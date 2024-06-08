@@ -15,6 +15,8 @@ SMTP_PASSWORD = 'smtp_password'
 SMTP_DOMAIN = 'smtp_domain'
 SMTP_FROM = 'Absender <E-Mail-Adresse>'
 
+ADMIN_USERS = []
+
 if defined? Mail
     Mail.defaults do
     delivery_method :smtp, {

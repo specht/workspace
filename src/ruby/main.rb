@@ -143,7 +143,6 @@ class Main < Sinatra::Base
         Main.tag_for_email(email)
     end
 
-
     def self.refresh_nginx_config
         tag_for_email = {}
         email_for_tag = {}
@@ -335,8 +334,8 @@ class Main < Sinatra::Base
         return (!@session_user.nil?)
     end
 
-    def jury_logged_in?
-        return false
+    def admin_logged_in?
+        return user_logged_in? && ADMIN_USERS.include?(@session_user[:email])
     end
 
     post '/api/request_login' do
@@ -519,6 +518,60 @@ class Main < Sinatra::Base
                 end
             end
             ws.rack_response
+        end
+    end
+
+    def bytes_to_str(ai_Size)
+        if ai_Size < 1024
+            return "#{ai_Size} B"
+        elsif ai_Size < 1024 * 1024
+            return "#{sprintf('%1.1f', ai_Size.to_f / 1024.0)} kB"
+        elsif ai_Size < 1024 * 1024 * 1024
+            return "#{sprintf('%1.1f', ai_Size.to_f / 1024.0 / 1024.0)} MB"
+        elsif ai_Size < 1024 * 1024 * 1024 * 1024
+            return "#{sprintf('%1.1f', ai_Size.to_f / 1024.0 / 1024.0 / 1024.0)} GB"
+        end
+        return "#{sprintf('%1.1f', ai_Size.to_f / 1024.0 / 1024.0 / 1024.0 / 1024.0)} TB"
+    end
+
+    def print_admin_info()
+        return '' unless admin_logged_in?
+        StringIO.open do |io|
+            io.puts "<table class='table'>"
+            io.puts "<tr>"
+            io.puts "<th>Tag</th>"
+            io.puts "<th>State</th>"
+            io.puts "<th>E-Mail</th>"
+            io.puts "<th>IP</th>"
+            io.puts "<th>DU</th>"
+            io.puts "</tr>"
+            Dir['/user/*'].each do |path|
+                user_tag = path.split('/').last
+                info = get_server_state(user_tag)
+                io.puts "<tr>"
+                io.puts "<td>#{user_tag}</td>"
+                io.puts "<td>#{info[:running] ? 'Running' : 'Stopped'}</td>"
+                io.puts "<td></td>"
+                io.puts "<td></td>"
+                io.puts "<td>#{bytes_to_str(info[:du] * 1024)}</td>"
+                io.puts "</tr>"
+                STDERR.puts info.to_yaml
+            end
+            # running_servers = {}
+            # inspect = JSON.parse(`docker network inspect workspace`)
+            # inspect.first['Containers'].values.each do |container|
+            #     name = container['Name']
+            #     next unless name[0, 8] == 'hs_code_'
+            #     user_tag = name.sub('hs_code_', '')
+            #     ip = container['IPv4Address'].split('/').first
+            #     if email_for_tag[user_tag]
+            #         running_servers[user_tag] = {
+            #             :ip => ip,
+            #             :email => email_for_tag[user_tag],
+            #         }
+            #     end
+            # end
+            io.string
         end
     end
 
