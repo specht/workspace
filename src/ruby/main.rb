@@ -453,7 +453,7 @@ class Main < Sinatra::Base
         system("mkdir -p /user/#{container_name}/workspace")
         system("chown -R 1000:1000 /user/#{container_name}")
         network_name = "hscode"
-        system("docker run -d -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} --name hs_code_#{container_name} hackschule_code")
+        system("docker run -d -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} --name hs_code_#{container_name} hs_code_server")
 
         Main.refresh_nginx_config()
         send_server_state()
