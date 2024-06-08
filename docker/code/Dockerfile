@@ -1,4 +1,4 @@
-FROM linuxserver/code-server:latest
+FROM linuxserver/code-server:4.89.1
 RUN sudo apt-get update && sudo apt-get install -y \
     wget \
     ruby \

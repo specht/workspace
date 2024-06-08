@@ -41,6 +41,7 @@
             });
         });
         $('#bu_launch').on('click', function(e) {
+            console.log("Launching Visual Studio Code with workspace: #{@sid_tag}");
             window.location.href = '/#{@sid_tag}/';
         });
     });
