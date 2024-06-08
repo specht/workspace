@@ -3,7 +3,7 @@
 require 'json'
 require 'yaml'
 
-data = JSON.parse(`docker network inspect hscode_hscode`)
+data = JSON.parse(`docker network inspect hscode`)
 data[0]['Containers'].each_pair do |k, v|
     name = v['Name']
     tag =  name.split('_').last

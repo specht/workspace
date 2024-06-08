@@ -165,7 +165,7 @@ class Main < Sinatra::Base
         end
 
         running_servers = {}
-        inspect = JSON.parse(`docker network inspect hscode_hscode`)
+        inspect = JSON.parse(`docker network inspect hscode`)
         inspect.first['Containers'].values.each do |container|
             name = container['Name']
             next unless name[0, 8] == 'hs_code_'
@@ -424,7 +424,7 @@ class Main < Sinatra::Base
         inspect = JSON.parse(`docker inspect hs_code_#{tag}`)
         unless inspect.empty?
             result[:running] = true
-            result[:ip] = inspect.first['NetworkSettings']['Networks']['hscode_hscode']['IPAddress']
+            result[:ip] = inspect.first['NetworkSettings']['Networks']['hscode']['IPAddress']
         end
         result
     end
@@ -452,7 +452,7 @@ class Main < Sinatra::Base
         system("mkdir -p /user/#{container_name}/config")
         system("mkdir -p /user/#{container_name}/workspace")
         system("chown -R 1000:1000 /user/#{container_name}")
-        network_name = "hscode_hscode"
+        network_name = "hscode"
         system("docker run -d -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} --name hs_code_#{container_name} hackschule_code")
 
         Main.refresh_nginx_config()
