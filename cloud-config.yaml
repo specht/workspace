@@ -1,0 +1,48 @@
+#cloud-config
+users:
+  - name: micha
+    groups: users, admin
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-rsa INSERT PUBLIC KEY HERE
+packages:
+  - fail2ban
+  - ufw
+  - ruby
+package_update: true
+package_upgrade: true
+runcmd:
+  - printf "[sshd]\nenabled = true\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
+  - systemctl enable fail2ban
+  - ufw allow OpenSSH
+  - ufw enable
+  - sed -i -e '/^\(#\|\)PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+  - sed -i -e '/^\(#\|\)PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
+  - sed -i -e '/^\(#\|\)KbdInteractiveAuthentication/s/^.*$/KbdInteractiveAuthentication no/' /etc/ssh/sshd_config
+  - sed -i -e '/^\(#\|\)ChallengeResponseAuthentication/s/^.*$/ChallengeResponseAuthentication no/' /etc/ssh/sshd_config
+  - sed -i -e '/^\(#\|\)MaxAuthTries/s/^.*$/MaxAuthTries 2/' /etc/ssh/sshd_config
+  - sed -i -e '/^\(#\|\)AllowTcpForwarding/s/^.*$/AllowTcpForwarding no/' /etc/ssh/sshd_config
+  - sed -i -e '/^\(#\|\)X11Forwarding/s/^.*$/X11Forwarding no/' /etc/ssh/sshd_config
+  - sed -i -e '/^\(#\|\)AllowAgentForwarding/s/^.*$/AllowAgentForwarding no/' /etc/ssh/sshd_config
+  - sed -i -e '/^\(#\|\)AuthorizedKeysFile/s/^.*$/AuthorizedKeysFile .ssh\/authorized_keys/' /etc/ssh/sshd_config
+  - sed -i '$a AllowUsers micha' /etc/ssh/sshd_config
+  # >>> start of docker install
+  # This is taken from https://docs.docker.com/engine/install/ubuntu/
+  - sudo apt-get update
+  - sudo apt-get install ca-certificates curl
+  - sudo install -m 0755 -d /etc/apt/keyrings
+  - sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+  - sudo chmod a+r /etc/apt/keyrings/docker.asc
+  - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  - sudo apt-get update
+  - sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  - sudo groupadd docker
+  - sudo usermod -aG docker micha
+  - sudo git clone https://github.com/magicmonty/bash-git-prompt.git /home/micha/.bash-git-prompt --depth=1
+  - echo "GIT_PROMPT_ONLY_IN_REPO=1" >> /home/micha/.bashrc
+  - echo "source ~/.bash-git-prompt/gitprompt.sh" >> /home/micha/.bashrc
+  # <<< end of docker install
+  - sudo apt-get update
+  - sudo apt-get install -y borgbackup borgmatic
+  - reboot
