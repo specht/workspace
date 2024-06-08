@@ -35,8 +35,8 @@ if PROFILE.include?(:static)
     }
     if !DEVELOPMENT
         docker_compose[:services][:nginx][:environment] = [
-            'VIRTUAL_HOST=physikmarathon.de',
-            'LETSENCRYPT_HOST=physikmarathon.de',
+            'VIRTUAL_HOST=workspace.hackschule.de',
+            'LETSENCRYPT_HOST=workspace.hackschule.de',
             'LETSENCRYPT_EMAIL=specht@gymnasiumsteglitz.de'
         ]
         docker_compose[:services][:nginx][:expose] = ['80']
