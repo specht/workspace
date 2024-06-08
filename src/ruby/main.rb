@@ -127,8 +127,7 @@ class Main < Sinatra::Base
     helpers Sinatra::Cookies
 
     def self.tag_for_sid(sid)
-        srand(Digest::SHA2.hexdigest(LOGIN_CODE_SALT + sid).to_i)
-        (0...10).map { |x| rand(10).to_s }.join('')
+        Digest::SHA2.hexdigest(LOGIN_CODE_SALT + sid)[0, 16]
     end
 
     def tag_for_sid(sid)
