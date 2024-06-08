@@ -1,0 +1,147 @@
+@font-face {
+    font-family: 'Alegreya';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/Alegreya/static/Alegreya-Regular.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'Alegreya';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/Alegreya/static/Alegreya-Italic.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'Alegreya';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(fonts/Alegreya/static/Alegreya-Bold.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'Alegreya';
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url(fonts/Alegreya/static/Alegreya-BoldItalic.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'Alegreya SC';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/Alegreya_SC/AlegreyaSC-Regular.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'Alegreya SC';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/Alegreya_SC/AlegreyaSC-Italic.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'Alegreya SC';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url(fonts/Alegreya_SC/AlegreyaSC-Medium.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'Alegreya SC';
+    font-style: italic;
+    font-weight: 500;
+    font-display: swap;
+    src: url(fonts/Alegreya_SC/AlegreyaSC-MediumItalic.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'Fira Code';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/FiraCode/FiraCode-Regular.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'Fira Code';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url(fonts/FiraCode/FiraCode-Bold.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'MonaSans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/mona-sans-cufonfonts/Mona-Sans-Regular.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'MonaSans';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/mona-sans-cufonfonts/Mona-Sans-RegularItalic.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'MonaSans';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url(fonts/mona-sans-cufonfonts/Mona-Sans-Bold.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'MonaSans';
+    font-style: italic;
+    font-weight: 500;
+    font-display: swap;
+    src: url(fonts/mona-sans-cufonfonts/Mona-Sans-BoldItalic.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'SpaceMono';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/Space_Mono/SpaceMono-Regular.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'SpaceMono';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/Space_Mono/SpaceMono-Italic.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'SpaceMono';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url(fonts/Space_Mono/SpaceMono-Bold.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'MonSpaceMonoSans';
+    font-style: italic;
+    font-weight: 500;
+    font-display: swap;
+    src: url(fonts/Space_Mono/SpaceMono-BoldItalic.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'Latin Modern Mono';
+    font-style: regular;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/lmm/lmmono10-regular.otf) format('truetype');
+}
+@font-face {
+    font-family: 'Latin Modern Mono';
+    font-style: regular;
+    font-weight: 900;
+    font-display: swap;
+    src: url(fonts/lmm/lmmonolt10-bold.otf) format('truetype');
+}
+@font-face {
+    font-family: 'Latin Modern Mono';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/lmm/lmmono10-italic.otf) format('truetype');
+}

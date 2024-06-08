@@ -1,0 +1,103 @@
+<div class='container'>
+    <div class='row'>
+        <div class='col-md-12'>
+            <div style="#{user_logged_in? ? 'display: none;' : ''}">
+                <h1>
+                    Willkommen zum Workspace der Hackschule!
+                </h1>
+                <p>
+                    Hier bekommst du deine eigene Programmierumgebung, in der du direkt loslegen kannst, egal ob in Java, Python, Ruby, JavaScript, C oder C++.
+                </p>
+            </div>
+            <div id='div_control_panel' class='mt-5' style="display: none; text-align: center;">
+                <div>
+                    <div id='div_state_off' class="alert alert-secondary">Dein Server ist ausgeschaltet.</div>
+                    <div id='div_state_on'  class="alert alert-success">
+                        <i class='fa fa-check text-success'></i>&nbsp;Dein Server ist eingeschaltet.
+                    </div>
+                </div>
+                <div>
+                    <p>
+                        <button id='bu_start_server' class="btn btn-lg btn-success"><i class='fa fa-play'></i>&nbsp;&nbsp;Server starten</button>
+                        <button id='bu_stop_server' class="btn btn-lg btn-danger"><i class='fa fa-stop'></i>&nbsp;&nbsp;Server stoppen</button>
+                    </p>
+                    <p>
+                        <button id='bu_launch' class="btn btn-lg btn-primary"><i class='fa fa-send'></i>&nbsp;&nbsp;Visual Studio Code öffnen</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    window.addEventListener('load', function() {
+        establish_websocket_connection();
+        $('#bu_start_server').on('click', function(e) {
+            api_call('/api/start_server', {}, function(data) {
+            });
+        });
+        $('#bu_stop_server').on('click', function(e) {
+            api_call('/api/stop_server', {}, function(data) {
+            });
+        });
+        $('#bu_launch').on('click', function(e) {
+            window.location.href = '/#{@sid_tag}/';
+        });
+    });
+
+    function establish_websocket_connection() {
+        var ws_uri = 'ws://' + location.host + '/ws';
+        if (location.host !== 'localhost:8025')
+            ws_uri = 'wss://' + location.host + '/ws';
+        ws = new WebSocket(ws_uri);
+        setup_ws(ws);
+    }
+
+    function keepAlive() {
+        var timeout = 20000;
+        if (ws.readyState == ws.OPEN) {
+            ws.send('');
+        }
+        (function() {
+            timerId = setTimeout(keepAlive, timeout);
+        })();
+    }
+
+    function setup_ws(ws)
+    {
+        ws.onopen = function () {
+            console.log('WS connection established');
+            // ws.send(JSON.stringify({'hello': 'world'}));
+            keepAlive();
+        }
+
+        ws.onclose = function () {
+            console.log('WS connection closed');
+            $('.please-reload').fadeIn();
+            clearTimeout(timerId);
+        }
+
+        ws.onmessage = function (msg) {
+            data = JSON.parse(msg.data);
+            console.log(data);
+            if (data.action === 'update_state') {
+                if (data.state.running) {
+                    $('#div_state_on').show();
+                    $('#div_state_off').hide();
+                    $('#bu_start_server').prop('disabled', true);
+                    $('#bu_stop_server').prop('disabled', false);
+                    $('#bu_launch').prop('disabled', false);
+                } else {
+                    $('#div_state_on').hide();
+                    $('#div_state_off').show();
+                    $('#bu_start_server').prop('disabled', false);
+                    $('#bu_stop_server').prop('disabled', true);
+                    $('#bu_launch').prop('disabled', true);
+                }
+                $('#div_control_panel').show();
+
+                console.log(data.state);
+            }
+        }
+    }
+</script>

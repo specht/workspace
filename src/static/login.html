@@ -1,0 +1,84 @@
+<style>
+    h1 {
+        margin-top: 0;
+    }
+    form input {
+        text-align: center;
+    }
+</style>
+<script>
+    var code_requested = false;
+    var tag = null;
+
+    window.addEventListener('load', function() {
+        $('#ti_email').on('change keyup', function(e) {
+            let email = $('#ti_email').val().trim();
+            if (code_requested || email.length === 0) {
+                $('#bu_submit_email').prop('disabled', true);
+            } else {
+                $('#bu_submit_email').prop('disabled', false);
+            }
+        });
+        $('#bu_submit_email').on('click', function(e) {
+            e.preventDefault();
+            let email = $('#ti_email').val().trim();
+            code_requested = true;
+            $('#bu_submit_email').prop('disabled', true);
+            $('#ti_email').prop('readonly', true).prop('disabled', true);
+            api_call('/api/request_login', {email: email}, function(data) {
+                if (data.success) {
+                    tag = data.tag;
+                    $('#part1').slideDown();
+                    $('#ti_code').focus();
+                }
+            });
+        });
+        $('#bu_submit_code').on('click', function(e) {
+            console.log('yay');
+            e.preventDefault();
+            let code = $('#ti_code').val().trim();
+            window.location.href = `/l/${tag}/${code}`;
+        });
+        $('#ti_email').on('keydown', function(e) {
+            if (e.keyCode === 13) {
+                let email = $('#ti_email').val().trim();
+                if (email.length > 0)
+                    $('#bu_submit_email').trigger('click');
+            }
+        });
+        $('#ti_code').on('keydown', function(e) {
+            if (e.keyCode === 13) {
+                let code = $('#ti_code').val().trim();
+                if (code.length > 0)
+                    $('#bu_submit_code').trigger('click');
+            }
+        });
+        $('#ti_email').focus();
+    });
+</script>
+<div class='container'>
+    <div class='row'>
+        <div class='col-md-12'>
+
+            <div class="row">
+                <div class="col-md-8 offset-md-2 pt-5">
+                    <form id='form' autocomplete='on'>
+                        <p>
+                            Bitte gib deine E-Mail-Adresse ein.
+                            Du bekommst dann eine E-Mail mit einem Code, den du im nächsten Schritt eingeben musst, um angemeldet zu werden.
+                        </p>
+                        <div id='part0' class="input-group mb-3">
+                            <input type="email" id='ti_email' class="form-control" placeholder="Bitte gib deine E-Mail-Adresse ein" autocomplete='on'>
+                            <button id='bu_submit_email' class="btn btn-primary" disabled><i class="fa fa-send"></i>&nbsp;&nbsp;Code zusenden</button>
+                        </div>
+                        <div id='part1' class="input-group mb-3" style="display: none;">
+                            <input type="text" id='ti_code' class="form-control" placeholder="Bitte gib deinen 6-stelligen Code ein." autocomplete='off'>
+                            <button id='bu_submit_code' class="btn btn-primary"><i class="fa fa-sign-in"></i>&nbsp;&nbsp;Anmelden</button>
+                        </div>
+                        <div class='api_messages' style='display: none;'></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

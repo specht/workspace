@@ -1,0 +1,25 @@
+{
+  "name": "exif",
+  "main": "exif.js",
+  "ignore": [
+    "test ",
+    "node_modules",
+    "**/.*",
+    "**/*.json",
+    "**/*.html",
+    "**/*.md"
+  ],
+  "dependencies": {},
+  "devDependencies": {},
+  "homepage": "https://github.com/dmarcos/exif-parser",
+  "_release": "eca4a75d6c",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "eca4a75d6cd3a158c9637e9ffe54f46c475eefe0"
+  },
+  "_source": "https://github.com/dmarcos/exif-parser.git",
+  "_target": "*",
+  "_originalSource": "exif",
+  "_direct": true
+}

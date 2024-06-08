@@ -1,0 +1,6 @@
+docker-compose.yaml
+data
+docker/ruby/Gemfile
+logs
+src/ruby/credentials.rb
+src/ruby/invitations.txt

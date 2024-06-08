@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hackschule Workspace</title>
+    <link href="/include/bootstrap.min.css" rel="stylesheet">
+    <link href="/include/bower_components/fork-awesome/css/fork-awesome.min.css" rel="stylesheet">
+
+    <link href="/include/fonts.css?#{CACHE_BUSTER}" rel="stylesheet">
+    <link href="/include/default.css?#{CACHE_BUSTER}" rel="stylesheet">
+
+    <script src="/include/code.js?#{CACHE_BUSTER}"></script>
+    <script src="/include/bower_components/moment/min/moment-with-locales.min.js"></script>
+    <script src="/include/bootstrap.bundle.min.js"></script>
+    <script src="/include/bower_components/jquery/dist/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="title"><a href='/'>Hackschule Workspace</a></div>
+        </div>
+    </div>
+    <div class="menu">
+        <!-- <a style='#{@session_user.nil? ? '' : 'display: none;'}' href='/login' class="btn btn-success"><i class='fa fa-sign-in'></i>&nbsp;&nbsp;Anmelden</a> -->
+        <!-- <a style='#{@session_user.nil? ? 'display: none;' : ''}' href='/logout' class="btn btn-secondary"><i class='fa fa-sign-out'></i>&nbsp;&nbsp;Abmelden</a> -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <div class="navbar-brand">
+                <div class="hide-on-mobile" style='#{@session_user.nil? ? 'display: none;' : ''};'>
+                    <div>
+                        Angemeldet als <strong>#{(@session_user || {})[:email]}</strong>
+                    </div>
+                </div>
+            </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" style='flex-flow: row-reverse;' id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="nav-link #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='fa fa-sign-in'></i>&nbsp;&nbsp;Anmelden</a>
+                    <a style='#{!@session_user.nil? ? '' : 'display: none;'}' class="nav-link" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;&nbsp;Abmelden</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+    #{CONTENT}
+
+    <!-- <footer>
+        <a href='/impressum'>Impressum</a>
+        <span style="display: inline-block; width: 1em;"></span>
+        <a href='/dse'>Datenschutzerklärung</a>
+        <span style="display: inline-block; width: 1em;"></span>
+        <a href='/credits'>Credits</a>
+    </footer> -->
+    <div class='please-reload' style='display: none;'>
+        Die Verbindung zum Server wurde unterbrochen. Bitte lade die Seite neu.
+    </div>
+</body>
+</html>

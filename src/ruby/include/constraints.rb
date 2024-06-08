@@ -1,0 +1,3 @@
+NEED_NEO4J = false
+CONSTRAINTS_LIST = []
+INDEX_LIST = []

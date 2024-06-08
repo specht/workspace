@@ -1,0 +1,2 @@
+# Hackschule VS Code Server
+
