@@ -165,7 +165,7 @@ class Main < Sinatra::Base
         end
 
         running_servers = {}
-        inspect = JSON.parse(`docker network inspect hscode`)
+        inspect = JSON.parse(`docker network inspect workspace`)
         inspect.first['Containers'].values.each do |container|
             name = container['Name']
             next unless name[0, 8] == 'hs_code_'
@@ -232,7 +232,7 @@ class Main < Sinatra::Base
                 }
 
                 location @ruby {
-                    proxy_pass http://hscode_ruby_1:9292;
+                    proxy_pass http://workspace_ruby_1:9292;
                     proxy_set_header Host $host;
                     proxy_http_version 1.1;
                     proxy_set_header Upgrade $http_upgrade;
@@ -265,7 +265,7 @@ class Main < Sinatra::Base
             end
         f.puts nginx_config_second_part
         end
-        system("docker kill -s HUP hscode_nginx_1")
+        system("docker kill -s HUP workspace_nginx_1")
     end
 
     configure do
@@ -424,7 +424,7 @@ class Main < Sinatra::Base
         inspect = JSON.parse(`docker inspect hs_code_#{tag}`)
         unless inspect.empty?
             result[:running] = true
-            result[:ip] = inspect.first['NetworkSettings']['Networks']['hscode']['IPAddress']
+            result[:ip] = inspect.first['NetworkSettings']['Networks']['workspace']['IPAddress']
         end
         result
     end
@@ -452,7 +452,7 @@ class Main < Sinatra::Base
         system("mkdir -p /user/#{container_name}/config")
         system("mkdir -p /user/#{container_name}/workspace")
         system("chown -R 1000:1000 /user/#{container_name}")
-        network_name = "hscode"
+        network_name = "workspace"
         system("docker run -d -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} --name hs_code_#{container_name} hs_code_server")
 
         Main.refresh_nginx_config()

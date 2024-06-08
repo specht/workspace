@@ -8,7 +8,7 @@ PROFILE = [:static, :dynamic, :neo4j]
 
 STAGING = File::dirname(File::expand_path(__FILE__)).include?('staging')
 DEVELOPMENT = !(ENV['QTS_DEVELOPMENT'].nil?)
-PROJECT_NAME = 'hscode'
+PROJECT_NAME = 'workspace'
 DEV_NGINX_PORT = 8025
 DEV_NEO4J_PORT = 8021
 LOGS_PATH = DEVELOPMENT ? './logs' : "/home/micha/logs/#{PROJECT_NAME}"
@@ -151,11 +151,11 @@ if PROFILE.include?(:neo4j)
 end
 
 docker_compose[:services].values.each do |x|
-    x[:networks] = [:hscode]
+    x[:networks] = [:workspace]
     # x[:network_mode] = 'default'
 end
 
-docker_compose[:networks] = {:hscode => {:name => 'hscode'}}
+docker_compose[:networks] = {:workspace => {:name => 'workspace'}}
 
 if DEVELOPMENT
     docker_compose[:services][:nginx][:ports] = ["0.0.0.0:#{DEV_NGINX_PORT}:80"]
