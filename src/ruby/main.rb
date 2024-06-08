@@ -153,6 +153,7 @@ class Main < Sinatra::Base
         END_OF_QUERY
             sid = row['s.sid']
             tag = tag_for_sid(sid)
+            STDERR.puts "sid #{sid} -> sid_tag #{tag}"
             email = row['u.email']
             sessions_for_user[email] ||= {}
             sessions_for_user[email][tag] = sid
@@ -162,6 +163,9 @@ class Main < Sinatra::Base
                 email_for_tag[email_tag] = email
             end
         end
+        STDERR.puts "tag_for_email: #{tag_for_email.to_yaml}"
+        STDERR.puts "email_for_tag: #{email_for_tag.to_yaml}"
+        STDERR.puts "sessions_for_user: #{sessions_for_user.to_yaml}"
 
         running_servers = {}
         inspect = JSON.parse(`docker network inspect workspace`)
