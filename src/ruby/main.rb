@@ -127,7 +127,7 @@ class Main < Sinatra::Base
     helpers Sinatra::Cookies
 
     def self.tag_for_sid(sid)
-        Digest::SHA2.hexdigest(LOGIN_CODE_SALT + sid)[0, 16]
+        Digest::SHA2.hexdigest(LOGIN_CODE_SALT + sid)[0, 16].to_i(16).to_s(36)[0, 8].downcase
     end
 
     def tag_for_sid(sid)
