@@ -34,10 +34,27 @@
     </div>
 </div>
 <script>
+    var user_tag = "#{tag_for_email((@session_user || {})[:email])}";
+    function check_server_online() {
+        fetch(`/${user_tag}/`) // replace with your actual API endpoint
+        .then(response => {
+            if (response.status === 200) {
+                console.log('Server is online');
+            } else {
+                console.log('Server is offline');
+                setTimeout(function() { check_server_online(); }, 500);
+            }
+        })
+        .catch(error => {
+            console.log('Error:', error);
+        });
+    }
+
     window.addEventListener('load', function() {
         establish_websocket_connection();
         $('#bu_start_server').on('click', function(e) {
             api_call('/api/start_server', {}, function(data) {
+                check_server_online();
             });
         });
         $('#bu_stop_server').on('click', function(e) {
@@ -45,8 +62,7 @@
             });
         });
         $('#bu_launch').on('click', function(e) {
-            console.log("Launching Visual Studio Code with workspace: #{@sid_tag}");
-            window.location.href = '/#{tag_for_email((@session_user || {})[:email])}/';
+            window.location.href = `/${user_tag}/`;
         });
     });
 

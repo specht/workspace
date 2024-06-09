@@ -574,20 +574,6 @@ class Main < Sinatra::Base
                 io.puts "</tr>"
                 STDERR.puts info.to_yaml
             end
-            # running_servers = {}
-            # inspect = JSON.parse(`docker network inspect workspace`)
-            # inspect.first['Containers'].values.each do |container|
-            #     name = container['Name']
-            #     next unless name[0, 8] == 'hs_code_'
-            #     user_tag = name.sub('hs_code_', '')
-            #     ip = container['IPv4Address'].split('/').first
-            #     if email_for_tag[user_tag]
-            #         running_servers[user_tag] = {
-            #             :ip => ip,
-            #             :email => email_for_tag[user_tag],
-            #         }
-            #     end
-            # end
             io.string
         end
     end
