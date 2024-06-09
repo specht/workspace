@@ -545,6 +545,13 @@ class Main < Sinatra::Base
     end
 
     def print_admin_info()
+        email_for_tag = {}
+        neo4j_query(<<~END_OF_STRING).each do |row|
+            MATCH (u:User) RETURN u.email;
+        END_OF_STRING
+            email = row['u.email']
+            email_for_tag[tag_for_email(email)] = email
+        end
         return '' unless admin_logged_in?
         StringIO.open do |io|
             io.puts "<table class='table'>"
@@ -561,8 +568,8 @@ class Main < Sinatra::Base
                 io.puts "<tr>"
                 io.puts "<td>#{user_tag}</td>"
                 io.puts "<td>#{info[:running] ? 'Running' : 'Stopped'}</td>"
-                io.puts "<td></td>"
-                io.puts "<td></td>"
+                io.puts "<td>#{email_for_tag[user_tag]}</td>"
+                io.puts "<td>#{info[:ip] || '&ndash;'}</td>"
                 io.puts "<td>#{bytes_to_str(info[:du] * 1024)}</td>"
                 io.puts "</tr>"
                 STDERR.puts info.to_yaml
