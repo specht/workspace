@@ -26,13 +26,13 @@
     </div>
 </div>
 <script>
-    var user_tag = "#{@session_user.nil? ? '' : tag_for_email((@session_user || {})[:email])}";
+    var server_tag = "#{(@session_user || {})[:server_tag]}";
     function check_server_online() {
-        fetch(`/${user_tag}/`) // replace with your actual API endpoint
+        fetch(`/${server_tag}/`) // replace with your actual API endpoint
         .then(response => {
             if (response.status === 200) {
                 console.log('Server is online');
-                window.location.href = `/${user_tag}/`;
+                window.location.href = `/${server_tag}/`;
         } else {
                 console.log('Server is offline');
                 setTimeout(function() { check_server_online(); }, 500);
@@ -46,17 +46,26 @@
     window.addEventListener('load', function() {
         establish_websocket_connection();
         $('#bu_launch').on('click', function(e) {
+            $('#bu_launch').prop('disabled', true);
             $('#bu_launch .fa').addClass('fa-spin');
             api_call('/api/start_server', {}, function(data) {
                 check_server_online();
             });
-            // window.location.href = `/${user_tag}/`;
         });
         $('#bu_reset').on('click', function(e) {
-            // $('#bu_launch .fa').addClass('fa-spin');
-            api_call('/api/reset_server', {}, function(data) {
+            showTemplateModal('Workspace zurücksetzen', 'Bist du sicher, dass du deinen Workspace zurücksetzen möchtest? Alle Dateien und deine installierten Erweiterungen werden gelöscht.',
+            "<i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen", 'btn-danger', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+                api_call('/api/reset_server', {}, function(data) {
+                    // localStorage.clear();
+                    // sessionStorage.clear();
+                    (async () => {
+                        const dbs = await window.indexedDB.databases();
+                        dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) });
+                    })();
+                    // we need to reload the website to receive the updated server_tag and server_sid
+                    window.location.reload();
+                });
             });
-            // window.location.href = `/${user_tag}/`;
         });
     });
 

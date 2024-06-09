@@ -186,7 +186,7 @@ if PROFILE.include?(:neo4j)
 end
 FileUtils::mkpath(USER_PATH)
 
-system("cd docker/code && docker build -t hs_code_server .")
+# system("cd docker/code && docker build -t hs_code_server .")
 
 `docker compose 2> /dev/null`
 DOCKER_COMPOSE = ($? == 0) ? 'docker compose' : 'docker-compose'

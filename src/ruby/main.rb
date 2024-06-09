@@ -126,20 +126,20 @@ class Main < Sinatra::Base
     include Neo4jBolt
     helpers Sinatra::Cookies
 
+    def self.fs_tag_for_email(email)
+        Digest::SHA2.hexdigest(email).to_i(16).to_s(36)[0, 16]
+    end
+
+    def fs_tag_for_email(email)
+        Main.fs_tag_for_email(email)
+    end
+
     def self.tag_for_sid(sid)
         Digest::SHA2.hexdigest(LOGIN_CODE_SALT + sid)[0, 16].to_i(16).to_s(36)[0, 8].downcase
     end
 
     def tag_for_sid(sid)
         Main.tag_for_sid(sid)
-    end
-
-    def self.tag_for_email(email)
-        return Digest::SHA1.hexdigest(email)[0, 16]
-    end
-
-    def tag_for_email(email)
-        Main.tag_for_email(email)
     end
 
     def self.server_sid_for_email(email)
@@ -151,42 +151,16 @@ class Main < Sinatra::Base
     end
 
     def self.refresh_nginx_config
-        tag_for_email = {}
-        email_for_tag = {}
-        sessions_for_user = {}
-        results = $neo4j.neo4j_query(<<~END_OF_QUERY).each do |row|
-            MATCH (s:Session)-[:FOR]->(u:User)
-            RETURN s.sid, u.email, s;
-        END_OF_QUERY
-            sid = row['s.sid']
-            tag = tag_for_sid(sid)
-            STDERR.puts "sid #{sid} -> sid_tag #{tag}"
-            email = row['u.email']
-            sessions_for_user[email] ||= {}
-            sessions_for_user[email][tag] = sid
-            unless tag_for_email.include?(email)
-                email_tag = tag_for_email(email)
-                tag_for_email[email] = email_tag
-                email_for_tag[email_tag] = email
-            end
-        end
-        STDERR.puts "tag_for_email: #{tag_for_email.to_yaml}"
-        STDERR.puts "email_for_tag: #{email_for_tag.to_yaml}"
-        STDERR.puts "sessions_for_user: #{sessions_for_user.to_yaml}"
-
         running_servers = {}
         inspect = JSON.parse(`docker network inspect workspace`)
         inspect.first['Containers'].values.each do |container|
             name = container['Name']
             next unless name[0, 8] == 'hs_code_'
-            user_tag = name.sub('hs_code_', '')
+            fs_tag = name.sub('hs_code_', '')
             ip = container['IPv4Address'].split('/').first
-            if email_for_tag[user_tag]
-                running_servers[user_tag] = {
-                    :ip => ip,
-                    :email => email_for_tag[user_tag],
-                }
-            end
+            running_servers[fs_tag] = {
+                :ip => ip,
+            }
         end
 
         nginx_config_first_part = <<~END_OF_STRING
@@ -256,23 +230,26 @@ class Main < Sinatra::Base
 
         File.open('/nginx/default.conf', 'w') do |f|
             f.puts nginx_config_first_part
-            running_servers.each_pair do |email_tag, info|
-                email = email_for_tag[email_tag]
-                f.puts <<~END_OF_STRING
-                location /#{email_tag}/ {
-                    if ($cookie_server_sid != "#{server_sid_for_email(email)}") {
-                        return 403;
+            $neo4j.neo4j_query("MATCH (u:User) RETURN u;").each do |row|
+                user = row['u']
+                fs_tag = fs_tag_for_email(user[:email])
+                if running_servers.include?(fs_tag)
+                    f.puts <<~END_OF_STRING
+                    location /#{user[:server_tag]}/ {
+                        if ($cookie_server_sid != "#{user[:server_sid]}") {
+                            return 403;
+                        }
+                        rewrite ^/#{user[:server_tag]}(.*)$ $1 break;
+                        proxy_set_header Host $http_host;
+                        proxy_set_header Upgrade $http_upgrade;
+                        proxy_set_header Connection upgrade;
+                        proxy_set_header Accept-Encoding gzip;
+                        proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
                     }
-                    rewrite ^/#{email_tag}(.*)$ $1 break;
-                    proxy_set_header Host $http_host;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection upgrade;
-                    proxy_set_header Accept-Encoding gzip;
-                    proxy_pass http://#{info[:ip]}:8443;
-                }
-                END_OF_STRING
+                    END_OF_STRING
+                end
             end
-        f.puts nginx_config_second_part
+            f.puts nginx_config_second_part
         end
         system("docker kill -s HUP workspace_nginx_1")
     end
@@ -296,7 +273,6 @@ class Main < Sinatra::Base
 
     before '*' do
         @session_user = nil
-        @sid_tag = nil
         if request.cookies.include?('sid')
             sid = request.cookies['sid']
             if (sid.is_a? String) && (sid =~ /^[0-9A-Za-z]+$/)
@@ -314,8 +290,20 @@ class Main < Sinatra::Base
                                 email = results.first['u'][:email]
                                 @session_user = {
                                     :email => email.downcase,
+                                    :server_tag => results.first['u'][:server_tag],
                                 }
-                                @sid_tag = tag_for_sid(first_sid)
+                                # set server_sid cookie if it's not set or out of date
+                                expires = Time.new + 3600 * 24 * 365
+                                [:server_sid].each do |key|
+                                    if request.cookies[key.to_s] != results.first['u'][key]
+                                        response.set_cookie(key.to_s,
+                                        :value => results.first['u'][key],
+                                        :expires => expires,
+                                        :path => '/',
+                                        :httponly => true,
+                                        :secure => DEVELOPMENT ? false : true)
+                                    end
+                                end
                             end
                         rescue
                             # something went wrong, delete the session
@@ -346,6 +334,14 @@ class Main < Sinatra::Base
 
     def admin_logged_in?
         return user_logged_in? && ADMIN_USERS.include?(@session_user[:email])
+    end
+
+    def gen_server_tag()
+        RandomTag::generate(12)
+    end
+
+    def gen_server_sid()
+        RandomTag::generate(48)
     end
 
     post '/api/request_login' do
@@ -379,10 +375,18 @@ class Main < Sinatra::Base
         random_code = (0..5).map { |x| rand(10).to_s }.join('')
         random_code = '123456' if DEVELOPMENT
 
-        neo4j_query_expect_one(<<~END_OF_QUERY, {:email => email})
+        user = neo4j_query_expect_one(<<~END_OF_QUERY, {:email => email})['u']
             MERGE (u:User {email: $email})
-            RETURN u.email;
+            RETURN u;
         END_OF_QUERY
+
+        if user[:server_tag].nil? || user[:server_sid].nil?
+            neo4j_query(<<~END_OF_QUERY, {:email => email, :server_tag => gen_server_tag(), :server_sid => gen_server_sid()})
+                MATCH (u:User {email: $email})
+                SET u.server_tag = COALESCE(u.server_tag, $server_tag)
+                SET u.server_sid = COALESCE(u.server_sid, $server_sid)
+            END_OF_QUERY
+        end
 
         neo4j_query_expect_one(<<~END_OF_QUERY, {:email => email, :tag => tag, :code => random_code})
             MATCH (u:User {email: $email})
@@ -429,7 +433,9 @@ class Main < Sinatra::Base
         result = {}
         result[:tag] = tag
         result[:running] = false
-        result[:du] = `du -d 0 /user/#{tag}`.split(/\s/).first.to_i
+        if File.exist?("/user/#{tag}")
+            result[:du] = `du -d 0 /user/#{tag}`.split(/\s/).first.to_i
+        end
         inspect = JSON.parse(`docker inspect hs_code_#{tag}`)
         unless inspect.empty?
             result[:running] = true
@@ -441,7 +447,7 @@ class Main < Sinatra::Base
     def send_server_state
         return unless @session_user
         email = @session_user[:email]
-        container_name = tag_for_email(email)
+        container_name = fs_tag_for_email(email)
         state = get_server_state(container_name)
         (@@client_ids_for_email[email] || []).each do |client_id|
             ws = @@clients[client_id]
@@ -450,7 +456,7 @@ class Main < Sinatra::Base
     end
 
     def start_server(email)
-        container_name = tag_for_email(email)
+        container_name = fs_tag_for_email(email)
 
         state = get_server_state(container_name)
         return if state[:running]
@@ -469,7 +475,7 @@ class Main < Sinatra::Base
     end
 
     def stop_server(email)
-        container_name = tag_for_email(email)
+        container_name = fs_tag_for_email(email)
 
         system("docker kill hs_code_#{container_name}")
         system("docker rm hs_code_#{container_name}")
@@ -501,8 +507,16 @@ class Main < Sinatra::Base
 
         email = @session_user[:email]
         stop_server(email)
-        container_name = tag_for_email(email)
+        container_name = fs_tag_for_email(email)
         system("rm -rf /user/#{container_name}")
+        # assign new server_tag and server_sid
+        server_tag = gen_server_tag()
+        server_sid = gen_server_sid()
+        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :server_tag => server_tag, :server_sid => server_sid})
+            MATCH (u:User {email: $email})
+            SET u.server_tag = $server_tag
+            SET u.server_sid = $server_sid
+        END_OF_STRING
         send_server_state()
 
         respond(:yay => 'sure')
@@ -573,7 +587,7 @@ class Main < Sinatra::Base
             MATCH (u:User) RETURN u.email;
         END_OF_STRING
             email = row['u.email']
-            email_for_tag[tag_for_email(email)] = email
+            email_for_tag[fs_tag_for_email(email)] = email
         end
         return '' unless admin_logged_in?
         StringIO.open do |io|
@@ -641,7 +655,7 @@ class Main < Sinatra::Base
                 response.set_cookie('server_sid',
                     :value => server_sid_for_email(email),
                     :expires => expires,
-                    :path => "/#{tag_for_email(email)}",
+                    :path => "/#{fs_tag_for_email(email)}",
                     :httponly => true,
                     :secure => DEVELOPMENT ? false : true)
             end
