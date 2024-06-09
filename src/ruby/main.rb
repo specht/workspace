@@ -142,6 +142,14 @@ class Main < Sinatra::Base
         Main.tag_for_email(email)
     end
 
+    def self.server_sid_for_email(email)
+        return Digest::SHA2.hexdigest(LOGIN_CODE_SALT + email)
+    end
+
+    def server_sid_for_email(email)
+        Main.server_sid_for_email(email)
+    end
+
     def self.refresh_nginx_config
         tag_for_email = {}
         email_for_tag = {}
@@ -249,21 +257,20 @@ class Main < Sinatra::Base
         File.open('/nginx/default.conf', 'w') do |f|
             f.puts nginx_config_first_part
             running_servers.each_pair do |email_tag, info|
-                sessions_for_user[email_for_tag[email_tag]].each_pair do |session_tag, sid|
-                    f.puts <<~END_OF_STRING
-                    location /#{session_tag}/ {
-                        if ($cookie_sid != "#{sid}") {
-                            return 403;
-                        }
-                        rewrite ^/#{session_tag}(.*)$ $1 break;
-                        proxy_set_header Host $http_host;
-                        proxy_set_header Upgrade $http_upgrade;
-                        proxy_set_header Connection upgrade;
-                        proxy_set_header Accept-Encoding gzip;
-                        proxy_pass http://#{info[:ip]}:8443;
+                email = email_for_tag[email_tag]
+                f.puts <<~END_OF_STRING
+                location /#{email_tag}/ {
+                    if ($cookie_server_sid != "#{server_sid_for_email(email)}") {
+                        return 403;
                     }
-                    END_OF_STRING
-                end
+                    rewrite ^/#{email_tag}(.*)$ $1 break;
+                    proxy_set_header Host $http_host;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection upgrade;
+                    proxy_set_header Accept-Encoding gzip;
+                    proxy_pass http://#{info[:ip]}:8443;
+                }
+                END_OF_STRING
             end
         f.puts nginx_config_second_part
         end
@@ -605,10 +612,17 @@ class Main < Sinatra::Base
                     CREATE (s:Session {sid: $sid, expires: $expires})-[:FOR]->(u)
                     RETURN s.sid AS sid;
                 END_OF_QUERY
+                expires = Time.new + 3600 * 24 * 365
                 response.set_cookie('sid',
                     :value => sid,
-                    :expires => Time.new + 3600 * 24 * 365,
+                    :expires => expires,
                     :path => '/',
+                    :httponly => true,
+                    :secure => DEVELOPMENT ? false : true)
+                response.set_cookie('server_sid',
+                    :value => server_sid_for_email(email),
+                    :expires => expires,
+                    :path => "/#{tag_for_email(email)}",
                     :httponly => true,
                     :secure => DEVELOPMENT ? false : true)
             end
