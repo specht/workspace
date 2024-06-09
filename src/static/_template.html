@@ -72,10 +72,10 @@
                         </div>
                     </div>
                 </div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" style='flex-flow: row-reverse;' id="navbarNavAltMarkup">
+                </button> -->
+                <div class="navbar-expand" style='flex-flow: row-reverse;' id="navbarNavAltMarkup">
                     <div class="navbar-nav">
                         <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="nav-link #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='fa fa-sign-in'></i>&nbsp;&nbsp;Anmelden</a>
                         <a style='#{!@session_user.nil? ? '' : 'display: none;'}' class="nav-link" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;&nbsp;Abmelden</a>
