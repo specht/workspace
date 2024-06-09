@@ -9,21 +9,13 @@
                     Hier bekommst du deine eigene Programmierumgebung, in der du direkt loslegen kannst, egal ob in Java, Python, Ruby, JavaScript, C oder C++.
                 </p>
             </div>
-            <div id='div_control_panel' class='mt-5' style="display: none; text-align: center;">
+            <div id='div_control_panel' class='mt-5' style="text-align: center; #{user_logged_in? ? '' : 'display: none;'}">
                 <div>
-                    <div id='div_state_off' class="alert alert-secondary">Dein Server ist ausgeschaltet.</div>
-                    <div id='div_state_on'  class="alert alert-success">
-                        <i class='fa fa-check text-success'></i>&nbsp;Dein Server ist eingeschaltet.
-                    </div>
+                    <button id='bu_launch' class="btn btn-lg btn-success"><i class='fa fa-code'></i>&nbsp;&nbsp;Workspace öffnen</button>
                 </div>
-                <div>
-                    <p>
-                        <button id='bu_start_server' class="btn btn-lg btn-success"><i class='fa fa-play'></i>&nbsp;&nbsp;Server starten</button>
-                        <button id='bu_stop_server' class="btn btn-lg btn-danger"><i class='fa fa-stop'></i>&nbsp;&nbsp;Server stoppen</button>
-                    </p>
-                    <p>
-                        <button id='bu_launch' class="btn btn-lg btn-primary"><i class='fa fa-send'></i>&nbsp;&nbsp;Visual Studio Code öffnen</button>
-                    </p>
+                <div class="mt-2">
+                    <!-- <button id='bu_restart' class="btn btn btn-warning"><i class='fa fa-refresh'></i>&nbsp;&nbsp;Workspace neustarten</button> -->
+                    <button id='bu_reset' class="btn btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Workspace zurücksetzen</button>
                 </div>
             </div>
             <div id="div_admin" style="#{admin_logged_in? ? '' : 'display: none;'}">
@@ -34,13 +26,14 @@
     </div>
 </div>
 <script>
-    var user_tag = "#{tag_for_email((@session_user || {})[:email])}";
+    var user_tag = "#{@session_user.nil? ? '' : tag_for_email((@session_user || {})[:email])}";
     function check_server_online() {
         fetch(`/${user_tag}/`) // replace with your actual API endpoint
         .then(response => {
             if (response.status === 200) {
                 console.log('Server is online');
-            } else {
+                window.location.href = `/${user_tag}/`;
+        } else {
                 console.log('Server is offline');
                 setTimeout(function() { check_server_online(); }, 500);
             }
@@ -52,17 +45,18 @@
 
     window.addEventListener('load', function() {
         establish_websocket_connection();
-        $('#bu_start_server').on('click', function(e) {
+        $('#bu_launch').on('click', function(e) {
+            $('#bu_launch .fa').addClass('fa-spin');
             api_call('/api/start_server', {}, function(data) {
                 check_server_online();
             });
+            // window.location.href = `/${user_tag}/`;
         });
-        $('#bu_stop_server').on('click', function(e) {
-            api_call('/api/stop_server', {}, function(data) {
+        $('#bu_reset').on('click', function(e) {
+            // $('#bu_launch .fa').addClass('fa-spin');
+            api_call('/api/reset_server', {}, function(data) {
             });
-        });
-        $('#bu_launch').on('click', function(e) {
-            window.location.href = `/${user_tag}/`;
+            // window.location.href = `/${user_tag}/`;
         });
     });
 
@@ -88,7 +82,6 @@
     {
         ws.onopen = function () {
             console.log('WS connection established');
-            // ws.send(JSON.stringify({'hello': 'world'}));
             keepAlive();
         }
 
@@ -102,20 +95,20 @@
             data = JSON.parse(msg.data);
             console.log(data);
             if (data.action === 'update_state') {
-                if (data.state.running) {
-                    $('#div_state_on').show();
-                    $('#div_state_off').hide();
-                    $('#bu_start_server').prop('disabled', true);
-                    $('#bu_stop_server').prop('disabled', false);
-                    $('#bu_launch').prop('disabled', false);
-                } else {
-                    $('#div_state_on').hide();
-                    $('#div_state_off').show();
-                    $('#bu_start_server').prop('disabled', false);
-                    $('#bu_stop_server').prop('disabled', true);
-                    $('#bu_launch').prop('disabled', true);
-                }
-                $('#div_control_panel').show();
+                // if (data.state.running) {
+                //     $('#div_state_on').show();
+                //     $('#div_state_off').hide();
+                //     $('#bu_start_server').prop('disabled', true);
+                //     $('#bu_stop_server').prop('disabled', false);
+                //     $('#bu_launch').prop('disabled', false);
+                // } else {
+                //     $('#div_state_on').hide();
+                //     $('#div_state_off').show();
+                //     $('#bu_start_server').prop('disabled', false);
+                //     $('#bu_stop_server').prop('disabled', true);
+                //     $('#bu_launch').prop('disabled', true);
+                // }
+                // $('#div_control_panel').show();
 
                 console.log(data.state);
             }

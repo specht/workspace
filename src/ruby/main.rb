@@ -449,11 +449,11 @@ class Main < Sinatra::Base
         end
     end
 
-    post '/api/start_server' do
-        assert(user_logged_in?)
-
-        email = @session_user[:email]
+    def start_server(email)
         container_name = tag_for_email(email)
+
+        state = get_server_state(container_name)
+        return if state[:running]
 
         system("mkdir -p /user/#{container_name}/config")
         system("mkdir -p /user/#{container_name}/config/data")
@@ -466,6 +466,23 @@ class Main < Sinatra::Base
 
         Main.refresh_nginx_config()
         send_server_state()
+    end
+
+    def stop_server(email)
+        container_name = tag_for_email(email)
+
+        system("docker kill hs_code_#{container_name}")
+        system("docker rm hs_code_#{container_name}")
+
+        Main.refresh_nginx_config()
+        send_server_state()
+    end
+
+    post '/api/start_server' do
+        assert(user_logged_in?)
+
+        email = @session_user[:email]
+        start_server(email)
 
         respond(:yay => 'sure')
     end
@@ -474,12 +491,18 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
 
         email = @session_user[:email]
+        stop_server(email)
+
+        respond(:yay => 'sure')
+    end
+
+    post '/api/reset_server' do
+        assert(user_logged_in?)
+
+        email = @session_user[:email]
+        stop_server(email)
         container_name = tag_for_email(email)
-
-        system("docker kill hs_code_#{container_name}")
-        system("docker rm hs_code_#{container_name}")
-
-        Main.refresh_nginx_config()
+        system("rm -rf /user/#{container_name}")
         send_server_state()
 
         respond(:yay => 'sure')
@@ -554,6 +577,7 @@ class Main < Sinatra::Base
         end
         return '' unless admin_logged_in?
         StringIO.open do |io|
+            io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
             io.puts "<table class='table'>"
             io.puts "<tr>"
             io.puts "<th>Tag</th>"
@@ -574,6 +598,8 @@ class Main < Sinatra::Base
                 io.puts "</tr>"
                 STDERR.puts info.to_yaml
             end
+            io.puts "</table>"
+            io.puts "</div>"
             io.string
         end
     end
