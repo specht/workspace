@@ -7,6 +7,7 @@ RUN sudo apt-get update && sudo apt-get install -y \
     openjdk-17-jdk-headless \
     lua5.4 \
     nodejs npm \
+    texlive-full \
     htop \
     build-essential file \
     && sudo apt-get clean \
