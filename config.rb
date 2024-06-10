@@ -14,6 +14,7 @@ DEV_NEO4J_PORT = 8021
 LOGS_PATH = DEVELOPMENT ? './logs' : "/home/micha/logs/#{PROJECT_NAME}"
 DATA_PATH = DEVELOPMENT ? './data' : "/mnt/hackschule/#{PROJECT_NAME}"
 USER_PATH = File.join(DATA_PATH, 'user')
+INTERNAL_PATH = File.join(DATA_PATH, 'internal')
 NGINX_PATH = File.join(DATA_PATH, 'nginx')
 NEO4J_LOGS_PATH = File::join(LOGS_PATH, 'neo4j')
 NEO4J_DATA_PATH = File::join(DATA_PATH, 'neo4j')
@@ -119,6 +120,7 @@ if PROFILE.include?(:dynamic)
         :build => './docker/ruby',
         :volumes => ['./src:/src:ro',
                      "#{USER_PATH}:/user",
+                     "#{INTERNAL_PATH}:/internal",
                      "/var/run/docker.sock:/var/run/docker.sock",
                      "#{NGINX_PATH}:/nginx",
                     ],
@@ -185,6 +187,7 @@ if PROFILE.include?(:neo4j)
     FileUtils::mkpath(NEO4J_DATA_PATH)
 end
 FileUtils::mkpath(USER_PATH)
+FileUtils::mkpath(INTERNAL_PATH)
 
 `docker compose 2> /dev/null`
 DOCKER_COMPOSE = ($? == 0) ? 'docker compose' : 'docker-compose'

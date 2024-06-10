@@ -4,36 +4,53 @@
             <p class="mt-4">
                 Herzlich willkommen im <strong>Hackschule Workspace</strong>! Hier kannst du direkt im Browser mit Visual Studio Code programmieren, ohne dass du irgendetwas installieren musst. Egal ob du ein Anfänger bist oder schon Erfahrung hast, hier findest du alles, was du brauchst, um deine Programmierkenntnisse zu verbessern.
             </p>
-            <div class="row">
-                <div class="#{user_logged_in? ? 'col-md-4' : 'col-md-6'} mt-4">
-                    <h3><img src='/images/hacker.png' style="height: 1.2em;"> Programmieren üben</h3>
+            <div style='#{user_logged_in? ? '' : ''}' class="row">
+                <div class="#{user_logged_in? ? 'col-lg-4 col-md-12 col-sm-12' : 'col-md-6'} mt-4">
+                    <h3><img class='circle' src='/images/hacker.png'> Programmieren üben</h3>
                     <p>
                         Hier bekommst du deine eigene Programmier&shy;umgebung (Visual Studio Code), in der du direkt loslegen kannst, egal ob in Java, Python, Ruby, JavaScript, Go, Lua, C oder C++. Du kannst auch Dokumente mit L<span style='position: relative; font-size: 90%; top: -0.2em;'>A</span>T<span style='position: relative; top: 0.2em;'>E</span>X setzen.
                     </p>
                 </div>
-                <div class="#{user_logged_in? ? 'col-md-4' : 'col-md-6'} mt-4">
-                    <h3><img src='/images/penguin.png' style="height: 1.2em;"> Linux-Befehle lernen</h3>
+                <div class="#{user_logged_in? ? 'col-lg-4 col-md-12 col-sm-12' : 'col-md-6'} mt-4">
+                    <h3><img class='circle' src='/images/penguin.png'> Linux-Befehle lernen</h3>
                     <p>
                         Nutze das eingebaute Terminal, um Linux-Kommandos auszuführen und die Linux-Shell zu lernen. Du kannst auch eigene Shell-Skripte schreiben und ausführen.
                     </p>
                 </div>
-                <div class="#{user_logged_in? ? 'col-md-4' : 'col-md-6'} mt-4">
-                    <h3><img src='/images/git.png' style="height: 1.2em;"> Lerne den Umgang mit Git</h3>
+                <div class="#{user_logged_in? ? 'col-lg-4 col-md-12 col-sm-12' : 'col-md-6'} mt-4">
+                    <h3><img class='circle' src='/images/git.png'> Lerne den Umgang mit Git</h3>
                     <p>
                         Du kannst Git direkt im Workspace verwenden, um deine Projekte zu verwalten und mit anderen zu teilen. Du kannst auch GitHub-Repositories klonen und bearbeiten.
                     </p>
                 </div>
-                <div style='#{user_logged_in? ? 'display: none' : ''}' class="col-md-6 mt-4">
-                    <h3><img src='/images/key.png' style="height: 1.2em;"> Wie komme ich rein?</h3>
+                <div class="col-md-6 mt-4" style="#{user_logged_in? ? 'display: none;' : ''}">
+                    <h3><img class='circle' src='/images/key.png'> Wie komme ich rein?</h3>
                     <p>
                         Um den Hackschule Workspace zu nutzen, <a href='/login'>musst du dich anmelden</a>. Du brauchst dafür eine E-Mail-Adresse am Gymnasium Steglitz. Du kannst auch nach einer <a href='mailto:specht@hackschule.de'>Einladung</a> fragen.
                     </p>
                 </div>
             </div>
-            <!-- <h1>Tutorials</h1>
-            <p>
-                
-            </p> -->
+            <!-- <h2><img class='circle' src='/images/hacker.png'> Programmieren üben</h2>
+            <div class='tutorial_card'>
+                <h4>Erstelle eine Präsentation in HTML</h4>
+                <p>
+                    Erstelle eine Präsentation mit shower.js in HTML und CSS. Mach dich
+                    unabhängig von PowerPoint und Keynote und erstelle eine Präsentation,
+                    die in jedem modernen Browser vom Stick oder von der Cloud aus
+                    funktioniert.
+                </p>
+            </div>
+            <div class='tutorial_card'>
+                <h4>Schreib ein einfaches Programm in Java</h4>
+                <p>
+                    Erstelle eine Präsentation mit shower.js in HTML und CSS. Mach dich
+                    unabhängig von PowerPoint und Keynote und erstelle eine Präsentation,
+                    die in jedem modernen Browser vom Stick oder von der Cloud aus
+                    funktioniert.
+                </p>
+            </div>
+            <h2><img class='circle' src='/images/penguin.png'> Linux-Befehle lernen</h2>
+            <h2><img class='circle' src='/images/git.png'> Versionsverwaltung mit Git lernen</h2> -->
             <div id="div_admin" style="#{admin_logged_in? ? '' : 'display: none;'}">
                 <h2>Administration</h2>
                 #{print_admin_info()}

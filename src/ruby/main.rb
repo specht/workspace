@@ -388,15 +388,19 @@ class Main < Sinatra::Base
             END_OF_QUERY
         end
 
-        neo4j_query(<<~END_OF_QUERY, {:email => email})
-            MATCH (l:LoginRequest)-[:FOR]->(u:User {email: $email})
+        # remove all stale login requests
+        ts = Time.now.to_i - 60 * 10
+        neo4j_query(<<~END_OF_QUERY, {:ts => ts})
+            MATCH (l:LoginRequest)
+            WHERE COALESCE(l.ts_expiry, 0) < $ts
             DETACH DELETE l;
         END_OF_QUERY
-        neo4j_query_expect_one(<<~END_OF_QUERY, {:email => email, :tag => tag, :code => random_code})
+        neo4j_query_expect_one(<<~END_OF_QUERY, {:email => email, :tag => tag, :code => random_code, :now => Time.now.to_i})
             MATCH (u:User {email: $email})
             CREATE (r:LoginRequest)-[:FOR]->(u)
             SET r.tag = $tag
             SET r.code = $code
+            SET r.ts_expiry = $now
             RETURN u.email;
         END_OF_QUERY
 
@@ -601,7 +605,7 @@ class Main < Sinatra::Base
             io.puts "<th>State</th>"
             io.puts "<th>E-Mail</th>"
             io.puts "<th>IP</th>"
-            io.puts "<th>DU</th>"
+            io.puts "<th>Disk Usage</th>"
             io.puts "</tr>"
             Dir['/user/*'].each do |path|
                 user_tag = path.split('/').last
@@ -618,25 +622,31 @@ class Main < Sinatra::Base
             io.puts "</table>"
             io.puts "</div>"
 
-            io.puts "<h2>Anmeldecodes</h2>"
-            io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
-            io.puts "<table class='table'>"
-            io.puts "<tr>"
-            io.puts "<th>E-Mail</th>"
-            io.puts "<th>Code</th>"
-            io.puts "</tr>"
+            written_something = false
             neo4j_query(<<~END_OF_STRING).each do |row|
                 MATCH (l:LoginRequest)-[:FOR]->(u:User)
                 RETURN l.code, u.email
                 ORDER BY u.email;
             END_OF_STRING
+                unless written_something
+                    written_something = true
+                    io.puts "<h2>Anmeldecodes</h2>"
+                    io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
+                    io.puts "<table class='table'>"
+                    io.puts "<tr>"
+                    io.puts "<th>E-Mail</th>"
+                    io.puts "<th>Code</th>"
+                    io.puts "</tr>"
+                end
                 io.puts "<tr>"
                 io.puts "<td>#{row['u.email']}</td>"
                 io.puts "<td>#{row['l.code']}</td>"
                 io.puts "</tr>"
             end
-            io.puts "</table>"
-            io.puts "</div>"
+            if written_something
+                io.puts "</table>"
+                io.puts "</div>"
+            end
             io.string
         end
     end
