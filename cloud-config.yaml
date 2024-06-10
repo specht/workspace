@@ -45,4 +45,5 @@ runcmd:
   # <<< end of docker install
   - sudo apt-get update
   - sudo apt-get install -y borgbackup borgmatic
+  - sudo timedatectl set-timezone Europe/Berlin
   - reboot
