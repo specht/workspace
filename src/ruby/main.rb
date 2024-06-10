@@ -441,9 +441,6 @@ class Main < Sinatra::Base
         result = {}
         result[:tag] = tag
         result[:running] = false
-        if File.exist?("/user/#{tag}")
-            result[:du] = `du -d 0 /user/#{tag}`.split(/\s/).first.to_i
-        end
         inspect = JSON.parse(`docker inspect hs_code_#{tag}`)
         unless inspect.empty?
             result[:running] = true
@@ -451,17 +448,6 @@ class Main < Sinatra::Base
         end
         result
     end
-
-    # def send_server_state
-    #     return unless @session_user
-    #     email = @session_user[:email]
-    #     container_name = fs_tag_for_email(email)
-    #     state = get_server_state(container_name)
-    #     (@@client_ids_for_email[email] || []).each do |client_id|
-    #         ws = @@clients[client_id]
-    #         ws.send({:action => :update_state, :state => state}.to_json)
-    #     end
-    # end
 
     def start_server(email)
         container_name = fs_tag_for_email(email)
@@ -479,7 +465,6 @@ class Main < Sinatra::Base
         system("docker run -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} --name hs_code_#{container_name} hs_code_server")
 
         Main.refresh_nginx_config()
-        # send_server_state()
     end
 
     def stop_server(email)
@@ -488,7 +473,6 @@ class Main < Sinatra::Base
         system("docker kill hs_code_#{container_name}")
 
         Main.refresh_nginx_config()
-        # send_server_state()
     end
 
     post '/api/start_server' do
@@ -500,15 +484,6 @@ class Main < Sinatra::Base
         respond(:yay => 'sure', :server_tag => @session_user[:server_tag])
     end
 
-    post '/api/stop_server' do
-        assert(user_logged_in?)
-
-        email = @session_user[:email]
-        stop_server(email)
-
-        respond(:yay => 'sure')
-    end
-
     post '/api/reset_server' do
         assert(user_logged_in?)
 
@@ -516,6 +491,7 @@ class Main < Sinatra::Base
         stop_server(email)
         container_name = fs_tag_for_email(email)
         system("rm -rf /user/#{container_name}")
+
         # assign new server_tag and server_sid
         server_tag = gen_server_tag()
         server_sid = gen_server_sid()
@@ -524,56 +500,9 @@ class Main < Sinatra::Base
             SET u.server_tag = $server_tag
             SET u.server_sid = $server_sid
         END_OF_STRING
-        # send_server_state()
 
         respond(:yay => 'sure')
     end
-
-    # get '/ws' do
-    #     if Faye::WebSocket.websocket?(request.env)
-    #         ws = Faye::WebSocket.new(request.env)
-
-    #         ws.on(:open) do |event|
-    #             client_id = request.env['HTTP_SEC_WEBSOCKET_KEY']
-    #             ws.send({:hello => 'world'})
-    #             @@clients[client_id] = ws
-    #             if @session_user
-    #                 @@email_for_client_id[client_id] = @session_user[:email]
-    #                 @@client_ids_for_email[@session_user[:email]] ||= Set.new()
-    #                 @@client_ids_for_email[@session_user[:email]] << client_id
-    #                 send_server_state()
-    #             end
-    #             debug "Got #{@@clients.size} connected clients!"
-    #         end
-
-    #         ws.on(:close) do |event|
-    #             client_id = request.env['HTTP_SEC_WEBSOCKET_KEY']
-    #             @@clients.delete(client_id) if @@clients.include?(client_id)
-    #             @@email_for_client_id.delete(client_id) if @@email_for_client_id.include?(client_id)
-    #             if @session_user
-    #                 @@client_ids_for_email[@session_user[:email]].delete(client_id) if @@client_ids_for_email[@session_user[:email]].include?(client_id)
-    #                 @@client_ids_for_email.delete(@session_user[:email]) if @@client_ids_for_email.include?(@session_user[:email]) && @@client_ids_for_email[@session_user[:email]].empty?
-    #             end
-    #             debug "Got #{@@clients.size} connected clients!"
-    #         end
-
-    #         ws.on(:message) do |msg|
-    #             client_id = request.env['HTTP_SEC_WEBSOCKET_KEY']
-    #             begin
-    #                 request = {}
-    #                 unless msg.data.empty?
-    #                     request = JSON.parse(msg.data)
-    #                 end
-    #                 if request['hello'] == 'world'
-    #                     ws.send({:status => 'welcome'}.to_json)
-    #                 end
-    #             rescue StandardError => e
-    #                 STDERR.puts e
-    #             end
-    #         end
-    #         ws.rack_response
-    #     end
-    # end
 
     def bytes_to_str(ai_Size)
         if ai_Size < 1024
@@ -597,6 +526,11 @@ class Main < Sinatra::Base
             email_for_tag[fs_tag_for_email(email)] = email
         end
         return '' unless admin_logged_in?
+        du_for_fs_tag = {}
+        begin
+            du_for_fs_tag = JSON.parse(File.read('/internal/du_for_fs_tag.json'))
+        rescue
+        end
         StringIO.open do |io|
             io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
             io.puts "<table class='table'>"
@@ -606,18 +540,24 @@ class Main < Sinatra::Base
             io.puts "<th>E-Mail</th>"
             io.puts "<th>IP</th>"
             io.puts "<th>Disk Usage</th>"
+            # io.puts "<th>Workspace</th>"
             io.puts "</tr>"
             Dir['/user/*'].each do |path|
+                next unless File.basename(path) =~ /^[0-9a-z]{16}$/
                 user_tag = path.split('/').last
                 info = get_server_state(user_tag)
                 io.puts "<tr>"
-                io.puts "<td>#{user_tag}</td>"
+                io.puts "<td><code>#{user_tag}</code></td>"
                 io.puts "<td>#{info[:running] ? 'Running' : 'Stopped'}</td>"
                 io.puts "<td>#{email_for_tag[user_tag]}</td>"
                 io.puts "<td>#{info[:ip] || '&ndash;'}</td>"
-                io.puts "<td>#{bytes_to_str(info[:du] * 1024)}</td>"
+                if du_for_fs_tag[user_tag]
+                    io.puts "<td>#{bytes_to_str(du_for_fs_tag[user_tag] * 1024)}</td>"
+                else
+                    io.puts "<td>&ndash;</td>"
+                end
+                # io.puts "<td><button class='btn btn-sm btn-warning' data-email='#{email_for_tag[user_tag]}'>Workspace öffnen</button></td>"
                 io.puts "</tr>"
-                STDERR.puts info.to_yaml
             end
             io.puts "</table>"
             io.puts "</div>"
