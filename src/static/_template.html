@@ -123,33 +123,17 @@ window.addEventListener('load', function() {
         </div>
     </div>
     <div class="menu">
-        <!-- <a style='#{@session_user.nil? ? '' : 'display: none;'}' href='/login' class="btn btn-success"><i class='fa fa-sign-in'></i>&nbsp;&nbsp;Anmelden</a> -->
-        <!-- <a style='#{@session_user.nil? ? 'display: none;' : ''}' href='/logout' class="btn btn-secondary"><i class='fa fa-sign-out'></i>&nbsp;&nbsp;Abmelden</a> -->
-        <!-- <nav class="navbar navbar-expand-lg navbar-light"> -->
-            <div class="container">
-                <!-- <div class="navbar-brand">
-                    <div class="hide-on-mobile" style='#{@session_user.nil? ? 'display: none;' : ''};'>
-                        <div>
-                            Angemeldet als <strong>#{(@session_user || {})[:email]}</strong>
-                        </div>
-                    </div>
-                </div> -->
-                <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button> -->
-                <div style='text-align: center; width: 100%;'>
-                    <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="btn btn-success #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='fa fa-sign-in'></i>&nbsp;Anmelden</a>
-                    <button  style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='fa fa-code'></i>&nbsp;Workspace öffnen</button>
-                    <button  style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_settings' class="btn btn-outline-secondary"><i class='fa fa-cog'></i></button>
-                    <!-- <button id='bu_reset' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Workspace zurücksetzen</button> -->
-                    <!-- <a style='#{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-outline-secondary" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a> -->
-                </div>
-                <div id='div_settings' style='display: none; text-align: center; width: 100%; border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;'>
-                    <button id='bu_reset' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Workspace zurücksetzen</button>
-                    <a style='#{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-outline-secondary" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a>
-                </div>
+        <div class="container">
+            <div style='text-align: center; width: 100%;'>
+                <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="btn btn-success #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='fa fa-sign-in'></i>&nbsp;Anmelden</a>
+                <button  style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='fa fa-code'></i>&nbsp;Workspace öffnen</button>
+                <button  style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_settings' class="btn btn-outline-secondary"><i class='fa fa-cog'></i></button>
             </div>
-        <!-- </nav> -->
+            <div id='div_settings' style='display: none; text-align: center; width: 100%; border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;'>
+                <button id='bu_reset' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Workspace zurücksetzen</button>
+                <a style='#{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-outline-secondary" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a>
+            </div>
+        </div>
     </div>
     #{CONTENT}
 
