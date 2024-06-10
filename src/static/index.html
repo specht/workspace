@@ -1,40 +1,29 @@
 <div class='container'>
     <div class='row'>
         <div class='col-md-12'>
-            <div style="#{user_logged_in? ? 'display: none;' : ''}">
-                <p class="mt-4">
-                    Herzlich willkommen im <strong>Hackschule Workspace</strong>! Hier kannst du direkt im Browser programmieren, ohne dass du irgendetwas installieren musst. Egal ob du ein Anfänger bist oder schon Erfahrung hast, hier findest du alles, was du brauchst, um deine Programmierkenntnisse zu verbessern.
-                </p>
-                <h2>
-                    Programmieren üben
-                </h2>
-                <p>
-                    Hier bekommst du deine eigene Programmierumgebung (Visual Studio Code), in der du direkt loslegen kannst, egal ob in Java, Python, Ruby, JavaScript, Go, Lua, C oder C++. Du kannst auch Dokumente mit LaTeX setzen.
-                </p>
-                <h2>
-                    Linux-Kommandos kennenlernen
-                </h2>
-                <p>
-                    Nutze das eingebaute Terminal, um Linux-Kommandos auszuführen und die Linux-Shell zu lernen. Du kannst auch eigene Shell-Skripte schreiben und ausführen.
-                </p>
-                <h2>Lerne den Umgang mit Git</h2>
-                <p>
-                    Du kannst Git direkt im Workspace verwenden, um deine Projekte zu verwalten und mit anderen zu teilen. Du kannst auch GitHub-Repositories klonen und bearbeiten.
-                </p>
-                <h2>Wie komme ich rein?</h2>
-                <p>
-                    Um den Hackschule Workspace zu nutzen, <a href='/login'>musst du dich anmelden</a>. Du brauchst dafür eine E-Mail-Adresse am Gymnasium Steglitz. Falls du nicht an dieser Schule bist und trotzdem einen Account haben möchtest, schreib einfach eine E-Mail an <a href='mailto:specht@gymnasiumsteglitz.de'>specht@gymnasiumsteglitz.de</a>.
-                </p>
-            </div>
-            <div id='div_control_panel' class='mt-5' style="text-align: center; #{user_logged_in? ? '' : 'display: none;'}">
-                <div>
-                    <button id='bu_launch' class="btn btn-lg btn-success"><i class='fa fa-code'></i>&nbsp;&nbsp;Workspace öffnen</button>
-                </div>
-                <div class="mt-2">
-                    <!-- <button id='bu_restart' class="btn btn btn-warning"><i class='fa fa-refresh'></i>&nbsp;&nbsp;Workspace neustarten</button> -->
-                    <button id='bu_reset' class="btn btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Workspace zurücksetzen</button>
-                </div>
-            </div>
+            <p class="mt-4">
+                Herzlich willkommen im <strong>Hackschule Workspace</strong>! Hier kannst du direkt im Browser programmieren, ohne dass du irgendetwas installieren musst. Egal ob du ein Anfänger bist oder schon Erfahrung hast, hier findest du alles, was du brauchst, um deine Programmierkenntnisse zu verbessern.
+            </p>
+            <h2>
+                Programmieren üben
+            </h2>
+            <p>
+                Hier bekommst du deine eigene Programmierumgebung (Visual Studio Code), in der du direkt loslegen kannst, egal ob in Java, Python, Ruby, JavaScript, Go, Lua, C oder C++. Du kannst auch Dokumente mit LaTeX setzen.
+            </p>
+            <h2>
+                Linux-Kommandos kennenlernen
+            </h2>
+            <p>
+                Nutze das eingebaute Terminal, um Linux-Kommandos auszuführen und die Linux-Shell zu lernen. Du kannst auch eigene Shell-Skripte schreiben und ausführen.
+            </p>
+            <h2>Lerne den Umgang mit Git</h2>
+            <p>
+                Du kannst Git direkt im Workspace verwenden, um deine Projekte zu verwalten und mit anderen zu teilen. Du kannst auch GitHub-Repositories klonen und bearbeiten.
+            </p>
+            <h2>Wie komme ich rein?</h2>
+            <p>
+                Um den Hackschule Workspace zu nutzen, <a href='/login'>musst du dich anmelden</a>. Du brauchst dafür eine E-Mail-Adresse am Gymnasium Steglitz. Falls du nicht an dieser Schule bist und trotzdem einen Account haben möchtest, schreib einfach eine E-Mail an <a href='mailto:specht@gymnasiumsteglitz.de'>specht@gymnasiumsteglitz.de</a>.
+            </p>
             <div id="div_admin" style="#{admin_logged_in? ? '' : 'display: none;'}">
                 <h2>Administration</h2>
                 #{print_admin_info()}
@@ -42,102 +31,4 @@
         </div>
     </div>
 </div>
-<script>
-    var server_tag = "#{(@session_user || {})[:server_tag]}";
-    function check_server_online() {
-        fetch(`/${server_tag}/`) // replace with your actual API endpoint
-        .then(response => {
-            if (response.status === 200) {
-                console.log('Server is online');
-                window.location.href = `/${server_tag}/`;
-        } else {
-                console.log('Server is offline');
-                setTimeout(function() { check_server_online(); }, 500);
-            }
-        })
-        .catch(error => {
-            console.log('Error:', error);
-        });
-    }
 
-    window.addEventListener('load', function() {
-        establish_websocket_connection();
-        $('#bu_launch').on('click', function(e) {
-            $('#bu_launch').prop('disabled', true);
-            $('#bu_launch .fa').addClass('fa-spin');
-            api_call('/api/start_server', {}, function(data) {
-                check_server_online();
-            });
-        });
-        $('#bu_reset').on('click', function(e) {
-            showTemplateModal('Workspace zurücksetzen', 'Bist du sicher, dass du deinen Workspace zurücksetzen möchtest? Alle Dateien und deine installierten Erweiterungen werden gelöscht.',
-            "<i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen", 'btn-danger', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
-                api_call('/api/reset_server', {}, function(data) {
-                    // localStorage.clear();
-                    // sessionStorage.clear();
-                    (async () => {
-                        const dbs = await window.indexedDB.databases();
-                        dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) });
-                    })();
-                    // we need to reload the website to receive the updated server_tag and server_sid
-                    window.location.reload();
-                });
-            });
-        });
-    });
-
-    function establish_websocket_connection() {
-        var ws_uri = 'ws://' + location.host + '/ws';
-        if (location.host !== 'localhost:8025')
-            ws_uri = 'wss://' + location.host + '/ws';
-        ws = new WebSocket(ws_uri);
-        setup_ws(ws);
-    }
-
-    function keepAlive() {
-        var timeout = 20000;
-        if (ws.readyState == ws.OPEN) {
-            ws.send('');
-        }
-        (function() {
-            timerId = setTimeout(keepAlive, timeout);
-        })();
-    }
-
-    function setup_ws(ws)
-    {
-        ws.onopen = function () {
-            console.log('WS connection established');
-            keepAlive();
-        }
-
-        ws.onclose = function () {
-            console.log('WS connection closed');
-            $('.please-reload').fadeIn();
-            clearTimeout(timerId);
-        }
-
-        ws.onmessage = function (msg) {
-            data = JSON.parse(msg.data);
-            console.log(data);
-            if (data.action === 'update_state') {
-                // if (data.state.running) {
-                //     $('#div_state_on').show();
-                //     $('#div_state_off').hide();
-                //     $('#bu_start_server').prop('disabled', true);
-                //     $('#bu_stop_server').prop('disabled', false);
-                //     $('#bu_launch').prop('disabled', false);
-                // } else {
-                //     $('#div_state_on').hide();
-                //     $('#div_state_off').show();
-                //     $('#bu_start_server').prop('disabled', false);
-                //     $('#bu_stop_server').prop('disabled', true);
-                //     $('#bu_launch').prop('disabled', true);
-                // }
-                // $('#div_control_panel').show();
-
-                console.log(data.state);
-            }
-        }
-    }
-</script>

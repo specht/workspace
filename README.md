@@ -12,6 +12,8 @@
   - used in url
   - created on user creation
   - changed on server reset for cache busting
+  - stored in browser cookie
+    - if change is detected => purge indexeddb
 - `server_sid`:
   - random tag
   - stored in user node

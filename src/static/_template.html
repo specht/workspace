@@ -19,7 +19,7 @@
 </head>
 
 <script>
-    function showTemplateModal(title, text, confirm_label, confirm_class,
+function showTemplateModal(title, text, confirm_label, confirm_class,
     cancel_label, cancel_class, confirm_callback) {
     $('#__template_modal .modal-title').html(title);
     $('#__template_modal .modal-body').html(text);
@@ -38,6 +38,68 @@
     });
     $('#__template_modal').modal('show');
 }
+
+var server_tag = "#{(@session_user || {})[:server_tag]}";
+function check_server_online() {
+    fetch(`/${server_tag}/`) // replace with your actual API endpoint
+    .then(response => {
+        if (response.status === 200) {
+            console.log('Server is online');
+            window.location.href = `/${server_tag}/`;
+    } else {
+            console.log('Server is offline');
+            setTimeout(function() { check_server_online(); }, 500);
+        }
+    })
+    .catch(error => {
+        console.log('Error:', error);
+    });
+}
+
+function check_server_tag_update(server_tag) {
+    let stored_server_tag = localStorage.getItem('server_tag');
+    if (server_tag !== stored_server_tag) {
+        console.log('Server tag has changed, purging indexed DB...');
+        (async () => {
+            const dbs = await window.indexedDB.databases();
+            dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) });
+        })();
+        localStorage.setItem('server_tag', server_tag);
+    }
+}
+
+window.addEventListener('load', function() {
+    // check if the server tag has changed
+    if ('#{user_logged_in?}' === 'true') {
+        let server_tag = '#{(@session_user || {})[:server_tag]}';
+        check_server_tag_update(server_tag);
+    }
+
+    $('#bu_launch').on('click', function(e) {
+        $('#bu_launch').prop('disabled', true);
+        $('#bu_launch .fa').addClass('fa-spin');
+        api_call('/api/start_server', {}, function(data) {
+            check_server_tag_update(data.server_tag);
+            check_server_online();
+        });
+    });
+    $('#bu_reset').on('click', function(e) {
+        showTemplateModal('Workspace zurücksetzen', 'Bist du sicher, dass du deinen Workspace zurücksetzen möchtest? Alle Dateien und deine installierten Erweiterungen werden gelöscht.',
+        "<i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen", 'btn-danger', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+            api_call('/api/reset_server', {}, function(data) {
+                // we need to reload the website to receive the updated server_tag and server_sid
+                window.location.reload();
+            });
+        });
+    });
+
+    $('#bu_settings').on('click', function(e) {
+        if ($('#div_settings').is(':visible'))
+            $('#div_settings').slideUp();
+        else
+            $('#div_settings').slideDown();
+    });
+});
 </script>
 
 <body>
@@ -63,26 +125,31 @@
     <div class="menu">
         <!-- <a style='#{@session_user.nil? ? '' : 'display: none;'}' href='/login' class="btn btn-success"><i class='fa fa-sign-in'></i>&nbsp;&nbsp;Anmelden</a> -->
         <!-- <a style='#{@session_user.nil? ? 'display: none;' : ''}' href='/logout' class="btn btn-secondary"><i class='fa fa-sign-out'></i>&nbsp;&nbsp;Abmelden</a> -->
-        <nav class="navbar navbar-expand-lg navbar-light">
+        <!-- <nav class="navbar navbar-expand-lg navbar-light"> -->
             <div class="container">
-                <div class="navbar-brand">
+                <!-- <div class="navbar-brand">
                     <div class="hide-on-mobile" style='#{@session_user.nil? ? 'display: none;' : ''};'>
                         <div>
                             Angemeldet als <strong>#{(@session_user || {})[:email]}</strong>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button> -->
-                <div class="navbar-expand" style='flex-flow: row-reverse;' id="navbarNavAltMarkup">
-                    <div class="navbar-nav">
-                        <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="nav-link #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='fa fa-sign-in'></i>&nbsp;&nbsp;Anmelden</a>
-                        <a style='#{!@session_user.nil? ? '' : 'display: none;'}' class="nav-link" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;&nbsp;Abmelden</a>
-                    </div>
+                <div style='text-align: center; width: 100%;'>
+                    <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="btn btn-success #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='fa fa-sign-in'></i>&nbsp;Anmelden</a>
+                    <button  style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='fa fa-code'></i>&nbsp;Workspace öffnen</button>
+                    <button  style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_settings' class="btn btn-outline-secondary"><i class='fa fa-cog'></i></button>
+                    <!-- <button id='bu_reset' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Workspace zurücksetzen</button> -->
+                    <!-- <a style='#{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-outline-secondary" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a> -->
+                </div>
+                <div id='div_settings' style='display: none; text-align: center; width: 100%; border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;'>
+                    <button id='bu_reset' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Workspace zurücksetzen</button>
+                    <a style='#{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-outline-secondary" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a>
                 </div>
             </div>
-        </nav>
+        <!-- </nav> -->
     </div>
     #{CONTENT}
 
