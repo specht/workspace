@@ -145,3 +145,66 @@
     font-display: swap;
     src: url(fonts/lmm/lmmono10-italic.otf) format('truetype');
 }
+@font-face {
+    font-family: 'IBM Plex Mono';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/IBM_Plex_Mono/IBMPlexMono-Italic.ttf) format('truetype');
+  }
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url(fonts/IBM_Plex_Mono/IBMPlexMono-BoldItalic.ttf) format('truetype');
+  }
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/IBM_Plex_Mono/IBMPlexMono-Regular.ttf) format('truetype');
+  }
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(fonts/IBM_Plex_Mono/IBMPlexMono-Bold.ttf) format('truetype');
+  }
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/IBM_Plex_Sans/IBMPlexSans-Italic.ttf) format('truetype');
+  }
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url(fonts/IBM_Plex_Sans/IBMPlexSans-BoldItalic.ttf) format('truetype');
+  }
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/IBM_Plex_Sans/IBMPlexSans-Regular.ttf) format('truetype');
+  }
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(fonts/IBM_Plex_Sans/IBMPlexSans-Bold.ttf) format('truetype');
+  }
+  @font-face {
+    font-family: 'Patua One';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/PatuaOne-Regular.ttf) format('truetype');
+  }

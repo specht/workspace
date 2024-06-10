@@ -1,14 +1,12 @@
 body {
-    font-family: 'Latin Modern Mono', monospace;
-    font-size: 14pt;
+    /* font-family: 'Latin Modern Mono', monospace; */
+    font-family: 'IBM Plex Sans', monospace;
+    font-size: 13pt;
     margin-bottom: 100px;
 }
-.form-control {
-    font-size: 14pt;
-}
 h1, h2 {
-    font-family: 'Latin Modern Mono', sans-serif;
-    font-weight: 500;
+    font-family: 'IBM Plex Sans', monospace;
+    font-weight: 400;
     margin: 1em 0;
 }
 .faq {
@@ -107,11 +105,12 @@ footer a:hover {
 }
 
 .title {
-    font-family: 'Latin Modern Mono', monospace;
+    font-family: 'Patua One', monospace;
     font-weight: 400;
     /* font-style: italic; */
     font-size: 3rem;
     padding: 0.5em 0;
+    text-align: center;
 }
 
 .title a {
