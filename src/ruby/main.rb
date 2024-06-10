@@ -388,6 +388,10 @@ class Main < Sinatra::Base
             END_OF_QUERY
         end
 
+        neo4j_query(<<~END_OF_QUERY, {:email => email})
+            MATCH (l:LoginRequest)-[:FOR]->(u:User {email: $email})
+            DETACH DELETE l;
+        END_OF_QUERY
         neo4j_query_expect_one(<<~END_OF_QUERY, {:email => email, :tag => tag, :code => random_code})
             MATCH (u:User {email: $email})
             CREATE (r:LoginRequest)-[:FOR]->(u)
@@ -610,6 +614,26 @@ class Main < Sinatra::Base
                 io.puts "<td>#{bytes_to_str(info[:du] * 1024)}</td>"
                 io.puts "</tr>"
                 STDERR.puts info.to_yaml
+            end
+            io.puts "</table>"
+            io.puts "</div>"
+
+            io.puts "<h2>Anmeldecodes</h2>"
+            io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
+            io.puts "<table class='table'>"
+            io.puts "<tr>"
+            io.puts "<th>E-Mail</th>"
+            io.puts "<th>Code</th>"
+            io.puts "</tr>"
+            neo4j_query(<<~END_OF_STRING).each do |row|
+                MATCH (l:LoginRequest)-[:FOR]->(u:User)
+                RETURN l.code, u.email
+                ORDER BY u.email;
+            END_OF_STRING
+                io.puts "<tr>"
+                io.puts "<td>#{row['u.email']}</td>"
+                io.puts "<td>#{row['l.code']}</td>"
+                io.puts "</tr>"
             end
             io.puts "</table>"
             io.puts "</div>"
