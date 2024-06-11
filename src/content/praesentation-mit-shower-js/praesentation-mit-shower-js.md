@@ -37,4 +37,8 @@ Anschließend müssen wir einen Speicherort für das Verzeichnis wählen. Wähle
 
 ### Live Server installieren
 
-Als nächstes müssen wir eine Erweiterung installieren, die uns eine Live-Vorschau unserer Präsentation zeigen kann. 
+Als nächstes müssen wir eine Erweiterung installieren, die uns eine Live-Vorschau unserer Präsentation zeigen kann.
+
+<div style='text-align: center;'>
+<em>Fortsetzung folgt...</em>
+</div>
