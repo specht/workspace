@@ -37,8 +37,19 @@ Anschließend müssen wir einen Speicherort für das Verzeichnis wählen. Wähle
 
 ### Live Server installieren
 
-Als nächstes müssen wir eine Erweiterung installieren, die uns eine Live-Vorschau unserer Präsentation zeigen kann.
+Als nächstes müssen wir eine Erweiterung installieren, die uns eine Live-Vorschau unserer Präsentation zeigen kann. Öffne dazu links die Extensions, suche die Erweiterung »Live Server« und klicke auf »Install«, um die Erweiterung zu installieren. Anschließend sollte dein Workspace so aussehen:
 
-<div style='text-align: center;'>
-<em>Fortsetzung folgt...</em>
-</div>
+<img class='full' src='live-server-installed.webp'>
+
+Öffne nun wieder den Explorer und öffne die `index.html`. Unten rechts findest du jetzt den Eintrag »Go Live«. Drück dort drauf und deine Präsentation wird sich in einem neuen Tab öffnen, das du mit der Maus einfach aus dem Browser lösen kannst, um beide Fenster nebeneinander anzuordnen.
+
+<img class='full' src='side-by-side.webp'>
+
+### Schreib deine Präsentation
+
+Du kannst nun damit beginnen, die Vorlage an deine Bedürfnisse anzupassen. Falls du nach Hilfe suchst: die Technologien, die hier verwendet werden, heißen HTML und CSS. Wenn du die `index.html` bearbeitest, musst du darauf achten, dass du vorsichtig bist, da die Syntax relativ wichtig ist und eine fehlende spitze Klammer dazu führen kann, dass viele Folien auf einmal nicht mehr sichtbar sind. Gehe also behutsam vor und verwende zur Not <span class='key'>Strg</span><span class='key'>Z</span>, um Änderungen rückgängig zu machen. Speichere deine Änderungen mit <span class='key'>Strg</span><span class='key'>S</span>, um den Effekt im Vorschaufenster zu sehen, falls dein Workspace Änderungen nicht schon automatisch speichert (das kannst du im Menü unter File / Auto Save einstellen).
+
+#### HTML-Syntax
+
+Generell ist es so, dass bei HTML Text in sogenannte Tags eingeschlossen wird. Schreibt man z. B. `H<sub>2</sub>O`, sorgen die `<sub>`-Tags dafür, dass die 2 tiefer gestellt wird: H<sub>2</sub>O. Ein öffnendes Tag wie `<sub>` muss immer mit einem passenden schließenden Tag `</sub>` geschlossen werden, wobei Tags beliebig geschachtelt werden können.
+

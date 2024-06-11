@@ -111,3 +111,26 @@ Dazu noch ein wichtiger Hinweis: In den unteren Ecken deiner Tastatur findest du
 <span class='key'>AltGr</span>. Diese Tasten haben meistens keinen Effekt, wenn man sie alleine drückt, sondern sie werden für Tastenkombinationen verwendet, die meistens aus einer oder mehreren Hilfstasten und einer »richtigen« Taste bestehen. Um einen ausgewählten Text mit <span class='key'>Strg</span><span class='key'>C</span> zu kopieren, musst du also erst <span class='key'>Strg</span> gedrückt halten und dann einmal <span class='key'>C</span> tippen.
 
 Du kannst Hilfstasten auch verwenden, um Sonderzeichen einzugeben, genauso wie du Großbuchstaben mit <span class='key'>Shift</span> (auch: Umschalttaste) eingeben kannst.
+
+## Bearbeiten von Text
+
+Gerade am Anfang kann das Tippen und Navigieren in einer Datei sehr kräftezehrend sein. Es ist aber wie mit so vielen Dingen: mit der Zeit kommt die Übung. 🤠 Wenn du eine gewissen Übung hast, bist du mit der Tastatur oft schneller, als wenn du erst zur Maus greifen musst, um an eine bestimmte Stelle zu klicken.
+
+Du kannst Webseiten wie [keybr.com](https://www.keybr.com/) nutzen, um deine Tippgeschwindigkeit zu trainieren. Darüberhinaus wirst du schneller, wenn du ein paar wesentliche Tasten deiner Tastatur kennenlernst:
+
+### Navigation
+
+<table class='table'>
+<tr>
+<td style='width: 10em;'><span class='key'>←</span><span class='key'>↑</span><span class='key'>→</span><span class='key'>↓</span></td>
+<td>Mit den Pfeiltasten bewegst du den Cursor.</td>
+</tr>
+<tr>
+<td><span class='key'>Pos1</span> / <span class='key'>Ende</span></td>
+<td>springt an den Anfang / das Ende einer Zeile</td>
+</tr>
+<tr>
+<td><span class='key'>Bild↑</span> / <span class='key'>Bild↓</span></td>
+<td>springt eine Seite hoch / runter</td>
+</tr>
+</table>
