@@ -2,11 +2,11 @@
 section: programming
 </div>
 
+# Die Basics
+
 <p class='abstract'>
 Mach dich mit Visual Studio Code vertraut und lerne die wichtigsten Funktionen kennen.
 </p>
-
-# Die Basics
 
 Wenn du den Workspace öffnest, siehst du die Entwicklungsumgebung Visual Studio Code:
 
