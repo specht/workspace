@@ -10,7 +10,7 @@ Erstelle eine Präsentation mit shower.js in HTML und CSS. Mach dich unabhängig
 
 <img class='full' src='showerjs.webp'>
 
-In diesem Tutorial erstellen wir eine Präsentation mit Hilfe von [shower.js](https://github.com/shower/shower) auf der Grundlage von HTML und CSS. Das heisst, dass jeder Webbrowser deine Präsentation abspielen kann.
+In diesem Tutorial erstellen wir eine Präsentation mit Hilfe von [shower.js](https://github.com/shower/shower) auf der Grundlage von HTML und CSS. Das heisst, dass jeder Webbrowser deine Präsentation abspielen kann und keine besondere Software brauchst, um deine Präsentation abzuspielen. Du kannst shower.js hier [in Aktion sehen](https://shwr.me/).
 
 ## Los geht's!
 
@@ -35,7 +35,7 @@ Anschließend müssen wir einen Speicherort für das Verzeichnis wählen. Wähle
 
 <img class='full' src='index-opened.webp'>
 
-### Live Server installieren
+### Live Server-Erweiterung installieren
 
 Als nächstes müssen wir eine Erweiterung installieren, die uns eine Live-Vorschau unserer Präsentation zeigen kann. Öffne dazu links die Extensions, suche die Erweiterung »Live Server« und klicke auf »Install«, um die Erweiterung zu installieren. Anschließend sollte dein Workspace so aussehen:
 
@@ -51,5 +51,65 @@ Du kannst nun damit beginnen, die Vorlage an deine Bedürfnisse anzupassen. Fall
 
 #### HTML-Syntax
 
-Generell ist es so, dass bei HTML Text in sogenannte Tags eingeschlossen wird. Schreibt man z. B. `H<sub>2</sub>O`, sorgen die `<sub>`-Tags dafür, dass die 2 tiefer gestellt wird: H<sub>2</sub>O. Ein öffnendes Tag wie `<sub>` muss immer mit einem passenden schließenden Tag `</sub>` geschlossen werden, wobei Tags beliebig geschachtelt werden können.
+HTML wird normalerweise nicht für Präsentationen, sondern für Werbsites verwendet. Die Funktion dieser Sprache ist es, Text mit bestimmten Eigenschaften auszuzeichnen &ndash; daher auch der Name »Hypertext Markup Language«. Schau dir den Quelltext einer beliebigen Website mit <span class='key'>Strg</span><span class='key'>U</span> an und du wirst HTML-Code sehen (der sicherlich wiederum auch JavaScript enthält).
 
+Generell ist es so, dass bei HTML Textteile in sogenannte Tags eingeschlossen werden. Schreibt man z. B. `H<sub>2</sub>O`, sorgen die `<sub>`-Tags dafür, dass die 2 tiefer gestellt wird: H<sub>2</sub>O. Ein öffnendes Tag wie `<sub>` muss immer mit einem passenden schließenden Tag `</sub>` geschlossen werden, wobei Tags beliebig geschachtelt werden können. Diese folgende Auflisten ist nicht vollständig und es gibt viele weitere Tags, die du an anderen Stellen im Internet dokumentiert findest.
+
+<table class='table'>
+<tr>
+<th>Tag</th>
+<th>Bedeutung</th>
+</tr>
+<tr>
+<td><code>&lt;strong&gt;</code></td>
+<td><strong>fetter Text</strong></td>
+</tr>
+<tr>
+<td><code>&lt;em&gt;</code></td>
+<td><em>kursiver Text</em></td>
+</tr>
+<tr>
+<td><code>&lt;p&gt;</code></td>
+<td><p style='margin: 0;'>Absatz</p></td>
+</tr>
+<tr>
+<td><code>&lt;h1&gt;</code></td>
+<td><h1 style='margin: 0;'>Überschrift 1</h1></td>
+</tr>
+<tr>
+<td><code>&lt;h2&gt;</code></td>
+<td><h2 style='margin: 0;'>Überschrift 2</h2></td>
+</tr>
+<tr>
+<td><code>&lt;h3&gt;</code></td>
+<td><h3 style='margin: 0;'>Überschrift 3</h3></td>
+</tr>
+<tr>
+<td><code>&lt;h4&gt;</code></td>
+<td><h4 style='margin: 0;'>Überschrift 4</h4></td>
+</tr>
+<tr>
+<td><code>&lt;ul&gt;</code></td>
+<td>Aufzählung ohne Nummerierung</td>
+</tr>
+<tr>
+<td><code>&lt;ol&gt;</code></td>
+<td>Aufzählung mit Nummerierung</td>
+</tr>
+<tr>
+<td><code>&lt;li&gt;</code></td>
+<td>Listenpunkt (nur innerhalb <code>&lt;ul&gt;</code> oder <code>&lt;ol&gt;</code>)</td>
+</tr>
+<tr>
+<td><code>&lt;img&gt;</code></td>
+<td>Bild</td>
+</tr>
+</table>
+
+#### CSS-Syntax
+
+Während HTML für die Struktur eines Dokuments zuständig ist, wird CSS für die visuelle Repräsentation, also das Aussehen, verwendet.
+
+<div style='text-align: center;'>
+<em>to be continued...</em>
+</div>

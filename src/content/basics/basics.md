@@ -120,10 +120,12 @@ Du kannst Webseiten wie [keybr.com](https://www.keybr.com/) nutzen, um deine Tip
 
 ### Navigation
 
+Die folgenden Shortcuts funktionieren nicht in Visual Studio Code, sondern in fast allen anderen Programmen:
+
 <table class='table'>
 <tr>
-<td style='width: 10em;'><span class='key'>←</span><span class='key'>↑</span><span class='key'>→</span><span class='key'>↓</span></td>
-<td>Mit den Pfeiltasten bewegst du den Cursor.</td>
+<td style='width: 14em;'><span class='key'>←</span> / <span class='key'>↑</span> / <span class='key'>→</span> / <span class='key'>↓</span></td>
+<td>bewegt den Cursor</td>
 </tr>
 <tr>
 <td><span class='key'>Pos1</span> / <span class='key'>Ende</span></td>
@@ -133,4 +135,20 @@ Du kannst Webseiten wie [keybr.com](https://www.keybr.com/) nutzen, um deine Tip
 <td><span class='key'>Bild↑</span> / <span class='key'>Bild↓</span></td>
 <td>springt eine Seite hoch / runter</td>
 </tr>
+<tr>
+<td><span class='key'>Strg</span><span class='key'>←</span> / <span class='key'>Strg</span><span class='key'>→</span></td>
+<td>springt zum vorherigen / nächsten Wort</td>
+</tr>
+<tr>
+<td><span class='key'>Strg</span><span class='key'>Pos1</span> / <span class='key'>Strg</span><span class='key'>Ende</span></td>
+<td>springt an den Anfang / das Ende des Dokuments</td>
+</tr>
+<tr>
 </table>
+
+### Text auswählen und löschen
+
+Halte <span class='key'>Shift</span> gedrückt, während du durch einen Text navigierst, um Text zu markieren.
+
+Zum Löschen von einzelnen Zeichen gibt es zwei verschiedene Tasten, deren Unterschied man kennen sollte: <span style='width: 3em; display: inline-block;' class='key'>⟵</span> (Backspace) löscht das Zeichen links vom Cursor, während <span class='key'>Entf</span> das Zeichen rechts neben dem Cursor löscht. Oft gibt es Shortcuts, um ganze Zeilen zu löschen – in Visual Studio Code mit <span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>K</span>.
+
