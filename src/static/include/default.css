@@ -4,10 +4,11 @@ body {
     font-size: 13pt;
     margin-bottom: 100px;
 }
-h1, h2 {
+
+h1, h2, h3 {
     font-family: 'IBM Plex Sans', monospace;
     font-weight: 400;
-    margin: 1em 0;
+    margin: 1em 0 0.5em 0;
 }
 .faq {
     margin-bottom: 1em;
@@ -115,6 +116,14 @@ footer a:hover {
 
 .title a {
     color: unset;
+    text-decoration: none;
+}
+
+.title a:hover {
+    text-decoration: none;
+}
+
+.menu a:hover {
     text-decoration: none;
 }
 
@@ -357,6 +366,11 @@ code {
     font-weight: bold;
     /* color: #000; */
     font-size: 110%;
+    color: #e5185d;
+    background-color: rgba(243, 132, 175, 0.2);
+    display: inline-block;
+    padding: 0 0.3em;
+    border-radius: 0.3em;
 }
 
 .key {
@@ -385,6 +399,12 @@ img.full {
     border-radius: 0.5em;
 }
 
+img.r {
+    float: right;
+    margin-left: 1em;
+    margin-bottom: 1em;
+}
+
 .abstract {
     font-style: italic;
 }
@@ -395,4 +415,21 @@ a {
 
 a:hover {
     text-decoration: underline;
+}
+
+.sq-icon {
+    height: 3em;
+    width: 3em;
+    object-fit: cover;
+    border-radius: 0.5em;
+}
+
+.scroll-x {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.scroll-x > img {
+    width: 100%;
+    overflow-x: auto;
 }

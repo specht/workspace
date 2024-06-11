@@ -217,6 +217,12 @@ class Main < Sinatra::Base
                     try_files $uri @ruby;
                 }
 
+                location /cache {
+                    rewrite ^/cache(.*)$ $1 break;
+                    root /webcache;
+                    include /etc/nginx/mime.types;
+                }
+
                 location @ruby {
                     proxy_pass http://workspace_ruby_1:9292;
                     proxy_set_header Host $host;
@@ -275,6 +281,23 @@ class Main < Sinatra::Base
                 slug = File.basename(path, '.md')
                 html = redcarpet.render(markdown)
                 root = Nokogiri::HTML(html)
+                root.css('img').each do |img|
+                    src = img.attr('src')
+                    image_path = File.join(File.dirname(path), src)
+                    next unless File.exist?(image_path)
+                    image_sha1 = Digest::SHA1.hexdigest(File.read(image_path))[0, 16]
+                    target_path = "/webcache/#{image_sha1}.webp"
+                    unless FileUtils.uptodate?(target_path, [image_path])
+                        STDERR.puts "Copying #{image_path} to cache..."
+                        FileUtils.cp(image_path, target_path)
+                    end
+                    img['src'] = "/cache/#{image_sha1}.webp"
+                    if img.classes.include?('full')
+                        img.wrap("<div class='scroll-x'>")
+                    end
+                end
+                html = root.to_html
+                STDERR.puts html
                 meta = root.css('.meta').first
                 if meta
                     meta = YAML.load(meta)

@@ -15,6 +15,7 @@ LOGS_PATH = DEVELOPMENT ? './logs' : "/home/micha/logs/#{PROJECT_NAME}"
 DATA_PATH = DEVELOPMENT ? './data' : "/mnt/hackschule/#{PROJECT_NAME}"
 USER_PATH = File.join(DATA_PATH, 'user')
 INTERNAL_PATH = File.join(DATA_PATH, 'internal')
+WEB_CACHE_PATH = File.join(DATA_PATH, 'cache')
 NGINX_PATH = File.join(DATA_PATH, 'nginx')
 NEO4J_LOGS_PATH = File::join(LOGS_PATH, 'neo4j')
 NEO4J_DATA_PATH = File::join(DATA_PATH, 'neo4j')
@@ -30,6 +31,7 @@ if PROFILE.include?(:static)
         :build => './docker/nginx',
         :volumes => [
             './src/static:/usr/share/nginx/html:ro',
+            "#{WEB_CACHE_PATH}:/webcache:ro",
             "#{LOGS_PATH}:/var/log/nginx",
             "#{DATA_PATH}/nginx:/etc/nginx/conf.d"
         ]
@@ -119,6 +121,7 @@ if PROFILE.include?(:dynamic)
     docker_compose[:services][:ruby] = {
         :build => './docker/ruby',
         :volumes => ['./src:/src:ro',
+                     "#{WEB_CACHE_PATH}:/webcache",
                      "#{USER_PATH}:/user",
                      "#{INTERNAL_PATH}:/internal",
                      "/var/run/docker.sock:/var/run/docker.sock",
@@ -188,6 +191,7 @@ if PROFILE.include?(:neo4j)
 end
 FileUtils::mkpath(USER_PATH)
 FileUtils::mkpath(INTERNAL_PATH)
+FileUtils::mkpath(WEB_CACHE_PATH)
 
 `docker compose 2> /dev/null`
 DOCKER_COMPOSE = ($? == 0) ? 'docker compose' : 'docker-compose'
