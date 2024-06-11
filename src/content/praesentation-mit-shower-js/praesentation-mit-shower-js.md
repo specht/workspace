@@ -53,7 +53,7 @@ Du kannst nun damit beginnen, die Vorlage an deine Bedürfnisse anzupassen. Fall
 
 HTML wird normalerweise nicht für Präsentationen, sondern für Websites verwendet. Die Funktion dieser Sprache ist es, Text mit bestimmten Eigenschaften auszuzeichnen &ndash; daher auch der Name »Hypertext Markup Language«. Schau dir den Quelltext einer beliebigen Website mit <span class='key'>Strg</span><span class='key'>U</span> an und du wirst HTML-Code sehen (der sicherlich wiederum auch JavaScript enthält).
 
-Generell ist es so, dass bei HTML Textteile in sogenannte Tags eingeschlossen werden. Schreibt man z. B. `H<sub>2</sub>O`, sorgen die `<sub>`-Tags dafür, dass die 2 tiefer gestellt wird: H<sub>2</sub>O. Ein öffnendes Tag wie `<sub>` muss immer mit einem passenden schließenden Tag `</sub>` geschlossen werden, wobei Tags beliebig geschachtelt werden können. Diese folgende Auflisten ist nicht vollständig und es gibt viele weitere Tags, die du an anderen Stellen im Internet dokumentiert findest.
+Generell ist es so, dass bei HTML Textteile in sogenannte Tags eingeschlossen werden. Schreibt man z. B. `H<sub>2</sub>O`, sorgen die `<sub>`-Tags dafür, dass die 2 tiefer gestellt wird: H<sub>2</sub>O. Ein öffnendes Tag wie `<sub>` muss immer mit einem passenden schließenden Tag `</sub>` geschlossen werden, wobei Tags beliebig geschachtelt werden können. Die folgende Auflistung ist nicht vollständig und es gibt viele weitere Tags, die du an anderen Stellen im Internet dokumentiert findest.
 
 <table class='table'>
 <tr>
@@ -67,6 +67,18 @@ Generell ist es so, dass bei HTML Textteile in sogenannte Tags eingeschlossen we
 <tr>
 <td><code>&lt;em&gt;</code></td>
 <td><em>kursiver Text</em></td>
+</tr>
+<tr>
+<td><code>&lt;u&gt;</code></td>
+<td><u>unterstrichener Text</u></td>
+</tr>
+<tr>
+<td><code>&lt;sub&gt;</code></td>
+<td><sub>tiefgestellter</sub> Text</td>
+</tr>
+<tr>
+<td><code>&lt;sup&gt;</code></td>
+<td><sup>hochgestellter</sup> Text</td>
 </tr>
 <tr>
 <td><code>&lt;p&gt;</code></td>
