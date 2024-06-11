@@ -4,7 +4,7 @@
             <p class="mt-4">
                 Herzlich willkommen im <strong>Hackschule Workspace</strong>! Hier kannst du direkt im Browser mit Visual Studio Code programmieren, ohne dass du irgendetwas installieren musst. Egal ob du ein Anfänger bist oder schon Erfahrung hast, hier findest du alles, was du brauchst, um deine Programmierkenntnisse zu verbessern.
             </p>
-            <div style='#{user_logged_in? ? '' : ''}' class="row">
+            <div style='#{user_logged_in? ? 'display: none;' : ''}' class="row">
                 <div class="#{user_logged_in? ? 'col-lg-4 col-md-12 col-sm-12' : 'col-md-6'} mt-4">
                     <h3><img class='circle' src='/images/hacker.png'> Programmieren üben</h3>
                     <p>
@@ -30,6 +30,7 @@
                     </p>
                 </div>
             </div>
+            #{print_content_overview()}
             <!-- <h2><img class='circle' src='/images/hacker.png'> Programmieren üben</h2>
             <div class='tutorial_card'>
                 <h4>Erstelle eine Präsentation in HTML</h4>
@@ -39,8 +40,7 @@
                     die in jedem modernen Browser vom Stick oder von der Cloud aus
                     funktioniert.
                 </p>
-            </div> -->
-            <!--
+            </div>
             <div class='tutorial_card'>
                 <h4>Schreib ein einfaches Programm in Java</h4>
                 <p>
@@ -51,8 +51,8 @@
                 </p>
             </div>
             <h2><img class='circle' src='/images/penguin.png'> Linux-Befehle lernen</h2>
-            <h2><img class='circle' src='/images/git.png'> Versionsverwaltung mit Git lernen</h2>
-            -->
+            <h2><img class='circle' src='/images/git.png'> Versionsverwaltung mit Git lernen</h2> -->
+           
             <div id="div_admin" style="#{admin_logged_in? ? '' : 'display: none;'}">
                 <h2>Administration</h2>
                 #{print_admin_info()}

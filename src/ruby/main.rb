@@ -4,8 +4,10 @@ require 'cgi'
 require 'digest'
 require 'mail'
 require 'neo4j_bolt'
+require 'nokogiri'
 require './credentials.rb'
 # require 'faye/websocket'
+require 'redcarpet'
 require 'securerandom'
 require 'sinatra/base'
 require 'sinatra/cookies'
@@ -254,6 +256,50 @@ class Main < Sinatra::Base
         system("docker kill -s HUP workspace_nginx_1")
     end
 
+    def self.parse_content
+        sections = YAML.load(File.read('/src/content/sections.yaml'))
+        @@section_order = sections.map { |section| section['key'] }
+        @@sections = {}
+        sections.each do |section|
+            @@sections[section['key']] = {}
+            section.each_pair do |k, v|
+                @@sections[section['key']][k.to_sym] = v
+            end
+            @@sections[section['key']][:entries] = []
+        end
+        @@content = {}
+        StringIO.open do |io|
+            redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML)
+            Dir['/src/content/*/*.md'].each do |path|
+                markdown = File.read(path)
+                slug = File.basename(path, '.md')
+                html = redcarpet.render(markdown)
+                root = Nokogiri::HTML(html)
+                meta = root.css('.meta').first
+                if meta
+                    meta = YAML.load(meta)
+                    section = meta['section']
+                    @@sections[section][:entries] << slug
+                end
+                @@content[slug] = {
+                    :html => html
+                }
+                begin
+                    @@content[slug][:title] = root.css('h1').first.text
+                rescue
+                end
+                begin
+                    @@content[slug][:abstract] = root.css('.abstract').first.text
+                rescue
+                end
+                begin
+                    @@content[slug][:image] = root.css('img').first.attr('src')
+                rescue
+                end
+            end
+        end
+    end
+
     configure do
         CONSTRAINTS_LIST = [
             'User/email',
@@ -269,6 +315,7 @@ class Main < Sinatra::Base
         @@client_ids_for_email = {}
         $neo4j.setup_constraints_and_indexes(CONSTRAINTS_LIST, INDEX_LIST)
         self.refresh_nginx_config()
+        self.parse_content()
     end
 
     before '*' do
@@ -517,6 +564,36 @@ class Main < Sinatra::Base
         return "#{sprintf('%1.1f', ai_Size.to_f / 1024.0 / 1024.0 / 1024.0 / 1024.0)} TB"
     end
 
+    def print_content_overview()
+        Main.parse_content if DEVELOPMENT
+        StringIO.open do |io|
+            @@section_order.each do |section_key|
+                section = @@sections[section_key]
+                next if section[:entries].empty?
+                io.puts "<h2><img class='circle' src='#{section[:icon]}'> #{section[:label]}</h2>"
+                section[:entries].each do |slug|
+                    content = @@content[slug]
+                    io.puts "<a href='/#{slug}' class='tutorial_card'>"
+                    # io.puts "<img src='#{content[:image]}'>"
+                    io.puts "<h4>#{content[:title]}</h4>"
+                    io.puts "<p class='abstract'>#{content[:abstract]}</p>"
+                    io.puts "</a>"
+                #     <div class='tutorial_card'>
+                #     <h4>Erstelle eine Präsentation in HTML</h4>
+                #     <p>
+                #         Erstelle eine Präsentation mit shower.js in HTML und CSS. Mach dich
+                #         unabhängig von PowerPoint und Keynote und erstelle eine Präsentation,
+                #         die in jedem modernen Browser vom Stick oder von der Cloud aus
+                #         funktioniert.
+                #     </p>
+                # </div>
+    
+                end
+            end
+            io.string
+        end
+    end
+
     def print_admin_info()
         email_for_tag = {}
         neo4j_query(<<~END_OF_STRING).each do |row|
@@ -593,6 +670,12 @@ class Main < Sinatra::Base
 
     get '/*' do
         path = request.path
+        slug = nil
+        Main.parse_content() if DEVELOPMENT
+        if @@content.include?(path[1, path.size - 1])
+            slug = path[1, path.size - 1]
+            path = '/a.html'
+        end
         if path == '/'
             path = '/index.html'
         end
