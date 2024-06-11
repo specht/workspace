@@ -51,7 +51,7 @@ Du kannst nun damit beginnen, die Vorlage an deine Bedürfnisse anzupassen. Fall
 
 #### HTML-Syntax
 
-HTML wird normalerweise nicht für Präsentationen, sondern für Werbsites verwendet. Die Funktion dieser Sprache ist es, Text mit bestimmten Eigenschaften auszuzeichnen &ndash; daher auch der Name »Hypertext Markup Language«. Schau dir den Quelltext einer beliebigen Website mit <span class='key'>Strg</span><span class='key'>U</span> an und du wirst HTML-Code sehen (der sicherlich wiederum auch JavaScript enthält).
+HTML wird normalerweise nicht für Präsentationen, sondern für Websites verwendet. Die Funktion dieser Sprache ist es, Text mit bestimmten Eigenschaften auszuzeichnen &ndash; daher auch der Name »Hypertext Markup Language«. Schau dir den Quelltext einer beliebigen Website mit <span class='key'>Strg</span><span class='key'>U</span> an und du wirst HTML-Code sehen (der sicherlich wiederum auch JavaScript enthält).
 
 Generell ist es so, dass bei HTML Textteile in sogenannte Tags eingeschlossen werden. Schreibt man z. B. `H<sub>2</sub>O`, sorgen die `<sub>`-Tags dafür, dass die 2 tiefer gestellt wird: H<sub>2</sub>O. Ein öffnendes Tag wie `<sub>` muss immer mit einem passenden schließenden Tag `</sub>` geschlossen werden, wobei Tags beliebig geschachtelt werden können. Diese folgende Auflisten ist nicht vollständig und es gibt viele weitere Tags, die du an anderen Stellen im Internet dokumentiert findest.
 
