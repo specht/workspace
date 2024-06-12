@@ -92,6 +92,26 @@ window.addEventListener('load', function() {
             });
         });
     });
+    $('#bu_share').on('click', function(e) {
+        showTemplateModal('Workspace teilen', 'Wenn du deinen Workspace teilst, erhältst du einen Link, mit dem man ohne Anmeldung auf deinen Workspace zugreifen kann. Möchtest du deinen Workspace teilen?',
+        "<i class='fa fa-send'></i>&nbsp;&nbsp;Workspace teilen", 'btn-primary', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+            api_call('/api/share_server', {}, function(data) {
+                if (data.success) {
+                    console.log(data.share_tag);
+                }
+            });
+        });
+    });
+    $('#bu_stop_share').on('click', function(e) {
+        showTemplateModal('Teilen beenden', 'Bist du sicher, dass du die Teilung aufheben möchtest? Der Link kann dann nicht mehr für den Zugriff auf deinen Workspace verwendet werden.',
+        "<i class='fa fa-trash'></i>&nbsp;&nbsp;Teilen beenden", 'btn-danger', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+            api_call('/api/unshare_server', {}, function(data) {
+                if (data.success) {
+                    console.log(data.share_tag);
+                }
+            });
+        });
+    });
 
     $('#bu_settings').on('click', function(e) {
         if ($('#div_settings').is(':visible'))
@@ -130,7 +150,9 @@ window.addEventListener('load', function() {
                 <button  style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_settings' class="btn btn-outline-secondary"><i class='fa fa-cog'></i></button>
             </div>
             <div id='div_settings' style='display: none; text-align: center; width: 100%; border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;'>
-                <button id='bu_reset' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Workspace zurücksetzen</button>
+                <button style='#{(@session_user || {})[:share_tag].nil? ? '' : 'display: none;'}'id='bu_share' class="btn btn-primary"><i class='fa fa-send'></i>&nbsp;&nbsp;Teilen</button>
+                <button style='#{(@session_user || {})[:share_tag].nil? ? 'display: none;' : ''}' id='bu_stop_share' class="btn btn-primary"><i class='fa fa-send'></i>&nbsp;&nbsp;Teilen beenden</button>
+                <button id='bu_reset' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen</button>
                 <a style='#{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-outline-secondary" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a>
             </div>
         </div>

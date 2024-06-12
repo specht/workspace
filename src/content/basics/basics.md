@@ -5,7 +5,7 @@ section: programming
 # Die Basics
 
 <p class='abstract'>
-Mach dich mit Visual Studio Code vertraut und lerne die wichtigsten Funktionen kennen.
+Mach dich mit Visual Studio Code vertraut und lerne die wichtigsten Funktionen und Shortcuts auf der Tastatur kennen.
 </p>
 
 Wenn du den Workspace öffnest, siehst du die Entwicklungsumgebung Visual Studio Code:
@@ -15,12 +15,6 @@ Wenn du den Workspace öffnest, siehst du die Entwicklungsumgebung Visual Studio
 ## Die Benutzeroberfläche
 
 Am linken Rand sieht du einige Icons, die wichtig sind:
-
-<style>
-    .table td {
-        white-space: normal;
-    }
-</style>
 
 <table class='table'>
 <tr>

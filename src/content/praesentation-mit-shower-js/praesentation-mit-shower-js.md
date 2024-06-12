@@ -2,7 +2,7 @@
 section: programming
 </div>
 
-# Erstelle eine Präsentation in HTML!
+# Eine Präsentation in HTML erstellen
 
 <p class='abstract'>
 Erstelle eine Präsentation mit shower.js in HTML und CSS. Mach dich unabhängig von PowerPoint und Keynote und erstelle eine Präsentation, die in jedem modernen Browser vom Stick oder von der Cloud aus funktioniert.
@@ -10,7 +10,7 @@ Erstelle eine Präsentation mit shower.js in HTML und CSS. Mach dich unabhängig
 
 <img class='full' src='showerjs.webp'>
 
-In diesem Tutorial erstellen wir eine Präsentation mit Hilfe von [shower.js](https://github.com/shower/shower) auf der Grundlage von HTML und CSS. Das heisst, dass jeder Webbrowser deine Präsentation abspielen kann und keine besondere Software brauchst, um deine Präsentation abzuspielen. Du kannst shower.js hier [in Aktion sehen](https://shwr.me/).
+In diesem Tutorial erstellen wir eine Präsentation mit Hilfe von [shower.js](https://github.com/shower/shower) auf der Grundlage von HTML und CSS. Das heisst, dass jeder Webbrowser deine Präsentation abspielen kann und du keine besondere Software brauchst, um deine Präsentation abzuspielen. Du kannst shower.js hier [in Aktion sehen](https://shwr.me/).
 
 ## Los geht's!
 

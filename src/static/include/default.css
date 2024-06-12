@@ -433,3 +433,13 @@ a:hover {
     width: 100%;
     overflow-x: auto;
 }
+
+.btn-primary {
+    background-color: #428bd4;
+    border: 1px solid  #428bd4;
+}
+
+.btn-primary:focus .btn-primary:hover {
+    background-color: #2c72b8;
+    border: 1px solid  #2c72b8;
+}

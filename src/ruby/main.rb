@@ -361,6 +361,7 @@ class Main < Sinatra::Base
                                 @session_user = {
                                     :email => email.downcase,
                                     :server_tag => results.first['u'][:server_tag],
+                                    :share_tag => results.first['u'][:share_tag],
                                 }
                                 # set server_sid cookie if it's not set or out of date
                                 expires = Time.new + 3600 * 24 * 365
@@ -411,6 +412,10 @@ class Main < Sinatra::Base
     end
 
     def gen_server_sid()
+        RandomTag::generate(48)
+    end
+
+    def gen_share_tag()
         RandomTag::generate(48)
     end
 
@@ -570,6 +575,34 @@ class Main < Sinatra::Base
             SET u.server_tag = $server_tag
             SET u.server_sid = $server_sid
         END_OF_STRING
+
+        respond(:yay => 'sure')
+    end
+
+    post '/api/share_server' do
+        assert(user_logged_in?)
+
+        # create server_tag for user
+        share_tag = gen_share_tag()
+        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :share_tag => share_tag})
+            MATCH (u:User {email: $email})
+            SET u.share_tag = $share_tag;
+        END_OF_STRING
+
+        Main.refresh_nginx_config()
+
+        respond(:yay => 'sure', :share_tag => share_tag)
+    end
+
+    post '/api/unshare_server' do
+        assert(user_logged_in?)
+
+        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email]})
+            MATCH (u:User {email: $email})
+            REMOVE u.share_tag;
+        END_OF_STRING
+
+        Main.refresh_nginx_config()
 
         respond(:yay => 'sure')
     end
