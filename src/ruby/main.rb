@@ -255,6 +255,18 @@ class Main < Sinatra::Base
                         proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
                     }
                     END_OF_STRING
+                    if user[:share_tag] && user[:share_tag] =~ /^[a-z0-9]{48}$/
+                        f.puts <<~END_OF_STRING
+                            location /#{user[:share_tag]}/ {
+                                rewrite ^/#{user[:share_tag]}(.*)$ $1 break;
+                                proxy_set_header Host $http_host;
+                                proxy_set_header Upgrade $http_upgrade;
+                                proxy_set_header Connection upgrade;
+                                proxy_set_header Accept-Encoding gzip;
+                                proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
+                            }
+                        END_OF_STRING
+                    end
                 end
             end
             f.puts nginx_config_second_part
@@ -326,6 +338,8 @@ class Main < Sinatra::Base
     configure do
         CONSTRAINTS_LIST = [
             'User/email',
+            'User/server_tag',
+            'User/share_tag',
             'LoginRequest/tag',
             'Session/sid',
         ]
@@ -559,6 +573,20 @@ class Main < Sinatra::Base
         respond(:yay => 'sure', :server_tag => @session_user[:server_tag])
     end
 
+    post '/api/start_server_with_share_tag' do
+        data = parse_request_data(:required_tags => [:share_tag])
+        share_tag = data[:share_tag]
+
+        user = neo4j_query_expect_one(<<~END_OF_QUERY, :share_tag => share_tag)['u']
+            MATCH (u:User {share_tag: $share_tag})
+            RETURN u;
+        END_OF_QUERY
+
+        start_server(user[:email])
+
+        respond(:yay => 'sure', :server_tag => user[:server_tag])
+    end
+
     post '/api/reset_server' do
         assert(user_logged_in?)
 
@@ -726,8 +754,18 @@ class Main < Sinatra::Base
 
     get '/*' do
         path = request.path
+        assert(!path.include?('..'))
         slug = nil
         Main.parse_content() if DEVELOPMENT
+        if path[0, 7] == '/share/'
+            STDERR.puts "OPENING SHARE!"
+            share_tag = path.sub('/share/', '')
+            share_user = neo4j_query_expect_one(<<~END_OF_STRING, :share_tag => share_tag)['u']
+                MATCH (u:User {share_tag: $share_tag})
+                RETURN u;
+            END_OF_STRING
+            path = '/share.html'
+        end
         if @@content.include?(path[1, path.size - 1])
             slug = path[1, path.size - 1]
             path = '/a.html'

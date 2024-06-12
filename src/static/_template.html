@@ -15,10 +15,29 @@
     <script src="/include/code.js?#{CACHE_BUSTER}"></script>
     <script src="/include/bower_components/moment/min/moment-with-locales.min.js"></script>
     <script src="/include/bootstrap.bundle.min.js"></script>
+    <script src="/include/clipboard.min.js"></script>
     <script src="/include/bower_components/jquery/dist/jquery.min.js"></script>
 </head>
 
 <script>
+
+function install_clipboard_handler(selector) {
+    window.clipboard = new ClipboardJS(selector);
+    window.clipboard.on('success', function(e) {
+        let check = $("<i class='fa fa-check btn-success btn-clipboard-check' style='position: absolute; left: 0.8em; top: 0.6em;'/>");
+        $(e.trigger).closest('.btn').find('.fa-clipboard').css('visibility', 'hidden');
+        $(e.trigger).append(check);
+        (function(check) {
+            setTimeout(function() {
+                check.fadeOut(400, function() {
+                    $(e.trigger).closest('.btn').find('.fa-clipboard').css('visibility', 'visible');
+                    check.remove();
+                });
+            }, 1000);
+        })(check);
+    });
+}
+
 function showTemplateModal(title, text, confirm_label, confirm_class,
     cancel_label, cancel_class, confirm_callback) {
     $('#__template_modal .modal-title').html(title);
@@ -69,6 +88,7 @@ function check_server_tag_update(server_tag) {
 }
 
 window.addEventListener('load', function() {
+    install_clipboard_handler('.btn-clipboard');
     // check if the server tag has changed
     if ('#{user_logged_in?}' === 'true') {
         let server_tag = '#{(@session_user || {})[:server_tag]}';
@@ -97,18 +117,24 @@ window.addEventListener('load', function() {
         "<i class='fa fa-send'></i>&nbsp;&nbsp;Workspace teilen", 'btn-primary', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
             api_call('/api/share_server', {}, function(data) {
                 if (data.success) {
-                    $('#ti_share_link').val("#{WEB_ROOT}/" + data.share_tag);
+                    $('#ti_share_link').val("#{WEB_ROOT}/share/" + data.share_tag);
+                    $('#bu_copy_share_link').data('clipboard-text', "#{WEB_ROOT}/share/" + data.share_tag);
                     $('#div_share_link').slideDown();
+                    $('#bu_share').hide();
+                    $('#bu_stop_share').show();
                 }
             });
         });
     });
     $('#bu_stop_share').on('click', function(e) {
         showTemplateModal('Teilen beenden', 'Bist du sicher, dass du die Teilung aufheben möchtest? Der Link kann dann nicht mehr für den Zugriff auf deinen Workspace verwendet werden.',
-        "<i class='fa fa-trash'></i>&nbsp;&nbsp;Teilen beenden", 'btn-danger', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+        "<i class='fa fa-trash'></i>&nbsp;&nbsp;Teilen beenden", 'btn-primary', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
             api_call('/api/unshare_server', {}, function(data) {
                 if (data.success) {
-                    console.log(data.share_tag);
+                    $('#ti_share_link').val('');
+                    $('#div_share_link').slideUp();
+                    $('#bu_share').show();
+                    $('#bu_stop_share').hide();
                 }
             });
         });
@@ -147,20 +173,22 @@ window.addEventListener('load', function() {
         <div class="container">
             <div style='text-align: center; width: 100%;'>
                 <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="btn btn-success #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='fa fa-sign-in'></i>&nbsp;Anmelden</a>
-                <button  style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='fa fa-code'></i>&nbsp;Workspace öffnen</button>
-                <button  style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_settings' class="btn btn-outline-secondary"><i class='fa fa-cog'></i></button>
+                <button style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='fa fa-code'></i>&nbsp;Workspace öffnen</button>
+                <button style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_settings' class="btn btn-outline-secondary"><i class='fa fa-cog'></i></button>
             </div>
             <div id='div_settings' style='display: none; text-align: center; width: 100%; border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;'>
                 <div>
                     <button style='#{(@session_user || {})[:share_tag].nil? ? '' : 'display: none;'}'id='bu_share' class="btn btn-primary"><i class='fa fa-send'></i>&nbsp;&nbsp;Teilen</button>
-                    <button style='#{(@session_user || {})[:share_tag].nil? ? 'display: none;' : ''}' id='bu_stop_share' class="btn btn-primary"><i class='fa fa-send'></i>&nbsp;&nbsp;Teilen beenden</button>
+                    <button style='#{(@session_user || {})[:share_tag].nil? ? 'display: none;' : ''}' id='bu_stop_share' class="btn btn-primary"><i class='fa fa-trash'></i>&nbsp;&nbsp;Teilen beenden</button>
                     <button id='bu_reset' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen</button>
                     <a style='#{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-outline-secondary" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a>
                 </div>
                 <div id='div_share_link' class="input-group mb-3 mt-2" style="#{(@session_user || {})[:share_tag] ? '' : 'display: none;'}">
                     <span class="input-group-text">Freigabelink:</span>
-                    <input type="text" id='ti_share_link' class="form-control" readonly value="#{WEB_ROOT}/#{(@session_user || {})[:share_tag]}">
-                    <button id='bu_copy_share_link' class="btn btn-primary"><i class="fa fa-copy"></i>&nbsp;&nbsp;Kopieren</button>
+                    <input type="text" id='ti_share_link' class="form-control" readonly value="#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}">
+                    <button id='bu_copy_share_link' class='btn btn-success btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}'><i class='fa fa-clipboard'></i></button>
+
+                    <!-- <button id='bu_copy_share_link' class="btn btn-primary"><i class="fa fa-copy"></i>&nbsp;&nbsp;Kopieren</button> -->
                 </div>
             </div>
         </div>
