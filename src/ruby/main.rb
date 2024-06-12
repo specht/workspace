@@ -309,7 +309,6 @@ class Main < Sinatra::Base
                     end
                 end
                 html = root.to_html
-                STDERR.puts html
                 meta = root.css('.meta').first
                 if meta
                     meta = YAML.load(meta)
@@ -430,8 +429,7 @@ class Main < Sinatra::Base
     end
 
     def gen_share_tag()
-        # RandomTag::generate(48)
-        'share_tag'
+        RandomTag::generate(48)
     end
 
     post '/api/request_login' do
@@ -575,8 +573,7 @@ class Main < Sinatra::Base
     end
 
     post '/api/start_server_with_share_tag' do
-        data = parse_request_data(:required_tags => [:share_tag])
-        STDERR.puts data.to_yaml
+        data = parse_request_data(:required_keys => [:share_tag])
         share_tag = data[:share_tag]
 
         STDERR.puts "Finding user with share tag #{share_tag}"
@@ -588,7 +585,7 @@ class Main < Sinatra::Base
 
         start_server(user[:email])
 
-        respond(:yay => 'sure', :server_tag => user[:server_tag])
+        respond(:yay => 'sure', :share_tag => user[:share_tag])
     end
 
     post '/api/reset_server' do

@@ -59,15 +59,15 @@ function showTemplateModal(title, text, confirm_label, confirm_class,
 }
 
 var server_tag = "#{(@session_user || {})[:server_tag]}";
-function check_server_online() {
-    fetch(`/${server_tag}/`) // replace with your actual API endpoint
+function check_server_online(server_tag) {
+    fetch(`/${server_tag}/`)
     .then(response => {
         if (response.status === 200) {
             console.log('Server is online');
             window.location.href = `/${server_tag}/`;
     } else {
             console.log('Server is offline');
-            setTimeout(function() { check_server_online(); }, 500);
+            setTimeout(function() { check_server_online(server_tag); }, 500);
         }
     })
     .catch(error => {
@@ -100,7 +100,7 @@ window.addEventListener('load', function() {
         $('#bu_launch .fa').addClass('fa-spin');
         api_call('/api/start_server', {}, function(data) {
             check_server_tag_update(data.server_tag);
-            check_server_online();
+            check_server_online(data.server_tag);
         });
     });
     $('#bu_reset').on('click', function(e) {
@@ -141,10 +141,13 @@ window.addEventListener('load', function() {
     });
 
     $('#bu_settings').on('click', function(e) {
-        if ($('#div_settings').is(':visible'))
+        if ($('#div_settings').is(':visible')) {
             $('#div_settings').slideUp();
-        else
+            $('#bu_settings .fa-chevron-down').removeClass('rot180');
+        } else {
             $('#div_settings').slideDown();
+            $('#bu_settings .fa-chevron-down').addClass('rot180');
+        }
     });
 });
 </script>
@@ -174,21 +177,21 @@ window.addEventListener('load', function() {
             <div style='text-align: center; width: 100%;'>
                 <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="btn btn-success #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='fa fa-sign-in'></i>&nbsp;Anmelden</a>
                 <button style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='fa fa-code'></i>&nbsp;Workspace öffnen</button>
-                <button style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_settings' class="btn btn-outline-secondary"><i class='fa fa-cog'></i></button>
+                <button style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_settings' class="btn btn-outline-secondary"><i class='fa fa-chevron-down rot'></i></button>
             </div>
             <div id='div_settings' style='display: none; text-align: center; width: 100%; border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;'>
-                <div>
-                    <button style='#{(@session_user || {})[:share_tag].nil? ? '' : 'display: none;'}'id='bu_share' class="btn btn-primary"><i class='fa fa-send'></i>&nbsp;&nbsp;Teilen</button>
-                    <button style='#{(@session_user || {})[:share_tag].nil? ? 'display: none;' : ''}' id='bu_stop_share' class="btn btn-primary"><i class='fa fa-trash'></i>&nbsp;&nbsp;Teilen beenden</button>
-                    <button id='bu_reset' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen</button>
-                    <a style='#{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-outline-secondary" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a>
+                <div style="margin-top: -6px;">
+                    <button style='margin-top: 4px; #{(@session_user || {})[:share_tag].nil? ? '' : 'display: none;'}'id='bu_share' class="btn btn-primary"><i class='fa fa-send'></i>&nbsp;&nbsp;Teilen</button>
+                    <button style='margin-top: 4px; #{(@session_user || {})[:share_tag].nil? ? 'display: none;' : ''}' id='bu_stop_share' class="btn btn-primary"><i class='fa fa-trash'></i>&nbsp;&nbsp;Teilen beenden</button>
+                    <button style='margin-top: 4px; ' id='bu_reset' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen</button>
+                    <a style='margin-top: 4px; #{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-outline-secondary" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a>
                 </div>
-                <div id='div_share_link' class="input-group mb-3 mt-2" style="#{(@session_user || {})[:share_tag] ? '' : 'display: none;'}">
-                    <span class="input-group-text">Freigabelink:</span>
-                    <input type="text" id='ti_share_link' class="form-control" readonly value="#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}">
-                    <button id='bu_copy_share_link' class='btn btn-success btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}'><i class='fa fa-clipboard'></i></button>
-
-                    <!-- <button id='bu_copy_share_link' class="btn btn-primary"><i class="fa fa-copy"></i>&nbsp;&nbsp;Kopieren</button> -->
+                <div style="display: table; margin-left: auto; margin-right: auto;">
+                    <div id='div_share_link' class="input-group mt-2" style="#{(@session_user || {})[:share_tag] ? '' : 'display: none;'}">
+                        <span class="input-group-text">Freigabelink:</span>
+                        <input type="text" id='ti_share_link' style='max-width: 42em;' class="form-control" readonly value="#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}">
+                        <button id='bu_copy_share_link' class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}'><i class='fa fa-clipboard'></i></button>
+                    </div>
                 </div>
             </div>
         </div>

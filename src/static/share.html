@@ -18,8 +18,8 @@ window.addEventListener('load', function() {
         console.log(share_tag);
         api_call('/api/start_server_with_share_tag', {share_tag: share_tag}, function(data) {
             if (data.success) {
-                check_server_tag_update(data.server_tag);
-                check_server_online();
+                // check_server_tag_update(data.share_tag);
+                check_server_online(data.share_tag);
             }
         });
     });
