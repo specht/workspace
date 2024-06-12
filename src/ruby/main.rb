@@ -656,23 +656,15 @@ class Main < Sinatra::Base
                 section = @@sections[section_key]
                 next if section[:entries].empty?
                 io.puts "<h2><img class='circle' src='#{section[:icon]}'> #{section[:label]}</h2>"
-                section[:entries].each do |slug|
+                io.puts "<hr>"
+                section[:entries].each.with_index do |slug, index|
                     content = @@content[slug]
                     io.puts "<a href='/#{slug}' class='tutorial_card'>"
                     # io.puts "<img src='#{content[:image]}'>"
                     io.puts "<h4>#{content[:title]}</h4>"
                     io.puts "<p class='abstract'>#{content[:abstract]}</p>"
                     io.puts "</a>"
-                #     <div class='tutorial_card'>
-                #     <h4>Erstelle eine Präsentation in HTML</h4>
-                #     <p>
-                #         Erstelle eine Präsentation mit shower.js in HTML und CSS. Mach dich
-                #         unabhängig von PowerPoint und Keynote und erstelle eine Präsentation,
-                #         die in jedem modernen Browser vom Stick oder von der Cloud aus
-                #         funktioniert.
-                #     </p>
-                # </div>
-    
+                    io.puts "<hr>"
                 end
             end
             io.string

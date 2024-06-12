@@ -48,7 +48,7 @@ Es gibt an mehreren Rändern Bereiche, die du ein- und ausblenden kannst. Nutze 
 <table class='table'>
 <tr>
 <td style='width: 1em;'><img class='sq-icon' src='primary-side-bar.webp'></td>
-<td>Primary Side Bar (<span class='key'>Strg</span><span class='key'>B</span>)</td>
+<td>Linke Seitenleiste (<span class='key'>Strg</span><span class='key'>B</span>)</td>
 </tr>
 <tr>
 <td><img class='sq-icon' src='panel.webp'></td>
@@ -56,7 +56,7 @@ Es gibt an mehreren Rändern Bereiche, die du ein- und ausblenden kannst. Nutze 
 </tr>
 <tr>
 <td><img class='sq-icon' src='secondary-side-bar.webp'></td>
-<td>Secondary Side bar (<span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>B</span>)</td>
+<td>Rechte Seitenleiste (<span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>B</span>)</td>
 </tr>
 </table>
 
