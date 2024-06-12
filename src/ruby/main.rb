@@ -430,7 +430,8 @@ class Main < Sinatra::Base
     end
 
     def gen_share_tag()
-        RandomTag::generate(48)
+        # RandomTag::generate(48)
+        'share_tag'
     end
 
     post '/api/request_login' do
@@ -575,7 +576,10 @@ class Main < Sinatra::Base
 
     post '/api/start_server_with_share_tag' do
         data = parse_request_data(:required_tags => [:share_tag])
+        STDERR.puts data.to_yaml
         share_tag = data[:share_tag]
+
+        STDERR.puts "Finding user with share tag #{share_tag}"
 
         user = neo4j_query_expect_one(<<~END_OF_QUERY, :share_tag => share_tag)['u']
             MATCH (u:User {share_tag: $share_tag})
@@ -758,8 +762,8 @@ class Main < Sinatra::Base
         slug = nil
         Main.parse_content() if DEVELOPMENT
         if path[0, 7] == '/share/'
-            STDERR.puts "OPENING SHARE!"
             share_tag = path.sub('/share/', '')
+            STDERR.puts "OPENING SHARE WITH SHARE TAG #{share_tag}"
             share_user = neo4j_query_expect_one(<<~END_OF_STRING, :share_tag => share_tag)['u']
                 MATCH (u:User {share_tag: $share_tag})
                 RETURN u;

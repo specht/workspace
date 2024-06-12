@@ -118,7 +118,7 @@ window.addEventListener('load', function() {
             api_call('/api/share_server', {}, function(data) {
                 if (data.success) {
                     $('#ti_share_link').val("#{WEB_ROOT}/share/" + data.share_tag);
-                    $('#bu_copy_share_link').data('clipboard-text', "#{WEB_ROOT}/share/" + data.share_tag);
+                    $('#bu_copy_share_link').attr('data-clipboard-text', "#{WEB_ROOT}/share/" + data.share_tag);
                     $('#div_share_link').slideDown();
                     $('#bu_share').hide();
                     $('#bu_stop_share').show();
