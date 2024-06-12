@@ -275,6 +275,11 @@ class Main < Sinatra::Base
     end
 
     def self.parse_content
+        hyphenation_map = {}
+        File.read('/src/content/hyphenation.txt').split("\n").each do |line|
+            line.strip!
+            hyphenation_map[line.gsub('-', '')] = line.gsub('-', '&shy;')
+        end
         sections = YAML.load(File.read('/src/content/sections.yaml'))
         @@section_order = sections.map { |section| section['key'] }
         @@sections = {}
@@ -290,6 +295,9 @@ class Main < Sinatra::Base
             redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML)
             Dir['/src/content/*/*.md'].each do |path|
                 markdown = File.read(path)
+                hyphenation_map.each_pair do |a, b|
+                    markdown.gsub!(a, b)
+                end
                 slug = File.basename(path, '.md')
                 html = redcarpet.render(markdown)
                 root = Nokogiri::HTML(html)
