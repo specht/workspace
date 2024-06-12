@@ -97,7 +97,8 @@ window.addEventListener('load', function() {
         "<i class='fa fa-send'></i>&nbsp;&nbsp;Workspace teilen", 'btn-primary', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
             api_call('/api/share_server', {}, function(data) {
                 if (data.success) {
-                    console.log(data.share_tag);
+                    $('#ti_share_link').val("#{WEB_ROOT}/" + data.share_tag);
+                    $('#div_share_link').slideDown();
                 }
             });
         });
@@ -150,10 +151,17 @@ window.addEventListener('load', function() {
                 <button  style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_settings' class="btn btn-outline-secondary"><i class='fa fa-cog'></i></button>
             </div>
             <div id='div_settings' style='display: none; text-align: center; width: 100%; border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;'>
-                <button style='#{(@session_user || {})[:share_tag].nil? ? '' : 'display: none;'}'id='bu_share' class="btn btn-primary"><i class='fa fa-send'></i>&nbsp;&nbsp;Teilen</button>
-                <button style='#{(@session_user || {})[:share_tag].nil? ? 'display: none;' : ''}' id='bu_stop_share' class="btn btn-primary"><i class='fa fa-send'></i>&nbsp;&nbsp;Teilen beenden</button>
-                <button id='bu_reset' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen</button>
-                <a style='#{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-outline-secondary" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a>
+                <div>
+                    <button style='#{(@session_user || {})[:share_tag].nil? ? '' : 'display: none;'}'id='bu_share' class="btn btn-primary"><i class='fa fa-send'></i>&nbsp;&nbsp;Teilen</button>
+                    <button style='#{(@session_user || {})[:share_tag].nil? ? 'display: none;' : ''}' id='bu_stop_share' class="btn btn-primary"><i class='fa fa-send'></i>&nbsp;&nbsp;Teilen beenden</button>
+                    <button id='bu_reset' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen</button>
+                    <a style='#{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-outline-secondary" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a>
+                </div>
+                <div id='div_share_link' class="input-group mb-3 mt-2" style="#{(@session_user || {})[:share_tag] ? '' : 'display: none;'}">
+                    <span class="input-group-text">Freigabelink:</span>
+                    <input type="text" id='ti_share_link' class="form-control" readonly value="#{WEB_ROOT}/#{(@session_user || {})[:share_tag]}">
+                    <button id='bu_copy_share_link' class="btn btn-primary"><i class="fa fa-copy"></i>&nbsp;&nbsp;Kopieren</button>
+                </div>
             </div>
         </div>
     </div>
