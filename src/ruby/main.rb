@@ -626,14 +626,16 @@ class Main < Sinatra::Base
         unless File.exist?(config_path)
             FileUtils.mkpath(File.dirname(config_path))
             File.open(config_path, 'w') do |f|
-                config = {
-                    'files.exclude' => {
-                        '**/.*' => true,
-                    },
-                }
+                config = {}
                 f.write config.to_json
             end
-
+        end
+        config = JSON.parse(File.read(config_path))
+        config ||= {}
+        config['files.exclude'] ||= {}
+        config['files.exclude']['**/.*'] = true
+        File.open(config_path, 'w') do |f|
+            f.write config.to_json
         end
         system("chown -R 1000:1000 /user/#{container_name}")
         network_name = "workspace"
