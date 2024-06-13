@@ -19,7 +19,9 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 
 <img class='full' src='fresh-start.webp'>
 
-Klicke nun auf »New File« und wähle als Dateityp »Text File«.
+### Quelltext schreiben
+
+Klicke auf »New File« und wähle als Dateityp »Text File«.
 
 <img class='full' src='choose-filename.webp'>
 
@@ -33,17 +35,36 @@ public class HelloWorld {
 }
 ```
 
-<img class='r' src='no-syntax-highlighting.webp' style='width: 25em;'>
-
 Deine Datei sieht noch nicht besonders spektakulär aus, aber das ist in Ordnung und wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
 
-Drücke nun <span class='key'>Strg</span><span class='key'>S</span>, um die Datei zu speichern.
+<img class='full' src='no-syntax-highlighting.webp'>
 
-Speichere die Datei als `HelloWorld.java` und öffne ein Terminal. Navigiere zum Verzeichnis, in dem du die Datei gespeichert hast, und führe folgenden Befehl aus:
+Drücke nun <span class='key'>Strg</span><span class='key'>S</span>, um die Datei zu speichern. Gib `HelloWorld.java` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/HelloWorld.java`.
+
+<img class='full' src='enter-filename.webp'>
+
+Sobald du die Datei gespeichert hast, wird sie automatisch als Java-Datei erkannt und die Syntax wird hervorgehoben.
+
+<img class='full' src='syntax-highlighting.webp'>
+
+### Compilieren und ausführen
+
+Bevor wir das Programm ausführen können, müssen wir es compilieren.
+Dadurch wird der Quelltext des Programms in Bytecode übersetzt, den die Java Virtual Machine (JVM) ausführen kann.
+
+Öffne dazu ein Terminal und navigiere in den Ordner, indem du entweder <span class='key'>Strg</span><span class='key'>J</span> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+
+<img class='full' src='code-with-terminal.webp'>
+
+Wir rufen jetzt den Java-Compiler `javac` auf, um das Programm zu übersetzen:
 
 ```bash
 javac HelloWorld.java
 ```
+
+<div class='hint'>
+Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>javac He</code> und drücke <span class='key'>Tab</span>, um den Rest automatisch vervollständigen zu lassen.
+</div>
 
 Dieser Befehl kompiliert den Java-Code und erzeugt eine ausführbare Datei namens `HelloWorld.class`. Um das Programm auszuführen, gib folgenden Befehl ein:
 
@@ -51,4 +72,41 @@ Dieser Befehl kompiliert den Java-Code und erzeugt eine ausführbare Datei namen
 java HelloWorld
 ```
 
-Das Programm sollte die Nachricht `Hello, World!` auf der Konsole ausgeben.
+Das Programm sollte die Nachricht `Hello, World!` auf der Konsole ausgeben. Du kannst beide Schritte auch in einem Befehl kombinieren:
+
+```bash
+javac HelloWorld.java && java HelloWorld
+```
+
+<div class='hint'>
+Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der zweite Befehl nur ausgeführt wird, wenn der erste erfolgreich war.
+</div>
+
+Nutze die Pfeiltaste hoch <span class='key'>↑</span>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
+
+### Fehler finden und beheben
+
+Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, die Methode `println` falsch zu schreiben:
+
+```java
+System.out.printn("Hello, World!");
+```
+
+Speichere die Datei und führe den Compiler erneut aus:
+
+```bash
+javac HelloWorld.java
+```
+
+Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
+
+```bash
+HelloWorld.java:3: error: cannot find symbol
+        System.out.printn("Hello, World!");
+                  ^
+  symbol:   method printn(String)
+  location: variable out of type PrintStream
+1 error
+```
+
+Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 3) und den Text, der dir sagt, was falsch ist.
