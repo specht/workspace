@@ -837,9 +837,13 @@ class Main < Sinatra::Base
             io.puts "<th>Disk Usage</th>"
             io.puts "<th>Workspace</th>"
             io.puts "</tr>"
-            Dir['/user/*'].each do |path|
-                next unless File.basename(path) =~ /^[0-9a-z]{16}$/
-                user_tag = path.split('/').last
+            Dir['/user/*'].map do |path|
+                path.split('/').last
+            end.select do |user_tag|
+                user_tag =~ /^[0-9a-z]{16}$/
+            end.sort do |a, b|
+                email_for_tag[a] <=> email_for_tag[b]
+            end.each do |user_tag|
                 io.puts "<tr id='tr_hs_code_#{user_tag}'>"
                 io.puts "<td><code>#{user_tag}</code></td>"
                 io.puts "<td>#{email_for_tag[user_tag]}</td>"
