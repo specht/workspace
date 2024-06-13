@@ -803,6 +803,18 @@ class Main < Sinatra::Base
             du_for_fs_tag = JSON.parse(File.read('/internal/du_for_fs_tag.json'))
         rescue
         end
+
+        info_for_tag = {}
+        JSON.parse(`docker inspect workspace`).each do |entry|
+            entry['Containers'].each_pair do |id, container|
+                name = container['Name']
+                next unless name[0, 8] == 'hs_code_'
+                info_for_tag[name.sub('hs_code_', '')] = {
+                    :ip => container['IPv4Address'],
+                }
+            end
+        end
+
         StringIO.open do |io|
             io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
             io.puts "<table class='table'>"
@@ -817,12 +829,11 @@ class Main < Sinatra::Base
             Dir['/user/*'].each do |path|
                 next unless File.basename(path) =~ /^[0-9a-z]{16}$/
                 user_tag = path.split('/').last
-                info = get_server_state(user_tag)
                 io.puts "<tr>"
                 io.puts "<td><code>#{user_tag}</code></td>"
-                io.puts "<td>#{info[:running] ? 'Running' : 'Stopped'}</td>"
+                io.puts "<td>#{info_for_tag.include?(user_tag) ? 'Running' : 'Stopped'}</td>"
                 io.puts "<td>#{email_for_tag[user_tag]}</td>"
-                io.puts "<td>#{info[:ip] || '&ndash;'}</td>"
+                io.puts "<td>#{(info_for_tag[user_tag] || {})[:ip] || '&ndash;'}</td>"
                 if du_for_fs_tag[user_tag]
                     io.puts "<td>#{bytes_to_str(du_for_fs_tag[user_tag] * 1024)}</td>"
                 else
