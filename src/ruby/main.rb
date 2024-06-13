@@ -795,6 +795,7 @@ class Main < Sinatra::Base
                     io.puts "<h4>#{content[:title]}</h4>"
                     io.puts "<div class='ratio ratio-16x9 mb-2'>"
                     io.puts "<img src='#{(content[:image] || '/images/white.webp').sub('.webp', '-512.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
+                    io.puts "<div class='shade'></div>"
                     io.puts "</div>"
                     io.puts "<p class='abstract'>#{content[:abstract]}</p>"
                     io.puts "</a>"

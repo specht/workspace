@@ -361,7 +361,12 @@ a.tutorial_card:hover h4 {
     width: calc(100% + 30px + 4px);
     object-fit: cover;
     margin: 0 -17px 0em -17px;
-    box-shadow: 0 0.5em 0.5em -0.5em rgba(0, 0, 0, 0.2) inset, 0 -0.5em 0.5em -0.5em rgba(0, 0, 0, 0.2) inset;
+}
+
+.tutorial_card .shade {
+    width: calc(100% + 30px + 4px);
+    margin: 0 -17px 0em -17px;
+    box-shadow: 0 0.5em 0.5em -0.5em rgba(0, 0, 0, 0.3) inset, 0 -0.5em 0.5em -0.5em rgba(0, 0, 0, 0.3) inset;
 }
 
 .tutorial_card p {
