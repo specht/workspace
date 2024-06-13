@@ -8,6 +8,7 @@ require 'nokogiri'
 require './credentials.rb'
 # require 'faye/websocket'
 require 'redcarpet'
+require 'rouge'
 require 'securerandom'
 require 'sinatra/base'
 require 'sinatra/cookies'
@@ -292,7 +293,7 @@ class Main < Sinatra::Base
         end
         @@content = {}
         StringIO.open do |io|
-            redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML)
+            redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
             Dir['/src/content/*/*.md'].each do |path|
                 markdown = File.read(path)
                 hyphenation_map.each_pair do |a, b|
@@ -315,6 +316,26 @@ class Main < Sinatra::Base
                     if img.classes.include?('full')
                         img.wrap("<div class='scroll-x'>")
                     end
+                end
+                root.css('pre').each do |pre|
+                    code = pre.css('code').first
+                    next if code.nil?
+                    language = code.attr('class')
+                    formatter = Rouge::Formatters::HTML.new
+                    lexer = nil
+                    case language
+                    when 'java'
+                        lexer = Rouge::Lexers::Java.new
+                    when 'python'
+                        lexer = Rouge::Lexers::Python.new
+                    when 'ruby'
+                        lexer = Rouge::Lexers::Ruby.new
+                    when 'bash'
+                        lexer = Rouge::Lexers::Shell.new
+                    end
+                    next if lexer.nil?
+                    pre.content = ''
+                    pre << formatter.format(lexer.lex(code.text))
                 end
                 html = root.to_html
                 meta = root.css('.meta').first
@@ -552,10 +573,20 @@ class Main < Sinatra::Base
         return if state[:running]
 
         system("mkdir -p /user/#{container_name}/config")
-        system("mkdir -p /user/#{container_name}/config/data")
-        system("mkdir -p /user/#{container_name}/config/extensions")
-        system("mkdir -p /user/#{container_name}/config")
         system("mkdir -p /user/#{container_name}/workspace")
+        config_path = "/user/#{container_name}/config/.local/share/code-server/User/settings.json"
+        unless File.exist?(config_path)
+            FileUtils.mkpath(File.dirname(config_path))
+            File.open(config_path, 'w') do |f|
+                config = {
+                    'files.exclude' => {
+                        '**/.*' => true,
+                    },
+                }
+                f.write config.to_json
+            end
+
+        end
         system("chown -R 1000:1000 /user/#{container_name}")
         network_name = "workspace"
         system("docker run -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} --name hs_code_#{container_name} hs_code_server")

@@ -2,7 +2,12 @@
 
 hostname = `hostname`.strip
 
-path = "/home/michael/Screenshots/"
+path = case hostname
+when 'vaka'
+    "/home/michael/Screenshots/"
+when 'vakadell'
+    "/home/michael/Pictures/Screenshots/"
+end
 latest_path = Dir.glob(File.join(path, '*.png')).sort_by { |f| File.mtime(f) }.last
 
 STDERR.puts latest_path
@@ -16,7 +21,7 @@ latest_content_path = File.dirname(Dir["src/content/*/*.md"].sort_by { |f| File.
 
 target_path = "#{File.join(latest_content_path, slug)}.webp"
 
-raise 'file already exists!' if File.exist?(target_path)
+# raise 'file already exists!' if File.exist?(target_path)
 
 system("cwebp -q 80 \"#{latest_path}\" -o \"#{target_path}\"")
 

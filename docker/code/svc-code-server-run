@@ -20,7 +20,7 @@ exec \
                 --bind-addr 0.0.0.0:8443 \
                 --disable-telemetry \
                 --auth none \
-                --extensions-dir /config/extensions \
+                --extensions-dir /workspace/.extensions \
                 --disable-workspace-trust \
                 --disable-update-check \
                 --app-name "Hackschule VS Code" \

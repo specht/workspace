@@ -1,4 +1,5 @@
 FROM linuxserver/code-server:4.89.1
+RUN usermod -d /workspace abc
 RUN sudo apt-get update && sudo apt-get install -y \
     wget \
     ruby \
@@ -12,9 +13,10 @@ RUN sudo apt-get update && sudo apt-get install -y \
     build-essential file \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
-RUN wget https://storage.googleapis.com/dart-archive/channels/stable/release/latest/linux_packages/dart_3.4.3-1_amd64.deb
-RUN sudo dpkg -i dart_3.4.3-1_amd64.deb
-RUN rm dart_3.4.3-1_amd64.deb
+RUN apt-get update && sudo apt-get install apt-transport-https
+RUN wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg  --dearmor -o /usr/share/keyrings/dart.gpg
+RUN echo 'deb [signed-by=/usr/share/keyrings/dart.gpg arch=amd64] https://storage.googleapis.com/download.dartlang.org/linux/debian stable main' | tee /etc/apt/sources.list.d/dart_stable.list
+RUN apt-get update && apt-get install dart
 COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run
 COPY svc-code-server-run /etc/s6-overlay/s6-rc.d/svc-code-server/run
 WORKDIR /workspace

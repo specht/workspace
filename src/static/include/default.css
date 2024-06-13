@@ -467,3 +467,14 @@ a:hover {
 .rot.rot180 {
     transform: rotate(180deg);
 }
+
+pre {
+    font-family: 'Latin Modern Mono', monospace;
+    font-weight: bold;
+    /* color: #000; */
+    font-size: 110%;
+    /* border: 1px solid #eee; */
+    padding: 0.5em 1em;
+    /* box-shadow: 0 0 0.5em rgba(0,0,0,0.2); */
+    border-radius: 0.5em;
+}

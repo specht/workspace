@@ -19,6 +19,11 @@
     <script src="/include/bower_components/jquery/dist/jquery.min.js"></script>
 </head>
 
+<style>
+/* #{Rouge::Theme.find('base16.light').render(scope: 'pre')} */
+#{Rouge::Theme.find('gruvbox').render(scope: 'pre')}
+</style>
+
 <script>
 
 function install_clipboard_handler(selector) {
@@ -64,8 +69,10 @@ function check_server_online(server_tag) {
     .then(response => {
         if (response.status === 200) {
             console.log('Server is online');
-            window.location.href = `/${server_tag}/`;
-    } else {
+            $('#bu_launch .fa').removeClass('fa-spin');
+            $('#bu_launch').prop('disabled', false);
+            window.open(`/${server_tag}/`, '_blank');
+        } else {
             console.log('Server is offline');
             setTimeout(function() { check_server_online(server_tag); }, 500);
         }
