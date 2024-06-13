@@ -324,12 +324,14 @@ class Main < Sinatra::Base
         @@content = {}
         StringIO.open do |io|
             redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
-            Dir['/src/content/*/*.md'].each do |path|
+            Dir['/src/content/*/*.md'].sort do |a, b|
+                File.basename(a) <=> File.basename(b)
+            end.each do |path|
                 markdown = File.read(path)
                 hyphenation_map.each_pair do |a, b|
                     markdown.gsub!(a, b)
                 end
-                slug = File.basename(path, '.md')
+                slug = File.basename(path, '.md').sub(/^[0-9]+\-/, '')
                 html = redcarpet.render(markdown)
                 root = Nokogiri::HTML(html)
                 meta = root.css('.meta').first
@@ -352,6 +354,12 @@ class Main < Sinatra::Base
                     img['src'] = "/cache/#{image_sha1}.webp"
                     if img.classes.include?('full')
                         img.wrap("<div class='scroll-x'>")
+                    end
+                end
+                root.css('a').each do |a|
+                    href = a.attr('href')
+                    if href.index('https://') == 0
+                        a['target'] = '_blank'
                     end
                 end
                 root.css('pre').each do |pre|
@@ -786,7 +794,7 @@ class Main < Sinatra::Base
                     io.puts "<a href='/#{slug}' class='tutorial_card'>"
                     io.puts "<h4>#{content[:title]}</h4>"
                     io.puts "<div class='ratio ratio-16x9 mb-2'>"
-                    io.puts "<img src='#{content[:image].sub('.webp', '-512.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
+                    io.puts "<img src='#{(content[:image] || '/images/white.webp').sub('.webp', '-512.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
                     io.puts "</div>"
                     io.puts "<p class='abstract'>#{content[:abstract]}</p>"
                     io.puts "</a>"

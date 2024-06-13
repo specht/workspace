@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="160mm"
+   height="90mm"
+   viewBox="0 0 160 90"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   sodipodi:docname="workspace.svg"
+   inkscape:export-filename="/home/michael/programming/websites/workspace/src/content/basics/workspace.png"
+   inkscape:export-xdpi="325.12"
+   inkscape:export-ydpi="325.12"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.2036188"
+     inkscape:cx="242.60173"
+     inkscape:cy="76.851577"
+     inkscape:window-width="2496"
+     inkscape:window-height="1369"
+     inkscape:window-x="2624"
+     inkscape:window-y="34"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter9027"
+       x="-0.026552685"
+       y="-0.088115648"
+       width="1.0531054"
+       height="1.1762313">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="2.2581849"
+         id="feGaussianBlur9029" />
+    </filter>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="opacity:1;fill:#2c5aa0;fill-opacity:1;stroke:none;stroke-width:0.01;stroke-linejoin:round"
+       id="rect9535"
+       width="160"
+       height="90"
+       x="8.8817842e-16"
+       y="0" />
+    <rect
+       style="fill:#000000;stroke-width:0.00795296;stroke-linejoin:round;filter:url(#filter9027);opacity:0.69873114"
+       id="rect8927"
+       width="204.10907"
+       height="61.506031"
+       x="-35.693851"
+       y="33.834114"
+       transform="rotate(-15)" />
+    <rect
+       style="fill:#f2f2f2;stroke-width:0.00795296;stroke-linejoin:round;opacity:1;fill-opacity:1"
+       id="rect9309"
+       width="204.10907"
+       height="61.506031"
+       x="-35.693851"
+       y="33.834114"
+       transform="rotate(-15)" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.6854px;line-height:1;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;stroke-width:1.16172"
+       x="66.644669"
+       y="59.970295"
+       id="text2683"
+       transform="rotate(-15)"><tspan
+         sodipodi:role="line"
+         id="tspan2681"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Patua One';-inkscape-font-specification:'Patua One';stroke-width:1.16172"
+         x="66.644669"
+         y="59.970295">Hackschule</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Patua One';-inkscape-font-specification:'Patua One';stroke-width:1.16172"
+         x="66.644669"
+         y="82.12455"
+         id="tspan2685">Workspace</tspan></text>
+  </g>
+</svg>

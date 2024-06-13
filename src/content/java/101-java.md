@@ -111,3 +111,7 @@ HelloWorld.java:3: error: cannot find symbol
 ```
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 3) und den Text, der dir sagt, was falsch ist.
+
+### Zusammenfassung
+
+In diesem Kapitel hast du gelernt, wie du ein einfaches Java-Programm schreibst, compilierst und ausführst. Als nächstes wirst du lernen, wie du Variablen deklarierst, Schleifen und Bedingungen verwendest und Klassen und Methoden schreibst &ndash; die Buchhandlungen, Bibliotheken und Youtube sind voll von Material für dich. Java ist eine mächtige Programmiersprache, die dir viele Möglichkeiten bietet, eigene Programme zu schreiben. Viel Spaß beim Programmieren!
