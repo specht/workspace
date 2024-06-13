@@ -574,7 +574,7 @@ class Main < Sinatra::Base
 
         system("mkdir -p /user/#{container_name}/config")
         system("mkdir -p /user/#{container_name}/workspace")
-        config_path = "/user/#{container_name}/config/.local/share/code-server/User/settings.json"
+        config_path = "/user/#{container_name}/workspace/.local/share/code-server/User/settings.json"
         unless File.exist?(config_path)
             FileUtils.mkpath(File.dirname(config_path))
             File.open(config_path, 'w') do |f|

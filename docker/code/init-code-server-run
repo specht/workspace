@@ -29,3 +29,4 @@ chmod 700 /workspace/.ssh
 if [ -n "$(ls -A /workspace/.ssh)" ]; then
     chmod 600 /workspace/.ssh/*
 fi
+usermod -d /workspace abc

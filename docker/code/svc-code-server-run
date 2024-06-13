@@ -13,7 +13,7 @@ else
     PROXY_DOMAIN_ARG="--proxy-domain=${PROXY_DOMAIN}"
 fi
 
-exec \
+HOME=/workspace exec \
     s6-notifyoncheck -d -n 300 -w 1000 -c "nc -z 127.0.0.1 8443" \
         s6-setuidgid abc \
             /app/code-server/bin/code-server \
@@ -24,5 +24,4 @@ exec \
                 --disable-workspace-trust \
                 --disable-update-check \
                 --app-name "Hackschule VS Code" \
-                --welcome-text "Herzlich Willkommen in der Hackschule" \
-                /workspace
+                --welcome-text "Herzlich Willkommen in der Hackschule"
