@@ -275,6 +275,20 @@ class Main < Sinatra::Base
         system("docker kill -s HUP workspace_nginx_1")
     end
 
+    def self.convert_image(image_path)
+        image_sha1 = Digest::SHA1.hexdigest(File.read(image_path))[0, 16]
+        target_path = "/webcache/#{image_sha1}.webp"
+        unless FileUtils.uptodate?(target_path, [image_path])
+            STDERR.puts "Copying #{image_path} to cache..."
+            FileUtils.cp(image_path, target_path)
+        end
+        target_path_512 = "/webcache/#{image_sha1}-512.webp"
+        unless FileUtils.uptodate?(target_path_512, [target_path])
+            system("convert #{target_path} -resize 512x #{target_path_512}")
+        end
+        image_sha1
+    end
+
     def self.parse_content
         hyphenation_map = {}
         File.read('/src/content/hyphenation.txt').split("\n").each do |line|
@@ -302,16 +316,23 @@ class Main < Sinatra::Base
                 slug = File.basename(path, '.md')
                 html = redcarpet.render(markdown)
                 root = Nokogiri::HTML(html)
+                meta = root.css('.meta').first
+                if meta
+                    meta = YAML.load(meta)
+                    if meta.include?('visible')
+                        if meta['visible'] == false
+                            next
+                        elsif meta['visible'] == 'development'
+                            next unless DEVELOPMENT
+                        end
+                    end
+                end
+
                 root.css('img').each do |img|
                     src = img.attr('src')
                     image_path = File.join(File.dirname(path), src)
                     next unless File.exist?(image_path)
-                    image_sha1 = Digest::SHA1.hexdigest(File.read(image_path))[0, 16]
-                    target_path = "/webcache/#{image_sha1}.webp"
-                    unless FileUtils.uptodate?(target_path, [image_path])
-                        STDERR.puts "Copying #{image_path} to cache..."
-                        FileUtils.cp(image_path, target_path)
-                    end
+                    image_sha1 = convert_image(image_path)
                     img['src'] = "/cache/#{image_sha1}.webp"
                     if img.classes.include?('full')
                         img.wrap("<div class='scroll-x'>")
@@ -332,6 +353,8 @@ class Main < Sinatra::Base
                         lexer = Rouge::Lexers::Ruby.new
                     when 'bash'
                         lexer = Rouge::Lexers::Shell.new
+                    when 'javascript'
+                        lexer = Rouge::Lexers::Javascript.new
                     end
                     next if lexer.nil?
                     pre.content = ''
@@ -339,14 +362,21 @@ class Main < Sinatra::Base
                 end
                 html = root.to_html
                 meta = root.css('.meta').first
+                @@content[slug] = {
+                    :html => html
+                }
                 if meta
                     meta = YAML.load(meta)
                     section = meta['section']
                     @@sections[section][:entries] << slug
+                    if meta['image']
+                        parts = meta['image'].split(':')
+                        sha1 = convert_image(File.join(File.dirname(path), parts[0]))
+                        @@content[slug][:image] = "/cache/#{sha1}.webp"
+                        @@content[slug][:image_x] = (parts[1] || '50').to_i
+                        @@content[slug][:image_y] = (parts[2] || '50').to_i
+                    end
                 end
-                @@content[slug] = {
-                    :html => html
-                }
                 begin
                     @@content[slug][:title] = root.css('h1').first.text
                 rescue
@@ -356,7 +386,9 @@ class Main < Sinatra::Base
                 rescue
                 end
                 begin
-                    @@content[slug][:image] = root.css('img').first.attr('src')
+                    @@content[slug][:image] ||= root.css('img').first.attr('src')
+                    @@content[slug][:image_x] ||= 50
+                    @@content[slug][:image_y] ||= 50
                 rescue
                 end
             end
@@ -696,15 +728,21 @@ class Main < Sinatra::Base
                 next if section[:entries].empty?
                 io.puts "<h2><img class='circle' src='#{section[:icon]}'> #{section[:label]}</h2>"
                 io.puts "<hr>"
+                io.puts "<div class='row'>"
                 section[:entries].each.with_index do |slug, index|
                     content = @@content[slug]
+                    io.puts "<div class='col-sm-12 col-md-6 col-lg-4'>"
                     io.puts "<a href='/#{slug}' class='tutorial_card'>"
-                    # io.puts "<img src='#{content[:image]}'>"
                     io.puts "<h4>#{content[:title]}</h4>"
+                    io.puts "<div class='ratio ratio-16x9 mb-2'>"
+                    io.puts "<img src='#{content[:image].sub('.webp', '-512.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
+                    io.puts "</div>"
                     io.puts "<p class='abstract'>#{content[:abstract]}</p>"
                     io.puts "</a>"
-                    io.puts "<hr>"
+                    io.puts "</div>"
+                    # io.puts "<hr>"
                 end
+                io.puts "</div>"
             end
             io.string
         end

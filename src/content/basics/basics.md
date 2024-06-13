@@ -108,7 +108,7 @@ Du kannst Hilfstasten auch verwenden, um Sonderzeichen einzugeben, genauso wie d
 
 ## Bearbeiten von Text
 
-Gerade am Anfang kann das Tippen und Navigieren in einer Datei sehr kräftezehrend sein. Es ist aber wie mit so vielen Dingen: mit der Zeit kommt die Übung. 🤠 Wenn du eine gewissen Übung hast, bist du mit der Tastatur oft schneller, als wenn du erst zur Maus greifen musst, um an eine bestimmte Stelle zu klicken.
+Gerade am Anfang kann es sein, dass du beim Tippen und Navigieren in einer Datei relativ langsam bist. Es ist aber wie mit so vielen Dingen: mit der Zeit kommt die Übung. 🤠 Wenn du eine gewissen Übung hast, bist du mit der Tastatur oft schneller, als wenn du erst zur Maus greifen musst, um an eine bestimmte Stelle zu klicken.
 
 Du kannst Webseiten wie [keybr.com](https://www.keybr.com/) nutzen, um deine Tippgeschwindigkeit zu trainieren. Darüberhinaus wirst du schneller, wenn du ein paar wesentliche Tasten deiner Tastatur kennenlernst:
 

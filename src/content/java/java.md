@@ -1,5 +1,6 @@
 <div class='meta'>
 section: programming
+image: Java-Logo.png
 </div>
 
 # Programmieren in Java

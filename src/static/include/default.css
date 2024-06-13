@@ -311,11 +311,12 @@ tr.noborder td {
 
 a.tutorial_card {
     display: block;
-    /* border: 1px solid #ddd; */
-    /* border-radius: 1em; */
+    border: 1px solid #ddd;
+    border-radius: 0.5em;
     padding: 1em;
-    margin: -1em;
-    /* box-shadow: 0 0 1em rgba(0, 0, 0, 0.3); */
+    /* margin: -1em; */
+    box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.2);
+    overflow-y: hidden;
     /* margin-bottom: 1em; */
     /* margin-left: -15px; */
     /* margin-right: -15px; */
@@ -323,12 +324,17 @@ a.tutorial_card {
     color: unset;
     text-decoration: none;
     /* transition: box-shadow 0.1s ease-out; */
+    height: 21.7em;
+    margin-bottom: 1em;
 }
 
 a.tutorial_card:hover {
     /* box-shadow: 0 0 1em rgba(0, 0, 0, 0.25); */
     text-decoration: none;
     /* background-color: #fce94f; */
+    border: 1px solid #bbb;
+    /* margin: -1em; */
+    box-shadow: 0 0 0.8em rgba(0, 0, 0, 0.2);
 }
 
 a.tutorial_card h4 {
@@ -339,11 +345,7 @@ a.tutorial_card h4 {
 }
 
 a.tutorial_card:hover h4 {
-    background-color: #fce94f;
-}
-
-.tutorial_card {
-    /* height: 10em; */
+    /* background-color: #fce94f; */
 }
 
 .tutorial_card .abstract {
@@ -356,12 +358,10 @@ a.tutorial_card:hover h4 {
 }
 
 .tutorial_card img {
-    width: 8em;
-    height: 8em;
+    width: calc(100% + 30px + 4px);
     object-fit: cover;
-    float: right;
-    margin-left: 1em;
-    margin-bottom: 1em;
+    margin: 0 -17px 0em -17px;
+    box-shadow: 0 0.5em 0.5em -0.5em rgba(0, 0, 0, 0.2) inset, 0 -0.5em 0.5em -0.5em rgba(0, 0, 0, 0.2) inset;
 }
 
 .tutorial_card p {
@@ -501,4 +501,38 @@ pre {
     height: 2em;
     background-image: url(/images/bulb.png);
     background-size: cover;
+}
+
+a.tutorial_card {
+    max-height: 100vw;
+}
+
+@media (min-width: 576px) {
+    a.tutorial_card {
+        height: 25.6em;
+    }
+}
+
+@media (min-width: 768px) {
+    a.tutorial_card {
+        height: 21.4em;
+    }
+}
+
+@media (min-width: 960px) {
+    a.tutorial_card {
+        height: 21.6em;
+    }
+}
+
+@media (min-width: 1152px) {
+    a.tutorial_card {
+        height: 22em;
+    }
+}
+
+@media (min-width: 1400px) {
+    a.tutorial_card {
+        height: 22.4em;
+    }
 }
