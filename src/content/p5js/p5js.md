@@ -1,16 +1,18 @@
 <div class='meta'>
 section: programming
-image: pyramid.webp:0:67
+image: P5js_Logo.png
 visible: development
 </div>
 
-# Programmieren in p5.js
+# Grafikprogrammierung in p5.js
 
 <p class='abstract'>
 p5.js ist eine JavaScript-Bibliothek, die speziell für Künstler und Designer entwickelt wurde. Sie macht es einfach, interaktive Grafiken und Animationen zu erstellen.
 </p>
 
-Extensions: p5canvas
+## Einführung
+
+Bei p5.js gibt es zwei Funktionen, die für die Erstellung von Grafiken und Animationen verwendet werden: `setup()` und `draw()`. Die `setup()`-Funktion wird einmal aufgerufen, wenn das Programm startet, und die `draw()`-Funktion wird dann in einer Schleife aufgerufen, bis das Programm beendet wird. In der `setup()`-Funktion wird die Größe der Zeichenfläche (Canvas) festgelegt, in dem die Grafik angezeigt wird. In der `draw()`-Funktion wird dann die eigentliche Grafik gezeichnet.
 
 ```javascript
 function setup() {

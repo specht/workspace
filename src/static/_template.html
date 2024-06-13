@@ -171,6 +171,75 @@ window.addEventListener('load', function() {
         });
     });
 });
+
+function keepAlive() {
+        var timeout = 20000;
+        if (ws.readyState == ws.OPEN) {
+            ws.send('');
+        }
+        (function() {
+            timerId = setTimeout(keepAlive, timeout);
+        })();
+    }
+
+    function setup_ws(ws)
+    {
+        ws.onopen = function () {
+            console.log('WS connection established');
+            // ws.send(JSON.stringify({'hello': 'world'}));
+            keepAlive();
+        }
+
+        ws.onclose = function () {
+            console.log('WS connection closed');
+            $('.please-reload').fadeIn();
+            clearTimeout(timerId);
+        }
+
+        ws.onmessage = function (msg) {
+            data = JSON.parse(msg.data);
+            if (data.stats) {
+                let seen_tags = {};
+                for (let tag in data.stats) {
+                    seen_tags[tag] = true;
+                    let row = $(`#tr_hs_code_${tag}`);
+                    row.find('.td_cpu').text(data.stats[tag]['CPUPerc']);
+                    row.find('.td_ram').text(data.stats[tag]['MemUsage']);
+                }
+                for (let row of $('#table_admin_workspaces tr')) {
+                    let tag = ($(row).attr('id') ?? '').replace('tr_hs_code_', '');
+                    if (!(tag in seen_tags)) {
+                        // $(row).find('.td_ip').html('&ndash;')
+                        $(row).find('.td_cpu').html('&ndash;')
+                        $(row).find('.td_ram').html('&ndash;')
+                    }
+                }
+            }
+            if (data.action === 'login_codes') {
+                // console.log(data.lines);
+                if (data.lines.length === 0) {
+                    $('#login_codes_here').hide();
+                } else {
+                    let tbody = $('#login_codes_here').find('tbody');
+                    tbody.empty();
+                    for (let line of data.lines) {
+                        let row = $('<tr>').appendTo(tbody);
+                        row.append($('<td>').text(line.email));
+                        row.append($('<td>').text(line.code));
+                    }
+                    $('#login_codes_here').show();
+                }
+            }
+        }
+    }
+
+    function establish_websocket_connection() {
+        var ws_uri = 'ws://' + location.host + '/ws';
+        if (location.host !== 'localhost:8025')
+            ws_uri = 'wss://' + location.host + '/ws';
+        ws = new WebSocket(ws_uri);
+        setup_ws(ws);
+    }
 </script>
 
 <body>
@@ -198,6 +267,7 @@ window.addEventListener('load', function() {
             <div style='text-align: center; width: 100%;'>
                 <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="btn btn-success #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='fa fa-sign-in'></i>&nbsp;Anmelden</a>
                 <button style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='fa fa-code'></i>&nbsp;Workspace öffnen</button>
+                <a href='/admin' style='#{admin_logged_in? ? '' : 'display: none;'}' class="btn btn-warning"><i class='fa fa-wrench'></i>&nbsp;Administration</a>
                 <button style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_settings' class="btn btn-outline-secondary"><i class='fa fa-chevron-down rot'></i></button>
             </div>
             <div id='div_settings' style='display: none; text-align: center; width: 100%; border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;'>

@@ -54,6 +54,10 @@
             }
         });
         $('#ti_email').focus();
+        if ('#{DEVELOPMENT == true}' === 'true') {
+            $('#ti_email').val('anon@gymnasiumsteglitz.de');
+            $('#bu_submit_email').prop('disabled', false);
+        }
     });
 </script>
 <div class='container'>

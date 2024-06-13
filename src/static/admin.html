@@ -1,0 +1,28 @@
+#{ assert(admin_logged_in?) }
+<div class='container'>
+    <div class='row'>
+        <div class='col-md-12'>
+            <div id="login_codes_here" style="display: none;">
+                <div style="max-width: 100%; overflow-x: auto;">
+                    <table class="table" id="table_admin_workspaces">
+                        <thead>
+                            <tr>
+                                <th>E-Mail</th>
+                                <th>Code</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <h2>Workspaces</h2>
+            #{print_workspaces()}
+        </div>
+    </div>
+</div>
+
+<script>
+    window.addEventListener('load', function() {
+        establish_websocket_connection();
+    });
+</script>

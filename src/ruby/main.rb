@@ -2,11 +2,12 @@ require './include/helper.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
+require 'io-tail'
 require 'mail'
 require 'neo4j_bolt'
 require 'nokogiri'
 require './credentials.rb'
-# require 'faye/websocket'
+require 'faye/websocket'
 require 'redcarpet'
 require 'rouge'
 require 'securerandom'
@@ -16,7 +17,7 @@ require 'sinatra/cookies'
 Neo4jBolt.bolt_host = 'neo4j'
 Neo4jBolt.bolt_port = 7687
 
-# Faye::WebSocket.load_adapter('thin')
+Faye::WebSocket.load_adapter('thin')
 
 CACHE_BUSTER = SecureRandom.alphanumeric(12)
 
@@ -426,6 +427,7 @@ class Main < Sinatra::Base
         @@clients = {}
         @@email_for_client_id = {}
         @@client_ids_for_email = {}
+        @@threads_for_client_id = {}
         $neo4j.setup_constraints_and_indexes(CONSTRAINTS_LIST, INDEX_LIST)
         self.refresh_nginx_config()
         self.parse_content()
@@ -560,6 +562,12 @@ class Main < Sinatra::Base
             WHERE COALESCE(l.ts_expiry, 0) < $ts
             DETACH DELETE l;
         END_OF_QUERY
+        # remove all pending login requests for this user
+        neo4j_query(<<~END_OF_QUERY, {:email => email})
+            MATCH (r:LoginRequest)-[:FOR]->(u:User {email: $email})
+            DETACH DELETE r;
+        END_OF_QUERY
+        # add new login requests for this user
         neo4j_query_expect_one(<<~END_OF_QUERY, {:email => email, :tag => tag, :code => random_code, :now => Time.now.to_i})
             MATCH (u:User {email: $email})
             CREATE (r:LoginRequest)-[:FOR]->(u)
@@ -568,6 +576,7 @@ class Main < Sinatra::Base
             SET r.ts_expiry = $now
             RETURN u.email;
         END_OF_QUERY
+        broadcast_login_codes()
 
         deliver_mail do
             to data[:email]
@@ -639,7 +648,7 @@ class Main < Sinatra::Base
         end
         system("chown -R 1000:1000 /user/#{container_name}")
         network_name = "workspace"
-        system("docker run -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} --name hs_code_#{container_name} hs_code_server")
+        system("docker run --cpus=1 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} --name hs_code_#{container_name} hs_code_server")
 
         Main.refresh_nginx_config()
     end
@@ -791,7 +800,7 @@ class Main < Sinatra::Base
         end
     end
 
-    def print_admin_info()
+    def print_workspaces()
         email_for_tag = {}
         neo4j_query(<<~END_OF_STRING).each do |row|
             MATCH (u:User) RETURN u.email;
@@ -819,23 +828,25 @@ class Main < Sinatra::Base
 
         StringIO.open do |io|
             io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
-            io.puts "<table class='table'>"
+            io.puts "<table class='table' id='table_admin_workspaces'>"
             io.puts "<tr>"
             io.puts "<th>Tag</th>"
-            io.puts "<th>State</th>"
             io.puts "<th>E-Mail</th>"
             io.puts "<th>IP</th>"
+            io.puts "<th style='width: 5.2em;'>CPU</th>"
+            io.puts "<th>RAM</th>"
             io.puts "<th>Disk Usage</th>"
             io.puts "<th>Workspace</th>"
             io.puts "</tr>"
             Dir['/user/*'].each do |path|
                 next unless File.basename(path) =~ /^[0-9a-z]{16}$/
                 user_tag = path.split('/').last
-                io.puts "<tr>"
+                io.puts "<tr id='tr_hs_code_#{user_tag}'>"
                 io.puts "<td><code>#{user_tag}</code></td>"
-                io.puts "<td>#{info_for_tag.include?(user_tag) ? 'Running' : 'Stopped'}</td>"
                 io.puts "<td>#{email_for_tag[user_tag]}</td>"
-                io.puts "<td>#{(info_for_tag[user_tag] || {})[:ip] || '&ndash;'}</td>"
+                io.puts "<td class='td_ip'>#{(info_for_tag[user_tag] || {})[:ip] || '&ndash;'}</td>"
+                io.puts "<td class='td_cpu'></td>"
+                io.puts "<td class='td_ram'></td>"
                 if du_for_fs_tag[user_tag]
                     io.puts "<td>#{bytes_to_str(du_for_fs_tag[user_tag] * 1024)}</td>"
                 else
@@ -846,33 +857,85 @@ class Main < Sinatra::Base
             end
             io.puts "</table>"
             io.puts "</div>"
-
-            written_something = false
-            neo4j_query(<<~END_OF_STRING).each do |row|
-                MATCH (l:LoginRequest)-[:FOR]->(u:User)
-                RETURN l.code, u.email
-                ORDER BY u.email;
-            END_OF_STRING
-                unless written_something
-                    written_something = true
-                    io.puts "<h2>Anmeldecodes</h2>"
-                    io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
-                    io.puts "<table class='table'>"
-                    io.puts "<tr>"
-                    io.puts "<th>E-Mail</th>"
-                    io.puts "<th>Code</th>"
-                    io.puts "</tr>"
-                end
-                io.puts "<tr>"
-                io.puts "<td>#{row['u.email']}</td>"
-                io.puts "<td>#{row['l.code']}</td>"
-                io.puts "</tr>"
-            end
-            if written_something
-                io.puts "</table>"
-                io.puts "</div>"
-            end
             io.string
+        end
+    end
+
+    def broadcast_login_codes
+        return if @@clients.empty?
+        lines = []
+        neo4j_query(<<~END_OF_STRING).each do |row|
+            MATCH (l:LoginRequest)-[:FOR]->(u:User)
+            RETURN l.code, u.email
+            ORDER BY l.expiry;
+        END_OF_STRING
+            lines << { :email => row['u.email'], :code => row['l.code'] }
+        end
+        @@clients.each_pair do |client_id, ws|
+            ws.send({:action => 'login_codes', :lines => lines}.to_json)
+        end
+    end
+
+    get '/ws' do
+        assert(admin_logged_in?)
+        if Faye::WebSocket.websocket?(request.env)
+            ws = Faye::WebSocket.new(request.env)
+
+            ws.on(:open) do |event|
+                client_id = request.env['HTTP_SEC_WEBSOCKET_KEY']
+                ws.send({:hello => 'world'})
+                @@clients[client_id] = ws
+                @@email_for_client_id[client_id] = @session_user[:email]
+                @@client_ids_for_email[@session_user[:email]] ||= []
+                @@client_ids_for_email[@session_user[:email]] << client_id
+                @@threads_for_client_id[client_id] ||= Thread.new do
+                    command = "docker stats --format \"{{ json . }}\""
+                    lines = {}
+                    IO.popen(command).each_line do |line|
+                        if line[0, 1].ord == 0x1b
+                            ws.send({:stats => lines}.to_json)
+                            lines = {}
+                        end
+                        line = line[line.index('{'), line.size]
+                        stat_line = JSON.parse(line)
+                        name = stat_line['Name']
+                        if name[0, 8] == 'hs_code_'
+                            lines[name.sub('hs_code_', '')] = stat_line
+                        end
+                    end
+                end
+                broadcast_login_codes()
+                debug "Got #{@@clients.size} connected clients!"
+            end
+
+            ws.on(:close) do |event|
+                client_id = request.env['HTTP_SEC_WEBSOCKET_KEY']
+                @@clients.delete(client_id) if @@clients.include?(client_id)
+                @@email_for_client_id.delete(client_id) if @@email_for_client_id.include?(client_id)
+                @@client_ids_for_email[@session_user[:email]].delete(client_id) if @@client_ids_for_email[@session_user[:email]].include?(client_id)
+                @@client_ids_for_email.delete(@session_user[:email]) if @@client_ids_for_email[@session_user[:email]].empty?
+                if @@threads_for_client_id.include?(client_id)
+                    @@threads_for_client_id[client_id].kill
+                    @@threads_for_client_id.delete(client_id)
+                end
+                debug "Got #{@@clients.size} connected clients!"
+            end
+
+            ws.on(:message) do |msg|
+                client_id = request.env['HTTP_SEC_WEBSOCKET_KEY']
+                begin
+                    request = {}
+                    unless msg.data.empty?
+                        request = JSON.parse(msg.data)
+                    end
+                    if request['hello'] == 'world'
+                        ws.send({:status => 'welcome'}.to_json)
+                    end
+                rescue StandardError => e
+                    STDERR.puts e
+                end
+            end
+            ws.rack_response
         end
     end
 
@@ -912,6 +975,7 @@ class Main < Sinatra::Base
                     MATCH (r:LoginRequest {tag: $tag, code: $code})-[:FOR]->(u:User)
                     DETACH DELETE r;
                 END_OF_QUERY
+                broadcast_login_codes()
                 sid = RandomTag::generate(24)
                 neo4j_query_expect_one(<<~END_OF_QUERY, {:sid => sid, :email => email, :expires => (DateTime.now() + 365).to_s})
                     MATCH (u:User {email: $email})
