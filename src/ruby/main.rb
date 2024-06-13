@@ -268,6 +268,22 @@ class Main < Sinatra::Base
                             }
                         END_OF_STRING
                     end
+                    $neo4j.neo4j_query(<<~END_OF_QUERY, {:email => user[:email]}).each do |row|
+                        MATCH (:User)-[r:WATCHING]->(u:User {email: $email})
+                        RETURN r.watch_tag;
+                    END_OF_QUERY
+                        watch_tag = row['r.watch_tag']
+                        f.puts <<~END_OF_STRING
+                            location /#{watch_tag}/ {
+                                rewrite ^/#{watch_tag}(.*)$ $1 break;
+                                proxy_set_header Host $http_host;
+                                proxy_set_header Upgrade $http_upgrade;
+                                proxy_set_header Connection upgrade;
+                                proxy_set_header Accept-Encoding gzip;
+                                proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
+                            }
+                        END_OF_STRING
+                    end
                 end
             end
             f.puts nginx_config_second_part
@@ -647,8 +663,6 @@ class Main < Sinatra::Base
         data = parse_request_data(:required_keys => [:share_tag])
         share_tag = data[:share_tag]
 
-        STDERR.puts "Finding user with share tag #{share_tag}"
-
         user = neo4j_query_expect_one(<<~END_OF_QUERY, :share_tag => share_tag)['u']
             MATCH (u:User {share_tag: $share_tag})
             RETURN u;
@@ -657,6 +671,33 @@ class Main < Sinatra::Base
         start_server(user[:email])
 
         respond(:yay => 'sure', :share_tag => user[:share_tag])
+    end
+
+    post '/api/start_server_as_admin' do
+        assert(admin_logged_in?)
+        data = parse_request_data(:required_keys => [:email])
+        email = data[:email]
+
+        # purge all WATCHING relationships (should be zero or one)
+        neo4j_query(<<~END_OF_QUERY, {:email_self => @session_user[:email]})
+            MATCH (u_self:User {email: $email_self})-[r:WATCHING]->(u:User)
+            DELETE r;
+        END_OF_QUERY
+
+        # create new WATCHING relationship
+        watch_tag = RandomTag.generate(48)
+        neo4j_query_expect_one(<<~END_OF_QUERY, {:email_self => @session_user[:email], :email_other => email, :watch_tag => watch_tag})
+            MATCH (u_self:User {email: $email_self})
+            MATCH (u_other:User {email: $email_other})
+            CREATE (u_self)-[r:WATCHING]->(u_other)
+            SET r.watch_tag = $watch_tag
+            RETURN r;
+        END_OF_QUERY
+
+        start_server(email)
+        Main.refresh_nginx_config()
+
+        respond(:yay => 'sure', :watch_tag => watch_tag)
     end
 
     post '/api/reset_server' do
@@ -771,7 +812,7 @@ class Main < Sinatra::Base
             io.puts "<th>E-Mail</th>"
             io.puts "<th>IP</th>"
             io.puts "<th>Disk Usage</th>"
-            # io.puts "<th>Workspace</th>"
+            io.puts "<th>Workspace</th>"
             io.puts "</tr>"
             Dir['/user/*'].each do |path|
                 next unless File.basename(path) =~ /^[0-9a-z]{16}$/
@@ -787,7 +828,7 @@ class Main < Sinatra::Base
                 else
                     io.puts "<td>&ndash;</td>"
                 end
-                # io.puts "<td><button class='btn btn-sm btn-warning' data-email='#{email_for_tag[user_tag]}'>Workspace öffnen</button></td>"
+                io.puts "<td><button class='btn btn-sm btn-success bu-open-workspace-as-admin' data-email='#{email_for_tag[user_tag]}'><i class='fa fa-code'></i>&nbsp;Workspace öffnen</button></td>"
                 io.puts "</tr>"
             end
             io.puts "</table>"

@@ -71,6 +71,8 @@ function check_server_online(server_tag) {
             console.log('Server is online');
             $('#bu_launch .fa').removeClass('fa-spin');
             $('#bu_launch').prop('disabled', false);
+            $('.bu-open-workspace-as-admin .fa').removeClass('fa-spin');
+            $('.bu-open-workspace-as-admin').prop('disabled', false);
             window.open(`/${server_tag}/`, '_blank');
         } else {
             console.log('Server is offline');
@@ -155,6 +157,18 @@ window.addEventListener('load', function() {
             $('#div_settings').slideDown();
             $('#bu_settings .fa-chevron-down').addClass('rot180');
         }
+    });
+
+    $('.bu-open-workspace-as-admin').on('click', function(e) {
+        let button = $(e.target);
+        let email = button.data('email');
+        console.log(`Opening workspace for ${email}`);
+        button.prop('disabled', true);
+        button.find('.fa').addClass('fa-spin');
+        api_call('/api/start_server_as_admin', {email: email}, function(data) {
+            check_server_tag_update(data.watch_tag);
+            check_server_online(data.watch_tag);
+        });
     });
 });
 </script>
