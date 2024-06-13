@@ -52,7 +52,7 @@ Sobald du die Datei gespeichert hast, wird sie automatisch als Java-Datei erkann
 Bevor wir das Programm ausführen können, müssen wir es compilieren.
 Dadurch wird der Quelltext des Programms in Bytecode übersetzt, den die Java Virtual Machine (JVM) ausführen kann.
 
-Öffne dazu ein Terminal und navigiere in den Ordner, indem du entweder <span class='key'>Strg</span><span class='key'>J</span> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal und navigiere in den Ordner, indem du entweder <span class='key'>Strg</span><span class='key'>J</span> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='code-with-terminal.webp'>
 
