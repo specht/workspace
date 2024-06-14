@@ -969,9 +969,9 @@ class Main < Sinatra::Base
                     IO.popen(command).each_line do |line|
                         if line[0, 1].ord == 0x1b
                             count = (count + 1) % 2
-                            if count == 1
+                            # if count == 1
                                 ws.send({:stats => lines}.to_json)
-                            end
+                            # end
                             lines = {}
                         end
                         line = line[line.index('{'), line.size]
