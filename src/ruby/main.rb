@@ -675,6 +675,8 @@ class Main < Sinatra::Base
     def start_server(email)
         container_name = fs_tag_for_email(email)
 
+        system("mkdir -p /user/#{container_name}/config")
+        system("mkdir -p /user/#{container_name}/workspace")
         # touch this file so that housekeeping won't shut down the server immediately
         File.open("/user/#{container_name}/workspace/.hackschule", 'w') do |f|
             f.puts "https://youtu.be/Akaa9xHaw7E"
@@ -683,8 +685,6 @@ class Main < Sinatra::Base
         state = get_server_state(container_name)
         return if state[:running]
 
-        system("mkdir -p /user/#{container_name}/config")
-        system("mkdir -p /user/#{container_name}/workspace")
         config_path = "/user/#{container_name}/workspace/.local/share/code-server/User/settings.json"
         unless File.exist?(config_path)
             FileUtils.mkpath(File.dirname(config_path))
