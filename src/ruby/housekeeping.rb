@@ -16,7 +16,7 @@ now = Time.now.to_i
 
 running_servers.each do |fs_tag|
     age = now - Dir["/user/#{fs_tag}/**/*"].map { |x| File.mtime(x).to_i }.max
-    if age > 3600
+    if age > 60 * 90
         STDERR.puts "Killing #{fs_tag} => #{age} seconds old"
         system("docker kill hs_code_#{fs_tag}")
     end

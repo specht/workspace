@@ -419,6 +419,47 @@ class Main < Sinatra::Base
         end
     end
 
+    def self.load_invitations
+        @@invitations = {}
+        @@user_groups = {}
+        @@user_group_order = []
+        current_group = '(keine Gruppe)'
+        group_admins = {}
+        Dir['/src/invitations/*.txt'].sort.each do |path|
+            next if File.basename(path) == 'template.txt'
+            File.open(path) do |f|
+                f.each_line do |line|
+                    next if line.strip.empty?
+                    next if line.strip[0] == '#'
+                    if line[0] == '>'
+                        current_group = line[1, line.size - 1].strip
+                        group_admins[current_group] ||= []
+                        @@user_group_order << current_group unless @@user_group_order.include?(current_group)
+                    elsif line[0] == '+'
+                        group_admins[current_group] << line[1, line.size - 1].strip.delete_prefix('<').delete_suffix('>')
+                    else
+                        parts = line.strip.split(' ')
+                        email = parts.last.delete_prefix('<').delete_suffix('>').downcase
+                        @@user_groups[current_group] ||= []
+                        @@user_groups[current_group] << email
+                        @@invitations[email] = { :group => current_group }
+                        if parts.size > 1
+                            name = parts[0, parts.size - 1].join(' ')
+                            @@invitations[email][:name] = name
+                        end
+                    end
+                end
+            end
+        end
+        @@teachers = {}
+        group_admins.each_pair do |group, emails|
+            emails.each do |email|
+                @@teachers[email] ||= Set.new()
+                @@teachers[email] << group
+            end
+        end
+    end
+
     configure do
         CONSTRAINTS_LIST = [
             'User/email',
@@ -438,6 +479,7 @@ class Main < Sinatra::Base
         $neo4j.setup_constraints_and_indexes(CONSTRAINTS_LIST, INDEX_LIST)
         self.refresh_nginx_config()
         self.parse_content()
+        self.load_invitations()
     end
 
     before '*' do
@@ -522,40 +564,40 @@ class Main < Sinatra::Base
         data = parse_request_data(:required_keys => [:email])
         email = data[:email].downcase.strip
 
-        found = false
-        File.open('invitations.txt') do |f|
-            f.each_line do |line|
-                line.strip!
-                next if line.empty?
-                if line[0] == '@'
-                    parts = email.split('@')
-                    if parts.size == 2 && "@#{parts.last}" == line
-                        found = true
-                        break
-                    end
-                else
-                    if line == email
-                        found = true
-                        break
-                    end
-                end
+        unless @@invitations.include?(data[:email])
+            candidates = @@invitations.keys.select do |x|
+                x[0, data[:email].size] == data[:email]
+            end
+            if candidates.size == 1
+                data[:email] = candidates.first
             end
         end
-
-        raise 'no invitation found' unless found
+        unless @@invitations.include?(data[:email])
+            respond(:error => 'no_invitation_found')
+        end
+        assert(@@invitations.include?(data[:email]), 'no_invitation_found')
 
         tag = RandomTag::generate(12)
         srand(Digest::SHA2.hexdigest(LOGIN_CODE_SALT).to_i + (Time.now.to_f * 1000000).to_i)
         random_code = (0..5).map { |x| rand(10).to_s }.join('')
         random_code = '123456' if DEVELOPMENT
 
-        user = neo4j_query_expect_one(<<~END_OF_QUERY, {:email => email})['u']
-            MERGE (u:User {email: $email})
-            RETURN u;
+        # create user node if it doesn't already exist
+        user = neo4j_query_expect_one(<<~END_OF_QUERY, :email => data[:email])['n']
+            MERGE (n:User {email: $email})
+            RETURN n;
         END_OF_QUERY
+        unless user[:name]
+            name = @@invitations[data[:email]][:name]
+            user = neo4j_query_expect_one(<<~END_OF_QUERY, :email => data[:email], :name => name)['n']
+                MATCH (n:User {email: $email})
+                SET n.name = $name
+                RETURN n;
+            END_OF_QUERY
+        end
 
         if user[:server_tag].nil? || user[:server_sid].nil?
-            neo4j_query(<<~END_OF_QUERY, {:email => email, :server_tag => gen_server_tag(), :server_sid => gen_server_sid()})
+            neo4j_query(<<~END_OF_QUERY, {:email => data[:email], :server_tag => gen_server_tag(), :server_sid => gen_server_sid()})
                 MATCH (u:User {email: $email})
                 SET u.server_tag = COALESCE(u.server_tag, $server_tag)
                 SET u.server_sid = COALESCE(u.server_sid, $server_sid)
@@ -570,12 +612,12 @@ class Main < Sinatra::Base
             DETACH DELETE l;
         END_OF_QUERY
         # remove all pending login requests for this user
-        neo4j_query(<<~END_OF_QUERY, {:email => email})
+        neo4j_query(<<~END_OF_QUERY, {:email => data[:email]})
             MATCH (r:LoginRequest)-[:FOR]->(u:User {email: $email})
             DETACH DELETE r;
         END_OF_QUERY
         # add new login requests for this user
-        neo4j_query_expect_one(<<~END_OF_QUERY, {:email => email, :tag => tag, :code => random_code, :now => Time.now.to_i})
+        neo4j_query_expect_one(<<~END_OF_QUERY, {:email => data[:email], :tag => tag, :code => random_code, :now => Time.now.to_i})
             MATCH (u:User {email: $email})
             CREATE (r:LoginRequest)-[:FOR]->(u)
             SET r.tag = $tag
@@ -633,6 +675,11 @@ class Main < Sinatra::Base
     def start_server(email)
         container_name = fs_tag_for_email(email)
 
+        # touch this file so that housekeeping won't shut down the server immediately
+        File.open("/user/#{container_name}/workspace/.hackschule", 'w') do |f|
+            f.puts "https://youtu.be/Akaa9xHaw7E"
+        end
+
         state = get_server_state(container_name)
         return if state[:running]
 
@@ -643,15 +690,10 @@ class Main < Sinatra::Base
             FileUtils.mkpath(File.dirname(config_path))
             File.open(config_path, 'w') do |f|
                 config = {}
+                config['files.exclude'] ||= {}
+                config['files.exclude']['**/.*'] = true
                 f.write config.to_json
             end
-        end
-        config = JSON.parse(File.read(config_path))
-        config ||= {}
-        config['files.exclude'] ||= {}
-        config['files.exclude']['**/.*'] = true
-        File.open(config_path, 'w') do |f|
-            f.write config.to_json
         end
         system("chown -R 1000:1000 /user/#{container_name}")
         network_name = "workspace"
@@ -809,14 +851,16 @@ class Main < Sinatra::Base
     end
 
     def print_workspaces()
+        assert(admin_logged_in?)
         email_for_tag = {}
+        registered_emails = []
         neo4j_query(<<~END_OF_STRING).each do |row|
             MATCH (u:User) RETURN u.email;
         END_OF_STRING
             email = row['u.email']
             email_for_tag[fs_tag_for_email(email)] = email
+            registered_emails << email
         end
-        return '' unless admin_logged_in?
         du_for_fs_tag = {}
         begin
             du_for_fs_tag = JSON.parse(File.read('/internal/du_for_fs_tag.json'))
@@ -835,40 +879,51 @@ class Main < Sinatra::Base
         end
 
         StringIO.open do |io|
-            io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
-            io.puts "<table class='table' id='table_admin_workspaces'>"
-            io.puts "<tr>"
-            io.puts "<th>Tag</th>"
-            io.puts "<th>E-Mail</th>"
-            io.puts "<th>IP</th>"
-            io.puts "<th style='width: 5.2em;'>CPU</th>"
-            io.puts "<th>RAM</th>"
-            io.puts "<th>Disk Usage</th>"
-            io.puts "<th>Workspace</th>"
-            io.puts "</tr>"
-            Dir['/user/*'].map do |path|
+            active_users = Dir['/user/*'].map do |path|
                 path.split('/').last
             end.select do |user_tag|
                 user_tag =~ /^[0-9a-z]{16}$/
-            end.sort do |a, b|
-                email_for_tag[a] <=> email_for_tag[b]
-            end.each do |user_tag|
-                io.puts "<tr id='tr_hs_code_#{user_tag}'>"
-                io.puts "<td><code>#{user_tag}</code></td>"
-                io.puts "<td>#{email_for_tag[user_tag]}</td>"
-                io.puts "<td class='td_ip'>#{(info_for_tag[user_tag] || {})[:ip] || '&ndash;'}</td>"
-                io.puts "<td class='td_cpu'></td>"
-                io.puts "<td class='td_ram'></td>"
-                if du_for_fs_tag[user_tag]
-                    io.puts "<td>#{bytes_to_str(du_for_fs_tag[user_tag] * 1024)}</td>"
-                else
-                    io.puts "<td>&ndash;</td>"
-                end
-                io.puts "<td><button class='btn btn-sm btn-success bu-open-workspace-as-admin' data-email='#{email_for_tag[user_tag]}'><i class='fa fa-code'></i>&nbsp;Workspace öffnen</button></td>"
-                io.puts "</tr>"
             end
-            io.puts "</table>"
-            io.puts "</div>"
+            active_users = Set.new(active_users)
+            @@user_group_order.each do |group|
+                sub = StringIO.open do |io2|
+                    @@user_groups[group].each do |email|
+                        user_tag = fs_tag_for_email(email)
+                        next unless active_users.include?(user_tag)
+                        io2.puts "<tr id='tr_hs_code_#{user_tag}'>"
+                        io2.puts "<td><code>#{user_tag}</code></td>"
+                        io2.puts "<td>#{@@invitations[email_for_tag[user_tag]][:name]}</td>"
+                        # io2.puts "<td class='td_ip'>#{(info_for_tag[user_tag] || {})[:ip] || '&ndash;'}</td>"
+                        io2.puts "<td class='td_cpu'>&ndash;</td>"
+                        io2.puts "<td class='td_ram'>&ndash;</td>"
+                        if du_for_fs_tag[user_tag]
+                            io2.puts "<td>#{bytes_to_str(du_for_fs_tag[user_tag] * 1024)}</td>"
+                        else
+                            io2.puts "<td>&ndash;</td>"
+                        end
+                        io2.puts "<td><button class='btn btn-sm btn-success bu-open-workspace-as-admin' data-email='#{email_for_tag[user_tag]}'><i class='fa fa-code'></i>&nbsp;Workspace öffnen</button></td>"
+                        io2.puts "</tr>"
+                    end
+                    io2.string
+                end
+                unless sub.empty?
+                    io.puts "<h2>#{group}</h3>"
+                    io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
+                    io.puts "<table class='table table-sm' id='table_admin_workspaces'>"
+                    io.puts "<tr>"
+                    io.puts "<th>Tag</th>"
+                    io.puts "<th>E-Mail</th>"
+                    # io.puts "<th>IP</th>"
+                    io.puts "<th style='width: 5.2em;'>CPU</th>"
+                    io.puts "<th>RAM</th>"
+                    io.puts "<th>Disk Usage</th>"
+                    io.puts "<th>Workspace</th>"
+                    io.puts "</tr>"
+                    io.puts sub
+                    io.puts "</table>"
+                    io.puts "</div>"
+                end
+            end
             io.string
         end
     end
@@ -900,19 +955,36 @@ class Main < Sinatra::Base
                 @@email_for_client_id[client_id] = @session_user[:email]
                 @@client_ids_for_email[@session_user[:email]] ||= []
                 @@client_ids_for_email[@session_user[:email]] << client_id
+                email_for_tag = {}
+                neo4j_query(<<~END_OF_STRING).each do |row|
+                    MATCH (u:User) RETURN u.email;
+                END_OF_STRING
+                    email = row['u.email']
+                    email_for_tag[fs_tag_for_email(email)] = email
+                end
                 @@threads_for_client_id[client_id] ||= Thread.new do
                     command = "docker stats --format \"{{ json . }}\""
                     lines = {}
+                    count = 0
                     IO.popen(command).each_line do |line|
                         if line[0, 1].ord == 0x1b
-                            ws.send({:stats => lines}.to_json)
+                            count = (count + 1) % 2
+                            if count == 0
+                                ws.send({:stats => lines}.to_json)
+                            end
                             lines = {}
                         end
                         line = line[line.index('{'), line.size]
                         stat_line = JSON.parse(line)
                         name = stat_line['Name']
                         if name[0, 8] == 'hs_code_'
-                            lines[name.sub('hs_code_', '')] = stat_line
+                            fs_tag = name.sub('hs_code_', '')
+                            email = email_for_tag[fs_tag]
+                            lines[fs_tag] = {
+                                :name => (@@invitations[email] || {})[:name],
+                                :group => (@@invitations[email] || {})[:group],
+                                :stats => stat_line
+                            }
                         end
                     end
                 end

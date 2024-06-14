@@ -4,7 +4,7 @@
         <div class='col-md-12'>
             <div id="login_codes_here" style="display: none;">
                 <div style="max-width: 100%; overflow-x: auto;">
-                    <table class="table" id="table_admin_workspaces">
+                    <table class="table table-sm" id="table_admin_workspaces">
                         <thead>
                             <tr>
                                 <th>E-Mail</th>
@@ -15,14 +15,100 @@
                     </table>
                 </div>
             </div>
-            <h2>Workspaces</h2>
             #{print_workspaces()}
         </div>
     </div>
 </div>
 
 <script>
-    window.addEventListener('load', function() {
-        establish_websocket_connection();
+
+var invitations = #{@@invitations.to_json};
+var group_order = #{@@user_groups.keys.to_json};
+
+function keepAlive() {
+    var timeout = 20000;
+    if (ws.readyState == ws.OPEN) {
+        ws.send('');
+    }
+    (function() {
+        timerId = setTimeout(keepAlive, timeout);
+    })();
+}
+
+function setup_ws(ws)
+{
+    ws.onopen = function () {
+        console.log('WS connection established');
+        // ws.send(JSON.stringify({'hello': 'world'}));
+        keepAlive();
+    }
+
+    ws.onclose = function () {
+        console.log('WS connection closed');
+        $('.please-reload').fadeIn();
+        clearTimeout(timerId);
+    }
+
+    ws.onmessage = function (msg) {
+        data = JSON.parse(msg.data);
+        if (data.stats) {
+            let seen_tags = {};
+            for (let tag in data.stats) {
+                seen_tags[tag] = true;
+                let row = $(`#tr_hs_code_${tag}`);
+                let perc = parseFloat(data.stats[tag].stats['CPUPerc']) / 100.0;
+                row.css('background-color', `rgba(255, 200, 0, ${perc})`);
+                row.find('.td_cpu').text(data.stats[tag].stats['CPUPerc']);
+                row.find('.td_ram').text((data.stats[tag].stats['MemUsage'] ?? '').split('/')[0].trim());
+            }
+            for (let row of $('#table_admin_workspaces tr')) {
+                let tag = ($(row).attr('id') ?? '').replace('tr_hs_code_', '');
+                if (!(tag in seen_tags)) {
+                    $(row).css('background-color', `unset`);
+                    // $(row).find('.td_ip').html('&ndash;')
+                    $(row).find('.td_cpu').html('&ndash;')
+                    $(row).find('.td_ram').html('&ndash;')
+                }
+            }
+        }
+        if (data.action === 'login_codes') {
+            // console.log(data.lines);
+            if (data.lines.length === 0) {
+                $('#login_codes_here').hide();
+            } else {
+                let tbody = $('#login_codes_here').find('tbody');
+                tbody.empty();
+                for (let line of data.lines) {
+                    let row = $('<tr>').appendTo(tbody);
+                    row.append($('<td>').text(line.email));
+                    row.append($('<td>').text(line.code));
+                }
+                $('#login_codes_here').show();
+            }
+        }
+    }
+}
+
+function establish_websocket_connection() {
+    var ws_uri = 'ws://' + location.host + '/ws';
+    if (location.host !== 'localhost:8025')
+        ws_uri = 'wss://' + location.host + '/ws';
+    ws = new WebSocket(ws_uri);
+    setup_ws(ws);
+}
+
+window.addEventListener('load', function() {
+    establish_websocket_connection();
+    $('.bu-open-workspace-as-admin').on('click', function(e) {
+        let button = $(e.target);
+        let email = button.data('email');
+        console.log(`Opening workspace for ${email}`);
+        button.prop('disabled', true);
+        button.find('.fa').addClass('fa-spin');
+        api_call('/api/start_server_as_admin', {email: email}, function(data) {
+            check_server_tag_update(data.watch_tag);
+            check_server_online(data.watch_tag);
+        });
     });
+});
 </script>
