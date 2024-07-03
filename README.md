@@ -26,3 +26,8 @@
   - can be removed again (stop sharing)
   - used to share access with other user
   - used in nginx config (requires no sid)
+
+tic-80
+mysql
+Ruby
+Neo4j
