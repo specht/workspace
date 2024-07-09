@@ -1,0 +1,7 @@
+cd /home/michael/programming/workspace/docker/tic80
+docker build -t hs_code_tic80 .
+docker run -it -v /home/michael/programming/TIC-80:/src hs_code_tic80 bash
+cd build
+emcmake cmake -DBUILD_PRO=On -DBUILD_WITH_JANET=On -DBUILD_WITH_JS=On -DBUILD_WITH_PYTHON=On -DBUILD_WITH_SQUIRREL=On -DBUILD_WITH_SCHEME=On -DBUILD_WITH_WASM=On -DBUILD_WITH_WREN=On -DBUILD_WITH_FENNEL=On -DBUILD_WITH_RUBY=On -DBUILD_WITH_MOON=On -DBUILD_WITH_ALL=On -DBUILD_SDLGPU=On -DCMAKE_BUILD_TYPE=MinSizeRel ..
+cmake --build . --config MinSizeRel --parallel
+# this creates tic80.js and tic80.wasm

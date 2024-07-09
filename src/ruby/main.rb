@@ -483,6 +483,7 @@ class Main < Sinatra::Base
     end
 
     before '*' do
+        STDERR.puts ">>> #{request.path}"
         @session_user = nil
         if request.cookies.include?('sid')
             sid = request.cookies['sid']
@@ -1020,6 +1021,42 @@ class Main < Sinatra::Base
                 end
             end
             ws.rack_response
+        end
+    end
+
+    get '/json' do
+        params = request.params
+        STDERR.puts params.to_yaml
+        if params['fn'] == 'version'
+            # response = StringIO.open do |io|
+            #     io.puts <<~END_OF_STRING
+            #         version="1.1.2837"
+            #         major=1
+            #         minor=1
+            #         patch=2837
+            #     END_OF_STRING
+            #     io.string
+            # end
+            # respond_raw_with_mimetype(response, 'text/plain')
+        elsif params['fn'] == 'dir'
+            # response = StringIO.open do |io|
+            #     io.puts <<~END_OF_STRING
+            #         folders =
+            #         {
+            #             { name = "Devs" },
+            #             { name = "Play" },
+
+            #         }
+
+            #         files =
+            #         {
+
+            #         }
+            #     END_OF_STRING
+            #     io.string
+            # end
+            # respond_raw_with_mimetype(response, 'text/plain')
+            respond(:folders => [{:name => 'games'}], :files => [])
         end
     end
 
