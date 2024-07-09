@@ -5,3 +5,4 @@ logs
 src/ruby/credentials.rb
 src/ruby/invitations.txt
 invitations
+temp

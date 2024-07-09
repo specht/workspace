@@ -8,12 +8,19 @@
     <title>TIC-80 tiny computer</title>
 
     <style type="text/css">
+        @font-face {
+            font-family: '04b03Regular';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(04B_03__.TTF) format('truetype');
+        }
         .modal{display:none;position:fixed;z-index:1;padding-top:100px;left:0;top:0;width:100%;height:100%;overflow:auto;background-color:#000;background-color:rgba(0,0,0,.4)}
         .modal-content{color: #333c57;position:relative;background-color:#fefefe;margin:auto;padding:2px 16px;border:1px solid #888;width:500px;box-shadow:0 4px 8px 0 rgba(0,0,0,.2),0 6px 20px 0 rgba(0,0,0,.19);-webkit-animation-name:animatetop;-webkit-animation-duration:.4s;animation-name:animatetop;animation-duration:.4s}@keyframes animatetop{from{top:-300px;opacity:0}to{top:0;opacity:1}}
         .close{color:#000;float:right;font-size:28px;font-weight:700}
         .close:focus,
         .close:hover{color:#000;text-decoration:none;cursor:pointer}
-        
+
         #game-frame > div { font-size: 44px; font-family: monospace; font-weight: bold;}
 
         /* You can set custom dimensions here */
@@ -26,7 +33,7 @@
 
         <div id="game-frame" style="cursor: pointer; position: absolute; margin: 0 auto; opacity: 1; background: #1a1c2c; width: 100%; height: 100%;">
             <div style="text-align: center; color: white; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
-                <p style="margin: 0;">- CLICK TO PLAY -</p>
+                <p style="margin: 0; font-family: '04b03Regular';">- CLICK TO PLAY -</p>
             </div>
 
         </div>
@@ -45,6 +52,12 @@
     <script type="text/javascript">
         var Module = {canvas: document.getElementById('canvas')}
 
+        Module.storeFiles = function(callback) {
+            setTimeout(function() {
+                store_files_from_indexed_db();
+            }, 1000);
+        };
+
         const gameFrame = document.getElementById('game-frame')
 
         gameFrame.addEventListener('click', function() {
@@ -52,7 +65,97 @@
             firstScriptTag = document.getElementsByTagName('script')[0]; // find the first script tag in the document
             scriptTag.src = 'tic80.js'; // set the source of the script to your script
             firstScriptTag.parentNode.insertBefore(scriptTag, firstScriptTag); // append the script to the DOM
-            this.remove()
+            this.remove();
+            window.addEventListener('keydown', function(e) {
+                if (e.code === 'KeyS' && e.ctrlKey) {
+                    e.preventDefault();
+                } else if (e.code === 'KeyR' && e.ctrlKey) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        var store_timestamps = {};
+
+        function store_files_from_indexed_db() {
+            indexedDB.open('/com.nesbox.tic/TIC-80').onsuccess = function(event) {
+                let db = event.target.result;
+                let tx = db.transaction(['FILE_DATA'], 'readonly');
+                let store = tx.objectStore('FILE_DATA');
+                store.getAllKeys().onsuccess = function(event) {
+                    let path_list = event.target.result;
+                    let fs = [];
+                    let delete_these = {};
+                    for (let path of Object.keys(store_timestamps)) {
+                        delete_these[path] = true;
+                    }
+
+                    for (let path_index = 0; path_index < path_list.length; path_index++) {
+                        let path = event.target.result[path_index];
+                        delete delete_these[path];
+                        store.get(path).onsuccess = function(event) {
+                            let file = event.target.result;
+                            let entry = {path: path, file: {}};
+                            let ts = Date.parse(file.timestamp);
+                            if (ts > (store_timestamps[path] ?? 0)) {
+                                store_timestamps[path] = ts;
+                                for (let key in file) {
+                                    if (key === 'contents') {
+                                        entry.file[key] = btoa(file[key]);
+                                    } else {
+                                        entry.file[key] = file[key];
+                                    }
+                                }
+                                fs.push(entry);
+                            }
+                            if (path_index === path_list.length - 1) {
+                                // Once all files are processed, make a POST request
+                                fetch('/api/store_tic80_files', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({create: fs, delete: Object.keys(delete_these)}),
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log('Success:', data);
+                                    for (let path of Object.keys(delete_these)) {
+                                        delete store_timestamps[path];
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.error('Error:', error);
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function remove_file_from_indexed_db(path) {
+            indexedDB.open('/com.nesbox.tic/TIC-80').onsuccess = function(event) {
+                let db = event.target.result;
+                const request = db.transaction('FILE_DATA', 'readwrite')
+                    .objectStore('FILE_DATA')
+                    .delete(path);
+
+                request.onsuccess = ()=> {
+                    console.log(`Student deleted, email: ${request.result}`);
+                }
+
+                request.onerror = (err)=> {
+                    console.error(`Error to delete student: ${err}`)
+                }
+                // let tx = db.transaction(['FILE_DATA'], 'readwrite');
+                // let store = tx.objectStore('FILE_DATA');
+                // store.delete(path);
+            }
+        }
+
+        window.addEventListener('onbeforeunload', function(e) {
+            store_files_from_indexed_db();
         });
     </script>
 </body>

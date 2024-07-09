@@ -1024,39 +1024,24 @@ class Main < Sinatra::Base
         end
     end
 
-    get '/json' do
-        params = request.params
-        STDERR.puts params.to_yaml
-        if params['fn'] == 'version'
-            # response = StringIO.open do |io|
-            #     io.puts <<~END_OF_STRING
-            #         version="1.1.2837"
-            #         major=1
-            #         minor=1
-            #         patch=2837
-            #     END_OF_STRING
-            #     io.string
-            # end
-            # respond_raw_with_mimetype(response, 'text/plain')
-        elsif params['fn'] == 'dir'
-            # response = StringIO.open do |io|
-            #     io.puts <<~END_OF_STRING
-            #         folders =
-            #         {
-            #             { name = "Devs" },
-            #             { name = "Play" },
+    # get '/json' do
+    #     params = request.params
+    #     STDERR.puts params.to_yaml
+    #     if params['fn'] == 'version'
+    #     elsif params['fn'] == 'dir'
+    #         respond(:folders => [{:name => 'games'}], :files => [])
+    #     end
+    # end
 
-            #         }
-
-            #         files =
-            #         {
-
-            #         }
-            #     END_OF_STRING
-            #     io.string
-            # end
-            # respond_raw_with_mimetype(response, 'text/plain')
-            respond(:folders => [{:name => 'games'}], :files => [])
+    post '/api/store_tic80_files' do
+        assert(user_logged_in?)
+        max_size = 64 * 1024 * 1024
+        data = parse_request_data(:required_keys => [:create, :delete], :types => {:create => Array, :delete => Array}, :max_body_length => max_size, :max_string_length => max_size, :max_value_lengths => {:create => max_size, :delete => max_size})
+        data[:create].each do |entry|
+            STDERR.puts "WRITING: #{entry['path']}"
+        end
+        data[:delete].each do |path|
+            STDERR.puts "DELETING: #{path}"
         end
     end
 
