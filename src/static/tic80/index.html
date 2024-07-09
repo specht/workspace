@@ -60,6 +60,12 @@
 
         const gameFrame = document.getElementById('game-frame')
 
+
+        function writeArrayToMemory(array, buffer) {
+            // assert(array.length >= 0, 'writeArrayToMemory array must have a length (should be an array or typed array)')
+            HEAP8.set(array, buffer);
+        }
+
         gameFrame.addEventListener('click', function() {
             let scriptTag = document.createElement('script'), // create a script tag
             firstScriptTag = document.getElementsByTagName('script')[0]; // find the first script tag in the document
@@ -70,6 +76,8 @@
                 if (e.code === 'KeyS' && e.ctrlKey) {
                     e.preventDefault();
                 } else if (e.code === 'KeyR' && e.ctrlKey) {
+                    e.preventDefault();
+                } else if (e.code === 'KeyK' && e.ctrlKey) {
                     e.preventDefault();
                 }
             });
