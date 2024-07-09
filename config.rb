@@ -14,8 +14,8 @@ DEV_NGINX_PORT = 8025
 DEV_NEO4J_PORT = 8021
 LOGS_PATH = DEVELOPMENT ? './logs' : "/home/micha/logs/#{PROJECT_NAME}"
 DATA_PATH = DEVELOPMENT ? './data' : "/mnt/hackschule/#{PROJECT_NAME}"
-MYSQL_DATA_PATH = File.join(DATA_PATH, 'mysql')
-POSTGRES_DATA_PATH = File.join(DATA_PATH, 'postgres')
+# MYSQL_DATA_PATH = File.join(DATA_PATH, 'mysql')
+# POSTGRES_DATA_PATH = File.join(DATA_PATH, 'postgres')
 USER_PATH = File.join(DATA_PATH, 'user')
 INTERNAL_PATH = File.join(DATA_PATH, 'internal')
 WEB_CACHE_PATH = File.join(DATA_PATH, 'cache')
@@ -170,16 +170,16 @@ end
 #     :ports => ['0.0.0.0:3306:3306'],
 # }
 
-docker_compose[:services][:postgres] = {
-    :image => 'postgres',
-    # :command => ["--default-authentication-plugin=mysql_native_password"],
-    :volumes => ["#{POSTGRES_DATA_PATH}:/var/lib/postgres"],
-    :restart => 'always',
-    :environment => {
-        'POSTGRES_PASSWORD' => POSTGRES_ROOT_PASSWORD
-    },
-    :ports => ['0.0.0.0:5432:5432'],
-}
+# docker_compose[:services][:postgres] = {
+#     :image => 'postgres',
+#     # :command => ["--default-authentication-plugin=mysql_native_password"],
+#     :volumes => ["#{POSTGRES_DATA_PATH}:/var/lib/postgres"],
+#     :restart => 'always',
+#     :environment => {
+#         'POSTGRES_PASSWORD' => POSTGRES_ROOT_PASSWORD
+#     },
+#     :ports => ['0.0.0.0:5432:5432'],
+# }
 
 docker_compose[:services].values.each do |x|
     x[:networks] = [:workspace]
@@ -218,8 +218,8 @@ end
 FileUtils::mkpath(USER_PATH)
 FileUtils::mkpath(INTERNAL_PATH)
 FileUtils::mkpath(WEB_CACHE_PATH)
-FileUtils::mkpath(MYSQL_DATA_PATH)
-FileUtils::mkpath(POSTGRES_DATA_PATH)
+# FileUtils::mkpath(MYSQL_DATA_PATH)
+# FileUtils::mkpath(POSTGRES_DATA_PATH)
 
 `docker compose 2> /dev/null`
 DOCKER_COMPOSE = ($? == 0) ? 'docker compose' : 'docker-compose'
