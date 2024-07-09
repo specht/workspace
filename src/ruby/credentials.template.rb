@@ -17,6 +17,9 @@ SMTP_FROM = 'Absender <E-Mail-Adresse>'
 
 ADMIN_USERS = []
 
+MYSQL_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
+POSTGRES_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
+
 if defined? Mail
     Mail.defaults do
     delivery_method :smtp, {
