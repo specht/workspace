@@ -483,7 +483,6 @@ class Main < Sinatra::Base
     end
 
     before '*' do
-        STDERR.puts ">>> #{request.path}"
         @session_user = nil
         if request.cookies.include?('sid')
             sid = request.cookies['sid']
@@ -1037,9 +1036,20 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         max_size = 64 * 1024 * 1024
         data = parse_request_data(:required_keys => [:path, :file], :types => {:path => String, :file => Hash}, :max_body_length => max_size, :max_string_length => max_size, :max_value_lengths => {:entry => max_size})
-        blob = Base64::decode64(data[:file]['contents'])
-        sha1 = Digest::SHA1.hexdigest(blob)[0, 16]
-        STDERR.puts "CREATE #{data[:path]} / mode #{data[:file]['mode']} / size #{data[:file]['contents'].size} / SHA1 #{sha1}"
+        if data[:file]['contents']
+            blob = Base64::decode64(data[:file]['contents'])
+            sha1 = Digest::SHA1.hexdigest(blob)[0, 16]
+            STDERR.puts "CREATE #{data[:path]} / mode #{data[:file]['mode']} / size #{data[:file]['contents'].size} / SHA1 #{sha1}"
+            path = "/tic80/#{sha1[0, 2]}/#{sha1}"
+            FileUtils.mkpath(File.dirname(path))
+            unless File.exist?(path)
+                File.open(path, 'w') do |f|
+                    f.write(blob.split(',').map { |x| x.to_i }.pack('c*'))
+                end
+            end
+            data[:file]['sha1'] = sha1
+            data[:file].delete('contents')
+        end
     end
 
     post '/api/delete_tic80_file' do
@@ -1069,6 +1079,14 @@ class Main < Sinatra::Base
         end
         if path == '/'
             path = '/index.html'
+        end
+        if path == '/tic80'
+            redirect "#{WEB_ROOT}/tic80/", 302
+            return
+        end
+        if path == '/tic80/'
+            respond_with_file(File.join(@@static_dir, '/tic80/index.html'))
+            return
         end
         confirm_tag = nil
         if path[0, 3] == '/l/'

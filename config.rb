@@ -127,6 +127,7 @@ if PROFILE.include?(:dynamic)
                      "#{WEB_CACHE_PATH}:/webcache",
                      "#{USER_PATH}:/user",
                      "#{INTERNAL_PATH}:/internal",
+                     "#{DATA_PATH}/tic80:/tic80",
                      "/var/run/docker.sock:/var/run/docker.sock",
                      "#{NGINX_PATH}:/nginx",
                     ],
@@ -218,6 +219,7 @@ end
 FileUtils::mkpath(USER_PATH)
 FileUtils::mkpath(INTERNAL_PATH)
 FileUtils::mkpath(WEB_CACHE_PATH)
+FileUtils::mkpath(File.join(DATA_PATH, 'tic80'))
 # FileUtils::mkpath(MYSQL_DATA_PATH)
 # FileUtils::mkpath(POSTGRES_DATA_PATH)
 
