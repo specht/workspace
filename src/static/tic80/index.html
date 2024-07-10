@@ -81,6 +81,7 @@
         }
 
         gameFrame.addEventListener('click', function() {
+            purge_all_files_from_indexed_db();
             let scriptTag = document.createElement('script'), // create a script tag
             firstScriptTag = document.getElementsByTagName('script')[0]; // find the first script tag in the document
             scriptTag.src = 'tic80.js'; // set the source of the script to your script
@@ -102,7 +103,6 @@
                 let store = tx.objectStore('FILE_DATA');
                 store.getAllKeys().onsuccess = function(event) {
                     let path_list = event.target.result;
-                    let fs = [];
                     let delete_these = {};
                     for (let path of Object.keys(store_timestamps)) {
                         delete_these[path] = true;
@@ -124,51 +124,52 @@
                                         entry.file[key] = file[key];
                                     }
                                 }
-                                fs.push(entry);
-                            }
-                            if (path_index === path_list.length - 1) {
-                                // Once all files are processed, make a POST request
-                                fetch('/api/store_tic80_files', {
+                                fetch('/api/update_tic80_file', {
                                     method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                    },
-                                    body: JSON.stringify({create: fs, delete: Object.keys(delete_these)}),
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify(entry),
                                 })
                                 .then(response => response.json())
                                 .then(data => {
                                     console.log('Success:', data);
-                                    for (let path of Object.keys(delete_these)) {
-                                        delete store_timestamps[path];
-                                    }
                                 })
                                 .catch((error) => {
                                     console.error('Error:', error);
                                 });
+
                             }
                         }
+                    }
+                    for (let path of Object.keys(delete_these)) {
+                        fetch('/api/delete_tic80_file', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({path: path}),
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Success:', data);
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
                     }
                 }
             }
         }
 
-        function remove_file_from_indexed_db(path) {
+        function purge_all_files_from_indexed_db() {
             indexedDB.open('/com.nesbox.tic/TIC-80').onsuccess = function(event) {
                 let db = event.target.result;
-                const request = db.transaction('FILE_DATA', 'readwrite')
-                    .objectStore('FILE_DATA')
-                    .delete(path);
+                let tx = db.transaction(['FILE_DATA'], 'readwrite');
+                let store = tx.objectStore('FILE_DATA');
+                store.getAllKeys().onsuccess = function(event) {
+                    let path_list = event.target.result;
+                    for (let path of path_list) {
+                        store.delete(path);
+                    }
+                };
 
-                request.onsuccess = ()=> {
-                    console.log(`Student deleted, email: ${request.result}`);
-                }
-
-                request.onerror = (err)=> {
-                    console.error(`Error to delete student: ${err}`)
-                }
-                // let tx = db.transaction(['FILE_DATA'], 'readwrite');
-                // let store = tx.objectStore('FILE_DATA');
-                // store.delete(path);
             }
         }
 

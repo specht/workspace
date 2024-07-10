@@ -1033,16 +1033,20 @@ class Main < Sinatra::Base
     #     end
     # end
 
-    post '/api/store_tic80_files' do
+    post '/api/update_tic80_file' do
         assert(user_logged_in?)
         max_size = 64 * 1024 * 1024
-        data = parse_request_data(:required_keys => [:create, :delete], :types => {:create => Array, :delete => Array}, :max_body_length => max_size, :max_string_length => max_size, :max_value_lengths => {:create => max_size, :delete => max_size})
-        data[:create].each do |entry|
-            STDERR.puts "WRITING: #{entry['path']}"
-        end
-        data[:delete].each do |path|
-            STDERR.puts "DELETING: #{path}"
-        end
+        data = parse_request_data(:required_keys => [:path, :file], :types => {:path => String, :file => Hash}, :max_body_length => max_size, :max_string_length => max_size, :max_value_lengths => {:entry => max_size})
+        blob = Base64::decode64(data[:file]['contents'])
+        sha1 = Digest::SHA1.hexdigest(blob)[0, 16]
+        STDERR.puts "CREATE #{data[:path]} / mode #{data[:file]['mode']} / size #{data[:file]['contents'].size} / SHA1 #{sha1}"
+    end
+
+    post '/api/delete_tic80_file' do
+        assert(user_logged_in?)
+        max_size = 64 * 1024 * 1024
+        data = parse_request_data(:required_keys => [:path], :types => {:path => String}, :max_body_length => max_size, :max_string_length => max_size, :max_value_lengths => {:entry => max_size})
+        STDERR.puts "DELETE #{data[:path]}"
     end
 
     get '/*' do
