@@ -467,6 +467,8 @@ class Main < Sinatra::Base
             'User/share_tag',
             'LoginRequest/tag',
             'Session/sid',
+            'TIC80File/sha1',
+            'TIC80Dir/path',
         ]
         INDEX_LIST = []
 
@@ -1039,16 +1041,36 @@ class Main < Sinatra::Base
         if data[:file]['contents']
             blob = Base64::decode64(data[:file]['contents'])
             sha1 = Digest::SHA1.hexdigest(blob)[0, 16]
-            STDERR.puts "CREATE #{data[:path]} / mode #{data[:file]['mode']} / size #{data[:file]['contents'].size} / SHA1 #{sha1}"
-            path = "/tic80/#{sha1[0, 2]}/#{sha1}"
+            STDERR.puts "UPDATE FILE #{data[:path]} / mode #{data[:file]['mode']} / size #{data[:file]['contents'].size} / SHA1 #{sha1}"
+            path = "/tic80/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}"
             FileUtils.mkpath(File.dirname(path))
             unless File.exist?(path)
                 File.open(path, 'w') do |f|
-                    f.write(blob.split(',').map { |x| x.to_i }.pack('c*'))
+                    f.write(blob)
                 end
             end
             data[:file]['sha1'] = sha1
             data[:file].delete('contents')
+            neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :path => data[:path], :timestamp => data[:file]['timestamp'], :mode => data[:file]['mode'], :sha1 => data[:file]['sha1']})
+                MERGE (f:TIC80File {sha1: $sha1})
+                WITH f
+                MATCH (u:User {email: $email})
+                MERGE (u)-[r:HAS {path: $path}]->(f)
+                SET r.timestamp = $timestamp
+                SET r.mode = $mode
+                RETURN f;
+            END_OF_STRING
+        else
+            STDERR.puts "UPDATE DIR  #{data[:path]} / mode #{data[:file]['mode']}"
+            neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :path => data[:path], :timestamp => data[:file]['timestamp'], :mode => data[:file]['mode']})
+                MERGE (d:TIC80Dir {path: $path})
+                WITH d
+                MATCH (u:User {email: $email})
+                MERGE (u)-[r:HAS]->(d)
+                SET r.timestamp = $timestamp
+                SET r.mode = $mode
+                RETURN d;
+            END_OF_STRING
         end
     end
 
@@ -1057,6 +1079,54 @@ class Main < Sinatra::Base
         max_size = 64 * 1024 * 1024
         data = parse_request_data(:required_keys => [:path], :types => {:path => String}, :max_body_length => max_size, :max_string_length => max_size, :max_value_lengths => {:entry => max_size})
         STDERR.puts "DELETE #{data[:path]}"
+        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :path => data[:path]})
+            MATCH (u:User {email: $email})-[r:HAS]->(f:TIC80File)
+            WHERE r.path = $path
+            DELETE r;
+        END_OF_STRING
+        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :path => data[:path]})
+            MATCH (u:User {email: $email})-[r:HAS]->(f:TIC80Dir {path: $path})
+            DELETE r;
+        END_OF_STRING
+    end
+
+    def tic80_get_dirs_and_files
+        assert(user_logged_in?)
+        entries = []
+        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email]}).each do |row|
+            MATCH (u:User {email: $email})-[r:HAS]->(f:TIC80Dir)
+            RETURN f, r;
+        END_OF_STRING
+            entries << {
+                :type => :dir,
+                :path => row['f'][:path],
+                :timestamp => row['r'][:timestamp],
+                :mode => row['r'][:mode],
+            }
+        end
+        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email]}).each do |row|
+            MATCH (u:User {email: $email})-[r:HAS]->(f:TIC80File)
+            RETURN f, r;
+        END_OF_STRING
+            entries << {
+                :type => :file,
+                :path => row['r'][:path],
+                :timestamp => row['r'][:timestamp],
+                :mode => row['r'][:mode],
+                :sha1 => row['f'][:sha1],
+            }
+        end
+        entries
+    end
+
+    post '/api/tic80_get_raw_file_with_sha1' do
+        data = parse_request_data(:required_keys => [:sha1])
+        sha1 = data[:sha1]
+        assert(sha1.size == 16)
+        assert(sha1 =~ /^[0-9a-f]{16}$/)
+        path = "/tic80/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}"
+        blob = File.read(path)
+        respond_raw_with_mimetype(blob, 'application/octet-stream')
     end
 
     get '/*' do
@@ -1085,7 +1155,28 @@ class Main < Sinatra::Base
             return
         end
         if path == '/tic80/'
-            respond_with_file(File.join(@@static_dir, '/tic80/index.html'))
+            s = File.read(File.join(@@static_dir, '/tic80/index.html'))
+            while true
+                index = s.index('#{')
+                break if index.nil?
+                length = 2
+                balance = 1
+                while index + length < s.size && balance > 0
+                    c = s[index + length]
+                    balance -= 1 if c == '}'
+                    balance += 1 if c == '{'
+                    length += 1
+                end
+                code = s[index + 2, length - 3]
+                begin
+                    s[index, length] = eval(code).to_s || ''
+                rescue
+                    STDERR.puts "Error while evaluating:"
+                    STDERR.puts code
+                    raise
+                end
+            end
+            respond_raw_with_mimetype(s, 'text/html')
             return
         end
         confirm_tag = nil

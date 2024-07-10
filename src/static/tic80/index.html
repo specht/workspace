@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="umd.js"></script>
 
     <title>TIC-80 tiny computer</title>
 
@@ -15,16 +16,64 @@
             font-display: swap;
             src: url(04B_03__.TTF) format('truetype');
         }
-        .modal{display:none;position:fixed;z-index:1;padding-top:100px;left:0;top:0;width:100%;height:100%;overflow:auto;background-color:#000;background-color:rgba(0,0,0,.4)}
-        .modal-content{font-size: 40px; background-color: #222;position:relative;color:#fefefe;margin:auto;padding:2px 16px;border:1px solid #444;width:700px;box-shadow:0 4px 8px 0 rgba(0,0,0,.2),0 6px 20px 0 rgba(0,0,0,.19);-webkit-animation-name:animatetop;-webkit-animation-duration:.4s;animation-name:animatetop;animation-duration:.4s}@keyframes animatetop{from{top:-300px;opacity:0}to{top:0;opacity:1}}
-        .close{color:#dddddd;float:right;font-size:28px;font-weight:700}
-        .close:focus,
-        .close:hover{color:#ffffff;text-decoration:none;cursor:pointer}
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color:rgba(0,0,0,.4);
+        }
+        .modal-content {
+            font-size: min(5vw, 30px);
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 1em;
+            box-shadow: 0 0 0.2em #fff;
+            backdrop-filter: blur(1em);
+            position: relative;
+            color: #fefefe;
+            margin: auto;
+            padding: 0.5em 1em;
+            width: min(20em, 90vw);
+            -webkit-animation-name: animatetop;
+            -webkit-animation-duration: .4s;
+            animation-name: animatetop;
+            animation-duration:.4s
+        }
+        @keyframes animatetop {
+            from {
+                top: -300px;
+                opacity: 0
+            } to {
+                top: 0;
+                opacity: 1;
+            }
+        }
+        .close {
+            color: #dddddd;
+            float: right;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .close:focus, .close:hover {
+            color: #ffffff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        #game-frame > div {
+            font-size: 44px;
+            font-family: monospace;
+            font-weight: bold;
+        }
 
-        #game-frame > div { font-size: 44px; font-family: monospace; font-weight: bold;}
-
-        /* You can set custom dimensions here */
-        .game { width: 100vw; height: 100vh; }
+        .game {
+            width: 100vw;
+            height: 100vh;
+        }
 
         .modal {
             font-family: '04b03Regular';
@@ -67,12 +116,101 @@
 
     <script type="text/javascript">
         var Module = {canvas: document.getElementById('canvas')}
+        var initial_files_and_dirs = #{tic80_get_dirs_and_files.to_json};
+        var fetched_initial_files = false;
 
         Module.storeFiles = function(callback) {
-            setTimeout(function() {
-                store_files_from_indexed_db();
+            if (!fetched_initial_files) return;
+            console.log('STORING FILES!');
+            setTimeout(async () => {
+                const db = await idb.openDB('/com.nesbox.tic/TIC-80');
+                let tx = await db.transaction(['FILE_DATA'], 'readonly');
+                let store = await tx.objectStore('FILE_DATA');
+                let path_list = await store.getAllKeys();
+                let delete_these = {};
+                for (let path of Object.keys(store_timestamps)) {
+                    delete_these[path] = true;
+                }
+                for (let path of path_list) {
+                    delete delete_these[path];
+                    let tx2 = await db.transaction(['FILE_DATA'], 'readonly');
+                    let store2 = await tx2.objectStore('FILE_DATA');
+                    let file = await store2.get(path);
+                    let entry = {path: path, file: {}};
+                    let ts = Date.parse(file.timestamp);
+                    if (ts > (store_timestamps[path] ?? 0)) {
+                        store_timestamps[path] = ts;
+                        for (let key in file) {
+                            if (key !== 'contents') {
+                                entry.file[key] = file[key];
+                            }
+                        }
+                        if (file.contents) {
+                            entry.file.contents = await bufferToBase64(file.contents);
+                            await fetch('/api/update_tic80_file', {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify(entry),
+                            })
+                            .then(response => response.json())
+                            .then(data => {})
+                            .catch((error) => {});
+                        } else {
+                            await fetch('/api/update_tic80_file', {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify(entry),
+                            })
+                            .then(response => response.json())
+                            .then(data => {})
+                            .catch((error) => {});
+                        }
+                    }
+                }
+
+                for (let path of Object.keys(delete_these)) {
+                    await fetch('/api/delete_tic80_file', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({path: path}),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                    })
+                    .catch((error) => {
+                    });
+                }
             }, 1000);
+
         };
+
+        Module.fetchStoredFiles = async function(callback) {
+            const db = await idb.openDB('/com.nesbox.tic/TIC-80');
+            let tx = await db.transaction(['FILE_DATA'], 'readwrite');
+            let store = await tx.objectStore('FILE_DATA');
+            let path_list = await store.getAllKeys();
+            for (let path of path_list) {
+                await store.delete(path);
+            }
+            for (let entry of initial_files_and_dirs) {
+                if (entry.type === 'dir') {
+                    await store.put({mode: entry.mode, timestamp: new Date(entry.timestamp)}, entry.path);
+                } else {
+                    let arrayBuffer = await fetch('/api/tic80_get_raw_file_with_sha1',
+                        {   method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({sha1: entry.sha1}),
+                        }).then(response => response.arrayBuffer()
+                    );
+                    let array = new Int8Array(arrayBuffer);
+                    let tx2 = await db.transaction(['FILE_DATA'], 'readwrite');
+                    let store2 = await tx2.objectStore('FILE_DATA');
+                    await store2.put({mode: entry.mode, timestamp: new Date(entry.timestamp), contents: array}, entry.path);
+                    store_timestamps[entry.path] = Date.parse(entry.timestamp);
+                }
+            }
+            fetched_initial_files = true;
+        }
 
         const gameFrame = document.getElementById('game-frame')
 
@@ -81,11 +219,10 @@
         }
 
         gameFrame.addEventListener('click', function() {
-            purge_all_files_from_indexed_db();
-            let scriptTag = document.createElement('script'), // create a script tag
-            firstScriptTag = document.getElementsByTagName('script')[0]; // find the first script tag in the document
-            scriptTag.src = 'tic80.js'; // set the source of the script to your script
-            firstScriptTag.parentNode.insertBefore(scriptTag, firstScriptTag); // append the script to the DOM
+            let scriptTag = document.createElement('script'),
+            firstScriptTag = document.getElementsByTagName('script')[0];
+            scriptTag.src = 'tic80.js';
+            firstScriptTag.parentNode.insertBefore(scriptTag, firstScriptTag);
             this.remove();
             window.addEventListener('keydown', function(e) {
                 if (e.ctrlKey && (e.code === 'KeyS' || e.code === 'KeyR' || e.code === 'KeyK')) {
@@ -96,86 +233,14 @@
 
         var store_timestamps = {};
 
-        function store_files_from_indexed_db() {
-            indexedDB.open('/com.nesbox.tic/TIC-80').onsuccess = function(event) {
-                let db = event.target.result;
-                let tx = db.transaction(['FILE_DATA'], 'readonly');
-                let store = tx.objectStore('FILE_DATA');
-                store.getAllKeys().onsuccess = function(event) {
-                    let path_list = event.target.result;
-                    let delete_these = {};
-                    for (let path of Object.keys(store_timestamps)) {
-                        delete_these[path] = true;
-                    }
-
-                    for (let path_index = 0; path_index < path_list.length; path_index++) {
-                        let path = event.target.result[path_index];
-                        delete delete_these[path];
-                        store.get(path).onsuccess = function(event) {
-                            let file = event.target.result;
-                            let entry = {path: path, file: {}};
-                            let ts = Date.parse(file.timestamp);
-                            if (ts > (store_timestamps[path] ?? 0)) {
-                                store_timestamps[path] = ts;
-                                for (let key in file) {
-                                    if (key === 'contents') {
-                                        entry.file[key] = btoa(file[key]);
-                                    } else {
-                                        entry.file[key] = file[key];
-                                    }
-                                }
-                                fetch('/api/update_tic80_file', {
-                                    method: 'POST',
-                                    headers: {'Content-Type': 'application/json'},
-                                    body: JSON.stringify(entry),
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    console.log('Success:', data);
-                                })
-                                .catch((error) => {
-                                    console.error('Error:', error);
-                                });
-
-                            }
-                        }
-                    }
-                    for (let path of Object.keys(delete_these)) {
-                        fetch('/api/delete_tic80_file', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({path: path}),
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log('Success:', data);
-                        })
-                        .catch((error) => {
-                            console.error('Error:', error);
-                        });
-                    }
-                }
-            }
+        async function bufferToBase64(buffer) {
+            const base64url = await new Promise(r => {
+                const reader = new FileReader()
+                reader.onload = () => r(reader.result)
+                reader.readAsDataURL(new Blob([buffer]))
+            });
+            return base64url.slice(base64url.indexOf(',') + 1);
         }
-
-        function purge_all_files_from_indexed_db() {
-            indexedDB.open('/com.nesbox.tic/TIC-80').onsuccess = function(event) {
-                let db = event.target.result;
-                let tx = db.transaction(['FILE_DATA'], 'readwrite');
-                let store = tx.objectStore('FILE_DATA');
-                store.getAllKeys().onsuccess = function(event) {
-                    let path_list = event.target.result;
-                    for (let path of path_list) {
-                        store.delete(path);
-                    }
-                };
-
-            }
-        }
-
-        window.addEventListener('onbeforeunload', function(e) {
-            store_files_from_indexed_db();
-        });
     </script>
 </body>
 </html>
