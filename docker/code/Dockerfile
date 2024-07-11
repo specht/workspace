@@ -3,7 +3,7 @@ RUN usermod -d /workspace abc
 RUN sudo apt-get update && sudo apt-get install -y \
     wget \
     ruby \
-    python3.11 python3-pip \
+    python3 python3-pip \
     golang-go \
     openjdk-17-jdk-headless \
     lua5.4 \
