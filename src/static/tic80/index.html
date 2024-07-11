@@ -193,6 +193,7 @@
                 await store.delete(path);
             }
             for (let entry of initial_files_and_dirs) {
+                console.log(`Fetching ${entry.path}`);
                 if (entry.type === 'dir') {
                     await store.put({mode: entry.mode, timestamp: new Date(entry.timestamp)}, entry.path);
                 } else {
@@ -221,7 +222,7 @@
         gameFrame.addEventListener('click', function() {
             let scriptTag = document.createElement('script'),
             firstScriptTag = document.getElementsByTagName('script')[0];
-            scriptTag.src = 'tic80.js';
+            scriptTag.src = `tic80.js?cache_buster=#{Random.rand(1000000)}`;
             firstScriptTag.parentNode.insertBefore(scriptTag, firstScriptTag);
             this.remove();
             window.addEventListener('keydown', function(e) {
