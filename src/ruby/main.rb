@@ -467,7 +467,7 @@ class Main < Sinatra::Base
             'User/share_tag',
             'LoginRequest/tag',
             'Session/sid',
-            'TIC80File/sha1',
+            'TIC80File/path',
             'TIC80Dir/path',
         ]
         INDEX_LIST = []
@@ -1049,27 +1049,29 @@ class Main < Sinatra::Base
                     f.write(blob)
                 end
             end
-            data[:file]['sha1'] = sha1
             data[:file].delete('contents')
-            neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :path => data[:path], :timestamp => data[:file]['timestamp'], :mode => data[:file]['mode'], :sha1 => data[:file]['sha1']})
-                MERGE (f:TIC80File {sha1: $sha1})
-                WITH f
+            neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :path => data[:path], :timestamp => data[:file]['timestamp'], :mode => data[:file]['mode'], :sha1 => sha1})
                 MATCH (u:User {email: $email})
-                MERGE (u)-[r:HAS {path: $path}]->(f)
+                WITH u
+                MERGE (f:TIC80File {path: $path})
+                WITH u, f
+                MERGE (u)-[r:HAS]->(f)
                 SET r.timestamp = $timestamp
                 SET r.mode = $mode
+                SET r.sha1 = $sha1
                 RETURN f;
             END_OF_STRING
         else
             STDERR.puts "UPDATE DIR  #{data[:path]} / mode #{data[:file]['mode']}"
             neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :path => data[:path], :timestamp => data[:file]['timestamp'], :mode => data[:file]['mode']})
-                MERGE (d:TIC80Dir {path: $path})
-                WITH d
                 MATCH (u:User {email: $email})
-                MERGE (u)-[r:HAS]->(d)
+                WITH u
+                MERGE (f:TIC80Dir {path: $path})
+                WITH u, f
+                MERGE (u)-[r:HAS]->(f)
                 SET r.timestamp = $timestamp
                 SET r.mode = $mode
-                RETURN d;
+                RETURN f;
             END_OF_STRING
         end
     end
@@ -1080,8 +1082,7 @@ class Main < Sinatra::Base
         data = parse_request_data(:required_keys => [:path], :types => {:path => String}, :max_body_length => max_size, :max_string_length => max_size, :max_value_lengths => {:entry => max_size})
         STDERR.puts "DELETE #{data[:path]}"
         neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :path => data[:path]})
-            MATCH (u:User {email: $email})-[r:HAS]->(f:TIC80File)
-            WHERE r.path = $path
+            MATCH (u:User {email: $email})-[r:HAS]->(f:TIC80File {path: $path})
             DELETE r;
         END_OF_STRING
         neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :path => data[:path]})
@@ -1110,10 +1111,10 @@ class Main < Sinatra::Base
         END_OF_STRING
             entries << {
                 :type => :file,
-                :path => row['r'][:path],
+                :path => row['f'][:path],
                 :timestamp => row['r'][:timestamp],
                 :mode => row['r'][:mode],
-                :sha1 => row['f'][:sha1],
+                :sha1 => row['r'][:sha1],
             }
         end
         entries

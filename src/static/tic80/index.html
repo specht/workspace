@@ -185,13 +185,17 @@
         };
 
         Module.fetchStoredFiles = async function(callback) {
+            console.log('Now fetching stored files!');
             const db = await idb.openDB('/com.nesbox.tic/TIC-80');
             let tx = await db.transaction(['FILE_DATA'], 'readwrite');
             let store = await tx.objectStore('FILE_DATA');
             let path_list = await store.getAllKeys();
+            console.log('Deleting present files...')
             for (let path of path_list) {
+                console.log(`Deleting ${path}`);
                 await store.delete(path);
             }
+            console.log('Fetching files...')
             for (let entry of initial_files_and_dirs) {
                 console.log(`Fetching ${entry.path}`);
                 if (entry.type === 'dir') {
