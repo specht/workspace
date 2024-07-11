@@ -348,12 +348,23 @@ class Main < Sinatra::Base
 
                 root.css('img').each do |img|
                     src = img.attr('src')
-                    image_path = File.join(File.dirname(path), src)
-                    next unless File.exist?(image_path)
-                    image_sha1 = convert_image(image_path)
-                    img['src'] = "/cache/#{image_sha1}.webp"
-                    if img.classes.include?('full')
-                        img.wrap("<div class='scroll-x'>")
+                    if img.attr('data-noconvert')
+                        image_path = File.join(File.dirname(path), src)
+                        next unless File.exist?(image_path)
+                        image_sha1 = Digest::SHA1.hexdigest(File.read(image_path))[0, 16]
+                        system("cp -pu \"#{image_path}\" /webcache/")
+                        img['src'] = "/cache/#{File.basename(image_path)}"
+                        if img.classes.include?('full')
+                            img.wrap("<div class='scroll-x'>")
+                        end
+                    else
+                        image_path = File.join(File.dirname(path), src)
+                        next unless File.exist?(image_path)
+                        image_sha1 = convert_image(image_path)
+                        img['src'] = "/cache/#{image_sha1}.webp"
+                        if img.classes.include?('full')
+                            img.wrap("<div class='scroll-x'>")
+                        end
                     end
                 end
                 root.css('a').each do |a|
