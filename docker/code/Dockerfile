@@ -19,7 +19,7 @@ RUN echo 'deb [signed-by=/usr/share/keyrings/dart.gpg arch=amd64] https://storag
 RUN apt-get update && apt-get install dart
 RUN yes | unminimize
 RUN apt-get install -y libncurses5-dev
-RUN pip install matplotlib numpy==1.26.4 keras==2.11.0 tensorflow==2.11.0 tensorflowjs==2.8.5
+RUN pip install matplotlib numpy==1.26.4 keras==2.11.0 tensorflow==2.11.0 tensorflowjs==4.0.0
 COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run
 COPY svc-code-server-run /etc/s6-overlay/s6-rc.d/svc-code-server/run
 WORKDIR /workspace
