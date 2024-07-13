@@ -193,7 +193,8 @@ docker_compose[:services][:tensorflowjs] = {
 }
 
 docker_compose[:services].values.each do |x|
-    x[:networks] = [:workspace]
+    # x[:networks] = [:workspace]
+    x[:network_mode] = 'default'
 end
 
 docker_compose[:networks] = {
