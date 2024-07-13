@@ -680,7 +680,7 @@ class Main < Sinatra::Base
         inspect = JSON.parse(`docker inspect hs_code_#{tag}`)
         unless inspect.empty?
             result[:running] = true
-            result[:ip] = inspect.first['NetworkSettings']['Networks']['workspace']['IPAddress']
+            result[:ip] = inspect.first['NetworkSettings']['Networks']['bridge']['IPAddress']
         end
         result
     end
