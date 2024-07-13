@@ -155,7 +155,7 @@ class Main < Sinatra::Base
 
     def self.refresh_nginx_config
         running_servers = {}
-        inspect = JSON.parse(`docker network inspect workspace`)
+        inspect = JSON.parse(`docker network inspect bridge`)
         inspect.first['Containers'].values.each do |container|
             name = container['Name']
             next unless name[0, 8] == 'hs_code_'
