@@ -18,6 +18,7 @@ DEV_NEO4J_PORT = 8021
 LOGS_PATH = DEVELOPMENT ? './logs' : "/home/micha/logs/#{PROJECT_NAME}"
 DATA_PATH = DEVELOPMENT ? './data' : "/mnt/hackschule/#{PROJECT_NAME}"
 MYSQL_DATA_PATH = File.join(DATA_PATH, 'mysql')
+# NEO4J_USER_DATA_PATH = File.join(DATA_PATH, 'neo4j_user')
 # POSTGRES_DATA_PATH = File.join(DATA_PATH, 'postgres')
 USER_PATH = File.join(DATA_PATH, 'user')
 INTERNAL_PATH = File.join(DATA_PATH, 'internal')
@@ -173,6 +174,16 @@ docker_compose[:services][:mysql] = {
     },
     :ports => ['0.0.0.0:3306:3306'],
 }
+
+# docker_compose[:services][:neo4j_user] = {
+#     :image => 'neo4j:4.4-community',
+#     :environment => {
+#         'NEO4J_AUTH' => "neo4j/#{NEO4J_ROOT_PASSWORD}",
+#     },
+#     :volumes => ["#{NEO4J_USER_DATA_PATH}:/data"],
+#     :restart => 'always',
+#     :ports => ['0.0.0.0:7688:7687'],
+# }
 
 # docker_compose[:services][:postgres] = {
 #     :image => 'postgres',
