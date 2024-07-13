@@ -193,7 +193,14 @@ docker_compose[:services][:tensorflowjs] = {
 }
 
 docker_compose[:services].values.each do |x|
-    x[:networks] = [:workspace]
+    x[:networks] = {
+        :workspace => {
+            :driver => 'bridge',
+            :driver_opts => {
+                'com.docker.network.driver.mtu' => 1400
+            }
+        }
+    }
     # x[:network_mode] = 'default'
 end
 
