@@ -1141,6 +1141,35 @@ class Main < Sinatra::Base
         respond_raw_with_mimetype(blob, 'application/octet-stream')
     end
 
+    get '/api/ping' do
+        respond(:pong => 'yeah')
+    end
+
+    post '/api/convert_keras_modal_to_tensorflowjs' do
+        file = params['file']
+        filename = file['filename']
+        assert(!filename.include?('/'))
+        assert(filename.size > 0)
+        blob = file['tempfile'].read
+        sha1 = Digest::SHA1.hexdigest(blob)[0, 16]
+        STDERR.puts "Read #{blob.size} bytes with SHA1 #{sha1}"
+        path = "/internal/tfjs/#{sha1}"
+        FileUtils.mkpath(File.dirname(path))
+        File.open(path, 'w') do |f|
+            f.write(blob)
+        end
+        out_path = File.join(File.dirname(path), "#{sha1}-out")
+        FileUtils.mkpath(out_path)
+        system("docker exec workspace_tensorflowjs_1 tensorflowjs_converter --input_format=keras \"#{path}\" \"#{out_path}\"")
+        files = []
+        Dir[File.join(out_path, '*')].each do |path|
+            files << { :name => File.basename(path), :contents => Base64::encode64(File.read(path)) }
+        end
+        # FileUtils.rm(path)
+        # FileUtils.rm_rf(out_path)
+        respond(:uploaded => 'yeah', :files => files)
+    end
+
     get '/*' do
         path = request.path
         assert(!path.include?('..'))

@@ -185,6 +185,13 @@ end
 #     :ports => ['0.0.0.0:5432:5432'],
 # }
 
+docker_compose[:services][:tensorflowjs] = {
+    :image => 'evenchange4/docker-tfjs-converter',
+    :volumes => ["#{INTERNAL_PATH}:/internal"],
+    :restart => 'always',
+    :tty => true,
+}
+
 docker_compose[:services].values.each do |x|
     x[:networks] = [:workspace]
     # x[:network_mode] = 'default'
