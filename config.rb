@@ -196,7 +196,15 @@ docker_compose[:services].values.each do |x|
     x[:networks] = [:workspace]
 end
 
-docker_compose[:networks] = {:workspace => {:name => 'workspace'}}
+docker_compose[:networks] = {
+    :workspace => {
+        :name => 'workspace',
+        :driver => 'bridge',
+        :driver_opts => {
+            'com.docker.network.driver.mtu' => 1400
+        }
+    }
+}
 
 if DEVELOPMENT
     docker_compose[:services][:nginx][:ports] = ["0.0.0.0:#{DEV_NGINX_PORT}:80"]
