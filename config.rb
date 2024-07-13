@@ -199,10 +199,6 @@ end
 docker_compose[:networks] = {
     :workspace => {
         :name => 'workspace',
-        :driver => 'bridge',
-        :driver_opts => {
-            'com.docker.network.driver.mtu' => 1400
-        }
     }
 }
 
