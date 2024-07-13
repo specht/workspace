@@ -7,6 +7,7 @@ require 'neo4j_bolt'
 require 'nokogiri'
 require './credentials.rb'
 require 'faye/websocket'
+require 'open3'
 require 'redcarpet'
 require 'rouge'
 require 'securerandom'
@@ -685,6 +686,27 @@ class Main < Sinatra::Base
         result
     end
 
+    def self.gen_password_for_email(email, salt)
+        chars = 'BCDFGHJKMNPQRSTVWXYZ23456789'.split('')
+        sha2 = Digest::SHA256.new()
+        sha2 << salt
+        sha2 << email
+        srand(sha2.hexdigest.to_i(16))
+        password = ''
+        8.times do
+            c = chars.sample.dup
+            c.downcase! if [0, 1].sample == 1
+            password += c
+        end
+        password += '-'
+        4.times do
+            c = chars.sample.dup
+            c.downcase! if [0, 1].sample == 1
+            password += c
+        end
+        password
+    end
+
     def start_server(email)
         container_name = fs_tag_for_email(email)
 
@@ -709,8 +731,28 @@ class Main < Sinatra::Base
             end
         end
         system("chown -R 1000:1000 /user/#{container_name}")
+        mysql_user = @session_user[:email]
+        mysql_password = Main.gen_password_for_email(mysql_user, MYSQL_PASSWORD_SALT)
+        STDERR.puts "Setting up MySQL user #{mysql_user} with password #{mysql_password}"
+        # [
+        #     "CREATE USER IF NOT EXISTS '#{mysql_user}'@'%' identified by '#{mysql_password}';",
+        #     "CREATE DATABASE IF NOT EXISTS `#{mysql_user}`;",
+        #     "GRANT ALL ON `#{mysql_user}`.* TO '#{mysql_user}'@'%';",
+        #     "FLUSH PRIVILEGES;",
+        # ].each do |query|
+        #     system("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD} -e \"#{query}\"")
+        # end
+        Open3.popen2("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+            stdin.puts "CREATE USER IF NOT EXISTS '#{mysql_user}'@'%' identified by '#{mysql_password}';"
+            stdin.puts "CREATE DATABASE IF NOT EXISTS `#{mysql_user}`;"
+            stdin.puts "GRANT ALL ON `#{mysql_user}`.* TO '#{mysql_user}'@'%';"
+            stdin.puts "FLUSH PRIVILEGES;"
+            stdin.close
+            wait_thr.value
+        end
         network_name = "bridge"
-        system("docker run --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} --name hs_code_#{container_name} hs_code_server")
+        mysql_ip = `docker inspect workspace_mysql_1`.split('"IPAddress": "')[1].split('"')[0]
+        system("docker run --add-host=mysql:#{mysql_ip} --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} --name hs_code_#{container_name} hs_code_server")
 
         Main.refresh_nginx_config()
     end

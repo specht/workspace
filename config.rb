@@ -17,7 +17,7 @@ DEV_NGINX_PORT = 8025
 DEV_NEO4J_PORT = 8021
 LOGS_PATH = DEVELOPMENT ? './logs' : "/home/micha/logs/#{PROJECT_NAME}"
 DATA_PATH = DEVELOPMENT ? './data' : "/mnt/hackschule/#{PROJECT_NAME}"
-# MYSQL_DATA_PATH = File.join(DATA_PATH, 'mysql')
+MYSQL_DATA_PATH = File.join(DATA_PATH, 'mysql')
 # POSTGRES_DATA_PATH = File.join(DATA_PATH, 'postgres')
 USER_PATH = File.join(DATA_PATH, 'user')
 INTERNAL_PATH = File.join(DATA_PATH, 'internal')
@@ -162,17 +162,17 @@ if PROFILE.include?(:neo4j)
     docker_compose[:services][:neo4j][:user] = '1000'
 end
 
-# docker_compose[:services][:mysql] = {
-#     :image => 'mysql/mysql-server',
-#     :command => ["--default-authentication-plugin=mysql_native_password"],
-#     :volumes => ["#{MYSQL_DATA_PATH}:/var/lib/mysql"],
-#     :restart => 'always',
-#     :environment => {
-#         'MYSQL_ROOT_HOST' => '%',
-#         'MYSQL_ROOT_PASSWORD' => MYSQL_ROOT_PASSWORD
-#     },
-#     :ports => ['0.0.0.0:3306:3306'],
-# }
+docker_compose[:services][:mysql] = {
+    :image => 'mysql/mysql-server',
+    :command => ["--default-authentication-plugin=mysql_native_password"],
+    :volumes => ["#{MYSQL_DATA_PATH}:/var/lib/mysql"],
+    :restart => 'always',
+    :environment => {
+        'MYSQL_ROOT_HOST' => '%',
+        'MYSQL_ROOT_PASSWORD' => MYSQL_ROOT_PASSWORD
+    },
+    :ports => ['0.0.0.0:3306:3306'],
+}
 
 # docker_compose[:services][:postgres] = {
 #     :image => 'postgres',
