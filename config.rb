@@ -176,7 +176,7 @@ docker_compose[:services][:mysql] = {
 }
 
 # docker_compose[:services][:neo4j_user] = {
-#     :image => 'neo4j:4.4-community',
+#     :image => 'neo4j:4.4.26-community',
 #     :environment => {
 #         'NEO4J_AUTH' => "neo4j/#{NEO4J_ROOT_PASSWORD}",
 #     },

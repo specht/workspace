@@ -117,104 +117,57 @@
     <script type="text/javascript">
         var Module = {canvas: document.getElementById('canvas')}
         var initial_files_and_dirs = #{tic80_get_dirs_and_files.to_json};
-        var fetched_initial_files = false;
 
-        Module.storeFiles = function(callback) {
-            if (!fetched_initial_files) return;
-            console.log('STORING FILES!');
-            setTimeout(async () => {
-                const db = await idb.openDB('/com.nesbox.tic/TIC-80');
-                let tx = await db.transaction(['FILE_DATA'], 'readonly');
-                let store = await tx.objectStore('FILE_DATA');
-                let path_list = await store.getAllKeys();
-                let delete_these = {};
-                for (let path of Object.keys(store_timestamps)) {
-                    delete_these[path] = true;
-                }
-                for (let path of path_list) {
-                    delete delete_these[path];
-                    let tx2 = await db.transaction(['FILE_DATA'], 'readonly');
-                    let store2 = await tx2.objectStore('FILE_DATA');
-                    let file = await store2.get(path);
-                    let entry = {path: path, file: {}};
-                    let ts = Date.parse(file.timestamp);
-                    if (ts > (store_timestamps[path] ?? 0)) {
-                        store_timestamps[path] = ts;
-                        for (let key in file) {
-                            if (key !== 'contents') {
-                                entry.file[key] = file[key];
-                            }
-                        }
-                        if (file.contents) {
-                            entry.file.contents = await bufferToBase64(file.contents);
-                            await fetch('/api/update_tic80_file', {
-                                method: 'POST',
-                                headers: {'Content-Type': 'application/json'},
-                                body: JSON.stringify(entry),
-                            })
-                            .then(response => response.json())
-                            .then(data => {})
-                            .catch((error) => {});
-                        } else {
-                            await fetch('/api/update_tic80_file', {
-                                method: 'POST',
-                                headers: {'Content-Type': 'application/json'},
-                                body: JSON.stringify(entry),
-                            })
-                            .then(response => response.json())
-                            .then(data => {})
-                            .catch((error) => {});
-                        }
-                    }
-                }
-
-                for (let path of Object.keys(delete_these)) {
-                    await fetch('/api/delete_tic80_file', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({path: path}),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                    })
-                    .catch((error) => {
-                    });
-                }
-            }, 1000);
-
-        };
-
-        Module.fetchStoredFiles = async function(callback) {
-            console.log('Now fetching stored files!');
-            const db = await idb.openDB('/com.nesbox.tic/TIC-80');
-            let tx = await db.transaction(['FILE_DATA'], 'readwrite');
-            let store = await tx.objectStore('FILE_DATA');
-            let path_list = await store.getAllKeys();
-            console.log('Deleting present files...')
-            for (let path of path_list) {
-                console.log(`Deleting ${path}`);
-                await store.delete(path);
+        function _arrayBufferToBase64(buffer) {
+            var binary = '';
+            var bytes = new Uint8Array(buffer);
+            var len = bytes.byteLength;
+            for (var i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[ i ]);
             }
-            console.log('Fetching files...')
-            for (let entry of initial_files_and_dirs) {
-                console.log(`Fetching ${entry.path}`);
-                if (entry.type === 'dir') {
-                    await store.put({mode: entry.mode, timestamp: new Date(entry.timestamp)}, entry.path);
-                } else {
-                    let arrayBuffer = await fetch('/api/tic80_get_raw_file_with_sha1',
-                        {   method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({sha1: entry.sha1}),
-                        }).then(response => response.arrayBuffer()
-                    );
-                    let array = new Int8Array(arrayBuffer);
-                    let tx2 = await db.transaction(['FILE_DATA'], 'readwrite');
-                    let store2 = await tx2.objectStore('FILE_DATA');
-                    await store2.put({mode: entry.mode, timestamp: new Date(entry.timestamp), contents: array}, entry.path);
-                    store_timestamps[entry.path] = Date.parse(entry.timestamp);
-                }
+            return window.btoa(binary);
+        }
+
+        Module.hs_load_initial_dirs_and_files = async function() {
+            for (let entry of Module.hs_initial_dirs) {
+                console.log(entry);
+                // FS.writeFile(entry.path, Uint8Array.from(atob(entry.contents), c => c.charCodeAt(0)), { canOwn: true });
+                FS.mkdirTree(entry.path);
             }
-            fetched_initial_files = true;
+            for (let entry of Module.hs_initial_files) {
+                console.log(entry);
+                FS.writeFile(entry.path, Uint8Array.from(atob(entry.contents), c => c.charCodeAt(0)), { canOwn: true });
+            }
+        }
+
+        Module.hs_fs_write = async function(filename, buffer, size) {
+            filename = UTF8ToString(filename);
+            buffer = HEAPU8.subarray(buffer, buffer + size);
+            let base64String = _arrayBufferToBase64(buffer);
+            let entry = {path: filename, file: { contents: base64String}};
+            await fetch('/api/fs_write', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(entry) })
+            .catch((error) => {});
+        }
+
+        Module.hs_fs_delfile = async function(path) {
+            path = UTF8ToString(path);
+            let entry = {path: path};
+            await fetch('/api/fs_delfile', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(entry) })
+            .catch((error) => {});
+        }
+
+        Module.hs_fs_makedir = async function(path) {
+            path = UTF8ToString(path);
+            let entry = {path: path};
+            await fetch('/api/fs_makedir', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(entry) })
+            .catch((error) => {});
+        }
+
+        Module.hs_fs_deldir = async function(path) {
+            path = UTF8ToString(path);
+            let entry = {path: path};
+            await fetch('/api/fs_deldir', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(entry) })
+            .catch((error) => {});
         }
 
         const gameFrame = document.getElementById('game-frame')
@@ -223,29 +176,26 @@
             HEAP8.set(array, buffer);
         }
 
-        gameFrame.addEventListener('click', function() {
-            let scriptTag = document.createElement('script'),
-            firstScriptTag = document.getElementsByTagName('script')[0];
-            scriptTag.src = `tic80.js?cache_buster=#{Random.rand(1000000)}`;
-            firstScriptTag.parentNode.insertBefore(scriptTag, firstScriptTag);
-            this.remove();
-            window.addEventListener('keydown', function(e) {
-                if (e.ctrlKey && (e.code === 'KeyS' || e.code === 'KeyR' || e.code === 'KeyK')) {
-                    e.preventDefault();
-                }
+        fetch('/api/hs_get_all_stored_dirs_and_files', { method: 'GET', })
+        .then(response => response.json())
+        .then(data => {
+            Module.hs_initial_dirs = data.dirs;
+            Module.hs_initial_files = data.files;
+            gameFrame.addEventListener('click', function() {
+                let scriptTag = document.createElement('script'),
+                firstScriptTag = document.getElementsByTagName('script')[0];
+                scriptTag.src = `tic80.js?cache_buster=#{Random.rand(1000000)}`;
+                firstScriptTag.parentNode.insertBefore(scriptTag, firstScriptTag);
+                this.remove();
+                window.addEventListener('keydown', function(e) {
+                    if (e.ctrlKey && (e.code === 'KeyS' || e.code === 'KeyR' || e.code === 'KeyK')) {
+                        e.preventDefault();
+                    }
+                });
             });
+        })
+        .catch((error) => {
         });
-
-        var store_timestamps = {};
-
-        async function bufferToBase64(buffer) {
-            const base64url = await new Promise(r => {
-                const reader = new FileReader()
-                reader.onload = () => r(reader.result)
-                reader.readAsDataURL(new Blob([buffer]))
-            });
-            return base64url.slice(base64url.indexOf(',') + 1);
-        }
     </script>
 </body>
 </html>

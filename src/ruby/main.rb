@@ -1087,6 +1087,105 @@ class Main < Sinatra::Base
     #     end
     # end
 
+    get '/api/hs_get_all_stored_dirs_and_files' do
+        assert(user_logged_in?)
+        dirs = []
+        files = []
+        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email]}).each do |row|
+            MATCH (u:User {email: $email})-[r:HAS]->(f:TIC80Dir)
+            RETURN f, r;
+        END_OF_STRING
+            dirs << {
+                :path => row['f'][:path],
+            }
+        end
+        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email]}).each do |row|
+            MATCH (u:User {email: $email})-[r:HAS]->(f:TIC80File)
+            RETURN f, r;
+        END_OF_STRING
+            files << {
+                :path => row['f'][:path],
+                :sha1 => row['r'][:sha1],
+                :contents => Base64.encode64(File.read("/tic80/#{row['r'][:sha1][0, 2]}/#{row['r'][:sha1][2, row['r'][:sha1].size - 2]}")),
+            }
+        end
+        dirs.sort! do |a, b|
+            a[:path] <=> b[:path]
+        end
+        files.sort! do |a, b|
+            a[:path] <=> b[:path]
+        end
+
+        respond(:dirs => dirs, :files => files)
+    end
+
+    post '/api/fs_write' do
+        assert(user_logged_in?)
+        max_size = 64 * 1024 * 1024
+        data = parse_request_data(:required_keys => [:path, :file], :types => {:path => String, :file => Hash}, :max_body_length => max_size, :max_string_length => max_size, :max_value_lengths => {:entry => max_size})
+        data[:path] = data[:path].gsub('//', '/')
+        data[:path] = '/com.nesbox.tic/TIC-80/' + data[:path] unless data[:path][0] == '/'
+        blob = Base64::decode64(data[:file]['contents'])
+        sha1 = Digest::SHA1.hexdigest(blob)[0, 16]
+        STDERR.puts "[FS_WRITE] #{data[:path]} / size #{data[:file]['contents'].size} / SHA1 #{sha1}"
+        path = "/tic80/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}"
+        FileUtils.mkpath(File.dirname(path))
+        unless File.exist?(path)
+            File.open(path, 'w') do |f|
+                f.write(blob)
+            end
+        end
+        neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :path => data[:path], :sha1 => sha1})
+            MATCH (u:User {email: $email})
+            WITH u
+            MERGE (f:TIC80File {path: $path})
+            WITH u, f
+            MERGE (u)-[r:HAS]->(f)
+            SET r.sha1 = $sha1
+            RETURN f;
+        END_OF_STRING
+    end
+
+    post '/api/fs_delfile' do
+        assert(user_logged_in?)
+        data = parse_request_data(:required_keys => [:path], :types => {:path => String})
+        data[:path] = data[:path].gsub('//', '/')
+        data[:path] = '/com.nesbox.tic/TIC-80/' + data[:path] unless data[:path][0] == '/'
+        STDERR.puts "[FS_DELFILE] #{data[:path]}"
+        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :path => data[:path]})
+            MATCH (u:User {email: $email})-[r:HAS]->(f:TIC80File {path: $path})
+            DELETE r;
+        END_OF_STRING
+    end
+
+    post '/api/fs_makedir' do
+        assert(user_logged_in?)
+        data = parse_request_data(:required_keys => [:path], :types => {:path => String})
+        data[:path] = data[:path].gsub('//', '/')
+        data[:path] = '/com.nesbox.tic/TIC-80/' + data[:path] unless data[:path][0] == '/'
+        STDERR.puts "[FS_MAKEDIR] #{data[:path]}"
+        neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :path => data[:path]})
+            MATCH (u:User {email: $email})
+            WITH u
+            MERGE (f:TIC80Dir {path: $path})
+            WITH u, f
+            MERGE (u)-[r:HAS]->(f)
+            RETURN f;
+        END_OF_STRING
+    end
+
+    post '/api/fs_deldir' do
+        assert(user_logged_in?)
+        data = parse_request_data(:required_keys => [:path], :types => {:path => String})
+        data[:path] = data[:path].gsub('//', '/')
+        data[:path] = '/com.nesbox.tic/TIC-80/' + data[:path] unless data[:path][0] == '/'
+        STDERR.puts "[FS_DELDIR] #{data[:path]}"
+        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :path => data[:path]})
+            MATCH (u:User {email: $email})-[r:HAS]->(f:TIC80Dir {path: $path})
+            DELETE r;
+        END_OF_STRING
+    end
+
     post '/api/update_tic80_file' do
         assert(user_logged_in?)
         max_size = 64 * 1024 * 1024

@@ -19,7 +19,7 @@ ADMIN_USERS = []
 
 MYSQL_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
 MYSQL_PASSWORD_SALT = 'bitte_ein_langes_salt_generieren'
-# NEO4J_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
+NEO4J_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
 
 if defined? Mail
     Mail.defaults do
