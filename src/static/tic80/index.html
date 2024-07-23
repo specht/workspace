@@ -116,7 +116,6 @@
 
     <script type="text/javascript">
         var Module = {canvas: document.getElementById('canvas')}
-        var initial_files_and_dirs = #{tic80_get_dirs_and_files.to_json};
 
         function _arrayBufferToBase64(buffer) {
             var binary = '';
@@ -130,13 +129,18 @@
 
         Module.hs_load_initial_dirs_and_files = async function() {
             for (let entry of Module.hs_initial_dirs) {
-                console.log(entry);
-                // FS.writeFile(entry.path, Uint8Array.from(atob(entry.contents), c => c.charCodeAt(0)), { canOwn: true });
-                FS.mkdirTree(entry.path);
+                try {
+                    FS.mkdirTree(entry.path);
+                } catch (e) {
+                    console.log(e)
+                }
             }
             for (let entry of Module.hs_initial_files) {
-                console.log(entry);
-                FS.writeFile(entry.path, Uint8Array.from(atob(entry.contents), c => c.charCodeAt(0)), { canOwn: true });
+                try {
+                    FS.writeFile(entry.path, Uint8Array.from(atob(entry.contents), c => c.charCodeAt(0)), { canOwn: true });
+                } catch (e) {
+                    console.log(e)
+                }
             }
         }
 
@@ -149,22 +153,28 @@
             .catch((error) => {});
         }
 
-        Module.hs_fs_delfile = async function(path) {
+        Module.hs_fs_delfile = async function(path, workdir) {
             path = UTF8ToString(path);
+            workdir = UTF8ToString(workdir);
+            if (workdir.trim() !== '') path = workdir + '/' + path;
             let entry = {path: path};
             await fetch('/api/fs_delfile', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(entry) })
             .catch((error) => {});
         }
 
-        Module.hs_fs_makedir = async function(path) {
+        Module.hs_fs_makedir = async function(path, workdir) {
             path = UTF8ToString(path);
+            workdir = UTF8ToString(workdir);
+            if (workdir.trim() !== '') path = workdir + '/' + path;
             let entry = {path: path};
             await fetch('/api/fs_makedir', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(entry) })
             .catch((error) => {});
         }
 
-        Module.hs_fs_deldir = async function(path) {
+        Module.hs_fs_deldir = async function(path, workdir) {
             path = UTF8ToString(path);
+            workdir = UTF8ToString(workdir);
+            if (workdir.trim() !== '') path = workdir + '/' + path;
             let entry = {path: path};
             await fetch('/api/fs_deldir', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(entry) })
             .catch((error) => {});
