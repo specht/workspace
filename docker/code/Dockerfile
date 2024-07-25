@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install dart
 RUN yes | unminimize
 RUN apt-get install -y libncurses5-dev iputils-ping
 RUN pip install matplotlib numpy==1.26.4 keras==2.11.0 tensorflow==2.11.0 tensorflowjs==4.0.0
+RUN apt-get install -y cmake
 COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run
 COPY svc-code-server-run /etc/s6-overlay/s6-rc.d/svc-code-server/run
 WORKDIR /workspace

@@ -61,3 +61,11 @@ Die grüne Datei `hello` ist die ausführbare Datei – im Unterschied zu Window
 Wenn alles richtig gemacht wurde, sollte die Ausgabe `Hello, World!` erscheinen.
 
 Herzlichen Glückwunsch! Du hast dein erstes C++-Programm geschrieben und ausgeführt.
+
+### Ausblick
+
+C++ ist eine mächtige Sprache, die viele Möglichkeiten bietet. Hier findest du eine Sammlung von Links, die dir helfen können, mehr über C++ zu lernen:
+
+- [C++ Reference](https://en.cppreference.com/w/cpp) – eine umfassende Referenz für die C++-Programmiersprache.
+- [C++ Tutorial](https://www.learncpp.com/) – ein umfangreiches Tutorial für C++.
+- [C++ FAQ](https://isocpp.org/faq) – häufig gestellte Fragen zur C++-Programmiersprache.

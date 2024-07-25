@@ -1,6 +1,7 @@
 Ani-ma-tio-nen
 An-wen-dungs-ent-wick-lung
 ar-bei-test
+be-lieb-ten
 Bib-lio-thek
 Com-puter
 Da-tei-na-men
@@ -8,7 +9,7 @@ Da-ten-ban-ken
 Daten-bank-pro-gram-mierung
 ein-ge-setzt
 ent-wick-elt
-Ent-wick-lungs-um-gebung
+Ent-wick-lungs-um-ge-bung
 Funk-tio-nen
 Grafiken
 inter-ak-ti-ve
@@ -16,6 +17,7 @@ ken-nen-lernst
 meist-ver-wen-de-ten
 nor-ma-ler-wei-se
 ob-jekt-orien-tierte
+On-line
 Power-Point
 Pro-gram-mier-spra-che
 Pro-gram-mier-spra-chen
