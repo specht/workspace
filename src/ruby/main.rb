@@ -1087,6 +1087,12 @@ class Main < Sinatra::Base
     #     end
     # end
 
+    get '/export/1.2-dev/:tag' do
+        tag = params['tag']
+        assert(%w(html linux mac rpi win winxp).include?(tag))
+        redirect "#{WEB_ROOT}/tic80/export/1.1/#{tag}"
+    end
+
     get '/api/hs_get_all_stored_dirs_and_files' do
         assert(user_logged_in?)
         dirs = []
