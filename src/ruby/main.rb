@@ -1087,7 +1087,7 @@ class Main < Sinatra::Base
     #     end
     # end
 
-    get '/export/1.2-dev/:tag' do
+    get '/export/1.1/:tag' do
         tag = params['tag']
         assert(%w(html linux mac rpi win winxp).include?(tag))
         redirect "#{WEB_ROOT}/tic80/export/1.1/#{tag}"
