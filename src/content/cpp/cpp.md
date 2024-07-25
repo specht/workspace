@@ -1,6 +1,5 @@
 <div class='meta'>
 image: cpp-logo.png
-visible: development
 </div>
 
 # Programmieren in C++
