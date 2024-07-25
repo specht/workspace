@@ -394,6 +394,8 @@ class Main < Sinatra::Base
                         lexer = Rouge::Lexers::Python.new
                     when 'ruby'
                         lexer = Rouge::Lexers::Ruby.new
+                    when 'cpp'
+                        lexer = Rouge::Lexers::Cpp.new
                     when 'bash'
                         lexer = Rouge::Lexers::Shell.new
                     when 'javascript'

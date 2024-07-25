@@ -8,7 +8,7 @@ when 'vaka'
 when 'vakadell'
     "/home/michael/Pictures/Screenshots/"
 end
-latest_path = Dir.glob(File.join(path, '*.png')).sort_by { |f| File.mtime(f) }.last
+latest_path = Dir.glob(File.join(path, '*')).sort_by { |f| File.mtime(f) }.last
 
 STDERR.puts latest_path
 

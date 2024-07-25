@@ -9,7 +9,7 @@
   icon: /images/keyboard.png
   entries:
   - java
-  #- c++
+  - cpp
 - key: computer_graphics
   label: Computergrafik
   icon: /images/palette.png
