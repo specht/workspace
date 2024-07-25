@@ -1,5 +1,4 @@
 <div class='meta'>
-section: programming
 image: showerjs.webp:0:80
 </div>
 

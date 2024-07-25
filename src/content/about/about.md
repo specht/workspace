@@ -1,5 +1,4 @@
 <div class='meta'>
-section: programming
 image: workspace.webp
 </div>
 

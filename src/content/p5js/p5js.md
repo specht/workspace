@@ -1,5 +1,4 @@
 <div class='meta'>
-section: programming
 image: P5js_Logo.png
 visible: development
 </div>

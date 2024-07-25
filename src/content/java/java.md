@@ -1,5 +1,4 @@
 <div class='meta'>
-section: programming
 image: Java-Logo.png
 </div>
 
@@ -8,7 +7,7 @@ image: Java-Logo.png
 <p class='abstract'>
 Java ist eine der meistverwendeten Programmiersprachen weltweit,
 die zum Beispiel in der Anwendungsentwicklung und
-Datenbankprogrammierung eingesetzt wird. In diesem Kapitel lernst du,
+Programmierung von Datenbanken eingesetzt wird. In diesem Kapitel lernst du,
 wie du ein einfaches Programm in Java schreibst und ausführst.
 </p>
 

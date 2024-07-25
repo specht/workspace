@@ -299,9 +299,11 @@ class Main < Sinatra::Base
             STDERR.puts "Copying #{image_path} to cache..."
             FileUtils.cp(image_path, target_path)
         end
-        target_path_512 = "/webcache/#{image_sha1}-512.webp"
-        unless FileUtils.uptodate?(target_path_512, [target_path])
-            system("convert #{target_path} -resize 512x #{target_path_512}")
+        [1024, 512].each do |width|
+            target_path_width = "/webcache/#{image_sha1}-#{width}.webp"
+            unless FileUtils.uptodate?(target_path_width, [target_path])
+                system("convert #{target_path} -resize #{width}x #{target_path_width}")
+            end
         end
         image_sha1
     end
@@ -315,19 +317,24 @@ class Main < Sinatra::Base
         sections = YAML.load(File.read('/src/content/sections.yaml'))
         @@section_order = sections.map { |section| section['key'] }
         @@sections = {}
+        paths = []
         sections.each do |section|
             @@sections[section['key']] = {}
             section.each_pair do |k, v|
                 @@sections[section['key']][k.to_sym] = v
             end
             @@sections[section['key']][:entries] = []
+            (section['entries'] || []).each do |path|
+                paths << {:section => section['key'], :path => path}
+            end
         end
         @@content = {}
+
         StringIO.open do |io|
             redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
-            Dir['/src/content/*/*.md'].sort do |a, b|
-                File.basename(a) <=> File.basename(b)
-            end.each do |path|
+            paths.each do |entry|
+                section = entry[:section]
+                path = Dir["/src/content/#{entry[:path]}/*.md"].first
                 markdown = File.read(path)
                 hyphenation_map.each_pair do |a, b|
                     markdown.gsub!(a, b)
@@ -401,10 +408,9 @@ class Main < Sinatra::Base
                 @@content[slug] = {
                     :html => html
                 }
+                @@sections[section][:entries] << slug
                 if meta
                     meta = YAML.load(meta)
-                    section = meta['section']
-                    @@sections[section][:entries] << slug
                     if meta['image']
                         parts = meta['image'].split(':')
                         sha1 = convert_image(File.join(File.dirname(path), parts[0]))
@@ -883,18 +889,17 @@ class Main < Sinatra::Base
                 section = @@sections[section_key]
                 next if section[:entries].empty?
                 io.puts "<h2><img class='circle' src='#{section[:icon]}'> #{section[:label]}</h2>"
-                io.puts "<hr>"
+                # io.puts "<hr>"
                 io.puts "<div class='row'>"
                 section[:entries].each.with_index do |slug, index|
                     content = @@content[slug]
-                    io.puts "<div class='col-sm-12 col-md-6 col-lg-4'>"
-                    io.puts "<a href='/#{slug}' class='tutorial_card'>"
+                    io.puts "<div class='col-sm-12 col-md-12 col-lg-6'>"
+                    io.puts "<a href='/#{slug}' class='tutorial_card2'>"
                     io.puts "<h4>#{content[:title]}</h4>"
-                    io.puts "<div class='ratio ratio-16x9 mb-2'>"
-                    io.puts "<img src='#{(content[:image] || '/images/white.webp').sub('.webp', '-512.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
-                    io.puts "<div class='shade'></div>"
+                    io.puts "<div class='inner'>"
+                    io.puts "<img src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
+                    io.puts "<div class='abstract'>#{content[:abstract]}</div>"
                     io.puts "</div>"
-                    io.puts "<p class='abstract'>#{content[:abstract]}</p>"
                     io.puts "</a>"
                     io.puts "</div>"
                     # io.puts "<hr>"

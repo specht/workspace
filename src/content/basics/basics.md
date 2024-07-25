@@ -1,7 +1,3 @@
-<div class='meta'>
-section: programming
-</div>
-
 # Die Basics
 
 <p class='abstract'>

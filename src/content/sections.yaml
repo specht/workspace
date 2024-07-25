@@ -1,13 +1,34 @@
-- key: programming
-  label: Programmieren üben
-  icon: /images/hacker.png
-  teaser: Hier bekommst du deine eigene Programmier­umgebung (Visual Studio Code), in der du direkt loslegen kannst, egal ob in Java, Python, Ruby, JavaScript, Go, Lua, C oder C++. Du kannst auch Dokumente mit LATEX setzen.
-- key: linux
-  label: Linux-Befehle lernen
-  icon: /images/penguin.png
-  teaser: Nutze das eingebaute Terminal, um Linux-Kommandos auszuführen und die Linux-Shell zu lernen. Du kannst auch eigene Shell-Skripte schreiben und ausführen.
-- key: git
-  label: Lerne den Umgang mit Git
-  icon: /images/git.png
-  teaser: Du kannst Git direkt im Workspace verwenden, um deine Projekte zu verwalten und mit anderen zu teilen. Du kannst auch GitHub-Repositories klonen und bearbeiten.
+- key: introduction
+  label: Einführung
+  icon: /images/rocket.png
+  entries:
+  - about
+  - basics
+- key: programming_languages
+  label: Programmiersprachen
+  icon: /images/keyboard.png
+  entries:
+  - java
+  #- c++
+- key: computer_graphics
+  label: Computergrafik
+  icon: /images/palette.png
+  entries:
+  - p5js
+- key: artificial_intelligence
+  label: Künstliche Intelligenz
+  icon: /images/brain.png
+  entries:
+  - digits-experiment
+- key: miscellaneous
+  label: Verschiedenes
+  icon: /images/star.png
+  entries:
+  - showerjs
+# - key: linux
+#   label: Linux-Befehle lernen
+#   icon: /images/penguin.png
+# - key: git
+#   label: Lerne den Umgang mit Git
+#   icon: /images/git.png
 

@@ -1,6 +1,5 @@
 <div class='meta'>
-section: programming
-image: digits.webp
+image: digits-16-9.webp
 </div>
 
 # Trainiere ein neuronales Netzwerk

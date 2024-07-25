@@ -199,6 +199,34 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
+    src: url(fonts/IBM_Plex_Sans_Condensed/IBMPlexSansCondensed-Bold.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'IBM Plex Sans Condensed';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/IBM_Plex_Sans_Condensed/IBMPlexSansCondensed-Italic.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'IBM Plex Sans Condensed';
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url(fonts/IBM_Plex_Sans_Condensed/IBMPlexSansCondensed-BoldItalic.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'IBM Plex Sans Condensed';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/IBM_Plex_Sans_Condensed/IBMPlexSansCondensed-Regular.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'IBM Plex Sans Condensed';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
     src: url(fonts/IBM_Plex_Sans/IBMPlexSans-Bold.ttf) format('truetype');
 }
 @font-face {
