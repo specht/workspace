@@ -480,6 +480,12 @@ pre {
     border-radius: 0.5em;
 }
 
+.rouge-line-table pre {
+    padding: 0;
+    font-size: 95%;
+    border-radius: 0;
+}
+
 .hint {
     /* font-style: italic; */
     position: relative;
@@ -572,4 +578,16 @@ pre {
 
 .tutorial_card2.compact .abstract {
     display: none;
+}
+
+img.author {
+    float: right;
+    width: 10em;
+    height: 10em;
+    object-fit: cover;
+    border-radius: 20%;
+    border: 0.5em solid #fff;
+    box-shadow: 0 0 0.5em rgba(0,0,0,0.2);
+    margin-top: 3em;
+    margin-left: 1em;
 }

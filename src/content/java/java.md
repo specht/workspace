@@ -30,13 +30,7 @@ Klicke auf »New File« und wähle als Dateityp »Text File«.
 
 Schreibe nun den folgenden Code in die Datei:
 
-```java
-public class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
-}
-```
+_include_file(HelloWorld.java, java)
 
 Deine Datei sieht noch nicht besonders spektakulär aus, aber das ist in Ordnung und wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
 

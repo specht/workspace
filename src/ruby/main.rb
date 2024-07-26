@@ -343,6 +343,15 @@ class Main < Sinatra::Base
                 section = entry[:section]
                 path = Dir["/src/content/#{entry[:path]}/*.md"].first
                 markdown = File.read(path)
+                markdown.gsub!(/_include_file\(([^)]+)\)/) do |match|
+                    options = $1.split(',').map { |x| x.strip }
+                    StringIO.open do |io|
+                        io.puts "```#{options[1]}_lineno"
+                        io.puts File.read(File.join(File.dirname(path), options[0]))
+                        io.puts "```"
+                        io.string
+                    end
+                end
                 hyphenation_map.each_pair do |a, b|
                     markdown.gsub!(a, b)
                 end
@@ -392,7 +401,12 @@ class Main < Sinatra::Base
                     code = pre.css('code').first
                     next if code.nil?
                     language = code.attr('class')
-                    formatter = Rouge::Formatters::HTML.new
+                    lineno = false
+                    if language =~ /_lineno$/
+                        lineno = true
+                        language = language.sub(/_lineno$/, '')
+                    end
+                    formatter = lineno ? Rouge::Formatters::HTMLLineTable.new(Rouge::Formatters::HTML.new) : Rouge::Formatters::HTML.new
                     lexer = nil
                     case language
                     when 'fortran'
@@ -405,6 +419,8 @@ class Main < Sinatra::Base
                         lexer = Rouge::Lexers::CommonLisp.new
                     when 'java'
                         lexer = Rouge::Lexers::Java.new
+                    when 'nasm'
+                        lexer = Rouge::Lexers::Nasm.new
                     when 'python'
                         lexer = Rouge::Lexers::Python.new
                     when 'ruby'

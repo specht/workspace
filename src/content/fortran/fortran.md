@@ -2,6 +2,8 @@
 image: fortran-logo.png
 </div>
 
+<img class='author' src='backus.jpg'>
+
 # Fortran <span style='font-size: 80%;'>(1957)</span>
 
 <p class='abstract'>
@@ -10,85 +12,14 @@ Fortran wurde 1957 von IBM entwickelt und ist eine der ältesten Programmierspra
 
 ## Hello, world!
 
-```fortran
-program HelloWorld
-    print *, "Hello, World!"
-end program HelloWorld
-```
+_include_file(hello.f90, fortran)
 
 ## Primfaktorenzerlegung
 
-```fortran
-program prime_factors
-    implicit none
-    integer :: n, i
-
-    ! Read the number from the user
-    write(*, *) "Enter a number:"
-    read(*, *) n
-
-    ! Find and print the prime factors
-    write(*, *) "Prime factors of", n, ":"
-    do i = 2, n
-        if (n % i == 0) then
-            write(*, *) i
-            n = n / i
-            i = i - 1
-        end if
-    end do
-
-    stop
-end program prime_factors
-```
+_include_file(factor.f90, fortran)
 
 ## Bubble Sort
 
-```fortran
-program bubble_sort
-    implicit none
-    integer, parameter :: n = 10
-    integer :: arr(n)
-    integer :: i, j, temp
-
-    ! Initialize the array with random values
-    call random_seed()
-    call random_number(arr)
-
-    ! Print the unsorted array
-    print *, "Unsorted array:"
-    do i = 1, n
-        print *, arr(i)
-    end do
-
-    ! Call the bubble sort function
-    call bubble_sort(arr, n)
-
-    ! Print the sorted array
-    print *, "Sorted array:"
-    do i = 1, n
-        print *, arr(i)
-    end do
-
-contains
-
-    subroutine bubble_sort(arr, n)
-        integer, intent(inout) :: arr(:)
-        integer, intent(in) :: n
-        integer :: i, j, temp
-
-        do i = 1, n-1
-            do j = 1, n-i
-                if (arr(j) > arr(j+1)) then
-                    temp = arr(j)
-                    arr(j) = arr(j+1)
-                    arr(j+1) = temp
-                end if
-            end do
-        end do
-
-    end subroutine bubble_sort
-
-end program bubble_sort
-```
+_include_file(sort.f90, fortran)
 
 <div class='alert alert-warning'>#{stub()}</div>

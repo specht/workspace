@@ -2,6 +2,8 @@
 image: c-logo.png
 </div>
 
+<img class='author' src='ritchie.jpg'>
+
 # C <span style='font-size: 80%;'>(1972)</span>
 
 <p class='abstract'>

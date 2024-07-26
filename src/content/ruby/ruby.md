@@ -2,6 +2,8 @@
 image: ruby-logo.png
 </div>
 
+<img class='author' src='matz.jpg'>
+
 # Ruby <span style='font-size: 80%;'>(1995)</span>
 
 <p class='abstract'>
