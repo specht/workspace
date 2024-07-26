@@ -2,7 +2,7 @@
 image: Java-Logo.png
 </div>
 
-# Java (1995)
+# Java <span style='font-size: 80%;'>(1995)</span>
 
 <p class='abstract'>
 Java ist eine der meistverwendeten Programmiersprachen weltweit,

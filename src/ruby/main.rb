@@ -395,6 +395,14 @@ class Main < Sinatra::Base
                     formatter = Rouge::Formatters::HTML.new
                     lexer = nil
                     case language
+                    when 'fortran'
+                        lexer = Rouge::Lexers::Fortran.new
+                    when 'basic'
+                        lexer = Rouge::Lexers::VisualBasic.new
+                    when 'c'
+                        lexer = Rouge::Lexers::C.new
+                    when 'clisp'
+                        lexer = Rouge::Lexers::CommonLisp.new
                     when 'java'
                         lexer = Rouge::Lexers::Java.new
                     when 'python'
@@ -429,7 +437,7 @@ class Main < Sinatra::Base
                     end
                 end
                 begin
-                    @@content[slug][:title] = root.css('h1').first.text
+                    @@content[slug][:title] = root.css('h1').first.to_s.sub('<h1>', '').sub('</h1>', '').strip
                 rescue
                 end
                 begin
