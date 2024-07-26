@@ -9,5 +9,3 @@ Ruby ist eine von Yukihiro Matsumoto entwickelte Programmiersprache, die im Jahr
 </p>
 
 <div class='alert alert-warning'>#{stub()}</div>
-
-<div class='alert alert-warning'>#{stub()}</div>
