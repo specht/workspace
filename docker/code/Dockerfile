@@ -12,7 +12,7 @@ RUN sudo apt-get update && sudo apt-get install -y \
     htop \
     build-essential file \
     libncurses5-dev iputils-ping \
-    cmake \
+    cmake autoconf \
     mc \
     gfortran bwbasic clisp mono-devel \
     golang-go \
