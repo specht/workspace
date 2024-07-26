@@ -117,7 +117,7 @@ if PROFILE.include?(:static)
         f.write nginx_config
     end
     if PROFILE.include?(:dynamic)
-        docker_compose[:services][:nginx][:depends_on] = [:ruby]
+        docker_compose[:services][:nginx][:depends_on] = [:ruby, :phpmyadmin]
     end
 end
 
@@ -173,6 +173,19 @@ docker_compose[:services][:mysql] = {
         'MYSQL_ROOT_PASSWORD' => MYSQL_ROOT_PASSWORD
     },
     :ports => ['0.0.0.0:3306:3306'],
+}
+
+docker_compose[:services][:phpmyadmin] = {
+    :image => 'phpmyadmin/phpmyadmin',
+    :volumes => ["#{MYSQL_DATA_PATH}:/var/lib/mysql"],
+    :restart => 'always',
+    :expose => ['80']
+}
+docker_compose[:services][:phpmyadmin][:depends_on] ||= []
+docker_compose[:services][:phpmyadmin][:depends_on] << :mysql
+docker_compose[:services][:phpmyadmin][:links] = ['mysql:mysql']
+docker_compose[:services][:phpmyadmin][:environment] = {
+    'PMA_HOST' => 'mysql',
 }
 
 # docker_compose[:services][:neo4j_user] = {

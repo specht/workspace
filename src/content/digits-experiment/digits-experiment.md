@@ -5,7 +5,7 @@ image: digits-16-9.webp
 # Trainiere ein neuronales Netzwerk
 
 <p class='abstract'>
-Trainiere ein einfaches neuronales Netzwerk, das handgeschriebene Ziffern oder Symbole erkennen kann.
+In diesem Experiment lernst du, wie du ein neuronales Netzwerk trainierst, das deine handgeschriebenen Ziffern erkennt. Dazu verwendest du TensorFlow und Keras, zwei Bibliotheken für maschinelles Lernen in Python.
 </p>
 
 In diesem Artikel bekommst du eine Schritt-für-Schritt-Anleitung. Lies sie genau und befolge einen Schritt nach dem anderen.

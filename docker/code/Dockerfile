@@ -11,6 +11,9 @@ RUN sudo apt-get update && sudo apt-get install -y \
     texlive-full \
     htop \
     build-essential file \
+    libncurses5-dev iputils-ping \
+    cmake \
+    mc \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
 RUN apt-get update && sudo apt-get install apt-transport-https
@@ -18,9 +21,10 @@ RUN wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg  --dea
 RUN echo 'deb [signed-by=/usr/share/keyrings/dart.gpg arch=amd64] https://storage.googleapis.com/download.dartlang.org/linux/debian stable main' | tee /etc/apt/sources.list.d/dart_stable.list
 RUN apt-get update && apt-get install dart
 RUN yes | unminimize
-RUN apt-get install -y libncurses5-dev iputils-ping
 RUN pip install matplotlib numpy==1.26.4 keras==2.11.0 tensorflow==2.11.0 tensorflowjs==4.0.0
-RUN apt-get install -y cmake
+RUN apt-get install -y gfortran bwbasic clisp mono-devel
+RUN apt-get install -y golang-go
+RUN apt-get install -y rustc cargo
 COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run
 COPY svc-code-server-run /etc/s6-overlay/s6-rc.d/svc-code-server/run
 WORKDIR /workspace

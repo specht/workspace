@@ -184,14 +184,16 @@ window.addEventListener('load', function() {
     <div class="menu">
         <div class="container">
             <div style='text-align: center; width: 100%;'>
-                <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="btn btn-success #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='fa fa-sign-in'></i>&nbsp;Anmelden</a>
-                <button style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='fa fa-code'></i>&nbsp;Workspace öffnen</button>
-                <a href='/admin' style='#{admin_logged_in? ? '' : 'display: none;'}' class="btn btn-warning"><i class='fa fa-wrench'></i>&nbsp;Administration</a>
-                <button style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_settings' class="btn btn-outline-secondary"><i class='fa fa-chevron-down rot'></i></button>
+                <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="btn btn-success #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='fa fa-sign-in'></i>&nbsp;&nbsp;Anmelden</a>
+                <button style='#{(@session_user.nil? || @session_user[:show_workspace] == false) ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='fa fa-code'></i>&nbsp;&nbsp;Workspace öffnen</button>
+                <a style='#{(@session_user.nil? || @session_user[:show_phpmyadmin] == false) ? 'display: none;' : ''}' href="/phpmyadmin/" class="btn btn-success" target="_blank"><i class='fa fa-database'></i>&nbsp;&nbsp;phpmyadmin</a>
+                <a style='#{(@session_user.nil? || @session_user[:show_tic80] == false) ? 'display: none;' : ''}' href="/tic80/" class="btn btn-success" target="_blank"><i class='fa fa-keyboard-o'></i>&nbsp;&nbsp;TIC-80</a>
+                <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-secondary"><i class='fa fa-wrench'></i>&nbsp;&nbsp;Profil</a>
+                <a href='/admin' style='#{admin_logged_in? ? '' : 'display: none;'}' class="btn btn-warning"><i class='fa fa-wrench'></i>&nbsp;&nbsp;Administration</a>
+                <!-- <button style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_settings' class="btn btn-outline-secondary"><i class='fa fa-chevron-down rot'></i></button> -->
             </div>
-            <div id='div_settings' style='display: none; text-align: center; width: 100%; border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;'>
+            <!-- <div id='div_settings' style='display: none; text-align: center; width: 100%; border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;'>
                 <div style="margin-top: -6px;">
-                    <a style='margin-top: 4px;' class="btn btn-success" href="/tic80/" target="_blank"><i class='fa fa-keyboard-o'></i>&nbsp;TIC-80</a>
                     <button style='margin-top: 4px; #{(@session_user || {})[:share_tag].nil? ? '' : 'display: none;'}'id='bu_share' class="btn btn-primary"><i class='fa fa-send'></i>&nbsp;&nbsp;Teilen</button>
                     <button style='margin-top: 4px; #{(@session_user || {})[:share_tag].nil? ? 'display: none;' : ''}' id='bu_stop_share' class="btn btn-primary"><i class='fa fa-trash'></i>&nbsp;&nbsp;Teilen beenden</button>
                     <button style='margin-top: 4px; ' id='bu_reset' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen</button>
@@ -204,7 +206,7 @@ window.addEventListener('load', function() {
                         <button id='bu_copy_share_link' class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}'><i class='fa fa-clipboard'></i></button>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
     #{CONTENT}

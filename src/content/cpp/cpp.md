@@ -2,7 +2,7 @@
 image: cpp-logo.png
 </div>
 
-# Programmieren in C++
+# C++ (1983)
 
 <p class='abstract'>
 C++ ist eine Programmiersprache, die im Jahr 1983 von Bjarne Stroustrup entwickelt wurde. Sie ist eine Erweiterung der Programmiersprache C und wird in vielen Bereichen eingesetzt, darunter Spieleentwicklung, Betriebssysteme und Anwendungen, die hohe Leistung erfordern.

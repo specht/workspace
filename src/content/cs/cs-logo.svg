@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="160"
+   height="90"
+   id="svg1968"
+   sodipodi:version="0.32"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   version="1.0"
+   sodipodi:docname="cs-logo.svg"
+   inkscape:export-filename="/home/michael/programming/websites/workspace/src/content/cs/cs-logo.png"
+   inkscape:export-xdpi="1228.8"
+   inkscape:export-ydpi="1228.8"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs1970" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="9.05625"
+     inkscape:cx="80"
+     inkscape:cy="44.996549"
+     inkscape:document-units="px"
+     inkscape:current-layer="Ebene_x0020_1"
+     width="68.51mm"
+     height="129.89mm"
+     units="mm"
+     inkscape:window-width="2496"
+     inkscape:window-height="1369"
+     inkscape:window-x="2624"
+     inkscape:window-y="34"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata1973">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(3824.556,782.8939)">
+    <g
+       id="Ebene_x0020_1"
+       transform="translate(-3826.724,-785.8793)"
+       inkscape:label="Ebene 1"
+       inkscape:groupmode="layer">
+      <metadata
+         id="CorelCorpID_0Corel-Layer" />
+      <g
+         id="g2448"
+         transform="matrix(0.24368824,0,0,0.24368824,51.026836,12.985374)">
+        <path
+           d="m 255.569,84.452 c -0.002,-4.83 -1.035,-9.098 -3.124,-12.76 -2.052,-3.603 -5.125,-6.622 -9.247,-9.009 C 209.173,43.064 175.115,23.505 141.101,3.866 131.931,-1.428 123.04,-1.234 113.938,4.136 100.395,12.122 32.59,50.969 12.385,62.672 4.064,67.49 0.015,74.862 0.013,84.443 0,123.898 0.013,163.353 0,202.808 c 0,4.724 0.991,8.91 2.988,12.517 2.053,3.711 5.169,6.813 9.386,9.254 20.206,11.703 88.02,50.547 101.56,58.536 9.106,5.373 17.997,5.565 27.17,0.27 34.015,-19.64 68.075,-39.199 102.105,-58.818 4.217,-2.44 7.333,-5.544 9.386,-9.252 1.994,-3.608 2.987,-7.793 2.987,-12.518 0,0 0,-78.889 -0.013,-118.345"
+           fill="#a179dc"
+           id="path2424" />
+        <path
+           d="M 128.182,143.241 2.988,215.325 c 2.053,3.711 5.169,6.813 9.386,9.254 20.206,11.703 88.02,50.547 101.56,58.536 9.106,5.373 17.997,5.565 27.17,0.27 34.015,-19.64 68.075,-39.199 102.105,-58.818 4.217,-2.44 7.333,-5.544 9.386,-9.252 z"
+           fill="#280068"
+           id="path2426" />
+        <path
+           d="m 255.569,84.452 c -0.002,-4.83 -1.035,-9.098 -3.124,-12.76 l -124.263,71.55 124.413,72.073 c 1.994,-3.608 2.985,-7.793 2.987,-12.518 0,0 0,-78.889 -0.013,-118.345"
+           fill="#390091"
+           id="path2428" />
+        <g
+           fill="#ffffff"
+           id="g2434">
+          <path
+             d="m 201.892,116.294 v 13.474 h 13.474 v -13.474 h 6.737 v 13.474 h 13.474 v 6.737 h -13.474 v 13.473 h 13.474 v 6.737 h -13.474 v 13.474 h -6.737 v -13.474 h -13.474 v 13.474 h -6.737 v -13.474 h -13.473 v -6.737 h 13.473 v -13.473 h -13.473 v -6.737 h 13.473 v -13.474 z m 13.474,20.21 h -13.474 v 13.474 h 13.474 z"
+             id="path2430" />
+          <path
+             d="m 128.457,48.626 c 35.144,0 65.827,19.086 82.262,47.456 l -0.16,-0.273 -41.35,23.808 c -8.146,-13.793 -23.08,-23.102 -40.213,-23.294 l -0.54,-0.003 c -26.125,0 -47.305,21.18 -47.305,47.305 a 47.08,47.08 0 0 0 6.239,23.47 c 8.154,14.235 23.483,23.836 41.067,23.836 17.693,0 33.109,-9.723 41.221,-24.11 l -0.197,0.345 41.287,23.918 c -16.255,28.13 -46.518,47.157 -81.253,47.536 l -1.058,0.006 c -35.255,0 -66.025,-19.204 -82.419,-47.724 -8.003,-13.923 -12.582,-30.064 -12.582,-47.277 0,-52.466 42.532,-95 95,-95 z"
+             id="path2432" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

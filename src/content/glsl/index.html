@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<script id='shader-vs' type='x-shader/x-vertex'>
+#version 100
+// -------------- VERTEX SHADER --------------
+attribute vec2 pos;
+
+void main() {
+    gl_Position = vec4(pos, 0.0, 1.0);
+}
+// -------------------------------------------
+</script>
+
+<script id='shader-fs' type='x-shader/x-fragment'>
+#version 100
+// ------------- FRAGMENT SHADER -------------
+precision highp float;
+uniform vec4 uColor;
+uniform float t;
+uniform vec2 size;
+
+float f(float _x, float _y)
+{
+    float x = (_x - size.x / 2.0) * 0.3;
+    float y = (_y - size.y / 2.0) * 0.3;
+    x = x / size.y * 300.0;
+    y = y / size.y * 300.0;
+    x += cos(y * 0.04 + t) * sin(t * 0.1) * 20.0;
+    y += sin(x * 0.04 + t) * sin(t * 0.1) * 20.0;
+    float r = sqrt(x * x + y * y) * 2.0;
+    return r;
+}
+
+void main() {
+    float z = 30.0;//f(gl_FragCoord.x, gl_FragCoord.y);
+    float dx = f(gl_FragCoord.x + 1.0, gl_FragCoord.y) - z;
+    float dy = f(gl_FragCoord.x, gl_FragCoord.y + 1.0) - z;
+    dx = 1.0 - exp(dx);
+    dy = 1.0 - exp(dy);
+    z = pow(sin(z), 00000.1) * 0.4 + 0.5;
+    gl_FragColor = vec4(dx * 5.0, z, dy * 5.0, 1.0);
+}
+// -------------------------------------------
+</script>
+
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Shader-Experiment</title>
+</head>
+
+<style type='text/css'>
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: monospace;
+}
+
+#error-message {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.2);
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    padding: 20px;
+}
+</style>
+
+<body>
+<script type='text/javascript'>
+
+window.onerror = function(e) {
+    let div = document.getElementById('error-message');
+    console.log(div);
+    div.innerHTML = e;
+    div.style.display = 'block';
+}
+
+function shaderProgram(gl, vs, fs) {
+    let prog = gl.createProgram();
+    var addshader = function(type, source) {
+        var s = gl.createShader((type == 'vertex') ?
+            gl.VERTEX_SHADER : gl.FRAGMENT_SHADER);
+        gl.shaderSource(s, source);
+        gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+            throw new Error(gl.getShaderInfoLog(s));
+        }
+        gl.attachShader(prog, s);
+    };
+    addshader('vertex', vs);
+    addshader('fragment', fs);
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+        throw new Error(gl.getProgramInfoLog(prog));
+    }
+    return prog;
+}
+
+function draw(gl) {
+    window.prog.uColor = gl.getUniformLocation(window.prog, 'uColor');
+    gl.uniform4fv(window.prog.uColor, [0.0, 0.3, 0.4, 1.0]);
+
+    window.prog.pos = gl.getAttribLocation(window.prog, 'pos');
+    gl.enableVertexAttribArray(window.prog.pos);
+    gl.vertexAttribPointer(window.prog.pos, itemSize, gl.FLOAT, false, 0, 0);
+
+    window.prog.t = gl.getUniformLocation(prog, 't');
+    gl.uniform1f(window.prog.t, performance.now() / 1000.0);
+    
+    window.prog.size = gl.getUniformLocation(prog, 'size');
+    gl.uniform2fv(window.prog.size, [window.innerWidth, window.innerHeight]);
+
+    gl.drawArrays(gl.TRIANGLES, 0, numItems);
+}
+
+window.addEventListener('load', function() {
+    document.getElementById('webgl').width = window.innerWidth;
+    document.getElementById('webgl').height = window.innerHeight;
+    try {
+        var gl = document.getElementById('webgl')
+            .getContext('experimental-webgl');
+        if (!gl) { throw 'x'; }
+    } catch (err) {
+        throw 'Your web browser does not support WebGL!';
+    }
+
+    gl.clearColor(0, 0, 0, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    window.prog = shaderProgram(gl,
+        document.getElementById('shader-vs').firstChild.nodeValue,
+        document.getElementById('shader-fs').firstChild.nodeValue
+    );
+    gl.useProgram(window.prog);
+
+    var vertices = new Float32Array([-1, 1, 1, 1, 1, -1, -1, 1, 1, -1, -1 ,-1]);
+
+    vbuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+    itemSize = 2;
+    numItems = vertices.length / itemSize;
+
+    setInterval(function() { draw(gl); }, 1);
+});
+
+window.addEventListener('resize', function() {
+    console.log('resize');
+    document.getElementById('webgl').width = window.innerWidth;
+    document.getElementById('webgl').height = window.innerHeight;
+});
+
+</script>
+<canvas id='webgl'></canvas>
+<div id='error-message' style='display: none;'>
+</div>
+
+</body>
+</html>

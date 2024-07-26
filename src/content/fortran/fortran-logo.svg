@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="160"
+   height="90"
+   id="svg1968"
+   sodipodi:version="0.32"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   version="1.0"
+   sodipodi:docname="fortran-logo.svg"
+   inkscape:export-filename="/home/michael/programming/websites/workspace/src/content/fortran/fortran-logo.png"
+   inkscape:export-xdpi="1228.8"
+   inkscape:export-ydpi="1228.8"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs1970" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.6652978"
+     inkscape:cx="-59.148579"
+     inkscape:cy="23.719481"
+     inkscape:document-units="px"
+     inkscape:current-layer="g2452"
+     width="68.51mm"
+     height="129.89mm"
+     units="mm"
+     inkscape:window-width="2496"
+     inkscape:window-height="1369"
+     inkscape:window-x="2624"
+     inkscape:window-y="34"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:window-maximized="1"
+     inkscape:snap-to-guides="false" />
+  <metadata
+     id="metadata1973">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(3824.556,782.8939)">
+    <g
+       id="Ebene_x0020_1"
+       transform="translate(-3826.724,-785.8793)"
+       inkscape:label="Ebene 1"
+       inkscape:groupmode="layer">
+      <metadata
+         id="CorelCorpID_0Corel-Layer" />
+      <g
+         id="g2452"
+         transform="matrix(0.20328214,0,0,0.20328214,51.065833,12.985399)">
+        <g
+           id="g2436"
+           transform="matrix(0.11916923,0,0,0.11916923,1.0341446,20.215738)">
+          <g
+             id="layer101"
+             style="fill:#734f96;stroke:none"
+             transform="translate(0.142,-7.901)">
+            <path
+               d="M 374,2558.203 C 223.231,2558.253 -0.142,2295.04 -0.142,2181.664 v -1802 C -0.142,227.08 263.836,7.893 377.76,7.901 l 1805.356,0.127 c 155.783,0.01 367.163,254.122 367.163,375.222 v 1803.768 c 0,177.696 -238.056,370.532 -372.282,370.577 z"
+               id="path2" />
+          </g>
+          <g
+             id="layer102"
+             style="fill:#ffffff;stroke:none"
+             transform="translate(0.142,-7.901)">
+            <path
+               d="m 350,2062 98,-6 c 199,-13 197,-12 207,-168 9,-148 -2.337,-1306.766 -9,-1330 -10.975,-38.27 -52.156,-60.281 -175,-60.25 L 350,497 V 280 h 1860 v 831 l -219,-3.25 c -2,-2 -8,-60.75 -12,-114.75 -23,-254 -80,-400.142 -190,-457.142 -58,-30 -148.565,-38.842 -438.652,-38.93 L 1080,497 v 623 h 48 c 81,-1 184,-20 218,-41 44,-27 81,-105 94,-199 9.8,-68.603 17.362,-119.933 17.362,-119.933 L 1670,760 v 990 h -220 v -39 c 0,-64 -30,-213 -51,-258 -33,-69 -89,-93 -248,-108 l -73,-7 4,321 c 3,305 5,322 24,348 24,32 50,38 209,50 l 106.727,5.077 L 1421,2280 H 350 Z"
+               id="path5" />
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -347,6 +347,9 @@ tr.noborder td {
     padding: 0.5em 0.5em 0.5em 0.5em;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     margin-bottom: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .tutorial_card2 div > img {
@@ -553,4 +556,20 @@ pre {
     .tutorial_card2 .abstract {
         height: calc(25em * 9 / 16 / 0.9);
     }
+}
+
+@media (pointer: coarse) {
+    .scroll-x > img {
+        width: calc(max(100%, 900px));
+    }
+}
+
+
+.tutorial_card2.compact div > img {
+    width: 100%;
+    height: calc(100% * 9 / 16);
+}
+
+.tutorial_card2.compact .abstract {
+    display: none;
 }

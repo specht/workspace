@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="160"
+   height="90"
+   id="svg1968"
+   sodipodi:version="0.32"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   version="1.0"
+   sodipodi:docname="c-logo.svg"
+   inkscape:export-filename="/home/michael/programming/websites/workspace/src/content/c/c-logo.png"
+   inkscape:export-xdpi="1228.8"
+   inkscape:export-ydpi="1228.8"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs1970" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="9.05625"
+     inkscape:cx="80"
+     inkscape:cy="33.954451"
+     inkscape:document-units="px"
+     inkscape:current-layer="g2452"
+     width="68.51mm"
+     height="129.89mm"
+     units="mm"
+     inkscape:window-width="2496"
+     inkscape:window-height="1369"
+     inkscape:window-x="2624"
+     inkscape:window-y="34"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata1973">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(3824.556,782.8939)">
+    <g
+       id="Ebene_x0020_1"
+       transform="translate(-3826.724,-785.8793)"
+       inkscape:label="Ebene 1"
+       inkscape:groupmode="layer">
+      <metadata
+         id="CorelCorpID_0Corel-Layer" />
+      <g
+         id="g2452"
+         transform="matrix(0.20328214,0,0,0.20328214,51.065833,12.985399)">
+        <g
+           id="g2467"
+           transform="matrix(1.4076282,0,0,1.4076282,-49.747276,-30.52396)">
+          <path
+             d="m 252.71,93.61 a 21.67,21.67 0 0 0 -2.65,-10.87 20.74,20.74 0 0 0 -7.87,-7.67 Q 198.77,50 155.32,25 c -7.8,-4.51 -15.36,-4.35 -23.11,0.23 C 120.69,32 63,65.09 45.81,75.06 38.73,79.16 35.29,85.44 35.29,93.6 v 100.8 a 21.77,21.77 0 0 0 2.55,10.66 20.63,20.63 0 0 0 8,7.88 c 17.19,10 74.89,43.05 86.41,49.85 7.75,4.58 15.31,4.74 23.12,0.23 q 43.41,-25.08 86.87,-50.09 a 20.63,20.63 0 0 0 8,-7.88 21.77,21.77 0 0 0 2.55,-10.66 V 93.61 Z"
+             fill="#004482"
+             id="path2449" />
+          <path
+             d="m 252.73,194.4 a 21.72,21.72 0 0 1 -2.55,10.66 18.58,18.58 0 0 1 -1.45,2.24 L 144,144 242.19,75.07 a 20.72,20.72 0 0 1 7.86,7.67 21.57,21.57 0 0 1 2.66,10.87 c 0.02,33.6 0.02,100.79 0.02,100.79 z"
+             fill="#00599c"
+             id="path2451" />
+          <path
+             d="M 250.05,82.74 37.81,205.06 A 21.75,21.75 0 0 1 35.28,194.41 V 93.6 C 35.28,85.44 38.73,79.16 45.8,75.06 63,65.09 120.69,32 132.22,25.21 c 7.73,-4.58 15.3,-4.74 23.1,-0.23 q 43.41,25.08 86.87,50.09 a 20.72,20.72 0 0 1 7.86,7.67 z"
+             fill="#659ad2"
+             id="path2453" />
+          <path
+             d="m 148.2,184.72 a 39.91,39.91 0 0 1 -35,-20.63 q -0.53,-0.94 -1,-1.92 A 39.94,39.94 0 0 1 179,119.4 c 0.53,0.64 1,1.31 1.53,2 0.24,0.33 0.48,0.66 0.7,1 l 35.07,-20.2 q -1.28,-2.06 -2.68,-4 c -0.49,-0.69 -1,-1.35 -1.48,-2 A 79.9,79.9 0 0 0 78,181.92 c 0.34,0.64 0.69,1.27 1,1.9 a 79.91,79.91 0 0 0 136.86,3.62 l -34.29,-20.73 a 39.88,39.88 0 0 1 -33.37,18.01 z"
+             fill="#ffffff"
+             id="path2455" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

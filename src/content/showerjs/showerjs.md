@@ -122,6 +122,4 @@ Generell ist es so, dass bei HTML Textteile in sogenannte Tags eingeschlossen we
 
 Während HTML für die Struktur eines Dokuments zuständig ist, wird CSS für die visuelle Repräsentation, also das Aussehen, verwendet.
 
-<div style='text-align: center;'>
-<em>to be continued...</em>
-</div>
+<div class='alert alert-warning'>#{stub()}</div>

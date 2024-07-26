@@ -21,6 +21,13 @@ Faye::WebSocket.load_adapter('thin')
 
 CACHE_BUSTER = SecureRandom.alphanumeric(12)
 
+MODULE_ORDER = [:workspace, :phpmyadmin, :tic80]
+MODULE_LABELS = {
+    :workspace => 'Workspace (Visual Studio Code)',
+    :phpmyadmin => 'phpMyAdmin',
+    :tic80 => 'TIC-80',
+}
+
 class Neo4jGlobal
     include Neo4jBolt
 end
@@ -526,6 +533,11 @@ class Main < Sinatra::Base
                                     :server_tag => results.first['u'][:server_tag],
                                     :share_tag => results.first['u'][:share_tag],
                                 }
+                                results.first['u'].each_pair do |k, v|
+                                    next if @session_user.include?(k.to_sym)
+                                    @session_user[k.to_sym] = v
+                                end
+                                @session_user[:show_workspace] = true unless @session_user.include?(:show_workspace)
                                 # set server_sid cookie if it's not set or out of date
                                 expires = Time.new + 3600 * 24 * 365
                                 [:server_sid].each do |key|
@@ -715,6 +727,19 @@ class Main < Sinatra::Base
         password
     end
 
+    def init_mysql(email)
+        mysql_password = Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT)
+        STDERR.puts "Setting up MySQL user #{email} with password #{mysql_password}"
+        Open3.popen2("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+            stdin.puts "CREATE USER IF NOT EXISTS '#{email}'@'%' identified by '#{mysql_password}';"
+            stdin.puts "CREATE DATABASE IF NOT EXISTS `#{email}`;"
+            stdin.puts "GRANT ALL ON `#{email}`.* TO '#{email}'@'%';"
+            stdin.puts "FLUSH PRIVILEGES;"
+            stdin.close
+            wait_thr.value
+        end
+    end
+
     def start_server(email)
         container_name = fs_tag_for_email(email)
 
@@ -739,25 +764,8 @@ class Main < Sinatra::Base
             end
         end
         system("chown -R 1000:1000 /user/#{container_name}")
-        mysql_user = @session_user[:email]
-        mysql_password = Main.gen_password_for_email(mysql_user, MYSQL_PASSWORD_SALT)
-        STDERR.puts "Setting up MySQL user #{mysql_user} with password #{mysql_password}"
-        # [
-        #     "CREATE USER IF NOT EXISTS '#{mysql_user}'@'%' identified by '#{mysql_password}';",
-        #     "CREATE DATABASE IF NOT EXISTS `#{mysql_user}`;",
-        #     "GRANT ALL ON `#{mysql_user}`.* TO '#{mysql_user}'@'%';",
-        #     "FLUSH PRIVILEGES;",
-        # ].each do |query|
-        #     system("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD} -e \"#{query}\"")
-        # end
-        Open3.popen2("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
-            stdin.puts "CREATE USER IF NOT EXISTS '#{mysql_user}'@'%' identified by '#{mysql_password}';"
-            stdin.puts "CREATE DATABASE IF NOT EXISTS `#{mysql_user}`;"
-            stdin.puts "GRANT ALL ON `#{mysql_user}`.* TO '#{mysql_user}'@'%';"
-            stdin.puts "FLUSH PRIVILEGES;"
-            stdin.close
-            wait_thr.value
-        end
+        init_mysql(email)
+
         network_name = "bridge"
         mysql_ip = `docker inspect workspace_mysql_1`.split('"IPAddress": "')[1].split('"')[0]
         system("docker run --add-host=mysql:#{mysql_ip} --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} --name hs_code_#{container_name} hs_code_server")
@@ -891,12 +899,15 @@ class Main < Sinatra::Base
                 section = @@sections[section_key]
                 next if section[:entries].empty?
                 io.puts "<h2><img class='circle' src='#{section[:icon]}'> #{section[:label]}</h2>"
+                if section[:description]
+                    io.puts "<p>#{section[:description]}</p>"
+                end
                 # io.puts "<hr>"
                 io.puts "<div class='row'>"
                 section[:entries].each.with_index do |slug, index|
                     content = @@content[slug]
-                    io.puts "<div class='col-sm-12 col-md-12 col-lg-6'>"
-                    io.puts "<a href='/#{slug}' class='tutorial_card2'>"
+                    io.puts "<div class='col-sm-12 #{section_key == 'programming_languages' ? 'col-md-6' : 'col-md-12'} #{section_key == 'programming_languages' ? 'col-lg-4' : 'col-lg-6'}'>"
+                    io.puts "<a href='/#{slug}' class='tutorial_card2 #{section_key == 'programming_languages' ? 'compact' : ''}'>"
                     io.puts "<h4>#{content[:title]}</h4>"
                     io.puts "<div class='inner'>"
                     io.puts "<img src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
@@ -986,6 +997,13 @@ class Main < Sinatra::Base
                     io.puts "</div>"
                 end
             end
+            io.string
+        end
+    end
+
+    def stub
+        StringIO.open do |io|
+            io.puts "<em>Dieser Artikel ist noch nicht vollständig. Schreib eine E-Mail an <a href='mailto:specht@gymnasiumsteglitz.de'>specht@gymnasiumsteglitz.de</a>, wenn du dabei helfen möchtest, ihn fertigzustellen.</em>"
             io.string
         end
     end
@@ -1226,6 +1244,50 @@ class Main < Sinatra::Base
         # FileUtils.rm(path)
         # FileUtils.rm_rf(out_path)
         respond(:uploaded => 'yeah', :files => files)
+    end
+
+    post '/api/toggle_show_module' do
+        assert(user_logged_in?)
+
+        params = parse_request_data(:required_keys => [:module])
+        key = params[:module].to_sym
+        assert(MODULE_ORDER.include?(key))
+
+        flag = @session_user["show_#{key}".to_sym] == true
+        new_flag = !flag
+
+        email = @session_user[:email]
+        neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :value => new_flag})
+            MATCH (u:User {email: $email})
+            SET u.show_#{key} = $value
+            RETURN u;
+        END_OF_STRING
+
+        respond(:yay => 'sure')
+    end
+
+    def print_module_table
+        assert(user_logged_in?)
+        StringIO.open do |io|
+            io.puts "<table class='table'>"
+            io.puts "<thead>"
+            io.puts "<tr>"
+            io.puts "<th>Modul</th>"
+            io.puts "<th>Status</th>"
+            io.puts "</tr>"
+            io.puts "</thead>"
+            io.puts "<tbody>"
+            MODULE_ORDER.each do |key|
+                io.puts "<tr>"
+                io.puts "<td>#{MODULE_LABELS[key]}</td>"
+                active = @session_user["show_#{key}".to_sym]
+                io.puts "<td><button class='btn btn-sm #{active ? 'btn-success' : 'btn-secondary'} bu-toggle-module' data-module='#{key}'><i class='fa #{active ? 'fa-check' : 'fa-times'}'></i>&nbsp;&nbsp;Modul #{active ? 'aktiv' : 'inaktiv'}</button></td>"
+                io.puts "</tr>"
+            end
+            io.puts "</tbody>"
+            io.puts "</table>"
+            io.string
+        end
     end
 
     get '/*' do

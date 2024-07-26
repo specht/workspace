@@ -2,7 +2,7 @@
 image: Java-Logo.png
 </div>
 
-# Programmieren in Java
+# Java (1995)
 
 <p class='abstract'>
 Java ist eine der meistverwendeten Programmiersprachen weltweit,

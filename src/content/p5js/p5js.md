@@ -1,9 +1,8 @@
 <div class='meta'>
 image: P5js_Logo.png
-visible: development
 </div>
 
-# Grafikprogrammierung in p5.js
+# Grafik-Programmierung in p5.js
 
 <p class='abstract'>
 p5.js ist eine JavaScript-Bibliothek, die speziell für Künstler und Designer entwickelt wurde. Sie macht es einfach, interaktive Grafiken und Animationen zu erstellen.
@@ -43,3 +42,5 @@ function draw() {
     phi += 0.01;
 }
 ```
+
+<div class='alert alert-warning'>#{stub()}</div>

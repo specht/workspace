@@ -1,0 +1,33 @@
+<style>
+    h2 {
+        margin: 1em 0;
+    }
+</style>
+<div class='container'>
+    <div class='row'>
+        <div class='col-md-12'>
+            <!-- <h2>Zugang teilen</h2> -->
+            <h2>Module aktivieren oder deaktivieren</h2>
+            <p>
+                Hier kannst du auswählen, welche Module du in deinem Workspace verwenden möchtest. Für jedes aktive Modul wird dir ein entsprechender Button in der oberen Leiste angezeigt.
+            </p>
+            #{print_module_table}
+            <h2>Module zurücksetzen</h2>
+            <h2>Abmelden</h2>
+            <a style='margin-top: 4px; #{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-danger" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.addEventListener('load', function() {
+        $('.bu-toggle-module').on('click', function(e) {
+            let key = $(e.target).closest('button').data('module');
+            api_call('/api/toggle_show_module', {module: key}, function(data) {
+                if (data.success) {
+                    window.location.reload();
+                }
+            });
+        });
+    });
+</script>

@@ -37,3 +37,66 @@ DBML:
 nicolas-liger.dbml-viewer
 bocovo.dbml-erd-visualizer
 
+
+=> Fortran gfortran
+apt install gfortran
+program hello
+    print *, "Hello, World!"
+end program hello
+gfortran hello.f90 -o hello
+
+=> BASIC bwbasic
+10 FOR I = 1 TO 10
+20 PRINT "HELLO, WORLD!", I
+30 NEXT I
+
+=> C gcc
+
+=> C++ g++
+
+=> Common Lisp (clisp) .lsp
+(defun hello ()
+           (format t "Hello, World!"))
+(hello)
+=> Python
+
+=> Lua
+-- hello world lua program
+print ("Hello, World!")
+lua hello.lua
+
+=> Ruby
+=> Java
+=> C#
+using System;
+
+public class HelloWorld
+{
+    public static void Main(string[] args)
+    {
+        Console.WriteLine ("Hello Mono World");
+    }
+}
+
+mcs hello.cs
+mono hello.exe
+=> Go
+
+package main
+import "fmt"
+func main() {
+    fmt.Println("hello world")
+}
+
+go run hello.go
+go build hello.go && ./hello
+
+=> Dart
+
+void main() {
+  print("Hello, World!");
+}
+
+dart hello.dart
+
+=> Rust
