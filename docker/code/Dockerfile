@@ -14,6 +14,9 @@ RUN sudo apt-get update && sudo apt-get install -y \
     libncurses5-dev iputils-ping \
     cmake \
     mc \
+    gfortran bwbasic clisp mono-devel \
+    golang-go \
+    rustc cargo \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
 RUN apt-get update && sudo apt-get install apt-transport-https
@@ -22,9 +25,6 @@ RUN echo 'deb [signed-by=/usr/share/keyrings/dart.gpg arch=amd64] https://storag
 RUN apt-get update && apt-get install dart
 RUN yes | unminimize
 RUN pip install matplotlib numpy==1.26.4 keras==2.11.0 tensorflow==2.11.0 tensorflowjs==4.0.0
-RUN apt-get install -y gfortran bwbasic clisp mono-devel
-RUN apt-get install -y golang-go
-RUN apt-get install -y rustc cargo
 COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run
 COPY svc-code-server-run /etc/s6-overlay/s6-rc.d/svc-code-server/run
 WORKDIR /workspace
