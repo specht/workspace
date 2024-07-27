@@ -2,11 +2,27 @@
 image: clisp-logo.png
 </div>
 
-# Common Lisp <span style='font-size: 80%;'>(1984)</span>
+<div class='floatright mt-5' style='width: 12em;'>
+    <img src='mccarthy.webp'>
+    <p>John McCarthy</p>
+</div>
+
+# Lisp <span style='font-size: 80%;'>(1958)</span>
 
 <p class='abstract'>
-Common Lisp wurde im Jahr 1984 als Nachfolger von Lisp entwickelt. Der Hauptaspekt dieser Sprache sind Listen, die als Datenstruktur und Programmiersprache dienen. Common Lisp ist eine der ältesten Programmiersprachen und wird in der KI-Forschung und in der Softwareentwicklung eingesetzt.
+Die Programmiersprache Lisp wurde 1958 von John McCarthy am MIT entwickelt und ist eine Sprache, die auf der rekursiven Funktionstheorie basiert.
+Nachdem sich zunächst eine Vielzahl an Dialkten entwickelt hatte, wurde 1984 Common Lisp als Vereinheitlichung der Sprache veröffentlicht.
+Der Hauptaspekt dieser Sprache sind Listen, die als Datenstruktur und Programmiersprache dienen. Common Lisp wird in der KI-Forschung und in der Softwareentwicklung eingesetzt.
 </p>
+
+## Eigenschaften
+
+- **Funktional**: Common Lisp ist eine funktionale Programmiersprache, die auf der rekursiven Funktionstheorie basiert.
+- **Dynamisch**: Common Lisp ist eine dynamisch typisierte Sprache, was bedeutet, dass Variablen ihren Datentyp zur Laufzeit ändern können.
+- **Objektorientierung**: Common Lisp unterstützt die objektorientierte Programmierung, die auf der Verwendung von Objekten und Klassen basiert.
+- **Makros**: Common Lisp bietet Makros, die es ermöglichen, den Code zur Kompilierzeit zu transformieren.
+- **Hohe Performance**: Common Lisp ist eine der schnellsten Programmiersprachen und wird häufig für rechenintensive Anwendungen eingesetzt.
+- **Community**: Common Lisp hat eine aktive und engagierte Community, die eine Vielzahl von Bibliotheken und Frameworks entwickelt hat.
 
 ## Hello, World!
 

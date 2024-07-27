@@ -27,7 +27,7 @@ pre table td {
     border-radius: 0;
 }
 .rouge-gutter {
-    padding-right: 1em;
+    /* padding-right: 1em; */
     opacity: 0.5;
     text-align: right;
 }
@@ -195,7 +195,7 @@ window.addEventListener('load', function() {
             <div style='text-align: center; width: 100%;'>
                 <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="btn btn-success #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='fa fa-sign-in'></i>&nbsp;&nbsp;Anmelden</a>
                 <button style='#{(@session_user.nil? || (!@session_user[:show_workspace])) ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='fa fa-code'></i>&nbsp;&nbsp;Workspace öffnen</button>
-                <a style='#{(@session_user.nil? || (!@session_user[:show_phpmyadmin])) ? 'display: none;' : ''}' href="/phpmyadmin/" class="btn btn-success" target="_blank"><i class='fa fa-database'></i>&nbsp;&nbsp;phpmyadmin</a>
+                <a style='#{(@session_user.nil? || (!@session_user[:show_phpmyadmin])) ? 'display: none;' : ''}' href="/phpmyadmin/" class="btn btn-success" target="_blank"><i class='fa fa-database'></i>&nbsp;&nbsp;phpMyAdmin</a>
                 <a style='#{(@session_user.nil? || (!@session_user[:show_tic80])) ? 'display: none;' : ''}' href="/tic80/" class="btn btn-success" target="_blank"><i class='fa fa-keyboard-o'></i>&nbsp;&nbsp;TIC-80</a>
                 <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-secondary"><i class='fa fa-wrench'></i>&nbsp;&nbsp;Profil</a>
                 <a href='/admin' style='#{admin_logged_in? ? '' : 'display: none;'}' class="btn btn-warning"><i class='fa fa-wrench'></i>&nbsp;&nbsp;Administration</a>

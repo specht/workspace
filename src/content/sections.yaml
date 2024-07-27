@@ -10,28 +10,28 @@
   description: Hier siehst du eine Übersicht aller Programmiersprachen, die du im Workspace verwenden kannst. Klicke auf den jeweiligen Artikel, um
     ein einfaches »Hello, World«-Beispiel zu sehen.
   entries:
-  - fortran
-  - basic
-  - c
-  - cpp
-  - clisp
-  - python
-  - lua
-  - ruby
-  - java
-  - js
-  - nasm
-  - cs
-  - go
-  - dart
-  - rust
+  # - fortran
+  # - clisp
+  # - basic
+  # - c
+  - cpp # done
+  - python # done
+  # - lua
+  # - ruby
+  - java # done
+  # - js
+  # - nasm
+  # - cs
+  # - go
+  # - dart
+  # - rust
 - key: computer_graphics
   label: Computergrafik
   icon: /images/palette.png
   entries:
-  - p5js
-  - glsl
-  - raytracing
+  # - p5js
+  # - glsl
+  # - raytracing
 - key: artificial_intelligence
   label: Künstliche Intelligenz
   icon: /images/brain.png
@@ -42,7 +42,7 @@
   icon: /images/pen.png
   entries:
   - showerjs
-  - latex
+  # - latex
 # - key: linux
 #   label: Linux-Befehle lernen
 #   icon: /images/penguin.png
@@ -53,5 +53,5 @@
   label: Werkzeuge
   icon: /images/hammer-and-wrench.png
   entries:
-  - bash
-  - git
+  # - bash
+  # - git

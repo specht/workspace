@@ -13,8 +13,15 @@
             </p>
             #{print_module_table}
             <h2>Module zurücksetzen</h2>
+            <h3>Workspace zurücksetzen</h3>
+            <p>
+                Hiermit kannst du deinen Workspace zurücksetzen. Alle Dateien, Einstellungen und installierte Erweiterungen werden gelöscht und dein Workspace wird auf den Ursprungszustand zurückgesetzt.
+                <div>
+                    <button id='bu_reset_workspace' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Workspace zurücksetzen</button>
+                </div>
+            </p>
             <h2>Abmelden</h2>
-            <a style='margin-top: 4px; #{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-danger" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a>
+            <a style='margin-top: 4px; #{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-primary" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a>
         </div>
     </div>
 </div>
@@ -27,6 +34,15 @@
                 if (data.success) {
                     window.location.reload();
                 }
+            });
+        });
+        $('#bu_reset_workspace').on('click', function() {
+            showTemplateModal('Workspace zurücksetzen', 'Bist du sicher, dass du deinen Workspace zurücksetzen möchtest? Alle Dateien, Einstellungen und installierte Erweiterungen werden gelöscht.',
+            "<i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen", 'btn-danger', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+                api_call('/api/reset_server', {}, function(data) {
+                    // we need to reload the website to receive the updated server_tag and server_sid
+                    window.location.reload();
+                });
             });
         });
     });

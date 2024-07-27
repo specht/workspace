@@ -310,6 +310,9 @@ class Main < Sinatra::Base
             target_path_width = "/webcache/#{image_sha1}-#{width}.webp"
             unless FileUtils.uptodate?(target_path_width, [target_path])
                 system("convert #{target_path} -resize #{width}x #{target_path_width}")
+                if $? != 0
+                    STDERR.puts "...conversion of #{image_path} failed!"
+                end
             end
         end
         image_sha1
@@ -406,7 +409,12 @@ class Main < Sinatra::Base
                         lineno = true
                         language = language.sub(/_lineno$/, '')
                     end
-                    formatter = lineno ? Rouge::Formatters::HTMLLineTable.new(Rouge::Formatters::HTML.new) : Rouge::Formatters::HTML.new
+                    formatter = if lineno
+                        Rouge::Formatters::HTMLTable.new(Rouge::Formatters::HTML.new)
+                        # Rouge::Formatters::HTMLLineTable.new(Rouge::Formatters::HTML.new)
+                    else
+                        Rouge::Formatters::HTML.new
+                    end
                     lexer = nil
                     case language
                     when 'fortran'
@@ -434,6 +442,9 @@ class Main < Sinatra::Base
                     end
                     next if lexer.nil?
                     pre.content = ''
+                    # if lineno
+                    #     pre << "<div style='border-bottom: 1px solid white;display: inline-table;width: 100%;margin-bottom: 0.5em;padding-bottom: 0.5em;font-style: italic;font-weight: normal;'>HelloWorld.java (124 Bytes)</div>"
+                    # end
                     pre << formatter.format(lexer.lex(code.text))
                 end
                 html = root.to_html

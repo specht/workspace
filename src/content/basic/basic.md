@@ -2,11 +2,25 @@
 image: basic-logo.png
 </div>
 
+<div class='floatright mt-5' style='width: 24em;'>
+    <img src='kemeny-kurtz.webp'>
+    <p>John G. Kemeny &amp; Thomas E. Kurtz</p>
+</div>
+
 # BASIC <span style='font-size: 80%;'>(1964)</span>
 
 <p class='abstract'>
-BASIC ist eine Programmiersprache, die in den 1960er Jahren entwickelt wurde. Sie wurde ursprünglich für Anfänger entwickelt, um das Programmieren zu erlernen. Der Name BASIC steht für "Beginner's All-purpose Symbolic Instruction Code". BASIC wurde in den 1970er und 1980er Jahren auf vielen Heimcomputern eingesetzt. Es gibt viele verschiedene Versionen von BASIC, darunter Microsoft BASIC, Commodore BASIC und Sinclair BASIC.
+BASIC ist eine Programmiersprache, die in den 1960er Jahren von John G. Kemeny und Thomas E. Kurtz am Dartmouth College entwickelt wurde. Sie wurde ursprünglich für Anfänger entwickelt, um das Programmieren zu erlernen. Der Name BASIC steht für "Beginner's All-purpose Symbolic Instruction Code". BASIC wurde in den 1970er und 1980er Jahren auf vielen Heimcomputern eingesetzt. Es gibt viele verschiedene Versionen von BASIC, darunter Microsoft BASIC, Commodore BASIC und Sinclair BASIC.
 </p>
+
+## Eigenschaften
+
+- **Einfachheit**: BASIC wurde entwickelt, um einfach zu erlernen und zu verwenden zu sein. Es verwendet eine klare und verständliche Syntax, die es Anfängern erleichtert, das Programmieren zu erlernen.
+- **Interpretiert**: BASIC ist eine interpretierte Sprache, was bedeutet, dass der Code zur Laufzeit ausgeführt wird.
+- **Strukturiert**: Moderne Versionen von BASIC unterstützen strukturierte Programmierung, die es ermöglicht, den Code in logische Blöcke zu unterteilen.
+- **Portabilität**: BASIC-Code ist in der Regel portabel und kann auf verschiedenen Plattformen und Betriebssystemen ausgeführt werden.
+- **Grafik und Sound**: BASIC bietet Funktionen zur Erstellung von Grafiken und Soundeffekten, die es ermöglichen, interaktive Programme zu erstellen.
+- **Einfache Mathematik**: BASIC bietet eine Vielzahl von mathematischen Funktionen und Operatoren, die es ermöglichen, mathematische Berechnungen durchzuführen.
 
 ## Hello, World!
 

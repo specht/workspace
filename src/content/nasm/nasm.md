@@ -2,8 +2,6 @@
 image: nasm-logo.png
 </div>
 
-<img class='author' src='tatham.jpg'>
-
 # Netwide Assembler <span style='font-size: 80%;'>(1996)</span>
 
 <p class='abstract'>
