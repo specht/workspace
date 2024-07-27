@@ -90,7 +90,6 @@ ruby hello.rb
 Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>ruby he</code> und drücke <span class='key'>Tab</span>, um den Dateinamen automatisch zu <code>hello.rb</code> vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
 </div>
 
-
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
 
 <img class='full' src='hello.webp'>

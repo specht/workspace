@@ -11,7 +11,7 @@
     ein einfaches »Hello, World«-Beispiel zu sehen.
   entries:
   # - fortran
-  # - clisp
+  - clisp
   # - basic
   - c # done
   - cpp # done

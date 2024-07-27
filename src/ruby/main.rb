@@ -417,28 +417,28 @@ class Main < Sinatra::Base
                     end
                     lexer = nil
                     case language
-                    when 'fortran'
-                        lexer = Rouge::Lexers::Fortran.new
                     when 'basic'
                         lexer = Rouge::Lexers::VisualBasic.new
                     when 'c'
                         lexer = Rouge::Lexers::C.new
                     when 'clisp'
                         lexer = Rouge::Lexers::CommonLisp.new
+                    when 'cpp'
+                        lexer = Rouge::Lexers::Cpp.new
+                    when 'fortran'
+                        lexer = Rouge::Lexers::Fortran.new
                     when 'java'
                         lexer = Rouge::Lexers::Java.new
+                    when 'javascript'
+                        lexer = Rouge::Lexers::Javascript.new
                     when 'nasm'
                         lexer = Rouge::Lexers::Nasm.new
                     when 'python'
                         lexer = Rouge::Lexers::Python.new
                     when 'ruby'
                         lexer = Rouge::Lexers::Ruby.new
-                    when 'cpp'
-                        lexer = Rouge::Lexers::Cpp.new
                     when 'bash'
                         lexer = Rouge::Lexers::Shell.new
-                    when 'javascript'
-                        lexer = Rouge::Lexers::Javascript.new
                     end
                     next if lexer.nil?
                     pre.content = ''
