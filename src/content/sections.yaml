@@ -13,11 +13,11 @@
   # - fortran
   # - clisp
   # - basic
-  # - c
+  - c # done
   - cpp # done
   - python # done
   # - lua
-  # - ruby
+  - ruby # done
   - java # done
   # - js
   # - nasm

@@ -1446,12 +1446,16 @@ class Main < Sinatra::Base
                         length += 1
                     end
                     code = s[index + 2, length - 3]
-                    begin
-                        s[index, length] = eval(code).to_s || ''
-                    rescue
-                        STDERR.puts "Error while evaluating:"
-                        STDERR.puts code
-                        raise
+                    if code[0] != '<'
+                        begin
+                            s[index, length] = eval(code).to_s || ''
+                        rescue
+                            STDERR.puts "Error while evaluating:"
+                            STDERR.puts code
+                            raise
+                        end
+                    else
+                        s.sub!('#{', '&#35;{')
                     end
                 end
                 s

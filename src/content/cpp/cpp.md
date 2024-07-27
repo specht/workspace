@@ -25,7 +25,7 @@ In diesem Kapitel lernst du, wie du ein einfaches Programm in C++ schreibst und 
 
 ## Hello, world!
 
-C++ ist eine Weiterentwicklung der [Programmiersprache C](/c) und hat viele Ähnlichkeiten mit dieser. Das heisst, dass man auch jedes C-Programm in C++ kompilieren kann. C++-Programme werden in Textdateien mit der Endung `.cpp` geschrieben. Diese Dateien werden anschließend von einem Compiler in ausführbare Dateien übersetzt, die auf deinem Computer direkt ausgeführt werden können. Es gibt eine Vielzahl von Compilern, die du verwenden kannst, aber wir werden hier den freien »GNU C Compiler« `gcc` verwenden, der auf den meisten Systemen verfügbar ist.
+C++ ist eine Weiterentwicklung der [Programmiersprache C](/c) und hat viele Ähnlichkeiten mit dieser. Das heisst, dass man auch jedes C-Programm in C++ kompilieren kann. C++-Programme werden in Textdateien mit der Endung `.cpp` oder `.cc` geschrieben. Diese Dateien werden anschließend von einem Compiler in ausführbare Dateien übersetzt, die auf deinem Computer direkt ausgeführt werden können. Es gibt eine Vielzahl von Compilern, die du verwenden kannst, aber wir werden hier den freien »GNU C Compiler« `gcc` verwenden, der auf den meisten Systemen verfügbar ist.
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
@@ -53,9 +53,9 @@ Sobald du die Datei gespeichert hast, wird sie automatisch als C++-Datei erkannt
 
 <img class='full' src='syntax-highlighting.webp'>
 
-### Compilieren und ausführen
+### Kompilieren und ausführen
 
-Bevor wir das Programm ausführen können, müssen wir es compilieren. Dadurch wird der Quelltext in Maschinencode übersetzt, den dein Computer ausführen kann.
+Bevor wir das Programm ausführen können, müssen wir es kompilieren. Dadurch wird der Quelltext in Maschinencode übersetzt, den dein Computer ausführen kann.
 
 Öffne dazu ein Terminal, indem du entweder <span class='key'>Strg</span><span class='key'>J</span> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
@@ -68,7 +68,7 @@ g++ hello.cpp -o hello
 ```
 
 <div class='hint'>
-Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>g++ he</code> und drücke <span class='key'>Tab</span>, um den Dateinamen automatisch zu `hello.cpp` vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
+Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>g++ he</code> und drücke <span class='key'>Tab</span>, um den Dateinamen automatisch zu <code>hello.cpp</code> vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
 </div>
 
 Wenn du keinen Fehler gemacht hast, wird das Programm erfolgreich kompiliert und die ausführbare Datei `hello` wird im selben Verzeichnis erstellt. Du kannst dies überprüfen, indem du dir die Dateien im aktuellen Verzeichnis mit `ls` oder `ls -l` anzeigen lässt:

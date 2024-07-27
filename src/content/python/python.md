@@ -2,12 +2,12 @@
 image: python-logo.png
 </div>
 
-<div class='floatright mt-5' style='width: 12em;'>
+# Python <span style='font-size: 80%;'>(1991)</span>
+
+<div class='floatright' style='width: 12em;'>
     <img src='guido.webp'>
     <p>Guido van Rossum</p>
 </div>
-
-# Python <span style='font-size: 80%;'>(1991)</span>
 
 <p class='abstract'>
 Entwickelt von Guido van Rossum und erstmals 1991 veröffentlicht, ist Python eine der beliebtesten Programmiersprachen der Welt. Python ist bekannt für seine Einfachheit und Lesbarkeit und wird in vielen Bereichen eingesetzt, darunter Webentwicklung, Datenanalyse, künstliche Intelligenz und maschinelles Lernen. In diesem Kapitel lernst du, wie du ein einfaches Programm in Python schreibst und ausführst.
@@ -84,7 +84,7 @@ python3 hello.py
 ```
 
 <div class='hint'>
-Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>python3 he</code> und drücke <span class='key'>Tab</span>, um den Rest automatisch vervollständigen zu lassen.
+Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>python3 he</code> und drücke <span class='key'>Tab</span>, um den Dateinamen automatisch zu <code>hello.py</code> vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
 </div>
 
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
@@ -162,13 +162,13 @@ Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Ander
 
 Im dritten Beispiel wollen wir eine Liste von 10 Zufallszahlen sortieren. Dafür verwenden wir den [Bubblesort-Algorithmus](https://de.wikipedia.org/wiki/Bubblesort), der zwar nicht besonders effizient ist, aber sehr einfach zu verstehen und zu implementieren. Der Bubblesort-Algorithmus funktioniert, indem er die Liste mehrmals durchläuft und benachbarte Elemente vertauscht, wenn sie in der falschen Reihenfolge sind.
 
-An diesem Beispiel kannst du sehen, wie man in Java Arrays verwendet, Funktionen verwendet und Schleifen verschachtelt.
+An diesem Beispiel kannst du sehen, wie man in Python Arrays verwendet, Funktionen verwendet und Schleifen verschachtelt.
 
 Erstelle eine neue Datei und schreibe den folgenden Code hinein:
 
 _include_file(bubblesort.py, python)
 
-Speichere die Datei unter dem Namen `bubblesort.py` und führe es aus:
+Speichere das Skript unter dem Namen `bubblesort.py` und führe es aus:
 
 <img class='full' src='bubblesort.webp'>
 

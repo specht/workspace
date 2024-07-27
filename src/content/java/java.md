@@ -57,9 +57,9 @@ Sobald du die Datei gespeichert hast, wird sie automatisch als Java-Datei erkann
 
 <img class='full' src='syntax-highlighting.webp'>
 
-### Compilieren und ausführen
+### Kompilieren und ausführen
 
-Bevor wir das Programm ausführen können, müssen wir es compilieren.
+Bevor wir das Programm ausführen können, müssen wir es kompilieren.
 Dadurch wird der Quelltext des Programms in Bytecode übersetzt, den die Java Virtual Machine (JVM) ausführen kann.
 
 Öffne dazu ein Terminal, indem du entweder <span class='key'>Strg</span><span class='key'>J</span> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
@@ -73,7 +73,7 @@ javac HelloWorld.java
 ```
 
 <div class='hint'>
-Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>javac He</code> und drücke <span class='key'>Tab</span>, um den Rest automatisch vervollständigen zu lassen.
+Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>javac He</code> und drücke <span class='key'>Tab</span>, um den Dateinamen automatisch zu <code>HelloWorld.java</code> vervollständigen zu lassen.
 </div>
 
 Wenn du keinen Fehler gemacht hast, wird das Programm erfolgreich kompiliert und die Datei `HelloWorld.class` wird im selben Verzeichnis erstellt. Du kannst dies überprüfen, indem du dir die Dateien im aktuellen Verzeichnis mit `ls` oder `ls -l` anzeigen lässt:
