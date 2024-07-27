@@ -2,15 +2,15 @@
 image: Java-Logo.png
 </div>
 
-<div class='floatright mt-5' style='width: 12em;'>
+# Java <span style='font-size: 80%;'>(1995)</span>
+
+<div class='floatright' style='width: 12em;'>
     <img src='gosling.webp'>
     <p>
       James Gosling<br>
       <span style='font-size: 90%; opacity: 0.7;'>(Foto von Yuichi Sakuraba)</span>
     </p>
 </div>
-
-# Java <span style='font-size: 80%;'>(1995)</span>
 
 <p class='abstract'>
 Java ist eine der meistverwendeten Programmiersprachen weltweit, die zum Beispiel in der Anwendungsentwicklung und Programmierung von Datenbanken eingesetzt  wird. Sie wurde 1995 von James Gosling entwickelt und ist eine objektorientierte Programmiersprache. In diesem Kapitel lernst du, wie du ein einfaches Programm in Java schreibst und ausführst.

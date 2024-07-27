@@ -2,12 +2,12 @@
 image: cpp-logo.png
 </div>
 
-<div class='floatright mt-5' style='width: 12em;'>
+# C++ <span style='font-size: 80%;'>(1983)</span>
+
+<div class='floatright' style='width: 12em;'>
     <img src='stroustrup.webp'>
     <p>Bjarne Stroustrup</p>
 </div>
-
-# C++ <span style='font-size: 80%;'>(1983)</span>
 
 <p class='abstract'>
 C++ ist eine Programmiersprache, die im Jahr 1983 von Bjarne Stroustrup entwickelt wurde. Sie ist eine Erweiterung der Programmiersprache C und wird in vielen Bereichen eingesetzt, darunter Spieleentwicklung, Betriebssysteme und Anwendungen, die hohe Leistung erfordern.

@@ -2,12 +2,12 @@
 image: c-logo.png
 </div>
 
-<div class='floatright mt-5' style='width: 12em;'>
+# C <span style='font-size: 80%;'>(1972)</span>
+
+<div class='floatright' style='width: 12em;'>
     <img src='ritchie.webp'>
     <p>Dennis Ritchie</p>
 </div>
-
-# C <span style='font-size: 80%;'>(1972)</span>
 
 <p class='abstract'>
 C ist eine imperative Programmiersprache, die 1972 von Dennis Ritchie bei Bell Labs entwickelt wurde. Sie ist eine der ältesten und einflussreichsten Programmiersprachen und dient als Grundlage für viele andere Programmiersprachen. C ist eine kompilierte Sprache, die eine hohe Leistung und eine enge Kontrolle über die Hardware bietet. Sie wird häufig für die Entwicklung von Betriebssystemen, Treibern, eingebetteten Systemen und Anwendungen mit hoher Leistung verwendet.
