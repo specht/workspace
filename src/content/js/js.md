@@ -2,15 +2,15 @@
 image: js-logo.png
 </div>
 
-<div class='floatright mt-5' style='width: 12em;'>
+# JavaScript <span style='font-size: 80%;'>(1995)</span>
+
+<div class='floatright' style='width: 12em;'>
     <img src='eich.webp'>
     <p>
       Brendan Eich<br>
       <span style='font-size: 90%; opacity: 0.7;'>(Foto von James Duncan Davidson)</span>
     </p>
 </div>
-
-# JavaScript <span style='font-size: 80%;'>(1995)</span>
 
 <p class='abstract'>
 JavaScript ist eine der bekanntesten Programmiersprachen und wird in der Webentwicklung eingesetzt. Die Sprache wurde im Jahr 1995 von Brendan Eich entwickelt und wird für die Interaktion mit HTML-Elementen und CSS-Stilen verwendet. Inzwischen wird JavaScript auch für serverseitige Anwendungen mit Node.js eingesetzt.
