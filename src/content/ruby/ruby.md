@@ -147,7 +147,7 @@ Erstelle eine neue Datei mit <span class='key'>Strg</span><span class='key'>Alt<
 
 _include_file(factor.rb, ruby)
 
-Speichere die Datei unter dem Namen `factor.rb` und führe es aus:
+Speichere die Datei unter dem Namen `factor.rb` und führe sie aus:
 
 <img class='full' src='try-factor.webp'>
 

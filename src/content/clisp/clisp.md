@@ -150,7 +150,7 @@ Erstelle eine neue Datei mit <span class='key'>Strg</span><span class='key'>Alt<
 
 _include_file(factor.lisp, clisp)
 
-Speichere die Datei unter dem Namen `factor.lisp` und führe es aus:
+Speichere die Datei unter dem Namen `factor.lisp` und führe sie aus:
 
 <img class='full' src='try-factor.webp'>
 

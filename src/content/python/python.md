@@ -152,7 +152,7 @@ Erstelle eine neue Datei mit <span class='key'>Strg</span><span class='key'>Alt<
 
 _include_file(factor.py, python)
 
-Speichere die Datei unter dem Namen `factor.py` und führe es aus:
+Speichere die Datei unter dem Namen `factor.py` und führe sie aus:
 
 <img class='full' src='try-factor.webp'>
 
