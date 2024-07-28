@@ -67,7 +67,7 @@ Da Assembler standardmäßig nicht von Visual Studio Code unterstützt wird, mü
 
 <img class='full' src='nasm-syntax.webp'>
 
-Anschließend solltest du dein Fortran-Programm farbig sehen:
+Anschließend solltest du dein Assembler-Programm farbig sehen:
 
 <img class='full' src='syntax-highlighting.webp'>
 
