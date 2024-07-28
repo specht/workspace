@@ -2,6 +2,7 @@ Ab-schluss-ar-bei-ten
 Ani-ma-tio-nen
 An-wen-dungs-ent-wick-lung
 ar-bei-test
+Assemb-ler
 be-lieb-ten
 be-lieb-testen
 Bib-lio-thek
@@ -37,7 +38,9 @@ Pro-gram-mier-en
 Pro-gram-mier-spra-che
 Pro-gram-mier-spra-chen
 Pro-to-ty-pen-er-stel-lung
+res-sour-cen-scho-nen-de
 Skript-spra-che
+Soft-ware-ent-wick-lung
 Spie-le-ent-wick-lung
 Spra-che
 steu-ern
