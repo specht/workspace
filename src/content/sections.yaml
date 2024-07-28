@@ -7,8 +7,6 @@
 - key: programming_languages
   label: Programmiersprachen
   icon: /images/keyboard.png
-  description: Hier siehst du eine Übersicht aller Programmiersprachen, die du im Workspace verwenden kannst. Klicke auf den jeweiligen Artikel, um
-    ein einfaches »Hello, World«-Beispiel zu sehen.
   entries:
   - fortran
   - clisp
@@ -20,7 +18,7 @@
   - ruby
   - java
   - js
-  # - nasm
+  - nasm
   # - cs
   # - go
   # - dart
