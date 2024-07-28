@@ -612,3 +612,12 @@ div.floatright > p {
     text-align: left;
     line-height: 120%;
 }
+
+.scroll-x {
+    scrollbar-width: thin;
+}
+
+img.full {
+    min-width: 1000px;
+    cursor: grab;
+}

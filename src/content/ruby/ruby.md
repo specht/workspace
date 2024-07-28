@@ -36,11 +36,11 @@ Ruby ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpreti
 
 Öffne dazu ein Terminal, indem du entweder <span class='key'>Strg</span><span class='key'>J</span> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='code-with-terminal.webp'>
+<img class='full' src='code-with-terminal.webp' data-scroll='33%'>
 
 Starte nun die Ruby-Shell, indem du `irb` eingibst und dann <span class='key'>Enter</span> drückst. Du solltest eine Ausgabe wie diese sehen:
 
-<img class='full' src='irb.webp'>
+<img class='full' src='irb.webp' data-scroll='5%'>
 
 Jetzt kannst du Ruby-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `puts "Hello, world!"` und drücke <span class='key'>Enter</span>. Du solltest die Ausgabe `Hello, world!` sehen.
 
@@ -52,13 +52,13 @@ Ruby-Programme werden in Textdateien mit der Endung `.rb` geschrieben. Ein Ruby-
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp'>
+<img class='full' src='fresh-start.webp' data-scroll='28%'>
 
 ### Quelltext schreiben
 
 Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <span class='key'>Enter</span>).
 
-<img class='full' src='choose-filename.webp'>
+<img class='full' src='choose-filename.webp' data-scroll='20%'>
 
 Schreibe nun den folgenden Code in die Datei:
 

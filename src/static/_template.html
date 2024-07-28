@@ -167,6 +167,49 @@ window.addEventListener('load', function() {
             $('#bu_settings .fa-chevron-down').addClass('rot180');
         }
     });
+    // for (let e of $('img.full')) {
+    //     e = $(e);
+    //     if (e.data('scroll')) {
+    //         let p = e.parent();
+    //         let x = parseFloat(e.data('scroll').replace('%', '')) / 100.0;
+    //         p[0].scrollLeft = x * e.width();
+    //     }
+    // }
+    var isDown = false;
+    var startX;
+    var scrollLeft;
+    var scrollElement = null;
+    for (let img of $('.scroll-x img.full')) {
+        img = $(img);
+        let slider = $(img).parent()[0];
+        $(slider).on('mousedown', function(e) {
+            e.preventDefault();
+            isDown = true;
+            slider.classList.add('active');
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+            scrollElement = slider;
+        });
+        $('body').on('mouseup', () => {
+            if (!isDown) return;
+            scrollElement.classList.remove('active');
+            isDown = false;
+            scrollElement = null;
+        });
+        $('body').on('mouseleave', () => {
+            if (!isDown) return;
+            scrollElement.classList.remove('active');
+            isDown = false;
+            scrollElement = null;
+        });
+        $('body').on('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - scrollElement.offsetLeft;
+            const walk = x - startX;
+            scrollElement.scrollLeft = scrollLeft - walk;
+        });
+    }
 });
 </script>
 
