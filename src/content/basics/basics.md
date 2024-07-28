@@ -110,7 +110,7 @@ Du kannst Webseiten wie [keybr.com](https://www.keybr.com/) nutzen, um deine Tip
 
 ### Navigation
 
-Die folgenden Shortcuts funktionieren nicht in Visual Studio Code, sondern in fast allen anderen Programmen:
+Die folgenden Shortcuts funktionieren nicht nur in Visual Studio Code, sondern in fast allen anderen Programmen:
 
 <table class='table'>
 <tr>
