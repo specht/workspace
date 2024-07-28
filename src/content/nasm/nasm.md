@@ -53,6 +53,10 @@ In den Zeilen 9 bis 13 wird ein Systemaufruf (`syscall`) verwendet, um die Funkt
 
 Eine Übersicht über alle Linux-Systemaufrufe für die x86_64-Architektur findest du hier: [Linux x86_64 System Call Reference Table](https://hackeradam.com/x86-64-linux-syscalls/).
 
+<div class='hint'>
+Die Frage, warum man in Assembler programmieren sollte, wenn es doch so viel einfacher geht, ist berechtigt. Assembler ist eine sehr mächtige Programmiersprache, die es dir erlaubt, die Hardware deines Computers direkt zu kontrollieren. Das kann in bestimmten Situationen sehr nützlich sein, z. B. wenn du extrem schnelle oder ressourcenschonende Programme schreiben möchtest. Außerdem kann es sehr lehrreich sein, Assembler zu lernen, da du ein tiefes Verständnis dafür bekommst, wie Computer auf der Ebene der CPU funktionieren. Unabhängig davon spielt Assembler auch in der Softwareentwicklung eine wichtige Rolle, da die Quelltexte kompilierter Programmiersprachen (z. B. C und C++) im ersten Schritt in Assembler-Code übersetzt werden.
+</div>
+
 ### Syntax-Highlighting aktivieren
 
 Da Visual Studio Code noch nicht weiß, dass es sich um Assembler-Quelltext handelt, ist dein Programm momentan noch einfarbig, aber das wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
