@@ -9,10 +9,10 @@
   icon: /images/keyboard.png
   entries:
   - fortran
-  - clisp
   - basic
   - c
   - cpp
+  - clisp
   - python
   - lua
   - ruby

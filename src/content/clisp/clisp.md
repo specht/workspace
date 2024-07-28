@@ -2,7 +2,7 @@
 image: clisp-logo.png
 </div>
 
-# Lisp <span style='font-size: 80%;'>(1958)</span>
+# Common Lisp <span style='font-size: 80%;'>(1984)</span>
 
 <div class='floatright' style='width: 12em;'>
     <img src='mccarthy.webp'>
