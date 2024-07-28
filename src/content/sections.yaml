@@ -13,12 +13,12 @@
   - fortran
   - clisp
   - basic
-  - c # done
-  - cpp # done
-  - python # done
+  - c
+  - cpp
+  - python
   - lua
-  - ruby # done
-  - java # done
+  - ruby
+  - java
   # - js
   # - nasm
   # - cs
