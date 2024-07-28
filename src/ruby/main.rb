@@ -431,6 +431,8 @@ class Main < Sinatra::Base
                         lexer = Rouge::Lexers::Java.new
                     when 'javascript'
                         lexer = Rouge::Lexers::Javascript.new
+                    when 'lua'
+                        lexer = Rouge::Lexers::Lua.new
                     when 'nasm'
                         lexer = Rouge::Lexers::Nasm.new
                     when 'python'
