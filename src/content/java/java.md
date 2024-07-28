@@ -117,14 +117,7 @@ Nutze die Pfeiltaste hoch <span class='key'>↑</span>, um den letzten Befehl er
 
 Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
-```bash
-HelloWorld.java:3: error: cannot find symbol
-        System.out.printn("Hello, World!");
-                  ^
-  symbol:   method printn(String)
-  location: variable out of type PrintStream
-1 error
-```
+<img class='full' src='hello-error.webp'>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 3) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
