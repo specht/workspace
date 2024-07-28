@@ -413,7 +413,9 @@ p {
 img.full {
     display: block;
     width: 100%;
+    min-width: 1000px;
     border-radius: 0.5em;
+    cursor: grab;
 }
 
 img.r {
@@ -615,9 +617,4 @@ div.floatright > p {
 
 .scroll-x {
     scrollbar-width: thin;
-}
-
-img.full {
-    min-width: 1000px;
-    cursor: grab;
 }

@@ -143,9 +143,28 @@ Der Assembler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu f
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 9) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
+## Primfaktorenzerlegung
+
+Im zweiten Beispiel wollen wir eine Zahl in ihre Primfaktoren zerlegen. An diesem Beispiel kannst du sehen, wie man in Assembler Benutzereingaben verarbeitet, Schleifen verwendet sowie Strings in Zahlen umwandelt und anders herum.
+Erstelle eine neue Datei mit <span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>N</span> und schreibe den folgenden Code hinein:
+
+_include_file(factor.asm, nasm)
+
+Speichere die Datei unter dem Namen `factor.asm`. Kompiliere und linke das Programm:
+
+```bash
+nasm -f elf64 factor.asm && ld factor.o -o factor
+```
+
+Falls du keine Fehlermeldung erhältst, kannst du das Programm ausführen und testen:
+
+<img class='full' src='try-factor.webp'>
+
+Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Probiere aus, was passiert, wenn du die Zahl 3000000000 eingibst oder die Zahl 123456789123456789. Was könnte der Grund dafür sein?
+
 ## Zusammenfassung
 
-Wie du siehst, ist Assembler eine sehr komplexe Programmiersprache. Daher verzichten wir vorerst auf die weiteren Beispiele. Falls du eine funktionierende NASM-Implentierung der Primfaktorzerlegung oder des Bubblesort-Algorihmus (für x86_64) hast, schick sie bitte an <a href='mailto:specht@gymnasiumsteglitz.de'>specht@gymnasiumsteglitz.de</a>, damit wir sie hier einfügen können.
+Wie du siehst, ist Assembler eine sehr komplexe Programmiersprache. Daher verzichten wir vorerst auf das Bubblesort-Beispiel. Falls du eine funktionierende NASM-Implentierung des Bubblesort-Algorihmus (für x86_64) hast, schick sie bitte an <a href='mailto:specht@gymnasiumsteglitz.de'>specht@gymnasiumsteglitz.de</a>, damit wir sie hier einfügen können.
 
-In diesem Kapitel hast du an einem Beispiel gesehen, wie man ein einfaches Assembler-Programm schreiben, kompilieren, linken und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um Assembler wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Programme schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und Youtube sind voll von Material für dich. Viel Spaß beim Programmieren!
+In diesem Kapitel hast du an zwei Beispielen gesehen, wie man ein einfaches Assembler-Programm schreiben, kompilieren, linken und ausführen kann. Das ist natürlich nur ein erster Eindruck. Um Assembler wirklich zu beherrschen, musst du noch viel mehr lernen – am besten, indem du eigene Programme schreibst und ausprobierst. Die Buchhandlungen, Bibliotheken und Youtube sind voll von Material für dich. Viel Spaß beim Programmieren!
 

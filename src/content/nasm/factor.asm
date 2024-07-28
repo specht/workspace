@@ -1,130 +1,147 @@
 section .data
-    prompt db "Enter a number (1-1000000): ", 0
-    factors db "Prime factors: ", 0
-    newline db 10, 0
-    buffer db 32 ; buffer to store the converted number
+    prompt db "Enter a number: ", 0
+    answer db "Prime factors: ", 0
+    result db "Doubled number: %d", 0
+    newline db 0x0a
+    space db 0x20
 
 section .bss
-    number resd 1
+    input resb 16
 
 section .text
     global _start
 
 _start:
-    ; Display prompt
+    ; Prompt the user for input
     mov rax, 1
     mov rdi, 1
     mov rsi, prompt
-    mov rdx, 26
+    mov rdx, 16
     syscall
 
-    ; Read number from user
+    ; Read user input
     mov rax, 0
     mov rdi, 0
-    mov rsi, number
-    mov rdx, 4
+    mov rsi, input
+    mov rdx, 10
     syscall
 
-    ; Convert number to string
-    mov rax, [number]
-    mov rdi, buffer
-    call itoa
-
-    ; Convert string to number
-    mov rdi, buffer
-    call atoi
-
-    ; Print prime factors
-    mov rax, [number]
-    mov rbx, 2
-    mov rdx, 0
-
-find_factors:
-    cmp rax, rbx
-    jle done
-
-    mov rdx, 0
-    div rbx
-    cmp rdx, 0
-    jne next
-
-    ; rbx is a factor, convert it to string
-    push rax
-    push rbx
-    mov rax, rbx
-    mov rdi, buffer
-    call itoa
-    pop rbx
-    pop rax
-
-    ; Print the factor
+    ; Write answer
     mov rax, 1
     mov rdi, 1
-    mov rsi, factors
-    mov rdx, 14
+    mov rsi, answer
+    mov rdx, 15
     syscall
 
-    ; continue finding factors
-    jmp find_factors
+    ; Convert input to integer
+    mov rdi, input
+    call atoi
 
-next:
-    inc rbx
-    jmp find_factors
+    mov rdi, 2          ; Initialize divisor to 2
+    mov rsi, rax        ; Copy value from rax to rsi
 
-done:
-    ; Print newline
+find_factors:
+    mov rdx, 0          ; Clear rdx register
+    mov rax, rsi        ; Move value in rsi to rax
+
+    div rdi             ; Divide rsi by rdi
+    cmp rdx, 0          ; Check if remainder is zero
+    jne failed          ; If remainder is not zero, go to next factor
+
+    mov rsi, rax
+
+    push rax
+    push rdi
+    push rsi
+    push rdx
+
+    mov rax, rdi        ; Move divisor to rax
+
+    ; Convert the result to string
+    mov byte [input+15], 0
+    mov rdi, input+15
+    call itoa
+
+    ; Print the result
+    mov rax, 1
+    mov rsi, rdi
+    mov rdi, 1
+    mov rdx, input
+    add rdx, 15
+    sub rdx, rsi
+    syscall
+
+    ; Print a space
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, space
+    mov rdx, 1
+    syscall
+
+    pop rdx
+    pop rsi
+    pop rdi
+    pop rax
+
+    mov rsi, rax
+    jmp next_factor
+failed:
+    mov rax, rsi
+    inc rdi             ; Increment divisor
+    cmp rdi, rsi        ; Compare divisor with value in rsi
+    jle find_factors    ; If divisor is less than or equal to value, continue finding factors
+
+next_factor:
+    cmp rdi, rsi        ; Compare divisor with value in rsi
+    jle find_factors
+
+    ; Print a newline
     mov rax, 1
     mov rdi, 1
     mov rsi, newline
     mov rdx, 1
     syscall
 
-    ; Exit program
+    ; Exit the program
     mov rax, 60
     xor rdi, rdi
     syscall
 
-itoa:
-    ; Convert a number in rax to a string in rdi
-    xor rcx, rcx
-    mov r9, 10
+atoi:
+    xor rax, rax
+    mov rcx, 10
 
-itoa_convert_loop:
+atoi_loop:
+    xor rbx, rbx
+    mov bl, byte [rdi]
+    inc rdi
+    cmp bl, 0
+    je atoi_done
+    cmp bl, 10
+    je atoi_done
+
+    sub bl, '0'
+    mul rcx
+    add rax, rbx
+
+    jmp atoi_loop
+
+atoi_done:
+    ret
+
+; itoa implementation
+itoa:
+    xor rcx, rcx
+    mov rsi, 10
+
+itoa_loop:
     xor rdx, rdx
-    div r9
+    div rsi
     add dl, '0'
     dec rdi
     mov byte [rdi], dl
-    inc rcx
     test rax, rax
-    jnz itoa_convert_loop
+    jnz itoa_loop
 
-    ; Null-terminate the string
-    dec rdi
-    mov byte [rdi], 0
-
-    ; Return the length of the string in rax
-    mov rax, rcx
-    ret
-
-atoi:
-    ; Convert a string in rdi to a number in rax
-    xor rax, rax
-    xor rbx, rbx
-    mov rcx, 10
-
-atoi_convert_loop:
-    movzx edx, byte [rdi]
-    cmp dl, '0'
-    jb atoi_done
-    cmp dl, '9'
-    ja atoi_done
-    sub dl, '0'
-    imul rbx, rcx
-    add rbx, rax
-    mov rax, rbx
-    inc rdi
-    jmp atoi_convert_loop
-
-atoi_done:
+itoa_done:
     ret
