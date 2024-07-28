@@ -128,7 +128,7 @@ _include_file(factor.f90, fortran)
 Speichere die Datei unter dem Namen `factor.f90`. Kompiliere das Programm:
 
 ```bash
-gfotran factor.f90 -o factor
+gfortran factor.f90 -o factor
 ```
 
 Falls du keine Fehlermeldung erhältst, kannst du das Programm ausführen und testen:
