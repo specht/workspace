@@ -67,7 +67,7 @@ Da Visual Studio Code noch nicht weiß, dass es sich um Lisp-Quelltext handelt, 
 
 <img class='full' src='no-syntax-highlighting.webp'>
 
-Drücke nun <span class='key'>Strg</span><span class='key'>S</span>, um die Datei zu speichern. Gib `hello.rb` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.rb`.
+Drücke nun <span class='key'>Strg</span><span class='key'>S</span>, um die Datei zu speichern. Gib `hello.lisp` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.lisp`.
 
 <img class='full' src='enter-filename.webp'>
 
@@ -99,7 +99,7 @@ Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
 
 ### Fehler finden und beheben
 
-Wenn du einen Fehler im Code machst, wird Ruby eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `format` das Wort `formt` zu schreiben:
+Wenn du einen Fehler im Code machst, wird Lisp eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `format` das Wort `formt` zu schreiben:
 
 ```clisp
     (formt t "Hello, World!"))
