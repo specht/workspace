@@ -429,7 +429,7 @@ class Main < Sinatra::Base
                         lexer = Rouge::Lexers::Fortran.new
                     when 'java'
                         lexer = Rouge::Lexers::Java.new
-                    when 'javascript'
+                    when 'js'
                         lexer = Rouge::Lexers::Javascript.new
                     when 'lua'
                         lexer = Rouge::Lexers::Lua.new
