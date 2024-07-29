@@ -1,205 +1,96 @@
 # Hackschule Workspace
 
-- login with invitation only
-- user node gets created on first login
+Der Workspace der Hackschule ist eine Entwicklungsumgebung, die speziell für den Einsatz in der Schule konzipiert wurde. Sie läuft vollständig im Browser und benötigt keine Installation. Der Workspace enthält alle notwendigen Werkzeuge, um Programme in verschiedenen Programmiersprachen zu schreiben, zu kompilieren und auszuführen. Der wesentliche Vorteil ist, dass Schülerinnen und Schüler in der Schule und zu Hause dieselbe Umgebung vorfinden und ihre Dateien an einem zentralen Ort speichern können.
 
-- `fs_tag`: derived from email
-  - used for user data directory
-  - never published
-- `server_tag`:
-  - random tag
-  - stored in user node
-  - used in url
-  - created on user creation
-  - changed on server reset for cache busting
-  - stored in browser cookie
-    - if change is detected => purge indexeddb
-- `server_sid`:
-  - random tag
-  - stored in user node
-  - sent to user on login
-  - must be sent to already logged in user if not present
-- `share_tag`:
-  - pretty long, random tag
-  - stored in user node
-  - max. 1 per user
-  - can be removed again (stop sharing)
-  - used to share access with other user
-  - used in nginx config (requires no sid)
+## Funktionen
 
-tic-80
-mysql
-Ruby
-Neo4j
+- Programmieren: Fortran, BASIC, C, C++, Common Lisp, Python, Lua, Ruby, Java, JavaScript, Netwide Assembler, C#, Go, Dart, Rust
+- wissenschaftliche Dokumente setzen mit LaTeX
+- moderne und portable HTML-Präsentationen erstellen mit shower.js
+- den Umgang mit der Kommandozeile lernen (Bash)
+- Versionsverwaltung mit Git üben
 
-DBML:
+## Installation (lokal)
 
-nicolas-liger.dbml-viewer
-bocovo.dbml-erd-visualizer
+Für die lokale Installation benötigst du Docker (mit docker-compose), Git und Ruby. Die Installation wurde unter Linux getestet, sollte aber auch unter Windows funktionieren.
 
+**Klonen des Repositories**
 
-=> Fortran gfortran
-apt install gfortran
-program hello
-    print *, "Hello, World!"
-end program hello
-gfortran hello.f90 -o hello
+```bash
+git clone https://git.nhcham.org/specht/workspace.git
+```
+**Anpassung der Konfiguration**
 
-https://www.mjr19.org.uk/IT/sorts/
-https://rosettacode.org/wiki/Sorting_algorithms/Bubble_sort#Fortran
+Kopiere die Datei `src/ruby/credentials.template.rb` nach `src/rubyt/credentials.rb` und nimm ein paar Anpassungen vor:
 
-module sorts
-  implicit none
-  integer, parameter :: prec=kind(1d0), i64=selected_int_kind(15)
+- `DEVELOPMENT` sollte `true` sein
+- `PATH_TO_HOST_DATA` sollte einen absoluten Pfad zum Datenverzeichnis beinhalten (leg einfach ein Unterverzeichnis `data` an und gib den absoluten Pfad an)
+- `WEBSITE_HOST` wird erst wichtig, wenn die Seite tatsächlich auf einem Server gehostet wird
+- die E-Mail-Zugangsdaten sind im Development-Modus nicht relevant
+- trag deine E-Mail-Adresse bei `ADMIN_USERS` ein
 
-  ! array L used by smoothsort
+**Einladung hinzufügen**
 
+Lege die Datei `src/invitations/dev.txt` an (der Dateiname ist egal) und trage die folgenden Zeilen ein (mit deinen Daten):
 
-contains
-  subroutine bubble_sort(array)
+```
+> Developer
+Max Mustermann <max@example.com>
+```
 
-    real(prec), intent(inout) :: array(:)
-    real(prec) :: temp
-    integer :: i,j,last
+Wir haben damit eine Gruppe »Developer« mit einem Mitglied »Max Mustermann« angelegt. Die E-Mail-Adresse wird später für die Anmeldung benötigt – später könnte man hier Klassen oder Lerngruppen anlegen.
 
-    last=size(array)
-    do i=last-1,1,-1
-       do j=1,i
-          if (array(j+1).lt.array(j)) then
-             temp=array(j+1)
-             array(j+1)=array(j)
-             array(j)=temp
-          endif
-       enddo
-    enddo
+**Webserver-Image bauen**
 
-  end subroutine bubble_sort
-end module sorts
+```bash
+./config.rb build
+```
 
-! Code to perform trivial benchmark
-! of a collection of sort algorithms
-!
-! MJR Oct 2019
-!
-! Nov 2023, ensure random nos are both +ve and -ve
+**Webserver starten**
 
-program b
-  use sorts
-  
-  write(*,*)'Bubble sort'
-  call bench(bubble_sort,50000)
-  write(*,*)
+```bash
+./config.rb up
+```
 
-  contains
+Wenn der Workspace gestartet ist, kannst du ihn im Browser unter <a href='http://localhost:8025'>http://localhost:8025</a> erreichen. Du solltest dich mit deiner E-Mail-Adresse (oder einem eindeutigen Präfix) und dem Code 123456 (fester Code in der Development-Umgebung) anmelden können. Um den Workspace zu starten, ist ein weiterer Schritt notwendig:
 
-subroutine bench(sort,big)
-  use sorts
-  procedure(bubble_sort) :: sort
-  real(prec), allocatable :: array(:)
-  integer, intent(in) :: big
-  integer i,off,t1,t2,rate
-  real(prec):: check
-  
-  allocate(array(big))
-  i=10
-  ! find rate
-  call system_clock(t1,rate)
-  write(*,*)'      Size      time/element'
-  do while(i<=big)
-     call random_number(array)
-     array=array-0.2d0
-     check=sum(array(1:i))
-     off=1
-     call system_clock(t1)
-     do while(off+i-1<=big)
-     call sort(array(off:off+i-1))
-        off=off+i
-     enddo
-     call system_clock(t2)
-! Check result is ordered
-     do j=2,i
-        if (array(j)<array(j-1)) then
-           write(*,*)'Sort error at ',j,' value ',array(j)
-           if (i.le.100) then
-              write(*,*)array(1:i)
-           else
-              write(*,*)array(j-3:j+3)
-           endif
-           stop
-        endif
-     enddo
-! Check sum of result is approximately the same as it was
-     check=check-sum(array(1:i))
-     if (check.gt.1e-15*i*sqrt(real(i))) then
-        write(*,*)'Large difference in sums before and after',check
-     endif
-     
-     write(*,*)i,real(t2-t1)/(real(rate)*i*(big/i))
-     i=10*i
-  enddo
-  deallocate(array)
-end subroutine bench
+**Workspace-Image bauen**
 
-end program b
+Das Bauen des Workspace-Images dauert relativ lange (bei mir 34 Minuten), da alle notwendigen Pakete heruntergeladen und installiert werden müssen. Das Image ist ca. 13.5 GB groß.
 
-=> BASIC bwbasic
-10 FOR I = 1 TO 10
-20 PRINT "HELLO, WORLD!", I
-30 NEXT I
+```bash
+./build-image.sh
+```
 
-=> C gcc
+Falls der Platz einmal knapp werden sollte, lohnt es sich, zwischendurch mal den eisernen Besen zu schwingen:
 
-=> C++ g++
+```bash
+docker system prune
+```
 
-=> Common Lisp (clisp) .lsp
-(defun hello ()
-           (format t "Hello, World!"))
-(hello)
-=> Python
+## Betrieb auf einem Server
 
-=> Lua
--- hello world lua program
-print ("Hello, World!")
-lua hello.lua
+Der Workspace ist für den Betrieb auf einem Server für eine Schule konzipiert. Die Installation funktioniert im wesentlichen genau wie die lokale Installation, aber es gibt einen wichtigen Punkt zu beachten: Der Webserver hat vollen Zugriff auf Docker, da er Container starten und stoppen können muss. Das bedeutet, dass der Workspace isoliert auf einem eigenen Server laufen sollte.
 
-=> Ruby
-=> Java
-=> C#
-using System;
+Ich betreibe dafür einen Cloud-Server bei Hetzner mit den folgenden Eckdaten:
 
-public class HelloWorld
-{
-    public static void Main(string[] args)
-    {
-        Console.WriteLine ("Hello Mono World");
-    }
-}
+- Shared vCPU x86 (Intel/AMD)
+- Standort Falkenstein
+- 80 GB Festplatte
+- 100 GB externes Volume
 
-mcs hello.cs
-mono hello.exe
-=> Go
+Je nach Bedarf kann man flexibel zwischen verschiedenen Servern wechseln. Wenn viel los ist und viel gearbeitet wird, verwende ich einen Server mit 16 Kernen und 32 GB RAM für ca. 65 € / Monat. Wenn weniger los ist, z. B. in den Ferien, reicht auch ein Server mit 4 Kernen und 8 GB RAM für ca. 8 € / Monat. Dafür wird der Server einfach über die Cloud Console heruntergefahren, skaliert und neu gestartet. Der ganze Vorgang dauert eine bis zwei Minuten und die Abrechnung erfolg minutengenau, so dass man die Kosten gut im Griff hat.
 
-package main
-import "fmt"
-func main() {
-    fmt.Println("hello world")
-}
+Für die Installation auf dem Cloud Server gibt es die Datei `cloud-config.yaml`, die man beim Erstellen des Servers mit angeben kann (vorher bitte den Nutzernamen `micha` ggfs. anpassen und den eigenen Public Key eintragen).
 
-go run hello.go
-go build hello.go && ./hello
+Das TLS-Frontend wird ebenfalls in einem Container betrieben, der über Docker Compose gestartet wird. Dazu einfach die Datei `frontend-docker-compose.yaml` in ein Verzeichnis `frontend` als `docker-compose.yaml` kopieren und dort starten:
 
-=> Dart
+```bash
+docker compose up -d
+```
 
-void main() {
-  print("Hello, World!");
-}
+In der `config.rb` sollten die Werte für `VIRTUAL_HOST`, `LETSENCRYPT_HOST` und `LETSENCRYPT_EMAIL` angepasst werden, damit das Frontend automatisch Letsencrypt-Zertifikate anfordern kann.
 
-dart hello.dart
+## Mitmachen
 
-=> Rust
-
-Can you write a simple Hello World program in LANG?
-
-Can you write a program in LANG which reads a number from the user and prints the prime factors of that number?
-
-Can you write a program in LANG which creates an array of 10 random integers, prints the array, sorts the array using the bubble sort algorithm and prints the sorted numbers?
+Wenn du Fragen, Hinweise, Wünsche oder Anregungen hast, kannst du gerne ein Issue aufmachen oder einen Merge Request schicken. Oder schreib einfach eine Mail an <a href='mailto:specht@gymnasiumsteglitz.de'>specht@gymnasiumsteglitz.de</a>. Ich freue mich über jede Art von Feedback.
