@@ -652,6 +652,19 @@ pre .c, pre .ch, pre .cd, pre .cm, pre .cpf, pre .c1, pre .cs {
     }
 }
 
+.btn-module-4 {
+    margin-bottom: 0.5em;
+}
+
+@media (min-width: 576px) {
+    .btn-module-4 {
+        position: unset;
+        top: unset;
+        text-align: right;
+        /* padding-top: 0.5em; */
+    }
+}
+
 a.btn:hover {
     text-decoration: none;
 }

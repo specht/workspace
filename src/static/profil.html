@@ -21,9 +21,28 @@
             <p>
                 Der Workspace ist deine persönliche Visual Studio Code-Arbeitsumgebung. Hier kannst du Dateien erstellen, bearbeiten und löschen. Du kannst auch neue Dateien und Ordner erstellen und Dateien hochladen.
             </p>
+            <div class="row">
+                <div class="col-sm-6"><h4>Workspace teilen</h4></div>
+                <div class="col-sm-6 btn-module-4" style="margin-top: 0;">
+                    <button style='#{(@session_user || {})[:share_tag].nil? ? '' : 'display: none;'}' id='bu_share' class="btn btn-primary"><i class='fa fa-send'></i>&nbsp;&nbsp;Workspace teilen</button>
+                    <button style='#{(@session_user || {})[:share_tag].nil? ? 'display: none;' : ''}' id='bu_stop_share' class="btn btn-primary"><i class='fa fa-trash'></i>&nbsp;&nbsp;Teilen beenden</button>
+                </div>
+            </div>
+            <p>
+                Wenn du jemandem deinen Workspace zeigen möchtest oder dir helfen lassen möchtest, kannst du deinen Workspace teilen. Du erhältst einen Link, den du weitergeben kannst. Jeder, der diesen Link hat, uneingeschränkten Zugriff auf deinen Workspace, auch ohne Anmeldung. Der Link ist solange gültig, bis du ihn deaktivierst.
+            </p>
+            <div id='div_share_link' style="max-width: 100%; overflow-x: auto; #{(@session_user || {})[:share_tag] ? '' : 'display: none;'}" class="mt-2 mb-4">
+                <div style="display: table; margin-left: auto; margin-right: auto;">
+                    <div class="input-group">
+                        <span class="input-group-text">Freigabelink:</span>
+                        <input type="text" id='ti_share_link' style='width: 42em; max-width: 100%;' class="form-control" readonly value="#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}">
+                        <button id='bu_copy_share_link' class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}'><i class='fa fa-clipboard'></i></button>
+                    </div>
+                </div>
+            </div>
             <h4>Workspace zurücksetzen</h4>
             <p>
-                Hiermit kannst du deinen Workspace zurücksetzen. Alle Dateien, Einstellungen und installierte Erweiterungen werden gelöscht und dein Workspace wird auf den Ursprungszustand zurückgesetzt.
+                Hier kannst du deinen Workspace zurücksetzen. Alle Dateien, Einstellungen und installierte Erweiterungen werden gelöscht und dein Workspace wird auf den Ursprungszustand zurückgesetzt.
             </p>
             <div>
                 <button id='bu_reset_workspace' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Workspace zurücksetzen</button>
@@ -68,6 +87,13 @@
             <div class="hint">
                 Deine Zugangsdaten sind im Workspace in den Umgebungsvariablen <code>MYSQL_HOST</code>, <code>MYSQL_USER</code>, <code>MYSQL_PASSWORD</code> und <code>MYSQL_DB</code> hinterlegt, damit du keine Zugangsdaten im Quellcode deiner Programme speichern musst.
             </div>
+            <h4>Datenbank zurücksetzen</h4>
+            <p>
+                Hier kannst du deine MySQL-Datenbank zurücksetzen. Alle Tabellen und Daten werden gelöscht und deine Datenbank wird auf den Ursprungszustand zurückgesetzt.
+            </p>
+            <div>
+                <button id='bu_reset_mysql' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Datenbank zurücksetzen</button>
+            </div>
             <hr>
             <div class="row">
                 <div class="col-sm-6"><h2>TIC-80</h2></div>
@@ -99,12 +125,25 @@
             });
         });
         $('#bu_reset_workspace').on('click', function() {
-            showTemplateModal('Workspace zurücksetzen', `<div>Bist du sicher, dass du deinen Workspace zurücksetzen möchtest? Alle Dateien, Einstellungen und installierte Erweiterungen werden gelöscht.</div><div id='div_reset_workspace_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog fa-spin'></i>&nbsp;&nbsp;Moment, dein Workspace wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_workspace_please_success' style='display: none; margin-top: 1em;'><i class='text-success fa fa-check'></i>&nbsp;&nbsp;Dein Workspace wurde auf den Ursprungszustand zurückgesetzt.</div>`,
+            showTemplateModal('Workspace zurücksetzen', `<div>Bist du sicher, dass du deinen Workspace zurücksetzen möchtest? Alle Dateien, Einstellungen und installierte Erweiterungen werden gelöscht.</div><div id='div_reset_workspace_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog fa-spin'></i>&nbsp;&nbsp;Moment, dein Workspace wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_workspace_success' style='display: none; margin-top: 1em;'><i class='text-success fa fa-check'></i>&nbsp;&nbsp;Dein Workspace wurde auf den Ursprungszustand zurückgesetzt.</div>`,
             "<i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen", 'btn-danger', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
                 $('#div_reset_workspace_please_wait').slideDown();
                 api_call('/api/reset_server', {}, function(data) {
                     $('#div_reset_workspace_please_wait').hide();
-                    $('#div_reset_workspace_please_success').show();
+                    $('#div_reset_workspace_success').show();
+                    $('#__template_modal .modal-footer .btn').eq(0).hide();
+                    $('#__template_modal .modal-footer .btn').eq(1).html(`<i class='fa fa-times'></i>&nbsp;&nbsp;Schließen`);
+                });
+                return false;
+            });
+        });
+        $('#bu_reset_mysql').on('click', function() {
+            showTemplateModal('MySQL-Datenbank zurücksetzen', `<div>Bist du sicher, dass du deine MySQL-Datenbank zurücksetzen möchtest? Alle Tabellen und Daten werden gelöscht.</div><div id='div_reset_mysql_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog fa-spin'></i>&nbsp;&nbsp;Moment, deine Datenbank wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_mysql_success' style='display: none; margin-top: 1em;'><i class='text-success fa fa-check'></i>&nbsp;&nbsp;Deine Datenbank wurde auf den Ursprungszustand zurückgesetzt.</div>`,
+            "<i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen", 'btn-danger', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+                $('#div_reset_mysql_please_wait').slideDown();
+                api_call('/api/reset_mysql', {}, function(data) {
+                    $('#div_reset_mysql_please_wait').hide();
+                    $('#div_reset_mysql_success').show();
                     $('#__template_modal .modal-footer .btn').eq(0).hide();
                     $('#__template_modal .modal-footer .btn').eq(1).html(`<i class='fa fa-times'></i>&nbsp;&nbsp;Schließen`);
                 });

@@ -774,7 +774,7 @@ class Main < Sinatra::Base
 
     def init_mysql(email)
         mysql_password = Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT)
-        STDERR.puts "Setting up MySQL user #{email} with password #{mysql_password}"
+        STDERR.puts "Setting up MySQL user #{email} with database #{email}"
         Open3.popen2("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
             stdin.puts "CREATE USER IF NOT EXISTS '#{email}'@'%' identified by '#{mysql_password}';"
             stdin.puts "CREATE DATABASE IF NOT EXISTS `#{email}`;"
@@ -783,6 +783,16 @@ class Main < Sinatra::Base
             stdin.close
             wait_thr.value
         end
+    end
+
+    def reset_mysql(email)
+        STDERR.puts "Removing database for MySQL user #{email}"
+        Open3.popen2("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+            stdin.puts "DROP DATABASE IF EXISTS `#{email}`;"
+            stdin.close
+            wait_thr.value
+        end
+        init_mysql(email)
     end
 
     def start_server(email)
@@ -832,6 +842,13 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         email = @session_user[:email]
         init_mysql(email)
+        respond(:yay => 'sure')
+    end
+
+    post '/api/reset_mysql' do
+        assert(user_logged_in?)
+        email = @session_user[:email]
+        reset_mysql(email)
         respond(:yay => 'sure')
     end
 
@@ -1334,10 +1351,15 @@ class Main < Sinatra::Base
         if path[0, 7] == '/share/'
             share_tag = path.sub('/share/', '')
             STDERR.puts "OPENING SHARE WITH SHARE TAG #{share_tag}"
-            share_user = neo4j_query_expect_one(<<~END_OF_STRING, :share_tag => share_tag)['u']
-                MATCH (u:User {share_tag: $share_tag})
-                RETURN u;
-            END_OF_STRING
+            begin
+                share_user = neo4j_query_expect_one(<<~END_OF_STRING, :share_tag => share_tag)['u']
+                    MATCH (u:User {share_tag: $share_tag})
+                    RETURN u;
+                END_OF_STRING
+            rescue
+                redirect "#{WEB_ROOT}/", 302
+                return
+            end
             path = '/share.html'
         end
         if @@content.include?(path[1, path.size - 1])

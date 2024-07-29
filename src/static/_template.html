@@ -38,17 +38,19 @@ pre table td {
 function install_clipboard_handler(selector) {
     window.clipboard = new ClipboardJS(selector);
     window.clipboard.on('success', function(e) {
-        let check = $("<i class='fa fa-check btn-success btn-clipboard-check' style='position: absolute; left: 0.8em; top: 0.6em;'/>");
+        let check = $("<i class='fa fa-check btn-clipboard-check' style='position: absolute; left: 0.8em; top: 0.6em;'/>");
+        $(e.trigger).removeClass('btn-secondary').addClass('btn-success');
         $(e.trigger).closest('.btn').find('.fa-clipboard').css('visibility', 'hidden');
         $(e.trigger).append(check);
-        (function(check) {
+        (function(check, trigger) {
             setTimeout(function() {
                 check.fadeOut(400, function() {
-                    $(e.trigger).closest('.btn').find('.fa-clipboard').css('visibility', 'visible');
+                    trigger.addClass('btn-secondary').removeClass('btn-success');
+                    trigger.closest('.btn').find('.fa-clipboard').css('visibility', 'visible');
                     check.remove();
                 });
             }, 1000);
-        })(check);
+        })(check, $(e.trigger));
     });
 }
 
@@ -252,7 +254,7 @@ window.addEventListener('load', function() {
                 <button style='#{(@session_user.nil? || (!@session_user[:show_workspace])) ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='fa fa-code'></i>&nbsp;&nbsp;Workspace öffnen</button>
                 <button style='#{(@session_user.nil? || (!@session_user[:show_phpmyadmin])) ? 'display: none;' : ''}' id='bu_phpmyadmin' class="btn btn-success" target="_blank"><i class='fa fa-database'></i>&nbsp;&nbsp;phpMyAdmin</button>
                 <a style='#{(@session_user.nil? || (!@session_user[:show_tic80])) ? 'display: none;' : ''}' href="/tic80/" class="btn btn-success" target="_blank"><i class='fa fa-keyboard-o'></i>&nbsp;&nbsp;TIC-80</a>
-                <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-secondary"><i class='fa fa-id-card-o'></i>&nbsp;&nbsp;Profil</a>
+                <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-primary"><i class='fa fa-id-card-o'></i>&nbsp;&nbsp;Profil</a>
                 <a href='/admin' style='#{admin_logged_in? ? '' : 'display: none;'}' class="btn btn-warning"><i class='fa fa-wrench'></i>&nbsp;&nbsp;Administration</a>
                 <!-- <button style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_settings' class="btn btn-outline-secondary"><i class='fa fa-chevron-down rot'></i></button> -->
             </div>
