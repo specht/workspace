@@ -619,3 +619,12 @@ div.floatright > p {
 .scroll-x {
     scrollbar-width: thin;
 }
+
+pre .s, pre .sb, pre .sc, pre .dl, pre .sd, pre .s2, pre .sh, pre .sx, pre .s1 {
+    color: #fad31c!important;
+    font-weight: normal!important;
+}
+
+pre .c, pre .ch, pre .cd, pre .cm, pre .cpf, pre .c1, pre .cs {
+    font-weight: normal!important;
+}
