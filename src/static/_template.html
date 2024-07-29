@@ -66,8 +66,10 @@ function showTemplateModal(title, text, confirm_label, confirm_class,
         });
     }
     bu_confirm.click(function(e) {
-        confirm_callback();
-        $('#__template_modal').modal('hide');
+        if (confirm_callback() !== false) {
+            console.log('hiding!');
+            $('#__template_modal').modal('hide');
+        }
     });
     $('#__template_modal').modal('show');
 }

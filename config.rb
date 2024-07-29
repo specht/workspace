@@ -51,7 +51,10 @@ if PROFILE.include?(:static)
         ]
         docker_compose[:services][:nginx][:expose] = ['80']
     end
-    docker_compose[:services][:nginx][:links] = ["ruby:#{PROJECT_NAME}_ruby_1"]
+    docker_compose[:services][:nginx][:links] = [
+        "ruby:#{PROJECT_NAME}_ruby_1",
+        "phpmyadmin:#{PROJECT_NAME}_phpmyadmin_1",
+    ]
     nginx_config = <<~END_OF_STRING
         log_format custom '$http_x_forwarded_for - $remote_user [$time_local] "$request" '
                           '$status $body_bytes_sent "$http_referer" '
@@ -98,6 +101,17 @@ if PROFILE.include?(:static)
 
             charset utf-8;
 
+            location /phpmyadmin/ {
+                rewrite ^/phpmyadmin(/.*)$ $1 break;
+                try_files $uri @phpmyadmin;
+            }
+
+            location @phpmyadmin {
+                proxy_pass http://phpmyadmin_1:80;
+                proxy_set_header Host $host;
+                proxy_http_version 1.1;
+            }
+
             location / {
                 root /usr/share/nginx/html;
                 include /etc/nginx/mime.types;
@@ -105,7 +119,7 @@ if PROFILE.include?(:static)
             }
 
             location @ruby {
-                proxy_pass http://#{PROJECT_NAME}_ruby_1:9292;
+                proxy_pass http://ruby_1:9292;
                 proxy_set_header Host $host;
                 proxy_http_version 1.1;
                 proxy_set_header Upgrade $http_upgrade;
@@ -172,14 +186,15 @@ docker_compose[:services][:mysql] = {
         'MYSQL_ROOT_HOST' => '%',
         'MYSQL_ROOT_PASSWORD' => MYSQL_ROOT_PASSWORD
     },
-    :ports => ['0.0.0.0:3306:3306'],
+    :ports => ['127.0.0.1:3306:3306'],
 }
 
 docker_compose[:services][:phpmyadmin] = {
     :image => 'phpmyadmin/phpmyadmin',
     :volumes => ["#{MYSQL_DATA_PATH}:/var/lib/mysql"],
     :restart => 'always',
-    :expose => ['80']
+    :expose => ['80'],
+    :ports => ['127.0.0.1:8026:80'],
 }
 docker_compose[:services][:phpmyadmin][:depends_on] ||= []
 docker_compose[:services][:phpmyadmin][:depends_on] << :mysql

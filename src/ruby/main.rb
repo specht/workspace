@@ -23,7 +23,7 @@ CACHE_BUSTER = SecureRandom.alphanumeric(12)
 
 MODULE_ORDER = [:workspace, :phpmyadmin, :tic80]
 MODULE_LABELS = {
-    :workspace => 'Workspace (Visual Studio Code)',
+    :workspace => 'Workspace',
     :phpmyadmin => 'phpMyAdmin',
     :tic80 => 'TIC-80',
 }
@@ -1025,7 +1025,7 @@ class Main < Sinatra::Base
                     io2.string
                 end
                 unless sub.empty?
-                    io.puts "<h2>#{group}</h3>"
+                    io.puts "<h2>#{group}</h2>"
                     io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
                     io.puts "<table class='table table-sm' id='table_admin_workspaces'>"
                     io.puts "<tr>"
@@ -1311,28 +1311,10 @@ class Main < Sinatra::Base
         respond(:yay => 'sure')
     end
 
-    def print_module_table
+    def print_module_button(key)
         assert(user_logged_in?)
-        StringIO.open do |io|
-            io.puts "<table class='table'>"
-            io.puts "<thead>"
-            io.puts "<tr>"
-            io.puts "<th>Modul</th>"
-            io.puts "<th>Status</th>"
-            io.puts "</tr>"
-            io.puts "</thead>"
-            io.puts "<tbody>"
-            MODULE_ORDER.each do |key|
-                io.puts "<tr>"
-                io.puts "<td>#{MODULE_LABELS[key]}</td>"
-                active = @session_user["show_#{key}".to_sym]
-                io.puts "<td><button class='btn btn-sm #{active ? 'btn-success' : 'btn-secondary'} bu-toggle-module' data-module='#{key}'><i class='fa #{active ? 'fa-check' : 'fa-times'}'></i>&nbsp;&nbsp;Modul #{active ? 'aktiv' : 'inaktiv'}</button></td>"
-                io.puts "</tr>"
-            end
-            io.puts "</tbody>"
-            io.puts "</table>"
-            io.string
-        end
+        active = @session_user["show_#{key}".to_sym]
+        "<button class='btn btn-md #{active ? 'btn-success' : 'btn-outline-secondary'} bu-toggle-module' data-module='#{key}'><i class='fa #{active ? 'fa-check' : 'fa-times'}'></i>&nbsp;&nbsp;#{MODULE_LABELS[key]} im Menü #{active ? '' : 'nicht'} anzeigen</button>"
     end
 
     get '/*' do

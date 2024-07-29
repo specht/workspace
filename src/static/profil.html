@@ -6,22 +6,72 @@
 <div class='container'>
     <div class='row'>
         <div class='col-md-12'>
-            <!-- <h2>Zugang teilen</h2> -->
-            <h2>Module aktivieren oder deaktivieren</h2>
+            <div class="row">
+                <div class="col-sm-6"><h2>Abmelden</h2></div>
+                <div class="col-sm-6 btn-module"><a style='margin-top: 4px; #{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-secondary" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a></div>
+            </div>
             <p>
-                Hier kannst du auswählen, welche Module du in deinem Workspace verwenden möchtest. Für jedes aktive Modul wird dir ein entsprechender Button in der oberen Leiste angezeigt.
+                Drücke den Button, um dich in diesem Browser abzumelden. Du kannst dich später wieder mit deiner E-Mail-Adresse anmelden, deine Dateien und Einstellungen bleiben erhalten.
             </p>
-            #{print_module_table}
-            <h2>Module zurücksetzen</h2>
-            <h3>Workspace zurücksetzen</h3>
+            <hr>
+            <div class="row">
+                <div class="col-sm-6"><h2>Workspace</h2></div>
+                <div class="col-sm-6 btn-module">#{print_module_button(:workspace)}</div>
+            </div>
+            <p>
+                Der Workspace ist deine persönliche Visual Studio Code-Arbeitsumgebung. Hier kannst du Dateien erstellen, bearbeiten und löschen. Du kannst auch neue Dateien und Ordner erstellen und Dateien hochladen.
+            </p>
+            <h4>Workspace zurücksetzen</h4>
             <p>
                 Hiermit kannst du deinen Workspace zurücksetzen. Alle Dateien, Einstellungen und installierte Erweiterungen werden gelöscht und dein Workspace wird auf den Ursprungszustand zurückgesetzt.
-                <div>
-                    <button id='bu_reset_workspace' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Workspace zurücksetzen</button>
-                </div>
             </p>
-            <h2>Abmelden</h2>
-            <a style='margin-top: 4px; #{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-primary" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a>
+            <div>
+                <button id='bu_reset_workspace' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Workspace zurücksetzen</button>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-sm-6"><h2>MySQL</h2></div>
+                <div class="col-sm-6 btn-module">#{print_module_button(:phpmyadmin)}</div>
+            </div>
+            <p>
+                Du hast eine MySQL-Datenbank, die du im Workspace verwenden kannst. Du kannst Tabellen erstellen, Daten einfügen, abfragen und löschen. Deine Zugangsdaten sind:
+            </p>
+            <div style='max-width: 100%; overflow-x: auto;'>
+                <table class='table'>
+                    <tr>
+                        <td>Host</td>
+                        <td><code>mysql</code></td>
+                    </tr>
+                    <tr>
+                        <td>Benutzername</td>
+                        <td><code>#{@session_user[:email]}</code></td>
+                    </tr>
+                    <tr>
+                        <td>Passwort</td>
+                        <td><code>#{Main.gen_password_for_email(@session_user[:email], MYSQL_PASSWORD_SALT)}</code></td>
+                    </tr>
+                    <tr>
+                        <td>Datenbank</td>
+                        <td><code>#{@session_user[:email]}</code></td>
+                    </tr>
+                </table>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-sm-6"><h2>TIC-80</h2></div>
+                <div class="col-sm-6 btn-module">#{print_module_button(:tic80)}</div>
+            </div>
+            <p>
+                Der TIC-80 ist ein Fantasy-Computer für Spiele, Demos und Prototypen. Du kannst Programme in der Programmiersprache Lua schreiben und ausführen, aber auch andere Sprachen sind möglich. Im Unterschied zum TIC-80 auf <a href='https://tic80.com/create' target='_blank'>https://tic80.com/create</a> kannst du hier die Pro-Version verwenden und deine Dateien werden automatisch gespeichert, so dass du sie nicht verlierst.
+
+            </p>
+            <!-- <h4>TIC-80 zurücksetzen</h4>
+            <p>
+                Hiermit kannst du deinen TIC-80 zurücksetzen. Alle Dateien werden gelöscht und dein TIC-80 wird auf den Ursprungszustand zurückgesetzt.
+            </p>
+            <div>
+                <button id='bu_reset_tic80' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;TIC-80 zurücksetzen</button>
+            </div> -->
         </div>
     </div>
 </div>
@@ -37,12 +87,16 @@
             });
         });
         $('#bu_reset_workspace').on('click', function() {
-            showTemplateModal('Workspace zurücksetzen', 'Bist du sicher, dass du deinen Workspace zurücksetzen möchtest? Alle Dateien, Einstellungen und installierte Erweiterungen werden gelöscht.',
+            showTemplateModal('Workspace zurücksetzen', `<div>Bist du sicher, dass du deinen Workspace zurücksetzen möchtest? Alle Dateien, Einstellungen und installierte Erweiterungen werden gelöscht.</div><div id='div_reset_workspace_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog fa-spin'></i>&nbsp;&nbsp;Moment, dein Workspace wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_workspace_please_success' style='display: none; margin-top: 1em;'><i class='text-success fa fa-check'></i>&nbsp;&nbsp;Dein Workspace wurde auf den Ursprungszustand zurückgesetzt.</div>`,
             "<i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen", 'btn-danger', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+                $('#div_reset_workspace_please_wait').slideDown();
                 api_call('/api/reset_server', {}, function(data) {
-                    // we need to reload the website to receive the updated server_tag and server_sid
-                    window.location.reload();
+                    $('#div_reset_workspace_please_wait').hide();
+                    $('#div_reset_workspace_please_success').show();
+                    $('#__template_modal .modal-footer .btn').eq(0).hide();
+                    $('#__template_modal .modal-footer .btn').eq(1).html(`<i class='fa fa-times'></i>&nbsp;&nbsp;Schließen`);
                 });
+                return false;
             });
         });
     });

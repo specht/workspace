@@ -628,3 +628,29 @@ pre .s, pre .sb, pre .sc, pre .dl, pre .sd, pre .s2, pre .sh, pre .sx, pre .s1 {
 pre .c, pre .ch, pre .cd, pre .cm, pre .cpf, pre .c1, pre .cs {
     font-weight: normal!important;
 }
+
+.menu {
+    padding-bottom: 5px;
+}
+
+.menu .btn {
+    margin-bottom: 5px;
+}
+
+.btn-module {
+    position: relative;
+    top: -0.8em;
+}
+
+@media (min-width: 576px) {
+    .btn-module {
+        position: unset;
+        top: unset;
+        text-align: right;
+        padding-top: 1.5em;
+    }
+}
+
+a.btn:hover {
+    text-decoration: none;
+}
