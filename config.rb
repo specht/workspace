@@ -181,8 +181,10 @@ docker_compose[:services][:phpmyadmin] = {
     # :volumes => ["#{MYSQL_DATA_PATH}:/var/lib/mysql"],
     :restart => 'always',
     :expose => ['80'],
-    :ports => ['127.0.0.1:8026:80'],
 }
+if DEVELOPMENT
+    docker_compose[:services][:phpmyadmin][:ports] => ['127.0.0.1:8026:80']
+end
 docker_compose[:services][:phpmyadmin][:depends_on] ||= []
 docker_compose[:services][:phpmyadmin][:depends_on] << :mysql
 docker_compose[:services][:phpmyadmin][:links] = ['mysql:mysql']
