@@ -50,6 +50,12 @@ if PROFILE.include?(:static)
             'LETSENCRYPT_EMAIL=specht@gymnasiumsteglitz.de'
         ]
         docker_compose[:services][:nginx][:expose] = ['80']
+        docker_compose[:services][:phpmyadmin][:environment] = [
+            'VIRTUAL_HOST=phpmyadmin.hackschule.de',
+            'LETSENCRYPT_HOST=phpmyadmin.hackschule.de',
+            'LETSENCRYPT_EMAIL=specht@gymnasiumsteglitz.de'
+        ]
+        docker_compose[:services][:phpmyadmin][:expose] = ['80']
     end
     docker_compose[:services][:nginx][:links] = [
         "ruby:#{PROJECT_NAME}_ruby_1",
@@ -119,7 +125,7 @@ if PROFILE.include?(:static)
         f.write nginx_config
     end
     if PROFILE.include?(:dynamic)
-        docker_compose[:services][:nginx][:depends_on] = [:ruby, :phpmyadmin]
+        docker_compose[:services][:nginx][:depends_on] = [:ruby]
     end
 end
 
