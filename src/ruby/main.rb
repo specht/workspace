@@ -951,7 +951,7 @@ class Main < Sinatra::Base
                 io.puts "<div class='row'>"
                 section[:entries].each.with_index do |slug, index|
                     content = @@content[slug]
-                    io.puts "<div class='col-sm-12 #{section_key == 'programming_languages' ? 'col-md-6' : 'col-md-12'} #{section_key == 'programming_languages' ? 'col-lg-4' : 'col-lg-6'}'>"
+                    io.puts "<div class='#{section_key == 'programming_languages' ? 'col-sm-6' : 'col-sm-12'} #{section_key == 'programming_languages' ? 'col-md-6' : 'col-md-12'} #{section_key == 'programming_languages' ? 'col-lg-4' : 'col-lg-6'}'>"
                     io.puts "<a href='/#{slug}' class='tutorial_card2 #{section_key == 'programming_languages' ? 'compact' : ''}'>"
                     io.puts "<h4>#{content[:title]}</h4>"
                     io.puts "<div class='inner'>"

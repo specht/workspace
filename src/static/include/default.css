@@ -325,6 +325,7 @@ tr.noborder td {
     text-decoration: none;
     border: 1px solid #aaa;
     box-shadow: 0 0 0.8em rgba(0, 0, 0, 0.5);
+    color: unset;
 }
 
 .tutorial_card2 > .inner {
