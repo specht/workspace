@@ -2,6 +2,8 @@
 
 Der Workspace der Hackschule ist eine Entwicklungsumgebung, die speziell für den Einsatz in der Schule konzipiert wurde. Sie läuft vollständig im Browser und benötigt keine Installation. Der Workspace enthält alle notwendigen Werkzeuge, um Programme in verschiedenen Programmiersprachen zu schreiben, zu kompilieren und auszuführen. Der wesentliche Vorteil ist, dass Schülerinnen und Schüler in der Schule und zu Hause dieselbe Umgebung vorfinden und ihre Dateien an einem zentralen Ort speichern können.
 
+Der Workspace am Gymnasium Steglitz hier zu finden: <a href='https://workspace.hackschule.de'>https://workspace.hackschule.de</a>.
+
 ## Funktionen
 
 - Programmieren: Fortran, BASIC, C, C++, Common Lisp, Python, Lua, Ruby, Java, JavaScript, Netwide Assembler, C#, Go, Dart, Rust
