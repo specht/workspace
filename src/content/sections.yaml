@@ -20,7 +20,7 @@
   - js
   - nasm
   - cs
-  # - go
+  - go
   # - dart
   # - rust
 - key: computer_graphics

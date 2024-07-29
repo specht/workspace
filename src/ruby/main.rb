@@ -429,6 +429,8 @@ class Main < Sinatra::Base
                         lexer = Rouge::Lexers::CSharp.new
                     when 'fortran'
                         lexer = Rouge::Lexers::Fortran.new
+                    when 'go'
+                        lexer = Rouge::Lexers::Go.new
                     when 'java'
                         lexer = Rouge::Lexers::Java.new
                     when 'js'
