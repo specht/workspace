@@ -174,7 +174,8 @@ docker_compose[:services][:mysql] = {
         'MYSQL_ROOT_HOST' => '%',
         'MYSQL_ROOT_PASSWORD' => MYSQL_ROOT_PASSWORD
     },
-    :ports => ['127.0.0.1:3306:3306'],
+    :expose => ['3306'],
+    # :ports => ['127.0.0.1:3306:3306'],
 }
 
 docker_compose[:services][:phpmyadmin] = {
