@@ -97,7 +97,7 @@ footer a:hover {
 
 .header {
     /* border-bottom: 1px solid #ccc; */
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+    /* box-shadow: 0 0 30px rgba(0, 0, 0, 0.2); */
     /* padding: 1em 0; */
     background-repeat: no-repeat;
     background-size: cover;
