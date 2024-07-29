@@ -189,8 +189,8 @@ docker_compose[:services][:phpmyadmin][:depends_on] ||= []
 docker_compose[:services][:phpmyadmin][:depends_on] << :mysql
 docker_compose[:services][:phpmyadmin][:links] = ['mysql:db']
 docker_compose[:services][:phpmyadmin][:environment] = {
-    # 'PMA_HOST' => 'mysql',
     'PMA_ABSOLUTE_URI' => PHPMYADMIN_WEB_ROOT + '/',
+    'UPLOAD_LIMIT' => '128M',
 }
 if !DEVELOPMENT
     docker_compose[:services][:phpmyadmin][:environment] = [
