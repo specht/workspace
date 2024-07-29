@@ -22,7 +22,7 @@
   - cs
   - go
   - dart
-  # - rust
+  - rust
 - key: computer_graphics
   label: Computergrafik
   icon: /images/palette.png

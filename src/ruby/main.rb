@@ -417,6 +417,8 @@ class Main < Sinatra::Base
                     end
                     lexer = nil
                     case language
+                    when 'bash'
+                        lexer = Rouge::Lexers::Shell.new
                     when 'basic'
                         lexer = Rouge::Lexers::VisualBasic.new
                     when 'c'
@@ -445,8 +447,8 @@ class Main < Sinatra::Base
                         lexer = Rouge::Lexers::Python.new
                     when 'ruby'
                         lexer = Rouge::Lexers::Ruby.new
-                    when 'bash'
-                        lexer = Rouge::Lexers::Shell.new
+                    when 'rust'
+                        lexer = Rouge::Lexers::Rust.new
                     end
                     next if lexer.nil?
                     pre.content = ''
