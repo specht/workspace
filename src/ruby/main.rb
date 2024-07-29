@@ -826,6 +826,13 @@ class Main < Sinatra::Base
         Main.refresh_nginx_config()
     end
 
+    post '/api/start_mysql' do
+        assert(user_logged_in?)
+        email = @session_user[:email]
+        init_mysql(email)
+        respond(:yay => 'sure')
+    end
+
     post '/api/start_server' do
         assert(user_logged_in?)
 
