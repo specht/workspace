@@ -50,12 +50,6 @@ if PROFILE.include?(:static)
             'LETSENCRYPT_EMAIL=specht@gymnasiumsteglitz.de'
         ]
         docker_compose[:services][:nginx][:expose] = ['80']
-        docker_compose[:services][:phpmyadmin][:environment] = [
-            'VIRTUAL_HOST=phpmyadmin.hackschule.de',
-            'LETSENCRYPT_HOST=phpmyadmin.hackschule.de',
-            'LETSENCRYPT_EMAIL=specht@gymnasiumsteglitz.de'
-        ]
-        docker_compose[:services][:phpmyadmin][:expose] = ['80']
     end
     docker_compose[:services][:nginx][:links] = [
         "ruby:#{PROJECT_NAME}_ruby_1",
@@ -196,6 +190,14 @@ docker_compose[:services][:phpmyadmin][:links] = ['mysql:mysql']
 docker_compose[:services][:phpmyadmin][:environment] = {
     'PMA_HOST' => 'mysql',
 }
+if !DEVELOPMENT
+    docker_compose[:services][:phpmyadmin][:environment] = [
+        'VIRTUAL_HOST=phpmyadmin.hackschule.de',
+        'LETSENCRYPT_HOST=phpmyadmin.hackschule.de',
+        'LETSENCRYPT_EMAIL=specht@gymnasiumsteglitz.de'
+    ]
+    docker_compose[:services][:phpmyadmin][:expose] = ['80']
+end
 
 # docker_compose[:services][:neo4j_user] = {
 #     :image => 'neo4j:4.4.26-community',
