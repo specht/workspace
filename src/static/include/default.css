@@ -668,3 +668,14 @@ pre .c, pre .ch, pre .cd, pre .cm, pre .cpf, pre .c1, pre .cs {
 a.btn:hover {
     text-decoration: none;
 }
+
+.div-mysql-data .input-group-text {
+    background-color: #fff;
+    border: none;
+    margin-left: -0.75em;
+}
+
+.div-mysql-data input {
+    border-top-left-radius: 4px!important;
+    border-bottom-left-radius: 4px!important;
+}

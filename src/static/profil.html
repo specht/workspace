@@ -49,7 +49,7 @@
             </div>
             <hr>
             <div class="row">
-                <div class="col-sm-6"><h2>MySQL</h2></div>
+                <div class="col-sm-6"><h2>MySQL-Datenbank</h2></div>
                 <div class="col-sm-6 btn-module">#{print_module_button(:phpmyadmin)}</div>
             </div>
             <p>
@@ -58,30 +58,34 @@
             <p>
                 Deine Zugangsdaten lauten:
             </p>
-            <div class="row g-3 align-items-center mb-3">
-                <div class="col-md-2">
-                    <label for="ti_mysql_host" class="col-form-label">Host:</label>
+            <div class="row g-3 align-items-center mb-3 div-mysql-data">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 9em;">Host:</span>
+                        <input type="text" class="form-control" readonly value="mysql">
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='mysql'><i class='fa fa-clipboard'></i></button>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <input type="text" id="ti_mysql_host" class="form-control" readonly value="mysql">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 9em;">Benutzername:</span>
+                        <input type="text" class="form-control" readonly value="#{@session_user[:email]}">
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email]}'><i class='fa fa-clipboard'></i></button>
+                    </div>
                 </div>
-                <div class="col-md-2">
-                    <label for="ti_mysql_user" class="col-form-label">Benutzername:</label>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 9em;">Datenbank:</span>
+                        <input type="text" class="form-control" readonly value="#{@session_user[:email]}">
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email]}'><i class='fa fa-clipboard'></i></button>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <input type="text" id="ti_mysql_user" class="form-control" readonly value="#{@session_user[:email]}">
-                </div>
-                <div class="col-md-2">
-                    <label for="ti_mysql_db" class="col-form-label">Datenbank:</label>
-                </div>
-                <div class="col-md-4">
-                    <input type="text" id="ti_mysql_db" class="form-control" readonly value="#{@session_user[:email]}">
-                </div>
-                <div class="col-md-2">
-                    <label for="ti_mysql_password" class="col-form-label">Passwort:</label>
-                </div>
-                <div class="col-md-4">
-                    <input type="text" id="ti_mysql_password" class="form-control" readonly value="#{Main.gen_password_for_email(@session_user[:email], MYSQL_PASSWORD_SALT)}">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 9em;">Passwort:</span>
+                        <input type="text" class="form-control" readonly value="#{Main.gen_password_for_email(@session_user[:email], MYSQL_PASSWORD_SALT)}">
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{Main.gen_password_for_email(@session_user[:email], MYSQL_PASSWORD_SALT)}'><i class='fa fa-clipboard'></i></button>
+                    </div>
                 </div>
             </div>
             <div class="hint">
