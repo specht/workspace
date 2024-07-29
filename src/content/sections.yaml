@@ -21,7 +21,7 @@
   - nasm
   - cs
   - go
-  # - dart
+  - dart
   # - rust
 - key: computer_graphics
   label: Computergrafik

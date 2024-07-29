@@ -427,6 +427,8 @@ class Main < Sinatra::Base
                         lexer = Rouge::Lexers::Cpp.new
                     when 'cs'
                         lexer = Rouge::Lexers::CSharp.new
+                    when 'dart'
+                        lexer = Rouge::Lexers::Dart.new
                     when 'fortran'
                         lexer = Rouge::Lexers::Fortran.new
                     when 'go'
