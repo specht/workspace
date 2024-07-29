@@ -1,4 +1,4 @@
-FROM linuxserver/code-server:4.89.1
+FROM linuxserver/code-server:4.91.1
 RUN usermod -d /workspace abc
 RUN sudo apt-get update && sudo apt-get install -y \
     wget \

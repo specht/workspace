@@ -58,7 +58,7 @@ Wenn der Workspace gestartet ist, kannst du ihn im Browser unter <a href='http:/
 
 **Workspace-Image bauen**
 
-Das Bauen des Workspace-Images dauert relativ lange (bei mir 34 Minuten), da alle notwendigen Pakete heruntergeladen und installiert werden müssen. Das Image ist ca. 13.5 GB groß.
+Das Bauen des Workspace-Images dauert relativ lange (bei mir ca. 30 Minuten), da alle notwendigen Pakete heruntergeladen und installiert werden müssen. Das Image ist ca. 13.5 GB groß.
 
 ```bash
 ./build-image.sh
