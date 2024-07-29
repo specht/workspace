@@ -813,7 +813,9 @@ class Main < Sinatra::Base
 
         network_name = "bridge"
         mysql_ip = `docker inspect workspace_mysql_1`.split('"IPAddress": "')[1].split('"')[0]
-        system("docker run --add-host=mysql:#{mysql_ip} --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} --name hs_code_#{container_name} hs_code_server")
+        command = "docker run --add-host=mysql:#{mysql_ip} --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{email}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{email}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} --name hs_code_#{container_name} hs_code_server"
+        STDERR.puts command
+        system(command)
 
         Main.refresh_nginx_config()
     end

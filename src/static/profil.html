@@ -34,27 +34,39 @@
                 <div class="col-sm-6 btn-module">#{print_module_button(:phpmyadmin)}</div>
             </div>
             <p>
-                Du hast eine MySQL-Datenbank, die du im Workspace verwenden kannst. Du kannst Tabellen erstellen, Daten einfügen, abfragen und löschen. Deine Zugangsdaten sind:
+                Du hast eine MySQL-Datenbank, die du im Workspace verwenden kannst. Du kannst Tabellen erstellen, Daten einfügen, abfragen und löschen.
             </p>
-            <div style='max-width: 100%; overflow-x: auto;'>
-                <table class='table'>
-                    <tr>
-                        <td>Host</td>
-                        <td><code>mysql</code></td>
-                    </tr>
-                    <tr>
-                        <td>Benutzername</td>
-                        <td><code>#{@session_user[:email]}</code></td>
-                    </tr>
-                    <tr>
-                        <td>Passwort</td>
-                        <td><code>#{Main.gen_password_for_email(@session_user[:email], MYSQL_PASSWORD_SALT)}</code></td>
-                    </tr>
-                    <tr>
-                        <td>Datenbank</td>
-                        <td><code>#{@session_user[:email]}</code></td>
-                    </tr>
-                </table>
+            <p>
+                Deine Zugangsdaten lauten:
+            </p>
+            <div class="row g-3 align-items-center mb-3">
+                <div class="col-md-2">
+                    <label for="ti_mysql_host" class="col-form-label">Host:</label>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" id="ti_mysql_host" class="form-control" readonly value="mysql">
+                </div>
+                <div class="col-md-2">
+                    <label for="ti_mysql_user" class="col-form-label">Benutzername:</label>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" id="ti_mysql_user" class="form-control" readonly value="#{@session_user[:email]}">
+                </div>
+                <div class="col-md-2">
+                    <label for="ti_mysql_db" class="col-form-label">Datenbank:</label>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" id="ti_mysql_db" class="form-control" readonly value="#{@session_user[:email]}">
+                </div>
+                <div class="col-md-2">
+                    <label for="ti_mysql_password" class="col-form-label">Passwort:</label>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" id="ti_mysql_password" class="form-control" readonly value="#{Main.gen_password_for_email(@session_user[:email], MYSQL_PASSWORD_SALT)}">
+                </div>
+            </div>
+            <div class="hint">
+                Deine Zugangsdaten sind im Workspace in den Umgebungsvariablen <code>MYSQL_HOST</code>, <code>MYSQL_USER</code>, <code>MYSQL_PASSWORD</code> und <code>MYSQL_DB</code> hinterlegt, damit du keine Zugangsdaten im Quellcode deiner Programme speichern musst.
             </div>
             <hr>
             <div class="row">

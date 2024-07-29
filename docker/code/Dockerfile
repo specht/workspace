@@ -4,6 +4,9 @@ RUN sudo apt-get update && sudo apt-get install -y \
     wget \
     ruby \
     python3 python3-pip \
+    python3-dev libmysqlclient-dev libmysqlclient21 \
+    python3-mysql.connector \
+    mysql-client \
     golang-go \
     openjdk-17-jdk-headless \
     lua5.4 \
