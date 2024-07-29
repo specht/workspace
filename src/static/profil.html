@@ -15,8 +15,8 @@
             </p>
             <hr>
             <div class="row">
-                <div class="col-sm-6"><h2>Workspace</h2></div>
-                <div class="col-sm-6 btn-module">#{print_module_button(:workspace)}</div>
+                <div class="col-sm-12"><h2>Workspace</h2></div>
+                <!-- <div class="col-sm-6 btn-module">#{print_module_button(:workspace)}</div> -->
             </div>
             <p>
                 Der Workspace ist deine persönliche Visual Studio Code-Arbeitsumgebung. Hier kannst du Dateien erstellen, bearbeiten und löschen. Du kannst auch neue Dateien und Ordner erstellen und Dateien hochladen.
@@ -32,7 +32,7 @@
                 Wenn du jemandem deinen Workspace zeigen möchtest oder dir helfen lassen möchtest, kannst du deinen Workspace teilen. Du erhältst einen Link, den du weitergeben kannst. Jeder, der diesen Link hat, uneingeschränkten Zugriff auf deinen Workspace, auch ohne Anmeldung. Der Link ist solange gültig, bis du ihn deaktivierst.
             </p>
             <div id='div_share_link' style="max-width: 100%; overflow-x: auto; #{(@session_user || {})[:share_tag] ? '' : 'display: none;'}" class="mt-2 mb-4">
-                <div style="display: table; margin-left: auto; margin-right: auto;">
+                <div style="display: table; margin-left: auto; margin-right: auto;" class="input-with-text-mod">
                     <div class="input-group">
                         <span class="input-group-text">Freigabelink:</span>
                         <input type="text" id='ti_share_link' style='width: 42em; max-width: 100%;' class="form-control" readonly value="#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}">
@@ -58,7 +58,7 @@
             <p>
                 Deine Zugangsdaten lauten:
             </p>
-            <div class="row g-3 align-items-center mb-3 div-mysql-data">
+            <div class="row g-3 align-items-center mb-3 input-with-text-mod">
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-text" style="width: 9em;">Host:</span>

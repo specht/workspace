@@ -669,13 +669,24 @@ a.btn:hover {
     text-decoration: none;
 }
 
-.div-mysql-data .input-group-text {
+.input-with-text-mod .input-group-text {
     background-color: #fff;
     border: none;
     margin-left: -0.75em;
 }
 
-.div-mysql-data input {
+.input-with-text-mod input {
     border-top-left-radius: 4px!important;
     border-bottom-left-radius: 4px!important;
+}
+
+hr {
+    margin: 1rem 0;
+    color: inherit;
+    border: none;
+    border-bottom: 1px solid rgba(0,0,0,0.5);
+    background: none;
+    opacity: .25;
+    box-shadow: 0 0.2em 0.4em rgba(0, 0, 0, 0.3);
+    height: 4px!important;
 }
