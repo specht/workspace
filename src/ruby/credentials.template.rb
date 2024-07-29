@@ -4,7 +4,9 @@ DEVELOPMENT = (ENV['DEVELOPMENT'] == '1')
 PATH_TO_HOST_DATA = nil
 
 WEBSITE_HOST = "code.hackschule.de"
+WEBSITE_HOST_PHPMYADMIN = "phpmyadmin.hackschule.de"
 WEB_ROOT = DEVELOPMENT ? 'http://localhost:8025' : "https://#{WEBSITE_HOST}"
+PHPMYADMIN_WEB_ROOT = DEVELOPMENT ? 'http://localhost:8026' : "https://#{WEBSITE_HOST_PHPMYADMIN}"
 
 LOGIN_CODE_SALT = 'bitte_ein_salt_eintragen'
 

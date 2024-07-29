@@ -53,7 +53,6 @@ if PROFILE.include?(:static)
     end
     docker_compose[:services][:nginx][:links] = [
         "ruby:#{PROJECT_NAME}_ruby_1",
-        "phpmyadmin:#{PROJECT_NAME}_phpmyadmin_1",
     ]
     nginx_config = <<~END_OF_STRING
         log_format custom '$http_x_forwarded_for - $remote_user [$time_local] "$request" '
@@ -100,17 +99,6 @@ if PROFILE.include?(:static)
             access_log /var/log/nginx/access.log custom;
 
             charset utf-8;
-
-            location /phpmyadmin/ {
-                rewrite ^/phpmyadmin(/.*)$ $1 break;
-                try_files $uri @phpmyadmin;
-            }
-
-            location @phpmyadmin {
-                proxy_pass http://phpmyadmin_1:80;
-                proxy_set_header Host $host;
-                proxy_http_version 1.1;
-            }
 
             location / {
                 root /usr/share/nginx/html;
