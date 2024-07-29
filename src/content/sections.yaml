@@ -23,6 +23,9 @@
   - go
   - dart
   - rust
+  # - pascal
+  # - perl
+  # - php
 - key: computer_graphics
   label: Computergrafik
   icon: /images/palette.png
