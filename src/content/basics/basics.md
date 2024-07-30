@@ -93,14 +93,20 @@ Zum Schluss noch ein paar Tipps zur Tastatur: es gibt einige praktische Funktion
 </tr>
 </table>
 
+<div class='hint'>
+<p>
 Dazu noch ein wichtiger Hinweis: In den unteren Ecken deiner Tastatur findest du ein paar sogenannte _Hilfstasten_, z. B.
 <span class='key'>Strg</span>,
 <span class='key'>Shift</span>,
 <span class='key'>Alt</span>,
 <span class='key'>Win</span> und
 <span class='key'>AltGr</span>. Diese Tasten haben meistens keinen Effekt, wenn man sie alleine drückt, sondern sie werden für Tastenkombinationen verwendet, die meistens aus einer oder mehreren Hilfstasten und einer »richtigen« Taste bestehen. Um einen ausgewählten Text mit <span class='key'>Strg</span><span class='key'>C</span> zu kopieren, musst du also erst <span class='key'>Strg</span> gedrückt halten und dann einmal <span class='key'>C</span> tippen.
-
+</p>
+<p>
 Du kannst Hilfstasten auch verwenden, um Sonderzeichen einzugeben, genauso wie du Großbuchstaben mit <span class='key'>Shift</span> (auch: Umschalttaste) eingeben kannst.
+</p>
+</div>
+
 
 ## Bearbeiten von Text
 
@@ -142,3 +148,14 @@ Halte <span class='key'>Shift</span> gedrückt, während du durch einen Text nav
 
 Zum Löschen von einzelnen Zeichen gibt es zwei verschiedene Tasten, deren Unterschied man kennen sollte: <span style='width: 3em; display: inline-block;' class='key'>⟵</span> (Backspace) löscht das Zeichen links vom Cursor, während <span class='key'>Entf</span> das Zeichen rechts neben dem Cursor löscht. Oft gibt es Shortcuts, um ganze Zeilen zu löschen – in Visual Studio Code mit <span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>K</span>.
 
+
+### Tastaturlayouts
+
+Vielleicht fragst du dich irgendwann, wieso beim Programmieren oft so viele merkwürdige und kompliziert zu tippende Zeichen einzugeben sind. Denke bitte daran, dass die Welt der Computer und Programmiersprachen vor allem eine US-amerikanisch geprägte Welt ist. 
+Die fehlenden Umlaute in der englischen Sprache bieten die Möglichkeit, die Tastatur anders zu belegen und Zeichen wie `[`, `]`, `{`, `}`, `@`, `\`, `~` und `|` direkt zu erreichen, ohne dass man sich dabei die Finger verrenken muss. Das bedeutet, dass die deutsche Tastaturbelegung nicht unbedingt die beste Tastaturbelegung für das Programmieren ist.
+
+Hier siehst du eine Tastatur mit US-Layout:
+
+<img class='full' src='us-layout.webp'>
+
+ Es gibt spezielle Tastaturlayouts, die extra für Programmiererinnen und Programmierer entwickelt wurden, z. B. das [Neo-Tastaturlayout](https://neo-layout.org/), das [Colemak-Layout](https://colemak.com/) oder das [Dvorak-Layout](https://dvorak-keyboard.com/). Wenn du dich für das Thema interessierst, kannst du dich gerne mal damit beschäftigen. Es ist aber kein Muss, um programmieren zu lernen. Viel wichtiger ist es, dass du programmieren übst, egal mit welcher Tastatur. 🤓
