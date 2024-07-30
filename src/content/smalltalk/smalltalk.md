@@ -4,7 +4,7 @@ image: smalltalk-logo.png
 
 # Smalltalk <span style='font-size: 80%;'>(1980)</span>
 
-<div class='floatright' style='width: 30em;'>
+<div class='floatright fr-wide' style='width: 30em;'>
     <img src='smalltalk-team.webp'>
     <p>Alan Kay, Adele Goldberg und Dan Ingalls</p>
 </div>

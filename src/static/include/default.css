@@ -597,7 +597,7 @@ pre pre {
 div.floatright {
     float: right;
     margin-left: 1em;
-    margin-bottom: 1em;
+    margin-bottom: 0.8em;
     border: 0.5em solid #fff;
     border-radius: 0.2em;
     box-shadow: 0 0 0.5em rgba(0,0,0,0.2);
@@ -662,6 +662,13 @@ pre .c, pre .ch, pre .cd, pre .cm, pre .cpf, pre .c1, pre .cs {
         top: unset;
         text-align: right;
         /* padding-top: 0.5em; */
+    }
+}
+
+@media (max-width: 768px) {
+    div.floatright.fr-wide {
+        display: block;
+        width: 100%!important;
     }
 }
 

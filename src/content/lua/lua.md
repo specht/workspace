@@ -4,7 +4,7 @@ image: lua-logo.png
 
 # Lua <span style='font-size: 80%;'>(1993)</span>
 
-<div class='floatright' style='width: 30em;'>
+<div class='floatright' style='width: 24em;'>
     <img src='lua-team.webp'>
     <p>
         Waldemar Celes, Roberto Ierusalimschy, Luiz Henrique de Figueiredo
