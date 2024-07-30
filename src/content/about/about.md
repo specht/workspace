@@ -9,7 +9,6 @@ image: workspace.webp
 <p class='abstract'>
 Der Workspace der Hackschule ist eine Online-Entwicklungsumgebung, die speziell für den Einsatz in der Schule entwickelt wurde.
 Es handelt sich dabei um nichts anderes als eine Web-Version von Visual Studio Code, einem beliebten Code-Editor, der von vielen Entwicklerinnen und Entwicklern weltweit verwendet wird.
-Du kannst den Workspace verwenden, um Code zu schreiben, auszuführen und zu testen. Du musst keine Software installieren oder konfigurieren. Du kannst sofort loslegen!
 </p>
 
 ## Programmieren lernen kostet Zeit und Geduld

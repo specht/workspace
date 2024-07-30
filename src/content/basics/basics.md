@@ -1,7 +1,7 @@
 # Die Basics
 
 <p class='abstract'>
-Mach dich mit Visual Studio Code vertraut und lerne die wichtigsten Funktionen und Shortcuts auf der Tastatur kennen.
+Eine kleine Tour durch die Benutzeroberfläche von Visual Studio Code, gefolgt von ein paar grundlegenden Hinweisen zur Arbeit mit Dateien und Verzeichnissen. Lerne die wichtigsten Shortcuts und Funktionen zum Bearbeiten von und Navigieren innerhalb von Textdateien kennen.
 </p>
 
 Wenn du den Workspace öffnest, siehst du die Entwicklungsumgebung Visual Studio Code:

@@ -23,6 +23,8 @@ Film-pro-duk-tion
 Funk-tio-nen
 Ge-schäfts-an-wen-dun-gen
 Gra-fi-ken
+grund-le-gen-den
+Hack-schu-le
 hand-ge-schrie-ben-en
 inter-ak-ti-ve
 ken-nen-lernst
@@ -45,6 +47,7 @@ Pro-to-ty-pen-er-stel-lung
 res-sour-cen-scho-nen-de
 Skript-spra-che
 Soft-ware-ent-wick-lung
+spe-ziell
 Spie-le-ent-wick-lung
 Spra-che
 steu-ern
@@ -61,9 +64,11 @@ ver-öffent-licht
 ver-wen-det
 Ver-sions-ver-wal-tungs-sys-teme
 Ver-sions-ver-wal-tungs-sys-tem
+Ver-zeich-nis-sen
 Web-an-wen-dun-gen
 Web-ent-wick-lung
 welt-weit
+wich-tig-sten
 wissen-schaft-li-che
 Work-space
 wur-de
