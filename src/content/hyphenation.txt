@@ -13,6 +13,7 @@ be-lieb-ten
 be-lieb-testen
 Be-nut-zer-ein-ga-ben
 Be-nut-zer-ober-flä-chen
+Be-rei-chen
 be-son-de-ren
 Be-triebs-sys-te-men
 Bib-lio-thek
@@ -89,6 +90,7 @@ Pro-gram-mier-spra-che
 Pro-to-ty-pen-er-stel-lung
 Re-gier-ungs-be-hör-den
 res-sour-cen-scho-nen-de
+Ros-sum
 Short-cuts
 Skript-spra-che
 Soft-ware-ent-wick-lung
