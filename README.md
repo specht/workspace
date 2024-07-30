@@ -6,7 +6,7 @@ Der Workspace am Gymnasium Steglitz ist hier zu finden: <a href='https://workspa
 
 ## Funktionen
 
-- Programmieren: Fortran, BASIC, C, C++, Common Lisp, Python, Lua, Ruby, Java, JavaScript, Netwide Assembler, C#, Go, Dart, Rust
+- Programmieren: Fortran, COBOL, BASIC, Pascal, C, Smalltalk, C++, Common Lisp, Python, Lua, Ruby, Java, JavaScript, Netwide Assembler, C#, Go, Dart, Rust
 - wissenschaftliche Dokumente setzen mit LaTeX
 - moderne und portable HTML-Präsentationen erstellen mit shower.js
 - den Umgang mit der Kommandozeile lernen (Bash)
