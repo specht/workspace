@@ -1,4 +1,5 @@
 Ab-schluss-ar-bei-ten
+Ab-strak-ti-ons-ebene
 Ani-ma-tio-nen
 An-wen-dun-gen
 An-wen-dungs-be-rei-chen
@@ -21,7 +22,8 @@ da-run-ter
 Da-tei-na-men
 Da-ten-ban-ken
 Da-ten-bank-pro-gram-mierung
-ef-fi-zi-en-te
+ef-fi-zien-te
+Ef-fi-zienz
 Ein-fach-heit
 ein-ge-bet-te-ten
 ein-ge-setzt
@@ -51,6 +53,7 @@ Jahr-zehn-ten
 ken-nen-lernst
 kon-zi-piert
 Lam-port
+Leis-tungs-fä-hig-keit
 leis-tungs-fä-hi-ge
 Les-bar-keit
 Kli-ma-for-schung
