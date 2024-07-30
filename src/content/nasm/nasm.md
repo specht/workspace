@@ -4,7 +4,7 @@ image: nasm-logo.png
 
 # Netwide Assembler <span style='font-size: 80%;'>(1996)</span>
 
-<div class='floatright' style='width: 16em;'>
+<div class='floatright' style='width: 14em;'>
     <img src='tatham.webp'>
     <p>Simon Tatham</p>
 </div>
