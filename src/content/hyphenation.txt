@@ -72,6 +72,7 @@ Pro-gram-mier-spra-chen
 Pro-to-ty-pen-er-stel-lung
 Re-gier-ungs-be-hör-den
 res-sour-cen-scho-nen-de
+Short-cuts
 Skript-spra-che
 Soft-ware-ent-wick-lung
 spe-ziell
