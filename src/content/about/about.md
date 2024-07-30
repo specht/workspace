@@ -4,7 +4,7 @@ image: workspace.webp
 
 # Was ist der Hackschule Workspace?
 
-<img class='r' style='width: 6em;' src='vscode.png'>
+<img class='r' style='width: 8em;' src='vscode.png'>
 
 <p class='abstract'>
 Der Workspace der Hackschule ist eine Online-Entwicklungsumgebung, die speziell für den Einsatz in der Schule entwickelt wurde.
