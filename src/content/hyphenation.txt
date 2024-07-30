@@ -36,6 +36,7 @@ ent-wick-elt
 Ent-wick-lungs-um-ge-bung
 Ent-wick-lung
 er-ler-nen
+er-mög-licht
 erst-mals
 Er-wei-te-rung
 er-kennt
