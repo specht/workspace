@@ -97,7 +97,7 @@ Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der zweite Bef
 
 Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `WriteLn` das Wort `WritLn` zu schreiben:
 
-```c
+```pascal
     WritLn('Hello, World!');
 ```
 
