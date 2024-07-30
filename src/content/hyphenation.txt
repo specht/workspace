@@ -7,6 +7,8 @@ An-wen-dungs-ent-wick-lung
 ar-bei-test
 Assemb-ler
 auf-grund
+bei-zu-be-hal-ten
+be-kann-ten
 be-lieb-ten
 be-lieb-testen
 Be-nut-zer-ein-ga-ben
@@ -36,6 +38,8 @@ Er-wei-te-rung
 er-kennt
 feh-ler-to-le-ran-ten
 Film-pro-duk-tion
+Fire-fox
+Flexi-bi-li-tät
 Funk-tio-nen
 Funk-tions-theo-rie
 Ge-schäfts-an-wen-dun-gen
@@ -61,6 +65,7 @@ Ma-schi-nen-ebene
 ma-schi-nen-na-he
 Mathe-ma-ti-ker
 meist-ver-wen-de-ten
+Micro-soft
 mo-bi-len
 Net-scape
 neu-ro-na-les
