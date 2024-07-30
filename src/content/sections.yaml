@@ -38,6 +38,11 @@
   icon: /images/brain.png
   entries:
   - digits-experiment
+- key: networks
+  label: Netzwerke
+  icon: /images/telephone.png
+  entries:
+  # - tcpip
 - key: office
   label: Dokumente und Präsentationen
   icon: /images/pen.png
