@@ -18,12 +18,14 @@ ent-wick-elt
 er-ler-nen
 Ent-wick-lungs-um-ge-bung
 er-kennt
+feh-ler-to-le-ran-ten
 Film-pro-duk-tion
 Funk-tio-nen
 Gra-fi-ken
 hand-ge-schrie-ben-en
 inter-ak-ti-ve
 ken-nen-lernst
+kon-zi-piert
 Lam-port
 leis-tungs-fä-hi-ge
 Ma-schi-nen-ebene
@@ -51,6 +53,7 @@ Text-satz-sys-tem
 trai-nierst
 Um-schalt-tas-te
 un-ab-hän-gig
+Un-ter-neh-mens-soft-ware-ent-wick-lung
 ur-sprüng-lich
 Ver-zeich-nis-struk-tur
 ver-öffent-licht

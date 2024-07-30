@@ -431,6 +431,8 @@ class Main < Sinatra::Base
                         lexer = Rouge::Lexers::CSharp.new
                     when 'dart'
                         lexer = Rouge::Lexers::Dart.new
+                    when 'erlang'
+                        lexer = Rouge::Lexers::Erlang.new
                     when 'fortran'
                         lexer = Rouge::Lexers::Fortran.new
                     when 'go'
@@ -443,12 +445,16 @@ class Main < Sinatra::Base
                         lexer = Rouge::Lexers::Lua.new
                     when 'nasm'
                         lexer = Rouge::Lexers::Nasm.new
+                    when 'pascal'
+                        lexer = Rouge::Lexers::Pascal.new
                     when 'python'
                         lexer = Rouge::Lexers::Python.new
                     when 'ruby'
                         lexer = Rouge::Lexers::Ruby.new
                     when 'rust'
                         lexer = Rouge::Lexers::Rust.new
+                    when 'smalltalk'
+                        lexer = Rouge::Lexers::Smalltalk.new
                     end
                     next if lexer.nil?
                     pre.content = ''
@@ -977,7 +983,7 @@ class Main < Sinatra::Base
                 io.puts "<div class='row'>"
                 section[:entries].each.with_index do |slug, index|
                     content = @@content[slug]
-                    io.puts "<div class='#{section_key == 'programming_languages' ? 'col-sm-6' : 'col-sm-12'} #{section_key == 'programming_languages' ? 'col-md-6' : 'col-md-12'} #{section_key == 'programming_languages' ? 'col-lg-4' : 'col-lg-6'}'>"
+                    io.puts "<div class='#{section_key == 'programming_languages' ? 'col-sm-6' : 'col-sm-12'} #{section_key == 'programming_languages' ? 'col-md-4' : 'col-md-12'} #{section_key == 'programming_languages' ? 'col-lg-4' : 'col-lg-6'}'>"
                     io.puts "<a href='/#{slug}' class='tutorial_card2 #{section_key == 'programming_languages' ? 'compact' : ''}'>"
                     io.puts "<h4>#{content[:title]}</h4>"
                     io.puts "<div class='inner'>"

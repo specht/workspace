@@ -71,6 +71,8 @@ Da Assembler standardmäßig nicht von Visual Studio Code unterstützt wird, mü
 
 <img class='full' src='nasm-syntax.webp'>
 
+Alternativ kannst du auch <span class='key'>Strg</span><span class='key'>P</span> drücken und `ext install rights.nas-vscode` eingeben, um die Erweiterung zu installieren.
+
 Anschließend solltest du dein Assembler-Programm farbig sehen:
 
 <img class='full' src='syntax-highlighting.webp'>

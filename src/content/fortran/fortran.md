@@ -48,9 +48,11 @@ Drücke nun <span class='key'>Strg</span><span class='key'>S</span>, um die Date
 
 <img class='full' src='enter-filename.webp'>
 
-Da Lisp standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;'> in der Seitenleiste oder drücke <span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>X</span>. Suche nach der Erweiterung »Photran« und installiere sie.
+Da Fortran standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;'> in der Seitenleiste oder drücke <span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>X</span>. Suche nach der Erweiterung »Photran« und installiere sie.
 
 <img class='full' src='fortran-syntax.webp'>
+
+Alternativ kannst du auch <span class='key'>Strg</span><span class='key'>P</span> drücken und `ext install fiuba.photran-lsp-client-vscode` eingeben, um die Erweiterung zu installieren.
 
 Anschließend solltest du dein Fortran-Programm farbig sehen:
 

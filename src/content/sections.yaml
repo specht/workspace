@@ -9,12 +9,18 @@
   icon: /images/keyboard.png
   entries:
   - fortran
+  - cobol
   - basic
+  - pascal
   - c
+  - smalltalk
   - cpp
   - clisp
+  # - erlang
+  # - perl
   - python
   - lua
+  # - php
   - ruby
   - java
   - js
@@ -23,9 +29,6 @@
   - go
   - dart
   - rust
-  # - pascal
-  # - perl
-  # - php
 - key: computer_graphics
   label: Computergrafik
   icon: /images/palette.png
