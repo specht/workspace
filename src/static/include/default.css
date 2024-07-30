@@ -377,6 +377,7 @@ tr.noborder td {
     height: 2.2em;
     padding: 0.2em;
     margin-right: 0.4em;
+    margin-left: -0.2em;
     background-image: url(/images/squircle.png);
     background-size: cover;
 }
