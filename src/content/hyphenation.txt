@@ -5,6 +5,7 @@ An-wen-dun-gen
 An-wen-dungs-be-rei-chen
 An-wen-dungs-ent-wick-lung
 ar-bei-test
+ar-bei-tet
 Assemb-ler
 auf-grund
 bei-zu-be-hal-ten
