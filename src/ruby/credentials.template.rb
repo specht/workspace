@@ -4,9 +4,8 @@ DEVELOPMENT = (ENV['DEVELOPMENT'] == '1')
 PATH_TO_HOST_DATA = nil
 
 WEBSITE_HOST = "code.hackschule.de"
-WEBSITE_HOST_PHPMYADMIN = "phpmyadmin.hackschule.de"
 WEB_ROOT = DEVELOPMENT ? 'http://localhost:8025' : "https://#{WEBSITE_HOST}"
-PHPMYADMIN_WEB_ROOT = DEVELOPMENT ? 'http://localhost:8026' : "https://#{WEBSITE_HOST_PHPMYADMIN}"
+PHPMYADMIN_WEB_ROOT = "#{WEB_ROOT}/phpmyadmin/"
 
 LOGIN_CODE_SALT = 'bitte_ein_salt_eintragen'
 
@@ -21,7 +20,8 @@ ADMIN_USERS = []
 
 MYSQL_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
 MYSQL_PASSWORD_SALT = 'bitte_ein_langes_salt_generieren'
-NEO4J_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
+POSTGRES_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
+POSTGRES_PASSWORD_SALT = 'bitte_ein_langes_salt_generieren'
 
 if defined? Mail
     Mail.defaults do

@@ -232,8 +232,30 @@ class Main < Sinatra::Base
                     include /etc/nginx/mime.types;
                 }
 
+                location /phpmyadmin {
+                    rewrite ^/phpmyadmin(.*)$ $1 break;
+                    try_files $uri @phpmyadmin;
+                }
+
+                location /pgadmin {
+                    # rewrite ^/pgadmin(.*)$ $1 break;
+                    proxy_pass http://pgadmin_1:80;
+                    proxy_set_header Host $host;
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection Upgrade;
+                }
+
                 location @ruby {
-                    proxy_pass http://workspace_ruby_1:9292;
+                    proxy_pass http://ruby_1:9292;
+                    proxy_set_header Host $host;
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection Upgrade;
+                }
+
+                location @phpmyadmin {
+                    proxy_pass http://phpmyadmin_1:80;
                     proxy_set_header Host $host;
                     proxy_http_version 1.1;
                     proxy_set_header Upgrade $http_upgrade;

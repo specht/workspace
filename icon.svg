@@ -29,9 +29,9 @@
      showgrid="false"
      units="px"
      width="512px"
-     inkscape:zoom="1.6602451"
-     inkscape:cx="209.6076"
-     inkscape:cy="282.18725"
+     inkscape:zoom="1.0998078"
+     inkscape:cx="126.38572"
+     inkscape:cy="372.33779"
      inkscape:window-width="2496"
      inkscape:window-height="1369"
      inkscape:window-x="2624"
@@ -75,13 +75,13 @@
        style="fill:url(#linearGradient13672);stroke:none;stroke-width:4.23333333;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1" />
     <text
        xml:space="preserve"
-       style="font-size:63.5px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ffffff;stroke-width:0.264583"
+       style="font-size:63.5px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ffffff;stroke-width:4.23333333;stroke:#ffffff;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
        x="67.765076"
        y="87.132584"
        id="text3981"><tspan
          sodipodi:role="line"
          id="tspan3979"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:63.5px;font-family:'Latin Modern Mono';-inkscape-font-specification:'Latin Modern Mono';fill:#ffffff;stroke-width:0.264583"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:63.5px;font-family:'Latin Modern Mono';-inkscape-font-specification:'Latin Modern Mono';fill:#ffffff;stroke-width:4.23333333;stroke:#ffffff;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
          x="67.765076"
          y="87.132584">&lt;/&gt;</tspan></text>
   </g>

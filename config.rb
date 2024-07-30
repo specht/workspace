@@ -18,8 +18,9 @@ DEV_NEO4J_PORT = 8021
 LOGS_PATH = DEVELOPMENT ? './logs' : "/home/micha/logs/#{PROJECT_NAME}"
 DATA_PATH = DEVELOPMENT ? './data' : "/mnt/hackschule/#{PROJECT_NAME}"
 MYSQL_DATA_PATH = File.join(DATA_PATH, 'mysql')
+POSTGRES_DATA_PATH = File.join(DATA_PATH, 'postgres')
+PGADMIN_DATA_PATH = File.join(DATA_PATH, 'pgadmin')
 # NEO4J_USER_DATA_PATH = File.join(DATA_PATH, 'neo4j_user')
-# POSTGRES_DATA_PATH = File.join(DATA_PATH, 'postgres')
 USER_PATH = File.join(DATA_PATH, 'user')
 INTERNAL_PATH = File.join(DATA_PATH, 'internal')
 WEB_CACHE_PATH = File.join(DATA_PATH, 'cache')
@@ -53,6 +54,8 @@ if PROFILE.include?(:static)
     end
     docker_compose[:services][:nginx][:links] = [
         "ruby:#{PROJECT_NAME}_ruby_1",
+        "phpmyadmin:#{PROJECT_NAME}_phpmyadmin_1",
+        "pgadmin:#{PROJECT_NAME}_pgadmin_1",
     ]
     nginx_config = <<~END_OF_STRING
         log_format custom '$http_x_forwarded_for - $remote_user [$time_local] "$request" '
@@ -119,7 +122,7 @@ if PROFILE.include?(:static)
         f.write nginx_config
     end
     if PROFILE.include?(:dynamic)
-        docker_compose[:services][:nginx][:depends_on] = [:ruby]
+        docker_compose[:services][:nginx][:depends_on] = [:ruby, :phpmyadmin, :pgadmin]
     end
 end
 
@@ -169,6 +172,7 @@ docker_compose[:services][:mysql] = {
     :image => 'mysql/mysql-server',
     :command => ["--default-authentication-plugin=mysql_native_password"],
     :volumes => ["#{MYSQL_DATA_PATH}:/var/lib/mysql"],
+    :user => '1000',
     :restart => 'always',
     :environment => {
         'MYSQL_ROOT_HOST' => '%',
@@ -178,28 +182,43 @@ docker_compose[:services][:mysql] = {
 
 docker_compose[:services][:phpmyadmin] = {
     :image => 'phpmyadmin/phpmyadmin',
-    # :volumes => ["#{MYSQL_DATA_PATH}:/var/lib/mysql"],
     :restart => 'always',
-    :expose => ['80'],
+    # :expose => ['80'],
+    :depends_on => [:mysql],
+    :links => ['mysql:db'],
+    :environment => {
+        'PMA_ABSOLUTE_URI' => PHPMYADMIN_WEB_ROOT,
+        'UPLOAD_LIMIT' => '128M',
+    },
 }
-if DEVELOPMENT
-    docker_compose[:services][:phpmyadmin][:ports] = ['127.0.0.1:8026:80']
-end
-docker_compose[:services][:phpmyadmin][:depends_on] ||= []
-docker_compose[:services][:phpmyadmin][:depends_on] << :mysql
-docker_compose[:services][:phpmyadmin][:links] = ['mysql:db']
-docker_compose[:services][:phpmyadmin][:environment] = {
-    'PMA_ABSOLUTE_URI' => PHPMYADMIN_WEB_ROOT + '/',
-    'UPLOAD_LIMIT' => '128M',
+
+docker_compose[:services][:postgres] = {
+    :image => 'postgres',
+    :volumes => ["#{POSTGRES_DATA_PATH}:/var/lib/postgresql/data"],
+    :restart => 'always',
+    :user => '1000',
+    :environment => {
+        'POSTGRES_PASSWORD' => POSTGRES_ROOT_PASSWORD,
+    },
 }
-if !DEVELOPMENT
-    docker_compose[:services][:phpmyadmin][:environment] = [
-        'VIRTUAL_HOST=phpmyadmin.hackschule.de',
-        'LETSENCRYPT_HOST=phpmyadmin.hackschule.de',
-        'LETSENCRYPT_EMAIL=specht@gymnasiumsteglitz.de'
-    ]
-    docker_compose[:services][:phpmyadmin][:expose] = ['80']
-end
+
+docker_compose[:services][:pgadmin] = {
+    :image => 'dpage/pgadmin4',
+    :restart => 'always',
+    :volumes => ["#{PGADMIN_DATA_PATH}:/var/lib/pgadmin"],
+    # :expose => ['80'],
+    :depends_on => [:postgres],
+    :links => ['postgres:postgres'],
+    :user => '1000',
+    :environment => {
+        'PGADMIN_DEFAULT_EMAIL' => 'user@domain.com',
+        'PGADMIN_DEFAULT_PASSWORD' => 'SuperSecret',
+        'SCRIPT_NAME' => '/pgadmin',
+    },
+}
+
+
+
 
 # docker_compose[:services][:neo4j_user] = {
 #     :image => 'neo4j:4.4.26-community',
@@ -211,16 +230,6 @@ end
 #     :ports => ['0.0.0.0:7688:7687'],
 # }
 
-# docker_compose[:services][:postgres] = {
-#     :image => 'postgres',
-#     # :command => ["--default-authentication-plugin=mysql_native_password"],
-#     :volumes => ["#{POSTGRES_DATA_PATH}:/var/lib/postgres"],
-#     :restart => 'always',
-#     :environment => {
-#         'POSTGRES_PASSWORD' => POSTGRES_ROOT_PASSWORD
-#     },
-#     :ports => ['0.0.0.0:5432:5432'],
-# }
 
 docker_compose[:services][:tensorflowjs] = {
     :image => 'evenchange4/docker-tfjs-converter',
@@ -271,8 +280,9 @@ FileUtils::mkpath(USER_PATH)
 FileUtils::mkpath(INTERNAL_PATH)
 FileUtils::mkpath(WEB_CACHE_PATH)
 FileUtils::mkpath(File.join(DATA_PATH, 'tic80'))
-# FileUtils::mkpath(MYSQL_DATA_PATH)
-# FileUtils::mkpath(POSTGRES_DATA_PATH)
+FileUtils::mkpath(MYSQL_DATA_PATH)
+FileUtils::mkpath(POSTGRES_DATA_PATH)
+FileUtils::mkpath(PGADMIN_DATA_PATH)
 
 `docker compose 2> /dev/null`
 DOCKER_COMPOSE = ($? == 0) ? 'docker compose' : 'docker-compose'
