@@ -975,7 +975,7 @@ class Main < Sinatra::Base
             @@section_order.each do |section_key|
                 section = @@sections[section_key]
                 next if section[:entries].empty?
-                io.puts "<h2><img class='circle' src='#{section[:icon]}'> #{section[:label]}</h2>"
+                io.puts "<h2><div class='squircle'><img src='#{section[:icon]}'></div> #{section[:label]}</h2>"
                 if section[:description]
                     io.puts "<p>#{section[:description]}</p>"
                 end

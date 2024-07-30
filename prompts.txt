@@ -1,0 +1,7 @@
+Can you write a simple Hello World program in LANG?
+
+Can you write a program in LANG which reads a number from the user and prints the prime factors of that number?
+
+Can you write a program in LANG which creates an array of 10 random integers, prints the array, sorts the array using the bubble sort algorithm and prints the sorted numbers?
+
+Schreibe einen kurzen Absatz über die Programmiersprache Smalltalk, der die folgenden Fragen beantwortet: wofür wurde Smalltalk verwendet (nenne konkrete, bekannte Beispiele, wenn es sie gibt) und ist es heutzutage noch relevant?
