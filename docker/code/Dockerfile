@@ -25,6 +25,11 @@ RUN sudo apt-get update && sudo apt-get install -y \
     emacs vim \
     bsdmainutils \
     iputils-tracepath traceroute \
+    gnucobol4 \
+    fp-compiler fp-ide \
+    gnu-smalltalk \
+    erlang \
+    php-cli \
     libboost-dev libboost-date-time-dev libboost-thread-dev zlib1g-dev libpng-dev libjpeg8-dev libtiff5-dev libopenexr-dev \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*

@@ -2,7 +2,7 @@
 
 - `ifconfig`
 - `ping`
-- `traceroute`
+- `traceroute` / `tracepath`
   - https://blog.davidvarghese.dev/posts/traceroute-explained/
 - `netstat`
 - Chat mit `nc`
