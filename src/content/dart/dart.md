@@ -12,8 +12,10 @@ image: dart-logo.png
 </div>
 
 <p class='abstract'>
-Dart ist eine von Google entwickelte Programmiersprache, die im Jahr 2011 veröffentlicht wurde. Dart ist eine kompilierte Programmiersprache, die für die Entwicklung von Webanwendungen und mobilen Apps eingesetzt wird. Dart wird häufig in Verbindung mit dem Flutter-Framework verwendet, das es ermöglicht, plattformübergreifende mobile Apps zu erstellen.
+Dart, entwickelt von Lars Bak und Kaspar Lund bei Google und erstmals 2011 veröffentlicht, ist eine objektorientierte Programmiersprache, die für die Entwicklung von Web- und mobilen Anwendungen konzipiert wurde. Dart wird häufig in Verbindung mit dem Framework Flutter verwendet, das es ermöglicht, plattformübergreifende mobile Anwendungen mit einer einzigen Codebasis zu erstellen.
 </p>
+
+Bekannte Beispiele für Anwendungen, die mit Dart und Flutter entwickelt wurden, sind die mobilen Apps Google Pay, Google Earth, Google Classroom und die App von Alibaba. Heutzutage ist Dart immer noch relevant, insbesondere in der mobilen App-Entwicklung, da Flutter eine wachsende Popularität genießt und eine effiziente und konsistente Entwicklungserfahrung über verschiedene Plattformen hinweg bietet.
 
 <!-- ## Eigenschaften
 

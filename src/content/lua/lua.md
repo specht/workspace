@@ -13,8 +13,10 @@ image: lua-logo.png
 </div>
 
 <p class='abstract'>
-Lua ist eine leichte, effiziente und leistungsfähige Skriptsprache, die für die Erweiterung von Anwendungen und für die schnelle Prototypenerstellung entwickelt wurde. Lua ist eine interpretierte Sprache, die in C geschrieben ist und eine einfache API zum Einbetten in Anwendungen bietet. Lua ist weit verbreitet, da es einfach zu erlernen und zu verwenden ist.
+Lua, entwickelt in den frühen 1990er Jahren von Waldemar Celes, Roberto Ierusalimschy und Luiz Henrique de Figueiredo in Brasilien, ist eine leichte, eingebettete Skriptsprache, die für ihre Einfachheit und Effizienz bekannt ist.
 </p>
+
+Lua wird häufig in der Spieleentwicklung verwendet, um Spielmechaniken und Skripting zu implementieren, mit bekannten Beispielen wie World of Warcraft und Angry Birds. Darüber hinaus findet Lua Anwendung in eingebetteten Systemen und als Skriptsprache in Software wie Adobe Lightroom. Heutzutage ist Lua immer noch relevant, insbesondere in der Spieleindustrie und bei eingebetteten Anwendungen, da sie eine schnelle Ausführung und einfache Integration in andere Software bietet.
 
 <!-- ## Eigenschaften
 

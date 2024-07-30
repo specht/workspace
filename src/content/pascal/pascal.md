@@ -13,6 +13,8 @@ image: pascal-logo.png
 Die Programmiersprache Pascal wurde 1970 von Niklaus Wirth entwickelt und ist eine imperative und strukturierte Programmiersprache. Pascal wurde ursprünglich als Sprache für die Lehre entwickelt und hat eine klare und einfache Syntax. Die Sprache wurde nach dem französischen Mathematiker und Philosophen Blaise Pascal benannt.
 </p>
 
+Pascal fand Anwendung in der Softwareentwicklung, insbesondere in den 1980er und 1990er Jahren, mit bekannten Entwicklungsumgebungen wie Turbo Pascal von Borland. Heutzutage ist Pascal weniger verbreitet als moderne Programmiersprachen, bleibt aber in bestimmten Nischen relevant, insbesondere in der Lehre und bei der Entwicklung von eingebetteten Systemen. Die Sprache hat auch zu Weiterentwicklungen wie Object Pascal geführt, das in der Delphi-Entwicklungsumgebung verwendet wird.
+
 <!-- ## Eigenschaften
 
 - **Imperativ**: Pascal ist eine imperative Programmiersprache, die auf der Abarbeitung von Befehlen basiert.

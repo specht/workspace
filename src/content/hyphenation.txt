@@ -26,6 +26,7 @@ Gra-fi-ken
 grund-le-gen-den
 Hack-schu-le
 hand-ge-schrie-ben-en
+In-gen-ieurs-si-mu-la-tio-nen
 inter-ak-ti-ve
 ken-nen-lernst
 kon-zi-piert
@@ -38,6 +39,7 @@ neu-ro-na-les
 nor-ma-ler-wei-se
 ob-jekt-orien-tierte
 On-line
+platt-form-über-grei-fen-de
 Power-Point
 Pro-gramme
 Pro-gram-mier-en
@@ -51,10 +53,12 @@ spe-ziell
 Spie-le-ent-wick-lung
 Spra-che
 steu-ern
+Sys-tem-pro-gram-mie-rung
 Sys-tem-soft-ware
 Tas-ten-kom-bi-na-ti-onen
 Text-satz-sys-tem
 trai-nierst
+Trans-ak-tions-ver-ar-bei-tung
 Um-schalt-tas-te
 un-ab-hän-gig
 Un-ter-neh-mens-soft-ware-ent-wick-lung

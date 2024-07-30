@@ -12,8 +12,10 @@ image: go-logo.png
 </div>
 
 <p class='abstract'>
-Go ist eine von Robert Griesemer, Rob Pike und Ken Thompson entwickelte Programmiersprache, die im Jahr 2009 veröffentlicht wurde. Go ist eine kompilierte Programmiersprache, die für die Entwicklung von Systemsoftware und Webanwendungen eingesetzt wird. Go zeichnet sich durch eine einfache und klare Syntax, eine effiziente Kompilierung und eine integrierte Unterstützung für Nebenläufigkeit aus.
+Go, auch bekannt als Golang, wurde 2009 von Robert Griesemer, Rob Pike und Ken Thompson bei Google entwickelt. Die Programmiersprache wurde für die Entwicklung von Systemsoftware und Webanwendungen konzipiert und zeichnet sich durch ihre einfache Syntax, effiziente Kompilierung und integrierte Unterstützung für Nebenläufigkeit aus.
 </p>
+
+Bekannte Beispiele für Anwendungen, die in Go entwickelt wurden, sind Docker, Kubernetes und das Web-Framework Hugo. Heutzutage ist Go immer noch äußerst relevant, insbesondere in der Cloud- und Server-Backend-Entwicklung, da es eine hohe Leistung und Skalierbarkeit bietet und von einer aktiven Entwickler-Community unterstützt wird.
 
 <!-- ## Eigenschaften
 

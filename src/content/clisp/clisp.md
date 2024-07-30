@@ -10,9 +10,7 @@ image: clisp-logo.png
 </div>
 
 <p class='abstract'>
-Die Programmiersprache Lisp wurde 1958 von John McCarthy am MIT entwickelt und ist eine Sprache, die auf der rekursiven Funktionstheorie basiert.
-Nachdem sich zunächst eine Vielzahl an Dialkten entwickelt hatte, wurde 1984 Common Lisp als Vereinheitlichung der Sprache veröffentlicht.
-Der Hauptaspekt dieser Sprache sind Listen, die als Datenstruktur und Programmiersprache dienen. Common Lisp wird in der KI-Forschung und in der Softwareentwicklung eingesetzt.
+Lisp, entwickelt 1958 von John McCarthy am MIT, ist eine der ältesten Programmiersprachen und basiert auf der rekursiven Funktionstheorie. Lisp wurde vor allem in der Künstlichen Intelligenz (KI) eingesetzt, mit bekannten Anwendungen wie dem Expertensystem DENDRAL und dem KI-Framework Cyc. Heutzutage ist Lisp immer noch relevant, insbesondere in der Forschung und in spezialisierten Bereichen der Softwareentwicklung. Dialekte wie Common Lisp und Scheme werden weiterhin für ihre Flexibilität und mächtigen Makrosysteme geschätzt, die es ermöglichen, komplexe Programme effizient zu entwickeln und zu erweitern.
 </p>
 
 <!-- ## Eigenschaften

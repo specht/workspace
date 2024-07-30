@@ -10,8 +10,10 @@ image: python-logo.png
 </div>
 
 <p class='abstract'>
-Entwickelt von Guido van Rossum und erstmals 1991 veröffentlicht, ist Python eine der beliebtesten Programmiersprachen der Welt. Python ist bekannt für seine Einfachheit und Lesbarkeit und wird in vielen Bereichen eingesetzt, darunter Webentwicklung, Datenanalyse, künstliche Intelligenz und maschinelles Lernen. In diesem Kapitel lernst du, wie du ein einfaches Programm in Python schreibst und ausführst.
+Python, entwickelt von Guido van Rossum und erstmals 1991 veröffentlicht, ist eine der beliebtesten Programmiersprachen der Welt. Python wird aufgrund seiner Einfachheit und Lesbarkeit in vielen Bereichen eingesetzt, darunter Webentwicklung, Datenanalyse, künstliche Intelligenz und maschinelles Lernen.
 </p>
+
+Bekannte Beispiele für Anwendungen, die in Python entwickelt wurden, sind das Web-Framework Django, die Datenanalysebibliothek Pandas und das maschinelle Lernframework TensorFlow. Heutzutage ist Python äußerst relevant und weit verbreitet, da es eine aktive Community und eine Vielzahl von Bibliotheken und Frameworks bietet, die die Entwicklung in verschiedenen Domänen unterstützen.
 
 <!-- ## Eigenschaften
 

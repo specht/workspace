@@ -13,8 +13,10 @@ image: js-logo.png
 </div>
 
 <p class='abstract'>
-JavaScript ist eine der bekanntesten Programmiersprachen und wird in der Webentwicklung eingesetzt. Die Sprache wurde im Jahr 1995 von Brendan Eich entwickelt und wird für die Interaktion mit HTML-Elementen und CSS-Stilen verwendet. Inzwischen wird JavaScript auch für serverseitige Anwendungen mit Node.js eingesetzt.
+JavaScript, entwickelt 1995 von Brendan Eich bei Netscape, ist eine dynamische Programmiersprache, die ursprünglich zur Erstellung interaktiver und dynamischer Inhalte auf Webseiten verwendet wurde.
 </p>
+
+JavaScript wird häufig für die Frontend-Webentwicklung eingesetzt, wobei bekannte Beispiele wie die Benutzeroberflächen von Google Maps, Facebook und YouTube hervorzuheben sind. Mit der Einführung von Node.js hat sich JavaScript auch auf die Backend-Entwicklung ausgeweitet, was es ermöglicht, serverseitige Anwendungen zu erstellen. Heutzutage ist JavaScript äußerst relevant und weit verbreitet, da es eine zentrale Rolle im modernen Web spielt und eine Vielzahl von Frameworks und Bibliotheken wie React, Angular und Vue.js bietet, die die Entwicklung von Webanwendungen erheblich erleichtern.
 
 <!-- ## Eigenschaften
 

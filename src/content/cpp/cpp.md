@@ -10,9 +10,10 @@ image: cpp-logo.png
 </div>
 
 <p class='abstract'>
-C++ ist eine Programmiersprache, die im Jahr 1983 von Bjarne Stroustrup entwickelt wurde. Sie ist eine Erweiterung der Programmiersprache C und wird in vielen Bereichen eingesetzt, darunter Spieleentwicklung, Betriebssysteme und Anwendungen, die hohe Leistung erfordern.
-In diesem Kapitel lernst du, wie du ein einfaches Programm in C++ schreibst und ausführst.
+C++ wurde in den frühen 1980er Jahren von Bjarne Stroustrup als Erweiterung der Programmiersprache C entwickelt, um objektorientierte Programmierkonzepte zu unterstützen und gleichzeitig die Effizienz und Leistungsfähigkeit von C beizubehalten. C++ wurde in zahlreichen bekannten Softwareprojekten verwendet, darunter die Entwicklung des Betriebssystems Microsoft Windows, der Webbrowser Mozilla Firefox, das Grafik-Rendering-Framework Unreal Engine und die Datenbanksoftware MySQL.
 </p>
+
+Heutzutage ist C++ immer noch äußerst relevant und weit verbreitet, insbesondere in Bereichen wie Spieleentwicklung, Systemprogrammierung, Echtzeitanwendungen und Hochleistungssoftware. Die Sprache wird für ihre Effizienz, Flexibilität und die Fähigkeit geschätzt, sowohl auf niedriger als auch auf hoher Abstraktionsebene zu programmieren.
 
 <!-- ## Eigenschaften
 

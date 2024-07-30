@@ -12,8 +12,10 @@ image: cs-logo.png
 </div>
 
 <p class='abstract'>
-C# ist eine von Microsoft entwickelte Programmiersprache, die im Jahr 2000 veröffentlicht wurde. C# ist eine objektorientierte Programmiersprache, die auf C++ und Java basiert. C# wird z. B. in der Spieleentwicklung mit der Unity-Engine und in der Webentwicklung mit ASP.NET eingesetzt. In diesem Kapitel lernst du, wie du ein einfaches Programm in C# schreibst und ausführst.
+C#, entwickelt von Anders Heijlsberg und seinem Team bei Microsoft und erstmals im Jahr 2000 veröffentlicht, ist eine moderne, objektorientierte Programmiersprache, die Teil des .NET-Frameworks ist.
 </p>
+
+C# wird häufig für die Entwicklung von Windows-Anwendungen, Webanwendungen und Spielen verwendet. Bekannte Beispiele für Anwendungen, die in C# entwickelt wurden, sind die Entwicklungsumgebung Visual Studio, die Webanwendungsplattform ASP.NET und Spiele, die mit der Unity-Engine erstellt wurden, wie »Hearthstone« und »Monument Valley«. Heutzutage ist C# immer noch äußerst relevant, da es eine breite Palette von Anwendungsbereichen abdeckt und durch die .NET-Plattform sowie die Unterstützung durch Microsoft kontinuierlich weiterentwickelt wird.
 
 <!-- ## Eigenschaften
 

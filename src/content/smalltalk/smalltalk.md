@@ -10,8 +10,10 @@ image: smalltalk-logo.png
 </div>
 
 <p class='abstract'>
-Smalltalk ist eine objektorientierte Programmiersprache, die 1980 von Alan Kay, Adele Goldberg und Dan Ingalls am Xerox Palo Alto Research Center (PARC) entwickelt wurde. Smalltalk war die erste Programmiersprache, die das Konzept der Objektorientierung vollständig umsetzte und beeinflusste viele moderne Programmiersprachen wie Java, Ruby und Objective-C.
+Smalltalk wurde in den 1970er Jahren von Alan Kay, Adele Goldberg und Dan Ingalls am Xerox Palo Alto Research Center (PARC) entwickelt und gilt als eine der ersten objektorientierten Programmiersprachen. Smalltalk wurde ursprünglich für die Entwicklung von grafischen Benutzeroberflächen und interaktiven Anwendungen verwendet.
 </p>
+
+Ein bekanntes Beispiel ist das erste grafische Benutzerinterface des Xerox Alto Computers. Heutzutage ist Smalltalk weniger verbreitet, aber immer noch relevant in bestimmten Nischen, insbesondere in der Forschung und Lehre zur objektorientierten Programmierung. Es wird auch in einigen spezialisierten industriellen Anwendungen und von Enthusiasten verwendet, die die Sprache für ihre Einfachheit und Eleganz schätzen.
 
 <!-- ## Eigenschaften
 

@@ -13,8 +13,10 @@ image: ruby-logo.png
 </div>
 
 <p class='abstract'>
-Ruby ist eine von Yukihiro Matsumoto entwickelte Programmiersprache, die im Jahr 1995 veröffentlicht wurde. Der Fokus von Ruby liegt auf der Einfachheit und Produktivität, weshalb sie oft als »Programmiersprache für glückliche Entwickler« bezeichnet wird. Ruby wird häufig für die Entwicklung von Webanwendungen eingesetzt und bietet eine Vielzahl von Frameworks und Bibliotheken für die Webentwicklung.
+Ruby, entwickelt Mitte der 1990er Jahre von Yukihiro "Matz" Matsumoto, ist eine dynamische, objektorientierte Programmiersprache, die für ihre Einfachheit und Produktivität bekannt ist.
 </p>
+
+Ruby wird häufig für die Webentwicklung verwendet, insbesondere durch das populäre Web-Framework Ruby on Rails, das die Entwicklung von Webanwendungen erheblich beschleunigt. Bekannte Beispiele für Anwendungen, die mit Ruby on Rails entwickelt wurden, sind GitHub, Shopify und Basecamp. Heutzutage ist Ruby immer noch relevant, insbesondere in der Webentwicklung, da es eine aktive Community und eine Vielzahl von Bibliotheken und Tools bietet, die die Entwicklung effizienter und angenehmer machen.
 
 <!-- ## Eigenschaften
 
