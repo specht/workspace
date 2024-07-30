@@ -52,6 +52,7 @@ Hard-ware-steue-rung
 Hoch-ener-gie-phy-sik
 Hoch-lei-stungs-soft-ware
 In-gen-ieurs-si-mu-la-tio-nen
+In-sti-tute
 In-tel-li-genz
 inter-ak-ti-ve
 Jah-ren
@@ -65,6 +66,7 @@ Les-bar-keit
 Kli-ma-for-schung
 Ma-schi-nen-ebene
 ma-schi-nen-na-he
+Mas-sa-chus-setts
 Mathe-ma-ti-ker
 meist-ver-wen-de-ten
 Micro-soft
@@ -100,6 +102,7 @@ Sys-tem-pro-gram-mie-rung
 Sys-tem-soft-ware
 Tas-ten-kom-bi-na-ti-onen
 tech-ni-sche
+Tech-no-logy
 Text-satz-sys-tem
 trai-nierst
 Trans-ak-tions-ver-ar-bei-tung
