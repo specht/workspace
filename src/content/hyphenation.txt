@@ -51,6 +51,7 @@ kon-zi-piert
 Lam-port
 leis-tungs-fä-hi-ge
 Les-bar-keit
+Kli-ma-for-schung
 Ma-schi-nen-ebene
 ma-schi-nen-na-he
 Mathe-ma-ti-ker
@@ -75,6 +76,7 @@ res-sour-cen-scho-nen-de
 Short-cuts
 Skript-spra-che
 Soft-ware-ent-wick-lung
+Soft-ware-pro-jekt
 spe-ziell
 Spie-le-ent-wick-lung
 Spra-che
