@@ -81,6 +81,7 @@ neu-ro-na-les
 nor-ma-ler-wei-se
 ob-jekt-orien-tierte
 On-line
+Pa-ral-le-li-tät
 Per-for-mance
 platt-form-über-grei-fen-de
 Power-Point
