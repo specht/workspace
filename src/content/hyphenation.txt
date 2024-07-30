@@ -93,6 +93,7 @@ Short-cuts
 Skript-spra-che
 Soft-ware-ent-wick-lung
 Soft-ware-pro-jekt
+spe-zia-li-sier-ten
 spe-ziell
 Spie-le-ent-wick-lung
 Spra-che
