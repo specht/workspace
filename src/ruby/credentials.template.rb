@@ -23,6 +23,7 @@ MYSQL_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
 MYSQL_PASSWORD_SALT = 'bitte_ein_langes_salt_generieren'
 POSTGRES_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
 POSTGRES_PASSWORD_SALT = 'bitte_ein_langes_salt_generieren'
+PGADMIN_PASSWORD = 'bitte_ein_passwort_eintragen'
 
 if defined? Mail
     Mail.defaults do
