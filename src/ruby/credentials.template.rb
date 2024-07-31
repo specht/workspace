@@ -6,6 +6,7 @@ PATH_TO_HOST_DATA = nil
 WEBSITE_HOST = "code.hackschule.de"
 WEB_ROOT = DEVELOPMENT ? 'http://localhost:8025' : "https://#{WEBSITE_HOST}"
 PHPMYADMIN_WEB_ROOT = "#{WEB_ROOT}/phpmyadmin/"
+PGADMIN_WEB_ROOT = "#{WEB_ROOT}/pgadmin/"
 
 LOGIN_CODE_SALT = 'bitte_ein_salt_eintragen'
 

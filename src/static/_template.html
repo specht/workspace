@@ -17,6 +17,7 @@
     <script src="/include/bootstrap-5.0.2/dist/js/bootstrap.bundle.min.js?#{CACHE_BUSTER}"></script>
     <script src="/include/clipboard.min.js"></script>
     <script src="/include/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -180,6 +181,17 @@ window.addEventListener('load', function() {
         });
     });
 
+    $('#bu_pgadmin').on('click', function(e) {
+        $('#bu_pgadmin').prop('disabled', true);
+        $('#bu_pgadmin .fa').addClass('fa-spin');
+        api_call('/api/start_postgres', {}, function(data) {
+            $('#bu_pgadmin').prop('disabled', false);
+            $('#bu_pgadmin .fa').removeClass('fa-spin');
+            console.log('#{PGADMIN_WEB_ROOT}');
+            window.open('#{PGADMIN_WEB_ROOT}', '_blank');
+        });
+    });
+
     $('#bu_settings').on('click', function(e) {
         if ($('#div_settings').is(':visible')) {
             $('#div_settings').slideUp();
@@ -261,8 +273,9 @@ window.addEventListener('load', function() {
                 <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="btn btn-success #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='fa fa-sign-in'></i>&nbsp;&nbsp;Anmelden</a>
                 <button style='#{(@session_user.nil? || (!@session_user[:show_workspace])) ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='fa fa-code'></i>&nbsp;&nbsp;Workspace öffnen</button>
                 <button style='#{(@session_user.nil? || (!@session_user[:show_phpmyadmin])) ? 'display: none;' : ''}' id='bu_phpmyadmin' class="btn btn-success" target="_blank"><i class='fa fa-database'></i>&nbsp;&nbsp;phpMyAdmin</button>
+                <button style='#{(@session_user.nil? || (!@session_user[:show_pgadmin])) ? 'display: none;' : ''}' id='bu_pgadmin' class="btn btn-success" target="_blank"><i class='fa fa-database'></i>&nbsp;&nbsp;pgAdmin</button>
                 <a style='#{(@session_user.nil? || (!@session_user[:show_tic80])) ? 'display: none;' : ''}' href="/tic80/" class="btn btn-success" target="_blank"><i class='fa fa-keyboard-o'></i>&nbsp;&nbsp;TIC-80</a>
-                <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-primary"><i class='fa fa-id-card-o'></i>&nbsp;&nbsp;Profil</a>
+                <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-primary"><i class='fa fa-id-card-o'></i>&nbsp;&nbsp;#{((@@invitations[(@session_user || {})[:email]] || {})[:name] || '')}</a>
                 <a href='/admin' style='#{admin_logged_in? ? '' : 'display: none;'}' class="btn btn-warning"><i class='fa fa-wrench'></i>&nbsp;&nbsp;Administration</a>
                 <!-- <button style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_settings' class="btn btn-outline-secondary"><i class='fa fa-chevron-down rot'></i></button> -->
             </div>

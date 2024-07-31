@@ -205,7 +205,10 @@ docker_compose[:services][:postgres] = {
 docker_compose[:services][:pgadmin] = {
     :image => 'dpage/pgadmin4',
     :restart => 'always',
-    :volumes => ["#{PGADMIN_DATA_PATH}:/var/lib/pgadmin"],
+    :volumes => [
+        "#{PGADMIN_DATA_PATH}:/var/lib/pgadmin",
+        "#{File.expand_path('docker/pgadmin4')}:/etc/pgadmin:ro",
+    ],
     # :expose => ['80'],
     :depends_on => [:postgres],
     :links => ['postgres:postgres'],
@@ -213,6 +216,8 @@ docker_compose[:services][:pgadmin] = {
     :environment => {
         'PGADMIN_DEFAULT_EMAIL' => 'user@domain.com',
         'PGADMIN_DEFAULT_PASSWORD' => 'SuperSecret',
+        'PGADMIN_CONFIG_WTF_CSRF_ENABLED' => 'False',
+        'PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION' => 'False',
         'SCRIPT_NAME' => '/pgadmin',
     },
 }

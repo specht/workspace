@@ -21,10 +21,11 @@ Faye::WebSocket.load_adapter('thin')
 
 CACHE_BUSTER = SecureRandom.alphanumeric(12)
 
-MODULE_ORDER = [:workspace, :phpmyadmin, :tic80]
+MODULE_ORDER = [:workspace, :phpmyadmin, :pgadmin, :tic80]
 MODULE_LABELS = {
     :workspace => 'Workspace',
     :phpmyadmin => 'phpMyAdmin',
+    :pgadmin => 'pgAdmin',
     :tic80 => 'TIC-80',
 }
 
@@ -174,10 +175,24 @@ class Main < Sinatra::Base
             }
         end
 
+        # $neo4j.neo4j_query(<<~END_OF_QUERY, {:ts => Time.now.to_i})
+        #     MATCH (u:User)
+        #     WHERE u.temp_server_sid_for_pgadmin_expires <= $ts
+        #     REMOVE u.temp_server_sid_for_pgadmin_expires;
+        # END_OF_QUERY
+        # emails_and_server_tags = $neo4j.neo4j_query(<<~END_OF_QUERY).to_a.map { |x| [x['u.email'], x['u.server_sid']] }
+        #     MATCH (u:User) WHERE u.temp_server_sid_for_pgadmin_expires IS NOT NULL RETURN u.email, u.server_sid;
+        # END_OF_QUERY
+        emails_and_server_tags = []
+
+        # STDERR.puts "Got #{emails_and_server_tags.size} emails and server tags: #{emails_and_server_tags.to_yaml}"
+
         nginx_config_first_part = <<~END_OF_STRING
             log_format custom '$http_x_forwarded_for - $remote_user [$time_local] "$request" '
                             '$status $body_bytes_sent "$http_referer" '
                             '"$http_user_agent" "$request_time"';
+
+            map_hash_bucket_size 128;
 
             map $sent_http_content_type $expires {
                 default                         off;
@@ -191,6 +206,11 @@ class Main < Sinatra::Base
                 application/font-woff           max;
                 application/font-woff2          max;
             }
+
+            # map $cookie_server_sid $pgadmin_user {
+            #    default "";
+            #    #{emails_and_server_tags.map { |x| "\"#{x[1]}\" \"#{x[0]}\";" }.join("\n")}
+            # }
 
             server {
                 listen 80;
@@ -238,7 +258,10 @@ class Main < Sinatra::Base
                 }
 
                 location /pgadmin {
-                    # rewrite ^/pgadmin(.*)$ $1 break;
+                    # proxy_set_header Remote-User $pgadmin_user;
+                    proxy_set_header X-Real-IP $remote_addr;
+                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                    proxy_set_header X-Forwarded-Proto $scheme;
                     proxy_pass http://pgadmin_1:80;
                     proxy_set_header Host $host;
                     proxy_http_version 1.1;
@@ -289,7 +312,7 @@ class Main < Sinatra::Base
                     if user[:share_tag] && user[:share_tag] =~ /^[a-z0-9]{48}$/
                         f.puts <<~END_OF_STRING
                             location /#{user[:share_tag]}/ {
-                                rewrite ^/#{user[:share_tag]}(.*)$ $1 break;
+                                rewrite ^/#{user[:share_tag]}/(.*)$ $1 break;
                                 proxy_set_header Host $http_host;
                                 proxy_set_header Upgrade $http_upgrade;
                                 proxy_set_header Connection upgrade;
@@ -823,6 +846,36 @@ class Main < Sinatra::Base
         init_mysql(email)
     end
 
+    def init_postgres(email)
+        postgres_password = Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)
+        STDERR.puts "Setting up Postgres user #{email} with database #{email}"
+        # neo4j_query(<<~END_OF_QUERY, :email => email, :ts_expires => Time.now.to_i + 10)
+        #     MATCH (u:User {email: $email})
+        #     SET u.temp_server_sid_for_pgadmin_expires = $ts_expires;
+        # END_OF_QUERY
+
+        # Main.refresh_nginx_config()
+        # Thread.new do
+        #     sleep 11
+        #     Main.refresh_nginx_config()
+        # end
+
+        Open3.popen2("docker exec -i -e PGPASSWORD=#{POSTGRES_ROOT_PASSWORD} workspace_postgres_1 psql --user=postgres") do |stdin, stdout, wait_thr|
+            stdin.puts <<~END_OF_STRING
+                CREATE USER \"#{email}\" WITH ENCRYPTED PASSWORD '#{postgres_password}';
+                CREATE DATABASE \"#{email}\";
+                ALTER DATABASE \"#{email}\" OWNER TO \"#{email}\";
+                REVOKE ALL PRIVILEGES ON DATABASE \"#{email}\" FROM public;
+            END_OF_STRING
+            # stdin.puts "CREATE USER \"#{email}\" WITH ENCRYPTED PASSWORD '#{postgres_password}';"
+            # stdin.puts "CREATE DATABASE \"#{email}\";"
+            # stdin.puts "ALTER DATABASE \"#{email}\" OWNER TO \"#{email}\";"
+            # stdin.puts "REVOKE ALL PRIVILEGES ON DATABASE \"#{email}\" FROM public;"
+            stdin.close
+            wait_thr.value
+        end
+    end
+
     def start_server(email)
         container_name = fs_tag_for_email(email)
 
@@ -848,6 +901,7 @@ class Main < Sinatra::Base
         end
         system("chown -R 1000:1000 /user/#{container_name}")
         init_mysql(email)
+        init_postgres(email)
 
         network_name = "bridge"
         mysql_ip = `docker inspect workspace_mysql_1`.split('"IPAddress": "')[1].split('"')[0]
@@ -877,6 +931,13 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         email = @session_user[:email]
         reset_mysql(email)
+        respond(:yay => 'sure')
+    end
+
+    post '/api/start_postgres' do
+        assert(user_logged_in?)
+        email = @session_user[:email]
+        init_postgres(email)
         respond(:yay => 'sure')
     end
 
@@ -1462,6 +1523,10 @@ class Main < Sinatra::Base
                     :path => "/#{fs_tag_for_email(email)}",
                     :httponly => true,
                     :secure => DEVELOPMENT ? false : true)
+                Thread.new do
+                    postgres_password = Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)
+                    system("docker exec -i workspace_pgadmin_1 /venv/bin/python setup.py add-user #{email} #{postgres_password}")
+                end
             end
             redirect "#{WEB_ROOT}/", 302
         end
