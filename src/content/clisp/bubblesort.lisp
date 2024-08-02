@@ -1,17 +1,29 @@
-(defun bubble-sort (arr)
-  (let ((n (length arr)))
-    (loop for i from 0 below (- n 1)
-          do (loop for j from 0 below (- n i 1)
-                   do (when (> (aref arr j) (aref arr (1+ j)))
-                        (rotatef (aref arr j) (aref arr (1+ j)))))))
-  arr)
+(defun bubble-sort (sequence &optional (compare #'<))
+  "sort a sequence (array or list) in place with an optional comparison
+function (cl:< is the default)"
+  (loop with sorted = nil until sorted do
+    (setf sorted t)
+    ;; assume the list is sorted before checking it
+    (loop for a below (1- (length sequence)) do
+      ;; loop through the sequence
+      (unless (funcall compare
+                       ;; use 'compare' function to check seq[a] vs. seq[a+1]
+                       (elt sequence a)
+                       (elt sequence (1+ a)))
+        ;; if 'compare' function is unfulfilled, rotate [a] and [a+1]
+        (rotatef (elt sequence a)
+                 (elt sequence (1+ a)))
+        ;; and of course this means the list is not yet sorted
+        (setf sorted nil)))))
 
-(defun main ()
-  (let ((arr (make-array 10 :element-type 'integer))
-        (random-state (make-random-state t))) ; Initialize random state with a seed
-    (loop for i from 0 below 10
-          do (setf (aref arr i) (random 100 random-state))) ; Use the random state
-    (format t "Original array: ~a~%" arr)
-    (format t "Sorted array: ~a~%" (bubble-sort arr))))
-
-(main)
+(let ((list
+        ;; create a local scope in which 'list' is bound to the following
+        ;; definition
+        (mapcar #'random
+                ;; map the function 'random' to our ten-element list
+                ;; this creates random values between 0 and 100
+                (make-list 10 :initial-element 100))))
+  (format t "Original list: ~a~%" list)
+  (bubble-sort list)
+  ;; list is now sorted
+  (format t "Sorted list: ~a~%" list))
