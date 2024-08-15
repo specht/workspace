@@ -1082,8 +1082,7 @@ class Main < Sinatra::Base
             @@section_order.each do |section_key|
                 section = @@sections[section_key]
                 next if section[:entries].reject do |entry|
-                    STDERR.puts entry.to_yaml
-                    (!DEVELOPMENT) && entry[:dev_only]
+                    (!DEVELOPMENT) && @@content[entry][:dev_only]
                 end.empty?
                 io.puts "<h2><div class='squircle'><img src='#{section[:icon]}'></div> #{section[:label]}</h2>"
                 if section[:description]
@@ -1092,7 +1091,7 @@ class Main < Sinatra::Base
                 # io.puts "<hr>"
                 io.puts "<div class='row'>"
                 section[:entries].reject do |entry|
-                    (!DEVELOPMENT) && entry[:dev_only]
+                    (!DEVELOPMENT) && @@content[entry][:dev_only]
                 end.each.with_index do |slug, index|
                     content = @@content[slug]
                     STDERR.puts content.to_yaml
