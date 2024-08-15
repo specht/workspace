@@ -417,13 +417,13 @@ class Main < Sinatra::Base
                 meta = root.css('.meta').first
                 if meta
                     meta = YAML.load(meta)
-                    if meta.include?('visible')
-                        if meta['visible'] == false
-                            next
-                        elsif meta['visible'] == 'development'
-                            next unless DEVELOPMENT
-                        end
-                    end
+                    # if meta.include?('visible')
+                    #     if meta['visible'] == false
+                    #         next
+                    #     elsif meta['visible'] == 'development'
+                    #         next unless DEVELOPMENT
+                    #     end
+                    # end
                 end
 
                 root.css('img').each do |img|
@@ -1082,6 +1082,7 @@ class Main < Sinatra::Base
             @@section_order.each do |section_key|
                 section = @@sections[section_key]
                 next if section[:entries].reject do |entry|
+                    STDERR.puts entry.to_yaml
                     (!DEVELOPMENT) && entry[:dev_only]
                 end.empty?
                 io.puts "<h2><div class='squircle'><img src='#{section[:icon]}'></div> #{section[:label]}</h2>"
