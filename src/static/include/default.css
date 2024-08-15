@@ -320,6 +320,7 @@ tr.noborder td {
     box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.2);
     cursor: pointer;
     margin-bottom: 1em;
+    overflow: hidden;
 }
 
 .tutorial_card2:hover {

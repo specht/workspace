@@ -33,9 +33,9 @@
   label: Computergrafik
   icon: /images/palette.png
   entries:
-  # - p5js
-  # - glsl
-  # - raytracing
+  - .p5js
+  - .glsl
+  - .raytracing
 - key: artificial_intelligence
   label: Künstliche Intelligenz
   icon: /images/brain.png
@@ -45,22 +45,23 @@
   label: Netzwerke
   icon: /images/telephone.png
   entries:
-  # - tcpip
+  - .tcpip
 - key: office
   label: Dokumente und Präsentationen
   icon: /images/pen.png
   entries:
   - showerjs
-  # - latex
-# - key: linux
-#   label: Linux-Befehle lernen
-#   icon: /images/penguin.png
-# - key: git
-#   label: Lerne den Umgang mit Git
-#   icon: /images/git.png
+  - .latex
+- key: linux
+  label: Linux und die Shell
+  icon: /images/penguin.png
+  entries:
+  - .working-with-files
+  - .working-with-processes
+  - .git
 - key: tools
   label: Werkzeuge
   icon: /images/hammer-and-wrench.png
   entries:
-  # - bash
-  # - git
+  - .bash
+  # - .git

@@ -24,6 +24,7 @@ PGADMIN_DATA_PATH = File.join(DATA_PATH, 'pgadmin')
 USER_PATH = File.join(DATA_PATH, 'user')
 INTERNAL_PATH = File.join(DATA_PATH, 'internal')
 WEB_CACHE_PATH = File.join(DATA_PATH, 'cache')
+DOWNLOAD_PATH = File.join(DATA_PATH, 'dl')
 NGINX_PATH = File.join(DATA_PATH, 'nginx')
 NEO4J_LOGS_PATH = File::join(LOGS_PATH, 'neo4j')
 NEO4J_DATA_PATH = File::join(DATA_PATH, 'neo4j')
@@ -40,6 +41,7 @@ if PROFILE.include?(:static)
         :volumes => [
             './src/static:/usr/share/nginx/html:ro',
             "#{WEB_CACHE_PATH}:/webcache:ro",
+            "#{DOWNLOAD_PATH}:/dl:ro",
             "#{LOGS_PATH}:/var/log/nginx",
             "#{DATA_PATH}/nginx:/etc/nginx/conf.d"
         ]
@@ -139,6 +141,7 @@ if PROFILE.include?(:dynamic)
                      "#{DATA_PATH}/tic80:/tic80",
                      "/var/run/docker.sock:/var/run/docker.sock",
                      "#{NGINX_PATH}:/nginx",
+                     "#{DOWNLOAD_PATH}:/dl",
                     ],
         :environment => env,
         :working_dir => '/src/ruby',
@@ -288,6 +291,11 @@ FileUtils::mkpath(File.join(DATA_PATH, 'tic80'))
 FileUtils::mkpath(MYSQL_DATA_PATH)
 FileUtils::mkpath(POSTGRES_DATA_PATH)
 FileUtils::mkpath(PGADMIN_DATA_PATH)
+FileUtils::mkpath(File.join(DATA_PATH, 'internal'))
+FileUtils::mkpath(File.join(DATA_PATH, 'mysql'))
+FileUtils::mkpath(File.join(DATA_PATH, 'pgadmin'))
+FileUtils::mkpath(File.join(DATA_PATH, 'postgres'))
+FileUtils::mkpath(File.join(DATA_PATH, 'dl'))
 
 `docker compose 2> /dev/null`
 DOCKER_COMPOSE = ($? == 0) ? 'docker compose' : 'docker-compose'

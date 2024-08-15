@@ -252,6 +252,12 @@ class Main < Sinatra::Base
                     include /etc/nginx/mime.types;
                 }
 
+                location /dl {
+                    rewrite ^/dl(.*)$ $1 break;
+                    root /dl;
+                    include /etc/nginx/mime.types;
+                }
+
                 location /phpmyadmin {
                     rewrite ^/phpmyadmin(.*)$ $1 break;
                     try_files $uri @phpmyadmin;
@@ -380,7 +386,9 @@ class Main < Sinatra::Base
             end
             @@sections[section['key']][:entries] = []
             (section['entries'] || []).each do |path|
-                paths << {:section => section['key'], :path => path}
+                dev_only = path[0] == '.'
+                path = path.sub(/^\./, '')
+                paths << {:section => section['key'], :path => path, :dev_only => dev_only}
             end
         end
         @@content = {}
@@ -511,7 +519,8 @@ class Main < Sinatra::Base
                 html = root.to_html
                 meta = root.css('.meta').first
                 @@content[slug] = {
-                    :html => html
+                    :html => html,
+                    :dev_only => entry[:dev_only],
                 }
                 @@sections[section][:entries] << slug
                 if meta
@@ -583,6 +592,20 @@ class Main < Sinatra::Base
         end
     end
 
+    def self.prepare_downloads()
+        unless File.exist?("/dl/working-with-files.tar.bz2")
+            STDERR.puts "Preparing /dl/working-with-files.tar.bz2..."
+            FileUtils.rm_rf('/dl/working-with-files')
+            FileUtils.mkpath('/dl/working-with-files')
+            system("wget -O /dl/working-with-files/alice.txt https://www.gutenberg.org/cache/epub/11/pg11.txt")
+            system("wget -O /dl/working-with-files/stallman.jpg https://upload.wikimedia.org/wikipedia/commons/c/c2/Richard_Stallman_at_Marlboro_College.jpg")
+            system("wget -O /dl/working-with-files/jay.webm https://upload.wikimedia.org/wikipedia/commons/transcoded/7/75/Jay_Feeding.webm/Jay_Feeding.webm.360p.vp9.webm")
+            system("wget -O /dl/working-with-files/zork.zip https://github.com/devshane/zork/archive/refs/heads/master.zip")
+            system("tar cvjf /dl/working-with-files.tar.bz2 -C /dl working-with-files")
+            FileUtils.rm_rf('/dl/working-with-files')
+        end
+    end
+
     configure do
         CONSTRAINTS_LIST = [
             'User/email',
@@ -605,6 +628,7 @@ class Main < Sinatra::Base
         self.refresh_nginx_config()
         self.parse_content()
         self.load_invitations()
+        self.prepare_downloads()
     end
 
     before '*' do
@@ -1057,18 +1081,23 @@ class Main < Sinatra::Base
         StringIO.open do |io|
             @@section_order.each do |section_key|
                 section = @@sections[section_key]
-                next if section[:entries].empty?
+                next if section[:entries].reject do |entry|
+                    (!DEVELOPMENT) && entry[:dev_only]
+                end.empty?
                 io.puts "<h2><div class='squircle'><img src='#{section[:icon]}'></div> #{section[:label]}</h2>"
                 if section[:description]
                     io.puts "<p>#{section[:description]}</p>"
                 end
                 # io.puts "<hr>"
                 io.puts "<div class='row'>"
-                section[:entries].each.with_index do |slug, index|
+                section[:entries].reject do |entry|
+                    (!DEVELOPMENT) && entry[:dev_only]
+                end.each.with_index do |slug, index|
                     content = @@content[slug]
+                    STDERR.puts content.to_yaml
                     io.puts "<div class='#{section_key == 'programming_languages' ? 'col-sm-6' : 'col-sm-12'} #{section_key == 'programming_languages' ? 'col-md-4' : 'col-md-12'} #{section_key == 'programming_languages' ? 'col-lg-4' : 'col-lg-6'}'>"
                     io.puts "<a href='/#{slug}' class='tutorial_card2 #{section_key == 'programming_languages' ? 'compact' : ''}'>"
-                    io.puts "<h4>#{content[:title]}</h4>"
+                    io.puts "<h4>#{content[:dev_only] ? '<span class="badge bg-danger" style="transform: scale(0.8);">dev</span> ' : ''}#{content[:title]}</h4>"
                     io.puts "<div class='inner'>"
                     io.puts "<img src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
                     io.puts "<div class='abstract'>#{content[:abstract]}</div>"
