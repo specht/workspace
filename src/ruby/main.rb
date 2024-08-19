@@ -602,7 +602,7 @@ class Main < Sinatra::Base
             system("wget -O /dl/working-with-files/jay.webm https://upload.wikimedia.org/wikipedia/commons/transcoded/7/75/Jay_Feeding.webm/Jay_Feeding.webm.360p.vp9.webm")
             system("wget -O /dl/working-with-files/zork.zip https://github.com/devshane/zork/archive/refs/heads/master.zip")
             system("wget -O /dl/working-with-files/music-releases.tar.bz2 https://github.com/specht/workspace-files/raw/main/music-releases.tar.bz2")
-            system("tar cvjf /dl/working-with-files.tar.bz2 -C /dl working-with-files")
+            system("tar cvzf /dl/working-with-files.tar.gz -C /dl working-with-files")
             FileUtils.rm_rf('/dl/working-with-files')
         end
     end
