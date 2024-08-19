@@ -146,7 +146,7 @@ Jetzt können wir das Skript direkt ausführen:
 ```
 <img class='full' src='shebang.webp'>
 
-## Primfaktorenzerlegung
+## Primfaktorzerlegung
 
 Im zweiten Beispiel wollen wir eine Zahl in ihre Primfaktoren zerlegen. An diesem Beispiel kannst du sehen, wie man in Smalltalk Benutzereingaben verarbeitet und Schleifen verwendet.
 Erstelle eine neue Datei mit <span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>N</span> und schreibe den folgenden Code hinein:

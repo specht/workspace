@@ -141,7 +141,7 @@ Jetzt können wir das Skript direkt ausführen:
 
 <img class='full' src='shebang.webp'>
 
-## Primfaktorenzerlegung
+## Primfaktorzerlegung
 
 Im zweiten Beispiel wollen wir eine Zahl in ihre Primfaktoren zerlegen.
 An diesem Beispiel kannst du sehen, wie man in Ruby Benutzereingaben verarbeitet und Schleifen verwendet.

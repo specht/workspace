@@ -100,7 +100,7 @@ Dart sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 2) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
-## Primfaktorenzerlegung
+## Primfaktorzerlegung
 
 Im zweiten Beispiel wollen wir eine Zahl in ihre Primfaktoren zerlegen.
 An diesem Beispiel kannst du sehen, wie man in Dart Benutzereingaben verarbeitet und Schleifen verwendet.

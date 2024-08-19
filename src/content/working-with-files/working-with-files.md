@@ -10,6 +10,8 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 
 Öffne als nächstes das Terminal, indem du den Shortcut <span class='key'>Strg</span><span class='key'>J</span> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
 
+IMAGE_MISSING
+
 ## Grundlagen
 
 Ein Computer speichert Daten in Dateien. Eine Datei ist eine Sammlung von
@@ -24,10 +26,10 @@ enthalten.
 
 ## Beispieldateien herunterladen
 
-Gib folgenden Befehl ein, um eine Datei herunterzuladen,die ein paar Beispieldateien enthält:
+Gib folgenden Befehl ein, um eine Datei herunterzuladen, die ein paar Beispieldateien enthält:
 
 ```bash
-wget #{WEB_ROOT}/dl/working-with-files.tar.bz2
+wget #{WEB_ROOT}/dl/working-with-files.tar.gz
 ```
 
 ## Befehle
@@ -36,65 +38,57 @@ In der Kommandozeile verwenden wir Befehle, um mit Dateien und Verzeichnissen
 zu arbeiten. Hier sind einige der wichtigsten Befehle, die wir verwenden
 werden:
 
+### Überblick verschaffen
+
+- `pwd`: Zeigt das aktuelle Verzeichnis an.
+- `tree`: Zeigt die Verzeichnisstruktur an.
 - `file`: Zeigt den Dateityp einer Datei an.
-- `tar`: Archiviert und extrahiert Dateien.
 - `cd`: Wechselt das aktuelle Verzeichnis.
 - `ls`: Listet Dateien und Verzeichnisse auf.
-- `mkdir`: Erstellt ein neues Verzeichnis.
-- `rmdir`: Löscht ein Verzeichnis.
-- `rm`: Löscht eine Datei.
+
+### Dateien anzeigen
+
 - `cat`: Zeigt den Inhalt einer Datei an.
 - `less`: Zeigt den Inhalt einer Datei seitenweise an.
-- `wc`: Zählt die Anzahl der Zeilen, Wörter und Zeichen in einer Datei.
-- `sha1sum`: Berechnet den SHA-1-Hashwert einer Datei.
-- `cp`: Kopiert eine Datei oder ein Verzeichnis.
-- `mv`: Verschiebt eine Datei oder ein Verzeichnis.
+- `hd`: Zeigt den hexadezimalen Inhalt einer Datei an.
+
+### Dateien erstellen und bearbeiten
+
 - `touch`: Erstellt eine leere Datei.
 - `nano`, `vim`, `emacs`: Bearbeitet eine Datei.
-- `pwd`: Zeigt das aktuelle Verzeichnis an.
-- Umleiten von stdout
+
+### Dateien analysieren, durchsuchen und filtern
+
+- `wc`: Zählt die Anzahl der Zeilen, Wörter und Zeichen in einer Datei.
+- `grep`: Sucht nach einem Muster in einer Datei.
+- `sort`: Sortiert die Zeilen einer Datei.
+- `uniq`: Entfernt doppelte Zeilen aus einer Datei.
 - `head`: Zeigt die ersten Zeilen einer Datei an.
 - `tail`: Zeigt die letzten Zeilen einer Datei an.
-- `hexdump`: Zeigt den hexadezimalen Inhalt einer Datei an.
+- `diff`: Zeigt den Unterschied zwischen zwei Dateien an.
+- `sha1sum`: Berechnet den SHA-1-Hashwert einer Datei.
+- Umleiten von stdout
 
-## Beispiele
+### Verzeichnisse analysieren und durchsuchen
 
-Hier sind einige Beispiele, wie wir die oben genannten Befehle verwenden
-können, um mit Dateien und Verzeichnissen zu arbeiten:
+- `du`: Zeigt die Größe von Dateien und Verzeichnissen an.
+- `find`: Sucht nach Dateien und Verzeichnissen.
 
-- `file picture.jpg`: Zeigt den Dateityp der Datei `picture.jpg` an.
-- `tar -czvf archive.tar.gz directory`: Archiviert das Verzeichnis `directory`
-  in die Datei `archive.tar.gz`.
-- `cd /home/user`: Wechselt das aktuelle Verzeichnis nach `/home/user`.
-- `ls -l`: Listet Dateien und Verzeichnisse im aktuellen Verzeichnis auf.
+### Dateien (und Verzeichnisse) kopieren, verschieben und löschen
 
-Picture of RMS
-Text of Alice in Wonderland
-Video of Jay
-Source of Dungeon
-https://en.wikipedia.org/wiki/Dungeon_(video_game)
+- `rm`: Löscht eine Datei.
+- `cp`: Kopiert eine Datei oder ein Verzeichnis.
+- `mv`: Verschiebt eine Datei oder ein Verzeichnis.
+- `mkdir`: Erstellt ein neues Verzeichnis.
+- `rmdir`: Löscht ein Verzeichnis.
 
-Commands:
+### Dateien archivieren und extrahieren
 
-file
-tar
-cd
-ls
-tree
-hidden files
-mkdir
-rmdir
-rm
-cat
-less (mention more)
-wc
-sha1sum
-cp
-mv
-touch
-nano / vim / emacs
-pwd
-redirect stdout
-head
-tail
-hexdump
+- `tar`: Archiviert und extrahiert Dateien.
+- `gzip` und `bzip2`: Komprimiert und dekomprimiert Dateien.
+- `zip` und `unzip`: Komprimiert und dekomprimiert Dateien.
+
+### Dateien aus dem Internet herunterladen
+
+- `wget`: Lädt Dateien aus dem Internet herunter.
+- `curl`: Lädt Dateien aus dem Internet herunter.

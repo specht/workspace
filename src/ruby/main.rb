@@ -393,160 +393,164 @@ class Main < Sinatra::Base
         end
         @@content = {}
 
-        StringIO.open do |io|
-            redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
-            paths.each do |entry|
-                section = entry[:section]
-                path = Dir["/src/content/#{entry[:path]}/*.md"].first
-                markdown = File.read(path)
-                markdown.gsub!(/_include_file\(([^)]+)\)/) do |match|
-                    options = $1.split(',').map { |x| x.strip }
-                    StringIO.open do |io|
-                        io.puts "```#{options[1]}_lineno"
-                        io.puts File.read(File.join(File.dirname(path), options[0]))
-                        io.puts "```"
-                        io.string
-                    end
+        redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
+        paths.each do |entry|
+            section = entry[:section]
+            path = Dir["/src/content/#{entry[:path]}/*.md"].first
+            markdown = File.read(path)
+            markdown.gsub!(/_include_file\(([^)]+)\)/) do |match|
+                options = $1.split(',').map { |x| x.strip }
+                StringIO.open do |io|
+                    io.puts "```#{options[1]}_lineno"
+                    io.puts File.read(File.join(File.dirname(path), options[0]))
+                    io.puts "```"
+                    io.string
                 end
-                hyphenation_map.each_pair do |a, b|
-                    markdown.gsub!(a, b)
-                end
-                slug = File.basename(path, '.md').sub(/^[0-9]+\-/, '')
-                html = redcarpet.render(markdown)
-                root = Nokogiri::HTML(html)
-                meta = root.css('.meta').first
-                if meta
-                    meta = YAML.load(meta)
-                    # if meta.include?('visible')
-                    #     if meta['visible'] == false
-                    #         next
-                    #     elsif meta['visible'] == 'development'
-                    #         next unless DEVELOPMENT
-                    #     end
-                    # end
-                end
+            end
+            hyphenation_map.each_pair do |a, b|
+                markdown.gsub!(a, b)
+            end
+            slug = File.basename(path, '.md').sub(/^[0-9]+\-/, '')
+            html = redcarpet.render(markdown)
+            root = Nokogiri::HTML(html)
+            meta = root.css('.meta').first
+            if meta
+                meta = YAML.load(meta)
+                # if meta.include?('visible')
+                #     if meta['visible'] == false
+                #         next
+                #     elsif meta['visible'] == 'development'
+                #         next unless DEVELOPMENT
+                #     end
+                # end
+            end
 
-                root.css('img').each do |img|
-                    src = img.attr('src')
-                    if img.attr('data-noconvert')
-                        image_path = File.join(File.dirname(path), src)
-                        next unless File.exist?(image_path)
-                        image_sha1 = Digest::SHA1.hexdigest(File.read(image_path))[0, 16]
-                        system("cp -pu \"#{image_path}\" /webcache/")
-                        img['src'] = "/cache/#{File.basename(image_path)}"
-                        if img.classes.include?('full')
-                            img.wrap("<div class='scroll-x'>")
-                        end
-                    else
-                        image_path = File.join(File.dirname(path), src)
-                        next unless File.exist?(image_path)
-                        image_sha1 = convert_image(image_path)
-                        img['src'] = "/cache/#{image_sha1}.webp"
-                        if img.classes.include?('full')
-                            img.wrap("<div class='scroll-x'>")
-                        end
+            root.css('img').each do |img|
+                src = img.attr('src')
+                if img.attr('data-noconvert')
+                    image_path = File.join(File.dirname(path), src)
+                    next unless File.exist?(image_path)
+                    image_sha1 = Digest::SHA1.hexdigest(File.read(image_path))[0, 16]
+                    system("cp -pu \"#{image_path}\" /webcache/")
+                    img['src'] = "/cache/#{File.basename(image_path)}"
+                    if img.classes.include?('full')
+                        img.wrap("<div class='scroll-x'>")
+                    end
+                else
+                    image_path = File.join(File.dirname(path), src)
+                    next unless File.exist?(image_path)
+                    image_sha1 = convert_image(image_path)
+                    img['src'] = "/cache/#{image_sha1}.webp"
+                    if img.classes.include?('full')
+                        img.wrap("<div class='scroll-x'>")
                     end
                 end
-                root.css('a').each do |a|
-                    href = a.attr('href')
-                    if href.index('https://') == 0
-                        a['target'] = '_blank'
-                    end
+            end
+            root.css('a').each do |a|
+                href = a.attr('href')
+                if href.index('https://') == 0
+                    a['target'] = '_blank'
                 end
-                root.css('pre').each do |pre|
-                    code = pre.css('code').first
-                    next if code.nil?
-                    language = code.attr('class')
-                    lineno = false
-                    if language =~ /_lineno$/
-                        lineno = true
-                        language = language.sub(/_lineno$/, '')
-                    end
-                    formatter = if lineno
-                        Rouge::Formatters::HTMLTable.new(Rouge::Formatters::HTML.new)
-                        # Rouge::Formatters::HTMLLineTable.new(Rouge::Formatters::HTML.new)
-                    else
-                        Rouge::Formatters::HTML.new
-                    end
-                    lexer = nil
-                    case language
-                    when 'bash'
-                        lexer = Rouge::Lexers::Shell.new
-                    when 'basic'
-                        lexer = Rouge::Lexers::VisualBasic.new
-                    when 'c'
-                        lexer = Rouge::Lexers::C.new
-                    when 'clisp'
-                        lexer = Rouge::Lexers::CommonLisp.new
-                    when 'cpp'
-                        lexer = Rouge::Lexers::Cpp.new
-                    when 'cs'
-                        lexer = Rouge::Lexers::CSharp.new
-                    when 'dart'
-                        lexer = Rouge::Lexers::Dart.new
-                    when 'erlang'
-                        lexer = Rouge::Lexers::Erlang.new
-                    when 'fortran'
-                        lexer = Rouge::Lexers::Fortran.new
-                    when 'go'
-                        lexer = Rouge::Lexers::Go.new
-                    when 'java'
-                        lexer = Rouge::Lexers::Java.new
-                    when 'js'
-                        lexer = Rouge::Lexers::Javascript.new
-                    when 'lua'
-                        lexer = Rouge::Lexers::Lua.new
-                    when 'nasm'
-                        lexer = Rouge::Lexers::Nasm.new
-                    when 'pascal'
-                        lexer = Rouge::Lexers::Pascal.new
-                    when 'python'
-                        lexer = Rouge::Lexers::Python.new
-                    when 'ruby'
-                        lexer = Rouge::Lexers::Ruby.new
-                    when 'rust'
-                        lexer = Rouge::Lexers::Rust.new
-                    when 'smalltalk'
-                        lexer = Rouge::Lexers::Smalltalk.new
-                    end
-                    next if lexer.nil?
-                    pre.content = ''
-                    # if lineno
-                    #     pre << "<div style='border-bottom: 1px solid white;display: inline-table;width: 100%;margin-bottom: 0.5em;padding-bottom: 0.5em;font-style: italic;font-weight: normal;'>HelloWorld.java (124 Bytes)</div>"
-                    # end
-                    pre << formatter.format(lexer.lex(code.text))
+            end
+            root.css('pre').each do |pre|
+                code = pre.css('code').first
+                next if code.nil?
+                language = code.attr('class')
+                lineno = false
+                if language =~ /_lineno$/
+                    lineno = true
+                    language = language.sub(/_lineno$/, '')
                 end
-                html = root.to_html
-                meta = root.css('.meta').first
-                @@content[slug] = {
-                    :html => html,
-                    :dev_only => entry[:dev_only],
-                }
-                @@sections[section][:entries] << slug
-                if meta
-                    meta = YAML.load(meta)
-                    if meta['image']
-                        parts = meta['image'].split(':')
-                        sha1 = convert_image(File.join(File.dirname(path), parts[0]))
-                        @@content[slug][:image] = "/cache/#{sha1}.webp"
-                        @@content[slug][:image_x] = (parts[1] || '50').to_i
-                        @@content[slug][:image_y] = (parts[2] || '50').to_i
-                    end
+                formatter = if lineno
+                    Rouge::Formatters::HTMLTable.new(Rouge::Formatters::HTML.new)
+                    # Rouge::Formatters::HTMLLineTable.new(Rouge::Formatters::HTML.new)
+                else
+                    Rouge::Formatters::HTML.new
                 end
-                begin
-                    @@content[slug][:title] = root.css('h1').first.to_s.sub('<h1>', '').sub('</h1>', '').strip
-                rescue
+                lexer = nil
+                case language
+                when 'bash'
+                    lexer = Rouge::Lexers::Shell.new
+                when 'basic'
+                    lexer = Rouge::Lexers::VisualBasic.new
+                when 'c'
+                    lexer = Rouge::Lexers::C.new
+                when 'clisp'
+                    lexer = Rouge::Lexers::CommonLisp.new
+                when 'cpp'
+                    lexer = Rouge::Lexers::Cpp.new
+                when 'cs'
+                    lexer = Rouge::Lexers::CSharp.new
+                when 'dart'
+                    lexer = Rouge::Lexers::Dart.new
+                when 'erlang'
+                    lexer = Rouge::Lexers::Erlang.new
+                when 'fortran'
+                    lexer = Rouge::Lexers::Fortran.new
+                when 'go'
+                    lexer = Rouge::Lexers::Go.new
+                when 'java'
+                    lexer = Rouge::Lexers::Java.new
+                when 'js'
+                    lexer = Rouge::Lexers::Javascript.new
+                when 'lua'
+                    lexer = Rouge::Lexers::Lua.new
+                when 'nasm'
+                    lexer = Rouge::Lexers::Nasm.new
+                when 'pascal'
+                    lexer = Rouge::Lexers::Pascal.new
+                when 'python'
+                    lexer = Rouge::Lexers::Python.new
+                when 'ruby'
+                    lexer = Rouge::Lexers::Ruby.new
+                when 'rust'
+                    lexer = Rouge::Lexers::Rust.new
+                when 'smalltalk'
+                    lexer = Rouge::Lexers::Smalltalk.new
                 end
-                begin
-                    @@content[slug][:abstract] = root.css('.abstract').first.text
-                rescue
+                next if lexer.nil?
+                pre.content = ''
+                # if lineno
+                #     pre << "<div style='border-bottom: 1px solid white;display: inline-table;width: 100%;margin-bottom: 0.5em;padding-bottom: 0.5em;font-style: italic;font-weight: normal;'>HelloWorld.java (124 Bytes)</div>"
+                # end
+                pre << formatter.format(lexer.lex(code.text))
+            end
+            html = root.to_html
+            # root.css('h2, h3, h4, h5, h6').each do |e|
+            #     if slug == 'c'
+            #         level = e.name.sub('h', '').to_i
+            #         STDERR.puts "#{'  ' * (level - 2)}- #{e.text}"
+            #     end
+            # end
+            meta = root.css('.meta').first
+            @@content[slug] = {
+                :html => html,
+                :dev_only => entry[:dev_only],
+            }
+            @@sections[section][:entries] << slug
+            if meta
+                meta = YAML.load(meta)
+                if meta['image']
+                    parts = meta['image'].split(':')
+                    sha1 = convert_image(File.join(File.dirname(path), parts[0]))
+                    @@content[slug][:image] = "/cache/#{sha1}.webp"
+                    @@content[slug][:image_x] = (parts[1] || '50').to_i
+                    @@content[slug][:image_y] = (parts[2] || '50').to_i
                 end
-                begin
-                    @@content[slug][:image] ||= root.css('img').first.attr('src')
-                    @@content[slug][:image_x] ||= 50
-                    @@content[slug][:image_y] ||= 50
-                rescue
-                end
+            end
+            begin
+                @@content[slug][:title] = root.css('h1').first.to_s.sub('<h1>', '').sub('</h1>', '').strip
+            rescue
+            end
+            begin
+                @@content[slug][:abstract] = root.css('.abstract').first.text
+            rescue
+            end
+            begin
+                @@content[slug][:image] ||= root.css('img').first.attr('src')
+                @@content[slug][:image_x] ||= 50
+                @@content[slug][:image_y] ||= 50
+            rescue
             end
         end
     end
@@ -602,6 +606,7 @@ class Main < Sinatra::Base
             system("wget -O /dl/working-with-files/jay.webm https://upload.wikimedia.org/wikipedia/commons/transcoded/7/75/Jay_Feeding.webm/Jay_Feeding.webm.360p.vp9.webm")
             system("wget -O /dl/working-with-files/zork.zip https://github.com/devshane/zork/archive/refs/heads/master.zip")
             system("wget -O /dl/working-with-files/music-releases.tar.bz2 https://github.com/specht/workspace-files/raw/main/music-releases.tar.bz2")
+            system("echo 'Nothing to see here, just a hidden file!' > /dl/working-with-files/.hidden")
             system("tar cvzf /dl/working-with-files.tar.gz -C /dl working-with-files")
             FileUtils.rm_rf('/dl/working-with-files')
         end

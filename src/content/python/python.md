@@ -146,7 +146,7 @@ Visual Studio Code bietet auch eine integrierte Möglichkeit, Python-Skripte dir
 
 Du kannst nun dein Skript einfach direkt aus dem Editor starten, indem du rechts oben auf das Run-Symbol <img src='../basics/run-button.webp' style='border-radius: 4px; height: 1.5em;'> klickst.
 
-## Primfaktorenzerlegung
+## Primfaktorzerlegung
 
 Im zweiten Beispiel wollen wir eine Zahl in ihre Primfaktoren zerlegen.
 An diesem Beispiel kannst du sehen, wie man in Python Benutzereingaben verarbeitet und Schleifen verwendet.
