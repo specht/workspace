@@ -5,6 +5,13 @@
   - about
   - basics
 - key: programming_languages
+  description: |
+    Hier findest du kurze, praktische Einführungen in verschiedene
+    Programmiersprachen. Du bekommst drei Beispiele für Programme gezeigt, die
+    du direkt im Workspace ausprobieren kannst: ein einfaches »Hello, World!«,
+    ein Programm, das eine Zahl einliest und in ihre Primfaktoren zerlegt, und
+    ein Programm, das den Bubblesort-Algorithmus demonstriert. Finde deine
+    Lieblingssprache!
   label: Programmiersprachen
   icon: /images/keyboard.png
   entries:
@@ -33,9 +40,9 @@
   label: Computergrafik
   icon: /images/palette.png
   entries:
-  - .p5js
-  - .glsl
-  - .raytracing
+  # - .p5js
+  # - .glsl
+  # - .raytracing
 - key: artificial_intelligence
   label: Künstliche Intelligenz
   icon: /images/brain.png
@@ -45,23 +52,23 @@
   label: Netzwerke
   icon: /images/telephone.png
   entries:
-  - .tcpip
+  # - .tcpip
 - key: office
   label: Dokumente und Präsentationen
   icon: /images/pen.png
   entries:
   - showerjs
-  - .latex
+  # - .latex
 - key: linux
   label: Linux und die Shell
   icon: /images/penguin.png
   entries:
   - .working-with-files
-  - .working-with-processes
-  - .git
+  # - .working-with-processes
+  # - .git
 - key: tools
   label: Werkzeuge
   icon: /images/hammer-and-wrench.png
   entries:
-  - .bash
+  # - .bash
   # - .git

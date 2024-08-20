@@ -1092,7 +1092,7 @@ class Main < Sinatra::Base
                 end.empty?
                 io.puts "<h2><div class='squircle'><img src='#{section[:icon]}'></div> #{section[:label]}</h2>"
                 if section[:description]
-                    io.puts "<p>#{section[:description]}</p>"
+                    io.puts "<p style='margin-top: -1em; margin-bottom: 1em;'>#{section[:description]}</p>"
                 end
                 # io.puts "<hr>"
                 io.puts "<div class='row'>"
