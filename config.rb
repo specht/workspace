@@ -8,10 +8,6 @@ require './src/ruby/credentials.rb'
 PROFILE = [:static, :dynamic, :neo4j]
 
 STAGING = File::dirname(File::expand_path(__FILE__)).include?('staging')
-warn_level = $VERBOSE
-$VERBOSE = nil
-DEVELOPMENT = !(ENV['QTS_DEVELOPMENT'].nil?)
-$VERBOSE = warn_level
 PROJECT_NAME = 'workspace'
 DEV_NGINX_PORT = 8025
 DEV_NEO4J_PORT = 8021

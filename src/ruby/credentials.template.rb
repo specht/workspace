@@ -1,4 +1,4 @@
-DEVELOPMENT = (ENV['DEVELOPMENT'] == '1')
+DEVELOPMENT = true
 
 # IMPORTANT: This must be the path to the data directory on the host machine
 PATH_TO_HOST_DATA = nil
