@@ -1092,7 +1092,11 @@ class Main < Sinatra::Base
                 end.empty?
                 io.puts "<h2><div class='squircle'><img src='#{section[:icon]}'></div> #{section[:label]}</h2>"
                 if section[:description]
-                    io.puts "<p style='margin-top: -1em; margin-bottom: 1em;'>#{section[:description]}</p>"
+                    s = section[:description]
+                    hyphenation_map.each_pair do |a, b|
+                        s.gsub!(a, b)
+                    end
+                    io.puts "<p style='margin-top: -1em; margin-bottom: 1em;'>#{s}</p>"
                 end
                 # io.puts "<hr>"
                 io.puts "<div class='row'>"
