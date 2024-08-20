@@ -7,11 +7,11 @@
 - key: programming_languages
   description: |
     Hier findest du kurze, praktische Einführungen in verschiedene
-    Programmiersprachen. Du bekommst drei Beispiele für Programme gezeigt, die
-    du direkt im Workspace ausprobieren kannst: ein einfaches »Hello, World!«,
-    ein Programm, das eine Zahl einliest und in ihre Primfaktoren zerlegt, und
-    ein Programm, das den Bubblesort-Algorithmus demonstriert. Finde deine
-    Lieblingssprache!
+    Programmiersprachen. Du bekommst jeweils drei Beispiele für Programme
+    gezeigt, die du direkt im Workspace ausprobieren kannst: ein einfaches
+    »Hello, World!«, ein Programm, das eine Zahl einliest und in ihre Primfaktoren
+    zerlegt, und ein Programm, das den Bubblesort-Algorithmus demonstriert. Finde
+    deine Lieblingssprache!
   label: Programmiersprachen
   icon: /images/keyboard.png
   entries:

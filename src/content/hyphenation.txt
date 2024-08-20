@@ -1,5 +1,6 @@
 Ab-schluss-ar-bei-ten
 Ab-strak-ti-ons-ebene
+Al-go-rith-mus
 Ani-ma-tio-nen
 An-wen-dun-gen
 An-wen-dungs-be-rei-chen
