@@ -384,6 +384,11 @@ class Main < Sinatra::Base
             section.each_pair do |k, v|
                 @@sections[section['key']][k.to_sym] = v
             end
+            if @@sections[section['key']][:description]
+                hyphenation_map.each_pair do |a, b|
+                    @@sections[section['key']][:description].gsub!(a, b)
+                end
+            end
             @@sections[section['key']][:entries] = []
             (section['entries'] || []).each do |path|
                 dev_only = path[0] == '.'
@@ -1092,11 +1097,7 @@ class Main < Sinatra::Base
                 end.empty?
                 io.puts "<h2><div class='squircle'><img src='#{section[:icon]}'></div> #{section[:label]}</h2>"
                 if section[:description]
-                    s = section[:description]
-                    hyphenation_map.each_pair do |a, b|
-                        s.gsub!(a, b)
-                    end
-                    io.puts "<p style='margin-top: -1em; margin-bottom: 1em;'>#{s}</p>"
+                    io.puts "<p style='margin-top: -1em; margin-bottom: 1em;'>#{section[:description]}</p>"
                 end
                 # io.puts "<hr>"
                 io.puts "<div class='row'>"
