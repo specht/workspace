@@ -274,6 +274,7 @@ File::open('docker-compose.yaml', 'w') do |f|
 end
 
 FileUtils::mkpath(LOGS_PATH)
+FileUtils::mkpath(File.join(LOGS_PATH, 'neo4j'))
 if PROFILE.include?(:dynamic)
     FileUtils::cp('src/ruby/Gemfile', 'docker/ruby/')
 end

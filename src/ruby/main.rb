@@ -597,7 +597,7 @@ class Main < Sinatra::Base
     end
 
     def self.prepare_downloads()
-        unless File.exist?("/dl/working-with-files.tar.bz2")
+        unless File.exist?("/dl/working-with-files.tar.gz")
             STDERR.puts "Preparing /dl/working-with-files.tar.bz2..."
             FileUtils.rm_rf('/dl/working-with-files')
             FileUtils.mkpath('/dl/working-with-files')
