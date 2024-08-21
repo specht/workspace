@@ -36,6 +36,13 @@
   - go
   - dart
   - rust
+- key: linux
+  label: Linux und die Shell
+  icon: /images/penguin.png
+  entries:
+  - working-with-files
+  # - .working-with-processes
+  # - .git
 - key: computer_graphics
   label: Computergrafik
   icon: /images/palette.png
@@ -59,13 +66,6 @@
   entries:
   - showerjs
   # - .latex
-- key: linux
-  label: Linux und die Shell
-  icon: /images/penguin.png
-  entries:
-  - working-with-files
-  # - .working-with-processes
-  # - .git
 - key: tools
   label: Werkzeuge
   icon: /images/hammer-and-wrench.png

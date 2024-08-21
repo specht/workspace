@@ -369,6 +369,31 @@ class Main < Sinatra::Base
         image_sha1
     end
 
+    def self.inject_autotoc(root, options = {})
+        options[:inject_numbers] = true unless options.include?(:inject_numbers)
+        h2_list = root.css('h2').reject { |x| x['data-autotoc'] == 'ignore' }
+        if h2_list.size > 1
+            h2_list.each.with_index do |h2, index|
+                autotoc_container = Nokogiri::XML::Node.new('div', root)
+                autotoc_container['class'] = 'autotoc-container'
+                label = h2.text
+                if options[:inject_numbers]
+                    label = "#{index + 1}. #{h2.text}"
+                end
+                autotoc_container['data-label'] = label
+                h2.content = label
+                h2.add_previous_sibling(autotoc_container)
+                autotoc_container.add_child(h2)
+                p = autotoc_container.next_element
+                while p && p.name != 'h2'
+                    pnext = p.next_element
+                    autotoc_container.add_child(p)
+                    p = pnext
+                end
+            end
+        end
+    end
+
     def self.parse_content
         hyphenation_map = {}
         File.read('/src/content/hyphenation.txt').split("\n").each do |line|
@@ -513,23 +538,8 @@ class Main < Sinatra::Base
                 # end
                 pre << formatter.format(lexer.lex(code.text))
             end
-            h2_list = root.css('h2').reject { |x| x['data-autotoc'] == 'ignore' }
-            if h2_list.size > 1
-                h2_list.each.with_index do |h2, index|
-                    autotoc_container = Nokogiri::XML::Node.new('div', root)
-                    autotoc_container['class'] = 'autotoc-container'
-                    autotoc_container['data-label'] = "#{index + 1}. #{h2.text}"
-                    h2.content = "#{index + 1}. #{h2.text}"
-                    h2.add_previous_sibling(autotoc_container)
-                    autotoc_container.add_child(h2)
-                    p = autotoc_container.next_element
-                    while p && p.name != 'h2'
-                        pnext = p.next_element
-                        autotoc_container.add_child(p)
-                        p = pnext
-                    end
-                end
-            end
+
+            inject_autotoc(root)
 
             html = root.to_html
             # root.css('h2, h3, h4, h5, h6').each do |e|
@@ -1100,7 +1110,7 @@ class Main < Sinatra::Base
 
     def print_content_overview()
         Main.parse_content if DEVELOPMENT
-        StringIO.open do |io|
+        html = StringIO.open do |io|
             @@section_order.each do |section_key|
                 section = @@sections[section_key]
                 next if section[:entries].reject do |entry|
@@ -1131,6 +1141,9 @@ class Main < Sinatra::Base
             end
             io.string
         end
+        doc = Nokogiri::HTML::DocumentFragment.parse(html)
+        Main.inject_autotoc(doc, inject_numbers: false)
+        doc.to_html
     end
 
     def print_workspaces()
