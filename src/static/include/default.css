@@ -396,7 +396,7 @@ code {
     font-size: 110%;
     color: #e5185d;
     background-color: rgba(243, 132, 175, 0.2);
-    display: inline-block;
+    /* display: inline-block; */
     padding: 0 0.3em;
     border-radius: 0.3em;
 }

@@ -52,12 +52,12 @@ angekommen ist, indem du den Befehl `ls` eingibst:
 
 <img class='full' src='ls.webp'>
 
-Für mehr Details verwende den Befehlt `ls -l`:
+Für mehr Details verwende den Befehlt `ls -l` (für »long«):
 
 <img class='full' src='ls-l.webp'>
 
-Du siehst nun, wie groß die Datei ist. Nutze den Befehl `ls -lh`, um die Größe in einer
-menschlich lesbaren Form zu sehen:
+Du siehst nun, wie groß die Datei ist. Nutze den Befehl `ls -lh` (für »long human-readable«),
+um die Größe in einer besser lesbaren Form zu sehen:
 
 <img class='full' src='ls-lh.webp'>
 
@@ -75,6 +75,14 @@ ausführst, solltest du eine Meldung sehen, die dir anzeigt, welche Dateien entp
 
 <img class='full' src='tar-xvf.webp'>
 
+Gib noch einmal `ls -l` ein, um zu sehen, was sich nun in deinem Verzeichnis befindet:
+
+<img class='full' src='ls-after-tar-xvf.webp'>
+
+Du solltest jetzt zusätzlich zur heruntergelandenen Archivdatei ein Verzeichnis namens
+`working-with-files` sehen. Du erkennst an dem `d` am Anfang der Zeile, dass es sich um ein
+Verzeichnis handelt.
+
 <div class='hint'>
 Um dein Terminal aufzuräumen, kannst du den Befehl <code>clear</code> verwenden oder einfach die Tastenkombination <span class='key'>Strg</span><span class='key'>L</span> drücken.
 </div>
@@ -82,14 +90,56 @@ Um dein Terminal aufzuräumen, kannst du den Befehl <code>clear</code> verwenden
 ## Überblick verschaffen
 
 <div class='hint'>
-In diesem Abschnitt lernst du die Befehle <code>pwd</code>, <code>cd</code>, <code>tree</code>, <code>file</code> und <code>ls</code> kennen.
+In diesem Abschnitt lernst du die Befehle <code>pwd</code>, <code>cd</code>, <code>ls</code> und <code>file</code> kennen.
 </div>
 
-- `pwd`: Zeigt das aktuelle Verzeichnis an.
-- `cd`: Wechselt das aktuelle Verzeichnis.
-- `tree`: Zeigt die Verzeichnisstruktur an.
-- `file`: Zeigt den Dateityp einer Datei an.
-- `ls`: Listet Dateien und Verzeichnisse auf.
+Gib den Befehl `pwd` ein und drücke die Eingabetaste:
+
+<img class='full' src='pwd.webp'>
+
+Der Befehl `pwd` steht für »print working directory« und zeigt dir das aktuelle Verzeichnis an, in dem du dich gerade befindest. Das aktuelle Verzeichnis wird auch im Prompt angezeigt – da im Workspace das Verzeichnis `/workspace` dein Home-Verzeichnis ist, wird es im Prompt mit `~` abgekürzt.
+
+Wechsle nun in das entpackte Verzeichnis, indem du `cd working-with-files` eingibst und die Eingabetaste drückst. Du solltest nun im Verzeichnis `working-with-files` sein, was du leicht am Prompt erkennen kannst.
+
+<img class='full' src='cd.webp'>
+
+Wechsle wieder in das übergeordnete Verzeichnis, indem du `cd ..` eingibst und die Eingabetaste drückst. Du solltest nun wieder im Home-Verzeichnis sein.
+
+<img class='full' src='cd-back.webp'>
+
+### Die Tab-Ergänzung verwenden
+
+Ein nützliches Feature der Kommandozeile ist die Tab-Ergänzung. Wenn du anfängst, einen Befehl oder einen Dateinamen einzugeben, kannst du die Tab-Taste drücken, um den Befehl oder den Dateinamen automatisch zu vervollständigen. Wenn es mehrere Möglichkeiten gibt, kannst du die Tab-Taste zweimal drücken, um eine Liste der verfügbaren Optionen zu sehen.
+
+Wechsle wieder in das Verzeichnis, aber gib diesmal nur `cd w` ein und drücke die Tab-Taste. Die Kommandozeile vervollständigt den Befehl automatisch, weil es nur eine mögliche Option für einen Verzeichniswechsel gibt, die mit `w` beginnt.
+
+Lass dir anschließend die Inhalte des Verzeichnisses mit `ls -l` anzeigen:
+
+<img class='full' src='ls-again.webp'>
+
+<div class='hint'>
+Es gibt noch eine versteckte Datei in diesem Verzeichnis, die du dir mit dem Befehl <code>ls -la</code> (für »long all«) anzeigen lassen kannst. Versteckte Dateien beginnen unter Linux mit einem Punkt.
+</div>
+
+Gib nun den Befehl `file *` ein und drücke die Eingabetaste. Der Stern `*` ist ein Platzhalter, der für alle Dateien im aktuellen Verzeichnis steht. Der Befehl `file` zeigt den Dateityp einer Datei an und mit `file *` können wir also den Dateityp aller Dateien im aktuellen Verzeichnis anzeigen.
+
+<img class='full' src='file.webp'>
+
+Oft ist der Dateityp einer Datei schon anhand der Dateiendung zu erkennen. Das Programm `file` kann jedoch auch den Dateityp von Dateien ohne Dateiendung bestimmen und gibt einige zusätzliche Informationen aus.
+
+Wir sehen die folgenden Dateien:
+
+<table class='table table-sm'>
+<tr><td><code>alice.txt</code></td><td>eine normale Textdatei</td></tr>
+<tr><td><code>jay.webm</code></td><td>eine Videodatei im WebM-Format</td></tr>
+<tr><td><code>music-releases.tar.bz2</code></td><td>ein komprimiertes Archiv im Bzip2-Format</td></tr>
+<tr><td><code>stallman.jpg</code></td><td>eine Bilddatei im JPEG-Format mit sehr vielen Metadaten</td></tr>
+<tr><td><code>zork.zip</code></td><td>ein komprimiertes Archiv im ZIP-Format</td></tr>
+</td>
+</tr>
+</table>
+
+In den folgenden Abschnitten wirst du weitere Befehle kennenlernen und anhand dieser Dateien ausprobieren können.
 
 ## Dateien anzeigen
 
@@ -97,18 +147,11 @@ In diesem Abschnitt lernst du die Befehle <code>pwd</code>, <code>cd</code>, <co
 In diesem Abschnitt lernst du die Befehle <code>cat</code>, <code>less</code> und <code>hd</code> kennen.
 </div>
 
-- `cat`: Zeigt den Inhalt einer Datei an.
-- `less`: Zeigt den Inhalt einer Datei seitenweise an.
-- `hd`: Zeigt den hexadezimalen Inhalt einer Datei an.
-
 ## Dateien erstellen und bearbeiten
 
 <div class='hint'>
 In diesem Abschnitt lernst du die Befehle <code>touch</code>, <code>nano</code>, <code>vim</code> und <code>emacs</code> kennen.
 </div>
-
-- `touch`: Erstellt eine leere Datei.
-- `nano`, `vim`, `emacs`: Bearbeitet eine Datei.
 
 ## Dateien analysieren, durchsuchen und filtern
 
@@ -116,24 +159,11 @@ In diesem Abschnitt lernst du die Befehle <code>touch</code>, <code>nano</code>,
 In diesem Abschnitt lernst du die Befehle <code>wc</code>, <code>grep</code>, <code>sort</code>, <code>uniq</code>, <code>head</code>, <code>tail</code>, <code>diff</code> und <code>sha1sum</code> kennen.
 </div>
 
-- `wc`: Zählt die Anzahl der Zeilen, Wörter und Zeichen in einer Datei.
-- `grep`: Sucht nach einem Muster in einer Datei.
-- `sort`: Sortiert die Zeilen einer Datei.
-- `uniq`: Entfernt doppelte Zeilen aus einer Datei.
-- `head`: Zeigt die ersten Zeilen einer Datei an.
-- `tail`: Zeigt die letzten Zeilen einer Datei an.
-- `diff`: Zeigt den Unterschied zwischen zwei Dateien an.
-- `sha1sum`: Berechnet den SHA-1-Hashwert einer Datei.
-- Umleiten von stdout
-
 ## Verzeichnisse analysieren und durchsuchen
 
 <div class='hint'>
 In diesem Abschnitt lernst du die Befehle <code>du</code> und <code>find</code> kennen.
 </div>
-
-- `du`: Zeigt die Größe von Dateien und Verzeichnissen an.
-- `find`: Sucht nach Dateien und Verzeichnissen.
 
 ## Dateien (und Verzeichnisse) kopieren, verschieben und löschen
 
@@ -141,27 +171,14 @@ In diesem Abschnitt lernst du die Befehle <code>du</code> und <code>find</code> 
 In diesem Abschnitt lernst du die Befehle <code>rm</code>, <code>cp</code>, <code>mv</code>, <code>mkdir</code> und <code>rmdir</code> kennen.
 </div>
 
-- `rm`: Löscht eine Datei.
-- `cp`: Kopiert eine Datei oder ein Verzeichnis.
-- `mv`: Verschiebt eine Datei oder ein Verzeichnis.
-- `mkdir`: Erstellt ein neues Verzeichnis.
-- `rmdir`: Löscht ein Verzeichnis.
-
 ## Dateien archivieren und extrahieren
 
 <div class='hint'>
-In diesem Abschnitt lernst du die Befehle <code>tar</code>, <code>gzip</code>, <code>bzip2</code>, <code>zip</code> und <code>unzip</code> kennen.
+In diesem Abschnitt lernst du die Befehle <code>tar</code>, <code>tree</code>, <code>gzip</code>, <code>bzip2</code>, <code>zip</code> und <code>unzip</code> kennen.
 </div>
-
-- `tar`: Archiviert und extrahiert Dateien.
-- `gzip` und `bzip2`: Komprimiert und dekomprimiert Dateien.
-- `zip` und `unzip`: Komprimiert und dekomprimiert Dateien.
 
 ## Dateien aus dem Internet herunterladen
 
 <div class='hint'>
 In diesem Abschnitt lernst du die Befehle <code>wget</code> und <code>curl</code> kennen.
 </div>
-
-- `wget`: Lädt Dateien aus dem Internet herunter.
-- `curl`: Lädt Dateien aus dem Internet herunter.

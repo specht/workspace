@@ -12,13 +12,11 @@ Erstelle eine Präsentation mit shower.js in HTML und CSS. Mach dich unabhängig
 
 In diesem Tutorial erstellen wir eine Präsentation mit Hilfe von [shower.js](https://github.com/shower/shower) auf der Grundlage von HTML und CSS. Das heisst, dass jeder Webbrowser deine Präsentation abspielen kann und du keine besondere Software brauchst, um deine Präsentation abzuspielen. Du kannst shower.js hier [in Aktion sehen](https://shwr.me/).
 
-## Los geht's!
+## Repository klonen
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='vscode-empty-project.webp'>
-
-### Repository klonen
 
 <img class='r' style='width: 20em;' src='vscode-clone-from-git.webp'>
 
@@ -35,7 +33,7 @@ Anschließend müssen wir einen Speicherort für das Verzeichnis wählen. Wähle
 
 <img class='full' src='index-opened.webp'>
 
-### Live Server-Erweiterung installieren
+## Live Server-Erweiterung installieren
 
 Als nächstes müssen wir eine Erweiterung installieren, die uns eine Live-Vorschau unserer Präsentation zeigen kann. Öffne dazu links die Extensions, suche die Erweiterung »Live Server« und klicke auf »Install«, um die Erweiterung zu installieren. Anschließend sollte dein Workspace so aussehen:
 
@@ -45,11 +43,11 @@ Als nächstes müssen wir eine Erweiterung installieren, die uns eine Live-Vorsc
 
 <img class='full' src='side-by-side.webp'>
 
-### Schreib deine Präsentation
+## Schreib deine Präsentation
 
 Du kannst nun damit beginnen, die Vorlage an deine Bedürfnisse anzupassen. Falls du nach Hilfe suchst: die Technologien, die hier verwendet werden, heißen HTML und CSS. Wenn du die `index.html` bearbeitest, musst du darauf achten, dass du vorsichtig bist, da die Syntax relativ wichtig ist und eine fehlende spitze Klammer dazu führen kann, dass viele Folien auf einmal nicht mehr sichtbar sind. Gehe also behutsam vor und verwende zur Not <span class='key'>Strg</span><span class='key'>Z</span>, um Änderungen rückgängig zu machen. Speichere deine Änderungen mit <span class='key'>Strg</span><span class='key'>S</span>, um den Effekt im Vorschaufenster zu sehen, falls dein Workspace Änderungen nicht schon automatisch speichert (das kannst du im Menü unter File / Auto Save einstellen).
 
-#### HTML-Syntax
+### HTML-Syntax
 
 HTML wird normalerweise nicht für Präsentationen, sondern für Websites verwendet. Die Funktion dieser Sprache ist es, Text mit bestimmten Eigenschaften auszuzeichnen &ndash; daher auch der Name »Hypertext Markup Language«. Schau dir den Quelltext einer beliebigen Website mit <span class='key'>Strg</span><span class='key'>U</span> an und du wirst HTML-Code sehen (der sicherlich wiederum auch JavaScript enthält).
 
@@ -90,7 +88,7 @@ Generell ist es so, dass bei HTML Textteile in sogenannte Tags eingeschlossen we
 </tr>
 <tr>
 <td><code>&lt;h2&gt;</code></td>
-<td><h2 style='margin: 0;'>Überschrift 2</h2></td>
+<td><h2 data-autotoc='ignore' style='margin: 0;'>Überschrift 2</h2></td>
 </tr>
 <tr>
 <td><code>&lt;h3&gt;</code></td>

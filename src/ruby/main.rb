@@ -421,13 +421,6 @@ class Main < Sinatra::Base
             meta = root.css('.meta').first
             if meta
                 meta = YAML.load(meta)
-                # if meta.include?('visible')
-                #     if meta['visible'] == false
-                #         next
-                #     elsif meta['visible'] == 'development'
-                #         next unless DEVELOPMENT
-                #     end
-                # end
             end
 
             root.css('img').each do |img|
@@ -520,6 +513,24 @@ class Main < Sinatra::Base
                 # end
                 pre << formatter.format(lexer.lex(code.text))
             end
+            h2_list = root.css('h2').reject { |x| x['data-autotoc'] == 'ignore' }
+            if h2_list.size > 1
+                h2_list.each.with_index do |h2, index|
+                    autotoc_container = Nokogiri::XML::Node.new('div', root)
+                    autotoc_container['class'] = 'autotoc-container'
+                    autotoc_container['data-label'] = "#{index + 1}. #{h2.text}"
+                    h2.content = "#{index + 1}. #{h2.text}"
+                    h2.add_previous_sibling(autotoc_container)
+                    autotoc_container.add_child(h2)
+                    p = autotoc_container.next_element
+                    while p && p.name != 'h2'
+                        pnext = p.next_element
+                        autotoc_container.add_child(p)
+                        p = pnext
+                    end
+                end
+            end
+
             html = root.to_html
             # root.css('h2, h3, h4, h5, h6').each do |e|
             #     if slug == 'c'

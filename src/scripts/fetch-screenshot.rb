@@ -21,8 +21,13 @@ latest_content_path = File.dirname(Dir["src/content/*/*.md"].sort_by { |f| File.
 
 target_path = "#{File.join(latest_content_path, slug)}.webp"
 
-# raise 'file already exists!' if File.exist?(target_path)
+if File.exist?(target_path)
+    puts "File already exists! Replace it? (y/n)"
+    answer = gets.strip
+    if answer != 'y'
+        exit
+    end
+end
 
 system("cwebp -q 80 \"#{latest_path}\" -o \"#{target_path}\"")
-
 system("rm \"#{latest_path}\"")
