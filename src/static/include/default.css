@@ -512,7 +512,6 @@ pre pre {
 }
 
 .hint {
-    /* font-style: italic; */
     position: relative;
     border-top: 1px solid #eee;
     border-bottom: 1px solid #eee;
@@ -533,6 +532,14 @@ pre pre {
     height: 2em;
     background-image: url(/images/bulb.png);
     background-size: cover;
+}
+
+.hint.wink::before {
+    background-image: url(/images/wink.png);
+}
+
+.hint.books::before {
+    background-image: url(/images/books.png);
 }
 
 /* a.tutorial_card {

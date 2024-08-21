@@ -29,7 +29,6 @@
 </head>
 
 <style>
-/* #{Rouge::Theme.find('base16.light').render(scope: 'pre')} */
 #{Rouge::Theme.find('gruvbox').render(scope: 'pre')}
 pre table td {
     padding: 0;
@@ -47,16 +46,15 @@ pre table td {
     left: 0;
     right: 0;
     background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 1em rgba(0, 0, 0, 0.5);
     font-size: 85%;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease-out;
     transform: translateY(0);
-    pointer-events: none;
 }
 
 .autotoc.hidden {
-    transform: translateY(-100%);
+    transform: translateY(calc(-100% - 1em));
 }
 
 .autotoc > .items {
@@ -65,8 +63,6 @@ pre table td {
     white-space: nowrap;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    padding: 1em;
-    padding-bottom: 0.6em;
     text-align: center;
 }
 
@@ -80,12 +76,30 @@ pre table td {
     scroll-snap-align: center;
     display: inline-block;
     overflow-x: hidden;
-    padding: 0 1em;
+    overflow-y: hidden;
+    padding: 1em 2em;
     width: 20em;
+    position: relative;
+    margin-bottom: -0.5em;
+    cursor: pointer;
+    user-select: none;
 }
+
+/* .autotoc > .items > div::after {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 0.5em;
+    content: '';
+    height: 0.2em;
+    position: absolute;
+    bottom: 0.2em;
+    left: 0.5em;
+    right: 0.5em;
+} */
+
 
 .autotoc > .items > div.active {
     font-weight: bold;
+    position: relative;
 }
 
 .autotoc > .progress {
@@ -96,39 +110,63 @@ pre table td {
     width: 0;
     height: 0.25em;
     transition: left 0.3s ease-out;
-    /* border-radius: 1em; */
     border-radius: 0;
     transform: translate(0.3em, 0);
+    display: none;
 }
 
-.autotoc > .progress_spots {
+.autotoc > .progress_spots_sm {
     position: absolute;
     bottom: 0.1em;
     left: 0;
     width: 100%;
     height: 0.2em;
-    display: flex;
     flex-wrap: nowrap;
 }
 
-.autotoc > .progress_spots > div {
+.autotoc > .progress_spots_sm > div {
     background-color: rgba(0, 0, 0, 0.15);
     height: 0.2em;
-    display: block;
     padding: 0 0.5em;
     border-left: 0.07em solid #fff;
     border-right: 0.07em solid #fff;
     border-radius: 1em;
     margin: 0 0.15em;
+    width: 20em;
+    display: inline-block;
 }
 
+.progress_spots_sm {
+    display: none;
+}
 
 @media (max-width: 768px) {
+    .progress_spots_sm {
+        display: flex;
+    }
+    .autotoc {
+        pointer-events: none;
+    }
+    .autotoc > .items {
+        padding: 1em 1em 0.6em 1em;
+    }
     .autotoc > .items > div {
         width: 100%;
+        padding: 0 1em;
+        margin-bottom: 0;
     }
     .autotoc > .items > div.active {
         font-weight: unset;
+    }
+    .autotoc > .progress_spots_sm {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+    .autotoc > .progress_spots_sm > div {
+        display: block;
+    }
+    .autotoc > .progress {
+        display: block;
     }
 }
 
@@ -221,8 +259,7 @@ var autotoc_items_visible = [];
 function install_autotoc() {
     let options = {
         root: null,
-        rootMargin: '-33% 0% -67% 0%',
-        // threshold: [0.001],
+        rootMargin: '-20% 0% -80% 0%',
     };
     let autotoc = $('.autotoc');
     let observer = new IntersectionObserver((entries, observer) => {
@@ -237,7 +274,8 @@ function install_autotoc() {
             if (autotoc_items_visible[i]) {
                 found_entry = true;
                 autotoc.removeClass('hidden');
-                $(item).parent()[0].scrollTo({ left: item.offsetLeft - 100, behavior: 'smooth' });
+                let container = $(item).parent()[0];
+                container.scrollTo({ left: item.offsetLeft - (container.offsetWidth / 2) + (item.offsetWidth / 2), behavior: 'smooth' });
                 $('.autotoc .progress').css('left', `${100.0 * i / autotoc_containers.length}%`);
                 $(item).addClass('active');
             }
@@ -252,13 +290,16 @@ function install_autotoc() {
         div.data('autotoc-index', i);
         autotoc_containers.push(div[0]);
         let item = $('<div>').text(div.data('label'));
+        item[0].addEventListener('click', function(e) {
+            $('html')[0].scrollTop = $(containers[i]).find('h2')[0].offsetTop - 80;
+        });
         autotoc_items.push(item[0]);
         autotoc_items_visible.push(false);
         $('.autotoc > .items').append(item);
         observer.observe(div[0]);
-        let spot = $('<div>');
-        spot.css('width', `${100.0 / containers.length}%`);
-        spot.appendTo($('.autotoc > .progress_spots'));
+        let spot_sm = $('<div>');
+        spot_sm.css('width', `${100.0 / containers.length}%`);
+        spot_sm.appendTo($('.autotoc > .progress_spots_sm'));
     }
     $('.autotoc .progress').css('width', `calc(${100.0 / autotoc_containers.length}% - 0.6em)`);
 }
@@ -446,7 +487,8 @@ window.addEventListener('load', function() {
 
     <div class="autotoc hidden">
         <div class="items"></div>
-        <div class="progress_spots"></div>
+        <div class="progress_spots_sm">
+        </div>
         <div class="progress"></div>
     </div>
 

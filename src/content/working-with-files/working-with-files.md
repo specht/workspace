@@ -89,7 +89,7 @@ Um dein Terminal aufzuräumen, kannst du den Befehl <code>clear</code> verwenden
 
 ## Überblick verschaffen
 
-<div class='hint'>
+<div class='hint books'>
 In diesem Abschnitt lernst du die Befehle <code>pwd</code>, <code>cd</code>, <code>ls</code> und <code>file</code> kennen.
 </div>
 
@@ -143,42 +143,156 @@ In den folgenden Abschnitten wirst du weitere Befehle kennenlernen und anhand di
 
 ## Dateien anzeigen
 
-<div class='hint'>
+<div class='hint books'>
 In diesem Abschnitt lernst du die Befehle <code>cat</code>, <code>less</code> und <code>hd</code> kennen.
 </div>
 
-## Dateien erstellen und bearbeiten
+Gib `cat alice.txt` ein und drücke die Eingabetaste. Der Befehl `cat` steht für »concatenate« und zeigt den Inhalt einer Datei an. Die Datei `alice.txt` enthält den Text des Buches »Alice im Wunderland« von Lewis Carroll. Der Text stammt von [Project Gutenberg](https://www.gutenberg.org/) und da der ganze Text im Terminal an dir vorbei rauscht, siehst du auch nur die letzten Zeilen, die auf die Quelle des Textes hinweisen:
+
+<img class='full' src='cat-alice.webp'>
+
+Um den Text Seite für Seite zu lesen und die Möglichkeit zum scrollen zu bekommen, kannst du den Befehl `less` verwenden. Gib `less alice.txt` ein und drücke die Eingabetaste. Der Befehl `less` zeigt den Inhalt einer Datei an und ermöglicht es dir, durch den Text zu scrollen. Du kannst die Pfeiltasten <span class='key'>←</span><span class='key'>↑</span><span class='key'>→</span><span class='key'>↓</span> oder <span class='key'>Bild↑</span><span class='key'>Bild↓</span> sowie <span class='key'>Pos1</span> und <span class='key'>Ende</span> verwenden, um durch den Text zu navigieren. Drücke die Taste <span class='key'>Q</span> (für »quit«), um `less` zu beenden.
+
+<div class='hint wink'>
+Hast du daran gedacht, die <span class='key'>Tab</span>-Taste zu verwenden, um den Dateinamen zu vervollständigen?
+</div>
+
+Wenn wir `less` mit den anderen Dateien, die keinen Textdateien sind, verwenden, sehen wir, dass `less` nicht für alle Dateitypen geeignet ist. Gib `less jay.webm` ein und drücke die Eingabetaste. Du siehst eine Warnung, dass `jay.webm` keine Textdatei ist und deshalb vermutlich nicht korrekt angezeigt werden kann:
+
+<img class='full' src='less-jay-warning.webp'>
+
+Wenn du hier mit `y` bestätigst, wird der Inhalt der Datei trotzdem angezeigt, aber es wird nicht lesbar sein:
+
+<img class='full' src='less-jay.webp'>
+
+Drücke die Taste <span class='key'>Q</span>, um `less` zu beenden.
+
+Mit `less stallman.jpg` siehst du, dass `less` bei Bildern zumindest ein paar Metadaten anzeigen kann:
+
+<img class='full' src='less-stallman.webp'>
+
+Wenn du `less` auf die Archivdateien anwendest, bekommst du eine Vorschau der Dateien, die sich im Archiv befinden:
+
+<img class='full' src='less-zork.webp'>
+
+Um die einzelnen, tatsächlichen Bytes zu sehen, die in einer Datei gespeichert sind, kannst du den Befehl `hd` verwenden. Gib `hd alice.txt | less` ein und drücke die Eingabetaste. Der Befehl `hd` steht für »hexdump« und zeigt den Inhalt einer Datei in hexadezimaler Darstellung an. Du siehst die Bytes, die in der Datei gespeichert sind, und kannst so den Inhalt der Datei auf Byte-Ebene analysieren. Du kannst nun durch die Ausgabe von `hd` navigieren. Drücke die Taste <span class='key'>Q</span>, um das Programm zu beenden.
+
+<img class='full' src='hd-alice-less.webp'>
+
+Im Hexdump siehst du immer 16 Bytes in einer Zeile. Die erste Spalte zeigt den Offset in der Datei an (hexadezimal), die zweite Spalte zeigt die hexadezimalen Werte der 16 Bytes an und die dritte Spalte zeigt die ASCII-Zeichen an, die den hexadezimalen Werten entsprechen. Wenn ein Byte nicht druckbar ist, wird ein Punkt angezeigt.
+
+In der folgenden Tabelle siehst du, welche Werte welchem ASCII-Zeichen entsprechen:
+
+<img class='full' src='ascii.webp'>
 
 <div class='hint'>
+Ignoriere die rechte Hälfte der Tabelle &ndash; die Werte von 128 bis 255 sind nicht standardisiert und können je nach Zeichensatz unterschiedlich sein (abgebildet ist eine ASCII-Tabelle für MS-DOS von 1990). Die linke Hälfte (0 bis 127) ist jedoch standardisiert und wird von allen modernen Systemen unterstützt, wobei die Zeichen von 0 bis 31 sowie 127 nicht druckbar sind.
+</div>
+
+Wenn du dir den Hexdump genau anschaust, findest du z. B. Leerzeichen (`20`) und Zeilenumbrüche (`0d` `0a`), auch CRLF genannt. Hieran erkennst du, dass es sich um eine Windows-Textdatei handelt. Linux-Textdateien verwenden nur ein LF (`0a`) als Zeilenumbruch (trotzdem kann Linux mit beiden Arten von Textdateien umgehen).
+
+Du kannst die Dateien natürlich auch in Visual Studio Code öffnen, indem du die linke Seitenleiste mit <span class='key'>Strg</span><span class='key'>B</span> einblendest und dann auf »Open Folder« klickst (oder einfach die Abkürzung <span class='key'>Strg</span><span class='key'>K</span>+<span class='key'>O</span> verwendest). Wähle das Verzeichnis `working-with-files` aus und klicke auf »OK«.
+
+<img class='full' src='open-folder.webp'>
+
+Links siehst du jetzt die Dateien und kannst sie (bis auf die Archivdateien) öffnen, um ihren Inhalt zu sehen.
+
+<img class='full' src='jay.webp'>
+
+Schließe anschließend wieder alle Dateien und öffne das Terminal, um mit den nächsten Befehlen fortzufahren.
+
+<div class='hint'>
+Schließe die linke Seitenleiste und maximiere dein Terminal, um mehr Platz zu haben.
+</div>
+
+Nachdem wir uns nun einen Überblick verschafft und uns die Dateien angeschaut haben, werden wir im nächsten Abschnitt sehen, wie wir Dateien erstellen und bearbeiten können.
+
+## Dateien erstellen und bearbeiten
+
+<div class='hint books'>
 In diesem Abschnitt lernst du die Befehle <code>touch</code>, <code>nano</code>, <code>vim</code> und <code>emacs</code> kennen.
 </div>
 
-## Dateien analysieren, durchsuchen und filtern
+Gib den Befehl `touch hello.txt` ein und drücke die Eingabetaste. Der Befehl `touch` erstellt eine leere Datei mit dem angegebenen Namen. Gib `ls -l` ein, um zu sehen, dass die Datei `hello.txt` erstellt wurde:
+
+<img class='full' src='touch-hello.webp'>
+
+Da die Datei keinen Inhalt hat, beträgt ihre Größe erwartungsgemäß 0 Byte. Wenn du nach einer oder mehreren Minuten noch einmal `touch hello.txt` eingibst, siehst du, dass sich danach der Zeitstempel der Datei geändert hat:
+
+<img class='full' src='touch-hello-again.webp'>
+
+Der Befehl <code>touch</code> wird oft verwendet, um den Zeitstempel einer Datei zu aktualisieren, ohne den Inhalt zu verändern. Wenn die Datei nicht existiert, wird sie erstellt.
 
 <div class='hint'>
+Um einen vorherigen Befehl zu suchen, kannst du die Pfeiltasten <span class='key'>↑</span> und <span class='key'>↓</span> verwenden und anschließend die Eingabetaste drücken, um den Befehl erneut auszuführen. So vermeidest du wiederholte Eingaben.
+</div>
+
+Es gibt verschiedene Text-Editoren für Linux, mit denen du Dateien im Terminal bearbeiten kannst. Die gebräuchlichsten Editoren sind `nano`, `vim` und `emacs`. `nano` ist der einfachste Editor und wird oft für Anfänger empfohlen. `vim` und `emacs` sind mächtige Editoren, die viele Funktionen bieten, aber auch eine steile Lernkurve haben. Wir werden uns alle drei Editoren kurz ansehen.
+
+### Dateien bearbeiten mit `nano`
+
+Gib den Befehl `nano hello-nano.txt` ein, um eine neue Datei zu öffnen. Du kannst nun Text eingeben und relativ intuitiv im Text navigieren. Wenn du fertig bist, speichere deinen Text mit <span class='key'>Strg</span><span class='key'>O</span> (für »write out«) und bestätige mit der Eingabetaste. Beende `nano` mit <span class='key'>Strg</span><span class='key'>X</span> (für »exit«).
+
+<img class='full' src='hello-nano-saved.webp'>
+
+### Dateien bearbeiten mit `vim`
+
+Gib den Befehl `vim hello-vim.txt` ein, um eine neue Datei zu öffnen. `vim` hat verschiedene Modi, die du mit der Taste <span class='key'>Esc</span> wechseln kannst. Im Befehlsmodus kannst du Befehle eingeben, um Text zu bearbeiten. Im Einfügemodus kannst du Text eingeben. Um in den Einfügemodus zu wechseln, drücke <span class='key'>i</span> (für »insert«). Um den Eingabemodus zu verlassen und zum Befehlsmodus zurückzukehren, drücke <span class='key'>Esc</span>. Um `vim` zu beenden, wechsle in den Befehlsmodus und gib `:q` ein. Wenn du deine Änderungen speichern möchtest, gib `:w` ein. Wenn du `vim` beenden und deine Änderungen speichern möchtest, gib `:wq` ein.
+
+<img class='full' src='hello-vim-saved.webp'>
+
+Für die oben stehende Eingabe musst du also folgende Tasten drücken:
+
+1. <span class='key'>i</span> (für »insert«)
+2. »Hello from vim« eingeben
+3. <span class='key'>Esc</span> (um in den Befehlsmodus zu wechseln)
+4. <span class='key'>:</span>, <span class='key'>w</span> und <span class='key'>Enter</span>, um die Datei zu speichern
+5. <span class='key'>:</span>, <span class='key'>q</span> und <span class='key'>Enter</span>, um `vim` zu beenden
+
+Falls du mehr über `vim` lernen und den Umgang mit diesem Editor trainieren möchtest, kannst du den Befehl `vimtutor` im Terminal eingeben, um ein interaktives Tutorial zu starten, für das du ca. 30 Minuten einplanen solltest:
+
+<img class='full' src='vimtutor.webp'>
+
+<div class='hint'>
+<code>vimtutor</code> lässt sich, genau wie <code>vim</code> selbst, mit <span class='key'>:</span>, <span class='key'>q</span> und <span class='key'>Enter</span> beenden.
+</div>
+
+### Dateien bearbeiten mit `emacs`
+
+Gib den Befehl `emacs hello-emacs.txt` ein, um eine neue Datei zu öffnen. Im Gegensatz zu `vim` kannst du hier einfach anfangen, Text einzugeben. Wenn du fertig bist, speichere deine Änderungen mit <span class='key'>Strg</span><span class='key'>X</span> und dann <span class='key'>Strg</span><span class='key'>S</span> (für »save«). Um `emacs` zu beenden, drücke <span class='key'>Strg</span><span class='key'>X</span> und dann <span class='key'>Strg</span><span class='key'>C</span>.
+
+<img class='full' src='hello-emacs.webp'>
+
+## Dateien analysieren, durchsuchen und filtern
+
+<div class='hint books'>
 In diesem Abschnitt lernst du die Befehle <code>wc</code>, <code>grep</code>, <code>sort</code>, <code>uniq</code>, <code>head</code>, <code>tail</code>, <code>diff</code> und <code>sha1sum</code> kennen.
+</div>
+
+<div class='alert alert-warning'>
+Dieser Artikel wird gerade geschrieben und ist noch nicht vollständig. Bitte schau später noch einmal vorbei.
+</div>
+
+## Dateien archivieren und extrahieren
+
+<div class='hint books'>
+In diesem Abschnitt lernst du die Befehle <code>tar</code>, <code>tree</code>, <code>gzip</code>, <code>bzip2</code>, <code>zip</code> und <code>unzip</code> kennen.
 </div>
 
 ## Verzeichnisse analysieren und durchsuchen
 
-<div class='hint'>
+<div class='hint books'>
 In diesem Abschnitt lernst du die Befehle <code>du</code> und <code>find</code> kennen.
 </div>
 
 ## Dateien (und Verzeichnisse) kopieren, verschieben und löschen
 
-<div class='hint'>
+<div class='hint books'>
 In diesem Abschnitt lernst du die Befehle <code>rm</code>, <code>cp</code>, <code>mv</code>, <code>mkdir</code> und <code>rmdir</code> kennen.
-</div>
-
-## Dateien archivieren und extrahieren
-
-<div class='hint'>
-In diesem Abschnitt lernst du die Befehle <code>tar</code>, <code>tree</code>, <code>gzip</code>, <code>bzip2</code>, <code>zip</code> und <code>unzip</code> kennen.
 </div>
 
 ## Dateien aus dem Internet herunterladen
 
-<div class='hint'>
+<div class='hint books'>
 In diesem Abschnitt lernst du die Befehle <code>wget</code> und <code>curl</code> kennen.
 </div>

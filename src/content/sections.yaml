@@ -63,7 +63,7 @@
   label: Linux und die Shell
   icon: /images/penguin.png
   entries:
-  - .working-with-files
+  - working-with-files
   # - .working-with-processes
   # - .git
 - key: tools
