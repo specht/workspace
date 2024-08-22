@@ -376,12 +376,12 @@ class Main < Sinatra::Base
             h2_list.each.with_index do |h2, index|
                 autotoc_container = Nokogiri::XML::Node.new('div', root)
                 autotoc_container['class'] = 'autotoc-container'
-                label = h2.text
+                label = h2.text.strip
                 if options[:inject_numbers]
-                    label = "#{index + 1}. #{h2.text}"
+                    label = "#{index + 1}. #{h2.text}".strip
+                    h2.content = label
                 end
                 autotoc_container['data-label'] = label
-                h2.content = label
                 h2.add_previous_sibling(autotoc_container)
                 autotoc_container.add_child(h2)
                 p = autotoc_container.next_element
