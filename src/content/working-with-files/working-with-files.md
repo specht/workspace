@@ -374,6 +374,165 @@ tail words.txt
 In diesem Abschnitt lernst du die Befehle <code>tree</code>, <code>unzip</code>, <code>tar</code>, <code>gzip</code> und <code>bzip2</code> kennen.
 </div>
 
+Gib den Befehl `tree` ein, um eine Baumstruktur des aktuellen Verzeichnisses anzuzeigen. Der Befehl `tree` zeigt dir eine Baumstruktur des aktuellen Verzeichnisses an, beginnend mit dem aktuellen Verzeichnis. Wenn du `tree` ohne Argumente eingibst, wird die Baumstruktur des aktuellen Verzeichnisses angezeigt. Wenn du `tree` mit einem Verzeichnisnamen eingibst, wird die Baumstruktur dieses Verzeichnisses angezeigt.
+
+<img class='full' src='tree.webp'>
+
+Im Moment unterscheidet sich Ausgabe von `tree` noch nicht sehr von der Ausgabe von `ls`. Das liegt daran, dass wir uns in einem flachen Verzeichnis ohne Unterverzeichnisse befinden. Wenn wir uns in einem tiefer verschachtelten Verzeichnis befinden, wird die Ausgabe von `tree` nützlicher.
+
+Nutze `unzip`, um das Archiv `zork.zip` zu entpacken:
+
+```bash
+unzip zork.zip
+```
+
+`unzip` entpackt alle Dateien aus dem Archiv `zork.zip` in das aktuelle Verzeichnis.
+
+<img class='full' src='unzip-zork.webp'>
+
+Wenn du nun wieder `tree` eingibst und nach oben scrollst, siehst du, dass das Verzeichnis `zork-master` mit einigen Dateien hinzugefügt wurde:
+
+<img class='full' src='tree-after-unzip.webp'>
+
+Wechsle in das Verzeichnis `zork-master` und gib `ls` ein, um zu sehen, was sich darin befindet:
+
+```bash
+cd zork-master
+ls
+```
+
+<img class='full' src='ls-zork.webp'>
+
+Lass dir den Inhalt der Datei `readme.txt` anzeigen:
+
+```bash
+cat readme.txt
+```
+
+<img class='full' src='cat-zork-readme.webp'>
+
+Es handelt sich also um ein Spiel. Da es in der Programmiersprache [C](/c) geschrieben ist und es ein `Makefile` gibt, können wir es leicht kompilieren, um ein ausführbares Programm zu erhalten.
+
+```bash
+make
+```
+
+Ein paar Sekunden und wenige Warnungen später haben wir ein ausführbares Programm namens `zork`:
+
+<img class='full' src='ls-zork-bin.webp'>
+
+Du kannst das Spiel starten, indem du `./zork` eingibst:
+
+<img class='full' src='play-zork.webp'>
+
+<div class='hint'>
+Anders als unter Windows kannst du hier nicht einfach <code>zork</code> eingeben, um das Spiel zu starten, da das aktuelle Verzeichnis nicht im Suchpfad enthalten ist. Du musst also explizit angeben, dass du die Datei <code>zork</code> im aktuellen Verzeichnis (welches mit <code>.</code> bezeichnet wird) ausführen möchtest.
+</div>
+
+Falls du [Zork](https://de.wikipedia.org/wiki/Zork) beenden möchtest, bevor du das Spiel durchgespielt hast, kannst du dies durch die Eingabe von `quit` erreichen.
+
+Verlasse nun wieder das Verzeichnis `zork-master`, indem du `cd ..` eingibst. Wir werden nun das Archiv `music-releases.tar.bz2` entpacken:
+
+```bash
+tar xvf music-releases.tar.bz2
+```
+
+Nach dem Entpacken siehst du, dass ein neues Verzeichnis `music-releases` hinzugefügt wurde. Die Ausgabe von `tree` zeigt dir die Baumstruktur des Verzeichnisses:
+
+<img class='full' src='tree-music.webp'>
+
+Es handelt sich um ein Verzeichnis mit mehreren Unterverzeichnissen, in dem sich Alben und Singles / EPs verschiedener Künstlerinnen und Künstler bzw. Bands, nach Land und Jahr sortiert, befinden.
+
+Wechsle in das Verzeichnis und lass dir den Inhalt anzeigen:
+
+```bash
+cd music-releases
+ls -l
+```
+
+<img class='full' src='music-ls-l.webp'>
+
+Dir fällt sicherlich auf, dass einige Verzeichnisnamen in Anführungszeichen stehen. Das liegt daran, dass sie Leerzeichen enthalten. Wenn du einen Datei- oder Verzeichnisnamen als Argument an einen Befehl übergibst und der Name Leerzeichen enthält, musst du den Namen in Anführungszeichen setzen, damit der Befehl den Namen als ein Argument erkennt.
+
+Wechsle in das Verzeichnis `Japan/Radwimps` (verwende wie immer die <span class='key'>Tab</span>-Taste) und lass dir den Inhalt anzeigen:
+
+```bash
+cd Japan/Radwimps/
+ls -l
+```
+
+<img class='full' src='ls-radwimps.webp'>
+
+Eine kurze Information zur Geschichte der Band findest du in der Datei `Radwimps.txt`, die du dir mit `less` anzeigen lassen kannst:
+
+```bash
+less Radwimps.txt
+```
+
+<img class='full' src='less-radwimps.webp'>
+
+Schau auch in ein paar Alben rein, um ein Gefühl für die Tab-Ergänzung zu bekommen:
+
+```bash
+less Albums/2016\ -\ 君の名は。.txt
+```
+
+<img class='full' src='less-radwimps-2016.webp'>
+
+<div class='hint'>
+Lass dir nun das Album »Die Bestie in Menschengestalt« der Band »Die Ärzte« anzeigen. Wenn du das geschafft hast, hast du die Navigation im Dateisystem und die Tab-Ergänzung gemeistert!
+</div>
+
+<img class='full' src='bestie.webp'>
+
+Gehe nun wieder ins Verzeichnis `working-with-files` zurück und lass dir die Größe der Datei `alice.txt` anzeigen:
+
+```bash
+cd ~/working-with-files
+ls -l alice.txt
+```
+
+<img class='full' src='re-ls-alice.webp'>
+
+Die Datei ist 174.355 Bytes groß. Wir können sie komprimieren, um Speicherplatz zu sparen. Dazu verwenden wir `gzip`:
+
+```bash
+gzip alice.txt
+ls -l alice.txt.gz
+```
+
+`gzip` hat die Datei `alice.txt` komprimiert und in die Datei `alice.txt.gz` umgewandelt. Die Datei ist jetzt nur noch 61.204 Bytes groß und belegt damit nur noch 35% des ursprünglichen Speicherplatzes:
+
+<img class='full' src='gzip-alice.webp'>
+
+Um die Datei wieder zu entpacken, verwenden wir `gzip -d`:
+
+```bash
+gzip -d alice.txt.gz
+```
+
+Die Option `-d` steht für »decompress« und entpackt die Datei `alice.txt.gz` wieder in die Datei `alice.txt`. Wenn du dir die Größe der Datei `alice.txt` ansiehst, wirst du feststellen, dass sie wieder 174.355 Bytes groß ist:
+
+<img class='full' src='gzip-d-alice.webp'>
+
+Wir können die Datei auch mit `bzip2` komprimieren:
+
+```bash
+bzip2 alice.txt
+ls -l alice.txt.bz2
+```
+<img class='full' src='bzip2-alice.webp'>
+
+Wie du siehst, hast `bzip2` eine noch kleinere Datei erzeugt, die nur 48.925 Bytes groß ist und somit nur noch 28% des ursprünglichen Speicherplatzes belegt. Um die Datei wieder zu entpacken, verwenden wir `bzip2 -d`:
+
+```bash
+bzip2 -d alice.txt.bz2
+ls -l alice.txt
+```
+<img class='full' src='bzip2-d-alice.webp'>
+
+Die Datei ist wieder 174.355 Bytes groß.
+
 ## Verzeichnisse analysieren und durchsuchen
 
 <div class='hint books'>
