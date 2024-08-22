@@ -64,6 +64,7 @@ In-tel-li-genz
 inter-ak-ti-ve
 Jah-ren
 Jahr-zehn-ten
+ken-nen-ler-nen
 ken-nen-lernst
 kon-zi-piert
 Lam-port
@@ -114,6 +115,7 @@ Sys-tem-soft-ware
 Tas-ten-kom-bi-na-ti-onen
 tech-ni-sche
 Tech-no-logy
+Ter-mi-nal
 Text-satz-sys-tem
 trai-nierst
 Trans-ak-tions-ver-ar-bei-tung
