@@ -197,7 +197,7 @@ Verwende die Pfeiltasten, um durch die Webseite zu scrollen, und drücke <span c
 
 <img class='full' src='curl-gyst.webp'>
 
-Du kannst `curl` auch verwenden, um dir die Header anzuschauen, die ein Server zurücksendet:
+Du kannst `curl` auch verwenden, um dir die HTTP-Header anzuschauen, die ein Webserver zurücksendet:
 
 ```bash
 curl -I https://gymnasiumsteglitz.de
