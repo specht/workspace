@@ -146,7 +146,7 @@ Um Dateien aus dem Internet herunterzuladen, kannst du den Befehl `wget` verwend
 Gib einfach `wget` gefolgt von der URL der Datei ein, die du herunterladen möchtest:
 
 ```bash
-wget https://raw.githubusercontent.com/specht/workspace-files/main/snake.c
+wget https://github.com/specht/workspace-files/raw/main/snake.c
 ```
 
 Du solltest sehen, wie die Datei `snake.c` heruntergeladen wird:
