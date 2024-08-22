@@ -35,7 +35,6 @@ pre table td {
     border-radius: 0;
 }
 .rouge-gutter {
-    /* padding-right: 1em; */
     opacity: 0.5;
     text-align: right;
 }
@@ -67,7 +66,7 @@ pre table td {
 }
 
 .autotoc > .items::-webkit-scrollbar {
-    display: none;  /* Safari and Chrome */
+    display: none;
 }
 
 .autotoc > .items > div {
@@ -80,29 +79,17 @@ pre table td {
     padding: 1em 2em;
     width: 20em;
     position: relative;
-    margin-bottom: -0.5em;
+    margin-bottom: 0.5em;
     cursor: pointer;
     user-select: none;
 }
-
-/* .autotoc > .items > div::after {
-    background-color: rgba(0, 0, 0, 0.15);
-    border-radius: 0.5em;
-    content: '';
-    height: 0.2em;
-    position: absolute;
-    bottom: 0.2em;
-    left: 0.5em;
-    right: 0.5em;
-} */
-
 
 .autotoc > .items > div.active {
     font-weight: bold;
     position: relative;
 }
 
-.autotoc > .progress {
+.autotoc > .progress_sm {
     background-color: rgba(0, 0, 0, 0.3);
     position: absolute;
     bottom: 0.13em;
@@ -110,8 +97,8 @@ pre table td {
     width: 0;
     height: 0.25em;
     transition: left 0.3s ease-out;
-    border-radius: 0;
-    transform: translate(0.3em, 0);
+    border-radius: 0.05em;
+    transform: translate(0.15em, 0.05em);
     display: none;
 }
 
@@ -122,6 +109,7 @@ pre table td {
     width: 100%;
     height: 0.2em;
     flex-wrap: nowrap;
+    display: none;
 }
 
 .autotoc > .progress_spots_sm > div {
@@ -136,14 +124,41 @@ pre table td {
     display: inline-block;
 }
 
-.progress_spots_sm {
+.autotoc > .progress_spots_lg {
+    display: block;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    white-space: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    text-align: center;
+    position: relative;
+    top: -2em;
+    margin-bottom: -2.2em;
+}
+
+.autotoc > .progress_spots_lg::-webkit-scrollbar {
     display: none;
 }
 
+.autotoc > .progress_spots_lg > div {
+    background-color: rgba(0, 0, 0, 0.15);
+    height: 0.2em;
+    padding: 0 0.5em;
+    border-left: 0.07em solid #fff;
+    border-right: 0.07em solid #fff;
+    border-radius: 1em;
+    margin: 0 0.15em;
+    width: calc(20em - 0.3em);
+    display: inline-block;
+    transition: background-color 0.1s ease-out;
+}
+
+.autotoc > .progress_spots_lg > div.active {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
 @media (max-width: 768px) {
-    .progress_spots_sm {
-        display: flex;
-    }
     .autotoc {
         pointer-events: none;
     }
@@ -153,7 +168,7 @@ pre table td {
     .autotoc > .items > div {
         width: 100%;
         padding: 0 1em;
-        margin-bottom: 0;
+        margin-bottom: 0em;
     }
     .autotoc > .items > div.active {
         font-weight: unset;
@@ -165,7 +180,10 @@ pre table td {
     .autotoc > .progress_spots_sm > div {
         display: block;
     }
-    .autotoc > .progress {
+    .autotoc > .progress_spots_lg {
+        display: none;
+    }
+    .autotoc > .progress_sm {
         display: block;
     }
 }
@@ -257,10 +275,6 @@ var autotoc_items = [];
 var autotoc_items_visible = [];
 
 function install_autotoc() {
-    let options = {
-        root: null,
-        rootMargin: '-20% 0% -80% 0%',
-    };
     let autotoc = $('.autotoc');
     let observer = new IntersectionObserver((entries, observer) => {
         let found_entry = false;
@@ -276,20 +290,24 @@ function install_autotoc() {
                 autotoc.removeClass('hidden');
                 let container = $(item).parent()[0];
                 container.scrollTo({ left: item.offsetLeft - (container.offsetWidth / 2) + (item.offsetWidth / 2), behavior: 'smooth' });
-                $('.autotoc .progress').css('left', `${100.0 * i / autotoc_containers.length}%`);
+                $('.progress_spots_lg')[0].scrollTo({ left: item.offsetLeft - (container.offsetWidth / 2) + (item.offsetWidth / 2), behavior: 'smooth' });
+                $('.progress_spots_lg').find('div').removeClass('active');
+                $('.progress_spots_lg').find('div').eq(i).addClass('active');
+                $('.autotoc .progress_sm').css('left', `${100.0 * i / autotoc_containers.length}%`);
                 $(item).addClass('active');
             }
         }
         if (!found_entry) {
             $('.autotoc').addClass('hidden');
         }
-    }, options);
+    }, { root: null, rootMargin: '-20% 0% -80% 0%' });
     let containers = $('.autotoc-container').toArray();
     for (let i = 0; i < containers.length; i++) {
         let div = $(containers[i]);
         div.data('autotoc-index', i);
         autotoc_containers.push(div[0]);
         let item = $('<div>').text(div.data('label'));
+        item.data('autotoc-index', i);
         item[0].addEventListener('click', function(e) {
             $('html')[0].scrollTop = $(containers[i]).find('h2')[0].offsetTop - 80;
         });
@@ -300,8 +318,10 @@ function install_autotoc() {
         let spot_sm = $('<div>');
         spot_sm.css('width', `${100.0 / containers.length}%`);
         spot_sm.appendTo($('.autotoc > .progress_spots_sm'));
+        let spot_lg = $('<div>');
+        spot_lg.appendTo($('.autotoc > .progress_spots_lg'));
     }
-    $('.autotoc .progress').css('width', `calc(${100.0 / autotoc_containers.length}% - 0.6em)`);
+    $('.autotoc .progress_sm').css('width', `calc(${100.0 / autotoc_containers.length}% - 0.3em)`);
 }
 
 window.addEventListener('load', function() {
@@ -487,9 +507,9 @@ window.addEventListener('load', function() {
 
     <div class="autotoc hidden">
         <div class="items"></div>
-        <div class="progress_spots_sm">
-        </div>
-        <div class="progress"></div>
+        <div class="progress_spots_sm"></div>
+        <div class="progress_spots_lg"></div>
+        <div class="progress_sm"></div>
     </div>
 
     <footer>
