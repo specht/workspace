@@ -6,8 +6,3 @@ RUN cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime && echo "Europe/Berlin" 
 RUN gem install bundler
 ADD Gemfile /
 RUN bundle install
-
-# RUN adduser -D -u 1000 hackschule
-# RUN adduser hackschule docker
-# RUN touch /var/run/docker.sock && chmod 666 /var/run/docker.sock
-# USER hackschule

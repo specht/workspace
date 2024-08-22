@@ -542,6 +542,10 @@ pre pre {
     background-image: url(/images/books.png);
 }
 
+.hint.handshake::before {
+    background-image: url(/images/handshake.png);
+}
+
 /* a.tutorial_card {
     max-height: 100vw;
 } */

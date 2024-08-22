@@ -8,6 +8,7 @@ An-wen-dungs-ent-wick-lung
 ar-bei-test
 ar-bei-tet
 Assemb-ler
+auf-baust
 auf-grund
 bei-zu-be-hal-ten
 be-kann-ten
@@ -80,6 +81,7 @@ meist-ver-wen-de-ten
 Micro-soft
 mo-bi-len
 Net-scape
+Netz-werk-ver-bin-dun-gen
 neu-ro-na-les
 nor-ma-ler-wei-se
 ob-jekt-orien-tierte
@@ -132,6 +134,7 @@ ver-wen-det
 Ver-sions-ver-wal-tungs-sys-teme
 Ver-sions-ver-wal-tungs-sys-tem
 Ver-zeich-nis-sen
+wahr-schein-lich
 Web-an-wen-dun-gen
 Web-an-wen-dungs-platt-form
 Web-ent-wick-lung

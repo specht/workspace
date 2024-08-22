@@ -1,3 +1,7 @@
+<div class='meta'>
+image: working-with-files.webp
+</div>
+
 # Dateien und Verzeichnisse
 
 <p class='abstract'>
@@ -40,7 +44,7 @@ Jetzt können wir anfangen, mit Dateien und Verzeichnissen zu arbeiten.
 Gib folgenden Befehl ein, um eine Datei herunterzuladen, die ein paar Beispieldateien enthält:
 
 ```bash
-wget #{WEB_ROOT}/dl/working-with-files.tar.gz
+wget https://github.com/specht/workspace-files/raw/main/working-with-files.tar.gz
 ```
 Die Ausgabe sollte in etwa so aussehen:
 

@@ -41,6 +41,7 @@
   icon: /images/penguin.png
   entries:
   - working-with-files
+  - tcpip
   # - .working-with-processes
   # - .git
 - key: computer_graphics
