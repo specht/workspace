@@ -327,7 +327,7 @@ Dadurch wurden aufeinanderfolgende Duplikate entfernt und wir sehen nun eine alp
 
 <img class='full' src='alice-sort-uniq.webp'>
 
-Allerdings gibt es hinsichtlich der Groß- und Kleinschreibung noch Duplikate. Um auch diese zu entfernen, können wir die Option `-i` von `uniq` verwenden:
+Allerdings gibt es hinsichtlich der Groß- und Kleinschreibung noch Duplikate (»you«, »You«, »YOU«). Um auch diese zu entfernen, können wir die Option `-i` von `uniq` verwenden (für »ignore case«):
 
 ```bash
 grep -o -E "[A-Za-z]+" alice.txt | sort | uniq -i
@@ -539,14 +539,177 @@ Die Datei ist wieder 174.355 Bytes groß.
 In diesem Abschnitt lernst du die Befehle <code>du</code> und <code>find</code> kennen.
 </div>
 
-## Dateien (und Verzeichnisse) kopieren, verschieben und löschen
+Gib den Befehl `du -h` ein und drücke die Eingabetaste. Der Befehl `du` steht für »disk usage« und zeigt dir die Größe eines Verzeichnisses an. Die Option `-h` steht für »human-readable« und zeigt die Größe in einer besser lesbaren Form an:
+
+<img class='full' src='du-h.webp'>
+
+An der letzten Zeile erkennst du, dass das ganze Verzeichnis mit allen Unterverzeichnissen insgesamt 30 MB groß ist. Falls dich interessiert, wie viel Speicherplatz jedes einzelne Unterverzeichnis belegt, kannst du die Option `-d` (für »depth«) verwenden, um die Tiefe der Analyse anzugeben. Gib `du -h -d 2` ein, um die Größen der Unterverzeichnisse bis zu einer Tiefe von 2 anzuzeigen:
+
+<img class='full' src='du-h-d-2.webp'>
+
+Man sieht hier sehr gut, dass die Unterverzeichnisse `United States` und `United Kingdom` am meisten Speicherplatz belegen.
+
+Wir können den Befehl `grep`, den wir weiter oben schon kennen gelernt haben, auch auf Verzeichnisse anwenden. Gib den folgenden Befehl ein, um alle Dateien zu finden, die das Wort »welcome« enthalten:
+
+```bash
+grep -ri welcome .
+```
+
+Dabei stehen die Optionen `-r` für »recursive« (rekursiv) und `-i` für »ignore case« (Groß- und Kleinschreibung ignorieren). Der Punkt `.` steht für das aktuelle Verzeichnis. Es bedeutet also: untersuche alle Dateien im aktuellen Verzeichnis und allen Unterverzeichnissen. Wenn du den Befehl ausführst, siehst du alle Dateien, die das Wort »welcome« enthalten:
+
+<img class='full' src='grep-ri-welcome.webp'>
+
+## Dateien und Verzeichnisse kopieren, verschieben und löschen
 
 <div class='hint books'>
-In diesem Abschnitt lernst du die Befehle <code>rm</code>, <code>cp</code>, <code>mv</code>, <code>mkdir</code> und <code>rmdir</code> kennen.
+In diesem Abschnitt lernst du die Befehle <code>mkdir</code>, <code>cp</code>, <code>mv</code>, <code>rmdir</code> und <code>rm</code> kennen.
 </div>
 
-## Dateien aus dem Internet herunterladen
+Gehe nun wieder ins Verzeichnis `working-with-files` zurück:
 
-<div class='hint books'>
-In diesem Abschnitt lernst du die Befehle <code>wget</code> und <code>curl</code> kennen.
+```bash
+cd ~/working-with-files
+```
+
+Nutze den Befehl `mkdir`, um ein neues Verzeichnis namens `sandbox` zu erstellen:
+
+```bash
+mkdir sandbox
+```
+
+<img class='full' src='mkdir-sandbox.webp'>
+
+Wenn du ein Verzeichnis erstellen möchtest, das selbst ein Unterverzeichnis ist, kannst du die Option `-p` verwenden, um sicherzustellen, dass alle übergeordneten Verzeichnisse ebenfalls erstellt werden:
+
+```bash
+mkdir -p sandbox/nested/nothing/to/see/here
+```
+
+<img class='full' src='mkdir-p.webp'>
+
+Nutze den Befehl `cp`, um Dateien zu kopieren. Der Befehl benötigt zwei Argumente: die Quelle und das Ziel.
+
+**Möglichkeit 1: Datei in ein anderes Verzeichnis kopieren**
+
+Du kannst eine Datei aus dem aktuellen Verzeichnis in ein anderes Verzeichnis kopieren. Kopiere die Datei `jay.webm` in das Verzeichnis `sandbox`:
+
+```bash
+cp jay.webm sandbox
+```
+
+Die Datei `jay.webm` wurde in das Verzeichnis `sandbox` kopiert:
+
+<img class='full' src='cp-jay-sandbox.webp'>
+
+**Möglichkeit 2: eine Datei in das aktuelle Verzeichnis kopieren**
+
+Geh in das Verzeichnis `sandbox` und kopiere die Datei `alice.txt` hinein:
+
+```bash
+cd sandbox
+cp ../alice.txt .
+```
+
+<div class='hint'>
+Der Punkt <code>.</code> steht für das aktuelle Verzeichnis. Wenn du also eine Datei in das aktuelle Verzeichnis kopieren möchtest, kannst du den Punkt als Ziel angeben.
 </div>
+
+Die Datei `alice.txt` wurde ebenfalls in das Verzeichnis `sandbox` kopiert:
+
+<img class='full' src='cp-alice.webp'>
+
+Wenn du versuchst, ein Verzeichnis zu kopieren, erhältst du eine Fehlermeldung:
+
+```bash
+cp ../zork-master .
+```
+
+<img class='full' src='cp-zork.webp'>
+
+Um ein Verzeichnis zu kopieren, musst du die Option `-r` (für »recursive«) verwenden:
+
+```bash
+cp -r ../zork-master .
+```
+
+Das Verzeichnis `zork-master` wurde in das Verzeichnis `sandbox` kopiert:
+
+<img class='full' src='cp-r-zork.webp'>
+
+Nutze den Befehl `mv`, um Dateien und Verzeichnisse zu verschieben. Der Befehl `mv` benötigt ebenfalls zwei Argumente: die Quelle und das Ziel. Der Unterschied zu `cp` besteht darin, dass `mv` die Datei oder das Verzeichnis an den neuen Speicherort verschiebt, während `cp` eine Kopie erstellt. Verschiebe die Datei `jay.webm` in das Verzeichnis `nested`:
+
+```bash
+mv jay.webm nested
+```
+
+Du siehst nun, dass die Datei `jay.webm` nicht mehr im Verzeichnis `sandbox` ist, sondern im Verzeichnis `sandbox/nested`:
+
+<img class='full' src='mv-jay.webp'>
+
+Du kannst `mv` auch verwenden, um Dateien umzubenennen. Versuche, die Datei `alice.txt` in `alice-in-wonderland.txt` umzubenennen:
+
+```bash
+mv alice.txt alice-in-wonderland.txt
+```
+
+Du siehst nun, dass die Datei `alice.txt` in `alice-in-wonderland.txt` umbenannt wurde:
+
+<img class='full' src='mv-alice.webp'>
+
+Nutze den Befehl `rmdir`, um ein leeres Verzeichnis zu löschen. Der Befehl `rmdir` löscht nur leere Verzeichnisse. Bevor wir diesen Befehl testen können, legen wir uns ein leeres Verzeichnis namens `empty` an:
+
+```bash
+mkdir empty
+```
+
+<img class='full' src='mkdir-empty.webp'>
+
+Nutze `rmdir`, um das Verzeichnis `empty` zu löschen:
+
+```bash
+rmdir empty
+```
+
+Wie du sehen kannst, ist das Verzeichnis `empty` nicht mehr vorhanden:
+
+<img class='full' src='rmdir-empty.webp'>
+
+Versuche, das Verzeichnis `zork-master` mit `rmdir` zu löschen:
+
+```bash
+rmdir zork-master
+```
+
+Erwartungsgemäß erhältst du eine Fehlermeldung, da das Verzeichnis nicht leer ist:
+
+<img class='full' src='rmdir-zork.webp'>
+
+Du kannst `rmdir` also dann nutzen, wenn du ein Verzeichnis löschen möchtest, von dem du ausgehst, dass es leer ist. Falls das Verzeichnis doch nicht leer sein sollte, erhältst du eine Fehlermeldung.
+
+Nutze den Befehl `rm`, um Dateien und Verzeichnisse zu löschen. Der Befehl `rm` benötigt ein Argument: die Datei oder das Verzeichnis, das gelöscht werden soll.
+
+<div class='hint'>
+Achtung: Der Befehl <code>rm</code> löscht Dateien und Verzeichnisse dauerhaft, ohne sie in den Papierkorb zu verschieben. Das Konzept des Papierkorbs gibt es im Terminal nicht. Sei also vorsichtig, wenn du <code>rm</code> verwendest, und überlege dir gut, ob du wirklich Dateien oder Verzeichnisse löschen möchtest.
+</div>
+
+Lösche die Datei `alice-in-wonderland.txt`:
+
+```bash
+rm alice-in-wonderland.txt
+```
+
+Die Datei `alice-in-wonderland.txt` wurde gelöscht:
+
+<img class='full' src='rm-alice.webp'>
+
+Wenn du versuchst, ein Verzeichnis zu löschen, musst du wie bei `cp` die Option `-r` (für »recursive«) verwenden:
+
+```bash
+rm -r zork-master
+```
+
+<img class='full' src='rm-r-zork.webp'>
+
+## Zusammenfassung
+
+In diesem Kapitel hast du gelernt, wie du im Terminal mit Dateien und Verzeichnissen arbeiten kannst. Du hast gesehen, wie du Dateien und Verzeichnisse erstellen, bearbeiten, analysieren, durchsuchen, filtern, komprimieren, extrahieren, kopieren, verschieben und löschen kannst. Du hast auch gelernt, wie du Dateien und Verzeichnisse analysieren und durchsuchen kannst. Du hast die wichtigsten Befehle kennengelernt, die du benötigst, um effizient mit Dateien und Verzeichnissen im Terminal zu arbeiten.

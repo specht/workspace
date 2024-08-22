@@ -246,6 +246,10 @@ class Main < Sinatra::Base
                     try_files $uri @ruby;
                 }
 
+                location ~ \.html$ {
+                    return 404;
+                }
+
                 location /cache {
                     rewrite ^/cache(.*)$ $1 break;
                     root /webcache;

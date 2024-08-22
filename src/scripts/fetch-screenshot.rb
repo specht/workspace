@@ -22,7 +22,7 @@ latest_content_path = File.dirname(Dir["src/content/*/*.md"].sort_by { |f| File.
 target_path = "#{File.join(latest_content_path, slug)}.webp"
 
 if File.exist?(target_path)
-    puts "File already exists! Replace it? (y/n)"
+    print "File already exists! Replace it? (y/n) "
     answer = gets.strip
     if answer != 'y'
         exit
