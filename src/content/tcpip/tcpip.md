@@ -5,7 +5,7 @@ image: tcpip.webp
 # TCP/IP-Verbindungen
 
 <p class='abstract'>
-In diesem Kapitel lernst du, wie du mit Linux Netzwerkverbindungen aufbaust und mit anderen Rechnern kommunizierst. Du wirst lernen, wie du die IP-Adresse deines Computers herausfindest, wie du andere Rechner im Netzwerk anpingst und wie du mit <code>ssh</code> und <code>netcat</code> kommunizierst.
+In diesem Kapitel lernst du, wie du mit Linux Netzwerkverbindungen aufbaust und mit anderen Rechnern kommunizierst. Du wirst lernen, wie du die IP-Adresse deines Computers herausfindest, wie du andere Rechner im Netzwerk anpingst, Dateien mit <code>wget</code> herunterlädst und mit <code>curl</code> APIs abfragst. Außerdem wirst du lernen, wie du mit <code>netcat</code> chatten kannst.
 </p>
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
