@@ -233,10 +233,10 @@ Du kannst die Abfrage beliebig oft wiederholen und solltest jedesmal einen zufä
 
 Es gibt eine Vielzahl von APIs, die du mit `curl` abfragen kannst. Manche davon sind frei zugänglich, aber einige benötigen einen API-Schlüssel. Die Dokumentation der API sollte dir sagen, wie du den Schlüssel erhältst und wie du ihn in deinen Abfragen verwendest. Jemand hat sich die Mühe gemacht und eine Liste von [Public APIs](https://github.com/public-apis/public-apis) zusammengestellt, die du durchsuchen kannst.
 
-<!-- ## Verbindungen zu anderen Servern aufbauen
+## ASCII-Kino
 
 <div class='hint books'>
-In diesem Abschnitt lernst du die Befehle <code>telnet</code>, <code>ssh-keygen</code> und <code>ssh</code> kennen.
+In diesem Abschnitt lernst du den Befehl <code>telnet</code> kennen, den du aber gar keinen Fall verwenden solltest, um Verbindungen zu anderen Servern aufzubauen. Wir verwenden ihn hier nur, um die ASCII-Version von Star Wars zu schauen.
 </div>
 
 
@@ -255,6 +255,8 @@ Du kannst jetzt die ASCII-Version von Star Wars sehen:
 Da `telnet` etwas umständlich zu beenden ist, drücke einfach auf die Mülltonne in der rechten oberen Ecke des Terminals, um das Terminal zu schließen und anschließend auf das Pluszeichen, um ein neues Terminal zu öffnen.
 
 <div style='clear: both;'></div>
+
+<!--
 
 Um eine sichere Verbindung zu einem anderen Server aufzubauen, verwenden wir `ssh`. Dazu benötigen wir einen SSH-Schlüssel, den wir mit dem Befehl `ssh-keygen` erstellen können. Gib einfach den folgenden Befehl ein und drücke <span class='key'>Enter</span>, um den Schlüssel zu erstellen:
 
