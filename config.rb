@@ -221,20 +221,6 @@ docker_compose[:services][:pgadmin] = {
     },
 }
 
-
-
-
-# docker_compose[:services][:neo4j_user] = {
-#     :image => 'neo4j:4.4.26-community',
-#     :environment => {
-#         'NEO4J_AUTH' => "neo4j/#{NEO4J_ROOT_PASSWORD}",
-#     },
-#     :volumes => ["#{NEO4J_USER_DATA_PATH}:/data"],
-#     :restart => 'always',
-#     :ports => ['0.0.0.0:7688:7687'],
-# }
-
-
 docker_compose[:services][:tensorflowjs] = {
     :image => 'evenchange4/docker-tfjs-converter',
     :volumes => ["#{INTERNAL_PATH}:/internal"],
@@ -243,15 +229,8 @@ docker_compose[:services][:tensorflowjs] = {
 }
 
 docker_compose[:services].values.each do |x|
-    # x[:networks] = [:workspace]
     x[:network_mode] = 'default'
 end
-
-# docker_compose[:networks] = {
-#     :workspace => {
-#         :name => 'workspace',
-#     }
-# }
 
 if DEVELOPMENT
     docker_compose[:services][:nginx][:ports] = ["0.0.0.0:#{DEV_NGINX_PORT}:80"]
