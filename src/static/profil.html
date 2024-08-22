@@ -211,5 +211,18 @@
                 return false;
             });
         });
+        $('#bu_reset_postgres').on('click', function() {
+            showTemplateModal('Postgres-Datenbank zurücksetzen', `<div>Bist du sicher, dass du deine Postgres-Datenbank zurücksetzen möchtest? Alle Tabellen und Daten werden gelöscht.</div><div id='div_reset_postgres_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog fa-spin'></i>&nbsp;&nbsp;Moment, deine Datenbank wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_postgres_success' style='display: none; margin-top: 1em;'><i class='text-success fa fa-check'></i>&nbsp;&nbsp;Deine Datenbank wurde auf den Ursprungszustand zurückgesetzt.</div>`,
+            "<i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen", 'btn-danger', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+                $('#div_reset_postgres_please_wait').slideDown();
+                api_call('/api/reset_postgres', {}, function(data) {
+                    $('#div_reset_postgres_please_wait').hide();
+                    $('#div_reset_postgres_success').show();
+                    $('#__template_modal .modal-footer .btn').eq(0).hide();
+                    $('#__template_modal .modal-footer .btn').eq(1).html(`<i class='fa fa-times'></i>&nbsp;&nbsp;Schließen`);
+                });
+                return false;
+            });
+        });
     });
 </script>
