@@ -589,7 +589,7 @@ mkdir -p sandbox/nested/nothing/to/see/here
 
 Nutze den Befehl `cp`, um Dateien zu kopieren. Der Befehl benötigt zwei Argumente: die Quelle und das Ziel.
 
-**Möglichkeit 1: Datei in ein anderes Verzeichnis kopieren**
+**Möglichkeit 1: eine Datei in ein anderes Verzeichnis kopieren**
 
 Du kannst eine Datei aus dem aktuellen Verzeichnis in ein anderes Verzeichnis kopieren. Kopiere die Datei `jay.webm` in das Verzeichnis `sandbox`:
 
