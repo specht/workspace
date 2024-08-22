@@ -177,6 +177,10 @@ Wenn du `less` auf die Archivdateien anwendest, bekommst du eine Vorschau der Da
 
 Um die einzelnen, tatsächlichen Bytes zu sehen, die in einer Datei gespeichert sind, kannst du den Befehl `hd` verwenden. Gib `hd alice.txt | less` ein und drücke die Eingabetaste. Der Befehl `hd` steht für »hexdump« und zeigt den Inhalt einer Datei in hexadezimaler Darstellung an. Du siehst die Bytes, die in der Datei gespeichert sind, und kannst so den Inhalt der Datei auf Byte-Ebene analysieren. Du kannst nun durch die Ausgabe von `hd` navigieren. Drücke die Taste <span class='key'>Q</span>, um das Programm zu beenden.
 
+<div class='hint'>
+Mit dem Zeichen <code>|</code> kann man mehrere Befehle in einer »Pipeline« miteinander verknüpfen. Die Ausgabe des ersten Befehls wird als Eingabe des zweiten Befehls verwendet. So können wir z. B. die Ausgabe von <code>hd</code> an die Eingabe von <code>less</code> weiterleiten, um die Ausgabe von <code>hd</code> seitenweise zu betrachten. Auf diese Weise lassen sich viele Befehle miteinander kombinieren.
+</div>
+
 <img class='full' src='hd-alice-less.webp'>
 
 Im Hexdump siehst du immer 16 Bytes in einer Zeile. Die erste Spalte zeigt den Offset in der Datei an (hexadezimal), die zweite Spalte zeigt die hexadezimalen Werte der 16 Bytes an und die dritte Spalte zeigt die ASCII-Zeichen an, die den hexadezimalen Werten entsprechen. Wenn ein Byte nicht druckbar ist, wird ein Punkt angezeigt.
@@ -266,13 +270,108 @@ Gib den Befehl `emacs hello-emacs.txt` ein, um eine neue Datei zu öffnen. Im Ge
 ## Dateien analysieren, durchsuchen und filtern
 
 <div class='hint books'>
-In diesem Abschnitt lernst du die Befehle <code>wc</code>, <code>grep</code>, <code>sort</code>, <code>uniq</code>, <code>head</code>, <code>tail</code>, <code>diff</code> und <code>sha1sum</code> kennen.
+In diesem Abschnitt lernst du die Befehle <code>wc</code>, <code>grep</code>, <code>sort</code>, <code>uniq</code>, <code>head</code> und <code>tail</code> kennen.
 </div>
+
+Gib den Befehl `wc alice.txt` ein und drücke die Eingabetaste. Der Befehl `wc` steht für »word count« und zeigt dir die Anzahl der Zeilen, Wörter und Bytes in einer Datei an:
+
+<img class='full' src='wc-alice.webp'>
+
+Die Datei `alice.txt` enthält also 3.756 Zeilen, 29.564 Wörter und 174.355 Bytes. Oft wird `wc` dazu verwendet, um die Anzahl der Zeilen in einer Datei zu zählen. Wenn du nur die Anzahl der Zeilen wissen möchtest, kannst du den Befehl `wc -l alice.txt` (`-l` für »lines«) verwenden:
+
+<img class='full' src='wc-l-alice.webp'>
+
+Verwende `grep`, um nach einem bestimmten Muster in einer Datei zu suchen. Gib `grep everybody alice.txt` ein und drücke die Eingabetaste. Der Befehl `grep` sucht nach dem Muster »everybody« in der Datei `alice.txt` und zeigt die Zeilen an, in denen das Muster gefunden wurde:
+
+<img class='full' src='grep-everybody.webp'>
+
+Mit der Option `-i` können wir `grep` anweisen, die Groß- und Kleinschreibung zu ignorieren. Gib `grep -i everybody alice.txt` ein und drücke die Eingabetaste:
+
+<img class='full' src='grep-i-everybody.webp'>
+
+Wir haben nun ein paar weitere Stellen gefunden. Wenn du die Zeilennummer sehen möchtest, in denen das Muster gefunden wurde, kannst du die Option `-n` verwenden:
+
+<img class='full' src='grep-in-everybody.webp'>
+
+`grep` ist ein sehr mächtiges Programm mit einer Vielzahl von Optionen. Du kannst z. B. reguläre Ausdrücke verwenden, um nach komplexeren Mustern zu suchen. Gib `man grep` ein, um die manpage von `grep` zu lesen und mehr über die verschiedenen Optionen zu erfahren.
+
+Wir wollen nun alle Wörter aus der Datei `alice.txt` extrahieren. Gib dazu den folgenden Befehl ein:
+
+```bash
+grep -o -E "[A-Za-z]+" alice.txt
+```
+Der reguläre Ausdruck `[A-Za-z]+` sucht nach Wörtern, die aus Groß- und Kleinbuchstaben bestehen. Du siehst, wie der gesamte Text Wort für Wort ausgegeben wird:
+
+<img class='full' src='grep-words-alice.webp'>
+
+<div class='hint'>
+Um eine lange Ausgabe seitenweise zu betrachten, kannst du an jeden Befehl einfach <code>| less</code> anhängen.
+</div>
+
+Nutze `sort`, um die Ausgabe zu sortieren:
+
+```bash
+grep -o -E "[A-Za-z]+" alice.txt | sort
+```
+Jetzt sind die Wörter alphabetisch sortiert:
+
+<img class='full' src='alice-sort.webp'>
+
+Um Duplikate zu entfernen, können wir `uniq` verwenden:
+
+```bash
+grep -o -E "[A-Za-z]+" alice.txt | sort | uniq
+```
+
+Dadurch wurden aufeinanderfolgende Duplikate entfernt und wir sehen nun eine alphabetisch sortierte Liste aller Wörter, die im Text vorkommen:
+
+<img class='full' src='alice-sort-uniq.webp'>
+
+Allerdings gibt es hinsichtlich der Groß- und Kleinschreibung noch Duplikate. Um auch diese zu entfernen, können wir die Option `-i` von `uniq` verwenden:
+
+```bash
+grep -o -E "[A-Za-z]+" alice.txt | sort | uniq -i
+```
+Nun ist unsere Liste fertig:
+
+<img class='full' src='alice-sort-uniq-i.webp'>
+
+Wir können nun die Anzahl der Wörter in der Liste zählen:
+
+```bash
+grep -o -E "[A-Za-z]+" alice.txt | sort | uniq -i | wc -l
+```
+Die Ausgabe zeigt, dass es 3.002 verschiedene Wörter in der Datei `alice.txt` gibt.
+
+<img class='full' src='alice-sort-uniq-wc.webp'>
+
+Wir können unser Ergebnis auch in einer Datei speichern, indem wir die Ausgabe der gesamten Pipeline in eine Datei umleiten:
+
+```bash
+grep -o -E "[A-Za-z]+" alice.txt | sort | uniq -i > words.txt
+```
+<img class='full' src='alice-redirect-to-file.webp'>
+
+Es gibt noch zwei weitere Befehle, die nützlich sind, wenn man nur den Anfang oder das Ende einer Datei oder einer Ausgabe sehen möchte. Nutze `head`, um die ersten 10 Zeilen einer Datei oder einer Ausgabe zu sehen:
+
+```bash
+head words.txt
+```
+<img class='full' src='head-words.webp'>
+
+Analog dazu kannst du `tail` verwenden, um die letzten 10 Zeilen einer Datei oder einer Ausgabe zu sehen:
+
+```bash
+tail words.txt
+```
+<img class='full' src='tail-words.webp'>
+
+`tail` wird in Verbindung mit der Option `-f` (für »follow«) oft verwendet, um eine Datei in Echtzeit zu beobachten. Wenn du z. B. eine Logdatei überwachen möchtest, kannst du `tail -f logfile.log` verwenden, um die letzten Zeilen der Datei anzuzeigen und neue Zeilen anzuzeigen, sobald sie hinzugefügt werden.
 
 ## Dateien archivieren und extrahieren
 
 <div class='hint books'>
-In diesem Abschnitt lernst du die Befehle <code>tar</code>, <code>tree</code>, <code>gzip</code>, <code>bzip2</code>, <code>zip</code> und <code>unzip</code> kennen.
+In diesem Abschnitt lernst du die Befehle <code>tree</code>, <code>unzip</code>, <code>tar</code>, <code>gzip</code> und <code>bzip2</code> kennen.
 </div>
 
 ## Verzeichnisse analysieren und durchsuchen
