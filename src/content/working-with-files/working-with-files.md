@@ -269,10 +269,6 @@ Gib den Befehl `emacs hello-emacs.txt` ein, um eine neue Datei zu öffnen. Im Ge
 In diesem Abschnitt lernst du die Befehle <code>wc</code>, <code>grep</code>, <code>sort</code>, <code>uniq</code>, <code>head</code>, <code>tail</code>, <code>diff</code> und <code>sha1sum</code> kennen.
 </div>
 
-<div class='alert alert-warning'>
-Dieser Artikel wird gerade geschrieben und ist noch nicht vollständig. Bitte schau später noch einmal vorbei.
-</div>
-
 ## Dateien archivieren und extrahieren
 
 <div class='hint books'>

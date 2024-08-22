@@ -56,7 +56,7 @@ Es gibt an mehreren Rändern Bereiche, die du ein- und ausblenden kannst. Nutze 
 </tr>
 </table>
 
-## Pfade, Dateien, Verzeichnisse
+## Dateien, Verzeichnisse, Pfade
 
 <img src='directory-tree.webp' class='r' style='width: 15em;'>
 
@@ -64,7 +64,7 @@ Wenn du am Computer arbeitest, speicherst du deine Arbeit in Dateien. Jede Datei
 
 Der vollständige Pfad zu einer Datei setzt sich dann aus allen Verzeichnissen und dem Dateinamen zusammen, z. B:
 
-`/home/abc/shower.js/pictures/monkey.jpg`
+`/workspace/pictures/monkey.jpg`
 
 Unter Linux ist das oberste Verzeichnis immer `/`, unter Windows beginnt es immer mit einem Laufwerksbuchstaben wie z. B. `C:\`. Ein weiterer Unterschied zu Linux ist, dass unter Windows `\` statt `/` verwendet wird, um Verzeichnisse im Pfad voneinander abzutrennen.
 
@@ -95,7 +95,7 @@ Zum Schluss noch ein paar Tipps zur Tastatur: es gibt einige praktische Funktion
 
 <div class='hint'>
 <p>
-Dazu noch ein wichtiger Hinweis: In den unteren Ecken deiner Tastatur findest du ein paar sogenannte _Hilfstasten_, z. B.
+Dazu noch ein wichtiger Hinweis: In den unteren Ecken deiner Tastatur findest du ein paar sogenannte <em>Hilfstasten</em>, z. B.
 <span class='key'>Strg</span>,
 <span class='key'>Shift</span>,
 <span class='key'>Alt</span>,
