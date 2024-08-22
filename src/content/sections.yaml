@@ -37,7 +37,7 @@
   - dart
   - rust
 - key: linux
-  label: Linux und die Shell
+  label: Linux und das Terminal
   icon: /images/penguin.png
   entries:
   - working-with-files
