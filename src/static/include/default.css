@@ -723,3 +723,15 @@ hr {
     box-shadow: 0 0.2em 0.4em rgba(0, 0, 0, 0.3);
     height: 4px!important;
 }
+
+@media print {
+    body {
+        font-size: 12pt;
+    }
+    .container {
+        max-width: 100%;
+    }
+    .menu, .header, footer, .autotoc {
+        display: none;
+    }
+}
