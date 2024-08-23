@@ -20,13 +20,14 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 
 Du kannst das Terminal auch maximieren, indem du auf den Pfeil in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du mit <span class='key'>Strg</span><span class='key'>B</span> ein- und ausblenden.
 
-Im Terminal siehst du nun einen Prompt, der dir anzeigt, in welchem Verzeichnis du dich befindest. Der Prompt sieht in etwa so aus:
+Alle Befehle im Terminal einzugeben anstatt durch Mausklick, wird auch "Arbeiten auf der Kommandozeile" genannt.
+Im Terminal siehst du nun die Eingabeaufforderung, auch Prompt genannt, der dir u.a. anzeigt, in welchem Verzeichnis du dich befindest. Der Prompt sieht in etwa so aus:
 
 ```bash
 abc@fefd40576dad:~$
 ```
 
-Lass dich von dem Prompt nicht verwirren. Der Teil `abc` vor dem `@` ist dein Benutzername, der Teil `fefd40576dad` nach dem `@` ist der Name deines Computers, und der Teil nach dem `:` ist das aktuelle Verzeichnis. In diesem Fall ist das aktuelle Verzeichnis `~`, was das Home-Verzeichnis deines Benutzers ist. Das `$` am Ende des Prompts zeigt an, dass du als normaler Benutzer angemeldet bist. Wenn du als Administrator angemeldet wärst, würde das `$` durch ein `#` ersetzt.
+Lass dich von dem Prompt nicht verwirren. Der Teil `abc` vor dem `@` ist dein Benutzername, der Teil `fefd40576dad` nach dem `@` ist der Name deines Computers, und der Teil nach dem `:` ist das aktuelle Verzeichnis. In diesem Fall ist das aktuelle Verzeichnis `~`, welches die Abkürzung für dein Home-Verzeichnis ist. Das `$` am Ende des Prompts zeigt an, dass du als normaler Benutzer angemeldet bist. Wenn du als Administrator angemeldet wärst, würde das `$` durch ein `#` ersetzt.
 
 Gib folgenden Befehl ein und drücke die Eingabetaste:
 
@@ -41,7 +42,7 @@ Jetzt können wir anfangen, mit Dateien und Verzeichnissen zu arbeiten.
 
 ## Beispieldateien herunterladen
 
-Gib folgenden Befehl ein, um eine Datei herunterzuladen, die ein paar Beispieldateien enthält:
+Gib folgenden Befehl ein, um eine Datei aus dem Internet herunterzuladen, die ein paar Beispieldateien enthält:
 
 ```bash
 wget https://github.com/specht/workspace-files/raw/main/working-with-files.tar.gz
@@ -52,21 +53,24 @@ Die Ausgabe sollte in etwa so aussehen:
 
 Das Programm `wget` können wir dazu verwenden, um Dateien aus dem Internet herunterzuladen.
 Die Datei wird standardmäßig im aktuellen Verzeichnis gespeichert. Schau nach, ob die Datei
-angekommen ist, indem du den Befehl `ls` eingibst:
+angekommen ist, indem du den Befehl `ls` (kurz für »list«) eingibst:
 
 <img class='full' src='ls.webp'>
 
-Für mehr Details verwende den Befehlt `ls -l` (für »long«):
+Viele Befehle auf der Kommandozeile haben Optionen, die stets hinter dem Befehlsnamen mit einem `-` beginnen.
+Probiere hier den Befehl `ls -l` (für »long«), um dir mehr Details anzeigen zu lassen:
 
 <img class='full' src='ls-l.webp'>
 
-Du siehst nun, wie groß die Datei ist. Nutze den Befehl `ls -lh` (für »long human-readable«),
+Du siehst nun u.a., wie groß die Datei ist. Nutze den Befehl `ls -lh` (für »long human-readable«),
 um die Größe in einer besser lesbaren Form zu sehen:
 
 <img class='full' src='ls-lh.webp'>
 
-Die Datei ist also fast 10 MB groß. Die Endung `.tar.gz` zeigt an, dass es sich um ein
-komprimiertes Archiv handelt. Wir können es mit dem Befehl `tar` entpacken:
+Die Datei ist also fast 10 MB groß.
+Du lernst alle Optionen eines Befehls kennen, wenn du den Befehl `man` (für »manual«) benutzt, hier also `man ls`.
+Die Endung `.tar.gz` in unserem Beispiel zeigt an, dass es sich um ein komprimiertes Archiv handelt.
+Wir können es mit dem Befehl `tar` entpacken:
 
 ```bash
 tar xvf working-with-files.tar.gz
@@ -74,8 +78,9 @@ tar xvf working-with-files.tar.gz
 
 Die Optionen `xvf` stehen für `extract`, `verbose` und `file`. Das bedeutet, dass wir das
 Archiv entpacken (`x` für »extract«), den Fortschritt anzeigen (`v` für »verbose«) und als
-nächste Option den Dateinamen angeben (`f` für »file«). Wenn du den Befehl
-ausführst, solltest du eine Meldung sehen, die dir anzeigt, welche Dateien entpackt wurden:
+nächste Option den Dateinamen angeben (`f` für »file«).
+Der Befehl `tar` ist eine Ausnahme: die Optionen `xvf` beginnen hier ohne das übliche `-`.
+Wenn du den Befehl ausführst, solltest du eine Meldung sehen, die dir anzeigt, welche Dateien entpackt wurden:
 
 <img class='full' src='tar-xvf.webp'>
 
