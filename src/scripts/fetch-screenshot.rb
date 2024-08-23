@@ -29,5 +29,6 @@ if File.exist?(target_path)
     end
 end
 
+system("mogrify -fuzz 50% -trim +repage \"#{latest_path}\"")
 system("cwebp -lossless \"#{latest_path}\" -o \"#{target_path}\"")
 system("rm \"#{latest_path}\"")

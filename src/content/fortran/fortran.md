@@ -15,15 +15,6 @@ FORTRAN, kurz für "Formula Translation," wurde 1957 von John Backus bei IBM ent
 
 FORTRAN wurde vor allem in Bereichen eingesetzt, die intensive numerische Berechnungen erfordern, wie zum Beispiel in der Wettervorhersage, der numerischen Strömungsmechanik und der linearen Algebra. Ein bekanntes Softwareprojekt, das FORTRAN verwenden, ist das Weather Research and Forecasting (WRF) Model, das zur Wettervorhersage und Klimaforschung eingesetzt wird. FORTRAN wird auch in der Hochenergiephysik, der Astronomie und der Chemie eingesetzt.
 
-<!-- ## Eigenschaften
-
-- **Imperative Programmiersprache**: Fortran ist eine imperative Programmiersprache, die auf der sequentiellen Ausführung von Anweisungen basiert.
-- **Numerische Berechnungen**: Fortran ist speziell für numerische Berechnungen optimiert und bietet eine Vielzahl von Funktionen und Bibliotheken für mathematische und wissenschaftliche Berechnungen.
-- **Hohe Performance**: Fortran ist eine der schnellsten Programmiersprachen und wird häufig für rechenintensive Anwendungen eingesetzt.
-- **Statische Typisierung**: Fortran ist eine statisch typisierte Sprache, was bedeutet, dass Variablen bei der Deklaration einen festen Datentyp haben.
-- **Array-Operationen**: Fortran bietet leistungsstarke Array-Operationen, die es ermöglichen, effizient mit großen Datenmengen zu arbeiten.
-- **Parallelisierung**: Fortran unterstützt die Parallelisierung von Code, was es ermöglicht, rechenintensive Anwendungen auf Mehrkernprozessoren und Clustern auszuführen. -->
-
 ## Hello, world!
 
 Fortran-Programme werden in Textdateien mit der Endung `.f90` geschrieben. Diese Dateien werden anschließend von einem Compiler in ausführbare Dateien übersetzt, die auf deinem Computer direkt ausgeführt werden können. Es gibt eine Vielzahl von Compilern, die du verwenden kannst, aber wir werden hier den freien »GNU Fortran Compiler« `gfortran` verwenden, der auf den meisten Systemen verfügbar ist.
