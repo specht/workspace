@@ -899,7 +899,8 @@ hr {
         background-color: #151514;
     }
     .menu {
-        border-top: 1px solid #333;
+        border: none;
+        background-color: #0a0a0a;
     }
     .squircle {
         background-image: url(/images/squircle-dark.png);

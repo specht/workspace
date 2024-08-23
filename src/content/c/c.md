@@ -15,16 +15,6 @@ Die Programmiersprache C wurde in den frühen 1970er Jahren von Dennis Ritchie b
 
 Heutzutage ist C immer noch äußerst relevant und weit verbreitet. Sie bildet die Grundlage für viele moderne Programmiersprachen wie C++, C#, und Objective-C und wird weiterhin in der Entwicklung von Betriebssystemen, eingebetteten Systemen, Datenbanken und anderen Performance-kritischen Anwendungen eingesetzt. Die Sprache ist bekannt für ihre Effizienz, Portabilität und Nähe zur Hardware, was sie zu einer bevorzugten Wahl für Anwendungen macht, die eine hohe Leistung erfordern.
 
-<!-- ## Eigenschaften
-
-- **Imperative Programmiersprache**: C ist eine imperative Programmiersprache, die auf der sequentiellen Ausführung von Anweisungen basiert.
-- **Kompilierte Sprache**: C ist eine kompilierte Sprache, was bedeutet, dass der Code in Maschinencode übersetzt wird, bevor er ausgeführt wird.
-- **Hohe Leistung**: C ist eine der schnellsten Programmiersprachen und wird häufig für rechenintensive Anwendungen eingesetzt.
-- **Hardware-Nähe**: C bietet eine enge Kontrolle über die Hardware und ermöglicht es, direkt mit Speicheradressen und Registern zu arbeiten.
-- **Portabilität**: C-Code ist in der Regel portabel und kann auf verschiedenen Plattformen und Betriebssystemen ausgeführt werden.
-- **Modularität**: C unterstützt die modulare Programmierung, was es ermöglicht, den Code in separate Module oder Dateien aufzuteilen.
-- **Standardbibliothek**: C verfügt über eine umfangreiche Standardbibliothek, die eine Vielzahl von Funktionen und Datentypen bereitstellt. -->
-
 ## Hello, world!
 
 C-Programme werden in Textdateien mit der Endung `.c` geschrieben. Diese Dateien werden anschließend von einem Compiler in ausführbare Dateien übersetzt, die auf deinem Computer direkt ausgeführt werden können. Es gibt eine Vielzahl von Compilern, die du verwenden kannst, aber wir werden hier den freien »GNU C Compiler« `gcc` verwenden, der auf den meisten Systemen verfügbar ist.
