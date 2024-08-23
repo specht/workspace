@@ -12,6 +12,7 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 
 <img class='full' src='fresh-start.webp'>
 
+Schließe die linken Seitenleiste, indem du <span class='key'>Strg</span><span class='key'>B</span> drückst, um mehr Platz zu haben.
 Öffne als nächstes das Terminal, indem du den Shortcut <span class='key'>Strg</span><span class='key'>J</span> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='got-terminal.webp'>
@@ -24,10 +25,10 @@ Alle Befehle im Terminal einzugeben anstatt durch Mausklick, wird auch »Arbeite
 Im Terminal siehst du nun die Eingabeaufforderung, auch Prompt genannt, der dir u.a. anzeigt, in welchem Verzeichnis du dich befindest. Der Prompt sieht in etwa so aus:
 
 ```bash
-abc@fefd40576dad:~$
+abc@7a93efd91905:~$
 ```
 
-Lass dich von dem Prompt nicht verwirren. Der Teil `abc` vor dem `@` ist dein Benutzername, der Teil `fefd40576dad` nach dem `@` ist der Name deines Computers, und der Teil nach dem `:` ist das aktuelle Verzeichnis. In diesem Fall ist das aktuelle Verzeichnis `~`, welches die Abkürzung für dein Home-Verzeichnis ist. Das `$` am Ende des Prompts zeigt an, dass du als normaler Benutzer angemeldet bist. Wenn du als Administrator angemeldet wärst, würde das `$` durch ein `#` ersetzt.
+Lass dich von dem Prompt nicht verwirren. Der Teil `abc` vor dem `@` ist dein Benutzername, der Teil `7a93efd91905` nach dem `@` ist der Name deines Computers, und der Teil nach dem `:` ist das aktuelle Verzeichnis. In diesem Fall ist das aktuelle Verzeichnis `~`, welches die Abkürzung für dein Home-Verzeichnis ist. Das `$` am Ende des Prompts zeigt an, dass du als normaler Benutzer angemeldet bist. Wenn du als Administrator angemeldet wärst, würde das `$` durch ein `#` ersetzt.
 
 Gib folgenden Befehl ein und drücke die Eingabetaste:
 
@@ -50,6 +51,12 @@ wget https://github.com/specht/workspace-files/raw/main/working-with-files.tar.g
 Die Ausgabe sollte in etwa so aussehen:
 
 <img class='full' src='wget.webp'>
+
+<div class='hint'>
+Lass dich nicht davon stören, dass die Ausgabe so umfangreich ist. Der Grund dafür ist, dass der Webserver die
+Anfrage auf eine andere URL umleitet (»302 Found«) und `wget` dieser Umleitung folgt. Die eigentliche Datei wird
+dann heruntergeladen (»200 OK«) und die Ausgabe von `wget` zeigt dir den Fortschritt an.
+</div>
 
 Das Programm `wget` können wir dazu verwenden, um Dateien aus dem Internet herunterzuladen.
 Die Datei wird standardmäßig im aktuellen Verzeichnis gespeichert. Schau nach, ob die Datei
@@ -556,9 +563,10 @@ An der letzten Zeile erkennst du, dass das ganze Verzeichnis mit allen Unterverz
 
 Man sieht hier sehr gut, dass die Unterverzeichnisse `United States` und `United Kingdom` am meisten Speicherplatz belegen.
 
-Wir können den Befehl `grep`, den wir weiter oben schon kennen gelernt haben, auch auf Verzeichnisse anwenden. Gib den folgenden Befehl ein, um alle Dateien zu finden, die das Wort »welcome« enthalten:
+Wir können den Befehl `grep`, den wir weiter oben schon kennen gelernt haben, auch auf Verzeichnisse anwenden. Wechsle nun wieder ins Verzeichnis `music-releases`, und verwende den Befehl `grep`, um alle Dateien zu finden, die das Wort »welcome« enthalten:
 
 ```bash
+cd music-releases
 grep -ri welcome .
 ```
 
