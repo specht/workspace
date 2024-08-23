@@ -12,6 +12,7 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 
 <img class='full' src='fresh-start.webp'>
 
+Schließe die linken Seitenleiste, indem du <span class='key'>Strg</span><span class='key'>B</span> drückst, um mehr Platz zu haben.
 Öffne als nächstes das Terminal, indem du den Shortcut <span class='key'>Strg</span><span class='key'>J</span> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='got-terminal.webp'>
@@ -74,7 +75,7 @@ Die Pakete werden im Abstand von einer Sekunde gesendet, bis du den Befehl mit
 <span class='key'>Strg</span><span class='key'>C</span> abbrichst.
 
 Die Angabe, die du unter »time« siehst, ist die Zeit in Millisekunden, die das Paket benötigt hat, um zum Ziel zu gelangen und zurück.
-Umso kleiner die Zeit, desto besser ist die Verbindung: im Bild oben beträgt die Zeit ca. 5,5 ms.
+Umso kleiner die Zeit, desto besser ist die Verbindung: im Bild oben beträgt die Zeit ca. 5,3 ms.
 
 Wenn du deinen eigenen Rechner anpingst, sollte die »Roundtrip Time« sehr gering sein, da die Pakete nicht das lokale Netzwerk verlassen müssen:
 
@@ -82,7 +83,7 @@ Wenn du deinen eigenen Rechner anpingst, sollte die »Roundtrip Time« sehr geri
 ping 127.0.0.1
 ```
 
-Wie du siehst, ist die »Roundtrip Time« mit ca. 0.06 ms sehr gering:
+Wie du siehst, ist die »Roundtrip Time« mit ca. 0,05 ms sehr viel kleiner:
 
 <img class='full' src='ping-127-0-0-1.webp'>
 
@@ -146,40 +147,38 @@ Um Dateien aus dem Internet herunterzuladen, kannst du den Befehl `wget` verwend
 Gib einfach `wget` gefolgt von der URL der Datei ein, die du herunterladen möchtest:
 
 ```bash
-wget https://github.com/specht/workspace-files/raw/main/snake.c
+wget https://github.com/begilbert-sys/2048-in-C/raw/main/main.c
 ```
 
-Du solltest sehen, wie die Datei `snake.c` heruntergeladen wird:
+Du solltest sehen, wie die Datei `main.c` heruntergeladen wird:
 
-<img class='full' src='wget-snake.webp'>
+<img class='full' src='wget-2048.webp'>
 
-Du solltest jetzt eine Datei `snake.c` in deinem aktuellen Verzeichnis haben:
+Du solltest jetzt eine Datei `main.c` in deinem aktuellen Verzeichnis haben:
 
-<img class='full' src='ls-snake.webp'>
+<img class='full' src='ls-2048.webp'>
 
-Es handelt sich um ein Minispiel in C, das du mit dem Befehl `gcc` kompilieren und ausführen kannst.
+Es handelt sich um ein Mini-Spiel, das in der [Programmiersprache C](/c) programmiert worden ist. Du kannst es mit dem Befehl `gcc` kompilieren und anschließend ausführen.
 
 ```bash
-gcc snake.c -o snake -lncurses
+gcc main.c -o 2048 -lncurses -lm
 ```
 
 <div class='hint'>
-Das Spiel benötigt die Bibliothek <code>ncurses</code>, weshalb wir dem Compiler mit der Option <code>-lncurses</code> mitteilen, dass er diese Bibliothek einbinden soll.
+Das Spiel benötigt die Bibliotheken <code>ncurses</code> und <code>math</code>, weshalb wir dem Compiler mit den Option <code>-lncurses</code> und <code>-lm</code> mitteilen, dass er diese Bibliotheken einbinden soll.
 </div>
 
-<img class='full' src='ls-snake-bin.webp'>
+<img class='full' src='ls-2048-bin.webp'>
 
-Das Spiel ist jetzt kompiliert und kann mit dem Befehl `./snake` ausgeführt werden:
+Das Spiel ist jetzt kompiliert und kann mit dem Befehl `./2048` ausgeführt werden:
 
 ```bash
-./snake
+./2048
 ```
 
-<img class='full' src='snake.webp'>
+<img class='full' src='2048.webp'>
 
-<div class='hint'>
-Falls du Lust auf ein weiteres kleines Spiel hast, kannst du auch eine sehr schöne Version des Spiels <a href='https://raw.githubusercontent.com/begilbert-sys/2048-in-C/main/main.c'>»2048« von Benjamin Gilbert</a> herunterladen. Wenn du das Spiel kompilieren möchtest, musst du noch zusätzlich die Option <code>-lm</code> an <code>gcc</code> übergeben, um die Mathematik-Bibliothek einzubinden.
-</div>
+Du kannst das Spiel mit den Pfeiltasten steuern und mit <span class='key'>Strg</span><span class='key'>C</span> beenden.
 
 ## Mit APIs interagieren
 
@@ -300,7 +299,7 @@ Findet zunächst beide eure IP-Adressen heraus, indem ihr den Befehl `ifconfig` 
 
 <img class='full' src='nc-ifconfig.webp'>
 
-In diesem Beispiel hat der erste Rechner die IP-Adresse `172.17.0.12` und der zweite Rechner die IP-Adresse `172.17.0.14`.
+In diesem Beispiel hat der erste Rechner die IP-Adresse `172.17.0.12` und der zweite Rechner die IP-Adresse `172.17.0.13`.
 
 Einer von euch beiden ist der Server und der andere der Client. Der Server öffnet einen Port, auf dem der Client sich verbinden kann. Der Client verbindet sich dann mit dem Server. Nehmen wir mal an, links ist der Server und rechts ist der Client. Der Server öffnet den Port 1234:
 
@@ -326,11 +325,7 @@ Falls sich der Client nicht mit dem Server verbinden kann, überprüft bitte, ob
 
 <img class='full' src='nc-connect.webp'>
 
-Sobald die Verbindung hergestellt ist, könnt ihr beide miteinander chatten:
-
-<img class='full' src='nc-chat.webp'>
-
-Ihr könnt nun Nachrichten hin- und herschicken. Wenn ihr fertig seid, könnt ihr die Verbindung beenden, indem ihr auf beiden Rechnern <span class='key'>Strg</span><span class='key'>C</span> drückt.
+Sobald die Verbindung hergestellt ist, könnt ihr miteinander chatten! Ihr könnt nun Nachrichten hin- und herschicken. Wenn ihr fertig seid, könnt ihr die Verbindung beenden, indem ihr auf beiden Rechnern <span class='key'>Strg</span><span class='key'>C</span> drückt.
 
 <div class='hint'>
 Der Zweck von <code>netcat</code> ist es eigentlich nicht, zu chatten. Man kann es verwenden, um ohne Protokoll oder Verschlüsselung Daten zwischen zwei Rechnern zu übertragen.

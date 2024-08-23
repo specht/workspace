@@ -14,6 +14,11 @@ STDERR.puts latest_path
 
 print "Please enter image title: "
 title = gets.strip
+nocrop = false
+if title[0] == '*'
+    title = title[1..-1]
+    nocrop = true
+end
 
 slug = title.downcase.gsub(/[^a-z0-9]+/, '-').chomp('-')
 
@@ -29,6 +34,6 @@ if File.exist?(target_path)
     end
 end
 
-system("mogrify -fuzz 50% -trim +repage \"#{latest_path}\"")
+system("mogrify -fuzz 50% -trim +repage \"#{latest_path}\"") unless nocrop
 system("cwebp -lossless \"#{latest_path}\" -o \"#{target_path}\"")
 system("rm \"#{latest_path}\"")
