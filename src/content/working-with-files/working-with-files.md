@@ -68,7 +68,6 @@ um die Größe in einer besser lesbaren Form zu sehen:
 <img class='full' src='ls-lh.webp'>
 
 Die Datei ist also fast 10 MB groß.
-Du lernst alle Optionen eines Befehls kennen, wenn du den Befehl `man` (für »manual«) benutzt, hier also `man ls`.
 Die Endung `.tar.gz` in unserem Beispiel zeigt an, dass es sich um ein komprimiertes Archiv handelt.
 Wir können es mit dem Befehl `tar` entpacken:
 
@@ -79,7 +78,6 @@ tar xvf working-with-files.tar.gz
 Die Optionen `xvf` stehen für `extract`, `verbose` und `file`. Das bedeutet, dass wir das
 Archiv entpacken (`x` für »extract«), den Fortschritt anzeigen (`v` für »verbose«) und als
 nächste Option den Dateinamen angeben (`f` für »file«).
-Der Befehl `tar` ist eine Ausnahme: die Optionen `xvf` beginnen hier ohne das übliche `-`.
 Wenn du den Befehl ausführst, solltest du eine Meldung sehen, die dir anzeigt, welche Dateien entpackt wurden:
 
 <img class='full' src='tar-xvf.webp'>
