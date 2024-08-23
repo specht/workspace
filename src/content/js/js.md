@@ -18,15 +18,6 @@ JavaScript, entwickelt 1995 von Brendan Eich bei Netscape, ist eine dynamische P
 
 JavaScript wird häufig für die Frontend-Webentwicklung eingesetzt, wobei bekannte Beispiele wie die Benutzeroberflächen von Google Maps, Facebook und YouTube hervorzuheben sind. Mit der Einführung von Node.js hat sich JavaScript auch auf die Backend-Entwicklung ausgeweitet, was es ermöglicht, serverseitige Anwendungen zu erstellen. Heutzutage ist JavaScript äußerst relevant und weit verbreitet, da es eine zentrale Rolle im modernen Web spielt und eine Vielzahl von Frameworks und Bibliotheken wie React, Angular und Vue.js bietet, die die Entwicklung von Webanwendungen erheblich erleichtern.
 
-<!-- ## Eigenschaften
-
-- **Clientseitige Skriptsprache**: JavaScript ist eine clientseitige Skriptsprache, die im Webbrowser ausgeführt wird.
-- **Dynamische Typisierung**: JavaScript ist eine dynamisch typisierte Sprache, was bedeutet, dass Variablen ihren Datentyp zur Laufzeit ändern können.
-- **Objektorientierung**: JavaScript ist eine objektorientierte Programmiersprache, die auf der Verwendung von Objekten und Klassen basiert.
-- **Webentwicklung**: JavaScript wird in der Webentwicklung eingesetzt und ermöglicht die Interaktion mit HTML-Elementen und CSS-Stilen.
-- **Node.js**: Node.js ist eine serverseitige JavaScript-Laufzeitumgebung, die die Entwicklung von serverseitigen Anwendungen mit JavaScript ermöglicht.
-- **Frameworks**: JavaScript hat eine Vielzahl von Frameworks und Bibliotheken, darunter React, Angular und Vue.js. -->
-
 ## Hello, world!
 
 JavaScript wird in der Regel in Webbrowsern ausgeführt, um die Interaktion mit Webseiten zu ermöglichen. Du kannst JavaScript-Code direkt in der Entwicklerkonsole deines Browsers ausführen oder in einer HTML-Datei speichern und dann im Browser öffnen.

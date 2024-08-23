@@ -154,7 +154,7 @@ _include_file(BubbleSort.cs, cs)
 Speichere die Datei unter dem Namen `BubbleSort.cs`. Kompiliere das Programm:
 
 ```bash
-mono BubbleSort.cs
+mcs BubbleSort.cs
 ```
 Falls du keine Fehlermeldung erhältst, kannst du das Programm ausführen und testen:
 

@@ -17,13 +17,6 @@ Dart, entwickelt von Lars Bak und Kaspar Lund bei Google und erstmals 2011 verö
 
 Bekannte Beispiele für Anwendungen, die mit Dart und Flutter entwickelt wurden, sind die mobilen Apps Google Pay, Google Earth, Google Classroom und die App von Alibaba. Heutzutage ist Dart immer noch relevant, insbesondere in der mobilen App-Entwicklung, da Flutter eine wachsende Popularität genießt und eine effiziente und konsistente Entwicklungserfahrung über verschiedene Plattformen hinweg bietet.
 
-<!-- ## Eigenschaften
-
-- **Kompiliert**: Dart ist eine kompilierte Sprache, was bedeutet, dass der Code in Maschinencode übersetzt wird, der direkt auf der Hardware ausgeführt werden kann.
-- **Effizienz**: Dart wurde für die Effizienz entwickelt und bietet eine schnelle Kompilierung und Ausführung von Code.
-- **Webentwicklung**: Dart wird häufig für die Entwicklung von Webanwendungen und mobilen Apps eingesetzt und bietet eine Vielzahl von Frameworks und Bibliotheken für die Webentwicklung.
-- **Community**: Dart hat eine aktive und engagierte Community, die eine Vielzahl von Bibliotheken und Frameworks entwickelt hat. -->
-
 ## Hello, world!
 
 Dart-Programme werden in Textdateien mit der Endung `.dart` geschrieben. Diese Dateien werden anschließend von einem Compiler in ausführbare Dateien übersetzt, die auf deinem Computer direkt ausgeführt werden können.
@@ -70,10 +63,26 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>da
 
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
 
-<img class='full' src='hello.webp'>
+<img class='full' src='hello-telemetry.webp'>
+
+### Was ist Telemetrie?
+
+Telemetrie ist eine Funktion von Dart, die Informationen über die Ausführung des Programms sammelt und an Google sendet. Diese Informationen helfen den Entwicklern von Dart, die Sprache zu verbessern. Um zu verhindern, dass Telemetrie-Daten gesendet werden, gib den folgenden Befehl wie angegeben ein:
+
+```bash
+dart --disable-analytics
+```
+
+Du solltest nun eine Bestätigung sehen, dass die Telemetrie deaktiviert wurde:
+
+<img class='full' src='disable-analytics.webp'>
+
+Wenn wir das Programm erneut ausführen, sollte es die Nachricht `Hello, World!` ohne die Meldung zur Telemetrie ausgeben:
+
+<img class='full' src='hello-again.webp'>
 
 <div class='hint'>
-Dart kann Quelltext für viele verschiedene Plattformen kompilieren, z. B. für Webanwendungen, mobile Apps (mit Flutter) und Desktopanwendungen. In diesem Artikel probieren wir Dart auf der Kommandozeile aus, aber du kannst Dart auch in anderen Umgebungen verwenden.
+Dart kann Quelltext für viele verschiedene Plattformen kompilieren, z. B. für Webanwendungen, mobile Apps für Android und iOS (mit Flutter) und Desktopanwendungen unter Windows, Mac OS und Linux. In diesem Artikel probieren wir Dart auf der Kommandozeile aus, aber du kannst Dart auch in anderen Umgebungen verwenden.
 </div>
 
 ### Fehler finden und beheben

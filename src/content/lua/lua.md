@@ -18,15 +18,6 @@ Lua, entwickelt in den frühen 1990er Jahren von Waldemar Celes, Roberto Ierusal
 
 Lua wird häufig in der Spieleentwicklung verwendet, um Spielmechaniken und Skripting zu implementieren, mit bekannten Beispielen wie World of Warcraft und Angry Birds. Darüber hinaus findet Lua Anwendung in eingebetteten Systemen und als Skriptsprache in Software wie Adobe Lightroom. Heutzutage ist Lua immer noch relevant, insbesondere in der Spieleindustrie und bei eingebetteten Anwendungen, da sie eine schnelle Ausführung und einfache Integration in andere Software bietet.
 
-<!-- ## Eigenschaften
-
-- **Leichtgewichtig**: Lua ist eine leichte Sprache, die wenig Speicher und Ressourcen benötigt.
-- **Effizient**: Lua ist eine effiziente Sprache, die schnell ausgeführt wird und eine hohe Leistung bietet.
-- **Leistungsfähig**: Lua bietet eine Vielzahl von Funktionen und Bibliotheken, die die Entwicklung von Anwendungen erleichtern.
-- **Einfache Integration**: Lua kann leicht in Anwendungen eingebettet werden und bietet eine einfache API für die Kommunikation mit anderen Programmiersprachen.
-- **Dynamische Typisierung**: Lua ist eine dynamisch typisierte Sprache, was bedeutet, dass Variablen ihren Datentyp zur Laufzeit ändern können.
-- **Funktional**: Lua ist eine funktionale Programmiersprache, die auf der Verwendung von Funktionen als Grundbausteine von Programmen basiert. -->
-
 ## Hello, world!
 
 Lua ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpretiert wird. Du hast zwei Möglichkeiten, Lua-Code auszuführen:

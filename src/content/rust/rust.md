@@ -18,13 +18,6 @@ Rust, entwickelt von Graydon Hoare und erstmals 2015 veröffentlicht, ist eine k
 
 Bekannte Beispiele für die Verwendung von Rust sind der Browser-Engine-Teil von Mozilla Firefox, genannt Servo, und das Betriebssystem Redox. Heutzutage ist Rust äußerst relevant, da sie von einer aktiven Community unterstützt wird und eine wachsende Anzahl von Bibliotheken und Frameworks bietet, die die Entwicklung sicherer und effizienter Software ermöglichen.
 
-<!-- ## Eigenschaften
-
-- **Kompiliert**: Rust ist eine kompilierte Sprache, was bedeutet, dass der Code in Maschinencode übersetzt wird, der direkt auf der Hardware ausgeführt werden kann.
-- **Sicherheit**: Rust wurde für die Sicherheit entwickelt und bietet eine Reihe von Funktionen, die die Entwickler vor Fehlern schützen.
-- **Performance**: Rust bietet eine hohe Leistung und Effizienz, was es ideal für die Entwicklung von Systemsoftware macht.
-- **Webentwicklung**: Rust wird auch für die Entwicklung von Webanwendungen eingesetzt und bietet eine Vielzahl von Frameworks und Bibliotheken für die Webentwicklung. -->
-
 ## Hello, world!
 
 Rust-Programme werden in Textdateien mit der Endung `.rs` geschrieben. Diese Dateien werden anschließend von einem Compiler in ausführbare Dateien übersetzt, die auf deinem Computer direkt ausgeführt werden können.

@@ -17,15 +17,6 @@ Assembler wird häufig für die Entwicklung von Betriebssystemen, Gerätetreiber
 
 NASM (Netwide Assembler) ist ein freier Assembler, der auf vielen Plattformen verfügbar ist und die x86-Architektur unterstützt. Er wurde 1996 von Simon Tatham entwickelt und ist eine der beliebtesten Assembler-Tools in der Open-Source-Community.
 
-<!-- ## Eigenschaften
-
-- **Maschinennah**: Assembler ist eine maschinennahe Programmiersprache, die direkt auf der Maschinenebene arbeitet.
-- **Effizient**: Assembler ist eine der effizientesten Programmiersprachen und bietet eine hohe Leistung.
-- **Komplex**: Assembler ist eine komplexe Sprache, die sehr detailliert und präzise ist.
-- **Hardware-Nähe**: Assembler bietet eine enge Kontrolle über die Hardware und ermöglicht es, direkt mit Speicheradressen und Registern zu arbeiten.
-- **Plattformabhängig**: Assembler ist stark von der Hardwarearchitektur abhängig und nicht portabel.
-- **Low-Level**: Assembler ist eine Low-Level-Programmiersprache, die direkt mit der Hardware kommuniziert. -->
-
 ## Hello, world!
 
 Assembler-Programme werden in Textdateien mit der Endung `.asm` oder `.s` geschrieben. Diese Dateien werden anschließend von einem Assembler in ausführbare Dateien übersetzt, die auf deinem Computer direkt ausgeführt werden können. Es gibt eine Vielzahl von Assemblern, die du verwenden kannst, aber wir werden hier den »Netwide Assembler« (NASM) verwenden, der auf vielen Plattformen verfügbar ist.

@@ -18,17 +18,6 @@ Java, entwickelt von James Gosling und seinem Team bei Sun Microsystems und erst
 
 Java wird häufig für die Entwicklung von Unternehmensanwendungen, mobilen Anwendungen (insbesondere Android-Apps), Webanwendungen und großen Systemen verwendet. Bekannte Beispiele für Anwendungen und Plattformen, die in Java entwickelt wurden, sind die Android-Betriebssysteme, die Apache Hadoop-Frameworks für Big Data und die Unternehmenssoftware von Unternehmen wie LinkedIn und Netflix. Heutzutage ist Java immer noch äußerst relevant und weit verbreitet, da es eine robuste, skalierbare und sichere Umgebung für die Entwicklung bietet und eine große Entwickler-Community sowie eine Vielzahl von Bibliotheken und Frameworks unterstützt.
 
-<!--
-## Eigenschaften
-
-- **Objektorientierung**: Java ist eine objektorientierte Programmiersprache, die auf der Verwendung von Objekten und Klassen basiert.
-- **Plattformunabhängigkeit**: Java-Programme können auf verschiedenen Betriebssystemen und Plattformen ausgeführt werden.
-- **Sicherheit**: Java bietet eine Vielzahl von Sicherheitsfunktionen, die es ermöglichen, sichere Anwendungen zu entwickeln.
-- **Performance**: Java ist eine der schnellsten Programmiersprachen und wird häufig für rechenintensive Anwendungen eingesetzt.
-- **Community**: Java hat eine aktive und engagierte Community, die eine Vielzahl von Bibliotheken und Frameworks entwickelt hat.
-- **Vielseitigkeit**: Java wird in vielen Bereichen eingesetzt, darunter Anwendungsentwicklung, Webentwicklung und Datenbankprogrammierung.
--->
-
 ## Hello, world!
 
 Java-Programme werden in Textdateien mit der Endung `.java` geschrieben. Diese Dateien werden dann mit dem Java-Compiler `javac` kompiliert, um ausführbare Dateien zu erzeugen. Diese ausführbaren Dateien haben die Endung `.class` und können mit dem Java-Interpreter `java` ausgeführt werden.
