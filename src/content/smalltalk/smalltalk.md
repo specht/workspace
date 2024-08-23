@@ -1,5 +1,6 @@
 <div class='meta'>
 image: smalltalk-logo.png
+needs_contrast: light
 </div>
 
 # Smalltalk <span style='font-size: 80%;'>(1980)</span>

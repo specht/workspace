@@ -42,5 +42,3 @@ function draw() {
     phi += 0.01;
 }
 ```
-
-<div class='alert alert-warning'>#{stub()}</div>

@@ -562,6 +562,7 @@ class Main < Sinatra::Base
                     @@content[slug][:image] = "/cache/#{sha1}.webp"
                     @@content[slug][:image_x] = (parts[1] || '50').to_i
                     @@content[slug][:image_y] = (parts[2] || '50').to_i
+                    @@content[slug][:needs_contrast] = meta['needs_contrast']
                 end
             end
             begin
@@ -1136,7 +1137,11 @@ class Main < Sinatra::Base
                     io.puts "<a href='/#{slug}' class='tutorial_card2 #{section_key == 'programming_languages' ? 'compact' : ''}'>"
                     io.puts "<h4>#{content[:dev_only] ? '<span class="badge bg-danger" style="transform: scale(0.8);">dev</span> ' : ''}#{content[:title]}</h4>"
                     io.puts "<div class='inner'>"
-                    io.puts "<img src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
+                    additional_classes = []
+                    if content[:needs_contrast] == 'light'
+                        additional_classes << 'dark-only-bg-contrast-light'
+                    end
+                    io.puts "<img class='#{additional_classes.join(' ')}' src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
                     io.puts "<div class='abstract'>#{content[:abstract]}</div>"
                     io.puts "</div>"
                     io.puts "</a>"

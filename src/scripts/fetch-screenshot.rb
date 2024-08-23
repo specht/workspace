@@ -29,5 +29,5 @@ if File.exist?(target_path)
     end
 end
 
-system("cwebp -q 80 \"#{latest_path}\" -o \"#{target_path}\"")
+system("cwebp -lossless \"#{latest_path}\" -o \"#{target_path}\"")
 system("rm \"#{latest_path}\"")

@@ -11,5 +11,3 @@ GLSL (OpenGL Shading Language) ist eine Programmiersprache, die für die Entwick
 <!--
 https://www.cs.sjsu.edu/~bruce/fall_2016_cs_116a_lecture_glsl_opengl_shading_language_part_2_of_2.html
 -->
-
-<div class='alert alert-warning'>#{stub()}</div>

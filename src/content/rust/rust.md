@@ -1,5 +1,6 @@
 <div class='meta'>
 image: rust-logo.png
+needs_contrast: light
 </div>
 
 # Rust <span style='font-size: 80%;'>(2015)</span>

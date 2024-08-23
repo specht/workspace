@@ -6,15 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hackschule Workspace</title>
-    <link href="/include/bootstrap-5.0.2/dist/css/bootstrap.min.css?#{CACHE_BUSTER}" rel="stylesheet">
+    <link href="/include/bootstrap-5.3.3/dist/css/bootstrap.min.css?#{CACHE_BUSTER}" rel="stylesheet">
     <link href="/include/bower_components/fork-awesome/css/fork-awesome.min.css" rel="stylesheet">
 
     <link href="/include/fonts.css?#{CACHE_BUSTER}" rel="stylesheet">
-    <link href="/include/default.css?#{CACHE_BUSTER}" rel="stylesheet">
+    <link href="/include/default.css?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}" rel="stylesheet">
 
     <script src="/include/code.js?#{CACHE_BUSTER}"></script>
     <script src="/include/bower_components/moment/min/moment-with-locales.min.js"></script>
-    <script src="/include/bootstrap-5.0.2/dist/js/bootstrap.bundle.min.js?#{CACHE_BUSTER}"></script>
+    <script src="/include/bootstrap-5.3.3/dist/js/bootstrap.bundle.min.js?#{CACHE_BUSTER}"></script>
     <script src="/include/clipboard.min.js"></script>
     <script src="/include/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
@@ -39,159 +39,6 @@ pre table td {
     text-align: right;
 }
 
-.autotoc {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background-color: #fff;
-    box-shadow: 0 0 1em rgba(0, 0, 0, 0.5);
-    font-size: 85%;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease-out;
-    transform: translateY(0);
-}
-
-.autotoc.hidden {
-    transform: translateY(calc(-100% - 1em));
-}
-
-.autotoc > .items {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    white-space: nowrap;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    text-align: center;
-}
-
-.autotoc > .items::-webkit-scrollbar {
-    display: none;
-}
-
-.autotoc > .items > div {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    scroll-snap-align: center;
-    display: inline-block;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    padding: 1em 2em;
-    width: 20em;
-    position: relative;
-    margin-bottom: 0.5em;
-    cursor: pointer;
-    user-select: none;
-}
-
-.autotoc > .items > div.active {
-    font-weight: bold;
-    position: relative;
-}
-
-.autotoc > .progress_sm {
-    background-color: rgba(0, 0, 0, 0.3);
-    position: absolute;
-    bottom: 0.13em;
-    left: 0;
-    width: 0;
-    height: 0.25em;
-    transition: left 0.3s ease-out;
-    border-radius: 0.05em;
-    transform: translate(0.15em, 0.05em);
-    display: none;
-}
-
-.autotoc > .progress_spots_sm {
-    position: absolute;
-    bottom: 0.1em;
-    left: 0;
-    width: 100%;
-    height: 0.2em;
-    flex-wrap: nowrap;
-    display: none;
-}
-
-.autotoc > .progress_spots_sm > div {
-    background-color: rgba(0, 0, 0, 0.15);
-    height: 0.2em;
-    padding: 0 0.5em;
-    border-left: 0.07em solid #fff;
-    border-right: 0.07em solid #fff;
-    border-radius: 1em;
-    margin: 0 0.15em;
-    width: 20em;
-    display: inline-block;
-}
-
-.autotoc > .progress_spots_lg {
-    display: block;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    white-space: nowrap;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    text-align: center;
-    position: relative;
-    top: -2em;
-    margin-bottom: -2.2em;
-}
-
-.autotoc > .progress_spots_lg::-webkit-scrollbar {
-    display: none;
-}
-
-.autotoc > .progress_spots_lg > div {
-    background-color: rgba(0, 0, 0, 0.15);
-    height: 0.2em;
-    padding: 0 0.5em;
-    border-left: 0.07em solid #fff;
-    border-right: 0.07em solid #fff;
-    border-radius: 1em;
-    margin: 0 0.15em;
-    width: calc(20em - 0.3em);
-    display: inline-block;
-    transition: background-color 0.1s ease-out;
-}
-
-.autotoc > .progress_spots_lg > div.active {
-    background-color: rgba(0, 0, 0, 0.3);
-}
-
-@media (max-width: 768px) {
-    .autotoc {
-        pointer-events: none;
-    }
-    .autotoc > .items {
-        padding: 1em 1em 0.6em 1em;
-    }
-    .autotoc > .items > div {
-        width: 100%;
-        padding: 0 1em;
-        margin-bottom: 0em;
-    }
-    .autotoc > .items > div.active {
-        font-weight: unset;
-    }
-    .autotoc > .progress_spots_sm {
-        display: flex;
-        flex-wrap: nowrap;
-    }
-    .autotoc > .progress_spots_sm > div {
-        display: block;
-    }
-    .autotoc > .progress_spots_lg {
-        display: none;
-    }
-    .autotoc > .progress_sm {
-        display: block;
-    }
-}
-
-.autotoc-container {
-    border-top: 1px solid rgba(0,0,0,0);
-    border-bottom: 1px solid rgba(0,0,0,0);
-}
 </style>
 
 <script>
@@ -324,6 +171,20 @@ function install_autotoc() {
     $('.autotoc .progress_sm').css('width', `calc(${100.0 / autotoc_containers.length}% - 0.3em)`);
 }
 
+window.addEventListener('DOMContentLoaded', function() {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.getElementsByTagName('html')[0].setAttribute('data-bs-theme', 'dark');
+    }
+    window.matchMedia('(prefers-color-scheme: dark)')
+      .addEventListener('change',({ matches }) => {
+        if (matches) {
+            document.getElementsByTagName('html')[0].setAttribute('data-bs-theme', 'dark');
+        } else {
+            document.getElementsByTagName('html')[0].setAttribute('data-bs-theme', 'light');
+        }
+    });
+});
+
 window.addEventListener('load', function() {
     install_clipboard_handler('.btn-clipboard');
     // check if the server tag has changed
@@ -454,7 +315,7 @@ window.addEventListener('load', function() {
 });
 </script>
 
-<body>
+<body >
     <div class="modal" id="__template_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style='z-index: 200000;'>
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
