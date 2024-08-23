@@ -15,15 +15,6 @@ Python, entwickelt von Guido van Rossum und erstmals 1991 veröffentlicht, ist e
 
 Bekannte Beispiele für Anwendungen, die in Python entwickelt wurden, sind das Web-Framework Django, die Datenanalysebibliothek Pandas und das maschinelle Lernframework TensorFlow. Heutzutage ist Python äußerst relevant und weit verbreitet, da es eine aktive Community und eine Vielzahl von Bibliotheken und Frameworks bietet, die die Entwicklung in verschiedenen Domänen unterstützen.
 
-<!-- ## Eigenschaften
-
-- **Einfachheit**: Python legt Wert auf eine klare und einfache Syntax, die es ermöglicht, den Code leicht zu lesen und zu schreiben.
-- **Lesbarkeit**: Python-Code ist leicht lesbar und verständlich, was die Wartung und Weiterentwicklung von Projekten erleichtert.
-- **Vielseitigkeit**: Python wird in vielen Bereichen eingesetzt, darunter Webentwicklung, Datenanalyse, künstliche Intelligenz und maschinelles Lernen.
-- **Community**: Python hat eine aktive und engagierte Community, die eine Vielzahl von Bibliotheken und Frameworks entwickelt hat.
-- **Interpretiert**: Python ist eine interpretierte Sprache, was bedeutet, dass der Code zur Laufzeit ausgeführt wird.
-- **Objektorientierung**: Python ist eine objektorientierte Programmiersprache, die auf der Verwendung von Objekten und Klassen basiert. -->
-
 ## Hello, world!
 
 Python ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpretiert wird. Du hast zwei Möglichkeiten, Python-Code auszuführen:

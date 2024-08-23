@@ -1,4 +1,3 @@
-#!/usr/bin/env clisp
 (defun prime-factors (number &optional (return-values '()))
   ;; function declaration has an optional return-values parameter for
   ;; tail-recursive use

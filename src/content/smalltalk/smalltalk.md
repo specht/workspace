@@ -16,14 +16,6 @@ Smalltalk wurde in den 1970er Jahren von Alan Kay, Adele Goldberg und Dan Ingall
 
 Ein bekanntes Beispiel ist das erste grafische Benutzerinterface des Xerox Alto Computers. Heutzutage ist Smalltalk weniger verbreitet, aber immer noch relevant in bestimmten Nischen, insbesondere in der Forschung und Lehre zur objektorientierten Programmierung. Es wird auch in einigen spezialisierten industriellen Anwendungen und von Enthusiasten verwendet, die die Sprache für ihre Einfachheit und Eleganz schätzen.
 
-<!-- ## Eigenschaften
-
-- **Objektorientiert**: Smalltalk ist eine objektorientierte Programmiersprache, die auf der Verwendung von Objekten und Klassen basiert.
-- **Dynamisch**: Smalltalk ist eine dynamisch typisierte Sprache, was bedeutet, dass Variablen ihren Datentyp zur Laufzeit ändern können.
-- **Reflexiv**: Smalltalk ist eine reflexive Sprache, was bedeutet, dass sie zur Laufzeit auf ihre eigene Struktur zugreifen kann.
-- **Live-Programmierung**: Smalltalk unterstützt Live-Programmierung, was bedeutet, dass du den Code während der Ausführung ändern kannst.
-- **Entwicklungsumgebung**: Smalltalk wird oft mit einer integrierten Entwicklungsumgebung (IDE) geliefert, die es ermöglicht, den Code zu schreiben, zu testen und zu debuggen. -->
-
 ## Hello, world!
 
 Smalltalk ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpretiert wird. Du hast zwei Möglichkeiten, Smalltalk-Code auszuführen:
@@ -154,10 +146,10 @@ Erstelle eine neue Datei mit <span class='key'>Strg</span><span class='key'>Alt<
 
 _include_file(factor.st, smalltalk)
 
-Speichere die Datei unter dem Namen `factor.st`. Kompiliere das Programm:
+Speichere die Datei unter dem Namen `factor.st` und führe sie aus:
 
 ```bash
-gcc factor.c -o factor
+gst factor.st
 ```
 
 Falls du keine Fehlermeldung erhältst, kannst du das Programm ausführen und testen:
