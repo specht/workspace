@@ -120,9 +120,29 @@ function check_server_tag_update(server_tag) {
 var autotoc_containers = [];
 var autotoc_items = [];
 var autotoc_items_visible = [];
+var autotoc = null;
+var autotoc_showing = false;
+var got_autotoc = false;
 
 function install_autotoc() {
-    let autotoc = $('.autotoc');
+    autotoc = $('.autotoc');
+    got_autotoc = $('.autotoc-container').toArray().length > 0;
+
+    function fix_autotoc() {
+        if (window.scrollY < 100) {
+            autotoc_showing = false;
+        } else {
+            if (window.scrollY > window.innerHeight * 0.3) autotoc_showing = true;
+        }
+        autotoc.toggleClass('hidden', !autotoc_showing);
+    }
+
+    if (got_autotoc) {
+        window.addEventListener('scroll', function(e) {
+            fix_autotoc();
+        });
+        fix_autotoc();
+    }
     let observer = new IntersectionObserver((entries, observer) => {
         let found_entry = false;
         entries.forEach(entry => {
@@ -134,7 +154,6 @@ function install_autotoc() {
             $(item).removeClass('active');
             if (autotoc_items_visible[i]) {
                 found_entry = true;
-                autotoc.removeClass('hidden');
                 let container = $(item).parent()[0];
                 container.scrollTo({ left: item.offsetLeft - (container.offsetWidth / 2) + (item.offsetWidth / 2), behavior: 'smooth' });
                 $('.progress_spots_lg')[0].scrollTo({ left: item.offsetLeft - (container.offsetWidth / 2) + (item.offsetWidth / 2), behavior: 'smooth' });
@@ -144,10 +163,7 @@ function install_autotoc() {
                 $(item).addClass('active');
             }
         }
-        if (!found_entry) {
-            $('.autotoc').addClass('hidden');
-        }
-    }, { root: null, rootMargin: '-20% 0% -80% 0%' });
+    }, { root: null, rootMargin: '-30% 0% -70% 0%' });
     let containers = $('.autotoc-container').toArray();
     for (let i = 0; i < containers.length; i++) {
         let div = $(containers[i]);
