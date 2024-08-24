@@ -1,7 +1,7 @@
 function show_error_message(message) {
     var div = $('<div>').css('text-align', 'center').css('padding', '15px').addClass('bg-light text-danger').html(message);
     $('.api_messages').empty();
-    let button = $("<button class='text-stone-400 btn pull-right form-control' style='width: unset; margin: 8px;' ><i class='fa fa-times'></i></button>");
+    let button = $("<button class='text-stone-400 btn pull-right form-control' style='width: unset; margin: 8px;' ><i class='bi bi-x-lg'></i></button>");
     $('.api_messages').append(button).append(div).show();
     button.on('click', function(e) { e.preventDefault(); $('.api_messages').hide(); });
 }
@@ -23,7 +23,7 @@ function api_call(url, data, callback, options) {
         // show 'please wait' message after 500 ms
         (function () {
             window.please_wait_timeout = setTimeout(function () {
-                var div = $('<div>').css('text-align', 'center').css('padding', '15px').addClass('text-muted').html("<i class='fa fa-cog fa-spin'></i>&nbsp;&nbsp;Einen Moment bitte...");
+                var div = $('<div>').css('text-align', 'center').css('padding', '15px').addClass('text-muted').html("<i class='fa fa-cog bi-spin'></i>&nbsp;&nbsp;Einen Moment bitte...");
                 $('.api_messages').empty().show();
                 $('.api_messages').append(div);
             }, 500);

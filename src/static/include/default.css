@@ -890,113 +890,11 @@ hr {
     border-bottom: 1px solid rgba(0,0,0,0);
 }
 
-@media (prefers-color-scheme: dark) {
-    body {
-        background-color: #151514;
-        color: #e7e6e1;
-    }
-    .header {
-        background-color: #151514;
-    }
-    .menu {
-        border: none;
-        background-color: #0a0a0a;
-    }
-    .squircle {
-        background-image: url(/images/squircle-dark.png);
-    }
-    p {
-        color: #ccccc9;
-    }
-    .autotoc {
-        background-color: #121212;
-        box-shadow: 0 0 1em rgba(0, 0, 0, 1.0);
-    }
-    .autotoc > .progress_spots_sm > div {
-        background-color: rgba(255, 255, 255, 0.3);
-    }
-    .autotoc > .progress_sm {
-        background-color: rgba(255, 255, 255, 0.7);
-    }
-    .autotoc > .progress_spots_lg > div {
-        background-color: rgba(255, 255, 255, 0.15);
-    }
-    .autotoc > .progress_spots_lg > div.active {
-        background-color: rgba(255, 255, 255, 0.4);
-    }
-    div.floatright {
-        border: none;
-    }
-    div.floatright img {
-        border-radius: 0.5em;
-        box-shadow: 0 0 1em rgba(0,0,0,1);
-    }
-    code {
-        color: #e5185d;
-        background-color: rgba(243, 132, 175, 0.08);
-    }
-    .key {
-        border: 1px solid #555753;
-        font-weight: bold;
-    }
-    .hint {
-        border-top: 1px solid #232626;
-        border-bottom: 1px solid #232626;
-        background-color: #0c0d0d;
-    }
-    a {
-        color: #0d95fd;
-    }
-    footer {
-        border-top: 1px solid #333;
-        background-color: #0e0e0d;
-        color: #e7e6e1;
-    }
-    .table th, .table td {
-        color: #e7e6e1;
-    }
-    .tutorial_card2 {
-        border: 1px solid #080808;
-        background-color: #181818;
-        box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.2);
-    }
+@keyframes spinner {
+    to { transform: rotate(360deg); }
+}
 
-    .tutorial_card2:hover {
-        border: 1px solid #000;
-        box-shadow: 0 0 0.8em rgba(0, 0, 0, 0.5);
-    }
-
-    .tutorial_card2 > .inner::after {
-        position: absolute;
-        left: 0;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        content: '';
-        box-shadow: 0px 10px 10px -10px rgba(0, 0, 0, 1.0) inset;
-    }
-
-    .tutorial_card2 > h4 {
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    }
-
-    .tutorial_card2 .abstract {
-        box-shadow: 0px 10px 10px -10px rgba(0, 0, 0, 1.0) inset;
-    }
-
-    .tutorial_card2.compact .abstract {
-        box-shadow: 0px 10px 10px -10px rgba(0, 0, 0, 1.0) inset;
-    }
-    .dark-only-bg-contrast-light {
-        filter: invert(0.5);
-    }
-    pre, pre .w {
-        background-color: #0a0a0a!important;
-    }
-    .scroll-x {
-        box-shadow: 0 0 1em rgba(0,0,0,0.5);
-    }
-    .input-with-text-mod .input-group-text {
-        background-color: unset;
-    }
+.bi-spin {
+    display: inline-block;
+    animation: spinner 1.5s ease-out infinite;
 }

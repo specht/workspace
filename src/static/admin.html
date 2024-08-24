@@ -110,7 +110,7 @@ window.addEventListener('load', function() {
         let email = button.data('email');
         console.log(`Opening workspace for ${email}`);
         button.prop('disabled', true);
-        button.find('.fa').addClass('fa-spin');
+        button.find('.bi').addClass('bi-spin');
         api_call('/api/start_server_as_admin', {email: email}, function(data) {
             check_server_tag_update(data.watch_tag);
             check_server_online(data.watch_tag);

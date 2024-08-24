@@ -3,7 +3,7 @@
         <div class='col-md-12' style='margin-top: 5em;'>
             <p style="text-align: center;">Du hast Zugriff auf den Workspace von <code>#{share_user[:email]}</code> bekommen.</p>
             <div style="text-align: center;">
-                <button id='bu_launch_share' class="btn btn-success"><i class='fa fa-code'></i>&nbsp;Workspace öffnen</button>
+                <button id='bu_launch_share' class="btn btn-success"><i class='bi bi-code-slash'></i>&nbsp;Workspace öffnen</button>
             </div>
         </div>
     </div>
@@ -14,7 +14,7 @@ var share_tag = '#{share_tag}';
 window.addEventListener('load', function() {
     $('#bu_launch_share').on('click', function(e) {
         $('#bu_launch_share').prop('disabled', true);
-        $('#bu_launch_share .fa').addClass('fa-spin');
+        $('#bu_launch_share .bi').addClass('bi-spin');
         console.log(share_tag);
         api_call('/api/start_server_with_share_tag', {share_tag: share_tag}, function(data) {
             if (data.success) {

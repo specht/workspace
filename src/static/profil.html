@@ -3,20 +3,22 @@
         margin: 1em 0;
     }
 </style>
+<div class="container-fluid" style="padding: 0.5em 0 0.5em 0;">
+    <div class="container" style="text-align: center; margin-bottom: -0.9em;">
+        <div class="btn-group" role="group" style="margin: 0 1em; margin-bottom: 5px;">
+            <button type="button" class="bu-set-brightness btn btn-light  " data-brightness="light"><i class='bi bi-sun'></i>&nbsp;&nbsp;Hell            #{(@session_user[:brightness] || 'auto') == 'light' ? "<i class='bi bi-check-lg'></i>" : ''}</button>
+            <button type="button" class="bu-set-brightness btn btn-primary" data-brightness="auto"><i class='bi bi-moon-stars-fill'></i>&nbsp;&nbsp;Auto #{(@session_user[:brightness] || 'auto') == 'auto'  ? "<i class='bi bi-check-lg'></i>" : ''}</button>
+            <button type="button" class="bu-set-brightness btn btn-dark   " data-brightness="dark"><i class='bi bi-moon-fill'></i>&nbsp;&nbsp;Dunkel     #{(@session_user[:brightness] || 'auto') == 'dark'  ? "<i class='bi bi-check-lg'></i>" : ''}</button>
+        </div>
+        <a style="margin: 0 1em; margin-bottom: 5px;" class="btn btn-secondary" href="/logout"><i class='bi bi-box-arrow-in-right'></i>&nbsp;Abmelden</a>
+    </div>
+    <hr>
+</div>
 <div class='container'>
     <div class='row'>
         <div class='col-md-12'>
             <div class="row">
-                <div class="col-sm-6"><h2>Abmelden</h2></div>
-                <div class="col-sm-6 btn-module"><a style='margin-top: 4px; #{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-secondary" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a></div>
-            </div>
-            <p>
-                Drücke den Button, um dich in diesem Browser abzumelden. Du kannst dich später wieder mit deiner E-Mail-Adresse anmelden, deine Dateien und Einstellungen bleiben erhalten.
-            </p>
-            <hr>
-            <div class="row">
                 <div class="col-sm-12"><h2>Workspace</h2></div>
-                <!-- <div class="col-sm-6 btn-module">#{print_module_button(:workspace)}</div> -->
             </div>
             <p>
                 Der Workspace ist deine persönliche Visual Studio Code-Arbeitsumgebung. Hier kannst du Dateien erstellen, bearbeiten und löschen. Du kannst auch neue Dateien und Ordner erstellen und Dateien hochladen.
@@ -24,8 +26,8 @@
             <div class="row">
                 <div class="col-sm-6"><h4>Workspace teilen</h4></div>
                 <div class="col-sm-6 btn-module-4" style="margin-top: 0;">
-                    <button style='#{(@session_user || {})[:share_tag].nil? ? '' : 'display: none;'}' id='bu_share' class="btn btn-primary"><i class='fa fa-send'></i>&nbsp;&nbsp;Workspace teilen</button>
-                    <button style='#{(@session_user || {})[:share_tag].nil? ? 'display: none;' : ''}' id='bu_stop_share' class="btn btn-primary"><i class='fa fa-trash'></i>&nbsp;&nbsp;Teilen beenden</button>
+                    <button style='#{(@session_user || {})[:share_tag].nil? ? '' : 'display: none;'}' id='bu_share' class="btn btn-primary"><i class='bi bi-share'></i>&nbsp;&nbsp;Workspace teilen</button>
+                    <button style='#{(@session_user || {})[:share_tag].nil? ? 'display: none;' : ''}' id='bu_stop_share' class="btn btn-primary"><i class='bi bi-trash-fill'></i>&nbsp;&nbsp;Teilen beenden</button>
                 </div>
             </div>
             <p>
@@ -36,7 +38,7 @@
                     <div class="input-group">
                         <span class="input-group-text">Freigabelink:</span>
                         <input type="text" id='ti_share_link' style='width: 42em; max-width: 100%;' class="form-control" readonly value="#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}">
-                        <button id='bu_copy_share_link' class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}'><i class='fa fa-clipboard'></i></button>
+                        <button id='bu_copy_share_link' class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}'><i class='bi bi-copy'></i></button>
                     </div>
                 </div>
             </div>
@@ -45,7 +47,7 @@
                 Hier kannst du deinen Workspace zurücksetzen. Alle Dateien, Einstellungen und installierte Erweiterungen werden gelöscht und dein Workspace wird auf den Ursprungszustand zurückgesetzt.
             </p>
             <div>
-                <button id='bu_reset_workspace' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Workspace zurücksetzen</button>
+                <button id='bu_reset_workspace' class="btn btn-danger"><i class='bi bi-trash-fill'></i>&nbsp;&nbsp;Workspace zurücksetzen</button>
             </div>
 
             <hr>
@@ -65,28 +67,28 @@
                     <div class="input-group">
                         <span class="input-group-text" style="width: 9em;">Host:</span>
                         <input type="text" class="form-control" readonly value="mysql">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='mysql'><i class='fa fa-clipboard'></i></button>
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='mysql'><i class='bi bi-copy'></i></button>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-text" style="width: 9em;">Benutzername:</span>
                         <input type="text" class="form-control" readonly value="#{@session_user[:email]}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email]}'><i class='fa fa-clipboard'></i></button>
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email]}'><i class='bi bi-copy'></i></button>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-text" style="width: 9em;">Datenbank:</span>
                         <input type="text" class="form-control" readonly value="#{@session_user[:email]}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email]}'><i class='fa fa-clipboard'></i></button>
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email]}'><i class='bi bi-copy'></i></button>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-text" style="width: 9em;">Passwort:</span>
                         <input type="text" class="form-control" readonly value="#{Main.gen_password_for_email(@session_user[:email], MYSQL_PASSWORD_SALT)}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{Main.gen_password_for_email(@session_user[:email], MYSQL_PASSWORD_SALT)}'><i class='fa fa-clipboard'></i></button>
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{Main.gen_password_for_email(@session_user[:email], MYSQL_PASSWORD_SALT)}'><i class='bi bi-copy'></i></button>
                     </div>
                 </div>
             </div>
@@ -98,7 +100,7 @@
                 Hier kannst du deine MySQL-Datenbank zurücksetzen. Alle Tabellen und Daten werden gelöscht und deine Datenbank wird auf den Ursprungszustand zurückgesetzt.
             </p>
             <div>
-                <button id='bu_reset_mysql' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;MySQL-Datenbank zurücksetzen</button>
+                <button id='bu_reset_mysql' class="btn btn-danger"><i class='bi bi-trash-fill'></i>&nbsp;&nbsp;MySQL-Datenbank zurücksetzen</button>
             </div>
 
             <hr>
@@ -118,28 +120,28 @@
                     <div class="input-group">
                         <span class="input-group-text" style="width: 9em;">Host:</span>
                         <input type="text" class="form-control" readonly value="postgres">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='postgres'><i class='fa fa-clipboard'></i></button>
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='postgres'><i class='bi bi-copy'></i></button>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-text" style="width: 9em;">Benutzername:</span>
                         <input type="text" class="form-control" readonly value="#{@session_user[:email]}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email]}'><i class='fa fa-clipboard'></i></button>
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email]}'><i class='bi bi-copy'></i></button>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-text" style="width: 9em;">Datenbank:</span>
                         <input type="text" class="form-control" readonly value="#{@session_user[:email]}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email]}'><i class='fa fa-clipboard'></i></button>
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email]}'><i class='bi bi-copy'></i></button>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-text" style="width: 9em;">Passwort:</span>
                         <input type="text" class="form-control" readonly value="#{Main.gen_password_for_email(@session_user[:email], POSTGRES_PASSWORD_SALT)}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{Main.gen_password_for_email(@session_user[:email], POSTGRES_PASSWORD_SALT)}'><i class='fa fa-clipboard'></i></button>
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{Main.gen_password_for_email(@session_user[:email], POSTGRES_PASSWORD_SALT)}'><i class='bi bi-copy'></i></button>
                     </div>
                 </div>
             </div>
@@ -151,7 +153,7 @@
                 Hier kannst du deine Postgres-Datenbank zurücksetzen. Alle Tabellen und Daten werden gelöscht und deine Datenbank wird auf den Ursprungszustand zurückgesetzt.
             </p>
             <div>
-                <button id='bu_reset_postgres' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Postgres-Datenbank zurücksetzen</button>
+                <button id='bu_reset_postgres' class="btn btn-danger"><i class='bi bi-trash-fill'></i>&nbsp;&nbsp;Postgres-Datenbank zurücksetzen</button>
             </div>
 
             <hr>
@@ -169,7 +171,7 @@
                 Hiermit kannst du deinen TIC-80 zurücksetzen. Alle Dateien werden gelöscht und dein TIC-80 wird auf den Ursprungszustand zurückgesetzt.
             </p>
             <div>
-                <button id='bu_reset_tic80' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;TIC-80 zurücksetzen</button>
+                <button id='bu_reset_tic80' class="btn btn-danger"><i class='bi bi-trash-fill'></i>&nbsp;&nbsp;TIC-80 zurücksetzen</button>
             </div> -->
         </div>
     </div>
@@ -186,42 +188,50 @@
             });
         });
         $('#bu_reset_workspace').on('click', function() {
-            showTemplateModal('Workspace zurücksetzen', `<div>Bist du sicher, dass du deinen Workspace zurücksetzen möchtest? Alle Dateien, Einstellungen und installierte Erweiterungen werden gelöscht.</div><div id='div_reset_workspace_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog fa-spin'></i>&nbsp;&nbsp;Moment, dein Workspace wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_workspace_success' style='display: none; margin-top: 1em;'><i class='text-success fa fa-check'></i>&nbsp;&nbsp;Dein Workspace wurde auf den Ursprungszustand zurückgesetzt.</div>`,
-            "<i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen", 'btn-danger', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+            showTemplateModal('Workspace zurücksetzen', `<div>Bist du sicher, dass du deinen Workspace zurücksetzen möchtest? Alle Dateien, Einstellungen und installierte Erweiterungen werden gelöscht.</div><div id='div_reset_workspace_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog bi-spin'></i>&nbsp;&nbsp;Moment, dein Workspace wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_workspace_success' style='display: none; margin-top: 1em;'><i class='text-success bi bi-check-lg'></i>&nbsp;&nbsp;Dein Workspace wurde auf den Ursprungszustand zurückgesetzt.</div>`,
+            "<i class='bi bi-trash-fill'></i>&nbsp;&nbsp;Zurücksetzen", 'btn-danger', "<i class='bi bi-x-lg'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
                 $('#div_reset_workspace_please_wait').slideDown();
                 api_call('/api/reset_server', {}, function(data) {
                     $('#div_reset_workspace_please_wait').hide();
                     $('#div_reset_workspace_success').show();
                     $('#__template_modal .modal-footer .btn').eq(0).hide();
-                    $('#__template_modal .modal-footer .btn').eq(1).html(`<i class='fa fa-times'></i>&nbsp;&nbsp;Schließen`);
+                    $('#__template_modal .modal-footer .btn').eq(1).html(`<i class='bi bi-x-lg'></i>&nbsp;&nbsp;Schließen`);
                 });
                 return false;
             });
         });
         $('#bu_reset_mysql').on('click', function() {
-            showTemplateModal('MySQL-Datenbank zurücksetzen', `<div>Bist du sicher, dass du deine MySQL-Datenbank zurücksetzen möchtest? Alle Tabellen und Daten werden gelöscht.</div><div id='div_reset_mysql_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog fa-spin'></i>&nbsp;&nbsp;Moment, deine Datenbank wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_mysql_success' style='display: none; margin-top: 1em;'><i class='text-success fa fa-check'></i>&nbsp;&nbsp;Deine Datenbank wurde auf den Ursprungszustand zurückgesetzt.</div>`,
-            "<i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen", 'btn-danger', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+            showTemplateModal('MySQL-Datenbank zurücksetzen', `<div>Bist du sicher, dass du deine MySQL-Datenbank zurücksetzen möchtest? Alle Tabellen und Daten werden gelöscht.</div><div id='div_reset_mysql_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog bi-spin'></i>&nbsp;&nbsp;Moment, deine Datenbank wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_mysql_success' style='display: none; margin-top: 1em;'><i class='text-success bi bi-check-lg'></i>&nbsp;&nbsp;Deine Datenbank wurde auf den Ursprungszustand zurückgesetzt.</div>`,
+            "<i class='bi bi-trash-fill'></i>&nbsp;&nbsp;Zurücksetzen", 'btn-danger', "<i class='bi bi-x-lg'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
                 $('#div_reset_mysql_please_wait').slideDown();
                 api_call('/api/reset_mysql', {}, function(data) {
                     $('#div_reset_mysql_please_wait').hide();
                     $('#div_reset_mysql_success').show();
                     $('#__template_modal .modal-footer .btn').eq(0).hide();
-                    $('#__template_modal .modal-footer .btn').eq(1).html(`<i class='fa fa-times'></i>&nbsp;&nbsp;Schließen`);
+                    $('#__template_modal .modal-footer .btn').eq(1).html(`<i class='bi bi-x-lg'></i>&nbsp;&nbsp;Schließen`);
                 });
                 return false;
             });
         });
         $('#bu_reset_postgres').on('click', function() {
-            showTemplateModal('Postgres-Datenbank zurücksetzen', `<div>Bist du sicher, dass du deine Postgres-Datenbank zurücksetzen möchtest? Alle Tabellen und Daten werden gelöscht.</div><div id='div_reset_postgres_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog fa-spin'></i>&nbsp;&nbsp;Moment, deine Datenbank wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_postgres_success' style='display: none; margin-top: 1em;'><i class='text-success fa fa-check'></i>&nbsp;&nbsp;Deine Datenbank wurde auf den Ursprungszustand zurückgesetzt.</div>`,
-            "<i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen", 'btn-danger', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+            showTemplateModal('Postgres-Datenbank zurücksetzen', `<div>Bist du sicher, dass du deine Postgres-Datenbank zurücksetzen möchtest? Alle Tabellen und Daten werden gelöscht.</div><div id='div_reset_postgres_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog bi-spin'></i>&nbsp;&nbsp;Moment, deine Datenbank wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_postgres_success' style='display: none; margin-top: 1em;'><i class='text-success bi bi-check-lg'></i>&nbsp;&nbsp;Deine Datenbank wurde auf den Ursprungszustand zurückgesetzt.</div>`,
+            "<i class='bi bi-trash-fill'></i>&nbsp;&nbsp;Zurücksetzen", 'btn-danger', "<i class='bi bi-x-lg'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
                 $('#div_reset_postgres_please_wait').slideDown();
                 api_call('/api/reset_postgres', {}, function(data) {
                     $('#div_reset_postgres_please_wait').hide();
                     $('#div_reset_postgres_success').show();
                     $('#__template_modal .modal-footer .btn').eq(0).hide();
-                    $('#__template_modal .modal-footer .btn').eq(1).html(`<i class='fa fa-times'></i>&nbsp;&nbsp;Schließen`);
+                    $('#__template_modal .modal-footer .btn').eq(1).html(`<i class='bi bi-x-lg'></i>&nbsp;&nbsp;Schließen`);
                 });
                 return false;
+            });
+        });
+        $('.bu-set-brightness').on('click', function(e) {
+            let brightness = $(e.target.closest('.btn')).data('brightness');
+            api_call(`/api/set_brightness/${brightness}`, {}, function(data) {
+                if (data.success) {
+                    window.location.reload();
+                }
             });
         });
     });

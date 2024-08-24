@@ -951,6 +951,7 @@ class Main < Sinatra::Base
                 config = {}
                 config['files.exclude'] ||= {}
                 config['files.exclude']['**/.*'] = true
+                config['telemetry.telemetryLevel'] ||= 'off'
                 f.write config.to_json
             end
         end
@@ -1208,7 +1209,7 @@ class Main < Sinatra::Base
                         else
                             io2.puts "<td>&ndash;</td>"
                         end
-                        io2.puts "<td><button class='btn btn-sm btn-success bu-open-workspace-as-admin' data-email='#{email_for_tag[user_tag]}'><i class='fa fa-code'></i>&nbsp;Workspace öffnen</button></td>"
+                        io2.puts "<td><button class='btn btn-sm btn-success bu-open-workspace-as-admin' data-email='#{email_for_tag[user_tag]}'><i class='bi bi-code-slash'></i>&nbsp;Workspace öffnen</button></td>"
                         io2.puts "</tr>"
                     end
                     io2.string
@@ -1503,7 +1504,17 @@ class Main < Sinatra::Base
     def print_module_button(key)
         assert(user_logged_in?)
         active = @session_user["show_#{key}".to_sym]
-        "<button class='btn btn-md #{active ? 'btn-success' : 'btn-outline-secondary'} bu-toggle-module' data-module='#{key}'><i class='fa #{active ? 'fa-check' : 'fa-times'}'></i>&nbsp;&nbsp;#{MODULE_LABELS[key]} im Menü #{active ? '' : 'nicht'} anzeigen</button>"
+        "<button class='btn btn-md #{active ? 'btn-success' : 'btn-outline-secondary'} bu-toggle-module' data-module='#{key}'><i class='bi #{active ? 'bi-check-lg' : 'bi-x-lg'}'></i>&nbsp;&nbsp;#{MODULE_LABELS[key]} im Menü #{active ? '' : 'nicht'} anzeigen</button>"
+    end
+
+    post '/api/set_brightness/:mode' do
+        mode = params['mode']
+        assert(%w(light dark auto).include?(mode))
+        neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :mode => mode})
+            MATCH (u:User {email: $email})
+            SET u.brightness = $mode
+            RETURN u;
+        END_OF_STRING
     end
 
     get '/*' do

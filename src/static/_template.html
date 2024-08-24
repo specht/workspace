@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hackschule Workspace</title>
     <link href="/include/bootstrap-5.3.3/dist/css/bootstrap.min.css?#{CACHE_BUSTER}" rel="stylesheet">
-    <link href="/include/bower_components/fork-awesome/css/fork-awesome.min.css" rel="stylesheet">
+    <link href="/include/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css?#{CACHE_BUSTER}" rel="stylesheet">
 
     <link href="/include/fonts.css?#{CACHE_BUSTER}" rel="stylesheet">
     <link href="/include/default.css?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}" rel="stylesheet">
@@ -46,15 +46,15 @@ pre table td {
 function install_clipboard_handler(selector) {
     window.clipboard = new ClipboardJS(selector);
     window.clipboard.on('success', function(e) {
-        let check = $("<i class='fa fa-check btn-clipboard-check' style='position: absolute; left: 0.8em; top: 0.6em;'/>");
+        let check = $("<i class='bi bi-check-lg btn-clipboard-check' style='position: absolute; left: 0.8em; top: 0.6em;'/>");
         $(e.trigger).removeClass('btn-secondary').addClass('btn-success');
-        $(e.trigger).closest('.btn').find('.fa-clipboard').css('visibility', 'hidden');
+        $(e.trigger).closest('.btn').find('.bi-copy').css('visibility', 'hidden');
         $(e.trigger).append(check);
         (function(check, trigger) {
             setTimeout(function() {
                 check.fadeOut(400, function() {
                     trigger.addClass('btn-secondary').removeClass('btn-success');
-                    trigger.closest('.btn').find('.fa-clipboard').css('visibility', 'visible');
+                    trigger.closest('.btn').find('.bi-copy').css('visibility', 'visible');
                     check.remove();
                 });
             }, 1000);
@@ -90,9 +90,9 @@ function check_server_online(server_tag) {
     .then(response => {
         if (response.status === 200) {
             console.log('Server is online');
-            $('#bu_launch .fa').removeClass('fa-spin');
+            $('#bu_launch .bi').removeClass('bi-spin');
             $('#bu_launch').prop('disabled', false);
-            $('.bu-open-workspace-as-admin .fa').removeClass('fa-spin');
+            $('.bu-open-workspace-as-admin .bi').removeClass('bi-spin');
             $('.bu-open-workspace-as-admin').prop('disabled', false);
             window.open(`/${server_tag}/`, '_blank');
         } else {
@@ -171,16 +171,46 @@ function install_autotoc() {
     $('.autotoc .progress_sm').css('width', `calc(${100.0 / autotoc_containers.length}% - 0.3em)`);
 }
 
+var brightness = `#{((@session_user || {})[:brightness] || 'auto')}`;
+var system_brightness = 'light';
+var dark_css_element = null;
+
+function update_dark_mode() {
+    let dark = false;
+    if (brightness === 'auto') dark = (system_brightness === 'dark');
+    if (brightness === 'light') dark = false;
+    if (brightness === 'dark') dark = true;
+    console.log(`Setting dark mode to ${dark}`);
+    if (dark) {
+        document.getElementsByTagName('html')[0].setAttribute('data-bs-theme', 'dark');
+    } else {
+        document.getElementsByTagName('html')[0].setAttribute('data-bs-theme', 'light');
+    }
+    if (dark_css_element !== null) {
+        dark_css_element.remove();
+        dark_css_element = null;
+    }
+    if (dark) {
+        dark_css_element = document.createElement('link');
+        dark_css_element.rel = 'stylesheet';
+        dark_css_element.href = '/include/dark.css';
+        document.head.appendChild(dark_css_element);
+    }
+}
+
 window.addEventListener('DOMContentLoaded', function() {
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.getElementsByTagName('html')[0].setAttribute('data-bs-theme', 'dark');
+        system_brightness = 'dark';
     }
+    update_dark_mode();
     window.matchMedia('(prefers-color-scheme: dark)')
-      .addEventListener('change',({ matches }) => {
+    .addEventListener('change',({ matches }) => {
         if (matches) {
-            document.getElementsByTagName('html')[0].setAttribute('data-bs-theme', 'dark');
+            system_brightness = 'dark';
+            update_dark_mode();
         } else {
-            document.getElementsByTagName('html')[0].setAttribute('data-bs-theme', 'light');
+            system_brightness = 'light';
+            update_dark_mode();
         }
     });
 });
@@ -195,7 +225,7 @@ window.addEventListener('load', function() {
 
     $('#bu_launch').on('click', function(e) {
         $('#bu_launch').prop('disabled', true);
-        $('#bu_launch .fa').addClass('fa-spin');
+        $('#bu_launch .bi').addClass('bi-spin');
         api_call('/api/start_server', {}, function(data) {
             check_server_tag_update(data.server_tag);
             check_server_online(data.server_tag);
@@ -203,7 +233,7 @@ window.addEventListener('load', function() {
     });
     $('#bu_reset').on('click', function(e) {
         showTemplateModal('Workspace zurücksetzen', 'Bist du sicher, dass du deinen Workspace zurücksetzen möchtest? Alle Dateien und deine installierten Erweiterungen werden gelöscht.',
-        "<i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen", 'btn-danger', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+        "<i class='bi bi-trash-fill'></i>&nbsp;&nbsp;Zurücksetzen", 'btn-danger', "<i class='bi bi-x-lg'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
             api_call('/api/reset_server', {}, function(data) {
                 // we need to reload the website to receive the updated server_tag and server_sid
                 window.location.reload();
@@ -212,7 +242,7 @@ window.addEventListener('load', function() {
     });
     $('#bu_share').on('click', function(e) {
         showTemplateModal('Workspace teilen', 'Wenn du deinen Workspace teilst, erhältst du einen Link, mit dem man ohne Anmeldung auf deinen Workspace zugreifen kann. Möchtest du deinen Workspace teilen?',
-        "<i class='fa fa-send'></i>&nbsp;&nbsp;Workspace teilen", 'btn-primary', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+        "<i class='bi bi-share'></i>&nbsp;&nbsp;Workspace teilen", 'btn-primary', "<i class='bi bi-x-lg'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
             api_call('/api/share_server', {}, function(data) {
                 if (data.success) {
                     $('#ti_share_link').val("#{WEB_ROOT}/share/" + data.share_tag);
@@ -226,7 +256,7 @@ window.addEventListener('load', function() {
     });
     $('#bu_stop_share').on('click', function(e) {
         showTemplateModal('Teilen beenden', 'Bist du sicher, dass du die Teilung aufheben möchtest? Der Link kann dann nicht mehr für den Zugriff auf deinen Workspace verwendet werden.',
-        "<i class='fa fa-trash'></i>&nbsp;&nbsp;Teilen beenden", 'btn-primary', "<i class='fa fa-times'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+        "<i class='bi bi-trash-fill'></i>&nbsp;&nbsp;Teilen beenden", 'btn-primary', "<i class='bi bi-x-lg'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
             api_call('/api/unshare_server', {}, function(data) {
                 if (data.success) {
                     $('#ti_share_link').val('');
@@ -240,42 +270,25 @@ window.addEventListener('load', function() {
 
     $('#bu_phpmyadmin').on('click', function(e) {
         $('#bu_phpmyadmin').prop('disabled', true);
-        $('#bu_phpmyadmin .fa').addClass('fa-spin');
+        $('#bu_phpmyadmin .bi').addClass('bi-spin');
         api_call('/api/start_mysql', {}, function(data) {
             $('#bu_phpmyadmin').prop('disabled', false);
-            $('#bu_phpmyadmin .fa').removeClass('fa-spin');
+            $('#bu_phpmyadmin .bi').removeClass('bi-spin');
             window.open('#{PHPMYADMIN_WEB_ROOT}', '_blank');
         });
     });
 
     $('#bu_pgadmin').on('click', function(e) {
         $('#bu_pgadmin').prop('disabled', true);
-        $('#bu_pgadmin .fa').addClass('fa-spin');
+        $('#bu_pgadmin .bi').addClass('bi-spin');
         api_call('/api/start_postgres', {}, function(data) {
             $('#bu_pgadmin').prop('disabled', false);
-            $('#bu_pgadmin .fa').removeClass('fa-spin');
+            $('#bu_pgadmin .bi').removeClass('bi-spin');
             console.log('#{PGADMIN_WEB_ROOT}');
             window.open('#{PGADMIN_WEB_ROOT}', '_blank');
         });
     });
 
-    $('#bu_settings').on('click', function(e) {
-        if ($('#div_settings').is(':visible')) {
-            $('#div_settings').slideUp();
-            $('#bu_settings .fa-chevron-down').removeClass('rot180');
-        } else {
-            $('#div_settings').slideDown();
-            $('#bu_settings .fa-chevron-down').addClass('rot180');
-        }
-    });
-    // for (let e of $('img.full')) {
-    //     e = $(e);
-    //     if (e.data('scroll')) {
-    //         let p = e.parent();
-    //         let x = parseFloat(e.data('scroll').replace('%', '')) / 100.0;
-    //         p[0].scrollLeft = x * e.width();
-    //     }
-    // }
     var isDown = false;
     var startX;
     var scrollLeft;
@@ -338,30 +351,14 @@ window.addEventListener('load', function() {
     <div class="menu">
         <div class="container">
             <div style='text-align: center; width: 100%;'>
-                <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="btn btn-success #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='fa fa-sign-in'></i>&nbsp;&nbsp;Anmelden</a>
-                <button style='#{(@session_user.nil? || (!@session_user[:show_workspace])) ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='fa fa-code'></i>&nbsp;&nbsp;Workspace öffnen</button>
-                <button style='#{(@session_user.nil? || (!@session_user[:show_phpmyadmin])) ? 'display: none;' : ''}' id='bu_phpmyadmin' class="btn btn-success" target="_blank"><i class='fa fa-database'></i>&nbsp;&nbsp;phpMyAdmin</button>
-                <button style='#{(@session_user.nil? || (!@session_user[:show_pgadmin])) ? 'display: none;' : ''}' id='bu_pgadmin' class="btn btn-success" target="_blank"><i class='fa fa-database'></i>&nbsp;&nbsp;pgAdmin</button>
-                <a style='#{(@session_user.nil? || (!@session_user[:show_tic80])) ? 'display: none;' : ''}' href="/tic80/" class="btn btn-success" target="_blank"><i class='fa fa-keyboard-o'></i>&nbsp;&nbsp;TIC-80</a>
-                <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-primary"><i class='fa fa-id-card-o'></i>&nbsp;&nbsp;#{((@@invitations[(@session_user || {})[:email]] || {})[:name] || '')}</a>
-                <a href='/admin' style='#{admin_logged_in? ? '' : 'display: none;'}' class="btn btn-warning"><i class='fa fa-wrench'></i>&nbsp;&nbsp;Administration</a>
-                <!-- <button style='#{@session_user.nil? ? 'display: none;' : ''}' id='bu_settings' class="btn btn-outline-secondary"><i class='fa fa-chevron-down rot'></i></button> -->
+                <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="btn btn-success #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='bi bi-box-arrow-in-right'></i>&nbsp;&nbsp;Anmelden</a>
+                <button style='#{(@session_user.nil? || (!@session_user[:show_workspace])) ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='bi bi-code-slash'></i>&nbsp;&nbsp;Workspace öffnen</button>
+                <button style='#{(@session_user.nil? || (!@session_user[:show_phpmyadmin])) ? 'display: none;' : ''}' id='bu_phpmyadmin' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>&nbsp;&nbsp;phpMyAdmin</button>
+                <button style='#{(@session_user.nil? || (!@session_user[:show_pgadmin])) ? 'display: none;' : ''}' id='bu_pgadmin' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>&nbsp;&nbsp;pgAdmin</button>
+                <a style='#{(@session_user.nil? || (!@session_user[:show_tic80])) ? 'display: none;' : ''}' href="/tic80/" class="btn btn-success" target="_blank"><i class='bi bi-keyboard'></i>&nbsp;&nbsp;TIC-80</a>
+                <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-primary"><i class='bi bi-person-vcard'></i>&nbsp;&nbsp;#{((@@invitations[(@session_user || {})[:email]] || {})[:name] || '')}</a>
+                <a href='/admin' style='#{admin_logged_in? ? '' : 'display: none;'}' class="btn btn-warning"><i class='bi bi-wrench-adjustable'></i>&nbsp;&nbsp;Administration</a>
             </div>
-            <!-- <div id='div_settings' style='display: none; text-align: center; width: 100%; border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;'>
-                <div style="margin-top: -6px;">
-                    <button style='margin-top: 4px; #{(@session_user || {})[:share_tag].nil? ? '' : 'display: none;'}'id='bu_share' class="btn btn-primary"><i class='fa fa-send'></i>&nbsp;&nbsp;Teilen</button>
-                    <button style='margin-top: 4px; #{(@session_user || {})[:share_tag].nil? ? 'display: none;' : ''}' id='bu_stop_share' class="btn btn-primary"><i class='fa fa-trash'></i>&nbsp;&nbsp;Teilen beenden</button>
-                    <button style='margin-top: 4px; ' id='bu_reset' class="btn btn-danger"><i class='fa fa-trash'></i>&nbsp;&nbsp;Zurücksetzen</button>
-                    <a style='margin-top: 4px; #{!@session_user.nil? ? '' : 'display: none;'}' class="btn btn-outline-secondary" href="/logout"><i class='fa fa-sign-out'></i>&nbsp;Abmelden</a>
-                </div>
-                <div style="display: table; margin-left: auto; margin-right: auto;">
-                    <div id='div_share_link' class="input-group mt-2" style="#{(@session_user || {})[:share_tag] ? '' : 'display: none;'}">
-                        <span class="input-group-text">Freigabelink:</span>
-                        <input type="text" id='ti_share_link' style='max-width: 42em;' class="form-control" readonly value="#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}">
-                        <button id='bu_copy_share_link' class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}'><i class='fa fa-clipboard'></i></button>
-                    </div>
-                </div>
-            </div> -->
         </div>
     </div>
     #{CONTENT}
