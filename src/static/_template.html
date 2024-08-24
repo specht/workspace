@@ -147,7 +147,7 @@ function install_autotoc() {
         if (!found_entry) {
             $('.autotoc').addClass('hidden');
         }
-    }, { root: null, rootMargin: '-40% 0% -60% 0%' });
+    }, { root: null, rootMargin: '-20% 0% -80% 0%' });
     let containers = $('.autotoc-container').toArray();
     for (let i = 0; i < containers.length; i++) {
         let div = $(containers[i]);
@@ -180,7 +180,6 @@ function update_dark_mode() {
     if (brightness === 'auto') dark = (system_brightness === 'dark');
     if (brightness === 'light') dark = false;
     if (brightness === 'dark') dark = true;
-    console.log(`Setting dark mode to ${dark}`);
     if (dark) {
         document.getElementsByTagName('html')[0].setAttribute('data-bs-theme', 'dark');
     } else {

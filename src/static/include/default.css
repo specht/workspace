@@ -429,6 +429,10 @@ img.full {
     cursor: grab;
 }
 
+img.fit-width {
+    min-width: unset;
+}
+
 img.r {
     float: right;
     margin-top: 0.5em;
@@ -546,6 +550,10 @@ pre pre {
     background-image: url(/images/handshake.png);
 }
 
+.hint.melting::before {
+    background-image: url(/images/melting.png);
+}
+
 /* a.tutorial_card {
     max-height: 100vw;
 } */
@@ -603,6 +611,9 @@ pre pre {
 @media (pointer: coarse) {
     .scroll-x > img {
         width: calc(max(100%, 900px));
+    }
+    .scroll-x > img.fit-width {
+        width: 100%;
     }
 }
 
