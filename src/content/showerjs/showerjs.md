@@ -149,7 +149,7 @@ Generell ist es so, dass bei HTML Textteile in sogenannte Tags eingeschlossen we
 </tr>
 <tr>
 <td><code>&lt;img&gt;</code></td>
-<td><img style='width: 200px;' src='bird.jpg'></td>
+<td><img style='width: 200px;' src='bird.webp'></td>
 <td><code style='white-space: nowrap;'>&lt;img src='image.jpg'&gt;</code></td>
 </tr>
 </table>
