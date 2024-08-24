@@ -16,14 +16,45 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 
 <img class='full' src='fresh-start.webp'>
 
-1. Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du auf »Clone Repository« klickst. Gib die URL <a href='https://github.com/specht/digits-experiment.git' target='_blank'>https://github.com/specht/digits-experiment.git</a> ein und bestätige mit <span class='key'>Enter</span>.
-  - Bestätige den Pfad `/workspace/` mit <span class='key'>Enter</span>.
-  - Beantworte die Frage »Would you like to open the cloned repository?« mit »Open«.
-2. Öffne die Datei `00-install-packages.ipynb`, klicke in den Code-Block und dann auf das Play-Symbol links neben dem Codeblock, um ihn auszuführen. Das klappt aber noch nicht, weil wir erst noch ein paar Pakete installieren müssen.
-  - Bestätige die Meldung »Install / Enable suggested extensions« mit <span class='key'>Enter</span>.
-  - Warte kurz, während Python und Jupyter installiert werden.
-  - Bestätige die Meldung »Python Environments« und »★ Python 3.10.12«
-  - Warte kurz, während weitere Pakete installiert werden, bis du die Meldung »✅ Pakete installiert« ganz unten unter dem Codeblock siehst.
+Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du auf den blauen Button »Clone Repository« klickst. Gib die folgende URL ein und bestätige mit <span class='key'>Enter</span>:
+
+```bash
+https://github.com/specht/digits-experiment.git
+```
+
+<img class='full' src='git-clone.webp'>
+
+Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <span class='key'>Enter</span>.
+
+<img class='full' src='confirm-clone-path.webp'>
+
+Beantworte die Frage »Would you like to open the cloned repository?« mit »Open«.
+
+<img class='full' src='open-yes-no.webp'>
+
+Du siehst nun auf der linken Seite ein paar Verzeichnisse und Dateien, die wir für dieses Experiment verwenden werden.
+
+<img class='full' src='lets-start.webp'>
+
+Öffne nun die Datei `00-install-packages.ipynb`, indem du darauf klickst.
+Es handelt sich dabei um ein Jupyter-Notebook, das du verwenden kannst, um die notwendigen Pakete zu installieren.
+Links neben dem ersten Codeblock siehst du ein Play-Symbol. Klicke darauf, um den Codeblock auszuführen.
+
+<img class='full' src='run-step-0.webp'>
+
+Bevor der Code ausgeführt werden kann, müssen wir noch ein paar Pakete installieren. Bestätige die Meldung »Install / Enable suggested extensions« mit <span class='key'>Enter</span>:
+
+<img class='full' src='install-extensions.webp'>
+
+Wenn das erledigt ist, musst du noch einen Python-Interpreter auswählen. Bestätige die Meldung »Python Environments« und »★ Python 3.10.12«:
+
+<img class='full' src='choose-kernel.webp'>
+
+<img class='full' src='python-3-10-12.webp'>
+
+Wenn du die Meldung »Pakete installiert« siehst, hast du den Vorbereitungsschritt erfolgreich abgeschlossen:
+
+<img class='full' src='step-0-done.webp'>
 
 ## Trainingsmaterial herstellen
 
@@ -31,7 +62,7 @@ Du hast nun zwei Möglichkeiten: entweder verwendest du fertige Scans mit handge
 
 <b>Variante 1: Fertige Scans verwenden</b>
 
-Du kannst diese Seiten hier herunterladen und per Drag & Drop in deinem Workspace in das Verzeichnis `01-pages` ziehen:
+Du kannst diese Seiten im PNG-Format hier herunterladen und per Drag & Drop in deinem Workspace in das Verzeichnis `01-pages` ziehen:
 
 <a href='/cache/blatt1.png' target='_blank'><img src='blatt1.png' data-noconvert='1' style='height: 16em; box-shadow: 0 0 2px rgba(0,0,0,0.5);'></a>
 <a href='/cache/blatt2.png' target='_blank'><img src='blatt2.png' data-noconvert='1' style='height: 16em; box-shadow: 0 0 2px rgba(0,0,0,0.5);'></a>
@@ -39,27 +70,97 @@ Du kannst diese Seiten hier herunterladen und per Drag & Drop in deinem Workspac
 
 <b>Variante 2: Ziffern selbst schreiben</b>
 
-Drucke <a href='/docs/grid-digits.pdf'>diese PDF-Vorlage</a> zweimal aus und trage in jedes Feld die entsprechenden Ziffern ein. Scanne die Blätter anschließend mit einer Auflösung von 300 dpi, speichere sie im PNG-Format und ziehe sie per Drag & Drop in deinen Workspace in das Verzeichnis `01-pages`.
+Drucke <a href='/docs/grid-digits.pdf' target='_blank'>diese PDF-Vorlage</a> ohne zusätzliche Seitenränder zweimal aus und trage in jedes Feld die entsprechenden Ziffern ein. Scanne die Blätter anschließend mit einer Auflösung von 300 dpi, speichere sie im PNG-Format und ziehe sie per Drag & Drop in deinen Workspace in das Verzeichnis `01-pages`.
 
-Tipp: Wenn du deinen eigenen Blätter beschreibst, kannst du statt Ziffern auch Symbole verwenden. Dadurch ist dein neuronales Netzwerk später in der Lage, diese Symbole zu erkennen.
+<div class='hint'>
+Wenn du deinen eigenen Blätter beschreibst, kannst du statt Ziffern auch Symbole verwenden. Dadurch ist dein neuronales Netzwerk später in der Lage, diese Symbole zu erkennen.
+</div>
 
 ## Trainingsmaterial vorbereiten
 
-Öffne die Datei `01-prepare-training-data.ipynb`, lies die Abschnitte genau und führe die einzelnen Schritte aus. Achte darauf, dass deine Zwischenergebnisse korrekt sind. Nur so kannst du am Ende sicher sein, dass du ein gutes neuronales Netzwerk trainierst.
+Stelle sicher, dass du mindestens zwei Bilddateien im Verzeichnis `01-pages` hast. Du kannst die Dateien öffnen, um zu überprüfen, ob sie korrekt sind:
 
-Wenn am Ende alle Schritte erfolgreich durchgelaufen sind, schau dir die Bilder im Verzeichnis `04-sheets` an – hier siehst du das rohe Trainingsmaterial, sortiert nach Ziffer, mit dem wir im nächsten Schritt das Training beginnen.
+<img class='full' src='pages-ready.webp'>
+
+Öffne nun das zweite Jupyter-Notebook `01-prepare-training-data.ipynb`, und führe den ersten Codeblock aus, indem du auf das Play-Symbol klickst.
+
+<img class='full' src='colors-adjusted.webp'>
+
+Im nächsten Schritt siehst du den Effekt der Farbanpassung:
+
+<img class='full' src='step-2.webp'>
+
+Wenn die Bilder korrekt angezeigt werden, führe den nächsten Codeblock aus. In diesem Schritt werden die gedruckten Rahmen in jeder Bilddatei gesucht:
+
+<img class='full' src='detect-frame.webp'>
+
+Der nächste Schritt zeigt dir, wo die Rahmen gefunden wurden:
+
+<img class='full' src='frames.webp'>
+
+Wenn das Ergebnis zufriedenstellend aussieht, führe den nächsten Codeblock aus. In diesem Schritt werden die einzelnen Ziffern aus den Bildern ausgeschnitten:
+
+<img class='full' src='extracting-digits.webp'>
+
+Im nächsten Schritt werden 10 Bilddateien generiert, in denen die einzelnen Ziffern gesammelt werden:
+
+<img class='full' src='collect-digits.webp'>
+
+Du kannst dir die Bilder anschauen, indem du auf das Verzeichnis `04-sheets` klickst:
+
+<img class='full' src='4.webp'>
+
+Wenn alle Schritte erfolgreich durchgelaufen sind, können wir mit dem Training des Modells beginnen.
 
 ## Modell trainieren
 
-Öffne die Datei `02-train-model.ipynb`, lies die Abschnitte genau und führe die einzelnen Schritte aus.
+Öffne nun das dritte Juptyer-Notebook `02-train-model.ipynb`, indem du darauf klickst. Es enthält den Code, um unser neuronales Netzwerk zu trainieren, das die handgeschriebenen Ziffern erkennen soll. Im ersten Schritt wird die Menge aller Trainingsdaten in drei Teile aufgeteilt: 80% für das Training, 10% für die Validierung und 10% für den Test:
 
-Am Ende kannst du dein Modell testen, indem du rechts unten auf »Go Live« drückst. Es öffnet sich eine Seite, auf der du Ziffern schreiben kannst und währenddessen siehst, wie dein Modell die Ziffern erkennt (klicke mit links, um zu zeichnen und mit rechts, um zu löschen). Rechts siehst du die Vorhersage des Modells.
+<img class='full' src='train-groups.webp'>
 
-<img src='digits-prediction-good.webp' class='full'>
+Im nächsten Schritt wird die Architektur des Modells festgelegt. Es handelt sich um ein einfaches neuronales Netzwerk mit vier Schichten:
 
-Da dieses Modell eine sehr einfache Architektur hat, kann es zu falschen Vorhersagen kommen. Das ist normal und zeigt, dass das Modell noch nicht perfekt ist. Im nächsten Schritt wirst du lernen, wie du das Modell verbessern kannst.
+- die erste Schicht ist ein »Flatten Layer«, das die 28x28 Pixel großen Bilder in einen Vektor mit 784 Elementen umwandelt.
+- die zweite und dritte Schicht sind jeweils ein »Dense Layer« mit 100 Neuronen und der Aktivierungsfunktion »ReLU«.
+- die vierte Schicht ist ebenfalls ein »Dense Layer« mit 10 Neuronen, die die jeweiligen Ziffern repräsentieren, jedoch mit der Aktivierungsfunktion »Softmax«.
 
-<img src='digits-prediction-bad.webp' class='full'>
+<img class='full' src='architecture.webp'>
+
+Dieses Modell verfügt über eine Gesamtzahl von 89.610 Parametern, die während des Trainings optimiert werden.
+
+Wir sind jetzt bereit, das Modell zu trainieren. Klicke auf das Play-Symbol, um den Codeblock auszuführen. Nach 30 Trainingsepochen ist das Training beendet.
+
+<img class='full' src='training-finished.webp'>
+
+Im nächsten Schritt ermitteln wir, wie gut das Modell ist. Dazu verwenden wir die Testdaten, die wir zuvor beiseite gelegt haben. Die wichtigen Kennwerte sind der Verlust (loss) und die Genauigkeit (accuracy):
+
+- der Verlust sollte möglichst klein sein, idealerweise nahe bei 0.
+- die Genauigkeit sollte möglichst groß sein, idealerweise nahe bei 100%.
+
+<img class='full' src='evaluate.webp'>
+
+Um den vorherigen Schritt zu visualisieren, können wir uns nun ein paar Testbilder anzeigen lassen und die Vorhersagen des Modells überprüfen:
+
+<img class='full' src='test-bitmaps.webp'>
+
+Die roten Ziffern markieren die falschen Vorhersagen. Das Modell ist noch nicht perfekt, aber es ist bereits in der Lage, handgeschriebene Ziffern zu erkennen.
+
+## Modell ausprobieren
+
+Im nächsten Schritt wollen wir unser Modell interaktiv im Webbrowser testen. Dazu müssen wir das gespeicherte Modell zunächst in ein anderes Format konvertieren, das von TensorFlow.js gelesen werden kann. Führe dazu den nächsten Codeblock aus:
+
+<img class='full' src='convert-model.webp'>
+
+<img src='go-live.webp' class='r' style='width: 25em;'>
+
+Wenn das Modell erfolgreich konvertiert wurde, können wir es im Webbrowser testen. Klicke dazu rechts unten auf den Button »Go Live«.
+Du kannst nun links oben mit der Maus Ziffern schreiben und zuschauen, wie sich die Aktivierungen der Neuronen im Modell verändern. Du siehst die einzelnen Schichten und die Aktivierungen der Neuronen. Ganz rechts siehst du die Vorhersage des Modells.
+
+Versuche, die Grenze zwischen zwei Ziffern zu finden, um zu sehen, wie das Modell reagiert. Mit der rechten Maustaste kannst du deine Zeichnung wieder wegradieren.
+
+<div style='clear: both;'></div>
+
+<img class='full' src='interactive-1.webp'>
 
 ## Modell verbessern
 
@@ -69,7 +170,43 @@ Um ein CNN zu verwenden, scrolle nach oben zum Abschnitt »Architektur des Model
 
 <img src='model-2.webp' class='full'>
 
-Wenn du jetzt dein Modell trainierst, wirst du sehen, dass es besser ist als das vorherige Modell. Noch besser wird es, wenn du mehr Trainingsmaterial hinzufügst. Dazu kannst du entweder neue Blätter verwenden oder dich hier bedienen:
+Das neue Modell hat eine etwas andere Architektur:
+
+- die erste Schicht ist ein »Conv2D Layer«, dar das 28x28 Pixel großen Eingabebild mit 32 3x3-Filtern in 32 26x26 Pixel große Bildern umwandelt.
+- die zweite Schicht ist ein »MaxPooling2D Layer«, der die Größe der Bilder halbiert (13x13).
+- die dritte Schicht ist ein weiterer »Conv2D Layer«, der die 13x13 großen Bilder mit 64 3x3-Filtern in 64 11x11 Pixel große Bildern umwandelt.
+- die vierte Schicht ist ein weiterer »MaxPooling2D Layer«, der die Größe der Bilder halbiert (5x5).
+- die fünfte Schicht ist ein »Flatten Layer«, das die 5x5 Pixel großen Bilder in einen Vektor mit 1600 Elementen umwandelt.
+- die sechste Schicht ist ein »Dense Layer« mit 128 Neuronen und der Aktivierungsfunktion »ReLU«.
+- die siebte Schicht ist ein weiterer »Dense Layer« mit 10 Neuronen, die die jeweiligen Ziffern repräsentieren, jedoch mit der Aktivierungsfunktion »Softmax«.
+
+Das verbesserte Modell verfügt über eine Gesamtzahl von 225.034 Parametern, also ca. 2,5 mal so viele Parameter wie im vorherigen Modell:
+
+<img class='full' src='new-model-parameters.webp'>
+
+Da das neue Modell mehr Parameter hat, dauert das Training auch länger. Nach 30 Epochen ist das Training beendet:
+
+<img class='full' src='second-training-finished.webp'>
+
+Wie du an den Werten für Verlust und Genauigkeit sehen kannst, ist das neue Modell deutlich besser als das vorherige.
+
+<div class='hint'>
+Eine Angabe wie »2.9e-04« bedeutet 2,9&sdot;10<sup>-4</sup> bzw. 0,00029.
+</div>
+
+Bei der Evaluation des neuen Modells siehst du, dass der Validation Loss und die Validation Accuracy zwar schlechter sind als beim Traning, aber immer noch deutlich besser als beim vorherigen Modell:
+
+<img class='full' src='evaluate-again.webp'>
+
+Die Testbilder sehen jetzt so aus:
+
+<img class='full' src='test-bitmaps-2.webp'>
+
+Wenn du das Modell im Webbrowser testest, siehst du, wie die Pixel nicht mehr im ersten Schritt voneinander getrennt werden, sondern über mehrere Schichten hinweg im Quadrat angeordnet gemeinsam behandelt werden:
+
+<img class='full' src='interactive-2.webp'>
+
+Falls du ein noch besseres Modell haben möchtest, kannst du die Anzahl der Epochen erhöhen oder die Architektur des Modells weiter anpassen. Du kannst auch die Anzahl der Trainingsdaten erhöhen, indem du mehr Blätter mit handgeschriebenen Ziffern verwendest. Hier findest du weitere Blätter, die du verwenden kannst:
 
 <div style='text-align: left;'>
 <a href='/cache/blatt4.png' target='_blank'><img src='blatt4.png' data-noconvert='1' style='height: 10em; box-shadow: 0 0 2px rgba(0,0,0,0.5);'></a>
@@ -83,4 +220,6 @@ Wenn du jetzt dein Modell trainierst, wirst du sehen, dass es besser ist als das
 <a href='/cache/blatt12.png' target='_blank'><img src='blatt12.png' data-noconvert='1' style='height: 10em; box-shadow: 0 0 2px rgba(0,0,0,0.5);'></a>
 </div>
 
-Um die neuen Blätter zu verwenden, ziehe sie per Drag & Drop in das Verzeichnis `01-pages` und führe dann alle Schritte erneut aus.
+## Zusammenfassung
+
+In diesem Experiment hast du gelernt, wie du ein neuronales Netzwerk trainierst, das handgeschriebene Ziffern erkennt. Du hast gesehen, wie du die Trainingsdaten vorbereitest, das Modell trainierst und es im Webbrowser testest. Du hast auch gesehen, wie du das Modell verbessern kannst, indem du ein Convolutional Neural Network verwendest.
