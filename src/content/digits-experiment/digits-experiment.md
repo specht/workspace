@@ -172,13 +172,13 @@ Um ein CNN zu verwenden, scrolle nach oben zum Abschnitt »Architektur des Model
 
 Das neue Modell hat eine etwas andere Architektur:
 
-- die erste Schicht ist ein »Conv2D Layer«, dar das 28x28 Pixel großen Eingabebild mit 32 3x3-Filtern in 32 26x26 Pixel große Bildern umwandelt.
-- die zweite Schicht ist ein »MaxPooling2D Layer«, der die Größe der Bilder halbiert (13x13).
-- die dritte Schicht ist ein weiterer »Conv2D Layer«, der die 13x13 großen Bilder mit 64 3x3-Filtern in 64 11x11 Pixel große Bildern umwandelt.
-- die vierte Schicht ist ein weiterer »MaxPooling2D Layer«, der die Größe der Bilder halbiert (5x5).
+- die erste Schicht ist ein »Conv2D Layer«, das das 28x28 Pixel großen Eingabebild mit 32 3x3-Filtern in 32 26x26 Pixel große Bilder umwandelt.
+- die zweite Schicht ist ein »MaxPooling2D Layer«, das die Größe der Bilder halbiert (13x13).
+- die dritte Schicht ist ein weiteres »Conv2D Layer«, des die 13x13 großen Bilder mit 64 3x3-Filtern in 64 11x11 Pixel große Bilder umwandelt.
+- die vierte Schicht ist ein weiteres »MaxPooling2D Layer«, des die Größe der Bilder halbiert (5x5).
 - die fünfte Schicht ist ein »Flatten Layer«, das die 5x5 Pixel großen Bilder in einen Vektor mit 1600 Elementen umwandelt.
 - die sechste Schicht ist ein »Dense Layer« mit 128 Neuronen und der Aktivierungsfunktion »ReLU«.
-- die siebte Schicht ist ein weiterer »Dense Layer« mit 10 Neuronen, die die jeweiligen Ziffern repräsentieren, jedoch mit der Aktivierungsfunktion »Softmax«.
+- die siebte Schicht ist ein weiteres »Dense Layer« mit 10 Neuronen, die die jeweiligen Ziffern repräsentieren, jedoch mit der Aktivierungsfunktion »Softmax«.
 
 Das verbesserte Modell verfügt über eine Gesamtzahl von 225.034 Parametern, also ca. 2,5 mal so viele Parameter wie im vorherigen Modell:
 

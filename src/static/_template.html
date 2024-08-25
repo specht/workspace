@@ -46,7 +46,7 @@ pre table td {
 function install_clipboard_handler(selector) {
     window.clipboard = new ClipboardJS(selector);
     window.clipboard.on('success', function(e) {
-        let check = $("<i class='bi bi-check-lg btn-clipboard-check' style='position: absolute; left: 0.8em; top: 0.6em;'/>");
+        let check = $("<i class='bi bi-check-lg btn-clipboard-check' style='position: absolute; left: 0.7em; top: 0.4em;'/>");
         $(e.trigger).removeClass('btn-secondary').addClass('btn-success');
         $(e.trigger).closest('.btn').find('.bi-copy').css('visibility', 'hidden');
         $(e.trigger).append(check);

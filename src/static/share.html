@@ -1,7 +1,7 @@
 <div class='container'>
     <div class='row'>
         <div class='col-md-12' style='margin-top: 5em;'>
-            <p style="text-align: center;">Du hast Zugriff auf den Workspace von <code>#{share_user[:email]}</code> bekommen.</p>
+            <p style="text-align: center;">Du hast Zugriff auf den Workspace von #{share_user[:name]} bekommen.</p>
             <div style="text-align: center;">
                 <button id='bu_launch_share' class="btn btn-success"><i class='bi bi-code-slash'></i>&nbsp;Workspace öffnen</button>
             </div>
@@ -18,7 +18,6 @@ window.addEventListener('load', function() {
         console.log(share_tag);
         api_call('/api/start_server_with_share_tag', {share_tag: share_tag}, function(data) {
             if (data.success) {
-                // check_server_tag_update(data.share_tag);
                 check_server_online(data.share_tag);
             }
         });

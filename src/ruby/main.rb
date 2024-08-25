@@ -318,7 +318,7 @@ class Main < Sinatra::Base
                     if user[:share_tag] && user[:share_tag] =~ /^[a-z0-9]{48}$/
                         f.puts <<~END_OF_STRING
                             location /#{user[:share_tag]}/ {
-                                rewrite ^/#{user[:share_tag]}/(.*)$ $1 break;
+                                rewrite ^/#{user[:share_tag]}(.*)$ $1 break;
                                 proxy_set_header Host $http_host;
                                 proxy_set_header Upgrade $http_upgrade;
                                 proxy_set_header Connection upgrade;
@@ -1511,9 +1511,36 @@ class Main < Sinatra::Base
         END_OF_STRING
     end
 
+    get '/pdf..*' do
+        # Here's a hack to make live reload work with LaTeX PDFs
+        # The LaTeX Workshop extensions recompiles the PDF on save
+        # and then requests a funny URL to reload the PDF in the browser.
+        # This route serves the main.pdf by looking for the latest
+        # PDF file in the current user's workspace tree.
+
+        # If the user uses a share tag, we need to look up the email
+        # Otherwise, use the email of the logged in user
+
+        referer_path = request.env['HTTP_REFERER']
+        referer_path = URI.parse(referer_path).path
+        share_tag = referer_path.split('/')[1]
+        rows = neo4j_query(<<~END_OF_STRING, {:share_tag => share_tag})
+            MATCH (u:User {share_tag: $share_tag})
+            RETURN u.email;
+        END_OF_STRING
+        email = (rows.first || {})['u.email']
+        email ||= (@session_user || {})[:email]
+        assert(!(email.nil?))
+        fs_tag = fs_tag_for_email(email)
+        candidates = Dir["/user/#{fs_tag}/workspace/**/*.pdf"]
+        candidates.sort! do |a, b|
+            File.mtime(b) <=> File.mtime(a)
+        end
+        respond_with_file(candidates.first)
+    end
+
     get '/*' do
         path = request.path
-        assert(!path.include?('..'))
         slug = nil
         Main.parse_content() if DEVELOPMENT
         if path[0, 7] == '/share/'
@@ -1624,7 +1651,9 @@ class Main < Sinatra::Base
             redirect "#{WEB_ROOT}/", 302
         end
         path = path + '.html' unless path.include?('.')
-        respond_with_file(File.join(@@static_dir, path)) do |content, mime_type|
+        path = File.join(@@static_dir, path)
+        assert(File.absolute_path(path).start_with?(@@static_dir))
+        respond_with_file(path) do |content, mime_type|
             if mime_type == 'text/html'
                 template = File.read(File.join(@@static_dir, '_template.html'))
                 template.sub!('#{CONTENT}', content)

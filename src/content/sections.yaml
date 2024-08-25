@@ -56,20 +56,9 @@
   icon: /images/brain.png
   entries:
   - digits-experiment
-- key: networks
-  label: Netzwerke
-  icon: /images/telephone.png
-  entries:
-  # - .tcpip
 - key: office
   label: Dokumente und Präsentationen
   icon: /images/pen.png
   entries:
   - showerjs
   # - .latex
-- key: tools
-  label: Werkzeuge
-  icon: /images/hammer-and-wrench.png
-  entries:
-  # - .bash
-  # - .git
