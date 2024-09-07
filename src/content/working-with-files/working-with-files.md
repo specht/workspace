@@ -54,8 +54,8 @@ Die Ausgabe sollte in etwa so aussehen:
 
 <div class='hint'>
 Lass dich nicht davon stören, dass die Ausgabe so umfangreich ist. Der Grund dafür ist, dass der Webserver die
-Anfrage auf eine andere URL umleitet (»302 Found«) und `wget` dieser Umleitung folgt. Die eigentliche Datei wird
-dann heruntergeladen (»200 OK«) und die Ausgabe von `wget` zeigt dir den Fortschritt an.
+Anfrage auf eine andere URL umleitet (»302 Found«) und <code>wget</code> dieser Umleitung folgt. Die eigentliche Datei wird
+dann heruntergeladen (»200 OK«) und die Ausgabe von <code>wget</code> zeigt dir den Fortschritt an.
 </div>
 
 Das Programm `wget` können wir dazu verwenden, um Dateien aus dem Internet herunterzuladen.
