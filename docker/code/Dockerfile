@@ -33,7 +33,7 @@ RUN sudo apt-get update && sudo apt-get install -y \
     tree \
     man-db \
     telnet \
-    pgcli \
+    psql pgcli \
     libboost-dev libboost-date-time-dev libboost-thread-dev zlib1g-dev libpng-dev libjpeg8-dev libtiff5-dev libopenexr-dev \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
