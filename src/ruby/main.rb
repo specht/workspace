@@ -934,6 +934,16 @@ class Main < Sinatra::Base
         File.open("/user/#{container_name}/workspace/.hackschule", 'w') do |f|
             f.puts "https://youtu.be/Akaa9xHaw7E"
         end
+        File.open("/user/#{container_name}/workspace/.my.cnf", 'w') do |f|
+            f.puts <<~END_OF_STRING
+                [client]
+                user = #{email}
+                password = #{Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT)}
+                host = mysql
+                database = #{email}
+                port = 3306
+            END_OF_STRING
+        end
 
         state = get_server_state(container_name)
         return if state[:running]
