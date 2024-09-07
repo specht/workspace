@@ -33,7 +33,7 @@ RUN sudo apt-get update && sudo apt-get install -y \
     tree \
     man-db \
     telnet \
-    postgresql-client pgcli mycli \
+    postgresql-client pgcli \
     libboost-dev libboost-date-time-dev libboost-thread-dev zlib1g-dev libpng-dev libjpeg8-dev libtiff5-dev libopenexr-dev \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
@@ -43,6 +43,7 @@ RUN echo 'deb [signed-by=/usr/share/keyrings/dart.gpg arch=amd64] https://storag
 RUN apt-get update && apt-get install dart
 RUN yes | unminimize
 RUN pip install matplotlib numpy==1.26.4 keras==2.11.0 tensorflow==2.11.0 tensorflowjs==4.0.0
+RUN pip install -U mycli
 COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run
 COPY svc-code-server-run /etc/s6-overlay/s6-rc.d/svc-code-server/run
 WORKDIR /workspace
