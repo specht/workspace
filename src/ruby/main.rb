@@ -1024,7 +1024,7 @@ class Main < Sinatra::Base
                     # \\A - DSN alias name (from the [alias_dsn] section)
                     # \\u - Username
                     # \\x1b[...m - insert ANSI escape sequence
-                    prompt = '\d> '
+                    prompt = '\\d> '
                     prompt_continuation = '->'
 
                     # Skip intro info on startup and outro info on exit
