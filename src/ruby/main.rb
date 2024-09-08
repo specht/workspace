@@ -1044,7 +1044,7 @@ class Main < Sinatra::Base
                     enable_pager = True
 
                     # Choose a specific pager
-                    pager = 'less'
+                    pager = 'less -S'
 
                     # Custom colors for the completion menu, toolbar, etc.
                     [colors]
