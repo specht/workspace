@@ -15,13 +15,6 @@ COBOL (Common Business-Oriented Language) wurde 1959 von Grace Hopper entwickelt
 
 Die Sprache wurde hauptsächlich in Bereichen wie Banken, Versicherungen und Regierungsbehörden eingesetzt, um Transaktionsverarbeitung, Buchhaltung und andere geschäftskritische Anwendungen zu unterstützen. Heutzutage ist COBOL immer noch relevant, insbesondere in der Finanzbranche und bei großen Unternehmen, die auf stabile und zuverlässige Systeme angewiesen sind. Viele dieser Systeme laufen seit Jahrzehnten und werden weiterhin gepflegt und erweitert, da sie für den täglichen Betrieb unerlässlich sind.
 
-<!-- ## Eigenschaften
-
-- **Imperativ**: COBOL ist eine imperative Programmiersprache, die die Verarbeitung von Daten in Form von Datensätzen unterstützt.
-- **Geschäftsorientiert**: COBOL wurde speziell für Geschäftsanwendungen entwickelt.
-- **Datensatzorientiert**: COBOL ist für die Verarbeitung von Daten in Form von Datensätzen optimiert.
-- **Weit verbreitet**: COBOL wird immer noch in der Unternehmenssoftwareentwicklung eingesetzt. -->
-
 ## Hello, world!
 
 COBOL-Programme werden in Textdateien mit der Endung `.cbl` oder `.cob` geschrieben. Diese Dateien werden anschließend von einem Compiler in ausführbare Dateien übersetzt, die auf deinem Computer direkt ausgeführt werden können.

@@ -15,15 +15,6 @@ BASIC ist eine Programmiersprache, die in den 1960er Jahren von John G. Kemeny u
 
 Heutzutage ist BASIC weniger relevant als moderne Programmiersprachen, wird aber immer noch in Bildungskontexten und von Enthusiasten verwendet, um die Grundlagen des Programmierens zu lehren und historische Computersysteme zu emulieren.
 
-<!-- ## Eigenschaften
-
-- **Einfachheit**: BASIC wurde entwickelt, um einfach zu erlernen und zu verwenden zu sein. Es verwendet eine klare und verständliche Syntax, die es Anfängern erleichtert, das Programmieren zu erlernen.
-- **Interpretiert**: BASIC ist eine interpretierte Sprache, was bedeutet, dass der Code zur Laufzeit ausgeführt wird.
-- **Strukturiert**: Moderne Versionen von BASIC unterstützen strukturierte Programmierung, die es ermöglicht, den Code in logische Blöcke zu unterteilen.
-- **Portabilität**: BASIC-Code ist in der Regel portabel und kann auf verschiedenen Plattformen und Betriebssystemen ausgeführt werden.
-- **Grafik und Sound**: BASIC bietet Funktionen zur Erstellung von Grafiken und Soundeffekten, die es ermöglichen, interaktive Programme zu erstellen.
-- **Einfache Mathematik**: BASIC bietet eine Vielzahl von mathematischen Funktionen und Operatoren, die es ermöglichen, mathematische Berechnungen durchzuführen. -->
-
 ## Hello, World!
 
 BASIC ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpretiert wird.

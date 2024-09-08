@@ -19,7 +19,7 @@ Schließe die linken Seitenleiste, indem du <span class='key'>Strg</span><span c
 
 <img src='terminal-maximize.webp' class='r' style='width: 25em;'>
 
-Du kannst das Terminal auch maximieren, indem du auf den Pfeil in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du mit <span class='key'>Strg</span><span class='key'>B</span> ein- und ausblenden.
+Du kannst das Terminal auch maximieren, indem du auf den Pfeil in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du jederzeit mit <span class='key'>Strg</span><span class='key'>B</span> ein- und ausblenden.
 
 Alle Befehle im Terminal einzugeben anstatt durch Mausklick, wird auch »Arbeiten auf der Kommandozeile« genannt.
 Im Terminal siehst du nun die Eingabeaufforderung, auch Prompt genannt, der dir u.a. anzeigt, in welchem Verzeichnis du dich befindest. Der Prompt sieht in etwa so aus:

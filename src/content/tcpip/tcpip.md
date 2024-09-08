@@ -19,7 +19,7 @@ Schließe die linken Seitenleiste, indem du <span class='key'>Strg</span><span c
 
 <img src='terminal-maximize.webp' class='r' style='width: 25em;'>
 
-Du kannst das Terminal auch maximieren, indem du auf den Pfeil in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du mit <span class='key'>Strg</span><span class='key'>B</span> ein- und ausblenden.
+Du kannst das Terminal auch maximieren, indem du auf den Pfeil in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du jederzeit mit <span class='key'>Strg</span><span class='key'>B</span> ein- und ausblenden.
 
 ## Eigene IP-Adresse herausfinden
 

@@ -991,7 +991,7 @@ class Main < Sinatra::Base
                     # psql, plain, simple, grid, fancy_grid, pipe, orgtbl, rst, mediawiki, html,
                     # latex, latex_booktabs, textile, moinmoin, jira, vertical, tsv, csv.
                     # Recommended: ascii
-                    table_format = ascii
+                    table_format = double
 
                     # Syntax coloring style. Possible values (many support the "-dark" suffix):
                     # manni, igor, xcode, vim, autumn, vs, rrt, native, perldoc, borland, tango, emacs,
@@ -1044,7 +1044,7 @@ class Main < Sinatra::Base
                     enable_pager = True
 
                     # Choose a specific pager
-                    pager = 'less -S'
+                    pager = 'less -S -F'
 
                     # Custom colors for the completion menu, toolbar, etc.
                     [colors]

@@ -549,6 +549,10 @@ pre pre {
     background-image: url(/images/wink.png);
 }
 
+.hint.task::before {
+    background-image: url(/images/memo.png);
+}
+
 .hint.books::before {
     background-image: url(/images/books.png);
 }
