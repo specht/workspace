@@ -198,7 +198,7 @@ Du hast jetzt die einzelnen Bestandteile einer SQL-Abfrage kennengelernt:
 <tr><td><code>SELECT</code></td><td>Welche Spalten sollen angezeigt werden?</td></tr>
 <tr><td><code>FROM</code></td><td>Aus welcher Tabelle sollen die Daten kommen?</td></tr>
 <tr><td><code>WHERE</code></td><td>Filter / Welche Zeilen sollen angezeigt werden?</td></tr>
-<tr><td><code>ORDER BY</code></td><td>Sortierung / In welcher Reihenfolge sollen die Zeilen angezeigt werden?</td></tr>
+<tr><td><code>ORDER&nbsp;BY</code></td><td>Sortierung / In welcher Reihenfolge sollen die Zeilen angezeigt werden?</td></tr>
 <tr><td><code>LIMIT</code></td><td>Anzahl / Wie viele Zeilen sollen angezeigt werden?</td></tr>
 </tbody>
 </table>
