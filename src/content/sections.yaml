@@ -36,6 +36,17 @@
   - go
   - dart
   - rust
+- key: misc
+  label: Verschiedenes
+  icon: /images/parrot.png
+  entries:
+  - digits-experiment
+  - showerjs
+  - mysql
+  # - .p5js
+  # - .glsl
+  # - .raytracing
+  # - .latex
 - key: linux
   label: Linux und das Terminal
   icon: /images/penguin.png
@@ -44,28 +55,3 @@
   - tcpip
   # - .working-with-processes
   # - .git
-- key: computer_graphics
-  label: Computergrafik
-  icon: /images/palette.png
-  entries:
-  # - .p5js
-  # - .glsl
-  # - .raytracing
-# - key: artificial_intelligence
-#   label: Künstliche Intelligenz
-#   icon: /images/brain.png
-#   entries:
-#   - digits-experiment
-# - key: office
-#   label: Dokumente und Präsentationen
-#   icon: /images/pen.png
-#   entries:
-#   - showerjs
-#   # - .latex
-- key: misc
-  label: Verschiedenes
-  icon: /images/parrot.png
-  entries:
-  - digits-experiment
-  - showerjs
-  - mysql
