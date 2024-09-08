@@ -876,11 +876,12 @@ class Main < Sinatra::Base
 
     def init_mysql(email)
         mysql_password = Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT)
-        STDERR.puts "Setting up MySQL user #{email} with database #{email}"
+        login = email.split('@').first.downcase
+        STDERR.puts "Setting up MySQL user #{login} with database #{login}"
         Open3.popen2("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
-            stdin.puts "CREATE USER IF NOT EXISTS '#{email}'@'%' identified by '#{mysql_password}';"
-            stdin.puts "CREATE DATABASE IF NOT EXISTS `#{email}`;"
-            stdin.puts "GRANT ALL ON `#{email}`.* TO '#{email}'@'%';"
+            stdin.puts "CREATE USER IF NOT EXISTS '#{login}'@'%' identified by '#{mysql_password}';"
+            stdin.puts "CREATE DATABASE IF NOT EXISTS `#{login}`;"
+            stdin.puts "GRANT ALL ON `#{login}`.* TO '#{login}'@'%';"
             stdin.puts "FLUSH PRIVILEGES;"
             stdin.close
             wait_thr.value
@@ -888,9 +889,10 @@ class Main < Sinatra::Base
     end
 
     def reset_mysql(email)
-        STDERR.puts "Removing database for MySQL user #{email}"
+        login = email.split('@').first.downcase
+        STDERR.puts "Removing database for MySQL user #{login}"
         Open3.popen2("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
-            stdin.puts "DROP DATABASE IF EXISTS `#{email}`;"
+            stdin.puts "DROP DATABASE IF EXISTS `#{login}`;"
             stdin.close
             wait_thr.value
         end
@@ -899,14 +901,15 @@ class Main < Sinatra::Base
 
     def init_postgres(email)
         postgres_password = Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)
-        STDERR.puts "Setting up Postgres user #{email} with database #{email}"
+        login = email.split('@').first.downcase
+        STDERR.puts "Setting up Postgres user #{login} with database #{login}"
 
         Open3.popen2("docker exec -i -e PGPASSWORD=#{POSTGRES_ROOT_PASSWORD} workspace_postgres_1 psql --user=postgres") do |stdin, stdout, wait_thr|
             stdin.puts <<~END_OF_STRING
-                CREATE USER \"#{email}\" WITH ENCRYPTED PASSWORD '#{postgres_password}';
-                CREATE DATABASE \"#{email}\";
-                ALTER DATABASE \"#{email}\" OWNER TO \"#{email}\";
-                REVOKE ALL PRIVILEGES ON DATABASE \"#{email}\" FROM public;
+                CREATE USER \"#{login}\" WITH ENCRYPTED PASSWORD '#{postgres_password}';
+                CREATE DATABASE \"#{login}\";
+                ALTER DATABASE \"#{login}\" OWNER TO \"#{login}\";
+                REVOKE ALL PRIVILEGES ON DATABASE \"#{login}\" FROM public;
             END_OF_STRING
             stdin.close
             wait_thr.value
@@ -915,9 +918,10 @@ class Main < Sinatra::Base
 
     def reset_postgres(email)
         STDERR.puts "Removing database for Postgres user #{email}"
+        login = email.split('@').first.downcase
         Open3.popen2("docker exec -i -e PGPASSWORD=#{POSTGRES_ROOT_PASSWORD} workspace_postgres_1 psql --user=postgres") do |stdin, stdout, wait_thr|
             stdin.puts <<~END_OF_STRING
-                DROP DATABASE IF EXISTS "#{email}" WITH (FORCE);
+                DROP DATABASE IF EXISTS "#{login}" WITH (FORCE);
             END_OF_STRING
             stdin.close
             wait_thr.value
@@ -937,10 +941,10 @@ class Main < Sinatra::Base
         File.open("/user/#{container_name}/workspace/.my.cnf", 'w') do |f|
             f.puts <<~END_OF_STRING
                 [client]
-                user = #{email}
+                user = #{email.split('@').first.downcase}
                 password = #{Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT)}
                 host = mysql
-                database = #{email}
+                database = #{email.split('@').first.downcase}
                 port = 3306
             END_OF_STRING
         end
@@ -966,7 +970,8 @@ class Main < Sinatra::Base
         network_name = "bridge"
         mysql_ip = `docker inspect workspace_mysql_1`.split('"IPAddress": "')[1].split('"')[0]
         postgres_ip = `docker inspect workspace_postgres_1`.split('"IPAddress": "')[1].split('"')[0]
-        command = "docker run --add-host=mysql:#{mysql_ip} --add-host=postgres:#{postgres_ip} --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{email}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{email}\" -e POSTGRES_HOST=\"postgres\" -e POSTGRES_USER=\"#{email}\" -e POSTGRES_PASSWORD=\"#{Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)}\" -e POSTGRES_DATABASE=\"#{email}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} --name hs_code_#{container_name} hs_code_server"
+        login = email.split('@').first.downcase
+        command = "docker run --add-host=mysql:#{mysql_ip} --add-host=postgres:#{postgres_ip} --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{login}\" -e POSTGRES_HOST=\"postgres\" -e POSTGRES_USER=\"#{login}\" -e POSTGRES_PASSWORD=\"#{Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)}\" -e POSTGRES_DATABASE=\"#{login}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} --name hs_code_#{container_name} hs_code_server"
         STDERR.puts command
         system(command)
 
