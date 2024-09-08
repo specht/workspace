@@ -206,6 +206,10 @@ Du hast jetzt die einzelnen Bestandteile einer SQL-Abfrage kennengelernt:
 
 Du kannst diese Befehle kombinieren, um genau die Daten zu erhalten, die du benötigst.
 
+<div class='hint'>
+Um <code>mycli</code> zu beenden, gib einfach den Befehl <code>exit</code> ein oder verwende die Tastenkombination <span class='key'>Strg</span><span class='key'>D</span>.
+</div>
+
 ### Aufgaben
 
 Beantworte die folgenden Fragen, indem du eine geeignete SQL-Abfrage formulierst. Notiere jeweils die Abfrage und dein Ergebnis. Formuliere die Abfrage möglichst so, dass du nur die benötigten Spalten erhältst.
