@@ -1,4 +1,4 @@
-FROM linuxserver/code-server:4.91.1
+FROM linuxserver/code-server:4.92.2
 RUN usermod -d /workspace abc
 RUN sudo apt-get update && sudo apt-get install -y \
     wget \
@@ -27,7 +27,7 @@ RUN sudo apt-get update && sudo apt-get install -y \
     iputils-tracepath traceroute \
     gnucobol4 \
     fp-compiler fp-ide \
-    gnu-smalltalk \
+    gawk \
     erlang \
     php-cli \
     tree \
@@ -35,15 +35,21 @@ RUN sudo apt-get update && sudo apt-get install -y \
     telnet \
     postgresql-client pgcli \
     libboost-dev libboost-date-time-dev libboost-thread-dev zlib1g-dev libpng-dev libjpeg8-dev libtiff5-dev libopenexr-dev \
+    apt-transport-https \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
-RUN apt-get update && sudo apt-get install apt-transport-https
+RUN wget -O /smalltalk.tar.gz https://ftp.gnu.org/gnu/smalltalk/smalltalk-3.2.5.tar.gz
+RUN tar xzf /smalltalk.tar.gz
+RUN rm /smalltalk.tar.gz
+RUN cd /smalltalk-3.2.5 && ./configure && make && make install
+RUN rm -rf /smalltalk-3.2.5
 RUN wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg  --dearmor -o /usr/share/keyrings/dart.gpg
 RUN echo 'deb [signed-by=/usr/share/keyrings/dart.gpg arch=amd64] https://storage.googleapis.com/download.dartlang.org/linux/debian stable main' | tee /etc/apt/sources.list.d/dart_stable.list
 RUN apt-get update && apt-get install dart
-RUN yes | unminimize
-RUN pip install matplotlib numpy==1.26.4 keras==2.11.0 tensorflow==2.11.0 tensorflowjs==4.0.0
-RUN pip install -U mycli
+RUN apt-get install -y mycli
+# RUN pip install --break-system-packages matplotlib numpy==1.26.4 keras==2.11.0 tensorflow==2.11.0 tensorflowjs==4.0.0
+RUN pip install --break-system-packages matplotlib numpy keras tensorflow tensorflowjs
+RUN apt-get install -y python3-ipykernel
 COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run
 COPY svc-code-server-run /etc/s6-overlay/s6-rc.d/svc-code-server/run
 WORKDIR /workspace
