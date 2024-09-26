@@ -745,18 +745,18 @@ class Main < Sinatra::Base
         data = parse_request_data(:required_keys => [:email])
         email = data[:email].downcase.strip
 
-        unless @@invitations.include?(data[:email])
+        unless @@invitations.include?(email)
             candidates = @@invitations.keys.select do |x|
-                x[0, data[:email].size] == data[:email]
+                x[0, email.size] == email
             end
             if candidates.size == 1
-                data[:email] = candidates.first
+                email = candidates.first
             end
         end
-        unless @@invitations.include?(data[:email])
+        unless @@invitations.include?(email)
             respond(:error => 'no_invitation_found')
         end
-        assert(@@invitations.include?(data[:email]), 'no_invitation_found')
+        assert(@@invitations.include?(email), 'no_invitation_found')
 
         tag = RandomTag::generate(12)
         srand(Digest::SHA2.hexdigest(LOGIN_CODE_SALT).to_i + (Time.now.to_f * 1000000).to_i)
@@ -764,13 +764,13 @@ class Main < Sinatra::Base
         random_code = '123456' if DEVELOPMENT
 
         # create user node if it doesn't already exist
-        user = neo4j_query_expect_one(<<~END_OF_QUERY, :email => data[:email])['n']
+        user = neo4j_query_expect_one(<<~END_OF_QUERY, :email => email)['n']
             MERGE (n:User {email: $email})
             RETURN n;
         END_OF_QUERY
         unless user[:name]
-            name = @@invitations[data[:email]][:name]
-            user = neo4j_query_expect_one(<<~END_OF_QUERY, :email => data[:email], :name => name)['n']
+            name = @@invitations[email][:name]
+            user = neo4j_query_expect_one(<<~END_OF_QUERY, :email => email, :name => name)['n']
                 MATCH (n:User {email: $email})
                 SET n.name = $name
                 RETURN n;
@@ -778,7 +778,7 @@ class Main < Sinatra::Base
         end
 
         if user[:server_tag].nil? || user[:server_sid].nil?
-            neo4j_query(<<~END_OF_QUERY, {:email => data[:email], :server_tag => gen_server_tag(), :server_sid => gen_server_sid()})
+            neo4j_query(<<~END_OF_QUERY, {:email => email, :server_tag => gen_server_tag(), :server_sid => gen_server_sid()})
                 MATCH (u:User {email: $email})
                 SET u.server_tag = COALESCE(u.server_tag, $server_tag)
                 SET u.server_sid = COALESCE(u.server_sid, $server_sid)
@@ -793,12 +793,12 @@ class Main < Sinatra::Base
             DETACH DELETE l;
         END_OF_QUERY
         # remove all pending login requests for this user
-        neo4j_query(<<~END_OF_QUERY, {:email => data[:email]})
+        neo4j_query(<<~END_OF_QUERY, {:email => email})
             MATCH (r:LoginRequest)-[:FOR]->(u:User {email: $email})
             DETACH DELETE r;
         END_OF_QUERY
         # add new login requests for this user
-        neo4j_query_expect_one(<<~END_OF_QUERY, {:email => data[:email], :tag => tag, :code => random_code, :now => Time.now.to_i})
+        neo4j_query_expect_one(<<~END_OF_QUERY, {:email => email, :tag => tag, :code => random_code, :now => Time.now.to_i})
             MATCH (u:User {email: $email})
             CREATE (r:LoginRequest)-[:FOR]->(u)
             SET r.tag = $tag
@@ -809,7 +809,7 @@ class Main < Sinatra::Base
         broadcast_login_codes()
 
         deliver_mail do
-            to data[:email]
+            to email
             # bcc SMTP_FROM
             from SMTP_FROM
 
