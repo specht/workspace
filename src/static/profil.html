@@ -173,11 +173,59 @@
             <div>
                 <button id='bu_reset_tic80' class="btn btn-danger"><i class='bi bi-trash-fill'></i>&nbsp;&nbsp;TIC-80 zurücksetzen</button>
             </div> -->
+            <div style="#{teacher_logged_in? ? '' : 'display: none;'}">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>Leistungsüberprüfungen</h2>
+                        <p>
+                            Hier kannst du ein komprimiertes Verzeichnis hochladen, das du deinen Schülerinnen und Schülern in einer Leistungsüberprüfung
+                            zur Verfügung stellen möchtest.
+                        </p>
+                        <button id='bu_upload_test_archive' class='btn btn-primary'><i class='bi bi-upload'></i>&nbsp;&nbsp;Leistungsüberprüfung hochladen</button>
+                        <div style="max-width: 100%; overflow-x: auto;" class="mt-3">
+                            <table class="table table-sm" id="table_my_test_archives">
+                                <thead>
+                                    <tr>
+                                        <th>SHA1</th>
+                                        <th>Dateiname</th>
+                                        <th>Größe</th>
+                                        <th>Löschen</th>
+                                        <th>Gruppe</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
+
+    function refresh_test_archives() {
+        api_call('/api/get_my_test_archives', {}, function(data) {
+            $('#table_my_test_archives tbody').empty();
+            if (data.success) {
+                for (let entry of data.entries) {
+                    let row = $(`<tr>`).appendTo($('#table_my_test_archives tbody'));
+                    $(`<td>`).html(`<code>${entry.sha1.substr(0, 16)}</code>`).appendTo(row);
+                    $(`<td>`).html(`${entry.filename}`).appendTo(row);
+                    $(`<td>`).html(`${entry.size}`).appendTo(row);
+                    let bu_delete = $(`<button>`).html(`<i class='bi bi-trash-fill'></i>&nbsp;&nbsp;Löschen`).addClass('btn btn-sm btn-danger');
+                    bu_delete.appendTo($(`<td>`).appendTo(row));
+                    let bu_group = $(`<button>`).html(`<i class='bi bi-people-fill'></i>&nbsp;&nbsp;0 Personen`).addClass('btn btn-sm btn-secondary');
+                    bu_group.appendTo($(`<td>`).appendTo(row));
+                    let bu_start_stop = $(`<button>`).html(`<i class='bi bi-play-fill'></i>&nbsp;&nbsp;Start`).addClass('btn btn-sm btn-success');
+                    bu_start_stop.appendTo($(`<td>`).appendTo(row));
+                }
+            }
+        });
+    }
+
     window.addEventListener('load', function() {
         $('.bu-toggle-module').on('click', function(e) {
             let key = $(e.target).closest('button').data('module');
@@ -234,5 +282,30 @@
                 }
             });
         });
+        $('#bu_upload_test_archive').on('click', function(e) {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.tar.gz, .tar.bz2';
+            fileInput.addEventListener('change', handleFileUpload);
+            fileInput.click();
+
+            function handleFileUpload(event) {
+                const file = event.target.files[0];
+                const formData = new FormData();
+                formData.append('file', file);
+
+                fetch('/api/upload_test_archive', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    refresh_test_archives();
+                })
+                .catch(error => {
+                });
+            }
+        });
+        refresh_test_archives();
     });
 </script>

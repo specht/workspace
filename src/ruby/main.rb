@@ -725,6 +725,10 @@ class Main < Sinatra::Base
         return (!@session_user.nil?)
     end
 
+    def teacher_logged_in?
+        user_logged_in? && @@teachers.include?(@session_user[:email])
+    end
+
     def admin_logged_in?
         return user_logged_in? && ADMIN_USERS.include?(@session_user[:email])
     end
@@ -1718,6 +1722,47 @@ class Main < Sinatra::Base
             File.mtime(b) <=> File.mtime(a)
         end
         respond_with_file(candidates.first)
+    end
+
+    post '/api/upload_test_archive' do
+        assert(teacher_logged_in?)
+        entry = params['file']
+        filename = entry['filename']
+        blob = entry['tempfile'].read
+        sha1 = Digest::SHA1.hexdigest(blob)
+        debug "Got a file called #{filename} with #{blob.size} bytes."
+        FileUtils.mkpath('/internal/test_archives')
+        File.open("/internal/test_archives/#{sha1}", 'w') do |f|
+            f.write blob
+        end
+        ts = Time.now.to_i
+        neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :sha1 => sha1, :size => blob.size, :filename => filename, :ts => ts})
+            MATCH (u:User {email: $email})
+            MERGE (f:File {sha1: $sha1})
+            MERGE (u)-[r:HAS_UPLOADED_TEST_ARCHIVE]->(f)
+            SET f.size = $size
+            SET r.filename = $filename
+            SET r.ts = $ts
+            RETURN f.sha1;
+        END_OF_STRING
+        respond(:yay => 'sure')
+    end
+
+    post '/api/get_my_test_archives' do
+        assert(teacher_logged_in?)
+        entries = []
+        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email]}).each do |row|
+            MATCH (u:User {email: $email})-[r:HAS_UPLOADED_TEST_ARCHIVE]->(f:File)
+            RETURN r, f;
+        END_OF_STRING
+            entries << {
+                sha1: row['f'][:sha1],
+                size: bytes_to_str(row['f'][:size]),
+                filename: row['r'][:filename],
+                ts: row['r'][:ts],
+            }
+        end
+        respond(:entries => entries)
     end
 
     get '/*' do
