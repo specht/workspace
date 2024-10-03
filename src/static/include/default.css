@@ -924,3 +924,7 @@ hr {
 .progress_spots_sm {
     pointer-events: none;
 }
+
+.btn .bi, button .bi {
+    margin-right: 0.55em;
+}
