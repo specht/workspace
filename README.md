@@ -54,7 +54,7 @@ Wir haben damit eine Gruppe »Developer« mit einem Mitglied »Max Mustermann« 
 ./config.rb up
 ```
 
-Wenn der Workspace gestartet ist, kannst du ihn im Browser unter <a href='http://localhost:8025'>http://localhost:8025</a> erreichen. Du solltest dich mit deiner E-Mail-Adresse (oder einem eindeutigen Präfix) und dem Code 123456 (fester Code in der Development-Umgebung) anmelden können. Um den Workspace zu starten, ist ein weiterer Schritt notwendig:
+Wenn der Workspace gestartet ist, kannst du ihn im Browser unter <a href='http://localhost:8025'>http://localhost:8025</a> erreichen. Du solltest dich mit deiner E-Mail-Adresse (oder einem eindeutigen Präfix) und dem Code 123456 (fester Code in der Development-Umgebung) anmelden können. Um den eigentlichen Workspace (Visual Studio Code) zu starten, ist ein weiterer Schritt notwendig:
 
 **Workspace-Image bauen**
 
@@ -68,6 +68,14 @@ Falls der Platz einmal knapp werden sollte, lohnt es sich, zwischendurch mal den
 
 ```bash
 docker system prune
+```
+
+**TIC-80 compilieren**
+
+Wenn du TIC-80 nutzen möchtest, musst du es einmalig kompilieren. Dazu musst du folgendes Skript ausführen:
+
+```bash
+./build-tic80.sh
 ```
 
 ## Betrieb auf einem Server
