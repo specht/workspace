@@ -920,3 +920,11 @@ hr {
     display: inline-block;
     animation: spinner 1.5s ease-out infinite;
 }
+
+.progress_spots_sm {
+    pointer-events: none;
+}
+
+.btn .bi, button .bi {
+    margin-right: 0.55em;
+}

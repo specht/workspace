@@ -92,6 +92,8 @@ function check_server_online(server_tag) {
             console.log('Server is online');
             $('#bu_launch .bi').removeClass('bi-spin');
             $('#bu_launch').prop('disabled', false);
+            $('.bu-launch-test .bi').removeClass('bi-spin');
+            $('.bu-launch-test').prop('disabled', false);
             $('.bu-open-workspace-as-admin .bi').removeClass('bi-spin');
             $('.bu-open-workspace-as-admin').prop('disabled', false);
             window.open(`/${server_tag}/`, '_blank');
@@ -246,9 +248,19 @@ window.addEventListener('load', function() {
             check_server_online(data.server_tag);
         });
     });
+    $('.bu-launch-test').on('click', function(e) {
+        let button = $(e.target).closest('button');
+        let test_tag = button.data('tag');
+        button.prop('disabled', true);
+        button.find('.bi').addClass('bi-spin');
+        api_call('/api/start_server', {test_tag: test_tag}, function(data) {
+            check_server_tag_update(data.server_tag);
+            check_server_online(data.server_tag);
+        });
+    });
     $('#bu_reset').on('click', function(e) {
         showTemplateModal('Workspace zurücksetzen', 'Bist du sicher, dass du deinen Workspace zurücksetzen möchtest? Alle Dateien und deine installierten Erweiterungen werden gelöscht.',
-        "<i class='bi bi-trash-fill'></i>&nbsp;&nbsp;Zurücksetzen", 'btn-danger', "<i class='bi bi-x-lg'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+        "<i class='bi bi-trash-fill'></i>Zurücksetzen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
             api_call('/api/reset_server', {}, function(data) {
                 // we need to reload the website to receive the updated server_tag and server_sid
                 window.location.reload();
@@ -257,7 +269,7 @@ window.addEventListener('load', function() {
     });
     $('#bu_share').on('click', function(e) {
         showTemplateModal('Workspace teilen', 'Wenn du deinen Workspace teilst, erhältst du einen Link, mit dem man ohne Anmeldung auf deinen Workspace zugreifen kann. Möchtest du deinen Workspace teilen?',
-        "<i class='bi bi-share'></i>&nbsp;&nbsp;Workspace teilen", 'btn-primary', "<i class='bi bi-x-lg'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+        "<i class='bi bi-share'></i>Workspace teilen", 'btn-primary', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
             api_call('/api/share_server', {}, function(data) {
                 if (data.success) {
                     $('#ti_share_link').val("#{WEB_ROOT}/share/" + data.share_tag);
@@ -271,7 +283,7 @@ window.addEventListener('load', function() {
     });
     $('#bu_stop_share').on('click', function(e) {
         showTemplateModal('Teilen beenden', 'Bist du sicher, dass du die Teilung aufheben möchtest? Der Link kann dann nicht mehr für den Zugriff auf deinen Workspace verwendet werden.',
-        "<i class='bi bi-trash-fill'></i>&nbsp;&nbsp;Teilen beenden", 'btn-primary', "<i class='bi bi-x-lg'></i>&nbsp;&nbsp;Abbruch", 'btn-secondary', function() {
+        "<i class='bi bi-trash-fill'></i>Teilen beenden", 'btn-primary', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
             api_call('/api/unshare_server', {}, function(data) {
                 if (data.success) {
                     $('#ti_share_link').val('');
@@ -363,16 +375,16 @@ window.addEventListener('load', function() {
             <div class="title"><a href='/'>Hackschule Workspace</a></div>
         </div>
     </div>
-    <div class="menu">
+    <div class="menu" style="#{running_tests.empty? ? '': 'display: none;'}">
         <div class="container">
             <div style='text-align: center; width: 100%;'>
-                <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="btn btn-success #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='bi bi-box-arrow-in-right'></i>&nbsp;&nbsp;Anmelden</a>
-                <button style='#{(@session_user.nil? || (!@session_user[:show_workspace])) ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='bi bi-code-slash'></i>&nbsp;&nbsp;Workspace öffnen</button>
-                <button style='#{(@session_user.nil? || (!@session_user[:show_phpmyadmin])) ? 'display: none;' : ''}' id='bu_phpmyadmin' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>&nbsp;&nbsp;phpMyAdmin</button>
-                <button style='#{(@session_user.nil? || (!@session_user[:show_pgadmin])) ? 'display: none;' : ''}' id='bu_pgadmin' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>&nbsp;&nbsp;pgAdmin</button>
-                <a style='#{(@session_user.nil? || (!@session_user[:show_tic80])) ? 'display: none;' : ''}' href="/tic80/" class="btn btn-success" target="_blank"><i class='bi bi-keyboard'></i>&nbsp;&nbsp;TIC-80</a>
-                <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-primary"><i class='bi bi-person-vcard'></i>&nbsp;&nbsp;#{((@@invitations[(@session_user || {})[:email]] || {})[:name] || '')}</a>
-                <a href='/admin' style='#{admin_logged_in? ? '' : 'display: none;'}' class="btn btn-warning"><i class='bi bi-wrench-adjustable'></i>&nbsp;&nbsp;Administration</a>
+                <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="btn btn-success #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='bi bi-box-arrow-in-right'></i>Anmelden</a>
+                <button style='#{(@session_user.nil? || (!@session_user[:show_workspace])) ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='bi bi-code-slash'></i>Workspace öffnen</button>
+                <button style='#{(@session_user.nil? || (!@session_user[:show_phpmyadmin])) ? 'display: none;' : ''}' id='bu_phpmyadmin' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>phpMyAdmin</button>
+                <button style='#{(@session_user.nil? || (!@session_user[:show_pgadmin])) ? 'display: none;' : ''}' id='bu_pgadmin' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>pgAdmin</button>
+                <a style='#{(@session_user.nil? || (!@session_user[:show_tic80])) ? 'display: none;' : ''}' href="/tic80/" class="btn btn-success" target="_blank"><i class='bi bi-keyboard'></i>TIC-80</a>
+                <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-primary"><i class='bi bi-person-vcard'></i>#{((@@invitations[(@session_user || {})[:email]] || {})[:name] || '')}</a>
+                <a href='/admin' style='#{admin_logged_in? ? '' : 'display: none;'}' class="btn btn-warning"><i class='bi bi-wrench-adjustable'></i>Administration</a>
             </div>
         </div>
     </div>

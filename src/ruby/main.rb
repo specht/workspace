@@ -298,16 +298,19 @@ class Main < Sinatra::Base
 
         File.open('/nginx/default.conf', 'w') do |f|
             f.puts nginx_config_first_part
-            $neo4j.neo4j_query("MATCH (u:User) RETURN u;").each do |row|
+            $neo4j.neo4j_query("MATCH (u:User) OPTIONAL MATCH (u)-[:TAKES]->(t:Test {running: TRUE}) RETURN u, t;").each do |row|
                 user = row['u']
-                fs_tag = fs_tag_for_email(user[:email])
+                test = row['t']
+                email_with_test_tag = "#{user[:email]}#{(test || {})[:tag]}"
+                server_tag = "#{user[:server_tag]}#{(test || {})[:tag]}"
+                fs_tag = fs_tag_for_email(email_with_test_tag)
                 if running_servers.include?(fs_tag)
                     f.puts <<~END_OF_STRING
-                    location /#{user[:server_tag]}/ {
+                    location /#{server_tag}/ {
                         if ($cookie_server_sid != "#{user[:server_sid]}") {
                             return 403;
                         }
-                        rewrite ^/#{user[:server_tag]}(.*)$ $1 break;
+                        rewrite ^/#{server_tag}(.*)$ $1 break;
                         proxy_set_header Host $http_host;
                         proxy_set_header Upgrade $http_upgrade;
                         proxy_set_header Connection upgrade;
@@ -315,33 +318,35 @@ class Main < Sinatra::Base
                         proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
                     }
                     END_OF_STRING
-                    if user[:share_tag] && user[:share_tag] =~ /^[a-z0-9]{48}$/
-                        f.puts <<~END_OF_STRING
-                            location /#{user[:share_tag]}/ {
-                                rewrite ^/#{user[:share_tag]}(.*)$ $1 break;
-                                proxy_set_header Host $http_host;
-                                proxy_set_header Upgrade $http_upgrade;
-                                proxy_set_header Connection upgrade;
-                                proxy_set_header Accept-Encoding gzip;
-                                proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
-                            }
-                        END_OF_STRING
-                    end
-                    $neo4j.neo4j_query(<<~END_OF_QUERY, {:email => user[:email]}).each do |row|
-                        MATCH (:User)-[r:WATCHING]->(u:User {email: $email})
-                        RETURN r.watch_tag;
-                    END_OF_QUERY
-                        watch_tag = row['r.watch_tag']
-                        f.puts <<~END_OF_STRING
-                            location /#{watch_tag}/ {
-                                rewrite ^/#{watch_tag}(.*)$ $1 break;
-                                proxy_set_header Host $http_host;
-                                proxy_set_header Upgrade $http_upgrade;
-                                proxy_set_header Connection upgrade;
-                                proxy_set_header Accept-Encoding gzip;
-                                proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
-                            }
-                        END_OF_STRING
+                    if test.nil?
+                        if user[:share_tag] && user[:share_tag] =~ /^[a-z0-9]{48}$/
+                            f.puts <<~END_OF_STRING
+                                location /#{user[:share_tag]}/ {
+                                    rewrite ^/#{user[:share_tag]}(.*)$ $1 break;
+                                    proxy_set_header Host $http_host;
+                                    proxy_set_header Upgrade $http_upgrade;
+                                    proxy_set_header Connection upgrade;
+                                    proxy_set_header Accept-Encoding gzip;
+                                    proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
+                                }
+                            END_OF_STRING
+                        end
+                        $neo4j.neo4j_query(<<~END_OF_QUERY, {:email => user[:email]}).each do |row|
+                            MATCH (:User)-[r:WATCHING]->(u:User {email: $email})
+                            RETURN r.watch_tag;
+                        END_OF_QUERY
+                            watch_tag = row['r.watch_tag']
+                            f.puts <<~END_OF_STRING
+                                location /#{watch_tag}/ {
+                                    rewrite ^/#{watch_tag}(.*)$ $1 break;
+                                    proxy_set_header Host $http_host;
+                                    proxy_set_header Upgrade $http_upgrade;
+                                    proxy_set_header Connection upgrade;
+                                    proxy_set_header Accept-Encoding gzip;
+                                    proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
+                                }
+                            END_OF_STRING
+                        end
                     end
                 end
             end
@@ -635,6 +640,8 @@ class Main < Sinatra::Base
 
     configure do
         CONSTRAINTS_LIST = [
+            'File/sha1',
+            'Test/tag',
             'User/email',
             'User/server_tag',
             'User/share_tag',
@@ -643,7 +650,9 @@ class Main < Sinatra::Base
             'TIC80File/path',
             'TIC80Dir/path',
         ]
-        INDEX_LIST = []
+        INDEX_LIST = [
+            'Test/running'
+        ]
 
         setup = SetupDatabase.new()
         setup.wait_for_neo4j()
@@ -725,6 +734,10 @@ class Main < Sinatra::Base
         return (!@session_user.nil?)
     end
 
+    def teacher_logged_in?
+        user_logged_in? && @@teachers.include?(@session_user[:email])
+    end
+
     def admin_logged_in?
         return user_logged_in? && ADMIN_USERS.include?(@session_user[:email])
     end
@@ -745,18 +758,18 @@ class Main < Sinatra::Base
         data = parse_request_data(:required_keys => [:email])
         email = data[:email].downcase.strip
 
-        unless @@invitations.include?(data[:email])
+        unless @@invitations.include?(email)
             candidates = @@invitations.keys.select do |x|
-                x[0, data[:email].size] == data[:email]
+                x[0, email.size] == email
             end
             if candidates.size == 1
-                data[:email] = candidates.first
+                email = candidates.first
             end
         end
-        unless @@invitations.include?(data[:email])
+        unless @@invitations.include?(email)
             respond(:error => 'no_invitation_found')
         end
-        assert(@@invitations.include?(data[:email]), 'no_invitation_found')
+        assert(@@invitations.include?(email), 'no_invitation_found')
 
         tag = RandomTag::generate(12)
         srand(Digest::SHA2.hexdigest(LOGIN_CODE_SALT).to_i + (Time.now.to_f * 1000000).to_i)
@@ -764,13 +777,13 @@ class Main < Sinatra::Base
         random_code = '123456' if DEVELOPMENT
 
         # create user node if it doesn't already exist
-        user = neo4j_query_expect_one(<<~END_OF_QUERY, :email => data[:email])['n']
+        user = neo4j_query_expect_one(<<~END_OF_QUERY, :email => email)['n']
             MERGE (n:User {email: $email})
             RETURN n;
         END_OF_QUERY
         unless user[:name]
-            name = @@invitations[data[:email]][:name]
-            user = neo4j_query_expect_one(<<~END_OF_QUERY, :email => data[:email], :name => name)['n']
+            name = @@invitations[email][:name]
+            user = neo4j_query_expect_one(<<~END_OF_QUERY, :email => email, :name => name)['n']
                 MATCH (n:User {email: $email})
                 SET n.name = $name
                 RETURN n;
@@ -778,7 +791,7 @@ class Main < Sinatra::Base
         end
 
         if user[:server_tag].nil? || user[:server_sid].nil?
-            neo4j_query(<<~END_OF_QUERY, {:email => data[:email], :server_tag => gen_server_tag(), :server_sid => gen_server_sid()})
+            neo4j_query(<<~END_OF_QUERY, {:email => email, :server_tag => gen_server_tag(), :server_sid => gen_server_sid()})
                 MATCH (u:User {email: $email})
                 SET u.server_tag = COALESCE(u.server_tag, $server_tag)
                 SET u.server_sid = COALESCE(u.server_sid, $server_sid)
@@ -793,12 +806,12 @@ class Main < Sinatra::Base
             DETACH DELETE l;
         END_OF_QUERY
         # remove all pending login requests for this user
-        neo4j_query(<<~END_OF_QUERY, {:email => data[:email]})
+        neo4j_query(<<~END_OF_QUERY, {:email => email})
             MATCH (r:LoginRequest)-[:FOR]->(u:User {email: $email})
             DETACH DELETE r;
         END_OF_QUERY
         # add new login requests for this user
-        neo4j_query_expect_one(<<~END_OF_QUERY, {:email => data[:email], :tag => tag, :code => random_code, :now => Time.now.to_i})
+        neo4j_query_expect_one(<<~END_OF_QUERY, {:email => email, :tag => tag, :code => random_code, :now => Time.now.to_i})
             MATCH (u:User {email: $email})
             CREATE (r:LoginRequest)-[:FOR]->(u)
             SET r.tag = $tag
@@ -809,7 +822,7 @@ class Main < Sinatra::Base
         broadcast_login_codes()
 
         deliver_mail do
-            to data[:email]
+            to email
             # bcc SMTP_FROM
             from SMTP_FROM
 
@@ -929,8 +942,9 @@ class Main < Sinatra::Base
         init_postgres(email)
     end
 
-    def start_server(email)
-        container_name = fs_tag_for_email(email)
+    def start_server(email, test_tag = nil)
+        email_with_test_tag = "#{email}#{test_tag}"
+        container_name = fs_tag_for_email(email_with_test_tag)
 
         system("mkdir -p /user/#{container_name}/config")
         system("mkdir -p /user/#{container_name}/workspace")
@@ -1116,32 +1130,68 @@ class Main < Sinatra::Base
         end
 
         state = get_server_state(container_name)
-        return if state[:running]
+        unless state[:running]
+            config_path = "/user/#{container_name}/workspace/.local/share/code-server/User/settings.json"
+            unless File.exist?(config_path)
+                FileUtils.mkpath(File.dirname(config_path))
+                File.open(config_path, 'w') do |f|
+                    config = {}
+                    config['files.exclude'] ||= {}
+                    config['files.exclude']['**/.*'] = true
+                    config['telemetry.telemetryLevel'] ||= 'off'
+                    if test_tag
+                        config['workbench.colorTheme'] = 'Tomorrow Night Blue'
 
-        config_path = "/user/#{container_name}/workspace/.local/share/code-server/User/settings.json"
-        unless File.exist?(config_path)
-            FileUtils.mkpath(File.dirname(config_path))
-            File.open(config_path, 'w') do |f|
-                config = {}
-                config['files.exclude'] ||= {}
-                config['files.exclude']['**/.*'] = true
-                config['telemetry.telemetryLevel'] ||= 'off'
-                f.write config.to_json
+                    end
+                    f.write config.to_json
+                end
             end
+            if test_tag
+                config_path = "/user/#{container_name}/workspace/.local/share/code-server/coder.json"
+                unless File.exist?(config_path)
+                    FileUtils.mkpath(File.dirname(config_path))
+                    File.open(config_path, 'w') do |f|
+                        config = {}
+                        config['query'] ||= {}
+                        config['query']['folder'] = '/workspace'
+                        f.write config.to_json
+                    end
+                end
+            end
+            # {
+            #     "query": {
+            #       "folder": "/workspace"
+            #     }
+            #   }
+            system("chown -R 1000:1000 /user/#{container_name}")
+            init_mysql(email)
+            init_postgres(email)
+
+            if test_tag
+                test_init_mark_path = "/user/#{container_name}/workspace/.test_init"
+                unless File.exist?(test_init_mark_path)
+                    sha1 = neo4j_query_expect_one(<<~END_OF_QUERY, {:test_tag => test_tag})['f.sha1']
+                        MATCH (t:Test {tag: $test_tag})-[:USES]->(f:File)
+                        RETURN f.sha1;
+                    END_OF_QUERY
+                    system("tar xf /internal/test_archives/#{sha1} -C /user/#{container_name}/workspace")
+                    File.open(test_init_mark_path, 'w') do |f|
+                    end
+                end
+            end
+
+            network_name = "bridge"
+            mysql_ip = `docker inspect workspace_mysql_1`.split('"IPAddress": "')[1].split('"')[0]
+            postgres_ip = `docker inspect workspace_postgres_1`.split('"IPAddress": "')[1].split('"')[0]
+            login = email.split('@').first.downcase
+            command = "docker run --add-host=mysql:#{mysql_ip} --add-host=postgres:#{postgres_ip} --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{login}\" -e POSTGRES_HOST=\"postgres\" -e POSTGRES_USER=\"#{login}\" -e POSTGRES_PASSWORD=\"#{Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)}\" -e POSTGRES_DATABASE=\"#{login}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
+            STDERR.puts command
+            system(command)
+
+            Main.refresh_nginx_config()
         end
-        system("chown -R 1000:1000 /user/#{container_name}")
-        init_mysql(email)
-        init_postgres(email)
 
-        network_name = "bridge"
-        mysql_ip = `docker inspect workspace_mysql_1`.split('"IPAddress": "')[1].split('"')[0]
-        postgres_ip = `docker inspect workspace_postgres_1`.split('"IPAddress": "')[1].split('"')[0]
-        login = email.split('@').first.downcase
-        command = "docker run --add-host=mysql:#{mysql_ip} --add-host=postgres:#{postgres_ip} --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{login}\" -e POSTGRES_HOST=\"postgres\" -e POSTGRES_USER=\"#{login}\" -e POSTGRES_PASSWORD=\"#{Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)}\" -e POSTGRES_DATABASE=\"#{login}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} --name hs_code_#{container_name} hs_code_server"
-        STDERR.puts command
-        system(command)
-
-        Main.refresh_nginx_config()
+        return "#{@session_user[:server_tag]}#{test_tag}"
     end
 
     def stop_server(email)
@@ -1182,11 +1232,12 @@ class Main < Sinatra::Base
 
     post '/api/start_server' do
         assert(user_logged_in?)
+        data = parse_request_data(:optional_keys => [:test_tag])
 
         email = @session_user[:email]
-        start_server(email)
+        server_tag = start_server(email, data[:test_tag])
 
-        respond(:yay => 'sure', :server_tag => @session_user[:server_tag])
+        respond(:yay => 'sure', :server_tag => server_tag)
     end
 
     post '/api/start_server_with_share_tag' do
@@ -1294,35 +1345,48 @@ class Main < Sinatra::Base
     def print_content_overview()
         Main.parse_content if DEVELOPMENT
         html = StringIO.open do |io|
-            @@section_order.each do |section_key|
-                section = @@sections[section_key]
-                next if section[:entries].reject do |entry|
-                    (!DEVELOPMENT) && @@content[entry][:dev_only]
-                end.empty?
-                io.puts "<h2><div class='squircle'><img src='#{section[:icon]}'></div> #{section[:label]}</h2>"
-                if section[:description]
-                    io.puts "<p style='margin-top: -1em; margin-bottom: 1em;'>#{section[:description]}</p>"
-                end
-                # io.puts "<hr>"
-                io.puts "<div class='row'>"
-                section[:entries].reject do |entry|
-                    (!DEVELOPMENT) && @@content[entry][:dev_only]
-                end.each.with_index do |slug, index|
-                    content = @@content[slug]
-                    io.puts "<div class='#{section_key == 'programming_languages' ? 'col-sm-6' : 'col-sm-12'} #{section_key == 'programming_languages' ? 'col-md-4' : 'col-md-12'} #{section_key == 'programming_languages' ? 'col-lg-4' : 'col-lg-6'}'>"
-                    io.puts "<a href='/#{slug}' class='tutorial_card2 #{section_key == 'programming_languages' ? 'compact' : ''}'>"
-                    io.puts "<h4>#{content[:dev_only] ? '<span class="badge bg-danger" style="transform: scale(0.8);">dev</span> ' : ''}#{content[:title]}</h4>"
-                    io.puts "<div class='inner'>"
-                    additional_classes = []
-                    if content[:needs_contrast] == 'light'
-                        additional_classes << 'dark-only-bg-contrast-light'
+            running_tests = my_running_tests()
+            if running_tests.empty?
+                @@section_order.each do |section_key|
+                    section = @@sections[section_key]
+                    next if section[:entries].reject do |entry|
+                        (!DEVELOPMENT) && @@content[entry][:dev_only]
+                    end.empty?
+                    io.puts "<h2><div class='squircle'><img src='#{section[:icon]}'></div> #{section[:label]}</h2>"
+                    if section[:description]
+                        io.puts "<p style='margin-top: -1em; margin-bottom: 1em;'>#{section[:description]}</p>"
                     end
-                    io.puts "<img class='#{additional_classes.join(' ')}' src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
-                    io.puts "<div class='abstract'>#{content[:abstract]}</div>"
-                    io.puts "</div>"
-                    io.puts "</a>"
-                    io.puts "</div>"
                     # io.puts "<hr>"
+                    io.puts "<div class='row'>"
+                    section[:entries].reject do |entry|
+                        (!DEVELOPMENT) && @@content[entry][:dev_only]
+                    end.each.with_index do |slug, index|
+                        content = @@content[slug]
+                        io.puts "<div class='#{section_key == 'programming_languages' ? 'col-sm-6' : 'col-sm-12'} #{section_key == 'programming_languages' ? 'col-md-4' : 'col-md-12'} #{section_key == 'programming_languages' ? 'col-lg-4' : 'col-lg-6'}'>"
+                        io.puts "<a href='/#{slug}' class='tutorial_card2 #{section_key == 'programming_languages' ? 'compact' : ''}'>"
+                        io.puts "<h4>#{content[:dev_only] ? '<span class="badge bg-danger" style="transform: scale(0.8);">dev</span> ' : ''}#{content[:title]}</h4>"
+                        io.puts "<div class='inner'>"
+                        additional_classes = []
+                        if content[:needs_contrast] == 'light'
+                            additional_classes << 'dark-only-bg-contrast-light'
+                        end
+                        io.puts "<img class='#{additional_classes.join(' ')}' src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
+                        io.puts "<div class='abstract'>#{content[:abstract]}</div>"
+                        io.puts "</div>"
+                        io.puts "</a>"
+                        io.puts "</div>"
+                        # io.puts "<hr>"
+                    end
+                    io.puts "</div>"
+                end
+            else
+                io.puts "<div style='text-align: center;'>"
+                io.puts "<h2>Leistungsüberprüfung</h2>"
+                io.puts "<p style='text-align: center;'>"
+                io.puts "Momentan läuft eine Leistungsüberprüfung. Klicke auf den entsprechenden Button, um den dazugehörigen Workspace zu öffnen."
+                io.puts "</p>"
+                running_tests.each do |entry|
+                    io.puts "<p style='text-align: center;'><button class='btn btn-success bu-launch-test' data-tag='#{entry[:tag]}'><i class='bi bi-code-slash'></i>Leistungsüberprüfung bei #{entry[:teacher]}</button></p>"
                 end
                 io.puts "</div>"
             end
@@ -1362,6 +1426,17 @@ class Main < Sinatra::Base
         end
 
         StringIO.open do |io|
+            io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
+            io.puts "<table class='table table-sm' id='table_admin_workspaces'>"
+            io.puts "<tr>"
+            io.puts "<th>Tag</th>"
+            io.puts "<th>E-Mail</th>"
+            # io.puts "<th>IP</th>"
+            io.puts "<th style='width: 5.2em;'>CPU</th>"
+            io.puts "<th>RAM</th>"
+            io.puts "<th>Disk Usage</th>"
+            io.puts "<th>Workspace</th>"
+            io.puts "</tr>"
             active_users = Dir['/user/*'].map do |path|
                 path.split('/').last
             end.select do |user_tag|
@@ -1390,23 +1465,12 @@ class Main < Sinatra::Base
                     io2.string
                 end
                 unless sub.empty?
-                    io.puts "<h2>#{group}</h2>"
-                    io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
-                    io.puts "<table class='table table-sm' id='table_admin_workspaces'>"
-                    io.puts "<tr>"
-                    io.puts "<th>Tag</th>"
-                    io.puts "<th>E-Mail</th>"
-                    # io.puts "<th>IP</th>"
-                    io.puts "<th style='width: 5.2em;'>CPU</th>"
-                    io.puts "<th>RAM</th>"
-                    io.puts "<th>Disk Usage</th>"
-                    io.puts "<th>Workspace</th>"
-                    io.puts "</tr>"
+                    io.puts "<tr><th colspan='6' style='background-color: rgba(0,0,0,0.03);'>#{group}</th></tr>"
                     io.puts sub
-                    io.puts "</table>"
-                    io.puts "</div>"
                 end
             end
+            io.puts "</table>"
+            io.puts "</div>"
             io.string
         end
     end
@@ -1679,7 +1743,7 @@ class Main < Sinatra::Base
     def print_module_button(key)
         assert(user_logged_in?)
         active = @session_user["show_#{key}".to_sym]
-        "<button class='btn btn-md #{active ? 'btn-success' : 'btn-outline-secondary'} bu-toggle-module' data-module='#{key}'><i class='bi #{active ? 'bi-check-lg' : 'bi-x-lg'}'></i>&nbsp;&nbsp;#{MODULE_LABELS[key]} im Menü #{active ? '' : 'nicht'} anzeigen</button>"
+        "<button class='btn btn-md #{active ? 'btn-success' : 'btn-outline-secondary'} bu-toggle-module' data-module='#{key}'><i class='bi #{active ? 'bi-check-lg' : 'bi-x-lg'}'></i>#{MODULE_LABELS[key]} im Menü #{active ? '' : 'nicht'} anzeigen</button>"
     end
 
     post '/api/set_brightness/:mode' do
@@ -1720,10 +1784,227 @@ class Main < Sinatra::Base
         respond_with_file(candidates.first)
     end
 
+    post '/api/upload_test_archive' do
+        assert(teacher_logged_in?)
+        entry = params['file']
+        filename = entry['filename']
+        blob = entry['tempfile'].read
+        sha1 = Digest::SHA1.hexdigest(blob)
+        debug "Got a file called #{filename} with #{blob.size} bytes."
+        FileUtils.mkpath('/internal/test_archives')
+        File.open("/internal/test_archives/#{sha1}", 'w') do |f|
+            f.write blob
+        end
+        ts = Time.now.to_i
+        tag = RandomTag.generate(24)
+        neo4j_query_expect_one(<<~END_OF_STRING, {:tag => tag, :email => @session_user[:email], :sha1 => sha1, :size => blob.size, :filename => filename, :ts => ts})
+            MATCH (u:User {email: $email})
+            MERGE (f:File {sha1: $sha1})
+            WITH u, f
+            CREATE (u)<-[:BELONGS_TO]-(t:Test {tag: $tag})-[:USES]->(f)
+            SET f.size = $size
+            SET t.filename = $filename
+            SET t.ts = $ts
+            RETURN f.sha1;
+        END_OF_STRING
+        respond(:yay => 'sure')
+    end
+
+    post '/api/get_my_test_archives' do
+        assert(teacher_logged_in?)
+        entries = []
+        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email]}).each do |row|
+            MATCH (u:User {email: $email})<-[:BELONGS_TO]->(t:Test)-[:USES]->(f:File)
+            OPTIONAL MATCH (t)<-[:TAKES]-(u2:User)
+            RETURN t, f, COUNT(u2);
+        END_OF_STRING
+            entries << {
+                tag: row['t'][:tag],
+                running: row['t'][:running],
+                size: bytes_to_str(row['f'][:size]),
+                filename: row['t'][:filename],
+                ts: row['t'][:ts],
+                count: row['COUNT(u2)'],
+            }
+        end
+        respond(:entries => entries)
+    end
+
+    post '/api/delete_test' do
+        assert(teacher_logged_in?)
+        data = parse_request_data(:required_keys => [:tag])
+        neo4j_query(<<~END_OF_STRING, {:tag => data[:tag], :email => @session_user[:email]})
+            MATCH (u:User {email: $email})<-[:BELONGS_TO]->(t:Test {tag: $tag})
+            DETACH DELETE t;
+        END_OF_STRING
+        Main.refresh_nginx_config()
+        respond(:ok => 'sure')
+    end
+
+    post '/api/get_assigned_users_for_test' do
+        assert(teacher_logged_in?)
+        data = parse_request_data(:required_keys => [:tag])
+        emails = neo4j_query(<<~END_OF_STRING, {:tag => data[:tag]}).map { |x| x['u.email'] }
+            MATCH (u:User)-[:TAKES]->(t:Test {tag: $tag})
+            RETURN u.email;
+        END_OF_STRING
+        respond(:emails => emails)
+    end
+
+    post '/api/test_toggle_user' do
+        assert(teacher_logged_in?)
+        data = parse_request_data(:required_keys => [:tag, :email])
+        count = neo4j_query(<<~END_OF_STRING, {:tag => data[:tag], :email => data[:email]}).size
+            MATCH (u:User {email: $email})-[:TAKES]->(t:Test {tag: $tag})
+            RETURN u.email;
+        END_OF_STRING
+        if count == 0
+            neo4j_query_expect_one(<<~END_OF_STRING, {:tag => data[:tag], :email => data[:email]})
+                MERGE (u:User {email: $email})
+                WITH u
+                MATCH (t:Test {tag: $tag})
+                CREATE (u)-[:TAKES]->(t)
+                RETURN u.email;
+            END_OF_STRING
+            Main.refresh_nginx_config()
+            respond(:flag => true)
+        else
+            neo4j_query_expect_one(<<~END_OF_STRING, {:tag => data[:tag], :email => data[:email]})
+                MATCH (u:User {email: $email})-[r:TAKES]->(t:Test {tag: $tag})
+                DELETE r
+                RETURN u.email;
+            END_OF_STRING
+            Main.refresh_nginx_config()
+            respond(:flag => false)
+        end
+    end
+
+    post '/api/start_test' do
+        assert(teacher_logged_in?)
+        data = parse_request_data(:required_keys => [:tag])
+        neo4j_query(<<~END_OF_STRING, {:tag => data[:tag]})
+            MATCH (t:Test {tag: $tag})
+            SET t.running = TRUE;
+        END_OF_STRING
+        Main.refresh_nginx_config()
+    end
+
+    post '/api/stop_test' do
+        assert(teacher_logged_in?)
+        data = parse_request_data(:required_keys => [:tag])
+        neo4j_query(<<~END_OF_STRING, {:tag => data[:tag]})
+            MATCH (t:Test {tag: $tag})
+            REMOVE t.running;
+        END_OF_STRING
+        Main.refresh_nginx_config()
+    end
+
+    def my_user_group_order
+        if admin_logged_in?
+            @@user_group_order
+        else
+            []
+        end
+    end
+
+    def my_user_groups
+        if admin_logged_in?
+            @@user_groups
+        else
+            {}
+        end
+    end
+
+    def my_invitations
+        if admin_logged_in?
+            @@invitations
+        else
+            {}
+        end
+    end
+
+    def my_running_tests
+        unless user_logged_in?
+            return []
+        end
+        entries = []
+        neo4j_query(<<~END_OF_QUERY, {:email => @session_user[:email]}).each do |row|
+            MATCH (u:User {email: $email})-[:TAKES]->(t:Test {running: TRUE})-[:BELONGS_TO]->(tu:User)
+            RETURN t, tu.email;
+        END_OF_QUERY
+            entries << {
+                :tag => row['t'][:tag],
+                :teacher => @@invitations[row['tu.email']][:name]
+            }
+        end
+        entries
+    end
+
+    get '/api/pdf_for_test/:tag' do
+        assert(teacher_logged_in?)
+        test_tag = params['tag']
+        html = StringIO.open do |io|
+            io.puts <<~END_OF_STRING
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body {
+                            font-family: 'Latin Modern Mono', monospace;
+                            font-size: 12pt;
+                        }
+                        pre {
+                            font-family: 'Latin Modern Mono', monospace;
+                            font-size: 12pt;
+                            white-space: pre-wrap;
+                        }
+                        .file {
+                            page-break-before: always;
+                        }
+                    </style>
+                </head>
+
+                <body>
+            END_OF_STRING
+
+            neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :test_tag => test_tag}).each do |row|
+                MATCH (u:User)-[:TAKES]->(t:Test {tag: $test_tag})-[:BELONGS_TO]->(:User {email: $email})
+                RETURN u.email;
+            END_OF_STRING
+                email = row['u.email']
+                email_with_test_tag = "#{email}#{test_tag}"
+                container_name = fs_tag_for_email(email_with_test_tag)
+                Dir["/user/#{container_name}/workspace/*"].each do |path|
+                    if ['txt', 'dart'].include?(path.split('.').last)
+                        io.puts "<div class='file'>"
+                        io.puts "<div style='display: flex; background-color: #ccc; padding: 0.25em 0.25em; font-weight: bold;'>"
+                        io.puts "<div>#{File.basename(path)}</div>"
+                        io.puts "<div style='flex-grow: 1; text-align: right;'>#{@@invitations[email][:name]} | #{Time.now.strftime("%d.%m.%Y %H:%M Uhr")}</div>"
+                        io.puts "</div>"
+                        io.puts "<pre>"
+                        lines = File.read(path).split("\n")
+                        lines.each_with_index do |line, index|
+                            io.puts sprintf("<span style='color: #888; border-right: 1px solid #888; padding-right: 1em;'>%4d</span> %s", index + 1, CGI.escapeHTML(line))
+                        end
+                        io.puts "</pre>"
+                        io.puts "</div>"
+                    end
+                end
+            end
+
+            io.puts "</body>"
+            io.puts "</html>"
+
+            io.string
+        end
+        respond_raw_with_mimetype(html, 'text/html')
+    end
+
     get '/*' do
         path = request.path
         slug = nil
         Main.parse_content() if DEVELOPMENT
+        running_tests = my_running_tests()
         if path[0, 7] == '/share/'
             share_tag = path.sub('/share/', '')
             STDERR.puts "OPENING SHARE WITH SHARE TAG #{share_tag}"
