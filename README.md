@@ -19,7 +19,7 @@ Für die lokale Installation benötigst du Docker (mit docker-compose), Git und 
 **Klonen des Repositories**
 
 ```bash
-git clone https://git.nhcham.org/specht/workspace.git
+git clone https://github.com/specht/workspace.git
 ```
 **Anpassung der Konfiguration**
 
