@@ -1450,9 +1450,9 @@ class Main < Sinatra::Base
             end
             active_users = Set.new(active_users)
             @@user_group_order.each do |group|
-                next unless (@@teachers[@session_user[:email]] || Set.new()).include?(group) || admin_logged_in?
                 sub = StringIO.open do |io2|
                     @@user_groups[group].each do |email|
+                        next unless (@@teachers[@session_user[:email]] || Set.new()).include?(group) || admin_logged_in? || email == @session_user[:email]
                         user_tag = fs_tag_for_email(email)
                         next unless active_users.include?(user_tag)
                         io2.puts "<tr id='tr_hs_code_#{user_tag}'>"
