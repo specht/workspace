@@ -47,4 +47,5 @@ RUN pip install -U mycli
 RUN gem install tty paint
 COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run
 COPY svc-code-server-run /etc/s6-overlay/s6-rc.d/svc-code-server/run
+RUN echo "export GEM_HOME=$HOME/.gem" >> /root/.bashrc
 WORKDIR /workspace
