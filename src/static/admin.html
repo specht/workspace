@@ -1,4 +1,4 @@
-#{ assert(admin_logged_in?) }
+#{ assert(teacher_logged_in?) }
 
 <style>
     .table tr {
@@ -9,6 +9,7 @@
     <div class='row'>
         <div class='col-md-12'>
             <div id="login_codes_here" style="display: none;">
+                <h2>Anmelde-Codes</h2>
                 <div style="max-width: 100%; overflow-x: auto;">
                     <table class="table table-sm" id="table_admin_workspaces">
                         <thead>

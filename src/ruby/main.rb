@@ -735,11 +735,11 @@ class Main < Sinatra::Base
     end
 
     def teacher_logged_in?
-        user_logged_in? && @@teachers.include?(@session_user[:email])
+        admin_logged_in? || (user_logged_in? && @@teachers.include?(@session_user[:email]))
     end
 
     def admin_logged_in?
-        return user_logged_in? && ADMIN_USERS.include?(@session_user[:email])
+        user_logged_in? && ADMIN_USERS.include?(@session_user[:email])
     end
 
     def gen_server_tag()
@@ -948,6 +948,12 @@ class Main < Sinatra::Base
 
         system("mkdir -p /user/#{container_name}/config")
         system("mkdir -p /user/#{container_name}/workspace")
+        if File.exist?("/user/#{container_name}/workspace/.bashrc")
+            contents = File.read("/user/#{container_name}/workspace/.bashrc")
+            unless contents.include?('GEM_HOME')
+                system("echo 'export GEM_HOME=\"$HOME/.gem\"' >> /user/#{container_name}/workspace/.bashrc")
+            end
+        end
         # touch this file so that housekeeping won't shut down the server immediately
         File.open("/user/#{container_name}/workspace/.hackschule", 'w') do |f|
             f.puts "https://youtu.be/Akaa9xHaw7E"
@@ -1255,7 +1261,7 @@ class Main < Sinatra::Base
     end
 
     post '/api/start_server_as_admin' do
-        assert(admin_logged_in?)
+        assert(teacher_logged_in?)
         data = parse_request_data(:required_keys => [:email])
         email = data[:email]
 
@@ -1398,7 +1404,16 @@ class Main < Sinatra::Base
     end
 
     def print_workspaces()
-        assert(admin_logged_in?)
+        assert(teacher_logged_in?)
+
+        # remove all stale login requests
+        ts = Time.now.to_i - 60 * 10
+        neo4j_query(<<~END_OF_QUERY, {:ts => ts})
+            MATCH (l:LoginRequest)
+            WHERE COALESCE(l.ts_expiry, 0) < $ts
+            DETACH DELETE l;
+        END_OF_QUERY
+
         email_for_tag = {}
         registered_emails = []
         neo4j_query(<<~END_OF_STRING).each do |row|
@@ -1428,15 +1443,6 @@ class Main < Sinatra::Base
         StringIO.open do |io|
             io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
             io.puts "<table class='table table-sm' id='table_admin_workspaces'>"
-            io.puts "<tr>"
-            io.puts "<th>Tag</th>"
-            io.puts "<th>E-Mail</th>"
-            # io.puts "<th>IP</th>"
-            io.puts "<th style='width: 5.2em;'>CPU</th>"
-            io.puts "<th>RAM</th>"
-            io.puts "<th>Disk Usage</th>"
-            io.puts "<th>Workspace</th>"
-            io.puts "</tr>"
             active_users = Dir['/user/*'].map do |path|
                 path.split('/').last
             end.select do |user_tag|
@@ -1444,6 +1450,7 @@ class Main < Sinatra::Base
             end
             active_users = Set.new(active_users)
             @@user_group_order.each do |group|
+                next unless (@@teachers[@session_user[:email]] || Set.new()).include?(group) || admin_logged_in?
                 sub = StringIO.open do |io2|
                     @@user_groups[group].each do |email|
                         user_tag = fs_tag_for_email(email)
@@ -1465,7 +1472,16 @@ class Main < Sinatra::Base
                     io2.string
                 end
                 unless sub.empty?
-                    io.puts "<tr><th colspan='6' style='background-color: rgba(0,0,0,0.03);'>#{group}</th></tr>"
+                    io.puts "<tr><th colspan='6' style='background-color: rgba(0,0,0,0); padding: 1em 0;'><h4>#{group}</h4></th></tr>"
+                    io.puts "<tr>"
+                    io.puts "<th>Tag</th>"
+                    io.puts "<th>Name</th>"
+                    # io.puts "<th>IP</th>"
+                    io.puts "<th style='width: 5.2em;'>CPU</th>"
+                    io.puts "<th>RAM</th>"
+                    io.puts "<th>Disk Usage</th>"
+                    io.puts "<th>Workspace</th>"
+                    io.puts "</tr>"
                     io.puts sub
                 end
             end
@@ -1490,15 +1506,22 @@ class Main < Sinatra::Base
             RETURN l.code, u.email
             ORDER BY l.expiry;
         END_OF_STRING
-            lines << { :email => row['u.email'], :code => row['l.code'] }
+            email = row['u.email']
+            lines << { :email => email, :code => row['l.code'] }
         end
         @@clients.each_pair do |client_id, ws|
-            ws.send({:action => 'login_codes', :lines => lines}.to_json)
+            filtered_lines = lines.select do |line|
+                ws_email = @@email_for_client_id[client_id]
+                email = line[:email]
+                group = @@invitations[email][:group]
+                ADMIN_USERS.include?(ws_email) ||(@@teachers[ws_email] || Set.new()).include?(group)
+            end
+            ws.send({:action => 'login_codes', :lines => filtered_lines}.to_json)
         end
     end
 
     get '/ws' do
-        assert(admin_logged_in?)
+        assert(teacher_logged_in?)
         if Faye::WebSocket.websocket?(request.env)
             ws = Faye::WebSocket.new(request.env)
 
