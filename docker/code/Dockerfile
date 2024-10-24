@@ -34,6 +34,7 @@ RUN sudo apt-get update && sudo apt-get install -y \
     man-db \
     telnet \
     postgresql-client pgcli \
+    bash-completion \
     libboost-dev libboost-date-time-dev libboost-thread-dev zlib1g-dev libpng-dev libjpeg8-dev libtiff5-dev libopenexr-dev \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
@@ -48,5 +49,4 @@ RUN gem install tty paint
 COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run
 COPY svc-code-server-run /etc/s6-overlay/s6-rc.d/svc-code-server/run
 RUN echo "export GEM_HOME=$HOME/.gem" >> /root/.bashrc
-RUN touch /hackschule.txt
 WORKDIR /workspace
