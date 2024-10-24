@@ -18,7 +18,7 @@ mkdir -p /workspace/{.extensions,.ssh}
 # fi
 
 [[ ! -f /workspace/.bashrc ]] && \
-    cp /root/.bashrc /workspace/.bashrc
+    cp /root/.bashrc /workspace/.bashrc && echo 'export GEM_HOME=$HOME/.gem' >> /workspace/.bashrc
 [[ ! -f /workspace/.profile ]] && \
     cp /root/.profile /workspace/.profile
 
