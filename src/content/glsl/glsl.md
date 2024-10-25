@@ -2,7 +2,7 @@
 image: ocean.png
 </div>
 
-# Shader-Programmierung mit GLSL
+# Shader mit GLSL
 
 <p class='abstract'>
 GLSL (OpenGL Shading Language) ist eine Programmiersprache, die für die Entwicklung von Shadern in OpenGL verwendet wird. Shader sind kleine Programme, die auf der Grafikkarte ausgeführt werden und die Darstellung von 3D-Objekten steuern.

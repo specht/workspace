@@ -1368,8 +1368,8 @@ class Main < Sinatra::Base
                         (!DEVELOPMENT) && @@content[entry][:dev_only]
                     end.each.with_index do |slug, index|
                         content = @@content[slug]
-                        io.puts "<div class='#{section_key == 'programming_languages' ? 'col-sm-6' : 'col-sm-12'} #{section_key == 'programming_languages' ? 'col-md-4' : 'col-md-12'} #{section_key == 'programming_languages' ? 'col-lg-4' : 'col-lg-6'}'>"
-                        io.puts "<a href='/#{slug}' class='tutorial_card2 #{section_key == 'programming_languages' ? 'compact' : ''}'>"
+                        io.puts "<div class='#{section[:compact] ? 'col-sm-6' : 'col-sm-12'} #{section[:compact] ? 'col-md-4' : 'col-md-12'} #{section[:compact] ? 'col-lg-4' : 'col-lg-6'}'>"
+                        io.puts "<a href='/#{slug}' class='tutorial_card2 #{section[:compact] ? 'compact' : ''}'>"
                         io.puts "<h4>#{content[:dev_only] ? '<span class="badge bg-danger" style="transform: scale(0.8);">dev</span> ' : ''}#{content[:title]}</h4>"
                         io.puts "<div class='inner'>"
                         additional_classes = []

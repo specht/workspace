@@ -2,9 +2,10 @@
 image: fire.webp:73:0
 </div>
 
-# Grafik-Programmierung
+# Demoscene
 
 <p class='abstract'>
+»Demos« nannte man in der 90er Jahren kleine Programme, die spektakuläre Grafiken und Musik auf dem Bildschirm darstellten und dabei die Grenzen der verfügbaren Hardware ausreizten. Die Demoszene ist eine Subkultur, die sich um die Entwicklung von Demos und die Organisation von Demopartys dreht.
 </p>
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
