@@ -42,12 +42,12 @@
   label: Computergrafik
   icon: /images/palette.png
   entries:
-  # - .turtle
-  # - .drawing
+  # - .turtle (got test)
+  # - .drawing (koch curve)
   - .demoscene
-  # - .anaglyph
-  # - .sirds
-  # - .raytracing
+  # - .anaglyph (got test)
+  # - .sirds (got test)
+  # - .raytracing (got screenshot)
   - .p5js
   - .glsl
   # - .gif
