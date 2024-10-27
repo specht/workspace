@@ -2,7 +2,7 @@ FROM linuxserver/code-server:4.91.1
 RUN usermod -d /workspace abc
 RUN sudo apt-get update && sudo apt-get install -y \
     wget \
-    ruby \
+    ruby ruby-dev libmagickcore-dev \
     python3 python3-pip \
     python3-dev libmysqlclient-dev libmysqlclient21 \
     python3-mysql.connector \
