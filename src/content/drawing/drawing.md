@@ -5,7 +5,7 @@ image: rainbow.webp
 # Pixelgrafik programmieren
 
 <p class='abstract'>
-In diesem Kapitel lernst du, wie du Pixelgrafiken programmieren kannst. Dazu installieren wir das Paket »Pixelflow Canvas« und erstellen ein erstes Bild.
+In diesem Kapitel lernst du, wie du Pixelgrafiken programmieren kannst. Dazu installieren wir das Paket »Pixelflow Canvas« und erstellen ein erstes Bild mit einer hügeligen Wiese aus Bézierkurven und einem Regenbogen aus konzentrischen Kreisen.
 </p>
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
