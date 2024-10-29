@@ -223,6 +223,22 @@ Du kannst hier interaktiv die Punkte der Bézierkurven verschieben, um zu verste
     stroke-dasharray: 0.2;
     fill: none;
 }
+[data-bs-theme=dark] {
+    .bezier_div path.spline {
+        stroke: #fff;
+    }
+    .bezier_div path.line {
+        stroke: #666;
+    }
+    .bezier_div circle {
+        fill: #222;
+        stroke: #888;
+    }
+    .bezier_div circle:hover {
+        fill: #333;
+        stroke: #aaa;
+    }
+}
 </style>
 
 <div class='row'>
