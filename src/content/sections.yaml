@@ -44,7 +44,6 @@
   entries:
   # - .turtle (got test)
   # - .drawing (koch curve)
-  - .drawing
   - .demoscene
   - .anaglyphs
   - .sirds
@@ -53,10 +52,11 @@
   - .glsl
   # - .gif
 - key: misc
-  compact: true
+  # compact: true
   label: Verschiedenes
   icon: /images/parrot.png
   entries:
+  - drawing
   - digits-experiment
   - showerjs
   - mysql
