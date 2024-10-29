@@ -44,12 +44,12 @@
   entries:
   # - .turtle (got test)
   # - .drawing (koch curve)
-  - .demoscene
-  - .anaglyphs
-  - .sirds
-  - .raytracing
-  - .p5js
-  - .glsl
+  # - .demoscene
+  # - .anaglyphs
+  # - .sirds
+  # - .raytracing
+  # - .p5js
+  # - .glsl
   # - .gif
 - key: misc
   # compact: true
