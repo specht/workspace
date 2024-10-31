@@ -101,7 +101,7 @@ hinter welcher Zahl verbirgt, ist in der Palette definiert.
 
 Da standardmäßig die VGA-Palette verwendet wird, entspricht die Farbe 10 einem hellen Grün.
 
-Hier findest du eine Übersicht über alle Farben der Standard-VGA-Palette: [https://github.com/specht/pixelflow_canvas?tab=readme-ov-file#vga](https://github.com/specht/pixelflow_canvas?tab=readme-ov-file#vga).
+Hier findest du eine Übersicht über alle Farben der Standard-VGA-Palette: [https://specht.github.io/pixelflow_canvas_ruby/palettes.html#vga](https://specht.github.io/pixelflow_canvas_ruby/palettes.html#vga).
 
 <div class='hint'>
     Kannst du die Farbe des Pixels auf Blau ändern? Versuche auch, den Pixel in alle vier Ecken der Zeichenfläche zu schieben.
@@ -450,4 +450,4 @@ _include_file(rainbow.rb, ruby)
 
 ## Zusammenfassung
 
-In diesem Kapitel hast du gesehen, wie du Pixelgrafiken mit dem Pixelflow Canvas programmieren kannst. Du hast gesehen, wie man komplexe Szenen aus einfachen Formen zusammensetzen kann und anschließend das Bild speichern kann. Eine Übersicht über alle Befehle findest du in der [Dokumentation des Pixelflow Canvas](https://specht.github.io/pixelflow_canvas_ruby/).
+In diesem Kapitel hast du gesehen, wie du Pixelgrafiken mit dem Pixelflow Canvas programmieren kannst. Du hast gesehen, wie man komplexe Szenen aus einfachen Formen zusammensetzen kann und anschließend das Bild speichern kann. Eine Übersicht über alle Befehle findest du in der Dokumentation des Pixelflow Canvas unter [https://specht.github.io/pixelflow_canvas_ruby/drawing_things.html](https://specht.github.io/pixelflow_canvas_ruby/drawing_things.html).
