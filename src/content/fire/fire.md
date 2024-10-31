@@ -182,11 +182,22 @@ Hier siehst du ein paar Beispiele:
     width: 1.5em;
     text-align: center;
 }
+[data-bs-theme=dark] {
+    .kernel {
+        color: #fff;
+    }
+    .kernel td {
+        color: #fff;
+    }
+    .kernel_img {
+        filter: invert(0.917);
+    }
+}
 </style>
 
 <div class='row'>
     <div class='col-md-4' style='position: relative;'>
-        <img src='kernel_identity.png' style='width: 100%; image-rendering: pixelated;'>
+        <img class='kernel_img' src='kernel_identity.png' style='width: 100%; image-rendering: pixelated;'>
         <div class='kernel'>
             <strong>Identity</strong>
             <table>
@@ -197,7 +208,7 @@ Hier siehst du ein paar Beispiele:
         </div>
     </div>
     <div class='col-md-4' style='position: relative;'>
-        <img src='kernel_boxblur.png' style='width: 100%; image-rendering: pixelated;'>
+        <img class='kernel_img' src='kernel_boxblur.png' style='width: 100%; image-rendering: pixelated;'>
         <div class='kernel'>
             <strong>Box blur</strong>
             <table>
@@ -208,7 +219,7 @@ Hier siehst du ein paar Beispiele:
         </div>
     </div>
     <div class='col-md-4' style='position: relative;'>
-        <img src='kernel_edge.png' style='width: 100%; image-rendering: pixelated;'>
+        <img class='kernel_img' src='kernel_edge.png' style='width: 100%; image-rendering: pixelated;'>
         <div class='kernel'>
             <strong>Edge detection</strong>
             <table>
@@ -225,7 +236,7 @@ Im ersten Beispiel (»Identity«) wird der Pixelwert unverändert übernommen un
 Wird ein Filterkernel wiederholt auf ein Bild angewendet, entsteht ein Effekt, der sich über die gesamte Bildfläche ausbreitet. Der Feuereffekt verwendet einen speziellen Filterkernel, der die Farben von Pixeln nach oben bewegt und dabei abkühlt. Der Filterkernel sieht folgendermaßen aus:
 
 <div style='max-width: 20em; margin-left: auto; margin-right: auto; position: relative;'>
-    <img src='kernel_fire.png' style='width: 100%; image-rendering: pixelated;'>
+    <img class='kernel_img' src='kernel_fire.png' style='width: 100%; image-rendering: pixelated;'>
     <div class='kernel'>
         <table>
             <tr><td>0</td><td>0</td><td>0</td></tr>
