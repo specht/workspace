@@ -314,6 +314,10 @@ Dein Feuereffekt sollte nun so aussehen:
 
 <img src='fire5.png' class='full' style='image-rendering: pixelated;'>
 
+Das gesamte Programm sieht nun so aus:
+
+_include_file(fire.rb, ruby)
+
 ## Zusammenfassung
 
 In diesem Tutorial haben wir eine kleine Feueranimation in Ruby programmiert, die auf einem Farbverlauf basiert und einen speziellen Filterkernel verwendet, um die Farben zu animieren. Wir haben gesehen, wie Filterkernel in der Bildbearbeitung verwendet werden und wie sie in der Programmierung eingesetzt werden können, um Effekte zu erzielen. Die Feueranimation ist ein beliebter Effekt in der Demoszene und kann mit ein wenig Übung und Experimentieren noch weiter verbessert werden.
@@ -322,7 +326,3 @@ Hier sind ein paar Vorschläge, wie du die Animation weiter verbessern könntest
 
 - Versuche, andere Muster zu zeichnen, um die Quelle des Feuers zu verändern.
 - Experimentiere mit verschiedenen Farbverläufen und Filterkernels, um andere Effekte (z. B. einen Raucheffekt) zu erzielen.
-
-Das gesamte Programm sieht nun so aus:
-
-_include_file(fire.rb, ruby)
