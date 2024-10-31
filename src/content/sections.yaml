@@ -45,7 +45,7 @@
     - drawing
   # - .turtle (got test)
   # - .drawing (koch curve)
-    - .fire
+    - fire
   # - .anaglyphs
   # - .sirds
   # - .raytracing
