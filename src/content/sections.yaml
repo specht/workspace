@@ -38,13 +38,14 @@
   - dart
   - rust
 - key: graphics
-  compact: true
+  # compact: true
   label: Computergrafik
   icon: /images/palette.png
   entries:
+    - drawing
   # - .turtle (got test)
   # - .drawing (koch curve)
-  # - .demoscene
+    - .fire
   # - .anaglyphs
   # - .sirds
   # - .raytracing
@@ -52,11 +53,10 @@
   # - .glsl
   # - .gif
 - key: misc
-  # compact: true
+  compact: true
   label: Verschiedenes
   icon: /images/parrot.png
   entries:
-  - drawing
   - digits-experiment
   - showerjs
   - mysql

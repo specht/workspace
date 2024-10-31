@@ -557,6 +557,10 @@ pre pre {
     background-image: url(/images/books.png);
 }
 
+.hint.think::before {
+    background-image: url(/images/think.png);
+}
+
 .hint.handshake::before {
     background-image: url(/images/handshake.png);
 }

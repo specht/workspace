@@ -36,7 +36,7 @@ gem install pixelflow_canvas
 
 ## Zeichenfläche ausprobieren
 
-Wähle im Menü links oben »File« / »New Text File«, um eine neue Datei anzulegen:
+Wähle im Menü links oben »File« / »New Text File« (oder drücke <span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>N</span>), um eine neue Datei anzulegen:
 
 <img class='full' src='new-file.webp'>
 
@@ -450,4 +450,4 @@ _include_file(rainbow.rb, ruby)
 
 ## Zusammenfassung
 
-In diesem Kapitel hast du gesehen, wie du Pixelgrafiken mit dem Pixelflow Canvas programmieren kannst. Du hast gesehen, wie man komplexe Szenen aus einfachen Formen zusammensetzen kann und anschließend das Bild speichern kann. In den nächsten Kapiteln werden wir uns mit weiteren Techniken beschäftigen, um noch komplexere Bilder zu erstellen.
+In diesem Kapitel hast du gesehen, wie du Pixelgrafiken mit dem Pixelflow Canvas programmieren kannst. Du hast gesehen, wie man komplexe Szenen aus einfachen Formen zusammensetzen kann und anschließend das Bild speichern kann. Eine Übersicht über alle Befehle findest du in der [Dokumentation des Pixelflow Canvas](https://specht.github.io/pixelflow_canvas_ruby/).

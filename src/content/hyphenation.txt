@@ -28,6 +28,7 @@ Commo-dore
 Com-puter
 Dar-stell-ung
 da-run-ter
+dar-stell-ten
 Da-tei-en
 Da-tei-na-men
 Da-ten-ban-ken
@@ -110,6 +111,7 @@ Short-cuts
 Skript-spra-che
 Soft-ware-ent-wick-lung
 Soft-ware-pro-jekt
+spek-ta-ku-läre
 spe-zia-li-sier-ten
 spe-ziell
 Spie-le-ent-wick-lung
@@ -117,6 +119,7 @@ Spra-che
 steu-ern
 Strö-mungs-me-cha-nik
 Strou-strup
+Sub-kul-tur
 Sys-tem-pro-gram-mie-rung
 Sys-tem-soft-ware
 Tas-ten-kom-bi-na-ti-onen
