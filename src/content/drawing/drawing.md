@@ -119,8 +119,7 @@ einheitliche Farbgebung hast und nicht jedes Mal die passenden RGB-Werte herauss
 ## Palette wählen
 
 Die Standard-VGA-Palette ist nicht die einzige Palette, die du verwenden kannst. Du kannst auch eine andere Palette
-wählen oder sogar deine eigene Palette definieren. Eine Übersicht über alle verfügbaren Paletten findest du unter dem
-weiter oben genannten Link. Da wir eine Wiese mit Regenbogen zeichnen möchten, wählen wir die »zughy_32«-Palette:
+wählen oder sogar deine eigene Palette definieren. Eine Übersicht über alle verfügbaren Paletten findest du [hier](https://specht.github.io/pixelflow_canvas_ruby/palettes.html). Da wir eine Wiese mit Regenbogen zeichnen möchten, wählen wir die »zughy_32«-Palette:
 
 <div class='swatches'>
 <span style='background-color: #472d3c;'><span>0</span></span>
