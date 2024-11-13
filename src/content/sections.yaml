@@ -53,13 +53,14 @@
   # - .glsl
   # - .gif
 - key: misc
-  compact: true
+  compact: false
   label: Verschiedenes
   icon: /images/parrot.png
   entries:
   - digits-experiment
   - showerjs
   - mysql
+  - hades
   # - .latex
 - key: linux
   label: Linux und das Terminal
