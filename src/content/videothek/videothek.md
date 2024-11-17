@@ -275,7 +275,7 @@ Die erste Zeile gibt dir einen Hinweis darauf, was überhaupt passiert ist. »Qu
 
 Wir werden nun die entsprechende Abfrage formulieren und in den Quelltext einfügen. Wir bekommen eine `genre_id` als Parameter übergeben und sollen nun alle Filme aus der Datenbank herausfiltern, die zu diesem Genre gehören.
 
-Um die Abfrage zu entwickeln, können wir wieder `mycli` verwenden. Wir wollen alle Filme ausgeben, die zum Genre »Animation« gehören. Dazu müssen wir zuerst die Tabellen `movie` und `movie_genre` mit Hilfe einer `JOIN`-Klausel verknüpfen.
+Um die Abfrage zu entwickeln, können wir wieder `mycli` verwenden. Wir wollen alle Filme ausgeben, die zu einem bestimmten Genre gehören, dessen ID wir kennen. Dazu müssen wir die Tabellen `movie` und `movie_genre` mit Hilfe einer `JOIN`-Klausel verknüpfen.
 
 Zu jedem `JOIN` gehört ein `ON`-Statement, das definiert, welche Einträge aus jeder der beteiligten Tabellen zusammengeführt werden sollen. In unserem Fall verknüpfen wir die Tabellen `movie` und `movie_genre` über die Spalte `id` und `movie_id`:
 
