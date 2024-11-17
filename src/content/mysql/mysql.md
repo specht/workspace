@@ -2,7 +2,7 @@
 image: select-land.webp:25:0
 </div>
 
-# MySQL-Datenbanken
+# Einführung in SQL
 
 <p class='abstract'>
 In diesem Kapitel lernst du, wie du MySQL-Datenbanken abfragen kannst. Dazu verwenden wir die Programmiersprache SQL, die speziell für Datenbanken entwickelt wurde. SQL steht für Structured Query Language und wird ausgesprochen wie »Sequel«.
