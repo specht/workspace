@@ -389,6 +389,7 @@ Führe das Skript aus – es wird diesmal etwas länger dauern, da mehr Daten im
 
 Versuche nun, die folgenden Funktionen zu implementieren:
 
+- Filmsuche erweitern: »eine neue hoffnung« soll genauso ein Ergebnis liefern wie »a new hope«
 - Filmanzeige erweitern: Crew anzeigen
 - nach Personen suchen
 - alle Filme anzeigen, an denen einen Person beteiligt war (wie die Filmanzeige, nur für Personen)
