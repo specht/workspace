@@ -367,7 +367,7 @@ Versuche, die Videothek zu erweitern, indem du weitere Funktionen hinzufügst:
 
 ### Datenmodell erweitern
 
-Wenn du diese Funktionen implementiert hast, kannst du dein Datenmodell um an den Filmen beteiligte Personen erweitern. Dazu musst du die Tabellen `crew` und `movie_crew` hinzufügen und die Beziehungen zwischen den Tabellen definieren:
+Wenn du diese Funktionen implementiert hast, kannst du dein Datenmodell um an den Filmen beteiligte Personen erweitern. Dazu musst du die Tabellen `crew`, `movie_crew` und `job` hinzufügen und die Beziehungen zwischen den Tabellen definieren:
 
 <img class='full' src='extended-erd.webp'>
 
