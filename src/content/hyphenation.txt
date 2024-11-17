@@ -32,12 +32,15 @@ dar-stell-ten
 Da-tei-en
 Da-tei-na-men
 Da-ten-ban-ken
+Da-ten-bank
 Da-ten-bank-pro-gram-mierung
+Dia-gramm
 ef-fi-zien-te
 Ef-fi-zienz
 Ein-fach-heit
 ein-ge-bet-te-ten
 ein-ge-setzt
+ent-wick-elst
 ent-wick-elt
 Ent-wick-lungs-um-ge-bung
 Ent-wick-lung
@@ -105,6 +108,7 @@ Pro-gram-mier-spra-che
 Pro-gram-mier-ung
 Pro-to-ty-pen-er-stel-lung
 Re-gier-ungs-be-hör-den
+Re-la-tion-ship
 res-sour-cen-scho-nen-de
 Ros-sum
 Short-cuts
@@ -143,6 +147,7 @@ ver-wen-det
 Ver-sions-ver-wal-tungs-sys-teme
 Ver-sions-ver-wal-tungs-sys-tem
 Ver-zeich-nis-sen
+Video-thek
 wahr-schein-lich
 Web-an-wen-dun-gen
 Web-an-wen-dungs-platt-form
