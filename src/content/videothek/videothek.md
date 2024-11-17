@@ -372,7 +372,7 @@ Wenn du diese Funktionen implementiert hast, kannst du dein Datenmodell um an de
 <img class='full' src='extended-erd.webp'>
 
 <div class='hint'>
-In der Tabelle <code>movie_crew</code> werden diesmal drei Tabellen miteinander verbunden. Alle drei Fremdschlüssel sind gleichzeitig Primärschlüssel, da sie zusammen eindeutig sind, da eine Person in einem Film mehrere Jobs haben kann.
+In der Tabelle <code>movie_crew</code> werden diesmal drei Tabellen miteinander verbunden. Alle drei Fremdschlüssel sind gleichzeitig Primärschlüssel, da sie zusammen eindeutig sind, weil eine Person in einem Film mehrere Jobs haben kann.
 </div>
 
 Erweitere außerdem bei der Gelegenheit gleich die Tabelle `movie` um die Spalte `german_title`. Exportiere das SQL-Schema erneut als `videothek.sql`, setze deine Datenbank zurück und gib die Datei an `mycli`:
