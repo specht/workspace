@@ -277,7 +277,7 @@ Wir werden nun die entsprechende Abfrage formulieren und in den Quelltext einfü
 
 Um die Abfrage zu entwickeln, können wir wieder `mycli` verwenden. Wir wollen alle Filme ausgeben, die zum Genre »Animation« gehören. Dazu müssen wir zuerst die Tabellen `movie` und `movie_genre` mit Hilfe einer `JOIN`-Klausel verknüpfen.
 
-Zu jeden `JOIN` gehört ein `ON`-Statement, das definiert, welche Einträge aus jeder der beteiligten Tabellen zusammengeführt werden sollen. In unserem Fall verknüpfen wir die Tabellen `movie` und `movie_genre` über die Spalte `id` und `movie_id`:
+Zu jedem `JOIN` gehört ein `ON`-Statement, das definiert, welche Einträge aus jeder der beteiligten Tabellen zusammengeführt werden sollen. In unserem Fall verknüpfen wir die Tabellen `movie` und `movie_genre` über die Spalte `id` und `movie_id`:
 
 ```sql
 SELECT *
