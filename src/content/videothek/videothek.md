@@ -339,7 +339,7 @@ Unsere Abfrage ist nun also fertig und wir können sie in unser Ruby-Programm ei
 <img class='full' src='new-code.webp'>
 
 - Die gewünschte Genre-ID wird als Parameter `genre_id` in Z. 47 übergeben und in Z. 55 mit Hilfe von String Interpolation (zwischen `#{` und `}`) in die Abfrage eingefügt.
-- Um das SQL-Statement besser lesbar zu machen, wird es auf mehrere Zeilen aufgeteilt (Z. 51 bis 57). Dazu wird der Beginn eines mehrzeiligen Strings mit `<<~SQL` markiert und mit `SQL` beendet.
+- Um das SQL-Statement besser lesbar zu machen, wird es auf mehrere Zeilen aufgeteilt (Z. 51 bis 57). Dazu wird der Beginn eines mehrzeiligen Strings mit `<<~SQL` markiert und mit `SQL` beendet (anstelle von `SQL` könnten wir auch jeden anderen Bezeichner wählen).
 - Der Rest des Programms bleibt unverändert.
 
 Führe das Programm erneut aus:
