@@ -395,3 +395,11 @@ Versuche nun, die folgenden Funktionen zu implementieren:
 - nach Personen suchen
 - alle Filme anzeigen, an denen einen Person beteiligt war (wie die Filmanzeige, nur für Personen)
 - die wichtigsten 100 Regisseur:innen / Schauspieler:innen pro Jahrzehnt anzeigen
+
+### Nutzer und Ausleihen implementieren
+
+Bis hierhin ist die Videothek "nur" eine Filmdatenbank. Um sie zu einer Videothek zu machen, fehlen noch die Nutzer und die Möglichkeit, Filme auszuleihen. Erweitere das Datenmodell um die entsprechenden Tabellen und füge die fehlende Funktionalität hinzu.
+
+## Zusammenfassung
+
+In diesem Kapitel hast du eine Datenbank für eine Videothek entwickelt, indem du ein Entity-Relationship-Diagramm erstellt und dieses in eine relationale Datenbank überführt hast. Anschließend hast du Beispieldaten in die Datenbank geladen und erste Abfragen durchgeführt. Das Datenmodell wurde Schritt für Schritt erweitert, um die Videothek um weitere Funktionen zu erweitern.
