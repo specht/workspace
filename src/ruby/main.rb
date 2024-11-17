@@ -515,6 +515,8 @@ class Main < Sinatra::Base
                     lexer = Rouge::Lexers::Java.new
                 when 'js'
                     lexer = Rouge::Lexers::Javascript.new
+                when 'json'
+                    lexer = Rouge::Lexers::JSON.new
                 when 'lua'
                     lexer = Rouge::Lexers::Lua.new
                 when 'nasm'
@@ -529,6 +531,10 @@ class Main < Sinatra::Base
                     lexer = Rouge::Lexers::Rust.new
                 when 'smalltalk'
                     lexer = Rouge::Lexers::Smalltalk.new
+                when 'sql'
+                    lexer = Rouge::Lexers::SQL.new
+                when 'text'
+                    lexer = Rouge::Lexers::PlainText.new
                 end
                 next if lexer.nil?
                 pre.content = ''

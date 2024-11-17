@@ -52,14 +52,19 @@
   # - .p5js
   # - .glsl
   # - .gif
+- key: databases
+  label: Datenbanken
+  icon: /images/card-file-box.png
+  entries:
+    - mysql
+    - videothek
 - key: misc
-  compact: false
+  compact: true
   label: Verschiedenes
   icon: /images/parrot.png
   entries:
   - digits-experiment
   - showerjs
-  - mysql
   - hades
   # - .latex
 - key: linux
