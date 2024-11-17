@@ -285,8 +285,6 @@ FROM movie JOIN movie_genre
 ON movie.id = movie_genre.movie_id;
 ```
 
-Wir erhalten eine Tabelle, in der alle Filme mehrfach aufgelistet sind, da jeder Film mehrere Genres haben kann:
-
 <div class='hint'>
 Die <code>ON</code>-Klausel ist ein wichtiger Bestandteil von <code>JOIN</code>-Anweisungen. Wenn du sie vergisst, wird die Datenbank alle möglichen Kombinationen der Einträge aller beteiligten Tabellen zurückgeben, was zu einem sehr großen Ergebnis – in unserem Fall 16,7 Millionen Einträgen – führen kann. Du wirst merken, dass die Abfrage sehr lange dauert, du kannst die Ausführung mit <span class='key'>Strg</span><span class='key'>C</span> abbrechen.
 </div>
