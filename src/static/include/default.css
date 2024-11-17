@@ -955,3 +955,15 @@ hr {
     font-size: 80%;
     text-align: center;
 }
+
+@media (min-width: 768px) {
+    .container, .container-md, .container-sm {
+        max-width: calc(100vw - 60px);
+    }
+}
+
+@media (min-width: 576px) {
+    .container, .container-md, .container-sm {
+        max-width: calc(100vw - 60px);
+    }
+}
