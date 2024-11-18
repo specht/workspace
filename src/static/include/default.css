@@ -964,6 +964,6 @@ hr {
 
 @media (max-width: 560px) {
     .container, .container-md, .container-sm {
-        max-width: calc(100vw - 15px);
+        max-width: calc(100vw - 10px);
     }
 }
