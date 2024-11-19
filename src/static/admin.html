@@ -121,5 +121,14 @@ window.addEventListener('load', function() {
             check_server_online(data.watch_tag);
         });
     });
+    $('.bu-impersonate').on('click', function(e) {
+        let button = $(e.target);
+        let email = button.data('email');
+        button.prop('disabled', true);
+        button.find('.bi').addClass('bi-spin');
+        api_call('/api/impersonate', {email: email}, function(data) {
+            location.href = '/';
+        });
+    });
 });
 </script>

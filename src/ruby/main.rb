@@ -1474,6 +1474,9 @@ class Main < Sinatra::Base
                             io2.puts "<td>&ndash;</td>"
                         end
                         io2.puts "<td><button class='btn btn-sm btn-success bu-open-workspace-as-admin' data-email='#{email_for_tag[user_tag]}'><i class='bi bi-code-slash'></i>&nbsp;Workspace öffnen</button></td>"
+                        if admin_logged_in?
+                            io2.puts "<td><button class='btn btn-sm btn-warning bu-impersonate' data-email='#{email_for_tag[user_tag]}'><i class='bi bi-person-vcard'></i>&nbsp;Impersonate</button></td>"
+                        end
                         io2.puts "</tr>"
                     end
                     io2.string
@@ -1488,6 +1491,9 @@ class Main < Sinatra::Base
                     io.puts "<th>RAM</th>"
                     io.puts "<th>Disk Usage</th>"
                     io.puts "<th>Workspace</th>"
+                    if admin_logged_in?
+                        io.puts "<th>Impersonate</th>"
+                    end
                     io.puts "</tr>"
                     io.puts sub
                 end
