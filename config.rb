@@ -149,7 +149,7 @@ if PROFILE.include?(:dynamic)
     if PROFILE.include?(:neo4j)
         docker_compose[:services][:ruby][:depends_on] ||= []
         docker_compose[:services][:ruby][:depends_on] << :neo4j
-        docker_compose[:services][:ruby][:links] = ['neo4j:neo4j']
+        docker_compose[:services][:ruby][:links] = ['neo4j:neo4j', 'mysql:mysql']
     end
 end
 

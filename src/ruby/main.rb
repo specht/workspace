@@ -3,6 +3,7 @@ require 'base64'
 require 'cgi'
 require 'digest'
 require 'mail'
+require 'mysql2'
 require 'neo4j_bolt'
 require 'nokogiri'
 require './credentials.rb'
@@ -2027,6 +2028,103 @@ class Main < Sinatra::Base
             io.string
         end
         respond_raw_with_mimetype(html, 'text/html')
+    end
+
+    # SELECT 
+    #     table_name AS `table`,
+    #     table_rows AS `rows`,
+    #     data_length + index_length AS size
+    # FROM 
+    #     information_schema.tables
+    # WHERE 
+    #     table_schema = 'specht';
+
+    # show create table specht.crew;
+
+    post '/api/get_my_mysql_databases' do
+        assert(user_logged_in?)
+        client = Mysql2::Client.new(
+            host: 'mysql',
+            username: 'root',
+            password: MYSQL_ROOT_PASSWORD,
+        )
+
+        result = {}
+        databases = []
+        databases << @session_user[:email].split('@').first.downcase
+        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email]}).each do |row|
+            MATCH (u:User {email: $email})-[:HAS]->(d:Database {type: 'mysql'})
+            RETURN d.name AS name;
+        END_OF_STRING
+            databases << row['name']
+        end
+        databases.each do |database|
+            result[:databases] ||= []
+            result[:databases] << database
+            result[:tables] ||= {}
+            result[:tables][database] = {}
+            result[:total] ||= {}
+            result[:total][database] = {
+                :rows => 0,
+                :size => 0
+            }
+            client.query("SELECT table_name AS `table`, table_rows AS `rows`, data_length + index_length AS size FROM information_schema.tables WHERE table_schema = '#{database}';").each do |row|
+                result[:tables][database][row['table']] = {
+                    :rows => row['rows'],
+                    :size => row['size'],
+                }
+                result[:total][database][:rows] += row['rows']
+                result[:total][database][:size] += row['size']
+            end
+        end
+        respond(:result => result)
+    end
+
+    post '/api/create_mysql_database' do
+        assert(user_logged_in?)
+        count = neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email]})['count']
+            MATCH (u:User {email: $email})-[:HAS]->(d:Database {type: 'mysql'})
+            RETURN COUNT(d) AS count;
+        END_OF_STRING
+        assert(count < 4)
+        database_name = "db_#{RandomTag.generate(12)}"
+        client = Mysql2::Client.new(
+            host: 'mysql',
+            username: 'root',
+            password: MYSQL_ROOT_PASSWORD,
+        )
+        login = @session_user[:email].split('@').first.downcase
+        client.query("CREATE DATABASE #{database_name};")
+        client.query("GRANT ALL ON `#{database_name}`.* TO '#{login}'@'%';")
+        client.query("FLUSH PRIVILEGES;")
+        neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :database_name => database_name})
+            MATCH (u:User {email: $email})
+            CREATE (d:Database {type: 'mysql', name: $database_name})<-[:HAS]-(u)
+            RETURN d;
+        END_OF_STRING
+        respond(:yay => 'sure')
+    end
+
+    post '/api/delete_mysql_database' do
+        assert(user_logged_in?)
+        data = parse_request_data(:required_keys => [:database])
+        client = Mysql2::Client.new(
+            host: 'mysql',
+            username: 'root',
+            password: MYSQL_ROOT_PASSWORD,
+        )
+        is_user_db = (data[:database] == @session_user[:email].split('@').first.downcase)
+        client.query("DROP DATABASE IF EXISTS #{data[:database]};")
+        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :database => data[:database]})
+            MATCH (u:User {email: $email})-[:HAS]->(d:Database {type: 'mysql', name: $database})
+            DETACH DELETE d;
+        END_OF_STRING
+        if is_user_db
+            login = @session_user[:email].split('@').first.downcase
+            client.query("CREATE DATABASE #{login};")
+            client.query("GRANT ALL ON `#{login}`.* TO '#{login}'@'%';")
+            client.query("FLUSH PRIVILEGES;")
+        end
     end
 
     get '/*' do
