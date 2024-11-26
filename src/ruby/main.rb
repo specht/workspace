@@ -656,6 +656,7 @@ class Main < Sinatra::Base
             'Session/sid',
             'TIC80File/path',
             'TIC80Dir/path',
+            'Database/name'
         ]
         INDEX_LIST = [
             'Test/running'
@@ -1520,6 +1521,7 @@ class Main < Sinatra::Base
             ORDER BY l.expiry;
         END_OF_STRING
             email = row['u.email']
+            next if @@teachers.include?(email)
             lines << { :email => email, :code => row['l.code'] }
         end
         @@clients.each_pair do |client_id, ws|
@@ -2120,14 +2122,14 @@ class Main < Sinatra::Base
             password: MYSQL_ROOT_PASSWORD,
         )
         is_user_db = (data[:database] == @session_user[:email].split('@').first.downcase)
-        client.query("DROP DATABASE IF EXISTS #{data[:database]};")
+        client.query("DROP DATABASE IF EXISTS `#{data[:database]}`;")
         neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :database => data[:database]})
             MATCH (u:User {email: $email})-[:HAS]->(d:Database {type: 'mysql', name: $database})
             DETACH DELETE d;
         END_OF_STRING
         if is_user_db
             login = @session_user[:email].split('@').first.downcase
-            client.query("CREATE DATABASE #{login};")
+            client.query("CREATE DATABASE `#{login}`;")
             client.query("GRANT ALL ON `#{login}`.* TO '#{login}'@'%';")
             client.query("FLUSH PRIVILEGES;")
         end
@@ -2188,7 +2190,6 @@ class Main < Sinatra::Base
             respond_raw_with_mimetype(s, 'text/html')
             return
         end
-        confirm_tag = nil
         if path[0, 3] == '/l/'
             rest = path[3, path.size - 3].split('/')
             path = '/index.html'
@@ -2228,6 +2229,7 @@ class Main < Sinatra::Base
                     postgres_password = Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)
                     system("docker exec -i workspace_pgadmin_1 /venv/bin/python setup.py add-user #{email} #{postgres_password}")
                 end
+            rescue
             end
             redirect "#{WEB_ROOT}/", 302
         end
