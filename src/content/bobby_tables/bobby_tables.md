@@ -150,6 +150,8 @@ Es ist wichtig, dass du dein Wissen verantwortungsbewusst einsetzt und nur auf S
 
 Der Zweck dieses Tutorials ist es also nicht, dich dazu zu ermutigen, in fremde Systeme einzudringen oder Daten zu stehlen, sondern dir zu zeigen, worauf du achten musst, um solche Angriffe zu verhindern, wenn du Software implementierst.
 
+Ein kleiner Vergleich zum Schluß: Es ist in Ordnung, wenn du deine Fähigkeiten und ein Lockpicking-Set verwendest, um deine eigenen Schlösser zu öffnen, weil du z. B. den Schlüssel verloren hast. Sobald du allerdings fremde Schlösser ohne Erlaubnis öffnest, begehst du eine Straftat.
+
 <img class='full' src='xkcd-327.webp'>
 
 <em>Cartoon von Randall Munroe, [xkcd.com](https://xkcd.com/327/).</em>
