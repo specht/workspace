@@ -53,11 +53,13 @@
   # - .glsl
   # - .gif
 - key: databases
+  compact: true
   label: Datenbanken
   icon: /images/card-file-box.png
   entries:
     - mysql
     - videothek
+    - bobby_tables
 - key: misc
   compact: true
   label: Verschiedenes
