@@ -148,6 +148,8 @@ Du kannst Zeilen in Ruby auskommentieren, indem du sie mit einem <code>#</code> 
 Das Eindringen in fremde Computersysteme bzw. das Auspähen von Daten ist illegal und wird bestraft. Die hier gezeigten Beispiele dienen ausschließlich der Demonstration von Sicherheitslücken und sollen dazu beitragen, dein Bewusstsein für die Gefahren bei der Programmierung von Software und der Verarbeitung von Nutzereingaben zu schärfen.
 Es ist wichtig, dass du dein Wissen verantwortungsbewusst einsetzt und nur auf Systemen experimentierst, für die du die ausdrückliche Erlaubnis hast oder die du selbst betreibst.
 
+Der Zweck dieses Tutorials ist es also nicht, dich dazu zu ermutigen, in fremde Systeme einzudringen oder Daten zu stehlen, sondern dir zu zeigen, worauf du achten musst, um solche Angriffe zu verhindern, wenn du Software implementierst.
+
 <img class='full' src='xkcd-327.webp'>
 
 <em>Cartoon von Randall Munroe, [xkcd.com](https://xkcd.com/327/).</em>
