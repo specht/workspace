@@ -1,5 +1,5 @@
 <div class='meta'>
-image: spheres-with-small-hangar.png
+image: title.webp
 </div>
 
 # Raytracing

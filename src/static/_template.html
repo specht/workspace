@@ -384,7 +384,7 @@ window.addEventListener('load', function() {
                 <button style='#{(@session_user.nil? || (!@session_user[:show_pgadmin])) ? 'display: none;' : ''}' id='bu_pgadmin' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>pgAdmin</button>
                 <a style='#{(@session_user.nil? || (!@session_user[:show_tic80])) ? 'display: none;' : ''}' href="/tic80/" class="btn btn-success" target="_blank"><i class='bi bi-keyboard'></i>TIC-80</a>
                 <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-primary"><i class='bi bi-person-vcard'></i>#{((@@invitations[(@session_user || {})[:email]] || {})[:name] || '')}</a>
-                <a href='/admin' style='#{admin_logged_in? ? '' : 'display: none;'}' class="btn btn-warning"><i class='bi bi-wrench-adjustable'></i>Administration</a>
+                <a href='/admin' style='#{teacher_logged_in? ? '' : 'display: none;'}' class="btn btn-warning"><i class='bi bi-wrench-adjustable'></i>Administration</a>
             </div>
         </div>
     </div>

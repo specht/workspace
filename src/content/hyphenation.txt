@@ -28,15 +28,19 @@ Commo-dore
 Com-puter
 Dar-stell-ung
 da-run-ter
+dar-stell-ten
 Da-tei-en
 Da-tei-na-men
 Da-ten-ban-ken
+Da-ten-bank
 Da-ten-bank-pro-gram-mierung
+Dia-gramm
 ef-fi-zien-te
 Ef-fi-zienz
 Ein-fach-heit
 ein-ge-bet-te-ten
 ein-ge-setzt
+ent-wick-elst
 ent-wick-elt
 Ent-wick-lungs-um-ge-bung
 Ent-wick-lung
@@ -76,6 +80,7 @@ leis-tungs-fä-hi-ge
 Les-bar-keit
 Kli-ma-for-schung
 Kom-man-do-zei-le
+Krei-sen
 Ma-schi-nen-ebene
 ma-schi-nen-na-he
 ma-schi-nel-les
@@ -103,12 +108,14 @@ Pro-gram-mier-spra-che
 Pro-gram-mier-ung
 Pro-to-ty-pen-er-stel-lung
 Re-gier-ungs-be-hör-den
+Re-la-tion-ship
 res-sour-cen-scho-nen-de
 Ros-sum
 Short-cuts
 Skript-spra-che
 Soft-ware-ent-wick-lung
 Soft-ware-pro-jekt
+spek-ta-ku-läre
 spe-zia-li-sier-ten
 spe-ziell
 Spie-le-ent-wick-lung
@@ -116,6 +123,7 @@ Spra-che
 steu-ern
 Strö-mungs-me-cha-nik
 Strou-strup
+Sub-kul-tur
 Sys-tem-pro-gram-mie-rung
 Sys-tem-soft-ware
 Tas-ten-kom-bi-na-ti-onen
@@ -128,6 +136,7 @@ Trans-ak-tions-ver-ar-bei-tung
 Trans-la-tion
 Um-schalt-tas-te
 un-ab-hän-gig
+un-spek-ta-ku-lär
 Un-ter-neh-mens-an-wen-dun-gen
 Un-ter-neh-mens-soft-ware-ent-wick-lung
 un-ter-stützt
@@ -138,6 +147,7 @@ ver-wen-det
 Ver-sions-ver-wal-tungs-sys-teme
 Ver-sions-ver-wal-tungs-sys-tem
 Ver-zeich-nis-sen
+Video-thek
 wahr-schein-lich
 Web-an-wen-dun-gen
 Web-an-wen-dungs-platt-form

@@ -1,14 +1,18 @@
-#{ assert(admin_logged_in?) }
+#{ assert(teacher_logged_in?) }
 
 <style>
     .table tr {
         transition: background-color 0.5s ease-out;
+    }
+    .table>:not(caption)>*>* {
+        background: none;
     }
 </style>
 <div class='container'>
     <div class='row'>
         <div class='col-md-12'>
             <div id="login_codes_here" style="display: none;">
+                <h2>Anmelde-Codes</h2>
                 <div style="max-width: 100%; overflow-x: auto;">
                     <table class="table table-sm" id="table_admin_workspaces">
                         <thead>
@@ -115,6 +119,15 @@ window.addEventListener('load', function() {
         api_call('/api/start_server_as_admin', {email: email}, function(data) {
             check_server_tag_update(data.watch_tag);
             check_server_online(data.watch_tag);
+        });
+    });
+    $('.bu-impersonate').on('click', function(e) {
+        let button = $(e.target);
+        let email = button.data('email');
+        button.prop('disabled', true);
+        button.find('.bi').addClass('bi-spin');
+        api_call('/api/impersonate', {email: email}, function(data) {
+            location.href = '/';
         });
     });
 });

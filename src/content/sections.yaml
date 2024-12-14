@@ -5,6 +5,7 @@
   - about
   - basics
 - key: programming_languages
+  compact: true
   description: |
     Hier findest du kurze, praktische Einführungen in verschiedene
     Programmiersprachen. Du bekommst jeweils drei Beispiele für Programme
@@ -36,16 +37,37 @@
   - go
   - dart
   - rust
+- key: graphics
+  # compact: true
+  label: Computergrafik
+  icon: /images/palette.png
+  entries:
+    - drawing
+  # - .turtle (got test)
+  # - .drawing (koch curve)
+    - fire
+  # - .anaglyphs
+  # - .sirds
+  # - .raytracing
+  # - .p5js
+  # - .glsl
+  # - .gif
+- key: databases
+  compact: true
+  label: Datenbanken
+  icon: /images/card-file-box.png
+  entries:
+    - mysql
+    - videothek
+    - bobby_tables
 - key: misc
+  compact: true
   label: Verschiedenes
   icon: /images/parrot.png
   entries:
   - digits-experiment
   - showerjs
-  - mysql
-  # - .p5js
-  # - .glsl
-  # - .raytracing
+  - hades
   # - .latex
 - key: linux
   label: Linux und das Terminal

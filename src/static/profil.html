@@ -20,12 +20,12 @@
 </div>
 <div class="container-fluid" style="padding: 0.5em 0 0.5em 0;">
     <div class="container" style="text-align: center; margin-bottom: -0.9em;">
-        <div class="btn-group" role="group" style="margin: 0 1em; margin-bottom: 5px;">
+        <div class="btn-group" role="group" style="margin-bottom: 5px;">
             <button type="button" class="bu-set-brightness btn btn-light  " data-brightness="light"><i class='bi bi-sun'></i>Hell            #{(@session_user[:brightness] || 'auto') == 'light' ? "<i class='bi bi-check-lg'></i>" : ''}</button>
             <button type="button" class="bu-set-brightness btn btn-primary" data-brightness="auto"><i class='bi bi-moon-stars-fill'></i>Auto #{(@session_user[:brightness] || 'auto') == 'auto'  ? "<i class='bi bi-check-lg'></i>" : ''}</button>
             <button type="button" class="bu-set-brightness btn btn-dark   " data-brightness="dark"><i class='bi bi-moon-fill'></i>Dunkel     #{(@session_user[:brightness] || 'auto') == 'dark'  ? "<i class='bi bi-check-lg'></i>" : ''}</button>
         </div>
-        <a style="margin: 0 1em; margin-bottom: 5px;" class="btn btn-secondary" href="/logout"><i class='bi bi-box-arrow-in-right'></i>Abmelden</a>
+        <a style="margin-left: 1em; margin-bottom: 5px;" class="btn btn-secondary" href="/logout"><i class='bi bi-box-arrow-in-right'></i>Abmelden</a>
     </div>
     <hr>
 </div>
@@ -107,15 +107,29 @@
                     </div>
                 </div>
             </div>
+
             <div class="hint">
                 Deine Zugangsdaten sind im Workspace in den Umgebungsvariablen <code>MYSQL_HOST</code>, <code>MYSQL_USER</code>, <code>MYSQL_PASSWORD</code> und <code>MYSQL_DB</code> hinterlegt, damit du keine Zugangsdaten im Quellcode deiner Programme speichern musst.
             </div>
-            <h4>MySQL-Datenbank zurücksetzen</h4>
-            <p>
-                Hier kannst du deine MySQL-Datenbank zurücksetzen. Alle Tabellen und Daten werden gelöscht und deine Datenbank wird auf den Ursprungszustand zurückgesetzt.
-            </p>
-            <div>
-                <button id='bu_reset_mysql' class="btn btn-danger"><i class='bi bi-trash-fill'></i>MySQL-Datenbank zurücksetzen</button>
+
+            <div style="text-align: right;">
+                <button id='bu_add_mysql_database' class="btn btn-success mt-3"><i class='bi bi-plus'></i>MySQL-Datenbank erstellen</button>
+            </div>
+
+            <div style="max-width: 100%; overflow-x: auto;" class="mt-3">
+                <table class="table table-sm" id="table_my_databases">
+                    <thead>
+                        <tr>
+                            <th>Datenbank</th>
+                            <th>Tabellen</th>
+                            <th>Einträge</th>
+                            <th>Speicherplatz</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
             </div>
 
             <hr>
@@ -234,6 +248,7 @@
     var test_email_buttons = {};
 
     function refresh_test_archives() {
+        if ('#{teacher_logged_in?}' !== 'true') return;
         api_call('/api/get_my_test_archives', {}, function(data) {
             $('#table_my_test_archives tbody').empty();
             if (data.success) {
@@ -309,6 +324,36 @@
                     bu_results_pdf.on('click', function(e) {
                         window.open(`/api/pdf_for_test/${entry.tag}`, '_blank');
                     });
+                }
+            }
+        });
+    }
+
+    function refresh_mysql_databases() {
+        api_call('/api/get_my_mysql_databases', {}, function(data) {
+            if (data.success) {
+                let tbody = $('#table_my_databases tbody');
+                tbody.empty();
+                console.log(data);
+                for (let database of data.result.databases) {
+                    let row = $(`<tr>`).appendTo(tbody);
+                    $(`<td>`).append(`<code>${database}</code>`).appendTo(row);
+                    $(`<td>`).text(`${Object.keys(data.result.tables[database]).length}`).appendTo(row);
+                    $(`<td>`).text(`${data.result.total[database].rows}`).appendTo(row);
+                    $(`<td>`).text(`${bytes_to_str(data.result.total[database].size)}`).appendTo(row);
+                    let is_user_db = database === "#{@session_user[:email].split('@').first.downcase}";
+                    let bu_delete = $(`<button>`).html(`<i class='bi bi-trash-fill'></i>${is_user_db ? 'Zurücksetzen' : 'Löschen'}`).addClass('btn btn-sm btn-danger');
+                    bu_delete.on('click', function(e) {
+                        showTemplateModal('Datenbank löschen', `Bist du sicher, dass du die Datenbank <code>${database}</code> ${is_user_db ? 'zurücksetzen' : 'löschen'} möchtest? Alle Tabellen und Daten werden gelöscht.`,
+                            `<i class='bi bi-trash-fill'></i>${is_user_db ? 'Zurücksetzen' : 'Löschen'}`, 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
+                                api_call('/api/delete_mysql_database', {database: database}, function(data2) {
+                                    if (data2.success) {
+                                        refresh_mysql_databases();
+                                    }
+                                });
+                            });
+                    });
+                    bu_delete.appendTo($(`<td style='text-align: right;'>`).appendTo(row));
                 }
             }
         });
@@ -415,5 +460,13 @@
                 });
             }
         }
+        refresh_mysql_databases();
+        $('#bu_add_mysql_database').on('click', function() {
+            api_call('/api/create_mysql_database', {}, function(data) {
+                if (data.success) {
+                    refresh_mysql_databases();
+                }
+            });
+        });
     });
 </script>

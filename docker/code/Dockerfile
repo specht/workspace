@@ -2,7 +2,7 @@ FROM linuxserver/code-server:4.92.2
 RUN usermod -d /workspace abc
 RUN sudo apt-get update && sudo apt-get install -y \
     wget \
-    ruby \
+    ruby ruby-dev libmagickcore-dev \
     python3 python3-pip \
     python3-dev libmysqlclient-dev libmysqlclient21 \
     python3-mysql.connector \
@@ -34,8 +34,12 @@ RUN sudo apt-get update && sudo apt-get install -y \
     man-db \
     telnet \
     postgresql-client pgcli \
+    bash-completion \
     libboost-dev libboost-date-time-dev libboost-thread-dev zlib1g-dev libpng-dev libjpeg8-dev libtiff5-dev libopenexr-dev \
     apt-transport-https \
+    clang \
+    guile-3.0 \
+    maven \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
 RUN wget -O /smalltalk.tar.gz https://ftp.gnu.org/gnu/smalltalk/smalltalk-3.2.5.tar.gz
@@ -52,4 +56,5 @@ RUN pip install --break-system-packages matplotlib numpy keras tensorflow tensor
 RUN apt-get install -y python3-ipykernel
 COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run
 COPY svc-code-server-run /etc/s6-overlay/s6-rc.d/svc-code-server/run
+RUN echo "export GEM_HOME=\$HOME/.gem" >> /root/.bashrc
 WORKDIR /workspace

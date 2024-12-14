@@ -81,3 +81,16 @@ function api_call(url, data, callback, options) {
         }
     });
 }
+
+function bytes_to_str(ai_Size) {
+    if (ai_Size < 1024) {
+        return `${ai_Size} B`;
+    } else if (ai_Size < 1024 * 1024) {
+        return `${(ai_Size / 1024).toFixed(1)} kB`;
+    } else if (ai_Size < 1024 * 1024 * 1024) {
+        return `${(ai_Size / 1024 / 1024).toFixed(1)} MB`;
+    } else if (ai_Size < 1024 * 1024 * 1024 * 1024) {
+        return `${(ai_Size / 1024 / 1024 / 1024).toFixed(1)} GB`;
+    }
+    return `${(ai_Size / 1024 / 1024 / 1024 / 1024).toFixed(1)} TB`;
+}
