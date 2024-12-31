@@ -388,7 +388,7 @@ tail words.txt
 In diesem Abschnitt lernst du die Befehle <code>tree</code>, <code>unzip</code>, <code>tar</code>, <code>gzip</code> und <code>bzip2</code> kennen.
 </div>
 
-Gib den Befehl `tree` ein, um eine Baumstruktur des aktuellen Verzeichnisses anzuzeigen. Der Befehl `tree` zeigt dir eine Baumstruktur des aktuellen Verzeichnisses an, beginnend mit dem aktuellen Verzeichnis. Wenn du `tree` ohne Argumente eingibst, wird die Baumstruktur des aktuellen Verzeichnisses angezeigt. Wenn du `tree` mit einem Verzeichnisnamen eingibst, wird die Baumstruktur dieses Verzeichnisses angezeigt.
+Gib den Befehl `tree` ein, um eine Baumstruktur des aktuellen Verzeichnisses anzuzeigen.
 
 <img class='full' src='tree.webp'>
 
