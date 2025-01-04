@@ -966,6 +966,8 @@ class Main < Sinatra::Base
         File.open("/user/#{container_name}/workspace/.hackschule", 'w') do |f|
             f.puts "https://youtu.be/Akaa9xHaw7E"
         end
+        system("touch /user/#{container_name}/workspace/.hackschule")
+        
         unless File.exist?("/user/#{container_name}/workspace/.my.cnf")
             File.open("/user/#{container_name}/workspace/.my.cnf", 'w') do |f|
                 f.puts <<~END_OF_STRING
