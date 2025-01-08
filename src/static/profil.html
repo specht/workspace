@@ -89,7 +89,7 @@
                     <div class="input-group">
                         <span class="input-group-text" style="width: 9em;">Benutzername:</span>
                         <input type="text" class="form-control" readonly value="#{@session_user[:email].split('@').first.downcase}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email]}'><i class='bi bi-copy'></i>Kopieren</button>
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email].split('@').first.downcase}'><i class='bi bi-copy'></i>Kopieren</button>
                     </div>
                 </div>
                 <div class="col-md-6">
