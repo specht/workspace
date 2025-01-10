@@ -1485,7 +1485,7 @@ class Main < Sinatra::Base
                     io2.string
                 end
                 unless sub.empty?
-                    io.puts "<tr><th colspan='6' style='background-color: rgba(0,0,0,0); padding: 1em 0;'><h4>#{group}</h4></th></tr>"
+                    io.puts "<tr><th colspan='#{admin_logged_in? ? 7 : 6}' style='background-color: rgba(0,0,0,0); padding: 1em 0;'><h4>#{group}</h4></th></tr>"
                     io.puts "<tr>"
                     io.puts "<th>Tag</th>"
                     io.puts "<th>Name</th>"
