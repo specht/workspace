@@ -123,9 +123,9 @@ Wechsle wieder in das übergeordnete Verzeichnis, indem du `cd ..` eingibst und 
 
 ### Die Tab-Ergänzung verwenden
 
-Ein nützliches Feature des Terminals ist die Tab-Ergänzung. Wenn du anfängst, einen Befehl oder einen Dateinamen einzugeben, kannst du die Tab-Taste drücken, um den Befehl oder den Dateinamen automatisch zu vervollständigen. Wenn es mehrere Möglichkeiten gibt, kannst du die Tab-Taste zweimal drücken, um eine Liste der verfügbaren Optionen zu sehen.
+Ein nützliches Feature des Terminals ist die Tab-Ergänzung. Wenn du anfängst, einen Befehl oder einen Dateinamen einzugeben, kannst du die <span class='key'>Tab</span>-Taste drücken, um den Befehl oder den Dateinamen automatisch zu vervollständigen. Wenn es mehrere Möglichkeiten gibt, kannst du die <span class='key'>Tab</span>-Taste zweimal drücken, um eine Liste der verfügbaren Optionen zu sehen.
 
-Wechsle wieder in das Verzeichnis, aber gib diesmal nur `cd w` ein und drücke die Tab-Taste. Das Terminal vervollständigt den Befehl automatisch, weil es nur eine mögliche Option für einen Verzeichniswechsel gibt, die mit `w` beginnt.
+Wechsle wieder in das Verzeichnis, aber gib diesmal nur `cd w` ein und drücke die <span class='key'>Tab</span>-Taste. Das Terminal vervollständigt den Befehl automatisch, weil es nur eine mögliche Option für einen Verzeichniswechsel gibt, die mit `w` beginnt.
 
 Lass dir anschließend die Inhalte des Verzeichnisses mit `ls -l` anzeigen:
 
