@@ -1,6 +1,6 @@
 FROM linuxserver/code-server:4.91.1
 RUN usermod -d /workspace abc
-RUN curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+RUN curl -sL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 RUN sudo apt-get update && sudo apt-get install -y \
     nodejs
 RUN sudo apt-get update && sudo apt-get install -y \
