@@ -2,6 +2,8 @@ FROM linuxserver/code-server:4.91.1
 RUN usermod -d /workspace abc
 RUN curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 RUN sudo apt-get update && sudo apt-get install -y \
+    nodejs npm
+RUN sudo apt-get update && sudo apt-get install -y \
     wget \
     ruby ruby-dev libmagickcore-dev \
     python3 python3-pip \
@@ -11,7 +13,6 @@ RUN sudo apt-get update && sudo apt-get install -y \
     golang-go \
     openjdk-17-jdk-headless \
     lua5.4 \
-    nodejs npm \
     texlive-full \
     htop \
     build-essential file \
