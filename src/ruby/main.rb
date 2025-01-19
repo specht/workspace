@@ -188,6 +188,8 @@ class Main < Sinatra::Base
 
         # STDERR.puts "Got #{emails_and_server_tags.size} emails and server tags: #{emails_and_server_tags.to_yaml}"
 
+        users = $neo4j.neo4j_query("MATCH (u:User) OPTIONAL MATCH (u)-[:TAKES]->(t:Test {running: TRUE}) RETURN u, t;").to_a
+
         nginx_config_first_part = <<~END_OF_STRING
             log_format custom '$http_x_forwarded_for - $remote_user [$time_local] "$request" '
                             '$status $body_bytes_sent "$http_referer" '
@@ -244,6 +246,9 @@ class Main < Sinatra::Base
                 location / {
                     root /usr/share/nginx/html;
                     include /etc/nginx/mime.types;
+
+                    #{users.map { |row| user = row['u']; server_tag = user[:server_tag]; fs_tag = fs_tag_for_email(user[:email]); running_servers.include?(fs_tag) ? "if ($http_referer ~* \"/#{server_tag}/proxy/([0-9]{4})/\") { set $port $1; set $new_url_#{server_tag} \"/#{server_tag}/proxy/$port$request_uri\"; } if ($new_url_#{server_tag}) { return 301 $new_url_#{server_tag}; }\n\n" : ''}.join("")}
+
                     try_files $uri @ruby;
                 }
 
@@ -299,7 +304,7 @@ class Main < Sinatra::Base
 
         File.open('/nginx/default.conf', 'w') do |f|
             f.puts nginx_config_first_part
-            $neo4j.neo4j_query("MATCH (u:User) OPTIONAL MATCH (u)-[:TAKES]->(t:Test {running: TRUE}) RETURN u, t;").each do |row|
+            users.each do |row|
                 user = row['u']
                 test = row['t']
                 email_with_test_tag = "#{user[:email]}#{(test || {})[:tag]}"
