@@ -2,8 +2,8 @@
   label: Einführung
   icon: /images/rocket.png
   entries:
-  - about
-  - basics
+    - about
+    - basics
 - key: programming_languages
   compact: true
   description: |
@@ -16,35 +16,35 @@
   label: Programmiersprachen
   icon: /images/keyboard.png
   entries:
-  - fortran
-  - cobol
-  - basic
-  - pascal
-  - c
-  - smalltalk
-  - cpp
-  - clisp
-  # - erlang
-  # - perl
-  - python
-  - lua
-  # - php
-  - ruby
-  - java
-  - js
-  - nasm
-  - cs
-  - go
-  - dart
-  - rust
+    - fortran
+    - cobol
+    - basic
+    - pascal
+    - c
+    - smalltalk
+    - cpp
+    - clisp
+    # - erlang
+    # - perl
+    - python
+    - lua
+    # - php
+    - ruby
+    - java
+    - js
+    - nasm
+    - cs
+    - go
+    - dart
+    - rust
 - key: graphics
   # compact: true
   label: Computergrafik
   icon: /images/palette.png
   entries:
     - drawing
-  # - .turtle (got test)
-  # - .drawing (koch curve)
+    # - .turtle (got test)
+    # - .drawing (koch curve)
     - fire
   # - .anaglyphs
   # - .sirds
@@ -65,15 +65,16 @@
   label: Verschiedenes
   icon: /images/parrot.png
   entries:
-  - digits-experiment
-  - showerjs
-  - hades
+    # - sveltejs
+    - digits-experiment
+    - showerjs
+    - hades
   # - .latex
 - key: linux
   label: Linux und das Terminal
   icon: /images/penguin.png
   entries:
-  - working-with-files
-  - tcpip
+    - working-with-files
+    - tcpip
   # - .working-with-processes
   # - .git

@@ -1162,7 +1162,6 @@ class Main < Sinatra::Base
                     config['telemetry.telemetryLevel'] ||= 'off'
                     if test_tag
                         config['workbench.colorTheme'] = 'Tomorrow Night Blue'
-
                     end
                     f.write config.to_json
                 end
@@ -1195,8 +1194,21 @@ class Main < Sinatra::Base
                         MATCH (t:Test {tag: $test_tag})-[:USES]->(f:File)
                         RETURN f.sha1;
                     END_OF_QUERY
+                    # unpack files from archive
                     system("tar xf /internal/test_archives/#{sha1} -C /user/#{container_name}/workspace")
                     File.open(test_init_mark_path, 'w') do |f|
+                    end
+                    # check if we have a config file in the archive
+                    if File.exist?("/user/#{container_name}/workspace/.workspace/config.yaml")
+                        config = YAML.load(File.read("/user/#{container_name}/workspace/.workspace/config.yaml"))
+                        if config['vscode_config']
+                            config_path = "/user/#{container_name}/workspace/.local/share/code-server/User/settings.json"
+                            vscode_config = JSON.parse(File.read(config_path))
+                            vscode_config.merge!(config['vscode_config'])
+                            File.open(config_path, 'w') do |f|
+                                f.write vscode_config.to_json
+                            end
+                        end
                     end
                 end
             end
