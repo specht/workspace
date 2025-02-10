@@ -1403,7 +1403,7 @@ class Main < Sinatra::Base
                         if content[:needs_contrast] == 'light'
                             additional_classes << 'dark-only-bg-contrast-light'
                         end
-                        io.puts "<img class='#{additional_classes.join(' ')}' src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
+                        io.puts "<img class='#{additional_classes.join(' ')}' src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='width: 100%; object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
                         io.puts "<div class='abstract'>#{content[:abstract]}</div>"
                         io.puts "</div>"
                         io.puts "</a>"
