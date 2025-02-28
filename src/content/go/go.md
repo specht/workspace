@@ -59,7 +59,7 @@ Drücke nun <span class='key'>Strg</span><span class='key'>S</span>, um die Date
 
 <img class='full' src='enter-filename.webp'>
 
-Sobald du die Datei gespeichert hast, wird sie automatisch als C-Datei erkannt und die Syntax wird hervorgehoben.
+Sobald du die Datei gespeichert hast, wird sie automatisch als Go-Datei erkannt und die Syntax wird hervorgehoben.
 
 <img class='full' src='syntax-highlighting.webp'>
 
