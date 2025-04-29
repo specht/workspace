@@ -40,6 +40,9 @@ RUN sudo apt-get update && sudo apt-get install -y \
     clang \
     guile-3.0 \
     maven \
+    rsync \
+    hugo \
+    jekyll \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
 RUN apt-get update && sudo apt-get install apt-transport-https
