@@ -44,7 +44,7 @@ RUN sudo apt-get update && sudo apt-get install -y \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
 RUN apt-get update && sudo apt-get install apt-transport-https
-RUN wget -qO- https://github.com/gohugoio/hugo/releases/download/v0.147.0/hugo_0.147.0_linux-amd64.deb
+RUN wget -q https://github.com/gohugoio/hugo/releases/download/v0.147.0/hugo_0.147.0_linux-amd64.deb
 RUN dpkg -i hugo_0.147.0_linux-amd64.deb
 RUN rm hugo_0.147.0_linux-amd64.deb
 RUN wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg  --dearmor -o /usr/share/keyrings/dart.gpg
