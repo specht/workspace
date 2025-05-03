@@ -29,7 +29,7 @@ const lz = {
 let history = [];
 let context = {};
 
-let devMode = true;
+let devMode = window.location.port.length > 0;
 
 const contextProxy = new Proxy(context, {
     has(target, key) {
@@ -322,9 +322,9 @@ async function loadGraph() {
 }
 
 document.addEventListener("DOMContentLoaded", async function () {
-    // if (devMode) {
-    //     document.querySelector('#main').classList.add('dev');
-    // }
+    if (devMode) {
+        document.querySelector('body').classList.add('dev');
+    }
     if (window.location.hash) {
         const hash = window.location.hash.substring(1);
         if (hash) {

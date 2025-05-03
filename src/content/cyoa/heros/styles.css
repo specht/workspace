@@ -105,116 +105,130 @@ button {
     white-space: nowrap;
 }
 
-
-nav {
-    display: block;
-    overflow-x: auto;
-    display: flex;
-    flex-direction: row;
-    gap: 0.5em;
-    padding: 0.5em;
-    flex-wrap: nowrap;
-    background-color: #fff;
-    box-shadow: 0.1em 0.1em 0.25em rgba(0, 0, 0, 0.25);
-    z-index: 1;
-    flex-shrink: 0;
+nav, #dev_pane {
+    display: none;
 }
 
-#resizable-children {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    flex: 1;
-    min-height: 0;
+#game_pane {
+    max-width: 30em;
+    margin: auto;
+    padding: 1em;
+    height: 100vh;
+    overflow-y: scroll;
+}
 
-    #dev_pane {
-        flex: 1;
-        box-shadow: 0.15em 0 0.15em rgba(0, 0, 0, 0.25);
+body.dev {
+    nav {
+        display: block;
+        overflow-x: auto;
         display: flex;
-        flex-direction: column;
-        min-width: 100px;
-        position: relative;
-
-        #graph-container {
-            flex: 1;
-            position: relative;
-            svg {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                flex-grow: 1;
-                user-select: none;
-                cursor: grab;
-            }
-
-            .node {
-                cursor: pointer;
-                &:hover {
-                    opacity: 1;
-                }
-                opacity: 0.5;
-                &.active {
-                    opacity: 1;
-                    polygon {
-                        stroke: #000;
-                    }
-                }
-            }
-            .edge {
-                opacity: 0.3;
-                &.active {
-                    opacity: 1;
-                    path {
-                        stroke: #000;
-                    }
-                    polygon {
-                        stroke: #000;
-                        fill: #000;
-                    }
-                }
-            }
-        }
-
-        #state-container {
-            position: absolute;
-            top: 1em;
-            left: 1em;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.9em;
-            background-color: #fff;
-            padding: 0.5em;
-            white-space: pre;
-            box-shadow: 0.1em 0.1em 0.25em rgba(0, 0, 0, 0.25);
-            border-radius: 0.25em;
-        }
-    }
-
-    .divider {
-        width: 8px;
-        background: #f0f0f0;
-        cursor: col-resize;
-        transition: background 0.2s;
-    }
-
-    .divider:hover {
-        /* background: #999; */
-    }
-
-    #game_pane {
-        width: 30%;
-        min-width: 200px;
-        max-width: 50%;
-        overflow-y: scroll;
+        flex-direction: row;
+        gap: 0.5em;
         padding: 0.5em;
+        flex-wrap: nowrap;
+        background-color: #fff;
+        box-shadow: 0.1em 0.1em 0.25em rgba(0, 0, 0, 0.25);
+        z-index: 1;
+        flex-shrink: 0;
+    }
 
-        &::-webkit-scrollbar {
-            width: 8px;
+    #resizable-children {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        flex: 1;
+        min-height: 0;
+
+        #dev_pane {
+            flex: 1;
+            box-shadow: 0.15em 0 0.15em rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            min-width: 100px;
+            position: relative;
+
+            #graph-container {
+                flex: 1;
+                position: relative;
+                svg {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    flex-grow: 1;
+                    user-select: none;
+                    cursor: grab;
+                }
+
+                .node {
+                    cursor: pointer;
+                    &:hover {
+                        opacity: 1;
+                    }
+                    opacity: 0.5;
+                    &.active {
+                        opacity: 1;
+                        polygon {
+                            stroke: #000;
+                        }
+                    }
+                }
+                .edge {
+                    opacity: 0.3;
+                    &.active {
+                        opacity: 1;
+                        path {
+                            stroke: #000;
+                        }
+                        polygon {
+                            stroke: #000;
+                            fill: #000;
+                        }
+                    }
+                }
+            }
+
+            #state-container {
+                position: absolute;
+                top: 1em;
+                left: 1em;
+                font-family: 'IBM Plex Mono', monospace;
+                font-size: 0.9em;
+                background-color: #fff;
+                padding: 0.5em;
+                white-space: pre;
+                box-shadow: 0.1em 0.1em 0.25em rgba(0, 0, 0, 0.25);
+                border-radius: 0.25em;
+            }
         }
-        &::-webkit-scrollbar-thumb {
-            background: rgba(0,0,0,0.3);
-            border-radius: 4px;
+
+        .divider {
+            width: 8px;
+            background: #f0f0f0;
+            cursor: col-resize;
+            transition: background 0.2s;
+        }
+
+        .divider:hover {
+            /* background: #999; */
+        }
+
+        #game_pane {
+            width: 30%;
+            min-width: 200px;
+            max-width: 50%;
+            overflow-y: scroll;
+            padding: 0.5em;
+            
+
+            &::-webkit-scrollbar {
+                width: 8px;
+            }
+            &::-webkit-scrollbar-thumb {
+                background: rgba(0,0,0,0.3);
+                border-radius: 4px;
+            }
         }
     }
 }
