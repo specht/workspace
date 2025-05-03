@@ -5,6 +5,7 @@ body {
     max-width: 600px;
     padding: 1em;
     margin: 0 auto;
+    overflow: hidden;
 }
 
 img {
@@ -46,4 +47,63 @@ ul {
             }
         }
     }
+}
+
+.pagelink {
+    cursor: pointer;
+
+    transition: transform 0.5s ease, height 0.5s ease, margin 0.5s ease, padding 0.5s ease, opacity 0.5s ease, border 0.5s ease;
+
+    height: auto;
+    overflow-y: hidden;
+
+    &.dismissed {
+        height: 0 !important;
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
+.page {
+    transition: opacity 0.5s ease;
+    opacity: 1;
+
+    &.hidden {
+        opacity: 0;
+    }
+}
+
+#main {
+    display: flex;
+    flex-direction: row;
+    align-items: top;
+    justify-content: top;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+}
+
+#dev_pane {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    padding: 1em;
+    /* background-color: #f0f0f0; */
+    box-shadow: 0.15em 0 0.15em rgba(0, 0, 0, 0.25);
+    z-index: 1;
+}
+
+#game_pane {
+    max-height: 100%;
+    max-width: 30em;
+    overflow-y: scroll;
+    padding: 1em;
 }
