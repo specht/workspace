@@ -199,7 +199,7 @@ nav {
     }
 
     .divider:hover {
-        background: #999;
+        /* background: #999; */
     }
 
     #game_pane {

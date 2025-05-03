@@ -50,7 +50,9 @@ const contextProxy = new Proxy(context, {
 
 function runInContext(code, isCondition = false) {
     const wrappedCode = isCondition ? `return (${code});` : `${code}`;
-    return Function('ctx', `with (ctx) { ${wrappedCode} }`)(contextProxy);
+    let result = Function('ctx', `with (ctx) { ${wrappedCode} }`)(contextProxy);
+    document.querySelector('#state-container').innerHTML = JSON.stringify(context, null, 2);
+    return result;
 }
 
 async function appendPage(page) {
