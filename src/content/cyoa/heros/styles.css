@@ -1,5 +1,6 @@
-html {
+html, body {
     overflow: none;
+    height: 100%;
 }
 
 body {
@@ -274,5 +275,12 @@ table {
     }
     tr:nth-child(even) {
         background-color: rgba(0,0,0,0.03);
+    }
+}
+
+body.skip-animations {
+    * {
+        transition: none !important;
+        animation: none !important;
     }
 }

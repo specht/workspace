@@ -30,6 +30,8 @@ let history = [];
 let context = {};
 
 let devMode = (window.location.port.length > 0) || (window.location.search.indexOf('dev') > 0);
+let printBuffer = "";
+let nextPageLinks = {};
 
 const contextProxy = new Proxy(context, {
     has(target, key) {
@@ -38,6 +40,10 @@ const contextProxy = new Proxy(context, {
     get(target, key) {
         if (key in target) {
             return target[key];
+        } else if (key === 'print') {
+            return function(...args) {
+                printBuffer += args.join(' ') + '\n';
+            };
         } else {
             return globalThis[key];
         }
@@ -56,6 +62,8 @@ function runInContext(code, isCondition = false) {
 }
 
 async function appendPage(page) {
+    // sometimes the viewport is not at the top IDK :-)
+    document.querySelector('html').scrollTop = 0;
     await fetch(`/pages/${page}.md`)
     .then(response => {
         if (!response.ok) {
@@ -67,8 +75,18 @@ async function appendPage(page) {
         const parser = new DOMParser();
         // replace [[ ... ]] with <span expression="..."></span>
         data = data.replace(/\[\[([^\]]+)\]\]/g, '<span expression="$1"></span>');
-        let doc = parser.parseFromString(md.render(data), 'text/html');
+        let html = md.render(data);
+        let doc = parser.parseFromString('<div></div>' + html, 'text/html');
         let count = 0;
+
+        nextPageLinks = {};
+        for (let link of doc.querySelectorAll('a')) {
+            let href = link.getAttribute('href');
+            if (href.indexOf('/') < 0) {
+                let page = href;
+                nextPageLinks[page] = link;
+            }
+        }
 
         while (true) {
             count += 1;
@@ -94,8 +112,17 @@ async function appendPage(page) {
                     }
                     if (element.tagName === 'SCRIPT') {
                         let code = element.textContent;
+                        printBuffer = "";
                         runInContext(code, false);
                         element.setAttribute('__handled', 'true');
+                        if (printBuffer.length > 0) {
+                            let div = document.createElement('div');
+                            div.innerHTML = printBuffer;
+                            // console.log(div);
+                            // element.parentNode.insertBefore(div, element.nextSibling);
+                            let result = element.parentNode.insertBefore(div, element.nextSibling);
+                            console.log(result);
+                        }
                     } else if (element.hasAttribute('expression')) {
                         let expression = element.getAttribute('expression');
                         let value = runInContext(expression, true);
@@ -127,30 +154,19 @@ async function appendPage(page) {
             if (href.indexOf('/') < 0) {
                 link.setAttribute('__handled', 'true');
                 let page = link.getAttribute('href');
-                link.setAttribute('href', '#');
                 link.removeAttribute('href');
                 let parent = link.parentNode;
                 if (parent.tagName === 'LI') link = parent;
+                nextPageLinks[page] = link;
                 link.classList.add('pagelink');
                 link.style.height = `${link.scrollHeight + 2}px`;
                 link.addEventListener('click', function(event) {
-                    if (link.classList.contains('chosen')) {
-                        return;
-                    }
                     event.preventDefault();
-                    link.classList.add('chosen');
-                    for (let el of document.querySelectorAll('.pagelink')) {
-                        if (!el.classList.contains('chosen')) {
-                            el.classList.add('dismissed');
-                            el.addEventListener('transitionend', () => {
-                                el.remove();
-                            }, { once: true });
-                        }
-                    }
-                    appendPage(page);
+                    turnToPage(page);
                 });
             }
         }
+
         markNodesInGraph();
     })
     .catch(error => {
@@ -278,8 +294,19 @@ function wordWrap(text, maxLength) {
     return wrappedText;
 }
 
-function turnToPage(page) {
-
+async function turnToPage(page) {
+    if (nextPageLinks[page]) {
+        nextPageLinks[page].classList.add('chosen');
+        for (let el of document.querySelectorAll('.pagelink')) {
+            if (!el.classList.contains('chosen')) {
+                el.classList.add('dismissed');
+                el.addEventListener('transitionend', () => {
+                    el.remove();
+                }, { once: true });
+            }
+        }
+        await appendPage(page);
+    }
 }
 
 async function loadGraph() {
@@ -355,16 +382,32 @@ async function loadGraph() {
         markNodesInGraph();
         installPanAndZoomHandler(document.querySelector('#graph-container svg'));
         for (let el of document.querySelectorAll('svg g.node')) {
-            el.addEventListener('click', function(event) {
+            el.addEventListener('click', async function(event) {
                 let id = this.getAttribute('id');
                 let page = id.substring(5);
-                // user clicked on a node - either:
-                // - the node is one of the next pages, turn to that page
-                // - or the node is in the history, turn to that page
-                console.log(page);
-                // if (page) {
-                    // appendPage(page);
-                // }
+                if (nextPageLinks[page]) {
+                    // the node is one of the next pages, turn to that page
+                    await turnToPage(page);
+                } else {
+                    // the node is in the history, turn to that page
+                    let index = history.lastIndexOf(page);
+                    if (index > 0 && index < history.length - 1) {
+                        document.querySelector('body').classList.add('skip-animations');
+                        let new_history = history.slice(0, index + 1);
+                        history = history.slice(0, 1);
+                        markNodesInGraph();
+                        document.querySelector('#content').innerHTML = '';
+                        Math.random = mulberry32(parseInt(history[0]));
+                        context = {};
+                        runInContext('');
+                        await appendPage('1');
+                        for (let i = 2; i < new_history.length; i++) {
+                            console.log('turning to page', new_history[i]);
+                            await turnToPage(new_history[i]);
+                        }
+                        document.querySelector('body').classList.remove('skip-animations');
+                    }
+                }
             });
         }
 
@@ -400,21 +443,17 @@ document.addEventListener("DOMContentLoaded", async function () {
         let slug = history.join(',');
         let compressed = lz.compress(slug);
         window.location.hash = compressed;
-        Math.rand = mulberry32(seed);
-        Math.chance = (chance) => (Math.rand() * 100 < chance);
-        await appendPage(1);
+        Math.random = mulberry32(seed);
+        await appendPage('1');
     } else {
         // restore narrative
         let seed = parseInt(history[0]);
-        Math.rand = mulberry32(seed);
-        Math.chance = (chance) => (Math.rand() * 100 < chance);
+        Math.random = mulberry32(seed);
         let pages = history.slice(1);
         history = history.slice(0, 1);
-        for (let i = 0; i < pages.length; i++) {
-            let page = pages[i];
-            if (page) {
-                await appendPage(page);
-            }
+        await appendPage('1');
+        for (let i = 1; i < pages.length; i++) {
+            await turnToPage(pages[i]);
         }
     }
 
@@ -434,8 +473,8 @@ function appendSection(text) {
     content.appendChild(section);
     let options = {
         top: document.querySelector('#game_pane').scrollHeight,
+        behavior: document.querySelector('body').classList.contains('skip-animations') ? 'instant' : 'smooth',
     }
-    if (!document.querySelector('body').classList.contains('skip-animations')) options.behavior = 'smooth';
     document.querySelector('#game_pane').scrollTo(options);
     setTimeout(() => section.classList.remove('hidden'), 1);
 }
