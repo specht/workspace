@@ -14,11 +14,11 @@ function mulberry32(seed) {
         t += 0x6D2B79F5;
         let r = Math.imul(t ^ (t >>> 15), t | 1);
         r ^= r + Math.imul(r ^ (r >>> 7), r | 61);
-        return ((r ^ (r >>> 14)) >>> 0) / 4294967296; // [0,1)
+        return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
     };
 }
 
-const md = markdownit({ html: true }).use(markdownitAttrs);
+const md = markdownit({ html: true, typographer: true }).use(markdownitAttrs);
 const content = document.getElementById('content');
 
 const lz = {
@@ -29,7 +29,7 @@ const lz = {
 let history = [];
 let context = {};
 
-let devMode = window.location.port.length > 0;
+let devMode = (window.location.port.length > 0) || (window.location.search.indexOf('dev') > 0);
 
 const contextProxy = new Proxy(context, {
     has(target, key) {
@@ -65,6 +65,8 @@ async function appendPage(page) {
     })
     .then(data => {
         const parser = new DOMParser();
+        // replace [[ ... ]] with <span expression="..."></span>
+        data = data.replace(/\[\[([^\]]+)\]\]/g, '<span expression="$1"></span>');
         let doc = parser.parseFromString(md.render(data), 'text/html');
         let count = 0;
 
@@ -130,7 +132,7 @@ async function appendPage(page) {
                 let parent = link.parentNode;
                 if (parent.tagName === 'LI') link = parent;
                 link.classList.add('pagelink');
-                link.style.height = `${link.scrollHeight}px`;
+                link.style.height = `${link.scrollHeight + 2}px`;
                 link.addEventListener('click', function(event) {
                     if (link.classList.contains('chosen')) {
                         return;
@@ -188,16 +190,24 @@ function parsePage(text) {
     let html = md.render(text);
     let dom = new DOMParser().parseFromString(html, 'text/html');
     let links = {};
+    let linkLabels = {};
     for (let link of dom.querySelectorAll('a')) {
         let href = link.getAttribute('href');
         if (href.indexOf('/') < 0) {
             links[href] = link;
+            if (link.hasAttribute('label')) {
+                let label = link.getAttribute('label');
+                linkLabels[href] = label.trim();
+                if (linkLabels[href].length === 0)
+                    linkLabels[href] = link.innerHTML.trim();
+            }
         }
     }
     return {
         group: group,
         summary: summary,
         links: Object.keys(links),
+        linkLabels: linkLabels,
     }
 }
 
@@ -250,6 +260,28 @@ function markNodesInGraph() {
     }
 }
 
+function wordWrap(text, maxLength) {
+    const words = text.split(' ');
+    let line = '';
+    let wrappedText = '';
+
+    words.forEach(word => {
+        if (line.length + word.length + 1 <= maxLength) {
+            line += (line.length ? ' ' : '') + word;
+        } else {
+            wrappedText += line + '\n';
+            line = word;
+        }
+    });
+    wrappedText += line;
+
+    return wrappedText;
+}
+
+function turnToPage(page) {
+
+}
+
 async function loadGraph() {
     let seenLinks = {};
     let wavefront = {};
@@ -276,7 +308,11 @@ async function loadGraph() {
             pageData.summary = `${pageCode}\n${pageData.summary}`;
             pageSummaries[pageCode] = pageData.summary;
             for (let link of pageData.links) {
-                dotLinks.push(`"${pageCode}" -> "${link}" [id="edge_${pageCode}_${link}"];`);
+                if (pageData.linkLabels[link]) {
+                    dotLinks.push(`"${pageCode}" -> "${link}" [id="edge_${pageCode}_${link}", label="  ${wordWrap(pageData.linkLabels[link], 10)}"];`);
+                } else {
+                    dotLinks.push(`"${pageCode}" -> "${link}" [id="edge_${pageCode}_${link}"];`);
+                }
                 if (seenLinks[link]) continue;
                 newWavefront[link] = true;
             }
@@ -300,11 +336,11 @@ async function loadGraph() {
             color="${groupColor[0]}"
             fillcolor="${groupColor[2]}"
             node [style=filled, fillcolor="${groupColor[1]}", color="${groupColor[0]}"]
-            ${subGraphs[group].map(page => `"${page}" [label="${pageSummaries[page]}", id="node_${page}"]`).join('\n')}
+            ${subGraphs[group].map(page => `"${page}" [label="${wordWrap(pageSummaries[page] ?? '', 10).trim()}", id="node_${page}"]`).join('\n')}
         }`;
         } else {
             dot += `
-            ${subGraphs[group].map(page => `"${page}" [label="${pageSummaries[page]}", id="node_${page}", style=filled, fillcolor="#cccccc", color="#888888"]`).join('\n')}
+            ${subGraphs[group].map(page => `"${page}" [label="${wordWrap(pageSummaries[page] ?? '', 10).trim()}", id="node_${page}", style=filled, fillcolor="#cccccc", color="#888888"]`).join('\n')}
             `;
         }
     }
@@ -318,12 +354,30 @@ async function loadGraph() {
         for (let e of document.querySelectorAll('#graph-container svg title')) e.remove();
         markNodesInGraph();
         installPanAndZoomHandler(document.querySelector('#graph-container svg'));
+        for (let el of document.querySelectorAll('svg g.node')) {
+            el.addEventListener('click', function(event) {
+                let id = this.getAttribute('id');
+                let page = id.substring(5);
+                // user clicked on a node - either:
+                // - the node is one of the next pages, turn to that page
+                // - or the node is in the history, turn to that page
+                console.log(page);
+                // if (page) {
+                    // appendPage(page);
+                // }
+            });
+        }
+
     });
 }
 
 document.addEventListener("DOMContentLoaded", async function () {
+    document.querySelector('body').classList.add('skip-animations');
     if (devMode) {
         document.querySelector('body').classList.add('dev');
+        document.querySelector('#bu_reset_game').addEventListener('click', function() {
+            window.location = '/';
+        });
     }
     if (window.location.hash) {
         const hash = window.location.hash.substring(1);
@@ -338,7 +392,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
+    Math.w6 = () => Math.floor(Math.rand() * 6) + 1;
     if (history.length < 3) {
+        // it's a new game because there's only the seed and the first page in the history
         let seed = randomSeed();
         history = [seed];
         let slug = history.join(',');
@@ -346,7 +402,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         window.location.hash = compressed;
         Math.rand = mulberry32(seed);
         Math.chance = (chance) => (Math.rand() * 100 < chance);
-        appendPage(1);
+        await appendPage(1);
     } else {
         // restore narrative
         let seed = parseInt(history[0]);
@@ -367,6 +423,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.querySelector('#state-container').innerHTML = JSON.stringify(context, null, 2);
         initPaneSlider();
     }
+    document.querySelector('body').classList.remove('skip-animations');
 });
 
 function appendSection(text) {
@@ -375,7 +432,12 @@ function appendSection(text) {
     section.classList.add('hidden');
     section.innerHTML = md.render(text);
     content.appendChild(section);
-    setTimeout(() => section.classList.remove('hidden'), 100);
+    let options = {
+        top: document.querySelector('#game_pane').scrollHeight,
+    }
+    if (!document.querySelector('body').classList.contains('skip-animations')) options.behavior = 'smooth';
+    document.querySelector('#game_pane').scrollTo(options);
+    setTimeout(() => section.classList.remove('hidden'), 1);
 }
 
 function installPanAndZoomHandler(svg) {
