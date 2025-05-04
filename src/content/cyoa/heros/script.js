@@ -30,8 +30,32 @@ let history = [];
 let context = {};
 
 let devMode = (window.location.port.length > 0) || (window.location.search.indexOf('dev') > 0);
-let printBuffer = "";
+let printAnchor = document.querySelector('#content');
 let nextPageLinks = {};
+
+function present_choice(choices) {
+    console.log('present_choice', choices);
+    return new Promise((resolve) => {
+        let ul = document.createElement('ul');
+        printAnchor.appendChild(ul);
+        for (let i = 0; i < choices.length; i++) {
+            let li = document.createElement('li');
+            ul.appendChild(li);
+            let button = document.createElement('button');
+            button.classList.add('pagelink');
+            li.appendChild(button);
+            button.innerHTML = choices[i];
+            console.log('button', button);
+            button.addEventListener('click', function(event) {
+                console.log('clicked', i);
+                event.preventDefault();
+                event.stopPropagation();
+                ul.remove();
+                resolve(i);
+            });
+        }
+    });
+}
 
 const contextProxy = new Proxy(context, {
     has(target, key) {
@@ -42,8 +66,14 @@ const contextProxy = new Proxy(context, {
             return target[key];
         } else if (key === 'print') {
             return function(...args) {
-                printBuffer += args.join(' ') + '\n';
+                console.log('print', args);
+                let div = document.createElement('div');
+                div.innerHTML = args.map((x) => md.render(x)).join(' ') + '\n';
+                printAnchor.appendChild(div);
+                scrollToBottom();
             };
+        } else if (key === 'present_choice') {
+            return present_choice;
         } else {
             return globalThis[key];
         }
@@ -61,8 +91,118 @@ function runInContext(code, isCondition = false) {
     return result;
 }
 
+function replaceDoubleBrackets(node) {
+    if (node.nodeName === 'SCRIPT') {
+      return;
+    }
+
+    if (node.nodeType === Node.TEXT_NODE) {
+      const pattern = /\[\[\s*(.+?)\s*\]\]/g;
+      let match;
+      const parent = node.parentNode;
+      let lastIndex = 0;
+      const fragment = document.createDocumentFragment();
+
+      while ((match = pattern.exec(node.textContent)) !== null) {
+        if (match.index > lastIndex) {
+          fragment.appendChild(document.createTextNode(node.textContent.slice(lastIndex, match.index)));
+        }
+
+        const span = document.createElement('span');
+        span.setAttribute('expression', match[1]);
+        fragment.appendChild(span);
+
+        lastIndex = pattern.lastIndex;
+      }
+
+      if (lastIndex < node.textContent.length) {
+        fragment.appendChild(document.createTextNode(node.textContent.slice(lastIndex)));
+      }
+
+      if (fragment.childNodes.length > 0) {
+        parent.replaceChild(fragment, node);
+      }
+    }
+
+    for (const child of Array.from(node.childNodes)) {
+        replaceDoubleBrackets(child);
+    }
+}
+
+function processDOM(inputRoot) {
+    const outputRoot = document.querySelector('#content');
+
+    // Helper: evaluate an expression in the given context
+    function evaluate(expr) {
+        return Function(...Object.keys(contextProxy), `return (${expr});`)(...Object.values(contextProxy));
+    }
+
+    // Helper: check condition (defaults to true if no attribute)
+    function checkCondition(node) {
+        if (!node.hasAttribute('condition')) return true;
+        try {
+            return Boolean(evaluate(node.getAttribute('condition')));
+        } catch {
+            return false;
+        }
+    }
+
+    // Helper: handle <script> execution with print redirection
+    function executeScript(scriptContent) {
+        runInContext(scriptContent, false);
+    }
+
+    // Recursive processor
+    function processNode(node, outputParent) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            outputParent.appendChild(document.createTextNode(node.nodeValue));
+            return;
+        }
+
+        if (node.nodeType !== Node.ELEMENT_NODE) return;
+
+        if (!checkCondition(node)) return; // Skip subtree
+
+        if (node.hasAttribute('expression')) {
+            const value = evaluate(node.getAttribute('expression'));
+            const textNode = document.createTextNode(value);
+            outputParent.appendChild(textNode);
+            return;
+        }
+
+        if (node.tagName.toLowerCase() === 'script') {
+            if (checkCondition(node)) {
+                executeScript(node.textContent, part => outputParent.appendChild(part));
+            }
+            return;
+        }
+
+        const clone = document.createElement(node.tagName);
+        // Copy attributes (except 'expression' and 'condition')
+        for (const attr of node.attributes) {
+            if (attr.name !== 'expression' && attr.name !== 'condition') {
+                clone.setAttribute(attr.name, attr.value);
+            }
+        }
+
+        outputParent.appendChild(clone);
+
+        for (const child of node.childNodes) {
+            processNode(child, clone);
+        }
+    }
+
+    for (const child of inputRoot.childNodes) {
+        processNode(child, outputRoot);
+    }
+
+    scrollToBottom();
+
+    return outputRoot;
+}
+
+
 async function appendPage(page) {
-    // sometimes the viewport is not at the top IDK :-)
     document.querySelector('html').scrollTop = 0;
     await fetch(`/pages/${page}.md`)
     .then(response => {
@@ -73,12 +213,13 @@ async function appendPage(page) {
     })
     .then(data => {
         const parser = new DOMParser();
-        // replace [[ ... ]] with <span expression="..."></span>
-        data = data.replace(/\[\[([^\]]+)\]\]/g, '<span expression="$1"></span>');
         let html = md.render(data);
         let doc = parser.parseFromString('<div></div>' + html, 'text/html');
+        replaceDoubleBrackets(doc);
+
         let count = 0;
 
+        // collect all next page links for navigation
         nextPageLinks = {};
         for (let link of doc.querySelectorAll('a')) {
             let href = link.getAttribute('href');
@@ -88,53 +229,52 @@ async function appendPage(page) {
             }
         }
 
-        while (true) {
-            count += 1;
-            if (count > 10000) {
-                console.error('Infinite loop detected');
-                break;
-            }
-            let xpathResult = doc.evaluate('//script | //*[@condition] | //*[@expression]', doc, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
-            try {
-                let element;
-                while (element = xpathResult.iterateNext()) {
-                    if (element.hasAttribute('__handled')) {
-                        continue;
-                    }
-                    if (element.hasAttribute('condition')) {
-                        let condition = element.getAttribute('condition');
-                        let value = runInContext(condition, true);
-                        element.setAttribute('__handled', 'true');
-                        if (!value) {
-                            element.remove();
-                            continue;
-                        }
-                    }
-                    if (element.tagName === 'SCRIPT') {
-                        let code = element.textContent;
-                        printBuffer = "";
-                        runInContext(code, false);
-                        element.setAttribute('__handled', 'true');
-                        if (printBuffer.length > 0) {
-                            let div = document.createElement('div');
-                            div.innerHTML = printBuffer;
-                            // console.log(div);
-                            // element.parentNode.insertBefore(div, element.nextSibling);
-                            let result = element.parentNode.insertBefore(div, element.nextSibling);
-                            console.log(result);
-                        }
-                    } else if (element.hasAttribute('expression')) {
-                        let expression = element.getAttribute('expression');
-                        let value = runInContext(expression, true);
-                        element.setAttribute('__handled', 'true');
-                        element.innerHTML = value;
-                    }
-                }
-                break;
-            } catch (e) {
-                if (e.name !== 'InvalidStateError') throw e;
-            }
-        }
+        // processDOM(parser.parseFromString(md.render(doc.innerHTML)))
+        processDOM(doc.body);
+
+        // while (true) {
+        //     count += 1;
+        //     if (count > 10000) {
+        //         console.error('Infinite loop detected');
+        //         break;
+        //     }
+        //     let xpathResult = doc.evaluate('//script | //*[@condition] | //*[@expression]', doc, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+        //     try {
+        //         let element;
+        //         while (element = xpathResult.iterateNext()) {
+        //             if (element.hasAttribute('__handled')) {
+        //                 continue;
+        //             }
+        //             if (element.hasAttribute('condition')) {
+        //                 let condition = element.getAttribute('condition');
+        //                 let value = runInContext(condition, true);
+        //                 element.setAttribute('__handled', 'true');
+        //                 if (!value) {
+        //                     element.remove();
+        //                     continue;
+        //                 }
+        //             }
+        //             if (element.tagName === 'SCRIPT') {
+        //                 let code = element.textContent;
+        //                 let div = document.createElement('div');
+        //                 // element.parentNode.insertBefore(div, element.nextSibling);
+        //                 document.querySelector('#content').appendChild(div);
+        //                 printAnchor = div;
+        //                 console.log('printAnchor', printAnchor);
+        //                 runInContext(code, false);
+        //                 element.setAttribute('__handled', 'true');
+        //             } else if (element.hasAttribute('expression')) {
+        //                 let expression = element.getAttribute('expression');
+        //                 let value = runInContext(expression, true);
+        //                 element.setAttribute('__handled', 'true');
+        //                 element.innerHTML = value;
+        //             }
+        //         }
+        //         break;
+        //     } catch (e) {
+        //         if (e.name !== 'InvalidStateError') throw e;
+        //     }
+        // }
 
         if (history.length > 1) {
             content.appendChild(document.createElement('hr'));
@@ -144,13 +284,13 @@ async function appendPage(page) {
         let compressed = lz.compress(slug);
         window.location.hash = compressed;
 
-        appendSection(doc.body.innerHTML);
+        // appendSection(doc.body.innerHTML);
 
         for (let link of document.querySelectorAll('a')) {
             if (link.getAttribute('__handled')) {
                 continue;
             }
-            let href = link.getAttribute('href');
+            let href = link.getAttribute('href') ?? '';
             if (href.indexOf('/') < 0) {
                 link.setAttribute('__handled', 'true');
                 let page = link.getAttribute('href');
@@ -465,17 +605,21 @@ document.addEventListener("DOMContentLoaded", async function () {
     document.querySelector('body').classList.remove('skip-animations');
 });
 
+function scrollToBottom() {
+    let options = {
+        top: document.querySelector('#game_pane').scrollHeight,
+        behavior: document.querySelector('body').classList.contains('skip-animations') ? 'instant' : 'smooth',
+    }
+    document.querySelector('#game_pane').scrollTo(options);
+}
+
 function appendSection(text) {
     const section = document.createElement('div');
     section.classList.add('page');
     section.classList.add('hidden');
     section.innerHTML = md.render(text);
     content.appendChild(section);
-    let options = {
-        top: document.querySelector('#game_pane').scrollHeight,
-        behavior: document.querySelector('body').classList.contains('skip-animations') ? 'instant' : 'smooth',
-    }
-    document.querySelector('#game_pane').scrollTo(options);
+    scrollToBottom();
     setTimeout(() => section.classList.remove('hidden'), 1);
 }
 
