@@ -2,11 +2,29 @@ import markdownit from 'https://cdn.jsdelivr.net/npm/markdown-it@14/+esm';
 import markdownitAttrs from 'https://cdn.jsdelivr.net/npm/markdown-it-attrs@4/+esm';
 import { Graphviz} from 'https://cdn.jsdelivr.net/npm/@hpcc-js/wasm/dist/graphviz.min.js';
 
-const dot = `digraph {
-    A -> B;
-    B -> C;
-    C -> A;
-}`;
+const md = markdownit({ html: true, typographer: true }).use(markdownitAttrs);
+const content = document.getElementById('content');
+
+const lz = {
+    compress: LZString.compressToEncodedURIComponent,
+    decompress: LZString.decompressFromEncodedURIComponent
+};
+
+const el = {
+    devPane: document.getElementById('dev_pane'),
+    graphContainer: document.getElementById('graph-container'),
+    stateContainer: document.getElementById('state-container'),
+    divider: document.getElementById('divider'),
+    gamePane: document.getElementById('game_pane'),
+    content: document.getElementById('content'),
+}
+
+let history = [];
+let context = {};
+
+let devMode = (window.location.port.length > 0) || (window.location.search.indexOf('dev') > 0);
+let printAnchor = document.querySelector('#content');
+let nextPageLinks = {};
 
 function mulberry32(seed) {
     let t = seed >>> 0;
@@ -18,23 +36,7 @@ function mulberry32(seed) {
     };
 }
 
-const md = markdownit({ html: true, typographer: true }).use(markdownitAttrs);
-const content = document.getElementById('content');
-
-const lz = {
-    compress: LZString.compressToEncodedURIComponent,
-    decompress: LZString.decompressFromEncodedURIComponent
-};
-
-let history = [];
-let context = {};
-
-let devMode = (window.location.port.length > 0) || (window.location.search.indexOf('dev') > 0);
-let printAnchor = document.querySelector('#content');
-let nextPageLinks = {};
-
 function present_choice(choices) {
-    console.log('present_choice', choices);
     return new Promise((resolve) => {
         let ul = document.createElement('ul');
         printAnchor.appendChild(ul);
@@ -47,13 +49,13 @@ function present_choice(choices) {
             button.innerHTML = choices[i];
             console.log('button', button);
             button.addEventListener('click', function(event) {
-                console.log('clicked', i);
                 event.preventDefault();
                 event.stopPropagation();
                 ul.remove();
                 resolve(i);
             });
         }
+        scrollToBottom();
     });
 }
 
@@ -84,15 +86,14 @@ const contextProxy = new Proxy(context, {
     }
 });
 
-function runInContext(code, isCondition = false) {
-    const wrappedCode = isCondition ? `return (${code});` : `${code}`;
-    let result = Function('ctx', `with (ctx) { ${wrappedCode} }`)(contextProxy);
-    document.querySelector('#state-container').innerHTML = JSON.stringify(context, null, 2);
+function runInContext(code) {
+    let result = Function('ctx', `with (ctx) { ${code} }`)(contextProxy);
+    el.stateContainer.innerHTML = JSON.stringify(context, null, 2);
     return result;
 }
 
 function replaceDoubleBrackets(node) {
-    if (node.nodeName === 'SCRIPT') {
+    if (node.nodeName.toLowerCase() === 'script') {
       return;
     }
 
@@ -132,12 +133,10 @@ function replaceDoubleBrackets(node) {
 function processDOM(inputRoot) {
     const outputRoot = document.querySelector('#content');
 
-    // Helper: evaluate an expression in the given context
     function evaluate(expr) {
         return Function(...Object.keys(contextProxy), `return (${expr});`)(...Object.values(contextProxy));
     }
 
-    // Helper: check condition (defaults to true if no attribute)
     function checkCondition(node) {
         if (!node.hasAttribute('condition')) return true;
         try {
@@ -145,11 +144,6 @@ function processDOM(inputRoot) {
         } catch {
             return false;
         }
-    }
-
-    // Helper: handle <script> execution with print redirection
-    function executeScript(scriptContent) {
-        runInContext(scriptContent, false);
     }
 
     // Recursive processor
@@ -172,7 +166,7 @@ function processDOM(inputRoot) {
 
         if (node.tagName.toLowerCase() === 'script') {
             if (checkCondition(node)) {
-                executeScript(node.textContent, part => outputParent.appendChild(part));
+                runInContext(node.textContent);
             }
             return;
         }
@@ -229,52 +223,7 @@ async function appendPage(page) {
             }
         }
 
-        // processDOM(parser.parseFromString(md.render(doc.innerHTML)))
         processDOM(doc.body);
-
-        // while (true) {
-        //     count += 1;
-        //     if (count > 10000) {
-        //         console.error('Infinite loop detected');
-        //         break;
-        //     }
-        //     let xpathResult = doc.evaluate('//script | //*[@condition] | //*[@expression]', doc, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
-        //     try {
-        //         let element;
-        //         while (element = xpathResult.iterateNext()) {
-        //             if (element.hasAttribute('__handled')) {
-        //                 continue;
-        //             }
-        //             if (element.hasAttribute('condition')) {
-        //                 let condition = element.getAttribute('condition');
-        //                 let value = runInContext(condition, true);
-        //                 element.setAttribute('__handled', 'true');
-        //                 if (!value) {
-        //                     element.remove();
-        //                     continue;
-        //                 }
-        //             }
-        //             if (element.tagName === 'SCRIPT') {
-        //                 let code = element.textContent;
-        //                 let div = document.createElement('div');
-        //                 // element.parentNode.insertBefore(div, element.nextSibling);
-        //                 document.querySelector('#content').appendChild(div);
-        //                 printAnchor = div;
-        //                 console.log('printAnchor', printAnchor);
-        //                 runInContext(code, false);
-        //                 element.setAttribute('__handled', 'true');
-        //             } else if (element.hasAttribute('expression')) {
-        //                 let expression = element.getAttribute('expression');
-        //                 let value = runInContext(expression, true);
-        //                 element.setAttribute('__handled', 'true');
-        //                 element.innerHTML = value;
-        //             }
-        //         }
-        //         break;
-        //     } catch (e) {
-        //         if (e.name !== 'InvalidStateError') throw e;
-        //     }
-        // }
 
         if (history.length > 1) {
             content.appendChild(document.createElement('hr'));
@@ -284,19 +233,13 @@ async function appendPage(page) {
         let compressed = lz.compress(slug);
         window.location.hash = compressed;
 
-        // appendSection(doc.body.innerHTML);
-
         for (let link of document.querySelectorAll('a')) {
-            if (link.getAttribute('__handled')) {
-                continue;
-            }
             let href = link.getAttribute('href') ?? '';
             if (href.indexOf('/') < 0) {
-                link.setAttribute('__handled', 'true');
                 let page = link.getAttribute('href');
                 link.removeAttribute('href');
                 let parent = link.parentNode;
-                if (parent.tagName === 'LI') link = parent;
+                if ((parent.tagName ?? '').toLowerCase() === 'li') link = parent;
                 nextPageLinks[page] = link;
                 link.classList.add('pagelink');
                 link.style.height = `${link.scrollHeight + 2}px`;
