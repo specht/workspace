@@ -3,7 +3,6 @@ import markdownitAttrs from 'https://cdn.jsdelivr.net/npm/markdown-it-attrs@4/+e
 import { Graphviz} from 'https://cdn.jsdelivr.net/npm/@hpcc-js/wasm/dist/graphviz.min.js';
 
 const md = markdownit({ html: true, typographer: true }).use(markdownitAttrs);
-const content = document.getElementById('content');
 
 const lz = {
     compress: LZString.compressToEncodedURIComponent,
@@ -11,6 +10,8 @@ const lz = {
 };
 
 const el = {
+    html: document.querySelector('html'),
+    body: document.querySelector('body'),
     devPane: document.getElementById('dev_pane'),
     graphContainer: document.getElementById('graph-container'),
     stateContainer: document.getElementById('state-container'),
@@ -23,7 +24,7 @@ let history = [];
 let context = {};
 
 let devMode = (window.location.port.length > 0) || (window.location.search.indexOf('dev') > 0);
-let printAnchor = document.querySelector('#content');
+let printAnchor = el.content;
 let nextPageLinks = {};
 
 function mulberry32(seed) {
@@ -47,7 +48,6 @@ function present_choice(choices) {
             button.classList.add('pagelink');
             li.appendChild(button);
             button.innerHTML = choices[i];
-            console.log('button', button);
             button.addEventListener('click', function(event) {
                 event.preventDefault();
                 event.stopPropagation();
@@ -68,7 +68,6 @@ const contextProxy = new Proxy(context, {
             return target[key];
         } else if (key === 'print') {
             return function(...args) {
-                console.log('print', args);
                 let div = document.createElement('div');
                 div.innerHTML = args.map((x) => md.render(x)).join(' ') + '\n';
                 printAnchor.appendChild(div);
@@ -131,8 +130,6 @@ function replaceDoubleBrackets(node) {
 }
 
 function processDOM(inputRoot) {
-    const outputRoot = document.querySelector('#content');
-
     function evaluate(expr) {
         return Function(...Object.keys(contextProxy), `return (${expr});`)(...Object.values(contextProxy));
     }
@@ -187,17 +184,15 @@ function processDOM(inputRoot) {
     }
 
     for (const child of inputRoot.childNodes) {
-        processNode(child, outputRoot);
+        processNode(child, el.content);
     }
 
     scrollToBottom();
-
-    return outputRoot;
 }
 
 
 async function appendPage(page) {
-    document.querySelector('html').scrollTop = 0;
+    el.html.scrollTop = 0;
     await fetch(`/pages/${page}.md`)
     .then(response => {
         if (!response.ok) {
@@ -226,7 +221,7 @@ async function appendPage(page) {
         processDOM(doc.body);
 
         if (history.length > 1) {
-            content.appendChild(document.createElement('hr'));
+            el.content.appendChild(document.createElement('hr'));
         }
         history.push(page);
         let slug = history.join(',');
@@ -244,6 +239,7 @@ async function appendPage(page) {
                 link.classList.add('pagelink');
                 link.style.height = `${link.scrollHeight + 2}px`;
                 link.addEventListener('click', function(event) {
+                    if (link.classList.contains('chosen')) return;
                     event.preventDefault();
                     turnToPage(page);
                 });
@@ -341,7 +337,7 @@ function getColorForGroup(groupLabel) {
 
 function markNodesInGraph() {
     if (!devMode) return;
-    let graph = document.querySelector('#graph-container');
+    let graph = el.graphContainer;
     for (let e of graph.querySelectorAll('.node')) {
         e.classList.remove('active');
     }
@@ -357,6 +353,8 @@ function markNodesInGraph() {
         }
         lastPage = page;
     }
+    // focusOnElement(graph.querySelector(`#node_${history[history.length - 1]}`));
+    
 }
 
 function wordWrap(text, maxLength) {
@@ -458,14 +456,14 @@ async function loadGraph() {
     dot += `}`;
     Graphviz.load().then(graphviz => {
         const svg = graphviz.dot(dot);
-        document.querySelector('#graph-container').innerHTML = svg;
-        document.querySelector('#graph-container svg').removeAttribute('width');
-        document.querySelector('#graph-container svg').removeAttribute('height');
+        el.graphContainer.innerHTML = svg;
+        el.graphContainer.querySelector('svg').removeAttribute('width');
+        el.graphContainer.querySelector('svg').removeAttribute('height');
         for (let e of document.querySelectorAll('#graph-container svg title')) e.remove();
         markNodesInGraph();
         installPanAndZoomHandler(document.querySelector('#graph-container svg'));
-        for (let el of document.querySelectorAll('svg g.node')) {
-            el.addEventListener('click', async function(event) {
+        for (let e of document.querySelectorAll('svg g.node')) {
+            e.addEventListener('click', async function(event) {
                 let id = this.getAttribute('id');
                 let page = id.substring(5);
                 if (nextPageLinks[page]) {
@@ -475,11 +473,11 @@ async function loadGraph() {
                     // the node is in the history, turn to that page
                     let index = history.lastIndexOf(page);
                     if (index > 0 && index < history.length - 1) {
-                        document.querySelector('body').classList.add('skip-animations');
+                        el.body.classList.add('skip-animations');
                         let new_history = history.slice(0, index + 1);
                         history = history.slice(0, 1);
                         markNodesInGraph();
-                        document.querySelector('#content').innerHTML = '';
+                        el.content.innerHTML = '';
                         Math.random = mulberry32(parseInt(history[0]));
                         context = {};
                         runInContext('');
@@ -488,7 +486,7 @@ async function loadGraph() {
                             console.log('turning to page', new_history[i]);
                             await turnToPage(new_history[i]);
                         }
-                        document.querySelector('body').classList.remove('skip-animations');
+                        el.body.classList.remove('skip-animations');
                     }
                 }
             });
@@ -498,11 +496,14 @@ async function loadGraph() {
 }
 
 document.addEventListener("DOMContentLoaded", async function () {
-    document.querySelector('body').classList.add('skip-animations');
+    el.body.classList.add('skip-animations');
     if (devMode) {
-        document.querySelector('body').classList.add('dev');
+        el.body.classList.add('dev');
         document.querySelector('#bu_reset_game').addEventListener('click', function() {
             window.location = '/';
+        });
+        document.querySelector('#bu_fit_zoom').addEventListener('click', function() {
+            resetViewBox();
         });
     }
     if (window.location.hash) {
@@ -542,18 +543,18 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     if (devMode) {
         loadGraph();
-        document.querySelector('#state-container').innerHTML = JSON.stringify(context, null, 2);
+        el.stateContainer.innerHTML = JSON.stringify(context, null, 2);
         initPaneSlider();
     }
-    document.querySelector('body').classList.remove('skip-animations');
+    el.body.classList.remove('skip-animations');
 });
 
 function scrollToBottom() {
     let options = {
-        top: document.querySelector('#game_pane').scrollHeight,
-        behavior: document.querySelector('body').classList.contains('skip-animations') ? 'instant' : 'smooth',
+        top: el.gamePane.scrollHeight,
+        behavior: el.body.classList.contains('skip-animations') ? 'instant' : 'smooth',
     }
-    document.querySelector('#game_pane').scrollTo(options);
+    el.gamePane.scrollTo(options);
 }
 
 function appendSection(text) {
@@ -566,20 +567,346 @@ function appendSection(text) {
     setTimeout(() => section.classList.remove('hidden'), 1);
 }
 
-function installPanAndZoomHandler(svg) {
-    let isPanning = false;
-    let startPoint = { x: 0, y: 0 };
-    let viewBox = { x: 0, y: 0, width: 0, height: 0 };
-    let currentScale = 1;
+let isPanning = false;
+let startPoint = { x: 0, y: 0 };
+let viewBox = { x: 0, y: 0, width: 0, height: 0 };
+let currentScale = 1;
 
-    let touchStartDistance = 0;
-    let isTouching = false;
+let touchStartDistance = 0;
+let isTouching = false;
+
+function handlePan(e) {
+    if (!isPanning) return;
+
+    const dx = (e.clientX - startPoint.x) / currentScale; // Scale-aware
+    const dy = (e.clientY - startPoint.y) / currentScale;
+
+    viewBox.x -= dx;
+    viewBox.y -= dy;
+
+    updateViewBox();
+    startPoint = { x: e.clientX, y: e.clientY }; // Update for next move
+}
+
+function startPan(e) {
+    isPanning = true;
+    startPoint = { x: e.clientX, y: e.clientY };
+}
+
+function pan(e) {
+    if (!isPanning) return;
+
+    const dx = (e.clientX - startPoint.x) / currentScale; // Scale-corrected
+    const dy = (e.clientY - startPoint.y) / currentScale;
+
+    viewBox.x -= dx;
+    viewBox.y -= dy;
+
+    updateViewBox();
+    startPoint = { x: e.clientX, y: e.clientY };
+}
+
+function endPan() {
+    isPanning = false;
+}
+
+function zoom(e) {
+    e.preventDefault();
+    const zoomIntensity = 0.1;
+    const wheelDelta = -e.deltaY; // Invert for natural scrolling
+    const zoomFactor = wheelDelta > 0 ? 1 - zoomIntensity : 1 + zoomIntensity;
+
+    // Get mouse position in SVG coordinates
+    const mouseX = e.clientX - window.svg.getBoundingClientRect().left;
+    const mouseY = e.clientY - window.svg.getBoundingClientRect().top;
+    const mouseXPercent = mouseX / window.svg.clientWidth;
+    const mouseYPercent = mouseY / window.svg.clientHeight;
+
+    // Store previous dimensions
+    const prevWidth = viewBox.width;
+    const prevHeight = viewBox.height;
+
+    // Apply zoom
+    viewBox.width *= zoomFactor;
+    viewBox.height *= zoomFactor;
+
+    // Adjust viewBox origin to zoom toward mouse
+    viewBox.x += mouseXPercent * (prevWidth - viewBox.width);
+    viewBox.y += mouseYPercent * (prevHeight - viewBox.height);
+
+    updateViewBox();
+}
+
+function handleTouchStart(e) {
+    if (e.touches.length === 2) {
+        // Pinch-to-zoom
+        touchStartDistance = getDistance(e.touches[0], e.touches[1]);
+        isTouching = true;
+    } else if (e.touches.length === 1) {
+        // Single-touch pan
+        startPan({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
+        isTouching = true;
+    }
+}
+
+function handleTouchMove(e) {
+    if (!isTouching) return;
+    e.preventDefault();
+
+    if (e.touches.length === 2) {
+        // Pinch-to-zoom
+        const currentDistance = getDistance(e.touches[0], e.touches[1]);
+        const zoomFactor = currentDistance / touchStartDistance;
+        const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+        zoom({
+            deltaY: zoomFactor < 1 ? 1 : -1,
+            clientX: midX,
+            clientY: midY,
+            preventDefault: () => {}
+        });
+        touchStartDistance = currentDistance;
+    } else if (e.touches.length === 1) {
+        // Single-touch pan
+        pan({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
+    }
+}
+
+function handleTouchEnd(e) {
+    isTouching = false;
+    endPan(); // Reset panning state if needed
+}
+
+
+function getDistance(touch1, touch2) {
+    return Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY
+    );
+}
+
+function updateViewBox() {
+    window.svg.setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
+    currentScale = window.svg.clientWidth / viewBox.width; // Update scale
+}
+
+function resetViewBox() {
+    const bbox = window.svg.getBBox();
+    const padding = 10; // Optional padding
+    const maxZoom = 1.5; // Maximum allowed zoom level (2x)
+
+    // Get container dimensions
+    const containerWidth = window.svg.clientWidth;
+    const containerHeight = window.svg.clientHeight;
+
+    // Calculate minimum allowed viewBox dimensions based on maxZoom
+    const minWidth = containerWidth / maxZoom;
+    const minHeight = containerHeight / maxZoom;
+
+    // Calculate initial fit
+    const containerRatio = containerWidth / containerHeight;
+    const contentRatio = bbox.width / bbox.height;
+
+    if (contentRatio > containerRatio) {
+        // Fit to width
+        viewBox.width = Math.max(bbox.width + padding * 2, minWidth);
+        viewBox.height = viewBox.width / containerRatio;
+    } else {
+        // Fit to height
+        viewBox.height = Math.max(bbox.height + padding * 2, minHeight);
+        viewBox.width = viewBox.height * containerRatio;
+    }
+
+    // Center content
+    viewBox.x = bbox.x - (viewBox.width - bbox.width) / 2;
+    viewBox.y = bbox.y - (viewBox.height - bbox.height) / 2;
+
+    updateViewBox();
+}
+
+let animationFrameId = null;
+
+function animateViewBox(target, duration = 300) {
+    const start = { ...viewBox };
+    const end = { ...target };
+    const startTime = performance.now();
+
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+    }
+
+    function step(now) {
+        const elapsed = now - startTime;
+        const t = Math.min(elapsed / duration, 1); // Clamp to [0,1]
+        const ease = easeInOutQuad(t);
+
+        // Interpolate each property
+        viewBox.x = lerp(start.x, end.x, ease);
+        viewBox.y = lerp(start.y, end.y, ease);
+        viewBox.width = lerp(start.width, end.width, ease);
+        viewBox.height = lerp(start.height, end.height, ease);
+
+        updateViewBox();
+
+        if (t < 1) {
+            animationFrameId = requestAnimationFrame(step);
+        } else {
+            animationFrameId = null; // Done
+        }
+    }
+
+    requestAnimationFrame(step);
+}
+
+// Helpers
+function lerp(a, b, t) {
+    return a + (b - a) * t;
+}
+
+function easeInOutQuad(t) {
+    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+}
+
+function getBBoxInSVGCoords(element, svg) {
+    const bbox = element.getBBox();
+    const matrix = element.getCTM();
+
+    const points = [
+        svg.createSVGPoint(), svg.createSVGPoint(),
+        svg.createSVGPoint(), svg.createSVGPoint()
+    ];
+
+    points[0].x = bbox.x;               points[0].y = bbox.y;
+    points[1].x = bbox.x + bbox.width;  points[1].y = bbox.y;
+    points[2].x = bbox.x;               points[2].y = bbox.y + bbox.height;
+    points[3].x = bbox.x + bbox.width;  points[3].y = bbox.y + bbox.height;
+
+    const transformedPoints = points.map(p => p.matrixTransform(matrix));
+
+    const xs = transformedPoints.map(p => p.x);
+    const ys = transformedPoints.map(p => p.y);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
+
+    return {
+        x: minX,
+        y: minY,
+        width: maxX - minX,
+        height: maxY - minY
+    };
+}
+
+function isElementWellInView(elementBBox, margin = 20) {
+    const boxLeft = elementBBox.x - margin;
+    const boxRight = elementBBox.x + elementBBox.width + margin;
+    const boxTop = elementBBox.y - margin;
+    const boxBottom = elementBBox.y + elementBBox.height + margin;
+
+    const viewLeft = viewBox.x;
+    const viewRight = viewBox.x + viewBox.width;
+    const viewTop = viewBox.y;
+    const viewBottom = viewBox.y + viewBox.height;
+
+    return (
+        boxLeft >= viewLeft &&
+        boxRight <= viewRight &&
+        boxTop >= viewTop &&
+        boxBottom <= viewBottom
+    );
+}
+
+function focusOnElement(element) {
+    if (window.svg === undefined || element === null) return;
+    console.log('focusing on element', element);
+    let graphGroup = window.svg.querySelector('g.graph');
+    const svg = window.svg;
+    const containerWidth = svg.clientWidth;
+    const containerHeight = svg.clientHeight;
+    const containerRatio = containerWidth / containerHeight;
+
+    const elementBBox = getBBoxInSVGCoords(element, svg);
+    const graphBBox = getBBoxInSVGCoords(graphGroup, svg);
+
+    const padding = 10;       // Around graph or focused element
+    const focusMargin = 40;   // Space above focused element
+    const maxZoom = 1.5;
+
+    // Calculate minimum allowed viewBox dimensions based on maxZoom
+    const minWidth = containerWidth / maxZoom;
+    const minHeight = containerHeight / maxZoom;
+
+    // Smart skip: If element is already nicely visible, don't move
+    if (isElementWellInView(elementBBox)) {
+        return;
+    }
+
+    // Determine if whole graph is small enough to center instead
+    const fitsHorizontally = graphBBox.width + padding * 2 <= minWidth;
+    const fitsVertically = graphBBox.height + padding * 2 <= minHeight;
+    const graphIsSmall = fitsHorizontally && fitsVertically;
+
+    let targetViewBox = {};
+
+    if (graphIsSmall) {
+        // Center whole graph
+        const contentRatio = graphBBox.width / graphBBox.height;
+        if (contentRatio > containerRatio) {
+            // Fit to width
+            targetViewBox.width = Math.max(graphBBox.width + padding * 2, minWidth);
+            targetViewBox.height = targetViewBox.width / containerRatio;
+        } else {
+            // Fit to height
+            targetViewBox.height = Math.max(graphBBox.height + padding * 2, minHeight);
+            targetViewBox.width = targetViewBox.height * containerRatio;
+        }
+
+        targetViewBox.x = graphBBox.x - (targetViewBox.width - graphBBox.width) / 2;
+        targetViewBox.y = graphBBox.y - (targetViewBox.height - graphBBox.height) / 2;
+    } else {
+        // Focus on element — keep near top
+        const focusWidth = Math.max(elementBBox.width + padding * 2, minWidth);
+        const focusHeight = Math.max(elementBBox.height + padding * 2, minHeight);
+
+        let viewWidth, viewHeight;
+        if (focusWidth / focusHeight > containerRatio) {
+            // Fit to width
+            viewWidth = focusWidth;
+            viewHeight = viewWidth / containerRatio;
+        } else {
+            // Fit to height
+            viewHeight = focusHeight;
+            viewWidth = viewHeight * containerRatio;
+        }
+
+        const centerX = elementBBox.x + elementBBox.width / 2;
+        const viewX = centerX - viewWidth / 2;
+        const viewY = elementBBox.y - focusMargin;
+
+        targetViewBox = {
+            x: viewX,
+            y: viewY,
+            width: viewWidth,
+            height: viewHeight
+        };
+    }
+
+    // viewBox = targetViewBox;
+    // updateViewBox();
+
+    animateViewBox(targetViewBox);
+}
+
+function installPanAndZoomHandler(svg) {
+    window.svg = svg;
 
     // Initialize viewBox to default
     resetViewBox();
 
     // Mouse/touch events
-    svg.addEventListener('mousedown', (e) => {
+    window.svg.addEventListener('mousedown', (e) => {
         if (e.button !== 0) return; // Only left button
         isPanning = true;
         startPoint = { x: e.clientX, y: e.clientY };
@@ -594,170 +921,19 @@ function installPanAndZoomHandler(svg) {
     });
 
     // Handle SVG-specific mouseleave (optional cleanup)
-    svg.addEventListener('mouseleave', (e) => {
+    window.svg.addEventListener('mouseleave', (e) => {
         if (!isPanning) return; // Only reset if not panning
     });
-    svg.addEventListener('wheel', zoom);
+    window.svg.addEventListener('wheel', zoom);
 
     // Touch events (for mobile)
-    svg.addEventListener('touchstart', handleTouchStart, { passive: false });
-    svg.addEventListener('touchmove', handleTouchMove, { passive: false });
-    svg.addEventListener('touchend', handleTouchEnd);
-
-    function handlePan(e) {
-        if (!isPanning) return;
-
-        const dx = (e.clientX - startPoint.x) / currentScale; // Scale-aware
-        const dy = (e.clientY - startPoint.y) / currentScale;
-
-        viewBox.x -= dx;
-        viewBox.y -= dy;
-
-        updateViewBox();
-        startPoint = { x: e.clientX, y: e.clientY }; // Update for next move
-    }
-
-    function startPan(e) {
-        isPanning = true;
-        startPoint = { x: e.clientX, y: e.clientY };
-    }
-
-    function pan(e) {
-        if (!isPanning) return;
-
-        const dx = (e.clientX - startPoint.x) / currentScale; // Scale-corrected
-        const dy = (e.clientY - startPoint.y) / currentScale;
-
-        viewBox.x -= dx;
-        viewBox.y -= dy;
-
-        updateViewBox();
-        startPoint = { x: e.clientX, y: e.clientY };
-    }
-
-    function endPan() {
-        isPanning = false;
-    }
-
-    function zoom(e) {
-        e.preventDefault();
-        const zoomIntensity = 0.1;
-        const wheelDelta = -e.deltaY; // Invert for natural scrolling
-        const zoomFactor = wheelDelta > 0 ? 1 - zoomIntensity : 1 + zoomIntensity;
-
-        // Get mouse position in SVG coordinates
-        const mouseX = e.clientX - svg.getBoundingClientRect().left;
-        const mouseY = e.clientY - svg.getBoundingClientRect().top;
-        const mouseXPercent = mouseX / svg.clientWidth;
-        const mouseYPercent = mouseY / svg.clientHeight;
-
-        // Store previous dimensions
-        const prevWidth = viewBox.width;
-        const prevHeight = viewBox.height;
-
-        // Apply zoom
-        viewBox.width *= zoomFactor;
-        viewBox.height *= zoomFactor;
-
-        // Adjust viewBox origin to zoom toward mouse
-        viewBox.x += mouseXPercent * (prevWidth - viewBox.width);
-        viewBox.y += mouseYPercent * (prevHeight - viewBox.height);
-
-        updateViewBox();
-    }
-
-    function handleTouchStart(e) {
-        if (e.touches.length === 2) {
-            // Pinch-to-zoom
-            touchStartDistance = getDistance(e.touches[0], e.touches[1]);
-            isTouching = true;
-        } else if (e.touches.length === 1) {
-            // Single-touch pan
-            startPan({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
-            isTouching = true;
-        }
-    }
-
-    function handleTouchMove(e) {
-        if (!isTouching) return;
-        e.preventDefault();
-
-        if (e.touches.length === 2) {
-            // Pinch-to-zoom
-            const currentDistance = getDistance(e.touches[0], e.touches[1]);
-            const zoomFactor = currentDistance / touchStartDistance;
-            const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-            const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-
-            zoom({
-                deltaY: zoomFactor < 1 ? 1 : -1,
-                clientX: midX,
-                clientY: midY,
-                preventDefault: () => {}
-            });
-            touchStartDistance = currentDistance;
-        } else if (e.touches.length === 1) {
-            // Single-touch pan
-            pan({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
-        }
-    }
-
-    function handleTouchEnd(e) {
-        isTouching = false;
-        endPan(); // Reset panning state if needed
-    }
-
-
-    function getDistance(touch1, touch2) {
-        return Math.hypot(
-            touch2.clientX - touch1.clientX,
-            touch2.clientY - touch1.clientY
-        );
-    }
-
-    function updateViewBox() {
-        svg.setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
-        currentScale = svg.clientWidth / viewBox.width; // Update scale
-    }
-
-    function resetViewBox() {
-        const bbox = svg.getBBox();
-        const padding = 10; // Optional padding
-        const maxZoom = 1.5; // Maximum allowed zoom level (2x)
-
-        // Get container dimensions
-        const containerWidth = svg.clientWidth;
-        const containerHeight = svg.clientHeight;
-
-        // Calculate minimum allowed viewBox dimensions based on maxZoom
-        const minWidth = containerWidth / maxZoom;
-        const minHeight = containerHeight / maxZoom;
-
-        // Calculate initial fit
-        const containerRatio = containerWidth / containerHeight;
-        const contentRatio = bbox.width / bbox.height;
-
-        if (contentRatio > containerRatio) {
-            // Fit to width
-            viewBox.width = Math.max(bbox.width + padding * 2, minWidth);
-            viewBox.height = viewBox.width / containerRatio;
-        } else {
-            // Fit to height
-            viewBox.height = Math.max(bbox.height + padding * 2, minHeight);
-            viewBox.width = viewBox.height * containerRatio;
-        }
-
-        // Center content
-        viewBox.x = bbox.x - (viewBox.width - bbox.width) / 2;
-        viewBox.y = bbox.y - (viewBox.height - bbox.height) / 2;
-
-        updateViewBox();
-    }
+    window.svg.addEventListener('touchstart', handleTouchStart, { passive: false });
+    window.svg.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.svg.addEventListener('touchend', handleTouchEnd);
 }
 
 function initPaneSlider() {
-    const divider = document.getElementById('divider');
-    const rightPanel = document.querySelector('#game_pane');
+    const rightPanel = el.gamePane;
     const container = document.querySelector('#resizable-children');
     let isDragging = false;
 
@@ -775,7 +951,7 @@ function initPaneSlider() {
     }
 
     // Handle divider drag
-    divider.addEventListener('mousedown', (e) => {
+    el.divider.addEventListener('mousedown', (e) => {
         isDragging = true;
         document.body.style.cursor = 'col-resize';
         document.addEventListener('mousemove', onMouseMove);
