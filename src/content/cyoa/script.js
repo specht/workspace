@@ -341,6 +341,9 @@ function markNodesInGraph() {
     for (let e of graph.querySelectorAll('.node')) {
         e.classList.remove('active');
     }
+    for (let e of graph.querySelectorAll('.edge')) {
+        e.classList.remove('active');
+    }
     let lastPage = '';
     for (let page of history.slice(1)) {
         let node = graph.querySelector(`#node_${page}`);
