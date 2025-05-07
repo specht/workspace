@@ -37,7 +37,7 @@ function mulberry32(seed) {
     };
 }
 
-function present_choice(choices) {
+function presentChoice(choices) {
     return new Promise((resolve) => {
         let ul = document.createElement('ul');
         printAnchor.appendChild(ul);
@@ -47,12 +47,13 @@ function present_choice(choices) {
             let button = document.createElement('button');
             button.classList.add('pagelink');
             li.appendChild(button);
-            button.innerHTML = choices[i];
+            let choice = choices[i];
+            button.innerHTML = choice[1];
             button.addEventListener('click', function(event) {
                 event.preventDefault();
                 event.stopPropagation();
                 ul.remove();
-                resolve(i);
+                resolve(choice[0]);
             });
         }
         scrollToBottom();
@@ -73,8 +74,8 @@ const contextProxy = new Proxy(context, {
                 printAnchor.appendChild(div);
                 scrollToBottom();
             };
-        } else if (key === 'present_choice') {
-            return present_choice;
+        } else if (key === 'presentChoice') {
+            return presentChoice;
         } else {
             return globalThis[key];
         }
