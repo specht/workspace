@@ -102,7 +102,7 @@ footer {
 .dark-only-bg-contrast-light {
     /* background: none; */
     /* filter: invert(0.5); */
-    filter:brightness(0.5) contrast(1.5);
+    /* filter:brightness(0.5) contrast(1.5); */
     /* background-color: #0e0e0d; */
 }
 pre, pre .w {
