@@ -52,10 +52,12 @@
   # - .p5js
   # - .glsl
   # - .gif
-# - key: networks
-#   label: Netzwerke
-#   icon: /images/telephone.png
-#   entries:
+- key: networks
+  label: Netzwerke
+  icon: /images/telephone.png
+  entries:
+    - showerjs
+    - static-website
 - key: databases
   compact: true
   label: Datenbanken
@@ -72,8 +74,6 @@
     # - sveltejs
     - digits-experiment
     - hades
-    - showerjs
-    - static-website
   # - .latex
 - key: linux
   label: Linux und das Terminal

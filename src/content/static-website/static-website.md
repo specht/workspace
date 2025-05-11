@@ -102,11 +102,15 @@ Du kannst auch Listen in HTML erstellen. Es gibt zwei Arten von Listen: ungeordn
 
 ### Links
 
-Das Fanstastische an HTML ist, dass du auch Links zu anderen Webseiten einfügen kannst. Das machst du mit dem `<a>`-Tag. Hier ist ein Beispiel:
+Das Fantastische an HTML ist, dass du auch Links zu anderen Webseiten einfügen kannst. Das machst du mit dem `<a>`-Tag. Hier ist ein Beispiel:
 
 ```html
 Weitere Informationen findest du <a href="https://de.wikipedia.org">in der Wikipedia</a>.
 ```
+
+<div class='hint'>
+Übrigens, das »H« in HTML steht für »Hypertext« und bedeutet, dass du mit HTML auch Links zu anderen Webseiten erstellen kannst. Das ist eine der wichtigsten Funktionen von HTML und macht das Web so mächtig – damals, zum Beginn des World Wide Web, war das eine Revolution!
+</div>
 
 Beim `<a>`-Tag musst du das Attribut `href` angeben, das die URL der Seite angibt, auf die du verlinken möchtest. Möchtest du, dass sich die Seite in einem neuen Tab öffnet, kannst du das Attribut `target="_blank"` hinzufügen (ansonsten verlässt der Nutzer mit dem Klick auf den Link deine Seite). Hier ist ein Beispiel:
 
@@ -131,11 +135,11 @@ Statt einer URL kannst du auch einen relativen Pfad angeben. Wenn du z. B. ein B
 ```
 
 <div class='hint'>
-Früher wurden vor allem die Bildformate GIF, JPEG und PNG verwendet. Heutzutage werden auch WebP-, AVIF-Dateien verwendet. Diese Formate sind moderner und bieten eine bessere Qualität bei kleinerer Dateigröße.
+Früher wurden vor allem die Bildformate GIF, JPEG und PNG verwendet. Heutzutage werden auch WebP-, AVIF-Dateien unterstützt. Diese Formate sind moderner und bieten eine bessere Qualität bei kleinerer Dateigröße.
 </div>
 
 <div class='hint think'>
-Wenn du besonders aufmerksam warst, hast du vielleicht bemerkt, dass es zum <code>&lt;img&gt;</code>-Tag kein schließendes Tag gibt. Das liegt daran, dass es sich um ein sogenanntes <a href="https://developer.mozilla.org/de/docs/Glossary/Void_element">Void-Element</a> handelt, das leer ist und kein schließendes Tag benötigt. Es gibt noch einige andere Void-Elemente, die du <a href="https://developer.mozilla.org/de/docs/Glossary/Void_element">hier</a> nachlesen kannst.
+Wenn du besonders aufmerksam warst, hast du vielleicht bemerkt, dass es zum <code>&lt;img&gt;</code>-Tag kein schließendes Tag gibt. Das liegt daran, dass es sich um ein sogenanntes Void-Element handelt, das leer ist und kein schließendes Tag benötigt. Es gibt noch einige andere Void-Elemente, die du <a href="https://developer.mozilla.org/de/docs/Glossary/Void_element">hier</a> nachlesen kannst.
 </div>
 
 ### Tabellen
@@ -175,7 +179,7 @@ Hier siehst du noch einmal den vollständigen Code:
 <body>
   <h1>Willkommen auf meiner Webseite!</h1>
   <p>Dies ist ein einfacher Absatz.</p>
-  
+
   <ul>
     <li>Erster Punkt</li>
     <li>Zweiter Punkt</li>
@@ -212,7 +216,7 @@ Beachte, dass wir den Text mit dem Link nun auch in einen Absatz (<code>&lt;p&gt
 </div>
 
 <div class='floatright' style='width: 32em;'>
-    <img src='ugly.webp'>
+    <img src='ugly.webp' class='keep_padding'>
 </div>
 
 Deine Seite sollte in der Live-Vorschau jetzt so aussehen wie rechts abgebildet. Wenn du die Seite so siehst, hast du alles richtig gemacht. Wenn nicht, schau dir den Quelltext noch einmal genau an und achte darauf, dass du alle Tags richtig gesetzt hast. HTML ist sehr empfindlich gegenüber Fehlern. Wenn du z. B. ein schließendes Tag vergisst oder ein Tag falsch schreibst, wird die Seite nicht richtig angezeigt.
@@ -233,15 +237,15 @@ Es gibt drei Möglichkeiten, CSS in HTML einzufügen:
 <h1 style="color: red;">Willkommen auf meiner Webseite!</h1>
 ```
 
-**Internes CSS**: Du kannst CSS im `<head>`-Tag der HTML-Datei einfügen, indem du den `<style>`-Tag verwendest. Hier ist ein Beispiel:
+**Eingebettetes CSS**: Du kannst CSS im `<head>`-Tag der HTML-Datei einfügen, indem du den `<style>`-Tag verwendest. Hier ist ein Beispiel:
 
 ```html
 <head>
-    <style>
+  <style>
     h1 {
         color: red;
     }
-    </style>
+  </style>
 </head>
 ```
 
@@ -249,7 +253,7 @@ Es gibt drei Möglichkeiten, CSS in HTML einzufügen:
 
 ```html
 <head>
-    <link rel="stylesheet" type="text/css" href="styles.css">
+  <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 ```
 
@@ -263,14 +267,14 @@ Erstelle eine neue Datei und speichere sie unter dem Namen `styles.css`. Schreib
 
 ```css
 body {
-    font-family: Arial;
+  font-family: Arial, sans-serif;
 }
 ```
 
-Wenn du die Datei gespeichert hast, solltest du die Änderungen in der Vorschau sehen: die Schriftart sollte sich geändert haben.
+Wenn du die Datei gespeichert hast, solltest du die Änderungen in der Vorschau sehen: die Schriftart sollte sich geändert haben. Falls die Schriftart Arial installiert (was unter Windows seit 1992 überall der Fall sein sollte und auf dem Mac auch), wird sie verwendet. Wenn nicht, wird eine andere, <a href="https://de.wikipedia.org/wiki/Serife">serifenlose Schriftart</a> verwendet.
 
 <div class='hint think'>
-Tipp: Deine Vorschau hat sich nicht verändert, obwohl du schon einmal neu geladen hast? Hast du daran gedacht, die CSS-Datei im `<head>`-Tag der HTML-Datei zu verlinken?
+Tipp: Deine Vorschau hat sich nicht verändert, obwohl du schon einmal neu geladen hast? Hast du daran gedacht, die CSS-Datei im <code>&lt;head&gt;</code>-Tag der HTML-Datei zu verlinken?
 </div>
 
 ### Schriftarten ändern
@@ -279,8 +283,8 @@ Du kannst die Schriftart auch auf eine andere Schriftart ändern, indem du den N
 
 ```html
 <head>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap">
-    <link rel="stylesheet" type="text/css" href="styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap">
+  <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 ```
 
@@ -294,7 +298,7 @@ Schau noch einmal in die CSS-Datei:
 
 ```css
 body {
-    font-family: Arial, sans-serif;
+  font-family: Arial, sans-serif;
 }
 ```
 
@@ -302,11 +306,11 @@ Vor den geschweiften Klammern `{}` steht der Selektor `body`. Der Selektor gibt 
 
 ```css
 h1 {
-    color: red;
+  color: red;
 }
 
 p {
-    font-size: 16px;
+  font-size: 16px;
 }
 ```
 
@@ -318,8 +322,8 @@ Kümmern wir uns nun um die Links: Normalerweise sind Links blau und unterstrich
 
 ```css
 a {
-    color: #0d60ae;
-    text-decoration: none;
+  color: #0d60ae;
+  text-decoration: none;
 }
 ```
 
@@ -336,12 +340,12 @@ Wenn du die Datei gespeichert hast, solltest du die Änderungen in der Vorschau 
 
 ```css
 a {
-    color: #0d60ae;
-    text-decoration: none;
+  color: #0d60ae;
+  text-decoration: none;
 
-    &:hover {
-        text-decoration: underline;
-    }
+  &:hover {
+    text-decoration: underline;
+  }
 }
 ```
 
@@ -357,7 +361,7 @@ Vielleicht hast du dich schon gefragt, wieso das Bild mitten im Text steht und n
 
 ```css
 img {
-    display: block;
+  display: block;
 }
 ```
 
@@ -365,12 +369,12 @@ Jetzt sollte das Bild auf einer eigenen Zeile stehen. Wir fügen jetzt noch eine
 
 ```css
 img {
-    display: block;
-    padding: 1em;
-    margin: 1em 0;
-    background-color: white;
-    border-radius: 0.5em;
-    box-shadow: 0.1em 0.1em 0.5em rgba(0, 0, 0, 0.25);
+  display: block;
+  padding: 1em;
+  margin: 1em 0;
+  background-color: white;
+  border-radius: 0.5em;
+  box-shadow: 0.1em 0.1em 0.5em rgba(0, 0, 0, 0.25);
 }
 ```
 
@@ -396,19 +400,19 @@ Tabellen sind in HTML sehr nützlich, aber sie sehen oft nicht besonders gut aus
 
 ```css
 table {
-    border-collapse: collapse;
+  border-collapse: collapse;
 
-    th, td {
-        padding: 0.5em 1em;
-        background-color: #fff;
-        border: 1px solid #ccc;
-    }
+  th, td {
+    padding: 0.5em 1em;
+    background-color: #fff;
+    border: 1px solid #ccc;
+  }
 
-    th {
-        font-weight: bold;
-        text-align: left;
-        background-color: #eee;
-    }
+  th {
+    font-weight: bold;
+    text-align: left;
+    background-color: #eee;
+  }
 }
 ```
 
@@ -417,7 +421,7 @@ Mit `border-collapse: collapse;` sorgen wir dafür, dass die Ränder der Zellen 
 Deine Webseite sollte jetzt ungefähr so aussehen:
 
 <div class='floatright' style='width: 32em;'>
-    <img src='pretty.webp'>
+    <img src='pretty.webp' class='keep_padding'>
 </div>
 
 ## Tipps & Tricks
@@ -448,6 +452,6 @@ Du kannst deine Webseite ganz einfach veröffentlichen, indem du sie auf einen W
 
 Um deine Webseite interaktiv zu gestalten, kannst du auch JavaScript verwenden. JavaScript ist eine Programmiersprache, die es dir ermöglicht, deine Webseite mit interaktiven Elementen zu versehen. Du kannst z. B. Formulare validieren, Animationen erstellen oder mit einem Server interagieren. Wenn du mehr über JavaScript lernen möchtest, schau dir die <a href="https://developer.mozilla.org/de/docs/Learn/JavaScript">MDN Web Docs</a> an. Es gibt auch viele JavaScript-Frameworks, die dir helfen können, deine Webseite schnell und einfach zu gestalten. Einige der bekanntesten sind <a href="https://reactjs.org/">React</a>, <a href="https://vuejs.org/">Vue.js</a>, <a href="https://angular.io/">Angular</a> und <a href="https://svelte.dev/">Svelte</a>.
 
-Hier haben wir uns nur mit statischen Webseiten beschäftigt. Statische Seiten haben den Nachteil, dass sie weniger interaktiv sind und z. B. keine Daten speichern können. Der große Vorteil ist aber, dass sie sehr schnell geladen werden und sehr sicher sind, da sie keine spezielle Server-Software benötigen, die aktuell gehalten werden muss.
+Hier haben wir uns nur mit statischen Webseiten beschäftigt. Statische Seiten haben den Nachteil, dass sie weniger interaktiv sind und z. B. keine Daten dauerhaft speichern können. Der große Vorteil ist aber, dass sie sehr schnell geladen werden und sehr sicher sind, da sie keine spezielle Server-Software benötigen, die aktuell gehalten werden muss.
 
 Es gibt aber auch mit statischen Webseiten viele Möglichkeiten, sie interaktiv zu gestalten. Du kannst z. B. eine Software wie <a href="https://gohugo.io/">Hugo</a> oder <a href="https://jekyllrb.com/">Jekyll</a> verwenden, um deine Webseite zu erstellen. Diese Programme generieren statische Webseiten aus Vorlagen und Inhalten, die du in Markdown schreibst – so kannst du z. B. relativ leicht einen Blog erstellen.

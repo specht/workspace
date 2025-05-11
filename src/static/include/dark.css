@@ -74,6 +74,10 @@ footer {
     box-shadow: 0 0 0.8em rgba(0, 0, 0, 0.5);
 }
 
+.tutorial_card2 > .inner img {
+    background-color: rgba(0,0,0,0.5);;
+}
+
 .tutorial_card2 > .inner::after {
     position: absolute;
     left: 0;
@@ -96,7 +100,10 @@ footer {
     box-shadow: 0px 10px 10px -10px rgba(0, 0, 0, 1.0) inset;
 }
 .dark-only-bg-contrast-light {
-    filter: invert(0.5);
+    /* background: none; */
+    /* filter: invert(0.5); */
+    filter:brightness(0.5) contrast(1.5);
+    /* background-color: #0e0e0d; */
 }
 pre, pre .w {
     background-color: #0a0a0a!important;
@@ -110,4 +117,10 @@ pre, pre .w {
 hr {
     opacity: 0.5;
     box-shadow: 0 0.2em 0.4em rgba(0, 0, 0, 1.0);
+}
+
+div.floatright img {
+    &.keep_padding {
+        border: 0.5em solid #fff;
+    }
 }
