@@ -509,6 +509,8 @@ class Main < Sinatra::Base
                     lexer = Rouge::Lexers::Cpp.new
                 when 'cs'
                     lexer = Rouge::Lexers::CSharp.new
+                when 'css'
+                    lexer = Rouge::Lexers::CSS.new
                 when 'dart'
                     lexer = Rouge::Lexers::Dart.new
                 when 'erlang'
@@ -517,6 +519,8 @@ class Main < Sinatra::Base
                     lexer = Rouge::Lexers::Fortran.new
                 when 'go'
                     lexer = Rouge::Lexers::Go.new
+                when 'html'
+                    lexer = Rouge::Lexers::HTML.new
                 when 'java'
                     lexer = Rouge::Lexers::Java.new
                 when 'js'
@@ -1403,7 +1407,7 @@ class Main < Sinatra::Base
                         if content[:needs_contrast] == 'light'
                             additional_classes << 'dark-only-bg-contrast-light'
                         end
-                        io.puts "<img class='#{additional_classes.join(' ')}' src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='width: 100%; object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
+                        io.puts "<img class='#{additional_classes.join(' ')}' src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
                         io.puts "<div class='abstract'>#{content[:abstract]}</div>"
                         io.puts "</div>"
                         io.puts "</a>"

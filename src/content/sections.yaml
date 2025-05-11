@@ -52,6 +52,10 @@
   # - .p5js
   # - .glsl
   # - .gif
+# - key: networks
+#   label: Netzwerke
+#   icon: /images/telephone.png
+#   entries:
 - key: databases
   compact: true
   label: Datenbanken
@@ -61,14 +65,15 @@
     - videothek
     - bobby_tables
 - key: misc
-  compact: true
+  compact: false
   label: Verschiedenes
   icon: /images/parrot.png
   entries:
     # - sveltejs
     - digits-experiment
-    - showerjs
     - hades
+    - showerjs
+    - static-website
   # - .latex
 - key: linux
   label: Linux und das Terminal

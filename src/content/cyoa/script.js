@@ -26,6 +26,8 @@ let context = {};
 let devMode = (window.location.port.length > 0) || (window.location.search.indexOf('dev') > 0);
 let printAnchor = el.content;
 let nextPageLinks = {};
+let deferred = null;
+let choiceDiv = null;
 
 function mulberry32(seed) {
     let t = seed >>> 0;
@@ -38,26 +40,50 @@ function mulberry32(seed) {
 }
 
 function presentChoice(choices) {
-    return new Promise((resolve) => {
-        let ul = document.createElement('ul');
-        printAnchor.appendChild(ul);
-        for (let i = 0; i < choices.length; i++) {
-            let li = document.createElement('li');
-            ul.appendChild(li);
-            let button = document.createElement('button');
-            button.classList.add('pagelink');
-            li.appendChild(button);
-            let choice = choices[i];
-            button.innerHTML = choice[1];
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                event.stopPropagation();
-                ul.remove();
-                resolve(choice[0]);
-            });
-        }
-        scrollToBottom();
+    if (choiceDiv) {
+        choiceDiv.remove();
+        choiceDiv = null;
+    }
+    deferred = {};
+    deferred.promise = new Promise((resolve, reject) => {
+        deferred.resolve = (value) => {
+            cleanup();
+            resolve(value);
+        };
+        deferred.reject = (reason) => {
+            cleanup();
+            reject(reason);
+        };
     });
+
+    function cleanup() {
+        deferred = null;
+    }
+
+    choiceDiv = document.createElement('div');
+    choiceDiv.classList.add('choice');
+    printAnchor.appendChild(choiceDiv);
+
+    nextPageLinks = {};
+    for (let i = 0; i < choices.length; i++) {
+        let button = document.createElement('button');
+        button.classList.add('pagelink');
+        choiceDiv.appendChild(button);
+
+        let choice = choices[i];
+        button.innerHTML = choice[1];
+        nextPageLinks[`${choice[0]}`] = button;
+
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            turnToPage(`${choice[0]}`);
+        });
+    }
+
+    scrollToBottom();
+
+    return deferred.promise;
 }
 
 const contextProxy = new Proxy(context, {
@@ -76,6 +102,8 @@ const contextProxy = new Proxy(context, {
             };
         } else if (key === 'presentChoice') {
             return presentChoice;
+        } else if (key === 'forceTurnToPage') {
+            return forceTurnToPage;
         } else {
             return globalThis[key];
         }
@@ -191,6 +219,11 @@ function processDOM(inputRoot) {
     scrollToBottom();
 }
 
+function updateHistoryHash() {
+    let slug = history.join(',');
+    let compressed = lz.compress(slug);
+    window.location.hash = compressed;
+}
 
 async function appendPage(page) {
     el.html.scrollTop = 0;
@@ -224,10 +257,9 @@ async function appendPage(page) {
         if (history.length > 1) {
             el.content.appendChild(document.createElement('hr'));
         }
+
         history.push(page);
-        let slug = history.join(',');
-        let compressed = lz.compress(slug);
-        window.location.hash = compressed;
+        updateHistoryHash();
 
         for (let link of document.querySelectorAll('a')) {
             let href = link.getAttribute('href') ?? '';
@@ -358,7 +390,6 @@ function markNodesInGraph() {
         lastPage = page;
     }
     // focusOnElement(graph.querySelector(`#node_${history[history.length - 1]}`));
-    
 }
 
 function wordWrap(text, maxLength) {
@@ -379,8 +410,18 @@ function wordWrap(text, maxLength) {
     return wrappedText;
 }
 
+async function forceTurnToPage(page) {
+    await appendPage(page);
+}
+
 async function turnToPage(page) {
-    if (nextPageLinks[page]) {
+    if (deferred) {
+        choiceDiv.remove();
+        choiceDiv = null;
+        deferred.resolve(`${page}`);
+        history.push(page);
+        updateHistoryHash();
+    } else if (nextPageLinks[page]) {
         nextPageLinks[page].classList.add('chosen');
         for (let el of document.querySelectorAll('.pagelink')) {
             if (!el.classList.contains('chosen')) {
@@ -528,9 +569,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         // it's a new game because there's only the seed and the first page in the history
         let seed = randomSeed();
         history = [seed];
-        let slug = history.join(',');
-        let compressed = lz.compress(slug);
-        window.location.hash = compressed;
+        updateHistoryHash();
         Math.random = mulberry32(seed);
         await appendPage('1');
     } else {

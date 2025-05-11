@@ -295,3 +295,13 @@ body.skip-animations {
         animation: none !important;
     }
 }
+
+div.choice {
+    display: flex;
+    flex-direction: row;
+    gap: 0.75em;
+
+    .pagelink {
+        text-align: center
+    }
+}
