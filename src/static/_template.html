@@ -210,7 +210,7 @@ function update_dark_mode() {
     if (dark) {
         dark_css_element = document.createElement('link');
         dark_css_element.rel = 'stylesheet';
-        dark_css_element.href = '/include/dark.css';
+        dark_css_element.href = `/include/dark.css?#{CACHE_BUSTER}`;
         document.head.appendChild(dark_css_element);
     }
 }
