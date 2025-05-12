@@ -36,7 +36,7 @@ Da das Unterverzeichnis `website-test` noch nicht existiert, wirst du gefragt, o
 
 <img class='full' src='create-folder.webp'>
 
-Da wir nun in diesem Verzeichnis arbeiten wollen, kannst du es öffnen, indem du entweder im Menü »File« / »Open Folder…« auswählst oder einfach <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>O</span> drückst. Wähle den Ordner `website-test` aus:
+Da wir nun in diesem Verzeichnis arbeiten wollen, kannst du es öffnen, indem du entweder im Menü »File« / »Open Folder…« auswählst oder einfach <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>Strg</span><span class='key'>O</span> drückst. Wähle den Ordner `website-test` aus:
 
 <img class='full' src='open-folder.webp'>
 

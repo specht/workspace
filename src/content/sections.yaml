@@ -53,11 +53,13 @@
   # - .glsl
   # - .gif
 - key: networks
+  # compact: true
   label: Netzwerke
   icon: /images/telephone.png
   entries:
     - showerjs
     - static-website
+    # - svelte
 - key: databases
   compact: true
   label: Datenbanken
@@ -71,7 +73,6 @@
   label: Verschiedenes
   icon: /images/parrot.png
   entries:
-    # - sveltejs
     - digits-experiment
     - hades
   # - .latex
