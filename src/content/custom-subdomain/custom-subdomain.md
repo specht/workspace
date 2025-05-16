@@ -93,3 +93,20 @@ Diese Datei kannst du jetzt in deinem Browser aufrufen, indem du die URL `http:/
 
 ## Dateien mit rsync hochladen
 
+Um Dateien auf deinen Server hochzuladen, kannst du `rsync` verwenden. Das ist ein Programm, das Dateien zwischen zwei Computern synchronisiert. Du kannst es verwenden, um Dateien von deinem lokalen Computer auf den Server zu kopieren. Gehe dazu in das Verzeichnis, das du hochladen möchtest. Wenn du z. B. die Dateien in `/workspace/website-test` hast, gehe in dieses Verzeichnis:
+
+```bash
+cd /workspace/website-test
+```
+
+Anschließend kannst du `rsync` verwenden, um die Dateien auf den Server zu kopieren. Ersetze `max` und `cobolultras` durch deinen Benutzernamen und deine Subdomain:
+
+```bash
+rsync -avz . max@cobolultras.hackschule.de:cobolultras
+```
+
+Das `-a` steht für "archive" und sorgt dafür, dass die Dateien rekursiv (also mit allen Unterverzeichnissen) kopiert werden und die Dateiberechtigungen beibehalten werden. Das `-v` steht für "verbose" und zeigt dir an, welche Dateien kopiert werden. Das `-z` steht für "compress" und sorgt dafür, dass die Daten komprimiert übertragen werden, was die Übertragungsgeschwindigkeit erhöht.
+
+Wenn du rsync mehrfach ausführst, werden nur die Dateien übertragen, die sich geändert haben. Das ist besonders nützlich, wenn du an deiner Website arbeitest und immer wieder neue Dateien hochladen möchtest.
+
+Viel Spaß beim Programmieren!
