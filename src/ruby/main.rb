@@ -442,7 +442,7 @@ class Main < Sinatra::Base
             path = path.sub('+', '')
             unless seen_paths.include?(path)
                 STDERR.puts "Got path: #{path}"
-                paths << {:section => 'misc', :path => path, :dev_only => false, :original_path => "+#{path}"}
+                paths << {:section => 'misc', :path => path, :dev_only => false, :original_path => "+#{path}", :extra => true}
                 seen_paths << path
             end
         end
@@ -583,31 +583,33 @@ class Main < Sinatra::Base
                 :html => html,
                 :dev_only => entry[:dev_only],
             }
-            @@sections[section][:entries] << slug
-            if meta
-                meta = YAML.load(meta)
-                if meta['image']
-                    parts = meta['image'].split(':')
-                    sha1 = convert_image(File.join(File.dirname(path), parts[0]))
-                    @@content[slug][:image] = "/cache/#{sha1}.webp"
-                    @@content[slug][:image_x] = (parts[1] || '50').to_i
-                    @@content[slug][:image_y] = (parts[2] || '50').to_i
-                    @@content[slug][:needs_contrast] = meta['needs_contrast']
+            unless entry[:extra]
+                @@sections[section][:entries] << slug
+                if meta
+                    meta = YAML.load(meta)
+                    if meta['image']
+                        parts = meta['image'].split(':')
+                        sha1 = convert_image(File.join(File.dirname(path), parts[0]))
+                        @@content[slug][:image] = "/cache/#{sha1}.webp"
+                        @@content[slug][:image_x] = (parts[1] || '50').to_i
+                        @@content[slug][:image_y] = (parts[2] || '50').to_i
+                        @@content[slug][:needs_contrast] = meta['needs_contrast']
+                    end
                 end
-            end
-            begin
-                @@content[slug][:title] = root.css('h1').first.to_s.sub('<h1>', '').sub('</h1>', '').strip
-            rescue
-            end
-            begin
-                @@content[slug][:abstract] = root.css('.abstract').first.text
-            rescue
-            end
-            begin
-                @@content[slug][:image] ||= root.css('img').first.attr('src')
-                @@content[slug][:image_x] ||= 50
-                @@content[slug][:image_y] ||= 50
-            rescue
+                begin
+                    @@content[slug][:title] = root.css('h1').first.to_s.sub('<h1>', '').sub('</h1>', '').strip
+                rescue
+                end
+                begin
+                    @@content[slug][:abstract] = root.css('.abstract').first.text
+                rescue
+                end
+                begin
+                    @@content[slug][:image] ||= root.css('img').first.attr('src')
+                    @@content[slug][:image_x] ||= 50
+                    @@content[slug][:image_y] ||= 50
+                rescue
+                end
             end
         end
     end
