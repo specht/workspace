@@ -438,6 +438,8 @@ class Main < Sinatra::Base
         Dir['/src/content/**/*.md'].each do |path|
             path = File.dirname(path).sub('/src/content/', '')
             next if path.include?('/')
+            next unless path.include?('+')
+            path = path.sub('+', '')
             unless seen_paths.include?(path)
                 STDERR.puts "Got path: #{path}"
                 paths << {:section => 'misc', :path => path, :dev_only => false}
