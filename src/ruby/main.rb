@@ -442,16 +442,17 @@ class Main < Sinatra::Base
             path = path.sub('+', '')
             unless seen_paths.include?(path)
                 STDERR.puts "Got path: #{path}"
-                paths << {:section => 'misc', :path => path, :dev_only => false}
+                paths << {:section => 'misc', :path => path, :dev_only => false, :original_path => "+#{path}"}
                 seen_paths << path
             end
         end
+        paths.map! { |x| x[:original_path] ||= x[:path]; x }
         @@content = {}
 
         redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
         paths.each do |entry|
             section = entry[:section]
-            path = Dir["/src/content/#{entry[:path]}/*.md"].first
+            path = Dir["/src/content/#{entry[:original_path]}/*.md"].first
             markdown = File.read(path)
             markdown.gsub!(/_include_file\(([^)]+)\)/) do |match|
                 options = $1.split(',').map { |x| x.strip }
