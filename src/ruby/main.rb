@@ -12,6 +12,7 @@ require 'open3'
 require 'redcarpet'
 require 'rouge'
 require 'securerandom'
+require 'set'
 require 'sinatra/base'
 require 'sinatra/cookies'
 
@@ -415,6 +416,7 @@ class Main < Sinatra::Base
         @@section_order = sections.map { |section| section['key'] }
         @@sections = {}
         paths = []
+        seen_paths = Set.new()
         sections.each do |section|
             @@sections[section['key']] = {}
             section.each_pair do |k, v|
@@ -429,7 +431,17 @@ class Main < Sinatra::Base
             (section['entries'] || []).each do |path|
                 dev_only = path[0] == '.'
                 path = path.sub(/^\./, '')
+                seen_paths << path
                 paths << {:section => section['key'], :path => path, :dev_only => dev_only}
+            end
+        end
+        Dir['/src/content/**/*.md'].each do |path|
+            path = File.dirname(path).sub('/src/content/', '')
+            next if path.include?('/')
+            unless seen_paths.include?(path)
+                STDERR.puts "Got path: #{path}"
+                paths << {:section => 'misc', :path => path, :dev_only => false}
+                seen_paths << path
             end
         end
         @@content = {}
