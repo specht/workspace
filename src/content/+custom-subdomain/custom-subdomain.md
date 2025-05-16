@@ -18,7 +18,7 @@ ssh-keygen
 Bestätige den Speicherort, eine Passphrase ist nicht nötig. Das Schlüsselpaar wird in `~/.ssh/id_rsa` und `~/.ssh/id_rsa.pub` gespeichert.
 
 <div class="hint">
-Achtung: Dein Schlüsselpaar besteht aus zwei Dateien: `id_rsa` (privat) und `id_rsa.pub` (öffentlich). Teile niemals deine private Datei!
+Achtung: Dein Schlüsselpaar besteht aus zwei Dateien: <code>id_rsa</code> (privat) und <code>id_rsa.pub</code> (öffentlich). Teile niemals deine private Datei!
 Die öffentliche Datei kannst du jedoch mit anderen teilen, um ihnen Zugriff auf deine Ressourcen zu gewähren.
 </div>
 
