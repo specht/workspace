@@ -1,5 +1,7 @@
 # Deine eigene Subdomain
 
+Um deine eigene Subdomain zu bekommen, musst du zuerst ein SSH-Schlüsselpaar erstellen (falls du noch keins hast).
+
 ## Schlüsselpaar erstellen
 
 Überprüfe, ob du bereits ein Schlüsselpaar hast:
