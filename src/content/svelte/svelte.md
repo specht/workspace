@@ -159,6 +159,7 @@ Wir beginnen mit dem CSS-Code für die Webseite. Füge den folgenden Code in den
     justify-content: center;
     min-height: 100vh;
     margin: 0 1em;
+    user-select: none;
 }
 ```
 

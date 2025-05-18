@@ -93,6 +93,7 @@
         justify-content: center;
         min-height: 100vh;
         margin: 0 1em;
+        user-select: none;
     }
     .timer {
         font-size: 300%;
