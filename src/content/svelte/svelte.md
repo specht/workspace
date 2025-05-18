@@ -431,14 +431,14 @@ Jetzt kannst du Bootstrap-Klassen verwenden, um deine Webseite zu gestalten. Unt
 ```html
 <button
     id="bu_reset"
-    class="btn btn-lg {state < 3 ? 'btn-outline-secondary' : 'btn-success'}"
+    class="btn btn-lg {state < 3 ? 'btn-outline-secondary' : 'btn-warning'}"
     disabled={state < 3 ? "disabled" : ""}
     on:click={resetTimer}>
     Reset
 </button>
 ```
 
-Wir definieren hier einen Button mit der ID `bu_reset`, der die Klasse `btn` von Bootstrap hat. Außerdem verwenden wir die Klasse `btn-outline-secondary` (graue Umrandung), wenn `state` kleiner als 3 ist, und ansonsten die Klasse `btn-success` (grüne Farbe). Außerdem wird der Button deaktiviert, wenn `state` kleiner als 3 ist. Wenn der Button geklickt wird, wird die Funktion `resetTimer` aufgerufen.
+Wir definieren hier einen Button mit der ID `bu_reset`, der die Klasse `btn` von Bootstrap hat. Außerdem verwenden wir die Klasse `btn-outline-secondary` (graue Umrandung), wenn `state` kleiner als 3 ist, und ansonsten die Klasse `btn-warning` (gelbe Farbe). Außerdem wird der Button deaktiviert, wenn `state` kleiner als 3 ist. Wenn der Button geklickt wird, wird die Funktion `resetTimer` aufgerufen.
 
 Wir müssen jetzt noch eine Funktion `resetTimer` hinzufügen, die den Timer zurücksetzt. Füge den folgenden Code in das `<script>`-Tag ein (z. B. hinter der Funktion `handleKeyUp`):
 
