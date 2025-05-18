@@ -556,6 +556,7 @@ pre pre {
 }
 
 .hint {
+    display: flow-root;
     position: relative;
     border-top: 1px solid #eee;
     border-bottom: 1px solid #eee;

@@ -53,13 +53,13 @@
   # - .glsl
   # - .gif
 - key: networks
-  # compact: true
+  compact: true
   label: Netzwerke
   icon: /images/telephone.png
   entries:
     - showerjs
     - static-website
-    # - svelte
+    - svelte
 - key: databases
   compact: true
   label: Datenbanken

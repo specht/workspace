@@ -1,0 +1,17 @@
+digraph {
+    rankdir=LR;
+    node [shape=box, style=filled, fillcolor="#fce94f", fontname="Arial", fontsize=12];
+    edge [fontname="Arial", fontsize=12, color="#888888"];
+
+    n0 [label=<<B>0</B><BR/>Start>];
+    n1 [label=<<B>1</B><BR/>Leertaste>];
+    n2 [label=<<B>2</B><BR/>Uhr bereit>];
+    n3 [label=<<B>3</B><BR/>Uhr läuft>];
+    n4 [label=<<B>4</B><BR/>Uhr gestoppt>];
+
+    n0 -> n1 [label="Leertaste\ngedrückt"];
+    n1 -> n0 [label="Leertaste zu früh\nlosgelassen"];
+    n1 -> n2 [label="Leertaste min.\n500 ms gedrückt"];
+    n2 -> n3 [label="Leertaste\nlosgelassen"];
+    n3 -> n4 [label="Leertaste\ngedrückt"];
+}

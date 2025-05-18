@@ -558,6 +558,8 @@ class Main < Sinatra::Base
                     lexer = Rouge::Lexers::Smalltalk.new
                 when 'sql'
                     lexer = Rouge::Lexers::SQL.new
+                when 'svelte'
+                    lexer = Rouge::Lexers::Svelte.new
                 when 'text'
                     lexer = Rouge::Lexers::PlainText.new
                 end
