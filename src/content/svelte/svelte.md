@@ -311,6 +311,9 @@ Im CSS-Abschnitt fügen wir noch ein paar Zeilen hinzu, um den Timer zu formatie
     }
 }
 ```
+
+Da Svelte normalerweise allen Code, der nicht verwendet wird, aus Effizienzgründen entfernt, müssen wir CSS-Klassen, die nicht von Anfang an schon im HTML-Code vorhanden sind, mit `:global(`...`)` kennzeichnen. Das ist hier der Fall, weil die CSS-Klassen `ready` und `small` erst später durch JavaScript-Funktionen hinzugefügt werden.
+
 Wir brauchen eine Funktion, die die Timeranzeige, also die Variable `timerString`, aktualisiert. Füge den folgenden Code in das `<script>`-Tag ein:
 
 ```js
@@ -386,7 +389,7 @@ Deine Seite sollte jetzt so aussehen:
 
 <img class='full border' src='finished.webp'>
 
-## Etwas Styling
+## Webseite erweitern
 
 Jetzt, wo die Stoppuhr funktioniert, können wir uns um das Styling kümmern. Wir haben bereits ein paar CSS-Regeln hinzugefügt, aber es gibt noch ein paar Dinge, die wir verbessern können.
 
@@ -414,6 +417,88 @@ Wir können die Schriftart der Webseite ändern, um sie ansprechender zu gestalt
 Du solltest jetzt sehen, dass die Schriftart der Webseite geändert wurde. Wenn du die Seite aktualisierst, sollte sie jetzt so aussehen:
 
 <img class='full border' src='finished-pretty.webp'>
+
+### Bootstrap einbinden und Reset-Button hinzufügen
+
+[Bootstrap](https://getbootstrap.com/) ist ein beliebtes CSS-Framework, das dir hilft, deine Webseite schnell und einfach zu gestalten. Du kannst es einbinden, indem du den folgenden Code in den `<head>`-Tag der Datei `src/app.html` einfügst:
+
+```html
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+```
+
+Jetzt kannst du Bootstrap-Klassen verwenden, um deine Webseite zu gestalten. Unter anderem stellt Bootstrap Klassen zum Styling von Buttons zur Verfügung, die wir für unseren Reset-Button verwenden können. Füge den folgenden Code in den `<div class="main">`-Tag ein, um einen Reset-Button hinzuzufügen:
+
+```html
+<button
+    id="bu_reset"
+    class="btn btn-lg {state < 3 ? 'btn-outline-secondary' : 'btn-success'}"
+    disabled={state < 3 ? "disabled" : ""}
+    on:click={resetTimer}>
+    Reset
+</button>
+```
+
+Wir definieren hier einen Button mit der ID `bu_reset`, der die Klasse `btn` von Bootstrap hat. Außerdem verwenden wir die Klasse `btn-outline-secondary` (graue Umrandung), wenn `state` kleiner als 3 ist, und ansonsten die Klasse `btn-success` (grüne Farbe). Außerdem wird der Button deaktiviert, wenn `state` kleiner als 3 ist. Wenn der Button geklickt wird, wird die Funktion `resetTimer` aufgerufen.
+
+Wir müssen jetzt noch eine Funktion `resetTimer` hinzufügen, die den Timer zurücksetzt. Füge den folgenden Code in das `<script>`-Tag ein (z. B. hinter der Funktion `handleKeyUp`):
+
+```js
+function resetTimer() {
+    if (state > 2) {
+        state = 0;
+        t0 = 0;
+        timerString = "00:00<span class='small'>.00</span>";
+        document.querySelector(".timer")?.classList.remove("ready");
+    }
+}
+```
+
+### Icons einbinden
+
+Auf dem Reset-Button fehlt noch ein Icon. Wir verwenden dafür [Iconify](https://iconify.design/), eine Sammlung von Icons, die du ganz einfach in deine Webseite einfügen kannst. Um die Icons zu verwenden, müssen wir das Iconify-Paket installieren. Das geht ganz einfach mit dem folgenden Befehl:
+
+```bash
+npm install @iconify/svelte
+```
+
+Wenn du das Paket installiert hast, kannst du die Icons ganz einfach in deine Webseite einfügen. Füge den folgenden Code in den `<script>`-Tag ein:
+
+```js
+import Icon from '@iconify/svelte';
+```
+Füge dann den folgenden Code in den `<button>`-Tag ein (genau vor dem Label »Reset«), um das Icon anzuzeigen:
+
+```html
+<Icon icon="material-symbols:device-reset-rounded" class="icon" />
+```
+
+<div class='hint'>
+Denke daran, dass du den Entwicklungs-Server neu starten musst, damit du die Seite aufrufen kannst.
+</div>
+
+Das Icon wird jetzt in dem Button angezeigt. Du kannst die Größe des Icons ändern, indem du die CSS-Klasse `icon` anpasst. Füge den folgenden Code in den `<style>`-Tag ein:
+
+```css
+:global(.btn .icon) {
+    margin-right: 0.25em;
+    padding-bottom: 0.1em;
+    transform: scale(1.3);
+}
+```
+
+Wenn du die Seite jetzt aktualisierst, solltest du den Reset-Button mit dem Icon sehen:
+
+<img class='full border' src='finished-pretty-with-icon.webp'>
+
+Du kannst dir hier auch andere Icons aussuchen: [https://icon-sets.iconify.design/](https://icon-sets.iconify.design/). Du kannst die Icons ganz einfach in deine Webseite einfügen, indem du den Namen des Icons in den `<Icon>`-Tag einfügst. Zum Beispiel:
+
+```html
+<Icon icon="mdi:home" class="icon" />
+```
+
+<div class='hint'>
+Es kann sein, dass deine Icons etwas verzögert angezeigt werden. Das ist aber nur in der Vorschau so. Wenn du die Seite als statische Webseite exportierst, werden die Icons sofort angezeigt.
+</div>
 
 ## Statische Webseite exportieren
 
@@ -443,7 +528,7 @@ npm run build
 Wenn alles geklappt hat, solltest du ein neues Verzeichnis `build` in deinem Verzeichnis sehen, das alle Dateien enthält, die du für deine Webseite benötigst.
 
 <div class='hint'>
-Du kannst die Seite testen, indem du das `build`-Verzeichnis öffnest und den Live-Server startest. Sie sollte genauso aussehen und funktionieren wie die Seite, die du mit dem Entwicklungs-Server siehst.
+Du kannst die Seite testen, indem du das <code>build</code>-Verzeichnis öffnest und den Live-Server startest. Sie sollte genauso aussehen und funktionieren wie die Seite, die du mit dem Entwicklungs-Server siehst.
 </div>
 
 ### Deine Seite veröffentlichen
@@ -460,5 +545,10 @@ Du kannst deine Webseite ganz einfach veröffentlichen, indem du sie auf einen W
 - Icons unter: https://icon-sets.iconify.design/
 - statischen Build aktivieren
 - npm run build
+- Extras:
+  - Google Fonts
+  - Reset-Button
+  - Bootstrap
+  - Icons
 - -> Hosten auf eigener Subdomain von hackschule.de
 -->
