@@ -26,13 +26,36 @@ File.open('wanted-artists.txt') do |f|
     end
 end
 
+$round = 1
+$transitive_wanted_artist_ids = Set.new()
+
 def handle_xml(xml)
     id = xml.match(/<id>(\d+)<\/id>/)[1]
-    return unless $wanted_artists.include?(id)
+    return unless $wanted_artists.include?(id) || $transitive_wanted_artist_ids.include?(id)
     path = "cache/artists/#{id}.xml"
     FileUtils.mkpath(File.dirname(path))
     File.open(path, 'w') { |f| f.write(xml) }
+    if $round == 1
+        doc = Nokogiri::XML(xml)
+        doc.css('members *').each do |member|
+            $transitive_wanted_artist_ids << member.attr('id')
+        end
+    end
 end
+
+Open3.popen2("pigz -cd artists.xml.gz") do |stdin, stdout, wait_thr|
+    xml = ''
+    stdout.readline
+    stdout.each_line do |line|
+        xml += line
+        if line[line.size - 10, 9] == '</artist>'
+            handle_xml(xml)
+            xml = ''
+        end
+    end
+end
+
+$round = 2
 
 Open3.popen2("pigz -cd artists.xml.gz") do |stdin, stdout, wait_thr|
     xml = ''
