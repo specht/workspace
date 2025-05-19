@@ -282,7 +282,7 @@ let timeoutId = null;
 - `timerString` ist der Text, der auf der Webseite angezeigt wird. Wir verwenden hier HTML, um die Zeit mit hunderstel Sekunden anzuzeigen. Die CSS-Klasse `small` soll dafür sorgen, dass die hunderstel Sekunden kleiner dargestellt werden – wir definieren sie später. Dieser Variable verwendet auch wieder `$state` von Svelte, damit sie im HTML automatisch aktualisiert wird, wenn sich der Wert ändert.
 - `timeoutId` ist eine ID, die wir später verwenden werden, um den 500 ms-Timeout abzubrechen, falls die Leertaste vorher losgelassen wird.
 
-Im `main`-Tag fügen wir jetzt noch eine Anleitung und den eigentlichen Timer hinzu:
+Im `.main`-Element fügen wir jetzt noch eine Anleitung und den eigentlichen Timer hinzu:
 
 ```html
 <p>
