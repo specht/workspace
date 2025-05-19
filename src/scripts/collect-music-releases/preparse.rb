@@ -26,7 +26,7 @@ end
 
 %w(artist label release master).each do |key|
     ks = key.size + 3
-    next unless key == 'master'
+    # next unless key == 'master'
     File.open("index-#{key}s.txt", 'w') do |f|
         info = {}
         count = 0
