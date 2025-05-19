@@ -41,7 +41,7 @@ def handle_xml(xml)
     File.open(path, 'w') { |f| f.write(xml) }
 end
 
-Open3.popen2("pigz -cd discogs_20240701_releases.xml.gz") do |stdin, stdout, wait_thr|
+Open3.popen2("pigz -cd releases.xml.gz") do |stdin, stdout, wait_thr|
     xml = ''
     stdout.readline
     stdout.each_line do |line|
