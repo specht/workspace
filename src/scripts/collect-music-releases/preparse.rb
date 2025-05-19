@@ -30,7 +30,7 @@ end
     File.open("index-#{key}s.txt", 'w') do |f|
         info = {}
         count = 0
-        Open3.popen2("pigz -cd discogs_20240701_#{key}s.xml.gz") do |stdin, stdout, wait_thr|
+        Open3.popen2("pigz -cd #{key}s.xml.gz") do |stdin, stdout, wait_thr|
             xml = ''
             stdout.readline
             stdout.each_line do |line|
