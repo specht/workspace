@@ -4,7 +4,7 @@ image: svelte5.webp:0:80
 
 # Frontend-Entwicklung mit Svelte
 
-<div class='floatright' style='width: 18em;'>
+<div class='floatright' style='width: 30em;'>
     <img src='rich-harris.webp'>
     <p>Rich Harris</p>
 </div>
