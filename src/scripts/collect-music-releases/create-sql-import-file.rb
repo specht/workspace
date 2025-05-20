@@ -5,7 +5,6 @@ require 'yaml'
 require 'fileutils'
 require 'set'
 require 'stringio'
-require "unicode/display_width/string_ext"
 
 $wanted_artists = Set.new()
 $country_for_artist = {}
