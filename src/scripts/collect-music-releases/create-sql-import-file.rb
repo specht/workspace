@@ -79,20 +79,21 @@ $artist_part_of = {}
 $all_descriptions = {}
 $all_genres = {}
 $all_styles = {}
+$all_releases = {}
 
 def store(album)
     artist_id = album[:artist_id]
     country = $country_for_artist[artist_id]
-    STDERR.puts country
-    STDERR.puts album.to_yaml
+    # STDERR.puts country
+    # STDERR.puts album.to_yaml
     album[:description].each do |description|
-        $all_descriptions[description] ||= $all_descriptions.size
+        $all_descriptions[description] ||= $all_descriptions.size + 1
     end
     album[:genres].each do |genre|
-        $all_genres[genre] ||= $all_genres.size
+        $all_genres[genre] ||= $all_genres.size + 1
     end
     album[:styles].each do |style|
-        $all_styles[style] ||= $all_styles.size
+        $all_styles[style] ||= $all_styles.size + 1
     end
     unless $all_artists_ids.include?(artist_id)
         $all_artists_ids << artist_id
@@ -104,98 +105,10 @@ def store(album)
             $all_artists_ids << member_artist_id
         end
         doc.css('aliases name').each do |alias_name|
-            STDERR.puts alias_name.text
+            # STDERR.puts alias_name.text
         end
-
-        # unless doc.css('members name').empty?
-        #     puts "Members: #{doc.css('members name').map { |x| x.text.sub(/\(\d+\)\s*$/, '').strip }.join(', ')}"
-        #     puts
-        # end
-        # unless doc.css('aliases name').empty?
-        #     puts "Aliases: #{doc.css('aliases name').map { |x| x.text.sub(/\(\d+\)\s*$/, '').strip }.join(', ')}"
-        #     puts
-        # end
-        # profile = doc.at('profile').text
-        # profile = cleanup_markup(profile)
-        # puts profile
-
     end
-    # exit
-    # return if (album[:released] || '').empty?
-    # type = nil
-    # if album[:description].include?('Album')
-    #     type = 'Albums'
-    # elsif album[:description].include?('Single') || album[:description].include?('Maxi-Single') || album[:description].include?('EP')
-    #     type = 'Singles - EPs'
-    # end
-    # return if type.nil?
-    # ['Unofficial Release', 'Single', 'Maxi-Single', 'Reissue', 'Promo', 'Compilation'].each do |word|
-    #     return if album[:description].include?(word)
-    # end
-    # path = "music-releases/#{$country_for_artist[album[:artist_id]]}/#{album[:artist].gsub('/', '-')}/#{album[:artist].gsub('/', '-')}.txt"
-    # unless $seen_bios.include?(path)
-    #     $seen_bios << path
-    #     STDERR.puts "Storing #{path}"
-    #     contents = StringIO.open do |io|
-    #         io.puts "-" * (album[:artist].size + 3)
-    #         io.puts "> #{album[:artist]}"
-    #         io.puts "-" * (album[:artist].size + 3)
-    #         io.puts
-    #         doc = Nokogiri::XML(File.read('cache/artists/' + album[:artist_id] + '.xml'))
-    #         unless doc.css('members name').empty?
-    #             io.puts "Members: #{doc.css('members name').map { |x| x.text.sub(/\(\d+\)\s*$/, '').strip }.join(', ')}"
-    #             io.puts
-    #         end
-    #         unless doc.css('aliases name').empty?
-    #             io.puts "Aliases: #{doc.css('aliases name').map { |x| x.text.sub(/\(\d+\)\s*$/, '').strip }.join(', ')}"
-    #             io.puts
-    #         end
-    #         profile = doc.at('profile').text
-    #         profile = cleanup_markup(profile)
-    #         io.puts profile
-    #         io.string
-    #     end
-    #     FileUtils.mkpath(File.dirname(path))
-    #     File.open(path, 'w') { |f| f.write(contents) }
-    #     # STDERR.puts contents
-    # end
-    # path = "music-releases/#{$country_for_artist[album[:artist_id]]}/#{album[:artist].gsub('/', '-')}/#{type}/#{album[:released][0, 4]} - #{album[:title].gsub('/', '-')}.txt"
-    # unless File.exist?(path)
-    #     STDERR.puts "Storing #{path}"
-    #     contents = StringIO.open do |io|
-    #         io.puts "-" * (album[:title].size + 3)
-    #         io.puts "> #{album[:title]}"
-    #         io.puts "-" * (album[:title].size + 3)
-    #         io.puts
-    #         io.puts "Artist  : #{album[:artist]}"
-    #         io.puts "Released: #{album[:released]}, #{album[:country]}"
-    #         io.puts "Genres  : #{album[:genres].join(', ')}" unless album[:genres].empty?
-    #         io.puts "Styles  : #{album[:styles].join(', ')}" unless album[:styles].empty?
-    #         io.puts
-    #         longest_position = album[:tracklist].map { |x| x[:position].size }.max
-    #         longest_title = album[:tracklist].map { |x| x[:title].display_width }.max
-    #         album[:tracklist].each do |track|
-    #             if track[:position].empty?
-    #                 io.puts
-    #                 io.puts "#{track[:title]}"
-    #                 io.puts
-    #             else
-    #                 io.print "#{track[:position].rjust(longest_position)}. "
-    #                 io.print "#{track[:title]}"
-    #                 io.print " " * (longest_title - track[:title].display_width)
-    #                 unless track[:duration].empty?
-    #                     io.print " (#{track[:duration]})"
-    #                 end
-    #                 io.puts
-    #             end
-    #         end
-    #         io.puts
-    #         io.puts cleanup_markup(album[:notes])
-    #         io.string
-    #     end
-    #     FileUtils.mkpath(File.dirname(path))
-    #     File.open(path, 'w') { |f| f.write(contents) }
-    # end
+    $all_releases[album[:id]] ||= album
 end
 
 Dir['cache/releases/*.xml'].each do |path|
@@ -209,7 +122,7 @@ Dir['cache/releases/*.xml'].each do |path|
     artist_id = artist_id.first
     next unless $wanted_artists.include?(artist_id)
 
-    album[:id] = release.at('id').text
+    album[:id] = release.attr('id')
     album[:artist_id] = artist_id
     album[:artist] = $artist_for_id[artist_id]
     album[:title] = release.at('title').text
@@ -229,4 +142,107 @@ Dir['cache/releases/*.xml'].each do |path|
     end
 
     store(album)
+end
+
+File.open('music-archive-dump.sql', 'w') do |f|
+    f.puts File.read('music-archive-schema.sql')
+
+    f.puts "SET FOREIGN_KEY_CHECKS = 0;"
+    f.puts "SET UNIQUE_CHECKS = 0;"
+    f.puts "SET AUTOCOMMIT = 0;"
+
+    $all_genres.each do |genre, genre_id|
+        f.puts "INSERT INTO genre (id, genre) VALUES (#{genre_id}, '#{genre}');"
+    end
+
+    $all_styles.each do |style, style_id|
+        f.puts "INSERT INTO style (id, style) VALUES (#{style_id}, '#{style}');"
+    end
+
+    $all_descriptions.each do |description, description_id|
+        f.puts "INSERT INTO description (id, description) VALUES (#{description_id}, '#{description}');"
+    end
+
+    $all_artists_ids.to_a.sort.each do |artist_id|
+        doc = Nokogiri::XML(File.read('cache/artists/' + artist_id + '.xml'))
+        name = doc.at('artist/name').text
+        # remove the (n) at the end of the name
+        name.gsub!(/\s\(\d+\)$/, '')
+        born = nil
+        died = nil
+        if doc.at('artist/members').nil?
+            begin
+                # description = cleanup_markup(doc.at('artist/profile').text).downcase
+                description = doc.at('artist/profile').text.downcase
+                if description.include?('born')
+                    index_born = description.index('born')
+                    born = description[index_born, 40].scan(/[^\d](\d{4})[^\d]/).map { |x| x[0] }.first
+                end
+                if description.include?('died')
+                    index_died = description.index('died')
+                    died = description[index_died, 40].scan(/[^\d](\d{4})[^\d]/).map { |x| x[0] }.first
+                end
+            rescue
+            end
+        end
+        born ||= 'NULL'
+        died ||= 'NULL'
+
+        f.puts "INSERT INTO artist (id, name, born, died) VALUES (#{artist_id}, '#{name.gsub('\'', '\'\'')}', #{born}, #{died});"
+    end
+    $artist_part_of.each do |artist_id, part_of|
+        part_of.each do |part_of_id|
+            f.puts "INSERT INTO artist_part_of (member_id, band_id) VALUES (#{artist_id}, #{part_of_id});"
+        end
+    end
+    $all_releases.each do |release_id, release|
+        artist_id = release[:artist_id]
+        title = release[:title]
+        year = release[:released][0, 4].strip
+        year = 'NULL' if year.empty?
+        country = release[:country]
+        f.puts "INSERT INTO medium (id, artist_id, title, year, country) VALUES (#{release_id}, #{artist_id}, '#{title.gsub('\'', '\'\'')}', #{year}, '#{country}');"
+    end
+    f.puts "COMMIT;"
+
+    $all_releases.each do |release_id, release|
+        release[:styles].uniq.each do |style|
+            style_id = $all_styles[style]
+            f.puts "INSERT INTO medium_style (medium_id, style_id) VALUES (#{release_id}, #{style_id});"
+        end
+        release[:genres].uniq.each do |genre|
+            genre_id = $all_genres[genre]
+            f.puts "INSERT INTO medium_genre (medium_id, genre_id) VALUES (#{release_id}, #{genre_id});"
+        end
+        release[:description].uniq.each do |description|
+            description_id = $all_descriptions[description]
+            f.puts "INSERT INTO medium_description (medium_id, description_id) VALUES (#{release_id}, #{description_id});"
+        end
+    end
+    f.puts "COMMIT;"
+
+    $all_releases.each do |release_id, release|
+        release[:tracklist].each.with_index do |track, i|
+            position = track[:position].strip
+            title = track[:title].strip
+            if title.size > 80
+                title = title[0, 80] + '…'
+            end
+            duration = track[:duration].strip.split(':').map { |x| x.to_i }
+            begin
+                duration = duration[0] * 60 + duration[1]
+            rescue
+                duration = 'NULL'
+            end
+            position = 'NULL' if position.empty?
+            medium_id = release_id
+            number = i + 1
+            f.puts "INSERT INTO track (medium_id, number, position, title, duration) VALUES (#{medium_id}, #{number}, '#{position.gsub('\'', '\'\'')}', '#{title.gsub('\'', '\'\'')}', #{duration});"
+        end
+    end
+    f.puts "COMMIT;"
+
+    f.puts "SET FOREIGN_KEY_CHECKS = 1;"
+    f.puts "SET UNIQUE_CHECKS = 1;"
+
 end

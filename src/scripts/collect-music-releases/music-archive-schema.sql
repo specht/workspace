@@ -1,102 +1,88 @@
-
 CREATE TABLE album_artist
 (
-  release_id INT NOT NULL,
+  album_id INT NOT NULL,
   artist_id  INT NOT NULL,
-  PRIMARY KEY (release_id, artist_id)
-);
-
-CREATE TABLE album_description
-(
-  release_id     INT NOT NULL,
-  description_id INT NOT NULL,
-  PRIMARY KEY (release_id, description_id)
+  PRIMARY KEY (album_id, artist_id)
 );
 
 CREATE TABLE album_genre
 (
-  release_id INT NOT NULL,
+  album_id INT NOT NULL,
   genre_id   INT NOT NULL,
-  PRIMARY KEY (release_id, genre_id)
+  PRIMARY KEY (album_id, genre_id)
 );
 
 CREATE TABLE album_style
 (
-  release_id INT NOT NULL,
+  album_id INT NOT NULL,
   style_id   INT NOT NULL,
-  PRIMARY KEY (release_id, style_id)
+  PRIMARY KEY (album_id, style_id)
 );
 
 CREATE TABLE artist
 (
   id   INT     NOT NULL,
-  name VARCHAR NULL    ,
-  born INT     NULL    ,
-  died INT     NULL    ,
-  PRIMARY KEY (id)
-);
-
-CREATE TABLE description
-(
-  id          INT     NOT NULL,
-  description VARCHAR NOT NULL,
+  name VARCHAR(255) NULL,
+  born INT     NULL,
+  died INT     NULL,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE genre
 (
   id    INT     NOT NULL,
-  genre VARCHAR NOT NULL,
+  genre VARCHAR(255) NOT NULL,
   PRIMARY KEY (id)
 );
 
-CREATE TABLE part_of
+CREATE TABLE artist_part_of
 (
   member_id INT NOT NULL,
   band_id   INT NOT NULL,
   PRIMARY KEY (member_id, band_id)
 );
 
-CREATE TABLE release
+CREATE TABLE album
 (
   id      INT     NOT NULL,
-  title   VARCHAR NULL    ,
-  year    INT     NULL    ,
-  country VARCHAR NULL    ,
+  artist_id INT NOT NULL,
+  title   VARCHAR(255) NULL,
+  year    INT     NULL,
+  country VARCHAR(255) NULL,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE style
 (
   id    INT     NOT NULL,
-  style VARCHAR NOT NULL,
+  style VARCHAR(255) NOT NULL,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE track
 (
-  release_id INT     NOT NULL,
-  index      INT     NOT NULL,
-  position   VARCHAR NULL    ,
-  title      VARCHAR NULL    ,
-  duration   INT     NULL    ,
-  PRIMARY KEY (release_id, index)
+  album_id INT     NOT NULL,
+  number    INT     NOT NULL,
+  position   VARCHAR(255) NULL,
+  title      VARCHAR(255) NULL,
+  duration   INT     NULL,
+  PRIMARY KEY (album_id, number)
 );
 
-ALTER TABLE album_description
-  ADD CONSTRAINT FK_release_TO_album_description
-    FOREIGN KEY (release_id)
-    REFERENCES release (id);
+ALTER TABLE album
+  ADD CONSTRAINT FK_artist_id_TO_artist_description
+    FOREIGN KEY (artist_id)
+    REFERENCES artist (id);
 
 ALTER TABLE album_description
-  ADD CONSTRAINT FK_description_TO_album_description
-    FOREIGN KEY (description_id)
-    REFERENCES description (id);
+  ADD CONSTRAINT FK_album_TO_album_description
+    FOREIGN KEY (album_id)
+    REFERENCES album (id);
 
 ALTER TABLE album_genre
-  ADD CONSTRAINT FK_release_TO_album_genre
-    FOREIGN KEY (release_id)
-    REFERENCES release (id);
+  ADD CONSTRAINT FK_album_TO_album_genre
+    FOREIGN KEY (album_id)
+    REFERENCES album (id);
 
 ALTER TABLE album_genre
   ADD CONSTRAINT FK_genre_TO_album_genre
@@ -104,36 +90,26 @@ ALTER TABLE album_genre
     REFERENCES genre (id);
 
 ALTER TABLE album_style
-  ADD CONSTRAINT FK_release_TO_album_style
-    FOREIGN KEY (release_id)
-    REFERENCES release (id);
+  ADD CONSTRAINT FK_album_TO_album_style
+    FOREIGN KEY (album_id)
+    REFERENCES album (id);
 
 ALTER TABLE album_style
   ADD CONSTRAINT FK_style_TO_album_style
     FOREIGN KEY (style_id)
     REFERENCES style (id);
 
-ALTER TABLE album_artist
-  ADD CONSTRAINT FK_release_TO_album_artist
-    FOREIGN KEY (release_id)
-    REFERENCES release (id);
-
-ALTER TABLE album_artist
-  ADD CONSTRAINT FK_artist_TO_album_artist
-    FOREIGN KEY (artist_id)
-    REFERENCES artist (id);
-
-ALTER TABLE part_of
+ALTER TABLE artist_part_of
   ADD CONSTRAINT FK_artist_TO_part_of
     FOREIGN KEY (member_id)
     REFERENCES artist (id);
 
-ALTER TABLE part_of
+ALTER TABLE artist_part_of
   ADD CONSTRAINT FK_artist_TO_part_of1
     FOREIGN KEY (band_id)
     REFERENCES artist (id);
 
 ALTER TABLE track
-  ADD CONSTRAINT FK_release_TO_track
-    FOREIGN KEY (release_id)
-    REFERENCES release (id);
+  ADD CONSTRAINT FK_album_TO_track
+    FOREIGN KEY (album_id)
+    REFERENCES album (id);

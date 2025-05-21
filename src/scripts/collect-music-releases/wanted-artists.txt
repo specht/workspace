@@ -98,7 +98,6 @@ https://www.discogs.com/artist/8024-Janet-Jackson
 https://www.discogs.com/artist/21742-Jay-Z
 https://www.discogs.com/artist/128395-Journey
 https://www.discogs.com/artist/66824-Justin-Timberlake
-https://www.discogs.com/artist/137880-Kanye-West
 https://www.discogs.com/artist/971243-Katy-Perry
 https://www.discogs.com/artist/153073-Kiss
 https://www.discogs.com/artist/1103159-Lady-Gaga
@@ -198,3 +197,6 @@ https://www.discogs.com/artist/4786543-Twice-25
 https://www.discogs.com/artist/5034422-BTS-4
 https://www.discogs.com/artist/6838809-Stray-Kids
 https://www.discogs.com/artist/4390346-Red-Velvet-3
+
+# Finland
+https://www.discogs.com/de/artist/17482-Apocalyptica
