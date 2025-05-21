@@ -237,7 +237,10 @@ File.open('music-archive-dump.sql', 'w') do |f|
     f.puts "COMMIT;"
 
     $all_releases.each do |release_id, release|
-        release[:tracklist].each.with_index do |track, i|
+        skip_tracks_without_position = release[:tracklist].any? { |x| !(x[:position] || '').empty? }
+        i = 0
+        release[:tracklist].each.with_index do |track|
+            next if skip_tracks_without_position && (track[:position] || '').empty?
             title = track[:title].strip
             if title.size > 80
                 title = title[0, 80] + '…'
@@ -251,6 +254,7 @@ File.open('music-archive-dump.sql', 'w') do |f|
             album_id = release_id
             number = i + 1
             f.puts "INSERT INTO track (album_id, number, title, duration) VALUES (#{album_id}, #{number}, '#{title.gsub('\'', '\'\'')}', #{duration});"
+            i += 1
         end
     end
     f.puts "COMMIT;"
