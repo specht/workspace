@@ -209,22 +209,22 @@ File.open('music-archive-dump.sql', 'w') do |f|
         year = release[:released][0, 4].strip
         year = 'NULL' if year.empty?
         country = release[:country]
-        f.puts "INSERT INTO medium (id, artist_id, title, year, country) VALUES (#{release_id}, #{artist_id}, '#{title.gsub('\'', '\'\'')}', #{year}, '#{country}');"
+        f.puts "INSERT INTO album (id, artist_id, title, year, country) VALUES (#{release_id}, #{artist_id}, '#{title.gsub('\'', '\'\'')}', #{year}, '#{country}');"
     end
     f.puts "COMMIT;"
 
     $all_releases.each do |release_id, release|
         release[:styles].uniq.each do |style|
             style_id = $all_styles[style]
-            f.puts "INSERT INTO medium_style (medium_id, style_id) VALUES (#{release_id}, #{style_id});"
+            f.puts "INSERT INTO album_style (album_id, style_id) VALUES (#{release_id}, #{style_id});"
         end
         release[:genres].uniq.each do |genre|
             genre_id = $all_genres[genre]
-            f.puts "INSERT INTO medium_genre (medium_id, genre_id) VALUES (#{release_id}, #{genre_id});"
+            f.puts "INSERT INTO album_genre (album_id, genre_id) VALUES (#{release_id}, #{genre_id});"
         end
         release[:description].uniq.each do |description|
             description_id = $all_descriptions[description]
-            f.puts "INSERT INTO medium_description (medium_id, description_id) VALUES (#{release_id}, #{description_id});"
+            f.puts "INSERT INTO album_description (album_id, description_id) VALUES (#{release_id}, #{description_id});"
         end
     end
     f.puts "COMMIT;"
@@ -243,9 +243,9 @@ File.open('music-archive-dump.sql', 'w') do |f|
                 duration = 'NULL'
             end
             position = 'NULL' if position.empty?
-            medium_id = release_id
+            album_id = release_id
             number = i + 1
-            f.puts "INSERT INTO track (medium_id, number, position, title, duration) VALUES (#{medium_id}, #{number}, '#{position.gsub('\'', '\'\'')}', '#{title.gsub('\'', '\'\'')}', #{duration});"
+            f.puts "INSERT INTO track (album_id, number, position, title, duration) VALUES (#{album_id}, #{number}, '#{position.gsub('\'', '\'\'')}', '#{title.gsub('\'', '\'\'')}', #{duration});"
         end
     end
     f.puts "COMMIT;"
