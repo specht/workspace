@@ -97,7 +97,8 @@ def store(album)
     return if album[:description].include?('Reissue')
     return if album[:description].include?('Remastered')
     return if album[:description].include?('Tour Recording')
-    return if album[:released].nil?
+    return if (album[:released] || '').empty?
+    return unless album[:country].include?('Europe') || album[:country].include?('US') || album[:country].include?('Germany') || album[:country].include?('UK')
     album[:description].each do |description|
         $all_descriptions[description] ||= $all_descriptions.size + 1
     end
