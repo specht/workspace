@@ -63,7 +63,6 @@ CREATE TABLE track
 (
   album_id INT     NOT NULL,
   number    INT     NOT NULL,
-  position   VARCHAR(255) NULL,
   title      VARCHAR(255) NULL,
   duration   INT     NULL,
   PRIMARY KEY (album_id, number)
@@ -73,11 +72,6 @@ ALTER TABLE album
   ADD CONSTRAINT FK_artist_id_TO_artist_description
     FOREIGN KEY (artist_id)
     REFERENCES artist (id);
-
-ALTER TABLE album_description
-  ADD CONSTRAINT FK_album_TO_album_description
-    FOREIGN KEY (album_id)
-    REFERENCES album (id);
 
 ALTER TABLE album_genre
   ADD CONSTRAINT FK_album_TO_album_genre

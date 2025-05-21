@@ -92,6 +92,11 @@ def store(album)
     # STDERR.puts country
     # STDERR.puts album.to_yaml
     return unless album[:description].include?('Album')
+    return if album[:description].include?('Compilation')
+    return if album[:description].include?('Unofficial Release')
+    return if album[:description].include?('Reissue')
+    return if album[:description].include?('Remastered')
+    return if album[:description].include?('Tour Recording')
     album[:description].each do |description|
         $all_descriptions[description] ||= $all_descriptions.size + 1
     end
@@ -160,16 +165,16 @@ File.open('music-archive-dump.sql', 'w') do |f|
     f.puts "SET AUTOCOMMIT = 0;"
 
     $all_genres.each do |genre, genre_id|
-        f.puts "INSERT INTO genre (id, genre) VALUES (#{genre_id}, '#{genre}');"
+        f.puts "INSERT INTO genre (id, genre) VALUES (#{genre_id}, '#{genre.gsub('\'', '\'\'')}');"
     end
 
     $all_styles.each do |style, style_id|
-        f.puts "INSERT INTO style (id, style) VALUES (#{style_id}, '#{style}');"
+        f.puts "INSERT INTO style (id, style) VALUES (#{style_id}, '#{style.gsub('\'', '\'\'')}');"
     end
 
-    $all_descriptions.each do |description, description_id|
-        f.puts "INSERT INTO description (id, description) VALUES (#{description_id}, '#{description}');"
-    end
+    # $all_descriptions.each do |description, description_id|
+    #     f.puts "INSERT INTO description (id, description) VALUES (#{description_id}, '#{description}');"
+    # end
 
     $all_artists_ids.to_a.sort.each do |artist_id|
         doc = Nokogiri::XML(File.read('cache/artists/' + artist_id + '.xml'))
@@ -222,16 +227,11 @@ File.open('music-archive-dump.sql', 'w') do |f|
             genre_id = $all_genres[genre]
             f.puts "INSERT INTO album_genre (album_id, genre_id) VALUES (#{release_id}, #{genre_id});"
         end
-        release[:description].uniq.each do |description|
-            description_id = $all_descriptions[description]
-            f.puts "INSERT INTO album_description (album_id, description_id) VALUES (#{release_id}, #{description_id});"
-        end
     end
     f.puts "COMMIT;"
 
     $all_releases.each do |release_id, release|
         release[:tracklist].each.with_index do |track, i|
-            position = track[:position].strip
             title = track[:title].strip
             if title.size > 80
                 title = title[0, 80] + '…'
@@ -242,10 +242,9 @@ File.open('music-archive-dump.sql', 'w') do |f|
             rescue
                 duration = 'NULL'
             end
-            position = 'NULL' if position.empty?
             album_id = release_id
             number = i + 1
-            f.puts "INSERT INTO track (album_id, number, position, title, duration) VALUES (#{album_id}, #{number}, '#{position.gsub('\'', '\'\'')}', '#{title.gsub('\'', '\'\'')}', #{duration});"
+            f.puts "INSERT INTO track (album_id, number, title, duration) VALUES (#{album_id}, #{number}, '#{title.gsub('\'', '\'\'')}', #{duration});"
         end
     end
     f.puts "COMMIT;"
