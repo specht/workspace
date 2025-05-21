@@ -126,6 +126,7 @@ Dir['cache/releases/*.xml'].each do |path|
     next if artist_id.size > 1
     artist_id = artist_id.first
     next unless $wanted_artists.include?(artist_id)
+    next unless File.exist?('cache/artists/' + artist_id + '.xml')
 
     album[:id] = release.attr('id')
     album[:artist_id] = artist_id
