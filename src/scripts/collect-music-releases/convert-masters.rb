@@ -29,7 +29,10 @@ Open3.popen2("pigz -cd masters.xml.gz") do |stdin, stdout, wait_thr|
     stdout.each_line do |line|
         xml += line
         if line[line.size - 10, 9] == '</master>'
-            handle_xml(xml)
+            begin
+                handle_xml(xml)
+            rescue
+            end
             xml = ''
         end
     end
