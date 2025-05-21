@@ -26,6 +26,10 @@ File.open('wanted-artists.txt') do |f|
     end
 end
 
+Dir['cache/artists/*.xml'].each do |file|
+    $wanted_artists << File.basename(file, '.xml')
+end
+
 $artist_for_id = {}
 
 Dir['cache/artists/*.xml'].each do |path|
@@ -86,6 +90,7 @@ def store(album)
     country = $country_for_artist[artist_id]
     # STDERR.puts country
     # STDERR.puts album.to_yaml
+    next unless album[:description].include?('Album')
     album[:description].each do |description|
         $all_descriptions[description] ||= $all_descriptions.size + 1
     end
