@@ -24,6 +24,7 @@ end
 def handle_xml(xml)
     id = xml.match(/<release id="(\d+)"/)[1]
     return unless $wanted_releases.include?(id)
+    return unless xml.include?('Album')
     path = "cache/releases/#{id}.xml"
     FileUtils.mkpath(File.dirname(path))
     File.open(path, 'w') { |f| f.write(xml) }
