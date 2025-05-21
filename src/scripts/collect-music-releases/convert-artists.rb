@@ -35,36 +35,33 @@ def handle_xml(xml)
     path = "cache/artists/#{id}.xml"
     FileUtils.mkpath(File.dirname(path))
     File.open(path, 'w') { |f| f.write(xml) }
-    if $round == 1
+    if $round == 1 || $round == 3
         doc = Nokogiri::XML(xml)
         doc.css('members *').each do |member|
+            $transitive_wanted_artist_ids << member.attr('id')
+        end
+    elsif $round == 2
+        doc = Nokogiri::XML(xml)
+        doc.css('groups *').each do |member|
             $transitive_wanted_artist_ids << member.attr('id')
         end
     end
 end
 
-Open3.popen2("pigz -cd artists.xml.gz") do |stdin, stdout, wait_thr|
-    xml = ''
-    stdout.readline
-    stdout.each_line do |line|
-        xml += line
-        if line[line.size - 10, 9] == '</artist>'
-            handle_xml(xml)
-            xml = ''
+$round = 0
+3.times do
+    $round += 1
+    Open3.popen2("pigz -cd artists.xml.gz") do |stdin, stdout, wait_thr|
+        xml = ''
+        stdout.readline
+        stdout.each_line do |line|
+            xml += line
+            if line[line.size - 10, 9] == '</artist>'
+                handle_xml(xml)
+                xml = ''
+            end
         end
     end
-end
 
-$round = 2
-
-Open3.popen2("pigz -cd artists.xml.gz") do |stdin, stdout, wait_thr|
-    xml = ''
-    stdout.readline
-    stdout.each_line do |line|
-        xml += line
-        if line[line.size - 10, 9] == '</artist>'
-            handle_xml(xml)
-            xml = ''
-        end
-    end
+    STDERR.puts "Got #{($transitive_wanted_artist_ids | $wanted_artists).size} artists after round #{$round}"
 end
