@@ -12,6 +12,8 @@ Dir['cache/artists/*.xml'].each do |file|
     $wanted_artists << File.basename(file, '.xml')
 end
 
+STDERR.puts "Wanted artists: #{$wanted_artists.size}"
+
 def handle_xml(xml)
     id = xml.match(/<master id="(\d+)">/)[1]
     artist_id = xml.match(/<artist><id>(\d+)<\/id>/)[1]
