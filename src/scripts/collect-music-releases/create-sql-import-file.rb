@@ -87,6 +87,7 @@ $all_releases = {}
 
 def store(album)
     artist_id = album[:artist_id]
+    return unless File.exist?('cache/artists/' + artist_id + '.xml')
     country = $country_for_artist[artist_id]
     # STDERR.puts country
     # STDERR.puts album.to_yaml
