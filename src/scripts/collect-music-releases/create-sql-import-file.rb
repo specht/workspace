@@ -106,6 +106,7 @@ def store(album)
         doc = Nokogiri::XML(File.read('cache/artists/' + artist_id + '.xml'))
         doc.css('members *').each do |member|
             member_artist_id = member.attr('id')
+            next unless File.exist?('cache/artists/' + member_artist_id + '.xml')
             $artist_part_of[member_artist_id] ||= Set.new()
             $artist_part_of[member_artist_id] << artist_id
             $all_artists_ids << member_artist_id
