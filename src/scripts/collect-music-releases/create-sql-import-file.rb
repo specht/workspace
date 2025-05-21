@@ -170,9 +170,9 @@ File.open('music-archive-dump.sql', 'w') do |f|
         f.puts "INSERT INTO genre (id, genre) VALUES (#{genre_id}, '#{genre.gsub('\'', '\'\'')}');"
     end
 
-    $all_styles.each do |style, style_id|
-        f.puts "INSERT INTO style (id, style) VALUES (#{style_id}, '#{style.gsub('\'', '\'\'')}');"
-    end
+    # $all_styles.each do |style, style_id|
+    #     f.puts "INSERT INTO style (id, style) VALUES (#{style_id}, '#{style.gsub('\'', '\'\'')}');"
+    # end
 
     # $all_descriptions.each do |description, description_id|
     #     f.puts "INSERT INTO description (id, description) VALUES (#{description_id}, '#{description}');"
@@ -225,10 +225,10 @@ File.open('music-archive-dump.sql', 'w') do |f|
     f.puts "COMMIT;"
 
     $all_releases.each do |release_id, release|
-        release[:styles].uniq.each do |style|
-            style_id = $all_styles[style]
-            f.puts "INSERT INTO album_style (album_id, style_id) VALUES (#{release_id}, #{style_id});"
-        end
+        # release[:styles].uniq.each do |style|
+        #     style_id = $all_styles[style]
+        #     f.puts "INSERT INTO album_style (album_id, style_id) VALUES (#{release_id}, #{style_id});"
+        # end
         release[:genres].uniq.each do |genre|
             genre_id = $all_genres[genre]
             f.puts "INSERT INTO album_genre (album_id, genre_id) VALUES (#{release_id}, #{genre_id});"

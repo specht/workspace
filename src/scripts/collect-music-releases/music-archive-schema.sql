@@ -12,13 +12,6 @@ CREATE TABLE album_genre
   PRIMARY KEY (album_id, genre_id)
 );
 
-CREATE TABLE album_style
-(
-  album_id INT NOT NULL,
-  style_id   INT NOT NULL,
-  PRIMARY KEY (album_id, style_id)
-);
-
 CREATE TABLE artist
 (
   id   INT     NOT NULL,
@@ -52,13 +45,6 @@ CREATE TABLE album
   PRIMARY KEY (id)
 );
 
-CREATE TABLE style
-(
-  id    INT     NOT NULL,
-  style VARCHAR(255) NOT NULL,
-  PRIMARY KEY (id)
-);
-
 CREATE TABLE track
 (
   album_id INT     NOT NULL,
@@ -82,16 +68,6 @@ ALTER TABLE album_genre
   ADD CONSTRAINT FK_genre_TO_album_genre
     FOREIGN KEY (genre_id)
     REFERENCES genre (id);
-
-ALTER TABLE album_style
-  ADD CONSTRAINT FK_album_TO_album_style
-    FOREIGN KEY (album_id)
-    REFERENCES album (id);
-
-ALTER TABLE album_style
-  ADD CONSTRAINT FK_style_TO_album_style
-    FOREIGN KEY (style_id)
-    REFERENCES style (id);
 
 ALTER TABLE artist_part_of
   ADD CONSTRAINT FK_artist_TO_part_of
