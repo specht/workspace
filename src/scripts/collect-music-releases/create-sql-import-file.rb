@@ -90,7 +90,7 @@ def store(album)
     country = $country_for_artist[artist_id]
     # STDERR.puts country
     # STDERR.puts album.to_yaml
-    next unless album[:description].include?('Album')
+    return unless album[:description].include?('Album')
     album[:description].each do |description|
         $all_descriptions[description] ||= $all_descriptions.size + 1
     end
