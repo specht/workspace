@@ -49,7 +49,7 @@ def handle_xml(xml)
 end
 
 $round = 0
-3.times do
+4.times do
     $round += 1
     Open3.popen2("pigz -cd artists.xml.gz") do |stdin, stdout, wait_thr|
         xml = ''
