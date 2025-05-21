@@ -1,10 +1,3 @@
-CREATE TABLE album_artist
-(
-  album_id INT NOT NULL,
-  artist_id  INT NOT NULL,
-  PRIMARY KEY (album_id, artist_id)
-);
-
 CREATE TABLE album_genre
 (
   album_id INT NOT NULL,
