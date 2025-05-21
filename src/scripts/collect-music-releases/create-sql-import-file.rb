@@ -198,6 +198,10 @@ File.open('music-archive-dump.sql', 'w') do |f|
             rescue
             end
         end
+        if born && died && died.to_i <= born.to_i
+            born = nil
+            died = nil
+        end
         born ||= 'NULL'
         died ||= 'NULL'
 
