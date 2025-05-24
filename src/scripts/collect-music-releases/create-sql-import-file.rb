@@ -219,7 +219,7 @@ File.open('music-archive-dump.sql', 'w') do |f|
         title = release[:title]
         year = release[:released][0, 4].strip
         year = 'NULL' if year.empty?
-        country = release[:country].nil? ? 'NULL' : "'#{release[:country].strip}'
+        country = release[:country].nil? ? 'NULL' : "'#{release[:country].strip}'"
 
         f.puts "INSERT INTO album (id, artist_id, title, year, country) VALUES (#{release_id}, #{artist_id}, '#{title.gsub('\'', '\'\'')}', #{year}, #{country});"
     end
