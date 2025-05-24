@@ -279,7 +279,7 @@ class Main < Sinatra::Base
                     proxy_set_header Host $host;
                     proxy_http_version 1.1;
                     proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection Upgrade;
+                    proxy_set_header Connection "Upgrade";
                 }
 
                 location @ruby {
@@ -287,7 +287,7 @@ class Main < Sinatra::Base
                     proxy_set_header Host $host;
                     proxy_http_version 1.1;
                     proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection Upgrade;
+                    proxy_set_header Connection "Upgrade";
                 }
 
                 location @phpmyadmin {
@@ -295,7 +295,7 @@ class Main < Sinatra::Base
                     proxy_set_header Host $host;
                     proxy_http_version 1.1;
                     proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection Upgrade;
+                    proxy_set_header Connection "Upgrade";
                 }
         END_OF_STRING
 
@@ -320,7 +320,7 @@ class Main < Sinatra::Base
                         rewrite ^/#{server_tag}/_/neo4j(.*)$ $1 break;
                         proxy_set_header Host $http_host;
                         proxy_set_header Upgrade $http_upgrade;
-                        proxy_set_header Connection upgrade;
+                        proxy_set_header Connection "Upgrade";
                         proxy_set_header Accept-Encoding gzip;
                         proxy_pass http://#{running_servers[fs_tag][:ip]}:7474;
                     }
@@ -329,9 +329,10 @@ class Main < Sinatra::Base
                         #     return 403;
                         # }
                         rewrite ^/#{server_tag}/_/bolt(.*)$ $1 break;
-                        proxy_set_header Host $http_host;
+                        proxy_http_version 1.1;
                         proxy_set_header Upgrade $http_upgrade;
-                        proxy_set_header Connection upgrade;
+                        proxy_set_header Connection "Upgrade";
+                        proxy_set_header Host $http_host;
                         proxy_set_header Accept-Encoding gzip;
                         proxy_pass http://#{running_servers[fs_tag][:ip]}:7687;
                     }
@@ -342,7 +343,7 @@ class Main < Sinatra::Base
                         rewrite ^/#{server_tag}(.*)$ $1 break;
                         proxy_set_header Host $http_host;
                         proxy_set_header Upgrade $http_upgrade;
-                        proxy_set_header Connection upgrade;
+                        proxy_set_header Connection "Upgrade";
                         proxy_set_header Accept-Encoding gzip;
                         proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
                     }
@@ -354,7 +355,7 @@ class Main < Sinatra::Base
                                     rewrite ^/#{user[:share_tag]}(.*)$ $1 break;
                                     proxy_set_header Host $http_host;
                                     proxy_set_header Upgrade $http_upgrade;
-                                    proxy_set_header Connection upgrade;
+                                    proxy_set_header Connection "Upgrade";
                                     proxy_set_header Accept-Encoding gzip;
                                     proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
                                 }
@@ -370,7 +371,7 @@ class Main < Sinatra::Base
                                     rewrite ^/#{watch_tag}(.*)$ $1 break;
                                     proxy_set_header Host $http_host;
                                     proxy_set_header Upgrade $http_upgrade;
-                                    proxy_set_header Connection upgrade;
+                                    proxy_set_header Connection "Upgrade";
                                     proxy_set_header Accept-Encoding gzip;
                                     proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
                                 }
