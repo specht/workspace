@@ -143,9 +143,10 @@ Dir['cache/releases/*.xml'].each do |path|
     album[:description] = release.xpath('formats/format/descriptions/description').map { |x| x.text }
     album[:genres] = release.xpath('genres/genre').map { |x| x.text }
     album[:styles] = release.xpath('styles/style').map { |x| x.text }
-    album[:country] = release.xpath('country').text
-    album[:released] = release.xpath('released').text
-    album[:notes] = release.xpath('notes').text
+    album[:country] = release.xpath('country').text.strip
+    album[:country] = null if album[:country].empty?
+    album[:released] = release.xpath('released').text.strip
+    album[:notes] = release.xpath('notes').text.strip
     album[:tracklist] = []
     release.xpath('tracklist/track').each do |track|
         album[:tracklist] << {
