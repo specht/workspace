@@ -313,6 +313,28 @@ class Main < Sinatra::Base
                 fs_tag = fs_tag_for_email(email_with_test_tag)
                 if running_servers.include?(fs_tag)
                     f.puts <<~END_OF_STRING
+                    location /#{server_tag}/_/neo4j {
+                        if ($cookie_server_sid != "#{user[:server_sid]}") {
+                            return 403;
+                        }
+                        rewrite ^/#{server_tag}/_/neo4j(.*)$ $1 break;
+                        proxy_set_header Host $http_host;
+                        proxy_set_header Upgrade $http_upgrade;
+                        proxy_set_header Connection upgrade;
+                        proxy_set_header Accept-Encoding gzip;
+                        proxy_pass http://#{running_servers[fs_tag][:ip]}:7474;
+                    }
+                    location /#{server_tag}/_/bolt {
+                        # if ($cookie_server_sid != "#{user[:server_sid]}") {
+                        #     return 403;
+                        # }
+                        rewrite ^/#{server_tag}/_/bolt(.*)$ $1 break;
+                        proxy_set_header Host $http_host;
+                        proxy_set_header Upgrade $http_upgrade;
+                        proxy_set_header Connection upgrade;
+                        proxy_set_header Accept-Encoding gzip;
+                        proxy_pass http://#{running_servers[fs_tag][:ip]}:7687;
+                    }
                     location /#{server_tag}/ {
                         if ($cookie_server_sid != "#{user[:server_sid]}") {
                             return 403;
@@ -323,28 +345,6 @@ class Main < Sinatra::Base
                         proxy_set_header Connection upgrade;
                         proxy_set_header Accept-Encoding gzip;
                         proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
-                    }
-                    location /#{server_tag}/neo4j {
-                        if ($cookie_server_sid != "#{user[:server_sid]}") {
-                            return 403;
-                        }
-                        rewrite ^/#{server_tag}/neo4j(.*)$ $1 break;
-                        proxy_set_header Host $http_host;
-                        proxy_set_header Upgrade $http_upgrade;
-                        proxy_set_header Connection upgrade;
-                        proxy_set_header Accept-Encoding gzip;
-                        proxy_pass http://#{running_servers[fs_tag][:ip]}:7474;
-                    }
-                    location /#{server_tag}/bolt {
-                        # if ($cookie_server_sid != "#{user[:server_sid]}") {
-                        #     return 403;
-                        # }
-                        rewrite ^/#{server_tag}/bolt(.*)$ $1 break;
-                        proxy_set_header Host $http_host;
-                        proxy_set_header Upgrade $http_upgrade;
-                        proxy_set_header Connection upgrade;
-                        proxy_set_header Accept-Encoding gzip;
-                        proxy_pass http://#{running_servers[fs_tag][:ip]}:7687;
                     }
                     END_OF_STRING
                     if test.nil?
