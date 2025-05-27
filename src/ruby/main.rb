@@ -299,10 +299,6 @@ class Main < Sinatra::Base
                 }
         END_OF_STRING
 
-        nginx_config_second_part = <<~END_OF_STRING
-            }
-        END_OF_STRING
-
         File.open('/nginx/default.conf', 'w') do |f|
             f.puts nginx_config_first_part
             users.each do |row|
@@ -357,7 +353,7 @@ class Main < Sinatra::Base
                     end
                 end
             end
-            f.puts nginx_config_second_part
+            f.puts "}"
         end
         system("docker kill -s HUP workspace_nginx_1")
     end
