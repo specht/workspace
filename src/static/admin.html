@@ -102,7 +102,7 @@ function setup_ws(ws)
 
 function establish_websocket_connection() {
     var ws_uri = 'ws://' + location.host + '/ws';
-    if (location.host !== 'localhost:8025')
+    if (location.host.indexOf(':8025') < 0)
         ws_uri = 'wss://' + location.host + '/ws';
     ws = new WebSocket(ws_uri);
     setup_ws(ws);

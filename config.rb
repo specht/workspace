@@ -75,7 +75,7 @@ if PROFILE.include?(:static)
 
         server {
             listen 80;
-            server_name localhost;
+            server_name #{WEBSITE_HOST};
             client_max_body_size 100M;
             expires $expires;
 
@@ -105,6 +105,35 @@ if PROFILE.include?(:static)
                 root /usr/share/nginx/html;
                 include /etc/nginx/mime.types;
                 try_files $uri @ruby;
+            }
+
+            location /cache {
+                rewrite ^/cache(.*)$ $1 break;
+                root /webcache;
+                include /etc/nginx/mime.types;
+            }
+
+            location /dl {
+                rewrite ^/dl(.*)$ $1 break;
+                root /dl;
+                include /etc/nginx/mime.types;
+            }
+
+            location /phpmyadmin {
+                rewrite ^/phpmyadmin(.*)$ $1 break;
+                try_files $uri @phpmyadmin;
+            }
+
+            location /pgadmin {
+                # proxy_set_header Remote-User $pgadmin_user;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_pass http://pgadmin_1:80;
+                proxy_set_header Host $host;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection Upgrade;
             }
 
             location @ruby {
@@ -192,7 +221,7 @@ docker_compose[:services][:phpmyadmin] = {
 }
 
 docker_compose[:services][:postgres] = {
-    :image => 'postgres',
+    :image => 'postgres:16-bookworm',
     :volumes => ["#{POSTGRES_DATA_PATH}:/var/lib/postgresql/data"],
     :restart => 'always',
     :user => '1000',

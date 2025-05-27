@@ -190,117 +190,61 @@ class Main < Sinatra::Base
         # STDERR.puts "Got #{emails_and_server_tags.size} emails and server tags: #{emails_and_server_tags.to_yaml}"
 
         users = $neo4j.neo4j_query("MATCH (u:User) OPTIONAL MATCH (u)-[:TAKES]->(t:Test {running: TRUE}) RETURN u, t;").to_a
+        server_settings = <<~END_OF_STRING
+            client_max_body_size 100M;
+            expires $expires;
 
-        nginx_config_first_part = <<~END_OF_STRING
-            log_format custom '$http_x_forwarded_for - $remote_user [$time_local] "$request" '
-                            '$status $body_bytes_sent "$http_referer" '
-                            '"$http_user_agent" "$request_time"';
+            gzip on;
+            gzip_comp_level 6;
+            gzip_min_length 256;
+            gzip_buffers 16 8k;
+            gzip_proxied any;
+            gzip_types
+                text/plain
+                text/css
+                text/js
+                text/xml
+                text/javascript
+                application/javascript
+                application/x-javascript
+                application/json
+                application/xml
+                application/rss+xml
+                image/svg+xml;
 
-            map_hash_bucket_size 128;
+            access_log /var/log/nginx/access.log custom;
 
-            map $sent_http_content_type $expires {
-                default                         off;
-                text/html                       epoch;
-                text/css                        max;
-                application/javascript          max;
-                ~image/                         max;
-                ~font/                          max;
-                application/x-font-ttf          max;
-                application/x-font-otf          max;
-                application/font-woff           max;
-                application/font-woff2          max;
-            }
-
-            # map $cookie_server_sid $pgadmin_user {
-            #    default "";
-            #    #{emails_and_server_tags.map { |x| "\"#{x[1]}\" \"#{x[0]}\";" }.join("\n")}
-            # }
-
-            server {
-                listen 80;
-                server_name localhost;
-                client_max_body_size 100M;
-                expires $expires;
-
-                gzip on;
-                gzip_comp_level 6;
-                gzip_min_length 256;
-                gzip_buffers 16 8k;
-                gzip_proxied any;
-                gzip_types
-                    text/plain
-                    text/css
-                    text/js
-                    text/xml
-                    text/javascript
-                    application/javascript
-                    application/x-javascript
-                    application/json
-                    application/xml
-                    application/rss+xml
-                    image/svg+xml;
-
-                access_log /var/log/nginx/access.log custom;
-
-                charset utf-8;
-
-                location / {
-                    root /usr/share/nginx/html;
-                    include /etc/nginx/mime.types;
-
-                    #{users.map { |row| user = row['u']; server_tag = user[:server_tag]; fs_tag = fs_tag_for_email(user[:email]); running_servers.include?(fs_tag) ? "if ($http_referer ~* \"/#{server_tag}/proxy/([0-9]{4})/\") { set $port $1; set $new_url_#{server_tag} \"/#{server_tag}/proxy/$port$request_uri\"; } if ($new_url_#{server_tag}) { return 301 $new_url_#{server_tag}; }\n\n" : ''}.join("")}
-
-                    try_files $uri @ruby;
-                }
-
-                location /cache {
-                    rewrite ^/cache(.*)$ $1 break;
-                    root /webcache;
-                    include /etc/nginx/mime.types;
-                }
-
-                location /dl {
-                    rewrite ^/dl(.*)$ $1 break;
-                    root /dl;
-                    include /etc/nginx/mime.types;
-                }
-
-                location /phpmyadmin {
-                    rewrite ^/phpmyadmin(.*)$ $1 break;
-                    try_files $uri @phpmyadmin;
-                }
-
-                location /pgadmin {
-                    # proxy_set_header Remote-User $pgadmin_user;
-                    proxy_set_header X-Real-IP $remote_addr;
-                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                    proxy_set_header X-Forwarded-Proto $scheme;
-                    proxy_pass http://pgadmin_1:80;
-                    proxy_set_header Host $host;
-                    proxy_http_version 1.1;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection Upgrade;
-                }
-
-                location @ruby {
-                    proxy_pass http://ruby_1:9292;
-                    proxy_set_header Host $host;
-                    proxy_http_version 1.1;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection Upgrade;
-                }
-
-                location @phpmyadmin {
-                    proxy_pass http://phpmyadmin_1:80;
-                    proxy_set_header Host $host;
-                    proxy_http_version 1.1;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection Upgrade;
-                }
+            charset utf-8;
         END_OF_STRING
 
         File.open('/nginx/default.conf', 'w') do |f|
-            f.puts nginx_config_first_part
+            f.puts <<~END_OF_STRING
+                server {
+                    listen 80 default_server;
+                    server_name _;
+
+                    return 444;
+                }
+                    
+                log_format custom '$http_x_forwarded_for - $remote_user [$time_local] "$request" '
+                                '$status $body_bytes_sent "$http_referer" '
+                                '"$http_user_agent" "$request_time"';
+
+                map_hash_bucket_size 128;
+
+                map $sent_http_content_type $expires {
+                    default                         off;
+                    text/html                       epoch;
+                    text/css                        max;
+                    application/javascript          max;
+                    ~image/                         max;
+                    ~font/                          max;
+                    application/x-font-ttf          max;
+                    application/x-font-otf          max;
+                    application/font-woff           max;
+                    application/font-woff2          max;
+                }
+            END_OF_STRING
             users.each do |row|
                 user = row['u']
                 test = row['t']
@@ -309,51 +253,121 @@ class Main < Sinatra::Base
                 fs_tag = fs_tag_for_email(email_with_test_tag)
                 if running_servers.include?(fs_tag)
                     f.puts <<~END_OF_STRING
-                    location /#{server_tag}/ {
-                        if ($cookie_server_sid != "#{user[:server_sid]}") {
-                            return 403;
+                        server {
+                            server_name #{server_tag}.#{WEBSITE_HOST};
+                            listen 80;
+                            #{server_settings}
+
+                            add_header 'Access-Control-Allow-Origin' '#{WEB_ROOT}' always;
+                            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+                            add_header 'Access-Control-Allow-Headers' 'Content-Type' always;
+                            add_header 'Access-Control-Allow-Credentials' 'true' always;
+
+                            location / {
+                                if ($cookie_server_sid != "#{user[:server_sid]}") {
+                                    return 403;
+                                }
+                                proxy_set_header Host $http_host;
+                                proxy_set_header Upgrade $http_upgrade;
+                                proxy_set_header Connection upgrade;
+                                proxy_set_header Accept-Encoding gzip;
+                                proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
+                            }
                         }
-                        rewrite ^/#{server_tag}(.*)$ $1 break;
-                        proxy_set_header Host $http_host;
-                        proxy_set_header Upgrade $http_upgrade;
-                        proxy_set_header Connection upgrade;
-                        proxy_set_header Accept-Encoding gzip;
-                        proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
-                    }
                     END_OF_STRING
-                    if test.nil?
-                        if user[:share_tag] && user[:share_tag] =~ /^[a-z0-9]{48}$/
-                            f.puts <<~END_OF_STRING
-                                location /#{user[:share_tag]}/ {
-                                    rewrite ^/#{user[:share_tag]}(.*)$ $1 break;
-                                    proxy_set_header Host $http_host;
-                                    proxy_set_header Upgrade $http_upgrade;
-                                    proxy_set_header Connection upgrade;
-                                    proxy_set_header Accept-Encoding gzip;
-                                    proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
-                                }
-                            END_OF_STRING
-                        end
-                        $neo4j.neo4j_query(<<~END_OF_QUERY, {:email => user[:email]}).each do |row|
-                            MATCH (:User)-[r:WATCHING]->(u:User {email: $email})
-                            RETURN r.watch_tag;
-                        END_OF_QUERY
-                            watch_tag = row['r.watch_tag']
-                            f.puts <<~END_OF_STRING
-                                location /#{watch_tag}/ {
-                                    rewrite ^/#{watch_tag}(.*)$ $1 break;
-                                    proxy_set_header Host $http_host;
-                                    proxy_set_header Upgrade $http_upgrade;
-                                    proxy_set_header Connection upgrade;
-                                    proxy_set_header Accept-Encoding gzip;
-                                    proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
-                                }
-                            END_OF_STRING
-                        end
-                    end
+                    # if test.nil?
+                    #     if user[:share_tag] && user[:share_tag] =~ /^[a-z0-9]{48}$/
+                    #         f.puts <<~END_OF_STRING
+                    #             location /#{user[:share_tag]}/ {
+                    #                 rewrite ^/#{user[:share_tag]}(.*)$ $1 break;
+                    #                 proxy_set_header Host $http_host;
+                    #                 proxy_set_header Upgrade $http_upgrade;
+                    #                 proxy_set_header Connection upgrade;
+                    #                 proxy_set_header Accept-Encoding gzip;
+                    #                 proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
+                    #             }
+                    #         END_OF_STRING
+                    #     end
+                    #     $neo4j.neo4j_query(<<~END_OF_QUERY, {:email => user[:email]}).each do |row|
+                    #         MATCH (:User)-[r:WATCHING]->(u:User {email: $email})
+                    #         RETURN r.watch_tag;
+                    #     END_OF_QUERY
+                    #         watch_tag = row['r.watch_tag']
+                    #         f.puts <<~END_OF_STRING
+                    #             location /#{watch_tag}/ {
+                    #                 rewrite ^/#{watch_tag}(.*)$ $1 break;
+                    #                 proxy_set_header Host $http_host;
+                    #                 proxy_set_header Upgrade $http_upgrade;
+                    #                 proxy_set_header Connection upgrade;
+                    #                 proxy_set_header Accept-Encoding gzip;
+                    #                 proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
+                    #             }
+                    #         END_OF_STRING
+                    #     end
+                    # end
                 end
             end
-            f.puts "}"
+            f.puts <<~END_OF_STRING
+                server {
+                    server_name #{WEBSITE_HOST};
+                    listen 80;
+                    #{server_settings}
+
+                    location / {
+                        root /usr/share/nginx/html;
+                        include /etc/nginx/mime.types;
+
+                        #{users.map { |row| user = row['u']; server_tag = user[:server_tag]; fs_tag = fs_tag_for_email(user[:email]); running_servers.include?(fs_tag) ? "if ($http_referer ~* \"/#{server_tag}/proxy/([0-9]{4})/\") { set $port $1; set $new_url_#{server_tag} \"/#{server_tag}/proxy/$port$request_uri\"; } if ($new_url_#{server_tag}) { return 301 $new_url_#{server_tag}; }\n\n" : ''}.join("")}
+
+                        try_files $uri @ruby;
+                    }
+
+                    location /cache {
+                        rewrite ^/cache(.*)$ $1 break;
+                        root /webcache;
+                        include /etc/nginx/mime.types;
+                    }
+
+                    location /dl {
+                        rewrite ^/dl(.*)$ $1 break;
+                        root /dl;
+                        include /etc/nginx/mime.types;
+                    }
+
+                    location /phpmyadmin {
+                        rewrite ^/phpmyadmin(.*)$ $1 break;
+                        try_files $uri @phpmyadmin;
+                    }
+
+                    location /pgadmin {
+                        # proxy_set_header Remote-User $pgadmin_user;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_pass http://pgadmin_1:80;
+                        proxy_set_header Host $host;
+                        proxy_http_version 1.1;
+                        proxy_set_header Upgrade $http_upgrade;
+                        proxy_set_header Connection Upgrade;
+                    }
+
+                    location @ruby {
+                        proxy_pass http://ruby_1:9292;
+                        proxy_set_header Host $host;
+                        proxy_http_version 1.1;
+                        proxy_set_header Upgrade $http_upgrade;
+                        proxy_set_header Connection Upgrade;
+                    }
+
+                    location @phpmyadmin {
+                        proxy_pass http://phpmyadmin_1:80;
+                        proxy_set_header Host $host;
+                        proxy_http_version 1.1;
+                        proxy_set_header Upgrade $http_upgrade;
+                        proxy_set_header Connection Upgrade;
+                    }
+                }
+            END_OF_STRING
         end
         system("docker kill -s HUP workspace_nginx_1")
     end
@@ -437,7 +451,6 @@ class Main < Sinatra::Base
             next unless path.include?('+')
             path = path.sub('+', '')
             unless seen_paths.include?(path)
-                STDERR.puts "Got path: #{path}"
                 paths << {:section => 'misc', :path => path, :dev_only => false, :original_path => "+#{path}", :extra => true}
                 seen_paths << path
             end
@@ -733,6 +746,7 @@ class Main < Sinatra::Base
                                         response.set_cookie(key.to_s,
                                         :value => results.first['u'][key],
                                         :expires => expires,
+                                        :domain => ".#{WEBSITE_HOST}",
                                         :path => '/',
                                         :httponly => true,
                                         :secure => DEVELOPMENT ? false : true)
@@ -2260,13 +2274,15 @@ class Main < Sinatra::Base
                 response.set_cookie('sid',
                     :value => sid,
                     :expires => expires,
+                    :domain => ".#{WEBSITE_HOST}",
                     :path => '/',
                     :httponly => true,
                     :secure => DEVELOPMENT ? false : true)
                 response.set_cookie('server_sid',
                     :value => server_sid_for_email(email),
                     :expires => expires,
-                    :path => "/#{fs_tag_for_email(email)}",
+                    :domain => ".#{WEBSITE_HOST}",
+                    :path => "/",
                     :httponly => true,
                     :secure => DEVELOPMENT ? false : true)
                 Thread.new do
@@ -2286,6 +2302,7 @@ class Main < Sinatra::Base
             response.set_cookie('sid',
                 :value => nil,
                 :expires => Time.new + 3600 * 24 * 365,
+                :domain => ".#{WEBSITE_HOST}",
                 :path => '/',
                 :httponly => true,
                 :secure => DEVELOPMENT ? false : true)
