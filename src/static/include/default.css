@@ -669,7 +669,7 @@ pre pre {
 
 
 .tutorial_card2.compact div>img {
-    /* width: 100%; */
+    width: 100%;
     /* height: calc(100% * 9 / 16); */
 }
 
