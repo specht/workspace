@@ -193,7 +193,6 @@ docker_compose[:services][:neo4j_user] = {
         'NEO4J_AUTH' => "neo4j/#{NEO4J_ROOT_PASSWORD}",
         'NEO4J_EDITION' => 'enterprise',
         'NEO4J_dbms_security_auth__enabled' => 'true',
-        'NEO4J_dbms_security_auth__enabled' => 'true',
     },
 }
 
