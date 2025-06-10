@@ -460,6 +460,19 @@
                 return false;
             });
         });
+        $('#bu_reset_neo4j').on('click', function() {
+            showTemplateModal('Neo4j-Datenbank zurücksetzen', `<div>Bist du sicher, dass du deine Neo4j-Datenbank zurücksetzen möchtest?</div>`,
+            "<i class='bi bi-trash-fill'></i>Zurücksetzen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
+                $('#div_reset_neo4j_please_wait').slideDown();
+                api_call('/api/reset_neo4j', {}, function(data) {
+                    $('#div_reset_neo4j_please_wait').hide();
+                    $('#div_reset_neo4j_success').show();
+                    $('#__template_modal .modal-footer .btn').eq(0).hide();
+                    $('#__template_modal .modal-footer .btn').eq(1).html(`<i class='bi bi-x-lg'></i>Schließen`);
+                });
+                return false;
+            });
+        });
         $('.bu-set-brightness').on('click', function(e) {
             let brightness = $(e.target.closest('.btn')).data('brightness');
             api_call(`/api/set_brightness/${brightness}`, {}, function(data) {
