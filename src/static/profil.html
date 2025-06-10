@@ -188,6 +188,59 @@
             <hr>
 
             <div class="row">
+                <div class="col-sm-6"><h2>Neo4j-Datenbank</h2></div>
+                <div class="col-sm-6 btn-module">#{print_module_button(:neo4j)}</div>
+            </div>
+            <p>
+                Du hast eine Neo4j-Datenbank, die du im Workspace verwenden kannst.
+            </p>
+            <p>
+                Deine Zugangsdaten lauten:
+            </p>
+            <div class="row g-3 align-items-center mb-3 input-with-text-mod">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 9em;">Host:</span>
+                        <input type="text" class="form-control" readonly value="neo4j">
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='postgres'><i class='bi bi-copy'></i>Kopieren</button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 9em;">Benutzername:</span>
+                        <input type="text" class="form-control" readonly value="#{@session_user[:email].split('@').first.downcase}">
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email]}'><i class='bi bi-copy'></i>Kopieren</button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 9em;">Datenbank:</span>
+                        <input type="text" class="form-control" readonly value="#{@session_user[:email].split('@').first.downcase.gsub('.', '_')}">
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email]}'><i class='bi bi-copy'></i>Kopieren</button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text" style="width: 9em;">Passwort:</span>
+                        <input type="text" class="form-control" readonly value="#{Main.gen_password_for_email(@session_user[:email], NEO4J_PASSWORD_SALT)}">
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{Main.gen_password_for_email(@session_user[:email], POSTGRES_PASSWORD_SALT)}'><i class='bi bi-copy'></i>Kopieren</button>
+                    </div>
+                </div>
+            </div>
+            <div class="hint">
+                Deine Zugangsdaten sind im Workspace in den Umgebungsvariablen <code>NEO4J_HOST</code>, <code>NEO4J_USER</code>, <code>NEO4J_PASSWORD</code> und <code>NEO4J_DB</code> hinterlegt, damit du keine Zugangsdaten im Quellcode deiner Programme speichern musst.
+            </div>
+            <h4>Neo4j-Datenbank zurücksetzen</h4>
+            <p>
+                Hier kannst du deine Neo4j-Datenbank zurücksetzen.
+            </p>
+            <div>
+                <button id='bu_reset_neo4j' class="btn btn-danger"><i class='bi bi-trash-fill'></i>Neo4j-Datenbank zurücksetzen</button>
+            </div>
+
+            <hr>            
+
+            <div class="row">
                 <div class="col-sm-6"><h2>TIC-80</h2></div>
                 <div class="col-sm-6 btn-module">#{print_module_button(:tic80)}</div>
             </div>

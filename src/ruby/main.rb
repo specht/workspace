@@ -23,11 +23,12 @@ Faye::WebSocket.load_adapter('thin')
 
 CACHE_BUSTER = SecureRandom.alphanumeric(12)
 
-MODULE_ORDER = [:workspace, :phpmyadmin, :pgadmin, :tic80]
+MODULE_ORDER = [:workspace, :phpmyadmin, :pgadmin, :neo4j, :tic80]
 MODULE_LABELS = {
     :workspace => 'Workspace',
     :phpmyadmin => 'phpMyAdmin',
     :pgadmin => 'pgAdmin',
+    :neo4j => 'Neo4j',
     :tic80 => 'TIC-80',
 }
 
@@ -282,6 +283,16 @@ class Main < Sinatra::Base
                     proxy_set_header Connection Upgrade;
                 }
 
+                location /neo4j {
+                    rewrite ^/neo4j(.*)$ $1 break;
+                    try_files $uri @neo4j_browser;
+                }
+
+                location /bolt {
+                    rewrite ^/bolt(.*)$ $1 break;
+                    try_files $uri @neo4j_bolt;
+                }
+
                 location @ruby {
                     proxy_pass http://ruby_1:9292;
                     proxy_set_header Host $host;
@@ -292,6 +303,22 @@ class Main < Sinatra::Base
 
                 location @phpmyadmin {
                     proxy_pass http://phpmyadmin_1:80;
+                    proxy_set_header Host $host;
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection Upgrade;
+                }
+
+                location @neo4j_browser {
+                    proxy_pass http://neo4j_user_1:7474;
+                    proxy_set_header Host $host;
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection Upgrade;
+                }
+
+                location @neo4j_bolt {
+                    proxy_pass http://neo4j_user_1:7687;
                     proxy_set_header Host $host;
                     proxy_http_version 1.1;
                     proxy_set_header Upgrade $http_upgrade;
@@ -974,6 +1001,35 @@ class Main < Sinatra::Base
         init_postgres(email)
     end
 
+    def init_neo4j(email)
+        neo4j_password = Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)
+        login = email.split('@').first.downcase
+        database = login.gsub('.', '_')
+        STDERR.puts "Setting up Neo4j user #{login} with database #{login}"
+        Open3.popen2("docker exec -i workspace_neo4j_user_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+            stdin.puts <<~END_OF_STRING
+                CREATE DATABASE #{database} IF NOT EXISTS;
+                CREATE USER #{login} IF NOT EXISTS SET PLAINTEXT PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED
+                SET HOME DATABASE #{database};
+            END_OF_STRING
+            stdin.close
+            wait_thr.value
+        end
+    end
+
+    def reset_neo4j(email)
+        login = email.split('@').first.downcase
+        database = login.gsub('.', '_')
+        Open3.popen2("docker exec -i workspace_neo4j_user_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+            stdin.puts <<~END_OF_STRING
+                DROP DATABASE #{database} IF EXISTS;
+            END_OF_STRING
+            stdin.close
+            wait_thr.value
+        end
+        init_neo4j(email)
+    end
+
     def start_server(email, test_tag = nil)
         email_with_test_tag = "#{email}#{test_tag}"
         container_name = fs_tag_for_email(email_with_test_tag)
@@ -1204,12 +1260,13 @@ class Main < Sinatra::Base
             #   }
             system("chown -R 1000:1000 /user/#{container_name}")
 
-            mysql_email = email
+            db_email = email
             if test_tag
-                mysql_email = "#{email}-#{test_tag}"
+                db_email = "#{email}-#{test_tag}"
             end
-            init_mysql(mysql_email)
-            init_postgres(email)
+            init_mysql(db_email)
+            init_postgres(db_email)
+            init_neo4j(db_email)
 
             if test_tag
                 test_init_mark_path = "/user/#{container_name}/workspace/.test_init"
@@ -1240,9 +1297,10 @@ class Main < Sinatra::Base
             network_name = "bridge"
             mysql_ip = `docker inspect workspace_mysql_1`.split('"IPAddress": "')[1].split('"')[0]
             postgres_ip = `docker inspect workspace_postgres_1`.split('"IPAddress": "')[1].split('"')[0]
+            neo4j_ip = `docker inspect workspace_neo4j_user_1`.split('"IPAddress": "')[1].split('"')[0]
             login = email.split('@').first.downcase
-            mysql_login = mysql_email.split('@').first.downcase
-            command = "docker run --add-host=mysql:#{mysql_ip} --add-host=postgres:#{postgres_ip} --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(mysql_email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e POSTGRES_HOST=\"postgres\" -e POSTGRES_USER=\"#{login}\" -e POSTGRES_PASSWORD=\"#{Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)}\" -e POSTGRES_DATABASE=\"#{login}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
+            mysql_login = db_email.split('@').first.downcase
+            command = "docker run --add-host=mysql:#{mysql_ip} --add-host=postgres:#{postgres_ip} --add-host=mysql:#{neo4j_ip} --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(mysql_login, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e POSTGRES_HOST=\"postgres\" -e POSTGRES_USER=\"#{login}\" -e POSTGRES_PASSWORD=\"#{Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)}\" -e POSTGRES_DATABASE=\"#{login}\"  -e NEO4J_HOST=\"neo4j\" -e NEO4J_USER=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(mysql_login, NEO4J_PASSWORD_SALT)}\" -e NEO4J_DATABASE=\"#{mysql_login.gsub('.', '_')}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
             STDERR.puts command
             system(command)
 
@@ -1285,6 +1343,20 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         email = @session_user[:email]
         reset_postgres(email)
+        respond(:yay => 'sure')
+    end
+
+    post '/api/start_neo4j' do
+        assert(user_logged_in?)
+        email = @session_user[:email]
+        init_neo4j(email)
+        respond(:yay => 'sure')
+    end
+
+    post '/api/reset_neo4j' do
+        assert(user_logged_in?)
+        email = @session_user[:email]
+        reset_neo4j(email)
         respond(:yay => 'sure')
     end
 
