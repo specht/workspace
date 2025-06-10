@@ -196,6 +196,16 @@ docker_compose[:services][:neo4j_user] = {
     },
 }
 
+if !DEVELOPMENT
+    docker_compose[:services][:neo4j_user][:environment] = [
+        'VIRTUAL_HOST=bolt.workspace.hackschule.de',
+        'LETSENCRYPT_HOST=bolt.workspace.hackschule.de',
+        'LETSENCRYPT_EMAIL=specht@gymnasiumsteglitz.de'
+    ]
+    docker_compose[:services][:neo4j_user][:expose] = ['7687']
+end
+
+
 docker_compose[:services][:phpmyadmin] = {
     :image => 'phpmyadmin/phpmyadmin',
     :restart => 'always',

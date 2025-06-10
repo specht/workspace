@@ -8,6 +8,7 @@ WEB_ROOT = DEVELOPMENT ? 'http://localhost:8025' : "https://#{WEBSITE_HOST}"
 PHPMYADMIN_WEB_ROOT = "#{WEB_ROOT}/phpmyadmin/"
 PGADMIN_WEB_ROOT = "#{WEB_ROOT}/pgadmin/"
 NEO4J_WEB_ROOT = "#{WEB_ROOT}/neo4j/browser/"
+NEO4J_BOLT_HOST = "localhost:7687"
 
 LOGIN_CODE_SALT = 'bitte_ein_salt_eintragen'
 
