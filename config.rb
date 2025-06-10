@@ -200,7 +200,7 @@ if !DEVELOPMENT
     docker_compose[:services][:neo4j_user][:volumes] << "/home/micha/frontend/certs/workspace.hackschule.de:/certs:ro"
     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_enabled'] = 'true'
     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_base__directory'] = '/certs'
-    docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_private__key'] = 'key.pem'
+    docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_private__key'] = 'key.readable.pem'
     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_public__certificate'] = 'fullchain.pem'
     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_connector_bolt_tls__level'] = 'REQUIRED'
     # docker_compose[:services][:neo4j_user][:environment]['VIRTUAL_HOST'] = 'workspace.hackschule.de'
