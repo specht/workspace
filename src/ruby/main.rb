@@ -1011,7 +1011,7 @@ class Main < Sinatra::Base
                 CREATE DATABASE #{database} IF NOT EXISTS;
                 CREATE USER #{login} IF NOT EXISTS SET PLAINTEXT PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED
                 SET HOME DATABASE #{database};
-                GRANT ROLE editor ON DATABASE #{database} TO #{login};
+                GRANT ROLE architect TO #{login};
             END_OF_STRING
             stdin.close
             wait_thr.value
