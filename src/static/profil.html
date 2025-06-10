@@ -461,7 +461,7 @@
             });
         });
         $('#bu_reset_neo4j').on('click', function() {
-            showTemplateModal('Neo4j-Datenbank zurücksetzen', `<div>Bist du sicher, dass du deine Neo4j-Datenbank zurücksetzen möchtest?</div>`,
+            showTemplateModal('Neo4j-Datenbank zurücksetzen', `<div>Bist du sicher, dass du deine Neo4j-Datenbank zurücksetzen möchtest?</div><div id='div_reset_neo4j_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog bi-spin'></i>Moment, deine Datenbank wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_neo4j_success' style='display: none; margin-top: 1em;'><i class='text-success bi bi-check-lg'></i>Deine Datenbank wurde auf den Ursprungszustand zurückgesetzt.</div>`,
             "<i class='bi bi-trash-fill'></i>Zurücksetzen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
                 $('#div_reset_neo4j_please_wait').slideDown();
                 api_call('/api/reset_neo4j', {}, function(data) {
