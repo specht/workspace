@@ -125,7 +125,6 @@ div.floatright img {
     }
 }
 
-
 .sponsor {
-    filter: grayscale(1) brightness(3) !important;
+    filter: invert(1);
 }
