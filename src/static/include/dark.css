@@ -124,3 +124,8 @@ div.floatright img {
         border: 0.5em solid #fff;
     }
 }
+
+
+.sponsor {
+    filter: grayscale(1) brightness(3) !important;
+}
