@@ -56,7 +56,7 @@ Tipp: Ziehe deinen Workspace und die Vorschau nebeneinander, damit du deine Änd
 Du solltest einen Würfel sehen, der in der Mitte des Bildschirms schwebt. Benutze die Maus, um die Szene zu drehen und zu zoomen.
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='box.webp' style='max-width: 100%;'>
+<img src='box.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
 </div>
 
 
@@ -75,7 +75,7 @@ shape = sphere
 Speichere die Datei mit <span class='key'>Strg</span><span class='key'>S</span> und schaue dir die Vorschau an. Du solltest nun eine Kugel sehen:
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='sphere.webp' style='max-width: 100%;'>
+<img src='sphere.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
 </div>
 
 <div class='hint'>
@@ -99,7 +99,7 @@ shape = sphere
 ```
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='sphere-with-grid.webp' style='max-width: 100%;'>
+<img src='sphere-with-grid.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
 </div>
 
 
@@ -111,7 +111,7 @@ shape = sphere
 ```
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='sphere-with-torus.webp' style='max-width: 100%;'>
+<img src='sphere-with-torus.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
 </div>
 
 ## Objekte verschieben
@@ -126,7 +126,7 @@ move = 100, 0, 0
 ```
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='box-move-right.webp' style='max-width: 100%;'>
+<img src='box-move-right.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
 </div>
 
 Dabei gibt `move = 100, 0, 0` an, dass das Objekt um 100 Einheiten nach rechts verschoben wird. Die drei Werte stehen für die Verschiebung in den X-, Y- und Z-Richtungen.
@@ -151,7 +151,7 @@ Tipp: Du musst die Szene mit der Maus ein bisschen drehen, um alle Würfel gut z
 </div>
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='three-cubes.webp' style='max-width: 100%;'>
+<img src='three-cubes.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
 </div>
 
 <div style='display: none;'>
@@ -192,7 +192,7 @@ move = 100, 0, 0
 ```
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='rotate-boxes.webp' style='max-width: 100%;'>
+<img src='rotate-boxes.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
 </div>
 
 Du siehst hier ein Gitter und drei Würfel:
@@ -204,7 +204,7 @@ Du siehst hier ein Gitter und drei Würfel:
 **Aufgabe:** Versuche, die folgende Szene zu erstellen, indem du drei Würfel erstellst und rotierst:
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='cube-star.webp' style='max-width: 100%;'>
+<img src='cube-star.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
 </div>
 
 <div style='display: none;'>
@@ -251,7 +251,7 @@ Achtung: Beim Programmieren musst du meistens Kommazahlen mit einem Punkt schrei
 </div>
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='scaled-spheres.webp' style='max-width: 100%;'>
+<img src='scaled-spheres.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
 </div>
 
 Du kannst ein Objekt auch in alle drei Richtungen unterschiedlich skalieren, indem du drei Werte angibst:
@@ -266,7 +266,7 @@ scale = 1, 0.2, 1
 Hier wurde eine Kugel nur in der Y-Richtung verkleinert (auf 20%), sodass sie wie eine Scheibe aussieht:
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='pancake.webp' style='max-width: 100%;'>
+<img src='pancake.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
 </div>
 
 **Aufgabe:** Versuche, die folgende Szene zu erstellen, indem du eine Box erstellst und sie auf die zehnfache Breite skalierst. Verschiebe die Box anschließend um 25 Einheiten nach oben, so dass sie auf dem Gitter aufliegt:
@@ -290,7 +290,7 @@ move = 100, 0, 0
 Hier wurde ein Würfel zuerst um 45 Grad um die Z-Achse gedreht und dann um 100 Einheiten nach rechts verschoben. Das Ergebnis sieht so aus:
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='rotate-then-move.webp' style='max-width: 100%;'>
+<img src='rotate-then-move.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
 </div>
 
 Dabei ist es wichtig, in welcher Reihenfolge du die Transformationen angibst. Wenn du zuerst verschiebst und dann drehst, sieht das Ergebnis anders aus:
@@ -303,7 +303,7 @@ move = 100, 0, 0
 rotate = 0, 0, 45
 ```
 <div style='text-align: center; margin: 1em 0;'>
-<img src='move-then-rotate.webp' style='max-width: 100%;'>
+<img src='move-then-rotate.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
 </div>
 
 Dieser Würfel schwebt jetzt über dem Gitter, weil er zuerst nach rechts verschoben wurde und danach erst um 45 Grad gedreht um die Z-Achse gedreht wurde, denn: jede Drehung findet immer um den Ursprung statt (und jede Skalierung auch).
@@ -343,7 +343,7 @@ stroke = off
 ```
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='3d-torus.webp' style='max-width: 100%;'>
+<img src='3d-torus.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
 </div>
 
 ### Anaglyph-Effekt ausschalten
@@ -351,7 +351,7 @@ stroke = off
 Falls du gar keine 3D-Brille hast oder die 3D-Effekte nicht sehen möchtest, kannst du den Anaglyph-Effekt ausschalten, indem du die Zeile `anaglyph = off` hinzufügst:
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='anaglyph-off.webp' style='max-width: 100%;'>
+<img src='anaglyph-off.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
 </div>
 
 ## Code auskommentieren
