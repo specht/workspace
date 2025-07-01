@@ -1,5 +1,5 @@
 <div class='meta'>
-image: rotate-boxes.webp
+image: title.webp
 </div>
 
 # 3D-Grafik mit Anaglyphen
