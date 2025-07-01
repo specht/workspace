@@ -38,7 +38,7 @@
     - dart
     - rust
 - key: graphics
-  # compact: true
+  compact: true
   label: Computergrafik
   icon: /images/palette.png
   entries:
@@ -46,7 +46,7 @@
     # - .turtle (got test)
     # - .drawing (koch curve)
     - fire
-  # - .anaglyphs
+    - anaglyph
   # - .sirds
   # - .raytracing
   # - .p5js

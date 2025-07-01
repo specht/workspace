@@ -559,6 +559,8 @@ class Main < Sinatra::Base
                     lexer = Rouge::Lexers::Go.new
                 when 'html'
                     lexer = Rouge::Lexers::HTML.new
+                when 'ini'
+                    lexer = Rouge::Lexers::INI.new
                 when 'java'
                     lexer = Rouge::Lexers::Java.new
                 when 'js'
