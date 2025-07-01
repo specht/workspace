@@ -374,17 +374,32 @@ Um schnell ganze Blöcke auszukommentieren, kannst du mehrere Zeilen markieren u
 Während deine Szene angezeigt wird, läuft im Hintergrund eine Uhr mit. Die Anzahl der Sekunden seit dem Start der Szene wird in der Variablen `t` gespeichert. Du kannst diese Variable verwenden, um Animationen zu erstellen:
 
 ```ini
+shade = on
 shape = torus
 rotate = 0, t * 30, 0
 ```
 
 In diesem Beispiel wird der Torus um 30 Grad pro Sekunde um die Y-Achse gedreht. Das bedeutet, dass er nach 3 Sekunden 90 Grad geschafft hat und nach 12 Sekunden eine volle Umdrehung gemacht hat.
 
+<div style='text-align: center; margin: 1em 0;'>
+<video src='animation1.mp4' autoplay loop muted data-noconvert='true'></video>
+</div>
+
 **Profitipp:** Mit Hilfe der Sinus- und Cosinusfunktionen kannst du auch sanfte Bewegungen erzeugen:
 
 ```ini
+shade = on
 shape = box
 rotate = cos(t * 2) * 10, 0, sin(t * 3) * 10
 ```
 
-**Aufgabe:** Erstelle eine Animation mit verschiedenen Objekten!
+<div style='text-align: center; margin: 1em 0;'>
+<video src='animation2.mp4' autoplay loop muted data-noconvert='true'></video>
+</div>
+
+
+**Aufgabe:** Erstelle eine Animation, bei der die Sonne in der Mitte steht und die Erde um die Sonne kreist. Der Mond soll dabei um die Erde kreisen:
+
+<div style='text-align: center; margin: 1em 0;'>
+<video src='animation3.mp4' autoplay loop muted data-noconvert='true' style='max-width: 100%;'></video>
+</div>

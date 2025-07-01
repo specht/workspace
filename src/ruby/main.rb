@@ -512,6 +512,18 @@ class Main < Sinatra::Base
                     system("cp -pu \"#{image_path}\" /webcache/")
                 end
             end
+            root.css('video').each do |video|
+                src = video.attr('src')
+                image_path = File.join(File.dirname(path), src)
+                next unless File.exist?(image_path)
+                image_sha1 = convert_image(image_path)
+                video['src'] = "/cache/#{image_sha1}.webp"
+                if video.attr('data-noconvert')
+                    image_path = File.join(File.dirname(path), src)
+                    next unless File.exist?(image_path)
+                    system("cp -pu \"#{image_path}\" /webcache/")
+                end
+            end
             root.css('a').each do |a|
                 href = a.attr('href')
                 if href.index('https://') == 0
