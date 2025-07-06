@@ -430,6 +430,7 @@ class Main < Sinatra::Base
     end
 
     def self.parse_content
+        STDERR.puts "Parsing content..."
         hyphenation_map = {}
         File.read('/src/content/hyphenation.txt').split("\n").each do |line|
             line.strip!
@@ -473,11 +474,14 @@ class Main < Sinatra::Base
         end
 
         @@kenney = {}
-        Dir['/src/content/anaglyph/kenney/*/*.webp'].sort.each do |path|
+        Dir['/src/content/anaglyph/kenney/*/*.webp']each do |path|
             kit = path.split('/').last(2).first
             model = path.split('/').last(2).last.sub('.webp', '')
             @@kenney[kit] ||= []
             @@kenney[kit] << model
+        end
+        @@kenney.keys.each do |kit|
+            @@kenney[kit].sort!
         end
 
         @@kenney.keys.each do |kit|
@@ -523,7 +527,7 @@ class Main < Sinatra::Base
                         Du kannst dann mit dem Befehl `model` ein Modell zu deiner Szene hinzufügen, also z. B.:
 
                         ```ini
-                        model = #{kit}/#{@@kenney[kit].first}
+                        model = #{kit}/#{@@kenney[kit].first}.obj
                         ```
 
                         <div class='hint'>
@@ -2321,7 +2325,7 @@ class Main < Sinatra::Base
     get '/*' do
         path = request.path
         slug = nil
-        if DEVELOPMENT && !(path.include?('.webp') || !path.include?('.mp4'))
+        if DEVELOPMENT && path =~ /^\/[a-zA-Z0-9_-]+$/
             Main.parse_content()
         end
         running_tests = my_running_tests()

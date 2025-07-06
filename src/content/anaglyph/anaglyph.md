@@ -406,6 +406,8 @@ rotate = cos(t * 2) * 10, 0, sin(t * 3) * 10
 
 ## 3D-Modelle
 
+Du kannst auch 3D-Modelle in deine Szene einfügen. Auf der Website [kenney.nl](https://kenney.nl/assets) gibt es eine große Sammlung von kostenlosen 3D-Modellen, die du verwenden kannst. Du kannst sie direkt in dein Projekt herunterladen und in der `scene.ini` einfügen. Klicke dazu auf ein Kit, um die verfügbaren 3D-Modelle zu sehen:
+
 <div class='kenney-overview row'>
     <div class='col-md-6'>
         <a href='/city-kit-commercial'><img src='kenney/city-kit-commercial-sample.webp'></a>
