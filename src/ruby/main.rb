@@ -474,14 +474,11 @@ class Main < Sinatra::Base
         end
 
         @@kenney = {}
-        Dir['/src/content/anaglyph/kenney/*/*.webp']each do |path|
+        Dir['/src/content/anaglyph/kenney/*/*.webp'].sort.each do |path|
             kit = path.split('/').last(2).first
             model = path.split('/').last(2).last.sub('.webp', '')
             @@kenney[kit] ||= []
             @@kenney[kit] << model
-        end
-        @@kenney.keys.each do |kit|
-            @@kenney[kit].sort!
         end
 
         @@kenney.keys.each do |kit|
