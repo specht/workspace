@@ -455,41 +455,96 @@ class Main < Sinatra::Base
                 dev_only = path[0] == '.'
                 path = path.sub(/^\./, '')
                 seen_paths << path
-                paths << {:section => section['key'], :path => path, :dev_only => dev_only}
+                original_path = Dir["/src/content/#{path}/*.md"].reject { |x| x.include?('+') }.first
+                paths << {:section => section['key'], :path => path, :original_path => original_path, :dev_only => dev_only}
             end
         end
-        Dir['/src/content/**/*.md'].each do |path|
-            path = File.dirname(path).sub('/src/content/', '')
+        Dir['/src/content/**/+*.md'].each do |path|
+            original_path = path
+            path = File.basename(path)
             next if path.include?('/')
             next unless path.include?('+')
             path = path.sub('+', '')
             unless seen_paths.include?(path)
-                STDERR.puts "Got path: #{path}"
-                paths << {:section => 'misc', :path => path, :dev_only => false, :original_path => "+#{path}", :extra => true}
+                STDERR.puts "Got custom path: #{path} (#{original_path})"
+                paths << {:section => 'misc', :path => path, :dev_only => false, :original_path => original_path, :extra => true}
                 seen_paths << path
             end
         end
-        paths.map! { |x| x[:original_path] ||= x[:path]; x }
+
+        @@kenney = {}
+        Dir['/src/content/anaglyph/kenney/*/*.webp'].sort.each do |path|
+            kit = path.split('/').last(2).first
+            model = path.split('/').last(2).last.sub('.webp', '')
+            @@kenney[kit] ||= []
+            @@kenney[kit] << model
+        end
+
+        @@kenney.keys.each do |kit|
+            paths << {:section => 'misc', :path => kit, :original_path => "/src/content/anaglyph/#{kit}.md", :dev_only => false, :kenney => true, :extra => true}
+        end
+
         @@content = {}
 
         redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
         paths.each do |entry|
             section = entry[:section]
-            path = Dir["/src/content/#{entry[:original_path]}/*.md"].first
-            markdown = File.read(path)
-            markdown.gsub!(/_include_file\(([^)]+)\)/) do |match|
-                options = $1.split(',').map { |x| x.strip }
-                StringIO.open do |io|
-                    io.puts "```#{options[1]}_lineno"
-                    io.puts File.read(File.join(File.dirname(path), options[0]))
-                    io.puts "```"
+            path = entry[:original_path]
+            markdown = nil
+            unless entry[:kenney]
+                next unless path
+                markdown = File.read(path)
+                markdown.gsub!(/_include_file\(([^)]+)\)/) do |match|
+                    options = $1.split(',').map { |x| x.strip }
+                    StringIO.open do |io|
+                        io.puts "```#{options[1]}_lineno"
+                        io.puts File.read(File.join(File.dirname(path), options[0]))
+                        io.puts "```"
+                        io.string
+                    end
+                end
+            else
+                kit = entry[:path]
+                markdown = StringIO.open do |io|
+                    title = kit.split('-').map { |x| x.capitalize}. join(' ')
+                    io.puts "# #{title}"
+                    io.puts
+                    io.puts <<~EOS
+                        Um das #{title} verwenden zu können, musst du es erst installieren. Öffne dazu ein Terminal, indem du <span class='key'>Strg</span><span class='key'>J</span> drückst. Führe dann den folgenden Befehl aus:
+
+                        ```bash
+                        ./download.rb #{kit}
+                        ```
+
+                        <div class='hint'>
+                            Hinweis: Achte auf die genaue Schreibweise des Befehls.
+                        </div>
+
+                        Du kannst dann mit dem Befehl `model` ein Modell zu deiner Szene hinzufügen, also z. B.:
+
+                        ```ini
+                        model = #{kit}/#{@@kenney[kit].first}
+                        ```
+
+                        <div class='hint'>
+                            Achtung: Vergiss nicht, den Namen des Kits (<code>#{kit}/</code>) vor dem Modellnamen anzugeben!
+                        </div>
+
+                        Die folgenden Modelle stehen zur Auswahl:
+
+                        <div class='kenney-gallery'>
+                    EOS
+                    @@kenney[kit].each do |model|
+                        io.puts "<div><img src='kenney/#{kit}/#{model}.webp' data-noconvert='true'><div>#{model}</div></div>"
+                    end
+                    io.puts "</div>"
                     io.string
                 end
             end
             hyphenation_map.each_pair do |a, b|
                 markdown.gsub!(a, b)
             end
-            slug = File.basename(path, '.md').sub(/^[0-9]+\-/, '')
+            slug = File.basename(path, '.md').sub(/^[0-9]+\-/, '').sub('+', '')
             html = redcarpet.render(markdown)
             root = Nokogiri::HTML(html)
             meta = root.css('.meta').first
@@ -501,28 +556,25 @@ class Main < Sinatra::Base
                 src = img.attr('src')
                 image_path = File.join(File.dirname(path), src)
                 next unless File.exist?(image_path)
-                image_sha1 = convert_image(image_path)
-                img['src'] = "/cache/#{image_sha1}.webp"
+                if img.attr('data-noconvert')
+                    sha1 = Digest::SHA1.hexdigest(image_path)
+                    system("cp -pu \"#{image_path}\" /webcache/#{sha1}.#{image_path.split('.').last}")
+                    img['src'] = "/cache/#{sha1}.#{image_path.split('.').last}"
+                else
+                    sha1 = convert_image(image_path)
+                    img['src'] = "/cache/#{sha1}.webp"
+                end
                 if img.classes.include?('full')
                     img.wrap("<div class='scroll-x'>")
-                end
-                if img.attr('data-noconvert')
-                    image_path = File.join(File.dirname(path), src)
-                    next unless File.exist?(image_path)
-                    system("cp -pu \"#{image_path}\" /webcache/")
                 end
             end
             root.css('video').each do |video|
                 src = video.attr('src')
                 image_path = File.join(File.dirname(path), src)
                 next unless File.exist?(image_path)
-                image_sha1 = convert_image(image_path)
-                video['src'] = "/cache/#{image_sha1}.webp"
-                if video.attr('data-noconvert')
-                    image_path = File.join(File.dirname(path), src)
-                    next unless File.exist?(image_path)
-                    system("cp -pu \"#{image_path}\" /webcache/")
-                end
+                sha1 = Digest::SHA1.hexdigest(File.read(image_path))[0, 16]
+                system("cp -pu \"#{image_path}\" /webcache/#{sha1}.mp4")
+                video['src'] = "/cache/#{sha1}.mp4"
             end
             root.css('a').each do |a|
                 href = a.attr('href')
@@ -2269,7 +2321,9 @@ class Main < Sinatra::Base
     get '/*' do
         path = request.path
         slug = nil
-        Main.parse_content() if DEVELOPMENT
+        if DEVELOPMENT && !(path.include?('.webp') || !path.include?('.mp4'))
+            Main.parse_content()
+        end
         running_tests = my_running_tests()
         if path[0, 7] == '/share/'
             share_tag = path.sub('/share/', '')

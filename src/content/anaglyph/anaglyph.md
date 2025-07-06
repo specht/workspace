@@ -382,7 +382,7 @@ rotate = 0, t * 30, 0
 In diesem Beispiel wird der Torus um 30 Grad pro Sekunde um die Y-Achse gedreht. Das bedeutet, dass er nach 3 Sekunden 90 Grad geschafft hat und nach 12 Sekunden eine volle Umdrehung gemacht hat.
 
 <div style='text-align: center; margin: 1em 0;'>
-<video src='animation1.mp4' autoplay loop muted data-noconvert='true'></video>
+<video src='animation1.mp4' autoplay loop muted></video>
 </div>
 
 **Profitipp:** Mit Hilfe der Sinus- und Cosinusfunktionen kannst du auch sanfte Bewegungen erzeugen:
@@ -394,12 +394,73 @@ rotate = cos(t * 2) * 10, 0, sin(t * 3) * 10
 ```
 
 <div style='text-align: center; margin: 1em 0;'>
-<video src='animation2.mp4' autoplay loop muted data-noconvert='true'></video>
+<video src='animation2.mp4' autoplay loop muted></video>
 </div>
 
 
 **Aufgabe:** Erstelle eine Animation, bei der die Sonne in der Mitte steht und die Erde um die Sonne kreist. Der Mond soll dabei um die Erde kreisen:
 
 <div style='text-align: center; margin: 1em 0;'>
-<video src='animation3.mp4' autoplay loop muted data-noconvert='true' style='max-width: 100%;'></video>
+<video src='animation3.mp4' autoplay loop muted style='max-width: 100%;'></video>
+</div>
+
+## 3D-Modelle
+
+<div class='kenney-overview row'>
+    <div class='col-md-6'>
+        <a href='/city-kit-commercial'><img src='kenney/city-kit-commercial-sample.webp'></a>
+        <div>City Kit (Commercial)</div>
+    </div>
+    <div class='col-md-6'>
+        <a href='/city-kit-industrial'><img src='kenney/city-kit-industrial-sample.webp'></a>
+        <div>City Kit (Industrial)</div>
+    </div>
+    <div class='col-md-6'>
+        <a href='/city-kit-suburban'><img src='kenney/city-kit-suburban-sample.webp'></a>
+        <div>City Kit (Suburban)</div>
+    </div>
+    <div class='col-md-6'>
+        <a href='/city-kit-roads'><img src='kenney/city-kit-roads-sample.webp'></a>
+        <div>City Kit (Roads)</div>
+    </div>
+    <div class='col-md-6'>
+        <a href='/castle-kit'><img src='kenney/castle-kit-sample.webp'></a>
+        <div>Castle Kit</div>
+    </div>
+    <div class='col-md-6'>
+        <a href='/graveyard-kit'><img src='kenney/graveyard-kit-sample.webp'></a>
+        <div>Graveyard Kit</div>
+    </div>
+    <div class='col-md-6'>
+        <a href='/holiday-kit'><img src='kenney/holiday-kit-sample.webp'></a>
+        <div>Holiday Kit</div>
+    </div>
+    <div class='col-md-6'>
+        <a href='/pirate-kit'><img src='kenney/pirate-kit-sample.webp'></a>
+        <div>Pirate Kit</div>
+    </div>
+    <div class='col-md-6'>
+        <a href='/survival-kit'><img src='kenney/survival-kit-sample.webp'></a>
+        <div>Survival Kit</div>
+    </div>
+    <div class='col-md-6'>
+        <a href='/mini-characters'><img src='kenney/mini-characters.webp'></a>
+        <div>Mini Characters</div>
+    </div>
+    <div class='col-md-6'>
+        <a href='/mini-arcade'><img src='kenney/mini-arcade-sample.webp'></a>
+        <div>Mini Arcade</div>
+    </div>
+    <div class='col-md-6'>
+        <a href='/mini-market'><img src='kenney/mini-market-sample.webp'></a>
+        <div>Mini Market</div>
+    </div>
+    <div class='col-md-6'>
+        <a href='/food-kit'><img src='kenney/food-kit.webp'></a>
+        <div>Food Kit</div>
+    </div>
+    <div class='col-md-6'>
+        <a href='/blaster-kit'><img src='kenney/blaster-kit.webp'></a>
+        <div>Blaster Kit</div>
+    </div>
 </div>

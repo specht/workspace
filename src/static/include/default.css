@@ -1057,3 +1057,27 @@ button .bi {
     }
 }
 
+.kenney-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    div {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 90%;
+        text-align: center;
+        img {
+            height: 128px;
+            width: 128px;
+            object-fit: contain;
+            border: 1px solid #ddd;
+            padding: 0.5em;
+            border-radius: 0.5em;
+        }
+    }
+}
+
+.kenney-overview {
+    img {
+        width: 100%;
+    }
+}
