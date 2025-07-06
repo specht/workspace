@@ -36,7 +36,10 @@
       scale(1, -1, 1);
       // scale(20);
       rotateX(PI / 8);
-      rotateY(PI / 4);
+      rotateY(-PI / 4);
+      if (modelName.indexOf('graveyard-kit') < 0) {
+        rotateY(PI / 2);
+      }
       // scale(1.5);
       
       if (textureImg) texture(textureImg);

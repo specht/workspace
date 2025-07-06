@@ -22,7 +22,12 @@ begin
 
     puts "Server started on http://localhost:9247"
 
-    KITS.keys.each do |kit|
+    kits = ARGV
+    if ARGV.include?('--all')
+        kits = KITS.keys
+    end
+
+    kits.each do |kit|
         system("./download.rb #{kit}")
         system("node screenshot.mjs #{kit}")
     end

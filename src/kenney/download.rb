@@ -52,5 +52,12 @@ Dir["_temp/unpacked/Models/OBJ format/*.obj"].each do |path|
         end
     end
 end
+FileUtils.mkpath("previews")
+FileUtils.cp("_temp/unpacked/Preview.png", "previews/#{kit}.png")
+begin
+    FileUtils.cp("_temp/unpacked/Sample.png", "previews/#{kit}-sample.png")
+rescue
+end
+
 
 system("rm -rf _temp") unless ARGV.include?('--keep-temp')
