@@ -5,6 +5,19 @@ body {
     margin-bottom: 100px;
 }
 
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .container {
+    max-width: calc(100vw - 60px);
+    /* --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0;
+    width: 100%;
+    padding-right: calc(var(--bs-gutter-x) * .5);
+    padding-left: calc(var(--bs-gutter-x) * .5);
+    margin-right: auto;
+    margin-left: auto; */
+  }
+}
+
 h1,
 h2,
 h3 {
@@ -689,7 +702,7 @@ pre pre {
 
 .tutorial_card2.compact div>img {
     width: 100%;
-    /* height: calc(100% * 9 / 16); */
+    height: calc(100% * 9 / 16);
 }
 
 .tutorial_card2.compact .abstract {

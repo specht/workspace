@@ -524,7 +524,7 @@ class Main < Sinatra::Base
                         Du kannst dann mit dem Befehl `model` ein Modell zu deiner Szene hinzufügen, also z. B.:
 
                         ```ini
-                        model = #{kit}/#{@@kenney[kit].first}.obj
+                        model = #{kit}/#{@@kenney[kit].first}
                         ```
 
                         <div class='hint'>

@@ -409,59 +409,59 @@ rotate = cos(t * 2) * 10, 0, sin(t * 3) * 10
 Du kannst auch 3D-Modelle in deine Szene einfügen. Auf der Website [kenney.nl](https://kenney.nl/assets) gibt es eine große Sammlung von kostenlosen 3D-Modellen, die du verwenden kannst. Du kannst sie direkt in dein Projekt herunterladen und in der `scene.ini` einfügen. Klicke dazu auf ein Kit, um die verfügbaren 3D-Modelle zu sehen:
 
 <div class='kenney-overview row'>
-    <div class='col-md-6'>
+    <div class='col-sm-6'>
         <a href='/city-kit-commercial'><img src='kenney/city-kit-commercial-sample.webp'></a>
         <div>City Kit (Commercial)</div>
     </div>
-    <div class='col-md-6'>
+    <div class='col-sm-6'>
         <a href='/city-kit-industrial'><img src='kenney/city-kit-industrial-sample.webp'></a>
         <div>City Kit (Industrial)</div>
     </div>
-    <div class='col-md-6'>
+    <div class='col-sm-6'>
         <a href='/city-kit-suburban'><img src='kenney/city-kit-suburban-sample.webp'></a>
         <div>City Kit (Suburban)</div>
     </div>
-    <div class='col-md-6'>
+    <div class='col-sm-6'>
         <a href='/city-kit-roads'><img src='kenney/city-kit-roads-sample.webp'></a>
         <div>City Kit (Roads)</div>
     </div>
-    <div class='col-md-6'>
+    <div class='col-sm-6'>
         <a href='/castle-kit'><img src='kenney/castle-kit-sample.webp'></a>
         <div>Castle Kit</div>
     </div>
-    <div class='col-md-6'>
+    <div class='col-sm-6'>
         <a href='/graveyard-kit'><img src='kenney/graveyard-kit-sample.webp'></a>
         <div>Graveyard Kit</div>
     </div>
-    <div class='col-md-6'>
+    <div class='col-sm-6'>
         <a href='/holiday-kit'><img src='kenney/holiday-kit-sample.webp'></a>
         <div>Holiday Kit</div>
     </div>
-    <div class='col-md-6'>
+    <div class='col-sm-6'>
         <a href='/pirate-kit'><img src='kenney/pirate-kit-sample.webp'></a>
         <div>Pirate Kit</div>
     </div>
-    <div class='col-md-6'>
+    <div class='col-sm-6'>
         <a href='/survival-kit'><img src='kenney/survival-kit-sample.webp'></a>
         <div>Survival Kit</div>
     </div>
-    <div class='col-md-6'>
+    <div class='col-sm-6'>
         <a href='/mini-characters'><img src='kenney/mini-characters.webp'></a>
         <div>Mini Characters</div>
     </div>
-    <div class='col-md-6'>
+    <div class='col-sm-6'>
         <a href='/mini-arcade'><img src='kenney/mini-arcade-sample.webp'></a>
         <div>Mini Arcade</div>
     </div>
-    <div class='col-md-6'>
+    <div class='col-sm-6'>
         <a href='/mini-market'><img src='kenney/mini-market-sample.webp'></a>
         <div>Mini Market</div>
     </div>
-    <div class='col-md-6'>
+    <div class='col-sm-6'>
         <a href='/food-kit'><img src='kenney/food-kit.webp'></a>
         <div>Food Kit</div>
     </div>
-    <div class='col-md-6'>
+    <div class='col-sm-6'>
         <a href='/blaster-kit'><img src='kenney/blaster-kit.webp'></a>
         <div>Blaster Kit</div>
     </div>
