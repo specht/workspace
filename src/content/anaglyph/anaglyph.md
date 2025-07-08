@@ -466,3 +466,94 @@ Du kannst auch 3D-Modelle in deine Szene einfügen. Auf der Website [kenney.nl](
         <div>Blaster Kit</div>
     </div>
 </div>
+
+## Schleifen
+
+Wenn du viele Objekte platzieren möchtest, wirst du merken, dass du dafür viele Zeilen schreiben musst. Hier werden z. B. drei Würfel nebeneinander platziert:
+
+<div style='text-align: center; margin: 1em 0;'>
+<img src='3-cubes-row.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
+</div>
+
+Für jeden Würfel werden zwei Zeilen geschrieben:
+
+```ini
+shape = grid
+
+shape = box
+move = -100, 0, 0
+
+shape = box
+move = 0, 0, 0
+
+shape = box
+move = 100, 0, 0
+```
+
+Du kannst ähnliche Zeilen zu einer Schleife zusammenfassen. Wenn du z. B. schreibst:
+
+<pre>shape = <span class='s'>grid</span>
+
+loop x <span class='s'>from</span> -100 <span class='s'>to</span> 100 <span class='s'>step</span> 100
+    shape = <span class='s'>box</span>
+    move = <span class='s'>x, 0, 0</span>
+end
+</pre>
+
+…erhältst du genau dasselbe Bild. Dabei lassen wir eine Variable `x` in 100er-Schritten von -100 bis 100 laufen, wodurch drei Würfel an den gewünschten Positionen gezeichnet werden.
+
+<div class='hint'>
+Tipp: Rücke das Innere einer Schleife ein (wie oben z. B. mit Tab oder ein 4 Leerzeichen), um den Überblick zu behalten.
+</div>
+
+Um eine Schleife zu verwenden, musst du dich genau an die Syntax halten. Dabei gelten folgende Regeln:
+
+- Eine Schleife beginnt mit `loop` und endet mit `end`.
+- Du musst eine Variable benennen, z. B. `x`.
+- Du musst mit `from` angeben, mit welchem Wert du beginnen möchtest.
+- Du musst mit `end` angeben, bis zu welchem Wert die Schleife laufen soll.
+- Du _kannst_ mit `step` angeben, in welchen Schritten die Variable weiterlaufen soll. Wenn du `step` nicht angibst, wird eine Schrittgröße von 1 angenommen.
+
+Du kannst die oben abgebildete Schleife auch so formulieren:
+
+<pre>shape = <span class='s'>grid</span>
+
+loop x <span class='s'>from</span> 1 <span class='s'>to</span> 3
+    shape = <span class='s'>box</span>
+    move = <span class='s'>(x - 2) * 100, 0, 0</span>
+end
+</pre>
+
+<div class='hint'>
+Warum funktioniert das? Wenn du die Werte 1 bis 3 in den Ausdruck (x - 2) * 100 einsetzt, siehst du, dass genau dieselben Werte (-100, 0 und 100) herauskommen. Du kannst aber grnauso auch die erste Schleife verwenden, falls du das leichter findest. Für den Computer macht es keinen Unterschied.
+</div>
+
+### Verschachtelte Schleifen
+
+Schleifen können auch verschachtelt werden. Das heisst: du schreibst erst eine äußere Schleife mit einer Variablen, und darin eine innere Schleife mit einer anderen Variablen, z. B.:
+
+<pre>shape = <span class='s'>grid</span>
+
+loop z <span class='s'>from</span> -100 <span class='s'>to</span> 100 <span class='s'>step</span> 100
+    loop x <span class='s'>from</span> -100 <span class='s'>to</span> 100 <span class='s'>step</span> 100
+        shape = <span class='s'>box</span>
+        move = <span class='s'>x, 0, z</span>
+    end
+end
+</pre>
+
+In der äußeren Schleife nimmt `z` drei verschiedene Werte an und für jeden Durchlauf der äußeren Schleife nimmt `x` unabhängig von `z` ebenso drei Werte an. Diese beiden Werte können wir jetzt verwenden, um den Würfel in x- und z-Richtung zu verschieben. Das Ergebnis sieht dann so aus:
+
+<div style='text-align: center; margin: 1em 0;'>
+<img src='9-cubes-loop.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;'>
+</div>
+
+<div class='hint'>
+Achtung: Achte darauf, bei verschachtelten Schleifen verschiedene Variablen für jede Schleife zu verwenden!
+</div>
+
+**Aufgabe:** Versuche, mit Hilfe von verschachtelten Schleifen ein Gitter aus 3x3x3 Würfeln zu bauen:
+
+<div style='text-align: center; margin: 1em 0;'>
+<img src='27-cubes-loop.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;'>
+</div>
