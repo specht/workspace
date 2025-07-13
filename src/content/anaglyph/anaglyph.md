@@ -335,7 +335,7 @@ Dafür stehen dir vier Befehle zur Verfügung:
 Im folgenden Beispiel schalten wir die Strichfarbe aus und die 3D-Schattierung ein:
 
 ```ini
-shape= grid
+shape = grid
 
 shape = torus
 shade = on
@@ -344,6 +344,10 @@ stroke = off
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='3d-torus.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
+</div>
+
+<div class='hint'>
+Wenn du möchtest, kannst du auch bunte Farben verwenden. Gib dafür statt einer Zahl von 0.0 bis 1.0 einfach einen HTML-Farbcode wie z. B. <code>#4aa03f</code> an.
 </div>
 
 ### Anaglyph-Effekt ausschalten
