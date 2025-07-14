@@ -1,5 +1,6 @@
 Blaster Kit https://kenney.nl/media/pages/assets/blaster-kit/8d1877e5cd-1742986401/kenney_blaster-kit.zip
 # Building Kit https://kenney.nl/media/pages/assets/building-kit/973da8686e-1743244741/kenney_building-kit.zip
+Car Kit https://kenney.nl/media/pages/assets/car-kit/a9b1e99e92-1714554900/kenney_car-kit.zip
 Castle Kit https://kenney.nl/media/pages/assets/castle-kit/5e344a4444-1711543616/kenney_castle-kit.zip
 City Kit (Commercial) https://kenney.nl/media/pages/assets/city-kit-commercial/e52cc98a7b-1747481485/kenney_city-kit-commercial_20.zip
 City Kit (Industrial) https://kenney.nl/media/pages/assets/city-kit-industrial/558e215159-1750838303/kenney_city-kit-industrial_1.0.zip
