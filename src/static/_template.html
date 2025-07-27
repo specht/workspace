@@ -210,7 +210,7 @@ function update_dark_mode() {
     if (dark) {
         dark_css_element = document.createElement('link');
         dark_css_element.rel = 'stylesheet';
-        dark_css_element.href = '/include/dark.css';
+        dark_css_element.href = `/include/dark.css?#{CACHE_BUSTER}`;
         document.head.appendChild(dark_css_element);
     }
 }
@@ -316,6 +316,17 @@ window.addEventListener('load', function() {
         });
     });
 
+    $('#bu_neo4j').on('click', function(e) {
+        $('#bu_neo4j').prop('disabled', true);
+        $('#bu_neo4j .bi').addClass('bi-spin');
+        api_call('/api/start_neo4j', {}, function(data) {
+            $('#bu_neo4j').prop('disabled', false);
+            $('#bu_neo4j .bi').removeClass('bi-spin');
+            console.log('#{NEO4J_WEB_ROOT}');
+            window.open('#{NEO4J_WEB_ROOT}', '_blank');
+        });
+    });
+
     var isDown = false;
     var startX;
     var scrollLeft;
@@ -373,6 +384,9 @@ window.addEventListener('load', function() {
     <div class="header">
         <div class="container">
             <div class="title"><a href='/'>Hackschule Workspace</a></div>
+            <div class="sponsor">
+                powered by <a href="https://www.hetzner.com/cloud/" target="_blank"><img src="/Logo_Hetzner.png?1"></a>
+            </div>
         </div>
     </div>
     <div class="menu" style="#{running_tests.empty? ? '': 'display: none;'}">
@@ -382,6 +396,7 @@ window.addEventListener('load', function() {
                 <button style='#{(@session_user.nil? || (!@session_user[:show_workspace])) ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='bi bi-code-slash'></i>Workspace öffnen</button>
                 <button style='#{(@session_user.nil? || (!@session_user[:show_phpmyadmin])) ? 'display: none;' : ''}' id='bu_phpmyadmin' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>phpMyAdmin</button>
                 <button style='#{(@session_user.nil? || (!@session_user[:show_pgadmin])) ? 'display: none;' : ''}' id='bu_pgadmin' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>pgAdmin</button>
+                <button style='#{(@session_user.nil? || (!@session_user[:show_neo4j])) ? 'display: none;' : ''}' id='bu_neo4j' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>Neo4j</button>
                 <a style='#{(@session_user.nil? || (!@session_user[:show_tic80])) ? 'display: none;' : ''}' href="/tic80/" class="btn btn-success" target="_blank"><i class='bi bi-keyboard'></i>TIC-80</a>
                 <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-primary"><i class='bi bi-person-vcard'></i>#{((@@invitations[(@session_user || {})[:email]] || {})[:name] || '')}</a>
                 <a href='/admin' style='#{teacher_logged_in? ? '' : 'display: none;'}' class="btn btn-warning"><i class='bi bi-wrench-adjustable'></i>Administration</a>

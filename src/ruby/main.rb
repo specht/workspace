@@ -12,6 +12,7 @@ require 'open3'
 require 'redcarpet'
 require 'rouge'
 require 'securerandom'
+require 'set'
 require 'sinatra/base'
 require 'sinatra/cookies'
 
@@ -22,11 +23,12 @@ Faye::WebSocket.load_adapter('thin')
 
 CACHE_BUSTER = SecureRandom.alphanumeric(12)
 
-MODULE_ORDER = [:workspace, :phpmyadmin, :pgadmin, :tic80]
+MODULE_ORDER = [:workspace, :phpmyadmin, :pgadmin, :neo4j, :tic80]
 MODULE_LABELS = {
     :workspace => 'Workspace',
     :phpmyadmin => 'phpMyAdmin',
     :pgadmin => 'pgAdmin',
+    :neo4j => 'Neo4j',
     :tic80 => 'TIC-80',
 }
 
@@ -188,6 +190,8 @@ class Main < Sinatra::Base
 
         # STDERR.puts "Got #{emails_and_server_tags.size} emails and server tags: #{emails_and_server_tags.to_yaml}"
 
+        users = $neo4j.neo4j_query("MATCH (u:User) OPTIONAL MATCH (u)-[:TAKES]->(t:Test {running: TRUE}) RETURN u, t;").to_a
+
         nginx_config_first_part = <<~END_OF_STRING
             log_format custom '$http_x_forwarded_for - $remote_user [$time_local] "$request" '
                             '$status $body_bytes_sent "$http_referer" '
@@ -244,6 +248,9 @@ class Main < Sinatra::Base
                 location / {
                     root /usr/share/nginx/html;
                     include /etc/nginx/mime.types;
+
+                    #{users.map { |row| user = row['u']; server_tag = user[:server_tag]; fs_tag = fs_tag_for_email(user[:email]); running_servers.include?(fs_tag) ? "if ($http_referer ~* \"/#{server_tag}/proxy/([0-9]{4})/\") { set $port $1; set $new_url_#{server_tag} \"/#{server_tag}/proxy/$port$request_uri\"; } if ($new_url_#{server_tag}) { return 301 $new_url_#{server_tag}; }\n\n" : ''}.join("")}
+
                     try_files $uri @ruby;
                 }
 
@@ -276,6 +283,16 @@ class Main < Sinatra::Base
                     proxy_set_header Connection Upgrade;
                 }
 
+                location /neo4j {
+                    rewrite ^/neo4j(.*)$ $1 break;
+                    try_files $uri @neo4j_browser;
+                }
+
+                location /bolt {
+                    rewrite ^/bolt(.*)$ $1 break;
+                    try_files $uri @neo4j_bolt;
+                }
+
                 location @ruby {
                     proxy_pass http://ruby_1:9292;
                     proxy_set_header Host $host;
@@ -291,15 +308,27 @@ class Main < Sinatra::Base
                     proxy_set_header Upgrade $http_upgrade;
                     proxy_set_header Connection Upgrade;
                 }
-        END_OF_STRING
 
-        nginx_config_second_part = <<~END_OF_STRING
-            }
+                location @neo4j_browser {
+                    proxy_pass http://neo4j_user_1:7474;
+                    proxy_set_header Host $host;
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection Upgrade;
+                }
+
+                location @neo4j_bolt {
+                    proxy_pass http://neo4j_user_1:7687;
+                    proxy_set_header Host $host;
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection Upgrade;
+                }
         END_OF_STRING
 
         File.open('/nginx/default.conf', 'w') do |f|
             f.puts nginx_config_first_part
-            $neo4j.neo4j_query("MATCH (u:User) OPTIONAL MATCH (u)-[:TAKES]->(t:Test {running: TRUE}) RETURN u, t;").each do |row|
+            users.each do |row|
                 user = row['u']
                 test = row['t']
                 email_with_test_tag = "#{user[:email]}#{(test || {})[:tag]}"
@@ -351,7 +380,7 @@ class Main < Sinatra::Base
                     end
                 end
             end
-            f.puts nginx_config_second_part
+            f.puts "}"
         end
         system("docker kill -s HUP workspace_nginx_1")
     end
@@ -401,6 +430,7 @@ class Main < Sinatra::Base
     end
 
     def self.parse_content
+        STDERR.puts "Parsing content..."
         hyphenation_map = {}
         File.read('/src/content/hyphenation.txt').split("\n").each do |line|
             line.strip!
@@ -410,6 +440,7 @@ class Main < Sinatra::Base
         @@section_order = sections.map { |section| section['key'] }
         @@sections = {}
         paths = []
+        seen_paths = Set.new()
         sections.each do |section|
             @@sections[section['key']] = {}
             section.each_pair do |k, v|
@@ -424,29 +455,97 @@ class Main < Sinatra::Base
             (section['entries'] || []).each do |path|
                 dev_only = path[0] == '.'
                 path = path.sub(/^\./, '')
-                paths << {:section => section['key'], :path => path, :dev_only => dev_only}
+                seen_paths << path
+                original_path = Dir["/src/content/#{path}/*.md"].reject { |x| x.include?('+') }.first
+                paths << {:section => section['key'], :path => path, :original_path => original_path, :dev_only => dev_only}
             end
         end
+        Dir['/src/content/**/+*.md'].each do |path|
+            original_path = path
+            path = File.basename(path)
+            next if path.include?('/')
+            next unless path.include?('+')
+            path = path.sub('+', '')
+            unless seen_paths.include?(path)
+                STDERR.puts "Got custom path: #{path} (#{original_path})"
+                paths << {:section => 'misc', :path => path, :dev_only => false, :original_path => original_path, :extra => true}
+                seen_paths << path
+            end
+        end
+
+        @@kenney = {}
+        Dir['/src/content/anaglyph/kenney/*/*.webp'].sort.each do |path|
+            kit = path.split('/').last(2).first
+            model = path.split('/').last(2).last.sub('.webp', '')
+            @@kenney[kit] ||= []
+            @@kenney[kit] << model
+        end
+
+        @@kenney.keys.each do |kit|
+            paths << {:section => 'misc', :path => kit, :original_path => "/src/content/anaglyph/#{kit}.md", :dev_only => false, :kenney => true, :extra => true}
+        end
+
         @@content = {}
 
         redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
         paths.each do |entry|
             section = entry[:section]
-            path = Dir["/src/content/#{entry[:path]}/*.md"].first
-            markdown = File.read(path)
-            markdown.gsub!(/_include_file\(([^)]+)\)/) do |match|
-                options = $1.split(',').map { |x| x.strip }
-                StringIO.open do |io|
-                    io.puts "```#{options[1]}_lineno"
-                    io.puts File.read(File.join(File.dirname(path), options[0]))
-                    io.puts "```"
+            path = entry[:original_path]
+            markdown = nil
+            unless entry[:kenney]
+                next unless path
+                markdown = File.read(path)
+                markdown.gsub!(/_include_file\(([^)]+)\)/) do |match|
+                    options = $1.split(',').map { |x| x.strip }
+                    StringIO.open do |io|
+                        io.puts "```#{options[1]}_lineno"
+                        io.puts File.read(File.join(File.dirname(path), options[0]))
+                        io.puts "```"
+                        io.string
+                    end
+                end
+            else
+                kit = entry[:path]
+                markdown = StringIO.open do |io|
+                    title = kit.split('-').map { |x| x.capitalize}. join(' ')
+                    io.puts "# #{title}"
+                    io.puts
+                    io.puts <<~EOS
+                        Um das #{title} verwenden zu können, musst du es erst installieren. Öffne dazu ein Terminal, indem du <span class='key'>Strg</span><span class='key'>J</span> drückst. Führe dann den folgenden Befehl aus:
+
+                        ```bash
+                        ./download.rb #{kit}
+                        ```
+
+                        <div class='hint'>
+                            Hinweis: Achte auf die genaue Schreibweise des Befehls.
+                        </div>
+
+                        Du kannst dann mit dem Befehl `model` ein Modell zu deiner Szene hinzufügen, also z. B.:
+
+                        ```ini
+                        model = #{kit}/#{@@kenney[kit].first}
+                        ```
+
+                        <div class='hint'>
+                            Achtung: Vergiss nicht, den Namen des Kits (<code>#{kit}/</code>) vor dem Modellnamen anzugeben!
+                        </div>
+
+                        Die folgenden Modelle stehen zur Auswahl:
+
+                        <div class='kenney-gallery'>
+                    EOS
+                    @@kenney[kit].each do |model|
+                        io.puts "<div><img src='kenney/#{kit}/#{model}.webp' data-noconvert='true'><div>#{model}</div></div>"
+                    end
+                    io.puts "</div>"
                     io.string
                 end
             end
             hyphenation_map.each_pair do |a, b|
                 markdown.gsub!(a, b)
             end
-            slug = File.basename(path, '.md').sub(/^[0-9]+\-/, '')
+            slug = File.basename(path, '.md').sub(/^[0-9]+\-/, '').sub('+', '')
             html = redcarpet.render(markdown)
             root = Nokogiri::HTML(html)
             meta = root.css('.meta').first
@@ -458,16 +557,25 @@ class Main < Sinatra::Base
                 src = img.attr('src')
                 image_path = File.join(File.dirname(path), src)
                 next unless File.exist?(image_path)
-                image_sha1 = convert_image(image_path)
-                img['src'] = "/cache/#{image_sha1}.webp"
+                if img.attr('data-noconvert')
+                    sha1 = Digest::SHA1.hexdigest(image_path)
+                    system("cp -pu \"#{image_path}\" /webcache/#{sha1}.#{image_path.split('.').last}")
+                    img['src'] = "/cache/#{sha1}.#{image_path.split('.').last}"
+                else
+                    sha1 = convert_image(image_path)
+                    img['src'] = "/cache/#{sha1}.webp"
+                end
                 if img.classes.include?('full')
                     img.wrap("<div class='scroll-x'>")
                 end
-                if img.attr('data-noconvert')
-                    image_path = File.join(File.dirname(path), src)
-                    next unless File.exist?(image_path)
-                    system("cp -pu \"#{image_path}\" /webcache/")
-                end
+            end
+            root.css('video').each do |video|
+                src = video.attr('src')
+                image_path = File.join(File.dirname(path), src)
+                next unless File.exist?(image_path)
+                sha1 = Digest::SHA1.hexdigest(File.read(image_path))[0, 16]
+                system("cp -pu \"#{image_path}\" /webcache/#{sha1}.mp4")
+                video['src'] = "/cache/#{sha1}.mp4"
             end
             root.css('a').each do |a|
                 href = a.attr('href')
@@ -504,6 +612,8 @@ class Main < Sinatra::Base
                     lexer = Rouge::Lexers::Cpp.new
                 when 'cs'
                     lexer = Rouge::Lexers::CSharp.new
+                when 'css'
+                    lexer = Rouge::Lexers::CSS.new
                 when 'dart'
                     lexer = Rouge::Lexers::Dart.new
                 when 'erlang'
@@ -512,6 +622,10 @@ class Main < Sinatra::Base
                     lexer = Rouge::Lexers::Fortran.new
                 when 'go'
                     lexer = Rouge::Lexers::Go.new
+                when 'html'
+                    lexer = Rouge::Lexers::HTML.new
+                when 'ini'
+                    lexer = Rouge::Lexers::INI.new
                 when 'java'
                     lexer = Rouge::Lexers::Java.new
                 when 'js'
@@ -534,6 +648,8 @@ class Main < Sinatra::Base
                     lexer = Rouge::Lexers::Smalltalk.new
                 when 'sql'
                     lexer = Rouge::Lexers::SQL.new
+                when 'svelte'
+                    lexer = Rouge::Lexers::Svelte.new
                 when 'text'
                     lexer = Rouge::Lexers::PlainText.new
                 end
@@ -559,31 +675,33 @@ class Main < Sinatra::Base
                 :html => html,
                 :dev_only => entry[:dev_only],
             }
-            @@sections[section][:entries] << slug
-            if meta
-                meta = YAML.load(meta)
-                if meta['image']
-                    parts = meta['image'].split(':')
-                    sha1 = convert_image(File.join(File.dirname(path), parts[0]))
-                    @@content[slug][:image] = "/cache/#{sha1}.webp"
-                    @@content[slug][:image_x] = (parts[1] || '50').to_i
-                    @@content[slug][:image_y] = (parts[2] || '50').to_i
-                    @@content[slug][:needs_contrast] = meta['needs_contrast']
+            unless entry[:extra]
+                @@sections[section][:entries] << slug
+                if meta
+                    meta = YAML.load(meta)
+                    if meta['image']
+                        parts = meta['image'].split(':')
+                        sha1 = convert_image(File.join(File.dirname(path), parts[0]))
+                        @@content[slug][:image] = "/cache/#{sha1}.webp"
+                        @@content[slug][:image_x] = (parts[1] || '50').to_i
+                        @@content[slug][:image_y] = (parts[2] || '50').to_i
+                        @@content[slug][:needs_contrast] = meta['needs_contrast']
+                    end
                 end
-            end
-            begin
-                @@content[slug][:title] = root.css('h1').first.to_s.sub('<h1>', '').sub('</h1>', '').strip
-            rescue
-            end
-            begin
-                @@content[slug][:abstract] = root.css('.abstract').first.text
-            rescue
-            end
-            begin
-                @@content[slug][:image] ||= root.css('img').first.attr('src')
-                @@content[slug][:image_x] ||= 50
-                @@content[slug][:image_y] ||= 50
-            rescue
+                begin
+                    @@content[slug][:title] = root.css('h1').first.to_s.sub('<h1>', '').sub('</h1>', '').strip
+                rescue
+                end
+                begin
+                    @@content[slug][:abstract] = root.css('.abstract').first.text
+                rescue
+                end
+                begin
+                    @@content[slug][:image] ||= root.css('img').first.attr('src')
+                    @@content[slug][:image_x] ||= 50
+                    @@content[slug][:image_y] ||= 50
+                rescue
+                end
             end
         end
     end
@@ -950,6 +1068,36 @@ class Main < Sinatra::Base
         init_postgres(email)
     end
 
+    def init_neo4j(email)
+        neo4j_password = Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)
+        login = email.split('@').first.downcase
+        database = login.gsub('.', '_')
+        STDERR.puts "Setting up Neo4j user #{login} with database #{login}"
+        Open3.popen2("docker exec -i workspace_neo4j_user_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+            stdin.puts <<~END_OF_STRING
+                CREATE DATABASE #{database} IF NOT EXISTS;
+                CREATE USER #{login} IF NOT EXISTS SET PLAINTEXT PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED
+                SET HOME DATABASE #{database};
+                GRANT ROLE architect TO #{login};
+            END_OF_STRING
+            stdin.close
+            wait_thr.value
+        end
+    end
+
+    def reset_neo4j(email)
+        login = email.split('@').first.downcase
+        database = login.gsub('.', '_')
+        Open3.popen2("docker exec -i workspace_neo4j_user_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+            stdin.puts <<~END_OF_STRING
+                DROP DATABASE #{database} IF EXISTS;
+            END_OF_STRING
+            stdin.close
+            wait_thr.value
+        end
+        init_neo4j(email)
+    end
+
     def start_server(email, test_tag = nil)
         email_with_test_tag = "#{email}#{test_tag}"
         container_name = fs_tag_for_email(email_with_test_tag)
@@ -966,6 +1114,8 @@ class Main < Sinatra::Base
         File.open("/user/#{container_name}/workspace/.hackschule", 'w') do |f|
             f.puts "https://youtu.be/Akaa9xHaw7E"
         end
+        system("touch /user/#{container_name}/workspace/.hackschule")
+        
         unless File.exist?("/user/#{container_name}/workspace/.my.cnf")
             File.open("/user/#{container_name}/workspace/.my.cnf", 'w') do |f|
                 f.puts <<~END_OF_STRING
@@ -1152,10 +1302,10 @@ class Main < Sinatra::Base
                     config = {}
                     config['files.exclude'] ||= {}
                     config['files.exclude']['**/.*'] = true
+                    config['files.autoSave']||= "off"
                     config['telemetry.telemetryLevel'] ||= 'off'
                     if test_tag
                         config['workbench.colorTheme'] = 'Tomorrow Night Blue'
-
                     end
                     f.write config.to_json
                 end
@@ -1178,8 +1328,14 @@ class Main < Sinatra::Base
             #     }
             #   }
             system("chown -R 1000:1000 /user/#{container_name}")
-            init_mysql(email)
-            init_postgres(email)
+
+            db_email = email
+            if test_tag
+                db_email = "#{email}-#{test_tag}"
+            end
+            init_mysql(db_email)
+            init_postgres(db_email)
+            init_neo4j(db_email)
 
             if test_tag
                 test_init_mark_path = "/user/#{container_name}/workspace/.test_init"
@@ -1188,8 +1344,21 @@ class Main < Sinatra::Base
                         MATCH (t:Test {tag: $test_tag})-[:USES]->(f:File)
                         RETURN f.sha1;
                     END_OF_QUERY
+                    # unpack files from archive
                     system("tar xf /internal/test_archives/#{sha1} -C /user/#{container_name}/workspace")
                     File.open(test_init_mark_path, 'w') do |f|
+                    end
+                    # check if we have a config file in the archive
+                    if File.exist?("/user/#{container_name}/workspace/.workspace/config.yaml")
+                        config = YAML.load(File.read("/user/#{container_name}/workspace/.workspace/config.yaml"))
+                        if config['vscode_config']
+                            config_path = "/user/#{container_name}/workspace/.local/share/code-server/User/settings.json"
+                            vscode_config = JSON.parse(File.read(config_path))
+                            vscode_config.merge!(config['vscode_config'])
+                            File.open(config_path, 'w') do |f|
+                                f.write vscode_config.to_json
+                            end
+                        end
                     end
                 end
             end
@@ -1197,8 +1366,10 @@ class Main < Sinatra::Base
             network_name = "bridge"
             mysql_ip = `docker inspect workspace_mysql_1`.split('"IPAddress": "')[1].split('"')[0]
             postgres_ip = `docker inspect workspace_postgres_1`.split('"IPAddress": "')[1].split('"')[0]
+            neo4j_ip = `docker inspect workspace_neo4j_user_1`.split('"IPAddress": "')[1].split('"')[0]
             login = email.split('@').first.downcase
-            command = "docker run --add-host=mysql:#{mysql_ip} --add-host=postgres:#{postgres_ip} --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{login}\" -e POSTGRES_HOST=\"postgres\" -e POSTGRES_USER=\"#{login}\" -e POSTGRES_PASSWORD=\"#{Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)}\" -e POSTGRES_DATABASE=\"#{login}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
+            mysql_login = db_email.split('@').first.downcase
+            command = "docker run --add-host=mysql:#{mysql_ip} --add-host=postgres:#{postgres_ip} --add-host=mysql:#{neo4j_ip} --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(mysql_login, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e POSTGRES_HOST=\"postgres\" -e POSTGRES_USER=\"#{login}\" -e POSTGRES_PASSWORD=\"#{Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)}\" -e POSTGRES_DATABASE=\"#{login}\"  -e NEO4J_HOST=\"neo4j\" -e NEO4J_USER=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(mysql_login, NEO4J_PASSWORD_SALT)}\" -e NEO4J_DATABASE=\"#{mysql_login.gsub('.', '_')}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
             STDERR.puts command
             system(command)
 
@@ -1241,6 +1412,20 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         email = @session_user[:email]
         reset_postgres(email)
+        respond(:yay => 'sure')
+    end
+
+    post '/api/start_neo4j' do
+        assert(user_logged_in?)
+        email = @session_user[:email]
+        init_neo4j(email)
+        respond(:yay => 'sure')
+    end
+
+    post '/api/reset_neo4j' do
+        assert(user_logged_in?)
+        email = @session_user[:email]
+        reset_neo4j(email)
         respond(:yay => 'sure')
     end
 
@@ -1483,7 +1668,7 @@ class Main < Sinatra::Base
                     io2.string
                 end
                 unless sub.empty?
-                    io.puts "<tr><th colspan='6' style='background-color: rgba(0,0,0,0); padding: 1em 0;'><h4>#{group}</h4></th></tr>"
+                    io.puts "<tr><th colspan='#{admin_logged_in? ? 7 : 6}' style='background-color: rgba(0,0,0,0); padding: 1em 0;'><h4>#{group}</h4></th></tr>"
                     io.puts "<tr>"
                     io.puts "<th>Tag</th>"
                     io.puts "<th>Name</th>"
@@ -2138,7 +2323,9 @@ class Main < Sinatra::Base
     get '/*' do
         path = request.path
         slug = nil
-        Main.parse_content() if DEVELOPMENT
+        if DEVELOPMENT && path =~ /^\/[a-zA-Z0-9_-]+$/
+            Main.parse_content()
+        end
         running_tests = my_running_tests()
         if path[0, 7] == '/share/'
             share_tag = path.sub('/share/', '')

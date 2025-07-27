@@ -10,6 +10,8 @@ https://www.discogs.com/artist/2028458-KraftKlub
 https://www.discogs.com/artist/84883-Seeed
 https://www.discogs.com/artist/616-The-Notwist
 https://www.discogs.com/artist/849866-Get-Well-Soon
+https://www.discogs.com/artist/2718584-Mr-Hurley-Die-Pulveraffen
+https://www.discogs.com/artist/253297-WIZO
 
 # United Kingdom
 https://www.discogs.com/artist/140140-Oasis-2
@@ -49,6 +51,7 @@ https://www.discogs.com/artist/46481-John-Lennon
 https://www.discogs.com/artist/72872-Rick-Astley
 https://www.discogs.com/artist/3101-Fatboy-Slim
 https://www.discogs.com/artist/37606-Cat-Stevens
+https://www.discogs.com/artist/180940-Rocky-Sharpe-The-Replays
 
 # Ireland
 https://www.discogs.com/artist/9807-Enya
@@ -98,7 +101,6 @@ https://www.discogs.com/artist/8024-Janet-Jackson
 https://www.discogs.com/artist/21742-Jay-Z
 https://www.discogs.com/artist/128395-Journey
 https://www.discogs.com/artist/66824-Justin-Timberlake
-https://www.discogs.com/artist/137880-Kanye-West
 https://www.discogs.com/artist/971243-Katy-Perry
 https://www.discogs.com/artist/153073-Kiss
 https://www.discogs.com/artist/1103159-Lady-Gaga
@@ -143,6 +145,7 @@ https://www.discogs.com/artist/159169-Jeff-Buckley
 https://www.discogs.com/artist/198282-Foo-Fighters
 https://www.discogs.com/artist/2104840-The-Head-And-The-Heart
 https://www.discogs.com/artist/4020841-Stephen-Sanchez
+https://www.discogs.com/artist/5123016-Cory-Wong
 
 # Canada
 https://www.discogs.com/artist/19298-C%C3%A9line-Dion
@@ -198,3 +201,6 @@ https://www.discogs.com/artist/4786543-Twice-25
 https://www.discogs.com/artist/5034422-BTS-4
 https://www.discogs.com/artist/6838809-Stray-Kids
 https://www.discogs.com/artist/4390346-Red-Velvet-3
+
+# Finland
+https://www.discogs.com/artist/17482-Apocalyptica

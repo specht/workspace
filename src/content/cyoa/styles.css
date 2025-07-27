@@ -1,0 +1,307 @@
+html, body {
+    overflow: none;
+    height: 100%;
+}
+
+body {
+    color: #333;
+    background-color: #fff;
+    margin: 0;
+    overflow: hidden;
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: normal;
+    font-style: normal;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: start;
+    height: 100vh;
+}
+
+img {
+    display: block;
+    width: 100%;
+    border-radius: 0.25em;
+}
+
+blockquote {
+    background-color: #f9f9f9;
+    border-left: 4px solid #ccc;
+    margin: 1em 0;
+    padding: 0.1em 1em
+}
+
+p {
+    line-height: 1.4em;
+}
+
+a {
+    color: rgb(137, 4, 4);
+    text-decoration: none;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+
+    li {
+        a {
+            color: unset;
+            display: block;
+            margin: 0.5em 0;
+            padding: 0.75em;
+            background-color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 0.05em 0.15em rgba(0, 0, 0, 0.1);
+            border: 1px solid #ccc;
+            background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.05));
+
+            &:hover {
+                background-color: #e9e9e9;
+                border: 1px solid #bbb;
+                box-shadow: 0 0.05em 0.15em rgba(0, 0, 0, 0.2);
+            }
+        }
+    }
+}
+
+button.pagelink {
+    font-size: 16px;
+    color: unset;
+    display: block;
+    margin: 0.5em 0;
+    padding: 0.75em;
+    width: 100%;
+    text-align: left;
+}
+
+#content {
+    margin-bottom: 100px;
+}
+
+.pagelink {
+    cursor: pointer;
+    user-select: none;
+
+    transition: transform 0.5s ease, height 0.5s ease, margin 0.5s ease, padding 0.5s ease, opacity 0.5s ease, border 0.5s ease;
+
+    height: auto;
+    overflow-y: hidden;
+
+    margin: 0.5em 0;
+
+    a {
+        margin: 0;
+    }
+
+    &.dismissed {
+        height: 0 !important;
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
+.page {
+    transition: opacity 0.5s ease;
+    opacity: 1;
+
+    &.hidden {
+        opacity: 0;
+    }
+}
+
+button {
+    user-select: none;
+    font-family: Inter;
+    /* margin: 0.5em 0; */
+    padding: 0.5em 1em;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 0.05em 0.15em rgba(0, 0, 0, 0.1);
+    border: 1px solid #ccc;
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.05));
+
+    cursor: pointer;
+
+    &:hover {
+        background-color: #e9e9e9;
+        border: 1px solid #bbb;
+        box-shadow: 0 0.05em 0.15em rgba(0, 0, 0, 0.2);
+    }
+
+    white-space: nowrap;
+}
+
+nav, #dev_pane {
+    display: none;
+}
+
+#game_pane {
+    max-width: 30em;
+    margin: auto;
+    padding: 1em;
+    height: 100vh;
+    overflow-y: scroll;
+}
+
+body.dev {
+    nav {
+        display: block;
+        overflow-x: auto;
+        display: flex;
+        flex-direction: row;
+        gap: 0.5em;
+        padding: 0.5em;
+        flex-wrap: nowrap;
+        background-color: #fff;
+        box-shadow: 0.1em 0.1em 0.25em rgba(0, 0, 0, 0.25);
+        z-index: 1;
+        flex-shrink: 0;
+    }
+
+    #resizable-children {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        flex: 1;
+        min-height: 0;
+
+        #dev_pane {
+            flex: 1;
+            box-shadow: 0.15em 0 0.15em rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            min-width: 100px;
+            position: relative;
+
+            #graph-container {
+                flex: 1;
+                position: relative;
+                svg {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    flex-grow: 1;
+                    user-select: none;
+                    cursor: grab;
+                }
+
+                .node {
+                    cursor: pointer;
+                    &:hover {
+                        opacity: 1;
+                    }
+                    opacity: 0.5;
+                    &.active {
+                        opacity: 1;
+                        polygon {
+                            stroke: #000;
+                        }
+                    }
+                }
+                .edge {
+                    opacity: 0.3;
+                    &.active {
+                        opacity: 1;
+                        path {
+                            stroke: #000;
+                        }
+                        polygon {
+                            stroke: #000;
+                            fill: #000;
+                        }
+                    }
+                }
+            }
+
+            #state-container {
+                position: absolute;
+                top: 1em;
+                left: 1em;
+                font-family: 'IBM Plex Mono', monospace;
+                font-size: 0.9em;
+                background-color: #fff;
+                padding: 0.5em;
+                white-space: pre;
+                box-shadow: 0.1em 0.1em 0.25em rgba(0, 0, 0, 0.25);
+                border-radius: 0.25em;
+            }
+        }
+
+        .divider {
+            width: 8px;
+            background: #f0f0f0;
+            cursor: col-resize;
+            transition: background 0.2s;
+        }
+
+        .divider:hover {
+            /* background: #999; */
+        }
+
+        #game_pane {
+            width: 30%;
+            min-width: 200px;
+            max-width: 50%;
+            overflow-y: scroll;
+            padding: 0.5em;
+            
+
+            &::-webkit-scrollbar {
+                width: 8px;
+            }
+            &::-webkit-scrollbar-thumb {
+                background: rgba(0,0,0,0.3);
+                border-radius: 4px;
+            }
+        }
+    }
+}
+
+hr {
+    height: 1px;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.15);
+}
+
+table {
+    border-collapse: collapse;
+    /* width: 100%; */
+    margin: 1em 0;
+    border-radius: 0.25em;
+    overflow: hidden;
+
+    th, td {
+        padding: 0.5em;
+        text-align: left;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    th {
+        background-color: rgba(0,0,0,0.1);
+        font-weight: bold;
+    }
+    tr:nth-child(even) {
+        background-color: rgba(0,0,0,0.03);
+    }
+}
+
+body.skip-animations {
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+div.choice {
+    display: flex;
+    flex-direction: row;
+    gap: 0.75em;
+
+    .pagelink {
+        text-align: center
+    }
+}

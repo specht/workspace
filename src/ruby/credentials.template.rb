@@ -7,6 +7,7 @@ WEBSITE_HOST = "code.hackschule.de"
 WEB_ROOT = DEVELOPMENT ? 'http://localhost:8025' : "https://#{WEBSITE_HOST}"
 PHPMYADMIN_WEB_ROOT = "#{WEB_ROOT}/phpmyadmin/"
 PGADMIN_WEB_ROOT = "#{WEB_ROOT}/pgadmin/"
+NEO4J_WEB_ROOT = "#{WEB_ROOT}/neo4j/browser/"
 
 LOGIN_CODE_SALT = 'bitte_ein_salt_eintragen'
 
@@ -24,6 +25,8 @@ MYSQL_PASSWORD_SALT = 'bitte_ein_langes_salt_generieren'
 POSTGRES_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
 POSTGRES_PASSWORD_SALT = 'bitte_ein_langes_salt_generieren'
 PGADMIN_PASSWORD = 'bitte_ein_passwort_eintragen'
+NEO4J_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
+NEO4J_PASSWORD_SALT = 'bitte_ein_langes_salt_generieren'
 
 if defined? Mail
     Mail.defaults do

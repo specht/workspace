@@ -10,10 +10,16 @@ when 'vakadell'
 end
 latest_path = Dir.glob(File.join(path, '*')).sort_by { |f| File.mtime(f) }.last
 
+fuzz = 50
+
+if ARGV.size > 0
+    fuzz = ARGV.first.to_i
+end
+
 STDERR.puts latest_path
 
 print "Please enter image title: "
-title = gets.strip
+title = $stdin.gets.strip
 nocrop = false
 if title[0] == '*'
     title = title[1..-1]
@@ -28,12 +34,14 @@ target_path = "#{File.join(latest_content_path, slug)}.webp"
 
 if File.exist?(target_path)
     print "File already exists! Replace it? (y/n) "
-    answer = gets.strip
+    answer = $stdin.gets.strip
     if answer != 'y'
         exit
     end
 end
 
-system("mogrify -fuzz 50% -trim +repage \"#{latest_path}\"") unless nocrop
+if fuzz > 0
+    system("mogrify -fuzz #{fuzz}% -trim +repage \"#{latest_path}\"") unless nocrop
+end
 system("cwebp -lossless \"#{latest_path}\" -o \"#{target_path}\"")
 system("rm \"#{latest_path}\"")

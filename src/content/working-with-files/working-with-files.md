@@ -123,9 +123,9 @@ Wechsle wieder in das übergeordnete Verzeichnis, indem du `cd ..` eingibst und 
 
 ### Die Tab-Ergänzung verwenden
 
-Ein nützliches Feature des Terminals ist die Tab-Ergänzung. Wenn du anfängst, einen Befehl oder einen Dateinamen einzugeben, kannst du die Tab-Taste drücken, um den Befehl oder den Dateinamen automatisch zu vervollständigen. Wenn es mehrere Möglichkeiten gibt, kannst du die Tab-Taste zweimal drücken, um eine Liste der verfügbaren Optionen zu sehen.
+Ein nützliches Feature des Terminals ist die Tab-Ergänzung. Wenn du anfängst, einen Befehl oder einen Dateinamen einzugeben, kannst du die <span class='key'>Tab</span>-Taste drücken, um den Befehl oder den Dateinamen automatisch zu vervollständigen. Wenn es mehrere Möglichkeiten gibt, kannst du die <span class='key'>Tab</span>-Taste zweimal drücken, um eine Liste der verfügbaren Optionen zu sehen.
 
-Wechsle wieder in das Verzeichnis, aber gib diesmal nur `cd w` ein und drücke die Tab-Taste. Das Terminal vervollständigt den Befehl automatisch, weil es nur eine mögliche Option für einen Verzeichniswechsel gibt, die mit `w` beginnt.
+Wechsle wieder in das Verzeichnis, aber gib diesmal nur `cd w` ein und drücke die <span class='key'>Tab</span>-Taste. Das Terminal vervollständigt den Befehl automatisch, weil es nur eine mögliche Option für einen Verzeichniswechsel gibt, die mit `w` beginnt.
 
 Lass dir anschließend die Inhalte des Verzeichnisses mit `ls -l` anzeigen:
 
@@ -388,7 +388,7 @@ tail words.txt
 In diesem Abschnitt lernst du die Befehle <code>tree</code>, <code>unzip</code>, <code>tar</code>, <code>gzip</code> und <code>bzip2</code> kennen.
 </div>
 
-Gib den Befehl `tree` ein, um eine Baumstruktur des aktuellen Verzeichnisses anzuzeigen. Der Befehl `tree` zeigt dir eine Baumstruktur des aktuellen Verzeichnisses an, beginnend mit dem aktuellen Verzeichnis. Wenn du `tree` ohne Argumente eingibst, wird die Baumstruktur des aktuellen Verzeichnisses angezeigt. Wenn du `tree` mit einem Verzeichnisnamen eingibst, wird die Baumstruktur dieses Verzeichnisses angezeigt.
+Gib den Befehl `tree` ein, um eine Baumstruktur des aktuellen Verzeichnisses anzuzeigen.
 
 <img class='full' src='tree.webp'>
 
