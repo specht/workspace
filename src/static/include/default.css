@@ -1094,3 +1094,68 @@ button .bi {
         width: 100%;
     }
 }
+
+.tutorial_card3 {
+    display: flex;
+    flex-direction: column;
+    border-radius: 0.75em;
+    @media (max-width: 400px) {
+        border-radius: 0.5em;
+    }
+    
+    box-shadow: 0 0.25em 0.75em rgba(0,0,0,0.1);
+    overflow: hidden;
+    width: 100%;
+    margin-bottom: 1.5em;
+    position: relative;
+    transition: box-shadow 0.2s ease;
+
+    &:hover {
+        text-decoration: none;
+        box-shadow: 0 0.25em 0.75em rgba(0,0,0,0.3);
+    }
+
+    img {
+        width: 100%;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+    }
+
+    .shade {
+        width: 100%;
+        aspect-ratio: 16/9;
+        position: absolute;
+        left: 0;
+        top: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.0) 10%);
+    }
+
+    .card-content {
+        padding: 1em;
+
+        color: #222;
+        border-top: 1px solid #eee;
+
+        h4 {
+            font-size: 1.25rem;
+            margin: 0 0 8px 0;
+            font-weight: bold;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .abstract {
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;     /* Show max 3 lines */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+}

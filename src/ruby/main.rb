@@ -488,9 +488,12 @@ class Main < Sinatra::Base
         @@content = {}
 
         redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
+        @@parse_content_count ||= 0
+        @@parse_content_count += 1
         paths.each do |entry|
             section = entry[:section]
             path = entry[:original_path]
+            next if @@parse_content_count > 1 && entry[:kenney]
             markdown = nil
             unless entry[:kenney]
                 next unless path
@@ -1561,16 +1564,33 @@ class Main < Sinatra::Base
                     section[:entries].reject do |entry|
                         (!DEVELOPMENT) && @@content[entry][:dev_only]
                     end.each.with_index do |slug, index|
+                        # content = @@content[slug]
+                        # io.puts "<div class='#{section[:compact] ? 'col-sm-6' : 'col-sm-12'} #{section[:compact] ? 'col-md-4' : 'col-md-12'} #{section[:compact] ? 'col-lg-4' : 'col-lg-6'}'>"
+                        # io.puts "<a href='/#{slug}' class='tutorial_card2 #{section[:compact] ? 'compact' : ''}'>"
+                        # io.puts "#{content[:dev_only] ? '<span class="badge badge-sm bg-danger">dev</span> ' : ''}<h4>#{content[:title]}</h4>"
+                        # io.puts "<div class='inner'>"
+                        # additional_classes = []
+                        # if content[:needs_contrast] == 'light'
+                        #     additional_classes << 'dark-only-bg-contrast-light'
+                        # end
+                        # io.puts "<img class='#{additional_classes.join(' ')}' src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
+                        # io.puts "<div class='abstract'>#{content[:abstract]}</div>"
+                        # io.puts "</div>"
+                        # io.puts "</a>"
+                        # io.puts "</div>"
+                        # # io.puts "<hr>"
                         content = @@content[slug]
-                        io.puts "<div class='#{section[:compact] ? 'col-sm-6' : 'col-sm-12'} #{section[:compact] ? 'col-md-4' : 'col-md-12'} #{section[:compact] ? 'col-lg-4' : 'col-lg-6'}'>"
-                        io.puts "<a href='/#{slug}' class='tutorial_card2 #{section[:compact] ? 'compact' : ''}'>"
-                        io.puts "#{content[:dev_only] ? '<span class="badge badge-sm bg-danger">dev</span> ' : ''}<h4>#{content[:title]}</h4>"
-                        io.puts "<div class='inner'>"
+                        io.puts "<div class='#{section[:compact] ? 'col-sm-6' : 'col-sm-6'} #{section[:compact] ? 'col-md-4' : 'col-md-6'} #{section[:compact] ? 'col-lg-4' : 'col-lg-6'}'>"
+                        io.puts "<a href='/#{slug}' class='tutorial_card3 #{section[:compact] ? 'compact' : ''}'>"
+                        # io.puts "<div class='inner'>"
                         additional_classes = []
                         if content[:needs_contrast] == 'light'
                             additional_classes << 'dark-only-bg-contrast-light'
                         end
                         io.puts "<img class='#{additional_classes.join(' ')}' src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
+                        io.puts "<div class='shade'></div>"
+                        io.puts "<div class='card-content'>"
+                        io.puts "#{content[:dev_only] ? '<span class="badge badge-sm bg-danger">dev</span> ' : ''}<h4>#{content[:title]}</h4>"
                         io.puts "<div class='abstract'>#{content[:abstract]}</div>"
                         io.puts "</div>"
                         io.puts "</a>"

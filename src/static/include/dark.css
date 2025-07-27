@@ -128,3 +128,20 @@ div.floatright img {
 .sponsor {
     filter: invert(1);
 }
+.tutorial_card3 {
+    img {
+        background-color: rgba(0,0,0,0.5);
+    }
+    .card-content {
+        background-color: #181818;
+        border-top: 1px solid #444;
+
+        h4 {
+            color: #ddd;
+        }
+
+        .abstract {
+            color: #aaa;
+        }
+    }
+}
