@@ -144,7 +144,7 @@ if PROFILE.include?(:dynamic)
         :working_dir => '/src/ruby',
         :privileged => true,
         :entrypoint =>  DEVELOPMENT ?
-            'rerun -b --dir /src/ruby -s SIGKILL \'rackup --host 0.0.0.0\'' :
+            'rerun -b --dir /src/ruby -s SIGKILL -- rackup --host 0.0.0.0' :
             'rackup --host 0.0.0.0'
     }
     if PROFILE.include?(:neo4j)
@@ -248,12 +248,12 @@ docker_compose[:services][:pgadmin] = {
     },
 }
 
-docker_compose[:services][:tensorflowjs] = {
-    :image => 'evenchange4/docker-tfjs-converter',
-    :volumes => ["#{INTERNAL_PATH}:/internal"],
-    :restart => 'always',
-    :tty => true,
-}
+# docker_compose[:services][:tensorflowjs] = {
+#     :image => 'evenchange4/docker-tfjs-converter',
+#     :volumes => ["#{INTERNAL_PATH}:/internal"],
+#     :restart => 'always',
+#     :tty => true,
+# }
 
 docker_compose[:services].values.each do |x|
     x[:network_mode] = 'default'
