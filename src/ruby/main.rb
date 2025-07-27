@@ -1303,6 +1303,7 @@ class Main < Sinatra::Base
                     config['files.exclude'] ||= {}
                     config['files.exclude']['**/.*'] = true
                     config['files.autoSave']||= "off"
+                    config["window.menuBarVisibility"] ||= "classic"
                     config['telemetry.telemetryLevel'] ||= 'off'
                     if test_tag
                         config['workbench.colorTheme'] = 'Tomorrow Night Blue'

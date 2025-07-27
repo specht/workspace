@@ -1,4 +1,4 @@
-FROM linuxserver/code-server:4.95.3
+FROM linuxserver/code-server:4.102.2
 RUN usermod -d /workspace abc
 RUN curl -sL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 RUN sudo apt-get update && sudo apt-get install -y \
@@ -54,22 +54,31 @@ RUN rm -rf /smalltalk-3.2.5
 RUN apt-get update && apt-get install dart
 RUN apt-get install -y mycli
 
+RUN wget -q https://github.com/gohugoio/hugo/releases/download/v0.148.1/hugo_0.148.1_linux-amd64.deb
+RUN dpkg -i hugo_0.148.1_linux-amd64.deb
+RUN rm hugo_0.148.1_linux-amd64.deb
 
-# RUN pip install --break-system-packages matplotlib numpy==1.26.4 keras==2.11.0 tensorflow==2.11.0 tensorflowjs==4.0.0
-#RUN pip install --break-system-packages matplotlib numpy keras tensorflow tensorflowjs
-#RUN apt-get install -y python3-ipykernel
-#RUN apt-get update && sudo apt-get install apt-transport-https
-#RUN wget -q https://github.com/gohugoio/hugo/releases/download/v0.147.0/hugo_0.147.0_linux-amd64.deb
-#RUN dpkg -i hugo_0.147.0_linux-amd64.deb
-#RUN rm hugo_0.147.0_linux-amd64.deb
+RUN apt-get update && apt-get install -y graphviz mtr whois dnsutils host ntpdate
+RUN yes | unminimize
 
-#RUN wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg  --dearmor -o /usr/share/keyrings/dart.gpg
-#RUN echo 'deb [signed-by=/usr/share/keyrings/dart.gpg arch=amd64] https://storage.googleapis.com/download.dartlang.org/linux/debian stable main' | tee /etc/apt/sources.list.d/dart_stable.list
+RUN apt-get update && apt-get install -y \
+    software-properties-common wget build-essential libssl-dev libffi-dev libbz2-dev libreadline-dev libsqlite3-dev \
+    zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev libgdbm-dev uuid-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-#RUN apt-get update && apt-get install -y dart graphviz mtr whois dnsutils host ntpdate
-#RUN yes | unminimize
-#RUN pip install matplotlib numpy==1.26.4 keras==2.11.0 tensorflow==2.11.0 tensorflowjs==4.0.0
-#RUN pip install -U mycli
+RUN mkdir /tmp/python-build && cd /tmp/python-build \
+    && wget https://www.python.org/ftp/python/3.10.12/Python-3.10.12.tgz \
+    && tar xzf Python-3.10.12.tgz \
+    && cd Python-3.10.12 \
+    && ./configure --enable-optimizations \
+    && make -j$(nproc) \
+    && make altinstall
+
+RUN python3.10 -m venv /opt/python-env \
+    && /opt/python-env/bin/pip install --upgrade pip setuptools wheel \
+    && /opt/python-env/bin/pip install matplotlib jax==0.4.21 jaxlib==0.4.21 numpy==1.26.4 keras==2.11.0 tensorflow==2.11.0 tensorflowjs==4.0.0 ipykernel \
+    && chmod -R a+rx /opt/python-env
+
 COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run
 COPY svc-code-server-run /etc/s6-overlay/s6-rc.d/svc-code-server/run
 RUN echo "export GEM_HOME=\$HOME/.gem" >> /root/.bashrc
