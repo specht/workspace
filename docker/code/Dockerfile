@@ -1,5 +1,7 @@
 FROM linuxserver/code-server:4.102.2
 
+COPY dart.deb /
+
 # Set user home directory early (rarely changed)
 RUN usermod -d /workspace abc
 
@@ -25,9 +27,7 @@ RUN wget -O /smalltalk.tar.gz https://ftp.gnu.org/gnu/smalltalk/smalltalk-3.2.5.
     && cd / && rm -rf /smalltalk-3.2.5
 
 # Dart SDK install in one step
-# RUN curl -sL -o /dart.deb https://storage.googleapis.com/dart-archive/channels/stable/release/latest/linux_packages/dart_3.8.2-1_amd64.deb \
-#     && dpkg -i /dart.deb \
-#     && rm /dart.deb
+RUN dpkg -i /dart.deb && rm /dart.deb
 
 # Install mycli and hugo together (small packages)
 RUN apt-get update && apt-get install -y mycli graphviz \
