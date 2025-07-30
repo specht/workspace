@@ -203,6 +203,7 @@ if !DEVELOPMENT
     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_private__key'] = 'key.pem'
     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_public__certificate'] = 'fullchain.pem'
     docker_compose[:services][:neo4j_user][:environment]['NEO4J_server_bolt_tls__level'] = 'OPTIONAL'
+    docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_usage__report_enabled'] = 'false'
 end
 
 
