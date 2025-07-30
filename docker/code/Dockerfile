@@ -25,7 +25,7 @@ RUN wget -O /smalltalk.tar.gz https://ftp.gnu.org/gnu/smalltalk/smalltalk-3.2.5.
     && cd / && rm -rf /smalltalk-3.2.5
 
 # Dart SDK install in one step
-RUN curl -o /dart.deb https://storage.googleapis.com/dart-archive/channels/stable/release/latest/linux_packages/dart_3.8.2-1_amd64.deb \
+RUN curl -sL -o /dart.deb https://storage.googleapis.com/dart-archive/channels/stable/release/latest/linux_packages/dart_3.8.2-1_amd64.deb \
     && dpkg -i /dart.deb \
     && rm /dart.deb
 
