@@ -48,10 +48,9 @@ RUN wget -O /smalltalk.tar.gz https://ftp.gnu.org/gnu/smalltalk/smalltalk-3.2.5.
 RUN tar xzf /smalltalk.tar.gz
 RUN rm /smalltalk.tar.gz
 RUN cd /smalltalk-3.2.5 && ./configure && make && make install
-RUN wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg  --dearmor -o /usr/share/keyrings/dart.gpg
-RUN echo 'deb [signed-by=/usr/share/keyrings/dart.gpg arch=amd64] https://storage.googleapis.com/download.dartlang.org/linux/debian stable main' | tee /etc/apt/sources.list.d/dart_stable.list
 RUN rm -rf /smalltalk-3.2.5
-RUN apt-get update && apt-get install dart
+RUN curl https://storage.googleapis.com/dart-archive/channels/stable/release/latest/linux_packages/dart_3.8.2-1_amd64.deb
+RUN dpkg -i dart_3.8.2-1_amd64.deb && rm dart_3.8.2-1_amd64.deb
 RUN apt-get install -y mycli
 
 RUN wget -q https://github.com/gohugoio/hugo/releases/download/v0.148.1/hugo_0.148.1_linux-amd64.deb
