@@ -21,6 +21,9 @@ RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - \
         libssl-dev libffi-dev libbz2-dev libreadline-dev libsqlite3-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev libgdbm-dev uuid-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Install rustup to /workspace
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | HOME=/workspace sh -s -- -y
+
 # Smalltalk build: download + build in one RUN to cache whole step, remove tarball afterward
 RUN wget -O /smalltalk.tar.gz https://ftp.gnu.org/gnu/smalltalk/smalltalk-3.2.5.tar.gz \
     && tar xzf /smalltalk.tar.gz \
