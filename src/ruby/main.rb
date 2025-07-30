@@ -395,7 +395,7 @@ class Main < Sinatra::Base
         [1024, 512].each do |width|
             target_path_width = "/webcache/#{image_sha1}-#{width}.webp"
             unless FileUtils.uptodate?(target_path_width, [target_path])
-                system("convert #{target_path} -resize #{width}x #{target_path_width}")
+                system("magick #{target_path} -resize #{width}x #{target_path_width}")
                 if $? != 0
                     STDERR.puts "...conversion of #{image_path} failed!"
                 end
