@@ -50,7 +50,7 @@ RUN rm /smalltalk.tar.gz
 RUN cd /smalltalk-3.2.5 && ./configure && make && make install
 RUN rm -rf /smalltalk-3.2.5
 RUN curl -o /dart.deb https://storage.googleapis.com/dart-archive/channels/stable/release/latest/linux_packages/dart_3.8.2-1_amd64.deb
-RUN dpkg -i /dart.deb  && rm /dart.deb 
+RUN dpkg -i /dart.deb  && rm /dart.deb
 RUN apt-get install -y mycli
 
 RUN wget -q https://github.com/gohugoio/hugo/releases/download/v0.148.1/hugo_0.148.1_linux-amd64.deb
