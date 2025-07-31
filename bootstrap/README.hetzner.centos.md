@@ -157,7 +157,7 @@ Außerdem die Erinnerung für jeden Reboot:
 
 Probiere einmal, den Server neu zu starten und diese Schritte durchzuführen. Du solltest anschließend mit `mountpoint /mnt/hackschule` und `docker ps` sehen, dass beide Schritte erfolgreich waren:
 
-![](./check.png)
+![](/bootstrap/check.png)
 
 ## Schritt 4: Workspace vorbereiten
 
