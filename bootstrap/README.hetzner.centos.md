@@ -48,3 +48,20 @@ Führe dann das 1. Setup-Skript aus:
 curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/specht/workspace/refs/heads/master/bootstrap/01-prepare-server.sh | sh
 ```
 
+Das Skript installiert Ruby und lädt das nächste Skript herunter.
+
+## Schritt 2: Server aufsetzen
+
+Öffne die Datei `config.yaml` und trage deinen gewünschten Login sowie deinen public key ein. Um das »storage device« kümmern wir uns später.
+
+Führe das 2. Setup-Skript aus (das dauert ungefähr 2 bis 3 Minuten):
+
+```
+./02-setup-server.sh
+```
+
+Wenn alles geklappt hat, kannst du den Server neu starten:
+
+```
+reboot
+```
