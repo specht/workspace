@@ -110,14 +110,14 @@ END_OF_STRING
 
 puts colored("2. Härte SSH-Server ", color: :cyan, bold: true)
 run_with_scrolling_tail(<<~END_OF_STRING)
-    sed -i -e '/^\(#\|\)PermitRootLogin/s|^.*$|PermitRootLogin no|' /etc/ssh/sshd_config
-    sed -i -e '/^\(#\|\)PasswordAuthentication/s|^.*$|PasswordAuthentication no|' /etc/ssh/sshd_config
-    sed -i -e '/^\(#\|\)ChallengeResponseAuthentication/s|^.*$|ChallengeResponseAuthentication no|' /etc/ssh/sshd_config
-    sed -i -e '/^\(#\|\)MaxAuthTries/s|^.*$|MaxAuthTries 2|' /etc/ssh/sshd_config
-    sed -i -e '/^\(#\|\)AllowTcpForwarding/s|^.*$|AllowTcpForwarding no|' /etc/ssh/sshd_config
-    sed -i -e '/^\(#\|\)X11Forwarding/s|^.*$|X11Forwarding no|' /etc/ssh/sshd_config
-    sed -i -e '/^\(#\|\)AllowAgentForwarding/s|^.*$|AllowAgentForwarding no|' /etc/ssh/sshd_config
-    sed -i -e '/^\(#\|\)AuthorizedKeysFile/s|^.*$|AuthorizedKeysFile .ssh/authorized_keys|' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)ChallengeResponseAuthentication/s/^.*$/ChallengeResponseAuthentication no/' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)MaxAuthTries/s/^.*$/MaxAuthTries 2/' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)AllowTcpForwarding/s/^.*$/AllowTcpForwarding no/' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)X11Forwarding/s/^.*$/X11Forwarding no/' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)AllowAgentForwarding/s/^.*$/AllowAgentForwarding no/' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)AuthorizedKeysFile/s/^.*$/AuthorizedKeysFile .ssh\/authorized_keys/' /etc/ssh/sshd_config
     systemctl reload sshd
 END_OF_STRING
 
@@ -152,10 +152,10 @@ run_with_scrolling_tail(<<~END_OF_STRING)
     firewall-cmd --reload
 END_OF_STRING
 
-puts colored("7. Installiere Ruby, Git, htop und bash-completion ", color: :cyan, bold: true)
+puts colored("7. Installiere Git, htop und bash-completion ", color: :cyan, bold: true)
 run_with_scrolling_tail(<<~END_OF_STRING)
     # Install ruby, git, htop and bash-completion
-    dnf install -y ruby git htop bash-completion
+    dnf install -y git htop bash-completion
 END_OF_STRING
 
 puts colored("8. Installiere Docker ", color: :cyan, bold: true)
