@@ -142,7 +142,7 @@ Die besondere Situation im Workspace ist, dass wir viele Schüler:innen haben, d
 
 Melde dich vom Server ab und verbinde dich erneut, du solltest jetzt ein Banner sehen:
 
-![](banner.png)
+![](./banner.png)
 
 Oben siehst du in drei Zeilen die Festplattenbelegung:
 
@@ -157,7 +157,7 @@ Außerdem die Erinnerung für jeden Reboot:
 
 Probiere einmal, den Server neu zu starten und diese Schritte durchzuführen. Du solltest anschließend mit `mountpoint /mnt/hackschule` und `docker ps` sehen, dass beide Schritte erfolgreich waren:
 
-![](check.png)
+![](./check.png)
 
 ## Schritt 4: Workspace vorbereiten
 
