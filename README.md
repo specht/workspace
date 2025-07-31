@@ -100,7 +100,3 @@ docker compose up -d
 ```
 
 In der `config.rb` sollten die Werte für `VIRTUAL_HOST`, `LETSENCRYPT_HOST` und `LETSENCRYPT_EMAIL` angepasst werden, damit das Frontend automatisch Letsencrypt-Zertifikate anfordern kann.
-
-## Mitmachen
-
-Wenn du Fragen, Hinweise, Wünsche oder Anregungen hast, kannst du gerne ein Issue aufmachen oder einen Merge Request schicken. Oder schreib einfach eine Mail an <a href='mailto:specht@gymnasiumsteglitz.de'>specht@gymnasiumsteglitz.de</a>. Ich freue mich über jede Art von Feedback.
