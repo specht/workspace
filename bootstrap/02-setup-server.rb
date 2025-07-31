@@ -1,83 +1,28 @@
 #!/usr/bin/env ruby
+
 require 'yaml'
 require 'io/console'
-
-def colored(text, color: nil, bg: nil, bold: false, underline: false)
-    codes = []
-
-    colors = {
-        black: 30, red: 31, green: 32, yellow: 33, blue: 34,
-        magenta: 35, cyan: 36, white: 37, gray: 90
-    }
-
-    bg_colors = {
-        black: 40, red: 41, green: 42, yellow: 43, blue: 44,
-        magenta: 45, cyan: 46, white: 47
-    }
-
-    codes << colors[color.to_sym] if color && colors[color.to_sym]
-    codes << bg_colors[bg.to_sym] if bg && bg_colors[bg.to_sym]
-    codes << 1 if bold
-    codes << 4 if underline
-
-    start = "\e[#{codes.join(';')}m"
-    reset = "\e[0m"
-
-    "#{start}#{text}#{reset}"
-end
-
-def confirm(prompt = "Do you want to proceed? (j/n): ")
-    print "#{prompt} "
-    input = gets.chomp.strip
-
-    until input.match?(/\A[Jn]\z/i)
-        print "Bitte gib j (ja) oder n (nein) ein: "
-        input = gets.chomp.strip
-    end
-
-    input.downcase == "j"
-end
-
-def run_with_scrolling_tail(cmd, line_limit: 8)
-    lines = []
-    IO.popen(cmd, err: [:child, :out]) do |io|
-        io.each_line do |line|
-            lines << line.chomp
-            print "\e[#{lines.size - 1}A" unless lines.size == 1
-            lines.shift if lines.size > line_limit
-            lines.each { |l| puts l.ljust(IO.console.winsize[1]) }
-            # sleep 0.1
-                # puts line.ljust(IO.console.winsize[1]).strip
-        end
-    end
-    # Process.wait
-    status = $?.exitstatus
-    # print "\e[#{lines.size}A"
-    # lines.each { puts " " * IO.console.winsize[1] }
-    # print "\e[#{lines.size}A"
-    if status != 0
-        puts "❌ Ups, etwas ging schief:\nBefehl: #{cmd}\nStatus: #{status}"
-        exit status
-    end
-end
+require './common.rb'
 
 config = YAML.load(File.read('config.yaml'))
 
 LOGIN = config['login']
 PUBLIC_KEY = config['public_key']
 DOMAIN = config['domain']
+STORAGE_DEVICE = config['storage_device']
 
 unless Process.uid == 0
     puts "Dieses Skript muss als root laufen."
     exit(1)
 end
 
-if LOGIN.nil? || PUBLIC_KEY.nil? || DOMAIN.nil?
+if LOGIN.nil? || PUBLIC_KEY.nil? || DOMAIN.nil? || STORAGE_DEVICE.nil?
     puts "Bevor es losgehen kann, musst du in der config.yaml ein paar Angaben machen:"
     puts
-    puts "login      : Dein Login auf dem Server (nach außen nicht sichtbar)"
-    puts "public_key : Dein Public Key"
-    puts "domain     : Die Domain, unter der Workspace gehostet werden soll"
+    puts "login          : Dein Login auf dem Server (nach außen nicht sichtbar)"
+    puts "public_key     : Dein Public Key"
+    puts "domain         : Die Domain, unter der Workspace gehostet werden soll"
+    puts "storage_device : Der Pfad zum Volume (z. B. /dev/sdb)"
     puts
     exit(1)
 end
@@ -130,13 +75,11 @@ END_OF_STRING
 
 puts colored("4. Installiere VDO  ", color: :cyan, bold: true)
 run_with_scrolling_tail(<<~END_OF_STRING)
-    # Install VDO
     dnf install -y vdo lvm2
 END_OF_STRING
 
 puts colored("5. Installiere fail2ban ", color: :cyan, bold: true)
 run_with_scrolling_tail(<<~END_OF_STRING)
-    # Install fail2ban
     dnf install -y fail2ban
     systemctl enable --now fail2ban
     bash -c "echo -e '[sshd]\\nenabled=true\\nport=ssh\\nlogpath=%(sshd_log)s\\nbackend=systemd\\nmaxretry=5\\nbantime=1h\\nfindtime=10m' > /etc/fail2ban/jail.d/sshd.local"
@@ -145,7 +88,6 @@ END_OF_STRING
 
 puts colored("6. Installiere Firewall ", color: :cyan, bold: true)
 run_with_scrolling_tail(<<~END_OF_STRING)
-    # Install firewall
     dnf install -y firewalld
     systemctl enable --now firewalld
     firewall-cmd --permanent --add-service=ssh
@@ -154,13 +96,11 @@ END_OF_STRING
 
 puts colored("7. Installiere Git, htop und bash-completion ", color: :cyan, bold: true)
 run_with_scrolling_tail(<<~END_OF_STRING)
-    # Install ruby, git, htop and bash-completion
     dnf install -y git htop bash-completion
 END_OF_STRING
 
 puts colored("8. Installiere Docker ", color: :cyan, bold: true)
 run_with_scrolling_tail(<<~END_OF_STRING)
-    # Install Docker CE
     dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
     dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     systemctl enable --now docker
@@ -169,7 +109,6 @@ END_OF_STRING
 
 puts colored("9. Installiere borg und borgmatic ", color: :cyan, bold: true)
 run_with_scrolling_tail(<<~END_OF_STRING)
-    # Install borgmatic
     dnf install -y borgbackup python3-pip python3-setuptools
     pip3 install --upgrade pip
     pip3 install borgmatic
@@ -177,10 +116,16 @@ END_OF_STRING
 
 puts colored("10. Setze Zeitzone ", color: :cyan, bold: true)
 run_with_scrolling_tail(<<~END_OF_STRING)
-    # Set timezone
     timedatectl set-timezone Europe/Berlin
+END_OF_STRING
+
+puts colored("11. Hole nächstes Skript: 03-setup-storage.rb ", color: :cyan, bold: true)
+run_with_scrolling_tail(<<~END_OF_STRING)
+    wget -q https://raw.githubusercontent.com/specht/workspace/refs/heads/master/bootstrap/03-setup-storage.rb -O 03-setup-storage.rb
+    chmod +x 03-setup-storage.rb
 END_OF_STRING
 
 puts colored("Fertig, starte nun den Server neu mit: reboot now", color: :green, bold: true)
 
 # curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/specht/workspace/refs/heads/master/bootstrap/01-prepare-server.sh | sh
+
