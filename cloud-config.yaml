@@ -27,8 +27,6 @@ runcmd:
   - sed -i -e '/^\(#\|\)AllowAgentForwarding/s/^.*$/AllowAgentForwarding no/' /etc/ssh/sshd_config
   - sed -i -e '/^\(#\|\)AuthorizedKeysFile/s/^.*$/AuthorizedKeysFile .ssh\/authorized_keys/' /etc/ssh/sshd_config
   - sed -i '$a AllowUsers micha' /etc/ssh/sshd_config
-  # >>> start of docker install
-  # This is taken from https://docs.docker.com/engine/install/ubuntu/
   - sudo apt-get update
   - sudo apt-get install ca-certificates curl
   - sudo install -m 0755 -d /etc/apt/keyrings
@@ -39,10 +37,6 @@ runcmd:
   - sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
   - sudo groupadd docker
   - sudo usermod -aG docker micha
-  - sudo git clone https://github.com/magicmonty/bash-git-prompt.git /home/micha/.bash-git-prompt --depth=1
-  - echo "GIT_PROMPT_ONLY_IN_REPO=1" >> /home/micha/.bashrc
-  - echo "source ~/.bash-git-prompt/gitprompt.sh" >> /home/micha/.bashrc
-  # <<< end of docker install
   - sudo apt-get update
   - sudo apt-get install -y borgbackup borgmatic
   - sudo timedatectl set-timezone Europe/Berlin
