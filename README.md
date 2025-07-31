@@ -89,6 +89,6 @@ Ich betreibe dafür einen Cloud-Server bei Hetzner mit den folgenden Eckdaten:
 - 80 GB Festplatte
 - 100 GB externes Volume
 
-Je nach Bedarf kann man flexibel zwischen verschiedenen Servern wechseln. Wenn viel los ist und viel gearbeitet wird, verwende ich einen Server mit 16 Kernen und 32 GB RAM für ca. 65 € / Monat. Wenn weniger los ist, z. B. in den Ferien, reicht auch ein Server mit 4 Kernen und 8 GB RAM für ca. 8 € / Monat. Dafür wird der Server einfach über die Cloud Console heruntergefahren, skaliert und neu gestartet. Der ganze Vorgang dauert eine bis zwei Minuten und die Abrechnung erfolg minutengenau, so dass man die Kosten gut im Griff hat.
+Je nach Bedarf kann man flexibel zwischen verschiedenen Servern wechseln. Wenn viel los ist und viel gearbeitet wird, verwende ich einen Server mit 16 Kernen und 32 GB RAM für ca. 65 € / Monat. Wenn weniger los ist, z. B. in den Ferien, reicht auch ein Server mit 4 Kernen und 8 GB RAM für ca. 8 € / Monat. Dafür wird der Server einfach über die Cloud Console heruntergefahren, skaliert und neu gestartet. Der ganze Vorgang dauert eine bis zwei Minuten und die Abrechnung erfolg stundengenau, so dass man die Kosten gut im Griff hat.
 
-Falls du es ausprobieren möchtest, findest du [hier eine Schnellstart-Anleitung](bootstrap/README.hetzner.centos.md).
+Falls du mit dem Gedanken spielst, einen eigenen Workspace für deine Schule aufzusetzen und es einfach mal ausprobieren möchtest, findest du [hier eine Schnellstart-Anleitung](bootstrap/README.hetzner.centos.md).

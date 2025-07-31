@@ -1,6 +1,6 @@
-# Schnellstart: Workspace bei Hetzner Cloud hosten
+# Schnellstart: Workspace bei Hetzner hosten
 
-Wenn du deinen eigenen Workspace bei Hetzner hosten möchtest, ist diese Anleitung die Richtige für dich.
+Wenn du deinen eigenen Workspace bei Hetzner hosten möchtest, ist diese Anleitung die Richtige für dich. Da die Cloud-Server bei Hetzner stundengenau abgerechnet werden und nicht teuer sind, kannst du dieses Experiment für wenige Cent leicht durchführen.
 
 ## Voraussetzungen
 
@@ -13,10 +13,10 @@ Du benötigst:
 
 ## Schritt 0: Server und Volume anlegen
 
-Erstelle einen Server:
+Erstelle einen Server (Hetzner Cloud):
 
 - Cent OS Stream 10
-- Shared vCPU (x86), zum Ausprobieren z. B. CPX21
+- Shared vCPU (x86), zum Ausprobieren z. B. CPX21, kann später skaliert werden
 - Gib gleich deinen SSH-Key an
 - Servername: z. B. workspace-server
 
