@@ -142,7 +142,7 @@ Die besondere Situation im Workspace ist, dass wir viele Schüler:innen haben, d
 
 Melde dich vom Server ab und verbinde dich erneut, du solltest jetzt ein Banner sehen:
 
-![](./banner.png)
+<img src="banner.png">
 
 Oben siehst du in drei Zeilen die Festplattenbelegung:
 
