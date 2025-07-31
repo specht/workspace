@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 require 'yaml'
+require 'io/console'
 
 def colored(text, color: nil, bg: nil, bold: false, underline: false)
     codes = []
@@ -25,15 +26,40 @@ def colored(text, color: nil, bg: nil, bold: false, underline: false)
     "#{start}#{text}#{reset}"
 end
 
-def confirm(message)
-    print("#{message}")
-    loop do
-        c = getc()
-        puts c
+def confirm(prompt = "Do you want to proceed? (j/n): ")
+    print "#{prompt} "
+    input = gets.chomp.strip
+
+    until input.match?(/\A[Jn]\z/i)
+        print "Bitte gib j (ja) oder n (nein) ein: "
+        input = gets.chomp.strip
     end
+
+    input.downcase == "j"
 end
 
-puts colored(" Hackschule Workspace Servereinrichtung ", color: :cyan, bg: :blue, bold: true)
+def run_with_scrolling_tail(cmd, line_limit: 8)
+    lines = []
+    IO.popen(cmd, err: [:child, :out]) do |io|
+        io.each_line do |line|
+            lines << line.chomp
+            print "\e[#{lines.size - 1}A" unless lines.size == 1
+            lines.shift if lines.size > line_limit
+            lines.each { |l| puts l.ljust(IO.console.winsize[1]) }
+            # sleep 0.1
+                # puts line.ljust(IO.console.winsize[1]).strip
+        end
+    end
+    # Process.wait
+    status = $?.exitstatus
+    # print "\e[#{lines.size}A"
+    # lines.each { puts " " * IO.console.winsize[1] }
+    # print "\e[#{lines.size}A"
+    if status != 0
+        puts "❌ Ups, etwas ging schief:\nBefehl: #{cmd}\nStatus: #{status}"
+        exit status
+    end
+end
 
 config = YAML.load(File.read('config.yaml'))
 
@@ -41,7 +67,7 @@ LOGIN = config['login']
 PUBLIC_KEY = config['public_key']
 DOMAIN = config['domain']
 
-unless  Process.uid == 0
+unless Process.uid == 0
     puts "Dieses Skript muss als root laufen."
     exit(1)
 end
@@ -56,4 +82,49 @@ if LOGIN.nil? || PUBLIC_KEY.nil? || DOMAIN.nil?
     exit(1)
 end
 
-exit unless confirm("Bist du sicher?")
+puts colored(" ACHTUNG ", color: :white, bg: :red)
+puts
+puts "Dieses Skript nimmt umfangreiche Änderungen an diesem Server vor und"
+puts "richtet den Hackschule Workspace ein. Führe dieses Skript nur auf einem"
+puts "frischen Server aus (Cent OS Stream 10). Auf dem Server oder angeschlossenen"
+puts "Volumes dürfen sich keine Daten befinden, die du noch brauchst."
+puts
+exit unless confirm("Bist du sicher, dass du mit der Einrichtung beginnen möchtest (j/n)?")
+
+puts "Los geht's!"
+
+puts colored(" Hackschule Workspace Servereinrichtung ", color: :white, bg: :blue, bold: true)
+
+puts colored("1. Füge Nutzer hinzu: #{LOGIN} ", color: :cyan, bold: true)
+run_with_scrolling_tail(<<~END_OF_STRING)
+    useradd -m -s /bin/bash #{LOGIN}
+    usermod -aG wheel #{LOGIN}
+    echo "#{LOGIN} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/#{LOGIN}
+    chmod 440 /etc/sudoers.d/#{LOGIN}
+    mkdir -p /home/#{LOGIN}/.ssh
+    echo "$PUBLIC_KEY" > /home/#{LOGIN}/.ssh/authorized_keys
+    chmod 700 /home/#{LOGIN}/.ssh
+    chmod 600 /home/#{LOGIN}/.ssh/authorized_keys
+    chown -R #{LOGIN}:#{LOGIN} /home/#{LOGIN}/.ssh
+END_OF_STRING
+
+puts colored("2. Härte SSH-Server ", color: :cyan, bold: true)
+run_with_scrolling_tail(<<~END_OF_STRING)
+    sed -i -e '/^\(#\|\)PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)ChallengeResponseAuthentication/s/^.*$/ChallengeResponseAuthentication no/' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)MaxAuthTries/s/^.*$/MaxAuthTries 2/' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)AllowTcpForwarding/s/^.*$/AllowTcpForwarding no/' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)X11Forwarding/s/^.*$/X11Forwarding no/' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)AllowAgentForwarding/s/^.*$/AllowAgentForwarding no/' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)AuthorizedKeysFile/s/^.*$/AuthorizedKeysFile .ssh\/authorized_keys/' /etc/ssh/sshd_config
+    systemctl reload sshd
+END_OF_STRING
+
+
+puts colored("3. Paketupdates ", color: :cyan, bold: true)
+run_with_scrolling_tail(<<~END_OF_STRING)
+    dnf install -y epel-release
+    dnf config-manager --set-enabled epel
+    dnf update -y
+END_OF_STRING
