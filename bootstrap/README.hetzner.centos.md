@@ -218,3 +218,42 @@ Achtung: dieser Vorgang dauert lange – ca. 45 Minuten.
 ```
 ./build-image.sh
 ```
+
+### 4.4 Workspace starten
+
+Wir können nun den Workspace starten:
+
+```
+./config.rb up -d
+```
+
+Es wird ein paar Minuten dauern, bis der Workspace läuft – es werden beim ersten Start noch ein paar Dateien und Bilder vorbereitet.
+
+**Hinweis:** `config.rb` ist nur ein Wrapper um `docker compose`, der die `docker-compose.yaml` schreibt, bevor er `docker compose` mit allen übergebenen Argumenten aufruft.
+
+## Schritt 5: Frontend starten
+
+Das Frontend kümmert sich um das TLS-Zertifikat (Letsencrypt) und stellt die Schnittstelle nach außen dar:
+
+```
+cd
+mkdir frontend
+cp workspace/frontend-docker-compose.yaml frontend/docker-compose.yaml
+cd frontend
+```
+
+Jetzt können wir das Frontend starten:
+
+```
+docker compose up -d
+```
+
+Um die Erstellung des Zertifikats zu triggern, müssen wir einmal den Workspace herunterfahren und wieder starten:
+
+```
+cd ~/workspace
+./config down
+./config up -d
+```
+
+Der Workspace sollte nun unter deiner Domain (oder Subdomain) erreichbar sein.
