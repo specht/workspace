@@ -43,7 +43,6 @@ puts colored(" Hackschule Workspace Servereinrichtung ", color: :white, bg: :blu
 
 puts colored("12. Erstelle physisches Volume: #{STORAGE_DEVICE} ", color: :cyan, bold: true)
 run_with_scrolling_tail(<<~END_OF_STRING)
-    umount #{STORAGE_DEVICE}
     pvcreate #{STORAGE_DEVICE}
     vgcreate vdo-vg #{STORAGE_DEVICE}
 END_OF_STRING
