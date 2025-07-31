@@ -69,4 +69,17 @@ END_OF_STRING
 puts colored("16. Trage /mnt/hackschule in /etc/fstab ein ", color: :cyan, bold: true)
 run_with_scrolling_tail(<<~END_OF_STRING)
     echo "/dev/mapper/vdo--vg-vdo1 /mnt/hackschule xfs defaults,noauto 0 0" >> /etc/fstab
+    systemctl daemon-reload
 END_OF_STRING
+
+puts colored("17. Hänge /mnt/hackschule ein ", color: :cyan, bold: true)
+run_with_scrolling_tail(<<~END_OF_STRING)
+    mount /mnt/hackschule
+END_OF_STRING
+
+puts colored("18. Generiere Begrüßungsnachricht nach Login ", color: :cyan, bold: true)
+run_with_scrolling_tail(<<~END_OF_STRING)
+    echo "#{BANNER}" > /home/specht/banner.txt
+END_OF_STRING
+
+
