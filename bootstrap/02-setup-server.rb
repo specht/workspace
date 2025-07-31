@@ -102,7 +102,7 @@ run_with_scrolling_tail(<<~END_OF_STRING)
     echo "#{LOGIN} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/#{LOGIN}
     chmod 440 /etc/sudoers.d/#{LOGIN}
     mkdir -p /home/#{LOGIN}/.ssh
-    echo "$PUBLIC_KEY" > /home/#{LOGIN}/.ssh/authorized_keys
+    echo "#{PUBLIC_KEY}" > /home/#{LOGIN}/.ssh/authorized_keys
     chmod 700 /home/#{LOGIN}/.ssh
     chmod 600 /home/#{LOGIN}/.ssh/authorized_keys
     chown -R #{LOGIN}:#{LOGIN} /home/#{LOGIN}/.ssh
@@ -110,14 +110,14 @@ END_OF_STRING
 
 puts colored("2. Härte SSH-Server ", color: :cyan, bold: true)
 run_with_scrolling_tail(<<~END_OF_STRING)
-    sed -i -e '/^\(#\|\)PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
-    sed -i -e '/^\(#\|\)PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
-    sed -i -e '/^\(#\|\)ChallengeResponseAuthentication/s/^.*$/ChallengeResponseAuthentication no/' /etc/ssh/sshd_config
-    sed -i -e '/^\(#\|\)MaxAuthTries/s/^.*$/MaxAuthTries 2/' /etc/ssh/sshd_config
-    sed -i -e '/^\(#\|\)AllowTcpForwarding/s/^.*$/AllowTcpForwarding no/' /etc/ssh/sshd_config
-    sed -i -e '/^\(#\|\)X11Forwarding/s/^.*$/X11Forwarding no/' /etc/ssh/sshd_config
-    sed -i -e '/^\(#\|\)AllowAgentForwarding/s/^.*$/AllowAgentForwarding no/' /etc/ssh/sshd_config
-    sed -i -e '/^\(#\|\)AuthorizedKeysFile/s/^.*$/AuthorizedKeysFile .ssh\/authorized_keys/' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)PermitRootLogin/s|^.*$|PermitRootLogin no|' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)PasswordAuthentication/s|^.*$|PasswordAuthentication no|' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)ChallengeResponseAuthentication/s|^.*$|ChallengeResponseAuthentication no|' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)MaxAuthTries/s|^.*$|MaxAuthTries 2|' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)AllowTcpForwarding/s|^.*$|AllowTcpForwarding no|' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)X11Forwarding/s|^.*$|X11Forwarding no|' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)AllowAgentForwarding/s|^.*$|AllowAgentForwarding no|' /etc/ssh/sshd_config
+    sed -i -e '/^\(#\|\)AuthorizedKeysFile/s|^.*$|AuthorizedKeysFile .ssh/authorized_keys|' /etc/ssh/sshd_config
     systemctl reload sshd
 END_OF_STRING
 
@@ -182,3 +182,5 @@ run_with_scrolling_tail(<<~END_OF_STRING)
 END_OF_STRING
 
 puts colored("Fertig, starte nun den Server neu mit: reboot now", color: :green, bold: true)
+
+# curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/specht/workspace/refs/heads/master/bootstrap/01-prepare-server.sh | sh
