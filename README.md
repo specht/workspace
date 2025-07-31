@@ -91,12 +91,4 @@ Ich betreibe dafür einen Cloud-Server bei Hetzner mit den folgenden Eckdaten:
 
 Je nach Bedarf kann man flexibel zwischen verschiedenen Servern wechseln. Wenn viel los ist und viel gearbeitet wird, verwende ich einen Server mit 16 Kernen und 32 GB RAM für ca. 65 € / Monat. Wenn weniger los ist, z. B. in den Ferien, reicht auch ein Server mit 4 Kernen und 8 GB RAM für ca. 8 € / Monat. Dafür wird der Server einfach über die Cloud Console heruntergefahren, skaliert und neu gestartet. Der ganze Vorgang dauert eine bis zwei Minuten und die Abrechnung erfolg minutengenau, so dass man die Kosten gut im Griff hat.
 
-Für die Installation auf dem Cloud Server gibt es die Datei `cloud-config.yaml`, die man beim Erstellen des Servers mit angeben kann (vorher bitte den Nutzernamen `micha` ggfs. anpassen und den eigenen Public Key eintragen).
-
-Das TLS-Frontend wird ebenfalls in einem Container betrieben, der über Docker Compose gestartet wird. Dazu einfach die Datei `frontend-docker-compose.yaml` in ein Verzeichnis `frontend` als `docker-compose.yaml` kopieren und dort starten:
-
-```bash
-docker compose up -d
-```
-
-In der `config.rb` sollten die Werte für `VIRTUAL_HOST`, `LETSENCRYPT_HOST` und `LETSENCRYPT_EMAIL` angepasst werden, damit das Frontend automatisch Letsencrypt-Zertifikate anfordern kann.
+Falls du es ausprobieren möchtest, findest du [hier eine Schnellstart-Anleitung](bootstrap/README.hetzner.centos.md).

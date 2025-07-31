@@ -124,5 +124,4 @@ END_OF_STRING
 
 puts colored("Fertig, starte nun den Server neu mit: reboot now", color: :green, bold: true)
 
-# curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/specht/workspace/refs/heads/master/bootstrap/01-prepare-server.sh | sh
 
