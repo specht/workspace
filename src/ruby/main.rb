@@ -1765,14 +1765,17 @@ class Main < Sinatra::Base
                     lines = {}
                     count = 0
                     IO.popen(command).each_line do |line|
-                        if line[0, 1].ord == 0x1b
+                        if line[0].ord == 0x1b
                             count = (count + 1) % 2
-                            # if count == 1
-                                ws.send({:stats => lines}.to_json)
-                            # end
+                            ws.send({:stats => lines}.to_json)
                             lines = {}
+                            line = line[line.index('{'), line.size]
                         end
-                        line = line[line.index('{'), line.size]
+                        if line.include?(0x1b.chr)
+                            line = line[0, line.index(0x1b.chr)]
+                        end
+                        line.strip!
+                        next if line.empty?
                         stat_line = JSON.parse(line)
                         name = stat_line['Name']
                         if name[0, 8] == 'hs_code_'
