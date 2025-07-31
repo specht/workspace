@@ -121,10 +121,64 @@ run_with_scrolling_tail(<<~END_OF_STRING)
     systemctl reload sshd
 END_OF_STRING
 
-
 puts colored("3. Paketupdates ", color: :cyan, bold: true)
 run_with_scrolling_tail(<<~END_OF_STRING)
     dnf install -y epel-release
     dnf config-manager --set-enabled epel
     dnf update -y
 END_OF_STRING
+
+puts colored("4. Installiere VDO  ", color: :cyan, bold: true)
+run_with_scrolling_tail(<<~END_OF_STRING)
+    # Install VDO
+    dnf install -y vdo lvm2
+END_OF_STRING
+
+puts colored("5. Installiere fail2ban ", color: :cyan, bold: true)
+run_with_scrolling_tail(<<~END_OF_STRING)
+    # Install fail2ban
+    dnf install -y fail2ban
+    systemctl enable --now fail2ban
+    bash -c "echo -e '[sshd]\\nenabled=true\\nport=ssh\\nlogpath=%(sshd_log)s\\nbackend=systemd\\nmaxretry=5\\nbantime=1h\\nfindtime=10m' > /etc/fail2ban/jail.d/sshd.local"
+    systemctl restart fail2ban
+END_OF_STRING
+
+puts colored("6. Installiere Firewall ", color: :cyan, bold: true)
+run_with_scrolling_tail(<<~END_OF_STRING)
+    # Install firewall
+    dnf install -y firewalld
+    systemctl enable --now firewalld
+    firewall-cmd --permanent --add-service=ssh
+    firewall-cmd --reload
+END_OF_STRING
+
+puts colored("7. Installiere Ruby, Git, htop und bash-completion ", color: :cyan, bold: true)
+run_with_scrolling_tail(<<~END_OF_STRING)
+    # Install ruby, git, htop and bash-completion
+    dnf install -y ruby git htop bash-completion
+END_OF_STRING
+
+puts colored("8. Installiere Docker ", color: :cyan, bold: true)
+run_with_scrolling_tail(<<~END_OF_STRING)
+    # Install Docker CE
+    dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+    dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    systemctl enable --now docker
+    usermod -aG docker #{LOGIN}
+END_OF_STRING
+
+puts colored("9. Installiere borg und borgmatic ", color: :cyan, bold: true)
+run_with_scrolling_tail(<<~END_OF_STRING)
+    # Install borgmatic
+    dnf install -y borgbackup python3-pip python3-setuptools
+    pip3 install --upgrade pip
+    pip3 install borgmatic
+END_OF_STRING
+
+puts colored("10. Setze Zeitzone ", color: :cyan, bold: true)
+run_with_scrolling_tail(<<~END_OF_STRING)
+    # Set timezone
+    timedatectl set-timezone Europe/Berlin
+END_OF_STRING
+
+puts colored("Fertig, starte nun den Server neu mit: reboot now", color: :green, bold: true)
