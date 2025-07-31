@@ -16,13 +16,11 @@ unless Process.uid == 0
     exit(1)
 end
 
-if LOGIN.nil? || PUBLIC_KEY.nil? || DOMAIN.nil? || STORAGE_DEVICE.nil?
+if LOGIN.nil? || PUBLIC_KEY.nil?
     puts "Bevor es losgehen kann, musst du in der config.yaml ein paar Angaben machen:"
     puts
     puts "login          : Dein Login auf dem Server (nach außen nicht sichtbar)"
     puts "public_key     : Dein Public Key"
-    puts "domain         : Die Domain, unter der Workspace gehostet werden soll"
-    puts "storage_device : Der Pfad zum Volume (z. B. /dev/sdb)"
     puts
     exit(1)
 end
