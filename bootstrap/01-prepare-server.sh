@@ -3,6 +3,8 @@ set -e
 
 echo "Installiere Ruby..."
 dnf install -yq ruby
+echo "Installiere TTY Gems..."
+gem install tty
 echo "Hole nächstes Skript: 02-setup-server.rb"
 wget -q https://raw.githubusercontent.com/specht/workspace/refs/heads/master/bootstrap/02-setup-server.rb -O 02-setup-server.rb
 wget -q https://raw.githubusercontent.com/specht/workspace/refs/heads/master/bootstrap/config.yaml -O config.yaml
