@@ -48,7 +48,7 @@ run_with_scrolling_tail(<<~END_OF_STRING)
 END_OF_STRING
 
 PHYS_GB = `vgs --noheadings --units g -o vg_free vdo-vg`.strip.to_f
-PHYS_GB_SAFE= PHYS_GB * 0.9999
+PHYS_GB_SAFE= PHYS_GB * 0.999
 VIRT_GB= PHYS_GB_SAFE * 3
 
 puts colored("13. Erstelle logisches Volume mit #{VIRT_GB.round} GB", color: :cyan, bold: true)
