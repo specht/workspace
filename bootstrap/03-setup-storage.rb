@@ -79,7 +79,30 @@ END_OF_STRING
 
 puts colored("18. Generiere Begrüßungsnachricht nach Login ", color: :cyan, bold: true)
 run_with_scrolling_tail(<<~END_OF_STRING)
-    echo "#{BANNER}" > /home/specht/banner.txt
+    wget -q https://raw.githubusercontent.com/specht/workspace/refs/heads/master/bootstrap/banner.txt -O /home/#{LOGIN}/.banner.txt
+    wget -q https://raw.githubusercontent.com/specht/workspace/refs/heads/master/bootstrap/stats.rb -O /home/#{LOGIN}/.stats.rb
+    wget -q https://raw.githubusercontent.com/specht/workspace/refs/heads/master/bootstrap/git-completion.bash -O /home/#{LOGIN}/.git-completion.bash
+    chmod +x /home/#{LOGIN}/.stats.rb
+    chown #{LOGIN}:#{LOGIN} /home/#{LOGIN}/{.banner.txt,.stats.rb,.git-completion.bash}
 END_OF_STRING
 
+bashrc = File.read("/home/#{LOGIN}/.bashrc")
+bashrc += <<~EOS
+if [ -f ~/.git-completion.bash ]; then
+  source ~/.git-completion.bash
+fi
+
+if [[ $- == *i* ]]; then
+  echo "--------------------------------------------------------------------------------"
+  cat .banner.txt
+  echo "--------------------------------------------------------------------------------"
+  ./.stats.rb
+  echo "--------------------------------------------------------------------------------"
+  echo " Nach dem Reboot nicht vergessen: "
+  echo " # mount /mnt/hackschule"
+  echo " # systemctl start docker"
+  echo "--------------------------------------------------------------------------------"
+fi
+EOS
+File.open("/home/#{LOGIN}/.bashrc", 'w') { |f| f.write bashrc }
 

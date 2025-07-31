@@ -43,7 +43,7 @@ def dump(total, used, path)
     ts = bytes_to_str(total * 1024)
     us = bytes_to_str(used * 1024)
     b = print_progress_bar(used * 100.0 / total, 27)
-    puts sprintf(" %8s of %8s used (%1.1f%%) %s %s", us, ts, used * 100.0 / total, b, path)
+    puts sprintf(" %8s of %8s used (%4.1f%%) %s %s", us, ts, used * 100.0 / total, b, path)
 end
 
 `df / /mnt/hackschule`.each_line do |line|

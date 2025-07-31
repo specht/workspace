@@ -105,6 +105,7 @@ run_with_scrolling_tail(<<~END_OF_STRING)
     dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     systemctl enable --now docker
     usermod -aG docker #{LOGIN}
+    systemctl disable docker.service
 END_OF_STRING
 
 puts colored("9. Installiere borg und borgmatic ", color: :cyan, bold: true)
