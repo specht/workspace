@@ -8,7 +8,6 @@ config = YAML.load(File.read('config.yaml'))
 
 LOGIN = config['login']
 PUBLIC_KEY = config['public_key']
-DOMAIN = config['domain']
 STORAGE_DEVICE = config['storage_device']
 
 unless Process.uid == 0
@@ -60,7 +59,6 @@ run_with_scrolling_tail(<<~END_OF_STRING)
     sed -i -e '/^\(#\|\)AllowTcpForwarding/s/^.*$/AllowTcpForwarding no/' /etc/ssh/sshd_config
     sed -i -e '/^\(#\|\)X11Forwarding/s/^.*$/X11Forwarding no/' /etc/ssh/sshd_config
     sed -i -e '/^\(#\|\)AllowAgentForwarding/s/^.*$/AllowAgentForwarding no/' /etc/ssh/sshd_config
-    sed -i -e '/^\(#\|\)AuthorizedKeysFile/s/^.*$/AuthorizedKeysFile .ssh\/authorized_keys/' /etc/ssh/sshd_config
     systemctl reload sshd
 END_OF_STRING
 

@@ -11,7 +11,7 @@ STAGING = File::dirname(File::expand_path(__FILE__)).include?('staging')
 PROJECT_NAME = 'workspace'
 DEV_NGINX_PORT = 8025
 DEV_NEO4J_PORT = 8021
-LOGS_PATH = DEVELOPMENT ? './logs' : "/home/micha/logs/#{PROJECT_NAME}"
+LOGS_PATH = DEVELOPMENT ? './logs' : "/home/#{ENV['USER']}/logs/#{PROJECT_NAME}"
 DATA_PATH = DEVELOPMENT ? './data' : "/mnt/hackschule/#{PROJECT_NAME}"
 MYSQL_DATA_PATH = File.join(DATA_PATH, 'mysql')
 POSTGRES_DATA_PATH = File.join(DATA_PATH, 'postgres')
@@ -197,7 +197,7 @@ docker_compose[:services][:neo4j_user] = {
 }
 
 if !DEVELOPMENT
-    docker_compose[:services][:neo4j_user][:volumes] << "/home/micha/frontend/certs/certs-for-neo4j:/certs:ro"
+    docker_compose[:services][:neo4j_user][:volumes] << "/home/#{ENV['USER']}/frontend/certs/certs-for-neo4j:/certs:ro"
     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_enabled'] = 'true'
     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_base__directory'] = '/certs'
     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_private__key'] = 'key.pem'

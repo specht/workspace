@@ -22,6 +22,16 @@ if LOGIN.nil? || STORAGE_DEVICE.nil?
     exit(1)
 end
 
+_ = `mountpoint /mnt/hackschule`
+if $? == 0
+    puts "Achtung, /mnt/hackschule ist momentan eingehängt."
+    puts "Bitte hänge das Volume aus, bevor wir anfangen:"
+    puts
+    puts "sudo umount /mnt/hackschule"
+    puts
+    exit(1)
+end
+
 puts colored(" ACHTUNG ", color: :white, bg: :red)
 puts
 puts "Dieses Skript nimmt umfangreiche Änderungen an diesem Server vor und"
@@ -102,3 +112,8 @@ fi
 EOS
 File.open("/home/#{LOGIN}/.bashrc", 'w') { |f| f.write bashrc }
 
+puts colored("19. Hole nächstes Skript: 04-setup-workspace.rb ", color: :cyan, bold: true)
+run_with_scrolling_tail(<<~END_OF_STRING)
+    wget -q https://raw.githubusercontent.com/specht/workspace/refs/heads/master/bootstrap/04-setup-workspace.rb -O 04-setup-workspace.rb
+    chmod +x 04-setup-workspace.rb
+END_OF_STRING
