@@ -2,8 +2,8 @@
 set -e
 
 # Achtung: Hier bitte den gewünschten Login und Public Key eintragen
-LOGIN = ""
-PUBLIC_KEY = ""
+LOGIN=""
+PUBLIC_KEY=""
 
 if [[ -z "$LOGIN" || -z "$PUBLIC_KEY" ]]; then
   echo "Fehler: Bitte zuerst Werte für LOGIN und PUBLIC_KEY eintragen." >&2
