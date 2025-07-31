@@ -55,6 +55,14 @@ Bevor wir das Programm ausführen können, müssen wir es kompilieren. Dadurch w
 
 <img class='full' src='lets-compile.webp'>
 
+Vorher müssen wir noch Rust installieren. Gib folgenden Befehl im Terminal ein:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+Du wirst anschließend gefragt, ob du die Standard-Installation durchführen willst &ndash; du kannst diese Frage bestätigen, indem du Enter drückst. Wenn die Installation vorbei ist, musst du dich abmelden. Drücke dafür <span class='key'>Strg</span><span class='key'>D</span> und öffne das Terminal erneut. Wenn du anschließend `rustc --version` eingibst, solltest du sehen, dass Rust bereit ist und sich mit einer Versionsnummer meldet.
+
 Um das Programm zu kompilieren, gib folgenden Befehl ein:
 
 ```bash
