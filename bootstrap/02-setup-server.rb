@@ -122,6 +122,6 @@ run_with_scrolling_tail(<<~END_OF_STRING)
     chmod +x 03-setup-storage.rb
 END_OF_STRING
 
-puts colored("Fertig, starte nun den Server neu mit: reboot now", color: :green, bold: true)
+puts colored("Fertig, starte nun den Server neu mit: reboot", color: :green, bold: true)
 
 
