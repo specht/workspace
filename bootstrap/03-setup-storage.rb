@@ -117,3 +117,26 @@ run_with_scrolling_tail(<<~END_OF_STRING)
     wget -q https://raw.githubusercontent.com/specht/workspace/refs/heads/master/bootstrap/04-setup-workspace.rb -O 04-setup-workspace.rb
     chmod +x 04-setup-workspace.rb
 END_OF_STRING
+
+puts colored("20. Erstelle Verzeichnis: /mnt/hackschule/workspace ", color: :cyan, bold: true)
+system("mkdir -p /mnt/hackschule/workspace && chown #{LOGIN}:#{LOGIN} /mnt/hackschule/workspace")
+
+puts colored("21. Konfiguriere logrotate ", color: :cyan, bold: true)
+logrotate = <<~EOS
+    /home/#{LOGIN}/logs/workspace/access.log
+    /home/#{LOGIN}/logs/workspace/error.log
+    /home/#{LOGIN}/logs/workspace/neo4j/debug.log {
+        daily
+        rotate 7
+        compress
+        missingok
+        notifempty
+        copytruncate
+        create 644 #{LOGIN} #{LOGIN}
+        postrotate
+            docker exec workspace_nginx_1 nginx -s reopen 2>/dev/null || true
+            docker exec workspace_neo4j_1 bash -c 'kill -HUP 1' 2>/dev/null || true
+        endscript
+    }
+EOS
+File.open("/etc/logrotate.d/workspace-logs", 'w') { |f| f.write logrotate }
