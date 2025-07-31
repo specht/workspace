@@ -60,3 +60,13 @@ puts colored("14. Formatiere Volume mit XFS: #{STORAGE_DEVICE} ", color: :cyan, 
 run_with_scrolling_tail(<<~END_OF_STRING)
     mkfs.xfs /dev/vdo-vg/vdo1
 END_OF_STRING
+
+puts colored("15. Erstelle /mnt/hackschule ", color: :cyan, bold: true)
+run_with_scrolling_tail(<<~END_OF_STRING)
+    mkdir /mnt/hackschule
+END_OF_STRING
+
+puts colored("16. Trage /mnt/hackschule in /etc/fstab ein ", color: :cyan, bold: true)
+run_with_scrolling_tail(<<~END_OF_STRING)
+    echo "/dev/mapper/vdo--vg-vdo1 /mnt/hackschule xfs defaults,noauto 0 0" >> /etc/fstab
+END_OF_STRING
