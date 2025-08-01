@@ -14,6 +14,8 @@ end
 
 now = Time.now.to_i
 
+STDERR.puts "Housekeeping: Checking #{running_servers.size} running servers..."
+
 running_servers.each do |fs_tag|
     age = now - Dir["/user/#{fs_tag}/**/*"].map { |x| File.mtime(x).to_i }.max
     if age > 60 * 180
