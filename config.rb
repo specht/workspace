@@ -16,7 +16,7 @@ DATA_PATH = DEVELOPMENT ? './data' : "/mnt/hackschule/#{PROJECT_NAME}"
 MYSQL_DATA_PATH = File.join(DATA_PATH, 'mysql')
 POSTGRES_DATA_PATH = File.join(DATA_PATH, 'postgres')
 PGADMIN_DATA_PATH = File.join(DATA_PATH, 'pgadmin')
-NEO4J_USER_DATA_PATH = File.join(DATA_PATH, 'neo4j_user')
+# NEO4J_USER_DATA_PATH = File.join(DATA_PATH, 'neo4j_user')
 USER_PATH = File.join(DATA_PATH, 'user')
 INTERNAL_PATH = File.join(DATA_PATH, 'internal')
 WEB_CACHE_PATH = File.join(DATA_PATH, 'cache')
@@ -54,7 +54,7 @@ if PROFILE.include?(:static)
         "ruby:#{PROJECT_NAME}_ruby_1",
         "phpmyadmin:#{PROJECT_NAME}_phpmyadmin_1",
         "pgadmin:#{PROJECT_NAME}_pgadmin_1",
-        "neo4j_user:#{PROJECT_NAME}_neo4j_user_1",
+        # "neo4j_user:#{PROJECT_NAME}_neo4j_user_1",
     ]
     nginx_config = <<~END_OF_STRING
         log_format custom '$http_x_forwarded_for - $remote_user [$time_local] "$request" '
@@ -121,7 +121,12 @@ if PROFILE.include?(:static)
         f.write nginx_config
     end
     if PROFILE.include?(:dynamic)
-        docker_compose[:services][:nginx][:depends_on] = [:ruby, :phpmyadmin, :pgadmin, :neo4j_user]
+        docker_compose[:services][:nginx][:depends_on] = [
+            :ruby,
+            :phpmyadmin,
+            :pgadmin,
+            # :neo4j_user,
+        ]
     end
 end
 
@@ -150,7 +155,11 @@ if PROFILE.include?(:dynamic)
     if PROFILE.include?(:neo4j)
         docker_compose[:services][:ruby][:depends_on] ||= []
         docker_compose[:services][:ruby][:depends_on] << :neo4j
-        docker_compose[:services][:ruby][:links] = ['neo4j:neo4j', 'mysql:mysql', 'neo4j_user:neo4j_user']
+        docker_compose[:services][:ruby][:links] = [
+            'neo4j:neo4j',
+            'mysql:mysql',
+            # 'neo4j_user:neo4j_user',
+        ]
     end
 end
 
@@ -180,32 +189,31 @@ docker_compose[:services][:mysql] = {
     },
 }
 
-docker_compose[:services][:neo4j_user] = {
-    :image => 'neo4j:enterprise',
-    # :command => ["--default-authentication-plugin=mysql_native_password"],
-    :volumes => ["#{NEO4J_USER_DATA_PATH}:/data"],
-    :user => '1000',
-    :restart => 'always',
-    :ports => ["7474:7474", "7687:7687"],
-    :expose => ['7687'],
-    :environment => {
-        'NEO4J_ACCEPT_LICENSE_AGREEMENT' => 'yes',
-        'NEO4J_AUTH' => "neo4j/#{NEO4J_ROOT_PASSWORD}",
-        'NEO4J_EDITION' => 'enterprise',
-        'NEO4J_dbms_security_auth__enabled' => 'true',
-    },
-}
+# docker_compose[:services][:neo4j_user] = {
+#     :image => 'neo4j:enterprise',
+#     # :command => ["--default-authentication-plugin=mysql_native_password"],
+#     :volumes => ["#{NEO4J_USER_DATA_PATH}:/data"],
+#     :user => '1000',
+#     :restart => 'always',
+#     :ports => ["7474:7474", "7687:7687"],
+#     :expose => ['7687'],
+#     :environment => {
+#         'NEO4J_ACCEPT_LICENSE_AGREEMENT' => 'yes',
+#         'NEO4J_AUTH' => "neo4j/#{NEO4J_ROOT_PASSWORD}",
+#         'NEO4J_EDITION' => 'enterprise',
+#         'NEO4J_dbms_security_auth__enabled' => 'true',
+#     },
+# }
 
-if !DEVELOPMENT
-    # docker_compose[:services][:neo4j_user][:volumes] << "/home/#{ENV['USER']}/frontend/certs/certs-for-neo4j:/certs:ro"
-    docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_enabled'] = 'true'
-    docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_base__directory'] = '/certs'
-    docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_private__key'] = 'key.pem'
-    docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_public__certificate'] = 'fullchain.pem'
-    docker_compose[:services][:neo4j_user][:environment]['NEO4J_server_bolt_tls__level'] = 'OPTIONAL'
-    docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_usage__report_enabled'] = 'false'
-end
-
+# if !DEVELOPMENT
+#     docker_compose[:services][:neo4j_user][:volumes] << "/home/#{ENV['USER']}/frontend/certs/certs-for-neo4j:/certs:ro"
+#     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_enabled'] = 'true'
+#     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_base__directory'] = '/certs'
+#     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_private__key'] = 'key.pem'
+#     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_public__certificate'] = 'fullchain.pem'
+#     docker_compose[:services][:neo4j_user][:environment]['NEO4J_server_bolt_tls__level'] = 'OPTIONAL'
+#     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_usage__report_enabled'] = 'false'
+# end
 
 docker_compose[:services][:phpmyadmin] = {
     :image => 'phpmyadmin/phpmyadmin',
@@ -294,10 +302,10 @@ FileUtils::mkpath(File.join(DATA_PATH, 'tic80'))
 FileUtils::mkpath(MYSQL_DATA_PATH)
 FileUtils::mkpath(POSTGRES_DATA_PATH)
 FileUtils::mkpath(PGADMIN_DATA_PATH)
-FileUtils::mkpath(NEO4J_USER_DATA_PATH)
+# FileUtils::mkpath(NEO4J_USER_DATA_PATH)
 FileUtils::mkpath(File.join(DATA_PATH, 'internal'))
 FileUtils::mkpath(File.join(DATA_PATH, 'mysql'))
-FileUtils::mkpath(File.join(DATA_PATH, 'neo4j_user'))
+# FileUtils::mkpath(File.join(DATA_PATH, 'neo4j_user'))
 FileUtils::mkpath(File.join(DATA_PATH, 'pgadmin'))
 FileUtils::mkpath(File.join(DATA_PATH, 'postgres'))
 FileUtils::mkpath(File.join(DATA_PATH, 'dl'))
