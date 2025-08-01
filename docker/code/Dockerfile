@@ -10,7 +10,7 @@ RUN usermod -d /workspace abc
 # Install system dependencies in one RUN to reduce layers and improve cache reuse
 RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get update && apt-get install --no-install-recommends -y \
-        wget ruby ruby-dev libmagickcore-dev unzip \
+        wget ruby ruby-dev libmagickcore-dev zip unzip \
         python3 python3-pip python3-dev libmysqlclient-dev libmysqlclient21 python3-mysql.connector \
         mysql-client golang-go openjdk-17-jdk-headless nodejs lua5.4 htop \
         texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended \
