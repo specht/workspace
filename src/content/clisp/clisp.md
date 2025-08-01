@@ -81,7 +81,7 @@ Anschließend solltest du dein Lisp-Programm farbig sehen:
 
 ### Skript ausführen
 
-Um unser Programm auszuführen, müssen wir den Lisp-Interpreter aufrufen (in unserem Fall `clisp`) und ihm den Dateinamen unseres Programms übergeben.
+Um unser Programm auszuführen, müssen wir den Lisp-Interpreter aufrufen (in unserem Fall `sbcl`) und ihm den Dateinamen unseres Programms übergeben.
 
 Öffne dazu ein Terminal, indem du <span class='key'>Strg</span><span class='key'>J</span> drückst und gib folgenden Befehl ein:
 
@@ -115,7 +115,7 @@ sbcl --script hello.lisp
 Nutze die Pfeiltaste hoch <span class='key'>↑</span>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
-CLISP sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden (du musst etwas nach oben scrollen, um den Auslöser zu finden):
+SBCL sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden (du musst etwas nach oben scrollen, um den Auslöser zu finden):
 
 <img class='full' src='hello-error.webp'>
 
