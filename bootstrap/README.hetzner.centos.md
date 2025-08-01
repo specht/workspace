@@ -13,6 +13,15 @@ Du benötigst:
 
 ## Schritt 0: Server und Volume anlegen
 
+Die folgende Tabelle gibt eine Übersicht mit ungefähren Preisen (Stand 2025). Zum Ausprobieren reicht die kleinste Konfiguration.
+
+| Eigenschaft | Zum Ausprobieren | Produktiveinsatz (Ferien) | Produktiveinsatz (Schulzeit) |
+|---|------------------|------------------------------|---------------------------|
+| Cores | 3 | 4 | 16 |
+| RAM   | 4 GB | 4 GB | 32 GB |
+| Volume | 10 GB | 100 GB | 100 GB |
+| Kosten / Monat (ca.) | € 10 | € 20 | € 70 |
+
 Erstelle einen Server (Hetzner Cloud):
 
 - Cent OS Stream 10
@@ -27,7 +36,7 @@ Erstelle ein Volume:
 
 ## Schritt 1: Server vorbereiten
 
-Füge einen Eintrag in deine `~/.ssh/config` hinzu (oasse die Werte entsprechend an &ndash; trage unter `user` den Login ein, den du auf dem Server verwenden möchtest, in diesem Beispiel `max`):
+Füge einen Eintrag in deine `~/.ssh/config` hinzu (passe die Werte entsprechend an &ndash; trage unter `user` den Login ein, den du auf dem Server verwenden möchtest, in diesem Beispiel `max`):
 
 ```
 host workspace-server
