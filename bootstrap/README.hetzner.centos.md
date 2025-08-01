@@ -1,6 +1,6 @@
-# Schnellstart: Workspace bei Hetzner hosten
+# Schnellstart: Workspace hosten
 
-Wenn du deinen eigenen Workspace bei Hetzner hosten möchtest, ist diese Anleitung die Richtige für dich. Da die Cloud-Server bei Hetzner stundengenau abgerechnet werden und nicht teuer sind, kannst du dieses Experiment für wenige Cent leicht durchführen.
+Wenn du deinen eigenen Workspace (z. B. bei Hetzner) hosten möchtest, ist diese Anleitung die Richtige für dich. Da die Cloud-Server bei Hetzner stundengenau abgerechnet werden und nicht teuer sind, kannst du dieses Experiment für wenige Cent leicht durchführen.
 
 ## Voraussetzungen
 
@@ -21,6 +21,8 @@ Die folgende Tabelle gibt eine Übersicht über verschiedene Konfigurationen mit
 | RAM   | 4 GB | 4 GB | 32 GB |
 | Volume | 10 GB | 100 GB | 100 GB |
 | Kosten / Monat (ca.) | € 10 | € 20 | € 70 |
+
+Du kannst natürlich auch einen eigenen Server verwenden!
 
 Erstelle einen Server (Hetzner Cloud):
 
