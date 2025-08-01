@@ -55,7 +55,7 @@
             </div>
             <h2>Server</h2>
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="server-stats" id="stats-cpu">
                         <h4>CPU</h4>
                         <i class='bi bi-cpu'></i>
@@ -65,7 +65,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="server-stats" id="stats-ram">
                         <h4>RAM</h4>
                         <i class='bi bi-memory'></i>
@@ -75,7 +75,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="server-stats" id="stats-storage">
                         <h4>Storage</h4>
                         <i class='bi bi-nvme'></i>
@@ -129,6 +129,7 @@ function setup_ws(ws)
         data = JSON.parse(msg.data);
         if (data.server_stats) {
             let stats = data.server_stats;
+            stats.cpu_usage *= stats.num_cores;
             $('#stats-cpu p').html(`${stats.cpu_usage.toFixed(2)}% of ${stats.num_cores} cores`);
             $('#stats-cpu .progress-bar').css('width', `${stats.cpu_usage}%`);
             $('#stats-ram p').html(`${stats.ram_used} of ${stats.ram_total}`);
