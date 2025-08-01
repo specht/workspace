@@ -78,6 +78,8 @@ Führe das 2. Setup-Skript aus (das dauert ungefähr 2 bis 3 Minuten):
 ./02-setup-server.sh
 ```
 
+Dieses Skript legt den Nutzer mit deinem gewählten Login an, nimmt ein paar sicherheitsrelevante Einstellungen vor (SSH, fail2ban, Firewall), aktualisiert das System und aktualisiert weitere Pakete, z. B. Git, Docker und Borg Backup.
+
 Wenn alles geklappt hat, kannst du den Server neu starten:
 
 ```
