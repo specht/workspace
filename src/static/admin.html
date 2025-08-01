@@ -7,6 +7,12 @@
     .table>:not(caption)>*>* {
         background: none;
     }
+    .unit {
+        /* font-weight: bold; */
+        margin-left: 0.15em;
+        font-size: 90%;
+        opacity: 0.7;
+    }
 </style>
 <div class='container'>
     <div class='row'>
@@ -35,6 +41,10 @@
 
 var invitations = #{@@invitations.to_json};
 var group_order = #{@@user_groups.keys.to_json};
+
+function wrapLettersInSpan(input) {
+  return input.replace(/([A-Za-z%]+)/g, "<span class='unit'>$1</span>");
+}
 
 function keepAlive() {
     var timeout = 20000;
@@ -69,11 +79,11 @@ function setup_ws(ws)
                 let row = $(`#tr_hs_code_${tag}`);
                 let perc = parseFloat(data.stats[tag].stats['CPUPerc']) / 100.0;
                 row.css('background-color', `rgba(255, 200, 0, ${perc})`);
-                row.find('.td_cpu').text(data.stats[tag].stats['CPUPerc']);
-                row.find('.td_ram').text((data.stats[tag].stats['MemUsage'] ?? '').split('/')[0].trim().replace('iB', ''));
-                row.find('.td_net').text(data.stats[tag].stats['NetIO'].replace(/B/g, ''));
-                row.find('.td_disk').text(data.stats[tag].stats['BlockIO'].replace(/B/g, ''));
-                row.find('.td_pid').text(data.stats[tag].stats['PIDs']);
+                row.find('.td_cpu').html(wrapLettersInSpan(data.stats[tag].stats['CPUPerc']));
+                row.find('.td_ram').html(wrapLettersInSpan((data.stats[tag].stats['MemUsage'] ?? '').split('/')[0].trim().replace('iB', '')));
+                row.find('.td_net').html(wrapLettersInSpan(data.stats[tag].stats['NetIO'].replace(/B/g, '')));
+                row.find('.td_disk').html(wrapLettersInSpan(data.stats[tag].stats['BlockIO'].replace(/B/g, '')));
+                row.find('.td_pid').html(wrapLettersInSpan(data.stats[tag].stats['PIDs']));
             }
             for (let row of $('#table_admin_workspaces tr')) {
                 let tag = ($(row).attr('id') ?? '').replace('tr_hs_code_', '');

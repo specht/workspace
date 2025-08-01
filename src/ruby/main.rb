@@ -1698,7 +1698,7 @@ class Main < Sinatra::Base
                         io2.puts "<td class='td_net'>&ndash;</td>"
                         io2.puts "<td class='td_disk'>&ndash;</td>"
                         if du_for_fs_tag[user_tag]
-                            io2.puts "<td>#{bytes_to_str(du_for_fs_tag[user_tag] * 1024).sub('B', '').gsub(' ', '')}</td>"
+                            io2.puts "<td>#{bytes_to_str(du_for_fs_tag[user_tag] * 1024).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')}</td>"
                         else
                             io2.puts "<td>&ndash;</td>"
                         end
@@ -1712,6 +1712,7 @@ class Main < Sinatra::Base
                     io2.string
                 end
                 unless sub.empty?
+                    io.puts "<thead>"
                     io.puts "<tr><th colspan='#{admin_logged_in? ? 10 : 9}' style='background-color: rgba(0,0,0,0); padding: 1em 0;'><h4>#{group}</h4></th></tr>"
                     io.puts "<tr>"
                     io.puts "<th>Tag</th>"
@@ -1728,6 +1729,7 @@ class Main < Sinatra::Base
                         io.puts "<th>Impersonate</th>"
                     end
                     io.puts "</tr>"
+                    io.puts "</thead>"
                     io.puts sub
                 end
             end
