@@ -11,6 +11,7 @@
 
     <link href="/include/fonts.css?#{CACHE_BUSTER}" rel="stylesheet">
     <link href="/include/default.css?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}" rel="stylesheet">
+    <link href="/include/dark.css?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}" rel="stylesheet">
 
     <script src="/include/code.js?#{CACHE_BUSTER}"></script>
     <script src="/include/bower_components/moment/min/moment-with-locales.min.js"></script>
@@ -203,16 +204,16 @@ function update_dark_mode() {
     } else {
         document.getElementsByTagName('html')[0].setAttribute('data-bs-theme', 'light');
     }
-    if (dark_css_element !== null) {
-        dark_css_element.remove();
-        dark_css_element = null;
-    }
-    if (dark) {
-        dark_css_element = document.createElement('link');
-        dark_css_element.rel = 'stylesheet';
-        dark_css_element.href = `/include/dark.css?#{CACHE_BUSTER}`;
-        document.head.appendChild(dark_css_element);
-    }
+    // if (dark_css_element !== null) {
+    //     dark_css_element.remove();
+    //     dark_css_element = null;
+    // }
+    // if (dark) {
+    //     dark_css_element = document.createElement('link');
+    //     dark_css_element.rel = 'stylesheet';
+    //     dark_css_element.href = `/include/dark.css?#{CACHE_BUSTER}`;
+    //     document.head.appendChild(dark_css_element);
+    // }
 }
 
 window.addEventListener('DOMContentLoaded', function() {
@@ -384,9 +385,7 @@ window.addEventListener('load', function() {
     <div class="header">
         <div class="container">
             <div class="title"><a href='/'>Hackschule Workspace</a></div>
-            <div class="sponsor">
-                powered by <a href="https://www.hetzner.com/cloud/" target="_blank"><img src="/Logo_Hetzner.png?1"></a>
-            </div>
+            #{ @@brand_header }
         </div>
     </div>
     <div class="menu" style="#{running_tests.empty? ? '': 'display: none;'}">

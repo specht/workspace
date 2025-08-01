@@ -26,21 +26,6 @@ h3 {
     margin: 1em 0 0.5em 0;
 }
 
-.sponsor {
-    text-align: center;
-    position: relative;
-    top: -1.4em;
-    color: #000;
-    opacity: 0.5;
-
-    img {
-        margin-left: 3px;
-        height: 14px;
-        position: relative;
-        top: -2px;
-    }
-}
-
 .faq {
     margin-bottom: 1em;
 }

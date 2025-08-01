@@ -38,6 +38,7 @@ if PROFILE.include?(:static)
         :volumes => [
             './src/static:/usr/share/nginx/html:ro',
             "#{WEB_CACHE_PATH}:/webcache:ro",
+            "#{DATA_PATH}/brand:/brand:ro",
             "#{DOWNLOAD_PATH}:/dl:ro",
             "#{LOGS_PATH}:/var/log/nginx",
             "#{DATA_PATH}/nginx:/etc/nginx/conf.d"
@@ -141,6 +142,7 @@ if PROFILE.include?(:dynamic)
                      "#{WEB_CACHE_PATH}:/webcache",
                      "#{USER_PATH}:/user",
                      "#{INTERNAL_PATH}:/internal",
+                     "#{DATA_PATH}/brand:/brand:ro",
                      "#{INVITATIONS_PATH}:/invitations:ro",
                      "#{DATA_PATH}/tic80:/tic80",
                      "/var/run/docker.sock:/var/run/docker.sock",
@@ -324,6 +326,7 @@ FileUtils::mkpath(POSTGRES_DATA_PATH)
 FileUtils::mkpath(PGADMIN_DATA_PATH)
 # FileUtils::mkpath(NEO4J_USER_DATA_PATH)
 FileUtils::mkpath(File.join(DATA_PATH, 'internal'))
+FileUtils::mkpath(File.join(DATA_PATH, 'brand'))
 FileUtils::mkpath(File.join(DATA_PATH, 'mysql'))
 # FileUtils::mkpath(File.join(DATA_PATH, 'neo4j_user'))
 FileUtils::mkpath(File.join(DATA_PATH, 'pgadmin'))

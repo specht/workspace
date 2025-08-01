@@ -260,6 +260,12 @@ class Main < Sinatra::Base
                     include /etc/nginx/mime.types;
                 }
 
+                location /brand {
+                    rewrite ^/brand(.*)$ $1 break;
+                    root /brand;
+                    include /etc/nginx/mime.types;
+                }
+
                 location /dl {
                     rewrite ^/dl(.*)$ $1 break;
                     root /dl;
@@ -796,6 +802,7 @@ class Main < Sinatra::Base
         ]
 
         setup = SetupDatabase.new()
+
         setup.wait_for_neo4j()
         @@clients = {}
         @@email_for_client_id = {}
@@ -806,6 +813,12 @@ class Main < Sinatra::Base
         self.parse_content()
         self.load_invitations()
         self.prepare_downloads()
+
+        @@brand_header = ''
+        begin
+            @@brand_header = File.read('/brand/header.html')
+        rescue
+        end
 
         Thread.new do
             loop do
