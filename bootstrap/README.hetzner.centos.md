@@ -43,7 +43,7 @@ host workspace-server
 hostname 188.34.187.108
 user max
 port 22
-identityFile /home/michael/.ssh/id_ed25519_hetzner
+identityFile <Pfad zum Private Key>
 ```
 
 **Tipp:** Jetzt ist ein guter Zeitpunkt, um den A-Record deiner Domain (oder Subdomain) zu setzen, damit nachher alles bereit ist.
