@@ -38,16 +38,15 @@ RUN wget -q https://github.com/gohugoio/hugo/releases/download/v0.148.1/hugo_0.1
     && dpkg -i hugo_0.148.1_linux-amd64.deb \
     && rm hugo_0.148.1_linux-amd64.deb
 
-# Python 3.10.12 build + install + virtualenv + python packages
+# Python 3.10.12 build + install
 RUN mkdir /tmp/python-build && cd /tmp/python-build \
     && wget https://www.python.org/ftp/python/3.10.12/Python-3.10.12.tgz \
     && tar xzf Python-3.10.12.tgz \
     && cd Python-3.10.12 \
-    && ./configure --prefix=/opt/python3.10 --enable-optimizations --with-lto \
+    && ./configure --enable-optimizations --with-lto \
     && make -j$(nproc) \
     && make altinstall \
-    && cd / && rm -rf /tmp/python-build && rm -rf /usr/local/lib/python3.10/test \
-    && strip /opt/python3.10/bin/python3.10
+    && cd / && rm -rf /tmp/python-build && rm -rf /usr/local/lib/python3.10/test
 
 # # Install Tensorflow etc.
 # RUN python3.10 -m venv /opt/python-env \
