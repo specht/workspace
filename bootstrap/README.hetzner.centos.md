@@ -13,7 +13,7 @@ Du benötigst:
 
 ## Schritt 0: Server und Volume anlegen
 
-Die folgende Tabelle gibt eine Übersicht mit ungefähren Preisen (Stand 2025). Zum Ausprobieren reicht die kleinste Konfiguration.
+Die folgende Tabelle gibt eine Übersicht über verschiedene Konfigurationen mit ungefähren Preisen (Stand 2025). Zum Ausprobieren reicht die kleinste Konfiguration.
 
 | Eigenschaft | Zum Ausprobieren | Produktiveinsatz (Ferien) | Produktiveinsatz (Schulzeit) |
 |---|------------------|------------------------------|---------------------------|
@@ -31,7 +31,7 @@ Erstelle einen Server (Hetzner Cloud):
 
 Erstelle ein Volume:
 
-- 10 GB reichen zum ausprobieren (in meinem Workspace verwende ich 100 GB und es reicht momentan für 350 Nutzer:innen)
+- 10 GB reichen zum ausprobieren
 - Mount-Option: manuell (da wir nicht direkt XFS verwenden, sondern darunter noch VDO aufsetzen)
 
 ## Schritt 1: Server vorbereiten
