@@ -148,7 +148,20 @@ Oben siehst du in drei Zeilen die Festplattenbelegung:
 
 - `/` wird sich mit Docker-Images füllen
 - `/mnt/hackschule` ist eine logische Partition, die 3× so groß wie die physische Partition ist
-- `(physical vdo)` ist die physische Partition – so viel Platz ist tatsächlich belegt (4 GB sind von Anfang an belegt, aber der Effekt wird später sichtbar)
+- `(physical vdo)` ist die physische Partition – so viel Platz ist tatsächlich belegt
+
+<style>
+    .hint {
+        border: 1px solid #888;
+        padding: 1em;
+        margin: 1em 0;
+        border-radius: 0.5em;
+    }
+</style>
+
+<div class='hint'>
+Am Anfang sieht es nicht so aus, als ob sich die VDO-Partition lohnt, aber in meinem Workspace sind momentan (August 2025) 75 GB auf der logischen Partition belegt, aber nur 28 GB auf der physischen Partition (bei 350 Nutzer:innen).
+</div>
 
 Außerdem die Erinnerung für jeden Reboot:
 
