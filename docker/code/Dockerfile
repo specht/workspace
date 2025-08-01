@@ -12,7 +12,8 @@ RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get update && apt-get install -y \
         wget ruby ruby-dev libmagickcore-dev \
         python3 python3-pip python3-dev libmysqlclient-dev libmysqlclient21 python3-mysql.connector \
-        mysql-client golang-go openjdk-17-jdk-headless nodejs lua5.4 texlive-full htop \
+        mysql-client golang-go openjdk-17-jdk-headless nodejs lua5.4 htop \
+        texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended \
         build-essential file libncurses5-dev iputils-ping cmake autoconf mc gfortran bwbasic clisp mono-devel \
         nasm gdb emacs vim bsdmainutils iputils-tracepath traceroute gnucobol4 fp-compiler fp-ide \
         gawk erlang php-cli tree man-db telnet postgresql-client pgcli bash-completion \
