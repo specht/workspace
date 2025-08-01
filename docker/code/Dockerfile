@@ -52,8 +52,8 @@ RUN mkdir /tmp/python-build && cd /tmp/python-build \
     && cd / && rm -rf /tmp/python-build
 
 RUN python3.10 -m venv /opt/python-env \
-    && /opt/python-env/bin/pip install --upgrade pip setuptools wheel \
-    && /opt/python-env/bin/pip install matplotlib jax==0.4.21 jaxlib==0.4.21 numpy==1.26.4 keras==2.11.0 tensorflow==2.11.0 tensorflowjs==4.0.0 ipykernel \
+    && /opt/python-env/bin/pip install --no-cache-dir --upgrade pip setuptools wheel \
+    && /opt/python-env/bin/pip install --no-cache-dir matplotlib jax==0.4.21 jaxlib==0.4.21 numpy==1.26.4 keras==2.11.0 tensorflow-cpu==2.11.0 tensorflowjs==4.0.0 ipykernel \
     && chmod -R a+rx /opt/python-env
 
 # Add environment variable for gems only once
