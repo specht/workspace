@@ -133,7 +133,8 @@ I/O size (minimum/optimal): 512 bytes / 512 bytes
 
 In diesem Beispiel liegt das eingerichtete 10 GB-Volume unter `/dev/sda`.
 
-> ⚠️ **Achtung:** Der Pfad zum eingehängten Volume kann sich nach dem Reboot geändert haben, falls du den Pfad also vorhin schon bestimmt hast, musst du jetzt unbedingt noch einmal schauen.
+> ⚠️ **Achtung:**
+Der Pfad zum eingehängten Volume kann sich nach dem Reboot geändert haben, falls du den Pfad also vorhin schon bestimmt hast, musst du jetzt unbedingt noch einmal schauen.
 
 Trage diesen Pfad in die `config.yaml` ein:
 
@@ -227,7 +228,8 @@ Als nächstes bauen wir unsere eigen Pro-Version von TIC-80 (das dauert ca. 3 bi
 
 Jetzt kommt ein Schritt, der etwas länger dauert – wir bauen das Image, das die Schülerinnen und Schüler nutzen, wenn sie ihren Workspace starten. Hier wird also alle mögliche Software installiert, die man im Workspace vielleicht einmal gebrauchen kann.
 
-> 🕙 **Achtung:** dieser Vorgang dauert lange – ca. 45 Minuten.
+> 🕙 **Achtung:**
+Dieser Vorgang dauert lange – ca. 45 Minuten.
 
 ```
 ./build-image.sh
@@ -243,7 +245,8 @@ Wir können nun den Workspace starten:
 
 Es wird ein paar Minuten dauern, bis der Workspace läuft – es werden beim ersten Start noch ein paar Dateien und Bilder vorbereitet.
 
-**Hinweis:** `config.rb` ist nur ein Wrapper um `docker compose`, der die `docker-compose.yaml` schreibt, bevor er `docker compose` mit allen übergebenen Argumenten aufruft.
+> 💡 **Hinweis:**
+`config.rb` ist nur ein Wrapper um `docker compose`, der die `docker-compose.yaml` schreibt, bevor er `docker compose` mit allen übergebenen Argumenten aufruft.
 
 ## Schritt 5: Frontend starten
 
@@ -266,8 +269,8 @@ Um die Erstellung des Zertifikats zu triggern, müssen wir einmal den Workspace 
 
 ```
 cd ~/workspace
-./config down
-./config up -d
+./config.rb down
+./config.rb up -d
 ```
 
 Der Workspace sollte nun unter deiner Domain (oder Subdomain) erreichbar sein.
