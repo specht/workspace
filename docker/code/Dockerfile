@@ -19,7 +19,8 @@ RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - \
         gawk erlang php-cli tree man-db telnet postgresql-client pgcli bash-completion \
         libboost-dev libboost-date-time-dev libboost-thread-dev zlib1g-dev libpng-dev libjpeg8-dev libtiff5-dev libopenexr-dev \
         apt-transport-https clang guile-3.0 maven rsync graphviz mtr whois dnsutils host ntpdate software-properties-common \
-        libssl-dev libffi-dev libbz2-dev libreadline-dev libsqlite3-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev libgdbm-dev uuid-dev \
+        libssl-dev libffi-dev libbz2-dev libreadline-dev libsqlite3-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev \
+        mycli graphviz man-db bash-completion manpages manpages-dev libgdbm-dev uuid-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install rustup to /workspace
@@ -32,15 +33,10 @@ RUN wget -O /smalltalk.tar.gz https://ftp.gnu.org/gnu/smalltalk/smalltalk-3.2.5.
     && cd /smalltalk-3.2.5 && ./configure && make && make install \
     && cd / && rm -rf /smalltalk-3.2.5
 
-# Install mycli and hugo together (small packages)
-RUN apt-get update && apt-get install --no-install-recommends -y mycli graphviz \
-    && wget -q https://github.com/gohugoio/hugo/releases/download/v0.148.1/hugo_0.148.1_linux-amd64.deb \
+# Install mycli, hugo, bash completion and man pages
+RUN wget -q https://github.com/gohugoio/hugo/releases/download/v0.148.1/hugo_0.148.1_linux-amd64.deb \
     && dpkg -i hugo_0.148.1_linux-amd64.deb \
-    && rm hugo_0.148.1_linux-amd64.deb \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Run unminimize (which can take time, so done once here)
-RUN yes | unminimize
+    && rm hugo_0.148.1_linux-amd64.deb
 
 # Python 3.10.12 build + install + virtualenv + python packages
 RUN mkdir /tmp/python-build && cd /tmp/python-build \
