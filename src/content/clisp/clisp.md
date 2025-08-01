@@ -4,7 +4,7 @@ image: clisp-logo.png
 
 # Common Lisp <span style='font-size: 80%;'>(1984)</span>
 
-<div class='floatright' style='width: 12em;'>
+<div class='floatright' style='width: 16em;'>
     <img src='mccarthy.webp'>
     <p>John McCarthy</p>
 </div>
@@ -24,24 +24,24 @@ Lisp, entwickelt 1958 von John McCarthy am Massachusetts Institute of Technology
 
 ## Hello, world!
 
-Lisp ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpretiert wird. Du hast zwei Möglichkeiten, Lisp-Code auszuführen:
+Lisp ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpretiert wird. Ein moderner Lisp-Interpreter ist [»SBCL«](https://de.wikipedia.org/wiki/Steel_Bank_Common_Lisp) (»Steel Bank Common Lisp«), den wir in diesem Tutorial verwenden. Du hast damit zwei Möglichkeiten, Lisp-Code auszuführen:
 
-1. Du kannst Lisp-Code direkt in der CLISP-Shell ausführen.
+1. Du kannst Lisp-Code direkt in der SBCL-Shell ausführen.
 2. Du kannst Lisp-Code in einer Textdatei speichern und dann ausführen.
 
-**Möglichkeit 1:** Lisp-Code in der CLISP-Shell ausführen
+**Möglichkeit 1:** Lisp-Code in der SBCL-Shell ausführen
 
 Öffne dazu ein Terminal, indem du entweder <span class='key'>Strg</span><span class='key'>J</span> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='code-with-terminal.webp'>
 
-Starte nun die CLISP-Shell, indem du `clisp` eingibst und dann <span class='key'>Enter</span> drückst. Du solltest eine Ausgabe wie diese sehen:
+Starte nun die SBCL-Shell, indem du `sbcl` eingibst und dann <span class='key'>Enter</span> drückst. Du solltest eine Ausgabe wie diese sehen:
 
-<img class='full' src='clisp.webp'>
+<img class='full' src='sbcl.webp'>
 
 Jetzt kannst du Lisp-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `(format t "Hello, world!")` und drücke <span class='key'>Enter</span>. Du solltest die Ausgabe `Hello, world!` sehen.
 
-Du kannst die CLISP-Shell wieder beenden, indem du `(exit)` eingibst und <span class='key'>Enter</span> drückst oder einfach <span class='key'>Strg</span><span class='key'>D</span> drückst.
+Du kannst die SBCL-Shell wieder beenden, indem du `(exit)` eingibst und <span class='key'>Enter</span> drückst oder einfach <span class='key'>Strg</span><span class='key'>D</span> drückst.
 
 **Möglichkeit 2:** Lisp-Code in einer Textdatei speichern und ausführen
 
@@ -86,11 +86,11 @@ Um unser Programm auszuführen, müssen wir den Lisp-Interpreter aufrufen (in un
 Öffne dazu ein Terminal, indem du <span class='key'>Strg</span><span class='key'>J</span> drückst und gib folgenden Befehl ein:
 
 ```bash
-clisp hello.lisp
+sbcl --script hello.lisp
 ```
 
 <div class='hint'>
-Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>clisp he</code> und drücke <span class='key'>Tab</span>, um den Dateinamen automatisch zu <code>hello.lisp</code> vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
+Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>sbcl --script he</code> und drücke <span class='key'>Tab</span>, um den Dateinamen automatisch zu <code>hello.lisp</code> vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
 </div>
 
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
@@ -102,45 +102,24 @@ Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
 Wenn du einen Fehler im Code machst, wird Lisp eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `format` das Wort `formt` zu schreiben:
 
 ```clisp
-    (formt t "Hello, World!"))
+(formt t "Hello, World!~%"))
 ```
 
 Speichere die Datei und führe das Skript erneut aus:
 
 ```bash
-clisp hello.lisp
+sbcl --script hello.lisp
 ```
 
 <div class='hint'>
 Nutze die Pfeiltaste hoch <span class='key'>↑</span>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
-CLISP sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
+CLISP sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden (du musst etwas nach oben scrollen, um den Auslöser zu finden):
 
 <img class='full' src='hello-error.webp'>
 
-Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Leider gibt CLISP im Gegensatz zu vielen anderen Interpretern keine Zeilennummer an, aber die Meldung sollte dir trotzdem helfen, den Fehler zu finden. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
-
-### Shebang `#!`
-
-Bisher musst du, um dein Skript auszuführen, immer den CLISP-Interpreter explizit aufrufen. Wenn du dein Skript wie ein normales Programm ausführen möchtest, kannst du ein sogenanntes Shebang am Anfang deiner Datei hinzufügen. Das Shebang besteht aus einer Raute `#` gefolgt von einem Ausrufezeichen `!` und dem Pfad zum CLISP-Interpreter. In unserem Fall sieht das so aus:
-
-```clisp
-#!/usr/bin/env clisp
-```
-
-Füge diese Zeile ganz oben in deinem Skript ein und speichere die Datei. Bevor wir das Skript ausführen können, müssen wir es noch ausführbar machen. Das machen wir mit dem Befehl `chmod`:
-
-```bash
-chmod +x hello.lisp
-```
-Jetzt können wir das Skript direkt ausführen:
-
-```bash
-./hello.lisp
-```
-
-<img class='full' src='shebang.webp'>
+Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Leider gibt SBCL im Gegensatz zu vielen anderen Interpretern keine Zeilennummer an, aber die Meldung sollte dir trotzdem helfen, den Fehler zu finden. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
 ## Primfaktorzerlegung
 

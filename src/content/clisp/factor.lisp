@@ -31,5 +31,5 @@
                             (cdr return-values))
                            (cons (list divisor 1) return-values)))))))))
 
-(format T "Please enter the number to factorise: ")
-(format T "Prime factors: ~d" (prime-factors (read)))
+(format T "Please enter the number to factorise: ~%")
+(format T "Prime factors: ~d~%" (prime-factors (read)))

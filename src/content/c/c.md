@@ -4,7 +4,7 @@ image: c-logo.png
 
 # C <span style='font-size: 80%;'>(1972)</span>
 
-<div class='floatright' style='width: 12em;'>
+<div class='floatright' style='width: 16em;'>
     <img src='ritchie.webp'>
     <p>Dennis Ritchie</p>
 </div>

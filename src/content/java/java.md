@@ -4,7 +4,7 @@ image: Java-Logo.png
 
 # Java <span style='font-size: 80%;'>(1995)</span>
 
-<div class='floatright' style='width: 12em;'>
+<div class='floatright' style='width: 16em;'>
     <img src='gosling.webp'>
     <p>
       James Gosling<br>

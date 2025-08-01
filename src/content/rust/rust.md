@@ -4,7 +4,7 @@ image: rust-logo.png
 
 # Rust <span style='font-size: 80%;'>(2015)</span>
 
-<div class='floatright' style='width: 12em;'>
+<div class='floatright' style='width: 16em;'>
     <img src='hoare.webp'>
     <p>
         Graydon Hoare

@@ -4,7 +4,7 @@ image: python-logo.png
 
 # Python <span style='font-size: 80%;'>(1991)</span>
 
-<div class='floatright' style='width: 12em;'>
+<div class='floatright' style='width: 16em;'>
     <img src='guido.webp'>
     <p>Guido van Rossum</p>
 </div>

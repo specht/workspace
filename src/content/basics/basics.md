@@ -1,3 +1,7 @@
+<div class='meta'>
+image: vs-code-welcome.webp:0:50
+</div>
+
 # Die Basics
 
 <p class='abstract'>
@@ -6,18 +10,13 @@ Eine kleine Tour durch die Benutzeroberfläche von Visual Studio Code, gefolgt v
 
 Wenn du den Workspace öffnest, siehst du die Entwicklungsumgebung Visual Studio Code:
 
-<img class='full' src='vs-code-welcome.webp'>
+<img class='full' src='vs-code-welcome.webp' data>
 
 ## Die Benutzeroberfläche
 
 Am linken Rand sieht du einige Icons, die wichtig sind:
 
 <table class='table'>
-<tr>
-<td style='width: 1em;'><img class='sq-icon' src='menu.webp'></td>
-<td>Das Menü</td>
-</tr>
-<tr>
 <td><img class='sq-icon' src='explorer.webp'></td>
 <td>Explorer (<span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>E</span>) &ndash; hier siehst du alle Dateien und Unterordner des aktuell geöffneten Projekts</td>
 </tr>
@@ -39,9 +38,13 @@ Am linken Rand sieht du einige Icons, die wichtig sind:
 </tr>
 </table>
 
-Es gibt an mehreren Rändern Bereiche, die du ein- und ausblenden kannst. Nutze dafür die Buttons rechts oben:
+Rechts oben siehst du mehrere Buttons, mit denen du das Layout anpassen oder verschiedene Bereiche ein- und ausblenden kannst:
 
 <table class='table'>
+<tr>
+<td><img class='sq-icon' src='customize-layout.webp'></td>
+<td>Layout anpassen</td>
+</tr>
 <tr>
 <td style='width: 1em;'><img class='sq-icon' src='primary-side-bar.webp'></td>
 <td>Linke Seitenleiste (<span class='key'>Strg</span><span class='key'>B</span>)</td>
@@ -60,7 +63,7 @@ Es gibt an mehreren Rändern Bereiche, die du ein- und ausblenden kannst. Nutze 
 
 <img src='directory-tree.webp' class='r' style='width: 15em;'>
 
-Wenn du am Computer arbeitest, speicherst du deine Arbeit in Dateien. Jede Datei hat einen Dateinamen (der normalerweise auch eine Erweiterung enthält) und befindet sich in einem Verzeichnis, das sich wiederum in einem anderen Verzeichnis befinden kann. So entsteht ein Verzeichnisbaum.
+Wenn du am Computer arbeitest, speicherst du deine Arbeit in Dateien. Jede Datei hat einen Dateinamen (der normalerweise auch eine Erweiterung wie z. B. `.jpg` oder `.html` enthält) und befindet sich in einem Verzeichnis, das sich wiederum in einem anderen Verzeichnis befinden kann. So entsteht ein Verzeichnisbaum.
 
 Der vollständige Pfad zu einer Datei setzt sich dann aus allen Verzeichnissen und dem Dateinamen zusammen, z. B:
 
@@ -68,7 +71,7 @@ Der vollständige Pfad zu einer Datei setzt sich dann aus allen Verzeichnissen u
 
 Unter Linux ist das oberste Verzeichnis immer `/`, unter Windows beginnt es immer mit einem Laufwerksbuchstaben wie z. B. `C:\`. Ein weiterer Unterschied zu Linux ist, dass unter Windows `\` statt `/` verwendet wird, um Verzeichnisse im Pfad voneinander abzutrennen.
 
-Im Hackschule Workspace ist es so, dass du deine Projekte und Dateien im Verzeichnis `/workspace` ablegen kannst. Du kannst dir in diesem Verzeichnis eine beliebige Verzeichnisstruktur anlegen.
+Im Hackschule Workspace ist es so, dass du deine Projekte und Dateien im Verzeichnis `/workspace` ablegen kannst – es ist dein Home-Verzeichnisd. Du kannst dir in diesem Verzeichnis eine beliebige Verzeichnisstruktur anlegen.
 
 ## Shortcuts
 
@@ -95,7 +98,7 @@ Zum Schluss noch ein paar Tipps zur Tastatur: es gibt einige praktische Funktion
 
 <div class='hint'>
 <p>
-Dazu noch ein wichtiger Hinweis: In den unteren Ecken deiner Tastatur findest du ein paar sogenannte <em>Hilfstasten</em>, z. B.
+Dazu noch ein wichtiger Hinweis: In den unteren Ecken deiner Tastatur findest du ein paar sogenannte <em>Modifikatortasten</em>, z. B.
 <span class='key'>Strg</span>,
 <span class='key'>Shift</span>,
 <span class='key'>Alt</span>,
@@ -103,7 +106,7 @@ Dazu noch ein wichtiger Hinweis: In den unteren Ecken deiner Tastatur findest du
 <span class='key'>AltGr</span>. Diese Tasten haben meistens keinen Effekt, wenn man sie alleine drückt, sondern sie werden für Tastenkombinationen verwendet, die meistens aus einer oder mehreren Hilfstasten und einer »richtigen« Taste bestehen. Um einen ausgewählten Text mit <span class='key'>Strg</span><span class='key'>C</span> zu kopieren, musst du also erst <span class='key'>Strg</span> gedrückt halten und dann einmal <span class='key'>C</span> tippen.
 </p>
 <p>
-Du kannst Hilfstasten auch verwenden, um Sonderzeichen einzugeben, genauso wie du Großbuchstaben mit <span class='key'>Shift</span> (auch: Umschalttaste) eingeben kannst.
+Du kannst Modifikatortasten auch verwenden, um Sonderzeichen einzugeben, genauso wie du Großbuchstaben mit <span class='key'>Shift</span> (auch: Umschalttaste) eingeben kannst.
 </p>
 </div>
 

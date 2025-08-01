@@ -4,7 +4,7 @@ image: pascal-logo.png
 
 # Pascal <span style='font-size: 80%;'>(1970)</span>
 
-<div class='floatright' style='width: 12em;'>
+<div class='floatright' style='width: 16em;'>
     <img src='wirth.webp'>
     <p>Niklaus Wirth</p>
 </div>

@@ -422,7 +422,7 @@
             });
         });
         $('#bu_reset_workspace').on('click', function() {
-            showTemplateModal('Workspace zurücksetzen', `<div>Bist du sicher, dass du deinen Workspace zurücksetzen möchtest? Alle Dateien, Einstellungen und installierte Erweiterungen werden gelöscht.</div><div id='div_reset_workspace_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog bi-spin'></i>Moment, dein Workspace wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_workspace_success' style='display: none; margin-top: 1em;'><i class='text-success bi bi-check-lg'></i>Dein Workspace wurde auf den Ursprungszustand zurückgesetzt.</div>`,
+            showTemplateModal('Workspace zurücksetzen', `<div>Bist du sicher, dass du deinen Workspace zurücksetzen möchtest? Alle Dateien, Einstellungen und installierte Erweiterungen werden gelöscht.</div><div id='div_reset_workspace_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog bi-spin'></i>Moment, dein Workspace wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_workspace_success' style='display: none; margin-top: 1em;'><i class='text-success bi bi-check-lg'></i>&nbsp;Dein Workspace wurde auf den Ursprungszustand zurückgesetzt.</div>`,
             "<i class='bi bi-trash-fill'></i>Zurücksetzen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
                 $('#div_reset_workspace_please_wait').slideDown();
                 api_call('/api/reset_server', {}, function(data) {
@@ -435,7 +435,7 @@
             });
         });
         $('#bu_reset_mysql').on('click', function() {
-            showTemplateModal('MySQL-Datenbank zurücksetzen', `<div>Bist du sicher, dass du deine MySQL-Datenbank zurücksetzen möchtest? Alle Tabellen und Daten werden gelöscht.</div><div id='div_reset_mysql_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog bi-spin'></i>Moment, deine Datenbank wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_mysql_success' style='display: none; margin-top: 1em;'><i class='text-success bi bi-check-lg'></i>Deine Datenbank wurde auf den Ursprungszustand zurückgesetzt.</div>`,
+            showTemplateModal('MySQL-Datenbank zurücksetzen', `<div>Bist du sicher, dass du deine MySQL-Datenbank zurücksetzen möchtest? Alle Tabellen und Daten werden gelöscht.</div><div id='div_reset_mysql_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog bi-spin'></i>Moment, deine Datenbank wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_mysql_success' style='display: none; margin-top: 1em;'><i class='text-success bi bi-check-lg'></i>&nbsp;Deine Datenbank wurde auf den Ursprungszustand zurückgesetzt.</div>`,
             "<i class='bi bi-trash-fill'></i>Zurücksetzen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
                 $('#div_reset_mysql_please_wait').slideDown();
                 api_call('/api/reset_mysql', {}, function(data) {
@@ -448,7 +448,7 @@
             });
         });
         $('#bu_reset_postgres').on('click', function() {
-            showTemplateModal('Postgres-Datenbank zurücksetzen', `<div>Bist du sicher, dass du deine Postgres-Datenbank zurücksetzen möchtest? Alle Tabellen und Daten werden gelöscht.</div><div id='div_reset_postgres_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog bi-spin'></i>Moment, deine Datenbank wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_postgres_success' style='display: none; margin-top: 1em;'><i class='text-success bi bi-check-lg'></i>Deine Datenbank wurde auf den Ursprungszustand zurückgesetzt.</div>`,
+            showTemplateModal('Postgres-Datenbank zurücksetzen', `<div>Bist du sicher, dass du deine Postgres-Datenbank zurücksetzen möchtest? Alle Tabellen und Daten werden gelöscht.</div><div id='div_reset_postgres_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog bi-spin'></i>Moment, deine Datenbank wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_postgres_success' style='display: none; margin-top: 1em;'><i class='text-success bi bi-check-lg'></i>&nbsp;Deine Datenbank wurde auf den Ursprungszustand zurückgesetzt.</div>`,
             "<i class='bi bi-trash-fill'></i>Zurücksetzen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
                 $('#div_reset_postgres_please_wait').slideDown();
                 api_call('/api/reset_postgres', {}, function(data) {

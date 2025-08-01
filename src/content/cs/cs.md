@@ -4,7 +4,7 @@ image: cs-logo.png
 
 # C&#35; <span style='font-size: 80%;'>(2000)</span>
 
-<div class='floatright' style='width: 12em;'>
+<div class='floatright' style='width: 16em;'>
     <img src='heijlsberg.webp'>
     <p>
         Anders Heijlsberg

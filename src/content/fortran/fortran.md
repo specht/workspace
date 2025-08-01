@@ -4,7 +4,7 @@ image: fortran-logo.png
 
 # Fortran <span style='font-size: 80%;'>(1957)</span>
 
-<div class='floatright' style='width: 12em;'>
+<div class='floatright' style='width: 16em;'>
     <img src='backus.webp'>
     <p>John Backus</p>
 </div>

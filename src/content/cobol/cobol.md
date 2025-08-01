@@ -4,7 +4,7 @@ image: cobol-logo.png
 
 # COBOL <span style='font-size: 80%;'>(1959)</span>
 
-<div class='floatright' style='width: 12em;'>
+<div class='floatright' style='width: 16em;'>
     <img src='hopper.webp'>
     <p>Grace Hopper</p>
 </div>

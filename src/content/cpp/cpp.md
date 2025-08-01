@@ -4,7 +4,7 @@ image: cpp-logo.png
 
 # C++ <span style='font-size: 80%;'>(1983)</span>
 
-<div class='floatright' style='width: 12em;'>
+<div class='floatright' style='width: 16em;'>
     <img src='stroustrup.webp'>
     <p>Bjarne Stroustrup</p>
 </div>
