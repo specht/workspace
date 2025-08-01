@@ -16,7 +16,7 @@ RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - \
         texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended \
         build-essential file libncurses5-dev iputils-ping cmake autoconf mc gfortran bwbasic clisp mono-mcs mono-runtime \
         nasm gdb emacs-nox vim bsdmainutils iputils-tracepath traceroute gnucobol4 fp-compiler fp-ide \
-        gawk erlang php-cli tree telnet postgresql-client pgcli bash-completion \
+        gawk erlang php-cli tree telnet postgresql-client pgcli bash-completion imagemagick \
         libboost-dev libboost-date-time-dev libboost-thread-dev zlib1g-dev libpng-dev libjpeg8-dev libtiff5-dev libopenexr-dev \
         apt-transport-https clang guile-3.0 maven rsync graphviz mtr whois dnsutils host ntpdate software-properties-common \
         libssl-dev libffi-dev libbz2-dev libreadline-dev libsqlite3-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev \
