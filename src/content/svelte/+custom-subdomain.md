@@ -7,7 +7,7 @@ Um deine eigene Subdomain zu bekommen, musst du zuerst ein SSH-Schlüsselpaar er
 Überprüfe, ob du bereits ein Schlüsselpaar hast:
 
 ```bash
-ls ~/.ssh/id_rsa.pub
+ls ~/.ssh/*.pub
 ```
 Falls nicht, erstelle ein neues Schlüsselpaar:
 
@@ -15,23 +15,22 @@ Falls nicht, erstelle ein neues Schlüsselpaar:
 ssh-keygen
 ```
 
-Bestätige den Speicherort, eine Passphrase ist nicht nötig. Das Schlüsselpaar wird in `~/.ssh/id_rsa` und `~/.ssh/id_rsa.pub` gespeichert.
+Bestätige den Speicherort, eine Passphrase ist nicht nötig (du kannst aber natürlich ein Passphrase setzen, wenn du möchtest). Das Schlüsselpaar wird in `~/.ssh/id_ed25519` und `~/.ssh/id_ed25519.pub` gespeichert.
 
 <div class="hint">
-Achtung: Dein Schlüsselpaar besteht aus zwei Dateien: <code>id_rsa</code> (privat) und <code>id_rsa.pub</code> (öffentlich). Teile niemals deine private Datei!
-Die öffentliche Datei kannst du jedoch mit anderen teilen, um ihnen Zugriff auf deine Ressourcen zu gewähren.
+Achtung: Dein Schlüsselpaar besteht aus zwei Dateien: <code>id_ed25519</code> (privat) und <code>id_ed25519.pub</code> (öffentlich). Teile niemals deinen privaten Schlüssel! Den öffentlichen Schlüssel kannst du jedoch mit anderen teilen, um ihnen Zugriff auf deine Ressourcen zu gewähren.
 </div>
 
 Lasse dir den öffentlichen Schlüssel anzeigen:
 
 ```bash
-cat ~/.ssh/id_rsa.pub
+cat ~/.ssh/id_ed25519.pub
 ```
 
 Das sollte z. B. so aussehen:
 
 ```
-ssh-rsa AAAAB3NzaC1yc2EAAAADAQABA... abc@0ea48f711732
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHx1j3zKyFZybh2BRyiaiGj7KceAPyzHGy6gM0gHp43j abc@757c63b27d58
 ```
 
 Schicke den kompletten öffentlichen Schlüssel an <a href='mailto:specht@gymnasiumsteglitz.de'>specht@gymnasiumsteglitz.de</a> und gib an, welche Subdomain du haben möchtest. Du bekommst als Antwort eine E-Mail, in der zwei Dinge stehen:

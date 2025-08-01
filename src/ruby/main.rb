@@ -1698,11 +1698,11 @@ class Main < Sinatra::Base
                         io2.puts "<td class='td_net'>&ndash;</td>"
                         io2.puts "<td class='td_disk'>&ndash;</td>"
                         if du_for_fs_tag[user_tag]
-                            io2.puts "<td>#{bytes_to_str(du_for_fs_tag[user_tag] * 1024)}</td>"
+                            io2.puts "<td>#{bytes_to_str(du_for_fs_tag[user_tag] * 1024).sub('B', '').gsub(' ', '')}</td>"
                         else
                             io2.puts "<td>&ndash;</td>"
                         end
-                        io2.puts "<td class='td_pid' style='text-align: right;'>&ndash;</td>"
+                        io2.puts "<td class='td_pid'>&ndash;</td>"
                         io2.puts "<td><button class='btn btn-sm btn-success bu-open-workspace-as-admin' data-email='#{email_for_tag[user_tag]}'><i class='bi bi-code-slash'></i>&nbsp;Workspace öffnen</button></td>"
                         if admin_logged_in?
                             io2.puts "<td><button class='btn btn-sm btn-warning bu-impersonate' data-email='#{email_for_tag[user_tag]}'><i class='bi bi-person-vcard'></i>&nbsp;Impersonate</button></td>"

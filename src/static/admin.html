@@ -70,9 +70,9 @@ function setup_ws(ws)
                 let perc = parseFloat(data.stats[tag].stats['CPUPerc']) / 100.0;
                 row.css('background-color', `rgba(255, 200, 0, ${perc})`);
                 row.find('.td_cpu').text(data.stats[tag].stats['CPUPerc']);
-                row.find('.td_ram').text((data.stats[tag].stats['MemUsage'] ?? '').split('/')[0].trim());
-                row.find('.td_net').text(data.stats[tag].stats['NetIO']);
-                row.find('.td_disk').text(data.stats[tag].stats['BlockIO']);
+                row.find('.td_ram').text((data.stats[tag].stats['MemUsage'] ?? '').split('/')[0].trim().replace('iB', ''));
+                row.find('.td_net').text(data.stats[tag].stats['NetIO'].replace(/B/g, ''));
+                row.find('.td_disk').text(data.stats[tag].stats['BlockIO'].replace(/B/g, ''));
                 row.find('.td_pid').text(data.stats[tag].stats['PIDs']);
             }
             for (let row of $('#table_admin_workspaces tr')) {
