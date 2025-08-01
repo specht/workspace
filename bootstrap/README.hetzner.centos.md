@@ -27,7 +27,7 @@ Erstelle einen Server (Hetzner Cloud):
 - Cent OS Stream 10
 - Shared vCPU (x86), zum Ausprobieren z. B. CPX21, kann später skaliert werden
 - Gib gleich deinen SSH-Key an
-- Servername: z. B. workspace-server
+- Servername: z. B. `workspace-server`
 
 Erstelle ein Volume:
 
@@ -46,7 +46,7 @@ port 22
 identityFile /home/michael/.ssh/id_ed25519_hetzner
 ```
 
-**Tipp:** Jetzt ist ein guter Zeitpunkt, um den A-Record deiner Domain(oder Subdomain) zu setzen, damit nachher alles bereit ist.
+**Tipp:** Jetzt ist ein guter Zeitpunkt, um den A-Record deiner Domain (oder Subdomain) zu setzen, damit nachher alles bereit ist.
 
 Verbinde dich als `root` mit deinem Server:
 
