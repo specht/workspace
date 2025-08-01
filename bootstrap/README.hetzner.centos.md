@@ -133,7 +133,7 @@ I/O size (minimum/optimal): 512 bytes / 512 bytes
 
 In diesem Beispiel liegt das eingerichtete 10 GB-Volume unter `/dev/sda`.
 
-**Achtung:** Der Pfad zum eingehängten Volume kann sich nach dem Reboot geändert haben, falls du den Pfad also vorhin schon bestimmt hast, musst du jetzt unbedingt noch einmal schauen.
+> ⚠️ **Achtung:** Der Pfad zum eingehängten Volume kann sich nach dem Reboot geändert haben, falls du den Pfad also vorhin schon bestimmt hast, musst du jetzt unbedingt noch einmal schauen.
 
 Trage diesen Pfad in die `config.yaml` ein:
 
