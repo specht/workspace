@@ -442,6 +442,8 @@ async function loadGraph() {
     let dotLinks = [];
     let subGraphs = {};
     let pageSummaries = {};
+    let edgeSet = {};
+
     while (Object.keys(wavefront).length > 0) {
         let newWavefront = {};
         for (let pageCode of Object.keys(wavefront)) {
@@ -461,13 +463,17 @@ async function loadGraph() {
             pageData.summary = `${pageCode}\n${pageData.summary}`;
             pageSummaries[pageCode] = pageData.summary;
             for (let link of pageData.links) {
-                if (pageData.linkLabels[link]) {
-                    dotLinks.push(`"${pageCode}" -> "${link}" [id="edge_${pageCode}_${link}", label="  ${wordWrap(pageData.linkLabels[link], 10)}"];`);
-                } else {
-                    dotLinks.push(`"${pageCode}" -> "${link}" [id="edge_${pageCode}_${link}"];`);
+                let edgeKey = `${pageCode}->${link}`;
+                if (!edgeSet[edgeKey]) {
+                    edgeSet[edgeKey] = true;
+                    if (pageData.linkLabels[link]) {
+                        dotLinks.push(`"${pageCode}" -> "${link}" [id="edge_${pageCode}_${link}", label="  ${wordWrap(pageData.linkLabels[link], 10)}"];`);
+                    } else {
+                        dotLinks.push(`"${pageCode}" -> "${link}" [id="edge_${pageCode}_${link}"];`);
+                    }
+                    if (seenLinks[link]) continue;
+                    newWavefront[link] = true;
                 }
-                if (seenLinks[link]) continue;
-                newWavefront[link] = true;
             }
         }
         wavefront = newWavefront;
