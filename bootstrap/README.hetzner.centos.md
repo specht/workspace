@@ -227,7 +227,7 @@ Als nächstes bauen wir unsere eigen Pro-Version von TIC-80 (das dauert ca. 3 bi
 
 Jetzt kommt ein Schritt, der etwas länger dauert – wir bauen das Image, das die Schülerinnen und Schüler nutzen, wenn sie ihren Workspace starten. Hier wird also alle mögliche Software installiert, die man im Workspace vielleicht einmal gebrauchen kann.
 
-Achtung: dieser Vorgang dauert lange – ca. 45 Minuten.
+> 🕙 **Achtung:** dieser Vorgang dauert lange – ca. 45 Minuten.
 
 ```
 ./build-image.sh
