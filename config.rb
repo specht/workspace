@@ -19,6 +19,7 @@ PGADMIN_DATA_PATH = File.join(DATA_PATH, 'pgadmin')
 # NEO4J_USER_DATA_PATH = File.join(DATA_PATH, 'neo4j_user')
 USER_PATH = File.join(DATA_PATH, 'user')
 INTERNAL_PATH = File.join(DATA_PATH, 'internal')
+INVITATIONS_PATH = File.join(DATA_PATH, 'invitations')
 WEB_CACHE_PATH = File.join(DATA_PATH, 'cache')
 DOWNLOAD_PATH = File.join(DATA_PATH, 'dl')
 NGINX_PATH = File.join(DATA_PATH, 'nginx')
@@ -140,6 +141,7 @@ if PROFILE.include?(:dynamic)
                      "#{WEB_CACHE_PATH}:/webcache",
                      "#{USER_PATH}:/user",
                      "#{INTERNAL_PATH}:/internal",
+                     "#{INVITATIONS_PATH}:/invitations:ro",
                      "#{DATA_PATH}/tic80:/tic80",
                      "/var/run/docker.sock:/var/run/docker.sock",
                      "#{NGINX_PATH}:/nginx",
@@ -297,6 +299,24 @@ if PROFILE.include?(:neo4j)
 end
 FileUtils::mkpath(USER_PATH)
 FileUtils::mkpath(INTERNAL_PATH)
+FileUtils::mkpath(INVITATIONS_PATH)
+template_path = File.join(INVITATIONS_PATH, '_template.txt')
+File.open(template_path, 'w') do |f|
+    f.puts <<~EOS
+        # Der Workspace findet alle Dateien, die auf .txt enden und nicht
+        # _template.txt heißen – dort stehen alle Einladungen drin.
+        #
+        # Du kannst mit »>« Gruppen mit Mitgliedern definieren:
+        > Lehrkräfte
+        Scott Clarke <scott@example.com>
+
+        # Du kannst mit »+« definieren, wer in welcher Gruppe als Lehrer
+        # Zugriff auf Daten der SuS hat:
+        > Klasse 5a
+        + scott@example.com
+        Max Mustermann <max@example.com>
+    EOS
+end
 FileUtils::mkpath(WEB_CACHE_PATH)
 FileUtils::mkpath(File.join(DATA_PATH, 'tic80'))
 FileUtils::mkpath(MYSQL_DATA_PATH)

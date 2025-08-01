@@ -713,10 +713,20 @@ class Main < Sinatra::Base
         @@invitations = {}
         @@user_groups = {}
         @@user_group_order = []
+
+        current_group = 'Administrator'
+
+        ADMIN_USERS.each do |email|
+            @@user_group_order << current_group unless @@user_group_order.include?(current_group)
+            @@invitations[email] = { :group => current_group, :name => email }
+            @@user_groups[current_group] ||= []
+            @@user_groups[current_group] << email
+        end
+
         current_group = '(keine Gruppe)'
         group_admins = {}
-        Dir['/src/invitations/*.txt'].sort.each do |path|
-            next if File.basename(path) == 'template.txt'
+        Dir['/invitations/*.txt'].sort.each do |path|
+            next if File.basename(path) == '_template.txt'
             File.open(path) do |f|
                 f.each_line do |line|
                     next if line.strip.empty?
@@ -730,9 +740,11 @@ class Main < Sinatra::Base
                     else
                         parts = line.strip.split(' ')
                         email = parts.last.delete_prefix('<').delete_suffix('>').downcase
-                        @@user_groups[current_group] ||= []
-                        @@user_groups[current_group] << email
-                        @@invitations[email] = { :group => current_group }
+                        unless @@invitations[email]
+                            @@user_groups[current_group] ||= []
+                            @@user_groups[current_group] << email
+                            @@invitations[email] = { :group => current_group }
+                        end
                         if parts.size > 1
                             name = parts[0, parts.size - 1].join(' ')
                             @@invitations[email][:name] = name
@@ -891,6 +903,7 @@ class Main < Sinatra::Base
     end
 
     post '/api/request_login' do
+        Main.load_invitations()
         data = parse_request_data(:required_keys => [:email])
         email = data[:email].downcase.strip
 
@@ -1346,7 +1359,7 @@ class Main < Sinatra::Base
             end
             init_mysql(db_email)
             init_postgres(db_email)
-            init_neo4j(db_email)
+            # init_neo4j(db_email)
 
             if test_tag
                 test_init_mark_path = "/user/#{container_name}/workspace/.test_init"
@@ -1672,7 +1685,7 @@ class Main < Sinatra::Base
             active_users = Set.new(active_users)
             @@user_group_order.each do |group|
                 sub = StringIO.open do |io2|
-                    @@user_groups[group].each do |email|
+                    (@@user_groups[group] || []).each do |email|
                         next unless (@@teachers[@session_user[:email]] || Set.new()).include?(group) || admin_logged_in? || email == @session_user[:email]
                         user_tag = fs_tag_for_email(email)
                         next unless active_users.include?(user_tag)
@@ -1682,11 +1695,14 @@ class Main < Sinatra::Base
                         # io2.puts "<td class='td_ip'>#{(info_for_tag[user_tag] || {})[:ip] || '&ndash;'}</td>"
                         io2.puts "<td class='td_cpu'>&ndash;</td>"
                         io2.puts "<td class='td_ram'>&ndash;</td>"
+                        io2.puts "<td class='td_net'>&ndash;</td>"
+                        io2.puts "<td class='td_disk'>&ndash;</td>"
                         if du_for_fs_tag[user_tag]
                             io2.puts "<td>#{bytes_to_str(du_for_fs_tag[user_tag] * 1024)}</td>"
                         else
                             io2.puts "<td>&ndash;</td>"
                         end
+                        io2.puts "<td class='td_pid' style='text-align: right;'>&ndash;</td>"
                         io2.puts "<td><button class='btn btn-sm btn-success bu-open-workspace-as-admin' data-email='#{email_for_tag[user_tag]}'><i class='bi bi-code-slash'></i>&nbsp;Workspace öffnen</button></td>"
                         if admin_logged_in?
                             io2.puts "<td><button class='btn btn-sm btn-warning bu-impersonate' data-email='#{email_for_tag[user_tag]}'><i class='bi bi-person-vcard'></i>&nbsp;Impersonate</button></td>"
@@ -1696,14 +1712,17 @@ class Main < Sinatra::Base
                     io2.string
                 end
                 unless sub.empty?
-                    io.puts "<tr><th colspan='#{admin_logged_in? ? 7 : 6}' style='background-color: rgba(0,0,0,0); padding: 1em 0;'><h4>#{group}</h4></th></tr>"
+                    io.puts "<tr><th colspan='#{admin_logged_in? ? 10 : 9}' style='background-color: rgba(0,0,0,0); padding: 1em 0;'><h4>#{group}</h4></th></tr>"
                     io.puts "<tr>"
                     io.puts "<th>Tag</th>"
                     io.puts "<th>Name</th>"
                     # io.puts "<th>IP</th>"
                     io.puts "<th style='width: 5.2em;'>CPU</th>"
                     io.puts "<th>RAM</th>"
-                    io.puts "<th>Disk Usage</th>"
+                    io.puts "<th>Network</th>"
+                    io.puts "<th>Disk I/O</th>"
+                    io.puts "<th>Storage</th>"
+                    io.puts "<th>#PID</th>"
                     io.puts "<th>Workspace</th>"
                     if admin_logged_in?
                         io.puts "<th>Impersonate</th>"
@@ -2382,6 +2401,9 @@ class Main < Sinatra::Base
         if path == '/tic80'
             redirect "#{WEB_ROOT}/tic80/", 302
             return
+        end
+        if path == '/admin' && teacher_logged_in?
+            Main.load_invitations()
         end
         if path == '/tic80/'
             s = File.read(File.join(@@static_dir, '/tic80/index.html'))
