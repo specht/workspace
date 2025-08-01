@@ -14,7 +14,7 @@ RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - \
         python3 python3-pip python3-dev libmysqlclient-dev libmysqlclient21 python3-mysql.connector \
         mysql-client golang-go openjdk-17-jdk-headless nodejs lua5.4 htop \
         texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended \
-        build-essential file libncurses5-dev iputils-ping cmake autoconf mc gfortran bwbasic clisp mono-mcs mono-runtime \
+        build-essential file libncurses5-dev iputils-ping cmake autoconf mc gfortran bwbasic sbcl mono-mcs mono-runtime \
         nasm gdb emacs-nox vim bsdmainutils iputils-tracepath traceroute gnucobol4 fp-compiler fp-ide \
         gawk erlang php-cli tree telnet postgresql-client pgcli bash-completion imagemagick \
         libboost-dev libboost-date-time-dev libboost-thread-dev zlib1g-dev libpng-dev libjpeg8-dev libtiff5-dev libopenexr-dev \
