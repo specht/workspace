@@ -129,7 +129,6 @@ function setup_ws(ws)
         data = JSON.parse(msg.data);
         if (data.server_stats) {
             let stats = data.server_stats;
-            stats.cpu_usage *= stats.num_cores;
             $('#stats-cpu p').html(`${stats.cpu_usage.toFixed(2)}% of ${stats.num_cores} cores`);
             $('#stats-cpu .progress-bar').css('width', `${stats.cpu_usage}%`);
             $('#stats-ram p').html(`${stats.ram_used} of ${stats.ram_total}`);
