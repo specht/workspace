@@ -13,6 +13,28 @@
         font-size: 90%;
         opacity: 0.7;
     }
+    .server-stats {
+        border: 1px solid rgba(0,0,0,0.1);
+        position: relative;
+        padding: 1em;
+        border-radius: 1em;
+        box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.075);
+        h4 {
+            opacity: 0.7;
+        }
+        .bi {
+            position: absolute;
+            top: 0.1em;
+            right: 0.3em;
+            font-size: 220%;
+            opacity: 0.33;
+        }
+        p {
+            text-justify: left;
+            overflow-x: hidden;
+            white-space: pre;
+        }
+    }
 </style>
 <div class='container'>
     <div class='row'>
@@ -29,6 +51,39 @@
                         </thead>
                         <tbody></tbody>
                     </table>
+                </div>
+            </div>
+            <h2>Server</h2>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="server-stats" id="stats-cpu">
+                        <h4>CPU</h4>
+                        <i class='bi bi-cpu'></i>
+                        <p>&nbsp;</p>
+                        <div class="progress" role="progressbar">
+                            <div class="progress-bar progress-bar-striped" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="server-stats" id="stats-ram">
+                        <h4>RAM</h4>
+                        <i class='bi bi-memory'></i>
+                        <p>&nbsp;</p>
+                        <div class="progress" role="progressbar">
+                            <div class="progress-bar progress-bar-striped" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="server-stats" id="stats-storage">
+                        <h4>Storage</h4>
+                        <i class='bi bi-nvme'></i>
+                        <p>&nbsp;</p>
+                        <div class="progress" role="progressbar">
+                            <div class="progress-bar progress-bar-striped" style="width: 0%"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <h2>Workspaces</h2>
@@ -72,7 +127,16 @@ function setup_ws(ws)
 
     ws.onmessage = function (msg) {
         data = JSON.parse(msg.data);
-        if (data.stats) {
+        if (data.server_stats) {
+            let stats = data.server_stats;
+            $('#stats-cpu p').html(`${stats.cpu_usage.toFixed(2)}% of ${stats.num_cores} cores`);
+            $('#stats-cpu .progress-bar').css('width', `${stats.cpu_usage}%`);
+            $('#stats-ram p').html(`${stats.ram_used} of ${stats.ram_total}`);
+            $('#stats-ram .progress-bar').css('width', `${stats.ram_percent}%`);
+            $('#stats-storage p').html(`${stats.disk_used} of ${stats.disk_total}`);
+            $('#stats-storage .progress-bar').css('width', `${stats.disk_percent}%`);
+            console.log(data.server_stats);
+        } else if (data.stats) {
             let seen_tags = {};
             for (let tag in data.stats) {
                 seen_tags[tag] = true;

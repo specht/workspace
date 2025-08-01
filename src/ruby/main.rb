@@ -1788,7 +1788,8 @@ class Main < Sinatra::Base
                     email = row['u.email']
                     email_for_tag[fs_tag_for_email(email)] = email
                 end
-                @@threads_for_client_id[client_id] ||= Thread.new do
+                @@threads_for_client_id[client_id] ||= {}
+                @@threads_for_client_id[client_id][:docker_stats] ||= Thread.new do
                     command = "docker stats --format \"{{ json . }}\""
                     lines = {}
                     count = 0
@@ -1817,6 +1818,41 @@ class Main < Sinatra::Base
                         end
                     end
                 end
+                @@threads_for_client_id[client_id][:host_stats] ||= Thread.new do
+                    loop do
+                        data = {}
+
+                        mpstat = `mpstat 1 1 | grep 'Average' |grep 'all'`.strip
+                        parts = mpstat.split(/\s+/)
+                        cpu_idle = (parts.last.to_f * 100).to_i / 100.0
+                        cpu_used = ((100.0 - cpu_idle) * 100).to_i / 100.0
+                        data[:cpu_usage] = cpu_used
+
+                        num_cores = `grep -c ^processor /proc/cpuinfo`.to_i
+                        data[:num_cores] = num_cores
+                        meminfo = `free -k | grep 'Mem:'`
+
+                        parts = meminfo.split(/\s+/)
+                        ram_total = parts[1].to_i * 1024
+                        ram_available = parts[6].to_i * 1024
+                        ram_used = ram_total - ram_available
+                        data[:ram_total] = bytes_to_str(ram_total).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')
+                        data[:ram_used] = bytes_to_str(ram_used).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')
+                        data[:ram_percent] = (ram_used * 100.0 / ram_total * 100).to_i.to_f / 100
+
+                        diskinfo = `df -k /`.split("\n").last.strip
+                        parts = diskinfo.split(/\s+/)
+                        disk_total = parts[1].to_i * 1024
+                        disk_free = parts[3].to_i * 1024
+                        disk_used = disk_total - disk_free
+                        data[:disk_total] = bytes_to_str(disk_total).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')
+                        data[:disk_used] = bytes_to_str(disk_used).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')
+                        data[:disk_percent] = (disk_used * 100.0 / disk_total * 100).to_i.to_f / 100
+                        ws.send({:server_stats => data}.to_json)
+
+                        sleep 5
+                    end
+                end
                 broadcast_login_codes()
                 debug "Got #{@@clients.size} connected clients!"
             end
@@ -1828,7 +1864,9 @@ class Main < Sinatra::Base
                 @@client_ids_for_email[@session_user[:email]].delete(client_id) if @@client_ids_for_email[@session_user[:email]].include?(client_id)
                 @@client_ids_for_email.delete(@session_user[:email]) if @@client_ids_for_email[@session_user[:email]].empty?
                 if @@threads_for_client_id.include?(client_id)
-                    @@threads_for_client_id[client_id].kill
+                    @@threads_for_client_id[client_id].keys.each do |key|
+                        @@threads_for_client_id[client_id][key].kill
+                    end
                     @@threads_for_client_id.delete(client_id)
                 end
                 debug "Got #{@@clients.size} connected clients!"
