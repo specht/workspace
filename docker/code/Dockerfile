@@ -48,22 +48,22 @@ RUN mkdir /tmp/python-build && cd /tmp/python-build \
     && make altinstall \
     && cd / && rm -rf /tmp/python-build && rm -rf /usr/local/lib/python3.10/test
 
-# # Install Tensorflow etc.
-# RUN python3.10 -m venv /opt/python-env \
-#     && /opt/python-env/bin/pip install --no-cache-dir --upgrade pip setuptools wheel \
-#     && /opt/python-env/bin/pip install --no-cache-dir matplotlib jax==0.4.21 jaxlib==0.4.21 numpy==1.26.4 keras==2.11.0 tensorflow-cpu==2.11.0 tensorflowjs==4.0.0 ipykernel \
-#     && chmod -R a+rx /opt/python-env
+# Install Tensorflow etc.
+RUN python3.10 -m venv /opt/python-env \
+    && /opt/python-env/bin/pip install --no-cache-dir --upgrade pip setuptools wheel \
+    && /opt/python-env/bin/pip install --no-cache-dir matplotlib jax==0.4.21 jaxlib==0.4.21 numpy==1.26.4 keras==2.11.0 tensorflow-cpu==2.11.0 tensorflowjs==4.0.0 ipykernel \
+    && chmod -R a+rx /opt/python-env
 
-# RUN apt-get purge -y \
-#   libmysqlclient-dev libboost-dev libboost-thread-dev libssl-dev libbz2-dev \
-#   libpng-dev zlib1g-dev \
-#   && apt-get autoremove -y && apt-get clean
+RUN apt-get purge -y \
+  libmysqlclient-dev libboost-dev libboost-thread-dev libssl-dev libbz2-dev \
+  libpng-dev zlib1g-dev \
+  && apt-get autoremove -y && apt-get clean
 
-# # Add environment variable for gems only once
-# RUN echo "export GEM_HOME=\$HOME/.gem" >> /root/.bashrc
+# Add environment variable for gems only once
+RUN echo "export GEM_HOME=\$HOME/.gem" >> /root/.bashrc
 
-# # Copy your custom init scripts (should be last, change this less frequently)
-# COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run
-# COPY svc-code-server-run /etc/s6-overlay/s6-rc.d/svc-code-server/run
+# Copy your custom init scripts (should be last, change this less frequently)
+COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run
+COPY svc-code-server-run /etc/s6-overlay/s6-rc.d/svc-code-server/run
 
-# WORKDIR /workspace
+WORKDIR /workspace
