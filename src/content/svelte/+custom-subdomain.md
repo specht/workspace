@@ -53,7 +53,7 @@ touch /workspace/.ssh/config
 ```bash
 Host cobolultras.hackschule.de
   User max
-  IdentityFile ~/.ssh/id_rsa
+  IdentityFile ~/.ssh/id_ed25519
   Port 2222
 ```
 
