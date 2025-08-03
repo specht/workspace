@@ -30,6 +30,7 @@ let history = [];
 let context = {};
 
 let devMode = (window.location.port.length > 0) || (window.location.search.indexOf('dev') > 0);
+// devMode = false;
 let printAnchor = el.content;
 let nextPageLinks = {};
 let deferred = null;

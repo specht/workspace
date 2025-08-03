@@ -1,6 +1,7 @@
 :root {
   --bg-color: #fff;
   --fg-color: #333;
+  --vh: 1vh;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,6 +22,9 @@
   --mix-95: color-mix(in hsl, var(--bg-color) 95%, var(--fg-color));
 }
 
+nav {
+    display: none;
+}
 
 html, body {
     overflow: none;
@@ -40,7 +44,7 @@ body {
     flex-direction: column;
     align-items: stretch;
     justify-content: start;
-    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
 }
 
 a {
@@ -65,7 +69,15 @@ p {
     line-height: 1.4em;
 }
 
-ul {
+ul:not(:has(li a)) {
+    list-style: none;
+    /* padding-left: 1.5em; */
+    li::marker {
+       content: "–  ";
+    }
+}
+
+ul:has(li a) {
     list-style: none;
     padding: 0;
 
@@ -101,7 +113,8 @@ button.pagelink {
 }
 
 #content {
-    margin-bottom: 15px;
+    padding-bottom: 25px;
+    margin-bottom: 100px;
 }
 
 .pagelink {
@@ -187,7 +200,7 @@ nav, #dev_pane {
     max-width: 30em;
     margin: auto;
     padding: 1em;
-    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
     overflow-y: scroll;
 }
 
