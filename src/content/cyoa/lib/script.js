@@ -1,6 +1,9 @@
-import markdownit from 'https://cdn.jsdelivr.net/npm/markdown-it@14/+esm';
-import markdownitAttrs from 'https://cdn.jsdelivr.net/npm/markdown-it-attrs@4/+esm';
-import { Graphviz} from 'https://cdn.jsdelivr.net/npm/@hpcc-js/wasm/dist/graphviz.min.js';
+import markdownit from '/lib/markdown-it.js';
+import markdownitAttrs from '/lib/markdown-it-attrs.js';
+import { Graphviz} from '/lib/graphviz.min.js';
+
+const ts = Date.now();
+const { path } = await import(`/config.js?${ts}`);
 
 const md = markdownit({ html: true, typographer: true }).use(markdownitAttrs);
 
@@ -18,7 +21,10 @@ const el = {
     divider: document.getElementById('divider'),
     gamePane: document.getElementById('game_pane'),
     content: document.getElementById('content'),
+    clickedButton: null,
 }
+
+const cache_buster = `${Date.now()}`;
 
 let history = [];
 let context = {};
@@ -39,52 +45,51 @@ function mulberry32(seed) {
     };
 }
 
-function presentChoice(choices) {
-    if (choiceDiv) {
-        choiceDiv.remove();
-        choiceDiv = null;
-    }
-    deferred = {};
-    deferred.promise = new Promise((resolve, reject) => {
-        deferred.resolve = (value) => {
-            cleanup();
-            resolve(value);
-        };
-        deferred.reject = (reason) => {
-            cleanup();
-            reject(reason);
-        };
-    });
+// function presentChoice(choices) {
+//     if (choiceDiv) {
+//         choiceDiv.remove();
+//         choiceDiv = null;
+//     }
+//     deferred = {};
+//     deferred.promise = new Promise((resolve, reject) => {
+//         deferred.resolve = (value) => {
+//             cleanup();
+//             resolve(value);
+//         };
+//         deferred.reject = (reason) => {
+//             cleanup();
+//             reject(reason);
+//         };
+//     });
 
-    function cleanup() {
-        deferred = null;
-    }
+//     function cleanup() {
+//         deferred = null;
+//     }
 
-    choiceDiv = document.createElement('div');
-    choiceDiv.classList.add('choice');
-    printAnchor.appendChild(choiceDiv);
+//     choiceDiv = document.createElement('div');
+//     choiceDiv.classList.add('choice');
+//     printAnchor.appendChild(choiceDiv);
 
-    nextPageLinks = {};
-    for (let i = 0; i < choices.length; i++) {
-        let button = document.createElement('button');
-        button.classList.add('pagelink');
-        choiceDiv.appendChild(button);
+//     nextPageLinks = {};
+//     for (let i = 0; i < choices.length; i++) {
+//         let button = document.createElement('button');
+//         button.classList.add('pagelink');
+//         choiceDiv.appendChild(button);
 
-        let choice = choices[i];
-        button.innerHTML = choice[1];
-        nextPageLinks[`${choice[0]}`] = button;
+//         let choice = choices[i];
+//         button.innerHTML = choice[1];
+//         nextPageLinks[`${choice[0]}`] = button;
 
-        button.addEventListener('click', function(event) {
-            event.preventDefault();
-            event.stopPropagation();
-            turnToPage(`${choice[0]}`);
-        });
-    }
+//         button.addEventListener('click', function(event) {
+//             el.clickedButton = button;
+//             event.preventDefault();
+//             event.stopPropagation();
+//             turnToPage(`${choice[0]}`);
+//         });
+//     }
 
-    scrollToBottom();
-
-    return deferred.promise;
-}
+//     return deferred.promise;
+// }
 
 const contextProxy = new Proxy(context, {
     has(target, key) {
@@ -98,12 +103,11 @@ const contextProxy = new Proxy(context, {
                 let div = document.createElement('div');
                 div.innerHTML = args.map((x) => md.render(x)).join(' ') + '\n';
                 printAnchor.appendChild(div);
-                scrollToBottom();
             };
-        } else if (key === 'presentChoice') {
-            return presentChoice;
-        } else if (key === 'forceTurnToPage') {
-            return forceTurnToPage;
+        // } else if (key === 'presentChoice') {
+        //     return presentChoice;
+        // } else if (key === 'forceTurnToPage') {
+        //     return forceTurnToPage;
         } else {
             return globalThis[key];
         }
@@ -111,12 +115,12 @@ const contextProxy = new Proxy(context, {
     set(target, key, value) {
         target[key] = value;
         return true;
-    }
+    },
 });
 
 function runInContext(code) {
     let result = Function('ctx', `with (ctx) { ${code} }`)(contextProxy);
-    el.stateContainer.innerHTML = JSON.stringify(context, null, 2);
+    el.stateContainer.innerHTML = jsyaml.dump(context);
     return result;
 }
 
@@ -215,8 +219,6 @@ function processDOM(inputRoot) {
     for (const child of inputRoot.childNodes) {
         processNode(child, el.content);
     }
-
-    scrollToBottom();
 }
 
 function updateHistoryHash() {
@@ -227,7 +229,7 @@ function updateHistoryHash() {
 
 async function appendPage(page) {
     el.html.scrollTop = 0;
-    await fetch(`/pages/${page}.md`)
+    await fetch(`/${path}/${page}.md?${cache_buster}`)
     .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -261,25 +263,48 @@ async function appendPage(page) {
         history.push(page);
         updateHistoryHash();
 
+        let foundAnyLinks = false;
         for (let link of document.querySelectorAll('a')) {
             let href = link.getAttribute('href') ?? '';
             if (href.indexOf('/') < 0) {
                 let page = link.getAttribute('href');
-                link.removeAttribute('href');
-                let parent = link.parentNode;
-                if ((parent.tagName ?? '').toLowerCase() === 'li') link = parent;
-                nextPageLinks[page] = link;
-                link.classList.add('pagelink');
-                link.style.height = `${link.scrollHeight + 2}px`;
-                link.addEventListener('click', function(event) {
-                    if (link.classList.contains('chosen')) return;
-                    event.preventDefault();
-                    turnToPage(page);
-                });
+                if (page) {
+                    link.removeAttribute('href');
+                    let parent = link.parentNode;
+                    if ((parent.tagName ?? '').toLowerCase() === 'li') link = parent;
+                    nextPageLinks[page] = link;
+                    link.classList.add('pagelink');
+                    foundAnyLinks = true;
+                    link.addEventListener('click', function(event) {
+                        el.clickedButton = link;
+                        if (link.classList.contains('chosen')) return;
+                        event.preventDefault();
+                        turnToPage(page);
+                    });
+                }
             }
         }
 
+        if (!foundAnyLinks) {
+            // this is the end of the story, add a restart button
+            let button = document.createElement('button');
+            button.classList.add('pagelink');
+            el.content.appendChild(button);
+            button.innerHTML = `<svg class="icon"><use href="#reload"></use></svg><span>Spiel neu starten</span>`;
+            button.style.textAlign = 'center';
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                window.location.href = '/';
+            });
+
+        }
+
         markNodesInGraph();
+    })
+    .then(() => {
+        scrollToElement(el.clickedButton);
+        el.clickedButton = null;
     })
     .catch(error => {
         appendSection(`Fehler: Seite ${page} nicht gefunden. (${error.message})`);
@@ -294,7 +319,7 @@ function randomSeed() {
 }
 
 async function loadPage(page) {
-    const response = await fetch(`/pages/${page}.md`);
+    const response = await fetch(`/${path}/${page}.md?${cache_buster}`);
     if (!response.ok) {
         throw new Error('Network response was not ok');
     }
@@ -410,9 +435,9 @@ function wordWrap(text, maxLength) {
     return wrappedText;
 }
 
-async function forceTurnToPage(page) {
-    await appendPage(page);
-}
+// async function forceTurnToPage(page) {
+//     await appendPage(page);
+// }
 
 async function turnToPage(page) {
     if (deferred) {
@@ -426,9 +451,6 @@ async function turnToPage(page) {
         for (let el of document.querySelectorAll('.pagelink')) {
             if (!el.classList.contains('chosen')) {
                 el.classList.add('dismissed');
-                el.addEventListener('transitionend', () => {
-                    el.remove();
-                }, { once: true });
             }
         }
         await appendPage(page);
@@ -460,7 +482,7 @@ async function loadGraph() {
             subGraphs[pageData.group] ??= [];
             subGraphs[pageData.group].push(pageCode);
             pageData.summary ??= '';
-            pageData.summary = `${pageCode}\n${pageData.summary}`;
+            pageData.summary = `${pageCode} ${pageData.summary}`.trim();
             pageSummaries[pageCode] = pageData.summary;
             for (let link of pageData.links) {
                 let edgeKey = `${pageCode}->${link}`;
@@ -481,7 +503,7 @@ async function loadGraph() {
     let dot = "";
     dot += `digraph Adventure {
     rankdir="TB"
-    graph [fontname="Arial", fontsize=11]
+    graph [fontname="Arial", fontsize=11, bgcolor="none"]
     node [shape=box, style=filled, fontname="Arial", fontsize=11, color="#000000"]
     edge [fontname="Arial", fontsize=11, penwidth=1, style="solid", color="#000000"]`;
     for (let group of Object.keys(subGraphs)) {
@@ -493,7 +515,7 @@ async function loadGraph() {
             labeljust="l"
             style=filled
             color="${groupColor[0]}"
-            fillcolor="${groupColor[2]}"
+            fillcolor="${groupColor[2]}ff"
             node [style=filled, fillcolor="${groupColor[1]}", color="${groupColor[0]}"]
             ${subGraphs[group].map(page => `"${page}" [label="${wordWrap(pageSummaries[page] ?? '', 10).trim()}", id="node_${page}"]`).join('\n')}
         }`;
@@ -546,16 +568,17 @@ async function loadGraph() {
     });
 }
 
-document.addEventListener("DOMContentLoaded", async function () {
+export async function init() {
     el.body.classList.add('skip-animations');
     if (devMode) {
         el.body.classList.add('dev');
         document.querySelector('#bu_reset_game').addEventListener('click', function() {
             window.location = '/';
         });
-        document.querySelector('#bu_fit_zoom').addEventListener('click', function() {
-            resetViewBox();
-        });
+        document.querySelector('nav').style.display = 'unset';
+        // document.querySelector('#bu_fit_zoom').addEventListener('click', function() {
+        //     resetViewBox();
+        // });
     }
     if (window.location.hash) {
         const hash = window.location.hash.substring(1);
@@ -571,6 +594,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     Math.w6 = () => Math.floor(Math.rand() * 6) + 1;
+    Math.chance = (x) => Math.random() * 100 < x;
     if (history.length < 3) {
         // it's a new game because there's only the seed and the first page in the history
         let seed = randomSeed();
@@ -592,28 +616,23 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     if (devMode) {
         loadGraph();
-        el.stateContainer.innerHTML = JSON.stringify(context, null, 2);
+        el.stateContainer.innerHTML = jsyaml.dump(context);
         initPaneSlider();
     }
     el.body.classList.remove('skip-animations');
-});
+}
 
-function scrollToBottom() {
-    let options = {
-        top: el.gamePane.scrollHeight,
-        behavior: el.body.classList.contains('skip-animations') ? 'instant' : 'smooth',
-    }
-    el.gamePane.scrollTo(options);
+function scrollToElement(e) {
+    if (!e) return;
+    const top = e.offsetTop - 10;
+    el.gamePane.scrollTo({top, behavior: 'smooth'});
 }
 
 function appendSection(text) {
     const section = document.createElement('div');
     section.classList.add('page');
-    section.classList.add('hidden');
     section.innerHTML = md.render(text);
     content.appendChild(section);
-    scrollToBottom();
-    setTimeout(() => section.classList.remove('hidden'), 1);
 }
 
 let isPanning = false;
@@ -627,14 +646,14 @@ let isTouching = false;
 function handlePan(e) {
     if (!isPanning) return;
 
-    const dx = (e.clientX - startPoint.x) / currentScale; // Scale-aware
+    const dx = (e.clientX - startPoint.x) / currentScale;
     const dy = (e.clientY - startPoint.y) / currentScale;
 
     viewBox.x -= dx;
     viewBox.y -= dy;
 
     updateViewBox();
-    startPoint = { x: e.clientX, y: e.clientY }; // Update for next move
+    startPoint = { x: e.clientX, y: e.clientY };
 }
 
 function startPan(e) {
@@ -645,7 +664,7 @@ function startPan(e) {
 function pan(e) {
     if (!isPanning) return;
 
-    const dx = (e.clientX - startPoint.x) / currentScale; // Scale-corrected
+    const dx = (e.clientX - startPoint.x) / currentScale;
     const dy = (e.clientY - startPoint.y) / currentScale;
 
     viewBox.x -= dx;
@@ -662,24 +681,20 @@ function endPan() {
 function zoom(e) {
     e.preventDefault();
     const zoomIntensity = 0.1;
-    const wheelDelta = -e.deltaY; // Invert for natural scrolling
+    const wheelDelta = -e.deltaY;
     const zoomFactor = wheelDelta > 0 ? 1 - zoomIntensity : 1 + zoomIntensity;
 
-    // Get mouse position in SVG coordinates
     const mouseX = e.clientX - window.svg.getBoundingClientRect().left;
     const mouseY = e.clientY - window.svg.getBoundingClientRect().top;
     const mouseXPercent = mouseX / window.svg.clientWidth;
     const mouseYPercent = mouseY / window.svg.clientHeight;
 
-    // Store previous dimensions
     const prevWidth = viewBox.width;
     const prevHeight = viewBox.height;
 
-    // Apply zoom
     viewBox.width *= zoomFactor;
     viewBox.height *= zoomFactor;
 
-    // Adjust viewBox origin to zoom toward mouse
     viewBox.x += mouseXPercent * (prevWidth - viewBox.width);
     viewBox.y += mouseYPercent * (prevHeight - viewBox.height);
 
@@ -688,11 +703,9 @@ function zoom(e) {
 
 function handleTouchStart(e) {
     if (e.touches.length === 2) {
-        // Pinch-to-zoom
         touchStartDistance = getDistance(e.touches[0], e.touches[1]);
         isTouching = true;
     } else if (e.touches.length === 1) {
-        // Single-touch pan
         startPan({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
         isTouching = true;
     }
@@ -703,7 +716,6 @@ function handleTouchMove(e) {
     e.preventDefault();
 
     if (e.touches.length === 2) {
-        // Pinch-to-zoom
         const currentDistance = getDistance(e.touches[0], e.touches[1]);
         const zoomFactor = currentDistance / touchStartDistance;
         const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
@@ -717,14 +729,13 @@ function handleTouchMove(e) {
         });
         touchStartDistance = currentDistance;
     } else if (e.touches.length === 1) {
-        // Single-touch pan
         pan({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
     }
 }
 
 function handleTouchEnd(e) {
     isTouching = false;
-    endPan(); // Reset panning state if needed
+    endPan();
 }
 
 
@@ -737,37 +748,31 @@ function getDistance(touch1, touch2) {
 
 function updateViewBox() {
     window.svg.setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
-    currentScale = window.svg.clientWidth / viewBox.width; // Update scale
+    currentScale = window.svg.clientWidth / viewBox.width;
 }
 
 function resetViewBox() {
     const bbox = window.svg.getBBox();
-    const padding = 10; // Optional padding
-    const maxZoom = 1.5; // Maximum allowed zoom level (2x)
+    const padding = 10;
+    const maxZoom = 1.5;
 
-    // Get container dimensions
     const containerWidth = window.svg.clientWidth;
     const containerHeight = window.svg.clientHeight;
 
-    // Calculate minimum allowed viewBox dimensions based on maxZoom
     const minWidth = containerWidth / maxZoom;
     const minHeight = containerHeight / maxZoom;
 
-    // Calculate initial fit
     const containerRatio = containerWidth / containerHeight;
     const contentRatio = bbox.width / bbox.height;
 
     if (contentRatio > containerRatio) {
-        // Fit to width
         viewBox.width = Math.max(bbox.width + padding * 2, minWidth);
         viewBox.height = viewBox.width / containerRatio;
     } else {
-        // Fit to height
         viewBox.height = Math.max(bbox.height + padding * 2, minHeight);
         viewBox.width = viewBox.height * containerRatio;
     }
 
-    // Center content
     viewBox.x = bbox.x - (viewBox.width - bbox.width) / 2;
     viewBox.y = bbox.y - (viewBox.height - bbox.height) / 2;
 
@@ -787,10 +792,9 @@ function animateViewBox(target, duration = 300) {
 
     function step(now) {
         const elapsed = now - startTime;
-        const t = Math.min(elapsed / duration, 1); // Clamp to [0,1]
+        const t = Math.min(elapsed / duration, 1);
         const ease = easeInOutQuad(t);
 
-        // Interpolate each property
         viewBox.x = lerp(start.x, end.x, ease);
         viewBox.y = lerp(start.y, end.y, ease);
         viewBox.width = lerp(start.width, end.width, ease);
@@ -801,14 +805,13 @@ function animateViewBox(target, duration = 300) {
         if (t < 1) {
             animationFrameId = requestAnimationFrame(step);
         } else {
-            animationFrameId = null; // Done
+            animationFrameId = null;
         }
     }
 
     requestAnimationFrame(step);
 }
 
-// Helpers
 function lerp(a, b, t) {
     return a + (b - a) * t;
 }
@@ -879,20 +882,17 @@ function focusOnElement(element) {
     const elementBBox = getBBoxInSVGCoords(element, svg);
     const graphBBox = getBBoxInSVGCoords(graphGroup, svg);
 
-    const padding = 10;       // Around graph or focused element
-    const focusMargin = 40;   // Space above focused element
+    const padding = 10;
+    const focusMargin = 40;
     const maxZoom = 1.5;
 
-    // Calculate minimum allowed viewBox dimensions based on maxZoom
     const minWidth = containerWidth / maxZoom;
     const minHeight = containerHeight / maxZoom;
 
-    // Smart skip: If element is already nicely visible, don't move
     if (isElementWellInView(elementBBox)) {
         return;
     }
 
-    // Determine if whole graph is small enough to center instead
     const fitsHorizontally = graphBBox.width + padding * 2 <= minWidth;
     const fitsVertically = graphBBox.height + padding * 2 <= minHeight;
     const graphIsSmall = fitsHorizontally && fitsVertically;
@@ -900,14 +900,11 @@ function focusOnElement(element) {
     let targetViewBox = {};
 
     if (graphIsSmall) {
-        // Center whole graph
         const contentRatio = graphBBox.width / graphBBox.height;
         if (contentRatio > containerRatio) {
-            // Fit to width
             targetViewBox.width = Math.max(graphBBox.width + padding * 2, minWidth);
             targetViewBox.height = targetViewBox.width / containerRatio;
         } else {
-            // Fit to height
             targetViewBox.height = Math.max(graphBBox.height + padding * 2, minHeight);
             targetViewBox.width = targetViewBox.height * containerRatio;
         }
@@ -915,17 +912,14 @@ function focusOnElement(element) {
         targetViewBox.x = graphBBox.x - (targetViewBox.width - graphBBox.width) / 2;
         targetViewBox.y = graphBBox.y - (targetViewBox.height - graphBBox.height) / 2;
     } else {
-        // Focus on element — keep near top
         const focusWidth = Math.max(elementBBox.width + padding * 2, minWidth);
         const focusHeight = Math.max(elementBBox.height + padding * 2, minHeight);
 
         let viewWidth, viewHeight;
         if (focusWidth / focusHeight > containerRatio) {
-            // Fit to width
             viewWidth = focusWidth;
             viewHeight = viewWidth / containerRatio;
         } else {
-            // Fit to height
             viewHeight = focusHeight;
             viewWidth = viewHeight * containerRatio;
         }
@@ -942,40 +936,32 @@ function focusOnElement(element) {
         };
     }
 
-    // viewBox = targetViewBox;
-    // updateViewBox();
-
     animateViewBox(targetViewBox);
 }
 
 function installPanAndZoomHandler(svg) {
     window.svg = svg;
 
-    // Initialize viewBox to default
     resetViewBox();
 
-    // Mouse/touch events
     window.svg.addEventListener('mousedown', (e) => {
-        if (e.button !== 0) return; // Only left button
+        if (e.button !== 0) return;
         isPanning = true;
         startPoint = { x: e.clientX, y: e.clientY };
-        e.preventDefault(); // Prevent text selection during drag
+        e.preventDefault();
     });
 
-    // Track mouse movement globally
     document.addEventListener('mousemove', handlePan);
     document.addEventListener('mouseup', (e) => {
-        if (e.button !== 0) return; // Only left button
+        if (e.button !== 0) return;
         isPanning = false;
     });
 
-    // Handle SVG-specific mouseleave (optional cleanup)
     window.svg.addEventListener('mouseleave', (e) => {
-        if (!isPanning) return; // Only reset if not panning
+        if (!isPanning) return;
     });
     window.svg.addEventListener('wheel', zoom);
 
-    // Touch events (for mobile)
     window.svg.addEventListener('touchstart', handleTouchStart, { passive: false });
     window.svg.addEventListener('touchmove', handleTouchMove, { passive: false });
     window.svg.addEventListener('touchend', handleTouchEnd);
@@ -986,7 +972,6 @@ function initPaneSlider() {
     const container = document.querySelector('#resizable-children');
     let isDragging = false;
 
-    // Initialize with saved percentage or default
     function initPanel() {
         const savedPercent = localStorage.getItem('rightPanelPercent');
         const containerWidth = container.clientWidth;
@@ -995,11 +980,10 @@ function initPaneSlider() {
             const percent = parseFloat(savedPercent);
             rightPanel.style.width = `${Math.min(Math.max(percent, 20), 50)}%`;
         } else {
-            rightPanel.style.width = '30%'; // Default
+            rightPanel.style.width = '30%';
         }
     }
 
-    // Handle divider drag
     el.divider.addEventListener('mousedown', (e) => {
         isDragging = true;
         document.body.style.cursor = 'col-resize';
@@ -1016,7 +1000,6 @@ function initPaneSlider() {
         const containerWidth = containerRect.width;
         const newPercent = (newWidthPx / containerWidth) * 100;
 
-        // Apply constraints (20% to 50%)
         rightPanel.style.width = `${Math.min(Math.max(newPercent, 20), 50)}%`;
     }
 
@@ -1026,14 +1009,12 @@ function initPaneSlider() {
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
 
-        // Save percentage
         const containerWidth = container.clientWidth;
         const rightPanelWidth = rightPanel.clientWidth;
         const percent = (rightPanelWidth / containerWidth) * 100;
         localStorage.setItem('rightPanelPercent', percent);
     }
 
-    // Handle window resize
     function handleResize() {
         const savedPercent = localStorage.getItem('rightPanelPercent');
         if (savedPercent) {
@@ -1042,7 +1023,6 @@ function initPaneSlider() {
         }
     }
 
-    // Initialize
     initPanel();
     window.addEventListener('resize', handleResize);
 }

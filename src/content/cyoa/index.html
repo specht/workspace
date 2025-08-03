@@ -4,20 +4,28 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Choose Your Own Adventure</title>
-        <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
-        <script src="script.js" type="module"></script>
+        <script src="/lib/js-yaml.min.js"></script>
+        <script src="/lib/lz-string.min.js"></script>
+
+        <script>
+            const ts = Date.now();
+            const style = document.createElement('link');
+            style.rel = 'stylesheet';
+            style.href = `/styles.css?v=${ts}`;
+            document.head.appendChild(style);
+        </script>
+
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="styles.css">
+        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
     </head>
     <body>
-        <nav>
-            <button id="bu_toggle_state">Zustand</button>
-            <button id="bu_toggle_images">Bilder</button>
-            <button id="bu_toggle_errors">Fehler</button>
-            <button id="bu_reset_game">Spiel neu starten</button>
-            <button id="bu_fit_zoom">Zoom anpassen</button>
+        <nav style="display: none;">
+            <!-- <button id="bu_toggle_state">Zustand</button> -->
+            <!-- <button id="bu_toggle_images">Bilder</button> -->
+            <!-- <button id="bu_toggle_errors">Fehler</button> -->
+            <button id="bu_reset_game"><svg class="icon"><use href="#reload"></use></svg><span>Spiel neu starten</span></button>
+            <!-- <button id="bu_fit_zoom">Zoom anpassen</button> -->
         </nav>
 
         <div id="resizable-children">
@@ -30,6 +38,16 @@
                 <div id="content">
                 </div>
             </div>
+        </div>
+        <script type="module">
+            import(`/lib/script.js?v=${ts}`).then(mod => mod.init());
+        </script>
+        <div style="display: none;">
+            <svg>
+                <symbol id="reload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.933 13.041a8 8 0 1 1 -9.925 -8.788c3.899 -1 7.935 1.007 9.425 4.747" /><path d="M20 4v5h-5" />
+                </symbol>
+            </svg>
         </div>
     </body>
 </html>

@@ -1,14 +1,38 @@
+:root {
+  --bg-color: #fff;
+  --fg-color: #333;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #222;
+        --fg-color: #eee;
+    }
+}
+
+:root {
+  --mix-60: color-mix(in hsl, var(--bg-color) 60%, var(--fg-color));
+  --mix-65: color-mix(in hsl, var(--bg-color) 65%, var(--fg-color));
+  --mix-70: color-mix(in hsl, var(--bg-color) 70%, var(--fg-color));
+  --mix-75: color-mix(in hsl, var(--bg-color) 75%, var(--fg-color));
+  --mix-80: color-mix(in hsl, var(--bg-color) 80%, var(--fg-color));
+  --mix-85: color-mix(in hsl, var(--bg-color) 85%, var(--fg-color));
+  --mix-90: color-mix(in hsl, var(--bg-color) 90%, var(--fg-color));
+  --mix-95: color-mix(in hsl, var(--bg-color) 95%, var(--fg-color));
+}
+
+
 html, body {
     overflow: none;
     height: 100%;
 }
 
 body {
-    color: #333;
-    background-color: #fff;
+    background-color: var(--bg-color);
+    color: var(--fg-color);
     margin: 0;
     overflow: hidden;
-    font-family: "Inter", sans-serif;
+    font-family: "IBM Plex Sans", sans-serif;
     font-optical-sizing: auto;
     font-weight: normal;
     font-style: normal;
@@ -19,6 +43,10 @@ body {
     height: 100vh;
 }
 
+a {
+    text-decoration: none;
+}
+
 img {
     display: block;
     width: 100%;
@@ -26,19 +54,15 @@ img {
 }
 
 blockquote {
-    background-color: #f9f9f9;
-    border-left: 4px solid #ccc;
-    margin: 1em 0;
-    padding: 0.1em 1em
+    background-color: var(--mix-95);
+    border-left: 4px solid var(--mix-85);
+    margin: 0;
+    padding: 0.1em 1em;
+    font-style: italic;
 }
 
 p {
     line-height: 1.4em;
-}
-
-a {
-    color: rgb(137, 4, 4);
-    text-decoration: none;
 }
 
 ul {
@@ -51,15 +75,15 @@ ul {
             display: block;
             margin: 0.5em 0;
             padding: 0.75em;
-            background-color: #fff;
+            background-color: var(--bg-color);
             border-radius: 4px;
             box-shadow: 0 0.05em 0.15em rgba(0, 0, 0, 0.1);
-            border: 1px solid #ccc;
+            border: 1px solid var(--mix-70);
             background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.05));
 
             &:hover {
-                background-color: #e9e9e9;
-                border: 1px solid #bbb;
+                background-color: var(--mix-95);
+                border: 1px solid var(--mix-60);
                 box-shadow: 0 0.05em 0.15em rgba(0, 0, 0, 0.2);
             }
         }
@@ -83,22 +107,24 @@ button.pagelink {
 .pagelink {
     cursor: pointer;
     user-select: none;
-
-    transition: transform 0.5s ease, height 0.5s ease, margin 0.5s ease, padding 0.5s ease, opacity 0.5s ease, border 0.5s ease;
-
-    height: auto;
+    transition: max-height 300ms ease, height 300ms ease, margin 300ms ease, padding 300ms ease, opacity 0.5s ease, border 0.5s ease, transform 0.5s ease;
+    max-height: 100px;
     overflow-y: hidden;
-
     margin: 0.5em 0;
 
     a {
         margin: 0;
+        padding: 0.75em 1em;
+    }
+
+    &.chosen {
+        pointer-events: none;
     }
 
     &.dismissed {
-        height: 0 !important;
-        opacity: 0;
         pointer-events: none;
+        max-height: 0;
+        margin: 0;
     }
 }
 
@@ -111,26 +137,46 @@ button.pagelink {
     }
 }
 
+.icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    color: var(--fg-color);
+    background-size: contain;
+}
+
 button {
     user-select: none;
-    font-family: Inter;
-    /* margin: 0.5em 0; */
+    font-family: "IBM Plex Sans", sans-serif;
     padding: 0.5em 1em;
-    background-color: #fff;
+    background-color: var(--bg-color);
+    color: var(--fg-color);
     border-radius: 4px;
     box-shadow: 0 0.05em 0.15em rgba(0, 0, 0, 0.1);
-    border: 1px solid #ccc;
+    border: 1px solid var(--mix-70);
     background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.05));
 
     cursor: pointer;
 
     &:hover {
-        background-color: #e9e9e9;
-        border: 1px solid #bbb;
+        background-color: var(--mix-95);
+        border: 1px solid var(--mix-60);
         box-shadow: 0 0.05em 0.15em rgba(0, 0, 0, 0.2);
     }
 
     white-space: nowrap;
+
+    .icon {
+        color: var(--my-button-foreground);
+        position: relative;
+        top: 0.15em;
+    }
+    :first-child.icon {
+        margin-right: 0.5em;
+    }
+    :last-child.icon {
+        margin-left: 0.5em;
+    }
 }
 
 nav, #dev_pane {
@@ -147,17 +193,15 @@ nav, #dev_pane {
 
 body.dev {
     nav {
-        display: block;
-        overflow-x: auto;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        z-index: 1;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         gap: 0.5em;
         padding: 0.5em;
         flex-wrap: nowrap;
-        background-color: #fff;
-        box-shadow: 0.1em 0.1em 0.25em rgba(0, 0, 0, 0.25);
-        z-index: 1;
-        flex-shrink: 0;
     }
 
     #resizable-children {
@@ -169,7 +213,7 @@ body.dev {
 
         #dev_pane {
             flex: 1;
-            box-shadow: 0.15em 0 0.15em rgba(0, 0, 0, 0.25);
+            box-shadow: 0.1em 0 0.1em rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
             min-width: 100px;
@@ -219,21 +263,22 @@ body.dev {
 
             #state-container {
                 position: absolute;
-                top: 1em;
-                left: 1em;
+                bottom: 1em;
+                right: 1em;
                 font-family: 'IBM Plex Mono', monospace;
                 font-size: 0.9em;
-                background-color: #fff;
+                background-color: var(--bg-color);
                 padding: 0.5em;
                 white-space: pre;
                 box-shadow: 0.1em 0.1em 0.25em rgba(0, 0, 0, 0.25);
                 border-radius: 0.25em;
+                border: 1px solid var(--mix-80);
             }
         }
 
         .divider {
             width: 8px;
-            background: #f0f0f0;
+            background: var(--mix-95);
             cursor: col-resize;
             transition: background 0.2s;
         }
@@ -248,7 +293,6 @@ body.dev {
             max-width: 50%;
             overflow-y: scroll;
             padding: 0.5em;
-            
 
             &::-webkit-scrollbar {
                 width: 8px;
@@ -262,9 +306,9 @@ body.dev {
 }
 
 hr {
-    height: 1px;
+    height: 0;
     border: none;
-    border-top: 1px solid rgba(0,0,0,0.15);
+    border-top: 1px solid var(--mix-85);
 }
 
 table {
