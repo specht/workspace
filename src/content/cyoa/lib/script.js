@@ -541,6 +541,8 @@ async function loadGraph() {
                 let page = id.substring(5);
                 if (nextPageLinks[page]) {
                     // the node is one of the next pages, turn to that page
+                    // find button that belongs to the node
+                    el.clickedButton = nextPageLinks[page];
                     await turnToPage(page);
                 } else {
                     // the node is in the history, turn to that page
@@ -676,6 +678,10 @@ function pan(e) {
 
 function endPan() {
     isPanning = false;
+}
+
+function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
 }
 
 function zoom(e) {
