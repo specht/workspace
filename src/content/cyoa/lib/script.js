@@ -3,7 +3,9 @@ import markdownitAttrs from '/lib/markdown-it-attrs.js';
 import { Graphviz} from '/lib/graphviz.min.js';
 
 const ts = Date.now();
-const { path } = await import(`/config.js?${ts}`);
+const { path, title } = await import(`/config.js?${ts}`);
+
+document.title = title;
 
 const md = markdownit({ html: true, typographer: true }).use(markdownitAttrs);
 

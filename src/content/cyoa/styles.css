@@ -69,14 +69,6 @@ p {
     line-height: 1.4em;
 }
 
-ul:not(:has(li a)) {
-    list-style: none;
-    /* padding-left: 1.5em; */
-    li::marker {
-       content: "–  ";
-    }
-}
-
 ul:has(li a) {
     list-style: none;
     padding: 0;
