@@ -33,6 +33,7 @@
             text-justify: left;
             overflow-x: hidden;
             white-space: pre;
+            margin: 0.5rem 0 0 0;
         }
     }
 </style>
@@ -55,33 +56,49 @@
             </div>
             <h2>Server</h2>
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-6 mb-3">
                     <div class="server-stats" id="stats-cpu">
-                        <h4>CPU</h4>
+                        <h4>CPU / RAM</h4>
                         <i class='bi bi-cpu'></i>
-                        <p>&nbsp;</p>
-                        <div class="progress" role="progressbar">
-                            <div class="progress-bar progress-bar-striped" style="width: 0%"></div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                CPU
+                                <div class="progress" role="progressbar">
+                                    <div class="progress-bar progress-bar-striped" style="width: 0%"></div>
+                                </div>
+                                <p>&nbsp;</p>
+                            </div>
+                            <div class="col-md-6">
+                                RAM
+                                <div class="progress" role="progressbar">
+                                    <div class="progress-bar progress-bar-striped" style="width: 0%"></div>
+                                </div>
+                                <p>&nbsp;</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="server-stats" id="stats-ram">
-                        <h4>RAM</h4>
-                        <i class='bi bi-memory'></i>
-                        <p>&nbsp;</p>
-                        <div class="progress" role="progressbar">
-                            <div class="progress-bar progress-bar-striped" style="width: 0%"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <div class="server-stats" id="stats-storage">
                         <h4>Storage</h4>
                         <i class='bi bi-nvme'></i>
-                        <p>&nbsp;</p>
-                        <div class="progress" role="progressbar">
-                            <div class="progress-bar progress-bar-striped" style="width: 0%"></div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                System
+                                <div class="progress" role="progressbar">
+                                    <div class="progress-bar progress-bar-striped" style="width: 0%"></div>
+                                </div>
+                                <p>&nbsp;</p>
+                            </div>
+                            <div class="col-md-6">
+                                User data
+                                <div class="progress" role="progressbar">
+                                    <div class="progress-bar progress-bar-striped" style="width: 0%"></div>
+                                </div>
+                                <p>&nbsp;</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -129,12 +146,15 @@ function setup_ws(ws)
         data = JSON.parse(msg.data);
         if (data.server_stats) {
             let stats = data.server_stats;
-            $('#stats-cpu p').html(`${stats.cpu_usage.toFixed(2)}% of ${stats.num_cores} cores`);
-            $('#stats-cpu .progress-bar').css('width', `${stats.cpu_usage}%`);
-            $('#stats-ram p').html(`${stats.ram_used} of ${stats.ram_total}`);
-            $('#stats-ram .progress-bar').css('width', `${stats.ram_percent}%`);
-            $('#stats-storage p').html(`${stats.disk_used} of ${stats.disk_total}`);
-            $('#stats-storage .progress-bar').css('width', `${stats.disk_percent}%`);
+            console.log(stats);
+            $('#stats-cpu p').eq(0).html(`${stats.cpu_usage.toFixed(2)}% of ${stats.num_cores} cores`);
+            $('#stats-cpu .progress-bar').eq(0).css('width', `${stats.cpu_usage}%`);
+            $('#stats-cpu p').eq(1).html(`${stats.ram_used} of ${stats.ram_total}`);
+            $('#stats-cpu .progress-bar').eq(1).css('width', `${stats.ram_percent}%`);
+            $('#stats-storage p').eq(0).html(`${stats.disk_root_used} of ${stats.disk_root_total}`);
+            $('#stats-storage .progress-bar').eq(0).css('width', `${stats.disk_root_percent}%`);
+            $('#stats-storage p').eq(1).html(`${stats.disk_user_used} of ${stats.disk_user_total}`);
+            $('#stats-storage .progress-bar').eq(1).css('width', `${stats.disk_user_percent}%`);
             console.log(data.server_stats);
         } else if (data.stats) {
             let seen_tags = {};

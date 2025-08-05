@@ -1,7 +1,6 @@
 :root {
   --bg-color: #fff;
   --fg-color: #333;
-  --vh: 1vh;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,20 +21,20 @@
   --mix-95: color-mix(in hsl, var(--bg-color) 95%, var(--fg-color));
 }
 
-nav {
-    display: none;
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: auto;
 }
 
-html, body {
-    overflow: none;
-    height: 100%;
+nav {
+    display: none;
 }
 
 body {
     background-color: var(--bg-color);
     color: var(--fg-color);
     margin: 0;
-    overflow: hidden;
     font-family: "IBM Plex Sans", sans-serif;
     font-optical-sizing: auto;
     font-weight: normal;
@@ -44,7 +43,13 @@ body {
     flex-direction: column;
     align-items: stretch;
     justify-content: start;
-    height: calc(var(--vh, 1vh) * 100);
+    /* &::-webkit-scrollbar {
+        width: 8px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: rgba(0,0,0,0.3);
+        border-radius: 4px;
+    } */
 }
 
 a {
@@ -105,8 +110,7 @@ button.pagelink {
 }
 
 #content {
-    padding-bottom: 25px;
-    margin-bottom: 100px;
+    padding-bottom: 15px;
 }
 
 .pagelink {
@@ -188,12 +192,14 @@ nav, #dev_pane {
     display: none;
 }
 
+#dev_fixed {
+    background-color: var(--bg-color);
+}
+
 #game_pane {
     max-width: 30em;
     margin: auto;
     padding: 1em;
-    height: calc(var(--vh, 1vh) * 100);
-    overflow-y: scroll;
 }
 
 body.dev {
@@ -211,100 +217,95 @@ body.dev {
 
     #resizable-children {
         display: flex;
-        flex-direction: row;
         align-items: stretch;
-        flex: 1;
-        min-height: 0;
-
-        #dev_pane {
-            flex: 1;
-            box-shadow: 0.1em 0 0.1em rgba(0, 0, 0, 0.2);
-            display: flex;
-            flex-direction: column;
-            min-width: 100px;
-            position: relative;
-
-            #graph-container {
-                flex: 1;
-                position: relative;
-                svg {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    flex-grow: 1;
-                    user-select: none;
-                    cursor: grab;
-                }
-
-                .node {
-                    cursor: pointer;
-                    &:hover {
-                        opacity: 1;
-                    }
-                    opacity: 0.5;
-                    &.active {
-                        opacity: 1;
-                        polygon {
-                            stroke: #000;
-                        }
-                    }
-                }
-                .edge {
-                    opacity: 0.3;
-                    &.active {
-                        opacity: 1;
-                        path {
-                            stroke: #000;
-                        }
-                        polygon {
-                            stroke: #000;
-                            fill: #000;
-                        }
-                    }
-                }
-            }
-
-            #state-container {
-                position: absolute;
-                bottom: 1em;
-                right: 1em;
-                font-family: 'IBM Plex Mono', monospace;
-                font-size: 0.9em;
-                background-color: var(--bg-color);
-                padding: 0.5em;
-                white-space: pre;
-                box-shadow: 0.1em 0.1em 0.25em rgba(0, 0, 0, 0.25);
-                border-radius: 0.25em;
-                border: 1px solid var(--mix-80);
-            }
-        }
-
-        .divider {
-            width: 8px;
-            background: var(--mix-95);
-            cursor: col-resize;
-            transition: background 0.2s;
-        }
-
-        .divider:hover {
-            /* background: #999; */
-        }
+        height: 100vh;
 
         #game_pane {
-            width: 30%;
+            flex: 30;
             min-width: 200px;
-            max-width: 50%;
-            overflow-y: scroll;
             padding: 0.5em;
+            height: 100%;
+        }
 
-            &::-webkit-scrollbar {
-                width: 8px;
-            }
-            &::-webkit-scrollbar-thumb {
-                background: rgba(0,0,0,0.3);
-                border-radius: 4px;
+        #dev_pane {
+            flex: 70;
+            display: flex;
+            flex-direction: column;
+
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+
+            #dev_fixed {
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                width: 600px;
+                display: flex;
+
+                #divider {
+                    width: 8px;
+                    cursor: col-resize;
+                    background: var(--mix-95);
+                }
+
+                #graph-container {
+                    box-shadow: 0.1em 0 0.1em rgba(0, 0, 0, 0.1);
+                    flex: 1;
+                    position: relative;
+                    svg {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        flex-grow: 1;
+                        user-select: none;
+                        cursor: grab;
+                    }
+
+                    .node {
+                        cursor: pointer;
+                        &:hover {
+                            opacity: 1;
+                        }
+                        opacity: 0.5;
+                        &.active {
+                            opacity: 1;
+                            polygon {
+                                stroke: #000;
+                            }
+                        }
+                    }
+                    .edge {
+                        opacity: 0.3;
+                        &.active {
+                            opacity: 1;
+                            path {
+                                stroke: #000;
+                            }
+                            polygon {
+                                stroke: #000;
+                                fill: #000;
+                            }
+                        }
+                    }
+                }
+
+                #state-container {
+                    position: absolute;
+                    bottom: 1em;
+                    right: 1em;
+                    font-family: 'IBM Plex Mono', monospace;
+                    font-size: 0.9em;
+                    background-color: var(--bg-color);
+                    padding: 0.5em;
+                    white-space: pre;
+                    box-shadow: 0.1em 0.1em 0.25em rgba(0, 0, 0, 0.25);
+                    border-radius: 0.25em;
+                    border: 1px solid var(--mix-80);
+                }
             }
         }
     }

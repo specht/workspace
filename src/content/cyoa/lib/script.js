@@ -18,6 +18,7 @@ const el = {
     html: document.querySelector('html'),
     body: document.querySelector('body'),
     devPane: document.getElementById('dev_pane'),
+    devFixed: document.getElementById('dev_fixed'),
     graphContainer: document.getElementById('graph-container'),
     stateContainer: document.getElementById('state-container'),
     divider: document.getElementById('divider'),
@@ -32,7 +33,6 @@ let history = [];
 let context = {};
 
 let devMode = (window.location.port.length > 0) || (window.location.search.indexOf('dev') > 0);
-// devMode = false;
 let printAnchor = el.content;
 let nextPageLinks = {};
 let deferred = null;
@@ -231,7 +231,6 @@ function updateHistoryHash() {
 }
 
 async function appendPage(page) {
-    el.html.scrollTop = 0;
     await fetch(`/${path}/${page}.md?${cache_buster}`)
     .then(response => {
         if (!response.ok) {
@@ -240,6 +239,10 @@ async function appendPage(page) {
         return response.text();
     })
     .then(data => {
+        if (history.length > 1) {
+            el.content.appendChild(document.createElement('hr'));
+        }
+
         const parser = new DOMParser();
         let html = md.render(data);
         let doc = parser.parseFromString('<div></div>' + html, 'text/html');
@@ -258,10 +261,6 @@ async function appendPage(page) {
         }
 
         processDOM(doc.body);
-
-        if (history.length > 1) {
-            el.content.appendChild(document.createElement('hr'));
-        }
 
         history.push(page);
         updateHistoryHash();
@@ -574,6 +573,10 @@ async function loadGraph() {
 }
 
 export async function init() {
+    setTimeout(() => {
+        let width = el.devPane.clientWidth;
+        el.devFixed.style.width = `${width}px`;
+    }, 1);
     el.body.classList.add('skip-animations');
     if (devMode) {
         el.body.classList.add('dev');
@@ -630,7 +633,7 @@ export async function init() {
 function scrollToElement(e) {
     if (!e) return;
     const top = e.offsetTop - 10;
-    el.gamePane.scrollTo({top, behavior: 'smooth'});
+    el.body.scrollTo({top, behavior: 'smooth'});
 }
 
 function appendSection(text) {
@@ -765,8 +768,10 @@ function resetViewBox() {
     const padding = 10;
     const maxZoom = 1.5;
 
-    const containerWidth = window.svg.clientWidth;
-    const containerHeight = window.svg.clientHeight;
+    let containerWidth = window.svg.clientWidth;
+    let containerHeight = window.svg.clientHeight;
+    if (containerWidth < 1) containerWidth = 1;
+    if (containerHeight < 1) containerHeight = 1;
 
     const minWidth = containerWidth / maxZoom;
     const minHeight = containerHeight / maxZoom;
@@ -977,20 +982,28 @@ function installPanAndZoomHandler(svg) {
 }
 
 function initPaneSlider() {
+    const leftPanel = el.devPane;
     const rightPanel = el.gamePane;
     const container = document.querySelector('#resizable-children');
     let isDragging = false;
 
     function initPanel() {
-        const savedPercent = localStorage.getItem('rightPanelPercent');
+        const savedPercent = localStorage.getItem('leftPanelPercent');
         const containerWidth = container.clientWidth;
 
         if (savedPercent) {
-            const percent = parseFloat(savedPercent);
-            rightPanel.style.width = `${Math.min(Math.max(percent, 20), 50)}%`;
+            let percent = parseFloat(savedPercent);
+            percent = clamp(percent, 20, 80);
+            leftPanel.style.flex = `${percent}`;
+            rightPanel.style.flex = `${100 - percent}`;
         } else {
-            rightPanel.style.width = '30%';
+            leftPanel.style.flex = `70`;
+            rightPanel.style.flex = `30`;
         }
+        setTimeout(() => {
+            let width = el.devPane.clientWidth;
+            el.devFixed.style.width = `${width}px`;
+        }, 1);
     }
 
     el.divider.addEventListener('mousedown', (e) => {
@@ -1007,9 +1020,13 @@ function initPaneSlider() {
         const containerRect = container.getBoundingClientRect();
         const newWidthPx = containerRect.right - e.clientX;
         const containerWidth = containerRect.width;
-        const newPercent = (newWidthPx / containerWidth) * 100;
-
-        rightPanel.style.width = `${Math.min(Math.max(newPercent, 20), 50)}%`;
+        const newPercent = 100 - (newWidthPx / containerWidth) * 100;
+        leftPanel.style.flex = `${newPercent}`;
+        rightPanel.style.flex = `${100 - newPercent}`;
+        setTimeout(() => {
+            let width = el.devPane.clientWidth;
+            el.devFixed.style.width = `${width}px`;
+        }, 1);
     }
 
     function onMouseUp() {
@@ -1019,17 +1036,22 @@ function initPaneSlider() {
         document.removeEventListener('mouseup', onMouseUp);
 
         const containerWidth = container.clientWidth;
-        const rightPanelWidth = rightPanel.clientWidth;
-        const percent = (rightPanelWidth / containerWidth) * 100;
-        localStorage.setItem('rightPanelPercent', percent);
+        const leftPanelWidth = leftPanel.clientWidth;
+        const percent = (leftPanelWidth / containerWidth) * 100;
+        localStorage.setItem('leftPanelPercent', percent);
     }
 
     function handleResize() {
-        const savedPercent = localStorage.getItem('rightPanelPercent');
+        const savedPercent = localStorage.getItem('leftPanelPercent');
         if (savedPercent) {
             const percent = parseFloat(savedPercent);
-            rightPanel.style.width = `${Math.min(Math.max(percent, 20), 50)}%`;
+            leftPanel.style.flex = `${percent}`;
+            rightPanel.style.flex = `${percent}`;
         }
+        setTimeout(() => {
+            let width = el.devPane.clientWidth;
+            el.devFixed.style.width = `${width}px`;
+        }, 1);
     }
 
     initPanel();

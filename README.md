@@ -23,24 +23,13 @@ git clone https://github.com/specht/workspace.git
 ```
 **Anpassung der Konfiguration**
 
-Kopiere die Datei `src/ruby/credentials.template.rb` nach `src/rubyt/credentials.rb` und nimm ein paar Anpassungen vor:
+Kopiere die Datei `src/ruby/credentials.template.rb` nach `src/ruby/credentials.rb` und nimm ein paar Anpassungen vor:
 
 - `DEVELOPMENT` sollte `true` sein
 - `PATH_TO_HOST_DATA` sollte einen absoluten Pfad zum Datenverzeichnis beinhalten (leg einfach ein Unterverzeichnis `data` an und gib den absoluten Pfad an)
 - `WEBSITE_HOST` wird erst wichtig, wenn die Seite tatsächlich auf einem Server gehostet wird
 - die E-Mail-Zugangsdaten sind im Development-Modus nicht relevant
 - trag deine E-Mail-Adresse bei `ADMIN_USERS` ein
-
-**Einladung hinzufügen**
-
-Lege die Datei `src/invitations/dev.txt` an (der Dateiname ist egal) und trage die folgenden Zeilen ein (mit deinen Daten):
-
-```
-> Developer
-Max Mustermann <max@example.com>
-```
-
-Wir haben damit eine Gruppe »Developer« mit einem Mitglied »Max Mustermann« angelegt. Die E-Mail-Adresse wird später für die Anmeldung benötigt – später könnte man hier Klassen oder Lerngruppen anlegen.
 
 **Webserver-Image bauen**
 
