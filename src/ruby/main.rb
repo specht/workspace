@@ -1854,7 +1854,7 @@ class Main < Sinatra::Base
                         data[:ram_used] = bytes_to_str(ram_used).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')
                         data[:ram_percent] = (ram_used * 100.0 / ram_total * 100).to_i.to_f / 100
 
-                        diskinfo = `df -k /`.split("\n").last.strip
+                        diskinfo = `df -kP /`.split("\n").last.strip
                         parts = diskinfo.split(/\s+/)
                         disk_total = parts[1].to_i * 1024
                         disk_free = parts[3].to_i * 1024
@@ -1863,7 +1863,7 @@ class Main < Sinatra::Base
                         data[:disk_root_used] = bytes_to_str(disk_used).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')
                         data[:disk_root_percent] = (disk_used * 100.0 / disk_total * 100).to_i.to_f / 100
 
-                        diskinfo = `df -k /user`.split("\n").last.strip
+                        diskinfo = `df -kP /user`.split("\n").last.strip
                         parts = diskinfo.split(/\s+/)
                         disk_total = parts[1].to_i * 1024
                         disk_free = parts[3].to_i * 1024
@@ -1871,7 +1871,6 @@ class Main < Sinatra::Base
                         data[:disk_user_total] = bytes_to_str(disk_total).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')
                         data[:disk_user_used] = bytes_to_str(disk_used).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')
                         data[:disk_user_percent] = (disk_used * 100.0 / disk_total * 100).to_i.to_f / 100
-
                         
                         ws.send({:server_stats => data}.to_json)
 
