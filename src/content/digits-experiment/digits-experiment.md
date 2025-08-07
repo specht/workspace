@@ -232,7 +232,7 @@ Wenn du das Modell im Webbrowser testest, siehst du, wie die Pixel nicht mehr im
 
 Falls du ein noch besseres Modell haben möchtest, kannst du die Anzahl der Epochen erhöhen oder die Architektur des Modells weiter anpassen. Du kannst auch die Anzahl der Trainingsdaten erhöhen, indem du mehr Blätter mit handgeschriebenen Ziffern verwendest. Hier findest du weitere Blätter, die du verwenden kannst:
 
-<div style='text-align: left;'>
+<div style='text-align: left; margin-bottom: 1em;'>
 <a href='/cache/blatt4.png' target='_blank'><img src='blatt4.png' data-noconvert='1' style='height: 10em; box-shadow: 0 0 2px rgba(0,0,0,0.5);'></a>
 <a href='/cache/blatt5.png' target='_blank'><img src='blatt5.png' data-noconvert='1' style='height: 10em; box-shadow: 0 0 2px rgba(0,0,0,0.5);'></a>
 <a href='/cache/blatt6.png' target='_blank'><img src='blatt6.png' data-noconvert='1' style='height: 10em; box-shadow: 0 0 2px rgba(0,0,0,0.5);'></a>
