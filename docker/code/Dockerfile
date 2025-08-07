@@ -11,7 +11,7 @@ RUN usermod -d /workspace abc
 RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get update && apt-get install --no-install-recommends -y \
         wget ruby ruby-dev libmagickcore-dev zip unzip \
-        python3 python3-pip python3-dev libmysqlclient-dev libmysqlclient21 python3-mysql.connector \
+        python3 python3-pip python3-dev python3-venv libmysqlclient-dev libmysqlclient21 python3-mysql.connector \
         mysql-client golang-go openjdk-17-jdk-headless nodejs lua5.4 htop \
         texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended \
         build-essential file libncurses5-dev iputils-ping cmake autoconf mc gfortran bwbasic sbcl mono-mcs mono-runtime \
@@ -38,21 +38,28 @@ RUN wget -q https://github.com/gohugoio/hugo/releases/download/v0.148.1/hugo_0.1
     && dpkg -i hugo_0.148.1_linux-amd64.deb \
     && rm hugo_0.148.1_linux-amd64.deb
 
-# Python 3.10.12 build + install
-RUN mkdir /tmp/python-build && cd /tmp/python-build \
-    && wget https://www.python.org/ftp/python/3.10.12/Python-3.10.12.tgz \
-    && tar xzf Python-3.10.12.tgz \
-    && cd Python-3.10.12 \
-    && ./configure --enable-optimizations --with-lto \
-    && make -j$(nproc) \
-    && make altinstall \
-    && cd / && rm -rf /tmp/python-build && rm -rf /usr/local/lib/python3.10/test
+# Install Python 3.10 as well
+# RUN apt install -y software-properties-common \
+#     && add-apt-repository ppa:deadsnakes/ppa -y \
+#     && apt update \
+#     && apt install -y python3.10 python3.10-venv python3.10-dev python3.10-distutils python3.10-full \
+#     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Tensorflow etc.
-RUN python3.10 -m venv /opt/python-env \
-    && /opt/python-env/bin/pip install --no-cache-dir --upgrade pip setuptools wheel \
-    && /opt/python-env/bin/pip install --no-cache-dir matplotlib jax==0.4.21 jaxlib==0.4.21 numpy==1.26.4 keras==2.11.0 tensorflow-cpu==2.11.0 tensorflowjs==4.0.0 ipykernel \
-    && chmod -R a+rx /opt/python-env
+# # Python 3.10.12 build + install
+# RUN mkdir /tmp/python-build && cd /tmp/python-build \
+#     && wget https://www.python.org/ftp/python/3.10.12/Python-3.10.12.tgz \
+#     && tar xzf Python-3.10.12.tgz \
+#     && cd Python-3.10.12 \
+#     && ./configure --enable-optimizations --with-lto \
+#     && make -j$(nproc) \
+#     && make altinstall \
+#     && cd / && rm -rf /tmp/python-build && rm -rf /usr/local/lib/python3.10/test
+
+# # Install Tensorflow etc.
+# RUN python3.10 -m venv /opt/python-env \
+#     && /opt/python-env/bin/pip install --no-cache-dir --upgrade pip setuptools wheel \
+#     && /opt/python-env/bin/pip install --no-cache-dir matplotlib jax==0.4.21 jaxlib==0.4.21 numpy==1.26.4 keras==2.11.0 tensorflow-cpu==2.11.0 tensorflowjs==4.0.0 ipykernel \
+#     && chmod -R a+rx /opt/python-env
 
 # RUN apt-get purge -y \
 #   libmysqlclient-dev libboost-dev libboost-thread-dev libssl-dev libbz2-dev \
