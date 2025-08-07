@@ -50,7 +50,7 @@ Starte nun das Skript `bootstrap.sh`, indem du den folgenden Befehl eingibst:
 Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>./bo</code> und drücke <span class='key'>Tab</span>, um den Dateinamen automatisch zu <code>./boostrap.sh</code> vervollständigen zu lassen. Drücke <span class='key'>Enter</span>, um das Skript auszuführen.
 </div>
 
-<img class='r' src='noticed-new-environment.webp' style='width: 30em;'>
+<img class='r' src='noticed-new-environment.webp' style='width: 25em;'>
 
 Dieses Skript richtet eine Python-Umgebung ein und installiert die nötigen Pakete für das KI-Experiment. Dabei werden ca. 500 MB heruntergeladen und dein Verzeichnis ist danach ca. 2 GB groß (das ist aber in der Hackschule kein Problem). Wenn du den grünen Haken siehst, hat alles geklappt und du kannst das Terminal wieder schließen:
 
