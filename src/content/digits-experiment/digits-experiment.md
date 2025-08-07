@@ -1,5 +1,5 @@
 <div class='meta'>
-image: interactive-2.webp
+image: interactive-3.webp:0:50
 </div>
 
 # Trainiere ein neuronales Netzwerk
@@ -36,25 +36,27 @@ Du siehst nun auf der linken Seite ein paar Verzeichnisse und Dateien, die wir f
 
 <img class='full' src='lets-start.webp'>
 
-Öffne nun die Datei `00-install-packages.ipynb`, indem du darauf klickst.
-Es handelt sich dabei um ein Jupyter-Notebook, das du verwenden kannst, um die notwendigen Pakete zu installieren.
-Links neben dem ersten Codeblock siehst du ein Play-Symbol. Klicke darauf, um den Codeblock auszuführen.
+Öffne nun ein Terminal, indem du z. B. <span class='key'>Strg</span><span class='key'>J</span> drückst:
 
-<img class='full' src='run-step-0.webp'>
+<img class='full' src='got-terminal.webp'>
 
-Bevor der Code ausgeführt werden kann, müssen wir noch ein paar Pakete installieren. Bestätige die Meldung »Install / Enable suggested extensions« mit <span class='key'>Enter</span>:
+Starte nun das Skript `bootstrap.sh`, indem du den folgenden Befehl eingibst:
 
-<img class='full' src='install-extensions.webp'>
+```bash
+./bootstrap.sh
+```
 
-Wenn das erledigt ist, musst du noch einen Python-Interpreter auswählen. Bestätige die Meldung »Python Environments« und »★ Python 3.10.12«:
+<div class='hint'>
+Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>./bo</code> und drücke <span class='key'>Tab</span>, um den Dateinamen automatisch zu <code>./boostrap.sh</code> vervollständigen zu lassen. Drücke <span class='key'>Enter</span>, um das Skript auszuführen.
+</div>
 
-<img class='full' src='choose-kernel.webp'>
+<img class='r' src='noticed-new-environment.webp' style='width: 30em;'>
 
-<img class='full' src='python-3-10-12.webp'>
+Dieses Skript richtet eine Python-Umgebung ein und installiert die nötigen Pakete für das KI-Experiment. Dabei werden ca. 500 MB heruntergeladen und dein Verzeichnis ist danach ca. 2 GB groß (das ist aber in der Hackschule kein Problem). Wenn du den grünen Haken siehst, hat alles geklappt und du kannst das Terminal wieder schließen:
 
-Wenn du die Meldung »Pakete installiert« siehst, hast du den Vorbereitungsschritt erfolgreich abgeschlossen:
+Wenn du zwischendurch diesen Hinweis siehst (s. oben rechts), kannst du mit »Yes« antworten, da wir die frisch eingerichtete Python-Umgebung in diesem Verzeichnis verwenden wollen.
 
-<img class='full' src='step-0-done.webp'>
+<img class='full' src='bootstrap-finished.webp'>
 
 ## Trainingsmaterial herstellen
 
@@ -82,7 +84,15 @@ Stelle sicher, dass du mindestens zwei Bilddateien im Verzeichnis `01-pages` has
 
 <img class='full' src='pages-ready.webp'>
 
-Öffne nun das zweite Jupyter-Notebook `01-prepare-training-data.ipynb`, und führe den ersten Codeblock aus, indem du auf das Play-Symbol klickst.
+Öffne nun das erste Jupyter-Notebook `01-prepare-training-data.ipynb`, und führe den ersten Codeblock aus, indem du auf das Play-Symbol klickst.
+
+Bevor der Code ausgeführt werden kann, musst du noch einen Python-Interpreter auswählen. Bestätige die Auswahl »Python Environments« und »★ .venv (Python 3.12.3)«:
+
+<img class='full' src='choose-kernel.webp'>
+
+<img class='full' src='python-venv.webp'>
+
+Im ersten Schritt werden die Helligkeit und der Kontrast der eingescannten Seiten automatisch angepasst:
 
 <img class='full' src='colors-adjusted.webp'>
 
@@ -114,7 +124,11 @@ Wenn alle Schritte erfolgreich durchgelaufen sind, können wir mit dem Training 
 
 ## Modell trainieren
 
-Öffne nun das dritte Juptyer-Notebook `02-train-model.ipynb`, indem du darauf klickst. Es enthält den Code, um unser neuronales Netzwerk zu trainieren, das die handgeschriebenen Ziffern erkennen soll. Im ersten Schritt wird die Menge aller Trainingsdaten in drei Teile aufgeteilt: 80% für das Training, 10% für die Validierung und 10% für den Test:
+Öffne nun das zweite Jupyter-Notebook `02-train-model.ipynb`, indem du darauf klickst. Es enthält den Code, um unser neuronales Netzwerk zu trainieren, das die handgeschriebenen Ziffern erkennen soll. Im ersten Schritt wird die Menge aller Trainingsdaten in drei Teile aufgeteilt: 80% für das Training, 10% für die Validierung und 10% für den Test.
+
+Bevor du den ersten Codeblock starten kannst, musst du wieder den Kenrel in ».venv« auswählen:
+
+<img class='full' src='choose-kernel-again.webp'>
 
 <img class='full' src='train-groups.webp'>
 
@@ -132,7 +146,15 @@ Wir sind jetzt bereit, das Modell zu trainieren. Klicke auf das Play-Symbol, um 
 
 <img class='full' src='training-finished.webp'>
 
-Im nächsten Schritt ermitteln wir, wie gut das Modell ist. Dazu verwenden wir die Testdaten, die wir zuvor beiseite gelegt haben. Die wichtigen Kennwerte sind der Verlust (loss) und die Genauigkeit (accuracy):
+<div class='hint'>
+Du kannst hier gut beboachten, wie der »Loss« immer geringer wird – am Anfang ist er noch relativ groß und nach 30 Trainingsrunden schon bei 10<sup>-4</sup>.
+</div>
+
+Im nächsten Schritt wird das Modell im Verzeichnis `05-model` gespeichert:
+
+<img class='full' src='saved-model.webp'>
+
+Jetzt ermitteln wir, wie gut das Modell ist. Dazu verwenden wir die Testdaten, die wir zuvor beiseite gelegt haben. Die wichtigen Kennwerte sind der Verlust (loss) und die Genauigkeit (accuracy):
 
 - der Verlust sollte möglichst klein sein, idealerweise nahe bei 0.
 - die Genauigkeit sollte möglichst groß sein, idealerweise nahe bei 100%.
@@ -147,7 +169,7 @@ Die roten Ziffern markieren die falschen Vorhersagen. Das Modell ist noch nicht 
 
 ## Modell ausprobieren
 
-Im nächsten Schritt wollen wir unser Modell interaktiv im Webbrowser testen. Dazu müssen wir das gespeicherte Modell zunächst in ein anderes Format konvertieren, das von TensorFlow.js gelesen werden kann. Führe dazu den nächsten Codeblock aus:
+Im nächsten Schritt wollen wir unser Modell interaktiv im Webbrowser testen. Dazu müssen wir das gespeicherte Modell zunächst in ein anderes Format namens [ONNX](https://de.wikipedia.org/wiki/ONNX) konvertieren, damit wir es im Webbrowser laufen lassen können. Führe dazu den nächsten Codeblock aus:
 
 <img class='full' src='convert-model.webp'>
 
@@ -188,19 +210,21 @@ Da das neue Modell mehr Parameter hat, dauert das Training auch länger. Nach 30
 
 <img class='full' src='second-training-finished.webp'>
 
-Wie du an den Werten für Verlust und Genauigkeit sehen kannst, ist das neue Modell deutlich besser als das vorherige.
+Im nächsten Schritt wird das Modell wieder gespeichert (natürlich mit mehr Layern als vorher):
 
-<div class='hint'>
-Eine Angabe wie »2.9e-04« bedeutet 2,9&sdot;10<sup>-4</sup> bzw. 0,00029.
-</div>
+<img class='full' src='saved-model-2.webp'>
 
-Bei der Evaluation des neuen Modells siehst du, dass der Validation Loss und die Validation Accuracy zwar schlechter sind als beim Traning, aber immer noch deutlich besser als beim vorherigen Modell:
+Bei der Evaluation des neuen Modells siehst du, dass Loss und Accuracy besser sein sollten als beim ersten Modell:
 
 <img class='full' src='evaluate-again.webp'>
 
 Die Testbilder sehen jetzt so aus:
 
 <img class='full' src='test-bitmaps-2.webp'>
+
+Um das Modell im Browser zu testen, musst du es erst wieder konvertieren:
+
+<img class='full' src='convert-again.webp'>
 
 Wenn du das Modell im Webbrowser testest, siehst du, wie die Pixel nicht mehr im ersten Schritt voneinander getrennt werden, sondern über mehrere Schichten hinweg im Quadrat angeordnet gemeinsam behandelt werden:
 
@@ -219,6 +243,11 @@ Falls du ein noch besseres Modell haben möchtest, kannst du die Anzahl der Epoc
 <a href='/cache/blatt11.png' target='_blank'><img src='blatt11.png' data-noconvert='1' style='height: 10em; box-shadow: 0 0 2px rgba(0,0,0,0.5);'></a>
 <a href='/cache/blatt12.png' target='_blank'><img src='blatt12.png' data-noconvert='1' style='height: 10em; box-shadow: 0 0 2px rgba(0,0,0,0.5);'></a>
 </div>
+
+In den bisherigen Beispielen war es so, dass wir nur weiß und blau gesehen haben, wobei blau für »positiv« steht. Wenn du statt `ReLU` eine Aktivierungsfunktion wählst, die auch negative Werte zurückgeben kann (wie z. B. `tanh`), dann wirst du auch orangefarbene Neuronen bekommen (für negative Werte):
+
+<img class='full' src='interactive-3.webp'>
+
 
 ## Zusammenfassung
 
