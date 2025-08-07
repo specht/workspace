@@ -11,7 +11,7 @@ RUN usermod -d /workspace abc
 RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get update && apt-get install --no-install-recommends -y \
         wget ruby ruby-dev libmagickcore-dev zip unzip \
-        python3 python3-pip python3-dev python3-venv libmysqlclient-dev libmysqlclient21 python3-mysql.connector \
+        python3 python3-pip python3-dev python3-venv python3-ipykernel libmysqlclient-dev libmysqlclient21 python3-mysql.connector \
         mysql-client golang-go openjdk-17-jdk-headless nodejs lua5.4 htop \
         texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended \
         build-essential file libncurses5-dev iputils-ping cmake autoconf mc gfortran bwbasic sbcl mono-mcs mono-runtime \
