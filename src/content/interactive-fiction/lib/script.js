@@ -1,6 +1,6 @@
 import markdownit from '/lib/markdown-it.js';
 import markdownitAttrs from '/lib/markdown-it-attrs.js';
-import { Graphviz} from '/lib/graphviz.min.js';
+import { Graphviz } from '/lib/graphviz.min.js';
 
 const ts = Date.now();
 const { path, title } = await import(`/config.js?${ts}`);
@@ -40,7 +40,7 @@ let choiceDiv = null;
 
 function mulberry32(seed) {
     let t = seed >>> 0;
-    return function() {
+    return function () {
         t += 0x6D2B79F5;
         let r = Math.imul(t ^ (t >>> 15), t | 1);
         r ^= r + Math.imul(r ^ (r >>> 7), r | 61);
@@ -48,51 +48,51 @@ function mulberry32(seed) {
     };
 }
 
-// function presentChoice(choices) {
-//     if (choiceDiv) {
-//         choiceDiv.remove();
-//         choiceDiv = null;
-//     }
-//     deferred = {};
-//     deferred.promise = new Promise((resolve, reject) => {
-//         deferred.resolve = (value) => {
-//             cleanup();
-//             resolve(value);
-//         };
-//         deferred.reject = (reason) => {
-//             cleanup();
-//             reject(reason);
-//         };
-//     });
+function presentChoice(choices) {
+    if (choiceDiv) {
+        choiceDiv.remove();
+        choiceDiv = null;
+    }
+    deferred = {};
+    deferred.promise = new Promise((resolve, reject) => {
+        deferred.resolve = (value) => {
+            cleanup();
+            resolve(value);
+        };
+        deferred.reject = (reason) => {
+            cleanup();
+            reject(reason);
+        };
+    });
 
-//     function cleanup() {
-//         deferred = null;
-//     }
+    function cleanup() {
+        deferred = null;
+    }
 
-//     choiceDiv = document.createElement('div');
-//     choiceDiv.classList.add('choice');
-//     printAnchor.appendChild(choiceDiv);
+    choiceDiv = document.createElement('div');
+    choiceDiv.classList.add('choice');
+    printAnchor.appendChild(choiceDiv);
 
-//     nextPageLinks = {};
-//     for (let i = 0; i < choices.length; i++) {
-//         let button = document.createElement('button');
-//         button.classList.add('pagelink');
-//         choiceDiv.appendChild(button);
+    nextPageLinks = {};
+    for (let i = 0; i < choices.length; i++) {
+        let button = document.createElement('button');
+        button.classList.add('pagelink');
+        choiceDiv.appendChild(button);
 
-//         let choice = choices[i];
-//         button.innerHTML = choice[1];
-//         nextPageLinks[`${choice[0]}`] = button;
+        let choice = choices[i];
+        button.innerHTML = choice[1];
+        nextPageLinks[`${choice[0]}`] = button;
 
-//         button.addEventListener('click', function(event) {
-//             el.clickedButton = button;
-//             event.preventDefault();
-//             event.stopPropagation();
-//             turnToPage(`${choice[0]}`);
-//         });
-//     }
+        button.addEventListener('click', function (event) {
+            el.clickedButton = button;
+            event.preventDefault();
+            event.stopPropagation();
+            turnToPage(`${choice[0]}`);
+        });
+    }
 
-//     return deferred.promise;
-// }
+    return deferred.promise;
+}
 
 const contextProxy = new Proxy(context, {
     has(target, key) {
@@ -102,15 +102,15 @@ const contextProxy = new Proxy(context, {
         if (key in target) {
             return target[key];
         } else if (key === 'print') {
-            return function(...args) {
+            return function (...args) {
                 let div = document.createElement('div');
                 div.innerHTML = args.map((x) => md.render(x)).join(' ') + '\n';
                 printAnchor.appendChild(div);
             };
-        // } else if (key === 'presentChoice') {
-        //     return presentChoice;
-        // } else if (key === 'forceTurnToPage') {
-        //     return forceTurnToPage;
+        } else if (key === 'presentChoice') {
+            return presentChoice;
+        } else if (key === 'forceTurnToPage') {
+            return forceTurnToPage;
         } else {
             return globalThis[key];
         }
@@ -123,41 +123,43 @@ const contextProxy = new Proxy(context, {
 
 function runInContext(code) {
     let result = Function('ctx', `with (ctx) { ${code} }`)(contextProxy);
-    el.stateContainer.innerHTML = jsyaml.dump(context);
+    el.stateContainer.innerHTML = jsyaml.dump(sortKeys(Object.fromEntries(
+        Object.entries(context).filter(([key, value]) => typeof value !== "function")
+    )));
     return result;
 }
 
 function replaceDoubleBrackets(node) {
     if (node.nodeName.toLowerCase() === 'script') {
-      return;
+        return;
     }
 
     if (node.nodeType === Node.TEXT_NODE) {
-      const pattern = /\[\[\s*(.+?)\s*\]\]/g;
-      let match;
-      const parent = node.parentNode;
-      let lastIndex = 0;
-      const fragment = document.createDocumentFragment();
+        const pattern = /\[\[\s*(.+?)\s*\]\]/g;
+        let match;
+        const parent = node.parentNode;
+        let lastIndex = 0;
+        const fragment = document.createDocumentFragment();
 
-      while ((match = pattern.exec(node.textContent)) !== null) {
-        if (match.index > lastIndex) {
-          fragment.appendChild(document.createTextNode(node.textContent.slice(lastIndex, match.index)));
+        while ((match = pattern.exec(node.textContent)) !== null) {
+            if (match.index > lastIndex) {
+                fragment.appendChild(document.createTextNode(node.textContent.slice(lastIndex, match.index)));
+            }
+
+            const span = document.createElement('span');
+            span.setAttribute('expression', match[1]);
+            fragment.appendChild(span);
+
+            lastIndex = pattern.lastIndex;
         }
 
-        const span = document.createElement('span');
-        span.setAttribute('expression', match[1]);
-        fragment.appendChild(span);
+        if (lastIndex < node.textContent.length) {
+            fragment.appendChild(document.createTextNode(node.textContent.slice(lastIndex)));
+        }
 
-        lastIndex = pattern.lastIndex;
-      }
-
-      if (lastIndex < node.textContent.length) {
-        fragment.appendChild(document.createTextNode(node.textContent.slice(lastIndex)));
-      }
-
-      if (fragment.childNodes.length > 0) {
-        parent.replaceChild(fragment, node);
-      }
+        if (fragment.childNodes.length > 0) {
+            parent.replaceChild(fragment, node);
+        }
     }
 
     for (const child of Array.from(node.childNodes)) {
@@ -232,86 +234,89 @@ function updateHistoryHash() {
 
 async function appendPage(page) {
     await fetch(`/${path}/${page}.md?${cache_buster}`)
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.text();
-    })
-    .then(data => {
-        if (history.length > 1) {
-            el.content.appendChild(document.createElement('hr'));
-        }
-
-        const parser = new DOMParser();
-        let html = md.render(data);
-        let doc = parser.parseFromString('<div></div>' + html, 'text/html');
-        replaceDoubleBrackets(doc);
-
-        let count = 0;
-
-        // collect all next page links for navigation
-        nextPageLinks = {};
-        for (let link of doc.querySelectorAll('a')) {
-            let href = link.getAttribute('href');
-            if (href.indexOf('/') < 0) {
-                let page = href;
-                nextPageLinks[page] = link;
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-        }
+            return response.text();
+        })
+        .then(data => {
+            if (history.length > 1) {
+                el.content.appendChild(document.createElement('hr'));
+            }
 
-        processDOM(doc.body);
+            const parser = new DOMParser();
+            let html = md.render(data);
+            let doc = parser.parseFromString('<div></div>' + html, 'text/html');
+            replaceDoubleBrackets(doc);
 
-        history.push(page);
-        updateHistoryHash();
+            let count = 0;
 
-        let foundAnyLinks = false;
-        for (let link of document.querySelectorAll('a')) {
-            let href = link.getAttribute('href') ?? '';
-            if (href.indexOf('/') < 0) {
-                let page = link.getAttribute('href');
-                if (page) {
-                    link.removeAttribute('href');
-                    let parent = link.parentNode;
-                    if ((parent.tagName ?? '').toLowerCase() === 'li') link = parent;
+            // collect all next page links for navigation
+            nextPageLinks = {};
+            for (let link of doc.querySelectorAll('a')) {
+                let href = link.getAttribute('href');
+                if (href.indexOf('/') < 0) {
+                    let page = href;
                     nextPageLinks[page] = link;
-                    link.classList.add('pagelink');
-                    foundAnyLinks = true;
-                    link.addEventListener('click', function(event) {
-                        el.clickedButton = link;
-                        if (link.classList.contains('chosen')) return;
-                        event.preventDefault();
-                        turnToPage(page);
-                    });
                 }
             }
-        }
 
-        if (!foundAnyLinks) {
-            // this is the end of the story, add a restart button
-            let button = document.createElement('button');
-            button.classList.add('pagelink');
-            el.content.appendChild(button);
-            button.innerHTML = `<svg class="icon"><use href="#reload"></use></svg><span>Spiel neu starten</span>`;
-            button.style.textAlign = 'center';
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                event.stopPropagation();
-                window.location.href = '/';
-            });
+            processDOM(doc.body);
 
-        }
+            history.push(page);
+            updateHistoryHash();
 
-        markNodesInGraph();
-    })
-    .then(() => {
-        scrollToElement(el.clickedButton);
-        el.clickedButton = null;
-    })
-    .catch(error => {
-        appendSection(`Fehler: Seite ${page} nicht gefunden. (${error.message})`);
-        throw error;
-    });
+            let foundAnyLinks = false;
+            for (let link of document.querySelectorAll('a')) {
+                let href = link.getAttribute('href') ?? '';
+                if (href.indexOf('/') < 0) {
+                    let page = link.getAttribute('href');
+                    if (page) {
+                        link.removeAttribute('href');
+                        let parent = link.parentNode;
+                        if ((parent.tagName ?? '').toLowerCase() === 'li') link = parent;
+                        nextPageLinks[page] = link;
+                        link.classList.add('pagelink');
+                        foundAnyLinks = true;
+                        link.addEventListener('click', function (event) {
+                            el.clickedButton = link;
+                            if (link.classList.contains('chosen')) return;
+                            event.preventDefault();
+                            turnToPage(page);
+                        });
+                    }
+                }
+            }
+            for (let link of document.querySelectorAll('button.pagelink')) {
+                foundAnyLinks = true;
+            }
+
+            if (!foundAnyLinks) {
+                // this is the end of the story, add a restart button
+                let button = document.createElement('button');
+                button.classList.add('pagelink');
+                el.content.appendChild(button);
+                button.innerHTML = `<svg class="icon"><use href="#reload"></use></svg><span>Spiel neu starten</span>`;
+                button.style.textAlign = 'center';
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    window.location.href = '/';
+                });
+
+            }
+
+            markNodesInGraph();
+        })
+        .then(() => {
+            scrollToElement(el.clickedButton);
+            el.clickedButton = null;
+        })
+        .catch(error => {
+            appendSection(`Fehler: Seite ${page} nicht gefunden. (${error.message})`);
+            throw error;
+        });
 }
 
 function randomSeed() {
@@ -375,7 +380,7 @@ function getColorForGroup(groupLabel) {
     const hue = Math.abs(hash) % 360;
     const saturation = 50;
 
-    return [50, 70, 90].map(function(lightness) {
+    return [50, 70, 90].map(function (lightness) {
         // Convert HSL to RGB
         function hslToRgb(h, s, l) {
             s /= 100;
@@ -478,7 +483,7 @@ async function loadGraph() {
                 page = await loadPage(pageCode);
                 pageData = parsePage(page);
             } catch (e) {
-                pageData = { links: [], missing: true};
+                pageData = { links: [], missing: true };
             }
             pageData.group ??= '';
             subGraphs[pageData.group] ??= [];
@@ -538,7 +543,7 @@ async function loadGraph() {
         markNodesInGraph();
         installPanAndZoomHandler(document.querySelector('#graph-container svg'));
         for (let e of document.querySelectorAll('svg g.node')) {
-            e.addEventListener('click', async function(event) {
+            e.addEventListener('click', async function (event) {
                 let id = this.getAttribute('id');
                 let page = id.substring(5);
                 if (nextPageLinks[page]) {
@@ -572,6 +577,20 @@ async function loadGraph() {
     });
 }
 
+function sortKeys(obj) {
+    if (Array.isArray(obj)) {
+        return obj.map(sortKeys);
+    } else if (obj && typeof obj === "object") {
+        return Object.keys(obj)
+            .sort()
+            .reduce((acc, key) => {
+                acc[key] = sortKeys(obj[key]);
+                return acc;
+            }, {});
+    }
+    return obj;
+}
+
 export async function init() {
     setTimeout(() => {
         let width = el.devPane.clientWidth;
@@ -580,7 +599,7 @@ export async function init() {
     el.body.classList.add('skip-animations');
     if (devMode) {
         el.body.classList.add('dev');
-        document.querySelector('#bu_reset_game').addEventListener('click', function() {
+        document.querySelector('#bu_reset_game').addEventListener('click', function () {
             window.location = '/';
         });
         document.querySelector('nav').style.display = 'unset';
@@ -624,7 +643,9 @@ export async function init() {
 
     if (devMode) {
         loadGraph();
-        el.stateContainer.innerHTML = jsyaml.dump(context);
+        el.stateContainer.innerHTML = jsyaml.dump(sortKeys(Object.fromEntries(
+            Object.entries(context).filter(([key, value]) => typeof value !== "function")
+        )));
         initPaneSlider();
     }
     el.body.classList.remove('skip-animations');
@@ -633,7 +654,7 @@ export async function init() {
 function scrollToElement(e) {
     if (!e) return;
     const top = e.offsetTop - 10;
-    el.body.scrollTo({top, behavior: 'smooth'});
+    el.body.scrollTo({ top, behavior: 'smooth' });
 }
 
 function appendSection(text) {
@@ -737,7 +758,7 @@ function handleTouchMove(e) {
             deltaY: zoomFactor < 1 ? 1 : -1,
             clientX: midX,
             clientY: midY,
-            preventDefault: () => {}
+            preventDefault: () => { }
         });
         touchStartDistance = currentDistance;
     } else if (e.touches.length === 1) {
@@ -843,10 +864,10 @@ function getBBoxInSVGCoords(element, svg) {
         svg.createSVGPoint(), svg.createSVGPoint()
     ];
 
-    points[0].x = bbox.x;               points[0].y = bbox.y;
-    points[1].x = bbox.x + bbox.width;  points[1].y = bbox.y;
-    points[2].x = bbox.x;               points[2].y = bbox.y + bbox.height;
-    points[3].x = bbox.x + bbox.width;  points[3].y = bbox.y + bbox.height;
+    points[0].x = bbox.x; points[0].y = bbox.y;
+    points[1].x = bbox.x + bbox.width; points[1].y = bbox.y;
+    points[2].x = bbox.x; points[2].y = bbox.y + bbox.height;
+    points[3].x = bbox.x + bbox.width; points[3].y = bbox.y + bbox.height;
 
     const transformedPoints = points.map(p => p.matrixTransform(matrix));
 
