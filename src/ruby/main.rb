@@ -167,6 +167,7 @@ class Main < Sinatra::Base
     end
 
     def self.refresh_nginx_config
+        STDERR.puts ">>> Refreshing nginx config..."
         running_servers = {}
         inspect = JSON.parse(`docker network inspect bridge`)
         inspect.first['Containers'].values.each do |container|
@@ -178,6 +179,7 @@ class Main < Sinatra::Base
                 :ip => ip,
             }
         end
+        STDERR.puts ">>> Got running servers: #{running_servers.to_json}"
 
         # $neo4j.neo4j_query(<<~END_OF_QUERY, {:ts => Time.now.to_i})
         #     MATCH (u:User)
@@ -191,7 +193,10 @@ class Main < Sinatra::Base
 
         # STDERR.puts "Got #{emails_and_server_tags.size} emails and server tags: #{emails_and_server_tags.to_yaml}"
 
+        STDERR.puts ">>> Fetching users..."
         users = $neo4j.neo4j_query("MATCH (u:User) OPTIONAL MATCH (u)-[:TAKES]->(t:Test {running: TRUE}) RETURN u, t;").to_a
+
+        STDERR.puts ">>> Creating nginx config..."
 
         nginx_config_first_part = <<~END_OF_STRING
             log_format custom '$http_x_forwarded_for - $remote_user [$time_local] "$request" '
@@ -333,6 +338,8 @@ class Main < Sinatra::Base
                 # }
         END_OF_STRING
 
+        STDERR.puts ">>> Writing nginx config..."
+
         File.open('/nginx/default.conf', 'w') do |f|
             f.puts nginx_config_first_part
             users.each do |row|
@@ -389,6 +396,7 @@ class Main < Sinatra::Base
             end
             f.puts "}"
         end
+        STDERR.puts ">>> Sending HUP to nginx to reload nginx config"
         system("docker kill -s HUP workspace_nginx_1")
     end
 
@@ -1139,6 +1147,8 @@ class Main < Sinatra::Base
         email_with_test_tag = "#{email}#{test_tag}"
         container_name = fs_tag_for_email(email_with_test_tag)
 
+        STDERR.puts ">>> Starting server with email #{email_with_test_tag} and container name #{container_name}"
+
         system("mkdir -p /user/#{container_name}/config")
         system("mkdir -p /user/#{container_name}/workspace")
         if File.exist?("/user/#{container_name}/workspace/.bashrc")
@@ -1329,8 +1339,11 @@ class Main < Sinatra::Base
                 END_OF_STRING
             end
         end
+        STDERR.puts ">>> Getting server state"
 
         state = get_server_state(container_name)
+        STDERR.puts ">>> Server state is #{state.to_json}"
+
         unless state[:running]
             config_path = "/user/#{container_name}/workspace/.local/share/code-server/User/settings.json"
             unless File.exist?(config_path)
@@ -1371,7 +1384,9 @@ class Main < Sinatra::Base
             if test_tag
                 db_email = "#{email}-#{test_tag}"
             end
+            STDERR.puts ">>> Initializing MySQL"
             init_mysql(db_email)
+            STDERR.puts ">>> Initializing Postgres"
             init_postgres(db_email)
             # init_neo4j(db_email)
 
@@ -1402,15 +1417,17 @@ class Main < Sinatra::Base
             end
 
             network_name = "bridge"
+            STDERR.puts ">>> Getting IP addresses for mysql and postgres..."
             mysql_ip = `docker inspect workspace_mysql_1`.split('"IPAddress": "')[1].split('"')[0]
             postgres_ip = `docker inspect workspace_postgres_1`.split('"IPAddress": "')[1].split('"')[0]
+            STDERR.puts ">>> MySQL running #{mysql_ip}, Postgres running at #{postgres_ip}"
             # neo4j_ip = `docker inspect workspace_neo4j_user_1`.split('"IPAddress": "')[1].split('"')[0]
             login = email.split('@').first.downcase
             mysql_login = db_email.split('@').first.downcase
+            STDERR.puts ">>> Login is #{login}, MySQL login is #{mysql_login}"
             command = "docker run --add-host=mysql:#{mysql_ip} --add-host=postgres:#{postgres_ip} --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(mysql_login, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e POSTGRES_HOST=\"postgres\" -e POSTGRES_USER=\"#{login}\" -e POSTGRES_PASSWORD=\"#{Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)}\" -e POSTGRES_DATABASE=\"#{login}\"  -e NEO4J_HOST=\"neo4j\" -e NEO4J_USER=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(mysql_login, NEO4J_PASSWORD_SALT)}\" -e NEO4J_DATABASE=\"#{mysql_login.gsub('.', '_')}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
-            STDERR.puts command
+            STDERR.puts ">>> Command:\n#{command}"
             system(command)
-
             Main.refresh_nginx_config()
         end
 
