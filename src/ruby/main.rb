@@ -194,7 +194,18 @@ class Main < Sinatra::Base
         # STDERR.puts "Got #{emails_and_server_tags.size} emails and server tags: #{emails_and_server_tags.to_yaml}"
 
         STDERR.puts ">>> Fetching users..."
-        users = $neo4j.neo4j_query("MATCH (u:User) OPTIONAL MATCH (u)-[:TAKES]->(t:Test {running: TRUE}) RETURN u, t;").to_a
+        users = []
+        # Here's an ugly hack: for some reason, after a day, this results in
+        # Errno::EPIPE - Broken pipe, so we catch that error, and if it failed,
+        # just recreate the neo4j connection and try again
+        2.times do
+            begin
+                users = $neo4j.neo4j_query("MATCH (u:User) OPTIONAL MATCH (u)-[:TAKES]->(t:Test {running: TRUE}) RETURN u, t;").to_a
+                break
+            rescue
+                $neo4j = Neo4jGlobal.new
+            end
+        end
 
         STDERR.puts ">>> Creating nginx config..."
 
