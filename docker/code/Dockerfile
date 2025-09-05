@@ -1,4 +1,4 @@
-FROM linuxserver/code-server:4.102.2
+FROM linuxserver/code-server:4.103.2
 
 COPY dart.deb /
 # Dart SDK install in one step
@@ -37,6 +37,16 @@ RUN wget -O /smalltalk.tar.gz https://ftp.gnu.org/gnu/smalltalk/smalltalk-3.2.5.
 RUN wget -q https://github.com/gohugoio/hugo/releases/download/v0.148.1/hugo_0.148.1_linux-amd64.deb \
     && dpkg -i hugo_0.148.1_linux-amd64.deb \
     && rm hugo_0.148.1_linux-amd64.deb
+
+# Install dotnet
+RUN sudo add-apt-repository ppa:dotnet/backports -y \
+    && apt-get update && apt-get install -y dotnet-sdk-9.0 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install PowerShell
+RUN wget https://github.com/PowerShell/PowerShell/releases/download/v7.4.11/powershell_7.4.11-1.deb_amd64.deb \
+    && dpkg -i powershell_7.4.11-1.deb_amd64.deb \
+    && rm powershell_7.4.11-1.deb_amd64.deb
 
 # Install Python 3.10 as well
 # RUN apt install -y software-properties-common \
