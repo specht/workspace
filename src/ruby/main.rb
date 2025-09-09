@@ -209,6 +209,21 @@ class Main < Sinatra::Base
 
         STDERR.puts ">>> Creating nginx config..."
 
+        sid_ip_pairs = []
+
+        users.each do |row|
+            user = row['u']
+            test = row['t']
+            email_with_test_tag = "#{user[:email]}#{(test || {})[:tag]}"
+            server_tag = "#{user[:server_tag]}#{(test || {})[:tag]}"
+            fs_tag = fs_tag_for_email(email_with_test_tag)
+            if running_servers.include?(fs_tag)
+                sid_ip_pairs << "#{user[:server_sid]} #{running_servers[fs_tag][:ip]}:8443;"
+            end
+        end
+
+        STDERR.puts sid_ip_pairs.join("\n")
+
         nginx_config_first_part = <<~END_OF_STRING
             log_format custom '$http_x_forwarded_for - $remote_user [$time_local] "$request" '
                             '$status $body_bytes_sent "$http_referer" '
@@ -229,14 +244,45 @@ class Main < Sinatra::Base
                 application/font-woff2          max;
             }
 
+            # Map session cookie -> target upstream (regenerate when sessions change)
+            # You can generate this map block when a workspace starts/stops.
+            map $cookie_server_sid $workspace_upstream {
+                default "";
+                #{sid_ip_pairs.join("\n")}
+            }
+
+            # Proper Upgrade header for WebSockets
+            map $http_upgrade $connection_upgrade {
+                default upgrade;
+                ''      close;
+            }
+
             # map $cookie_server_sid $pgadmin_user {
             #    default "";
             #    #{emails_and_server_tags.map { |x| "\"#{x[1]}\" \"#{x[0]}\";" }.join("\n")}
             # }
 
+            # code.workspace.hackschule.de – route by session cookie
             server {
                 listen 80;
-                server_name localhost;
+                server_name code.#{WEBSITE_HOST};
+
+                # gzip/expires/etc as you like…
+
+                location / {
+                    if ($workspace_upstream = "") { return 403; }
+
+                    proxy_set_header Host $http_host;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection upgrade;
+                    proxy_set_header Accept-Encoding gzip;
+                    proxy_pass http://$workspace_upstream;
+                }
+            }
+
+            server {
+                listen 80;
+                server_name #{WEBSITE_HOST};
                 client_max_body_size 100M;
                 expires $expires;
 
@@ -880,11 +926,13 @@ class Main < Sinatra::Base
                                 [:server_sid].each do |key|
                                     if request.cookies[key.to_s] != results.first['u'][key]
                                         response.set_cookie(key.to_s,
-                                        :value => results.first['u'][key],
-                                        :expires => expires,
-                                        :path => '/',
-                                        :httponly => true,
-                                        :secure => DEVELOPMENT ? false : true)
+                                            :domain => ".#{WEBSITE_HOST}",
+                                            :value => results.first['u'][key],
+                                            :expires => expires,
+                                            :path => '/',
+                                            :httponly => true,
+                                            :secure => DEVELOPMENT ? false : true
+                                        )
                                     end
                                 end
                             end
@@ -2546,15 +2594,17 @@ class Main < Sinatra::Base
                 END_OF_QUERY
                 expires = Time.new + 3600 * 24 * 365
                 response.set_cookie('sid',
+                    :domain => ".#{WEBSITE_HOST}",
                     :value => sid,
                     :expires => expires,
                     :path => '/',
                     :httponly => true,
                     :secure => DEVELOPMENT ? false : true)
                 response.set_cookie('server_sid',
+                    :domain => ".#{WEBSITE_HOST}",
                     :value => server_sid_for_email(email),
                     :expires => expires,
-                    :path => "/#{fs_tag_for_email(email)}",
+                    :path => "/", #"/#{fs_tag_for_email(email)}",
                     :httponly => true,
                     :secure => DEVELOPMENT ? false : true)
                 Thread.new do
@@ -2572,6 +2622,7 @@ class Main < Sinatra::Base
                 DETACH DELETE s;
             END_OF_QUERY
             response.set_cookie('sid',
+                :domain => ".#{WEBSITE_HOST}",
                 :value => nil,
                 :expires => Time.new + 3600 * 24 * 365,
                 :path => '/',

@@ -44,12 +44,11 @@ if PROFILE.include?(:static)
             "#{DATA_PATH}/nginx:/etc/nginx/conf.d"
         ]
     }
+    docker_compose[:services][:nginx][:environment] ||= []
+    docker_compose[:services][:nginx][:environment] << "VIRTUAL_HOST=#{WEBSITE_HOST},code.#{WEBSITE_HOST}"
     if !DEVELOPMENT
-        docker_compose[:services][:nginx][:environment] = [
-            "VIRTUAL_HOST=#{WEBSITE_HOST}",
-            "LETSENCRYPT_HOST=#{WEBSITE_HOST}",
-            "LETSENCRYPT_EMAIL=#{ADMIN_USERS.first}"
-        ]
+        docker_compose[:services][:nginx][:environment] << "LETSENCRYPT_HOST=#{WEBSITE_HOST},code.#{WEBSITE_HOST}"
+        docker_compose[:services][:nginx][:environment] << "LETSENCRYPT_EMAIL=#{ADMIN_USERS.first}"
         docker_compose[:services][:nginx][:expose] = ['80']
     end
     docker_compose[:services][:nginx][:links] = [
