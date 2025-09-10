@@ -246,7 +246,7 @@ class Main < Sinatra::Base
 
             # Map session cookie -> target upstream (regenerate when sessions change)
             # You can generate this map block when a workspace starts/stops.
-            map $cookie_server_sid $workspace_upstream {
+            map $cookie_hs_server_sid $workspace_upstream {
                 default "";
                 #{sid_ip_pairs.join("\n")}
             }
@@ -257,7 +257,7 @@ class Main < Sinatra::Base
                 ''      close;
             }
 
-            # map $cookie_server_sid $pgadmin_user {
+            # map $cookie_hs_server_sid $pgadmin_user {
             #    default "";
             #    #{emails_and_server_tags.map { |x| "\"#{x[1]}\" \"#{x[0]}\";" }.join("\n")}
             # }
@@ -408,7 +408,7 @@ class Main < Sinatra::Base
                 if running_servers.include?(fs_tag)
                     f.puts <<~END_OF_STRING
                     location /#{server_tag}/ {
-                        if ($cookie_server_sid != "#{user[:server_sid]}") {
+                        if ($cookie_hs_server_sid != "#{user[:server_sid]}") {
                             return 403;
                         }
                         rewrite ^/#{server_tag}(.*)$ $1 break;
@@ -896,8 +896,8 @@ class Main < Sinatra::Base
 
     before '*' do
         @session_user = nil
-        if request.cookies.include?('sid')
-            sid = request.cookies['sid']
+        if request.cookies.include?('hs_sid')
+            sid = request.cookies['hs_sid']
             if (sid.is_a? String) && (sid =~ /^[0-9A-Za-z]+$/)
                 first_sid = sid.split(',').first
                 if first_sid =~ /^[0-9A-Za-z]+$/
@@ -923,7 +923,7 @@ class Main < Sinatra::Base
                                 @session_user[:show_workspace] = true unless @session_user.include?(:show_workspace)
                                 # set server_sid cookie if it's not set or out of date
                                 expires = Time.new + 3600 * 24 * 365
-                                [:server_sid].each do |key|
+                                [:hs_server_sid].each do |key|
                                     if request.cookies[key.to_s] != results.first['u'][key]
                                         response.set_cookie(key.to_s,
                                             :domain => ".#{WEBSITE_HOST}",
@@ -1075,7 +1075,7 @@ class Main < Sinatra::Base
         assert(admin_logged_in?)
         data = parse_request_data(:required_keys => [:email])
         email = data[:email]
-        sid = request.cookies['sid']
+        sid = request.cookies['hs_sid']
         neo4j_query(<<~END_OF_STRING, {:sid => sid, :email => email})
             MATCH (s:Session {sid: $sid})-[r:FOR]->(:User), (u:User {email: $email})
             DELETE r
@@ -2593,14 +2593,14 @@ class Main < Sinatra::Base
                     RETURN s.sid AS sid;
                 END_OF_QUERY
                 expires = Time.new + 3600 * 24 * 365
-                response.set_cookie('sid',
+                response.set_cookie('hs_sid',
                     :domain => ".#{WEBSITE_HOST}",
                     :value => sid,
                     :expires => expires,
                     :path => '/',
                     :httponly => true,
                     :secure => DEVELOPMENT ? false : true)
-                response.set_cookie('server_sid',
+                response.set_cookie('hs_server_sid',
                     :domain => ".#{WEBSITE_HOST}",
                     :value => server_sid_for_email(email),
                     :expires => expires,
@@ -2617,11 +2617,11 @@ class Main < Sinatra::Base
         end
         if path[0, 7] == '/logout'
             path = '/index.html'
-            neo4j_query(<<~END_OF_QUERY, {:sid => request.cookies['sid']})
+            neo4j_query(<<~END_OF_QUERY, {:sid => request.cookies['hs_sid']})
                 MATCH (s:Session {sid: $sid})
                 DETACH DELETE s;
             END_OF_QUERY
-            response.set_cookie('sid',
+            response.set_cookie('hs_sid',
                 :domain => ".#{WEBSITE_HOST}",
                 :value => nil,
                 :expires => Time.new + 3600 * 24 * 365,
