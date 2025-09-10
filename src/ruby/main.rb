@@ -921,20 +921,20 @@ class Main < Sinatra::Base
                                     @session_user[k.to_sym] = v
                                 end
                                 @session_user[:show_workspace] = true unless @session_user.include?(:show_workspace)
-                                # set server_sid cookie if it's not set or out of date
-                                expires = Time.new + 3600 * 24 * 365
-                                [:hs_server_sid].each do |key|
-                                    if request.cookies[key.to_s] != results.first['u'][key.to_s.sub('hs_', '').to_sym]
-                                        response.set_cookie(key.to_s,
-                                            :domain => ".#{WEBSITE_HOST}",
-                                            :value => results.first['u'][key],
-                                            :expires => expires,
-                                            :path => '/',
-                                            :httponly => true,
-                                            :secure => DEVELOPMENT ? false : true
-                                        )
-                                    end
-                                end
+                                # # set server_sid cookie if it's not set or out of date
+                                # expires = Time.new + 3600 * 24 * 365
+                                # [:hs_server_sid].each do |key|
+                                #     if request.cookies[key.to_s] != results.first['u'][key.to_s.sub('hs_', '').to_sym]
+                                #         response.set_cookie(key.to_s,
+                                #             :domain => ".#{WEBSITE_HOST}",
+                                #             :value => results.first['u'][key],
+                                #             :expires => expires,
+                                #             :path => '/',
+                                #             :httponly => true,
+                                #             :secure => DEVELOPMENT ? false : true
+                                #         )
+                                #     end
+                                # end
                             end
                         rescue
                             # something went wrong, delete the session
