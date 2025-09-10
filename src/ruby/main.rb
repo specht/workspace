@@ -924,7 +924,7 @@ class Main < Sinatra::Base
                                 # set server_sid cookie if it's not set or out of date
                                 expires = Time.new + 3600 * 24 * 365
                                 [:hs_server_sid].each do |key|
-                                    if request.cookies[key.to_s] != results.first['u'][key]
+                                    if request.cookies[key.to_s] != results.first['u'][key.to_s.sub('hs_', '').to_sym]
                                         response.set_cookie(key.to_s,
                                             :domain => ".#{WEBSITE_HOST}",
                                             :value => results.first['u'][key],
