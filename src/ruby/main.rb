@@ -1401,7 +1401,7 @@ class Main < Sinatra::Base
         STDERR.puts ">>> Getting server state"
 
         state = get_server_state(container_name)
-        STDERR.puts ">>> Server state is #{state.to_json}"
+        STDERR.puts ">>> Server state is #{state.to_yaml}"
 
         unless state[:running]
             config_path = "/user/#{container_name}/workspace/.local/share/code-server/User/settings.json"
