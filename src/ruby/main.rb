@@ -221,8 +221,25 @@ class Main < Sinatra::Base
                 sid_ip_pairs << "#{user[:server_sid]} #{running_servers[fs_tag][:ip]}:8443;"
             end
         end
-
+        STDERR.puts "sid_ip_pairs:"
         STDERR.puts sid_ip_pairs.join("\n")
+
+        watch_tag_ip_pairs = []
+
+        $neo4j.neo4j_query(<<~END_OF_QUERY).each do |row|
+            MATCH (:User)-[r:WATCHING]->(u:User)
+            RETURN r.watch_tag, u;
+        END_OF_QUERY
+            watch_tag = row['r.watch_tag']
+            user = row['u']
+            fs_tag = fs_tag_for_email(user[:email])
+            if running_servers.include?(fs_tag)
+                watch_tag_ip_pairs << "#{watch_tag} #{running_servers[fs_tag][:ip]}:8443;"
+            end
+        end
+
+        STDERR.puts "watch_tag_ip_pairs:"
+        STDERR.puts watch_tag_ip_pairs.join("\n")
 
         nginx_config_first_part = <<~END_OF_STRING
             log_format custom '$http_x_forwarded_for - $remote_user [$time_local] "$request" '
@@ -249,6 +266,10 @@ class Main < Sinatra::Base
             map $cookie_hs_server_sid $workspace_upstream {
                 default "";
                 #{sid_ip_pairs.join("\n")}
+            }
+            map $cookie_hs_watch_tag $workspace_upstream_watch {
+                default "";
+                #{watch_tag_ip_pairs.join("\n")}
             }
 
             # Proper Upgrade header for WebSockets
@@ -277,6 +298,23 @@ class Main < Sinatra::Base
                     proxy_set_header Connection upgrade;
                     proxy_set_header Accept-Encoding gzip;
                     proxy_pass http://$workspace_upstream;
+                }
+            }
+
+            server {
+                listen 80;
+                server_name watch.#{WEBSITE_HOST};
+
+                # gzip/expires/etc as you like…
+
+                location / {
+                    if ($workspace_upstream_watch = "") { return 403; }
+
+                    proxy_set_header Host $http_host;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection upgrade;
+                    proxy_set_header Accept-Encoding gzip;
+                    proxy_pass http://$workspace_upstream_watch;
                 }
             }
 
@@ -1591,6 +1629,14 @@ class Main < Sinatra::Base
         start_server(email)
         Main.refresh_nginx_config()
 
+        expires = Time.new + 3600 * 24 * 365
+        response.set_cookie('hs_watch_tag',
+            :domain => ".#{WEBSITE_HOST}",
+            :value => watch_tag,
+            :expires => expires,
+            :path => "/", #"/#{fs_tag_for_email(email)}",
+            :httponly => true,
+            :secure => DEVELOPMENT ? false : true)
         respond(:yay => 'sure', :watch_tag => watch_tag)
     end
 
@@ -1752,6 +1798,8 @@ class Main < Sinatra::Base
             du_for_fs_tag = JSON.parse(File.read('/internal/du_for_fs_tag.json'))
         rescue
         end
+
+        STDERR.puts "email_for_tag: #{email_for_tag.to_yaml}"
 
         info_for_tag = {}
         JSON.parse(`docker inspect workspace`).each do |entry|

@@ -85,7 +85,8 @@ function showTemplateModal(title, text, confirm_label, confirm_class,
 }
 
 var server_tag = "#{(@session_user || {})[:server_tag]}";
-function check_server_online(server_tag) {
+function check_server_online(server_tag, watch) {
+    if (typeof(watch) === 'undefined') watch = false;
     fetch(`/${server_tag}/`)
     .then(response => {
         if (response.status === 200) {
@@ -96,11 +97,13 @@ function check_server_online(server_tag) {
             $('.bu-launch-test').prop('disabled', false);
             $('.bu-open-workspace-as-admin .bi').removeClass('bi-spin');
             $('.bu-open-workspace-as-admin').prop('disabled', false);
-            window.open(window.location.origin.replace('//', '//code.'), '_blank');
+            let url = window.location.origin.replace('//', watch ? '//watch.' : '//code.');
+            console.log(`Now opening ${url}`);
+            window.open(url, '_blank');
             // window.open(`/${server_tag}/`, '_blank');
         } else {
             console.log('Server is offline');
-            setTimeout(function() { check_server_online(server_tag); }, 500);
+            setTimeout(function() { check_server_online(server_tag, watch); }, 500);
         }
     })
     .catch(error => {

@@ -136,7 +136,7 @@
             ws.send('');
         }
         (function () {
-            timerId = setTimeout(keepAlive, timeout);
+            window.timerId = setTimeout(keepAlive, timeout);
         })();
     }
 
@@ -150,7 +150,7 @@
         ws.onclose = function () {
             console.log('WS connection closed');
             $('.please-reload').fadeIn();
-            clearTimeout(timerId);
+            clearTimeout(window.timerId);
         }
 
         // Simple hash function to turn a string into a number
@@ -292,7 +292,7 @@
 
     function establish_websocket_connection() {
         var ws_uri = 'ws://' + location.host + '/ws';
-        if (location.host !== 'localhost:8025')
+        if (location.host !== 'localtest.me:8025')
             ws_uri = 'wss://' + location.host + '/ws';
         ws = new WebSocket(ws_uri);
         setup_ws(ws);
@@ -301,18 +301,18 @@
     window.addEventListener('load', function () {
         establish_websocket_connection();
         $('.bu-open-workspace-as-admin').on('click', function (e) {
-            let button = $(e.target);
+            let button = $(e.target).closest('button');
             let email = button.data('email');
             console.log(`Opening workspace for ${email}`);
             button.prop('disabled', true);
             button.find('.bi').addClass('bi-spin');
             api_call('/api/start_server_as_admin', { email: email }, function (data) {
                 check_server_tag_update(data.watch_tag);
-                check_server_online(data.watch_tag);
+                check_server_online(data.watch_tag, true);
             });
         });
         $('.bu-impersonate').on('click', function (e) {
-            let button = $(e.target);
+            let button = $(e.target).closest('button');
             let email = button.data('email');
             button.prop('disabled', true);
             button.find('.bi').addClass('bi-spin');

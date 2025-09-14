@@ -43,7 +43,7 @@ Kopiere die Datei `src/ruby/credentials.template.rb` nach `src/ruby/credentials.
 ./config.rb up
 ```
 
-Wenn der Workspace gestartet ist, kannst du ihn im Browser unter <a href='http://localhost:8025'>http://localhost:8025</a> erreichen. Du solltest dich mit deiner E-Mail-Adresse (oder einem eindeutigen Präfix) und dem Code 123456 (fester Code in der Development-Umgebung) anmelden können. Um den eigentlichen Workspace (Visual Studio Code) zu starten, ist ein weiterer Schritt notwendig:
+Wenn der Workspace gestartet ist, kannst du ihn im Browser unter <a href='http://localtest.me:8025'>http://localtest.me:8025</a> erreichen. Du solltest dich mit deiner E-Mail-Adresse (oder einem eindeutigen Präfix) und dem Code 123456 (fester Code in der Development-Umgebung) anmelden können. Um den eigentlichen Workspace (Visual Studio Code) zu starten, ist ein weiterer Schritt notwendig:
 
 **Workspace-Image bauen**
 
