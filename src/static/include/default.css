@@ -1153,7 +1153,7 @@ button .bi {
       width: 100%;
       aspect-ratio: 16 / 9;
       pointer-events: none;
-      z-index: 1;
+      /* z-index: 1; */
       background: linear-gradient(
         to top,
         rgba(0, 0, 0, 0.05) 0%,
@@ -1163,7 +1163,7 @@ button .bi {
 
     .card-content {
       position: relative;
-      z-index: 1;
+      /* z-index: 1; */
       padding: 1em;
       color: #222;
       border-top: 1px solid #eee;
