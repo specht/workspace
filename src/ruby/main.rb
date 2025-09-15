@@ -1715,7 +1715,6 @@ class Main < Sinatra::Base
                     if section[:description]
                         io.puts "<p style='margin-top: -1em; margin-bottom: 1em;'>#{section[:description]}</p>"
                     end
-                    # io.puts "<hr>"
                     io.puts "<div class='row'>"
                     entries = section[:entries].reject do |entry|
                         (!DEVELOPMENT) && @@content[entry][:dev_only]
@@ -1728,21 +1727,6 @@ class Main < Sinatra::Base
                         elsif entries.length % 3 == 2
                             hor3 = index >= entries.length - 2
                         end
-                        # <div class="hscol">
-                        #     <a href="/about" class="tutorial_card3">
-                        #         <h4>Was ist der Hack&shy;schu&shy;le Work&shy;space?</h4>
-                        #         <div>
-                        #             <img class="" src="/cache/6e451920d423ffe5-1024.webp" style="object-position: 50% 50%;">
-                        #             <div class="card-content">
-                        #                 <h4>Was ist der Hack&shy;schu&shy;le Work&shy;space?</h4>
-                        #                 <div class="abstract">
-                        #                     Der Work&shy;space der Hack&shy;schu&shy;le ist eine On&shy;line-Ent&shy;wick&shy;lungs&shy;um&shy;ge&shy;bung, die spe&shy;ziell für den Einsatz in der Schule ent&shy;wick&shy;elt wur&shy;de.
-                        #                     Es handelt sich dabei um eine Web-Version von Visual Studio Code, einem be&shy;lieb&shy;ten Code-Editor, der von vielen Entwicklerinnen und Entwicklern welt&shy;weit ver&shy;wen&shy;det wird.
-                        #                 </div>
-                        #             </div>
-                        #         </div>
-                        #     </a>
-                        # </div>
 
                         content = @@content[slug]
                         io.puts "<div class='hscol #{hor2 ? 'hor2' : ''} #{hor3 ? 'hor3' : ''}'>"
