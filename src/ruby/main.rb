@@ -1089,6 +1089,8 @@ class Main < Sinatra::Base
         END_OF_QUERY
         broadcast_login_codes()
 
+        STDERR.puts "Sending login code #{random_code} to #{email}..."
+
         deliver_mail do
             to email
             # bcc SMTP_FROM
