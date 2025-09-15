@@ -1157,7 +1157,7 @@ button .bi {
       background: linear-gradient(
         to top,
         rgba(0, 0, 0, 0.05) 0%,
-        rgba(0, 0, 0, 0.0) 2em
+        rgba(0, 0, 0, 0.0) 8px
       );
     }
 
@@ -1221,7 +1221,7 @@ button .bi {
             background: linear-gradient(
                 to left,
                 rgba(0, 0, 0, 0.05) 0%,
-                rgba(0, 0, 0, 0.0) 2em
+                rgba(0, 0, 0, 0.0) 8px
             );
         }
 
@@ -1275,7 +1275,7 @@ button .bi {
             background: linear-gradient(
                 to left,
                 rgba(0, 0, 0, 0.05) 0%,
-                rgba(0, 0, 0, 0.0) 2em
+                rgba(0, 0, 0, 0.0) 8px
             );
         }
 
