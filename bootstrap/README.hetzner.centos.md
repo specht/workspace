@@ -152,6 +152,9 @@ Führe das 3. Setup-Skript aus (das dauert nicht lange):
 ./03-setup-storage.sh
 ```
 
+> 💡 **Hinweis:**
+Falls du eine Fehlermeldung bekommst (volume mounted), dann ist das Volume wahrscheinlich schon gemountet. In dem Fall kannst du es mit `umount /dev/sda`  *(natürlich mit deinem Pfad) aushängen und das Skript erneut ausführen.
+
 Die besondere Situation im Workspace ist, dass wir viele Schüler:innen haben, die oft dieselben Dateien herunterladen. Deshalb verwenden wir VDO (Virtual Disk Optimizer), damit Daten dedupliziert gespeichert werden.
 
 Melde dich vom Server ab und verbinde dich erneut, du solltest jetzt ein Banner sehen:
