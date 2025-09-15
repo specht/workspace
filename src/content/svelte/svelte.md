@@ -1,5 +1,5 @@
 <div class='meta'>
-image: svelte5.webp:0:80
+image: svelte5.webp
 </div>
 
 # Frontend-Entwicklung mit Svelte

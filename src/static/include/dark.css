@@ -126,7 +126,39 @@ html[data-bs-theme="dark"] {
         }
     }
 
-    .tutorial_card3 {
+    .hscol {
+        .tutorial_card3 {
+            &:hover {
+                background-color: #222;
+                h4 {
+                    border-bottom: 1px solid #333;
+                }
+            }
+            border: 1px solid #333;
+            h4 {
+                color: #ccccc9;
+                border-bottom: 1px solid #222;
+            }
+
+            &:hover {
+                text-decoration: none;
+                box-shadow: 0 0.25em 0.75em rgba(0,0,0,0.3);
+            }
+
+            img {
+                background-color: rgba(0,0,0,0.5);
+            }
+
+            .card-content {
+                color: #aaa;
+                border-top: 1px solid #222;
+                .abstract {
+                    color: #ccccc9;
+                }
+            }
+        }
+    }
+   /* .tutorial_card3 {
         img {
             background-color: rgba(0,0,0,0.5);
         }
@@ -142,5 +174,5 @@ html[data-bs-theme="dark"] {
                 color: #aaa;
             }
         }
-    }
+    } */
 }

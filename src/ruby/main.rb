@@ -1717,28 +1717,38 @@ class Main < Sinatra::Base
                     end
                     # io.puts "<hr>"
                     io.puts "<div class='row'>"
-                    section[:entries].reject do |entry|
+                    entries = section[:entries].reject do |entry|
                         (!DEVELOPMENT) && @@content[entry][:dev_only]
-                    end.each.with_index do |slug, index|
-                        # content = @@content[slug]
-                        # io.puts "<div class='#{section[:compact] ? 'col-sm-6' : 'col-sm-12'} #{section[:compact] ? 'col-md-4' : 'col-md-12'} #{section[:compact] ? 'col-lg-4' : 'col-lg-6'}'>"
-                        # io.puts "<a href='/#{slug}' class='tutorial_card2 #{section[:compact] ? 'compact' : ''}'>"
-                        # io.puts "#{content[:dev_only] ? '<span class="badge badge-sm bg-danger">dev</span> ' : ''}<h4>#{content[:title]}</h4>"
-                        # io.puts "<div class='inner'>"
-                        # additional_classes = []
-                        # if content[:needs_contrast] == 'light'
-                        #     additional_classes << 'dark-only-bg-contrast-light'
-                        # end
-                        # io.puts "<img class='#{additional_classes.join(' ')}' src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
-                        # io.puts "<div class='abstract'>#{content[:abstract]}</div>"
-                        # io.puts "</div>"
-                        # io.puts "</a>"
-                        # io.puts "</div>"
-                        # # io.puts "<hr>"
+                    end
+                    entries.each.with_index do |slug, index|
+                        hor2 = ((entries.length % 2) == 1) && (index == entries.length - 1)
+                        hor3 = false
+                        if entries.length % 3 == 1
+                            hor3 = index >= entries.length - 4
+                        elsif entries.length % 3 == 2
+                            hor3 = index >= entries.length - 2
+                        end
+                        # <div class="hscol">
+                        #     <a href="/about" class="tutorial_card3">
+                        #         <h4>Was ist der Hack&shy;schu&shy;le Work&shy;space?</h4>
+                        #         <div>
+                        #             <img class="" src="/cache/6e451920d423ffe5-1024.webp" style="object-position: 50% 50%;">
+                        #             <div class="card-content">
+                        #                 <h4>Was ist der Hack&shy;schu&shy;le Work&shy;space?</h4>
+                        #                 <div class="abstract">
+                        #                     Der Work&shy;space der Hack&shy;schu&shy;le ist eine On&shy;line-Ent&shy;wick&shy;lungs&shy;um&shy;ge&shy;bung, die spe&shy;ziell für den Einsatz in der Schule ent&shy;wick&shy;elt wur&shy;de.
+                        #                     Es handelt sich dabei um eine Web-Version von Visual Studio Code, einem be&shy;lieb&shy;ten Code-Editor, der von vielen Entwicklerinnen und Entwicklern welt&shy;weit ver&shy;wen&shy;det wird.
+                        #                 </div>
+                        #             </div>
+                        #         </div>
+                        #     </a>
+                        # </div>
+
                         content = @@content[slug]
-                        io.puts "<div class='#{section[:compact] ? 'col-sm-6' : 'col-sm-6'} #{section[:compact] ? 'col-md-4' : 'col-md-6'} #{section[:compact] ? 'col-lg-4' : 'col-lg-6'}'>"
-                        io.puts "<a href='/#{slug}' class='tutorial_card3 #{section[:compact] ? 'compact' : ''}'>"
-                        # io.puts "<div class='inner'>"
+                        io.puts "<div class='hscol #{hor2 ? 'hor2' : ''} #{hor3 ? 'hor3' : ''}'>"
+                        io.puts "<a href='/#{slug}' class='tutorial_card3'>"
+                        io.puts "<h4>#{content[:title]}</h4>"
+                        io.puts "<div>"
                         additional_classes = []
                         if content[:needs_contrast] == 'light'
                             additional_classes << 'dark-only-bg-contrast-light'
@@ -1749,9 +1759,9 @@ class Main < Sinatra::Base
                         io.puts "#{content[:dev_only] ? '<span class="badge badge-sm bg-danger">dev</span> ' : ''}<h4>#{content[:title]}</h4>"
                         io.puts "<div class='abstract'>#{content[:abstract]}</div>"
                         io.puts "</div>"
+                        io.puts "</div>"
                         io.puts "</a>"
                         io.puts "</div>"
-                        # io.puts "<hr>"
                     end
                     io.puts "</div>"
                 end

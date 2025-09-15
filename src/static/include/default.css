@@ -1080,48 +1080,35 @@ button .bi {
     }
 }
 
-.tutorial_card3 {
-    display: flex;
-    flex-direction: column;
-    border-radius: 0.75em;
-    @media (max-width: 400px) {
-        border-radius: 0.5em;
-    }
-    
-    box-shadow: 0 0.25em 0.75em rgba(0,0,0,0.1);
-    overflow: hidden;
+.hscol {
+    flex: 0 0 auto;
     width: 100%;
-    margin-bottom: 1.5em;
-    position: relative;
-    transition: box-shadow 0.2s ease;
 
-    &:hover {
-        text-decoration: none;
-        box-shadow: 0 0.25em 0.75em rgba(0,0,0,0.3);
+    @media (min-width: 768px) {
+        width: 50%;
     }
 
-    img {
+    @media (min-width: 1200px) {
+        width: 33.33333333333%;
+    }
+
+    .tutorial_card3 {
+        display: flex;
+        flex-direction: row;
+        border-radius: 0.75em;
+        @media (max-width: 400px) {
+            border-radius: 0.5em;
+        }
+
+        box-shadow: 0 0.25em 0.75em rgba(0,0,0,0.1);
+        overflow: hidden;
         width: 100%;
-        aspect-ratio: 16/9;
-        object-fit: cover;
-    }
-
-    .shade {
-        width: 100%;
-        aspect-ratio: 16/9;
-        position: absolute;
-        left: 0;
-        top: 0;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.0) 10%);
-    }
-
-    .card-content {
-        padding: 1em;
-
-        color: #222;
-        border-top: 1px solid #eee;
+        margin-bottom: 1.5em;
+        position: relative;
+        transition: box-shadow 0.2s ease;
 
         h4 {
+            color: #222;
             font-size: 1.25rem;
             margin: 0 0 8px 0;
             font-weight: bold;
@@ -1130,17 +1117,116 @@ button .bi {
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
+            display: none;
         }
 
-        .abstract {
-            font-size: 0.95rem;
-            color: #555;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;     /* Show max 3 lines */
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        &:hover {
+            text-decoration: none;
+            box-shadow: 0 0.25em 0.75em rgba(0,0,0,0.3);
+        }
+
+        img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+        }
+
+        .shade {
+            width: 100%;
+            aspect-ratio: 16/9;
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.0) 10%);
+        }
+
+        .card-content {
+            padding: 1em;
+
+            color: #222;
+            border-top: 1px solid #eee;
+
+            h4 {
+                display: block;
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .abstract {
+                font-size: 0.95rem;
+                color: #555;
+                line-height: 1.4;
+                display: -webkit-box;
+                -webkit-line-clamp: 3;     /* Show max 3 lines */
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+    @media (min-width: 768px) and (max-width: 1199.999999px) {
+        &.hor2 {
+            width: 100%;
+            .tutorial_card3 {
+                flex-direction: column;
+                div {
+                    display: flex;
+                    flex-direction: row;
+                }
+                img {
+                    width: 55%;
+                }
+
+                .card-content {
+                    border-top: unset;
+                    border-left: 1px solid #eee;
+                    flex-direction: column;
+                    box-shadow: 0 0 1em rgba(0,0,0,0.1);
+                    h4 {
+                        border-bottom: 1px solid #eee;
+                        padding-bottom: 0.5em;
+                    }
+                    .abstract {
+                        -webkit-line-clamp: 10;
+                    };
+                }
+            }
+        }
+    }
+    @media (min-width: 1200px) {
+        &.hor3 {
+            width: 50%;
+            .tutorial_card3 {
+                flex-direction: column;
+                div {
+                    display: flex;
+                    flex-direction: row;
+                }
+                img {
+                    width: 65%;
+                }
+                h4 {
+                    display: block;
+                    border-bottom: 1px solid #eee;
+                    margin: 0;
+                    padding: 0.5em 1em;
+                }
+
+                .card-content {
+                    border-top: unset;
+                    border-left: 1px solid #eee;
+                    flex-direction: column;
+                    h4 {
+                        display: none;
+                    }
+                    .abstract {
+                        -webkit-line-clamp: 9;
+                    };
+                }
+            }
         }
     }
 }
