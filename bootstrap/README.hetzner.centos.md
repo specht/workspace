@@ -133,7 +133,7 @@ Sector size (logical/physical): 512 bytes / 512 bytes
 I/O size (minimum/optimal): 512 bytes / 512 bytes
 ```
 
-In diesem Beispiel liegt das eingerichtete 10 GB-Volume unter `/dev/sda`.
+In diesem Beispiel liegt das eingerichtete 10 GB-Volume unter `/dev/sda` (es kann bei dir anders sein, also schau auf jeden Fall genau hin, wir suchen jetzt das Volume, das wir zum Server dazu gebucht haben, und von dem nicht gebootet wird).
 
 > ⚠️ **Achtung:**
 Der Pfad zum eingehängten Volume kann sich nach dem Reboot geändert haben, falls du den Pfad also vorhin schon bestimmt hast, musst du jetzt unbedingt noch einmal schauen.
