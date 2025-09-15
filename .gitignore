@@ -2,9 +2,11 @@ docker-compose.yaml
 data
 docker/ruby/Gemfile
 logs
+src/kenney
 src/ruby/credentials.rb
 src/ruby/invitations.txt
 invitations
 temp
 src/static/include/bootstrap*/node_modules
 src/static/tic80
+src/scripts/collect-music-releases/cache
