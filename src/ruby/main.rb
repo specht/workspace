@@ -1089,7 +1089,7 @@ class Main < Sinatra::Base
         END_OF_QUERY
         broadcast_login_codes()
 
-        STDERR.puts "Sending login code #{random_code} to #{email}... go to /l/#{tag}/#{code} to log in."
+        STDERR.puts "Sending login code #{random_code} to #{email}... go to /l/#{tag}/#{random_code} to log in."
         deliver_mail do
             to email
             # bcc SMTP_FROM
