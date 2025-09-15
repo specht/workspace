@@ -130,14 +130,11 @@ html[data-bs-theme="dark"] {
         .tutorial_card3 {
             &:hover {
                 background-color: #222;
-                h4 {
-                    border-bottom: 1px solid #333;
-                }
             }
             border: 1px solid #333;
             h4 {
                 color: #ccccc9;
-                border-bottom: 1px solid #222;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             }
 
             &:hover {
@@ -151,28 +148,52 @@ html[data-bs-theme="dark"] {
 
             .card-content {
                 color: #aaa;
-                border-top: 1px solid #222;
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
                 .abstract {
                     color: #ccccc9;
                 }
             }
         }
+        @media (max-width: 767.999999px) {
+            .card-content {
+                h4 {
+                    border-bottom: none;
+                }
+            }
+        }
+        @media (min-width: 768px) and (max-width: 1199.999999px) {
+            .card-content {
+                h4 {
+                    border-bottom: none;
+                }
+            }
+            &.hor2 {
+                .tutorial_card3 {
+                    .card-content {
+                        border-left: 1px solid rgba(255, 255, 255, 0.05);
+                        h4 {
+                            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                        }
+                    }
+                }
+            }
+        }
+        @media (min-width: 1200px) {
+            .card-content {
+                h4 {
+                    border-bottom: none;
+                }
+            }
+            &.hor3 {
+                .tutorial_card3 {
+                    .card-content {
+                        border-left: 1px solid rgba(255, 255, 255, 0.05);
+                        h4 {
+                            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                        }
+                    }
+                }
+            }
+        }
     }
-   /* .tutorial_card3 {
-        img {
-            background-color: rgba(0,0,0,0.5);
-        }
-        .card-content {
-            background-color: #181818;
-            border-top: 1px solid #444;
-
-            h4 {
-                color: #ddd;
-            }
-
-            .abstract {
-                color: #aaa;
-            }
-        }
-    } */
 }
