@@ -1251,6 +1251,9 @@ button .bi {
   @media (min-width: 1200px) {
     &.hor3 {
       width: 50%;
+    }
+    /* &.hor3 {
+      width: 50%;
 
       .tutorial_card3 {
         flex-direction: column;
@@ -1263,8 +1266,8 @@ button .bi {
         }
 
         img {
-          flex: 0 0 65%;
-          max-width: 65%;
+          flex: 0 0 75%;
+          max-width: 75%;
           height: auto;
           aspect-ratio: auto;
         }
@@ -1304,6 +1307,6 @@ button .bi {
           }
         }
       }
-    }
+    } */
   }
 }
