@@ -858,6 +858,8 @@ class Main < Sinatra::Base
                         if parts.size > 1
                             name = parts[0, parts.size - 1].join(' ')
                             @@invitations[email][:name] = name
+                        else
+                            @@invitations[email][:name] = email
                         end
                     end
                 end
