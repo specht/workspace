@@ -757,44 +757,70 @@ module HtmlNotes
     HTML
   end
 
-  def table_minimization(trace)
-    states = trace[:states]
-    accepts = trace[:accepts]
+def table_minimization(trace)
+  states  = trace[:states]
+  accepts = trace[:accepts]
+  n = states.size
 
-    head = (1...states.size).map { |j| "<th>q_#{states[j]}</th>" }.join
-    body = (0...states.size-1).map do |i|
-      row = (i+1...states.size).map do |j|
-        key = [i,j]
-        cell = '&nbsp;'
+  head = (1...n).map { |j| "<th>q_#{states[j]}</th>" }.join
+
+  body = (0...n-1).map do |i|
+    # pad left with i cells so the upper triangle aligns under the headers
+    pad = i.times.map { '<td class="na">—</td>' }.join
+
+    row_cells = (i+1...n).map do |j|
+      key  = [i, j]
+      cell =
         if trace[:initial_marked].include?(key)
-          cell = '× (acc/non-acc)'
-        elsif w = trace[:witnesses][key]
+          '× <span class="reason">(acc/non-acc)</span>'
+        elsif (w = trace[:witnesses][key])
           to = w[:to]
-          cell = "× via #{esc w[:symbol]} → (q_#{states[to[0]]}, q_#{states[to[1]]})"
+          "× <span class=\"reason\">via #{esc w[:symbol]} → (q_#{states[to[0]]}, q_#{states[to[1]]})</span>"
         else
-          cell = '✓ (equiv)'
+          '✓ <span class="reason">(equiv)</span>'
         end
-        "<td>#{cell}</td>"
-      end.join
-      "<tr><th>q_#{states[i]}</th>#{row}</tr>"
+
+      # color classes for clarity
+      cls =
+        if cell.start_with?('×')
+          'marked'
+        else
+          'equiv'
+        end
+
+      "<td class=\"#{cls}\">#{cell}</td>"
     end.join
 
-    parts = trace[:blocks].map.with_index { |blk, i| "B#{i} = { #{blk.map { |s| "q_#{s}" }.join(', ')} }" }.join('<br>')
+    "<tr><th>q_#{states[i]}</th>#{pad}#{row_cells}</tr>"
+  end.join
 
-    <<~HTML
-    <section>
-      <h2>Minimization (Table-Filling Method)</h2>
-      <p><strong>Accepting states:</strong> #{states.each_with_index.map { |s, i| accepts[i] ? "q_#{s}" : nil }.compact.join(', ')}</p>
-      <h3>Distinguishability Table (upper triangle)</h3>
-      <table border="1" cellpadding="4" cellspacing="0">
-        <tr><th></th>#{head}</tr>
-        #{body}
-      </table>
-      <h3>Final Partitions</h3>
-      <p>#{parts}</p>
-    </section>
-    HTML
-  end
+  css = <<~CSS
+    table.min-table{border-collapse:collapse;margin:12px 0}
+    table.min-table th,table.min-table td{padding:6px 8px;border:1px solid #999;text-align:center}
+    table.min-table td.na{background:#f7f7f7;color:#bbb;font-style:italic}
+    table.min-table td.marked{color:#b00020}
+    table.min-table td.equiv{color:#006400}
+    table.min-table .reason{color:#444;font-weight:normal}
+  CSS
+
+  parts = trace[:blocks].map.with_index { |blk, i| "B#{i} = { #{blk.map { |s| "q_#{s}" }.join(', ')} }" }.join('<br>')
+
+  <<~HTML
+  <section>
+    <h2>Minimization (Table-Filling Method)</h2>
+    <p><strong>Accepting states:</strong> #{states.each_with_index.map { |s, i| accepts[i] ? "q_#{s}" : nil }.compact.join(', ')}</p>
+    <h3>Distinguishability Table (upper triangle)</h3>
+    <style>#{css}</style>
+    <table class="min-table">
+      <tr><th></th>#{head}</tr>
+      #{body}
+    </table>
+    <h3>Final Partitions</h3>
+    <p>#{parts}</p>
+  </section>
+  HTML
+end
+
 
   def wrap(*sections)
     <<~HTML
