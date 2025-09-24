@@ -1,0 +1,39 @@
+<div class="container">
+    <div class="col-md-12">
+        <h2>Automatron</h2>
+        <div class="input-group mb-3">
+            <input class="form-control" type="text" id="ti_input" placeholder="Enter regex...">
+            <button class="btn btn-primary" id="btn_process">Send</button>
+        </div>
+        <div id="output_area" class="mb-3"></div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    $('#ti_input').focus();
+    $('#ti_input').on('keypress', function(e) {
+        if (e.which == 13) {
+            $('#btn_process').click();
+        }
+    });
+    $('#btn_process').on('click', function() {
+        const input = $('#ti_input').val();
+        api_call('/api/automatron', { regex: input }, function(data) {
+            console.log(data);
+            let div = $('#output_area');
+            div.empty();
+            div.append($('<h3>').html('&epsilon;-NFA'));
+            div.append($(data.nfa.svg));
+            div.append($('<h3>').text('DFA'));
+            div.append(data.notes_subset_html);
+            div.append($(data.dfa.implicit_sink.svg));
+            div.append($('<h3>').text('DFA (minimized)'));
+            div.append(data.notes_minimization_html);
+            div.append($(data.min_dfa.implicit_sink.svg));
+            div.append($('<h3>').text('Regular Grammar'));
+            div.append($('<pre>').text(data.grammar));
+        })
+    });
+
+});
+</script>

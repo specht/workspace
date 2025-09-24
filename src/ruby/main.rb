@@ -1,4 +1,5 @@
 require './include/helper.rb'
+require './include/automatron.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
@@ -141,6 +142,24 @@ end
 class Main < Sinatra::Base
     include Neo4jBolt
     helpers Sinatra::Cookies
+
+    helpers do
+        def svg_from_dot(dot_str)
+            # Use Graphviz 'dot' from PATH to turn DOT into SVG (no temp files needed).
+            svg, err, status = Open3.capture3('dot', '-Tsvg', stdin_data: dot_str)
+            halt 500, { error: "Graphviz failed", detail: err }.to_json unless status.success?
+            svg
+        end
+
+        def safe_regex(str)
+            # very lightweight guardrails for classroom use:
+            # - non-empty
+            # - length cap (avoid pathological inputs)
+            halt 400, { error: "regex must be a non-empty string" }.to_json if str.nil? || str.strip.empty?
+            halt 413, { error: "regex too long" }.to_json if str.length > 2000
+            str
+        end
+    end
 
     def self.fs_tag_for_email(email)
         Digest::SHA2.hexdigest(email).to_i(16).to_s(36)[0, 16]
@@ -2554,6 +2573,69 @@ class Main < Sinatra::Base
             client.query("FLUSH PRIVILEGES;")
         end
     end
+
+    post '/api/automatron' do
+        data  = parse_request_data(:required_keys => [:regex])
+        regex = safe_regex(data[:regex])
+
+        # ε-NFA
+        nfa = NFA.from_regex(regex)
+
+        # DFA (with subset trace)
+        dfa, subset_trace = SubsetTrace.build_with_trace(nfa)
+
+        # Minimized DFA (with table method trace)
+        min, min_trace = DFAMinimizer.minimize_with_trace(dfa)
+
+        # DOT
+        nfa_dot           = DotRender.nfa(nfa)
+        dfa_dot_explicit  = DotRender.dfa(dfa, title: 'DFA',                 sink_explicit: true)
+        dfa_dot_implicit  = DotRender.dfa(dfa, title: 'DFA_ImplicitSink',    sink_explicit: false)
+        min_dot_explicit  = DotRender.dfa(min, title: 'MinDFA',              sink_explicit: true)
+        min_dot_implicit  = DotRender.dfa(min, title: 'MinDFA_ImplicitSink', sink_explicit: false)
+
+        # SVG
+        nfa_svg           = svg_from_dot(nfa_dot)
+        dfa_svg           = svg_from_dot(dfa_dot_explicit)
+        dfa_implicit_svg  = svg_from_dot(dfa_dot_implicit)
+        min_svg           = svg_from_dot(min_dot_explicit)
+        min_implicit_svg  = svg_from_dot(min_dot_implicit)
+
+        # Grammar
+        grammar = RegularGrammar.from_dfa(min)
+
+        # Unwrapped HTML snippets (each is a <section>…</section>)
+        subset_html        = HtmlNotes.subset(subset_trace)
+        minimization_html  = HtmlNotes.table_minimization(min_trace)
+
+        payload = {
+            input: { regex: regex },
+
+            nfa: { dot: nfa_dot, svg: nfa_svg },
+
+            dfa: {
+                explicit_sink: { dot: dfa_dot_explicit, svg: dfa_svg },
+                implicit_sink: { dot: dfa_dot_implicit, svg: dfa_implicit_svg }
+            },
+
+            min_dfa: {
+                explicit_sink: { dot: min_dot_explicit, svg: min_svg },
+                implicit_sink: { dot: min_dot_implicit, svg: min_implicit_svg }
+            },
+
+            grammar: grammar,
+
+            # Two separate, unwrapped sections for easy inclusion
+            notes_subset_html:       subset_html,
+            notes_minimization_html: minimization_html,
+
+            # If you still want raw trace data for custom UIs, you can add:
+            traces: { subset: subset_trace, minimization: min_trace }
+        }
+
+        respond(payload)
+    end
+
 
     get '/*' do
         path = request.path
