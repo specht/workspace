@@ -119,11 +119,11 @@ document.addEventListener('DOMContentLoaded', function() {
       $out.append($('<h3>').text('Regular Grammar'));
       $out.append($('<pre>').text(data.grammar));
 
-      $out.append($('<h3>').text('Samples (positive)'));
-      $out.append($(data.samples_positive.map(x => `<i class='bi bi-check text-success mr-2'></i><code>${x}</code>`).join('<br>')));
+      $out.append($('<h3>').html("<i class='bi bi-check text-success mr-2'></i>&nbsp;Samples (positive)"));
+      $out.append($(data.samples_positive.map(x => `<code>${x}</code>&nbsp;`).join(' ')));
 
-      $out.append($('<h3>').text('Samples (negative)'));
-      $out.append($(data.samples_negative.map(x => `<i class='bi bi-x text-danger mr-2'></i><code>${x}</code>`).join('<br>')));
+      $out.append($('<h3>').html("<i class='bi bi-x text-danger mr-2'></i>&nbsp;Samples (negative)"));
+      $out.append($(data.samples_negative.map(x => `<code>${x}</code>&nbsp;`).join(' ')));
     }, function onError(err) {
       const $out = $('#output_area');
       $out.empty().append(
