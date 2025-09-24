@@ -8,6 +8,8 @@
 
 require 'set'
 
+INCLUDE_SINK = false  # set true to include the sink state in the table
+
 # ------------------- Utilities -------------------
 
 # ------------------- Subset Construction trace helper -------------------
@@ -38,6 +40,11 @@ module SubsetTrace
       seen
     end
 
+    eps_closures = {}
+    nfa.states.each_key do |q|
+      eps_closures[q] = eps.call(Set[q]).to_a.sort
+    end
+
     # move(S, a)
     move = lambda do |set, sym|
       out = Set.new
@@ -63,6 +70,7 @@ module SubsetTrace
     trace = {
       alphabet: alphabet.to_a,
       start_closure: start_set.to_a.sort,
+      eps_closures: eps_closures,
       state_map: { start_id => start_set.to_a.sort },
       steps: []
     }
@@ -465,7 +473,15 @@ end
 
 class DFAMinimizer
   # Classic table-filling (distinguishability) minimization with trace.
+
+  def self._detect_sink(dfa)
+    dfa.states.find do |s|
+      !dfa.accepts.include?(s) && dfa.alphabet.all? { |a| dfa.transitions[s][a] == s }
+    end
+  end
+
   def self.minimize_with_trace(dfa)
+    sink = _detect_sink(dfa) 
     states = dfa.states.to_a.sort
     index = {}
     states.each_with_index { |s, i| index[s] = i }
@@ -591,7 +607,8 @@ class DFAMinimizer
       initial_marked: initial_marked,
       witnesses: witnesses, # keys are pairs [i,j]
       blocks: (0...next_block).map { |b| states.select { |s| block_id[s] == b } },
-      block_map: block_id
+      block_map: block_id,
+      sink: sink
     }
 
     [dmin, trace]
@@ -614,11 +631,11 @@ module DotRender
   end
 
   # HTML-like label: q with subscript 0..9,A..Z then fallback to numeric
-  def node_label(id)
-    base = ('0'..'9').to_a + ('A'..'Z').to_a
-    sym = id < base.size ? base[id] : id.to_s
+  def node_label(id, q = 'q')
+    # base = ('0'..'9').to_a + ('A'..'Z').to_a
+    # sym = id < base.size ? base[id] : id.to_s
     # Subscript with smaller font size
-    "<q<SUB><FONT POINT-SIZE=\"10\">#{sym}</FONT></SUB>>"
+    "<#{q}<SUB><FONT POINT-SIZE=\"10\">#{id}</FONT></SUB>>"
   end
 
   def sink_id
@@ -628,18 +645,22 @@ module DotRender
     '<q<SUB><FONT POINT-SIZE="10">F</FONT></SUB>>'
   end
 
-  def nfa(nfa)
+  def nfa(nfa, q: 'q')
     lines = []
     lines << 'digraph NFA {'
     lines << '  rankdir=LR;'
-    lines << '  node [shape=circle];'
-    lines << '  __start [shape=point,label=""];'
+    lines << "graph [fontsize = 14, nodesep = 0.2, ranksep = 0.3];"
+    lines << "node [fontsize = 14, shape = circle, margin = 0, style = filled, fillcolor=\"#f0f0f0\"];"
+    lines << "edge [fontsize = 14, arrowsize = 0.6, color = \"#000000\"];"
+    lines << 'splines=true;'
+
+    lines << '  __start [shape=point, color="#ffffff", label=""];'
     lines << "  __start -> #{node_id(nfa.start)};"
 
     # Nodes
     nfa.states.each do |id, st|
       shape = (id == nfa.accept) ? 'doublecircle' : 'circle'
-      lines << "  #{node_id(id)} [shape=#{shape},label=#{node_label(id)}];"
+      lines << "  #{node_id(id)} [shape=#{shape},label=#{node_label(id, q)}];"
     end
 
     # Grouped edges per (from,to)
@@ -672,13 +693,15 @@ module DotRender
   end
 
   # Render DFA; when sink_explicit=false, hide sink node and edges to it.
-  def dfa(dfa, title: 'DFA', sink_explicit: true, sink_label_text: 'q_F')
+  def dfa(dfa, title: 'DFA', sink_explicit: true, sink_label_text: 'q_F', q: 'q')
     sink = detect_sink(dfa)
     lines = []
     lines << "digraph #{title} {"
     lines << '  rankdir=LR;'
-    lines << '  node [shape=circle];'
-    lines << '  __start [shape=point,label=""];'
+    lines << "graph [fontsize = 14, nodesep = 0.2, ranksep = 0.3];"
+    lines << "node [fontsize = 14, shape = circle, margin = 0, style = filled, fillcolor=\"#f0f0f0\"];"
+    lines << "edge [fontsize = 14, arrowsize = 0.6, color = \"#000000\"];"
+    lines << '  __start [shape=point, color="#ffffff", label=""];'
     lines << "  __start -> #{node_id(dfa.start)};"
 
     # Nodes
@@ -686,7 +709,7 @@ module DotRender
       next if !sink_explicit && s == sink
       shape = dfa.accepts.include?(s) ? 'doublecircle' : 'circle'
       nid = (sink_explicit && s == sink) ? sink_id : node_id(s)
-      lab = (sink_explicit && s == sink) ? sink_label : node_label(s)
+      lab = (sink_explicit && s == sink) ? sink_label : node_label(s, q)
       lines << "  #{nid} [shape=#{shape},label=#{lab}];"
     end
 
@@ -709,8 +732,8 @@ module DotRender
 
     if !sink_explicit && sink
       lines << '  subgraph cluster_legend {'
-      lines << '    label="Legend"; style=dashed;'
-      lines << '    l1 [shape=note,label="Missing transitions go to implicit sink q_F."];'
+      lines << '    label=""; style=invisible;'
+      lines << '    l1 [shape=note,label="Fehlende Übergänge\nführen in einen\nimpliziten Fehlerzustand."];'
       lines << '  }'
     end
 
@@ -868,96 +891,178 @@ module HtmlNotes
 
   def subset(trace)
     alpha = trace[:alphabet]
-    rows = trace[:steps].map do |r|
-      "<tr><td>{#{r[:from].join(', ')}}</td><td>#{esc r[:symbol]}</td><td>{#{r[:move].join(', ')}}</td><td>ε-closure → {#{r[:closure].join(', ')}}</td><td>#{r[:to] ? "q_#{r[:to]}" : '—'}</td></tr>"
+
+    # Map subset -> dfa id (string key: "0,2,4")
+    subset_key = ->(arr) { arr.join(',') }
+    subset_to_dfa = {}
+    trace[:state_map].each do |dfa_id, set|
+        subset_to_dfa[subset_key.call(set)] = dfa_id
+    end
+
+    # Group steps by from-subset; for each from, map symbol -> step row
+    by_from = Hash.new { |h, k| h[k] = {} }
+    trace[:steps].each do |r|
+        key = subset_key.call(r[:from])
+        by_from[key][r[:symbol]] = r
+    end
+
+    # Sort rows by DFA id if we have it; otherwise by subset lexicographically
+    ordered_from_keys = by_from.keys.sort_by do |k|
+        subset_to_dfa.key?(k) ? [0, subset_to_dfa[k]] : [1, k]
+    end
+
+    # Build header: one column per symbol
+    head = "<tr><th>Zustand (DEA)</th><th>Zustände (NEA)</th>" +
+            alpha.map { |a| "<th>#{CGI.escapeHTML(a)}</th>" }.join +
+            "</tr>"
+
+    # Pretty subset like "{0, 2, 4}"
+    fmt_set = ->(arr) { '{' + arr.map { |x| 'q<sub>' + x.to_s + '</sub>' }.join('; ') + '}' }
+
+    # Build rows
+    body = ordered_from_keys.map do |k|
+        # Display DFA name if known
+        dfa_tag = subset_to_dfa[k] ? "r<sub>#{subset_to_dfa[k]}</sub>" : ''
+
+        cells = alpha.map do |sym|
+        r = by_from[k][sym]
+        if r.nil?
+            '<td>—</td>'
+        elsif r[:closure].empty?
+            '<td>∅</td>'
+        else
+            "<td>#{fmt_set.call(r[:closure])}</td>"
+        end
+        end.join
+
+        "<tr><td>#{dfa_tag}</td><td>{#{k.split(',').map { |x| 'q<sub>' + x + '</sub>'}.join('; ')}}</td>#{cells}</tr>"
     end.join
 
+    # ε-closures table (kept, just above)
+    closures_rows = trace[:eps_closures].sort_by { |q, _| q }.map do |q, set|
+        "<tr><td>q<sub>#{q}</sub></td><td>{#{set.map { |x| 'q<sub>' + x.to_s + '</sub>' }.join('; ')}}</td></tr>"
+    end.join
+
+    # (optional) keep the state map; comment out if you don’t want it
     map_rows = trace[:state_map].sort_by { |k,_| k }.map do |id, set|
-      "<tr><td>q_#{id}</td><td>{#{set.join(', ')}}</td></tr>"
+        "<tr><td>q_#{id}</td><td>{#{set.join(', ')}}</td></tr>"
     end.join
 
     <<~HTML
     <section>
-      <h2>Subset Construction (ε-closures)</h2>
-      <p><strong>Alphabet:</strong> #{alpha.join(', ')}</p>
-      <p><strong>Start ε-closure:</strong> {#{trace[:start_closure].join(', ')}}</p>
-      <h3>DFA State Map (subset → state)</h3>
-      <table border="1" cellpadding="4" cellspacing="0">
+        <h4>ε-Hüllen aller Zustände</h4>
+        <table class='table' style='width: unset;'>
+        <tr><th>q</th><th>E(q)</th></tr>
+        #{closures_rows}
+        </table>
+
+        <p><strong>Start ε-closure:</strong> {#{trace[:start_closure].join(', ')}}</p>
+
+        <!--
+        <h3>DFA State Map (subset → state)</h3>
+        <table class='table' style='width: unset;'>
         <tr><th>DFA state</th><th>NFA subset</th></tr>
         #{map_rows}
-      </table>
-      <h3>Transition Derivations</h3>
-      <table border="1" cellpadding="4" cellspacing="0">
-        <tr><th>From subset</th><th>Symbol</th><th>move()</th><th>ε-closure</th><th>To DFA</th></tr>
-        #{rows}
-      </table>
+        </table>
+        -->
+
+        <h4>Übergänge</h4>
+        <table class='table' style='width: unset;'>
+        #{head}
+        #{body}
+        </table>
     </section>
     HTML
   end
 
-def table_minimization(trace)
-  states  = trace[:states]
-  accepts = trace[:accepts]
-  n = states.size
-
-  head = (1...n).map { |j| "<th>q_#{states[j]}</th>" }.join
-
-  body = (0...n-1).map do |i|
-    # pad left with i cells so the upper triangle aligns under the headers
-    pad = i.times.map { '<td class="na">—</td>' }.join
-
-    row_cells = (i+1...n).map do |j|
-      key  = [i, j]
-      cell =
-        if trace[:initial_marked].include?(key)
-          "<i class='bi bi-x text-danger'></i>"
-        elsif (w = trace[:witnesses][key])
-          to = w[:to]
-          "<i class='bi bi-x text-danger'></i> <span class='reason'>via #{esc w[:symbol]} → (q_#{states[to[0]]}, q_#{states[to[1]]})</span>"
-        else
-          "<i class='bi bi-check text-success'></i>"
-        end
-
-      # color classes for clarity
-      cls =
-        if cell.start_with?("<i class='bi bi-x")
+  def table_minimization(trace)
+    # --- config ---
+    states  = trace[:states]
+    accepts = trace[:accepts]
+    sink    = trace[:sink] rescue nil
+  
+    # which states to render
+    vis_states = (INCLUDE_SINK || sink.nil?) ? states : states.reject { |s| s == sink }
+  
+    # map original state -> original index
+    orig_idx = {}
+    states.each_with_index { |s, i| orig_idx[s] = i }
+  
+    # header (all columns)
+    head = "<tr><th></th>" +
+           vis_states.map { |s| "<th>r<sub>#{s}</sub></th>" }.join +
+           "</tr>"
+  
+    # helper to read status for pair (i,j) using original indices, regardless of order
+    cell_for = lambda do |i_vis, j_vis|
+      i0 = orig_idx[vis_states[i_vis]]
+      j0 = orig_idx[vis_states[j_vis]]
+      i, j = [i0, j0].min, [i0, j0].max
+      key = [i, j]
+  
+      if i_vis == j_vis
+        ['—', 'diag'] # diagonal
+      elsif j_vis < i_vis
+        ['—', 'na']   # lower triangle (not used)
+      elsif trace[:initial_marked].include?(key)
+        ["<i class='bi bi-x text-danger'></i>", 'marked']
+      elsif (w = trace[:witnesses][key])
+        to_i, to_j = w[:to]
+        [
+          "<i class='bi bi-x text-danger'></i> "\
+          "<span class='reason'>#{CGI.escapeHTML(w[:symbol])} → "\
+          "(r<sub>#{states[to_i]}</sub>, r<sub>#{states[to_j]}</sub>)</span>",
           'marked'
-        else
-          'equiv'
-        end
-
-      "<td class=\"#{cls}\">#{cell}</td>"
+        ]
+      else
+        ["<i class='bi bi-check text-success'></i>", 'equiv']
+      end
+    end
+  
+    # build body: one row per visible state, one cell per visible state
+    body = vis_states.each_index.map do |i|
+      row_cells = vis_states.each_index.map do |j|
+        html, cls = cell_for.call(i, j)
+        "<td class=\"#{cls}\">#{html}</td>"
+      end.join
+      "<tr><th>r<sub>#{vis_states[i]}</sub></th>#{row_cells}</tr>"
     end.join
-
-    "<tr><th>q_#{states[i]}</th>#{pad}#{row_cells}</tr>"
-  end.join
-
-  css = <<~CSS
-    table.min-table{border-collapse:collapse;margin:12px 0}
-    table.min-table th,table.min-table td{padding:6px 8px;border:1px solid #999;text-align:center}
-    table.min-table td.na{background:#f7f7f7;color:#bbb;font-style:italic}
-    table.min-table td.marked{color:#b00020}
-    table.min-table td.equiv{color:#006400}
-    table.min-table .reason{color:#444;font-weight:normal}
-  CSS
-
-  parts = trace[:blocks].map.with_index { |blk, i| "B#{i} = { #{blk.map { |s| "q_#{s}" }.join(', ')} }" }.join('<br>')
-
-  <<~HTML
-  <section>
-    <h2>Minimization (Table-Filling Method)</h2>
-    <p><strong>Accepting states:</strong> #{states.each_with_index.map { |s, i| accepts[i] ? "q_#{s}" : nil }.compact.join(', ')}</p>
-    <h3>Distinguishability Table (upper triangle)</h3>
-    <style>#{css}</style>
-    <table class="min-table">
-      <tr><th></th>#{head}</tr>
-      #{body}
-    </table>
-    <h3>Final Partitions</h3>
-    <p>#{parts}</p>
-  </section>
-  HTML
-end
+  
+    css = <<~CSS
+      table.min-table{border-collapse:collapse;margin:12px 0}
+      table.min-table th,table.min-table td{padding:6px 8px;border:1px solid #999;text-align:center;vertical-align: top;}
+      table.min-table td.na{background:#f7f7f7;color:#bbb;font-style:italic}
+      table.min-table td.diag{background:#f0f0f0;color:#999}
+      table.min-table td.marked{color:#b00020}
+      table.min-table td.equiv{color:#006400}
+      table.min-table .reason{color:#444;font-weight:normal;font-size:0.8em;display:block;}
+    CSS
+  
+    sink = trace[:sink] rescue nil
+    visible_blocks = sink ? trace[:blocks].reject { |blk| blk.include?(sink) } : trace[:blocks]
+    parts = visible_blocks.map.with_index do |blk, i|
+        "<td>s<sub>#{i}</sub></td><td>{#{blk.map do |s|
+            "r<sub>#{s}</sub>"
+        end.join('; ')}}</td>"
+    end.map do |x|
+        "<tr>#{x}</tr>"
+    end.join
+  
+    <<~HTML
+    <section>
+      <style>#{css}</style>
+      <table class="min-table">
+        #{head}
+        #{body}
+      </table>
+      <h4>Resultierende Partitionen</h4>
+      <table class='table' style='width: unset;'>
+      <tr><th>Zustand (min. DEA)</th><th>Partition</th></tr>
+      #{parts}
+      </table>
+    </section>
+    HTML
+  end
 
 
   def wrap(*sections)
@@ -1059,30 +1164,209 @@ class RegularGrammar
 
   # Pretty-print grammar. By default hides productions that target nonproductive NTs,
   # avoiding confusing rules (e.g., 'a' after 'b' for a?b+) that can never terminate.
-  def self.to_text(g, hide_nonproductive: true)
+  def self.to_html(g, hide_nonproductive: true)
     productive = hide_nonproductive ? productive_nonterminals(g) : nil
     lines = []
-    lines << "Nonterminals: #{g[:nonterminals].to_a.join(', ')}"
-    lines << "Terminals: #{g[:terminals].to_a.join(', ')}"
-    lines << "Start: #{g[:start]}"
-    lines << "Productions:"
+    lines << "Nicht-Terminale: #{g[:nonterminals].to_a.join(', ')}<br>"
+    lines << "Terminale: #{g[:terminals].to_a.join(', ')}<br>"
+    lines << "Start: #{g[:start]}<br>"
+    lines << "Produktionsregeln:<br>"
+    lines << "<ul>"
 
-    g[:productions].keys.sort.each do |lhs|
-      rhs_all = g[:productions][lhs].uniq
-      rhs = if productive
+
+    # --- S first, then others alphabetically ---
+    ordered_lhs = ['S'] + (g[:productions].keys - ['S']).sort
+
+    ordered_lhs.each do |lhs|
+        next unless g[:productions].key?(lhs)
+        rhs_all = g[:productions][lhs].uniq
+        rhs = if productive
         rhs_all.select { |r| r == 'ε' || productive.include?(r[1..]) }
-      else
+        else
         rhs_all
-      end
-      next if rhs.empty?
-      lines << "  #{lhs} → #{rhs.join(' | ')}"
+        end
+        next if rhs.empty?
+        lines << "<li>#{lhs} → #{rhs.join(' | ')}</li>"
     end
+
+    lines << "</ul>"
     lines.join("\n")
   end
 
+
   # Back-compat helper: what you previously used
   def self.from_dfa(dfa)
-    to_text(build(dfa), hide_nonproductive: true)
+    to_html(build(dfa), hide_nonproductive: true)
+  end
+
+# Convert "aB" / "ε" to pairs [w, Y] where w is a terminal string, Y is a nonterminal or nil
+  def self._expand_pairs(g)
+    prods2 = Hash.new { |h, k| h[k] = [] }
+    g[:productions].each do |lhs, rhslist|
+      rhslist.each do |rhs|
+        if rhs == 'ε'
+          prods2[lhs] << ['', nil]
+        else
+          # Our construction produces exactly 1 terminal followed by 1 nonterminal.
+          # But the simplifier will create longer w's; we keep it general.
+          w = rhs[0]
+          y = rhs[1..]
+          prods2[lhs] << [w, y]
+        end
+      end
+    end
+    prods2
+  end
+
+  # Turn pairs back to strings "wY" / "ε"
+  def self._compact_pairs_to_strings(prods2)
+    out = Hash.new { |h, k| h[k] = [] }
+    prods2.each do |lhs, arr|
+      arr.each do |w, y|
+        out[lhs] << (y ? "#{w}#{y}" : (w.empty? ? 'ε' : w))
+      end
+    end
+    out
+  end
+
+  # Recompute how often each nonterminal appears as the trailing NT on RHS
+  def self._rhs_refcounts(prods2)
+    rc = Hash.new(0)
+    prods2.each_value do |arr|
+      arr.each do |w, y|
+        rc[y] += 1 if y
+      end
+    end
+    rc
+  end
+
+  # Simplify by (i) removing non-productive targets, then (ii) inlining linear chains.
+  # Returns a new grammar hash like `build`, but RHS may contain w∈Σ* (multi-char).
+  def self.simplify(g)
+    start = g[:start]
+    prods2 = _expand_pairs(g)  # { "A" => [[w, Y], ...] }
+
+    # (i) Drop any RHS whose trailing NT cannot reach ε
+    productive = productive_nonterminals(g)
+    prods2.each do |lhs, list|
+      list.select! { |w, y| y.nil? || productive.include?(y) } # keep ε (y=nil) and productive targets
+    end
+
+    # Remove LHS that lost all productions (except S if it has ε)
+    prods2.keys.each do |lhs|
+      if prods2[lhs].empty?
+        prods2.delete(lhs) unless lhs == start
+      end
+    end
+
+    # (ii) Inline ε, w, wY chains until fixed point
+    changed = true
+    while changed
+      changed = false
+
+      # Inline X -> ε
+      prods2.keys.each do |x|
+        arr = prods2[x]
+        next unless arr.size == 1 && arr[0] == ['', nil]
+        prods2.each_value do |list|
+          list.each_index do |i|
+            w, y = list[i]
+            if y == x
+              list[i] = [w, nil]      # drop the trailing NT
+              changed = true
+            end
+          end
+        end
+        prods2.delete(x) unless x == start
+      end
+
+      # Inline X -> w (terminal-only)
+      prods2.keys.each do |x|
+        next if x == start
+        arr = prods2[x]
+        next unless arr.size == 1
+        w1, y1 = arr[0]
+        next unless y1.nil? && !w1.empty?
+
+        used = false
+        prods2.each_value do |list|
+          list.each_index do |i|
+            w, y = list[i]
+            if y == x
+              list[i] = [w + w1, nil]
+              used = true
+              changed = true
+            end
+          end
+        end
+        prods2.delete(x) if used
+      end
+
+      # Inline X -> wY (chain)
+      prods2.keys.each do |x|
+        next if x == start
+        arr = prods2[x]
+        next unless arr.size == 1
+        w1, y1 = arr[0]
+        next if y1.nil?
+
+        used = false
+        prods2.each_value do |list|
+          list.each_index do |i|
+            w, y = list[i]
+            if y == x
+              list[i] = [w + w1, y1]
+              used = true
+              changed = true
+            end
+          end
+        end
+        prods2.delete(x) if used
+      end
+    end
+
+    # Rebuild grammar object
+    g2 = {
+      nonterminals: g[:nonterminals].dup,
+      terminals:    g[:terminals].dup,
+      start:        start,
+      productions:  _compact_pairs_to_strings(prods2),
+      state_names:  g[:state_names]
+    }
+
+    # Keep only actually-used nonterminals (LHS plus any trailing NTs on RHS)
+    still = Set.new(g2[:productions].keys)
+    g2[:productions].each_value do |list|
+      list.each do |rhs|
+        next if rhs == 'ε'
+        if rhs =~ /[A-Z]+$/  # trailing NT
+          still << $&
+        end
+      end
+    end
+    g2[:nonterminals] = still
+    g2
+  end
+
+  # Start-first pretty printer for compact grammar
+  def self.to_html_compact(g)
+    keys = g[:productions].keys
+    ordered = ['S'] + (keys - ['S']).sort
+    lines = []
+    lines << "Nicht-Terminale: #{g[:nonterminals].to_a.sort.join(', ')}<br>"
+    lines << "Terminale: #{g[:terminals].to_a.sort.join(', ')}<br>"
+    lines << "Start: #{g[:start]}<br>"
+    lines << "Produktionsregeln:<br>"
+    lines << "<ul>"
+    ordered.each do |lhs|
+      next unless g[:productions].key?(lhs)
+      rhs = g[:productions][lhs].uniq
+      # optional nicety: sort short (terminal-only) before chain rules
+      rhs.sort_by! { |r| r == 'ε' ? -1 : (r =~ /[A-Z]+$/ ? 1 : 0) }
+      lines << "<li>#{lhs} → #{rhs.join(' | ')}</li>"
+    end
+    lines << "</ul>"
+    lines.join("\n")
   end
 end
 
@@ -1101,7 +1385,7 @@ if __FILE__ == $0
 
   # DFA with trace (subset construction)
   dfa, subset_trace = SubsetTrace.build_with_trace(nfa)
-  File.write(File.join(outdir, 'dfa.dot'), DotRender.dfa(dfa, title: 'DFA', sink_explicit: true))
+  File.write(File.join(outdir, 'dfa.dot'), DotRender.dfa(dfa, title: 'DFA', sink_explicit: true, q: 'r'))
   puts "Wrote #{outdir}/dfa.dot"
   system("dot -Tsvg #{outdir}/dfa.dot -o #{outdir}/dfa.svg")
   File.write(File.join(outdir, 'dfa_implicit_sink.dot'), DotRender.dfa(dfa, title: 'DFA_ImplicitSink', sink_explicit: false))
@@ -1109,7 +1393,7 @@ if __FILE__ == $0
 
   # Minimization with trace (table method)
   min, min_trace = DFAMinimizer.minimize_with_trace(dfa)
-  File.write(File.join(outdir, 'min_dfa.dot'), DotRender.dfa(min, title: 'MinDFA', sink_explicit: true))
+  File.write(File.join(outdir, 'min_dfa.dot'), DotRender.dfa(min, title: 'MinDFA', sink_explicit: true, q: 's'))
   puts "Wrote #{outdir}/min_dfa.dot"
   system("dot -Tsvg #{outdir}/min_dfa.dot -o #{outdir}/min_dfa.svg")
   File.write(File.join(outdir, 'min_dfa_implicit_sink.dot'), DotRender.dfa(min, title: 'MinDFA_ImplicitSink', sink_explicit: false))

@@ -4,13 +4,13 @@
 
     <!-- Examples -->
     <div class="mb-3">
-      <h5 class="mb-2">Examples</h5>
       <div class="row" id="examples_list"></div>
     </div>
 
+    <h3>Regulärer Ausdruck</h3>
     <!-- Input -->
     <div class="input-group mb-3">
-      <input class="form-control" type="text" id="ti_input" placeholder="Enter regex...">
+      <input class="form-control" type="text" id="ti_input" placeholder="Gib einen regulären Ausdruck ein...">
       <button class="btn btn-primary" id="btn_process">Send</button>
     </div>
 
@@ -22,43 +22,37 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     const exampleGroups = {
-  "Easy": [
-    { regex: 'a*',                desc: 'Zero or more a' },
-    { regex: 'ab',                desc: 'Concatenation' },
-    { regex: 'a|b',               desc: 'Alternation' },
-    { regex: 'a+',                desc: 'One or more a' },
-    { regex: 'a?b+',              desc: 'Optional a, then ≥1 b' }
+  "Einfach": [
+    { regex: 'a|b',               desc: 'Vereinigung' },
+    { regex: 'ab',                desc: 'Verkettung' },
+    { regex: 'a*',                desc: "K<span style='font-size: 80%;'>LEEN</span>sche Hülle" },
+    { regex: 'a+',                desc: 'Positive Hülle' },
   ],
-  "Slightly richer": [
-    { regex: '(a|b)*c',           desc: 'All words ending with c' },
-    { regex: '(a|b)*a',           desc: 'All words ending with a' },
-    { regex: 'a(b|c)',            desc: 'a followed by b or c' },
-    { regex: '(a|b)(a|b)',        desc: 'All words of length 2 over {a,b}' },
-    { regex: '(a|b)*(ab|ba)',     desc: 'Ends with ab or ba' }
+  "Etwas schwerer": [
+    { regex: '(a|b)*c',           desc: 'alle Wörter, die auf c enden' },
+    { regex: 'a(b|c)',            desc: 'a gefolgt von b oder c' },
+    { regex: '(a|b)(a|b)',        desc: 'Alle Wörter über {a,b} mit der Länge 2' },
+    { regex: '(a|b)*(ab|ba)',     desc: 'endet auf ab oder ba' }
   ],
-  "Moderate": [
-    { regex: '(ab)*',             desc: 'Even repetitions of "ab"' },
-    { regex: 'a*b*',              desc: 'a’s then b’s (one block of b)' },
-    { regex: 'a*b*a*',            desc: 'All b’s in a single block' },
-    { regex: '(a|b)*aa',          desc: 'Ends with aa' },
-    { regex: '(aa|bb)*',          desc: 'Even length, pairs of equal letters' }
+  "Mittel": [
+    { regex: '(ab)*',             desc: 'Wiederholungen von "ab"' },
+    { regex: 'a*b*',              desc: 'a’s gefolgt von b’s' },
+    { regex: 'a*b*a*',            desc: 'höchstens ein Blocks von b’s in der Mitte' },
+    { regex: '(a|b)*aa',          desc: 'endet auf aa' },
   ],
-  "Challenging": [
-    { regex: '(a|b)*abb',         desc: 'Ends with abb' },
-    { regex: '(a|b)*aba(a|b)*',   desc: 'Contains substring "aba"' },
-    { regex: '(a|b)*a(a|b)*b(a|b)*', desc: 'Contains substring "ab"' },
-    { regex: '(a|b)*b(a|b)*a(a|b)*', desc: 'Contains substring "ba"' },
-    { regex: '(ab|ba)*',          desc: 'Even length alternating pairs' }
+  "Schwerer": [
+    { regex: '(a|b)*abb',         desc: 'endet auf abb' },
+    { regex: '(a|b)*aba(a|b)*',   desc: 'enthält "aba"' },
+    { regex: '(aa|bb)*',          desc: 'gerade Länge, nur Buchstabenpaare' },
   ],
-  "Binary (0/1)": [
-    { regex: '(0|1)*1(0|1)(0|1)', desc: '3rd-last is 1' },
-    { regex: '(0|1)*01(0|1)*',    desc: 'Contains 01' },
-    { regex: '(0|1)*(00|11)(0|1)*', desc: 'Contains 00 or 11' },
+  "Binärzahlen": [
+    { regex: '(0|1)*1(0|1)(0|1)', desc: 'drittletztes Symbol ist 1' },
+    { regex: '(0|1)*01(0|1)*',    desc: 'enthält 01' },
+    { regex: '(0|1)*(00|11)(0|1)*', desc: 'enthält 00 or 11' },
   ],
-  "Motivated": [
-    { regex: '(a|b)*a(a|b)*a(a|b)*',   desc: 'At least two a’s' },
-    { regex: '(a|b)*a(a|b)*a(a|b)*a(a|b)*', desc: 'At least three a’s' },
-    { regex: '(a|b)*a(a|b)(a|b)',      desc: '3rd-last is a' }
+  "Anspruchsvoll": [
+    { regex: '(a|b)*a(a|b)*a(a|b)*',   desc: 'mindestens zwei a’s' },
+    { regex: '(a|b)*a(a|b)*a(a|b)*a(a|b)*', desc: 'mindestens drei a’s' },
   ]
 };
 
@@ -86,7 +80,6 @@ document.addEventListener('DOMContentLoaded', function() {
     $list.append($col);
   });
 
-  $('#ti_input').focus();
   $('#ti_input').on('keypress', function(e) {
     if (e.which == 13) $('#btn_process').click();
   });
@@ -105,24 +98,27 @@ document.addEventListener('DOMContentLoaded', function() {
       const $out = $('#output_area');
       $out.empty();
 
-      $out.append($('<h3>').html('&epsilon;-NFA'));
+      $out.append($('<h3>').html('Regulärer Ausdruck &rightarrow; &epsilon;-NEA (Thompson-Konstruktion)'));
       $out.append($(data.nfa.svg).css('max-width', '100%'));
 
-      $out.append($('<h3>').text('DFA'));
+      $out.append($('<h3>').html('Potenzmengenkonstruktion (&epsilon;-NEA &rightarrow; DEA)'));
       $out.append($(data.notes_subset_html));
       $out.append($(data.dfa.implicit_sink.svg).css('max-width', '100%'));
 
-      $out.append($('<h3>').text('DFA (minimized)'));
+      $out.append($('<h3>').html('DEA &rightarrow; minimierter DEA (Tabellenverfahren)'));
       $out.append($(data.notes_minimization_html));
       $out.append($(data.min_dfa.implicit_sink.svg).css('max-width', '100%'));
 
-      $out.append($('<h3>').text('Regular Grammar'));
-      $out.append($('<pre>').text(data.grammar));
+      $out.append($('<h3>').text('Reguläre Grammatik'));
+      $out.append($('<div>').html(data.grammar));
 
-      $out.append($('<h3>').html("<i class='bi bi-check text-success mr-2'></i>&nbsp;Samples (positive)"));
+      $out.append($('<h3>').text('Reguläre Grammatik (vereinfacht)'));
+      $out.append($('<div>').html(data.grammar_compact));
+
+      $out.append($('<h3>').html("<i class='bi bi-check text-success mr-2'></i>&nbsp;Wörter, die zur Sprache gehören"));
       $out.append($(data.samples_positive.map(x => `<code>${x}</code>&nbsp;`).join(' ')));
 
-      $out.append($('<h3>').html("<i class='bi bi-x text-danger mr-2'></i>&nbsp;Samples (negative)"));
+      $out.append($('<h3>').html("<i class='bi bi-x text-danger mr-2'></i>&nbsp;Wörter, die <em>nicht</em> zur Sprache gehören"));
       $out.append($(data.samples_negative.map(x => `<code>${x}</code>&nbsp;`).join(' ')));
     }, function onError(err) {
       const $out = $('#output_area');

@@ -2589,10 +2589,10 @@ class Main < Sinatra::Base
 
         # DOT
         nfa_dot           = DotRender.nfa(nfa)
-        dfa_dot_explicit  = DotRender.dfa(dfa, title: 'DFA',                 sink_explicit: true)
-        dfa_dot_implicit  = DotRender.dfa(dfa, title: 'DFA_ImplicitSink',    sink_explicit: false)
-        min_dot_explicit  = DotRender.dfa(min, title: 'MinDFA',              sink_explicit: true)
-        min_dot_implicit  = DotRender.dfa(min, title: 'MinDFA_ImplicitSink', sink_explicit: false)
+        dfa_dot_explicit  = DotRender.dfa(dfa, title: 'DFA',                 sink_explicit: true,  q: 'r')
+        dfa_dot_implicit  = DotRender.dfa(dfa, title: 'DFA_ImplicitSink',    sink_explicit: false, q: 'r')
+        min_dot_explicit  = DotRender.dfa(min, title: 'MinDFA',              sink_explicit: true,  q: 's')
+        min_dot_implicit  = DotRender.dfa(min, title: 'MinDFA_ImplicitSink', sink_explicit: false, q: 's')
 
         # SVG
         nfa_svg           = svg_from_dot(nfa_dot)
@@ -2603,7 +2603,11 @@ class Main < Sinatra::Base
 
         # Grammar (build structure + pretty text)
         gram_struct = RegularGrammar.build(min)
-        grammar     = RegularGrammar.to_text(gram_struct, hide_nonproductive: true)
+        # Classic (step-by-step) grammar text (hides nonproductive targets)
+        grammar     = RegularGrammar.to_html(gram_struct, hide_nonproductive: true)
+        # Simplified / compact grammar (merging linear chains, e.g., S → ab)
+        gram_simpl   = RegularGrammar.simplify(gram_struct)
+        grammar_compact = RegularGrammar.to_html_compact(gram_simpl)
 
         # Random samples (positives from grammar, negatives from DFA)
         samples_mixed = GrammarSampler.sample_mixed(
@@ -2637,6 +2641,7 @@ class Main < Sinatra::Base
             },
 
             grammar: grammar,
+            grammar_compact: grammar_compact,
             samples_positive: samples_mixed[:positives],
             samples_negative: samples_mixed[:negatives],
 

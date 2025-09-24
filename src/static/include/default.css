@@ -18,9 +18,14 @@ body {
   }
 }
 
+.sc {
+  font-variant: small-caps;
+}
+
 h1,
 h2,
-h3 {
+h3,
+h4 {
     font-family: 'IBM Plex Sans', sans-serif;
     font-weight: 400;
     margin: 1em 0 0.5em 0;
