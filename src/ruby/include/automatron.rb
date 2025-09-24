@@ -720,6 +720,144 @@ module DotRender
   end
 end
 
+# ------------------- Grammar-based random word sampler (extended) -------------------
+module GrammarSampler
+  module_function
+
+  # Existing positive sampler (kept as-is)
+  def sample(g, count: 20, max_steps: 30, eps_bias: 1.0, seed: nil)
+    rng = seed ? Random.new(seed) : Random
+    prods = g[:productions]
+    start = g[:start]
+    productive = RegularGrammar.productive_nonterminals(g)
+
+    words = []
+    attempts = 0
+    max_attempts = count * 50
+
+    while words.size < count && attempts < max_attempts
+      attempts += 1
+      output = +''
+      nt = start
+      steps = 0
+      success = false
+
+      while nt && steps < max_steps
+        choices = prods[nt]
+        break if choices.nil? || choices.empty?
+
+        usable = choices.select { |rhs| rhs == 'ε' || productive.include?(rhs[1..]) }
+        if usable.empty?
+          if choices.include?('ε')
+            usable = ['ε']
+          else
+            nt = :dead
+            break
+          end
+        end
+
+        total = 0.0
+        weighted = usable.map do |rhs|
+          w = 1.0
+          w += eps_bias if rhs == 'ε'
+          total += w
+          [rhs, w]
+        end
+
+        r = rng.rand * total
+        pick = nil
+        acc = 0.0
+        weighted.each do |rhs, w|
+          acc += w
+          if r <= acc
+            pick = rhs
+            break
+          end
+        end
+        pick ||= weighted.last[0]
+
+        if pick == 'ε'
+          nt = nil
+          success = true
+          break
+        else
+          output << pick[0]
+          nt = pick[1..]
+        end
+
+        steps += 1
+      end
+
+      words << output if success
+    end
+
+    words.sort.uniq.sort do |a, b|
+      (a.size == b.size) ?
+      (a <=> b) :
+      (a.size <=> b.size)
+    end
+  end
+
+  # --- NEW: negatives via DFA random strings that do NOT belong to the language ---
+  def sample_negatives_via_dfa(dfa, count: 20, max_len: 20, stop_prob: 0.25, seed: nil)
+    rng = seed ? Random.new(seed) : Random
+    alphabet = dfa.alphabet.to_a.sort
+
+    negatives = []
+    attempts = 0
+    max_attempts = count * 200 # allow retries to find enough negatives
+
+    while negatives.size < count && attempts < max_attempts
+      attempts += 1
+      # random-length string via geometric stop
+      s = +''
+      len = 0
+      while len < max_len
+        # stop with probability if we already have at least length 1
+        break if len > 0 && rng.rand < stop_prob
+        s << alphabet[rng.rand(alphabet.length)]
+        len += 1
+      end
+      s.freeze
+
+      next if s.empty? # avoid empty unless you want it
+      next if dfa_accepts?(dfa, s) # we want only rejected strings
+      negatives << s
+    end
+
+    negatives.sort.uniq.sort do |a, b|
+      (a.size == b.size) ?
+      (a <=> b) :
+      (a.size <=> b.size)
+    end
+  end
+
+  # --- NEW: convenience mixer ---
+  def sample_mixed(dfa, grammar, pos: 20, neg: 20,
+                    max_steps: 30, eps_bias: 1.0,
+                    max_len: 20, stop_prob: 0.25, seed: nil)
+    {
+      positives: sample(grammar, count: pos, max_steps: max_steps, eps_bias: eps_bias, seed: seed),
+      negatives: sample_negatives_via_dfa(dfa, count: neg, max_len: max_len, stop_prob: stop_prob, seed: seed)
+    }
+  end
+
+  # --- Helper: simulate DFA acceptance ---
+  def dfa_accepts?(dfa, str)
+    state = dfa.start
+    str.each_char do |ch|
+      # if symbol not in alphabet, treat as immediate reject
+      return false unless dfa.alphabet.include?(ch)
+      state = dfa.transitions[state][ch]
+      # if transition missing (shouldn't happen in completed DFA), reject
+      return false if state.nil?
+    end
+    dfa.accepts.include?(state)
+  end
+end
+
+
+
 # ------------------- HTML Notes -------------------
 module HtmlNotes
   module_function
@@ -846,44 +984,105 @@ end
   end
 end
 
-# ------------------- Regular Grammar from DFA -------------------
+# ------------------- Regular Grammar from DFA (productive-aware) -------------------
 class RegularGrammar
-  # Right-linear grammar from DFA: For each state A and transition on a to B, add A → aB. For accepting states, add A → ε.
-  def self.from_dfa(dfa)
-    # Name nonterminals: S for start, then A, B, C...
-    names = {}
-    ordered = [dfa.start] + (dfa.states.to_a - [dfa.start]).sort
+  # Build a right-linear grammar structure from a DFA.
+  # Returns:
+  # {
+  #   nonterminals: Set<String>,
+  #   terminals:    Set<String>,
+  #   start:        "S",
+  #   productions:  { "S" => ["aA", "ε", ...], "A" => ["bB", ...], ... },
+  #   state_names:  { dfa_state_id => "S"/"A"/... }   # for reference
+  # }
+  def self.build(dfa)
     idx_to_name = {}
     letters = ('A'..'Z').to_a
     letters.delete('S')
+    ordered = [dfa.start] + (dfa.states.to_a - [dfa.start]).sort
     idx_to_name[dfa.start] = 'S'
     pool = letters.cycle
-    (ordered - [dfa.start]).each do |s|
-      idx_to_name[s] = pool.next
-    end
+    (ordered - [dfa.start]).each { |s| idx_to_name[s] = pool.next }
 
-    productions = Hash.new { |h, k| h[k] = [] }
+    nonterms = Set.new(idx_to_name.values)
+    terms    = Set.new(dfa.alphabet.to_a)
+    prods    = Hash.new { |h, k| h[k] = [] }
 
     dfa.states.each do |s|
       lhs = idx_to_name[s]
       dfa.alphabet.each do |a|
         t = dfa.transitions[s][a]
-        productions[lhs] << "#{a}#{idx_to_name[t]}"
+        prods[lhs] << "#{a}#{idx_to_name[t]}"
       end
-      productions[lhs] << 'ε' if dfa.accepts.include?(s)
+      prods[lhs] << 'ε' if dfa.accepts.include?(s)
     end
 
-    # Serialize
+    { nonterminals: nonterms, terminals: terms, start: 'S', productions: prods, state_names: idx_to_name }
+  end
+
+  # Compute productive nonterminals (those that can derive ε).
+  # For right-linear grammars built from DFAs, this coincides with DFA states that can reach an accept.
+  def self.productive_nonterminals(g)
+    prods = g[:productions]
+    rev = Hash.new { |h, k| h[k] = Set.new }  # reverse edges: B <- A if A -> aB
+
+    prods.each do |a, rhslist|
+      rhslist.each do |rhs|
+        next if rhs == 'ε'
+        b = rhs[1..]
+        rev[b] << a
+      end
+    end
+
+    productive = Set.new
+    queue = []
+
+    # Any A with ε in its productions is productive
+    prods.each do |a, rhslist|
+      if rhslist.include?('ε')
+        productive << a
+        queue << a
+      end
+    end
+
+    # Backward closure: if A -> aB and B productive then A productive
+    while (x = queue.shift)
+      rev[x].each do |pred|
+        next if productive.include?(pred)
+        productive << pred
+        queue << pred
+      end
+    end
+
+    productive
+  end
+
+  # Pretty-print grammar. By default hides productions that target nonproductive NTs,
+  # avoiding confusing rules (e.g., 'a' after 'b' for a?b+) that can never terminate.
+  def self.to_text(g, hide_nonproductive: true)
+    productive = hide_nonproductive ? productive_nonterminals(g) : nil
     lines = []
-    lines << "Nonterminals: #{idx_to_name.values.uniq.join(', ')}"
-    lines << "Terminals: #{dfa.alphabet.to_a.join(', ')}"
-    lines << "Start: S"
+    lines << "Nonterminals: #{g[:nonterminals].to_a.join(', ')}"
+    lines << "Terminals: #{g[:terminals].to_a.join(', ')}"
+    lines << "Start: #{g[:start]}"
     lines << "Productions:"
-    productions.keys.sort.each do |lhs|
-      rhs = productions[lhs].uniq
+
+    g[:productions].keys.sort.each do |lhs|
+      rhs_all = g[:productions][lhs].uniq
+      rhs = if productive
+        rhs_all.select { |r| r == 'ε' || productive.include?(r[1..]) }
+      else
+        rhs_all
+      end
+      next if rhs.empty?
       lines << "  #{lhs} → #{rhs.join(' | ')}"
     end
     lines.join("\n")
+  end
+
+  # Back-compat helper: what you previously used
+  def self.from_dfa(dfa)
+    to_text(build(dfa), hide_nonproductive: true)
   end
 end
 

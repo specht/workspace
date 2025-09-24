@@ -2601,8 +2601,21 @@ class Main < Sinatra::Base
         min_svg           = svg_from_dot(min_dot_explicit)
         min_implicit_svg  = svg_from_dot(min_dot_implicit)
 
-        # Grammar
-        grammar = RegularGrammar.from_dfa(min)
+        # Grammar (build structure + pretty text)
+        gram_struct = RegularGrammar.build(min)
+        grammar     = RegularGrammar.to_text(gram_struct, hide_nonproductive: true)
+
+        # Random samples (positives from grammar, negatives from DFA)
+        samples_mixed = GrammarSampler.sample_mixed(
+            min, gram_struct,
+            pos: 30,      # how many positives
+            neg: 30,      # how many negatives
+            max_steps: 30,
+            eps_bias: 1.0,
+            max_len: 20,
+            stop_prob: 0.25,
+            seed: Time.now.to_i      # remove/alter for fresh sets each call
+        )
 
         # Unwrapped HTML snippets (each is a <section>…</section>)
         subset_html        = HtmlNotes.subset(subset_trace)
@@ -2624,6 +2637,8 @@ class Main < Sinatra::Base
             },
 
             grammar: grammar,
+            samples_positive: samples_mixed[:positives],
+            samples_negative: samples_mixed[:negatives],
 
             # Two separate, unwrapped sections for easy inclusion
             notes_subset_html:       subset_html,
