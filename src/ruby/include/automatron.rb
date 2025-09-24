@@ -910,17 +910,17 @@ def table_minimization(trace)
       key  = [i, j]
       cell =
         if trace[:initial_marked].include?(key)
-          '× <span class="reason">(acc/non-acc)</span>'
+          "<i class='bi bi-x text-danger'></i>"
         elsif (w = trace[:witnesses][key])
           to = w[:to]
-          "× <span class=\"reason\">via #{esc w[:symbol]} → (q_#{states[to[0]]}, q_#{states[to[1]]})</span>"
+          "<i class='bi bi-x text-danger'></i> <span class='reason'>via #{esc w[:symbol]} → (q_#{states[to[0]]}, q_#{states[to[1]]})</span>"
         else
-          '✓ <span class="reason">(equiv)</span>'
+          "<i class='bi bi-check text-success'></i>"
         end
 
       # color classes for clarity
       cls =
-        if cell.start_with?('×')
+        if cell.start_with?("<i class='bi bi-x")
           'marked'
         else
           'equiv'

@@ -106,15 +106,15 @@ document.addEventListener('DOMContentLoaded', function() {
       $out.empty();
 
       $out.append($('<h3>').html('&epsilon;-NFA'));
-      $out.append($(data.nfa.svg));
+      $out.append($(data.nfa.svg).css('max-width', '100%'));
 
       $out.append($('<h3>').text('DFA'));
       $out.append($(data.notes_subset_html));
-      $out.append($(data.dfa.implicit_sink.svg));
+      $out.append($(data.dfa.implicit_sink.svg).css('max-width', '100%'));
 
       $out.append($('<h3>').text('DFA (minimized)'));
       $out.append($(data.notes_minimization_html));
-      $out.append($(data.min_dfa.implicit_sink.svg));
+      $out.append($(data.min_dfa.implicit_sink.svg).css('max-width', '100%'));
 
       $out.append($('<h3>').text('Regular Grammar'));
       $out.append($('<pre>').text(data.grammar));
