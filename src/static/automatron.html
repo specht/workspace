@@ -1,39 +1,117 @@
 <div class="container">
-    <div class="col-md-12">
-        <h2>Automatron</h2>
-        <div class="input-group mb-3">
-            <input class="form-control" type="text" id="ti_input" placeholder="Enter regex...">
-            <button class="btn btn-primary" id="btn_process">Send</button>
-        </div>
-        <div id="output_area" class="mb-3"></div>
+  <div class="col-md-12">
+    <h2>Automatron</h2>
+
+    <!-- Examples -->
+    <div class="mb-3">
+      <h5 class="mb-2">Examples</h5>
+      <div id="examples_list"></div>
     </div>
+
+    <!-- Input -->
+    <div class="input-group mb-3">
+      <input class="form-control" type="text" id="ti_input" placeholder="Enter regex...">
+      <button class="btn btn-primary" id="btn_process">Send</button>
+    </div>
+
+    <div id="output_area" class="mb-3"></div>
+  </div>
 </div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    $('#ti_input').focus();
-    $('#ti_input').on('keypress', function(e) {
-        if (e.which == 13) {
-            $('#btn_process').click();
-        }
-    });
-    $('#btn_process').on('click', function() {
-        const input = $('#ti_input').val();
-        api_call('/api/automatron', { regex: input }, function(data) {
-            console.log(data);
-            let div = $('#output_area');
-            div.empty();
-            div.append($('<h3>').html('&epsilon;-NFA'));
-            div.append($(data.nfa.svg));
-            div.append($('<h3>').text('DFA'));
-            div.append(data.notes_subset_html);
-            div.append($(data.dfa.implicit_sink.svg));
-            div.append($('<h3>').text('DFA (minimized)'));
-            div.append(data.notes_minimization_html);
-            div.append($(data.min_dfa.implicit_sink.svg));
-            div.append($('<h3>').text('Regular Grammar'));
-            div.append($('<pre>').text(data.grammar));
-        })
-    });
+  const exampleGroups = {
+    "Easy": [
+      { regex: 'a*',         desc: 'Zero or more a' },
+      { regex: 'ab',         desc: 'Concatenation' },
+      { regex: 'a|b',        desc: 'Alternation' }
+    ],
+    "Slightly richer": [
+      { regex: '(a|b)*c',    desc: 'All words ending with c' },
+      { regex: 'a(b|c)',     desc: 'a followed by b or c' },
+      { regex: 'a+',         desc: 'One or more a' }
+    ],
+    "Moderate": [
+      { regex: '(ab)*',      desc: 'Even repetitions of "ab"' },
+      { regex: 'a*b*',       desc: 'a’s then b’s' },
+      { regex: '(a|b)(a|b)', desc: 'All words of length 2 over {a,b}' },
+      { regex: '(a|b)*abb',  desc: 'All words ending in abb' }
+    ],
+    "Challenging": [
+      { regex: '(a|b)*a(a|b)(a|b)',     desc: '3rd-last is a' },
+      { regex: '(a|b)*a(a|b)*a(a|b)*',  desc: 'At least two a’s' },
+      { regex: '(ab|ba)*',              desc: 'Even length alternating pairs' },
+      { regex: '(0|1)*1(0|1)(0|1)',     desc: 'Binary: 3rd-last is 1' }
+    ],
+    "Motivated": [
+      { regex: '(a|b)*a(a|b)*b(a|b)*',  desc: 'Contains substring "ab"' },
+      { regex: '(0|1)*0(0|1)*0(0|1)*',  desc: 'Binary: at least two zeros' }
+    ]
+  };
 
+  const $list = $('#examples_list');
+  Object.entries(exampleGroups).forEach(([group, items]) => {
+    $list.append(`<h6 class="mt-3">${group}</h6>`);
+    const $grp = $('<div class="list-group mb-2"></div>');
+    items.forEach(ex => {
+      const $item = $(`
+        <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          <span><code>${ex.regex}</code> — ${ex.desc}</span>
+          <span class="badge bg-secondary">Run</span>
+        </button>
+      `);
+      $item.on('click', () => {
+        $('#ti_input').val(ex.regex);
+        processRegex(ex.regex);
+        $list.find('.active').removeClass('active');
+        $item.addClass('active');
+      });
+      $grp.append($item);
+    });
+    $list.append($grp);
+  });
+
+  $('#ti_input').focus();
+  $('#ti_input').on('keypress', function(e) {
+    if (e.which == 13) $('#btn_process').click();
+  });
+  $('#btn_process').on('click', function() {
+    const input = $('#ti_input').val();
+    processRegex(input);
+  });
+
+  function processRegex(input) {
+    if (!input || !input.trim()) return;
+    const $btn = $('#btn_process');
+
+    api_call('/api/automatron', { regex: input }, function(data) {
+      const $out = $('#output_area');
+      $out.empty();
+
+      $out.append($('<h3>').html('&epsilon;-NFA'));
+      $out.append($(data.nfa.svg).css('max-width', '100%'));
+
+      $out.append($('<h3>').text('DFA'));
+      $out.append($(data.notes_subset_html));
+      $out.append($(data.dfa.implicit_sink.svg).css('max-width', '100%'));
+
+      $out.append($('<h3>').text('DFA (minimized)'));
+      $out.append($(data.notes_minimization_html));
+      $out.append($(data.min_dfa.implicit_sink.svg).css('max-width', '100%'));
+
+      $out.append($('<h3>').text('Regular Grammar'));
+      $out.append($('<pre>').text(data.grammar));
+    }, function onError(err) {
+      const $out = $('#output_area');
+      $out.empty().append(
+        $('<div class="alert alert-danger" role="alert">')
+          .text('Error: ' + (err?.message || 'Request failed'))
+      );
+    }).always?.(() => {
+      $btn.prop('disabled', false).text('Send');
+    }) || (function(){ 
+      $btn.prop('disabled', false).text('Send');
+    })();
+  }
 });
 </script>
