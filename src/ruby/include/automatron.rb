@@ -279,6 +279,74 @@ class NFA
     @alphabet = alphabet # Set of symbols (excludes :eps)
   end
 
+  # Renumber states to 0..n-1 (stable by old id order) and rewrite all transitions.
+  def compact_ids!
+    old_ids = @states.keys.sort
+    map = {}
+    old_ids.each_with_index { |old, i| map[old] = i }
+
+    new_states = {}
+
+    @states.each do |old, st|
+      nid = map[old]
+      new_trans = Hash.new { |h, k| h[k] = Set.new }
+      st.trans.each do |sym, toset|
+        toset.each { |t| new_trans[sym] << map[t] }
+      end
+      new_states[nid] = State.new(nid, new_trans)
+    end
+
+    @start  = map[@start]
+    @accept = map[@accept]
+    @states = new_states
+    self
+  end
+
+  def topo_relabel!
+    # Build adjacency ignoring ε self-loops
+    adj = {}
+    @states.each do |id, st|
+      adj[id] = st.trans.values.flat_map(&:to_a)
+    end
+
+    visited = {}
+    order = []
+
+    dfs = lambda do |u|
+      return if visited[u]
+      visited[u] = true
+      adj[u].each { |v| dfs.call(v) }
+      order << u
+    end
+
+    dfs.call(@start)
+
+    order.reverse! # so start comes first
+
+    # Map old -> new
+    map = {}
+    order.each_with_index { |old, i| map[old] = i }
+    # If some states were unreachable, give them numbers after
+    (@states.keys - order).sort.each { |old| map[old] = map.size }
+
+    # Rebuild states
+    new_states = {}
+    @states.each do |old, st|
+      nid = map[old]
+      new_trans = Hash.new { |h, k| h[k] = Set.new }
+      st.trans.each do |sym, toset|
+        toset.each { |t| new_trans[sym] << map[t] }
+      end
+      new_states[nid] = State.new(nid, new_trans)
+    end
+
+    @start  = map[@start]
+    @accept = map[@accept]
+    @states = new_states
+    self
+  end  
+
+
   # Collapse linear ε-connectors:
   # u --ε--> v  where
   #   (i)  u has no outgoing edges except that ε to v

@@ -2580,6 +2580,8 @@ class Main < Sinatra::Base
 
         # ε-NFA
         nfa = NFA.from_regex(regex)
+        nfa.compact_ids!
+        nfa.topo_relabel!
 
         # DFA (with subset trace)
         dfa, subset_trace = SubsetTrace.build_with_trace(nfa)
