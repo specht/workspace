@@ -1111,9 +1111,9 @@ module HtmlNotes
         #{closures_rows}
         </table>
 
+        <!--
         <p><strong>Start ε-closure:</strong> {#{trace[:start_closure].join(', ')}}</p>
 
-        <!--
         <h3>DFA State Map (subset → state)</h3>
         <table class='table' style='width: unset;'>
         <tr><th>DFA state</th><th>NFA subset</th></tr>
