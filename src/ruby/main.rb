@@ -2632,12 +2632,12 @@ class Main < Sinatra::Base
 
             dfa: {
                 explicit_sink: { dot: dfa_dot_explicit, svg: dfa_svg },
-                implicit_sink: { dot: dfa_dot_implicit, svg: dfa_implicit_svg }
+                implicit_sink: { dot: dfa_dot_implicit, svg: dfa_implicit_svg, has_sink: !!DotRender.detect_sink(dfa) }
             },
 
             min_dfa: {
                 explicit_sink: { dot: min_dot_explicit, svg: min_svg },
-                implicit_sink: { dot: min_dot_implicit, svg: min_implicit_svg }
+                implicit_sink: { dot: min_dot_implicit, svg: min_implicit_svg, has_sink: !!DotRender.detect_sink(min) }
             },
 
             grammar: grammar,

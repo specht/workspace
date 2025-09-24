@@ -21,40 +21,51 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    const exampleGroups = {
+const exampleGroups = {
   "Einfach": [
     { regex: 'a|b',               desc: 'Vereinigung' },
     { regex: 'ab',                desc: 'Verkettung' },
     { regex: 'a*',                desc: "K<span style='font-size: 80%;'>LEEN</span>sche Hülle" },
-    { regex: 'a+',                desc: 'Positive Hülle' },
+    { regex: 'a+',                desc: 'Positive Hülle (mindestens ein a)' },
   ],
+
   "Etwas schwerer": [
     { regex: '(a|b)*c',           desc: 'alle Wörter, die auf c enden' },
     { regex: 'a(b|c)',            desc: 'a gefolgt von b oder c' },
-    { regex: '(a|b)(a|b)',        desc: 'Alle Wörter über {a,b} mit der Länge 2' },
+    { regex: '(a|b)+',            desc: 'alle nichtleeren Wörter über {a,b}' },            // uses +
     { regex: '(a|b)*(ab|ba)',     desc: 'endet auf ab oder ba' }
   ],
+
   "Mittel": [
-    { regex: '(ab)*',             desc: 'Wiederholungen von "ab"' },
-    { regex: 'a*b*',              desc: 'a’s gefolgt von b’s' },
-    { regex: 'a*b*a*',            desc: 'höchstens ein Blocks von b’s in der Mitte' },
+    { regex: '(ab)+',             desc: 'mindestens einmal "ab" hintereinander' },         // uses +
+    { regex: 'a+b+',              desc: 'mindestens ein a, danach mindestens ein b' },     // uses +
+    { regex: 'a*b*a*',            desc: 'höchstens ein Block von b’s in der Mitte' },
     { regex: '(a|b)*aa',          desc: 'endet auf aa' },
   ],
+
   "Schwerer": [
     { regex: '(a|b)*abb',         desc: 'endet auf abb' },
     { regex: '(a|b)*aba(a|b)*',   desc: 'enthält "aba"' },
-    { regex: '(aa|bb)*',          desc: 'gerade Länge, nur Buchstabenpaare' },
+    { regex: '(aa|bb)+',          desc: 'gerade Länge aus Paaren, mindestens 2 Zeichen' }, // uses +
+    { regex: '(ab|ba)+',          desc: 'abwechselnd in Paaren, mindestens 2 Zeichen' },   // uses +
   ],
+
   "Binärzahlen": [
     { regex: '(0|1)*1(0|1)(0|1)', desc: 'drittletztes Symbol ist 1' },
     { regex: '(0|1)*01(0|1)*',    desc: 'enthält 01' },
-    { regex: '(0|1)*(00|11)(0|1)*', desc: 'enthält 00 or 11' },
+    { regex: '(0|1)*(00|11)(0|1)*', desc: 'enthält 00 oder 11' },
+    { regex: '(00|11)+',          desc: 'mindestens ein Doppel (00 oder 11)' },            // uses +
   ],
+
   "Anspruchsvoll": [
-    { regex: '(a|b)*a(a|b)*a(a|b)*',   desc: 'mindestens zwei a’s' },
-    { regex: '(a|b)*a(a|b)*a(a|b)*a(a|b)*', desc: 'mindestens drei a’s' },
+    { regex: '(a|b)*a(a|b)*a(a|b)*',             desc: 'mindestens zwei a’s' },
+    { regex: '(a|b)*a(a|b)*a(a|b)*a(a|b)*',      desc: 'mindestens drei a’s' },
+    { regex: 'b*(ab*ab*)+',                      desc: 'gerade Anzahl von a’s (≥ 2 a’s)' }, // uses +
+    { regex: 'b*(ab*ab*ab*)+',                   desc: 'Anzahl der a’s durch 3 teilbar (≥ 3 a’s)' } // uses +
   ]
 };
+
+
 
   const $list = $('#examples_list');
   Object.entries(exampleGroups).forEach(([group, items], idx) => {
@@ -104,10 +115,20 @@ document.addEventListener('DOMContentLoaded', function() {
       $out.append($('<h3>').html('Potenzmengenkonstruktion (&epsilon;-NEA &rightarrow; DEA)'));
       $out.append($(data.notes_subset_html));
       $out.append($(data.dfa.implicit_sink.svg).css('max-width', '100%'));
+      if (data.dfa.implicit_sink.has_sink) {
+        $out.append($("<div class='mt-3'>").html(
+          '<em>(nicht dargestellte Übergänge führen in einen impliziten Fehlerzustand)</em>'
+        ));
+      }
 
       $out.append($('<h3>').html('DEA &rightarrow; minimierter DEA (Tabellenverfahren)'));
       $out.append($(data.notes_minimization_html));
       $out.append($(data.min_dfa.implicit_sink.svg).css('max-width', '100%'));
+      if (data.min_dfa.implicit_sink.has_sink) {
+        $out.append($("<div class='mt-3'>").html(
+          '<em>(nicht dargestellte Übergänge führen in einen impliziten Fehlerzustand)</em>'
+        ));
+      }
 
       $out.append($('<h3>').text('Reguläre Grammatik'));
       $out.append($('<div>').html(data.grammar));

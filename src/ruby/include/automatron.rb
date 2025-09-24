@@ -279,7 +279,90 @@ class NFA
     @alphabet = alphabet # Set of symbols (excludes :eps)
   end
 
-  def self.from_regex(regex)
+  # Collapse linear ε-connectors:
+  # u --ε--> v  where
+  #   (i)  u has no outgoing edges except that ε to v
+  #   (ii) v has no incoming edges except that same ε from u
+  # We merge v into u and repeat to fixpoint.
+  def collapse_simple_eps!
+    loop do
+      # Build incoming maps (both total and ε-only)
+      eps_in  = Hash.new { |h, k| h[k] = Set.new }
+      in_any  = Hash.new { |h, k| h[k] = Set.new }
+
+      @states.each do |from, st|
+        st.trans.each do |sym, toset|
+          toset.each do |to|
+            in_any[to] << from
+            eps_in[to]  << from if sym == :eps
+          end
+        end
+      end
+
+      changed = false
+
+      @states.each do |u, su|
+        eps_out = (su.trans[:eps] || Set.new).dup
+        next unless eps_out.size == 1
+        v = eps_out.first
+
+        # condition (i): u has exactly that one ε and no other outs
+        only_that_eps =
+          su.trans.all? do |sym, toset|
+            if sym == :eps
+              toset.size == 1 && toset.include?(v)
+            else
+              toset.empty?
+            end
+          end
+        next unless only_that_eps
+
+        # condition (ii): v has no incoming edges except u via ε
+        next unless in_any[v].size == 1 && in_any[v].include?(u)
+        next unless eps_in[v].size == 1 && eps_in[v].include?(u)
+
+        # Merge v into u:
+        sv = @states[v]
+
+        # 1) remove u -> v ε
+        su.trans[:eps].delete(v)
+
+        # 2) move all v's outgoing edges to u
+        sv.trans.each do |sym, toset|
+          next if sym == :eps && toset.include?(u) # avoid immediate u-ε->u self-loop
+          toset.each { |w| su.trans[sym] << w }
+        end
+
+        # 3) redirect all edges that pointed to v, to point to u (should only be u via ε,
+        #     but this keeps us safe if something slipped through)
+        @states.each do |p, sp|
+          sp.trans.each do |sym, toset|
+            if toset.delete?(v)
+              sp.trans[sym] << u
+            end
+          end
+        end
+
+        # 4) adjust start/accept if needed
+        if @start == v
+          @start = u
+        end
+        if @accept == v
+          @accept = u
+        end
+
+        # 5) delete v
+        @states.delete(v)
+
+        changed = true
+        break
+      end
+
+      break unless changed
+    end
+  end  
+
+  def self.from_regex(regex, collapse_simple_eps: true)
     parser = RegexParser.new(regex)
     rpn = parser.to_postfix
     idgen = ID.new
@@ -360,7 +443,10 @@ class NFA
 
     raise 'Invalid regex expression' unless stack.size == 1
     s, e, st = stack.pop
-    new(s, e, st, alphabet)
+    nfa = new(s, e, st, alphabet)
+
+    nfa.collapse_simple_eps! if collapse_simple_eps
+    nfa
   end
 
   def self.merge_states(a, b)
@@ -730,16 +816,15 @@ module DotRender
       end
     end
 
-    if !sink_explicit && sink
-      lines << '  subgraph cluster_legend {'
-      lines << '    label=""; style=invisible;'
-      lines << '    l1 [shape=note,label="Fehlende Übergänge\nführen in einen\nimpliziten Fehlerzustand."];'
-      lines << '  }'
-    end
+    # if !sink_explicit && sink
+    #   lines << '  subgraph cluster_legend {'
+    #   lines << '    label=""; style=invisible;'
+    #   lines << '    l1 [shape=note,label="Fehlende Übergänge\nführen in einen\nimpliziten Fehlerzustand."];'
+    #   lines << '  }'
+    # end
 
     lines << '}'
-    lines.join("
-")
+    lines.join("\n")
   end
 end
 
@@ -925,14 +1010,15 @@ module HtmlNotes
         dfa_tag = subset_to_dfa[k] ? "r<sub>#{subset_to_dfa[k]}</sub>" : ''
 
         cells = alpha.map do |sym|
-        r = by_from[k][sym]
-        if r.nil?
-            '<td>—</td>'
-        elsif r[:closure].empty?
-            '<td>∅</td>'
-        else
-            "<td>#{fmt_set.call(r[:closure])}</td>"
-        end
+            r = by_from[k][sym]
+            if r.nil?
+                '<td>—</td>'
+            elsif r[:closure].empty?
+                '<td>∅</td>'
+            else
+                #"<td>#{fmt_set.call(r[:closure])}</td>"
+                "<td>r<sub>#{subset_to_dfa[r[:closure].join(',')]}</sub></td>"
+            end
         end.join
 
         "<tr><td>#{dfa_tag}</td><td>{#{k.split(',').map { |x| 'q<sub>' + x + '</sub>'}.join('; ')}}</td>#{cells}</tr>"
@@ -951,6 +1037,7 @@ module HtmlNotes
     <<~HTML
     <section>
         <h4>ε-Hüllen aller Zustände</h4>
+        <div style="max-width: 100%; overflow-x: auto;">
         <table class='table' style='width: unset;'>
         <tr><th>q</th><th>E(q)</th></tr>
         #{closures_rows}
@@ -967,10 +1054,13 @@ module HtmlNotes
         -->
 
         <h4>Übergänge</h4>
+        <div style="max-width: 100%; overflow-x: auto;">
         <table class='table' style='width: unset;'>
         #{head}
         #{body}
         </table>
+        </div>
+        </div>
     </section>
     HTML
   end
@@ -1010,8 +1100,7 @@ module HtmlNotes
         to_i, to_j = w[:to]
         [
           "<i class='bi bi-x text-danger'></i> "\
-          "<span class='reason'>#{CGI.escapeHTML(w[:symbol])} → "\
-          "(r<sub>#{states[to_i]}</sub>, r<sub>#{states[to_j]}</sub>)</span>",
+          "<span class='reason'>(#{CGI.escapeHTML(w[:symbol])})</span>",
           'marked'
         ]
       else
@@ -1035,7 +1124,7 @@ module HtmlNotes
       table.min-table td.diag{background:#f0f0f0;color:#999}
       table.min-table td.marked{color:#b00020}
       table.min-table td.equiv{color:#006400}
-      table.min-table .reason{color:#444;font-weight:normal;font-size:0.8em;display:block;}
+      table.min-table .reason{color:#444;font-weight:normal;}
     CSS
   
     sink = trace[:sink] rescue nil
@@ -1051,15 +1140,19 @@ module HtmlNotes
     <<~HTML
     <section>
       <style>#{css}</style>
+      <div style="max-width: 100%; overflow-x: auto;">
       <table class="min-table">
         #{head}
         #{body}
       </table>
+      </div>
       <h4>Resultierende Partitionen</h4>
+      <div style="max-width: 100%; overflow-x: auto;">
       <table class='table' style='width: unset;'>
       <tr><th>Zustand (min. DEA)</th><th>Partition</th></tr>
       #{parts}
       </table>
+      </div>
     </section>
     HTML
   end
