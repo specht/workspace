@@ -2,7 +2,7 @@
 image: rust-logo.png
 </div>
 
-# Rust <span style='font-size: 80%;'>(2015)</span>
+# Rust <span style='font-size: 80%;'>(2012)</span>
 
 <div class='floatright' style='width: 16em;'>
     <img src='hoare.webp'>
