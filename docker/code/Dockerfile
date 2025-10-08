@@ -79,6 +79,8 @@ RUN wget https://github.com/PowerShell/PowerShell/releases/download/v7.4.11/powe
 # Add environment variable for gems only once
 RUN echo "export GEM_HOME=\$HOME/.gem" >> /root/.bashrc
 
+RUN curl -qsL 'https://install.pwndbg.re' | sh -s -- -t pwndbg-gdb
+
 # Copy your custom init scripts (should be last, change this less frequently)
 COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run
 COPY svc-code-server-run /etc/s6-overlay/s6-rc.d/svc-code-server/run
