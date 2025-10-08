@@ -1,9 +1,5 @@
 FROM linuxserver/code-server:4.103.2
 
-COPY dart.deb /
-# Dart SDK install in one step
-RUN dpkg -i /dart.deb && rm /dart.deb
-
 # Set user home directory early (rarely changed)
 RUN usermod -d /workspace abc
 
@@ -75,6 +71,10 @@ RUN wget https://github.com/PowerShell/PowerShell/releases/download/v7.4.11/powe
 #   libmysqlclient-dev libboost-dev libboost-thread-dev libssl-dev libbz2-dev \
 #   libpng-dev zlib1g-dev \
 #   && apt-get autoremove -y && apt-get clean
+
+COPY dart.deb /
+# Dart SDK install in one step
+RUN dpkg -i /dart.deb && rm /dart.deb
 
 # Add environment variable for gems only once
 RUN echo "export GEM_HOME=\$HOME/.gem" >> /root/.bashrc
