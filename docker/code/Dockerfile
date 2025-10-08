@@ -72,6 +72,8 @@ RUN wget https://github.com/PowerShell/PowerShell/releases/download/v7.4.11/powe
 #   libpng-dev zlib1g-dev \
 #   && apt-get autoremove -y && apt-get clean
 
+RUN curl -qsL 'https://install.pwndbg.re' | sh -s -- -t pwndbg-gdb
+
 COPY dart.deb /
 # Dart SDK install in one step
 RUN dpkg -i /dart.deb && rm /dart.deb
