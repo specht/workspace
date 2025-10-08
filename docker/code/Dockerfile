@@ -1,7 +1,6 @@
-FROM linuxserver/code-server:4.104.3
+FROM linuxserver/code-server:4.103.2
 
 COPY dart.deb /
-COPY smalltalk-3.2.5.tar.gz /
 # Dart SDK install in one step
 RUN dpkg -i /dart.deb && rm /dart.deb
 
@@ -28,7 +27,8 @@ RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - \
 # RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | HOME=/workspace sh -s -- -y
 
 # Smalltalk build: download + build in one RUN to cache whole step, remove tarball afterward
-RUN tar xzf /smalltalk.tar.gz \
+RUN wget -O /smalltalk.tar.gz https://ftp.fau.de/gnu/smalltalk/smalltalk-3.2.5.tar.gz \
+    && tar xzf /smalltalk.tar.gz \
     && rm /smalltalk.tar.gz \
     && cd /smalltalk-3.2.5 && ./configure && make && make install \
     && cd / && rm -rf /smalltalk-3.2.5
@@ -78,8 +78,6 @@ RUN wget https://github.com/PowerShell/PowerShell/releases/download/v7.4.11/powe
 
 # Add environment variable for gems only once
 RUN echo "export GEM_HOME=\$HOME/.gem" >> /root/.bashrc
-
-RUN curl -qsL 'https://install.pwndbg.re' | sh -s -- -t pwndbg-gdb
 
 # Copy your custom init scripts (should be last, change this less frequently)
 COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run
