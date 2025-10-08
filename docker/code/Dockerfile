@@ -1,4 +1,4 @@
-FROM linuxserver/code-server:4.103.2
+FROM linuxserver/code-server:4.104.3
 
 COPY dart.deb /
 # Dart SDK install in one step
