@@ -1,6 +1,7 @@
 FROM linuxserver/code-server:4.104.3
 
 COPY dart.deb /
+COPY smalltalk-3.2.5.tar.gz /
 # Dart SDK install in one step
 RUN dpkg -i /dart.deb && rm /dart.deb
 
@@ -27,8 +28,7 @@ RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - \
 # RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | HOME=/workspace sh -s -- -y
 
 # Smalltalk build: download + build in one RUN to cache whole step, remove tarball afterward
-RUN wget -O /smalltalk.tar.gz https://ftp.gnu.org/gnu/smalltalk/smalltalk-3.2.5.tar.gz \
-    && tar xzf /smalltalk.tar.gz \
+RUN tar xzf /smalltalk.tar.gz \
     && rm /smalltalk.tar.gz \
     && cd /smalltalk-3.2.5 && ./configure && make && make install \
     && cd / && rm -rf /smalltalk-3.2.5
