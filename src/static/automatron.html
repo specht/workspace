@@ -27,42 +27,55 @@ const exampleGroups = {
     { regex: 'ab',                desc: 'Verkettung' },
     { regex: 'a*',                desc: "K<span style='font-size: 80%;'>LEEN</span>sche Hülle" },
     { regex: 'a+',                desc: 'Positive Hülle (mindestens ein a)' },
+    { regex: '.',                 desc: 'ein beliebiges Zeichen' },
+    { regex: '[ab]',              desc: 'einzelnes a oder b' },
+    { regex: '[a-c]',             desc: 'ein Zeichen von a bis c' }
   ],
 
-  "Etwas schwerer": [
+"Etwas schwerer": [
     { regex: '(a|b)*c',           desc: 'alle Wörter, die auf c enden' },
     { regex: 'a(b|c)',            desc: 'a gefolgt von b oder c' },
-    { regex: '(a|b)+',            desc: 'alle nichtleeren Wörter über {a,b}' },            // uses +
-    { regex: '(a|b)*(ab|ba)',     desc: 'endet auf ab oder ba' }
+    { regex: '(a|b)+',            desc: 'alle nichtleeren Wörter über {a,b}' },
+    { regex: '(a|b)*(ab|ba)',     desc: 'endet auf ab oder ba' },
+    { regex: '[ab]{2,4}',         desc: 'Wörter der Länge 2 bis 4 über a,b' },
+    { regex: 'a?b',               desc: 'optional ein a, gefolgt von b' }
   ],
 
-  "Mittel": [
-    { regex: '(ab)+',             desc: 'mindestens einmal "ab" hintereinander' },         // uses +
-    { regex: 'a+b+',              desc: 'mindestens ein a, danach mindestens ein b' },     // uses +
+"Mittel": [
+    { regex: '(ab)+',             desc: 'mindestens einmal "ab" hintereinander' },
+    { regex: 'a+b+',              desc: 'mindestens ein a, danach mindestens ein b' },
     { regex: 'a*b*a*',            desc: 'höchstens ein Block von b’s in der Mitte' },
     { regex: '(a|b)*aa',          desc: 'endet auf aa' },
+    { regex: '(a|b)*bb',          desc: 'endet auf bb' },
+    { regex: 'a(b|ab)*a',         desc: 'beginnt und endet mit a, dazwischen b oder ab' }
   ],
 
-  "Schwerer": [
+"Schwerer": [
     { regex: '(a|b)*abb',         desc: 'endet auf abb' },
     { regex: '(a|b)*aba(a|b)*',   desc: 'enthält "aba"' },
-    { regex: '(aa|bb)+',          desc: 'gerade Länge aus Paaren, mindestens 2 Zeichen' }, // uses +
-    { regex: '(ab|ba)+',          desc: 'abwechselnd in Paaren, mindestens 2 Zeichen' },   // uses +
+    { regex: '(aa|bb)+',          desc: 'gerade Länge aus Paaren, mindestens 2 Zeichen' },
+    { regex: '(ab|ba)+',          desc: 'abwechselnd in Paaren, mindestens 2 Zeichen' },
+    { regex: '(a|b)*bba(a|b)*',   desc: 'enthält bba' },
+    { regex: '(a|b){3,6}',        desc: 'Wörter mit Länge 3 bis 6' }
   ],
 
-  "Binärzahlen": [
+"Binärzahlen": [
     { regex: '(0|1)*1(0|1)(0|1)', desc: 'drittletztes Symbol ist 1' },
     { regex: '(0|1)*01(0|1)*',    desc: 'enthält 01' },
     { regex: '(0|1)*(00|11)(0|1)*', desc: 'enthält 00 oder 11' },
-    { regex: '(00|11)+',          desc: 'mindestens ein Doppel (00 oder 11)' },            // uses +
+    { regex: '(00|11)+',          desc: 'mindestens ein Doppel (00 oder 11)' },
+    { regex: '1*0*1',             desc: 'beginnt mit beliebig vielen 1, endet auf 1' },
+    { regex: '(10)+',              desc: 'abwechselnd 1 und 0, mindestens einmal' }
   ],
 
-  "Anspruchsvoll": [
+"Anspruchsvoll": [
     { regex: '(a|b)*a(a|b)*a(a|b)*',             desc: 'mindestens zwei a’s' },
     { regex: '(a|b)*a(a|b)*a(a|b)*a(a|b)*',      desc: 'mindestens drei a’s' },
-    { regex: 'b*(ab*ab*)+',                      desc: 'gerade Anzahl von a’s (≥ 2 a’s)' }, // uses +
-    { regex: 'b*(ab*ab*ab*)+',                   desc: 'Anzahl der a’s durch 3 teilbar (≥ 3 a’s)' } // uses +
-  ]
+    { regex: 'b*(ab*ab*)+',                      desc: 'gerade Anzahl von a’s (≥ 2 a’s)' },
+    { regex: 'b*(ab*ab*ab*)+',                   desc: 'Anzahl der a’s durch 3 teilbar (≥ 3 a’s)' },
+    { regex: '(a|b)*(aba|bab)(a|b)*',           desc: 'enthält aba oder bab' },
+    { regex: '(aa|bb|ab|ba){2,}',                desc: 'mindestens zwei beliebige Paare' }
+  ] 
 };
 
 
