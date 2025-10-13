@@ -9,7 +9,7 @@ RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - \
         wget ruby ruby-dev libmagickcore-dev zip unzip \
         python3 python3-pip python3-dev python3-venv python3-ipykernel libmysqlclient-dev libmysqlclient21 python3-mysql.connector \
         mysql-client golang-go openjdk-17-jdk-headless nodejs lua5.4 htop \
-        texlive-latex-recommended texlive-luatex texlive-latex-extra texlive-bibtex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science latexmk biber texlive-biblatex texlive-lang-german \
+        texlive-full \
         build-essential file libncurses5-dev iputils-ping cmake autoconf mc gfortran bwbasic sbcl mono-mcs mono-runtime \
         nasm gdb emacs-nox vim bsdmainutils iputils-tracepath traceroute gnucobol4 fp-compiler fp-ide \
         gawk erlang php-cli tree telnet postgresql-client pgcli bash-completion imagemagick \
@@ -18,6 +18,8 @@ RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - \
         libssl-dev libffi-dev libbz2-dev libreadline-dev libsqlite3-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev \
         mycli graphviz man-db manpages manpages-dev coreutils libgdbm-dev uuid-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN mktexlsr && luaotfload-tool -u
 
 # Install rustup to /workspace
 # RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | HOME=/workspace sh -s -- -y
