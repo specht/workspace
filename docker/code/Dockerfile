@@ -9,7 +9,6 @@ RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - \
         wget ruby ruby-dev libmagickcore-dev zip unzip \
         python3 python3-pip python3-dev python3-venv python3-ipykernel libmysqlclient-dev libmysqlclient21 python3-mysql.connector \
         mysql-client golang-go openjdk-17-jdk-headless nodejs lua5.4 htop \
-        texlive-full \
         build-essential file libncurses5-dev iputils-ping cmake autoconf mc gfortran bwbasic sbcl mono-mcs mono-runtime \
         nasm gdb emacs-nox vim bsdmainutils iputils-tracepath traceroute gnucobol4 fp-compiler fp-ide \
         gawk erlang php-cli tree telnet postgresql-client pgcli bash-completion imagemagick \
@@ -75,6 +74,74 @@ RUN wget https://github.com/PowerShell/PowerShell/releases/download/v7.4.11/powe
 #   && apt-get autoremove -y && apt-get clean
 
 RUN curl -qsL 'https://install.pwndbg.re' | sh -s -- -t pwndbg-gdb
+
+# --------------------------------------------------------------------
+# TeX Live (full, non-interactive) — system-wide for all users
+# --------------------------------------------------------------------
+# Base: your image should be Debian/Ubuntu. Ensure no distro texlive is installed.
+# If your base image already has TeX Live from APT, remove it before proceeding:
+# RUN apt-get update && apt-get purge -y 'texlive*' && apt-get autoremove -y
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG TL_YEAR=2025
+ENV TEXLIVE_DIR=/usr/local/texlive/${TL_YEAR}
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        perl \
+        wget \
+        xz-utils \
+        tar \
+        make \
+        fontconfig \
+        ghostscript \
+        unzip \
+        git \
+    ; \
+    rm -rf /var/lib/apt/lists/*
+
+# Fetch installer, provide a profile, and install non-interactively (scheme-full)
+RUN set -eux; \
+    wget -q https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz; \
+    tar xzf install-tl-unx.tar.gz; \
+    cd install-tl-*; \
+    cat > /tmp/texlive.profile <<'EOF'
+selected_scheme scheme-full
+TEXDIR /usr/local/texlive/2025
+TEXMFLOCAL /usr/local/texlive/texmf-local
+TEXMFSYSCONFIG /usr/local/texlive/2025/texmf-config
+TEXMFSYSVAR /usr/local/texlive/2025/texmf-var
+# Per-user trees (optional; created on first use by each user):
+TEXMFHOME ~/texmf
+TEXMFVAR ~/.texlive2025/texmf-var
+TEXMFCONFIG ~/.texlive2025/texmf-config
+binary_x86_64-linux 1
+instopt_adjustpath 0
+instopt_adjustrepo 1
+instopt_letter 0
+instopt_portable 0
+instopt_write18_restricted 1
+EOF
+    ./install-tl -no-interaction -profile /tmp/texlive.profile; \
+    cd /; \
+    rm -rf install-tl-* install-tl-unx.tar.gz /tmp/texlive.profile
+
+# Make TeX Live available to all users (at runtime & in subsequent layers)
+ENV PATH="${TEXLIVE_DIR}/bin/x86_64-linux:${PATH}"
+ENV MANPATH="${TEXLIVE_DIR}/texmf-dist/doc/man:${MANPATH}"
+ENV INFOPATH="${TEXLIVE_DIR}/texmf-dist/doc/info:${INFOPATH}"
+
+# Update tlmgr, refresh filename db, and rebuild LuaTeX font cache
+RUN set -eux; \
+    tlmgr option repository ctan; \
+    tlmgr update --self --all; \
+    mktexlsr; \
+    luaotfload-tool -u
+
+# Optional: prove that important fonts/packages are visible
+# RUN luaotfload-tool --find "TeX Gyre Heros" && kpsewhich biblatex.sty && biber --version
 
 COPY dart.deb /
 # Dart SDK install in one step
