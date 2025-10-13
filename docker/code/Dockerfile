@@ -18,8 +18,6 @@ RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - \
         mycli graphviz man-db manpages manpages-dev coreutils libgdbm-dev uuid-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN mktexlsr && luaotfload-tool -u
-
 # Install rustup to /workspace
 # RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | HOME=/workspace sh -s -- -y
 
