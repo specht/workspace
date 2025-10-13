@@ -9,7 +9,7 @@ RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - \
         wget ruby ruby-dev libmagickcore-dev zip unzip \
         python3 python3-pip python3-dev python3-venv python3-ipykernel libmysqlclient-dev libmysqlclient21 python3-mysql.connector \
         mysql-client golang-go openjdk-17-jdk-headless nodejs lua5.4 htop \
-        texlive-latex-recommended texlive-luatex texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science latexmk texlive-biblatex biber \
+        texlive-latex-recommended texlive-luatex texlive-latex-extra texlive-bibtex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science latexmk biber \
         build-essential file libncurses5-dev iputils-ping cmake autoconf mc gfortran bwbasic sbcl mono-mcs mono-runtime \
         nasm gdb emacs-nox vim bsdmainutils iputils-tracepath traceroute gnucobol4 fp-compiler fp-ide \
         gawk erlang php-cli tree telnet postgresql-client pgcli bash-completion imagemagick \
