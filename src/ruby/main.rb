@@ -2452,7 +2452,7 @@ class Main < Sinatra::Base
                 email_with_test_tag = "#{email}#{test_tag}"
                 container_name = fs_tag_for_email(email_with_test_tag)
                 Dir["/user/#{container_name}/workspace/*"].each do |path|
-                    if ['txt', 'dart'].include?(path.split('.').last)
+                    if ['txt', 'dart', 'asm'].include?(path.split('.').last)
                         io.puts "<div class='file'>"
                         io.puts "<div style='display: flex; background-color: #ccc; padding: 0.25em 0.25em; font-weight: bold;'>"
                         io.puts "<div>#{File.basename(path)}</div>"
