@@ -86,7 +86,7 @@ Du musst also den folgenden Eintrag hinzufügen:
 
 ```json
 server: {
-    allowedHosts: ['workspace.hackschule.de']
+    allowedHosts: ['code.workspace.hackschule.de']
 }
 ```
 
