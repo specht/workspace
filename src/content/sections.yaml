@@ -74,6 +74,7 @@
   icon: /images/parrot.png
   entries:
     - digits-experiment
+    - git
     - hades
   # - .latex
 - key: linux
@@ -83,4 +84,3 @@
     - working-with-files
     - tcpip
   # - .working-with-processes
-  # - .git
