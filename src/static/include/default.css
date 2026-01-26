@@ -483,13 +483,18 @@ p {
     text-align: justify;
 }
 
-img.full {
+img.full, svg.full {
     display: block;
     width: 100%;
     min-width: 1000px;
     border-radius: 0.5em;
     cursor: grab;
 }
+
+svg.full {
+    min-width: 800px;
+}
+
 
 img.fit-width {
     min-width: unset;
@@ -527,7 +532,7 @@ a:hover {
     overflow-x: auto;
 }
 
-.scroll-x>img {
+.scroll-x>img, .scroll-x>svg {
     width: 100%;
     overflow-x: auto;
 }
@@ -1314,4 +1319,19 @@ button .bi {
       }
     } */
   }
+}
+
+svg text[font-family="monospace"] {
+    font-family: 'IBM Plex Mono', monospace;
+    font-style: italic;
+    font-size: 79%;
+}
+
+svg text[font-family="Times,serif"] {
+    font-family: 'IBM Plex Sans';
+    font-size: 70%;
+}
+
+svg {
+    user-select: none;
 }

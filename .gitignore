@@ -10,3 +10,4 @@ temp
 src/static/include/bootstrap*/node_modules
 src/static/tic80
 src/scripts/collect-music-releases/cache
+src/content/git/git-tutorial/alice

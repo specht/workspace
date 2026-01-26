@@ -636,6 +636,20 @@ class Main < Sinatra::Base
                         io.string
                     end
                 end
+                markdown.gsub!(/_include_svg\(([^)]+)\)/) do |match|
+                    options = $1.split(',').map { |x| x.strip }
+                    StringIO.open do |io|
+                        svg = File.read(File.join(File.dirname(path), options[0]))
+                        dom = Nokogiri::XML(svg)
+                        dom.css('svg').first['class'] = (dom.css('svg').first['class'].to_s.split(' ') + ['full']).join(' ')
+                        dom.css('svg').each do |s|
+                            s.remove_attribute('width')
+                            s.remove_attribute('height')
+                        end
+                        io.puts dom.css('svg').first.to_s
+                        io.string
+                    end
+                end
             else
                 kit = entry[:path]
                 markdown = StringIO.open do |io|
@@ -697,6 +711,11 @@ class Main < Sinatra::Base
                     sha1 = convert_image(image_path)
                     img['src'] = "/cache/#{sha1}.webp"
                 end
+                if img.classes.include?('full')
+                    img.wrap("<div class='scroll-x'>")
+                end
+            end
+            root.css('svg').each do |img|
                 if img.classes.include?('full')
                     img.wrap("<div class='scroll-x'>")
                 end
@@ -1283,7 +1302,20 @@ class Main < Sinatra::Base
             f.puts "https://youtu.be/Akaa9xHaw7E"
         end
         system("touch /user/#{container_name}/workspace/.hackschule")
-        
+
+        unless File.exist?("/user/#{container_name}/workspace/.gitconfig")
+            File.open("/user/#{container_name}/workspace/.gitconfig", 'w') do |f|
+                f.puts <<~END_OF_STRING
+                    [init]
+                        defaultBranch = main
+                    [user]
+                        name = #{@@invitations[email][:name] || email.split('@').first}
+                        email = #{email}
+                    [core]
+                        editor = nano
+                END_OF_STRING
+            end
+        end
         unless File.exist?("/user/#{container_name}/workspace/.my.cnf")
             File.open("/user/#{container_name}/workspace/.my.cnf", 'w') do |f|
                 f.puts <<~END_OF_STRING

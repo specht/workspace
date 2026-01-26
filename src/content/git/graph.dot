@@ -1,0 +1,3 @@
+Wrote git-objects.dot.
+Render with, for example:
+  dot -Tsvg git-objects.dot -o git-objects.svg
