@@ -135,7 +135,7 @@ git mv hello.txt README.md
 ```
 
 <div class='hint info'>
-Normalerweise kannst du Dateien mit dem Befehl <code>mv</code> umbenennen. Da die Datei `readme.txt` jedoch unter der Versionskontrolle von Git steht, solltest du den Befehl <code>git mv</code> verwenden. Dadurch wird Git darüber informiert, dass die Datei umbenannt wurde, und die Änderung wird automatisch zur Staging Area hinzugefügt.
+Normalerweise kannst du Dateien mit dem Befehl <code>mv</code> umbenennen. Da die Datei <code>readme.txt</code> jedoch unter der Versionskontrolle von Git steht, solltest du den Befehl <code>git mv</code> verwenden. Dadurch wird Git darüber informiert, dass die Datei umbenannt wurde, und die Änderung wird automatisch zur Staging Area hinzugefügt.
 </div>
 
 Erzeuge anschließend einen neuen Commit:
@@ -156,7 +156,7 @@ Wie du siehst, sind die alten Objekte (Blob `af5626b` und Tree `ec947e3`) weiter
 
 ## Dateien ändern
 
-Öffne jetzt das Verzeichnis `/workspace/git-tutorial/alice` in VS Code, indem du <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>O</span> drückst:
+Öffne jetzt das Verzeichnis `/workspace/git-tutorial/alice` in VS Code, indem du <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>Strg</span><span class='key'>O</span> drückst:
 
 <img class='full' src='open-dir.webp'>
 
@@ -228,7 +228,7 @@ Um wieder zum `main`-Branch zurückzukehren, kannst du den Befehl `git checkout 
 
 <img class='full' src='git-checkout-main.webp'>
 
-Damit sind wir wieder im neuesten Zustand des Repositories. Der Git-Objektgraph sieht jetzt folgendermaßen aus:
+Damit sind wir wieder im neuesten Zustand des Repositories. Der Git-Objektgraph sieht jetzt wieder folgendermaßen aus:
 
 _include_svg(graph4.svg)
 
@@ -383,6 +383,10 @@ _include_svg(graph9.svg)
 
 Obwohl es nun keinen `feature`-Branch mehr gibt, sieht man immer noch Spuren davon im Graphen, da es Verzweigungen und Zusammenführungen in der Versionsgeschichte gibt. Der Vorteil des Feature-Branches war, dass wir isoliert an einer neuen Funktion arbeiten konnten, ohne den Haupt-Branch zu beeinflussen. Nachdem die Funktion fertig war, konnten wir sie problemlos in den Haupt-Branch integrieren.
 
+<div class='hint books'>
+Wenn es dir wichtig ist, dass dein <code>main</code>-Branch stabil bleibt, solltest du den <code>feature</code>-Branch nicht ungeprüft in den <code>main</code>-Branch mergen. Hole vorher alle Änderungen aus dem <code>main</code>-Branch in deinen <code>feature</code>-Branch, teste alles gründlich und führe erst dann den Merge durch.
+</div>
+
 ## Etwas Luxus im Terminal
 
 Um die Arbeit im Terminal etwas zu vereinfachen, können wir zwei Dinge tun:
@@ -390,12 +394,10 @@ Um die Arbeit im Terminal etwas zu vereinfachen, können wir zwei Dinge tun:
 1. Bash-Completion für Git aktivieren
 2. Einen Git-Prompt einrichten
 
-### Bash-Completion für Git aktivieren
-
-Um die Tab-Ergänzung für Git-Befehle zu aktivieren, lade das Bash-Completion-Skript für Git herunter und füge es in deine `.bashrc`-Datei ein:
+Um den Git-Prompt zu installieren, klone das Repository `bash-git-prompt` in dein Home-Verzeichnis:
 
 ```bash
-curl -o ~/.git-completion.bash https://raw.githubusercontent.com/git/git/master/contrib/
+git clone https://github.com/magicmonty/bash-git-prompt.git ~/.bash-git-prompt --depth=1
 ```
 
 Öffne anschließend die Datei `/workspace/.bashrc` in VS Code und füge am Ende der Datei folgende Zeilen hinzu:
@@ -421,8 +423,6 @@ source ~/.bashrc
 Jetzt hast du einen speziellen Git-Prompt, wenn du in einem Git-Repository arbeitest. Dieser Prompt zeigt dir immer den aktuellen Branch und den Status des Repositories an:
 
 <img class='full' src='git-prompt.webp'>
-
-*to be continued...*
 
 <!--
 TO DO:
