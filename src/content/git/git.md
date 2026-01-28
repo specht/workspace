@@ -424,9 +424,289 @@ Jetzt hast du einen speziellen Git-Prompt, wenn du in einem Git-Repository arbei
 
 <img class='full' src='git-prompt.webp'>
 
-<!--
-TO DO:
-Tags
-Merge Conflicts
-Remotes
--->
+## Git Remotes
+
+In einem echten Projekt arbeitest du wahrscheinlich nicht alleine, sondern im Team. Damit mehrere Personen an demselben Repository arbeiten können, verwenden wir sogenannte »Remotes«. Ein Remote ist eine Kopie deines Repositories, die an einer anderen Stelle – also normalerweise auf einem anderen Computer oder Server – gespeichert ist.
+
+In diesem Tutorial werden wir jedoch anstelle eines Servers einfach ein lokales Verzeichnis verwenden, um das Konzept der Remotes zu demonstrieren – die Handhabung ist in beiden Fällen identisch.
+
+Zuerst legen wir ein neues Verzeichnis namens `remote-repo` an, das unser Remote-Repository darstellen soll:
+
+```bash
+cd ~/git-tutorial
+mkdir remote-repo
+cd remote-repo
+```
+
+In diesem Verzeichnis initialisieren wir ein neues, leeres Git-Repository:
+
+```bash
+git init --bare
+```
+
+Im Terminal sollte jetzt Folgendes zu sehen sein:
+
+<img class='full' src='git-init-bare.webp'>
+
+<div class='hint info'>
+Ein »bare«-Repository ist ein spezieller Typ von Git-Repository, das kein Arbeitsverzeichnis enthält. Es wird hauptsächlich als zentrales Repository verwendet, auf das mehrere Entwickler zugreifen können, um ihre Änderungen zu pushen und zu pullen. In einem bare-Repository gibt es keine ausgecheckten Dateien, sondern nur die Git-Objekte und Metadaten.
+</div>
+
+Mit dem Befehl `ls -l` kannst du sehen, dass in diesem Verzeichnis die üblichen Git-Ordner und -Dateien vorhanden sind, die sonst im <code>.git</code>-Verzeichnis eines normalen Repositories zu finden sind:
+
+<img class='full' src='ls-bare.webp'>
+
+Wir wechseln jetzt zurück in das Verzeichnis von Alice, um unser Remote-Repository zu verknüpfen:
+
+```bash
+cd ~/git-tutorial/alice
+git remote add origin ../remote-repo
+```
+
+Der Befehl bewirkt nur, dass das Remote-Repository verknüpft wird, es gibt keine Ausgabe im Terminal. Ein Blick in die Datei `.git/config` zeigt jedoch, dass das Remote-Repository jetzt konfiguriert ist:
+
+<img class='full' src='remote-config.webp'>
+
+
+<div class='hint info'>
+Der Befehl <code>git remote add</code> fügt ein neues Remote-Repository hinzu. In diesem Fall nennen wir das Remote <code>origin</code>, was der Standardname für das Haupt-Remote ist (wir könnten aber auch jeden anderen Namen wählen). Der Pfad <code>../remote-repo</code> gibt den Speicherort des Remote-Repositories an. In einem echten Szenario würde hier normalerweise eine URL zu einem entfernten Server stehen, die z. B. mit <code>https://</code> oder <code>git://</code> beginnt.
+</div>
+
+Jetzt können wir unsere Änderungen an das Remote-Repository pushen. Verwende den folgenden Befehl, um den `main`-Branch zum ersten Mal zu pushen:
+
+```bash
+git push -u origin main
+```
+
+<img class='full' src='git-push-origin-main.webp'>
+
+Die Option `-u` (oder `--set-upstream`) richtet eine Tracking-Verbindung zwischen dem lokalen `main`-Branch und dem Remote-Branch `origin/main` ein. Dadurch kannst du in Zukunft einfach `git push` oder `git pull` ausführen, ohne den Remote-Namen und den Branch-Namen angeben zu müssen (ansonsten müsstest du immer `git push origin main` schreiben).
+
+## Git clone
+
+Um zu demonstrieren, wie mehrere Personen an demselben Repository arbeiten können, erstellen wir jetzt ein neues Verzeichnis für eine fiktive Person namens Bob:
+
+```bash
+cd ~/git-tutorial
+mkdir bob
+cd bob
+```
+
+Bob kann jetzt das Remote-Repository klonen, das wir zuvor erstellt haben:
+
+```bash
+git clone ../remote-repo
+```
+
+Das Repository wird in ein neues Verzeichnis namens `remote-repo` geklont. Wechsle in dieses Verzeichnis:
+
+```bash
+cd remote-repo
+```
+
+<img class='full' src='git-clone.webp'>
+
+Bob hat jetzt eine vollständige Kopie des Repositories, einschließlich der gesamten Versionsgeschichte. Öffne die Datei `README.md` mit dem Editor `nano`, um sie zu bearbeiten:
+
+```bash
+nano README.md
+```
+
+<img class='full' src='bob-was-here.webp'>
+
+Speichere die Datei mit <span class='key'>Strg</span><span class='key'>O</span> und <span class='key'>Enter</span> und schließe den Editor mit <span class='key'>Strg</span><span class='key'>X</span>. Mit `git diff` kann Bob seine Änderungen überprüfen:
+
+<img class='full' src='git-diff-bob.webp'>
+
+Wir haben nun drei Möglichkeiten, wie Bob seine Änderungen committen kann:
+
+1. `git add README.md` und `git commit -m "Bob was here"`
+2. `git commit -a -m "Bob was here"`
+3. `git commit -a` – bei dieser Variante öffnet sich ein Texteditor, in dem Bob seine Commit-Nachricht eingeben kann.
+
+<img class='full' src='bob-commit.webp'>
+
+<div class='hint info'>
+Achtung: Die Änderungen liegen immer noch komplett bei Bob lokal vor. Der Objektgraph in Bobs Repository ist gewachsen, aber das Remote-Repository hat davon noch nichts mitbekommen.
+</div>
+
+Um die Änderungen an das Remote-Repository zu senden, verwendet Bob den Befehl `git push`:
+
+<img class='full' src='bob-push.webp'>
+
+Wechsle nun wieder in das Verzeichnis von Alice:
+
+```bash
+cd ~/git-tutorial/alice
+```
+
+Mit dem Befehl `git pull` kann Alice die Änderungen von Bob in ihr lokales Repository holen und mit ihrem aktuellen Stand zusammenführen:
+
+<img class='full' src='alice-pull.webp'>
+
+Alice sieht, dass die Datei `README.md` aktualisiert wurde und jetzt auch Bobs Änderung enthält:
+
+<img class='full' src='alice-cat-readme.webp'>
+
+## Merge-Konflikte
+
+Wenn Alice und Bob gleichzeitig an derselben Datei arbeiten und ihre Änderungen nicht kompatibel sind, entsteht ein Merge-Konflikt. Um dies zu demonstrieren, ändern wir die Datei `README.md` sowohl bei Alice als auch bei Bob.
+
+Alice ändert die Datei `README.md`:
+
+```bash
+echo "HEYYYY" >> README.md
+```
+
+<div class='hint warning'>
+Vorhin haben wir <code>&gt;</code> verwendet, um eine Ausgabe in eine Datei umzuleiten. Das <code>&gt;&gt;</code> fügt die Ausgabe am Ende der Datei hinzu, anstatt den Inhalt zu überschreiben. Achte also darauf, dass du <code>&gt;&gt;</code> verwendest, um die Zeile hinzuzufügen, ohne den bestehenden Inhalt zu löschen.
+</div>
+
+Überprüfe die Änderungen mit `cat` und `git diff`:
+
+<img class='full' src='alice-conflict-edit-diff.webp'>
+
+Alice committet ihre Änderungen und pusht sie zum Remote-Repository:
+
+<img class='full' src='alice-conflict-commit-push.webp'>
+
+Wechsle jetzt in Bobs Verzeichnis:
+
+```bash
+cd ~/git-tutorial/bob/remote-repo
+```
+
+Bob ändert ebenfalls die Datei `README.md`:
+
+```bash
+echo "HOLAAA" >> README.md
+```
+
+Er überprüft seine Änderungen mit `git diff` und committet sie:
+
+<img class='full' src='bob-conflict-edit-diff-commit.webp'>
+
+Wenn Bob jetzt versucht, seine Änderungen zu pushen, erhält er eine Fehlermeldung, da Alice bereits Änderungen gepusht hat, die Bob noch nicht in seinem lokalen Repository hat:
+
+<img class='full' src='bob-conflict-push-error.webp'>
+
+Um die Änderungen von Alice zu holen und mit seinen eigenen zusammenzuführen, führt Bob den Befehl `git pull` aus:
+
+<img class='full' src='bob-conflict-pull-error.webp'>
+
+Auch hier erhält Bob eine Fehlermeldung, die besagt, dass es einen Merge-Konflikt gibt, da divergente Branches existieren, also Alice und Bob gleichzeitig an derselben Datei gearbeitet haben. Für die Konfliktbehebung gibt es verschiedene Möglichkeiten, von denen wir jetzt eine Default-Strategie für unser lokales Repository wählen sollen. Die Möglichkeiten sind:
+
+1. `git config pull.rebase false` – Standard-Merge-Strategie
+2. `git config pull.rebase true` – Rebase-Strategie
+3. `git config pull.ff only` – Nur Fast-Forward-Merges
+
+<div class='hint info'>
+Welche Strategie du wählst, hängt von deinem Workflow und deinen Präferenzen ab. Die Standard-Merge-Strategie ist einfach zu verstehen und zu verwenden, während die Rebase-Strategie eine sauberere Historie erzeugt. Die Fast-Forward-Strategie ist nützlich, wenn du eine lineare Historie bevorzugst und keine Merge-Commits erstellen möchtest.
+</div>
+
+Bob entscheidet sich für die Standard-Merge-Strategie und führt die folgenden Befehle aus:
+
+```bash
+git config pull.rebase false
+git pull
+```
+
+<img class='full' src='bob-pull-conflict.webp'>
+
+Wir sehen, dass Git den Merge-Konflikt in der Datei `README.md` markiert hat. Bob muss die Datei jetzt manuell bearbeiten, um den Konflikt zu lösen. Öffne die Datei `README.md` in einem Texteditor (`nano README.md`):
+
+<img class='full' src='bob-resolve-conflict.webp'>
+
+Hier siehst du die Konfliktmarkierungen:
+
+```c
+<<<<<<< HEAD
+HOLAAA
+=======
+HEYYYY
+>>>>>>> ef91739f955f1e0c761caaaea48c7261d5ce24ab
+```
+
+Die Markierungen `<<<<<<<`, `=======` und `>>>>>>>` zeigen die Bereiche an, in denen der Konflikt aufgetreten ist. Der obere Abschnitt enthält Bobs lokale Änderungen, während der untere Abschnitt die Änderungen des Remote-Repository (also Alices Änderungen) enthält.
+
+Bob muss sich jetzt entscheiden, wie er den Konflikt lösen möchte. Er könnte zum Beispiel beide Änderungen manuell zusammenführen:
+
+<img class='full' src='bob-bonjour.webp'>
+
+Speichere die Datei und beende den Editor. Bob muss den Konflikt nun als gelöst markieren, indem er die Datei mit `git add` zur Staging Area hinzufügt. Anschließend kann er den Merge-Commit, der durch den Pull-Vorgang erstellt wurde und zunächst aufgrund des Konflikts unvollständig war, abschließen und danach seine Änderungen pushen:
+
+<img class='full' src='bob-complete-merge-push.webp'>
+
+Alice hat von dem Merge-Konflikt nichts mitbekommen, da Bob den Konflikt lokal gelöst hat, bevor er seine Änderungen gepusht hat. Wenn Alice jetzt ihre Änderungen mit `git pull` holt, erhält sie die von Bob aktualisierte Datei `README.md`.
+
+<img class='full' src='alice-pull-after-conflict.webp'>
+
+## Tags
+
+Tags sind eine Möglichkeit, bestimmte Punkte in der Versionsgeschichte zu markieren, z.B. für Releases oder wichtige Meilensteine. Wir erstellen jetzt einen Tag namens `v1.0` für den aktuellen Commit im `main`-Branch:
+
+```bash
+git tag v1.0 -m "v1.0 release"
+```
+
+So können wir später leicht zu diesem Punkt in der Geschichte zurückkehren, wenn wir z.B. ein Release erstellen möchten. Um Tags zu pushen, verwenden wir den Befehl `git push` mit dem Tag-Namen:
+
+```bash
+git push origin v1.0
+```
+
+…oder um alle Tags auf einmal zu pushen:
+
+```bash
+git push origin --tags
+```
+
+## Git checkout
+
+Um zu einem bestimmten Branch oder Tag zurückzukehren, verwenden wir den Befehl `git checkout`. Du kannst also z. B. folgende Befehle verwenden:
+
+- `git checkout main` – wechselt zum `main`-Branch
+- `git checkout v1.0` – wechselt zum Tag `v1.0`
+- `git checkout HEAD~2` – wechselt zu dem Commit, der zwei Commits vor dem aktuellen `HEAD` liegt
+
+<div class='hint warning'>
+Beachte, dass das Auschecken eines Tags oder eines älteren Commits dazu führt,
+dass du dich in einem »detached HEAD«-Zustand befindest. In diesem Zustand kannst du keine neuen Commits zu einem Branch hinzufügen, da <code>HEAD</code> nicht auf einen Branch zeigt. Wenn du Änderungen vornehmen möchtest, solltest du stattdessen von dieser Stelle aus einen neuen Branch erstellen.
+</div>
+
+## Fehler rückgängig machen
+
+Manchmal möchtest du vielleicht Änderungen an Dateien rückgängig machen. Hierzu gibt es verschiedene Möglichkeiten:
+
+### Wenn die Änderungen noch nicht gestaged sind
+
+Um Änderungen an einer Datei rückgängig zu machen, die noch nicht zur Staging Area hinzugefügt wurden, kannst du den Befehl `git checkout -- <datei>` verwenden. Dies setzt die Datei auf den Zustand des letzten Commits zurück:
+
+```bash
+git restore README.md
+```
+
+### Wenn die Änderungen bereits gestaged sind
+
+Um Änderungen rückgängig zu machen, die bereits zur Staging Area hinzugefügt wurden, kannst du den Befehl `git reset HEAD <datei>` verwenden. Dies entfernt die Datei aus der Staging Area, behält jedoch die Änderungen im Arbeitsverzeichnis bei:
+
+```bash
+git restore --staged README.md
+```
+
+### Wenn du einen Commit rückgängig machen möchtest
+
+Um den letzten Commit rückgängig zu machen, kannst du den Befehl `git revert HEAD` verwenden. Dies erstellt einen neuen Commit, der die Änderungen des letzten Commits rückgängig macht:
+
+```bash
+git revert HEAD
+```
+
+<div class='hint warning'>
+Denke daran, dass Knoten im Git-Objektgraphen niemals gelöscht werden. Selbst wenn du einen Commit rückgängig machst, bleibt der ursprüngliche Commit weiterhin in der Versionsgeschichte erhalten – es wird nur ein neuer Commit erstellt, der die Änderungen des ursprünglichen Commits aufhebt.
+</div>
+
+## Zusammenfassung
+
+In diesem Tutorial haben wir die Grundlagen von Git kennengelernt, einschließlich der Erstellung eines Repositories, dem Hinzufügen und Committen von Dateien, dem Arbeiten mit Branches und Merges sowie dem Umgang mit Remotes. Wir haben auch gesehen, wie
+man Merge-Konflikte löst und Tags verwendet. Mit diesem Wissen bist du nun in der Lage, Git effektiv für die Versionskontrolle deiner Projekte zu nutzen. Viel Erfolg bei deinen zukünftigen Projekten!
