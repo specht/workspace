@@ -140,7 +140,7 @@ git mv hello.txt README.md
 ```
 
 <div class='hint info'>
-Normalerweise kannst du Dateien mit dem Befehl <code>mv</code> umbenennen. Da die Datei <code>readme.txt</code> jedoch unter der Versionskontrolle von Git steht, solltest du den Befehl <code>git mv</code> verwenden. Dadurch wird Git darüber informiert, dass die Datei umbenannt wurde, und die Änderung wird automatisch zur Staging Area hinzugefügt.
+Normalerweise kannst du Dateien mit dem Befehl <code>mv</code> umbenennen. Da die Datei <code>hello.txt</code> jedoch unter der Versionskontrolle von Git steht, solltest du den Befehl <code>git mv</code> verwenden. Dadurch wird Git darüber informiert, dass die Datei umbenannt wurde, und die Änderung wird automatisch zur Staging Area hinzugefügt.
 </div>
 
 Erzeuge anschließend einen neuen Commit:
@@ -188,6 +188,10 @@ Wenn du einen Commit erstellen möchtest, der alle Änderungen in deinem Arbeits
 ```bash
 git commit -a -m "updated README.md"
 ```
+
+<div class='hint books'>
+Die Option <code>-a</code> bei <code>git commit</code> ist praktisch, wenn du alle Änderungen in deinem Arbeitsverzeichnis auf einmal committen möchtest. Beachte jedoch, dass diese Option nur für bereits verfolgte Dateien gilt. Neue, untracked Dateien müssen weiterhin mit <code>git add</code> zur Staging Area hinzugefügt werden, bevor sie committet werden können.
+</div>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
 
@@ -651,8 +655,12 @@ Alice hat von dem Merge-Konflikt nichts mitbekommen, da Bob den Konflikt lokal g
 Tags sind eine Möglichkeit, bestimmte Punkte in der Versionsgeschichte zu markieren, z.B. für Releases oder wichtige Meilensteine. Wir erstellen jetzt einen Tag namens `v1.0` für den aktuellen Commit im `main`-Branch:
 
 ```bash
-git tag v1.0 -m "v1.0 release"
+git tag -a v1.0 -m "v1.0 release"
 ```
+
+<div class='hint info'>
+Der Befehl <code>git tag -a</code> erstellt einen annotierten Tag. Annotierte Tags enthalten zusätzliche Informationen wie den Tag-Namen, die Commit-ID, den Autor und eine Nachricht. Dies ist nützlich, um wichtige Punkte in der Versionsgeschichte zu markieren.
+</div>
 
 So können wir später leicht zu diesem Punkt in der Geschichte zurückkehren, wenn wir z.B. ein Release erstellen möchten. Um Tags zu pushen, verwenden wir den Befehl `git push` mit dem Tag-Namen:
 
@@ -665,6 +673,10 @@ git push origin v1.0
 ```bash
 git push origin --tags
 ```
+
+<div class='hint books'>
+Branches werden beim Push normal mit übertragen, Tags aber nicht automatisch — deshalb muss man sie extra pushen.
+</div>
 
 ## Git checkout
 
@@ -685,7 +697,7 @@ Manchmal möchtest du vielleicht Änderungen an Dateien rückgängig machen. Hie
 
 ### Wenn die Änderungen noch nicht gestaged sind
 
-Um Änderungen an einer Datei rückgängig zu machen, die noch nicht zur Staging Area hinzugefügt wurden, kannst du den Befehl `git checkout -- <datei>` verwenden. Dies setzt die Datei auf den Zustand des letzten Commits zurück:
+Wenn du Änderungen an einer Datei verwerfen möchtest, die noch nicht in der Staging Area sind, kannst du sie mit `git restore` auf den Stand des letzten Commits zurücksetzen:
 
 ```bash
 git restore README.md
@@ -693,11 +705,13 @@ git restore README.md
 
 ### Wenn die Änderungen bereits gestaged sind
 
-Um Änderungen rückgängig zu machen, die bereits zur Staging Area hinzugefügt wurden, kannst du den Befehl `git reset HEAD <datei>` verwenden. Dies entfernt die Datei aus der Staging Area, behält jedoch die Änderungen im Arbeitsverzeichnis bei:
+Wenn du eine Datei aus der Staging Area entfernen möchtest (ohne die Änderung im Arbeitsverzeichnis zu verlieren), verwende:
 
 ```bash
 git restore --staged README.md
 ```
+
+Du kannst danach immer noch `git restore README.md` verwenden, um die Änderungen im Arbeitsverzeichnis zu verwerfen, falls gewünscht.
 
 ### Wenn du einen Commit rückgängig machen möchtest
 
