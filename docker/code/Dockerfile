@@ -1,4 +1,4 @@
-FROM linuxserver/code-server:4.103.2
+FROM linuxserver/code-server:4.108.2
 
 # Set user home directory early (rarely changed)
 RUN usermod -d /workspace abc
