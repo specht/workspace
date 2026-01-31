@@ -80,8 +80,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG TL_YEAR=2025
 ENV TEXLIVE_DIR=/usr/local/texlive/${TL_YEAR}
 ENV PATH=${TEXLIVE_DIR}/bin/x86_64-linux:$PATH
-ENV MANPATH=${TEXLIVE_DIR}/texmf-dist/doc/man:$MANPATH
-ENV INFOPATH=${TEXLIVE_DIR}/texmf-dist/doc/info:$INFOPATH
+ENV MANPATH=${TEXLIVE_DIR}/texmf-dist/doc/man
+ENV INFOPATH=${TEXLIVE_DIR}/texmf-dist/doc/info
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       perl wget xz-utils tar fontconfig ghostscript ca-certificates \
