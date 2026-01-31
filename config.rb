@@ -31,6 +31,7 @@ docker_compose = {
 }
 
 FileUtils::mkpath(NGINX_PATH)
+FileUtils::mkpath(File.join(DATA_PATH, 'nginx-snippets'))
 
 if PROFILE.include?(:static)
     docker_compose[:services][:nginx] = {
@@ -41,7 +42,8 @@ if PROFILE.include?(:static)
             "#{DATA_PATH}/brand:/brand:ro",
             "#{DOWNLOAD_PATH}:/dl:ro",
             "#{LOGS_PATH}:/var/log/nginx",
-            "#{DATA_PATH}/nginx:/etc/nginx/conf.d"
+            "#{DATA_PATH}/nginx:/etc/nginx/conf.d",
+            "#{DATA_PATH}/nginx-snippets:/etc/nginx/snippets"
         ]
     }
     docker_compose[:services][:nginx][:environment] ||= []
@@ -146,6 +148,7 @@ if PROFILE.include?(:dynamic)
                      "#{DATA_PATH}/tic80:/tic80",
                      "/var/run/docker.sock:/var/run/docker.sock",
                      "#{NGINX_PATH}:/nginx",
+                     "#{DATA_PATH}/nginx-snippets:/nginx-snippets",
                      "#{DOWNLOAD_PATH}:/dl",
                     ],
         :environment => env,

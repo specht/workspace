@@ -3,11 +3,18 @@ DEVELOPMENT = true
 # IMPORTANT: This must be the path to the data directory on the host machine
 PATH_TO_HOST_DATA = nil
 
-WEBSITE_HOST = "code.hackschule.de"
-WEB_ROOT = DEVELOPMENT ? 'http://localhost:8025' : "https://#{WEBSITE_HOST}"
+WEBSITE_HOST = DEVELOPMENT ? "localhost:8025" : "code.hackschule.de"
+WEB_ROOT = DEVELOPMENT ? "http://#{WEBSITE_HOST}" : "https://#{WEBSITE_HOST}"
 PHPMYADMIN_WEB_ROOT = "#{WEB_ROOT}/phpmyadmin/"
 PGADMIN_WEB_ROOT = "#{WEB_ROOT}/pgadmin/"
 NEO4J_WEB_ROOT = "#{WEB_ROOT}/neo4j/browser/"
+
+# WORKSPACE_URL_MODE must be one of the following:
+# :subpath - workspaces are hosted under WEB_ROOT/12345678/
+# :subdomain - workspaces are hosted under 12345678.WEBSITE_HOST
+# :subdomain_with_port - like :subdomain but /proxy/<port> redirects to
+#                        5500.12345678.WEBSITE_HOST
+WORKSPACE_URL_MODE = :subpath
 
 LOGIN_CODE_SALT = 'bitte_ein_salt_eintragen'
 

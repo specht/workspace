@@ -27,11 +27,11 @@ CACHE_BUSTER = SecureRandom.alphanumeric(12)
 
 MODULE_ORDER = [:workspace, :phpmyadmin, :pgadmin, :neo4j, :tic80]
 MODULE_LABELS = {
-    :workspace => 'Workspace',
+    :workspace  => 'Workspace',
     :phpmyadmin => 'phpMyAdmin',
-    :pgadmin => 'pgAdmin',
-    :neo4j => 'Neo4j',
-    :tic80 => 'TIC-80',
+    :pgadmin    => 'pgAdmin',
+    :neo4j      => 'Neo4j',
+    :tic80      => 'TIC-80',
 }
 
 class Neo4jGlobal
@@ -185,6 +185,30 @@ class Main < Sinatra::Base
         Main.server_sid_for_email(email)
     end
 
+    def workspace_url()
+        if user_logged_in?
+            server_tag = @session_user[:server_tag]
+            user_with_test = neo4j_query_expect_one(<<~END_OF_QUERY, {:email => @session_user[:email]})
+                MATCH (u:User {email: $email})
+                OPTIONAL MATCH (u)-[:TAKES]->(t:Test {running: TRUE})
+                RETURN u, t;
+            END_OF_QUERY
+            server_tag = "#{server_tag}#{(user_with_test['t'] || {})[:tag]}"
+            case WORKSPACE_URL_MODE
+            when :subpath
+                "#{WEB_ROOT}/w/#{server_tag}/"
+            when :subdomain
+                "http://#{server_tag}.#{WEBSITE_HOST}/"
+            when :subdomain_with_port
+                "http://#{server_tag}.#{WEBSITE_HOST}"
+            else
+                raise "Invalid WORKSPACE_URL_MODE: #{WORKSPACE_URL_MODE.inspect}"
+            end
+        else
+            ''
+        end
+    end
+
     def self.refresh_nginx_config
         STDERR.puts ">>> Refreshing nginx config..."
         running_servers = {}
@@ -196,9 +220,11 @@ class Main < Sinatra::Base
             ip = container['IPv4Address'].split('/').first
             running_servers[fs_tag] = {
                 :ip => ip,
+                :server_sid => nil,
+                :server_tag => nil,
+                :watch_tags => Set.new(),
             }
         end
-        STDERR.puts ">>> Got running servers: #{running_servers.to_json}"
 
         # $neo4j.neo4j_query(<<~END_OF_QUERY, {:ts => Time.now.to_i})
         #     MATCH (u:User)
@@ -228,8 +254,6 @@ class Main < Sinatra::Base
 
         STDERR.puts ">>> Creating nginx config..."
 
-        sid_ip_pairs = []
-
         users.each do |row|
             user = row['u']
             test = row['t']
@@ -237,13 +261,15 @@ class Main < Sinatra::Base
             server_tag = "#{user[:server_tag]}#{(test || {})[:tag]}"
             fs_tag = fs_tag_for_email(email_with_test_tag)
             if running_servers.include?(fs_tag)
-                sid_ip_pairs << "#{user[:server_sid]} #{running_servers[fs_tag][:ip]}:8443;"
+                # sid_ip_pairs << "#{user[:server_sid]} #{running_servers[fs_tag][:ip]}:8443;"
+                running_servers[fs_tag][:server_sid] = user[:server_sid]
+                running_servers[fs_tag][:server_tag] = server_tag
             end
         end
-        STDERR.puts "sid_ip_pairs:"
-        STDERR.puts sid_ip_pairs.join("\n")
+        # STDERR.puts "sid_ip_pairs:"
+        # STDERR.puts sid_ip_pairs.join("\n")
 
-        watch_tag_ip_pairs = []
+        # watch_tag_ip_pairs = []
 
         $neo4j.neo4j_query(<<~END_OF_QUERY).each do |row|
             MATCH (:User)-[r:WATCHING]->(u:User)
@@ -253,14 +279,17 @@ class Main < Sinatra::Base
             user = row['u']
             fs_tag = fs_tag_for_email(user[:email])
             if running_servers.include?(fs_tag)
-                watch_tag_ip_pairs << "#{watch_tag} #{running_servers[fs_tag][:ip]}:8443;"
+                # watch_tag_ip_pairs << "#{watch_tag} #{running_servers[fs_tag][:ip]}:8443;"
+                running_servers[fs_tag][:watch_tags] << watch_tag
             end
         end
 
-        STDERR.puts "watch_tag_ip_pairs:"
-        STDERR.puts watch_tag_ip_pairs.join("\n")
+        STDERR.puts ">>> Got running servers: #{running_servers.to_yaml}"
 
-        nginx_config_first_part = <<~END_OF_STRING
+        # STDERR.puts "watch_tag_ip_pairs:"
+        # STDERR.puts watch_tag_ip_pairs.join("\n")
+
+        nginx_config = <<~END_OF_STRING
             log_format custom '$http_x_forwarded_for - $remote_user [$time_local] "$request" '
                             '$status $body_bytes_sent "$http_referer" '
                             '"$http_user_agent" "$request_time"';
@@ -280,66 +309,49 @@ class Main < Sinatra::Base
                 application/font-woff2          max;
             }
 
-            # Map session cookie -> target upstream (regenerate when sessions change)
-            # You can generate this map block when a workspace starts/stops.
-            map $cookie_hs_server_sid $workspace_upstream {
+            # ---------------------------
+            # Workspace token extraction
+            # ---------------------------
+
+            # Extract token from /w/<token>/...
+            map $uri $w_token {
                 default "";
-                #{sid_ip_pairs.join("\n")}
+                ~^/w/(?<t>[a-z0-9]+)(?:/|$) $t;
             }
-            map $cookie_hs_watch_tag $workspace_upstream_watch {
+
+            # Extract token from <token>.#{WEBSITE_HOST.split(':').first}
+            map $host $host_token {
                 default "";
-                #{watch_tag_ip_pairs.join("\n")}
+                ~^(?<t>[a-z0-9]+)\\.#{WEBSITE_HOST.split(':').first.gsub('.', '\\.')} $t;
             }
 
-            # Proper Upgrade header for WebSockets
-            map $http_upgrade $connection_upgrade {
-                default upgrade;
-                ''      close;
+            # Effective token: prefer subdomain token, else /w/ token
+            map "$host_token:$w_token" $hs_token {
+                default $w_token;
+                ~^(?<t>[^:]+): $t;
             }
 
-            # map $cookie_hs_server_sid $pgadmin_user {
-            #    default "";
-            #    #{emails_and_server_tags.map { |x| "\"#{x[1]}\" \"#{x[0]}\";" }.join("\n")}
-            # }
+            # Token -> upstream
+            map $hs_token $hs_upstream {
+                default "";
+                #{running_servers.map { |fs_tag, info| if info[:server_tag] then "#{info[:server_tag]} http://#{info[:ip]}:8443;" else nil end}.compact.join("\n    ")}
+            }
 
-            # code.workspace.hackschule.de – route by session cookie
-            server {
-                listen 80;
-                server_name code.#{WEBSITE_HOST};
+            # Token -> required SID
+            map $hs_token $hs_required_sid {
+                default "";
+                #{running_servers.map { |fs_tag, info| if info[:server_sid] then "#{info[:server_tag]} #{info[:server_sid]};" else nil end}.compact.join("\n    ")}
+            }
 
-                # gzip/expires/etc as you like…
-
-                location / {
-                    if ($workspace_upstream = "") { return 403; }
-
-                    proxy_set_header Host $http_host;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection upgrade;
-                    proxy_set_header Accept-Encoding gzip;
-                    proxy_pass http://$workspace_upstream;
-                }
+            # Allowed if cookie SID matches required SID
+            map "$cookie_hs_server_sid:$hs_required_sid" $hs_allowed {
+                default 0;
+                ~^(.+):\\1$ 1;
             }
 
             server {
                 listen 80;
-                server_name watch.#{WEBSITE_HOST};
-
-                # gzip/expires/etc as you like…
-
-                location / {
-                    if ($workspace_upstream_watch = "") { return 403; }
-
-                    proxy_set_header Host $http_host;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection upgrade;
-                    proxy_set_header Accept-Encoding gzip;
-                    proxy_pass http://$workspace_upstream_watch;
-                }
-            }
-
-            server {
-                listen 80;
-                server_name #{WEBSITE_HOST};
+                server_name #{WEBSITE_HOST.split(':').first};
                 client_max_body_size 100M;
                 expires $expires;
 
@@ -362,153 +374,131 @@ class Main < Sinatra::Base
                     image/svg+xml;
 
                 access_log /var/log/nginx/access.log custom;
-
                 charset utf-8;
+
+                location = /cache { return 301 /cache/; }
+                location ^~ /cache/ { alias /webcache/; }
+
+                location = /brand { return 301 /brand/; }
+                location ^~ /brand/ { alias /brand/; }
+
+                location = /dl { return 301 /dl/; }
+                location ^~ /dl/ { alias /dl/; }
 
                 location / {
                     root /usr/share/nginx/html;
-                    include /etc/nginx/mime.types;
-
-                    #{users.map { |row| user = row['u']; server_tag = user[:server_tag]; fs_tag = fs_tag_for_email(user[:email]); running_servers.include?(fs_tag) ? "if ($http_referer ~* \"/#{server_tag}/proxy/([0-9]{4})/\") { set $port $1; set $new_url_#{server_tag} \"/#{server_tag}/proxy/$port$request_uri\"; } if ($new_url_#{server_tag}) { return 301 $new_url_#{server_tag}; }\n\n" : ''}.join("")}
-
                     try_files $uri @ruby;
                 }
 
-                location /cache {
-                    rewrite ^/cache(.*)$ $1 break;
-                    root /webcache;
-                    include /etc/nginx/mime.types;
-                }
-
-                location /brand {
-                    rewrite ^/brand(.*)$ $1 break;
-                    root /brand;
-                    include /etc/nginx/mime.types;
-                }
-
-                location /dl {
-                    rewrite ^/dl(.*)$ $1 break;
-                    root /dl;
-                    include /etc/nginx/mime.types;
-                }
-
-                location /phpmyadmin {
-                    rewrite ^/phpmyadmin(.*)$ $1 break;
-                    try_files $uri @phpmyadmin;
-                }
-
-                location /pgadmin {
-                    # proxy_set_header Remote-User $pgadmin_user;
-                    proxy_set_header X-Real-IP $remote_addr;
-                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                    proxy_set_header X-Forwarded-Proto $scheme;
-                    proxy_pass http://pgadmin_1:80;
-                    proxy_set_header Host $host;
-                    proxy_http_version 1.1;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection Upgrade;
-                }
-
-                location /neo4j {
-                    rewrite ^/neo4j(.*)$ $1 break;
-                    try_files $uri @neo4j_browser;
-                }
-
-                location /bolt {
-                    rewrite ^/bolt(.*)$ $1 break;
-                    try_files $uri @neo4j_bolt;
-                }
-
                 location @ruby {
+                    include /etc/nginx/snippets/proxy_ws.conf;
                     proxy_pass http://ruby_1:9292;
-                    proxy_set_header Host $host;
-                    proxy_http_version 1.1;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection Upgrade;
                 }
 
                 location @phpmyadmin {
+                    include /etc/nginx/snippets/proxy_ws.conf;
                     proxy_pass http://phpmyadmin_1:80;
-                    proxy_set_header Host $host;
-                    proxy_http_version 1.1;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection Upgrade;
                 }
 
-                # location @neo4j_browser {
-                #     proxy_pass http://neo4j_user_1:7474;
-                #     proxy_set_header Host $host;
-                #     proxy_http_version 1.1;
-                #     proxy_set_header Upgrade $http_upgrade;
-                #     proxy_set_header Connection Upgrade;
-                # }
+                # Normalize /w/<token>  -> /w/<token>/
+                location ~ ^/w/[a-z0-9]+$ {
+                    return 301 $uri/;
+                }
 
-                # location @neo4j_bolt {
-                #     proxy_pass http://neo4j_user_1:7687;
-                #     proxy_set_header Host $host;
-                #     proxy_http_version 1.1;
-                #     proxy_set_header Upgrade $http_upgrade;
-                #     proxy_set_header Connection Upgrade;
-                # }
+                location ~ ^/w/[a-z0-9]+/ {
+                    if ($hs_upstream = "") { return 404; }
+                    if ($hs_allowed = 0)   { return 403; }
+
+                    # strip /w/<token>
+                    rewrite ^/w/[a-z0-9]+(.*)$ $1 break;
+
+                    include /etc/nginx/snippets/proxy_ws.conf;
+                    proxy_pass $hs_upstream;
+                }
+            }
+
+            # ==================================
+            # Subdomains: <token>.#{WEBSITE_HOST.split(':').first}
+            # ==================================
+            server {
+                listen 80;
+                server_name ~^(?<t>[a-z0-9]+)\\.#{WEBSITE_HOST.split(':').first.gsub('.', '\.')}$;
+                client_max_body_size 100M;
+                access_log /var/log/nginx/access.log custom;
+                charset utf-8;
+
+                # ----------------------------------
+                # /proxy/<port> → p<port>.<token>.#{WEBSITE_HOST.split(':').first}
+                # ----------------------------------
+                location ~ ^/proxy/(?<p>\\d+)(?<rest>/.*)?$ {
+                    if ($hs_token = "") { return 404; }
+                    if ($hs_allowed = 0) { return 403; }
+
+                    # Default rest to /
+                    set $r $rest;
+                    if ($r = "") { set $r /; }
+
+                    # pick up external port from Host header (e.g. :8025)
+                    set $port "";
+                    if ($http_host ~* :(?<hp>\\d+)$) { set $port :$hp; }
+
+                    return 302 http://p$p.$t.#{WEBSITE_HOST.split(':').first}$port$r;
+                }
+
+                location / {
+                    if ($hs_upstream = "") { return 404; }
+                    if ($hs_allowed = 0)   { return 403; }
+
+                    include /etc/nginx/snippets/proxy_ws.conf;
+                    proxy_pass $hs_upstream;
+                }
+            }
+
+            # ==========================================
+            # Port subdomains: p<port>.<tag>.#{WEBSITE_HOST.split(':').first}
+            # ==========================================
+            server {
+                listen 80;
+                server_name ~^p(?<p>\\d+)\\.(?<t>[a-z0-9]+)\.#{WEBSITE_HOST.split(':').first.gsub('.', '\.')}$;
+
+                client_max_body_size 100M;
+                access_log /var/log/nginx/access.log custom;
+                charset utf-8;
+
+                # Override the token derived from $host_token/$w_token maps
+                # so all your existing maps (upstream + required_sid + allowed) reuse <tag>
+                set $hs_token $t;
+
+                location / {
+                    if ($hs_upstream = "") { return 404; }
+                    if ($hs_allowed = 0)   { return 403; }
+
+                    # Map:
+                    #   /foo/bar  -> /proxy/<port>/foo/bar
+                    #   /         -> /proxy/<port>/
+                    rewrite ^/(.*)$ /proxy/$p/$1 break;
+
+                    include /etc/nginx/snippets/proxy_ws.conf;
+                    proxy_pass $hs_upstream;
+                }
+            }
         END_OF_STRING
 
         STDERR.puts ">>> Writing nginx config..."
 
+        path = '/nginx-snippets/proxy_ws.conf'
+        File.open(path, 'w') do |f|
+            f.puts <<~END_OF_STRING
+                proxy_http_version 1.1;
+                proxy_set_header Host $http_host;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection upgrade;
+                proxy_set_header Accept-Encoding gzip;
+            END_OF_STRING
+        end
+
         File.open('/nginx/default.conf', 'w') do |f|
-            f.puts nginx_config_first_part
-            users.each do |row|
-                user = row['u']
-                test = row['t']
-                email_with_test_tag = "#{user[:email]}#{(test || {})[:tag]}"
-                server_tag = "#{user[:server_tag]}#{(test || {})[:tag]}"
-                fs_tag = fs_tag_for_email(email_with_test_tag)
-                if running_servers.include?(fs_tag)
-                    f.puts <<~END_OF_STRING
-                    location /#{server_tag}/ {
-                        if ($cookie_hs_server_sid != "#{user[:server_sid]}") {
-                            return 403;
-                        }
-                        rewrite ^/#{server_tag}(.*)$ $1 break;
-                        proxy_set_header Host $http_host;
-                        proxy_set_header Upgrade $http_upgrade;
-                        proxy_set_header Connection upgrade;
-                        proxy_set_header Accept-Encoding gzip;
-                        proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
-                    }
-                    END_OF_STRING
-                    if test.nil?
-                        if user[:share_tag] && user[:share_tag] =~ /^[a-z0-9]{48}$/
-                            f.puts <<~END_OF_STRING
-                                location /#{user[:share_tag]}/ {
-                                    rewrite ^/#{user[:share_tag]}(.*)$ $1 break;
-                                    proxy_set_header Host $http_host;
-                                    proxy_set_header Upgrade $http_upgrade;
-                                    proxy_set_header Connection upgrade;
-                                    proxy_set_header Accept-Encoding gzip;
-                                    proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
-                                }
-                            END_OF_STRING
-                        end
-                        $neo4j.neo4j_query(<<~END_OF_QUERY, {:email => user[:email]}).each do |row|
-                            MATCH (:User)-[r:WATCHING]->(u:User {email: $email})
-                            RETURN r.watch_tag;
-                        END_OF_QUERY
-                            watch_tag = row['r.watch_tag']
-                            f.puts <<~END_OF_STRING
-                                location /#{watch_tag}/ {
-                                    rewrite ^/#{watch_tag}(.*)$ $1 break;
-                                    proxy_set_header Host $http_host;
-                                    proxy_set_header Upgrade $http_upgrade;
-                                    proxy_set_header Connection upgrade;
-                                    proxy_set_header Accept-Encoding gzip;
-                                    proxy_pass http://#{running_servers[fs_tag][:ip]}:8443;
-                                }
-                            END_OF_STRING
-                        end
-                    end
-                end
-            end
-            f.puts "}"
+            f.puts nginx_config
         end
         STDERR.puts ">>> Sending HUP to nginx to reload nginx config"
         system("docker kill -s HUP workspace_nginx_1")
@@ -1004,7 +994,7 @@ class Main < Sinatra::Base
                                 [:hs_server_sid].each do |key|
                                     if request.cookies[key.to_s] != results.first['u'][key.to_s.sub('hs_', '').to_sym]
                                         response.set_cookie(key.to_s,
-                                            :domain => ".#{WEBSITE_HOST}",
+                                            :domain => ".#{WEBSITE_HOST.split(':').first}",
                                             :value => results.first['u'][key.to_s.sub('hs_', '').to_sym],
                                             :expires => expires,
                                             :path => '/',
@@ -1687,7 +1677,7 @@ class Main < Sinatra::Base
 
         expires = Time.new + 3600 * 24 * 365
         response.set_cookie('hs_watch_tag',
-            :domain => ".#{WEBSITE_HOST}",
+            :domain => ".#{WEBSITE_HOST.split(':').first}",
             :value => watch_tag,
             :expires => expires,
             :path => "/", #"/#{fs_tag_for_email(email)}",
@@ -2777,14 +2767,14 @@ class Main < Sinatra::Base
                 END_OF_QUERY
                 expires = Time.new + 3600 * 24 * 365
                 response.set_cookie('hs_sid',
-                    :domain => ".#{WEBSITE_HOST}",
+                    :domain => ".#{WEBSITE_HOST.split(':').first}",
                     :value => sid,
                     :expires => expires,
                     :path => '/',
                     :httponly => true,
                     :secure => DEVELOPMENT ? false : true)
                 response.set_cookie('hs_server_sid',
-                    :domain => ".#{WEBSITE_HOST}",
+                    :domain => ".#{WEBSITE_HOST.split(':').first}",
                     :value => server_sid_for_email(email),
                     :expires => expires,
                     :path => "/", #"/#{fs_tag_for_email(email)}",
@@ -2805,7 +2795,7 @@ class Main < Sinatra::Base
                 DETACH DELETE s;
             END_OF_QUERY
             response.set_cookie('hs_sid',
-                :domain => ".#{WEBSITE_HOST}",
+                :domain => ".#{WEBSITE_HOST.split(':').first}",
                 :value => nil,
                 :expires => Time.new + 3600 * 24 * 365,
                 :path => '/',

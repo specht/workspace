@@ -85,9 +85,13 @@ function showTemplateModal(title, text, confirm_label, confirm_class,
 }
 
 var server_tag = "#{(@session_user || {})[:server_tag]}";
+var workspace_url = "#{workspace_url()}";
+
 function check_server_online(server_tag, watch) {
     if (typeof(watch) === 'undefined') watch = false;
-    fetch(`/${server_tag}/`)
+    let url = `#{WEB_ROOT}/w/${server_tag}/`;
+    console.log(url);
+    fetch(url, {credentials: 'include'})
     .then(response => {
         if (response.status === 200) {
             console.log('Server is online');
@@ -97,10 +101,8 @@ function check_server_online(server_tag, watch) {
             $('.bu-launch-test').prop('disabled', false);
             $('.bu-open-workspace-as-admin .bi').removeClass('bi-spin');
             $('.bu-open-workspace-as-admin').prop('disabled', false);
-            let url = window.location.origin.replace('//', watch ? '//watch.' : '//code.');
-            console.log(`Now opening ${url}`);
-            window.open(url, '_blank');
-            // window.open(`/${server_tag}/`, '_blank');
+            console.log(`Now opening ${workspace_url}`);
+            window.open(workspace_url, '_blank');
         } else {
             console.log('Server is offline');
             setTimeout(function() { check_server_online(server_tag, watch); }, 500);
@@ -248,6 +250,7 @@ window.addEventListener('load', function() {
         $('#bu_launch').prop('disabled', true);
         $('#bu_launch .bi').addClass('bi-spin');
         api_call('/api/start_server', {}, function(data) {
+            console.log(data);
             check_server_tag_update(data.server_tag);
             check_server_online(data.server_tag);
         });
@@ -258,6 +261,7 @@ window.addEventListener('load', function() {
         button.prop('disabled', true);
         button.find('.bi').addClass('bi-spin');
         api_call('/api/start_server', {test_tag: test_tag}, function(data) {
+            console.log(data);
             check_server_tag_update(data.server_tag);
             check_server_online(data.server_tag);
         });
