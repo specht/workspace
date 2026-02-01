@@ -194,16 +194,7 @@ class Main < Sinatra::Base
                 RETURN u, t;
             END_OF_QUERY
             server_tag = "#{server_tag}#{(user_with_test['t'] || {})[:tag]}"
-            case WORKSPACE_URL_MODE
-            when :subpath
-                "#{WEB_ROOT}/w/#{server_tag}/"
-            when :subdomain
-                "http://#{server_tag}.#{WEBSITE_HOST}/"
-            when :subdomain_with_port
-                "http://#{server_tag}.#{WEBSITE_HOST}"
-            else
-                raise "Invalid WORKSPACE_URL_MODE: #{WORKSPACE_URL_MODE.inspect}"
-            end
+            "http://#{server_tag}.#{WEBSITE_HOST}/"
         else
             ''
         end

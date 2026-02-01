@@ -9,13 +9,6 @@ PHPMYADMIN_WEB_ROOT = "#{WEB_ROOT}/phpmyadmin/"
 PGADMIN_WEB_ROOT = "#{WEB_ROOT}/pgadmin/"
 NEO4J_WEB_ROOT = "#{WEB_ROOT}/neo4j/browser/"
 
-# WORKSPACE_URL_MODE must be one of the following:
-# :subpath - workspaces are hosted under WEB_ROOT/12345678/
-# :subdomain - workspaces are hosted under 12345678.WEBSITE_HOST
-# :subdomain_with_port - like :subdomain but /proxy/<port> redirects to
-#                        5500.12345678.WEBSITE_HOST
-WORKSPACE_URL_MODE = :subpath
-
 LOGIN_CODE_SALT = 'bitte_ein_salt_eintragen'
 
 SMTP_SERVER = 'smtps.udag.de'
