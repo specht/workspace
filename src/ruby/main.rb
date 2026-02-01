@@ -386,11 +386,6 @@ class Main < Sinatra::Base
                     proxy_pass http://ruby_1:9292;
                 }
 
-                location @phpmyadmin {
-                    include /etc/nginx/snippets/proxy_ws.conf;
-                    proxy_pass http://phpmyadmin_1:80;
-                }
-
                 # Normalize /w/<token>  -> /w/<token>/
                 location ~ ^/w/[a-z0-9]+$ {
                     return 301 $uri/;
@@ -471,6 +466,23 @@ class Main < Sinatra::Base
 
                     include /etc/nginx/snippets/proxy_ws.conf;
                     proxy_pass $hs_upstream;
+                }
+            }
+
+            # ===========
+            # phpMyAdmin
+            # ===========
+            server {
+                listen 80;
+                server_name phpmyadmin.#{WEBSITE_HOST.split(':').first};
+
+                client_max_body_size 100M;
+                access_log /var/log/nginx/access.log custom;
+                charset utf-8;
+
+                location / {
+                    include /etc/nginx/snippets/proxy_ws.conf;
+                    proxy_pass http://phpmyadmin_1:80;
                 }
             }
         END_OF_STRING

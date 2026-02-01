@@ -77,6 +77,7 @@
     - git
     - hades
   # - .latex
+  # - .flutter
 - key: linux
   label: Linux und das Terminal
   icon: /images/penguin.png
