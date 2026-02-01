@@ -428,7 +428,7 @@ class Main < Sinatra::Base
                     set $port "";
                     if ($http_host ~* :(?<hp>\\d+)$) { set $port :$hp; }
 
-                    return 302 http://p$p.$t.#{WEBSITE_HOST.split(':').first}$port$r;
+                    return 302 http://${t}_${p}.#{WEBSITE_HOST.split(':').first}$port$r;
                 }
 
                 location / {
@@ -441,11 +441,11 @@ class Main < Sinatra::Base
             }
 
             # ==========================================
-            # Port subdomains: p<port>.<tag>.#{WEBSITE_HOST.split(':').first}
+            # Port subdomains: <tag>_<port>.#{WEBSITE_HOST.split(':').first}
             # ==========================================
             server {
                 listen 80;
-                server_name ~^p(?<p>\\d+)\\.(?<t>[a-z0-9]+)\.#{WEBSITE_HOST.split(':').first.gsub('.', '\.')}$;
+                server_name ~^(?<t>[a-z0-9]+)_(?<p>\\d+)\.#{WEBSITE_HOST.split(':').first.gsub('.', '\.')}$;
 
                 client_max_body_size 100M;
                 access_log /var/log/nginx/access.log custom;
