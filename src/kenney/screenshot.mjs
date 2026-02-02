@@ -25,10 +25,14 @@ for (let i = 0; i < modelFiles.length; i++) {
 
   console.log(`Rendering ${model}...`);
   await page.goto(url);
+  await page.waitForTimeout(500);
   await page.screenshot({ path: `${outputDir}/${model.replace('.obj', '.png')}` });
   const screenshotPath = `${outputDir}/${model.replace('.obj', '.png')}`;
   const { execSync } = await import('child_process');
   execSync(`mogrify -trim "${screenshotPath}"`);
+  execSync(`convert "${screenshotPath}" -resize 400% -fuzz 0% -transparent white -resize 25% "${screenshotPath.replace('.png', '.webp')}"`);
+  execSync(`rm "${screenshotPath}"`);
+//   break;
 }
 
 await browser.close();

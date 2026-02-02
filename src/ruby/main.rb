@@ -522,8 +522,10 @@ class Main < Sinatra::Base
         [1024, 512].each do |width|
             target_path_width = "/webcache/#{image_sha1}-#{width}.webp"
             unless FileUtils.uptodate?(target_path_width, [target_path])
-                system("magick #{target_path} -resize #{width}x #{target_path_width}")
+                command = "convert #{target_path} -resize #{width}x #{target_path_width}"
+                system(command)
                 if $? != 0
+                    STDERR.puts command
                     STDERR.puts "...conversion of #{image_path} failed!"
                 end
             end
@@ -608,11 +610,11 @@ class Main < Sinatra::Base
             @@kenney[kit] << model
         end
 
+        STDERR.puts "Kenney kits: #{@@kenney.keys.to_yaml}"
+
         @@kenney.keys.each do |kit|
             paths << {:section => 'misc', :path => kit, :original_path => "/src/content/anaglyph/#{kit}.md", :dev_only => false, :kenney => true, :extra => true}
         end
-
-        @@content = {}
 
         redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
         @@parse_content_count ||= 0
@@ -820,6 +822,7 @@ class Main < Sinatra::Base
             #     end
             # end
             meta = root.css('.meta').first
+            STDERR.puts "Added content: #{slug}"
             @@content[slug] = {
                 :html => html,
                 :dev_only => entry[:dev_only],
@@ -952,6 +955,8 @@ class Main < Sinatra::Base
         @@threads_for_client_id = {}
         $neo4j.setup_constraints_and_indexes(CONSTRAINTS_LIST, INDEX_LIST)
         self.refresh_nginx_config()
+
+        @@content = {}
         self.parse_content()
         self.load_invitations()
         self.prepare_downloads()
@@ -2712,6 +2717,8 @@ class Main < Sinatra::Base
             end
             path = '/share.html'
         end
+        STDERR.puts "Requested path: #{path}"
+        STDERR.puts "Available content slugs: #{@@content.keys.join(', ')}"
         if @@content.include?(path[1, path.size - 1])
             slug = path[1, path.size - 1]
             path = '/a.html'

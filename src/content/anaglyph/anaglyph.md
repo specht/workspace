@@ -414,67 +414,67 @@ Du kannst auch 3D-Modelle in deine Szene einfügen. Auf der Website [kenney.nl](
 
 <div class='kenney-overview row'>
     <div class='col-sm-6'>
-        <a href='/city-kit-commercial'><img src='kenney/city-kit-commercial-sample.webp'></a>
+        <a href='/city-kit-commercial'><img src='kenney/city-kit-commercial-sample.png'></a>
         <div>City Kit (Commercial)</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/city-kit-industrial'><img src='kenney/city-kit-industrial-sample.webp'></a>
+        <a href='/city-kit-industrial'><img src='kenney/city-kit-industrial-sample.png'></a>
         <div>City Kit (Industrial)</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/city-kit-suburban'><img src='kenney/city-kit-suburban-sample.webp'></a>
+        <a href='/city-kit-suburban'><img src='kenney/city-kit-suburban-sample.png'></a>
         <div>City Kit (Suburban)</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/city-kit-roads'><img src='kenney/city-kit-roads-sample.webp'></a>
+        <a href='/city-kit-roads'><img src='kenney/city-kit-roads-sample.png'></a>
         <div>City Kit (Roads)</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/car-kit'><img src='kenney/car-kit-sample.webp'></a>
+        <a href='/car-kit'><img src='kenney/car-kit.png'></a>
         <div>Car Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/train-kit'><img src='kenney/train-kit-sample.webp'></a>
+        <a href='/train-kit'><img src='kenney/train-kit.png'></a>
         <div>Train Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/castle-kit'><img src='kenney/castle-kit-sample.webp'></a>
+        <a href='/castle-kit'><img src='kenney/castle-kit-sample.png'></a>
         <div>Castle Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/graveyard-kit'><img src='kenney/graveyard-kit-sample.webp'></a>
+        <a href='/graveyard-kit'><img src='kenney/graveyard-kit-sample.png'></a>
         <div>Graveyard Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/holiday-kit'><img src='kenney/holiday-kit-sample.webp'></a>
+        <a href='/holiday-kit'><img src='kenney/holiday-kit-sample.png'></a>
         <div>Holiday Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/pirate-kit'><img src='kenney/pirate-kit-sample.webp'></a>
+        <a href='/pirate-kit'><img src='kenney/pirate-kit-sample.png'></a>
         <div>Pirate Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/survival-kit'><img src='kenney/survival-kit-sample.webp'></a>
+        <a href='/survival-kit'><img src='kenney/survival-kit-sample.png'></a>
         <div>Survival Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/mini-characters'><img src='kenney/mini-characters.webp'></a>
+        <a href='/mini-characters'><img src='kenney/mini-characters.png'></a>
         <div>Mini Characters</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/mini-arcade'><img src='kenney/mini-arcade-sample.webp'></a>
+        <a href='/mini-arcade'><img src='kenney/mini-arcade-sample.png'></a>
         <div>Mini Arcade</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/mini-market'><img src='kenney/mini-market-sample.webp'></a>
+        <a href='/mini-market'><img src='kenney/mini-market-sample.png'></a>
         <div>Mini Market</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/food-kit'><img src='kenney/food-kit.webp'></a>
+        <a href='/food-kit'><img src='kenney/food-kit.png'></a>
         <div>Food Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/blaster-kit'><img src='kenney/blaster-kit.webp'></a>
+        <a href='/blaster-kit'><img src='kenney/blaster-kit.png'></a>
         <div>Blaster Kit</div>
     </div>
 </div>
