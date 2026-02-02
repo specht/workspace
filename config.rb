@@ -54,6 +54,7 @@ if PROFILE.include?(:static)
         docker_compose[:services][:nginx][:expose] = ['80']
         docker_compose[:services][:nginx][:labels] = []
         docker_compose[:services][:nginx][:labels] << "traefik.enable=true"
+        docker_compose[:services][:nginx][:labels] << "traefik.network=proxy"
         docker_compose[:services][:nginx][:labels] << "traefik.http.routers.workspace.rule=Host(`#{WEBSITE_HOST}`) || HostRegexp(`^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)\\.#{WEBSITE_HOST.gsub('.', '\\.')}$`)"
         docker_compose[:services][:nginx][:labels] << "traefik.http.routers.workspace.entrypoints=websecure"
         docker_compose[:services][:nginx][:labels] << "traefik.http.routers.workspace.tls.certresolver=le"
@@ -294,6 +295,12 @@ unless DEVELOPMENT
     docker_compose[:services].values.each do |x|
         x[:restart] = :always
     end
+    docker_compose[:networks] = {
+        :proxy => {
+            :external => true
+        }
+    }
+    docker_compose[:services][:nginx][:networks] = ['proxy']
 end
 
 File::open('docker-compose.yaml', 'w') do |f|
