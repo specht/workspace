@@ -51,10 +51,9 @@ if PROFILE.include?(:static)
     if !DEVELOPMENT
         # docker_compose[:services][:nginx][:environment] << "LETSENCRYPT_HOST=#{WEBSITE_HOST},code.#{WEBSITE_HOST},watch.#{WEBSITE_HOST}"
         # docker_compose[:services][:nginx][:environment] << "LETSENCRYPT_EMAIL=#{ADMIN_USERS.first}"
-        docker_compose[:services][:nginx][:expose] = ['80']
         docker_compose[:services][:nginx][:labels] = []
         docker_compose[:services][:nginx][:labels] << "traefik.enable=true"
-        docker_compose[:services][:nginx][:labels] << "traefik.network=proxy"
+        docker_compose[:services][:nginx][:labels] << "traefik.docker.network=proxy"
         docker_compose[:services][:nginx][:labels] << "traefik.http.routers.workspace.rule=Host(`#{WEBSITE_HOST}`) || HostRegexp(`^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)\\.#{WEBSITE_HOST.gsub('.', '\\.')}$`)"
         docker_compose[:services][:nginx][:labels] << "traefik.http.routers.workspace.entrypoints=websecure"
         docker_compose[:services][:nginx][:labels] << "traefik.http.routers.workspace.tls.certresolver=le"
@@ -62,12 +61,6 @@ if PROFILE.include?(:static)
         docker_compose[:services][:nginx][:labels] << "traefik.http.routers.workspace.tls.domains[0].sans=*.#{WEBSITE_HOST}"
         docker_compose[:services][:nginx][:labels] << "traefik.http.services.workspace.loadbalancer.server.port=80"
     end
-    docker_compose[:services][:nginx][:links] = [
-        "ruby:#{PROJECT_NAME}_ruby_1",
-        "phpmyadmin:#{PROJECT_NAME}_phpmyadmin_1",
-        "pgadmin:#{PROJECT_NAME}_pgadmin_1",
-        # "neo4j_user:#{PROJECT_NAME}_neo4j_user_1",
-    ]
     nginx_config = <<~END_OF_STRING
         log_format custom '$http_x_forwarded_for - $remote_user [$time_local] "$request" '
                           '$status $body_bytes_sent "$http_referer" '
@@ -162,7 +155,6 @@ if PROFILE.include?(:dynamic)
                     ],
         :environment => env,
         :working_dir => '/src/ruby',
-        :expose => ['9292'],
         :privileged => true,
         :entrypoint =>  DEVELOPMENT ?
             'rerun -b --dir /src/ruby -s SIGKILL -- rackup --host 0.0.0.0' :
@@ -171,11 +163,6 @@ if PROFILE.include?(:dynamic)
     if PROFILE.include?(:neo4j)
         docker_compose[:services][:ruby][:depends_on] ||= []
         docker_compose[:services][:ruby][:depends_on] << :neo4j
-        docker_compose[:services][:ruby][:links] = [
-            'neo4j:neo4j',
-            'mysql:mysql',
-            # 'neo4j_user:neo4j_user',
-        ]
     end
 end
 
@@ -212,7 +199,6 @@ docker_compose[:services][:mysql] = {
 #     :user => '1000',
 #     :restart => 'always',
 #     :ports => ["7474:7474", "7687:7687"],
-#     :expose => ['7687'],
 #     :environment => {
 #         'NEO4J_ACCEPT_LICENSE_AGREEMENT' => 'yes',
 #         'NEO4J_AUTH' => "neo4j/#{NEO4J_ROOT_PASSWORD}",
@@ -234,9 +220,7 @@ docker_compose[:services][:mysql] = {
 docker_compose[:services][:phpmyadmin] = {
     :image => 'phpmyadmin/phpmyadmin',
     :restart => 'always',
-    # :expose => ['80'],
     :depends_on => [:mysql],
-    :links => ['mysql:db'],
     :environment => {
         'PMA_ABSOLUTE_URI' => PHPMYADMIN_WEB_ROOT,
         'UPLOAD_LIMIT' => '128M',
@@ -260,9 +244,7 @@ docker_compose[:services][:pgadmin] = {
         "#{PGADMIN_DATA_PATH}:/var/lib/pgadmin",
         "#{File.expand_path('docker/pgadmin4')}:/etc/pgadmin:ro",
     ],
-    # :expose => ['80'],
     :depends_on => [:postgres],
-    :links => ['postgres:postgres'],
     :user => '1000',
     :environment => {
         'PGADMIN_DEFAULT_EMAIL' => 'default_account_dont_use@example.com',
