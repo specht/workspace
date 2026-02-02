@@ -294,13 +294,17 @@ end
 unless DEVELOPMENT
     docker_compose[:services].values.each do |x|
         x[:restart] = :always
+        x[:networks] = ['internal']
     end
     docker_compose[:networks] = {
         :proxy => {
             :external => true
+        },
+        :internal => {
+            :driver => 'bridge'
         }
     }
-    docker_compose[:services][:nginx][:networks] = ['proxy']
+    docker_compose[:services][:nginx][:networks] = ['proxy', 'internal']
 end
 
 File::open('docker-compose.yaml', 'w') do |f|
