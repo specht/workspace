@@ -434,7 +434,7 @@ class Main < Sinatra::Base
                     set $port "";
                     if ($http_host ~* :(?<hp>\\d+)$) { set $port :$hp; }
 
-                    return 302 //${t}-${p}.#{WEBSITE_HOST.split(':').first}$port$r;
+                    return 302 #{DEVELOPMENT ? 'http:' : 'https:'}//${t}-${p}.#{WEBSITE_HOST.split(':').first}$port$r;
                 }
 
                 location / {
