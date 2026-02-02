@@ -278,9 +278,9 @@ docker_compose[:services][:pgadmin] = {
 #     :tty => true,
 # }
 
-docker_compose[:services].values.each do |x|
-    x[:network_mode] = 'default'
-end
+# docker_compose[:services].values.each do |x|
+#     x[:network_mode] = 'default'
+# end
 
 if DEVELOPMENT
     docker_compose[:services][:nginx][:ports] = ["0.0.0.0:#{DEV_NGINX_PORT}:80"]
