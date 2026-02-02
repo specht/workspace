@@ -162,6 +162,7 @@ if PROFILE.include?(:dynamic)
                     ],
         :environment => env,
         :working_dir => '/src/ruby',
+        :expose => ['9292'],
         :privileged => true,
         :entrypoint =>  DEVELOPMENT ?
             'rerun -b --dir /src/ruby -s SIGKILL -- rackup --host 0.0.0.0' :
