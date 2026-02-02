@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   curl \
   bash \
   tzdata \
+  sysstat \
   graphviz \
   build-essential \
   pkg-config \
