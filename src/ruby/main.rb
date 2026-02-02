@@ -203,7 +203,7 @@ class Main < Sinatra::Base
     def self.refresh_nginx_config
         STDERR.puts ">>> Refreshing nginx config..."
         running_servers = {}
-        inspect = JSON.parse(`docker network inspect bridge`)
+        inspect = JSON.parse(`docker network inspect workspace_internal`)
         inspect.first['Containers'].values.each do |container|
             name = container['Name']
             next unless name[0, 8] == 'hs_code_'
@@ -1165,7 +1165,7 @@ class Main < Sinatra::Base
         inspect = JSON.parse(`docker inspect hs_code_#{tag}`)
         unless inspect.empty?
             result[:running] = true
-            result[:ip] = inspect.first['NetworkSettings']['Networks']['bridge']['IPAddress']
+            result[:ip] = inspect.first['NetworkSettings']['Networks']['workspace_internal']['IPAddress']
         end
         result
     end
