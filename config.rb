@@ -120,7 +120,7 @@ if PROFILE.include?(:static)
             }
 
             location @ruby {
-                proxy_pass http://ruby_1:9292;
+                proxy_pass http://ruby:9292;
                 proxy_set_header Host $host;
                 proxy_http_version 1.1;
                 proxy_set_header Upgrade $http_upgrade;
