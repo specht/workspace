@@ -47,10 +47,10 @@ if PROFILE.include?(:static)
         ]
     }
     docker_compose[:services][:nginx][:environment] ||= []
-    docker_compose[:services][:nginx][:environment] << "VIRTUAL_HOST=#{WEBSITE_HOST},code.#{WEBSITE_HOST},watch.#{WEBSITE_HOST}"
+    # docker_compose[:services][:nginx][:environment] << "VIRTUAL_HOST=#{WEBSITE_HOST},code.#{WEBSITE_HOST},watch.#{WEBSITE_HOST}"
     if !DEVELOPMENT
-        docker_compose[:services][:nginx][:environment] << "LETSENCRYPT_HOST=#{WEBSITE_HOST},code.#{WEBSITE_HOST},watch.#{WEBSITE_HOST}"
-        docker_compose[:services][:nginx][:environment] << "LETSENCRYPT_EMAIL=#{ADMIN_USERS.first}"
+        # docker_compose[:services][:nginx][:environment] << "LETSENCRYPT_HOST=#{WEBSITE_HOST},code.#{WEBSITE_HOST},watch.#{WEBSITE_HOST}"
+        # docker_compose[:services][:nginx][:environment] << "LETSENCRYPT_EMAIL=#{ADMIN_USERS.first}"
         docker_compose[:services][:nginx][:expose] = ['80']
         docker_compose[:services][:nginx][:labels] = []
         docker_compose[:services][:nginx][:labels] << "traefik.enable=true"
