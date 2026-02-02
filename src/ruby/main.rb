@@ -2259,33 +2259,33 @@ class Main < Sinatra::Base
         END_OF_STRING
     end
 
-    get '/pdf..*' do
-        # Here's a hack to make live reload work with LaTeX PDFs
-        # The LaTeX Workshop extensions recompiles the PDF on save
-        # and then requests a funny URL to reload the PDF in the browser.
-        # This route serves the main.pdf by looking for the latest
-        # PDF file in the current user's workspace tree.
+    # get '/pdf..*' do
+    #     # Here's a hack to make live reload work with LaTeX PDFs
+    #     # The LaTeX Workshop extensions recompiles the PDF on save
+    #     # and then requests a funny URL to reload the PDF in the browser.
+    #     # This route serves the main.pdf by looking for the latest
+    #     # PDF file in the current user's workspace tree.
 
-        # If the user uses a share tag, we need to look up the email
-        # Otherwise, use the email of the logged in user
+    #     # If the user uses a share tag, we need to look up the email
+    #     # Otherwise, use the email of the logged in user
 
-        referer_path = request.env['HTTP_REFERER']
-        referer_path = URI.parse(referer_path).path
-        share_tag = referer_path.split('/')[1]
-        rows = neo4j_query(<<~END_OF_STRING, {:share_tag => share_tag})
-            MATCH (u:User {share_tag: $share_tag})
-            RETURN u.email;
-        END_OF_STRING
-        email = (rows.first || {})['u.email']
-        email ||= (@session_user || {})[:email]
-        assert(!(email.nil?))
-        fs_tag = fs_tag_for_email(email)
-        candidates = Dir["/user/#{fs_tag}/workspace/**/*.pdf"]
-        candidates.sort! do |a, b|
-            File.mtime(b) <=> File.mtime(a)
-        end
-        respond_with_file(candidates.first)
-    end
+    #     referer_path = request.env['HTTP_REFERER']
+    #     referer_path = URI.parse(referer_path).path
+    #     share_tag = referer_path.split('/')[1]
+    #     rows = neo4j_query(<<~END_OF_STRING, {:share_tag => share_tag})
+    #         MATCH (u:User {share_tag: $share_tag})
+    #         RETURN u.email;
+    #     END_OF_STRING
+    #     email = (rows.first || {})['u.email']
+    #     email ||= (@session_user || {})[:email]
+    #     assert(!(email.nil?))
+    #     fs_tag = fs_tag_for_email(email)
+    #     candidates = Dir["/user/#{fs_tag}/workspace/**/*.pdf"]
+    #     candidates.sort! do |a, b|
+    #         File.mtime(b) <=> File.mtime(a)
+    #     end
+    #     respond_with_file(candidates.first)
+    # end
 
     post '/api/upload_test_archive' do
         assert(teacher_logged_in?)
