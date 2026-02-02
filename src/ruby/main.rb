@@ -281,9 +281,10 @@ class Main < Sinatra::Base
         # STDERR.puts watch_tag_ip_pairs.join("\n")
 
         nginx_config = <<~END_OF_STRING
-            log_format custom '$http_x_forwarded_for - $remote_user [$time_local] "$request" '
+            log_format custom '$host $http_x_forwarded_proto $remote_addr - $remote_user [$time_local] "$request" '
                             '$status $body_bytes_sent "$http_referer" '
                             '"$http_user_agent" "$request_time"';
+
 
             map_hash_bucket_size 128;
 
@@ -298,6 +299,11 @@ class Main < Sinatra::Base
                 application/x-font-otf          max;
                 application/font-woff           max;
                 application/font-woff2          max;
+            }
+
+            map $http_upgrade $connection_upgrade {
+                default upgrade;
+                ''      close;
             }
 
             # ---------------------------
@@ -428,7 +434,7 @@ class Main < Sinatra::Base
                     set $port "";
                     if ($http_host ~* :(?<hp>\\d+)$) { set $port :$hp; }
 
-                    return 302 http://${t}-${p}.#{WEBSITE_HOST.split(':').first}$port$r;
+                    return 302 //${t}-${p}.#{WEBSITE_HOST.split(':').first}$port$r;
                 }
 
                 location / {
