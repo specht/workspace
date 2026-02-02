@@ -13,7 +13,7 @@ if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir);
 
 const modelFiles = fs.readdirSync(modelsDir).filter(f => f.endsWith('.obj'));
 
-const browser = await puppeteer.launch({headless: false});
+const browser = await puppeteer.launch({executablePath: '/usr/bin/chromium', headless: false});
 const page = await browser.newPage();
 await page.setViewport({ width: 1024, height: 1024 });
 
