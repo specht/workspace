@@ -1562,7 +1562,7 @@ class Main < Sinatra::Base
                 end
             end
 
-            network_name = "bridge"
+            network_name = "internal"
             STDERR.puts ">>> Getting IP addresses for mysql and postgres..."
             # mysql_ip = `docker inspect workspace_mysql_1`.split('"IPAddress": "')[1].split('"')[0]
             # postgres_ip = `docker inspect workspace_postgres_1`.split('"IPAddress": "')[1].split('"')[0]
