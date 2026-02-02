@@ -383,7 +383,7 @@ class Main < Sinatra::Base
 
                 location @ruby {
                     include /etc/nginx/snippets/proxy_ws.conf;
-                    proxy_pass http://ruby_1:9292;
+                    proxy_pass http://ruby:9292;
                 }
 
                 # Normalize /w/<token>  -> /w/<token>/
@@ -482,7 +482,7 @@ class Main < Sinatra::Base
 
                 location / {
                     include /etc/nginx/snippets/proxy_ws.conf;
-                    proxy_pass http://phpmyadmin_1:80;
+                    proxy_pass http://phpmyadmin:80;
                 }
             }
         END_OF_STRING
