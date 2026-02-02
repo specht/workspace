@@ -181,8 +181,8 @@ if PROFILE.include?(:neo4j)
 end
 
 docker_compose[:services][:mysql] = {
-    :image => 'mysql/mysql-server',
-    :command => ["--default-authentication-plugin=mysql_native_password"],
+    :image => 'mysql/mysql-server:8.0',
+    :command => ["--require_secure_transport=OFF", "--mysqlx=0"],
     :volumes => ["#{MYSQL_DATA_PATH}:/var/lib/mysql"],
     :user => '1000',
     :restart => 'always',
@@ -218,11 +218,12 @@ docker_compose[:services][:mysql] = {
 # end
 
 docker_compose[:services][:phpmyadmin] = {
-    :image => 'phpmyadmin/phpmyadmin',
+    :image => 'phpmyadmin/phpmyadmin:5.2',
     :restart => 'always',
     :depends_on => [:mysql],
     :environment => {
         'PMA_ABSOLUTE_URI' => PHPMYADMIN_WEB_ROOT,
+        'PMA_HOST' => 'mysql',
         'UPLOAD_LIMIT' => '128M',
     },
 }
@@ -238,7 +239,7 @@ docker_compose[:services][:postgres] = {
 }
 
 docker_compose[:services][:pgadmin] = {
-    :image => 'dpage/pgadmin4',
+    :image => 'dpage/pgadmin4:9.11',
     :restart => 'always',
     :volumes => [
         "#{PGADMIN_DATA_PATH}:/var/lib/pgadmin",

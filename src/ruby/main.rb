@@ -2519,7 +2519,7 @@ class Main < Sinatra::Base
         client = Mysql2::Client.new(
             host: 'mysql',
             username: 'root',
-            password: MYSQL_ROOT_PASSWORD,
+            password: MYSQL_ROOT_PASSWORD
         )
 
         result = {}
@@ -2564,7 +2564,7 @@ class Main < Sinatra::Base
         client = Mysql2::Client.new(
             host: 'mysql',
             username: 'root',
-            password: MYSQL_ROOT_PASSWORD,
+            password: MYSQL_ROOT_PASSWORD
         )
         login = @session_user[:email].split('@').first.downcase
         client.query("CREATE DATABASE #{database_name};")
@@ -2584,7 +2584,7 @@ class Main < Sinatra::Base
         client = Mysql2::Client.new(
             host: 'mysql',
             username: 'root',
-            password: MYSQL_ROOT_PASSWORD,
+            password: MYSQL_ROOT_PASSWORD
         )
         is_user_db = (data[:database] == @session_user[:email].split('@').first.downcase)
         client.query("DROP DATABASE IF EXISTS `#{data[:database]}`;")
