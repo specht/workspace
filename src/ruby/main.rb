@@ -547,6 +547,11 @@ class Main < Sinatra::Base
 
                 location / {
                     include /etc/nginx/snippets/proxy_ws.conf;
+                    proxy_set_header Sec-WebSocket-Protocol $http_sec_websocket_protocol;
+                    proxy_buffering off;
+                    proxy_read_timeout 1h;
+                    proxy_send_timeout 1h;
+
                     proxy_pass http://neo4j_user:7687;
                 }
             }
