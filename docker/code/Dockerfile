@@ -131,7 +131,6 @@ RUN apt-get update && apt-get install -y \
   fonts-anonymous-pro \
   fonts-atkinson-hyperlegible \
   fonts-bebas-neue \
-  fonts-bitstream-charter \
   fonts-cantarell \
   fonts-cmu \
   fonts-comfortaa \
