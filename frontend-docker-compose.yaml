@@ -1,27 +1,42 @@
-version: '2'
+networks:
+  proxy:
+    external: true
 
 services:
-  nginx-proxy:
-    network_mode: default
-    restart: always
-    image: jwilder/nginx-proxy:latest
+  traefik:
+    networks:
+      - proxy
+    image: traefik:v3.6
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      - --global.checknewversion=false
+      - --global.sendanonymoususage=false
+
+      - --log.level=INFO
+
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+
+      - --certificatesresolvers.le.acme.email=specht@gymnasiumsteglitz.de
+      - --certificatesresolvers.le.acme.storage=/acme/acme.json
+      - --certificatesresolvers.le.acme.dnschallenge=true
+      - --certificatesresolvers.le.acme.dnschallenge.provider=cloudflare
+      - --certificatesresolvers.le.acme.dnschallenge.propagation.delaybeforechecks=10
+
     ports:
       - "80:80"
       - "443:443"
+
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+
     volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ./certs:/etc/nginx/certs
-      - ./vhost:/etc/nginx/vhost.d
-      - ./html:/usr/share/nginx/html
-      - ./conf.d:/etc/nginx/conf.d
-    labels:
-      - com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy
-  nginx-proxy-acme:
-    image: nginxproxy/acme-companion
-    restart: always
-    volumes:
-      - ./certs:/etc/nginx/certs
-      - ./vhost:/etc/nginx/vhost.d
-      - ./html:/usr/share/nginx/html
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./acme:/etc/acme.sh
+      - ./traefik/acme.json:/acme/acme.json
