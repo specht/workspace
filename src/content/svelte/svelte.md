@@ -86,7 +86,7 @@ Du musst also den folgenden Eintrag hinzufügen:
 
 ```json
 server: {
-    allowedHosts: ['code.workspace.hackschule.de']
+    allowedHosts: true
 }
 ```
 
@@ -174,6 +174,10 @@ body {
 
 Füge den Code in einen `<style>`-Tag in der Datei `src/app.html` ein (am besten nach dem `</body>`). Wenn du die Seite jetzt aktualisierst, sollte der Scrollbalken verschwunden sein.
 
+<div class='hint'>
+Füge den CSS-Code in einem <code>&lt;style&gt;</code>-Tag in der Datei <code>src/app.html</code> ein, am besten nach dem <code>&lt;/body&gt;</code>-Tag.
+</div>
+
 ### Modellierung
 
 Um die Stoppuhr zu programmieren, brauchen wir eine Idee, wie sie benutzt werden soll – kümmern wir uns um die »Business-Logik«! Die Stoppuhr kann in verschiedenen Zuständen sein:
@@ -188,7 +192,7 @@ Daraus ergibt sich folgender Ablauf:
 
 <img class='full' src='logik.webp'>
 
-Um den Zustand auf der Webseite zu speichern, deklarieren wir eine Variable `state` im `<script>`-Tag:
+Um den Zustand auf der Webseite zu speichern, deklarieren wir eine Variable `state` im `<script>`-Tag von `src/routes/+page.svelte`:
 
 ```js
 let state = $state(0);
@@ -219,7 +223,7 @@ Um zu erkennen, wann die Leertaste gedrückt wird, müssen wir einen Event-Liste
 import { onMount } from 'svelte';
 ```
 
-Wir können nun den `onMount`-Hook verwenden, um den Event-Listener hinzuzufügen. Füge den folgenden Code in das `<script>`-Tag ein:
+Wir können nun den `onMount`-Hook verwenden, um den Event-Listener hinzuzufügen. Füge den folgenden Code an das Ende des `<script>`-Tags ein:
 
 ```js
 function handleKeyDown() {
@@ -238,12 +242,12 @@ onMount(() => {
 Wir definieren eine Funktion `handleKeyDown`, die den Zustand auf 1 setzt (wir werden die Logik später noch erweitern). Dann fügen wir im `onMount`-Hook einen Event-Listener hinzu, der die Funktion `handleKeyDown` aufruft, wenn die Leertaste gedrückt wird.
 
 <div class='hint'>
-Achte beim Einfügen von Code darauf, dass du eine einheitliche Einrückung verwendest. Mach dich mit den Möglichkeiten in VS Code vertraut, um den Code einzurücken. Du kannst z. B. den gesamten Code markieren und dann <span class='key'>Tab</span> drücken, um ihn einzurücken, oder <span class='key'>Shift</span><span class='key'>Tab</span>, um ihn wieder auszurücken. VS Code kann Code auch automatisch einrücken – drücke dazu <span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>P</span> und gib »Reindent Lines« ein.
+Achte beim Einfügen von Code darauf, dass du eine einheitliche Einrückung verwendest. Mach dich mit den Möglichkeiten in VS Code vertraut, um den Code einzurücken. Du kannst z. B. den gesamten Code markieren und dann <span class='key'>Tab</span> drücken, um ihn einzurücken, oder <span class='key'>Shift</span><span class='key'>Tab</span>, um ihn wieder auszurücken. VS Code kann Code auch automatisch einrücken – drücke dazu <span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>P</span> und gib »Reindent Lines« ein. Du kannst auch »Format Document« auswählen, um das gesamte Dokument zu formatieren.
 </div>
 
 Wenn du die Seite jetzt aktualisierst und die Leertaste drückst, sollte sich der Zustand auf 1 ändern. Wenn du die Leertaste loslässt, bleibt der Zustand auf 1 stehen. Das liegt daran, dass wir noch keine Logik implementiert haben, um den Zustand zurückzusetzen. Du kannst die Seite aber neu laden, um den Zustand zurückzusetzen.
 
-Wir fügen eine Funktion `handleKeyUp` hinzu, die den Zustand zurücksetzt, wenn die Leertaste losgelassen wird. Füge den folgenden Code in das `<script>`-Tag ein:
+Wir fügen eine Funktion `handleKeyUp` hinzu, die den Zustand zurücksetzt, wenn die Leertaste losgelassen wird. Füge den folgenden Code hinter `handleKeyDown` ein:
 
 ```js
 function handleKeyUp() {
@@ -251,7 +255,7 @@ function handleKeyUp() {
 }
 ```
 
-Füge außerdem einen weiteren Event-Listener in `onMount` hinzu, der die Funktion `handleKeyUp` aufruft, wenn die Leertaste losgelassen wird:
+Füge außerdem zwei weitere Event-Listener in `onMount` hinzu, der die Funktion `handleKeyUp` aufruft, wenn die Leertaste losgelassen wird:
 
 ```js
 document.addEventListener("keyup", (e) => {
@@ -270,7 +274,7 @@ document.addEventListener("touchstart", () => handleKeyDown());
 document.addEventListener("touchend", () => handleKeyUp());
 ```
 
-Wir fügen noch noch ein paar Variablen oben im `<script>`-Tag hinzu:
+Wir fügen noch noch ein paar Variablen oben im `<script>`-Tag hinzu (unter `let state`):
 
 ```js
 let t0 = 0;
@@ -315,7 +319,7 @@ Im CSS-Abschnitt fügen wir noch ein paar Zeilen hinzu, um den Timer zu formatie
 
 Da Svelte normalerweise allen Code, der nicht verwendet wird, aus Effizienzgründen entfernt, müssen wir CSS-Klassen, die nicht von Anfang an schon im HTML-Code vorhanden sind, mit `:global(`...`)` kennzeichnen. Das ist hier der Fall, weil die CSS-Klassen `ready` und `small` erst später durch JavaScript-Funktionen hinzugefügt werden.
 
-Wir brauchen eine Funktion, die die Timeranzeige, also die Variable `timerString`, aktualisiert. Füge den folgenden Code in das `<script>`-Tag ein:
+Wir brauchen eine Funktion, die die Timeranzeige, also die Variable `timerString`, aktualisiert. Füge den folgenden Code in das `<script>`-Tag ein (vor `handleKeyDown`):
 
 ```js
 function updateTimer() {
@@ -386,7 +390,7 @@ Der ganzen Code für die Datei `src/routes/+page.svelte` sieht jetzt so aus:
 
 _include_file(+page.svelte, svelte)
 
-Deine Seite sollte jetzt so aussehen:
+Deine Seite sollte jetzt so aussehen und funktionieren:
 
 <img class='full border' src='finished.webp'>
 
@@ -396,7 +400,7 @@ Jetzt, wo die Stoppuhr funktioniert, können wir uns um das Styling kümmern. Wi
 
 ### Bessere Schriftarten
 
-Wir können die Schriftart der Webseite ändern, um sie ansprechender zu gestalten. Dazu verwenden wir Google Fonts. Füge den folgenden Code in den `<head>`-Tag der Datei `src/app.html` ein:
+Wir können die Schriftart der Webseite ändern, um sie ansprechender zu gestalten. Dazu verwenden wir Google Fonts. Füge den folgenden Code in den `<head>`-Tag der Datei `src/app.html` ein (vor `%sveltekit.head%`):
 
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -434,14 +438,14 @@ Jetzt kannst du Bootstrap-Klassen verwenden, um deine Webseite zu gestalten. Unt
     id="bu_reset"
     class="btn btn-lg {state < 3 ? 'btn-outline-secondary' : 'btn-warning'}"
     disabled={state < 3 ? "disabled" : ""}
-    on:click={resetTimer}>
+    onclick={resetTimer}>
     Reset
 </button>
 ```
 
 Wir definieren hier einen Button mit der ID `bu_reset`, der die Klasse `btn` von Bootstrap hat. Außerdem verwenden wir die Klasse `btn-outline-secondary` (graue Umrandung), wenn `state` kleiner als 3 ist, und ansonsten die Klasse `btn-warning` (gelbe Farbe). Außerdem wird der Button deaktiviert, wenn `state` kleiner als 3 ist. Wenn der Button geklickt wird, wird die Funktion `resetTimer` aufgerufen.
 
-Wir müssen jetzt noch eine Funktion `resetTimer` hinzufügen, die den Timer zurücksetzt. Füge den folgenden Code in das `<script>`-Tag ein (z. B. hinter der Funktion `handleKeyUp`):
+Wir müssen jetzt noch eine Funktion `resetTimer` hinzufügen, die den Timer zurücksetzt. Füge den folgenden Code in das `<script>`-Tag ein (z. B. nach der Funktion `updateTimer`):
 
 ```js
 function resetTimer() {
@@ -461,6 +465,10 @@ Auf dem Reset-Button fehlt noch ein Icon. Wir verwenden dafür [Iconify](https:/
 ```bash
 npm install @iconify/svelte
 ```
+
+<div class='hint'>
+Falls du den Entwicklungs-Server gerade laufen hast, musst du ihn jetzt stoppen (mit <span class='key'>Strg</span><span class='key'>C</span>) und anschließend den Befehl eingeben. Danach kannst du den Server wieder mit <code>npm run dev</code> starten.
+</div>
 
 Wenn du das Paket installiert hast, kannst du die Icons ganz einfach in deine Webseite einfügen. Füge den folgenden Code in den `<script>`-Tag ein:
 
@@ -515,7 +523,7 @@ Anschließend musst du den Adapter in der Datei `svelte.config.js` aktivieren. �
 
 <img class='full' src='adapter-static.webp'>
 
-Wir müssen Svelte jetzt noch mitteilen, dass wir die Webseite als statische Webseite exportieren möchten. Erstelle dazu eine neue Datei `src/routes/+layout.js` und füge den folgenden Code ein:
+Wir müssen Svelte jetzt noch mitteilen, dass wir die Webseite als statische Webseite exportieren möchten. Erstelle dazu eine neue Datei `src/routes/+layout.js` und füge den folgenden Code in das `<script>`-Tag ein:
 
 ```js
 export const prerender = true;
