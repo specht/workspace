@@ -1326,9 +1326,16 @@ class Main < Sinatra::Base
         STDERR.puts "Setting up Neo4j user #{login} with database #{login}"
         Open3.popen2("docker exec -i workspace_neo4j_user_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
             stdin.puts <<~END_OF_STRING
+                CREATE USER `#{login}` IF NOT EXISTS SET PLAINTEXT PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED;
+                ALTER USER `#{login}` SET PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED;
                 CREATE DATABASE `#{database}` IF NOT EXISTS;
-                CREATE USER `#{login}` IF NOT EXISTS SET PLAINTEXT PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED SET HOME DATABASE `#{database}`;
-                REVOKE ACCESS ON DATABASE neo4j FROM `#{login}`;
+                CREATE ROLE `#{login}` IF NOT EXISTS;
+                GRANT ACCESS ON DATABASE `#{database}` TO `#{login}`;
+                GRANT ALL ON GRAPH `#{database}` TO `#{login}`;
+                GRANT EXECUTE PROCEDURES * ON DBMS TO `#{login}`;
+                GRANT EXECUTE FUNCTIONS * ON DBMS TO `#{login}`;
+                GRANT ROLE `#{login}` TO `#{login}`;
+                ALTER USER `#{login}` SET HOME DATABASE `#{database}`;
             END_OF_STRING
             stdin.close
             wait_thr.value
@@ -1342,10 +1349,18 @@ class Main < Sinatra::Base
         Open3.popen2("docker exec -i workspace_neo4j_user_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
             stdin.puts <<~END_OF_STRING
                 DROP DATABASE `#{database}` IF EXISTS;
+                DROP USER `#{login}` IF EXISTS;
+                DROP ROLE `#{login}` IF EXISTS;
+                CREATE USER `#{login}` IF NOT EXISTS SET PLAINTEXT PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED;
+                ALTER USER `#{login}` SET PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED;
                 CREATE DATABASE `#{database}` IF NOT EXISTS;
-                CREATE USER `#{login}` IF NOT EXISTS SET PLAINTEXT PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED SET HOME DATABASE `#{database}`;
-                GRANT ROLE architect TO `#{login}`;
-                REVOKE ACCESS ON DATABASE neo4j FROM `#{login}`;
+                CREATE ROLE `#{login}` IF NOT EXISTS;
+                GRANT ACCESS ON DATABASE `#{database}` TO `#{login}`;
+                GRANT ALL ON GRAPH `#{database}` TO `#{login}`;
+                GRANT EXECUTE PROCEDURES * ON DBMS TO `#{login}`;
+                GRANT EXECUTE FUNCTIONS * ON DBMS TO `#{login}`;
+                GRANT ROLE `#{login}` TO `#{login}`;
+                ALTER USER `#{login}` SET HOME DATABASE `#{database}`;
             END_OF_STRING
             stdin.close
             wait_thr.value
