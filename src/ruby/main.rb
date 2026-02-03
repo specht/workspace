@@ -864,6 +864,8 @@ class Main < Sinatra::Base
                     lexer = Rouge::Lexers::SQL.new
                 when 'svelte'
                     lexer = Rouge::Lexers::Svelte.new
+                when 'tex'
+                    lexer = Rouge::Lexers::TeX.new
                 when 'text'
                     lexer = Rouge::Lexers::PlainText.new
                 end

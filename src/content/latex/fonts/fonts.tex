@@ -1,0 +1,249 @@
+% !TEX program = lualatex
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=20mm]{geometry}
+\usepackage{fontspec}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{tabto}
+
+% ---------- Mathematik ----------
+% Default-Mathefont (robust, passt zu fast allem)
+\usepackage{unicode-math}
+% \setmainfont{XCharter}
+% \setmathfont{XCharter Math}
+
+\pagestyle{empty}
+
+% ---------- Layout ----------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+% ---------- Beispielsätze (LaTeX-sicher: \$ statt $) ----------
+\newcommand{\abc}{abcdefghijklmnopqrstuvwxyz}
+\newcommand{\ligs}{\ ff fi fl ffi ffl}
+\newcommand{\abctextrm}{Text roman:  \abc\ligs}
+\newcommand{\abctextit}{Text italic: \ \ \textit{\abc\ligs}}
+\newcommand{\abcmathit}{Math italic: \ $\abc$}
+\newcommand{\formulas}{%
+  $\displaystyle
+   \int_{0}^{1}\! x^{2}\,\mathrm{d}x = \dfrac{1}{3} 
+   \qquad
+   \sum_{k=0}^{\infty} \frac{1}{k^{2}}=\frac{\pi^{2}}{6}
+   \qquad
+   \mathcal{ABC}\ \mathfrak{ABC}\ \mathbb{CNQR}$}
+\newcommand{\doall}{\abctextrm\par\abctextit\par\abcmathit\par\formulas}
+
+\newcommand{\pangram}{Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.}
+\newcommand{\intl}{Falsches Üben von Xylophonmusik quält jeden größeren Zwerg.}
+\newcommand{\numbers}{0123456789\hspace{0.5em}—\hspace{0.5em} € £ \$ ¥ © ®\hspace{0.5em}·\hspace{0.5em}}
+\newcommand{\sampletext}{%
+  Normal: \tabto{3.5cm}\intl\\
+  {\em Kursiv:}\tabto{3.5cm}{\em \intl}\\
+  {\bfseries Fett:}\tabto{3.5cm}{\bfseries \intl}\\
+  {\bfseries\em Fett + Kursiv:}\tabto{3.5cm}{\bfseries\em \intl}\\
+  Symbole:\tabto{3.5cm}\numbers\ligs
+}
+
+\newcommand{\headline}[2]{%
+  {\large\bfseries #1}\hfill{\small\ttfamily #2}\par
+}
+
+% showfont(Titel, Font-Familienname wie in fc-list)
+\newcommand{\showfont}[2]{%
+  \clearpage
+  \vspace{5pt}
+  \hrule
+  \vspace{5pt}
+  \headline{\fontspec{#2}{#1}}{#2}
+  {%
+    \fontspec{#2}\sampletext\par
+  }%
+  \vspace{5pt}
+  \hrule
+  \vspace{5pt}
+}
+
+% showfont(Titel, Textfont, Mathefont) — lokal gekoppelt
+\newcommand{\showfontmath}[3]{%
+  \clearpage
+  \vspace{5pt}
+  \hrule
+  \vspace{5pt}
+  \headline{\fontspec{#2}{#1}}{#2 / #3}
+  {%
+    \fontspec{#2}%
+    \setmathfont{#3}%
+    \sampletext\hspace{1em} $\mathcal{ABC}\ \mathfrak{ABC}\ \mathbb{CNQR}$\par
+    \[
+      \int_0^\pi \textrm{\setmainfont{#2}sin}(x)\,dx = 2
+      \qquad
+      \sum_{k=1}^{n} k = \frac{n(n+1)}{2}
+    \]
+  }%
+  \vspace{5pt}
+  \hrule
+  \vspace{5pt}
+}
+
+% ---------- Listings ----------
+\lstset{
+  columns=fullflexible,
+  frame=single,
+  breaklines=true,
+  showstringspaces=false
+}
+
+\title{Schriftarten-Galerie für LuaLaTeX}
+\author{}
+\date{}
+
+\begin{document}
+% \maketitle
+
+% \tableofcontents
+% \bigskip
+% \hrule
+% \vspace{10pt}
+
+% ============================================================
+% \section{Textschrift + passende Mathematik}
+% In LaTeX sind Textschrift und Mathe-Schrift getrennt. Einige Schriftfamilien liefern jedoch eine passende Mathe-Schrift mit, was das Gesamtbild harmonischer macht. Im Folgenden sind einige Beispiele aufgeführt.
+
+\showfontmath{Latin Modern Roman}{Latin Modern Roman}{Latin Modern Math}
+\showfontmath{XCharter}{XCharter}{XCharter Math}
+\showfontmath{Stix Two}{Stix Two Text}{Stix Two Math}
+\showfontmath{TeX Gyre Pagella + Pagella Math}{TeX Gyre Pagella}{TeX Gyre Pagella Math}
+\showfontmath{TeX Gyre Termes + Termes Math}{TeX Gyre Termes}{TeX Gyre Termes Math}
+\showfontmath{TeX Gyre Schola + Schola Math}{TeX Gyre Schola}{TeX Gyre Schola Math}
+\showfontmath{TeX Gyre Bonum + Bonum Math}{TeX Gyre Bonum}{TeX Gyre Bonum Math}
+
+% \hrule
+% \vspace{10pt}
+
+% ============================================================
+% \section{Klassiker (typisches LaTeX-Aussehen)}
+\showfont{Latin Modern Roman}{Latin Modern Roman}
+\showfont{Latin Modern Sans}{Latin Modern Sans}
+\showfont{Latin Modern Mono}{Latin Modern Mono}
+
+\showfont{CMU Serif}{CMU Serif}
+\showfont{CMU Sans Serif}{CMU Sans Serif}
+\showfont{CMU Typewriter Text}{CMU Typewriter Text}
+
+% ============================================================
+% \section{Buch- und Textschriften (für längere Texte)}
+\showfont{Nimbus Roman (Times-ähnlich)}{Nimbus Roman}
+\showfont{Vollkorn}{Vollkorn}
+
+% ============================================================
+% \section{Moderne serifenlose Schriften (Arbeitsblätter, Präsentationen)}
+\showfont{Inter}{Inter}
+\showfont{IBM Plex Sans}{IBM Plex Sans}
+\showfont{Ubuntu}{Ubuntu}
+
+% ============================================================
+% \section{Word-ähnliche Schriften (gut für Kompatibilität)}
+\showfont{Liberation Serif (ähnlich Times New Roman)}{Liberation Serif}
+\showfont{Liberation Sans (ähnlich Arial)}{Liberation Sans}
+\showfont{Caladea (ähnlich Cambria)}{Caladea}
+\showfont{Carlito (ähnlich Calibri)}{Carlito}
+
+% ============================================================
+% \section{Monospace-Schriften (Code, Terminal, Informatik)}
+{\small \showfont{JetBrains Mono}{JetBrains Mono} }
+\showfont{Anonymous Pro}{Anonymous Pro}
+{\small \showfont{IBM Plex Mono}{IBM Plex Mono}}
+
+% \bigskip
+% \headline{Beispiel: Quellcode (gleicher Code, andere Schrift)}{listings}
+
+% \textbf{JetBrains Mono}
+% {\lstset{basicstyle=\small\fontspec{JetBrains Mono}}
+% \begin{lstlisting}
+% def begruessung(name):
+%     return "Hallo, " + name + "!"
+
+% for n in ["Ada", "Linus", "Grace"]:
+%     print(begruessung(n))
+% \end{lstlisting}}
+
+% \textbf{Fira Code}
+% {\lstset{basicstyle=\small\fontspec{Fira Code}}
+% \begin{lstlisting}
+% if (a <= b && b != 0) {
+%   const prozent = (a / b) * 100;
+%   console.log("Ergebnis: " + prozent + "%");
+% }
+% \end{lstlisting}}
+
+% \textbf{Hack}
+% {\lstset{basicstyle=\small\fontspec{Hack}}
+% \begin{lstlisting}
+% SELECT titel, jahr
+% FROM filme
+% WHERE jahr >= 2000
+% ORDER BY titel;
+% \end{lstlisting}}
+
+% ============================================================
+% \section{Gut lesbar / kreativ (für Überschriften, Plakate)}
+\showfont{Atkinson Hyperlegible (sehr gut lesbar)}{Atkinson Hyperlegible}
+\showfont{Comic Neue (locker, aber sauber)}{Comic Neue}
+\showfont{Montserrat}{Montserrat}
+\showfont{Comfortaa}{Comfortaa}
+
+% \section{Alle Schriftgrößen}
+
+% {\tiny\intl}
+
+% {\scriptsize\intl}
+
+% {\footnotesize\intl}
+
+% {\small\intl}
+
+% {\normalsize\intl}
+
+% {\large\intl}
+
+% {\Large\intl}
+
+% {\LARGE\intl}
+
+% {\huge\intl}
+
+% {\Huge\intl}
+
+% \vspace{10pt}
+% \hrule
+% \vspace{8pt}
+
+% \section*{Merksätze}
+% \textbf{1) Schrift für normalen Text setzen:}
+% \begin{verbatim}
+% \usepackage{fontspec}
+% \setmainfont{Inter}
+% \end{verbatim}
+
+% \textbf{2) Monospace-Schrift (für Code) setzen:}
+% \begin{verbatim}
+% \setmonofont{JetBrains Mono}
+% \end{verbatim}
+
+% \textbf{3) Mathe-Schrift setzen (optional):}
+% \begin{verbatim}
+% \usepackage{unicode-math}
+% \setmathfont{STIX Two Math}
+% \end{verbatim}
+
+% \textbf{4) Text + passende Mathe-Schrift (TeX Gyre):}
+% \begin{verbatim}
+% \setmainfont{TeX Gyre Pagella}
+% \setmathfont{TeX Gyre Pagella Math}
+% \end{verbatim}
+
+\end{document}
