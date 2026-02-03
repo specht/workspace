@@ -3,7 +3,7 @@
 require 'json'
 
 running_servers = []
-inspect = JSON.parse(`docker network inspect bridge`)
+inspect = JSON.parse(`docker network inspect workspace_internal`)
 inspect.first['Containers'].values.each do |container|
     name = container['Name']
     next unless name[0, 8] == 'hs_code_'
