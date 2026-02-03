@@ -1327,7 +1327,6 @@ class Main < Sinatra::Base
         Open3.popen2("docker exec -i workspace_neo4j_user_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
             stdin.puts <<~END_OF_STRING
                 CREATE USER `#{login}` IF NOT EXISTS SET PLAINTEXT PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED;
-                ALTER USER `#{login}` SET PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED;
                 CREATE DATABASE `#{database}` IF NOT EXISTS;
                 CREATE ROLE `#{login}` IF NOT EXISTS;
                 GRANT ACCESS ON DATABASE `#{database}` TO `#{login}`;
@@ -1352,7 +1351,6 @@ class Main < Sinatra::Base
                 DROP USER `#{login}` IF EXISTS;
                 DROP ROLE `#{login}` IF EXISTS;
                 CREATE USER `#{login}` IF NOT EXISTS SET PLAINTEXT PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED;
-                ALTER USER `#{login}` SET PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED;
                 CREATE DATABASE `#{database}` IF NOT EXISTS;
                 CREATE ROLE `#{login}` IF NOT EXISTS;
                 GRANT ACCESS ON DATABASE `#{database}` TO `#{login}`;
