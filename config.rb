@@ -130,7 +130,7 @@ if PROFILE.include?(:static)
             :ruby,
             :phpmyadmin,
             :pgadmin,
-            :neo4j_user,
+            :neo4japp,
         ]
     end
 end
@@ -162,22 +162,22 @@ if PROFILE.include?(:dynamic)
     }
     if PROFILE.include?(:neo4j)
         docker_compose[:services][:ruby][:depends_on] ||= []
-        docker_compose[:services][:ruby][:depends_on] << :neo4j
+        docker_compose[:services][:ruby][:depends_on] << :neo4japp
     end
 end
 
 if PROFILE.include?(:neo4j)
-    docker_compose[:services][:neo4j] = {
+    docker_compose[:services][:neo4japp] = {
         :build => './docker/neo4j',
         :volumes => ["#{NEO4J_DATA_PATH}:/data",
                      "#{NEO4J_LOGS_PATH}:/logs"]
     }
-    docker_compose[:services][:neo4j][:environment] = [
+    docker_compose[:services][:neo4japp][:environment] = [
         'NEO4J_AUTH=none',
         'NEO4J_dbms_logs__timezone=SYSTEM',
         'NEO4J_dbms_allow__upgrade=true',
     ]
-    docker_compose[:services][:neo4j][:user] = '1000'
+    docker_compose[:services][:neo4japp][:user] = '1000'
 end
 
 docker_compose[:services][:mysql] = {
@@ -192,7 +192,7 @@ docker_compose[:services][:mysql] = {
     },
 }
 
-docker_compose[:services][:neo4j_user] = {
+docker_compose[:services][:neo4j] = {
     :image => 'neo4j:enterprise',
     # :command => ["--default-authentication-plugin=mysql_native_password"],
     :volumes => ["#{NEO4J_USER_DATA_PATH}:/data"],
@@ -205,16 +205,6 @@ docker_compose[:services][:neo4j_user] = {
         'NEO4J_dbms_security_auth__enabled' => 'true',
     },
 }
-
-# if !DEVELOPMENT
-#     docker_compose[:services][:neo4j_user][:volumes] << "/home/#{ENV['USER']}/frontend/certs/certs-for-neo4j:/certs:ro"
-#     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_enabled'] = 'true'
-#     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_base__directory'] = '/certs'
-#     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_private__key'] = 'key.pem'
-#     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_ssl_policy_bolt_public__certificate'] = 'fullchain.pem'
-#     docker_compose[:services][:neo4j_user][:environment]['NEO4J_server_bolt_tls__level'] = 'OPTIONAL'
-#     docker_compose[:services][:neo4j_user][:environment]['NEO4J_dbms_usage__report_enabled'] = 'false'
-# end
 
 docker_compose[:services][:phpmyadmin] = {
     :image => 'phpmyadmin/phpmyadmin:5.2',
@@ -269,8 +259,8 @@ docker_compose[:services][:pgadmin] = {
 if DEVELOPMENT
     docker_compose[:services][:nginx][:ports] = ["0.0.0.0:#{DEV_NGINX_PORT}:80"]
     if PROFILE.include?(:neo4j)
-        docker_compose[:services][:neo4j][:ports] ||= []
-        docker_compose[:services][:neo4j][:ports] << "127.0.0.1:#{DEV_NEO4J_PORT}:7474"
+        docker_compose[:services][:neo4japp][:ports] ||= []
+        docker_compose[:services][:neo4japp][:ports] << "127.0.0.1:#{DEV_NEO4J_PORT}:7474"
     end
 end
 
@@ -285,7 +275,7 @@ docker_compose[:networks] = {
         :driver => 'bridge'
     }
 }
-[:nginx, :ruby, :mysql, :neo4j_user, :postgres].each do |service_name|
+[:nginx, :ruby, :mysql, :neo4j, :postgres].each do |service_name|
     docker_compose[:services][service_name][:networks] << 'user'
 end
 unless DEVELOPMENT

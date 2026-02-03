@@ -18,7 +18,7 @@ require 'sinatra/cookies'
 
 require './credentials.rb'
 
-Neo4jBolt.bolt_host = 'neo4j'
+Neo4jBolt.bolt_host = 'neo4japp'
 Neo4jBolt.bolt_port = 7687
 
 Faye::WebSocket.load_adapter('thin')
@@ -534,7 +534,7 @@ class Main < Sinatra::Base
 
                 location / {
                     include /etc/nginx/snippets/proxy_ws.conf;
-                    proxy_pass http://neo4j_user:7474;
+                    proxy_pass http://neo4j:7474;
                 }
             }
             server {
@@ -552,7 +552,7 @@ class Main < Sinatra::Base
                     proxy_read_timeout 1h;
                     proxy_send_timeout 1h;
 
-                    proxy_pass http://neo4j_user:7687;
+                    proxy_pass http://neo4j:7687;
                 }
             }
         END_OF_STRING
@@ -1324,7 +1324,7 @@ class Main < Sinatra::Base
         login = email.split('@').first.downcase
         database = "#{login}"
         STDERR.puts "Setting up Neo4j user #{login} with database #{login}"
-        Open3.popen2("docker exec -i workspace_neo4j_user_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+        Open3.popen2("docker exec -i workspace_neo4j_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
             stdin.puts <<~END_OF_STRING
                 CREATE USER `#{login}` IF NOT EXISTS SET PLAINTEXT PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED;
                 CREATE DATABASE `#{database}` IF NOT EXISTS;
@@ -1352,7 +1352,7 @@ class Main < Sinatra::Base
         neo4j_password = Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)
         login = email.split('@').first.downcase
         database = "#{login}"
-        Open3.popen2("docker exec -i workspace_neo4j_user_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+        Open3.popen2("docker exec -i workspace_neo4j_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
             stdin.puts <<~END_OF_STRING
                 DROP DATABASE `#{database}` IF EXISTS;
                 DROP USER `#{login}` IF EXISTS;
@@ -1668,14 +1668,10 @@ class Main < Sinatra::Base
 
             network_name = "workspace_user"
             STDERR.puts ">>> Getting IP addresses for mysql and postgres..."
-            # mysql_ip = `docker inspect workspace_mysql_1`.split('"IPAddress": "')[1].split('"')[0]
-            # postgres_ip = `docker inspect workspace_postgres_1`.split('"IPAddress": "')[1].split('"')[0]
-            # STDERR.puts ">>> MySQL running #{mysql_ip}, Postgres running at #{postgres_ip}"
-            # neo4j_ip = `docker inspect workspace_neo4j_user_1`.split('"IPAddress": "')[1].split('"')[0]
             login = email.split('@').first.downcase
             mysql_login = db_email.split('@').first.downcase
             STDERR.puts ">>> Login is #{login}, MySQL login is #{mysql_login}"
-            command = "docker run --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(db_email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e POSTGRES_HOST=\"postgres\" -e POSTGRES_USER=\"#{login}\" -e POSTGRES_PASSWORD=\"#{Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)}\" -e POSTGRES_DATABASE=\"#{login}\"  -e NEO4J_HOST=\"neo4j\" -e NEO4J_USERNAME=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(mysql_login, NEO4J_PASSWORD_SALT)}\" -e NEO4J_DATABASE=\"#{mysql_login.gsub('.', '_')}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
+            command = "docker run --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(db_email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e POSTGRES_HOST=\"postgres\" -e POSTGRES_USER=\"#{login}\" -e POSTGRES_PASSWORD=\"#{Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)}\" -e POSTGRES_DATABASE=\"#{login}\"  -e NEO4J_URI=\"neo4j://neo4j:7687\" -e NEO4J_USERNAME=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(mysql_login, NEO4J_PASSWORD_SALT)}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
             STDERR.puts ">>> Command:\n#{command}"
             system(command)
             Main.refresh_nginx_config()
