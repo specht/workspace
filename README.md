@@ -43,7 +43,7 @@ Kopiere die Datei `src/ruby/credentials.template.rb` nach `src/ruby/credentials.
 ./config.rb up
 ```
 
-**workspace.test einrichten**
+**Domain »workspace.test« einrichten**
 
 Da der Workspace viel mit Subdomains arbeitet, müssen wir uns darum kümmern, dass die Domain `workspace.test` und alle Subdomains auf unseren lokalen Rechner zeigen. Das geht z. B. mit `dnsmasq`.
 
