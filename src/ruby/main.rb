@@ -213,7 +213,8 @@ class Main < Sinatra::Base
                 :ip => ip,
                 :server_sid => nil,
                 :server_tag => nil,
-                :watch_tags => Set.new(),
+                :share_tag => nil,
+                :watch_tags => {} # watch_tag => server_id of watcher
             }
         end
 
@@ -255,6 +256,7 @@ class Main < Sinatra::Base
                 # sid_ip_pairs << "#{user[:server_sid]} #{running_servers[fs_tag][:ip]}:8443;"
                 running_servers[fs_tag][:server_sid] = user[:server_sid]
                 running_servers[fs_tag][:server_tag] = server_tag
+                running_servers[fs_tag][:share_tag] = user[:share_tag]
             end
         end
         # STDERR.puts "sid_ip_pairs:"
@@ -263,15 +265,16 @@ class Main < Sinatra::Base
         # watch_tag_ip_pairs = []
 
         $neo4j.neo4j_query(<<~END_OF_QUERY).each do |row|
-            MATCH (:User)-[r:WATCHING]->(u:User)
-            RETURN r.watch_tag, u;
+            MATCH (w:User)-[r:WATCHING]->(u:User)
+            RETURN r.watch_tag, u, w;
         END_OF_QUERY
             watch_tag = row['r.watch_tag']
             user = row['u']
+            watcher = row['w']
             fs_tag = fs_tag_for_email(user[:email])
             if running_servers.include?(fs_tag)
                 # watch_tag_ip_pairs << "#{watch_tag} #{running_servers[fs_tag][:ip]}:8443;"
-                running_servers[fs_tag][:watch_tags] << watch_tag
+                running_servers[fs_tag][:watch_tags][watch_tag] = watcher[:server_sid]
             end
         end
 
@@ -281,11 +284,12 @@ class Main < Sinatra::Base
         # STDERR.puts watch_tag_ip_pairs.join("\n")
 
         nginx_config = <<~END_OF_STRING
-            log_format custom '$host $http_x_forwarded_proto $remote_addr - $remote_user [$time_local] "$request" '
-                            '$status $body_bytes_sent "$http_referer" '
-                            '"$http_user_agent" "$request_time"';
+            #log_format custom '$host $http_x_forwarded_proto $remote_addr - $remote_user [$time_local] "$request" '
+            #                '$status $body_bytes_sent "$http_referer" '
+            #                '"$http_user_agent" "$request_time"';
 
-
+            log_format custom '$host:$server_port uri=$uri token=$hs_token up=$hs_upstream share=$hs_is_share reqsid=$hs_required_sid cookie=$cookie_hs_server_sid allowed=$hs_allowed "$request" $status';
+        
             map_hash_bucket_size 128;
 
             map $sent_http_content_type $expires {
@@ -332,18 +336,46 @@ class Main < Sinatra::Base
             map $hs_token $hs_upstream {
                 default "";
                 #{running_servers.map { |fs_tag, info| if info[:server_tag] then "#{info[:server_tag]} http://#{info[:ip]}:8443;" else nil end}.compact.join("\n    ")}
+                #{running_servers.map { |fs_tag, info| if info[:server_tag] then info[:watch_tags].map { |watch_tag, server_sid| "#{watch_tag} http://#{info[:ip]}:8443;" }.flatten.compact.join("\n    ") else nil end}.compact.join("\n    ")}
+                #{running_servers.map { |fs_tag, info| if info[:share_tag] then "#{info[:share_tag]} http://#{info[:ip]}:8443;" else nil end}.compact.join("\n    ")}
+            }
+
+            # Token -> share flag (explicit allowlist)
+            map $hs_token $hs_is_share {
+                default 0;
+                #{running_servers.map { |fs_tag, info| if info[:share_tag] then "#{info[:share_tag]} 1;" else nil end}.compact.join("\n    ")}
             }
 
             # Token -> required SID
             map $hs_token $hs_required_sid {
                 default "";
                 #{running_servers.map { |fs_tag, info| if info[:server_sid] then "#{info[:server_tag]} #{info[:server_sid]};" else nil end}.compact.join("\n    ")}
+                #{running_servers.map { |fs_tag, info| if info[:server_tag] then info[:watch_tags].map { |watch_tag, server_sid | "#{watch_tag} #{server_sid};" }.flatten.compact.join("\n    ") else nil end}.compact.join("\n    ")}
             }
 
-            # Allowed if cookie SID matches required SID
-            map "$cookie_hs_server_sid:$hs_required_sid" $hs_allowed {
+            # deny if upstream missing
+            map $hs_upstream $hs_no_upstream {
+                ""      1;
                 default 0;
-                ~^(.+):\\1$ 1;
+            }
+
+            # deny if token is private but required SID missing (fail closed)
+            map "$hs_is_share:$hs_required_sid" $hs_private_missing_sid {
+                default 0;
+                "0:"    1;
+            }
+
+            # Allowed if:
+            # - share token, OR
+            # - cookie SID matches required SID
+            map "$hs_is_share:$cookie_hs_server_sid:$hs_required_sid" $hs_allowed {
+                default 0;
+
+                # Share token => allow regardless of cookie
+                ~^1: 1;
+
+                # Private token => cookie must equal required sid
+                ~^0:(?<sid>[^:]+):\\k<sid>$ 1;
             }
 
             server {
@@ -394,13 +426,13 @@ class Main < Sinatra::Base
 
                 # Normalize /w/<token>  -> /w/<token>/
                 location ~ ^/w/[a-z0-9]+$ {
-                    return 301 $uri/;
+                    return 301 $uri/$is_args$args;
                 }
 
                 location ~ ^/w/[a-z0-9]+/ {
-                    if ($hs_upstream = "") { return 404; }
-                    if ($hs_allowed = 0)   { return 403; }
-
+                    if ($hs_no_upstream) { return 404; }
+                    if ($hs_private_missing_sid) { return 403; }
+                    if ($hs_allowed = 0) { return 403; }
                     # strip /w/<token>
                     rewrite ^/w/[a-z0-9]+(.*)$ $1 break;
 
@@ -420,10 +452,11 @@ class Main < Sinatra::Base
                 charset utf-8;
 
                 # ----------------------------------
-                # /proxy/<port> → p<port>.<token>.#{WEBSITE_HOST.split(':').first}
+                # /proxy/<port> → <token>-<port>.#{WEBSITE_HOST.split(':').first}
                 # ----------------------------------
                 location ~ ^/proxy/(?<p>\\d+)(?<rest>/.*)?$ {
-                    if ($hs_token = "") { return 404; }
+                    if ($hs_no_upstream) { return 404; }
+                    if ($hs_private_missing_sid) { return 403; }
                     if ($hs_allowed = 0) { return 403; }
 
                     # Default rest to /
@@ -434,12 +467,13 @@ class Main < Sinatra::Base
                     set $port "";
                     if ($http_host ~* :(?<hp>\\d+)$) { set $port :$hp; }
 
-                    return 302 #{DEVELOPMENT ? 'http:' : 'https:'}//${t}-${p}.#{WEBSITE_HOST.split(':').first}$port$r;
+                    return 302 #{DEVELOPMENT ? 'http:' : 'https:'}//${t}-${p}.#{WEBSITE_HOST.split(':').first}$port$r$is_args$args;
                 }
 
                 location / {
-                    if ($hs_upstream = "") { return 404; }
-                    if ($hs_allowed = 0)   { return 403; }
+                    if ($hs_no_upstream) { return 404; }
+                    if ($hs_private_missing_sid) { return 403; }
+                    if ($hs_allowed = 0) { return 403; }
 
                     include /etc/nginx/snippets/proxy_ws.conf;
                     proxy_pass $hs_upstream;
@@ -456,17 +490,13 @@ class Main < Sinatra::Base
                 access_log /var/log/nginx/access.log custom;
                 charset utf-8;
 
-                # Override the token derived from $host_token/$w_token maps
-                # so all your existing maps (upstream + required_sid + allowed) reuse <tag>
                 set $hs_token $t;
 
                 location / {
-                    if ($hs_upstream = "") { return 404; }
-                    if ($hs_allowed = 0)   { return 403; }
+                    if ($hs_no_upstream) { return 404; }
+                    if ($hs_private_missing_sid) { return 403; }
+                    if ($hs_allowed = 0) { return 403; }
 
-                    # Map:
-                    #   /foo/bar  -> /proxy/<port>/foo/bar
-                    #   /         -> /proxy/<port>/
                     rewrite ^/(.*)$ /proxy/$p/$1 break;
 
                     include /etc/nginx/snippets/proxy_ws.conf;
@@ -609,8 +639,6 @@ class Main < Sinatra::Base
             @@kenney[kit] ||= []
             @@kenney[kit] << model
         end
-
-        STDERR.puts "Kenney kits: #{@@kenney.keys.to_yaml}"
 
         @@kenney.keys.each do |kit|
             paths << {:section => 'misc', :path => kit, :original_path => "/src/content/anaglyph/#{kit}.md", :dev_only => false, :kenney => true, :extra => true}
@@ -1587,7 +1615,11 @@ class Main < Sinatra::Base
             Main.refresh_nginx_config()
         end
 
-        return "#{@session_user[:server_tag]}#{test_tag}"
+        begin
+            return "#{@session_user[:server_tag]}#{test_tag}"
+        rescue
+            return ""
+        end
     end
 
     def stop_server(email)

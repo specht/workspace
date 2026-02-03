@@ -85,7 +85,6 @@ function showTemplateModal(title, text, confirm_label, confirm_class,
 }
 
 var server_tag = "#{(@session_user || {})[:server_tag]}";
-var workspace_url = "#{workspace_url()}";
 
 function check_server_online(server_tag, watch) {
     if (typeof(watch) === 'undefined') watch = false;
@@ -97,10 +96,13 @@ function check_server_online(server_tag, watch) {
             console.log('Server is online');
             $('#bu_launch .bi').removeClass('bi-spin');
             $('#bu_launch').prop('disabled', false);
+            $('#bu_launch_share .bi').removeClass('bi-spin');
+            $('#bu_launch_share').prop('disabled', false);
             $('.bu-launch-test .bi').removeClass('bi-spin');
             $('.bu-launch-test').prop('disabled', false);
             $('.bu-open-workspace-as-admin .bi').removeClass('bi-spin');
             $('.bu-open-workspace-as-admin').prop('disabled', false);
+            let workspace_url = `#{WEB_ROOT}`.replace('//', `//${server_tag}.`);
             console.log(`Now opening ${workspace_url}`);
             window.open(workspace_url, '_blank');
         } else {
