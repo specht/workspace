@@ -21,7 +21,7 @@ fonts << 'ibm-plex-sans'
 fonts << 'ubuntu'
 fonts << 'liberation-serif'
 fonts << 'liberation-sans'
-fonts << 'caladea'
+# fonts << 'caladea'
 fonts << 'carlito'
 fonts << 'jetbrains-mono'
 fonts << 'anonymous-pro'
@@ -30,6 +30,9 @@ fonts << 'atkinson-hyperlegible'
 fonts << 'comic-neue'
 fonts << 'montserrat'
 fonts << 'comfortaa'
+fonts << 'gfs-bodoni'
+fonts << 'gfs-didot'
+fonts << 'gfs-neohellenic'
 
 fonts.each.with_index do |font, index|
     page = index + 1

@@ -1,0 +1,7 @@
+*.svg
+fonts/
+fonts.pdf
+fonts.aux
+fonts.fdb_latexmk
+fonts.log
+fonts.fls

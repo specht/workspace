@@ -70,6 +70,14 @@ Diese Schriftarten sind kreativ und gut lesbar, was sie ideal macht für Übersc
 <img class='full' src='fonts/montserrat.webp'>
 <img class='full' src='fonts/comfortaa.webp'>
 
+### Schriftarten mit griechischer Unterstützung
+
+Die Greek Font Society (GFS) stellt eine Reihe von Schriftarten bereit, die speziell für die Darstellung griechischer Texte entwickelt wurden.
+
+<img class='full' src='fonts/gfs-bodoni.webp'>
+<img class='full' src='fonts/gfs-didot.webp'>
+<img class='full' src='fonts/gfs-neohellenic.webp'>
+<img class='full' src='fonts/gfs-porson.webp'>
 
 
 ### Schriftarten mit mathematischer Unterstützung

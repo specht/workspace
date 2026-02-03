@@ -39,12 +39,22 @@
 
 \newcommand{\pangram}{Franz jagt im komplett verwahrlosten Taxi quer durch Bayern.}
 \newcommand{\intl}{Falsches Üben von Xylophonmusik quält jeden größeren Zwerg.}
+\newcommand{\greekintl}{Ξεσκεπάζω την ψυχοφθόρα βδελυγμία.}
+
 \newcommand{\numbers}{0123456789\hspace{0.5em}—\hspace{0.5em} € £ \$ ¥ © ®\hspace{0.5em}·\hspace{0.5em}}
 \newcommand{\sampletext}{%
   Normal: \tabto{3.5cm}\intl\\
   {\em Kursiv:}\tabto{3.5cm}{\em \intl}\\
   {\bfseries Fett:}\tabto{3.5cm}{\bfseries \intl}\\
   {\bfseries\em Fett + Kursiv:}\tabto{3.5cm}{\bfseries\em \intl}\\
+  Symbole:\tabto{3.5cm}\numbers\ligs
+}
+\newcommand{\sampletextgreek}{%
+  Normal: \tabto{3.5cm}\greekintl\\
+  {\em Kursiv:}\tabto{3.5cm}{\em \greekintl}\\
+  {\bfseries Fett:}\tabto{3.5cm}{\bfseries \greekintl}\\
+  {\bfseries\em Fett + Kursiv:}\tabto{3.5cm}{\bfseries\em \greekintl}\\
+  Polytonie:\tabto{3.5cm}Ἀγάπη, Ὀδύσσεια, Παιδεία\\
   Symbole:\tabto{3.5cm}\numbers\ligs
 }
 
@@ -61,6 +71,21 @@
   \headline{\fontspec{#2}{#1}}{#2}
   {%
     \fontspec{#2}\sampletext\par
+  }%
+  \vspace{5pt}
+  \hrule
+  \vspace{5pt}
+}
+
+% showfont(Titel, Font-Familienname wie in fc-list)
+\newcommand{\showfontgreek}[2]{%
+  \clearpage
+  \vspace{5pt}
+  \hrule
+  \vspace{5pt}
+  \headline{\fontspec{#2}{#1}}{#2}
+  {%
+    \fontspec{#2}\sampletextgreek\par
   }%
   \vspace{5pt}
   \hrule
@@ -149,7 +174,7 @@
 % \section{Word-ähnliche Schriften (gut für Kompatibilität)}
 \showfont{Liberation Serif (ähnlich Times New Roman)}{Liberation Serif}
 \showfont{Liberation Sans (ähnlich Arial)}{Liberation Sans}
-\showfont{Caladea (ähnlich Cambria)}{Caladea}
+% \showfont{Caladea (ähnlich Cambria)}{Caladea}
 \showfont{Carlito (ähnlich Calibri)}{Carlito}
 
 % ============================================================
@@ -195,6 +220,13 @@
 \showfont{Comic Neue (locker, aber sauber)}{Comic Neue}
 \showfont{Montserrat}{Montserrat}
 \showfont{Comfortaa}{Comfortaa}
+
+% ============================================================
+% \section{Griechische Schriftarten}
+\showfontgreek{GFS Bodoni}{GFS Bodoni}
+\showfontgreek{GFS Didot}{GFS Didot}
+\showfontgreek{GFS Neohellenic}{GFS Neohellenic}
+
 
 % \section{Alle Schriftgrößen}
 
