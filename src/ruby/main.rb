@@ -1333,7 +1333,7 @@ class Main < Sinatra::Base
                 GRANT ALL ON GRAPH `#{database}` TO `#{login}`;
                 GRANT CREATE NEW NODE LABEL ON DATABASE `#{database}` TO `#{login}`;
                 GRANT CREATE NEW RELATIONSHIP TYPE ON DATABASE `#{database}` TO `#{login}`;
-                GRANT CREATE NEW PROPERTY KEY ON DATABASE `#{database}` TO `#{login}`;
+                GRANT CREATE NEW PROPERTY NAME ON DATABASE `#{database}` TO `#{login}`;
                 GRANT ROLE `#{login}` TO `#{login}`;
                 ALTER USER `#{login}` SET HOME DATABASE `#{database}`;
             END_OF_STRING
@@ -1358,7 +1358,7 @@ class Main < Sinatra::Base
                 GRANT ALL ON GRAPH `#{database}` TO `#{login}`;
                 GRANT CREATE NEW NODE LABEL ON DATABASE `#{database}` TO `#{login}`;
                 GRANT CREATE NEW RELATIONSHIP TYPE ON DATABASE `#{database}` TO `#{login}`;
-                GRANT CREATE NEW PROPERTY KEY ON DATABASE `#{database}` TO `#{login}`;
+                GRANT CREATE NEW PROPERTY NAME ON DATABASE `#{database}` TO `#{login}`;
                 GRANT ROLE `#{login}` TO `#{login}`;
                 ALTER USER `#{login}` SET HOME DATABASE `#{database}`;
             END_OF_STRING
