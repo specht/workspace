@@ -127,6 +127,33 @@ RUN curl -fsSL https://debian.neo4j.com/neotechnology.gpg.key | sudo gpg --dearm
 RUN echo "deb [signed-by=/usr/share/keyrings/neo4j.gpg] https://debian.neo4j.com stable latest" | sudo tee /etc/apt/sources.list.d/neo4j.list
 RUN apt-get update && apt-get install -y cypher-shell && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update && apt-get install -y \
+  fonts-anonymous-pro \
+  fonts-atkinson-hyperlegible \
+  fonts-bebas-neue \
+  fonts-bitstream-charter \
+  fonts-cantarell \
+  fonts-cmu \
+  fonts-comfortaa \
+  fonts-comic-neue \
+  fonts-crosextra-caladea \
+  fonts-crosextra-carlito \
+  fonts-ebgaramond \
+  fonts-firacode \
+  fonts-hack \
+  fonts-ibm-plex \
+  fonts-inter \
+  fonts-jetbrains-mono \
+  fonts-liberation \
+  fonts-lmodern \
+  fonts-montserrat \
+  fonts-space-grotesk-ttf \
+  fonts-stix \
+  fonts-ubuntu \
+  fonts-vollkorn \
+  texlive-fonts-recommended \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* && fc-cache -f -v
+
 # Add environment variable for gems only once
 RUN echo "export GEM_HOME=\$HOME/.gem" >> /root/.bashrc
 
