@@ -16,7 +16,7 @@ DATA_PATH = DEVELOPMENT ? './data' : "/mnt/hackschule/#{PROJECT_NAME}"
 MYSQL_DATA_PATH = File.join(DATA_PATH, 'mysql')
 POSTGRES_DATA_PATH = File.join(DATA_PATH, 'postgres')
 PGADMIN_DATA_PATH = File.join(DATA_PATH, 'pgadmin')
-# NEO4J_USER_DATA_PATH = File.join(DATA_PATH, 'neo4j_user')
+NEO4J_USER_DATA_PATH = File.join(DATA_PATH, 'neo4j_user')
 USER_PATH = File.join(DATA_PATH, 'user')
 INTERNAL_PATH = File.join(DATA_PATH, 'internal')
 INVITATIONS_PATH = File.join(DATA_PATH, 'invitations')
@@ -130,7 +130,7 @@ if PROFILE.include?(:static)
             :ruby,
             :phpmyadmin,
             :pgadmin,
-            # :neo4j_user,
+            :neo4j_user,
         ]
     end
 end
@@ -192,20 +192,20 @@ docker_compose[:services][:mysql] = {
     },
 }
 
-# docker_compose[:services][:neo4j_user] = {
-#     :image => 'neo4j:enterprise',
-#     # :command => ["--default-authentication-plugin=mysql_native_password"],
-#     :volumes => ["#{NEO4J_USER_DATA_PATH}:/data"],
-#     :user => '1000',
-#     :restart => 'always',
-#     :ports => ["7474:7474", "7687:7687"],
-#     :environment => {
-#         'NEO4J_ACCEPT_LICENSE_AGREEMENT' => 'yes',
-#         'NEO4J_AUTH' => "neo4j/#{NEO4J_ROOT_PASSWORD}",
-#         'NEO4J_EDITION' => 'enterprise',
-#         'NEO4J_dbms_security_auth__enabled' => 'true',
-#     },
-# }
+docker_compose[:services][:neo4j_user] = {
+    :image => 'neo4j:enterprise',
+    # :command => ["--default-authentication-plugin=mysql_native_password"],
+    :volumes => ["#{NEO4J_USER_DATA_PATH}:/data"],
+    :user => '1000',
+    :restart => 'always',
+    :ports => ["7474:7474", "7687:7687"],
+    :environment => {
+        'NEO4J_ACCEPT_LICENSE_AGREEMENT' => 'yes',
+        'NEO4J_AUTH' => "neo4j/#{NEO4J_ROOT_PASSWORD}",
+        'NEO4J_EDITION' => 'enterprise',
+        'NEO4J_dbms_security_auth__enabled' => 'true',
+    },
+}
 
 # if !DEVELOPMENT
 #     docker_compose[:services][:neo4j_user][:volumes] << "/home/#{ENV['USER']}/frontend/certs/certs-for-neo4j:/certs:ro"
@@ -331,11 +331,10 @@ FileUtils::mkpath(File.join(DATA_PATH, 'tic80'))
 FileUtils::mkpath(MYSQL_DATA_PATH)
 FileUtils::mkpath(POSTGRES_DATA_PATH)
 FileUtils::mkpath(PGADMIN_DATA_PATH)
-# FileUtils::mkpath(NEO4J_USER_DATA_PATH)
+FileUtils::mkpath(NEO4J_USER_DATA_PATH)
 FileUtils::mkpath(File.join(DATA_PATH, 'internal'))
 FileUtils::mkpath(File.join(DATA_PATH, 'brand'))
 FileUtils::mkpath(File.join(DATA_PATH, 'mysql'))
-# FileUtils::mkpath(File.join(DATA_PATH, 'neo4j_user'))
 FileUtils::mkpath(File.join(DATA_PATH, 'pgadmin'))
 FileUtils::mkpath(File.join(DATA_PATH, 'postgres'))
 FileUtils::mkpath(File.join(DATA_PATH, 'dl'))

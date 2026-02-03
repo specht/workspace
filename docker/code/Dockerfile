@@ -122,6 +122,11 @@ COPY dart.deb /
 # Dart SDK install in one step
 RUN dpkg -i /dart.deb && rm /dart.deb
 
+# Install Cypher Shell
+RUN curl -fsSL https://debian.neo4j.com/neotechnology.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/neo4j.gpg
+RUN echo "deb [signed-by=/usr/share/keyrings/neo4j.gpg] https://debian.neo4j.com stable latest" | sudo tee /etc/apt/sources.list.d/neo4j.list
+RUN apt-get update && apt-get install -y cypher-shell && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Add environment variable for gems only once
 RUN echo "export GEM_HOME=\$HOME/.gem" >> /root/.bashrc
 

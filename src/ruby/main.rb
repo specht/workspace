@@ -289,7 +289,7 @@ class Main < Sinatra::Base
             #                '"$http_user_agent" "$request_time"';
 
             log_format custom '$host:$server_port uri=$uri token=$hs_token up=$hs_upstream share=$hs_is_share reqsid=$hs_required_sid cookie=$cookie_hs_server_sid allowed=$hs_allowed "$request" $status';
-        
+
             map_hash_bucket_size 128;
 
             map $sent_http_content_type $expires {
@@ -518,6 +518,36 @@ class Main < Sinatra::Base
                 location / {
                     include /etc/nginx/snippets/proxy_ws.conf;
                     proxy_pass http://phpmyadmin:80;
+                }
+            }
+
+            # ======
+            # Neo4j
+            # ======
+            server {
+                listen 80;
+                server_name neo4j.#{WEBSITE_HOST.split(':').first};
+
+                client_max_body_size 100M;
+                access_log /var/log/nginx/access.log custom;
+                charset utf-8;
+
+                location / {
+                    include /etc/nginx/snippets/proxy_ws.conf;
+                    proxy_pass http://neo4j_user:7474;
+                }
+            }
+            server {
+                listen 80;
+                server_name bolt.#{WEBSITE_HOST.split(':').first};
+
+                client_max_body_size 100M;
+                access_log /var/log/nginx/access.log custom;
+                charset utf-8;
+
+                location / {
+                    include /etc/nginx/snippets/proxy_ws.conf;
+                    proxy_pass http://neo4j_user:7687;
                 }
             }
         END_OF_STRING
@@ -1284,35 +1314,40 @@ class Main < Sinatra::Base
         init_postgres(email)
     end
 
-    # def init_neo4j(email)
-    #     neo4j_password = Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)
-    #     login = email.split('@').first.downcase
-    #     database = login.gsub('.', '_')
-    #     STDERR.puts "Setting up Neo4j user #{login} with database #{login}"
-    #     Open3.popen2("docker exec -i workspace_neo4j_user_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
-    #         stdin.puts <<~END_OF_STRING
-    #             CREATE DATABASE #{database} IF NOT EXISTS;
-    #             CREATE USER #{login} IF NOT EXISTS SET PLAINTEXT PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED
-    #             SET HOME DATABASE #{database};
-    #             GRANT ROLE architect TO #{login};
-    #         END_OF_STRING
-    #         stdin.close
-    #         wait_thr.value
-    #     end
-    # end
+    def init_neo4j(email)
+        neo4j_password = Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)
+        login = email.split('@').first.downcase
+        database = "#{login}"
+        STDERR.puts "Setting up Neo4j user #{login} with database #{login}"
+        Open3.popen2("docker exec -i workspace_neo4j_user_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+            stdin.puts <<~END_OF_STRING
+                CREATE DATABASE `#{database}` IF NOT EXISTS;
+                CREATE USER `#{login}` IF NOT EXISTS SET PLAINTEXT PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED SET HOME DATABASE `#{database}`;
+                GRANT ROLE architect TO `#{login}`;
+                REVOKE ACCESS ON DATABASE neo4j FROM `#{login}`;
+            END_OF_STRING
+            stdin.close
+            wait_thr.value
+        end
+    end
 
-    # def reset_neo4j(email)
-    #     login = email.split('@').first.downcase
-    #     database = login.gsub('.', '_')
-    #     Open3.popen2("docker exec -i workspace_neo4j_user_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
-    #         stdin.puts <<~END_OF_STRING
-    #             DROP DATABASE #{database} IF EXISTS;
-    #         END_OF_STRING
-    #         stdin.close
-    #         wait_thr.value
-    #     end
-    #     init_neo4j(email)
-    # end
+    def reset_neo4j(email)
+        neo4j_password = Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)
+        login = email.split('@').first.downcase
+        database = "#{login}"
+        Open3.popen2("docker exec -i workspace_neo4j_user_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+            stdin.puts <<~END_OF_STRING
+                DROP DATABASE `#{database}` IF EXISTS;
+                CREATE DATABASE `#{database}` IF NOT EXISTS;
+                CREATE USER `#{login}` IF NOT EXISTS SET PLAINTEXT PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED SET HOME DATABASE `#{database}`;
+                GRANT ROLE architect TO `#{login}`;
+                REVOKE ACCESS ON DATABASE neo4j FROM `#{login}`;
+            END_OF_STRING
+            stdin.close
+            wait_thr.value
+        end
+        init_neo4j(email)
+    end
 
     def start_server(email, test_tag = nil)
         email_with_test_tag = "#{email}#{test_tag}"
@@ -1572,7 +1607,7 @@ class Main < Sinatra::Base
             init_mysql(db_email)
             STDERR.puts ">>> Initializing Postgres"
             init_postgres(db_email)
-            # init_neo4j(db_email)
+            init_neo4j(db_email)
 
             if test_tag
                 test_init_mark_path = "/user/#{container_name}/workspace/.test_init"
@@ -1609,7 +1644,7 @@ class Main < Sinatra::Base
             login = email.split('@').first.downcase
             mysql_login = db_email.split('@').first.downcase
             STDERR.puts ">>> Login is #{login}, MySQL login is #{mysql_login}"
-            command = "docker run --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(db_email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e POSTGRES_HOST=\"postgres\" -e POSTGRES_USER=\"#{login}\" -e POSTGRES_PASSWORD=\"#{Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)}\" -e POSTGRES_DATABASE=\"#{login}\"  -e NEO4J_HOST=\"neo4j\" -e NEO4J_USER=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(mysql_login, NEO4J_PASSWORD_SALT)}\" -e NEO4J_DATABASE=\"#{mysql_login.gsub('.', '_')}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
+            command = "docker run --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(db_email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e POSTGRES_HOST=\"postgres\" -e POSTGRES_USER=\"#{login}\" -e POSTGRES_PASSWORD=\"#{Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)}\" -e POSTGRES_DATABASE=\"#{login}\"  -e NEO4J_HOST=\"neo4j\" -e NEO4J_USERNAME=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(mysql_login, NEO4J_PASSWORD_SALT)}\" -e NEO4J_DATABASE=\"#{mysql_login.gsub('.', '_')}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
             STDERR.puts ">>> Command:\n#{command}"
             system(command)
             Main.refresh_nginx_config()
@@ -2080,7 +2115,7 @@ class Main < Sinatra::Base
                         data[:disk_user_total] = bytes_to_str(disk_total).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')
                         data[:disk_user_used] = bytes_to_str(disk_used).sub('B', '').gsub(' ', '').gsub(/([A-Za-z]+)/, '<span class=\'unit\'>\1</span>')
                         data[:disk_user_percent] = (disk_used * 100.0 / disk_total * 100).to_i.to_f / 100
-                        
+
                         ws.send({:server_stats => data}.to_json)
 
                         sleep 5
@@ -2546,13 +2581,13 @@ class Main < Sinatra::Base
         respond_raw_with_mimetype(html, 'text/html')
     end
 
-    # SELECT 
+    # SELECT
     #     table_name AS `table`,
     #     table_rows AS `rows`,
     #     data_length + index_length AS size
-    # FROM 
+    # FROM
     #     information_schema.tables
-    # WHERE 
+    # WHERE
     #     table_schema = 'specht';
 
     # show create table specht.crew;
