@@ -1336,8 +1336,10 @@ class Main < Sinatra::Base
                 GRANT CREATE NEW PROPERTY NAME ON DATABASE `#{database}` TO `#{login}`;
                 GRANT CREATE CONSTRAINTS ON DATABASE `#{database}` TO `#{login}`;
                 GRANT DROP CONSTRAINTS ON DATABASE `#{database}` TO `#{login}`;
+                GRANT SHOW CONSTRAINTS ON DATABASE `#{database}` TO `#{login}`;
                 GRANT CREATE INDEXES ON DATABASE `#{database}` TO `#{login}`;
                 GRANT DROP INDEXES ON DATABASE `#{database}` TO `#{login}`;
+                GRANT SHOW INDEXES ON DATABASE `#{database}` TO `#{login}`;
                 GRANT ROLE `#{login}` TO `#{login}`;
                 ALTER USER `#{login}` SET HOME DATABASE `#{database}`;
             END_OF_STRING
@@ -1365,8 +1367,10 @@ class Main < Sinatra::Base
                 GRANT CREATE NEW PROPERTY NAME ON DATABASE `#{database}` TO `#{login}`;
                 GRANT CREATE CONSTRAINTS ON DATABASE `#{database}` TO `#{login}`;
                 GRANT DROP CONSTRAINTS ON DATABASE `#{database}` TO `#{login}`;
+                GRANT SHOW CONSTRAINTS ON DATABASE `#{database}` TO `#{login}`;
                 GRANT CREATE INDEXES ON DATABASE `#{database}` TO `#{login}`;
                 GRANT DROP INDEXES ON DATABASE `#{database}` TO `#{login}`;
+                GRANT SHOW INDEXES ON DATABASE `#{database}` TO `#{login}`;
                 GRANT ROLE `#{login}` TO `#{login}`;
                 ALTER USER `#{login}` SET HOME DATABASE `#{database}`;
             END_OF_STRING
