@@ -526,7 +526,7 @@ class Main < Sinatra::Base
             # ======
             server {
                 listen 80;
-                server_name neo4j.#{WEBSITE_HOST.split(':').first};
+                server_name ~^neo4j-(?<t>[a-z0-9]+)\.#{WEBSITE_HOST.split(':').first.gsub('.', '\.')}$;
 
                 client_max_body_size 100M;
                 access_log /var/log/nginx/access.log custom;
@@ -1728,7 +1728,11 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         email = @session_user[:email]
         init_neo4j(email)
-        respond(:yay => 'sure')
+        user = neo4j_query_expect_one(<<~END_OF_QUERY, :email => email)['u']
+            MATCH (u:User {email: $email})
+            RETURN u;
+        END_OF_QUERY
+        respond(:yay => 'sure', :browser_url => "#{NEO4J_WEB_ROOT.sub('neo4j.', 'neo4j-' + user[:server_tag] + '.')}?dbms=bolt#{DEVELOPMENT ? '' : '+s'}://bolt.#{WEBSITE_HOST}#{DEVELOPMENT ? '' : ':443'}")
     end
 
     post '/api/reset_neo4j' do

@@ -332,7 +332,7 @@ window.addEventListener('load', function() {
         api_call('/api/start_neo4j', {}, function(data) {
             $('#bu_neo4j').prop('disabled', false);
             $('#bu_neo4j .bi').removeClass('bi-spin');
-            let url = `#{NEO4J_WEB_ROOT}?connectURL=bolt#{DEVELOPMENT ? '' : '+s'}://bolt.#{WEBSITE_HOST}:443`;
+            let url = data.browser_url;
             console.log(url);
             window.open(url, '_blank');
         });
