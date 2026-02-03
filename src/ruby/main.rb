@@ -1328,7 +1328,6 @@ class Main < Sinatra::Base
             stdin.puts <<~END_OF_STRING
                 CREATE DATABASE `#{database}` IF NOT EXISTS;
                 CREATE USER `#{login}` IF NOT EXISTS SET PLAINTEXT PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED SET HOME DATABASE `#{database}`;
-                GRANT ROLE architect TO `#{login}`;
                 REVOKE ACCESS ON DATABASE neo4j FROM `#{login}`;
             END_OF_STRING
             stdin.close
