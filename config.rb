@@ -198,7 +198,6 @@ docker_compose[:services][:neo4j_user] = {
     :volumes => ["#{NEO4J_USER_DATA_PATH}:/data"],
     :user => '1000',
     :restart => 'always',
-    :ports => ["7474:7474", "7687:7687"],
     :environment => {
         'NEO4J_ACCEPT_LICENSE_AGREEMENT' => 'yes',
         'NEO4J_AUTH' => "neo4j/#{NEO4J_ROOT_PASSWORD}",
@@ -281,8 +280,14 @@ end
 docker_compose[:networks] = {
     :internal => {
         :driver => 'bridge'
+    },
+    :user => {
+        :driver => 'bridge'
     }
 }
+[:nginx, :ruby, :mysql, :neo4j_user, :postgres].each do |service_name|
+    docker_compose[:services][service_name][:networks] << 'user'
+end
 unless DEVELOPMENT
     docker_compose[:services].values.each do |x|
         x[:restart] = :always

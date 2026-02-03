@@ -203,7 +203,7 @@ class Main < Sinatra::Base
     def self.refresh_nginx_config
         STDERR.puts ">>> Refreshing nginx config..."
         running_servers = {}
-        inspect = JSON.parse(`docker network inspect workspace_internal`)
+        inspect = JSON.parse(`docker network inspect workspace_user`)
         inspect.first['Containers'].values.each do |container|
             name = container['Name']
             next unless name[0, 8] == 'hs_code_'
@@ -1238,7 +1238,7 @@ class Main < Sinatra::Base
         inspect = JSON.parse(`docker inspect hs_code_#{tag}`)
         unless inspect.empty?
             result[:running] = true
-            result[:ip] = inspect.first['NetworkSettings']['Networks']['workspace_internal']['IPAddress']
+            result[:ip] = inspect.first['NetworkSettings']['Networks']['workspace_user']['IPAddress']
         end
         result
     end
@@ -1640,7 +1640,7 @@ class Main < Sinatra::Base
                 end
             end
 
-            network_name = "workspace_internal"
+            network_name = "workspace_user"
             STDERR.puts ">>> Getting IP addresses for mysql and postgres..."
             # mysql_ip = `docker inspect workspace_mysql_1`.split('"IPAddress": "')[1].split('"')[0]
             # postgres_ip = `docker inspect workspace_postgres_1`.split('"IPAddress": "')[1].split('"')[0]
