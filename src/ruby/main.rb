@@ -1649,6 +1649,7 @@ class Main < Sinatra::Base
                 }
             ]
             user_config['latex-workshop.latex.recipe.default'] ||= "latexmk (LuaLaTeX)"
+            user_config['latex-workshop.latex.outDir'] ||= "%DIR%"
             unless user_config.include?('latex-workshop.latex.clean.enabled')
                 user_config['latex-workshop.latex.clean.enabled'] = true
             end
