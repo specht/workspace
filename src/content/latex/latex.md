@@ -43,6 +43,7 @@ Achte auf den Bezeichner rechts oben im Bild - um z. B. `Latin Modern Roman` zu 
 Diese Schriftarten sind gut geeignet für längere Texte, wie z. B. Bücher oder Berichte. Sie sind angenehm zu lesen und haben ein professionelles Aussehen.
 
 <img class='full' src='fonts/nimbus-roman.webp'>
+<img class='full' src='fonts/xcharter.webp'>
 <img class='full' src='fonts/vollkorn.webp'>
 
 ### Moderne serifenlose Schriften (Arbeitsblätter, Präsentationen)
