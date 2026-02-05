@@ -37,7 +37,7 @@ Beantworte die Frage »Would you like to open the cloned repository?« mit »Ope
 
 ## LaTeX Workshop installieren
 
-Um uns die Arbeit mit LaTeX zu erleichtern, verwenden wir die Erweiterung »LaTeX Workshop«. Diese Erweiterung bietet viele nützliche Funktionen, wie z. B. das automatische Kompilieren von LaTeX-Dokumenten, Syntaxhervorhebung und Vorschauen. Klicke dazu auf das Extensions-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;'> in der Seitenleiste und suche nach »LaTeX Workshop«. Klicke auf »Install«, um die Erweiterung zu installieren.
+Um uns die Arbeit mit LaTeX zu erleichtern, verwenden wir die Erweiterung »LaTeX Workshop«. Diese Erweiterung bietet viele nützliche Funktionen, wie z. B. das automatische Compilieren von LaTeX-Dokumenten, Syntaxhervorhebung und Vorschauen. Klicke dazu auf das Extensions-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;'> in der Seitenleiste und suche nach »LaTeX Workshop«. Klicke auf »Install«, um die Erweiterung zu installieren.
 
 <img class='full' src='latex-workshop-ext.webp'>
 
@@ -46,11 +46,11 @@ Wechsle nun wieder zurück zum Explorer, indem du auf das Explorer-Symbol <img s
 _include_file(hello.tex, tex)
 
 Rechts oben findest du einen kleinen Button: »Build LaTeX project« 
-<img src='build-latex-project.webp' style='border-radius: 4px; height: 1.5em;'>. Drücke diesen Button, um dein LaTeX-Dokument zu kompilieren (oder drücke <span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>B</span>). Währenddessen siehst du unten in der Zeile den Fortschritt der Kompilierung (<i class='bi bi-arrow-repeat bi-spin'></i> Build), und wenn die Kompilierung abgeschlossen ist, siehst du ein grünes Häkchen (<i class='bi bi-check-lg'></i>):
+<img src='build-latex-project.webp' style='border-radius: 4px; height: 1.5em;'>. Drücke diesen Button, um dein LaTeX-Dokument zu compilieren (oder drücke <span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>B</span>). Währenddessen siehst du unten in der Zeile den Fortschritt der compilierung (<i class='bi bi-arrow-repeat bi-spin'></i> Build), und wenn die compilierung abgeschlossen ist, siehst du ein grünes Häkchen (<i class='bi bi-check-lg'></i>):
 
 <img class='full' src='latex-build.webp'>
 
-Wenn die Kompilierung erfolgreich war, solltest du eine
+Wenn die compilierung erfolgreich war, solltest du eine
 PDF-Datei namens `hello.pdf` im selben Verzeichnis sehen. Klicke anschließend auf den Button rechts oben: »View LaTeX PDF file«
 <img src='view-latex-pdf-file.webp' style='border-radius: 4px; height: 1.5em;'> oder verwende den Shortcut <span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>V</span>, um die PDF-Datei neben deinem LaTeX-Quelltext anzuzeigen:
 
@@ -60,9 +60,13 @@ Das Dokument sieht noch nicht besonders spektakulär aus, deswegen schauen wir u
 
 ## Bewerbung
 
-Öffne als nächstes die Datei `Bewerbung.tex`. Diese Datei enthält eine Vorlage für eine Bewerbung, die du anpassen kannst. Schau dir den Inhalt der Datei an und versuche zu verstehen, wie die verschiedenen Teile funktionieren. Du kannst die Vorlage an deine eigenen Bedürfnisse anpassen, indem du die entsprechenden Informationen änderst.
+Öffne als nächstes die Datei `Bewerbung.tex`. Diese Datei enthält eine Vorlage für eine Bewerbung, die du anpassen kannst. Wenn du die Datei compilierst und die PDF-Datei anschaust, sollte sie ungefähr so aussehen:
 
-Versuche als nächstes die Schriftart in der Bewerbung zu ändern, indem du in der Zeile `\setmainfont{XCharter}` die Schriftart `XCharter` durch eine andere Schriftart ersetzt.
+<img class='full' src='side-by-side-bewerbung.webp'>
+
+Schau dir den Inhalt der LaTeX-Datei an und versuche zu verstehen, wie die verschiedenen Teile funktionieren. Du kannst die Vorlage an deine eigenen Bedürfnisse anpassen, indem du die entsprechenden Informationen änderst.
+
+Versuche als nächstes die Schriftart in der Bewerbung zu ändern, indem du in der Zeile `\setmainfont{XCharter}` die Schriftart `XCharter` durch eine andere Schriftart ersetzt. Welche Schriftarten du verwenden kannst, erfährst du im nächsten Abschnitt.
 
 ## Schriftarten
 
