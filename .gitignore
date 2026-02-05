@@ -10,3 +10,5 @@ src/static/include/bootstrap*/node_modules
 src/static/tic80
 src/scripts/collect-music-releases/cache
 src/content/git/git-tutorial/alice
+docker/code/dart.deb
+docker/code/hackschule-sidebar-init.vsix

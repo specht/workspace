@@ -1335,3 +1335,15 @@ svg text[font-family="Times,serif"] {
 svg {
     user-select: none;
 }
+
+pre .k, pre .kn, pre .kp, pre .kr, pre .kv {
+    color: #fdb717 !important;
+}
+
+pre .nt {
+    color: #fdb717 !important;
+}
+
+pre .na {
+    color: #73a946 !important;
+}

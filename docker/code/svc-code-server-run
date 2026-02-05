@@ -13,6 +13,7 @@ if [ -f "$VSIX" ]; then
   if [ ! -d "$EXT_DIR/$EXT_ID" ] && ! find "$EXT_DIR" -maxdepth 1 -type d -name "${EXT_ID}-*" | grep -q .; then
     echo "Installing VS Code extension from $VSIX into $EXT_DIR"
     "$CODE_SERVER" --extensions-dir "$EXT_DIR" --install-extension "$VSIX" >/dev/null
+    chown -R abc:abc "$EXT_DIR"
   fi
 else
   echo "WARNING: VSIX not found at $VSIX"
