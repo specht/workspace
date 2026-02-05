@@ -1,0 +1,68 @@
+{
+    "chat.agent.enabled": false,
+    "chat.disableAIFeatures": true,
+    "editor.minimap.enabled": false,
+    "files.exclude": {
+        "**/.*": true
+    },
+    "files.autoSave": "off",
+    "latex-workshop.latex.tools": [
+        {
+            "name": "lualatex",
+            "command": "lualatex",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "%DOC%"
+            ]
+        },
+        {
+            "name": "latexmk-lualatex",
+            "command": "latexmk",
+            "args": [
+                "-lualatex",
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "%DOC%"
+            ]
+        }
+    ],
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "LuaLaTeX",
+            "tools": [
+                "lualatex"
+            ]
+        },
+        {
+            "name": "latexmk (LuaLaTeX)",
+            "tools": [
+                "latexmk-lualatex"
+            ]
+        }
+    ],
+    "latex-workshop.latex.recipe.default": "latexmk (LuaLaTeX)",
+    "latex-workshop.latex.outDir": "%DIR%",
+    "latex-workshop.latex.clean.enabled": true,
+    "latex-workshop.latex.clean.fileTypes": [
+        "*.aux",
+        "*.bbl",
+        "*.bcf",
+        "*.blg",
+        "*.idx",
+        "*.ilg",
+        "*.ind",
+        "*.lof",
+        "*.lot",
+        "*.out",
+        "*.toc",
+        "*.run.xml"
+    ],
+    "latex-workshop.latex.autoBuild.run": "onSave",
+    "telemetry.feedback.enabled": false,
+    "telemetry.telemetryLevel": "off",
+    "window.menuBarVisibility": "visible",
+    "workbench.secondarySideBar.defaultVisibility": "hidden"
+}

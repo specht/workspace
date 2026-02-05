@@ -1602,62 +1602,24 @@ class Main < Sinatra::Base
                 FileUtils.mkpath(File.dirname(config_path))
                 File.open(config_path, 'w') do |f|
                     config = {}
-                    config['files.exclude'] ||= {}
-                    config['files.exclude']['**/.*'] = true
-                    config['files.autoSave']||= "off"
-                    config["window.menuBarVisibility"] ||= "classic"
-                    config['telemetry.telemetryLevel'] ||= 'off'
                     if test_tag
                         config['workbench.colorTheme'] = 'Tomorrow Night Blue'
                     end
-                    f.write config.to_json
+                    f.puts JSON.pretty_generate(config)
                 end
             end
             user_config = JSON.parse(File.read(config_path))
             original_config = user_config.to_json
-            user_config['latex-workshop.latex.tools'] ||= [
-                {
-                    "name": "lualatex",
-                    "command": "lualatex",
-                    "args": [
-                        "-synctex=1",
-                        "-interaction=nonstopmode",
-                        "-file-line-error",
-                        "%DOC%"
-                    ]
-                },
-                {
-                    "name": "latexmk-lualatex",
-                    "command": "latexmk",
-                    "args": [
-                        "-lualatex",
-                        "-synctex=1",
-                        "-interaction=nonstopmode",
-                        "-file-line-error",
-                        "%DOC%"
-                    ]
-                }
-            ]
-            user_config['latex-workshop.latex.recipes'] ||= [
-                {
-                    "name": "LuaLaTeX",
-                    "tools": ["lualatex"]
-                },
-                {
-                    "name": "latexmk (LuaLaTeX)",
-                    "tools": ["latexmk-lualatex"]
-                }
-            ]
-            user_config['latex-workshop.latex.recipe.default'] ||= "latexmk (LuaLaTeX)"
-            user_config['latex-workshop.latex.outDir'] ||= "%DIR%"
-            unless user_config.include?('latex-workshop.latex.clean.enabled')
-                user_config['latex-workshop.latex.clean.enabled'] = true
+            default_config = JSON.parse(File.read('default-vscode-settings.json'))
+            default_config.each_pair do |k, v|
+                if v == true || v == false
+                    unless user_config.include?(k)
+                        user_config[k] = v
+                    end
+                else
+                    user_config[k] ||= v
+                end
             end
-            user_config['latex-workshop.latex.clean.fileTypes'] ||= [
-                "*.aux", "*.bbl", "*.bcf", "*.blg", "*.idx", "*.ilg",
-                "*.ind", "*.lof", "*.lot", "*.out", "*.toc", "*.run.xml"
-            ]
-            user_config["latex-workshop.latex.autoBuild.run"] ||= "onSave"
             new_config = user_config.to_json
             if original_config != new_config
                 File.open(config_path, 'w') do |f|

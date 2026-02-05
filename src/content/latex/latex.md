@@ -5,22 +5,15 @@ image: latex-logo.png
 # Dokumente schreiben mit LaTeX
 
 <p class='abstract'>
-LaTeX ist ein Textsatzsystem, das von Leslie Lamport entwickelt wurde und auf dem Textsatzsystem TeX von Donald E. Knuth basiert. LaTeX wird für die Erstellung von wissenschaftlichen Dokumenten, wie z. B. Abschlussarbeiten, Dissertationen und wissenschaftlichen Artikeln, eingesetzt.
+In diesem Tutorial lernst du LaTeX kennen – ein Werkzeug, mit dem man Texte nicht „zusammenschiebt“, sondern strukturiert beschreibt.
+Anstatt Schriftgrößen, Abstände und Formatierungen per Hand einzustellen, sagst du LaTeX, was etwas ist (Überschrift, Absatz, Tabelle, Formel) – und LaTeX kümmert sich darum, wie es aussieht.
 </p>
 
-extensions:
-  - latex
-  - unzip
+LaTeX wird häufig an Universitäten, in der Wissenschaft und bei technischen Berufen verwendet, zum Beispiel für Protokolle, Facharbeiten, Präsentationen oder Bewerbungen. Aber auch für die Schule ist es sehr praktisch: Texte sehen automatisch ordentlich aus, Formeln sind klar lesbar, und Änderungen wirken sich sofort auf das ganze Dokument aus.
 
-https://www.latextemplates.com/template/tufte-essay
-https://www.latextemplates.com/template/drake-certificate
-https://www.teuderun.de/latex/vorlagen-downloads/vorlagen-latex/
+In diesem Tutorial lernst du die Grundlagen von LaTeX anhand einer Bewerbung, eines Lebenslaufs und einer schriftlichen Ausarbeitung kennen.
 
-- Drehbuch
-- Gedicht
-- Wörterbuch
-- Lebenslauf
-- Lehrbuch
+_include_file(hello.tex, tex)
 
 ## Schriftarten
 
@@ -71,16 +64,6 @@ Diese Schriftarten sind kreativ und gut lesbar, was sie ideal macht für Übersc
 <img class='full' src='fonts/montserrat.webp'>
 <img class='full' src='fonts/comfortaa.webp'>
 
-### Schriftarten mit griechischer Unterstützung
-
-Die Greek Font Society (GFS) stellt eine Reihe von Schriftarten bereit, die speziell für die Darstellung griechischer Texte entwickelt wurden.
-
-<img class='full' src='fonts/gfs-bodoni.webp'>
-<img class='full' src='fonts/gfs-didot.webp'>
-<img class='full' src='fonts/gfs-neohellenic.webp'>
-<img class='full' src='fonts/gfs-porson.webp'>
-
-
 ### Schriftarten mit mathematischer Unterstützung
 
 In LaTeX wird unterschieden zwischen Text- und Mathe-Schriftarten. Für mathematische Formeln werden spezielle Schriftarten benötigt, die mathematische Symbole und Zeichen unterstützen. Hier sind einige Schriftarten, die sowohl für den Text als auch für mathematische Formeln geeignet sind.
@@ -98,3 +81,9 @@ Achte auf die Bezeichner rechts oben im Bild - um z. B. `Latin Modern Roman` und
 <img class='full' src='fonts/tex-gyre-termes-math.webp'><img class='full' src='fonts/tex-gyre-pagella-math.webp'>
 <img class='full' src='fonts/tex-gyre-schola-math.webp'>
 <img class='full' src='fonts/tex-gyre-bonum-math.webp'>
+
+## Bewerbungsschreiben
+
+## Lebenslauf
+
+## Schriftliche Ausarbeitung

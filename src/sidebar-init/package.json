@@ -1,0 +1,25 @@
+{
+  "name": "hackschule-sidebar-init",
+  "displayName": "Hackschule Sidebar Init",
+  "description": "Ensures the primary sidebar is shown on first startup.",
+  "version": "0.0.1",
+  "publisher": "hackschule",
+  "engines": {
+    "vscode": "^1.91.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./dist/extension.cjs",
+  "extensionKind": ["workspace"],
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "package": "npm run build && npx @vscode/vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.91.0",
+    "@vscode/vsce": "^3.2.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.5.0"
+  }
+}
