@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-URL = "https://discogs-data-dumps.s3-us-west-2.amazonaws.com/data/2025/discogs_20250501"
+URL = "https://data.discogs.com/?download=data%2F2026%2Fdiscogs_20260201"
 
 ['artists', 'masters', 'labels', 'releases'].each do |key|
     url = "#{URL}_#{key}.xml.gz"
