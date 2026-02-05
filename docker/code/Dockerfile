@@ -156,6 +156,8 @@ RUN apt-get update && apt-get install -y \
 # Add environment variable for gems only once
 RUN echo "export GEM_HOME=\$HOME/.gem" >> /root/.bashrc
 
+COPY hackschule-sidebar-init.vsix /app/extensions/hackschule-sidebar-init.vsix
+
 # Copy your custom init scripts (should be last, change this less frequently)
 COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run
 COPY svc-code-server-run /etc/s6-overlay/s6-rc.d/svc-code-server/run

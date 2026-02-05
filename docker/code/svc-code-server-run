@@ -1,4 +1,22 @@
 #!/usr/bin/with-contenv bash
+set -e
+
+CODE_SERVER=/app/code-server/bin/code-server
+EXT_DIR=/workspace/.extensions
+VSIX=/app/extensions/hackschule-sidebar-init.vsix
+EXT_ID="hackschule.hackschule-sidebar-init"
+
+mkdir -p "$EXT_DIR"
+
+# Install once (per /workspace) if not already present
+if [ -f "$VSIX" ]; then
+  if [ ! -d "$EXT_DIR/$EXT_ID" ] && ! find "$EXT_DIR" -maxdepth 1 -type d -name "${EXT_ID}-*" | grep -q .; then
+    echo "Installing VS Code extension from $VSIX into $EXT_DIR"
+    "$CODE_SERVER" --extensions-dir "$EXT_DIR" --install-extension "$VSIX" >/dev/null
+  fi
+else
+  echo "WARNING: VSIX not found at $VSIX"
+fi
 
 if [ -n "${PASSWORD}" ] || [ -n "${HASHED_PASSWORD}" ]; then
     AUTH="password"
@@ -16,12 +34,13 @@ fi
 HOME=/workspace exec \
     s6-notifyoncheck -d -n 300 -w 1000 -c "nc -z 127.0.0.1 8443" \
         s6-setuidgid abc \
-            /app/code-server/bin/code-server \
+            "$CODE_SERVER" \
                 --bind-addr 0.0.0.0:8443 \
                 --disable-telemetry \
                 --auth none \
-                --extensions-dir /workspace/.extensions \
+                --extensions-dir "$EXT_DIR" \
                 --disable-workspace-trust \
                 --disable-update-check \
                 --app-name "Hackschule VS Code" \
-                --welcome-text "Herzlich Willkommen in der Hackschule"
+                --welcome-text "Herzlich Willkommen in der Hackschule" \
+                $PROXY_DOMAIN_ARG

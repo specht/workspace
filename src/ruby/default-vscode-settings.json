@@ -64,5 +64,6 @@
     "telemetry.feedback.enabled": false,
     "telemetry.telemetryLevel": "off",
     "window.menuBarVisibility": "visible",
-    "workbench.secondarySideBar.defaultVisibility": "hidden"
+    "workbench.secondarySideBar.defaultVisibility": "hidden",
+    "workbench.colorTheme": "Default Dark Modern"
 }
