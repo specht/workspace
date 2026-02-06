@@ -46,7 +46,7 @@ Wechsle nun wieder zurück zum Explorer, indem du auf das Explorer-Symbol <img s
 _include_file(hello.tex, tex)
 
 Rechts oben findest du einen kleinen Button: »Build LaTeX project« 
-<img src='build-latex-project.webp' style='border-radius: 4px; height: 1.5em;'>. Drücke diesen Button, um dein LaTeX-Dokument zu compilieren (oder drücke <span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>B</span>). Währenddessen siehst du unten in der Zeile den Fortschritt der compilierung (<i class='bi bi-arrow-repeat bi-spin'></i> Build), und wenn die compilierung abgeschlossen ist, siehst du ein grünes Häkchen (<i class='bi bi-check-lg'></i>):
+<img src='build-latex-project.webp' style='border-radius: 4px; height: 1.5em;'>. Drücke diesen Button, um dein LaTeX-Dokument zu compilieren (oder drücke <span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>B</span>). Währenddessen siehst du unten in der Zeile den Fortschritt der Compilierung (<i class='bi bi-arrow-repeat bi-spin'></i> Build), und wenn die compilierung abgeschlossen ist, siehst du ein grünes Häkchen (<i class='bi bi-check-lg'></i>):
 
 <img class='full' src='latex-build.webp'>
 
