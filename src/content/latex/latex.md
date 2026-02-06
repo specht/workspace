@@ -144,4 +144,7 @@ Du kannst auch eigene Schriftarten verwenden, wenn du die entsprechenden Schrift
 
 ## Lebenslauf
 
+<img class='full' src='cv.webp'>
+
+
 ## Schriftliche Ausarbeitung
