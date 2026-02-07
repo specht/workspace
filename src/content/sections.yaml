@@ -74,9 +74,8 @@
   icon: /images/parrot.png
   entries:
     - digits-experiment
-    - git
+    - latex
     - hades
-    - .latex
   # - .flutter
 - key: linux
   label: Linux und das Terminal
@@ -84,4 +83,5 @@
   entries:
     - working-with-files
     - tcpip
+    - git
   # - .working-with-processes

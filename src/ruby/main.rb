@@ -751,9 +751,17 @@ class Main < Sinatra::Base
                     io.string
                 end
             end
-            hyphenation_map.each_pair do |a, b|
-                markdown.gsub!(a, b)
-            end
+            parts = markdown.split(/(```.*?```)/m)
+            markdown = parts.map.with_index do |part, i|
+                if i.odd?
+                    part
+                else
+                    hyphenation_map.each_pair do |a, b|
+                        part.gsub!(a, b)
+                    end
+                    part
+                end
+            end.join
             slug = File.basename(path, '.md').sub(/^[0-9]+\-/, '').sub('+', '')
             html = redcarpet.render(markdown)
             root = Nokogiri::HTML(html)
@@ -818,6 +826,8 @@ class Main < Sinatra::Base
                     lexer = Rouge::Lexers::Shell.new
                 when 'basic'
                     lexer = Rouge::Lexers::VisualBasic.new
+                when 'bibtex'
+                    lexer = Rouge::Lexers::BibTeX.new
                 when 'c'
                     lexer = Rouge::Lexers::C.new
                 when 'clisp'

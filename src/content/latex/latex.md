@@ -144,7 +144,37 @@ Du kannst auch eigene Schriftarten verwenden, wenn du die entsprechenden Schrift
 
 ## Lebenslauf
 
+In der Datei `Lebenslauf.tex` findest du eine Vorlage für einen Lebenslauf, die du anpassen kannst. Wenn du die Datei compilierst und die PDF-Datei anschaust, sollte sie ungefähr so aussehen:
+
 <img class='full' src='cv.webp'>
 
+Wenn du eine Datei `photo.jpg` im selben Verzeichnis hast, wird sie automatisch in den Lebenslauf eingebunden.
 
 ## Schriftliche Ausarbeitung
+
+Falls du eine schriftliche Ausarbeitung oder einen Bericht schreiben musst, kannst du die Vorlage in der Datei `Ausarbeitung.tex` verwenden. Diese Vorlage enthält bereits eine Struktur für eine wissenschaftliche Arbeit, einschließlich Titelblatt, Inhaltsverzeichnis, Abschnitte und Literaturverzeichnis. Wenn du die Datei compilierst und die PDF-Datei anschaust, sollte sie ungefähr so aussehen:
+
+<img class='full' src='ausarbeitung.webp'>
+
+Der Befehl `\setstretch{1.2}` sorgt dafür, dass der Zeilenabstand auf 1,2-fach eingestellt ist, was die Lesbarkeit verbessert. Du kannst diesen Wert anpassen, um den Zeilenabstand nach deinen Bedürfnissen zu ändern.
+
+Zur Ausarbeitung gehört auch ein Literaturverzeichnis. In der Vorlage wird das Literaturverzeichnis mit dem Befehl `\printbibliography` erstellt, und die Literaturangaben werden in der Datei `litatur.bib` gespeichert, die im BibTeX-Format geschrieben ist:
+
+_include_file(literatur.bib, bibtex)
+
+In dieser Datei kannst du deine Literaturangaben hinzufügen, indem du die entsprechenden Einträge im BibTeX-Format erstellst. Anschließend kannst du die Literaturangaben in deinem LaTeX-Dokument mit dem Befehl `\cite{}` zitieren, wobei du den Schlüssel des Eintrags in der `literatur.bib`-Datei angibst:
+
+- `\textcite{mueller2022}`: Zitiert die Quelle mit dem Schlüssel `mueller2022` und zeigt die Zitatangabe im Fließtext an, z. B. Müller (2022).
+- `\parencite{schmidt2023}`: Zitiert die Quelle mit dem Schlüssel `schmidt2023` und zeigt die Zitatangabe in Klammern an, z. B. (Schmidt, 2023).
+
+## Mathematische Formeln
+
+Ein Bereicht, in dem LaTeX besonders glänzt, ist die Darstellung von mathematischen Formeln. LaTeX bietet eine Vielzahl von Möglichkeiten, um komplexe mathematische Ausdrücke klar und professionell darzustellen. In der Datei `Mathe.tex` findest du bereits einige Beispiele für mathematische Formeln, die du anpassen und erweitern kannst:
+
+<img class='full' src='mathe.webp'>
+
+## Ein ganzes Buch
+
+Zum Abschluss dieses Tutorials findest du in der Datei `wpgtr.tex` eine LaTeX-Datei für ein ganzes Buch: »Why's (Poignant) Guide to Ruby« von [*\_why the lucky stiff*](https://tmewett.com/whytheluckystiff/). Diese Datei enthält die gesamte Struktur eines Buches, einschließlich Inhaltsverzeichnis, Kapiteln, Bildern und Formatierungen. Wenn du die Datei compilierst und die PDF-Datei anschaust, sollte sie ungefähr so aussehen:
+
+<img class='full' src='wpgtr.webp'>
