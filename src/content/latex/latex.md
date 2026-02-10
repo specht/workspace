@@ -144,7 +144,7 @@ Du kannst auch eigene Schriftarten verwenden, wenn du die entsprechenden Schrift
 
 ## Lebenslauf
 
-In der Datei `Lebenslauf.tex` findest du eine Vorlage für einen Lebenslauf, die du anpassen kannst. Wenn du die Datei compilierst und die PDF-Datei anschaust, sollte sie ungefähr so aussehen:
+In der Datei `CV.tex` findest du eine Vorlage für einen Lebenslauf, die du anpassen kannst. Wenn du die Datei compilierst und die PDF-Datei anschaust, sollte sie ungefähr so aussehen:
 
 <img class='full' src='cv.webp'>
 
