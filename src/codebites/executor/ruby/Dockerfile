@@ -1,11 +1,10 @@
 FROM ruby:3.2-alpine
 
-# Create non-root user
 RUN adduser -D appuser
 USER appuser
 
-WORKDIR /app
+WORKDIR /workspace
 
-COPY executor.rb /app/executor.rb
+COPY executor.rb /usr/local/bin/hackschule_executor.rb
 
-ENTRYPOINT ["ruby", "/app/executor.rb"]
+ENTRYPOINT ["ruby", "/usr/local/bin/hackschule_executor.rb"]
