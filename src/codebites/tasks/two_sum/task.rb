@@ -26,6 +26,11 @@ def build_task(executor:)
         Judge::Case.new(args: [[1,2,3,4], 10],  expect: Judge::Expect.equals(nil)),
         Judge::Case.new(args: [[2], 4],         expect: Judge::Expect.equals(nil))
     ]
+    nums = []
+    100.times { nums << rand(-1000..1000) }
+    indices = (0...nums.length).to_a.sample(2)
+    target = nums[indices[0]] + nums[indices[1]]
+    cases << Judge::Case.new(args: [nums, target], expect: Judge::Expect.property(:two_sum_valid))
 
     Judge::FunctionTask.new(
         function_name: :two_sum,
