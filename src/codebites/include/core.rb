@@ -12,17 +12,37 @@ module Judge
     end
 
     class Result
-        attr_reader :tests, :status, :error
+        attr_reader :tests, :status, :error, :total, :failed
 
-        def initialize
+        def initialize(store: :all)
+            @store = store # :all | :failures | :none
             @tests = []
             @status = "pass"
             @error = nil
+            @total = 0
+            @failed = 0
         end
 
         def add_test(entry)
-            @tests << entry
-            @status = "fail" if entry[:status] != "pass" && @status == "pass"
+            @total += 1
+
+            passed = (entry[:status] == "pass")
+            unless passed
+                @failed += 1
+                @status = "fail" if @status == "pass"
+            end
+
+            case @store
+                when :all
+                @tests << entry
+                when :failures
+                @tests << entry unless passed
+                when :none
+                # store nothing
+                else
+                # fallback to safe behavior
+                @tests << entry
+            end
         end
 
         def set_error(type:, message:, location: nil)
@@ -31,7 +51,7 @@ module Judge
         end
 
         def to_h
-            { status: @status, tests: @tests, error: @error }
+            { status: @status, tests: @tests, error: @error, total: @total, failed: @failed }
         end
     end
 

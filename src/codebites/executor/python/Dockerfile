@@ -10,4 +10,4 @@ WORKDIR /workspace
 
 COPY executor.py /usr/local/bin/hackschule_executor.py
 
-ENTRYPOINT ["python", "/usr/local/bin/hackschule_executor.py"]
+ENTRYPOINT ["python", "-u", "/usr/local/bin/hackschule_executor.py"]
