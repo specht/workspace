@@ -23,8 +23,8 @@ def build_task(executor:)
 
     cases = [
         Judge::Case.new(args: [[2,7,11,15], 9], expect: Judge::Expect.property(:two_sum_valid)),
-        Judge::Case.new(args: [[1,2,3,4], 10], expect: Judge::Expect.equals(nil)),
-        Judge::Case.new(args: [[2], 4],        expect: Judge::Expect.equals(nil))
+        Judge::Case.new(args: [[1,2,3,4], 10],  expect: Judge::Expect.equals(nil)),
+        Judge::Case.new(args: [[2], 4],         expect: Judge::Expect.equals(nil))
     ]
 
     Judge::FunctionTask.new(
