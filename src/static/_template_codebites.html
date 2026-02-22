@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html style="scroll-behavior: smooth;">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hackschule Workspace</title>
+    <link href="/include/bootstrap-5.3.3/dist/css/bootstrap.min.css?#{CACHE_BUSTER}" rel="stylesheet">
+    <link href="/include/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css?#{CACHE_BUSTER}" rel="stylesheet">
+
+    <link href="/include/fonts.css?#{CACHE_BUSTER}" rel="stylesheet">
+    <link href="/include/default.css?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}" rel="stylesheet">
+    <link href="/include/dark.css?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}" rel="stylesheet">
+
+    <script src="/include/code.js?#{CACHE_BUSTER}"></script>
+    <script src="/include/bower_components/moment/min/moment-with-locales.min.js"></script>
+    <script src="/include/bootstrap-5.3.3/dist/js/bootstrap.bundle.min.js?#{CACHE_BUSTER}"></script>
+    <script src="/include/clipboard.min.js"></script>
+    <script src="/include/bower_components/jquery/dist/jquery.min.js"></script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#00aba9">
+    <meta name="theme-color" content="#ffffff">
+</head>
+
+<style>
+#{Rouge::Theme.find('gruvbox').render(scope: 'pre')}
+pre table td {
+    padding: 0;
+    border-radius: 0;
+}
+.rouge-gutter {
+    opacity: 0.5;
+    text-align: right;
+}
+
+</style>
+
+<script>
+
+function install_clipboard_handler(selector) {
+    window.clipboard = new ClipboardJS(selector);
+    window.clipboard.on('success', function(e) {
+        let check = $("<i class='bi bi-check-lg btn-clipboard-check' style='position: absolute; left: 0.7em; top: 0.4em;'/>");
+        $(e.trigger).removeClass('btn-secondary').addClass('btn-success');
+        $(e.trigger).closest('.btn').find('.bi-copy').css('visibility', 'hidden');
+        $(e.trigger).append(check);
+        (function(check, trigger) {
+            setTimeout(function() {
+                check.fadeOut(400, function() {
+                    trigger.addClass('btn-secondary').removeClass('btn-success');
+                    trigger.closest('.btn').find('.bi-copy').css('visibility', 'visible');
+                    check.remove();
+                });
+            }, 1000);
+        })(check, $(e.trigger));
+    });
+}
+
+function showTemplateModal(title, text, confirm_label, confirm_class,
+    cancel_label, cancel_class, confirm_callback) {
+    $('#__template_modal .modal-title').html(title);
+    $('#__template_modal .modal-body').html(text);
+    let bu_confirm = $('<button>').addClass('btn ' + confirm_class).html(confirm_label);
+    $('#__template_modal .modal-footer').empty().append(bu_confirm);
+    if (cancel_label !== null) {
+        let bu_cancel = $('<button>').addClass('btn ' + cancel_class).html(cancel_label).attr('data-dismiss', 'modal');
+        $('#__template_modal .modal-footer').append(bu_cancel);
+        bu_cancel.on('click', function(e) {
+            $('#__template_modal').modal('hide');
+        });
+    }
+    bu_confirm.click(function(e) {
+        if (confirm_callback() !== false) {
+            console.log('hiding!');
+            $('#__template_modal').modal('hide');
+        }
+    });
+    $('#__template_modal').modal('show');
+}
+
+var server_tag = "#{(@session_user || {})[:server_tag]}";
+
+function check_server_online(server_tag, watch) {
+    if (typeof(watch) === 'undefined') watch = false;
+    let url = `#{WEB_ROOT}/w/${server_tag}/`;
+    console.log(url);
+    fetch(url, {credentials: 'include'})
+    .then(response => {
+        if (response.status === 200) {
+            console.log('Server is online');
+            $('#bu_launch .bi').removeClass('bi-spin');
+            $('#bu_launch').prop('disabled', false);
+            $('#bu_launch_share .bi').removeClass('bi-spin');
+            $('#bu_launch_share').prop('disabled', false);
+            $('.bu-launch-test .bi').removeClass('bi-spin');
+            $('.bu-launch-test').prop('disabled', false);
+            $('.bu-open-workspace-as-admin .bi').removeClass('bi-spin');
+            $('.bu-open-workspace-as-admin').prop('disabled', false);
+            let workspace_url = `#{WEB_ROOT}`.replace('//', `//${server_tag}.`);
+            console.log(`Now opening ${workspace_url}`);
+            window.open(workspace_url, '_blank');
+        } else {
+            console.log('Server is offline');
+            setTimeout(function() { check_server_online(server_tag, watch); }, 500);
+        }
+    })
+    .catch(error => {
+        console.log('Error:', error);
+    });
+}
+
+function check_server_tag_update(server_tag) {
+    let stored_server_tag = localStorage.getItem('server_tag');
+    if (server_tag !== stored_server_tag) {
+        console.log('Server tag has changed, purging indexed DB...');
+        (async () => {
+            const dbs = await window.indexedDB.databases();
+            dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) });
+        })();
+        localStorage.setItem('server_tag', server_tag);
+    }
+}
+
+var autotoc_containers = [];
+var autotoc_items = [];
+var autotoc_items_visible = [];
+var autotoc = null;
+var autotoc_showing = false;
+var got_autotoc = false;
+
+function install_autotoc() {
+    autotoc = $('.autotoc');
+    got_autotoc = $('.autotoc-container').toArray().length > 0;
+
+    function fix_autotoc() {
+        if (window.scrollY < 100) {
+            autotoc_showing = false;
+        } else {
+            if (window.scrollY > window.innerHeight * 0.3) autotoc_showing = true;
+        }
+        autotoc.toggleClass('hidden', !autotoc_showing);
+    }
+
+    if (got_autotoc) {
+        window.addEventListener('scroll', function(e) {
+            fix_autotoc();
+        });
+        fix_autotoc();
+    }
+    let observer = new IntersectionObserver((entries, observer) => {
+        let found_entry = false;
+        entries.forEach(entry => {
+            let index = $(entry.target).data('autotoc-index');
+            autotoc_items_visible[index] = entry.isIntersecting;
+        });
+        for (let i = 0; i < autotoc_containers.length; i++) {
+            let item = autotoc_items[i];
+            $(item).removeClass('active');
+            if (autotoc_items_visible[i]) {
+                found_entry = true;
+                let container = $(item).parent()[0];
+                container.scrollTo({ left: item.offsetLeft - (container.offsetWidth / 2) + (item.offsetWidth / 2), behavior: 'smooth' });
+                $('.progress_spots_lg')[0].scrollTo({ left: item.offsetLeft - (container.offsetWidth / 2) + (item.offsetWidth / 2), behavior: 'smooth' });
+                $('.progress_spots_lg').find('div').removeClass('active');
+                $('.progress_spots_lg').find('div').eq(i).addClass('active');
+                $('.autotoc .progress_sm').css('left', `${100.0 * i / autotoc_containers.length}%`);
+                $(item).addClass('active');
+            }
+        }
+    }, { root: null, rootMargin: '-30% 0% -70% 0%' });
+    let containers = $('.autotoc-container').toArray();
+    for (let i = 0; i < containers.length; i++) {
+        let div = $(containers[i]);
+        div.data('autotoc-index', i);
+        autotoc_containers.push(div[0]);
+        let item = $('<div>').text(div.data('label'));
+        item.data('autotoc-index', i);
+        item[0].addEventListener('click', function(e) {
+            $('html')[0].scrollTop = $(containers[i]).find('h2')[0].offsetTop - 80;
+        });
+        autotoc_items.push(item[0]);
+        autotoc_items_visible.push(false);
+        $('.autotoc > .items').append(item);
+        observer.observe(div[0]);
+        let spot_sm = $('<div>');
+        spot_sm.css('width', `${100.0 / containers.length}%`);
+        spot_sm.appendTo($('.autotoc > .progress_spots_sm'));
+        let spot_lg = $('<div>');
+        spot_lg.appendTo($('.autotoc > .progress_spots_lg'));
+    }
+    $('.autotoc .progress_sm').css('width', `calc(${100.0 / autotoc_containers.length}% - 0.3em)`);
+}
+
+var brightness = `#{((@session_user || {})[:brightness] || 'auto')}`;
+var system_brightness = 'light';
+var dark_css_element = null;
+
+function update_dark_mode() {
+    let dark = false;
+    if (brightness === 'auto') dark = (system_brightness === 'dark');
+    if (brightness === 'light') dark = false;
+    if (brightness === 'dark') dark = true;
+    if (dark) {
+        document.getElementsByTagName('html')[0].setAttribute('data-bs-theme', 'dark');
+    } else {
+        document.getElementsByTagName('html')[0].setAttribute('data-bs-theme', 'light');
+    }
+    // if (dark_css_element !== null) {
+    //     dark_css_element.remove();
+    //     dark_css_element = null;
+    // }
+    // if (dark) {
+    //     dark_css_element = document.createElement('link');
+    //     dark_css_element.rel = 'stylesheet';
+    //     dark_css_element.href = `/include/dark.css?#{CACHE_BUSTER}`;
+    //     document.head.appendChild(dark_css_element);
+    // }
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        system_brightness = 'dark';
+    }
+    update_dark_mode();
+    window.matchMedia('(prefers-color-scheme: dark)')
+    .addEventListener('change',({ matches }) => {
+        if (matches) {
+            system_brightness = 'dark';
+            update_dark_mode();
+        } else {
+            system_brightness = 'light';
+            update_dark_mode();
+        }
+    });
+});
+
+window.addEventListener('load', function() {
+    install_clipboard_handler('.btn-clipboard');
+    // check if the server tag has changed
+    if ('#{user_logged_in?}' === 'true') {
+        let server_tag = '#{(@session_user || {})[:server_tag]}';
+        check_server_tag_update(server_tag);
+    }
+
+    $('#bu_launch').on('click', function(e) {
+        $('#bu_launch').prop('disabled', true);
+        $('#bu_launch .bi').addClass('bi-spin');
+        api_call('/api/start_server', {}, function(data) {
+            console.log(data);
+            check_server_tag_update(data.server_tag);
+            check_server_online(data.server_tag);
+        });
+    });
+    $('.bu-launch-test').on('click', function(e) {
+        let button = $(e.target).closest('button');
+        let test_tag = button.data('tag');
+        button.prop('disabled', true);
+        button.find('.bi').addClass('bi-spin');
+        api_call('/api/start_server', {test_tag: test_tag}, function(data) {
+            console.log(data);
+            check_server_tag_update(data.server_tag);
+            check_server_online(data.server_tag);
+        });
+    });
+    $('#bu_reset').on('click', function(e) {
+        showTemplateModal('Workspace zurücksetzen', 'Bist du sicher, dass du deinen Workspace zurücksetzen möchtest? Alle Dateien und deine installierten Erweiterungen werden gelöscht.',
+        "<i class='bi bi-trash-fill'></i>Zurücksetzen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
+            api_call('/api/reset_server', {}, function(data) {
+                // we need to reload the website to receive the updated server_tag and server_sid
+                window.location.reload();
+            });
+        });
+    });
+    $('#bu_share').on('click', function(e) {
+        showTemplateModal('Workspace teilen', 'Wenn du deinen Workspace teilst, erhältst du einen Link, mit dem man ohne Anmeldung auf deinen Workspace zugreifen kann. Möchtest du deinen Workspace teilen?',
+        "<i class='bi bi-share'></i>Workspace teilen", 'btn-primary', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
+            api_call('/api/share_server', {}, function(data) {
+                if (data.success) {
+                    $('#ti_share_link').val("#{WEB_ROOT}/share/" + data.share_tag);
+                    $('#bu_copy_share_link').attr('data-clipboard-text', "#{WEB_ROOT}/share/" + data.share_tag);
+                    $('#div_share_link').slideDown();
+                    $('#bu_share').hide();
+                    $('#bu_stop_share').show();
+                }
+            });
+        });
+    });
+    $('#bu_stop_share').on('click', function(e) {
+        showTemplateModal('Teilen beenden', 'Bist du sicher, dass du die Teilung aufheben möchtest? Der Link kann dann nicht mehr für den Zugriff auf deinen Workspace verwendet werden.',
+        "<i class='bi bi-trash-fill'></i>Teilen beenden", 'btn-primary', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
+            api_call('/api/unshare_server', {}, function(data) {
+                if (data.success) {
+                    $('#ti_share_link').val('');
+                    $('#div_share_link').slideUp();
+                    $('#bu_share').show();
+                    $('#bu_stop_share').hide();
+                }
+            });
+        });
+    });
+
+    $('#bu_phpmyadmin').on('click', function(e) {
+        $('#bu_phpmyadmin').prop('disabled', true);
+        $('#bu_phpmyadmin .bi').addClass('bi-spin');
+        api_call('/api/start_mysql', {}, function(data) {
+            $('#bu_phpmyadmin').prop('disabled', false);
+            $('#bu_phpmyadmin .bi').removeClass('bi-spin');
+            window.open('#{PHPMYADMIN_WEB_ROOT}', '_blank');
+        });
+    });
+
+    $('#bu_pgadmin').on('click', function(e) {
+        $('#bu_pgadmin').prop('disabled', true);
+        $('#bu_pgadmin .bi').addClass('bi-spin');
+        api_call('/api/start_postgres', {}, function(data) {
+            $('#bu_pgadmin').prop('disabled', false);
+            $('#bu_pgadmin .bi').removeClass('bi-spin');
+            console.log('#{PGADMIN_WEB_ROOT}');
+            window.open('#{PGADMIN_WEB_ROOT}', '_blank');
+        });
+    });
+
+    $('#bu_neo4j').on('click', function(e) {
+        $('#bu_neo4j').prop('disabled', true);
+        $('#bu_neo4j .bi').addClass('bi-spin');
+        api_call('/api/start_neo4j', {}, function(data) {
+            $('#bu_neo4j').prop('disabled', false);
+            $('#bu_neo4j .bi').removeClass('bi-spin');
+            let url = data.browser_url;
+            console.log(url);
+            window.open(url, '_blank');
+        });
+    });
+
+    var isDown = false;
+    var startX;
+    var scrollLeft;
+    var scrollElement = null;
+    for (let img of $('.scroll-x img.full')) {
+        img = $(img);
+        let slider = $(img).parent()[0];
+        $(slider).on('mousedown', function(e) {
+            e.preventDefault();
+            isDown = true;
+            slider.classList.add('active');
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+            scrollElement = slider;
+        });
+        $('body').on('mouseup', () => {
+            if (!isDown) return;
+            scrollElement.classList.remove('active');
+            isDown = false;
+            scrollElement = null;
+        });
+        $('body').on('mouseleave', () => {
+            if (!isDown) return;
+            scrollElement.classList.remove('active');
+            isDown = false;
+            scrollElement = null;
+        });
+        $('body').on('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - scrollElement.offsetLeft;
+            const walk = x - startX;
+            scrollElement.scrollLeft = scrollLeft - walk;
+        });
+    }
+    install_autotoc();
+});
+</script>
+
+<body >
+    <div class="modal" id="__template_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style='z-index: 200000;'>
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" >
+                    </h5>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    #{CONTENT}
+
+    <div class="autotoc hidden">
+        <div class="items"></div>
+        <div class="progress_spots_sm"></div>
+        <div class="progress_spots_lg"></div>
+        <div class="progress_sm"></div>
+    </div>
+
+    <footer>
+        <a href='/impressum'>Impressum und Datenschutzerklärung</a>
+    </footer>
+    <div class='please-reload' style='display: none;'>
+        Die Verbindung zum Server wurde unterbrochen. Bitte lade die Seite neu.
+    </div>
+</body>
+</html>

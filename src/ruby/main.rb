@@ -2948,6 +2948,9 @@ class Main < Sinatra::Base
         respond_with_file(path) do |content, mime_type|
             if mime_type == 'text/html'
                 template = File.read(File.join(@@static_dir, '_template.html'))
+                if path.include?('codebites')
+                    template = File.read(File.join(@@static_dir, '_template_codebites.html'))
+                end
                 template.sub!('#{CONTENT}', content)
                 s = template
                 while true

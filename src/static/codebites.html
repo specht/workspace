@@ -1,230 +1,316 @@
 <link rel="stylesheet" href="/include/xterm/xterm.css" />
 
 <style>
-    .pane {
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0.1em 0.1em 0.5em rgba(0, 0, 0, 0.2);
-        background: #080808;
-        padding: 1em;
-    }
+  :root {
+    --topbar-h: 56px; /* fixed top bar height */
+  }
 
-    .ide {
-        --left: 50%;
-        --h: 408px;
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
 
-        display: grid;
-        grid-template-columns: var(--left) 10px 1fr; /* gutter */
-        gap: 0;
-        height: var(--h);
-        user-select: none; /* helps while dragging */
-    }
+  /* Page layout: top bar + content fills remaining height */
+  .page {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: var(--topbar-h) 1fr;
+  }
 
-    .pane-body {
-        height: 100%;
-    }
+  .topbar {
+    height: var(--topbar-h);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-bottom: 1px solid #ddd;
+    background: #fff;
+    z-index: 10;
+  }
 
-    #editor,
-    #terminal {
-        height: 100%;
-    }
+  /* 3-column main layout */
+  .main {
+    min-height: 0; /* important so children can scroll */
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr 1.2fr; /* text | editor | terminal */
+    gap: 12px;
+    padding: 12px;
+  }
 
-    .gutter {
-        cursor: col-resize;
-        border-radius: 999px;
-        margin: 10px 0;
-        background: rgba(255, 255, 255, 0.08);
-    }
-    .gutter:hover {
-        background: rgba(255, 255, 255, 0.16);
-    }
+  /* Left text column: scrollable */
+  .problem {
+    min-height: 0; /* enables scrolling */
+    overflow: auto;
+    /* border: 1px solid #ddd; */
+    /* border-radius: 12px; */
+    padding-right: 8px;
+    /* background: #fff; */
+  }
 
-    .resize-row {
-        height: 12px;
-        cursor: row-resize;
-        margin-top: 8px;
-        border-radius: 999px;
-        background: rgba(0, 0, 0, 0.06);
+  /* IDE wrapper: keeps editor+terminal full height */
+  .ide-wrap {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: 1fr auto; /* IDE + height handle */
+    gap: 8px;
+  }
+
+  .pane {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0.1em 0.1em 0.5em rgba(0, 0, 0, 0.2);
+    background: #080808;
+    padding: 1em;
+    min-height: 0;
+  }
+
+  /* Your IDE split inside the middle+right columns */
+  .ide {
+    --left: 50%;
+    --h: 100%; /* now it fills its column by default */
+
+    min-height: 0;
+    height: var(--h);
+
+    display: grid;
+    grid-template-columns: var(--left) 10px 1fr;
+    gap: 0;
+    user-select: none;
+  }
+
+  .pane-body,
+  #editor,
+  #terminal {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .gutter {
+    cursor: col-resize;
+    border-radius: 999px;
+    margin: 10px 0;
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .gutter:hover {
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  /* Height handle sits under the IDE (optional) */
+  .resize-row {
+    height: 12px;
+    cursor: row-resize;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.06);
+  }
+  .resize-row:hover {
+    background: rgba(0, 0, 0, 0.12);
+  }
+
+  /* On small screens stack nicely */
+  @media (max-width: 992px) {
+    .main {
+      grid-template-columns: 1fr;
+      grid-template-rows: 40vh 60vh; /* text then IDE */
     }
-    .resize-row:hover {
-        background: rgba(0, 0, 0, 0.12);
+  }
+  .topbar {
+    a {
+      text-decoration: none;
+      color: #333;
     }
+    a:hover {
+        text-decoration: underline;
+    }
+  }
 </style>
 
-<div class="container-fluid">
-    <div class="row mt-3">
-        <div class="col-12">
-            <h2>Two Sum</h2>
-            <p>
-                Deine Aufgabe ist es, eine Funktion zu implementieren, die ein Array von Ganzzahlen und eine Zielsumme als Eingabe erhält. Die Funktion soll die Indizes der beiden Zahlen zurückgeben, die zusammen die Zielsumme ergeben. Falls es keine solche Zahlen gibt, soll die Funktion eine leere Liste zurückgeben und du darfst dieselbe Zahl nicht zweimal verwenden.
-            </p>
-            <div id="ide" class="ide">
-                <div class="pane">
-                    <div class="pane-body" id="editor"></div>
-                </div>
-                <div id="gutter" class="gutter" title="Drag to resize width"></div>
-                <div class="pane">
-                    <div class="pane-body" id="terminal"></div>
-                </div>
-            </div>
-            <div id="heightHandle" class="resize-row" title="Drag to resize height"></div>
-        </div>
+<div class="page">
+  <div class="topbar">
+    <a href="/">Workspace</a>
+    <span style="margin: 0 0.5em;">/</span>
+    <a href="/codebites">Code Bites</a>
+    <span style="margin: 0 0.5em;">/</span>
+    <a href="/codebites/basics">Basics</a>
+    <span style="margin: 0 0.5em;">/</span>
+    <span style="font-weight: bold;">Two Sum</span>
+  </div>
+
+  <div class="main">
+    <!-- Column 1: Scrollable text -->
+    <div class="problem">
+      <h2>Two Sum</h2>
+      <p>
+        Deine Aufgabe ist es, eine Funktion zu implementieren, die ein Array von Ganzzahlen und eine Zielsumme als Eingabe erhält.
+        Die Funktion soll die Indizes der beiden Zahlen zurückgeben, die zusammen die Zielsumme ergeben.
+        Falls es keine solche Zahlen gibt, soll die Funktion eine leere Liste zurückgeben und du darfst dieselbe Zahl nicht zweimal verwenden.
+      </p>
+
+      <!-- put more text here; it will scroll -->
     </div>
+
+    <!-- Columns 2+3 combined: editor + terminal split -->
+    <div class="ide-wrap" style="grid-column: 2 / span 2;">
+      <div id="ide" class="ide">
+        <div class="pane">
+          <div class="pane-body" id="editor"></div>
+        </div>
+
+        <div id="gutter" class="gutter" title="Drag to resize width"></div>
+
+        <div class="pane">
+          <div class="pane-body" id="terminal"></div>
+        </div>
+      </div>
+
+      <div id="heightHandle" class="resize-row" title="Drag to resize height"></div>
+    </div>
+  </div>
 </div>
 
 <script src="/include/monaco/package/min/vs/loader.js"></script>
 <script>
-    var language = 'ruby';
-    (function () {
-        const ideEl = document.getElementById("ide");
-        const gutterEl = document.getElementById("gutter");
-        const heightHandleEl = document.getElementById("heightHandle");
+  var language = "ruby";
 
-        function clamp(n, min, max) {
-            return Math.max(min, Math.min(max, n));
-        }
+  (function () {
+    const ideEl = document.getElementById("ide");
+    const gutterEl = document.getElementById("gutter");
+    const heightHandleEl = document.getElementById("heightHandle");
 
-        // Will be assigned after require() loads everything
-        let editor = null;
-        let term = null;
-        let fitAddon = null;
+    function clamp(n, min, max) {
+      return Math.max(min, Math.min(max, n));
+    }
 
-        function relayout() {
-            if (editor) editor.layout();
-            if (fitAddon) fitAddon.fit();
-        }
+    let editor = null;
+    let term = null;
+    let fitAddon = null;
 
-        // ---- Width drag ----
-        (function setupWidthDrag() {
-            let dragging = false;
+    function relayout() {
+      if (editor) editor.layout();
+      if (fitAddon) fitAddon.fit();
+    }
 
-            function onMove(e) {
-                if (!dragging) return;
+    // ---- Width drag ----
+    (function setupWidthDrag() {
+      let dragging = false;
 
-                const rect = ideEl.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const pct = (x / rect.width) * 100;
+      function onMove(e) {
+        if (!dragging) return;
 
-                ideEl.style.setProperty("--left", clamp(pct, 20, 80) + "%");
-                relayout();
-            }
+        const rect = ideEl.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const pct = (x / rect.width) * 100;
 
-            function stop() {
-                if (!dragging) return;
-                dragging = false;
-                document.body.style.cursor = "";
-                document.body.style.userSelect = "";
-                window.removeEventListener("mousemove", onMove);
-                window.removeEventListener("mouseup", stop);
-                relayout(); // final snap
-            }
+        ideEl.style.setProperty("--left", clamp(pct, 20, 80) + "%");
+        relayout();
+      }
 
-            gutterEl.addEventListener("mousedown", (e) => {
-                e.preventDefault();
-                dragging = true;
-                document.body.style.cursor = "col-resize";
-                document.body.style.userSelect = "none";
-                window.addEventListener("mousemove", onMove);
-                window.addEventListener("mouseup", stop);
-            });
-        })();
+      function stop() {
+        if (!dragging) return;
+        dragging = false;
+        document.body.style.cursor = "";
+        document.body.style.userSelect = "";
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseup", stop);
+        relayout();
+      }
 
-        // ---- Height drag ----
-        (function setupHeightDrag() {
-            let dragging = false;
-
-            function onMove(e) {
-                if (!dragging) return;
-
-                const top = ideEl.getBoundingClientRect().top;
-                const newH = e.clientY - top;
-
-                ideEl.style.setProperty("--h", clamp(newH, 200, 900) + "px");
-                relayout();
-            }
-
-            function stop() {
-                if (!dragging) return;
-                dragging = false;
-                document.body.style.cursor = "";
-                document.body.style.userSelect = "";
-                window.removeEventListener("mousemove", onMove);
-                window.removeEventListener("mouseup", stop);
-                relayout(); // final snap
-            }
-
-            heightHandleEl.addEventListener("mousedown", (e) => {
-                e.preventDefault();
-                dragging = true;
-                document.body.style.cursor = "row-resize";
-                document.body.style.userSelect = "none";
-                window.addEventListener("mousemove", onMove);
-                window.addEventListener("mouseup", stop);
-            });
-        })();
-
-        // Also handle window resize
-        window.addEventListener("resize", () => relayout());
-
-        // ---- AMD config ----
-        window.require.config({
-            paths: {
-                vs: "/include/monaco/package/min/vs",
-                xterm: "/include/xterm/xterm",
-                "xterm-addon-fit": "/include/xterm/addon-fit"
-            }
-        });
-
-        // ---- Load Monaco + xterm + fit ----
-        window.require(
-        ["vs/editor/editor.main", "xterm", "xterm-addon-fit"],
-        function (_monacoMain, xterm, fitMod) {
-            // Monaco
-            editor = monaco.editor.create(document.getElementById("editor"), {
-                value: "def two_sum(nums, target)\n    # Füge deinen Code hier ein\nend\n",
-                language: language,
-                theme: "vs-dark",
-                minimap: { enabled: false },
-                tabSize: 4,
-                insertSpaces: true,
-                automaticLayout: false,
-                fontFamily: '"0xProto", monospace',
-                fontSize: 15,
-                fontLigatures: true
-            });
-
-            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, function () {
-                console.log(editor.getValue());
-            });
-
-            window.getCode = () => editor.getValue();
-
-            // xterm + fit addon
-            term = new xterm.Terminal({
-                convertEol: true,
-                disableStdin: true,
-                cursorBlink: false,
-                fontFamily: '"0xProto", monospace',
-                fontSize: 15
-            });
-
-            fitAddon = new fitMod.FitAddon();
-            term.loadAddon(fitAddon);
-
-            term.open(document.getElementById("terminal"));
-            fitAddon.fit();
-
-            // Feed bytes
-            window.feedBytes = (bytes) => term.write(bytes);
-
-            term.write("Hello \x1b[1;32mANSI\x1b[0m terminal\r\n");
-
-            // Optional debug
-            window.term = term;
-
-            // Final layout
-            relayout();
-        }
-        );
+      gutterEl.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        dragging = true;
+        document.body.style.cursor = "col-resize";
+        document.body.style.userSelect = "none";
+        window.addEventListener("mousemove", onMove);
+        window.addEventListener("mouseup", stop);
+      });
     })();
+
+    // ---- Height drag (controls IDE height within its column) ----
+    (function setupHeightDrag() {
+      let dragging = false;
+
+      function onMove(e) {
+        if (!dragging) return;
+
+        // Height relative to top of ide container
+        const top = ideEl.getBoundingClientRect().top;
+        const newH = e.clientY - top;
+
+        // Let it grow/shrink but keep usable bounds
+        ideEl.style.setProperty("--h", clamp(newH, 200, window.innerHeight - 120) + "px");
+        relayout();
+      }
+
+      function stop() {
+        if (!dragging) return;
+        dragging = false;
+        document.body.style.cursor = "";
+        document.body.style.userSelect = "";
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseup", stop);
+        relayout();
+      }
+
+      heightHandleEl.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        dragging = true;
+        document.body.style.cursor = "row-resize";
+        document.body.style.userSelect = "none";
+        window.addEventListener("mousemove", onMove);
+        window.addEventListener("mouseup", stop);
+      });
+    })();
+
+    window.addEventListener("resize", () => relayout());
+
+    window.require.config({
+      paths: {
+        vs: "/include/monaco/package/min/vs",
+        xterm: "/include/xterm/xterm",
+        "xterm-addon-fit": "/include/xterm/addon-fit"
+      }
+    });
+
+    window.require(["vs/editor/editor.main", "xterm", "xterm-addon-fit"], function (_monacoMain, xterm, fitMod) {
+      editor = monaco.editor.create(document.getElementById("editor"), {
+        value: "def two_sum(nums, target)\n    # Füge deinen Code hier ein\nend\n",
+        language: language,
+        theme: "vs-dark",
+        minimap: { enabled: false },
+        tabSize: 4,
+        insertSpaces: true,
+        automaticLayout: false,
+        formatOnPaste: true,
+        formatOnType: true,
+        autoIndent: "full",
+        fontFamily: '"0xProto", monospace',
+        fontSize: 15,
+        fontLigatures: true
+      });
+
+      editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, function () {
+        console.log(editor.getValue());
+      });
+
+      window.getCode = () => editor.getValue();
+
+      term = new xterm.Terminal({
+        convertEol: true,
+        disableStdin: true,
+        cursorBlink: false,
+        fontFamily: '"0xProto", monospace',
+        fontSize: 15
+      });
+
+      fitAddon = new fitMod.FitAddon();
+      term.loadAddon(fitAddon);
+
+      term.open(document.getElementById("terminal"));
+      fitAddon.fit();
+
+      window.feedBytes = (bytes) => term.write(bytes);
+
+      term.write("Hello \x1b[1;32mANSI\x1b[0m terminal\r\n");
+
+      relayout();
+    });
+  })();
 </script>

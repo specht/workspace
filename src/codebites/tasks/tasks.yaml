@@ -1,0 +1,5 @@
+- key: basics
+  label: Grundlagen
+  icon: /images/rocket.png
+  entries:
+    - two_sum
