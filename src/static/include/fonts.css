@@ -250,3 +250,24 @@
     font-display: swap;
     src: url(fonts/PatuaOne-Regular.ttf) format('truetype');
 }
+@font-face {
+    font-family: '0xProto';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/0xProto/0xProto-Italic.ttf) format('truetype');
+}
+@font-face {
+    font-family: '0xProto';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/0xProto/0xProto-Regular.ttf) format('truetype');
+}
+@font-face {
+    font-family: '0xProto';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(fonts/0xProto/0xProto-Bold.ttf) format('truetype');
+}
