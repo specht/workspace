@@ -19,6 +19,18 @@
 - Greatest common divisor (GCD)
 
 ### Collections
+1. Schreibe eine Schleife, die jedes Element des Arrays mit ihrem Index ausgibt.
+2. Berechne die Summe aller Elemente im Array.
+3. Bestimme die Anzahl der geraden Zahlen im Array (%2 == 0).
+4. Finde das größte Element im Array.
+5. Wandle ein gegebenes Array in ein neues Array um, in dem jedes Element doppelt enthalten ist.
+6. Entferne alle ungeraden Zahlen in einem Array.
+7. Drehe die Reihenfolge aller Elemente im Array um.
+8. Finde heraus, ob ein Array ein bestimmtes Element enthält.
+9. Schreibe eine Funktion, die ermittelt, ob ein Array aufsteigend sortiert ist.
+10. Rotate left
+11. Swap first and last
+12. Palindrome check
 - Remove duplicates from list
 - Find the most frequent element
 - Merge two sorted lists
