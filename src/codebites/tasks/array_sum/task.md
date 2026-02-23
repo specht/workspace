@@ -19,7 +19,7 @@ Implementiere eine Funktion, die die Summe aller Zahlen in einem Array berechnet
 </tr>
 </table>
 
-Erklärung: Die Summe aller Zahlen im Array [2, 7, 11, 15] beträgt 35.
+Erklärung: Die Summe aller Zahlen im Array beträgt 2 + 7 + 11 + 15 = 35.
 
 <hr>
 
