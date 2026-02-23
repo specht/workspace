@@ -2,7 +2,7 @@
 
 <style>
   :root {
-    --topbar-h: 56px; /* fixed top bar height */
+    --topbar-h: 56px;
   }
 
   html, body {
@@ -10,7 +10,6 @@
     margin: 0;
   }
 
-  /* Page layout: top bar + content fills remaining height */
   .page {
     height: 100vh;
     display: grid;
@@ -27,30 +26,36 @@
     z-index: 10;
   }
 
-  /* 3-column main layout */
   .main {
-    min-height: 0; /* important so children can scroll */
+    min-height: 0;
     display: grid;
-    grid-template-columns: 0.8fr 1.2fr 1.2fr; /* text | editor | terminal */
+    grid-template-columns: 0.8fr 1.2fr 1.2fr;
     gap: 12px;
     padding: 12px;
   }
 
-  /* Left text column: scrollable */
   .problem {
-    min-height: 0; /* enables scrolling */
+    min-height: 0;
     overflow: auto;
-    /* border: 1px solid #ddd; */
-    /* border-radius: 12px; */
     padding-right: 8px;
-    /* background: #fff; */
+
+    h1, h2, h3, h4 {
+      margin: 0.5em 0;
+    }
+
+    table {
+        margin-bottom: 1em;
+    }
+    td {
+        vertical-align: top;
+        padding-right: 0.25em;
+    }
   }
 
-  /* IDE wrapper: keeps editor+terminal full height */
   .ide-wrap {
     min-height: 0;
     display: grid;
-    grid-template-rows: 1fr auto; /* IDE + height handle */
+    grid-template-rows: 1fr auto;
     gap: 8px;
   }
 
@@ -63,10 +68,9 @@
     min-height: 0;
   }
 
-  /* Your IDE split inside the middle+right columns */
   .ide {
     --left: 50%;
-    --h: 100%; /* now it fills its column by default */
+    --h: 100%;
 
     min-height: 0;
     height: var(--h);
@@ -94,7 +98,6 @@
     background: rgba(255, 255, 255, 0.16);
   }
 
-  /* Height handle sits under the IDE (optional) */
   .resize-row {
     height: 12px;
     cursor: row-resize;
@@ -105,13 +108,6 @@
     background: rgba(0, 0, 0, 0.12);
   }
 
-  /* On small screens stack nicely */
-  @media (max-width: 992px) {
-    .main {
-      grid-template-columns: 1fr;
-      grid-template-rows: 40vh 60vh; /* text then IDE */
-    }
-  }
   .topbar {
     a {
       text-decoration: none;
@@ -130,24 +126,12 @@
     <a href="/codebites">Code Bites</a>
     <span style="margin: 0 0.5em;">/</span>
     <a href="/codebites/basics">Basics</a>
-    <span style="margin: 0 0.5em;">/</span>
-    <span style="font-weight: bold;">Two Sum</span>
   </div>
 
   <div class="main">
-    <!-- Column 1: Scrollable text -->
     <div class="problem">
-      <h2>Two Sum</h2>
-      <p>
-        Deine Aufgabe ist es, eine Funktion zu implementieren, die ein Array von Ganzzahlen und eine Zielsumme als Eingabe erhält.
-        Die Funktion soll die Indizes der beiden Zahlen zurückgeben, die zusammen die Zielsumme ergeben.
-        Falls es keine solche Zahlen gibt, soll die Funktion eine leere Liste zurückgeben und du darfst dieselbe Zahl nicht zweimal verwenden.
-      </p>
-
-      <!-- put more text here; it will scroll -->
     </div>
 
-    <!-- Columns 2+3 combined: editor + terminal split -->
     <div class="ide-wrap" style="grid-column: 2 / span 2;">
       <div id="ide" class="ide">
         <div class="pane">
@@ -160,8 +144,6 @@
           <div class="pane-body" id="terminal"></div>
         </div>
       </div>
-
-      <div id="heightHandle" class="resize-row" title="Drag to resize height"></div>
     </div>
   </div>
 </div>
@@ -170,10 +152,47 @@
 <script>
   var language = "ruby";
 
+  function reloadPage() {
+    let slug = window.location.pathname.split("/codebites")[1];
+    let task = (slug.split("/")[1] ?? '').trim();
+    let sha1 = (slug.split("/")[2] ?? '').trim();
+    if (task === '') task = null;
+    if (sha1 === '') sha1 = null;
+    console.log(`Task: ${task}, SHA1: ${sha1}`);
+    if (task === null) {
+      api_call('/api/codebites_get_tasks', {}, function(data) {
+        if (data.success) {
+          console.log(data);
+          let div = $('<div>');
+          for (let section of data.sections) {
+            let title_and_icon = $('<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">');
+            title_and_icon.append(`<h2>${section.title}</h2>`);
+            title_and_icon.append(`<img src="${section.icon}" style="width: 32px; height: 32px;">`);
+            div.append(title_and_icon);
+            div.append(`<p>${section.description}</p>`);
+            for (let entry of section.entries) {
+              let heading = data.tasks[entry] ? data.tasks[entry].heading : entry;
+              div.append(`<a href="/codebites/${entry}" class="btn w-100">${heading}</a>`);
+            }
+          }
+          $('.problem').html(div);
+        }
+      });
+    } else {
+      api_call('/api/get_codebite', { task: task }, function(data) {
+        if (data.success) {
+          console.log(data);
+          $('.problem').html(data.result.problem);
+          window.setCode(data.result.starter.ruby);
+          // feedBytes(data.output);
+        }
+      });
+    }
+  }
+
   (function () {
     const ideEl = document.getElementById("ide");
     const gutterEl = document.getElementById("gutter");
-    const heightHandleEl = document.getElementById("heightHandle");
 
     function clamp(n, min, max) {
       return Math.max(min, Math.min(max, n));
@@ -188,7 +207,6 @@
       if (fitAddon) fitAddon.fit();
     }
 
-    // ---- Width drag ----
     (function setupWidthDrag() {
       let dragging = false;
 
@@ -223,42 +241,6 @@
       });
     })();
 
-    // ---- Height drag (controls IDE height within its column) ----
-    (function setupHeightDrag() {
-      let dragging = false;
-
-      function onMove(e) {
-        if (!dragging) return;
-
-        // Height relative to top of ide container
-        const top = ideEl.getBoundingClientRect().top;
-        const newH = e.clientY - top;
-
-        // Let it grow/shrink but keep usable bounds
-        ideEl.style.setProperty("--h", clamp(newH, 200, window.innerHeight - 120) + "px");
-        relayout();
-      }
-
-      function stop() {
-        if (!dragging) return;
-        dragging = false;
-        document.body.style.cursor = "";
-        document.body.style.userSelect = "";
-        window.removeEventListener("mousemove", onMove);
-        window.removeEventListener("mouseup", stop);
-        relayout();
-      }
-
-      heightHandleEl.addEventListener("mousedown", (e) => {
-        e.preventDefault();
-        dragging = true;
-        document.body.style.cursor = "row-resize";
-        document.body.style.userSelect = "none";
-        window.addEventListener("mousemove", onMove);
-        window.addEventListener("mouseup", stop);
-      });
-    })();
-
     window.addEventListener("resize", () => relayout());
 
     window.require.config({
@@ -271,11 +253,12 @@
 
     window.require(["vs/editor/editor.main", "xterm", "xterm-addon-fit"], function (_monacoMain, xterm, fitMod) {
       editor = monaco.editor.create(document.getElementById("editor"), {
-        value: "def two_sum(nums, target)\n    # Füge deinen Code hier ein\nend\n",
+        // value: "def two_sum(nums, target)\n    # Füge deinen Code hier ein\nend\n",
         language: language,
         theme: "vs-dark",
         minimap: { enabled: false },
         tabSize: 4,
+        // readOnly: true,
         insertSpaces: true,
         automaticLayout: false,
         formatOnPaste: true,
@@ -291,6 +274,7 @@
       });
 
       window.getCode = () => editor.getValue();
+      window.setCode = (code) => editor.setValue(code);
 
       term = new xterm.Terminal({
         convertEol: true,
@@ -308,9 +292,10 @@
 
       window.feedBytes = (bytes) => term.write(bytes);
 
-      term.write("Hello \x1b[1;32mANSI\x1b[0m terminal\r\n");
+      // term.write("Hello \x1b[1;32mANSI\x1b[0m terminal\r\n");
 
       relayout();
+      reloadPage();
     });
   })();
 </script>

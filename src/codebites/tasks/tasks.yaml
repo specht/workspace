@@ -1,5 +1,6 @@
 - key: basics
-  label: Grundlagen
+  title: Basics
+  description: Übe die Grundlagen der Programmierung mit einfachen Aufgaben.
   icon: /images/rocket.png
   entries:
     - two_sum

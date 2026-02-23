@@ -9,7 +9,6 @@ PHPMYADMIN_WEB_ROOT = DEVELOPMENT ? "http://phpmyadmin.#{WEBSITE_HOST}" : "https
 PGADMIN_WEB_ROOT = DEVELOPMENT ? "http://pgadmin.#{WEBSITE_HOST}" : "https://pgadmin.#{WEBSITE_HOST}"
 NEO4J_WEB_ROOT = DEVELOPMENT ? "http://neo4j.#{WEBSITE_HOST}/browser/" : "https://neo4j.#{WEBSITE_HOST}/browser/"
 NEO4J_BOLT_HOST = "bolt.#{WEBSITE_HOST}"
-ENABLE_CODEBITES = false
 
 LOGIN_CODE_SALT = 'bitte_ein_salt_eintragen'
 

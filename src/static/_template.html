@@ -403,7 +403,7 @@ window.addEventListener('load', function() {
             <div style='text-align: center; width: 100%;'>
                 <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="btn btn-success #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='bi bi-box-arrow-in-right'></i>Anmelden</a>
                 <button style='#{(@session_user.nil? || (!@session_user[:show_workspace])) ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='bi bi-code-slash'></i>Workspace öffnen</button>
-                <a href='/codebites' style='#{(@session_user.nil? || (!ENABLE_CODEBITES)) ? 'display: none;' : ''}' id='bu_codebites' class="btn btn-success"><i class='bi bi-star'></i>Code Bites</a>
+                <a href='/codebites' id='bu_codebites' class="btn btn-success"><i class='bi bi-star'></i>Code Bites</a>
                 <button style='#{(@session_user.nil? || (!@session_user[:show_phpmyadmin])) ? 'display: none;' : ''}' id='bu_phpmyadmin' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>phpMyAdmin</button>
                 <button style='#{(@session_user.nil? || (!@session_user[:show_pgadmin])) ? 'display: none;' : ''}' id='bu_pgadmin' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>pgAdmin</button>
                 <button style='#{(@session_user.nil? || (!@session_user[:show_neo4j])) ? 'display: none;' : ''}' id='bu_neo4j' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>Neo4j</button>

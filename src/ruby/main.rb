@@ -2735,6 +2735,62 @@ class Main < Sinatra::Base
         end
     end
 
+    def self.update_codebites
+        @@codebite_sections ||= nil
+        @@codebite_sections_mtime ||= nil
+        sections_path = '/src/codebites/tasks/tasks.yaml'
+        if @@codebite_sections.nil? || File.mtime(sections_path) > @@codebite_sections_mtime
+            @@codebite_sections = YAML.load_file(sections_path)
+            @@codebite_sections_mtime = File.mtime(sections_path)
+        end
+        @@codebite_tasks ||= {}
+        @@codebite_sections.each do |section|
+            section['entries'].each do |task|
+                task_md_path = "/src/codebites/tasks/#{task}/task.md"
+                if @@codebite_tasks[task].nil? || File.mtime(task_md_path) > (@@codebite_tasks[task][:mtime])
+                    heading = File.read(task_md_path).split("\n").first.sub(/^#+\s+/, '')
+                    @@codebite_tasks[task] = {
+                        :mtime => File.mtime(task_md_path),
+                        :heading => heading
+                    }
+                end
+            end
+        end
+    end
+
+    post '/api/codebites_get_tasks' do
+        Main.update_codebites
+        respond(:sections => @@codebite_sections, :tasks => @@codebite_tasks)
+    end
+
+    post '/api/get_codebite' do
+        data = parse_request_data(:required_keys => [:task])
+        Main.update_codebites
+        task = data[:task]
+        assert(!(task.include?('/') || task.include?('.')))
+        result = {}
+        md_path = "/src/codebites/tasks/#{task}/task.md"
+        md = File.read(md_path)
+        redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
+        result[:problem] = redcarpet.render(md)
+        Dir["/src/codebites/tasks/#{task}/starter.*"].each do |path|
+            extension = File.basename(path).split('.').last
+            language = case extension
+            when 'py'
+                'python'
+            when 'js'
+                'javascript'
+            when 'rb'
+                'ruby'
+            end
+            if language
+                result[:starter] ||= {}
+                result[:starter][language] = File.read(path)
+            end
+        end
+        respond(:result => result)
+    end
+
     post '/api/automatron' do
         data  = parse_request_data(:required_keys => [:regex])
         regex = safe_regex(data[:regex])
@@ -2881,6 +2937,10 @@ class Main < Sinatra::Base
             end
             respond_raw_with_mimetype(s, 'text/html')
             return
+        end
+        if path[0, 10] == '/codebites'
+            @codebite_slug = path[10, path.size - 10]
+            path = 'codebites.html'
         end
         if path[0, 3] == '/l/'
             rest = path[3, path.size - 3].split('/')
