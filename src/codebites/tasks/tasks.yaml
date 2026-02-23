@@ -4,3 +4,4 @@
   icon: /images/rocket.png
   entries:
     - two_sum
+    - reverse_array

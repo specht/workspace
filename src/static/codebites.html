@@ -3,9 +3,11 @@
 <style>
   :root {
     --topbar-h: 56px;
+    --left: 50%;
   }
 
-  html, body {
+  html,
+  body {
     height: 100%;
     margin: 0;
   }
@@ -16,14 +18,58 @@
     grid-template-rows: var(--topbar-h) 1fr;
   }
 
+  /* Topbar uses same 3 columns as .main */
   .topbar {
     height: var(--topbar-h);
-    display: flex;
-    align-items: center;
     padding: 0 16px;
     border-bottom: 1px solid #ddd;
     background: #fff;
     z-index: 10;
+
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr 1.2fr;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .topbar-left {
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .topbar-ide {
+    grid-column: 2 / span 2;
+
+    display: grid;
+    grid-template-columns: var(--left) 10px 1fr;
+    align-items: center;
+  }
+
+  .topbar-editor-left {
+    grid-column: 1;
+    justify-self: start;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .topbar-terminal-right {
+    grid-column: 3;
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .topbar a {
+    text-decoration: none;
+    color: #333;
+  }
+
+  .topbar a:hover {
+    text-decoration: underline;
   }
 
   .main {
@@ -38,18 +84,22 @@
     min-height: 0;
     overflow: auto;
     padding-right: 8px;
+  }
 
-    h1, h2, h3, h4 {
-      margin: 0.5em 0;
-    }
+  .problem h1,
+  .problem h2,
+  .problem h3,
+  .problem h4 {
+    margin: 0.5em 0;
+  }
 
-    table {
-        margin-bottom: 1em;
-    }
-    td {
-        vertical-align: top;
-        padding-right: 0.25em;
-    }
+  .problem table {
+    margin-bottom: 1em;
+  }
+
+  .problem td {
+    vertical-align: top;
+    padding-right: 0.25em;
   }
 
   .ide-wrap {
@@ -94,6 +144,7 @@
     margin: 10px 0;
     background: rgba(255, 255, 255, 0.08);
   }
+
   .gutter:hover {
     background: rgba(255, 255, 255, 0.16);
   }
@@ -104,33 +155,40 @@
     border-radius: 999px;
     background: rgba(0, 0, 0, 0.06);
   }
+
   .resize-row:hover {
     background: rgba(0, 0, 0, 0.12);
-  }
-
-  .topbar {
-    a {
-      text-decoration: none;
-      color: #333;
-    }
-    a:hover {
-        text-decoration: underline;
-    }
   }
 </style>
 
 <div class="page">
   <div class="topbar">
-    <a href="/">Workspace</a>
-    <span style="margin: 0 0.5em;">/</span>
-    <a href="/codebites">Code Bites</a>
-    <span style="margin: 0 0.5em;">/</span>
-    <a href="/codebites/basics">Basics</a>
-  </div>
 
-  <div class="main">
-    <div class="problem">
+    <div class="topbar-left">
+      <a href="/">Workspace</a>
+      <span>/</span>
+      <a href="/codebites">Code Bites</a>
+      <span>/</span>
+      <a href="/codebites/basics">Basics</a>
     </div>
+
+    <div class="topbar-ide">
+
+      <div class="topbar-editor-left">
+        <button class="btn btn-light" disabled>Python</button>
+        <button class="btn btn-light" disabled>Ruby</button>
+        <button class="btn btn-light" disabled>JavaScript</button>
+      </div>
+
+      <div class="topbar-terminal-right">
+        <button class="btn btn-success"><i class='bi bi-play-fill'></i>Ausführen</button>
+      </div>
+
+    </div>
+
+  </div>
+  <div class="main">
+    <div class="problem"></div>
 
     <div class="ide-wrap" style="grid-column: 2 / span 2;">
       <div id="ide" class="ide">
@@ -154,37 +212,41 @@
 
   function reloadPage() {
     let slug = window.location.pathname.split("/codebites")[1];
-    let task = (slug.split("/")[1] ?? '').trim();
-    let sha1 = (slug.split("/")[2] ?? '').trim();
-    if (task === '') task = null;
-    if (sha1 === '') sha1 = null;
+    let task = (slug.split("/")[1] ?? "").trim();
+    let sha1 = (slug.split("/")[2] ?? "").trim();
+    if (task === "") task = null;
+    if (sha1 === "") sha1 = null;
+
     console.log(`Task: ${task}, SHA1: ${sha1}`);
     if (task === null) {
-      api_call('/api/codebites_get_tasks', {}, function(data) {
+      api_call("/api/codebites_get_tasks", {}, function (data) {
         if (data.success) {
-          console.log(data);
-          let div = $('<div>');
+          let div = $("<div>");
           for (let section of data.sections) {
-            let title_and_icon = $('<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">');
+            let title_and_icon = $(
+              '<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">'
+            );
             title_and_icon.append(`<h2>${section.title}</h2>`);
-            title_and_icon.append(`<img src="${section.icon}" style="width: 32px; height: 32px;">`);
+            title_and_icon.append(
+              `<img src="${section.icon}" style="width: 32px; height: 32px;">`
+            );
             div.append(title_and_icon);
             div.append(`<p>${section.description}</p>`);
             for (let entry of section.entries) {
               let heading = data.tasks[entry] ? data.tasks[entry].heading : entry;
-              div.append(`<a href="/codebites/${entry}" class="btn w-100">${heading}</a>`);
+              div.append(
+                `<a href="/codebites/${entry}" class="btn w-100">${heading}</a>`
+              );
             }
           }
-          $('.problem').html(div);
+          $(".problem").html(div);
         }
       });
     } else {
-      api_call('/api/get_codebite', { task: task }, function(data) {
+      api_call("/api/get_codebite", { task: task }, function (data) {
         if (data.success) {
-          console.log(data);
-          $('.problem').html(data.result.problem);
+          $(".problem").html(data.result.problem);
           window.setCode(data.result.starter.ruby);
-          // feedBytes(data.output);
         }
       });
     }
@@ -247,18 +309,20 @@
       paths: {
         vs: "/include/monaco/package/min/vs",
         xterm: "/include/xterm/xterm",
-        "xterm-addon-fit": "/include/xterm/addon-fit"
-      }
+        "xterm-addon-fit": "/include/xterm/addon-fit",
+      },
     });
 
-    window.require(["vs/editor/editor.main", "xterm", "xterm-addon-fit"], function (_monacoMain, xterm, fitMod) {
+    window.require(["vs/editor/editor.main", "xterm", "xterm-addon-fit"], function (
+      _monacoMain,
+      xterm,
+      fitMod
+    ) {
       editor = monaco.editor.create(document.getElementById("editor"), {
-        // value: "def two_sum(nums, target)\n    # Füge deinen Code hier ein\nend\n",
         language: language,
         theme: "vs-dark",
         minimap: { enabled: false },
         tabSize: 4,
-        // readOnly: true,
         insertSpaces: true,
         automaticLayout: false,
         formatOnPaste: true,
@@ -266,11 +330,7 @@
         autoIndent: "full",
         fontFamily: '"0xProto", monospace',
         fontSize: 15,
-        fontLigatures: true
-      });
-
-      editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, function () {
-        console.log(editor.getValue());
+        fontLigatures: true,
       });
 
       window.getCode = () => editor.getValue();
@@ -281,7 +341,7 @@
         disableStdin: true,
         cursorBlink: false,
         fontFamily: '"0xProto", monospace',
-        fontSize: 15
+        fontSize: 15,
       });
 
       fitAddon = new fitMod.FitAddon();
@@ -292,7 +352,13 @@
 
       window.feedBytes = (bytes) => term.write(bytes);
 
-      // term.write("Hello \x1b[1;32mANSI\x1b[0m terminal\r\n");
+      document.getElementById("runBtn")?.addEventListener("click", () => {
+        console.log(editor.getValue());
+      });
+
+      document.getElementById("resetBtn")?.addEventListener("click", () => {
+        // editor.setValue(...);
+      });
 
       relayout();
       reloadPage();
