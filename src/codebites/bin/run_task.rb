@@ -8,6 +8,7 @@ ROOT = File.expand_path("..", __dir__)
 # ---- args ----
 args = ARGV.dup
 stream = args.delete("--stream")
+stream_json = args.delete("--stream-json")
 
 stream_format_arg = args.find { |a| a.start_with?("--stream-format=") }
 summary_arg       = args.find { |a| a.start_with?("--summary=") }
@@ -22,7 +23,7 @@ task_id  = args[0]
 language = args[1]
 
 if task_id.nil? || language.nil?
-    warn "Usage: bin/run_task <task_id> <language> [--stream] [--stream-format=compact|failures|full] [--summary=compact|full|failures] < submission_file"
+    warn "Usage: bin/run_task <task_id> <language> [--stream] [--stream-json] [--stream-format=compact|failures|full] [--summary=compact|full|failures] < submission_file"
     exit 2
 end
 
@@ -141,56 +142,223 @@ end
 
 # ---- run ----
 if stream
-    # Fail-fast, truly-live stream:
-    # - Forward output events immediately (stdout/stderr from student code)
-    # - Emit test result events as each case finishes
-    # - Stop after the first failing test
+    if stream_json
+        # Legacy, fail-fast NDJSON stream for programmatic consumers.
+        res = task.run_stream(submission_code: submission_code, fail_fast: true) do |ev|
+            ev = JSON.parse(JSON.generate(ev))
 
-    res = task.run_stream(submission_code: submission_code) do |ev|
+            case ev["event"]
+            when "output"
+                # Keep it simple for the frontend terminal: one event type.
+                puts JSON.generate({
+                    event: "o",
+                    stream: ev["stream"],
+                    text: ev["text"],
+                    i: ev["index"],
+                    task_id: task_id,
+                    language: language
+                })
+                STDOUT.flush
+
+            when "test"
+                t = ev["test"] || {}
+                to_print =
+                    case stream_format
+                    when "full"
+                        full_test_event(ev)
+                    when "failures"
+                        (t["status"] == "fail") ? compact_test_event(ev) : nil
+                    else
+                        compact_test_event(ev)
+                    end
+
+                if to_print
+                    to_print = JSON.parse(JSON.generate(to_print))
+                    to_print["task_id"] = task_id
+                    to_print["language"] = language
+                    puts JSON.generate(to_print)
+                    STDOUT.flush
+                end
+
+            when "error"
+                puts JSON.generate({ event: "error", error: ev["error"], task_id: task_id, language: language })
+                STDOUT.flush
+            end
+        end
+
+        out = res.to_h
+        exit(out[:status] == "pass" ? 0 : 1)
+    end
+
+    # Human-friendly ANSI stream:
+    # - Forward output immediately (stdout/stderr from student code)
+    # - Run all tests (no fail-fast)
+    # - Print a colored progress line per test
+    # - Print nice errors (with locations)
+
+    module ANSI
+        RESET = "\e[0m"
+        BOLD  = "\e[1m"
+        DIM   = "\e[2m"
+        RED   = "\e[31m"
+        GREEN = "\e[32m"
+        YELLOW= "\e[33m"
+        CYAN  = "\e[36m"
+        GRAY  = "\e[90m"
+
+        def self.wrap(color, s)
+            "#{color}#{s}#{RESET}"
+        end
+    end
+
+    def fmt_loc(loc)
+        return nil if loc.nil?
+        file = loc["file"] || loc[:file]
+        line = loc["line"] || loc[:line]
+        return nil unless file || line
+        [file, (line ? "#{line}" : nil)].compact.join(":")
+    end
+
+    # Abbreviate values (results / expected) so the terminal stays readable.
+    MAX_VAL_STR = 120
+    MAX_ELEMS   = 10
+    MAX_DEPTH   = 3
+
+    def fmt_value(v, depth: 0)
+        return "…" if depth >= MAX_DEPTH
+
+        case v
+        when Array
+            if v.length <= MAX_ELEMS
+                "[#{v.map { |x| fmt_value(x, depth: depth + 1) }.join(', ')}]"
+            else
+                head = v.first(3).map { |x| fmt_value(x, depth: depth + 1) }
+                tail = v.last(2).map { |x| fmt_value(x, depth: depth + 1) }
+                "[#{(head + ['…'] + tail).join(', ')}]"
+            end
+        when Hash
+            pairs = v.to_a
+            shown = pairs.first(MAX_ELEMS).map do |k, val|
+                "#{fmt_value(k, depth: depth + 1)}=>#{fmt_value(val, depth: depth + 1)}"
+            end
+            shown << "…" if pairs.length > MAX_ELEMS
+            "{#{shown.join(', ')}}"
+        when String
+            s = v
+            if s.length > MAX_VAL_STR
+                (s[0, MAX_VAL_STR - 1] + "…").inspect
+            else
+                s.inspect
+            end
+        else
+            s = v.inspect
+            s = s[0, MAX_VAL_STR - 1] + "…" if s.length > MAX_VAL_STR
+            s
+        end
+    end
+
+    def print_error_block(title:, type:, message:, location: nil)
+        loc = fmt_loc(location)
+        header = [title, (type && !type.empty? ? type : nil)].compact.join(": ")
+        puts ANSI.wrap(ANSI::RED, "\n#{ANSI::BOLD}#{header}#{ANSI::RESET}")
+        puts "  #{message}" if message && !message.empty?
+        puts ANSI.wrap(ANSI::GRAY, "  at #{loc}") if loc
+        STDOUT.flush
+    end
+
+    started = false
+    total = nil
+    passed = 0
+    failed = 0
+    failures = []
+    fatal_error = nil
+
+    puts ANSI.wrap(ANSI::CYAN, "#{ANSI::BOLD}Running #{task_id} (#{language})#{ANSI::RESET}")
+    STDOUT.flush
+
+    res = task.run_stream(submission_code: submission_code, fail_fast: false) do |ev|
         ev = JSON.parse(JSON.generate(ev))
 
         case ev["event"]
         when "output"
-            # Keep it simple for the frontend terminal: one event type.
-            puts JSON.generate({
-                event: "o",
-                stream: ev["stream"],
-                text: ev["text"],
-                i: ev["index"],
-                task_id: task_id,
-                language: language
-            })
-            STDOUT.flush
+            text = ev["text"] || ""
+            stream_name = ev["stream"]
+
+            # Print raw student output, but visually separate stderr.
+            if stream_name == "stderr"
+                $stdout.print(ANSI.wrap(ANSI::YELLOW, text))
+            else
+                $stdout.print(text)
+            end
+            $stdout.flush
 
         when "test"
+            idx = (ev["index"] || 0).to_i
+            total = (ev["total"] || total).to_i if ev["total"]
+
             t = ev["test"] || {}
-            to_print =
-                case stream_format
-                when "full"
-                    full_test_event(ev)
-                when "failures"
-                    (t["status"] == "fail") ? compact_test_event(ev) : nil
-                else
-                    compact_test_event(ev)
+            status = t["status"] || t[:status]
+            call = t["call"] || t[:call]
+            msg  = t["message"] || t[:message]
+            loc  = t["location"] || t[:location]
+            expected = t["expected"] || t[:expected]
+            actual   = t["actual"] || t[:actual]
+
+            started ||= true
+            total ||= (ev["total"] || 0)
+
+            label = "[#{idx + 1}/#{total}]"
+            if status == "pass"
+                passed += 1
+                shown_actual = (t.key?("actual") || t.key?(:actual)) ? fmt_value(actual) : nil
+                suffix = shown_actual ? " #{ANSI.wrap(ANSI::GRAY, "=>")} #{shown_actual}" : ""
+                puts "#{ANSI.wrap(ANSI::GREEN, "✓ PASS")} #{ANSI.wrap(ANSI::GRAY, label)} #{call}#{suffix}"
+            else
+                failed += 1
+                puts "#{ANSI.wrap(ANSI::RED, "✗ FAIL")} #{ANSI.wrap(ANSI::GRAY, label)} #{call}"
+
+                # Show expectation mismatch, if present.
+                if (t.key?("expected") || t.key?(:expected) || t.key?("actual") || t.key?(:actual))
+                    puts "  #{ANSI.wrap(ANSI::GRAY, "expected:")} #{fmt_value(expected)}"
+                    puts "  #{ANSI.wrap(ANSI::GRAY, "got:     ")} #{fmt_value(actual)}"
                 end
 
-            if to_print
-                to_print = JSON.parse(JSON.generate(to_print))
-                to_print["task_id"] = task_id
-                to_print["language"] = language
-                puts JSON.generate(to_print)
-                STDOUT.flush
+                puts "  #{msg}" if msg && !msg.empty?
+                loc_s = fmt_loc(loc)
+                puts ANSI.wrap(ANSI::GRAY, "  at #{loc_s}") if loc_s
+
+                failures << t
             end
+            STDOUT.flush
 
         when "error"
-            puts JSON.generate({ event: "error", error: ev["error"], task_id: task_id, language: language })
-            STDOUT.flush
+            fatal_error = ev["error"]
+            break
         end
     end
 
-    # No summary in stream mode.
     out = res.to_h
-    exit(out[:status] == "pass" ? 0 : 1)
+
+    if fatal_error || out[:status] == "error"
+        e = fatal_error || out[:error] || {}
+        print_error_block(
+            title: "Execution error",
+            type: (e["type"] || e[:type]),
+            message: (e["message"] || e[:message]),
+            location: (e["location"] || e[:location])
+        )
+        exit 1
+    end
+
+    # Final summary
+    total ||= out[:total]
+    if out[:status] == "pass"
+        puts ANSI.wrap(ANSI::GREEN, "\n#{ANSI::BOLD}All tests passed (#{passed}/#{total}).#{ANSI::RESET}")
+        exit 0
+    else
+        puts ANSI.wrap(ANSI::RED, "\n#{ANSI::BOLD}Some tests failed (#{failed}/#{total}).#{ANSI::RESET}")
+        exit 1
+    end
 else
     res = task.run(submission_code: submission_code)
     out = res.to_h.merge(task_id: task_id, language: language)

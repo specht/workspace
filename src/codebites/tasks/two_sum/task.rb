@@ -5,9 +5,6 @@ def build_task(executor:)
     two_sum_valid = lambda do |actual, args|
         nums, target = args
 
-        # Expect nil when no solution (based on your tests/spec)
-        return [true, nil] if actual.nil?
-
         return [false, "Expected [i, j] or nil, got #{actual.inspect}"] unless actual.is_a?(Array) && actual.length == 2
         i, j = actual
 

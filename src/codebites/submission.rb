@@ -1,4 +1,5 @@
 # Return indices of two numbers that add up to target.
+puts "Hey"
 def two_sum(nums, target)
     nums.each.with_index do |n1, i|
         nums.each_with_index do |n2, j|

@@ -88,6 +88,22 @@ module Judge
         end
       rescue Timeout::Error
         return timeout_error
+      rescue SystemCallError => e
+        return {
+          "error" => {
+            "type" => "ExecutorUnavailable",
+            "message" => e.message,
+            "location" => nil
+          }
+        }
+      rescue StandardError => e
+        return {
+          "error" => {
+            "type" => "ExecutorFailed",
+            "message" => e.message,
+            "location" => nil
+          }
+        }
       end
 
       unless status&.success?
@@ -155,6 +171,26 @@ module Judge
       rescue Timeout::Error
         yield timeout_error["error"] if block_given?
         return timeout_error
+      rescue SystemCallError => e
+        err = {
+          "error" => {
+            "type" => "ExecutorUnavailable",
+            "message" => e.message,
+            "location" => nil
+          }
+        }
+        yield err["error"] if block_given?
+        return err
+      rescue StandardError => e
+        err = {
+          "error" => {
+            "type" => "ExecutorFailed",
+            "message" => e.message,
+            "location" => nil
+          }
+        }
+        yield err["error"] if block_given?
+        return err
       end
 
       return last_obj if last_obj
@@ -181,6 +217,22 @@ module Judge
         end
       rescue Timeout::Error
         return timeout_error
+      rescue SystemCallError => e
+        return {
+          "error" => {
+            "type" => "ExecutorUnavailable",
+            "message" => e.message,
+            "location" => nil
+          }
+        }
+      rescue StandardError => e
+        return {
+          "error" => {
+            "type" => "ExecutorFailed",
+            "message" => e.message,
+            "location" => nil
+          }
+        }
       end
     end
 

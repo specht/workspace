@@ -3,6 +3,13 @@ require_relative "core"
 
 module Judge
   class FunctionTask
+    # ---- pretty formatting (for terminal + streaming) ----
+    # We want calls like two_sum([1, 2, 3], 4) to be readable, but also avoid
+    # dumping huge arrays/hashes/strings into the terminal.
+    MAX_STR_LEN   = 80
+    MAX_ELEMS     = 8
+    MAX_DEPTH     = 3
+
     def initialize(function_name:, cases:, validator:, executor:)
       @function_name = function_name
       @cases = cases
@@ -11,7 +18,40 @@ module Judge
     end
 
     def call_string(args)
-      "#{@function_name}(#{args.map(&:inspect).join(', ')})"
+      "#{@function_name}(#{args.map { |a| fmt_value(a) }.join(', ')})"
+    end
+
+    def fmt_value(v, depth: 0)
+      return "…" if depth >= MAX_DEPTH
+
+      case v
+      when Array
+        if v.length <= MAX_ELEMS
+          "[#{v.map { |x| fmt_value(x, depth: depth + 1) }.join(', ')}]"
+        else
+          head = v.first(3).map { |x| fmt_value(x, depth: depth + 1) }
+          tail = v.last(2).map { |x| fmt_value(x, depth: depth + 1) }
+          "[#{(head + ['…'] + tail).join(', ')}]"
+        end
+      when Hash
+        pairs = v.to_a
+        shown = pairs.first(MAX_ELEMS).map do |k, val|
+          "#{fmt_value(k, depth: depth + 1)}=>#{fmt_value(val, depth: depth + 1)}"
+        end
+        shown << "…" if pairs.length > MAX_ELEMS
+        "{#{shown.join(', ')}}"
+      when String
+        s = v
+        if s.length > MAX_STR_LEN
+          (s[0, MAX_STR_LEN - 1] + "…").inspect
+        else
+          s.inspect
+        end
+      else
+        s = v.inspect
+        s = s[0, MAX_STR_LEN - 1] + "…" if s.length > MAX_STR_LEN
+        s
+      end
     end
 
     def build_request(submission_code, stream: false)
@@ -62,7 +102,7 @@ module Judge
     #   {"event":"error","error":{...}}
     #
     # Returns the final Result.
-    def run_stream(submission_code:)
+    def run_stream(submission_code:, fail_fast: true)
       # Interactive, fail-fast streaming:
       # - start one docker process
       # - send init once
@@ -115,8 +155,8 @@ module Judge
               test_entry = add_run_to_result!(result, run, idx)
               yield({ "event" => "test", "index" => idx, "total" => total, "test" => test_entry }) if block_given?
 
-              # Fail-fast: stop after first failing test.
-              if test_entry[:status] != "pass"
+              # Optionally stop after first failing test.
+              if fail_fast && test_entry[:status] != "pass"
                 session.close
                 return result
               end
