@@ -161,57 +161,101 @@
 </style>
 
 <div class="page">
-  <div class="topbar">
+    <div class="topbar">
 
-    <div class="topbar-left">
-      <a href="/">Workspace</a>
-      <span>/</span>
-      <a href="/codebites">Code Bites</a>
-      <span>/</span>
-      <a href="/codebites/basics">Basics</a>
-    </div>
-
-    <div class="topbar-ide">
-
-      <div class="topbar-editor-left">
-        <button class="btn btn-light" disabled>Python</button>
-        <button class="btn btn-light" disabled>Ruby</button>
-        <button class="btn btn-light" disabled>JavaScript</button>
-      </div>
-
-      <div class="topbar-terminal-right">
-        <button class="btn btn-success"><i class='bi bi-play-fill'></i>Ausführen</button>
-      </div>
-
-    </div>
-
-  </div>
-  <div class="main">
-    <div class="problem"></div>
-
-    <div class="ide-wrap" style="grid-column: 2 / span 2;">
-      <div id="ide" class="ide">
-        <div class="pane">
-          <div class="pane-body" id="editor"></div>
+        <div class="topbar-left">
+            <a href="/">Workspace</a>
+            <span>/</span>
+            <a href="/codebites">Code Bites</a>
+            <span>/</span>
+            <a href="/codebites/basics">Basics</a>
         </div>
 
-        <div id="gutter" class="gutter" title="Drag to resize width"></div>
+        <div class="topbar-ide">
 
-        <div class="pane">
-          <div class="pane-body" id="terminal"></div>
+            <div class="topbar-editor-left">
+                <button class="btn btn-light" disabled>Python</button>
+                <button class="btn btn-light" disabled>Ruby</button>
+                <!-- <button class="btn btn-light" disabled>JavaScript</button> -->
+            </div>
+
+            <div class="topbar-terminal-right">
+                <button id="runBtn"class="btn btn-success">
+                    <i class='bi bi-play-fill'></i>Ausführen
+                </button>
+                <button id="stopBtn" class="btn btn-outline-secondary" disabled>
+                    <i class="bi bi-stop-fill"></i>Stop
+                </button>
+            </div>
+
         </div>
-      </div>
+
     </div>
-  </div>
+    <div class="main">
+        <div class="problem"></div>
+
+        <div class="ide-wrap" style="grid-column: 2 / span 2;">
+            <div id="ide" class="ide">
+                <div class="pane">
+                    <div class="pane-body" id="editor"></div>
+                </div>
+
+                <div id="gutter" class="gutter"
+                    title="Drag to resize width"></div>
+
+                <div class="pane">
+                    <div class="pane-body" id="terminal"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="/include/monaco/package/min/vs/loader.js"></script>
 <script>
   var language = "ruby";
+  var task = null;
+  var editor = null;
+  var term = null;
+  var starter = null;
+
+  function loadTemplate(lang) {
+    if (!starter) return;
+    let code = starter[lang];
+    if (!code) return;
+
+    const marker = "#_";
+    const idx = code.indexOf(marker);
+
+    let lineNumber = 1;
+    let column = 1;
+
+    if (idx !== -1) {
+        // Text before the marker
+        const before = code.slice(0, idx);
+
+        // 1-based line number = number of '\n' + 1
+        const lines = before.split("\n");
+        lineNumber = lines.length;
+
+        // 1-based column = length of last line + 1
+        column = lines[lines.length - 1].length + 1;
+
+        // Remove only the first occurrence of the marker
+        code = code.slice(0, idx) + code.slice(idx + marker.length);
+    }
+
+    editor.setValue(code);
+    editor.focus();
+
+    const pos = { lineNumber, column };
+    editor.setPosition(pos);
+    editor.revealPositionInCenter(pos);
+  }
 
   function reloadPage() {
     let slug = window.location.pathname.split("/codebites")[1];
-    let task = (slug.split("/")[1] ?? "").trim();
+    task = (slug.split("/")[1] ?? "").trim();
     let sha1 = (slug.split("/")[2] ?? "").trim();
     if (task === "") task = null;
     if (sha1 === "") sha1 = null;
@@ -245,7 +289,8 @@
       api_call("/api/get_codebite", { task: task }, function (data) {
         if (data.success) {
           $(".problem").html(data.result.problem);
-          window.setCode(data.result.starter.ruby);
+          starter = data.result.starter;
+          loadTemplate('ruby');
         }
       });
     }
@@ -259,8 +304,8 @@
       return Math.max(min, Math.min(max, n));
     }
 
-    let editor = null;
-    let term = null;
+    editor = null;
+    term = null;
     let fitAddon = null;
 
     function relayout() {
@@ -332,8 +377,41 @@
         fontLigatures: true,
       });
 
-      window.getCode = () => editor.getValue();
-      window.setCode = (code) => editor.setValue(code);
+      function runSubmission() {
+        ensureCodebitesWs();
+        term.reset();
+        api_call("/api/run_codebite", { task: task, language: language, code: editor.getValue() }, function (data) {
+            // you can show errors here if request fails
+            if (!data || !data.yay) {
+                term.write(`\r\n\x1b[31mFailed to start run.\x1b[0m\r\n`);
+            } else {
+                $('#runBtn').attr("disabled", true).removeClass("btn-success").addClass("btn-outline-secondary");
+                $('#stopBtn').attr("disabled", false).removeClass("btn-outline-secondary").addClass("btn-danger");
+                term.focus();
+            }
+        });
+      }
+
+      function stopSubmission() {
+        ensureCodebitesWs();
+        api_call("/api/stop_codebite", { task: task }, function (data) {
+            // you can show errors here if request fails
+            if (!data || !data.yay) {
+                term.write(`\r\n\x1b[31mFailed to stop run.\x1b[0m\r\n`);
+            }
+        });
+      }
+
+      editor.addAction({
+        id: "codebites.run",
+        label: "Run",
+        keybindings: [
+          monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
+        ],
+        precondition: null,
+        keybindingContext: null,
+        run: runSubmission,
+      });
 
       term = new xterm.Terminal({
         convertEol: true,
@@ -341,6 +419,31 @@
         cursorBlink: false,
         fontFamily: '"0xProto", monospace',
         fontSize: 15,
+
+        theme: {
+          background: '#080808',
+          foreground: '#D3D7CF',
+          cursor:     '#D3D7CF',
+          selection:  '#555753',
+
+          black:   '#080808',
+          red:     '#8c0c03',
+          green:   '#16884a',
+          yellow:  '#fdb717',
+          blue:    '#3465A4',
+          magenta: '#75507B',
+          cyan:    '#06989A',
+          white:   '#D3D7CF',
+
+          brightBlack:   '#888a85',
+          brightRed:     '#d5291a',
+          brightGreen:   '#4aa03f',
+          brightYellow:  '#FCE94F',
+          brightBlue:    '#729FCF',
+          brightMagenta: '#AD7FA8',
+          brightCyan:    '#55beed',
+          brightWhite:   '#EEEEEC'
+        }
       });
 
       fitAddon = new fitMod.FitAddon();
@@ -349,18 +452,98 @@
       term.open(document.getElementById("terminal"));
       fitAddon.fit();
 
+      term.onKey(({ key, domEvent }) => {
+        const ev = domEvent;
+
+        // Ctrl+C  → stop current run
+        if (ev.ctrlKey && ev.key === "c") {
+          ev.preventDefault();
+          stopSubmission?.();
+          return;
+        }
+
+        // Ctrl+Enter / Cmd+Enter → run
+        if ((ev.ctrlKey || ev.metaKey) && ev.key === "Enter") {
+          ev.preventDefault();
+          runSubmission?.();
+          return;
+        }
+
+        // // Escape → clear terminal
+        // if (ev.key === "Escape") {
+        //   ev.preventDefault();
+        //   term.reset();
+        //   return;
+        // }
+      });
+
       window.feedBytes = (bytes) => term.write(bytes);
 
       document.getElementById("runBtn")?.addEventListener("click", () => {
-        console.log(editor.getValue());
+        runSubmission();
       });
 
-      document.getElementById("resetBtn")?.addEventListener("click", () => {
-        // editor.setValue(...);
+      document.getElementById("stopBtn")?.addEventListener("click", () => {
+        stopSubmission?.();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
+          runSubmission();
+        }
       });
 
       relayout();
       reloadPage();
+
+      let codebitesWs = null;
+
+      function ensureCodebitesWs() {
+        if (codebitesWs && (codebitesWs.readyState === WebSocket.OPEN || codebitesWs.readyState === WebSocket.CONNECTING)) {
+            return;
+        }
+        const proto = (location.protocol === "https:") ? "wss" : "ws";
+        codebitesWs = new WebSocket(`${proto}://${location.host}/ws_codebites`);
+
+        codebitesWs.onmessage = (ev) => {
+          let msg = {};
+          try { msg = JSON.parse(ev.data); } catch { return; }
+
+          if (msg.action === "codebite_output") {
+            // decode base64 to bytes and write to xterm
+            const binStr = atob(msg.data_b64);
+            const bytes = new Uint8Array(binStr.length);
+            for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+            term.write(bytes);
+            return;
+          }
+
+          if (msg.action === "codebite_exit") {
+            // term.write(`\r\n\x1b[90m[process exited with ${msg.exit_code}]\x1b[0m\r\n`);
+            $('#runBtn').attr("disabled", false).removeClass("btn-outline-secondary").addClass("btn-success");
+            $('#stopBtn').attr("disabled", true).removeClass("btn-danger").addClass("btn-outline-secondary");
+            editor.focus();
+            return;
+          }
+
+        //   if (msg.action === "codebite_status") {
+        //     term.write(`\r\n\x1b[90m[${msg.status}]\x1b[0m\r\n`);
+        //     return;
+        //   }
+
+          if (msg.action === "codebite_error") {
+            term.write(`\r\n\x1b[31m${msg.message}\x1b[0m\r\n`);
+            return;
+          }
+        };
+
+        codebitesWs.onclose = () => {
+            setTimeout(ensureCodebitesWs, 500);
+        };
+      }
+
+      ensureCodebitesWs();
     });
   })();
 </script>

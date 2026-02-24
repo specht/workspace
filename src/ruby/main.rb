@@ -933,6 +933,55 @@ class Main < Sinatra::Base
         end
     end
 
+    def codebite_broadcast(email, payload)
+        msg = payload.is_a?(String) ? payload : payload.to_json
+        @@codebite_mutex.synchronize do
+            conns = (@@codebite_ws_clients[email] || {})
+            conns.each_value do |ws|
+                begin
+                    ws.send(msg)
+                rescue
+                    # ignore broken sockets; cleanup happens on close
+                end
+            end
+        end
+    end
+
+    def kill_codebite_run(email, reason: "replaced")
+        run = nil
+        @@codebite_mutex.synchronize do
+            run = @@codebite_runs[email]
+            @@codebite_runs.delete(email)
+        end
+        return unless run
+
+        pid = run[:pid]
+        codebite_broadcast(email, { action: "codebite_status", status: "killing", reason: reason })
+
+        begin
+            # Try graceful terminate
+            Process.kill("TERM", pid) rescue nil
+
+            # Wait briefly, then hard kill
+            t0 = Time.now
+            while Time.now - t0 < 1.0
+                break unless run[:wait_thr]&.alive?
+                sleep 0.05
+            end
+            if run[:wait_thr]&.alive?
+                Process.kill("KILL", pid) rescue nil
+            end
+        ensure
+            # Stop reader threads
+            (run[:threads] || []).each do |thr|
+                thr.kill rescue nil
+            end
+            run[:wait_thr]&.join(0.2) rescue nil
+        end
+
+        codebite_broadcast(email, { action: "codebite_exit", exit_code: 1, killed: true })
+    end
+
     def self.load_invitations
         @@invitations = {}
         @@user_groups = {}
@@ -1041,6 +1090,10 @@ class Main < Sinatra::Base
             @@brand_header = File.read('/brand/header.html')
         rescue
         end
+
+        @@codebite_ws_clients ||= {}     # email => { client_id => ws }
+        @@codebite_runs ||= {}           # email => { pid:, wait_thr:, threads:, started_at:, task:, language: }
+        @@codebite_mutex ||= Mutex.new   # protects @@codebite_runs + @@codebite_ws_clients
 
         Thread.new do
             loop do
@@ -2789,6 +2842,167 @@ class Main < Sinatra::Base
             end
         end
         respond(:result => result)
+    end
+
+    get '/ws_codebites' do
+        assert(user_logged_in?)
+        if Faye::WebSocket.websocket?(request.env)
+            ws = Faye::WebSocket.new(request.env)
+
+            ws.on(:open) do |_|
+                client_id = request.env['HTTP_SEC_WEBSOCKET_KEY']
+                email = @session_user[:email]
+
+                @@codebite_mutex.synchronize do
+                    @@codebite_ws_clients[email] ||= {}
+                    @@codebite_ws_clients[email][client_id] = ws
+                end
+
+                ws.send({ action: "codebite_ws_ready" }.to_json)
+            end
+
+            ws.on(:close) do |_|
+                client_id = request.env['HTTP_SEC_WEBSOCKET_KEY']
+                email = @session_user[:email]
+
+                @@codebite_mutex.synchronize do
+                    if @@codebite_ws_clients[email]
+                        @@codebite_ws_clients[email].delete(client_id)
+                        @@codebite_ws_clients.delete(email) if @@codebite_ws_clients[email].empty?
+                    end
+                end
+            end
+
+            ws.on(:message) do |msg|
+                # Optional: handle ping or client-side subscription messages later
+                # For now we can ignore or accept {"ping":true}
+                begin
+                    data = msg.data.to_s
+                    if !data.empty?
+                        obj = JSON.parse(data) rescue {}
+                        if obj["ping"]
+                            ws.send({ action: "pong" }.to_json)
+                        end
+                    end
+                rescue
+                end
+            end
+
+            return ws.rack_response
+        end
+        halt 400
+    end
+
+    post '/api/run_codebite' do
+        assert(user_logged_in?)
+        data = parse_request_data(required_keys: [:task, :language, :code], :max_string_length => 100 * 1024, :max_value_lengths => { :code => 100 * 1024 })
+
+        task = data[:task].strip
+        language = data[:language].strip
+        code = data[:code].to_s
+
+        # basic guardrails
+        assert(task =~ /\A[a-zA-Z0-9_\-]+\z/)
+        assert(%w(ruby python javascript).include?(language))
+
+        email = @session_user[:email]
+
+        # 0) kill any existing run for this user
+        kill_codebite_run(email, reason: "new submission")
+
+        # 1) you said you’ll handle: sha1, store file, DB link, etc.
+        # sha1 = Digest::SHA1.hexdigest(code)
+        # ... persist ...
+
+        # 2) spawn runner
+        cmd = ["/src/codebites/bin/run_task.rb", task, language, "--stream"]
+
+        # codebite_broadcast(email, { action: "codebite_status", status: "starting", task: task, language: language })
+
+        stdin, stdout, stderr, wait_thr = Open3.popen3(*cmd)
+
+        # Important: send the code to stdin, then close it
+        stdin.write(code)
+        stdin.close
+
+        pid = wait_thr.pid
+
+        threads = []
+
+        # helper to stream chunks as base64 (safe for JSON + binary)
+        stream_chunk = lambda do |stream_name, io|
+            begin
+                while (chunk = io.readpartial(64))
+                    codebite_broadcast(email, {
+                    action: "codebite_output",
+                    stream: stream_name,                 # "stdout" or "stderr"
+                    data_b64: Base64.strict_encode64(chunk)
+                    })
+                end
+            rescue EOFError
+            rescue => e
+                codebite_broadcast(email, {
+                    action: "codebite_error",
+                    message: "stream #{stream_name} failed: #{e.class}: #{e.message}"
+                })
+            ensure
+                io.close rescue nil
+            end
+        end
+
+        threads << Thread.new { stream_chunk.call("stdout", stdout) }
+        threads << Thread.new { stream_chunk.call("stderr", stderr) }
+
+        # watcher thread to emit exit code
+        watcher = Thread.new do
+            status = wait_thr.value
+            exit_code = status.exitstatus || 1
+
+            # wait a moment for remaining output threads to drain
+            threads.each { |t| t.join(0.2) rescue nil }
+
+            codebite_broadcast(email, {
+                action: "codebite_exit",
+                exit_code: exit_code
+            })
+
+            @@codebite_mutex.synchronize do
+                # Only clear if it still points to this pid
+                if @@codebite_runs[email] && @@codebite_runs[email][:pid] == pid
+                    @@codebite_runs.delete(email)
+                end
+            end
+        end
+
+        @@codebite_mutex.synchronize do
+            @@codebite_runs[email] = {
+                pid: pid,
+                wait_thr: wait_thr,
+                threads: threads + [watcher],
+                started_at: Time.now.to_i,
+                task: task,
+                language: language
+            }
+        end
+
+        respond(yay: "running", pid: pid)
+    end
+
+    post '/api/stop_codebite' do
+        assert(user_logged_in?)
+        email = @session_user[:email]
+
+        # If nothing is running, just be nice and say ok.
+        running = false
+        @@codebite_mutex.synchronize do
+            running = @@codebite_runs.key?(email)
+        end
+
+        if running
+            kill_codebite_run(email, reason: "stopped by user")
+        end
+
+        respond(yay: "stopped", running_was: running)
     end
 
     post '/api/automatron' do

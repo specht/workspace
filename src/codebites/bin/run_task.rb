@@ -200,14 +200,20 @@ if stream
         RESET = "\e[0m"
         BOLD  = "\e[1m"
         DIM   = "\e[2m"
+
         RED   = "\e[31m"
         GREEN = "\e[32m"
         YELLOW= "\e[33m"
         CYAN  = "\e[36m"
         GRAY  = "\e[90m"
 
-        def self.wrap(color, s)
-            "#{color}#{s}#{RESET}"
+        BG_RED   = "\e[41m"
+        BG_GREEN = "\e[42m"
+
+        WHITE = "\e[97m"
+
+        def self.wrap(*codes, s)
+            "#{codes.join}#{s}#{RESET}"
         end
     end
 
@@ -266,6 +272,20 @@ if stream
         STDOUT.flush
     end
 
+    def unwrap_expected(exp)
+        return exp unless exp.is_a?(Hash)
+
+        kind = exp["kind"] || exp[:kind]
+        case kind
+        when "equals"
+            # print the actual expected value, not the matcher wrapper
+            return exp["value"] if exp.key?("value")
+            return exp[:value]  if exp.key?(:value)
+        end
+
+        exp
+    end
+
     started = false
     total = nil
     passed = 0
@@ -273,8 +293,9 @@ if stream
     failures = []
     fatal_error = nil
 
-    puts ANSI.wrap(ANSI::CYAN, "#{ANSI::BOLD}Running #{task_id} (#{language})#{ANSI::RESET}")
+    puts ANSI.wrap(ANSI::CYAN, "#{ANSI::BOLD}Running #{task_id} (#{language})#{ANSI::RESET}\n")
     STDOUT.flush
+    first_task = true
 
     res = task.run_stream(submission_code: submission_code, fail_fast: false) do |ev|
         ev = JSON.parse(JSON.generate(ev))
@@ -308,28 +329,51 @@ if stream
             total ||= (ev["total"] || 0)
 
             label = "[#{idx + 1}/#{total}]"
+            pass_label = ANSI.wrap(ANSI::BOLD, ANSI::WHITE, ANSI::BG_GREEN, " ✓ PASS  ")
+            fail_label = ANSI.wrap(ANSI::BOLD, ANSI::WHITE, ANSI::BG_RED,   " ✗ FAIL  ")
+
+            puts unless first_task
+
             if status == "pass"
                 passed += 1
                 shown_actual = (t.key?("actual") || t.key?(:actual)) ? fmt_value(actual) : nil
-                suffix = shown_actual ? " #{ANSI.wrap(ANSI::GRAY, "=>")} #{shown_actual}" : ""
-                puts "#{ANSI.wrap(ANSI::GREEN, "✓ PASS")} #{ANSI.wrap(ANSI::GRAY, label)} #{call}#{suffix}"
+                suffix = shown_actual ? " #{ANSI.wrap(ANSI::GRAY, "=>")} #{shown_actual} #{ANSI.wrap(ANSI::BOLD, ANSI::GREEN, '✓')}" : ""
+                puts "#{pass_label} #{ANSI.wrap(ANSI::GRAY, label)} #{call}#{suffix}"
+                # puts "#{ANSI.wrap(ANSI::GREEN, "✓ PASS")} #{ANSI.wrap(ANSI::GRAY, label)} #{call}#{suffix}"
             else
                 failed += 1
-                puts "#{ANSI.wrap(ANSI::RED, "✗ FAIL")} #{ANSI.wrap(ANSI::GRAY, label)} #{call}"
+                puts "#{fail_label} #{ANSI.wrap(ANSI::GRAY, label)} #{call}"
+                # puts "#{ANSI.wrap(ANSI::RED, "✗ FAIL")} #{ANSI.wrap(ANSI::GRAY, label)} #{call}"
 
                 # Show expectation mismatch, if present.
                 if (t.key?("expected") || t.key?(:expected) || t.key?("actual") || t.key?(:actual))
-                    puts "  #{ANSI.wrap(ANSI::GRAY, "expected:")} #{fmt_value(expected)}"
-                    puts "  #{ANSI.wrap(ANSI::GRAY, "got:     ")} #{fmt_value(actual)}"
+                    exp2 = unwrap_expected(expected)
+                    puts "  #{ANSI.wrap(ANSI::GRAY, "expected:")} #{fmt_value(exp2)}"
+                    puts "  #{ANSI.wrap(ANSI::GRAY, "got:     ")} #{fmt_value(actual)} #{ANSI.wrap(ANSI::BOLD, ANSI::RED, "✗")}"
                 end
 
-                puts "  #{msg}" if msg && !msg.empty?
+                # If we already printed expected/got, suppress the common redundant "Expected X, got Y" message.
+                if msg && !msg.empty?
+                    has_exp_got = (t.key?("expected") || t.key?(:expected) || t.key?("actual") || t.key?(:actual))
+                    redundant = false
+
+                    if has_exp_got
+                        # Very small heuristic: most of these messages start with "Expected "
+                        # or contain ", got " / "got " patterns.
+                        m = msg.strip
+                        redundant = (m.start_with?("Expected ") || m.include?(", got ") || m.include?(" got "))
+                    end
+
+                    puts "  #{msg}" unless redundant
+                end
                 loc_s = fmt_loc(loc)
                 puts ANSI.wrap(ANSI::GRAY, "  at #{loc_s}") if loc_s
+                # puts
 
                 failures << t
             end
             STDOUT.flush
+            first_task = false
 
         when "error"
             fatal_error = ev["error"]
@@ -355,6 +399,9 @@ if stream
     if out[:status] == "pass"
         puts ANSI.wrap(ANSI::GREEN, "\n#{ANSI::BOLD}All tests passed (#{passed}/#{total}).#{ANSI::RESET}")
         exit 0
+    elsif failed == total
+        puts ANSI.wrap(ANSI::RED, "\n#{ANSI::BOLD}All tests failed (#{failed}/#{total}).#{ANSI::RESET}")
+        exit 1
     else
         puts ANSI.wrap(ANSI::RED, "\n#{ANSI::BOLD}Some tests failed (#{failed}/#{total}).#{ANSI::RESET}")
         exit 1

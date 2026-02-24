@@ -4,7 +4,7 @@ require "timeout"
 
 module Judge
   class DockerExecutor
-    DEFAULT_TIMEOUT = 3 # seconds
+    DEFAULT_TIMEOUT = 20 # seconds
 
     def initialize(image:, timeout: DEFAULT_TIMEOUT)
       @image = image

@@ -5,7 +5,7 @@ require "json"
 #
 # Reads commands from STDIN (one JSON object per line):
 #   {"cmd":"init","mode":"function","entry":"two_sum","files":{"submission":"..."}}
-#   {"cmd":"case","index":0,"args":[...]} 
+#   {"cmd":"case","index":0,"args":[...]}
 #
 # Emits events on STDOUT (one JSON object per line):
 #   {"event":"ready"}
@@ -16,13 +16,21 @@ require "json"
 SUB_FILE = "submission.rb"
 SUB_BASENAME = SUB_FILE
 
+STDOUT.sync = true
+STDERR.sync = true
+$stdout.sync = true
+$stderr.sync = true
+
 # IMPORTANT: keep stable handles to the *real* stdout/stderr for protocol output.
 # We'll temporarily redirect STDOUT/STDERR to capture student output.
 REAL_STDOUT = IO.new(1).dup
 REAL_STDERR = IO.new(2).dup
+REAL_STDOUT.sync = true
+REAL_STDERR.sync = true
 
 def emit(obj)
-  REAL_STDOUT.puts(JSON.generate(obj))
+  REAL_STDOUT.write(JSON.generate(obj))
+  REAL_STDOUT.write("\n")
   REAL_STDOUT.flush
 end
 
@@ -43,22 +51,23 @@ end
 
 def start_stream_reader(io, stream_name, index)
   Thread.new do
+    buf = +""
     begin
       loop do
-        chunk = io.readpartial(4096)
-        break if chunk.nil? || chunk.empty?
-        emit({ event: "output", stream: stream_name, text: chunk, index: index })
+        chunk = io.readpartial(512) # smaller read helps latency a bit
+        buf << chunk
+        while (nl = buf.index("\n"))
+          line = buf.slice!(0, nl + 1)
+          emit({ event: "output", stream: stream_name, text: line, index: index })
+        end
       end
     rescue EOFError
-      # normal
+      # flush remaining
+      emit({ event: "output", stream: stream_name, text: buf, index: index }) unless buf.empty?
     rescue StandardError => e
       REAL_STDERR.puts("[executor] output reader error: #{e.class}: #{e.message}")
     ensure
-      begin
-        io.close
-      rescue StandardError
-        nil
-      end
+      io.close rescue nil
     end
   end
 end
@@ -67,19 +76,19 @@ def with_live_stdio(index)
   out_r, out_w = IO.pipe
   err_r, err_w = IO.pipe
 
-  # Make sure writes flush immediately for a "truly live" experience.
-  out_w.sync = true
-  err_w.sync = true
-
-  # Redirect both globals and constants. Many programs write to STDERR directly.
   old_stdout = STDOUT.dup
   old_stderr = STDERR.dup
 
   STDOUT.reopen(out_w)
   STDERR.reopen(err_w)
 
+  # ✅ THIS is the important part (force unbuffered on the *new* STDOUT/STDERR)
+  STDOUT.sync = true
+  STDERR.sync = true
   $stdout = STDOUT
   $stderr = STDERR
+  $stdout.sync = true
+  $stderr.sync = true
 
   t_out = start_stream_reader(out_r, "stdout", index)
   t_err = start_stream_reader(err_r, "stderr", index)
