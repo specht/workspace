@@ -5,7 +5,7 @@ def build_task(executor:)
     validator = Judge::Validator.new()
 
     cases = []
-    cases << Judge::Case.new(args: [[1,2,3,4,5]],  expect: Judge::Expect.equals(15))
+    cases << Judge::Case.new(args: [[1,2,3,4,5]], expect: Judge::Expect.equals(15))
 
     nums = []
     100.times { nums << rand(-1000..1000) }
