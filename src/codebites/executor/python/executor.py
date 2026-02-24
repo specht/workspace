@@ -124,7 +124,9 @@ def load_submission(code: str) -> ModuleType:
         raise RuntimeError("Could not load submission module")
 
     mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)  # type: ignore
+    # Capture any top-level output during import so it doesn't break the JSON protocol.
+    with LiveCapture(-1):
+        spec.loader.exec_module(mod)  # type: ignore
     return mod
 
 def handle_fatal(e: BaseException) -> None:

@@ -128,6 +128,9 @@ module Judge
           break if obj.nil?
           if obj["event"] == "ready"
             break
+          elsif obj["event"] == "output"
+            # User code may print during load/import. Stream it too.
+            yield(obj) if block_given?
           elsif obj["event"] == "fatal" && obj["error"]
             e = obj["error"]
             result.set_error(type: e["type"], message: e["message"], location: e["location"])

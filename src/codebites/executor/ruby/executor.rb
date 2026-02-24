@@ -153,7 +153,10 @@ STDIN.each_line do |line|
       submission_code = msg.dig("files", "submission") || ""
 
       File.write("/workspace/#{SUB_FILE}", submission_code)
-      load "/workspace/#{SUB_FILE}", false
+      # Capture any top-level output during load so it doesn't break the JSON protocol.
+      with_live_stdio(-1) do
+        load "/workspace/#{SUB_FILE}", false
+      end
 
       unless function_name && (Object.private_instance_methods.include?(function_name.to_sym) || Object.instance_methods.include?(function_name.to_sym))
         err = {

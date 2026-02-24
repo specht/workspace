@@ -48,9 +48,23 @@ module Judge
 
         line = @stdout.gets
         return nil if line.nil?
-        line = line.strip
-        return nil if line.empty?
-        JSON.parse(line)
+
+        raw = line
+        stripped = line.strip
+        return nil if stripped.empty?
+
+        begin
+          JSON.parse(stripped)
+        rescue JSON::ParserError
+          # Gracefully handle user output that accidentally lands on protocol stdout
+          # (e.g., top-level `puts` during module load/import).
+          {
+            "event" => "output",
+            "stream" => "stdout",
+            "text" => raw,
+            "index" => -1
+          }
+        end
       end
 
       def close
