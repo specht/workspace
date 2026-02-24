@@ -160,10 +160,11 @@
   }
 
   .btn-lang img {
-    width: 1.25em;
-    height: 1.25em;
+    width: 1em;
+    height: 1em;
     margin-right: 0.3em;
     object-fit: cover;
+    transform: scale(1.25);
   }
   .btn-lang {
     color: #444;
@@ -173,7 +174,7 @@
   }
   .btn-light.active {
     border: 1px solid #aaa;
-    background-color: #fff;
+    background-color: #f8f8f8;
   }
 </style>
 
@@ -192,7 +193,7 @@
 
             <div class="topbar-editor-left">
                 <button id="bu-python" class="btn btn-lang btn-light"><img src='/images/lang/python-128.png'> Python</button>
-                <button id="bu-ruby" class="btn btn-lang btn-light active"><img src='/images/lang/ruby-128.png'> Ruby</button>
+                <button id="bu-ruby" class="btn btn-lang btn-light"><img src='/images/lang/ruby-128.png'> Ruby</button>
             </div>
 
             <div class="topbar-terminal-right">

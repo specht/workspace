@@ -5,6 +5,7 @@ def build_task(executor:)
     validator = Judge::Validator.new()
 
     cases = []
+    cases << Judge::Case.new(args: [[2,7,11,15]], expect: Judge::Expect.equals(35))
     cases << Judge::Case.new(args: [[1,2,3,4,5]], expect: Judge::Expect.equals(15))
 
     nums = []
