@@ -159,20 +159,20 @@
     background: rgba(0, 0, 0, 0.12);
   }
 
-  .btn-lang img {
+  .bu-lang img {
     width: 1em;
     height: 1em;
     margin-right: 0.3em;
     object-fit: cover;
     transform: scale(1.25);
   }
-  .btn-lang {
+  .bu-lang {
     color: #444;
   }
-  .btn-lang:disabled img {
+  .bu-lang:disabled img {
     filter: grayscale(100%);
   }
-  .btn-light.active {
+  .bu-light.active {
     border: 1px solid #aaa;
     background-color: #f8f8f8;
   }
@@ -192,8 +192,8 @@
         <div class="topbar-ide">
 
             <div class="topbar-editor-left">
-                <button id="bu-python" class="btn btn-lang btn-light"><img src='/images/lang/python-128.png'> Python</button>
-                <button id="bu-ruby" class="btn btn-lang btn-light"><img src='/images/lang/ruby-128.png'> Ruby</button>
+                <button id="bu-python" class="btn bu-lang btn-light"><img src='/images/lang/python-128.png'> Python</button>
+                <button id="bu-ruby" class="btn bu-lang btn-light"><img src='/images/lang/ruby-128.png'> Ruby</button>
             </div>
 
             <div class="topbar-terminal-right">
@@ -304,10 +304,13 @@
       });
     } else {
       api_call("/api/get_codebite", { task: task }, function (data) {
+        console.log(data);
         if (data.success) {
           $(".problem").html(data.result.problem);
           starter = data.result.starter;
-          loadTemplate('ruby');
+          language = data.result.preferred_language;
+          loadTemplate(language);
+          $(`#bu-${language}`).addClass('active');
         }
       });
     }
@@ -561,6 +564,19 @@
       }
 
       ensureCodebitesWs();
+
+      $('.bu-lang').on('click', function() {
+        const selectedLang = $(this).attr('id').replace('bu-', '');
+        if (selectedLang === language) return; // already selected
+        api_call('/api/set_preferred_language', { language: selectedLang }, function(data) {
+          if (data.success) {
+            language = selectedLang;
+            $('.bu-lang').removeClass('active');
+            $(`#bu-${language}`).addClass('active');
+            loadTemplate(language);
+          }
+        });
+      });
     });
   })();
 </script>

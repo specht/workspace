@@ -1064,7 +1064,10 @@ class Main < Sinatra::Base
             'Session/sid',
             'TIC80File/path',
             'TIC80Dir/path',
-            'Database/name'
+            'Database/name',
+            'Language/name',
+            'Task/name',
+            'Submission/sha1',
         ]
         INDEX_LIST = [
             'Test/running'
@@ -2826,6 +2829,10 @@ class Main < Sinatra::Base
         md = File.read(md_path)
         redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
         result[:problem] = redcarpet.render(md)
+        result[:preferred_language] = neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email]})['preferred_language']
+            MATCH (u:User {email: $email})
+            RETURN COALESCE(u.preferred_language, "ruby") AS preferred_language;
+        END_OF_STRING
         Dir["/src/codebites/tasks/#{task}/starter.*"].each do |path|
             extension = File.basename(path).split('.').last
             language = case extension
@@ -2842,6 +2849,19 @@ class Main < Sinatra::Base
             end
         end
         respond(:result => result)
+    end
+
+    post '/api/set_preferred_language' do
+        assert(user_logged_in?)
+        data = parse_request_data(:required_keys => [:language])
+        language = data[:language]
+        assert(%w(ruby python javascript).include?(language))
+        neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :language => language})
+            MATCH (u:User {email: $email})
+            SET u.preferred_language = $language
+            RETURN u;
+        END_OF_STRING
+        respond(:yay => 'sure')
     end
 
     get '/ws_codebites' do
@@ -2910,9 +2930,29 @@ class Main < Sinatra::Base
         # 0) kill any existing run for this user
         kill_codebite_run(email, reason: "new submission")
 
-        # 1) you said you’ll handle: sha1, store file, DB link, etc.
-        # sha1 = Digest::SHA1.hexdigest(code)
-        # ... persist ...
+        # 1) handle: sha1, store file, DB link, etc.
+        sha1 = Digest::SHA1.hexdigest(code)
+        path = "/internal/codebites/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}"
+        FileUtils.mkpath(File.dirname(path))
+        unless File.exist?(path)
+            File.open(path, 'w') do |f|
+                f.write(code)
+            end
+        end
+        ts = Time.now.to_i
+        neo4j_query(<<~END_OF_STRING, {:email => email, :task => task, :language => language, :sha1 => sha1, :ts => ts})
+            MATCH (u:User {email: $email})
+            WITH u
+            MERGE (l:Language {name: $language})
+            WITH u, l
+            MERGE (t:Task {name: $task})
+            WITH u, l, t
+            MERGE (s:Submission {sha1: $sha1})
+            SET s.ts = $ts
+            WITH u, l, t, s
+            MERGE (u)-[:SUBMITTED]->(s)-[:FOR]->(t)
+            MERGE (s)-[:IN]->(l);
+        END_OF_STRING
 
         # 2) spawn runner
         cmd = ["/src/codebites/bin/run_task.rb", task, language, "--stream"]
