@@ -314,6 +314,8 @@
           language = data.result.preferred_language;
           loadTemplate(language);
           $(`#bu-${language}`).addClass('active');
+          $('#runBtn').attr("disabled", false);
+          $('#stopBtn').attr("disabled", false);
         }
       });
     }
