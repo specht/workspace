@@ -192,12 +192,12 @@
         <div class="topbar-ide">
 
             <div class="topbar-editor-left">
-                <button id="bu-python" class="btn bu-lang btn-light"><img src='/images/lang/python-128.png'> Python</button>
-                <button id="bu-ruby" class="btn bu-lang btn-light"><img src='/images/lang/ruby-128.png'> Ruby</button>
+                <button id="bu-python" class="btn bu-lang btn-light"><img src='/images/lang/python-128.png' disabled> Python</button>
+                <button id="bu-ruby" class="btn bu-lang btn-light"><img src='/images/lang/ruby-128.png' disabled> Ruby</button>
             </div>
 
             <div class="topbar-terminal-right">
-                <button id="runBtn"class="btn btn-success">
+                <button id="runBtn"class="btn btn-success" disabled>
                     <i class='bi bi-play-fill'></i>Ausführen
                 </button>
                 <button id="stopBtn" class="btn btn-outline-secondary" disabled>
@@ -279,6 +279,9 @@
 
     console.log(`Task: ${task}, SHA1: ${sha1}`);
     if (task === null) {
+      $('.bu-lang').attr("disabled", true);
+      $('#runBtn').attr("disabled", true);
+      $('#stopBtn').attr("disabled", true);
       api_call("/api/codebites_get_tasks", {}, function (data) {
         if (data.success) {
           let div = $("<div>");
