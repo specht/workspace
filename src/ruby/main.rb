@@ -2821,8 +2821,22 @@ class Main < Sinatra::Base
     end
 
     post '/api/codebites_get_tasks' do
-        Main.update_codebites
-        respond(:sections => @@codebite_sections, :tasks => @@codebite_tasks)
+        Main.update_codebites()
+        result = {
+            :sections => @@codebite_sections,
+            :tasks => @@codebite_tasks,
+        }
+        if user_logged_in?
+            result[:solved_tasks] = {}
+            neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email]}).map do |row|
+                MATCH (u:User {email: $email})<-[:BY]-(s:Submission {success: true})-[:FOR]->(t:Task)
+                RETURN DISTINCT t.name, s.lang;
+            END_OF_STRING
+                result[:solved_tasks][row['t.name']] ||= []
+                result[:solved_tasks][row['t.name']] << row['s.lang']
+            end
+        end
+        respond(result)
     end
 
     post '/api/get_codebite' do

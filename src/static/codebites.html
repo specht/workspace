@@ -172,6 +172,9 @@
   .bu-lang:disabled img {
     filter: grayscale(100%);
   }
+  .bu-lang.btn.active {
+    background-color: #e6e7e8!important;
+  }
   .bu-light.active {
     border: 1px solid #aaa;
     background-color: #f8f8f8;
@@ -185,6 +188,28 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.15);
     padding: 0.5em 0.5em;
     background-color: rgba(0, 0, 0, 0.05);
+  }
+  #solved-hint i {
+    margin-right: 0.15em;
+  }
+  .task-overview-lang {
+    display: inline-flex;
+    gap: 0.25em;
+    margin-left: 0.5em;
+  }
+  .task-overview-lang img {
+    width: 1.5em;
+    height: 1.5em;
+    object-fit: cover;
+  }
+  .btn-task {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .btn-task:hover {
+    background-color: #f8f8f8;
+    border: 1px solid #e0e0e0;
   }
 </style>
 
@@ -243,6 +268,7 @@
 
 <script src="/include/monaco/package/min/vs/loader.js"></script>
 <script>
+  var available_languages = ["python", "ruby"];
   var language = "ruby";
   var task = null;
   var codebite = null;
@@ -265,7 +291,7 @@
     $('.problem').find('#solved-hint').remove();
     if (codebite.solved.length > 0) {
       lang_labels = [];
-      for (let lang of ['python', 'ruby']) {
+      for (let lang of available_languages) {
         if (codebite.solved.indexOf(lang) !== -1)
           lang_labels.push($(`#bu-${lang}`).text().trim());
       }
@@ -321,21 +347,28 @@
       $('#stopBtn').attr("disabled", true);
       api_call("/api/codebites_get_tasks", {}, function (data) {
         if (data.success) {
+          console.log(data);
           let div = $("<div>");
           for (let section of data.sections) {
             let title_and_icon = $(
               '<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">'
             );
-            title_and_icon.append(`<h2>${section.title}</h2>`);
+            title_and_icon.append(`<h3>${section.title}</h3>`);
             title_and_icon.append(
               `<img src="${section.icon}" style="width: 32px; height: 32px;">`
             );
             div.append(title_and_icon);
-            div.append(`<p>${section.description}</p>`);
+            // div.append(`<p>${section.description}</p>`);
             for (let entry of section.entries) {
               let heading = data.tasks[entry] ? data.tasks[entry].heading : entry;
+              let solved_lang = [];
+              for (let lang of available_languages) {
+                if ((data.solved_tasks[entry] || []).indexOf(lang) !== -1) {
+                  solved_lang.push(`<img src='/images/lang/${lang}-128.png'>`);
+                }
+              }
               div.append(
-                `<a href="/codebites/${entry}" class="btn w-100">${heading}</a>`
+                `<a href="/codebites/${entry}" class="btn btn-task w-100">${heading}<div class='task-overview-lang'>${solved_lang.join('')}</div></a>`
               );
             }
           }
