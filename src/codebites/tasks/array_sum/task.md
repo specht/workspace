@@ -1,4 +1,4 @@
-## Summe berechnen
+## Summe mehrerer Zahlen berechnen
 
 Implementiere eine Funktion, die die Summe aller Zahlen in einem Array berechnet.
 

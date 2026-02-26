@@ -1,4 +1,4 @@
-## Two Sum
+## Summanden finden (Two Sum)
 
 Deine Aufgabe ist es, eine Funktion zu implementieren, die ein Array von Ganzzahlen (nums) und eine Zielsumme (target) als Eingabe erhält. Die Funktion soll die Indizes der beiden Zahlen zurückgeben, die zusammen die Zielsumme ergeben.
 
