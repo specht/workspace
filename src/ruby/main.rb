@@ -1067,10 +1067,12 @@ class Main < Sinatra::Base
             'Database/name',
             'Language/name',
             'Task/name',
-            'Submission/sha1',
         ]
         INDEX_LIST = [
-            'Test/running'
+            'Test/running',
+            'Submission/sha1',
+            'Submission/success',
+            'Submission/lang',
         ]
 
         setup = SetupDatabase.new()
@@ -2940,18 +2942,14 @@ class Main < Sinatra::Base
             end
         end
         ts = Time.now.to_i
-        neo4j_query(<<~END_OF_STRING, {:email => email, :task => task, :language => language, :sha1 => sha1, :ts => ts})
+        node_id = neo4j_query_expect_one(<<~END_OF_STRING, {:email => email, :task => task, :language => language, :sha1 => sha1, :ts => ts})['id']
             MATCH (u:User {email: $email})
             WITH u
-            MERGE (l:Language {name: $language})
-            WITH u, l
             MERGE (t:Task {name: $task})
-            WITH u, l, t
-            MERGE (s:Submission {sha1: $sha1})
+            WITH u, t
+            MERGE (u)<-[:BY]-(s:Submission {sha1: $sha1, lang: $language})-[:FOR]->(t)
             SET s.ts = $ts
-            WITH u, l, t, s
-            MERGE (u)-[:SUBMITTED]->(s)-[:FOR]->(t)
-            MERGE (s)-[:IN]->(l);
+            RETURN ID(s) AS id;
         END_OF_STRING
 
         # 2) spawn runner
@@ -2974,9 +2972,9 @@ class Main < Sinatra::Base
             begin
                 while (chunk = io.readpartial(64))
                     codebite_broadcast(email, {
-                    action: "codebite_output",
-                    stream: stream_name,                 # "stdout" or "stderr"
-                    data_b64: Base64.strict_encode64(chunk)
+                        action: "codebite_output",
+                        stream: stream_name,                 # "stdout" or "stderr"
+                        data_b64: Base64.strict_encode64(chunk)
                     })
                 end
             rescue EOFError
@@ -3005,6 +3003,12 @@ class Main < Sinatra::Base
                 action: "codebite_exit",
                 exit_code: exit_code
             })
+
+            neo4j_query_expect_one(<<~END_OF_STRING, {:node_id => node_id, :success => exit_code == 0})
+                MATCH (s:Submission) WHERE ID(s) = $node_id
+                SET s.success = $success
+                RETURN s;
+            END_OF_STRING
 
             @@codebite_mutex.synchronize do
                 # Only clear if it still points to this pid
