@@ -979,7 +979,11 @@ class Main < Sinatra::Base
             run[:wait_thr]&.join(0.2) rescue nil
         end
 
-        codebite_broadcast(email, { action: "codebite_exit", exit_code: 1, killed: true })
+        codebite_broadcast(email, { 
+            action: "codebite_exit",
+            exit_code: 1,
+            killed: true
+        })
     end
 
     def self.load_invitations
@@ -2835,6 +2839,10 @@ class Main < Sinatra::Base
             MATCH (u:User {email: $email})
             RETURN COALESCE(u.preferred_language, "ruby") AS preferred_language;
         END_OF_STRING
+        result[:solved] = neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :task => task}).map { |x| x['lang'] }
+            MATCH (u:User {email: $email})<-[:BY]-(s:Submission {success: true})-[:FOR]->(t:Task {name: $task})
+            RETURN DISTINCT s.lang AS lang;
+        END_OF_STRING
         Dir["/src/codebites/tasks/#{task}/starter.*"].each do |path|
             extension = File.basename(path).split('.').last
             language = case extension
@@ -2915,6 +2923,19 @@ class Main < Sinatra::Base
         halt 400
     end
 
+    post '/api/codebite_load_submissions' do
+        assert(user_logged_in?)
+        data = parse_request_data(required_keys: [:task])
+
+        submissions = neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :task => data[:task]}).to_a.map { |x| x['s'] }
+            MATCH (u:User {email: $email})<-[:BY]-(s:Submission)-[:FOR]->(t:Task {name: $task})
+            RETURN s
+            ORDER BY s.ts DESC;
+        END_OF_STRING
+
+        respond(:submissions => submissions)
+    end
+
     post '/api/run_codebite' do
         assert(user_logged_in?)
         data = parse_request_data(required_keys: [:task, :language, :code], :max_string_length => 100 * 1024, :max_value_lengths => { :code => 100 * 1024 })
@@ -2922,6 +2943,8 @@ class Main < Sinatra::Base
         task = data[:task].strip
         language = data[:language].strip
         code = data[:code].to_s
+
+        line_count = code.count("\n") + 1
 
         # basic guardrails
         assert(task =~ /\A[a-zA-Z0-9_\-]+\z/)
@@ -2942,13 +2965,13 @@ class Main < Sinatra::Base
             end
         end
         ts = Time.now.to_i
-        node_id = neo4j_query_expect_one(<<~END_OF_STRING, {:email => email, :task => task, :language => language, :sha1 => sha1, :ts => ts})['id']
+        node_id = neo4j_query_expect_one(<<~END_OF_STRING, {:email => email, :task => task, :language => language, :sha1 => sha1, :ts => ts, :line_count => line_count, :size => code.size})['id']
             MATCH (u:User {email: $email})
             WITH u
             MERGE (t:Task {name: $task})
             WITH u, t
             MERGE (u)<-[:BY]-(s:Submission {sha1: $sha1, lang: $language})-[:FOR]->(t)
-            SET s.ts = $ts
+            SET s.ts = $ts, s.line_count = $line_count, s.size = $size
             RETURN ID(s) AS id;
         END_OF_STRING
 
@@ -3001,7 +3024,8 @@ class Main < Sinatra::Base
 
             codebite_broadcast(email, {
                 action: "codebite_exit",
-                exit_code: exit_code
+                exit_code: exit_code,
+                language: language,
             })
 
             neo4j_query_expect_one(<<~END_OF_STRING, {:node_id => node_id, :success => exit_code == 0})

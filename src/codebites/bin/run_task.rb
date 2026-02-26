@@ -297,7 +297,7 @@ if stream
     STDOUT.flush
     first_task = true
 
-    res = task.run_stream(submission_code: submission_code, fail_fast: false) do |ev|
+    res = task.run_stream(submission_code: submission_code, fail_fast: true) do |ev|
         ev = JSON.parse(JSON.generate(ev))
 
         case ev["event"]

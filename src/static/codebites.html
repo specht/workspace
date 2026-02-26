@@ -176,6 +176,16 @@
     border: 1px solid #aaa;
     background-color: #f8f8f8;
   }
+  .bu-lang i {
+    margin-left: 0.5em;
+    margin-right: 0!important;
+  }
+  #solved-hint {
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    padding: 0.5em 0.5em;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
 </style>
 
 <div class="page">
@@ -192,11 +202,14 @@
         <div class="topbar-ide">
 
             <div class="topbar-editor-left">
-                <button id="bu-python" class="btn bu-lang btn-light"><img src='/images/lang/python-128.png' disabled> Python</button>
-                <button id="bu-ruby" class="btn bu-lang btn-light"><img src='/images/lang/ruby-128.png' disabled> Ruby</button>
+                <button id="bu-python" class="btn bu-lang btn-light"><img src='/images/lang/python-128.png' disabled> Python<i class='bi bi-check-lg text-success' style="display: none;"></i></button>
+                <button id="bu-ruby" class="btn bu-lang btn-light"><img src='/images/lang/ruby-128.png' disabled> Ruby<i class='bi bi-check-lg text-success' style="display: none;"></i></button>
             </div>
 
             <div class="topbar-terminal-right">
+                <button id="loadBtn"class="btn btn-outline-secondary">
+                    <i class='bi bi-clock-history'></i>Laden…
+                </button>
                 <button id="runBtn"class="btn btn-success" disabled>
                     <i class='bi bi-play-fill'></i>Ausführen
                 </button>
@@ -232,9 +245,33 @@
 <script>
   var language = "ruby";
   var task = null;
+  var codebite = null;
   var editor = null;
   var term = null;
   var starter = null;
+
+  function join_with_sep(arr, sep, final_sep) {
+    if (arr.length === 0) return "";
+    if (arr.length === 1) return arr[0];
+    if (arr.length === 2) return arr[0] + final_sep + arr[1];
+    return arr.slice(0, -1).join(sep) + final_sep + arr[arr.length - 1];
+  }
+
+  function updateTaskSolved() {
+    $('.bu-lang i').hide();
+    for (let lang of codebite.solved) {
+      $(`#bu-${lang} i`).show();
+    }
+    $('.problem').find('#solved-hint').remove();
+    if (codebite.solved.length > 0) {
+      lang_labels = [];
+      for (let lang of ['python', 'ruby']) {
+        if (codebite.solved.indexOf(lang) !== -1)
+          lang_labels.push($(`#bu-${lang}`).text().trim());
+      }
+      $(`<p id="solved-hint"><i class='bi bi-check-lg text-success' style='transform: scale(1.2);'></i> Du hast diese Aufgabe bereits in ${join_with_sep(lang_labels, ", ", " und ")} gelöst.</p>`).insertAfter($('.problem').find('h2').first());
+    }
+  }
 
   function loadTemplate(lang) {
     if (!starter) return;
@@ -309,6 +346,7 @@
       api_call("/api/get_codebite", { task: task }, function (data) {
         console.log(data);
         if (data.success) {
+          codebite = data.result;
           $(".problem").html(data.result.problem);
           starter = data.result.starter;
           language = data.result.preferred_language;
@@ -316,6 +354,8 @@
           $(`#bu-${language}`).addClass('active');
           $('#runBtn').attr("disabled", false);
           $('#stopBtn').attr("disabled", false);
+          codebite.solved = data.result.solved ?? [];
+          updateTaskSolved();
         }
       });
     }
@@ -512,6 +552,12 @@
         stopSubmission?.();
       });
 
+      document.getElementById("loadBtn")?.addEventListener("click", () => {
+        api_call("/api/codebite_load_submissions", { task: task }, function (data) {
+          console.log(data);
+        });
+      });
+
       window.addEventListener('keydown', (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
           e.preventDefault();
@@ -546,6 +592,13 @@
 
           if (msg.action === "codebite_exit") {
             // term.write(`\r\n\x1b[90m[process exited with ${msg.exit_code}]\x1b[0m\r\n`);
+            if (msg.exit_code === 0) {
+              let language = msg.language;
+              if (codebite.solved.indexOf(language) === -1) {
+                codebite.solved.push(language);
+                updateTaskSolved();
+              }
+            }
             $('#runBtn').attr("disabled", false).removeClass("btn-outline-secondary").addClass("btn-success");
             $('#stopBtn').attr("disabled", true).removeClass("btn-danger").addClass("btn-outline-secondary");
             editor.focus();
