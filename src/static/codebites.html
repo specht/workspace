@@ -386,7 +386,7 @@
           loadTemplate(language);
           $(`#bu-${language}`).addClass('active');
           $('#runBtn').attr("disabled", false);
-          $('#stopBtn').attr("disabled", false);
+          $('#stopBtn').attr("disabled", true);
           codebite.solved = data.result.solved ?? [];
           updateTaskSolved();
         }
