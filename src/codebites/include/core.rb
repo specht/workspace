@@ -66,6 +66,7 @@ module Judge
             when :equals
                 ok = (actual == expect[:value])
                 msg = ok ? nil : "Expected #{expect[:value].inspect}, got #{actual.inspect}"
+                # msg = ok ? nil : "#{expect[:value]}"
                 [ok, msg]
             when :property
                 fn = @property_validators.fetch(expect[:name])

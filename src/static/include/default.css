@@ -1347,3 +1347,7 @@ pre .nt {
 pre .na {
     color: #73a946 !important;
 }
+
+.modal-xxl {
+    --bs-modal-width: calc(100vw - 4em);
+}

@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="/include/xterm/xterm.css" />
+<!-- <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script> -->
 
 <style>
   :root {
@@ -211,6 +212,26 @@
     background-color: #f8f8f8;
     border: 1px solid #e0e0e0;
   }
+  .code-container {
+    margin-bottom: 1em;
+  }
+  .code-container img {
+    width: 2em;
+    height: 2em;
+    object-fit: cover;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+  #codebites_here .card {
+    border: none;
+  }
+  #codebites_here .card-body {
+    padding: 0;
+  }
+  #codebites_here .card-body pre {
+    overflow: hidden;
+  }
 </style>
 
 <div class="page">
@@ -232,7 +253,7 @@
             </div>
 
             <div class="topbar-terminal-right">
-                <button id="loadBtn"class="btn btn-outline-secondary">
+                <button id="loadBtn"class="btn btn-outline-secondary" disabled>
                     <i class='bi bi-clock-history'></i>Laden…
                 </button>
                 <button id="runBtn"class="btn btn-success" disabled>
@@ -343,6 +364,7 @@
     console.log(`Task: ${task}, SHA1: ${sha1}`);
     if (task === null) {
       $('.bu-lang').attr("disabled", true);
+      $('#loadBtn').attr("disabled", true);
       $('#runBtn').attr("disabled", true);
       $('#stopBtn').attr("disabled", true);
       api_call("/api/codebites_get_tasks", {}, function (data) {
@@ -385,6 +407,7 @@
           language = data.result.preferred_language;
           loadTemplate(language);
           $(`#bu-${language}`).addClass('active');
+          $('#loadBtn').attr("disabled", false);
           $('#runBtn').attr("disabled", false);
           $('#stopBtn').attr("disabled", true);
           codebite.solved = data.result.solved ?? [];
@@ -483,6 +506,7 @@
             if (!data || !data.yay) {
                 term.write(`\r\n\x1b[31mFailed to start run.\x1b[0m\r\n`);
             } else {
+                $('#loadBtn').attr("disabled", true);
                 $('#runBtn').attr("disabled", true).removeClass("btn-success").addClass("btn-outline-secondary");
                 $('#stopBtn').attr("disabled", false).removeClass("btn-outline-secondary").addClass("btn-danger");
                 term.focus();
@@ -587,7 +611,63 @@
 
       document.getElementById("loadBtn")?.addEventListener("click", () => {
         api_call("/api/codebite_load_submissions", { task: task }, function (data) {
+          $('#load_modal').modal('show');
           console.log(data);
+          let body = $('#codebites_here');
+          body.empty();
+          if (!data || !data.submissions || data.submissions.length === 0) {
+            body.append("<p>Keine früheren Einreichungen gefunden.</p>");
+            return;
+          }
+          for (let sub of data.submissions) {
+            let sha1 = sub.sha1;
+            let line_count = sub.line_count;
+            let size = sub.size;
+            let lang = sub.lang;
+            let success = sub.success;
+            let card = $(`<div class="code-container col-md-6 col-lg-4 col-xl-3">
+              <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                  <pre>${("\n".repeat(line_count))}</pre>
+                  <img src="/images/lang/${lang}-128.png">
+                  <!-- <h5 class="card-title">${lang.toUpperCase()} - ${line_count} Zeilen</h5> -->
+                  <!-- <p class="card-text mb-4">Größe: ${size} Bytes<br>Erfolg: ${success ? "<span class='text-success'>Ja</span>" : "<span class='text-danger'>Nein</span>"}</p> -->
+                  <!-- <button class="btn btn-primary mt-auto" data-sha1="${sha1}">Laden</button> -->
+                </div>
+              </div>
+            </div>`);
+            card.css('height', `${(line_count - 1) * 29 + 16}px`);
+            let observer = new IntersectionObserver((entries) => {
+              if (entries[0].isIntersecting) {
+                api_call('/api/codebite_load_submission_code', { sha1: sha1 }, function(data) {
+                  if (data.success) {
+                    let code = data.code;
+                    entries[0].target.querySelector("pre").innerHTML = code
+                  }
+                });
+                observer.disconnect();
+              }
+            }, { threshold: 0.1 });
+            observer.observe(card[0]);
+            card.find("button").on("click", function() {
+              let sha1 = $(this).data("sha1");
+              api_call("/api/codebite_load_submission_code", { sha1: sha1 }, function(data) {
+                $('#load_modal').modal('hide');
+                if (data.success) {
+                  editor.setValue(data.code);
+                  editor.focus();
+                  const pos = { lineNumber: 1, column: 1 };
+                  editor.setPosition(pos);
+                  editor.revealPositionInCenter(pos);
+                }
+              });
+            });
+            body.append(card);
+          }
+          let msnry = new Masonry(body[0], {
+            itemSelector: '.code-container',
+            // columnWidth: 200
+          });
         });
       });
 
@@ -632,6 +712,7 @@
                 updateTaskSolved();
               }
             }
+            $('#loadBtn').attr("disabled", false);
             $('#runBtn').attr("disabled", false).removeClass("btn-outline-secondary").addClass("btn-success");
             $('#stopBtn').attr("disabled", true).removeClass("btn-danger").addClass("btn-outline-secondary");
             editor.focus();

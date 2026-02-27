@@ -5,13 +5,13 @@ def build_task(executor:)
     two_sum_valid = lambda do |actual, args|
         nums, target = args
 
-        return [false, "Expected [i, j] or nil, got #{actual.inspect}"] unless actual.is_a?(Array) && actual.length == 2
+        return [false, "Expected [i, j], got #{actual.inspect}"] unless actual.is_a?(Array) && actual.length == 2
         i, j = actual
 
         return [false, "Indices must be integers"] unless i.is_a?(Integer) && j.is_a?(Integer)
         return [false, "Indices must be different"] unless i != j
-        return [false, "Index out of bounds"] unless i.between?(0, nums.length - 1) && j.between?(0, nums.length - 1)
-        return [false, "Values do not sum to target"] unless nums[i] + nums[j] == target
+        return [false, "Index within bounds"] unless i.between?(0, nums.length - 1) && j.between?(0, nums.length - 1)
+        return [false, "Values sum to target"] unless nums[i] + nums[j] == target
 
         [true, nil]
     end
@@ -20,6 +20,7 @@ def build_task(executor:)
 
     cases = [
         Judge::Case.new(args: [[2,7,11,15], 9], expect: Judge::Expect.property(:two_sum_valid)),
+        Judge::Case.new(args: [[2,7,11,15], 4], expect: Judge::Expect.equals(nil)),
         Judge::Case.new(args: [[1,2,3,4], 10],  expect: Judge::Expect.equals(nil)),
         Judge::Case.new(args: [[2], 4],         expect: Judge::Expect.equals(nil))
     ]

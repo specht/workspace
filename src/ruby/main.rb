@@ -2950,13 +2950,31 @@ class Main < Sinatra::Base
         respond(:submissions => submissions)
     end
 
+    post '/api/codebite_load_submission_code' do
+        data = parse_request_data(required_keys: [:sha1])
+        sha1 = data[:sha1]
+        assert(sha1 =~ /\A[a-f0-9]{40}\z/)
+        path = "/internal/codebites/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}"
+        if File.exist?(path)
+            code = File.read(path)
+
+            formatter = Rouge::Formatters::HTML.new
+            lexer = Rouge::Lexers::Ruby.new
+            code = formatter.format(lexer.lex(code))
+                        
+            respond(:code => code)
+        else
+            halt 404
+        end
+    end
+
     post '/api/run_codebite' do
         assert(user_logged_in?)
         data = parse_request_data(required_keys: [:task, :language, :code], :max_string_length => 100 * 1024, :max_value_lengths => { :code => 100 * 1024 })
 
         task = data[:task].strip
         language = data[:language].strip
-        code = data[:code].to_s
+        code = data[:code].to_s.strip
 
         line_count = code.count("\n") + 1
 

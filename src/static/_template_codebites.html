@@ -13,12 +13,12 @@
     <link href="/include/default.css?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}" rel="stylesheet">
     <link href="/include/dark.css?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}" rel="stylesheet">
 
+    <script src="/include/masonry.pkgd.min.js"></script>
     <script src="/include/code.js?#{CACHE_BUSTER}"></script>
     <script src="/include/bower_components/moment/min/moment-with-locales.min.js"></script>
     <script src="/include/bootstrap-5.3.3/dist/js/bootstrap.bundle.min.js?#{CACHE_BUSTER}"></script>
     <script src="/include/clipboard.min.js"></script>
     <script src="/include/bower_components/jquery/dist/jquery.min.js"></script>
-
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -382,10 +382,25 @@ window.addEventListener('load', function() {
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" >
+                    <h5 class="modal-title">
                     </h5>
                 </div>
                 <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="load_modal" tabindex="-1" role="dialog" aria-hidden="true" style='z-index: 200000;'>
+        <div class="modal-dialog modal-xl modal-xxl modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Code Bite laden</h5>
+                </div>
+                <div class="modal-body">
+                    <div id="codebites_here" class="row"></div>
                 </div>
                 <div class="modal-footer">
                 </div>
