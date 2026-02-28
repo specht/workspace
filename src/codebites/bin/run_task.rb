@@ -29,7 +29,14 @@ if task_id.nil? || language.nil?
     exit 2
 end
 
-image = "hackschule-exec-#{language}"
+canonical_lang = case language
+                 when "rb" then "ruby"
+                 when "py" then "python"
+                 when "js", "node" then "javascript"
+                 else language
+                 end
+
+image = "hackschule-exec-#{canonical_lang}"
 
 # ---- read submission ----
 submission_code = STDIN.read
@@ -43,6 +50,7 @@ def language_ext(language)
     case language
     when "ruby", "rb" then "rb"
     when "python", "py" then "py"
+    when "javascript", "js", "node" then "js"
     else
         # Best effort: treat the language arg as an extension
         language
@@ -85,6 +93,23 @@ def wrap_with_patch(language:, patch_code:, submission_code:)
         __cb_submission__ = base64.b64decode("#{sub_b64}").decode("utf-8")
         exec(compile(__cb_submission__, "submission.py", "exec"), globals(), globals())
         PY
+    end
+
+    if ["javascript", "js", "node"].include?(language)
+        # Base64 avoids any quoting / delimiter collisions from arbitrary student code.
+        patch_b64 = Base64.strict_encode64(patch_code)
+        sub_b64   = Base64.strict_encode64(submission_code)
+
+        return <<~JS
+        // --- injected by runner: task patch + submission wrapper ---
+        const __cb_b64__ = (s) => Buffer.from(s, "base64").toString("utf-8");
+
+        const __cb_patch__ = __cb_b64__("#{patch_b64}");
+        eval(__cb_patch__ + "\n//# sourceURL=patch.js");
+
+        const __cb_submission__ = __cb_b64__("#{sub_b64}");
+        eval(__cb_submission__ + "\n//# sourceURL=submission.js");
+        JS
     end
 
     # Unknown language: fall back to simple concatenation.
