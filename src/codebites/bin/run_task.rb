@@ -2,6 +2,8 @@
 # bin/run_task
 require "json"
 require "yaml"
+require "base64"
+require "securerandom"
 
 ROOT = File.expand_path("..", __dir__)
 
@@ -31,6 +33,69 @@ image = "hackschule-exec-#{language}"
 
 # ---- read submission ----
 submission_code = STDIN.read
+
+# ---- optional task patch (run BEFORE student code, but keep student line numbers) ----
+# If tasks/<task_id>/patch.(rb|py) exists, we execute it before the submission is evaluated.
+# We wrap both patch + submission in eval/exec blocks with explicit filenames so that
+# stack traces still point at submission.rb/submission.py starting at line 1.
+
+def language_ext(language)
+    case language
+    when "ruby", "rb" then "rb"
+    when "python", "py" then "py"
+    else
+        # Best effort: treat the language arg as an extension
+        language
+    end
+end
+
+def wrap_with_patch(language:, patch_code:, submission_code:)
+    return submission_code if patch_code.nil? || patch_code.strip.empty?
+
+    if ["ruby", "rb"].include?(language)
+        patch_tag = "__CODEBITES_PATCH_#{SecureRandom.hex(8)}__"
+        sub_tag   = "__CODEBITES_SUB_#{SecureRandom.hex(8)}__"
+
+        return <<~RUBY
+        # --- injected by runner: task patch + submission wrapper ---
+        __cb_patch__ = <<'#{patch_tag}'
+        #{patch_code}
+        #{patch_tag}
+        eval(__cb_patch__, TOPLEVEL_BINDING, "patch.rb", 1)
+
+        __cb_submission__ = <<'#{sub_tag}'
+        #{submission_code}
+        #{sub_tag}
+        eval(__cb_submission__, TOPLEVEL_BINDING, "submission.rb", 1)
+        RUBY
+    end
+
+    if ["python", "py"].include?(language)
+        # Base64 avoids any quoting / delimiter collisions from arbitrary student code.
+        patch_b64 = Base64.strict_encode64(patch_code)
+        sub_b64   = Base64.strict_encode64(submission_code)
+
+        return <<~PY
+        # --- injected by runner: task patch + submission wrapper ---
+        import base64
+
+        __cb_patch__ = base64.b64decode("#{patch_b64}").decode("utf-8")
+        exec(compile(__cb_patch__, "patch.py", "exec"), globals(), globals())
+
+        __cb_submission__ = base64.b64decode("#{sub_b64}").decode("utf-8")
+        exec(compile(__cb_submission__, "submission.py", "exec"), globals(), globals())
+        PY
+    end
+
+    # Unknown language: fall back to simple concatenation.
+    "#{patch_code}\n\n#{submission_code}"
+end
+
+patch_file = File.join(ROOT, "tasks", task_id, "patch.#{language_ext(language)}")
+if File.exist?(patch_file)
+    patch_code = File.read(patch_file)
+    submission_code = wrap_with_patch(language: language, patch_code: patch_code, submission_code: submission_code)
+end
 
 # ---- require judge core ----
 require File.join(ROOT, "include", "docker_executor")
