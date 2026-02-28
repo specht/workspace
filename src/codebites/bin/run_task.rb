@@ -108,22 +108,22 @@ executor = Judge::DockerExecutor.new(image: image)
 task_file = File.join(ROOT, "tasks", task_id, "task.rb")
 unless File.exist?(task_file)
     puts JSON.generate({
-    status: "error",
-    tests: [],
-    error: { type: "UnknownTask", message: "Unknown task: #{task_id}", location: nil }
-})
-exit 1
+        status: "error",
+        tests: [],
+        error: { type: "UnknownTask", message: "Unknown task: #{task_id}", location: nil }
+    })
+    exit 1
 end
 
 require task_file
 
 unless Object.private_instance_methods.include?(:build_task) || Object.instance_methods.include?(:build_task)
     puts JSON.generate({
-    status: "error",
-    tests: [],
-    error: { type: "TaskContractError", message: "Task #{task_id} must define build_task(executor:)", location: nil }
-})
-exit 1
+        status: "error",
+        tests: [],
+        error: { type: "TaskContractError", message: "Task #{task_id} must define build_task(executor:)", location: nil }
+    })
+    exit 1
 end
 
 task = Object.new.send(:build_task, executor: executor)

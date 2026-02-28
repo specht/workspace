@@ -658,7 +658,7 @@
               card.css('height', `${line_count * 29 + 16}px`);
               let observer = new IntersectionObserver((entries) => {
                 if (entries[0].isIntersecting) {
-                  api_call('/api/codebite_load_submission_code', { sha1: sha1 }, function(data) {
+                  api_call('/api/codebite_load_submission_code', { sha1: sha1, language: language }, function(data) {
                     if (data.success) {
                       entries[0].target.querySelector("pre").innerHTML = data.formatted_code;
                     }
@@ -669,7 +669,7 @@
               }, { threshold: 0.1 });
               observer.observe(card[0]);
               card.on("click", function() {
-                api_call("/api/codebite_load_submission_code", { sha1: sha1 }, function(data) {
+                api_call("/api/codebite_load_submission_code", { sha1: sha1, language: language }, function(data) {
                   $('#load_modal').modal('hide');
                   if (data.success) {
                     editor.setValue(data.code);

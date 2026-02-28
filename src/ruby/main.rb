@@ -2960,7 +2960,7 @@ class Main < Sinatra::Base
     end
 
     post '/api/codebite_load_submission_code' do
-        data = parse_request_data(required_keys: [:sha1])
+        data = parse_request_data(required_keys: [:sha1, :language])
         sha1 = data[:sha1]
         assert(sha1 =~ /\A[a-f0-9]{40}\z/)
         path = "/internal/codebites/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}"
@@ -2968,7 +2968,16 @@ class Main < Sinatra::Base
             code = File.read(path)
 
             formatter = Rouge::Formatters::HTML.new
-            lexer = Rouge::Lexers::Ruby.new
+            lexer = case data[:language]
+            when 'ruby'
+                Rouge::Lexers::Ruby.new
+            when 'python'
+                Rouge::Lexers::Python.new
+            when 'javascript'
+                Rouge::Lexers::Javascript.new
+            else
+                Rouge::Lexers::PlainText.new
+            end
             formatted_code = formatter.format(lexer.lex(code))
             # use first 10 lines for preview
             formatted_code = formatted_code.split("\n")[0, 10].join("\n")
