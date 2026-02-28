@@ -223,14 +223,26 @@
     top: 8px;
     right: 8px;
   }
-  #codebites_here .card {
+  #load_modal  .card {
     border: none;
   }
-  #codebites_here .card-body {
+  #load_modal .card-body {
     padding: 0;
   }
-  #codebites_here .card-body pre {
+  #load_modal .card-body pre {
     overflow: hidden;
+    user-select: none;
+    cursor: pointer;
+  }
+  #load_modal .card {
+    transition: all 0.1s ease-in-out;
+  }
+  #load_modal .card:hover {
+    transform: translateY(-4px);
+  }
+
+  #load_modal h4 {
+    margin: 0.25em 0 0.75em 0;
   }
 </style>
 
@@ -610,64 +622,72 @@
       });
 
       document.getElementById("loadBtn")?.addEventListener("click", () => {
-        api_call("/api/codebite_load_submissions", { task: task }, function (data) {
+        api_call("/api/codebite_load_submissions", { task: task, language: language }, function (data) {
           $('#load_modal').modal('show');
           console.log(data);
-          let body = $('#codebites_here');
+          let body = $('#load_modal .modal-body');
+          // let body = $('#codebites_here');
           body.empty();
-          if (!data || !data.submissions || data.submissions.length === 0) {
+          if (data.submissions.successful.length === 0 && data.submissions.tries.length === 0) {
             body.append("<p>Keine früheren Einreichungen gefunden.</p>");
             return;
           }
-          for (let sub of data.submissions) {
-            let sha1 = sub.sha1;
-            let line_count = sub.line_count;
-            let size = sub.size;
-            let lang = sub.lang;
-            let success = sub.success;
-            let card = $(`<div class="code-container col-md-6 col-lg-4 col-xl-3">
-              <div class="card h-100">
-                <div class="card-body d-flex flex-column">
-                  <pre>${("\n".repeat(line_count))}</pre>
-                  <img src="/images/lang/${lang}-128.png">
-                  <!-- <h5 class="card-title">${lang.toUpperCase()} - ${line_count} Zeilen</h5> -->
-                  <!-- <p class="card-text mb-4">Größe: ${size} Bytes<br>Erfolg: ${success ? "<span class='text-success'>Ja</span>" : "<span class='text-danger'>Nein</span>"}</p> -->
-                  <!-- <button class="btn btn-primary mt-auto" data-sha1="${sha1}">Laden</button> -->
+          for (let success of [true, false]) {
+            let subs = data.submissions[success ? "successful" : "tries"];
+            if (subs.length === 0) continue;
+            body.append(`<h4>${success ? "Korrekte Lösungen" : "Versuche"}</h4>`);
+            let container = $(`<div id="masonry_${success}" class="row">`);
+            for (let sub of subs) {
+              let sha1 = sub.sha1;
+              let line_count = sub.line_count;
+              if (line_count > 10) line_count = 10;
+              let size = sub.size;
+                let lang = sub.lang;
+              let success = sub.success;
+              let card = $(`<div class="code-container col-md-6 col-lg-4 col-xl-3">
+                <div class="card h-100">
+                  <div class="card-body d-flex flex-column">
+                    <pre>${("\n".repeat(line_count + 1))}</pre>
+                    <img src="/images/lang/${lang}-128.png">
+                    <!-- <h5 class="card-title">${lang.toUpperCase()} - ${line_count} Zeilen</h5> -->
+                    <!-- <p class="card-text mb-4">Größe: ${size} Bytes<br>Erfolg: ${success ? "<span class='text-success'>Ja</span>" : "<span class='text-danger'>Nein</span>"}</p> -->
+                    <!-- <button class="btn btn-primary mt-auto" data-sha1="${sha1}">Laden</button> -->
+                  </div>
                 </div>
-              </div>
-            </div>`);
-            card.css('height', `${(line_count - 1) * 29 + 16}px`);
-            let observer = new IntersectionObserver((entries) => {
-              if (entries[0].isIntersecting) {
-                api_call('/api/codebite_load_submission_code', { sha1: sha1 }, function(data) {
+              </div>`);
+              card.css('height', `${line_count * 29 + 16}px`);
+              let observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                  api_call('/api/codebite_load_submission_code', { sha1: sha1 }, function(data) {
+                    if (data.success) {
+                      entries[0].target.querySelector("pre").innerHTML = data.formatted_code;
+                    }
+                  });
+                  observer.disconnect();
+                  $('#load_modal').modal('handleUpdate');
+                }
+              }, { threshold: 0.1 });
+              observer.observe(card[0]);
+              card.on("click", function() {
+                api_call("/api/codebite_load_submission_code", { sha1: sha1 }, function(data) {
+                  $('#load_modal').modal('hide');
                   if (data.success) {
-                    let code = data.code;
-                    entries[0].target.querySelector("pre").innerHTML = code
+                    editor.setValue(data.code);
+                    editor.focus();
+                    const pos = { lineNumber: 1, column: 1 };
+                    editor.setPosition(pos);
+                    editor.revealPositionInCenter(pos);
                   }
                 });
-                observer.disconnect();
-              }
-            }, { threshold: 0.1 });
-            observer.observe(card[0]);
-            card.find("button").on("click", function() {
-              let sha1 = $(this).data("sha1");
-              api_call("/api/codebite_load_submission_code", { sha1: sha1 }, function(data) {
-                $('#load_modal').modal('hide');
-                if (data.success) {
-                  editor.setValue(data.code);
-                  editor.focus();
-                  const pos = { lineNumber: 1, column: 1 };
-                  editor.setPosition(pos);
-                  editor.revealPositionInCenter(pos);
-                }
               });
+              container.append(card);
+            }
+            body.append(container);
+            let msnry = new Masonry(container[0], {
+              itemSelector: `.code-container`,
+              // columnWidth: 200
             });
-            body.append(card);
           }
-          let msnry = new Masonry(body[0], {
-            itemSelector: '.code-container',
-            // columnWidth: 200
-          });
         });
       });
 

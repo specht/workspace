@@ -2939,13 +2939,22 @@ class Main < Sinatra::Base
 
     post '/api/codebite_load_submissions' do
         assert(user_logged_in?)
-        data = parse_request_data(required_keys: [:task])
+        data = parse_request_data(required_keys: [:task, :language])
 
-        submissions = neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :task => data[:task]}).to_a.map { |x| x['s'] }
-            MATCH (u:User {email: $email})<-[:BY]-(s:Submission)-[:FOR]->(t:Task {name: $task})
-            RETURN s
-            ORDER BY s.ts DESC;
+        user_has_correct_submissions = neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :task => data[:task], :language => data[:language]})['count'] > 0
+            MATCH (u:User {email: $email})<-[:BY]-(s:Submission {lang: $language, success: TRUE})-[:FOR]->(t:Task {name: $task})
+            RETURN COUNT(s) AS count;
         END_OF_STRING
+
+        submissions = {:successful => [], :tries => []}
+        [true, false].each do |success|
+            next if success && !user_has_correct_submissions
+            submissions[success ? :successful : :tries] = neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :task => data[:task], :language => data[:language], :success => success}).to_a.map { |x| x['s'] }
+                MATCH (u:User {email: $email})<-[:BY]-(s:Submission {lang: $language, success: $success})-[:FOR]->(t:Task {name: $task})
+                RETURN s
+                ORDER BY s.ts DESC;
+            END_OF_STRING
+        end
 
         respond(:submissions => submissions)
     end
@@ -2960,9 +2969,11 @@ class Main < Sinatra::Base
 
             formatter = Rouge::Formatters::HTML.new
             lexer = Rouge::Lexers::Ruby.new
-            code = formatter.format(lexer.lex(code))
+            formatted_code = formatter.format(lexer.lex(code))
+            # use first 10 lines for preview
+            formatted_code = formatted_code.split("\n")[0, 10].join("\n")
                         
-            respond(:code => code)
+            respond(:code => code, formatted_code: formatted_code)
         else
             halt 404
         end
@@ -2970,11 +2981,14 @@ class Main < Sinatra::Base
 
     post '/api/run_codebite' do
         assert(user_logged_in?)
-        data = parse_request_data(required_keys: [:task, :language, :code], :max_string_length => 100 * 1024, :max_value_lengths => { :code => 100 * 1024 })
+        data = parse_request_data(required_keys: [:task, :language, :code], :max_body_length => 100 * 1024, :max_string_length => 100 * 1024, :max_value_lengths => { :code => 100 * 1024 })
 
         task = data[:task].strip
         language = data[:language].strip
         code = data[:code].to_s.strip
+        lines = code.split("\n")
+        lines.map! { |l| l.rstrip }
+        code = lines.join("\n")
 
         line_count = code.count("\n") + 1
 

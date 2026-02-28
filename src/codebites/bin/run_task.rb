@@ -332,7 +332,7 @@ if stream
             pass_label = ANSI.wrap(ANSI::BOLD, ANSI::WHITE, ANSI::BG_GREEN, " ✓ PASS  ")
             fail_label = ANSI.wrap(ANSI::BOLD, ANSI::WHITE, ANSI::BG_RED,   " ✗ FAIL  ")
 
-            puts unless first_task
+            # puts unless first_task
 
             if status == "pass"
                 passed += 1
