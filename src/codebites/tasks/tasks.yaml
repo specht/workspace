@@ -16,3 +16,11 @@
 
     # - two_sum
     # - reverse_array
+- key: strings
+  title: Strings
+  description: Arbeite mit Zeichenketten und übe String-Manipulation.
+  # icon: /images/rocket.png
+  entries:
+    - reverse_string
+    # - palindrome
+    # - count_vowels
