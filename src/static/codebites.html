@@ -84,6 +84,7 @@
     min-height: 0;
     overflow: auto;
     padding-right: 8px;
+    padding-bottom: 30px;
   }
 
   .problem h1,
@@ -347,6 +348,12 @@
   .task-row.solved {
     border-left: 6px solid #4aa03f;
   }
+  .got-cat {
+    display: none;
+  }
+  .got-cat.got-it {
+    display: inline;
+  }
 </style>
 
 <div class="page">
@@ -356,16 +363,30 @@
             <a href="/">Workspace</a>
             <span>/</span>
             <a href="/codebites">Code Bites</a>
-            <span>/</span>
-            <a href="/codebites">Basics</a>
+            <span class="got-cat">/</span>
+            <a class="got-cat" href="/codebites">Basics</a>
         </div>
 
         <div class="topbar-ide">
 
             <div class="topbar-editor-left">
-                <button id="bu-python" class="btn bu-lang btn-light"><img src='/images/lang/python-128.png' disabled> Python<i class='bi bi-check-lg text-success' style="display: none;"></i></button>
-                <button id="bu-ruby" class="btn bu-lang btn-light"><img src='/images/lang/ruby-128.png' disabled> Ruby<i class='bi bi-check-lg text-success' style="display: none;"></i></button>
-                <button id="bu-javascript" class="btn bu-lang btn-light"><img src='/images/lang/js-128.png' disabled> JavaScript<i class='bi bi-check-lg text-success' style="display: none;"></i></button>
+              <button id="bu-python" class="btn bu-lang btn-light">
+                <img src="/images/lang/python-128.png" disabled>
+                <span class="bu-lang-label">Python</span>
+                <i class="bi bi-check-lg text-success" style="display:none;"></i>
+              </button>
+
+              <button id="bu-ruby" class="btn bu-lang btn-light">
+                <img src="/images/lang/ruby-128.png" disabled>
+                <span class="bu-lang-label">Ruby</span>
+                <i class="bi bi-check-lg text-success" style="display:none;"></i>
+              </button>
+
+              <button id="bu-javascript" class="btn bu-lang btn-light">
+                <img src="/images/lang/js-128.png" disabled>
+                <span class="bu-lang-label">JavaScript</span>
+                <i class="bi bi-check-lg text-success" style="display:none;"></i>
+              </button>
             </div>
 
             <div class="topbar-terminal-right">
@@ -491,6 +512,7 @@
 
     console.log(`Task: ${task}, SHA1: ${sha1}`);
     if (task === null) {
+      $('.got-cat').removeClass('got-it');
       $('.bu-lang').attr("disabled", true);
       $('#loadBtn').attr("disabled", true);
       $('#runBtn').attr("disabled", true);
@@ -503,7 +525,7 @@
             let title_and_icon = $(
               '<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">'
             );
-            title_and_icon.append(`<h3>${section.title}</h3>`);
+            title_and_icon.append(`<h3 id='h_${section.key}'>${section.title}</h3>`);
             if (section.icon) {
                 title_and_icon.append(
                    `<img src="${section.icon}" style="width: 32px; height: 32px;">`
@@ -520,8 +542,8 @@
 
               const solved = isSolvedAnyLang(data.solved_tasks[entry]);
 
-              div.append(`
-                <a href="/codebites/${entry}" class="btn btn-task w-100 task-row ${solved ? "solved" : ""}">
+              let link = $(`
+                <a id="h_${entry}" href="/codebites/${entry}" class="btn btn-task w-100 task-row ${solved ? "solved" : ""}">
                   <div class="task-inner">
                     <div class="task-main">
                       <div class="task-title">${heading}</div>
@@ -533,15 +555,26 @@
                   </div>
                 </a>
               `);
+              div.append(link);
             }
           }
           $(".problem").html(div);
+          let fragment = window.location.hash.slice(1);
+          if (fragment) {
+              document.getElementById(`h_${fragment}`).scrollIntoView({
+                behavior: "instant",
+                block: "center"
+              });
+          }
         }
       });
     } else {
       api_call("/api/get_codebite", { task: task }, function (data) {
         console.log(data);
         if (data.success) {
+          $('.got-cat').addClass('got-it');
+          $('a.got-cat').attr('href', `/codebites#${task}`);
+          $('a.got-cat').text(data.result.section_title);
           codebite = data.result;
           $(".problem").html(data.result.problem);
           starter = data.result.starter;

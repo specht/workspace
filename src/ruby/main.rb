@@ -2878,7 +2878,9 @@ class Main < Sinatra::Base
                 @@codebite_tasks[task_id] = {
                     mtime: File.mtime(task_rb_path),
                     heading: heading,
-                    difficulty: difficulty
+                    difficulty: difficulty,
+                    section_key: section['key'],
+                    section_title: section['title'],
                 }
             end
         end
@@ -2934,6 +2936,8 @@ class Main < Sinatra::Base
 
         md = sections['task.md'] || ""
         redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
+        result[:section_key] = @@codebite_tasks[task][:section_key]
+        result[:section_title] = @@codebite_tasks[task][:section_title]
         result[:problem] = redcarpet.render(md)
         result[:preferred_language] = neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email]})['preferred_language']
             MATCH (u:User {email: $email})
