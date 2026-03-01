@@ -75,3 +75,6 @@ import builtins
 def _is_prime(n):
     raise RuntimeError("Use of is_prime() is disabled for this exercise.")
 builtins.is_prime = _is_prime
+
+@@meta.yaml
+difficulty: 3

@@ -81,3 +81,6 @@ Array.prototype.max = function() {
 Array.prototype.sort = function() {
     throw new Error("Use of Array.prototype.sort is disabled for this exercise.");
 };
+
+@@meta.yaml
+difficulty: 1

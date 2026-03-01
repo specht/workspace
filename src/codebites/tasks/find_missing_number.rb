@@ -75,3 +75,6 @@ def find_missing_number(nums):
 function find_missing_number(nums) {
     #_
 }
+
+@@meta.yaml
+difficulty: 3

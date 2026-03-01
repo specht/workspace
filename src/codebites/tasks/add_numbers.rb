@@ -52,3 +52,6 @@ def add_numbers(a, b):
 function add_numbers(a, b) {
     #_
 }
+
+@@meta.yaml
+difficulty: 1

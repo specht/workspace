@@ -59,3 +59,6 @@ def factorial(n):
 function factorial(n) {
     #_
 }
+
+@@meta.yaml
+difficulty: 2

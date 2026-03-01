@@ -60,3 +60,6 @@ class Integer
         raise "Use of Integer#even? is disabled for this exercise."
     end
 end
+
+@@meta.yaml
+difficulty: 1

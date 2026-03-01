@@ -216,16 +216,20 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0.1em 0.1em 0.15em rgba(0, 0, 0, 0.15);
     /* padding-left: 0; */
     /* transition: padding-left 0.1s ease-in-out; */
     /* border: none; */
     /* box-shadow: none; */
   }
   .btn-task:hover {
-    background-color: #f8f8f8;
-    border: 1px solid #e0e0e0;
+    /* background-color: #f8f8f8; */
+    /* border: 1px solid #e0e0e0; */
     /* padding-left: 0.5rem; */
-    /* box-shadow: rgba(255, 255, 255, 0.15) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.075) 0px 1px 1px 0px; */
+    box-shadow: 0.1em 0.1em 0.25em rgba(0, 0, 0, 0.3);
+    border-color: var(--bs-btn-border-color);
+    border-left: 6px solid rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.025);
   }
   .code-container {
     margin-bottom: 1em;
@@ -272,6 +276,76 @@
   }
   .problem table {
     text-align: center;
+  }
+
+  .task-row {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+  }
+
+  .task-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* big solved marker on the left */
+  .task-status {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    border-radius: 100px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: rgba(0,0,0,0.03);
+    font-weight: 800;
+    font-size: 18px;
+    color: rgba(0, 0, 0, 0.5);
+  }
+  .task-stars .bi {
+    margin-right: 0.25em;
+    opacity: 0.75;
+  }
+  .task-status .bi {
+    margin: 0;
+  }
+
+  .task-status.solved {
+    background: #19875430;
+    border-color: #19875440;
+    color: #198754;
+  }
+
+  /* text block */
+  .task-main {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .task-title {
+    font-size: 16px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .task-stars {
+    margin-top: 3px;
+    font-size: 13px;
+    opacity: 0.85;
+    letter-spacing: 0.5px;
+  }
+
+  /* optional: subtle solved stripe */
+  .task-row {
+    border-left: 6px solid rgba(0, 0, 0, 0.05);
+  }
+  .task-row.solved {
+    border-left: 6px solid #4aa03f;
   }
 </style>
 
@@ -397,6 +471,17 @@
     editor.revealPositionInCenter(pos);
   }
 
+  function renderStars(difficulty) {
+    const d = Number(difficulty);
+    if (!Number.isFinite(d) || d < 1 || d > 5) return ""; // no stars if missing/invalid
+    return "<i class='bi bi-star-fill'></i>".repeat(d) + "<i class='bi bi-star'></i>".repeat(5 - d);
+  }
+
+  function isSolvedAnyLang(solvedTasksForEntry) {
+    // solvedTasksForEntry is like ["ruby","python"] or []
+    return Array.isArray(solvedTasksForEntry) && solvedTasksForEntry.length > 0;
+  }
+
   function reloadPage() {
     let slug = window.location.pathname.split("/codebites")[1];
     task = (slug.split("/")[1] ?? "").trim();
@@ -427,16 +512,27 @@
             div.append(title_and_icon);
             // div.append(`<p>${section.description}</p>`);
             for (let entry of section.entries) {
-              let heading = data.tasks[entry] ? data.tasks[entry].heading : entry;
-              let solved_lang = [];
-              for (let lang of available_languages) {
-                if ((data.solved_tasks[entry] || []).indexOf(lang) !== -1) {
-                  solved_lang.push(`<img src='/images/lang/${lang === 'javascript' ? 'js' : lang}-128.png'>`);
-                }
-              }
-              div.append(
-                `<a href="/codebites/${entry}" class="btn btn-task w-100">${heading}<div class='task-overview-lang'>${solved_lang.join('')}</div></a>`
-              );
+              const taskObj = data.tasks[entry] || {};
+              const heading = taskObj.heading || entry;
+
+              const difficulty = taskObj.difficulty;
+              const stars = renderStars(difficulty);
+
+              const solved = isSolvedAnyLang(data.solved_tasks[entry]);
+
+              div.append(`
+                <a href="/codebites/${entry}" class="btn btn-task w-100 task-row ${solved ? "solved" : ""}">
+                  <div class="task-inner">
+                    <div class="task-main">
+                      <div class="task-title">${heading}</div>
+                      <div class="task-stars">${stars}</div>
+                    </div>
+                    <div class="task-status ${solved ? "solved" : ""}" aria-label="${solved ? "Gelöst" : "Offen"}">
+                      ${solved ? "<i class='bi bi-check-lg'></i>" : "<i class='bi bi-x'></i>"}
+                    </div>
+                  </div>
+                </a>
+              `);
             }
           }
           $(".problem").html(div);

@@ -71,3 +71,6 @@ def fibonacci(n):
 function fibonacci(n) {
     #_
 }
+
+@@meta.yaml
+difficulty: 2

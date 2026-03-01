@@ -2814,6 +2814,20 @@ class Main < Sinatra::Base
         # Parse embedded @@sections from single-file tasks without executing the Ruby code.
         section_marker = "\n__END__\n"
 
+        parse_meta = lambda do |sections|
+            # Prefer meta.yaml, fallback to meta.json
+            if (y = sections["meta.yaml"]) && !y.strip.empty?
+                begin
+                    meta = YAML.safe_load(y) || {}
+                    meta.is_a?(Hash) ? meta : {}
+                rescue
+                    {}
+                end
+            else
+                {}
+            end
+        end
+
         parse_sections = lambda do |text|
             out = {}
             current = nil
@@ -2856,9 +2870,15 @@ class Main < Sinatra::Base
                 md = sections['task.md'] || ""
                 heading = extract_title.call(md) || task_id
 
+                meta = parse_meta.call(sections)
+                difficulty = meta["difficulty"] || meta[:difficulty]
+                difficulty = difficulty.to_i if difficulty
+                difficulty = nil unless difficulty && difficulty.between?(1, 5)
+
                 @@codebite_tasks[task_id] = {
                     mtime: File.mtime(task_rb_path),
-                    heading: heading
+                    heading: heading,
+                    difficulty: difficulty
                 }
             end
         end
@@ -3028,28 +3048,16 @@ class Main < Sinatra::Base
         sha1 = data[:sha1]
         assert(sha1 =~ /\A[a-f0-9]{40}\z/)
         path = "/internal/codebites/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}"
+        code = nil
+        highlighted_code = nil
         if File.exist?(path)
             code = File.read(path)
-
-            formatter = Rouge::Formatters::HTML.new
-            lexer = case data[:language]
-            when 'ruby'
-                Rouge::Lexers::Ruby.new
-            when 'python'
-                Rouge::Lexers::Python.new
-            when 'javascript'
-                Rouge::Lexers::Javascript.new
-            else
-                Rouge::Lexers::PlainText.new
-            end
-            formatted_code = formatter.format(lexer.lex(code))
-            # use first 10 lines for preview
-            formatted_code = formatted_code.split("\n")[0, 10].join("\n")
-
-            respond(:code => code, formatted_code: formatted_code)
-        else
-            halt 404
         end
+        highlighted_path = "/internal/codebites/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}.hl"
+        if File.exist?(highlighted_path)
+            highlighted_code = File.read(highlighted_path)
+        end
+        respond(:code => code, :formatted_code => highlighted_code)
     end
 
     post '/api/run_codebite' do
@@ -3076,12 +3084,33 @@ class Main < Sinatra::Base
         kill_codebite_run(email, reason: "new submission")
 
         # 1) handle: sha1, store file, DB link, etc.
-        sha1 = Digest::SHA1.hexdigest(code)
+        sha1 = Digest::SHA1.hexdigest(language + code)
         path = "/internal/codebites/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}"
         FileUtils.mkpath(File.dirname(path))
         unless File.exist?(path)
             File.open(path, 'w') do |f|
                 f.write(code)
+            end
+        end
+        highlighted_path = "/internal/codebites/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}.hl"
+        unless File.exist?(highlighted_path)
+            formatter = Rouge::Formatters::HTML.new
+            lexer = case language
+            when 'ruby'
+                Rouge::Lexers::Ruby.new
+            when 'python'
+                Rouge::Lexers::Python.new
+            when 'javascript'
+                Rouge::Lexers::Javascript.new
+            else
+                Rouge::Lexers::PlainText.new
+            end
+
+            formatted_code = formatter.format(lexer.lex(code))
+            # use first 10 lines
+            formatted_code = formatted_code.split("\n")[0, 10].join("\n")
+            File.open(highlighted_path, 'w') do |f|
+                f.write(formatted_code)
             end
         end
         ts = Time.now.to_i

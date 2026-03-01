@@ -51,3 +51,6 @@ def generate_primes(n):
 function generate_primes(n) {
     #_
 }
+
+@@meta.yaml
+difficulty: 4
