@@ -5,7 +5,7 @@ def build_task(executor:)
     two_sum_valid = lambda do |actual, args|
         nums, target = args
 
-        return [false, "Expected [i, j], got #{actual.inspect}"] unless actual.is_a?(Array) && actual.length == 2
+        return [false, "Expected [i, j]"] unless actual.is_a?(Array) && actual.length == 2
         i, j = actual
 
         return [false, "Indices must be integers"] unless i.is_a?(Integer) && j.is_a?(Integer)

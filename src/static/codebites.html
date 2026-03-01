@@ -207,10 +207,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    /* padding-left: 0; */
+    /* transition: padding-left 0.1s ease-in-out; */
+    /* border: none; */
+    /* box-shadow: none; */
   }
   .btn-task:hover {
     background-color: #f8f8f8;
     border: 1px solid #e0e0e0;
+    /* padding-left: 0.5rem; */
+    /* box-shadow: rgba(255, 255, 255, 0.15) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.075) 0px 1px 1px 0px; */
   }
   .code-container {
     margin-bottom: 1em;
@@ -641,6 +647,7 @@
             let container = $(`<div id="masonry_${success}" class="row">`);
             for (let sub of subs) {
               let sha1 = sub.sha1;
+              console.log(sha1);
               let line_count = sub.line_count;
               if (line_count > 10) line_count = 10;
               let size = sub.size;

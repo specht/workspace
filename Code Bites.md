@@ -1,102 +1,151 @@
-# Hackschule Code Bites – Extended Task List
+# Hackschule Code Bites – Aufgabenübersicht
 
-## 🟢 1. Foundations
+---
 
-### Strings
-- Reverse a string
-- Check palindrome
-- Count vowels
-- Caesar cipher
-- Format a name properly
-- Slugify a title (e.g., "Hello World!" → "hello-world")
+# 🟢 1. Grundlagen
 
-### Numbers
-- FizzBuzz
-- Prime check
-- Prime generator
-- Fibonacci (iterative + recursive)
-- Factorial
-- Greatest common divisor (GCD)
+## 🔢 Zahlen
 
-### Collections
-1. Schreibe eine Schleife, die jedes Element des Arrays mit ihrem Index ausgibt.
-2. Berechne die Summe aller Elemente im Array.
-3. Bestimme die Anzahl der geraden Zahlen im Array (%2 == 0).
-4. Finde das größte Element im Array.
-5. Wandle ein gegebenes Array in ein neues Array um, in dem jedes Element doppelt enthalten ist.
-6. Entferne alle ungeraden Zahlen in einem Array.
-7. Drehe die Reihenfolge aller Elemente im Array um.
-8. Finde heraus, ob ein Array ein bestimmtes Element enthält.
-9. Schreibe eine Funktion, die ermittelt, ob ein Array aufsteigend sortiert ist.
-10. Rotate left
-11. Swap first and last
-12. Palindrome check
-- Remove duplicates from list
-- Find the most frequent element
-- Merge two sorted lists
-- Flatten nested lists (one level first)
-- Group words by length
+### ⭐ Einstieg
+- ⭐ Zwei Zahlen addieren
+- ⭐ Zwei Zahlen multiplizieren
+- ⭐ Gerade oder ungerade Zahl erkennen
+- ⭐ Maximum von zwei Zahlen bestimmen
 
+### ⭐⭐ Leicht
+- ⭐⭐ Fakultät berechnen
+- ⭐⭐ Fibonacci (iterativ)
+- ⭐⭐ Größter gemeinsamer Teiler (GGT)
 
-## 🔵 2. Algorithmic Thinking
+### ⭐⭐⭐ Mittel
+- ⭐⭐⭐ Prüfen, ob eine Zahl eine Primzahl ist
+- ⭐⭐⭐ FizzBuzz
+- ⭐⭐⭐ Fehlende Zahl in einer Zahlenfolge finden
 
-- Two-sum problem
-- Valid parentheses
-- Anagram detection
-- Rotate array
-- Binary search
-- Find missing number in sequence
-- Longest word in sentence
-- Count word frequency
-- Detect duplicates in array
-- Implement sorting (bubble sort → quicksort progression)
+### ⭐⭐⭐⭐ Anspruchsvoll
+- ⭐⭐⭐⭐ Primzahlen bis n erzeugen
+- ⭐⭐⭐⭐ Fibonacci rekursiv berechnen
 
+---
 
-## 🟣 3. Real-World Mini Tools
+## 🔤 Strings
 
-- Simple password strength checker
-- Basic email validator
-- Dice simulator
-- Simple in-memory to-do list
-- Number guessing game
-- Unit converter (km ↔ miles, °C ↔ °F)
-- Basic calculator parser
-- URL shortener logic (without networking)
-- Text-based menu system
-- CSV reader & analyzer (count rows, average values)
+### ⭐ Einstieg
+- ⭐ String umdrehen
+- ⭐ Anzahl der Vokale zählen
+- ⭐ Längstes Wort in einem Satz finden
 
+### ⭐⭐ Leicht
+- ⭐⭐ Prüfen, ob ein Wort ein Palindrom ist
+- ⭐⭐ Wörter in einem Satz zählen
+- ⭐⭐ Zwei Wörter auf Anagramm prüfen
 
-## 🔴 4. Intermediate / Stretch Bites
+### ⭐⭐⭐ Mittel
+- ⭐⭐⭐ Wort-Häufigkeit in einem Text berechnen
+- ⭐⭐⭐ Namen korrekt formatieren („max mustermann“ → „Max Mustermann“)
+- ⭐⭐⭐ Slug erzeugen („Hello World!“ → „hello-world“)
 
-- Sudoku row validator
-- Tic-tac-toe winner detection
-- Roman numeral converter
-- JSON pretty printer
-- Word ladder (intro to graph thinking)
-- LRU cache implementation
-- Basic Markdown to HTML converter
-- Vigenère cipher encryption
+### ⭐⭐⭐⭐ Anspruchsvoll
+- ⭐⭐⭐⭐ Caesar-Verschlüsselung
+- ⭐⭐⭐⭐ Einfache E-Mail-Validierung
 
+### ⭐⭐⭐⭐⭐ Fortgeschritten
+- ⭐⭐⭐⭐⭐ Vigenère-Verschlüsselung
+- ⭐⭐⭐⭐⭐ Passwort-Stärkenprüfung mit Regeln
 
-## 🟡 5. Professional Skills Bites
+---
 
-- Refactor a messy function
-- Write tests for a given function
-- Optimize a slow function
-- Handle edge cases properly
-- Validate user input safely
-- Add proper error handling
-- Parse structured text input
-- Write clear docstrings/comments
-- Benchmark two implementations
-- Identify code smells
+## 📦 Arrays / Listen
 
+### ⭐ Einstieg
+- ⭐ Summe aller Elemente berechnen
+- ⭐ Größtes Element finden
+- ⭐ Anzahl gerader Zahlen zählen
+- ⭐ Prüfen, ob ein Element enthalten ist
+- ⭐ Reihenfolge umdrehen
+- ⭐ Erstes und letztes Element tauschen
 
-## ⚫ 6. Meta-Bites (Constraint-Based Challenges)
+### ⭐⭐ Leicht
+- ⭐⭐ Array nach links rotieren
+- ⭐⭐ Prüfen, ob ein Array sortiert ist
+- ⭐⭐ Duplikate entfernen
 
-- Solve without loops
-- Solve without using built-in sort
-- Improve from O(n²) to O(n)
-- Rewrite using recursion
-- Make the solution purely functional
-- Add caching/memoization
+### ⭐⭐⭐ Mittel
+- ⭐⭐⭐ Häufigstes Element finden
+- ⭐⭐⭐ Zwei sortierte Arrays zusammenführen
+- ⭐⭐⭐ Array flach machen (eine Ebene)
+
+### ⭐⭐⭐⭐ Anspruchsvoll
+- ⭐⭐⭐⭐ Zwei-Summen-Problem
+- ⭐⭐⭐⭐ Duplikate effizient erkennen
+- ⭐⭐⭐⭐ Binäre Suche implementieren
+
+### ⭐⭐⭐⭐⭐ Fortgeschritten
+- ⭐⭐⭐⭐⭐ Eigene Sortierung implementieren (Bubble Sort → Quick Sort)
+
+---
+
+## 🗂️ Hashes / Dictionaries / Maps
+
+### ⭐ Einstieg
+- ⭐ Wort-Häufigkeit mit Dictionary zählen
+- ⭐ Werte per Schlüssel abrufen
+- ⭐ Schlüssel-Wert-Paare iterieren
+
+### ⭐⭐ Leicht
+- ⭐⭐ Wörter nach Länge gruppieren
+- ⭐⭐ Häufigstes Wort bestimmen
+- ⭐⭐ Zwei Dictionaries zusammenführen
+
+### ⭐⭐⭐ Mittel
+- ⭐⭐⭐ JSON hübsch formatieren
+- ⭐⭐⭐ CSV einlesen und auswerten (Zeilen zählen, Durchschnitt berechnen)
+
+### ⭐⭐⭐⭐⭐ Fortgeschritten
+- ⭐⭐⭐⭐⭐ LRU-Cache implementieren
+
+---
+
+# 🔵 2. Algorithmisches Denken
+
+- ⭐⭐ Gültige Klammern prüfen
+- ⭐⭐ Array rotieren
+- ⭐⭐⭐ Sudoku-Zeile validieren
+- ⭐⭐⭐ Tic-Tac-Toe Gewinner erkennen
+- ⭐⭐⭐⭐ Zahl raten mit Binärstrategie
+- ⭐⭐⭐⭐⭐ Word Ladder (Graph-Denken)
+
+---
+
+# 🟣 3. Mini-Tools (Praxisnah)
+
+- ⭐⭐ Würfelsimulator
+- ⭐⭐ Einfache To-Do-Liste (In-Memory)
+- ⭐⭐ Einheiten-Umrechner (km ↔ Meilen, °C ↔ °F)
+- ⭐⭐⭐ Textbasiertes Menüsystem
+- ⭐⭐⭐ Römische Zahlen konvertieren
+- ⭐⭐⭐⭐ URL-Shortener-Logik (ohne Netzwerk)
+
+---
+
+# 🔴 4. Code-Qualität & Professional Skills
+
+- ⭐⭐ Unübersichtliche Funktion refaktorieren
+- ⭐⭐⭐ Tests für eine Funktion schreiben
+- ⭐⭐⭐ Langsame Funktion optimieren
+- ⭐⭐⭐ Edge Cases sauber behandeln
+- ⭐⭐⭐ Benutzereingaben validieren
+- ⭐⭐⭐ Fehlerbehandlung einbauen
+- ⭐⭐⭐⭐ Zwei Implementierungen benchmarken
+- ⭐⭐⭐⭐ Code-Smells identifizieren
+
+---
+
+# ⚫ 5. Meta-Bites (Constraint Challenges)
+
+- ⭐⭐ Lösung ohne Schleifen
+- ⭐⭐⭐ Lösung ohne eingebaute `sort`
+- ⭐⭐⭐ Von O(n²) auf O(n) verbessern
+- ⭐⭐⭐ Lösung rekursiv umschreiben
+- ⭐⭐⭐⭐ Rein funktional lösen
+- ⭐⭐⭐⭐ Memoisierung hinzufügen

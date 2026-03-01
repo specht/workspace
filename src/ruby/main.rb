@@ -979,7 +979,7 @@ class Main < Sinatra::Base
             run[:wait_thr]&.join(0.2) rescue nil
         end
 
-        codebite_broadcast(email, { 
+        codebite_broadcast(email, {
             action: "codebite_exit",
             exit_code: 1,
             killed: true
@@ -2798,24 +2798,68 @@ class Main < Sinatra::Base
     end
 
     def self.update_codebites
-        @@codebite_sections ||= nil
-        @@codebite_sections_mtime ||= nil
-        sections_path = '/src/codebites/tasks/tasks.yaml'
-        if @@codebite_sections.nil? || File.mtime(sections_path) > @@codebite_sections_mtime
-            @@codebite_sections = YAML.load_file(sections_path)
-            @@codebite_sections_mtime = File.mtime(sections_path)
+        # In development we want live reload: re-parse on every call.
+        # In production we want to travel light: parse once per process.
+        unless DEVELOPMENT
+            @@codebite_sections ||= nil
+            @@codebite_tasks ||= nil
+            return if @@codebite_sections && @@codebite_tasks
         end
-        @@codebite_tasks ||= {}
-        @@codebite_sections.each do |section|
-            section['entries'].each do |task|
-                task_md_path = "/src/codebites/tasks/#{task}/task.md"
-                if @@codebite_tasks[task].nil? || File.mtime(task_md_path) > (@@codebite_tasks[task][:mtime])
-                    heading = File.read(task_md_path).split("\n").first.sub(/^#+\s+/, '')
-                    @@codebite_tasks[task] = {
-                        :mtime => File.mtime(task_md_path),
-                        :heading => heading
-                    }
+
+        @@codebite_tasks = {}
+
+        sections_path = "/src/codebites/tasks/tasks.yaml"
+        @@codebite_sections = YAML.load_file(sections_path)
+
+        # Parse embedded @@sections from single-file tasks without executing the Ruby code.
+        section_marker = "\n__END__\n"
+
+        parse_sections = lambda do |text|
+            out = {}
+            current = nil
+            buf = +""
+
+            text.each_line do |line|
+                if line.start_with?("@@")
+                    out[current] = buf.rstrip + "\n" if current
+                    current = line.strip.sub("@@", "")
+                    buf = +""
+                else
+                    buf << line
                 end
+            end
+
+            out[current] = buf.rstrip + "\n" if current
+            out
+        end
+
+        extract_title = lambda do |md|
+            return nil if md.nil? || md.strip.empty?
+            md.each_line do |line|
+                if line =~ /^\s*\#{1,2}\s+(.+?)\s*$/
+                    return Regexp.last_match(1).strip
+                end
+            end
+            nil
+        end
+
+        @@codebite_sections.each do |section|
+            section.fetch('entries', []).each do |task_id|
+                task_rb_path = "/src/codebites/tasks/#{task_id}.rb"
+                next unless File.exist?(task_rb_path)
+
+                content = File.read(task_rb_path)
+                idx = content.index(section_marker)
+                sections_text = idx ? content[(idx + section_marker.length)..] : ""
+                sections = parse_sections.call(sections_text)
+
+                md = sections['task.md'] || ""
+                heading = extract_title.call(md) || task_id
+
+                @@codebite_tasks[task_id] = {
+                    mtime: File.mtime(task_rb_path),
+                    heading: heading
+                }
             end
         end
     end
@@ -2845,8 +2889,30 @@ class Main < Sinatra::Base
         task = data[:task]
         assert(!(task.include?('/') || task.include?('.')))
         result = {}
-        md_path = "/src/codebites/tasks/#{task}/task.md"
-        md = File.read(md_path)
+        task_rb_path = "/src/codebites/tasks/#{task}.rb"
+        halt 404 unless File.exist?(task_rb_path)
+
+        content = File.read(task_rb_path)
+        section_marker = "\n__END__\n"
+        idx = content.index(section_marker)
+        sections_text = idx ? content[(idx + section_marker.length)..] : ""
+
+        # Parse @@sections (same mini format as the runner)
+        sections = {}
+        current = nil
+        buf = +""
+        sections_text.each_line do |line|
+            if line.start_with?("@@")
+                sections[current] = buf.rstrip + "\n" if current
+                current = line.strip.sub("@@", "")
+                buf = +""
+            else
+                buf << line
+            end
+        end
+        sections[current] = buf.rstrip + "\n" if current
+
+        md = sections['task.md'] || ""
         redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
         result[:problem] = redcarpet.render(md)
         result[:preferred_language] = neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email]})['preferred_language']
@@ -2857,20 +2923,14 @@ class Main < Sinatra::Base
             MATCH (u:User {email: $email})<-[:BY]-(s:Submission {success: true})-[:FOR]->(t:Task {name: $task})
             RETURN DISTINCT s.lang AS lang;
         END_OF_STRING
-        Dir["/src/codebites/tasks/#{task}/starter.*"].each do |path|
-            extension = File.basename(path).split('.').last
-            language = case extension
-            when 'py'
-                'python'
-            when 'js'
-                'javascript'
-            when 'rb'
-                'ruby'
-            end
-            if language
-                result[:starter] ||= {}
-                result[:starter][language] = File.read(path)
-            end
+        result[:starter] ||= {}
+        {
+            'ruby' => 'starter.rb',
+            'python' => 'starter.py',
+            'javascript' => 'starter.js',
+        }.each do |lang, key|
+            val = sections[key]
+            result[:starter][lang] = val if val && !val.strip.empty?
         end
         respond(:result => result)
     end
@@ -2981,7 +3041,7 @@ class Main < Sinatra::Base
             formatted_code = formatter.format(lexer.lex(code))
             # use first 10 lines for preview
             formatted_code = formatted_code.split("\n")[0, 10].join("\n")
-                        
+
             respond(:code => code, formatted_code: formatted_code)
         else
             halt 404
@@ -2998,6 +3058,7 @@ class Main < Sinatra::Base
         lines = code.split("\n")
         lines.map! { |l| l.rstrip }
         code = lines.join("\n")
+        code.rstrip!
 
         line_count = code.count("\n") + 1
 

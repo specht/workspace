@@ -1,504 +1,321 @@
 #!/usr/bin/env ruby
 # bin/run_task
 require "json"
-require "yaml"
 require "base64"
 require "securerandom"
 
 ROOT = File.expand_path("..", __dir__)
 
 # ---- args ----
-args = ARGV.dup
-stream = args.delete("--stream")
-stream_json = args.delete("--stream-json")
-
-stream_format_arg = args.find { |a| a.start_with?("--stream-format=") }
-summary_arg       = args.find { |a| a.start_with?("--summary=") }
-
-args.delete(stream_format_arg) if stream_format_arg
-args.delete(summary_arg) if summary_arg
-
-stream_format = (stream_format_arg&.split("=", 2)&.last || "compact") # compact|failures|full
-summary_mode  = (summary_arg&.split("=", 2)&.last || "failures")      # compact|full|failures
-
-task_id  = args[0]
-language = args[1]
+task_id  = ARGV[0]
+language = ARGV[1]
 
 if task_id.nil? || language.nil?
-    warn "Usage: bin/run_task <task_id> <language> [--stream] [--stream-json] [--stream-format=compact|failures|full] [--summary=compact|full|failures] < submission_file"
-    exit 2
+  warn "Usage: bin/run_task <task_id> <language> < submission_file"
+  exit 2
 end
 
-canonical_lang = case language
-                 when "rb" then "ruby"
-                 when "py" then "python"
-                 when "js", "node" then "javascript"
-                 else language
-                 end
+canonical_lang =
+  case language
+  when "rb" then "ruby"
+  when "py" then "python"
+  when "js", "node" then "javascript"
+  else language
+  end
 
+$CODEBITES_LANG = canonical_lang
 image = "hackschule-exec-#{canonical_lang}"
 
 # ---- read submission ----
 submission_code = STDIN.read
 
-# ---- optional task patch (run BEFORE student code, but keep student line numbers) ----
-# If tasks/<task_id>/patch.(rb|py) exists, we execute it before the submission is evaluated.
-# We wrap both patch + submission in eval/exec blocks with explicit filenames so that
-# stack traces still point at submission.rb/submission.py starting at line 1.
-
 def language_ext(language)
-    case language
-    when "ruby", "rb" then "rb"
-    when "python", "py" then "py"
-    when "javascript", "js", "node" then "js"
-    else
-        # Best effort: treat the language arg as an extension
-        language
-    end
+  case language
+  when "ruby", "rb" then "rb"
+  when "python", "py" then "py"
+  when "javascript", "js", "node" then "js"
+  else language
+  end
 end
 
 def wrap_with_patch(language:, patch_code:, submission_code:)
-    return submission_code if patch_code.nil? || patch_code.strip.empty?
+  return submission_code if patch_code.nil? || patch_code.strip.empty?
 
-    if ["ruby", "rb"].include?(language)
-        patch_tag = "__CODEBITES_PATCH_#{SecureRandom.hex(8)}__"
-        sub_tag   = "__CODEBITES_SUB_#{SecureRandom.hex(8)}__"
+  if ["ruby", "rb"].include?(language)
+    patch_tag = "__CODEBITES_PATCH_#{SecureRandom.hex(8)}__"
+    sub_tag   = "__CODEBITES_SUB_#{SecureRandom.hex(8)}__"
 
-        return <<~RUBY
-        # --- injected by runner: task patch + submission wrapper ---
-        __cb_patch__ = <<'#{patch_tag}'
-        #{patch_code}
-        #{patch_tag}
-        eval(__cb_patch__, TOPLEVEL_BINDING, "patch.rb", 1)
+    return <<~RUBY
+      # --- injected by runner: task patch + submission wrapper ---
+      __cb_patch__ = <<'#{patch_tag}'
+      #{patch_code}
+      #{patch_tag}
+      eval(__cb_patch__, TOPLEVEL_BINDING, "patch.rb", 1)
 
-        __cb_submission__ = <<'#{sub_tag}'
-        #{submission_code}
-        #{sub_tag}
-        eval(__cb_submission__, TOPLEVEL_BINDING, "submission.rb", 1)
-        RUBY
-    end
+      __cb_submission__ = <<'#{sub_tag}'
+      #{submission_code}
+      #{sub_tag}
+      eval(__cb_submission__, TOPLEVEL_BINDING, "submission.rb", 1)
+    RUBY
+  end
 
-    if ["python", "py"].include?(language)
-        # Base64 avoids any quoting / delimiter collisions from arbitrary student code.
-        patch_b64 = Base64.strict_encode64(patch_code)
-        sub_b64   = Base64.strict_encode64(submission_code)
+  if ["python", "py"].include?(language)
+    patch_b64 = Base64.strict_encode64(patch_code)
+    sub_b64   = Base64.strict_encode64(submission_code)
 
-        return <<~PY
-        # --- injected by runner: task patch + submission wrapper ---
-        import base64
+    return <<~PY
+      # --- injected by runner: task patch + submission wrapper ---
+      import base64
 
-        __cb_patch__ = base64.b64decode("#{patch_b64}").decode("utf-8")
-        exec(compile(__cb_patch__, "patch.py", "exec"), globals(), globals())
+      __cb_patch__ = base64.b64decode("#{patch_b64}").decode("utf-8")
+      exec(compile(__cb_patch__, "patch.py", "exec"), globals(), globals())
 
-        __cb_submission__ = base64.b64decode("#{sub_b64}").decode("utf-8")
-        exec(compile(__cb_submission__, "submission.py", "exec"), globals(), globals())
-        PY
-    end
+      __cb_submission__ = base64.b64decode("#{sub_b64}").decode("utf-8")
+      exec(compile(__cb_submission__, "submission.py", "exec"), globals(), globals())
+    PY
+  end
 
-    if ["javascript", "js", "node"].include?(language)
-        # Base64 avoids any quoting / delimiter collisions from arbitrary student code.
-        patch_b64 = Base64.strict_encode64(patch_code)
-        sub_b64   = Base64.strict_encode64(submission_code)
+  if ["javascript", "js", "node"].include?(language)
+    patch_b64 = Base64.strict_encode64(patch_code)
+    sub_b64   = Base64.strict_encode64(submission_code)
 
-        return <<~JS
-        // --- injected by runner: task patch + submission wrapper ---
-        const __cb_b64__ = (s) => Buffer.from(s, "base64").toString("utf-8");
+    return <<~JS
+      // --- injected by runner: task patch + submission wrapper ---
+      const __cb_b64__ = (s) => Buffer.from(s, "base64").toString("utf-8");
 
-        const __cb_patch__ = __cb_b64__("#{patch_b64}");
-        eval(__cb_patch__ + "\n//# sourceURL=patch.js");
+      const __cb_patch__ = __cb_b64__("#{patch_b64}");
+      eval(__cb_patch__ + "\n//# sourceURL=patch.js");
 
-        const __cb_submission__ = __cb_b64__("#{sub_b64}");
-        eval(__cb_submission__ + "\n//# sourceURL=submission.js");
-        JS
-    end
+      const __cb_submission__ = __cb_b64__("#{sub_b64}");
+      eval(__cb_submission__ + "\n//# sourceURL=submission.js");
+    JS
+  end
 
-    # Unknown language: fall back to simple concatenation.
-    "#{patch_code}\n\n#{submission_code}"
-end
-
-patch_file = File.join(ROOT, "tasks", task_id, "patch.#{language_ext(language)}")
-if File.exist?(patch_file)
-    patch_code = File.read(patch_file)
-    submission_code = wrap_with_patch(language: language, patch_code: patch_code, submission_code: submission_code)
+  "#{patch_code}\n\n#{submission_code}"
 end
 
 # ---- require judge core ----
 require File.join(ROOT, "include", "docker_executor")
-require File.join(ROOT, "include", "function_task")
-require File.join(ROOT, "include", "core")
+require File.join(ROOT, "include", "single_file_task")
 
 executor = Judge::DockerExecutor.new(image: image)
 
-# ---- load task ----
-task_file = File.join(ROOT, "tasks", task_id, "task.rb")
-unless File.exist?(task_file)
-    puts JSON.generate({
-        status: "error",
-        tests: [],
-        error: { type: "UnknownTask", message: "Unknown task: #{task_id}", location: nil }
-    })
-    exit 1
+# ---- load task (single-file format only) ----
+task_path = File.join(ROOT, "tasks", "#{task_id}.rb")
+unless File.exist?(task_path)
+  warn "Unknown task: #{task_id}"
+  exit 1
 end
 
-require task_file
-
-unless Object.private_instance_methods.include?(:build_task) || Object.instance_methods.include?(:build_task)
-    puts JSON.generate({
-        status: "error",
-        tests: [],
-        error: { type: "TaskContractError", message: "Task #{task_id} must define build_task(executor:)", location: nil }
-    })
-    exit 1
+begin
+  spec = CodeBites::SingleFileTask.load(task_path)
+rescue => e
+  warn "Task load error: #{e.class}: #{e.message}"
+  exit 1
 end
 
-task = Object.new.send(:build_task, executor: executor)
+sections = spec[:sections]
+patch_code = sections["patch.#{language_ext(canonical_lang)}"]
 
-# ---- helpers ----
-MAX_CALL = 140
+# Apply optional patch before submission (keeping line numbers)
+submission_code = wrap_with_patch(language: canonical_lang, patch_code: patch_code, submission_code: submission_code)
 
-def truncate_call(call)
-    return call if call.nil? || call.length <= MAX_CALL
-    call[0, MAX_CALL - 1] + "…"
+# ---- build task ----
+seed = Random.new_seed
+rng  = Random.new(seed)
+
+begin
+  task = spec[:build_judge].call(executor: executor, rng: rng)
+rescue => e
+  warn "Task build error: #{e.class}: #{e.message}"
+  exit 1
 end
 
-def compact_test_event(ev)
-    # ev: {"event"=>"test","index"=>i,"total"=>n,"test"=>{...}}
-    t = ev["test"] || ev[:test] || {}
-    idx = ev["index"] || ev[:index]
-    total = ev["total"] || ev[:total]
-    status = t["status"] || t[:status]
-    ok = (status == "pass")
-    msg = t["message"] || t[:message]
-    loc = t["location"] || t[:location]
-    call = t["call"] || t[:call]
+# ---- ANSI output ----
+module ANSI
+  RESET = "\e[0m"
+  BOLD  = "\e[1m"
+  DIM   = "\e[2m"
 
-    out = { event: "t", i: idx, total: total, ok: ok }
-    # include call only when useful (failure), and truncate
-    if !ok
-        out[:call] = truncate_call(call) if call
-        out[:msg] = msg if msg
-        out[:loc] = loc if loc
-    end
-    out
+  RED   = "\e[31m"
+  GREEN = "\e[32m"
+  YELLOW= "\e[33m"
+  CYAN  = "\e[36m"
+  GRAY  = "\e[90m"
+
+  BG_RED   = "\e[41m"
+  BG_GREEN = "\e[42m"
+
+  WHITE = "\e[97m"
+
+  def self.wrap(*codes, s)
+    "#{codes.join}#{s}#{RESET}"
+  end
 end
 
-def full_test_event(ev)
-    # Keep your existing schema, but truncate call to avoid massive NDJSON lines.
-    ev = ev.dup
-    test = ev["test"] || ev[:test]
-    if test && (test["call"] || test[:call])
-        c = test["call"] || test[:call]
-        if test.is_a?(Hash)
-            if test.key?("call")
-                test["call"] = truncate_call(c)
-            else
-                test[:call] = truncate_call(c)
-            end
-        end
-    end
-    ev
+def fmt_loc(loc)
+  return nil if loc.nil?
+  file = loc["file"] || loc[:file]
+  line = loc["line"] || loc[:line]
+  return nil unless file || line
+  [file, (line ? "#{line}" : nil)].compact.join(":")
 end
 
-def summarize_result_compact(out, total:, failed_count:)
-    {
-    event: "summary",
-    status: out[:status],
-    total: total,
-    failed: failed_count,
-    error: out[:error],
-    task_id: out[:task_id],
-    language: out[:language]
-}
-end
+MAX_VAL_STR = 120
+MAX_ELEMS   = 10
+MAX_DEPTH   = 3
 
-def summarize_failures_only(out)
-    tests = out[:tests] || []
-    failed_tests = tests.select { |t| t[:status] == "fail" }
+def fmt_value(v, depth: 0)
+  return "…" if depth >= MAX_DEPTH
 
-    # Truncate call to avoid giant payloads
-    failed_tests.each do |t|
-        t[:call] = truncate_call(t[:call]) if t[:call]
-    end
-
-    {
-    event: "summary",
-    status: out[:status],
-    failed_tests: failed_tests,
-    error: out[:error],
-    task_id: out[:task_id],
-    language: out[:language]
-}
-end
-
-# ---- run ----
-if stream
-    if stream_json
-        # Legacy, fail-fast NDJSON stream for programmatic consumers.
-        res = task.run_stream(submission_code: submission_code, fail_fast: true) do |ev|
-            ev = JSON.parse(JSON.generate(ev))
-
-            case ev["event"]
-            when "output"
-                # Keep it simple for the frontend terminal: one event type.
-                puts JSON.generate({
-                    event: "o",
-                    stream: ev["stream"],
-                    text: ev["text"],
-                    i: ev["index"],
-                    task_id: task_id,
-                    language: language
-                })
-                STDOUT.flush
-
-            when "test"
-                t = ev["test"] || {}
-                to_print =
-                    case stream_format
-                    when "full"
-                        full_test_event(ev)
-                    when "failures"
-                        (t["status"] == "fail") ? compact_test_event(ev) : nil
-                    else
-                        compact_test_event(ev)
-                    end
-
-                if to_print
-                    to_print = JSON.parse(JSON.generate(to_print))
-                    to_print["task_id"] = task_id
-                    to_print["language"] = language
-                    puts JSON.generate(to_print)
-                    STDOUT.flush
-                end
-
-            when "error"
-                puts JSON.generate({ event: "error", error: ev["error"], task_id: task_id, language: language })
-                STDOUT.flush
-            end
-        end
-
-        out = res.to_h
-        exit(out[:status] == "pass" ? 0 : 1)
-    end
-
-    # Human-friendly ANSI stream:
-    # - Forward output immediately (stdout/stderr from student code)
-    # - Run all tests (no fail-fast)
-    # - Print a colored progress line per test
-    # - Print nice errors (with locations)
-
-    module ANSI
-        RESET = "\e[0m"
-        BOLD  = "\e[1m"
-        DIM   = "\e[2m"
-
-        RED   = "\e[31m"
-        GREEN = "\e[32m"
-        YELLOW= "\e[33m"
-        CYAN  = "\e[36m"
-        GRAY  = "\e[90m"
-
-        BG_RED   = "\e[41m"
-        BG_GREEN = "\e[42m"
-
-        WHITE = "\e[97m"
-
-        def self.wrap(*codes, s)
-            "#{codes.join}#{s}#{RESET}"
-        end
-    end
-
-    def fmt_loc(loc)
-        return nil if loc.nil?
-        file = loc["file"] || loc[:file]
-        line = loc["line"] || loc[:line]
-        return nil unless file || line
-        [file, (line ? "#{line}" : nil)].compact.join(":")
-    end
-
-    # Abbreviate values (results / expected) so the terminal stays readable.
-    MAX_VAL_STR = 120
-    MAX_ELEMS   = 10
-    MAX_DEPTH   = 3
-
-    def fmt_value(v, depth: 0)
-        return "…" if depth >= MAX_DEPTH
-
-        case v
-        when Array
-            if v.length <= MAX_ELEMS
-                "[#{v.map { |x| fmt_value(x, depth: depth + 1) }.join(', ')}]"
-            else
-                head = v.first(3).map { |x| fmt_value(x, depth: depth + 1) }
-                tail = v.last(2).map { |x| fmt_value(x, depth: depth + 1) }
-                "[#{(head + ['…'] + tail).join(', ')}]"
-            end
-        when Hash
-            pairs = v.to_a
-            shown = pairs.first(MAX_ELEMS).map do |k, val|
-                "#{fmt_value(k, depth: depth + 1)}=>#{fmt_value(val, depth: depth + 1)}"
-            end
-            shown << "…" if pairs.length > MAX_ELEMS
-            "{#{shown.join(', ')}}"
-        when String
-            s = v
-            if s.length > MAX_VAL_STR
-                (s[0, MAX_VAL_STR - 1] + "…").inspect
-            else
-                s.inspect
-            end
-        else
-            s = v.inspect
-            s = s[0, MAX_VAL_STR - 1] + "…" if s.length > MAX_VAL_STR
-            s
-        end
-    end
-
-    def print_error_block(title:, type:, message:, location: nil)
-        loc = fmt_loc(location)
-        header = [title, (type && !type.empty? ? type : nil)].compact.join(": ")
-        puts ANSI.wrap(ANSI::RED, "\n#{ANSI::BOLD}#{header}#{ANSI::RESET}")
-        puts "  #{message}" if message && !message.empty?
-        puts ANSI.wrap(ANSI::GRAY, "  at #{loc}") if loc
-        STDOUT.flush
-    end
-
-    def unwrap_expected(exp)
-        return exp unless exp.is_a?(Hash)
-
-        kind = exp["kind"] || exp[:kind]
-        case kind
-        when "equals"
-            # print the actual expected value, not the matcher wrapper
-            return exp["value"] if exp.key?("value")
-            return exp[:value]  if exp.key?(:value)
-        end
-
-        exp
-    end
-
-    started = false
-    total = nil
-    passed = 0
-    failed = 0
-    failures = []
-    fatal_error = nil
-
-    puts ANSI.wrap(ANSI::CYAN, "#{ANSI::BOLD}Running #{task_id} (#{language})#{ANSI::RESET}\n")
-    STDOUT.flush
-    first_task = true
-
-    res = task.run_stream(submission_code: submission_code, fail_fast: true) do |ev|
-        ev = JSON.parse(JSON.generate(ev))
-
-        case ev["event"]
-        when "output"
-            text = ev["text"] || ""
-            stream_name = ev["stream"]
-
-            # Print raw student output, but visually separate stderr.
-            if stream_name == "stderr"
-                $stdout.print(ANSI.wrap(ANSI::YELLOW, text))
-            else
-                $stdout.print(text)
-            end
-            $stdout.flush
-
-        when "test"
-            idx = (ev["index"] || 0).to_i
-            total = (ev["total"] || total).to_i if ev["total"]
-
-            t = ev["test"] || {}
-            status = t["status"] || t[:status]
-            call = t["call"] || t[:call]
-            msg  = t["message"] || t[:message]
-            loc  = t["location"] || t[:location]
-            expected = t["expected"] || t[:expected]
-            actual   = t["actual"] || t[:actual]
-
-            started ||= true
-            total ||= (ev["total"] || 0)
-
-            label = "[#{idx + 1}/#{total}]"
-            pass_label = ANSI.wrap(ANSI::BOLD, ANSI::WHITE, ANSI::BG_GREEN, " ✓ PASS  ")
-            fail_label = ANSI.wrap(ANSI::BOLD, ANSI::WHITE, ANSI::BG_RED,   " ✗ FAIL  ")
-
-            # puts unless first_task
-
-            if status == "pass"
-                passed += 1
-                shown_actual = (t.key?("actual") || t.key?(:actual)) ? fmt_value(actual) : nil
-                suffix = shown_actual ? " #{ANSI.wrap(ANSI::GRAY, "=>")} #{shown_actual} #{ANSI.wrap(ANSI::BOLD, ANSI::GREEN, '✓')}" : ""
-                puts "#{pass_label} #{ANSI.wrap(ANSI::GRAY, label)} #{call}#{suffix}"
-                # puts "#{ANSI.wrap(ANSI::GREEN, "✓ PASS")} #{ANSI.wrap(ANSI::GRAY, label)} #{call}#{suffix}"
-            else
-                failed += 1
-                puts "#{fail_label} #{ANSI.wrap(ANSI::GRAY, label)} #{call}"
-                # puts "#{ANSI.wrap(ANSI::RED, "✗ FAIL")} #{ANSI.wrap(ANSI::GRAY, label)} #{call}"
-
-                # Show expectation mismatch, if present.
-                if (t.key?("expected") || t.key?(:expected) || t.key?("actual") || t.key?(:actual))
-                    exp2 = unwrap_expected(expected)
-                    puts "  #{ANSI.wrap(ANSI::GRAY, "expected:")} #{fmt_value(exp2)}"
-                    puts "  #{ANSI.wrap(ANSI::GRAY, "got:     ")} #{fmt_value(actual)} #{ANSI.wrap(ANSI::BOLD, ANSI::RED, "✗")}"
-                end
-
-                # If we already printed expected/got, suppress the common redundant "Expected X, got Y" message.
-                if msg && !msg.empty?
-                    has_exp_got = (t.key?("expected") || t.key?(:expected) || t.key?("actual") || t.key?(:actual))
-                    redundant = false
-
-                    if has_exp_got
-                        # Very small heuristic: most of these messages start with "Expected "
-                        # or contain ", got " / "got " patterns.
-                        m = msg.strip
-                        redundant = (m.start_with?("Expected ") || m.include?(", got ") || m.include?(" got "))
-                    end
-
-                    puts "  #{msg}" unless redundant
-                end
-                loc_s = fmt_loc(loc)
-                puts ANSI.wrap(ANSI::GRAY, "  at #{loc_s}") if loc_s
-                # puts
-
-                failures << t
-            end
-            STDOUT.flush
-            first_task = false
-
-        when "error"
-            fatal_error = ev["error"]
-            break
-        end
-    end
-
-    out = res.to_h
-
-    if fatal_error || out[:status] == "error"
-        e = fatal_error || out[:error] || {}
-        print_error_block(
-            title: "Execution error",
-            type: (e["type"] || e[:type]),
-            message: (e["message"] || e[:message]),
-            location: (e["location"] || e[:location])
-        )
-        exit 1
-    end
-
-    # Final summary
-    total ||= out[:total]
-    if out[:status] == "pass"
-        puts ANSI.wrap(ANSI::GREEN, "\n#{ANSI::BOLD}All tests passed (#{passed}/#{total}).#{ANSI::RESET}")
-        exit 0
-    elsif failed == total
-        puts ANSI.wrap(ANSI::RED, "\n#{ANSI::BOLD}All tests failed (#{failed}/#{total}).#{ANSI::RESET}")
-        exit 1
+  case v
+  when Array
+    if v.length <= MAX_ELEMS
+      "[#{v.map { |x| fmt_value(x, depth: depth + 1) }.join(', ')}]"
     else
-        puts ANSI.wrap(ANSI::RED, "\n#{ANSI::BOLD}Some tests failed (#{failed}/#{total}).#{ANSI::RESET}")
-        exit 1
+      head = v.first(3).map { |x| fmt_value(x, depth: depth + 1) }
+      tail = v.last(2).map { |x| fmt_value(x, depth: depth + 1) }
+      "[#{(head + ['…'] + tail).join(', ')}]"
     end
+  when Hash
+    pairs = v.to_a
+    shown = pairs.first(MAX_ELEMS).map do |k, val|
+      "#{fmt_value(k, depth: depth + 1)}=>#{fmt_value(val, depth: depth + 1)}"
+    end
+    shown << "…" if pairs.length > MAX_ELEMS
+    "{#{shown.join(', ')}}"
+  when String
+    s = v
+    s = s[0, MAX_VAL_STR - 1] + "…" if s.length > MAX_VAL_STR
+    s
+  when NilClass
+    case $CODEBITES_LANG
+    when "javascript" then "null"
+    when "python"     then "None"
+    else "nil"
+    end
+  else
+    s = v.inspect
+    s = s[0, MAX_VAL_STR - 1] + "…" if s.length > MAX_VAL_STR
+    s
+  end
+end
+
+def unwrap_expected(exp)
+  return exp unless exp.is_a?(Hash)
+  kind = exp["kind"] || exp[:kind]
+  if kind == "equals"
+    return exp["value"] if exp.key?("value")
+    return exp[:value]  if exp.key?(:value)
+  end
+  exp
+end
+
+puts ANSI.wrap(ANSI::CYAN, "#{ANSI::BOLD}Running #{task_id} (#{canonical_lang})#{ANSI::RESET}\n")
+STDOUT.flush
+
+passed = 0
+failed = 0
+total = nil
+fatal_error = nil
+
+res = task.run_stream(submission_code: submission_code, fail_fast: true) do |ev|
+  ev = JSON.parse(JSON.generate(ev)) # normalize keys
+
+  case ev["event"]
+  when "output"
+    text = ev["text"] || ""
+    stream_name = ev["stream"]
+
+    if stream_name == "stderr"
+      $stdout.print(ANSI.wrap(ANSI::YELLOW, text))
+    else
+      $stdout.print(text)
+    end
+    $stdout.flush
+
+  when "test"
+    idx = (ev["index"] || 0).to_i
+    total = (ev["total"] || total).to_i if ev["total"]
+
+    t = ev["test"] || {}
+    status = t["status"] || t[:status]
+    call = t["call"] || t[:call]
+    msg  = t["message"] || t[:message]
+    loc  = t["location"] || t[:location]
+    expected = t["expected"] || t[:expected]
+    actual   = t["actual"] || t[:actual]
+
+    total ||= (ev["total"] || 0)
+
+    label = "[#{idx + 1}/#{total}]"
+    pass_label = ANSI.wrap(ANSI::BOLD, ANSI::WHITE, ANSI::BG_GREEN, " ✓ PASS  ")
+    fail_label = ANSI.wrap(ANSI::BOLD, ANSI::WHITE, ANSI::BG_RED,   " ✗ FAIL  ")
+
+    if status == "pass"
+      passed += 1
+      shown_actual = (t.key?("actual") || t.key?(:actual)) ? fmt_value(actual) : nil
+      suffix = shown_actual ? " #{ANSI.wrap(ANSI::GRAY, "=>")} #{shown_actual} #{ANSI.wrap(ANSI::BOLD, ANSI::GREEN, '✓')}" : ""
+      puts "#{pass_label} #{ANSI.wrap(ANSI::GRAY, label)} #{call}#{suffix}"
+    else
+      failed += 1
+      puts "#{fail_label} #{ANSI.wrap(ANSI::GRAY, label)} #{call}"
+
+      if (t.key?("expected") || t.key?(:expected) || t.key?("actual") || t.key?(:actual))
+        exp2 = unwrap_expected(expected)
+        puts "  #{ANSI.wrap(ANSI::GRAY, "expected:")} #{fmt_value(exp2)}"
+        puts "  #{ANSI.wrap(ANSI::GRAY, "got:     ")} #{fmt_value(actual)} #{ANSI.wrap(ANSI::BOLD, ANSI::RED, "✗")}"
+      end
+
+      if msg && !msg.empty?
+        has_exp_got = (t.key?("expected") || t.key?(:expected) || t.key?("actual") || t.key?(:actual))
+        redundant = false
+        if has_exp_got
+          m = msg.strip
+          redundant = (m.start_with?("Expected ") || m.include?(", got ") || m.include?(" got "))
+        end
+        puts "  #{msg}" unless redundant
+      end
+
+      loc_s = fmt_loc(loc)
+      puts ANSI.wrap(ANSI::GRAY, "  at #{loc_s}") if loc_s
+    end
+
+    STDOUT.flush
+
+  when "error"
+    fatal_error = ev["error"]
+    break
+  end
+end
+
+out = res.to_h
+
+if fatal_error || out[:status] == "error"
+  e = fatal_error || out[:error] || {}
+  type = (e["type"] || e[:type])
+  message = (e["message"] || e[:message])
+  location = (e["location"] || e[:location])
+  loc = fmt_loc(location)
+
+  header = ["Execution error", (type && !type.empty? ? type : nil)].compact.join(": ")
+  puts ANSI.wrap(ANSI::RED, "\n#{ANSI::BOLD}#{header}#{ANSI::RESET}")
+  puts "  #{message}" if message && !message.empty?
+  puts ANSI.wrap(ANSI::GRAY, "  at #{loc}") if loc
+#   puts ANSI.wrap(ANSI::GRAY, "  Seed: #{seed}") if seed
+  exit 1
+end
+
+total ||= out[:total]
+if out[:status] == "pass"
+  puts ANSI.wrap(ANSI::GREEN, "\n#{ANSI::BOLD}All tests passed (#{passed}/#{total}).#{ANSI::RESET}")
+  exit 0
+elsif failed == total
+  puts ANSI.wrap(ANSI::RED, "\n#{ANSI::BOLD}All tests failed (#{failed}/#{total}).#{ANSI::RESET}")
+#   puts ANSI.wrap(ANSI::GRAY, "Seed: #{seed}")
+  exit 1
 else
-    res = task.run(submission_code: submission_code)
-    out = res.to_h.merge(task_id: task_id, language: language)
-    puts JSON.generate(out)
-    exit(out[:status] == "pass" ? 0 : 1)
+  puts ANSI.wrap(ANSI::RED, "\n#{ANSI::BOLD}Some tests failed (#{failed}/#{total}).#{ANSI::RESET}")
+#   puts ANSI.wrap(ANSI::GRAY, "Seed: #{seed}")
+  exit 1
 end
