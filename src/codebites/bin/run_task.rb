@@ -241,6 +241,8 @@ def fmt_value(v, depth: 0)
     s = v
     s = s[0, MAX_VAL_STR - 1] + "…" if s.length > MAX_VAL_STR
     s
+  when FalseClass, TrueClass
+    $CODEBITES_LANG == "python" ? (v ? "True" : "False") : (v ? "true" : "false")
   when NilClass
     case $CODEBITES_LANG
     when "javascript" then "null"
@@ -296,8 +298,15 @@ res = task.run_stream(submission_code: submission_code, patch_code: patch_code, 
     call = t["call"] || t[:call]
     msg  = t["message"] || t[:message]
     loc  = t["location"] || t[:location]
-    expected = t["expected"] || t[:expected]
-    actual   = t["actual"] || t[:actual]
+    expected =
+        if t.key?("expected") then t["expected"]
+        elsif t.key?(:expected) then t[:expected]
+        end
+
+    actual =
+        if t.key?("actual") then t["actual"]
+        elsif t.key?(:actual) then t[:actual]
+        end
 
     total ||= (ev["total"] || 0)
 

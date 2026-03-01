@@ -28,23 +28,17 @@ __END__
 
 Implementiere eine Funktion `is_even`, die überprüft, ob eine Zahl gerade ist.
 
-**Beispiel:**
+**Beispiele:**
 
-<table>
-<tr><td rowspan="1">Eingabe:</td><td>n</td><td>=</td><td>4</td></tr>
-<tr><td>Ausgabe:</td><td colspan="3">true</td></tr>
+<div class='table-responsive'>
+<table class='table table-sm'>
+<tr><th>n</th><th></th><th>Rückgabewert</th></tr>
+<tr><td>4</td><td>→</td><td>true</td></tr>
+<tr><td>-3</td><td>→</td><td>false</td></tr>
+<tr><td>0</td><td>→</td><td>true</td></tr>
+<tr><td>-2</td><td>→</td><td>true</td></tr>
 </table>
-
-Die Funktion gibt `true` zurück, weil 4 ohne Rest durch 2 teilbar ist.
-
-**Beispiel:**
-
-<table>
-<tr><td rowspan="1">Eingabe:</td><td>n</td><td>=</td><td>17</td></tr>
-<tr><td>Ausgabe:</td><td colspan="3">false</td></tr>
-</table>
-
-Die Funktion gibt `false` zurück, weil 17 nicht ohne Rest durch 2 teilbar ist.
+</div>
 
 @@starter.rb
 def is_even(n)
@@ -59,3 +53,10 @@ def is_even(n):
 function is_even(n) {
     #_
 }
+
+@@patch.rb
+class Integer
+    def even?
+        raise "Use of Integer#even? is disabled for this exercise."
+    end
+end

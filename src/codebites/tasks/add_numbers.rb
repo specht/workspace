@@ -27,25 +27,17 @@ __END__
 
 Implementiere eine Funktion `add_numbers`, die die Summe von zwei Zahlen berechnet.
 
-**Beispiel:**
+**Beispiele:**
 
-<table>
-<tr>
-<td rowspan="2">Eingabe:</td>
-<td>a</td>
-<td>=</td>
-<td>4</td>
-</tr>
-<tr>
-<td>b</td>
-<td>=</td>
-<td>8</td>
-</tr>
-<tr>
-<td>Ausgabe:</td>
-<td colspan="3">12</td>
-</tr>
+<div class='table-responsive'>
+<table class='table table-sm'>
+<tr><th>a</th><th>b</th><th></th><th>Rückgabewert</th></tr>
+<tr><td>4</td><td>8</td><td>→</td><td>12</td></tr>
+<tr><td>-3</td><td>7</td><td>→</td><td>4</td></tr>
+<tr><td>0</td><td>0</td><td>→</td><td>0</td></tr>
+<tr><td>-2</td><td>2</td><td>→</td><td>0</td></tr>
 </table>
+</div>
 
 @@starter.rb
 def add_numbers(a, b)

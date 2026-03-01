@@ -92,6 +92,15 @@
   .problem h4 {
     margin: 0.5em 0;
   }
+  .problem h2 {
+    font-size: 1.5em;
+  }
+  .problem h3 {
+    font-size: 1.25em;
+  }
+  .problem h4 {
+    font-size: 1.1em;
+  }
 
   .problem table {
     margin-bottom: 1em;
@@ -261,6 +270,9 @@
   #load_modal h4 {
     margin: 0.25em 0 0.75em 0;
   }
+  .problem table {
+    text-align: center;
+  }
 </style>
 
 <div class="page">
@@ -407,9 +419,11 @@
               '<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">'
             );
             title_and_icon.append(`<h3>${section.title}</h3>`);
-            title_and_icon.append(
-              `<img src="${section.icon}" style="width: 32px; height: 32px;">`
-            );
+            if (section.icon) {
+                title_and_icon.append(
+                   `<img src="${section.icon}" style="width: 32px; height: 32px;">`
+                );
+            }
             div.append(title_and_icon);
             // div.append(`<p>${section.description}</p>`);
             for (let entry of section.entries) {
