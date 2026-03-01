@@ -142,7 +142,7 @@ process.stdin.on("data", (chunk) => {
         const files = msg.files || {};
         const submission = files.submission;
         const patch = files.patch;
-        emit({ event: "output", stream: "stderr", text: `DEBUG patch chars=${patch ? patch.length : 0}\n`, index: -1 });
+        // emit({ event: "output", stream: "stderr", text: `DEBUG patch chars=${patch ? patch.length : 0}\n`, index: -1 });
         if (typeof submission !== "string") throw new Error("missing files.submission");
 
         const entry = msg.entry;

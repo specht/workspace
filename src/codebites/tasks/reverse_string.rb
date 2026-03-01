@@ -50,7 +50,7 @@ def reverse_string(s):
 @@starter.js
 function reverse_string(s) {
     #_
-end
+}
 
 @@patch.rb
 class String
