@@ -22,5 +22,6 @@
   # icon: /images/rocket.png
   entries:
     - reverse_string
+    - count_vowels
     # - palindrome
     # - count_vowels
