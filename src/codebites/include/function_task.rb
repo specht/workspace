@@ -54,22 +54,26 @@ module Judge
       end
     end
 
-    def build_request(submission_code, stream: false)
+    def build_request(submission_code, patch_code: nil, stream: false)
+      files = { submission: submission_code }
+     files[:patch] = patch_code if patch_code && !patch_code.strip.empty?
       {
         mode: "function",
         entry: { name: @function_name.to_s },
         cases: @cases.map { |c| { args: c.args } },
-        files: { submission: submission_code },
+        files: files,
         stream: stream
       }
     end
 
-    def build_init(submission_code)
+    def build_init(submission_code, patch_code: nil)
+      files = { submission: submission_code }
+      files[:patch] = patch_code if patch_code && !patch_code.strip.empty?
       {
         cmd: "init",
         mode: "function",
         entry: @function_name.to_s,
-        files: { submission: submission_code }
+        files: files
       }
     end
 
@@ -78,9 +82,9 @@ module Judge
     end
 
     # Backwards-compatible, non-streaming.
-    def run(submission_code:)
+    def run(submission_code:, patch_code: nil)
       result = Result.new(store: :failures)
-      exec_resp = @executor.run(build_request(submission_code, stream: false))
+      exec_resp = @executor.run(build_request(submission_code, patch_code: patch_code, stream: false))
 
       if exec_resp["error"]
         e = exec_resp["error"]
@@ -102,7 +106,7 @@ module Judge
     #   {"event":"error","error":{...}}
     #
     # Returns the final Result.
-    def run_stream(submission_code:, fail_fast: true)
+    def run_stream(submission_code:, patch_code: nil, fail_fast: true)
       # Interactive, fail-fast streaming:
       # - start one docker process
       # - send init once
@@ -120,7 +124,7 @@ module Judge
       end
 
       begin
-        session.send(build_init(submission_code))
+        session.send(build_init(submission_code, patch_code: patch_code))
 
         # Wait for ready or fatal
         loop do

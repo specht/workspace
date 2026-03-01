@@ -73,11 +73,9 @@ def _sorted(a, b):
 builtins.sorted = _sorted
 
 @@patch.js
-/*
 Array.prototype.max = function() {
     throw new Error("Use of Array.prototype.max is disabled for this exercise.");
 };
 Array.prototype.sort = function() {
     throw new Error("Use of Array.prototype.sort is disabled for this exercise.");
 };
-*/

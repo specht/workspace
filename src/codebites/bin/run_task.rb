@@ -83,11 +83,59 @@ def wrap_with_patch(language:, patch_code:, submission_code:)
       // --- injected by runner: task patch + submission wrapper ---
       const __cb_b64__ = (s) => Buffer.from(s, "base64").toString("utf-8");
 
+      function __cb_escape_re(s) {
+        return s.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&");
+      }
+
+      function __cb_code_frame(src, line, col) {
+        const lines = String(src).split(/\\r?\\n/);
+        const i = Math.max(0, Math.min(lines.length - 1, (line || 1) - 1));
+        const start = Math.max(0, i - 2);
+        const end = Math.min(lines.length, i + 3);
+        const width = String(end).length;
+
+        let out = "";
+        for (let n = start; n < end; n++) {
+          const ln = String(n + 1).padStart(width, " ");
+          out += `${ln} | ${lines[n]}\\n`;
+          if (n === i) {
+            const caretPos = Math.max(0, (col || 1) - 1);
+            out += `${" ".repeat(width)} | ${" ".repeat(caretPos)}^\\n`;
+          }
+        }
+        return out;
+      }
+
+      function __cb_run(code, filename) {
+        // Function() gives better filename/loc than eval() in many sandboxes,
+        // and doesn't depend on require/vm.
+        const wrapped = code + "\\n//# sourceURL=" + filename;
+
+        try {
+          (new Function(wrapped))();
+        } catch (e) {
+          // Improve SyntaxError visibility (line/col + snippet)
+          const stack = String((e && e.stack) || "");
+          const re = new RegExp(__cb_escape_re(filename) + ":(\\\\d+):(\\\\d+)");
+          const m = stack.match(re);
+          const line = m ? parseInt(m[1], 10) : null;
+          const col  = m ? parseInt(m[2], 10) : null;
+
+          if (e && e.name === "SyntaxError") {
+            // Print to stderr; your runner shows stderr in yellow.
+            console.error("\\n--- JS SyntaxError in " + filename + (line ? `:${line}:${col}` : "") + " ---");
+            if (line) console.error(__cb_code_frame(code, line, col));
+          }
+
+          throw e;
+        }
+      }
+
       const __cb_patch__ = __cb_b64__("#{patch_b64}");
-      eval(__cb_patch__ + "\n//# sourceURL=patch.js");
+      __cb_run(__cb_patch__, "patch.js");
 
       const __cb_submission__ = __cb_b64__("#{sub_b64}");
-      eval(__cb_submission__ + "\n//# sourceURL=submission.js");
+      __cb_run(__cb_submission__, "submission.js");
     JS
   end
 
@@ -118,7 +166,12 @@ sections = spec[:sections]
 patch_code = sections["patch.#{language_ext(canonical_lang)}"]
 
 # Apply optional patch before submission (keeping line numbers)
-submission_code = wrap_with_patch(language: canonical_lang, patch_code: patch_code, submission_code: submission_code)
+# For JS we send patch separately; for others we keep wrapping.
+if canonical_lang == "javascript"
+  # leave submission_code as-is
+else
+  submission_code = wrap_with_patch(language: canonical_lang, patch_code: patch_code, submission_code: submission_code)
+end
 
 # ---- build task ----
 seed = Random.new_seed
@@ -219,7 +272,7 @@ failed = 0
 total = nil
 fatal_error = nil
 
-res = task.run_stream(submission_code: submission_code, fail_fast: true) do |ev|
+res = task.run_stream(submission_code: submission_code, patch_code: patch_code, fail_fast: true) do |ev|
   ev = JSON.parse(JSON.generate(ev)) # normalize keys
 
   case ev["event"]

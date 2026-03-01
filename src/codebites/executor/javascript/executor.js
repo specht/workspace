@@ -29,10 +29,8 @@ function extractLocationFromStack(stack) {
   for (let i = lines.length - 1; i >= 0; i--) {
     const l = lines[i];
     // e.g. at array_sum (submission.js:12:3)
-    const m = l.match(/\(?([^()\s]+submission\.js):(\d+):(\d+)\)?/);
-    if (m) {
-      return { file: "submission.js", line: Number(m[2]) };
-    }
+    const m = l.match(/\(?([^()\s]+(submission|patch)\.js):(\d+):(\d+)\)?/);
+    if (m) return { file: `${m[2]}.js`, line: Number(m[3]) };
   }
   return null;
 }
@@ -73,13 +71,9 @@ class LiveCapture {
   }
 }
 
-function loadSubmission(code) {
+function loadSubmissionWithPatch(submission, patch) {
   try { fs.mkdirSync("/workspace", { recursive: true }); } catch {}
-  const path = "/workspace/submission.js";
-  fs.writeFileSync(path, code, "utf8");
 
-  // Use a VM context so `function foo(){}` becomes reachable via context.foo.
-  // Provide a minimal, familiar environment.
   const ctx = {
     console,
     setTimeout,
@@ -90,14 +84,22 @@ function loadSubmission(code) {
   };
   vm.createContext(ctx);
 
-  const script = new vm.Script(code, { filename: path, displayErrors: true });
   const cap = new LiveCapture(-1);
   cap.start();
   try {
-    script.runInContext(ctx, { timeout: 1000 });
+    if (typeof patch === "string" && patch.trim() !== "") {
+      fs.writeFileSync("/workspace/patch.js", patch, "utf8");
+      new vm.Script(patch, { filename: "/workspace/patch.js", displayErrors: true })
+        .runInContext(ctx, { timeout: 1000 });
+    }
+
+    fs.writeFileSync("/workspace/submission.js", submission, "utf8");
+    new vm.Script(submission, { filename: "/workspace/submission.js", displayErrors: true })
+      .runInContext(ctx, { timeout: 1000 });
   } finally {
     cap.stop();
   }
+
   return ctx;
 }
 
@@ -139,13 +141,15 @@ process.stdin.on("data", (chunk) => {
       try {
         const files = msg.files || {};
         const submission = files.submission;
+        const patch = files.patch;
+        emit({ event: "output", stream: "stderr", text: `DEBUG patch chars=${patch ? patch.length : 0}\n`, index: -1 });
         if (typeof submission !== "string") throw new Error("missing files.submission");
 
         const entry = msg.entry;
         fnName = typeof entry === "object" && entry ? entry.name : entry;
         if (!fnName) throw new Error("missing entry/name");
 
-        submissionCtx = loadSubmission(submission);
+        submissionCtx = loadSubmissionWithPatch(submission, patch);
         if (typeof submissionCtx[fnName] !== "function") {
           throw Object.assign(new Error(`Function ${fnName} is not defined in submission.js`), { name: "MissingFunction" });
         }
