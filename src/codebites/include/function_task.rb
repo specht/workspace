@@ -207,7 +207,7 @@ module Judge
         ok, msg = @validator.validate(c.expect, actual, args)
         test_entry[:status] = ok ? "pass" : "fail"
         test_entry[:message] = msg
-        test_entry[:expected] = msg
+        # test_entry[:expected] = msg
         # puts test_entry.to_yaml
       else
         err = run["error"] || {}

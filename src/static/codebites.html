@@ -222,12 +222,23 @@
     margin-bottom: 1em;
   }
   .code-container img {
-    width: 2em;
-    height: 2em;
+    width: 1.5em;
+    height: 1.5em;
     object-fit: cover;
     position: absolute;
     top: 8px;
     right: 8px;
+  }
+  .code-container i.bi {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    border-radius: 100%;
+    width: 1.5em;
+    height: 1.5em;
+    text-align: center;
+    color: #fff;
+    background-color: #4aa03f;
   }
   #load_modal  .card {
     border: none;
@@ -657,7 +668,8 @@
                 <div class="card h-100">
                   <div class="card-body d-flex flex-column">
                     <pre>${("\n".repeat(line_count + 1))}</pre>
-                    <img src="/images/lang/${lang === 'javascript' ? 'js' : lang}-128.png">
+                    ${"<i class='bi bi-check-lg'></i>".repeat(success ? 1 : 0)}
+                    <!-- <img src="/images/lang/${lang === 'javascript' ? 'js' : lang}-128.png"> -->
                     <!-- <h5 class="card-title">${lang.toUpperCase()} - ${line_count} Zeilen</h5> -->
                     <!-- <p class="card-text mb-4">Größe: ${size} Bytes<br>Erfolg: ${success ? "<span class='text-success'>Ja</span>" : "<span class='text-danger'>Nein</span>"}</p> -->
                     <!-- <button class="btn btn-primary mt-auto" data-sha1="${sha1}">Laden</button> -->

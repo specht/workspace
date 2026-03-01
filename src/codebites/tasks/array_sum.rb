@@ -30,10 +30,21 @@ __END__
 Implementiere eine Funktion `array_sum`, die die Summe aller Zahlen in einem Array berechnet.
 
 **Beispiel:**
-- Eingabe: `[2, 7, 11, 15]`
-- Ausgabe: `35`
 
-*Achtung:* Falls das Array leer ist, soll die Funktion `0` zurückgeben.
+<table>
+<tr>
+<td rowspan="1">Eingabe:</td>
+<td>nums</td>
+<td>=</td>
+<td>[2, 7, 11, 15]</td>
+</tr>
+<tr>
+<td>Ausgabe:</td>
+<td colspan="3">35</td>
+</tr>
+</table>
+
+*Achtung:* Falls das Array leer ist, soll die Funktion 0 zurückgeben.
 
 @@starter.rb
 def array_sum(nums)

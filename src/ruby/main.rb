@@ -3008,7 +3008,11 @@ class Main < Sinatra::Base
 
         submissions = {:successful => [], :tries => []}
         [true, false].each do |success|
-            next if success && !user_has_correct_submissions
+            if user_has_correct_submissions
+                next unless success
+            else
+                next if success
+            end
             submissions[success ? :successful : :tries] = neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :task => data[:task], :language => data[:language], :success => success}).to_a.map { |x| x['s'] }
                 MATCH (u:User {email: $email})<-[:BY]-(s:Submission {lang: $language, success: $success})-[:FOR]->(t:Task {name: $task})
                 RETURN s

@@ -3,6 +3,10 @@
   description: Übe die Grundlagen der Programmierung mit einfachen Aufgaben.
   icon: /images/rocket.png
   entries:
-    - array_sum
+    - add_numbers
+    - even
+    - max_of_two
+    # - array_sum
+
     # - two_sum
     # - reverse_array
