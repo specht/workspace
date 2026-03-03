@@ -1059,24 +1059,25 @@ class Main < Sinatra::Base
 
     configure do
         CONSTRAINTS_LIST = [
+            'Code/sha1',
+            'Database/name',
             'File/sha1',
+            'Language/name',
+            'LoginRequest/tag',
+            'Session/sid',
+            'Solved/id',
+            'Submission/id',
+            'Task/name',
             'Test/tag',
+            'TIC80Dir/path',
+            'TIC80File/path',
             'User/email',
             'User/server_tag',
             'User/share_tag',
-            'LoginRequest/tag',
-            'Session/sid',
-            'TIC80File/path',
-            'TIC80Dir/path',
-            'Database/name',
-            'Language/name',
-            'Task/name',
         ]
         INDEX_LIST = [
-            'Test/running',
-            'Submission/sha1',
             'Submission/success',
-            'Submission/lang',
+            'Test/running',
         ]
 
         setup = SetupDatabase.new()
@@ -2895,11 +2896,11 @@ class Main < Sinatra::Base
         if user_logged_in?
             result[:solved_tasks] = {}
             neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email]}).map do |row|
-                MATCH (u:User {email: $email})<-[:BY]-(s:Submission {success: true})-[:FOR]->(t:Task)
-                RETURN DISTINCT t.name, s.lang;
+                MATCH (s:Solved)-[:FOR]->(t:Task), (s)-[:BY]->(u:User {email: $email}), (s)-[:IN]->(l:Language)
+                RETURN DISTINCT t.name, l.name;
             END_OF_STRING
                 result[:solved_tasks][row['t.name']] ||= []
-                result[:solved_tasks][row['t.name']] << row['s.lang']
+                result[:solved_tasks][row['t.name']] << row['l.name']
             end
         end
         respond(result)
@@ -2944,8 +2945,8 @@ class Main < Sinatra::Base
             RETURN COALESCE(u.preferred_language, "ruby") AS preferred_language;
         END_OF_STRING
         result[:solved] = neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :task => task}).map { |x| x['lang'] }
-            MATCH (u:User {email: $email})<-[:BY]-(s:Submission {success: true})-[:FOR]->(t:Task {name: $task})
-            RETURN DISTINCT s.lang AS lang;
+            MATCH (u:User {email: $email})<-[:BY]-(s:Solved)-[:FOR]->(t:Task {name: $task}), (s)-[:IN]->(l:Language)
+            RETURN DISTINCT l.name AS lang;
         END_OF_STRING
         result[:starter] ||= {}
         {
@@ -3026,7 +3027,7 @@ class Main < Sinatra::Base
         data = parse_request_data(required_keys: [:task, :language])
 
         user_has_correct_submissions = neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :task => data[:task], :language => data[:language]})['count'] > 0
-            MATCH (u:User {email: $email})<-[:BY]-(s:Submission {lang: $language, success: TRUE})-[:FOR]->(t:Task {name: $task})
+            MATCH (u:User {email: $email})<-[:BY]-(s:Solved)-[:FOR]->(t:Task {name: $task}), (s)-[:IN]->(l:Language {name: $language})
             RETURN COUNT(s) AS count;
         END_OF_STRING
 
@@ -3038,17 +3039,36 @@ class Main < Sinatra::Base
                 next if success
             end
             if success
-                submissions[:successful] = neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :task => data[:task], :language => data[:language], :success => success}).to_a.map { |x| x['s'] }
-                    MATCH (s:Submission {lang: $language, success: $success})-[:FOR]->(t:Task {name: $task})
-                    RETURN DISTINCT s
-                    ORDER BY s.ts DESC;
+                neo4j_query(<<~END_OF_STRING, {:task => data[:task], :language => data[:language], :success => success}).to_a.each do |x|
+                    MATCH (l:Language {name: $language})<-[:IN]-(s:Submission {success: $success})-[:FOR]->(t:Task {name: $task}), (s)-[:WITH]->(c:Code)
+                    RETURN s, c
+                    ORDER BY c.sha1;
                 END_OF_STRING
+                    entry = {
+                        :sha1 => x['c'][:sha1],
+                        :line_count => x['c'][:line_count],
+                        :size => x['c'][:size],
+                        :lang => data[:language],
+                        :success => success,
+                    }
+                    submissions[:successful] << entry
+                end
             else
-                submissions[:tries] = neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :task => data[:task], :language => data[:language], :success => success}).to_a.map { |x| x['s'] }
-                    MATCH (u:User {email: $email})<-[:BY]-(s:Submission {lang: $language, success: $success})-[:FOR]->(t:Task {name: $task})
-                    RETURN DISTINCT s
-                    ORDER BY s.ts DESC;
+                neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :task => data[:task], :language => data[:language], :success => success}).to_a.each do |x|
+                    MATCH (l:Language {name: $language})<-[:IN]-(s:Submission {success: $success})-[:FOR]->(t:Task {name: $task}),
+                    (s)-[:WITH]->(c:Code), (s)-[r:BY]->(u:User {email: $email})
+                    RETURN s, c
+                    ORDER BY r.ts DESC;
                 END_OF_STRING
+                    entry = {
+                        :sha1 => x['c'][:sha1],
+                        :line_count => x['c'][:line_count],
+                        :size => x['c'][:size],
+                        :lang => data[:language],
+                        :success => success,
+                    }
+                    submissions[:tries] << entry
+                end
             end
         end
 
@@ -3085,6 +3105,7 @@ class Main < Sinatra::Base
         code.rstrip!
 
         line_count = code.count("\n") + 1
+        size = code.bytesize
 
         # basic guardrails
         assert(task =~ /\A[a-zA-Z0-9_\-]+\z/)
@@ -3126,14 +3147,24 @@ class Main < Sinatra::Base
             end
         end
         ts = Time.now.to_i
-        node_id = neo4j_query_expect_one(<<~END_OF_STRING, {:email => email, :task => task, :language => language, :sha1 => sha1, :ts => ts, :line_count => line_count, :size => code.size})['id']
-            MATCH (u:User {email: $email})
-            WITH u
+        submission_id = Digest::SHA1.hexdigest("#{task}-#{language}-#{sha1}")
+        neo4j_query(<<~END_OF_STRING, {:email => email, :task => task, :lang => language, :sha1 => sha1, :line_count => line_count, :size => size, :ts => ts, :submission_id => submission_id})
+            MERGE (u:User {email: $email})
             MERGE (t:Task {name: $task})
-            WITH u, t
-            MERGE (u)<-[:BY]-(s:Submission {sha1: $sha1, lang: $language})-[:FOR]->(t)
-            SET s.ts = $ts, s.line_count = $line_count, s.size = $size
-            RETURN ID(s) AS id;
+            MERGE (l:Language {name: $lang})
+            MERGE (c:Code {sha1: $sha1})
+            ON CREATE SET c.line_count = $line_count, c.size = $size
+
+            WITH u,t,l,c
+
+            MERGE (s:Submission {id: $submission_id})
+            ON CREATE SET s.success = false
+
+            MERGE (s)-[r:BY]->(u)
+            ON CREATE SET r.ts = $ts
+            MERGE (s)-[:FOR]->(t)
+            MERGE (s)-[:IN]->(l)
+            MERGE (s)-[:WITH]->(c);
         END_OF_STRING
 
         # 2) spawn runner
@@ -3189,11 +3220,22 @@ class Main < Sinatra::Base
                 language: language,
             })
 
-            neo4j_query_expect_one(<<~END_OF_STRING, {:node_id => node_id, :success => exit_code == 0})
-                MATCH (s:Submission) WHERE ID(s) = $node_id
-                SET s.success = $success
-                RETURN s;
-            END_OF_STRING
+            if exit_code == 0
+                neo4j_query(<<~END_OF_STRING, {:submission_id => submission_id})
+                    MATCH (s:Submission {id: $submission_id})
+                    SET s.success = true
+                END_OF_STRING
+                solved_id = Digest::SHA1.hexdigest("#{email}-#{task}-#{language}")
+                neo4j_query(<<~END_OF_STRING, {:email => email, :task => task, :language => language, :solved_id => solved_id})
+                    MERGE (u:User {email: $email})
+                    MERGE (t:Task {name: $task})
+                    MERGE (l:Language {name: $language})
+                    MERGE (s:Solved {id: $solved_id})
+                    MERGE (s)-[:BY]->(u)
+                    MERGE (s)-[:FOR]->(t)
+                    MERGE (s)-[:IN]->(l)
+                END_OF_STRING
+            end
 
             @@codebite_mutex.synchronize do
                 # Only clear if it still points to this pid

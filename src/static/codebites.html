@@ -392,7 +392,7 @@
         <div class="topbar-left">
             <a href="/">Workspace</a>
             <span>/</span>
-            <a href="/codebites">Code Bites</a>
+            <a class="got-real-cat" href="/codebites">Code Bites</a>
             <span class="got-cat">/</span>
             <a class="got-cat" href="/codebites"></a>
         </div>
@@ -542,7 +542,8 @@
 
     console.log(`Task: ${task}, SHA1: ${sha1}`);
     if (task === null) {
-      $('.got-cat').removeClass('got-it');
+    //   $('.got-cat').removeClass('got-it');
+      $('.got-real-cat').attr('href', '/codebites');
       $('.bu-lang').attr("disabled", true);
       $('#loadBtn').attr("disabled", true);
       $('#runBtn').attr("disabled", true);
@@ -602,9 +603,10 @@
       api_call("/api/get_codebite", { task: task }, function (data) {
         console.log(data);
         if (data.success) {
-          $('.got-cat').addClass('got-it');
-          $('a.got-cat').attr('href', `/codebites#${task}`);
-          $('a.got-cat').text(data.result.section_title);
+        //   $('.got-cat').addClass('got-it');
+        //   $('a.got-cat').attr('href', `/codebites#${task}`);
+        //   $('a.got-cat').text(data.result.section_title);
+          $('.got-real-cat').attr('href', `/codebites#${task}`);
           codebite = data.result;
           $(".problem").html(data.result.problem);
           starter = data.result.starter;
@@ -829,13 +831,13 @@
             if (subs.length === 0) continue;
             body.append(`<h4>${success ? "Korrekte Lösungen" : "Versuche"}</h4>`);
             let container = $(`<div id="masonry_${success}" class="row">`);
+            console.log(subs.length);
             for (let sub of subs) {
               let sha1 = sub.sha1;
-              console.log(sha1);
               let line_count = sub.line_count;
               if (line_count > 10) line_count = 10;
               let size = sub.size;
-                let lang = sub.lang;
+              let lang = sub.lang;
               let success = sub.success;
               let card = $(`<div class="code-container col-md-6 col-lg-4 col-xl-3">
                 <div class="card h-100">
