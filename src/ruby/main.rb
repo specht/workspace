@@ -3039,14 +3039,14 @@ class Main < Sinatra::Base
             end
             if success
                 submissions[:successful] = neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :task => data[:task], :language => data[:language], :success => success}).to_a.map { |x| x['s'] }
-                    MATCH (s:Submission {lang: $language, success: $success})-[:FOR]->(t:Task {name: $task})
-                    RETURN s
+                    MATCH ^(s:Submission {lang: $language, success: $success})-[:FOR]->(t:Task {name: $task})
+                    RETURN DISTINCT s
                     ORDER BY s.ts DESC;
                 END_OF_STRING
             else
                 submissions[:tries] = neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :task => data[:task], :language => data[:language], :success => success}).to_a.map { |x| x['s'] }
                     MATCH (u:User {email: $email})<-[:BY]-(s:Submission {lang: $language, success: $success})-[:FOR]->(t:Task {name: $task})
-                    RETURN s
+                    RETURN DISTINCT s
                     ORDER BY s.ts DESC;
                 END_OF_STRING
             end
