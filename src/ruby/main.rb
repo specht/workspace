@@ -24,6 +24,7 @@ Neo4jBolt.bolt_port = 7687
 Faye::WebSocket.load_adapter('thin')
 
 CACHE_BUSTER = SecureRandom.alphanumeric(12)
+RUBOCOP_LAYOUT_CONFIG_PATH = "/tmp/rubocop_layout.yml"
 
 MODULE_ORDER = [:workspace, :phpmyadmin, :pgadmin, :neo4j, :tic80]
 MODULE_LABELS = {
@@ -158,6 +159,36 @@ class Main < Sinatra::Base
             halt 400, { error: "regex must be a non-empty string" }.to_json if str.nil? || str.strip.empty?
             halt 413, { error: "regex too long" }.to_json if str.length > 2000
             str
+        end
+
+        def rubocop_format_ruby(code)
+            Tempfile.create(["codebite", ".rb"]) do |f|
+                f.write(code)
+                f.flush
+
+                cmd = [
+                    "rubocop",
+                    "--server",
+                    "--config", RUBOCOP_LAYOUT_CONFIG_PATH,
+                    "--only", "Layout",
+                    "-x",               # layout-only autocorrect
+                    f.path
+                ]
+
+                _out, err, status = Open3.capture3(*cmd)
+
+                unless status.success?
+                    # fallback without server
+                    cmd.delete("--server")
+                    _out2, err2, status2 = Open3.capture3(*cmd)
+                    unless status2.success?
+                        STDERR.puts "RuboCop failed: #{err}\n#{err2}"
+                        return code
+                    end
+                end
+
+                File.read(f.path)
+            end
         end
     end
 
@@ -1110,6 +1141,27 @@ class Main < Sinatra::Base
                 system("ruby housekeeping.rb")
                 sleep 3600
             end
+        end
+        # --- RuboCop server + config (layout-only formatting) ---
+        begin
+            unless File.exist?(RUBOCOP_LAYOUT_CONFIG_PATH)
+                File.write(
+                    RUBOCOP_LAYOUT_CONFIG_PATH,
+                    <<~YAML
+                      AllCops:
+                        NewCops: disable
+
+                      Layout/IndentationWidth:
+                        Width: 4
+                    YAML
+                )
+            end
+
+            # Start rubocop server once per Sinatra process
+            # (safe to call multiple times; it will no-op if already started)
+            system("rubocop --start-server >/dev/null 2>&1")
+        rescue => e
+            STDERR.puts "RuboCop server start failed: #{e.class}: #{e.message}"
         end
     end
 
@@ -3099,6 +3151,11 @@ class Main < Sinatra::Base
         task = data[:task].strip
         language = data[:language].strip
         code = data[:code].to_s.strip
+
+        if data[:language] == "ruby"
+            code = rubocop_format_ruby(code).to_s
+        end
+
         lines = code.split("\n")
         lines.map! { |l| l.rstrip }
         code = lines.join("\n")
@@ -3256,7 +3313,7 @@ class Main < Sinatra::Base
             }
         end
 
-        respond(yay: "running", pid: pid)
+        respond(yay: "running", pid: pid, code: code)
     end
 
     post '/api/stop_codebite' do
