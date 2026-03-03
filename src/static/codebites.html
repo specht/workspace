@@ -708,15 +708,14 @@
         ensureCodebitesWs();
         term.reset();
         api_call("/api/run_codebite", { task: task, language: language, code: editor.getValue() }, function (data) {
-            // you can show errors here if request fails
+            $('#loadBtn').attr("disabled", true);
+            $('#runBtn').attr("disabled", true).removeClass("btn-success").addClass("btn-outline-secondary");
+            $('#stopBtn').attr("disabled", false).removeClass("btn-outline-secondary").addClass("btn-danger");
+            term.focus();
             if (!data || !data.yay) {
                 term.write(`\r\n\x1b[31mFailed to start run.\x1b[0m\r\n`);
             } else {
                 editor.setValue(data.code);
-                $('#loadBtn').attr("disabled", true);
-                $('#runBtn').attr("disabled", true).removeClass("btn-success").addClass("btn-outline-secondary");
-                $('#stopBtn').attr("disabled", false).removeClass("btn-outline-secondary").addClass("btn-danger");
-                term.focus();
             }
         });
       }
