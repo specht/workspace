@@ -283,6 +283,16 @@
     color: #fff;
     background-color: #4aa03f;
   }
+  .code-container .bi.bi-trash {
+    #{admin_logged_in? ? '' : 'display: none;'}
+    position: absolute;
+    top: 0.5em;
+    right: 2.25em;
+    border: 1px solid #8c0c03;
+    color: #8c0c03;
+    background-color: #fff;
+    cursor: pointer;
+  }
   #load_modal  .card {
     border: none;
   }
@@ -843,11 +853,8 @@
                 <div class="card h-100">
                   <div class="card-body d-flex flex-column">
                     <pre>${("\n".repeat(line_count + 1))}</pre>
+                    ${"<i class='bi bi-trash'></i>".repeat(success ? 1 : 0)}
                     ${"<i class='bi bi-check-lg'></i>".repeat(success ? 1 : 0)}
-                    <!-- <img src="/images/lang/${lang === 'javascript' ? 'js' : lang}-128.png"> -->
-                    <!-- <h5 class="card-title">${lang.toUpperCase()} - ${line_count} Zeilen</h5> -->
-                    <!-- <p class="card-text mb-4">Größe: ${size} Bytes<br>Erfolg: ${success ? "<span class='text-success'>Ja</span>" : "<span class='text-danger'>Nein</span>"}</p> -->
-                    <!-- <button class="btn btn-primary mt-auto" data-sha1="${sha1}">Laden</button> -->
                   </div>
                 </div>
               </div>`);
@@ -878,6 +885,16 @@
                 });
               });
               container.append(card);
+              card.find('.bi-trash').on('click', function(e) {
+                e.stopPropagation();
+                api_call('/api/codebite_delete_submission', { sha1: sha1, language: language }, function(data) {
+                  if (data.success) {
+                    card.remove();
+                  } else {
+                    alert("Löschen fehlgeschlagen.");
+                  }
+                });
+              });
             }
             body.append(container);
             let msnry = new Masonry(container[0], {

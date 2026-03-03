@@ -3094,7 +3094,7 @@ class Main < Sinatra::Base
                 neo4j_query(<<~END_OF_STRING, {:task => data[:task], :language => data[:language], :success => success}).to_a.each do |x|
                     MATCH (l:Language {name: $language})<-[:IN]-(s:Submission {success: $success})-[:FOR]->(t:Task {name: $task}), (s)-[:WITH]->(c:Code)
                     RETURN s, c
-                    ORDER BY c.sha1;
+                    ORDER BY c.size;
                 END_OF_STRING
                     entry = {
                         :sha1 => x['c'][:sha1],
@@ -3314,6 +3314,18 @@ class Main < Sinatra::Base
         end
 
         respond(yay: "running", pid: pid, code: code)
+    end
+
+    post '/api/codebite_delete_submission' do
+        assert(admin_logged_in?)
+        data = parse_request_data(required_keys: [:sha1, :language])
+        sha1 = data[:sha1]
+        assert(sha1 =~ /\A[a-f0-9]{40}\z/)
+        neo4j_query(<<~END_OF_STRING, {:sha1 => sha1, :language => data[:language]})
+            MATCH (c:Code {sha1: $sha1})<-[:WITH]-(s:Submission)-[:IN]->(l:Language {name: $language})
+            DETACH DELETE s;
+        END_OF_STRING
+        respond(:yay => "deleted")
     end
 
     post '/api/stop_codebite' do
