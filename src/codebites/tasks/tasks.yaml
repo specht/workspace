@@ -9,6 +9,7 @@
     - factorial
     - fibonacci
     - gcd
+    - pythagorean_triplet
     - prime
     - find_missing_number
     - primegen
