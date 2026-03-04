@@ -15,6 +15,11 @@ def build_judge(executor:, rng:)
         expected = a.gcd(b)
         cases << Judge::Case.new(args: [a, b], expect: Judge::Expect.equals(expected))
     end
+    1.times do |i|
+        a = rng.rand(1..1000)
+        expected = a.gcd(a)
+        cases << Judge::Case.new(args: [a, a], expect: Judge::Expect.equals(expected))
+    end
 
     Judge::FunctionTask.new(
         function_name: :gcd,
