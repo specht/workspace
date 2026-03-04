@@ -66,10 +66,12 @@ class Integer
 end
 
 @@patch.py
-import builtins
-def _sorted(a, b):
-    raise RuntimeError("Use of sorted() is disabled for this exercise.")
-builtins.sorted = _sorted
+import math
+
+def _gcd(*args, **kwargs):
+    raise RuntimeError("Use of math.gcd() is disabled for this exercise.")
+
+math.gcd = _gcd
 
 @@patch.js
 Array.prototype.max = function() {

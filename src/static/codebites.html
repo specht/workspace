@@ -430,6 +430,9 @@
             </div>
 
             <div class="topbar-terminal-right">
+                <button id="adminBtn" class="btn btn-warning" style="#{teacher_logged_in? ? '' : 'display: none'};">
+                    <i class="bi bi-shield-lock"></i>Admin
+                </button>
                 <button id="loadBtn"class="btn btn-outline-secondary" disabled>
                     <i class='bi bi-clock-history'></i>Laden…
                 </button>
@@ -1109,6 +1112,9 @@
             loadTemplate(language);
           }
         });
+      });
+      $('#adminBtn').on('click', function() {
+        window.location.href = '/codebites_admin';
       });
     });
   })();

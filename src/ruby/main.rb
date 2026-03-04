@@ -3492,8 +3492,8 @@ class Main < Sinatra::Base
             respond_raw_with_mimetype(s, 'text/html')
             return
         end
-        if path[0, 10] == '/codebites'
-            @codebite_slug = path[10, path.size - 10]
+        if path[0, 11] == '/codebites/'
+            @codebite_slug = path[11, path.size - 11]
             path = 'codebites.html'
         end
         if path[0, 3] == '/l/'
@@ -3562,7 +3562,7 @@ class Main < Sinatra::Base
         respond_with_file(path) do |content, mime_type|
             if mime_type == 'text/html'
                 template = File.read(File.join(@@static_dir, '_template.html'))
-                if path.include?('codebites')
+                if path.include?('codebites') && !path.include?('codebites_admin')
                     template = File.read(File.join(@@static_dir, '_template_codebites.html'))
                 end
                 template.sub!('#{CONTENT}', content)
