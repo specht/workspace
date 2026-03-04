@@ -3481,9 +3481,9 @@ class Main < Sinatra::Base
             io.puts "<table class='table table-sm'>"
             io.puts "<thead>"
             io.puts "<tr>"
-            io.puts "<th rowspan='2'>Name</th>"
+            io.puts "<th rowspan='2' style='text-align: left;'>Name</th>"
             @@codebite_sections.each do |section|
-                io.puts "<th colspan='#{section['entries'].size}'>#{section['title']}</th>"
+                io.puts "<th colspan='#{section['entries'].size}' style='text-align: left;'>#{section['title']}</th>"
             end
             io.puts "</tr>"
             io.puts "<tr>"
@@ -3492,13 +3492,19 @@ class Main < Sinatra::Base
             end
             io.puts "</tr>"
             io.puts "</thead>"
+            last_group = nil
             @@user_group_order.each do |group|
                 (@@user_groups[group] || []).each do |email|
                     next unless (@@teachers[@session_user[:email]] || Set.new()).include?(group) || admin_logged_in? || email == @session_user[:email]
                     user_tag = fs_tag_for_email(email)
                     next unless active_users.include?(user_tag)
+                    next unless tried_tasks.dig(email) || solved_tasks.dig(email)
+                    if group != last_group
+                        io.puts "<tr><td colspan='#{@@codebite_tasks.size + 1}' style='text-align: left; font-weight: bold; background-color: #eee;'>#{group}</td></tr>"
+                        last_group = group
+                    end
                     io.puts "<tr>"
-                    io.puts "<td>#{@@invitations[email][:name]}</td>"
+                    io.puts "<td style='text-align: left;'>#{@@invitations[email][:name]}</td>"
                     @@codebite_tasks.each do |task_id, task_info|
                         io.puts "<td>"
                         %w(python ruby javascript).each do |lang|
