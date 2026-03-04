@@ -3429,6 +3429,17 @@ class Main < Sinatra::Base
         respond(payload)
     end
 
+    def print_codebites_admin_table
+        assert(teacher_logged_in?)
+        Main.update_codebites()
+        StringIO.open do |io|
+            io.puts "<pre>"
+            io.puts @@codebite_sections.to_yaml
+            io.puts @@codebite_tasks.to_yaml
+            io.puts "</pre>"
+            io.string
+        end
+    end
 
     get '/*' do
         path = request.path
