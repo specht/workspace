@@ -3432,11 +3432,90 @@ class Main < Sinatra::Base
     def print_codebites_admin_table
         assert(teacher_logged_in?)
         Main.update_codebites()
+
+        email_for_tag = {}
+        registered_emails = []
+        neo4j_query(<<~END_OF_STRING).each do |row|
+            MATCH (u:User) RETURN u.email;
+        END_OF_STRING
+            email = row['u.email']
+            email_for_tag[fs_tag_for_email(email)] = email
+            registered_emails << email
+        end
+
+        active_users = Dir['/user/*'].map do |path|
+            path.split('/').last
+        end.select do |user_tag|
+            user_tag =~ /^[0-9a-z]{16}$/
+        end
+        active_users = Set.new(active_users)
+
+        solved_tasks = {}
+        tried_tasks = {}
+
+        neo4j_query(<<~END_OF_STRING).each do |row|
+            MATCH (u:User)<-[:BY]-(s:Solved)-[:FOR]->(t:Task), (s)-[:IN]->(l:Language)
+            RETURN DISTINCT u.email, t.name, l.name;
+        END_OF_STRING
+            email = row['u.email']
+            task = row['t.name']
+            lang = row['l.name']
+            solved_tasks[email] ||= {}
+            solved_tasks[email][task] ||= []
+            solved_tasks[email][task] << lang
+        end
+        neo4j_query(<<~END_OF_STRING).each do |row|
+            MATCH (u:User)<-[:BY]-(s:Submission)-[:FOR]->(t:Task), (s)-[:IN]->(l:Language)
+            RETURN DISTINCT u.email, t.name, l.name;
+        END_OF_STRING
+            email = row['u.email']
+            task = row['t.name']
+            lang = row['l.name']
+            tried_tasks[email] ||= {}
+            tried_tasks[email][task] ||= []
+            tried_tasks[email][task] << lang
+        end
+
         StringIO.open do |io|
-            io.puts "<pre>"
-            io.puts @@codebite_sections.to_yaml
-            io.puts @@codebite_tasks.to_yaml
-            io.puts "</pre>"
+            io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
+            io.puts "<table class='table table-sm'>"
+            io.puts "<thead>"
+            io.puts "<tr>"
+            io.puts "<th rowspan='2'>Name</th>"
+            @@codebite_sections.each do |section|
+                io.puts "<th colspan='#{section['entries'].size}'>#{section['title']}</th>"
+            end
+            io.puts "</tr>"
+            io.puts "<tr>"
+            @@codebite_tasks.each do |task_id, task_info|
+                io.puts "<th><a href='/codebites/#{task_id}'>#{task_info[:heading].split.map { |x| x[0] }.join}</a></th>"
+            end
+            io.puts "</tr>"
+            io.puts "</thead>"
+            @@user_group_order.each do |group|
+                (@@user_groups[group] || []).each do |email|
+                    next unless (@@teachers[@session_user[:email]] || Set.new()).include?(group) || admin_logged_in? || email == @session_user[:email]
+                    user_tag = fs_tag_for_email(email)
+                    next unless active_users.include?(user_tag)
+                    io.puts "<tr>"
+                    io.puts "<td>#{@@invitations[email][:name]}</td>"
+                    @@codebite_tasks.each do |task_id, task_info|
+                        io.puts "<td>"
+                        %w(python ruby javascript).each do |lang|
+                            state = 0
+                            if (tried_tasks.dig(email, task_id) || []).include?(lang)
+                                state = 1
+                            end
+                            if (solved_tasks.dig(email, task_id) || []).include?(lang)
+                                state = 2
+                            end
+                            io.puts "<img src='/images/lang/#{lang.sub('javascript', 'js')}-128.png' class='state-#{state}'>"
+                        end
+                        io.puts "</td>"
+                    end
+                    io.puts "</tr>"
+                end
+            end
             io.string
         end
     end

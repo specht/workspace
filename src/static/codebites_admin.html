@@ -1,9 +1,21 @@
 #{ assert(teacher_logged_in?) }
+<style>
+    .table img {
+        width: 1.2em;
+        height: 1.2em;
+        object-fit: cover;
+    }
+    .table img.state-0 {
+        opacity: 0;
+    }
+    .table img.state-1 {
+        filter: grayscale(100%);
+        opacity: 0.5;
+    }
+</style>
 <div class='container-fluid'>
     <div class='row'>
-      <div class="col-md-12">
-        <h1>Codebites Admin</h1>
-        <hr>
+      <div class="col-md-12 mt-3">
         #{print_codebites_admin_table()}
       </div>
     </div>

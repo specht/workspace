@@ -4,8 +4,8 @@
   # icon: /images/rocket.png
   entries:
     - add_numbers
-    - even
     - max_of_two
+    - even
     - factorial
     - fibonacci
     - gcd
