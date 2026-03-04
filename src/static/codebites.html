@@ -474,6 +474,129 @@
   var term = null;
   var starter = null;
 
+  function preventExternalPasteByClipboardMatch(editor, opts = {}) {
+    const ttlMs = typeof opts.ttlMs === "number" ? opts.ttlMs : 2000;
+    const maxRemember = typeof opts.maxRemember === "number" ? opts.maxRemember : 5;
+    const onBlocked =
+      typeof opts.onBlocked === "function"
+        ? opts.onBlocked
+        : (msg) => console.warn(msg);
+
+    const domNode = editor.getDomNode();
+    if (!domNode) throw new Error("Editor DOM node not ready.");
+
+    const inputArea =
+      domNode.querySelector("textarea.inputarea") ||
+      domNode.querySelector("textarea");
+
+    const recent = [];
+
+    function fingerprint(str) {
+      let h = 0x811c9dc5;
+      for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 0x01000193);
+      }
+      return (h >>> 0).toString(16) + ":" + str.length;
+    }
+
+    function prune(now) {
+      for (let i = recent.length - 1; i >= 0; i--) {
+        if (now - recent[i].t > ttlMs) recent.splice(i, 1);
+      }
+      while (recent.length > maxRemember) recent.shift();
+    }
+
+    function remember(text) {
+      if (!text) return;
+      const now = Date.now();
+      prune(now);
+      recent.push({ fp: fingerprint(text), t: now });
+      prune(now);
+    }
+
+    function isAllowed(text) {
+      const now = Date.now();
+      prune(now);
+      const fp = fingerprint(text);
+      return recent.some((r) => r.fp === fp && now - r.t <= ttlMs);
+    }
+
+    function getSelectedTextFromMonaco() {
+      const model = editor.getModel();
+      const sel = editor.getSelection();
+      if (!model || !sel || sel.isEmpty()) return "";
+      return model.getValueInRange(sel);
+    }
+
+    function getClipboardText(ev) {
+      if (ev.clipboardData && typeof ev.clipboardData.getData === "function") {
+        return ev.clipboardData.getData("text/plain") || "";
+      }
+      if (window.clipboardData && typeof window.clipboardData.getData === "function") {
+        return window.clipboardData.getData("Text") || "";
+      }
+      return "";
+    }
+
+    const onCopy = () => {
+      const text = getSelectedTextFromMonaco();
+      remember(text);
+    };
+
+    const onCut = () => {
+      const text = getSelectedTextFromMonaco();
+      remember(text);
+    };
+
+    const onPaste = (ev) => {
+      const text = getClipboardText(ev);
+
+      if (!text) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        onBlocked("Paste blocked (unable to read clipboard). Copy/paste within the editor is allowed.");
+        return;
+      }
+
+      if (!isAllowed(text)) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        onBlocked("Paste from outside is disabled. Copy/paste within the editor is allowed.");
+      }
+    };
+
+    const copyTarget = inputArea || domNode;
+
+    copyTarget.addEventListener("copy", onCopy, true);
+    copyTarget.addEventListener("cut", onCut, true);
+    copyTarget.addEventListener("paste", onPaste, true);
+
+    const onDocCopy = (ev) => {
+      if (domNode.contains(ev.target)) onCopy(ev);
+    };
+    const onDocCut = (ev) => {
+      if (domNode.contains(ev.target)) onCut(ev);
+    };
+    const onDocPaste = (ev) => {
+      if (domNode.contains(ev.target)) onPaste(ev);
+    };
+
+    document.addEventListener("copy", onDocCopy, true);
+    document.addEventListener("cut", onDocCut, true);
+    document.addEventListener("paste", onDocPaste, true);
+
+    return () => {
+      copyTarget.removeEventListener("copy", onCopy, true);
+      copyTarget.removeEventListener("cut", onCut, true);
+      copyTarget.removeEventListener("paste", onPaste, true);
+
+      document.removeEventListener("copy", onDocCopy, true);
+      document.removeEventListener("cut", onDocCut, true);
+      document.removeEventListener("paste", onDocPaste, true);
+    };
+  }
+
   function join_with_sep(arr, sep, final_sep) {
     if (arr.length === 0) return "";
     if (arr.length === 1) return arr[0];
@@ -509,17 +632,13 @@
     let column = 1;
 
     if (idx !== -1) {
-        // Text before the marker
         const before = code.slice(0, idx);
 
-        // 1-based line number = number of '\n' + 1
         const lines = before.split("\n");
         lineNumber = lines.length;
 
-        // 1-based column = length of last line + 1
         column = lines[lines.length - 1].length + 1;
 
-        // Remove only the first occurrence of the marker
         code = code.slice(0, idx) + code.slice(idx + marker.length);
     }
 
@@ -713,6 +832,14 @@
         fontSize: 15,
         fontLigatures: true,
       });
+
+      const cleanup = preventExternalPasteByClipboardMatch(editor, {
+        ttlMs: 10000,
+        maxRemember: 10,
+        onBlocked: (msg) => {
+          console.log("Blocked external paste!");
+        },
+      });      
 
       function runSubmission() {
         ensureCodebitesWs();
