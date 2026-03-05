@@ -1,0 +1,297 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #151514;
+    color: #e7e6e1;
+    font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+        Cantarell, sans-serif;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Split Layout */
+.split-layout {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Left Panel - Markdown Viewer */
+.markdown-panel {
+    width: 45%;
+    background: #121212;
+    border-right: 1px solid #333;
+    overflow-y: auto;
+    padding: 2rem 2.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: #3a4048 #151514;
+}
+
+.markdown-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+.markdown-panel::-webkit-scrollbar-track {
+    background: #151514;
+}
+
+.markdown-panel::-webkit-scrollbar-thumb {
+    background: #3a4048;
+    border-radius: 4px;
+}
+
+/* Markdown Content Styling */
+.markdown-content {
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.8;
+    color: #ccccc9;
+}
+
+.markdown-content h1 {
+    font-family: Georgia, serif;
+    font-size: 2.4rem;
+    font-weight: bold;
+    color: #e7e6e1;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #0d95fd;
+    padding-bottom: 0.4rem;
+}
+
+.markdown-content h2 {
+    font-family: Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #e7e6e1;
+    margin: 2.5rem 0 0.6rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid #232626;
+}
+
+.markdown-content h3 {
+    font-family: -apple-system, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #ccccc9;
+    margin: 1.5rem 0 0.4rem;
+}
+
+.markdown-content p {
+    font-size: 0.97rem;
+    color: #ccccc9;
+    margin: 0.6rem 0;
+    font-family: Georgia, serif;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+    margin: 0.5rem 0 0.75rem 1.5rem;
+    font-family: Georgia, serif;
+}
+
+.markdown-content li {
+    font-size: 0.95rem;
+    color: #ccccc9;
+    margin: 0.25rem 0;
+}
+
+.markdown-content code {
+    font-family: "Courier New", monospace;
+    font-size: 0.85em;
+    background: rgba(243, 132, 175, 0.08);
+    border: 1px solid #555753;
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+    color: #e5185d;
+}
+
+.markdown-content pre {
+    background: #0a0a0a;
+    border: 1px solid #555753;
+    border-radius: 4px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.markdown-content pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #e5185d;
+}
+
+.markdown-content blockquote {
+    border-left: 3px solid #dc3545;
+    padding: 0.8rem 1.1rem;
+    background: #0c0d0d;
+    margin: 1.2rem 0 1.75rem;
+    color: #ccccc9;
+    font-size: 0.94rem;
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+}
+
+.markdown-content hr {
+    border: none;
+    border-top: 2px solid #232626;
+    margin: 2.5rem 0;
+}
+
+.markdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #232626;
+    font-family: "Courier New", monospace;
+    font-size: 0.85rem;
+}
+
+.markdown-header .file-info {
+    color: #dc3545;
+}
+
+.markdown-header .file-info i {
+    margin-right: 0.5rem;
+}
+
+.markdown-header .file-badge {
+    background: #0a0a0a;
+    border: 1px solid #555753;
+    border-radius: 4px;
+    padding: 0.25rem 0.75rem;
+    color: #e5185d;
+}
+
+.loading-indicator {
+    text-align: center;
+    padding: 3rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.error-indicator {
+    text-align: center;
+    padding: 2rem;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    border-radius: 4px;
+    background: #0a0a0a;
+}
+
+/* Right Panel - Editor Only */
+.editor-panel {
+    width: 55%;
+    background: #0e0e0d;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.editor-header {
+    padding: 1rem 1.5rem;
+    background: #151514;
+    border-bottom: 1px solid #333;
+    font-family: "Courier New", monospace;
+    font-size: 0.85rem;
+    color: #e7e6e1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.editor-header span i {
+    margin-right: 0.5rem;
+}
+
+.brand {
+    color: #dc3545;
+}
+
+.audio-status {
+    margin-right: 1rem;
+}
+
+.audio-status i {
+    color: #dc3545;
+}
+
+.play-button {
+    background: #dc3545;
+    color: #000;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.play-button:hover {
+    background: #dc3545;
+}
+
+.play-button i {
+    margin-right: 0.3rem;
+}
+
+.editor-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    background: #151514;
+}
+
+.editor-tabs {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.editor-tab {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    background: #181818;
+    border: 1px solid #555753;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    margin-right: 0.25rem;
+    font-size: 0.8rem;
+    color: #ccccc9;
+}
+
+.editor-tab.active {
+    background: #1a1e22;
+    color: #e7e6e1;
+    border-bottom: 2px solid #dc3545;
+}
+
+strudel-editor {
+    display: block;
+    margin-bottom: 1.5rem;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #555753;
+    background: #181818;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+kbd {
+    background: #0a0a0a;
+    border: 1px solid #555753;
+    color: #e5185d;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    font-family: "Courier New", monospace;
+}
+
