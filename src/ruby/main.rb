@@ -3443,13 +3443,6 @@ class Main < Sinatra::Base
             registered_emails << email
         end
 
-        active_users = Dir['/user/*'].map do |path|
-            path.split('/').last
-        end.select do |user_tag|
-            user_tag =~ /^[0-9a-z]{16}$/
-        end
-        active_users = Set.new(active_users)
-
         solved_tasks = {}
         tried_tasks = {}
 
@@ -3476,6 +3469,22 @@ class Main < Sinatra::Base
             tried_tasks[email][task] << lang
         end
 
+        solution_for_task_and_lang = {}
+        line_count_for_sha1 = {}
+        neo4j_query(<<~END_OF_STRING, {}).to_a.each do |x|
+            MATCH (l:Language)<-[:IN]-(s:Submission {success: TRUE})-[:FOR]->(t:Task), (s)-[:WITH]->(c:Code)
+            RETURN s, c, l.name, t.name
+            ORDER BY c.size;
+        END_OF_STRING
+            sha1 = x['c'][:sha1]
+            lang = x['l.name']
+            task = x['t.name']
+            solution_for_task_and_lang[task] ||= {}
+            solution_for_task_and_lang[task][lang] ||= []
+            solution_for_task_and_lang[task][lang] << sha1
+            line_count_for_sha1[sha1] = x['c'][:line_count]
+        end
+
         StringIO.open do |io|
             io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
             io.puts "<table class='table table-sm'>"
@@ -3497,7 +3506,6 @@ class Main < Sinatra::Base
                 (@@user_groups[group] || []).each do |email|
                     next unless (@@teachers[@session_user[:email]] || Set.new()).include?(group) || admin_logged_in? || email == @session_user[:email]
                     user_tag = fs_tag_for_email(email)
-                    next unless active_users.include?(user_tag)
                     next unless tried_tasks.dig(email) || solved_tasks.dig(email)
                     if group != last_group
                         io.puts "<tr><td colspan='#{@@codebite_tasks.size + 1}' style='text-align: left; font-weight: bold; background-color: #eee;'>#{group}</td></tr>"
@@ -3522,6 +3530,22 @@ class Main < Sinatra::Base
                     io.puts "</tr>"
                 end
             end
+            io.puts "</table>"
+            io.puts "</div>"
+            @@codebite_tasks.each do |task_id, task_info|
+                next unless solution_for_task_and_lang[task_id]
+                io.puts "<h3>#{task_info[:heading]}</h3>"
+                %w(python ruby javascript).each do |lang|
+                    next unless solution_for_task_and_lang[task_id][lang]
+                    solution_for_task_and_lang[task_id][lang].each do |sha1|
+                        io.puts "<div class='masonry-container'>"
+                        code = File.read("/internal/codebites/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}.hl") rescue nil
+                        io.puts "<div class='code-container' data-sha1='#{sha1}' data-lang='#{lang}' data-line-count='#{line_count_for_sha1[sha1]}'><pre>#{code}</pre></div>"
+                        io.puts "</div>"
+                    end
+                end
+            end
+
             io.string
         end
     end
