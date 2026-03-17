@@ -522,7 +522,7 @@
       const now = Date.now();
       prune(now);
       const fp = fingerprint(text);
-      return recent.some((r) => r.fp === fp && now - r.t <= ttlMs);
+      return recent.some((r) => r.fp === fp && now - r.t <= ttlMs) || text.length <= 16;
     }
 
     function getSelectedTextFromMonaco() {
