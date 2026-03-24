@@ -842,7 +842,7 @@
         onBlocked: (msg) => {
           console.log("Blocked external paste!");
         },
-      });      
+      });
 
       function runSubmission() {
         ensureCodebitesWs();
@@ -855,7 +855,7 @@
             if (!data || !data.yay) {
                 term.write(`\r\n\x1b[31mFailed to start run.\x1b[0m\r\n`);
             } else {
-                editor.setValue(data.code);
+                // editor.setValue(data.code);
             }
         });
       }

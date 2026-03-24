@@ -24,8 +24,10 @@
   entries:
     - array_sum
     - array_max
+    - array_swap_first_last
+    - array_reverse
+    - array_rotate_left
     # - two_sum
-    # - reverse_array
 - key: strings
   title: Strings
   description: Arbeite mit Zeichenketten und übe String-Manipulation.

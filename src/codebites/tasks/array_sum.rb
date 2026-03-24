@@ -4,11 +4,11 @@ def build_judge(executor:, rng:)
     validator = Judge::Validator.new()
 
     cases = []
+    cases << Judge::Case.new(args: [[2, 7, 11, 15]], expect: Judge::Expect.equals(35))
     cases << Judge::Case.new(args: [[1, 2, 3, 4, 5]], expect: Judge::Expect.equals(15))
     cases << Judge::Case.new(args: [[2, 7, 11, 15]], expect: Judge::Expect.equals(35))
     cases << Judge::Case.new(args: [[]], expect: Judge::Expect.equals(0))
 
-    # Random cases: use rng injected by runner (so you can have true-random per run)
     3.times do |i|
         size = rng.rand(0..200)
         nums = Array.new(size) { rng.rand(-(10 ** (i + 1))..(10 ** (i + 1))) }

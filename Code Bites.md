@@ -71,15 +71,15 @@
 12. Palindrome check
 
 ### ⭐ Einstieg
-- ⭐ Summe aller Elemente berechnen
-- ⭐ Größtes Element finden
+- ✅ ⭐ Summe aller Elemente berechnen
+- ✅ ⭐ Größtes Element finden
 - ⭐ Anzahl gerader Zahlen zählen
 - ⭐ Prüfen, ob ein Element enthalten ist
-- ⭐ Reihenfolge umdrehen
-- ⭐ Erstes und letztes Element tauschen
+- ✅ ⭐ Erstes und letztes Element tauschen
+- ✅ ⭐ Reihenfolge umdrehen
 
 ### ⭐⭐ Leicht
-- ⭐⭐ Array nach links rotieren
+- ✅ ⭐⭐ Array nach links rotieren
 - ⭐⭐ Prüfen, ob ein Array sortiert ist
 - ⭐⭐ Duplikate entfernen
 

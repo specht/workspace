@@ -3152,9 +3152,9 @@ class Main < Sinatra::Base
         language = data[:language].strip
         code = data[:code].to_s.strip
 
-        if data[:language] == "ruby"
-            code = rubocop_format_ruby(code).to_s
-        end
+        # if data[:language] == "ruby"
+        #     code = rubocop_format_ruby(code).to_s
+        # end
 
         lines = code.split("\n")
         lines.map! { |l| l.rstrip }

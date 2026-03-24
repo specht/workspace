@@ -4,8 +4,8 @@ def build_judge(executor:, rng:)
     validator = Judge::Validator.new()
 
     cases = []
-    cases << Judge::Case.new(args: [[1, 2, 3, 4, 5]], expect: Judge::Expect.equals(5))
     cases << Judge::Case.new(args: [[2, 7, 11, 15]], expect: Judge::Expect.equals(15))
+    cases << Judge::Case.new(args: [[1, 2, 3, 4, 5]], expect: Judge::Expect.equals(5))
     cases << Judge::Case.new(args: [[]], expect: Judge::Expect.equals(nil))
 
     3.times do |i|
