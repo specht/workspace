@@ -1,0 +1,216 @@
+<style>
+    .menu, .header, footer {
+        display: none;
+    }
+
+    .canvas_container {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        outline: 1px solid #ccc;
+    }
+
+    .canvas_container canvas {
+        display: block;
+        background-color: #f0f0f0;
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 8px;
+        /* box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.15); */
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="col-md-12">
+        <img id="base_image" style="display: none;">
+        <div class="canvas_container" id="source"><canvas></canvas></div>
+        <div class="canvas_container" id="c1"><canvas></canvas></div>
+        <div class="canvas_container" id="c2"><canvas></canvas></div>
+        <div class="canvas_container" id="c3"><canvas></canvas></div>
+        <div class="canvas_container" id="c1m"><canvas></canvas></div>
+        <div class="canvas_container" id="c2m"><canvas></canvas></div>
+        <div class="canvas_container" id="c3m"><canvas></canvas></div>
+        <div class="canvas_container" id="result"><canvas></canvas></div>
+    </div>
+</div>
+
+<script>
+    var hpadding = 100;
+    var vpadding = 25;
+    var margin = 25;
+    var width = 128;
+    var height = 128;
+
+    // Basis vectors for decomposition
+    // var base1 = [1.0, 0.0, 0.0, 0];
+    // var base2 = [0.0, 1.0, 0.0, 0];
+    // var base3 = [0.0, 0.0, 1.0, 0];
+
+    // YCbCr color space basis vectors
+    var base1 = [0.299, 0.587, 0.114, 0];       // Y  (luminance)
+    var base2 = [-0.169, -0.331, 0.5, 128];     // Cb (blue chrominance)
+    var base3 = [0.5, -0.419, -0.081, 128];     // Cr (red chrominance)
+
+    function determinant3x3(v1, v2, v3) {
+        return (
+            v1[0] * (v2[1] * v3[2] - v2[2] * v3[1]) -
+            v1[1] * (v2[0] * v3[2] - v2[2] * v3[0]) +
+            v1[2] * (v2[0] * v3[1] - v2[1] * v3[0])
+        );
+    }
+
+    function inverseMatrix3x3(v1, v2, v3) {
+        let det = determinant3x3(v1, v2, v3);
+        if (Math.abs(det) < 1e-10) return null;
+        
+        let inv = [
+            [(v2[1] * v3[2] - v2[2] * v3[1]) / det, (v1[2] * v3[1] - v1[1] * v3[2]) / det, (v1[1] * v2[2] - v1[2] * v2[1]) / det],
+            [(v2[2] * v3[0] - v2[0] * v3[2]) / det, (v1[0] * v3[2] - v1[2] * v3[0]) / det, (v1[2] * v2[0] - v1[0] * v2[2]) / det],
+            [(v2[0] * v3[1] - v2[1] * v3[0]) / det, (v1[1] * v3[0] - v1[0] * v3[1]) / det, (v1[0] * v2[1] - v1[1] * v2[0]) / det]
+        ];
+        return inv;
+    }
+
+    function handleResize() {
+        let windowWidth = window.innerWidth;
+        let windowHeight = window.innerHeight;
+        let w = Math.floor((windowWidth - 3 * hpadding - 2 * margin) / 4);
+        let h = Math.floor((windowHeight - 2 * vpadding - 2 * margin) / 3);
+
+        let div = document.querySelector('#source');
+        div.style.left = `${margin}px`;
+        div.style.top = `${margin}px`;
+        div.style.width = `${w}px`;
+        div.style.height = `${h}px`;
+
+        for (let y = 0; y < 3; y++) {
+            div = document.querySelector(`#c${y + 1}`);
+            div.style.left = `${margin + w + hpadding}px`;
+            div.style.top = `${margin + y * (h + vpadding)}px`;
+            div.style.width = `${w}px`;
+            div.style.height = `${h}px`;
+        }
+
+        for (let y = 0; y < 3; y++) {
+            div = document.querySelector(`#c${y + 1}m`);
+            div.style.left = `${margin + 2 * (w + hpadding)}px`;
+            div.style.top = `${margin + y * (h + vpadding)}px`;
+            div.style.width = `${w}px`;
+            div.style.height = `${h}px`;
+        }
+
+        div = document.querySelector('#result');
+        div.style.left = `${margin + 3 * (w + hpadding)}px`;
+        div.style.top = `${margin + h + vpadding}px`;
+        div.style.width = `${w}px`;
+        div.style.height = `${h}px`;
+    }
+
+    function loadImage(src) {
+        let base_image = document.getElementById('base_image');
+        base_image.src = src;
+    }
+
+    function dot(a, b) {
+        return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    }
+
+    function scale(v, s) {
+        return [v[0] * s, v[1] * s, v[2] * s];
+    }
+
+    function normalize(v) {
+        let len = Math.sqrt(dot(v, v));
+        if (len === 0) return [0, 0, 0];
+        return [v[0] / len, v[1] / len, v[2] / len];
+    }
+
+    function clamp255(x) {
+        return Math.max(0, Math.min(255, Math.round(x)));
+    }
+
+    function applyBasis(rgb, base) {
+        return (
+            rgb[0] * base[0] +
+            rgb[1] * base[1] +
+            rgb[2] * base[2] +
+            base[3]
+        );
+    }
+
+    function decomposeImage() {
+        let sourceCanvas = document.querySelector('#source canvas');
+        let sourceCtx = sourceCanvas.getContext('2d');
+        let srcImageData = sourceCtx.getImageData(0, 0, width, height);
+        let src = srcImageData.data;
+
+        let canvases = [
+            document.querySelector('#c1 canvas'),
+            document.querySelector('#c2 canvas'),
+            document.querySelector('#c3 canvas')
+        ];
+
+        let ctxs = canvases.map(c => c.getContext('2d'));
+        let outImages = ctxs.map(ctx => ctx.createImageData(width, height));
+
+        let bases = [base1, base2, base3];
+
+        for (let i = 0; i < src.length; i += 4) {
+            let rgb = [src[i], src[i + 1], src[i + 2]];
+
+            for (let k = 0; k < 3; k++) {
+                let v = clamp255(applyBasis(rgb, bases[k]));
+                let out = outImages[k].data;
+
+                out[i] = v;
+                out[i + 1] = v;
+                out[i + 2] = v;
+                out[i + 3] = 255;
+            }
+        }
+
+        for (let k = 0; k < 3; k++) {
+            ctxs[k].putImageData(outImages[k], 0, 0);
+        }
+    }
+    window.addEventListener('resize', handleResize);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        handleResize();
+
+        let base_image = document.getElementById('base_image');
+
+        base_image.addEventListener('load', function() {
+            width = base_image.naturalWidth;
+            height = base_image.naturalHeight;
+
+            let canvas = document.querySelector('#source canvas');
+            let ctx = canvas.getContext('2d');
+            canvas.width = width;
+            canvas.height = height;
+            ctx.clearRect(0, 0, width, height);
+            ctx.drawImage(base_image, 0, 0, width, height);
+
+            for (let y = 0; y < 3; y++) {
+                let c = document.querySelector(`#c${y + 1} canvas`);
+                c.width = width;
+                c.height = height;
+            }
+            for (let y = 0; y < 3; y++) {
+                let c = document.querySelector(`#c${y + 1}m canvas`);
+                c.width = width;
+                c.height = height;
+            }
+            let c = document.querySelector(`#result canvas`);
+            c.width = width;
+            c.height = height;
+
+            decomposeImage();
+        });
+
+        loadImage('jpeg/91.jpg');
+    });
+</script>
