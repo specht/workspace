@@ -39,9 +39,9 @@
 </div>
 
 <script>
-    var hpadding = 100;
-    var vpadding = 50;
-    var margin = 25;
+    var hpadding = 10;
+    var vpadding = 10;
+    var margin = 10;
     var width = 128;
     var height = 128;
 
@@ -49,9 +49,9 @@
     var base2 = [0.0, 1.0, 0.0, 0];
     var base3 = [0.0, 0.0, 1.0, 0];
     // YCbCr color space basis vectors
-    var base1 = [0.299, 0.587, 0.114, 16];       // Y
-    var base2 = [-0.169, -0.331, 0.5, 128];     // Cb
-    var base3 = [0.5, -0.419, -0.081, 128];     // Cr
+    // var base1 = [0.299, 0.587, 0.114, 16];       // Y
+    // var base2 = [-0.169, -0.331, 0.5, 128];     // Cb
+    // var base3 = [0.5, -0.419, -0.081, 128];     // Cr
 
     var inverseBasis = null;
 
@@ -66,8 +66,8 @@
 
     const channelSettings = [
         { mode: 'gaussian', amount: 0 },
-        { mode: 'pixelate', amount: 0 },
-        { mode: 'pixelate', amount: 0 },
+        { mode: 'gaussian', amount: 10 },
+        { mode: 'gaussian', amount: 10 },
     ]
 
     // Full-resolution source buffers
@@ -104,7 +104,7 @@
 
     function getEffectiveScale(canvas) {
         return getFitScale(canvas) * viewState.zoom;
-    }    
+    }
 
     function determinant3x3(v1, v2, v3) {
         return (
@@ -377,36 +377,39 @@
     function handleResize() {
         let windowWidth = window.innerWidth;
         let windowHeight = window.innerHeight;
-        let w = Math.floor((windowWidth - 3 * hpadding - 2 * margin) / 4);
-        let h = Math.floor((windowHeight - 2 * vpadding - 2 * margin) / 3);
+        let ih = (windowWidth - 2 * margin) * 0.5;
+        let iv = windowHeight - 2 * margin;
+        let h = (ih - hpadding) / 6.0;
+        let h2 = (ih - hpadding * 2) / 6.0;
+        let v = (iv - vpadding * 2) / 7.0;
 
         let div = document.querySelector('#source');
-        div.style.left = `${margin}px`;
+        div.style.left = `${windowWidth - margin - h * 6 - hpadding}px`;
         div.style.top = `${margin}px`;
-        div.style.width = `${w}px`;
-        div.style.height = `${h}px`;
+        div.style.width = `${h * 3}px`;
+        div.style.height = `${v * 3}px`;
+
+        div = document.querySelector('#result');
+        div.style.left = `${windowWidth - margin - h * 3}px`;
+        div.style.top = `${margin}px`;
+        div.style.width = `${h * 3}px`;
+        div.style.height = `${v * 3}px`;
 
         for (let y = 0; y < 3; y++) {
             div = document.querySelector(`#c${y + 1}`);
-            div.style.left = `${margin + w + hpadding}px`;
-            div.style.top = `${margin + y * (h + vpadding)}px`;
-            div.style.width = `${w}px`;
-            div.style.height = `${h}px`;
+            div.style.left = `${windowWidth - margin - h * 6 - hpadding + (h2 * 2 + hpadding) * y}px`;
+            div.style.top = `${margin + v * 3 + vpadding}px`;
+            div.style.width = `${h2 * 2}px`;
+            div.style.height = `${v * 2}px`;
         }
 
         for (let y = 0; y < 3; y++) {
             div = document.querySelector(`#c${y + 1}m`);
-            div.style.left = `${margin + 2 * (w + hpadding)}px`;
-            div.style.top = `${margin + y * (h + vpadding)}px`;
-            div.style.width = `${w}px`;
-            div.style.height = `${h}px`;
+            div.style.left = `${windowWidth - margin - h * 6 - hpadding + (h2 * 2 + hpadding) * y}px`;
+            div.style.top = `${margin + v * 5 + vpadding * 2}px`;
+            div.style.width = `${h2 * 2}px`;
+            div.style.height = `${v * 2}px`;
         }
-
-        div = document.querySelector('#result');
-        div.style.left = `${margin + 3 * (w + hpadding)}px`;
-        div.style.top = `${margin + h + vpadding}px`;
-        div.style.width = `${w}px`;
-        div.style.height = `${h}px`;
 
         resizeVisibleCanvases();
         updateZoomLimits();
@@ -834,6 +837,7 @@
             resetView();
         });
 
-        loadImage('jpeg/44.jpg');
+        // loadImage('jpeg/44.jpg');
+        loadImage('jpeg/91.jpg');
     });
 </script>
