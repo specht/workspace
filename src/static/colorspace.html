@@ -1037,6 +1037,7 @@
                 if (k === 3) {
                     div.append(document.createElement('hr'));
                 }
+
                 let container = document.createElement('div');
                 container.classList.add('input-pair');
 
@@ -1107,6 +1108,71 @@
                     commitBasisValue(slider.value, true);
                 });
             }
+
+            // Blur control for this channel
+            div.append(document.createElement('hr'));
+
+            let blurContainer = document.createElement('div');
+            blurContainer.classList.add('input-pair');
+
+            let blurLabel = document.createElement('p');
+            blurLabel.textContent = 'Blur';
+            blurContainer.append(blurLabel);
+
+            let blurInput = document.createElement('input');
+            blurInput.type = 'text';
+            blurInput.classList.add('form-control');
+            blurInput.min = '0';
+            blurInput.max = '16';
+            blurInput.step = '1';
+            blurInput.value = String(channelSettings[i].amount);
+            blurContainer.append(blurInput);
+
+            let blurSlider = document.createElement('input');
+            blurSlider.type = 'range';
+            blurSlider.classList.add('form-range');
+            blurSlider.min = '0';
+            blurSlider.max = '16';
+            blurSlider.step = '1';
+            blurSlider.value = blurInput.value;
+            blurContainer.append(blurSlider);
+
+            div.append(blurContainer);
+
+            function clampBlurValue(rawValue) {
+                let val = parseInt(rawValue, 10);
+                if (isNaN(val)) return null;
+                return Math.max(0, Math.min(16, val));
+            }
+
+            function commitBlurValue(rawValue) {
+                const val = clampBlurValue(rawValue);
+                if (val === null) return;
+
+                channelSettings[i].mode = 'gaussian';
+                channelSettings[i].amount = val;
+
+                blurInput.value = String(val);
+                blurSlider.value = String(val);
+
+                schedulePipeline();
+            }
+
+            blurInput.addEventListener('input', function() {
+                const val = clampBlurValue(blurInput.value);
+                if (val !== null) {
+                    blurSlider.value = String(val);
+                }
+            });
+
+            blurInput.addEventListener('change', function() {
+                commitBlurValue(blurInput.value);
+            });
+
+            blurSlider.addEventListener('input', function() {
+                blurInput.value = blurSlider.value;
+                commitBlurValue(blurSlider.value);
+            });
         }
     }
 
