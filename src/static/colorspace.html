@@ -51,11 +51,40 @@
         width: 80px;
         text-align: center;
     }
+
+    .canvas-label {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 4px 8px;
+        border-radius: 6px;
+        font: 11px sans-serif;
+        line-height: 1.2;
+        pointer-events: none;
+        z-index: 2;
+        white-space: nowrap;
+        bottom: 2px;
+    }
+
+    .image_chooser {
+        position: absolute;
+        overflow-x: auto;
+        text-align: center;
+    }
+
+    .image_chooser img {
+        padding: 4px;
+    }
 </style>
 
 <div class="container-fluid">
     <div class="col-md-12">
         <img id="base_image" style="display: none;">
+
+        <div class="image_chooser">
+        </div>
 
         <div class="channel_div">
             <div class="channel_container" id="channel0"></div>
@@ -64,13 +93,41 @@
         </div>
 
         <div class="canvas_container" id="source"><canvas></canvas></div>
-        <div class="canvas_container" id="c1"><canvas></canvas></div>
-        <div class="canvas_container" id="c2"><canvas></canvas></div>
-        <div class="canvas_container" id="c3"><canvas></canvas></div>
-        <div class="canvas_container" id="c1m"><canvas></canvas></div>
-        <div class="canvas_container" id="c2m"><canvas></canvas></div>
-        <div class="canvas_container" id="c3m"><canvas></canvas></div>
-        <div class="canvas_container" id="result"><canvas></canvas></div>
+
+        <div class="canvas_container" id="c1">
+            <canvas></canvas>
+            <div class="canvas-label energy-label"></div>
+        </div>
+
+        <div class="canvas_container" id="c2">
+            <canvas></canvas>
+            <div class="canvas-label energy-label"></div>
+        </div>
+
+        <div class="canvas_container" id="c3">
+            <canvas></canvas>
+            <div class="canvas-label energy-label"></div>
+        </div>
+
+        <div class="canvas_container" id="c1m">
+            <canvas></canvas>
+            <div class="canvas-label energy-label"></div>
+        </div>
+
+        <div class="canvas_container" id="c2m">
+            <canvas></canvas>
+            <div class="canvas-label energy-label"></div>
+        </div>
+
+        <div class="canvas_container" id="c3m">
+            <canvas></canvas>
+            <div class="canvas-label energy-label"></div>
+        </div>
+
+        <div class="canvas_container" id="result">
+            <canvas></canvas>
+            <div class="canvas-label similarity-label"></div>
+        </div>
     </div>
 </div>
 
@@ -85,9 +142,9 @@
     var base2 = [0.0, 1.0, 0.0, 0];
     var base3 = [0.0, 0.0, 1.0, 0];
     // YCbCr examples:
-    // var base1 = [0.299, 0.587, 0.114, 16];
-    // var base2 = [-0.169, -0.331, 0.5, 128];
-    // var base3 = [0.5, -0.419, -0.081, 128];
+    var base1 = [0.299, 0.587, 0.114, 16];
+    var base2 = [-0.169, -0.331, 0.5, 128];
+    var base3 = [0.5, -0.419, -0.081, 128];
 
     var inverseBasis = null;
 
@@ -102,8 +159,8 @@
 
     const channelSettings = [
         { mode: 'gaussian', amount: 0 },
-        { mode: 'gaussian', amount: 0 },
-        { mode: 'gaussian', amount: 0 },
+        { mode: 'gaussian', amount: 10 },
+        { mode: 'gaussian', amount: 10 },
     ];
 
     let channelStats = {
@@ -572,6 +629,7 @@
         channelStats.c3m = modStats.c;
 
         updateImageSimilarity();
+        updateHtmlLabels();
 
         flushBuffersToCanvases();
         renderAll();
@@ -584,66 +642,24 @@
         requestAnimationFrame(runPipeline);
     }
 
-    function drawSimilarityOverlay(ctx, canvas, percent) {
-        const dpr = window.devicePixelRatio || 1;
-        const size = getCanvasDisplaySize(canvas);
+    function updateHtmlLabels() {
+        Object.keys(channelStats).forEach(id => {
+            const container = document.getElementById(id);
+            if (!container) return;
 
-        const text = `Similarity: ${percent.toFixed(1)}%`;
+            const label = container.querySelector('.energy-label');
+            if (label) {
+                label.textContent = `Energy: ${channelStats[id].toFixed(0)}%`;
+            }
+        });
 
-        ctx.save();
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-        ctx.font = '13px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-
-        const x = size.w / 2;
-        const y = size.h - 24;
-
-        const paddingX = 8;
-        const paddingY = 4;
-        const metrics = ctx.measureText(text);
-        const boxW = metrics.width + paddingX * 2;
-        const boxH = 18;
-
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-        ctx.fillRect(x - boxW / 2, y - boxH + paddingY, boxW, boxH);
-
-        ctx.fillStyle = 'white';
-        ctx.fillText(text, x, y);
-
-        ctx.restore();
-    }
-
-    function drawVarianceOverlay(ctx, canvas, value) {
-        const dpr = window.devicePixelRatio || 1;
-        const size = getCanvasDisplaySize(canvas);
-
-        const text = `Energy: ${value.toFixed(0)}%`;
-
-        ctx.save();
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-        ctx.font = '12px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-
-        const x = size.w / 2;
-        const y = size.h - 4;
-
-        // background for readability
-        const padding = 4;
-        const metrics = ctx.measureText(text);
-        const w = metrics.width + padding * 2;
-        const h = 14;
-
-        ctx.fillStyle = 'rgba(0,0,0,0.5)';
-        ctx.fillRect(x - w / 2, y - h, w, h);
-
-        ctx.fillStyle = 'white';
-        ctx.fillText(text, x, y);
-
-        ctx.restore();
+        const resultContainer = document.getElementById('result');
+        if (resultContainer) {
+            const label = resultContainer.querySelector('.similarity-label');
+            if (label) {
+                label.textContent = `Similarity: ${imageSimilarityPercent.toFixed(1)}%`;
+            }
+        }
     }
 
     function getCanvasDisplaySize(canvas) {
@@ -759,14 +775,6 @@
             sx, sy, sw, sh,
             0, 0, dw, dh
         );
-
-        if (channelStats[viewId] !== undefined) {
-            drawVarianceOverlay(ctx, visibleCanvas, channelStats[viewId]);
-        }
-
-        if (viewId === 'result') {
-            drawSimilarityOverlay(ctx, visibleCanvas, imageSimilarityPercent);
-        }
     }
 
     function renderAll() {
@@ -781,6 +789,7 @@
         let h = (ih - hpadding) / 6.0;
         let h2 = (ih - hpadding * 2) / 6.0;
         let v = (iv - vpadding * 2) / 7.0;
+        let imageChooserHeight = 96;
 
         let div = document.querySelector('#source');
         div.style.left = `${windowWidth - margin - h * 6 - hpadding}px`;
@@ -812,9 +821,15 @@
 
         div = document.querySelector('.channel_div');
         div.style.left = `${margin}px`;
+        div.style.top = `${margin + imageChooserHeight + vpadding}px`;
+        div.style.width = `${windowWidth - ih - hpadding - 2 * margin}px`;
+        // div.style.height = `${windowHeight - 2 * margin}px`;
+
+        div = document.querySelector('.image_chooser');
+        div.style.left = `${margin}px`;
         div.style.top = `${margin}px`;
         div.style.width = `${windowWidth - ih - hpadding - 2 * margin}px`;
-        div.style.height = `${windowHeight - 2 * margin}px`;
+        div.style.height = `${imageChooserHeight}px`;
 
         resizeVisibleCanvases();
         updateZoomLimits();
@@ -1018,15 +1033,8 @@
         for (let i = 0; i < 3; i++) {
             const div = document.querySelector(`#channel${i}`);
 
-            let ti_name = document.createElement('input');
-            ti_name.type = 'text';
-            ti_name.placeholder = `Channel ${i + 1}`;
-            ti_name.classList.add('form-control');
-            ti_name.classList.add('mb-3');
-            div.append(ti_name);
-
             for (let k = 0; k < 4; k++) {
-                if (k === 0 || k === 3) {
+                if (k === 3) {
                     div.append(document.createElement('hr'));
                 }
                 let container = document.createElement('div');
@@ -1132,7 +1140,29 @@
             resetView();
         });
 
-        loadImage('jpeg/44.jpg');
-        // loadImage('jpeg/91.jpg');
+        let images = [
+            'jpeg/25.jpg',
+            'jpeg/30.jpg',
+            'jpeg/33.jpg',
+            'jpeg/44.jpg',
+            'jpeg/76.jpg',
+            'jpeg/91.jpg',
+        ];
+
+        let imageChooser = document.querySelector('.image_chooser');
+        for (let imgSrc of images) {
+            let img = document.createElement('img');
+            img.src = imgSrc;
+            img.style.maxHeight = '100%';
+            img.style.cursor = 'pointer';
+            img.addEventListener('click', function() {
+                loadImage(imgSrc);
+            });
+            imageChooser.append(img);
+        }
+        const firstImage = imageChooser.querySelector('img');
+        if (firstImage) {
+            firstImage.click();
+        }
     });
 </script>
