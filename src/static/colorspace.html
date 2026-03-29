@@ -8,7 +8,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        outline: 1px solid #ccc;
+        /* outline: 1px solid #ccc; */
     }
 
     .canvas_container canvas {
@@ -22,11 +22,41 @@
         /* border-radius: 8px; */
         /* box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.15); */
     }
+
+    .channel_div {
+        position: absolute;
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .channel_container {
+        /* outline: 1px solid #ccc; */
+        flex: 1;
+    }
+
+    .input-pair {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 4px;
+    }
+
+    .input-pair input[type="number"] {
+        width: 80px;
+        text-align: center;
+    }
 </style>
 
 <div class="container-fluid">
     <div class="col-md-12">
         <img id="base_image" style="display: none;">
+        <div class="channel_div">
+            <div class="channel_container" id="channel0"></div>
+            <div class="channel_container" id="channel1"></div>
+            <div class="channel_container" id="channel2"></div>
+        </div>
         <div class="canvas_container" id="source"><canvas></canvas></div>
         <div class="canvas_container" id="c1"><canvas></canvas></div>
         <div class="canvas_container" id="c2"><canvas></canvas></div>
@@ -65,9 +95,9 @@
     };
 
     const channelSettings = [
-        { mode: 'gaussian', amount: 0 },
-        { mode: 'gaussian', amount: 10 },
-        { mode: 'gaussian', amount: 10 },
+        { mode: 'none', amount: 0 },
+        { mode: 'none', amount: 0 },
+        { mode: 'none', amount: 0 },
     ]
 
     // Full-resolution source buffers
@@ -410,6 +440,12 @@
             div.style.width = `${h2 * 2}px`;
             div.style.height = `${v * 2}px`;
         }
+
+        div = document.querySelector('.channel_div');
+        div.style.left = `${margin}px`;
+        div.style.top = `${margin}px`;
+        div.style.width = `${windowWidth - ih - hpadding - 2 * margin}px`;
+        div.style.height = `${windowHeight - 2 * margin}px`;
 
         resizeVisibleCanvases();
         updateZoomLimits();
@@ -809,6 +845,80 @@
         });
     }
 
+    function buildChannelControls() {
+        for (let i = 0; i < 3; i++) {
+            div = document.querySelector(`#channel${i}`);
+            let ti_name = document.createElement('input');
+            ti_name.type = 'text';
+            ti_name.placeholder = `Channel ${i + 1}`;
+            ti_name.classList.add('form-control');
+            ti_name.classList.add('mb-3');
+            div.append(ti_name);
+
+            for (let k = 0; k < 4; k++) {
+                let container = document.createElement('div');
+                container.classList.add('input-pair');
+                let input = document.createElement('input');
+                input.type = 'number';
+                input.classList.add('form-control');
+                input.min = '-1.0';
+                input.max = '1.0';
+                input.step = '0.001';
+                input.value = base1[k + i * 4];
+                container.append(input);
+                const bases = [base1, base2, base3];
+                const isOffset = k === 3;
+                const min = isOffset ? -128 : -1;
+                const max = isOffset ? 127 : 1;
+                const step = isOffset ? 1 : 0.1;
+
+                input.min = String(min);
+                input.max = String(max);
+                input.step = String(step);
+                input.value = String(bases[i][k]);
+
+                let slider = document.createElement('input');
+                slider.type = 'range';
+                slider.classList.add('form-range');
+                slider.min = String(min);
+                slider.max = String(max);
+                slider.step = String(step);
+                slider.value = input.value;
+                container.append(slider);
+                div.append(container);
+
+                function commitBasisValue(rawValue) {
+                    let val = parseFloat(rawValue);
+                    if (isNaN(val)) return;
+
+                    val = Math.max(min, Math.min(max, val));
+                    bases[i][k] = val;
+
+                    input.value = String(val);
+                    slider.value = String(val);
+
+                    inverseBasis = null;
+                    updateInverseBasis();
+                    decomposeImage();
+                    renderAll();
+                }
+
+                input.addEventListener('input', function() {
+                    slider.value = input.value;
+                });
+
+                input.addEventListener('change', function() {
+                    commitBasisValue(input.value);
+                });
+
+                slider.addEventListener('input', function() {
+                    input.value = slider.value;
+                    commitBasisValue(slider.value);
+                });
+            }
+        }
+    }
+
     window.addEventListener('resize', handleResize);
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -836,6 +946,8 @@
             decomposeImage();
             resetView();
         });
+
+        buildChannelControls();
 
         // loadImage('jpeg/44.jpg');
         loadImage('jpeg/91.jpg');
