@@ -83,8 +83,7 @@
     <div class="col-md-12">
         <img id="base_image" style="display: none;">
 
-        <div class="image_chooser">
-        </div>
+        <div class="image_chooser"></div>
 
         <div class="channel_div">
             <div class="channel_container" id="channel0"></div>
@@ -132,23 +131,22 @@
 </div>
 
 <script>
-    var hpadding = 10;
-    var vpadding = 10;
-    var margin = 10;
-    var width = 128;
-    var height = 128;
+    let hpadding = 10;
+    let vpadding = 10;
+    let margin = 10;
+    let width = 128;
+    let height = 128;
 
-    var base1 = [1.0, 0.0, 0.0, 0];
-    var base2 = [0.0, 1.0, 0.0, 0];
-    var base3 = [0.0, 0.0, 1.0, 0];
+    let base1 = [1.0, 0.0, 0.0, 0];
+    let base2 = [0.0, 1.0, 0.0, 0];
+    let base3 = [0.0, 0.0, 1.0, 0];
     // YCbCr:
-    // var base1 = [0.299, 0.587, 0.114, 16];
-    // var base2 = [-0.169, -0.331, 0.5, 128];
-    // var base3 = [0.5, -0.419, -0.081, 128];
+    // let base1 = [0.299, 0.587, 0.114, 16];
+    // let base2 = [-0.169, -0.331, 0.5, 128];
+    // let base3 = [0.5, -0.419, -0.081, 128];
 
-    var inverseBasis = null;
+    let inverseBasis = null;
 
-    // Shared synchronized viewport
     const viewState = {
         zoom: 1,
         minZoom: 1,
@@ -175,6 +173,8 @@
     let imageSimilarityPercent = 100;
     let meanDeltaE = 0;
 
+    const viewIds = ['source', 'c1', 'c2', 'c3', 'c1m', 'c2m', 'c3m', 'result'];
+
     const buffers = {
         source: document.createElement('canvas'),
         c1: document.createElement('canvas'),
@@ -186,15 +186,15 @@
         result: document.createElement('canvas')
     };
 
-    const viewIds = ['source', 'c1', 'c2', 'c3', 'c1m', 'c2m', 'c3m', 'result'];
+    const bufferContexts = {};
+    const visibleContexts = {};
 
-    // Cached source and channel data
-    let sourcePixels = null;          // RGBA Uint8ClampedArray
-    let sourceImageData = null;       // ImageData
-    let ch1 = null, ch2 = null, ch3 = null;       // raw grayscale channels
-    let ch1m = null, ch2m = null, ch3m = null;    // modified grayscale channels
+    let sourcePixels = null;
+    let sourceImageData = null;
 
-    // Reusable ImageData objects for display
+    let ch1 = null, ch2 = null, ch3 = null;
+    let ch1m = null, ch2m = null, ch3m = null;
+
     let c1ImageData = null;
     let c2ImageData = null;
     let c3ImageData = null;
@@ -203,16 +203,28 @@
     let c3mImageData = null;
     let resultImageData = null;
 
-    // Update scheduling
-    let pipelineQueued = false;
-    let pipelineDirty = false;
+    let blurTmp1 = null;
+    let blurTmp2 = null;
+    let blurTmp3 = null;
+    const gaussianKernelCache = new Map();
 
-    // Track pointers for mouse/touch/pinch
+    let pipelineQueued = false;
+    let renderQueued = false;
+    let metricsTimer = null;
+
+    let decomposeDirty = true;
+    let filterDirty = true;
+    let resultDirty = true;
+    let statsDirty = true;
+    let displayDirty = true;
+    let labelsDirty = true;
+    let metricsDirty = true;
+
     const pointers = new Map();
     let gesture = null;
 
     function clamp255(x) {
-        return Math.max(0, Math.min(255, Math.round(x)));
+        return x < 0 ? 0 : x > 255 ? 255 : x | 0;
     }
 
     function determinant3x3(v1, v2, v3) {
@@ -224,7 +236,7 @@
     }
 
     function inverseMatrix3x3(v1, v2, v3) {
-        let det = determinant3x3(v1, v2, v3);
+        const det = determinant3x3(v1, v2, v3);
         if (Math.abs(det) < 1e-10) return null;
 
         return [
@@ -253,24 +265,8 @@
         }
     }
 
-    function reconstructRgbFromComponents(v1, v2, v3) {
-        if (!inverseBasis) {
-            updateInverseBasis();
-        }
-
-        const c1 = v1 - base1[3];
-        const c2 = v2 - base2[3];
-        const c3 = v3 - base3[3];
-
-        const r = inverseBasis[0][0] * c1 + inverseBasis[0][1] * c2 + inverseBasis[0][2] * c3;
-        const g = inverseBasis[1][0] * c1 + inverseBasis[1][1] * c2 + inverseBasis[1][2] * c3;
-        const b = inverseBasis[2][0] * c1 + inverseBasis[2][1] * c2 + inverseBasis[2][2] * c3;
-
-        return [clamp255(r), clamp255(g), clamp255(b)];
-    }
-
-    function applyBasis(rgbR, rgbG, rgbB, base) {
-        return rgbR * base[0] + rgbG * base[1] + rgbB * base[2] + base[3];
+    function applyBasis(r, g, b, base) {
+        return r * base[0] + g * base[1] + b * base[2] + base[3];
     }
 
     function gaussianKernel1D(radius) {
@@ -278,7 +274,7 @@
 
         const sigma = Math.max(radius / 2, 0.8);
         const size = radius * 2 + 1;
-        const kernel = new Array(size);
+        const kernel = new Float32Array(size);
         let sum = 0;
 
         for (let i = -radius; i <= radius; i++) {
@@ -294,213 +290,11 @@
         return kernel;
     }
 
-    function gaussianBlurGrayArray(src, dst, w, h, radius) {
-        radius = Math.max(0, Math.floor(radius));
-        if (radius <= 0) {
-            dst.set(src);
-            return;
+    function getGaussianKernel(radius) {
+        if (!gaussianKernelCache.has(radius)) {
+            gaussianKernelCache.set(radius, gaussianKernel1D(radius));
         }
-
-        const kernel = gaussianKernel1D(radius);
-        const tmp = new Float32Array(w * h);
-
-        // Horizontal
-        for (let y = 0; y < h; y++) {
-            const row = y * w;
-            for (let x = 0; x < w; x++) {
-                let sum = 0;
-                for (let k = -radius; k <= radius; k++) {
-                    let xx = x + k;
-                    if (xx < 0) xx = 0;
-                    else if (xx >= w) xx = w - 1;
-                    sum += src[row + xx] * kernel[k + radius];
-                }
-                tmp[row + x] = sum;
-            }
-        }
-
-        // Vertical
-        for (let y = 0; y < h; y++) {
-            for (let x = 0; x < w; x++) {
-                let sum = 0;
-                for (let k = -radius; k <= radius; k++) {
-                    let yy = y + k;
-                    if (yy < 0) yy = 0;
-                    else if (yy >= h) yy = h - 1;
-                    sum += tmp[yy * w + x] * kernel[k + radius];
-                }
-                dst[y * w + x] = Math.round(sum);
-            }
-        }
-    }
-
-    function pixelateGrayArray(src, dst, w, h, blockSize) {
-        blockSize = Math.max(1, Math.floor(blockSize));
-        if (blockSize <= 1) {
-            dst.set(src);
-            return;
-        }
-
-        for (let by = 0; by < h; by += blockSize) {
-            for (let bx = 0; bx < w; bx += blockSize) {
-                let sum = 0;
-                let count = 0;
-
-                const yEnd = Math.min(by + blockSize, h);
-                const xEnd = Math.min(bx + blockSize, w);
-
-                for (let y = by; y < yEnd; y++) {
-                    const row = y * w;
-                    for (let x = bx; x < xEnd; x++) {
-                        sum += src[row + x];
-                        count++;
-                    }
-                }
-
-                const v = Math.round(sum / count);
-
-                for (let y = by; y < yEnd; y++) {
-                    const row = y * w;
-                    for (let x = bx; x < xEnd; x++) {
-                        dst[row + x] = v;
-                    }
-                }
-            }
-        }
-    }
-
-    function filterGrayArray(src, dst, w, h, settings) {
-        if (!settings || settings.mode === 'none' || settings.amount <= 0) {
-            dst.set(src);
-            return;
-        }
-
-        if (settings.mode === 'gaussian' && settings.amount > 0) {
-            gaussianBlurGrayArray(src, dst, w, h, settings.amount);
-            return;
-        }
-
-        if (settings.mode === 'pixelate' && settings.amount > 1) {
-            pixelateGrayArray(src, dst, w, h, settings.amount);
-            return;
-        }
-
-        dst.set(src);
-    }
-
-    function channelVariance(c) {
-        const n = c.length;
-        if (n === 0) return 0;
-
-        let mean = 0;
-        for (let i = 0; i < n; i++) {
-            mean += c[i];
-        }
-        mean /= n;
-
-        let varSum = 0;
-        for (let i = 0; i < n; i++) {
-            const d = c[i] - mean;
-            varSum += d * d;
-        }
-
-        return varSum / n;
-    }
-
-    function computeRelativeVarianceStats(a, b, c) {
-        const va = channelVariance(a);
-        const vb = channelVariance(b);
-        const vc = channelVariance(c);
-
-        const total = va + vb + vc;
-
-        if (total <= 1e-12) {
-            return { a: 0, b: 0, c: 0 };
-        }
-
-        return {
-            a: 100 * va / total,
-            b: 100 * vb / total,
-            c: 100 * vc / total
-        };
-    }
-
-    function srgbToLinear(c) {
-        c /= 255;
-        if (c <= 0.04045) return c / 12.92;
-        return Math.pow((c + 0.055) / 1.055, 2.4);
-    }
-
-    function rgbToXyz(r, g, b) {
-        const rl = srgbToLinear(r);
-        const gl = srgbToLinear(g);
-        const bl = srgbToLinear(b);
-
-        // sRGB D65
-        const x = rl * 0.4124564 + gl * 0.3575761 + bl * 0.1804375;
-        const y = rl * 0.2126729 + gl * 0.7151522 + bl * 0.0721750;
-        const z = rl * 0.0193339 + gl * 0.1191920 + bl * 0.9503041;
-
-        return [x, y, z];
-    }
-
-    function xyzToLab(x, y, z) {
-        // D65 reference white
-        const xn = 0.95047;
-        const yn = 1.00000;
-        const zn = 1.08883;
-
-        function f(t) {
-            const delta = 6 / 29;
-            if (t > delta * delta * delta) {
-                return Math.cbrt(t);
-            }
-            return t / (3 * delta * delta) + 4 / 29;
-        }
-
-        const fx = f(x / xn);
-        const fy = f(y / yn);
-        const fz = f(z / zn);
-
-        const L = 116 * fy - 16;
-        const a = 500 * (fx - fy);
-        const b = 200 * (fy - fz);
-
-        return [L, a, b];
-    }
-
-    function rgbToLab(r, g, b) {
-        const xyz = rgbToXyz(r, g, b);
-        return xyzToLab(xyz[0], xyz[1], xyz[2]);
-    }
-
-    function deltaE76(lab1, lab2) {
-        const dL = lab1[0] - lab2[0];
-        const da = lab1[1] - lab2[1];
-        const db = lab1[2] - lab2[2];
-        return Math.sqrt(dL * dL + da * da + db * db);
-    }
-
-    function computeMeanDeltaEFromImageData(dataA, dataB) {
-        const n = dataA.length / 4;
-        if (n === 0) return 0;
-
-        let sum = 0;
-
-        for (let i = 0; i < dataA.length; i += 4) {
-            const labA = rgbToLab(dataA[i], dataA[i + 1], dataA[i + 2]);
-            const labB = rgbToLab(dataB[i], dataB[i + 1], dataB[i + 2]);
-            sum += deltaE76(labA, labB);
-        }
-
-        return sum / n;
-    }
-
-    function deltaEToMatchPercent(meanDeltaE) {
-        // Tune 12 to adjust strictness:
-        // smaller -> harsher scoring
-        // larger  -> more forgiving scoring
-        return 100 * Math.exp(-meanDeltaE / 12);
+        return gaussianKernelCache.get(radius);
     }
 
     function ensureWorkingBuffers() {
@@ -513,6 +307,10 @@
         ch1m = new Uint8ClampedArray(n);
         ch2m = new Uint8ClampedArray(n);
         ch3m = new Uint8ClampedArray(n);
+
+        blurTmp1 = new Float32Array(n);
+        blurTmp2 = new Float32Array(n);
+        blurTmp3 = new Float32Array(n);
 
         c1ImageData = new ImageData(width, height);
         c2ImageData = new ImageData(width, height);
@@ -542,82 +340,180 @@
 
         const src = sourcePixels;
         const n = width * height;
+        const b1 = base1;
+        const b2 = base2;
+        const b3 = base3;
 
         for (let p = 0, i = 0; p < n; p++, i += 4) {
             const r = src[i];
             const g = src[i + 1];
             const b = src[i + 2];
 
-            ch1[p] = clamp255(applyBasis(r, g, b, base1));
-            ch2[p] = clamp255(applyBasis(r, g, b, base2));
-            ch3[p] = clamp255(applyBasis(r, g, b, base3));
+            ch1[p] = clamp255(applyBasis(r, g, b, b1) + 0.5);
+            ch2[p] = clamp255(applyBasis(r, g, b, b2) + 0.5);
+            ch3[p] = clamp255(applyBasis(r, g, b, b3) + 0.5);
         }
     }
 
+    function gaussianBlurGrayArray(src, dst, tmp, w, h, radius) {
+        radius = Math.max(0, Math.floor(radius));
+        if (radius <= 0) {
+            dst.set(src);
+            return;
+        }
+
+        const kernel = getGaussianKernel(radius);
+
+        for (let y = 0; y < h; y++) {
+            const row = y * w;
+            for (let x = 0; x < w; x++) {
+                let sum = 0;
+                for (let k = -radius; k <= radius; k++) {
+                    let xx = x + k;
+                    if (xx < 0) xx = 0;
+                    else if (xx >= w) xx = w - 1;
+                    sum += src[row + xx] * kernel[k + radius];
+                }
+                tmp[row + x] = sum;
+            }
+        }
+
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                let sum = 0;
+                for (let k = -radius; k <= radius; k++) {
+                    let yy = y + k;
+                    if (yy < 0) yy = 0;
+                    else if (yy >= h) yy = h - 1;
+                    sum += tmp[yy * w + x] * kernel[k + radius];
+                }
+                dst[y * w + x] = clamp255(sum + 0.5);
+            }
+        }
+    }
+
+    function pixelateGrayArray(src, dst, w, h, blockSize) {
+        blockSize = Math.max(1, Math.floor(blockSize));
+        if (blockSize <= 1) {
+            dst.set(src);
+            return;
+        }
+
+        for (let by = 0; by < h; by += blockSize) {
+            for (let bx = 0; bx < w; bx += blockSize) {
+                let sum = 0;
+                let count = 0;
+
+                const yEnd = Math.min(by + blockSize, h);
+                const xEnd = Math.min(bx + blockSize, w);
+
+                for (let y = by; y < yEnd; y++) {
+                    const row = y * w;
+                    for (let x = bx; x < xEnd; x++) {
+                        sum += src[row + x];
+                        count++;
+                    }
+                }
+
+                const v = clamp255(sum / count + 0.5);
+
+                for (let y = by; y < yEnd; y++) {
+                    const row = y * w;
+                    for (let x = bx; x < xEnd; x++) {
+                        dst[row + x] = v;
+                    }
+                }
+            }
+        }
+    }
+
+    function filterGrayArray(src, dst, tmp, w, h, settings) {
+        if (!settings || settings.mode === 'none' || settings.amount <= 0) {
+            dst.set(src);
+            return;
+        }
+
+        if (settings.mode === 'gaussian' && settings.amount > 0) {
+            gaussianBlurGrayArray(src, dst, tmp, w, h, settings.amount);
+            return;
+        }
+
+        if (settings.mode === 'pixelate' && settings.amount > 1) {
+            pixelateGrayArray(src, dst, w, h, settings.amount);
+            return;
+        }
+
+        dst.set(src);
+    }
+
     function applyChannelModifications() {
-        filterGrayArray(ch1, ch1m, width, height, channelSettings[0]);
-        filterGrayArray(ch2, ch2m, width, height, channelSettings[1]);
-        filterGrayArray(ch3, ch3m, width, height, channelSettings[2]);
+        filterGrayArray(ch1, ch1m, blurTmp1, width, height, channelSettings[0]);
+        filterGrayArray(ch2, ch2m, blurTmp2, width, height, channelSettings[1]);
+        filterGrayArray(ch3, ch3m, blurTmp3, width, height, channelSettings[2]);
     }
 
     function recomposeFromModifiedChannels() {
         const dst = resultImageData.data;
         const n = width * height;
+        const ib = inverseBasis;
+
+        const b10 = base1[3];
+        const b20 = base2[3];
+        const b30 = base3[3];
+
+        const m1 = ch1m;
+        const m2 = ch2m;
+        const m3 = ch3m;
 
         for (let p = 0, i = 0; p < n; p++, i += 4) {
-            const rgb = reconstructRgbFromComponents(ch1m[p], ch2m[p], ch3m[p]);
-            dst[i] = rgb[0];
-            dst[i + 1] = rgb[1];
-            dst[i + 2] = rgb[2];
+            const c1 = m1[p] - b10;
+            const c2 = m2[p] - b20;
+            const c3 = m3[p] - b30;
+
+            const r = ib[0][0] * c1 + ib[0][1] * c2 + ib[0][2] * c3;
+            const g = ib[1][0] * c1 + ib[1][1] * c2 + ib[1][2] * c3;
+            const b = ib[2][0] * c1 + ib[2][1] * c2 + ib[2][2] * c3;
+
+            dst[i] = clamp255(r + 0.5);
+            dst[i + 1] = clamp255(g + 0.5);
+            dst[i + 2] = clamp255(b + 0.5);
             dst[i + 3] = 255;
         }
     }
 
-    function flushBuffersToCanvases() {
-        fillGrayImageData(ch1, c1ImageData);
-        fillGrayImageData(ch2, c2ImageData);
-        fillGrayImageData(ch3, c3ImageData);
+    function channelVariance(c) {
+        const n = c.length;
+        if (n === 0) return 0;
 
-        fillGrayImageData(ch1m, c1mImageData);
-        fillGrayImageData(ch2m, c2mImageData);
-        fillGrayImageData(ch3m, c3mImageData);
+        let mean = 0;
+        for (let i = 0; i < n; i++) mean += c[i];
+        mean /= n;
 
-        buffers.c1.getContext('2d').putImageData(c1ImageData, 0, 0);
-        buffers.c2.getContext('2d').putImageData(c2ImageData, 0, 0);
-        buffers.c3.getContext('2d').putImageData(c3ImageData, 0, 0);
-
-        buffers.c1m.getContext('2d').putImageData(c1mImageData, 0, 0);
-        buffers.c2m.getContext('2d').putImageData(c2mImageData, 0, 0);
-        buffers.c3m.getContext('2d').putImageData(c3mImageData, 0, 0);
-
-        buffers.result.getContext('2d').putImageData(resultImageData, 0, 0);
-    }
-
-    function updateImageSimilarity() {
-        if (!sourceImageData || !resultImageData) {
-            imageSimilarityPercent = 100;
-            meanDeltaE = 0;
-            return;
+        let varSum = 0;
+        for (let i = 0; i < n; i++) {
+            const d = c[i] - mean;
+            varSum += d * d;
         }
 
-        meanDeltaE = computeMeanDeltaEFromImageData(
-            sourceImageData.data,
-            resultImageData.data
-        );
-
-        imageSimilarityPercent = deltaEToMatchPercent(meanDeltaE);
+        return varSum / n;
     }
 
-    function runPipeline() {
-        pipelineQueued = false;
-        if (!pipelineDirty) return;
-        pipelineDirty = false;
+    function computeRelativeVarianceStats(a, b, c) {
+        const va = channelVariance(a);
+        const vb = channelVariance(b);
+        const vc = channelVariance(c);
 
-        updateInverseBasis();
-        decomposeChannels();
-        applyChannelModifications();
-        recomposeFromModifiedChannels();
+        const total = va + vb + vc;
+        if (total <= 1e-12) return { a: 0, b: 0, c: 0 };
 
+        return {
+            a: 100 * va / total,
+            b: 100 * vb / total,
+            c: 100 * vc / total
+        };
+    }
+
+    function updateStats() {
         const rawStats = computeRelativeVarianceStats(ch1, ch2, ch3);
         channelStats.c1 = rawStats.a;
         channelStats.c2 = rawStats.b;
@@ -627,19 +523,32 @@
         channelStats.c1m = modStats.a;
         channelStats.c2m = modStats.b;
         channelStats.c3m = modStats.c;
-
-        updateImageSimilarity();
-        updateHtmlLabels();
-
-        flushBuffersToCanvases();
-        renderAll();
     }
 
-    function schedulePipeline() {
-        pipelineDirty = true;
-        if (pipelineQueued) return;
-        pipelineQueued = true;
-        requestAnimationFrame(runPipeline);
+    function flushDirtyBuffersToCanvases() {
+        if (decomposeDirty || displayDirty) {
+            fillGrayImageData(ch1, c1ImageData);
+            fillGrayImageData(ch2, c2ImageData);
+            fillGrayImageData(ch3, c3ImageData);
+
+            bufferContexts.c1.putImageData(c1ImageData, 0, 0);
+            bufferContexts.c2.putImageData(c2ImageData, 0, 0);
+            bufferContexts.c3.putImageData(c3ImageData, 0, 0);
+        }
+
+        if (filterDirty || displayDirty) {
+            fillGrayImageData(ch1m, c1mImageData);
+            fillGrayImageData(ch2m, c2mImageData);
+            fillGrayImageData(ch3m, c3mImageData);
+
+            bufferContexts.c1m.putImageData(c1mImageData, 0, 0);
+            bufferContexts.c2m.putImageData(c2mImageData, 0, 0);
+            bufferContexts.c3m.putImageData(c3mImageData, 0, 0);
+        }
+
+        if (resultDirty || displayDirty) {
+            bufferContexts.result.putImageData(resultImageData, 0, 0);
+        }
     }
 
     function updateHtmlLabels() {
@@ -660,6 +569,193 @@
                 label.textContent = `Similarity: ${imageSimilarityPercent.toFixed(1)}%`;
             }
         }
+    }
+
+    function srgbToLinear(c) {
+        c /= 255;
+        if (c <= 0.04045) return c / 12.92;
+        return Math.pow((c + 0.055) / 1.055, 2.4);
+    }
+
+    function rgbToXyz(r, g, b) {
+        const rl = srgbToLinear(r);
+        const gl = srgbToLinear(g);
+        const bl = srgbToLinear(b);
+
+        return [
+            rl * 0.4124564 + gl * 0.3575761 + bl * 0.1804375,
+            rl * 0.2126729 + gl * 0.7151522 + bl * 0.0721750,
+            rl * 0.0193339 + gl * 0.1191920 + bl * 0.9503041
+        ];
+    }
+
+    function xyzToLab(x, y, z) {
+        const xn = 0.95047;
+        const yn = 1.00000;
+        const zn = 1.08883;
+
+        function f(t) {
+            const delta = 6 / 29;
+            const delta3 = delta * delta * delta;
+            if (t > delta3) return Math.cbrt(t);
+            return t / (3 * delta * delta) + 4 / 29;
+        }
+
+        const fx = f(x / xn);
+        const fy = f(y / yn);
+        const fz = f(z / zn);
+
+        return [
+            116 * fy - 16,
+            500 * (fx - fy),
+            200 * (fy - fz)
+        ];
+    }
+
+    function rgbToLab(r, g, b) {
+        const xyz = rgbToXyz(r, g, b);
+        return xyzToLab(xyz[0], xyz[1], xyz[2]);
+    }
+
+    function deltaE76(lab1, lab2) {
+        const dL = lab1[0] - lab2[0];
+        const da = lab1[1] - lab2[1];
+        const db = lab1[2] - lab2[2];
+        return Math.sqrt(dL * dL + da * da + db * db);
+    }
+
+    function computeMeanDeltaESubsampled(dataA, dataB, step = 4) {
+        if (!dataA || !dataB) return 0;
+
+        let sum = 0;
+        let count = 0;
+
+        for (let y = 0; y < height; y += step) {
+            const row = y * width;
+            for (let x = 0; x < width; x += step) {
+                const i = (row + x) * 4;
+
+                const labA = rgbToLab(dataA[i], dataA[i + 1], dataA[i + 2]);
+                const labB = rgbToLab(dataB[i], dataB[i + 1], dataB[i + 2]);
+
+                sum += deltaE76(labA, labB);
+                count++;
+            }
+        }
+
+        return count ? sum / count : 0;
+    }
+
+    function deltaEToMatchPercent(meanDeltaE) {
+        return 100 * Math.exp(-meanDeltaE / 12);
+    }
+
+    function scheduleMetrics() {
+        clearTimeout(metricsTimer);
+        metricsTimer = setTimeout(() => {
+            if (!sourceImageData || !resultImageData) {
+                meanDeltaE = 0;
+                imageSimilarityPercent = 100;
+            } else {
+                meanDeltaE = computeMeanDeltaESubsampled(
+                    sourceImageData.data,
+                    resultImageData.data,
+                    4
+                );
+                imageSimilarityPercent = deltaEToMatchPercent(meanDeltaE);
+            }
+
+            updateHtmlLabels();
+        }, 120);
+    }
+
+    function schedulePipeline() {
+        if (pipelineQueued) return;
+        pipelineQueued = true;
+        requestAnimationFrame(runPipeline);
+    }
+
+    function scheduleRender() {
+        if (renderQueued) return;
+        renderQueued = true;
+        requestAnimationFrame(() => {
+            renderQueued = false;
+            renderAll();
+        });
+    }
+
+    function markBasisDirty() {
+        decomposeDirty = true;
+        filterDirty = true;
+        resultDirty = true;
+        statsDirty = true;
+        displayDirty = true;
+        labelsDirty = true;
+        metricsDirty = true;
+        schedulePipeline();
+    }
+
+    function markFilterDirty() {
+        filterDirty = true;
+        resultDirty = true;
+        statsDirty = true;
+        displayDirty = true;
+        labelsDirty = true;
+        metricsDirty = true;
+        schedulePipeline();
+    }
+
+    function runPipeline() {
+        pipelineQueued = false;
+        if (!sourcePixels || !inverseBasis) return;
+
+        const hadDecomposeDirty = decomposeDirty;
+        const hadFilterDirty = filterDirty;
+        const hadResultDirty = resultDirty;
+        const hadStatsDirty = statsDirty;
+        const hadDisplayDirty = displayDirty;
+        const hadLabelsDirty = labelsDirty;
+        const hadMetricsDirty = metricsDirty;
+
+        if (decomposeDirty) {
+            decomposeChannels();
+        }
+
+        if (filterDirty) {
+            applyChannelModifications();
+        }
+
+        if (resultDirty) {
+            recomposeFromModifiedChannels();
+        }
+
+        if (statsDirty) {
+            updateStats();
+        }
+
+        if (hadDecomposeDirty || hadFilterDirty || hadResultDirty || hadDisplayDirty) {
+            flushDirtyBuffersToCanvases();
+        }
+
+        if (hadStatsDirty || hadLabelsDirty) {
+            updateHtmlLabels();
+        }
+
+        if (hadDecomposeDirty || hadFilterDirty || hadResultDirty || hadDisplayDirty) {
+            renderAll();
+        }
+
+        if (hadMetricsDirty) {
+            scheduleMetrics();
+        }
+
+        decomposeDirty = false;
+        filterDirty = false;
+        resultDirty = false;
+        statsDirty = false;
+        displayDirty = false;
+        labelsDirty = false;
+        metricsDirty = false;
     }
 
     function getCanvasDisplaySize(canvas) {
@@ -747,7 +843,7 @@
         const visibleCanvas = document.querySelector(`#${viewId} canvas`);
         if (!visibleCanvas) return;
 
-        const ctx = visibleCanvas.getContext('2d');
+        const ctx = visibleContexts[viewId];
         const srcCanvas = buffers[viewId];
         const dpr = window.devicePixelRatio || 1;
         const size = getCanvasDisplaySize(visibleCanvas);
@@ -757,9 +853,7 @@
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, dw, dh);
 
-        if (!srcCanvas || !srcCanvas.width || !srcCanvas.height) {
-            return;
-        }
+        if (!srcCanvas || !srcCanvas.width || !srcCanvas.height) return;
 
         const scale = getEffectiveScale(visibleCanvas);
         const sw = dw / scale;
@@ -778,18 +872,20 @@
     }
 
     function renderAll() {
-        viewIds.forEach(renderView);
+        for (const id of viewIds) {
+            renderView(id);
+        }
     }
 
     function handleResize() {
-        let windowWidth = window.innerWidth;
-        let windowHeight = window.innerHeight;
-        let ih = (windowWidth - 2 * margin) * 0.5;
-        let iv = windowHeight - 2 * margin;
-        let h = (ih - hpadding) / 6.0;
-        let h2 = (ih - hpadding * 2) / 6.0;
-        let v = (iv - vpadding * 2) / 7.0;
-        let imageChooserHeight = 96;
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        const ih = (windowWidth - 2 * margin) * 0.5;
+        const iv = windowHeight - 2 * margin;
+        const h = (ih - hpadding) / 6.0;
+        const h2 = (ih - hpadding * 2) / 6.0;
+        const v = (iv - vpadding * 2) / 7.0;
+        const imageChooserHeight = 96;
 
         let div = document.querySelector('#source');
         div.style.left = `${windowWidth - margin - h * 6 - hpadding}px`;
@@ -823,7 +919,6 @@
         div.style.left = `${margin}px`;
         div.style.top = `${margin + imageChooserHeight + vpadding}px`;
         div.style.width = `${windowWidth - ih - hpadding - 2 * margin}px`;
-        // div.style.height = `${windowHeight - 2 * margin}px`;
 
         div = document.querySelector('.image_chooser');
         div.style.left = `${margin}px`;
@@ -834,7 +929,7 @@
         resizeVisibleCanvases();
         updateZoomLimits();
         clampView();
-        renderAll();
+        scheduleRender();
     }
 
     function loadImage(src) {
@@ -880,7 +975,7 @@
         viewState.cy = before.y - ((py / size.h) - 0.5) * sh;
 
         clampView();
-        renderAll();
+        scheduleRender();
     }
 
     function panByScreenDelta(canvas, dx, dy) {
@@ -888,7 +983,7 @@
         viewState.cx -= dx / scale;
         viewState.cy -= dy / scale;
         clampView();
-        renderAll();
+        scheduleRender();
     }
 
     function getTwoPointers() {
@@ -922,7 +1017,6 @@
             canvas,
             startDistance: distance(p1, p2),
             startZoom: viewState.zoom,
-            startMid: mid,
             anchorImageX: anchor.x,
             anchorImageY: anchor.y
         };
@@ -955,7 +1049,7 @@
         viewState.cy = gesture.anchorImageY - ((py / size.h) - 0.5) * sh;
 
         clampView();
-        renderAll();
+        scheduleRender();
     }
 
     function attachInteractions(canvas) {
@@ -1023,6 +1117,7 @@
     function setupInteractions() {
         viewIds.forEach(id => {
             const canvas = document.querySelector(`#${id} canvas`);
+            visibleContexts[id] = canvas.getContext('2d');
             attachInteractions(canvas);
         });
     }
@@ -1039,15 +1134,13 @@
             const div = document.querySelector(`#channel${i}`);
 
             for (let k = 0; k < 4; k++) {
-                if (k === 3) {
-                    div.append(document.createElement('hr'));
-                }
+                if (k === 3) div.append(document.createElement('hr'));
 
-                let container = document.createElement('div');
+                const container = document.createElement('div');
                 container.classList.add('input-pair');
 
-                let label = ['R', 'G', 'B', 'Bias'][k];
-                let p = document.createElement('p');
+                const label = ['R', 'G', 'B', 'Bias'][k];
+                const p = document.createElement('p');
                 p.textContent = label;
                 container.append(p);
 
@@ -1056,7 +1149,7 @@
                 const max = isOffset ? 128 : 1;
                 const step = isOffset ? 16 : 0.1;
 
-                let input = document.createElement('input');
+                const input = document.createElement('input');
                 input.type = 'text';
                 input.classList.add('form-control');
                 input.min = String(min);
@@ -1066,7 +1159,7 @@
                 container.append(input);
                 enableAutoSelect(input);
 
-                let slider = document.createElement('input');
+                const slider = document.createElement('input');
                 slider.type = 'range';
                 slider.classList.add('form-range');
                 slider.min = String(min);
@@ -1078,12 +1171,12 @@
                 div.append(container);
 
                 function clampBasisValue(rawValue) {
-                    let val = parseFloat(rawValue);
-                    if (isNaN(val)) return null;
+                    const val = parseFloat(rawValue);
+                    if (Number.isNaN(val)) return null;
                     return Math.max(min, Math.min(max, val));
                 }
 
-                function commitBasisValue(rawValue, schedule = true) {
+                function commitBasisValue(rawValue) {
                     const val = clampBasisValue(rawValue);
                     if (val === null) return;
 
@@ -1092,40 +1185,35 @@
                     slider.value = String(val);
 
                     inverseBasis = null;
-
-                    if (schedule) {
-                        schedulePipeline();
-                    }
+                    updateInverseBasis();
+                    markBasisDirty();
                 }
 
                 input.addEventListener('input', function() {
                     const val = clampBasisValue(input.value);
-                    if (val !== null) {
-                        slider.value = String(val);
-                    }
+                    if (val !== null) slider.value = String(val);
                 });
 
                 input.addEventListener('change', function() {
-                    commitBasisValue(input.value, true);
+                    commitBasisValue(input.value);
                 });
 
                 slider.addEventListener('input', function() {
                     input.value = slider.value;
-                    commitBasisValue(slider.value, true);
+                    commitBasisValue(slider.value);
                 });
             }
 
-            // Blur control for this channel
             div.append(document.createElement('hr'));
 
-            let blurContainer = document.createElement('div');
+            const blurContainer = document.createElement('div');
             blurContainer.classList.add('input-pair');
 
-            let blurLabel = document.createElement('p');
+            const blurLabel = document.createElement('p');
             blurLabel.textContent = 'Blur';
             blurContainer.append(blurLabel);
 
-            let blurInput = document.createElement('input');
+            const blurInput = document.createElement('input');
             blurInput.type = 'text';
             blurInput.classList.add('form-control');
             blurInput.min = '0';
@@ -1134,7 +1222,7 @@
             blurInput.value = String(channelSettings[i].amount);
             blurContainer.append(blurInput);
 
-            let blurSlider = document.createElement('input');
+            const blurSlider = document.createElement('input');
             blurSlider.type = 'range';
             blurSlider.classList.add('form-range');
             blurSlider.min = '0';
@@ -1146,8 +1234,8 @@
             div.append(blurContainer);
 
             function clampBlurValue(rawValue) {
-                let val = parseInt(rawValue, 10);
-                if (isNaN(val)) return null;
+                const val = parseInt(rawValue, 10);
+                if (Number.isNaN(val)) return null;
                 return Math.max(0, Math.min(16, val));
             }
 
@@ -1161,14 +1249,12 @@
                 blurInput.value = String(val);
                 blurSlider.value = String(val);
 
-                schedulePipeline();
+                markFilterDirty();
             }
 
             blurInput.addEventListener('input', function() {
                 const val = clampBlurValue(blurInput.value);
-                if (val !== null) {
-                    blurSlider.value = String(val);
-                }
+                if (val !== null) blurSlider.value = String(val);
             });
 
             blurInput.addEventListener('change', function() {
@@ -1179,41 +1265,67 @@
                 blurInput.value = blurSlider.value;
                 commitBlurValue(blurSlider.value);
             });
+
             enableAutoSelect(blurInput);
         }
+    }
+
+    function initBufferContexts() {
+        viewIds.forEach(id => {
+            const opts = id === 'source' ? { willReadFrequently: true } : undefined;
+            bufferContexts[id] = buffers[id].getContext('2d', opts);
+        });
+    }
+
+    function loadCurrentImageIntoPipeline() {
+        const baseImage = document.getElementById('base_image');
+
+        width = baseImage.naturalWidth;
+        height = baseImage.naturalHeight;
+
+        Object.values(buffers).forEach(c => {
+            c.width = width;
+            c.height = height;
+        });
+
+        const ctx = bufferContexts.source;
+        ctx.clearRect(0, 0, width, height);
+        ctx.drawImage(baseImage, 0, 0, width, height);
+
+        sourceImageData = ctx.getImageData(0, 0, width, height);
+        sourcePixels = sourceImageData.data;
+
+        ensureWorkingBuffers();
+        updateInverseBasis();
+
+        decomposeDirty = true;
+        filterDirty = true;
+        resultDirty = true;
+        statsDirty = true;
+        displayDirty = true;
+        labelsDirty = true;
+        metricsDirty = true;
+
+        schedulePipeline();
+        resetView();
     }
 
     window.addEventListener('resize', handleResize);
 
     document.addEventListener('DOMContentLoaded', function() {
+        initBufferContexts();
         handleResize();
         setupInteractions();
         buildChannelControls();
+        updateInverseBasis();
 
-        let base_image = document.getElementById('base_image');
+        const baseImage = document.getElementById('base_image');
 
-        base_image.addEventListener('load', function() {
-            width = base_image.naturalWidth;
-            height = base_image.naturalHeight;
-
-            Object.values(buffers).forEach(c => {
-                c.width = width;
-                c.height = height;
-            });
-
-            const ctx = buffers.source.getContext('2d');
-            ctx.clearRect(0, 0, width, height);
-            ctx.drawImage(base_image, 0, 0, width, height);
-
-            sourceImageData = ctx.getImageData(0, 0, width, height);
-            sourcePixels = sourceImageData.data;
-
-            ensureWorkingBuffers();
-            schedulePipeline();
-            resetView();
+        baseImage.addEventListener('load', function() {
+            loadCurrentImageIntoPipeline();
         });
 
-        let images = [
+        const images = [
             'jpeg/25.jpg',
             'jpeg/30.jpg',
             'jpeg/33.jpg',
@@ -1222,9 +1334,9 @@
             'jpeg/91.jpg',
         ];
 
-        let imageChooser = document.querySelector('.image_chooser');
-        for (let imgSrc of images) {
-            let img = document.createElement('img');
+        const imageChooser = document.querySelector('.image_chooser');
+        for (const imgSrc of images) {
+            const img = document.createElement('img');
             img.src = imgSrc;
             img.style.maxHeight = '100%';
             img.style.cursor = 'pointer';
@@ -1233,9 +1345,8 @@
             });
             imageChooser.append(img);
         }
+
         const firstImage = imageChooser.querySelector('img');
-        if (firstImage) {
-            firstImage.click();
-        }
+        if (firstImage) firstImage.click();
     });
 </script>
