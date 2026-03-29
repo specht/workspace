@@ -141,10 +141,10 @@
     var base1 = [1.0, 0.0, 0.0, 0];
     var base2 = [0.0, 1.0, 0.0, 0];
     var base3 = [0.0, 0.0, 1.0, 0];
-    // YCbCr examples:
-    var base1 = [0.299, 0.587, 0.114, 16];
-    var base2 = [-0.169, -0.331, 0.5, 128];
-    var base3 = [0.5, -0.419, -0.081, 128];
+    // YCbCr:
+    // var base1 = [0.299, 0.587, 0.114, 16];
+    // var base2 = [-0.169, -0.331, 0.5, 128];
+    // var base3 = [0.5, -0.419, -0.081, 128];
 
     var inverseBasis = null;
 
@@ -159,8 +159,8 @@
 
     const channelSettings = [
         { mode: 'gaussian', amount: 0 },
-        { mode: 'gaussian', amount: 10 },
-        { mode: 'gaussian', amount: 10 },
+        { mode: 'gaussian', amount: 0 },
+        { mode: 'gaussian', amount: 0 },
     ];
 
     let channelStats = {
@@ -1027,6 +1027,11 @@
         });
     }
 
+    function enableAutoSelect(el) {
+        el.addEventListener('focus', () => el.select());
+        el.addEventListener('click', () => el.select());
+    }
+
     function buildChannelControls() {
         const bases = [base1, base2, base3];
 
@@ -1059,6 +1064,7 @@
                 input.step = String(step);
                 input.value = String(bases[i][k]);
                 container.append(input);
+                enableAutoSelect(input);
 
                 let slider = document.createElement('input');
                 slider.type = 'range';
@@ -1173,6 +1179,7 @@
                 blurInput.value = blurSlider.value;
                 commitBlurValue(blurSlider.value);
             });
+            enableAutoSelect(blurInput);
         }
     }
 
