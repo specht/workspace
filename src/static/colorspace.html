@@ -8,17 +8,18 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        outline: 1px solid #ccc;
+        /* outline: 1px solid #ccc; */
     }
 
     .canvas_container canvas {
         display: block;
-        background-color: #f0f0f0;
+        touch-action: none;
+        /* background-color: #f0f0f0; */
         width: auto;
         height: auto;
         max-width: 100%;
         max-height: 100%;
-        border-radius: 8px;
+        /* border-radius: 8px; */
         /* box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.15); */
     }
 </style>
@@ -39,20 +40,53 @@
 
 <script>
     var hpadding = 100;
-    var vpadding = 25;
+    var vpadding = 50;
     var margin = 25;
     var width = 128;
     var height = 128;
 
-    // Basis vectors for decomposition
-    // var base1 = [1.0, 0.0, 0.0, 0];
-    // var base2 = [0.0, 1.0, 0.0, 0];
-    // var base3 = [0.0, 0.0, 1.0, 0];
-
+    var base1 = [1.0, 0.0, 0.0, 0];
+    var base2 = [0.0, 1.0, 0.0, 0];
+    var base3 = [0.0, 0.0, 1.0, 0];
     // YCbCr color space basis vectors
-    var base1 = [0.299, 0.587, 0.114, 0];       // Y  (luminance)
-    var base2 = [-0.169, -0.331, 0.5, 128];     // Cb (blue chrominance)
-    var base3 = [0.5, -0.419, -0.081, 128];     // Cr (red chrominance)
+    // var base1 = [0.299, 0.587, 0.114, 16];       // Y
+    // var base2 = [-0.169, -0.331, 0.5, 128];     // Cb
+    // var base3 = [0.5, -0.419, -0.081, 128];     // Cr
+
+    var inverseBasis = null;
+
+    // Shared synchronized viewport
+    const viewState = {
+        scale: 1,       // screen px per image px
+        minScale: 1,
+        maxScale: 64,
+        cx: 0,          // viewport center in image coordinates
+        cy: 0
+    };
+
+    const channelSettings = [
+        { mode: 'gaussian', amount: 0 },
+        { mode: 'pixelate', amount: 0 },
+        { mode: 'pixelate', amount: 0 },
+    ]    
+
+    // Full-resolution source buffers
+    const buffers = {
+        source: document.createElement('canvas'),
+        c1: document.createElement('canvas'),
+        c2: document.createElement('canvas'),
+        c3: document.createElement('canvas'),
+        c1m: document.createElement('canvas'),
+        c2m: document.createElement('canvas'),
+        c3m: document.createElement('canvas'),
+        result: document.createElement('canvas')
+    };
+
+    const viewIds = ['source', 'c1', 'c2', 'c3', 'c1m', 'c2m', 'c3m', 'result'];
+
+    // Track pointers for mouse/touch/pinch
+    const pointers = new Map();
+    let gesture = null;
 
     function determinant3x3(v1, v2, v3) {
         return (
@@ -65,7 +99,7 @@
     function inverseMatrix3x3(v1, v2, v3) {
         let det = determinant3x3(v1, v2, v3);
         if (Math.abs(det) < 1e-10) return null;
-        
+
         let inv = [
             [(v2[1] * v3[2] - v2[2] * v3[1]) / det, (v1[2] * v3[1] - v1[1] * v3[2]) / det, (v1[1] * v2[2] - v1[2] * v2[1]) / det],
             [(v2[2] * v3[0] - v2[0] * v3[2]) / det, (v1[0] * v3[2] - v1[2] * v3[0]) / det, (v1[2] * v2[0] - v1[0] * v2[2]) / det],
@@ -73,6 +107,254 @@
         ];
         return inv;
     }
+
+    function updateInverseBasis() {
+        inverseBasis = inverseMatrix3x3(base1, base2, base3);
+        if (!inverseBasis) {
+            throw new Error('Basis vectors are not invertible.');
+        }
+    }
+
+    function reconstructRgbFromComponents(v1, v2, v3) {
+        if (!inverseBasis) {
+            updateInverseBasis();
+        }
+
+        // Remove affine offsets first
+        const c1 = v1 - base1[3];
+        const c2 = v2 - base2[3];
+        const c3 = v3 - base3[3];
+
+        // Solve:
+        // [c1]   [b1x b1y b1z] [r]
+        // [c2] = [b2x b2y b2z] [g]
+        // [c3]   [b3x b3y b3z] [b]
+        //
+        // so [r g b]^T = inverseBasis * [c1 c2 c3]^T
+        const r = inverseBasis[0][0] * c1 + inverseBasis[0][1] * c2 + inverseBasis[0][2] * c3;
+        const g = inverseBasis[1][0] * c1 + inverseBasis[1][1] * c2 + inverseBasis[1][2] * c3;
+        const b = inverseBasis[2][0] * c1 + inverseBasis[2][1] * c2 + inverseBasis[2][2] * c3;
+
+        return [
+            clamp255(r),
+            clamp255(g),
+            clamp255(b)
+        ];
+    }
+
+    function copyImageData(img) {
+        return new ImageData(new Uint8ClampedArray(img.data), img.width, img.height);
+    }
+
+    function gaussianKernel1D(radius) {
+        if (radius <= 0) return [1];
+
+        const sigma = Math.max(radius / 2, 0.8);
+        const size = radius * 2 + 1;
+        const kernel = new Array(size);
+        let sum = 0;
+
+        for (let i = -radius; i <= radius; i++) {
+            const v = Math.exp(-(i * i) / (2 * sigma * sigma));
+            kernel[i + radius] = v;
+            sum += v;
+        }
+
+        for (let i = 0; i < size; i++) {
+            kernel[i] /= sum;
+        }
+
+        return kernel;
+    }
+
+    function gaussianBlurGray(imageData, radius) {
+        radius = Math.max(0, Math.floor(radius));
+        if (radius <= 0) return copyImageData(imageData);
+
+        const w = imageData.width;
+        const h = imageData.height;
+        const src = imageData.data;
+        const tmp = new Uint8ClampedArray(src.length);
+        const out = new Uint8ClampedArray(src.length);
+        const kernel = gaussianKernel1D(radius);
+
+        // Horizontal pass
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                let sum = 0;
+                let alpha = 0;
+
+                for (let k = -radius; k <= radius; k++) {
+                    let xx = Math.max(0, Math.min(w - 1, x + k));
+                    let idx = 4 * (y * w + xx);
+                    let weight = kernel[k + radius];
+                    sum += src[idx] * weight;
+                    alpha += src[idx + 3] * weight;
+                }
+
+                let outIdx = 4 * (y * w + x);
+                let v = Math.round(sum);
+                tmp[outIdx] = v;
+                tmp[outIdx + 1] = v;
+                tmp[outIdx + 2] = v;
+                tmp[outIdx + 3] = Math.round(alpha);
+            }
+        }
+
+        // Vertical pass
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                let sum = 0;
+                let alpha = 0;
+
+                for (let k = -radius; k <= radius; k++) {
+                    let yy = Math.max(0, Math.min(h - 1, y + k));
+                    let idx = 4 * (yy * w + x);
+                    let weight = kernel[k + radius];
+                    sum += tmp[idx] * weight;
+                    alpha += tmp[idx + 3] * weight;
+                }
+
+                let outIdx = 4 * (y * w + x);
+                let v = Math.round(sum);
+                out[outIdx] = v;
+                out[outIdx + 1] = v;
+                out[outIdx + 2] = v;
+                out[outIdx + 3] = Math.round(alpha);
+            }
+        }
+
+        return new ImageData(out, w, h);
+    }
+
+    function pixelateGray(imageData, blockSize) {
+        blockSize = Math.max(1, Math.floor(blockSize));
+        if (blockSize <= 1) return copyImageData(imageData);
+
+        const w = imageData.width;
+        const h = imageData.height;
+        const src = imageData.data;
+        const out = new Uint8ClampedArray(src.length);
+
+        for (let by = 0; by < h; by += blockSize) {
+            for (let bx = 0; bx < w; bx += blockSize) {
+                let sum = 0;
+                let alpha = 0;
+                let count = 0;
+
+                for (let y = by; y < Math.min(by + blockSize, h); y++) {
+                    for (let x = bx; x < Math.min(bx + blockSize, w); x++) {
+                        const idx = 4 * (y * w + x);
+                        sum += src[idx];
+                        alpha += src[idx + 3];
+                        count++;
+                    }
+                }
+
+                const v = Math.round(sum / count);
+                const a = Math.round(alpha / count);
+
+                for (let y = by; y < Math.min(by + blockSize, h); y++) {
+                    for (let x = bx; x < Math.min(bx + blockSize, w); x++) {
+                        const idx = 4 * (y * w + x);
+                        out[idx] = v;
+                        out[idx + 1] = v;
+                        out[idx + 2] = v;
+                        out[idx + 3] = a;
+                    }
+                }
+            }
+        }
+
+        return new ImageData(out, w, h);
+    }
+
+    function filterGrayImage(imageData, settings) {
+        if (!settings || settings.mode === 'none' || settings.amount <= 0) {
+            return copyImageData(imageData);
+        }
+
+        if (settings.mode === 'gaussian') {
+            return gaussianBlurGray(imageData, settings.amount);
+        }
+
+        if (settings.mode === 'pixelate') {
+            return pixelateGray(imageData, settings.amount);
+        }
+
+        return copyImageData(imageData);
+    }
+
+    function channelValueAt(data, i) {
+        return data[i]; // grayscale, so R=G=B
+    }
+
+    function updateInverseBasis() {
+        inverseBasis = inverseMatrix3x3(base1, base2, base3);
+        if (!inverseBasis) {
+            throw new Error('Basis vectors are not invertible.');
+        }
+    }
+
+    function reconstructRgbFromComponents(v1, v2, v3) {
+        if (!inverseBasis) {
+            updateInverseBasis();
+        }
+
+        // Remove affine offsets first
+        const c1 = v1 - base1[3];
+        const c2 = v2 - base2[3];
+        const c3 = v3 - base3[3];
+
+        // Solve:
+        // [c1]   [b1x b1y b1z] [r]
+        // [c2] = [b2x b2y b2z] [g]
+        // [c3]   [b3x b3y b3z] [b]
+        //
+        // so [r g b]^T = inverseBasis * [c1 c2 c3]^T
+        const r = inverseBasis[0][0] * c1 + inverseBasis[0][1] * c2 + inverseBasis[0][2] * c3;
+        const g = inverseBasis[1][0] * c1 + inverseBasis[1][1] * c2 + inverseBasis[1][2] * c3;
+        const b = inverseBasis[2][0] * c1 + inverseBasis[2][1] * c2 + inverseBasis[2][2] * c3;
+
+        return [
+            clamp255(r),
+            clamp255(g),
+            clamp255(b)
+        ];
+    }
+
+    function recomposeFromModifiedChannels() {
+        const c1ctx = buffers.c1m.getContext('2d');
+        const c2ctx = buffers.c2m.getContext('2d');
+        const c3ctx = buffers.c3m.getContext('2d');
+        const resultCtx = buffers.result.getContext('2d');
+
+        const img1 = c1ctx.getImageData(0, 0, width, height);
+        const img2 = c2ctx.getImageData(0, 0, width, height);
+        const img3 = c3ctx.getImageData(0, 0, width, height);
+
+        const d1 = img1.data;
+        const d2 = img2.data;
+        const d3 = img3.data;
+
+        const out = resultCtx.createImageData(width, height);
+        const dst = out.data;
+
+        for (let i = 0; i < dst.length; i += 4) {
+            const v1 = channelValueAt(d1, i);
+            const v2 = channelValueAt(d2, i);
+            const v3 = channelValueAt(d3, i);
+
+            const rgb = reconstructRgbFromComponents(v1, v2, v3);
+
+            dst[i] = rgb[0];
+            dst[i + 1] = rgb[1];
+            dst[i + 2] = rgb[2];
+            dst[i + 3] = 255;
+        }
+
+        resultCtx.putImageData(out, 0, 0);
+    }    
 
     function handleResize() {
         let windowWidth = window.innerWidth;
@@ -107,6 +389,11 @@
         div.style.top = `${margin + h + vpadding}px`;
         div.style.width = `${w}px`;
         div.style.height = `${h}px`;
+
+        resizeVisibleCanvases();
+        updateMinScale();
+        clampView();
+        renderAll();
     }
 
     function loadImage(src) {
@@ -116,10 +403,6 @@
 
     function dot(a, b) {
         return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-    }
-
-    function scale(v, s) {
-        return [v[0] * s, v[1] * s, v[2] * s];
     }
 
     function normalize(v) {
@@ -141,29 +424,161 @@
         );
     }
 
+    function resizeVisibleCanvases() {
+        viewIds.forEach(id => {
+            const container = document.getElementById(id);
+            const canvas = container.querySelector('canvas');
+            const rect = container.getBoundingClientRect();
+
+            const dpr = window.devicePixelRatio || 1;
+            const displayWidth = Math.max(1, Math.round(rect.width));
+            const displayHeight = Math.max(1, Math.round(rect.height));
+
+            canvas.width = Math.round(displayWidth * dpr);
+            canvas.height = Math.round(displayHeight * dpr);
+            canvas.style.width = `${displayWidth}px`;
+            canvas.style.height = `${displayHeight}px`;
+        });
+    }
+
+    function getReferenceCanvas() {
+        return document.querySelector('#source canvas');
+    }
+
+    function getCanvasSize(canvas) {
+        const dpr = window.devicePixelRatio || 1;
+        return {
+            w: canvas.width / dpr,
+            h: canvas.height / dpr
+        };
+    }
+
+    function updateMinScale() {
+        if (!width || !height) return;
+
+        const canvas = getReferenceCanvas();
+        if (!canvas) return;
+
+        const size = getCanvasSize(canvas);
+        viewState.minScale = Math.min(size.w / width, size.h / height);
+        viewState.maxScale = Math.max(viewState.minScale, 64);
+        viewState.scale = Math.max(viewState.minScale, Math.min(viewState.maxScale, viewState.scale || viewState.minScale));
+    }
+
+    function resetView() {
+        viewState.cx = width / 2;
+        viewState.cy = height / 2;
+        updateMinScale();
+        viewState.scale = viewState.minScale;
+        clampView();
+        renderAll();
+    }
+
+    function clampView() {
+        const canvas = getReferenceCanvas();
+        if (!canvas) return;
+
+        const size = getCanvasSize(canvas);
+        const halfW = size.w / (2 * viewState.scale);
+        const halfH = size.h / (2 * viewState.scale);
+
+        // If whole image fits, keep centered and prevent panning outside
+        if (halfW * 2 >= width) {
+            viewState.cx = width / 2;
+        } else {
+            viewState.cx = Math.max(halfW, Math.min(width - halfW, viewState.cx));
+        }
+
+        if (halfH * 2 >= height) {
+            viewState.cy = height / 2;
+        } else {
+            viewState.cy = Math.max(halfH, Math.min(height - halfH, viewState.cy));
+        }
+    }
+
+    function renderView(viewId) {
+        const visibleCanvas = document.querySelector(`#${viewId} canvas`);
+        if (!visibleCanvas) return;
+
+        const ctx = visibleCanvas.getContext('2d');
+        const srcCanvas = buffers[viewId];
+        const dpr = window.devicePixelRatio || 1;
+        const dw = visibleCanvas.width / dpr;
+        const dh = visibleCanvas.height / dpr;
+
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, dw, dh);
+
+        if (!srcCanvas || !srcCanvas.width || !srcCanvas.height) {
+            return;
+        }
+
+        const sw = dw / viewState.scale;
+        const sh = dh / viewState.scale;
+        const sx = viewState.cx - sw / 2;
+        const sy = viewState.cy - sh / 2;
+
+        // Use nearest-neighbor when zooming in enough to make pixels obvious
+        ctx.imageSmoothingEnabled = !(viewState.scale > viewState.minScale * 4);
+        ctx.imageSmoothingQuality = 'low';
+
+        ctx.drawImage(
+            srcCanvas,
+            sx, sy, sw, sh,
+            0, 0, dw, dh
+        );
+    }
+
+    function renderAll() {
+        viewIds.forEach(renderView);
+    }
+
+    function applyChannelModifications() {
+        for (let k = 0; k < 3; k++) {
+            const srcCanvas = buffers[`c${k + 1}`];
+            const dstCanvas = buffers[`c${k + 1}m`];
+
+            const srcCtx = srcCanvas.getContext('2d');
+            const dstCtx = dstCanvas.getContext('2d');
+
+            const srcImage = srcCtx.getImageData(0, 0, width, height);
+            const filtered = filterGrayImage(srcImage, channelSettings[k]);
+
+            dstCtx.putImageData(filtered, 0, 0);
+        }
+
+        recomposeFromModifiedChannels();
+        renderAll();
+    }    
+
     function decomposeImage() {
-        let sourceCanvas = document.querySelector('#source canvas');
-        let sourceCtx = sourceCanvas.getContext('2d');
-        let srcImageData = sourceCtx.getImageData(0, 0, width, height);
-        let src = srcImageData.data;
+        const sourceCanvas = buffers.source;
+        const sourceCtx = sourceCanvas.getContext('2d');
+        const srcImageData = sourceCtx.getImageData(0, 0, width, height);
+        const src = srcImageData.data;
 
-        let canvases = [
-            document.querySelector('#c1 canvas'),
-            document.querySelector('#c2 canvas'),
-            document.querySelector('#c3 canvas')
-        ];
+        const rawTargets = [buffers.c1, buffers.c2, buffers.c3];
+        rawTargets.forEach(c => {
+            c.width = width;
+            c.height = height;
+        });
 
-        let ctxs = canvases.map(c => c.getContext('2d'));
-        let outImages = ctxs.map(ctx => ctx.createImageData(width, height));
+        ['c1m', 'c2m', 'c3m', 'result'].forEach(id => {
+            buffers[id].width = width;
+            buffers[id].height = height;
+            buffers[id].getContext('2d').clearRect(0, 0, width, height);
+        });
 
-        let bases = [base1, base2, base3];
+        const rawCtxs = rawTargets.map(c => c.getContext('2d'));
+        const rawImages = rawCtxs.map(ctx => ctx.createImageData(width, height));
+        const bases = [base1, base2, base3];
 
         for (let i = 0; i < src.length; i += 4) {
-            let rgb = [src[i], src[i + 1], src[i + 2]];
+            const rgb = [src[i], src[i + 1], src[i + 2]];
 
             for (let k = 0; k < 3; k++) {
-                let v = clamp255(applyBasis(rgb, bases[k]));
-                let out = outImages[k].data;
+                const v = clamp255(applyBasis(rgb, bases[k]));
+                const out = rawImages[k].data;
 
                 out[i] = v;
                 out[i + 1] = v;
@@ -173,13 +588,209 @@
         }
 
         for (let k = 0; k < 3; k++) {
-            ctxs[k].putImageData(outImages[k], 0, 0);
+            rawCtxs[k].putImageData(rawImages[k], 0, 0);
         }
+
+        applyChannelModifications();
     }
+
+    function screenToImage(canvas, clientX, clientY) {
+        const rect = canvas.getBoundingClientRect();
+        const size = getCanvasSize(canvas);
+
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+
+        const sw = size.w / viewState.scale;
+        const sh = size.h / viewState.scale;
+        const sx = viewState.cx - sw / 2;
+        const sy = viewState.cy - sh / 2;
+
+        return {
+            x: sx + (x / size.w) * sw,
+            y: sy + (y / size.h) * sh
+        };
+    }
+
+    function zoomAt(canvas, clientX, clientY, zoomFactor) {
+        const before = screenToImage(canvas, clientX, clientY);
+        const newScale = Math.max(viewState.minScale, Math.min(viewState.maxScale, viewState.scale * zoomFactor));
+
+        if (newScale === viewState.scale) return;
+
+        viewState.scale = newScale;
+
+        const rect = canvas.getBoundingClientRect();
+        const size = getCanvasSize(canvas);
+        const px = clientX - rect.left;
+        const py = clientY - rect.top;
+
+        const sw = size.w / viewState.scale;
+        const sh = size.h / viewState.scale;
+
+        viewState.cx = before.x - ((px / size.w) - 0.5) * sw;
+        viewState.cy = before.y - ((py / size.h) - 0.5) * sh;
+
+        clampView();
+        renderAll();
+    }
+
+    function panByScreenDelta(canvas, dx, dy) {
+        viewState.cx -= dx / viewState.scale;
+        viewState.cy -= dy / viewState.scale;
+        clampView();
+        renderAll();
+    }
+
+    function getTwoPointers() {
+        const vals = Array.from(pointers.values());
+        if (vals.length < 2) return null;
+        return [vals[0], vals[1]];
+    }
+
+    function distance(a, b) {
+        const dx = a.clientX - b.clientX;
+        const dy = a.clientY - b.clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function midpoint(a, b) {
+        return {
+            clientX: (a.clientX + b.clientX) / 2,
+            clientY: (a.clientY + b.clientY) / 2
+        };
+    }
+
+    function startGesture(canvas) {
+        const two = getTwoPointers();
+        if (!two) return;
+
+        const [p1, p2] = two;
+        gesture = {
+            canvas,
+            startDistance: distance(p1, p2),
+            startScale: viewState.scale,
+            startCx: viewState.cx,
+            startCy: viewState.cy,
+            startMid: midpoint(p1, p2)
+        };
+    }
+
+    function updateGesture() {
+        if (!gesture) return;
+        const two = getTwoPointers();
+        if (!two) return;
+
+        const [p1, p2] = two;
+        const mid = midpoint(p1, p2);
+        const newDistance = distance(p1, p2);
+
+        if (gesture.startDistance <= 0) return;
+
+        let newScale = gesture.startScale * (newDistance / gesture.startDistance);
+        newScale = Math.max(viewState.minScale, Math.min(viewState.maxScale, newScale));
+
+        // Pinch around midpoint
+        const before = screenToImage(gesture.canvas, gesture.startMid.clientX, gesture.startMid.clientY);
+        viewState.scale = newScale;
+
+        const rect = gesture.canvas.getBoundingClientRect();
+        const size = getCanvasSize(gesture.canvas);
+        const px = mid.clientX - rect.left;
+        const py = mid.clientY - rect.top;
+
+        const sw = size.w / viewState.scale;
+        const sh = size.h / viewState.scale;
+
+        viewState.cx = before.x - ((px / size.w) - 0.5) * sw;
+        viewState.cy = before.y - ((py / size.h) - 0.5) * sh;
+
+        // Also translate according to midpoint movement
+        const mdx = mid.clientX - gesture.startMid.clientX;
+        const mdy = mid.clientY - gesture.startMid.clientY;
+        viewState.cx -= mdx / viewState.scale;
+        viewState.cy -= mdy / viewState.scale;
+
+        clampView();
+        renderAll();
+    }
+
+    function attachInteractions(canvas) {
+        canvas.addEventListener('wheel', function(e) {
+            e.preventDefault();
+
+            const factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
+            zoomAt(canvas, e.clientX, e.clientY, factor);
+        }, { passive: false });
+
+        canvas.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+            zoomAt(canvas, e.clientX, e.clientY, 2);
+        });
+
+        canvas.addEventListener('pointerdown', function(e) {
+            e.preventDefault();
+            canvas.setPointerCapture(e.pointerId);
+
+            pointers.set(e.pointerId, {
+                pointerId: e.pointerId,
+                clientX: e.clientX,
+                clientY: e.clientY,
+                prevX: e.clientX,
+                prevY: e.clientY
+            });
+
+            if (pointers.size === 2) {
+                startGesture(canvas);
+            }
+        });
+
+        canvas.addEventListener('pointermove', function(e) {
+            if (!pointers.has(e.pointerId)) return;
+
+            const p = pointers.get(e.pointerId);
+            const dx = e.clientX - p.prevX;
+            const dy = e.clientY - p.prevY;
+
+            p.clientX = e.clientX;
+            p.clientY = e.clientY;
+            p.prevX = e.clientX;
+            p.prevY = e.clientY;
+            pointers.set(e.pointerId, p);
+
+            if (pointers.size === 1) {
+                panByScreenDelta(canvas, dx, dy);
+            } else if (pointers.size >= 2) {
+                updateGesture();
+            }
+        });
+
+        function endPointer(e) {
+            pointers.delete(e.pointerId);
+            if (pointers.size < 2) {
+                gesture = null;
+            } else {
+                startGesture(canvas);
+            }
+        }
+
+        canvas.addEventListener('pointerup', endPointer);
+        canvas.addEventListener('pointercancel', endPointer);
+        canvas.addEventListener('pointerleave', function() {});
+    }
+
+    function setupInteractions() {
+        viewIds.forEach(id => {
+            const canvas = document.querySelector(`#${id} canvas`);
+            attachInteractions(canvas);
+        });
+    }
+
     window.addEventListener('resize', handleResize);
 
     document.addEventListener('DOMContentLoaded', function() {
         handleResize();
+        setupInteractions();
 
         let base_image = document.getElementById('base_image');
 
@@ -187,30 +798,22 @@
             width = base_image.naturalWidth;
             height = base_image.naturalHeight;
 
-            let canvas = document.querySelector('#source canvas');
-            let ctx = canvas.getContext('2d');
-            canvas.width = width;
-            canvas.height = height;
+            // Prepare full-res buffers
+            Object.values(buffers).forEach(c => {
+                c.width = width;
+                c.height = height;
+            });
+
+            // Draw source image into full-res source buffer
+            let ctx = buffers.source.getContext('2d');
             ctx.clearRect(0, 0, width, height);
             ctx.drawImage(base_image, 0, 0, width, height);
 
-            for (let y = 0; y < 3; y++) {
-                let c = document.querySelector(`#c${y + 1} canvas`);
-                c.width = width;
-                c.height = height;
-            }
-            for (let y = 0; y < 3; y++) {
-                let c = document.querySelector(`#c${y + 1}m canvas`);
-                c.width = width;
-                c.height = height;
-            }
-            let c = document.querySelector(`#result canvas`);
-            c.width = width;
-            c.height = height;
-
+            updateInverseBasis();
             decomposeImage();
+            resetView();
         });
 
-        loadImage('jpeg/91.jpg');
+        loadImage('jpeg/44.jpg');
     });
 </script>
