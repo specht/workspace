@@ -137,13 +137,13 @@
     let width = 128;
     let height = 128;
 
-    // let base1 = [1.0, 0.0, 0.0, 0];
-    // let base2 = [0.0, 1.0, 0.0, 0];
-    // let base3 = [0.0, 0.0, 1.0, 0];
+    let base1 = [1.0, 0.0, 0.0, 0];
+    let base2 = [0.0, 1.0, 0.0, 0];
+    let base3 = [0.0, 0.0, 1.0, 0];
     // YCbCr:
-    let base1 = [0.299, 0.587, 0.114, 16];
-    let base2 = [-0.169, -0.331, 0.5, 128];
-    let base3 = [0.5, -0.419, -0.081, 128];
+    // base1 = [0.299, 0.587, 0.114, 16];
+    // base2 = [-0.169, -0.331, 0.5, 128];
+    // base3 = [0.5, -0.419, -0.081, 128];
 
     let inverseBasis = null;
 
@@ -1228,7 +1228,7 @@
                 container.append(p);
 
                 const isOffset = k === 3;
-                const min = isOffset ? -128 : -1;
+                const min = isOffset ? 0 : -1;
                 const max = isOffset ? 128 : 1;
                 const step = isOffset ? 16 : 0.1;
 
