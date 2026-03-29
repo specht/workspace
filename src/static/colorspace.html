@@ -47,7 +47,7 @@
         top: 0.4em;
     }
 
-    .input-pair input[type="number"] {
+    .input-pair input[type="text"] {
         width: 80px;
         text-align: center;
     }
@@ -56,6 +56,7 @@
 <div class="container-fluid">
     <div class="col-md-12">
         <img id="base_image" style="display: none;">
+
         <div class="channel_div">
             <div class="channel_container" id="channel0"></div>
             <div class="channel_container" id="channel1"></div>
@@ -100,9 +101,9 @@
     };
 
     const channelSettings = [
-        { mode: 'none', amount: 0 },
-        { mode: 'none', amount: 0 },
-        { mode: 'none', amount: 0 },
+        { mode: 'gaussian', amount: 0 },
+        { mode: 'gaussian', amount: 0 },
+        { mode: 'gaussian', amount: 0 },
     ];
 
     const buffers = {
@@ -813,11 +814,11 @@
 
                 const isOffset = k === 3;
                 const min = isOffset ? -128 : -1;
-                const max = isOffset ? 127 : 1;
-                const step = isOffset ? 1 : 0.1;
+                const max = isOffset ? 128 : 1;
+                const step = isOffset ? 16 : 0.1;
 
                 let input = document.createElement('input');
-                input.type = 'number';
+                input.type = 'text';
                 input.classList.add('form-control');
                 input.min = String(min);
                 input.max = String(max);
