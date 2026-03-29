@@ -8,7 +8,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        /* outline: 1px solid #ccc; */
+        outline: 1px solid #ccc;
     }
 
     .canvas_container canvas {
@@ -49,17 +49,17 @@
     var base2 = [0.0, 1.0, 0.0, 0];
     var base3 = [0.0, 0.0, 1.0, 0];
     // YCbCr color space basis vectors
-    // var base1 = [0.299, 0.587, 0.114, 16];       // Y
-    // var base2 = [-0.169, -0.331, 0.5, 128];     // Cb
-    // var base3 = [0.5, -0.419, -0.081, 128];     // Cr
+    var base1 = [0.299, 0.587, 0.114, 16];       // Y
+    var base2 = [-0.169, -0.331, 0.5, 128];     // Cb
+    var base3 = [0.5, -0.419, -0.081, 128];     // Cr
 
     var inverseBasis = null;
 
     // Shared synchronized viewport
     const viewState = {
-        scale: 1,       // screen px per image px
-        minScale: 1,
-        maxScale: 64,
+        zoom: 1,       // screen px per image px
+        minZoom: 1,
+        maxZoom: 64,
         cx: 0,          // viewport center in image coordinates
         cy: 0
     };
@@ -68,7 +68,7 @@
         { mode: 'gaussian', amount: 0 },
         { mode: 'pixelate', amount: 0 },
         { mode: 'pixelate', amount: 0 },
-    ]    
+    ]
 
     // Full-resolution source buffers
     const buffers = {
@@ -87,6 +87,24 @@
     // Track pointers for mouse/touch/pinch
     const pointers = new Map();
     let gesture = null;
+
+    function getCanvasDisplaySize(canvas) {
+        const dpr = window.devicePixelRatio || 1;
+        return {
+            w: canvas.width / dpr,
+            h: canvas.height / dpr
+        };
+    }
+
+    function getFitScale(canvas) {
+        if (!width || !height) return 1;
+        const size = getCanvasDisplaySize(canvas);
+        return Math.min(size.w / width, size.h / height);
+    }
+
+    function getEffectiveScale(canvas) {
+        return getFitScale(canvas) * viewState.zoom;
+    }    
 
     function determinant3x3(v1, v2, v3) {
         return (
@@ -354,7 +372,7 @@
         }
 
         resultCtx.putImageData(out, 0, 0);
-    }    
+    }
 
     function handleResize() {
         let windowWidth = window.innerWidth;
@@ -391,7 +409,7 @@
         div.style.height = `${h}px`;
 
         resizeVisibleCanvases();
-        updateMinScale();
+        updateZoomLimits();
         clampView();
         renderAll();
     }
@@ -453,46 +471,49 @@
         };
     }
 
-    function updateMinScale() {
-        if (!width || !height) return;
-
-        const canvas = getReferenceCanvas();
-        if (!canvas) return;
-
-        const size = getCanvasSize(canvas);
-        viewState.minScale = Math.min(size.w / width, size.h / height);
-        viewState.maxScale = Math.max(viewState.minScale, 64);
-        viewState.scale = Math.max(viewState.minScale, Math.min(viewState.maxScale, viewState.scale || viewState.minScale));
+    function updateZoomLimits() {
+        viewState.minZoom = 1;
+        viewState.maxZoom = 64;
+        viewState.zoom = Math.max(viewState.minZoom, Math.min(viewState.maxZoom, viewState.zoom || 1));
     }
 
     function resetView() {
         viewState.cx = width / 2;
         viewState.cy = height / 2;
-        updateMinScale();
-        viewState.scale = viewState.minScale;
+        updateZoomLimits();
+        viewState.zoom = 1;
         clampView();
         renderAll();
     }
 
     function clampView() {
-        const canvas = getReferenceCanvas();
-        if (!canvas) return;
+        let maxHalfW = 0;
+        let maxHalfH = 0;
 
-        const size = getCanvasSize(canvas);
-        const halfW = size.w / (2 * viewState.scale);
-        const halfH = size.h / (2 * viewState.scale);
+        viewIds.forEach(id => {
+            const canvas = document.querySelector(`#${id} canvas`);
+            if (!canvas) return;
 
-        // If whole image fits, keep centered and prevent panning outside
-        if (halfW * 2 >= width) {
+            const size = getCanvasDisplaySize(canvas);
+            const scale = getEffectiveScale(canvas);
+
+            const halfW = size.w / (2 * scale);
+            const halfH = size.h / (2 * scale);
+
+            maxHalfW = Math.max(maxHalfW, halfW);
+            maxHalfH = Math.max(maxHalfH, halfH);
+        });
+
+        if (maxHalfW * 2 >= width) {
             viewState.cx = width / 2;
         } else {
-            viewState.cx = Math.max(halfW, Math.min(width - halfW, viewState.cx));
+            viewState.cx = Math.max(maxHalfW, Math.min(width - maxHalfW, viewState.cx));
         }
 
-        if (halfH * 2 >= height) {
+        if (maxHalfH * 2 >= height) {
             viewState.cy = height / 2;
         } else {
-            viewState.cy = Math.max(halfH, Math.min(height - halfH, viewState.cy));
+            viewState.cy = Math.max(maxHalfH, Math.min(height - maxHalfH, viewState.cy));
         }
     }
 
@@ -503,8 +524,9 @@
         const ctx = visibleCanvas.getContext('2d');
         const srcCanvas = buffers[viewId];
         const dpr = window.devicePixelRatio || 1;
-        const dw = visibleCanvas.width / dpr;
-        const dh = visibleCanvas.height / dpr;
+        const size = getCanvasDisplaySize(visibleCanvas);
+        const dw = size.w;
+        const dh = size.h;
 
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, dw, dh);
@@ -513,13 +535,13 @@
             return;
         }
 
-        const sw = dw / viewState.scale;
-        const sh = dh / viewState.scale;
+        const scale = getEffectiveScale(visibleCanvas);
+        const sw = dw / scale;
+        const sh = dh / scale;
         const sx = viewState.cx - sw / 2;
         const sy = viewState.cy - sh / 2;
 
-        // Use nearest-neighbor when zooming in enough to make pixels obvious
-        ctx.imageSmoothingEnabled = !(viewState.scale > viewState.minScale * 4);
+        ctx.imageSmoothingEnabled = !(viewState.zoom > 4);
         ctx.imageSmoothingQuality = 'low';
 
         ctx.drawImage(
@@ -596,13 +618,14 @@
 
     function screenToImage(canvas, clientX, clientY) {
         const rect = canvas.getBoundingClientRect();
-        const size = getCanvasSize(canvas);
+        const size = getCanvasDisplaySize(canvas);
 
         const x = clientX - rect.left;
         const y = clientY - rect.top;
 
-        const sw = size.w / viewState.scale;
-        const sh = size.h / viewState.scale;
+        const scale = getEffectiveScale(canvas);
+        const sw = size.w / scale;
+        const sh = size.h / scale;
         const sx = viewState.cx - sw / 2;
         const sy = viewState.cy - sh / 2;
 
@@ -614,19 +637,20 @@
 
     function zoomAt(canvas, clientX, clientY, zoomFactor) {
         const before = screenToImage(canvas, clientX, clientY);
-        const newScale = Math.max(viewState.minScale, Math.min(viewState.maxScale, viewState.scale * zoomFactor));
+        const newZoom = Math.max(viewState.minZoom, Math.min(viewState.maxZoom, viewState.zoom * zoomFactor));
 
-        if (newScale === viewState.scale) return;
+        if (newZoom === viewState.zoom) return;
 
-        viewState.scale = newScale;
+        viewState.zoom = newZoom;
 
         const rect = canvas.getBoundingClientRect();
-        const size = getCanvasSize(canvas);
+        const size = getCanvasDisplaySize(canvas);
         const px = clientX - rect.left;
         const py = clientY - rect.top;
 
-        const sw = size.w / viewState.scale;
-        const sh = size.h / viewState.scale;
+        const scale = getEffectiveScale(canvas);
+        const sw = size.w / scale;
+        const sh = size.h / scale;
 
         viewState.cx = before.x - ((px / size.w) - 0.5) * sw;
         viewState.cy = before.y - ((py / size.h) - 0.5) * sh;
@@ -636,8 +660,9 @@
     }
 
     function panByScreenDelta(canvas, dx, dy) {
-        viewState.cx -= dx / viewState.scale;
-        viewState.cy -= dy / viewState.scale;
+        const scale = getEffectiveScale(canvas);
+        viewState.cx -= dx / scale;
+        viewState.cy -= dy / scale;
         clampView();
         renderAll();
     }
@@ -669,7 +694,7 @@
         gesture = {
             canvas,
             startDistance: distance(p1, p2),
-            startScale: viewState.scale,
+            startZoom: viewState.zoom,
             startCx: viewState.cx,
             startCy: viewState.cy,
             startMid: midpoint(p1, p2)
@@ -687,29 +712,24 @@
 
         if (gesture.startDistance <= 0) return;
 
-        let newScale = gesture.startScale * (newDistance / gesture.startDistance);
-        newScale = Math.max(viewState.minScale, Math.min(viewState.maxScale, newScale));
-
-        // Pinch around midpoint
-        const before = screenToImage(gesture.canvas, gesture.startMid.clientX, gesture.startMid.clientY);
-        viewState.scale = newScale;
+        let newZoom = gesture.startZoom * (newDistance / gesture.startDistance);
+        newZoom = Math.max(viewState.minZoom, Math.min(viewState.maxZoom, newZoom));
+        viewState.zoom = newZoom;
 
         const rect = gesture.canvas.getBoundingClientRect();
-        const size = getCanvasSize(gesture.canvas);
-        const px = mid.clientX - rect.left;
-        const py = mid.clientY - rect.top;
-
-        const sw = size.w / viewState.scale;
-        const sh = size.h / viewState.scale;
-
+        const size = getCanvasDisplaySize(gesture.canvas);
+        const scale = getEffectiveScale(gesture.canvas);
+        const sw = size.w / scale;
+        const sh = size.h / scale;
         viewState.cx = before.x - ((px / size.w) - 0.5) * sw;
         viewState.cy = before.y - ((py / size.h) - 0.5) * sh;
 
         // Also translate according to midpoint movement
         const mdx = mid.clientX - gesture.startMid.clientX;
         const mdy = mid.clientY - gesture.startMid.clientY;
-        viewState.cx -= mdx / viewState.scale;
-        viewState.cy -= mdy / viewState.scale;
+
+        viewState.cx -= mdx / scale;
+        viewState.cy -= mdy / scale;
 
         clampView();
         renderAll();
