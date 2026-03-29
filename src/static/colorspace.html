@@ -137,13 +137,13 @@
     let width = 128;
     let height = 128;
 
-    let base1 = [1.0, 0.0, 0.0, 0];
-    let base2 = [0.0, 1.0, 0.0, 0];
-    let base3 = [0.0, 0.0, 1.0, 0];
+    // let base1 = [1.0, 0.0, 0.0, 0];
+    // let base2 = [0.0, 1.0, 0.0, 0];
+    // let base3 = [0.0, 0.0, 1.0, 0];
     // YCbCr:
-    // let base1 = [0.299, 0.587, 0.114, 16];
-    // let base2 = [-0.169, -0.331, 0.5, 128];
-    // let base3 = [0.5, -0.419, -0.081, 128];
+    let base1 = [0.299, 0.587, 0.114, 16];
+    let base2 = [-0.169, -0.331, 0.5, 128];
+    let base3 = [0.5, -0.419, -0.081, 128];
 
     let inverseBasis = null;
 
@@ -427,6 +427,84 @@
         }
     }
 
+    function downsampleGrayArrayBox(src, dst, w, h, factor) {
+        factor = Math.max(1, Math.floor(factor));
+        const rw = Math.max(1, Math.ceil(w / factor));
+        const rh = Math.max(1, Math.ceil(h / factor));
+
+        for (let ry = 0; ry < rh; ry++) {
+            const sy0 = ry * factor;
+            const sy1 = Math.min(sy0 + factor, h);
+
+            for (let rx = 0; rx < rw; rx++) {
+                const sx0 = rx * factor;
+                const sx1 = Math.min(sx0 + factor, w);
+
+                let sum = 0;
+                let count = 0;
+
+                for (let y = sy0; y < sy1; y++) {
+                    const row = y * w;
+                    for (let x = sx0; x < sx1; x++) {
+                        sum += src[row + x];
+                        count++;
+                    }
+                }
+
+                dst[ry * rw + rx] = count ? (sum / count) : 0;
+            }
+        }
+
+        return { rw, rh };
+    }
+
+    function bilinearSampleGray(src, rw, rh, x, y) {
+        const x0 = Math.floor(x);
+        const y0 = Math.floor(y);
+        const x1 = x0 + 1;
+        const y1 = y0 + 1;
+
+        const cx0 = Math.max(0, Math.min(rw - 1, x0));
+        const cy0 = Math.max(0, Math.min(rh - 1, y0));
+        const cx1 = Math.max(0, Math.min(rw - 1, x1));
+        const cy1 = Math.max(0, Math.min(rh - 1, y1));
+
+        const tx = x - x0;
+        const ty = y - y0;
+
+        const p00 = src[cy0 * rw + cx0];
+        const p10 = src[cy0 * rw + cx1];
+        const p01 = src[cy1 * rw + cx0];
+        const p11 = src[cy1 * rw + cx1];
+
+        const a = p00 * (1 - tx) + p10 * tx;
+        const b = p01 * (1 - tx) + p11 * tx;
+        return a * (1 - ty) + b * ty;
+    }
+
+    function subsampleGrayArray(src, dst, w, h, factor) {
+        factor = Math.max(1, Math.floor(factor));
+        if (factor <= 1) {
+            dst.set(src);
+            return;
+        }
+
+        const rw = Math.max(1, Math.ceil(w / factor));
+        const rh = Math.max(1, Math.ceil(h / factor));
+        const reduced = new Float32Array(rw * rh);
+
+        downsampleGrayArrayBox(src, reduced, w, h, factor);
+
+        for (let y = 0; y < h; y++) {
+            const sy = ((y + 0.5) / factor) - 0.5;
+
+            for (let x = 0; x < w; x++) {
+                const sx = ((x + 0.5) / factor) - 0.5;
+                dst[y * w + x] = clamp255(bilinearSampleGray(reduced, rw, rh, sx, sy) + 0.5);
+            }
+        }
+    }
+
     function filterGrayArray(src, dst, tmp, w, h, settings) {
         if (!settings || settings.mode === 'none' || settings.amount <= 0) {
             dst.set(src);
@@ -440,6 +518,11 @@
 
         if (settings.mode === 'pixelate' && settings.amount > 1) {
             pixelateGrayArray(src, dst, w, h, settings.amount);
+            return;
+        }
+
+        if (settings.mode === 'subsample' && settings.amount > 1) {
+            subsampleGrayArray(src, dst, w, h, settings.amount);
             return;
         }
 
