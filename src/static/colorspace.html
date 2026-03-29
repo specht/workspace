@@ -102,9 +102,18 @@
 
     const channelSettings = [
         { mode: 'gaussian', amount: 0 },
-        { mode: 'gaussian', amount: 0 },
-        { mode: 'gaussian', amount: 0 },
+        { mode: 'gaussian', amount: 10 },
+        { mode: 'gaussian', amount: 10 },
     ];
+
+    let channelStats = {
+        c1: 0,
+        c2: 0,
+        c3: 0,
+        c1m: 0,
+        c2m: 0,
+        c3m: 0
+    };
 
     const buffers = {
         source: document.createElement('canvas'),
@@ -319,6 +328,43 @@
         dst.set(src);
     }
 
+    function channelVariance(c) {
+        const n = c.length;
+        if (n === 0) return 0;
+
+        let mean = 0;
+        for (let i = 0; i < n; i++) {
+            mean += c[i];
+        }
+        mean /= n;
+
+        let varSum = 0;
+        for (let i = 0; i < n; i++) {
+            const d = c[i] - mean;
+            varSum += d * d;
+        }
+
+        return varSum / n;
+    }
+
+    function computeRelativeVarianceStats(a, b, c) {
+        const va = channelVariance(a);
+        const vb = channelVariance(b);
+        const vc = channelVariance(c);
+
+        const total = va + vb + vc;
+
+        if (total <= 1e-12) {
+            return { a: 0, b: 0, c: 0 };
+        }
+
+        return {
+            a: 100 * va / total,
+            b: 100 * vb / total,
+            c: 100 * vc / total
+        };
+    }
+
     function ensureWorkingBuffers() {
         const n = width * height;
 
@@ -418,15 +464,56 @@
         decomposeChannels();
         applyChannelModifications();
         recomposeFromModifiedChannels();
+
+        const rawStats = computeRelativeVarianceStats(ch1, ch2, ch3);
+        channelStats.c1 = rawStats.a;
+        channelStats.c2 = rawStats.b;
+        channelStats.c3 = rawStats.c;
+
+        const modStats = computeRelativeVarianceStats(ch1m, ch2m, ch3m);
+        channelStats.c1m = modStats.a;
+        channelStats.c2m = modStats.b;
+        channelStats.c3m = modStats.c;
+
         flushBuffersToCanvases();
         renderAll();
     }
-
     function schedulePipeline() {
         pipelineDirty = true;
         if (pipelineQueued) return;
         pipelineQueued = true;
         requestAnimationFrame(runPipeline);
+    }
+
+    function drawVarianceOverlay(ctx, canvas, value) {
+        const dpr = window.devicePixelRatio || 1;
+        const size = getCanvasDisplaySize(canvas);
+
+        const text = `Energy: ${value.toFixed(0)}%`;
+
+        ctx.save();
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+
+        const x = size.w / 2;
+        const y = size.h - 4;
+
+        // background for readability
+        const padding = 4;
+        const metrics = ctx.measureText(text);
+        const w = metrics.width + padding * 2;
+        const h = 14;
+
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(x - w / 2, y - h, w, h);
+
+        ctx.fillStyle = 'white';
+        ctx.fillText(text, x, y);
+
+        ctx.restore();
     }
 
     function getCanvasDisplaySize(canvas) {
@@ -542,6 +629,10 @@
             sx, sy, sw, sh,
             0, 0, dw, dh
         );
+
+        if (channelStats[viewId] !== undefined) {
+            drawVarianceOverlay(ctx, visibleCanvas, channelStats[viewId]);
+        }
     }
 
     function renderAll() {
