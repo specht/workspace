@@ -102,8 +102,8 @@
 
     const channelSettings = [
         { mode: 'gaussian', amount: 0 },
-        { mode: 'gaussian', amount: 10 },
-        { mode: 'gaussian', amount: 10 },
+        { mode: 'gaussian', amount: 0 },
+        { mode: 'gaussian', amount: 0 },
     ];
 
     let channelStats = {
@@ -114,6 +114,9 @@
         c2m: 0,
         c3m: 0
     };
+
+    let imageSimilarityPercent = 100;
+    let meanDeltaE = 0;
 
     const buffers = {
         source: document.createElement('canvas'),
@@ -315,12 +318,12 @@
             return;
         }
 
-        if (settings.mode === 'gaussian') {
+        if (settings.mode === 'gaussian' && settings.amount > 0) {
             gaussianBlurGrayArray(src, dst, w, h, settings.amount);
             return;
         }
 
-        if (settings.mode === 'pixelate') {
+        if (settings.mode === 'pixelate' && settings.amount > 1) {
             pixelateGrayArray(src, dst, w, h, settings.amount);
             return;
         }
@@ -363,6 +366,84 @@
             b: 100 * vb / total,
             c: 100 * vc / total
         };
+    }
+
+    function srgbToLinear(c) {
+        c /= 255;
+        if (c <= 0.04045) return c / 12.92;
+        return Math.pow((c + 0.055) / 1.055, 2.4);
+    }
+
+    function rgbToXyz(r, g, b) {
+        const rl = srgbToLinear(r);
+        const gl = srgbToLinear(g);
+        const bl = srgbToLinear(b);
+
+        // sRGB D65
+        const x = rl * 0.4124564 + gl * 0.3575761 + bl * 0.1804375;
+        const y = rl * 0.2126729 + gl * 0.7151522 + bl * 0.0721750;
+        const z = rl * 0.0193339 + gl * 0.1191920 + bl * 0.9503041;
+
+        return [x, y, z];
+    }
+
+    function xyzToLab(x, y, z) {
+        // D65 reference white
+        const xn = 0.95047;
+        const yn = 1.00000;
+        const zn = 1.08883;
+
+        function f(t) {
+            const delta = 6 / 29;
+            if (t > delta * delta * delta) {
+                return Math.cbrt(t);
+            }
+            return t / (3 * delta * delta) + 4 / 29;
+        }
+
+        const fx = f(x / xn);
+        const fy = f(y / yn);
+        const fz = f(z / zn);
+
+        const L = 116 * fy - 16;
+        const a = 500 * (fx - fy);
+        const b = 200 * (fy - fz);
+
+        return [L, a, b];
+    }
+
+    function rgbToLab(r, g, b) {
+        const xyz = rgbToXyz(r, g, b);
+        return xyzToLab(xyz[0], xyz[1], xyz[2]);
+    }
+
+    function deltaE76(lab1, lab2) {
+        const dL = lab1[0] - lab2[0];
+        const da = lab1[1] - lab2[1];
+        const db = lab1[2] - lab2[2];
+        return Math.sqrt(dL * dL + da * da + db * db);
+    }
+
+    function computeMeanDeltaEFromImageData(dataA, dataB) {
+        const n = dataA.length / 4;
+        if (n === 0) return 0;
+
+        let sum = 0;
+
+        for (let i = 0; i < dataA.length; i += 4) {
+            const labA = rgbToLab(dataA[i], dataA[i + 1], dataA[i + 2]);
+            const labB = rgbToLab(dataB[i], dataB[i + 1], dataB[i + 2]);
+            sum += deltaE76(labA, labB);
+        }
+
+        return sum / n;
+    }
+
+    function deltaEToMatchPercent(meanDeltaE) {
+        // Tune 12 to adjust strictness:
+        // smaller -> harsher scoring
+        // larger  -> more forgiving scoring
+        return 100 * Math.exp(-meanDeltaE / 12);
     }
 
     function ensureWorkingBuffers() {
@@ -455,6 +536,21 @@
         buffers.result.getContext('2d').putImageData(resultImageData, 0, 0);
     }
 
+    function updateImageSimilarity() {
+        if (!sourceImageData || !resultImageData) {
+            imageSimilarityPercent = 100;
+            meanDeltaE = 0;
+            return;
+        }
+
+        meanDeltaE = computeMeanDeltaEFromImageData(
+            sourceImageData.data,
+            resultImageData.data
+        );
+
+        imageSimilarityPercent = deltaEToMatchPercent(meanDeltaE);
+    }
+
     function runPipeline() {
         pipelineQueued = false;
         if (!pipelineDirty) return;
@@ -475,14 +571,48 @@
         channelStats.c2m = modStats.b;
         channelStats.c3m = modStats.c;
 
+        updateImageSimilarity();
+
         flushBuffersToCanvases();
         renderAll();
     }
+
     function schedulePipeline() {
         pipelineDirty = true;
         if (pipelineQueued) return;
         pipelineQueued = true;
         requestAnimationFrame(runPipeline);
+    }
+
+    function drawSimilarityOverlay(ctx, canvas, percent) {
+        const dpr = window.devicePixelRatio || 1;
+        const size = getCanvasDisplaySize(canvas);
+
+        const text = `Similarity: ${percent.toFixed(1)}%`;
+
+        ctx.save();
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        ctx.font = '13px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+
+        const x = size.w / 2;
+        const y = size.h - 24;
+
+        const paddingX = 8;
+        const paddingY = 4;
+        const metrics = ctx.measureText(text);
+        const boxW = metrics.width + paddingX * 2;
+        const boxH = 18;
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        ctx.fillRect(x - boxW / 2, y - boxH + paddingY, boxW, boxH);
+
+        ctx.fillStyle = 'white';
+        ctx.fillText(text, x, y);
+
+        ctx.restore();
     }
 
     function drawVarianceOverlay(ctx, canvas, value) {
@@ -632,6 +762,10 @@
 
         if (channelStats[viewId] !== undefined) {
             drawVarianceOverlay(ctx, visibleCanvas, channelStats[viewId]);
+        }
+
+        if (viewId === 'result') {
+            drawSimilarityOverlay(ctx, visibleCanvas, imageSimilarityPercent);
         }
     }
 
@@ -998,7 +1132,7 @@
             resetView();
         });
 
-        // loadImage('jpeg/44.jpg');
-        loadImage('jpeg/91.jpg');
+        loadImage('jpeg/44.jpg');
+        // loadImage('jpeg/91.jpg');
     });
 </script>
