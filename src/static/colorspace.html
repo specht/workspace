@@ -28,10 +28,11 @@
 
     .channel_container {
         position: absolute;
-        /* outline: 1px solid #444; */
         display: flex;
         flex-direction: column;
         justify-content: center;
+        transform: scale(min(1.0, calc(100vh / 1060px)));
+        /* outline: 1px solid #444; */
     }
 
     .channel-panel {
@@ -75,6 +76,7 @@
         white-space: nowrap;
         bottom: 2px;
         backdrop-filter: blur(10px);
+        user-select: none;
     }
 
     .image_chooser {
@@ -991,8 +993,10 @@
         const windowWidth = window.innerWidth;
         const windowHeight = window.innerHeight;
 
-        const c0w = 180;
-        const c1w = 100;
+        const scaleFactor = Math.min(1.0, 1060.0 / windowHeight);
+
+        const c0w = 180 * scaleFactor;
+        const c1w = 100 * scaleFactor;
 
         const ih = (windowWidth - 2 * margin - c0w - c1w - 5 * hpadding) / 4;
         const iv = (windowHeight - 2 * margin - 2 * vpadding) / 3;
@@ -1395,7 +1399,7 @@
                     value: bases[i][k],
                     color: ['#ea2830', '#73d216', '#238acc', '#d3d7cf'][k],
                     centerLabel: '0',
-                    size: 70,
+                    size: 80,
                     horizontal: true,
                     ticks: ticks,
                     formatValue: isOffset ? null : (v) => {
