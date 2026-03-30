@@ -1,0 +1,89 @@
+.knob {
+    width: 170px;
+    user-select: none;
+    touch-action: none;
+    text-align: center;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.knob svg {
+    display: block;
+    width: 70px;
+    height: 70px;
+    overflow: visible;
+    cursor: ns-resize;
+    flex: 0 0 auto;
+}
+
+.knob-title,
+.knob-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.05em;
+    margin: 0;
+}
+
+.knob-title {
+    color: #cfd3da;
+}
+
+.knob-value {
+    letter-spacing: 0.02em;
+}
+
+.knob-label {
+    font-size: 24px;
+    fill: #dddddd;
+    font-weight: 400;
+    opacity: 0.95;
+    pointer-events: none;
+}
+
+.knob-label.center {
+    fill: #ffffff;
+}
+
+.knob-readonly svg {
+    cursor: default;
+}
+
+.knob-focus-ring {
+    opacity: 0;
+    transition: opacity 120ms ease;
+}
+
+.knob.dragging .knob-focus-ring {
+    opacity: 1;
+}
+
+/* horizontal variant */
+.knob-horizontal {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    text-align: left;
+}
+
+.knob-horizontal .knob-title,
+.knob-horizontal .knob-value {
+    width: 2.5em;
+    text-align: center;
+}
+
+.knob-horizontal svg {
+    order: 0;
+}
+
+.knob-horizontal .knob-title {
+    order: 1;
+}
+
+.knob-horizontal .knob-value {
+    order: 2;
+}

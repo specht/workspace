@@ -1,4 +1,10 @@
+<link rel="stylesheet" href="include/knob.css">
+<script src="include/knob.js"></script>
+<script src="include/flowsvg.js"></script>
 <style>
+    body {
+        background-color: #1c1d21;
+    }
     .menu, .header, footer {
         display: none;
     }
@@ -8,6 +14,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        /* outline: 1px solid #444; */
     }
 
     .canvas_container canvas {
@@ -19,17 +26,18 @@
         max-height: 100%;
     }
 
-    .channel_div {
+    .channel_container {
         position: absolute;
+        /* outline: 1px solid #444; */
         display: flex;
-        flex-direction: row;
-        gap: 10px;
-        overflow: auto;
+        flex-direction: column;
+        justify-content: center;
     }
 
-    .channel_container {
-        flex: 1;
-        min-width: 180px;
+    .channel-panel {
+        background: #111;
+        border-radius: 8px;
+        padding: 16px 8px 8px 8px;
     }
 
     .input-pair {
@@ -66,6 +74,7 @@
         z-index: 2;
         white-space: nowrap;
         bottom: 2px;
+        backdrop-filter: blur(10px);
     }
 
     .image_chooser {
@@ -77,19 +86,28 @@
     .image_chooser img {
         padding: 4px;
     }
+
+    #bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        pointer-events: none;
+    }
 </style>
 
+<div id="bg"></div>
 <div class="container-fluid">
     <div class="col-md-12">
         <img id="base_image" style="display: none;">
 
         <div class="image_chooser"></div>
 
-        <div class="channel_div">
-            <div class="channel_container" id="channel0"></div>
-            <div class="channel_container" id="channel1"></div>
-            <div class="channel_container" id="channel2"></div>
-        </div>
+        <div class="channel_container" id="channel0"></div>
+        <div class="channel_container" id="channel1"></div>
+        <div class="channel_container" id="channel2"></div>
 
         <div class="canvas_container" id="source"><canvas></canvas></div>
 
@@ -107,6 +125,10 @@
             <canvas></canvas>
             <div class="canvas-label energy-label"></div>
         </div>
+
+        <div class="channel_container" id="channel0m"></div>
+        <div class="channel_container" id="channel1m"></div>
+        <div class="channel_container" id="channel2m"></div>
 
         <div class="canvas_container" id="c1m">
             <canvas></canvas>
@@ -131,7 +153,7 @@
 </div>
 
 <script>
-    let hpadding = 10;
+    let hpadding = 32;
     let vpadding = 10;
     let margin = 10;
     let width = 128;
@@ -261,7 +283,12 @@
     function updateInverseBasis() {
         inverseBasis = inverseMatrix3x3(base1, base2, base3);
         if (!inverseBasis) {
-            throw new Error('Basis vectors are not invertible.');
+            inverseBasis = [
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0]
+            ];
+            // throw new Error('Basis vectors are not invertible.');
         }
     }
 
@@ -963,51 +990,146 @@
     function handleResize() {
         const windowWidth = window.innerWidth;
         const windowHeight = window.innerHeight;
-        const ih = (windowWidth - 2 * margin) * 0.5;
-        const iv = windowHeight - 2 * margin;
-        const h = (ih - hpadding) / 6.0;
-        const h2 = (ih - hpadding * 2) / 6.0;
-        const v = (iv - vpadding * 2) / 7.0;
-        const imageChooserHeight = 96;
+
+        const c0w = 180;
+        const c1w = 100;
+
+        const ih = (windowWidth - 2 * margin - c0w - c1w - 5 * hpadding) / 4;
+        const iv = (windowHeight - 2 * margin - 2 * vpadding) / 3;
+        // const ih = (windowWidth - 2 * margin) * 0.5;
+        // const iv = windowHeight - 2 * margin;
+        // const h = (ih - hpadding) / 6.0;
+        // const h2 = (ih - hpadding * 2) / 6.0;
+        // const v = (iv - vpadding * 2) / 7.0;
+        // const imageChooserHeight = 96;
+
+        const bg = document.querySelector('#bg');
+        if (bg) {
+            bg.replaceChildren();
+        }
+
+        const flow = new FlowSVG({
+            container: "#bg",
+            width: windowWidth,
+            height: windowHeight
+        });
+
+        flow.createPath({ points: [
+            margin + ih * 0.5,
+            margin + iv * 1.5 + vpadding,
+            margin + ih * 0.5,
+            margin + iv * 0.5 + vpadding,
+            margin + ih + hpadding + c0w * 0.5,
+            margin + iv * 0.5 + vpadding,
+        ]});
+        flow.createPath({ points: [
+            margin + ih * 0.5,
+            margin + iv * 1.5 + vpadding,
+            margin + ih + hpadding + c0w * 0.5,
+            margin + iv * 1.5 + vpadding,
+        ]});
+        flow.createPath({ points: [
+            margin + ih * 0.5,
+            margin + iv * 1.5 + vpadding,
+            margin + ih * 0.5,
+            margin + iv * 2.5 + vpadding,
+            margin + ih + hpadding + c0w * 0.5,
+            margin + iv * 2.5 + vpadding,
+        ]});
+        for (let y = 0; y < 3; y++) {
+            flow.createPath({ points: [
+                margin + ih + hpadding + c0w * 0.5,
+                margin + iv * (y + 0.5) + vpadding,
+                margin + ih * 1.5 + hpadding + c0w,
+                margin + iv * (y + 0.5) + vpadding,
+            ]});
+            flow.createPath({ points: [
+                margin + ih * 1.5 + hpadding + c0w,
+                margin + iv * (y + 0.5) + vpadding,
+                margin + ih * 2 + hpadding * 3 + c0w + c1w * 0.5,
+                margin + iv * (y + 0.5) + vpadding,
+            ]});
+            flow.createPath({ points: [
+                margin + ih * 2 + hpadding * 3 + c0w + c1w * 0.5,
+                margin + iv * (y + 0.5) + vpadding,
+                margin + ih * 2.5 + hpadding * 5 + c0w + c1w,
+                margin + iv * (y + 0.5) + vpadding,
+            ]});
+        }
+        flow.createPath({ points: [
+            margin + ih * 2.5 + hpadding * 5 + c0w + c1w,
+            margin + iv * 0.5 + vpadding,
+            margin + ih * 3.5 + hpadding * 6 + c0w + c1w,
+            margin + iv * 0.5 + vpadding,
+            margin + ih * 3.5 + hpadding * 6 + c0w + c1w,
+            margin + iv * 1.5 + vpadding,
+        ]});
+        flow.createPath({ points: [
+            margin + ih * 2.5 + hpadding * 5 + c0w + c1w,
+            margin + iv * 1.5 + vpadding,
+            margin + ih * 3.5 + hpadding * 6 + c0w + c1w,
+            margin + iv * 1.5 + vpadding,
+        ]});
+        flow.createPath({ points: [
+            margin + ih * 2.5 + hpadding * 5 + c0w + c1w,
+            margin + iv * 2.5 + vpadding,
+            margin + ih * 3.5 + hpadding * 6 + c0w + c1w,
+            margin + iv * 2.5 + vpadding,
+            margin + ih * 3.5 + hpadding * 6 + c0w + c1w,
+            margin + iv * 1.5 + vpadding,
+        ]});
 
         let div = document.querySelector('#source');
-        div.style.left = `${windowWidth - margin - h * 6 - hpadding}px`;
-        div.style.top = `${margin}px`;
-        div.style.width = `${h * 3}px`;
-        div.style.height = `${v * 3}px`;
+        div.style.left = `${margin}px`;
+        div.style.top = `${margin + iv + vpadding}px`;
+        div.style.width = `${ih}px`;
+        div.style.height = `${iv}px`;
 
         div = document.querySelector('#result');
-        div.style.left = `${windowWidth - margin - h * 3}px`;
-        div.style.top = `${margin}px`;
-        div.style.width = `${h * 3}px`;
-        div.style.height = `${v * 3}px`;
+        div.style.left = `${margin + ih * 3 + hpadding * 5 + c0w + c1w}px`;
+        div.style.top = `${margin + iv + vpadding}px`;
+        div.style.width = `${ih}px`;
+        div.style.height = `${iv}px`;
 
         for (let y = 0; y < 3; y++) {
             div = document.querySelector(`#c${y + 1}`);
-            div.style.left = `${windowWidth - margin - h * 6 - hpadding + (h2 * 2 + hpadding) * y}px`;
-            div.style.top = `${margin + v * 3 + vpadding}px`;
-            div.style.width = `${h2 * 2}px`;
-            div.style.height = `${v * 2}px`;
+            div.style.left = `${margin + ih + c0w + hpadding * 2}px`;
+            div.style.top = `${margin + y * (iv + vpadding)}px`;
+            div.style.width = `${ih}px`;
+            div.style.height = `${iv}px`;
+        }
+
+        for (let y = 0; y < 3; y++) {
+            div = document.querySelector(`#channel${y}`);
+            div.style.left = `${margin + ih + hpadding}px`;
+            div.style.top = `${margin + y * (iv + vpadding)}px`;
+            div.style.width = `${c0w}px`;
+            div.style.height = `${iv}px`;
         }
 
         for (let y = 0; y < 3; y++) {
             div = document.querySelector(`#c${y + 1}m`);
-            div.style.left = `${windowWidth - margin - h * 6 - hpadding + (h2 * 2 + hpadding) * y}px`;
-            div.style.top = `${margin + v * 5 + vpadding * 2}px`;
-            div.style.width = `${h2 * 2}px`;
-            div.style.height = `${v * 2}px`;
+            div.style.left = `${margin + ih * 2 + c0w + c1w + hpadding * 4}px`;
+            div.style.top = `${margin + y * (iv + vpadding)}px`;
+            div.style.width = `${ih}px`;
+            div.style.height = `${iv}px`;
         }
 
-        div = document.querySelector('.channel_div');
-        div.style.left = `${margin}px`;
-        div.style.top = `${margin + imageChooserHeight + vpadding}px`;
-        div.style.width = `${windowWidth - ih - hpadding - 2 * margin}px`;
+        for (let y = 0; y < 3; y++) {
+            div = document.querySelector(`#channel${y}m`);
+            div.style.left = `${margin + ih * 2 + c0w + 3 *hpadding}px`;
+            div.style.top = `${margin + y * (iv + vpadding)}px`;
+            div.style.width = `${c1w}px`;
+            div.style.height = `${iv}px`;
+        }
+
 
         div = document.querySelector('.image_chooser');
-        div.style.left = `${margin}px`;
-        div.style.top = `${margin}px`;
-        div.style.width = `${windowWidth - ih - hpadding - 2 * margin}px`;
-        div.style.height = `${imageChooserHeight}px`;
+        // div.style.left = `${margin}px`;
+        // div.style.top = `${margin}px`;
+        // div.style.width = `${windowWidth - ih - hpadding - 2 * margin}px`;
+        // div.style.height = `${imageChooserHeight}px`;
+        div.style.display = 'none';
 
         resizeVisibleCanvases();
         updateZoomLimits();
@@ -1215,43 +1337,74 @@
 
         for (let i = 0; i < 3; i++) {
             const div = document.querySelector(`#channel${i}`);
+            const panel = document.createElement('div');
+            panel.classList.add('channel-panel');
+            div.append(panel);
 
             for (let k = 0; k < 4; k++) {
-                if (k === 3) div.append(document.createElement('hr'));
-
-                const container = document.createElement('div');
-                container.classList.add('input-pair');
-
-                const label = ['R', 'G', 'B', 'Bias'][k];
-                const p = document.createElement('p');
-                p.textContent = label;
-                container.append(p);
-
                 const isOffset = k === 3;
                 const min = isOffset ? 0 : -1;
                 const max = isOffset ? 128 : 1;
                 const step = isOffset ? 16 : 0.1;
 
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.classList.add('form-control');
-                input.min = String(min);
-                input.max = String(max);
-                input.step = String(step);
-                input.value = String(bases[i][k]);
-                container.append(input);
-                enableAutoSelect(input);
+                let holder = document.createElement('div');
+                holder.style.marginBottom = '-7px';
+                holder.style.marginTop = '-7px';
 
-                const slider = document.createElement('input');
-                slider.type = 'range';
-                slider.classList.add('form-range');
-                slider.min = String(min);
-                slider.max = String(max);
-                slider.step = String(step);
-                slider.value = input.value;
-                container.append(slider);
-
-                div.append(container);
+                panel.append(holder);
+                let ticks = isOffset ?
+                    [
+                        { value: 0, major: true },
+                        { value: 16 },
+                        { value: 32, major: true },
+                        { value: 48 },
+                        { value: 64, major: true },
+                        { value: 80 },
+                        { value: 96, major: true },
+                        { value: 112 },
+                        { value: 128, major: true },
+                    ] :
+                    [
+                        { value: -1.0, major: true },
+                        { value: -0.9 },
+                        { value: -0.8 },
+                        { value: -0.7 },
+                        { value: -0.6 },
+                        { value: -0.5, major: true },
+                        { value: -0.4 },
+                        { value: -0.3 },
+                        { value: -0.2 },
+                        { value: -0.1 },
+                        { value: 0, major: true },
+                        { value: 0.1 },
+                        { value: 0.2 },
+                        { value: 0.3 },
+                        { value: 0.4 },
+                        { value: 0.5, major: true },
+                        { value: 0.6 },
+                        { value: 0.7 },
+                        { value: 0.8 },
+                        { value: 0.9 },
+                        { value: 1.0, major: true },
+                    ];
+                new FancyKnob(holder, {
+                    label: ['R', 'G', 'B', 'Bias'][k],
+                    min: min,
+                    max: max,
+                    step: step,
+                    value: bases[i][k],
+                    color: ['#ea2830', '#73d216', '#238acc', '#d3d7cf'][k],
+                    centerLabel: '0',
+                    size: 70,
+                    horizontal: true,
+                    ticks: ticks,
+                    formatValue: isOffset ? null : (v) => {
+                        return `${Math.trunc(v * 100)}%`;
+                    },
+                    onInput: (v) => {
+                        commitBasisValue(v);
+                    }
+                });
 
                 function clampBasisValue(rawValue) {
                     const val = parseFloat(rawValue);
@@ -1264,58 +1417,15 @@
                     if (val === null) return;
 
                     bases[i][k] = val;
-                    input.value = String(val);
-                    slider.value = String(val);
 
                     inverseBasis = null;
                     updateInverseBasis();
                     markBasisDirty();
                 }
-
-                input.addEventListener('input', function() {
-                    const val = clampBasisValue(input.value);
-                    if (val !== null) slider.value = String(val);
-                });
-
-                input.addEventListener('change', function() {
-                    commitBasisValue(input.value);
-                });
-
-                slider.addEventListener('input', function() {
-                    input.value = slider.value;
-                    commitBasisValue(slider.value);
-                });
             }
+        }
 
-            div.append(document.createElement('hr'));
-
-            const blurContainer = document.createElement('div');
-            blurContainer.classList.add('input-pair');
-
-            const blurLabel = document.createElement('p');
-            blurLabel.textContent = 'Blur';
-            blurContainer.append(blurLabel);
-
-            const blurInput = document.createElement('input');
-            blurInput.type = 'text';
-            blurInput.classList.add('form-control');
-            blurInput.min = '0';
-            blurInput.max = '16';
-            blurInput.step = '1';
-            blurInput.value = String(channelSettings[i].amount);
-            blurContainer.append(blurInput);
-
-            const blurSlider = document.createElement('input');
-            blurSlider.type = 'range';
-            blurSlider.classList.add('form-range');
-            blurSlider.min = '0';
-            blurSlider.max = '16';
-            blurSlider.step = '1';
-            blurSlider.value = blurInput.value;
-            blurContainer.append(blurSlider);
-
-            div.append(blurContainer);
-
+        for (let i = 0; i < 3; i++) {
             function clampBlurValue(rawValue) {
                 const val = parseInt(rawValue, 10);
                 if (Number.isNaN(val)) return null;
@@ -1329,27 +1439,55 @@
                 channelSettings[i].mode = 'gaussian';
                 channelSettings[i].amount = val;
 
-                blurInput.value = String(val);
-                blurSlider.value = String(val);
-
                 markFilterDirty();
             }
 
-            blurInput.addEventListener('input', function() {
-                const val = clampBlurValue(blurInput.value);
-                if (val !== null) blurSlider.value = String(val);
-            });
+            const div = document.querySelector(`#channel${i}m`);
+            const panel = document.createElement('div');
+            panel.classList.add('channel-panel');
+            div.append(panel);
 
-            blurInput.addEventListener('change', function() {
-                commitBlurValue(blurInput.value);
-            });
+            let holder = document.createElement('div');
+            holder.style.marginBottom = '-7px';
+            holder.style.marginTop = '-7px';
 
-            blurSlider.addEventListener('input', function() {
-                blurInput.value = blurSlider.value;
-                commitBlurValue(blurSlider.value);
-            });
+            panel.append(holder);
 
-            enableAutoSelect(blurInput);
+            new FancyKnob(holder, {
+                label: 'Blur',
+                min: 0,
+                max: 16,
+                step: 1,
+                value: channelSettings[i].amount,
+                color: '#888888',
+                centerLabel: '0',
+                size: 70,
+                horizontal: false,
+                ticks: [
+                    { value: 0, major: true },
+                    { value: 1 },
+                    { value: 2 },
+                    { value: 3 },
+                    { value: 4, major: true },
+                    { value: 5 },
+                    { value: 6 },
+                    { value: 7 },
+                    { value: 8, major: true },
+                    { value: 9 },
+                    { value: 10 },
+                    { value: 11 },
+                    { value: 12, major: true },
+                    { value: 13 },
+                    { value: 14 },
+                    { value: 15 },
+                    { value: 16, major: true },
+                ],
+                onInput: (v) => {
+                    commitBlurValue(v);
+                }
+            });
+            holder.querySelector('.knob').style.width = '100%';
+
         }
     }
 
@@ -1409,9 +1547,9 @@
         });
 
         const images = [
-            'jpeg/25.jpg',
-            'jpeg/30.jpg',
-            'jpeg/33.jpg',
+            // 'jpeg/25.jpg',
+            // 'jpeg/30.jpg',
+            // 'jpeg/33.jpg',
             'jpeg/44.jpg',
             'jpeg/76.jpg',
             'jpeg/91.jpg',
@@ -1431,5 +1569,5 @@
 
         const firstImage = imageChooser.querySelector('img');
         if (firstImage) firstImage.click();
-    });
+});
 </script>
