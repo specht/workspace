@@ -4,9 +4,98 @@
 <style>
     body {
         background-color: #1c1d21;
+        overflow: hidden;
     }
+
     .menu, .header, footer {
         display: none;
+    }
+
+    :root {
+        --side-panel-width: 256px;
+        --side-panel-offset: 0px;
+    }
+
+    #app_shell {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        /* transform: translateX(var(--side-panel-offset)); */
+        /* transition: transform 220ms ease; */
+    }
+
+    #backdrop {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        background-color: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 220ms ease;
+    }
+
+    #backdrop.visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    #left_panel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: var(--side-panel-width);
+        height: 100vh;
+        background: #0f1013;
+        border-right: 1px solid #2a2d33;
+        box-shadow: 8px 0 24px rgba(0, 0, 0, 0.35);
+        color: white;
+        z-index: 20;
+        transform: translateX(-100%);
+        transition: transform 220ms ease;
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+    }
+
+    #left_panel.open {
+        transform: translateX(0);
+    }
+
+    .left-panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 16px;
+        border-bottom: 1px solid #2a2d33;
+        font: 600 14px sans-serif;
+    }
+
+    .left-panel-body {
+        padding: 16px;
+        font: 13px sans-serif;
+    }
+
+    .left-panel-close,
+    .left-panel-open {
+        appearance: none;
+        border: 0;
+        border-radius: 6px;
+        background: #2c313a;
+        color: white;
+        padding: 8px 10px;
+        cursor: pointer;
+        font: 12px sans-serif;
+    }
+
+    .left-panel-open {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 25;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
     }
 
     .canvas_container {
@@ -14,7 +103,6 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        /* outline: 1px solid #444; */
     }
 
     .canvas_container canvas {
@@ -32,7 +120,6 @@
         flex-direction: column;
         justify-content: center;
         transform: scale(min(1.0, calc(100vh / 1060px)));
-        /* outline: 1px solid #444; */
     }
 
     .channel-panel {
@@ -79,16 +166,6 @@
         user-select: none;
     }
 
-    .image_chooser {
-        position: absolute;
-        overflow-x: auto;
-        text-align: center;
-    }
-
-    .image_chooser img {
-        padding: 4px;
-    }
-
     #bg {
         position: absolute;
         top: 0;
@@ -98,68 +175,100 @@
         z-index: -1;
         pointer-events: none;
     }
+
+    #gallery {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    #gallery img {
+        width: 100%;
+        border-radius: 6px;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+
+    #gallery img:hover {
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    }
 </style>
 
-<div id="bg"></div>
-<div class="container-fluid">
-    <div class="col-md-12">
-        <img id="base_image" style="display: none;">
+<div id="backdrop"></div>
 
-        <div class="image_chooser"></div>
+<div id="left_panel" aria-hidden="true">
+    <div class="left-panel-body" id="left_panel_body">
+        <button id='bu_reset_pipeline' class="btn btn-sm btn-success mb-2"><i class='bi bi-arrow-counterclockwise'></i>Reset knobs</button>
+        <div id="gallery"></div>
+    </div>
+</div>
 
-        <div class="channel_container" id="channel0"></div>
-        <div class="channel_container" id="channel1"></div>
-        <div class="channel_container" id="channel2"></div>
+<button class="left-panel-open" id="left_panel_open_btn"><i class='bi bi-list'></i>Sidebar</button>
 
-        <div class="canvas_container" id="source"><canvas></canvas></div>
+<div id="app_shell">
+    <div id="bg"></div>
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <img id="base_image" style="display: none;">
 
-        <div class="canvas_container" id="c1">
-            <canvas></canvas>
-            <div class="canvas-label energy-label"></div>
-        </div>
+            <div class="image_chooser"></div>
 
-        <div class="canvas_container" id="c2">
-            <canvas></canvas>
-            <div class="canvas-label energy-label"></div>
-        </div>
+            <div class="channel_container" id="channel0"></div>
+            <div class="channel_container" id="channel1"></div>
+            <div class="channel_container" id="channel2"></div>
 
-        <div class="canvas_container" id="c3">
-            <canvas></canvas>
-            <div class="canvas-label energy-label"></div>
-        </div>
+            <div class="canvas_container" id="source"><canvas></canvas></div>
 
-        <div class="channel_container" id="channel0m"></div>
-        <div class="channel_container" id="channel1m"></div>
-        <div class="channel_container" id="channel2m"></div>
+            <div class="canvas_container" id="c1">
+                <canvas></canvas>
+                <div class="canvas-label energy-label"></div>
+            </div>
 
-        <div class="canvas_container" id="c1m">
-            <canvas></canvas>
-            <div class="canvas-label energy-label"></div>
-        </div>
+            <div class="canvas_container" id="c2">
+                <canvas></canvas>
+                <div class="canvas-label energy-label"></div>
+            </div>
 
-        <div class="canvas_container" id="c2m">
-            <canvas></canvas>
-            <div class="canvas-label energy-label"></div>
-        </div>
+            <div class="canvas_container" id="c3">
+                <canvas></canvas>
+                <div class="canvas-label energy-label"></div>
+            </div>
 
-        <div class="canvas_container" id="c3m">
-            <canvas></canvas>
-            <div class="canvas-label energy-label"></div>
-        </div>
+            <div class="channel_container" id="channel0m"></div>
+            <div class="channel_container" id="channel1m"></div>
+            <div class="channel_container" id="channel2m"></div>
 
-        <div class="canvas_container" id="result">
-            <canvas></canvas>
-            <div class="canvas-label similarity-label"></div>
+            <div class="canvas_container" id="c1m">
+                <canvas></canvas>
+                <div class="canvas-label energy-label"></div>
+            </div>
+
+            <div class="canvas_container" id="c2m">
+                <canvas></canvas>
+                <div class="canvas-label energy-label"></div>
+            </div>
+
+            <div class="canvas_container" id="c3m">
+                <canvas></canvas>
+                <div class="canvas-label energy-label"></div>
+            </div>
+
+            <div class="canvas_container" id="result">
+                <canvas></canvas>
+                <div class="canvas-label similarity-label"></div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
+    let isLeftPanelOpen = false;
     let hpadding = 32;
     let vpadding = 10;
     let margin = 10;
     let width = 128;
     let height = 128;
+    let knobs = [];
 
     let base1 = [1.0, 0.0, 0.0, 0];
     let base2 = [0.0, 1.0, 0.0, 0];
@@ -246,6 +355,47 @@
 
     const pointers = new Map();
     let gesture = null;
+
+    function getLeftPanelWidth() {
+        const panel = document.getElementById('left_panel');
+        return panel ? panel.getBoundingClientRect().width : 0;
+    }
+
+    function openLeftPanel() {
+        document.querySelector('#left_panel_open_btn').style.display = 'none';
+        document.querySelector('#backdrop').classList.add('visible');
+        const panel = document.getElementById('left_panel');
+        if (!panel) return;
+
+        isLeftPanelOpen = true;
+        panel.classList.add('open');
+        panel.setAttribute('aria-hidden', 'false');
+
+        const width = getLeftPanelWidth();
+        document.documentElement.style.setProperty('--side-panel-offset', `${width}px`);
+
+        // handleResize();
+    }
+
+    function closeLeftPanel() {
+        document.querySelector('#left_panel_open_btn').style.display = 'block';
+        document.querySelector('#backdrop').classList.remove('visible');
+        const panel = document.getElementById('left_panel');
+        if (!panel) return;
+
+        isLeftPanelOpen = false;
+        panel.classList.remove('open');
+        panel.setAttribute('aria-hidden', 'true');
+
+        document.documentElement.style.setProperty('--side-panel-offset', `0px`);
+
+        // handleResize();
+    }
+
+    function toggleLeftPanel() {
+        if (isLeftPanelOpen) closeLeftPanel();
+        else openLeftPanel();
+    }
 
     function clamp255(x) {
         return x < 0 ? 0 : x > 255 ? 255 : x | 0;
@@ -1391,7 +1541,7 @@
                         { value: 0.9 },
                         { value: 1.0, major: true },
                     ];
-                new FancyKnob(holder, {
+                knobs.push(new FancyKnob(holder, {
                     label: ['R', 'G', 'B', 'Bias'][k],
                     min: min,
                     max: max,
@@ -1408,7 +1558,7 @@
                     onInput: (v) => {
                         commitBasisValue(v);
                     }
-                });
+                }));
 
                 function clampBasisValue(rawValue) {
                     const val = parseFloat(rawValue);
@@ -1457,7 +1607,7 @@
 
             panel.append(holder);
 
-            new FancyKnob(holder, {
+            knobs.push(new FancyKnob(holder, {
                 label: 'Blur',
                 min: 0,
                 max: 16,
@@ -1489,7 +1639,7 @@
                 onInput: (v) => {
                     commitBlurValue(v);
                 }
-            });
+            }));
             holder.querySelector('.knob').style.width = '100%';
 
         }
@@ -1538,6 +1688,14 @@
     window.addEventListener('resize', handleResize);
 
     document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('left_panel_open_btn')?.addEventListener('click', openLeftPanel);
+        document.getElementById('left_panel_close_btn')?.addEventListener('click', closeLeftPanel);
+
+        document.getElementById('demo_close_programmatically')?.addEventListener('click', function() {
+            // do something here...
+            closeLeftPanel(); // close it programmatically when done
+        });
+
         initBufferContexts();
         handleResize();
         setupInteractions();
@@ -1551,15 +1709,20 @@
         });
 
         const images = [
-            // 'jpeg/25.jpg',
-            // 'jpeg/30.jpg',
-            // 'jpeg/33.jpg',
+            'jpeg/25.jpg',
+            'jpeg/30.jpg',
+            'jpeg/33.jpg',
             'jpeg/44.jpg',
             'jpeg/76.jpg',
             'jpeg/91.jpg',
+            // 'jpeg/1.jpg',
+            // 'jpeg/carroll-street.jpg',
+            // 'jpeg/school.jpg',
+            // 'jpeg/train.jpg',
+            // 'jpeg/hjwdpp3zx1sg1.jpg',
         ];
 
-        const imageChooser = document.querySelector('.image_chooser');
+        const imageChooser = document.querySelector('#gallery');
         for (const imgSrc of images) {
             const img = document.createElement('img');
             img.src = imgSrc;
@@ -1567,11 +1730,41 @@
             img.style.cursor = 'pointer';
             img.addEventListener('click', function() {
                 loadImage(imgSrc);
+                closeLeftPanel();
             });
             imageChooser.append(img);
         }
 
         const firstImage = imageChooser.querySelector('img');
         if (firstImage) firstImage.click();
-});
+
+        document.getElementById('bu_reset_pipeline')?.addEventListener('click', function() {
+            // red channel
+            knobs[0].setValue(1.0, true);
+            knobs[1].setValue(0.0, true);
+            knobs[2].setValue(0.0, true);
+            knobs[3].setValue(0.0, true);
+            // green channel
+            knobs[4].setValue(0.0, true);
+            knobs[5].setValue(1.0, true);
+            knobs[6].setValue(0.0, true);
+            knobs[7].setValue(0.0, true);
+            // blue channel
+            knobs[8].setValue(0.0, true);
+            knobs[9].setValue(0.0, true);
+            knobs[10].setValue(1.0, true);
+            knobs[11].setValue(0.0, true);
+            // blur
+            knobs[12].setValue(0, true);
+            knobs[13].setValue(0, true);
+            knobs[14].setValue(0, true);
+
+            markBasisDirty();
+            markFilterDirty();
+            schedulePipeline();
+            closeLeftPanel();
+        });
+
+        document.querySelector('#backdrop')?.addEventListener('click', closeLeftPanel);
+    });
 </script>
