@@ -3,17 +3,19 @@
 <script src="include/flowsvg.js"></script>
 
 <!-- KaTeX CSS -->
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 
-  <!-- KaTeX JS -->
-  <script defer
-          src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<!-- KaTeX JS -->
+<script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 
-  <!-- Auto-render extension -->
-  <script defer
-          src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
-          onload="renderMathInElement(document.body);"></script>
+<!-- Auto-render extension -->
+<script defer
+        src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body);"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
 
 <style>
     body {
@@ -350,6 +352,12 @@
     let meanDeltaE = 0;
 
     const viewIds = ['source', 'c1', 'c2', 'c3', 'c1m', 'c2m', 'c3m', 'result'];
+
+    let currentImageSrc = '';
+    let pendingRestoredView = null;
+    let suppressHashSync = false;
+    let hashWriteTimer = null;
+    let applyingHash = false;
 
     const buffers = {
         source: document.createElement('canvas'),
@@ -1261,6 +1269,7 @@
         viewState.zoom = 1;
         clampView();
         renderAll();
+        scheduleHashWrite();
     }
 
     function clampView() {
@@ -1492,7 +1501,9 @@
     }
 
     function loadImage(src) {
+        currentImageSrc = src;
         document.getElementById('base_image').src = src;
+        scheduleHashWrite();
     }
 
     function screenToImage(canvas, clientX, clientY) {
@@ -1535,6 +1546,7 @@
 
         clampView();
         scheduleRender();
+        scheduleHashWrite();
     }
 
     function panByScreenDelta(canvas, dx, dy) {
@@ -1543,6 +1555,7 @@
         viewState.cy -= dy / scale;
         clampView();
         scheduleRender();
+        scheduleHashWrite();
     }
 
     function getTwoPointers() {
@@ -1609,6 +1622,7 @@
 
         clampView();
         scheduleRender();
+        scheduleHashWrite();
     }
 
     function attachInteractions(canvas) {
@@ -1775,6 +1789,7 @@
                     inverseBasis = null;
                     updateInverseBasis();
                     markBasisDirty();
+                    scheduleHashWrite();
                 }
             }
         }
@@ -1794,6 +1809,7 @@
                 channelSettings[i].amount = val;
 
                 markFilterDirty();
+                scheduleHashWrite();
             }
 
             function clampLevelValue(rawValue) {
@@ -1813,6 +1829,7 @@
                 labelsDirty = true;
                 metricsDirty = true;
                 schedulePipeline();
+                scheduleHashWrite();
             }
 
             let div = document.querySelector(`#channel${i}m`);
@@ -1939,14 +1956,181 @@
         metricsDirty = true;
 
         schedulePipeline();
-        resetView();
+
+        if (pendingRestoredView) {
+            viewState.zoom = pendingRestoredView.zoom;
+            viewState.cx = pendingRestoredView.cx;
+            viewState.cy = pendingRestoredView.cy;
+            updateZoomLimits();
+            clampView();
+            renderAll();
+        } else {
+            resetView();
+        }
     }
 
     window.addEventListener('resize', handleResize);
 
+    function roundTo(x, digits = 3) {
+        const p = Math.pow(10, digits);
+        return Math.round(x * p) / p;
+    }
+
+    function isFiniteNumber(x) {
+        return typeof x === 'number' && Number.isFinite(x);
+    }
+
+    function isNumberArray(arr, len) {
+        return Array.isArray(arr) && arr.length === len && arr.every(isFiniteNumber);
+    }
+
+    function clampNumber(x, min, max) {
+        return Math.max(min, Math.min(max, x));
+    }
+
+    function getCompactState() {
+        return {
+            v: 1,
+            i: currentImageSrc || '',
+            b: [
+                base1.map(v => roundTo(v, 3)),
+                base2.map(v => roundTo(v, 3)),
+                base3.map(v => roundTo(v, 3))
+            ],
+            f: channelSettings.map(s => s.amount | 0),
+            l: channelLevels.map(v => Math.round(v * 100)),
+            z: roundTo(viewState.zoom, 3),
+            c: [roundTo(viewState.cx, 2), roundTo(viewState.cy, 2)]
+        };
+    }
+
+    function encodeStateToHash() {
+        const json = JSON.stringify(getCompactState());
+        const compressed = LZString.compressToEncodedURIComponent(json);
+        return `s=${compressed}`;
+    }
+
+    function decodeStateFromHash() {
+        const raw = window.location.hash.replace(/^#/, '');
+        if (!raw || !raw.startsWith('s=')) return null;
+
+        try {
+            const compressed = raw.slice(2);
+            const json = LZString.decompressFromEncodedURIComponent(compressed);
+            if (!json) return null;
+
+            const obj = JSON.parse(json);
+            if (!obj || obj.v !== 1) return null;
+            if (!Array.isArray(obj.b) || obj.b.length !== 3) return null;
+            if (!isNumberArray(obj.b[0], 4)) return null;
+            if (!isNumberArray(obj.b[1], 4)) return null;
+            if (!isNumberArray(obj.b[2], 4)) return null;
+            if (!isNumberArray(obj.f, 3)) return null;
+            if (!isNumberArray(obj.l, 3)) return null;
+            if (!isNumberArray(obj.c, 2)) return null;
+            if (!isFiniteNumber(obj.z)) return null;
+            if (typeof obj.i !== 'string') return null;
+
+            return {
+                img: obj.i,
+                b1: [
+                    clampNumber(obj.b[0][0], -1, 1),
+                    clampNumber(obj.b[0][1], -1, 1),
+                    clampNumber(obj.b[0][2], -1, 1),
+                    clampNumber(obj.b[0][3], -128, 128)
+                ],
+                b2: [
+                    clampNumber(obj.b[1][0], -1, 1),
+                    clampNumber(obj.b[1][1], -1, 1),
+                    clampNumber(obj.b[1][2], -1, 1),
+                    clampNumber(obj.b[1][3], -128, 128)
+                ],
+                b3: [
+                    clampNumber(obj.b[2][0], -1, 1),
+                    clampNumber(obj.b[2][1], -1, 1),
+                    clampNumber(obj.b[2][2], -1, 1),
+                    clampNumber(obj.b[2][3], -128, 128)
+                ],
+                f: obj.f.map(v => clampNumber(Math.round(v), 0, 16)),
+                l: obj.l.map(v => clampNumber(Math.round(v), 0, 100)),
+                z: clampNumber(obj.z, 1, 64),
+                cx: obj.c[0],
+                cy: obj.c[1]
+            };
+        } catch {
+            return null;
+        }
+    }
+
+    function writeHashNow() {
+        if (suppressHashSync || applyingHash) return;
+
+        const hash = encodeStateToHash();
+        const newUrl = `${window.location.pathname}${window.location.search}#${hash}`;
+        history.replaceState(null, '', newUrl);
+    }
+
+    function scheduleHashWrite() {
+        if (suppressHashSync || applyingHash) return;
+
+        clearTimeout(hashWriteTimer);
+        hashWriteTimer = setTimeout(writeHashNow, 180);
+    }
+
+    function applyStateToControls(state) {
+        applyingHash = true;
+        suppressHashSync = true;
+
+        try {
+            knobs[0].setValue(state.b1[0], true);
+            knobs[1].setValue(state.b1[1], true);
+            knobs[2].setValue(state.b1[2], true);
+            knobs[3].setValue(state.b1[3], true);
+
+            knobs[4].setValue(state.b2[0], true);
+            knobs[5].setValue(state.b2[1], true);
+            knobs[6].setValue(state.b2[2], true);
+            knobs[7].setValue(state.b2[3], true);
+
+            knobs[8].setValue(state.b3[0], true);
+            knobs[9].setValue(state.b3[1], true);
+            knobs[10].setValue(state.b3[2], true);
+            knobs[11].setValue(state.b3[3], true);
+
+            knobs[12].setValue(state.f[0], true);
+            knobs[14].setValue(state.f[1], true);
+            knobs[16].setValue(state.f[2], true);
+
+            knobs[13].setValue(state.l[0], true);
+            knobs[15].setValue(state.l[1], true);
+            knobs[17].setValue(state.l[2], true);
+
+            pendingRestoredView = {
+                zoom: state.z,
+                cx: state.cx,
+                cy: state.cy
+            };
+
+            if (state.img) {
+                loadImage(state.img);
+            } else {
+                pendingRestoredView = null;
+            }
+        } finally {
+            applyingHash = false;
+        }
+    }
+
+    function restoreFromHash() {
+        const state = decodeStateFromHash();
+        if (!state) return false;
+
+        applyStateToControls(state);
+        return true;
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('left_panel_open_btn')?.addEventListener('click', openLeftPanel);
-        document.getElementById('left_panel_close_btn')?.addEventListener('click', closeLeftPanel);
 
         document.getElementById('demo_close_programmatically')?.addEventListener('click', function() {
             // do something here...
@@ -1963,37 +2147,35 @@
 
         baseImage.addEventListener('load', function() {
             loadCurrentImageIntoPipeline();
+            pendingRestoredView = null;
+            suppressHashSync = false;
+            scheduleHashWrite();
         });
 
-        const images = [
-            'jpeg/25.jpg',
-            'jpeg/30.jpg',
-            'jpeg/33.jpg',
-            'jpeg/44.jpg',
-            'jpeg/76.jpg',
-            'jpeg/91.jpg',
-            // 'jpeg/1.jpg',
-            // 'jpeg/carroll-street.jpg',
-            // 'jpeg/school.jpg',
-            // 'jpeg/train.jpg',
-            // 'jpeg/hjwdpp3zx1sg1.jpg',
-        ];
+        const images = ['25', '30', '33', '44', '76', '91'];
 
         const imageChooser = document.querySelector('#gallery');
         for (const imgSrc of images) {
             const img = document.createElement('img');
-            img.src = imgSrc;
-            img.style.maxHeight = '100%';
-            img.style.cursor = 'pointer';
+            img.src = `jpeg/${imgSrc}.jpg`;
+            // img.style.maxHeight = '100%';
+            // img.style.cursor = 'pointer';
             img.addEventListener('click', function() {
-                loadImage(imgSrc);
+                loadImage(`jpeg/${imgSrc}.jpg`);
                 closeLeftPanel();
             });
             imageChooser.append(img);
         }
 
-        const firstImage = imageChooser.querySelector('img');
-        if (firstImage) firstImage.click();
+        const restored = restoreFromHash();
+        if (!restored) {
+            const firstImage = imageChooser.querySelector('img');
+            if (firstImage) firstImage.click();
+        }
+
+        window.addEventListener('hashchange', () => {
+            restoreFromHash();
+        });
 
         document.getElementById('bu_reset_pipeline')?.addEventListener('click', function() {
             // red channel
@@ -2024,6 +2206,7 @@
             markBasisDirty();
             markFilterDirty();
             schedulePipeline();
+            scheduleHashWrite();
             closeLeftPanel();
         });
 
