@@ -304,13 +304,13 @@
     let base2 = [0.0, 1.0, 0.0, 0];
     let base3 = [0.0, 0.0, 1.0, 0];
     // YCbCr:
-    // base1 = [0.299, 0.587, 0.114, 16];
-    // base2 = [-0.169, -0.331, 0.5, 128];
-    // base3 = [0.5, -0.419, -0.081, 128];
+    base1 = [0.299, 0.587, 0.114, 16];
+    base2 = [-0.169, -0.331, 0.5, 128];
+    base3 = [0.5, -0.419, -0.081, 128];
 
     let inverseBasis = null;
 
-    let rightChannelContributionAmount = [0, 0, 0];
+    let channelLevels = [1, 1, 1];
 
     const viewState = {
         zoom: 1,
@@ -624,6 +624,10 @@ katex.render(
         return mn > 0 && mx / mn < 4.0;
     }
 
+    function getLevelAnchor(base) {
+        return classifyChannel(base) === 'Luma-like' ? 128 : base[3];
+    }
+
     function fillContributionImageData(channel, imageData, base, gain = 1.0) {
         const dst = imageData.data;
         const n = channel.length;
@@ -862,18 +866,30 @@ katex.render(
         const b20 = base2[3];
         const b30 = base3[3];
 
+        const a1 = getLevelAnchor(base1);
+        const a2 = getLevelAnchor(base2);
+        const a3 = getLevelAnchor(base3);
+
+        const g1 = channelLevels[0];
+        const g2 = channelLevels[1];
+        const g3 = channelLevels[2];
+
         const m1 = ch1m;
         const m2 = ch2m;
         const m3 = ch3m;
 
         for (let p = 0, i = 0; p < n; p++, i += 4) {
-            const c1 = m1[p] - b10;
-            const c2 = m2[p] - b20;
-            const c3 = m3[p] - b30;
+            const u1 = a1 + (m1[p] - a1) * g1;
+            const u2 = a2 + (m2[p] - a2) * g2;
+            const u3 = a3 + (m3[p] - a3) * g3;
 
-            const r = ib[0][0] * c1 + ib[0][1] * c2 + ib[0][2] * c3;
-            const g = ib[1][0] * c1 + ib[1][1] * c2 + ib[1][2] * c3;
-            const b = ib[2][0] * c1 + ib[2][1] * c2 + ib[2][2] * c3;
+            const d1 = u1 - b10;
+            const d2 = u2 - b20;
+            const d3 = u3 - b30;
+
+            const r = ib[0][0] * d1 + ib[0][1] * d2 + ib[0][2] * d3;
+            const g = ib[1][0] * d1 + ib[1][1] * d2 + ib[1][2] * d3;
+            const b = ib[2][0] * d1 + ib[2][1] * d2 + ib[2][2] * d3;
 
             dst[i] = clamp255(r + 0.5);
             dst[i + 1] = clamp255(g + 0.5);
@@ -946,29 +962,14 @@ katex.render(
         }
 
         if (filterDirty || displayDirty) {
-            if (rightChannelContributionAmount[0] > 0) {
-                fillContributionImageData(ch1m, c1mImageData, base1, rightChannelContributionAmount[0]);
-            } else {
-                fillGrayImageData(ch1m, c1mImageData);
-            }
-
-            if (rightChannelContributionAmount[1] > 0) {
-                fillContributionImageData(ch2m, c2mImageData, base2, rightChannelContributionAmount[1]);
-            } else {
-                fillGrayImageData(ch2m, c2mImageData);
-            }
-
-            if (rightChannelContributionAmount[2] > 0) {
-                fillContributionImageData(ch3m, c3mImageData, base3, rightChannelContributionAmount[2]);
-            } else {
-                fillGrayImageData(ch3m, c3mImageData);
-            }
+            fillGrayImageData(ch1m, c1mImageData);
+            fillGrayImageData(ch2m, c2mImageData);
+            fillGrayImageData(ch3m, c3mImageData);
 
             bufferContexts.c1m.putImageData(c1mImageData, 0, 0);
             bufferContexts.c2m.putImageData(c2mImageData, 0, 0);
             bufferContexts.c3m.putImageData(c3mImageData, 0, 0);
         }
-
         if (resultDirty || displayDirty) {
             bufferContexts.result.putImageData(resultImageData, 0, 0);
         }
@@ -1766,19 +1767,22 @@ katex.render(
                 markFilterDirty();
             }
 
-            function clampContributionValue(rawValue) {
+            function clampLevelValue(rawValue) {
                 const val = parseFloat(rawValue);
                 if (Number.isNaN(val)) return null;
-                return Math.max(0, Math.min(3, val));
+                return Math.max(0, Math.min(100, val));
             }
 
-            function commitContributionValue(rawValue) {
-                const val = clampContributionValue(rawValue);
+            function commitLevelValue(rawValue) {
+                const val = clampLevelValue(rawValue);
                 if (val === null) return;
 
-                rightChannelContributionAmount[i] = val;
+                channelLevels[i] = val / 100.0;
+
+                resultDirty = true;
                 displayDirty = true;
                 labelsDirty = true;
+                metricsDirty = true;
                 schedulePipeline();
             }
 
@@ -1828,43 +1832,38 @@ katex.render(
             }));
             blurHolder.querySelector('.knob').style.width = '100%';
 
-            // Contribution knob
-            let contributionHolder = document.createElement('div');
-            // contributionHolder.style.marginBottom = '-7px';
-            // contributionHolder.style.marginTop = '2px';
-            panel.append(contributionHolder);
+            let levelHolder = document.createElement('div');
+            panel.append(levelHolder);
 
-            knobs.push(new FancyKnob(contributionHolder, {
-                label: 'Colorize',
+            knobs.push(new FancyKnob(levelHolder, {
+                label: 'Level',
                 min: 0,
-                max: 3,
-                step: 0.25,
-                value: rightChannelContributionAmount[i],
+                max: 100,
+                step: 1,
+                value: channelLevels[i] * 100,
                 color: '#b0b0b0',
                 centerLabel: '0',
                 size: 60,
                 horizontal: false,
-                formatValue: (v) => v === 0 ? 'off' : v.toFixed(2),
+                formatValue: (v) => `${Math.round(v)}%`,
                 ticks: [
                     { value: 0, major: true },
-                    { value: 0.25 },
-                    { value: 0.5 },
-                    { value: 0.75 },
-                    { value: 1, major: true },
-                    { value: 1.25 },
-                    { value: 1.5 },
-                    { value: 1.75 },
-                    { value: 2, major: true },
-                    { value: 2.25 },
-                    { value: 2.5 },
-                    { value: 2.75 },
-                    { value: 3, major: true },
+                    { value: 10 },
+                    { value: 20 },
+                    { value: 30 },
+                    { value: 40 },
+                    { value: 50, major: true },
+                    { value: 60 },
+                    { value: 70 },
+                    { value: 80 },
+                    { value: 90 },
+                    { value: 100, major: true },
                 ],
                 onInput: (v) => {
-                    commitContributionValue(v);
+                    commitLevelValue(v);
                 }
             }));
-            contributionHolder.querySelector('.knob').style.width = '100%';
+            levelHolder.querySelector('.knob').style.width = '100%';
         }
     }
 
@@ -1982,7 +1981,7 @@ katex.render(
             knobs[13].setValue(0, true);
             knobs[14].setValue(0, true);
 
-            // contribution
+            // level
             knobs[15].setValue(0, true);
             knobs[16].setValue(0, true);
             knobs[17].setValue(0, true);
@@ -1990,7 +1989,6 @@ katex.render(
             rightChannelContributionAmount[0] = 0;
             rightChannelContributionAmount[1] = 0;
             rightChannelContributionAmount[2] = 0;
-
             markBasisDirty();
             markFilterDirty();
             schedulePipeline();

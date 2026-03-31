@@ -29,6 +29,7 @@ class FancyKnob {
 
         this.value = this.clamp(this.snap(this.opts.value));
         this.dragging = false;
+        this.startX = 0;
         this.startY = 0;
         this.startValue = this.value;
 
@@ -237,6 +238,7 @@ class FancyKnob {
     attachEvents() {
         this.svg.addEventListener('pointerdown', (e) => {
             this.dragging = true;
+            this.startX = e.clientX;
             this.startY = e.clientY;
             this.startValue = this.value;
             this.root.classList.add('dragging');
@@ -245,8 +247,16 @@ class FancyKnob {
 
         this.svg.addEventListener('pointermove', (e) => {
             if (!this.dragging) return;
+
             const deltaY = this.startY - e.clientY;
-            const raw = this.startValue + deltaY * this.opts.sensitivity * (this.opts.max - this.opts.min);
+            const deltaX = e.clientX - this.startX;
+
+            const delta = (Math.abs(deltaY) > Math.abs(deltaX))
+                ? deltaY + deltaX * 0.3
+                : deltaX + deltaY * 0.3;
+
+            const raw = this.startValue + delta * this.opts.sensitivity * (this.opts.max - this.opts.min);
+
             this.setValue(raw, true);
         });
 
