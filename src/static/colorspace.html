@@ -310,6 +310,8 @@
 
     let inverseBasis = null;
 
+    let rightChannelContributionAmount = [0, 0, 0];
+
     const viewState = {
         zoom: 1,
         minZoom: 1,
@@ -332,6 +334,8 @@
         c2m: 0,
         c3m: 0
     };
+
+    let channelKinds = ['', '', ''];
 
     let imageSimilarityPercent = 100;
     let meanDeltaE = 0;
@@ -477,11 +481,26 @@
             ];
             // throw new Error('Basis vectors are not invertible.');
         }
-        katex.render(
-            `\\\\begin{bmatrix}${fn(base1[0])} & ${fn(base1[1])} & ${fn(base1[2])}\\\\\\\\${fn(base2[0])} & ${fn(base2[1])} & ${fn(base2[2])}\\\\\\\\${fn(base3[0])} & ${fn(base3[1])} & ${fn(base3[2])}\\\\end{bmatrix}`,
-            document.getElementById("math_forward"),
-            { displayMode: true }
-        );
+katex.render(
+  String.raw`
+  \begin{bmatrix}x \\\\ y \\\\ z\end{bmatrix}
+  =
+  \begin{bmatrix}
+  ${fn(base1[0])} & ${fn(base1[1])} & ${fn(base1[2])} \\\\
+  ${fn(base2[0])} & ${fn(base2[1])} & ${fn(base2[2])} \\\\
+  ${fn(base3[0])} & ${fn(base3[1])} & ${fn(base3[2])}
+  \end{bmatrix}
+  \begin{bmatrix}r \\\\ g \\\\ b\end{bmatrix}
+  +
+  \begin{bmatrix}
+  ${fn(base1[3])} \\\\
+  ${fn(base2[3])} \\\\
+  ${fn(base3[3])}
+  \end{bmatrix}
+  `,
+  document.getElementById("math_forward"),
+  { displayMode: true }
+);
         katex.render(
             `\\\\begin{bmatrix}${fn(inverseBasis[0][0])} & ${fn(inverseBasis[0][1])} & ${fn(inverseBasis[0][2])}\\\\\\\\${fn(inverseBasis[1][0])} & ${fn(inverseBasis[1][1])} & ${fn(inverseBasis[1][2])}\\\\\\\\${fn(inverseBasis[2][0])} & ${fn(inverseBasis[2][1])} & ${fn(inverseBasis[2][2])}\\\\end{bmatrix}`,
             document.getElementById("math_inverse"),
@@ -556,6 +575,81 @@
             dst[i + 1] = v;
             dst[i + 2] = v;
             dst[i + 3] = 255;
+        }
+    }
+
+    function classifyChannel(base) {
+        const r = base[0];
+        const g = base[1];
+        const b = base[2];
+
+        const absR = Math.abs(r);
+        const absG = Math.abs(g);
+        const absB = Math.abs(b);
+
+        const absSum = absR + absG + absB;
+        if (absSum < 1e-6) return 'Degenerate';
+
+        const sum = r + g + b;
+
+        const maxAbs = Math.max(absR, absG, absB);
+        const minAbs = Math.min(absR, absG, absB);
+
+        const allNonNegative = r >= 0 && g >= 0 && b >= 0;
+        const allNonPositive = r <= 0 && g <= 0 && b <= 0;
+
+        if (maxAbs / absSum > 0.85) {
+            if (absR === maxAbs) return 'Red channel';
+            if (absG === maxAbs) return 'Green channel';
+            if (absB === maxAbs) return 'Blue channel';
+        }
+
+        if ((allNonNegative || allNonPositive) && (minAbs / maxAbs) > 0.1) {
+            return 'Luma-like';
+        }
+
+        if (Math.abs(sum) < 0.25 * absSum) {
+            return 'Chroma-like';
+        }
+
+        return 'Mixed';
+    }
+
+    function isLumaLike(base) {
+        const r = base[0], g = base[1], b = base[2];
+        if (r <= 0 || g <= 0 || b <= 0) return false;
+
+        const mn = Math.min(r, g, b);
+        const mx = Math.max(r, g, b);
+        return mn > 0 && mx / mn < 4.0;
+    }
+
+    function fillContributionImageData(channel, imageData, base, gain = 1.0) {
+        const dst = imageData.data;
+        const n = channel.length;
+
+        const br = base[0];
+        const bg = base[1];
+        const bb = base[2];
+        const bias = base[3];
+
+        const lumaLike = isLumaLike(base);
+
+        for (let p = 0, i = 0; p < n; p++, i += 4) {
+            const dc = (channel[p] - bias) * gain;
+
+            if (lumaLike) {
+                const v = clamp255(128 + dc + 0.5);
+                dst[i] = v;
+                dst[i + 1] = v;
+                dst[i + 2] = v;
+                dst[i + 3] = 255;
+            } else {
+                dst[i] = clamp255(128 + dc * br + 0.5);
+                dst[i + 1] = clamp255(128 + dc * bg + 0.5);
+                dst[i + 2] = clamp255(128 + dc * bb + 0.5);
+                dst[i + 3] = 255;
+            }
         }
     }
 
@@ -820,6 +914,14 @@
         };
     }
 
+    function updateChannelKinds() {
+        const k1 = classifyChannel(base1);
+        const k2 = classifyChannel(base2);
+        const k3 = classifyChannel(base3);
+
+        channelKinds = [k1, k2, k3];
+    }
+
     function updateStats() {
         const rawStats = computeRelativeVarianceStats(ch1, ch2, ch3);
         channelStats.c1 = rawStats.a;
@@ -844,9 +946,23 @@
         }
 
         if (filterDirty || displayDirty) {
-            fillGrayImageData(ch1m, c1mImageData);
-            fillGrayImageData(ch2m, c2mImageData);
-            fillGrayImageData(ch3m, c3mImageData);
+            if (rightChannelContributionAmount[0] > 0) {
+                fillContributionImageData(ch1m, c1mImageData, base1, rightChannelContributionAmount[0]);
+            } else {
+                fillGrayImageData(ch1m, c1mImageData);
+            }
+
+            if (rightChannelContributionAmount[1] > 0) {
+                fillContributionImageData(ch2m, c2mImageData, base2, rightChannelContributionAmount[1]);
+            } else {
+                fillGrayImageData(ch2m, c2mImageData);
+            }
+
+            if (rightChannelContributionAmount[2] > 0) {
+                fillContributionImageData(ch3m, c3mImageData, base3, rightChannelContributionAmount[2]);
+            } else {
+                fillGrayImageData(ch3m, c3mImageData);
+            }
 
             bufferContexts.c1m.putImageData(c1mImageData, 0, 0);
             bufferContexts.c2m.putImageData(c2mImageData, 0, 0);
@@ -859,13 +975,21 @@
     }
 
     function updateHtmlLabels() {
-        Object.keys(channelStats).forEach(id => {
+        Object.keys(channelStats).forEach((id, i) => {
             const container = document.getElementById(id);
             if (!container) return;
 
             const label = container.querySelector('.energy-label');
             if (label) {
-                label.textContent = `Energy: ${channelStats[id].toFixed(0)}%`;
+                if (i < 3) {
+                    label.innerHTML = `
+                        Channel ${(i % 3) + 1}: ${channelKinds[i % 3] || ''}, Energy: ${channelStats[id].toFixed(0)}%
+                    `;
+                } else {
+                    label.innerHTML = `
+                        Energy: ${channelStats[id].toFixed(0)}%
+                    `;
+                }
             }
         });
 
@@ -1038,6 +1162,7 @@
 
         if (statsDirty) {
             updateStats();
+            updateChannelKinds();
         }
 
         if (hadDecomposeDirty || hadFilterDirty || hadResultDirty || hadDisplayDirty) {
@@ -1641,18 +1766,34 @@
                 markFilterDirty();
             }
 
+            function clampContributionValue(rawValue) {
+                const val = parseFloat(rawValue);
+                if (Number.isNaN(val)) return null;
+                return Math.max(0, Math.min(3, val));
+            }
+
+            function commitContributionValue(rawValue) {
+                const val = clampContributionValue(rawValue);
+                if (val === null) return;
+
+                rightChannelContributionAmount[i] = val;
+                displayDirty = true;
+                labelsDirty = true;
+                schedulePipeline();
+            }
+
             const div = document.querySelector(`#channel${i}m`);
             const panel = document.createElement('div');
             panel.classList.add('channel-panel');
             div.append(panel);
 
-            let holder = document.createElement('div');
-            holder.style.marginBottom = '-7px';
-            holder.style.marginTop = '-7px';
+            // Blur knob
+            let blurHolder = document.createElement('div');
+            // blurHolder.style.marginBottom = '-7px';
+            // blurHolder.style.marginTop = '-7px';
+            panel.append(blurHolder);
 
-            panel.append(holder);
-
-            knobs.push(new FancyKnob(holder, {
+            knobs.push(new FancyKnob(blurHolder, {
                 label: 'Blur',
                 min: 0,
                 max: 16,
@@ -1685,8 +1826,45 @@
                     commitBlurValue(v);
                 }
             }));
-            holder.querySelector('.knob').style.width = '100%';
+            blurHolder.querySelector('.knob').style.width = '100%';
 
+            // Contribution knob
+            let contributionHolder = document.createElement('div');
+            // contributionHolder.style.marginBottom = '-7px';
+            // contributionHolder.style.marginTop = '2px';
+            panel.append(contributionHolder);
+
+            knobs.push(new FancyKnob(contributionHolder, {
+                label: 'Colorize',
+                min: 0,
+                max: 3,
+                step: 0.25,
+                value: rightChannelContributionAmount[i],
+                color: '#b0b0b0',
+                centerLabel: '0',
+                size: 60,
+                horizontal: false,
+                formatValue: (v) => v === 0 ? 'off' : v.toFixed(2),
+                ticks: [
+                    { value: 0, major: true },
+                    { value: 0.25 },
+                    { value: 0.5 },
+                    { value: 0.75 },
+                    { value: 1, major: true },
+                    { value: 1.25 },
+                    { value: 1.5 },
+                    { value: 1.75 },
+                    { value: 2, major: true },
+                    { value: 2.25 },
+                    { value: 2.5 },
+                    { value: 2.75 },
+                    { value: 3, major: true },
+                ],
+                onInput: (v) => {
+                    commitContributionValue(v);
+                }
+            }));
+            contributionHolder.querySelector('.knob').style.width = '100%';
         }
     }
 
@@ -1803,6 +1981,15 @@
             knobs[12].setValue(0, true);
             knobs[13].setValue(0, true);
             knobs[14].setValue(0, true);
+
+            // contribution
+            knobs[15].setValue(0, true);
+            knobs[16].setValue(0, true);
+            knobs[17].setValue(0, true);
+
+            rightChannelContributionAmount[0] = 0;
+            rightChannelContributionAmount[1] = 0;
+            rightChannelContributionAmount[2] = 0;
 
             markBasisDirty();
             markFilterDirty();

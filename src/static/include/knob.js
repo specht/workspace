@@ -303,17 +303,6 @@ class FancyKnob {
         const angle = this.valueToAngle(this.value);
         const color = this.getActiveColor();
 
-        let start = this.sweepStart;
-        if (this.opts.bipolar) {
-            const zeroAngle = this.valueToAngle(0);
-            if (this.value >= 0) {
-                start = zeroAngle;
-            } else {
-                start = angle;
-                angle;
-            }
-        }
-
         if (this.opts.bipolar) {
             const zeroAngle = this.valueToAngle(0);
             if (this.value >= 0) {
