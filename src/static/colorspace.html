@@ -87,15 +87,6 @@
     .left-panel-open {
         --bs-btn-bg: #111;
         --bs-btn-border-color: #2a2d33;
-        /* background-color: #111; */
-        /* appearance: none;
-        border: 0;
-        border-radius: 6px;
-        background: #2c313a;
-        color: white;
-        padding: 8px 10px;
-        cursor: pointer;
-        font: 12px sans-serif; */
     }
 
     .left-panel-open {
@@ -103,7 +94,6 @@
         top: 12px;
         left: 12px;
         z-index: 25;
-        /* box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25); */
     }
 
     .canvas_container {
@@ -204,7 +194,7 @@
     #math_forward {
         position: absolute;
         left: 1em;
-        bottom: 1em;
+        bottom: calc(1em + 150px);
         color: #eee;
         transform: scale(0.9);
     }
@@ -212,7 +202,7 @@
     #math_inverse {
         position: absolute;
         right: 1em;
-        bottom: 1em;
+        bottom: calc(1em + 150px);
         color: #eee;
         transform: scale(0.9);
     }
@@ -310,7 +300,15 @@
 
     let inverseBasis = null;
 
+    const PIXEL_INTERACTION_MIN_ZOOM = 10;
+    const PIXEL_BOX_MIN_ZOOM = 10;
+
     let channelLevels = [1, 1, 1];
+
+    const pixelInspect = {
+        hover: null,      // { x, y }
+        selected: null    // { x, y }
+    };
 
     const viewState = {
         zoom: 1,
@@ -395,6 +393,10 @@
 
     const pointers = new Map();
     let gesture = null;
+
+    function canInspectPixels() {
+        return viewState.zoom >= PIXEL_INTERACTION_MIN_ZOOM;
+    }
 
     function getLeftPanelWidth() {
         const panel = document.getElementById('left_panel');
@@ -1028,6 +1030,10 @@
         return Math.pow((c + 0.055) / 1.055, 2.4);
     }
 
+    function luminance(r, g, b) {
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    }
+
     function rgbToXyz(r, g, b) {
         const rl = srgbToLinear(r);
         const gl = srgbToLinear(g);
@@ -1210,6 +1216,103 @@
         metricsDirty = false;
     }
 
+    function imageToScreen(canvas, ix, iy) {
+        const size = getCanvasDisplaySize(canvas);
+        const scale = getEffectiveScale(canvas);
+        const sw = size.w / scale;
+        const sh = size.h / scale;
+        const sx = viewState.cx - sw / 2;
+        const sy = viewState.cy - sh / 2;
+
+        return {
+            x: ((ix + 0.5 - sx) / sw) * size.w,
+            y: ((iy + 0.5 - sy) / sh) * size.h
+        };
+    }
+
+    function getPixelFromClient(canvas, clientX, clientY) {
+        const p = screenToImage(canvas, clientX, clientY);
+        const x = Math.floor(p.x);
+        const y = Math.floor(p.y);
+
+        if (x < 0 || x >= width || y < 0 || y >= height) return null;
+        return { x, y };
+    }
+
+    function getPixelIndex(x, y) {
+        return y * width + x;
+    }
+
+    function getRGBAFromImageData(imageData, x, y) {
+        if (!imageData) return null;
+        const i = (y * width + x) * 4;
+        const d = imageData.data;
+        return {
+            r: d[i],
+            g: d[i + 1],
+            b: d[i + 2],
+            a: d[i + 3]
+        };
+    }
+
+    function getGrayAt(arr, x, y) {
+        if (!arr) return null;
+        return arr[getPixelIndex(x, y)];
+    }
+
+    function getSelectedPixelValues() {
+        const p = pixelInspect.selected || pixelInspect.hover;
+        if (!p) return null;
+
+        return {
+            x: p.x,
+            y: p.y,
+
+            source: getRGBAFromImageData(sourceImageData, p.x, p.y),
+
+            c1: getGrayAt(ch1, p.x, p.y),
+            c2: getGrayAt(ch2, p.x, p.y),
+            c3: getGrayAt(ch3, p.x, p.y),
+
+            c1m: getGrayAt(ch1m, p.x, p.y),
+            c2m: getGrayAt(ch2m, p.x, p.y),
+            c3m: getGrayAt(ch3m, p.x, p.y),
+
+            result: getRGBAFromImageData(resultImageData, p.x, p.y)
+        };
+    }
+
+    function getDisplayColorForView(viewId, x, y) {
+        switch (viewId) {
+            case 'source':
+                return getRGBAFromImageData(sourceImageData, x, y);
+
+            case 'result':
+                return getRGBAFromImageData(resultImageData, x, y);
+
+            case 'c1':
+            case 'c2':
+            case 'c3': {
+                const arr = viewId === 'c1' ? ch1 :
+                            viewId === 'c2' ? ch2 : ch3;
+                const v = getGrayAt(arr, x, y);
+                return { r: v, g: v, b: v, a: 255 };
+            }
+
+            case 'c1m':
+            case 'c2m':
+            case 'c3m': {
+                const arr = viewId === 'c1m' ? ch1m :
+                            viewId === 'c2m' ? ch2m : ch3m;
+                const v = getGrayAt(arr, x, y);
+                return { r: v, g: v, b: v, a: 255 };
+            }
+
+            default:
+                return null;
+        }
+    }
+
     function getCanvasDisplaySize(canvas) {
         const dpr = window.devicePixelRatio || 1;
         return {
@@ -1257,6 +1360,7 @@
         updateZoomLimits();
         viewState.zoom = 1;
         clampView();
+        syncPixelInspectMode();
         renderAll();
         scheduleHashWrite();
     }
@@ -1292,6 +1396,66 @@
         }
     }
 
+    function drawPixelMarker(ctx, canvas, viewId, pixel, isSelected) {
+        if (!pixel) return;
+
+        const pos = imageToScreen(canvas, pixel.x, pixel.y);
+        const scale = getEffectiveScale(canvas);
+
+        ctx.save();
+
+        const px = pos.x;
+        const py = pos.y;
+
+        if (scale >= PIXEL_BOX_MIN_ZOOM) {
+            const boxSize = Math.max(8, scale);
+
+            ctx.strokeStyle = isSelected ? '#ff2d7a' : '#ffffff';
+            ctx.lineWidth = 2;
+
+            if (isSelected) {
+                ctx.shadowColor = 'rgba(255, 45, 122, 0.8)';
+                ctx.shadowBlur = 12;
+            } else {
+                ctx.shadowColor = 'rgba(255,255,255,0.5)';
+                ctx.shadowBlur = 8;
+            }
+
+            ctx.strokeRect(
+                Math.round(px - boxSize / 2),
+                Math.round(py - boxSize / 2),
+                Math.round(boxSize),
+                Math.round(boxSize)
+            );
+
+            ctx.shadowBlur = 0;
+        } else {
+            const r = isSelected ? 6 : 4;
+
+            let fill = 'rgba(255,255,255,0.9)';
+
+            if (isSelected) {
+                const c = getDisplayColorForView(viewId, pixel.x, pixel.y);
+                if (c) {
+                    fill = `rgba(${c.r}, ${c.g}, ${c.b}, 0.95)`;
+                    const lum = luminance(c.r, c.g, c.b);
+                    ctx.strokeStyle = lum > 140 ? 'rgba(0,0,0,0.9)' : 'rgba(255,255,255,0.9)';
+                }
+            }
+
+            ctx.beginPath();
+            ctx.arc(px, py, r, 0, Math.PI * 2);
+            ctx.fillStyle = fill;
+            ctx.fill();
+
+            // outline for contrast
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        ctx.restore();
+    }
+
     function renderView(viewId) {
         const visibleCanvas = document.querySelector(`#${viewId} canvas`);
         if (!visibleCanvas) return;
@@ -1322,6 +1486,9 @@
             sx, sy, sw, sh,
             0, 0, dw, dh
         );
+
+        drawPixelMarker(ctx, visibleCanvas, viewId, pixelInspect.hover, false);
+        drawPixelMarker(ctx, visibleCanvas, viewId, pixelInspect.selected, true);
     }
 
     function renderAll() {
@@ -1338,9 +1505,10 @@
 
         const c0w = 180 * scaleFactor;
         const c1w = 100 * scaleFactor;
+        const ch = 150;
 
         const ih = (windowWidth - 2 * margin - c0w - 2 * c1w - 6 * hpadding) / 4;
-        const iv = (windowHeight - 2 * margin - 2 * vpadding) / 3;
+        const iv = (windowHeight - 2 * margin - 2 * vpadding - ch) / 3;
         // const ih = (windowWidth - 2 * margin) * 0.5;
         // const iv = windowHeight - 2 * margin;
         // const h = (ih - hpadding) / 6.0;
@@ -1486,6 +1654,7 @@
         resizeVisibleCanvases();
         updateZoomLimits();
         clampView();
+        syncPixelInspectMode();
         scheduleRender();
     }
 
@@ -1514,6 +1683,13 @@
         };
     }
 
+    function syncPixelInspectMode() {
+        if (!canInspectPixels() && pixelInspect.hover) {
+            pixelInspect.hover = null;
+            scheduleRender();
+        }
+    }
+
     function zoomAt(canvas, clientX, clientY, zoomFactor) {
         const before = screenToImage(canvas, clientX, clientY);
         const newZoom = Math.max(viewState.minZoom, Math.min(viewState.maxZoom, viewState.zoom * zoomFactor));
@@ -1534,6 +1710,7 @@
         viewState.cy = before.y - ((py / size.h) - 0.5) * sh;
 
         clampView();
+        syncPixelInspectMode();
         scheduleRender();
         scheduleHashWrite();
     }
@@ -1614,6 +1791,10 @@
         scheduleHashWrite();
     }
 
+    function updatePixelReadout() {
+
+    }
+
     function attachInteractions(canvas) {
         canvas.addEventListener('wheel', function(e) {
             e.preventDefault();
@@ -1630,12 +1811,18 @@
             e.preventDefault();
             canvas.setPointerCapture(e.pointerId);
 
+            const px = getPixelFromClient(canvas, e.clientX, e.clientY);
+
             pointers.set(e.pointerId, {
                 pointerId: e.pointerId,
                 clientX: e.clientX,
                 clientY: e.clientY,
                 prevX: e.clientX,
-                prevY: e.clientY
+                prevY: e.clientY,
+                downX: e.clientX,
+                downY: e.clientY,
+                downPixel: px,
+                moved: false
             });
 
             if (pointers.size === 2) {
@@ -1644,11 +1831,34 @@
         });
 
         canvas.addEventListener('pointermove', function(e) {
+            if (canInspectPixels()) {
+                const hoverPixel = getPixelFromClient(canvas, e.clientX, e.clientY);
+                const oldHover = pixelInspect.hover;
+                pixelInspect.hover = hoverPixel;
+
+                if (
+                    (!oldHover && hoverPixel) ||
+                    (oldHover && !hoverPixel) ||
+                    (oldHover && hoverPixel && (oldHover.x !== hoverPixel.x || oldHover.y !== hoverPixel.y))
+                ) {
+                    scheduleRender();
+                    updatePixelReadout?.();
+                }
+            } else if (pixelInspect.hover) {
+                pixelInspect.hover = null;
+                scheduleRender();
+                updatePixelReadout?.();
+            }
+
             if (!pointers.has(e.pointerId)) return;
 
             const p = pointers.get(e.pointerId);
             const dx = e.clientX - p.prevX;
             const dy = e.clientY - p.prevY;
+
+            if (Math.abs(e.clientX - p.downX) > 3 || Math.abs(e.clientY - p.downY) > 3) {
+                p.moved = true;
+            }
 
             p.clientX = e.clientX;
             p.clientY = e.clientY;
@@ -1656,15 +1866,59 @@
             p.prevY = e.clientY;
             pointers.set(e.pointerId, p);
 
-            if (pointers.size === 1) {
+            if (pointers.size === 1 && p.moved) {
                 panByScreenDelta(canvas, dx, dy);
             } else if (pointers.size >= 2) {
                 updateGesture();
             }
         });
 
+        canvas.addEventListener('pointerleave', function() {
+            if (pixelInspect.hover) {
+                pixelInspect.hover = null;
+                scheduleRender();
+            }
+        });
+
         function endPointer(e) {
+            const p = pointers.get(e.pointerId);
+
+            if (p && !p.moved) {
+                const upPixel = getPixelFromClient(canvas, e.clientX, e.clientY);
+
+                if (!upPixel) {
+                    // clicked background/outside image -> deselect
+                    pixelInspect.selected = null;
+                    pixelInspect.hover = null;
+                    updatePixelReadout?.();
+                    scheduleRender();
+                } else if (canInspectPixels()) {
+                    if (
+                        p.downPixel &&
+                        upPixel.x === p.downPixel.x &&
+                        upPixel.y === p.downPixel.y
+                    ) {
+                        const sel = pixelInspect.selected;
+
+                        // clicking the selected pixel toggles it off
+                        if (sel && sel.x === upPixel.x && sel.y === upPixel.y) {
+                            pixelInspect.selected = null;
+                        } else {
+                            pixelInspect.selected = upPixel;
+                        }
+
+                        updatePixelReadout?.();
+                        scheduleRender();
+                    } else {
+                        pixelInspect.selected = null;
+                        updatePixelReadout?.();
+                        scheduleRender();
+                    }
+                }
+            }
+
             pointers.delete(e.pointerId);
+
             if (pointers.size < 2) {
                 gesture = null;
             } else {
@@ -1747,7 +2001,7 @@
                     value: bases[i][k],
                     color: ['#ea2830', '#73d216', '#238acc', '#d3d7cf'][k],
                     centerLabel: '0',
-                    size: 80,
+                    size: 70,
                     horizontal: true,
                     ticks: ticks,
                     formatValue: isOffset ? null : (v) => {
