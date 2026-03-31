@@ -34,8 +34,8 @@
         position: relative;
         width: 100vw;
         height: 100vh;
-        /* transform: translateX(var(--side-panel-offset)); */
-        /* transition: transform 220ms ease; */
+        transform: translateX(var(--side-panel-offset));
+        transition: transform 220ms ease;
     }
 
     #backdrop {
@@ -94,14 +94,17 @@
 
     .left-panel-close,
     .left-panel-open {
-        appearance: none;
+        --bs-btn-bg: #111;
+        --bs-btn-border-color: #2a2d33;
+        /* background-color: #111; */
+        /* appearance: none;
         border: 0;
         border-radius: 6px;
         background: #2c313a;
         color: white;
         padding: 8px 10px;
         cursor: pointer;
-        font: 12px sans-serif;
+        font: 12px sans-serif; */
     }
 
     .left-panel-open {
@@ -109,7 +112,7 @@
         top: 12px;
         left: 12px;
         z-index: 25;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+        /* box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25); */
     }
 
     .canvas_container {
@@ -233,7 +236,7 @@
     </div>
 </div>
 
-<button class="left-panel-open" id="left_panel_open_btn"><i class='bi bi-list'></i>Sidebar</button>
+<button class="btn btn-sm btn-secondary left-panel-open" id="left_panel_open_btn"><i class='bi bi-list'></i>Menu</button>
 
 <div id="app_shell">
     <div id="bg"></div>
@@ -1694,7 +1697,7 @@
 
             for (let k = 0; k < 4; k++) {
                 const isOffset = k === 3;
-                const min = isOffset ? 0 : -1;
+                const min = isOffset ? -128 : -1;
                 const max = isOffset ? 128 : 1;
                 const step = isOffset ? 16 : 0.1;
 
