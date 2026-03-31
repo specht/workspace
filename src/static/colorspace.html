@@ -1,6 +1,20 @@
 <link rel="stylesheet" href="include/knob.css">
 <script src="include/knob.js"></script>
 <script src="include/flowsvg.js"></script>
+
+<!-- KaTeX CSS -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+  <!-- KaTeX JS -->
+  <script defer
+          src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+  <!-- Auto-render extension -->
+  <script defer
+          src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+          onload="renderMathInElement(document.body);"></script>
+
 <style>
     body {
         background-color: #1c1d21;
@@ -192,6 +206,20 @@
     #gallery img:hover {
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
     }
+
+    #math_forward {
+        position: absolute;
+        left: 2em;
+        bottom: 1em;
+        color: #fff;
+    }
+
+    #math_inverse {
+        position: absolute;
+        right: 2em;
+        bottom: 1em;
+        color: #fff;
+    }
 </style>
 
 <div id="backdrop"></div>
@@ -209,6 +237,8 @@
     <div id="bg"></div>
     <div class="container-fluid">
         <div class="col-md-12">
+            <div id="math_forward"></div>
+            <div id="math_inverse"></div>
             <img id="base_image" style="display: none;">
 
             <div class="image_chooser"></div>
@@ -432,6 +462,11 @@
         ];
     }
 
+    function fn(x) {
+        // format with one decimal point at most, but remove trailing zeros
+        return parseFloat(x.toFixed(1)).toString();
+    }
+
     function updateInverseBasis() {
         inverseBasis = inverseMatrix3x3(base1, base2, base3);
         if (!inverseBasis) {
@@ -442,6 +477,16 @@
             ];
             // throw new Error('Basis vectors are not invertible.');
         }
+        katex.render(
+            `\\\\begin{bmatrix}${fn(base1[0])} & ${fn(base1[1])} & ${fn(base1[2])}\\\\\\\\${fn(base2[0])} & ${fn(base2[1])} & ${fn(base2[2])}\\\\\\\\${fn(base3[0])} & ${fn(base3[1])} & ${fn(base3[2])}\\\\end{bmatrix}`,
+            document.getElementById("math_forward"),
+            { displayMode: true }
+        );
+        katex.render(
+            `\\\\begin{bmatrix}${fn(inverseBasis[0][0])} & ${fn(inverseBasis[0][1])} & ${fn(inverseBasis[0][2])}\\\\\\\\${fn(inverseBasis[1][0])} & ${fn(inverseBasis[1][1])} & ${fn(inverseBasis[1][2])}\\\\\\\\${fn(inverseBasis[2][0])} & ${fn(inverseBasis[2][1])} & ${fn(inverseBasis[2][2])}\\\\end{bmatrix}`,
+            document.getElementById("math_inverse"),
+            { displayMode: true }
+        );
     }
 
     function applyBasis(r, g, b, base) {
