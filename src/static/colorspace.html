@@ -212,6 +212,7 @@
         left: 2em;
         bottom: 1em;
         color: #eee;
+        transform: scale(0.9);
     }
 
     #math_inverse {
@@ -219,6 +220,7 @@
         right: 2em;
         bottom: 1em;
         color: #eee;
+        transform: scale(0.9);
     }
 </style>
 
@@ -282,6 +284,10 @@
                 <canvas></canvas>
                 <div class="canvas-label energy-label"></div>
             </div>
+
+            <div class="channel_container" id="channel0n"></div>
+            <div class="channel_container" id="channel1n"></div>
+            <div class="channel_container" id="channel2n"></div>
 
             <div class="canvas_container" id="result">
                 <canvas></canvas>
@@ -407,8 +413,6 @@
 
         const width = getLeftPanelWidth();
         document.documentElement.style.setProperty('--side-panel-offset', `${width}px`);
-
-        // handleResize();
     }
 
     function closeLeftPanel() {
@@ -422,8 +426,6 @@
         panel.setAttribute('aria-hidden', 'true');
 
         document.documentElement.style.setProperty('--side-panel-offset', `0px`);
-
-        // handleResize();
     }
 
     function toggleLeftPanel() {
@@ -1336,7 +1338,7 @@
         const c0w = 180 * scaleFactor;
         const c1w = 100 * scaleFactor;
 
-        const ih = (windowWidth - 2 * margin - c0w - c1w - 5 * hpadding) / 4;
+        const ih = (windowWidth - 2 * margin - c0w - 2 * c1w - 6 * hpadding) / 4;
         const iv = (windowHeight - 2 * margin - 2 * vpadding) / 3;
         // const ih = (windowWidth - 2 * margin) * 0.5;
         // const iv = windowHeight - 2 * margin;
@@ -1401,23 +1403,23 @@
         flow.createPath({ points: [
             margin + ih * 2.5 + hpadding * 5 + c0w + c1w,
             margin + iv * 0.5 + vpadding,
-            margin + ih * 3.5 + hpadding * 6 + c0w + c1w,
+            margin + ih * 3.5 + hpadding * 7 + c0w + 2 * c1w,
             margin + iv * 0.5 + vpadding,
-            margin + ih * 3.5 + hpadding * 6 + c0w + c1w,
+            margin + ih * 3.5 + hpadding * 7 + c0w + 2 * c1w,
             margin + iv * 1.5 + vpadding,
         ]});
         flow.createPath({ points: [
             margin + ih * 2.5 + hpadding * 5 + c0w + c1w,
             margin + iv * 1.5 + vpadding,
-            margin + ih * 3.5 + hpadding * 6 + c0w + c1w,
+            margin + ih * 3.5 + hpadding * 7 + c0w + 2 * c1w,
             margin + iv * 1.5 + vpadding,
         ]});
         flow.createPath({ points: [
             margin + ih * 2.5 + hpadding * 5 + c0w + c1w,
             margin + iv * 2.5 + vpadding,
-            margin + ih * 3.5 + hpadding * 6 + c0w + c1w,
+            margin + ih * 3.5 + hpadding * 7 + c0w + 2 * c1w,
             margin + iv * 2.5 + vpadding,
-            margin + ih * 3.5 + hpadding * 6 + c0w + c1w,
+            margin + ih * 3.5 + hpadding * 7 + c0w + 2 * c1w,
             margin + iv * 1.5 + vpadding,
         ]});
 
@@ -1428,7 +1430,7 @@
         div.style.height = `${iv}px`;
 
         div = document.querySelector('#result');
-        div.style.left = `${margin + ih * 3 + hpadding * 5 + c0w + c1w}px`;
+        div.style.left = `${margin + ih * 3 + hpadding * 6 + c0w + 2 * c1w}px`;
         div.style.top = `${margin + iv + vpadding}px`;
         div.style.width = `${ih}px`;
         div.style.height = `${iv}px`;
@@ -1459,12 +1461,19 @@
 
         for (let y = 0; y < 3; y++) {
             div = document.querySelector(`#channel${y}m`);
-            div.style.left = `${margin + ih * 2 + c0w + 3 *hpadding}px`;
+            div.style.left = `${margin + ih * 2 + c0w + 3 * hpadding}px`;
             div.style.top = `${margin + y * (iv + vpadding)}px`;
             div.style.width = `${c1w}px`;
             div.style.height = `${iv}px`;
         }
 
+        for (let y = 0; y < 3; y++) {
+            div = document.querySelector(`#channel${y}n`);
+            div.style.left = `${margin + ih * 3 + c0w + c1w + 5 * hpadding}px`;
+            div.style.top = `${margin + 1.0 * (iv + vpadding) + (y - 1.0) * (iv * 0.9 + vpadding)}px`;
+            div.style.width = `${c1w}px`;
+            div.style.height = `${iv}px`;
+        }
 
         div = document.querySelector('.image_chooser');
         // div.style.left = `${margin}px`;
@@ -1803,8 +1812,8 @@
                 schedulePipeline();
             }
 
-            const div = document.querySelector(`#channel${i}m`);
-            const panel = document.createElement('div');
+            let div = document.querySelector(`#channel${i}m`);
+            let panel = document.createElement('div');
             panel.classList.add('channel-panel');
             div.append(panel);
 
@@ -1849,6 +1858,12 @@
             }));
             blurHolder.querySelector('.knob').style.width = '100%';
 
+            div = document.querySelector(`#channel${i}n`);
+            panel = document.createElement('div');
+            panel.classList.add('channel-panel');
+            div.append(panel);
+
+            // Level knob
             let levelHolder = document.createElement('div');
             panel.append(levelHolder);
 
@@ -1856,11 +1871,11 @@
                 label: 'Level',
                 min: 0,
                 max: 100,
-                step: 1,
+                step: 10,
                 value: channelLevels[i] * 100,
                 color: '#b0b0b0',
                 centerLabel: '0',
-                size: 60,
+                size: 70,
                 horizontal: false,
                 formatValue: (v) => `${Math.round(v)}%`,
                 ticks: [
@@ -1995,17 +2010,14 @@
             knobs[11].setValue(0.0, true);
             // blur
             knobs[12].setValue(0, true);
-            knobs[13].setValue(0, true);
             knobs[14].setValue(0, true);
-
-            // level
-            knobs[15].setValue(0, true);
             knobs[16].setValue(0, true);
-            knobs[17].setValue(0, true);
+            // level
+            knobs[13].setValue(100, true);
+            knobs[15].setValue(100, true);
+            knobs[17].setValue(100, true);
 
-            rightChannelContributionAmount[0] = 0;
-            rightChannelContributionAmount[1] = 0;
-            rightChannelContributionAmount[2] = 0;
+
             markBasisDirty();
             markFilterDirty();
             schedulePipeline();
