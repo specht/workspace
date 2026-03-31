@@ -1684,11 +1684,6 @@
         });
     }
 
-    function enableAutoSelect(el) {
-        el.addEventListener('focus', () => el.select());
-        el.addEventListener('click', () => el.select());
-    }
-
     function buildChannelControls() {
         const bases = [base1, base2, base3];
 
@@ -2120,11 +2115,6 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('left_panel_open_btn')?.addEventListener('click', openLeftPanel);
-
-        document.getElementById('demo_close_programmatically')?.addEventListener('click', function() {
-            // do something here...
-            closeLeftPanel(); // close it programmatically when done
-        });
 
         initBufferContexts();
         handleResize();
