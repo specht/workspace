@@ -211,14 +211,14 @@
         position: absolute;
         left: 2em;
         bottom: 1em;
-        color: #fff;
+        color: #eee;
     }
 
     #math_inverse {
         position: absolute;
         right: 2em;
         bottom: 1em;
-        color: #fff;
+        color: #eee;
     }
 </style>
 
@@ -304,9 +304,9 @@
     let base2 = [0.0, 1.0, 0.0, 0];
     let base3 = [0.0, 0.0, 1.0, 0];
     // YCbCr:
-    base1 = [0.299, 0.587, 0.114, 16];
-    base2 = [-0.169, -0.331, 0.5, 128];
-    base3 = [0.5, -0.419, -0.081, 128];
+    // base1 = [0.299, 0.587, 0.114, 16];
+    // base2 = [-0.169, -0.331, 0.5, 128];
+    // base3 = [0.5, -0.419, -0.081, 128];
 
     let inverseBasis = null;
 
@@ -481,28 +481,45 @@
             ];
             // throw new Error('Basis vectors are not invertible.');
         }
-katex.render(
-  String.raw`
-  \begin{bmatrix}x \\\\ y \\\\ z\end{bmatrix}
-  =
-  \begin{bmatrix}
-  ${fn(base1[0])} & ${fn(base1[1])} & ${fn(base1[2])} \\\\
-  ${fn(base2[0])} & ${fn(base2[1])} & ${fn(base2[2])} \\\\
-  ${fn(base3[0])} & ${fn(base3[1])} & ${fn(base3[2])}
-  \end{bmatrix}
-  \begin{bmatrix}r \\\\ g \\\\ b\end{bmatrix}
-  +
-  \begin{bmatrix}
-  ${fn(base1[3])} \\\\
-  ${fn(base2[3])} \\\\
-  ${fn(base3[3])}
-  \end{bmatrix}
-  `,
-  document.getElementById("math_forward"),
-  { displayMode: true }
-);
         katex.render(
-            `\\\\begin{bmatrix}${fn(inverseBasis[0][0])} & ${fn(inverseBasis[0][1])} & ${fn(inverseBasis[0][2])}\\\\\\\\${fn(inverseBasis[1][0])} & ${fn(inverseBasis[1][1])} & ${fn(inverseBasis[1][2])}\\\\\\\\${fn(inverseBasis[2][0])} & ${fn(inverseBasis[2][1])} & ${fn(inverseBasis[2][2])}\\\\end{bmatrix}`,
+            String.raw`
+                \begin{bmatrix}x \\\\ y \\\\ z\end{bmatrix}
+                =
+                \begin{bmatrix}
+                ${fn(base1[0])} & ${fn(base1[1])} & ${fn(base1[2])} \\\\
+                ${fn(base2[0])} & ${fn(base2[1])} & ${fn(base2[2])} \\\\
+                ${fn(base3[0])} & ${fn(base3[1])} & ${fn(base3[2])}
+                \end{bmatrix}
+                \begin{bmatrix}r \\\\ g \\\\ b\end{bmatrix}
+                +
+                \begin{bmatrix}
+                ${fn(base1[3])} \\\\
+                ${fn(base2[3])} \\\\
+                ${fn(base3[3])}
+                \end{bmatrix}
+            `,
+            document.getElementById("math_forward"),
+            { displayMode: true }
+        );
+        katex.render(
+            String.raw`
+                \begin{bmatrix}r \\\\ g \\\\ b\end{bmatrix}
+                =
+                \begin{bmatrix}
+                ${fn(inverseBasis[0][0])} & ${fn(inverseBasis[0][1])} & ${fn(inverseBasis[0][2])} \\\\
+                ${fn(inverseBasis[1][0])} & ${fn(inverseBasis[1][1])} & ${fn(inverseBasis[1][2])} \\\\
+                ${fn(inverseBasis[2][0])} & ${fn(inverseBasis[2][1])} & ${fn(inverseBasis[2][2])}
+                \end{bmatrix}
+                \left(
+                \begin{bmatrix}x \\\\ y \\\\ z\end{bmatrix}
+                -
+                \begin{bmatrix}
+                ${fn(base1[3])} \\\\
+                ${fn(base2[3])} \\\\
+                ${fn(base3[3])}
+                \end{bmatrix}
+                \right)
+            `,
             document.getElementById("math_inverse"),
             { displayMode: true }
         );
