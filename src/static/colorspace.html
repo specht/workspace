@@ -194,7 +194,7 @@
     #math_forward {
         position: absolute;
         left: 1em;
-        bottom: calc(1em + 150px);
+        bottom: 2em;
         color: #eee;
         transform: scale(0.9);
     }
@@ -202,7 +202,7 @@
     #math_inverse {
         position: absolute;
         right: 1em;
-        bottom: calc(1em + 150px);
+        bottom: 2em;
         color: #eee;
         transform: scale(0.9);
     }
@@ -300,15 +300,7 @@
 
     let inverseBasis = null;
 
-    const PIXEL_INTERACTION_MIN_ZOOM = 10;
-    const PIXEL_BOX_MIN_ZOOM = 10;
-
     let channelLevels = [1, 1, 1];
-
-    const pixelInspect = {
-        hover: null,      // { x, y }
-        selected: null    // { x, y }
-    };
 
     const viewState = {
         zoom: 1,
@@ -1216,103 +1208,6 @@
         metricsDirty = false;
     }
 
-    function imageToScreen(canvas, ix, iy) {
-        const size = getCanvasDisplaySize(canvas);
-        const scale = getEffectiveScale(canvas);
-        const sw = size.w / scale;
-        const sh = size.h / scale;
-        const sx = viewState.cx - sw / 2;
-        const sy = viewState.cy - sh / 2;
-
-        return {
-            x: ((ix + 0.5 - sx) / sw) * size.w,
-            y: ((iy + 0.5 - sy) / sh) * size.h
-        };
-    }
-
-    function getPixelFromClient(canvas, clientX, clientY) {
-        const p = screenToImage(canvas, clientX, clientY);
-        const x = Math.floor(p.x);
-        const y = Math.floor(p.y);
-
-        if (x < 0 || x >= width || y < 0 || y >= height) return null;
-        return { x, y };
-    }
-
-    function getPixelIndex(x, y) {
-        return y * width + x;
-    }
-
-    function getRGBAFromImageData(imageData, x, y) {
-        if (!imageData) return null;
-        const i = (y * width + x) * 4;
-        const d = imageData.data;
-        return {
-            r: d[i],
-            g: d[i + 1],
-            b: d[i + 2],
-            a: d[i + 3]
-        };
-    }
-
-    function getGrayAt(arr, x, y) {
-        if (!arr) return null;
-        return arr[getPixelIndex(x, y)];
-    }
-
-    function getSelectedPixelValues() {
-        const p = pixelInspect.selected || pixelInspect.hover;
-        if (!p) return null;
-
-        return {
-            x: p.x,
-            y: p.y,
-
-            source: getRGBAFromImageData(sourceImageData, p.x, p.y),
-
-            c1: getGrayAt(ch1, p.x, p.y),
-            c2: getGrayAt(ch2, p.x, p.y),
-            c3: getGrayAt(ch3, p.x, p.y),
-
-            c1m: getGrayAt(ch1m, p.x, p.y),
-            c2m: getGrayAt(ch2m, p.x, p.y),
-            c3m: getGrayAt(ch3m, p.x, p.y),
-
-            result: getRGBAFromImageData(resultImageData, p.x, p.y)
-        };
-    }
-
-    function getDisplayColorForView(viewId, x, y) {
-        switch (viewId) {
-            case 'source':
-                return getRGBAFromImageData(sourceImageData, x, y);
-
-            case 'result':
-                return getRGBAFromImageData(resultImageData, x, y);
-
-            case 'c1':
-            case 'c2':
-            case 'c3': {
-                const arr = viewId === 'c1' ? ch1 :
-                            viewId === 'c2' ? ch2 : ch3;
-                const v = getGrayAt(arr, x, y);
-                return { r: v, g: v, b: v, a: 255 };
-            }
-
-            case 'c1m':
-            case 'c2m':
-            case 'c3m': {
-                const arr = viewId === 'c1m' ? ch1m :
-                            viewId === 'c2m' ? ch2m : ch3m;
-                const v = getGrayAt(arr, x, y);
-                return { r: v, g: v, b: v, a: 255 };
-            }
-
-            default:
-                return null;
-        }
-    }
-
     function getCanvasDisplaySize(canvas) {
         const dpr = window.devicePixelRatio || 1;
         return {
@@ -1360,7 +1255,6 @@
         updateZoomLimits();
         viewState.zoom = 1;
         clampView();
-        syncPixelInspectMode();
         renderAll();
         scheduleHashWrite();
     }
@@ -1486,9 +1380,6 @@
             sx, sy, sw, sh,
             0, 0, dw, dh
         );
-
-        drawPixelMarker(ctx, visibleCanvas, viewId, pixelInspect.hover, false);
-        drawPixelMarker(ctx, visibleCanvas, viewId, pixelInspect.selected, true);
     }
 
     function renderAll() {
@@ -1505,10 +1396,9 @@
 
         const c0w = 180 * scaleFactor;
         const c1w = 100 * scaleFactor;
-        const ch = 150;
 
         const ih = (windowWidth - 2 * margin - c0w - 2 * c1w - 6 * hpadding) / 4;
-        const iv = (windowHeight - 2 * margin - 2 * vpadding - ch) / 3;
+        const iv = (windowHeight - 2 * margin - 2 * vpadding) / 3;
         // const ih = (windowWidth - 2 * margin) * 0.5;
         // const iv = windowHeight - 2 * margin;
         // const h = (ih - hpadding) / 6.0;
@@ -1654,7 +1544,6 @@
         resizeVisibleCanvases();
         updateZoomLimits();
         clampView();
-        syncPixelInspectMode();
         scheduleRender();
     }
 
@@ -1683,13 +1572,6 @@
         };
     }
 
-    function syncPixelInspectMode() {
-        if (!canInspectPixels() && pixelInspect.hover) {
-            pixelInspect.hover = null;
-            scheduleRender();
-        }
-    }
-
     function zoomAt(canvas, clientX, clientY, zoomFactor) {
         const before = screenToImage(canvas, clientX, clientY);
         const newZoom = Math.max(viewState.minZoom, Math.min(viewState.maxZoom, viewState.zoom * zoomFactor));
@@ -1710,7 +1592,6 @@
         viewState.cy = before.y - ((py / size.h) - 0.5) * sh;
 
         clampView();
-        syncPixelInspectMode();
         scheduleRender();
         scheduleHashWrite();
     }
@@ -1791,10 +1672,6 @@
         scheduleHashWrite();
     }
 
-    function updatePixelReadout() {
-
-    }
-
     function attachInteractions(canvas) {
         canvas.addEventListener('wheel', function(e) {
             e.preventDefault();
@@ -1811,8 +1688,6 @@
             e.preventDefault();
             canvas.setPointerCapture(e.pointerId);
 
-            const px = getPixelFromClient(canvas, e.clientX, e.clientY);
-
             pointers.set(e.pointerId, {
                 pointerId: e.pointerId,
                 clientX: e.clientX,
@@ -1821,7 +1696,6 @@
                 prevY: e.clientY,
                 downX: e.clientX,
                 downY: e.clientY,
-                downPixel: px,
                 moved: false
             });
 
@@ -1831,25 +1705,6 @@
         });
 
         canvas.addEventListener('pointermove', function(e) {
-            if (canInspectPixels()) {
-                const hoverPixel = getPixelFromClient(canvas, e.clientX, e.clientY);
-                const oldHover = pixelInspect.hover;
-                pixelInspect.hover = hoverPixel;
-
-                if (
-                    (!oldHover && hoverPixel) ||
-                    (oldHover && !hoverPixel) ||
-                    (oldHover && hoverPixel && (oldHover.x !== hoverPixel.x || oldHover.y !== hoverPixel.y))
-                ) {
-                    scheduleRender();
-                    updatePixelReadout?.();
-                }
-            } else if (pixelInspect.hover) {
-                pixelInspect.hover = null;
-                scheduleRender();
-                updatePixelReadout?.();
-            }
-
             if (!pointers.has(e.pointerId)) return;
 
             const p = pointers.get(e.pointerId);
@@ -1873,49 +1728,8 @@
             }
         });
 
-        canvas.addEventListener('pointerleave', function() {
-            if (pixelInspect.hover) {
-                pixelInspect.hover = null;
-                scheduleRender();
-            }
-        });
-
         function endPointer(e) {
             const p = pointers.get(e.pointerId);
-
-            if (p && !p.moved) {
-                const upPixel = getPixelFromClient(canvas, e.clientX, e.clientY);
-
-                if (!upPixel) {
-                    // clicked background/outside image -> deselect
-                    pixelInspect.selected = null;
-                    pixelInspect.hover = null;
-                    updatePixelReadout?.();
-                    scheduleRender();
-                } else if (canInspectPixels()) {
-                    if (
-                        p.downPixel &&
-                        upPixel.x === p.downPixel.x &&
-                        upPixel.y === p.downPixel.y
-                    ) {
-                        const sel = pixelInspect.selected;
-
-                        // clicking the selected pixel toggles it off
-                        if (sel && sel.x === upPixel.x && sel.y === upPixel.y) {
-                            pixelInspect.selected = null;
-                        } else {
-                            pixelInspect.selected = upPixel;
-                        }
-
-                        updatePixelReadout?.();
-                        scheduleRender();
-                    } else {
-                        pixelInspect.selected = null;
-                        updatePixelReadout?.();
-                        scheduleRender();
-                    }
-                }
-            }
 
             pointers.delete(e.pointerId);
 
