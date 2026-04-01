@@ -227,8 +227,6 @@
             <div id="math_inverse"></div>
             <img id="base_image" style="display: none;">
 
-            <div class="image_chooser"></div>
-
             <div class="channel_container" id="channel0"></div>
             <div class="channel_container" id="channel1"></div>
             <div class="channel_container" id="channel2"></div>
@@ -1534,13 +1532,6 @@
             div.style.height = `${iv}px`;
         }
 
-        div = document.querySelector('.image_chooser');
-        // div.style.left = `${margin}px`;
-        // div.style.top = `${margin}px`;
-        // div.style.width = `${windowWidth - ih - hpadding - 2 * margin}px`;
-        // div.style.height = `${imageChooserHeight}px`;
-        div.style.display = 'none';
-
         resizeVisibleCanvases();
         updateZoomLimits();
         clampView();
@@ -1763,7 +1754,7 @@
 
             for (let k = 0; k < 4; k++) {
                 const isOffset = k === 3;
-                const min = isOffset ? -128 : -1;
+                const min = isOffset ? 0 : -1;
                 const max = isOffset ? 128 : 1;
                 const step = isOffset ? 16 : 0.1;
 

@@ -1,0 +1,562 @@
+<style>
+    body {
+        margin: 0;
+        background-color: #1c1d21;
+        overflow: hidden;
+    }
+
+    .menu, .header, footer {
+        display: none;
+    }
+
+    :root {
+        --side-panel-width: 256px;
+        --side-panel-offset: 0px;
+    }
+
+    #app_shell {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        transform: translateX(var(--side-panel-offset));
+        transition: transform 220ms ease;
+    }
+
+    #backdrop {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        background-color: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 220ms ease;
+    }
+
+    #backdrop.visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    #left_panel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: var(--side-panel-width);
+        height: 100vh;
+        background: #0f1013;
+        border-right: 1px solid #2a2d33;
+        box-shadow: 8px 0 24px rgba(0, 0, 0, 0.35);
+        color: white;
+        z-index: 20;
+        transform: translateX(-100%);
+        transition: transform 220ms ease;
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+    }
+
+    #left_panel.open {
+        transform: translateX(0);
+    }
+
+    .left-panel-body {
+        padding: 16px;
+        font: 13px sans-serif;
+    }
+
+    .left-panel-open {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 25;
+    }
+
+    .canvas_container {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .canvas_container canvas {
+        display: block;
+        touch-action: none;
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    #gallery {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    #gallery img {
+        width: 100%;
+        border-radius: 6px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        display: block;
+    }
+
+    #gallery img:hover {
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    }
+</style>
+
+<div id="backdrop"></div>
+
+<div id="left_panel" aria-hidden="true">
+    <div class="left-panel-body">
+        <div id="gallery"></div>
+    </div>
+</div>
+
+<button class="btn btn-sm btn-secondary left-panel-open" id="left_panel_open_btn">
+    <i class="bi bi-list"></i>Menu
+</button>
+
+<div id="app_shell">
+    <img id="base_image" style="display:none;">
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <div class="canvas_container" id="source">
+                <canvas></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let isLeftPanelOpen = false;
+
+    let hpadding = 32;
+    let vpadding = 10;
+    let margin = 10;
+
+    let width = 1;
+    let height = 1;
+
+    const viewState = {
+        zoom: 1,
+        minZoom: 1,
+        maxZoom: 64,
+        cx: 0,
+        cy: 0
+    };
+
+    const pointers = new Map();
+    let gesture = null;
+    let renderQueued = false;
+
+    const bufferCanvas = document.createElement('canvas');
+    const bufferCtx = bufferCanvas.getContext('2d', { willReadFrequently: true });
+
+    const visibleCanvas = document.querySelector('#source canvas');
+    const visibleCtx = visibleCanvas.getContext('2d');
+
+    function getLeftPanelWidth() {
+        const panel = document.getElementById('left_panel');
+        return panel ? panel.getBoundingClientRect().width : 0;
+    }
+
+    function openLeftPanel() {
+        document.getElementById('left_panel_open_btn').style.display = 'none';
+        document.getElementById('backdrop').classList.add('visible');
+
+        const panel = document.getElementById('left_panel');
+        if (!panel) return;
+
+        isLeftPanelOpen = true;
+        panel.classList.add('open');
+        panel.setAttribute('aria-hidden', 'false');
+
+        const width = getLeftPanelWidth();
+        document.documentElement.style.setProperty('--side-panel-offset', `${width}px`);
+    }
+
+    function closeLeftPanel() {
+        document.getElementById('left_panel_open_btn').style.display = 'block';
+        document.getElementById('backdrop').classList.remove('visible');
+
+        const panel = document.getElementById('left_panel');
+        if (!panel) return;
+
+        isLeftPanelOpen = false;
+        panel.classList.remove('open');
+        panel.setAttribute('aria-hidden', 'true');
+
+        document.documentElement.style.setProperty('--side-panel-offset', `0px`);
+    }
+
+    function getCanvasDisplaySize(canvas) {
+        const dpr = window.devicePixelRatio || 1;
+        return {
+            w: canvas.width / dpr,
+            h: canvas.height / dpr
+        };
+    }
+
+    function getFitScale(canvas) {
+        if (!width || !height) return 1;
+        const size = getCanvasDisplaySize(canvas);
+        return Math.min(size.w / width, size.h / height);
+    }
+
+    function getEffectiveScale(canvas) {
+        return getFitScale(canvas) * viewState.zoom;
+    }
+
+    function resizeVisibleCanvas() {
+        const container = document.getElementById('source');
+        const rect = container.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+
+        const displayWidth = Math.max(1, Math.round(rect.width));
+        const displayHeight = Math.max(1, Math.round(rect.height));
+
+        visibleCanvas.width = Math.round(displayWidth * dpr);
+        visibleCanvas.height = Math.round(displayHeight * dpr);
+        visibleCanvas.style.width = `${displayWidth}px`;
+        visibleCanvas.style.height = `${displayHeight}px`;
+    }
+
+    function updateZoomLimits() {
+        viewState.minZoom = 1;
+        viewState.maxZoom = 64;
+        viewState.zoom = Math.max(viewState.minZoom, Math.min(viewState.maxZoom, viewState.zoom || 1));
+    }
+
+    function resetView() {
+        viewState.cx = width / 2;
+        viewState.cy = height / 2;
+        updateZoomLimits();
+        viewState.zoom = 1;
+        clampView();
+        renderAll();
+    }
+
+    function clampView() {
+        const canvas = visibleCanvas;
+        const size = getCanvasDisplaySize(canvas);
+        const scale = getEffectiveScale(canvas);
+
+        const halfW = size.w / (2 * scale);
+        const halfH = size.h / (2 * scale);
+
+        if (halfW * 2 >= width) {
+            viewState.cx = width / 2;
+        } else {
+            viewState.cx = Math.max(halfW, Math.min(width - halfW, viewState.cx));
+        }
+
+        if (halfH * 2 >= height) {
+            viewState.cy = height / 2;
+        } else {
+            viewState.cy = Math.max(halfH, Math.min(height - halfH, viewState.cy));
+        }
+    }
+
+    function renderView() {
+        const dpr = window.devicePixelRatio || 1;
+        const size = getCanvasDisplaySize(visibleCanvas);
+        const dw = size.w;
+        const dh = size.h;
+
+        visibleCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        visibleCtx.clearRect(0, 0, dw, dh);
+
+        if (!bufferCanvas.width || !bufferCanvas.height) return;
+
+        const scale = getEffectiveScale(visibleCanvas);
+        const sw = dw / scale;
+        const sh = dh / scale;
+        const sx = viewState.cx - sw / 2;
+        const sy = viewState.cy - sh / 2;
+
+        visibleCtx.imageSmoothingEnabled = !(viewState.zoom > 4);
+        visibleCtx.imageSmoothingQuality = 'low';
+
+        visibleCtx.drawImage(
+            bufferCanvas,
+            sx, sy, sw, sh,
+            0, 0, dw, dh
+        );
+    }
+
+    function renderAll() {
+        renderView();
+    }
+
+    function scheduleRender() {
+        if (renderQueued) return;
+        renderQueued = true;
+        requestAnimationFrame(() => {
+            renderQueued = false;
+            renderAll();
+        });
+    }
+
+    function handleResize() {
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        // original layout math
+        const scaleFactor = Math.min(1.0, 1060.0 / windowHeight);
+        const c0w = 180 * scaleFactor;
+        const c1w = 100 * scaleFactor;
+
+        const ih = (windowWidth - 2 * margin - c0w - 2 * c1w - 6 * hpadding) / 4;
+        const iv = (windowHeight - 2 * margin - 2 * vpadding) / 3;
+
+        const div = document.getElementById('source');
+        div.style.left = `${margin}px`;
+        div.style.top = `${margin + iv + vpadding}px`;
+        div.style.width = `${ih}px`;
+        div.style.height = `${iv}px`;
+
+        resizeVisibleCanvas();
+        updateZoomLimits();
+        clampView();
+        scheduleRender();
+    }
+
+    function loadImage(src) {
+        document.getElementById('base_image').src = src;
+    }
+
+    function loadCurrentImageIntoViewer() {
+        const baseImage = document.getElementById('base_image');
+
+        width = baseImage.naturalWidth;
+        height = baseImage.naturalHeight;
+
+        bufferCanvas.width = width;
+        bufferCanvas.height = height;
+
+        bufferCtx.clearRect(0, 0, width, height);
+        bufferCtx.drawImage(baseImage, 0, 0, width, height);
+
+        resetView();
+    }
+
+    function screenToImage(canvas, clientX, clientY) {
+        const rect = canvas.getBoundingClientRect();
+        const size = getCanvasDisplaySize(canvas);
+
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+
+        const scale = getEffectiveScale(canvas);
+        const sw = size.w / scale;
+        const sh = size.h / scale;
+        const sx = viewState.cx - sw / 2;
+        const sy = viewState.cy - sh / 2;
+
+        return {
+            x: sx + (x / size.w) * sw,
+            y: sy + (y / size.h) * sh
+        };
+    }
+
+    function zoomAt(canvas, clientX, clientY, zoomFactor) {
+        const before = screenToImage(canvas, clientX, clientY);
+        const newZoom = Math.max(viewState.minZoom, Math.min(viewState.maxZoom, viewState.zoom * zoomFactor));
+        if (newZoom === viewState.zoom) return;
+
+        viewState.zoom = newZoom;
+
+        const rect = canvas.getBoundingClientRect();
+        const size = getCanvasDisplaySize(canvas);
+        const px = clientX - rect.left;
+        const py = clientY - rect.top;
+
+        const scale = getEffectiveScale(canvas);
+        const sw = size.w / scale;
+        const sh = size.h / scale;
+
+        viewState.cx = before.x - ((px / size.w) - 0.5) * sw;
+        viewState.cy = before.y - ((py / size.h) - 0.5) * sh;
+
+        clampView();
+        scheduleRender();
+    }
+
+    function panByScreenDelta(canvas, dx, dy) {
+        const scale = getEffectiveScale(canvas);
+        viewState.cx -= dx / scale;
+        viewState.cy -= dy / scale;
+        clampView();
+        scheduleRender();
+    }
+
+    function getTwoPointers() {
+        const vals = Array.from(pointers.values());
+        if (vals.length < 2) return null;
+        return [vals[0], vals[1]];
+    }
+
+    function distance(a, b) {
+        const dx = a.clientX - b.clientX;
+        const dy = a.clientY - b.clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function midpoint(a, b) {
+        return {
+            clientX: (a.clientX + b.clientX) / 2,
+            clientY: (a.clientY + b.clientY) / 2
+        };
+    }
+
+    function startGesture(canvas) {
+        const two = getTwoPointers();
+        if (!two) return;
+
+        const [p1, p2] = two;
+        const mid = midpoint(p1, p2);
+        const anchor = screenToImage(canvas, mid.clientX, mid.clientY);
+
+        gesture = {
+            canvas,
+            startDistance: distance(p1, p2),
+            startZoom: viewState.zoom,
+            anchorImageX: anchor.x,
+            anchorImageY: anchor.y
+        };
+    }
+
+    function updateGesture() {
+        if (!gesture) return;
+        const two = getTwoPointers();
+        if (!two) return;
+
+        const [p1, p2] = two;
+        const mid = midpoint(p1, p2);
+        const newDistance = distance(p1, p2);
+        if (gesture.startDistance <= 0) return;
+
+        let newZoom = gesture.startZoom * (newDistance / gesture.startDistance);
+        newZoom = Math.max(viewState.minZoom, Math.min(viewState.maxZoom, newZoom));
+        viewState.zoom = newZoom;
+
+        const canvas = gesture.canvas;
+        const rect = canvas.getBoundingClientRect();
+        const size = getCanvasDisplaySize(canvas);
+        const px = mid.clientX - rect.left;
+        const py = mid.clientY - rect.top;
+        const scale = getEffectiveScale(canvas);
+        const sw = size.w / scale;
+        const sh = size.h / scale;
+
+        viewState.cx = gesture.anchorImageX - ((px / size.w) - 0.5) * sw;
+        viewState.cy = gesture.anchorImageY - ((py / size.h) - 0.5) * sh;
+
+        clampView();
+        scheduleRender();
+    }
+
+    function attachInteractions(canvas) {
+        canvas.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            const factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
+            zoomAt(canvas, e.clientX, e.clientY, factor);
+        }, { passive: false });
+
+        canvas.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+            zoomAt(canvas, e.clientX, e.clientY, 2);
+        });
+
+        canvas.addEventListener('pointerdown', function(e) {
+            e.preventDefault();
+            canvas.setPointerCapture(e.pointerId);
+
+            pointers.set(e.pointerId, {
+                pointerId: e.pointerId,
+                clientX: e.clientX,
+                clientY: e.clientY,
+                prevX: e.clientX,
+                prevY: e.clientY,
+                downX: e.clientX,
+                downY: e.clientY,
+                moved: false
+            });
+
+            if (pointers.size === 2) {
+                startGesture(canvas);
+            }
+        });
+
+        canvas.addEventListener('pointermove', function(e) {
+            if (!pointers.has(e.pointerId)) return;
+
+            const p = pointers.get(e.pointerId);
+            const dx = e.clientX - p.prevX;
+            const dy = e.clientY - p.prevY;
+
+            if (Math.abs(e.clientX - p.downX) > 3 || Math.abs(e.clientY - p.downY) > 3) {
+                p.moved = true;
+            }
+
+            p.clientX = e.clientX;
+            p.clientY = e.clientY;
+            p.prevX = e.clientX;
+            p.prevY = e.clientY;
+            pointers.set(e.pointerId, p);
+
+            if (pointers.size === 1 && p.moved) {
+                panByScreenDelta(canvas, dx, dy);
+            } else if (pointers.size >= 2) {
+                updateGesture();
+            }
+        });
+
+        function endPointer(e) {
+            pointers.delete(e.pointerId);
+
+            if (pointers.size < 2) {
+                gesture = null;
+            } else {
+                startGesture(canvas);
+            }
+        }
+
+        canvas.addEventListener('pointerup', endPointer);
+        canvas.addEventListener('pointercancel', endPointer);
+    }
+
+    window.addEventListener('resize', handleResize);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('left_panel_open_btn')?.addEventListener('click', openLeftPanel);
+        document.getElementById('backdrop')?.addEventListener('click', closeLeftPanel);
+
+        handleResize();
+        attachInteractions(visibleCanvas);
+
+        const baseImage = document.getElementById('base_image');
+        baseImage.addEventListener('load', loadCurrentImageIntoViewer);
+
+        const images = ['25', '30', '33', '44', '76', '91'];
+        const imageChooser = document.getElementById('gallery');
+
+        for (const imgSrc of images) {
+            const img = document.createElement('img');
+            img.src = `jpeg/${imgSrc}.jpg`;
+            img.addEventListener('click', function() {
+                loadImage(`jpeg/${imgSrc}.jpg`);
+                closeLeftPanel();
+            });
+            imageChooser.append(img);
+        }
+
+        const firstImage = imageChooser.querySelector('img');
+        if (firstImage) firstImage.click();
+    });
+</script>
