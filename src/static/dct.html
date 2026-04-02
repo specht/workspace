@@ -167,6 +167,50 @@
         border-color: #2e6da4;
         color: white;
     }
+
+    .sample-grid-wrap {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .sample-grid {
+        display: grid;
+        gap: 1px;
+        background: #2a2d33;
+        outline: 1px solid #444;
+    }
+
+    .sample-grid.mode-2d {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        aspect-ratio: 1 / 1;
+    }
+
+    .sample-grid.mode-1d {
+        width: 100%;
+        max-width: 100%;
+        aspect-ratio: 8 / 1;
+    }
+
+    .sample-cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        aspect-ratio: 1 / 1;
+        font-size: clamp(8px, 1.1vw, 14px);
+        user-select: none;
+    }
+
+    .sample-cell.empty {
+        background: #1c1d21;
+    }
 </style>
 
 <div id="backdrop"></div>
@@ -568,6 +612,7 @@
     function commitHoverSelection() {
         if (!selectionState.hover) return;
         selectionState.selected = { ...selectionState.hover };
+        renderSqInput();
         scheduleRender();
     }
 
@@ -683,6 +728,7 @@
 
         dstCtx.putImageData(dst, 0, 0);
         document.getElementById('channel_label').textContent = `${['Y', 'Cb', 'Cr'][currentChannel - 1]} Channel`;
+        renderSqInput();
     }
 
     function loadCurrentImageIntoViewer() {
@@ -704,6 +750,7 @@
         selectionState.selected = null;
 
         rebuildChannelBuffer();
+        renderSqInput();
         resetView();
     }
 
@@ -1062,6 +1109,7 @@
             ? selectionFromAnchor(hoverAnchor, mode)
             : null;
 
+        renderSqInput();
         scheduleRender();
     }
 
@@ -1071,6 +1119,105 @@
                 setAppMode(btn.dataset.mode);
             });
         });
+    }
+
+    function getSelectedBlockValues() {
+        const sel = selectionState.selected || selectionState.hover;
+        if (!sel) return null;
+
+        const { w, h } = getSelectionSize();
+        const ctx = bufferContexts.channel_view;
+        const img = ctx.getImageData(sel.x, sel.y, w, h);
+        const values = [];
+
+        for (let row = 0; row < h; row++) {
+            const line = [];
+            for (let col = 0; col < w; col++) {
+                const i = (row * w + col) * 4;
+                line.push(img.data[i]); // grayscale, so R is enough
+            }
+            values.push(line);
+        }
+
+        return values;
+    }
+
+    function getTextColorForValue(v) {
+        return v >= 140 ? '#111' : '#f5f5f5';
+    }
+
+    function renderSqInput() {
+        const container = document.getElementById('sq_input');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        const wrap = document.createElement('div');
+        wrap.className = 'sample-grid-wrap';
+
+        const grid = document.createElement('div');
+        grid.className = `sample-grid ${appMode === '2d' ? 'mode-2d' : 'mode-1d'}`;
+
+        const values = getSelectedBlockValues();
+
+        if (!values) {
+            if (appMode === '2d') {
+                grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+                grid.style.gridTemplateRows = 'repeat(8, 1fr)';
+
+                for (let i = 0; i < 64; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'sample-cell empty';
+                    grid.appendChild(cell);
+                }
+            } else {
+                grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+                grid.style.gridTemplateRows = '1fr';
+
+                for (let i = 0; i < 8; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'sample-cell empty';
+                    grid.appendChild(cell);
+                }
+            }
+
+            wrap.appendChild(grid);
+            container.appendChild(wrap);
+            return;
+        }
+
+        if (appMode === '2d') {
+            grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+            grid.style.gridTemplateRows = 'repeat(8, 1fr)';
+
+            for (let y = 0; y < 8; y++) {
+                for (let x = 0; x < 8; x++) {
+                    const v = values[y][x];
+                    const cell = document.createElement('div');
+                    cell.className = 'sample-cell';
+                    cell.textContent = v;
+                    cell.style.background = `rgb(${v}, ${v}, ${v})`;
+                    cell.style.color = getTextColorForValue(v);
+                    grid.appendChild(cell);
+                }
+            }
+        } else {
+            grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+            grid.style.gridTemplateRows = '1fr';
+
+            for (let x = 0; x < 8; x++) {
+                const v = values[0][x];
+                const cell = document.createElement('div');
+                cell.className = 'sample-cell';
+                cell.textContent = v;
+                cell.style.background = `rgb(${v}, ${v}, ${v})`;
+                cell.style.color = getTextColorForValue(v);
+                grid.appendChild(cell);
+            }
+        }
+
+        wrap.appendChild(grid);
+        container.appendChild(wrap);
     }
 
     document.addEventListener('DOMContentLoaded', function() {
