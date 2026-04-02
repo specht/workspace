@@ -88,9 +88,6 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        /* background: #0f1013; */
-        /* border: 1px solid #2a2d33; */
-        /* border-radius: 8px; */
         overflow: hidden;
         outline: 1px solid #444;
     }
@@ -128,7 +125,6 @@
         flex-direction: column;
         justify-content: center;
         outline: 1px solid #444;
-        /* transform: scale(min(1.0, calc(100vh / 1060px))); */
     }
 
     .channel-panel {
@@ -255,7 +251,6 @@
             <div class="canvas_container" id="sq_idct"></div>
         </div>
     </div>
-
 </div>
 
 <script>
@@ -268,7 +263,7 @@
     let width = 1;
     let height = 1;
 
-    let appMode = '1d'; // '1d' or '2d'
+    let appMode = '1d';
 
     const basisCache = {
         '1d': null,
@@ -310,11 +305,64 @@
 
     const visibleContexts = {};
 
-    let currentChannel = 1; // 1=Y, 2=Cb, 3=Cr
+    let currentChannel = 1;
 
     let coefficientsKnob = null;
     let coefficientCount = 64;
     let zigZagOrderCache = null;
+    let zigZagRankCache = null;
+
+    const DCT_N = 8;
+    const dctTables = {
+        alpha: new Float32Array(DCT_N),
+        cos: Array.from({ length: DCT_N }, () => new Float32Array(DCT_N))
+    };
+
+    const reconstructionCache = {
+        valid: false,
+        mode: null,
+        channel: null,
+        width: 0,
+        height: 0,
+        anchorX: 0,
+        anchorY: 0,
+        blockW: 0,
+        blockH: 0,
+        blocks: []
+    };
+
+    const selectedBlockCache = {
+        key: null,
+        values: null,
+        shifted: null,
+        coeffs: null,
+        reconstructed: new Map()
+    };
+
+    let coefficientRenderPending = false;
+    let pendingCoefficientCount = coefficientCount;
+
+    function invalidateReconstructionCache() {
+        reconstructionCache.valid = false;
+        reconstructionCache.blocks = [];
+    }
+
+    function invalidateSelectedBlockCache() {
+        selectedBlockCache.key = null;
+        selectedBlockCache.values = null;
+        selectedBlockCache.shifted = null;
+        selectedBlockCache.coeffs = null;
+        selectedBlockCache.reconstructed = new Map();
+    }
+
+    function buildDctTables() {
+        for (let k = 0; k < DCT_N; k++) {
+            dctTables.alpha[k] = k === 0 ? Math.sqrt(1 / DCT_N) : Math.sqrt(2 / DCT_N);
+            for (let n = 0; n < DCT_N; n++) {
+                dctTables.cos[k][n] = Math.cos((Math.PI / DCT_N) * (n + 0.5) * k);
+            }
+        }
+    }
 
     function getLeftPanelWidth() {
         const panel = document.getElementById('left_panel');
@@ -630,6 +678,8 @@
     function commitHoverSelection() {
         if (!selectionState.hover) return;
         selectionState.selected = { ...selectionState.hover };
+        invalidateReconstructionCache();
+        invalidateSelectedBlockCache();
         rebuildReconstructedBuffer();
         renderSqInput();
         renderSqDct();
@@ -671,7 +721,7 @@
         div.style.width = `${canvasW}px`;
         div.style.height = `${canvasH}px`;
 
-            div = document.getElementById('reconstructed_view');
+        div = document.getElementById('reconstructed_view');
         div.style.left = `${margin + 2 * canvasW + 2 * knobW + 4 * hpadding}px`;
         div.style.top = `${margin + vpadding}px`;
         div.style.width = `${canvasW}px`;
@@ -761,6 +811,10 @@
 
         dstCtx.putImageData(dst, 0, 0);
         document.getElementById('channel_label').textContent = `${['Y', 'Cb', 'Cr'][currentChannel - 1]} Channel`;
+
+        invalidateReconstructionCache();
+        invalidateSelectedBlockCache();
+
         rebuildReconstructedBuffer();
         renderSqInput();
         renderSqDct();
@@ -784,6 +838,9 @@
 
         selectionState.hover = null;
         selectionState.selected = null;
+
+        invalidateReconstructionCache();
+        invalidateSelectedBlockCache();
 
         rebuildChannelBuffer();
         renderSqInput();
@@ -842,7 +899,7 @@
     }
 
     function getDctCellStyle(v, maxAbs) {
-        const base = { r: 28, g: 29, b: 33 }; // #1c1d21
+        const base = { r: 28, g: 29, b: 33 };
 
         if (maxAbs < 1e-9) {
             return {
@@ -852,13 +909,10 @@
         }
 
         const t = Math.min(1, Math.abs(v) / maxAbs);
-
-        // soften dynamic range (prevents DC domination)
         const s = Math.pow(t, 0.6);
 
-        // target colors (not full intensity — keep it tasteful)
-        const warm = { r: 255, g: 140, b: 60 };   // orange
-        const cool = { r: 80,  g: 160, b: 255 };  // blue
+        const warm = { r: 255, g: 140, b: 60 };
+        const cool = { r: 80,  g: 160, b: 255 };
 
         const target = v > 0 ? warm : v < 0 ? cool : base;
 
@@ -867,8 +921,6 @@
         const b = Math.round(lerp(base.b, target.b, s));
 
         const bg = `rgb(${r}, ${g}, ${b})`;
-
-        // luminance-based text color
         const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 
         return {
@@ -878,7 +930,7 @@
     }
 
     function getBasisCellStyle(v, maxAbs = 1) {
-        const base = { r: 28, g: 29, b: 33 }; // #1c1d21
+        const base = { r: 28, g: 29, b: 33 };
         const warm = { r: 255, g: 140, b: 60 };
         const cool = { r: 80, g: 160, b: 255 };
 
@@ -898,86 +950,171 @@
         return k === 0 ? Math.sqrt(1 / n) : Math.sqrt(2 / n);
     }
 
-    function dct1d(vec) {
-        const N = vec.length;
-        const out = new Array(N).fill(0);
+    function dct1dFast(vec) {
+        const out = new Float32Array(8);
 
-        for (let k = 0; k < N; k++) {
+        for (let k = 0; k < 8; k++) {
             let sum = 0;
-            for (let n = 0; n < N; n++) {
-                sum += vec[n] * Math.cos((Math.PI / N) * (n + 0.5) * k);
+            const cosk = dctTables.cos[k];
+            for (let n = 0; n < 8; n++) {
+                sum += vec[n] * cosk[n];
             }
-            out[k] = alpha(k, N) * sum;
+            out[k] = dctTables.alpha[k] * sum;
         }
 
         return out;
     }
 
-    function dct2d(block) {
-        const H = block.length;
-        const W = block[0].length;
+    function dct2dFast(block) {
+        const temp = Array.from({ length: 8 }, () => new Float32Array(8));
+        const out = Array.from({ length: 8 }, () => new Float32Array(8));
 
-        const out = Array.from({ length: H }, () => new Array(W).fill(0));
-
-        for (let v = 0; v < H; v++) {
-            for (let u = 0; u < W; u++) {
+        for (let y = 0; y < 8; y++) {
+            for (let u = 0; u < 8; u++) {
                 let sum = 0;
-
-                for (let y = 0; y < H; y++) {
-                    for (let x = 0; x < W; x++) {
-                        sum += block[y][x]
-                            * Math.cos((Math.PI / W) * (x + 0.5) * u)
-                            * Math.cos((Math.PI / H) * (y + 0.5) * v);
-                    }
+                const cosu = dctTables.cos[u];
+                for (let x = 0; x < 8; x++) {
+                    sum += block[y][x] * cosu[x];
                 }
+                temp[y][u] = dctTables.alpha[u] * sum;
+            }
+        }
 
-                out[v][u] = alpha(u, W) * alpha(v, H) * sum;
+        for (let u = 0; u < 8; u++) {
+            for (let v = 0; v < 8; v++) {
+                let sum = 0;
+                const cosv = dctTables.cos[v];
+                for (let y = 0; y < 8; y++) {
+                    sum += temp[y][u] * cosv[y];
+                }
+                out[v][u] = dctTables.alpha[v] * sum;
             }
         }
 
         return out;
+    }
+
+    function idct1dFast(coeffs, count = 8) {
+        const out = new Float32Array(8);
+
+        for (let n = 0; n < 8; n++) {
+            let sum = 0;
+            for (let k = 0; k < count; k++) {
+                sum += dctTables.alpha[k] * coeffs[k] * dctTables.cos[k][n];
+            }
+            out[n] = sum;
+        }
+
+        return out;
+    }
+
+    function idct2dFast(coeffs, count = 64) {
+        const temp = Array.from({ length: 8 }, () => new Float32Array(8));
+        const out = Array.from({ length: 8 }, () => new Float32Array(8));
+        const zigzag = getZigZagOrder8x8();
+
+        const active = Array.from({ length: 8 }, () => new Float32Array(8));
+        for (let i = 0; i < Math.min(count, 64); i++) {
+            const { x, y } = zigzag[i];
+            active[y][x] = coeffs[y][x];
+        }
+
+        for (let y = 0; y < 8; y++) {
+            for (let u = 0; u < 8; u++) {
+                let sum = 0;
+                for (let v = 0; v < 8; v++) {
+                    sum += dctTables.alpha[v] * active[v][u] * dctTables.cos[v][y];
+                }
+                temp[y][u] = sum;
+            }
+        }
+
+        for (let y = 0; y < 8; y++) {
+            for (let x = 0; x < 8; x++) {
+                let sum = 0;
+                for (let u = 0; u < 8; u++) {
+                    sum += dctTables.alpha[u] * temp[y][u] * dctTables.cos[u][x];
+                }
+                out[y][x] = sum;
+            }
+        }
+
+        return out;
+    }
+
+    function getSelectedBlockCacheKey() {
+        const sel = selectionState.selected || selectionState.hover;
+        if (!sel) return null;
+        return `${appMode}:${currentChannel}:${sel.x}:${sel.y}`;
+    }
+
+    function getSelectedBlockValues() {
+        const key = getSelectedBlockCacheKey();
+        if (!key) return null;
+
+        if (selectedBlockCache.key === key && selectedBlockCache.values) {
+            return selectedBlockCache.values;
+        }
+
+        const sel = selectionState.selected || selectionState.hover;
+        if (!sel) return null;
+
+        const { w, h } = getSelectionSize();
+        const ctx = bufferContexts.channel_view;
+        const img = ctx.getImageData(sel.x, sel.y, w, h);
+        const values = [];
+
+        for (let row = 0; row < h; row++) {
+            const line = new Array(w);
+            for (let col = 0; col < w; col++) {
+                const i = (row * w + col) * 4;
+                line[col] = img.data[i];
+            }
+            values.push(line);
+        }
+
+        selectedBlockCache.key = key;
+        selectedBlockCache.values = values;
+        selectedBlockCache.shifted = null;
+        selectedBlockCache.coeffs = null;
+        selectedBlockCache.reconstructed = new Map();
+
+        return values;
     }
 
     function getSelectedBlockShiftedValues() {
+        const key = getSelectedBlockCacheKey();
+        if (!key) return null;
+
+        if (selectedBlockCache.key === key && selectedBlockCache.shifted) {
+            return selectedBlockCache.shifted;
+        }
+
         const values = getSelectedBlockValues();
         if (!values) return null;
 
-        // JPEG-style level shift: center samples around zero before DCT
-        return values.map(row => row.map(v => v - 128));
+        const shifted = values.map(row => row.map(v => v - 128));
+        selectedBlockCache.shifted = shifted;
+        return shifted;
     }
 
     function getSelectedDctCoefficients() {
+        const key = getSelectedBlockCacheKey();
+        if (!key) return null;
+
+        if (selectedBlockCache.key === key && selectedBlockCache.coeffs) {
+            return selectedBlockCache.coeffs;
+        }
+
         const shifted = getSelectedBlockShiftedValues();
         if (!shifted) return null;
 
-        if (appMode === '2d') {
-            return dct2d(shifted);
-        }
+        const coeffs = appMode === '2d'
+            ? dct2dFast(shifted)
+            : [dct1dFast(shifted[0])];
 
-        return [dct1d(shifted[0])];
-    }
-
-    function reconstructBlockFromValues(values, mode = appMode, count = coefficientCount) {
-        if (!values) return null;
-
-        const shifted = values.map(row => row.map(v => v - 128));
-
-        if (mode === '1d') {
-            const coeffs = dct1d(shifted[0]);
-            const truncated = new Array(8).fill(0);
-
-            for (let i = 0; i < Math.min(count, 8); i++) {
-                truncated[i] = coeffs[i];
-            }
-
-            const reconstructed = idct1d(truncated).map(v => clampByte(v + 128));
-            return [reconstructed];
-        }
-
-        const coeffs = dct2d(shifted);
-        const truncated = truncateCoefficients(coeffs, count, '2d');
-        const reconstructed = idct2d(truncated).map(row => row.map(v => clampByte(v + 128)));
-        return reconstructed;
+        selectedBlockCache.coeffs = coeffs;
+        return coeffs;
     }
 
     function setPixelInImageData(data, w, x, y, v) {
@@ -988,68 +1125,113 @@
         data[i + 3] = 255;
     }
 
-    function rebuildReconstructedBuffer() {
-        const srcCanvas = buffers.channel_view;
-        const srcCtx = bufferContexts.channel_view;
-        const dstCanvas = buffers.reconstructed_view;
-        const dstCtx = bufferContexts.reconstructed_view;
-
-        if (!srcCanvas.width || !srcCanvas.height) return;
-
-        const w = srcCanvas.width;
-        const h = srcCanvas.height;
-
-        dstCanvas.width = w;
-        dstCanvas.height = h;
-
-        const src = srcCtx.getImageData(0, 0, w, h);
-        const dst = dstCtx.createImageData(w, h);
-
+    function ensureReconstructionCache() {
+        const sel = selectionState.selected;
         const blockW = 8;
         const blockH = appMode === '1d' ? 1 : 8;
-
-        // Anchor the reconstruction grid to the selected block if present.
-        // Fallback to the old origin when nothing is selected yet.
-        const sel = selectionState.selected;
         const anchorX = sel ? sel.x : 0;
         const anchorY = sel ? sel.y : 0;
 
-        // Find the first block origin at or before the image bounds so that
-        // the infinite block lattice aligned to the selected block covers
-        // the full image.
+        if (
+            reconstructionCache.valid &&
+            reconstructionCache.mode === appMode &&
+            reconstructionCache.channel === currentChannel &&
+            reconstructionCache.width === width &&
+            reconstructionCache.height === height &&
+            reconstructionCache.anchorX === anchorX &&
+            reconstructionCache.anchorY === anchorY &&
+            reconstructionCache.blockW === blockW &&
+            reconstructionCache.blockH === blockH
+        ) {
+            return;
+        }
+
+        const srcCanvas = buffers.channel_view;
+        const srcCtx = bufferContexts.channel_view;
+        const w = srcCanvas.width;
+        const h = srcCanvas.height;
+        const src = srcCtx.getImageData(0, 0, w, h).data;
+
         let startX = anchorX;
         while (startX > 0) startX -= blockW;
 
         let startY = anchorY;
         while (startY > 0) startY -= blockH;
 
+        const blocks = [];
+
         for (let y0 = startY; y0 < h; y0 += blockH) {
             for (let x0 = startX; x0 < w; x0 += blockW) {
-                const block = [];
-
-                for (let y = 0; y < blockH; y++) {
-                    const row = [];
-                    const sy = Math.max(0, Math.min(h - 1, y0 + y));
-
-                    for (let x = 0; x < blockW; x++) {
+                if (appMode === '1d') {
+                    const row = new Float32Array(8);
+                    for (let x = 0; x < 8; x++) {
                         const sx = Math.max(0, Math.min(w - 1, x0 + x));
+                        const sy = Math.max(0, Math.min(h - 1, y0));
                         const i = (sy * w + sx) * 4;
-                        row.push(src.data[i]);
+                        row[x] = src[i] - 128;
                     }
-
-                    block.push(row);
+                    blocks.push({ x0, y0, coeffs: dct1dFast(row) });
+                } else {
+                    const block = Array.from({ length: 8 }, () => new Float32Array(8));
+                    for (let y = 0; y < 8; y++) {
+                        const sy = Math.max(0, Math.min(h - 1, y0 + y));
+                        for (let x = 0; x < 8; x++) {
+                            const sx = Math.max(0, Math.min(w - 1, x0 + x));
+                            const i = (sy * w + sx) * 4;
+                            block[y][x] = src[i] - 128;
+                        }
+                    }
+                    blocks.push({ x0, y0, coeffs: dct2dFast(block) });
                 }
+            }
+        }
 
-                const reconstructed = reconstructBlockFromValues(block, appMode, coefficientCount);
+        reconstructionCache.valid = true;
+        reconstructionCache.mode = appMode;
+        reconstructionCache.channel = currentChannel;
+        reconstructionCache.width = width;
+        reconstructionCache.height = height;
+        reconstructionCache.anchorX = anchorX;
+        reconstructionCache.anchorY = anchorY;
+        reconstructionCache.blockW = blockW;
+        reconstructionCache.blockH = blockH;
+        reconstructionCache.blocks = blocks;
+    }
 
-                for (let y = 0; y < blockH; y++) {
-                    const dy = y0 + y;
+    function rebuildReconstructedBuffer() {
+        const dstCanvas = buffers.reconstructed_view;
+        const dstCtx = bufferContexts.reconstructed_view;
+        const w = buffers.channel_view.width;
+        const h = buffers.channel_view.height;
+
+        if (!w || !h) return;
+
+        ensureReconstructionCache();
+
+        dstCanvas.width = w;
+        dstCanvas.height = h;
+
+        const dst = dstCtx.createImageData(w, h);
+        const data = dst.data;
+
+        for (const block of reconstructionCache.blocks) {
+            if (appMode === '1d') {
+                const reconstructed = idct1dFast(block.coeffs, Math.min(coefficientCount, 8));
+                for (let x = 0; x < 8; x++) {
+                    const dx = block.x0 + x;
+                    const dy = block.y0;
+                    if (dx < 0 || dx >= w || dy < 0 || dy >= h) continue;
+                    setPixelInImageData(data, w, dx, dy, clampByte(reconstructed[x] + 128));
+                }
+            } else {
+                const reconstructed = idct2dFast(block.coeffs, Math.min(coefficientCount, 64));
+                for (let y = 0; y < 8; y++) {
+                    const dy = block.y0 + y;
                     if (dy < 0 || dy >= h) continue;
-
-                    for (let x = 0; x < blockW; x++) {
-                        const dx = x0 + x;
+                    for (let x = 0; x < 8; x++) {
+                        const dx = block.x0 + x;
                         if (dx < 0 || dx >= w) continue;
-                        setPixelInImageData(dst.data, w, dx, dy, reconstructed[y][x]);
+                        setPixelInImageData(data, w, dx, dy, clampByte(reconstructed[y][x] + 128));
                     }
                 }
             }
@@ -1327,9 +1509,26 @@
         ];
     }
 
+    function scheduleCoefficientUpdate(v) {
+        pendingCoefficientCount = v;
+        if (coefficientRenderPending) return;
+
+        coefficientRenderPending = true;
+        requestAnimationFrame(() => {
+            coefficientRenderPending = false;
+            coefficientCount = pendingCoefficientCount;
+            rebuildReconstructedBuffer();
+            renderSqDct();
+            renderSqBaseFunctions();
+            renderSqIdct();
+            scheduleRender();
+        });
+    }
+
     function updateCoefficientsKnobForMode() {
         const max = getCoefficientMax(appMode);
         coefficientCount = Math.min(coefficientCount, max);
+        pendingCoefficientCount = coefficientCount;
 
         if (coefficientsKnob) {
             coefficientsKnob.updateOptions({
@@ -1381,75 +1580,40 @@
         return order;
     }
 
+    function getZigZagRank8x8() {
+        if (zigZagRankCache) return zigZagRankCache;
+        zigZagRankCache = Array.from({ length: 8 }, () => new Int16Array(8));
+        const order = getZigZagOrder8x8();
+        for (let i = 0; i < order.length; i++) {
+            zigZagRankCache[order[i].y][order[i].x] = i;
+        }
+        return zigZagRankCache;
+    }
+
     function isCoefficientActive(x, y = 0, count = coefficientCount, mode = appMode) {
         if (mode === '1d') {
             return x < count;
         }
-
-        const zigzag = getZigZagOrder8x8();
-        for (let i = 0; i < count; i++) {
-            if (zigzag[i].x === x && zigzag[i].y === y) return true;
-        }
-        return false;
+        return getZigZagRank8x8()[y][x] < count;
     }
 
     function truncateCoefficients(coeffs, count = coefficientCount, mode = appMode) {
         if (!coeffs) return null;
 
         if (mode === '1d') {
-            const out = [new Array(8).fill(0)];
+            const out = [new Float32Array(8)];
             for (let i = 0; i < Math.min(count, 8); i++) {
                 out[0][i] = coeffs[0][i];
             }
             return out;
         }
 
-        const out = Array.from({ length: 8 }, () => new Array(8).fill(0));
+        const out = Array.from({ length: 8 }, () => new Float32Array(8));
         const zigzag = getZigZagOrder8x8();
 
         for (let i = 0; i < Math.min(count, 64); i++) {
             const { x, y } = zigzag[i];
             out[y][x] = coeffs[y][x];
-        }
-
-        return out;
-    }
-
-    function idct1d(coeffs) {
-        const N = coeffs.length;
-        const out = new Array(N).fill(0);
-
-        for (let n = 0; n < N; n++) {
-            let sum = 0;
-            for (let k = 0; k < N; k++) {
-                sum += alpha(k, N) * coeffs[k] * Math.cos((Math.PI / N) * (n + 0.5) * k);
-            }
-            out[n] = sum;
-        }
-
-        return out;
-    }
-
-    function idct2d(coeffs) {
-        const H = coeffs.length;
-        const W = coeffs[0].length;
-        const out = Array.from({ length: H }, () => new Array(W).fill(0));
-
-        for (let y = 0; y < H; y++) {
-            for (let x = 0; x < W; x++) {
-                let sum = 0;
-
-                for (let v = 0; v < H; v++) {
-                    for (let u = 0; u < W; u++) {
-                        sum +=
-                            alpha(u, W) * alpha(v, H) * coeffs[v][u] *
-                            Math.cos((Math.PI / W) * (x + 0.5) * u) *
-                            Math.cos((Math.PI / H) * (y + 0.5) * v);
-                    }
-                }
-
-                out[y][x] = sum;
-            }
         }
 
         return out;
@@ -1462,20 +1626,25 @@
     }
 
     function getReconstructedBlockValues() {
-        const truncated = getTruncatedDctCoefficients();
-        if (!truncated) return null;
+        const coeffs = getSelectedDctCoefficients();
+        if (!coeffs) return null;
+
+        const cacheKey = `${appMode}:${coefficientCount}`;
+        if (selectedBlockCache.reconstructed.has(cacheKey)) {
+            return selectedBlockCache.reconstructed.get(cacheKey);
+        }
 
         let reconstructed;
 
         if (appMode === '1d') {
-            reconstructed = [idct1d(truncated[0])];
+            reconstructed = [Array.from(idct1dFast(coeffs[0], Math.min(coefficientCount, 8)))];
         } else {
-            reconstructed = idct2d(truncated);
+            reconstructed = idct2dFast(coeffs, Math.min(coefficientCount, 64)).map(row => Array.from(row));
         }
 
-        return reconstructed.map(row =>
-            row.map(v => clampByte(v + 128))
-        );
+        const values = reconstructed.map(row => row.map(v => clampByte(v + 128)));
+        selectedBlockCache.reconstructed.set(cacheKey, values);
+        return values;
     }
 
     function buildControls() {
@@ -1560,14 +1729,7 @@
             horizontal: false,
             ticks: makeCoefficientTicks(64),
             formatValue: (v) => v,
-            onInput: (v) => {
-                coefficientCount = v;
-                rebuildReconstructedBuffer();
-                renderSqDct();
-                renderSqBaseFunctions();
-                renderSqIdct();
-                scheduleRender();
-            }
+            onInput: scheduleCoefficientUpdate
         });
 
         knobs.push(coefficientsKnob);
@@ -1585,7 +1747,6 @@
             };
         }
 
-        // In 2D, use the middle row as the anchor row.
         return {
             x: sel.x,
             y: sel.y + 3
@@ -1637,6 +1798,9 @@
             ? selectionFromAnchor(hoverAnchor, mode)
             : null;
 
+        invalidateReconstructionCache();
+        invalidateSelectedBlockCache();
+
         updateCoefficientsKnobForMode();
 
         rebuildReconstructedBuffer();
@@ -1653,27 +1817,6 @@
                 setAppMode(btn.dataset.mode);
             });
         });
-    }
-
-    function getSelectedBlockValues() {
-        const sel = selectionState.selected || selectionState.hover;
-        if (!sel) return null;
-
-        const { w, h } = getSelectionSize();
-        const ctx = bufferContexts.channel_view;
-        const img = ctx.getImageData(sel.x, sel.y, w, h);
-        const values = [];
-
-        for (let row = 0; row < h; row++) {
-            const line = [];
-            for (let col = 0; col < w; col++) {
-                const i = (row * w + col) * 4;
-                line.push(img.data[i]); // grayscale, so R is enough
-            }
-            values.push(line);
-        }
-
-        return values;
     }
 
     function getTextColorForValue(v) {
@@ -1767,9 +1910,8 @@
         grid.className = `sample-grid ${appMode === '2d' ? 'mode-2d' : 'mode-1d'}`;
 
         const coeffs = getSelectedDctCoefficients();
-        const truncated = getTruncatedDctCoefficients();
 
-        if (!coeffs || !truncated) {
+        if (!coeffs) {
             if (appMode === '2d') {
                 grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
                 grid.style.gridTemplateRows = 'repeat(8, 1fr)';
@@ -1793,7 +1935,7 @@
             return;
         }
 
-        const flat = coeffs.flat();
+        const flat = coeffs.flat ? coeffs.flat() : coeffs.reduce((acc, row) => acc.concat(Array.from(row)), []);
         const maxAbs = Math.max(...flat.map(v => Math.abs(v)), 1);
 
         if (appMode === '2d') {
@@ -1990,6 +2132,9 @@
         document.getElementById('left_panel_open_btn')?.addEventListener('click', openLeftPanel);
         document.getElementById('backdrop')?.addEventListener('click', closeLeftPanel);
 
+        buildDctTables();
+        buildBasisCache();
+
         handleResize();
         setupInteractions();
         buildControls();
@@ -2014,7 +2159,6 @@
         const firstImage = imageChooser.querySelector('img');
         if (firstImage) firstImage.click();
 
-        buildBasisCache();
         renderSqBaseFunctions();
         updateCoefficientsKnobForMode();
         renderSqIdct();
