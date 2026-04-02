@@ -376,4 +376,37 @@ class FancyKnob {
     getValue() {
         return this.value;
     }
+
+    updateOptions(nextOpts = {}) {
+        const hadExplicitBipolar = Object.prototype.hasOwnProperty.call(nextOpts, 'bipolar');
+
+        this.opts = {
+            ...this.opts,
+            ...nextOpts
+        };
+
+        if (hadExplicitBipolar) {
+            this.opts.bipolar = nextOpts.bipolar;
+        } else if ('min' in nextOpts || 'max' in nextOpts) {
+            this.opts.bipolar = this.opts.min < 0 && this.opts.max > 0;
+        }
+
+        this.value = this.clamp(this.snap(
+            Object.prototype.hasOwnProperty.call(nextOpts, 'value')
+                ? nextOpts.value
+                : this.value
+        ));
+
+        this.buildTicksAndLabels();
+        this.render();
+    }
+
+    setRange(min, max, value = this.value, extraOpts = {}) {
+        this.updateOptions({
+            min,
+            max,
+            value,
+            ...extraOpts
+        });
+    }
 }

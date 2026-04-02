@@ -242,6 +242,13 @@
                 <div class="canvas-label" id="channel_label">Y</div>
             </div>
 
+            <div class="channel_container" id="coefficients_chooser"></div>
+
+            <div class="canvas_container" id="source">
+                <canvas></canvas>
+                <div class="canvas-label">Source</div>
+            </div>
+            
             <div class="canvas_container" id="sq_input"></div>
             <div class="canvas_container" id="sq_dct"></div>
             <div class="canvas_container" id="sq_base_functions"></div>
@@ -262,6 +269,11 @@
     let height = 1;
 
     let appMode = '1d'; // '1d' or '2d'
+
+    const basisCache = {
+        '1d': null,
+        '2d': null
+    };
 
     const selectionState = {
         hover: null,
@@ -297,6 +309,10 @@
     const visibleContexts = {};
 
     let currentChannel = 1; // 1=Y, 2=Cb, 3=Cr
+
+    let coefficientsKnob = null;
+    let coefficientCount = 64;
+    let zigZagOrderCache = null;
 
     function getLeftPanelWidth() {
         const panel = document.getElementById('left_panel');
@@ -613,6 +629,8 @@
         if (!selectionState.hover) return;
         selectionState.selected = { ...selectionState.hover };
         renderSqInput();
+        renderSqDct();
+        renderSqIdct();
         scheduleRender();
     }
 
@@ -634,6 +652,12 @@
 
         div = document.getElementById('channel_chooser');
         div.style.left = `${margin + canvasW + hpadding}px`;
+        div.style.top = `${margin + vpadding}px`;
+        div.style.width = `${knobW}px`;
+        div.style.height = `${canvasH}px`;
+
+        div = document.getElementById('coefficients_chooser');
+        div.style.left = `${margin + canvasW * 2 + hpadding * 3 + knobW}px`;
         div.style.top = `${margin + vpadding}px`;
         div.style.width = `${knobW}px`;
         div.style.height = `${canvasH}px`;
@@ -729,6 +753,8 @@
         dstCtx.putImageData(dst, 0, 0);
         document.getElementById('channel_label').textContent = `${['Y', 'Cb', 'Cr'][currentChannel - 1]} Channel`;
         renderSqInput();
+        renderSqDct();
+        renderSqIdct();
     }
 
     function loadCurrentImageIntoViewer() {
@@ -751,8 +777,175 @@
 
         rebuildChannelBuffer();
         renderSqInput();
+        renderSqDct();
+        renderSqIdct();
         resetView();
     }
+
+    function dctBasis1d(k, N = 8) {
+        const a = alpha(k, N);
+        const out = [];
+
+        for (let n = 0; n < N; n++) {
+            out.push(a * Math.cos((Math.PI / N) * (n + 0.5) * k));
+        }
+
+        return out;
+    }
+
+    function dctBasis2d(u, v, W = 8, H = 8) {
+        const au = alpha(u, W);
+        const av = alpha(v, H);
+
+        const out = Array.from({ length: H }, () => new Array(W).fill(0));
+
+        for (let y = 0; y < H; y++) {
+            for (let x = 0; x < W; x++) {
+                out[y][x] =
+                    au * av *
+                    Math.cos((Math.PI / W) * (x + 0.5) * u) *
+                    Math.cos((Math.PI / H) * (y + 0.5) * v);
+            }
+        }
+
+        return out;
+    }
+
+    function buildBasisCache() {
+        basisCache['1d'] = [];
+        for (let k = 0; k < 8; k++) {
+            basisCache['1d'].push(dctBasis1d(k, 8));
+        }
+
+        basisCache['2d'] = [];
+        for (let v = 0; v < 8; v++) {
+            const row = [];
+            for (let u = 0; u < 8; u++) {
+                row.push(dctBasis2d(u, v, 8, 8));
+            }
+            basisCache['2d'].push(row);
+        }
+    }
+
+    function lerp(a, b, t) {
+        return a + (b - a) * t;
+    }
+
+    function getDctCellStyle(v, maxAbs) {
+        const base = { r: 28, g: 29, b: 33 }; // #1c1d21
+
+        if (maxAbs < 1e-9) {
+            return {
+                background: `rgb(${base.r}, ${base.g}, ${base.b})`,
+                color: '#f5f5f5'
+            };
+        }
+
+        const t = Math.min(1, Math.abs(v) / maxAbs);
+
+        // soften dynamic range (prevents DC domination)
+        const s = Math.pow(t, 0.6);
+
+        // target colors (not full intensity — keep it tasteful)
+        const warm = { r: 255, g: 140, b: 60 };   // orange
+        const cool = { r: 80,  g: 160, b: 255 };  // blue
+
+        const target = v > 0 ? warm : v < 0 ? cool : base;
+
+        const r = Math.round(lerp(base.r, target.r, s));
+        const g = Math.round(lerp(base.g, target.g, s));
+        const b = Math.round(lerp(base.b, target.b, s));
+
+        const bg = `rgb(${r}, ${g}, ${b})`;
+
+        // luminance-based text color
+        const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+        return {
+            background: bg,
+            color: luminance > 140 ? '#111' : '#f5f5f5'
+        };
+    }
+
+    function getBasisCellStyle(v, maxAbs = 1) {
+        const base = { r: 28, g: 29, b: 33 }; // #1c1d21
+        const warm = { r: 255, g: 140, b: 60 };
+        const cool = { r: 80, g: 160, b: 255 };
+
+        const t = Math.min(1, Math.abs(v) / maxAbs);
+        const s = Math.pow(t, 0.9);
+
+        const target = v > 0 ? warm : v < 0 ? cool : base;
+
+        const r = Math.round(lerp(base.r, target.r, s));
+        const g = Math.round(lerp(base.g, target.g, s));
+        const b = Math.round(lerp(base.b, target.b, s));
+
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function alpha(k, n) {
+        return k === 0 ? Math.sqrt(1 / n) : Math.sqrt(2 / n);
+    }
+
+    function dct1d(vec) {
+        const N = vec.length;
+        const out = new Array(N).fill(0);
+
+        for (let k = 0; k < N; k++) {
+            let sum = 0;
+            for (let n = 0; n < N; n++) {
+                sum += vec[n] * Math.cos((Math.PI / N) * (n + 0.5) * k);
+            }
+            out[k] = alpha(k, N) * sum;
+        }
+
+        return out;
+    }
+
+    function dct2d(block) {
+        const H = block.length;
+        const W = block[0].length;
+
+        const out = Array.from({ length: H }, () => new Array(W).fill(0));
+
+        for (let v = 0; v < H; v++) {
+            for (let u = 0; u < W; u++) {
+                let sum = 0;
+
+                for (let y = 0; y < H; y++) {
+                    for (let x = 0; x < W; x++) {
+                        sum += block[y][x]
+                            * Math.cos((Math.PI / W) * (x + 0.5) * u)
+                            * Math.cos((Math.PI / H) * (y + 0.5) * v);
+                    }
+                }
+
+                out[v][u] = alpha(u, W) * alpha(v, H) * sum;
+            }
+        }
+
+        return out;
+    }
+
+    function getSelectedBlockShiftedValues() {
+        const values = getSelectedBlockValues();
+        if (!values) return null;
+
+        // JPEG-style level shift: center samples around zero before DCT
+        return values.map(row => row.map(v => v - 128));
+    }
+
+    function getSelectedDctCoefficients() {
+        const shifted = getSelectedBlockShiftedValues();
+        if (!shifted) return null;
+
+        if (appMode === '2d') {
+            return dct2d(shifted);
+        }
+
+        return [dct1d(shifted[0])];
+    }    
 
     function screenToImage(canvas, clientX, clientY) {
         const rect = canvas.getBoundingClientRect();
@@ -982,6 +1175,195 @@
         });
     }
 
+    function getCoefficientMax(mode = appMode) {
+        return mode === '1d' ? 8 : 64;
+    }
+
+    function makeCoefficientTicks(max) {
+        if (max === 8) {
+            return [
+                { value: 1, major: true },
+                { value: 2, major: false },
+                { value: 3, major: false },
+                { value: 4, major: true },
+                { value: 5, major: false },
+                { value: 6, major: false },
+                { value: 7, major: false },
+                { value: 8, major: true }
+            ];
+        }
+
+        return [
+            { value: 1, major: true },
+            { value: 4, major: false },
+            { value: 8, major: true },
+            { value: 12, major: false },
+            { value: 16, major: true },
+            { value: 20, major: false },
+            { value: 24, major: true },
+            { value: 28, major: false },
+            { value: 32, major: true },
+            { value: 36, major: false },
+            { value: 40, major: true },
+            { value: 44, major: false },
+            { value: 48, major: true },
+            { value: 52, major: false },
+            { value: 56, major: true },
+            { value: 60, major: false },
+            { value: 64, major: true }
+        ];
+    }
+
+    function updateCoefficientsKnobForMode() {
+        const max = getCoefficientMax(appMode);
+        coefficientCount = Math.min(coefficientCount, max);
+
+        if (coefficientsKnob) {
+            coefficientsKnob.updateOptions({
+                min: 1,
+                max,
+                step: 1,
+                value: coefficientCount,
+                ticks: makeCoefficientTicks(max),
+                bipolar: false,
+                formatValue: (v) => v
+            });
+        }
+
+        renderSqDct();
+        renderSqBaseFunctions();
+        renderSqIdct();
+    }
+
+    function getZigZagOrder8x8() {
+        if (zigZagOrderCache) return zigZagOrderCache;
+
+        const order = [];
+        const N = 8;
+
+        for (let s = 0; s <= 14; s++) {
+            if (s % 2 === 0) {
+                let y = Math.min(s, N - 1);
+                let x = s - y;
+
+                while (y >= 0 && x < N) {
+                    order.push({ x, y });
+                    x++;
+                    y--;
+                }
+            } else {
+                let x = Math.min(s, N - 1);
+                let y = s - x;
+
+                while (x >= 0 && y < N) {
+                    order.push({ x, y });
+                    x--;
+                    y++;
+                }
+            }
+        }
+
+        zigZagOrderCache = order;
+        return order;
+    }
+
+    function isCoefficientActive(x, y = 0, count = coefficientCount, mode = appMode) {
+        if (mode === '1d') {
+            return x < count;
+        }
+
+        const zigzag = getZigZagOrder8x8();
+        for (let i = 0; i < count; i++) {
+            if (zigzag[i].x === x && zigzag[i].y === y) return true;
+        }
+        return false;
+    }
+
+    function truncateCoefficients(coeffs, count = coefficientCount, mode = appMode) {
+        if (!coeffs) return null;
+
+        if (mode === '1d') {
+            const out = [new Array(8).fill(0)];
+            for (let i = 0; i < Math.min(count, 8); i++) {
+                out[0][i] = coeffs[0][i];
+            }
+            return out;
+        }
+
+        const out = Array.from({ length: 8 }, () => new Array(8).fill(0));
+        const zigzag = getZigZagOrder8x8();
+
+        for (let i = 0; i < Math.min(count, 64); i++) {
+            const { x, y } = zigzag[i];
+            out[y][x] = coeffs[y][x];
+        }
+
+        return out;
+    }
+
+    function idct1d(coeffs) {
+        const N = coeffs.length;
+        const out = new Array(N).fill(0);
+
+        for (let n = 0; n < N; n++) {
+            let sum = 0;
+            for (let k = 0; k < N; k++) {
+                sum += alpha(k, N) * coeffs[k] * Math.cos((Math.PI / N) * (n + 0.5) * k);
+            }
+            out[n] = sum;
+        }
+
+        return out;
+    }
+
+    function idct2d(coeffs) {
+        const H = coeffs.length;
+        const W = coeffs[0].length;
+        const out = Array.from({ length: H }, () => new Array(W).fill(0));
+
+        for (let y = 0; y < H; y++) {
+            for (let x = 0; x < W; x++) {
+                let sum = 0;
+
+                for (let v = 0; v < H; v++) {
+                    for (let u = 0; u < W; u++) {
+                        sum +=
+                            alpha(u, W) * alpha(v, H) * coeffs[v][u] *
+                            Math.cos((Math.PI / W) * (x + 0.5) * u) *
+                            Math.cos((Math.PI / H) * (y + 0.5) * v);
+                    }
+                }
+
+                out[y][x] = sum;
+            }
+        }
+
+        return out;
+    }
+
+    function getTruncatedDctCoefficients() {
+        const coeffs = getSelectedDctCoefficients();
+        if (!coeffs) return null;
+        return truncateCoefficients(coeffs, coefficientCount, appMode);
+    }
+
+    function getReconstructedBlockValues() {
+        const truncated = getTruncatedDctCoefficients();
+        if (!truncated) return null;
+
+        let reconstructed;
+
+        if (appMode === '1d') {
+            reconstructed = [idct1d(truncated[0])];
+        } else {
+            reconstructed = idct2d(truncated);
+        }
+
+        return reconstructed.map(row =>
+            row.map(v => clampByte(v + 128))
+        );
+    }
+
     function buildControls() {
         let div = document.querySelector('#channel_chooser');
         let panel = document.createElement('div');
@@ -1043,6 +1425,36 @@
                 setAppMode(v === 1 ? '1d' : '2d');
             }
         }));
+
+        div = document.querySelector('#coefficients_chooser');
+        panel = document.createElement('div');
+        panel.classList.add('channel-panel');
+        div.append(panel);
+
+        holder = document.createElement('div');
+        panel.append(holder);
+
+        coefficientsKnob = new FancyKnob(holder, {
+            label: 'Coefficients',
+            min: 1,
+            max: 64,
+            step: 1,
+            value: 64,
+            color: '#d3d7cf',
+            centerLabel: '0',
+            size: 70,
+            horizontal: false,
+            ticks: makeCoefficientTicks(64),
+            formatValue: (v) => v,
+            onInput: (v) => {
+                coefficientCount = v;
+                renderSqDct();
+                renderSqBaseFunctions();
+                renderSqIdct();
+            }
+        });
+
+        knobs.push(coefficientsKnob);
     }
 
     window.addEventListener('resize', handleResize);
@@ -1109,6 +1521,11 @@
             ? selectionFromAnchor(hoverAnchor, mode)
             : null;
 
+        updateCoefficientsKnobForMode();
+
+        renderSqInput();
+        renderSqDct();
+        renderSqBaseFunctions();
         renderSqInput();
         scheduleRender();
     }
@@ -1220,6 +1637,238 @@
         container.appendChild(wrap);
     }
 
+    function renderSqDct() {
+        const container = document.getElementById('sq_dct');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        const wrap = document.createElement('div');
+        wrap.className = 'sample-grid-wrap';
+
+        const grid = document.createElement('div');
+        grid.className = `sample-grid ${appMode === '2d' ? 'mode-2d' : 'mode-1d'}`;
+
+        const coeffs = getSelectedDctCoefficients();
+        const truncated = getTruncatedDctCoefficients();
+
+        if (!coeffs || !truncated) {
+            if (appMode === '2d') {
+                grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+                grid.style.gridTemplateRows = 'repeat(8, 1fr)';
+                for (let i = 0; i < 64; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'sample-cell empty';
+                    grid.appendChild(cell);
+                }
+            } else {
+                grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+                grid.style.gridTemplateRows = '1fr';
+                for (let i = 0; i < 8; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'sample-cell empty';
+                    grid.appendChild(cell);
+                }
+            }
+
+            wrap.appendChild(grid);
+            container.appendChild(wrap);
+            return;
+        }
+
+        const flat = coeffs.flat();
+        const maxAbs = Math.max(...flat.map(v => Math.abs(v)), 1);
+
+        if (appMode === '2d') {
+            grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+            grid.style.gridTemplateRows = 'repeat(8, 1fr)';
+
+            for (let y = 0; y < 8; y++) {
+                for (let x = 0; x < 8; x++) {
+                    const active = isCoefficientActive(x, y);
+                    const raw = coeffs[y][x];
+                    const shown = active ? raw : 0;
+
+                    const cell = document.createElement('div');
+                    cell.className = 'sample-cell';
+                    cell.textContent = Math.round(shown);
+
+                    const style = getDctCellStyle(shown, maxAbs);
+                    cell.style.background = style.background;
+                    cell.style.color = style.color;
+                    cell.style.opacity = active ? '1' : '0.2';
+
+                    grid.appendChild(cell);
+                }
+            }
+        } else {
+            grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+            grid.style.gridTemplateRows = '1fr';
+
+            for (let x = 0; x < 8; x++) {
+                const active = isCoefficientActive(x, 0);
+                const raw = coeffs[0][x];
+                const shown = active ? raw : 0;
+
+                const cell = document.createElement('div');
+                cell.className = 'sample-cell';
+                cell.textContent = Math.round(shown);
+
+                const style = getDctCellStyle(shown, maxAbs);
+                cell.style.background = style.background;
+                cell.style.color = style.color;
+                cell.style.opacity = active ? '1' : '0.2';
+
+                grid.appendChild(cell);
+            }
+        }
+
+        wrap.appendChild(grid);
+        container.appendChild(wrap);
+    }
+
+    function renderSqBaseFunctions() {
+        const container = document.getElementById('sq_base_functions');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        const wrap = document.createElement('div');
+        wrap.style.position = 'absolute';
+        wrap.style.inset = '10px';
+        wrap.style.boxSizing = 'border-box';
+
+        if (appMode === '2d') {
+            wrap.style.display = 'grid';
+            wrap.style.gap = '4px';
+            wrap.style.gridTemplateColumns = 'repeat(8, 1fr)';
+            wrap.style.gridTemplateRows = 'repeat(8, 1fr)';
+
+            for (let v = 0; v < 8; v++) {
+                for (let u = 0; u < 8; u++) {
+                    const basis = basisCache['2d'][v][u];
+                    const active = isCoefficientActive(u, v);
+
+                    const tile = document.createElement('div');
+                    tile.style.display = 'grid';
+                    tile.style.gridTemplateColumns = 'repeat(8, 1fr)';
+                    tile.style.gridTemplateRows = 'repeat(8, 1fr)';
+                    tile.style.gap = '0';
+                    tile.style.outline = '1px solid #2a2d33';
+                    tile.style.background = '#1c1d21';
+                    tile.style.opacity = active ? '1' : '0.18';
+                    tile.title = `u=${u}, v=${v}`;
+
+                    for (let y = 0; y < 8; y++) {
+                        for (let x = 0; x < 8; x++) {
+                            const cell = document.createElement('div');
+                            cell.style.aspectRatio = '1 / 1';
+                            cell.style.background = getBasisCellStyle(basis[y][x], 0.25);
+                            tile.appendChild(cell);
+                        }
+                    }
+
+                    wrap.appendChild(tile);
+                }
+            }
+        } else {
+            wrap.style.display = 'grid';
+            wrap.style.gridTemplateColumns = 'repeat(8, 1fr)';
+            wrap.style.gridTemplateRows = 'repeat(8, 1fr)';
+            wrap.style.gap = '1px';
+            wrap.style.background = '#2a2d33';
+            wrap.style.outline = '1px solid #444';
+
+            for (let k = 0; k < 8; k++) {
+                const basis = basisCache['1d'][k];
+                const active = isCoefficientActive(k, 0);
+
+                for (let x = 0; x < 8; x++) {
+                    const cell = document.createElement('div');
+                    cell.style.aspectRatio = '1 / 1';
+                    cell.style.background = getBasisCellStyle(basis[x], 0.5);
+                    cell.style.opacity = active ? '1' : '0.18';
+                    cell.title = `k=${k}, n=${x}, value=${basis[x].toFixed(3)}`;
+                    wrap.appendChild(cell);
+                }
+            }
+        }
+
+        container.appendChild(wrap);
+    }
+
+    function renderSqIdct() {
+        const container = document.getElementById('sq_idct');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        const wrap = document.createElement('div');
+        wrap.className = 'sample-grid-wrap';
+
+        const grid = document.createElement('div');
+        grid.className = `sample-grid ${appMode === '2d' ? 'mode-2d' : 'mode-1d'}`;
+
+        const values = getReconstructedBlockValues();
+
+        if (!values) {
+            if (appMode === '2d') {
+                grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+                grid.style.gridTemplateRows = 'repeat(8, 1fr)';
+                for (let i = 0; i < 64; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'sample-cell empty';
+                    grid.appendChild(cell);
+                }
+            } else {
+                grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+                grid.style.gridTemplateRows = '1fr';
+                for (let i = 0; i < 8; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'sample-cell empty';
+                    grid.appendChild(cell);
+                }
+            }
+
+            wrap.appendChild(grid);
+            container.appendChild(wrap);
+            return;
+        }
+
+        if (appMode === '2d') {
+            grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+            grid.style.gridTemplateRows = 'repeat(8, 1fr)';
+
+            for (let y = 0; y < 8; y++) {
+                for (let x = 0; x < 8; x++) {
+                    const v = values[y][x];
+                    const cell = document.createElement('div');
+                    cell.className = 'sample-cell';
+                    cell.textContent = v;
+                    cell.style.background = `rgb(${v}, ${v}, ${v})`;
+                    cell.style.color = getTextColorForValue(v);
+                    grid.appendChild(cell);
+                }
+            }
+        } else {
+            grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+            grid.style.gridTemplateRows = '1fr';
+
+            for (let x = 0; x < 8; x++) {
+                const v = values[0][x];
+                const cell = document.createElement('div');
+                cell.className = 'sample-cell';
+                cell.textContent = v;
+                cell.style.background = `rgb(${v}, ${v}, ${v})`;
+                cell.style.color = getTextColorForValue(v);
+                grid.appendChild(cell);
+            }
+        }
+
+        wrap.appendChild(grid);
+        container.appendChild(wrap);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('left_panel_open_btn')?.addEventListener('click', openLeftPanel);
         document.getElementById('backdrop')?.addEventListener('click', closeLeftPanel);
@@ -1247,5 +1896,10 @@
 
         const firstImage = imageChooser.querySelector('img');
         if (firstImage) firstImage.click();
+
+        buildBasisCache();
+        renderSqBaseFunctions();
+        updateCoefficientsKnobForMode();
+        renderSqIdct();
     });
 </script>
