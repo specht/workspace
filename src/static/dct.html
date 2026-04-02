@@ -153,6 +153,62 @@
         backdrop-filter: blur(10px);
         user-select: none;
     }
+
+    .mode_switch {
+        position: absolute;
+        display: flex;
+        gap: 8px;
+        z-index: 5;
+    }
+
+    .mode-btn.active {
+        background: #2e6da4;
+        border-color: #2e6da4;
+        color: white;
+    }
+
+    #mode_stage {
+        position: absolute;
+        overflow: hidden;
+        border: 1px solid #2a2d33;
+        border-radius: 8px;
+        background: #101114;
+    }
+
+    .mode-screen {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(24px);
+        transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .mode-screen.visible {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+    }
+
+    .mode-screen-inner {
+        width: 100%;
+        height: 100%;
+        padding: 16px;
+        color: white;
+        font: 13px sans-serif;
+    }
+
+    .placeholder-card {
+        width: 100%;
+        height: 100%;
+        border: 1px dashed #3a3d44;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #aaa;
+        background: rgba(255, 255, 255, 0.02);
+    }    
 </style>
 
 <div id="backdrop"></div>
@@ -183,8 +239,28 @@
             </div>
 
             <div class="channel_container" id="channel_chooser"></div>
+
+            <div class="mode_switch" id="mode_switch">
+                <button class="btn btn-sm btn-secondary mode-btn active" data-mode="1d">1D</button>
+                <button class="btn btn-sm btn-secondary mode-btn" data-mode="2d">2D</button>
+            </div>
+
+            <div id="mode_stage">
+                <div class="mode-screen visible" id="mode_1d_screen">
+                    <div class="mode-screen-inner">
+                        <div class="placeholder-card">1D controls go here later</div>
+                    </div>
+                </div>
+
+                <div class="mode-screen" id="mode_2d_screen">
+                    <div class="mode-screen-inner">
+                        <div class="placeholder-card">2D controls go here later</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
 </div>
 
 <script>
@@ -196,6 +272,13 @@
 
     let width = 1;
     let height = 1;
+
+    let appMode = '1d'; // '1d' or '2d'
+
+    const selectionState = {
+        hover: null,
+        selected: null
+    };
 
     let knobs = [];
 
@@ -259,6 +342,115 @@
         panel.setAttribute('aria-hidden', 'true');
 
         document.documentElement.style.setProperty('--side-panel-offset', `0px`);
+    }
+
+    function getSelectionSize() {
+        return appMode === '1d'
+            ? { w: 8, h: 1 }
+            : { w: 8, h: 8 };
+    }
+
+    function clampSelectionOrigin(x, y, blockW, blockH) {
+        return {
+            x: Math.max(0, Math.min(width - blockW, x)),
+            y: Math.max(0, Math.min(height - blockH, y))
+        };
+    }
+
+    function getSelectionAtImagePoint(ix, iy) {
+        if (!width || !height) return null;
+
+        const { w: blockW, h: blockH } = getSelectionSize();
+
+        const px = Math.floor(ix - blockW / 2 + 0.5);
+        const py = Math.floor(iy - blockH / 2 + 0.5);
+
+        return clampSelectionOrigin(px, py, blockW, blockH);
+    }
+
+    function drawSelectionOverlay(viewId, ctx, visibleCanvas) {
+        const size = getCanvasDisplaySize(visibleCanvas);
+        const dw = size.w;
+        const dh = size.h;
+        const scale = getEffectiveScale(visibleCanvas);
+        const sw = dw / scale;
+        const sh = dh / scale;
+        const sx = viewState.cx - sw / 2;
+        const sy = viewState.cy - sh / 2;
+
+        function drawPixelGrid(rx, ry, rw, rh, blockW, blockH, color, alpha) {
+            if (viewState.zoom < 8) return;
+
+            ctx.save();
+            ctx.beginPath();
+
+            for (let i = 1; i < blockW; i++) {
+                const gx = rx + i * scale;
+                ctx.moveTo(gx + 0.5, ry);
+                ctx.lineTo(gx + 0.5, ry + rh);
+            }
+
+            for (let j = 1; j < blockH; j++) {
+                const gy = ry + j * scale;
+                ctx.moveTo(rx, gy + 0.5);
+                ctx.lineTo(rx + rw, gy + 0.5);
+            }
+
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`;
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawRect(sel, opts) {
+            if (!sel) return;
+
+            const { w: blockW, h: blockH } = getSelectionSize();
+
+            const rx = Math.round((sel.x - sx) * scale);
+            const ry = Math.round((sel.y - sy) * scale);
+            const rw = Math.round(blockW * scale);
+            const rh = Math.round(blockH * scale);
+
+            ctx.save();
+
+            if (opts.dash) {
+                ctx.setLineDash(opts.dash);
+            } else {
+                ctx.setLineDash([]);
+            }
+
+            if (opts.fill) {
+                ctx.fillStyle = opts.fill;
+                ctx.fillRect(rx, ry, rw, rh);
+            }
+
+            ctx.lineWidth = opts.lineWidth;
+            ctx.strokeStyle = opts.stroke;
+            ctx.strokeRect(rx + 0.5, ry + 0.5, rw, rh);
+
+            drawPixelGrid(rx, ry, rw, rh, blockW, blockH, opts.gridColor, opts.gridAlpha);
+
+            ctx.restore();
+        }
+
+        drawRect(selectionState.hover, {
+            fill: 'rgba(0, 200, 255, 0.12)',
+            stroke: 'rgba(0, 200, 255, 0.95)',
+            lineWidth: 1,
+            dash: [5, 3],
+            gridColor: { r: 0, g: 200, b: 255 },
+            gridAlpha: 0.45
+        });
+
+        drawRect(selectionState.selected, {
+            fill: 'rgba(0, 200, 255, 0.12)',
+            stroke: 'rgba(0, 200, 255, 1.0)',
+            lineWidth: 2,
+            dash: null,
+            gridColor: { r: 0, g: 200, b: 255 },
+            gridAlpha: 0.45
+        });
     }
 
     function getCanvasDisplaySize(canvas) {
@@ -372,6 +564,8 @@
             sx, sy, sw, sh,
             0, 0, dw, dh
         );
+
+        drawSelectionOverlay(viewId, ctx, visibleCanvas);
     }
 
     function renderAll() {
@@ -387,6 +581,50 @@
             renderQueued = false;
             renderAll();
         });
+    }
+
+    function getSelectionCenter(sel, mode = appMode) {
+        if (!sel) return null;
+
+        const size = mode === '1d'
+            ? { w: 8, h: 1 }
+            : { w: 8, h: 8 };
+
+        return {
+            x: sel.x + size.w / 2,
+            y: sel.y + size.h / 2
+        };
+    }
+
+    function getSelectionFromCenter(cx, cy, mode = appMode) {
+        const size = mode === '1d'
+            ? { w: 8, h: 1 }
+            : { w: 8, h: 8 };
+
+        return clampSelectionOrigin(
+            Math.floor(cx - size.w / 2),
+            Math.floor(cy - size.h / 2),
+            size.w,
+            size.h
+        );
+    }
+
+    function updateHoverSelectionFromPointer(canvas, clientX, clientY) {
+        const p = screenToImage(canvas, clientX, clientY);
+        selectionState.hover = getSelectionAtImagePoint(p.x, p.y);
+        scheduleRender();
+    }
+
+    function clearHoverSelection() {
+        if (!selectionState.hover) return;
+        selectionState.hover = null;
+        scheduleRender();
+    }
+
+    function commitHoverSelection() {
+        if (!selectionState.hover) return;
+        selectionState.selected = { ...selectionState.hover };
+        scheduleRender();
     }
 
     function handleResize() {
@@ -416,6 +654,22 @@
         div.style.top = `${margin + vpadding}px`;
         div.style.width = `${canvasW}px`;
         div.style.height = `${canvasH}px`;
+
+        const topRowBottom = margin + vpadding + canvasH;
+        const modeTop = topRowBottom + 24;
+        const modeHeight = Math.max(140, windowHeight - modeTop - margin);
+        const modeLeft = margin;
+        const modeWidth = windowWidth - 2 * margin;
+
+        div = document.getElementById('mode_switch');
+        div.style.left = `${modeLeft}px`;
+        div.style.top = `${topRowBottom + 8}px`;
+
+        div = document.getElementById('mode_stage');
+        div.style.left = `${modeLeft}px`;
+        div.style.top = `${modeTop + 28}px`;
+        div.style.width = `${modeWidth}px`;
+        div.style.height = `${modeHeight - 28}px`;
 
         resizeVisibleCanvases();
         updateZoomLimits();
@@ -490,6 +744,9 @@
         const ctx = bufferContexts.source;
         ctx.clearRect(0, 0, width, height);
         ctx.drawImage(baseImage, 0, 0, width, height);
+
+        selectionState.hover = null;
+        selectionState.selected = null;
 
         rebuildChannelBuffer();
         resetView();
@@ -612,15 +869,25 @@
     }
 
     function attachInteractions(canvas) {
+        const isChannelCanvas = canvas.closest('#channel_view') !== null;
+
         canvas.addEventListener('wheel', function(e) {
             e.preventDefault();
             const factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
             zoomAt(canvas, e.clientX, e.clientY, factor);
+
+            if (isChannelCanvas) {
+                updateHoverSelectionFromPointer(canvas, e.clientX, e.clientY);
+            }
         }, { passive: false });
 
         canvas.addEventListener('dblclick', function(e) {
             e.preventDefault();
             zoomAt(canvas, e.clientX, e.clientY, 2);
+
+            if (isChannelCanvas) {
+                updateHoverSelectionFromPointer(canvas, e.clientX, e.clientY);
+            }
         });
 
         canvas.addEventListener('pointerdown', function(e) {
@@ -638,13 +905,22 @@
                 moved: false
             });
 
+            if (isChannelCanvas) {
+                updateHoverSelectionFromPointer(canvas, e.clientX, e.clientY);
+            }
+
             if (pointers.size === 2) {
                 startGesture(canvas);
             }
         });
 
         canvas.addEventListener('pointermove', function(e) {
-            if (!pointers.has(e.pointerId)) return;
+            if (!pointers.has(e.pointerId)) {
+                if (isChannelCanvas) {
+                    updateHoverSelectionFromPointer(canvas, e.clientX, e.clientY);
+                }
+                return;
+            }
 
             const p = pointers.get(e.pointerId);
             const dx = e.clientX - p.prevX;
@@ -665,9 +941,20 @@
             } else if (pointers.size >= 2) {
                 updateGesture();
             }
+
+            if (isChannelCanvas) {
+                updateHoverSelectionFromPointer(canvas, e.clientX, e.clientY);
+            }
         });
 
         function endPointer(e) {
+            const p = pointers.get(e.pointerId);
+            const wasClick = p && !p.moved && pointers.size === 1;
+
+            if (isChannelCanvas && wasClick) {
+                commitHoverSelection();
+            }
+
             pointers.delete(e.pointerId);
 
             if (pointers.size < 2) {
@@ -679,6 +966,10 @@
 
         canvas.addEventListener('pointerup', endPointer);
         canvas.addEventListener('pointercancel', endPointer);
+
+        if (isChannelCanvas) {
+            canvas.addEventListener('pointerleave', clearHoverSelection);
+        }
     }
 
     function setupInteractions() {
@@ -727,6 +1018,82 @@
 
     window.addEventListener('resize', handleResize);
 
+    function selectionToAnchor(sel, mode) {
+        if (!sel) return null;
+
+        if (mode === '1d') {
+            return {
+                x: sel.x,
+                y: sel.y
+            };
+        }
+
+        // In 2D, use the middle row as the anchor row.
+        return {
+            x: sel.x,
+            y: sel.y + 3
+        };
+    }
+
+    function selectionFromAnchor(anchor, mode) {
+        if (!anchor) return null;
+
+        const { w, h } = mode === '1d'
+            ? { w: 8, h: 1 }
+            : { w: 8, h: 8 };
+
+        let x = anchor.x;
+        let y = anchor.y;
+
+        if (mode === '2d') {
+            y = anchor.y - 3;
+        }
+
+        return clampSelectionOrigin(x, y, w, h);
+    }
+
+    function setAppMode(mode) {
+        if (mode !== '1d' && mode !== '2d') return;
+        if (appMode === mode) return;
+
+        const prevMode = appMode;
+
+        const selectedAnchor = selectionState.selected
+            ? selectionToAnchor(selectionState.selected, prevMode)
+            : null;
+
+        const hoverAnchor = selectionState.hover
+            ? selectionToAnchor(selectionState.hover, prevMode)
+            : null;
+
+        appMode = mode;
+
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.mode === mode);
+        });
+
+        document.getElementById('mode_1d_screen').classList.toggle('visible', mode === '1d');
+        document.getElementById('mode_2d_screen').classList.toggle('visible', mode === '2d');
+
+        selectionState.selected = selectedAnchor
+            ? selectionFromAnchor(selectedAnchor, mode)
+            : null;
+
+        selectionState.hover = hoverAnchor
+            ? selectionFromAnchor(hoverAnchor, mode)
+            : null;
+
+        scheduleRender();
+    }
+
+    function setupModeSwitch() {
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setAppMode(btn.dataset.mode);
+            });
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('left_panel_open_btn')?.addEventListener('click', openLeftPanel);
         document.getElementById('backdrop')?.addEventListener('click', closeLeftPanel);
@@ -734,6 +1101,7 @@
         handleResize();
         setupInteractions();
         buildControls();
+        setupModeSwitch();
 
         const baseImage = document.getElementById('base_image');
         baseImage.addEventListener('load', loadCurrentImageIntoViewer);
