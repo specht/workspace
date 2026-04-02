@@ -127,6 +127,7 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
+        outline: 1px solid #444;
         /* transform: scale(min(1.0, calc(100vh / 1060px))); */
     }
 
@@ -166,49 +167,6 @@
         border-color: #2e6da4;
         color: white;
     }
-
-    #mode_stage {
-        position: absolute;
-        overflow: hidden;
-        border: 1px solid #2a2d33;
-        border-radius: 8px;
-        background: #101114;
-    }
-
-    .mode-screen {
-        position: absolute;
-        inset: 0;
-        opacity: 0;
-        pointer-events: none;
-        transform: translateY(24px);
-        transition: opacity 180ms ease, transform 180ms ease;
-    }
-
-    .mode-screen.visible {
-        opacity: 1;
-        pointer-events: auto;
-        transform: translateY(0);
-    }
-
-    .mode-screen-inner {
-        width: 100%;
-        height: 100%;
-        padding: 16px;
-        color: white;
-        font: 13px sans-serif;
-    }
-
-    .placeholder-card {
-        width: 100%;
-        height: 100%;
-        border: 1px dashed #3a3d44;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #aaa;
-        background: rgba(255, 255, 255, 0.02);
-    }    
 </style>
 
 <div id="backdrop"></div>
@@ -233,31 +191,17 @@
                 <div class="canvas-label">Source</div>
             </div>
 
+            <div class="channel_container" id="channel_chooser"></div>
+
             <div class="canvas_container" id="channel_view">
                 <canvas></canvas>
                 <div class="canvas-label" id="channel_label">Y</div>
             </div>
 
-            <div class="channel_container" id="channel_chooser"></div>
-
-            <div class="mode_switch" id="mode_switch">
-                <button class="btn btn-sm btn-secondary mode-btn active" data-mode="1d">1D</button>
-                <button class="btn btn-sm btn-secondary mode-btn" data-mode="2d">2D</button>
-            </div>
-
-            <div id="mode_stage">
-                <div class="mode-screen visible" id="mode_1d_screen">
-                    <div class="mode-screen-inner">
-                        <div class="placeholder-card">1D controls go here later</div>
-                    </div>
-                </div>
-
-                <div class="mode-screen" id="mode_2d_screen">
-                    <div class="mode-screen-inner">
-                        <div class="placeholder-card">2D controls go here later</div>
-                    </div>
-                </div>
-            </div>
+            <div class="canvas_container" id="sq_input"></div>
+            <div class="canvas_container" id="sq_dct"></div>
+            <div class="canvas_container" id="sq_base_functions"></div>
+            <div class="canvas_container" id="sq_idct"></div>
         </div>
     </div>
 
@@ -655,21 +599,32 @@
         div.style.width = `${canvasW}px`;
         div.style.height = `${canvasH}px`;
 
-        const topRowBottom = margin + vpadding + canvasH;
-        const modeTop = topRowBottom + 24;
-        const modeHeight = Math.max(140, windowHeight - modeTop - margin);
-        const modeLeft = margin;
-        const modeWidth = windowWidth - 2 * margin;
+        let squareCount = 4;
+        let squareSize = (windowWidth - 2 * margin - (squareCount - 1) * hpadding) / squareCount;
 
-        div = document.getElementById('mode_switch');
-        div.style.left = `${modeLeft}px`;
-        div.style.top = `${topRowBottom + 8}px`;
+        div = document.getElementById('sq_input');
+        div.style.left = `${margin}px`;
+        div.style.top = `${margin + canvasH + 2 * vpadding}px`;
+        div.style.width = `${squareSize}px`;
+        div.style.height = `${squareSize}px`;
 
-        div = document.getElementById('mode_stage');
-        div.style.left = `${modeLeft}px`;
-        div.style.top = `${modeTop + 28}px`;
-        div.style.width = `${modeWidth}px`;
-        div.style.height = `${modeHeight - 28}px`;
+        div = document.getElementById('sq_dct');
+        div.style.left = `${margin + squareSize + hpadding}px`;
+        div.style.top = `${margin + canvasH + 2 * vpadding}px`;
+        div.style.width = `${squareSize}px`;
+        div.style.height = `${squareSize}px`;
+
+        div = document.getElementById('sq_base_functions');
+        div.style.left = `${margin + 2 * (squareSize + hpadding)}px`;
+        div.style.top = `${margin + canvasH + 2 * vpadding}px`;
+        div.style.width = `${squareSize}px`;
+        div.style.height = `${squareSize}px`;
+
+        div = document.getElementById('sq_idct');
+        div.style.left = `${margin + 3 * (squareSize + hpadding)}px`;
+        div.style.top = `${margin + canvasH + 2 * vpadding}px`;
+        div.style.width = `${squareSize}px`;
+        div.style.height = `${squareSize}px`;
 
         resizeVisibleCanvases();
         updateZoomLimits();
@@ -727,7 +682,7 @@
         }
 
         dstCtx.putImageData(dst, 0, 0);
-        document.getElementById('channel_label').textContent = ['Y', 'Cb', 'Cr'][currentChannel - 1];
+        document.getElementById('channel_label').textContent = `${['Y', 'Cb', 'Cr'][currentChannel - 1]} Channel`;
     }
 
     function loadCurrentImageIntoViewer() {
@@ -981,12 +936,12 @@
     }
 
     function buildControls() {
-        const div = document.querySelector('#channel_chooser');
-        const panel = document.createElement('div');
+        let div = document.querySelector('#channel_chooser');
+        let panel = document.createElement('div');
         panel.classList.add('channel-panel');
         div.append(panel);
 
-        const holder = document.createElement('div');
+        let holder = document.createElement('div');
         panel.append(holder);
 
         knobs.push(new FancyKnob(holder, {
@@ -1012,6 +967,33 @@
                 currentChannel = v;
                 rebuildChannelBuffer();
                 scheduleRender();
+            }
+        }));
+
+        holder = document.createElement('div');
+        holder.style.marginTop = '24px';
+        panel.append(holder);
+
+        knobs.push(new FancyKnob(holder, {
+            label: 'Mode',
+            min: 1,
+            max: 2,
+            step: 1,
+            value: 1,
+            color: '#d3d7cf',
+            centerLabel: '0',
+            size: 70,
+            horizontal: false,
+            sweepStart: -30,
+            sweepEnd: 30,
+            indicatorStyle: 'dot',
+            ticks: [
+                { value: 1, major: true, label: '1D' },
+                { value: 2, major: true, label: '2D' },
+            ],
+            formatValue: (v) => ['1D', '2D'][v - 1] || v,
+            onInput: (v) => {
+                setAppMode(v === 1 ? '1d' : '2d');
             }
         }));
     }
@@ -1071,9 +1053,6 @@
         document.querySelectorAll('.mode-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.mode === mode);
         });
-
-        document.getElementById('mode_1d_screen').classList.toggle('visible', mode === '1d');
-        document.getElementById('mode_2d_screen').classList.toggle('visible', mode === '2d');
 
         selectionState.selected = selectedAnchor
             ? selectionFromAnchor(selectedAnchor, mode)
