@@ -244,11 +244,11 @@
 
             <div class="channel_container" id="coefficients_chooser"></div>
 
-            <div class="canvas_container" id="source">
+            <div class="canvas_container" id="reconstructed_view">
                 <canvas></canvas>
-                <div class="canvas-label">Source</div>
+                <div class="canvas-label">Reconstructed</div>
             </div>
-            
+
             <div class="canvas_container" id="sq_input"></div>
             <div class="canvas_container" id="sq_dct"></div>
             <div class="canvas_container" id="sq_base_functions"></div>
@@ -294,16 +294,18 @@
     let gesture = null;
     let renderQueued = false;
 
-    const viewIds = ['source', 'channel_view'];
+    const viewIds = ['source', 'channel_view', 'reconstructed_view'];
 
     const buffers = {
         source: document.createElement('canvas'),
-        channel_view: document.createElement('canvas')
+        channel_view: document.createElement('canvas'),
+        reconstructed_view: document.createElement('canvas')
     };
 
     const bufferContexts = {
         source: buffers.source.getContext('2d', { willReadFrequently: true }),
-        channel_view: buffers.channel_view.getContext('2d', { willReadFrequently: true })
+        channel_view: buffers.channel_view.getContext('2d', { willReadFrequently: true }),
+        reconstructed_view: buffers.reconstructed_view.getContext('2d', { willReadFrequently: true })
     };
 
     const visibleContexts = {};
@@ -628,6 +630,7 @@
     function commitHoverSelection() {
         if (!selectionState.hover) return;
         selectionState.selected = { ...selectionState.hover };
+        rebuildReconstructedBuffer();
         renderSqInput();
         renderSqDct();
         renderSqIdct();
@@ -641,7 +644,7 @@
         const scaleFactor = Math.min(1.0, 1060.0 / windowHeight);
         const knobW = 100 * scaleFactor;
 
-        const canvasW = (windowWidth - 2 * margin - knobW - 4 * hpadding) / 3;
+        const canvasW = (windowWidth - 2 * margin - 2 * knobW - 4 * hpadding) / 3;
         const canvasH = (windowHeight - 2 * margin - 2 * vpadding) / 3;
 
         let div = document.getElementById('source');
@@ -664,6 +667,12 @@
 
         div = document.getElementById('channel_view');
         div.style.left = `${margin + canvasW + knobW + 2 * hpadding}px`;
+        div.style.top = `${margin + vpadding}px`;
+        div.style.width = `${canvasW}px`;
+        div.style.height = `${canvasH}px`;
+
+            div = document.getElementById('reconstructed_view');
+        div.style.left = `${margin + 2 * canvasW + 2 * knobW + 4 * hpadding}px`;
         div.style.top = `${margin + vpadding}px`;
         div.style.width = `${canvasW}px`;
         div.style.height = `${canvasH}px`;
@@ -752,6 +761,7 @@
 
         dstCtx.putImageData(dst, 0, 0);
         document.getElementById('channel_label').textContent = `${['Y', 'Cb', 'Cr'][currentChannel - 1]} Channel`;
+        rebuildReconstructedBuffer();
         renderSqInput();
         renderSqDct();
         renderSqIdct();
@@ -945,7 +955,108 @@
         }
 
         return [dct1d(shifted[0])];
-    }    
+    }
+
+    function reconstructBlockFromValues(values, mode = appMode, count = coefficientCount) {
+        if (!values) return null;
+
+        const shifted = values.map(row => row.map(v => v - 128));
+
+        if (mode === '1d') {
+            const coeffs = dct1d(shifted[0]);
+            const truncated = new Array(8).fill(0);
+
+            for (let i = 0; i < Math.min(count, 8); i++) {
+                truncated[i] = coeffs[i];
+            }
+
+            const reconstructed = idct1d(truncated).map(v => clampByte(v + 128));
+            return [reconstructed];
+        }
+
+        const coeffs = dct2d(shifted);
+        const truncated = truncateCoefficients(coeffs, count, '2d');
+        const reconstructed = idct2d(truncated).map(row => row.map(v => clampByte(v + 128)));
+        return reconstructed;
+    }
+
+    function setPixelInImageData(data, w, x, y, v) {
+        const i = (y * w + x) * 4;
+        data[i] = v;
+        data[i + 1] = v;
+        data[i + 2] = v;
+        data[i + 3] = 255;
+    }
+
+    function rebuildReconstructedBuffer() {
+        const srcCanvas = buffers.channel_view;
+        const srcCtx = bufferContexts.channel_view;
+        const dstCanvas = buffers.reconstructed_view;
+        const dstCtx = bufferContexts.reconstructed_view;
+
+        if (!srcCanvas.width || !srcCanvas.height) return;
+
+        const w = srcCanvas.width;
+        const h = srcCanvas.height;
+
+        dstCanvas.width = w;
+        dstCanvas.height = h;
+
+        const src = srcCtx.getImageData(0, 0, w, h);
+        const dst = dstCtx.createImageData(w, h);
+
+        const blockW = 8;
+        const blockH = appMode === '1d' ? 1 : 8;
+
+        // Anchor the reconstruction grid to the selected block if present.
+        // Fallback to the old origin when nothing is selected yet.
+        const sel = selectionState.selected;
+        const anchorX = sel ? sel.x : 0;
+        const anchorY = sel ? sel.y : 0;
+
+        // Find the first block origin at or before the image bounds so that
+        // the infinite block lattice aligned to the selected block covers
+        // the full image.
+        let startX = anchorX;
+        while (startX > 0) startX -= blockW;
+
+        let startY = anchorY;
+        while (startY > 0) startY -= blockH;
+
+        for (let y0 = startY; y0 < h; y0 += blockH) {
+            for (let x0 = startX; x0 < w; x0 += blockW) {
+                const block = [];
+
+                for (let y = 0; y < blockH; y++) {
+                    const row = [];
+                    const sy = Math.max(0, Math.min(h - 1, y0 + y));
+
+                    for (let x = 0; x < blockW; x++) {
+                        const sx = Math.max(0, Math.min(w - 1, x0 + x));
+                        const i = (sy * w + sx) * 4;
+                        row.push(src.data[i]);
+                    }
+
+                    block.push(row);
+                }
+
+                const reconstructed = reconstructBlockFromValues(block, appMode, coefficientCount);
+
+                for (let y = 0; y < blockH; y++) {
+                    const dy = y0 + y;
+                    if (dy < 0 || dy >= h) continue;
+
+                    for (let x = 0; x < blockW; x++) {
+                        const dx = x0 + x;
+                        if (dx < 0 || dx >= w) continue;
+                        setPixelInImageData(dst.data, w, dx, dy, reconstructed[y][x]);
+                    }
+                }
+            }
+        }
+
+        dstCtx.putImageData(dst, 0, 0);
+    }
 
     function screenToImage(canvas, clientX, clientY) {
         const rect = canvas.getBoundingClientRect();
@@ -1064,14 +1175,16 @@
     }
 
     function attachInteractions(canvas) {
-        const isChannelCanvas = canvas.closest('#channel_view') !== null;
+        const isSelectableCanvas =
+            canvas.closest('#channel_view') !== null ||
+            canvas.closest('#reconstructed_view') !== null;
 
         canvas.addEventListener('wheel', function(e) {
             e.preventDefault();
             const factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
             zoomAt(canvas, e.clientX, e.clientY, factor);
 
-            if (isChannelCanvas) {
+            if (isSelectableCanvas) {
                 updateHoverSelectionFromPointer(canvas, e.clientX, e.clientY);
             }
         }, { passive: false });
@@ -1080,7 +1193,7 @@
             e.preventDefault();
             zoomAt(canvas, e.clientX, e.clientY, 2);
 
-            if (isChannelCanvas) {
+            if (isSelectableCanvas) {
                 updateHoverSelectionFromPointer(canvas, e.clientX, e.clientY);
             }
         });
@@ -1100,7 +1213,7 @@
                 moved: false
             });
 
-            if (isChannelCanvas) {
+            if (isSelectableCanvas) {
                 updateHoverSelectionFromPointer(canvas, e.clientX, e.clientY);
             }
 
@@ -1111,7 +1224,7 @@
 
         canvas.addEventListener('pointermove', function(e) {
             if (!pointers.has(e.pointerId)) {
-                if (isChannelCanvas) {
+                if (isSelectableCanvas) {
                     updateHoverSelectionFromPointer(canvas, e.clientX, e.clientY);
                 }
                 return;
@@ -1137,7 +1250,7 @@
                 updateGesture();
             }
 
-            if (isChannelCanvas) {
+            if (isSelectableCanvas) {
                 updateHoverSelectionFromPointer(canvas, e.clientX, e.clientY);
             }
         });
@@ -1146,7 +1259,7 @@
             const p = pointers.get(e.pointerId);
             const wasClick = p && !p.moved && pointers.size === 1;
 
-            if (isChannelCanvas && wasClick) {
+            if (isSelectableCanvas && wasClick) {
                 commitHoverSelection();
             }
 
@@ -1162,7 +1275,7 @@
         canvas.addEventListener('pointerup', endPointer);
         canvas.addEventListener('pointercancel', endPointer);
 
-        if (isChannelCanvas) {
+        if (isSelectableCanvas) {
             canvas.addEventListener('pointerleave', clearHoverSelection);
         }
     }
@@ -1230,6 +1343,7 @@
             });
         }
 
+        rebuildReconstructedBuffer();
         renderSqDct();
         renderSqBaseFunctions();
         renderSqIdct();
@@ -1448,9 +1562,11 @@
             formatValue: (v) => v,
             onInput: (v) => {
                 coefficientCount = v;
+                rebuildReconstructedBuffer();
                 renderSqDct();
                 renderSqBaseFunctions();
                 renderSqIdct();
+                scheduleRender();
             }
         });
 
@@ -1523,10 +1639,11 @@
 
         updateCoefficientsKnobForMode();
 
+        rebuildReconstructedBuffer();
         renderSqInput();
         renderSqDct();
         renderSqBaseFunctions();
-        renderSqInput();
+        renderSqIdct();
         scheduleRender();
     }
 
@@ -1901,5 +2018,6 @@
         renderSqBaseFunctions();
         updateCoefficientsKnobForMode();
         renderSqIdct();
+        scheduleRender();
     });
 </script>
