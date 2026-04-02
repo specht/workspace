@@ -20,7 +20,13 @@ class FancyKnob {
             onInput: options.onInput ?? null,
             onChange: options.onChange ?? null,
             formatValue: options.formatValue ?? null,
-            horizontal: options.horizontal ?? false
+            horizontal: options.horizontal ?? false,
+
+            // new:
+            sweepStart: options.sweepStart ?? -135,
+            sweepEnd: options.sweepEnd ?? 135,
+            indicatorStyle: options.indicatorStyle ?? 'arc', // arc or dot
+            showTicks: options.showTicks ?? true,
         };
 
         if (this.opts.bipolar === null) {
@@ -37,8 +43,13 @@ class FancyKnob {
         this.cx = 100;
         this.cy = 100;
         this.rArc = 74;
-        this.sweepStart = -135;
-        this.sweepEnd = 135;
+
+        this.sweepStart = this.opts.sweepStart;
+        this.sweepEnd = this.opts.sweepEnd;
+
+        this.uid1 = this.uid();
+        this.uid2 = this.uid();
+        this.uid3 = this.uid();
 
         this.build();
         this.render();
@@ -100,15 +111,15 @@ class FancyKnob {
         this.root.innerHTML = `
             <svg viewBox="0 0 200 200" aria-label="${this.opts.label}" role="slider">
                 <defs>
-                    <filter id="shadow-${this.uid()}" x="-50%" y="-50%" width="200%" height="200%">
+                    <filter id="shadow-${this.uid1}" x="-50%" y="-50%" width="200%" height="200%">
                         <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="rgba(0,0,0,0.5)"/>
                     </filter>
-                    <radialGradient id="knobGradOuter-${this.uid2 = this.uid()}" cx="35%" cy="30%">
+                    <radialGradient id="knobGradOuter-${this.uid2}" cx="35%" cy="30%">
                         <stop offset="0%" stop-color="#3c4047"/>
                         <stop offset="55%" stop-color="#22262c"/>
                         <stop offset="100%" stop-color="#0e1013"/>
                     </radialGradient>
-                    <radialGradient id="knobGradInner-${this.uid3 = this.uid()}" cx="35%" cy="30%">
+                    <radialGradient id="knobGradInner-${this.uid3}" cx="35%" cy="30%">
                         <stop offset="0%" stop-color="#2b2f35"/>
                         <stop offset="100%" stop-color="#131519"/>
                     </radialGradient>
@@ -118,11 +129,12 @@ class FancyKnob {
                 <path class="track" fill="none" stroke="#0f1012" stroke-width="16" stroke-linecap="round"></path>
                 <path class="track-inner" fill="none" stroke="#2d3138" stroke-width="8" stroke-linecap="round" opacity="0.65"></path>
                 <path class="active" fill="none" stroke="${this.opts.color}" stroke-width="9" stroke-linecap="round"></path>
+                <circle class="value-dot" r="5" fill="${this.opts.color}"></circle>
 
                 <g class="tick-layer"></g>
                 <g class="label-layer"></g>
 
-                <circle cx="100" cy="100" r="57" fill="url(#knobGradOuter-${this.uid2})" filter="url(#shadow-${this.uid1 = this.uid()})"></circle>
+                <circle cx="100" cy="100" r="57" fill="url(#knobGradOuter-${this.uid2})" filter="url(#shadow-${this.uid1})"></circle>
                 <circle cx="100" cy="100" r="44" fill="url(#knobGradInner-${this.uid3})"></circle>
                 <circle cx="100" cy="100" r="18" fill="#0f1012"></circle>
 
@@ -149,6 +161,7 @@ class FancyKnob {
         this.indicatorShadowEl = this.root.querySelector('.indicator-shadow');
         this.tickLayer = this.root.querySelector('.tick-layer');
         this.labelLayer = this.root.querySelector('.label-layer');
+        this.valueDotEl = this.root.querySelector('.value-dot');
 
         this.titleEl.textContent = this.opts.label;
 
@@ -163,6 +176,14 @@ class FancyKnob {
         this.trackEl.setAttribute('d', trackPath);
         this.trackInnerEl.setAttribute('d', this.describeArc(this.rArc, this.sweepStart, this.sweepEnd));
         this.focusRingEl.setAttribute('d', this.describeArc(this.rArc + 10, this.sweepStart, this.sweepEnd));
+
+        if (this.opts.indicatorStyle === 'dot') {
+            this.trackEl.style.display = 'none';
+            this.trackInnerEl.style.display = 'none';
+            this.activeEl.style.display = 'none';
+        } else {
+            this.valueDotEl.style.display = 'none';
+        }        
 
         this.buildTicksAndLabels();
     }
@@ -182,16 +203,18 @@ class FancyKnob {
             const inner = this.polarToCartesian(84, angle);
             const outer = this.polarToCartesian(92, angle);
 
-            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            line.setAttribute('x1', inner.x);
-            line.setAttribute('y1', inner.y);
-            line.setAttribute('x2', outer.x);
-            line.setAttribute('y2', outer.y);
-            line.setAttribute('stroke', tick.major ? '#f0f0f0' : '#9ea4ad');
-            line.setAttribute('stroke-width', tick.major ? '2' : '2');
-            line.setAttribute('stroke-linecap', 'round');
-            line.setAttribute('opacity', tick.major ? '0.75' : '0.35');
-            this.tickLayer.appendChild(line);
+            if (this.opts.showTicks) {
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', inner.x);
+                line.setAttribute('y1', inner.y);
+                line.setAttribute('x2', outer.x);
+                line.setAttribute('y2', outer.y);
+                line.setAttribute('stroke', tick.major ? '#f0f0f0' : '#9ea4ad');
+                line.setAttribute('stroke-width', tick.major ? '2' : '2');
+                line.setAttribute('stroke-linecap', 'round');
+                line.setAttribute('opacity', tick.major ? '0.75' : '0.35');
+                this.tickLayer.appendChild(line);
+            }
 
             if (tick.label != null) {
                 const p = this.polarToCartesian(108, angle);
@@ -282,11 +305,7 @@ class FancyKnob {
 
     getActiveColor() {
         if (!this.opts.bipolar) return this.opts.color;
-
-        // if (this.value === 0) return '#d9d9d9';
         return this.opts.color;
-        if (this.value > 0) return this.opts.color;
-        return this.mix('#61656d', '#d9dde3', 1 - Math.abs(this.value / Math.max(Math.abs(this.opts.min), Math.abs(this.opts.max))));
     }
 
     mix(a, b, t) {
@@ -312,16 +331,22 @@ class FancyKnob {
     render() {
         const angle = this.valueToAngle(this.value);
         const color = this.getActiveColor();
+        const dotPos = this.polarToCartesian(this.rArc, angle);
+        this.valueDotEl.setAttribute('cx', dotPos.x);
+        this.valueDotEl.setAttribute('cy', dotPos.y);
+        this.valueDotEl.setAttribute('fill', color);
 
-        if (this.opts.bipolar) {
-            const zeroAngle = this.valueToAngle(0);
-            if (this.value >= 0) {
-                this.activeEl.setAttribute('d', this.describeArc(this.rArc, zeroAngle, angle));
+        if (this.opts.indicatorStyle === 'arc') {
+            if (this.opts.bipolar) {
+                const zeroAngle = this.valueToAngle(0);
+                if (this.value >= 0) {
+                    this.activeEl.setAttribute('d', this.describeArc(this.rArc, zeroAngle, angle));
+                } else {
+                    this.activeEl.setAttribute('d', this.describeArc(this.rArc, angle, zeroAngle));
+                }
             } else {
-                this.activeEl.setAttribute('d', this.describeArc(this.rArc, angle, zeroAngle));
+                this.activeEl.setAttribute('d', this.describeArc(this.rArc, this.sweepStart, angle));
             }
-        } else {
-            this.activeEl.setAttribute('d', this.describeArc(this.rArc, this.sweepStart, angle));
         }
 
         this.activeEl.setAttribute('stroke', color);

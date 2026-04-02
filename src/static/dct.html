@@ -1,3 +1,6 @@
+<link rel="stylesheet" href="include/knob.css">
+<script src="include/knob.js"></script>
+
 <style>
     body {
         margin: 0;
@@ -67,6 +70,12 @@
         font: 13px sans-serif;
     }
 
+    .left-panel-close,
+    .left-panel-open {
+        --bs-btn-bg: #111;
+        --bs-btn-border-color: #2a2d33;
+    }
+
     .left-panel-open {
         position: fixed;
         top: 12px;
@@ -79,6 +88,11 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        /* background: #0f1013; */
+        /* border: 1px solid #2a2d33; */
+        /* border-radius: 8px; */
+        overflow: hidden;
+        outline: 1px solid #444;
     }
 
     .canvas_container canvas {
@@ -107,6 +121,38 @@
     #gallery img:hover {
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
     }
+
+    .channel_container {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        /* transform: scale(min(1.0, calc(100vh / 1060px))); */
+    }
+
+    .channel-panel {
+        background: #111;
+        border-radius: 8px;
+        padding: 16px 8px 8px 8px;
+    }
+
+    .canvas-label {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 4px 8px;
+        border-radius: 6px;
+        font: 11px sans-serif;
+        line-height: 1.2;
+        pointer-events: none;
+        z-index: 2;
+        white-space: nowrap;
+        bottom: 6px;
+        backdrop-filter: blur(10px);
+        user-select: none;
+    }
 </style>
 
 <div id="backdrop"></div>
@@ -123,11 +169,20 @@
 
 <div id="app_shell">
     <img id="base_image" style="display:none;">
+
     <div class="container-fluid">
         <div class="col-md-12">
             <div class="canvas_container" id="source">
                 <canvas></canvas>
+                <div class="canvas-label">Source</div>
             </div>
+
+            <div class="canvas_container" id="channel_view">
+                <canvas></canvas>
+                <div class="canvas-label" id="channel_label">Y</div>
+            </div>
+
+            <div class="channel_container" id="channel_chooser"></div>
         </div>
     </div>
 </div>
@@ -142,6 +197,8 @@
     let width = 1;
     let height = 1;
 
+    let knobs = [];
+
     const viewState = {
         zoom: 1,
         minZoom: 1,
@@ -154,11 +211,21 @@
     let gesture = null;
     let renderQueued = false;
 
-    const bufferCanvas = document.createElement('canvas');
-    const bufferCtx = bufferCanvas.getContext('2d', { willReadFrequently: true });
+    const viewIds = ['source', 'channel_view'];
 
-    const visibleCanvas = document.querySelector('#source canvas');
-    const visibleCtx = visibleCanvas.getContext('2d');
+    const buffers = {
+        source: document.createElement('canvas'),
+        channel_view: document.createElement('canvas')
+    };
+
+    const bufferContexts = {
+        source: buffers.source.getContext('2d', { willReadFrequently: true }),
+        channel_view: buffers.channel_view.getContext('2d', { willReadFrequently: true })
+    };
+
+    const visibleContexts = {};
+
+    let currentChannel = 1; // 1=Y, 2=Cb, 3=Cr
 
     function getLeftPanelWidth() {
         const panel = document.getElementById('left_panel');
@@ -212,18 +279,21 @@
         return getFitScale(canvas) * viewState.zoom;
     }
 
-    function resizeVisibleCanvas() {
-        const container = document.getElementById('source');
-        const rect = container.getBoundingClientRect();
-        const dpr = window.devicePixelRatio || 1;
+    function resizeVisibleCanvases() {
+        viewIds.forEach(id => {
+            const container = document.getElementById(id);
+            const canvas = container.querySelector('canvas');
+            const rect = container.getBoundingClientRect();
 
-        const displayWidth = Math.max(1, Math.round(rect.width));
-        const displayHeight = Math.max(1, Math.round(rect.height));
+            const dpr = window.devicePixelRatio || 1;
+            const displayWidth = Math.max(1, Math.round(rect.width));
+            const displayHeight = Math.max(1, Math.round(rect.height));
 
-        visibleCanvas.width = Math.round(displayWidth * dpr);
-        visibleCanvas.height = Math.round(displayHeight * dpr);
-        visibleCanvas.style.width = `${displayWidth}px`;
-        visibleCanvas.style.height = `${displayHeight}px`;
+            canvas.width = Math.round(displayWidth * dpr);
+            canvas.height = Math.round(displayHeight * dpr);
+            canvas.style.width = `${displayWidth}px`;
+            canvas.style.height = `${displayHeight}px`;
+        });
     }
 
     function updateZoomLimits() {
@@ -242,36 +312,51 @@
     }
 
     function clampView() {
-        const canvas = visibleCanvas;
-        const size = getCanvasDisplaySize(canvas);
-        const scale = getEffectiveScale(canvas);
+        let maxHalfW = 0;
+        let maxHalfH = 0;
 
-        const halfW = size.w / (2 * scale);
-        const halfH = size.h / (2 * scale);
+        viewIds.forEach(id => {
+            const canvas = document.querySelector(`#${id} canvas`);
+            if (!canvas) return;
 
-        if (halfW * 2 >= width) {
+            const size = getCanvasDisplaySize(canvas);
+            const scale = getEffectiveScale(canvas);
+
+            const halfW = size.w / (2 * scale);
+            const halfH = size.h / (2 * scale);
+
+            maxHalfW = Math.max(maxHalfW, halfW);
+            maxHalfH = Math.max(maxHalfH, halfH);
+        });
+
+        if (maxHalfW * 2 >= width) {
             viewState.cx = width / 2;
         } else {
-            viewState.cx = Math.max(halfW, Math.min(width - halfW, viewState.cx));
+            viewState.cx = Math.max(maxHalfW, Math.min(width - maxHalfW, viewState.cx));
         }
 
-        if (halfH * 2 >= height) {
+        if (maxHalfH * 2 >= height) {
             viewState.cy = height / 2;
         } else {
-            viewState.cy = Math.max(halfH, Math.min(height - halfH, viewState.cy));
+            viewState.cy = Math.max(maxHalfH, Math.min(height - maxHalfH, viewState.cy));
         }
     }
 
-    function renderView() {
+    function renderView(viewId) {
+        const visibleCanvas = document.querySelector(`#${viewId} canvas`);
+        if (!visibleCanvas) return;
+
+        const ctx = visibleContexts[viewId];
+        const srcCanvas = buffers[viewId];
         const dpr = window.devicePixelRatio || 1;
         const size = getCanvasDisplaySize(visibleCanvas);
         const dw = size.w;
         const dh = size.h;
 
-        visibleCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        visibleCtx.clearRect(0, 0, dw, dh);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, dw, dh);
 
-        if (!bufferCanvas.width || !bufferCanvas.height) return;
+        if (!srcCanvas || !srcCanvas.width || !srcCanvas.height) return;
 
         const scale = getEffectiveScale(visibleCanvas);
         const sw = dw / scale;
@@ -279,18 +364,20 @@
         const sx = viewState.cx - sw / 2;
         const sy = viewState.cy - sh / 2;
 
-        visibleCtx.imageSmoothingEnabled = !(viewState.zoom > 4);
-        visibleCtx.imageSmoothingQuality = 'low';
+        ctx.imageSmoothingEnabled = !(viewState.zoom > 4);
+        ctx.imageSmoothingQuality = 'low';
 
-        visibleCtx.drawImage(
-            bufferCanvas,
+        ctx.drawImage(
+            srcCanvas,
             sx, sy, sw, sh,
             0, 0, dw, dh
         );
     }
 
     function renderAll() {
-        renderView();
+        for (const id of viewIds) {
+            renderView(id);
+        }
     }
 
     function scheduleRender() {
@@ -306,21 +393,31 @@
         const windowWidth = window.innerWidth;
         const windowHeight = window.innerHeight;
 
-        // original layout math
         const scaleFactor = Math.min(1.0, 1060.0 / windowHeight);
-        const c0w = 180 * scaleFactor;
-        const c1w = 100 * scaleFactor;
+        const knobW = 100 * scaleFactor;
 
-        const ih = (windowWidth - 2 * margin - c0w - 2 * c1w - 6 * hpadding) / 4;
-        const iv = (windowHeight - 2 * margin - 2 * vpadding) / 3;
+        const canvasW = (windowWidth - 2 * margin - knobW - 4 * hpadding) / 3;
+        const canvasH = (windowHeight - 2 * margin - 2 * vpadding) / 3;
 
-        const div = document.getElementById('source');
+        let div = document.getElementById('source');
         div.style.left = `${margin}px`;
-        div.style.top = `${margin + iv + vpadding}px`;
-        div.style.width = `${ih}px`;
-        div.style.height = `${iv}px`;
+        div.style.top = `${margin + vpadding}px`;
+        div.style.width = `${canvasW}px`;
+        div.style.height = `${canvasH}px`;
 
-        resizeVisibleCanvas();
+        div = document.getElementById('channel_chooser');
+        div.style.left = `${margin + canvasW + hpadding}px`;
+        div.style.top = `${margin + vpadding}px`;
+        div.style.width = `${knobW}px`;
+        div.style.height = `${canvasH}px`;
+
+        div = document.getElementById('channel_view');
+        div.style.left = `${margin + canvasW + knobW + 2 * hpadding}px`;
+        div.style.top = `${margin + vpadding}px`;
+        div.style.width = `${canvasW}px`;
+        div.style.height = `${canvasH}px`;
+
+        resizeVisibleCanvases();
         updateZoomLimits();
         clampView();
         scheduleRender();
@@ -330,18 +427,71 @@
         document.getElementById('base_image').src = src;
     }
 
+    function clampByte(v) {
+        return Math.max(0, Math.min(255, Math.round(v)));
+    }
+
+    function rebuildChannelBuffer() {
+        const srcCanvas = buffers.source;
+        const srcCtx = bufferContexts.source;
+        const dstCanvas = buffers.channel_view;
+        const dstCtx = bufferContexts.channel_view;
+
+        if (!srcCanvas.width || !srcCanvas.height) return;
+
+        dstCanvas.width = srcCanvas.width;
+        dstCanvas.height = srcCanvas.height;
+
+        const w = srcCanvas.width;
+        const h = srcCanvas.height;
+
+        const src = srcCtx.getImageData(0, 0, w, h);
+        const dst = dstCtx.createImageData(w, h);
+
+        const s = src.data;
+        const d = dst.data;
+
+        for (let i = 0; i < s.length; i += 4) {
+            const r = s[i];
+            const g = s[i + 1];
+            const b = s[i + 2];
+
+            const y  =  0.299 * r + 0.587 * g + 0.114 * b;
+            const cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * b;
+            const cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * b;
+
+            let v = y;
+            if (currentChannel === 2) v = cb;
+            if (currentChannel === 3) v = cr;
+
+            v = clampByte(v);
+
+            d[i] = v;
+            d[i + 1] = v;
+            d[i + 2] = v;
+            d[i + 3] = 255;
+        }
+
+        dstCtx.putImageData(dst, 0, 0);
+        document.getElementById('channel_label').textContent = ['Y', 'Cb', 'Cr'][currentChannel - 1];
+    }
+
     function loadCurrentImageIntoViewer() {
         const baseImage = document.getElementById('base_image');
 
         width = baseImage.naturalWidth;
         height = baseImage.naturalHeight;
 
-        bufferCanvas.width = width;
-        bufferCanvas.height = height;
+        Object.values(buffers).forEach(c => {
+            c.width = width;
+            c.height = height;
+        });
 
-        bufferCtx.clearRect(0, 0, width, height);
-        bufferCtx.drawImage(baseImage, 0, 0, width, height);
+        const ctx = bufferContexts.source;
+        ctx.clearRect(0, 0, width, height);
+        ctx.drawImage(baseImage, 0, 0, width, height);
 
+        rebuildChannelBuffer();
         resetView();
     }
 
@@ -531,6 +681,50 @@
         canvas.addEventListener('pointercancel', endPointer);
     }
 
+    function setupInteractions() {
+        viewIds.forEach(id => {
+            const canvas = document.querySelector(`#${id} canvas`);
+            visibleContexts[id] = canvas.getContext('2d');
+            attachInteractions(canvas);
+        });
+    }
+
+    function buildControls() {
+        const div = document.querySelector('#channel_chooser');
+        const panel = document.createElement('div');
+        panel.classList.add('channel-panel');
+        div.append(panel);
+
+        const holder = document.createElement('div');
+        panel.append(holder);
+
+        knobs.push(new FancyKnob(holder, {
+            label: 'Channel',
+            min: 1,
+            max: 3,
+            step: 1,
+            value: 1,
+            color: '#d3d7cf',
+            centerLabel: '0',
+            size: 70,
+            horizontal: false,
+            sweepStart: -45,
+            sweepEnd: 45,
+            indicatorStyle: 'dot',
+            ticks: [
+                { value: 1, major: true, label: 'Y' },
+                { value: 2, major: true, label: 'Cb' },
+                { value: 3, major: true, label: 'Cr' },
+            ],
+            formatValue: (v) => ['Y', 'Cb', 'Cr'][v - 1] || v,
+            onInput: (v) => {
+                currentChannel = v;
+                rebuildChannelBuffer();
+                scheduleRender();
+            }
+        }));
+    }
+
     window.addEventListener('resize', handleResize);
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -538,7 +732,8 @@
         document.getElementById('backdrop')?.addEventListener('click', closeLeftPanel);
 
         handleResize();
-        attachInteractions(visibleCanvas);
+        setupInteractions();
+        buildControls();
 
         const baseImage = document.getElementById('base_image');
         baseImage.addEventListener('load', loadCurrentImageIntoViewer);
