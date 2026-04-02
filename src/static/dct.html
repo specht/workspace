@@ -207,6 +207,56 @@
     .sample-cell.empty {
         background: #1c1d21;
     }
+
+    .plot-wrap {
+        position: absolute;
+        inset: 10px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: stretch;
+        justify-content: stretch;
+    }
+
+    .plot-canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+        background: #1c1d21;
+        outline: 1px solid #444;
+    }
+
+    .basis-1d-stack {
+        position: absolute;
+        inset: 10px;
+        box-sizing: border-box;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(8, 1fr);
+        gap: 4px;
+    }
+
+    .basis-row {
+        position: relative;
+        background: #1c1d21;
+        outline: 1px solid #444;
+        overflow: hidden;
+    }
+
+    .basis-row canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .basis-row-label {
+        position: absolute;
+        left: 6px;
+        top: 4px;
+        font: 10px sans-serif;
+        color: rgba(255,255,255,0.8);
+        pointer-events: none;
+        user-select: none;
+    }
 </style>
 
 <div id="backdrop"></div>
@@ -897,6 +947,107 @@
     function lerp(a, b, t) {
         return a + (b - a) * t;
     }
+
+    function evaluateIdct1dContinuous(coeffs, x, count = 8) {
+        let sum = 0;
+        const limit = Math.min(count, 8);
+
+        for (let k = 0; k < limit; k++) {
+            sum += dctTables.alpha[k] * coeffs[k] * Math.cos((Math.PI / 8) * (x + 0.5) * k);
+        }
+
+        return sum + 128;
+    }
+
+    function drawContinuousReconstructionPlot(ctx, w, h, coeffs, reconstructedSamples, options = {}) {
+        const axes = drawAxes(ctx, w, h, options);
+        const { x0, x1, y0, y1 } = axes;
+
+        const minY = options.minY ?? 0;
+        const maxY = options.maxY ?? 255;
+        const rangeY = Math.max(1e-6, maxY - minY);
+
+        const mapX = (t) => x0 + (t / 7) * (x1 - x0);
+        const mapY = (v) => y0 - ((v - minY) / rangeY) * (y0 - y1);
+
+        // optional original/reference signal in background
+        if (options.referenceValues) {
+            const ref = options.referenceValues;
+
+            ctx.save();
+            ctx.strokeStyle = 'rgba(255,255,255,0.16)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < ref.length; i++) {
+                const x = mapX(i);
+                const y = mapY(ref[i]);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(255,255,255,0.18)';
+            for (let i = 0; i < ref.length; i++) {
+                ctx.beginPath();
+                ctx.arc(mapX(i), mapY(ref[i]), 2.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        // sample guide lines
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 8; i++) {
+            const x = mapX(i);
+            ctx.beginPath();
+            ctx.moveTo(x + 0.5, y1);
+            ctx.lineTo(x + 0.5, y0);
+            ctx.stroke();
+        }
+        ctx.restore();
+
+        // continuous IDCT curve
+        ctx.save();
+        ctx.strokeStyle = options.strokeStyle || '#56a0ff';
+        ctx.lineWidth = options.lineWidth || 2.5;
+        ctx.beginPath();
+
+        const steps = Math.max(256, Math.round((x1 - x0) * 1.5));
+        for (let s = 0; s <= steps; s++) {
+            const t = (s / steps) * 7;
+            const v = evaluateIdct1dContinuous(coeffs, t, Math.min(coefficientCount, 8));
+            const x = mapX(t);
+            const y = mapY(v);
+
+            if (s === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        // discrete reconstructed samples on top
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255,140,60,0.45)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (let i = 0; i < reconstructedSamples.length; i++) {
+            const x = mapX(i);
+            const y = mapY(reconstructedSamples[i]);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        ctx.fillStyle = options.pointFillStyle || '#ff8c3c';
+        for (let i = 0; i < reconstructedSamples.length; i++) {
+            ctx.beginPath();
+            ctx.arc(mapX(i), mapY(reconstructedSamples[i]), 3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
+    }    
 
     function getDctCellStyle(v, maxAbs) {
         const base = { r: 28, g: 29, b: 33 };
@@ -1823,67 +1974,313 @@
         return v >= 140 ? '#111' : '#f5f5f5';
     }
 
+    function createHiDPICanvas(cssWidth, cssHeight) {
+        const canvas = document.createElement('canvas');
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.max(1, Math.round(cssWidth * dpr));
+        canvas.height = Math.max(1, Math.round(cssHeight * dpr));
+        canvas.style.width = `${cssWidth}px`;
+        canvas.style.height = `${cssHeight}px`;
+        return canvas;
+    }
+
+    function setupCanvas2D(ctx, canvas) {
+        const dpr = window.devicePixelRatio || 1;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.imageSmoothingEnabled = true;
+    }
+
+    function drawAxes(ctx, w, h, opts = {}) {
+        const padL = opts.padL ?? 28;
+        const padR = opts.padR ?? 10;
+        const padT = opts.padT ?? 10;
+        const padB = opts.padB ?? 22;
+
+        const x0 = padL;
+        const y0 = h - padB;
+        const x1 = w - padR;
+        const y1 = padT;
+
+        ctx.save();
+
+        // panel background
+        ctx.fillStyle = '#1c1d21';
+        ctx.fillRect(0, 0, w, h);
+
+        // guide lines
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = 1;
+
+        // horizontal midline
+        const midY = padT + (h - padT - padB) / 2;
+        ctx.beginPath();
+        ctx.moveTo(x0, midY + 0.5);
+        ctx.lineTo(x1, midY + 0.5);
+        ctx.stroke();
+
+        // axes
+        ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+        ctx.beginPath();
+        ctx.moveTo(x0 + 0.5, y1);
+        ctx.lineTo(x0 + 0.5, y0);
+        ctx.lineTo(x1, y0 + 0.5);
+        ctx.stroke();
+
+        // x ticks for 8 samples
+        ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+        ctx.fillStyle = 'rgba(255,255,255,0.75)';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+
+        for (let i = 0; i < 8; i++) {
+            const x = x0 + (i / 7) * (x1 - x0);
+            ctx.beginPath();
+            ctx.moveTo(x + 0.5, y0 - 4);
+            ctx.lineTo(x + 0.5, y0 + 4);
+            ctx.stroke();
+            ctx.fillText(String(i), x, y0 + 6);
+        }
+
+        ctx.restore();
+
+        return { x0, y0, x1, y1, midY };
+    }
+
+    function drawSignalPlot(ctx, w, h, values, options = {}) {
+        const axes = drawAxes(ctx, w, h, options);
+        const { x0, x1, y0, y1 } = axes;
+
+        const minY = options.minY ?? 0;
+        const maxY = options.maxY ?? 255;
+        const rangeY = Math.max(1e-6, maxY - minY);
+
+        const mapX = (i) => x0 + (i / 7) * (x1 - x0);
+        const mapY = (v) => y0 - ((v - minY) / rangeY) * (y0 - y1);
+
+        if (options.referenceValues) {
+            const ref = options.referenceValues;
+            ctx.save();
+            ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < ref.length; i++) {
+                const x = mapX(i);
+                const y = mapY(ref[i]);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(255,255,255,0.20)';
+            for (let i = 0; i < ref.length; i++) {
+                ctx.beginPath();
+                ctx.arc(mapX(i), mapY(ref[i]), 2.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        // vertical sample guides
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 8; i++) {
+            const x = mapX(i);
+            ctx.beginPath();
+            ctx.moveTo(x + 0.5, y1);
+            ctx.lineTo(x + 0.5, y0);
+            ctx.stroke();
+        }
+        ctx.restore();
+
+        // main polyline
+        ctx.save();
+        ctx.strokeStyle = options.strokeStyle || '#56a0ff';
+        ctx.lineWidth = options.lineWidth || 2.5;
+        ctx.beginPath();
+        for (let i = 0; i < values.length; i++) {
+            const x = mapX(i);
+            const y = mapY(values[i]);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        ctx.fillStyle = options.pointFillStyle || '#ff8c3c';
+        for (let i = 0; i < values.length; i++) {
+            ctx.beginPath();
+            ctx.arc(mapX(i), mapY(values[i]), 3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
+    }
+
+    function drawBasisWaveRow(ctx, w, h, basis, active, labelText) {
+        ctx.save();
+        ctx.fillStyle = '#1c1d21';
+        ctx.fillRect(0, 0, w, h);
+
+        const padL = 34;
+        const padR = 10;
+        const padT = 8;
+        const padB = 8;
+
+        const x0 = padL;
+        const x1 = w - padR;
+        const y0 = h - padB;
+        const y1 = padT;
+        const midY = (y0 + y1) / 2;
+        const amp = (y0 - y1) * 0.38;
+
+        const plotW = x1 - x0;
+        const plotH = y0 - y1;
+
+        // background guides
+        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+        ctx.lineWidth = 1;
+
+        for (let i = 0; i < 8; i++) {
+            const x = x0 + (i / 7) * plotW;
+            ctx.beginPath();
+            ctx.moveTo(x + 0.5, y1);
+            ctx.lineTo(x + 0.5, y0);
+            ctx.stroke();
+        }
+
+        // x axis / zero line
+        ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+        ctx.beginPath();
+        ctx.moveTo(x0, midY + 0.5);
+        ctx.lineTo(x1, midY + 0.5);
+        ctx.stroke();
+
+        // y axis
+        ctx.strokeStyle = 'rgba(255,255,255,0.28)';
+        ctx.beginPath();
+        ctx.moveTo(x0 + 0.5, y1);
+        ctx.lineTo(x0 + 0.5, y0);
+        ctx.stroke();
+
+        const labelMatch = /k=(\d+)/.exec(labelText);
+        const k = labelMatch ? parseInt(labelMatch[1], 10) : 0;
+        const a = alpha(k, 8);
+
+        const mapX = (t) => x0 + (t / 7) * plotW;
+        const mapY = (v) => midY - (v / 0.5) * amp;
+
+        // draw the actual continuous DCT basis curve:
+        // phi_k(x) = alpha(k) * cos((pi / 8) * (x + 0.5) * k)
+        ctx.strokeStyle = active ? 'rgba(86,160,255,0.98)' : 'rgba(255,255,255,0.22)';
+        ctx.lineWidth = active ? 2.2 : 1.6;
+        ctx.beginPath();
+
+        const steps = Math.max(256, Math.round(plotW * 1.5));
+        for (let s = 0; s <= steps; s++) {
+            const t = (s / steps) * 7;
+            const v = a * Math.cos((Math.PI / 8) * (t + 0.5) * k);
+            const x = mapX(t);
+            const y = mapY(v);
+
+            if (s === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // overlay the 8 discrete sample values
+        ctx.strokeStyle = active ? 'rgba(255,140,60,0.45)' : 'rgba(255,255,255,0.12)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (let n = 0; n < 8; n++) {
+            const x = mapX(n);
+            const y = mapY(basis[n]);
+            if (n === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        ctx.fillStyle = active ? '#ff8c3c' : 'rgba(255,255,255,0.24)';
+        for (let n = 0; n < 8; n++) {
+            ctx.beginPath();
+            ctx.arc(mapX(n), mapY(basis[n]), 2.5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // label
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText(labelText, 6, 4);
+
+        ctx.restore();
+    }
+
     function renderSqInput() {
         const container = document.getElementById('sq_input');
         if (!container) return;
 
         container.innerHTML = '';
 
+        const values = getSelectedBlockValues();
+
+        if (appMode === '1d') {
+            const wrap = document.createElement('div');
+            wrap.className = 'plot-wrap';
+
+            const rect = container.getBoundingClientRect();
+            const canvas = createHiDPICanvas(
+                Math.max(10, rect.width - 20),
+                Math.max(10, rect.height - 20)
+            );
+            canvas.className = 'plot-canvas';
+
+            const ctx = canvas.getContext('2d');
+            setupCanvas2D(ctx, canvas);
+
+            if (values && values[0]) {
+                drawSignalPlot(ctx, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1), values[0], {
+                    minY: 0,
+                    maxY: 255,
+                    strokeStyle: '#56a0ff',
+                    pointFillStyle: '#ff8c3c'
+                });
+            } else {
+                const w = canvas.width / (window.devicePixelRatio || 1);
+                const h = canvas.height / (window.devicePixelRatio || 1);
+                drawAxes(ctx, w, h);
+            }
+
+            wrap.appendChild(canvas);
+            container.appendChild(wrap);
+            return;
+        }
+
         const wrap = document.createElement('div');
         wrap.className = 'sample-grid-wrap';
 
         const grid = document.createElement('div');
-        grid.className = `sample-grid ${appMode === '2d' ? 'mode-2d' : 'mode-1d'}`;
-
-        const values = getSelectedBlockValues();
+        grid.className = 'sample-grid mode-2d';
 
         if (!values) {
-            if (appMode === '2d') {
-                grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
-                grid.style.gridTemplateRows = 'repeat(8, 1fr)';
-
-                for (let i = 0; i < 64; i++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'sample-cell empty';
-                    grid.appendChild(cell);
-                }
-            } else {
-                grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
-                grid.style.gridTemplateRows = '1fr';
-
-                for (let i = 0; i < 8; i++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'sample-cell empty';
-                    grid.appendChild(cell);
-                }
+            grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+            grid.style.gridTemplateRows = 'repeat(8, 1fr)';
+            for (let i = 0; i < 64; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'sample-cell empty';
+                grid.appendChild(cell);
             }
-
             wrap.appendChild(grid);
             container.appendChild(wrap);
             return;
         }
 
-        if (appMode === '2d') {
-            grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
-            grid.style.gridTemplateRows = 'repeat(8, 1fr)';
+        grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+        grid.style.gridTemplateRows = 'repeat(8, 1fr)';
 
-            for (let y = 0; y < 8; y++) {
-                for (let x = 0; x < 8; x++) {
-                    const v = values[y][x];
-                    const cell = document.createElement('div');
-                    cell.className = 'sample-cell';
-                    cell.textContent = v;
-                    cell.style.background = `rgb(${v}, ${v}, ${v})`;
-                    cell.style.color = getTextColorForValue(v);
-                    grid.appendChild(cell);
-                }
-            }
-        } else {
-            grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
-            grid.style.gridTemplateRows = '1fr';
-
+        for (let y = 0; y < 8; y++) {
             for (let x = 0; x < 8; x++) {
-                const v = values[0][x];
+                const v = values[y][x];
                 const cell = document.createElement('div');
                 cell.className = 'sample-cell';
                 cell.textContent = v;
@@ -1935,7 +2332,10 @@
             return;
         }
 
-        const flat = coeffs.flat ? coeffs.flat() : coeffs.reduce((acc, row) => acc.concat(Array.from(row)), []);
+        const flat = appMode === '2d'
+            ? coeffs.flatMap(row => Array.from(row))
+            : Array.from(coeffs[0]);
+
         const maxAbs = Math.max(...flat.map(v => Math.abs(v)), 1);
 
         if (appMode === '2d') {
@@ -1952,10 +2352,10 @@
                     cell.className = 'sample-cell';
                     cell.textContent = Math.round(shown);
 
-                    const style = getDctCellStyle(shown, maxAbs);
+                    const style = getDctCellStyle(raw, maxAbs);
                     cell.style.background = style.background;
                     cell.style.color = style.color;
-                    cell.style.opacity = active ? '1' : '0.2';
+                    cell.style.opacity = active ? '1' : '0.22';
 
                     grid.appendChild(cell);
                 }
@@ -1973,10 +2373,10 @@
                 cell.className = 'sample-cell';
                 cell.textContent = Math.round(shown);
 
-                const style = getDctCellStyle(shown, maxAbs);
+                const style = getDctCellStyle(raw, maxAbs);
                 cell.style.background = style.background;
                 cell.style.color = style.color;
-                cell.style.opacity = active ? '1' : '0.2';
+                cell.style.opacity = active ? '1' : '0.22';
 
                 grid.appendChild(cell);
             }
@@ -2031,26 +2431,39 @@
                 }
             }
         } else {
-            wrap.style.display = 'grid';
-            wrap.style.gridTemplateColumns = 'repeat(8, 1fr)';
-            wrap.style.gridTemplateRows = 'repeat(8, 1fr)';
-            wrap.style.gap = '1px';
-            wrap.style.background = '#2a2d33';
-            wrap.style.outline = '1px solid #444';
+            const stack = document.createElement('div');
+            stack.className = 'basis-1d-stack';
 
             for (let k = 0; k < 8; k++) {
                 const basis = basisCache['1d'][k];
                 const active = isCoefficientActive(k, 0);
 
-                for (let x = 0; x < 8; x++) {
-                    const cell = document.createElement('div');
-                    cell.style.aspectRatio = '1 / 1';
-                    cell.style.background = getBasisCellStyle(basis[x], 0.5);
-                    cell.style.opacity = active ? '1' : '0.18';
-                    cell.title = `k=${k}, n=${x}, value=${basis[x].toFixed(3)}`;
-                    wrap.appendChild(cell);
-                }
+                const row = document.createElement('div');
+                row.className = 'basis-row';
+                row.title = `k=${k}`;
+
+                const rect = container.getBoundingClientRect();
+                const innerW = Math.max(10, rect.width - 20);
+                const innerH = Math.max(10, (rect.height - 20 - 7 * 4) / 8);
+
+                const canvas = createHiDPICanvas(innerW, innerH);
+                const ctx = canvas.getContext('2d');
+                setupCanvas2D(ctx, canvas);
+
+                drawBasisWaveRow(
+                    ctx,
+                    canvas.width / (window.devicePixelRatio || 1),
+                    canvas.height / (window.devicePixelRatio || 1),
+                    basis,
+                    active,
+                    `k=${k}`
+                );
+
+                row.appendChild(canvas);
+                stack.appendChild(row);
             }
+
+            container.appendChild(stack);
         }
 
         container.appendChild(wrap);
@@ -2062,59 +2475,76 @@
 
         container.innerHTML = '';
 
+        const values = getReconstructedBlockValues();
+
+        if (appMode === '1d') {
+            const wrap = document.createElement('div');
+            wrap.className = 'plot-wrap';
+
+            const rect = container.getBoundingClientRect();
+            const canvas = createHiDPICanvas(
+                Math.max(10, rect.width - 20),
+                Math.max(10, rect.height - 20)
+            );
+            canvas.className = 'plot-canvas';
+
+            const ctx = canvas.getContext('2d');
+            setupCanvas2D(ctx, canvas);
+
+            const original = getSelectedBlockValues();
+            const dctCoeffs = getSelectedDctCoefficients();
+
+            if (values && values[0] && dctCoeffs && dctCoeffs[0]) {
+                drawContinuousReconstructionPlot(
+                    ctx,
+                    canvas.width / (window.devicePixelRatio || 1),
+                    canvas.height / (window.devicePixelRatio || 1),
+                    dctCoeffs[0],
+                    values[0],
+                    {
+                        minY: 0,
+                        maxY: 255,
+                        strokeStyle: '#56a0ff',
+                        pointFillStyle: '#ff8c3c',
+                        referenceValues: original && original[0] ? original[0] : null
+                    }
+                );
+            } else {
+                const w = canvas.width / (window.devicePixelRatio || 1);
+                const h = canvas.height / (window.devicePixelRatio || 1);
+                drawAxes(ctx, w, h);
+            }
+
+            wrap.appendChild(canvas);
+            container.appendChild(wrap);
+            return;
+        }
+
         const wrap = document.createElement('div');
         wrap.className = 'sample-grid-wrap';
 
         const grid = document.createElement('div');
-        grid.className = `sample-grid ${appMode === '2d' ? 'mode-2d' : 'mode-1d'}`;
-
-        const values = getReconstructedBlockValues();
+        grid.className = 'sample-grid mode-2d';
 
         if (!values) {
-            if (appMode === '2d') {
-                grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
-                grid.style.gridTemplateRows = 'repeat(8, 1fr)';
-                for (let i = 0; i < 64; i++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'sample-cell empty';
-                    grid.appendChild(cell);
-                }
-            } else {
-                grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
-                grid.style.gridTemplateRows = '1fr';
-                for (let i = 0; i < 8; i++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'sample-cell empty';
-                    grid.appendChild(cell);
-                }
+            grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+            grid.style.gridTemplateRows = 'repeat(8, 1fr)';
+            for (let i = 0; i < 64; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'sample-cell empty';
+                grid.appendChild(cell);
             }
-
             wrap.appendChild(grid);
             container.appendChild(wrap);
             return;
         }
 
-        if (appMode === '2d') {
-            grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
-            grid.style.gridTemplateRows = 'repeat(8, 1fr)';
+        grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+        grid.style.gridTemplateRows = 'repeat(8, 1fr)';
 
-            for (let y = 0; y < 8; y++) {
-                for (let x = 0; x < 8; x++) {
-                    const v = values[y][x];
-                    const cell = document.createElement('div');
-                    cell.className = 'sample-cell';
-                    cell.textContent = v;
-                    cell.style.background = `rgb(${v}, ${v}, ${v})`;
-                    cell.style.color = getTextColorForValue(v);
-                    grid.appendChild(cell);
-                }
-            }
-        } else {
-            grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
-            grid.style.gridTemplateRows = '1fr';
-
+        for (let y = 0; y < 8; y++) {
             for (let x = 0; x < 8; x++) {
-                const v = values[0][x];
+                const v = values[y][x];
                 const cell = document.createElement('div');
                 cell.className = 'sample-cell';
                 cell.textContent = v;
