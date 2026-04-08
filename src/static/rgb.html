@@ -104,11 +104,60 @@
     #cube_view.dragging {
         cursor: grabbing;
     }
+
+    .swatch-palette {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        width: 100%;
+    }
+
+    .swatch-palette-title {
+        font: 11px sans-serif;
+        color: rgba(255,255,255,0.7);
+        letter-spacing: 0.04em;
+        user-select: none;
+    }
+
+    .swatch-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 28px);
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .mini-swatch {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.18);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+        cursor: pointer;
+        transition: transform 0.08s ease, border-color 0.08s ease;
+    }
+
+    .mini-swatch:hover {
+        transform: scale(1.08);
+        border-color: rgba(255,255,255,0.45);
+    }
+
+    .mini-swatch.active {
+        border-color: rgba(255,255,255,0.95);
+        box-shadow: 0 0 0 1px rgba(255,255,255,0.35), 0 2px 10px rgba(0,0,0,0.35);
+    }
 </style>
 
 <div id="app_shell">
     <div class="panel_container" id="rgb_controls">
         <div class="knob-stack" id="knob_stack"></div>
+        <div class="swatch-palette" id="swatch_palette">
+            <div class="swatch-palette-title">Swatches</div>
+            <div class="swatch-grid" id="swatch_grid"></div>
+        </div>
     </div>
 
     <div class="result_container" id="result_view">
@@ -252,9 +301,9 @@
     let cube = null;
 
     let rgb = {
-        r: 60,
-        g: 1230,
-        b: 64,
+        r: 0,
+        g: 0,
+        b: 0,
     };
 
     let colorMode = 'RGB';
@@ -279,6 +328,23 @@
 
     const MODE_ORDER = ['RGB', 'YCbCr'];
 
+    const PRESET_HTML_COLORS = [
+        'black',
+        'white',
+        '#f00',
+        '#0ff',
+        '#0f0',
+        '#f0f',
+        '#00f',
+        '#ff0',
+        '#ea2830',
+        '#7dcdc2',
+        '#80bc42',
+        '#f384ae',
+        '#238acc',
+        '#fad31c',
+    ];
+
     let circleRadius = 150;
     let circleSpread = 40;
 
@@ -288,6 +354,79 @@
         'B': '#238acc',
         'M': '#d9d9d9'
     };
+
+    function parseCssColorToRgb(color) {
+        const probe = document.createElement('div');
+        probe.style.color = color;
+        document.body.appendChild(probe);
+
+        const computed = getComputedStyle(probe).color;
+        document.body.removeChild(probe);
+
+        const match = computed.match(/rgba?\(\s*([0-9]+)[,\s]+([0-9]+)[,\s]+([0-9]+)/i);
+        if (!match) {
+            return { r: 0, g: 0, b: 0 };
+        }
+
+        return {
+            r: clampByte(Number(match[1])),
+            g: clampByte(Number(match[2])),
+            b: clampByte(Number(match[3]))
+        };
+    }
+
+    function setRgbColor(nextRgb) {
+        rgb.r = clampByte(nextRgb.r);
+        rgb.g = clampByte(nextRgb.g);
+        rgb.b = clampByte(nextRgb.b);
+
+        syncKnobsToRGB();
+        updatePatches();
+    }
+
+    function buildSwatches() {
+        const grid = document.getElementById('swatch_grid');
+        if (!grid) return;
+
+        grid.innerHTML = '';
+
+        PRESET_HTML_COLORS.forEach((colorName) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'mini-swatch';
+            btn.title = colorName;
+            btn.setAttribute('aria-label', colorName);
+            btn.style.background = colorName;
+
+            btn.addEventListener('click', () => {
+                const next = parseCssColorToRgb(colorName);
+                setRgbColor(next);
+                updateSwatchSelection();
+            });
+
+            grid.appendChild(btn);
+        });
+
+        updateSwatchSelection();
+    }
+
+    function updateSwatchSelection() {
+        const grid = document.getElementById('swatch_grid');
+        if (!grid) return;
+
+        const current = rgbString(rgb.r, rgb.g, rgb.b).replace(/\s+/g, '');
+
+        [...grid.children].forEach((el) => {
+            const probeRgb = parseCssColorToRgb(el.title);
+            const probe = rgbString(probeRgb.r, probeRgb.g, probeRgb.b).replace(/\s+/g, '');
+
+            if (probe === current) {
+                el.classList.add('active');
+            } else {
+                el.classList.remove('active');
+            }
+        });
+    }
 
     function clampByte(v) {
         return Math.max(0, Math.min(255, Math.round(v)));
@@ -397,6 +536,7 @@
         document.getElementById('color_swatch').style.background = colors.rgb;
         updateCoordinateLabel();
         syncCubeToRGB();
+        updateSwatchSelection();
     }
 
     function handleResize() {
@@ -603,6 +743,7 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         buildControls();
+        buildSwatches();
         buildCube();
         handleResize();
         updateCircleGeometry();

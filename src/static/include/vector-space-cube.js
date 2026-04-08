@@ -227,7 +227,9 @@ export class VectorSpaceCube {
     }
 
     #formatCoeff(name, v) {
-        return `${name} = ${v.toFixed(2)}`;
+        const text = v.toFixed(2);
+        const pretty = text.startsWith('-') ? `−${text.slice(1)}` : text;
+        return `${name} = ${pretty}`;
     }
 
     #segmentLength2D(a, b) {
@@ -1862,7 +1864,7 @@ export class VectorSpaceCube {
         html += this.#textSVG(aLabel, basisA.name, basisA.color, 0, 0, 14);
         html += this.#textSVG(bLabel, basisB.name, basisB.color, 0, 0, 14);
         html += this.#textSVG(cLabel, basisC.name, basisC.color, 0, 0, 14);
-        html += this.#textSVG(farLabel, 'W', '#ffffff', 0, 0, 13);
+        html += this.#textSVG(farLabel, '', '#ffffff', 0, 0, 13);
 
         const previewOpacity = this.state.previewOpacity;
         let previewHtml = '';
