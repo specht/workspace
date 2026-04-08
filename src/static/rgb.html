@@ -542,7 +542,7 @@
         const viewBox = svg.viewBox.baseVal;
         const width = viewBox && viewBox.width ? viewBox.width : 1000;
         const height = viewBox && viewBox.height ? viewBox.height : 700;
-        const scale = Math.min(width, height) * 0.32 * cubeState.zoom;
+        const scale = Math.min(width, height) * 0.62 * cubeState.zoom;
         return { width, height, scale };
     }
 
@@ -680,6 +680,26 @@
         };
     }
 
+    function originLabelPos(origin, ends, distance = 18) {
+        let vx = 0;
+        let vy = 0;
+
+        for (const end of ends) {
+            const dx = origin.x - end.x;
+            const dy = origin.y - end.y;
+            const len = Math.hypot(dx, dy) || 1;
+            vx += dx / len;
+            vy += dy / len;
+        }
+
+        const vlen = Math.hypot(vx, vy) || 1;
+
+        return {
+            x: origin.x + (vx / vlen) * distance,
+            y: origin.y + (vy / vlen) * distance
+        };
+    }
+
     function pointMarkerSVG(p, fill = '#000', stroke = '#bbb', strokeWidth = 1.5, r = 5) {
         return `
             <circle
@@ -761,15 +781,112 @@
         `;
     }
 
+    function gradientArrowSVG(
+        a,
+        b,
+        colorStart,
+        colorEnd,
+        width = 4,
+        headLen = 16,
+        headWidth = 10,
+        opacity = 1,
+        id = ''
+    ) {
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const len = Math.hypot(dx, dy);
+
+        if (len < 1e-3) return ''; // nothing to draw
+
+        const ux = dx / len;
+        const uy = dy / len;
+
+        // --- NEW: adaptive arrowhead ---
+        const MIN_ARROW = 14; // threshold below which we skip arrowhead
+        const MAX_RATIO = 0.6;
+
+        let useArrow = len > MIN_ARROW;
+
+        // clamp head size relative to segment
+        let effectiveHeadLen = Math.min(headLen, len * MAX_RATIO);
+        let effectiveHeadWidth = headWidth;
+
+        const px = -uy;
+        const py = ux;
+
+        const gradId = id || `grad_arrow_${Math.random().toString(36).slice(2)}`;
+
+        // If too short → just draw line
+        if (!useArrow) {
+            return `
+                <defs>
+                    <linearGradient id="${gradId}"
+                                    gradientUnits="userSpaceOnUse"
+                                    x1="${a.x}" y1="${a.y}"
+                                    x2="${b.x}" y2="${b.y}">
+                        <stop offset="0%" stop-color="${colorStart}"></stop>
+                        <stop offset="100%" stop-color="${colorEnd}"></stop>
+                    </linearGradient>
+                </defs>
+                <line
+                    x1="${a.x}" y1="${a.y}"
+                    x2="${b.x}" y2="${b.y}"
+                    stroke="url(#${gradId})"
+                    stroke-width="${width}"
+                    stroke-linecap="round"
+                    opacity="${opacity}"
+                />
+            `;
+        }
+
+        // normal arrow
+        const shaftEnd = {
+            x: b.x - ux * (effectiveHeadLen * 0.72),
+            y: b.y - uy * (effectiveHeadLen * 0.72)
+        };
+
+        const left = {
+            x: b.x - ux * effectiveHeadLen + px * (effectiveHeadWidth * 0.5),
+            y: b.y - uy * effectiveHeadLen + py * (effectiveHeadWidth * 0.5)
+        };
+
+        const right = {
+            x: b.x - ux * effectiveHeadLen - px * (effectiveHeadWidth * 0.5),
+            y: b.y - uy * effectiveHeadLen - py * (effectiveHeadWidth * 0.5)
+        };
+
+        return `
+            <defs>
+                <linearGradient id="${gradId}"
+                                gradientUnits="userSpaceOnUse"
+                                x1="${a.x}" y1="${a.y}"
+                                x2="${b.x}" y2="${b.y}">
+                    <stop offset="0%" stop-color="${colorStart}"></stop>
+                    <stop offset="100%" stop-color="${colorEnd}"></stop>
+                </linearGradient>
+            </defs>
+            <g opacity="${opacity}">
+                <line
+                    x1="${a.x}" y1="${a.y}"
+                    x2="${shaftEnd.x}" y2="${shaftEnd.y}"
+                    stroke="url(#${gradId})"
+                    stroke-width="${width}"
+                    stroke-linecap="round"
+                />
+                <polygon
+                    points="${b.x},${b.y} ${left.x},${left.y} ${right.x},${right.y}"
+                    fill="${colorEnd}"
+                />
+            </g>
+        `;
+    }
+
     function drawRGBCube() {
         const svg = document.getElementById('cube_svg');
         if (!svg) return;
 
         const viewBox = svg.viewBox.baseVal;
-        const width = viewBox && viewBox.width ? viewBox.width : 1000;
-        const height = viewBox && viewBox.height ? viewBox.height : 700;
-
-        const scale = Math.min(width, height) * 0.32 * cubeState.zoom;
+        const { width, height, scale } = getCubeViewMetrics();
 
         const pts = {
             O:   { x: 0, y: 0, z: 0 },
@@ -900,22 +1017,23 @@
         html += arrowSVG(proj.O, proj.G, axisColor, 2);
         html += arrowSVG(proj.O, proj.B, axisColor, 2);
 
+        const kLabel = originLabelPos(proj.O, [proj.R, proj.G, proj.B], 18);
         const rLabel = axisLabelPos(proj.O, proj.R, 16);
         const gLabel = axisLabelPos(proj.O, proj.G, 16);
         const bLabel = axisLabelPos(proj.O, proj.B, 16);
         const wLabel = axisLabelPos(proj.O, proj.RGB, 16);
 
         html += pointMarkerSVG(proj.O, '#000', '#9a9a9a', 1.5, 5);
-        html += pointMarkerSVG(proj.R, '#000', '#9a9a9a', 1.5, 4.5);
-        html += pointMarkerSVG(proj.G, '#000', '#9a9a9a', 1.5, 4.5);
-        html += pointMarkerSVG(proj.B, '#000', '#9a9a9a', 1.5, 4.5);
-        html += pointMarkerSVG(proj.RGB, '#000', '#9a9a9a', 1.5, 4.5);
+        html += pointMarkerSVG(proj.R, '#f00', '#9a9a9a', 1.5, 4.5);
+        html += pointMarkerSVG(proj.G, '#0f0', '#9a9a9a', 1.5, 4.5);
+        html += pointMarkerSVG(proj.B, '#00f', '#9a9a9a', 1.5, 4.5);
+        html += pointMarkerSVG(proj.RGB, '#fff', '#9a9a9a', 1.5, 4.5);
 
-        html += textSVG(proj.O, 'K', '#bbbbbb', -10, 10, 12, 'end');
-        html += textSVG(rLabel, 'R', '#ff6c6c', 0, 0, 14);
-        html += textSVG(gLabel, 'G', '#76ff76', 0, 0, 14);
-        html += textSVG(bLabel, 'B', '#7aa6ff', 0, 0, 14);
-        html += textSVG(wLabel, 'W', '#f5f5f5', 0, 0, 13);
+        html += textSVG(kLabel, 'K', '#bbbbbb', 0, 0, 12);
+        html += textSVG(rLabel, 'R', '#ff0000', 0, 0, 14);
+        html += textSVG(gLabel, 'G', '#00ff00', 0, 0, 14);
+        html += textSVG(bLabel, 'B', '#0000ff', 0, 0, 14);
+        html += textSVG(wLabel, 'W', '#ffffff', 0, 0, 13);
 
         const c0 = rgbString(0, 0, 0);
         const c1 = rgbString(rgb.r, 0, 0);
@@ -935,18 +1053,18 @@
             </defs>
         `;
 
-        html += lineSVG(pp.p0, pp.p3, 'url(#mix_grad_direct)', 2.5, 0.55, '6 6');
+        html += lineSVG(pp.p0, pp.p3, 'url(#mix_grad_direct)', 2.5, 0.55, '4 4');
 
-        html += lineSVG(pp.p0, pp.p1, 'url(#mix_grad_01)', 4.5, 0.98);
-        html += lineSVG(pp.p1, pp.p2, 'url(#mix_grad_12)', 4.5, 0.98);
-        html += lineSVG(pp.p2, pp.p3, 'url(#mix_grad_23)', 4.5, 0.98);
+        html += gradientArrowSVG(pp.p0, pp.p1, c0, c1, 4.5, 25, 15, 0.98, 'mix_arrow_01');
+        html += gradientArrowSVG(pp.p1, pp.p2, c1, c2, 4.5, 25, 15, 0.98, 'mix_arrow_12');
+        html += gradientArrowSVG(pp.p2, pp.p3, c2, c3, 4.5, 25, 15, 0.98, 'mix_arrow_23');
 
         html += circleSVG(pp.p1, 4, c1, 'rgba(255,255,255,0.35)', 1);
         html += circleSVG(pp.p2, 4, c2, 'rgba(255,255,255,0.35)', 1);
 
-        html += lineSVG(gp.r0, gp.r1, 'url(#guide_grad_r)', 2.5, 0.75, '7 7');
-        html += lineSVG(gp.g0, gp.g1, 'url(#guide_grad_g)', 2.5, 0.75, '7 7');
-        html += lineSVG(gp.b0, gp.b1, 'url(#guide_grad_b)', 2.5, 0.75, '7 7');
+        html += lineSVG(gp.r0, gp.r1, 'url(#guide_grad_r)', 2.5, 0.75, '4 4');
+        html += lineSVG(gp.g0, gp.g1, 'url(#guide_grad_g)', 2.5, 0.75, '4 4');
+        html += lineSVG(gp.b0, gp.b1, 'url(#guide_grad_b)', 2.5, 0.75, '4 4');
 
         html += guidePointSVG(gp.r0, guideColors.r0);
         html += guidePointSVG(gp.r1, guideColors.r1);
