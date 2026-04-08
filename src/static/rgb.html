@@ -716,7 +716,7 @@
         let html = '';
 
         html += `
-            <rect x="0" y="0" width="1000" height="700" fill="url(#cube_bg)"></rect>
+            <rect x="0" y="0" width="${width}" height="${height}" fill="url(#cube_bg)"></rect>
             <defs>
                 <linearGradient id="cube_bg" x1="0" x2="1" y1="0" y2="0">
                     <stop offset="0%" stop-color="#191b22"></stop>
@@ -739,9 +739,9 @@
 
             html += `
                 <path d="${d}"
-                      fill="${face.color}"
-                      stroke="rgba(255,255,255,0.06)"
-                      stroke-width="1"></path>
+                    fill="${face.color}"
+                    stroke="rgba(255,255,255,0.06)"
+                    stroke-width="1"></path>
             `;
         }
 
@@ -755,7 +755,6 @@
         }
 
         const axisColor = 'rgba(180, 180, 180, 0.85)';
-
         html += arrowSVG(proj.O, proj.R, axisColor, 2);
         html += arrowSVG(proj.O, proj.G, axisColor, 2);
         html += arrowSVG(proj.O, proj.B, axisColor, 2);
@@ -766,10 +765,10 @@
         const wLabel = axisLabelPos(proj.O, proj.RGB, 16);
 
         html += pointMarkerSVG(proj.O, '#000', '#9a9a9a', 1.5, 5);
-        html += pointMarkerSVG(proj.R, '#f00', '#9a9a9a', 1.5, 4.5);
-        html += pointMarkerSVG(proj.G, '#0f0', '#9a9a9a', 1.5, 4.5);
-        html += pointMarkerSVG(proj.B, '#00f', '#9a9a9a', 1.5, 4.5);
-        html += pointMarkerSVG(proj.RGB, '#fff', '#9a9a9a', 1.5, 4.5);
+        html += pointMarkerSVG(proj.R, '#000', '#9a9a9a', 1.5, 4.5);
+        html += pointMarkerSVG(proj.G, '#000', '#9a9a9a', 1.5, 4.5);
+        html += pointMarkerSVG(proj.B, '#000', '#9a9a9a', 1.5, 4.5);
+        html += pointMarkerSVG(proj.RGB, '#000', '#9a9a9a', 1.5, 4.5);
 
         html += textSVG(proj.O, 'K', '#bbbbbb', -10, 10, 12, 'end');
         html += textSVG(rLabel, 'R', '#ff6c6c', 0, 0, 14);
@@ -796,6 +795,7 @@
         `;
 
         html += lineSVG(pp.p0, pp.p3, 'url(#mix_grad_direct)', 2.5, 0.55, '6 6');
+
         html += lineSVG(pp.p0, pp.p1, 'url(#mix_grad_01)', 4.5, 0.98);
         html += lineSVG(pp.p1, pp.p2, 'url(#mix_grad_12)', 4.5, 0.98);
         html += lineSVG(pp.p2, pp.p3, 'url(#mix_grad_23)', 4.5, 0.98);
@@ -807,19 +807,29 @@
         html += lineSVG(gp.g0, gp.g1, 'url(#guide_grad_g)', 2.5, 0.75, '7 7');
         html += lineSVG(gp.b0, gp.b1, 'url(#guide_grad_b)', 2.5, 0.75, '7 7');
 
-        // endpoints
         html += guidePointSVG(gp.r0, guideColors.r0);
         html += guidePointSVG(gp.r1, guideColors.r1);
-
         html += guidePointSVG(gp.g0, guideColors.g0);
         html += guidePointSVG(gp.g1, guideColors.g1);
-
         html += guidePointSVG(gp.b0, guideColors.b0);
         html += guidePointSVG(gp.b1, guideColors.b1);
-        
-        html += circleSVG(pp.p3, 7, c3, 'white', 1.75);
 
-        // html += textSVG(pp.p3, rgbString(rgb.r, rgb.g, rgb.b), '#f0f0f0', 12, -14, 12, 'start');
+        const addTicks = (a, b) => {
+            const dx = b.x - a.x;
+            const dy = b.y - a.y;
+            const len = Math.hypot(dx, dy) || 1;
+            const ux = dx / len;
+            const uy = dy / len;
+
+            html += guideTickSVG(a, ux, uy);
+            html += guideTickSVG(b, ux, uy);
+        };
+
+        addTicks(gp.r0, gp.r1);
+        addTicks(gp.g0, gp.g1);
+        addTicks(gp.b0, gp.b1);
+
+        html += circleSVG(pp.p3, 7, c3, 'white', 1.75);
 
         svg.innerHTML = html;
     }
