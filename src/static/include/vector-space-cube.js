@@ -1082,7 +1082,7 @@ export class VectorSpaceCube {
         if (active) {
             return {
                 stroke: 'rgba(255,255,255,0.88)',
-                width: 2.5,
+                width: 1.5,
                 fill: 'rgba(255,255,255,0.06)',
                 dash: '6 4'
             };
@@ -1091,7 +1091,7 @@ export class VectorSpaceCube {
         if (name === principal) {
             return {
                 stroke: 'rgba(255,255,255,0.52)',
-                width: 2,
+                width: 1.5,
                 fill: 'rgba(255,255,255,0.025)',
                 dash: '6 4'
             };
@@ -1099,7 +1099,7 @@ export class VectorSpaceCube {
 
         return {
             stroke: 'rgba(255,255,255,0.22)',
-            width: 1.35,
+            width: 1.2,
             fill: 'rgba(255,255,255,0.0)',
             dash: '4 5'
         };
@@ -1930,6 +1930,7 @@ export class VectorSpaceCube {
 
             const isActive = this.state.mode === 'point' && this.state.pointDragPlane === poly.name;
             if (isActive) continue;
+            if (poly.name !== principalPlane) continue;
 
             const style = this.#planeOutlineStyle(poly.name, principalPlane, false);
 
