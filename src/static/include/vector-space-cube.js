@@ -1580,84 +1580,140 @@ export class VectorSpaceCube {
     `;
     }
 
-    #arrowSVG(a, b, color = '#aaa', width = 2) {
+    #arrowSVG(
+        a,
+        b,
+        color = '#aaa',
+        width = 2,
+        headLen = 20,
+        headWidth = 8,
+        opacity = 1,
+        startPad = 0,
+        endPad = 0
+    ) {
         const dx = b.x - a.x;
         const dy = b.y - a.y;
         const len = Math.hypot(dx, dy) || 1;
 
+        if (len <= startPad + endPad + 1e-3) return '';
+
         const ux = dx / len;
         const uy = dy / len;
-        const arrowLen = 20;
-        const arrowWidth = 8;
         const px = -uy;
         const py = ux;
 
+        const a2 = {
+            x: a.x + ux * startPad,
+            y: a.y + uy * startPad
+        };
+
+        const b2 = {
+            x: b.x - ux * endPad,
+            y: b.y - uy * endPad
+        };
+
+        const trimmedLen = Math.hypot(b2.x - a2.x, b2.y - a2.y);
+        if (trimmedLen < 1e-3) return '';
+
+        const effectiveHeadLen = Math.min(headLen, trimmedLen * 0.6);
+
+        const shaftEnd = {
+            x: b2.x - ux * (effectiveHeadLen * 0.72),
+            y: b2.y - uy * (effectiveHeadLen * 0.72)
+        };
+
         const left = {
-            x: b.x - ux * arrowLen + px * arrowWidth * 0.5,
-            y: b.y - uy * arrowLen + py * arrowWidth * 0.5
+            x: b2.x - ux * effectiveHeadLen + px * headWidth * 0.5,
+            y: b2.y - uy * effectiveHeadLen + py * headWidth * 0.5
         };
 
         const right = {
-            x: b.x - ux * arrowLen - px * arrowWidth * 0.5,
-            y: b.y - uy * arrowLen - py * arrowWidth * 0.5
+            x: b2.x - ux * effectiveHeadLen - px * headWidth * 0.5,
+            y: b2.y - uy * effectiveHeadLen - py * headWidth * 0.5
         };
 
         return `
-      <g>
-<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${color}" stroke-width="${width}" stroke-linecap="round" />
-<polygon points="${b.x},${b.y} ${left.x},${left.y} ${right.x},${right.y}" fill="${color}" />
+      <g opacity="${opacity}">
+<line x1="${a2.x}" y1="${a2.y}" x2="${shaftEnd.x}" y2="${shaftEnd.y}" stroke="${color}" stroke-width="${width}" stroke-linecap="round" />
+<polygon points="${b2.x},${b2.y} ${left.x},${left.y} ${right.x},${right.y}" fill="${color}" />
 </g>
     `;
     }
 
-    #gradientArrowSVG(a, b, colorStart, colorEnd, width = 4.5, headLen = 25, headWidth = 15, opacity = 1, id = '') {
+    #gradientArrowSVG(
+        a,
+        b,
+        colorStart,
+        colorEnd,
+        width = 4.5,
+        headLen = 25,
+        headWidth = 15,
+        opacity = 1,
+        id = '',
+        startPad = 0,
+        endPad = 0
+    ) {
         const dx = b.x - a.x;
         const dy = b.y - a.y;
         const len = Math.hypot(dx, dy);
-        if (len < 1e-3) return '';
+        if (len < 1e-3 || len <= startPad + endPad) return '';
 
         const ux = dx / len;
         const uy = dy / len;
         const px = -uy;
         const py = ux;
+
+        const a2 = {
+            x: a.x + ux * startPad,
+            y: a.y + uy * startPad
+        };
+
+        const b2 = {
+            x: b.x - ux * endPad,
+            y: b.y - uy * endPad
+        };
+
+        const trimmedLen = Math.hypot(b2.x - a2.x, b2.y - a2.y);
+        if (trimmedLen < 1e-3) return '';
+
         const gradId = id || `grad_arrow_${Math.random().toString(36).slice(2)}`;
 
-        if (len <= 14) {
+        if (trimmedLen <= 14) {
             return `
         <defs>
-<linearGradient id="${gradId}" gradientUnits="userSpaceOnUse" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}">
+<linearGradient id="${gradId}" gradientUnits="userSpaceOnUse" x1="${a2.x}" y1="${a2.y}" x2="${b2.x}" y2="${b2.y}">
 <stop offset="0%" stop-color="${colorStart}"></stop>
 <stop offset="100%" stop-color="${colorEnd}"></stop>
 </linearGradient>
 </defs>
-<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="url(#${gradId})" stroke-width="${width}" stroke-linecap="round" opacity="${opacity}" />
+<line x1="${a2.x}" y1="${a2.y}" x2="${b2.x}" y2="${b2.y}" stroke="url(#${gradId})" stroke-width="${width}" stroke-linecap="round" opacity="${opacity}" />
       `;
         }
 
-        const effectiveHeadLen = Math.min(headLen, len * 0.6);
+        const effectiveHeadLen = Math.min(headLen, trimmedLen * 0.6);
         const shaftEnd = {
-            x: b.x - ux * (effectiveHeadLen * 0.72),
-            y: b.y - uy * (effectiveHeadLen * 0.72)
+            x: b2.x - ux * (effectiveHeadLen * 0.72),
+            y: b2.y - uy * (effectiveHeadLen * 0.72)
         };
         const left = {
-            x: b.x - ux * effectiveHeadLen + px * (headWidth * 0.5),
-            y: b.y - uy * effectiveHeadLen + py * (headWidth * 0.5)
+            x: b2.x - ux * effectiveHeadLen + px * (headWidth * 0.5),
+            y: b2.y - uy * effectiveHeadLen + py * (headWidth * 0.5)
         };
         const right = {
-            x: b.x - ux * effectiveHeadLen - px * (headWidth * 0.5),
-            y: b.y - uy * effectiveHeadLen - py * (headWidth * 0.5)
+            x: b2.x - ux * effectiveHeadLen - px * (headWidth * 0.5),
+            y: b2.y - uy * effectiveHeadLen - py * (headWidth * 0.5)
         };
 
         return `
       <defs>
-<linearGradient id="${gradId}" gradientUnits="userSpaceOnUse" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}">
+<linearGradient id="${gradId}" gradientUnits="userSpaceOnUse" x1="${a2.x}" y1="${a2.y}" x2="${b2.x}" y2="${b2.y}">
 <stop offset="0%" stop-color="${colorStart}"></stop>
 <stop offset="100%" stop-color="${colorEnd}"></stop>
 </linearGradient>
 </defs>
 <g opacity="${opacity}">
-<line x1="${a.x}" y1="${a.y}" x2="${shaftEnd.x}" y2="${shaftEnd.y}" stroke="url(#${gradId})" stroke-width="${width}" stroke-linecap="round" />
-<polygon points="${b.x},${b.y} ${left.x},${left.y} ${right.x},${right.y}" fill="${colorEnd}" />
+<line x1="${a2.x}" y1="${a2.y}" x2="${shaftEnd.x}" y2="${shaftEnd.y}" stroke="url(#${gradId})" stroke-width="${width}" stroke-linecap="round" />
+<polygon points="${b2.x},${b2.y} ${left.x},${left.y} ${right.x},${right.y}" fill="${colorEnd}" />
 </g>
     `;
     }
@@ -1844,9 +1900,9 @@ export class VectorSpaceCube {
         }
 
         const axisColor = 'rgba(190,190,190,0.88)';
-        html += this.#arrowSVG(proj.O, basisProj.A, axisColor, 2);
-        html += this.#arrowSVG(proj.O, basisProj.B, axisColor, 2);
-        html += this.#arrowSVG(proj.O, basisProj.C, axisColor, 2);
+        html += this.#arrowSVG(proj.O, basisProj.A, axisColor, 2, 20, 8, 1, 0, 6);
+        html += this.#arrowSVG(proj.O, basisProj.B, axisColor, 2, 20, 8, 1, 0, 6);
+        html += this.#arrowSVG(proj.O, basisProj.C, axisColor, 2, 20, 8, 1, 0, 6);
 
         const oLabel = this.#originLabelPos(proj.O, [proj.A, proj.B, proj.C], 18);
         const aLabel = this.#axisLabelPos(proj.O, basisProj.A, 16);
@@ -1886,20 +1942,38 @@ export class VectorSpaceCube {
             );
         }
 
-        const helperLinesPreviewHtml = [
-            this.#lineSVG(gp.a0, gp.a1, 'url(#guide_grad_a)', 2.5, 0.75, '4 4'),
-            this.#lineSVG(gp.b0, gp.b1, 'url(#guide_grad_b)', 2.5, 0.75, '4 4'),
-            this.#lineSVG(gp.c0, gp.c1, 'url(#guide_grad_c)', 2.5, 0.75, '4 4')
-        ].join('');
+        const activePreviewPlane =
+            (this.state.mode === 'point' && this.state.pointDragPlane)
+                ? this.state.pointDragPlane
+                : (this.state.previewNear ? principalPlane : null);
 
-        const helperPointsPreviewHtml = [
-            this.#guidePointSVG(gp.a0, this.#worldColorHex(guides.a0)),
-            this.#guidePointSVG(gp.a1, this.#worldColorHex(guides.a1)),
-            this.#guidePointSVG(gp.b0, this.#worldColorHex(guides.b0)),
-            this.#guidePointSVG(gp.b1, this.#worldColorHex(guides.b1)),
-            this.#guidePointSVG(gp.c0, this.#worldColorHex(guides.c0)),
-            this.#guidePointSVG(gp.c1, this.#worldColorHex(guides.c1))
-        ].join('');
+        const planeGuideKeys = {
+            xy: ['a', 'b'],
+            xz: ['a', 'c'],
+            yz: ['b', 'c']
+        };
+
+        const visibleGuideKeys = activePreviewPlane
+            ? (planeGuideKeys[activePreviewPlane] || [])
+            : [];
+
+        const helperLinesPreviewHtml = visibleGuideKeys.map((key) => {
+            return this.#lineSVG(
+                gp[`${key}0`],
+                gp[`${key}1`],
+                `url(#guide_grad_${key})`,
+                2.5,
+                0.75,
+                '4 4'
+            );
+        }).join('');
+
+        const helperPointsPreviewHtml = visibleGuideKeys.map((key) => {
+            return [
+                this.#guidePointSVG(gp[`${key}0`], this.#worldColorHex(guides[`${key}0`])),
+                this.#guidePointSVG(gp[`${key}1`], this.#worldColorHex(guides[`${key}1`]))
+            ].join('');
+        }).join('');
 
         const helperTicksPreviewHtml = (() => {
             const parts = [];
@@ -1915,9 +1989,9 @@ export class VectorSpaceCube {
                 parts.push(this.#guideTickSVG(b, dirX, dirY));
             };
 
-            pushTicks(gp.a0, gp.a1);
-            pushTicks(gp.b0, gp.b1);
-            pushTicks(gp.c0, gp.c1);
+            for (const key of visibleGuideKeys) {
+                pushTicks(gp[`${key}0`], gp[`${key}1`]);
+            }
 
             return parts.join('');
         })();
@@ -1931,6 +2005,7 @@ export class VectorSpaceCube {
   </g>
 `;
 
+
         html += `
       <defs>
         ${this.#gradientLineDef('mix_grad_01', pp.p0, pp.p1, c0, c1)}
@@ -1943,10 +2018,10 @@ export class VectorSpaceCube {
       </defs>
     `;
 
-        html += this.#lineSVG(pp.p0, pp.p3, 'url(#mix_grad_direct)', 2.5, 0.55, '4 4');
-        html += this.#gradientArrowSVG(pp.p0, pp.p1, c0, c1, 4.5, 25, 15, 0.98, 'mix_arrow_01');
-        html += this.#gradientArrowSVG(pp.p1, pp.p2, c1, c2, 4.5, 25, 15, 0.98, 'mix_arrow_12');
-        html += this.#gradientArrowSVG(pp.p2, pp.p3, c2, c3, 4.5, 25, 15, 0.98, 'mix_arrow_23');
+        html += this.#gradientArrowSVG(pp.p0, pp.p3, c0, c3, 1.5, 12, 7, 0.5, 'mix_arrow_direct', 0, 10);
+        html += this.#gradientArrowSVG(pp.p0, pp.p1, c0, c1, 4.5, 25, 15, 0.98, 'mix_arrow_01', 0, 5);
+        html += this.#gradientArrowSVG(pp.p1, pp.p2, c1, c2, 4.5, 25, 15, 0.98, 'mix_arrow_12', 0, 5);
+        html += this.#gradientArrowSVG(pp.p2, pp.p3, c2, c3, 4.5, 25, 15, 0.98, 'mix_arrow_23', 0, 5);
 
         const coeffTextA = this.#formatCoeff(this.basis[0].name, current.x);
         const coeffTextB = this.#formatCoeff(this.basis[1].name, current.y);
