@@ -1,3 +1,4 @@
+```html
 <link rel="stylesheet" href="include/knob.css">
 <script src="include/knob.js"></script>
 
@@ -239,12 +240,15 @@
     </div>
 </div>
 
-<script>
+<script type="module">
+    import { VectorSpaceCube } from './include/vector-space-cube.js';
+
     let hpadding = 32;
     let vpadding = 20;
     let margin = 20;
 
     let knobs = [];
+    let cube = null;
 
     let rgb = {
         r: 0x7d,
@@ -259,47 +263,14 @@
         'R': '#ea2830',
         'G': '#73d216',
         'B': '#238acc',
-    }
-
-    const cubeState = {
-        yaw: -0.65,
-        pitch: 0.50,
-        zoom: 1.0,
-        minZoom: 0.55,
-        maxZoom: 2.5,
-        dragging: false,
-        lastX: 0,
-        lastY: 0,
-        pinchDistance: null,
-        mode: null,
-        pointGrabRadius: 18,
-        pointHover: false
     };
 
     function clampByte(v) {
         return Math.max(0, Math.min(255, Math.round(v)));
     }
 
-    function clamp(v, lo, hi) {
-        return Math.max(lo, Math.min(hi, v));
-    }
-
     function rgbString(r, g, b) {
         return `rgb(${r}, ${g}, ${b})`;
-    }
-
-    function getSVGClientPoint(svg, x, y) {
-        const ctm = svg.getScreenCTM();
-        if (!ctm) return null;
-
-        const pt = new DOMPoint(x, y).matrixTransform(ctm);
-        return { x: pt.x, y: pt.y };
-    }
-
-    function getProjectedColorPointClient() {
-        const svg = document.getElementById('cube_svg');
-        const pp = projectedColorPoint();
-        return getSVGClientPoint(svg, pp.x, pp.y);
     }
 
     function updateCircleGeometry() {
@@ -307,7 +278,6 @@
         const cy = 350;
         const r = circleRadius;
         const d = circleSpread;
-
         const EPS = 0.1;
 
         const positions = {
@@ -331,6 +301,21 @@
         setCircle('geom_r_fill', positions.r, r + EPS);
         setCircle('geom_g_fill', positions.g, r + EPS);
         setCircle('geom_b_fill', positions.b, r + EPS);
+    }
+
+    function syncKnobsToRGB() {
+        if (knobs[0]) knobs[0].setValue(rgb.r);
+        if (knobs[1]) knobs[1].setValue(rgb.g);
+        if (knobs[2]) knobs[2].setValue(rgb.b);
+    }
+
+    function syncCubeToRGB() {
+        if (!cube) return;
+        cube.setValue({
+            x: rgb.r / 255,
+            y: rgb.g / 255,
+            z: rgb.b / 255
+        }, { silent: true });
     }
 
     function updatePatches() {
@@ -365,17 +350,15 @@
         setPatchColor('patch_r_only', colors.r_only);
         setPatchColor('patch_g_only', colors.g_only);
         setPatchColor('patch_b_only', colors.b_only);
-
         setPatchColor('patch_rg_only', colors.rg_only);
         setPatchColor('patch_rb_only', colors.rb_only);
         setPatchColor('patch_gb_only', colors.gb_only);
-
         setPatchColor('patch_rgb', colors.rgb);
 
         document.getElementById('color_swatch').style.background = colors.rgb;
         document.getElementById('color_label').textContent = colors.rgb;
 
-        drawRGBCube();
+        syncCubeToRGB();
     }
 
     function handleResize() {
@@ -410,7 +393,7 @@
         div.style.width = `${panelW}px`;
         div.style.height = `${fullH}px`;
 
-        drawRGBCube();
+        if (cube) cube.resize();
     }
 
     function buildControls() {
@@ -455,845 +438,49 @@
         }
     }
 
-    function rotatePoint(p) {
-        const cy = Math.cos(cubeState.yaw);
-        const sy = Math.sin(cubeState.yaw);
-        const cp = Math.cos(cubeState.pitch);
-        const sp = Math.sin(cubeState.pitch);
-
-        // rotate around cube center instead of origin
-        let x = p.x - 0.5;
-        let y = p.y - 0.5;
-        let z = p.z - 0.5;
-
-        // yaw around Y
-        let x1 = x * cy + z * sy;
-        let y1 = y;
-        let z1 = -x * sy + z * cy;
-
-        // pitch around X
-        let x2 = x1;
-        let y2 = y1 * cp - z1 * sp;
-        let z2 = y1 * sp + z1 * cp;
-
-        return { x: x2, y: y2, z: z2 };
-    }
-
-    function projectPoint(p, width, height, scale) {
-        const pr = rotatePoint(p);
-        const camera = 4.2;
-        const perspective = camera / (camera - pr.z);
-
-        return {
-            x: width * 0.5 + pr.x * scale * perspective,
-            y: height * 0.5 - pr.y * scale * perspective,
-            z: pr.z,
-            depth: pr.z
-        };
-    }
-
-    function rotateCenteredVector(v) {
-        const cy = Math.cos(cubeState.yaw);
-        const sy = Math.sin(cubeState.yaw);
-        const cp = Math.cos(cubeState.pitch);
-        const sp = Math.sin(cubeState.pitch);
-
-        // yaw around Y
-        let x1 = v.x * cy + v.z * sy;
-        let y1 = v.y;
-        let z1 = -v.x * sy + v.z * cy;
-
-        // pitch around X
-        let x2 = x1;
-        let y2 = y1 * cp - z1 * sp;
-        let z2 = y1 * sp + z1 * cp;
-
-        return { x: x2, y: y2, z: z2 };
-    }
-
-    function inverseRotateCenteredVector(v) {
-        // inverse of pitch then inverse of yaw
-        const cy = Math.cos(cubeState.yaw);
-        const sy = Math.sin(cubeState.yaw);
-        const cp = Math.cos(cubeState.pitch);
-        const sp = Math.sin(cubeState.pitch);
-
-        // inverse pitch around X
-        let x1 = v.x;
-        let y1 = v.y * cp + v.z * sp;
-        let z1 = -v.y * sp + v.z * cp;
-
-        // inverse yaw around Y
-        let x2 = x1 * cy - z1 * sy;
-        let y2 = y1;
-        let z2 = x1 * sy + z1 * cy;
-
-        return { x: x2, y: y2, z: z2 };
-    }
-
-    function syncKnobsToRGB() {
-        if (knobs[0]) knobs[0].setValue(rgb.r);
-        if (knobs[1]) knobs[1].setValue(rgb.g);
-        if (knobs[2]) knobs[2].setValue(rgb.b);
-    }
-
-    function getCubeViewMetrics() {
-        const svg = document.getElementById('cube_svg');
-        const viewBox = svg.viewBox.baseVal;
-        const width = viewBox && viewBox.width ? viewBox.width : 1000;
-        const height = viewBox && viewBox.height ? viewBox.height : 700;
-        const scale = Math.min(width, height) * 0.62 * cubeState.zoom;
-        return { width, height, scale };
-    }
-
-    function currentColorPointUnit() {
-        return {
-            x: rgb.r / 255,
-            y: rgb.g / 255,
-            z: rgb.b / 255
-        };
-    }
-
-    function projectedColorPoint() {
-        const { width, height, scale } = getCubeViewMetrics();
-        return projectPoint(currentColorPointUnit(), width, height, scale);
-    }
-
-    function isPointerNearColorPoint(ev) {
-        const p = pointerPos(ev);
-        const screenPt = getProjectedColorPointClient();
-        if (!screenPt) return false;
-
-        const dx = p.x - screenPt.x;
-        const dy = p.y - screenPt.y;
-
-        return Math.hypot(dx, dy) <= cubeState.pointGrabRadius;
-    }
-
-    function dragColorPointByScreenDelta(dxScreen, dyScreen) {
-        const camera = 4.2;
-        const { scale } = getCubeViewMetrics();
-
-        const p = currentColorPointUnit();
-
-        // center-relative cube coordinates
-        const centered = {
-            x: p.x - 0.5,
-            y: p.y - 0.5,
-            z: p.z - 0.5
-        };
-
-        // rotate into view space
-        const pr = rotateCenteredVector(centered);
-
-        // keep the dragged point on a screen-parallel plane => constant rotated z
-        const perspective = camera / (camera - pr.z);
-        const k = scale * perspective;
-
-        if (Math.abs(k) < 1e-6) return;
-
-        // convert screen delta to delta in rotated space
-        const deltaRot = {
-            x: dxScreen / k,
-            y: -dyScreen / k,
-            z: 0
-        };
-
-        // move back into cube space
-        const deltaCube = inverseRotateCenteredVector(deltaRot);
-
-        const next = {
-            x: clamp(p.x + deltaCube.x, 0, 1),
-            y: clamp(p.y + deltaCube.y, 0, 1),
-            z: clamp(p.z + deltaCube.z, 0, 1)
-        };
-
-        rgb.r = clampByte(next.x * 255);
-        rgb.g = clampByte(next.y * 255);
-        rgb.b = clampByte(next.z * 255);
-
-        syncKnobsToRGB();
-        updatePatches();
-    }    
-
-    function lineSVG(a, b, stroke, width, opacity = 1, dash = '') {
-        return `
-            <line
-                x1="${a.x}" y1="${a.y}"
-                x2="${b.x}" y2="${b.y}"
-                stroke="${stroke}"
-                stroke-width="${width}"
-                stroke-opacity="${opacity}"
-                ${dash ? `stroke-dasharray="${dash}"` : ''}
-                stroke-linecap="round"
-            />
-        `;
-    }
-
-    function circleSVG(p, r, fill, stroke = 'none', strokeWidth = 0, opacity = 1) {
-        return `
-            <circle
-                cx="${p.x}" cy="${p.y}" r="${r}"
-                fill="${fill}"
-                stroke="${stroke}"
-                stroke-width="${strokeWidth}"
-                fill-opacity="${opacity}"
-            />
-        `;
-    }
-
-    function textSVG(p, str, color, dx = 0, dy = 0, size = 14, anchor = 'middle') {
-        return `
-            <text
-                x="${p.x + dx}"
-                y="${p.y + dy}"
-                fill="${color}"
-                font-size="${size}"
-                font-family="sans-serif"
-                text-anchor="${anchor}"
-                dominant-baseline="middle"
-                style="user-select:none"
-            >${str}</text>
-        `;
-    }
-
-    function gradientLineDef(id, a, b, colorA, colorB) {
-        return `
-            <linearGradient id="${id}"
-                            gradientUnits="userSpaceOnUse"
-                            x1="${a.x}" y1="${a.y}"
-                            x2="${b.x}" y2="${b.y}">
-                <stop offset="0%" stop-color="${colorA}"></stop>
-                <stop offset="100%" stop-color="${colorB}"></stop>
-            </linearGradient>
-        `;
-    }
-
-    function axisLabelPos(origin, end, distance = 18) {
-        const dx = end.x - origin.x;
-        const dy = end.y - origin.y;
-        const len = Math.hypot(dx, dy) || 1;
-
-        return {
-            x: end.x + (dx / len) * distance,
-            y: end.y + (dy / len) * distance
-        };
-    }
-
-    function originLabelPos(origin, ends, distance = 18) {
-        let vx = 0;
-        let vy = 0;
-
-        for (const end of ends) {
-            const dx = origin.x - end.x;
-            const dy = origin.y - end.y;
-            const len = Math.hypot(dx, dy) || 1;
-            vx += dx / len;
-            vy += dy / len;
-        }
-
-        const vlen = Math.hypot(vx, vy) || 1;
-
-        return {
-            x: origin.x + (vx / vlen) * distance,
-            y: origin.y + (vy / vlen) * distance
-        };
-    }
-
-    function pointMarkerSVG(p, fill = '#000', stroke = '#bbb', strokeWidth = 1.5, r = 5) {
-        return `
-            <circle
-                cx="${p.x}"
-                cy="${p.y}"
-                r="${r}"
-                fill="${fill}"
-                stroke="${stroke}"
-                stroke-width="${strokeWidth}"
-            />
-        `;
-    }
-
-    function guidePointSVG(p, color) {
-        return `
-            <circle
-                cx="${p.x}"
-                cy="${p.y}"
-                r="3.5"
-                fill="${color}"
-                fill-opacity="0.9"
-                stroke="rgba(255,255,255,0.35)"
-                stroke-width="1"
-            />
-        `;
-    }
-
-    function guideTickSVG(p, dirX, dirY, size = 5) {
-        return `
-            <line
-                x1="${p.x - dirY * size}"
-                y1="${p.y + dirX * size}"
-                x2="${p.x + dirY * size}"
-                y2="${p.y - dirX * size}"
-                stroke="rgba(255,255,255,0.25)"
-                stroke-width="1"
-            />
-        `;
-    }
-
-    function arrowSVG(a, b, color = '#aaa', width = 2) {
-        const dx = b.x - a.x;
-        const dy = b.y - a.y;
-        const len = Math.hypot(dx, dy) || 1;
-
-        const ux = dx / len;
-        const uy = dy / len;
-
-        const arrowLen = 20;   // size in screen space
-        const arrowWidth = 8;
-
-        const px = -uy;
-        const py = ux;
-
-        const tip = b;
-        const left = {
-            x: b.x - ux * arrowLen + px * arrowWidth * 0.5,
-            y: b.y - uy * arrowLen + py * arrowWidth * 0.5
-        };
-        const right = {
-            x: b.x - ux * arrowLen - px * arrowWidth * 0.5,
-            y: b.y - uy * arrowLen - py * arrowWidth * 0.5
-        };
-
-        return `
-            <g>
-                <line
-                    x1="${a.x}" y1="${a.y}"
-                    x2="${b.x}" y2="${b.y}"
-                    stroke="${color}"
-                    stroke-width="${width}"
-                    stroke-linecap="round"
-                />
-                <polygon
-                    points="${tip.x},${tip.y} ${left.x},${left.y} ${right.x},${right.y}"
-                    fill="${color}"
-                />
-            </g>
-        `;
-    }
-
-    function gradientArrowSVG(
-        a,
-        b,
-        colorStart,
-        colorEnd,
-        width = 4,
-        headLen = 16,
-        headWidth = 10,
-        opacity = 1,
-        id = ''
-    ) {
-        const dx = b.x - a.x;
-        const dy = b.y - a.y;
-        const len = Math.hypot(dx, dy);
-
-        if (len < 1e-3) return ''; // nothing to draw
-
-        const ux = dx / len;
-        const uy = dy / len;
-
-        // --- NEW: adaptive arrowhead ---
-        const MIN_ARROW = 14; // threshold below which we skip arrowhead
-        const MAX_RATIO = 0.6;
-
-        let useArrow = len > MIN_ARROW;
-
-        // clamp head size relative to segment
-        let effectiveHeadLen = Math.min(headLen, len * MAX_RATIO);
-        let effectiveHeadWidth = headWidth;
-
-        const px = -uy;
-        const py = ux;
-
-        const gradId = id || `grad_arrow_${Math.random().toString(36).slice(2)}`;
-
-        // If too short → just draw line
-        if (!useArrow) {
-            return `
-                <defs>
-                    <linearGradient id="${gradId}"
-                                    gradientUnits="userSpaceOnUse"
-                                    x1="${a.x}" y1="${a.y}"
-                                    x2="${b.x}" y2="${b.y}">
-                        <stop offset="0%" stop-color="${colorStart}"></stop>
-                        <stop offset="100%" stop-color="${colorEnd}"></stop>
-                    </linearGradient>
-                </defs>
-                <line
-                    x1="${a.x}" y1="${a.y}"
-                    x2="${b.x}" y2="${b.y}"
-                    stroke="url(#${gradId})"
-                    stroke-width="${width}"
-                    stroke-linecap="round"
-                    opacity="${opacity}"
-                />
-            `;
-        }
-
-        // normal arrow
-        const shaftEnd = {
-            x: b.x - ux * (effectiveHeadLen * 0.72),
-            y: b.y - uy * (effectiveHeadLen * 0.72)
-        };
-
-        const left = {
-            x: b.x - ux * effectiveHeadLen + px * (effectiveHeadWidth * 0.5),
-            y: b.y - uy * effectiveHeadLen + py * (effectiveHeadWidth * 0.5)
-        };
-
-        const right = {
-            x: b.x - ux * effectiveHeadLen - px * (effectiveHeadWidth * 0.5),
-            y: b.y - uy * effectiveHeadLen - py * (effectiveHeadWidth * 0.5)
-        };
-
-        return `
-            <defs>
-                <linearGradient id="${gradId}"
-                                gradientUnits="userSpaceOnUse"
-                                x1="${a.x}" y1="${a.y}"
-                                x2="${b.x}" y2="${b.y}">
-                    <stop offset="0%" stop-color="${colorStart}"></stop>
-                    <stop offset="100%" stop-color="${colorEnd}"></stop>
-                </linearGradient>
-            </defs>
-            <g opacity="${opacity}">
-                <line
-                    x1="${a.x}" y1="${a.y}"
-                    x2="${shaftEnd.x}" y2="${shaftEnd.y}"
-                    stroke="url(#${gradId})"
-                    stroke-width="${width}"
-                    stroke-linecap="round"
-                />
-                <polygon
-                    points="${b.x},${b.y} ${left.x},${left.y} ${right.x},${right.y}"
-                    fill="${colorEnd}"
-                />
-            </g>
-        `;
-    }
-
-    function drawRGBCube() {
-        const svg = document.getElementById('cube_svg');
-        if (!svg) return;
-
-        const viewBox = svg.viewBox.baseVal;
-        const { width, height, scale } = getCubeViewMetrics();
-
-        const pts = {
-            O:   { x: 0, y: 0, z: 0 },
-            R:   { x: 1, y: 0, z: 0 },
-            G:   { x: 0, y: 1, z: 0 },
-            B:   { x: 0, y: 0, z: 1 },
-            RG:  { x: 1, y: 1, z: 0 },
-            RB:  { x: 1, y: 0, z: 1 },
-            GB:  { x: 0, y: 1, z: 1 },
-            RGB: { x: 1, y: 1, z: 1 }
-        };
-
-        const edges = [
-            ['O', 'R'], ['O', 'G'], ['O', 'B'],
-            ['R', 'RG'], ['R', 'RB'],
-            ['G', 'RG'], ['G', 'GB'],
-            ['B', 'RB'], ['B', 'GB'],
-            ['RG', 'RGB'], ['RB', 'RGB'], ['GB', 'RGB']
-        ];
-
-        const proj = {};
-        for (const k in pts) {
-            proj[k] = projectPoint(pts[k], width, height, scale);
-        }
-
-        const colorPoint = {
-            x: rgb.r / 255,
-            y: rgb.g / 255,
-            z: rgb.b / 255
-        };
-
-        const guides = {
-            r0: { x: 0, y: colorPoint.y, z: colorPoint.z },
-            r1: { x: 1, y: colorPoint.y, z: colorPoint.z },
-
-            g0: { x: colorPoint.x, y: 0, z: colorPoint.z },
-            g1: { x: colorPoint.x, y: 1, z: colorPoint.z },
-
-            b0: { x: colorPoint.x, y: colorPoint.y, z: 0 },
-            b1: { x: colorPoint.x, y: colorPoint.y, z: 1 }
-        };
-
-        const gp = {
-            r0: projectPoint(guides.r0, width, height, scale),
-            r1: projectPoint(guides.r1, width, height, scale),
-
-            g0: projectPoint(guides.g0, width, height, scale),
-            g1: projectPoint(guides.g1, width, height, scale),
-
-            b0: projectPoint(guides.b0, width, height, scale),
-            b1: projectPoint(guides.b1, width, height, scale)
-        };
-
-        const guideColors = {
-            r0: rgbString(0, rgb.g, rgb.b),
-            r1: rgbString(255, rgb.g, rgb.b),
-
-            g0: rgbString(rgb.r, 0, rgb.b),
-            g1: rgbString(rgb.r, 255, rgb.b),
-
-            b0: rgbString(rgb.r, rgb.g, 0),
-            b1: rgbString(rgb.r, rgb.g, 255)
-        };
-
-        const pathPts = {
-            p0: { x: 0, y: 0, z: 0 },
-            p1: { x: colorPoint.x, y: 0, z: 0 },
-            p2: { x: colorPoint.x, y: colorPoint.y, z: 0 },
-            p3: { x: colorPoint.x, y: colorPoint.y, z: colorPoint.z }
-        };
-
-        const pp = {
-            p0: projectPoint(pathPts.p0, width, height, scale),
-            p1: projectPoint(pathPts.p1, width, height, scale),
-            p2: projectPoint(pathPts.p2, width, height, scale),
-            p3: projectPoint(pathPts.p3, width, height, scale)
-        };
-
-        const faces = [
-            { name: 'xy0', points: ['O', 'R', 'RG', 'G'], color: 'rgba(255,255,0,0.05)' },
-            { name: 'xz0', points: ['O', 'R', 'RB', 'B'], color: 'rgba(255,0,255,0.05)' },
-            { name: 'yz0', points: ['O', 'G', 'GB', 'B'], color: 'rgba(0,255,255,0.05)' }
-        ];
-
-        let html = '';
-
-        html += `
-            <rect x="0" y="0" width="${width}" height="${height}" fill="url(#cube_bg)"></rect>
-            <defs>
-                <linearGradient id="cube_bg" x1="0" x2="1" y1="0" y2="0">
-                    <stop offset="0%" stop-color="#191b22"></stop>
-                    <stop offset="100%" stop-color="#1b1d24"></stop>
-                </linearGradient>
-            </defs>
-        `;
-
-        const faceItems = faces.map(face => {
-            const rotatedDepth =
-                face.points.reduce((sum, key) => sum + rotatePoint(pts[key]).z, 0) / face.points.length;
-            return { ...face, depth: rotatedDepth };
-        }).sort((a, b) => a.depth - b.depth);
-
-        for (const face of faceItems) {
-            const d = face.points.map((key, i) => {
-                const p = proj[key];
-                return `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`;
-            }).join(' ') + ' Z';
-
-            html += `
-                <path d="${d}"
-                    fill="${face.color}"
-                    stroke="rgba(255,255,255,0.06)"
-                    stroke-width="1"></path>
-            `;
-        }
-
-        const edgeItems = edges.map(([a, b]) => {
-            const depth = (rotatePoint(pts[a]).z + rotatePoint(pts[b]).z) * 0.5;
-            return { a, b, depth };
-        }).sort((a, b) => a.depth - b.depth);
-
-        for (const e of edgeItems) {
-            html += lineSVG(proj[e.a], proj[e.b], 'rgba(255,255,255,0.22)', 1.5);
-        }
-
-        const axisColor = 'rgba(180, 180, 180, 0.85)';
-        html += arrowSVG(proj.O, proj.R, axisColor, 2);
-        html += arrowSVG(proj.O, proj.G, axisColor, 2);
-        html += arrowSVG(proj.O, proj.B, axisColor, 2);
-
-        const kLabel = originLabelPos(proj.O, [proj.R, proj.G, proj.B], 18);
-        const rLabel = axisLabelPos(proj.O, proj.R, 16);
-        const gLabel = axisLabelPos(proj.O, proj.G, 16);
-        const bLabel = axisLabelPos(proj.O, proj.B, 16);
-        const wLabel = axisLabelPos(proj.O, proj.RGB, 16);
-
-        html += pointMarkerSVG(proj.O, '#000', '#9a9a9a', 1.5, 5);
-        html += pointMarkerSVG(proj.R, '#f00', '#9a9a9a', 1.5, 4.5);
-        html += pointMarkerSVG(proj.G, '#0f0', '#9a9a9a', 1.5, 4.5);
-        html += pointMarkerSVG(proj.B, '#00f', '#9a9a9a', 1.5, 4.5);
-        html += pointMarkerSVG(proj.RGB, '#fff', '#9a9a9a', 1.5, 4.5);
-
-        html += textSVG(kLabel, 'K', '#bbbbbb', 0, 0, 12);
-        html += textSVG(rLabel, 'R', '#ff0000', 0, 0, 14);
-        html += textSVG(gLabel, 'G', '#00ff00', 0, 0, 14);
-        html += textSVG(bLabel, 'B', '#0000ff', 0, 0, 14);
-        html += textSVG(wLabel, 'W', '#ffffff', 0, 0, 13);
-
-        const c0 = rgbString(0, 0, 0);
-        const c1 = rgbString(rgb.r, 0, 0);
-        const c2 = rgbString(rgb.r, rgb.g, 0);
-        const c3 = rgbString(rgb.r, rgb.g, rgb.b);
-
-        html += `
-            <defs>
-                ${gradientLineDef('mix_grad_01', pp.p0, pp.p1, c0, c1)}
-                ${gradientLineDef('mix_grad_12', pp.p1, pp.p2, c1, c2)}
-                ${gradientLineDef('mix_grad_23', pp.p2, pp.p3, c2, c3)}
-                ${gradientLineDef('mix_grad_direct', pp.p0, pp.p3, c0, c3)}
-
-                ${gradientLineDef('guide_grad_r', gp.r0, gp.r1, guideColors.r0, guideColors.r1)}
-                ${gradientLineDef('guide_grad_g', gp.g0, gp.g1, guideColors.g0, guideColors.g1)}
-                ${gradientLineDef('guide_grad_b', gp.b0, gp.b1, guideColors.b0, guideColors.b1)}
-            </defs>
-        `;
-
-        html += lineSVG(pp.p0, pp.p3, 'url(#mix_grad_direct)', 2.5, 0.55, '4 4');
-
-        html += gradientArrowSVG(pp.p0, pp.p1, c0, c1, 4.5, 25, 15, 0.98, 'mix_arrow_01');
-        html += gradientArrowSVG(pp.p1, pp.p2, c1, c2, 4.5, 25, 15, 0.98, 'mix_arrow_12');
-        html += gradientArrowSVG(pp.p2, pp.p3, c2, c3, 4.5, 25, 15, 0.98, 'mix_arrow_23');
-
-        html += circleSVG(pp.p1, 4, c1, 'rgba(255,255,255,0.35)', 1);
-        html += circleSVG(pp.p2, 4, c2, 'rgba(255,255,255,0.35)', 1);
-
-        html += lineSVG(gp.r0, gp.r1, 'url(#guide_grad_r)', 2.5, 0.75, '4 4');
-        html += lineSVG(gp.g0, gp.g1, 'url(#guide_grad_g)', 2.5, 0.75, '4 4');
-        html += lineSVG(gp.b0, gp.b1, 'url(#guide_grad_b)', 2.5, 0.75, '4 4');
-
-        html += guidePointSVG(gp.r0, guideColors.r0);
-        html += guidePointSVG(gp.r1, guideColors.r1);
-        html += guidePointSVG(gp.g0, guideColors.g0);
-        html += guidePointSVG(gp.g1, guideColors.g1);
-        html += guidePointSVG(gp.b0, guideColors.b0);
-        html += guidePointSVG(gp.b1, guideColors.b1);
-
-        const addTicks = (a, b) => {
-            const dx = b.x - a.x;
-            const dy = b.y - a.y;
-            const len = Math.hypot(dx, dy) || 1;
-            const ux = dx / len;
-            const uy = dy / len;
-
-            html += guideTickSVG(a, ux, uy);
-            html += guideTickSVG(b, ux, uy);
-        };
-
-        addTicks(gp.r0, gp.r1);
-        addTicks(gp.g0, gp.g1);
-        addTicks(gp.b0, gp.b1);
-
-        html += `
-            <g id="result_point_handle">
-                ${
-                    cubeState.pointHover || cubeState.mode === 'point'
-                        ? `
-                            <circle
-                                cx="${pp.p3.x}"
-                                cy="${pp.p3.y}"
-                                r="16"
-                                fill="rgba(255,255,255,0.08)"
-                                stroke="rgba(255,255,255,0.35)"
-                                stroke-width="1.25"
-                            />
-                        `
-                        : ''
-                }
-                <circle
-                    cx="${pp.p3.x}"
-                    cy="${pp.p3.y}"
-                    r="14"
-                    fill="transparent"
-                    stroke="transparent"
-                />
-                <circle
-                    cx="${pp.p3.x}"
-                    cy="${pp.p3.y}"
-                    r="7"
-                    fill="${c3}"
-                    stroke="white"
-                    stroke-width="1.75"
-                />
-            </g>
-        `;
-        svg.innerHTML = html;
-    }
-
-    function pointerPos(ev) {
-        if (ev.touches && ev.touches.length) {
-            return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
-        }
-        return { x: ev.clientX, y: ev.clientY };
-    }
-
-    function touchDistance(ev) {
-        if (!ev.touches || ev.touches.length < 2) return null;
-        const dx = ev.touches[1].clientX - ev.touches[0].clientX;
-        const dy = ev.touches[1].clientY - ev.touches[0].clientY;
-        return Math.hypot(dx, dy);
-    }
-
-    function onCubeWheel(ev) {
-        ev.preventDefault();
-
-        const zoomFactor = Math.exp(-ev.deltaY * 0.0015);
-        cubeState.zoom = clamp(
-            cubeState.zoom * zoomFactor,
-            cubeState.minZoom,
-            cubeState.maxZoom
-        );
-
-        drawRGBCube();
-    }
-
-    function beginCubeDrag(ev) {
-        ev.preventDefault();
-
-        if (ev.touches && ev.touches.length === 2) {
-            cubeState.mode = null;
-            cubeState.dragging = false;
-            cubeState.pinchDistance = touchDistance(ev);
-            cubeState.pointHover = false;
-            document.getElementById('cube_view').classList.remove('dragging');
-            document.getElementById('cube_label').textContent = 'pinch to zoom';
-            return;
-        }
-
-        const p = pointerPos(ev);
-        cubeState.lastX = p.x;
-        cubeState.lastY = p.y;
-        cubeState.pinchDistance = null;
-
-        if (isPointerNearColorPoint(ev)) {
-            cubeState.mode = 'point';
-            cubeState.dragging = true;
-            cubeState.pointHover = true;
-            document.getElementById('cube_view').classList.add('dragging');
-            document.getElementById('cube_label').textContent = 'drag point';
-            drawRGBCube();
-            return;
-        }
-
-        cubeState.mode = 'rotate';
-        cubeState.dragging = true;
-        cubeState.pointHover = false;
-        document.getElementById('cube_view').classList.add('dragging');
-        document.getElementById('cube_label').textContent = 'drag to rotate';
-        drawRGBCube();
-    }
-
-    function moveCubeDrag(ev) {
-        if (ev.touches && ev.touches.length === 2) {
-            ev.preventDefault();
-
-            const d = touchDistance(ev);
-            if (d && cubeState.pinchDistance) {
-                const ratio = d / cubeState.pinchDistance;
-                cubeState.zoom = clamp(
-                    cubeState.zoom * ratio,
-                    cubeState.minZoom,
-                    cubeState.maxZoom
-                );
-                drawRGBCube();
+    function buildCube() {
+        cube = new VectorSpaceCube({
+            svg: document.getElementById('cube_svg'),
+            labelEl: document.getElementById('cube_label'),
+            value: {
+                x: rgb.r / 255,
+                y: rgb.g / 255,
+                z: rgb.b / 255
+            },
+            basis: [
+                // { name: 'R', color: baseColors.R, vector: { x: 1, y: 0, z: 0 } },
+                // { name: 'G', color: baseColors.G, vector: { x: 0, y: 1, z: 0 } },
+                // { name: 'B', color: baseColors.B, vector: { x: 0, y: 0, z: 1 } },
+                { name: 'X', color: '#ff0000', vector: { x: 0.299, y: 0.587, z: 0.114 } },
+                { name: 'Y', color: '#00ff00', vector: { x: -0.168736, y: -0.331264, z: 0.5 } },
+                { name: 'Z', color: '#0000ff', vector: { x: 0.5, y: -0.418688, z: -0.081312 } }
+            ],
+            state: {
+                yaw: -0.65,
+                pitch: 0.50,
+                zoom: 1.0,
+                minZoom: 0.55,
+                maxZoom: 2.5,
+                pointGrabRadius: 18
+            },
+            onChange: ({ value }) => {
+                rgb.r = clampByte(value.x * 255);
+                rgb.g = clampByte(value.y * 255);
+                rgb.b = clampByte(value.z * 255);
+                syncKnobsToRGB();
+                updatePatches();
             }
-            cubeState.pinchDistance = d;
-            return;
-        }
-
-        if (!cubeState.dragging) return;
-        ev.preventDefault();
-
-        const p = pointerPos(ev);
-        const dx = p.x - cubeState.lastX;
-        const dy = p.y - cubeState.lastY;
-
-        cubeState.lastX = p.x;
-        cubeState.lastY = p.y;
-
-        if (cubeState.mode === 'point') {
-            dragColorPointByScreenDelta(dx, dy);
-            return;
-        }
-
-        if (cubeState.mode === 'rotate') {
-            cubeState.yaw += dx * 0.005;
-            cubeState.pitch += dy * 0.005;
-
-            const maxPitch = Math.PI * 0.49;
-            cubeState.pitch = Math.max(-maxPitch, Math.min(maxPitch, cubeState.pitch));
-
-            drawRGBCube();
-        }
-    }
-
-    function endCubeDrag(ev) {
-        cubeState.dragging = false;
-        cubeState.pinchDistance = null;
-        cubeState.mode = null;
-        document.getElementById('cube_view').classList.remove('dragging');
-
-        if (ev) {
-            cubeState.pointHover = isPointerNearColorPoint(ev);
-        } else {
-            cubeState.pointHover = false;
-        }
-
-        document.getElementById('cube_label').textContent =
-            cubeState.pointHover ? 'drag point' : 'drag to rotate';
-
-        drawRGBCube();
-    }
-
-    function updateCubeCursor(ev) {
-        if (cubeState.dragging) return;
-
-        const cubeView = document.getElementById('cube_view');
-        const cubeLabel = document.getElementById('cube_label');
-        const hoveringPoint = isPointerNearColorPoint(ev);
-
-        if (hoveringPoint !== cubeState.pointHover) {
-            cubeState.pointHover = hoveringPoint;
-            drawRGBCube();
-        }
-
-        if (hoveringPoint) {
-            cubeView.style.cursor = 'pointer';
-            cubeLabel.textContent = 'drag point';
-        } else {
-            cubeView.style.cursor = 'grab';
-            cubeLabel.textContent = 'drag to rotate';
-        }
-    }
-
-    function setupCubeInteraction() {
-        const cubeView = document.getElementById('cube_view');
-
-        cubeView.addEventListener('mousedown', beginCubeDrag);
-        window.addEventListener('mousemove', moveCubeDrag);
-        window.addEventListener('mouseup', endCubeDrag);
-
-        cubeView.addEventListener('touchstart', beginCubeDrag, { passive: false });
-        window.addEventListener('touchmove', moveCubeDrag, { passive: false });
-        window.addEventListener('touchend', endCubeDrag);
-        window.addEventListener('touchcancel', endCubeDrag);
-
-        cubeView.addEventListener('wheel', onCubeWheel, { passive: false });
-
-        cubeView.addEventListener('mousemove', updateCubeCursor);
+        });
     }
 
     window.addEventListener('resize', handleResize);
 
     document.addEventListener('DOMContentLoaded', function() {
         buildControls();
-        setupCubeInteraction();
+        buildCube();
         handleResize();
         updateCircleGeometry();
         updatePatches();
     });
 </script>
+```
