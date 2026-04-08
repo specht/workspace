@@ -1,0 +1,946 @@
+<link rel="stylesheet" href="include/knob.css">
+<script src="include/knob.js"></script>
+
+<style>
+    body {
+        margin: 0;
+        background-color: #1c1d21;
+        overflow: hidden;
+        color: white;
+        font-family: sans-serif;
+    }
+
+    .menu, .header, footer {
+        display: none;
+    }
+
+    #app_shell {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .panel_container {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        outline: 1px solid #444;
+        background: #050607;
+        border-radius: 8px;
+        box-sizing: border-box;
+        padding: 16px 8px 8px 8px;
+    }
+
+    .result_container {
+        position: absolute;
+        outline: 1px solid #444;
+        background: #1c1d21;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .knob-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+
+    #mix_svg,
+    #cube_svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+        background: linear-gradient(90deg, #191b22 0%, #1b1d24 100%);
+    }
+
+    .result-label {
+        position: absolute;
+        left: 50%;
+        bottom: 10px;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.45);
+        color: white;
+        font: 12px sans-serif;
+        padding: 6px 10px;
+        border-radius: 6px;
+        backdrop-filter: blur(8px);
+        pointer-events: none;
+        user-select: none;
+        white-space: nowrap;
+    }
+
+    .swatch {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 54px;
+        height: 54px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.15);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+
+    .panel-title {
+        position: absolute;
+        top: 10px;
+        left: 12px;
+        font: 12px sans-serif;
+        color: rgba(255,255,255,0.8);
+        letter-spacing: 0.04em;
+        user-select: none;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    #cube_view {
+        touch-action: none;
+        cursor: grab;
+    }
+
+    #cube_view.dragging {
+        cursor: grabbing;
+    }
+</style>
+
+<div id="app_shell">
+    <div class="panel_container" id="rgb_controls">
+        <div class="knob-stack" id="knob_stack"></div>
+    </div>
+
+    <div class="result_container" id="result_view">
+        <div class="panel-title">2D additive overlap</div>
+
+        <svg id="mix_svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet">
+            <defs>
+                <circle id="geom_r" cx="430" cy="300" r="150"></circle>
+                <circle id="geom_g" cx="570" cy="300" r="150"></circle>
+                <circle id="geom_b" cx="500" cy="430" r="150"></circle>
+
+                <circle id="geom_r_fill" cx="430" cy="300" r="150"></circle>
+                <circle id="geom_g_fill" cx="570" cy="300" r="150"></circle>
+                <circle id="geom_b_fill" cx="500" cy="430" r="150"></circle>
+
+                <mask id="mask_r_only" maskUnits="userSpaceOnUse">
+                    <rect width="1000" height="700" fill="black"></rect>
+                    <use href="#geom_r" fill="white"></use>
+                    <use href="#geom_g" fill="black"></use>
+                    <use href="#geom_b" fill="black"></use>
+                </mask>
+
+                <mask id="mask_g_only" maskUnits="userSpaceOnUse">
+                    <rect width="1000" height="700" fill="black"></rect>
+                    <use href="#geom_g" fill="white"></use>
+                    <use href="#geom_r" fill="black"></use>
+                    <use href="#geom_b" fill="black"></use>
+                </mask>
+
+                <mask id="mask_b_only" maskUnits="userSpaceOnUse">
+                    <rect width="1000" height="700" fill="black"></rect>
+                    <use href="#geom_b" fill="white"></use>
+                    <use href="#geom_r" fill="black"></use>
+                    <use href="#geom_g" fill="black"></use>
+                </mask>
+
+                <mask id="mask_rg_only" maskUnits="userSpaceOnUse">
+                    <rect width="1000" height="700" fill="black"></rect>
+                    <use href="#geom_r" fill="white"></use>
+                    <use href="#geom_g" fill="white"></use>
+                    <use href="#geom_b" fill="black"></use>
+                </mask>
+                <clipPath id="clip_rg">
+                    <use href="#geom_r"></use>
+                </clipPath>
+
+                <mask id="mask_rb_only" maskUnits="userSpaceOnUse">
+                    <rect width="1000" height="700" fill="black"></rect>
+                    <use href="#geom_r" fill="white"></use>
+                    <use href="#geom_b" fill="white"></use>
+                    <use href="#geom_g" fill="black"></use>
+                </mask>
+                <clipPath id="clip_rb">
+                    <use href="#geom_r"></use>
+                </clipPath>
+
+                <mask id="mask_gb_only" maskUnits="userSpaceOnUse">
+                    <rect width="1000" height="700" fill="black"></rect>
+                    <use href="#geom_g" fill="white"></use>
+                    <use href="#geom_b" fill="white"></use>
+                    <use href="#geom_r" fill="black"></use>
+                </mask>
+                <clipPath id="clip_gb">
+                    <use href="#geom_g"></use>
+                </clipPath>
+
+                <clipPath id="clip_rgb_center_a">
+                    <use href="#geom_r"></use>
+                </clipPath>
+                <clipPath id="clip_rgb_center_b">
+                    <use href="#geom_g"></use>
+                </clipPath>
+            </defs>
+
+            <use id="patch_r_only"
+                 href="#geom_r_fill"
+                 mask="url(#mask_r_only)"
+                 fill="rgb(255,0,0)"></use>
+
+            <use id="patch_g_only"
+                 href="#geom_g_fill"
+                 mask="url(#mask_g_only)"
+                 fill="rgb(0,255,0)"></use>
+
+            <use id="patch_b_only"
+                 href="#geom_b_fill"
+                 mask="url(#mask_b_only)"
+                 fill="rgb(0,0,255)"></use>
+
+            <g clip-path="url(#clip_rg)">
+                <use id="patch_rg_only"
+                     href="#geom_g_fill"
+                     mask="url(#mask_rg_only)"
+                     fill="rgb(255,255,0)"></use>
+            </g>
+
+            <g clip-path="url(#clip_rb)">
+                <use id="patch_rb_only"
+                     href="#geom_b_fill"
+                     mask="url(#mask_rb_only)"
+                     fill="rgb(255,0,255)"></use>
+            </g>
+
+            <g clip-path="url(#clip_gb)">
+                <use id="patch_gb_only"
+                     href="#geom_b_fill"
+                     mask="url(#mask_gb_only)"
+                     fill="rgb(0,255,255)"></use>
+            </g>
+
+            <g clip-path="url(#clip_rgb_center_a)">
+                <g clip-path="url(#clip_rgb_center_b)">
+                    <use id="patch_rgb"
+                         href="#geom_b_fill"
+                         fill="rgb(255,255,255)"></use>
+                </g>
+            </g>
+        </svg>
+
+        <div class="swatch" id="color_swatch"></div>
+        <div class="result-label" id="color_label">rgb(255, 255, 255)</div>
+    </div>
+
+    <div class="result_container" id="cube_view">
+        <div class="panel-title">3D RGB space</div>
+        <svg id="cube_svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet"></svg>
+        <div class="result-label" id="cube_label">drag to rotate</div>
+    </div>
+</div>
+
+<script>
+    let hpadding = 32;
+    let vpadding = 20;
+    let margin = 20;
+
+    let knobs = [];
+
+    let rgb = {
+        r: 0x7d,
+        g: 0xcd,
+        b: 0xc2,
+    };
+
+    let circleRadius = 150;
+    let circleSpread = 40;
+
+    let baseColors = {
+        'R': '#ea2830',
+        'G': '#73d216',
+        'B': '#238acc',
+    }
+
+    const cubeState = {
+        yaw: -0.65,
+        pitch: 0.50,
+        zoom: 1.0,
+        minZoom: 0.55,
+        maxZoom: 2.5,
+        dragging: false,
+        lastX: 0,
+        lastY: 0,
+        pinchDistance: null
+    };
+
+    function clampByte(v) {
+        return Math.max(0, Math.min(255, Math.round(v)));
+    }
+
+    function clamp(v, lo, hi) {
+        return Math.max(lo, Math.min(hi, v));
+    }
+
+    function rgbString(r, g, b) {
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function updateCircleGeometry() {
+        const cx = 500;
+        const cy = 350;
+        const r = circleRadius;
+        const d = circleSpread;
+
+        const EPS = 0.1;
+
+        const positions = {
+            r: { x: cx - d, y: cy - d * 0.60 },
+            g: { x: cx + d, y: cy - d * 0.60 },
+            b: { x: cx,     y: cy + d * 0.92 }
+        };
+
+        const setCircle = (id, p, radius) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.setAttribute('cx', p.x);
+            el.setAttribute('cy', p.y);
+            el.setAttribute('r', radius);
+        };
+
+        setCircle('geom_r', positions.r, r);
+        setCircle('geom_g', positions.g, r);
+        setCircle('geom_b', positions.b, r);
+
+        setCircle('geom_r_fill', positions.r, r + EPS);
+        setCircle('geom_g_fill', positions.g, r + EPS);
+        setCircle('geom_b_fill', positions.b, r + EPS);
+    }
+
+    function updatePatches() {
+        const r = rgb.r;
+        const g = rgb.g;
+        const b = rgb.b;
+
+        const colors = {
+            r_only:  rgbString(r, 0, 0),
+            g_only:  rgbString(0, g, 0),
+            b_only:  rgbString(0, 0, b),
+            rg_only: rgbString(r, g, 0),
+            rb_only: rgbString(r, 0, b),
+            gb_only: rgbString(0, g, b),
+            rgb:     rgbString(r, g, b)
+        };
+
+        const strokeWidth = 0.0;
+
+        const setPatchColor = (id, fill) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.setAttribute('fill', fill);
+            el.setAttribute('stroke', fill);
+            el.setAttribute('stroke-width', strokeWidth);
+            el.setAttribute('stroke-linejoin', 'round');
+            el.setAttribute('stroke-linecap', 'round');
+            el.setAttribute('paint-order', 'stroke fill');
+            el.setAttribute('vector-effect', 'non-scaling-stroke');
+        };
+
+        setPatchColor('patch_r_only', colors.r_only);
+        setPatchColor('patch_g_only', colors.g_only);
+        setPatchColor('patch_b_only', colors.b_only);
+
+        setPatchColor('patch_rg_only', colors.rg_only);
+        setPatchColor('patch_rb_only', colors.rb_only);
+        setPatchColor('patch_gb_only', colors.gb_only);
+
+        setPatchColor('patch_rgb', colors.rgb);
+
+        document.getElementById('color_swatch').style.background = colors.rgb;
+        document.getElementById('color_label').textContent = colors.rgb;
+
+        drawRGBCube();
+    }
+
+    function handleResize() {
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        const scaleFactor = Math.min(1.0, 1060.0 / windowHeight);
+        const knobPanelW = 120 * scaleFactor;
+
+        const fullH = windowHeight - 2 * margin;
+        const contentX = margin + knobPanelW + hpadding;
+        const contentW = windowWidth - contentX - margin;
+
+        const panelGap = hpadding;
+        const panelW = (contentW - panelGap) / 2;
+
+        let div = document.getElementById('rgb_controls');
+        div.style.left = `${margin}px`;
+        div.style.top = `${margin}px`;
+        div.style.width = `${knobPanelW}px`;
+        div.style.height = `${fullH}px`;
+
+        div = document.getElementById('result_view');
+        div.style.left = `${contentX}px`;
+        div.style.top = `${margin}px`;
+        div.style.width = `${panelW}px`;
+        div.style.height = `${fullH}px`;
+
+        div = document.getElementById('cube_view');
+        div.style.left = `${contentX + panelW + panelGap}px`;
+        div.style.top = `${margin}px`;
+        div.style.width = `${panelW}px`;
+        div.style.height = `${fullH}px`;
+
+        drawRGBCube();
+    }
+
+    function buildControls() {
+        const knobStack = document.getElementById('knob_stack');
+        knobStack.innerHTML = '';
+        knobs = [];
+
+        const channelConfigs = [
+            { key: 'r', label: 'R' },
+            { key: 'g', label: 'G' },
+            { key: 'b', label: 'B' }
+        ];
+
+        for (const cfg of channelConfigs) {
+            const holder = document.createElement('div');
+            knobStack.appendChild(holder);
+
+            const knob = new FancyKnob(holder, {
+                label: cfg.label,
+                min: 0,
+                max: 255,
+                step: 1,
+                value: rgb[cfg.key],
+                color: baseColors[cfg.label],
+                centerLabel: '0',
+                size: 76,
+                horizontal: false,
+                indicatorStyle: 'arc',
+                ticks: [
+                    { value: 0, major: true, label: '0' },
+                    { value: 128, major: true, label: '128' },
+                    { value: 255, major: true, label: '255' }
+                ],
+                formatValue: (v) => v,
+                onInput: (v) => {
+                    rgb[cfg.key] = clampByte(v);
+                    updatePatches();
+                }
+            });
+
+            knobs.push(knob);
+        }
+    }
+
+    function rotatePoint(p) {
+        const cy = Math.cos(cubeState.yaw);
+        const sy = Math.sin(cubeState.yaw);
+        const cp = Math.cos(cubeState.pitch);
+        const sp = Math.sin(cubeState.pitch);
+
+        // rotate around cube center instead of origin
+        let x = p.x - 0.5;
+        let y = p.y - 0.5;
+        let z = p.z - 0.5;
+
+        // yaw around Y
+        let x1 = x * cy + z * sy;
+        let y1 = y;
+        let z1 = -x * sy + z * cy;
+
+        // pitch around X
+        let x2 = x1;
+        let y2 = y1 * cp - z1 * sp;
+        let z2 = y1 * sp + z1 * cp;
+
+        return { x: x2, y: y2, z: z2 };
+    }
+
+    function projectPoint(p, width, height, scale) {
+        const pr = rotatePoint(p);
+        const camera = 4.2;
+        const perspective = camera / (camera - pr.z);
+
+        return {
+            x: width * 0.5 + pr.x * scale * perspective,
+            y: height * 0.5 - pr.y * scale * perspective,
+            z: pr.z,
+            depth: pr.z
+        };
+    }
+
+    function lineSVG(a, b, stroke, width, opacity = 1, dash = '') {
+        return `
+            <line
+                x1="${a.x}" y1="${a.y}"
+                x2="${b.x}" y2="${b.y}"
+                stroke="${stroke}"
+                stroke-width="${width}"
+                stroke-opacity="${opacity}"
+                ${dash ? `stroke-dasharray="${dash}"` : ''}
+                stroke-linecap="round"
+            />
+        `;
+    }
+
+    function circleSVG(p, r, fill, stroke = 'none', strokeWidth = 0, opacity = 1) {
+        return `
+            <circle
+                cx="${p.x}" cy="${p.y}" r="${r}"
+                fill="${fill}"
+                stroke="${stroke}"
+                stroke-width="${strokeWidth}"
+                fill-opacity="${opacity}"
+            />
+        `;
+    }
+
+    function textSVG(p, str, color, dx = 0, dy = 0, size = 14, anchor = 'middle') {
+        return `
+            <text
+                x="${p.x + dx}"
+                y="${p.y + dy}"
+                fill="${color}"
+                font-size="${size}"
+                font-family="sans-serif"
+                text-anchor="${anchor}"
+                dominant-baseline="middle"
+                style="user-select:none"
+            >${str}</text>
+        `;
+    }
+
+    function gradientLineDef(id, a, b, colorA, colorB) {
+        return `
+            <linearGradient id="${id}"
+                            gradientUnits="userSpaceOnUse"
+                            x1="${a.x}" y1="${a.y}"
+                            x2="${b.x}" y2="${b.y}">
+                <stop offset="0%" stop-color="${colorA}"></stop>
+                <stop offset="100%" stop-color="${colorB}"></stop>
+            </linearGradient>
+        `;
+    }
+
+    function axisLabelPos(origin, end, distance = 18) {
+        const dx = end.x - origin.x;
+        const dy = end.y - origin.y;
+        const len = Math.hypot(dx, dy) || 1;
+
+        return {
+            x: end.x + (dx / len) * distance,
+            y: end.y + (dy / len) * distance
+        };
+    }
+
+    function pointMarkerSVG(p, fill = '#000', stroke = '#bbb', strokeWidth = 1.5, r = 5) {
+        return `
+            <circle
+                cx="${p.x}"
+                cy="${p.y}"
+                r="${r}"
+                fill="${fill}"
+                stroke="${stroke}"
+                stroke-width="${strokeWidth}"
+            />
+        `;
+    }
+
+    function guidePointSVG(p, color) {
+        return `
+            <circle
+                cx="${p.x}"
+                cy="${p.y}"
+                r="3.5"
+                fill="${color}"
+                fill-opacity="0.9"
+                stroke="rgba(255,255,255,0.35)"
+                stroke-width="1"
+            />
+        `;
+    }
+
+    function guideTickSVG(p, dirX, dirY, size = 5) {
+        return `
+            <line
+                x1="${p.x - dirY * size}"
+                y1="${p.y + dirX * size}"
+                x2="${p.x + dirY * size}"
+                y2="${p.y - dirX * size}"
+                stroke="rgba(255,255,255,0.25)"
+                stroke-width="1"
+            />
+        `;
+    }
+
+    function arrowSVG(a, b, color = '#aaa', width = 2) {
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const len = Math.hypot(dx, dy) || 1;
+
+        const ux = dx / len;
+        const uy = dy / len;
+
+        const arrowLen = 20;   // size in screen space
+        const arrowWidth = 8;
+
+        const px = -uy;
+        const py = ux;
+
+        const tip = b;
+        const left = {
+            x: b.x - ux * arrowLen + px * arrowWidth * 0.5,
+            y: b.y - uy * arrowLen + py * arrowWidth * 0.5
+        };
+        const right = {
+            x: b.x - ux * arrowLen - px * arrowWidth * 0.5,
+            y: b.y - uy * arrowLen - py * arrowWidth * 0.5
+        };
+
+        return `
+            <g>
+                <line
+                    x1="${a.x}" y1="${a.y}"
+                    x2="${b.x}" y2="${b.y}"
+                    stroke="${color}"
+                    stroke-width="${width}"
+                    stroke-linecap="round"
+                />
+                <polygon
+                    points="${tip.x},${tip.y} ${left.x},${left.y} ${right.x},${right.y}"
+                    fill="${color}"
+                />
+            </g>
+        `;
+    }
+
+    function drawRGBCube() {
+        const svg = document.getElementById('cube_svg');
+        if (!svg) return;
+
+        const viewBox = svg.viewBox.baseVal;
+        const width = viewBox && viewBox.width ? viewBox.width : 1000;
+        const height = viewBox && viewBox.height ? viewBox.height : 700;
+
+        const scale = Math.min(width, height) * 0.32 * cubeState.zoom;
+
+        const pts = {
+            O:   { x: 0, y: 0, z: 0 },
+            R:   { x: 1, y: 0, z: 0 },
+            G:   { x: 0, y: 1, z: 0 },
+            B:   { x: 0, y: 0, z: 1 },
+            RG:  { x: 1, y: 1, z: 0 },
+            RB:  { x: 1, y: 0, z: 1 },
+            GB:  { x: 0, y: 1, z: 1 },
+            RGB: { x: 1, y: 1, z: 1 }
+        };
+
+        const edges = [
+            ['O', 'R'], ['O', 'G'], ['O', 'B'],
+            ['R', 'RG'], ['R', 'RB'],
+            ['G', 'RG'], ['G', 'GB'],
+            ['B', 'RB'], ['B', 'GB'],
+            ['RG', 'RGB'], ['RB', 'RGB'], ['GB', 'RGB']
+        ];
+
+        const proj = {};
+        for (const k in pts) {
+            proj[k] = projectPoint(pts[k], width, height, scale);
+        }
+
+        const colorPoint = {
+            x: rgb.r / 255,
+            y: rgb.g / 255,
+            z: rgb.b / 255
+        };
+
+        const guides = {
+            r0: { x: 0, y: colorPoint.y, z: colorPoint.z },
+            r1: { x: 1, y: colorPoint.y, z: colorPoint.z },
+
+            g0: { x: colorPoint.x, y: 0, z: colorPoint.z },
+            g1: { x: colorPoint.x, y: 1, z: colorPoint.z },
+
+            b0: { x: colorPoint.x, y: colorPoint.y, z: 0 },
+            b1: { x: colorPoint.x, y: colorPoint.y, z: 1 }
+        };
+
+        const gp = {
+            r0: projectPoint(guides.r0, width, height, scale),
+            r1: projectPoint(guides.r1, width, height, scale),
+
+            g0: projectPoint(guides.g0, width, height, scale),
+            g1: projectPoint(guides.g1, width, height, scale),
+
+            b0: projectPoint(guides.b0, width, height, scale),
+            b1: projectPoint(guides.b1, width, height, scale)
+        };
+
+        const guideColors = {
+            r0: rgbString(0, rgb.g, rgb.b),
+            r1: rgbString(255, rgb.g, rgb.b),
+
+            g0: rgbString(rgb.r, 0, rgb.b),
+            g1: rgbString(rgb.r, 255, rgb.b),
+
+            b0: rgbString(rgb.r, rgb.g, 0),
+            b1: rgbString(rgb.r, rgb.g, 255)
+        };
+
+        const pathPts = {
+            p0: { x: 0, y: 0, z: 0 },
+            p1: { x: colorPoint.x, y: 0, z: 0 },
+            p2: { x: colorPoint.x, y: colorPoint.y, z: 0 },
+            p3: { x: colorPoint.x, y: colorPoint.y, z: colorPoint.z }
+        };
+
+        const pp = {
+            p0: projectPoint(pathPts.p0, width, height, scale),
+            p1: projectPoint(pathPts.p1, width, height, scale),
+            p2: projectPoint(pathPts.p2, width, height, scale),
+            p3: projectPoint(pathPts.p3, width, height, scale)
+        };
+
+        const faces = [
+            { name: 'xy0', points: ['O', 'R', 'RG', 'G'], color: 'rgba(255,255,0,0.05)' },
+            { name: 'xz0', points: ['O', 'R', 'RB', 'B'], color: 'rgba(255,0,255,0.05)' },
+            { name: 'yz0', points: ['O', 'G', 'GB', 'B'], color: 'rgba(0,255,255,0.05)' }
+        ];
+
+        let html = '';
+
+        html += `
+            <rect x="0" y="0" width="1000" height="700" fill="url(#cube_bg)"></rect>
+            <defs>
+                <linearGradient id="cube_bg" x1="0" x2="1" y1="0" y2="0">
+                    <stop offset="0%" stop-color="#191b22"></stop>
+                    <stop offset="100%" stop-color="#1b1d24"></stop>
+                </linearGradient>
+            </defs>
+        `;
+
+        const faceItems = faces.map(face => {
+            const rotatedDepth =
+                face.points.reduce((sum, key) => sum + rotatePoint(pts[key]).z, 0) / face.points.length;
+            return { ...face, depth: rotatedDepth };
+        }).sort((a, b) => a.depth - b.depth);
+
+        for (const face of faceItems) {
+            const d = face.points.map((key, i) => {
+                const p = proj[key];
+                return `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`;
+            }).join(' ') + ' Z';
+
+            html += `
+                <path d="${d}"
+                      fill="${face.color}"
+                      stroke="rgba(255,255,255,0.06)"
+                      stroke-width="1"></path>
+            `;
+        }
+
+        const edgeItems = edges.map(([a, b]) => {
+            const depth = (rotatePoint(pts[a]).z + rotatePoint(pts[b]).z) * 0.5;
+            return { a, b, depth };
+        }).sort((a, b) => a.depth - b.depth);
+
+        for (const e of edgeItems) {
+            html += lineSVG(proj[e.a], proj[e.b], 'rgba(255,255,255,0.22)', 1.5);
+        }
+
+        const axisColor = 'rgba(180, 180, 180, 0.85)';
+
+        html += arrowSVG(proj.O, proj.R, axisColor, 2);
+        html += arrowSVG(proj.O, proj.G, axisColor, 2);
+        html += arrowSVG(proj.O, proj.B, axisColor, 2);
+
+        const rLabel = axisLabelPos(proj.O, proj.R, 16);
+        const gLabel = axisLabelPos(proj.O, proj.G, 16);
+        const bLabel = axisLabelPos(proj.O, proj.B, 16);
+        const wLabel = axisLabelPos(proj.O, proj.RGB, 16);
+
+        html += pointMarkerSVG(proj.O, '#000', '#9a9a9a', 1.5, 5);
+        html += pointMarkerSVG(proj.R, '#f00', '#9a9a9a', 1.5, 4.5);
+        html += pointMarkerSVG(proj.G, '#0f0', '#9a9a9a', 1.5, 4.5);
+        html += pointMarkerSVG(proj.B, '#00f', '#9a9a9a', 1.5, 4.5);
+        html += pointMarkerSVG(proj.RGB, '#fff', '#9a9a9a', 1.5, 4.5);
+
+        html += textSVG(proj.O, 'K', '#bbbbbb', -10, 10, 12, 'end');
+        html += textSVG(rLabel, 'R', '#ff6c6c', 0, 0, 14);
+        html += textSVG(gLabel, 'G', '#76ff76', 0, 0, 14);
+        html += textSVG(bLabel, 'B', '#7aa6ff', 0, 0, 14);
+        html += textSVG(wLabel, 'W', '#f5f5f5', 0, 0, 13);
+
+        const c0 = rgbString(0, 0, 0);
+        const c1 = rgbString(rgb.r, 0, 0);
+        const c2 = rgbString(rgb.r, rgb.g, 0);
+        const c3 = rgbString(rgb.r, rgb.g, rgb.b);
+
+        html += `
+            <defs>
+                ${gradientLineDef('mix_grad_01', pp.p0, pp.p1, c0, c1)}
+                ${gradientLineDef('mix_grad_12', pp.p1, pp.p2, c1, c2)}
+                ${gradientLineDef('mix_grad_23', pp.p2, pp.p3, c2, c3)}
+                ${gradientLineDef('mix_grad_direct', pp.p0, pp.p3, c0, c3)}
+
+                ${gradientLineDef('guide_grad_r', gp.r0, gp.r1, guideColors.r0, guideColors.r1)}
+                ${gradientLineDef('guide_grad_g', gp.g0, gp.g1, guideColors.g0, guideColors.g1)}
+                ${gradientLineDef('guide_grad_b', gp.b0, gp.b1, guideColors.b0, guideColors.b1)}
+            </defs>
+        `;
+
+        html += lineSVG(pp.p0, pp.p3, 'url(#mix_grad_direct)', 2.5, 0.55, '6 6');
+        html += lineSVG(pp.p0, pp.p1, 'url(#mix_grad_01)', 4.5, 0.98);
+        html += lineSVG(pp.p1, pp.p2, 'url(#mix_grad_12)', 4.5, 0.98);
+        html += lineSVG(pp.p2, pp.p3, 'url(#mix_grad_23)', 4.5, 0.98);
+
+        html += circleSVG(pp.p1, 4, c1, 'rgba(255,255,255,0.35)', 1);
+        html += circleSVG(pp.p2, 4, c2, 'rgba(255,255,255,0.35)', 1);
+
+        html += lineSVG(gp.r0, gp.r1, 'url(#guide_grad_r)', 2.5, 0.75, '7 7');
+        html += lineSVG(gp.g0, gp.g1, 'url(#guide_grad_g)', 2.5, 0.75, '7 7');
+        html += lineSVG(gp.b0, gp.b1, 'url(#guide_grad_b)', 2.5, 0.75, '7 7');
+
+        // endpoints
+        html += guidePointSVG(gp.r0, guideColors.r0);
+        html += guidePointSVG(gp.r1, guideColors.r1);
+
+        html += guidePointSVG(gp.g0, guideColors.g0);
+        html += guidePointSVG(gp.g1, guideColors.g1);
+
+        html += guidePointSVG(gp.b0, guideColors.b0);
+        html += guidePointSVG(gp.b1, guideColors.b1);
+        
+        html += circleSVG(pp.p3, 7, c3, 'white', 1.75);
+
+        // html += textSVG(pp.p3, rgbString(rgb.r, rgb.g, rgb.b), '#f0f0f0', 12, -14, 12, 'start');
+
+        svg.innerHTML = html;
+    }
+
+    function pointerPos(ev) {
+        if (ev.touches && ev.touches.length) {
+            return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
+        }
+        return { x: ev.clientX, y: ev.clientY };
+    }
+
+    function touchDistance(ev) {
+        if (!ev.touches || ev.touches.length < 2) return null;
+        const dx = ev.touches[1].clientX - ev.touches[0].clientX;
+        const dy = ev.touches[1].clientY - ev.touches[0].clientY;
+        return Math.hypot(dx, dy);
+    }
+
+    function touchDistance(ev) {
+        if (!ev.touches || ev.touches.length < 2) return null;
+        const dx = ev.touches[1].clientX - ev.touches[0].clientX;
+        const dy = ev.touches[1].clientY - ev.touches[0].clientY;
+        return Math.hypot(dx, dy);
+    }
+
+    function onCubeWheel(ev) {
+        ev.preventDefault();
+
+        const zoomFactor = Math.exp(-ev.deltaY * 0.0015);
+        cubeState.zoom = clamp(
+            cubeState.zoom * zoomFactor,
+            cubeState.minZoom,
+            cubeState.maxZoom
+        );
+
+        drawRGBCube();
+    }
+
+    function beginCubeDrag(ev) {
+        ev.preventDefault();
+
+        if (ev.touches && ev.touches.length === 2) {
+            cubeState.dragging = false;
+            cubeState.pinchDistance = touchDistance(ev);
+            document.getElementById('cube_view').classList.remove('dragging');
+            return;
+        }
+
+        const p = pointerPos(ev);
+        cubeState.dragging = true;
+        cubeState.lastX = p.x;
+        cubeState.lastY = p.y;
+        cubeState.pinchDistance = null;
+        document.getElementById('cube_view').classList.add('dragging');
+    }
+
+    function moveCubeDrag(ev) {
+        if (ev.touches && ev.touches.length === 2) {
+            ev.preventDefault();
+
+            const d = touchDistance(ev);
+            if (d && cubeState.pinchDistance) {
+                const ratio = d / cubeState.pinchDistance;
+                cubeState.zoom = clamp(
+                    cubeState.zoom * ratio,
+                    cubeState.minZoom,
+                    cubeState.maxZoom
+                );
+                drawRGBCube();
+            }
+            cubeState.pinchDistance = d;
+            return;
+        }
+
+        if (!cubeState.dragging) return;
+        ev.preventDefault();
+
+        const p = pointerPos(ev);
+        const dx = p.x - cubeState.lastX;
+        const dy = p.y - cubeState.lastY;
+
+        cubeState.lastX = p.x;
+        cubeState.lastY = p.y;
+
+        cubeState.yaw += dx * 0.005;
+        cubeState.pitch += dy * 0.005;
+
+        const maxPitch = Math.PI * 0.49;
+        cubeState.pitch = Math.max(-maxPitch, Math.min(maxPitch, cubeState.pitch));
+
+        drawRGBCube();
+    }
+
+    function endCubeDrag() {
+        cubeState.dragging = false;
+        cubeState.pinchDistance = null;
+        document.getElementById('cube_view').classList.remove('dragging');
+    }
+
+    function setupCubeInteraction() {
+        const cubeView = document.getElementById('cube_view');
+
+        cubeView.addEventListener('mousedown', beginCubeDrag);
+        window.addEventListener('mousemove', moveCubeDrag);
+        window.addEventListener('mouseup', endCubeDrag);
+
+        cubeView.addEventListener('touchstart', beginCubeDrag, { passive: false });
+        window.addEventListener('touchmove', moveCubeDrag, { passive: false });
+        window.addEventListener('touchend', endCubeDrag);
+        window.addEventListener('touchcancel', endCubeDrag);
+
+        cubeView.addEventListener('wheel', onCubeWheel, { passive: false });
+    }
+
+    window.addEventListener('resize', handleResize);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        buildControls();
+        setupCubeInteraction();
+        handleResize();
+        updateCircleGeometry();
+        updatePatches();
+    });
+</script>
