@@ -201,6 +201,32 @@ export class VectorSpaceCube {
         this.state.previewAnimFrame = requestAnimationFrame(step);
     }
 
+    #midLabelPos(a, b, offset = 14) {
+        const mx = (a.x + b.x) * 0.5;
+        const my = (a.y + b.y) * 0.5;
+
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const len = Math.hypot(dx, dy) || 1;
+
+        // perpendicular
+        const px = -dy / len;
+        const py = dx / len;
+
+        return {
+            x: mx + px * offset,
+            y: my + py * offset
+        };
+    }
+
+    #formatCoeff(name, v) {
+        return `${name} = ${v.toFixed(2)}`;
+    }
+
+    #segmentLength2D(a, b) {
+        return Math.hypot(b.x - a.x, b.y - a.y);
+    }
+
     #sub(a, b) {
         return {
             x: a.x - b.x,
@@ -1146,10 +1172,193 @@ export class VectorSpaceCube {
     `;
     }
 
-    #textSVG(p, str, color, dx = 0, dy = 0, size = 14, anchor = 'middle', halo = 'rgba(20,22,28,0.9)', haloWidth = 4) {
+    #parseColorToRgb(color) {
+        const value = String(color || '').trim();
+
+        if (value.startsWith('#')) {
+            let hex = value.slice(1);
+            if (hex.length === 3) {
+                hex = hex.split('').map((c) => c + c).join('');
+            }
+            if (hex.length >= 6) {
+                return {
+                    r: parseInt(hex.slice(0, 2), 16) || 0,
+                    g: parseInt(hex.slice(2, 4), 16) || 0,
+                    b: parseInt(hex.slice(4, 6), 16) || 0
+                };
+            }
+        }
+
+        const rgbMatch = value.match(
+            /rgba?\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)(?:\s*,\s*([0-9.]+))?\s*\)/i
+        );
+        if (rgbMatch) {
+            return {
+                r: Number(rgbMatch[1]) || 0,
+                g: Number(rgbMatch[2]) || 0,
+                b: Number(rgbMatch[3]) || 0
+            };
+        }
+
+        return { r: 255, g: 255, b: 255 };
+    }
+
+    #relativeLuminance(color) {
+        const { r, g, b } = this.#parseColorToRgb(color);
+
+        const toLinear = (v) => {
+            const s = v / 255;
+            return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        };
+
+        const R = toLinear(r);
+        const G = toLinear(g);
+        const B = toLinear(b);
+
+        return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+    }
+
+    #textStyleForColor(color) {
+        const lum = this.#relativeLuminance(color);
+
+        // Dark colors: use white fill, colored outline
+        if (lum < 0.15) {
+            return {
+                fill: '#ffffff',
+                halo: color,
+                haloWidth: 4.5
+            };
+        }
+
+        // Bright colors: use colored fill, dark outline
+        return {
+            fill: color,
+            halo: 'rgba(20,22,28,0.92)',
+            haloWidth: 4
+        };
+    }
+
+    #textHaloForColor(color) {
+        const lum = this.#relativeLuminance(color);
+
+        // darker label colors need a lighter outline
+        if (lum < 0.33) {
+            return 'rgba(255,255,255,0.92)';
+        }
+
+        return 'rgba(20,22,28,0.9)';
+    }
+
+    #textSVG(
+        p,
+        str,
+        color,
+        dx = 0,
+        dy = 0,
+        size = 14,
+        anchor = 'middle',
+        halo = null,
+        haloWidth = null
+    ) {
+        const style = this.#textStyleForColor(color);
+        const resolvedFill = style.fill;
+        const resolvedHalo = halo ?? style.halo;
+        const resolvedHaloWidth = haloWidth ?? style.haloWidth;
+
         return `
-      <text x="${p.x + dx}" y="${p.y + dy}" fill="${color}" stroke="${halo}" stroke-width="${haloWidth}" paint-order="stroke fill" stroke-linejoin="round" font-size="${size}" font-family="sans-serif" font-weight="600" text-anchor="${anchor}" dominant-baseline="middle" style="user-select:none">${str}</text>
+      <text x="${p.x + dx}" y="${p.y + dy}" fill="${resolvedFill}" stroke="${resolvedHalo}" stroke-width="${resolvedHaloWidth}" paint-order="stroke fill" stroke-linejoin="round" font-size="${size}" font-family="sans-serif" font-weight="600" text-anchor="${anchor}" dominant-baseline="middle" style="user-select:none">${str}</text>
     `;
+    }
+
+    #textOnSegmentSVG(
+        a,
+        b,
+        str,
+        color,
+        {
+            offset = 14,
+            size = 13,
+            halo = null,
+            haloWidth = null,
+            anchor = 'middle',
+            weight = '700',
+            side = 1
+        } = {}
+    ) {
+        const mx = (a.x + b.x) * 0.5;
+        const my = (a.y + b.y) * 0.5;
+
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const len = Math.hypot(dx, dy) || 1;
+
+        const px = -dy / len;
+        const py = dx / len;
+
+        const x = mx + px * offset * side;
+        const y = my + py * offset * side;
+
+        let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        if (angle > 90 || angle < -90) {
+            angle += 180;
+        }
+
+        const style = this.#textStyleForColor(color);
+        const resolvedFill = style.fill;
+        const resolvedHalo = halo ?? style.halo;
+        const resolvedHaloWidth = haloWidth ?? style.haloWidth;
+
+        return `
+      <text
+        x="${x}"
+        y="${y}"
+        fill="${resolvedFill}"
+        stroke="${resolvedHalo}"
+        stroke-width="${resolvedHaloWidth}"
+        paint-order="stroke fill"
+        stroke-linejoin="round"
+        font-size="${size}"
+        font-family="sans-serif"
+        font-weight="${weight}"
+        text-anchor="${anchor}"
+        dominant-baseline="middle"
+        transform="rotate(${angle} ${x} ${y})"
+        style="user-select:none"
+      >${str}</text>
+    `;
+    }
+
+    #distance2D(a, b) {
+        return Math.hypot(a.x - b.x, a.y - b.y);
+    }
+
+    #midOffsetPoint(a, b, offset = 14, side = 1) {
+        const mx = (a.x + b.x) * 0.5;
+        const my = (a.y + b.y) * 0.5;
+
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const len = Math.hypot(dx, dy) || 1;
+
+        const px = -dy / len;
+        const py = dx / len;
+
+        return {
+            x: mx + px * offset * side,
+            y: my + py * offset * side
+        };
+    }
+
+    #bestLabelSideForSegment(a, b, avoidPoints = [], offset = 14) {
+        const pPos = this.#midOffsetPoint(a, b, offset, 1);
+        const pNeg = this.#midOffsetPoint(a, b, offset, -1);
+
+        const clearance = (p) => {
+            if (!avoidPoints.length) return Infinity;
+            return Math.min(...avoidPoints.map((q) => this.#distance2D(p, q)));
+        };
+
+        return clearance(pPos) >= clearance(pNeg) ? 1 : -1;
     }
 
     #gradientLineDef(id, a, b, colorA, colorB) {
@@ -1526,9 +1735,48 @@ export class VectorSpaceCube {
             );
         }
 
+        const helperLinesPreviewHtml = [
+            this.#lineSVG(gp.a0, gp.a1, 'url(#guide_grad_a)', 2.5, 0.75, '4 4'),
+            this.#lineSVG(gp.b0, gp.b1, 'url(#guide_grad_b)', 2.5, 0.75, '4 4'),
+            this.#lineSVG(gp.c0, gp.c1, 'url(#guide_grad_c)', 2.5, 0.75, '4 4')
+        ].join('');
+
+        const helperPointsPreviewHtml = [
+            this.#guidePointSVG(gp.a0, this.#worldColorHex(guides.a0)),
+            this.#guidePointSVG(gp.a1, this.#worldColorHex(guides.a1)),
+            this.#guidePointSVG(gp.b0, this.#worldColorHex(guides.b0)),
+            this.#guidePointSVG(gp.b1, this.#worldColorHex(guides.b1)),
+            this.#guidePointSVG(gp.c0, this.#worldColorHex(guides.c0)),
+            this.#guidePointSVG(gp.c1, this.#worldColorHex(guides.c1))
+        ].join('');
+
+        const helperTicksPreviewHtml = (() => {
+            const parts = [];
+
+            const pushTicks = (a, b) => {
+                const dx = b.x - a.x;
+                const dy = b.y - a.y;
+                const len = Math.hypot(dx, dy) || 1;
+                const dirX = dx / len;
+                const dirY = dy / len;
+
+                parts.push(this.#guideTickSVG(a, dirX, dirY));
+                parts.push(this.#guideTickSVG(b, dirX, dirY));
+            };
+
+            pushTicks(gp.a0, gp.a1);
+            pushTicks(gp.b0, gp.b1);
+            pushTicks(gp.c0, gp.c1);
+
+            return parts.join('');
+        })();
+
         html += `
   <g opacity="${previewOpacity}">
     ${previewHtml}
+    ${helperLinesPreviewHtml}
+    ${helperPointsPreviewHtml}
+    ${helperTicksPreviewHtml}
   </g>
 `;
 
@@ -1549,35 +1797,54 @@ export class VectorSpaceCube {
         html += this.#gradientArrowSVG(pp.p1, pp.p2, c1, c2, 4.5, 25, 15, 0.98, 'mix_arrow_12');
         html += this.#gradientArrowSVG(pp.p2, pp.p3, c2, c3, 4.5, 25, 15, 0.98, 'mix_arrow_23');
 
+        const coeffTextA = this.#formatCoeff(this.basis[0].name, current.x);
+        const coeffTextB = this.#formatCoeff(this.basis[1].name, current.y);
+        const coeffTextC = this.#formatCoeff(this.basis[2].name, current.z);
+
+        const offsetA = 18;
+        const offsetB = 18;
+        const offsetC = 18;
+
+        const sideA = this.#bestLabelSideForSegment(pp.p0, pp.p1, [aLabel], offsetA);
+        const sideB = this.#bestLabelSideForSegment(pp.p1, pp.p2, [bLabel], offsetB);
+        const sideC = this.#bestLabelSideForSegment(pp.p2, pp.p3, [cLabel], offsetC);
+
+        if (this.#segmentLength2D(pp.p0, pp.p1) > 36) {
+            html += this.#textOnSegmentSVG(
+                pp.p0,
+                pp.p1,
+                coeffTextA,
+                this.basis[0].color,
+                { offset: offsetA, size: 13, side: sideA }
+            );
+        }
+
+        if (this.#segmentLength2D(pp.p1, pp.p2) > 36) {
+            html += this.#textOnSegmentSVG(
+                pp.p1,
+                pp.p2,
+                coeffTextB,
+                this.basis[1].color,
+                { offset: offsetB, size: 13, side: sideB }
+            );
+        }
+
+        if (this.#segmentLength2D(pp.p2, pp.p3) > 36) {
+            html += this.#textOnSegmentSVG(
+                pp.p2,
+                pp.p3,
+                coeffTextC,
+                this.basis[2].color,
+                { offset: offsetC, size: 13, side: sideC }
+            );
+        }
+
         html += this.#circleSVG(pp.p1, 4, c1, 'rgba(255,255,255,0.35)', 1);
         html += this.#circleSVG(pp.p2, 4, c2, 'rgba(255,255,255,0.35)', 1);
-
-        html += this.#lineSVG(gp.a0, gp.a1, 'url(#guide_grad_a)', 2.5, 0.75, '4 4');
-        html += this.#lineSVG(gp.b0, gp.b1, 'url(#guide_grad_b)', 2.5, 0.75, '4 4');
-        html += this.#lineSVG(gp.c0, gp.c1, 'url(#guide_grad_c)', 2.5, 0.75, '4.4');
 
         if (dragPlaneFillSvg) {
             html += dragPlaneFillSvg;
         }
-
-        html += this.#guidePointSVG(gp.a0, this.#worldColorHex(guides.a0));
-        html += this.#guidePointSVG(gp.a1, this.#worldColorHex(guides.a1));
-        html += this.#guidePointSVG(gp.b0, this.#worldColorHex(guides.b0));
-        html += this.#guidePointSVG(gp.b1, this.#worldColorHex(guides.b1));
-        html += this.#guidePointSVG(gp.c0, this.#worldColorHex(guides.c0));
-        html += this.#guidePointSVG(gp.c1, this.#worldColorHex(guides.c1));
-
-        const addTicks = (a, b) => {
-            const dx = b.x - a.x;
-            const dy = b.y - a.y;
-            const len = Math.hypot(dx, dy) || 1;
-            html += this.#guideTickSVG(a, dx / len, dy / len);
-            html += this.#guideTickSVG(b, dx / len, dy / len);
-        };
-
-        addTicks(gp.a0, gp.a1);
-        addTicks(gp.b0, gp.b1);
-        addTicks(gp.c0, gp.c1);
 
         const previewRingRadius = this.state.previewTriggerRadius;
         const pointRingRadius = 16;
