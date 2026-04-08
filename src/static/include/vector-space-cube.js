@@ -41,6 +41,8 @@ export class VectorSpaceCube {
             pointDragPlane: null,
             dragPlaneDef: null,
             dragPlaneCache: null,
+            dragPointerAnchor: null,
+            dragWorldAnchor: null,
             ...(state || {})
         };
 
@@ -419,7 +421,7 @@ export class VectorSpaceCube {
         ];
     }
 
-    #screenPointToWorldOnPlane(screenX, screenY, anchorWorld, def, iterations = 4) {
+    #svgPointToWorldOnPlane(screenX, screenY, anchorWorld, def, iterations = 4) {
         const { width, height, scale, bounds } = this.#getMetrics();
         const center = bounds.center;
 
@@ -508,7 +510,7 @@ export class VectorSpaceCube {
                 const sx = bounds.minX + (px + 0.5) / scale;
                 const idx = (py * canvasWidth + px) * 4;
 
-                const world = this.#screenPointToWorldOnPlane(sx, sy, anchorWorld, def);
+                const world = this.#svgPointToWorldOnPlane(sx, sy, anchorWorld, def);
                 const p2 = this.#planeTo2D(world, def.origin, u, v);
 
                 if (!this.#pointInPolygon2D(p2, poly2D)) {
@@ -665,31 +667,43 @@ export class VectorSpaceCube {
         return best || point;
     }
 
-    #dragValueInAlignedPlane(dxScreen, dyScreen) {
+    #dragValueInAlignedPlaneToPointer(pointerSvgX, pointerSvgY) {
         const def = this.#getDragPlaneWorldDefinition();
         if (!def) return;
 
+        const anchorPointer = this.state.dragPointerAnchor;
+        const anchorWorld = this.state.dragWorldAnchor;
+        if (!anchorPointer || !anchorWorld) return;
+
+        const anchorPointerSvg = this.#clientToSvgPoint(anchorPointer.x, anchorPointer.y);
+        if (!anchorPointerSvg) return;
+
+        const pointAtDragStart = this.#projectPoint(
+            anchorWorld,
+            this.#getMetrics().width,
+            this.#getMetrics().height,
+            this.#getMetrics().scale,
+            this.#getMetrics().bounds.center
+        );
+
+        const grabOffsetX = anchorPointerSvg.x - pointAtDragStart.x;
+        const grabOffsetY = anchorPointerSvg.y - pointAtDragStart.y;
+
+        const targetWorld = this.#svgPointToWorldOnPlane(
+            pointerSvgX - grabOffsetX,
+            pointerSvgY - grabOffsetY,
+            anchorWorld,
+            def
+        );
+
         const { u, v } = this.#planeFrame(def);
-        const currentWorld = this.#currentWorldPoint();
-
-        const deriv = this.#screenDerivativesForWorldVectors(currentWorld, u, v);
-        const [du, dv] = this.#solve2x2(
-            deriv.a.x, deriv.b.x,
-            deriv.a.y, deriv.b.y,
-            dxScreen, dyScreen
-        );
-
-        const tentativeWorld = this.#add(
-            currentWorld,
-            this.#add(this.#scale(u, du), this.#scale(v, dv))
-        );
 
         const polygon3D = this.#dragPlaneIntersectionPolygon();
         if (polygon3D.length < 3) return;
 
         const poly2D = polygon3D.map((p) => this.#planeTo2D(p, def.origin, u, v));
-        const tentative2D = this.#planeTo2D(tentativeWorld, def.origin, u, v);
-        const clamped2D = this.#clampPointToPolygon2D(tentative2D, poly2D);
+        const target2D = this.#planeTo2D(targetWorld, def.origin, u, v);
+        const clamped2D = this.#clampPointToPolygon2D(target2D, poly2D);
         const clampedWorld = this.#planeFrom2D(clamped2D, def.origin, u, v);
 
         this.value = this.#worldToBasisCoefficients(clampedWorld);
@@ -1015,6 +1029,13 @@ export class VectorSpaceCube {
         const ctm = this.svg.getScreenCTM();
         if (!ctm) return null;
         const pt = new DOMPoint(x, y).matrixTransform(ctm);
+        return { x: pt.x, y: pt.y };
+    }
+
+    #clientToSvgPoint(clientX, clientY) {
+        const ctm = this.svg.getScreenCTM();
+        if (!ctm) return null;
+        const pt = new DOMPoint(clientX, clientY).matrixTransform(ctm.inverse());
         return { x: pt.x, y: pt.y };
     }
 
@@ -1666,6 +1687,8 @@ export class VectorSpaceCube {
                 this.state.pointDragPlane = this.#bestScreenAlignedPlane();
                 this.state.dragPlaneDef = this.#makeDragPlaneWorldDefinition(this.state.pointDragPlane);
                 this.state.dragPlaneCache = this.#buildDragPlaneCache();
+                this.state.dragPointerAnchor = { x: p.x, y: p.y };
+                this.state.dragWorldAnchor = this.#currentWorldPoint();
                 this.#setLabel(`drag point (${this.state.pointDragPlane})`);
                 this.draw();
                 return;
@@ -1712,10 +1735,11 @@ export class VectorSpaceCube {
             this.state.lastY = p.y;
 
             if (this.state.mode === 'point') {
-                this.#dragValueInAlignedPlane(dx, dy);
+                const svgPt = this.#clientToSvgPoint(p.x, p.y);
+                if (!svgPt) return;
+                this.#dragValueInAlignedPlaneToPointer(svgPt.x, svgPt.y);
                 return;
             }
-
             if (this.state.mode === 'rotate') {
                 this.state.yaw += dx * 0.005;
                 this.state.pitch += dy * 0.005;
@@ -1732,6 +1756,8 @@ export class VectorSpaceCube {
             this.state.pointDragPlane = null;
             this.state.dragPlaneDef = null;
             this.state.dragPlaneCache = null;
+            this.state.dragPointerAnchor = null;
+            this.state.dragWorldAnchor = null;
             this.state.pointHover = ev ? this.#isPointerNearValuePoint(ev) : false;
             this.svg.style.cursor = this.state.pointHover ? 'pointer' : 'grab';
             this.#setLabel(this.state.pointHover ? 'drag point' : 'drag to rotate');
