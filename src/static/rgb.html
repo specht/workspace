@@ -234,7 +234,7 @@
     </div>
 
     <div class="result_container" id="cube_view">
-        <div class="panel-title">3D RGB space</div>
+        <div class="panel-title" id="cube_title">3D color location</div>
         <svg id="cube_svg" viewBox="0 0 1000 700"
             preserveAspectRatio="xMidYMid meet"></svg>
         <div class="result-label" id="cube_label">drag to rotate</div>
@@ -252,9 +252,9 @@
     let cube = null;
 
     let rgb = {
-        r: 137,
-        g: 175,
-        b: 202,
+        r: 60,
+        g: 1230,
+        b: 64,
     };
 
     let colorMode = 'RGB';
@@ -266,9 +266,9 @@
             { name: 'B', color: '#238acc', vector: { x: 0, y: 0, z: 1 } }
         ],
         YCbCr: [
-            { name: 'Y',  color: '#f4f1de', vector: { x:  0.299000, y:  0.587000, z:  0.114000 } },
-            { name: 'Cb', color: '#4cc9f0', vector: { x: -0.168736, y: -0.331264, z:  0.500000 } },
-            { name: 'Cr', color: '#f72585', vector: { x:  0.500000, y: -0.418688, z: -0.081312 } }
+            { name: 'Y',   color: '#f4f1de', vector: { x: 1.000000, y: 1.000000, z: 1.000000 } },
+            { name: 'Cb′', color: '#4cc9f0', vector: { x: 0.000000, y: -0.344136, z: 1.772000 } },
+            { name: 'Cr′', color: '#f72585', vector: { x: 1.402000, y: -0.714136, z: 0.000000 } }
         ],
         XYZ: [
             { name: 'X', color: '#ff6b6b', vector: { x: 0.4124, y: 0.3576, z: 0.1805 } },
@@ -304,6 +304,7 @@
         if (label) {
             label.textContent = `drag to rotate · ${colorMode}`;
         }
+        updateCubeTitle();
     }
 
     function updateCircleGeometry() {
@@ -394,8 +395,7 @@
         setPatchColor('patch_rgb', colors.rgb);
 
         document.getElementById('color_swatch').style.background = colors.rgb;
-        document.getElementById('color_label').textContent = `${colors.rgb} · ${colorMode}`;
-
+        updateCoordinateLabel();
         syncCubeToRGB();
     }
 
@@ -534,21 +534,69 @@
             },
             basis: BASES[colorMode],
             state: {
-                yaw: -0.65,
+                yaw: -0.45,
                 pitch: 0.50,
                 zoom: 1.0,
                 minZoom: 0.55,
                 maxZoom: 2.5,
                 pointGrabRadius: 18
             },
-            onChange: ({ value }) => {
+            onChange: ({ value, coefficients }) => {
                 rgb.r = clampByte(value.x * 255);
                 rgb.g = clampByte(value.y * 255);
                 rgb.b = clampByte(value.z * 255);
                 syncKnobsToRGB();
                 updatePatches();
+                updateCoordinateLabel(coefficients);
             }
         });
+    }
+
+    function formatFixed(v) {
+        return (Math.abs(v) < 1e-9 ? 0 : v).toFixed(2).replace('-', '−');
+    }
+
+    function updateCoordinateLabel(coeffs = null) {
+        const rgbText = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+
+        if (!cube) {
+            document.getElementById('color_label').textContent = rgbText;
+            return;
+        }
+
+        const c = coeffs || cube.getCoefficients();
+
+        if (colorMode === 'RGB') {
+            document.getElementById('color_label').textContent =
+                `${rgbText} · R=${formatFixed(c.x)} G=${formatFixed(c.y)} B=${formatFixed(c.z)}`;
+            return;
+        }
+
+        if (colorMode === 'YCbCr') {
+            const Y = c.x;
+            const CbPrime = c.y;
+            const CrPrime = c.z;
+
+            const CbJpeg = CbPrime + 0.5;
+            const CrJpeg = CrPrime + 0.5;
+
+            const Y8  = clampByte(Y * 255);
+            const Cb8 = clampByte((CbPrime + 0.5) * 255);
+            const Cr8 = clampByte((CrPrime + 0.5) * 255);
+
+            document.getElementById('color_label').textContent =
+                `${rgbText} · Y=${formatFixed(Y)} Cb′=${formatFixed(CbPrime)} Cr′=${formatFixed(CrPrime)} · bytes(${Y8}, ${Cb8}, ${Cr8})`;        }
+    }
+
+    function updateCubeTitle() {
+        const el = document.getElementById('cube_title');
+        if (!el) return;
+
+        if (colorMode === 'RGB') {
+            el.textContent = '3D RGB space';
+        } else if (colorMode === 'YCbCr') {
+            el.textContent = 'Same RGB color, described in YCbCr';
+        }
     }
 
     window.addEventListener('resize', handleResize);
@@ -561,5 +609,6 @@
         updatePatches();
         applyCubeBasis();
         syncModeKnob();
+        updateCubeTitle();
     });
 </script>
