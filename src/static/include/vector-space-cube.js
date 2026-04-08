@@ -10,7 +10,11 @@ export class VectorSpaceCube {
             background = { from: '#191b22', to: '#1b1d24' },
             showDragPlaneFill = true,
             dragPlaneFillResolution = 220,
-            dragPlaneFillOpacity = 0.5
+            dragPlaneFillOpacity = 0.5,
+            showDragPlaneGrid = true,
+            dragPlaneGridStep = 0.1,
+            dragPlaneGridOpacity = 0.18,
+            dragPlaneGridMajorOpacity = 0.34
         } = options;
 
         if (!svg) {
@@ -24,6 +28,10 @@ export class VectorSpaceCube {
         this.showDragPlaneFill = showDragPlaneFill;
         this.dragPlaneFillResolution = dragPlaneFillResolution;
         this.dragPlaneFillOpacity = dragPlaneFillOpacity;
+        this.showDragPlaneGrid = showDragPlaneGrid;
+        this.dragPlaneGridStep = dragPlaneGridStep;
+        this.dragPlaneGridOpacity = dragPlaneGridOpacity;
+        this.dragPlaneGridMajorOpacity = dragPlaneGridMajorOpacity;
 
         this.state = {
             yaw: -0.65,
@@ -209,7 +217,6 @@ export class VectorSpaceCube {
         const dy = b.y - a.y;
         const len = Math.hypot(dx, dy) || 1;
 
-        // perpendicular
         const px = -dy / len;
         const py = dx / len;
 
@@ -316,6 +323,7 @@ export class VectorSpaceCube {
         );
 
         const fillSvg = this.#dragPlaneFillSVG(polygon3D, polygonProj, def);
+        const gridSvg = this.#dragPlaneGridSVG(polygon3D, def, width, height, scale, center);
 
         return {
             width,
@@ -327,6 +335,7 @@ export class VectorSpaceCube {
             polygon3D,
             polygonProj,
             fillSvg,
+            gridSvg,
             outlineSvg: this.#polygonOutlineSVG(
                 polygonProj,
                 'rgba(255,255,255,0.7)',
@@ -488,7 +497,6 @@ export class VectorSpaceCube {
 
         const { u, v } = this.#planeFrame(def);
 
-        // Start from the previous linear approximation around the anchor.
         let world = anchorWorld;
 
         {
@@ -507,7 +515,6 @@ export class VectorSpaceCube {
             );
         }
 
-        // Refine using local Jacobians evaluated at the current estimate.
         for (let i = 0; i < iterations; i += 1) {
             const proj = this.#projectPoint(world, width, height, scale, center);
             const errX = screenX - proj.x;
@@ -602,6 +609,154 @@ export class VectorSpaceCube {
 </defs>
 <image x="${bounds.minX}" y="${bounds.minY}" width="${bounds.width}" height="${bounds.height}" href="${this.#escapeAttr(dataUrl)}" preserveAspectRatio="none" clip-path="url(#${clipId})" opacity="1" />
     `;
+    }
+
+    #planeBasisCoordinates(point, def) {
+        const d = this.#sub(point, def.origin);
+        const a = def.span1;
+        const b = def.span2;
+
+        const aa = this.#dot(a, a);
+        const ab = this.#dot(a, b);
+        const bb = this.#dot(b, b);
+        const da = this.#dot(d, a);
+        const db = this.#dot(d, b);
+
+        const [u, v] = this.#solve2x2(aa, ab, ab, bb, da, db);
+        return { x: u, y: v };
+    }
+
+    #planePointFromBasisCoordinates(p, def) {
+        return this.#add(
+            def.origin,
+            this.#add(this.#scale(def.span1, p.x), this.#scale(def.span2, p.y))
+        );
+    }
+
+    #uniquePoints2D(points, eps = 1e-6) {
+        const out = [];
+        for (const p of points) {
+            const exists = out.some((q) =>
+                Math.abs(p.x - q.x) < eps &&
+                Math.abs(p.y - q.y) < eps
+            );
+            if (!exists) out.push(p);
+        }
+        return out;
+    }
+
+    #clipPolygonLineInBasisCoords(polygon2D, axis, value, eps = 1e-8) {
+        const intersections = [];
+
+        for (let i = 0; i < polygon2D.length; i += 1) {
+            const a = polygon2D[i];
+            const b = polygon2D[(i + 1) % polygon2D.length];
+
+            const av = axis === 'x' ? a.x : a.y;
+            const bv = axis === 'x' ? b.x : b.y;
+
+            if (Math.abs(av - value) < eps && Math.abs(bv - value) < eps) {
+                intersections.push(a, b);
+                continue;
+            }
+
+            if ((av < value && bv < value) || (av > value && bv > value)) {
+                continue;
+            }
+
+            const denom = bv - av;
+            if (Math.abs(denom) < eps) continue;
+
+            const t = (value - av) / denom;
+            if (t < -eps || t > 1 + eps) continue;
+
+            intersections.push({
+                x: a.x + (b.x - a.x) * t,
+                y: a.y + (b.y - a.y) * t
+            });
+        }
+
+        const uniq = this.#uniquePoints2D(intersections);
+        if (uniq.length < 2) return null;
+
+        uniq.sort((p1, p2) => (axis === 'x' ? p1.y - p2.y : p1.x - p2.x));
+
+        return [uniq[0], uniq[uniq.length - 1]];
+    }
+
+    #dragPlaneGridSVG(polygon3D, def, width, height, scale, center) {
+        if (!this.showDragPlaneGrid) return '';
+        if (!def || polygon3D.length < 3) return '';
+
+        const step = Math.max(1e-4, Number(this.dragPlaneGridStep) || 0.1);
+        const polygonBasis = polygon3D.map((p) => this.#planeBasisCoordinates(p, def));
+        if (polygonBasis.length < 3) return '';
+
+        let minX = Infinity;
+        let maxX = -Infinity;
+        let minY = Infinity;
+        let maxY = -Infinity;
+
+        for (const p of polygonBasis) {
+            minX = Math.min(minX, p.x);
+            maxX = Math.max(maxX, p.x);
+            minY = Math.min(minY, p.y);
+            maxY = Math.max(maxY, p.y);
+        }
+
+        const eps = 1e-8;
+
+        const firstGridAtOrAbove = (v) => Math.ceil((v - eps) / step) * step;
+        const lastGridAtOrBelow = (v) => Math.floor((v + eps) / step) * step;
+
+        const xStart = firstGridAtOrAbove(minX);
+        const xEnd = lastGridAtOrBelow(maxX);
+        const yStart = firstGridAtOrAbove(minY);
+        const yEnd = lastGridAtOrBelow(maxY);
+
+        const isMajorLine = (t) => {
+            const k = Math.round(t / step);
+            return k % 5 === 0; // every 0.5 if step = 0.1
+        };
+
+        let html = '<g>';
+
+        for (let x = xStart; x <= xEnd + eps; x += step) {
+            const seg = this.#clipPolygonLineInBasisCoords(polygonBasis, 'x', x);
+            if (!seg) continue;
+
+            const isMajor = isMajorLine(x);
+            const opacity = isMajor ? this.dragPlaneGridMajorOpacity : this.dragPlaneGridOpacity;
+            const strokeWidth = isMajor ? 1.35 : 0.8;
+            const dash = isMajor ? '' : '3 5';
+
+            const w0 = this.#planePointFromBasisCoordinates(seg[0], def);
+            const w1 = this.#planePointFromBasisCoordinates(seg[1], def);
+            const p0 = this.#projectPoint(w0, width, height, scale, center);
+            const p1 = this.#projectPoint(w1, width, height, scale, center);
+
+            html += this.#lineSVG(p0, p1, 'rgba(255,255,255,0.9)', strokeWidth, opacity, dash);
+        }
+
+        for (let y = yStart; y <= yEnd + eps; y += step) {
+            const seg = this.#clipPolygonLineInBasisCoords(polygonBasis, 'y', y);
+            if (!seg) continue;
+
+            const isMajor = isMajorLine(y);
+            const opacity = isMajor ? this.dragPlaneGridMajorOpacity : this.dragPlaneGridOpacity;
+            const strokeWidth = isMajor ? 1.35 : 0.8;
+            const dash = isMajor ? '' : '3 5';
+
+            const w0 = this.#planePointFromBasisCoordinates(seg[0], def);
+            const w1 = this.#planePointFromBasisCoordinates(seg[1], def);
+            const p0 = this.#projectPoint(w0, width, height, scale, center);
+            const p1 = this.#projectPoint(w1, width, height, scale, center);
+
+            html += this.#lineSVG(p0, p1, 'rgba(255,255,255,0.9)', strokeWidth, opacity, dash);
+        }
+
+        html += '</g>';
+        return html;
     }
 
     #screenDerivativesForWorldVectors(worldPoint, vecA, vecB, epsilon = 1e-3) {
@@ -1221,7 +1376,6 @@ export class VectorSpaceCube {
     #textStyleForColor(color) {
         const lum = this.#relativeLuminance(color);
 
-        // Dark colors: use white fill, colored outline
         if (lum < 0.15) {
             return {
                 fill: '#ffffff',
@@ -1230,7 +1384,6 @@ export class VectorSpaceCube {
             };
         }
 
-        // Bright colors: use colored fill, dark outline
         return {
             fill: color,
             halo: 'rgba(20,22,28,0.92)',
@@ -1241,7 +1394,6 @@ export class VectorSpaceCube {
     #textHaloForColor(color) {
         const lum = this.#relativeLuminance(color);
 
-        // darker label colors need a lighter outline
         if (lum < 0.33) {
             return 'rgba(255,255,255,0.92)';
         }
@@ -1378,11 +1530,9 @@ export class VectorSpaceCube {
         const ux = dx / len;
         const uy = dy / len;
 
-        // Perpendicular
         const px = -uy;
         const py = ux;
 
-        // Pick a consistent side that tends to move text away from the center
         const sign = 1;
 
         return {
@@ -1553,6 +1703,7 @@ export class VectorSpaceCube {
         let dragPlanePoly3 = [];
         let dragPlaneProj = [];
         let dragPlaneFillSvg = '';
+        let dragPlaneGridSvg = '';
         let dragPlaneOutlineSvg = '';
         const dragPlaneDef = this.#getDragPlaneWorldDefinition();
         const dragPlaneCache = this.state.dragPlaneCache;
@@ -1572,12 +1723,14 @@ export class VectorSpaceCube {
             dragPlanePoly3 = dragPlaneCache.polygon3D;
             dragPlaneProj = dragPlaneCache.polygonProj;
             dragPlaneFillSvg = dragPlaneCache.fillSvg;
+            dragPlaneGridSvg = dragPlaneCache.gridSvg;
             dragPlaneOutlineSvg = dragPlaneCache.outlineSvg;
         } else if (this.state.mode === 'point' && this.state.pointDragPlane && dragPlaneDef) {
             this.state.dragPlaneCache = this.#buildDragPlaneCache();
             dragPlanePoly3 = this.state.dragPlaneCache?.polygon3D || [];
             dragPlaneProj = this.state.dragPlaneCache?.polygonProj || [];
             dragPlaneFillSvg = this.state.dragPlaneCache?.fillSvg || '';
+            dragPlaneGridSvg = this.state.dragPlaneCache?.gridSvg || '';
             dragPlaneOutlineSvg = this.state.dragPlaneCache?.outlineSvg || '';
         }
         const proj = {};
@@ -1653,10 +1806,6 @@ export class VectorSpaceCube {
                 depth: (this.#rotatePoint(corners[a], center).z + this.#rotatePoint(corners[b], center).z) * 0.5
             }))
             .sort((a, b) => a.depth - b.depth);
-
-        const worldMin = this.#mixToWorld({ x: 0, y: 0, z: 0 });
-        const worldA = this.#mixToWorld({ x: current.x, y: 0, z: 0 });
-        const worldAB = this.#mixToWorld({ x: current.x, y: current.y, z: 0 });
 
         const valueColor = this.#basisMixColor(current);
         const c0 = this.#basisMixColor({ x: 0, y: 0, z: 0 });
@@ -1846,7 +1995,10 @@ export class VectorSpaceCube {
             html += dragPlaneFillSvg;
         }
 
-        const previewRingRadius = this.state.previewTriggerRadius;
+        if (dragPlaneGridSvg) {
+            html += dragPlaneGridSvg;
+        }
+
         const pointRingRadius = 16;
 
         html += `
