@@ -1580,6 +1580,62 @@ export class VectorSpaceCube {
     `;
     }
 
+    #guideArrowWithLabelSVG(
+        a,
+        b,
+        colorStart,
+        colorEnd,
+        label,
+        {
+            opacity = 0.72,
+            width = 2.4,
+            dash = '4 4',
+            headLen = 14,
+            headWidth = 8,
+            startPad = 4,
+            endPad = 4,
+            labelOffset = 16,
+            labelSize = 12
+        } = {}
+    ) {
+        const gradId = `guide_arrow_${Math.random().toString(36).slice(2)}`;
+
+        const arrow = this.#gradientArrowSVG(
+            a,
+            b,
+            colorStart,
+            colorEnd,
+            width,
+            headLen,
+            headWidth,
+            opacity,
+            gradId,
+            startPad,
+            endPad
+        );
+
+        const labelSvg = this.#textOnSegmentSVG(
+            a,
+            b,
+            label,
+            colorEnd,
+            {
+                offset: labelOffset,
+                size: labelSize,
+                weight: '700'
+            }
+        );
+
+        // dashed underlay + gradient arrow + label
+        return `
+      <g opacity="${opacity}">
+        ${this.#lineSVG(a, b, `url(#${gradId})`, Math.max(1, width - 0.6), 0.55, dash)}
+      </g>
+      ${arrow}
+      ${labelSvg}
+    `;
+    }
+
     #arrowSVG(
         a,
         b,
@@ -1899,6 +1955,15 @@ export class VectorSpaceCube {
             html += this.#lineSVG(proj[edge.a], proj[edge.b], 'rgba(255,255,255,0.22)', 1.5);
         }
 
+        // Active drag plane should sit behind guide arrows, labels, and handle.
+        if (dragPlaneFillSvg) {
+            html += `<g id="drag_plane_fill_layer">${dragPlaneFillSvg}</g>`;
+        }
+
+        if (dragPlaneGridSvg) {
+            html += `<g id="drag_plane_grid_layer">${dragPlaneGridSvg}</g>`;
+        }
+
         const axisColor = 'rgba(190,190,190,0.88)';
         html += this.#arrowSVG(proj.O, basisProj.A, axisColor, 2, 20, 8, 1, 0, 6);
         html += this.#arrowSVG(proj.O, basisProj.B, axisColor, 2, 20, 8, 1, 0, 6);
@@ -1958,14 +2023,53 @@ export class VectorSpaceCube {
             ? (planeGuideKeys[activePreviewPlane] || [])
             : [];
 
+        const directedGuideEndpoints = (k0, k1, basisVector) => {
+            const p0 = guides[k0];
+            const p1 = guides[k1];
+            return this.#dot(this.#sub(p1, p0), basisVector) >= 0
+                ? { start: gp[k0], end: gp[k1], worldStart: p0, worldEnd: p1 }
+                : { start: gp[k1], end: gp[k0], worldStart: p1, worldEnd: p0 };
+        };
+
+        const guideMeta = {
+            a: {
+                label: `Δ${basisA.name}`,
+                ...directedGuideEndpoints('a0', 'a1', basisA.vector)
+            },
+            b: {
+                label: `Δ${basisB.name}`,
+                ...directedGuideEndpoints('b0', 'b1', basisB.vector)
+            },
+            c: {
+                label: `Δ${basisC.name}`,
+                ...directedGuideEndpoints('c0', 'c1', basisC.vector)
+            }
+        };
+
+        const guideIsActive = this.state.mode === 'point';
+        const guideOpacity = guideIsActive ? 0.94 : 0.7;
+        const guideWidth = guideIsActive ? 3.4 : 2.4;
+        const guideLabelSize = guideIsActive ? 13 : 12;
+
         const helperLinesPreviewHtml = visibleGuideKeys.map((key) => {
-            return this.#lineSVG(
-                gp[`${key}0`],
-                gp[`${key}1`],
-                `url(#guide_grad_${key})`,
-                2.5,
-                0.75,
-                '4 4'
+            const meta = guideMeta[key];
+            return this.#guideArrowWithLabelSVG(
+                meta.start,
+                meta.end,
+                this.#worldColorHex(meta.worldStart),
+                this.#worldColorHex(meta.worldEnd),
+                meta.label,
+                {
+                    opacity: guideOpacity,
+                    width: guideWidth,
+                    dash: '4 4',
+                    headLen: guideIsActive ? 16 : 14,
+                    headWidth: guideIsActive ? 10 : 8,
+                    startPad: 5,
+                    endPad: 5,
+                    labelOffset: 18,
+                    labelSize: guideLabelSize
+                }
             );
         }).join('');
 
@@ -2069,14 +2173,6 @@ export class VectorSpaceCube {
         html += this.#circleSVG(pp.p1, 4, c1, 'rgba(255,255,255,0.35)', 1);
         html += this.#circleSVG(pp.p2, 4, c2, 'rgba(255,255,255,0.35)', 1);
 
-        if (dragPlaneFillSvg) {
-            html += dragPlaneFillSvg;
-        }
-
-        if (dragPlaneGridSvg) {
-            html += dragPlaneGridSvg;
-        }
-
         const pointRingRadius = 16;
 
         html += `
@@ -2098,7 +2194,7 @@ export class VectorSpaceCube {
 `;
 
         if (dragPlaneOutlineSvg) {
-            html += dragPlaneOutlineSvg;
+            html += `<g id="drag_plane_outline_layer">${dragPlaneOutlineSvg}</g>`;
         }
 
         this.svg.innerHTML = html;
