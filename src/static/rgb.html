@@ -1,4 +1,3 @@
-```html
 <link rel="stylesheet" href="include/knob.css">
 <script src="include/knob.js"></script>
 
@@ -115,7 +114,8 @@
     <div class="result_container" id="result_view">
         <div class="panel-title">2D additive overlap</div>
 
-        <svg id="mix_svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet">
+        <svg id="mix_svg" viewBox="0 0 1000 700"
+            preserveAspectRatio="xMidYMid meet">
             <defs>
                 <circle id="geom_r" cx="430" cy="300" r="150"></circle>
                 <circle id="geom_g" cx="570" cy="300" r="150"></circle>
@@ -152,9 +152,9 @@
                     <use href="#geom_g" fill="white"></use>
                     <use href="#geom_b" fill="black"></use>
                 </mask>
-                <clipPath id="clip_rg">
+                <clippath id="clip_rg">
                     <use href="#geom_r"></use>
-                </clipPath>
+                </clippath>
 
                 <mask id="mask_rb_only" maskUnits="userSpaceOnUse">
                     <rect width="1000" height="700" fill="black"></rect>
@@ -162,9 +162,9 @@
                     <use href="#geom_b" fill="white"></use>
                     <use href="#geom_g" fill="black"></use>
                 </mask>
-                <clipPath id="clip_rb">
+                <clippath id="clip_rb">
                     <use href="#geom_r"></use>
-                </clipPath>
+                </clippath>
 
                 <mask id="mask_gb_only" maskUnits="userSpaceOnUse">
                     <rect width="1000" height="700" fill="black"></rect>
@@ -172,59 +172,59 @@
                     <use href="#geom_b" fill="white"></use>
                     <use href="#geom_r" fill="black"></use>
                 </mask>
-                <clipPath id="clip_gb">
+                <clippath id="clip_gb">
                     <use href="#geom_g"></use>
-                </clipPath>
+                </clippath>
 
-                <clipPath id="clip_rgb_center_a">
+                <clippath id="clip_rgb_center_a">
                     <use href="#geom_r"></use>
-                </clipPath>
-                <clipPath id="clip_rgb_center_b">
+                </clippath>
+                <clippath id="clip_rgb_center_b">
                     <use href="#geom_g"></use>
-                </clipPath>
+                </clippath>
             </defs>
 
             <use id="patch_r_only"
-                 href="#geom_r_fill"
-                 mask="url(#mask_r_only)"
-                 fill="rgb(255,0,0)"></use>
+                href="#geom_r_fill"
+                mask="url(#mask_r_only)"
+                fill="rgb(255,0,0)"></use>
 
             <use id="patch_g_only"
-                 href="#geom_g_fill"
-                 mask="url(#mask_g_only)"
-                 fill="rgb(0,255,0)"></use>
+                href="#geom_g_fill"
+                mask="url(#mask_g_only)"
+                fill="rgb(0,255,0)"></use>
 
             <use id="patch_b_only"
-                 href="#geom_b_fill"
-                 mask="url(#mask_b_only)"
-                 fill="rgb(0,0,255)"></use>
+                href="#geom_b_fill"
+                mask="url(#mask_b_only)"
+                fill="rgb(0,0,255)"></use>
 
             <g clip-path="url(#clip_rg)">
                 <use id="patch_rg_only"
-                     href="#geom_g_fill"
-                     mask="url(#mask_rg_only)"
-                     fill="rgb(255,255,0)"></use>
+                    href="#geom_g_fill"
+                    mask="url(#mask_rg_only)"
+                    fill="rgb(255,255,0)"></use>
             </g>
 
             <g clip-path="url(#clip_rb)">
                 <use id="patch_rb_only"
-                     href="#geom_b_fill"
-                     mask="url(#mask_rb_only)"
-                     fill="rgb(255,0,255)"></use>
+                    href="#geom_b_fill"
+                    mask="url(#mask_rb_only)"
+                    fill="rgb(255,0,255)"></use>
             </g>
 
             <g clip-path="url(#clip_gb)">
                 <use id="patch_gb_only"
-                     href="#geom_b_fill"
-                     mask="url(#mask_gb_only)"
-                     fill="rgb(0,255,255)"></use>
+                    href="#geom_b_fill"
+                    mask="url(#mask_gb_only)"
+                    fill="rgb(0,255,255)"></use>
             </g>
 
             <g clip-path="url(#clip_rgb_center_a)">
                 <g clip-path="url(#clip_rgb_center_b)">
                     <use id="patch_rgb"
-                         href="#geom_b_fill"
-                         fill="rgb(255,255,255)"></use>
+                        href="#geom_b_fill"
+                        fill="rgb(255,255,255)"></use>
                 </g>
             </g>
         </svg>
@@ -235,7 +235,8 @@
 
     <div class="result_container" id="cube_view">
         <div class="panel-title">3D RGB space</div>
-        <svg id="cube_svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet"></svg>
+        <svg id="cube_svg" viewBox="0 0 1000 700"
+            preserveAspectRatio="xMidYMid meet"></svg>
         <div class="result-label" id="cube_label">drag to rotate</div>
     </div>
 </div>
@@ -256,6 +257,28 @@
         b: 0xc2,
     };
 
+    let colorMode = 'RGB';
+
+    const BASES = {
+        RGB: [
+            { name: 'R', color: '#ff0000', vector: { x: 1, y: 0, z: 0 } },
+            { name: 'G', color: '#00ff00', vector: { x: 0, y: 1, z: 0 } },
+            { name: 'B', color: '#0000ff', vector: { x: 0, y: 0, z: 1 } }
+        ],
+        YCbCr: [
+            { name: 'Y',  color: '#f4f1de', vector: { x:  0.299000, y:  0.587000, z:  0.114000 } },
+            { name: 'Cb', color: '#4cc9f0', vector: { x: -0.168736, y: -0.331264, z:  0.500000 } },
+            { name: 'Cr', color: '#f72585', vector: { x:  0.500000, y: -0.418688, z: -0.081312 } }
+        ],
+        XYZ: [
+            { name: 'X', color: '#ff6b6b', vector: { x: 0.4124, y: 0.3576, z: 0.1805 } },
+            { name: 'Y', color: '#f7d154', vector: { x: 0.2126, y: 0.7152, z: 0.0722 } },
+            { name: 'Z', color: '#5da9ff', vector: { x: 0.0193, y: 0.1192, z: 0.9505 } }
+        ]
+    };
+
+    const MODE_ORDER = ['RGB', 'YCbCr'];
+
     let circleRadius = 150;
     let circleSpread = 40;
 
@@ -263,6 +286,7 @@
         'R': '#ea2830',
         'G': '#73d216',
         'B': '#238acc',
+        'M': '#d9d9d9'
     };
 
     function clampByte(v) {
@@ -271,6 +295,15 @@
 
     function rgbString(r, g, b) {
         return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function applyCubeBasis() {
+        if (!cube) return;
+        cube.setBasis(BASES[colorMode]);
+        const label = document.getElementById('cube_label');
+        if (label) {
+            label.textContent = `drag to rotate · ${colorMode}`;
+        }
     }
 
     function updateCircleGeometry() {
@@ -307,6 +340,11 @@
         if (knobs[0]) knobs[0].setValue(rgb.r);
         if (knobs[1]) knobs[1].setValue(rgb.g);
         if (knobs[2]) knobs[2].setValue(rgb.b);
+    }
+
+    function syncModeKnob() {
+        if (!knobs[3]) return;
+        knobs[3].setValue(MODE_ORDER.indexOf(colorMode));
     }
 
     function syncCubeToRGB() {
@@ -356,7 +394,7 @@
         setPatchColor('patch_rgb', colors.rgb);
 
         document.getElementById('color_swatch').style.background = colors.rgb;
-        document.getElementById('color_label').textContent = colors.rgb;
+        document.getElementById('color_label').textContent = `${colors.rgb} · ${colorMode}`;
 
         syncCubeToRGB();
     }
@@ -424,7 +462,21 @@
                 indicatorStyle: 'arc',
                 ticks: [
                     { value: 0, major: true, label: '0' },
+                    { value: 16 },
+                    { value: 32 },
+                    { value: 48 },
+                    { value: 64, major: true, label: '64' },
+                    { value: 80 },
+                    { value: 96 },
+                    { value: 112 },
                     { value: 128, major: true, label: '128' },
+                    { value: 144 },
+                    { value: 160 },
+                    { value: 176 },
+                    { value: 192, major: true, label: '192' },
+                    { value: 208 },
+                    { value: 224 },
+                    { value: 240 },
                     { value: 255, major: true, label: '255' }
                 ],
                 formatValue: (v) => v,
@@ -436,6 +488,39 @@
 
             knobs.push(knob);
         }
+
+        const modeHolder = document.createElement('div');
+        knobStack.appendChild(modeHolder);
+
+        const modeKnob = new FancyKnob(modeHolder, {
+            label: 'Mode',
+            min: 0,
+            max: MODE_ORDER.length - 1,
+            step: 1,
+            value: MODE_ORDER.indexOf(colorMode),
+            color: baseColors.M,
+            centerLabel: '',
+            size: 76,
+            horizontal: false,
+            indicatorStyle: 'dot',
+            sweepStart: -30,
+            sweepEnd: 30,
+            ticks: MODE_ORDER.map((mode, i) => ({
+                value: i,
+                major: true,
+                label: mode
+            })),
+            formatValue: (v) => MODE_ORDER[Math.round(v)] ?? MODE_ORDER[0],
+            onInput: (v) => {
+                const nextMode = MODE_ORDER[Math.round(v)] ?? MODE_ORDER[0];
+                if (nextMode === colorMode) return;
+                colorMode = nextMode;
+                applyCubeBasis();
+                syncModeKnob();
+            }
+        });
+
+        knobs.push(modeKnob);
     }
 
     function buildCube() {
@@ -447,14 +532,7 @@
                 y: rgb.g / 255,
                 z: rgb.b / 255
             },
-            basis: [
-                // { name: 'R', color: '#ff0000', vector: { x: 1, y: 0, z: 0 } },
-                // { name: 'G', color: '#00ff00', vector: { x: 0, y: 1, z: 0 } },
-                // { name: 'B', color: '#0000ff', vector: { x: 0, y: 0, z: 1 } },
-                { name: 'X', color: '#ff0000', vector: { x: 0.299, y: 0.587, z: 0.114 } },
-                { name: 'Y', color: '#00ff00', vector: { x: -0.168736, y: -0.331264, z: 0.5 } },
-                { name: 'Z', color: '#0000ff', vector: { x: 0.5, y: -0.418688, z: -0.081312 } }
-            ],
+            basis: BASES[colorMode],
             state: {
                 yaw: -0.65,
                 pitch: 0.50,
@@ -481,6 +559,7 @@
         handleResize();
         updateCircleGeometry();
         updatePatches();
+        applyCubeBasis();
+        syncModeKnob();
     });
 </script>
-```

@@ -37,12 +37,17 @@ export class VectorSpaceCube {
             pinchDistance: null,
             mode: null,
             pointGrabRadius: 18,
+            previewTriggerRadius: 256,
             pointHover: false,
+            previewNear: false,
             pointDragPlane: null,
             dragPlaneDef: null,
             dragPlaneCache: null,
             dragPointerAnchor: null,
             dragWorldAnchor: null,
+            previewOpacity: 0,
+            previewTargetOpacity: 0,
+            previewAnimFrame: null,
             ...(state || {})
         };
 
@@ -73,6 +78,11 @@ export class VectorSpaceCube {
 
     destroy() {
         if (!this.boundHandlers) return;
+
+        if (this.state.previewAnimFrame != null) {
+            cancelAnimationFrame(this.state.previewAnimFrame);
+            this.state.previewAnimFrame = null;
+        }
 
         const { onMouseDown, onMouseMove, onMouseUp, onTouchStart, onTouchMove, onTouchEnd, onWheel } = this.boundHandlers;
         this.svg.removeEventListener('mousedown', onMouseDown);
@@ -158,6 +168,37 @@ export class VectorSpaceCube {
     resize() {
         this.#invalidateDragPlaneCache();
         this.draw();
+    }
+
+    #setPreviewVisible(visible) {
+        const target = visible ? 0.85 : 0;
+        if (Math.abs(this.state.previewTargetOpacity - target) < 1e-4) return;
+
+        this.state.previewTargetOpacity = target;
+        this.#startPreviewOpacityAnimation();
+    }
+
+    #startPreviewOpacityAnimation() {
+        if (this.state.previewAnimFrame != null) return;
+
+        const step = () => {
+            const current = this.state.previewOpacity;
+            const target = this.state.previewTargetOpacity;
+            const next = current + (target - current) * 0.22;
+
+            if (Math.abs(next - target) < 0.01) {
+                this.state.previewOpacity = target;
+                this.state.previewAnimFrame = null;
+                this.draw();
+                return;
+            }
+
+            this.state.previewOpacity = next;
+            this.draw();
+            this.state.previewAnimFrame = requestAnimationFrame(step);
+        };
+
+        this.state.previewAnimFrame = requestAnimationFrame(step);
     }
 
     #sub(a, b) {
@@ -376,14 +417,8 @@ export class VectorSpaceCube {
         if (!points.length) return '';
         const pts = points.map((p) => `${p.x},${p.y}`).join(' ');
         return `
-    <polygon
-      points="${pts}"
-      fill="${fill}"
-      stroke="${stroke}"
-      stroke-width="${width}"
-      ${dash ? `stroke-dasharray="${dash}"` : ''}
-      stroke-linejoin="round"
-    />
+    <polygon points="${pts}" fill="${fill}" stroke="${stroke}" stroke-width="${width}"
+      ${dash ? `stroke-dasharray="${dash}"` : ''} stroke-linejoin="round" />
   `;
     }
 
@@ -535,20 +570,11 @@ export class VectorSpaceCube {
 
         return `
       <defs>
-        <clipPath id="${clipId}">
-          <polygon points="${pts}" />
-        </clipPath>
-      </defs>
-      <image
-        x="${bounds.minX}"
-        y="${bounds.minY}"
-        width="${bounds.width}"
-        height="${bounds.height}"
-        href="${this.#escapeAttr(dataUrl)}"
-        preserveAspectRatio="none"
-        clip-path="url(#${clipId})"
-        opacity="1"
-      />
+<clipPath id="${clipId}">
+<polygon points="${pts}" />
+</clipPath>
+</defs>
+<image x="${bounds.minX}" y="${bounds.minY}" width="${bounds.width}" height="${bounds.height}" href="${this.#escapeAttr(dataUrl)}" preserveAspectRatio="none" clip-path="url(#${clipId})" opacity="1" />
     `;
     }
 
@@ -1053,12 +1079,20 @@ export class VectorSpaceCube {
         return Math.hypot(dx, dy);
     }
 
-    #isPointerNearValuePoint(ev) {
+    #isPointerNearProjectedValuePoint(ev, radius) {
         const p = this.#pointerPos(ev);
         const point = this.#projectedValuePoint();
         const screen = this.#svgClientPoint(point.x, point.y);
         if (!screen) return false;
-        return Math.hypot(p.x - screen.x, p.y - screen.y) <= this.state.pointGrabRadius;
+        return Math.hypot(p.x - screen.x, p.y - screen.y) <= radius;
+    }
+
+    #isPointerNearValuePoint(ev) {
+        return this.#isPointerNearProjectedValuePoint(ev, this.state.pointGrabRadius);
+    }
+
+    #isPointerNearPreviewTrigger(ev) {
+        return this.#isPointerNearProjectedValuePoint(ev, this.state.previewTriggerRadius);
     }
 
     #dot(a, b) {
@@ -1101,65 +1135,50 @@ export class VectorSpaceCube {
 
     #lineSVG(a, b, stroke, width, opacity = 1, dash = '') {
         return `
-      <line
-        x1="${a.x}" y1="${a.y}"
-        x2="${b.x}" y2="${b.y}"
-        stroke="${stroke}"
-        stroke-width="${width}"
-        stroke-opacity="${opacity}"
-        ${dash ? `stroke-dasharray="${dash}"` : ''}
-        stroke-linecap="round"
-      />
+      <line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${stroke}" stroke-width="${width}" stroke-opacity="${opacity}"
+        ${dash ? `stroke-dasharray="${dash}"` : ''} stroke-linecap="round" />
     `;
     }
 
     #circleSVG(p, r, fill, stroke = 'none', strokeWidth = 0, opacity = 1) {
         return `
-      <circle
-        cx="${p.x}" cy="${p.y}" r="${r}"
-        fill="${fill}"
-        stroke="${stroke}"
-        stroke-width="${strokeWidth}"
-        fill-opacity="${opacity}"
-      />
+      <circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" fill-opacity="${opacity}" />
     `;
     }
 
-    #textSVG(p, str, color, dx = 0, dy = 0, size = 14, anchor = 'middle') {
+    #textSVG(p, str, color, dx = 0, dy = 0, size = 14, anchor = 'middle', halo = 'rgba(20,22,28,0.9)', haloWidth = 4) {
         return `
-      <text
-        x="${p.x + dx}"
-        y="${p.y + dy}"
-        fill="${color}"
-        font-size="${size}"
-        font-family="sans-serif"
-        text-anchor="${anchor}"
-        dominant-baseline="middle"
-        style="user-select:none"
-      >${str}</text>
+      <text x="${p.x + dx}" y="${p.y + dy}" fill="${color}" stroke="${halo}" stroke-width="${haloWidth}" paint-order="stroke fill" stroke-linejoin="round" font-size="${size}" font-family="sans-serif" font-weight="600" text-anchor="${anchor}" dominant-baseline="middle" style="user-select:none">${str}</text>
     `;
     }
 
     #gradientLineDef(id, a, b, colorA, colorB) {
         return `
-      <linearGradient id="${id}"
-                      gradientUnits="userSpaceOnUse"
-                      x1="${a.x}" y1="${a.y}"
-                      x2="${b.x}" y2="${b.y}">
-        <stop offset="0%" stop-color="${colorA}"></stop>
-        <stop offset="100%" stop-color="${colorB}"></stop>
-      </linearGradient>
+      <linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}">
+<stop offset="0%" stop-color="${colorA}"></stop>
+<stop offset="100%" stop-color="${colorB}"></stop>
+</linearGradient>
     `;
     }
 
-    #axisLabelPos(origin, end, distance = 18) {
+    #axisLabelPos(origin, end, distance = 18, side = 10) {
         const dx = end.x - origin.x;
         const dy = end.y - origin.y;
         const len = Math.hypot(dx, dy) || 1;
 
+        const ux = dx / len;
+        const uy = dy / len;
+
+        // Perpendicular
+        const px = -uy;
+        const py = ux;
+
+        // Pick a consistent side that tends to move text away from the center
+        const sign = 1;
+
         return {
-            x: end.x + (dx / len) * distance,
-            y: end.y + (dy / len) * distance
+            x: end.x + ux * distance + px * side * sign,
+            y: end.y + uy * distance + py * side * sign
         };
     }
 
@@ -1184,41 +1203,19 @@ export class VectorSpaceCube {
 
     #pointMarkerSVG(p, fill = '#000', stroke = '#bbb', strokeWidth = 1.5, r = 5) {
         return `
-      <circle
-        cx="${p.x}"
-        cy="${p.y}"
-        r="${r}"
-        fill="${fill}"
-        stroke="${stroke}"
-        stroke-width="${strokeWidth}"
-      />
+      <circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" />
     `;
     }
 
     #guidePointSVG(p, color) {
         return `
-      <circle
-        cx="${p.x}"
-        cy="${p.y}"
-        r="3.5"
-        fill="${color}"
-        fill-opacity="0.9"
-        stroke="rgba(255,255,255,0.35)"
-        stroke-width="1"
-      />
+      <circle cx="${p.x}" cy="${p.y}" r="3.5" fill="${color}" fill-opacity="0.9" stroke="rgba(255,255,255,0.35)" stroke-width="1" />
     `;
     }
 
     #guideTickSVG(p, dirX, dirY, size = 5) {
         return `
-      <line
-        x1="${p.x - dirY * size}"
-        y1="${p.y + dirX * size}"
-        x2="${p.x + dirY * size}"
-        y2="${p.y - dirX * size}"
-        stroke="rgba(255,255,255,0.25)"
-        stroke-width="1"
-      />
+      <line x1="${p.x - dirY * size}" y1="${p.y + dirX * size}" x2="${p.x + dirY * size}" y2="${p.y - dirX * size}" stroke="rgba(255,255,255,0.25)" stroke-width="1" />
     `;
     }
 
@@ -1246,18 +1243,9 @@ export class VectorSpaceCube {
 
         return `
       <g>
-        <line
-          x1="${a.x}" y1="${a.y}"
-          x2="${b.x}" y2="${b.y}"
-          stroke="${color}"
-          stroke-width="${width}"
-          stroke-linecap="round"
-        />
-        <polygon
-          points="${b.x},${b.y} ${left.x},${left.y} ${right.x},${right.y}"
-          fill="${color}"
-        />
-      </g>
+<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${color}" stroke-width="${width}" stroke-linecap="round" />
+<polygon points="${b.x},${b.y} ${left.x},${left.y} ${right.x},${right.y}" fill="${color}" />
+</g>
     `;
     }
 
@@ -1276,22 +1264,12 @@ export class VectorSpaceCube {
         if (len <= 14) {
             return `
         <defs>
-          <linearGradient id="${gradId}"
-                          gradientUnits="userSpaceOnUse"
-                          x1="${a.x}" y1="${a.y}"
-                          x2="${b.x}" y2="${b.y}">
-            <stop offset="0%" stop-color="${colorStart}"></stop>
-            <stop offset="100%" stop-color="${colorEnd}"></stop>
-          </linearGradient>
-        </defs>
-        <line
-          x1="${a.x}" y1="${a.y}"
-          x2="${b.x}" y2="${b.y}"
-          stroke="url(#${gradId})"
-          stroke-width="${width}"
-          stroke-linecap="round"
-          opacity="${opacity}"
-        />
+<linearGradient id="${gradId}" gradientUnits="userSpaceOnUse" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}">
+<stop offset="0%" stop-color="${colorStart}"></stop>
+<stop offset="100%" stop-color="${colorEnd}"></stop>
+</linearGradient>
+</defs>
+<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="url(#${gradId})" stroke-width="${width}" stroke-linecap="round" opacity="${opacity}" />
       `;
         }
 
@@ -1311,27 +1289,15 @@ export class VectorSpaceCube {
 
         return `
       <defs>
-        <linearGradient id="${gradId}"
-                        gradientUnits="userSpaceOnUse"
-                        x1="${a.x}" y1="${a.y}"
-                        x2="${b.x}" y2="${b.y}">
-          <stop offset="0%" stop-color="${colorStart}"></stop>
-          <stop offset="100%" stop-color="${colorEnd}"></stop>
-        </linearGradient>
-      </defs>
-      <g opacity="${opacity}">
-        <line
-          x1="${a.x}" y1="${a.y}"
-          x2="${shaftEnd.x}" y2="${shaftEnd.y}"
-          stroke="url(#${gradId})"
-          stroke-width="${width}"
-          stroke-linecap="round"
-        />
-        <polygon
-          points="${b.x},${b.y} ${left.x},${left.y} ${right.x},${right.y}"
-          fill="${colorEnd}"
-        />
-      </g>
+<linearGradient id="${gradId}" gradientUnits="userSpaceOnUse" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}">
+<stop offset="0%" stop-color="${colorStart}"></stop>
+<stop offset="100%" stop-color="${colorEnd}"></stop>
+</linearGradient>
+</defs>
+<g opacity="${opacity}">
+<line x1="${a.x}" y1="${a.y}" x2="${shaftEnd.x}" y2="${shaftEnd.y}" stroke="url(#${gradId})" stroke-width="${width}" stroke-linecap="round" />
+<polygon points="${b.x},${b.y} ${left.x},${left.y} ${right.x},${right.y}" fill="${colorEnd}" />
+</g>
     `;
     }
 
@@ -1500,12 +1466,12 @@ export class VectorSpaceCube {
 
         let html = `
             <rect x="0" y="0" width="${width}" height="${height}" fill="url(#cube_bg)"></rect>
-            <defs>
-                <linearGradient id="cube_bg" x1="0" x2="1" y1="0" y2="0">
-                <stop offset="0%" stop-color="${this.background.from}"></stop>
-                <stop offset="100%" stop-color="${this.background.to}"></stop>
-                </linearGradient>
-            </defs>
+<defs>
+<linearGradient id="cube_bg" x1="0" x2="1" y1="0" y2="0">
+<stop offset="0%" stop-color="${this.background.from}"></stop>
+<stop offset="100%" stop-color="${this.background.to}"></stop>
+</linearGradient>
+</defs>
             `;
 
         for (const face of faceItems) {
@@ -1529,9 +1495,9 @@ export class VectorSpaceCube {
         const farLabel = this.#axisLabelPos(proj.O, proj.ABC, 16);
 
         html += this.#pointMarkerSVG(proj.O, '#000', '#9a9a9a', 1.5, 5);
-        html += this.#pointMarkerSVG(proj.A, basisA.color, '#9a9a9a', 1.5, 4.5);
-        html += this.#pointMarkerSVG(proj.B, basisB.color, '#9a9a9a', 1.5, 4.5);
-        html += this.#pointMarkerSVG(proj.C, basisC.color, '#9a9a9a', 1.5, 4.5);
+        html += this.#pointMarkerSVG(proj.A, '#f00', '#9a9a9a', 1.5, 4.5);
+        html += this.#pointMarkerSVG(proj.B, '#0f0', '#9a9a9a', 1.5, 4.5);
+        html += this.#pointMarkerSVG(proj.C, '#00f', '#9a9a9a', 1.5, 4.5);
         html += this.#pointMarkerSVG(proj.ABC, '#fff', '#9a9a9a', 1.5, 4.5);
 
         html += this.#textSVG(oLabel, 'K', '#bbbbbb', 0, 0, 12);
@@ -1539,6 +1505,9 @@ export class VectorSpaceCube {
         html += this.#textSVG(bLabel, basisB.name, basisB.color, 0, 0, 14);
         html += this.#textSVG(cLabel, basisC.name, basisC.color, 0, 0, 14);
         html += this.#textSVG(farLabel, 'W', '#ffffff', 0, 0, 13);
+
+        const previewOpacity = this.state.previewOpacity;
+        let previewHtml = '';
 
         for (const poly of previewPolygons) {
             if (poly.poly2.length < 3) continue;
@@ -1548,7 +1517,7 @@ export class VectorSpaceCube {
 
             const style = this.#planeOutlineStyle(poly.name, principalPlane, false);
 
-            html += this.#polygonOutlineSVG(
+            previewHtml += this.#polygonOutlineSVG(
                 poly.poly2,
                 style.stroke,
                 style.width,
@@ -1556,6 +1525,12 @@ export class VectorSpaceCube {
                 style.dash
             );
         }
+
+        html += `
+  <g opacity="${previewOpacity}">
+    ${previewHtml}
+  </g>
+`;
 
         html += `
       <defs>
@@ -1604,16 +1579,26 @@ export class VectorSpaceCube {
         addTicks(gp.b0, gp.b1);
         addTicks(gp.c0, gp.c1);
 
+        const previewRingRadius = this.state.previewTriggerRadius;
+        const pointRingRadius = 16;
+
         html += `
-      <g id="result_point_handle">
-        ${this.state.pointHover || this.state.mode === 'point'
-                ? `<circle cx="${pointProj.x}" cy="${pointProj.y}" r="16" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.35)" stroke-width="1.25" />`
+  <g id="result_point_handle">
+    ${this.state.pointHover || this.state.mode === 'point'
+                ? `<circle
+                 cx="${pointProj.x}"
+                 cy="${pointProj.y}"
+                 r="${pointRingRadius}"
+                 fill="rgba(255,255,255,0.08)"
+                 stroke="rgba(255,255,255,0.35)"
+                 stroke-width="1.25"
+               />`
                 : ''
             }
-        <circle cx="${pointProj.x}" cy="${pointProj.y}" r="14" fill="transparent" stroke="transparent" />
-        <circle cx="${pointProj.x}" cy="${pointProj.y}" r="7" fill="${valueColor}" stroke="white" stroke-width="1.75" />
-      </g>
-    `;
+    <circle cx="${pointProj.x}" cy="${pointProj.y}" r="14" fill="transparent" stroke="transparent" />
+    <circle cx="${pointProj.x}" cy="${pointProj.y}" r="7" fill="${valueColor}" stroke="white" stroke-width="1.75" />
+  </g>
+`;
 
         if (dragPlaneOutlineSvg) {
             html += dragPlaneOutlineSvg;
@@ -1684,11 +1669,13 @@ export class VectorSpaceCube {
                 this.state.mode = 'point';
                 this.state.dragging = true;
                 this.state.pointHover = true;
+                this.state.previewNear = true;
                 this.state.pointDragPlane = this.#bestScreenAlignedPlane();
                 this.state.dragPlaneDef = this.#makeDragPlaneWorldDefinition(this.state.pointDragPlane);
                 this.state.dragPlaneCache = this.#buildDragPlaneCache();
                 this.state.dragPointerAnchor = { x: p.x, y: p.y };
                 this.state.dragWorldAnchor = this.#currentWorldPoint();
+                this.#setPreviewVisible(true);
                 this.#setLabel(`drag point (${this.state.pointDragPlane})`);
                 this.draw();
                 return;
@@ -1717,12 +1704,27 @@ export class VectorSpaceCube {
             if (!this.state.dragging) {
                 if (ev.type === 'mousemove') {
                     const hoveringPoint = this.#isPointerNearValuePoint(ev);
+                    const previewNear = this.#isPointerNearPreviewTrigger(ev);
+
+                    let needsDraw = false;
+
                     if (hoveringPoint !== this.state.pointHover) {
                         this.state.pointHover = hoveringPoint;
-                        this.draw();
+                        needsDraw = true;
                     }
+
+                    if (previewNear !== this.state.previewNear) {
+                        this.state.previewNear = previewNear;
+                        this.#setPreviewVisible(previewNear);
+                        needsDraw = true;
+                    }
+
                     this.svg.style.cursor = hoveringPoint ? 'pointer' : 'grab';
                     this.#setLabel(hoveringPoint ? 'drag point' : 'drag to rotate');
+
+                    if (needsDraw) {
+                        this.draw();
+                    }
                 }
                 return;
             }
@@ -1759,6 +1761,8 @@ export class VectorSpaceCube {
             this.state.dragPointerAnchor = null;
             this.state.dragWorldAnchor = null;
             this.state.pointHover = ev ? this.#isPointerNearValuePoint(ev) : false;
+            this.state.previewNear = ev ? this.#isPointerNearPreviewTrigger(ev) : false;
+            this.#setPreviewVisible(this.state.previewNear);
             this.svg.style.cursor = this.state.pointHover ? 'pointer' : 'grab';
             this.#setLabel(this.state.pointHover ? 'drag point' : 'drag to rotate');
             this.draw();
@@ -1787,34 +1791,3 @@ export class VectorSpaceCube {
         this.svg.addEventListener('mousemove', moveDrag);
     }
 }
-
-/*
-Usage:
-
-import { VectorSpaceCube } from './vector-space-cube.js';
-
-const cube = new VectorSpaceCube({
-  svg: document.getElementById('cube_svg'),
-  labelEl: document.getElementById('cube_label'),
-  value: { x: 0.49, y: 0.80, z: 0.76 },
-  basis: [
-    { name: 'R', color: '#ea2830', vector: { x: 1, y: 0, z: 0 } },
-    { name: 'G', color: '#73d216', vector: { x: 0, y: 1, z: 0 } },
-    { name: 'B', color: '#238acc', vector: { x: 0, y: 0, z: 1 } }
-  ],
-  onChange: ({ value, worldPoint }) => {
-    console.log('unit-space value', value);
-    console.log('world-space point', worldPoint);
-  }
-});
-
-window.addEventListener('resize', () => cube.resize());
-
-// Later:
-// cube.setValue({ x: 0.2, y: 0.4, z: 0.9 });
-// cube.setBasis([
-//   { name: 'U', color: '#ff8844', vector: { x: 1, y: 0.2, z: 0 } },
-//   { name: 'V', color: '#44ddaa', vector: { x: 0.1, y: 1, z: 0.2 } },
-//   { name: 'W', color: '#6699ff', vector: { x: 0, y: 0.25, z: 1 } }
-// ]);
-*/
