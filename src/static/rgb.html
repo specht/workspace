@@ -270,7 +270,10 @@
         dragging: false,
         lastX: 0,
         lastY: 0,
-        pinchDistance: null
+        pinchDistance: null,
+        mode: null,
+        pointGrabRadius: 18,
+        pointHover: false
     };
 
     function clampByte(v) {
@@ -283,6 +286,20 @@
 
     function rgbString(r, g, b) {
         return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function getSVGClientPoint(svg, x, y) {
+        const ctm = svg.getScreenCTM();
+        if (!ctm) return null;
+
+        const pt = new DOMPoint(x, y).matrixTransform(ctm);
+        return { x: pt.x, y: pt.y };
+    }
+
+    function getProjectedColorPointClient() {
+        const svg = document.getElementById('cube_svg');
+        const pp = projectedColorPoint();
+        return getSVGClientPoint(svg, pp.x, pp.y);
     }
 
     function updateCircleGeometry() {
@@ -474,6 +491,130 @@
             depth: pr.z
         };
     }
+
+    function rotateCenteredVector(v) {
+        const cy = Math.cos(cubeState.yaw);
+        const sy = Math.sin(cubeState.yaw);
+        const cp = Math.cos(cubeState.pitch);
+        const sp = Math.sin(cubeState.pitch);
+
+        // yaw around Y
+        let x1 = v.x * cy + v.z * sy;
+        let y1 = v.y;
+        let z1 = -v.x * sy + v.z * cy;
+
+        // pitch around X
+        let x2 = x1;
+        let y2 = y1 * cp - z1 * sp;
+        let z2 = y1 * sp + z1 * cp;
+
+        return { x: x2, y: y2, z: z2 };
+    }
+
+    function inverseRotateCenteredVector(v) {
+        // inverse of pitch then inverse of yaw
+        const cy = Math.cos(cubeState.yaw);
+        const sy = Math.sin(cubeState.yaw);
+        const cp = Math.cos(cubeState.pitch);
+        const sp = Math.sin(cubeState.pitch);
+
+        // inverse pitch around X
+        let x1 = v.x;
+        let y1 = v.y * cp + v.z * sp;
+        let z1 = -v.y * sp + v.z * cp;
+
+        // inverse yaw around Y
+        let x2 = x1 * cy - z1 * sy;
+        let y2 = y1;
+        let z2 = x1 * sy + z1 * cy;
+
+        return { x: x2, y: y2, z: z2 };
+    }
+
+    function syncKnobsToRGB() {
+        if (knobs[0]) knobs[0].setValue(rgb.r);
+        if (knobs[1]) knobs[1].setValue(rgb.g);
+        if (knobs[2]) knobs[2].setValue(rgb.b);
+    }
+
+    function getCubeViewMetrics() {
+        const svg = document.getElementById('cube_svg');
+        const viewBox = svg.viewBox.baseVal;
+        const width = viewBox && viewBox.width ? viewBox.width : 1000;
+        const height = viewBox && viewBox.height ? viewBox.height : 700;
+        const scale = Math.min(width, height) * 0.32 * cubeState.zoom;
+        return { width, height, scale };
+    }
+
+    function currentColorPointUnit() {
+        return {
+            x: rgb.r / 255,
+            y: rgb.g / 255,
+            z: rgb.b / 255
+        };
+    }
+
+    function projectedColorPoint() {
+        const { width, height, scale } = getCubeViewMetrics();
+        return projectPoint(currentColorPointUnit(), width, height, scale);
+    }
+
+    function isPointerNearColorPoint(ev) {
+        const p = pointerPos(ev);
+        const screenPt = getProjectedColorPointClient();
+        if (!screenPt) return false;
+
+        const dx = p.x - screenPt.x;
+        const dy = p.y - screenPt.y;
+
+        return Math.hypot(dx, dy) <= cubeState.pointGrabRadius;
+    }
+
+    function dragColorPointByScreenDelta(dxScreen, dyScreen) {
+        const camera = 4.2;
+        const { scale } = getCubeViewMetrics();
+
+        const p = currentColorPointUnit();
+
+        // center-relative cube coordinates
+        const centered = {
+            x: p.x - 0.5,
+            y: p.y - 0.5,
+            z: p.z - 0.5
+        };
+
+        // rotate into view space
+        const pr = rotateCenteredVector(centered);
+
+        // keep the dragged point on a screen-parallel plane => constant rotated z
+        const perspective = camera / (camera - pr.z);
+        const k = scale * perspective;
+
+        if (Math.abs(k) < 1e-6) return;
+
+        // convert screen delta to delta in rotated space
+        const deltaRot = {
+            x: dxScreen / k,
+            y: -dyScreen / k,
+            z: 0
+        };
+
+        // move back into cube space
+        const deltaCube = inverseRotateCenteredVector(deltaRot);
+
+        const next = {
+            x: clamp(p.x + deltaCube.x, 0, 1),
+            y: clamp(p.y + deltaCube.y, 0, 1),
+            z: clamp(p.z + deltaCube.z, 0, 1)
+        };
+
+        rgb.r = clampByte(next.x * 255);
+        rgb.g = clampByte(next.y * 255);
+        rgb.b = clampByte(next.z * 255);
+
+        syncKnobsToRGB();
+        updatePatches();
+    }    
 
     function lineSVG(a, b, stroke, width, opacity = 1, dash = '') {
         return `
@@ -829,8 +970,39 @@
         addTicks(gp.g0, gp.g1);
         addTicks(gp.b0, gp.b1);
 
-        html += circleSVG(pp.p3, 7, c3, 'white', 1.75);
-
+        html += `
+            <g id="result_point_handle">
+                ${
+                    cubeState.pointHover || cubeState.mode === 'point'
+                        ? `
+                            <circle
+                                cx="${pp.p3.x}"
+                                cy="${pp.p3.y}"
+                                r="16"
+                                fill="rgba(255,255,255,0.08)"
+                                stroke="rgba(255,255,255,0.35)"
+                                stroke-width="1.25"
+                            />
+                        `
+                        : ''
+                }
+                <circle
+                    cx="${pp.p3.x}"
+                    cy="${pp.p3.y}"
+                    r="14"
+                    fill="transparent"
+                    stroke="transparent"
+                />
+                <circle
+                    cx="${pp.p3.x}"
+                    cy="${pp.p3.y}"
+                    r="7"
+                    fill="${c3}"
+                    stroke="white"
+                    stroke-width="1.75"
+                />
+            </g>
+        `;
         svg.innerHTML = html;
     }
 
@@ -839,13 +1011,6 @@
             return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
         }
         return { x: ev.clientX, y: ev.clientY };
-    }
-
-    function touchDistance(ev) {
-        if (!ev.touches || ev.touches.length < 2) return null;
-        const dx = ev.touches[1].clientX - ev.touches[0].clientX;
-        const dy = ev.touches[1].clientY - ev.touches[0].clientY;
-        return Math.hypot(dx, dy);
     }
 
     function touchDistance(ev) {
@@ -872,18 +1037,36 @@
         ev.preventDefault();
 
         if (ev.touches && ev.touches.length === 2) {
+            cubeState.mode = null;
             cubeState.dragging = false;
             cubeState.pinchDistance = touchDistance(ev);
+            cubeState.pointHover = false;
             document.getElementById('cube_view').classList.remove('dragging');
+            document.getElementById('cube_label').textContent = 'pinch to zoom';
             return;
         }
 
         const p = pointerPos(ev);
-        cubeState.dragging = true;
         cubeState.lastX = p.x;
         cubeState.lastY = p.y;
         cubeState.pinchDistance = null;
+
+        if (isPointerNearColorPoint(ev)) {
+            cubeState.mode = 'point';
+            cubeState.dragging = true;
+            cubeState.pointHover = true;
+            document.getElementById('cube_view').classList.add('dragging');
+            document.getElementById('cube_label').textContent = 'drag point';
+            drawRGBCube();
+            return;
+        }
+
+        cubeState.mode = 'rotate';
+        cubeState.dragging = true;
+        cubeState.pointHover = false;
         document.getElementById('cube_view').classList.add('dragging');
+        document.getElementById('cube_label').textContent = 'drag to rotate';
+        drawRGBCube();
     }
 
     function moveCubeDrag(ev) {
@@ -914,19 +1097,59 @@
         cubeState.lastX = p.x;
         cubeState.lastY = p.y;
 
-        cubeState.yaw += dx * 0.005;
-        cubeState.pitch += dy * 0.005;
+        if (cubeState.mode === 'point') {
+            dragColorPointByScreenDelta(dx, dy);
+            return;
+        }
 
-        const maxPitch = Math.PI * 0.49;
-        cubeState.pitch = Math.max(-maxPitch, Math.min(maxPitch, cubeState.pitch));
+        if (cubeState.mode === 'rotate') {
+            cubeState.yaw += dx * 0.005;
+            cubeState.pitch += dy * 0.005;
+
+            const maxPitch = Math.PI * 0.49;
+            cubeState.pitch = Math.max(-maxPitch, Math.min(maxPitch, cubeState.pitch));
+
+            drawRGBCube();
+        }
+    }
+
+    function endCubeDrag(ev) {
+        cubeState.dragging = false;
+        cubeState.pinchDistance = null;
+        cubeState.mode = null;
+        document.getElementById('cube_view').classList.remove('dragging');
+
+        if (ev) {
+            cubeState.pointHover = isPointerNearColorPoint(ev);
+        } else {
+            cubeState.pointHover = false;
+        }
+
+        document.getElementById('cube_label').textContent =
+            cubeState.pointHover ? 'drag point' : 'drag to rotate';
 
         drawRGBCube();
     }
 
-    function endCubeDrag() {
-        cubeState.dragging = false;
-        cubeState.pinchDistance = null;
-        document.getElementById('cube_view').classList.remove('dragging');
+    function updateCubeCursor(ev) {
+        if (cubeState.dragging) return;
+
+        const cubeView = document.getElementById('cube_view');
+        const cubeLabel = document.getElementById('cube_label');
+        const hoveringPoint = isPointerNearColorPoint(ev);
+
+        if (hoveringPoint !== cubeState.pointHover) {
+            cubeState.pointHover = hoveringPoint;
+            drawRGBCube();
+        }
+
+        if (hoveringPoint) {
+            cubeView.style.cursor = 'pointer';
+            cubeLabel.textContent = 'drag point';
+        } else {
+            cubeView.style.cursor = 'grab';
+            cubeLabel.textContent = 'drag to rotate';
+        }
     }
 
     function setupCubeInteraction() {
@@ -942,6 +1165,8 @@
         window.addEventListener('touchcancel', endCubeDrag);
 
         cubeView.addEventListener('wheel', onCubeWheel, { passive: false });
+
+        cubeView.addEventListener('mousemove', updateCubeCursor);
     }
 
     window.addEventListener('resize', handleResize);
