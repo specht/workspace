@@ -47,6 +47,7 @@
     # - .drawing (koch curve)
     - fire
     - anaglyph
+    - .jpeg
   # - .sirds
   # - .raytracing
   # - .p5js

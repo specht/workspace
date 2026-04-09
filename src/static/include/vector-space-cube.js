@@ -7,7 +7,7 @@ export class VectorSpaceCube {
             value = null,
             basis = null,
             onChange = null,
-            background = { from: '#191b22', to: '#1b1d24' },
+            background = { from: '#111', to: '#111' },
             showDragPlaneFill = true,
             dragPlaneFillResolution = 220,
             dragPlaneFillOpacity = 0.5,
