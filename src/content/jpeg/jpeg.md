@@ -80,56 +80,51 @@ image: title.webp
         }
     }
 
-    /* pre.hexdump .hl,
-    pre.hexdump .hl1,
-    pre.hexdump .hl2,
-    pre.hexdump .hl3,
-    pre.hexdump .hl4,
-    pre.hexdump .hl5,
-    pre.hexdump .hl6,
-    pre.hexdump .hl7,
-    pre.hexdump .hl8 {
-        box-shadow: none;
-        border: none;
-        outline: none;
-        padding: 0 0.2em;
-        margin: 0 -0.2em;
-        border-radius: 0.25em;
-        background: linear-gradient(
-            transparent 15%,
-            #ffd54f 15%,
-            #ffd54f 85%,
-            transparent 85%
-        );
-    } */
+    p.expl {
+        font-style: italic;
+        font-size: 0.9em;
+        opacity: 0.6;
+        margin: 0;
+    }
 
-    pre.hexdump .hl1 {
-        /* background-color: #fdb717; */
+    table.center td, table.center th {
+        text-align: center;
     }
-    pre.hexdump .hl2 {
-        /* background-color: #80bc42; */
+
+    table.dct {
+        border-collapse: collapse;
+        table-layout: fixed;
+        width: unset;
     }
-    pre.hexdump .hl3 {
-        /* background-color: #00a8a8; */
+
+    table.dct td {
+        width: 2.5em;
+        height: 2.5em;
+        font-size: 85%;
+        aspect-ratio: 1 / 1;
+        padding: 0;
+        box-sizing: border-box;
+        text-align: center;
+        vertical-align: middle;
+        line-height: 1;
+        overflow: hidden;
+        border: 1px solid #ccc;
+        font-size: 80%;
     }
-    pre.hexdump .hl4 {
-        /* background-color: #238acc; */
-    }
-    pre.hexdump .hl5 {
-        /* background-color: #b296c7; */
-    }
-    pre.hexdump .hl6 {
-        /* background-color: #fac6d2; */
-    }
-    pre.hexdump .hl7 {
-        /* background-color: #fdb462; */
-    }
-    pre.hexdump .hl8 {
-        /* background-color: #7fcdbb; */
-    }
+
+    td.m0 { background-color: var(--color-m0); }
+    td.m1 { background-color: var(--color-m1); }
+    td.m2 { background-color: var(--color-m2); }
+    td.m3 { background-color: var(--color-m3); }
+    td.m4 { background-color: var(--color-m4); }
+    td.m5 { background-color: var(--color-m5); }
+    td.m6 { background-color: var(--color-m6); }
+    td.m7 { background-color: var(--color-m7); }
+    td.m8 { background-color: var(--color-m8); }
+
 </style>
 
-# JPEG
+# Eine JPEG-Datei decodieren
 
 <p class='abstract'>
 Das JPEG-Format (Joint Photographic Experts Group) ist ein weit verbreitetes Bildformat, das hauptsächlich für die Komprimierung von Fotografien und realistischen Bildern verwendet wird. Es wurde in den frühen 1990er Jahren entwickelt und bietet eine effiziente Methode zur Reduzierung der Dateigröße von Bildern, während gleichzeitig eine akzeptable Bildqualität beibehalten wird. JPEG verwendet eine verlustbehaftete Komprimierungstechnik, bei der bestimmte Bildinformationen entfernt werden, um die Dateigröße zu verringern. Dies führt zu einer gewissen Qualitätsminderung, die jedoch oft nicht sichtbar ist, insbesondere bei höheren Qualitätsstufen.
@@ -139,17 +134,22 @@ Das JPEG-Format (Joint Photographic Experts Group) ist ein weit verbreitetes Bil
 
 Dieser Artikel soll dir helfen, einen JPEG-Decoder zu implementieren. Dafür ist es wichtig, zunächst einige Grundlagen zu verstehen:
 
-### Basiswechsel
+<div class='row'>
+<div class='col-md-4'>
+<a href='/rgb'><img src='title.webp' style='width: 100%;'></a>
+Farbräume
+</div>
+<div class='col-md-4'>
+<a href='/colorspace'><img src='colorspace.webp' style='width: 100%;'></a>
+Trennung von Helligkeit und Farbe
+</div>
+<div class='col-md-4'>
+<a href='/dct'><img src='dct.webp' style='width: 100%;'></a>
+Diskrete Kosinustransformation (DCT)
+</div>
+</div>
 
-### Farbräume
-
-### Trennung von Helligkeit und Farbe
-
-### Diskrete Kosinustransformation
-
-### Quantisierung
-
-### Huffman-Codierung
+<!-- Basiswechsel, Quantisierung, Huffman-Codierung -->
 
 ## Grober Ablauf eines JPEG-Decoders
 
@@ -157,21 +157,20 @@ Um eine JPEG-Datei zu decodieren, musst du die folgenden Schritte durchführen:
 
 1. **Marker erkennen**: Suche nach den JPEG-Markern, um die Struktur der Datei zu verstehen.
 2. **Segmente interpretieren**: Je nach Marker musst du die entsprechenden Daten interpretieren. Zum Beispiel musst du bei einem DQT-Marker die Quantisierungstabelle lesen, bei einem SOF<sub>0</sub>-Marker die Bildgröße und die Anzahl der Komponenten, und bei einem DHT-Marker einen Huffman-Baum aufbauen.
-3. **Huffman-Codes lesen**: Ab dem SOS-Marker (Start of Scan) musst du die komprimierten Bilddaten lesen und die Huffman-Codes dekodieren, um die quantisierten DCT-Koeffizienten zu erhalten.
+3. **Huffman-Codes lesen**: Ab dem SOS-Marker (Start of Scan) musst du die komprimierten Bilddaten lesen und die Huffman-Codes decodieren, um die quantisierten DCT-Koeffizienten zu erhalten.
 4. **Dequantisierung**: Verwende die passende Quantisierungstabelle, um die quantisierten DCT-Koeffizienten in ihre ursprünglichen Werte zurückzuverwandeln.
 5. **Inverse DCT**: Wende die inverse diskrete Kosinustransformation an, um die Pixelwerte aus den DCT-Koeffizienten zu berechnen.
-6. **Farbraumkonvertierung**: Nutze eine Farbraumtransformation, um die Bilddaten von YCbCr zurück in RGB zu konvertieren.
-7. **Bild rekonstruieren**: Setze die Pixelwerte zusammen, um das endgültige Bild zu erstellen. Dabei müssen die Chroma-Kanäle entsprechend der Subsampling-Methode interpoliert werden, falls diese verwendet wurde.
+6. **Bild rekonstruieren**: Setze die Pixelwerte zusammen, um das endgültige Bild zu erstellen. Dabei müssen die Chroma-Kanäle entsprechend der Subsampling-Methode interpoliert werden, falls diese verwendet wurde.
+7. **Farbraumkonvertierung**: Nutze eine Farbraumtransformation, um die Bilddaten von YCbCr zurück in RGB zu konvertieren.
 8. **Bild anzeigen**: Zeige das rekonstruierte Bild mit dem Pixelflow Canvas an.
-
-## Dokumentation
 
 Der vollständige [JPEG-Standard](https://www.w3.org/Graphics/JPEG/itu-t81.pdf) ist sehr umfangreich und komplex. Wir fassen deshalb hier alle relevanten Informationen zusammen, die du für die Implementierung eines Baseline-JPEG-Decoders benötigst.
 
-### Marker und Segmente
+Wir beginnen mit den Markern und Segmenten, die die Struktur einer JPEG-Datei definieren, und gehen dann Schritt für Schritt durch die Decodierung der Bilddaten.
 
 Marker sind spezielle 16-Bit-Sequenzen, die bestimmte Abschnitte eines JPEG-Bildes kennzeichnen. Sie beginnen immer mit 0xFF, gefolgt von einem weiteren Byte, das den Typ des Markers angibt. Einige Marker stehen für sich allein und beinhalten keine Daten, während andere Marker von einer 16-Bit-Länge gefolgt werden, die die Anzahl der nachfolgenden Datenbytes angibt (inkl. der 2 Bytes für die Länge selbst). Hier ist eine Übersicht über die wichtigsten Marker (dabei werden Marker ohne Daten mit einem Sternchen (*) gekennzeichnet):
 
+<div style='max-width: 100%; overflow-x: auto;'>
 <table class='table'>
     <thead>
         <tr>
@@ -219,12 +218,13 @@ Marker sind spezielle 16-Bit-Sequenzen, die bestimmte Abschnitte eines JPEG-Bild
         </tr>
     </tbody>
 </table>
+</div>
 
 <div class='hint hint-warning'>
 Du solltest sicherstellen, dass die Datei mit den Bytes 0xFFD8 (SOI) beginnt. Anschließend kannst du in einer Schleife immer einen Marker lesen, dann je nach Marker eine Länge und die entsprechende Anzahl von Bytes überspringen, bis du auf den SOS-Marker (0xFFDA) stößt. Ab diesem Punkt kannst du später die komprimierten Bilddaten lesen.
 </div>
 
-#### Start of Image (SOI)
+## Start of Image (SOI)
 
 Der SOI-Marker (0xFFD8) markiert den Beginn eines JPEG-Bildes. Er besteht aus zwei Bytes und enthält keine weiteren Daten. Ein gültiges JPEG-Bild muss mit diesem Marker beginnen.
 
@@ -249,7 +249,7 @@ Der <span class='m0'>SOI-Marker</span> steht am Anfang der Datei. Sollte er fehl
 Falls du vorher noch nie einen Hex-Dump gesehen hast, hier eine kurze Erklärung zu diesem Format: Es werden immer 16 Bytes in einer Zeile dargestellt. Die erste Spalte zeigt den Offset (die Position) des ersten Bytes in der Zeile an (in hexadezimaler Form). Dann folgen die 16 Bytes in hexadezimaler Form (in der Mitte gibt es eine kleine Lücke nach 8 Bytes, um die Lesbarkeit zu verbessern). Am Ende der Zeile wird die ASCII-Darstellung der Bytes angezeigt, wobei nicht druckbare Zeichen durch einen Punkt (.) ersetzt werden. In diesem Beispiel siehst du, dass die ersten beiden Bytes 0xFF und 0xD8 sind (der SOI-Marker), gefolgt von weiteren Daten, die das APP0-Segment bilden.
 </div>
 
-#### Define Quantization Table (DQT)
+## Define Quantization Table (DQT)
 
 Im DQT-Segment werden Quantisierungstabellen definiert. Es gibt 4 mögliche Slots für diese Tabellen (0 bis 3), die jeweils 64 Werte enthalten. Die 64 Werte sind in der Zig-Zag-Reihenfolge abgespeichert.
 
@@ -275,12 +275,6 @@ Im DQT-Segment werden Quantisierungstabellen definiert. Es gibt 4 mögliche Slot
                             Tq: Table Identifier (0–3)                4 Bits
 </pre>
 
-<div class='hint hint-warning'>
-Für unsere Zwecke kannst du davon ausgehen, dass die Quantisierungstabelle immer 8-Bit-Werte enthält (Pq = 0). Beende dein Programm, falls Pq &ne; 0 ist.
-
-Es kann vorkommen, dass in einem DQT-Segment mehrere Quantisierungstabellen definiert werden. Du erkennst dies daran, dass die Segmentlänge größer als erwartet ist. In diesem Fall wiederholt sich die Struktur ab Offset 4.
-</div>
-
 **Beispiel:**
 
 <pre class='spec hexdump'>
@@ -291,6 +285,7 @@ Es kann vorkommen, dass in einem DQT-Segment mehrere Quantisierungstabellen defi
 00000050  <span class='m3'>22 24 22 1e 24 1c 1e 1f  1e</span> ff db 00 43 01 05 05  |"$".$.......C...|
 </pre>
 
+<div style='max-width: 100%; overflow-x: auto;'>
 <table class='table'>
 <tr>
 <td><span class='m0'><code>FF DB</code></span></td>
@@ -298,25 +293,32 @@ Es kann vorkommen, dass in einem DQT-Segment mehrere Quantisierungstabellen defi
 </tr>
 <tr>
 <td><span class='m1'><code>00 43</code></span></td>
-<td>Segmentlänge (0x43 = 67 Bytes)</td>
+<td>Segmentlänge (0x43 = 67 Bytes)
+<p class='expl'>
+Es kann vorkommen, dass in einem DQT-Segment mehrere Quantisierungstabellen definiert werden. Du erkennst dies daran, dass die Segmentlänge größer als erwartet ist. In diesem Fall wiederholt sich die Struktur ab Offset 4.
+</p>
+</td>
 </tr>
 <tr>
 <td><span class='m2'><code>00</code></span></td>
-<td>Pq = 0 (8-Bit-Werte), Tq = 0 (Slot 0)</td>
+<td>Pq = 0 (8-Bit-Werte), Tq = 0 (Slot 0)
+<p class='expl'>
+Du kannst für deinen Decoder davon ausgehen, dass Pq immer 0 ist, wir also 8-Bit-Werte einlesen können. Sollte Pq einen anderen Wert haben, beende dein Programm mit einer Fehlermeldung.
+</p>
+</td>
 </tr>
 <tr>
-<td><span class='m3'><code>05 03 04 04</code> ...</span></td>
-<td>64 Werte der Quantisierungstabelle</td>
+<td><span class='m3' style='white-space: nowrap;'><code>05 03 04 04</code> ...</span></td>
+<td>64 Werte der Quantisierungstabelle
+<p class='expl'>
+Speichere die Werte in dem entsprechenden Slot (Tq) ab, damit du sie später für die Dequantisierung verwenden kannst.
+</p>
+</td>
 </tr>
 </table>
-
-Speichere die Werte in dem entsprechenden Slot (Tq) ab, damit du sie später für die Dequantisierung verwenden kannst.
-
-<div class='hint'>
-Du kannst für deinen Decoder davon ausgehen, dass Pq immer 0 ist, wir also 8-Bit-Werte einlesen können. Sollte Pq einen anderen Wert haben, beende dein Programm mit einer Fehlermeldung.
 </div>
 
-#### Start of Frame (SOF<sub>0</sub>)
+## Start of Frame (SOF<sub>0</sub>)
 
 Im SOF<sub>0</sub>-Segment (Start of Frame, Baseline DCT) werden die Bildgröße, die Anzahl der Komponenten und die Präzision der Bilddaten definiert. Es enthält auch Informationen über die Subsampling-Methode, die für die Chroma-Kanäle verwendet wird.
 
@@ -366,10 +368,15 @@ Im SOF<sub>0</sub>-Segment (Start of Frame, Baseline DCT) werden die Bildgröße
 000000b0  <span class='m8'>01</span> ff c4 00 1f 00 00 01  05 01 01 01 01 01 01 00  |................|
 </pre>
 
+<div style='max-width: 100%; overflow-x: auto;'>
 <table class='table'>
 <tr>
 <td><span class='m0'><code>FF C0</code></span></td>
-<td>SOF<sub>0</sub>-Marker</td>
+<td>SOF<sub>0</sub>-Marker
+<p class='expl'>
+Zusätzlich zum SOF<sub>0</sub>-Marker gibt es noch weitere SOF-Marker (SOF<sub>1</sub>, SOF<sub>2</sub>, ...), die für verschiedene JPEG-Varianten verwendet werden. Für unseren Baseline-JPEG-Decoder kannst du davon ausgehen, dass nur der SOF<sub>0</sub>-Marker verwendet wird.
+</p>
+</td>
 </tr>
 <tr>
 <td><span class='m1'><code>00 11</code></span></td>
@@ -377,22 +384,38 @@ Im SOF<sub>0</sub>-Segment (Start of Frame, Baseline DCT) werden die Bildgröße
 </tr>
 <tr>
 <td><span class='m2'><code>08</code></span></td>
-<td>Sample Precision (8 Bit)</td>
+<td>Sample Precision (8 Bit)
+<p class='expl'>
+Du kannst für deinen Decoder davon ausgehen, dass dieser Wert immer 8 ist. Sollte er einen anderen Wert haben, beende dein Programm mit einer Fehlermeldung.
+</p>
+</td>
 </tr>
 <tr>
 <td><span class='m3'><code>02 9B</code></span></td>
-<td>Anzahl der Zeilen (0x29b = 667)</td>
+<td>Anzahl der Zeilen (0x29b = 667)
+<p class='expl'>
+Dieser Wert beschreibt die Höhe des Bildes in Pixeln.
+</p>
+</td>
 </tr>
 <tr>
 <td><span class='m4'><code>03 E8</code></span></td>
-<td>Anzahl der Samples pro Zeile (0x3e8 = 1000)</td>
+<td>Anzahl der Samples pro Zeile (0x3e8 = 1000)
+<p class='expl'>
+Dieser Wert beschreibt die Breite des Bildes in Pixeln.
+</p>
+</td>
 </tr>
 <tr>
 <td><span class='m5'><code>03</code></span></td>
-<td>Anzahl der Komponenten (3)</td>
+<td>Anzahl der Komponenten (3)
+<p class='expl'>
+Du kannst für deinen Decoder davon ausgehen, dass dieser Wert immer 3 ist und für die drei Komponenten Y, Cb und Cr steht. Sollte er einen anderen Wert haben, beende dein Programm mit einer Fehlermeldung.
+</p>
+</td>
 </tr>
 <tr>
-<td><span class='m6'><code>01</code></span> <span class='m6'><code>22</code></span> <span class='m6'><code>00</code></span></td>
+<td style='white-space: nowrap;'><span class='m6'><code>01</code></span> <span class='m6'><code>22</code></span> <span class='m6'><code>00</code></span></td>
 <td>Komponente 1 (Y), 2:2 Subsampling, Quantization Table 0</td>
 </tr>
 <tr>
@@ -404,14 +427,15 @@ Im SOF<sub>0</sub>-Segment (Start of Frame, Baseline DCT) werden die Bildgröße
 <td>Komponente 3 (Cr), 1:1 Subsampling, Quantization Table 1</td>
 </tr>
 </table>
-
-<div class='hint'>
-Zusätzlich zum SOF<sub>0</sub>-Marker gibt es noch weitere SOF-Marker (SOF<sub>1</sub>, SOF<sub>2</sub>, ...), die für verschiedene JPEG-Varianten verwendet werden. Für unseren Baseline-JPEG-Decoder kannst du davon ausgehen, dass nur der SOF<sub>0</sub>-Marker verwendet wird.
 </div>
 
-#### Define Huffman Table (DHT)
+### Chroma Subsampling
 
-Im DHT-Segment werden Huffman-Tabellen definiert. Es gibt 4 mögliche Slots für diese Tabellen (0 bis 3), die jeweils 16 Werte enthalten, die die Anzahl der Codes pro Codewortlänge angeben, gefolgt von den Symbolen, die den Codes zugeordnet sind.
+In diesem Beispiel siehst du, dass die Y-Komponente (Helligkeit) mit einem 2:2-Subsampling codiert ist, während die Cb- und Cr-Komponenten (Farbinformationen) mit einem 1:1-Subsampling codiert sind. Im JPEG-Jargon spricht man von einer Minimal Coding Unit (MCU), die in diesem Fall aus 4 Y-Blöcken, 1 Cb-Block und 1 Cr-Block besteht. Das bedeutet, dass für jede MCU 4 Blöcke der Y-Komponente und jeweils 1 Block der Cb- und Cr-Komponenten codiert werden: die Auflösung der Chroma-Komponenten ist also halb so hoch wie die der Luma-Komponente in beiden Dimensionen. 
+
+## Define Huffman Table (DHT)
+
+Im DHT-Segment werden Huffman-Tabellen definiert, die wir für die Decodierung der komprimierten Bilddaten benötigen. Dabei wird in DC- und AC-Tabellen unterschieden: DC-Tabellen codieren die Differenzen der DC-Koeffizienten, während AC-Tabellen die AC-Koeffizienten codieren. Es gibt 4 mögliche Slots für DC-Tabellen (0 bis 3) und 4 mögliche Slots für AC-Tabellen (0 bis 3). Jede Tabelle besteht aus 16 Bytes, die die Anzahl der Codes für jede Code-Länge von 1 bis 16 angeben, gefolgt von den Symbolen, die diesen Codes zugeordnet sind.
 
 <pre class='spec'>
      7 6 5 4 3 2 1 0        Field Name                    Type
@@ -445,6 +469,223 @@ Im DHT-Segment werden Huffman-Tabellen definiert. Es gibt 4 mögliche Slots für
 000000d0  <span class='m4'>0a 0b</span> ff c4 00 b5 10 00  02 01 03 03 02 04 03 05  |................|
 </pre>
 
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table'>
+<tr>
+<td><span class='m0'><code>FF C4</code></span></td>
+<td>DHT-Marker
+</td>
+</tr>
+<tr>
+<td><span class='m1'><code>00 1F</code></span></td>
+<td>Segmentlänge (0x1f = 31 Bytes)
+<p class='expl'>
+Es kann vorkommen, dass in einem DHT-Segment mehrere Huffman-Tabellen definiert werden. Du erkennst dies daran, dass die Segmentlänge größer als erwartet ist. In diesem Fall wiederholt sich die Struktur ab Offset 4.
+</p>
+</td>
+</tr>
+<tr>
+<td><span class='m2'><code>00</code></span></td>
+<td>Tc = 0 (DC-Tabelle), Th = 0 (Slot 0)
+<p class='expl'>
+Dieser Huffman-Baum ist für DC-Slot 0 bestimmt und wird später benötigt werden.
+</p>
+</td>
+</tr>
+<tr>
+<td style='white-space: nowrap;'>
+<div style='margin-bottom: 0.5em;'>
+<span class='m3'><code>00</code></span> <span class='m3'><code>01</code></span>
+<span class='m3'><code>05</code></span> <span class='m3'><code>01</code></span>
+</div>
+<div style='margin-bottom: 0.5em;'>
+<span class='m3'><code>01</code></span> <span class='m3'><code>01</code></span>
+<span class='m3'><code>01</code></span> <span class='m3'><code>01</code></span>
+</div>
+<div style='margin-bottom: 0.5em;'>
+<span class='m3'><code>01</code></span> <span class='m3'><code>00</code></span>
+<span class='m3'><code>00</code></span> <span class='m3'><code>00</code></span>
+</div>
+<div style='margin-bottom: 0.5em;'>
+<span class='m3'><code>00</code></span> <span class='m3'><code>00</code></span>
+<span class='m3'><code>00</code></span> <span class='m3'><code>00</code></span>
+</div>
+</td>
+<td>Anzahl der Codes pro Code-Länge für die DC-Tabelle im Slot 0
+<p class='expl'>
+Diese Werte geben an, wie viele Codes es mit einer bestimmten Länge gibt. In diesem Beispiel gibt es 0 Codes mit der Länge 1, 1 Code mit der Länge 2, 5 Codes mit der Länge 3 sowie jeweils 1 Code mit den Längen 4, 5, 6, 7, 8 und 9 – insgesamt also 12 Codes, deren Symbole nun folgen.
+</p>
+</td>
+</tr>
+<tr>
+<td style='white-space: nowrap;'>
+<div style='margin-bottom: 0.5em;'>
+<span class='m4'><code>00</code></span> <span class='m4'><code>01</code></span>
+<span class='m4'><code>02</code></span> <span class='m4'><code>03</code></span>
+</div>
+<div style='margin-bottom: 0.5em;'>
+<span class='m4'><code>04</code></span> <span class='m4'><code>05</code></span>
+<span class='m4'><code>06</code></span> <span class='m4'><code>07</code></span>
+</div>
+<div style='margin-bottom: 0.5em;'>
+<span class='m4'><code>08</code></span> <span class='m4'><code>09</code></span>
+<span class='m4'><code>0a</code></span> <span class='m4'><code>0b</code></span>
+</div>
+</td>
+<td>Symbole für die DC-Tabelle im Slot 0
+<p class='expl'>
+Diese Werte sind die Symbole, die den Codes zugeordnet werden. Das erste Symbol (0x00) wird dem einzigen Code mit der Länge 2 zugeordnet, die nächsten 5 Symbole (0x01 bis 0x05) werden den 5 Codes mit der Länge 3 zugeordnet, und so weiter.
+</p>
+</td>
+</tr>
+</table>
+</div>
+
+<div class='hint'>
+Du findest in der JPEG-Datei keinen kompletten Huffman-Baum, sondern nur eine Art Bauanleitung für einen »kanonischen Huffman-Baum«. Anhand der Anzahl der Codes pro Code-Länge kannst du die Struktur des Baumes rekonstruieren und die Symbole den entsprechenden Codes zuordnen.
+</div>
+
+**Implementierungshinweis:**
+
+Für einen JPEG-Decoder benötigst du keinen tatsächlichen Huffman-Baum. Es reicht, für jede Codelänge einen Bereich von Codes zu berechnen, der dieser Länge entspricht, und die Symbole in der richtigen Reihenfolge diesen Codes zuzuordnen.
+
+Wir benötigen die folgenden Arrays:
+
+- `min_code`: Ein Array, das für jede Codelänge den kleinsten Code dieser Länge enthält.
+- `max_code`: Ein Array, das für jede Codelänge den größten Code dieser Länge enthält.
+- `val_ptr`: Ein Array, das für jede Codelänge den Index des ersten Symbols dieser Länge enthält.
+- `huffval`: Ein Array, das die Symbole enthält, sortiert nach der Reihenfolge der Codes.
+
+In unserem Beispiel würden sich diese Arrays wie folgt füllen:
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table center'>
+<tr>
+<th>length</th>
+<th>min_code</th>
+<th>max_code</th>
+<th>(valid codes)</th>
+<th>val_ptr</th>
+</tr>
+<tr>
+<td>1</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0</td>
+<td>0</td>
+<td>00</td>
+<td>0</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2</td>
+<td>6</td>
+<td>010, 011, 100, 101, 110</td>
+<td>1</td>
+</tr>
+<tr>
+<td>4</td>
+<td>14</td>
+<td>14</td>
+<td>1110</td>
+<td>6</td>
+</tr>
+<tr>
+<td>5</td>
+<td>30</td>
+<td>30</td>
+<td>11110</td>
+<td>7</td>
+</tr>
+<tr>
+<td>6</td>
+<td>62</td>
+<td>62</td>
+<td>111110</td>
+<td>8</td>
+</tr>
+<tr>
+<td>7</td>
+<td>126</td>
+<td>126</td>
+<td>1111110</td>
+<td>9</td>
+</tr>
+<tr>
+<td>8</td>
+<td>254</td>
+<td>254</td>
+<td>11111110</td>
+<td>10</td>
+</tr>
+<tr>
+<td>9</td>
+<td>510</td>
+<td>510</td>
+<td>111111110</td>
+<td>11</td>
+</tr>
+<tr>
+<td>10</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td colspan='5' style='text-align: center;'>...</td>
+</tr>
+</table>
+</div>
+
+Die Werte für `huffval` können direkt aus den Symbolen im DHT-Segment übernommen werden, da sie bereits in der richtigen Reihenfolge vorliegen. Es ergibt sich also folgende Zuordnung:
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table center'>
+<tr>
+<th>Code</th>
+<td>00</td>
+<td>010</td>
+<td>011</td>
+<td>100</td>
+<td>101</td>
+<td>110</td>
+<td>1110</td>
+<td>11110</td>
+<td>111110</td>
+<td>1111110</td>
+<td>11111110</td>
+<td>111111110</td>
+</tr>
+<tr>
+<th>Symbol</th>
+<td>0</td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+<td>7</td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+<td>11</td>
+</tr>
+</table>
+</div>
+
+Im Decoder müssen wir später »nur noch« die Bits solange einzeln einlesen, bis wir einen gültigen Code erkennen und das entsprechende Symbol ermitteln können.
+
+**Ein weiteres Beispiel:**
+
+In diesem Beispiel wird eine AC-Tabelle im Slot 0 definiert, die deutlich mehr Codes enthält als die vorherige DC-Tabelle:
+
 <pre class='spec hexdump'>
 000000d0  0a 0b <span class='m0'>ff c4</span> <span class='m1'>00 b5</span> <span class='m2'>10</span> <span class='m3'>00  02 01 03 03 02 04 03 05</span>  |................|
 000000e0  <span class='m3'>05 04 04 00 00 01 7d</span> <span class='m4'>01  02 03 00 04 11 05 12 21</span>  |......}........!|
@@ -460,7 +701,7 @@ Im DHT-Segment werden Huffman-Tabellen definiert. Es gibt 4 mögliche Slots für
 00000180  <span class='m4'>f2 f3 f4 f5 f6 f7 f8 f9  fa</span> ff c4 00 1f 01 00 03  |................|
 </pre>
 
-#### Start of Scan (SOS)
+## Start of Scan (SOS)
 
 Der SOS-Marker (Start of Scan) markiert den Beginn der komprimierten Bilddaten. Er enthält Informationen über die Anzahl der Komponenten im Scan, die zu verwendenden Huffman-Tabellen und die Spezifikationen für die Spektralpositionen und die Fortschrittsanzeige.
 
@@ -478,25 +719,570 @@ Der SOS-Marker (Start of Scan) markiert den Beginn der komprimierten Bilddaten. 
  4  |      Ns       |       Number of Image Components in Scan Byte
     +---------------+
 
-  <table class="hexdump">
-    <thead>
-      <tr>
-        <th>Offset</th>
-        <th>00</th><th>01</th><th>02</th><th>03</th>
-        <th>04</th><th>05</th><th>06</th><th>07</th>
-        <th>08</th><th>09</th><th>0A</th><th>0B</th>
-        <th>0C</th><th>0D</th><th>0E</th><th>0F</th>
-        <th>ASCII</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="offset">00000000</td>
-        <td class="hex">48</td><td class="hex">65</td><td class="hex">6c</td><td class="hex">6c</td>
-        <td class="hex">6f</td><td class="hex">20</td><td class="hex">77</td><td class="hex">6f</td>
-        <td class="hex">72</td><td class="hex">6c</td><td class="hex">64</td><td class="hex">21</td>
-        <td class="hex">00</td><td class="hex">0a</td><td class="hex">ff</td><td class="hex">7e</td>
-        <td class="ascii">Hello world!...~</td>
-      </tr>
-    </tbody>
-  </table>
+(for each image component in scan:)
+
+    +---------------+
+ 5  |      Cs       |       Scan Component Selector       Byte
+    +---------------+
+ 6  |   Td  |  Ta   |       [Packed Fields]               See below
+    +---------------+
+
+    [Packed Fields]  =      Td: DC Huffman Table Selector 4 Bits
+                            Ta: AC Huffman Table Selector 4 Bits
+
+(at the end:)
+
+    +---------------+
+ 7  | Ss            |       Start of Spectral Selection   Byte
+    +---------------+
+ 8  | Se            |       End of Spectral Selection     Byte
+    +---------------+
+ 9  | Ah  | Al      |       Successive Approximation      Byte
+    +---------------+
+
+    [Packed Fields]  =  Ah: Successive Approximation High 4 Bits
+                        Al: Successive Approximation Low  4 Bits
+
+</pre>
+
+**Beispiel:**
+
+<pre class='spec hexdump'>
+00000260  fa <span class='m0'>ff da</span> <span class='m1'>00 0c</span> <span class='m2'>03</span> <span class='m3'>01</span> <span class='m3'>00</span>  <span class='m4'>02</span> <span class='m4'>11</span> <span class='m5'>03</span> <span class='m5'>11</span> <span class='m6'>00</span> <span class='m7'>3f</span> <span class='m8'>00</span> f0  |.............?..|
+00000270  7b 9d 26 64 7c c4 d9 52  7e e9 ed 59 b3 44 23 60  |{.&d|..R~..Y.D#`|
+00000280  92 2e c6 3d 33 5d f5 c5  96 d2 44 67 38 ec 45 72  |...=3]....Dg8.Er|
+</pre>
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table'>
+<tr>
+<td><span class='m0'><code>FF DA</code></span></td>
+<td>SOS-Marker
+</td>
+</tr>
+<tr>
+<td><span class='m1'><code>00 0C</code></span></td>
+<td>Segmentlänge (0x0c = 12 Bytes)</td>
+</tr>
+<tr>
+<td><span class='m2'><code>03</code></span></td>
+<td>Anzahl der Komponenten im Scan (3)
+<p class='expl'>
+Du kannst für deinen Decoder davon ausgehen, dass dieser Wert immer 3 ist und für die drei Komponenten Y, Cb und Cr steht. Sollte er einen anderen Wert haben, beende dein Programm mit einer Fehlermeldung.
+</p>
+</td>
+</tr>
+<tr>
+<td style='white-space: nowrap;'>
+<div style='margin-bottom: 0.5em;'>
+<span class='m3'><code>01</code></span> <span class='m3'><code>00</code></span>
+</div>
+<div style='margin-bottom: 0.5em;'>
+<span class='m4'><code>02</code></span> <span class='m4'><code>11</code></span>
+</div>
+<div style='margin-bottom: 0.5em;'>
+<span class='m5'><code>03</code></span> <span class='m5'><code>11</code></span>
+</div>
+</td>
+<td>Auswahl der Huffman-Tabellen
+<p class='expl'>
+Für jede der drei Komponenten Y, Cb und Cr wird angegeben, welche DC- und AC-Huffman-Tabelle verwendet werden soll. In diesem Beispiel wird für die Y-Komponente DC-Tabelle 0 und AC-Tabelle 0 verwendet, während für die Cb- und Cr-Komponenten jeweils DC-Tabelle 1 und AC-Tabelle 1 verwendet wird.
+</p>
+</td>
+</tr>
+<tr>
+<td style='white-space: nowrap;'>
+<div style='margin-bottom: 0.5em;'>
+<span class='m6'><code>00</code></span>
+</div>
+<div style='margin-bottom: 0.5em;'>
+<span class='m7'><code>3f</code></span>
+</div>
+<div style='margin-bottom: 0.5em;'>
+<span class='m8'><code>00</code></span>
+</div>
+</td>
+<td>Parameter für Progressive JPEGs
+<p class='expl'>
+In komplexeren JPEG-Varianten können Teile der Bilddaten nach und nach codiert werden. Dies war vor allem früher wichtig, als die Übertragung von Bildern über das Internet noch sehr langsam war. Du kannst für deinen Decoder davon ausgehen, dass diese Werte immer 0x00, 0x3f und 0x00 sind. Sollte dies nicht der Fall sein, beende dein Programm mit einer Fehlermeldung.
+</p>
+</td>
+</tr>
+</table>
+</div>
+
+## Decodierung der Bilddaten
+
+Direkt hinter dem SOS-Segment beginnen die komprimierten Bilddaten:
+
+<pre class='spec hexdump'>
+00000260  fa ff da 00 0c 03 01 00  02 11 03 11 00 3f 00 <span class='m0'>f0</span>  |.............?..|
+00000270  <span class='m0'>7b 9d 26 64 7c c4 d9 52  7e e9 ed 59 b3 44 23 60</span>  |{.&d|..R~..Y.D#`|
+00000280  <span class='m0'>92 2e c6 3d 33 5d f5 c5  96 d2 44 67 38 ec 45 72</span>  |...=3]....Dg8.Er|
+</pre>
+
+Dabei wird das Bild MCU-weise codiert. In unserem Beispiel haben wir eine MCU-Größe von 16x16 Pixeln, bestehend aus 4 Blöcken der Y-Komponente (jeweils 8x8 Pixel), 1 Block der Cb-Komponente (8x8 Pixel) und 1 Block der Cr-Komponente (8x8 Pixel), also folgende Reihenfolge: Y<sub>0</sub>, Y<sub>1</sub>, Y<sub>2</sub>, Y<sub>3</sub>, Cb<sub>0</sub>, Cr<sub>0</sub>. Wir müssen demnach insgesamt sechs 8x8-Pixel-Blöcke decodieren, um eine MCU von 16x16 Pixeln zu erhalten.
+
+### Decodierung eines Blocks: DC-Koeffizient
+
+Zuerst wird der DC-Koeffizient decodiert, indem die entsprechenden Bits aus der Datei gelesen werden. Wir verwenden in diesem Beispiel die folgende Tabelle:
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table center'>
+<tr>
+<th>Code</th>
+<td>00</td>
+<td>010</td>
+<td>011</td>
+<td>100</td>
+<td>101</td>
+<td>110</td>
+<td>1110</td>
+<td>11110</td>
+<td>111110</td>
+<td>1111110</td>
+<td>11111110</td>
+<td>111111110</td>
+</tr>
+<tr>
+<th>Symbol</th>
+<td>0</td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+<td>7</td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+<td>11</td>
+</tr>
+</table>
+</div>
+
+Nehmen wir die ersten beiden Bytes `F0 7B` und betrachten sie als Bits:
+
+<pre class='spec hexdump'>
+11110000 01111011
+</pre>
+
+Den ersten Code, den wir finden ist `11110`:
+
+<pre class='spec hexdump'>
+<span class='m0'>11110</span> 000 01111011
+</pre>
+
+Der Code `11110` entspricht dem Symbol 7, was bedeutet, dass der DC-Koeffizient in diesem Block mit 7 Bits codiert ist. Wir lesen also die nächsten 7 Bits ein:
+
+<pre class='spec hexdump'>
+<span class='m0'>11110</span> <span class='m1'>0000111</span> 1011
+</pre>
+
+Wir dürfen nun diese Zahl nicht einfach als 7 interpretieren, sondern müssen sie anhand der JPEG-Spezifikation in eine vorzeichenbehaftete Zahl umwandeln:
+
+- höchstes Bit: 1 → positive Zahl, kann so bleiben
+- höchstes Bit: 0 → negative Zahl, wir müssen 2<sup>7</sup> - 1 = 127 subtrahieren (die 7 steht für die Anzahl der Bits)
+
+Also rechnen wir: 7 - 127 = -120. Da der DC-Koeffizient nicht direkt, sondern als Differenz zum vorherigen DC-Koeffizienten codiert ist, müssen wir diesen Wert noch zum vorherigen DC-Koeffizienten addieren. Da dies der erste Block ist, nehmen wir an, dass der vorherige DC-Koeffizient 0 war, und erhalten somit einen DC-Koeffizienten von -120 für diesen Block.
+
+<div class='hint'>
+Achtung: Für jede Komponente gibt es einen eigenen vorherigen DC-Koeffizienten.
+</div>
+
+Unser DCT-Block sieht bisher wie folgt aus:
+
+<table class='table dct'>
+<tr>
+<td class='m1'>-120</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+</table>
+
+### Decodierung eines Blocks: AC-Koeffizienten
+
+Direkt auf die DC-Differenz folgen die AC-Koeffizienten. Schauen wir uns wieder den Hexdump an:
+
+<pre class='spec hexdump'>
+00000260  fa ff da 00 0c 03 01 00  02 11 03 11 00 3f 00 <span class='m0'>f0</span>  |.............?..|
+00000270  <span class='m0'>7b 9d 26 64 7c c4 d9</span> 52  7e e9 ed 59 b3 44 23 60  |{.&d|..R~..Y.D#`|
+00000280  92 2e c6 3d 33 5d f5 c5  96 d2 44 67 38 ec 45 72  |...=3]....Dg8.Er|
+</pre>
+
+Oder in binärer Form (die Bits des DC-Koeffizienten sind weiterhin markiert):
+
+<pre class='spec hexdump'>
+<span class='m0'>11110</span> <span class='m1'>0000111</span> 1011 10011101 00100110 01100100 01111100 11000100 11011001 ...
+</pre>
+
+Hier wird die AC-Tabelle im Slot 0 verwendet, die insgesamt 162 Codes definiert, von denen wir für dieses Beispiel nur die ersten 13 benötigen:
+
+<!--
+  00 ->   1 (0x01)
+  01 ->   2 (0x02)
+  100 ->   3 (0x03)
+  1010 ->   0 (0x00)
+  1011 ->   4 (0x04)
+  1100 ->  17 (0x11)
+  11010 ->   5 (0x05)
+  11011 ->  18 (0x12)
+  11100 ->  33 (0x21)
+  111010 ->  49 (0x31)
+  111011 ->  65 (0x41)
+  1111000 ->   6 (0x06)
+  1111001 ->  19 (0x13)
+  1111010 ->  81 (0x51)
+  1111011 ->  97 (0x61)
+  11111000 ->   7 (0x07)
+  11111001 ->  34 (0x22)
+  11111010 -> 113 (0x71)
+  111110110 ->  20 (0x14)
+  111110111 ->  50 (0x32)
+  111111000 -> 129 (0x81)
+  111111001 -> 145 (0x91)
+  111111010 -> 161 (0xA1)
+  1111110110 ->   8 (0x08)
+  1111110111 ->  35 (0x23)
+  1111111000 ->  66 (0x42)
+  1111111001 -> 177 (0xB1)
+  1111111010 -> 193 (0xC1)
+  11111110110 ->  21 (0x15)
+  11111110111 ->  82 (0x52)
+  11111111000 -> 209 (0xD1)
+  11111111001 -> 240 (0xF0)
+  111111110100 ->  36 (0x24)
+  111111110101 ->  51 (0x33)
+  111111110110 ->  98 (0x62)
+  111111110111 -> 114 (0x72)
+  111111111000000 -> 130 (0x82)
+  1111111110000010 ->   9 (0x09)
+  1111111110000011 ->  10 (0x0A)
+  1111111110000100 ->  22 (0x16)
+  1111111110000101 ->  23 (0x17)
+  1111111110000110 ->  24 (0x18)
+  1111111110000111 ->  25 (0x19)
+  1111111110001000 ->  26 (0x1A)
+  1111111110001001 ->  37 (0x25)
+  1111111110001010 ->  38 (0x26)
+  1111111110001011 ->  39 (0x27)
+  1111111110001100 ->  40 (0x28)
+  1111111110001101 ->  41 (0x29)
+  1111111110001110 ->  42 (0x2A)
+  1111111110001111 ->  52 (0x34)
+  1111111110010000 ->  53 (0x35)
+  1111111110010001 ->  54 (0x36)
+  1111111110010010 ->  55 (0x37)
+  1111111110010011 ->  56 (0x38)
+  1111111110010100 ->  57 (0x39)
+  1111111110010101 ->  58 (0x3A)
+  1111111110010110 ->  67 (0x43)
+  1111111110010111 ->  68 (0x44)
+  1111111110011000 ->  69 (0x45)
+  1111111110011001 ->  70 (0x46)
+  1111111110011010 ->  71 (0x47)
+  1111111110011011 ->  72 (0x48)
+  1111111110011100 ->  73 (0x49)
+  1111111110011101 ->  74 (0x4A)
+  1111111110011110 ->  83 (0x53)
+  1111111110011111 ->  84 (0x54)
+  1111111110100000 ->  85 (0x55)
+  1111111110100001 ->  86 (0x56)
+  1111111110100010 ->  87 (0x57)
+  1111111110100011 ->  88 (0x58)
+  1111111110100100 ->  89 (0x59)
+  1111111110100101 ->  90 (0x5A)
+  1111111110100110 ->  99 (0x63)
+  1111111110100111 -> 100 (0x64)
+  1111111110101000 -> 101 (0x65)
+  1111111110101001 -> 102 (0x66)
+  1111111110101010 -> 103 (0x67)
+  1111111110101011 -> 104 (0x68)
+  1111111110101100 -> 105 (0x69)
+  1111111110101101 -> 106 (0x6A)
+  1111111110101110 -> 115 (0x73)
+  1111111110101111 -> 116 (0x74)
+  1111111110110000 -> 117 (0x75)
+  1111111110110001 -> 118 (0x76)
+  1111111110110010 -> 119 (0x77)
+  1111111110110011 -> 120 (0x78)
+  1111111110110100 -> 121 (0x79)
+  1111111110110101 -> 122 (0x7A)
+  1111111110110110 -> 131 (0x83)
+  1111111110110111 -> 132 (0x84)
+  1111111110111000 -> 133 (0x85)
+  1111111110111001 -> 134 (0x86)
+  1111111110111010 -> 135 (0x87)
+  1111111110111011 -> 136 (0x88)
+  1111111110111100 -> 137 (0x89)
+  1111111110111101 -> 138 (0x8A)
+  1111111110111110 -> 146 (0x92)
+  1111111110111111 -> 147 (0x93)
+  1111111111000000 -> 148 (0x94)
+  1111111111000001 -> 149 (0x95)
+  1111111111000010 -> 150 (0x96)
+  1111111111000011 -> 151 (0x97)
+  1111111111000100 -> 152 (0x98)
+  1111111111000101 -> 153 (0x99)
+  1111111111000110 -> 154 (0x9A)
+  1111111111000111 -> 162 (0xA2)
+  1111111111001000 -> 163 (0xA3)
+  1111111111001001 -> 164 (0xA4)
+  1111111111001010 -> 165 (0xA5)
+  1111111111001011 -> 166 (0xA6)
+  1111111111001100 -> 167 (0xA7)
+  1111111111001101 -> 168 (0xA8)
+  1111111111001110 -> 169 (0xA9)
+  1111111111001111 -> 170 (0xAA)
+  1111111111010000 -> 178 (0xB2)
+  1111111111010001 -> 179 (0xB3)
+  1111111111010010 -> 180 (0xB4)
+  1111111111010011 -> 181 (0xB5)
+  1111111111010100 -> 182 (0xB6)
+  1111111111010101 -> 183 (0xB7)
+  1111111111010110 -> 184 (0xB8)
+  1111111111010111 -> 185 (0xB9)
+  1111111111011000 -> 186 (0xBA)
+  1111111111011001 -> 194 (0xC2)
+  1111111111011010 -> 195 (0xC3)
+  1111111111011011 -> 196 (0xC4)
+  1111111111011100 -> 197 (0xC5)
+  1111111111011101 -> 198 (0xC6)
+  1111111111011110 -> 199 (0xC7)
+  1111111111011111 -> 200 (0xC8)
+  1111111111100000 -> 201 (0xC9)
+  1111111111100001 -> 202 (0xCA)
+  1111111111100010 -> 210 (0xD2)
+  1111111111100011 -> 211 (0xD3)
+  1111111111100100 -> 212 (0xD4)
+  1111111111100101 -> 213 (0xD5)
+  1111111111100110 -> 214 (0xD6)
+  1111111111100111 -> 215 (0xD7)
+  1111111111101000 -> 216 (0xD8)
+  1111111111101001 -> 217 (0xD9)
+  1111111111101010 -> 218 (0xDA)
+  1111111111101011 -> 225 (0xE1)
+  1111111111101100 -> 226 (0xE2)
+  1111111111101101 -> 227 (0xE3)
+  1111111111101110 -> 228 (0xE4)
+  1111111111101111 -> 229 (0xE5)
+  1111111111110000 -> 230 (0xE6)
+  1111111111110001 -> 231 (0xE7)
+  1111111111110010 -> 232 (0xE8)
+  1111111111110011 -> 233 (0xE9)
+  1111111111110100 -> 234 (0xEA)
+  1111111111110101 -> 241 (0xF1)
+  1111111111110110 -> 242 (0xF2)
+  1111111111110111 -> 243 (0xF3)
+  1111111111111000 -> 244 (0xF4)
+  1111111111111001 -> 245 (0xF5)
+  1111111111111010 -> 246 (0xF6)
+  1111111111111011 -> 247 (0xF7)
+  1111111111111100 -> 248 (0xF8)
+  1111111111111101 -> 249 (0xF9)
+  1111111111111110 -> 250 (0xFA)
+-->
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table center'>
+<tr>
+<th>Code</th>
+<td>00</td>
+<td>01</td>
+<td>100</td>
+<td>1010</td>
+<td>1011</td>
+<td>1100</td>
+<td>11010</td>
+<td>11011</td>
+<td>11100</td>
+<td>111010</td>
+<td>111011</td>
+<td>1111000</td>
+<td>1111001</td>
+<td colspan='2' style='text-align: center;'>...</td>
+</tr>
+<tr>
+<th>Symbol</th>
+<td>0x01</td>
+<td>0x02</td>
+<td>0x03</td>
+<td>0x00</td>
+<td>0x04</td>
+<td>0x11</td>
+<td>0x05</td>
+<td>0x12</td>
+<td>0x21</td>
+<td>0x31</td>
+<td>0x41</td>
+<td>0x06</td>
+<td>0x13</td>
+<td colspan='2' style='text-align: center;'>...</td>
+</tr>
+</table>
+</div>
+
+Wir können also den nächsten Code extrahieren:
+
+<pre class='spec hexdump'>
+<span class='m0'>11110</span> <span class='m1'>0000111</span> <span class='m2'>1011</span> 10011101 00100110 01100100 01111100 11000100 11011001
+</pre>
+
+Zum Code `1011` gehört das Symbol 0x04. Dieses Byte beinhaltet zwei Informationen:
+
+- die Anzahl der Nullen, die vor diesem Koeffizienten in der DCT-Matrix stehen (0 Nullen)
+- die Anzahl der Bits, die für diesen Koeffizienten codiert sind (4 Bits)
+
+Wir lesen also die nächsten 4 Bits ein:
+
+<pre class='spec hexdump'>
+<span class='m0'>11110</span> <span class='m1'>0000111</span> <span class='m2'>1011</span> <span class='m3'>1001</span> 1101 00100110 01100100 01111100 11000100 11011001
+</pre>
+
+Wir wenden wieder die vorzeichenbehaftete Umwandlung an: Da das höchste Bit 1 ist, handelt es sich um eine positive Zahl, die so bleiben kann. Der erste AC-Koeffizient in diesem Block hat also den Wert 9.
+
+<table class='table dct'>
+<tr>
+<td class='m1'>-120</td><td class='m3'>9</td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+</table>
+
+Wir lesen nun den nächsten Code ein:
+
+<pre class='spec hexdump'>
+<span class='m0'>11110</span> <span class='m1'>0000111</span> <span class='m2'>1011</span> <span class='m3'>1001</span> <span class='m4'>11010</span> 0100110 01100100 01111100 11000100 11011001
+</pre>
+
+Der Code `11010` entspricht dem Symbol 0x05, was bedeutet, dass vor dem nächsten AC-Koeffizienten 0 Nullen stehen und dieser mit 5 Bits codiert ist. Wir lesen also die nächsten 5 Bits ein:
+
+<pre class='spec hexdump'>
+<span class='m0'>11110</span> <span class='m1'>0000111</span> <span class='m2'>1011</span> <span class='m3'>1001</span> <span class='m4'>11010</span> <span class='m5'>01001</span> 10 01100100 01111100 11000100 11011001
+</pre>
+
+Das höchste Bit ist 0, es handelt sich also um eine negative Zahl. Wir rechnen: 9 - (2<sup>5</sup> - 1) = 9 - 31 = -22. Der zweite AC-Koeffizient in diesem Block hat also den Wert -22. Die AC-Koeffizienten werden in der Zig-Zag-Reihenfolge in die DCT-Matrix eingetragen:
+
+<table class='table dct'>
+<tr>
+<td class='m1'>-120</td><td class='m3'>9</td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td class='m5'>-22</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+</table>
+
+Wenn wir den Prozess fortsetzen, erhalten wir das folgende Ergebnis:
+
+<pre class='spec hexdump'>
+<span class='m0'>11110</span> <span class='m1'>0000111</span> <span class='m2'>1011</span> <span class='m3'>1001</span> <span class='m4'>11010</span> <span class='m5'>01001</span> <span class='m6'>100</span> <span class='m7'>110</span> <span class='m8'>01</span> <span class='m0'>00</span> <span class='m1'>01</span> <span class='m2'>11</span> <span class='m3'>1100</span> <span class='m4'>1</span> <span class='m5'>100</span> <span class='m6'>010</span> <span class='m7'>01</span> <span class='m8'>10</span> <span class='m0'>1100</span> <span class='m1'>1</span>
+</pre>
+
+Wir erhalten den folgenden DCT-Block:
+
+<table class='table dct'>
+<tr>
+<td class='m1'>-120</td><td class='m3'>9</td><td class='m2'>3</td><td>0</td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td class='m5'>-22</td><td class='m0'>-3</td><td class='m4'>1</td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td class='m7'>6</td><td class='m6'>-5</td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td class='m8'>2</td><td class='m1'>1</td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td>0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+</table>
+
+<div class='hint'>
+Die beiden Einträge mit dem Wert 0 resultieren daraus, dass der Code <code>1100</code>, welcher für das Symbol 0x11 steht, dafür sorgt, dass eine Null in der DCT-Matrix eingetragen wird, bevor der nächste Koeffizient decodiert wird.
+</div>
+
+Es gibt zwei spezielle Symbole:
+
+- 0x00: EOB (End of Block) → Alle restlichen Koeffizienten in diesem Block haben den Wert 0
+- 0xF0: ZRL (Zero Run Length) → Es werden 16 Nullen in der DCT-Matrix eingetragen, bevor der nächste Koeffizient decodiert wird
+
+## iDCT
+
+Nachdem alle Koeffizienten eines Blocks decodiert wurden, müssen wir die inverse DCT (iDCT) anwenden, um die Pixelwerte zu erhalten. Die iDCT wird auf die 8x8-DCT-Matrix angewendet und liefert eine 8x8-Matrix mit den Pixelwerten zurück. Diese Werte liegen im Bereich von -128 bis 127 und müssen um 128 verschoben werden, um den Bereich von 0 bis 255 zu erhalten.
+
+## Farbraumkonvertierung
+
+Nachdem wir die Pixelwerte für die Y-, Cb- und Cr-Komponenten erhalten haben, müssen wir diese in den RGB-Farbraum konvertieren, um das Bild korrekt darstellen zu können. Die Konvertierung erfolgt mit den folgenden Formeln:
+
+<div>
+R = Y + 1.402 * (Cr - 128)<br>
+G = Y - 0.344136 * (Cb - 128) - 0.714136 * (Cr - 128)<br>
+B = Y + 1.772 * (Cb - 128)
+</div>
