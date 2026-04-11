@@ -2,6 +2,11 @@
 image: title.webp
 </div>
 
+<script src="/include/huffman_decode.js"></script>
+<link rel="stylesheet" href="include/katex/katex.min.css">
+<script defer src="include/katex/katex.min.js"></script>
+<script defer src="include/katex/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+
 <style>
 
     :root {
@@ -14,6 +19,7 @@ image: title.webp
         --color-m6: #12959f;
         --color-m7: #73a946;
         --color-m8: #bf9b6b;
+        --color-mg: #ddd;
     }
     pre.spec {
         background: none;
@@ -25,13 +31,13 @@ image: title.webp
         /* background: #f5f5f5; */
         line-height: 135%;
 
-        .m0, .m1, .m2, .m3, .m4, .m5, .m6, .m7, .m8 {
+        .m0, .m1, .m2, .m3, .m4, .m5, .m6, .m7, .m8, .mg {
             position: relative;
         }
 
         .m0::after, .m1::after, .m2::after,
         .m3::after, .m4::after, .m5::after,
-        .m6::after, .m7::after, .m8::after {
+        .m6::after, .m7::after, .m8::after, .mg::after {
             content: "";
             position: absolute;
             left: -0.2em;
@@ -52,10 +58,11 @@ image: title.webp
         .m6::after { background-color: var(--color-m6); }
         .m7::after { background-color: var(--color-m7); }
         .m8::after { background-color: var(--color-m8); }
+        .mg::after { background-color: var(--color-mg); }
     }
 
     p, td {
-        .m0, .m1, .m2, .m3, .m4, .m5, .m6, .m7, .m8 {
+        .m0, .m1, .m2, .m3, .m4, .m5, .m6, .m7, .m8, .mg {
             padding: 0 0.25em;
             border-radius: 0.25em;
         }
@@ -68,10 +75,11 @@ image: title.webp
         .m6 { background-color: color-mix(in srgb, var(--color-m6) 75%, transparent); }
         .m7 { background-color: color-mix(in srgb, var(--color-m7) 75%, transparent); }
         .m8 { background-color: color-mix(in srgb, var(--color-m8) 75%, transparent); }
+        .mg { background-color: color-mix(in srgb, var(--color-mg) 75%, transparent); }
     }
 
     td {
-        .m0, .m1, .m2, .m3, .m4, .m5, .m6, .m7, .m8 {
+        .m0, .m1, .m2, .m3, .m4, .m5, .m6, .m7, .m8, .mg {
             padding: 0.25em 0.5em;
             code {
                 background: transparent;
@@ -121,6 +129,19 @@ image: title.webp
     td.m6 { background-color: var(--color-m6); }
     td.m7 { background-color: var(--color-m7); }
     td.m8 { background-color: var(--color-m8); }
+    td.mg { background-color: var(--color-mg); }
+
+    .dequant-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2em;
+        width: 100%;
+    }
+
+    .dequant-row .op {
+        font-size: 24px;
+    }
 
 </style>
 
@@ -248,6 +269,8 @@ Der <span class='m0'>SOI-Marker</span> steht am Anfang der Datei. Sollte er fehl
 <div class='hint'>
 Falls du vorher noch nie einen Hex-Dump gesehen hast, hier eine kurze Erklärung zu diesem Format: Es werden immer 16 Bytes in einer Zeile dargestellt. Die erste Spalte zeigt den Offset (die Position) des ersten Bytes in der Zeile an (in hexadezimaler Form). Dann folgen die 16 Bytes in hexadezimaler Form (in der Mitte gibt es eine kleine Lücke nach 8 Bytes, um die Lesbarkeit zu verbessern). Am Ende der Zeile wird die ASCII-Darstellung der Bytes angezeigt, wobei nicht druckbare Zeichen durch einen Punkt (.) ersetzt werden. In diesem Beispiel siehst du, dass die ersten beiden Bytes 0xFF und 0xD8 sind (der SOI-Marker), gefolgt von weiteren Daten, die das APP0-Segment bilden.
 </div>
+
+Die Beispiele beziehen sich alle auf die Datei <a href='/jpeg/44-baseline.jpg' target='_blank'>44-baseline.jpg</a>, die du zum Testen deiner Implementation verwenden kannst.
 
 ## Define Quantization Table (DQT)
 
@@ -684,7 +707,7 @@ Im Decoder müssen wir später »nur noch« die Bits solange einzeln einlesen, b
 
 **Ein weiteres Beispiel:**
 
-In diesem Beispiel wird eine AC-Tabelle im Slot 0 definiert, die deutlich mehr Codes enthält als die vorherige DC-Tabelle:
+In diesem Beispiel wird eine AC-Tabelle im Slot 0 definiert, die deutlich mehr Codes enthält als die vorherige DC-Tabelle. Wir benötigen sie später für die Decodierung der AC-Koeffizienten.
 
 <pre class='spec hexdump'>
 000000d0  0a 0b <span class='m0'>ff c4</span> <span class='m1'>00 b5</span> <span class='m2'>10</span> <span class='m3'>00  02 01 03 03 02 04 03 05</span>  |................|
@@ -703,7 +726,7 @@ In diesem Beispiel wird eine AC-Tabelle im Slot 0 definiert, die deutlich mehr C
 
 ## Start of Scan (SOS)
 
-Der SOS-Marker (Start of Scan) markiert den Beginn der komprimierten Bilddaten. Er enthält Informationen über die Anzahl der Komponenten im Scan, die zu verwendenden Huffman-Tabellen und die Spezifikationen für die Spektralpositionen und die Fortschrittsanzeige.
+Der SOS-Marker (Start of Scan) markiert den Beginn der komprimierten Bilddaten. Er enthält Informationen über die Anzahl der Komponenten im Scan sowie die zu verwendenden Huffman-Tabellen.
 
 <pre class='spec'>
      7 6 5 4 3 2 1 0        Field Name                    Type
@@ -825,7 +848,7 @@ Dabei wird das Bild MCU-weise codiert. In unserem Beispiel haben wir eine MCU-Gr
 
 ### Decodierung eines Blocks: DC-Koeffizient
 
-Zuerst wird der DC-Koeffizient decodiert, indem die entsprechenden Bits aus der Datei gelesen werden. Wir verwenden in diesem Beispiel die folgende Tabelle:
+In jedem Block wird zuerst der DC-Koeffizient decodiert, indem die entsprechenden Bits aus der Datei gelesen werden. Wir verwenden in diesem Beispiel die folgende DC-Tabelle in Slot 0, die wir vorher aus dem ersten DHT-Segment erstellt haben:
 
 <div style='max-width: 100%; overflow-x: auto;'>
 <table class='table center'>
@@ -926,17 +949,9 @@ Direkt auf die DC-Differenz folgen die AC-Koeffizienten. Schauen wir uns wieder 
 
 <pre class='spec hexdump'>
 00000260  fa ff da 00 0c 03 01 00  02 11 03 11 00 3f 00 <span class='m0'>f0</span>  |.............?..|
-00000270  <span class='m0'>7b 9d 26 64 7c c4 d9</span> 52  7e e9 ed 59 b3 44 23 60  |{.&d|..R~..Y.D#`|
+00000270  <span class='m0'>7b 9d 26 64 7c c4 d9 52  7e e9 ed 59</span> b3 44 23 60  |{.&d|..R~..Y.D#`|
 00000280  92 2e c6 3d 33 5d f5 c5  96 d2 44 67 38 ec 45 72  |...=3]....Dg8.Er|
 </pre>
-
-Oder in binärer Form (die Bits des DC-Koeffizienten sind weiterhin markiert):
-
-<pre class='spec hexdump'>
-<span class='m0'>11110</span> <span class='m1'>0000111</span> 1011 10011101 00100110 01100100 01111100 11000100 11011001 ...
-</pre>
-
-Hier wird die AC-Tabelle im Slot 0 verwendet, die insgesamt 162 Codes definiert, von denen wir für dieses Beispiel nur die ersten 13 benötigen:
 
 <!--
   00 ->   1 (0x01)
@@ -1103,15 +1118,27 @@ Hier wird die AC-Tabelle im Slot 0 verwendet, die insgesamt 162 Codes definiert,
   1111111111111110 -> 250 (0xFA)
 -->
 
+<div style='position: relative;'>
+<div style='float: right; margin-left: 1em; margin-top: 0.25em;'>
+<button id='bu-first' class='btn btn-sm btn-success'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
+<button id='bu-prev' class='btn btn-sm btn-success'><i class='bi bi-chevron-left' style='margin-right: 0;'></i></button>
+<button id='bu-next' class='btn btn-sm btn-success'><i class='bi bi-chevron-right' style='margin-right: 0;'></i></button>
+<button id='bu-last' class='btn btn-sm btn-success'><i class='bi bi-chevron-bar-right' style='margin-right: 0;'></i></button>
+</div>
+<p>
+Hier wird die AC-Tabelle im Slot 0 verwendet, die insgesamt 162 Codes definiert, von denen wir für dieses Beispiel nur einen Auszug benötigen.
+Verwende die Buttons, um zu sehen, wie der Bitstream decodiert wird (die Bits des bereits decodierten DC-Koeffizienten sind weiterhin markiert):
+</p>
+<div style='clear: both;'></div>
 <div style='max-width: 100%; overflow-x: auto;'>
-<table class='table center'>
+<table class='table center' id='ac_table'>
 <tr>
 <th>Code</th>
 <td>00</td>
 <td>01</td>
 <td>100</td>
 <td>1010</td>
-<td>1011</td>
+<td><span class='m2'>1011</span></td>
 <td>1100</td>
 <td>11010</td>
 <td>11011</td>
@@ -1120,7 +1147,9 @@ Hier wird die AC-Tabelle im Slot 0 verwendet, die insgesamt 162 Codes definiert,
 <td>111011</td>
 <td>1111000</td>
 <td>1111001</td>
-<td colspan='2' style='text-align: center;'>...</td>
+<td>...</td>
+<td>111110111</td>
+<td>...</td>
 </tr>
 <tr>
 <th>Symbol</th>
@@ -1137,145 +1166,59 @@ Hier wird die AC-Tabelle im Slot 0 verwendet, die insgesamt 162 Codes definiert,
 <td>0x41</td>
 <td>0x06</td>
 <td>0x13</td>
-<td colspan='2' style='text-align: center;'>...</td>
+<td>...</td>
+<td>0x32</td>
+<td>...</td>
 </tr>
 </table>
 </div>
+<div style='float: right; margin: 0.5em;' id='div_block'>
 
-Wir können also den nächsten Code extrahieren:
+</div>
+<div id='div_hexdump'></div>
 
-<pre class='spec hexdump'>
-<span class='m0'>11110</span> <span class='m1'>0000111</span> <span class='m2'>1011</span> 10011101 00100110 01100100 01111100 11000100 11011001
-</pre>
+<ol>
+<li class='step0'>Wir finden den nächsten Code <code class='read_code'>1011</code>.</li>
+<li class='step1'>Zum Code <code class='read_code'>1011</code> gehört das Symbol <code class='read_symbol'>0x04</code>. Dieses Byte beinhaltet zwei Informationen:
+<ul>
+<li>die Anzahl der Nullen, die vor diesem Koeffizienten in der DCT-Matrix stehen (0 Nullen)</li>
+<li>die Anzahl der Bits, die für diesen Koeffizienten codiert sind (4 Bits)</li>
+</ul>
+<li class='step2'>Wir lesen also die nächsten 4 Bits ein und erhalten <code>1001</code>.</li>
+<li class='step3'></li>
+</ol>
 
-Zum Code `1011` gehört das Symbol 0x04. Dieses Byte beinhaltet zwei Informationen:
-
-- die Anzahl der Nullen, die vor diesem Koeffizienten in der DCT-Matrix stehen (0 Nullen)
-- die Anzahl der Bits, die für diesen Koeffizienten codiert sind (4 Bits)
-
-Wir lesen also die nächsten 4 Bits ein:
-
-<pre class='spec hexdump'>
-<span class='m0'>11110</span> <span class='m1'>0000111</span> <span class='m2'>1011</span> <span class='m3'>1001</span> 1101 00100110 01100100 01111100 11000100 11011001
-</pre>
-
-Wir wenden wieder die vorzeichenbehaftete Umwandlung an: Da das höchste Bit 1 ist, handelt es sich um eine positive Zahl, die so bleiben kann. Der erste AC-Koeffizient in diesem Block hat also den Wert 9.
-
-<table class='table dct'>
-<tr>
-<td class='m1'>-120</td><td class='m3'>9</td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-</table>
-
-Wir lesen nun den nächsten Code ein:
-
-<pre class='spec hexdump'>
-<span class='m0'>11110</span> <span class='m1'>0000111</span> <span class='m2'>1011</span> <span class='m3'>1001</span> <span class='m4'>11010</span> 0100110 01100100 01111100 11000100 11011001
-</pre>
-
-Der Code `11010` entspricht dem Symbol 0x05, was bedeutet, dass vor dem nächsten AC-Koeffizienten 0 Nullen stehen und dieser mit 5 Bits codiert ist. Wir lesen also die nächsten 5 Bits ein:
-
-<pre class='spec hexdump'>
-<span class='m0'>11110</span> <span class='m1'>0000111</span> <span class='m2'>1011</span> <span class='m3'>1001</span> <span class='m4'>11010</span> <span class='m5'>01001</span> 10 01100100 01111100 11000100 11011001
-</pre>
-
-Das höchste Bit ist 0, es handelt sich also um eine negative Zahl. Wir rechnen: 9 - (2<sup>5</sup> - 1) = 9 - 31 = -22. Der zweite AC-Koeffizient in diesem Block hat also den Wert -22. Die AC-Koeffizienten werden in der Zig-Zag-Reihenfolge in die DCT-Matrix eingetragen:
-
-<table class='table dct'>
-<tr>
-<td class='m1'>-120</td><td class='m3'>9</td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td class='m5'>-22</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-</table>
-
-Wenn wir den Prozess fortsetzen, erhalten wir das folgende Ergebnis:
-
-<pre class='spec hexdump'>
-<span class='m0'>11110</span> <span class='m1'>0000111</span> <span class='m2'>1011</span> <span class='m3'>1001</span> <span class='m4'>11010</span> <span class='m5'>01001</span> <span class='m6'>100</span> <span class='m7'>110</span> <span class='m8'>01</span> <span class='m0'>00</span> <span class='m1'>01</span> <span class='m2'>11</span> <span class='m3'>1100</span> <span class='m4'>1</span> <span class='m5'>100</span> <span class='m6'>010</span> <span class='m7'>01</span> <span class='m8'>10</span> <span class='m0'>1100</span> <span class='m1'>1</span>
-</pre>
-
-Wir erhalten den folgenden DCT-Block:
-
-<table class='table dct'>
-<tr>
-<td class='m1'>-120</td><td class='m3'>9</td><td class='m2'>3</td><td>0</td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td class='m5'>-22</td><td class='m0'>-3</td><td class='m4'>1</td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td class='m7'>6</td><td class='m6'>-5</td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td class='m8'>2</td><td class='m1'>1</td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td>0</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-<tr>
-<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-</tr>
-</table>
-
-<div class='hint'>
-Die beiden Einträge mit dem Wert 0 resultieren daraus, dass der Code <code>1100</code>, welcher für das Symbol 0x11 steht, dafür sorgt, dass eine Null in der DCT-Matrix eingetragen wird, bevor der nächste Koeffizient decodiert wird.
+<div style='clear: both;'></div>
 </div>
 
-Es gibt zwei spezielle Symbole:
+Es gibt zwei spezielle Symbole bei der Decodierung der AC-Koeffizienten:
 
-- 0x00: EOB (End of Block) → Alle restlichen Koeffizienten in diesem Block haben den Wert 0
-- 0xF0: ZRL (Zero Run Length) → Es werden 16 Nullen in der DCT-Matrix eingetragen, bevor der nächste Koeffizient decodiert wird
+- `0x00`: EOB (End of Block) → Alle restlichen Koeffizienten in diesem Block haben den Wert 0.
+- `0xF0`: ZRL (Zero Run Length) → Es werden 16 Nullen in der DCT-Matrix eingetragen, bevor der nächste Koeffizient decodiert wird.
+
+## Dequantisierung
+
+Jeder Block wird anschließend dequantisiert, indem die Koeffizienten komponentenweise mit den entsprechenden Werten aus der Quantisierungstabelle multipliziert werden. In unserem Beispiel verwenden wir die folgende Quantisierungstabelle für die Y-Komponente, die wir vorher aus dem ersten DQT-Segment erstellt haben:
+
+<div class="dequant-row">
+    <div id="dequant_0"></div>
+    <span class="op">×</span>
+    <div id="dequant_1"></div>
+    <span class="op">=</span>
+    <div id="dequant_2"></div>
+</div>
 
 ## iDCT
 
 Nachdem alle Koeffizienten eines Blocks decodiert wurden, müssen wir die inverse DCT (iDCT) anwenden, um die Pixelwerte zu erhalten. Die iDCT wird auf die 8x8-DCT-Matrix angewendet und liefert eine 8x8-Matrix mit den Pixelwerten zurück. Diese Werte liegen im Bereich von -128 bis 127 und müssen um 128 verschoben werden, um den Bereich von 0 bis 255 zu erhalten.
+
+Du kannst folgende Formel für die iDCT verwenden:
+
+<div id='idct_here'></div>
+
+## Rekonstruktion der MCU
+
+Wenn wir 6 Blöcke decodiert haben (4&times;Y, 1&times;Cb, 1&times;Cr), können wir die MCU von 16x16 Pixeln rekonstruieren. Dazu müssen wir die Blöcke der Y-Komponente entsprechend ihrer Position in der MCU anordnen und die Blöcke der Cb- und Cr-Komponenten auf die Größe von 16x16 Pixeln hochskalieren (da sie nur 8x8 Pixel groß sind). Anschließend können wir die iDCT auf jeden Block anwenden, um die Pixelwerte zu erhalten.
 
 ## Farbraumkonvertierung
 
@@ -1286,3 +1229,321 @@ R = Y + 1.402 * (Cr - 128)<br>
 G = Y - 0.344136 * (Cb - 128) - 0.714136 * (Cr - 128)<br>
 B = Y + 1.772 * (Cb - 128)
 </div>
+
+<script>
+
+const step_min = 3;
+const step_max = 65;
+let step = step_min;
+let steps = [];
+const hexBytes = `f0 7b 9d 26 64 7c c4 d9 52 7e e9 ed 59`;
+const bytes = parseHexBytes(hexBytes);
+
+function activateStep(step) {
+    let div = document.querySelector("#div_hexdump");
+    div.innerHTML = stepsToMarkedHexdump(bytes, steps, Math.floor((step + 2) / 2));
+    let currentStep = steps[Math.floor(step / 4)];
+    let phase = step % 4;
+    let value = `0x${(currentStep.huffman.symbol >> 4).toString(16).toUpperCase()}${(currentStep.huffman.symbol & 0x0F).toString(16).toUpperCase()}`;
+    for (let x of document.querySelectorAll(".read_code")) {
+        x.textContent = currentStep ? currentStep.huffman.bits : '';
+    }
+    marked_cells = [];
+    if (step != step_min) {
+        marked_cells.push({ content: currentStep.huffman.bits, className: `m${(Math.floor(step / 4) * 2) % 9}` });
+    }
+    if (phase > 0) {
+        marked_cells.push({ content: value, className: `mg` });
+    }
+    markTableCellsByContent("#ac_table", marked_cells);
+    document.querySelector("#div_block").innerHTML = stepsToDctTable(steps, Math.floor((step - 3) / 2 + 2));
+    document.querySelector('#bu-first').disabled = step <= step_min;
+    document.querySelector("#bu-prev").disabled = step <= step_min;
+    document.querySelector("#bu-next").disabled = step >= step_max;
+    document.querySelector('#bu-last').disabled = step >= step_max;
+    document.querySelector('.step0').style.display = (step > step_min) ? 'list-item' : 'none';
+    document.querySelector('.step1').style.display = (step > step_min && (step) % 4 > 0) ? 'list-item' : 'none';
+    document.querySelector('.step2').style.display = (step > step_min && (step) % 4 > 1) ? 'list-item' : 'none';
+    document.querySelector('.step3').style.display = (step > step_min && (step) % 4 > 2) ? 'list-item' : 'none';
+    // Da das höchste Bit 1 ist, handelt es sich um eine positive Zahl, die so bleiben kann. Der <span id='first_next'>erste</span> AC-Koeffizient in diesem Block hat also den Wert 9.
+    if (currentStep.decodedValue < 0) {
+        document.querySelector('.step3').innerHTML = `Da das höchste Bit 0 ist, handelt es sich um eine negative Zahl. Wir müssen also 2<sup>${currentStep.huffman.symbol & 0x0F}</sup> - 1 = ${Math.pow(2, currentStep.huffman.symbol & 0x0F) - 1} von der decodierten Zahl subtrahieren, um den tatsächlichen Wert zu erhalten. Der ${step > 8 ? `nächste` : `erste`} AC-Koeffizient in diesem Block hat also den Wert ${currentStep.valueBits.rawValue} - ${Math.pow(2, currentStep.huffman.symbol & 0x0F) - 1} =  ${currentStep.decodedValue}.`;
+    } else {
+        document.querySelector('.step3').textContent = `Da das höchste Bit 1 ist, handelt es sich um eine positive Zahl, die so bleiben kann. Der ${step > 8 ? `nächste` : `erste`} AC-Koeffizient in diesem Block hat also den Wert ${currentStep.decodedValue}.`;
+    }
+    if (currentStep.extra.run > 0) {
+        document.querySelector('.step3').innerHTML += ` <strong>Achtung:</strong> Da die Anzahl der Nullen hier größer als 0 ist, wurde${currentStep.extra.run > 1 ? 'n' : ''} vorher bereits ${currentStep.extra.run} Null${currentStep.extra.run > 1 ? 'en' : ''} eingetragen.`;
+    }
+    if (currentStep.kind === 'AC_EOB') {
+        document.querySelector('.step1').innerHTML = `Beim Symbol <code>0x00</code> handelt es sich um das EOB-Symbol (End of Block). Alle restlichen Koeffizienten in diesem Block haben den Wert 0 und die Decodierung ist damit abgeschlossen.`;
+    } else {
+        document.querySelector('.step1').innerHTML =
+            `Zum Code <code class='read_code'>${currentStep.huffman.bits}</code> gehört das Symbol <code class='read_symbol'>${value}</code>. Dieses Byte beinhaltet zwei Informationen:
+            <ul>
+            <li>die Anzahl der Nullen, die vor diesem Koeffizienten in der DCT-Matrix stehen (${currentStep.huffman.symbol >> 4} Null${(currentStep.huffman.symbol >> 4) !== 1 ? 'en' : ''})</li>
+            <li>die Anzahl der Bits, die für diesen Koeffizienten codiert sind (${currentStep.huffman.symbol & 0x0F} Bit${(currentStep.huffman.symbol & 0x0F) !== 1 ? 's' : ''})</li>
+            </ul>`;
+        document.querySelector('.step2').innerHTML = `Wir lesen also ${(currentStep.huffman.symbol & 0x0F) === 1 ? 'das nächste' : 'die nächsten'} ${currentStep.huffman.symbol & 0x0F} Bit${(currentStep.huffman.symbol & 0x0F) !== 1 ? 's' : ''} ein und erhalten <code>${currentStep.valueBits.rawValue.toString(2).padStart(currentStep.huffman.symbol & 0x0F, '0')}</code> = ${currentStep.valueBits.rawValue}.`;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const dcTable = {
+        "00": 0x00,
+        "010": 0x01,
+        "011": 0x02,
+        "100": 0x03,
+        "101": 0x04,
+        "110": 0x05,
+        "1110": 0x06,
+        "11110": 0x07,
+        "111110": 0x08,
+        "1111110": 0x09,
+        "11111110": 0x0A,
+        "111111110": 0x0B
+    };
+
+    const acTable = {
+        "00": 0x01,
+        "01": 0x02,
+        "100": 0x03,
+        "1010": 0x00,
+        "1011": 0x04,
+        "1100": 0x11,
+        "11010": 0x05,
+        "11011": 0x12,
+        "11100": 0x21,
+        "111010": 0x31,
+        "111011": 0x41,
+        "1111000": 0x06,
+        "1111001": 0x13,
+        "1111010": 0x51,
+        "1111011": 0x61,
+        "11111000": 0x07,
+        "11111001": 0x22,
+        "11111010": 0x71,
+        "111110110": 0x14,
+        "111110111": 0x32,
+        "111111000": 0x81,
+        "111111001": 0x91,
+        "111111010": 0xA1,
+        "1111110110": 0x08,
+        "1111110111": 0x23,
+        "1111111000": 0x42,
+        "1111111001": 0xB1,
+        "1111111010": 0xC1,
+        "11111110110": 0x15,
+        "11111110111": 0x52,
+        "11111111000": 0xD1,
+        "11111111001": 0xF0,
+        "111111110100": 0x24,
+        "111111110101": 0x33,
+        "111111110110": 0x62,
+        "111111110111": 0x72,
+        "111111111000000": 0x82,
+        "1111111110000010": 0x09,
+        "1111111110000011": 0x0A,
+        "1111111110000100": 0x16,
+        "1111111110000101": 0x17,
+        "1111111110000110": 0x18,
+        "1111111110000111": 0x19,
+        "1111111110001000": 0x1A,
+        "1111111110001001": 0x25,
+        "1111111110001010": 0x26,
+        "1111111110001011": 0x27,
+        "1111111110001100": 0x28,
+        "1111111110001101": 0x29,
+        "1111111110001110": 0x2A,
+        "1111111110001111": 0x34,
+        "1111111110010000": 0x35,
+        "1111111110010001": 0x36,
+        "1111111110010010": 0x37,
+        "1111111110010011": 0x38,
+        "1111111110010100": 0x39,
+        "1111111110010101": 0x3A,
+        "1111111110010110": 0x43,
+        "1111111110010111": 0x44,
+        "1111111110011000": 0x45,
+        "1111111110011001": 0x46,
+        "1111111110011010": 0x47,
+        "1111111110011011": 0x48,
+        "1111111110011100": 0x49,
+        "1111111110011101": 0x4A,
+        "1111111110011110": 0x53,
+        "1111111110011111": 0x54,
+        "1111111110100000": 0x55,
+        "1111111110100001": 0x56,
+        "1111111110100010": 0x57,
+        "1111111110100011": 0x58,
+        "1111111110100100": 0x59,
+        "1111111110100101": 0x5A,
+        "1111111110100110": 0x63,
+        "1111111110100111": 0x64,
+        "1111111110101000": 0x65,
+        "1111111110101001": 0x66,
+        "1111111110101010": 0x67,
+        "1111111110101011": 0x68,
+        "1111111110101100": 0x69,
+        "1111111110101101": 0x6A,
+        "1111111110101110": 0x73,
+        "1111111110101111": 0x74,
+        "1111111110110000": 0x75,
+        "1111111110110001": 0x76,
+        "1111111110110010": 0x77,
+        "1111111110110011": 0x78,
+        "1111111110110100": 0x79,
+        "1111111110110101": 0x7A,
+        "1111111110110110": 0x83,
+        "1111111110110111": 0x84,
+        "1111111110111000": 0x85,
+        "1111111110111001": 0x86,
+        "1111111110111010": 0x87,
+        "1111111110111011": 0x88,
+        "1111111110111100": 0x89,
+        "1111111110111101": 0x8A,
+        "1111111110111110": 0x92,
+        "1111111110111111": 0x93,
+        "1111111111000000": 0x94,
+        "1111111111000001": 0x95,
+        "1111111111000010": 0x96,
+        "1111111111000011": 0x97,
+        "1111111111000100": 0x98,
+        "1111111111000101": 0x99,
+        "1111111111000110": 0x9A,
+        "1111111111000111": 0xA2,
+        "1111111111001000": 0xA3,
+        "1111111111001001": 0xA4,
+        "1111111111001010": 0xA5,
+        "1111111111001011": 0xA6,
+        "1111111111001100": 0xA7,
+        "1111111111001101": 0xA8,
+        "1111111111001110": 0xA9,
+        "1111111111001111": 0xAA,
+        "1111111111010000": 0xB2,
+        "1111111111010001": 0xB3,
+        "1111111111010010": 0xB4,
+        "1111111111010011": 0xB5,
+        "1111111111010100": 0xB6,
+        "1111111111010101": 0xB7,
+        "1111111111010110": 0xB8,
+        "1111111111010111": 0xB9,
+        "1111111111011000": 0xBA,
+        "1111111111011001": 0xC2,
+        "1111111111011010": 0xC3,
+        "1111111111011011": 0xC4,
+        "1111111111011100": 0xC5,
+        "1111111111011101": 0xC6,
+        "1111111111011110": 0xC7,
+        "1111111111011111": 0xC8,
+        "1111111111100000": 0xC9,
+        "1111111111100001": 0xCA,
+        "1111111111100010": 0xD2,
+        "1111111111100011": 0xD3,
+        "1111111111100100": 0xD4,
+        "1111111111100101": 0xD5,
+        "1111111111100110": 0xD6,
+        "1111111111100111": 0xD7,
+        "1111111111101000": 0xD8,
+        "1111111111101001": 0xD9,
+        "1111111111101010": 0xDA,
+        "1111111111101011": 0xE1,
+        "1111111111101100": 0xE2,
+        "1111111111101101": 0xE3,
+        "1111111111101110": 0xE4,
+        "1111111111101111": 0xE5,
+        "1111111111110000": 0xE6,
+        "1111111111110001": 0xE7,
+        "1111111111110010": 0xE8,
+        "1111111111110011": 0xE9,
+        "1111111111110100": 0xEA,
+        "1111111111110101": 0xF1,
+        "1111111111110110": 0xF2,
+        "1111111111110111": 0xF3,
+        "1111111111111000": 0xF4,
+        "1111111111111001": 0xF5,
+        "1111111111111010": 0xF6,
+        "1111111111111011": 0xF7,
+        "1111111111111100": 0xF8,
+        "1111111111111101": 0xF9,
+        "1111111111111110": 0xFA
+    };
+
+    const result = decodeJpegDctStream(bytes, dcTable, acTable, {
+        initialDC: 0
+    });
+
+    steps = result.blocks[0].steps;
+
+    activateStep(step)
+
+    document.querySelector('#bu-first').addEventListener("click", function() {
+        step = step_min;
+        activateStep(step);
+    });
+    document.querySelector("#bu-prev").addEventListener("click", function() {
+        if (step > step_min) {
+            step--;
+            activateStep(step);
+        }
+    });
+    document.querySelector("#bu-next").addEventListener("click", function() {
+        if (step < step_max) {
+            step++;
+            activateStep(step);
+        }
+    });
+    document.querySelector('#bu-last').addEventListener("click", function() {
+        step = step_max;
+        activateStep(step);
+    });
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "ArrowLeft") {
+            if (step > step_min) {
+                step--;
+                activateStep(step);
+            }
+        } else if (event.key === "ArrowRight") {
+            if (step < step_max) {
+                step++;
+                activateStep(step);
+            }
+        }
+    });
+
+    document.querySelector("#dequant_0").innerHTML = stepsToDctTable(steps, 65, false);
+
+    const q = [
+        5, 3, 4, 4, 4, 3, 5, 4,
+        4, 4, 5, 5, 5, 6, 7, 12,
+        8, 7, 7, 7, 7, 15, 11, 11,
+        9, 12, 17, 15, 18, 18, 17, 15,
+        17, 17, 19, 22, 28, 23, 19, 20,
+        26, 21, 17, 17, 24, 33, 24, 26,
+        29, 29, 31, 31, 31, 19, 23, 34,
+        36, 34, 30, 36, 28, 30, 31, 30
+    ];
+
+    fillQuantAndDequantTablesFromSteps(
+        "#dequant_1",
+        "#dequant_2",
+        steps,
+        q,
+        65,
+        false
+    );
+
+katex.render(
+  String.raw`
+f(x,y)=\frac{1}{4}
+\sum_{u=0}^{7}\sum_{v=0}^{7}
+C(u)\,C(v)\,F(u,v)\;
+\cos\!\Bigg[\frac{(2x+1)u\pi}{16}\Bigg]\;
+\cos\!\Bigg[\frac{(2y+1)v\pi}{16}\Bigg]
+`,
+  document.getElementById("idct_here"),
+  { displayMode: true }
+);
+
+});
+
+</script>
