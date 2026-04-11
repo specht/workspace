@@ -496,7 +496,7 @@ function stepsToMarkedHexdump(bytes, steps, visibleMarkedCount = Infinity) {
         const t = tokens[i];
         const len = t.end - t.start;
 
-        if (lineBits > 0 && lineBits + len > 56) {
+        if (false && lineBits > 0 && lineBits + len > 56) {
             html += "\n";
             lineBits = 0;
         } else if (i > 0 && lineBits > 0) {
@@ -511,7 +511,7 @@ function stepsToMarkedHexdump(bytes, steps, visibleMarkedCount = Infinity) {
 
         lineBits += len;
 
-        if (lineBits === 56 && i !== tokens.length - 1) {
+        if (false && lineBits === 56 && i !== tokens.length - 1) {
             html += "\n";
             lineBits = 0;
         }

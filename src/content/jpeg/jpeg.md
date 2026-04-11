@@ -145,13 +145,25 @@ image: title.webp
     .dequant-row {
         display: flex;
         align-items: center;
-        justify-content: center;
+        /* justify-content: center; */
         gap: 2em;
-        width: 100%;
+        /* width: 100%; */
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    .dequant-row table.dct td {
+        min-width: 2.5em;
     }
 
     .dequant-row .op {
         font-size: 24px;
+    }
+
+    #div_hexdump {
+        pre {
+            white-space: break-spaces;
+        }
     }
 
     html[data-bs-theme="dark"] {
@@ -1226,12 +1238,14 @@ Es gibt zwei spezielle Symbole bei der Decodierung der AC-Koeffizienten:
 
 Jeder Block wird anschließend dequantisiert, indem die Koeffizienten komponentenweise mit den entsprechenden Werten aus der Quantisierungstabelle multipliziert werden. In unserem Beispiel verwenden wir die folgende Quantisierungstabelle für die Y-Komponente, die wir vorher aus dem ersten DQT-Segment erstellt haben:
 
+<div style='display: flex; justify-content: center;'>
 <div class="dequant-row">
     <div id="dequant_0"></div>
     <span class="op">×</span>
     <div id="dequant_1"></div>
     <span class="op">=</span>
     <div id="dequant_2"></div>
+</div>
 </div>
 
 ## iDCT
@@ -1240,7 +1254,7 @@ Nachdem alle Koeffizienten eines Blocks decodiert wurden, müssen wir die invers
 
 Du kannst folgende Formel für die iDCT verwenden:
 
-<div style="text-align: center; margin: 1em 0;">
+<div style="text-align: center; margin: 1em 0; max-width: 100%; overflow-x: auto;">
     <img src="/jpeg/idct_formula.svg" class="dark-mode-aware" alt="IDCT formula" style="width: 720px;" />
 </div>
 
@@ -1254,7 +1268,7 @@ Wenn wir 6 Blöcke decodiert haben (4&times;Y, 1&times;Cb, 1&times;Cr), können 
 
 Nachdem wir die Pixelwerte für die Y-, Cb- und Cr-Komponenten erhalten haben, müssen wir diese in den RGB-Farbraum konvertieren, um das Bild korrekt darstellen zu können. Die Konvertierung erfolgt mit den folgenden Formeln:
 
-<div style="text-align: center; margin: 1em 0;">
+<div style="text-align: center; margin: 1em 0; max-width: 100%; overflow-x: auto;">
     <img src="/jpeg/rgb_formula.svg" class="dark-mode-aware" alt="RGB conversion formula" style="width: 490px;" />
 </div>
 
