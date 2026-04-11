@@ -25,6 +25,16 @@
         transition: transform 220ms ease;
     }
 
+    .permission {
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+        color: #eee;
+        font: 11px sans-serif;
+        z-index: 100;
+        opacity: 0.75;
+    }
+
     #backdrop {
         position: absolute;
         left: 0;
@@ -272,6 +282,9 @@
 </button>
 
 <div id="app_shell">
+    <div class='permission'>
+        Alle Bilder mit freundlicher Genehmigung von Ian Kobylanski · <a href='https://www.koby.photography/' target='_blank'>https://www.koby.photography/</a>
+    </div>
     <img id="base_image" style="display:none;">
 
     <div class="container-fluid">
