@@ -1250,7 +1250,7 @@ Jeder Block wird anschließend dequantisiert, indem die Koeffizienten komponente
 
 ## iDCT
 
-Nachdem alle Koeffizienten eines Blocks decodiert wurden, müssen wir die inverse DCT (iDCT) anwenden, um die Pixelwerte zu erhalten. Die iDCT wird auf die 8x8-DCT-Matrix angewendet und liefert eine 8x8-Matrix mit den Pixelwerten zurück. Diese Werte liegen im Bereich von -128 bis 127 und müssen um 128 verschoben werden, um den Bereich von 0 bis 255 zu erhalten.
+Nachdem alle Koeffizienten eines Blocks decodiert wurden, müssen wir die inverse DCT (iDCT) anwenden, um die Pixelwerte zu erhalten. Die iDCT wird auf die 8x8-DCT-Matrix angewendet und liefert eine 8x8-Matrix mit den Pixelwerten zurück.
 
 Du kannst folgende Formel für die iDCT verwenden:
 
