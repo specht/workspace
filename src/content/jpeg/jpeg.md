@@ -3,9 +3,6 @@ image: title.webp
 </div>
 
 <script src="/include/huffman_decode.js"></script>
-<link rel="stylesheet" href="include/katex/katex.min.css">
-<script defer src="include/katex/katex.min.js"></script>
-<script defer src="include/katex/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
 
 <style>
 
@@ -1214,7 +1211,11 @@ Nachdem alle Koeffizienten eines Blocks decodiert wurden, müssen wir die invers
 
 Du kannst folgende Formel für die iDCT verwenden:
 
-<div id='idct_here'></div>
+<div style="text-align: center; margin: 1em 0;">
+    <img src="/jpeg/idct_formula.svg" alt="IDCT formula" style="width: 720px;" />
+</div>
+
+Da die resultierenden Werte nach der iDCT noch im Bereich von -128 bis 127 liegen, müssen wir sie um 128 verschieben, um den Bereich von 0 bis 255 zu erhalten.
 
 ## Rekonstruktion der MCU
 
@@ -1224,11 +1225,11 @@ Wenn wir 6 Blöcke decodiert haben (4&times;Y, 1&times;Cb, 1&times;Cr), können 
 
 Nachdem wir die Pixelwerte für die Y-, Cb- und Cr-Komponenten erhalten haben, müssen wir diese in den RGB-Farbraum konvertieren, um das Bild korrekt darstellen zu können. Die Konvertierung erfolgt mit den folgenden Formeln:
 
-<div>
-R = Y + 1.402 * (Cr - 128)<br>
-G = Y - 0.344136 * (Cb - 128) - 0.714136 * (Cr - 128)<br>
-B = Y + 1.772 * (Cb - 128)
+<div style="text-align: center; margin: 1em 0;">
+    <img src="/jpeg/rgb_formula.svg" alt="RGB conversion formula" style="width: 490px;" />
 </div>
+
+Anschließend müssen die RGB-Werte noch einmal auf den Bereich von 0 bis 255 beschränkt werden, da sie durch die Berechnung auch Werte außerhalb dieses Bereichs annehmen können.
 
 <script>
 
@@ -1531,19 +1532,6 @@ document.addEventListener('DOMContentLoaded', function() {
         65,
         false
     );
-
-katex.render(
-  String.raw`
-f(x,y)=\frac{1}{4}
-\sum_{u=0}^{7}\sum_{v=0}^{7}
-C(u)\,C(v)\,F(u,v)\;
-\cos\!\Bigg[\frac{(2x+1)u\pi}{16}\Bigg]\;
-\cos\!\Bigg[\frac{(2y+1)v\pi}{16}\Bigg]
-`,
-  document.getElementById("idct_here"),
-  { displayMode: true }
-);
-
 });
 
 </script>
