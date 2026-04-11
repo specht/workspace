@@ -5,7 +5,6 @@ image: title.webp
 <script src="/include/huffman_decode.js"></script>
 
 <style>
-
     :root {
         --color-m0: #ffe617;
         --color-m1: #f4951b;
@@ -18,6 +17,20 @@ image: title.webp
         --color-m8: #bf9b6b;
         --color-mg: #ddd;
     }
+
+    html[data-bs-theme="dark"] {
+        --color-m0: #7a6a00;
+        --color-m1: #8a4e00;
+        --color-m2: #7a1618;
+        --color-m3: #7a2f55;
+        --color-m4: #4a3f7a;
+        --color-m5: #165a8a;
+        --color-m6: #0d646b;
+        --color-m7: #4a6f2b;
+        --color-m8: #6d5233;
+        --color-mg: #555;
+    }
+
     pre.spec {
         background: none;
         color: #333;
@@ -30,11 +43,12 @@ image: title.webp
 
         .m0, .m1, .m2, .m3, .m4, .m5, .m6, .m7, .m8, .mg {
             position: relative;
+            /* z-index: 2; */
         }
 
-        .m0::after, .m1::after, .m2::after,
-        .m3::after, .m4::after, .m5::after,
-        .m6::after, .m7::after, .m8::after, .mg::after {
+        .m0::before, .m1::before, .m2::before,
+        .m3::before, .m4::before, .m5::before,
+        .m6::before, .m7::before, .m8::before, .mg::before {
             content: "";
             position: absolute;
             left: -0.2em;
@@ -46,16 +60,16 @@ image: title.webp
             opacity: 0.75;
         }
 
-        .m0::after { background-color: var(--color-m0); }
-        .m1::after { background-color: var(--color-m1); }
-        .m2::after { background-color: var(--color-m2); }
-        .m3::after { background-color: var(--color-m3); }
-        .m4::after { background-color: var(--color-m4); }
-        .m5::after { background-color: var(--color-m5); }
-        .m6::after { background-color: var(--color-m6); }
-        .m7::after { background-color: var(--color-m7); }
-        .m8::after { background-color: var(--color-m8); }
-        .mg::after { background-color: var(--color-mg); }
+        .m0::before { background-color: var(--color-m0); }
+        .m1::before { background-color: var(--color-m1); }
+        .m2::before { background-color: var(--color-m2); }
+        .m3::before { background-color: var(--color-m3); }
+        .m4::before { background-color: var(--color-m4); }
+        .m5::before { background-color: var(--color-m5); }
+        .m6::before { background-color: var(--color-m6); }
+        .m7::before { background-color: var(--color-m7); }
+        .m8::before { background-color: var(--color-m8); }
+        .mg::before { background-color: var(--color-mg); }
     }
 
     p, td {
@@ -138,6 +152,21 @@ image: title.webp
 
     .dequant-row .op {
         font-size: 24px;
+    }
+
+    html[data-bs-theme="dark"] {
+        pre.spec {
+            color: #ddd;
+        }
+        .dark-mode-aware {
+            filter: invert(1);
+        }
+        .m0, .m1, .m2, .m3, .m4, .m5, .m6, .m7, .m8, .mg {
+            color: #fff;
+        }
+        pre, pre .w {
+            background-color: transparent !important;
+        }
     }
 
 </style>
@@ -1212,7 +1241,7 @@ Nachdem alle Koeffizienten eines Blocks decodiert wurden, müssen wir die invers
 Du kannst folgende Formel für die iDCT verwenden:
 
 <div style="text-align: center; margin: 1em 0;">
-    <img src="/jpeg/idct_formula.svg" alt="IDCT formula" style="width: 720px;" />
+    <img src="/jpeg/idct_formula.svg" class="dark-mode-aware" alt="IDCT formula" style="width: 720px;" />
 </div>
 
 Da die resultierenden Werte nach der iDCT noch im Bereich von -128 bis 127 liegen, müssen wir sie um 128 verschieben, um den Bereich von 0 bis 255 zu erhalten.
@@ -1226,7 +1255,7 @@ Wenn wir 6 Blöcke decodiert haben (4&times;Y, 1&times;Cb, 1&times;Cr), können 
 Nachdem wir die Pixelwerte für die Y-, Cb- und Cr-Komponenten erhalten haben, müssen wir diese in den RGB-Farbraum konvertieren, um das Bild korrekt darstellen zu können. Die Konvertierung erfolgt mit den folgenden Formeln:
 
 <div style="text-align: center; margin: 1em 0;">
-    <img src="/jpeg/rgb_formula.svg" alt="RGB conversion formula" style="width: 490px;" />
+    <img src="/jpeg/rgb_formula.svg" class="dark-mode-aware" alt="RGB conversion formula" style="width: 490px;" />
 </div>
 
 Anschließend müssen die RGB-Werte noch einmal auf den Bereich von 0 bis 255 beschränkt werden, da sie durch die Berechnung auch Werte außerhalb dieses Bereichs annehmen können.
