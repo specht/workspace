@@ -204,7 +204,7 @@
     #math_forward {
         position: absolute;
         left: 1em;
-        bottom: 2em;
+        top: 2em;
         color: #eee;
         transform: scale(0.9);
     }
@@ -212,7 +212,7 @@
     #math_inverse {
         position: absolute;
         right: 1em;
-        bottom: 2em;
+        top: 2em;
         color: #eee;
         transform: scale(0.9);
     }
@@ -400,6 +400,12 @@
 
     const pointers = new Map();
     let gesture = null;
+
+    const PIXEL_INTERACTION_MIN_ZOOM = 8;
+    const PIXEL_BOX_MIN_ZOOM = 12;
+
+    let selectedPixel = null;
+    let hoveredPixel = null;
 
     function canInspectPixels() {
         return viewState.zoom >= PIXEL_INTERACTION_MIN_ZOOM;
@@ -1305,6 +1311,72 @@
         }
     }
 
+    function imageToScreen(canvas, ix, iy) {
+        const size = getCanvasDisplaySize(canvas);
+        const scale = getEffectiveScale(canvas);
+
+        const sw = size.w / scale;
+        const sh = size.h / scale;
+        const sx = viewState.cx - sw / 2;
+        const sy = viewState.cy - sh / 2;
+
+        return {
+            x: ((ix + 0.5 - sx) / sw) * size.w,
+            y: ((iy + 0.5 - sy) / sh) * size.h
+        };
+    }
+
+    function getDisplayColorForView(viewId, x, y) {
+        if (x < 0 || y < 0 || x >= width || y >= height) return null;
+
+        const ctx = bufferContexts[viewId];
+        if (!ctx) return null;
+
+        const data = ctx.getImageData(x, y, 1, 1).data;
+        return {
+            r: data[0],
+            g: data[1],
+            b: data[2],
+            a: data[3]
+        };
+    }
+
+    function getContrastingStroke(r, g, b) {
+        const lum = luminance(r, g, b);
+        return lum > 140 ? 'rgba(0,0,0,0.95)' : 'rgba(255,255,255,0.95)';
+    }
+
+    function getPixelFromEvent(canvas, clientX, clientY) {
+        const pt = screenToImage(canvas, clientX, clientY);
+
+        const x = Math.floor(pt.x);
+        const y = Math.floor(pt.y);
+
+        if (x < 0 || y < 0 || x >= width || y >= height) return null;
+
+        return { x, y };
+    }
+
+    function setSelectedPixel(pixel) {
+        selectedPixel = pixel;
+        scheduleRender();
+    }
+
+    function setHoveredPixel(pixel) {
+        const same =
+            hoveredPixel &&
+            pixel &&
+            hoveredPixel.x === pixel.x &&
+            hoveredPixel.y === pixel.y;
+
+        if (same) return;
+
+        if (!pixel && !hoveredPixel) return;
+
+        hoveredPixel = pixel;
+        scheduleRender();
+    }
+
     function drawPixelMarker(ctx, canvas, viewId, pixel, isSelected) {
         if (!pixel) return;
 
@@ -1317,18 +1389,12 @@
         const py = pos.y;
 
         if (scale >= PIXEL_BOX_MIN_ZOOM) {
-            const boxSize = Math.max(8, scale);
+            const boxSize = Math.max(1, Math.round(scale));
 
-            ctx.strokeStyle = isSelected ? '#ff2d7a' : '#ffffff';
-            ctx.lineWidth = 2;
-
-            if (isSelected) {
-                ctx.shadowColor = 'rgba(255, 45, 122, 0.8)';
-                ctx.shadowBlur = 12;
-            } else {
-                ctx.shadowColor = 'rgba(255,255,255,0.5)';
-                ctx.shadowBlur = 8;
-            }
+            ctx.lineWidth = isSelected ? 2.5 : 1.25;
+            ctx.strokeStyle = isSelected ? '#ff2d7a' : 'rgba(255,255,255,0.95)';
+            ctx.shadowColor = isSelected ? 'rgba(255,45,122,0.85)' : 'rgba(255,255,255,0.45)';
+            ctx.shadowBlur = isSelected ? 10 : 5;
 
             ctx.strokeRect(
                 Math.round(px - boxSize / 2),
@@ -1338,27 +1404,26 @@
             );
 
             ctx.shadowBlur = 0;
-        } else {
-            const r = isSelected ? 6 : 4;
-
-            let fill = 'rgba(255,255,255,0.9)';
-
-            if (isSelected) {
-                const c = getDisplayColorForView(viewId, pixel.x, pixel.y);
-                if (c) {
-                    fill = `rgba(${c.r}, ${c.g}, ${c.b}, 0.95)`;
-                    const lum = luminance(c.r, c.g, c.b);
-                    ctx.strokeStyle = lum > 140 ? 'rgba(0,0,0,0.9)' : 'rgba(255,255,255,0.9)';
-                }
-            }
+        } else if (isSelected) {
+            const c = getDisplayColorForView(viewId, pixel.x, pixel.y) || { r: 255, g: 45, b: 122 };
+            const stroke = getContrastingStroke(c.r, c.g, c.b);
 
             ctx.beginPath();
-            ctx.arc(px, py, r, 0, Math.PI * 2);
-            ctx.fillStyle = fill;
+            ctx.arc(px, py, 6, 0, Math.PI * 2);
+            ctx.fillStyle = `rgb(${c.r}, ${c.g}, ${c.b})`;
             ctx.fill();
 
-            // outline for contrast
             ctx.lineWidth = 2;
+            ctx.strokeStyle = stroke;
+            ctx.stroke();
+        } else {
+            ctx.beginPath();
+            ctx.arc(px, py, 4, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.95)';
+            ctx.fill();
+
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = 'rgba(0,0,0,0.85)';
             ctx.stroke();
         }
 
@@ -1395,9 +1460,20 @@
             sx, sy, sw, sh,
             0, 0, dw, dh
         );
+
+        if (canInspectPixels() && hoveredPixel) {
+            drawPixelMarker(ctx, visibleCanvas, viewId, hoveredPixel, false);
+        }
+
+        if (selectedPixel) {
+            drawPixelMarker(ctx, visibleCanvas, viewId, selectedPixel, true);
+        }
     }
 
     function renderAll() {
+        if (!canInspectPixels()) {
+            hoveredPixel = null;
+        }
         for (const id of viewIds) {
             renderView(id);
         }
@@ -1411,9 +1487,10 @@
 
         const c0w = 180 * scaleFactor;
         const c1w = 100 * scaleFactor;
+        const ch = 128;
 
         const ih = (windowWidth - 2 * margin - c0w - 2 * c1w - 6 * hpadding) / 4;
-        const iv = (windowHeight - 2 * margin - 2 * vpadding) / 3;
+        const iv = (windowHeight - ch - 2 * margin - 2 * vpadding) / 3;
         // const ih = (windowWidth - 2 * margin) * 0.5;
         // const iv = windowHeight - 2 * margin;
         // const h = (ih - hpadding) / 6.0;
@@ -1713,6 +1790,13 @@
         });
 
         canvas.addEventListener('pointermove', function(e) {
+            // hover should work even with no pressed pointer
+            if (canInspectPixels() && pointers.size <= 1) {
+                setHoveredPixel(getPixelFromEvent(canvas, e.clientX, e.clientY));
+            } else if (!canInspectPixels()) {
+                setHoveredPixel(null);
+            }
+
             if (!pointers.has(e.pointerId)) return;
 
             const p = pointers.get(e.pointerId);
@@ -1739,6 +1823,14 @@
         function endPointer(e) {
             const p = pointers.get(e.pointerId);
 
+            if (p && !p.moved && pointers.size === 1 && canInspectPixels()) {
+                const pixel = getPixelFromEvent(canvas, e.clientX, e.clientY);
+                if (pixel) {
+                    setSelectedPixel(pixel);
+                    setHoveredPixel(pixel);
+                }
+            }
+
             pointers.delete(e.pointerId);
 
             if (pointers.size < 2) {
@@ -1750,6 +1842,10 @@
 
         canvas.addEventListener('pointerup', endPointer);
         canvas.addEventListener('pointercancel', endPointer);
+
+        canvas.addEventListener('pointerleave', function() {
+            setHoveredPixel(null);
+        });
     }
 
     function setupInteractions() {
