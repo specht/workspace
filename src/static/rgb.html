@@ -162,7 +162,7 @@
     </div>
 
     <div class="result_container" id="result_view">
-        <div class="panel-title">2D additive overlap</div>
+        <div class="panel-title">RGB color mix</div>
 
         <svg id="mix_svg" viewBox="0 0 1000 700"
             preserveAspectRatio="xMidYMid meet">
@@ -333,16 +333,16 @@
         'black',
         'white',
         '#f00',
-        '#0ff',
-        '#0f0',
-        '#f0f',
-        '#00f',
-        '#ff0',
         '#ea2830',
-        '#7dcdc2',
+        '#0f0',
         '#80bc42',
-        '#f384ae',
+        '#00f',
         '#238acc',
+        '#0ff',
+        '#7dcdc2',
+        '#f0f',
+        '#f384ae',
+        '#ff0',
         '#fad31c',
     ];
 
@@ -736,7 +736,7 @@
         if (colorMode === 'RGB') {
             el.textContent = '3D RGB space';
         } else if (colorMode === 'YCbCr') {
-            el.textContent = "Same RGB color, described in YCb'Cr'";
+            el.textContent = "3D YCbCr space";
         }
     }
 
