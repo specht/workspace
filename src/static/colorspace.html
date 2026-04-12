@@ -176,7 +176,7 @@
 
     .permission {
         position: absolute;
-        bottom: 12px;
+        top: 12px;
         right: 12px;
         color: #eee;
         font: 11px sans-serif;
@@ -216,9 +216,67 @@
         color: #eee;
         transform: scale(0.9);
     }
+
     a {
         color: #55beed;
     }
+
+    #calc_strip {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        z-index: 35;
+        pointer-events: none;
+        color: #eee;
+        font: 12px/1.25 sans-serif;
+    }
+
+    .calc_col {
+        position: absolute;
+        white-space: normal;
+        font-variant-numeric: tabular-nums;
+        overflow: hidden;
+    }
+
+    .calc_title {
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 4px;
+    }
+
+    .calc_eq {
+        margin-bottom: 4px;
+    }
+
+    .calc_dim {
+        color: #aaa;
+    }
+
+    .calc_arrow {
+        color: #8dd3ff;
+        font-weight: 700;
+    }
+
+    .calc_swatch {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
+        border: 1px solid rgba(255,255,255,0.25);
+        margin-right: 6px;
+        vertical-align: -1px;
+    }
+
+    .calc_mono {
+        font-variant-numeric: tabular-nums;
+        letter-spacing: -0.01em;
+    }
+
+    .calc_r { color: #ff6b6b; }
+    .calc_g { color: #6bff95; }
+    .calc_b { color: #6bbcff; }
+    .calc_bias { color: #f2c879; }
+    .calc_dim_val { color: #bbb; }
 </style>
 
 <div id="backdrop"></div>
@@ -293,6 +351,13 @@
                 <div class="canvas-label similarity-label"></div>
             </div>
         </div>
+    </div>
+    <div id="calc_strip">
+        <div id="calc_source" class="calc_col"></div>
+        <div id="calc_decompose" class="calc_col"></div>
+        <div id="calc_filter" class="calc_col"></div>
+        <div id="calc_level" class="calc_col"></div>
+        <div id="calc_recompose" class="calc_col"></div>
     </div>
 </div>
 
@@ -481,6 +546,17 @@
                 (v1[0] * v2[1] - v1[1] * v2[0]) / det
             ]
         ];
+    }
+
+    function rgbSpan(value, channel) {
+        const cls = channel === 'r' ? 'calc_r' :
+                    channel === 'g' ? 'calc_g' :
+                    'calc_b';
+        return `<span class="${cls}">${value}</span>`;
+    }
+
+    function biasSpan(value) {
+        return `<span class="calc_bias">${value}</span>`;
     }
 
     function fn(x) {
@@ -1220,6 +1296,8 @@
             scheduleMetrics();
         }
 
+        renderCalcStrip();
+
         decomposeDirty = false;
         filterDirty = false;
         resultDirty = false;
@@ -1357,8 +1435,242 @@
         return { x, y };
     }
 
+    function f2(x) {
+        return Number(x).toFixed(2);
+    }
+
+    function swatchHtml(r, g, b) {
+        return `<span class="calc_swatch" style="background: rgb(${r}, ${g}, ${b})"></span>`;
+    }
+
+    function getSelectedPixelMath() {
+        if (!selectedPixel || !sourcePixels || !inverseBasis || !ch1 || !ch1m || !resultImageData) return null;
+
+        const x = selectedPixel.x;
+        const y = selectedPixel.y;
+        const idx = y * width + x;
+        const i = idx * 4;
+
+        const r = sourcePixels[i];
+        const g = sourcePixels[i + 1];
+        const b = sourcePixels[i + 2];
+
+        const raw1 = applyBasis(r, g, b, base1);
+        const raw2 = applyBasis(r, g, b, base2);
+        const raw3 = applyBasis(r, g, b, base3);
+
+        const c1v = ch1[idx];
+        const c2v = ch2[idx];
+        const c3v = ch3[idx];
+
+        const c1mv = ch1m[idx];
+        const c2mv = ch2m[idx];
+        const c3mv = ch3m[idx];
+
+        const a1 = getLevelAnchor(base1);
+        const a2 = getLevelAnchor(base2);
+        const a3 = getLevelAnchor(base3);
+
+        const u1 = a1 + (c1mv - a1) * channelLevels[0];
+        const u2 = a2 + (c2mv - a2) * channelLevels[1];
+        const u3 = a3 + (c3mv - a3) * channelLevels[2];
+
+        const d1 = u1 - base1[3];
+        const d2 = u2 - base2[3];
+        const d3 = u3 - base3[3];
+
+        const rf = inverseBasis[0][0] * d1 + inverseBasis[0][1] * d2 + inverseBasis[0][2] * d3;
+        const gf = inverseBasis[1][0] * d1 + inverseBasis[1][1] * d2 + inverseBasis[1][2] * d3;
+        const bf = inverseBasis[2][0] * d1 + inverseBasis[2][1] * d2 + inverseBasis[2][2] * d3;
+
+        return {
+            x, y,
+            rgb: [r, g, b],
+            raw: [raw1, raw2, raw3],
+            dec: [c1v, c2v, c3v],
+            mod: [c1mv, c2mv, c3mv],
+            anchors: [a1, a2, a3],
+            levels: [...channelLevels],
+            leveled: [u1, u2, u3],
+            deltas: [d1, d2, d3],
+            outFloat: [rf, gf, bf],
+            outByte: [
+                clamp255(rf + 0.5),
+                clamp255(gf + 0.5),
+                clamp255(bf + 0.5)
+            ]
+        };
+    }
+
+    function decomposeLine(name, base, rgb, raw, byteVal) {
+        const [r, g, b] = rgb;
+
+        return `
+            <div class="calc_eq calc_mono">
+                ${name} =
+                ${rgbSpan(r, 'r')} · ${f2(base[0])} +
+                ${rgbSpan(g, 'g')} · ${f2(base[1])} +
+                ${rgbSpan(b, 'b')} · ${f2(base[2])} +
+                ${biasSpan(f2(base[3]))}
+                = ${f2(raw)} <span class="calc_arrow">→</span> ${byteVal}
+            </div>
+        `;
+    }
+
+    function filterLevelLine(name, before, after, settings, anchor, level, leveled) {
+        const filterPart = (!settings || settings.amount <= 0 || settings.mode === 'none')
+            ? `${name}' = ${name} = ${after}`
+            : `${name}' = ${settings.mode}(${name}) = ${after}`;
+
+        return `
+            <div class="calc_eq calc_mono">
+                ${filterPart}<br>
+                u${name.slice(1)} = ${biasSpan(f2(anchor))} + (${after} - ${biasSpan(f2(anchor))}) · ${f2(level)} = ${f2(leveled)}
+            </div>
+        `;
+    }
+
+    function recomposeLine(name, row, d1, d2, d3, resultFloat, resultByte) {
+        return `
+            <div class="calc_eq calc_mono">
+                ${name}' =
+                ${f2(row[0])} · ${f2(d1)} +
+                ${f2(row[1])} · ${f2(d2)} +
+                ${f2(row[2])} · ${f2(d3)}
+                = ${f2(resultFloat)} <span class="calc_arrow">→</span> <span class='calc_${name}'>${resultByte}</span>
+            </div>
+        `;
+    }
+
+    function renderCalcStrip() {
+        const sourceEl = document.getElementById('calc_source');
+        const decomposeEl = document.getElementById('calc_decompose');
+        const filterEl = document.getElementById('calc_filter');
+        const levelEl = document.getElementById('calc_level');
+        const recomposeEl = document.getElementById('calc_recompose');
+
+        if (!sourceEl || !decomposeEl || !filterEl || !recomposeEl) return;
+
+        const m = getSelectedPixelMath();
+        if (!m) {
+            sourceEl.innerHTML = `<div class="calc_title">Selected pixel</div><div class="calc_dim">Zoom in and click a pixel.</div>`;
+            decomposeEl.innerHTML = '';
+            filterEl.innerHTML = '';
+            if (levelEl) levelEl.innerHTML = '';
+            recomposeEl.innerHTML = '';
+            return;
+        }
+
+        sourceEl.innerHTML = `
+            <div class="calc_title">Source</div>
+            <div class="calc_eq calc_mono">
+                <!-- pixel = (${m.x}, ${m.y})<br>
+                r = ${m.rgb[0]}, g = ${m.rgb[1]}, b = ${m.rgb[2]}<br>
+                -->
+                ${swatchHtml(m.rgb[0], m.rgb[1], m.rgb[2])}RGB = (<span class='calc_r'>${m.rgb[0]}</span>, <span class='calc_g'>${m.rgb[1]}</span>, <span class='calc_b'>${m.rgb[2]}</span>)
+            </div>
+        `;
+
+        decomposeEl.innerHTML = `
+            <div class="calc_title">Decompose</div>
+            ${decomposeLine('x₁', base1, m.rgb, m.raw[0], m.dec[0])}
+            ${decomposeLine('x₂', base2, m.rgb, m.raw[1], m.dec[1])}
+            ${decomposeLine('x₃', base3, m.rgb, m.raw[2], m.dec[2])}
+        `;
+
+        filterEl.innerHTML = `
+            <div class="calc_title">Filter / Level</div>
+            ${filterLevelLine('x₁', m.dec[0], m.mod[0], channelSettings[0], m.anchors[0], m.levels[0], m.leveled[0])}
+            ${filterLevelLine('x₂', m.dec[1], m.mod[1], channelSettings[1], m.anchors[1], m.levels[1], m.leveled[1])}
+            ${filterLevelLine('x₃', m.dec[2], m.mod[2], channelSettings[2], m.anchors[2], m.levels[2], m.leveled[2])}
+        `;
+
+        if (levelEl) {
+            levelEl.innerHTML = '';
+            levelEl.style.display = 'none';
+        }
+
+        recomposeEl.innerHTML = `
+            <div class="calc_title">Recompose</div>
+            <div class="calc_eq calc_mono">
+                d₁ = ${f2(m.leveled[0])} - ${biasSpan(f2(base1[3]))} = ${f2(m.deltas[0])}<br>
+                d₂ = ${f2(m.leveled[1])} - ${biasSpan(f2(base2[3]))} = ${f2(m.deltas[1])}<br>
+                d₃ = ${f2(m.leveled[2])} - ${biasSpan(f2(base3[3]))} = ${f2(m.deltas[2])}
+            </div>
+            ${recomposeLine('r', inverseBasis[0], m.deltas[0], m.deltas[1], m.deltas[2], m.outFloat[0], m.outByte[0])}
+            ${recomposeLine('g', inverseBasis[1], m.deltas[0], m.deltas[1], m.deltas[2], m.outFloat[1], m.outByte[1])}
+            ${recomposeLine('b', inverseBasis[2], m.deltas[0], m.deltas[1], m.deltas[2], m.outFloat[2], m.outByte[2])}
+            <div class="calc_eq calc_mono">
+                ${swatchHtml(m.outByte[0], m.outByte[1], m.outByte[2])}RGB = (<span class='calc_r'>${m.outByte[0]}</span>, <span class='calc_g'>${m.outByte[1]}</span>, <span class='calc_b'>${m.outByte[2]}</span>)
+            </div>
+        `;
+    }
+
+    function layoutCalcStrip(windowWidth, windowHeight, ih, iv, c0w, c1w) {
+        const strip = document.getElementById('calc_strip');
+        if (!strip) return;
+
+        const top = margin + 3 * iv + 2 * vpadding + 10;
+        const available = Math.max(84, windowHeight - top - 8);
+
+        strip.style.top = `${top}px`;
+        strip.style.height = `${available}px`;
+
+        const sourceLeft = margin;
+        const decomposeLeft = margin + ih + c0w + hpadding * 2;
+        const filterLeft = margin + ih * 2 + c0w + c1w + hpadding * 4;
+
+        const sourceW = Math.max(150, ih * 0.95);
+        const decomposeW = Math.max(300, ih + 110);
+        const filterW = Math.max(280, ih + 80);
+        const resultW = Math.max(300, ih + 110);
+
+        // move recompose next to filter
+        const resultLeft = filterLeft + filterW + hpadding * 2;
+
+        const sourceEl = document.getElementById('calc_source');
+        const decomposeEl = document.getElementById('calc_decompose');
+        const filterEl = document.getElementById('calc_filter');
+        const levelEl = document.getElementById('calc_level');
+        const recomposeEl = document.getElementById('calc_recompose');
+
+        if (sourceEl) {
+            sourceEl.style.display = 'block';
+            sourceEl.style.left = `${sourceLeft}px`;
+            sourceEl.style.bottom = `0px`;
+            sourceEl.style.width = `${sourceW}px`;
+        }
+
+        if (decomposeEl) {
+            decomposeEl.style.display = 'block';
+            decomposeEl.style.left = `${decomposeLeft}px`;
+            decomposeEl.style.bottom = `0px`;
+            decomposeEl.style.width = `${decomposeW}px`;
+        }
+
+        if (filterEl) {
+            filterEl.style.display = 'block';
+            filterEl.style.left = `${filterLeft}px`;
+            filterEl.style.bottom = `0px`;
+            filterEl.style.width = `${filterW}px`;
+        }
+
+        if (levelEl) {
+            levelEl.style.display = 'none';
+            levelEl.style.width = `0px`;
+        }
+
+        if (recomposeEl) {
+            recomposeEl.style.display = 'block';
+            recomposeEl.style.left = `${resultLeft}px`;
+            recomposeEl.style.bottom = `0px`;
+            recomposeEl.style.width = `${resultW}px`;
+        }
+    }
+
     function setSelectedPixel(pixel) {
         selectedPixel = pixel;
+        renderCalcStrip();
         scheduleRender();
     }
 
@@ -1629,6 +1941,8 @@
         resizeVisibleCanvases();
         updateZoomLimits();
         clampView();
+        layoutCalcStrip(windowWidth, windowHeight, ih, iv, c0w, c1w);
+        renderCalcStrip();
         scheduleRender();
     }
 
@@ -1677,6 +1991,13 @@
         viewState.cy = before.y - ((py / size.h) - 0.5) * sh;
 
         clampView();
+
+        if (canInspectPixels()) {
+            setHoveredPixel(getPixelFromEvent(canvas, clientX, clientY));
+        } else {
+            setHoveredPixel(null);
+        }
+
         scheduleRender();
         scheduleHashWrite();
     }
@@ -1917,7 +2238,7 @@
                     max: max,
                     step: step,
                     value: bases[i][k],
-                    color: ['#ea2830', '#73d216', '#238acc', '#d3d7cf'][k],
+                    color: ['#ea2830', '#73d216', '#238acc', '#f2c879'][k],
                     centerLabel: '0',
                     size: 70,
                     horizontal: true,
@@ -2112,6 +2433,7 @@
         metricsDirty = true;
 
         schedulePipeline();
+        renderCalcStrip();
 
         if (pendingRestoredView) {
             viewState.zoom = pendingRestoredView.zoom;
