@@ -1526,6 +1526,7 @@
 
     function attachInteractions(canvas) {
         const isSelectableCanvas =
+            canvas.closest('#source') !== null ||
             canvas.closest('#channel_view') !== null ||
             canvas.closest('#reconstructed_view') !== null;
 
