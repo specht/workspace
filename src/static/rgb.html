@@ -155,8 +155,11 @@
 <div id="app_shell">
     <div class="panel_container" id="rgb_controls">
         <div class="knob-stack" id="knob_stack"></div>
+    </div>
+
+    <div class="panel_container" id="swatches">
         <div class="swatch-palette" id="swatch_palette">
-            <div class="swatch-palette-title">Swatches</div>
+            <!-- <div class="swatch-palette-title">Swatches</div> -->
             <div class="swatch-grid" id="swatch_grid"></div>
         </div>
     </div>
@@ -294,7 +297,7 @@
 <script type="module">
     import { VectorSpaceCube } from './include/vector-space-cube.js';
 
-    let hpadding = 32;
+    let hpadding = 20;
     let vpadding = 20;
     let margin = 20;
 
@@ -346,8 +349,8 @@
         '#fad31c',
     ];
 
-    let circleRadius = 150;
-    let circleSpread = 40;
+    let circleRadius = 300;
+    let circleSpread = 75;
 
     let baseColors = {
         'R': '#ea2830',
@@ -546,31 +549,31 @@
 
         const scaleFactor = Math.min(1.0, 1060.0 / windowHeight);
         const knobPanelW = 120 * scaleFactor;
-
-        const fullH = windowHeight - 2 * margin;
-        const contentX = margin + knobPanelW + hpadding;
-        const contentW = windowWidth - contentX - margin;
-
-        const panelGap = hpadding;
-        const panelW = (contentW - panelGap) / 2;
+        const panelW = (windowWidth - margin * 2 - knobPanelW * 2 - hpadding * 3) / 2;
 
         let div = document.getElementById('rgb_controls');
         div.style.left = `${margin}px`;
         div.style.top = `${margin}px`;
         div.style.width = `${knobPanelW}px`;
-        div.style.height = `${fullH}px`;
+        div.style.height = `${windowHeight - 2 * margin}px`;
+
+        div = document.getElementById('swatches');
+        div.style.left = `${margin + knobPanelW + hpadding}px`;
+        div.style.top = `${margin}px`;
+        div.style.width = `${knobPanelW}px`;
+        div.style.height = `${windowHeight - 2 * margin}px`;
 
         div = document.getElementById('result_view');
-        div.style.left = `${contentX}px`;
+        div.style.left = `${margin + 2 * knobPanelW + 2 * hpadding}px`;
         div.style.top = `${margin}px`;
-        div.style.width = `${panelW}px`;
-        div.style.height = `${fullH}px`;
+        div.style.width = `${panelW * 0.7}px`;
+        div.style.height = `${windowHeight - 2 * margin}px`;
 
         div = document.getElementById('cube_view');
-        div.style.left = `${contentX + panelW + panelGap}px`;
+        div.style.left = `${margin + 2 * knobPanelW + 3 * hpadding + panelW * 0.7}px`;
         div.style.top = `${margin}px`;
-        div.style.width = `${panelW}px`;
-        div.style.height = `${fullH}px`;
+        div.style.width = `${panelW * 1.3}px`;
+        div.style.height = `${windowHeight - 2 * margin}px`;
 
         if (cube) cube.resize();
     }
