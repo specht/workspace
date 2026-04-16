@@ -750,6 +750,7 @@
         rebuildReconstructedBuffer();
         renderSqInput();
         renderSqDct();
+        renderSqBaseFunctions();
         renderSqIdct();
         scheduleRender();
     }
@@ -885,6 +886,7 @@
         rebuildReconstructedBuffer();
         renderSqInput();
         renderSqDct();
+        renderSqBaseFunctions();
         renderSqIdct();
     }
 
@@ -2134,7 +2136,7 @@
         ctx.restore();
     }
 
-    function drawBasisWaveRow(ctx, w, h, basis, active, labelText) {
+    function drawBasisWaveRow(ctx, w, h, basis, scaledBasis, isActive, labelText, coefficientScale = 0) {
         ctx.save();
         ctx.fillStyle = '#1c1d21';
         ctx.fillRect(0, 0, w, h);
@@ -2152,12 +2154,10 @@
         const amp = (y0 - y1) * 0.38;
 
         const plotW = x1 - x0;
-        const plotH = y0 - y1;
 
-        // background guides
+        // guides
         ctx.strokeStyle = 'rgba(255,255,255,0.06)';
         ctx.lineWidth = 1;
-
         for (let i = 0; i < 8; i++) {
             const x = x0 + (i / 7) * plotW;
             ctx.beginPath();
@@ -2166,7 +2166,7 @@
             ctx.stroke();
         }
 
-        // x axis / zero line
+        // zero axis
         ctx.strokeStyle = 'rgba(255,255,255,0.14)';
         ctx.beginPath();
         ctx.moveTo(x0, midY + 0.5);
@@ -2187,13 +2187,12 @@
         const mapX = (t) => x0 + (t / 7) * plotW;
         const mapY = (v) => midY - (v / 0.5) * amp;
 
-        // draw the actual continuous DCT basis curve:
-        // phi_k(x) = alpha(k) * cos((pi / 8) * (x + 0.5) * k)
-        ctx.strokeStyle = active ? 'rgba(86,160,255,0.98)' : 'rgba(255,255,255,0.22)';
-        ctx.lineWidth = active ? 2.2 : 1.6;
-        ctx.beginPath();
-
         const steps = Math.max(256, Math.round(plotW * 1.5));
+
+        // background: unscaled continuous basis
+        ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
         for (let s = 0; s <= steps; s++) {
             const t = (s / steps) * 7;
             const v = a * Math.cos((Math.PI / 8) * (t + 0.5) * k);
@@ -2205,8 +2204,8 @@
         }
         ctx.stroke();
 
-        // overlay the 8 discrete sample values
-        ctx.strokeStyle = active ? 'rgba(255,140,60,0.45)' : 'rgba(255,255,255,0.12)';
+        // background sampled points
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
         ctx.lineWidth = 1;
         ctx.beginPath();
         for (let n = 0; n < 8; n++) {
@@ -2217,14 +2216,50 @@
         }
         ctx.stroke();
 
-        ctx.fillStyle = active ? '#ff8c3c' : 'rgba(255,255,255,0.24)';
+        ctx.fillStyle = 'rgba(255,255,255,0.22)';
         for (let n = 0; n < 8; n++) {
             ctx.beginPath();
-            ctx.arc(mapX(n), mapY(basis[n]), 2.5, 0, Math.PI * 2);
+            ctx.arc(mapX(n), mapY(basis[n]), 2.2, 0, Math.PI * 2);
             ctx.fill();
         }
 
-        // label
+        // foreground: scaled continuous basis
+        if (scaledBasis) {
+            ctx.strokeStyle = isActive ? 'rgba(86,160,255,0.98)' : 'rgba(86,160,255,0.35)';
+            ctx.lineWidth = isActive ? 2.4 : 1.8;
+            ctx.beginPath();
+
+            for (let s = 0; s <= steps; s++) {
+                const t = (s / steps) * 7;
+                const v = coefficientScale * a * Math.cos((Math.PI / 8) * (t + 0.5) * k);
+                const x = mapX(t);
+                const y = mapY(v);
+
+                if (s === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // foreground sampled points
+            ctx.strokeStyle = isActive ? 'rgba(255,140,60,0.45)' : 'rgba(255,140,60,0.18)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let n = 0; n < 8; n++) {
+                const x = mapX(n);
+                const y = mapY(scaledBasis[n]);
+                if (n === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            ctx.fillStyle = isActive ? '#ff8c3c' : 'rgba(255,140,60,0.30)';
+            for (let n = 0; n < 8; n++) {
+                ctx.beginPath();
+                ctx.arc(mapX(n), mapY(scaledBasis[n]), 2.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
         ctx.fillStyle = 'rgba(255,255,255,0.8)';
         ctx.font = '10px sans-serif';
         ctx.textAlign = 'left';
@@ -2415,15 +2450,27 @@
         wrap.style.inset = '10px';
         wrap.style.boxSizing = 'border-box';
 
+        const coeffs = getSelectedDctCoefficients();
+
         if (appMode === '2d') {
             wrap.style.display = 'grid';
             wrap.style.gap = '4px';
             wrap.style.gridTemplateColumns = 'repeat(8, 1fr)';
             wrap.style.gridTemplateRows = 'repeat(8, 1fr)';
 
+            let maxScaledAbs = 1;
+            if (coeffs) {
+                for (let v = 0; v < 8; v++) {
+                    for (let u = 0; u < 8; u++) {
+                        maxScaledAbs = Math.max(maxScaledAbs, Math.abs(coeffs[v][u]));
+                    }
+                }
+            }
+
             for (let v = 0; v < 8; v++) {
                 for (let u = 0; u < 8; u++) {
                     const basis = basisCache['2d'][v][u];
+                    const coeff = coeffs ? coeffs[v][u] : 0;
                     const active = isCoefficientActive(u, v);
 
                     const tile = document.createElement('div');
@@ -2433,14 +2480,27 @@
                     tile.style.gap = '0';
                     tile.style.outline = '1px solid #2a2d33';
                     tile.style.background = '#1c1d21';
-                    tile.style.opacity = active ? '1' : '0.18';
-                    tile.title = `u=${u}, v=${v}`;
+                    tile.title = `u=${u}, v=${v}, c=${Math.round(coeff)}`;
 
                     for (let y = 0; y < 8; y++) {
                         for (let x = 0; x < 8; x++) {
                             const cell = document.createElement('div');
                             cell.style.aspectRatio = '1 / 1';
+                            cell.style.position = 'relative';
                             cell.style.background = getBasisCellStyle(basis[y][x], 0.25);
+
+                            if (coeffs) {
+                                const overlay = document.createElement('div');
+                                overlay.style.position = 'absolute';
+                                overlay.style.inset = '0';
+
+                                const scaled = basis[y][x] * coeff / maxScaledAbs;
+                                overlay.style.background = getBasisCellStyle(scaled, 1);
+                                overlay.style.opacity = active ? '0.95' : '0.22';
+
+                                cell.appendChild(overlay);
+                            }
+
                             tile.appendChild(cell);
                         }
                     }
@@ -2452,17 +2512,31 @@
             const stack = document.createElement('div');
             stack.className = 'basis-1d-stack';
 
+            const rect = container.getBoundingClientRect();
+            const innerW = Math.max(10, rect.width - 20);
+            const innerH = Math.max(10, (rect.height - 20 - 7 * 4) / 8);
+
+            let maxScaledAbs = 1;
+            if (coeffs && coeffs[0]) {
+                for (let k = 0; k < 8; k++) {
+                    const basis = basisCache['1d'][k];
+                    const c = coeffs[0][k];
+                    for (let n = 0; n < 8; n++) {
+                        maxScaledAbs = Math.max(maxScaledAbs, Math.abs(basis[n] * c));
+                    }
+                }
+            }
+
             for (let k = 0; k < 8; k++) {
                 const basis = basisCache['1d'][k];
+                const coeff = coeffs && coeffs[0] ? coeffs[0][k] : 0;
                 const active = isCoefficientActive(k, 0);
+
+                const scaledBasis = basis.map(v => (v * coeff) / maxScaledAbs);
 
                 const row = document.createElement('div');
                 row.className = 'basis-row';
-                row.title = `k=${k}`;
-
-                const rect = container.getBoundingClientRect();
-                const innerW = Math.max(10, rect.width - 20);
-                const innerH = Math.max(10, (rect.height - 20 - 7 * 4) / 8);
+                row.title = `k=${k}, c=${Math.round(coeff)}`;
 
                 const canvas = createHiDPICanvas(innerW, innerH);
                 const ctx = canvas.getContext('2d');
@@ -2473,10 +2547,12 @@
                     canvas.width / (window.devicePixelRatio || 1),
                     canvas.height / (window.devicePixelRatio || 1),
                     basis,
+                    coeffs ? scaledBasis : null,
                     active,
-                    `k=${k}`
+                    `k=${k}`,
+                    coeffs ? (coeff / maxScaledAbs) : 0
                 );
-
+                
                 row.appendChild(canvas);
                 stack.appendChild(row);
             }

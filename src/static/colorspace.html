@@ -206,7 +206,7 @@
         left: 1em;
         top: 2em;
         color: #eee;
-        transform: scale(0.9);
+        transform: scale(0.8);
     }
 
     #math_inverse {
@@ -214,7 +214,7 @@
         right: 1em;
         top: 2em;
         color: #eee;
-        transform: scale(0.9);
+        transform: scale(0.8);
     }
 
     a {
@@ -1626,7 +1626,7 @@
         const resultW = Math.max(300, ih + 110);
 
         // move recompose next to filter
-        const resultLeft = filterLeft + filterW + hpadding * 2;
+        const resultLeft = filterLeft + filterW + hpadding * 2 - c0w * 0.5;
 
         const sourceEl = document.getElementById('calc_source');
         const decomposeEl = document.getElementById('calc_decompose');
