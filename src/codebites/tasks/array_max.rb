@@ -72,11 +72,5 @@ class Array
     end
 end
 
-@@patch.py
-import builtins
-def _max(iterable, start=None):
-    raise RuntimeError("Use of max() is disabled for this exercise.")
-builtins.max = _max
-
 @@meta.yaml
 difficulty: 1
