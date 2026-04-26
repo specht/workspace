@@ -542,62 +542,62 @@
       return "";
     }
 
-    const onCopy = () => {
-      const text = getSelectedTextFromMonaco();
-      remember(text);
-    };
+    // const onCopy = () => {
+    //   const text = getSelectedTextFromMonaco();
+    //   remember(text);
+    // };
 
-    const onCut = () => {
-      const text = getSelectedTextFromMonaco();
-      remember(text);
-    };
+    // const onCut = () => {
+    //   const text = getSelectedTextFromMonaco();
+    //   remember(text);
+    // };
 
-    const onPaste = (ev) => {
-      const text = getClipboardText(ev);
+    // const onPaste = (ev) => {
+    //   const text = getClipboardText(ev);
 
-      if (!text) {
-        ev.preventDefault();
-        ev.stopPropagation();
-        onBlocked("Paste blocked (unable to read clipboard). Copy/paste within the editor is allowed.");
-        return;
-      }
+    //   if (!text) {
+    //     ev.preventDefault();
+    //     ev.stopPropagation();
+    //     onBlocked("Paste blocked (unable to read clipboard). Copy/paste within the editor is allowed.");
+    //     return;
+    //   }
 
-      if (!isAllowed(text)) {
-        ev.preventDefault();
-        ev.stopPropagation();
-        onBlocked("Paste from outside is disabled. Copy/paste within the editor is allowed.");
-      }
-    };
+    //   if (!isAllowed(text)) {
+    //     ev.preventDefault();
+    //     ev.stopPropagation();
+    //     onBlocked("Paste from outside is disabled. Copy/paste within the editor is allowed.");
+    //   }
+    // };
 
     const copyTarget = inputArea || domNode;
 
-    copyTarget.addEventListener("copy", onCopy, true);
-    copyTarget.addEventListener("cut", onCut, true);
-    copyTarget.addEventListener("paste", onPaste, true);
+    // copyTarget.addEventListener("copy", onCopy, true);
+    // copyTarget.addEventListener("cut", onCut, true);
+    // copyTarget.addEventListener("paste", onPaste, true);
 
-    const onDocCopy = (ev) => {
-      if (domNode.contains(ev.target)) onCopy(ev);
-    };
-    const onDocCut = (ev) => {
-      if (domNode.contains(ev.target)) onCut(ev);
-    };
-    const onDocPaste = (ev) => {
-      if (domNode.contains(ev.target)) onPaste(ev);
-    };
+    // const onDocCopy = (ev) => {
+    //   if (domNode.contains(ev.target)) onCopy(ev);
+    // };
+    // const onDocCut = (ev) => {
+    //   if (domNode.contains(ev.target)) onCut(ev);
+    // };
+    // const onDocPaste = (ev) => {
+    //   if (domNode.contains(ev.target)) onPaste(ev);
+    // };
 
-    document.addEventListener("copy", onDocCopy, true);
-    document.addEventListener("cut", onDocCut, true);
-    document.addEventListener("paste", onDocPaste, true);
+    // document.addEventListener("copy", onDocCopy, true);
+    // document.addEventListener("cut", onDocCut, true);
+    // document.addEventListener("paste", onDocPaste, true);
 
-    return () => {
-      copyTarget.removeEventListener("copy", onCopy, true);
-      copyTarget.removeEventListener("cut", onCut, true);
-      copyTarget.removeEventListener("paste", onPaste, true);
+    // return () => {
+    //   copyTarget.removeEventListener("copy", onCopy, true);
+    //   copyTarget.removeEventListener("cut", onCut, true);
+    //   copyTarget.removeEventListener("paste", onPaste, true);
 
-      document.removeEventListener("copy", onDocCopy, true);
-      document.removeEventListener("cut", onDocCut, true);
-      document.removeEventListener("paste", onDocPaste, true);
-    };
+    //   document.removeEventListener("copy", onDocCopy, true);
+    //   document.removeEventListener("cut", onDocCut, true);
+    //   document.removeEventListener("paste", onDocPaste, true);
+    // };
   }
 
   function join_with_sep(arr, sep, final_sep) {
