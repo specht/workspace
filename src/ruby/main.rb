@@ -802,19 +802,25 @@ class Main < Sinatra::Base
             end
 
             root.css('img').each do |img|
-                src = img.attr('src')
-                image_path = File.join(File.dirname(path), src)
-                next unless File.exist?(image_path)
-                if img.attr('data-noconvert')
-                    sha1 = Digest::SHA1.hexdigest(image_path)
-                    system("cp -pu \"#{image_path}\" /webcache/#{sha1}.#{image_path.split('.').last}")
-                    img['src'] = "/cache/#{sha1}.#{image_path.split('.').last}"
-                else
-                    sha1 = convert_image(image_path)
-                    img['src'] = "/cache/#{sha1}.webp"
-                end
-                if img.classes.include?('full')
-                    img.wrap("<div class='scroll-x'>")
+                begin
+                    src = img.attr('src')
+                    next if src.nil?
+                    image_path = File.join(File.dirname(path), src)
+                    next unless File.exist?(image_path)
+                    if img.attr('data-noconvert')
+                        sha1 = Digest::SHA1.hexdigest(image_path)
+                        system("cp -pu \"#{image_path}\" /webcache/#{sha1}.#{image_path.split('.').last}")
+                        img['src'] = "/cache/#{sha1}.#{image_path.split('.').last}"
+                    else
+                        sha1 = convert_image(image_path)
+                        img['src'] = "/cache/#{sha1}.webp"
+                    end
+                    if img.classes.include?('full')
+                        img.wrap("<div class='scroll-x'>")
+                    end
+                rescue
+                    STDERR.puts img.to_s
+                    raise
                 end
             end
             root.css('svg').each do |img|
