@@ -1163,6 +1163,32 @@ class Main < Sinatra::Base
         rescue => e
             STDERR.puts "RuboCop server start failed: #{e.class}: #{e.message}"
         end
+
+        @@db_init_queue ||= Queue.new
+        @@db_init_mutex ||= Mutex.new
+        @@db_init_queued_keys ||= Set.new
+
+        Thread.new do
+            loop do
+                job = @@db_init_queue.pop
+                key = job[:key]
+
+                begin
+                    STDERR.puts ">>> DB init worker: starting #{key}"
+                    Main.init_mysql(job[:email])
+                    Main.init_postgres(job[:email])
+                    Main.init_neo4j(job[:email])
+                    STDERR.puts ">>> DB init worker: finished #{key}"
+                rescue => e
+                    STDERR.puts ">>> DB init worker failed for #{key}: #{e.class}: #{e.message}"
+                    STDERR.puts e.backtrace.join("\n")
+                ensure
+                    @@db_init_mutex.synchronize do
+                        @@db_init_queued_keys.delete(key)
+                    end
+                end
+            end
+        end
     end
 
     before '*' do
@@ -1217,6 +1243,24 @@ class Main < Sinatra::Base
                     end
                 end
             end
+        end
+    end
+
+    def self.enqueue_database_init(email:)
+        key = "#{email}"
+
+        STDERR.puts ">>> Waiting for DB init mutex to enqueue #{key}..."
+        @@db_init_mutex.synchronize do
+            return false if @@db_init_queued_keys.include?(key)
+
+            @@db_init_queued_keys << key
+            @@db_init_queue << {
+                key: key,
+                email: email
+            }
+
+            STDERR.puts ">>> DB init queued: #{key}"
+            true
         end
     end
 
@@ -1391,7 +1435,7 @@ class Main < Sinatra::Base
         password
     end
 
-    def init_mysql(email)
+    def self.init_mysql(email)
         mysql_password = Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT)
         login = email.split('@').first.downcase
         STDERR.puts "Setting up MySQL user #{login} with database #{login}"
@@ -1405,6 +1449,10 @@ class Main < Sinatra::Base
         end
     end
 
+    def init_mysql(email)
+        Main.init_mysql(email)
+    end
+
     def reset_mysql(email)
         login = email.split('@').first.downcase
         STDERR.puts "Removing database for MySQL user #{login}"
@@ -1416,21 +1464,42 @@ class Main < Sinatra::Base
         init_mysql(email)
     end
 
-    def init_postgres(email)
+    def self.init_postgres(email)
         postgres_password = Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)
         login = email.split('@').first.downcase
         STDERR.puts "Setting up Postgres user #{login} with database #{login}"
 
         Open3.popen2("docker exec -i -e PGPASSWORD=#{POSTGRES_ROOT_PASSWORD} workspace_postgres_1 psql --user=postgres") do |stdin, stdout, wait_thr|
             stdin.puts <<~END_OF_STRING
-                CREATE USER \"#{login}\" WITH ENCRYPTED PASSWORD '#{postgres_password}';
-                CREATE DATABASE \"#{login}\";
-                ALTER DATABASE \"#{login}\" OWNER TO \"#{login}\";
-                REVOKE ALL PRIVILEGES ON DATABASE \"#{login}\" FROM public;
+                DO
+                $do$
+                BEGIN
+                    IF NOT EXISTS (
+                        SELECT FROM pg_catalog.pg_roles
+                        WHERE rolname = '#{login}'
+                    ) THEN
+                        CREATE USER "#{login}" WITH ENCRYPTED PASSWORD '#{postgres_password}';
+                    ELSE
+                        ALTER USER "#{login}" WITH ENCRYPTED PASSWORD '#{postgres_password}';
+                    END IF;
+                END
+                $do$;
+
+                SELECT 'CREATE DATABASE "#{login}"'
+                WHERE NOT EXISTS (
+                    SELECT FROM pg_database WHERE datname = '#{login}'
+                )\\gexec
+
+                ALTER DATABASE "#{login}" OWNER TO "#{login}";
+                REVOKE ALL PRIVILEGES ON DATABASE "#{login}" FROM public;
             END_OF_STRING
             stdin.close
             wait_thr.value
         end
+    end
+
+    def init_postgres(email)
+        Main.init_postgres(email)
     end
 
     def reset_postgres(email)
@@ -1446,11 +1515,12 @@ class Main < Sinatra::Base
         init_postgres(email)
     end
 
-    def init_neo4j(email)
+    def self.init_neo4j(email)
         neo4j_password = Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)
         login = email.split('@').first.downcase
-        database = "#{login}"
+        database = login
         STDERR.puts "Setting up Neo4j user #{login} with database #{login}"
+
         Open3.popen2("docker exec -i workspace_neo4j_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
             stdin.puts <<~END_OF_STRING
                 CREATE USER `#{login}` IF NOT EXISTS SET PLAINTEXT PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED;
@@ -1473,6 +1543,10 @@ class Main < Sinatra::Base
             stdin.close
             wait_thr.value
         end
+    end
+
+    def init_neo4j(email)
+        Main.init_neo4j(email)
     end
 
     def reset_neo4j(email)
@@ -1775,13 +1849,8 @@ class Main < Sinatra::Base
             if test_tag
                 db_email = "#{email}-#{test_tag}"
             end
-            STDERR.puts ">>> Initializing MySQL"
-            init_mysql(db_email)
-            STDERR.puts ">>> Initializing Postgres"
-            init_postgres(db_email)
-            STDERR.puts ">>> Initializing Neo4j"
-            init_neo4j(db_email)
-            STDERR.puts ">>> Done initializing databases"
+            STDERR.puts ">>> Enqueuing database initialization for #{db_email}"
+            Main.enqueue_database_init(email: db_email)
 
             if test_tag
                 test_init_mark_path = "/user/#{container_name}/workspace/.test_init"
