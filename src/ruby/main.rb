@@ -1779,7 +1779,9 @@ class Main < Sinatra::Base
             init_mysql(db_email)
             STDERR.puts ">>> Initializing Postgres"
             init_postgres(db_email)
+            STDERR.puts ">>> Initializing Neo4j"
             init_neo4j(db_email)
+            STDERR.puts ">>> Done initializing databases"
 
             if test_tag
                 test_init_mark_path = "/user/#{container_name}/workspace/.test_init"
