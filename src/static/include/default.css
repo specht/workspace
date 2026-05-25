@@ -630,6 +630,26 @@ pre pre {
     background-image: url(/images/melting.png);
 }
 
+.hint.good, .hint.bad {
+    padding-left: 0.5em;
+}
+
+.hint.good p:first-child, .hint.bad p:first-child {
+    padding-left: 2em;
+}
+
+
+.hint.good::before {
+    background-image: url(/images/check.png);
+    filter: saturate(800%) hue-rotate(270deg);
+    transform: scale(0.5) rotate(5deg) translateY(-8px);
+}
+
+.hint.bad::before {
+    background-image: url(/images/cross.png);
+    transform: scale(0.5) translateY(-8px);
+}
+
 /* a.tutorial_card {
     max-height: 100vw;
 } */

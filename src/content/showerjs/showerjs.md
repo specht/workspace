@@ -123,6 +123,10 @@ image: showerjs.webp:0:80
     max-width: 100%;
 }
 
+.shower-mini-slide mark {
+    background-color: #fce94f;
+}
+
 
 /* Shower-Ribbon mit Foliennummer für Mini-Folien.
  * Diese Vorschau übernimmt die Maße der offiziellen Shower-Vorlage:
@@ -351,7 +355,43 @@ image: showerjs.webp:0:80
         transition: none;
     }
 }
+/*
+ * Kompakte Gut-/Schlecht-Beispiele
+ * --------------------------------
+ * Diese kleinen Labels markieren Codebeispiele, ohne sie in große Kästen zu
+ * packen. Dadurch bleiben Vergleichsbeispiele kurz und gut scanbar.
+ */
+.example-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38em;
+
+    margin: 0.35rem 0 0.25rem;
+    padding: 0.16rem 0.55rem 0.18rem;
+
+    border: 1px solid currentColor;
+    border-radius: 999px;
+
+    font-weight: 700;
+    font-size: 0.92em;
+    line-height: 1.15;
+}
+
+.example-label::before {
+    display: inline-grid;
+    place-items: center;
+
+    width: 1.15em;
+    height: 1.15em;
+
+    border-radius: 50%;
+    color: white;
+
+    font-size: 0.82em;
+    line-height: 1;
+}
 </style>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const SLIDE_WIDTH = 1024;
@@ -717,17 +757,21 @@ In einer normalen Folie reicht meistens eine einzige Überschrift:
 Die Überschrift sollte kurz sagen, worum es auf der Folie geht.
 Besser ist oft eine konkrete Überschrift statt nur ein einzelnes Wort.
 
-Nicht so gut:
+<div class='row'>
+    <div class='col-md-6'>
+        <div class='hint bad'>
+            <p>Nicht so gut:</p>
+            <pre><code class='html'>&lt;h2&gt;HTML&lt;/h2&gt;</code></pre>
+        </div>
+    </div>
 
-```html
-<h2>HTML</h2>
-```
-
-Besser:
-
-```html
-<h2>HTML beschreibt die Struktur</h2>
-```
+    <div class='col-md-6'>
+        <div class='hint good'>
+            <p>Besser:</p>
+            <pre><code class='html'>&lt;h2&gt;HTML beschreibt die Struktur&lt;/h2&gt;</code></pre>
+        </div>
+    </div>
+</div>
 
 Die zweite Überschrift hilft dem Publikum mehr, weil sie schon eine kleine Aussage enthält.
 
@@ -735,18 +779,31 @@ Die zweite Überschrift hilft dem Publikum mehr, weil sie schon eine kleine Auss
 
 Wenn du mehrere Gedanken auf einer Folie hast, kannst du mehrere Absätze verwenden:
 
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='8'>
+    <div class='mini-title'>Die erste Webseite</div>
+
+    <p>Die erste Webseite bestand nur aus Text und Links.</p>
+
+    <p>Heute enthalten Webseiten oft Bilder, Videos, Menüs und interaktive Bereiche.</p>
+</div>
+</div>
+
 ```html
 <section class="slide">
     <h2>Die erste Webseite</h2>
 
     <p>Die erste Webseite bestand nur aus Text und Links.</p>
 
-    <p>Heute enthalten Webseiten oft Bilder, Videos, Menüs und interaktive Bereiche.</p>
+    <p>
+        Heute enthalten Webseiten oft Bilder, Videos,
+        Menüs und interaktive Bereiche.
+    </p>
 </section>
 ```
 
 Du musst nicht selbst leere Zeilen in die Folie schreiben.
-Der Abstand entsteht durch die Gestaltung der Vorlage.
+Der Abstand entsteht durch die Gestaltung der Vorlage. Dabei ist es egal, ob du hinter `<p>` direkt Text schreibst oder erst eine Zeile frei lässt.
 
 <div class='hint'>
 Verwende keine leeren Absätze wie <code>&lt;p&gt;&lt;/p&gt;</code>, nur um Abstand zu erzeugen.
@@ -758,7 +815,19 @@ Wenn du später Abstände verändern möchtest, ist CSS dafür der bessere Ort.
 Manchmal möchtest du innerhalb eines Absatzes eine neue Zeile beginnen, ohne einen neuen Absatz zu starten.
 Dafür gibt es `<br>`.
 
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='8'>
+<p>Wer bin ich?</p>
+<p>
+    Max Mustermann<br>
+    Klasse 9b<br>
+    Informatik
+</p>
+</div>
+</div>
+
 ```html
+<p>Wer bin ich?</p>
 <p>
     Max Mustermann<br>
     Klasse 9b<br>
@@ -772,14 +841,25 @@ Anders als viele andere HTML-Tags hat `<br>` kein eigenes schließendes Tag.
 Du schreibst also nicht `</br>`.
 
 <div class='hint'>
-Benutze <code>&lt;br&gt;</code> sparsam.
-Für normale Texte sind mehrere <code>&lt;p&gt;</code>-Absätze meistens besser.
-Viele erzwungene Zeilenumbrüche machen den HTML-Code schnell unübersichtlich.
+Wie du siehst, erhältst du durch <code>&lt;br&gt;</code> nur einen Zeilenumbruch, aber keinen Abstand zwischen den Zeilen wie bei Absätzen. Verwende <code>&lt;br&gt;</code> also nur, wenn du wirklich nur einen Zeilenumbruch brauchst, aber keinen neuen Absatz.
 </div>
 
 ##### Zu viel Text vermeiden
 
 Diese Folie ist technisch korrekt, aber als Präsentationsfolie wahrscheinlich zu voll:
+
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='8'>
+    <div class='mini-title'>Die Geschichte des Internets</div>
+
+    <p>
+        Das Internet entstand aus mehreren technischen Entwicklungen und wurde
+        über viele Jahre hinweg immer weiter ausgebaut. Heute benutzen wir es
+        für Webseiten, E-Mails, Chats, Videos, Spiele, Cloud-Dienste und viele
+        andere Anwendungen.
+    </p>
+</div>
+</div>
 
 ```html
 <section class="slide">
@@ -795,6 +875,21 @@ Diese Folie ist technisch korrekt, aber als Präsentationsfolie wahrscheinlich z
 ```
 
 Oft ist es besser, den Text zu kürzen oder auf mehrere Folien zu verteilen:
+
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='8'>
+    <div class='mini-title'>Das Internet verbindet Computer</div>
+
+    <p>
+        Das Internet ist ein riesiges Netzwerk aus vielen kleineren Netzwerken.
+    </p>
+
+    <p>
+        Darüber können Computer Daten austauschen: Webseiten, Nachrichten,
+        Bilder, Videos und vieles mehr.
+    </p>
+</div>
+</div>
 
 ```html
 <section class="slide">
@@ -871,25 +966,6 @@ Jeder Listenpunkt braucht ein eigenes <code>&lt;li&gt;</code>.
 Schreibe also nicht alle Punkte in ein einziges <code>&lt;li&gt;</code>, sondern mache für jeden Punkt eine eigene Zeile.
 </div>
 
-##### Liste mit Stichpunkten
-
-Eine Liste mit Stichpunkten verwendest du, wenn die Reihenfolge nicht besonders wichtig ist:
-
-```html
-<section class="slide">
-    <h2>Was ich gelernt habe</h2>
-
-    <ul>
-        <li>HTML beschreibt den Inhalt.</li>
-        <li>CSS gestaltet das Aussehen.</li>
-        <li>Der Browser zeigt die Präsentation an.</li>
-    </ul>
-</section>
-```
-
-Die Punkte könnten hier auch in einer anderen Reihenfolge stehen.
-Deshalb passt eine Liste mit Stichpunkten gut.
-
 ##### Nummerierte Liste
 
 Eine nummerierte Liste verwendest du, wenn die Reihenfolge wichtig ist:
@@ -922,33 +998,55 @@ Eine nummerierte Liste verwendest du, wenn die Reihenfolge wichtig ist:
 Bei `<ol>` setzt der Browser die Zahlen automatisch davor.
 Du musst die Zahlen also nicht selbst schreiben.
 
-Nicht so gut:
+<div class='row'>
+    <div class='col-md-6'>
+        <div class='hint bad'>
+            <p>Nicht so gut:</p>
+            <pre><code class='html'>&lt;ul&gt;
+    &lt;li&gt;1. Repository klonen&lt;/li&gt;
+    &lt;li&gt;2. index.html öffnen&lt;/li&gt;
+    &lt;li&gt;3. Live Server starten&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+        </div>
+    </div>
 
-```html
-<ul>
-    <li>1. Repository klonen</li>
-    <li>2. index.html öffnen</li>
-    <li>3. Live Server starten</li>
-</ul>
-```
-
-Besser:
-
-```html
-<ol>
-    <li>Repository klonen</li>
-    <li>index.html öffnen</li>
-    <li>Live Server starten</li>
-</ol>
-```
+    <div class='col-md-6'>
+        <div class='hint good'>
+            <p>Besser:</p>
+            <pre><code class='html'>&lt;ol&gt;
+    &lt;li&gt;Repository klonen&lt;/li&gt;
+    &lt;li&gt;index.html öffnen&lt;/li&gt;
+    &lt;li&gt;Live Server starten&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+        </div>
+    </div>
+</div>
 
 So kann der Browser die Nummerierung selbst übernehmen.
 Wenn du später einen Punkt einfügst oder löschst, stimmen die Zahlen automatisch wieder.
 
 ##### Listen nicht zu voll machen
 
+
 Eine Liste auf einer Folie sollte nicht zu lang sein.
-Diese Folie ist wahrscheinlich zu voll:
+Diese Folie ist zu voll und stößt an den unteren Rand der Folie:
+
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='9'>
+    <div class='mini-title'>Vorteile von HTML-Präsentationen</div>
+
+    <ul>
+        <li>Laufen im Browser</li>
+        <li>Funktionieren auch offline</li>
+        <li>Können mit CSS gestaltet werden</li>
+        <li>Kann man auf einen Stick kopieren</li>
+        <li>Trainieren den Umgang mit Code</li>
+        <li>Sind gut versionierbar</li>
+        <li>Können veröffentlicht werden</li>
+        <li>Funktionieren auf verschiedenen Geräten</li>
+    </ul>
+</div>
+</div>
 
 ```html
 <section class="slide">
@@ -968,6 +1066,18 @@ Diese Folie ist wahrscheinlich zu voll:
 ```
 
 Oft ist es besser, nur die wichtigsten Punkte auf die Folie zu schreiben:
+
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='9'>
+    <div class='mini-title'>Vorteile von HTML-Präsentationen</div>
+
+    <ul>
+        <li>Laufen in jedem modernen Browser</li>
+        <li>Lassen sich mit CSS frei gestalten</li>
+        <li>Trainieren den sicheren Umgang mit Code</li>
+    </ul>
+</div>
+</div>
 
 ```html
 <section class="slide">
@@ -1061,6 +1171,15 @@ Die wichtigsten Inline-Tags sind:
 
 Mit `<strong>` markierst du Wörter, die besonders wichtig sind:
 
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='11'>
+<p style='margin-top: 1em;'>
+    Speichere deine Datei mit <strong>Strg + S</strong>,
+    bevor du die Vorschau überprüfst.
+</p>
+</div>
+</div>
+
 ```html
 <p>
     Speichere deine Datei mit <strong>Strg + S</strong>,
@@ -1074,6 +1193,18 @@ Wichtiger ist aber die Bedeutung: Dieses Wort oder diese Stelle ist besonders wi
 ##### Betonen mit em
 
 Mit `<em>` betonst du ein Wort oder eine kurze Wortgruppe:
+
+<div class='shower-mini-clear'></div>
+
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='11'>
+<p style='margin-top: 1em;'>
+    Verwende Einblendungen <em>sparsam</em>,
+    damit die Präsentation ruhig bleibt.
+</p>
+</div>
+</div>
+
 
 ```html
 <p>
@@ -1092,6 +1223,15 @@ Wenn auf einer Folie fast alles fett oder kursiv ist, fällt am Ende gar nichts 
 ##### Code, Dateinamen und Befehle markieren
 
 Mit `<code>` markierst du kurze Stücke Code, Dateinamen, Tags oder Befehle:
+
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='11'>
+<p style='margin-top: 1em;'>
+    Öffne die Datei <code>index.html</code>
+    und suche nach <code>&lt;section class="slide"&gt;</code>. Verwende dazu <mark>Strg + F</mark>.
+</p>
+</div>
+</div>
 
 ```html
 <p>
@@ -1117,8 +1257,7 @@ und nicht:
 <code><section class="slide"></code>
 ```
 
-Im zweiten Beispiel würde der Browser versuchen, wirklich eine neue Folie zu beginnen.
-Das ist nicht das, was du hier möchtest.
+Im zweiten Beispiel würde der Browser versuchen, wirklich eine neue Folie zu beginnen, und das ist nicht das, was du hier möchtest.
 
 ##### Hochgestellte und tiefgestellte Zeichen
 
@@ -1172,6 +1311,129 @@ Wenn plötzlich ein ganzer Abschnitt fett, kursiv oder in Code-Schrift erscheint
 
 <div class='shower-mini-clear'></div>
 
+
+#### Echte Formeln mit LaTeX und KaTeX
+
+Manchmal reichen `<sup>` und `<sub>` nicht aus.
+Für richtige mathematische Formeln kannst du in der Vorlage LaTeX-Schreibweise verwenden.
+Die Darstellung übernimmt KaTeX.
+
+Es gibt zwei typische Arten von Formeln:
+
+- Eine **Inline-Formel** steht mitten im Satz.
+- Eine **abgesetzte Formel** steht groß in einer eigenen Zeile.
+
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='13'>
+<div class='mini-title'>Formeln mit KaTeX</div>
+    <p>Die Fläche eines Kreises ist \(A = \pi r^2\).</p>
+
+    <p>Der Satz des Pythagoras:</p>
+
+    <p>$$a^2 + b^2 = c^2$$</p>
+</div>
+</div>
+
+```html
+<section class="slide">
+    <h2>Formeln mit KaTeX</h2>
+
+    <p>Die Fläche eines Kreises ist \(A = \pi r^2\).</p>
+
+    <p>Der Satz des Pythagoras:</p>
+
+    <p>$$a^2 + b^2 = c^2$$</p>
+</section>
+```
+
+Für kurze Formeln im Text verwendest du `\(` und `\)`:
+
+```html
+<p>Die Fläche eines Kreises ist \(A = \pi r^2\).</p>
+```
+
+Für größere Formeln in einer eigenen Zeile verwendest du doppelte Dollarzeichen:
+
+```html
+<p>$$a^2 + b^2 = c^2$$</p>
+```
+
+<div class='hint'>
+Dieses Tutorial geht davon aus, dass KaTeX in der Vorlage bereits eingerichtet ist.
+Du musst also normalerweise nur die Formel in LaTeX-Schreibweise in deine Folie schreiben.
+</div>
+
+##### Häufige LaTeX-Schreibweisen
+
+Einige Schreibweisen brauchst du besonders oft:
+
+```text
+x^2              hochgestellte 2
+H_2O             tiefgestellte 2
+\frac{a}{b}      Bruch
+\sqrt{x}         Wurzel
+\pi              π
+\cdot            Malpunkt
+\le              kleiner oder gleich
+\ge              größer oder gleich
+```
+
+Zum Beispiel:
+
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='13'>
+<div class='mini-title'>Weitere Formeln</div>
+    <p>Eine Wurzel: \(\sqrt{25} = 5\)</p>
+    <p>Ein Bruch: \(\frac{1}{2} + \frac{1}{4} = \frac{3}{4}\)</p>
+    <p>Eine Ungleichung: \(x \ge 10\)</p>
+</div>
+</div>
+
+```html
+<section class="slide">
+    <h2>Weitere Formeln</h2>
+
+    <p>Eine Wurzel: \(\sqrt{25} = 5\)</p>
+    <p>Ein Bruch: \(\frac{1}{2} + \frac{1}{4} = \frac{3}{4}\)</p>
+    <p>Eine Ungleichung: \(x \ge 10\)</p>
+</section>
+```
+
+##### Wenn eine Formel nicht angezeigt wird
+
+Wenn du statt einer schön gesetzten Formel nur den LaTeX-Code siehst, prüfe zuerst diese Punkte:
+
+- Hast du am Anfang und am Ende der Formel `\(` und `\)` geschrieben?
+- Bei abgesetzten Formeln: Hast du am Anfang und am Ende jeweils zwei Dollarzeichen geschrieben?
+- Hast du geschweifte Klammern richtig geschlossen, zum Beispiel bei `\frac{1}{2}`?
+- Hast du einen Backslash `\` vor LaTeX-Befehlen wie `\sqrt`, `\frac` oder `\pi` geschrieben?
+
+
+<div class='row'>
+    <div class='col-md-6'>
+        <div class='hint bad'>
+            <p>Falsch:</p>
+            <pre><code class='html'>&lt;p&gt;Die Fläche ist \(A = \pi r^2.&lt;/p&gt;</code></pre>
+        </div>
+    </div>
+
+    <div class='col-md-6'>
+        <div class='hint good'>
+            <p>Richtig:</p>
+            <pre><code class='html'>&lt;p&gt;Die Fläche ist \(A = \pi r^2\).&lt;/p&gt;</code></pre>
+        </div>
+    </div>
+</div>
+
+Im falschen Beispiel fehlt das schließende Klammerzeichen `\)`. Dadurch weiß KaTeX nicht, wo die Formel endet.
+
+<div class='hint'>
+LaTeX-Formeln sind sehr praktisch, aber sie können eine Folie auch schnell überladen.
+Für Präsentationen sind wenige große und gut erklärte Formeln meistens besser als viele kleine Formeln auf einmal.
+</div>
+
+<div class='shower-mini-clear'></div>
+
 ### Bilder
 
 <!--
@@ -1180,18 +1442,19 @@ Die Beispiele sollten möglichst mit denselben Bilddateien funktionieren, die oh
 -->
 
 Bilder können eine Präsentation viel anschaulicher machen.
-Dabei musst du aber zwei verschiedene Aufgaben auseinanderhalten:
+Dabei musst du dich um zwei Dinge kümmern:
 
 1. Du brauchst zuerst eine **Bilddatei** in deinem Projekt.
 2. Danach musst du diese Bilddatei mit HTML in eine Folie einfügen.
 
 Der Browser kann ein Bild nur anzeigen, wenn er die Datei auch wirklich findet.
-Deshalb ist es wichtig, dass deine Bilddateien an einem sinnvollen Ort liegen und einen einfachen Dateinamen haben.
+Deshalb ist es wichtig, dass die Bilddatei im richtigen Ordner liegt und dass der Pfad im HTML genau stimmt.
 
-Für eigene Bilder verwendest du am besten einen Ordner mit dem Namen `pictures`.
-Diesen Ordner legst du direkt im Hauptordner deiner Präsentation an, also dort, wo auch `index.html` und `styles.css` liegen.
+In der Hackschule Workspace arbeitest du mit VS Code **im Browser**.
+Der Ordner `pictures` ist in der Vorlage bereits vorhanden.
+Dort legst du deine eigenen Bilder ab.
 
-Dein Projekt sieht dann ungefähr so aus:
+Dein Projekt sieht ungefähr so aus:
 
 ```text
 shower.js/
@@ -1221,27 +1484,27 @@ kleine Buchstaben, keine Leerzeichen, keine Umlaute und keine Sonderzeichen.
 Gut sind zum Beispiel <code>fuji.jpg</code>, <code>berlin.webp</code> oder <code>mein-bild.png</code>.
 </div>
 
-##### Den Ordner pictures anlegen
+#### Bilder in den Ordner pictures bekommen
 
-Wenn der Ordner `pictures` noch nicht existiert, kannst du ihn in VS Code anlegen:
+<!--
+Hier wird erklärt, wie Schülerinnen und Schüler in der browserbasierten VS-Code-Umgebung an Bilddateien kommen:
+per Drag & Drop vom eigenen Computer, per Zwischenablage und per wget im Terminal.
+-->
 
-1. Öffne links den Explorer.
-2. Klicke mit der rechten Maustaste in den Dateibereich.
-3. Wähle »New Folder«.
-4. Nenne den Ordner `pictures`.
+Bevor du ein Bild mit HTML einfügst, muss die Bilddatei zuerst im Ordner `pictures` liegen.
+Dafür hast du im Hackschule Workspace mehrere Möglichkeiten.
 
-Achte darauf, dass der Ordner wirklich neben `index.html` liegt und nicht aus Versehen in einem anderen Unterordner.
+##### Möglichkeit 1: Bilddatei per Drag & Drop hochladen
 
-##### Möglichkeit 1: Bilddatei per Drag & Drop einfügen
-
-Wenn du schon eine Bilddatei auf deinem Computer hast, kannst du sie meistens einfach in den Ordner `pictures` ziehen.
+Wenn du eine Bilddatei bereits auf deinem Computer hast, kannst du sie in den browserbasierten VS-Code-Explorer ziehen.
 
 Gehe so vor:
 
 1. Öffne links in VS Code den Explorer.
 2. Öffne den Ordner `pictures`.
-3. Ziehe die Bilddatei von deinem Computer in diesen Ordner.
-4. Benenne die Datei sinnvoll um, zum Beispiel in `fuji.jpg`.
+3. Ziehe die Bilddatei von deinem Computer in den Ordner `pictures`.
+4. Warte kurz, bis die Datei im Explorer erscheint.
+5. Benenne die Datei sinnvoll um, zum Beispiel in `fuji.jpg`.
 
 Wenn dein Bild danach im Explorer unter `pictures` sichtbar ist, liegt es im Projekt.
 
@@ -1249,20 +1512,24 @@ Wenn dein Bild danach im Explorer unter `pictures` sichtbar ist, liegt es im Pro
 pictures/fuji.jpg
 ```
 
+<div class='hint'>
+Ziehe die Datei wirklich in den VS-Code-Explorer und nicht nur in die Browser-Vorschau.
+Die Datei muss im Projektordner landen, sonst kann deine Präsentation sie später nicht laden.
+</div>
+
 ##### Möglichkeit 2: Bild aus der Zwischenablage einfügen
 
-In manchen Workspaces kannst du ein Bild auch direkt aus der Zwischenablage in VS Code einfügen.
+Du kannst in der Hackschule Workspace auch Bilder aus der Zwischenablage in den VS-Code-Explorer einfügen.
+Das ist besonders praktisch für Screenshots.
 
 Gehe so vor:
 
 1. Kopiere ein Bild oder erstelle einen Screenshot.
 2. Klicke links im Explorer auf den Ordner `pictures`.
 3. Drücke <span class='key'>Strg</span><span class='key'>V</span>.
-4. Prüfe, ob im Ordner `pictures` eine neue Bilddatei erscheint.
-5. Benenne die Datei sinnvoll um, zum Beispiel in `fuji.png`.
-
-Wenn dabei keine Datei im Ordner `pictures` erscheint, unterstützt dein Workspace diese Methode wahrscheinlich nicht.
-Dann verwende stattdessen Drag & Drop oder `wget`.
+4. Falls der Browser nach Zugriff auf die Zwischenablage fragt, erlaube den Zugriff.
+5. Prüfe, ob im Ordner `pictures` eine neue Bilddatei erscheint.
+6. Benenne die Datei sinnvoll um, zum Beispiel in `fuji.png`.
 
 <div class='hint'>
 Bilder, die du mit <span class='key'>Strg</span><span class='key'>V</span> einfügst, werden oft als PNG-Dateien gespeichert.
@@ -1272,16 +1539,14 @@ Im Profi-Abschnitt unten siehst du, wie du solche Dateien prüfen und umwandeln 
 
 ##### Möglichkeit 3: Bild mit wget herunterladen
 
-Wenn du schon etwas sicherer mit dem Terminal bist, kannst du das Fuji-Bild direkt mit `wget` herunterladen.
+Wenn du die Bildadresse kennst, kannst du ein Bild auch direkt im Terminal herunterladen.
+Das ist oft der sauberste Weg, weil die Datei direkt im Workspace landet.
 
 Öffne dafür das Terminal in VS Code und führe diesen Befehl aus:
 
 ```bash
-mkdir -p pictures
 wget -O pictures/fuji.jpg "https://commons.wikimedia.org/wiki/Special:Redirect/file/Kodaki_fuji_frm_shojinko.jpg"
 ```
-
-`mkdir -p pictures` sorgt dafür, dass der Ordner `pictures` existiert.
 
 `wget` lädt die Datei herunter.
 
@@ -1297,7 +1562,7 @@ Wenn du nur die Adresse einer normalen Webseite herunterlädst, bekommst du nich
 
 <!--
 Hier sollte <img src="..."> erklärt werden.
-Wichtig wären Dateinamen, relative Pfade, Dateiendungen und ein kurzer Hinweis auf alt-Text, ohne den Abschnitt zu überfrachten. Wir sollten auch erklären, wie man ein Bild entweder herunterladen und per Drag & Drop in das richtige Verzeichnis ziehen oder direkt in VS Code mit <span class='key'>Strg</span><span class='key'>V</span> einfügen kann (wenn das geht). Für Profis erklären wir, wie man ein Bild mit wget im Terminal herunterlädt.
+Wichtig wären Dateinamen, relative Pfade, Dateiendungen und ein kurzer Hinweis auf alt-Text, ohne den Abschnitt zu überfrachten.
 -->
 
 Wenn die Bilddatei im richtigen Ordner liegt, kannst du sie mit dem Tag `<img>` in eine Folie einfügen.
@@ -1306,7 +1571,7 @@ Angenommen, dein Bild heißt `fuji.jpg` und liegt im Ordner `pictures`.
 Dann fügst du es so ein:
 
 <div class='shower-mini'>
-<div class='shower-mini-slide' data-page='13'>
+<div class='shower-mini-slide' data-page='14'>
 <div class='mini-title'>Der Fuji</div>
 <img src='pictures/fuji.jpg' alt='Der Fuji vom Shōji-See aus gesehen' style='display: block; width: 66%; margin: 0.35em auto 0; border-radius: 0.35em;'>
 </div>
@@ -1349,19 +1614,19 @@ Wenn die Datei so liegt:
 pictures/fuji.jpg
 ```
 
-dann ist dieser Code richtig:
+<div class='example-label good'>Richtig</div>
 
 ```html
 <img src="pictures/fuji.jpg" alt="Der Fuji">
 ```
 
-Dieser Code ist dagegen falsch:
+<div class='example-label bad'>Falsch</div>
 
 ```html
 <img src="fuji.jpg" alt="Der Fuji">
 ```
 
-Der Browser sucht das Bild dann direkt neben `index.html`.
+Im falschen Beispiel sucht der Browser das Bild direkt neben `index.html`.
 Dort liegt es aber nicht, weil es im Ordner `pictures` liegt.
 
 ##### Dateinamen müssen exakt gleich sein
@@ -1390,23 +1655,28 @@ Achte besonders auf:
 
 Deshalb sind einfache Dateinamen so hilfreich.
 
-Gut:
+<div class='row'>
+    <div class='col-md-4'>
+        <div class='hint good'>
+            <p>Gut:</p>
+            <pre>fuji.jpg</pre>
+        </div>
+    </div>
 
-```text
-fuji.jpg
-```
+    <div class='col-md-4'>
+        <div class='hint good'>
+            <p>Auch gut:</p>
+            <pre>mount-fuji.webp</pre>
+        </div>
+    </div>
 
-Auch gut:
-
-```text
-mount-fuji.webp
-```
-
-Eher schlecht:
-
-```text
-Fuji Bild endgültig NEU!!!.JPG
-```
+    <div class='col-md-4'>
+        <div class='hint bad'>
+            <p>Eher schlecht:</p>
+            <pre>Fuji Bild endgültig NEU!!!.JPG</pre>
+        </div>
+    </div>
+</div>
 
 ##### Unterschiedliche Bildformate
 
@@ -1414,7 +1684,7 @@ Häufige Bildformate sind:
 
 - `.jpg` oder `.jpeg` für Fotos
 - `.png` für Grafiken, Screenshots oder Bilder mit Transparenz
-- `.webp` für moderne, oft kleinere Bilddateien
+- `.webp` oder `.avif` für moderne, oft kleinere Bilddateien
 - `.svg` für Zeichnungen, Logos und einfache Grafiken
 
 Für den Anfang sind `.jpg`, `.png` und `.webp` meistens am einfachsten.
