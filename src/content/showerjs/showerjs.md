@@ -2,6 +2,101 @@
 image: showerjs.webp:0:80
 </div>
 
+<style>
+.shower-mini {
+    float: right;
+    width: min(28rem, 45%);
+    margin: 0.2rem 0 1.2rem 1.5rem;
+}
+
+.shower-mini-slide {
+    aspect-ratio: 16 / 9;
+    position: relative;
+    overflow: hidden;
+
+    background: white;
+    color: #222;
+    border-radius: 0.35rem;
+    box-shadow: 0 0.35rem 1.2rem rgba(0, 0, 0, 0.25);
+
+    padding: 7%;
+    font-family: system-ui, sans-serif;
+    font-size: clamp(0.55rem, 1.45vw, 0.9rem);
+}
+
+.shower-mini-slide h3 {
+    margin: 0 0 0.6em;
+    font-size: 1.8em;
+    line-height: 1.1;
+}
+
+.shower-mini-slide p {
+    margin: 0 0 0.6em;
+    line-height: 1.35;
+}
+
+.shower-mini-slide img {
+    max-width: 100%;
+}
+
+.shower-mini-slide .right {
+    float: right;
+    width: 38%;
+    margin: 0 0 0.6em 0.8em;
+}
+
+.shower-mini-slide .place {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+}
+
+.shower-mini-slide .top {
+    top: 12%;
+}
+
+.shower-mini-slide .bottom {
+    top: 88%;
+}
+
+.shower-mini-slide .left {
+    left: 15%;
+}
+
+.shower-mini-slide .right-place {
+    left: 85%;
+}
+
+.shower-mini-slide .cover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    max-width: none;
+}
+
+.shower-mini-slide .over-image {
+    position: relative;
+    z-index: 1;
+    color: white;
+    text-shadow: 0 0.08em 0.25em black;
+}
+
+.shower-mini-clear {
+    clear: both;
+}
+
+@media (max-width: 760px) {
+    .shower-mini {
+        float: none;
+        width: 100%;
+        margin: 1rem 0;
+    }
+}
+</style>
+
 # Eine Präsentation in HTML erstellen
 
 <p class='abstract'>
@@ -79,84 +174,28 @@ Wenn du die Datei <code>index.html</code> bearbeitest, musst du darauf achten, d
 Falls sich deine Vorschau einmal nicht mehr aktualisieren sollte, kannst du die Seite einfach neu laden. Drück dafür einfach <span class='key'>Strg</span><span class='key'>R</span> oder <span class='key'>F5</span>.
 </div>
 
-## HTML
-
-HTML wird normalerweise nicht für Präsentationen, sondern für Websites verwendet. Die Funktion dieser Sprache ist es, Text mit bestimmten Eigenschaften auszuzeichnen &ndash; daher auch der Name »Hypertext Markup Language«. Schau dir den Quelltext einer beliebigen Website mit <span class='key'>Strg</span><span class='key'>U</span> an und du wirst HTML-Code sehen.
-
-Generell ist es so, dass bei HTML Textteile in sogenannte Tags eingeschlossen werden. Schreibt man z. B. `H<sub>2</sub>O`, sorgen die `<sub>`-Tags dafür, dass die 2 tiefer gestellt wird: H<sub>2</sub>O. Ein öffnendes Tag wie `<sub>` muss immer mit einem passenden schließenden Tag `</sub>` geschlossen werden, wobei Tags beliebig geschachtelt werden können. Hier sind einige Beispiele:
-
-<div style='max-width: 100%; overflow-x: auto;'>
-<table class='table'>
-<tr>
-<th>HTML-Tag</th>
-<th>Beispiel</th>
-<th>Code</th>
-</tr>
-<tr>
-<td><code>&lt;strong&gt;</code></td>
-<td><strong>fetter Text</strong></td>
-<td><code style='white-space: nowrap;'>&lt;strong&gt;fetter Text&lt;/strong&gt;</code></td>
-</tr>
-<tr>
-<td><code>&lt;em&gt;</code></td>
-<td><em>kursiver Text</em></td>
-<td><code style='white-space: nowrap;'>&lt;em&gt;kursiver Text&lt;/em&gt;</code></td>
-</tr>
-<tr>
-<td><code>&lt;u&gt;</code></td>
-<td><u>unterstrichener Text</u></td>
-<td><code style='white-space: nowrap;'>&lt;u&gt;unterstrichener Text&lt;/u&gt;</code></td>
-</tr>
-<tr>
-<td><code>&lt;sub&gt;</code></td>
-<td><sub style='white-space: nowrap;'>tiefgestellter</sub> Text</td>
-<td><code>&lt;sub&gt;tiefgestellter&lt;/sub&gt; Text</code></td>
-</tr>
-<tr>
-<td><code>&lt;sup&gt;</code></td>
-<td><sup>hochgestellter</sup> Text</td>
-<td><code style='white-space: nowrap;'>&lt;sup&gt;hochgestellter&lt;/sup&gt; Text</code></td>
-</tr>
-<tr>
-<td><code>&lt;p&gt;</code></td>
-<td><p style='margin: 0;'>Absatz</p></td>
-<td><code style='white-space: nowrap;'>&lt;p&gt;<br>Absatz<br>&lt;/p&gt;</code></td>
-</tr>
-<tr>
-<td><code>&lt;h1&gt;</code></td>
-<td><h1 style='margin: 0; white-space: nowrap;'>Überschrift 1</h1></td>
-<td><code style='white-space: nowrap;'>&lt;h1&gt;Überschrift 1&lt;/h1&gt;</code></td>
-</tr>
-<tr>
-<td><code>&lt;h2&gt;</code></td>
-<td><h2 data-autotoc='ignore' style='margin: 0;'>Überschrift 2</h2></td>
-<td><code style='white-space: nowrap;'>&lt;h2&gt;Überschrift 2&lt;/h2&gt;</code></td>
-</tr>
-<tr>
-<td><code>&lt;h3&gt;</code></td>
-<td><h3 style='margin: 0;'>Überschrift 3</h3></td>
-<td><code style='white-space: nowrap;'>&lt;h3&gt;Überschrift 3&lt;/h3&gt;</code></td>
-</tr>
-<tr>
-<td><code>&lt;ul&gt;</code></td>
-<td><ul><li>Stichpunkt 1</li><li>Stichpunkt 2</li></ul></td>
-<td><code style='white-space: nowrap;'>&lt;ul&gt;<br>&nbsp;&nbsp;&lt;li&gt;Stichpunkt 1&lt;/li&gt;<br>&nbsp;&nbsp;&lt;li&gt;Stichpunkt 2&lt;/li&gt;<br>&lt;/ul&gt;</code></td>
-</tr>
-<tr>
-<td><code>&lt;ol&gt;</code></td>
-<td><ol><li>Aufzählung 1</li><li>Aufzählung 2</li></ol></td>
-<td><code style='white-space: nowrap;'>&lt;ol&gt;<br>&nbsp;&nbsp;&lt;li&gt;Aufzählung 1&lt;/li&gt;<br>&nbsp;&nbsp;&lt;li&gt;Aufzählung 2&lt;/li&gt;<br>&lt;/ol&gt;</code></td>
-</tr>
-<tr>
-<td><code>&lt;img&gt;</code></td>
-<td><img style='width: 200px;' src='bird.webp'></td>
-<td><code style='white-space: nowrap;'>&lt;img src='image.jpg'&gt;</code></td>
-</tr>
-</table>
-</div>
-
-<!-- ## CSS -->
-
 ## Präsentation halten
 
 Wenn du deine Präsentation halten möchtest, kannst du sie einfach im Browser öffnen und mit den Pfeiltasten navigieren. Du kannst auch die Maus benutzen, um durch die Präsentation zu scrollen. Der besondere Vorteil bei dieser Art von Präsentation ist, dass sie in jedem modernen Browser funktioniert und du keine spezielle Software brauchst, um sie abzuspielen. Du kannst einfach das ganze Verzeichnis auf einen Stick kopieren und deine Präsentation überall abspielen, wo es einen modernen Webbrowser gibt.
+
+## Nachschlagen: Folien gestalten
+
+### Der Grundaufbau einer Folie
+### Text und Überschriften
+### Listen und Stichpunkte
+### Wörter hervorheben
+
+### Bilder einfügen
+### Bilder vergrößern, verkleinern und zuschneiden
+### Bilder links oder rechts platzieren
+### Ein Bild als Hintergrund verwenden
+
+### Farben ändern
+### Schriftgrößen ändern
+### Abstände ändern
+### Elemente genau platzieren
+### Zwei Spalten verwenden
+
+### Dinge nacheinander einblenden
+### Wiederverwendbare CSS-Klassen schreiben
+### Häufige Fehler finden
