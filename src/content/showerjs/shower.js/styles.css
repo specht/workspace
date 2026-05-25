@@ -1,0 +1,99 @@
+.slide.nopagenumber::after {
+    visibility: hidden;
+}
+
+.shower {
+    --slide-ratio: calc(16 / 9);
+}
+
+#titelfolie h2 {
+    margin: 330px 0 0;
+    color: rgb(0, 0, 0);
+    text-align: center;
+    font-size: 70px;
+}
+
+#titelfolie p {
+    margin: 10px 0 0;
+    text-align: center;
+    color: #402030;
+    font-style: italic;
+    font-size: 20px;
+}
+
+#titelfolie p a {
+    color: black;
+}
+
+img {
+    max-width: 100%;
+}
+
+img.cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.slide blockquote + figcaption {
+    text-align: right;
+    margin-right: 100px;
+}
+
+figcaption {
+    line-height: 1.2;
+}
+
+.slide mark, .slide tr.mark, .slide td.mark {
+    background-color: #fce94f;
+}
+
+.slide {
+    position: relative;
+}
+
+.slide.bright-text {
+    color: white;
+}
+
+.slide.bright-text h2,
+.slide.bright-text p,
+.slide.bright-text li,
+.slide.bright-text blockquote,
+.slide.bright-text figcaption {
+    color: white;
+    text-shadow: 0 0.08em 0.25em rgba(0, 0, 0, 0.85);
+}
+
+.side-by-side {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5em;
+    width: 100%;
+}
+
+.side-by-side > img {
+    flex: 0 0 auto;
+    max-width: 55%;
+
+    object-fit: cover;
+    object-position: center center;
+}
+
+.side-by-side > :not(img) {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.side-by-side > :not(img) > :first-child {
+    margin-top: 0;
+}
+
+/*
+ * Eigene CSS-Regeln
+ *
+ * Hier kannst du das Aussehen deiner Folien verändern:
+ * Farben, Größen, Abstände, Schatten und Positionen.
+ *
+ * Schreibe deine eigenen CSS-Regeln unter diese Zeile.
+ */

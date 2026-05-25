@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <title>Titel deiner Präsentation</title>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <link rel="stylesheet" href="shower/themes/ribbon/styles/index.css">
+
+    <link rel="stylesheet" href="styles.css">
+	<script src="shower/index.js" defer></script>
+</head>
+<body class="shower list">
+
+    <header class="caption">
+        <h1>Titel deiner Präsentation</h1>
+        <p>Dein Name</p>
+    </header>
+
+    <section class="slide nopagenumber" id="titelfolie">
+        <h2>Titel deiner Präsentation</h2>
+        <p>Dein Name</p>
+        <figure>
+            <!-- mit object-position können wir steuern, welcher
+                 Teil des Bildes fokussiert werden soll -->
+            <img class="cover" src="pictures/titelfolie.jpg" style="object-position: 50% 100%;">
+            <figcaption class="copyright right">
+                <!-- Vergiss nicht, die Quelle für Bilder anzugeben! -->
+                Image by Freepik
+            </figcaption>
+        </figure>
+    </section>
+
+
+
+    <section class="slide">
+        <h2>Schreib deine Präsentation in HTML!</h2>
+        <ol>
+            <li>🚀 Du brauchst kein Powerpoint, kein Google Slides etc.</li>
+            <li>🤩 Läuft in jedem modernen Browser (auch wenn du offline bist)</li>
+            <li>🎨 Du kannst das Layout anpassen</li>
+            <li>😎 Trainiert deine Computer-Skills</li>
+            <li>⌨️ Steuerung per Tastatur</li>
+            <li>🖨️ Als PDF druckbar</li>
+        </ol>
+    </section>
+
+    <section class="slide">
+        <h2>Fließtext auf deinen Folien</h2>
+        <p>
+            Schreib ganz normalen Text auf deine Folien &ndash; mit <code>&lt;p&gt;</code>.
+        </p>
+        <p>
+            Aber Achtung: Niemand
+            kann dir wirklich zuhören, wenn viel Text auf deiner Folie steht.
+            Wie soll man auch gleichzeitig lesen und zuhören? 🤔
+        </p>
+        <p>
+            Du kannst auch <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Links</a>
+            setzen (<code>&lt;a&gt;</code>),
+            <em>Text hervorheben</em> (<code>&lt;em&gt;</code>),<br>
+            <strong>Text fett</strong> schreiben (<code>&lt;strong&gt;</code>)
+            oder <mark>Text markieren</mark> (<code>&lt;mark&gt;</code>).
+        </p>
+    </section>
+
+    <section class="slide">
+        <h2>Listen sind super</h2>
+        <ol>
+            <li>Du kannst geordnete Listen verwenden (mit <code>&lt;ol&gt;</code> und <code>&lt;li&gt;</code>)</li>
+            <li>Hier sind die Einträge nummeriert</li>
+            <li>...wie man es gewohnt ist</li>
+        </ol>
+        <ul>
+            <li>Du kannst auch nicht nummerierte Listen verwenden</li>
+            <li>nutze dafür <code>&lt;ul&gt;</code> und <code>&lt;li&gt;</code></li>
+            <li>es sind einfach nur Stichpunkte</li>
+        </ul>
+    </section>
+
+
+    <section class="slide">
+        <h2>Bild mit Text</h2>
+
+        <div class="side-by-side">
+            <div>
+                <p>
+                    Lege die Größe deines Bildes mit CSS fest, und der Rest des Platzes wird automatisch für den Text genutzt.
+                </p>
+                <p>
+                    Tipp: Verschiebe das <code>&lt;img&gt;</code> vor das <code>&lt;div&gt;</code>, um das Bild auf der linken Seite zu platzieren.
+                </p>
+            </div>
+            <img src="pictures/fuji.jpg" alt="Der Fuji" style="height: 350px; aspect-ratio: 3/4; object-fit: cover; border-radius: 10px;">
+        </div>
+        <figcaption class="copyright right">
+            Bild: 名古屋太郎, CC BY-SA 3.0, Wikimedia Commons<br>
+            https://de.wikipedia.org/wiki/Datei:Kodaki_fuji_frm_shojinko.jpg
+        </figcaption>
+    </section>
+
+    <section class="slide">
+        <h2>Apropos Bilder...</h2>
+        <ul>
+            <li>Achte darauf, dass deine Bilder eine gute Qualität haben</li>
+            <li>Deine Bilder sollten aber auch nicht zu groß sein, sonst wird deine Präsentation langsam (ca. 2000 Pixel Breite sind ausreichend)</li>
+            <li>Quellenangaben nicht vergessen!</li>
+        </ul>
+    </section>
+
+    <section class="slide">
+        <h2>Mehrere Spalten</h2>
+        <div class="columns two">
+            <p>Nutze <code>&lt;div class="columns two"&gt;</code>, um zwei Spalten auf deiner Folie zu zeigen. In jeder Spalte können sich Fließtext oder Aufzählungen befinden.</p>
+            <ul>
+                <li>Pack deine Folien nicht zu voll</li>
+                <li>...sie sollen deinen Vortrag nur unterstützen</li>
+                <li>Setz dein Publikum nicht unter Druck, indem sie gleichzeitig viel lesen und zuhören sollen</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="slide">
+        <h2>Zitate</h2>
+        <figure>
+            <blockquote style="padding: 20px 0;">
+                <p>
+                    Warum im PowerPoint-Sumpf versinken, wenn du mit HTML deine Präsentationen rocken kannst? Verabschiede dich aus den Neunzigern und schreibe deine eigene digitale Erfolgsstory – DIY mit HTML, dem neuen Standard für Präsentationen!
+                </p>
+            </blockquote>
+            <figcaption>ein anonymer Informatiklehrer</figcaption>
+        </figure>
+    </section>
+
+    <section class="slide">
+        <h2>Tabellen können hilfreich sein</h2>
+        <table>
+        <tr>
+            <th>Instrument</th>
+            <th>Coolness</th>
+            <th>Schwierigkeit</th>
+            <th>Klang</th>
+        </tr>
+        <tr>
+            <td>Triangel</td>
+            <td>2/10</td>
+            <td>Super einfach</td>
+            <td>Dreieckige Klänge</td>
+        </tr>
+        <tr>
+            <td>Keyboard</td>
+            <td>7/10</td>
+            <td>Für Angeber geeignet</td>
+            <td>Vielseitige Klangfarben</td>
+        </tr>
+        <tr>
+            <td>Ukulele</td>
+            <td>8/10</td>
+            <td>Anfängerfreundlich</td>
+            <td>Sonnige Hawaii-Vibes</td>
+        </tr>
+        <tr>
+            <td>Bassgitarre</td>
+            <td>9/10</td>
+            <td>Groovy und hintergründig</td>
+            <td>Tiefe Frequenzen</td>
+        </tr>
+        </table>
+        <p>Nutze <code>&lt;th&gt;</code> und <code>&lt;td&gt;</code> für Zellen.</p>
+    </section>
+
+    <section class="slide">
+        <h2>Hebe Zeilen oder Zellen hervor...</h2>
+        <table>
+        <tr>
+            <th>Instrument</th>
+            <th>Coolness</th>
+            <th>Schwierigkeit</th>
+            <th>Klang</th>
+        </tr>
+        <tr>
+            <td>Triangel</td>
+            <td>2/10</td>
+            <td>Super einfach</td>
+            <td>Dreieckige Klänge</td>
+        </tr>
+        <tr>
+            <td>Keyboard</td>
+            <td>7/10</td>
+            <td>Für Angeber geeignet</td>
+            <td>Vielseitige Klangfarben</td>
+        </tr>
+        <tr>
+            <td>Ukulele</td>
+            <td>8/10</td>
+            <td>Anfängerfreundlich</td>
+            <td>Sonnige Hawaii-Vibes</td>
+        </tr>
+        <tr class="mark">
+            <td>Bassgitarre</td>
+            <td>9/10</td>
+            <td>Groovy und hintergründig</td>
+            <td>Tiefe Frequenzen</td>
+        </tr>
+        </table>
+        <p>Nutze <code>&lt;tr class="mark"&gt;</code> für die Hervorhebung.</p>
+    </section>
+
+    <section class="slide nopagenumber bright-text">
+        <h2>Wähle eindrucksvolle Bilder</h2>
+        <figure>
+            <img class="cover" src="pictures/sky.jpg">
+            <p>...zum Beispiel in voller Größe</p>
+            <figcaption class="copyright right white">
+                Image by evening_tao on Freepik
+            </figcaption>
+        </figure>
+    </section>
+
+    <section class="slide">
+        <h2>Schritt für Schritt</h2>
+        <ul>
+            <li>Du kannst deine Stichpunkte...</li>
+            <li class="next">...auch nach und nach einblenden...</li>
+            <li class="next">...um nicht gleich alles auf einmal zu zeigen.</li>
+            <li class="next">Nutze dafür <code>class="next"</code></li>
+        </ul>
+    </section>
+
+    <section class="slide">
+        <h2>Platzierung von Elementen</h2>
+        <p>Du kannst Elemente beliebig auf deiner Folie platzieren.</p>
+        <p>Probier einfach aus, die Formen und Farben auf dieser Folie zu verändern und schau, was passiert. Das Internet ist voller Tips und Tricks zu HTML und CSS – du kannst in deine Präsentation alles einbauen, was du möchtest.</p>
+        <div style="
+        background-color: #ffffff;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        width: 80vh;
+        height: 80vh;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: -1;
+        "></div>
+        <div style="
+        background-color: #35bfc6;
+        box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+        width: 80px;
+        height: 80px;
+        border-radius: 10px;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        "></div>
+        <div style="
+        background-color: #cf54c1;
+        box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+        width: 80px;
+        height: 80px;
+        border-radius: 10px;
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        "></div>
+    </section>
+
+    <section class="slide">
+        <h2>Bedienung mit der Tastatur</h2>
+        <p>
+            Bediene deine Präsentation einfach mit der Tastatur.
+        </p>
+        <ul>
+            <li><code>Esc</code>: Folienübersicht</li>
+            <li><code>Strg</code>+<code>P</code>: Präsentation als PDF speichern</li>
+            <li><code>F5</code>: neu laden</li>
+            <li><code>F11</code>: Vollbild</li>
+        </ul>
+    </section>
+
+    <section class="slide">
+        <h2>Los geht's!</h2>
+        <p>
+            Kopiere diese Datei und gib ihr einen sinnvollen Namen,
+            z. B. <code>Schnabeltiere – Fluch oder Segen.html</code>,
+            und fange an, deine eigene Präsentation zu schreiben.
+        </p>
+    </section>
+
+    <div class="progress"></div>
+</body>
+</html>

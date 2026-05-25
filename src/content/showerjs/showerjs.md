@@ -100,9 +100,11 @@ image: showerjs.webp:0:80
     margin: 0 0 0.35em;
 
     font-family: 'PT Sans Narrow', 'PT Sans', sans-serif;
-    font-size: 64px;
+    font-size: 54px;
     font-weight: bold;
     line-height: 1.05;
+    opacity: 0.8;
+    margin-bottom: 0.5em;
 }
 
 .shower-mini-slide p {
@@ -1236,7 +1238,7 @@ Mit `<code>` markierst du kurze Stücke Code, Dateinamen, Tags oder Befehle:
 ```html
 <p>
     Öffne die Datei <code>index.html</code>
-    und suche nach <code>&lt;section class="slide"&gt;</code>.
+    und suche nach <code>&lt;section class="slide"&gt;</code>. Verwende dazu <mark>Strg + F</mark>.
 </p>
 ```
 
