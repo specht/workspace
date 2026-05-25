@@ -50,6 +50,7 @@
         </section>
 
         <section class="slide">
+            <h2>Über mich</h2>
             <p>Wer bin ich?</p>
             <p>
                 Max Mustermann<br>
@@ -57,7 +58,7 @@
                 Informatik
             </p>
         </section>
-
+        
         <section class="slide">
             <h2>Die Geschichte des Internets</h2>
 
@@ -357,6 +358,82 @@
                 Bild: 名古屋太郎, CC BY-SA 3.0, Wikimedia Commons<br>
                 https://de.wikipedia.org/wiki/Datei:Kodaki_fuji_frm_shojinko.jpg
             </figcaption>
+        </section>
+
+        <section class="slide">
+            <h2>Ausflug nach Berlin</h2>
+            <ul>
+            <li>🏛️ Reichstag besuchen</li>
+            <li>🚲 Mit dem Rad durch die Stadt</li>
+            <li>🍟 Currywurst probieren</li>
+            </ul>
+        </section>
+
+        <style>
+            .slide.blue-ribbon::after {
+                background-color: #4b86c2;
+            }
+        </style>
+
+        <section class="slide blue-ribbon">
+            <h2>Blaues Ribbon</h2>
+            <p>Die Form bleibt gleich, aber die Farbe ändert sich.</p>
+        </section>
+
+        <style>
+            .slide.circle-page-number::after {
+                top: 32px;
+                left: auto;
+                right: 55px;
+
+                display: grid;
+                place-items: center;
+
+                width: 68px;
+                height: 68px;
+                padding-top: 0;
+
+                clip-path: none;
+                border-radius: 50%;
+                background-color: #75507b;
+
+                line-height: 1;
+            }
+        </style>
+
+        <section class="slide circle-page-number">
+            <h2>Runde Seitenzahl</h2>
+            <p>Hier wird aus dem Ribbon ein Kreis.</p>
+        </section>
+
+        <style>
+            .slide.plain-page-number::after {
+                top: auto;
+                left: auto;
+                right: 60px;
+                bottom: 32px;
+
+                width: auto;
+                height: auto;
+                padding-top: 0;
+
+                clip-path: none;
+                background: transparent;
+                color: var(--color-grey);
+
+                font-size: 20px;
+                line-height: 1;
+            }
+        </style>
+
+        <section class="slide plain-page-number">
+            <h2>Unauffällige Seitenzahl</h2>
+            <p>Die Nummer steht nur noch klein unten rechts.</p>
+        </section>
+
+        <section class="slide nopagenumber">
+            <h2>Startfolie ohne Seitenzahl</h2>
+            <p>Auf dieser Folie soll kein Ribbon erscheinen.</p>
         </section>
 
         <!-- <div class="progress"></div> -->

@@ -3,20 +3,6 @@ image: showerjs.webp:0:80
 </div>
 
 <style>
-/*
- * Mini-Folien im Referenzteil
- * --------------------------------
- * Die Mini-Folien verwenden dieselbe 16:9-Grundfläche wie die Shower-Vorlage:
- * 1024 × 576 Pixel. Vorschau und Lightbox skalieren diese Fläche nur optisch.
- * Dadurch bleibt das Layout beim Vergrößern exakt gleich.
- */
-.shower-mini,
-.mini-lightbox-content {
-    --mini-scale: 1;
-    --mini-slide-width: 1024px;
-    --mini-slide-height: 576px;
-}
-
 .shower-mini {
     box-sizing: border-box;
     float: right;
@@ -25,19 +11,58 @@ image: showerjs.webp:0:80
     width: min(28rem, 45%);
     aspect-ratio: 16 / 9;
     margin: 0.2rem 0 1.2rem 1.5rem;
+    padding: 0;
 
     overflow: hidden;
+    border: 0;
     border-radius: 10px;
     box-shadow: 0 0.35rem 1.15rem rgba(0, 0, 0, 0.22);
 
+    background: white;
     color: inherit;
     text-decoration: none;
     cursor: zoom-in;
 
     transition:
-        border-color 160ms ease,
         box-shadow 160ms ease,
-        filter 160ms ease;
+        filter 160ms ease,
+        transform 160ms ease;
+}
+
+.shower-mini img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.shower-mini::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+    pointer-events: none;
+
+    transition: box-shadow 160ms ease;
+}
+
+.shower-mini:hover,
+.shower-mini:focus-visible {
+    box-shadow: 0 0.55rem 1.45rem rgba(0, 0, 0, 0.3);
+    filter: brightness(1.03);
+}
+
+.shower-mini:hover::before,
+.shower-mini:focus-visible::before {
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.26);
+}
+
+.shower-mini:focus-visible {
+    outline: 0.18rem solid currentColor;
+    outline-offset: 0.3rem;
 }
 
 .shower-mini::before {
@@ -66,204 +91,6 @@ image: showerjs.webp:0:80
 .shower-mini:focus-visible {
     outline: 0.18rem solid currentColor;
     outline-offset: 0.3rem;
-}
-
-.shower-mini-slide {
-    box-sizing: border-box;
-    position: relative;
-    overflow: hidden;
-
-    width: var(--mini-slide-width);
-    height: var(--mini-slide-height);
-    padding: 70px;
-
-    background: white;
-    color: #222;
-    border-radius: 10px;
-
-    font-family: 'PT Sans', sans-serif;
-    font-size: 34px;
-    line-height: 1.35;
-
-    transform: scale(var(--mini-scale));
-    transform-origin: top left;
-}
-
-.shower-mini > .shower-mini-slide,
-.mini-lightbox-content > .shower-mini-slide {
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-.shower-mini-slide .mini-title {
-    margin: 0 0 0.35em;
-
-    font-family: 'PT Sans Narrow', 'PT Sans', sans-serif;
-    font-size: 54px;
-    font-weight: bold;
-    line-height: 1.05;
-    opacity: 0.8;
-    margin-bottom: 0.5em;
-}
-
-.shower-mini-slide p {
-    margin: 0 0 0.6em;
-}
-
-.shower-mini-slide ul,
-.shower-mini-slide ol {
-    margin: 0 0 0 1.25em;
-    padding: 0;
-}
-
-.shower-mini-slide li {
-    margin: 0.18em 0;
-}
-
-.shower-mini-slide img {
-    max-width: 100%;
-}
-
-.shower-mini-slide mark {
-    background-color: #fce94f;
-}
-
-
-/* Shower-Ribbon mit Foliennummer für Mini-Folien.
- * Diese Vorschau übernimmt die Maße der offiziellen Shower-Vorlage:
- * links 875px, 50px breit, 100px hoch und rotes Lesezeichen.
- * In echten Shower-Folien steht die Zahl in counter(slide); in den Mini-Folien
- * setzen wir sie mit data-page, damit die Beispiele unabhängig funktionieren.
- */
-.shower-mini-slide {
-    --color-blue: #4b86c2;
-    --color-red: #cc0000;
-    --color-yellow: #fafaa2;
-    --color-grey: #585a5e;
-    --ribbon-size: 50px;
-}
-
-.shower-mini-slide p {
-    text-align: left;
-}
-
-.shower-mini-slide[data-page]::after {
-    position: absolute;
-    top: 0;
-    left: 875px;
-    z-index: 2;
-
-    box-sizing: border-box;
-    width: var(--ribbon-size);
-    height: calc(var(--ribbon-size) * 2);
-    padding-top: 15px;
-
-    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 80%, 0% 100%);
-    background-color: var(--color-red);
-    color: white;
-
-    font-family: 'PT Sans', sans-serif;
-    font-size: 25px;
-    font-weight: normal;
-    line-height: 2;
-    text-align: center;
-
-    content: attr(data-page);
-}
-
-.shower-mini-slide.mini-blue-ribbon::after {
-    background-color: var(--color-blue);
-}
-
-.shower-mini-slide.mini-round-page::after {
-    top: 32px;
-    left: auto;
-    right: 55px;
-
-    display: grid;
-    place-items: center;
-
-    width: 68px;
-    height: 68px;
-    padding-top: 0;
-
-    clip-path: none;
-    border-radius: 50%;
-    background-color: var(--color-blue);
-
-    font-size: 31px;
-    line-height: 1;
-}
-
-.shower-mini-slide.mini-plain-page::after {
-    top: auto;
-    left: auto;
-    right: 60px;
-    bottom: 32px;
-
-    width: auto;
-    height: auto;
-    padding-top: 0;
-
-    clip-path: none;
-    background: transparent;
-    color: var(--color-grey);
-
-    font-size: 28px;
-    line-height: 1;
-}
-
-.shower-mini-slide.mini-no-ribbon::after {
-    visibility: hidden;
-}
-
-/* Hilfsklassen für typische Beispiele. */
-.shower-mini-slide .mini-right {
-    float: right;
-    width: 38%;
-    margin: 0 0 0.6em 0.8em;
-}
-
-.shower-mini-slide .mini-place {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.shower-mini-slide .mini-top {
-    top: 12%;
-}
-
-.shower-mini-slide .mini-bottom {
-    top: 88%;
-}
-
-.shower-mini-slide .mini-left {
-    left: 15%;
-}
-
-.shower-mini-slide .mini-right-place {
-    left: 85%;
-}
-
-.shower-mini-slide .mini-cover {
-    position: absolute;
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-    max-width: none;
-    object-fit: cover;
-}
-
-.shower-mini-slide .mini-over-image {
-    position: relative;
-    z-index: 1;
-
-    color: white;
-    text-shadow: 0 0.08em 0.25em black;
 }
 
 .shower-mini-clear {
@@ -312,11 +139,20 @@ image: showerjs.webp:0:80
     border-radius: 10px;
     box-shadow: 0 0.8rem 3rem rgba(0, 0, 0, 0.45);
 
+    background: white;
+
     opacity: 0;
     transform: scale(0.96);
     transition:
         opacity 180ms ease,
         transform 180ms ease;
+}
+
+.mini-lightbox-content img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .mini-lightbox.is-visible .mini-lightbox-content {
@@ -396,7 +232,6 @@ image: showerjs.webp:0:80
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const SLIDE_WIDTH = 1024;
     const ANIMATION_TIME = 180;
 
     const lightbox = document.createElement('dialog');
@@ -411,34 +246,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const content = lightbox.querySelector('.mini-lightbox-content');
     const closeButton = lightbox.querySelector('.mini-lightbox-close');
 
-    function setSlideScale(container) {
-        const width = container.clientWidth || container.offsetWidth;
-        if (width > 0) {
-            container.style.setProperty('--mini-scale', width / SLIDE_WIDTH);
-        }
-    }
-
-    function updateAllScales() {
-        document.querySelectorAll('.shower-mini').forEach(setSlideScale);
-        if (lightbox.open) {
-            setSlideScale(content);
-        }
-    }
-
     function prepareMiniSlides() {
         document.querySelectorAll('.shower-mini').forEach((mini) => {
-            mini.setAttribute('role', 'button');
-            mini.setAttribute('tabindex', '0');
-            mini.setAttribute('aria-label', 'Beispiel vergrößern');
-            setSlideScale(mini);
+            const img = mini.querySelector('img');
+
+            if (!img) return;
+
+            if (!mini.getAttribute('aria-label')) {
+                mini.setAttribute(
+                    'aria-label',
+                    img.alt ? `${img.alt} vergrößern` : 'Beispiel vergrößern'
+                );
+            }
         });
     }
 
     function openMiniSlide(mini) {
-        const slide = mini.querySelector('.shower-mini-slide');
-        if (!slide) return;
+        const previewImage = mini.querySelector('img');
+        if (!previewImage) return;
 
-        content.replaceChildren(slide.cloneNode(true));
+        const image = document.createElement('img');
+        image.src = mini.dataset.full || previewImage.src;
+        image.alt = previewImage.alt || '';
+
+        content.replaceChildren(image);
         lightbox.classList.remove('is-visible');
 
         if (typeof lightbox.showModal === 'function') {
@@ -447,10 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lightbox.setAttribute('open', '');
         }
 
-        setSlideScale(content);
-
         requestAnimationFrame(() => {
-            setSlideScale(content);
             lightbox.classList.add('is-visible');
         });
     }
@@ -479,15 +307,6 @@ document.addEventListener('DOMContentLoaded', () => {
         openMiniSlide(mini);
     });
 
-    document.addEventListener('keydown', (event) => {
-        const mini = event.target.closest('.shower-mini');
-
-        if (mini && (event.key === 'Enter' || event.key === ' ')) {
-            event.preventDefault();
-            openMiniSlide(mini);
-        }
-    });
-
     closeButton.addEventListener('click', closeMiniSlide);
 
     lightbox.addEventListener('click', (event) => {
@@ -501,16 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeMiniSlide();
     });
 
-    if ('ResizeObserver' in window) {
-        const observer = new ResizeObserver(updateAllScales);
-        document.querySelectorAll('.shower-mini').forEach((mini) => observer.observe(mini));
-        observer.observe(content);
-    }
-
-    window.addEventListener('resize', updateAllScales);
-
     prepareMiniSlides();
-    updateAllScales();
 });
 </script>
 
@@ -649,17 +459,9 @@ Eine Folie ist in shower.js ein eigener Abschnitt in der Datei `index.html`.
 Dieser Abschnitt beginnt mit `<section class="slide">` und endet mit `</section>`.
 Alles, was zwischen diesen beiden Zeilen steht, gehört zu dieser einen Folie.
 
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='7'>
-<div class='mini-title'>Meine Lieblingstiere</div>
-<ol>
-<li>🐧 Pinguine</li>
-<li>🦊 Füchse</li>
-<li>🐬 Delfine</li>
-<li>🦉 Eulen</li>
-</ol>
-</div>
-</div>
+<button class='shower-mini' type='button'>
+    <img src='screenshots/slide-001.webp'>
+</button>
 
 ```html
 <section class="slide">
@@ -719,13 +521,10 @@ In der Shower-Vorlage verwendest du dafür normalerweise `<h2>`.
 Längere Texte schreibst du nicht direkt lose in die Folie, sondern in Absätze.
 Ein Absatz beginnt mit `<p>` und endet mit `</p>`.
 
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='8'>
-<div class='mini-title'>Warum HTML?</div>
-<p>HTML beschreibt den Inhalt einer Webseite oder Präsentation.</p>
-<p>CSS legt fest, wie dieser Inhalt aussehen soll.</p>
-</div>
-</div>
+<button class='shower-mini' type='button'>
+    <img src='screenshots/slide-002.webp'>
+</button>
+
 
 ```html
 <section class="slide">
@@ -781,15 +580,10 @@ Die zweite Überschrift hilft dem Publikum mehr, weil sie schon eine kleine Auss
 
 Wenn du mehrere Gedanken auf einer Folie hast, kannst du mehrere Absätze verwenden:
 
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='8'>
-    <div class='mini-title'>Die erste Webseite</div>
+<button class='shower-mini' type='button'>
+    <img src='screenshots/slide-003.webp'>
+</button>
 
-    <p>Die erste Webseite bestand nur aus Text und Links.</p>
-
-    <p>Heute enthalten Webseiten oft Bilder, Videos, Menüs und interaktive Bereiche.</p>
-</div>
-</div>
 
 ```html
 <section class="slide">
@@ -817,24 +611,20 @@ Wenn du später Abstände verändern möchtest, ist CSS dafür der bessere Ort.
 Manchmal möchtest du innerhalb eines Absatzes eine neue Zeile beginnen, ohne einen neuen Absatz zu starten.
 Dafür gibt es `<br>`.
 
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='8'>
-<p>Wer bin ich?</p>
-<p>
-    Max Mustermann<br>
-    Klasse 9b<br>
-    Informatik
-</p>
-</div>
-</div>
+<button class='shower-mini' type='button'>
+    <img src='screenshots/slide-004.webp'>
+</button>
 
 ```html
-<p>Wer bin ich?</p>
-<p>
-    Max Mustermann<br>
-    Klasse 9b<br>
-    Informatik
-</p>
+<section class="slide">
+    <h2>Über mich</h2>
+    <p>Wer bin ich?</p>
+    <p>
+        Max Mustermann<br>
+        Klasse 9b<br>
+        Informatik
+    </p>
+</section>
 ```
 
 `<br>` bedeutet: Hier beginnt eine neue Zeile.
@@ -850,18 +640,9 @@ Wie du siehst, erhältst du durch <code>&lt;br&gt;</code> nur einen Zeilenumbruc
 
 Diese Folie ist technisch korrekt, aber als Präsentationsfolie wahrscheinlich zu voll:
 
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='8'>
-    <div class='mini-title'>Die Geschichte des Internets</div>
-
-    <p>
-        Das Internet entstand aus mehreren technischen Entwicklungen und wurde
-        über viele Jahre hinweg immer weiter ausgebaut. Heute benutzen wir es
-        für Webseiten, E-Mails, Chats, Videos, Spiele, Cloud-Dienste und viele
-        andere Anwendungen.
-    </p>
-</div>
-</div>
+<button class='shower-mini' type='button'>
+    <img src='screenshots/slide-005.webp'>
+</button>
 
 ```html
 <section class="slide">
@@ -878,20 +659,9 @@ Diese Folie ist technisch korrekt, aber als Präsentationsfolie wahrscheinlich z
 
 Oft ist es besser, den Text zu kürzen oder auf mehrere Folien zu verteilen:
 
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='8'>
-    <div class='mini-title'>Das Internet verbindet Computer</div>
-
-    <p>
-        Das Internet ist ein riesiges Netzwerk aus vielen kleineren Netzwerken.
-    </p>
-
-    <p>
-        Darüber können Computer Daten austauschen: Webseiten, Nachrichten,
-        Bilder, Videos und vieles mehr.
-    </p>
-</div>
-</div>
+<button class='shower-mini' type='button'>
+    <img src='screenshots/slide-006.webp'>
+</button>
 
 ```html
 <section class="slide">
@@ -931,17 +701,9 @@ In HTML gibt es zwei wichtige Arten von Listen:
 
 `li` steht für »list item«, also »Listenpunkt«.
 
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='9'>
-<div class='mini-title'>Meine Projektidee</div>
-<ul>
-<li>🎮 Ein kleines Spiel programmieren</li>
-<li>🧭 Eine Spielfigur bewegen</li>
-<li>💎 Punkte sammeln</li>
-<li>🏁 Ein Ziel erreichen</li>
-</ul>
-</div>
-</div>
+<button class='shower-mini' type='button'>
+    <img src='screenshots/slide-007.webp'>
+</button>
 
 ```html
 <section class="slide">
@@ -972,17 +734,9 @@ Schreibe also nicht alle Punkte in ein einziges <code>&lt;li&gt;</code>, sondern
 
 Eine nummerierte Liste verwendest du, wenn die Reihenfolge wichtig ist:
 
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='10'>
-<div class='mini-title'>So startest du</div>
-<ol>
-<li>Repository klonen</li>
-<li>index.html öffnen</li>
-<li>Live Server starten</li>
-<li>Folie bearbeiten</li>
-</ol>
-</div>
-</div>
+<button class='shower-mini' type='button'>
+    <img src='screenshots/slide-008.webp'>
+</button>
 
 ```html
 <section class="slide">
@@ -1033,22 +787,9 @@ Wenn du später einen Punkt einfügst oder löschst, stimmen die Zahlen automati
 Eine Liste auf einer Folie sollte nicht zu lang sein.
 Diese Folie ist zu voll und stößt an den unteren Rand der Folie:
 
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='9'>
-    <div class='mini-title'>Vorteile von HTML-Präsentationen</div>
-
-    <ul>
-        <li>Laufen im Browser</li>
-        <li>Funktionieren auch offline</li>
-        <li>Können mit CSS gestaltet werden</li>
-        <li>Kann man auf einen Stick kopieren</li>
-        <li>Trainieren den Umgang mit Code</li>
-        <li>Sind gut versionierbar</li>
-        <li>Können veröffentlicht werden</li>
-        <li>Funktionieren auf verschiedenen Geräten</li>
-    </ul>
-</div>
-</div>
+<button class='shower-mini' type='button'>
+    <img src='screenshots/slide-009.webp'>
+</button>
 
 ```html
 <section class="slide">
@@ -1069,17 +810,9 @@ Diese Folie ist zu voll und stößt an den unteren Rand der Folie:
 
 Oft ist es besser, nur die wichtigsten Punkte auf die Folie zu schreiben:
 
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='9'>
-    <div class='mini-title'>Vorteile von HTML-Präsentationen</div>
-
-    <ul>
-        <li>Laufen in jedem modernen Browser</li>
-        <li>Lassen sich mit CSS frei gestalten</li>
-        <li>Trainieren den sicheren Umgang mit Code</li>
-    </ul>
-</div>
-</div>
+<button class='shower-mini' type='button'>
+    <img src='screenshots/slide-010.webp'>
+</button>
 
 ```html
 <section class="slide">
@@ -1142,14 +875,9 @@ Dafür gibt es in HTML kleine Tags, die mitten im Text stehen können.
 
 Solche Tags nennt man **Inline-Tags**, weil sie in einer Zeile im Text mitlaufen.
 
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='11'>
-<div class='mini-title'>Wichtig!</div>
-<p>Mit <strong>HTML</strong> beschreibst du den Inhalt.</p>
-<p>Mit <em>CSS</em> gestaltest du das Aussehen.</p>
-<p>Der Dateiname ist <code>index.html</code>.</p>
-</div>
-</div>
+<button class='shower-mini' type='button'>
+    <img src='screenshots/slide-011.webp'>
+</button>
 
 ```html
 <section class="slide">
@@ -1173,14 +901,9 @@ Die wichtigsten Inline-Tags sind:
 
 Mit `<strong>` markierst du Wörter, die besonders wichtig sind:
 
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='11'>
-<p style='margin-top: 1em;'>
-    Speichere deine Datei mit <strong>Strg + S</strong>,
-    bevor du die Vorschau überprüfst.
-</p>
-</div>
-</div>
+<button class='shower-mini' type='button'>
+    <img src='screenshots/slide-012.webp'>
+</button>
 
 ```html
 <p>
@@ -1195,18 +918,6 @@ Wichtiger ist aber die Bedeutung: Dieses Wort oder diese Stelle ist besonders wi
 ##### Betonen mit em
 
 Mit `<em>` betonst du ein Wort oder eine kurze Wortgruppe:
-
-<div class='shower-mini-clear'></div>
-
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='11'>
-<p style='margin-top: 1em;'>
-    Verwende Einblendungen <em>sparsam</em>,
-    damit die Präsentation ruhig bleibt.
-</p>
-</div>
-</div>
-
 
 ```html
 <p>
@@ -1225,15 +936,6 @@ Wenn auf einer Folie fast alles fett oder kursiv ist, fällt am Ende gar nichts 
 ##### Code, Dateinamen und Befehle markieren
 
 Mit `<code>` markierst du kurze Stücke Code, Dateinamen, Tags oder Befehle:
-
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='11'>
-<p style='margin-top: 1em;'>
-    Öffne die Datei <code>index.html</code>
-    und suche nach <code>&lt;section class="slide"&gt;</code>. Verwende dazu <mark>Strg + F</mark>.
-</p>
-</div>
-</div>
 
 ```html
 <p>
@@ -1266,14 +968,9 @@ Im zweiten Beispiel würde der Browser versuchen, wirklich eine neue Folie zu be
 Für manche Themen brauchst du hochgestellte oder tiefgestellte Zeichen.
 Dafür gibt es `<sup>` und `<sub>`.
 
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='12'>
-<div class='mini-title'>Formeln im Text</div>
-<p>Fläche: A = a<sup>2</sup></p>
-<p>Wasser: H<sub>2</sub>O</p>
-<p>Binärzahl: 1010<sub>2</sub></p>
-</div>
-</div>
+<button class='shower-mini' type='button'>
+    <img src='screenshots/slide-013.webp'>
+</button>
 
 ```html
 <section class="slide">
@@ -1325,16 +1022,9 @@ Es gibt zwei typische Arten von Formeln:
 - Eine **Inline-Formel** steht mitten im Satz.
 - Eine **abgesetzte Formel** steht groß in einer eigenen Zeile.
 
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='13'>
-<div class='mini-title'>Formeln mit KaTeX</div>
-    <p>Die Fläche eines Kreises ist \(A = \pi r^2\).</p>
-
-    <p>Der Satz des Pythagoras:</p>
-
-    <p>$$a^2 + b^2 = c^2$$</p>
-</div>
-</div>
+<button class='shower-mini' type='button'>
+    <img src='screenshots/slide-014.webp'>
+</button>
 
 ```html
 <section class="slide">
@@ -1382,14 +1072,9 @@ H_2O             tiefgestellte 2
 
 Zum Beispiel:
 
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='13'>
-<div class='mini-title'>Weitere Formeln</div>
-    <p>Eine Wurzel: \(\sqrt{25} = 5\)</p>
-    <p>Ein Bruch: \(\frac{1}{2} + \frac{1}{4} = \frac{3}{4}\)</p>
-    <p>Eine Ungleichung: \(x \ge 10\)</p>
-</div>
-</div>
+<button class='shower-mini' type='button'>
+    <img src='screenshots/slide-015.webp'>
+</button>
 
 ```html
 <section class="slide">
@@ -1572,19 +1257,20 @@ Wenn die Bilddatei im richtigen Ordner liegt, kannst du sie mit dem Tag `<img>` 
 Angenommen, dein Bild heißt `fuji.jpg` und liegt im Ordner `pictures`.
 Dann fügst du es so ein:
 
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='14'>
-<div class='mini-title'>Der Fuji</div>
-<img src='pictures/fuji.jpg' alt='Der Fuji vom Shōji-See aus gesehen' style='display: block; width: 66%; margin: 0.35em auto 0; border-radius: 0.35em;'>
-</div>
-</div>
+<button class='shower-mini' type='button'>
+    <img src='screenshots/slide-016.webp'>
+</button>
 
 ```html
 <section class="slide">
-    <h2>Der Fuji</h2>
+    <h2>Dieses Bild ist zu groß</h2>
 
-    <img src="pictures/fuji.jpg" alt="Der Fuji vom Shōji-See aus gesehen">
+    <img
+        src="pictures/fuji.jpg"
+        alt="Der Fuji vom Shōji-See aus gesehen"
+    >
 </section>
+
 ```
 
 Die wichtigsten Teile sind:
@@ -1993,29 +1679,6 @@ Du kannst auch die vorhandene Shower-Farbvariable verwenden:
 
 <div class='shower-mini-clear'></div>
 
-##### Das Ribbon größer oder kleiner machen
-
-Das Standard-Ribbon verwendet die Variable `--ribbon-size`.
-In der Vorlage steht sie auf `50px`.
-Wenn du das Ribbon größer machen möchtest, kannst du diese Variable überschreiben:
-
-```css
-.shower {
-    --ribbon-size: 65px;
-}
-```
-
-Das verändert Breite und Höhe des Ribbons gleichzeitig, weil die Standardregel damit rechnet:
-
-```css
-width: var(--ribbon-size);
-height: calc(var(--ribbon-size) * 2);
-```
-
-<div class='hint'>
-Wenn du nur eine Kleinigkeit ändern möchtest, ist es oft besser, eine Variable zu überschreiben, statt die ganze <code>.slide::after</code>-Regel zu kopieren.
-</div>
-
 ##### Eine runde Seitenzahl verwenden
 
 <div class='shower-mini'>
@@ -2044,7 +1707,7 @@ Auch diese Regel gehört in `styles.css`:
 
     clip-path: none;
     border-radius: 50%;
-    background-color: var(--color-blue);
+    background-color: #75507b;
 
     line-height: 1;
 }
@@ -2085,7 +1748,7 @@ Dann kannst du Hintergrund und Form komplett entfernen:
     background: transparent;
     color: var(--color-grey);
 
-    font-size: 28px;
+    font-size: 20px;
     line-height: 1;
 }
 ```
