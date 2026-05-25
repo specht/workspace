@@ -124,32 +124,42 @@ image: showerjs.webp:0:80
 }
 
 
-/* Shower-artiger Ribbon mit Foliennummer für Mini-Folien. */
+/* Shower-artiger Ribbon mit Foliennummer für Mini-Folien.
+ * Er orientiert sich an der Standardvorlage: rotes Lesezeichen rechts oben.
+ */
 .shower-mini-slide[data-page]::after {
     content: attr(data-page);
     position: absolute;
     top: 0;
-    right: 0;
+    right: 40px;
     z-index: 2;
 
-    box-sizing: border-box;
-    width: 102px;
-    height: 102px;
-    padding: 16px 18px 0 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
 
-    background: #4b86c2;
-    clip-path: polygon(0 0, 100% 0, 100% 100%);
+    box-sizing: border-box;
+    width: 82px;
+    height: 160px;
+    padding-top: 20px;
+
+    background: #d80000;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 36px), 50% 100%, 0 calc(100% - 36px));
     color: white;
 
     font-family: 'PT Sans', sans-serif;
-    font-size: 30px;
-    font-weight: bold;
+    font-size: 42px;
+    font-weight: normal;
     line-height: 1;
-    text-align: right;
+    text-align: center;
 }
 
 .shower-mini-slide.mini-no-ribbon::after {
     display: none;
+}
+
+.shower-mini-slide.mini-blue-ribbon::after {
+    background: #4b86c2;
 }
 
 /* Hilfsklassen für typische Beispiele. */
@@ -518,7 +528,7 @@ Ziel: Die Schülerinnen und Schüler sollen bestehende Folien sicher ändern kö
 <!--
 Dieser Abschnitt führt <section class="slide"> als Rahmen einer Folie ein.
 Gezeigt werden sollten: Überschrift, Liste, öffnende und schließende Tags, Einrückung und die Idee, dass alles zwischen <section> und </section> zu genau einer Folie gehört.
-Die Mini-Folie zeigt zusätzlich schon den Shower-Ribbon mit einer Beispiel-Foliennummer, damit die Vorschau wie die echte Vorlage wirkt.
+Die Mini-Folie zeigt zusätzlich schon das rote Standard-Ribbon von Shower mit einer Beispiel-Foliennummer, damit die Vorschau wie die echte Vorlage wirkt.
 -->
 
 Eine Folie ist in shower.js ein eigener Abschnitt in der Datei `index.html`.
@@ -588,14 +598,12 @@ Man sieht dadurch besser, welche Teile zusammengehören:
 Hier sollten <h2>, <p> und eventuell <br> erklärt werden.
 Wichtig wäre: Eine Folie hat meistens eine <h2>-Überschrift; längere Texte gehören in Absätze; zu viel Text macht Folien schnell unlesbar.
 -->
-
 #### Listen und Stichpunkte
 
 <!--
 Hier sollten <ul>, <ol> und <li> eingeführt werden.
 Sinnvoll wäre ein Vergleich zwischen ungeordneter Liste und nummerierter Liste sowie ein Hinweis, dass jeder Listenpunkt ein eigenes <li> braucht.
 -->
-
 #### Wörter hervorheben
 
 <!--
@@ -614,30 +622,26 @@ Die Beispiele sollten möglichst mit denselben Bilddateien funktionieren, die oh
 
 <!--
 Hier sollte <img src="..."> erklärt werden.
-Wichtig wären Dateinamen, relative Pfade, Dateiendungen und ein kurzer Hinweis auf alt-Text, ohne den Abschnitt zu überfrachten. Wir sollten auch erklären, wie man ein Bild entweder herunterladen und per Drag & Drop in das richtige Verzeichnis ziehen oder direkt in VS Code mit <span class='key'>Strg</span><span class='key'>V</span> einfügen kann (wenn das geht). Für Profis erklären wir, wie man ein Bild mit wget im Terminal herunterlädt.
+Wichtig wären Dateinamen, relative Pfade, Dateiendungen und ein kurzer Hinweis auf alt-Text, ohne den Abschnitt zu überfrachten.
 -->
-
 #### Bilder vergrößern, verkleinern und zuschneiden
 
 <!--
 Hier sollten typische Größenprobleme gelöst werden: Bild zu groß, Bild zu klein, falsches Seitenverhältnis.
 Mögliche Beispiele: width per style, vorhandene Hilfsklassen der Vorlage und object-fit für zugeschnittene Bilder.
 -->
-
 #### Bilder links oder rechts platzieren
 
 <!--
 Hier sollten einfache Platzierungen neben Text gezeigt werden.
 Passend zur bisherigen Vorlage könnten Klassen wie class='r' bzw. class='l' oder kleine eigene CSS-Klassen erklärt werden.
 -->
-
 #### Ein Bild als Hintergrund verwenden
 
 <!--
 Hier sollte gezeigt werden, wie ein Bild die ganze Folie füllt.
 Wichtig: Der Unterschied zwischen normalem Bild im Textfluss und Hintergrund-/Cover-Bild, außerdem der Umgang mit Zuschnitt.
 -->
-
 #### Text auf Bildern lesbar machen
 
 <!--
@@ -658,21 +662,18 @@ Die Abschnitte sollten bewusst klein bleiben: erst einzelne Eigenschaften änder
 Hier sollten color und background erklärt werden.
 Gute Reihenfolge: erst ein einzelnes Element färben, dann eine eigene Klasse für wiederholbare Gestaltung.
 -->
-
 #### Schriftgrößen ändern
 
 <!--
 Hier sollten font-size und eventuell line-height gezeigt werden.
 Wichtig wäre ein Hinweis, dass größere Schrift oft besser ist als mehr Text und dass zu viele verschiedene Größen unruhig wirken.
 -->
-
 #### Schriftarten ändern
 
 <!--
 Hier sollte font-family erklärt werden, aber eher vorsichtig.
 Sinnvoll wäre: vorhandene Schriftarten nutzen, nicht zu viele Schriftarten mischen, Überschriften und normalen Text unterscheiden.
 -->
-
 #### Abstände ändern
 
 <!--
@@ -680,13 +681,79 @@ Hier sollten margin und padding auf sehr einfache Weise erklärt werden.
 Ziel: Schülerinnen und Schüler sollen Abstand erzeugen, ohne leere Absätze oder viele <br>-Tags zu missbrauchen.
 -->
 
+#### Seitenzahl-Ribbon ändern oder ausblenden
+
+<!--
+Hier soll erklärt werden, dass die Standardvorlage das rote Seitenzahl-Ribbon schon automatisch mitbringt.
+Zuerst sollte man das Default-Verhalten verstehen, dann kleine CSS-Änderungen ausprobieren: Farbe ändern, auf einzelnen Folien ausblenden oder überall ausblenden.
+Wichtig ist dabei, dass man dafür normalerweise kein neues HTML für die Zahl schreibt, sondern das vorhandene ::after-Styling der Vorlage anpasst.
+-->
+
+In der Standardvorlage von shower.js erscheint rechts oben automatisch ein rotes Ribbon mit der Foliennummer.
+Du musst dafür normalerweise **nichts** in deine Folie schreiben.
+Die Vorlage erzeugt dieses Ribbon selbst.
+
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='12'>
+<div class='mini-title'>Ausflug nach Berlin</div>
+<ul>
+<li>🏛️ Reichstag besuchen</li>
+<li>🚲 Mit dem Rad durch die Stadt</li>
+<li>🍟 Currywurst probieren</li>
+</ul>
+</div>
+</div>
+
+Wenn du nur das Aussehen ändern möchtest, kannst du das vorhandene Ribbon mit CSS überschreiben.
+Dafür legst du zum Beispiel in deiner Datei `index.html` im `<style>`-Block eine neue Regel für `.slide::after` an:
+
+```css
+.slide::after {
+    background: #4b86c2;
+    color: white;
+}
+```
+
+So bleibt das normale Seitenzahl-Ribbon erhalten, aber es bekommt eine andere Farbe.
+Du kannst auf dieselbe Weise auch Breite, Höhe oder Form verändern, wenn du dich ein wenig weiter an CSS herantraust.
+
+Wenn du das Ribbon **auf genau einer Folie** ausblenden möchtest, gibst du der Folie eine zusätzliche Klasse:
+
+```html
+<section class="slide no-page">
+    <h2>Startfolie ohne Seitenzahl</h2>
+    <p>Auf dieser Folie soll kein Ribbon erscheinen.</p>
+</section>
+```
+
+Dazu brauchst du diese CSS-Regel:
+
+```css
+.no-page::after {
+    display: none;
+}
+```
+
+Wenn du das Ribbon **überall** ausblenden möchtest, reicht sogar eine einzige Regel:
+
+```css
+.slide::after {
+    display: none;
+}
+```
+
+<div class='hint'>
+Am einfachsten ist es, das Standard-Ribbon erst einmal so zu lassen, wie es ist.
+Wenn du später sicherer mit CSS wirst, kannst du sein Aussehen Schritt für Schritt verändern, statt es komplett neu zu bauen.
+</div>
+
+<div class='shower-mini-clear'></div>
 #### Elemente genau platzieren
 
 <!--
 Hier sollten absolute Positionierung oder vorhandene Shower-Hilfsklassen wie place/top/left erklärt werden.
 Wichtig: Nur für gezielte Layouts verwenden, nicht als Ersatz für normalen Textfluss.
 -->
-
 #### Zwei Spalten verwenden
 
 <!--
@@ -707,14 +774,12 @@ Die Beispiele sollten erst kommen, wenn HTML-Struktur und einfaches CSS sitzen.
 Hier sollte class="next" erklärt werden.
 Wichtig: Nur sparsam verwenden; Einblendungen sollen den Vortrag unterstützen und nicht jede Folie unnötig kompliziert machen.
 -->
-
 #### Wiederverwendbare CSS-Klassen schreiben
 
 <!--
 Hier sollte der Schritt von Inline-Style zu eigener Klasse kommen.
 Ziel: Wiederholung vermeiden und den Schülerinnen und Schülern zeigen, dass CSS-Klassen eigene kleine Werkzeuge sind.
 -->
-
 #### Häufige Fehler finden
 
 <!--
@@ -735,9 +800,4 @@ Er ist für die Schülerinnen und Schüler gedacht, die ihre Präsentation siche
 Hier sollte sehr praktisch erklärt werden, wann man einen Commit macht und warum das vor größeren Änderungen hilft.
 Ziel: Git als Sicherheitsnetz zeigen, nicht als abstraktes Versionskontrollsystem.
 -->
-
 #### Präsentation veröffentlichen
-
-<!--
-Hier sollte auf /custom-subdomain hingewiesen werden, damit die Schülerinnen und Schüler ihre Präsentation online stellen können, ohne einen eigenen Server zu brauchen.
--->
