@@ -748,6 +748,8 @@ In der Standardvorlage von shower.js erscheint rechts oben automatisch ein rotes
 Du musst dafür normalerweise **nichts** in deine Folie schreiben.
 Die Vorlage erzeugt dieses Ribbon selbst.
 
+In der Vorlage steckt dafür diese CSS-Regel:
+
 <div class='shower-mini'>
 <div class='shower-mini-slide' data-page='12'>
 <div class='mini-title'>Ausflug nach Berlin</div>
@@ -758,8 +760,6 @@ Die Vorlage erzeugt dieses Ribbon selbst.
 </ul>
 </div>
 </div>
-
-In der Vorlage steckt dafür ungefähr diese CSS-Regel:
 
 ```css
 .slide::after {
@@ -790,6 +790,13 @@ Dann überschreiben deine Regeln die Standardvorlage.
 
 ##### Farbe des Standard-Ribbons ändern
 
+<div class='shower-mini'>
+<div class='shower-mini-slide mini-blue-ribbon' data-page='13'>
+<div class='mini-title'>Blaues Ribbon</div>
+<p>Die Form bleibt gleich, aber die Farbe ändert sich.</p>
+</div>
+</div>
+
 Wenn du nur die Farbe ändern möchtest, kannst du das vorhandene Ribbon behalten und nur die Hintergrundfarbe überschreiben:
 
 ```css
@@ -798,22 +805,17 @@ Wenn du nur die Farbe ändern möchtest, kannst du das vorhandene Ribbon behalte
 }
 ```
 
-<div class='shower-mini'>
-<div class='shower-mini-slide mini-blue-ribbon' data-page='13'>
-<div class='mini-title'>Blaues Ribbon</div>
-<p>Die Form bleibt gleich, aber die Farbe ändert sich.</p>
-</div>
-</div>
-
-Du kannst auch eine Farbe aus der Vorlage verwenden:
-
-```css
-.slide::after {
-    background-color: var(--color-blue);
-}
-```
+<div class='shower-mini-clear'></div>
 
 ##### Eine runde Seitenzahl verwenden
+
+
+<div class='shower-mini'>
+<div class='shower-mini-slide mini-round-page' data-page='14'>
+<div class='mini-title'>Runde Seitenzahl</div>
+<p>Hier wird aus dem Ribbon ein Kreis.</p>
+</div>
+</div>
 
 Das Ribbon muss nicht wie ein Lesezeichen aussehen.
 Du kannst daraus auch einen Kreis machen:
@@ -839,20 +841,22 @@ Du kannst daraus auch einen Kreis machen:
 }
 ```
 
-<div class='shower-mini'>
-<div class='shower-mini-slide mini-round-page' data-page='14'>
-<div class='mini-title'>Runde Seitenzahl</div>
-<p>Hier wird aus dem Ribbon ein Kreis.</p>
-</div>
-</div>
-
 Wichtig sind hier vor allem drei Dinge:
 
 - `clip-path: none;` entfernt die Lesezeichenform.
 - `border-radius: 50%;` macht aus der Fläche einen Kreis.
 - `left: auto; right: 55px;` platziert die Seitenzahl von rechts aus.
 
+<div class='shower-mini-clear'></div>
+
 ##### Nur eine kleine Zahl unten rechts anzeigen
+
+<div class='shower-mini'>
+<div class='shower-mini-slide mini-plain-page' data-page='15'>
+<div class='mini-title'>Unauffällige Seitenzahl</div>
+<p>Die Nummer steht nur noch klein unten rechts.</p>
+</div>
+</div>
 
 Manchmal soll die Seitenzahl sehr unauffällig sein.
 Dann kannst du Hintergrund und Form komplett entfernen:
@@ -877,12 +881,7 @@ Dann kannst du Hintergrund und Form komplett entfernen:
 }
 ```
 
-<div class='shower-mini'>
-<div class='shower-mini-slide mini-plain-page' data-page='15'>
-<div class='mini-title'>Unauffällige Seitenzahl</div>
-<p>Die Nummer steht nur noch klein unten rechts.</p>
-</div>
-</div>
+<div class='shower-mini-clear'></div>
 
 ##### Das Ribbon auf einer einzelnen Folie ausblenden
 
@@ -902,10 +901,6 @@ Dazu brauchst du diese CSS-Regel:
     visibility: hidden;
 }
 ```
-
-Verwende hier lieber `visibility: hidden;` statt `display: none;`.
-Die Foliennummern werden in der Shower-Vorlage direkt im Ribbon weitergezählt.
-Mit `visibility: hidden;` bleibt diese Zählung erhalten, nur das Ribbon ist unsichtbar.
 
 ##### Das Ribbon überall ausblenden
 
