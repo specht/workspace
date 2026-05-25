@@ -598,12 +598,14 @@ Man sieht dadurch besser, welche Teile zusammengehören:
 Hier sollten <h2>, <p> und eventuell <br> erklärt werden.
 Wichtig wäre: Eine Folie hat meistens eine <h2>-Überschrift; längere Texte gehören in Absätze; zu viel Text macht Folien schnell unlesbar.
 -->
+
 #### Listen und Stichpunkte
 
 <!--
 Hier sollten <ul>, <ol> und <li> eingeführt werden.
 Sinnvoll wäre ein Vergleich zwischen ungeordneter Liste und nummerierter Liste sowie ein Hinweis, dass jeder Listenpunkt ein eigenes <li> braucht.
 -->
+
 #### Wörter hervorheben
 
 <!--
@@ -622,26 +624,30 @@ Die Beispiele sollten möglichst mit denselben Bilddateien funktionieren, die oh
 
 <!--
 Hier sollte <img src="..."> erklärt werden.
-Wichtig wären Dateinamen, relative Pfade, Dateiendungen und ein kurzer Hinweis auf alt-Text, ohne den Abschnitt zu überfrachten.
+Wichtig wären Dateinamen, relative Pfade, Dateiendungen und ein kurzer Hinweis auf alt-Text, ohne den Abschnitt zu überfrachten. Wir sollten auch erklären, wie man ein Bild entweder herunterladen und per Drag & Drop in das richtige Verzeichnis ziehen oder direkt in VS Code mit <span class='key'>Strg</span><span class='key'>V</span> einfügen kann (wenn das geht). Für Profis erklären wir, wie man ein Bild mit wget im Terminal herunterlädt.
 -->
+
 #### Bilder vergrößern, verkleinern und zuschneiden
 
 <!--
 Hier sollten typische Größenprobleme gelöst werden: Bild zu groß, Bild zu klein, falsches Seitenverhältnis.
 Mögliche Beispiele: width per style, vorhandene Hilfsklassen der Vorlage und object-fit für zugeschnittene Bilder.
 -->
+
 #### Bilder links oder rechts platzieren
 
 <!--
 Hier sollten einfache Platzierungen neben Text gezeigt werden.
 Passend zur bisherigen Vorlage könnten Klassen wie class='r' bzw. class='l' oder kleine eigene CSS-Klassen erklärt werden.
 -->
+
 #### Ein Bild als Hintergrund verwenden
 
 <!--
 Hier sollte gezeigt werden, wie ein Bild die ganze Folie füllt.
 Wichtig: Der Unterschied zwischen normalem Bild im Textfluss und Hintergrund-/Cover-Bild, außerdem der Umgang mit Zuschnitt.
 -->
+
 #### Text auf Bildern lesbar machen
 
 <!--
@@ -662,18 +668,21 @@ Die Abschnitte sollten bewusst klein bleiben: erst einzelne Eigenschaften änder
 Hier sollten color und background erklärt werden.
 Gute Reihenfolge: erst ein einzelnes Element färben, dann eine eigene Klasse für wiederholbare Gestaltung.
 -->
+
 #### Schriftgrößen ändern
 
 <!--
 Hier sollten font-size und eventuell line-height gezeigt werden.
 Wichtig wäre ein Hinweis, dass größere Schrift oft besser ist als mehr Text und dass zu viele verschiedene Größen unruhig wirken.
 -->
+
 #### Schriftarten ändern
 
 <!--
 Hier sollte font-family erklärt werden, aber eher vorsichtig.
 Sinnvoll wäre: vorhandene Schriftarten nutzen, nicht zu viele Schriftarten mischen, Überschriften und normalen Text unterscheiden.
 -->
+
 #### Abstände ändern
 
 <!--
@@ -754,6 +763,7 @@ Wenn du später sicherer mit CSS wirst, kannst du sein Aussehen Schritt für Sch
 Hier sollten absolute Positionierung oder vorhandene Shower-Hilfsklassen wie place/top/left erklärt werden.
 Wichtig: Nur für gezielte Layouts verwenden, nicht als Ersatz für normalen Textfluss.
 -->
+
 #### Zwei Spalten verwenden
 
 <!--
@@ -774,12 +784,14 @@ Die Beispiele sollten erst kommen, wenn HTML-Struktur und einfaches CSS sitzen.
 Hier sollte class="next" erklärt werden.
 Wichtig: Nur sparsam verwenden; Einblendungen sollen den Vortrag unterstützen und nicht jede Folie unnötig kompliziert machen.
 -->
+
 #### Wiederverwendbare CSS-Klassen schreiben
 
 <!--
 Hier sollte der Schritt von Inline-Style zu eigener Klasse kommen.
 Ziel: Wiederholung vermeiden und den Schülerinnen und Schülern zeigen, dass CSS-Klassen eigene kleine Werkzeuge sind.
 -->
+
 #### Häufige Fehler finden
 
 <!--
@@ -800,4 +812,9 @@ Er ist für die Schülerinnen und Schüler gedacht, die ihre Präsentation siche
 Hier sollte sehr praktisch erklärt werden, wann man einen Commit macht und warum das vor größeren Änderungen hilft.
 Ziel: Git als Sicherheitsnetz zeigen, nicht als abstraktes Versionskontrollsystem.
 -->
+
 #### Präsentation veröffentlichen
+
+<!--
+Hier sollte auf /custom-subdomain hingewiesen werden, damit die Schülerinnen und Schüler ihre Präsentation online stellen können, ohne einen eigenen Server zu brauchen.
+-->
