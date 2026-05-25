@@ -124,42 +124,88 @@ image: showerjs.webp:0:80
 }
 
 
-/* Shower-artiger Ribbon mit Foliennummer für Mini-Folien.
- * Er orientiert sich an der Standardvorlage: rotes Lesezeichen rechts oben.
+/* Shower-Ribbon mit Foliennummer für Mini-Folien.
+ * Diese Vorschau übernimmt die Maße der offiziellen Shower-Vorlage:
+ * links 875px, 50px breit, 100px hoch und rotes Lesezeichen.
+ * In echten Shower-Folien steht die Zahl in counter(slide); in den Mini-Folien
+ * setzen wir sie mit data-page, damit die Beispiele unabhängig funktionieren.
  */
+.shower-mini-slide {
+    --color-blue: #4b86c2;
+    --color-red: #cc0000;
+    --color-yellow: #fafaa2;
+    --color-grey: #585a5e;
+    --ribbon-size: 50px;
+}
+
 .shower-mini-slide[data-page]::after {
-    content: attr(data-page);
     position: absolute;
     top: 0;
-    right: 40px;
+    left: 875px;
     z-index: 2;
 
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-
     box-sizing: border-box;
-    width: 82px;
-    height: 160px;
-    padding-top: 20px;
+    width: var(--ribbon-size);
+    height: calc(var(--ribbon-size) * 2);
+    padding-top: 15px;
 
-    background: #d80000;
-    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 36px), 50% 100%, 0 calc(100% - 36px));
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 80%, 0% 100%);
+    background-color: var(--color-red);
     color: white;
 
     font-family: 'PT Sans', sans-serif;
-    font-size: 42px;
+    font-size: 25px;
     font-weight: normal;
-    line-height: 1;
+    line-height: 2;
     text-align: center;
-}
 
-.shower-mini-slide.mini-no-ribbon::after {
-    display: none;
+    content: attr(data-page);
 }
 
 .shower-mini-slide.mini-blue-ribbon::after {
-    background: #4b86c2;
+    background-color: var(--color-blue);
+}
+
+.shower-mini-slide.mini-round-page::after {
+    top: 32px;
+    left: auto;
+    right: 55px;
+
+    display: grid;
+    place-items: center;
+
+    width: 68px;
+    height: 68px;
+    padding-top: 0;
+
+    clip-path: none;
+    border-radius: 50%;
+    background-color: var(--color-blue);
+
+    font-size: 31px;
+    line-height: 1;
+}
+
+.shower-mini-slide.mini-plain-page::after {
+    top: auto;
+    left: auto;
+    right: 60px;
+    bottom: 32px;
+
+    width: auto;
+    height: auto;
+    padding-top: 0;
+
+    clip-path: none;
+    background: transparent;
+    color: var(--color-grey);
+
+    font-size: 28px;
+    line-height: 1;
+}
+
+.shower-mini-slide.mini-no-ribbon::after {
+    visibility: hidden;
 }
 
 /* Hilfsklassen für typische Beispiele. */
@@ -694,7 +740,7 @@ Ziel: Schülerinnen und Schüler sollen Abstand erzeugen, ohne leere Absätze od
 
 <!--
 Hier soll erklärt werden, dass die Standardvorlage das rote Seitenzahl-Ribbon schon automatisch mitbringt.
-Zuerst sollte man das Default-Verhalten verstehen, dann kleine CSS-Änderungen ausprobieren: Farbe ändern, auf einzelnen Folien ausblenden oder überall ausblenden.
+Zuerst sollte man das Default-Verhalten verstehen, dann kleine CSS-Änderungen ausprobieren: Farbe ändern, eine andere Form verwenden, die Seitenzahl an eine andere Stelle setzen oder sie ausblenden.
 Wichtig ist dabei, dass man dafür normalerweise kein neues HTML für die Zahl schreibt, sondern das vorhandene ::after-Styling der Vorlage anpasst.
 -->
 
@@ -713,18 +759,132 @@ Die Vorlage erzeugt dieses Ribbon selbst.
 </div>
 </div>
 
-Wenn du nur das Aussehen ändern möchtest, kannst du das vorhandene Ribbon mit CSS überschreiben.
-Dafür legst du zum Beispiel in deiner Datei `index.html` im `<style>`-Block eine neue Regel für `.slide::after` an:
+In der Vorlage steckt dafür ungefähr diese CSS-Regel:
 
 ```css
 .slide::after {
-    background: #4b86c2;
+    position: absolute;
+    top: 0;
+    left: 875px;
+    padding-top: 15px;
+    box-sizing: border-box;
+    width: var(--ribbon-size);
+    height: calc(var(--ribbon-size) * 2);
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 80%, 0% 100%);
+    background-color: var(--color-red);
     color: white;
+    text-align: center;
+    counter-increment: slide;
+    content: counter(slide);
 }
 ```
 
-So bleibt das normale Seitenzahl-Ribbon erhalten, aber es bekommt eine andere Farbe.
-Du kannst auf dieselbe Weise auch Breite, Höhe oder Form verändern, wenn du dich ein wenig weiter an CSS herantraust.
+Die Zeile `content: counter(slide);` ist besonders wichtig.
+Sie sorgt dafür, dass die Foliennummer automatisch eingesetzt wird.
+Du schreibst die Zahl also **nicht** selbst in den HTML-Code der Folie.
+
+<div class='hint'>
+Schreibe eigene Ribbon-Regeln möglichst unter die vorhandenen Styles in den <code>&lt;style&gt;</code>-Block.
+Dann überschreiben deine Regeln die Standardvorlage.
+</div>
+
+##### Farbe des Standard-Ribbons ändern
+
+Wenn du nur die Farbe ändern möchtest, kannst du das vorhandene Ribbon behalten und nur die Hintergrundfarbe überschreiben:
+
+```css
+.slide::after {
+    background-color: #4b86c2;
+}
+```
+
+<div class='shower-mini'>
+<div class='shower-mini-slide mini-blue-ribbon' data-page='13'>
+<div class='mini-title'>Blaues Ribbon</div>
+<p>Die Form bleibt gleich, aber die Farbe ändert sich.</p>
+</div>
+</div>
+
+Du kannst auch eine Farbe aus der Vorlage verwenden:
+
+```css
+.slide::after {
+    background-color: var(--color-blue);
+}
+```
+
+##### Eine runde Seitenzahl verwenden
+
+Das Ribbon muss nicht wie ein Lesezeichen aussehen.
+Du kannst daraus auch einen Kreis machen:
+
+```css
+.slide::after {
+    top: 32px;
+    left: auto;
+    right: 55px;
+
+    display: grid;
+    place-items: center;
+
+    width: 68px;
+    height: 68px;
+    padding-top: 0;
+
+    clip-path: none;
+    border-radius: 50%;
+    background-color: var(--color-blue);
+
+    line-height: 1;
+}
+```
+
+<div class='shower-mini'>
+<div class='shower-mini-slide mini-round-page' data-page='14'>
+<div class='mini-title'>Runde Seitenzahl</div>
+<p>Hier wird aus dem Ribbon ein Kreis.</p>
+</div>
+</div>
+
+Wichtig sind hier vor allem drei Dinge:
+
+- `clip-path: none;` entfernt die Lesezeichenform.
+- `border-radius: 50%;` macht aus der Fläche einen Kreis.
+- `left: auto; right: 55px;` platziert die Seitenzahl von rechts aus.
+
+##### Nur eine kleine Zahl unten rechts anzeigen
+
+Manchmal soll die Seitenzahl sehr unauffällig sein.
+Dann kannst du Hintergrund und Form komplett entfernen:
+
+```css
+.slide::after {
+    top: auto;
+    left: auto;
+    right: 60px;
+    bottom: 32px;
+
+    width: auto;
+    height: auto;
+    padding-top: 0;
+
+    clip-path: none;
+    background: transparent;
+    color: var(--color-grey);
+
+    font-size: 28px;
+    line-height: 1;
+}
+```
+
+<div class='shower-mini'>
+<div class='shower-mini-slide mini-plain-page' data-page='15'>
+<div class='mini-title'>Unauffällige Seitenzahl</div>
+<p>Die Nummer steht nur noch klein unten rechts.</p>
+</div>
+</div>
+
+##### Das Ribbon auf einer einzelnen Folie ausblenden
 
 Wenn du das Ribbon **auf genau einer Folie** ausblenden möchtest, gibst du der Folie eine zusätzliche Klasse:
 
@@ -739,15 +899,21 @@ Dazu brauchst du diese CSS-Regel:
 
 ```css
 .no-page::after {
-    display: none;
+    visibility: hidden;
 }
 ```
 
-Wenn du das Ribbon **überall** ausblenden möchtest, reicht sogar eine einzige Regel:
+Verwende hier lieber `visibility: hidden;` statt `display: none;`.
+Die Foliennummern werden in der Shower-Vorlage direkt im Ribbon weitergezählt.
+Mit `visibility: hidden;` bleibt diese Zählung erhalten, nur das Ribbon ist unsichtbar.
+
+##### Das Ribbon überall ausblenden
+
+Wenn du das Ribbon **überall** ausblenden möchtest, kannst du dieselbe Idee für alle Folien verwenden:
 
 ```css
 .slide::after {
-    display: none;
+    visibility: hidden;
 }
 ```
 
@@ -757,6 +923,7 @@ Wenn du später sicherer mit CSS wirst, kannst du sein Aussehen Schritt für Sch
 </div>
 
 <div class='shower-mini-clear'></div>
+
 #### Elemente genau platzieren
 
 <!--
