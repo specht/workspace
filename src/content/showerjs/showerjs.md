@@ -138,6 +138,10 @@ image: showerjs.webp:0:80
     --ribbon-size: 50px;
 }
 
+.shower-mini-slide p {
+    text-align: left;
+}
+
 .shower-mini-slide[data-page]::after {
     position: absolute;
     top: 0;
@@ -666,6 +670,153 @@ Man sieht dadurch besser, welche Teile zusammengehören:
 Hier sollten <h2>, <p> und eventuell <br> erklärt werden.
 Wichtig wäre: Eine Folie hat meistens eine <h2>-Überschrift; längere Texte gehören in Absätze; zu viel Text macht Folien schnell unlesbar.
 -->
+
+Eine Folie braucht meistens zuerst eine klare Überschrift.
+In der Shower-Vorlage verwendest du dafür normalerweise `<h2>`.
+
+Längere Texte schreibst du nicht direkt lose in die Folie, sondern in Absätze.
+Ein Absatz beginnt mit `<p>` und endet mit `</p>`.
+
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='8'>
+<div class='mini-title'>Warum HTML?</div>
+<p>HTML beschreibt den Inhalt einer Webseite oder Präsentation.</p>
+<p>CSS legt fest, wie dieser Inhalt aussehen soll.</p>
+</div>
+</div>
+
+```html
+<section class="slide">
+    <h2>Warum HTML?</h2>
+
+    <p>HTML beschreibt den Inhalt einer Webseite oder Präsentation.</p>
+    <p>CSS legt fest, wie dieser Inhalt aussehen soll.</p>
+</section>
+```
+
+Die wichtigsten Tags in diesem Beispiel sind:
+
+- `<h2>` ist die Überschrift der Folie.
+- `<p>` beginnt einen Textabsatz.
+- `</p>` beendet den Textabsatz.
+- Zwischen zwei Absätzen entsteht automatisch etwas Abstand.
+
+<div class='hint'>
+Schreibe Text auf Folien lieber in kurze Absätze.
+Eine Folie ist keine ganze Buchseite. Wenn du zu viel Text auf eine Folie schreibst, wird sie beim Vortragen schnell unübersichtlich.
+</div>
+
+##### Überschriften
+
+In einer normalen Folie reicht meistens eine einzige Überschrift:
+
+```html
+<h2>Mein Thema</h2>
+```
+
+Die Überschrift sollte kurz sagen, worum es auf der Folie geht.
+Besser ist oft eine konkrete Überschrift statt nur ein einzelnes Wort.
+
+Nicht so gut:
+
+```html
+<h2>HTML</h2>
+```
+
+Besser:
+
+```html
+<h2>HTML beschreibt die Struktur</h2>
+```
+
+Die zweite Überschrift hilft dem Publikum mehr, weil sie schon eine kleine Aussage enthält.
+
+##### Absätze
+
+Wenn du mehrere Gedanken auf einer Folie hast, kannst du mehrere Absätze verwenden:
+
+```html
+<section class="slide">
+    <h2>Die erste Webseite</h2>
+
+    <p>Die erste Webseite bestand nur aus Text und Links.</p>
+
+    <p>Heute enthalten Webseiten oft Bilder, Videos, Menüs und interaktive Bereiche.</p>
+</section>
+```
+
+Du musst nicht selbst leere Zeilen in die Folie schreiben.
+Der Abstand entsteht durch die Gestaltung der Vorlage.
+
+<div class='hint'>
+Verwende keine leeren Absätze wie <code>&lt;p&gt;&lt;/p&gt;</code>, nur um Abstand zu erzeugen.
+Wenn du später Abstände verändern möchtest, ist CSS dafür der bessere Ort.
+</div>
+
+##### Einen Zeilenumbruch erzwingen
+
+Manchmal möchtest du innerhalb eines Absatzes eine neue Zeile beginnen, ohne einen neuen Absatz zu starten.
+Dafür gibt es `<br>`.
+
+```html
+<p>
+    Max Mustermann<br>
+    Klasse 9b<br>
+    Informatik
+</p>
+```
+
+`<br>` bedeutet: Hier beginnt eine neue Zeile.
+
+Anders als viele andere HTML-Tags hat `<br>` kein eigenes schließendes Tag.
+Du schreibst also nicht `</br>`.
+
+<div class='hint'>
+Benutze <code>&lt;br&gt;</code> sparsam.
+Für normale Texte sind mehrere <code>&lt;p&gt;</code>-Absätze meistens besser.
+Viele erzwungene Zeilenumbrüche machen den HTML-Code schnell unübersichtlich.
+</div>
+
+##### Zu viel Text vermeiden
+
+Diese Folie ist technisch korrekt, aber als Präsentationsfolie wahrscheinlich zu voll:
+
+```html
+<section class="slide">
+    <h2>Die Geschichte des Internets</h2>
+
+    <p>
+        Das Internet entstand aus mehreren technischen Entwicklungen und wurde
+        über viele Jahre hinweg immer weiter ausgebaut. Heute benutzen wir es
+        für Webseiten, E-Mails, Chats, Videos, Spiele, Cloud-Dienste und viele
+        andere Anwendungen.
+    </p>
+</section>
+```
+
+Oft ist es besser, den Text zu kürzen oder auf mehrere Folien zu verteilen:
+
+```html
+<section class="slide">
+    <h2>Das Internet verbindet Computer</h2>
+
+    <p>
+        Das Internet ist ein riesiges Netzwerk aus vielen kleineren Netzwerken.
+    </p>
+
+    <p>
+        Darüber können Computer Daten austauschen: Webseiten, Nachrichten,
+        Bilder, Videos und vieles mehr.
+    </p>
+</section>
+```
+
+<div class='hint'>
+Wenn du beim Vortragen sowieso erklären möchtest, was auf der Folie steht, muss nicht jeder Satz ausgeschrieben werden.
+Die Folie soll deinen Vortrag unterstützen, nicht ihn vollständig ersetzen.
+</div>
+
+<div class='shower-mini-clear'></div>
 
 #### Listen und Stichpunkte
 
