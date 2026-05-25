@@ -109,6 +109,16 @@ image: showerjs.webp:0:80
     margin: 0 0 0.6em;
 }
 
+.shower-mini-slide ul,
+.shower-mini-slide ol {
+    margin: 0 0 0 1.25em;
+    padding: 0;
+}
+
+.shower-mini-slide li {
+    margin: 0.18em 0;
+}
+
 .shower-mini-slide img {
     max-width: 100%;
 }
@@ -466,13 +476,66 @@ In diesem Abschnitt findest du kurze Beispiele für typische Dinge, die du beim 
 
 #### Der Grundaufbau einer Folie
 
+Eine Folie ist in shower.js ein eigener Abschnitt in der Datei `index.html`.
+Dieser Abschnitt beginnt mit `<section class="slide">` und endet mit `</section>`.
+Alles, was zwischen diesen beiden Zeilen steht, gehört zu dieser einen Folie.
+
 <div class='shower-mini'>
 <div class='shower-mini-slide'>
-<div class='mini-title'>Der Eisvogel</div>
-<img class='mini-right' src='bird.webp' alt='Eisvogel'>
-<p>Dieses Bild steht rechts. Der Text läuft links daran vorbei.</p>
+<div class='mini-title'>Meine Lieblingstiere</div>
+<ol>
+<li>🐧 Pinguine</li>
+<li>🦊 Füchse</li>
+<li>🐬 Delfine</li>
+<li>🦉 Eulen</li>
+</ol>
 </div>
 </div>
+
+```html
+<section class="slide">
+    <h2>Meine Lieblingstiere</h2>
+    <ol>
+        <li>🐧 Pinguine</li>
+        <li>🦊 Füchse</li>
+        <li>🐬 Delfine</li>
+        <li>🦉 Eulen</li>
+    </ol>
+</section>
+```
+
+Die wichtigsten Teile sind:
+
+- `<section class="slide">` beginnt eine neue Folie.
+- `<h2>` ist die Überschrift der Folie.
+- `<ol>` beginnt eine nummerierte Liste.
+- Jedes `<li>` ist ein Punkt in der Liste.
+- `</section>` beendet die Folie.
+
+Die meisten HTML-Tags bestehen aus einem **öffnenden Tag** und einem **schließenden Tag**:
+
+```html
+<h2>Meine Überschrift</h2>
+```
+
+Das öffnende Tag ist `<h2>`. Das schließende Tag ist `</h2>` – beim schließenden Tag steht also zusätzlich ein `/` vor dem Namen.
+
+<div class='hint'>
+Wenn du ein Tag öffnest, musst du es meistens auch wieder schließen.
+Fehlt ein schließendes Tag, kann es passieren, dass die Folie oder sogar mehrere Folien danach falsch angezeigt werden.
+</div>
+
+Einrückungen sind für den Browser nicht unbedingt nötig, aber sie helfen dir beim Lesen.
+Man sieht dadurch besser, welche Teile zusammengehören:
+
+```html
+<section class="slide">
+    <h2>Überschrift</h2>
+    <p>Dieser Text gehört zur Folie.</p>
+</section>
+```
+
+<div class='shower-mini-clear'></div>
 
 #### Text und Überschriften
 #### Listen und Stichpunkte
