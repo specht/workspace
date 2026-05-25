@@ -123,6 +123,35 @@ image: showerjs.webp:0:80
     max-width: 100%;
 }
 
+
+/* Shower-artiger Ribbon mit Foliennummer für Mini-Folien. */
+.shower-mini-slide[data-page]::after {
+    content: attr(data-page);
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+
+    box-sizing: border-box;
+    width: 102px;
+    height: 102px;
+    padding: 16px 18px 0 0;
+
+    background: #4b86c2;
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+    color: white;
+
+    font-family: 'PT Sans', sans-serif;
+    font-size: 30px;
+    font-weight: bold;
+    line-height: 1;
+    text-align: right;
+}
+
+.shower-mini-slide.mini-no-ribbon::after {
+    display: none;
+}
+
 /* Hilfsklassen für typische Beispiele. */
 .shower-mini-slide .mini-right {
     float: right;
@@ -470,18 +499,34 @@ Der besondere Vorteil bei dieser Art von Präsentation ist, dass sie in jedem mo
 
 ## Referenz: Folien gestalten
 
+<!--
+Dieser Referenzteil soll später wie ein Nachschlagewerk funktionieren, nicht wie ein linearer Lehrgang.
+Jeder Unterabschnitt sollte ein kleines Problem lösen: kurze Erklärung, Mini-Folie, kopierbares Beispiel und ein Hinweis auf typische Fehler.
+-->
+
 In diesem Abschnitt findest du kurze Beispiele für typische Dinge, die du beim Gestalten deiner Folien brauchst. Du musst nicht alles der Reihe nach lesen. Such dir einfach die Stelle heraus, die zu deinem Problem passt.
 
 ### Grundlagen
 
+<!--
+Hier sollten nur die HTML-Grundbausteine stehen, die man braucht, um überhaupt eine saubere Folie zu schreiben.
+Ziel: Die Schülerinnen und Schüler sollen bestehende Folien sicher ändern können, bevor CSS und Layout dazukommen.
+-->
+
 #### Der Grundaufbau einer Folie
+
+<!--
+Dieser Abschnitt führt <section class="slide"> als Rahmen einer Folie ein.
+Gezeigt werden sollten: Überschrift, Liste, öffnende und schließende Tags, Einrückung und die Idee, dass alles zwischen <section> und </section> zu genau einer Folie gehört.
+Die Mini-Folie zeigt zusätzlich schon den Shower-Ribbon mit einer Beispiel-Foliennummer, damit die Vorschau wie die echte Vorlage wirkt.
+-->
 
 Eine Folie ist in shower.js ein eigener Abschnitt in der Datei `index.html`.
 Dieser Abschnitt beginnt mit `<section class="slide">` und endet mit `</section>`.
 Alles, was zwischen diesen beiden Zeilen steht, gehört zu dieser einen Folie.
 
 <div class='shower-mini'>
-<div class='shower-mini-slide'>
+<div class='shower-mini-slide' data-page='7'>
 <div class='mini-title'>Meine Lieblingstiere</div>
 <ol>
 <li>🐧 Pinguine</li>
@@ -538,33 +583,161 @@ Man sieht dadurch besser, welche Teile zusammengehören:
 <div class='shower-mini-clear'></div>
 
 #### Text und Überschriften
+
+<!--
+Hier sollten <h2>, <p> und eventuell <br> erklärt werden.
+Wichtig wäre: Eine Folie hat meistens eine <h2>-Überschrift; längere Texte gehören in Absätze; zu viel Text macht Folien schnell unlesbar.
+-->
+
 #### Listen und Stichpunkte
+
+<!--
+Hier sollten <ul>, <ol> und <li> eingeführt werden.
+Sinnvoll wäre ein Vergleich zwischen ungeordneter Liste und nummerierter Liste sowie ein Hinweis, dass jeder Listenpunkt ein eigenes <li> braucht.
+-->
+
 #### Wörter hervorheben
+
+<!--
+Hier sollten einfache Inline-Tags wie <strong>, <em>, <code>, <sub> und <sup> gezeigt werden.
+Ziel: Einzelne Wörter hervorheben, ohne gleich eigenes CSS schreiben zu müssen.
+-->
 
 ### Bilder
 
+<!--
+Dieser Block sollte Bilder Schritt für Schritt einführen: erst einfügen, dann Größe und Zuschnitt, dann Platzierung, dann Hintergrundbilder und Lesbarkeit.
+Die Beispiele sollten möglichst mit denselben Bilddateien funktionieren, die ohnehin im Tutorial vorkommen.
+-->
+
 #### Bilder einfügen
+
+<!--
+Hier sollte <img src="..."> erklärt werden.
+Wichtig wären Dateinamen, relative Pfade, Dateiendungen und ein kurzer Hinweis auf alt-Text, ohne den Abschnitt zu überfrachten. Wir sollten auch erklären, wie man ein Bild entweder herunterladen und per Drag & Drop in das richtige Verzeichnis ziehen oder direkt in VS Code mit <span class='key'>Strg</span><span class='key'>V</span> einfügen kann (wenn das geht). Für Profis erklären wir, wie man ein Bild mit wget im Terminal herunterlädt.
+-->
+
 #### Bilder vergrößern, verkleinern und zuschneiden
+
+<!--
+Hier sollten typische Größenprobleme gelöst werden: Bild zu groß, Bild zu klein, falsches Seitenverhältnis.
+Mögliche Beispiele: width per style, vorhandene Hilfsklassen der Vorlage und object-fit für zugeschnittene Bilder.
+-->
+
 #### Bilder links oder rechts platzieren
+
+<!--
+Hier sollten einfache Platzierungen neben Text gezeigt werden.
+Passend zur bisherigen Vorlage könnten Klassen wie class='r' bzw. class='l' oder kleine eigene CSS-Klassen erklärt werden.
+-->
+
 #### Ein Bild als Hintergrund verwenden
+
+<!--
+Hier sollte gezeigt werden, wie ein Bild die ganze Folie füllt.
+Wichtig: Der Unterschied zwischen normalem Bild im Textfluss und Hintergrund-/Cover-Bild, außerdem der Umgang mit Zuschnitt.
+-->
+
 #### Text auf Bildern lesbar machen
+
+<!--
+Hier sollten Kontrastprobleme gelöst werden: Textschatten, halbtransparenter Kasten, dunkle Überlagerung oder helle Fläche.
+Ziel: Nicht nur zeigen, dass es geht, sondern warum Lesbarkeit wichtiger als ein schönes Bild ist.
+-->
 
 ### Gestaltung
 
+<!--
+Hier beginnt CSS als Werkzeug zur Gestaltung.
+Die Abschnitte sollten bewusst klein bleiben: erst einzelne Eigenschaften ändern, dann wiederverwendbare Klassen.
+-->
+
 #### Farben ändern
+
+<!--
+Hier sollten color und background erklärt werden.
+Gute Reihenfolge: erst ein einzelnes Element färben, dann eine eigene Klasse für wiederholbare Gestaltung.
+-->
+
 #### Schriftgrößen ändern
+
+<!--
+Hier sollten font-size und eventuell line-height gezeigt werden.
+Wichtig wäre ein Hinweis, dass größere Schrift oft besser ist als mehr Text und dass zu viele verschiedene Größen unruhig wirken.
+-->
+
 #### Schriftarten ändern
+
+<!--
+Hier sollte font-family erklärt werden, aber eher vorsichtig.
+Sinnvoll wäre: vorhandene Schriftarten nutzen, nicht zu viele Schriftarten mischen, Überschriften und normalen Text unterscheiden.
+-->
+
 #### Abstände ändern
+
+<!--
+Hier sollten margin und padding auf sehr einfache Weise erklärt werden.
+Ziel: Schülerinnen und Schüler sollen Abstand erzeugen, ohne leere Absätze oder viele <br>-Tags zu missbrauchen.
+-->
+
 #### Elemente genau platzieren
+
+<!--
+Hier sollten absolute Positionierung oder vorhandene Shower-Hilfsklassen wie place/top/left erklärt werden.
+Wichtig: Nur für gezielte Layouts verwenden, nicht als Ersatz für normalen Textfluss.
+-->
+
 #### Zwei Spalten verwenden
+
+<!--
+Hier sollte ein sehr einfaches Zwei-Spalten-Layout gezeigt werden.
+Am besten mit CSS Grid oder Flexbox, aber so reduziert, dass man das Muster kopieren und anpassen kann.
+-->
 
 ### Mehr Möglichkeiten
 
+<!--
+Dieser Block sollte Dinge enthalten, die nicht direkt nötig sind, aber Präsentationen deutlich stärker machen.
+Die Beispiele sollten erst kommen, wenn HTML-Struktur und einfaches CSS sitzen.
+-->
+
 #### Dinge nacheinander einblenden
+
+<!--
+Hier sollte class="next" erklärt werden.
+Wichtig: Nur sparsam verwenden; Einblendungen sollen den Vortrag unterstützen und nicht jede Folie unnötig kompliziert machen.
+-->
+
 #### Wiederverwendbare CSS-Klassen schreiben
+
+<!--
+Hier sollte der Schritt von Inline-Style zu eigener Klasse kommen.
+Ziel: Wiederholung vermeiden und den Schülerinnen und Schülern zeigen, dass CSS-Klassen eigene kleine Werkzeuge sind.
+-->
+
 #### Häufige Fehler finden
+
+<!--
+Hier sollten typische Fehler gesammelt werden: vergessenes schließendes Tag, falscher Dateiname, fehlende Anführungszeichen, CSS-Regel an falscher Stelle.
+Sinnvoll wäre eine kleine Checkliste für die Fehlersuche in VS Code und Browser-Vorschau.
+-->
 
 ### Profi-Tipps
 
+<!--
+Dieser Teil sollte Arbeitsweisen behandeln, nicht neue HTML/CSS-Bausteine.
+Er ist für die Schülerinnen und Schüler gedacht, die ihre Präsentation sichern, teilen oder veröffentlichen wollen.
+-->
+
 #### Änderungen mit Git sichern
+
+<!--
+Hier sollte sehr praktisch erklärt werden, wann man einen Commit macht und warum das vor größeren Änderungen hilft.
+Ziel: Git als Sicherheitsnetz zeigen, nicht als abstraktes Versionskontrollsystem.
+-->
+
 #### Präsentation veröffentlichen
+
+<!--
+Hier sollte auf /custom-subdomain hingewiesen werden, damit die Schülerinnen und Schüler ihre Präsentation online stellen können, ohne einen eigenen Server zu brauchen.
+-->
