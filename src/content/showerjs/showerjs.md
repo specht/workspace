@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeButton = lightbox.querySelector('.mini-lightbox-close');
 
     function setSlideScale(container) {
-        const width = container.getBoundingClientRect().width;
+        const width = container.clientWidth || container.offsetWidth;
         if (width > 0) {
             container.style.setProperty('--mini-scale', width / SLIDE_WIDTH);
         }
@@ -534,6 +534,28 @@ Für diese Präsentation verwendest du zwei Sprachen:
 
 - **HTML** beschreibt den Inhalt: Überschriften, Texte, Listen, Bilder und Folien.
 - **CSS** beschreibt das Aussehen: Farben, Größen, Abstände und Positionen.
+
+In der Vorlage sind Inhalt und Aussehen getrennt:
+
+- Deine Folien stehen in der Datei `index.html`.
+- Deine eigenen Gestaltungsregeln schreibst du in die Datei `styles.css`.
+
+Öffne deshalb am besten zusätzlich die Datei `styles.css`.
+Am Ende der Datei findest du diesen Kommentar:
+
+```css
+/*
+ * Eigene CSS-Regeln
+ *
+ * Hier kannst du das Aussehen deiner Folien verändern:
+ * Farben, Größen, Abstände, Schatten und Positionen.
+ *
+ * Schreibe deine eigenen CSS-Regeln unter diese Zeile.
+ */
+```
+
+Wenn in diesem Tutorial später CSS-Beispiele gezeigt werden, gehören sie normalerweise **unter diesen Kommentar in `styles.css`**.
+So bleibt `index.html` übersichtlich: Dort stehen die Folien, während `styles.css` für das Aussehen zuständig ist.
 
 Du kannst jetzt damit beginnen, die Vorlage an deine Bedürfnisse anzupassen und deine Präsentation zu schreiben.
 
@@ -740,15 +762,14 @@ Ziel: Schülerinnen und Schüler sollen Abstand erzeugen, ohne leere Absätze od
 
 <!--
 Hier soll erklärt werden, dass die Standardvorlage das rote Seitenzahl-Ribbon schon automatisch mitbringt.
+Wichtig ist jetzt besonders: In der Starter-Vorlage steht dafür kein <style>-Block in index.html, sondern die eigenen Regeln gehören in styles.css.
 Zuerst sollte man das Default-Verhalten verstehen, dann kleine CSS-Änderungen ausprobieren: Farbe ändern, eine andere Form verwenden, die Seitenzahl an eine andere Stelle setzen oder sie ausblenden.
-Wichtig ist dabei, dass man dafür normalerweise kein neues HTML für die Zahl schreibt, sondern das vorhandene ::after-Styling der Vorlage anpasst.
+Dabei sollte klar bleiben, dass man normalerweise kein neues HTML für die Zahl schreibt, sondern das vorhandene ::after-Styling der Vorlage anpasst.
 -->
 
 In der Standardvorlage von shower.js erscheint rechts oben automatisch ein rotes Ribbon mit der Foliennummer.
 Du musst dafür normalerweise **nichts** in deine Folie schreiben.
-Die Vorlage erzeugt dieses Ribbon selbst.
-
-In der Vorlage steckt dafür diese CSS-Regel:
+Die Vorlage erzeugt dieses Ribbon selbst mit Hilfe dieser CSS-Regel:
 
 <div class='shower-mini'>
 <div class='shower-mini-slide' data-page='12'>
@@ -783,10 +804,11 @@ Die Zeile `content: counter(slide);` ist besonders wichtig.
 Sie sorgt dafür, dass die Foliennummer automatisch eingesetzt wird.
 Du schreibst die Zahl also **nicht** selbst in den HTML-Code der Folie.
 
-<div class='hint'>
-Schreibe eigene Ribbon-Regeln möglichst unter die vorhandenen Styles in den <code>&lt;style&gt;</code>-Block.
-Dann überschreiben deine Regeln die Standardvorlage.
-</div>
+Die Variablen `--color-red` und `--ribbon-size` kommen ebenfalls aus der Vorlage.
+`var(--color-red)` bedeutet: »Nimm den Wert der CSS-Variable `--color-red`.«
+So kann die Vorlage Farben und Größen an einer zentralen Stelle verwalten.
+
+<div class='shower-mini-clear'></div>
 
 ##### Farbe des Standard-Ribbons ändern
 
@@ -797,7 +819,8 @@ Dann überschreiben deine Regeln die Standardvorlage.
 </div>
 </div>
 
-Wenn du nur die Farbe ändern möchtest, kannst du das vorhandene Ribbon behalten und nur die Hintergrundfarbe überschreiben:
+Wenn du nur die Farbe ändern möchtest, kannst du das vorhandene Ribbon behalten und nur die Hintergrundfarbe überschreiben.
+Schreibe diese Regel in `styles.css` unter den Kommentar `Eigene CSS-Regeln`:
 
 ```css
 .slide::after {
@@ -805,10 +828,40 @@ Wenn du nur die Farbe ändern möchtest, kannst du das vorhandene Ribbon behalte
 }
 ```
 
+Du kannst auch die vorhandene Shower-Farbvariable verwenden:
+
+```css
+.slide::after {
+    background-color: var(--color-blue);
+}
+```
+
 <div class='shower-mini-clear'></div>
 
-##### Eine runde Seitenzahl verwenden
+##### Das Ribbon größer oder kleiner machen
 
+Das Standard-Ribbon verwendet die Variable `--ribbon-size`.
+In der Vorlage steht sie auf `50px`.
+Wenn du das Ribbon größer machen möchtest, kannst du diese Variable überschreiben:
+
+```css
+.shower {
+    --ribbon-size: 65px;
+}
+```
+
+Das verändert Breite und Höhe des Ribbons gleichzeitig, weil die Standardregel damit rechnet:
+
+```css
+width: var(--ribbon-size);
+height: calc(var(--ribbon-size) * 2);
+```
+
+<div class='hint'>
+Wenn du nur eine Kleinigkeit ändern möchtest, ist es oft besser, eine Variable zu überschreiben, statt die ganze <code>.slide::after</code>-Regel zu kopieren.
+</div>
+
+##### Eine runde Seitenzahl verwenden
 
 <div class='shower-mini'>
 <div class='shower-mini-slide mini-round-page' data-page='14'>
@@ -818,7 +871,8 @@ Wenn du nur die Farbe ändern möchtest, kannst du das vorhandene Ribbon behalte
 </div>
 
 Das Ribbon muss nicht wie ein Lesezeichen aussehen.
-Du kannst daraus auch einen Kreis machen:
+Du kannst daraus auch einen Kreis machen.
+Auch diese Regel gehört in `styles.css`:
 
 ```css
 .slide::after {
@@ -883,28 +937,37 @@ Dann kannst du Hintergrund und Form komplett entfernen:
 
 <div class='shower-mini-clear'></div>
 
-##### Das Ribbon auf einer einzelnen Folie ausblenden
+##### Die Seitenzahl auf einer einzelnen Folie ausblenden
 
-Wenn du das Ribbon **auf genau einer Folie** ausblenden möchtest, gibst du der Folie eine zusätzliche Klasse:
+In der Starter-Vorlage gibt es dafür schon eine CSS-Regel in `styles.css`:
+
+```css
+.slide.nopagenumber::after {
+    visibility: hidden;
+}
+```
+
+Du musst also nur der Folie in `index.html` die zusätzliche Klasse `nopagenumber` geben:
 
 ```html
-<section class="slide no-page">
+<section class="slide nopagenumber">
     <h2>Startfolie ohne Seitenzahl</h2>
     <p>Auf dieser Folie soll kein Ribbon erscheinen.</p>
 </section>
 ```
 
-Dazu brauchst du diese CSS-Regel:
+Achte darauf, dass beide Klassen im selben `class`-Attribut stehen:
 
-```css
-.no-page::after {
-    visibility: hidden;
-}
+```html
+class="slide nopagenumber"
 ```
 
-##### Das Ribbon überall ausblenden
+`slide` macht den Abschnitt zu einer Folie.
+`nopagenumber` blendet nur auf dieser Folie die Seitenzahl aus.
 
-Wenn du das Ribbon **überall** ausblenden möchtest, kannst du dieselbe Idee für alle Folien verwenden:
+##### Die Seitenzahl überall ausblenden
+
+Wenn du die Seitenzahl **auf allen Folien** ausblenden möchtest, kannst du diese Regel in `styles.css` ergänzen:
 
 ```css
 .slide::after {
