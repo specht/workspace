@@ -825,12 +825,352 @@ Hier sollten <ul>, <ol> und <li> eingeführt werden.
 Sinnvoll wäre ein Vergleich zwischen ungeordneter Liste und nummerierter Liste sowie ein Hinweis, dass jeder Listenpunkt ein eigenes <li> braucht.
 -->
 
+Listen sind auf Präsentationsfolien sehr praktisch, weil sie Informationen übersichtlich machen.
+In HTML gibt es zwei wichtige Arten von Listen:
+
+- `<ul>` erstellt eine Liste mit Stichpunkten.
+- `<ol>` erstellt eine nummerierte Liste.
+- Jeder einzelne Listenpunkt steht in einem eigenen `<li>`.
+
+`li` steht für »list item«, also »Listenpunkt«.
+
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='9'>
+<div class='mini-title'>Meine Projektidee</div>
+<ul>
+<li>🎮 Ein kleines Spiel programmieren</li>
+<li>🧭 Eine Spielfigur bewegen</li>
+<li>💎 Punkte sammeln</li>
+<li>🏁 Ein Ziel erreichen</li>
+</ul>
+</div>
+</div>
+
+```html
+<section class="slide">
+    <h2>Meine Projektidee</h2>
+
+    <ul>
+        <li>🎮 Ein kleines Spiel programmieren</li>
+        <li>🧭 Eine Spielfigur bewegen</li>
+        <li>💎 Punkte sammeln</li>
+        <li>🏁 Ein Ziel erreichen</li>
+    </ul>
+</section>
+```
+
+Die wichtigsten Tags in diesem Beispiel sind:
+
+- `<ul>` beginnt eine Liste mit Stichpunkten.
+- `<li>` beginnt einen Listenpunkt.
+- `</li>` beendet einen Listenpunkt.
+- `</ul>` beendet die ganze Liste.
+
+<div class='hint'>
+Jeder Listenpunkt braucht ein eigenes <code>&lt;li&gt;</code>.
+Schreibe also nicht alle Punkte in ein einziges <code>&lt;li&gt;</code>, sondern mache für jeden Punkt eine eigene Zeile.
+</div>
+
+##### Liste mit Stichpunkten
+
+Eine Liste mit Stichpunkten verwendest du, wenn die Reihenfolge nicht besonders wichtig ist:
+
+```html
+<section class="slide">
+    <h2>Was ich gelernt habe</h2>
+
+    <ul>
+        <li>HTML beschreibt den Inhalt.</li>
+        <li>CSS gestaltet das Aussehen.</li>
+        <li>Der Browser zeigt die Präsentation an.</li>
+    </ul>
+</section>
+```
+
+Die Punkte könnten hier auch in einer anderen Reihenfolge stehen.
+Deshalb passt eine Liste mit Stichpunkten gut.
+
+##### Nummerierte Liste
+
+Eine nummerierte Liste verwendest du, wenn die Reihenfolge wichtig ist:
+
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='10'>
+<div class='mini-title'>So startest du</div>
+<ol>
+<li>Repository klonen</li>
+<li>index.html öffnen</li>
+<li>Live Server starten</li>
+<li>Folie bearbeiten</li>
+</ol>
+</div>
+</div>
+
+```html
+<section class="slide">
+    <h2>So startest du</h2>
+
+    <ol>
+        <li>Repository klonen</li>
+        <li>index.html öffnen</li>
+        <li>Live Server starten</li>
+        <li>Folie bearbeiten</li>
+    </ol>
+</section>
+```
+
+Bei `<ol>` setzt der Browser die Zahlen automatisch davor.
+Du musst die Zahlen also nicht selbst schreiben.
+
+Nicht so gut:
+
+```html
+<ul>
+    <li>1. Repository klonen</li>
+    <li>2. index.html öffnen</li>
+    <li>3. Live Server starten</li>
+</ul>
+```
+
+Besser:
+
+```html
+<ol>
+    <li>Repository klonen</li>
+    <li>index.html öffnen</li>
+    <li>Live Server starten</li>
+</ol>
+```
+
+So kann der Browser die Nummerierung selbst übernehmen.
+Wenn du später einen Punkt einfügst oder löschst, stimmen die Zahlen automatisch wieder.
+
+##### Listen nicht zu voll machen
+
+Eine Liste auf einer Folie sollte nicht zu lang sein.
+Diese Folie ist wahrscheinlich zu voll:
+
+```html
+<section class="slide">
+    <h2>Vorteile von HTML-Präsentationen</h2>
+
+    <ul>
+        <li>Laufen im Browser</li>
+        <li>Funktionieren auch offline</li>
+        <li>Können mit CSS gestaltet werden</li>
+        <li>Kann man auf einen Stick kopieren</li>
+        <li>Trainieren den Umgang mit Code</li>
+        <li>Sind gut versionierbar</li>
+        <li>Können veröffentlicht werden</li>
+        <li>Funktionieren auf verschiedenen Geräten</li>
+    </ul>
+</section>
+```
+
+Oft ist es besser, nur die wichtigsten Punkte auf die Folie zu schreiben:
+
+```html
+<section class="slide">
+    <h2>Vorteile von HTML-Präsentationen</h2>
+
+    <ul>
+        <li>Laufen in jedem modernen Browser</li>
+        <li>Lassen sich mit CSS frei gestalten</li>
+        <li>Trainieren den sicheren Umgang mit Code</li>
+    </ul>
+</section>
+```
+
+<div class='hint'>
+Eine gute Folie zeigt nicht alles, was du sagen möchtest.
+Sie zeigt die wichtigsten Stichworte, damit dein Publikum dir leichter folgen kann.
+</div>
+
+##### Typische Fehler bei Listen
+
+Achte darauf, dass die `<li>`-Tags wirklich innerhalb der Liste stehen:
+
+```html
+<ul>
+    <li>Erster Punkt</li>
+    <li>Zweiter Punkt</li>
+    <li>Dritter Punkt</li>
+</ul>
+```
+
+Nicht so:
+
+```html
+<ul>
+</ul>
+<li>Erster Punkt</li>
+<li>Zweiter Punkt</li>
+<li>Dritter Punkt</li>
+```
+
+Im zweiten Beispiel stehen die Listenpunkte außerhalb der Liste.
+Der Browser versucht zwar oft trotzdem, etwas daraus zu machen, aber der HTML-Code ist nicht sauber.
+
+<div class='hint'>
+Wenn eine Liste merkwürdig aussieht, prüfe zuerst, ob jedes <code>&lt;li&gt;</code> zwischen dem öffnenden Listen-Tag und dem schließenden Listen-Tag steht.
+Also zwischen <code>&lt;ul&gt;</code> und <code>&lt;/ul&gt;</code> oder zwischen <code>&lt;ol&gt;</code> und <code>&lt;/ol&gt;</code>.
+</div>
+
+<div class='shower-mini-clear'></div>
+
 #### Wörter hervorheben
 
 <!--
 Hier sollten einfache Inline-Tags wie <strong>, <em>, <code>, <sub> und <sup> gezeigt werden.
 Ziel: Einzelne Wörter hervorheben, ohne gleich eigenes CSS schreiben zu müssen.
 -->
+
+Manchmal möchtest du nicht einen ganzen Absatz verändern, sondern nur einzelne Wörter hervorheben.
+Dafür gibt es in HTML kleine Tags, die mitten im Text stehen können.
+
+Solche Tags nennt man **Inline-Tags**, weil sie in einer Zeile im Text mitlaufen.
+
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='11'>
+<div class='mini-title'>Wichtig!</div>
+<p>Mit <strong>HTML</strong> beschreibst du den Inhalt.</p>
+<p>Mit <em>CSS</em> gestaltest du das Aussehen.</p>
+<p>Der Dateiname ist <code>index.html</code>.</p>
+</div>
+</div>
+
+```html
+<section class="slide">
+    <h2>Wichtig!</h2>
+
+    <p>Mit <strong>HTML</strong> beschreibst du den Inhalt.</p>
+    <p>Mit <em>CSS</em> gestaltest du das Aussehen.</p>
+    <p>Der Dateiname ist <code>index.html</code>.</p>
+</section>
+```
+
+Die wichtigsten Inline-Tags sind:
+
+- `<strong>` hebt etwas stark hervor.
+- `<em>` betont etwas.
+- `<code>` markiert Code, Dateinamen oder Befehle.
+- `<sub>` stellt Text tiefer.
+- `<sup>` stellt Text höher.
+
+##### Stark hervorheben mit strong
+
+Mit `<strong>` markierst du Wörter, die besonders wichtig sind:
+
+```html
+<p>
+    Speichere deine Datei mit <strong>Strg + S</strong>,
+    bevor du die Vorschau überprüfst.
+</p>
+```
+
+Im Browser wird dieser Text meistens fett dargestellt.
+Wichtiger ist aber die Bedeutung: Dieses Wort oder diese Stelle ist besonders wichtig.
+
+##### Betonen mit em
+
+Mit `<em>` betonst du ein Wort oder eine kurze Wortgruppe:
+
+```html
+<p>
+    Verwende Einblendungen <em>sparsam</em>,
+    damit die Präsentation ruhig bleibt.
+</p>
+```
+
+Im Browser wird der Text meistens kursiv dargestellt.
+
+<div class='hint'>
+Verwende Hervorhebungen gezielt.
+Wenn auf einer Folie fast alles fett oder kursiv ist, fällt am Ende gar nichts mehr besonders auf.
+</div>
+
+##### Code, Dateinamen und Befehle markieren
+
+Mit `<code>` markierst du kurze Stücke Code, Dateinamen, Tags oder Befehle:
+
+```html
+<p>
+    Öffne die Datei <code>index.html</code>
+    und suche nach <code>&lt;section class="slide"&gt;</code>.
+</p>
+```
+
+Bei echten HTML-Tags im normalen Text musst du die spitzen Klammern ersetzen:
+
+- Statt `<` schreibst du `&lt;`.
+- Statt `>` schreibst du `&gt;`.
+
+Darum steht im Beispiel:
+
+```html
+<code>&lt;section class="slide"&gt;</code>
+```
+
+und nicht:
+
+```html
+<code><section class="slide"></code>
+```
+
+Im zweiten Beispiel würde der Browser versuchen, wirklich eine neue Folie zu beginnen.
+Das ist nicht das, was du hier möchtest.
+
+##### Hochgestellte und tiefgestellte Zeichen
+
+Für manche Themen brauchst du hochgestellte oder tiefgestellte Zeichen.
+Dafür gibt es `<sup>` und `<sub>`.
+
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='12'>
+<div class='mini-title'>Formeln im Text</div>
+<p>Fläche: A = a<sup>2</sup></p>
+<p>Wasser: H<sub>2</sub>O</p>
+<p>Binärzahl: 1010<sub>2</sub></p>
+</div>
+</div>
+
+```html
+<section class="slide">
+    <h2>Formeln im Text</h2>
+
+    <p>Fläche: A = a<sup>2</sup></p>
+    <p>Wasser: H<sub>2</sub>O</p>
+    <p>Binärzahl: 1010<sub>2</sub></p>
+</section>
+```
+
+`<sup>` stellt den Text höher.
+Das ist praktisch für Potenzen wie `a²`.
+
+`<sub>` stellt den Text tiefer.
+Das ist praktisch für chemische Formeln oder Zahlensysteme.
+
+##### Inline-Tags richtig schließen
+
+Auch Inline-Tags müssen meistens wieder geschlossen werden:
+
+```html
+<p>Das ist <strong>wichtig</strong>.</p>
+```
+
+Nicht so:
+
+```html
+<p>Das ist <strong>wichtig.</p>
+```
+
+Wenn du das schließende `</strong>` vergisst, kann es passieren, dass viel mehr Text fett wird, als du eigentlich wolltest.
+
+<div class='hint'>
+Wenn plötzlich ein ganzer Abschnitt fett, kursiv oder in Code-Schrift erscheint, fehlt wahrscheinlich irgendwo ein schließendes Tag wie <code>&lt;/strong&gt;</code>, <code>&lt;/em&gt;</code> oder <code>&lt;/code&gt;</code>.
+</div>
+
+<div class='shower-mini-clear'></div>
 
 ### Bilder
 
