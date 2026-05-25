@@ -1179,12 +1179,296 @@ Dieser Block sollte Bilder Schritt für Schritt einführen: erst einfügen, dann
 Die Beispiele sollten möglichst mit denselben Bilddateien funktionieren, die ohnehin im Tutorial vorkommen.
 -->
 
+Bilder können eine Präsentation viel anschaulicher machen.
+Dabei gibt musst du zwei Schritte beachten:
+
+1. Du brauchst zuerst eine **Bilddatei** in deinem Projekt.
+2. Danach musst du diese Bilddatei mit HTML in eine Folie einfügen.
+
+Der Browser kann ein Bild nur anzeigen, wenn er die Datei auch wirklich findet.
+Deshalb ist es wichtig, dass deine Bilddateien an einem sinnvollen Ort liegen und einen einfachen Dateinamen haben.
+
+Für eigene Bilder verwendest du am besten einen Ordner mit dem Namen `pictures`.
+Diesen Ordner legst du direkt im Hauptordner deiner Präsentation an, also dort, wo auch `index.html` und `styles.css` liegen.
+
+Dein Projekt sieht dann ungefähr so aus:
+
+```text
+shower.js/
+├── index.html
+├── styles.css
+├── pictures/
+│   ├── katze.jpg
+│   ├── berlin.webp
+│   └── diagramm.png
+└── ...
+```
+
+<div class='hint'>
+Verwende für Bilddateien am besten einfache Dateinamen:
+kleine Buchstaben, keine Leerzeichen, keine Umlaute und keine Sonderzeichen.
+Gut sind zum Beispiel <code>katze.jpg</code>, <code>berlin.webp</code> oder <code>mein-bild.png</code>.
+</div>
+
+##### Woher bekomme ich Bilddateien?
+
+Es gibt verschiedene Möglichkeiten, an Bilddateien zu kommen:
+
+- Du kannst ein eigenes Foto verwenden.
+- Du kannst einen Screenshot erstellen.
+- Du kannst ein Bild von deinem Computer in den Workspace ziehen.
+- Du kannst ein Bild aus dem Internet herunterladen.
+
+Achte bei Bildern aus dem Internet darauf, dass du sie verwenden darfst.
+Für Schulpräsentationen ist das oft kein großes Problem, trotzdem ist es eine gute Gewohnheit, eigene Bilder zu verwenden oder frei verwendbare Bilder zu suchen.
+
+<div class='hint'>
+Kopiere nicht einfach irgendein Bild aus dem Internet, ohne darüber nachzudenken.
+Bilder haben Urheberinnen und Urheber. Besonders wenn du deine Präsentation veröffentlichst, solltest du nur eigene oder frei verwendbare Bilder nutzen.
+</div>
+
+##### Bilder per Drag & Drop einfügen
+
+Wenn du schon eine Bilddatei auf deinem Computer hast, kannst du sie meistens einfach in den Ordner `pictures` ziehen.
+
+Ziehe die Datei dafür in VS Code links im Explorer direkt auf den Ordner `pictures`.
+Danach sollte die Datei dort erscheinen.
+
+Wenn dein Bild zum Beispiel `hund.jpg` heißt, liegt es danach hier:
+
+```text
+pictures/hund.jpg
+```
+
+##### Bilder aus dem Internet herunterladen
+
+Wenn du ein Bild im Browser gefunden hast, kannst du es meistens so speichern:
+
+1. Klicke mit der rechten Maustaste auf das Bild.
+2. Wähle »Bild speichern unter …« oder »Save image as …«.
+3. Speichere das Bild in deinem Projektordner im Ordner `pictures`.
+4. Gib dem Bild einen einfachen Dateinamen, zum Beispiel `vulkan.jpg`.
+
+Manchmal speichert der Browser Bilder mit sehr langen oder merkwürdigen Namen.
+Benenne solche Dateien lieber um.
+
+Nicht so gut:
+
+```text
+download?id=3487623987423&size=large
+```
+
+Besser:
+
+```text
+vulkan.jpg
+```
+
+<div class='hint'>
+Wichtig ist nicht nur der Name, sondern auch die Dateiendung.
+<code>vulkan.jpg</code>, <code>vulkan.png</code> und <code>vulkan.webp</code> sind für den Browser drei verschiedene Dateinamen.
+</div>
+
+##### Für Profis: Bild mit wget herunterladen
+
+Wenn du schon etwas sicherer mit dem Terminal bist, kannst du ein Bild auch direkt mit `wget` herunterladen.
+Dafür brauchst du die direkte Bildadresse.
+
+```bash
+wget -O pictures/vulkan.jpg "https://example.com/vulkan.jpg"
+```
+
+`-O pictures/vulkan.jpg` bedeutet:
+Speichere die heruntergeladene Datei unter diesem Namen im Ordner `pictures`.
+
+<div class='hint'>
+Das funktioniert nur mit einer direkten Bildadresse.
+Wenn du die Adresse einer ganzen Webseite verwendest, lädst du nicht das Bild herunter, sondern die HTML-Datei der Webseite.
+</div>
+
 #### Bilder einfügen
 
 <!--
 Hier sollte <img src="..."> erklärt werden.
 Wichtig wären Dateinamen, relative Pfade, Dateiendungen und ein kurzer Hinweis auf alt-Text, ohne den Abschnitt zu überfrachten. Wir sollten auch erklären, wie man ein Bild entweder herunterladen und per Drag & Drop in das richtige Verzeichnis ziehen oder direkt in VS Code mit <span class='key'>Strg</span><span class='key'>V</span> einfügen kann (wenn das geht). Für Profis erklären wir, wie man ein Bild mit wget im Terminal herunterlädt.
 -->
+
+Wenn die Bilddatei im richtigen Ordner liegt, kannst du sie mit dem Tag `<img>` in eine Folie einfügen.
+
+Angenommen, dein Bild heißt `vulkan.jpg` und liegt im Ordner `pictures`.
+Dann fügst du es so ein:
+
+<div class='shower-mini'>
+<div class='shower-mini-slide' data-page='13'>
+<div class='mini-title'>Mein Vulkan</div>
+<img src='fuji.jpg' alt='Symbolbild zu shower.js' style='display: block; width: 58%; margin: 0.45em auto 0; border-radius: 0.35em;'>
+</div>
+</div>
+
+```html
+<section class="slide">
+    <h2>Mein Vulkan</h2>
+
+    <img src="pictures/vulkan.jpg" alt="Ein Vulkan bei Sonnenuntergang">
+</section>
+```
+
+Die wichtigsten Teile sind:
+
+- `<img>` fügt ein Bild ein.
+- `src="pictures/vulkan.jpg"` sagt dem Browser, wo die Bilddatei liegt.
+- `alt="Ein Vulkan bei Sonnenuntergang"` beschreibt das Bild kurz.
+
+`src` steht für »source«, also »Quelle«.
+Dort steht der Pfad zur Bilddatei.
+
+`alt` steht für »alternative text«.
+Dieser Text wird verwendet, wenn das Bild nicht geladen werden kann.
+Außerdem hilft er Menschen, die sich Webseiten mit einem Screenreader vorlesen lassen.
+
+<div class='hint'>
+Das <code>&lt;img&gt;</code>-Tag hat kein eigenes schließendes Tag.
+Du schreibst also normalerweise nicht <code>&lt;/img&gt;</code>.
+</div>
+
+##### Der Pfad muss genau stimmen
+
+Der häufigste Fehler bei Bildern ist ein falscher Pfad.
+Wenn dein Bild im Ordner `pictures` liegt, muss dieser Ordner auch im `src`-Attribut stehen.
+
+Wenn die Datei so liegt:
+
+```text
+pictures/vulkan.jpg
+```
+
+dann ist dieser Code richtig:
+
+```html
+<img src="pictures/vulkan.jpg" alt="Ein Vulkan">
+```
+
+Dieser Code ist dagegen falsch:
+
+```html
+<img src="vulkan.jpg" alt="Ein Vulkan">
+```
+
+Der Browser sucht das Bild dann direkt neben `index.html`.
+Dort liegt es aber nicht, weil es im Ordner `pictures` liegt.
+
+##### Dateinamen müssen exakt gleich sein
+
+Der Browser ist bei Dateinamen sehr genau.
+
+Wenn deine Datei so heißt:
+
+```text
+Mein Bild.JPG
+```
+
+dann ist das nicht dasselbe wie:
+
+```text
+mein-bild.jpg
+```
+
+Achte besonders auf:
+
+- Groß- und Kleinschreibung
+- Leerzeichen
+- Umlaute
+- Bindestriche und Unterstriche
+- die Dateiendung
+
+Deshalb sind einfache Dateinamen so hilfreich.
+
+Gut:
+
+```text
+sonnenuntergang.jpg
+```
+
+Auch gut:
+
+```text
+sonnenuntergang-berlin.webp
+```
+
+Eher schlecht:
+
+```text
+Sonnenuntergang in Berlin endgültig NEU!!!.JPG
+```
+
+##### Unterschiedliche Bildformate
+
+Häufige Bildformate sind:
+
+- `.jpg` oder `.jpeg` für Fotos
+- `.png` für Grafiken, Screenshots oder Bilder mit Transparenz
+- `.webp` für moderne, oft kleinere Bilddateien
+- `.svg` für Zeichnungen, Logos und einfache Grafiken
+
+Für den Anfang sind `.jpg`, `.png` und `.webp` meistens am einfachsten.
+
+<div class='hint'>
+Wenn ein Bild nicht angezeigt wird, prüfe zuerst den Dateinamen und die Dateiendung.
+Sehr oft steht im HTML zum Beispiel <code>.jpg</code>, aber die Datei heißt in Wirklichkeit <code>.png</code> oder <code>.webp</code>.
+</div>
+
+##### Bild aus der Zwischenablage einfügen
+
+In manchen Workspaces kannst du ein Bild auch direkt aus der Zwischenablage in VS Code einfügen.
+Das hängt aber davon ab, wie dein Browser und dein Workspace eingerichtet sind.
+
+Wenn es funktioniert, gehe so vor:
+
+1. Kopiere ein Bild oder erstelle einen Screenshot.
+2. Klicke links im Explorer auf den Ordner `pictures`.
+3. Drücke <span class='key'>Strg</span><span class='key'>V</span>.
+4. Benenne die eingefügte Datei sinnvoll um.
+
+Wenn dabei keine Datei im Ordner `pictures` erscheint, unterstützt dein Workspace diese Methode wahrscheinlich nicht.
+Dann verwende stattdessen Drag & Drop oder »Bild speichern unter …«.
+
+##### Ein Bild mit Text kombinieren
+
+Ein Bild kann zusammen mit Text auf einer Folie stehen:
+
+```html
+<section class="slide">
+    <h2>Unser Ausflug</h2>
+
+    <p>Wir haben den Sonnenuntergang am See beobachtet.</p>
+
+    <img src="pictures/see.jpg" alt="Sonnenuntergang an einem See">
+</section>
+```
+
+Am Anfang ist es am einfachsten, das Bild einfach unter den Text zu setzen.
+Später lernst du, wie du Bilder vergrößerst, zuschneidest oder links und rechts neben Text platzierst.
+
+##### Typische Fehler bei Bildern
+
+Wenn ein Bild nicht erscheint, prüfe diese Punkte:
+
+- Liegt die Bilddatei wirklich im Ordner `pictures`?
+- Ist der Dateiname im HTML exakt gleich geschrieben?
+- Stimmt die Dateiendung?
+- Steht der Ordner im Pfad, also zum Beispiel `pictures/bild.jpg`?
+- Hast du die Datei nach dem Verschieben oder Umbenennen gespeichert?
+- Hast du die Vorschau im Browser neu geladen?
+
+Ein kaputtes Bild sieht im Browser oft nur wie ein kleines Symbol aus.
+Das bedeutet fast immer: Der Browser hat den Text der Folie gefunden, aber nicht die Bilddatei.
+
+<div class='hint'>
+Wenn du den Fehler nicht findest, öffne links den Ordner <code>pictures</code> und kopiere den Dateinamen genau ab.
+Setze ihn dann in <code>src="pictures/..."</code> ein.
+</div>
+
+<div class='shower-mini-clear'></div>
 
 #### Bilder vergrößern, verkleinern und zuschneiden
 
