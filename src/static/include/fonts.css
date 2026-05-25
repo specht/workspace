@@ -271,3 +271,45 @@
     font-display: swap;
     src: url(fonts/0xProto/0xProto-Bold.ttf) format('truetype');
 }
+@font-face {
+    font-family: 'PT Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/PT_Sans/PTSans-Regular.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'PT Sans';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/PT_Sans/PTSans-Italic.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'PT Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(fonts/PT_Sans/PTSans-Bold.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'PT Sans';
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url(fonts/PT_Sans/PTSans-BoldItalic.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'PT Sans Narrow';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/PT_Sans_Narrow/PTSansNarrow-Regular.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'PT Sans Narrow';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(fonts/PT_Sans_Narrow/PTSansNarrow-Bold.ttf) format('truetype');
+}
