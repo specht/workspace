@@ -1180,7 +1180,7 @@ Die Beispiele sollten möglichst mit denselben Bilddateien funktionieren, die oh
 -->
 
 Bilder können eine Präsentation viel anschaulicher machen.
-Dabei gibt musst du zwei Schritte beachten:
+Dabei musst du aber zwei verschiedene Aufgaben auseinanderhalten:
 
 1. Du brauchst zuerst eine **Bilddatei** in deinem Projekt.
 2. Danach musst du diese Bilddatei mit HTML in eine Folie einfügen.
@@ -1198,92 +1198,99 @@ shower.js/
 ├── index.html
 ├── styles.css
 ├── pictures/
-│   ├── katze.jpg
-│   ├── berlin.webp
-│   └── diagramm.png
+│   └── fuji.jpg
 └── ...
 ```
+
+In diesem Abschnitt verwenden wir als Beispiel ein Foto vom Fuji.
+Das Bild stammt von Wikimedia Commons und darf unter einer Creative-Commons-Lizenz verwendet werden:
+
+```text
+Bild: Mount Fuji from Lake Shōji
+Datei: Kodaki_fuji_frm_shojinko.jpg
+Autor: 名古屋太郎
+Lizenz: CC BY-SA 3.0
+Quelle: https://commons.wikimedia.org/wiki/File:Kodaki_fuji_frm_shojinko.jpg
+```
+
+Wenn du das Bild in einer veröffentlichten Präsentation verwendest, solltest du diese Informationen am Ende deiner Präsentation oder klein auf der Folie angeben.
 
 <div class='hint'>
 Verwende für Bilddateien am besten einfache Dateinamen:
 kleine Buchstaben, keine Leerzeichen, keine Umlaute und keine Sonderzeichen.
-Gut sind zum Beispiel <code>katze.jpg</code>, <code>berlin.webp</code> oder <code>mein-bild.png</code>.
+Gut sind zum Beispiel <code>fuji.jpg</code>, <code>berlin.webp</code> oder <code>mein-bild.png</code>.
 </div>
 
-##### Woher bekomme ich Bilddateien?
+##### Den Ordner pictures anlegen
 
-Es gibt verschiedene Möglichkeiten, an Bilddateien zu kommen:
+Wenn der Ordner `pictures` noch nicht existiert, kannst du ihn in VS Code anlegen:
 
-- Du kannst ein eigenes Foto verwenden.
-- Du kannst einen Screenshot erstellen.
-- Du kannst ein Bild von deinem Computer in den Workspace ziehen.
-- Du kannst ein Bild aus dem Internet herunterladen.
+1. Öffne links den Explorer.
+2. Klicke mit der rechten Maustaste in den Dateibereich.
+3. Wähle »New Folder«.
+4. Nenne den Ordner `pictures`.
 
-Achte bei Bildern aus dem Internet darauf, dass du sie verwenden darfst.
-Für Schulpräsentationen ist das oft kein großes Problem, trotzdem ist es eine gute Gewohnheit, eigene Bilder zu verwenden oder frei verwendbare Bilder zu suchen.
+Achte darauf, dass der Ordner wirklich neben `index.html` liegt und nicht aus Versehen in einem anderen Unterordner.
 
-<div class='hint'>
-Kopiere nicht einfach irgendein Bild aus dem Internet, ohne darüber nachzudenken.
-Bilder haben Urheberinnen und Urheber. Besonders wenn du deine Präsentation veröffentlichst, solltest du nur eigene oder frei verwendbare Bilder nutzen.
-</div>
-
-##### Bilder per Drag & Drop einfügen
+##### Möglichkeit 1: Bilddatei per Drag & Drop einfügen
 
 Wenn du schon eine Bilddatei auf deinem Computer hast, kannst du sie meistens einfach in den Ordner `pictures` ziehen.
 
-Ziehe die Datei dafür in VS Code links im Explorer direkt auf den Ordner `pictures`.
-Danach sollte die Datei dort erscheinen.
+Gehe so vor:
 
-Wenn dein Bild zum Beispiel `hund.jpg` heißt, liegt es danach hier:
+1. Öffne links in VS Code den Explorer.
+2. Öffne den Ordner `pictures`.
+3. Ziehe die Bilddatei von deinem Computer in diesen Ordner.
+4. Benenne die Datei sinnvoll um, zum Beispiel in `fuji.jpg`.
 
-```text
-pictures/hund.jpg
-```
-
-##### Bilder aus dem Internet herunterladen
-
-Wenn du ein Bild im Browser gefunden hast, kannst du es meistens so speichern:
-
-1. Klicke mit der rechten Maustaste auf das Bild.
-2. Wähle »Bild speichern unter …« oder »Save image as …«.
-3. Speichere das Bild in deinem Projektordner im Ordner `pictures`.
-4. Gib dem Bild einen einfachen Dateinamen, zum Beispiel `vulkan.jpg`.
-
-Manchmal speichert der Browser Bilder mit sehr langen oder merkwürdigen Namen.
-Benenne solche Dateien lieber um.
-
-Nicht so gut:
+Wenn dein Bild danach im Explorer unter `pictures` sichtbar ist, liegt es im Projekt.
 
 ```text
-download?id=3487623987423&size=large
+pictures/fuji.jpg
 ```
 
-Besser:
+##### Möglichkeit 2: Bild aus der Zwischenablage einfügen
 
-```text
-vulkan.jpg
-```
+In manchen Workspaces kannst du ein Bild auch direkt aus der Zwischenablage in VS Code einfügen.
+
+Gehe so vor:
+
+1. Kopiere ein Bild oder erstelle einen Screenshot.
+2. Klicke links im Explorer auf den Ordner `pictures`.
+3. Drücke <span class='key'>Strg</span><span class='key'>V</span>.
+4. Prüfe, ob im Ordner `pictures` eine neue Bilddatei erscheint.
+5. Benenne die Datei sinnvoll um, zum Beispiel in `fuji.png`.
+
+Wenn dabei keine Datei im Ordner `pictures` erscheint, unterstützt dein Workspace diese Methode wahrscheinlich nicht.
+Dann verwende stattdessen Drag & Drop oder `wget`.
 
 <div class='hint'>
-Wichtig ist nicht nur der Name, sondern auch die Dateiendung.
-<code>vulkan.jpg</code>, <code>vulkan.png</code> und <code>vulkan.webp</code> sind für den Browser drei verschiedene Dateinamen.
+Bilder, die du mit <span class='key'>Strg</span><span class='key'>V</span> einfügst, werden oft als PNG-Dateien gespeichert.
+Das ist für Screenshots gut, aber für Fotos manchmal unnötig groß.
+Im Profi-Abschnitt unten siehst du, wie du solche Dateien prüfen und umwandeln kannst.
 </div>
 
-##### Für Profis: Bild mit wget herunterladen
+##### Möglichkeit 3: Bild mit wget herunterladen
 
-Wenn du schon etwas sicherer mit dem Terminal bist, kannst du ein Bild auch direkt mit `wget` herunterladen.
-Dafür brauchst du die direkte Bildadresse.
+Wenn du schon etwas sicherer mit dem Terminal bist, kannst du das Fuji-Bild direkt mit `wget` herunterladen.
+
+Öffne dafür das Terminal in VS Code und führe diesen Befehl aus:
 
 ```bash
-wget -O pictures/vulkan.jpg "https://example.com/vulkan.jpg"
+mkdir -p pictures
+wget -O pictures/fuji.jpg "https://commons.wikimedia.org/wiki/Special:Redirect/file/Kodaki_fuji_frm_shojinko.jpg"
 ```
 
-`-O pictures/vulkan.jpg` bedeutet:
-Speichere die heruntergeladene Datei unter diesem Namen im Ordner `pictures`.
+`mkdir -p pictures` sorgt dafür, dass der Ordner `pictures` existiert.
+
+`wget` lädt die Datei herunter.
+
+`-O pictures/fuji.jpg` bedeutet:
+Speichere die heruntergeladene Datei unter dem Namen `fuji.jpg` im Ordner `pictures`.
 
 <div class='hint'>
-Das funktioniert nur mit einer direkten Bildadresse.
-Wenn du die Adresse einer ganzen Webseite verwendest, lädst du nicht das Bild herunter, sondern die HTML-Datei der Webseite.
+Achte bei <code>wget</code> darauf, eine direkte Bildadresse oder eine Datei-Weiterleitung zu verwenden.
+Wenn du nur die Adresse einer normalen Webseite herunterlädst, bekommst du nicht das Bild, sondern die HTML-Datei der Webseite.
 </div>
 
 #### Bilder einfügen
@@ -1295,29 +1302,29 @@ Wichtig wären Dateinamen, relative Pfade, Dateiendungen und ein kurzer Hinweis 
 
 Wenn die Bilddatei im richtigen Ordner liegt, kannst du sie mit dem Tag `<img>` in eine Folie einfügen.
 
-Angenommen, dein Bild heißt `vulkan.jpg` und liegt im Ordner `pictures`.
+Angenommen, dein Bild heißt `fuji.jpg` und liegt im Ordner `pictures`.
 Dann fügst du es so ein:
 
 <div class='shower-mini'>
 <div class='shower-mini-slide' data-page='13'>
-<div class='mini-title'>Mein Vulkan</div>
-<img src='fuji.jpg' alt='Symbolbild zu shower.js' style='display: block; width: 58%; margin: 0.45em auto 0; border-radius: 0.35em;'>
+<div class='mini-title'>Der Fuji</div>
+<img src='pictures/fuji.jpg' alt='Der Fuji vom Shōji-See aus gesehen' style='display: block; width: 66%; margin: 0.35em auto 0; border-radius: 0.35em;'>
 </div>
 </div>
 
 ```html
 <section class="slide">
-    <h2>Mein Vulkan</h2>
+    <h2>Der Fuji</h2>
 
-    <img src="pictures/vulkan.jpg" alt="Ein Vulkan bei Sonnenuntergang">
+    <img src="pictures/fuji.jpg" alt="Der Fuji vom Shōji-See aus gesehen">
 </section>
 ```
 
 Die wichtigsten Teile sind:
 
 - `<img>` fügt ein Bild ein.
-- `src="pictures/vulkan.jpg"` sagt dem Browser, wo die Bilddatei liegt.
-- `alt="Ein Vulkan bei Sonnenuntergang"` beschreibt das Bild kurz.
+- `src="pictures/fuji.jpg"` sagt dem Browser, wo die Bilddatei liegt.
+- `alt="Der Fuji vom Shōji-See aus gesehen"` beschreibt das Bild kurz.
 
 `src` steht für »source«, also »Quelle«.
 Dort steht der Pfad zur Bilddatei.
@@ -1339,19 +1346,19 @@ Wenn dein Bild im Ordner `pictures` liegt, muss dieser Ordner auch im `src`-Attr
 Wenn die Datei so liegt:
 
 ```text
-pictures/vulkan.jpg
+pictures/fuji.jpg
 ```
 
 dann ist dieser Code richtig:
 
 ```html
-<img src="pictures/vulkan.jpg" alt="Ein Vulkan">
+<img src="pictures/fuji.jpg" alt="Der Fuji">
 ```
 
 Dieser Code ist dagegen falsch:
 
 ```html
-<img src="vulkan.jpg" alt="Ein Vulkan">
+<img src="fuji.jpg" alt="Der Fuji">
 ```
 
 Der Browser sucht das Bild dann direkt neben `index.html`.
@@ -1364,13 +1371,13 @@ Der Browser ist bei Dateinamen sehr genau.
 Wenn deine Datei so heißt:
 
 ```text
-Mein Bild.JPG
+Fuji.JPG
 ```
 
 dann ist das nicht dasselbe wie:
 
 ```text
-mein-bild.jpg
+fuji.jpg
 ```
 
 Achte besonders auf:
@@ -1386,19 +1393,19 @@ Deshalb sind einfache Dateinamen so hilfreich.
 Gut:
 
 ```text
-sonnenuntergang.jpg
+fuji.jpg
 ```
 
 Auch gut:
 
 ```text
-sonnenuntergang-berlin.webp
+mount-fuji.webp
 ```
 
 Eher schlecht:
 
 ```text
-Sonnenuntergang in Berlin endgültig NEU!!!.JPG
+Fuji Bild endgültig NEU!!!.JPG
 ```
 
 ##### Unterschiedliche Bildformate
@@ -1417,37 +1424,27 @@ Wenn ein Bild nicht angezeigt wird, prüfe zuerst den Dateinamen und die Dateien
 Sehr oft steht im HTML zum Beispiel <code>.jpg</code>, aber die Datei heißt in Wirklichkeit <code>.png</code> oder <code>.webp</code>.
 </div>
 
-##### Bild aus der Zwischenablage einfügen
+##### Ein Bild mit Text und Quellenangabe kombinieren
 
-In manchen Workspaces kannst du ein Bild auch direkt aus der Zwischenablage in VS Code einfügen.
-Das hängt aber davon ab, wie dein Browser und dein Workspace eingerichtet sind.
-
-Wenn es funktioniert, gehe so vor:
-
-1. Kopiere ein Bild oder erstelle einen Screenshot.
-2. Klicke links im Explorer auf den Ordner `pictures`.
-3. Drücke <span class='key'>Strg</span><span class='key'>V</span>.
-4. Benenne die eingefügte Datei sinnvoll um.
-
-Wenn dabei keine Datei im Ordner `pictures` erscheint, unterstützt dein Workspace diese Methode wahrscheinlich nicht.
-Dann verwende stattdessen Drag & Drop oder »Bild speichern unter …«.
-
-##### Ein Bild mit Text kombinieren
-
-Ein Bild kann zusammen mit Text auf einer Folie stehen:
+Wenn du ein Bild aus dem Internet verwendest, ist eine kurze Quellenangabe sinnvoll.
+Das kann zum Beispiel so aussehen:
 
 ```html
 <section class="slide">
-    <h2>Unser Ausflug</h2>
+    <h2>Der Fuji</h2>
 
-    <p>Wir haben den Sonnenuntergang am See beobachtet.</p>
+    <img src="pictures/fuji.jpg" alt="Der Fuji vom Shōji-See aus gesehen">
 
-    <img src="pictures/see.jpg" alt="Sonnenuntergang an einem See">
+    <p>
+        Bild: 名古屋太郎,
+        CC BY-SA 3.0,
+        Wikimedia Commons
+    </p>
 </section>
 ```
 
-Am Anfang ist es am einfachsten, das Bild einfach unter den Text zu setzen.
-Später lernst du, wie du Bilder vergrößerst, zuschneidest oder links und rechts neben Text platzierst.
+Später kannst du diese Quellenangabe mit CSS kleiner oder unauffälliger gestalten.
+Wichtig ist zuerst, dass du dir merkst, woher das Bild stammt und unter welcher Lizenz es steht.
 
 ##### Typische Fehler bei Bildern
 
@@ -1456,16 +1453,127 @@ Wenn ein Bild nicht erscheint, prüfe diese Punkte:
 - Liegt die Bilddatei wirklich im Ordner `pictures`?
 - Ist der Dateiname im HTML exakt gleich geschrieben?
 - Stimmt die Dateiendung?
-- Steht der Ordner im Pfad, also zum Beispiel `pictures/bild.jpg`?
+- Steht der Ordner im Pfad, also zum Beispiel `pictures/fuji.jpg`?
 - Hast du die Datei nach dem Verschieben oder Umbenennen gespeichert?
 - Hast du die Vorschau im Browser neu geladen?
 
 Ein kaputtes Bild sieht im Browser oft nur wie ein kleines Symbol aus.
-Das bedeutet fast immer: Der Browser hat den Text der Folie gefunden, aber nicht die Bilddatei.
+Das bedeutet fast immer:
+Der Browser hat den Text der Folie gefunden, aber nicht die Bilddatei.
 
 <div class='hint'>
 Wenn du den Fehler nicht findest, öffne links den Ordner <code>pictures</code> und kopiere den Dateinamen genau ab.
 Setze ihn dann in <code>src="pictures/..."</code> ein.
+</div>
+
+##### Für Expertinnen und Experten: Bilddateien im Terminal prüfen
+
+Manchmal sieht eine Bilddatei im Explorer richtig aus, aber sie ist sehr groß oder hat ein anderes Format als gedacht.
+Dann helfen dir Terminalbefehle.
+
+Mit `ls -lh` siehst du, wie groß die Datei ist:
+
+```bash
+ls -lh pictures/fuji.jpg
+```
+
+Eine Ausgabe könnte ungefähr so aussehen:
+
+```text
+-rw-r--r-- 1 user user 1.4M May 25 18:30 pictures/fuji.jpg
+```
+
+`1.4M` bedeutet:
+Die Datei ist ungefähr 1,4 Megabyte groß.
+
+Mit `file` prüfst du, um welchen Dateityp es sich wirklich handelt:
+
+```bash
+file pictures/fuji.jpg
+```
+
+Eine Ausgabe könnte ungefähr so aussehen:
+
+```text
+pictures/fuji.jpg: JPEG image data, 1530x1024
+```
+
+Das ist praktisch, weil die Dateiendung nicht immer zuverlässig ist.
+Eine Datei kann zum Beispiel `bild.jpg` heißen, obwohl sie eigentlich eine PNG-Datei ist.
+
+##### Für Expertinnen und Experten: PNG-Fotos umwandeln
+
+Wenn du ein Foto mit <span class='key'>Strg</span><span class='key'>V</span> in den Explorer einfügst, entsteht oft eine PNG-Datei.
+Für Screenshots ist PNG gut.
+Für Fotos ist JPG oder WebP aber oft kleiner.
+
+Wenn dein eingefügtes Foto zum Beispiel `fuji.png` heißt, kannst du es mit `convert` in ein JPG umwandeln:
+
+```bash
+convert pictures/fuji.png -quality 85 pictures/fuji.jpg
+```
+
+Danach kannst du die Dateigröße vergleichen:
+
+```bash
+ls -lh pictures/fuji.png pictures/fuji.jpg
+```
+
+Wenn `fuji.jpg` deutlich kleiner ist und noch gut aussieht, kannst du in deiner Folie die JPG-Datei verwenden:
+
+```html
+<img src="pictures/fuji.jpg" alt="Der Fuji">
+```
+
+Du kannst auch in WebP umwandeln:
+
+```bash
+convert pictures/fuji.png -quality 85 pictures/fuji.webp
+```
+
+Dann verwendest du im HTML entsprechend:
+
+```html
+<img src="pictures/fuji.webp" alt="Der Fuji">
+```
+
+<div class='hint'>
+Wenn der Befehl <code>convert</code> nicht gefunden wird, ist ImageMagick wahrscheinlich nicht installiert.
+In manchen Systemen heißt der Befehl auch <code>magick</code>.
+Dann kannst du zum Beispiel <code>magick pictures/fuji.png -quality 85 pictures/fuji.jpg</code> ausprobieren.
+</div>
+
+##### Für Expertinnen und Experten: Große Bilder verkleinern
+
+Sehr große Bilder machen deine Präsentation unnötig langsam.
+Wenn ein Bild viel größer ist als die Folie, kannst du es verkleinern.
+
+Dieses Kommando erstellt eine kleinere JPG-Datei:
+
+```bash
+convert pictures/fuji.jpg -resize '1600x1600>' -quality 85 pictures/fuji-small.jpg
+```
+
+`1600x1600>` bedeutet:
+Das Bild wird nur verkleinert, wenn es größer als 1600 Pixel breit oder hoch ist.
+Kleinere Bilder bleiben unverändert.
+
+Danach kannst du wieder vergleichen:
+
+```bash
+ls -lh pictures/fuji.jpg pictures/fuji-small.jpg
+file pictures/fuji-small.jpg
+```
+
+In deiner Folie verwendest du dann die kleinere Datei:
+
+```html
+<img src="pictures/fuji-small.jpg" alt="Der Fuji">
+```
+
+<div class='hint'>
+Behalte am besten die Originaldatei, bis du sicher bist, dass die umgewandelte oder verkleinerte Datei gut aussieht.
+Dann kannst du später immer noch zurück.
 </div>
 
 <div class='shower-mini-clear'></div>
