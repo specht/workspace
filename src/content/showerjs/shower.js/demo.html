@@ -18,6 +18,23 @@
             .slide::after {
                 content: '17';
             }
+            /* exo-2-regular - latin */
+            @font-face {
+                font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+                font-family: 'Exo 2';
+                font-style: normal;
+                font-weight: 400;
+                src: url('fonts/exo-2-v26-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+            }
+
+            /* bebas-neue-regular - latin */
+            @font-face {
+                font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+                font-family: 'Bebas Neue';
+                font-style: normal;
+                font-weight: 400;
+                src: url('fonts/bebas-neue-v16-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+            }            
         </style>
     </head>
     <body class="shower list">
@@ -470,6 +487,266 @@
         <section id="keine-seitenzahl" class="slide nopagenumber">
             <h2>Keine Seitenzahl</h2>
             <p>Auf dieser Folie soll kein Ribbon erscheinen.</p>
+        </section>
+
+        <section id="element-relativ-verschoben" class="slide">
+            <h2>Relative Positionierung</h2>
+
+            <p>Dieser Absatz steht ganz normal auf der Folie.</p>
+
+            <p style="
+                position: relative;
+                left: 120px;
+                top: 40px;
+            ">
+                Dieser Absatz wurde verschoben.
+            </p>
+        </section>
+
+        <section id="infokarte-absolute-position" class="slide">
+            <h2>Absolute Positionierung</h2>
+
+            <p>
+                Dieser normale Text bleibt oben auf der Folie.
+                Die Infokarte wird unabhängig davon unten rechts platziert.
+            </p>
+
+            <div style="
+                position: absolute;
+                right: 70px;
+                bottom: 60px;
+
+                width: 320px;
+                padding: 24px;
+
+                border-radius: 16px;
+                background: #ffe88b;
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            ">
+                <strong>Merke:</strong><br>
+                Absolute Positionierung ist gut für besondere Elemente.
+            </div>
+        </section>
+
+        <section id="beschriftung-auf-bild" class="slide">
+            <h2>Beschriftung auf einem Bild</h2>
+
+            <div style="
+                position: relative;
+                width: 650px;
+                height: 360px;
+                border-radius: 15px;
+                overflow: hidden;
+            ">
+                <img
+                    src="pictures/fuji.jpg"
+                    alt="Der Fuji"
+                    style="
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                    ">
+
+                <div style="
+                    position: absolute;
+                    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+                    color: white;
+                    padding: 0 12px;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    text-align: center;
+                    font-size: 90%;
+                ">
+                    Fuji vom Shōji-See aus, dazwischen der Berg Ōmuro.
+                </div>
+            </div>
+        </section>
+
+        <section id="zwei-textspalten" class="slide">
+            <h2>Zwei Spalten</h2>
+
+            <div class="columns two">
+                <div>
+                    <h3>HTML</h3>
+                    <p>
+                        HTML beschreibt die Struktur:
+                        Überschriften, Absätze, Listen, Bilder und Folien.
+                    </p>
+                </div>
+
+                <div>
+                    <h3>CSS</h3>
+                    <p>
+                        CSS beschreibt die Gestaltung:
+                        Farben, Größen, Abstände und Positionen.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="zwei-spalten-listen" class="slide">
+            <h2>Vor- und Nachteile</h2>
+
+            <div class="columns two">
+                <div>
+                    <h3>Vorteile</h3>
+                    <ul>
+                        <li>Läuft im Browser</li>
+                        <li>Funktioniert auch offline</li>
+                        <li>Lässt sich mit CSS gestalten</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3>Nachteile</h3>
+                    <ul>
+                        <li>HTML muss genau stimmen</li>
+                        <li>Fehler sind anfangs ungewohnt</li>
+                        <li>Man braucht etwas Übung</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="drei-spalten" class="slide">
+            <h2>Drei wichtige Dateien</h2>
+
+            <div class="columns three">
+                <div>
+                    <h3>index.html</h3>
+                    <p>Hier stehen deine Folien und Inhalte.</p>
+                </div>
+
+                <div>
+                    <h3>styles.css</h3>
+                    <p>Hier stehen deine eigenen Gestaltungsregeln.</p>
+                </div>
+
+                <div>
+                    <h3>pictures</h3>
+                    <p>In diesem Ordner liegen deine Bilder.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="textfarbe-aendern" class="slide">
+            <h2 style="color: #75507b;">Farben ändern</h2>
+
+            <p>
+                Diese Folie hat eine farbige Überschrift.
+            </p>
+
+            <p style="color: #4b86c2;">
+                Dieser Absatz ist blau.
+            </p>
+        </section>
+
+        <section id="farbige-infokarte" class="slide">
+            <h2>Eine farbige Infokarte</h2>
+
+            <div style="
+                background: #f3e5f5;
+                color: #3b2540;
+                padding: 28px;
+                border-radius: 16px;
+            ">
+                <strong>Merke:</strong><br>
+                Mit <code>background</code> färbst du den Hintergrund.
+                Mit <code>color</code> färbst du den Text.
+            </div>
+        </section>
+
+        <section id="dunkle-folie" class="slide" style="
+            background: #2e3440;
+            color: white;
+        ">
+            <h2 style="color: white;">Eine dunkle Folie</h2>
+
+            <p>
+                Auf einem dunklen Hintergrund braucht der Text eine helle Farbe.
+            </p>
+        </section>
+
+        <section id="grosser-absatz" class="slide">
+            <h2>Schriftgrößen ändern</h2>
+
+            <p>
+                Dieser Absatz hat die normale Schriftgröße.
+            </p>
+
+            <p style="font-size: 42px;">
+                Dieser Absatz ist größer.
+            </p>
+        </section>
+
+        <section id="grosse-aussage" class="slide">
+            <h2>Merksatz</h2>
+
+            <p style="
+                font-size: 56px;
+                line-height: 1.15;
+            ">
+                Eine Folie soll deinen Vortrag unterstützen,
+                nicht ersetzen.
+            </p>
+        </section>
+
+        <section id="kleiner-hinweis" class="slide">
+            <h2>Das Internet verbindet Computer</h2>
+
+            <p>
+                Das Internet ist ein riesiges Netzwerk aus vielen
+                kleineren Netzwerken.
+            </p>
+
+            <p style="
+                font-size: 80%;
+                color: #666666;
+            ">
+                Hinweis: Ein Netzwerk verbindet Geräte, damit sie Daten austauschen können.
+            </p>
+        </section>
+
+        <section id="schriftfamilien" class="slide">
+            <h2>Schriftfamilien</h2>
+
+            <p style="font-family: serif;">
+                Dieser Text verwendet eine Serifenschrift.
+            </p>
+
+            <p style="font-family: sans-serif;">
+                Dieser Text verwendet eine serifenlose Schrift.
+            </p>
+
+            <p style="font-family: monospace;">
+                Dieser Text verwendet eine Schrift mit gleich breiten Zeichen.
+            </p>
+        </section>
+
+        <style>
+            #schrift-fuer-text {
+                /* atkinson-hyperlegible-regular - latin */
+                p, li {
+                    font-family: 'Exo 2', sans-serif;
+                }
+                h1, h2, h3 {
+                    font-family: 'Bebas Neue', sans-serif;
+                }
+            }
+        </style>
+
+        <section id="schrift-fuer-text" class="slide">
+            <h2>Neue Schrift für Text</h2>
+
+            <p>
+                Dieser Absatz verwendet die neue Schriftart.
+            </p>
+
+            <ul>
+                <li>Auch dieser Listenpunkt verwendet die neue Schriftart.</li>
+                <li>Das funktioniert, weil wir auch <code>.slide li</code> gestaltet haben.</li>
+            </ul>
         </section>
 
         <!-- <div class="progress"></div> -->

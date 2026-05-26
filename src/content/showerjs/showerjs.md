@@ -438,12 +438,6 @@ Wenn du die Datei <code>index.html</code> bearbeitest, musst du vorsichtig sein,
 Falls sich deine Vorschau einmal nicht mehr aktualisieren sollte, kannst du die Seite einfach neu laden. Drück dafür <span class='key'>Strg</span><span class='key'>R</span> oder <span class='key'>F5</span>.
 </div>
 
-## Präsentation halten
-
-Wenn du deine Präsentation halten möchtest, kannst du sie einfach im Browser öffnen und mit den Pfeiltasten navigieren. Du kannst auch die Maus benutzen, um durch die Präsentation zu scrollen.
-
-Der besondere Vorteil bei dieser Art von Präsentation ist, dass sie in jedem modernen Browser funktioniert und du keine spezielle Software brauchst. Du kannst einfach das ganze Verzeichnis auf einen Stick kopieren und deine Präsentation überall abspielen, wo es einen modernen Webbrowser gibt.
-
 ## Referenz: Folien gestalten
 
 <!--
@@ -1760,6 +1754,157 @@ Hier sollten color und background erklärt werden.
 Gute Reihenfolge: erst ein einzelnes Element färben, dann eine eigene Klasse für wiederholbare Gestaltung.
 -->
 
+Mit CSS kannst du die Farben deiner Folien verändern.
+Am Anfang sind vor allem zwei Eigenschaften wichtig:
+
+- `color` ändert die Textfarbe.
+- `background` ändert den Hintergrund.
+
+Du kannst Farben zum Beispiel mit Farbnamen oder mit Farbcodes angeben:
+
+```css
+color: red;
+color: white;
+color: #75507b;
+background: #f3e5f5;
+```
+
+Farbcodes mit `#` nennt man **Hex-Farben**.
+Sie sind besonders praktisch, weil du damit sehr genaue Farben auswählen kannst.
+
+<div class='hint'>
+Achte bei Farben immer auf den Kontrast.
+Text sollte sich deutlich vom Hintergrund abheben.
+Schwarzer Text auf weißem Hintergrund ist gut lesbar.
+Hellgrauer Text auf weißem Hintergrund sieht vielleicht schick aus, ist aber oft schlecht lesbar.
+</div>
+
+##### Die Textfarbe eines Elements ändern
+
+Wenn du nur ein einzelnes Element verändern möchtest, kannst du direkt ein `style`-Attribut verwenden.
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/textfarbe-aendern.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2 style="color: #75507b;">Farben ändern</h2>
+
+    <p>
+        Diese Folie hat eine farbige Überschrift.
+    </p>
+
+    <p style="color: #4b86c2;">
+        Dieser Absatz ist blau.
+    </p>
+</section>
+```
+
+In diesem Beispiel bekommt die Überschrift eine violette Textfarbe:
+
+```css
+color: #75507b;
+```
+
+Der zweite Absatz bekommt eine blaue Textfarbe:
+
+```css
+color: #4b86c2;
+```
+
+<div class='hint'>
+Das <code>style</code>-Attribut ist praktisch zum Ausprobieren.
+Wenn du dieselbe Gestaltung aber auf mehreren Folien verwenden möchtest, ist eine eigene CSS-Klasse meistens besser.
+</div>
+
+<div class='shower-mini-clear'></div>
+
+##### Einen Hintergrund färben
+
+Mit `background` kannst du den Hintergrund eines Elements verändern.
+Das funktioniert zum Beispiel gut bei einer kleinen Infokarte.
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/farbige-infokarte.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Eine farbige Infokarte</h2>
+
+    <div style="
+        background: #f3e5f5;
+        color: #3b2540;
+        padding: 28px;
+        border-radius: 16px;
+    ">
+        <strong>Merke:</strong><br>
+        Mit <code>background</code> färbst du den Hintergrund.
+        Mit <code>color</code> färbst du den Text.
+    </div>
+</section>
+```
+
+Die Infokarte bekommt hier einen hellvioletten Hintergrund:
+
+```css
+background: #f3e5f5;
+```
+
+Die Textfarbe wird dunkelviolett:
+
+```css
+color: #3b2540;
+```
+
+<div class='hint'>
+Wenn du einen farbigen Hintergrund verwendest, solltest du meistens auch die Textfarbe bewusst festlegen.
+So verhinderst du, dass der Text schlecht lesbar wird.
+</div>
+
+<div class='shower-mini-clear'></div>
+
+##### Die ganze Folie färben
+
+Du kannst auch der ganzen Folie eine Hintergrundfarbe geben.
+Dazu setzt du die Farbe direkt auf das `<section>`-Element.
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/dunkle-folie.webp'>
+</button>
+
+```html
+<section class="slide" style="background: #2e3440; color: white;">
+    <h2 style="color: white;">Eine dunkle Folie</h2>
+
+    <p>
+        Auf einem dunklen Hintergrund braucht der Text eine helle Farbe.
+    </p>
+</section>
+```
+
+In diesem Beispiel bekommt die gesamte Folie einen dunklen Hintergrund:
+
+```css
+background: #2e3440;
+```
+
+Gleichzeitig wird die Textfarbe auf Weiß gesetzt:
+
+```css
+color: white;
+```
+
+Da dies auf die Überschrift nicht automatisch angewendet wird, muss auch hier die Textfarbe explizit mit `color: white;` festgelegt werden.
+
+<div class='hint'>
+Wenn du eine ganze Folie dunkel färbst, prüfe auch Links, Code-Stellen und andere besondere Textelemente.
+Manche Farben, die auf weißem Hintergrund gut aussehen, sind auf dunklem Hintergrund schwer lesbar.
+</div>
+
+<div class='shower-mini-clear'></div>
+
 #### Schriftgrößen ändern
 
 <!--
@@ -1767,18 +1912,449 @@ Hier sollten font-size und eventuell line-height gezeigt werden.
 Wichtig wäre ein Hinweis, dass größere Schrift oft besser ist als mehr Text und dass zu viele verschiedene Größen unruhig wirken.
 -->
 
+Mit CSS kannst du auch die Größe von Text verändern.
+Dafür verwendest du die Eigenschaft `font-size`.
+
+```css
+font-size: 36px;
+```
+
+<div class='hint'>
+Bei Präsentationen ist größere Schrift oft besser als mehr Text.
+Wenn du merkst, dass du die Schrift immer kleiner machen musst, steht wahrscheinlich zu viel auf der Folie.
+Teile den Inhalt dann lieber auf mehrere Folien auf.
+</div>
+
+##### Einen Absatz größer machen
+
+Wenn du nur ein einzelnes Element verändern möchtest, kannst du wieder ein `style`-Attribut verwenden.
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/grosser-absatz.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Schriftgrößen ändern</h2>
+
+    <p>
+        Dieser Absatz hat die normale Schriftgröße.
+    </p>
+
+    <p style="font-size: 42px;">
+        Dieser Absatz ist größer.
+    </p>
+</section>
+```
+
+Die entscheidende Zeile ist:
+
+```css
+font-size: 42px;
+```
+
+Damit wird nur dieser eine Absatz größer dargestellt.
+Die Überschrift und der erste Absatz bleiben unverändert.
+
+<div class='hint'>
+Verändere Schriftgrößen gezielt.
+Wenn jeder Absatz eine andere Größe hat, wirkt die Folie schnell unruhig.
+</div>
+
+<div class='shower-mini-clear'></div>
+
+##### Eine besonders große Aussage
+
+Manchmal soll eine Folie nur eine wichtige Aussage zeigen.
+Dann darf der Text ruhig deutlich größer sein.
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/grosse-aussage.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Merksatz</h2>
+
+    <p style="
+        font-size: 56px;
+        line-height: 1.15;
+    ">
+        Eine Folie soll deinen Vortrag unterstützen,
+        nicht ersetzen.
+    </p>
+</section>
+```
+
+Hier werden zwei Eigenschaften verwendet:
+
+- `font-size: 56px;` macht den Text groß.
+- `line-height: 1.15;` legt den Abstand zwischen den Zeilen fest.
+
+`line-height` bedeutet **Zeilenhöhe**.
+Bei großem Text ist es oft sinnvoll, die Zeilenhöhe etwas kleiner zu machen, damit die Zeilen optisch zusammengehören.
+
+<div class='hint'>
+Wenn großer Text über mehrere Zeilen läuft, prüfe immer den Zeilenabstand.
+Zu viel Abstand lässt die Zeilen auseinanderfallen.
+Zu wenig Abstand macht den Text schwer lesbar.
+</div>
+
+<div class='shower-mini-clear'></div>
+
+##### Kleine Zusatzinformationen
+
+Manchmal brauchst du eine kleine Zusatzinformation, zum Beispiel eine Quelle, einen Hinweis oder eine kurze Bemerkung.
+Dann kannst du die Schrift etwas kleiner machen.
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/kleiner-hinweis.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Das Internet verbindet Computer</h2>
+
+    <p>
+        Das Internet ist ein riesiges Netzwerk aus vielen
+        kleineren Netzwerken.
+    </p>
+
+    <p style="
+        font-size: 80%;
+        color: #666666;
+    ">
+        Hinweis: Ein Netzwerk verbindet Geräte, damit sie Daten austauschen können.
+    </p>
+</section>
+```
+
+Der Hinweis ist kleiner und etwas heller.
+Dadurch erkennt man sofort:
+Das ist nicht die Hauptaussage der Folie, sondern eine Zusatzinformation.
+
+<div class='hint'>
+Mache wichtige Informationen nicht zu klein.
+Kleine Schrift eignet sich für Zusatzinformationen, aber nicht für Inhalte, die alle im Raum sicher lesen können sollen.
+</div>
+
+<div class='shower-mini-clear'></div>
+
+<!--
 #### Schriftarten ändern
+-->
 
 <!--
 Hier sollte font-family erklärt werden, aber eher vorsichtig.
 Sinnvoll wäre: vorhandene Schriftarten nutzen, nicht zu viele Schriftarten mischen, Überschriften und normalen Text unterscheiden.
 -->
 
-#### Abstände ändern
-
 <!--
-Hier sollten margin und padding auf sehr einfache Weise erklärt werden.
-Ziel: Schülerinnen und Schüler sollen Abstand erzeugen, ohne leere Absätze oder viele <br>-Tags zu missbrauchen.
+Mit CSS kannst du nicht nur Farben und Schriftgrößen ändern, sondern auch die Schriftart.
+Dafür verwendest du die Eigenschaft `font-family`.
+
+```css
+font-family: serif;
+font-family: sans-serif;
+font-family: monospace;
+```
+
+Es gibt einige allgemeine Schriftfamilien, die fast jeder Browser kennt:
+
+- `serif` steht für eine Schrift mit kleinen Endstrichen, ähnlich wie in vielen Büchern.
+- `sans-serif` steht für eine Schrift ohne Endstriche, oft klar und modern.
+- `monospace` steht für eine Schrift, bei der alle Zeichen gleich breit sind. Das ist typisch für Code.
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/schriftfamilien.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Schriftfamilien</h2>
+
+    <p style="font-family: serif;">
+        Dieser Text verwendet eine Serifenschrift.
+    </p>
+
+    <p style="font-family: sans-serif;">
+        Dieser Text verwendet eine serifenlose Schrift.
+    </p>
+
+    <p style="font-family: monospace;">
+        Dieser Text verwendet eine Schrift mit gleich breiten Zeichen.
+    </p>
+</section>
+```
+
+<div class='hint'>
+Verwende nicht zu viele verschiedene Schriftarten in einer Präsentation.
+Eine Schrift für Überschriften und eine Schrift für normalen Text reichen meistens völlig aus.
+</div>
+
+<div class='shower-mini-clear'></div>
+
+##### Eine Schriftart herunterladen
+
+Wenn du eine besondere Schriftart verwenden möchtest, muss die Schriftdatei in deinem Projekt liegen.
+Sonst funktioniert die Präsentation vielleicht nur auf deinem Computer, aber nicht auf einem anderen Gerät.
+
+Eine einfache Möglichkeit ist diese:
+
+1. Suche auf `fonts.google.com` nach einer passenden Schriftart.
+2. Merke dir den Namen der Schriftart, zum Beispiel `Atkinson Hyperlegible`.
+3. Öffne `gwfh.mranftl.com`.
+4. Suche dort nach derselben Schriftart.
+5. Wähle die benötigten Schriftschnitte aus, zum Beispiel `regular` und `700`.
+6. Lade die ZIP-Datei mit den Schriftdateien herunter.
+7. Kopiere die Schriftdateien in einen Ordner `fonts` in deinem Projekt.
+8. Kopiere den CSS-Code in deine Datei `styles.css`.
+
+Dein Projekt kann danach zum Beispiel so aussehen:
+
+```text
+shower.js/
+├── index.html
+├── styles.css
+├── fonts/
+│   ├── atkinson-hyperlegible-v11-latin-regular.woff2
+│   └── atkinson-hyperlegible-v11-latin-700.woff2
+└── pictures/
+```
+
+<div class='hint'>
+Du musst dafür nicht unbedingt Google Fonts verwenden.
+Wenn du eine Schriftdatei aus einer anderen Quelle hast, kannst du sie genauso einbinden.
+Achte aber darauf, dass du die Schrift auch verwenden darfst und dass die Lizenz zu deinem Projekt passt.
+</div>
+
+##### Eine Schriftart mit @font-face einbinden
+
+Damit der Browser deine heruntergeladene Schriftdatei kennt, schreibst du in `styles.css` eine `@font-face`-Regel.
+
+Diese Regel gehört in `styles.css`, nicht direkt in eine Folie:
+
+```css
+@font-face {
+    font-family: 'Atkinson Hyperlegible';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('fonts/atkinson-hyperlegible-v11-latin-regular.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Atkinson Hyperlegible';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('fonts/atkinson-hyperlegible-v11-latin-700.woff2') format('woff2');
+}
+```
+
+Die wichtigsten Teile sind:
+
+- `font-family` legt den Namen fest, den du später im CSS verwendest.
+- `font-weight: 400;` steht für normale Schrift.
+- `font-weight: 700;` steht für fette Schrift.
+- `src` zeigt auf die Schriftdatei im Ordner `fonts`.
+
+<div class='hint'>
+Der Pfad in <code>url(...)</code> muss genau stimmen.
+Wenn deine Schriftdateien im Ordner <code>fonts</code> liegen, muss der Pfad auch mit <code>fonts/</code> beginnen.
+</div>
+
+##### Die Schrift für normalen Text ändern
+
+Wenn die Schrift eingebunden ist, kannst du sie verwenden.
+Normaler Text steht auf deinen Folien meistens in Absätzen und Listen.
+Darum solltest du die Schrift mindestens für `<p>` und `<li>` festlegen.
+
+Schreibe diese Regel in `styles.css`:
+
+```css
+.slide p,
+.slide li {
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+}
+```
+
+Damit verwenden Absätze und Listenpunkte auf deinen Folien die neue Schriftart.
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/schrift-fuer-text.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Neue Schrift für Text</h2>
+
+    <p>
+        Dieser Absatz verwendet die neue Schriftart.
+    </p>
+
+    <ul>
+        <li>Auch dieser Listenpunkt verwendet die neue Schriftart.</li>
+        <li>Das funktioniert, weil wir auch <code>.slide li</code> gestaltet haben.</li>
+    </ul>
+</section>
+```
+
+Die Regel gilt nicht nur für einen einzelnen Absatz, sondern für alle Absätze und Listenpunkte in deinen Folien.
+
+<div class='hint'>
+Wenn du nur <code>.slide p</code> gestaltest, ändern sich Listenpunkte nicht unbedingt mit.
+Darum ist <code>.slide li</code> hier wichtig.
+</div>
+
+<div class='shower-mini-clear'></div>
+
+##### Die Schrift für Überschriften ändern
+
+Überschriften kannst du getrennt vom normalen Text gestalten.
+Dafür verwendest du `h2`.
+
+```css
+.slide h2 {
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+}
+```
+
+Dann verwenden auch die Folienüberschriften die neue Schriftart.
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/schrift-fuer-ueberschriften.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Neue Schrift für Überschriften</h2>
+
+    <p>
+        Die Überschrift und der Text können dieselbe Schriftart verwenden.
+    </p>
+
+    <ul>
+        <li>Das wirkt ruhig und einheitlich.</li>
+        <li>Für viele Präsentationen ist das eine gute Wahl.</li>
+    </ul>
+</section>
+```
+
+<div class='hint'>
+Eine einheitliche Schriftart wirkt meistens ruhiger als viele verschiedene Schriften.
+Wenn du gerade erst anfängst, verwende lieber eine Schriftart für alles.
+</div>
+
+<div class='shower-mini-clear'></div>
+
+##### Überschrift und Text unterschiedlich gestalten
+
+Du kannst aber auch eine Schrift für Überschriften und eine andere Schrift für normalen Text verwenden.
+Dafür brauchst du zwei eingebundene Schriftarten.
+
+Zum Beispiel könntest du in `styles.css` zwei Schriften einbinden:
+
+```css
+@font-face {
+    font-family: 'Bebas Neue';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('fonts/bebas-neue-v14-latin-regular.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Atkinson Hyperlegible';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('fonts/atkinson-hyperlegible-v11-latin-regular.woff2') format('woff2');
+}
+```
+
+Danach kannst du sie so verwenden:
+
+```css
+.slide h2 {
+    font-family: 'Bebas Neue', sans-serif;
+}
+
+.slide p,
+.slide li {
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+}
+```
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/zwei-schriftarten.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Zwei Schriftarten</h2>
+
+    <p>
+        Die Überschrift verwendet eine auffälligere Schrift.
+        Der normale Text bleibt gut lesbar.
+    </p>
+
+    <ul>
+        <li>Überschriften dürfen Charakter haben.</li>
+        <li>Fließtext und Listen müssen vor allem gut lesbar sein.</li>
+    </ul>
+</section>
+```
+
+<div class='hint'>
+Auffällige Schriften eignen sich oft besser für kurze Überschriften als für lange Texte.
+Für Absätze und Listen solltest du eine gut lesbare Schrift verwenden.
+</div>
+
+<div class='shower-mini-clear'></div>
+
+##### Wenn die Schrift nicht angezeigt wird
+
+Wenn deine neue Schrift nicht erscheint, prüfe zuerst diese Punkte:
+
+- Liegt die Schriftdatei wirklich im Ordner `fonts`?
+- Stimmt der Dateiname genau, auch Groß- und Kleinschreibung?
+- Stimmt der Pfad in `url(...)`?
+- Steht die `@font-face`-Regel in `styles.css`?
+- Verwendest du bei `font-family` genau denselben Namen wie in `@font-face`?
+- Hast du die Datei gespeichert und die Vorschau neu geladen?
+
+<div class='row'>
+    <div class='col-md-6'>
+        <div class='hint bad'>
+            <p>Nicht so gut:</p>
+            <pre><code class='css'>@font-face {
+    font-family: 'Atkinson Hyperlegible';
+    src: url('atkinson-hyperlegible.woff2') format('woff2');
+}</code></pre>
+        </div>
+    </div>
+
+    <div class='col-md-6'>
+        <div class='hint good'>
+            <p>Besser:</p>
+            <pre><code class='css'>@font-face {
+    font-family: 'Atkinson Hyperlegible';
+    src: url('fonts/atkinson-hyperlegible.woff2') format('woff2');
+}</code></pre>
+        </div>
+    </div>
+</div>
+
+Im ersten Beispiel fehlt der Ordner `fonts/` im Pfad.
+Wenn die Datei im Ordner `fonts` liegt, muss dieser Ordner auch in `url(...)` stehen.
+
+<div class='hint'>
+Wenn du eine Schriftart testest, ändere zuerst nur eine einzige Stelle, zum Beispiel <code>.slide h2</code>.
+Wenn das funktioniert, kannst du danach Absätze und Listen anpassen.
+</div>
+
+<div class='shower-mini-clear'></div>
 -->
 
 #### Seitenzahl-Ribbon ändern oder ausblenden
@@ -1972,56 +2548,414 @@ Hier sollten relative und absolute Positionierung erklärt werden.
 Wichtig: Nur für gezielte Layouts verwenden, nicht als Ersatz für normalen Textfluss.
 -->
 
-#### Zwei Spalten verwenden
+Normalerweise ordnet der Browser die Elemente einer Folie automatisch untereinander an:
+erst die Überschrift, dann Absätze, Listen, Bilder und so weiter.
+Das ist meistens gut, weil die Folie dadurch ordentlich bleibt.
+
+Manchmal möchtest du aber ein Element ganz gezielt an eine bestimmte Stelle setzen:
+zum Beispiel eine kleine Infobox unten rechts, ein Logo in eine Ecke oder eine Beschriftung direkt auf ein Bild.
+
+Dafür gibt es in CSS die Eigenschaft `position`.
+
+Es gibt zwei Arten, die du dafür besonders gut gebrauchen kannst:
+
+- `position: relative;` verschiebt ein Element von seiner normalen Position aus.
+- `position: absolute;` platziert ein Element frei auf der Folie.
+
+<div class='hint'>
+Verwende genaue Positionierung sparsam.
+Für normale Inhalte sind Absätze, Listen, Bilder nebeneinander oder Spalten meistens besser.
+Genaue Positionierung ist eher für besondere Elemente gedacht: Logos, Hinweise, Pfeile, kleine Infokarten oder Beschriftungen.
+</div>
+
+##### Ein Element leicht verschieben
+
+Mit `position: relative;` bleibt ein Element grundsätzlich an seiner normalen Stelle, wird aber optisch verschoben.
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/element-relativ-verschoben.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Relative Positionierung</h2>
+
+    <p>Dieser Absatz steht ganz normal auf der Folie.</p>
+
+    <p style="
+        position: relative;
+        left: 120px;
+        top: 40px;
+    ">
+        Dieser Absatz wurde verschoben.
+    </p>
+</section>
+```
+
+Die wichtigsten Eigenschaften sind:
+
+- `position: relative;` erlaubt das Verschieben des Elements.
+- `left: 120px;` verschiebt das Element 120 Pixel nach rechts.
+- `top: 40px;` verschiebt das Element 40 Pixel nach unten.
+
+<div class='hint'>
+Bei <code>position: relative;</code> bleibt der ursprüngliche Platz des Elements erhalten.
+Andere Elemente tun also so, als wäre das Element noch an seiner alten Position.
+Deshalb eignet sich relative Positionierung nur für kleine Korrekturen.
+</div>
+
+<div class='shower-mini-clear'></div>
+
+##### Ein Element frei auf der Folie platzieren
+
+Mit `position: absolute;` kannst du ein Element frei auf der Folie platzieren.
+Das Element wird dann aus dem normalen Textfluss herausgenommen.
+Andere Elemente machen keinen Platz mehr dafür.
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/infokarte-absolute-position.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Absolute Positionierung</h2>
+
+    <p>
+        Dieser normale Text bleibt oben auf der Folie.
+        Die Infokarte wird unabhängig davon unten rechts platziert.
+    </p>
+
+    <div style="
+        position: absolute;
+        right: 70px;
+        bottom: 60px;
+
+        width: 320px;
+        padding: 24px;
+
+        border-radius: 16px;
+        background: #ffe88b;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    ">
+        <strong>Merke:</strong><br>
+        Absolute Positionierung ist gut für besondere Elemente.
+    </div>
+</section>
+```
+
+In diesem Beispiel wird die Infokarte unten rechts platziert:
+
+- `position: absolute;` nimmt die Infokarte aus dem normalen Textfluss.
+- `right: 70px;` bedeutet: 70 Pixel Abstand vom rechten Rand der Folie.
+- `bottom: 60px;` bedeutet: 60 Pixel Abstand vom unteren Rand der Folie.
+- `width: 320px;` legt die Breite der Infokarte fest.
+- `padding: 24px;` erzeugt Innenabstand innerhalb der Infokarte.
+
+<div class='hint'>
+Bei absoluter Positionierung verwendest du meistens zwei Richtungsangaben:
+zum Beispiel <code>left</code> und <code>top</code> oder <code>right</code> und <code>bottom</code>.
+So ist klar, von welcher Ecke aus das Element platziert wird.
+</div>
+
+<div class='shower-mini-clear'></div>
+
+##### Die vier Richtungen
+
+Du kannst ein absolut positioniertes Element von verschiedenen Seiten aus platzieren:
+
+```css
+left: 80px;      /* Abstand vom linken Rand */
+right: 80px;     /* Abstand vom rechten Rand */
+top: 60px;       /* Abstand vom oberen Rand */
+bottom: 60px;    /* Abstand vom unteren Rand */
+```
+
+Diese Kombination setzt ein Element oben links auf die Folie:
+
+```css
+position: absolute;
+left: 80px;
+top: 80px;
+```
+
+Diese Kombination setzt ein Element unten rechts auf die Folie:
+
+```css
+position: absolute;
+right: 80px;
+bottom: 60px;
+```
+
+<div class='hint'>
+Verwende nicht wahllos alle vier Richtungen gleichzeitig.
+Wenn du <code>left</code>, <code>right</code>, <code>top</code> und <code>bottom</code> gleichzeitig angibst, wird das Element gestreckt.
+</div>
+
+##### Eine Beschriftung auf ein Bild setzen
+
+Absolute Positionierung ist besonders praktisch, wenn du ein kleines Element über ein Bild legen möchtest.
+Dafür packst du Bild und Beschriftung gemeinsam in ein `<div>`.
+Dieses äußere `<div>` bekommt `position: relative;`.
+Die Beschriftung darin bekommt `position: absolute;`.
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/beschriftung-auf-bild.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Beschriftung auf einem Bild</h2>
+
+    <div style="
+        position: relative;
+        width: 650px;
+        height: 360px;
+        border-radius: 15px;
+        overflow: hidden;
+    ">
+        <img
+            src="pictures/fuji.jpg"
+            alt="Der Fuji"
+            style="
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            ">
+
+        <div style="
+            position: absolute;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+            color: white;
+            padding: 0 12px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            text-align: center;
+            font-size: 90%;
+        ">
+            Fuji vom Shōji-See aus, dazwischen der Berg Ōmuro.
+        </div>
+    </div>
+</section>
+```
+
+Das äußere `<div>` ist hier der Rahmen für die Positionierung:
+
+```html
+<div style="position: relative;">
+```
+
+Das Bild und die Beschriftung orientieren sich dadurch nicht an der ganzen Folie, sondern an diesem Rahmen. Die Beschriftung wird mit `position: absolute;` genau innerhalb dieses Rahmens platziert, und zwar so, dass sie unten über dem Bild liegt (`bottom: 0;`) und sich über die gesamte Breite erstreckt (`left: 0; right: 0;`).
+
+<div class='hint'>
+Die Kombination aus außen <code>position: relative;</code> und innen <code>position: absolute;</code> ist sehr häufig.
+Merke dir:
+Der äußere Kasten ist der Bezugspunkt.
+Das innere Element wird darin genau platziert.
+</div>
+
+In diesem Beispiel tauchen einige interessante CSS-Eigenschaften auf, die du vielleicht noch nicht kennst:
+
+- `overflow: hidden;` sorgt dafür, dass die Inhalte des äußeren `<div>` nicht über dessen Grenzen hinaus sichtbar sind, damit die abgerundeten Ecken auch wirklich rund aussehen
+- `background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);` erzeugt einen Farbverlauf von einem halbtransparenten Schwarz zu transparent, damit die weiße Beschriftung besser lesbar ist
+- `text-align: center;` zentriert den Text horizontal in der Beschriftung
+- `font-size: 90%;` macht die Schrift etwas kleiner als die normale Schriftgröße, damit sie besser zum Bild passt
+
+<div class='shower-mini-clear'></div>
+
+#### Mehrere Spalten verwenden
 
 <!--
 Hier sollte ein sehr einfaches Zwei-Spalten-Layout gezeigt werden mit class="columns two" und class="columns three".
 -->
 
-### Mehr Möglichkeiten
+Wenn du Inhalte gleichmäßig nebeneinander anordnen möchtest, musst du sie nicht einzeln mit `left`, `right`, `top` oder `bottom` platzieren.
+Für normale Layouts sind Spalten meistens viel einfacher.
 
-<!--
-Dieser Block sollte Dinge enthalten, die nicht direkt nötig sind, aber Präsentationen deutlich stärker machen.
-Die Beispiele sollten erst kommen, wenn HTML-Struktur und einfaches CSS sitzen.
--->
+In der Vorlage gibt es dafür die Klasse `columns`.
+Zusätzlich gibst du an, wie viele Spalten du möchtest:
 
-#### Dinge nacheinander einblenden
+- `columns two` erzeugt zwei Spalten
+- `columns three` erzeugt drei Spalten
 
-<!--
-Hier sollte class="next" erklärt werden.
-Wichtig: Nur sparsam verwenden; Einblendungen sollen den Vortrag unterstützen und nicht jede Folie unnötig kompliziert machen.
--->
+Das ist besonders praktisch für Vergleiche, kurze Listen, Vor- und Nachteile oder mehrere kleine Textblöcke nebeneinander.
 
-#### Wiederverwendbare CSS-Klassen schreiben
+<div class='hint'>
+Verwende Spalten für Inhalte, die gleich wichtig sind und nebeneinander verglichen werden sollen.
+Wenn du dagegen nur ein einzelnes Logo, eine Beschriftung oder eine kleine Infokarte genau platzieren möchtest, ist <code>position: absolute;</code> oft passender.
+</div>
+
+##### Zwei Textspalten
+
+Für zwei Spalten verwendest du ein äußeres `<div>` mit der Klasse `columns two`.
+Jedes direkte Kind dieses `<div>` wird zu einer eigenen Spalte.
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/zwei-textspalten.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Zwei Spalten</h2>
+
+    <div class="columns two">
+        <div>
+            <h3>HTML</h3>
+            <p>
+                HTML beschreibt die Struktur:
+                Überschriften, Absätze, Listen, Bilder und Folien.
+            </p>
+        </div>
+
+        <div>
+            <h3>CSS</h3>
+            <p>
+                CSS beschreibt die Gestaltung:
+                Farben, Größen, Abstände und Positionen.
+            </p>
+        </div>
+    </div>
+</section>
+```
+
+Die Struktur ist wichtig:
+
+```html
+<div class="columns two">
+    <div>Erste Spalte</div>
+    <div>Zweite Spalte</div>
+</div>
+```
+
+Das äußere `<div>` erzeugt das Spaltenlayout.
+Die beiden inneren `<div>`-Elemente sind die Inhalte der beiden Spalten.
+
+<div class='hint'>
+Achte darauf, dass die beiden Spalten ungefähr gleich viel Inhalt haben.
+Wenn eine Spalte sehr voll ist und die andere fast leer, wirkt die Folie schnell unausgewogen.
+</div>
+
+<div class='shower-mini-clear'></div>
+
+##### Listen in zwei Spalten
+
+Du kannst auch Listen in Spalten setzen.
+Das ist praktisch, wenn du zwei Gruppen gegenüberstellen möchtest.
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/zwei-spalten-listen.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Vor- und Nachteile</h2>
+
+    <div class="columns two">
+        <div>
+            <h3>Vorteile</h3>
+            <ul>
+                <li>Läuft im Browser</li>
+                <li>Funktioniert auch offline</li>
+                <li>Lässt sich mit CSS gestalten</li>
+            </ul>
+        </div>
+
+        <div>
+            <h3>Nachteile</h3>
+            <ul>
+                <li>HTML muss genau stimmen</li>
+                <li>Fehler sind anfangs ungewohnt</li>
+                <li>Man braucht etwas Übung</li>
+            </ul>
+        </div>
+    </div>
+</section>
+```
+
+In diesem Beispiel enthält jede Spalte eine eigene Überschrift und eine eigene Liste.
+Die Listen gehören also nicht direkt in das äußere Spalten-`<div>`, sondern jeweils in ein eigenes inneres `<div>`.
+
+<div class='hint'>
+Wenn du in jeder Spalte mehrere Elemente brauchst, zum Beispiel eine Überschrift und eine Liste, packe sie gemeinsam in ein eigenes <code>&lt;div&gt;</code>.
+So bleiben die Inhalte einer Spalte sauber zusammen.
+</div>
+
+<div class='shower-mini-clear'></div>
+
+##### Drei Spalten verwenden
+
+Für drei Spalten verwendest du `columns three`.
+Das funktioniert genauso wie bei zwei Spalten, nur mit drei direkten Kindern.
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/drei-spalten.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Drei wichtige Dateien</h2>
+
+    <div class="columns three">
+        <div>
+            <h3>index.html</h3>
+            <p>Hier stehen deine Folien und Inhalte.</p>
+        </div>
+
+        <div>
+            <h3>styles.css</h3>
+            <p>Hier stehen deine eigenen Gestaltungsregeln.</p>
+        </div>
+
+        <div>
+            <h3>pictures</h3>
+            <p>In diesem Ordner liegen deine Bilder.</p>
+        </div>
+    </div>
+</section>
+```
+
+Bei drei Spalten ist weniger Platz pro Spalte.
+Darum sollten die Texte besonders kurz sein.
+
+<div class='hint'>
+Drei Spalten eignen sich gut für kurze Begriffe, kleine Erklärungen oder einfache Vergleiche.
+Für längere Absätze sind zwei Spalten meistens besser.
+</div>
+
+<div class='shower-mini-clear'></div>
+
+<!-- #### Wiederverwendbare CSS-Klassen schreiben -->
 
 <!--
 Hier sollte der Schritt von Inline-Style zu eigener Klasse kommen.
 Ziel: Wiederholung vermeiden und den Schülerinnen und Schülern zeigen, dass CSS-Klassen eigene kleine Werkzeuge sind.
 -->
 
-#### Häufige Fehler finden
+<!-- #### Häufige Fehler finden -->
 
 <!--
 Hier sollten typische Fehler gesammelt werden: vergessenes schließendes Tag, falscher Dateiname, fehlende Anführungszeichen, CSS-Regel an falscher Stelle.
 Sinnvoll wäre eine kleine Checkliste für die Fehlersuche in VS Code und Browser-Vorschau.
 -->
 
-### Profi-Tipps
+<!-- ### Profi-Tipps -->
 
 <!--
 Dieser Teil sollte Arbeitsweisen behandeln, nicht neue HTML/CSS-Bausteine.
 Er ist für die Schülerinnen und Schüler gedacht, die ihre Präsentation sichern, teilen oder veröffentlichen wollen.
 -->
 
-#### Änderungen mit Git sichern
+<!-- #### Änderungen mit Git sichern -->
 
 <!--
 Hier sollte sehr praktisch erklärt werden, wann man einen Commit macht und warum das vor größeren Änderungen hilft.
 Ziel: Git als Sicherheitsnetz zeigen, nicht als abstraktes Versionskontrollsystem.
 -->
 
-#### Präsentation veröffentlichen
+## Präsentation halten
 
-<!--
-Hier sollte auf /custom-subdomain hingewiesen werden, damit die Schülerinnen und Schüler ihre Präsentation online stellen können, ohne einen eigenen Server zu brauchen.
--->
+Wenn du deine Präsentation halten möchtest, kannst du sie einfach im Browser öffnen und mit den Pfeiltasten navigieren. Du kannst auch die Maus benutzen, um durch die Präsentation zu scrollen.
+
+Der besondere Vorteil bei dieser Art von Präsentation ist, dass sie in jedem modernen Browser funktioniert und du keine spezielle Software brauchst. Du kannst einfach das ganze Verzeichnis auf einen Stick kopieren und deine Präsentation überall abspielen, wo es einen modernen Webbrowser gibt.
+
+Du kannst deine Präsentation auch online stellen, zum Beispiel direkt in der Hackschule. <a href="/custom-subdomain">Hier erfährst du, wie das geht.</a>

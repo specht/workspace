@@ -1,0 +1,11 @@
+--2026-05-26 16:41:29--  https://gwfh.mranftl.com/api/fonts/exo-2?download=zip
+Resolving gwfh.mranftl.com (gwfh.mranftl.com)... 172.67.178.22, 104.21.31.152, 2606:4700:3030::ac43:b216, ...
+Connecting to gwfh.mranftl.com (gwfh.mranftl.com)|172.67.178.22|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [application/zip]
+Saving to: ‘exo-2?download=zip’
+
+exo-2?download=zip      [<=>               ]       0  --.-KB/s               exo-2?download=zip      [ <=>              ]   1,74M  --.-KB/s    in 0,1s    
+
+2026-05-26 16:41:29 (14,0 MB/s) - ‘exo-2?download=zip’ saved [1826119]
+
