@@ -1131,45 +1131,8 @@ Die Beispiele sollten möglichst mit denselben Bilddateien funktionieren, die oh
 Bilder können eine Präsentation viel anschaulicher machen.
 Dabei musst du dich um zwei Dinge kümmern:
 
-1. Du brauchst zuerst eine **Bilddatei** in deinem Projekt.
+1. Du brauchst zuerst eine Bilddatei in deinem Projekt.
 2. Danach musst du diese Bilddatei mit HTML in eine Folie einfügen.
-
-Der Browser kann ein Bild nur anzeigen, wenn er die Datei auch wirklich findet.
-Deshalb ist es wichtig, dass die Bilddatei im richtigen Ordner liegt und dass der Pfad im HTML genau stimmt.
-
-In der Hackschule Workspace arbeitest du mit VS Code **im Browser**.
-Der Ordner `pictures` ist in der Vorlage bereits vorhanden.
-Dort legst du deine eigenen Bilder ab.
-
-Dein Projekt sieht ungefähr so aus:
-
-```text
-shower.js/
-├── index.html
-├── styles.css
-├── pictures/
-│   └── fuji.jpg
-└── ...
-```
-
-In diesem Abschnitt verwenden wir als Beispiel ein Foto vom Fuji.
-Das Bild stammt von Wikimedia Commons und darf unter einer Creative-Commons-Lizenz verwendet werden:
-
-```text
-Bild: Mount Fuji from Lake Shōji
-Datei: Kodaki_fuji_frm_shojinko.jpg
-Autor: 名古屋太郎
-Lizenz: CC BY-SA 3.0
-Quelle: https://commons.wikimedia.org/wiki/File:Kodaki_fuji_frm_shojinko.jpg
-```
-
-Wenn du das Bild in einer veröffentlichten Präsentation verwendest, solltest du diese Informationen am Ende deiner Präsentation oder klein auf der Folie angeben.
-
-<div class='hint'>
-Verwende für Bilddateien am besten einfache Dateinamen:
-kleine Buchstaben, keine Leerzeichen, keine Umlaute und keine Sonderzeichen.
-Gut sind zum Beispiel <code>fuji.jpg</code>, <code>berlin.webp</code> oder <code>mein-bild.png</code>.
-</div>
 
 #### Bilder in den Ordner pictures bekommen
 
@@ -1178,8 +1141,74 @@ Hier wird erklärt, wie Schülerinnen und Schüler in der browserbasierten VS-Co
 per Drag & Drop vom eigenen Computer, per Zwischenablage und per wget im Terminal.
 -->
 
-Bevor du ein Bild mit HTML einfügst, muss die Bilddatei zuerst im Ordner `pictures` liegen.
-Dafür hast du im Hackschule Workspace mehrere Möglichkeiten.
+Wenn du den File Explorer in VS Code öffnest, siehst du einen Ordner namens `pictures`, in dem alle Bilder liegen sollten, die du in deiner Präsentation verwenden möchtest. Klicke auf eine Bilddatei, um sie in der Vorschau zu sehen:
+
+<img class='full' src='file-explorer.webp'>
+
+Es gibt verschiedene Bilddateiformate, die dir begegnen werden:
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table'>
+<tr>
+<th>Format</th>
+<th>Gut für</th>
+<th>Dateiendung</th>
+</tr>
+<tr>
+<td><strong>JPEG</strong></td>
+<td>Fotos, weil sie die Dateigröße klein halten</td>
+<td><code>.jpg</code> oder <code>.jpeg</code></td>
+</tr>
+<tr>
+<td><strong>PNG</strong></td>
+<td>Grafiken, Logos oder Bilder mit transparentem Hintergrund</td>
+<td><code>.png</code></td>
+</tr>
+<tr>
+<td><strong>GIF</strong></td>
+<td>Einfache Animationen, aber nicht so gut für Fotos</td>
+<td><code>.gif</code></td>
+</tr>
+<tr>
+<td><strong>WebP</strong></td>
+<td>Ein modernes Format, das oft kleinere Dateien als JPEG oder PNG erzeugt</td>
+<td><code>.webp</code></td>
+</tr>
+<tr>
+<td><strong>SVG</strong></td>
+<td>Ein Vektorformat, das sich gut für Logos und Icons eignet, weil es ohne Qualitätsverlust skaliert werden kann</td>
+<td><code>.svg</code></td>
+</tr>
+</table>
+</div>
+
+Verwende für Bilddateien am besten einfache Dateinamen:
+kleine Buchstaben, keine Leerzeichen, keine Umlaute und keine Sonderzeichen.
+Gut sind zum Beispiel <code>fuji.jpg</code>, <code>berlin.webp</code> oder <code>live-at-msg.png</code>.
+
+<div class='row'>
+    <div class='col-md-4'>
+        <div class='hint good'>
+            <p>Gut:</p>
+            <pre>fuji.jpg</pre>
+        </div>
+    </div>
+
+    <div class='col-md-4'>
+        <div class='hint good'>
+            <p>Auch gut:</p>
+            <pre>mount-fuji.webp</pre>
+        </div>
+    </div>
+
+    <div class='col-md-4'>
+        <div class='hint bad'>
+            <p>Eher schlecht:</p>
+            <pre>Fuji Bild endgültig NEU!!!.JPG</pre>
+        </div>
+    </div>
+</div>
+
 
 ##### Möglichkeit 1: Bilddatei per Drag & Drop hochladen
 
@@ -1342,29 +1371,6 @@ Achte besonders auf:
 - die Dateiendung
 
 Deshalb sind einfache Dateinamen so hilfreich.
-
-<div class='row'>
-    <div class='col-md-4'>
-        <div class='hint good'>
-            <p>Gut:</p>
-            <pre>fuji.jpg</pre>
-        </div>
-    </div>
-
-    <div class='col-md-4'>
-        <div class='hint good'>
-            <p>Auch gut:</p>
-            <pre>mount-fuji.webp</pre>
-        </div>
-    </div>
-
-    <div class='col-md-4'>
-        <div class='hint bad'>
-            <p>Eher schlecht:</p>
-            <pre>Fuji Bild endgültig NEU!!!.JPG</pre>
-        </div>
-    </div>
-</div>
 
 ##### Unterschiedliche Bildformate
 
