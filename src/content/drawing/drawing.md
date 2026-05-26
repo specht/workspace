@@ -2,6 +2,12 @@
 image: rainbow.webp
 </div>
 
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3,h4">
+</div>
+
 # Pixelgrafik programmieren
 
 <p class='abstract'>

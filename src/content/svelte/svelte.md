@@ -2,6 +2,12 @@
 image: svelte5.webp
 </div>
 
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3,h4">
+</div>
+
 # Frontend-Entwicklung mit Svelte
 
 <div class='floatright' style='width: 30em;'>

@@ -2,6 +2,12 @@
 image: title.webp
 </div>
 
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3,h4">
+</div>
+
 <script src="/include/huffman_decode.js"></script>
 
 <style>
