@@ -1024,7 +1024,7 @@ Wenn plötzlich ein ganzer Abschnitt fett, kursiv oder in Code-Schrift erscheint
 <div class='shower-mini-clear'></div>
 
 
-#### Echte Formeln mit LaTeX und KaTeX
+#### Formeln mit KaTeX
 
 Manchmal reichen `<sup>` und `<sub>` nicht aus.
 Für richtige mathematische Formeln kannst du in der Vorlage LaTeX-Schreibweise verwenden.
@@ -1147,7 +1147,7 @@ Dabei musst du dich um zwei Dinge kümmern:
 1. Du brauchst zuerst eine Bilddatei in deinem Projekt.
 2. Danach musst du diese Bilddatei mit HTML in eine Folie einfügen.
 
-#### Bilder in den Ordner pictures bekommen
+#### Bilddateien hinzufügen
 
 <!--
 Hier wird erklärt, wie Schülerinnen und Schüler in der browserbasierten VS-Code-Umgebung an Bilddateien kommen:
@@ -1470,7 +1470,7 @@ Wenn du den Fokus des Bildausschnitts anpassen möchtest, kannst du zusätzlich 
 Die beiden Werte bei <code>object-position</code> geben an, wo der Fokus des Bildes liegen soll. Der erste Wert (in diesem Fall 70%) gibt die horizontale Position an, wobei 0% ganz links und 100% ganz rechts bedeutet. Der zweite Wert (in diesem Fall 0%) gibt die vertikale Position an, wobei 0% ganz oben und 100% ganz unten bedeutet. In diesem Fall spielt der zweite Wert keine Rolle, weil das Bild sowieso schon den kompletten vertikalen Platz ausfüllt.
 </div>
 
-#### Bild verschieben
+#### Bilder verschieben
 
 Um das Bild auf der Folie zu verschieben, kannst du die CSS-Eigenschaft `position: relative;` verwenden und dann mit `left`, und `top` angeben, wie weit das Bild von seiner ursprünglichen Position verschoben werden soll:
 
@@ -1791,7 +1791,7 @@ Dabei sollte klar bleiben, dass man normalerweise kein neues HTML für die Zahl 
 -->
 
 In der Standardvorlage von shower.js erscheint rechts oben automatisch ein rotes Ribbon mit der Foliennummer.
-Du musst dafür normalerweise **nichts** in deine Folie schreiben.
+Du musst dafür normalerweise nichts in deine Folie schreiben.
 Die Vorlage erzeugt dieses Ribbon selbst mit Hilfe dieser CSS-Regel:
 
 <button class='shower-mini' type='button'>
@@ -1963,25 +1963,19 @@ Wenn du die Seitenzahl **auf allen Folien** ausblenden möchtest, kannst du dies
 }
 ```
 
-<div class='hint'>
-Am einfachsten ist es, das Standard-Ribbon erst einmal so zu lassen, wie es ist.
-Wenn du später sicherer mit CSS wirst, kannst du sein Aussehen Schritt für Schritt verändern, statt es komplett neu zu bauen.
-</div>
-
 <div class='shower-mini-clear'></div>
 
 #### Elemente genau platzieren
 
 <!--
-Hier sollten absolute Positionierung oder vorhandene Shower-Hilfsklassen wie place/top/left erklärt werden.
+Hier sollten relative und absolute Positionierung erklärt werden.
 Wichtig: Nur für gezielte Layouts verwenden, nicht als Ersatz für normalen Textfluss.
 -->
 
 #### Zwei Spalten verwenden
 
 <!--
-Hier sollte ein sehr einfaches Zwei-Spalten-Layout gezeigt werden.
-Am besten mit CSS Grid oder Flexbox, aber so reduziert, dass man das Muster kopieren und anpassen kann.
+Hier sollte ein sehr einfaches Zwei-Spalten-Layout gezeigt werden mit class="columns two" und class="columns three".
 -->
 
 ### Mehr Möglichkeiten
