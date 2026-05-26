@@ -1151,22 +1151,22 @@ Es gibt verschiedene Bilddateiformate, die dir begegnen werden:
 <table class='table'>
 <tr>
 <th>Format</th>
-<th>Gut für</th>
+<th>Eigenschaften</th>
 <th>Dateiendung</th>
 </tr>
 <tr>
 <td><strong>JPEG</strong></td>
-<td>Fotos, weil sie die Dateigröße klein halten</td>
+<td>Gut für Fotos, weil sie die Dateigröße klein halten</td>
 <td><code>.jpg</code> oder <code>.jpeg</code></td>
 </tr>
 <tr>
 <td><strong>PNG</strong></td>
-<td>Grafiken, Logos oder Bilder mit transparentem Hintergrund</td>
+<td>Gut für Grafiken, Logos oder Bilder mit transparentem Hintergrund</td>
 <td><code>.png</code></td>
 </tr>
 <tr>
 <td><strong>GIF</strong></td>
-<td>Einfache Animationen, aber nicht so gut für Fotos</td>
+<td>Gut für einfache Animationen, aber nicht so gut für Fotos</td>
 <td><code>.gif</code></td>
 </tr>
 <tr>
@@ -1209,69 +1209,89 @@ Gut sind zum Beispiel <code>fuji.jpg</code>, <code>berlin.webp</code> oder <code
     </div>
 </div>
 
+Im Folgenden siehst du drei Möglichkeiten, wie du eine Bilddatei in den Ordner `pictures` bekommen kannst, damit du sie später in deiner Präsentation verwenden kannst.
 
 ##### Möglichkeit 1: Bilddatei per Drag & Drop hochladen
 
-Wenn du eine Bilddatei bereits auf deinem Computer hast, kannst du sie in den browserbasierten VS-Code-Explorer ziehen.
+Wenn du eine Bilddatei bereits auf deinem Computer hast, kannst du sie in den File Explorer von VS Code ziehen und dort im Verzeichnis `pictures` ablegen:
 
-Gehe so vor:
-
-1. Öffne links in VS Code den Explorer.
-2. Öffne den Ordner `pictures`.
-3. Ziehe die Bilddatei von deinem Computer in den Ordner `pictures`.
-4. Warte kurz, bis die Datei im Explorer erscheint.
-5. Benenne die Datei sinnvoll um, zum Beispiel in `fuji.jpg`.
-
-Wenn dein Bild danach im Explorer unter `pictures` sichtbar ist, liegt es im Projekt.
-
-```text
-pictures/fuji.jpg
-```
+<img src='drag-and-drop.webp' class='full'>
 
 <div class='hint'>
-Ziehe die Datei wirklich in den VS-Code-Explorer und nicht nur in die Browser-Vorschau.
-Die Datei muss im Projektordner landen, sonst kann deine Präsentation sie später nicht laden.
+Egal, wie du dein Bild in den Ordner bekommst: Achte darauf, deinen Bildern einen sinnvollen Dateinamen zu geben. Das erleichtert dir später die Arbeit, wenn du das Bild in deine Folie einfügen möchtest.
 </div>
 
 ##### Möglichkeit 2: Bild aus der Zwischenablage einfügen
 
-Du kannst in der Hackschule Workspace auch Bilder aus der Zwischenablage in den VS-Code-Explorer einfügen.
-Das ist besonders praktisch für Screenshots.
+Du kannst auch ein Bild direkt in die Zwischenablage kopieren und dann in den Ordner `pictures` einfügen. Das ist besonders praktisch, wenn du einen Screenshot gemacht hast und diesen direkt verwenden möchtest, du kannst aber auch Bilder aus dem Internet oder von anderen Quellen auf diese Weise in deinen Workspace bekommen.
 
-Gehe so vor:
+Um ein Bild aus dem Internet in die Zwischenablage zu kopieren, kannst du mit der rechten Maustaste auf das Bild klicken und »Bild kopieren« oder »Copy Image« auswählen:
 
-1. Kopiere ein Bild oder erstelle einen Screenshot.
-2. Klicke links im Explorer auf den Ordner `pictures`.
-3. Drücke <span class='key'>Strg</span><span class='key'>V</span>.
-4. Falls der Browser nach Zugriff auf die Zwischenablage fragt, erlaube den Zugriff.
-5. Prüfe, ob im Ordner `pictures` eine neue Bilddatei erscheint.
-6. Benenne die Datei sinnvoll um, zum Beispiel in `fuji.png`.
+<img src="copy-image.webp" class="full">
+
+<!-- https://de.wikipedia.org/wiki/Japan#/media/Datei:Japanese_classroom.jpg -->
+
+Klicke jetzt im File Explorer auf ein Bild im Ordner `pictures` und drücke <span class='key'>Strg</span><span class='key'>V</span>, um das Bild in denselben Ordner einzufügen:
+
+<img src="confirm-paste.webp" class="full">
+
+Du solltest die neue Datei sehen, die automatisch einen Namen wie `image.png` bekommt:
+
+<img src="image-pasted.webp" class="full">
+
+Am unteren Rand siehst du zwei wichtige Informationen:
+
+1. die Auflösung des Bildes (in diesem Fall 1280×1013 Pixel): Achte darauf, dass deine Bilder nicht zu klein sind, damit sie auf der Folie nicht unscharf werden
+2. die Dateigröße (in diesem Fall 1,92 MB): Achte darauf, dass deine Bilder nicht zu groß sind, damit deine Präsentation später nicht zu viel Speicherplatz braucht und schnell lädt
+
+<div class='hint'>
+1,92 MB ist für ein Bild ziemlich groß – wir merken uns das und kümmern uns gleich darum, das Bild zu verkleinern, damit es besser für die Präsentation geeignet ist.
+</div>
+
+Gib der Bilddatei jetzt einen sinnvollen Namen, zum Beispiel `classroom.png`:
+
+<div class='row' style='margin-bottom: 1em;'>
+    <div class='col-md-6'>
+        <img src="rename-image.webp" class="full">
+    </div>
+    <div class='col-md-6'>
+        <img src="image-renamed.webp" class="full">
+    </div>
+</div>
+
+<div class='hint think'>
+Achte darauf, dass die Dateiendung erhalten bleibt (in diesem Fall <code>.png</code>), damit die Datei später als Bild erkannt wird.
+</div>
+
+Dadurch, dass ein Bild aus der Zwischenablage oft als PNG-Datei gespeichert wird, kann es passieren, dass die Dateigröße sehr groß ist, auch wenn die Auflösung nicht besonders hoch ist. Wir können die Datei aber leicht verkleinern, indem wir sie in ein moderneres Format wie WebP umwandeln.
+
+Installiere dazu die Erweiterung »WebP Converter for VSCode«. Anschließend kannst du mit einem Rechtsklick auf die Bilddatei die Option »Convert to WebP« auswählen:
+
+<div class='row' style='margin-bottom: 1em;'>
+    <div class='col-md-6'>
+        <img src="install-webp-converter.webp" class="full">
+    </div>
+    <div class='col-md-6'>
+        <img src="convert-to-webp.webp" class="full">
+    </div>
+</div>
+
+Du wirst nun nach der Qualität gefragt, die du verwenden möchtest. »Lossless« bedeutet, dass die Qualität des Bildes erhalten bleibt, aber die Dateigröße trotzdem deutlich kleiner wird – diese Option eignet sich am besten für Grafiken. »Lossy« bedeutet, dass die Qualität des Bildes etwas schlechter wird, aber die Dateigröße noch weiter reduziert wird – diese Option eignet sich am besten für Fotos. Für unser Foto eines Klassenzimmers wählen wir »Lossy« mit einer Qualität von 85%:
+
+<img src="convert-to-webp-step-1.webp" class="full">
+
+Mit einem Klick auf »Finish« wird die neue WebP-Datei erstellt, die deutlich kleiner ist als die ursprüngliche PNG-Datei:
+
+<img src="convert-to-webp-step-2.webp" class="full">
+
+Die neue Datei `classroom.webp` hat jetzt eine Dateigröße von nur 180 kB und sieht immer noch gut aus:
+
+<img src="webp-converted.webp" class="full">
 
 <div class='hint'>
 Bilder, die du mit <span class='key'>Strg</span><span class='key'>V</span> einfügst, werden oft als PNG-Dateien gespeichert.
 Das ist für Screenshots gut, aber für Fotos manchmal unnötig groß.
 Im Profi-Abschnitt unten siehst du, wie du solche Dateien prüfen und umwandeln kannst.
-</div>
-
-##### Möglichkeit 3: Bild mit wget herunterladen
-
-Wenn du die Bildadresse kennst, kannst du ein Bild auch direkt im Terminal herunterladen.
-Das ist oft der sauberste Weg, weil die Datei direkt im Workspace landet.
-
-Öffne dafür das Terminal in VS Code und führe diesen Befehl aus:
-
-```bash
-wget -O pictures/fuji.jpg "https://commons.wikimedia.org/wiki/Special:Redirect/file/Kodaki_fuji_frm_shojinko.jpg"
-```
-
-`wget` lädt die Datei herunter.
-
-`-O pictures/fuji.jpg` bedeutet:
-Speichere die heruntergeladene Datei unter dem Namen `fuji.jpg` im Ordner `pictures`.
-
-<div class='hint'>
-Achte bei <code>wget</code> darauf, eine direkte Bildadresse oder eine Datei-Weiterleitung zu verwenden.
-Wenn du nur die Adresse einer normalen Webseite herunterlädst, bekommst du nicht das Bild, sondern die HTML-Datei der Webseite.
 </div>
 
 #### Bilder einfügen
@@ -1281,9 +1301,7 @@ Hier sollte <img src="..."> erklärt werden.
 Wichtig wären Dateinamen, relative Pfade, Dateiendungen und ein kurzer Hinweis auf alt-Text, ohne den Abschnitt zu überfrachten.
 -->
 
-Wenn die Bilddatei im richtigen Ordner liegt, kannst du sie mit dem Tag `<img>` in eine Folie einfügen.
-
-Angenommen, dein Bild heißt `fuji.jpg` und liegt im Ordner `pictures`.
+Wenn die Bilddatei im richtigen Ordner liegt, kannst du sie mit dem Tag `<img>` in eine Folie einfügen. Angenommen, dein Bild heißt `fuji.jpg` und liegt im Ordner `pictures`.
 Dann fügst du es so ein:
 
 <button class='shower-mini' type='button'>
@@ -1299,21 +1317,19 @@ Dann fügst du es so ein:
         alt="Der Fuji vom Shōji-See aus gesehen"
     >
 </section>
-
 ```
+
+<div class='shower-mini-clear'></div>
+
+<div class='hint'>
+Wir ignorieren erst einmal, dass das eingefügte Bild zu groß ist und nicht auf die Folie passt – wir kümmern uns gleich darum.
+</div>
 
 Die wichtigsten Teile sind:
 
 - `<img>` fügt ein Bild ein.
 - `src="pictures/fuji.jpg"` sagt dem Browser, wo die Bilddatei liegt.
 - `alt="Der Fuji vom Shōji-See aus gesehen"` beschreibt das Bild kurz.
-
-`src` steht für »source«, also »Quelle«.
-Dort steht der Pfad zur Bilddatei.
-
-`alt` steht für »alternative text«.
-Dieser Text wird verwendet, wenn das Bild nicht geladen werden kann.
-Außerdem hilft er Menschen, die sich Webseiten mit einem Screenreader vorlesen lassen.
 
 <div class='hint'>
 Das <code>&lt;img&gt;</code>-Tag hat kein eigenes schließendes Tag.
@@ -1322,253 +1338,286 @@ Du schreibst also normalerweise nicht <code>&lt;/img&gt;</code>.
 
 ##### Der Pfad muss genau stimmen
 
-Der häufigste Fehler bei Bildern ist ein falscher Pfad.
-Wenn dein Bild im Ordner `pictures` liegt, muss dieser Ordner auch im `src`-Attribut stehen.
+Der häufigste Fehler bei Bildern ist ein falscher Pfad. Wenn dein Bild im Ordner `pictures` liegt, muss dieser Ordner auch im `src`-Attribut stehen:
 
-Wenn die Datei so liegt:
+<div class='row'>
+    <div class='col-md-6'>
+        <div class='hint good'>
+            <p>Richtig:</p>
+            <pre><code class='html'>&lt;img src="pictures/fuji.jpg" alt="Der Fuji"&gt;</code></pre>
+        </div>
+    </div>
 
-```text
-pictures/fuji.jpg
-```
-
-<div class='example-label good'>Richtig</div>
-
-```html
-<img src="pictures/fuji.jpg" alt="Der Fuji">
-```
-
-<div class='example-label bad'>Falsch</div>
-
-```html
-<img src="fuji.jpg" alt="Der Fuji">
-```
-
-Im falschen Beispiel sucht der Browser das Bild direkt neben `index.html`.
-Dort liegt es aber nicht, weil es im Ordner `pictures` liegt.
-
-##### Dateinamen müssen exakt gleich sein
-
-Der Browser ist bei Dateinamen sehr genau.
-
-Wenn deine Datei so heißt:
-
-```text
-Fuji.JPG
-```
-
-dann ist das nicht dasselbe wie:
-
-```text
-fuji.jpg
-```
-
-Achte besonders auf:
-
-- Groß- und Kleinschreibung
-- Leerzeichen
-- Umlaute
-- Bindestriche und Unterstriche
-- die Dateiendung
-
-Deshalb sind einfache Dateinamen so hilfreich.
-
-##### Unterschiedliche Bildformate
-
-Häufige Bildformate sind:
-
-- `.jpg` oder `.jpeg` für Fotos
-- `.png` für Grafiken, Screenshots oder Bilder mit Transparenz
-- `.webp` oder `.avif` für moderne, oft kleinere Bilddateien
-- `.svg` für Zeichnungen, Logos und einfache Grafiken
-
-Für den Anfang sind `.jpg`, `.png` und `.webp` meistens am einfachsten.
-
-<div class='hint'>
-Wenn ein Bild nicht angezeigt wird, prüfe zuerst den Dateinamen und die Dateiendung.
-Sehr oft steht im HTML zum Beispiel <code>.jpg</code>, aber die Datei heißt in Wirklichkeit <code>.png</code> oder <code>.webp</code>.
+    <div class='col-md-6'>
+        <div class='hint bad'>
+            <p>Falsch:</p>
+            <pre><code class='html'>&lt;img src="Fuji.jpg" alt="Der Fuji"&gt;</code></pre>
+        </div>
+    </div>
 </div>
 
-##### Ein Bild mit Text und Quellenangabe kombinieren
-
-Wenn du ein Bild aus dem Internet verwendest, ist eine kurze Quellenangabe sinnvoll.
-Das kann zum Beispiel so aussehen:
-
-```html
-<section class="slide">
-    <h2>Der Fuji</h2>
-
-    <img src="pictures/fuji.jpg" alt="Der Fuji vom Shōji-See aus gesehen">
-
-    <p>
-        Bild: 名古屋太郎,
-        CC BY-SA 3.0,
-        Wikimedia Commons
-    </p>
-</section>
-```
-
-Später kannst du diese Quellenangabe mit CSS kleiner oder unauffälliger gestalten.
-Wichtig ist zuerst, dass du dir merkst, woher das Bild stammt und unter welcher Lizenz es steht.
-
-##### Typische Fehler bei Bildern
-
-Wenn ein Bild nicht erscheint, prüfe diese Punkte:
-
-- Liegt die Bilddatei wirklich im Ordner `pictures`?
-- Ist der Dateiname im HTML exakt gleich geschrieben?
-- Stimmt die Dateiendung?
-- Steht der Ordner im Pfad, also zum Beispiel `pictures/fuji.jpg`?
-- Hast du die Datei nach dem Verschieben oder Umbenennen gespeichert?
-- Hast du die Vorschau im Browser neu geladen?
-
-Ein kaputtes Bild sieht im Browser oft nur wie ein kleines Symbol aus.
-Das bedeutet fast immer:
-Der Browser hat den Text der Folie gefunden, aber nicht die Bilddatei.
-
 <div class='hint'>
-Wenn du den Fehler nicht findest, öffne links den Ordner <code>pictures</code> und kopiere den Dateinamen genau ab.
-Setze ihn dann in <code>src="pictures/..."</code> ein.
+Du kannst theoretisch auch eine URL zu einem Bild angeben. Man nennt das »Hotlinking« und es birgt einige Probleme, zum Beispiel, dass das Bild plötzlich nicht mehr da ist, wenn die Webseite, von der du es verlinkt hast, offline geht oder das Bild löscht. Es könnte auch sein, dass der Betreiber der Webseite das Hotlinking nicht erlaubt und das Bild deshalb nicht angezeigt wird. Deshalb ist es meistens besser, Bilder in deinen eigenen Ordner zu legen und von dort aus zu verlinken – dann funktioniert deine Präsentation auch offline und du hast die volle Kontrolle über die Bilder, die du verwendest.
 </div>
 
-##### Für Expertinnen und Experten: Bilddateien im Terminal prüfen
-
-Manchmal sieht eine Bilddatei im Explorer richtig aus, aber sie ist sehr groß oder hat ein anderes Format als gedacht.
-Dann helfen dir Terminalbefehle.
-
-Mit `ls -lh` siehst du, wie groß die Datei ist:
-
-```bash
-ls -lh pictures/fuji.jpg
-```
-
-Eine Ausgabe könnte ungefähr so aussehen:
-
-```text
--rw-r--r-- 1 user user 1.4M May 25 18:30 pictures/fuji.jpg
-```
-
-`1.4M` bedeutet:
-Die Datei ist ungefähr 1,4 Megabyte groß.
-
-Mit `file` prüfst du, um welchen Dateityp es sich wirklich handelt:
-
-```bash
-file pictures/fuji.jpg
-```
-
-Eine Ausgabe könnte ungefähr so aussehen:
-
-```text
-pictures/fuji.jpg: JPEG image data, 1530x1024
-```
-
-Das ist praktisch, weil die Dateiendung nicht immer zuverlässig ist.
-Eine Datei kann zum Beispiel `bild.jpg` heißen, obwohl sie eigentlich eine PNG-Datei ist.
-
-##### Für Expertinnen und Experten: PNG-Fotos umwandeln
-
-Wenn du ein Foto mit <span class='key'>Strg</span><span class='key'>V</span> in den Explorer einfügst, entsteht oft eine PNG-Datei.
-Für Screenshots ist PNG gut.
-Für Fotos ist JPG oder WebP aber oft kleiner.
-
-Wenn dein eingefügtes Foto zum Beispiel `fuji.png` heißt, kannst du es mit `convert` in ein JPG umwandeln:
-
-```bash
-convert pictures/fuji.png -quality 85 pictures/fuji.jpg
-```
-
-Danach kannst du die Dateigröße vergleichen:
-
-```bash
-ls -lh pictures/fuji.png pictures/fuji.jpg
-```
-
-Wenn `fuji.jpg` deutlich kleiner ist und noch gut aussieht, kannst du in deiner Folie die JPG-Datei verwenden:
-
-```html
-<img src="pictures/fuji.jpg" alt="Der Fuji">
-```
-
-Du kannst auch in WebP umwandeln:
-
-```bash
-convert pictures/fuji.png -quality 85 pictures/fuji.webp
-```
-
-Dann verwendest du im HTML entsprechend:
-
-```html
-<img src="pictures/fuji.webp" alt="Der Fuji">
-```
-
-<div class='hint'>
-Wenn der Befehl <code>convert</code> nicht gefunden wird, ist ImageMagick wahrscheinlich nicht installiert.
-In manchen Systemen heißt der Befehl auch <code>magick</code>.
-Dann kannst du zum Beispiel <code>magick pictures/fuji.png -quality 85 pictures/fuji.jpg</code> ausprobieren.
-</div>
-
-##### Für Expertinnen und Experten: Große Bilder verkleinern
-
-Sehr große Bilder machen deine Präsentation unnötig langsam.
-Wenn ein Bild viel größer ist als die Folie, kannst du es verkleinern.
-
-Dieses Kommando erstellt eine kleinere JPG-Datei:
-
-```bash
-convert pictures/fuji.jpg -resize '1600x1600>' -quality 85 pictures/fuji-small.jpg
-```
-
-`1600x1600>` bedeutet:
-Das Bild wird nur verkleinert, wenn es größer als 1600 Pixel breit oder hoch ist.
-Kleinere Bilder bleiben unverändert.
-
-Danach kannst du wieder vergleichen:
-
-```bash
-ls -lh pictures/fuji.jpg pictures/fuji-small.jpg
-file pictures/fuji-small.jpg
-```
-
-In deiner Folie verwendest du dann die kleinere Datei:
-
-```html
-<img src="pictures/fuji-small.jpg" alt="Der Fuji">
-```
-
-<div class='hint'>
-Behalte am besten die Originaldatei, bis du sicher bist, dass die umgewandelte oder verkleinerte Datei gut aussieht.
-Dann kannst du später immer noch zurück.
-</div>
-
-<div class='shower-mini-clear'></div>
-
-#### Bilder vergrößern, verkleinern und zuschneiden
+#### Bildgröße anpassen
 
 <!--
 Hier sollten typische Größenprobleme gelöst werden: Bild zu groß, Bild zu klein, falsches Seitenverhältnis.
 Mögliche Beispiele: width per style, vorhandene Hilfsklassen der Vorlage und object-fit für zugeschnittene Bilder.
 -->
 
-#### Bilder links oder rechts platzieren
+Um die Größe eines Bildes anzupassen, kannst du CSS verwenden. Füge dazu ein `style`-Attribut zum `<img>`-Tag hinzu und schreibe die gewünschten CSS-Eigenschaften hinein.
 
-<!--
-Hier sollten einfache Platzierungen neben Text gezeigt werden.
-Passend zur bisherigen Vorlage könnten Klassen wie class='r' bzw. class='l' oder kleine eigene CSS-Klassen erklärt werden.
--->
+<button class='shower-mini' type='button'>
+    <img src='screenshots/bild-hoehe-350px.webp'>
+</button>
 
-#### Ein Bild als Hintergrund verwenden
+```html
+<section class="slide">
+    <h2>Höhe: 350px</h2>
 
-<!--
-Hier sollte gezeigt werden, wie ein Bild die ganze Folie füllt.
-Wichtig: Der Unterschied zwischen normalem Bild im Textfluss und Hintergrund-/Cover-Bild, außerdem der Umgang mit Zuschnitt.
--->
+    <img
+        src="pictures/fuji.jpg"
+        alt="Der Fuji"
+        style="
+            height: 350px;
+        ">
+</section>
+```
 
-#### Text auf Bildern lesbar machen
+<div class='shower-mini-clear'></div>
 
-<!--
-Hier sollten Kontrastprobleme gelöst werden: Textschatten, halbtransparenter Kasten, dunkle Überlagerung oder helle Fläche.
-Ziel: Nicht nur zeigen, dass es geht, sondern warum Lesbarkeit wichtiger als ein schönes Bild ist.
--->
+In diesem Beispiel wird die Höhe des Bildes auf 350 Pixel festgelegt. Die Breite wird automatisch angepasst, damit das Seitenverhältnis erhalten bleibt.
+
+Du kannst auch die Breite festlegen, zum Beispiel mit `width: 350px;`, oder beides gleichzeitig, zum Beispiel mit `width: 350px; height: 350px;`. Wenn du beides gleichzeitig festlegst, kann es passieren, dass das Bild verzerrt wird, wenn die angegebenen Werte nicht zum ursprünglichen Seitenverhältnis des Bildes passen. In diesem Fall kannst du die Eigenschaft `object-fit: cover;` verwenden, damit das Bild zugeschnitten wird, aber nicht verzerrt:
+
+
+#### Bild verschieben
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/bild-nach-rechts.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Verschiebung nach rechts</h2>
+
+    <img
+        src="pictures/fuji.jpg"
+        alt="Der Fuji"
+        style="
+            height: 350px;
+            position: relative;
+            left: 150px;
+        ">
+</section>
+```
+
+<div class='shower-mini-clear'></div>
+
+#### Abgerundete Ecken und Schattierung
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/bild-abgerundete-ecken.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Abgerundete Ecken</h2>
+
+    <img
+        src="pictures/fuji.jpg"
+        alt="Der Fuji"
+        style="
+            height: 350px;
+            position: relative;
+            left: 150px;
+            border-radius: 10px;
+        ">
+</section>
+```
+
+<div class='shower-mini-clear'></div>
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/bild-schattierung.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Schattierung</h2>
+
+    <img
+        src="pictures/fuji.jpg"
+        alt="Der Fuji"
+        style="
+            height: 350px;
+            position: relative;
+            left: 150px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+        ">
+</section>
+```
+
+#### Bilder zuschneiden
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/feste-seitenverhaeltnisse.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Feste Seitenverhältnisse</h2>
+
+    <div style="text-align: center;">
+
+        <img
+            src="pictures/fuji.jpg"
+            alt="Der Fuji"
+            style="
+                height: 170px;
+                aspect-ratio: 2/3;
+                border-radius: 10px;
+                object-fit: cover;
+            ">
+        <img
+            src="pictures/fuji.jpg"
+            alt="Der Fuji"
+            style="
+                height: 160px;
+                aspect-ratio: 3/4;
+                border-radius: 10px;
+                object-fit: cover;
+            ">
+        <img
+            src="pictures/fuji.jpg"
+            alt="Der Fuji"
+            style="
+                height: 150px;
+                aspect-ratio: 1/1;
+                border-radius: 10px;
+                object-fit: cover;
+            ">
+        <br>
+        <img
+            src="pictures/fuji.jpg"
+            alt="Der Fuji"
+            style="
+                height: 150px;
+                aspect-ratio: 4/3;
+                border-radius: 10px;
+                object-fit: cover;
+            ">
+        <img
+            src="pictures/fuji.jpg"
+            alt="Der Fuji"
+            style="
+                height: 150px;
+                aspect-ratio: 16/9;
+                border-radius: 10px;
+                object-fit: cover;
+            ">
+    </div>
+</section>
+```
+
+#### Bild im Hintergrund
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/mount-fuji-hintergrund.webp'>
+</button>
+
+```html
+<section class="slide bright-text">
+    <h2>Mount Fuji im Hintergrund</h2>
+
+    <img
+        src="pictures/fuji.jpg"
+        alt="Der Fuji"
+        class="cover"
+    >
+</section>
+```
+
+<div class='shower-mini-clear'></div>
+
+#### Text und Bild nebeneinander
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/text-links-bild-rechts.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Text links, Bild rechts</h2>
+
+    <div class="side-by-side">
+        <div>
+            <p>
+                Lege die Größe deines Bildes mit CSS fest, und der Rest
+                des Platzes wird automatisch für den Text genutzt.
+            </p>
+            <p>
+                Tipp: Verschiebe das <code>&lt;img&gt;</code> vor das
+                <code>&lt;div&gt;</code>, um das Bild auf der linken
+                Seite zu platzieren.
+            </p>
+        </div>
+        <img src="pictures/fuji.jpg" alt="Der Fuji"
+            style="
+                height: 350px;
+                aspect-ratio: 3/4;
+                object-fit: cover;
+                border-radius: 10px;
+            ">
+    </div>
+        <figcaption class="copyright right">
+        Bild: 名古屋太郎, CC BY-SA 3.0, Wikimedia Commons<br>
+        https://de.wikipedia.org/wiki/Datei:Kodaki_fuji_frm_shojinko.jpg
+    </figcaption>
+</section>
+```
+
+<div class='shower-mini-clear'></div>
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/bild-links-text-rechts.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Bild links, Text rechts</h2>
+
+    <div class="side-by-side">
+        <img src="pictures/fuji.jpg" alt="Der Fuji"
+            style="
+                height: 350px;
+                aspect-ratio: 3/4;
+                object-fit: cover;
+                border-radius: 10px;
+            ">
+        <div>
+            <p>
+                Lege die Größe deines Bildes mit CSS fest, und der Rest
+                des Platzes wird automatisch für den Text genutzt.
+            </p>
+            <p>
+                Tipp: Verschiebe das <code>&lt;img&gt;</code> vor das
+                <code>&lt;div&gt;</code>, um das Bild auf der linken
+                Seite zu platzieren.
+            </p>
+        </div>
+    </div>
+    <figcaption class="copyright right">
+        Bild: 名古屋太郎, CC BY-SA 3.0, Wikimedia Commons<br>
+        https://de.wikipedia.org/wiki/Datei:Kodaki_fuji_frm_shojinko.jpg
+    </figcaption>
+</section>
+```
+
+<div class='shower-mini-clear'></div>
 
 ### Gestaltung
 
