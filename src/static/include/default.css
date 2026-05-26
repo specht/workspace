@@ -1380,10 +1380,15 @@ pre .na {
 
 body.has-autotoc-secondary {
     --autotoc-secondary-width: 18rem;
-    --autotoc-secondary-gap: 2rem;
-    --autotoc-secondary-top: 0rem;
+    --autotoc-secondary-gap: 1.75rem;
+    --autotoc-secondary-top: 3.6rem;
     --autotoc-secondary-bottom: 1.9rem;
-    --autotoc-primary-height: 3.6rem;
+    --autotoc-article-width: 1320px;
+    --autotoc-layout-width: calc(
+        var(--autotoc-secondary-width)
+        + var(--autotoc-secondary-gap)
+        + var(--autotoc-article-width)
+    );
 }
 
 body.has-autotoc-secondary.autotoc-primary-visible {
@@ -1401,15 +1406,22 @@ body.has-autotoc-secondary.autotoc-primary-visible {
         display: grid;
         grid-template-columns:
             var(--autotoc-secondary-width)
-            minmax(0, 1fr);
+            minmax(0, var(--autotoc-article-width));
         column-gap: var(--autotoc-secondary-gap);
         align-items: start;
-        padding-right: 2rem;
+
+        width: min(
+            calc(100vw - 2rem),
+            var(--autotoc-layout-width)
+        );
+
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .autotoc-secondary-main {
         width: 100%;
-        max-width: 1320px;
+        max-width: var(--autotoc-article-width);
         margin-left: 0;
         margin-right: 0;
     }
@@ -1418,14 +1430,11 @@ body.has-autotoc-secondary.autotoc-primary-visible {
         position: sticky;
         top: var(--autotoc-secondary-top);
 
-        width: var(--autotoc-secondary-width);
         height: calc(
             100vh
             - var(--autotoc-secondary-top)
             - var(--autotoc-secondary-bottom)
         );
-
-        overflow-y: auto;
     }
 }
 
