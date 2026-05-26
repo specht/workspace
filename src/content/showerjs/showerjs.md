@@ -193,41 +193,48 @@ image: showerjs.webp:0:80
         transition: none;
     }
 }
-/*
- * Kompakte Gut-/Schlecht-Beispiele
- * --------------------------------
- * Diese kleinen Labels markieren Codebeispiele, ohne sie in große Kästen zu
- * packen. Dadurch bleiben Vergleichsbeispiele kurz und gut scanbar.
- */
-.example-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.38em;
 
-    margin: 0.35rem 0 0.25rem;
-    padding: 0.16rem 0.55rem 0.18rem;
-
-    border: 1px solid currentColor;
-    border-radius: 999px;
-
-    font-weight: 700;
-    font-size: 0.92em;
-    line-height: 1.15;
+.aspect-row {
+    display: grid;
+    grid-template-columns:
+        8fr     /* 2:3  */
+        9fr     /* 3:4  */
+        12fr    /* 1:1  */
+        16fr    /* 4:3  */
+        21.33fr;/* 16:9 */
+    gap: 18px;
+    align-items: start;
+    margin: 1em 0;
+    max-width: 100%;
+    overflow-x: auto;
 }
 
-.example-label::before {
-    display: inline-grid;
-    place-items: center;
-
-    width: 1.15em;
-    height: 1.15em;
-
-    border-radius: 50%;
-    color: white;
-
-    font-size: 0.82em;
-    line-height: 1;
+.aspect-box {
+    margin: 0;
+    display: grid;
+    min-height: 200px;
 }
+
+.aspect-box > div,
+.aspect-box figcaption {
+    grid-area: 1 / 1;
+}
+
+.aspect-box > div {
+    width: 100%;
+    aspect-ratio: var(--ratio);
+
+    border: 1px solid #75507b;
+    border-radius: 12px;
+    background:
+        linear-gradient(135deg, rgba(117, 80, 123, 0.15), rgba(117, 80, 123, 0.03));
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+.aspect-box figcaption {
+    place-self: center;
+}
+
 </style>
 
 <script>
@@ -1388,12 +1395,78 @@ Um die Größe eines Bildes anzupassen, kannst du CSS verwenden. Füge dazu ein 
 
 <div class='shower-mini-clear'></div>
 
-In diesem Beispiel wird die Höhe des Bildes auf 350 Pixel festgelegt. Die Breite wird automatisch angepasst, damit das Seitenverhältnis erhalten bleibt.
+In diesem Beispiel wird die Höhe des Bildes auf 350 Pixel festgelegt. Die Breite wird automatisch angepasst, damit das Seitenverhältnis erhalten bleibt. Du kannst auch die Breite festlegen, zum Beispiel mit `width: 250px;`, wodurch sich die Höhe automatisch anpasst.
 
-Du kannst auch die Breite festlegen, zum Beispiel mit `width: 350px;`, oder beides gleichzeitig, zum Beispiel mit `width: 350px; height: 350px;`. Wenn du beides gleichzeitig festlegst, kann es passieren, dass das Bild verzerrt wird, wenn die angegebenen Werte nicht zum ursprünglichen Seitenverhältnis des Bildes passen. In diesem Fall kannst du die Eigenschaft `object-fit: cover;` verwenden, damit das Bild zugeschnitten wird, aber nicht verzerrt:
+Falls du die Breite und die Höhe gleichzeitig festlegst, wird dein Bild verzerrt, wenn die angegebenen Werte nicht zum ursprünglichen Seitenverhältnis des Bildes passen:
 
+<button class='shower-mini' type='button'>
+    <img src='screenshots/bild-breite-250px-und-hoehe-350px.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Größe: 250px &times; 350px</h2>
+
+    <img
+        src="pictures/fuji.jpg"
+        alt="Der Fuji"
+        style="
+            width: 250px;
+            height: 350px;
+        ">
+</section>
+```
+
+Das Bild wurde zusammegestaucht und der Fuji ist jetzt spitzer als in Wirklichkeit. Um dieses Problem zu lösen, kannst du die CSS-Eigenschaft `object-fit` verwenden, um zu bestimmen, wie das Bild in den vorgegebenen Rahmen passt. Mit `object-fit: cover;` wird das Bild so skaliert, dass es den gesamten Rahmen ausfüllt, ohne das Seitenverhältnis zu verändern. Dabei wird das Bild aber so zugeschnitten, dass es nicht verzerrt wird:
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/bild-breite-250px-und-hoehe-350px-cover.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Größe: 250px &times; 350px + Cover</h2>
+
+    <img
+        src="pictures/fuji.jpg"
+        alt="Der Fuji"
+        style="
+            width: 250px;
+            height: 350px;
+            object-fit: cover;
+        ">
+</section>
+```
+
+Wenn du den Fokus des Bildausschnitts anpassen möchtest, kannst du zusätzlich die Eigenschaft `object-position` verwenden. Zum Beispiel mit `object-position: 70% 0%;` wird der Fokus mehr auf die rechte Seite des Bildes gelegt:
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/bild-breite-250px-und-hoehe-350px-cover-position.webp'>
+</button>
+
+```html
+<section class="slide">
+    <h2>Größe: 250px &times; 350px + Cover + Position</h2>
+
+    <img
+        src="pictures/fuji.jpg"
+        alt="Der Fuji"
+        style="
+            width: 250px;
+            height: 350px;
+            object-fit: cover;
+            object-position: 70% 0%;
+        ">
+</section>
+```
+
+<div class='hint'>
+Die beiden Werte bei <code>object-position</code> geben an, wo der Fokus des Bildes liegen soll. Der erste Wert (in diesem Fall 70%) gibt die horizontale Position an, wobei 0% ganz links und 100% ganz rechts bedeutet. Der zweite Wert (in diesem Fall 0%) gibt die vertikale Position an, wobei 0% ganz oben und 100% ganz unten bedeutet. In diesem Fall spielt der zweite Wert keine Rolle, weil das Bild sowieso schon den kompletten vertikalen Platz ausfüllt.
+</div>
 
 #### Bild verschieben
+
+Um das Bild auf der Folie zu verschieben, kannst du die CSS-Eigenschaft `position: relative;` verwenden und dann mit `left`, und `top` angeben, wie weit das Bild von seiner ursprünglichen Position verschoben werden soll:
 
 <button class='shower-mini' type='button'>
     <img src='screenshots/bild-nach-rechts.webp'>
@@ -1418,35 +1491,15 @@ Du kannst auch die Breite festlegen, zum Beispiel mit `width: 350px;`, oder beid
 
 #### Abgerundete Ecken und Schattierung
 
+Wenn du dein Bild mit abgerundeten Ecken oder einer Schattierung versehen möchtest, kannst du die CSS-Eigenschaft `border-radius` für abgerundete Ecken und `box-shadow` für Schattierung verwenden:
+
 <button class='shower-mini' type='button'>
-    <img src='screenshots/bild-abgerundete-ecken.webp'>
+    <img src='screenshots/bild-abgerundete-ecken-und-schattierung.webp'>
 </button>
 
 ```html
 <section class="slide">
-    <h2>Abgerundete Ecken</h2>
-
-    <img
-        src="pictures/fuji.jpg"
-        alt="Der Fuji"
-        style="
-            height: 350px;
-            position: relative;
-            left: 150px;
-            border-radius: 10px;
-        ">
-</section>
-```
-
-<div class='shower-mini-clear'></div>
-
-<button class='shower-mini' type='button'>
-    <img src='screenshots/bild-schattierung.webp'>
-</button>
-
-```html
-<section class="slide">
-    <h2>Schattierung</h2>
+    <h2>Abgerundete Ecken + Schattierung</h2>
 
     <img
         src="pictures/fuji.jpg"
@@ -1461,7 +1514,58 @@ Du kannst auch die Breite festlegen, zum Beispiel mit `width: 350px;`, oder beid
 </section>
 ```
 
+Die Eigenschaft `border-radius: 10px;` sorgt dafür, dass die Ecken des Bildes mit einem Radius von 10 Pixeln abgerundet werden. Die Eigenschaft `box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);` fügt dem Bild einen Schatten hinzu, der:
+
+- um 0 Pixel nach rechts verschoben ist (da es eine 0 ist, können wir hier die Einheit `px` weglassen)
+- um 4 Pixel nach unten verschoben ist
+- eine Unschärfe von 8 Pixeln hat
+- eine Farbe von Schwarz mit einer Transparenz von 25% hat (rgba steht für Rot, Grün, Blau und Alpha, wobei Alpha die Transparenz angibt)
+
 #### Bilder zuschneiden
+
+Manchmal möchte man nur einen Teil eines Bildes zeigen und es wichtiger, dass das Bild auf der Folie ein bestimmtes Seitenverhältnis hat, als dass das ganze Bild zu sehen ist.
+Verschiedene Seitenverhältnisse eignen sich für verschiedene Zwecke:
+
+<div class="aspect-row">
+    <figure class="aspect-box" style="--ratio: 2 / 3;">
+        <div></div>
+        <figcaption>2:3</figcaption>
+    </figure>
+
+    <figure class="aspect-box" style="--ratio: 3 / 4;">
+        <div></div>
+        <figcaption>3:4</figcaption>
+    </figure>
+
+    <figure class="aspect-box" style="--ratio: 1 / 1;">
+        <div></div>
+        <figcaption>1:1</figcaption>
+    </figure>
+
+    <figure class="aspect-box" style="--ratio: 4 / 3;">
+        <div></div>
+        <figcaption>4:3</figcaption>
+    </figure>
+
+    <figure class="aspect-box" style="--ratio: 16 / 9;">
+        <div></div>
+        <figcaption>16:9</figcaption>
+    </figure>
+</div>
+
+Wenn du für dein Bild eine Höhe mit `height` angibst, wird die Breite automatisch berechnet. Du kannst diese Berechnung beeinflussen, indem du dein gewünschtes Seitenverhältnis mit `aspect-ratio` angibst, z. B. so:
+
+```html
+<img
+    src="pictures/fuji.jpg"
+    alt="Der Fuji"
+    style="
+        height: 170px;
+        aspect-ratio: 2/3;
+    ">
+```
+
+Dabei wird die Höhe auf 170 Pixel festgelegt, und die Breite wird so berechnet, dass das Seitenverhältnis von 2:3 eingehalten wird. Vergiss nicht, `object-fit: cover;` zu verwenden, damit dein Bild nicht verzerrt wird, wenn das Seitenverhältnis nicht zum ursprünglichen Seitenverhältnis des Bildes passt.
 
 <button class='shower-mini' type='button'>
     <img src='screenshots/feste-seitenverhaeltnisse.webp'>
@@ -1479,8 +1583,8 @@ Du kannst auch die Breite festlegen, zum Beispiel mit `width: 350px;`, oder beid
             style="
                 height: 170px;
                 aspect-ratio: 2/3;
-                border-radius: 10px;
                 object-fit: cover;
+                border-radius: 10px;
             ">
         <img
             src="pictures/fuji.jpg"
@@ -1488,8 +1592,8 @@ Du kannst auch die Breite festlegen, zum Beispiel mit `width: 350px;`, oder beid
             style="
                 height: 160px;
                 aspect-ratio: 3/4;
-                border-radius: 10px;
                 object-fit: cover;
+                border-radius: 10px;
             ">
         <img
             src="pictures/fuji.jpg"
@@ -1497,8 +1601,8 @@ Du kannst auch die Breite festlegen, zum Beispiel mit `width: 350px;`, oder beid
             style="
                 height: 150px;
                 aspect-ratio: 1/1;
-                border-radius: 10px;
                 object-fit: cover;
+                border-radius: 10px;
             ">
         <br>
         <img
@@ -1507,8 +1611,8 @@ Du kannst auch die Breite festlegen, zum Beispiel mit `width: 350px;`, oder beid
             style="
                 height: 150px;
                 aspect-ratio: 4/3;
-                border-radius: 10px;
                 object-fit: cover;
+                border-radius: 10px;
             ">
         <img
             src="pictures/fuji.jpg"
@@ -1516,14 +1620,16 @@ Du kannst auch die Breite festlegen, zum Beispiel mit `width: 350px;`, oder beid
             style="
                 height: 150px;
                 aspect-ratio: 16/9;
-                border-radius: 10px;
                 object-fit: cover;
+                border-radius: 10px;
             ">
     </div>
 </section>
 ```
 
 #### Bild im Hintergrund
+
+Du kannst ein Bild auch als Hintergrund verwenden, indem du ihm die CSS-Klasse `cover` zuweist:
 
 <button class='shower-mini' type='button'>
     <img src='screenshots/mount-fuji-hintergrund.webp'>
@@ -1538,12 +1644,19 @@ Du kannst auch die Breite festlegen, zum Beispiel mit `width: 350px;`, oder beid
         alt="Der Fuji"
         class="cover"
     >
+
+    <p style="margin-top: 350px;">
+        Text auf Bildern ist schwerer lesbar.
+        Achte auf ausreichenden Kontrast!
+    </p>
 </section>
 ```
 
-<div class='shower-mini-clear'></div>
+In dieser Folie haben wir außerdem der Folie selbst die Klasse `bright-text` zugewiesen, damit der Text auf dem dunklen Bild besser lesbar ist. Im Absatz haben wir außerdem einen großen Abstand nach oben mit `margin-top: 350px;` hinzugefügt, damit der Text das Bild nicht so stört und besser lesbar ist.
 
 #### Text und Bild nebeneinander
+
+Häufig möchte man ein Bild zeigen und daneben noch etwas Text. Um diesen Effekt zu erreichen, kannst du ein `<div>` mit der CSS-Klasse `side-by-side` verwenden, das zwei Kinder hat, die nebeneinander angeordnet werden:
 
 <button class='shower-mini' type='button'>
     <img src='screenshots/text-links-bild-rechts.webp'>
@@ -1573,14 +1686,18 @@ Du kannst auch die Breite festlegen, zum Beispiel mit `width: 350px;`, oder beid
                 border-radius: 10px;
             ">
     </div>
-        <figcaption class="copyright right">
+    <figcaption class="copyright right">
         Bild: 名古屋太郎, CC BY-SA 3.0, Wikimedia Commons<br>
         https://de.wikipedia.org/wiki/Datei:Kodaki_fuji_frm_shojinko.jpg
     </figcaption>
 </section>
 ```
 
+Im Beispiel ist das erste Kind ein `<div>`, das zwei Absätze mit Text enthält, und das zweite Kind ist ein `<img>`, das das Bild enthält. Das `<div>` und das `<img>` werden automatisch nebeneinander angeordnet.
+
 <div class='shower-mini-clear'></div>
+
+Wenn du die Reihenfolge der Kinder tauschst, wird das Bild auf der linken Seite und der Text auf der rechten Seite angezeigt:
 
 <button class='shower-mini' type='button'>
     <img src='screenshots/bild-links-text-rechts.webp'>
@@ -1618,6 +1735,10 @@ Du kannst auch die Breite festlegen, zum Beispiel mit `width: 350px;`, oder beid
 ```
 
 <div class='shower-mini-clear'></div>
+
+<div class='hint'>
+Wozu benötigen wir das <code>&lt;div&gt;</code> um die Absätze? Wenn beide Absätze direkte Kinder des <code>&lt;div class="side-by-side"&gt;</code> wären, würden beide Absätze nebeneinander (»side-by-side«) angeordnet werden, was nicht das gewünschte Ergebnis wäre. Das innere <code>&lt;div&gt;</code> sorgt dafür, dass die beiden Absätze als eine Einheit behandelt werden und innerhalb dieses <code>&lt;div&gt;</code> ganz normal untereinander angeordnet werden.
+</div>
 
 ### Gestaltung
 
