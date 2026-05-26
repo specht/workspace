@@ -145,9 +145,14 @@ function install_autotoc() {
         if (window.scrollY < 100) {
             autotoc_showing = false;
         } else {
-            if (window.scrollY > window.innerHeight * 0.3) autotoc_showing = true;
+            if (window.scrollY > window.innerHeight * 0.3 || window.scrollY > 170) autotoc_showing = true;
         }
         autotoc.toggleClass('hidden', !autotoc_showing);
+
+        document.body.classList.toggle(
+            'autotoc-primary-visible',
+            autotoc_showing
+        );
     }
 
     if (got_autotoc) {
@@ -198,6 +203,168 @@ function install_autotoc() {
         spot_lg.appendTo($('.autotoc > .progress_spots_lg'));
     }
     $('.autotoc .progress_sm').css('width', `calc(${100.0 / autotoc_containers.length}% - 0.3em)`);
+}
+
+var autotoc_secondary = null;
+var autotoc_secondary_headings = [];
+var autotoc_secondary_links = [];
+var autotoc_secondary_ticking = false;
+
+function install_secondary_autotoc() {
+    let trigger = document.querySelector('.autotoc-secondary-trigger');
+    if (!trigger) return;
+
+    document.body.classList.add('has-autotoc-secondary');
+
+    let main_container = trigger.closest('.container');
+
+    let title = trigger.dataset.title || 'Auf dieser Seite';
+    let levels = (trigger.dataset.levels || 'h2,h3,h4,h5')
+        .split(',')
+        .map(x => x.trim())
+        .filter(x => x.length > 0);
+
+    if (levels.length === 0) return;
+
+    let scope = trigger.closest('.col-md-12') || document.body;
+
+    let headings = Array.from(scope.querySelectorAll(levels.join(',')))
+        .filter(heading => {
+            return !heading.closest('.autotoc')
+                && !heading.closest('.autotoc-secondary')
+                && !heading.closest('.header')
+                && !heading.closest('.menu')
+                && heading.textContent.trim().length > 0;
+        });
+
+    if (headings.length === 0) return;
+
+    function slugify(text) {
+        return text
+            .toLowerCase()
+            .trim()
+            .replace(/&shy;/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/[^\p{L}\p{N}-]+/gu, '')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+    }
+
+    function ensure_id(heading, index) {
+        if (heading.id) return heading.id;
+
+        let base = slugify(heading.textContent) || `abschnitt-${index + 1}`;
+        let id = base;
+        let counter = 2;
+
+        while (document.getElementById(id)) {
+            id = `${base}-${counter}`;
+            counter++;
+        }
+
+        heading.id = id;
+        return id;
+    }
+
+    let nav = document.createElement('nav');
+    nav.className = 'autotoc-secondary';
+    nav.setAttribute('aria-label', title);
+
+    let title_element = document.createElement('div');
+    title_element.className = 'autotoc-secondary-title';
+    title_element.textContent = title;
+
+    let items = document.createElement('div');
+    items.className = 'autotoc-secondary-items';
+
+    nav.appendChild(title_element);
+    nav.appendChild(items);
+
+    headings.forEach((heading, index) => {
+        let id = ensure_id(heading, index);
+        let level = parseInt(heading.tagName.substring(1), 10);
+
+        let link = document.createElement('a');
+        link.href = `#${id}`;
+        link.className = `level-${level}`;
+        link.textContent = heading.textContent.trim();
+        link.dataset.autotocSecondaryIndex = index;
+
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            window.scrollTo({
+                top: heading.offsetTop - 90,
+                behavior: 'smooth'
+            });
+
+            history.replaceState(null, '', `#${id}`);
+        });
+
+        items.appendChild(link);
+
+        autotoc_secondary_headings.push(heading);
+        autotoc_secondary_links.push(link);
+    });
+
+    if (main_container) {
+        main_container.classList.add('autotoc-secondary-main');
+
+        let layout = document.createElement('div');
+        layout.className = 'autotoc-secondary-layout';
+
+        main_container.parentNode.insertBefore(layout, main_container);
+        layout.appendChild(nav);
+        layout.appendChild(main_container);
+    } else {
+        document.body.appendChild(nav);
+    }
+
+    autotoc_secondary = nav;
+
+    function update_active_secondary_autotoc() {
+        autotoc_secondary_ticking = false;
+
+        if (autotoc_secondary_headings.length === 0) return;
+
+        let current_index = 0;
+        let marker_y = window.scrollY + 120;
+
+        for (let i = 0; i < autotoc_secondary_headings.length; i++) {
+            if (autotoc_secondary_headings[i].offsetTop <= marker_y) {
+                current_index = i;
+            } else {
+                break;
+            }
+        }
+
+        autotoc_secondary_links.forEach(link => {
+            link.classList.remove('active');
+        });
+
+        let active_link = autotoc_secondary_links[current_index];
+
+        if (active_link) {
+            active_link.classList.add('active');
+
+            active_link.scrollIntoView({
+                block: 'nearest',
+                inline: 'nearest'
+            });
+        }
+    }
+
+    function request_secondary_autotoc_update() {
+        if (autotoc_secondary_ticking) return;
+
+        autotoc_secondary_ticking = true;
+        requestAnimationFrame(update_active_secondary_autotoc);
+    }
+
+    window.addEventListener('scroll', request_secondary_autotoc_update);
+    window.addEventListener('resize', request_secondary_autotoc_update);
+
+    request_secondary_autotoc_update();
 }
 
 var brightness = `#{((@session_user || {})[:brightness] || 'auto')}`;
@@ -376,6 +543,7 @@ window.addEventListener('load', function() {
             scrollElement.scrollLeft = scrollLeft - walk;
         });
     }
+    install_secondary_autotoc();
     install_autotoc();
 });
 </script>

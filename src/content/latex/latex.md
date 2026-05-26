@@ -2,6 +2,13 @@
 image: latex-logo.png
 </div>
 
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3,h4">
+</div>
+
+
 # Dokumente schreiben mit LaTeX
 
 <p class='abstract'>

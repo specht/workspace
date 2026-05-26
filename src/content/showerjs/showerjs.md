@@ -2,6 +2,12 @@
 image: showerjs.webp:0:80
 </div>
 
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3,h4">
+</div>
+
 <style>
 .shower-mini {
     box-sizing: border-box;

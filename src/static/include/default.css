@@ -154,6 +154,9 @@ footer a:hover {
 }
 
 .menu {
+    position: relative;
+    z-index: 20;
+
     background-color: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(5px);
     text-align: right;
@@ -869,14 +872,14 @@ hr {
 
 .autotoc {
     position: fixed;
-    z-index: 1;
+    z-index: 1000;
     top: 0;
     left: 0;
     right: 0;
     background-color: #fff;
-    box-shadow: 0 0 1em rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 1em rgba(0, 0, 0, 0.25);
     font-size: 85%;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
     transition: transform 0.3s ease-out;
     transform: translateY(0);
 }
@@ -1371,4 +1374,251 @@ pre .na {
 
 .modal-xxl {
     --bs-modal-width: calc(100vw - 4em);
+}
+
+/* SECONDARY AUTO-TOC */
+
+body.has-autotoc-secondary {
+    --autotoc-secondary-width: 18rem;
+    --autotoc-secondary-gap: 2rem;
+    --autotoc-secondary-top: 0rem;
+    --autotoc-secondary-bottom: 1.9rem;
+    --autotoc-primary-height: 3.6rem;
+}
+
+body.has-autotoc-secondary.autotoc-primary-visible {
+    --autotoc-secondary-top: var(--autotoc-primary-height);
+}
+
+.autotoc-secondary-layout {
+    display: block;
+    position: relative;
+    z-index: 0;
+}
+
+@media (min-width: 1400px) {
+    .autotoc-secondary-layout {
+        display: grid;
+        grid-template-columns:
+            var(--autotoc-secondary-width)
+            minmax(0, 1fr);
+        column-gap: var(--autotoc-secondary-gap);
+        align-items: start;
+        padding-right: 2rem;
+    }
+
+    .autotoc-secondary-main {
+        width: 100%;
+        max-width: 1320px;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .autotoc-secondary {
+        position: sticky;
+        top: var(--autotoc-secondary-top);
+
+        width: var(--autotoc-secondary-width);
+        height: calc(
+            100vh
+            - var(--autotoc-secondary-top)
+            - var(--autotoc-secondary-bottom)
+        );
+
+        overflow-y: auto;
+    }
+}
+
+body.has-autotoc-secondary.autotoc-primary-visible {
+    --autotoc-secondary-top: 3.6rem;
+}
+
+.autotoc-secondary {
+    box-sizing: border-box;
+
+    width: var(--autotoc-secondary-width);
+    overflow-y: auto;
+
+    padding: 1rem 1rem 1.5rem 1.15rem;
+
+    background: rgba(var(--bs-body-bg-rgb), 0.96);
+    border-right: 1px solid rgba(var(--bs-body-color-rgb), 0.12);
+
+    backdrop-filter: blur(12px);
+    scrollbar-width: thin;
+
+    transition:
+        opacity 160ms ease,
+        transform 160ms ease,
+        visibility 160ms ease;
+}
+
+.autotoc-secondary.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-100%);
+    pointer-events: none;
+}
+
+.autotoc-secondary-title {
+    margin: 0 0 0.7rem;
+    padding: 0 0 0.55rem;
+
+    font-weight: 700;
+    font-size: 0.86rem;
+
+    border-bottom: 1px solid rgba(var(--bs-body-color-rgb), 0.12);
+}
+
+.autotoc-secondary-items {
+    display: grid;
+    gap: 0.04rem;
+}
+
+.autotoc-secondary a {
+    display: block;
+
+    padding: 0.18rem 0.45rem;
+    border-radius: 0.35rem;
+    border-left: 0.11rem solid transparent;
+
+    color: inherit;
+    text-decoration: none;
+    font-size: 0.78rem;
+    line-height: 1.22;
+
+    opacity: 0.56;
+
+    /*
+     * Important:
+     * Do not change font-weight on active.
+     * That causes small layout shifts while scrolling.
+     */
+    font-weight: 400;
+}
+
+.autotoc-secondary a:hover {
+    opacity: 0.95;
+    background: rgba(var(--bs-body-color-rgb), 0.055);
+}
+
+.autotoc-secondary a.active {
+    opacity: 1;
+    color: #143b86;
+    background: rgba(var(--bs-primary-rgb), 0.055);
+    border-left-color: #0d60ae;
+    font-weight: 400;
+}
+
+.autotoc-secondary a.level-2 {
+    padding-left: 0.45rem;
+    font-weight: 600;
+    opacity: 0.72;
+}
+
+.autotoc-secondary a.level-2.active {
+    font-weight: 600;
+}
+
+.autotoc-secondary a.level-3 {
+    padding-left: 1rem;
+}
+
+.autotoc-secondary a.level-4 {
+    padding-left: 1.55rem;
+}
+
+.autotoc-secondary a.level-5 {
+    padding-left: 2.1rem;
+    font-size: 0.72rem;
+}
+
+/*
+ * Desktop/laptop:
+ * The sidebar is part of the page layout,
+ * so the article starts to the right of it.
+ */
+.autotoc-secondary-main {
+    transition:
+        margin-left 180ms ease,
+        margin-right 180ms ease,
+        max-width 180ms ease;
+}
+
+body.has-autotoc-secondary {
+    --autotoc-secondary-width: 18rem;
+    --autotoc-secondary-gap: 2rem;
+    --autotoc-secondary-top: 3.6rem;
+    --autotoc-secondary-bottom: 1.9rem;
+}
+
+.autotoc-secondary-layout {
+    display: block;
+}
+
+@media (min-width: 1400px) {
+    .autotoc-secondary-layout {
+        display: grid;
+        grid-template-columns:
+            var(--autotoc-secondary-width)
+            minmax(0, 1fr);
+        column-gap: var(--autotoc-secondary-gap);
+        align-items: start;
+        padding-right: 2rem;
+    }
+
+    .autotoc-secondary-main {
+        width: 100%;
+        max-width: 1320px;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .autotoc-secondary {
+        position: sticky;
+        top: var(--autotoc-secondary-top);
+
+        width: var(--autotoc-secondary-width);
+        height: calc(
+            100vh
+            - var(--autotoc-secondary-top)
+            - var(--autotoc-secondary-bottom)
+        );
+
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 1399.98px) {
+    .autotoc-secondary {
+        display: none;
+    }
+}
+
+@media print {
+    .autotoc-secondary,
+    .autotoc-secondary-layout {
+        display: block;
+    }
+
+    .autotoc-secondary {
+        display: none;
+    }
+}
+
+
+/*
+ * Smaller screens:
+ * Hide it for now. Later this can become an offcanvas drawer.
+ */
+@media (max-width: 1399.98px) {
+    .autotoc-secondary {
+        display: none;
+    }
+}
+
+@media print {
+    .autotoc-secondary {
+        display: none;
+    }
 }
