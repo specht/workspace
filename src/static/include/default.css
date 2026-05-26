@@ -1433,6 +1433,19 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     --autotoc-secondary-top: 3.6rem;
 }
 
+/* SECONDARY AUTO TOC */
+
+body.has-autotoc-secondary {
+    --autotoc-secondary-width: 18rem;
+    --autotoc-secondary-gap: 2rem;
+    --autotoc-secondary-top: 3.6rem;
+    --autotoc-secondary-bottom: 1.9rem;
+}
+
+.autotoc-secondary-layout {
+    display: block;
+}
+
 .autotoc-secondary {
     box-sizing: border-box;
 
@@ -1488,12 +1501,6 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     line-height: 1.22;
 
     opacity: 0.56;
-
-    /*
-     * Important:
-     * Do not change font-weight on active.
-     * That causes small layout shifts while scrolling.
-     */
     font-weight: 400;
 }
 
@@ -1533,29 +1540,6 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     font-size: 0.72rem;
 }
 
-/*
- * Desktop/laptop:
- * The sidebar is part of the page layout,
- * so the article starts to the right of it.
- */
-.autotoc-secondary-main {
-    transition:
-        margin-left 180ms ease,
-        margin-right 180ms ease,
-        max-width 180ms ease;
-}
-
-body.has-autotoc-secondary {
-    --autotoc-secondary-width: 18rem;
-    --autotoc-secondary-gap: 2rem;
-    --autotoc-secondary-top: 3.6rem;
-    --autotoc-secondary-bottom: 1.9rem;
-}
-
-.autotoc-secondary-layout {
-    display: block;
-}
-
 @media (min-width: 1400px) {
     .autotoc-secondary-layout {
         display: grid;
@@ -1578,14 +1562,11 @@ body.has-autotoc-secondary {
         position: sticky;
         top: var(--autotoc-secondary-top);
 
-        width: var(--autotoc-secondary-width);
         height: calc(
             100vh
             - var(--autotoc-secondary-top)
             - var(--autotoc-secondary-bottom)
         );
-
-        overflow-y: auto;
     }
 }
 
@@ -1596,29 +1577,11 @@ body.has-autotoc-secondary {
 }
 
 @media print {
-    .autotoc-secondary,
+    .autotoc-secondary {
+        display: none;
+    }
+
     .autotoc-secondary-layout {
         display: block;
-    }
-
-    .autotoc-secondary {
-        display: none;
-    }
-}
-
-
-/*
- * Smaller screens:
- * Hide it for now. Later this can become an offcanvas drawer.
- */
-@media (max-width: 1399.98px) {
-    .autotoc-secondary {
-        display: none;
-    }
-}
-
-@media print {
-    .autotoc-secondary {
-        display: none;
     }
 }
