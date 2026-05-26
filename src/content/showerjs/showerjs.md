@@ -460,7 +460,7 @@ Dieser Abschnitt beginnt mit `<section class="slide">` und endet mit `</section>
 Alles, was zwischen diesen beiden Zeilen steht, gehört zu dieser einen Folie.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/slide-001.webp'>
+    <img src='screenshots/meine-lieblingstiere.webp'>
 </button>
 
 ```html
@@ -522,7 +522,7 @@ Längere Texte schreibst du nicht direkt lose in die Folie, sondern in Absätze.
 Ein Absatz beginnt mit `<p>` und endet mit `</p>`.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/slide-002.webp'>
+    <img src='screenshots/warum-html.webp'>
 </button>
 
 
@@ -581,7 +581,7 @@ Die zweite Überschrift hilft dem Publikum mehr, weil sie schon eine kleine Auss
 Wenn du mehrere Gedanken auf einer Folie hast, kannst du mehrere Absätze verwenden:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/slide-003.webp'>
+    <img src='screenshots/erste-webseite.webp'>
 </button>
 
 
@@ -612,7 +612,7 @@ Manchmal möchtest du innerhalb eines Absatzes eine neue Zeile beginnen, ohne ei
 Dafür gibt es `<br>`.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/slide-004.webp'>
+    <img src='screenshots/ueber-mich.webp'>
 </button>
 
 ```html
@@ -641,7 +641,7 @@ Wie du siehst, erhältst du durch <code>&lt;br&gt;</code> nur einen Zeilenumbruc
 Diese Folie ist technisch korrekt, aber als Präsentationsfolie wahrscheinlich zu voll:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/slide-005.webp'>
+    <img src='screenshots/geschichte-des-internets.webp'>
 </button>
 
 ```html
@@ -660,7 +660,7 @@ Diese Folie ist technisch korrekt, aber als Präsentationsfolie wahrscheinlich z
 Oft ist es besser, den Text zu kürzen oder auf mehrere Folien zu verteilen:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/slide-006.webp'>
+    <img src='screenshots/internet-verbindet-computer.webp'>
 </button>
 
 ```html
@@ -702,7 +702,7 @@ In HTML gibt es zwei wichtige Arten von Listen:
 `li` steht für »list item«, also »Listenpunkt«.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/slide-007.webp'>
+    <img src='screenshots/meine-projektidee.webp'>
 </button>
 
 ```html
@@ -735,7 +735,7 @@ Schreibe also nicht alle Punkte in ein einziges <code>&lt;li&gt;</code>, sondern
 Eine nummerierte Liste verwendest du, wenn die Reihenfolge wichtig ist:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/slide-008.webp'>
+    <img src='screenshots/so-startest-du.webp'>
 </button>
 
 ```html
@@ -788,7 +788,7 @@ Eine Liste auf einer Folie sollte nicht zu lang sein.
 Diese Folie ist zu voll und stößt an den unteren Rand der Folie:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/slide-009.webp'>
+    <img src='screenshots/vorteile-html-praesentationen-uebersicht.webp'>
 </button>
 
 ```html
@@ -811,7 +811,7 @@ Diese Folie ist zu voll und stößt an den unteren Rand der Folie:
 Oft ist es besser, nur die wichtigsten Punkte auf die Folie zu schreiben:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/slide-010.webp'>
+    <img src='screenshots/vorteile-html-praesentationen-kurz.webp'>
 </button>
 
 ```html
@@ -876,7 +876,7 @@ Dafür gibt es in HTML kleine Tags, die mitten im Text stehen können.
 Solche Tags nennt man **Inline-Tags**, weil sie in einer Zeile im Text mitlaufen.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/slide-011.webp'>
+    <img src='screenshots/wichtig-html-css.webp'>
 </button>
 
 ```html
@@ -902,7 +902,7 @@ Die wichtigsten Inline-Tags sind:
 Mit `<strong>` markierst du Wörter, die besonders wichtig sind:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/slide-012.webp'>
+    <img src='screenshots/speichern-und-einblendungen.webp'>
 </button>
 
 ```html
@@ -969,7 +969,7 @@ Für manche Themen brauchst du hochgestellte oder tiefgestellte Zeichen.
 Dafür gibt es `<sup>` und `<sub>`.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/slide-013.webp'>
+    <img src='screenshots/formeln-im-text.webp'>
 </button>
 
 ```html
@@ -1023,7 +1023,7 @@ Es gibt zwei typische Arten von Formeln:
 - Eine **abgesetzte Formel** steht groß in einer eigenen Zeile.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/slide-014.webp'>
+    <img src='screenshots/formeln-mit-katex.webp'>
 </button>
 
 ```html
@@ -1073,7 +1073,7 @@ H_2O             tiefgestellte 2
 Zum Beispiel:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/slide-015.webp'>
+    <img src='screenshots/weitere-formeln.webp'>
 </button>
 
 ```html
@@ -1258,7 +1258,7 @@ Angenommen, dein Bild heißt `fuji.jpg` und liegt im Ordner `pictures`.
 Dann fügst du es so ein:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/slide-016.webp'>
+    <img src='screenshots/bild-zu-gross.webp'>
 </button>
 
 ```html
@@ -1612,16 +1612,9 @@ In der Standardvorlage von shower.js erscheint rechts oben automatisch ein rotes
 Du musst dafür normalerweise **nichts** in deine Folie schreiben.
 Die Vorlage erzeugt dieses Ribbon selbst mit Hilfe dieser CSS-Regel:
 
-<div class='shower-mini'>
-<div class='shower-mini-slide' data-page='12'>
-<div class='mini-title'>Ausflug nach Berlin</div>
-<ul>
-<li>🏛️ Reichstag besuchen</li>
-<li>🚲 Mit dem Rad durch die Stadt</li>
-<li>🍟 Currywurst probieren</li>
-</ul>
-</div>
-</div>
+<button class='shower-mini' type='button'>
+    <img src='screenshots/ausflug-nach-berlin.webp'>
+</button>
 
 ```css
 .slide::after {
@@ -1653,15 +1646,12 @@ So kann die Vorlage Farben und Größen an einer zentralen Stelle verwalten.
 
 ##### Farbe des Standard-Ribbons ändern
 
-<div class='shower-mini'>
-<div class='shower-mini-slide mini-blue-ribbon' data-page='13'>
-<div class='mini-title'>Blaues Ribbon</div>
-<p>Die Form bleibt gleich, aber die Farbe ändert sich.</p>
-</div>
-</div>
-
 Wenn du nur die Farbe ändern möchtest, kannst du das vorhandene Ribbon behalten und nur die Hintergrundfarbe überschreiben.
 Schreibe diese Regel in `styles.css` unter den Kommentar `Eigene CSS-Regeln`:
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/blaues-ribbon.webp'>
+</button>
 
 ```css
 .slide::after {
@@ -1681,16 +1671,13 @@ Du kannst auch die vorhandene Shower-Farbvariable verwenden:
 
 ##### Eine runde Seitenzahl verwenden
 
-<div class='shower-mini'>
-<div class='shower-mini-slide mini-round-page' data-page='14'>
-<div class='mini-title'>Runde Seitenzahl</div>
-<p>Hier wird aus dem Ribbon ein Kreis.</p>
-</div>
-</div>
-
 Das Ribbon muss nicht wie ein Lesezeichen aussehen.
 Du kannst daraus auch einen Kreis machen.
 Auch diese Regel gehört in `styles.css`:
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/runde-seitenzahl.webp'>
+</button>
 
 ```css
 .slide::after {
@@ -1707,7 +1694,7 @@ Auch diese Regel gehört in `styles.css`:
 
     clip-path: none;
     border-radius: 50%;
-    background-color: #75507b;
+    background-color: #4aa03f;
 
     line-height: 1;
 }
@@ -1723,15 +1710,12 @@ Wichtig sind hier vor allem drei Dinge:
 
 ##### Nur eine kleine Zahl unten rechts anzeigen
 
-<div class='shower-mini'>
-<div class='shower-mini-slide mini-plain-page' data-page='15'>
-<div class='mini-title'>Unauffällige Seitenzahl</div>
-<p>Die Nummer steht nur noch klein unten rechts.</p>
-</div>
-</div>
-
 Manchmal soll die Seitenzahl sehr unauffällig sein.
 Dann kannst du Hintergrund und Form komplett entfernen:
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/unauffaellige-seitenzahl.webp'>
+</button>
 
 ```css
 .slide::after {
@@ -1766,6 +1750,10 @@ In der Starter-Vorlage gibt es dafür schon eine CSS-Regel in `styles.css`:
 ```
 
 Du musst also nur der Folie in `index.html` die zusätzliche Klasse `nopagenumber` geben:
+
+<button class='shower-mini' type='button'>
+    <img src='screenshots/keine-seitenzahl.webp'>
+</button>
 
 ```html
 <section class="slide nopagenumber">
