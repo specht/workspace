@@ -1520,9 +1520,9 @@ body.has-autotoc-secondary {
 
 .autotoc-secondary a.active {
     opacity: 1;
-    color: #143b86;
-    background: rgba(var(--bs-primary-rgb), 0.055);
-    border-left-color: #0d60ae;
+    color: #074e84;
+    background: rgba(12, 93, 155, 0.055);
+    border-left-color: #074e84;
     font-weight: 400;
 }
 
