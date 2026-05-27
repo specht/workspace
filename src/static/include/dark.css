@@ -197,3 +197,15 @@ html[data-bs-theme="dark"] {
         }
     }
 }
+
+.autotoc-secondary {
+    background: rgba(var(--bs-body-bg-rgb), 0.25);
+    border-right: 1px solid rgba(var(--bs-body-color-rgb), 0.05);
+}
+
+.autotoc-secondary a.active {
+    color: #18abe5;
+    background: rgba(255, 255, 255, 0.055);
+    border-left-color: #18abe5;
+    font-weight: 400;
+}
