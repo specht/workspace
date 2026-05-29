@@ -214,8 +214,6 @@ function install_secondary_autotoc() {
     let trigger = document.querySelector('.autotoc-secondary-trigger');
     if (!trigger) return;
 
-    document.body.classList.add('has-autotoc-secondary');
-
     let main_container = trigger.closest('.container');
 
     let title = trigger.dataset.title || 'Auf dieser Seite';
@@ -225,6 +223,7 @@ function install_secondary_autotoc() {
         .filter(x => x.length > 0);
 
     if (levels.length === 0) return;
+    document.body.classList.add('has-autotoc-secondary');
 
     let scope = trigger.closest('.col-md-12') || document.body;
 
@@ -408,6 +407,7 @@ window.addEventListener('DOMContentLoaded', function() {
             update_dark_mode();
         }
     });
+    install_secondary_autotoc();
 });
 
 window.addEventListener('load', function() {
@@ -543,7 +543,6 @@ window.addEventListener('load', function() {
             scrollElement.scrollLeft = scrollLeft - walk;
         });
     }
-    install_secondary_autotoc();
     install_autotoc();
 });
 </script>
