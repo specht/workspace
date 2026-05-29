@@ -346,10 +346,28 @@ function install_secondary_autotoc() {
         if (active_link) {
             active_link.classList.add('active');
 
-            active_link.scrollIntoView({
-                block: 'nearest',
-                inline: 'nearest'
-            });
+            let items = active_link.closest('.autotoc-secondary-items');
+
+            if (items) {
+                let padding = 12;
+                let link_top = active_link.offsetTop;
+                let link_bottom = link_top + active_link.offsetHeight;
+
+                let visible_top = items.scrollTop;
+                let visible_bottom = visible_top + items.clientHeight;
+
+                if (link_top < visible_top + padding) {
+                    items.scrollTo({
+                        top: link_top - padding,
+                        behavior: 'smooth'
+                    });
+                } else if (link_bottom > visible_bottom - padding) {
+                    items.scrollTo({
+                        top: link_bottom - items.clientHeight + padding,
+                        behavior: 'smooth'
+                    });
+                }
+            }
         }
     }
 
