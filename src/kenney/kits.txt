@@ -1,17 +1,25 @@
-Blaster Kit https://kenney.nl/media/pages/assets/blaster-kit/aa06525a20-1753959510/kenney_blaster-kit_2.1.zip
-Car Kit https://kenney.nl/media/pages/assets/car-kit/a9b1e99e92-1714554900/kenney_car-kit.zip
+Blaster Kit https://kenney.nl/media/pages/assets/blaster-kit/261d80a716-1753959510/kenney_blaster-kit_2.1.zip
+Car Kit https://kenney.nl/media/pages/assets/car-kit/1a312ec241-1775131960/kenney_car-kit.zip
 Castle Kit https://kenney.nl/media/pages/assets/castle-kit/5e344a4444-1711543616/kenney_castle-kit.zip
-City Kit (Commercial) https://kenney.nl/media/pages/assets/city-kit-commercial/16eb35d771-1753115042/kenney_city-kit-commercial_2.1.zip
+City Kit (Commercial) https://kenney.nl/media/pages/assets/city-kit-commercial/a742d900eb-1753115042/kenney_city-kit-commercial_2.1.zip
 City Kit (Industrial) https://kenney.nl/media/pages/assets/city-kit-industrial/558e215159-1750838303/kenney_city-kit-industrial_1.0.zip
-City Kit (Roads) https://kenney.nl/media/pages/assets/city-kit-roads/4b84d0ea8d-1741864740/kenney_city-kit-roads.zip
+City Kit (Roads) https://kenney.nl/media/pages/assets/city-kit-roads/74288c9459-1741864740/kenney_city-kit-roads.zip
 City Kit (Suburban) https://kenney.nl/media/pages/assets/city-kit-suburban/167f6dbc31-1745479373/kenney_city-kit-suburban_20.zip
-Food Kit https://kenney.nl/media/pages/assets/food-kit/719eef5f43-1719418518/kenney_food-kit.zip
-Graveyard Kit https://kenney.nl/media/pages/assets/graveyard-kit/bb13ecc2b6-1760691807/kenney_graveyard-kit_5.0.zip
-Holiday Kit https://kenney.nl/media/pages/assets/holiday-kit/1a0f5c0d51-1733923970/kenney_holiday-kit.zip
-Mini Arcade https://kenney.nl/media/pages/assets/mini-arcade/6864c49401-1721638600/kenney_mini-arcade.zip
+Cube Pets https://kenney.nl/media/pages/assets/cube-pets/44e58e945f-1774520254/kenney_cube-pets_1.0.zip
+Factory Kit https://kenney.nl/media/pages/assets/factory-kit/edaac9d4f6-1777639602/kenney_factory-kit_3.0.zip
+Fantasy Town Kit https://kenney.nl/media/pages/assets/fantasy-town-kit/efe948d309-1754222374/kenney_fantasy-town-kit_2.0.zip
+Food Kit https://kenney.nl/media/pages/assets/food-kit/83086fa91c-1719418518/kenney_food-kit.zip
+Graveyard Kit https://kenney.nl/media/pages/assets/graveyard-kit/ba8d4b4517-1760691807/kenney_graveyard-kit_5.0.zip
+Holiday Kit https://kenney.nl/media/pages/assets/holiday-kit/3976a6496a-1733923970/kenney_holiday-kit.zip
+Mini Arcade https://kenney.nl/media/pages/assets/mini-arcade/ece1e8f320-1721638600/kenney_mini-arcade.zip
 Mini Characters https://kenney.nl/media/pages/assets/mini-characters-1/546ff0fed5-1721210573/kenney_mini-characters.zip
+Mini Dungeon https://kenney.nl/media/pages/assets/mini-dungeon/6cd72dc849-1771249391/kenney_mini-dungeon.zip
 Mini Market https://kenney.nl/media/pages/assets/mini-market/9b3ce850b6-1729865423/kenney_mini-market.zip
-Pirate Kit https://kenney.nl/media/pages/assets/pirate-kit/85d331e664-1735140511/kenney_pirate-kit.zip
+Modular Dungeon Kit https://kenney.nl/media/pages/assets/modular-dungeon-kit/7bed87605b-1771926065/kenney_modular-dungeon-kit_1.0.zip
+Modular Space Kit https://kenney.nl/media/pages/assets/modular-space-kit/8261428a47-1771146076/kenney_modular-space-kit_1.0.zip
+Pirate Kit https://kenney.nl/media/pages/assets/pirate-kit/e6d4bb1525-1771333093/kenney_pirate-kit.zip
+Platformer Kit https://kenney.nl/media/pages/assets/platformer-kit/1585cf62b4-1775122253/kenney_platformer-kit.zip
 Survival Kit https://kenney.nl/media/pages/assets/survival-kit/750a1eb3f9-1712149243/kenney_survival-kit.zip
-Train Kit https://kenney.nl/media/pages/assets/train-kit/f58e738ada-1727040883/kenney_train-kit.zip
+Tower Defense Kit https://kenney.nl/media/pages/assets/tower-defense-kit/a402493eaa-1726471567/kenney_tower-defense-kit.zip
+Train Kit https://kenney.nl/media/pages/assets/train-kit/cf8521d625-1727040883/kenney_train-kit.zip
 Watercraft Kit https://kenney.nl/media/pages/assets/watercraft-kit/da473dc0d9-1713519620/kenney_watercraft-pack.zip

@@ -356,14 +356,6 @@ stroke = off
 Wenn du möchtest, kannst du auch bunte Farben verwenden. Gib dafür statt einer Zahl von 0.0 bis 1.0 einfach einen HTML-Farbcode wie z. B. <code>#4aa03f</code> an.
 </div>
 
-### Anaglyph-Effekt ausschalten
-
-Falls du gar keine 3D-Brille hast oder die 3D-Effekte nicht sehen möchtest, kannst du den Anaglyph-Effekt ausschalten, indem du die Zeile `anaglyph = off` hinzufügst:
-
-<div style='text-align: center; margin: 1em 0;'>
-<img src='anaglyph-off.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
-</div>
-
 ## Code auskommentieren
 
 Manchmal möchte man Teile eines Programms vorübergehend deaktivieren, ohne sie zu löschen. Dafür kannst du Zeilen auskommentieren, indem du ein Semikolon `;` am Anfang der Zeile setzt. Zum Beispiel:
@@ -407,18 +399,50 @@ rotate = cos(t * 2) * 10, 0, sin(t * 3) * 10
 <video src='animation2.mp4' autoplay loop muted></video>
 </div>
 
-
 **Aufgabe:** Erstelle eine Animation, bei der die Sonne in der Mitte steht und die Erde um die Sonne kreist. Der Mond soll dabei um die Erde kreisen:
 
 <div style='text-align: center; margin: 1em 0;'>
 <video src='animation3.mp4' autoplay loop muted style='max-width: 100%;'></video>
 </div>
 
+## Text
+
+Du kannst Text in deine Szene einfügen, indem du den Befehl `text` verwendest:
+
+```ini
+text = Hello!
+```
+
+<img class='full' src='hello.webp'>
+
+Richtig gut sieht er aber erst mit einer 3D-Schattierung aus:
+
+```ini
+text = Hello!
+shade = on
+stroke = off
+fill = #f9b935
+```
+
+<img class='full' src='hello-shade.webp'>
+
 ## 3D-Modelle
 
 Du kannst auch 3D-Modelle in deine Szene einfügen. Auf der Website [kenney.nl](https://kenney.nl/assets) gibt es eine große Sammlung von kostenlosen 3D-Modellen, die du verwenden kannst. Du kannst sie direkt in dein Projekt herunterladen und in der `scene.ini` einfügen. Klicke dazu auf ein Kit, um die verfügbaren 3D-Modelle zu sehen:
 
 <div class='kenney-overview row'>
+    <div class='col-sm-6'>
+        <a href='/blaster-kit'><img src='kenney/blaster-kit.png'></a>
+        <div>Blaster Kit</div>
+    </div>
+    <div class='col-sm-6'>
+        <a href='/car-kit'><img src='kenney/car-kit.png'></a>
+        <div>Car Kit</div>
+    </div>
+    <div class='col-sm-6'>
+        <a href='/castle-kit'><img src='kenney/castle-kit-sample.png'></a>
+        <div>Castle Kit</div>
+    </div>
     <div class='col-sm-6'>
         <a href='/city-kit-commercial'><img src='kenney/city-kit-commercial-sample.png'></a>
         <div>City Kit (Commercial)</div>
@@ -428,24 +452,28 @@ Du kannst auch 3D-Modelle in deine Szene einfügen. Auf der Website [kenney.nl](
         <div>City Kit (Industrial)</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/city-kit-suburban'><img src='kenney/city-kit-suburban-sample.png'></a>
-        <div>City Kit (Suburban)</div>
-    </div>
-    <div class='col-sm-6'>
         <a href='/city-kit-roads'><img src='kenney/city-kit-roads-sample.png'></a>
         <div>City Kit (Roads)</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/car-kit'><img src='kenney/car-kit.png'></a>
-        <div>Car Kit</div>
+        <a href='/city-kit-suburban'><img src='kenney/city-kit-suburban-sample.png'></a>
+        <div>City Kit (Suburban)</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/train-kit'><img src='kenney/train-kit.png'></a>
-        <div>Train Kit</div>
+        <a href='/cube-pets'><img src='kenney/cube-pets.png'></a>
+        <div>Cube Pets</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/castle-kit'><img src='kenney/castle-kit-sample.png'></a>
-        <div>Castle Kit</div>
+        <a href='/factory-kit'><img src='kenney/factory-kit.png'></a>
+        <div>Factory Kit</div>
+    </div>
+    <div class='col-sm-6'>
+        <a href='/fantasy-town-kit'><img src='kenney/fantasy-town-kit.png'></a>
+        <div>Fantasy Town Kit</div>
+    </div>
+    <div class='col-sm-6'>
+        <a href='/food-kit'><img src='kenney/food-kit.png'></a>
+        <div>Food Kit</div>
     </div>
     <div class='col-sm-6'>
         <a href='/graveyard-kit'><img src='kenney/graveyard-kit-sample.png'></a>
@@ -456,32 +484,40 @@ Du kannst auch 3D-Modelle in deine Szene einfügen. Auf der Website [kenney.nl](
         <div>Holiday Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/pirate-kit'><img src='kenney/pirate-kit-sample.png'></a>
-        <div>Pirate Kit</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/survival-kit'><img src='kenney/survival-kit-sample.png'></a>
-        <div>Survival Kit</div>
+        <a href='/mini-arcade'><img src='kenney/mini-arcade-sample.png'></a>
+        <div>Mini Arcade</div>
     </div>
     <div class='col-sm-6'>
         <a href='/mini-characters'><img src='kenney/mini-characters.png'></a>
         <div>Mini Characters</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/mini-arcade'><img src='kenney/mini-arcade-sample.png'></a>
-        <div>Mini Arcade</div>
+        <a href='/mini-dungeon'><img src='kenney/mini-dungeon-sample.png'></a>
+        <div>Mini Dungeon</div>
     </div>
     <div class='col-sm-6'>
         <a href='/mini-market'><img src='kenney/mini-market-sample.png'></a>
         <div>Mini Market</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/food-kit'><img src='kenney/food-kit.png'></a>
-        <div>Food Kit</div>
+        <a href='/pirate-kit'><img src='kenney/pirate-kit-sample.png'></a>
+        <div>Pirate Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/blaster-kit'><img src='kenney/blaster-kit.png'></a>
-        <div>Blaster Kit</div>
+        <a href='/platformer-kit'><img src='kenney/platformer-kit.png'></a>
+        <div>Platformer Kit</div>
+    </div>
+    <div class='col-sm-6'>
+        <a href='/survival-kit'><img src='kenney/survival-kit-sample.png'></a>
+        <div>Survival Kit</div>
+    </div>
+    <div class='col-sm-6'>
+        <a href='/train-kit'><img src='kenney/train-kit.png'></a>
+        <div>Train Kit</div>
+    </div>
+    <div class='col-sm-6'>
+        <a href='/watercraft-kit'><img src='kenney/watercraft-kit.png'></a>
+        <div>Watercraft Kit</div>
     </div>
 </div>
 
