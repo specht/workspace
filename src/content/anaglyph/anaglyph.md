@@ -413,7 +413,9 @@ Du kannst Text in deine Szene einfügen, indem du den Befehl `text` verwendest:
 text = Hello!
 ```
 
-<img class='full' src='hello.webp'>
+<div style='text-align: center; margin: 1em 0;'>
+<img src='hello.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;'>
+</div>
 
 Richtig gut sieht er aber erst mit einer 3D-Schattierung aus:
 
@@ -424,7 +426,9 @@ stroke = off
 fill = #f9b935
 ```
 
-<img class='full' src='hello-shade.webp'>
+<div style='text-align: center; margin: 1em 0;'>
+<img src='hello-shade.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;'>
+</div>
 
 ## 3D-Modelle
 
