@@ -414,7 +414,7 @@ text = Hello!
 ```
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='hello.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;'>
+<img src='hello.webp' style='max-width: 100%; min-height: 15em; object-fit: cover; object-position: center;'>
 </div>
 
 Richtig gut sieht er aber erst mit einer 3D-Schattierung aus:
@@ -427,7 +427,7 @@ fill = #f9b935
 ```
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='hello-shade.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;'>
+<img src='hello-shade.webp' style='max-width: 100%; min-height: 15em; object-fit: cover; object-position: center;'>
 </div>
 
 ## 3D-Modelle
