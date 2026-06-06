@@ -95,6 +95,7 @@ Probiere auch andere Formen aus, indem du den Wert für `shape` änderst. Hier s
 - `cylinder` für einen Zylinder
 - `cone` für einen Kegel
 - `torus` für einen Torus (Ring)
+- `teapot` für den [Utah Teapot](https://de.wikipedia.org/wiki/Utah_teapot)
 - `plane` für ein Quadrat
 
 Zusätzlich zu den geometrischen Körpern kannst auch ein Gitter anzeigen, indem du `shape = grid` einfügst:
