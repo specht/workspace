@@ -516,7 +516,7 @@ class Main < Sinatra::Base
             # ==========================================
             server {
                 listen 80;
-                server_name ~^(?<t>[a-z0-9]+)-(?<p>\\d+)\.#{WEBSITE_HOST.split(':').first.gsub('.', '\.')}$;
+                server_name ~^(?<t>[a-z0-9]+)-(?<p>\\d+)\\.#{WEBSITE_HOST.split(':').first.gsub('.', '\\.')}$;
                 client_max_body_size 100M;
                 access_log /var/log/nginx/access.log custom;
                 charset utf-8;
@@ -531,6 +531,12 @@ class Main < Sinatra::Base
                     rewrite ^/(.*)$ /proxy/$p/$1 break;
 
                     include /etc/nginx/snippets/proxy_ws.conf;
+
+                    proxy_redirect ~^/proxy/[0-9]+(/.*)$ $1;
+                    proxy_redirect ~^/proxy/[0-9]+/?$ /;
+                    proxy_redirect ~^https?://[^/]+/proxy/[0-9]+(/.*)$ $1;
+                    proxy_redirect ~^https?://[^/]+/proxy/[0-9]+/?$ /;
+
                     proxy_pass $hs_upstream;
                 }
             }
