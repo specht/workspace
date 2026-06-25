@@ -532,10 +532,22 @@ class Main < Sinatra::Base
 
                     include /etc/nginx/snippets/proxy_ws.conf;
 
+                    # Preserve local dev port, e.g. :8025.
+                    # Do not use $server_port here; nginx listens on 80 internally.
+                    set $external_port "";
+                    if ($http_host ~* :(?<hp>\\d+)$) { set $external_port :$hp; }
+
+                    # First remove leaked /proxy/<port>/ redirects.
                     proxy_redirect ~^/proxy/[0-9]+(/.*)$ $1;
                     proxy_redirect ~^/proxy/[0-9]+/?$ /;
                     proxy_redirect ~^https?://[^/]+/proxy/[0-9]+(/.*)$ $1;
                     proxy_redirect ~^https?://[^/]+/proxy/[0-9]+/?$ /;
+
+                    # Then repair absolute redirects that lost the local dev port:
+                    #   http://token-5500.workspace.test/sub/
+                    # becomes:
+                    #   http://token-5500.workspace.test:8025/sub/
+                    proxy_redirect ~^(https?://[a-z0-9]+-[0-9]+\\.#{WEBSITE_HOST.split(':').first.gsub('.', '\\.')})(/.*)$ $1$external_port$2;
 
                     proxy_pass $hs_upstream;
                 }
