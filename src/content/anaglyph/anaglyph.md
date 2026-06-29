@@ -357,6 +357,18 @@ stroke = off
 Wenn du möchtest, kannst du auch bunte Farben verwenden. Gib dafür statt einer Zahl von 0.0 bis 1.0 einfach einen HTML-Farbcode wie z. B. <code>#4aa03f</code> an.
 </div>
 
+## Übungsaufgaben
+
+Versuche, eine oder mehrere der folgenden Szenen zu erstellen:
+
+<div style='text-align: center;'>
+<img src='ampel.png' style='width: 33%;'>
+<img src='eis.png' style='width: 33%;'>
+<img src='schneemann.png' style='width: 33%;'>
+</div>
+
+Erstelle dafür jeweils eine neue Datei (mit »File« / »New Text File«) und speichere sie unter einem passenden Namen, z. B. `ampel.ini`, `eis.ini` oder `schneemann.ini`. Du musst dann auf der Vorschauseite nur noch den passenden Dateinamen im Textfeld unten ändern, um die Szene zu sehen.
+
 ## Code auskommentieren
 
 Manchmal möchte man Teile eines Programms vorübergehend deaktivieren, ohne sie zu löschen. Dafür kannst du Zeilen auskommentieren, indem du ein Semikolon `;` am Anfang der Zeile setzt. Zum Beispiel:
