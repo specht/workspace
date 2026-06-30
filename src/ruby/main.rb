@@ -1605,6 +1605,19 @@ class Main < Sinatra::Base
         init_neo4j(email)
     end
 
+    def with_timing(label)
+        t0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+        STDERR.puts ">>> BEGIN #{label}"
+        result = yield
+        dt = Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0
+        STDERR.puts ">>> END #{label} (#{format('%.3f', dt)}s)"
+        result
+    rescue => e
+        dt = Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0 rescue 0
+        STDERR.puts ">>> ERROR #{label} after #{format('%.3f', dt)}s: #{e.class}: #{e.message}"
+        raise
+    end    
+
     def start_server(email, test_tag = nil)
         email_with_test_tag = "#{email}#{test_tag}"
         container_name = fs_tag_for_email(email_with_test_tag)
@@ -1814,9 +1827,11 @@ class Main < Sinatra::Base
                 END_OF_STRING
             end
         end
-        STDERR.puts ">>> Getting server state"
 
-        state = get_server_state(container_name)
+        STDERR.puts ">>> Getting server state"
+        state = with_timing("start_server #{container_name}: docker inspect") do
+            get_server_state(container_name)
+        end
         STDERR.puts ">>> Server state is #{state.to_yaml}"
 
         unless state[:running]
@@ -1867,8 +1882,10 @@ class Main < Sinatra::Base
             #       "folder": "/workspace"
             #     }
             #   }
-            system("chown -R 1000:1000 /user/#{container_name}")
-
+            with_timing("start_server #{container_name}: chown -R") do
+                system("chown -R 1000:1000 /user/#{container_name}")
+            end
+            
             db_email = email
             if test_tag
                 db_email = "#{email}-#{test_tag}"
@@ -1884,7 +1901,9 @@ class Main < Sinatra::Base
                         RETURN f.sha1;
                     END_OF_QUERY
                     # unpack files from archive
-                    system("tar xf /internal/test_archives/#{sha1} -C /user/#{container_name}/workspace")
+                    with_timing("start_server #{container_name}: unpack test archive") do
+                        system("tar xf /internal/test_archives/#{sha1} -C /user/#{container_name}/workspace")
+                    end
                     File.open(test_init_mark_path, 'w') do |f|
                     end
                     # check if we have a config file in the archive
@@ -1909,10 +1928,13 @@ class Main < Sinatra::Base
             STDERR.puts ">>> Login is #{login}, MySQL login is #{mysql_login}"
             command = "docker run --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(db_email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e POSTGRES_HOST=\"postgres\" -e POSTGRES_USER=\"#{login}\" -e POSTGRES_PASSWORD=\"#{Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)}\" -e POSTGRES_DATABASE=\"#{login}\"  -e NEO4J_URI=\"neo4j://neo4j:7687\" -e NEO4J_USERNAME=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)}\" -e NEO4J_DATABASE=\"#{mysql_login}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
             STDERR.puts ">>> Command:\n#{command}"
-            system(command)
-            Main.refresh_nginx_config()
+            with_timing("start_server #{container_name}: docker run") do
+                system(command)
+            end
+            with_timing("start_server #{container_name}: refresh nginx") do
+                Main.refresh_nginx_config()
+            end
         end
-
         begin
             return "#{@session_user[:server_tag]}#{test_tag}"
         rescue
