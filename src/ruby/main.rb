@@ -351,6 +351,155 @@ class Main < Sinatra::Base
         Main.shell_ok(command, :timeout => timeout, :allow_failure => allow_failure)
     end
 
+    # Background queue for workspace launches. This keeps long-running Docker,
+    # chown, tar, and nginx-refresh work out of request handlers while still
+    # deduplicating repeated launch clicks for the same workspace.
+    def self.server_start_key(email, test_tag = nil)
+        fs_tag_for_email("#{email}#{test_tag}")
+    end
+
+    def self.server_start_wait_seconds
+        value = ENV['HS_SERVER_START_WAIT_SECONDS']
+        return 2.0 if value.nil? || value.strip.empty?
+        Float(value)
+    rescue
+        STDERR.puts ">>> Invalid HS_SERVER_START_WAIT_SECONDS=#{value.inspect}; using 2.0s"
+        2.0
+    end
+
+    def self.server_start_job_keep_seconds
+        value = ENV['HS_SERVER_START_JOB_KEEP_SECONDS']
+        return 3600 if value.nil? || value.strip.empty?
+        Integer(value)
+    rescue
+        STDERR.puts ">>> Invalid HS_SERVER_START_JOB_KEEP_SECONDS=#{value.inspect}; using 3600s"
+        3600
+    end
+
+    def self.ensure_server_start_queue!
+        @@server_start_queue = Queue.new unless defined?(@@server_start_queue) && @@server_start_queue
+        @@server_start_mutex = Mutex.new unless defined?(@@server_start_mutex) && @@server_start_mutex
+        @@server_start_jobs = {} unless defined?(@@server_start_jobs) && @@server_start_jobs
+    end
+
+    def self.prune_server_start_jobs_locked!
+        cutoff = Time.now - server_start_job_keep_seconds
+        @@server_start_jobs.delete_if do |_key, job|
+            job[:finished_at] && job[:finished_at] < cutoff
+        end
+    end
+
+    def self.server_start_snapshot(job)
+        return { :status => 'unknown' } unless job
+
+        {
+            :key => job[:key],
+            :email => job[:email],
+            :test_tag => job[:test_tag],
+            :server_tag => job[:server_tag],
+            :status => job[:status],
+            :queued_at => job[:queued_at]&.to_i,
+            :started_at => job[:started_at]&.to_i,
+            :finished_at => job[:finished_at]&.to_i,
+            :error => job[:error],
+        }
+    end
+
+    def self.server_start_status(key)
+        ensure_server_start_queue!
+
+        @@server_start_mutex.synchronize do
+            server_start_snapshot(@@server_start_jobs[key] || { :key => key, :status => 'unknown' })
+        end
+    end
+
+    def self.enqueue_server_start(email:, test_tag:, server_tag:, refresh_nginx_after: false, &block)
+        raise 'enqueue_server_start requires a block' unless block_given?
+
+        ensure_server_start_queue!
+        key = server_start_key(email, test_tag)
+
+        @@server_start_mutex.synchronize do
+            prune_server_start_jobs_locked!
+
+            existing = @@server_start_jobs[key]
+            if existing && ['queued', 'running'].include?(existing[:status])
+                STDERR.puts ">>> Server start already #{existing[:status]}: #{key}"
+                return existing
+            end
+
+            job = {
+                :key => key,
+                :email => email,
+                :test_tag => test_tag,
+                :server_tag => server_tag,
+                :status => 'queued',
+                :queued_at => Time.now,
+                :started_at => nil,
+                :finished_at => nil,
+                :error => nil,
+                :refresh_nginx_after => refresh_nginx_after,
+                :runner => block,
+            }
+
+            @@server_start_jobs[key] = job
+            @@server_start_queue << job
+            STDERR.puts ">>> Server start queued: #{key} email=#{email} test_tag=#{test_tag.inspect}"
+            job
+        end
+    end
+
+    def self.wait_for_server_start_job(job, max_seconds: server_start_wait_seconds)
+        deadline = Time.now + max_seconds.to_f
+
+        loop do
+            snapshot = server_start_status(job[:key])
+            return snapshot unless ['queued', 'running'].include?(snapshot[:status])
+            return snapshot if Time.now >= deadline
+            sleep 0.05
+        end
+    end
+
+    def self.server_start_worker_loop
+        ensure_server_start_queue!
+
+        loop do
+            job = @@server_start_queue.pop
+
+            @@server_start_mutex.synchronize do
+                job[:status] = 'running'
+                job[:started_at] = Time.now
+                job[:error] = nil
+            end
+
+            begin
+                STDERR.puts ">>> Server start worker: starting #{job[:key]}"
+                job[:runner].call
+
+                if job[:refresh_nginx_after]
+                    STDERR.puts ">>> Server start worker: refresh nginx after #{job[:key]}"
+                    Main.refresh_nginx_config()
+                end
+
+                @@server_start_mutex.synchronize do
+                    job[:status] = 'ready'
+                    job[:finished_at] = Time.now
+                end
+                STDERR.puts ">>> Server start worker: ready #{job[:key]}"
+            rescue => e
+                @@server_start_mutex.synchronize do
+                    job[:status] = 'failed'
+                    job[:finished_at] = Time.now
+                    job[:error] = "#{e.class}: #{e.message}"
+                end
+                STDERR.puts ">>> Server start worker failed for #{job[:key]}: #{e.class}: #{e.message}"
+                STDERR.puts e.backtrace.join("\n")
+            ensure
+                job.delete(:runner)
+            end
+        end
+    end
+
     def workspace_url()
         if user_logged_in?
             server_tag = @session_user[:server_tag]
@@ -1348,6 +1497,11 @@ class Main < Sinatra::Base
                 end
             end
         end
+
+        self.ensure_server_start_queue!
+        Thread.new do
+            Main.server_start_worker_loop
+        end
     end
 
     before '*' do
@@ -1754,7 +1908,7 @@ class Main < Sinatra::Base
         raise
     end    
 
-    def start_server(email, test_tag = nil)
+    def start_server(email, test_tag = nil, server_tag: nil)
         email_with_test_tag = "#{email}#{test_tag}"
         container_name = fs_tag_for_email(email_with_test_tag)
 
@@ -2071,6 +2225,8 @@ class Main < Sinatra::Base
                 Main.refresh_nginx_config()
             end
         end
+        return "#{server_tag}#{test_tag}" if server_tag
+
         begin
             return "#{@session_user[:server_tag]}#{test_tag}"
         rescue
@@ -2132,14 +2288,45 @@ class Main < Sinatra::Base
         respond(:yay => 'sure')
     end
 
+    post '/api/server_start_status' do
+        assert(user_logged_in?)
+        data = parse_request_data(:optional_keys => [:test_tag, :email])
+
+        email = @session_user[:email]
+        if data[:email] && teacher_logged_in?
+            email = data[:email]
+        end
+
+        key = Main.server_start_key(email, data[:test_tag])
+        respond(Main.server_start_status(key))
+    end
+
     post '/api/start_server' do
         assert(user_logged_in?)
         data = parse_request_data(:optional_keys => [:test_tag])
 
         email = @session_user[:email]
-        server_tag = start_server(email, data[:test_tag])
+        test_tag = data[:test_tag]
+        base_server_tag = @session_user[:server_tag]
+        server_tag = "#{base_server_tag}#{test_tag}"
 
-        respond(:yay => 'sure', :server_tag => server_tag)
+        job = Main.enqueue_server_start(
+            :email => email,
+            :test_tag => test_tag,
+            :server_tag => server_tag
+        ) do
+            start_server(email, test_tag, :server_tag => base_server_tag)
+        end
+
+        status = Main.wait_for_server_start_job(job)
+
+        respond(
+            :yay => 'sure',
+            :server_tag => server_tag,
+            :queued => ['queued', 'running'].include?(status[:status]),
+            :status => status[:status],
+            :error => status[:error]
+        )
     end
 
     post '/api/start_server_with_share_tag' do
@@ -2151,9 +2338,23 @@ class Main < Sinatra::Base
             RETURN u;
         END_OF_QUERY
 
-        start_server(user[:email])
+        job = Main.enqueue_server_start(
+            :email => user[:email],
+            :test_tag => nil,
+            :server_tag => user[:server_tag]
+        ) do
+            start_server(user[:email], nil, :server_tag => user[:server_tag])
+        end
 
-        respond(:yay => 'sure', :share_tag => user[:share_tag])
+        status = Main.wait_for_server_start_job(job)
+
+        respond(
+            :yay => 'sure',
+            :share_tag => user[:share_tag],
+            :queued => ['queued', 'running'].include?(status[:status]),
+            :status => status[:status],
+            :error => status[:error]
+        )
     end
 
     post '/api/start_server_as_admin' do
@@ -2169,16 +2370,24 @@ class Main < Sinatra::Base
 
         # create new WATCHING relationship
         watch_tag = RandomTag.generate(48)
-        neo4j_query_expect_one(<<~END_OF_QUERY, {:email_self => @session_user[:email], :email_other => email, :watch_tag => watch_tag})
+        target_user = neo4j_query_expect_one(<<~END_OF_QUERY, {:email_self => @session_user[:email], :email_other => email, :watch_tag => watch_tag})['u_other']
             MATCH (u_self:User {email: $email_self})
             MATCH (u_other:User {email: $email_other})
             CREATE (u_self)-[r:WATCHING]->(u_other)
             SET r.watch_tag = $watch_tag
-            RETURN r;
+            RETURN u_other;
         END_OF_QUERY
 
-        start_server(email)
-        Main.refresh_nginx_config()
+        job = Main.enqueue_server_start(
+            :email => email,
+            :test_tag => nil,
+            :server_tag => target_user[:server_tag],
+            :refresh_nginx_after => true
+        ) do
+            start_server(email, nil, :server_tag => target_user[:server_tag])
+        end
+
+        status = Main.wait_for_server_start_job(job)
 
         expires = Time.new + 3600 * 24 * 365
         response.set_cookie('hs_watch_tag',
@@ -2188,7 +2397,13 @@ class Main < Sinatra::Base
             :path => "/", #"/#{fs_tag_for_email(email)}",
             :httponly => true,
             :secure => DEVELOPMENT ? false : true)
-        respond(:yay => 'sure', :watch_tag => watch_tag)
+        respond(
+            :yay => 'sure',
+            :watch_tag => watch_tag,
+            :queued => ['queued', 'running'].include?(status[:status]),
+            :status => status[:status],
+            :error => status[:error]
+        )
     end
 
     post '/api/reset_server' do
