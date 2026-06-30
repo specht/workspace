@@ -216,6 +216,141 @@ class Main < Sinatra::Base
         Main.server_sid_for_email(email)
     end
 
+    # Shell/Docker command timeouts.
+    #
+    # All values are seconds and can be overridden through environment variables:
+    #   HS_TIMEOUT_DEFAULT
+    #   HS_TIMEOUT_DOCKER_INSPECT
+    #   HS_TIMEOUT_DOCKER_NETWORK_INSPECT
+    #   HS_TIMEOUT_NGINX_RELOAD
+    #   HS_TIMEOUT_CHOWN
+    #   HS_TIMEOUT_TAR
+    #   HS_TIMEOUT_DOCKER_RUN
+    #   HS_TIMEOUT_DOCKER_KILL
+    #
+    # The default values are intentionally conservative. They prevent a wedged
+    # Docker/chown/tar command from blocking a Sinatra request forever, while
+    # still allowing slow first starts to finish normally.
+    def self.timeout_seconds(env_name, default)
+        value = ENV[env_name]
+        return default if value.nil? || value.strip.empty?
+        Integer(value)
+    rescue
+        STDERR.puts ">>> Invalid #{env_name}=#{value.inspect}; using #{default}s"
+        default
+    end
+
+    SHELL_TIMEOUTS = {
+        :default => timeout_seconds('HS_TIMEOUT_DEFAULT', 30),
+        :docker_inspect => timeout_seconds('HS_TIMEOUT_DOCKER_INSPECT', 10),
+        :docker_network_inspect => timeout_seconds('HS_TIMEOUT_DOCKER_NETWORK_INSPECT', 10),
+        :nginx_reload => timeout_seconds('HS_TIMEOUT_NGINX_RELOAD', 10),
+        :chown => timeout_seconds('HS_TIMEOUT_CHOWN', 120),
+        :tar => timeout_seconds('HS_TIMEOUT_TAR', 60),
+        :docker_run => timeout_seconds('HS_TIMEOUT_DOCKER_RUN', 60),
+        :docker_kill => timeout_seconds('HS_TIMEOUT_DOCKER_KILL', 10),
+    }
+
+    def self.shell_timeout(name = :default)
+        SHELL_TIMEOUTS.fetch(name, SHELL_TIMEOUTS[:default])
+    end
+
+    def shell_timeout(name = :default)
+        Main.shell_timeout(name)
+    end
+
+    # Run a shell command with a hard timeout. We keep shell strings here because
+    # the existing code already builds commands that rely on shell syntax and
+    # environment interpolation.
+    def self.shell_capture(command, timeout: nil, allow_failure: false)
+        timeout ||= shell_timeout(:default)
+        timeout = Integer(timeout)
+
+        t0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+        STDERR.puts ">>> CMD BEGIN timeout=#{timeout}s: #{command}"
+
+        stdout_data = ''
+        stderr_data = ''
+        status = nil
+        timed_out = false
+
+        Open3.popen3(command, :pgroup => true) do |stdin, stdout, stderr, wait_thr|
+            stdin.close
+
+            stdout_thread = Thread.new { stdout.read }
+            stderr_thread = Thread.new { stderr.read }
+
+            unless wait_thr.join(timeout)
+                timed_out = true
+                begin
+                    Process.kill('TERM', -wait_thr.pid)
+                rescue
+                    begin
+                        Process.kill('TERM', wait_thr.pid)
+                    rescue
+                    end
+                end
+
+                sleep 1
+
+                if wait_thr.alive?
+                    begin
+                        Process.kill('KILL', -wait_thr.pid)
+                    rescue
+                        begin
+                            Process.kill('KILL', wait_thr.pid)
+                        rescue
+                        end
+                    end
+                end
+
+                wait_thr.join(1)
+            end
+
+            status = wait_thr.value unless wait_thr.alive?
+
+            if stdout_thread.join(1)
+                stdout_data = stdout_thread.value rescue ''
+            else
+                stdout_thread.kill rescue nil
+            end
+
+            if stderr_thread.join(1)
+                stderr_data = stderr_thread.value rescue ''
+            else
+                stderr_thread.kill rescue nil
+            end
+        end
+
+        dt = Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0
+
+        if timed_out
+            STDERR.puts ">>> CMD TIMEOUT after #{format('%.3f', dt)}s: #{command}"
+            raise "Command timed out after #{timeout}s: #{command}"
+        end
+
+        unless allow_failure || (status && status.success?)
+            STDERR.puts ">>> CMD ERROR after #{format('%.3f', dt)}s status=#{status&.exitstatus}: #{command}"
+            raise "Command failed with status #{status&.exitstatus}: #{command}\n#{stderr_data}"
+        end
+
+        STDERR.puts ">>> CMD END after #{format('%.3f', dt)}s status=#{status&.exitstatus}: #{command}"
+        stdout_data
+    end
+
+    def self.shell_ok(command, timeout: nil, allow_failure: false)
+        shell_capture(command, :timeout => timeout, :allow_failure => allow_failure)
+        true
+    end
+
+    def shell_capture(command, timeout: nil, allow_failure: false)
+        Main.shell_capture(command, :timeout => timeout, :allow_failure => allow_failure)
+    end
+
+    def shell_ok(command, timeout: nil, allow_failure: false)
+        Main.shell_ok(command, :timeout => timeout, :allow_failure => allow_failure)
+    end
+
     def workspace_url()
         if user_logged_in?
             server_tag = @session_user[:server_tag]
@@ -234,7 +369,7 @@ class Main < Sinatra::Base
     def self.refresh_nginx_config
         STDERR.puts ">>> Refreshing nginx config..."
         running_servers = {}
-        inspect = JSON.parse(`docker network inspect workspace_user`)
+        inspect = JSON.parse(shell_capture("docker network inspect workspace_user", :timeout => shell_timeout(:docker_network_inspect)))
         inspect.first['Containers'].values.each do |container|
             name = container['Name']
             next unless name[0, 8] == 'hs_code_'
@@ -623,7 +758,7 @@ class Main < Sinatra::Base
             f.puts nginx_config
         end
         STDERR.puts ">>> Sending HUP to nginx to reload nginx config"
-        system("docker kill -s HUP workspace_nginx_1")
+        shell_ok("docker kill -s HUP workspace_nginx_1", :timeout => shell_timeout(:nginx_reload))
     end
 
     def self.convert_image(image_path)
@@ -1430,7 +1565,8 @@ class Main < Sinatra::Base
         result = {}
         result[:tag] = tag
         result[:running] = false
-        inspect = JSON.parse(`docker inspect hs_code_#{tag}`)
+        inspect_json = shell_capture("docker inspect hs_code_#{tag}", :timeout => shell_timeout(:docker_inspect), :allow_failure => true)
+        inspect = inspect_json.strip.empty? ? [] : JSON.parse(inspect_json)
         unless inspect.empty?
             result[:running] = true
             result[:ip] = inspect.first['NetworkSettings']['Networks']['workspace_user']['IPAddress']
@@ -1883,7 +2019,7 @@ class Main < Sinatra::Base
             #     }
             #   }
             with_timing("start_server #{container_name}: chown -R") do
-                system("chown -R 1000:1000 /user/#{container_name}")
+                shell_ok("chown -R 1000:1000 /user/#{container_name}", :timeout => shell_timeout(:chown))
             end
             
             db_email = email
@@ -1902,7 +2038,7 @@ class Main < Sinatra::Base
                     END_OF_QUERY
                     # unpack files from archive
                     with_timing("start_server #{container_name}: unpack test archive") do
-                        system("tar xf /internal/test_archives/#{sha1} -C /user/#{container_name}/workspace")
+                        shell_ok("tar xf /internal/test_archives/#{sha1} -C /user/#{container_name}/workspace", :timeout => shell_timeout(:tar))
                     end
                     File.open(test_init_mark_path, 'w') do |f|
                     end
@@ -1929,7 +2065,7 @@ class Main < Sinatra::Base
             command = "docker run --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(db_email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e POSTGRES_HOST=\"postgres\" -e POSTGRES_USER=\"#{login}\" -e POSTGRES_PASSWORD=\"#{Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)}\" -e POSTGRES_DATABASE=\"#{login}\"  -e NEO4J_URI=\"neo4j://neo4j:7687\" -e NEO4J_USERNAME=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)}\" -e NEO4J_DATABASE=\"#{mysql_login}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
             STDERR.puts ">>> Command:\n#{command}"
             with_timing("start_server #{container_name}: docker run") do
-                system(command)
+                shell_ok(command, :timeout => shell_timeout(:docker_run))
             end
             with_timing("start_server #{container_name}: refresh nginx") do
                 Main.refresh_nginx_config()
@@ -1945,7 +2081,7 @@ class Main < Sinatra::Base
     def stop_server(email)
         container_name = fs_tag_for_email(email)
 
-        system("docker kill hs_code_#{container_name}")
+        shell_ok("docker kill hs_code_#{container_name}", :timeout => shell_timeout(:docker_kill), :allow_failure => true)
 
         Main.refresh_nginx_config()
     end
@@ -2211,13 +2347,16 @@ class Main < Sinatra::Base
         STDERR.puts "email_for_tag: #{email_for_tag.to_yaml}"
 
         info_for_tag = {}
-        JSON.parse(`docker inspect workspace`).each do |entry|
-            entry['Containers'].each_pair do |id, container|
-                name = container['Name']
-                next unless name[0, 8] == 'hs_code_'
-                info_for_tag[name.sub('hs_code_', '')] = {
-                    :ip => container['IPv4Address'],
-                }
+        inspect_json = shell_capture("docker inspect workspace", :timeout => shell_timeout(:docker_inspect), :allow_failure => true)
+        unless inspect_json.strip.empty?
+            JSON.parse(inspect_json).each do |entry|
+                entry['Containers'].each_pair do |id, container|
+                    name = container['Name']
+                    next unless name[0, 8] == 'hs_code_'
+                    info_for_tag[name.sub('hs_code_', '')] = {
+                        :ip => container['IPv4Address'],
+                    }
+                end
             end
         end
 
