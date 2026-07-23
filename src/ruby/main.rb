@@ -216,6 +216,290 @@ class Main < Sinatra::Base
         Main.server_sid_for_email(email)
     end
 
+    # Shell/Docker command timeouts.
+    #
+    # All values are seconds and can be overridden through environment variables:
+    #   HS_TIMEOUT_DEFAULT
+    #   HS_TIMEOUT_DOCKER_INSPECT
+    #   HS_TIMEOUT_DOCKER_NETWORK_INSPECT
+    #   HS_TIMEOUT_NGINX_RELOAD
+    #   HS_TIMEOUT_CHOWN
+    #   HS_TIMEOUT_TAR
+    #   HS_TIMEOUT_DOCKER_RUN
+    #   HS_TIMEOUT_DOCKER_KILL
+    #
+    # The default values are intentionally conservative. They prevent a wedged
+    # Docker/chown/tar command from blocking a Sinatra request forever, while
+    # still allowing slow first starts to finish normally.
+    def self.timeout_seconds(env_name, default)
+        value = ENV[env_name]
+        return default if value.nil? || value.strip.empty?
+        Integer(value)
+    rescue
+        STDERR.puts ">>> Invalid #{env_name}=#{value.inspect}; using #{default}s"
+        default
+    end
+
+    SHELL_TIMEOUTS = {
+        :default => timeout_seconds('HS_TIMEOUT_DEFAULT', 30),
+        :docker_inspect => timeout_seconds('HS_TIMEOUT_DOCKER_INSPECT', 10),
+        :docker_network_inspect => timeout_seconds('HS_TIMEOUT_DOCKER_NETWORK_INSPECT', 10),
+        :nginx_reload => timeout_seconds('HS_TIMEOUT_NGINX_RELOAD', 10),
+        :chown => timeout_seconds('HS_TIMEOUT_CHOWN', 120),
+        :tar => timeout_seconds('HS_TIMEOUT_TAR', 60),
+        :docker_run => timeout_seconds('HS_TIMEOUT_DOCKER_RUN', 60),
+        :docker_kill => timeout_seconds('HS_TIMEOUT_DOCKER_KILL', 10),
+    }
+
+    def self.shell_timeout(name = :default)
+        SHELL_TIMEOUTS.fetch(name, SHELL_TIMEOUTS[:default])
+    end
+
+    def shell_timeout(name = :default)
+        Main.shell_timeout(name)
+    end
+
+    # Run a shell command with a hard timeout. We keep shell strings here because
+    # the existing code already builds commands that rely on shell syntax and
+    # environment interpolation.
+    def self.shell_capture(command, timeout: nil, allow_failure: false)
+        timeout ||= shell_timeout(:default)
+        timeout = Integer(timeout)
+
+        t0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+        STDERR.puts ">>> CMD BEGIN timeout=#{timeout}s: #{command}"
+
+        stdout_data = ''
+        stderr_data = ''
+        status = nil
+        timed_out = false
+
+        Open3.popen3(command, :pgroup => true) do |stdin, stdout, stderr, wait_thr|
+            stdin.close
+
+            stdout_thread = Thread.new { stdout.read }
+            stderr_thread = Thread.new { stderr.read }
+
+            unless wait_thr.join(timeout)
+                timed_out = true
+                begin
+                    Process.kill('TERM', -wait_thr.pid)
+                rescue
+                    begin
+                        Process.kill('TERM', wait_thr.pid)
+                    rescue
+                    end
+                end
+
+                sleep 1
+
+                if wait_thr.alive?
+                    begin
+                        Process.kill('KILL', -wait_thr.pid)
+                    rescue
+                        begin
+                            Process.kill('KILL', wait_thr.pid)
+                        rescue
+                        end
+                    end
+                end
+
+                wait_thr.join(1)
+            end
+
+            status = wait_thr.value unless wait_thr.alive?
+
+            if stdout_thread.join(1)
+                stdout_data = stdout_thread.value rescue ''
+            else
+                stdout_thread.kill rescue nil
+            end
+
+            if stderr_thread.join(1)
+                stderr_data = stderr_thread.value rescue ''
+            else
+                stderr_thread.kill rescue nil
+            end
+        end
+
+        dt = Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0
+
+        if timed_out
+            STDERR.puts ">>> CMD TIMEOUT after #{format('%.3f', dt)}s: #{command}"
+            raise "Command timed out after #{timeout}s: #{command}"
+        end
+
+        unless allow_failure || (status && status.success?)
+            STDERR.puts ">>> CMD ERROR after #{format('%.3f', dt)}s status=#{status&.exitstatus}: #{command}"
+            raise "Command failed with status #{status&.exitstatus}: #{command}\n#{stderr_data}"
+        end
+
+        STDERR.puts ">>> CMD END after #{format('%.3f', dt)}s status=#{status&.exitstatus}: #{command}"
+        stdout_data
+    end
+
+    def self.shell_ok(command, timeout: nil, allow_failure: false)
+        shell_capture(command, :timeout => timeout, :allow_failure => allow_failure)
+        true
+    end
+
+    def shell_capture(command, timeout: nil, allow_failure: false)
+        Main.shell_capture(command, :timeout => timeout, :allow_failure => allow_failure)
+    end
+
+    def shell_ok(command, timeout: nil, allow_failure: false)
+        Main.shell_ok(command, :timeout => timeout, :allow_failure => allow_failure)
+    end
+
+    # Background queue for workspace launches. This keeps long-running Docker,
+    # chown, tar, and nginx-refresh work out of request handlers while still
+    # deduplicating repeated launch clicks for the same workspace.
+    def self.server_start_key(email, test_tag = nil)
+        fs_tag_for_email("#{email}#{test_tag}")
+    end
+
+    def self.server_start_wait_seconds
+        value = ENV['HS_SERVER_START_WAIT_SECONDS']
+        return 2.0 if value.nil? || value.strip.empty?
+        Float(value)
+    rescue
+        STDERR.puts ">>> Invalid HS_SERVER_START_WAIT_SECONDS=#{value.inspect}; using 2.0s"
+        2.0
+    end
+
+    def self.server_start_job_keep_seconds
+        value = ENV['HS_SERVER_START_JOB_KEEP_SECONDS']
+        return 3600 if value.nil? || value.strip.empty?
+        Integer(value)
+    rescue
+        STDERR.puts ">>> Invalid HS_SERVER_START_JOB_KEEP_SECONDS=#{value.inspect}; using 3600s"
+        3600
+    end
+
+    def self.ensure_server_start_queue!
+        @@server_start_queue = Queue.new unless defined?(@@server_start_queue) && @@server_start_queue
+        @@server_start_mutex = Mutex.new unless defined?(@@server_start_mutex) && @@server_start_mutex
+        @@server_start_jobs = {} unless defined?(@@server_start_jobs) && @@server_start_jobs
+    end
+
+    def self.prune_server_start_jobs_locked!
+        cutoff = Time.now - server_start_job_keep_seconds
+        @@server_start_jobs.delete_if do |_key, job|
+            job[:finished_at] && job[:finished_at] < cutoff
+        end
+    end
+
+    def self.server_start_snapshot(job)
+        return { :status => 'unknown' } unless job
+
+        {
+            :key => job[:key],
+            :email => job[:email],
+            :test_tag => job[:test_tag],
+            :server_tag => job[:server_tag],
+            :status => job[:status],
+            :queued_at => job[:queued_at]&.to_i,
+            :started_at => job[:started_at]&.to_i,
+            :finished_at => job[:finished_at]&.to_i,
+            :error => job[:error],
+        }
+    end
+
+    def self.server_start_status(key)
+        ensure_server_start_queue!
+
+        @@server_start_mutex.synchronize do
+            server_start_snapshot(@@server_start_jobs[key] || { :key => key, :status => 'unknown' })
+        end
+    end
+
+    def self.enqueue_server_start(email:, test_tag:, server_tag:, refresh_nginx_after: false, &block)
+        raise 'enqueue_server_start requires a block' unless block_given?
+
+        ensure_server_start_queue!
+        key = server_start_key(email, test_tag)
+
+        @@server_start_mutex.synchronize do
+            prune_server_start_jobs_locked!
+
+            existing = @@server_start_jobs[key]
+            if existing && ['queued', 'running'].include?(existing[:status])
+                STDERR.puts ">>> Server start already #{existing[:status]}: #{key}"
+                return existing
+            end
+
+            job = {
+                :key => key,
+                :email => email,
+                :test_tag => test_tag,
+                :server_tag => server_tag,
+                :status => 'queued',
+                :queued_at => Time.now,
+                :started_at => nil,
+                :finished_at => nil,
+                :error => nil,
+                :refresh_nginx_after => refresh_nginx_after,
+                :runner => block,
+            }
+
+            @@server_start_jobs[key] = job
+            @@server_start_queue << job
+            STDERR.puts ">>> Server start queued: #{key} email=#{email} test_tag=#{test_tag.inspect}"
+            job
+        end
+    end
+
+    def self.wait_for_server_start_job(job, max_seconds: server_start_wait_seconds)
+        deadline = Time.now + max_seconds.to_f
+
+        loop do
+            snapshot = server_start_status(job[:key])
+            return snapshot unless ['queued', 'running'].include?(snapshot[:status])
+            return snapshot if Time.now >= deadline
+            sleep 0.05
+        end
+    end
+
+    def self.server_start_worker_loop
+        ensure_server_start_queue!
+
+        loop do
+            job = @@server_start_queue.pop
+
+            @@server_start_mutex.synchronize do
+                job[:status] = 'running'
+                job[:started_at] = Time.now
+                job[:error] = nil
+            end
+
+            begin
+                STDERR.puts ">>> Server start worker: starting #{job[:key]}"
+                job[:runner].call
+
+                if job[:refresh_nginx_after]
+                    STDERR.puts ">>> Server start worker: refresh nginx after #{job[:key]}"
+                    Main.refresh_nginx_config()
+                end
+
+                @@server_start_mutex.synchronize do
+                    job[:status] = 'ready'
+                    job[:finished_at] = Time.now
+                end
+                STDERR.puts ">>> Server start worker: ready #{job[:key]}"
+            rescue => e
+                @@server_start_mutex.synchronize do
+                    job[:status] = 'failed'
+                    job[:finished_at] = Time.now
+                    job[:error] = "#{e.class}: #{e.message}"
+                end
+                STDERR.puts ">>> Server start worker failed for #{job[:key]}: #{e.class}: #{e.message}"
+                STDERR.puts e.backtrace.join("\n")
+            ensure
+                job.delete(:runner)
+            end
+        end
+    end
+
     def workspace_url()
         if user_logged_in?
             server_tag = @session_user[:server_tag]
@@ -234,7 +518,7 @@ class Main < Sinatra::Base
     def self.refresh_nginx_config
         STDERR.puts ">>> Refreshing nginx config..."
         running_servers = {}
-        inspect = JSON.parse(`docker network inspect workspace_user`)
+        inspect = JSON.parse(shell_capture("docker network inspect workspace_user", :timeout => shell_timeout(:docker_network_inspect)))
         inspect.first['Containers'].values.each do |container|
             name = container['Name']
             next unless name[0, 8] == 'hs_code_'
@@ -516,7 +800,7 @@ class Main < Sinatra::Base
             # ==========================================
             server {
                 listen 80;
-                server_name ~^(?<t>[a-z0-9]+)-(?<p>\\d+)\.#{WEBSITE_HOST.split(':').first.gsub('.', '\.')}$;
+                server_name ~^(?<t>[a-z0-9]+)-(?<p>\\d+)\\.#{WEBSITE_HOST.split(':').first.gsub('.', '\\.')}$;
                 client_max_body_size 100M;
                 access_log /var/log/nginx/access.log custom;
                 charset utf-8;
@@ -531,6 +815,24 @@ class Main < Sinatra::Base
                     rewrite ^/(.*)$ /proxy/$p/$1 break;
 
                     include /etc/nginx/snippets/proxy_ws.conf;
+
+                    # Preserve local dev port, e.g. :8025.
+                    # Do not use $server_port here; nginx listens on 80 internally.
+                    set $external_port "";
+                    if ($http_host ~* :(?<hp>\\d+)$) { set $external_port :$hp; }
+
+                    # First remove leaked /proxy/<port>/ redirects.
+                    proxy_redirect ~^/proxy/[0-9]+(/.*)$ $1;
+                    proxy_redirect ~^/proxy/[0-9]+/?$ /;
+                    proxy_redirect ~^https?://[^/]+/proxy/[0-9]+(/.*)$ $1;
+                    proxy_redirect ~^https?://[^/]+/proxy/[0-9]+/?$ /;
+
+                    # Then repair absolute redirects that lost the local dev port:
+                    #   http://token-5500.workspace.test/sub/
+                    # becomes:
+                    #   http://token-5500.workspace.test:8025/sub/
+                    proxy_redirect ~^(https?://[a-z0-9]+-[0-9]+\\.#{WEBSITE_HOST.split(':').first.gsub('.', '\\.')})(/.*)$ $1$external_port$2;
+
                     proxy_pass $hs_upstream;
                 }
             }
@@ -605,7 +907,7 @@ class Main < Sinatra::Base
             f.puts nginx_config
         end
         STDERR.puts ">>> Sending HUP to nginx to reload nginx config"
-        system("docker kill -s HUP workspace_nginx_1")
+        shell_ok("docker kill -s HUP workspace_nginx_1", :timeout => shell_timeout(:nginx_reload))
     end
 
     def self.convert_image(image_path)
@@ -1195,6 +1497,11 @@ class Main < Sinatra::Base
                 end
             end
         end
+
+        self.ensure_server_start_queue!
+        Thread.new do
+            Main.server_start_worker_loop
+        end
     end
 
     before '*' do
@@ -1412,7 +1719,8 @@ class Main < Sinatra::Base
         result = {}
         result[:tag] = tag
         result[:running] = false
-        inspect = JSON.parse(`docker inspect hs_code_#{tag}`)
+        inspect_json = shell_capture("docker inspect hs_code_#{tag}", :timeout => shell_timeout(:docker_inspect), :allow_failure => true)
+        inspect = inspect_json.strip.empty? ? [] : JSON.parse(inspect_json)
         unless inspect.empty?
             result[:running] = true
             result[:ip] = inspect.first['NetworkSettings']['Networks']['workspace_user']['IPAddress']
@@ -1587,7 +1895,20 @@ class Main < Sinatra::Base
         init_neo4j(email)
     end
 
-    def start_server(email, test_tag = nil)
+    def with_timing(label)
+        t0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+        STDERR.puts ">>> BEGIN #{label}"
+        result = yield
+        dt = Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0
+        STDERR.puts ">>> END #{label} (#{format('%.3f', dt)}s)"
+        result
+    rescue => e
+        dt = Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0 rescue 0
+        STDERR.puts ">>> ERROR #{label} after #{format('%.3f', dt)}s: #{e.class}: #{e.message}"
+        raise
+    end    
+
+    def start_server(email, test_tag = nil, server_tag: nil)
         email_with_test_tag = "#{email}#{test_tag}"
         container_name = fs_tag_for_email(email_with_test_tag)
 
@@ -1796,9 +2117,11 @@ class Main < Sinatra::Base
                 END_OF_STRING
             end
         end
-        STDERR.puts ">>> Getting server state"
 
-        state = get_server_state(container_name)
+        STDERR.puts ">>> Getting server state"
+        state = with_timing("start_server #{container_name}: docker inspect") do
+            get_server_state(container_name)
+        end
         STDERR.puts ">>> Server state is #{state.to_yaml}"
 
         unless state[:running]
@@ -1849,8 +2172,10 @@ class Main < Sinatra::Base
             #       "folder": "/workspace"
             #     }
             #   }
-            system("chown -R 1000:1000 /user/#{container_name}")
-
+            with_timing("start_server #{container_name}: chown -R") do
+                shell_ok("chown -R 1000:1000 /user/#{container_name}", :timeout => shell_timeout(:chown))
+            end
+            
             db_email = email
             if test_tag
                 db_email = "#{email}-#{test_tag}"
@@ -1866,7 +2191,9 @@ class Main < Sinatra::Base
                         RETURN f.sha1;
                     END_OF_QUERY
                     # unpack files from archive
-                    system("tar xf /internal/test_archives/#{sha1} -C /user/#{container_name}/workspace")
+                    with_timing("start_server #{container_name}: unpack test archive") do
+                        shell_ok("tar xf /internal/test_archives/#{sha1} -C /user/#{container_name}/workspace", :timeout => shell_timeout(:tar))
+                    end
                     File.open(test_init_mark_path, 'w') do |f|
                     end
                     # check if we have a config file in the archive
@@ -1891,9 +2218,14 @@ class Main < Sinatra::Base
             STDERR.puts ">>> Login is #{login}, MySQL login is #{mysql_login}"
             command = "docker run --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(db_email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e POSTGRES_HOST=\"postgres\" -e POSTGRES_USER=\"#{login}\" -e POSTGRES_PASSWORD=\"#{Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)}\" -e POSTGRES_DATABASE=\"#{login}\"  -e NEO4J_URI=\"neo4j://neo4j:7687\" -e NEO4J_USERNAME=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)}\" -e NEO4J_DATABASE=\"#{mysql_login}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
             STDERR.puts ">>> Command:\n#{command}"
-            system(command)
-            Main.refresh_nginx_config()
+            with_timing("start_server #{container_name}: docker run") do
+                shell_ok(command, :timeout => shell_timeout(:docker_run))
+            end
+            with_timing("start_server #{container_name}: refresh nginx") do
+                Main.refresh_nginx_config()
+            end
         end
+        return "#{server_tag}#{test_tag}" if server_tag
 
         begin
             return "#{@session_user[:server_tag]}#{test_tag}"
@@ -1905,7 +2237,7 @@ class Main < Sinatra::Base
     def stop_server(email)
         container_name = fs_tag_for_email(email)
 
-        system("docker kill hs_code_#{container_name}")
+        shell_ok("docker kill hs_code_#{container_name}", :timeout => shell_timeout(:docker_kill), :allow_failure => true)
 
         Main.refresh_nginx_config()
     end
@@ -1956,14 +2288,45 @@ class Main < Sinatra::Base
         respond(:yay => 'sure')
     end
 
+    post '/api/server_start_status' do
+        assert(user_logged_in?)
+        data = parse_request_data(:optional_keys => [:test_tag, :email])
+
+        email = @session_user[:email]
+        if data[:email] && teacher_logged_in?
+            email = data[:email]
+        end
+
+        key = Main.server_start_key(email, data[:test_tag])
+        respond(Main.server_start_status(key))
+    end
+
     post '/api/start_server' do
         assert(user_logged_in?)
         data = parse_request_data(:optional_keys => [:test_tag])
 
         email = @session_user[:email]
-        server_tag = start_server(email, data[:test_tag])
+        test_tag = data[:test_tag]
+        base_server_tag = @session_user[:server_tag]
+        server_tag = "#{base_server_tag}#{test_tag}"
 
-        respond(:yay => 'sure', :server_tag => server_tag)
+        job = Main.enqueue_server_start(
+            :email => email,
+            :test_tag => test_tag,
+            :server_tag => server_tag
+        ) do
+            start_server(email, test_tag, :server_tag => base_server_tag)
+        end
+
+        status = Main.wait_for_server_start_job(job)
+
+        respond(
+            :yay => 'sure',
+            :server_tag => server_tag,
+            :queued => ['queued', 'running'].include?(status[:status]),
+            :status => status[:status],
+            :error => status[:error]
+        )
     end
 
     post '/api/start_server_with_share_tag' do
@@ -1975,9 +2338,23 @@ class Main < Sinatra::Base
             RETURN u;
         END_OF_QUERY
 
-        start_server(user[:email])
+        job = Main.enqueue_server_start(
+            :email => user[:email],
+            :test_tag => nil,
+            :server_tag => user[:server_tag]
+        ) do
+            start_server(user[:email], nil, :server_tag => user[:server_tag])
+        end
 
-        respond(:yay => 'sure', :share_tag => user[:share_tag])
+        status = Main.wait_for_server_start_job(job)
+
+        respond(
+            :yay => 'sure',
+            :share_tag => user[:share_tag],
+            :queued => ['queued', 'running'].include?(status[:status]),
+            :status => status[:status],
+            :error => status[:error]
+        )
     end
 
     post '/api/start_server_as_admin' do
@@ -1993,16 +2370,24 @@ class Main < Sinatra::Base
 
         # create new WATCHING relationship
         watch_tag = RandomTag.generate(48)
-        neo4j_query_expect_one(<<~END_OF_QUERY, {:email_self => @session_user[:email], :email_other => email, :watch_tag => watch_tag})
+        target_user = neo4j_query_expect_one(<<~END_OF_QUERY, {:email_self => @session_user[:email], :email_other => email, :watch_tag => watch_tag})['u_other']
             MATCH (u_self:User {email: $email_self})
             MATCH (u_other:User {email: $email_other})
             CREATE (u_self)-[r:WATCHING]->(u_other)
             SET r.watch_tag = $watch_tag
-            RETURN r;
+            RETURN u_other;
         END_OF_QUERY
 
-        start_server(email)
-        Main.refresh_nginx_config()
+        job = Main.enqueue_server_start(
+            :email => email,
+            :test_tag => nil,
+            :server_tag => target_user[:server_tag],
+            :refresh_nginx_after => true
+        ) do
+            start_server(email, nil, :server_tag => target_user[:server_tag])
+        end
+
+        status = Main.wait_for_server_start_job(job)
 
         expires = Time.new + 3600 * 24 * 365
         response.set_cookie('hs_watch_tag',
@@ -2012,7 +2397,13 @@ class Main < Sinatra::Base
             :path => "/", #"/#{fs_tag_for_email(email)}",
             :httponly => true,
             :secure => DEVELOPMENT ? false : true)
-        respond(:yay => 'sure', :watch_tag => watch_tag)
+        respond(
+            :yay => 'sure',
+            :watch_tag => watch_tag,
+            :queued => ['queued', 'running'].include?(status[:status]),
+            :status => status[:status],
+            :error => status[:error]
+        )
     end
 
     post '/api/reset_server' do
@@ -2171,13 +2562,16 @@ class Main < Sinatra::Base
         STDERR.puts "email_for_tag: #{email_for_tag.to_yaml}"
 
         info_for_tag = {}
-        JSON.parse(`docker inspect workspace`).each do |entry|
-            entry['Containers'].each_pair do |id, container|
-                name = container['Name']
-                next unless name[0, 8] == 'hs_code_'
-                info_for_tag[name.sub('hs_code_', '')] = {
-                    :ip => container['IPv4Address'],
-                }
+        inspect_json = shell_capture("docker inspect workspace", :timeout => shell_timeout(:docker_inspect), :allow_failure => true)
+        unless inspect_json.strip.empty?
+            JSON.parse(inspect_json).each do |entry|
+                entry['Containers'].each_pair do |id, container|
+                    name = container['Name']
+                    next unless name[0, 8] == 'hs_code_'
+                    info_for_tag[name.sub('hs_code_', '')] = {
+                        :ip => container['IPv4Address'],
+                    }
+                end
             end
         end
 

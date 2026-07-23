@@ -95,6 +95,7 @@ Probiere auch andere Formen aus, indem du den Wert für `shape` änderst. Hier s
 - `cylinder` für einen Zylinder
 - `cone` für einen Kegel
 - `torus` für einen Torus (Ring)
+- `teapot` für den [Utah Teapot](https://de.wikipedia.org/wiki/Utah_teapot)
 - `plane` für ein Quadrat
 
 Zusätzlich zu den geometrischen Körpern kannst auch ein Gitter anzeigen, indem du `shape = grid` einfügst:
@@ -356,6 +357,18 @@ stroke = off
 Wenn du möchtest, kannst du auch bunte Farben verwenden. Gib dafür statt einer Zahl von 0.0 bis 1.0 einfach einen HTML-Farbcode wie z. B. <code>#4aa03f</code> an.
 </div>
 
+## Übungsaufgaben
+
+Versuche, eine oder mehrere der folgenden Szenen zu erstellen:
+
+<div style='text-align: center;'>
+<img src='ampel.png' style='width: 33%;'>
+<img src='eis.png' style='width: 33%;'>
+<img src='schneemann.png' style='width: 33%;'>
+</div>
+
+Erstelle dafür jeweils eine neue Datei (mit »File« / »New Text File«) und speichere sie unter einem passenden Namen, z. B. `ampel.ini`, `eis.ini` oder `schneemann.ini`. Du musst dann auf der Vorschauseite nur noch den passenden Dateinamen im Textfeld unten ändern, um die Szene zu sehen.
+
 ## Code auskommentieren
 
 Manchmal möchte man Teile eines Programms vorübergehend deaktivieren, ohne sie zu löschen. Dafür kannst du Zeilen auskommentieren, indem du ein Semikolon `;` am Anfang der Zeile setzt. Zum Beispiel:
@@ -413,7 +426,9 @@ Du kannst Text in deine Szene einfügen, indem du den Befehl `text` verwendest:
 text = Hello!
 ```
 
-<img class='full' src='hello.webp'>
+<div style='text-align: center; margin: 1em 0;'>
+<img src='hello.webp' style='max-width: 100%; min-height: 15em; object-fit: cover; object-position: center;'>
+</div>
 
 Richtig gut sieht er aber erst mit einer 3D-Schattierung aus:
 
@@ -424,7 +439,9 @@ stroke = off
 fill = #f9b935
 ```
 
-<img class='full' src='hello-shade.webp'>
+<div style='text-align: center; margin: 1em 0;'>
+<img src='hello-shade.webp' style='max-width: 100%; min-height: 15em; object-fit: cover; object-position: center;'>
+</div>
 
 ## 3D-Modelle
 
