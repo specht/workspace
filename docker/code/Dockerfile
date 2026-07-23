@@ -157,6 +157,7 @@ RUN apt-get update && apt-get install -y \
 RUN echo "export GEM_HOME=\$HOME/.gem" >> /root/.bashrc
 
 COPY hackschule-sidebar-init.vsix /app/extensions/hackschule-sidebar-init.vsix
+COPY hackschule-checkpoints-0.5.0.vsix /app/extensions/hackschule-checkpoints-0.5.0.vsix
 
 # Copy your custom init scripts (should be last, change this less frequently)
 COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run

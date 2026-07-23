@@ -1,0 +1,141 @@
+{
+  "name": "hackschule-checkpoints",
+  "displayName": "%extension.displayName%",
+  "description": "%extension.description%",
+  "version": "0.5.0",
+  "publisher": "hackschule",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:hackschuleCheckpoints.view",
+    "onCommand:hackschuleCheckpoints.create",
+    "onCommand:hackschuleCheckpoints.restore",
+    "onCommand:hackschuleCheckpoints.restoreItem",
+    "onCommand:hackschuleCheckpoints.compareItem",
+    "onCommand:hackschuleCheckpoints.refresh"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "hackschuleCheckpoints.create",
+        "title": "%command.create%",
+        "category": "%command.category%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "hackschuleCheckpoints.restore",
+        "title": "%command.restore%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "hackschuleCheckpoints.restoreItem",
+        "title": "%command.restoreItem%",
+        "category": "%command.category%",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "hackschuleCheckpoints.compareItem",
+        "title": "%command.compareItem%",
+        "category": "%command.category%",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "hackschuleCheckpoints.refresh",
+        "title": "%command.refresh%",
+        "category": "%command.category%",
+        "icon": "$(refresh)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "hackschuleCheckpoints.container",
+          "title": "%view.containerTitle%",
+          "icon": "resources/checkpoints.svg"
+        }
+      ]
+    },
+    "views": {
+      "hackschuleCheckpoints.container": [
+        {
+          "id": "hackschuleCheckpoints.view",
+          "name": "%view.name%",
+          "contextualTitle": "%view.contextualTitle%"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "hackschuleCheckpoints.view",
+        "contents": "%view.welcome%",
+        "when": "hackschuleCheckpoints.hasItems == false"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "hackschuleCheckpoints.create",
+          "when": "view == hackschuleCheckpoints.view",
+          "group": "navigation@1"
+        },
+        {
+          "command": "hackschuleCheckpoints.refresh",
+          "when": "view == hackschuleCheckpoints.view",
+          "group": "navigation@2"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "hackschuleCheckpoints.compareItem",
+          "when": "view == hackschuleCheckpoints.view && viewItem == hackschuleCheckpoint",
+          "group": "inline@1"
+        },
+        {
+          "command": "hackschuleCheckpoints.restoreItem",
+          "when": "view == hackschuleCheckpoints.view && viewItem == hackschuleCheckpoint",
+          "group": "inline@2"
+        },
+        {
+          "command": "hackschuleCheckpoints.compareItem",
+          "when": "view == hackschuleCheckpoints.view && viewItem == hackschuleCheckpoint",
+          "group": "navigation@1"
+        },
+        {
+          "command": "hackschuleCheckpoints.restoreItem",
+          "when": "view == hackschuleCheckpoints.view && viewItem == hackschuleCheckpoint",
+          "group": "navigation@2"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "%configuration.title%",
+      "properties": {
+        "hackschuleCheckpoints.showStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "%configuration.showStatusBar%"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "check-types": "tsc --noEmit",
+    "test": "node --test test/*.test.js",
+    "package": "npm run check-types && npm test && npm run compile && npx @vscode/vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/vscode": "^1.95.0",
+    "@vscode/vsce": "^3.2.1",
+    "esbuild": "^0.24.2",
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "extension.displayName": "Hackschule Checkpoints",
+  "extension.description": "Einfache lokale Checkpoints speichern, vergleichen und wiederherstellen, ohne den normalen Git-Verlauf zu verändern.",
+  "command.category": "Hackschule Checkpoints",
+  "command.create": "Checkpoint erstellen",
+  "command.restore": "Checkpoint zum Wiederherstellen auswählen",
+  "command.restoreItem": "Diesen Checkpoint wiederherstellen",
+  "command.compareItem": "Mit dem aktuellen Projekt vergleichen",
+  "command.refresh": "Checkpoints aktualisieren",
+  "view.containerTitle": "Checkpoints",
+  "view.name": "Checkpoints",
+  "view.contextualTitle": "Hackschule Checkpoints",
+  "view.welcome": "Es gibt noch keine Checkpoints.\\n[Checkpoint erstellen](command:hackschuleCheckpoints.create)",
+  "configuration.title": "Hackschule Checkpoints",
+  "configuration.showStatusBar": "Zeigt die Checkpoint-Schaltfläche in der Statusleiste."
+}

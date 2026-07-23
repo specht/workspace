@@ -1,0 +1,1 @@
+const esbuild=require("esbuild");const o={entryPoints:["src/extension.ts"],bundle:true,platform:"node",format:"cjs",target:"node20",outfile:"dist/extension.js",external:["vscode"],sourcemap:true};(async()=>{if(process.argv.includes("--watch")){const c=await esbuild.context(o);await c.watch();}else await esbuild.build(o);})().catch(e=>{console.error(e);process.exit(1);});
