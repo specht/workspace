@@ -156,7 +156,7 @@ RUN apt-get update && apt-get install -y \
 # Add environment variable for gems only once
 RUN echo "export GEM_HOME=\$HOME/.gem" >> /root/.bashrc
 
-COPY hackschule-sidebar-init.vsix /app/extensions/hackschule-sidebar-init.vsix
+COPY hackschule-sidebar-init-0.1.0.vsix /app/extensions/hackschule-sidebar-init-0.1.0.vsix
 COPY hackschule-checkpoints-0.5.0.vsix /app/extensions/hackschule-checkpoints-0.5.0.vsix
 
 # Copy your custom init scripts (should be last, change this less frequently)
