@@ -143,10 +143,24 @@ export async function listCheckpoints(context: RepositoryContext): Promise<Check
     };
   });
 }
-async function treeForCheckpoint(context: RepositoryContext, checkpointOid: string): Promise<string> {
+export async function treeForCheckpoint(
+  context: RepositoryContext,
+  checkpointOid: string
+): Promise<string> {
   return String(await run("git", ["rev-parse", `${checkpointOid}^{tree}`], {
     cwd: context.repositoryRoot
   })).trim();
+}
+
+export async function workspaceMatchesCheckpoint(
+  context: RepositoryContext,
+  checkpointOid: string
+): Promise<boolean> {
+  const [currentTree, selectedTree] = await Promise.all([
+    snapshotTree(context),
+    treeForCheckpoint(context, checkpointOid)
+  ]);
+  return currentTree === selectedTree;
 }
 
 export async function diffCheckpointAgainstCurrent(

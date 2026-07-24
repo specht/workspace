@@ -11,7 +11,8 @@ import {
   initializeRepository,
   isDirtySinceLatestCheckpoint,
   listCheckpoints,
-  restoreCheckpointFiles
+  restoreCheckpointFiles,
+  workspaceMatchesCheckpoint
 } from "./git";
 import type { Checkpoint, RepositoryContext } from "./types";
 import { askCheckpointName, chooseCheckpoint } from "./ui";
@@ -41,7 +42,9 @@ async function existingRepositoryContext(): Promise<RepositoryContext | undefine
   }
 }
 
-async function repositoryContext(allowInitialize: boolean): Promise<RepositoryContext | undefined> {
+async function repositoryContext(
+  allowInitialize: boolean
+): Promise<RepositoryContext | undefined> {
   const folder = activeWorkspaceFolder();
   if (!folder) {
     await vscode.window.showErrorMessage(
@@ -66,10 +69,10 @@ async function repositoryContext(allowInitialize: boolean): Promise<RepositoryCo
 
   try {
     await initializeRepository(folder.uri.fsPath);
+
+    // Return the newly discovered context to the original command. The caller
+    // must continue the requested create/restore action after initialization.
     const context = await discoverRepository(folder.uri.fsPath);
-    await vscode.window.showInformationMessage(
-      "Das Projekt wurde für Checkpoints vorbereitet."
-    );
     treeProvider.refresh();
     return context;
   } catch (error: unknown) {
@@ -192,11 +195,45 @@ async function createCommand(): Promise<void> {
   await saveNamedCheckpoint(context);
 }
 
+function canonicalCheckpoint(
+  selected: Checkpoint,
+  checkpoints: Checkpoint[]
+): Checkpoint {
+  const byOid = new Map(
+    checkpoints.map(checkpoint => [checkpoint.oid, checkpoint])
+  );
+  const visited = new Set<string>();
+  let current = selected;
+
+  while (
+    current.action === "restore" &&
+    current.restoredFrom &&
+    !visited.has(current.oid)
+  ) {
+    visited.add(current.oid);
+    const source = byOid.get(current.restoredFrom);
+    if (!source) break;
+    current = source;
+  }
+
+  return current;
+}
+
 async function restoreSelectedCheckpoint(
   context: RepositoryContext,
-  selected: Checkpoint
+  selected: Checkpoint,
+  checkpoints: Checkpoint[]
 ): Promise<void> {
   if (!(await ensureRestoreIsSafe(context))) return;
+
+  const canonical = canonicalCheckpoint(selected, checkpoints);
+
+  if (await workspaceMatchesCheckpoint(context, selected.oid)) {
+    await vscode.window.showInformationMessage(
+      `Das Projekt befindet sich bereits auf dem Stand „${canonical.name}“. Es wurde nichts verändert.`
+    );
+    return;
+  }
 
   const dirty = await isDirtySinceLatestCheckpoint(context);
 
@@ -211,11 +248,11 @@ async function restoreSelectedCheckpoint(
 
     await createCheckpointWithName(
       context,
-      `Vor dem Wiederherstellen von „${selected.name}“`
+      `Vor dem Wiederherstellen von „${canonical.name}“`
     );
   } else {
     const choice = await vscode.window.showWarningMessage(
-      `Zu „${selected.name}“ zurückkehren? Neuere Checkpoints bleiben erhalten.`,
+      `Zu „${canonical.name}“ zurückkehren? Neuere Checkpoints bleiben erhalten.`,
       { modal: true },
       "Wiederherstellen"
     );
@@ -225,15 +262,15 @@ async function restoreSelectedCheckpoint(
   await vscode.window.withProgress(
     {
       location: vscode.ProgressLocation.Notification,
-      title: `Stelle „${selected.name}“ wieder her…`,
+      title: `Stelle „${canonical.name}“ wieder her…`,
       cancellable: false
     },
     async () => {
       await restoreCheckpointFiles(context, selected.oid);
       await createCheckpoint(context, {
-        name: `Zurück zu „${selected.name}“`,
+        name: `Zurück zu „${canonical.name}“`,
         action: "restore",
-        restoredFrom: selected.oid
+        restoredFrom: canonical.oid
       });
     }
   );
@@ -243,7 +280,7 @@ async function restoreSelectedCheckpoint(
     "workbench.files.action.refreshFilesExplorer"
   );
   await vscode.window.showInformationMessage(
-    `„${selected.name}“ wurde wiederhergestellt. Neuere Checkpoints sind weiterhin verfügbar.`
+    `„${canonical.name}“ wurde wiederhergestellt. Neuere Checkpoints sind weiterhin verfügbar.`
   );
 }
 
@@ -266,7 +303,7 @@ async function restoreCommand(selectedCheckpoint?: Checkpoint): Promise<void> {
   const selected = selectedCheckpoint ?? await chooseCheckpoint(checkpoints);
   if (!selected) return;
 
-  await restoreSelectedCheckpoint(context, selected);
+  await restoreSelectedCheckpoint(context, selected, checkpoints);
 }
 
 async function compareCommand(checkpoint: Checkpoint): Promise<void> {

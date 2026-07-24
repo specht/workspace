@@ -8,7 +8,7 @@ export async function askCheckpointName(
     title: "Checkpoint erstellen",
     prompt: "Du kannst dem Checkpoint einen Namen geben oder das Feld leer lassen.",
     value: suggestedName,
-    placeHolder: "Zum Beispiel: Erster Prototyp",
+    placeHolder: "Zum Beispiel: Bevor ich die Beleuchtung ändere",
     ignoreFocusOut: true,
     validateInput(input) {
       return input.trim().length > 120

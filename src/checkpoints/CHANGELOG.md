@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.1
+
+- Do not create another restore entry when the current project already matches
+  the selected checkpoint.
+- Resolve restore entries to their original checkpoint so restore labels do not
+  accumulate repeated “Zurück zu” prefixes.
+- Continue the original create action immediately after initializing a new Git
+  repository.
+
 ## 0.4.0
 
 - Made the comparison tab student-friendly.

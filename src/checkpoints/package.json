@@ -2,7 +2,7 @@
   "name": "hackschule-checkpoints",
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "publisher": "hackschule",
   "license": "MIT",
   "engines": {

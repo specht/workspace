@@ -82,13 +82,13 @@ npm run package
 The result is:
 
 ```text
-hackschule-checkpoints-0.4.0.vsix
+hackschule-checkpoints-0.5.1.vsix
 ```
 
 Install or replace it with:
 
 ```bash
-code --install-extension hackschule-checkpoints-0.4.0.vsix --force
+code --install-extension hackschule-checkpoints-0.5.1.vsix --force
 ```
 
 Then run **Developer: Reload Window**.
@@ -113,6 +113,15 @@ npm run compile      # build dist/extension.js
 npm run watch        # rebuild while editing
 npm run package      # validate, test, compile and create VSIX
 ```
+
+## Restore safeguards
+
+- Restoring a checkpoint whose file tree already matches the current project is
+  a no-op and creates no additional history entry.
+- Restoring an earlier restore entry resolves its original named checkpoint, so
+  labels never accumulate as `Zurück zu „Zurück zu …“`.
+- Preparing a new folder with `git init` continues the original command and
+  creates the first checkpoint immediately afterward.
 
 ## Day grouping
 
