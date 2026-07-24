@@ -5,16 +5,18 @@ import { CheckpointTreeProvider } from "./checkpointTree";
 import { CheckpointDiffProvider } from "./diffProvider";
 import {
   createCheckpoint,
+  deleteAllCheckpoints,
   diffCheckpointAgainstCurrent,
   discoverRepository,
   hasMergeConflicts,
   initializeRepository,
   isDirtySinceLatestCheckpoint,
   listCheckpoints,
+  pendingCheckpointByteStats,
   restoreCheckpointFiles,
   workspaceMatchesCheckpoint
 } from "./git";
-import type { Checkpoint, RepositoryContext } from "./types";
+import type { ByteStats, Checkpoint, RepositoryContext } from "./types";
 import { askCheckpointName, chooseCheckpoint } from "./ui";
 
 let treeProvider: CheckpointTreeProvider;
@@ -151,6 +153,56 @@ async function nextUnnamedCheckpointName(
   return `Checkpoint ${number}`;
 }
 
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  const units = ["KB", "MB", "GB", "TB"];
+  let value = bytes / 1024;
+  let unit = units[0];
+  for (let index = 1; index < units.length && value >= 1024; index += 1) {
+    value /= 1024;
+    unit = units[index];
+  }
+  const digits = value >= 100 ? 0 : value >= 10 ? 1 : 2;
+  return `${value.toLocaleString("de-DE", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: digits,
+  })} ${unit}`;
+}
+
+async function confirmLargeCheckpoint(
+  context: RepositoryContext,
+  stats: ByteStats
+): Promise<boolean> {
+  const configuration = vscode.workspace.getConfiguration("hackschuleCheckpoints");
+  const addedLimit = configuration.get<number>("warnAddedBytes", 262144000);
+  const fileLimit = configuration.get<number>("warnChangedFiles", 2000);
+  const singleFileLimit = configuration.get<number>("warnSingleFileBytes", 104857600);
+
+  const reasons: string[] = [];
+  if (addedLimit > 0 && stats.addedBytes >= addedLimit) {
+    reasons.push(`${formatBytes(stats.addedBytes)} neue oder veränderte Daten`);
+  }
+  if (fileLimit > 0 && stats.changedFiles >= fileLimit) {
+    reasons.push(`${stats.changedFiles} betroffene Dateien`);
+  }
+  if (singleFileLimit > 0 && stats.largestAddedBytes >= singleFileLimit) {
+    reasons.push(`eine Datei mit ${formatBytes(stats.largestAddedBytes)}`);
+  }
+
+  if (reasons.length === 0) return true;
+
+  const choice = await vscode.window.showWarningMessage(
+    [
+      "Dieser Checkpoint wäre ungewöhnlich groß.",
+      reasons.join(" · "),
+      "Prüfe, ob wirklich der richtige Projektordner geöffnet ist.",
+    ].join(" "),
+    { modal: true },
+    "Trotzdem erstellen"
+  );
+  return choice === "Trotzdem erstellen";
+}
+
 async function createCheckpointWithName(
   context: RepositoryContext,
   name: string
@@ -165,7 +217,7 @@ async function createCheckpointWithName(
       await createCheckpoint(context, { name, action: "snapshot" });
     }
   );
-  treeProvider.refresh();
+  treeProvider.refresh(true);
 }
 
 async function saveNamedCheckpoint(context: RepositoryContext): Promise<boolean> {
@@ -177,6 +229,9 @@ async function saveNamedCheckpoint(context: RepositoryContext): Promise<boolean>
     );
     return false;
   }
+
+  const pendingStats = await pendingCheckpointByteStats(context);
+  if (!(await confirmLargeCheckpoint(context, pendingStats))) return false;
 
   const enteredName = await askCheckpointName();
   if (enteredName === undefined) return false;
@@ -246,6 +301,9 @@ async function restoreSelectedCheckpoint(
 
     if (choice !== "Aktuellen Stand speichern und zurückkehren") return;
 
+    const safetyStats = await pendingCheckpointByteStats(context);
+    if (!(await confirmLargeCheckpoint(context, safetyStats))) return;
+
     await createCheckpointWithName(
       context,
       `Vor dem Wiederherstellen von „${canonical.name}“`
@@ -275,7 +333,7 @@ async function restoreSelectedCheckpoint(
     }
   );
 
-  treeProvider.refresh();
+  treeProvider.refresh(true);
   await vscode.commands.executeCommand(
     "workbench.files.action.refreshFilesExplorer"
   );
@@ -313,10 +371,53 @@ async function compareCommand(checkpoint: Checkpoint): Promise<void> {
   if (!(await ensureWorkspaceFilesSaved(context))) return;
 
   const diff = await diffCheckpointAgainstCurrent(context, checkpoint.oid);
-  const uri = diffProvider.createDocumentUri(checkpoint.name, diff);
+  const uri = diffProvider.createDocumentUri(
+    checkpoint.name,
+    diff.rawDiff,
+    diff.byteStats
+  );
   const document = await vscode.workspace.openTextDocument(uri);
   await vscode.languages.setTextDocumentLanguage(document, "diff");
   await vscode.window.showTextDocument(document, { preview: true });
+}
+
+async function deleteAllCommand(): Promise<void> {
+  const context = await repositoryContext(false);
+  if (!context) return;
+
+  const checkpoints = await listCheckpoints(context);
+  if (checkpoints.length === 0) {
+    await vscode.window.showInformationMessage("Es gibt keine Checkpoints zum Löschen.");
+    return;
+  }
+
+  const firstChoice = await vscode.window.showWarningMessage(
+    [
+      `Alle ${checkpoints.length} Checkpoints dieses Projekts löschen?`,
+      "Die aktuellen Projektdateien und der normale Git-Verlauf bleiben unverändert.",
+      "Die Checkpoints können danach nicht mehr über die Erweiterung wiederhergestellt werden.",
+    ].join(" "),
+    { modal: true },
+    "Löschen vorbereiten"
+  );
+  if (firstChoice !== "Löschen vorbereiten") return;
+
+  const confirmation = await vscode.window.showInputBox({
+    title: "Alle Checkpoints endgültig löschen",
+    prompt: "Gib LÖSCHEN ein, um alle Checkpoints dieses Projekts zu entfernen.",
+    placeHolder: "LÖSCHEN",
+    ignoreFocusOut: true,
+    validateInput(value) {
+      return value === "LÖSCHEN" ? undefined : "Bitte gib genau LÖSCHEN ein.";
+    },
+  });
+  if (confirmation !== "LÖSCHEN") return;
+
+  await deleteAllCheckpoints(context);
+  treeProvider.refresh(true);
+  await vscode.window.showInformationMessage(
+    "Alle Checkpoints wurden entfernt. Git gibt den belegten Speicherplatz möglicherweise erst bei einer späteren automatischen Bereinigung frei."
+  );
 }
 
 export function activate(extensionContext: vscode.ExtensionContext): void {
@@ -370,7 +471,11 @@ export function activate(extensionContext: vscode.ExtensionContext): void {
     ),
     vscode.commands.registerCommand(
       "hackschuleCheckpoints.refresh",
-      () => treeProvider.refresh()
+      () => treeProvider.refresh(true)
+    ),
+    vscode.commands.registerCommand(
+      "hackschuleCheckpoints.deleteAll",
+      deleteAllCommand
     ),
     vscode.workspace.onDidChangeWorkspaceFolders(() => treeProvider.refresh()),
     vscode.window.onDidChangeActiveTextEditor(() => treeProvider.refresh()),

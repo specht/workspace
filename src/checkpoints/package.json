@@ -2,7 +2,7 @@
   "name": "hackschule-checkpoints",
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "publisher": "hackschule",
   "license": "MIT",
   "engines": {
@@ -17,7 +17,8 @@
     "onCommand:hackschuleCheckpoints.restore",
     "onCommand:hackschuleCheckpoints.restoreItem",
     "onCommand:hackschuleCheckpoints.compareItem",
-    "onCommand:hackschuleCheckpoints.refresh"
+    "onCommand:hackschuleCheckpoints.refresh",
+    "onCommand:hackschuleCheckpoints.deleteAll"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -50,6 +51,12 @@
         "title": "%command.refresh%",
         "category": "%command.category%",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "hackschuleCheckpoints.deleteAll",
+        "title": "%command.deleteAll%",
+        "category": "%command.category%",
+        "icon": "$(trash)"
       }
     ],
     "viewsContainers": {
@@ -88,6 +95,11 @@
           "command": "hackschuleCheckpoints.refresh",
           "when": "view == hackschuleCheckpoints.view",
           "group": "navigation@2"
+        },
+        {
+          "command": "hackschuleCheckpoints.deleteAll",
+          "when": "view == hackschuleCheckpoints.view && hackschuleCheckpoints.hasItems == true",
+          "group": "management@1"
         }
       ],
       "view/item/context": [
@@ -120,6 +132,24 @@
           "type": "boolean",
           "default": true,
           "description": "%configuration.showStatusBar%"
+        },
+        "hackschuleCheckpoints.warnAddedBytes": {
+          "type": "number",
+          "default": 262144000,
+          "minimum": 0,
+          "description": "%configuration.warnAddedBytes%"
+        },
+        "hackschuleCheckpoints.warnChangedFiles": {
+          "type": "number",
+          "default": 2000,
+          "minimum": 0,
+          "description": "%configuration.warnChangedFiles%"
+        },
+        "hackschuleCheckpoints.warnSingleFileBytes": {
+          "type": "number",
+          "default": 104857600,
+          "minimum": 0,
+          "description": "%configuration.warnSingleFileBytes%"
         }
       }
     }

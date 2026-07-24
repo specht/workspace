@@ -1,22 +1,11 @@
 import * as vscode from "vscode";
+import { formatBytes } from "./checkpointTree";
+import type { ByteStats } from "./types";
 
 interface DiffSection {
   fileName: string;
   status: "geändert" | "neu" | "gelöscht" | "umbenannt" | "binär geändert";
-  additions: number;
-  deletions: number;
   body: string[];
-}
-
-export interface FriendlyDiff {
-  content: string;
-  fileCount: number;
-  additions: number;
-  deletions: number;
-}
-
-function singularOrPlural(count: number, singular: string, plural: string): string {
-  return `${count} ${count === 1 ? singular : plural}`;
 }
 
 function cleanGitPath(value: string | undefined): string | undefined {
@@ -45,8 +34,6 @@ function parseSection(block: string): DiffSection | undefined {
     status = "binär geändert";
   }
 
-  let additions = 0;
-  let deletions = 0;
   const body: string[] = [];
   let inHunk = false;
 
@@ -63,11 +50,7 @@ function parseSection(block: string): DiffSection | undefined {
       continue;
     }
 
-    if (!inHunk) continue;
-
-    if (line.startsWith("+") && !line.startsWith("+++")) additions += 1;
-    if (line.startsWith("-") && !line.startsWith("---")) deletions += 1;
-    body.push(line);
+    if (inHunk) body.push(line);
   }
 
   if (body.length === 0) {
@@ -80,13 +63,15 @@ function parseSection(block: string): DiffSection | undefined {
   return {
     fileName: status === "gelöscht" ? oldPath : newPath,
     status,
-    additions,
-    deletions,
     body,
   };
 }
 
-export function formatFriendlyDiff(checkpointName: string, rawDiff: string): FriendlyDiff {
+export function formatFriendlyDiff(
+  checkpointName: string,
+  rawDiff: string,
+  byteStats: ByteStats,
+): string {
   const blocks = rawDiff
     .split(/(?=^diff --git )/m)
     .map(block => block.trimEnd())
@@ -96,32 +81,20 @@ export function formatFriendlyDiff(checkpointName: string, rawDiff: string): Fri
     .map(parseSection)
     .filter((section): section is DiffSection => section !== undefined);
 
-  const additions = sections.reduce((sum, section) => sum + section.additions, 0);
-  const deletions = sections.reduce((sum, section) => sum + section.deletions, 0);
-
   if (sections.length === 0) {
-    return {
-      fileCount: 0,
-      additions: 0,
-      deletions: 0,
-      content: [
-        `# Vergleich mit „${checkpointName}“`,
-        "#",
-        "# Seit diesem Checkpoint hat sich nichts geändert.",
-        "",
-      ].join("\n"),
-    };
+    return [
+      `# Vergleich mit „${checkpointName}“`,
+      "#",
+      "# Seit diesem Checkpoint hat sich nichts geändert.",
+      "",
+    ].join("\n");
   }
-
-  const summary = [
-    singularOrPlural(sections.length, "Datei", "Dateien"),
-    `${additions} ${additions === 1 ? "Zeile hinzugefügt" : "Zeilen hinzugefügt"}`,
-    `${deletions} ${deletions === 1 ? "Zeile entfernt" : "Zeilen entfernt"}`,
-  ].join(" · ");
 
   const output: string[] = [
     `# Vergleich mit „${checkpointName}“`,
-    `# ${summary}`,
+    `# ${sections.length} ${sections.length === 1 ? "Datei" : "Dateien"} betroffen`,
+    `# +${formatBytes(byteStats.addedBytes)} neue oder veränderte Daten`,
+    `# −${formatBytes(byteStats.removedBytes)} ersetzte oder entfernte Daten`,
     "# Grün (+) ist neu, Rot (-) wurde entfernt.",
     "",
   ];
@@ -129,19 +102,13 @@ export function formatFriendlyDiff(checkpointName: string, rawDiff: string): Fri
   for (const section of sections) {
     output.push(
       `# Datei: ${section.fileName} (${section.status})`,
-      `# ${section.additions} hinzugefügt · ${section.deletions} entfernt`,
       "# ────────────────────────────────────────────────",
       ...section.body,
       "",
     );
   }
 
-  return {
-    content: output.join("\n"),
-    fileCount: sections.length,
-    additions,
-    deletions,
-  };
+  return output.join("\n");
 }
 
 export class CheckpointDiffProvider
@@ -155,14 +122,21 @@ export class CheckpointDiffProvider
     return this.contents.get(uri.toString()) ?? "Vergleich nicht mehr verfügbar.\n";
   }
 
-  createDocumentUri(checkpointName: string, rawDiff: string): vscode.Uri {
+  createDocumentUri(
+    checkpointName: string,
+    rawDiff: string,
+    byteStats: ByteStats,
+  ): vscode.Uri {
     const safeName = checkpointName.replace(/[\\/:*?\"<>|]/g, "-");
     const uri = vscode.Uri.from({
       scheme: CheckpointDiffProvider.scheme,
       path: `/Vergleich mit ${safeName}.diff`,
       query: String(Date.now()),
     });
-    this.contents.set(uri.toString(), formatFriendlyDiff(checkpointName, rawDiff).content);
+    this.contents.set(
+      uri.toString(),
+      formatFriendlyDiff(checkpointName, rawDiff, byteStats),
+    );
     return uri;
   }
 }

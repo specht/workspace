@@ -128,3 +128,48 @@ npm run package      # validate, test, compile and create VSIX
 The sidebar groups the linear checkpoint history by local calendar day. Each
 header includes the weekday and date, while checkpoint rows show only their
 time. Day groups are expanded by default.
+
+## Byte statistics
+
+Each checkpoint row shows how much project content was added and removed compared
+with the preceding checkpoint:
+
+```text
+Checkpoint 3   10:42:17 · +2,4 MB −18 KB
+```
+
+For a modified file, the full old blob size counts as removed and the full new
+blob size counts as added. This also works for images and other binary files.
+A pure rename with unchanged content contributes zero bytes.
+
+These figures describe changed **project content**. They are not the exact
+physical size occupied inside `.git`, because Git reuses, compresses and packs
+objects.
+
+Before creating an unusually large checkpoint, the extension warns by default
+when one of these limits is reached:
+
+- 250 MB added or changed data
+- 2,000 affected files
+- one new or changed file of at least 100 MB
+
+The thresholds are configurable under `hackschuleCheckpoints.*` settings. A
+value of `0` disables that threshold.
+
+## Delete all checkpoints
+
+The Checkpoints view's `…` menu contains **Alle Checkpoints löschen…**. This
+removes only the private ref:
+
+```text
+refs/hackschule-checkpoints/current
+```
+
+The current project files, normal branch, staging area, commits and remotes are
+not changed. The operation requires a modal warning and typing `LÖSCHEN`
+exactly.
+
+Git may reclaim the now-unreachable object data later during automatic garbage
+collection. The extension deliberately does not run an aggressive
+`git gc --prune=now`, because that could also remove unrelated recovery objects
+from normal Git work.

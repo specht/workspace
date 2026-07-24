@@ -12,5 +12,9 @@
   "view.contextualTitle": "Hackschule Checkpoints",
   "view.welcome": "No checkpoints have been created yet.\\n[Create checkpoint](command:hackschuleCheckpoints.create)",
   "configuration.title": "Hackschule Checkpoints",
-  "configuration.showStatusBar": "Show the checkpoint button in the status bar."
+  "configuration.showStatusBar": "Show the checkpoint button in the status bar.",
+  "command.deleteAll": "Delete all checkpoints…",
+  "configuration.warnAddedBytes": "Warn when a new checkpoint contains at least this many added or changed bytes. Set to 0 to disable this threshold.",
+  "configuration.warnChangedFiles": "Warn when a new checkpoint changes at least this many files. Set to 0 to disable this threshold.",
+  "configuration.warnSingleFileBytes": "Warn when one added or changed file is at least this large. Set to 0 to disable this threshold."
 }

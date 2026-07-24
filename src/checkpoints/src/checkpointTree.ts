@@ -1,6 +1,13 @@
 import * as vscode from "vscode";
-import type { Checkpoint, RepositoryContext } from "./types";
-import { listCheckpoints } from "./git";
+import type {
+  ByteStats,
+  Checkpoint,
+  RepositoryContext,
+} from "./types";
+import {
+  checkpointByteStats,
+  listCheckpoints,
+} from "./git";
 
 interface CheckpointDayGroup {
   kind: "day";
@@ -39,6 +46,27 @@ function localTimeLabel(timestamp: number): string {
   }).format(new Date(timestamp * 1000));
 }
 
+export function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  const units = ["KB", "MB", "GB", "TB"];
+  let value = bytes / 1024;
+  let unit = units[0];
+  for (let index = 1; index < units.length && value >= 1024; index += 1) {
+    value /= 1024;
+    unit = units[index];
+  }
+  const digits = value >= 100 ? 0 : value >= 10 ? 1 : 2;
+  return `${value.toLocaleString("de-DE", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: digits,
+  })} ${unit}`;
+}
+
+function statsLabel(stats: ByteStats | undefined): string {
+  if (!stats) return "+? −?";
+  return `+${formatBytes(stats.addedBytes)} −${formatBytes(stats.removedBytes)}`;
+}
+
 function groupByLocalDay(checkpoints: Checkpoint[]): CheckpointDayGroup[] {
   const groups: CheckpointDayGroup[] = [];
 
@@ -68,6 +96,8 @@ export class CheckpointTreeProvider
   private readonly changedEmitter =
     new vscode.EventEmitter<CheckpointTreeNode | undefined | void>();
 
+  private readonly statsCache = new Map<string, ByteStats>();
+
   readonly onDidChangeTreeData = this.changedEmitter.event;
 
   constructor(
@@ -75,7 +105,8 @@ export class CheckpointTreeProvider
       () => Promise<RepositoryContext | undefined>,
   ) {}
 
-  refresh(): void {
+  refresh(clearStats = false): void {
+    if (clearStats) this.statsCache.clear();
     this.changedEmitter.fire();
   }
 
@@ -97,18 +128,32 @@ export class CheckpointTreeProvider
       node.name,
       vscode.TreeItemCollapsibleState.None,
     );
-    item.description = localTimeLabel(node.timestamp);
+    item.description = `${localTimeLabel(node.timestamp)} · ${statsLabel(node.byteStats)}`;
     item.iconPath = new vscode.ThemeIcon(
       node.action === "restore" ? "history" : "archive",
     );
     item.contextValue = "hackschuleCheckpoint";
+
+    const stats = node.byteStats;
     item.tooltip = new vscode.MarkdownString([
       `**${node.name}**`,
       "",
       new Date(node.timestamp * 1000).toLocaleString("de-DE"),
       "",
+      stats
+        ? `**Neue oder veränderte Daten:** ${formatBytes(stats.addedBytes)}`
+        : "Byte-Statistik nicht verfügbar.",
+      stats
+        ? `**Ersetzte oder entfernte Daten:** ${formatBytes(stats.removedBytes)}`
+        : "",
+      stats
+        ? `**Betroffene Dateien:** ${stats.changedFiles}`
+        : "",
+      "",
+      "Die Byte-Werte beschreiben geänderte Projektinhalte, nicht den exakten Speicherbedarf in Git.",
+      "",
       "Benutze den Vergleichs- oder Wiederherstellen-Knopf rechts.",
-    ].join("\n"));
+    ].filter(Boolean).join("\n"));
     return item;
   }
 
@@ -136,6 +181,19 @@ export class CheckpointTreeProvider
       checkpoints.length > 0,
     );
 
-    return groupByLocalDay(checkpoints);
+    const enriched: Checkpoint[] = [];
+    // Keep Git process usage bounded. A classroom project may accumulate many
+    // checkpoints, and starting hundreds of diff processes at once would make
+    // the sidebar slower rather than faster.
+    for (const checkpoint of checkpoints) {
+      let byteStats = this.statsCache.get(checkpoint.oid);
+      if (!byteStats) {
+        byteStats = await checkpointByteStats(context, checkpoint);
+        this.statsCache.set(checkpoint.oid, byteStats);
+      }
+      enriched.push({ ...checkpoint, byteStats });
+    }
+
+    return groupByLocalDay(enriched);
   }
 }
