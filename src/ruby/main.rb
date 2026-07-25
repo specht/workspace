@@ -2172,9 +2172,9 @@ class Main < Sinatra::Base
             #       "folder": "/workspace"
             #     }
             #   }
-            with_timing("start_server #{container_name}: chown -R") do
-                shell_ok("chown -R 1000:1000 /user/#{container_name}", :timeout => shell_timeout(:chown))
-            end
+            # with_timing("start_server #{container_name}: chown -R") do
+            #     shell_ok("chown -R 1000:1000 /user/#{container_name}", :timeout => shell_timeout(:chown))
+            # end
             
             db_email = email
             if test_tag
