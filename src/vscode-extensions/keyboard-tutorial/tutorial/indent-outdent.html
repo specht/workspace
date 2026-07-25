@@ -1,0 +1,134 @@
+<yaml>
+file: tutorial/indent-outdent.txt
+cursor: [2, 1]
+</yaml>
+
+<h2>Mehrere Zeilen einrücken</h2>
+
+<p>
+    Mit <key>Tab</key> kannst du nicht nur einzelne Zeichen eingeben:
+    Sind mehrere vollständige Zeilen markiert, rückt VS Code alle gemeinsam
+    ein. Mit <key>Shift</key> + <key>Tab</key> rückst du sie wieder aus.
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Die Zeilen bleiben dabei in ihrer Reihenfolge. Das ist später besonders
+    wichtig, wenn zusammengehörige Text- oder Codeblöcke verschoben und
+    eingerückt werden.
+</div>
+
+<table id="table"></table>
+
+<script>
+let firstIndentWidth = null;
+let secondIndentWidth = null;
+
+function getLines(contents) {
+    return contents.replace(/\r/g, '').split('\n');
+}
+
+function indentationWidth(line) {
+    const indentation = (line.match(/^[\t ]*/) || [''])[0];
+    let width = 0;
+
+    for (const character of indentation) {
+        width += character === '\t' ? 4 : 1;
+    }
+
+    return width;
+}
+
+function exerciseLines(contents) {
+    const lines = getLines(contents);
+
+    return {
+        lines,
+        widths: [
+            indentationWidth(lines[1] || ''),
+            indentationWidth(lines[2] || ''),
+            indentationWidth(lines[3] || '')
+        ],
+        textsUnchanged:
+            (lines[1] || '').trim() === 'Matheheft einpacken' &&
+            (lines[2] || '').trim() === 'Deutschbuch einpacken' &&
+            (lines[3] || '').trim() === 'Federmappe einpacken'
+    };
+}
+
+function allEqual(values) {
+    return values.every(value => value === values[0]);
+}
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    const state = exerciseLines(contents);
+
+    if (
+        firstIndentWidth === null &&
+        state.textsUnchanged &&
+        allEqual(state.widths) &&
+        state.widths[0] > 0
+    ) {
+        firstIndentWidth = state.widths[0];
+        setCheckBox('s0', true);
+    }
+
+    if (
+        firstIndentWidth !== null &&
+        secondIndentWidth === null &&
+        state.textsUnchanged &&
+        allEqual(state.widths) &&
+        state.widths[0] > firstIndentWidth
+    ) {
+        secondIndentWidth = state.widths[0];
+        setCheckBox('s1', true);
+    }
+
+    if (
+        secondIndentWidth !== null &&
+        state.textsUnchanged &&
+        allEqual(state.widths) &&
+        state.widths[0] > 0 &&
+        state.widths[0] < secondIndentWidth
+    ) {
+        setCheckBox('s2', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Markiere die drei vollständigen Zeilen von
+            <code>Matheheft einpacken</code> bis
+            <code>Federmappe einpacken</code>. Drücke einmal
+            <key>Tab</key>, um alle drei Zeilen gemeinsam einzurücken.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Lass die Zeilen markiert und drücke noch einmal
+            <key>Tab</key>. Der gesamte Block wird eine weitere Stufe
+            eingerückt.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s2')}</td>
+        <td>
+            Rücke den markierten Block mit
+            <key>Shift</key> + <key>Tab</key> wieder um eine Stufe aus.
+        </td>
+    </tr>
+`);
+</script>

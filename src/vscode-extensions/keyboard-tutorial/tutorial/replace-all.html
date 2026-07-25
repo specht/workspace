@@ -1,0 +1,96 @@
+<yaml>
+file: tutorial/replace-all.txt
+cursor: [1, 1]
+</yaml>
+
+<h2>Alle Treffer ersetzen</h2>
+
+<p>
+    Bisher hast du mit <key>Enter</key> nur den aktuellen Treffer ersetzt.
+    Mit <key>Strg</key> + <key>Alt</key> + <key>Enter</key>
+    ersetzt du stattdessen alle Treffer auf einmal.
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Kontrolliere vorher den Suchbegriff und den Ersatztext:
+    Der Befehl verändert jede gefundene Stelle.
+</div>
+
+<p>
+    Öffne wie zuvor Suchen und Ersetzen. Suche nach
+    <code>Montag</code> und gib als Ersatz
+    <code>Dienstag</code> ein.
+</p>
+
+<table id="table"></table>
+
+<script>
+const expected =
+    'Plan für die Projektwoche\n' +
+    'Der Wochentag steht im folgenden Abschnitt mehrfach.\n' +
+    'Alle Vorkommen sollen gemeinsam geändert werden.\n' +
+    'Die einleitenden Zeilen bleiben unverändert.\n' +
+    'Der eigentliche Abschnitt beginnt weiter unten.\n' +
+    '\n' +
+    'Dienstag beginnt die Projektwoche.\n' +
+    'Am Dienstag bauen wir Modelle.\n' +
+    'Dienstag präsentieren wir die Ergebnisse.\n' +
+    '\n' +
+    'Nach dem Abschnitt folgen noch Kontrollzeilen.\n' +
+    'Prüfe, ob wirklich alle Treffer ersetzt wurden.\n' +
+    'Hier endet die Datei.';
+
+let replacementDone = false;
+
+function normalize(contents) {
+    return contents.replace(/\r/g, '');
+}
+
+function isCursor(selection, line, character) {
+    return selection &&
+        selection.isEmpty &&
+        selection.active.line === line &&
+        selection.active.character === character;
+}
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    replacementDone = normalize(contents) === expected;
+    setCheckBox('s0', replacementDone);
+    checkTaskSolved();
+};
+
+handleOnDidChangeTextEditorSelection = function(e) {
+    const selection = e.selections && e.selections[0];
+
+    if (replacementDone && isCursor(selection, 12, 21)) {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Ersetze mit
+            <key>Strg</key> + <key>Alt</key> + <key>Enter</key>
+            alle drei Treffer.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Schließe Suchen und Ersetzen mit <key>Esc</key> und springe
+            anschließend mit <key>Strg</key> + <key>Ende</key>
+            ans Ende der Datei.
+        </td>
+    </tr>
+`);
+</script>

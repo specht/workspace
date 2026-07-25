@@ -1,0 +1,131 @@
+<yaml>
+file: tutorial/search-replace-challenge.txt
+cursor: [1, 1]
+</yaml>
+
+<h2>Übung: Suchen, ersetzen und speichern</h2>
+
+<p>
+    In dieser Aufgabe kombinierst du die neuen Techniken. Arbeite möglichst
+    vollständig mit der Tastatur.
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Nach dem ersten Ersetzen bleibt der Dialog geöffnet. Mit
+    <key>Shift</key> + <key>Tab</key> wechselst du vom Ersatzfeld zurück
+    ins Suchfeld. Mit <key>Strg</key> + <key>A</key> markierst du dort den
+    bisherigen Inhalt, bevor du den nächsten Begriff eingibst.
+</div>
+
+<table id="table"></table>
+
+<script>
+const expected =
+    'Arbeitsplan der AG\n' +
+    'Im folgenden Abschnitt müssen mehrere Angaben korrigiert werden.\n' +
+    'Benutze dafür Suchen und Ersetzen.\n' +
+    'Die einleitenden Zeilen bleiben unverändert.\n' +
+    'Der zu bearbeitende Abschnitt beginnt weiter unten.\n' +
+    '\n' +
+    'Die AG trifft sich am Donnerstag.\n' +
+    'Am Donnerstag bringen alle ihr Material mit.\n' +
+    'Die Arbeit beginnt schnell.\n' +
+    'Zum Schluss speichern wir die Datei.\n' +
+    '\n' +
+    'Nach dem Abschnitt stehen noch Kontrollzeilen.\n' +
+    'Sie dürfen nicht verändert werden.\n' +
+    'Hier endet die Übung.\n';
+
+let contentsCorrect = false;
+
+function normalize(contents) {
+    return contents.replace(/\r/g, '');
+}
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    const normalized = normalize(contents);
+
+    setCheckBox(
+        's0',
+        normalized.includes('Donnerstag') &&
+        !normalized.includes('Mittwoch')
+    );
+
+    setCheckBox(
+        's1',
+        normalized.includes('Die Arbeit beginnt schnell.') &&
+        !normalized.includes('Die Arbeit beginnt langsam.')
+    );
+
+    setCheckBox(
+        's2',
+        normalized.includes('Zum Schluss speichern wir die Datei.\n')
+    );
+
+    contentsCorrect = normalized === expected;
+    checkTaskSolved();
+};
+
+handleOnDidSaveTextDocument = function(e, contents) {
+    if (
+        contentsCorrect &&
+        e.document &&
+        e.document.isDirty === false &&
+        normalize(contents) === expected
+    ) {
+        setCheckBox('s3', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Öffne Suchen und Ersetzen. Suche nach <code>Mittwoch</code>,
+            wechsle mit <key>Tab</key> ins Ersatzfeld und gib
+            <code>Donnerstag</code> ein. Ersetze beide Treffer mit
+            <key>Strg</key> + <key>Alt</key> + <key>Enter</key>.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Wechsle mit <key>Shift</key> + <key>Tab</key> zurück ins
+            Suchfeld. Ersetze dessen Inhalt mithilfe von
+            <key>Strg</key> + <key>A</key> durch <code>langsam</code>.
+            Wechsle mit <key>Tab</key> ins Ersatzfeld, ersetze dessen
+            Inhalt durch <code>schnell</code> und drücke <key>Enter</key>,
+            um nur diesen einen Treffer zu ersetzen.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s2')}</td>
+        <td>
+            Schließe Suchen und Ersetzen mit <key>Esc</key>. Ergänze am
+            Ende der Zeile <code>Zum Schluss speichern wir die Datei</code>
+            den fehlenden Punkt.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s3')}</td>
+        <td>
+            Speichere die vollständig korrigierte Datei mit
+            <key>Strg</key> + <key>S</key>.
+        </td>
+    </tr>
+`);
+</script>

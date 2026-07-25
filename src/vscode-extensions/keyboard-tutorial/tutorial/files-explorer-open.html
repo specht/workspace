@@ -1,0 +1,62 @@
+<yaml>
+workspace: tutorial/workspace/files-chapter
+sharedWorkspace: files
+sharedWorkspaceVersion: 2
+</yaml>
+
+<h2>Dateien im Explorer öffnen</h2>
+
+<p>
+    Der Explorer zeigt links die Ordner und Dateien des geöffneten
+    Tutorial-Arbeitsbereichs. Mit
+    <key>Strg</key> + <key>Shift</key> + <key>E</key> setzt du den Fokus
+    dorthin. Die Anleitung bleibt rechts sichtbar.
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Dieser eine Arbeitsordner bleibt für alle folgenden Datei- und
+    Ordnerübungen geöffnet. Bereits angelegte oder umbenannte Einträge
+    bleiben daher sichtbar.
+</div>
+
+<table id="table"></table>
+
+<script>
+let firstFileOpened = false;
+
+handleOnDidChangeActiveTextEditor = function(e) {
+    const relativePath = e.resource && e.resource.relativePath;
+
+    if (!firstFileOpened && relativePath === 'willkommen.txt') {
+        firstFileOpened = true;
+        setCheckBox('s0', true);
+    }
+
+    if (firstFileOpened && relativePath === 'hinweis.txt') {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Öffne im Explorer die Datei <code>willkommen.txt</code>.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Öffne danach <code>hinweis.txt</code>.
+        </td>
+    </tr>
+`);
+</script>

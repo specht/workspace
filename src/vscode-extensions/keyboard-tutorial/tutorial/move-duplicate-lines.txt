@@ -1,0 +1,10 @@
+4. Zähne putzen
+5. Rucksack packen
+3. Frühstücken
+Diese Zeile gehört nicht in den Ablauf.
+1. Aufstehen
+7. Zur Schule fahren
+2. Anziehen
+6. Schuhe anziehen
+
+Geschafft!

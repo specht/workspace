@@ -1,0 +1,154 @@
+<yaml>
+file: tutorial/code-editing-challenge.c
+cursor: [6, 1]
+</yaml>
+
+<h2>Übung: Einen Codeabschnitt reparieren</h2>
+
+<p>
+    In dieser Aufgabe kombinierst du bekannte Bearbeitungstechniken.
+    Der Block zwischen <code>if (bereit) {</code> und der folgenden
+    schließenden Klammer soll zwischen <code>Start</code> und
+    <code>Ende</code> stehen. Seine innere Zeile muss weiter eingerückt
+    sein als die beiden Klammerzeilen.
+</p>
+
+<table id="table"></table>
+
+<script>
+let blockInCorrectPlace = false;
+let indentationCorrect = false;
+let finalLineActive = false;
+let finalStateReached = false;
+
+function lines(contents) {
+    return contents.replace(/\r/g, '').split('\n');
+}
+
+function indentationWidth(line) {
+    const whitespace = (line.match(/^[\t ]*/) || [''])[0];
+    let width = 0;
+
+    for (const character of whitespace) {
+        width += character === '\t' ? 4 : 1;
+    }
+
+    return width;
+}
+
+function withoutIndentation(line) {
+    return line.replace(/^[\t ]*/, '');
+}
+
+function inspect(contents) {
+    const current = lines(contents);
+    const trimmed = current.map(withoutIndentation);
+
+    const startIndex = trimmed.indexOf('printf("Start\\n");');
+    const ifIndex = trimmed.indexOf('if (bereit) {');
+    const middleIndex = trimmed.indexOf('printf("Mitte\\n");');
+    const closeIndex = trimmed.findIndex(
+        (line, index) => index > middleIndex && line === '}'
+    );
+    const endIndex = trimmed.indexOf('printf("Ende\\n");');
+    const finishedIndex = trimmed.indexOf('printf("Fertig\\n");');
+
+    const blockPlaced =
+        startIndex >= 0 &&
+        ifIndex === startIndex + 1 &&
+        middleIndex === ifIndex + 1 &&
+        closeIndex === middleIndex + 1 &&
+        endIndex === closeIndex + 1;
+
+    const indentationPlaced =
+        blockPlaced &&
+        indentationWidth(current[ifIndex]) > 0 &&
+        indentationWidth(current[closeIndex]) ===
+            indentationWidth(current[ifIndex]) &&
+        indentationWidth(current[middleIndex]) >
+            indentationWidth(current[ifIndex]);
+
+    const finishedActive = finishedIndex >= 0;
+
+    return {
+        blockPlaced,
+        indentationPlaced,
+        finishedActive,
+        complete:
+            blockPlaced &&
+            indentationPlaced &&
+            finishedActive
+    };
+}
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    const state = inspect(contents);
+
+    blockInCorrectPlace = state.blockPlaced;
+    indentationCorrect = state.indentationPlaced;
+    finalLineActive = state.finishedActive;
+    finalStateReached = state.complete;
+
+    setCheckBox('s0', blockInCorrectPlace);
+    setCheckBox('s1', indentationCorrect);
+    setCheckBox('s2', finalLineActive);
+
+    checkTaskSolved();
+};
+
+handleOnDidSaveTextDocument = function(e, contents) {
+    if (
+        e.document &&
+        e.document.isDirty === false &&
+        inspect(contents).complete
+    ) {
+        setCheckBox('s3', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Markiere den vollständigen Block von
+            <code>if (bereit) {</code> bis zur zugehörigen schließenden
+            Klammer. Verschiebe ihn über die Zeile
+            <code>printf("Ende\\n");</code>.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Rücke <code>printf("Mitte\\n");</code> eine Stufe weiter
+            ein als die beiden Klammerzeilen des Blocks.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s2')}</td>
+        <td>
+            Entferne mit <key>Strg</key> + <key>/</key> den Kommentar
+            vor <code>printf("Fertig\\n");</code>.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s3')}</td>
+        <td>
+            Speichere die reparierte Datei mit
+            <key>Strg</key> + <key>S</key>.
+        </td>
+    </tr>
+`);
+</script>

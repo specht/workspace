@@ -1,0 +1,83 @@
+<yaml>
+file: tutorial/multi-cursor-all.txt
+cursor: [1, 12]
+</yaml>
+
+<h2>Alle Vorkommen auswählen</h2>
+
+<p>
+    Mit <key>Strg</key> + <key>Shift</key> + <key>L</key> wählst du
+    alle Vorkommen des gerade markierten Textes aus.
+</p>
+
+<table id="table"></table>
+
+<script>
+const expected =
+    'Eintrag 1: geschlossen\n' +
+    'Eintrag 2: geschlossen\n' +
+    'Eintrag 3: geschlossen\n' +
+    'Eintrag 4: geschlossen';
+
+let allOccurrencesSelected = false;
+
+function isExpectedSelection(selection, line) {
+    return selection &&
+        !selection.isEmpty &&
+        selection.start.line === line &&
+        selection.start.character === 11 &&
+        selection.end.line === line &&
+        selection.end.character === 16;
+}
+
+handleOnDidChangeTextEditorSelection = function(e) {
+    const selections = e.selections || [];
+
+    if (
+        !allOccurrencesSelected &&
+        selections.length === 4 &&
+        [0, 1, 2, 3].every(line =>
+            selections.some(selection => isExpectedSelection(selection, line))
+        )
+    ) {
+        allOccurrencesSelected = true;
+        setCheckBox('s0', true);
+    }
+
+    checkTaskSolved();
+};
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    if (
+        allOccurrencesSelected &&
+        contents.replace(/\r/g, '') === expected
+    ) {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Markiere das erste Wort <code>offen</code> und drücke
+            <key>Strg</key> + <key>Shift</key> + <key>L</key>.
+            Alle vier Vorkommen sollen markiert sein.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Ersetze alle Markierungen gleichzeitig durch
+            <code>geschlossen</code>.
+        </td>
+    </tr>
+`);
+</script>

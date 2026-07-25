@@ -1,0 +1,103 @@
+<yaml>
+file: tutorial/multi-cursor-mouse.txt
+cursor: [1, 4]
+</yaml>
+
+<h2>Cursor untereinander hinzufügen</h2>
+
+<p>
+    Mit <key>Strg</key> + <key>Shift</key> + <key>↓</key> fügst du
+    unter dem aktuellen Cursor einen weiteren Cursor hinzu. Mit
+    <key>Strg</key> + <key>Shift</key> + <key>↑</key> funktioniert es
+    entsprechend nach oben.
+</p>
+
+<table id="table"></table>
+
+<script>
+const expected = 'rot!\nrot!\nrot!';
+let threeCursorsReady = false;
+let punctuationInserted = false;
+
+function sortedCursorPositions(selections) {
+    return selections
+        .filter(selection => selection.isEmpty)
+        .map(selection => [
+            selection.active.line,
+            selection.active.character
+        ])
+        .sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+}
+
+function positionsEqual(actual, expectedPositions) {
+    return actual.length === expectedPositions.length &&
+        actual.every((position, index) =>
+            position[0] === expectedPositions[index][0] &&
+            position[1] === expectedPositions[index][1]
+        );
+}
+
+handleOnDidChangeTextEditorSelection = function(e) {
+    const positions = sortedCursorPositions(e.selections || []);
+
+    if (
+        !threeCursorsReady &&
+        positionsEqual(positions, [[0, 3], [1, 3], [2, 3]])
+    ) {
+        threeCursorsReady = true;
+        setCheckBox('s0', true);
+    }
+
+    if (
+        punctuationInserted &&
+        e.selections &&
+        e.selections.length === 1 &&
+        e.selections[0].isEmpty
+    ) {
+        setCheckBox('s2', true);
+    }
+
+    checkTaskSolved();
+};
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    if (threeCursorsReady && contents.replace(/\r/g, '') === expected) {
+        punctuationInserted = true;
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Drücke zweimal
+            <key>Strg</key> + <key>Shift</key> + <key>↓</key>.
+            Jetzt sollen drei Cursor untereinander zu sehen sein.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Tippe ein Ausrufezeichen. Es soll in allen drei Zeilen
+            gleichzeitig erscheinen.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s2')}</td>
+        <td>
+            Drücke <key>Esc</key>, um wieder nur einen Cursor zu haben.
+        </td>
+    </tr>
+`);
+</script>

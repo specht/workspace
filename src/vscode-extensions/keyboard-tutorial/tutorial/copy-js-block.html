@@ -1,0 +1,77 @@
+<yaml>
+file: tutorial/copy-js-block.js
+cursor: [1, 1]
+</yaml>
+
+<h2>Einen Block kopieren</h2>
+
+<p>
+    Die Zeilen zwischen der öffnenden und der schließenden geschweiften
+    Klammer bilden hier einen Block. Kopierst du alle vollständigen Zeilen,
+    bleibt seine innere Einrückung erhalten.
+</p>
+
+<table id="table"></table>
+
+<script>
+const duplicated =
+    'const card1 = {\n' +
+    '  title: "Erste Karte"\n' +
+    '};\n' +
+    'const card1 = {\n' +
+    '  title: "Erste Karte"\n' +
+    '};\n' +
+    '\n' +
+    'console.log("Fertig");';
+
+const expected =
+    'const card1 = {\n' +
+    '  title: "Erste Karte"\n' +
+    '};\n' +
+    'const card2 = {\n' +
+    '  title: "Zweite Karte"\n' +
+    '};\n' +
+    '\n' +
+    'console.log("Fertig");';
+
+let blockCopied = false;
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    const normalized = contents.replace(/\r/g, '');
+
+    if (!blockCopied && normalized === duplicated) {
+        blockCopied = true;
+        setCheckBox('s0', true);
+    }
+
+    if (blockCopied && normalized === expected) {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Markiere die ersten drei vollständigen Zeilen. Kopiere den
+            Block und füge ihn am Anfang der leeren Zeile vor
+            <code>console.log</code> ein.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Ändere nur die Kopie: Aus <code>card1</code> wird
+            <code>card2</code> und aus <code>Erste Karte</code> wird
+            <code>Zweite Karte</code>.
+        </td>
+    </tr>
+`);
+</script>

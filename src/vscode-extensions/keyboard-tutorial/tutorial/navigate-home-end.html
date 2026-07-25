@@ -1,0 +1,84 @@
+<yaml>
+file: tutorial/alice.txt
+cursor: [12, 30]
+</yaml>
+<h2>Zum Ende einer Zeile springen</h2>
+<p>
+    Nutze die Taste <key>Ende</key>, um an das Ende einer Zeile zu springen.
+</p>
+
+<table id="table"></table>
+
+<h2>Zum Anfang einer Zeile springen</h2>
+
+<p>
+    Grundsätzlich kannst du mit der Taste <key>Pos1</key> zum Anfang einer
+    Zeile springen.
+    Aber: Da beim Programmieren Zeilen oft eingerückt werden (also mit
+    Whitespace beginnen), kann es verschiedene Auffassungen davon geben,
+    wo eine Zeile beginnt.
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Als »Whitespace« werden unsichtbare Zeichen in einem Text bezeichnet –
+    also Zeichen, die du nicht sehen kannst, die aber trotzdem da sind.
+
+    Beispiele für Whitespace:
+
+    <ul>
+        <li>Leerzeichen</li>
+        <li>Tabulator (ein größerer Sprung nach rechts)</li>
+        <li>Zeilenumbruch</li>
+    </ul>
+</div>
+
+<p>
+    Mit <key>Pos1</key> wechselst du also zwischen den folgenden Stellen:
+</p>
+<ul>
+    <li>die erste Position ganz links</li>
+    <li>die erste Position, an der ein richtiges Zeichen steht</li>
+</ul>
+
+<table id="table1"></table>
+
+<script>
+
+handleOnDidChangeTextEditorSelection = function(e) {
+    let s = e.selections[0];
+    if (s.start.line === 11 && s.start.character === 42 &&
+        s.end.line === s.start.line && s.end.character === s.start.character) {
+        document.querySelector('#s0 .check').classList.add('checked');
+    }
+    if (s.start.line === 11 && s.start.character === 0 &&
+        s.end.line === s.start.line && s.end.character === s.start.character) {
+        document.querySelector('#s1 .check').classList.add('checked');
+    }
+    if (s.start.line === 11 && s.start.character === 22 &&
+        s.end.line === s.start.line && s.end.character === s.start.character) {
+        document.querySelector('#s2 .check').classList.add('checked');
+    }
+    checkTaskSolved();
+}
+
+let table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend',
+    `<td style='width: 1.2em;' id="s0">
+    ${checkBox()}
+    </td><td>Springe zum Ende der aktuellen Zeile</td></tr>`);
+
+table = document.querySelector('#table1');
+
+table.insertAdjacentHTML('beforeend',
+    `<td style='width: 1.2em;' id="s1">
+    ${checkBox()}
+    </td><td>Springe zum Anfang der Zeile (ganz zum Anfang)</td></tr>`);
+table.insertAdjacentHTML('beforeend',
+    `<td style='width: 1.2em;' id="s2">
+    ${checkBox()}
+    </td><td>Springe zum Anfang der Zeile (hinter den Whitespace)</td></tr>`);
+
+
+</script>

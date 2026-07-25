@@ -1,0 +1,14 @@
+Arbeitsplan der AG
+Im folgenden Abschnitt müssen mehrere Angaben korrigiert werden.
+Benutze dafür Suchen und Ersetzen.
+Die einleitenden Zeilen bleiben unverändert.
+Der zu bearbeitende Abschnitt beginnt weiter unten.
+
+Die AG trifft sich am Mittwoch.
+Am Mittwoch bringen alle ihr Material mit.
+Die Arbeit beginnt langsam.
+Zum Schluss speichern wir die Datei
+
+Nach dem Abschnitt stehen noch Kontrollzeilen.
+Sie dürfen nicht verändert werden.
+Hier endet die Übung.

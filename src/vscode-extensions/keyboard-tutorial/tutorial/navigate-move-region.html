@@ -1,0 +1,42 @@
+<yaml>
+file: tutorial/alice.txt
+cursor: [1211, 1, 'top']
+</yaml>
+<h2>Bildausschnitt verschieben</h2>
+<p>
+    Manchmal möchte man den Bildausschnitt verschieben, ohne den Cursor zu
+    bewegen. Nutze dafür die Shortcuts
+    <key>Strg</key>+<key><svg class="icon"><use href="#arrow-up"></use></svg></key>
+    und
+    <key>Strg</key>+<key><svg class="icon"><use href="#arrow-down"></use></svg></key>.
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Tipp: Du kannst hierfür natürlich auch das Mausrad verwenden.
+</div>
+
+<table id="table"></table>
+
+<script>
+
+handleOnDidChangeTextEditorVisibleRanges = function(e) {
+    let y0 = e.visibleRanges[0][0].line;
+    let y1 = e.visibleRanges[0][1].line;
+    let yc = Math.round((y0 + y1) / 2);
+    if (yc >= 1211 - 1 && yc <= 1211 + 1) {
+        document.querySelector('#s0 .check').classList.add('checked');
+    } else {
+        document.querySelector('#s0 .check').classList.remove('checked');
+    }
+    checkTaskSolved();
+}
+
+let table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend',
+    `<td style='width: 1.2em;' id="s0">
+    ${checkBox()}
+    </td><td>Verschiebe den Bildausschnitt so, dass das Punktemuster ungefähr in der Mitte des Bildausschnitts ist.</td></tr>`);
+
+</script>

@@ -1,0 +1,53 @@
+<yaml>
+workspace: tutorial/workspace/files-chapter
+sharedWorkspace: files
+sharedWorkspaceVersion: 2
+resetSharedWorkspace: true
+</yaml>
+
+<h2>Explorer und Tutorial nebeneinander</h2>
+
+<p>
+    In den nächsten Übungen arbeitest du links im Explorer. Dafür öffnet
+    das Tutorial einen eigenen Arbeitsordner, der während des gesamten
+    Kapitels geöffnet und unverändert sichtbar bleibt. Damit die
+    Anleitung dabei sichtbar bleibt, verschiebst du das Tutorial
+    vorübergehend in die rechte Seitenleiste.
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Der folgende Button öffnet den VS-Code-Befehl zum Verschieben der
+    aktuellen Ansicht. Wähle dort
+    <strong>New Secondary Side Bar Entry</strong>
+    (neuer Eintrag in der sekundären Seitenleiste).
+</div>
+
+<p>
+    <button class="button" onclick="runTutorialAction('moveTutorialView')">
+        <svg class="icon"><use href="#arrow-right"></use></svg>
+        Tutorial nach rechts verschieben
+    </button>
+</p>
+
+<table id="table"></table>
+
+<script>
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Wenn das Tutorial rechts angezeigt wird, öffne mit diesem
+            Button den Explorer links:
+            <p>
+                <button class="button secondary"
+                    onclick="completeManualTask('s0', 'showExplorer')">
+                    Explorer öffnen
+                </button>
+            </p>
+        </td>
+    </tr>
+`);
+</script>

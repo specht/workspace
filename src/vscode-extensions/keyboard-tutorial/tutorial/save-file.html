@@ -1,0 +1,73 @@
+<yaml>
+file: tutorial/save-file.txt
+cursor: [1, 1]
+</yaml>
+
+<h2>Eine Datei speichern</h2>
+
+<p>
+    Änderungen im Editor werden nicht immer sofort in die Datei auf der
+    Festplatte geschrieben. Solange eine Datei noch ungespeicherte Änderungen
+    enthält, zeigt VS Code im Tab einen Punkt (<svg class="icon" style="transform: scale(0.8) translate(0, 0.2em);"><use href="#circle-filled"></use></svg>) statt des Schließen-Symbols (<svg class="icon" style="transform: translate(0, 0.2em);"><use href="#x"></use></svg>).
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Der Punkt bedeutet: <strong>Diese Datei wurde verändert, aber noch nicht
+    gespeichert.</strong> Mit <key>Strg</key> + <key>S</key> speicherst du
+    die aktuelle Datei. Danach verschwindet der Punkt wieder.
+</div>
+
+<table id="table"></table>
+
+<script>
+const expectedContents = 'Diese Datei ist jetzt vollständig gespeichert.\n';
+let contentsCorrect = false;
+
+function normalize(contents) {
+    return contents.replace(/\r/g, '');
+}
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    contentsCorrect = normalize(contents) === expectedContents;
+    setCheckBox('s0', contentsCorrect);
+    checkTaskSolved();
+};
+
+handleOnDidSaveTextDocument = function(e) {
+    if (
+        contentsCorrect &&
+        e.document &&
+        e.document.isDirty === false
+    ) {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Der Cursor steht am Anfang der Zeile. Springe mit
+            <key>Ende</key> ans Zeilenende und füge einen Punkt hinzu.
+            Beobachte danach den Punkt im Datei-Tab: Die Änderung ist
+            noch nicht gespeichert.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Speichere die Datei mit
+            <key>Strg</key> + <key>S</key>. Der Punkt im Tab muss
+            anschließend wieder verschwinden.
+        </td>
+    </tr>
+`);
+</script>

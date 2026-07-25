@@ -1,0 +1,60 @@
+<yaml>
+file: tutorial/undo-redo.txt
+cursor: [1, 5]
+</yaml>
+<h2>Rückgängig und wiederholen</h2>
+<p>
+    Mit <key>Strg</key> + <key>Z</key> machst du den letzten Bearbeitungsschritt
+    rückgängig. Mit <key>Strg</key> + <key>Shift</key> + <key>Z</key> stellst du
+    einen rückgängig gemachten Schritt wieder her.
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    VS Code kann eine getippte Eingabe in mehrere Bearbeitungsschritte aufteilen.
+    Drücke die jeweilige Tastenkombination deshalb so oft, bis der verlangte Text
+    wieder dasteht.
+</div>
+
+<table id="table"></table>
+
+<script>
+let replacementDone = false;
+let undoDone = false;
+let redoDone = false;
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    const line = contents.split('\n')[0];
+
+    if (!replacementDone && line === 'Der Hund schläft auf dem Sofa.') {
+        replacementDone = true;
+        setCheckBox('s0', true);
+    }
+
+    if (replacementDone && !undoDone && line === 'Die Katze schläft auf dem Sofa.') {
+        undoDone = true;
+        setCheckBox('s1', true);
+    }
+
+    if (undoDone && !redoDone && line === 'Der Hund schläft auf dem Sofa.') {
+        redoDone = true;
+        setCheckBox('s2', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s0')}</td>
+    <td>Markiere »Die Katze« und ersetze den Ausdruck durch »Der Hund«.</td></tr>
+`);
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s1')}</td>
+    <td>Drücke <key>Strg</key> + <key>Z</key> so oft, bis wieder »Die Katze« dasteht.</td></tr>
+`);
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s2')}</td>
+    <td>Drücke <key>Strg</key> + <key>Shift</key> + <key>Z</key> so oft, bis wieder »Der Hund« dasteht.</td></tr>
+`);
+</script>

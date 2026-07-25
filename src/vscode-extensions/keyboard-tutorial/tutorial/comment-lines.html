@@ -1,0 +1,108 @@
+<yaml>
+file: tutorial/comment-lines.js
+cursor: [3, 1]
+</yaml>
+
+<h2>Zeilen kommentieren</h2>
+
+<p>
+    Ein Kommentar bleibt im Text stehen, wird vom Programm aber nicht als
+    Befehl ausgeführt. Mit <key>Strg</key> + <key>/</key> schaltest du
+    Kommentare für die aktuelle oder die markierten Zeilen ein und aus.
+</p>
+
+<table id="table"></table>
+
+<script>
+const originalLines = [
+    'const name = "Mina";',
+    'console.log("Start");',
+    'console.log(name);',
+    'console.log("Ende");'
+];
+
+let singleLineCommented = false;
+let singleLineRestored = false;
+
+function lines(contents) {
+    return contents.replace(/\r/g, '').split('\n');
+}
+
+function isCommented(line, original) {
+    return new RegExp(
+        '^\\s*\\/\\/\\s*' +
+        original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') +
+        '\\s*$'
+    ).test(line);
+}
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    const current = lines(contents);
+
+    if (
+        !singleLineCommented &&
+        current.length === 4 &&
+        current[0] === originalLines[0] &&
+        current[1] === originalLines[1] &&
+        isCommented(current[2], originalLines[2]) &&
+        current[3] === originalLines[3]
+    ) {
+        singleLineCommented = true;
+        setCheckBox('s0', true);
+    }
+
+    if (
+        singleLineCommented &&
+        !singleLineRestored &&
+        current.join('\n') === originalLines.join('\n')
+    ) {
+        singleLineRestored = true;
+        setCheckBox('s1', true);
+    }
+
+    if (
+        singleLineRestored &&
+        current.length === 4 &&
+        current[0] === originalLines[0] &&
+        [1, 2, 3].every(index =>
+            isCommented(current[index], originalLines[index])
+        )
+    ) {
+        setCheckBox('s2', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Der Cursor steht in Zeile 3. Kommentiere diese Zeile mit
+            <key>Strg</key> + <key>/</key>.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Drücke dieselbe Tastenkombination noch einmal, um den
+            Kommentar wieder zu entfernen.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s2')}</td>
+        <td>
+            Markiere die vollständigen Zeilen 2 bis 4 und kommentiere sie
+            gemeinsam mit <key>Strg</key> + <key>/</key>.
+        </td>
+    </tr>
+`);
+</script>

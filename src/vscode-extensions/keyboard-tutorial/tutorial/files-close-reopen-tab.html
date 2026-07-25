@@ -1,0 +1,69 @@
+<yaml>
+workspace: tutorial/workspace/files-chapter
+sharedWorkspace: files
+sharedWorkspaceVersion: 2
+openFiles:
+  - notizen.txt
+  - aufgabe.txt
+activeFile: aufgabe.txt
+</yaml>
+
+<h2>Einen Tab schließen und wieder öffnen</h2>
+
+<p>
+    Rechts im Datei-Tab befindet sich das Schließen-Symbol
+    <span class="explorer-action"><svg class="icon" style="transform: translate(0, 0.1em);"><use href="#x"></use></svg></span>.
+    Da dieses Tutorial im Browser läuft, verwenden wir zum Schließen nicht
+    <key>Strg</key> + <key>W</key>: Damit könnte der Browser-Tab geschlossen
+    werden. Eine geschlossene Datei findest du jederzeit mit
+    <key>Strg</key> + <key>P</key> wieder.
+</p>
+
+<table id="table"></table>
+
+<script>
+let taskTabClosed = false;
+
+function eventContains(tabs, relativePath) {
+    return (tabs || []).some(tab =>
+        tab.resource && tab.resource.relativePath === relativePath
+    );
+}
+
+handleOnDidChangeTabs = function(e) {
+    if (!taskTabClosed && eventContains(e.closed, 'aufgabe.txt')) {
+        taskTabClosed = true;
+        setCheckBox('s0', true);
+    }
+
+    if (taskTabClosed && eventContains(e.opened, 'aufgabe.txt')) {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Schließe den aktiven Tab <code>aufgabe.txt</code>, indem du
+            rechts im Tab auf
+            <span class="explorer-action"><svg class="icon" style="transform: translate(0, 0.1em);"><use href="#x"></use></svg></span>
+            klickst.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Öffne <code>aufgabe.txt</code> mit
+            <key>Strg</key> + <key>P</key> wieder.
+        </td>
+    </tr>
+`);
+</script>

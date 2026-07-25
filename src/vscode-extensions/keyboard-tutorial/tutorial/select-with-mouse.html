@@ -1,0 +1,61 @@
+<yaml>
+file: tutorial/paragraph.txt
+cursor: [1, 1]
+</yaml>
+<h2>Text mit der Maus auswählen</h2>
+<p>
+    Du kannst mit der linken Maustaste Text auswählen, indem du die
+    Maustaste gedrückt hältst und die Maus bis zum Ende deiner
+    Auswahl ziehst.
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Achtung: Wenn du bereits markierten Text anklickst und ziehst,
+    verschiebst du ihn. Das probieren wir hier absichtlich aus.
+</div>
+
+<table id="table"></table>
+
+<script>
+handleOnDidChangeTextEditorSelection = function(e) {
+    const selection = e.selections[0];
+    if (selectionEquals(selection, 9, 32, 9, 44)) {
+        setCheckBox('s0', true);
+    }
+    checkTaskSolved();
+};
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    const moved = contents.includes('was empty:  she did not like to  for fear of killing') &&
+        contents.includes('fell past it.drop the jar');
+    if (getCheckBox('s0') && moved) {
+        setCheckBox('s1', true);
+    }
+
+    const restored = contents.includes('was empty:  she did not like to drop the jar for fear of killing') &&
+        contents.includes('fell past it.') &&
+        !contents.includes('fell past it.drop the jar');
+    if (getCheckBox('s1') && restored) {
+        setCheckBox('s2', true);
+    }
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s0')}</td>
+    <td>Markiere den Satzteil »drop the jar« in Zeile 10 mit der Maus.</td></tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s1')}</td>
+    <td>Ziehe den markierten Satzteil mit der Maus an das Ende des Textes.</td></tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s2')}</td>
+    <td>Mach die Änderung mit <key>Strg</key>+<key>Z</key> rückgängig.</td></tr>
+`);
+</script>

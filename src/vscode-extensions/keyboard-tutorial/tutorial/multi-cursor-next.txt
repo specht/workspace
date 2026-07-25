@@ -1,0 +1,4 @@
+Farbe 1: blau
+Farbe 2: blau
+Farbe 3: blau
+Farbe 4: blau

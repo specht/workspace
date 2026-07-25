@@ -1,0 +1,61 @@
+<yaml>
+workspace: tutorial/workspace/files-chapter
+sharedWorkspace: files
+sharedWorkspaceVersion: 2
+openFiles:
+  - start.txt
+activeFile: start.txt
+</yaml>
+
+<h2>Eine Datei schnell öffnen</h2>
+
+<p>
+    Mit <key>Strg</key> + <key>P</key> öffnest du die Dateisuche.
+    So findest du eine Datei anhand ihres Namens, ohne die vielen
+    Unterordner im Explorer aufklappen zu müssen. Bestätige den passenden
+    Treffer mit <key>Enter</key>.
+</p>
+
+<table id="table"></table>
+
+<script>
+let planOpened = false;
+
+handleOnDidChangeActiveTextEditor = function(e) {
+    const relativePath = e.resource && e.resource.relativePath;
+
+    if (!planOpened && relativePath === 'unterlagen/archiv/plaene/plan.txt') {
+        planOpened = true;
+        setCheckBox('s0', true);
+    }
+
+    if (planOpened && relativePath === 'material/sammlung/karten/karte.txt') {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Irgendwo tief in den Unterordnern liegt
+            <code>plan.txt</code>. Öffne die Datei mit
+            <key>Strg</key> + <key>P</key>.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Öffne auf dieselbe Weise die ebenfalls versteckte Datei
+            <code>karte.txt</code>.
+        </td>
+    </tr>
+`);
+</script>

@@ -1,0 +1,3 @@
+Der neugierige Fuchs springt über den schläfrigen Hund.
+Diese ganze Zeile soll markiert werden.
+Mit der Tastatur geht das sehr genau.

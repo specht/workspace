@@ -1,0 +1,46 @@
+<yaml>
+file: tutorial/alice.txt
+cursor: [1, 1]
+</yaml>
+<h2>Seitenweise blättern</h2>
+<p>
+    Wenn du schneller als zeilenweise durch ein Dokument scrollen
+    möchtest, kannst du die Tasten
+    <key>Bild <svg class="icon"><use href="#arrow-up"></use></svg></key>
+    und
+    <key>Bild <svg class="icon"><use href="#arrow-down"></use></svg></key>
+    verwenden. Damit springt dein Cursor eine ganze Seite nach oben bzw.
+    nach unten, wobei die Anzahl der gesprungenen Zeilen immer von der
+    aktuellen Größe des Editors abhängt.
+</p>
+
+<table id="table"></table>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Hinweis: Das gesuchte Kapitel befindet sich kurz unter Zeile 1300.
+</div>
+
+<script>
+handleOnDidChangeTextEditorSelection = function(e) {
+    let s = e.selections[0];
+    if (s.start.line >= 1326 && s.start.line <= 1328 &&
+        s.end.line === s.start.line && s.end.character === s.start.character) {
+        document.querySelector('#s0 .check').classList.add('checked');
+    } else {
+        document.querySelector('#s0 .check').classList.remove('checked');
+    }
+    checkTaskSolved();
+}
+
+let table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <td style='width: 1.2em;' id="s0">
+        ${checkBox()}
+    </td><td>
+        Scrolle seitenweise bis zu »Chapter VI: Pig and Pepper« und platziere den Cursor mit Hilfe der Pfeiltasten auf der Kapitelüberschrift.
+    </td></tr>
+`);
+
+</script>

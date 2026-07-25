@@ -1,0 +1,91 @@
+<yaml>
+file: tutorial/navigate-word-wrap.txt
+cursor: [1, 1]
+</yaml>
+
+<h2>Lange Zeilen umbrechen</h2>
+
+<p>
+    Mit <key>Alt</key> + <key>Z</key> schaltest du den Zeilenumbruch ein
+    oder aus. Mit Zeilenumbruch verteilt VS Code eine lange Dokumentzeile
+    auf mehrere sichtbare Abschnitte. In der Datei bleibt sie trotzdem eine
+    einzige Zeile.
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Bei eingeschaltetem Zeilenumbruch springt <key>Ende</key> zunächst ans
+    Ende des sichtbaren Abschnitts. Ohne Zeilenumbruch springt
+    <key>Ende</key> ans tatsächliche Ende der Dokumentzeile.
+</div>
+
+<table id="table"></table>
+
+<script>
+const logicalLineEnd = 312;
+let firstResult;
+
+function cursorResult(selection) {
+    if (
+        !selection ||
+        !selection.isEmpty ||
+        selection.active.line !== 0
+    ) {
+        return undefined;
+    }
+
+    const character = selection.active.character;
+
+    if (character === logicalLineEnd) {
+        return 'logical-end';
+    }
+
+    if (character > 0 && character < logicalLineEnd) {
+        return 'visible-end';
+    }
+
+    return undefined;
+}
+
+handleOnDidChangeTextEditorSelection = function(e) {
+    const result = cursorResult(e.selections && e.selections[0]);
+
+    if (!result) {
+        return;
+    }
+
+    if (!firstResult) {
+        firstResult = result;
+        setCheckBox('s0', true);
+    } else if (result !== firstResult) {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Drücke einmal <key>Alt</key> + <key>Z</key> und danach
+            <key>Ende</key>. Beobachte, ob der Cursor am Ende eines
+            sichtbaren Abschnitts oder ganz am Ende der Dokumentzeile landet.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Springe mit <key>Strg</key> + <key>Pos1</key> zurück zum
+            Anfang. Drücke erneut <key>Alt</key> + <key>Z</key> und danach
+            <key>Ende</key>. Diesmal muss der Cursor an der jeweils anderen
+            Stelle landen.
+        </td>
+    </tr>
+`);
+</script>

@@ -1,0 +1,12 @@
+Eine kleine Suchübung
+Der gesuchte Begriff steht nicht ganz oben.
+Lies zuerst diese einleitenden Zeilen.
+Der eigentliche Satz folgt weiter unten.
+Bis hierhin bleibt alles unverändert.
+
+Im Flur liegt ein kleiner Schlüssel.
+Die Tür am Ende ist verschlossen.
+
+Nach dem Suchtext folgen weitere Zeilen.
+Auch sie bleiben unverändert.
+Hier endet die Übung.

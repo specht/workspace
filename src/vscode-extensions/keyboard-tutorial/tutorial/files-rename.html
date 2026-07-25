@@ -1,0 +1,69 @@
+<yaml>
+workspace: tutorial/workspace/files-chapter
+sharedWorkspace: files
+sharedWorkspaceVersion: 2
+resetPaths:
+  - entwurf.txt
+  - bericht.txt
+  - bilder-alt
+  - bilder-archiv
+</yaml>
+
+<h2>Dateien und Ordner umbenennen</h2>
+
+<p>
+    Markiere im Explorer eine Datei oder einen Ordner und drücke
+    <key>F2</key>. Gib den neuen Namen ein und bestätige mit
+    <key>Enter</key>.
+</p>
+
+<table id="table"></table>
+
+<script>
+let fileRenamed = false;
+let folderRenamed = false;
+
+handleOnDidRenameFiles = function(e) {
+    for (const file of e.files || []) {
+        if (
+            file.oldUri.relativePath === 'entwurf.txt' &&
+            file.newUri.relativePath === 'bericht.txt'
+        ) {
+            fileRenamed = true;
+            setCheckBox('s0', true);
+        }
+
+        if (
+            file.oldUri.relativePath === 'bilder-alt' &&
+            file.newUri.relativePath === 'bilder-archiv'
+        ) {
+            folderRenamed = true;
+            setCheckBox('s1', true);
+        }
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Benenne <code>entwurf.txt</code> mit <key>F2</key> in
+            <code>bericht.txt</code> um.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Benenne den Ordner <code>bilder-alt</code> in
+            <code>bilder-archiv</code> um.
+        </td>
+    </tr>
+`);
+</script>

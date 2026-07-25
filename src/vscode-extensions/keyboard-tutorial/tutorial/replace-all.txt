@@ -1,0 +1,13 @@
+Plan für die Projektwoche
+Der Wochentag steht im folgenden Abschnitt mehrfach.
+Alle Vorkommen sollen gemeinsam geändert werden.
+Die einleitenden Zeilen bleiben unverändert.
+Der eigentliche Abschnitt beginnt weiter unten.
+
+Montag beginnt die Projektwoche.
+Am Montag bauen wir Modelle.
+Montag präsentieren wir die Ergebnisse.
+
+Nach dem Abschnitt folgen noch Kontrollzeilen.
+Prüfe, ob wirklich alle Treffer ersetzt wurden.
+Hier endet die Datei.

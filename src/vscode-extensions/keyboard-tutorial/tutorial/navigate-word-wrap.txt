@@ -1,0 +1,2 @@
+Diese sehr lange Dokumentzeile besteht technisch aus nur einer Zeile, auch wenn VS Code sie bei eingeschaltetem Zeilenumbruch auf mehrere sichtbare Abschnitte verteilt. So lässt sich langer Text lesen, ohne waagerecht zu scrollen, während Zeilennummer, Cursorposition und Dateiinhalt logisch unverändert bleiben.
+Diese zweite Dokumentzeile bleibt kurz.

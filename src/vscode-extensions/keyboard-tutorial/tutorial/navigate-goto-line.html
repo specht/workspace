@@ -1,0 +1,55 @@
+<yaml>
+file: tutorial/alice.txt
+cursor: [1, 1]
+</yaml>
+<h2>Zu einer bestimmten Zeile springen</h2>
+<p>
+    Nutze den Shortcut
+    <key>Strg</key>+<key>G</key>, um zu einer bestimmten Zeilennummer zu springen:
+</p>
+
+<ol>
+    <li><key>Strg</key>+<key>G</key> drücken</li>
+    <li>Zeilennummer eingeben</li>
+    <li>Mit <key>Enter</key> bestätigen</li>
+</ol>
+
+<table id="table"></table>
+
+<script>
+
+handleOnDidChangeTextEditorSelection = function(e) {
+    let s = e.selections[0];
+    if (s.start.line === 237 &&
+        s.end.line === s.start.line && s.end.character === s.start.character) {
+        document.querySelector('#s0 .check').classList.add('checked');
+    }
+    if (s.start.line === 641 &&
+        s.end.line === s.start.line && s.end.character === s.start.character) {
+        document.querySelector('#s1 .check').classList.add('checked');
+    }
+    if (s.start.line === 2982 &&
+        s.end.line === s.start.line && s.end.character === s.start.character) {
+        document.querySelector('#s2 .check').classList.add('checked');
+    }
+    checkTaskSolved();
+}
+
+let table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend',
+    `<td style='width: 1.2em;' id="s0">
+    ${checkBox()}
+    </td><td>Springe zu Zeile 238</td></tr>`);
+
+table.insertAdjacentHTML('beforeend',
+    `<td style='width: 1.2em;' id="s1">
+    ${checkBox()}
+    </td><td>Springe zu Zeile 642</td></tr>`);
+
+table.insertAdjacentHTML('beforeend',
+    `<td style='width: 1.2em;' id="s2">
+    ${checkBox()}
+    </td><td>Springe zu Zeile 2983</td></tr>`);
+
+</script>

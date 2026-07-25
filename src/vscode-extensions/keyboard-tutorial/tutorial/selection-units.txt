@@ -1,0 +1,3 @@
+Ein Doppelklick markiert genau ein Wort.
+Drei schnelle Klicks markieren eine ganze Zeile.
+Strg+A markiert schließlich das gesamte Dokument.

@@ -1,0 +1,105 @@
+<yaml>
+workspace: tutorial/workspace/files-chapter
+sharedWorkspace: files
+sharedWorkspaceVersion: 2
+resetPaths:
+  - bilder
+</yaml>
+
+<h2>Einen Ordner anlegen</h2>
+
+<p>
+    Neben dem Symbol für neue Dateien findest du oben rechts im Explorer
+    auch
+    <span class="explorer-action">
+        <svg class="icon"><use href="#folder-plus"></use></svg>
+        <strong>Neuer Ordner</strong>
+    </span>.
+    Ist eine Datei markiert, entsteht der neue Ordner daneben.
+    Ist ein Ordner markiert, entsteht der neue Eintrag innerhalb dieses
+    Ordners.
+</p>
+
+<table id="table"></table>
+
+<script>
+let folderCreated = false;
+let fileCreated = false;
+const expected = 'Hier kommen Bilder hinein.';
+
+handleOnDidCreateFiles = function(e) {
+    for (const file of e.files || []) {
+        if (file.relativePath === 'bilder') {
+            folderCreated = true;
+            setCheckBox('s0', true);
+        }
+
+        if (file.relativePath === 'bilder/beschreibung.txt') {
+            fileCreated = true;
+            setCheckBox('s1', true);
+        }
+    }
+
+    checkTaskSolved();
+};
+
+handleOnDidSaveTextDocument = function(e, contents) {
+    if (
+        folderCreated &&
+        fileCreated &&
+        e.document &&
+        e.document.isDirty === false &&
+        e.document.fileName.endsWith('beschreibung.txt') &&
+        contents === expected
+    ) {
+        setCheckBox('s2', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Markiere im Explorer die Datei
+            <code>willkommen.txt</code>. Klicke anschließend oben rechts
+            auf
+            <span class="explorer-action">
+                <svg class="icon" style="transform: translate(0, 0.1em);"><use href="#folder-plus"></use></svg>
+            </span>
+            und lege daneben den Ordner <code>bilder</code> an.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Markiere den neuen Ordner <code>bilder</code>. Klicke oben
+            rechts auf
+            <span class="explorer-action">
+                <svg class="icon">
+                    <use href="#file-plus"></use>
+                </svg>
+            </span>
+            und lege darin die Datei
+            <code>beschreibung.txt</code> an.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s2')}</td>
+        <td>
+            Schreibe
+            <code>Hier kommen Bilder hinein.</code>
+            in die Datei und speichere sie.
+        </td>
+    </tr>
+`);
+</script>

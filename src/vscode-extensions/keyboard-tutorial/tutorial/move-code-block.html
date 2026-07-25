@@ -1,0 +1,75 @@
+<yaml>
+file: tutorial/move-code-block.py
+cursor: [2, 1]
+</yaml>
+
+<h2>Einen Codeblock verschieben</h2>
+
+<p>
+    Die Zeile mit dem Doppelpunkt und die beiden eingerückten Zeilen darunter
+    bilden einen Block. Wenn du alle drei vollständigen Zeilen markierst,
+    kannst du den Block mit <key>Alt</key> + <key>↓</key> verschieben,
+    ohne seine innere Einrückung zu verändern.
+</p>
+
+<table id="table"></table>
+
+<script>
+const afterFirstMove =
+    'print("Der Morgen beginnt.")\n' +
+    'print("Tisch decken")\n' +
+    'if es_regnet:\n' +
+    '    print("Schirm einpacken")\n' +
+    '    print("Jacke anziehen")\n' +
+    'print("Frühstücken")\n' +
+    'print("Losgehen")';
+
+const afterSecondMove =
+    'print("Der Morgen beginnt.")\n' +
+    'print("Tisch decken")\n' +
+    'print("Frühstücken")\n' +
+    'if es_regnet:\n' +
+    '    print("Schirm einpacken")\n' +
+    '    print("Jacke anziehen")\n' +
+    'print("Losgehen")';
+
+let movedOnce = false;
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    const normalized = contents.replace(/\r/g, '');
+
+    if (!movedOnce && normalized === afterFirstMove) {
+        movedOnce = true;
+        setCheckBox('s0', true);
+    }
+
+    if (movedOnce && normalized === afterSecondMove) {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Markiere die drei vollständigen Zeilen des eingerückten Blocks
+            und verschiebe ihn mit <key>Alt</key> + <key>↓</key> unter
+            <code>print("Tisch decken")</code>.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Verschiebe denselben markierten Block noch einmal nach unten,
+            diesmal unter <code>print("Frühstücken")</code>.
+        </td>
+    </tr>
+`);
+</script>

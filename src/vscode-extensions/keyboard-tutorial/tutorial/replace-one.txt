@@ -1,0 +1,13 @@
+Farben im Alltag
+Die folgenden Beschreibungen enthalten dasselbe Farbadjektiv.
+In dieser Aufgabe soll nur der erste Treffer verändert werden.
+Die übrigen Beschreibungen bleiben unverändert.
+Der zu bearbeitende Abschnitt beginnt weiter unten.
+
+Der rote Ball liegt im Garten.
+Das rote Fahrrad steht am Zaun.
+Die rote Jacke hängt im Flur.
+
+Nach dem Abschnitt folgen noch einige Zeilen.
+Kontrolliere, dass nur ein Treffer ersetzt wurde.
+Hier endet die Datei.

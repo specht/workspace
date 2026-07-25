@@ -1,0 +1,112 @@
+<yaml>
+file: tutorial/find-options.txt
+cursor: [1, 1]
+</yaml>
+
+<h2>Genauer suchen</h2>
+
+<p>
+    Die Suche kann zwischen Groß- und Kleinschreibung unterscheiden und nur
+    vollständige Wörter berücksichtigen.
+</p>
+
+<ul>
+    <li>
+        <key>Alt</key> + <key>C</key> schaltet
+        <strong>Groß-/Kleinschreibung beachten</strong> ein oder aus.
+        Der Buchstabe kommt von der englischen Bezeichnung
+        <strong>Case</strong>.
+    </li>
+    <li>
+        <key>Alt</key> + <key>W</key> schaltet
+        <strong>Nur ganzes Wort suchen</strong> ein oder aus.
+        <strong>W</strong> erinnert an <strong>Whole Word</strong>.
+    </li>
+</ul>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Viele Tastenkürzel orientieren sich an englischen Befehlsnamen, auch
+    wenn VS Code auf Deutsch eingestellt ist. Nach dem Einschalten beider
+    Optionen darf die Suche weder <code>haus</code> noch
+    <code>Haustür</code> oder <code>Häuser</code> als Treffer zählen.
+</div>
+
+<table id="table"></table>
+
+<script>
+let foundFirstExactMatch = false;
+let foundSecondExactMatch = false;
+
+function isSelection(selection, line, start, end) {
+    return selection &&
+        selection.start.line === line &&
+        selection.start.character === start &&
+        selection.end.line === line &&
+        selection.end.character === end;
+}
+
+function isCursor(selection, line, character) {
+    return selection &&
+        selection.isEmpty &&
+        selection.active.line === line &&
+        selection.active.character === character;
+}
+
+handleOnDidChangeTextEditorSelection = function(e) {
+    const selection = e.selections && e.selections[0];
+
+    if (!foundFirstExactMatch && isSelection(selection, 6, 0, 4)) {
+        foundFirstExactMatch = true;
+        setCheckBox('s0', true);
+    }
+
+    if (foundFirstExactMatch && !foundSecondExactMatch &&
+        isSelection(selection, 9, 4, 8)) {
+        foundSecondExactMatch = true;
+        setCheckBox('s1', true);
+    }
+
+    if (foundSecondExactMatch && isCursor(selection, 14, 21)) {
+        setCheckBox('s2', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Öffne die Suche und suche nach <code>Haus</code>. Schalte mit
+            <key>Alt</key> + <key>C</key> die Beachtung der
+            Groß-/Kleinschreibung und mit
+            <key>Alt</key> + <key>W</key> die Suche nach ganzen Wörtern
+            ein. Der einzelne Eintrag <code>Haus</code> soll markiert sein.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Drücke <key>F3</key>. Der nächste und einzige weitere
+            passende Treffer ist <code>Haus</code> im Satz
+            <code>Das Haus steht am See.</code>
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s2')}</td>
+        <td>
+            Schließe die Suche mit <key>Esc</key> und springe danach mit
+            <key>Strg</key> + <key>Ende</key> ans Ende der Datei.
+        </td>
+    </tr>
+`);
+</script>

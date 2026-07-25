@@ -1,0 +1,90 @@
+<yaml>
+file: tutorial/replace-one.txt
+cursor: [1, 1]
+</yaml>
+
+<h2>Einen Treffer ersetzen</h2>
+
+<p>
+    Mit <key>Strg</key> + <key>H</key> öffnest du Suchen und Ersetzen.
+    Der Suchbegriff kommt in das obere Feld. Mit <key>Tab</key> wechselst
+    du in das Ersatzfeld darunter. Ist dieses Feld aktiv, ersetzt
+    <key>Enter</key> den aktuellen Treffer. Mit <key>Esc</key> schließt
+    du den Dialog wieder.
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Springt <key>Enter</key> nur zum nächsten Treffer, ist noch das
+    Suchfeld aktiv. Wechsle dann mit <key>Tab</key> in das Ersatzfeld.
+</div>
+
+<table id="table"></table>
+
+<script>
+const expected =
+    'Farben im Alltag\n' +
+    'Die folgenden Beschreibungen enthalten dasselbe Farbadjektiv.\n' +
+    'In dieser Aufgabe soll nur der erste Treffer verändert werden.\n' +
+    'Die übrigen Beschreibungen bleiben unverändert.\n' +
+    'Der zu bearbeitende Abschnitt beginnt weiter unten.\n' +
+    '\n' +
+    'Der blaue Ball liegt im Garten.\n' +
+    'Das rote Fahrrad steht am Zaun.\n' +
+    'Die rote Jacke hängt im Flur.\n' +
+    '\n' +
+    'Nach dem Abschnitt folgen noch einige Zeilen.\n' +
+    'Kontrolliere, dass nur ein Treffer ersetzt wurde.\n' +
+    'Hier endet die Datei.';
+
+let replacementDone = false;
+
+function normalize(contents) {
+    return contents.replace(/\r/g, '');
+}
+
+function isCursor(selection, line, character) {
+    return selection &&
+        selection.isEmpty &&
+        selection.active.line === line &&
+        selection.active.character === character;
+}
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    replacementDone = normalize(contents) === expected;
+    setCheckBox('s0', replacementDone);
+    checkTaskSolved();
+};
+
+handleOnDidChangeTextEditorSelection = function(e) {
+    const selection = e.selections && e.selections[0];
+
+    if (replacementDone && isCursor(selection, 12, 21)) {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Suche nach <code>rote</code> und ersetze nur den ersten
+            Treffer durch <code>blaue</code>.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Schließe Suchen und Ersetzen mit <key>Esc</key> und springe
+            mit <key>Strg</key> + <key>Ende</key> ans Ende der Datei.
+        </td>
+    </tr>
+`);
+</script>

@@ -1,0 +1,109 @@
+<yaml>
+file: tutorial/indent-dart-block.dart
+cursor: [2, 1]
+</yaml>
+
+<h2>Einen verschachtelten Block einrücken</h2>
+
+<p>
+    Geschweifte Klammern begrenzen hier zwei ineinanderliegende Blöcke.
+    Alles innerhalb des äußeren Blocks wird einmal eingerückt. Die Zeile
+    innerhalb des inneren Blocks wird noch eine Stufe weiter eingerückt.
+</p>
+
+<table id="table"></table>
+
+<script>
+let outerBlockIndented = false;
+
+function lines(contents) {
+    return contents.replace(/\r/g, '').split('\n');
+}
+
+function indentationWidth(line) {
+    const whitespace = (line.match(/^[\t ]*/) || [''])[0];
+    let width = 0;
+
+    for (const character of whitespace) {
+        width += character === '\t' ? 4 : 1;
+    }
+
+    return width;
+}
+
+function withoutIndentation(line) {
+    return line.replace(/^[\t ]*/, '');
+}
+
+function textsAreUnchanged(current) {
+    const expected = [
+        'void main() {',
+        'print("Start");',
+        'if (bereit) {',
+        'print("Los");',
+        '}',
+        'print("Ende");',
+        '}'
+    ];
+
+    return current.length === expected.length &&
+        current.every((line, index) =>
+            withoutIndentation(line) === expected[index]
+        );
+}
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    const current = lines(contents);
+    const widths = current.map(indentationWidth);
+
+    if (
+        !outerBlockIndented &&
+        textsAreUnchanged(current) &&
+        widths[0] === 0 &&
+        widths[6] === 0 &&
+        widths.slice(1, 6).every(width => width > 0) &&
+        widths.slice(1, 6).every(width => width === widths[1])
+    ) {
+        outerBlockIndented = true;
+        setCheckBox('s0', true);
+    }
+
+    if (
+        outerBlockIndented &&
+        textsAreUnchanged(current) &&
+        widths[0] === 0 &&
+        widths[6] === 0 &&
+        widths[1] > 0 &&
+        widths[1] === widths[2] &&
+        widths[2] === widths[4] &&
+        widths[4] === widths[5] &&
+        widths[3] > widths[2]
+    ) {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Markiere die vollständigen Zeilen 2 bis 6 und rücke sie
+            gemeinsam mit <key>Tab</key> ein.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Rücke nun nur die Zeile <code>print("Los");</code> eine
+            weitere Stufe ein.
+        </td>
+    </tr>
+`);
+</script>

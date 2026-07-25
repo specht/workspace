@@ -1,0 +1,66 @@
+<yaml>
+workspace: tutorial/workspace/files-chapter
+sharedWorkspace: files
+sharedWorkspaceVersion: 2
+resetPaths:
+  - weg-damit.txt
+  - alt
+</yaml>
+
+<h2>Dateien und Ordner löschen</h2>
+
+<p>
+    Markiere im Explorer den Eintrag, der gelöscht werden soll, und drücke
+    <key>Entf</key>. VS Code fragt möglicherweise noch einmal nach, bevor
+    der Eintrag in den Papierkorb verschoben wird.
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Kontrolliere vor dem Löschen immer den Namen. Lösche in dieser Übung nur
+    die ausdrücklich genannten Einträge.
+</div>
+
+<table id="table"></table>
+
+<script>
+let fileDeleted = false;
+let folderDeleted = false;
+
+handleOnDidDeleteFiles = function(e) {
+    for (const file of e.files || []) {
+        if (file.relativePath === 'weg-damit.txt') {
+            fileDeleted = true;
+            setCheckBox('s0', true);
+        }
+
+        if (file.relativePath === 'alt') {
+            folderDeleted = true;
+            setCheckBox('s1', true);
+        }
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Lösche <code>weg-damit.txt</code>. Die Datei
+            <code>behalten.txt</code> darf nicht gelöscht werden.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Lösche anschließend den Ordner <code>alt</code>.
+        </td>
+    </tr>
+`);
+</script>

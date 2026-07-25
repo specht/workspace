@@ -1,0 +1,109 @@
+<yaml>
+file: tutorial/find-text.txt
+cursor: [1, 1]
+</yaml>
+
+<h2>Text suchen</h2>
+
+<p>
+    Mit <key>Strg</key> + <key>F</key> öffnest du die Suche in der
+    aktuellen Datei. Während du den Suchbegriff eingibst, markiert VS Code
+    passende Fundstellen im Text.
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Mit <key>F3</key> springst du zum nächsten und mit
+    <key>Shift</key> + <key>F3</key> zum vorherigen Treffer. Das
+    funktioniert auch dann, wenn der Fokus wieder im Dokument liegt.
+</div>
+
+<table id="table"></table>
+
+<script>
+let foundFirst = false;
+let foundSecond = false;
+let returnedToFirst = false;
+
+function isSelection(selection, line, start, end) {
+    return selection &&
+        selection.start.line === line &&
+        selection.start.character === start &&
+        selection.end.line === line &&
+        selection.end.character === end;
+}
+
+function isCursor(selection, line, character) {
+    return selection &&
+        selection.isEmpty &&
+        selection.active.line === line &&
+        selection.active.character === character;
+}
+
+handleOnDidChangeTextEditorSelection = function(e) {
+    const selection = e.selections && e.selections[0];
+
+    if (!foundFirst && isSelection(selection, 7, 4, 9)) {
+        foundFirst = true;
+        setCheckBox('s0', true);
+    }
+
+    if (foundFirst && !foundSecond && isSelection(selection, 9, 9, 14)) {
+        foundSecond = true;
+        setCheckBox('s1', true);
+    }
+
+    if (foundSecond && !returnedToFirst && isSelection(selection, 7, 4, 9)) {
+        returnedToFirst = true;
+        setCheckBox('s2', true);
+    }
+
+    if (returnedToFirst && isCursor(selection, 15, 25)) {
+        setCheckBox('s3', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Öffne mit <key>Strg</key> + <key>F</key> die Suche und suche
+            nach <code>Stern</code>. Der erste Treffer soll markiert sein.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Drücke <key>F3</key>, um zum nächsten Treffer zu springen.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s2')}</td>
+        <td>
+            Springe mit <key>Shift</key> + <key>F3</key> wieder zum
+            vorherigen Treffer zurück.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s3')}</td>
+        <td>
+            Schließe die Suche mit <key>Esc</key>. Drücke danach
+            <key>Strg</key> + <key>Ende</key>, um ans Ende der Datei
+            zu springen.
+        </td>
+    </tr>
+`);
+</script>

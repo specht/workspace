@@ -1,0 +1,43 @@
+<yaml>
+file: tutorial/alice.txt
+cursor: [1493, 24]
+</yaml>
+<h2>Zum Anfang / zum Ende der Datei springen</h2>
+<p>
+    Nutze die Shortcuts
+    <key>Strg</key>+<key>Pos1</key>
+    und
+    <key>Strg</key>+<key>Ende</key>,
+    um zum Anfang bzw. zum Ende der Datei zu springen.
+</p>
+
+<table id="table"></table>
+
+<script>
+
+handleOnDidChangeTextEditorSelection = function(e) {
+    let s = e.selections[0];
+    if (s.start.line === 0 &&
+        s.end.line === s.start.line && s.end.character === s.start.character) {
+        document.querySelector('#s0 .check').classList.add('checked');
+    }
+    if (s.start.line >= 3597 &&
+        s.end.line === s.start.line && s.end.character === s.start.character) {
+        document.querySelector('#s1 .check').classList.add('checked');
+    }
+    checkTaskSolved();
+}
+
+let table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend',
+    `<td style='width: 1.2em;' id="s0">
+    ${checkBox()}
+    </td><td>Springe zum Anfang des Dokuments</td></tr>`);
+
+table.insertAdjacentHTML('beforeend',
+    `<td style='width: 1.2em;' id="s1">
+    ${checkBox()}
+    </td><td>Springe zum Ende des Dokuments</td></tr>`);
+
+</script>

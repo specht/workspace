@@ -1,0 +1,44 @@
+<yaml>
+file: tutorial/delete-text.txt
+cursor: [1, 10]
+</yaml>
+<h2>Text löschen</h2>
+<p>
+    <key>Backspace</key> löscht das Zeichen links vom Cursor,
+    <key>Entf</key> das Zeichen rechts vom Cursor. Ist Text markiert,
+    löschen beide Tasten die gesamte Markierung.
+</p>
+
+<table id="table"></table>
+
+<script>
+handleOnDidChangeTextDocument = function(e, contents) {
+    const lines = contents.split('\n');
+
+    if (lines[0] === 'Die Schüler lernen jeden Tag etwas Neues.') {
+        setCheckBox('s0', true);
+    }
+    if (lines[1] === 'Heute ist ein guter Tag zum Üben.') {
+        setCheckBox('s1', true);
+    }
+    if (lines[2] === 'Dieser Satz enthält ein überflüssiges Wort.') {
+        setCheckBox('s2', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s0')}</td>
+    <td>Der Cursor steht hinter dem überflüssigen »x« in Zeile 1. Lösche es mit <key>Backspace</key>.</td></tr>
+`);
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s1')}</td>
+    <td>Setze den Cursor vor das »x« in Zeile 2 und lösche es mit <key>Entf</key>.</td></tr>
+`);
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s2')}</td>
+    <td>Markiere in Zeile 3 »wirklich « und lösche die Markierung.</td></tr>
+`);
+</script>

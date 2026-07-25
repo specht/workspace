@@ -1,0 +1,150 @@
+<style>
+    key {
+        border-color: transparent;
+        &.solved {
+            border-color: color-mix(in hsl, var(--my-editor-foreground) 50%, transparent);
+        }
+        &.active {
+            border-color: var(--my-terminal-ansiGreen);
+        }
+    }
+</style>
+
+<h2>Willkommen zum Keyboard-Tutorial!</h2>
+
+<p>
+    Hier lernst du  die wichtigsten Grundlagen, um schnell und
+    effizient Texte am Computer bearbeiten zu können.
+    Los geht es mit einer kleinen Tour über die ganze Tastatur.
+</p>
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Hinweis: Du kannst dieses Panel etwas breiter ziehen, wenn du möchtest.
+</div>
+<hr>
+<p>
+    Drücke jeweils die angegebenen Tasten, bis du alle Punkte erledigt hast.
+    <input style="display: inline; font-size: 1px; opacity: 0; width: 1px; height: 1px;" type="text" id="key_catcher" />
+</p>
+<div id="keys_here"></div>
+
+<script>
+const instruction = document.querySelector('#instruction');
+
+const entries = [
+    [`Beginnen wir mit den Buchstaben und Ziffern:`],
+    [`A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z`, "Buchstaben", "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z"],
+    [`Ä,Ö,Ü,ß`, "Umlaute", "Ä,Ö,Ü,ß"],
+    [`1,2,3,4,5,6,7,8,9,0`, "Ziffern", "1,2,3,4,5,6,7,8,9,0"],
+    [`<strong>Modifikator-Tasten:</strong> Diese Tasten produzieren allein keine Zeichen, aber sie können die Bedeutung der anderen Tasten verändern.`],
+    [`Strg`, "Steuerung", "Control"],
+    [`Shift`, "Shift (Umschalt)", "Shift"],
+    [`Alt`, "Alt", "Alt"],
+    [`Für manche Zeichen musst du die <strong>Shift-Taste</strong> gedrückt halten:`],
+    [`.,_comma_,:,;,!,?,_quote_,'`, `Satzzeichen`, `.,_comma_,:,;,!,?,_quote_,'`],
+    [`+,-,*,/,=,%`, `Rechenzeichen`, `+,-,*,/,=,%`],
+    [`(,),<,>,#,&,_,°`, "Weitere Zeichen (teilweise mit Shift)", `(,),<,>,#,&,_,°`],
+    [`Für manche Zeichen musst du die <strong>AltGr-Taste</strong> gedrückt halten. Die genaue Belegung kann je nach Tastatur leicht abweichen:`],
+    [`[,],{,}`, "Eckige und geschweifte Klammern", `[,],{,}`],
+    ["@,_backslash_,~,€,|", "Sonderzeichen mit AltGr", "@,_backslash_,~,€,|"],
+    [`<svg class="icon"><use href="#arrow-left"></use></svg>,<svg class="icon"><use href="#arrow-right"></use></svg>,<svg class="icon"><use href="#arrow-up"></use></svg>,<svg class="icon"><use href="#arrow-down"></use></svg>`, "Pfeiltasten", "ArrowLeft,ArrowRight,ArrowUp,ArrowDown"],
+    [`Mit diesen Tasten kannst du schnell navigieren:`],
+    [`Pos1,Ende,Bild <svg class="icon"><use href="#arrow-up"></use></svg>,Bild <svg class="icon"><use href="#arrow-down"></use></svg>`, 'Navigationstasten', `Home,End,PageUp,PageDown`],
+    [`Zeichen links vom Cursor / rechts vom Cursor löschen:`],
+    [`&nbsp;&nbsp;<svg class="icon"><use href="#arrow-left"></use></svg>,Entf`, `Backspace und Entf`, `Backspace,Delete`],
+    [`<strong>Feststell-Tasten:</strong> die nächsten beiden Tasten sind besonders trickreich. Wenn du sie einmal drückst, sind sie »eingerastet«. Wenn du sie nochmal drückst, sind sie wieder inaktiv.`],
+    [`Wenn du die <strong>CapsLock-Taste</strong> (oder Feststell-Taste) drückst, werden Buchstaben dauerhaft großgeschrieben. Anders als <key>Shift</key> verändert sie normalerweise nicht die Ziffern und Satzzeichen. Oft zeigt eine kleine LED an, ob CapsLock aktiv ist. Stelle sicher, dass du die Taste am Ende wieder deaktivierst.`],
+    [`CapsLock`, `CapsLock`, `CapsLock`],
+    [`Wenn du dich wunderst, wieso du deinen Text überschreibst, während du Tasten drückst, hast du vermutlich die <strong>Einfüge-Taste</strong> gedrückt. Wenn sie aktiv ist, wird der vorhandene Text einfach überschrieben. Hierfür gibt es keine LED, aber man erkennt es meistens an der Form des Cursors.`],
+    [`Einfg`, `Einfügetaste`, `Insert`],
+    [`Die <strong>Tabulator-Taste</strong> (oder kurz »Tab«) hat verschiedene Funktionen:<ul><li>in Formularen kann man damit ins nächste Feld springen (zurück geht's mit <key>Shift</key>+<key>Tab</key>)</li><li>im Terminal und im Text-Editor kann man damit Text automatisch ergänzen</li><li>man kann damit Textblöcke ein- und ausrücken (also nach links oder rechts verschieben)</li></ul>`],
+    [`<svg class="icon"><use href="#arrow-bar-to-right"></use></svg>&nbsp;`, "Tabulator", "Tab"],
+    [`Mit <strong>Enter</strong> kannst du nicht nur Zeilenumbrüche einfügen, sondern auch Dialoge bestätigen (und mit <key>Esc</key> abbrechen):`],
+    [`<svg class="icon"><use href="#corner-down-left"></use></svg>`, "Enter", "Enter"],
+    [`Esc`, "Escape", "Escape"],
+    [`Die größte Taste haben wir uns bis zum Schluss aufgehoben:`],
+    [`&nbsp;&nbsp;<svg class="icon"><use href="#space"></use></svg>&nbsp;&nbsp;`, "Leertaste", " "],
+];
+
+let div = instruction.querySelector('#keys_here');
+
+let tr = {'_comma_': ',', '_quote_': '"', '_backslash_': '\\'};
+
+for (let entry of entries) {
+    if (entry.length === 1) {
+        div.insertAdjacentHTML('beforeend', `<p>${entry[0]}</p>`);
+    } else {
+        div.insertAdjacentHTML('beforeend', `
+            <table style="width: 100%;">
+            <tr>
+            <td style='width: 1.2em;'>
+            ${checkBox()}
+            </td>
+            <td>${entry[1]}</td>
+            <td class='wrap' style='text-align: right;'>${entry[0].split(',').map((x, _) => `<key data-key="${entry[2].split(',')[_].toLowerCase()}">${tr[x] ?? x}</key>`).join('')}</td>
+            </tr>
+            </table>
+        `);
+    }
+}
+
+const catcher = document.querySelector('#key_catcher');
+
+addStepEventListener(document, 'click', function() {
+    catcher.focus({ preventScroll: true });
+});
+
+catcher.addEventListener('beforeinput', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+});
+
+catcher.addEventListener('keydown', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    if (e.repeat) return;
+    instruction.querySelector('#key_catcher').value = "";
+    let key = e.key;
+    if (key === ',') key = '_comma_';
+    if (key === '"') key = '_quote_';
+    if (key === '\\') key = '_backslash_';
+    let element = instruction.querySelector(`key[data-key="${key.toLowerCase()}"]`);
+    if (element) {
+        element.classList.add('solved');
+        if (element.classList.contains('active')) {
+            element.classList.remove('active');
+        } else {
+            element.classList.add('active');
+        }
+    }
+    updateSolved();
+});
+instruction.querySelector('#key_catcher').focus();
+
+function updateSolved() {
+    for (let table of div.querySelectorAll('table')) {
+        let gotAll = true;
+        for (let key of table.querySelectorAll('key')) {
+            if (!key.classList.contains('solved')) {
+                gotAll = false;
+                break;
+            } else {
+                if (key.dataset.key === 'capslock') {
+                    if (key.classList.contains('active')) {
+                        gotAll = false;
+                        break;
+                    }
+                }
+            }
+        }
+        if (gotAll) {
+            table.querySelector('td .check').classList.add('checked');
+        } else {
+            table.querySelector('td .check').classList.remove('checked');
+        }
+        checkTaskSolved();
+    }
+}
+</script>

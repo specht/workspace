@@ -1,0 +1,91 @@
+<yaml>
+file: tutorial/rename-code-name.js
+cursor: [1, 5]
+</yaml>
+
+<h2>Einen Namen überall ändern</h2>
+
+<p>
+    In Programmtexten kommt derselbe Name oft an mehreren Stellen vor.
+    Mit <key>Strg</key> + <key>Shift</key> + <key>L</key> kannst du alle
+    Vorkommen eines markierten Namens gemeinsam bearbeiten.
+</p>
+
+<table id="table"></table>
+
+<script>
+const expected =
+    'let punkte = 0;\n' +
+    'punkte = punkte + 10;\n' +
+    'console.log(punkte);';
+
+let allNamesSelected = false;
+
+const expectedRanges = [
+    [0, 4, 9],
+    [1, 0, 5],
+    [1, 8, 13],
+    [2, 12, 17]
+];
+
+function hasSelection(selections, line, start, end) {
+    return selections.some(selection =>
+        !selection.isEmpty &&
+        selection.start.line === line &&
+        selection.start.character === start &&
+        selection.end.line === line &&
+        selection.end.character === end
+    );
+}
+
+handleOnDidChangeTextEditorSelection = function(e) {
+    const selections = e.selections || [];
+
+    if (
+        !allNamesSelected &&
+        selections.length === expectedRanges.length &&
+        expectedRanges.every(([line, start, end]) =>
+            hasSelection(selections, line, start, end)
+        )
+    ) {
+        allNamesSelected = true;
+        setCheckBox('s0', true);
+    }
+
+    checkTaskSolved();
+};
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    if (
+        allNamesSelected &&
+        contents.replace(/\r/g, '') === expected
+    ) {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Markiere das erste Wort <code>score</code> und drücke
+            <key>Strg</key> + <key>Shift</key> + <key>L</key>.
+            Alle vier Vorkommen sollen markiert sein.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Tippe <code>punkte</code>, um den Namen an allen Stellen
+            gleichzeitig zu ändern.
+        </td>
+    </tr>
+`);
+</script>

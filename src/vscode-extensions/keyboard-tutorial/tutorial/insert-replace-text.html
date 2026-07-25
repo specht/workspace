@@ -1,0 +1,53 @@
+<yaml>
+file: tutorial/insert-replace-text.txt
+cursor: [1, 30]
+</yaml>
+<h2>Text eingeben und ersetzen</h2>
+<p>
+    Wenn du tippst, wird der Text an der Cursorposition eingefügt.
+    Ist Text markiert, ersetzt deine Eingabe die gesamte Markierung.
+    Mit <key>Enter</key> beginnst du eine neue Zeile.
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Du musst vorhandenen Text zum Korrigieren nicht erst löschen:
+    Markiere ihn und tippe direkt den richtigen Text.
+</div>
+
+<table id="table"></table>
+
+<script>
+handleOnDidChangeTextDocument = function(e, contents) {
+    const lines = contents.split('\n');
+
+    setCheckBox('s0', lines[0] === 'Die Schüler lernen jeden Tag etwas Neues.');
+    setCheckBox('s1', lines[1] === 'Bitte schließe das Fenster.');
+    setCheckBox('s2', lines[2] === 'Der Kater schläft auf dem Sofa.');
+    setCheckBox(
+        's3',
+        lines[3] === 'Dieser Satz endet hier.' &&
+        lines[4] === 'Dieser Satz beginnt in einer neuen Zeile.'
+    );
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s0')}</td>
+    <td>Der Cursor steht in Zeile 1 vor »Neues«. Füge dort »etwas « ein.</td></tr>
+`);
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s1')}</td>
+    <td>Ergänze am Ende von Zeile 2 den fehlenden Punkt.</td></tr>
+`);
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s2')}</td>
+    <td>Markiere in Zeile 3 »Hund« und tippe »Kater«, um die Markierung zu ersetzen.</td></tr>
+`);
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s3')}</td>
+    <td>Setze in Zeile 4 zwischen den beiden Sätzen mit <key>Enter</key> einen Zeilenumbruch.</td></tr>
+`);
+</script>

@@ -1,0 +1,75 @@
+<yaml>
+workspace: tutorial/workspace/files-chapter
+sharedWorkspace: files
+sharedWorkspaceVersion: 2
+openFiles:
+  - rot.txt
+  - gruen.txt
+  - blau.txt
+activeFile: rot.txt
+</yaml>
+
+<h2>Zwischen Tabs wechseln</h2>
+
+<p>
+    Mit <key>Strg</key> + <key>Bild ↓</key> wechselst du zum nächsten
+    Tab. <key>Strg</key> + <key>Bild ↑</key> führt zum vorherigen Tab.
+</p>
+
+<table id="table"></table>
+
+<script>
+let greenReached = false;
+let blueReached = false;
+
+handleOnDidChangeActiveTextEditor = function(e) {
+    const relativePath = e.resource && e.resource.relativePath;
+
+    if (!greenReached && relativePath === 'gruen.txt') {
+        greenReached = true;
+        setCheckBox('s0', true);
+    }
+
+    if (greenReached && !blueReached && relativePath === 'blau.txt') {
+        blueReached = true;
+        setCheckBox('s1', true);
+    }
+
+    if (blueReached && relativePath === 'gruen.txt') {
+        setCheckBox('s2', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Wechsle mit <key>Strg</key> + <key>Bild ↓</key> von
+            <code>rot.txt</code> zu <code>gruen.txt</code>.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Wechsle noch einmal vorwärts zu <code>blau.txt</code>.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s2')}</td>
+        <td>
+            Wechsle mit <key>Strg</key> + <key>Bild ↑</key> zurück zu
+            <code>gruen.txt</code>.
+        </td>
+    </tr>
+`);
+</script>

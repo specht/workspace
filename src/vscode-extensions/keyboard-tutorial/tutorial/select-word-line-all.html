@@ -1,0 +1,51 @@
+<yaml>
+file: tutorial/selection-units.txt
+cursor: [1, 1]
+</yaml>
+<h2>Wörter, Zeilen und das ganze Dokument markieren</h2>
+<p>
+    Für häufige Markierungen gibt es besonders schnelle Abkürzungen:
+</p>
+<ul>
+    <li>Ein Doppelklick markiert ein Wort.</li>
+    <li>Drei schnelle Klicks markieren eine Zeile.</li>
+    <li><key>Strg</key>+<key>A</key> markiert das gesamte Dokument.</li>
+</ul>
+
+<table id="table"></table>
+
+<script>
+handleOnDidChangeTextEditorSelection = function(e) {
+    const selection = e.selections[0];
+
+    if (selectionEquals(selection, 0, 4, 0, 15)) {
+        setCheckBox('s0', true);
+    }
+
+    const secondLineWithBreak = selectionEquals(selection, 1, 0, 2, 0);
+    const secondLineWithoutBreak = selectionEquals(selection, 1, 0, 1, 48);
+    if (secondLineWithBreak || secondLineWithoutBreak) {
+        setCheckBox('s1', true);
+    }
+
+    if (selectionEquals(selection, 0, 0, 2, 49)) {
+        setCheckBox('s2', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s0')}</td>
+    <td>Markiere das Wort »Doppelklick« in der ersten Zeile mit einem Doppelklick.</td></tr>
+`);
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s1')}</td>
+    <td>Markiere die zweite Zeile mit drei schnellen Klicks.</td></tr>
+`);
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s2')}</td>
+    <td>Markiere das gesamte Dokument mit <key>Strg</key>+<key>A</key>.</td></tr>
+`);
+</script>

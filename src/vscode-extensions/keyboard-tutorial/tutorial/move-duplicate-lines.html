@@ -1,0 +1,211 @@
+<yaml>
+file: tutorial/move-duplicate-lines.txt
+cursor: [4, 1]
+</yaml>
+
+<h2>Ganze Zeilen bearbeiten</h2>
+
+<p>
+    Viele Befehle in VS Code wirken auf die gesamte aktuelle Zeile, ohne dass
+    du sie vorher Zeichen für Zeichen markieren musst.
+</p>
+
+<ul>
+    <li>
+        Mit <key>Strg</key> + <key>Shift</key> + <key>K</key>
+        löschst du die aktuelle Zeile vollständig.
+    </li>
+    <li>
+        Mit <key>Alt</key> + <key>↑</key> oder
+        <key>Alt</key> + <key>↓</key> verschiebst du eine Zeile.
+    </li>
+    <li>
+        Markierst du mehrere vollständige Zeilen, kannst du sie mit denselben
+        Tastenkombinationen gemeinsam als Block verschieben.
+    </li>
+    <li>
+        Ist nichts markiert, kopiert <key>Strg</key> + <key>C</key>
+        die gesamte aktuelle Zeile. Mit <key>Strg</key> + <key>V</key>
+        fügst du ihre Kopie ein.
+    </li>
+</ul>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Beim Verschieben darfst du <key>Alt</key> gedrückt halten und die
+    Pfeiltaste mehrmals drücken. Achte darauf, dass die vollständigen Zeilen
+    in der richtigen Reihenfolge bleiben.
+</div>
+
+<table id="table"></table>
+
+<script>
+let unwantedLineDeleted = false;
+let wakeUpMoved = false;
+let gettingDressedMoved = false;
+let blockMoved = false;
+let shoesMoved = false;
+
+const wantedSequence = [
+    '1. Aufstehen',
+    '2. Anziehen',
+    '3. Frühstücken',
+    '4. Zähne putzen',
+    '5. Rucksack packen',
+    '6. Schuhe anziehen',
+    '7. Zur Schule fahren'
+];
+
+function getLines(contents) {
+    return contents.replace(/\r/g, '').split('\n');
+}
+
+function compactLines(contents) {
+    return getLines(contents).filter(line => line !== '');
+}
+
+function startsWithSequence(lines, expected) {
+    return expected.every((line, index) => lines[index] === line);
+}
+
+function countLine(lines, expected) {
+    return lines.filter(line => line === expected).length;
+}
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    const lines = compactLines(contents);
+
+    if (
+        !unwantedLineDeleted &&
+        !lines.includes('Diese Zeile gehört nicht in den Ablauf.')
+    ) {
+        unwantedLineDeleted = true;
+        setCheckBox('s0', true);
+    }
+
+    if (
+        unwantedLineDeleted &&
+        !wakeUpMoved &&
+        lines[0] === '1. Aufstehen'
+    ) {
+        wakeUpMoved = true;
+        setCheckBox('s1', true);
+    }
+
+    if (
+        wakeUpMoved &&
+        !gettingDressedMoved &&
+        lines[0] === '1. Aufstehen' &&
+        lines[1] === '2. Anziehen'
+    ) {
+        gettingDressedMoved = true;
+        setCheckBox('s2', true);
+    }
+
+    if (
+        gettingDressedMoved &&
+        !blockMoved &&
+        startsWithSequence(lines, [
+            '1. Aufstehen',
+            '2. Anziehen',
+            '3. Frühstücken',
+            '4. Zähne putzen',
+            '5. Rucksack packen'
+        ])
+    ) {
+        blockMoved = true;
+        setCheckBox('s3', true);
+    }
+
+    if (
+        blockMoved &&
+        !shoesMoved &&
+        startsWithSequence(lines, wantedSequence)
+    ) {
+        shoesMoved = true;
+        setCheckBox('s4', true);
+    }
+
+    if (
+        shoesMoved &&
+        startsWithSequence(lines, wantedSequence) &&
+        countLine(lines, 'Geschafft!') === 2
+    ) {
+        setCheckBox('s5', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Der Cursor steht in der überflüssigen Zeile.
+            Lösche die gesamte Zeile mit
+            <key>Strg</key> + <key>Shift</key> + <key>K</key>.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Setze den Cursor in die Zeile <code>1. Aufstehen</code>.
+            Verschiebe sie mit <key>Alt</key> + <key>↑</key>
+            ganz nach oben. Du musst die Pfeiltaste mehrmals drücken.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s2')}</td>
+        <td>
+            Verschiebe nun <code>2. Anziehen</code> direkt unter
+            <code>1. Aufstehen</code>. Auch diese Zeile muss mehr als
+            eine Position nach oben.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s3')}</td>
+        <td>
+            Markiere die beiden vollständigen Zeilen
+            <code>4. Zähne putzen</code> und
+            <code>5. Rucksack packen</code>. Verschiebe beide gemeinsam
+            mit <key>Alt</key> + <key>↓</key> unter
+            <code>3. Frühstücken</code>.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s4')}</td>
+        <td>
+            Verschiebe <code>6. Schuhe anziehen</code> über
+            <code>7. Zur Schule fahren</code>. Danach müssen alle sieben
+            Schritte richtig sortiert sein.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s5')}</td>
+        <td>
+            Setze den Cursor in die letzte Zeile <code>Geschafft!</code>.
+            Achte darauf, dass nichts markiert ist. Drücke
+            <key>Strg</key> + <key>C</key> und danach
+            <key>Strg</key> + <key>V</key>, um die gesamte Zeile
+            zu duplizieren.
+        </td>
+    </tr>
+`);
+</script>

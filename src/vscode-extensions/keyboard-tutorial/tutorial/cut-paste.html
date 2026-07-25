@@ -1,0 +1,45 @@
+<yaml>
+file: tutorial/cut-paste.txt
+cursor: [2, 24]
+</yaml>
+<h2>Ausschneiden und einfügen</h2>
+<p>
+    Mit <key>Strg</key> + <key>X</key> schneidest du markierten Text aus.
+    Er verschwindet an der alten Stelle, bleibt aber in der Zwischenablage und
+    kann mit <key>Strg</key> + <key>V</key> an einer neuen Stelle eingefügt werden.
+</p>
+
+<table id="table"></table>
+
+<script>
+let cutDone = false;
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    const lines = contents.split('\n');
+
+    if (!cutDone && lines[1] === 'Gemüse: Möhren, Tomaten') {
+        cutDone = true;
+        setCheckBox('s0', true);
+    }
+
+    if (
+        cutDone &&
+        lines[0] === 'Obst: Äpfel, Birnen, Bananen' &&
+        lines[1] === 'Gemüse: Möhren, Tomaten'
+    ) {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s0')}</td>
+    <td>Markiere am Ende von Zeile 2 den Text », Bananen« und schneide ihn mit <key>Strg</key> + <key>X</key> aus.</td></tr>
+`);
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s1')}</td>
+    <td>Setze den Cursor an das Ende von Zeile 1 und füge den ausgeschnittenen Text dort mit <key>Strg</key> + <key>V</key> ein.</td></tr>
+`);
+</script>

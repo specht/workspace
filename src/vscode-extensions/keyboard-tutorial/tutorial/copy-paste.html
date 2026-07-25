@@ -1,0 +1,47 @@
+<yaml>
+file: tutorial/copy-paste.txt
+cursor: [1, 11]
+</yaml>
+<h2>Kopieren und einfügen</h2>
+<p>
+    Mit <key>Strg</key> + <key>C</key> kopierst du markierten Text in die
+    Zwischenablage. Mit <key>Strg</key> + <key>V</key> fügst du ihn an der
+    Cursorposition ein.
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Der kopierte Text bleibt in der Zwischenablage. Du kannst ihn daher mehrmals
+    einfügen, ohne ihn erneut zu kopieren.
+</div>
+
+<table id="table"></table>
+
+<script>
+handleOnDidChangeTextDocument = function(e, contents) {
+    const lines = contents.split('\n');
+
+    if (lines[1] === 'Kopie 1: Übung macht den Meister.') {
+        setCheckBox('s0', true);
+    }
+
+    if (
+        lines[1] === 'Kopie 1: Übung macht den Meister.' &&
+        lines[2] === 'Kopie 2: Übung macht den Meister.'
+    ) {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s0')}</td>
+    <td>Markiere in Zeile 1 »Übung macht den Meister.« und kopiere den Text mit <key>Strg</key> + <key>C</key>. Markiere in Zeile 2 »HIER EINFÜGEN« und füge den kopierten Text dort ein.</td></tr>
+`);
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s1')}</td>
+    <td>Markiere in Zeile 3 »HIER EINFÜGEN« und füge denselben Text dort ein, ohne ihn erneut zu kopieren.</td></tr>
+`);
+</script>

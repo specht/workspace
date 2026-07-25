@@ -1,0 +1,71 @@
+<yaml>
+file: tutorial/close-find.txt
+cursor: [1, 1]
+</yaml>
+
+<h2>Die Suche schließen</h2>
+
+<p>
+    Solange das Suchfeld den Fokus hat, landen deine Eingaben dort und nicht
+    im Text. Mit <key>Esc</key> schließt du die Suche und kehrst zum Editor
+    zurück.
+</p>
+
+<table id="table"></table>
+
+<script>
+let wordFound = false;
+
+function isSelection(selection, line, start, end) {
+    return selection &&
+        selection.start.line === line &&
+        selection.start.character === start &&
+        selection.end.line === line &&
+        selection.end.character === end;
+}
+
+function isCursor(selection, line, character) {
+    return selection &&
+        selection.isEmpty &&
+        selection.active.line === line &&
+        selection.active.character === character;
+}
+
+handleOnDidChangeTextEditorSelection = function(e) {
+    const selection = e.selections && e.selections[0];
+
+    if (!wordFound && isSelection(selection, 6, 26, 35)) {
+        wordFound = true;
+        setCheckBox('s0', true);
+    }
+
+    if (wordFound && isCursor(selection, 6, 35)) {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Suche mit <key>Strg</key> + <key>F</key> nach
+            <code>Schlüssel</code>.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Drücke <key>Esc</key>, um die Suche zu schließen. Drücke
+            anschließend einmal die Pfeiltaste <key>→</key>. Der Cursor soll direkt hinter
+            dem gefundenen Wort stehen.
+        </td>
+    </tr>
+`);
+</script>

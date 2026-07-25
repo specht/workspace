@@ -1,0 +1,84 @@
+<yaml>
+file: tutorial/multi-cursor-next.txt
+cursor: [1, 10]
+</yaml>
+
+<h2>Das nächste Vorkommen auswählen</h2>
+
+<p>
+    Ist ein Wort markiert, fügt <key>Strg</key> + <key>D</key> das
+    nächste gleiche Vorkommen als weitere Markierung hinzu.
+</p>
+
+<table id="table"></table>
+
+<script>
+const expected =
+    'Farbe 1: grün\n' +
+    'Farbe 2: grün\n' +
+    'Farbe 3: grün\n' +
+    'Farbe 4: blau';
+
+let threeOccurrencesSelected = false;
+
+function isExpectedSelection(selection, line) {
+    return selection &&
+        !selection.isEmpty &&
+        selection.start.line === line &&
+        selection.start.character === 9 &&
+        selection.end.line === line &&
+        selection.end.character === 13;
+}
+
+handleOnDidChangeTextEditorSelection = function(e) {
+    const selections = e.selections || [];
+
+    if (
+        !threeOccurrencesSelected &&
+        selections.length === 3 &&
+        [0, 1, 2].every(line =>
+            selections.some(selection => isExpectedSelection(selection, line))
+        )
+    ) {
+        threeOccurrencesSelected = true;
+        setCheckBox('s0', true);
+    }
+
+    checkTaskSolved();
+};
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    if (
+        threeOccurrencesSelected &&
+        contents.replace(/\r/g, '') === expected
+    ) {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Markiere das erste Wort <code>blau</code> mit einem
+            Doppelklick. Drücke danach zweimal
+            <key>Strg</key> + <key>D</key>, sodass die ersten drei
+            Vorkommen markiert sind.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Tippe <code>grün</code>. Nur die ersten drei Einträge sollen
+            sich ändern.
+        </td>
+    </tr>
+`);
+</script>

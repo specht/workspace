@@ -1,0 +1,100 @@
+<yaml>
+file: tutorial/indent-code-block.py
+cursor: [2, 1]
+</yaml>
+
+<h2>Einen Codeblock einrücken</h2>
+
+<p>
+    In diesem Python-Beispiel gehören die beiden Zeilen nach der Zeile mit
+    dem Doppelpunkt zusammen. Zusammengehörige Zeilen müssen gleich weit
+    eingerückt sein. Die letzte Zeile gehört nicht zu diesem Block.
+</p>
+
+<table id="table"></table>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Zum Ein- und Ausrücken ist es egal, wo der Cursor in der Zeile steht.
+</div>
+
+<script>
+let innerBlockIndented = false;
+
+function lines(contents) {
+    return contents.replace(/\r/g, '').split('\n');
+}
+
+function indentationWidth(line) {
+    const whitespace = (line.match(/^[\t ]*/) || [''])[0];
+    let width = 0;
+
+    for (const character of whitespace) {
+        width += character === '\t' ? 4 : 1;
+    }
+
+    return width;
+}
+
+function textWithoutIndentation(line) {
+    return line.replace(/^[\t ]*/, '');
+}
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    const current = lines(contents);
+    const widths = current.map(indentationWidth);
+
+    const textsUnchanged =
+        current.length === 4 &&
+        textWithoutIndentation(current[0]) === 'if schule_offen:' &&
+        textWithoutIndentation(current[1]) === 'print("Rucksack nehmen")' &&
+        textWithoutIndentation(current[2]) === 'print("Losgehen")' &&
+        textWithoutIndentation(current[3]) === 'print("Fertig")';
+
+    if (
+        !innerBlockIndented &&
+        textsUnchanged &&
+        widths[0] === 0 &&
+        widths[1] > 0 &&
+        widths[1] === widths[2]
+    ) {
+        innerBlockIndented = true;
+        setCheckBox('s0', true);
+    }
+
+    if (
+        innerBlockIndented &&
+        textsUnchanged &&
+        widths[0] === 0 &&
+        widths[1] > 0 &&
+        widths[1] === widths[2] &&
+        widths[3] === 0
+    ) {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Markiere die vollständigen Zeilen 2 und 3 und rücke beide
+            gemeinsam mit <key>Tab</key> ein.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Zeile 4 ist zu weit eingerückt. Setze den Cursor dort hinein
+            und rücke sie mit <key>Shift</key> + <key>Tab</key> aus.
+        </td>
+    </tr>
+`);
+</script>

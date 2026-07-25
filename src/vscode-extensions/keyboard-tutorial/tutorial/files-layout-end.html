@@ -1,0 +1,31 @@
+<yaml>
+workspace: tutorial/workspace/files-chapter
+sharedWorkspace: files
+sharedWorkspaceVersion: 2
+</yaml>
+
+<h2>Tutorial zurück verschieben</h2>
+
+<p>
+    Die Übungen mit dem Explorer sind abgeschlossen. Verschiebe das
+    Tutorial jetzt wieder in seinen ursprünglichen Hackschule-Bereich.
+    Wähle im Dialog unter <strong>New Side Bar Entry</strong> den Eintrag
+    <strong>Hackschule</strong>.
+</p>
+
+<table id="table"></table>
+
+<script>
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr class="task-action">
+        <td>${checkBox('s0')}</td>
+        <td>
+            <button id="bu_move_tutorial_back" class="button">
+                ← Tutorial zurück verschieben
+            </button>
+        </td>
+    </tr>
+`);
+</script>

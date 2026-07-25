@@ -1,0 +1,105 @@
+<yaml>
+file: tutorial/multi-cursor-lines.txt
+cursor: [1, 6]
+</yaml>
+
+<h2>Mehrere Zeilen gleichzeitig bearbeiten</h2>
+
+<p>
+    Zusätzliche Cursor entstehen jeweils in derselben Spalte. Danach wirken
+    Navigations- und Eingabetasten auf alle Cursor gleichzeitig.
+</p>
+
+<table id="table"></table>
+
+<script>
+const expected = '- Apfel\n- Birne\n- Kirsche\n- Pflaume';
+
+let fourCursorsReady = false;
+let cursorsAtLineStarts = false;
+
+function sortedCursorPositions(selections) {
+    return selections
+        .filter(selection => selection.isEmpty)
+        .map(selection => [
+            selection.active.line,
+            selection.active.character
+        ])
+        .sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+}
+
+handleOnDidChangeTextEditorSelection = function(e) {
+    const positions = sortedCursorPositions(e.selections || []);
+
+    if (
+        !fourCursorsReady &&
+        positions.length === 4 &&
+        positions.every((position, index) =>
+            position[0] === index &&
+            position[1] === 5
+        )
+    ) {
+        fourCursorsReady = true;
+        setCheckBox('s0', true);
+    }
+
+    if (
+        fourCursorsReady &&
+        !cursorsAtLineStarts &&
+        positions.length === 4 &&
+        positions.every((position, index) =>
+            position[0] === index &&
+            position[1] === 0
+        )
+    ) {
+        cursorsAtLineStarts = true;
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    if (
+        cursorsAtLineStarts &&
+        contents.replace(/\r/g, '') === expected
+    ) {
+        setCheckBox('s2', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Drücke dreimal
+            <key>Strg</key> + <key>Shift</key> + <key>↓</key>,
+            sodass in jeder Zeile ein Cursor steht.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Drücke <key>Pos1</key>. Alle vier Cursor sollen nun am
+            Zeilenanfang stehen.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s2')}</td>
+        <td>
+            Tippe <key>-</key> und <key><svg class="icon"><use href="#space"></use></svg></key>, um aus allen vier Zeilen gleichzeitig
+            eine Liste zu machen.
+        </td>
+    </tr>
+`);
+</script>

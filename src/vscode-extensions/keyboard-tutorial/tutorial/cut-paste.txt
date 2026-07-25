@@ -1,0 +1,2 @@
+Obst: Äpfel, Birnen
+Gemüse: Möhren, Tomaten, Bananen

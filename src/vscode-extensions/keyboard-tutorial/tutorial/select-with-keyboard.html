@@ -1,0 +1,52 @@
+<yaml>
+file: tutorial/selection-keyboard.txt
+cursor: [1, 5]
+</yaml>
+<h2>Text mit der Tastatur markieren</h2>
+<p>
+    Halte <key>Shift</key> gedrückt und bewege den Cursor mit den
+    Pfeiltasten. Der Text zwischen der ursprünglichen und der neuen
+    Cursorposition wird markiert.
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Mit <key>Strg</key>+<key>Shift</key>+<key>←</key>/<key>→</key>
+    kannst du die Markierung wortweise vergrößern. Mit
+    <key>Shift</key>+<key>Pos1</key> oder <key>Shift</key>+<key>Ende</key>
+    markierst du bis zum Anfang oder Ende der Zeile.
+</div>
+
+<table id="table"></table>
+
+<script>
+handleOnDidChangeTextEditorSelection = function(e) {
+    const selection = e.selections[0];
+
+    if (selectionEquals(selection, 0, 4, 0, 14)) {
+        setCheckBox('s0', true);
+    }
+    if (selectionEquals(selection, 0, 21, 0, 37)) {
+        setCheckBox('s1', true);
+    }
+    if (selectionEquals(selection, 1, 0, 1, 39)) {
+        setCheckBox('s2', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s0')}</td>
+    <td>Markiere »neugierige« nur mit <key>Shift</key> und der Pfeiltaste <key>→</key>.</td></tr>
+`);
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s1')}</td>
+    <td>Markiere »springt über den« wortweise mit <key>Strg</key>+<key>Shift</key>+<key>→</key>.</td></tr>
+`);
+table.insertAdjacentHTML('beforeend', `
+    <tr><td style="width: 1.2em;">${checkBox('s2')}</td>
+    <td>Setze den Cursor an den Anfang der zweiten Zeile und markiere sie mit <key>Shift</key>+<key>Ende</key>.</td></tr>
+`);
+</script>

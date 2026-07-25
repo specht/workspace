@@ -1,0 +1,78 @@
+<style>
+    table {
+        input {
+            padding: 0.2em 0.2em;
+        }
+    }
+</style>
+
+<h2>Akzent-Tasten</h2>
+
+<p>
+    Wenn du Buchstaben mit Akzenten schreiben möchtest, kannst du die Akzent-Tasten
+    <key>^</key> (links oben neben der 1) sowie
+    <key>´</key> und
+    <key>`</key> (rechts oben neben Backspace)
+    verwenden.
+</p>
+
+<p>
+    Wenn du so eine Taste drückst, kannst du danach einen weiteren Buchstaben tippen, um so z. B. ein é zu schreiben:
+</p>
+
+<ol>
+    <li>Akzent-Taste drücken: <key>´</key></li>
+    <li>Buchstaben-Taste drücken: <key>E</key></li>
+</ol>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Tipp: Um den Gravis-Akzent <key>`</key> zu bekommen, musst du <key>Shift</key>+<key>´</key> drücken.
+</div>
+
+<table id="table"></table>
+
+<script>
+
+let table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <td style='width: 1.2em;' id="s0">${checkBox()}</td>
+    <td>Gib »Café« ein:</td>
+    <td><input type='text' data-solution='Café' style='width: 100%;'></td>
+    </tr>
+`);
+table.insertAdjacentHTML('beforeend', `
+    <td style='width: 1.2em;' id="s1">${checkBox()}</td>
+    <td>Gib »Voilà« ein:</td>
+    <td><input type='text' data-solution='Voilà' style='width: 100%;'></td>
+    </tr>
+`);
+table.insertAdjacentHTML('beforeend', `
+    <td style='width: 1.2em;' id="s2">${checkBox()}</td>
+    <td>Gib »Tête-à-tête« ein:</td>
+    <td><input type='text' data-solution='Tête-à-tête' style='width: 100%;'></td>
+    </tr>
+`);
+
+for (let el of table.querySelectorAll('input')) {
+    el.addEventListener('paste', function(e) {
+        e.preventDefault();
+    });
+    el.addEventListener('keyup', function(e) {
+        let value = el.value.trim();
+        let solution = el.dataset.solution.trim();
+        if (value === solution) {
+            let check = el.closest('tr').querySelector('.check');
+            check.classList.add('checked');
+            checkTaskSolved();
+            const allInputs = Array.from(table.querySelectorAll('input'));
+            const currentIndex = allInputs.indexOf(el);
+            const next = allInputs[currentIndex + 1];
+            if (next) next.focus();
+        }
+    });
+}
+document.querySelector('#s0').parentElement.querySelector('input').focus();
+
+</script>

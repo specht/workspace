@@ -1,0 +1,76 @@
+<yaml>
+file: tutorial/move-ruby-block.rb
+cursor: [2, 1]
+</yaml>
+
+<h2>Einen Ruby-Block verschieben</h2>
+
+<p>
+    In diesem Beispiel beginnt ein zusammengehöriger Block mit
+    <code>3.times do</code> und endet mit <code>end</code>. Die
+    eingerückte Zeile dazwischen gehört ebenfalls dazu. Markierst du alle
+    vollständigen Zeilen, lässt sich der Block als Einheit verschieben.
+</p>
+
+<table id="table"></table>
+
+<script>
+const afterFirstMove =
+    'puts "Start"\n' +
+    'puts "Jacke anziehen"\n' +
+    '3.times do\n' +
+    '  puts "Klopfen"\n' +
+    'end\n' +
+    'puts "Schuhe anziehen"\n' +
+    'puts "Losgehen"';
+
+const afterSecondMove =
+    'puts "Start"\n' +
+    'puts "Jacke anziehen"\n' +
+    'puts "Schuhe anziehen"\n' +
+    '3.times do\n' +
+    '  puts "Klopfen"\n' +
+    'end\n' +
+    'puts "Losgehen"';
+
+let movedOnce = false;
+
+handleOnDidChangeTextDocument = function(e, contents) {
+    const normalized = contents.replace(/\r/g, '');
+
+    if (!movedOnce && normalized === afterFirstMove) {
+        movedOnce = true;
+        setCheckBox('s0', true);
+    }
+
+    if (movedOnce && normalized === afterSecondMove) {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Markiere die drei vollständigen Zeilen von
+            <code>3.times do</code> bis <code>end</code>. Verschiebe den
+            Block mit <key>Alt</key> + <key>↓</key> unter
+            <code>puts "Jacke anziehen"</code>.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Verschiebe denselben Block noch einmal nach unten, diesmal
+            unter <code>puts "Schuhe anziehen"</code>.
+        </td>
+    </tr>
+`);
+</script>

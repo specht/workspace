@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="styles.css">
+        <script>
+            const sections = "__SECTIONS__";
+            const stepOrder = [];
+            const stepSection = [];
+            const firstStepForSection = [];
+            let stepIndex = 0;
+        </script>
+        <script type="text/javascript" src="script.js"></script>
+    </head>
+
+    <body>
+        <!-- https://tabler.io/icons/icon/arrow-left -->
+        <svg style="display: none;" aria-hidden="true">
+            <symbol id="arrow-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l14 0" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" />
+            </symbol>
+        </svg>
+        <svg style="display: none;" aria-hidden="true">
+            <symbol id="arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" />
+            </symbol>
+        </svg>
+        <svg style="display: none;" aria-hidden="true">
+            <symbol id="arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M18 11l-6 -6" /><path d="M6 11l6 -6" />
+            </symbol>
+        </svg>
+        <svg style="display: none;" aria-hidden="true">
+            <symbol id="arrow-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M18 13l-6 6" /><path d="M6 13l6 6" />
+            </symbol>
+        </svg>
+        <svg style="display: none;" aria-hidden="true">
+            <symbol id="arrow-bar-to-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 12l-10 0" /><path d="M14 12l-4 4" /><path d="M14 12l-4 -4" /><path d="M20 4l0 16" />
+            </symbol>
+        </svg>
+        <svg style="display: none;" aria-hidden="true">
+            <symbol id="corner-down-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6v6a3 3 0 0 1 -3 3h-10l4 -4m0 8l-4 -4" />
+            </symbol>
+        </svg>
+        <svg style="display: none;" aria-hidden="true">
+            <symbol id="chevrons-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7l5 5l-5 5" /><path d="M13 7l5 5l-5 5" />
+            </symbol>
+        </svg>
+        <svg style="display: none;" aria-hidden="true">
+            <symbol id="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" />
+            </symbol>
+        </svg>
+        <svg style="display: none;" aria-hidden="true">
+            <symbol id="circle-dotted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7.5 4.21l0 .01" /><path d="M4.21 7.5l0 .01" /><path d="M3 12l0 .01" /><path d="M4.21 16.5l0 .01" /><path d="M7.5 19.79l0 .01" /><path d="M12 21l0 .01" /><path d="M16.5 19.79l0 .01" /><path d="M19.79 16.5l0 .01" /><path d="M21 12l0 .01" /><path d="M19.79 7.5l0 .01" /><path d="M16.5 4.21l0 .01" /><path d="M12 3l0 .01" />
+            </symbol>
+        </svg>
+        <svg style="display: none;" aria-hidden="true">
+            <symbol id="clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M12 7v5l3 3" />
+            </symbol>
+        </svg>
+        <svg style="display: none;" aria-hidden="true">
+            <symbol id="space" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 10v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1 -1v-3" />
+            </symbol>
+        </svg>
+        <svg style="display: none;" aria-hidden="true">
+            <symbol id="reload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.933 13.041a8 8 0 1 1 -9.925 -8.788c3.899 -1 7.935 1.007 9.425 4.747" /><path d="M20 4v5h-5" />
+            </symbol>
+        </svg>
+        <svg style="display: none;" aria-hidden="true">
+            <symbol id="bulb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12h1m8 -9v1m8 8h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7" /><path d="M9 16a5 5 0 1 1 6 0a3.5 3.5 0 0 0 -1 3a2 2 0 0 1 -4 0a3.5 3.5 0 0 0 -1 -3" /><path d="M9.7 17l4.6 0" />
+            </symbol>
+        </svg>
+        <!-- https://tabler.io/icons/icon/file-plus -->
+        <svg style="display: none;" aria-hidden="true">
+            <symbol id="file-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v5" />
+                <path d="M12 18v-6" />
+                <path d="M9 15h6" />
+            </symbol>
+        </svg>
+        <!-- https://tabler.io/icons/icon/folder-plus -->
+        <svg style="display: none;" aria-hidden="true">
+            <symbol id="folder-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M12 19h-7a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2h4l2 3h6a2 2 0 0 1 2 2v2" />
+                <path d="M16 19h6" />
+                <path d="M19 16v6" />
+            </symbol>
+        </svg>
+        <svg style="display: none;" aria-hidden="true">
+            <symbol id="x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+	            <path d="M18 6l-12 12" />
+	            <path d="M6 6l12 12" />
+            </symbol>
+        </svg>
+        <svg style="display: none;" aria-hidden="true">
+            <symbol id="circle-filled" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        	    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+	            <path d="M7 3.34a10 10 0 1 1 -4.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 4.995 -8.336z" />
+            </symbol>
+        </svg>
+
+        <hr>
+        <table class="toc">
+            <tbody></tbody>
+        </table>
+        <hr>
+        <div id="instruction"></div>
+        <hr>
+        <div style="display: flex; justify-content: space-between;">
+            <button id="bu_reload" class="button secondary" onclick="clickRestartStep()"><svg class="icon"><use
+                        href="#reload"></use></svg> <span>Neu starten</span></button>
+            <button id="bu_next" disabled class="button" onclick="clickNextStep()"><span>Nächster Schritt</span> <svg class="icon"><use
+                        href="#chevrons-right"></use></svg></button>
+        </div>
+        <div style="margin-bottom: 1em;"></div>
+    </body>
+
+</html>

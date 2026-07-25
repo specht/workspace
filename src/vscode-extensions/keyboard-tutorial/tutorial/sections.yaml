@@ -1,0 +1,115 @@
+sections:
+- heading: Die Tastatur
+  steps:
+  - heading: Die wichtigsten Tasten
+    key: press-keys
+  - heading: Akzenttasten
+    key: dead-keys
+  - heading: Tastenkombinationen
+    key: modifier-keys
+- heading: Navigieren im Dokument
+  steps:
+  - heading: Navigieren mit Pfeiltasten
+    key: navigate-arrow-keys
+  - heading: Zum Anfang / zum Ende einer Zeile springen
+    key: navigate-home-end
+  - heading: Seitenweise blättern
+    key: navigate-page-keys
+  - heading: Zum Anfang / zum Ende der Datei springen
+    key: navigate-start-end
+  - heading: Zu einer bestimmten Zeile springen
+    key: navigate-goto-line
+  - heading: Bildausschnitt verschieben
+    key: navigate-move-region
+  - heading: Lange Zeilen umbrechen
+    key: navigate-word-wrap
+- heading: Text markieren
+  steps:
+  - heading: Text mit der Maus auswählen
+    key: select-with-mouse
+  - heading: Text mit der Tastatur markieren
+    key: select-with-keyboard
+  - heading: Wörter, Zeilen und alles markieren
+    key: select-word-line-all
+- heading: Text bearbeiten
+  steps:
+  - heading: Text löschen
+    key: delete-text
+  - heading: Text eingeben und ersetzen
+    key: insert-replace-text
+  - heading: Rückgängig und wiederholen
+    key: undo-redo
+  - heading: Kopieren und einfügen
+    key: copy-paste
+  - heading: Ausschneiden und einfügen
+    key: cut-paste
+  - heading: Ganze Zeilen bearbeiten
+    key: move-duplicate-lines
+  - heading: Mehrere Zeilen einrücken
+    key: indent-outdent
+  - heading: Eine Datei speichern
+    key: save-file
+- heading: Suchen und Ersetzen
+  steps:
+  - heading: Text suchen
+    key: find-text
+  - heading: Genauer suchen
+    key: find-options
+  - heading: Die Suche schließen
+    key: close-find
+  - heading: Einen Treffer ersetzen
+    key: replace-one
+  - heading: Alle Treffer ersetzen
+    key: replace-all
+  - heading: "Übung: Suchen, ersetzen und speichern"
+    key: search-replace-challenge
+- heading: Mehrere Stellen gleichzeitig bearbeiten
+  steps:
+  - heading: Cursor untereinander hinzufügen
+    key: multi-cursor-mouse
+  - heading: Das nächste Vorkommen auswählen
+    key: multi-cursor-next
+  - heading: Alle Vorkommen auswählen
+    key: multi-cursor-all
+  - heading: Mehrere Zeilen gleichzeitig bearbeiten
+    key: multi-cursor-lines
+- heading: Code bearbeiten
+  steps:
+  - heading: Zeilen kommentieren
+    key: comment-lines
+  - heading: Einen Codeblock einrücken
+    key: indent-code-block
+  - heading: Einen Codeblock verschieben
+    key: move-code-block
+  - heading: Einen Namen überall ändern
+    key: rename-code-name
+  - heading: Einen Ruby-Block verschieben
+    key: move-ruby-block
+  - heading: Einen Block kopieren
+    key: copy-js-block
+  - heading: Einen verschachtelten Block einrücken
+    key: indent-dart-block
+  - heading: "Übung: Einen Codeabschnitt reparieren"
+    key: code-editing-challenge
+- heading: Dateien, Ordner und Tabs
+  steps:
+  - heading: Explorer und Tutorial nebeneinander
+    key: files-layout-start
+  - heading: Dateien im Explorer öffnen
+    key: files-explorer-open
+  - heading: Eine Datei schnell öffnen
+    key: files-quick-open
+  - heading: Zwischen Tabs wechseln
+    key: files-switch-tabs
+  - heading: Einen Tab schließen und wieder öffnen
+    key: files-close-reopen-tab
+  - heading: Eine neue Datei anlegen
+    key: files-create-save
+  - heading: Einen Ordner anlegen
+    key: files-create-folder
+  - heading: Dateien und Ordner umbenennen
+    key: files-rename
+  - heading: Dateien und Ordner löschen
+    key: files-delete
+  - heading: Tutorial zurück verschieben
+    key: files-layout-end

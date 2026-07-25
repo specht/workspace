@@ -1,0 +1,73 @@
+<yaml>
+workspace: tutorial/workspace/files-chapter
+sharedWorkspace: files
+sharedWorkspaceVersion: 2
+resetPaths:
+  - meine-notiz.txt
+</yaml>
+
+<h2>Eine neue Datei anlegen</h2>
+
+<p>
+    Markiere im Explorer zunächst eine Datei, die direkt im
+    Tutorial-Ordner liegt, zum Beispiel <code>willkommen.txt</code>.
+    Bewegst du die Maus in den Explorer, erscheint oben rechts das Symbol
+    <svg class="icon"><use href="#file-plus"></use></svg>
+    <strong>Neue Datei</strong>.
+</p>
+
+<table id="table"></table>
+
+<script>
+let fileCreated = false;
+const expected = 'Ich kann Dateien anlegen.';
+
+handleOnDidCreateFiles = function(e) {
+    if ((e.files || []).some(file =>
+        file.relativePath === 'meine-notiz.txt'
+    )) {
+        fileCreated = true;
+        setCheckBox('s0', true);
+    }
+
+    checkTaskSolved();
+};
+
+handleOnDidSaveTextDocument = function(e, contents) {
+    if (
+        fileCreated &&
+        e.document &&
+        e.document.isDirty === false &&
+        e.document.fileName.endsWith('meine-notiz.txt') &&
+        contents === expected
+    ) {
+        setCheckBox('s1', true);
+    }
+
+    checkTaskSolved();
+};
+
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s0')}</td>
+        <td>
+            Markiere im Explorer die Datei <code>willkommen.txt</code>.
+            Klicke anschließend oben rechts auf
+            <svg class="icon" style="transform: translate(0, 0.1em);"><use href="#file-plus"></use></svg>
+            und lege daneben die Datei <code>meine-notiz.txt</code> an.
+        </td>
+    </tr>
+`);
+
+table.insertAdjacentHTML('beforeend', `
+    <tr>
+        <td style="width: 1.2em;">${checkBox('s1')}</td>
+        <td>
+            Schreibe <code>Ich kann Dateien anlegen.</code> hinein und
+            speichere die Datei mit <key>Strg</key> + <key>S</key>.
+        </td>
+    </tr>
+`);
+</script>

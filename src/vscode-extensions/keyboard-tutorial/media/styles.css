@@ -1,0 +1,362 @@
+:root {
+    --my-editor-background: var(--vscode-editor-background, #1f1f1f);
+    --my-editor-foreground: var(--vscode-editor-foreground, #cccccc);
+    --my-button-background: var(--vscode-button-background, #0078d4);
+    --my-button-foreground: var(--vscode-button-foreground, #ffffff);
+    --my-button-hoverBackground: var(--vscode-button-hoverBackground, #026ec1);
+    --my-button-secondaryBackground: var(--vscode-button-secondaryBackground, #313131);
+    --my-button-secondaryForeground: var(--vscode-button-secondaryForeground, #cccccc);
+    --my-button-secondaryHoverBackground: var(--vscode-button-secondaryHoverBackground, #3c3c3c);
+    --my-toolbar-hoverBackground: var(--vscode-toolbar-hoverBackground, rgba(90, 93, 94, 0.31));
+    --my-toolbar-activeBackground: var(--vscode-toolbar-activeBackground, rgba(99, 102, 103, 0.31));
+    --my-terminal-ansiGreen: var(--vscode-terminal-ansiGreen, #0dbc79);
+    --my-terminal-ansiYellow: var(--vscode-terminal-ansiYellow, #e5e510);
+    --my-terminal-ansiRed: var(--vscode-terminal-ansiRed, #cd3131);
+    --my-input-background: var(--vscode-input-background, #313131);
+    --my-input-border: var(--vscode-input-border, #3c3c3c);
+    --my-input-foreground: var(--vscode-input-foreground, #cccccc);
+    --my-input-placeholderForeground: var(--vscode-input-placeholderForeground, #989898);
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+/* body {
+    overflow-y: scroll;
+} */
+
+input {
+    background-color: var(--my-input-background);
+    color: var(--my-input-foreground);
+    border: 1px solid var(--my-input-border);
+    border-radius: 0.15em;
+    padding: 0.25em 0;
+
+    &::placeholder {
+        color: var(--my-input-placeholderForeground);
+    }
+}
+
+body {
+    background-color: var(--my-editor-background);
+    color: var(--my-editor-foreground);
+    font-family: var(--vscode-font-family, system-ui, Ubuntu, Droid Sans, sans-serif);
+    font-size: var(--vscode-font-size, 13px);
+    font-size: 14px;
+    user-select: none;
+    margin: 0 1em;
+    overflow-x: hidden;
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(1.0);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1.0);
+    }
+}
+
+.button {
+    background-color: var(--my-button-background);
+    color: var(--my-button-foreground);
+
+    &:hover:not([disabled]) {
+        background-color: var(--my-button-hoverBackground);
+    }
+
+    .icon {
+        color: var(--my-button-foreground);
+        position: relative;
+        top: 0.15em;
+    }
+
+    :first-child.icon {
+        margin-right: 0.2em;
+    }
+
+    :last-child.icon {
+        margin-left: 0.2em;
+    }
+
+    &.secondary {
+        background-color: var(--my-button-secondaryBackground);
+        color: var(--my-button-secondaryForeground);
+        border: 1px solid color-mix(in hsl, var(--my-editor-foreground) 20%, transparent);
+
+        &:hover:not([disabled]) {
+            background-color: var(--my-button-secondaryHoverBackground);
+        }
+
+        .icon {
+            color: var(--my-button-secondaryForeground);
+        }
+    }
+
+    border: none;
+    padding: 0.4em 0.8em;
+    border-radius: 0.25em;
+    cursor: pointer;
+
+    &[disabled] {
+        opacity: 0.5;
+    }
+
+    transition: opacity 0.2s ease-out;
+
+    &.pop {
+        animation: popIn 0.3s ease;
+    }
+}
+
+key {
+    display: inline-block;
+    font-family: monospace;
+    padding: 0 0.4em;
+    font-size: 90%;
+    font-weight: bold;
+    border-radius: 0.25em;
+    margin: 0 2px;
+    background-color: color-mix(in hsl, var(--my-editor-foreground) 10%, transparent);
+
+    color: var(--my-editor-foreground);
+    border: 1px solid color-mix(in hsl, var(--my-editor-foreground) 20%, transparent);
+}
+
+table {
+    key {
+        margin: 0 2px 2px 0;
+    }
+}
+
+hr {
+    border: none;
+    border-top: 1px solid color-mix(in hsl, var(--my-editor-foreground) 30%, transparent);
+}
+
+table {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: collapse;
+
+    td {
+        padding: 0.1em 0.25em;
+        vertical-align: top;
+
+        &.wrap {
+            white-space: normal;
+            word-break: break-word;
+        }
+    }
+}
+
+table {
+    width: 100%;
+}
+
+table.toc {
+    tr {
+        cursor: pointer;
+    }
+
+    tr:hover {
+        background-color: color-mix(in hsl, var(--my-button-background) 30%, var(--my-editor-background));
+    }
+
+    tr.active {
+        /* background-color: var(--my-toolbar-activeBackground);
+
+        td {
+            font-weight: bold;
+        } */
+        background-color: color-mix(in hsl, var(--my-button-background) 50%, var(--my-editor-background));
+        /* color: var(--my-editor-foreground); */
+    }
+
+
+    td:first-child {
+        text-align: right;
+        width: 2em;
+    }
+
+    td:last-child {
+        text-align: center;
+        width: 1.2em;
+    }
+}
+
+.icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    color: var(--my-editor-foreground);
+    background-size: contain;
+}
+
+key {
+    .icon {
+        margin-left: -0.2em;
+        margin-right: -0.2em;
+        position: relative;
+        top: 0.15em;
+    }
+}
+
+.circle {
+    display: inline-block;
+    border-radius: 1em;
+    width: 1em;
+    height: 1em;
+    position: relative;
+    top: 0.2em;
+
+    svg {
+        color: color-mix(in hsl, var(--my-editor-foreground) 50%, transparent);
+        position: absolute;
+        left: 0;
+        top: 0;
+
+        &.hidden {
+            transform: scale(0) rotate(360deg);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+            &.showing {
+                transform: scale(1) rotate(0deg);
+            }
+
+            &.success {
+                color: var(--my-terminal-ansiGreen);
+            }
+        }
+    }
+
+    &.success {
+        svg {
+            color: var(--my-terminal-ansiGreen);
+        }
+    }
+
+    &.warning {
+        svg {
+            color: var(--my-terminal-ansiYellow);
+        }
+    }
+
+    &.danger {
+        svg {
+            color: var(--my-terminal-ansiRed);
+        }
+    }
+}
+
+.hint {
+    position: relative;
+
+    .icon {
+        transform: scale(1.2);
+        position: absolute;
+        left: 0.6em;
+        top: 0.6em;
+    }
+
+    margin: 1em 0;
+    padding: 0.5em 0.5em 0.5em 2.5em;
+    border-top: 1px solid color-mix(in hsl, var(--my-editor-foreground) 30%, transparent);
+    border-bottom: 1px solid color-mix(in hsl, var(--my-editor-foreground) 30%, transparent);
+    background-color: color-mix(in hsl, var(--my-editor-foreground) 10%, transparent);
+}
+
+.check {
+    display: inline-block;
+    border-radius: 1em;
+    width: 1em;
+    height: 1em;
+    position: relative;
+    top: 0.2em;
+
+    svg {
+        color: color-mix(in hsl, var(--my-editor-foreground) 50%, transparent);
+        transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    svg:nth-child(1) {
+        transform: scale(1) rotate(0deg);
+    }
+
+    svg:nth-child(2) {
+        color: var(--my-terminal-ansiGreen);
+        transform: scale(0) rotate(360deg);
+    }
+
+    &.checked {
+        svg:nth-child(2) {
+            transform: scale(1) rotate(0deg);
+        }
+
+        svg:nth-child(1) {
+            transform: scale(0) rotate(360deg);
+        }
+
+    }
+
+    &.hidden {
+        transform: scale(0) rotate(360deg);
+        transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+        &.showing {
+            transform: scale(1) rotate(0deg);
+        }
+
+        &.success {
+            color: var(--my-terminal-ansiGreen);
+        }
+    }
+}
+.error {
+    margin: 1em 0;
+    padding: 0.75em;
+    border: 1px solid var(--my-terminal-ansiRed);
+    border-radius: 0.25em;
+    user-select: text;
+    white-space: pre-wrap;
+}
+
+.explorer-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15em;
+    white-space: nowrap;
+}
+
+.explorer-action .icon {
+    position: relative;
+    top: 0.05em;
+}
+
+#table tr.task-action td {
+    vertical-align: middle;
+}
+
+#table tr.task-action td:first-child {
+    width: auto;
+    padding-right: 0.35rem;
+}
+
+#table tr.task-action td:last-child {
+    padding-left: 0;
+}
+
+#table tr.task-action button {
+    margin: 0;
+}
