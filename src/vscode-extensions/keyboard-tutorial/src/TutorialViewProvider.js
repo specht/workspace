@@ -855,6 +855,139 @@ class TutorialViewProvider {
         };
     }
 
+    sharedWorkspaceStateKeys() {
+        const keys = new Set();
+
+        for (const section of this.sections.sections) {
+            for (const step of section.steps) {
+                const htmlPath = vscode.Uri.joinPath(
+                    this.context.extensionUri,
+                    "tutorial",
+                    `${step.key}.html`,
+                ).fsPath;
+
+                if (!fs.existsSync(htmlPath)) {
+                    continue;
+                }
+
+                const html = fs.readFileSync(htmlPath, "utf8");
+                const yamlMatch = html.match(
+                    /<yaml>([\s\S]*?)<\/yaml>/i,
+                );
+
+                if (!yamlMatch) {
+                    continue;
+                }
+
+                const metadata = yaml.parse(
+                    yamlMatch[1].trim(),
+                ) ?? {};
+
+                if (metadata.sharedWorkspace) {
+                    keys.add(this.sharedWorkspaceStateKey(
+                        metadata.sharedWorkspace,
+                        metadata.sharedWorkspaceVersion ?? 1,
+                    ));
+                }
+            }
+        }
+
+        return keys;
+    }
+
+    async resetEntireTutorial() {
+        const resetLabel = "Alles zurücksetzen";
+        const choice = await vscode.window.showWarningMessage(
+            "Möchtest du das gesamte Keyboard-Tutorial zurücksetzen?",
+            {
+                modal: true,
+                detail: [
+                    "Alle grünen Häkchen und alle bearbeiteten",
+                    "Übungsdateien werden gelöscht.",
+                    "Danach beginnt das Tutorial wieder beim ersten Schritt.",
+                ].join(" "),
+            },
+            resetLabel,
+        );
+
+        if (choice !== resetLabel) {
+            return false;
+        }
+
+        const tutorialRootUri = vscode.Uri.file(tutorialDir);
+
+        /*
+         * Save only disposable tutorial documents before closing them.
+         * This avoids additional dirty-editor confirmation dialogs; the
+         * files are deleted or restored immediately afterwards anyway.
+         */
+        await this.saveDirtyDocumentsInside(tutorialRootUri);
+        await this.closeTabs(
+            this.findTabsInsideRoot(tutorialRootUri),
+            true,
+        );
+
+        if (fs.existsSync(stateFilePath)) {
+            fs.rmSync(stateFilePath, { force: true });
+        }
+
+        for (const directory of [
+            path.join(tutorialDir, "steps"),
+            workspaceStepStatePath,
+        ]) {
+            if (fs.existsSync(directory)) {
+                fs.rmSync(directory, {
+                    recursive: true,
+                    force: true,
+                });
+            }
+        }
+
+        await this.context.globalState.update(
+            pendingWorkspaceStepStateKey,
+            undefined,
+        );
+
+        for (const key of this.sharedWorkspaceStateKeys()) {
+            await this.context.globalState.update(key, undefined);
+        }
+
+        const managedWorkspaceUri = vscode.Uri.file(
+            managedWorkspacePath,
+        );
+
+        if (await this.uriExists(managedWorkspaceUri)) {
+            await this.clearDirectoryContents(
+                managedWorkspaceUri,
+            );
+
+            const fixturePath = vscode.Uri.joinPath(
+                this.context.extensionUri,
+                "tutorial",
+                "workspace",
+                "files-chapter",
+            ).fsPath;
+
+            if (fs.existsSync(fixturePath)) {
+                await this.copyFixtureDirectory(
+                    fixturePath,
+                    managedWorkspaceUri,
+                );
+            }
+        }
+
+        this.currentStepKey = undefined;
+        this.activeTutorialDocumentUri = undefined;
+        this.activeTutorialOriginalContents = undefined;
+        this.activeTutorialRootUri = undefined;
+        this.activeWorkspaceFixturePath = undefined;
+        this.activeWorkspaceStepKey = undefined;
+        this.activeWorkspaceSharedKey = undefined;
+        this.activeEventTypes.clear();
+
+        return true;
+    }
+
     async runTutorialAction(action) {
         if (action === "moveTutorialView") {
             /*
@@ -1007,6 +1140,14 @@ class TutorialViewProvider {
                         command: "update_state",
                         state: this.readCompletionState(),
                     });
+                } else if (message.command === "reset_tutorial") {
+                    const reset = await this.resetEntireTutorial();
+                    if (reset) {
+                        this.postMessage({
+                            command: "tutorial_reset_complete",
+                            state: this.readCompletionState(),
+                        });
+                    }
                 } else if (message.command === "run_tutorial_action") {
                     if (message.completeStep) {
                         this.markStepComplete(message.completeStep);

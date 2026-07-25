@@ -138,6 +138,14 @@ window.addEventListener("message", event => {
         case "click_step":
             clickStep(message.step);
             break;
+        case "tutorial_reset_complete":
+            state = message.state;
+            currentStepPersistedComplete = false;
+            markedAsComplete = false;
+            showingCompletion = false;
+            updateToc();
+            clickStep(0, true);
+            break;
         case "show_error":
             showError(message.message);
             break;
@@ -189,6 +197,11 @@ function escapeHtml(text) {
 }
 
 function updateToc() {
+    const resetRow = document.querySelector("#reset_tutorial_row");
+    if (resetRow) {
+        resetRow.hidden = !Object.values(state).some(Boolean);
+    }
+
     for (const element of document.querySelectorAll('tr[data-type="section"], tr[data-type="step"]')) {
         element.classList.remove("active");
     }
@@ -302,6 +315,10 @@ function clickStep(n, restart = false) {
 
 function clickRestartStep() {
     clickStep(stepIndex, true);
+}
+
+function clickResetTutorial() {
+    vscode.postMessage({ command: "reset_tutorial" });
 }
 
 function clickNextStep() {

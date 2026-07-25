@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add a confirmed full-tutorial reset that clears progress and restores all practice files.
+
 - Das Tutorial ist als achtteiliges Curriculum abgeschlossen; geplante Kapitel zu Ansicht/Fokus, Terminal und Abschlussaufgabe wurden entfernt.
 - Der Zeilenumbruch mit `Alt+Z` ist als Tastaturübung in das Kapitel **Navigieren im Dokument** integriert.
 - Die Datei- und Ordnerübungen verwenden einen einzigen stabilen, isolierten Arbeitsordner für das gesamte Kapitel.
