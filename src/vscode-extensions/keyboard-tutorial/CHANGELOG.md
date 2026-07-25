@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.1 - 2026-07-25
+
+- Nach dem Öffnen des isolierten Datei-Arbeitsordners wird die Tutorial-Ansicht in VS Code Web automatisch wieder eingeblendet.
+- Das letzte Kapitel erklärt das Schließen eines Arbeitsordners und schließt den Tutorial-Arbeitsordner über einen geführten Button.
+- Nach dem dadurch ausgelösten Browser-Neuladen wird das Tutorial automatisch geöffnet und direkt die Abschlussseite angezeigt.
+- `onStartupFinished` wird nur genutzt, um einen zuvor gespeicherten Workspace-Übergang fortzusetzen; bei normalen Starts bleibt die aktuelle Ansicht unverändert.
+
 ## 0.1.0 - 2026-07-25
 
 - Die Versionsnummer wurde für die erste vollständige Unterrichtsfassung auf `0.1.0` angehoben.

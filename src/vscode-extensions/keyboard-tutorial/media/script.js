@@ -146,6 +146,9 @@ window.addEventListener("message", event => {
             updateToc();
             clickStep(0, true);
             break;
+        case "show_completion":
+            showTutorialCompletion();
+            break;
         case "show_error":
             showError(message.message);
             break;
@@ -300,6 +303,7 @@ function clickStep(n, restart = false) {
     stepIndex = parsedIndex;
     currentStepKey = stepOrder[stepIndex];
     currentStepPersistedComplete = state[currentStepKey] === true;
+    document.querySelector("#bu_reload").disabled = false;
     markedAsComplete = currentStepPersistedComplete;
     showingCompletion = false;
     resetStepRuntime();
@@ -324,23 +328,36 @@ function clickResetTutorial() {
     vscode.postMessage({ command: "reset_tutorial" });
 }
 
+function showTutorialCompletion() {
+    showingCompletion = true;
+    resetStepRuntime();
+
+    if (stepOrder.length > 0) {
+        stepIndex = stepOrder.length - 1;
+        currentStepKey = stepOrder[stepIndex];
+    }
+
+    const completedSteps = stepOrder.filter(key => state[key]).length;
+    document.querySelector("#instruction").innerHTML = `
+        <h2>Tutorial abgeschlossen!</h2>
+        <p>Du hast alle ${completedSteps} Tutorial-Schritte erledigt.</p>
+        <p>Der Tutorial-Arbeitsordner ist geschlossen. VS Code ist wieder bereit für dein nächstes Projekt.</p>
+        <p>Über das Inhaltsverzeichnis kannst du einzelne Übungen jederzeit wiederholen. Mit <strong>Gesamtes Tutorial zurücksetzen</strong> kannst du später noch einmal ganz von vorne beginnen.</p>
+    `;
+    const nextButton = document.querySelector("#bu_next");
+    nextButton.querySelector("span").textContent = "Tutorial abgeschlossen";
+    nextButton.disabled = true;
+    document.querySelector("#bu_reload").disabled = true;
+    updateToc();
+}
+
 function clickNextStep() {
     if (stepIndex + 1 < stepOrder.length) {
         clickStep(stepIndex + 1);
         return;
     }
 
-    showingCompletion = true;
-    resetStepRuntime();
-    const completedSteps = stepOrder.filter(key => state[key]).length;
-    document.querySelector("#instruction").innerHTML = `
-        <h2>Tutorial abgeschlossen!</h2>
-        <p>Du hast alle ${completedSteps} Tutorial-Schritte erledigt.</p>
-        <p>Über das Inhaltsverzeichnis kannst du einzelne Übungen jederzeit wiederholen. Mit <strong>Gesamtes Tutorial zurücksetzen</strong> kannst du später noch einmal ganz von vorne beginnen.</p>
-    `;
-    const nextButton = document.querySelector("#bu_next");
-    nextButton.querySelector("span").textContent = "Tutorial abgeschlossen";
-    nextButton.disabled = true;
+    showTutorialCompletion();
 }
 
 function clickSection(n) {

@@ -2,7 +2,7 @@
     "name": "hackschule-keyboard-tutorial",
     "displayName": "Hackschule Keyboard Tutorial",
     "description": "Lerne die wichtigsten Grundlagen der Tastatur kennen",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "engines": {
         "vscode": "^1.91.0"
     },
@@ -11,7 +11,10 @@
     ],
     "repository": "https://github.com/specht/hackschule_keyboard_tutorial",
     "icon": "media/icon.png",
-    "activationEvents": [],
+    "activationEvents": [
+        "onView:typingSteps",
+        "onStartupFinished"
+    ],
     "main": "./src/extension.js",
     "publisher": "gymnasiumsteglitz",
     "contributes": {

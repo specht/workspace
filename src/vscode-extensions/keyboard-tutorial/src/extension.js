@@ -275,6 +275,12 @@ async function activate(context) {
     );
 
     watchUserActivity(context);
+    void provider.revealTutorialAfterWorkspaceReload().catch(error => {
+        console.warn(
+            "Could not restore keyboard tutorial after workspace reload:",
+            error,
+        );
+    });
     console.log("Hackschule Keyboard Tutorial activated");
 }
 

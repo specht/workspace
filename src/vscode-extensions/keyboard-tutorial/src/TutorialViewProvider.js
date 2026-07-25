@@ -17,6 +17,10 @@ const workspaceStepStatePath = path.join(
 const pendingWorkspaceStepStateKey =
     "hackschuleKeyboardTutorial.pendingWorkspaceStep";
 
+function delay(milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
 function serializePosition(position) {
     return {
         line: position.line,
@@ -573,6 +577,76 @@ class TutorialViewProvider {
         }
     }
 
+    currentWorkspaceUri() {
+        const workspaceFolders = vscode.workspace.workspaceFolders ?? [];
+
+        if (workspaceFolders.length === 0) {
+            return null;
+        }
+
+        if (workspaceFolders.length === 1) {
+            return workspaceFolders[0].uri.toString();
+        }
+
+        // The tutorial transitions only target a single folder or an empty
+        // window. A multi-root workspace must never accidentally match.
+        return undefined;
+    }
+
+    pendingWorkspaceTransitionMatches(pending) {
+        if (!pending || typeof pending !== "object") {
+            return false;
+        }
+
+        const expectedWorkspaceUri = pending.workspaceUri ?? null;
+        const currentWorkspaceUri = this.currentWorkspaceUri();
+
+        return currentWorkspaceUri !== undefined &&
+            expectedWorkspaceUri === currentWorkspaceUri;
+    }
+
+    async revealTutorialAfterWorkspaceReload() {
+        const pending = this.context.globalState.get(
+            pendingWorkspaceStepStateKey,
+        );
+
+        if (!this.pendingWorkspaceTransitionMatches(pending)) {
+            return false;
+        }
+
+        /*
+         * Opening or closing a folder restarts the extension host. In VS
+         * Code Web the Explorer becomes active after that reload, even when
+         * the tutorial was visible before. Explicitly reveal the tutorial
+         * again. Keep the pending marker until the webview sends "ready";
+         * that way a failed focus attempt can still be recovered manually.
+         */
+        const delays = [0, 100, 300, 700];
+
+        for (const milliseconds of delays) {
+            if (milliseconds > 0) {
+                await delay(milliseconds);
+            }
+
+            try {
+                await vscode.commands.executeCommand(
+                    "workbench.view.extension.typingTutorSidebar",
+                );
+                await vscode.commands.executeCommand("typingSteps.focus");
+                return true;
+            } catch (error) {
+                // The generated view commands may not be registered during
+                // the first few moments after a browser reload.
+                console.debug(
+                    "Keyboard tutorial view is not ready yet:",
+                    error,
+                );
+            }
+        }
+
+        return false;
+    }
+
     async ensureManagedWorkspace(key) {
         const managedWorkspaceUri =
             vscode.Uri.file(managedWorkspacePath);
@@ -605,6 +679,7 @@ class TutorialViewProvider {
         await this.context.globalState.update(
             pendingWorkspaceStepStateKey,
             {
+                destination: "step",
                 key,
                 workspaceUri: managedWorkspaceUri.toString(),
             },
@@ -1023,6 +1098,51 @@ class TutorialViewProvider {
             return;
         }
 
+        if (action === "closeTutorialWorkspace") {
+            const managedWorkspaceUri = vscode.Uri.file(
+                managedWorkspacePath,
+            );
+
+            if (this.currentWorkspaceUri() !==
+                managedWorkspaceUri.toString()) {
+                throw new Error(
+                    "Der Tutorial-Arbeitsordner ist nicht geöffnet.",
+                );
+            }
+
+            await this.saveDirtyDocumentsInside(managedWorkspaceUri);
+            await this.closeTabs(
+                this.findTabsInsideRoot(managedWorkspaceUri),
+                true,
+            );
+
+            /*
+             * Closing the folder reloads VS Code Web. Resume on the overall
+             * completion page instead of loading this workspace step again;
+             * loading it would immediately reopen the folder we just closed.
+             */
+            await this.context.globalState.update(
+                pendingWorkspaceStepStateKey,
+                {
+                    destination: "completion",
+                    workspaceUri: null,
+                },
+            );
+
+            try {
+                await vscode.commands.executeCommand(
+                    "workbench.action.closeFolder",
+                );
+            } catch (error) {
+                await this.context.globalState.update(
+                    pendingWorkspaceStepStateKey,
+                    undefined,
+                );
+                throw error;
+            }
+            return;
+        }
+
         throw new Error(
             `Unknown tutorial action: ${action}`,
         );
@@ -1166,21 +1286,23 @@ class TutorialViewProvider {
                             pendingWorkspaceStepStateKey,
                         );
 
-                    const currentWorkspaceUri =
-                        vscode.workspace.workspaceFolders?.[0]
-                            ?.uri.toString();
-
                     let requestedStepKey;
 
-                    if (
-                        pending &&
-                        pending.workspaceUri === currentWorkspaceUri
-                    ) {
-                        requestedStepKey = pending.key;
+                    if (this.pendingWorkspaceTransitionMatches(pending)) {
                         await this.context.globalState.update(
                             pendingWorkspaceStepStateKey,
                             undefined,
                         );
+
+                        if (pending.destination === "completion") {
+                            this.currentStepKey = undefined;
+                            this.postMessage({
+                                command: "show_completion",
+                            });
+                            return;
+                        }
+
+                        requestedStepKey = pending.key;
                     } else if (this.currentStepKey) {
                         /*
                          * Moving a view between sidebars can recreate its

@@ -13,11 +13,11 @@ function readSections() {
 }
 
 suite("Hackschule Keyboard Tutorial", () => {
-    test("extension version is the first complete curriculum release", () => {
+    test("extension version matches the current release", () => {
         const manifest = JSON.parse(
             fs.readFileSync(path.join(extensionRoot, "package.json"), "utf8"),
         );
-        assert.strictEqual(manifest.version, "0.1.0");
+        assert.strictEqual(manifest.version, "0.5.1");
     });
 
     vscode.window.showInformationMessage("Testing Hackschule Keyboard Tutorial");

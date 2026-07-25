@@ -113,3 +113,5 @@ sections:
     key: files-delete
   - heading: Tutorial zurück verschieben
     key: files-layout-end
+  - heading: Tutorial-Arbeitsordner schließen
+    key: files-close-workspace

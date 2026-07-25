@@ -111,3 +111,4 @@ Programmiersprachen werden als geeignete Beispiele für Bearbeitungstechniken ve
 - Dateien und Ordner mit Entf löschen
 - Vor dem Löschen den ausgewählten Namen kontrollieren
 - Das Tutorial am Kapitelende in seinen ursprünglichen Bereich zurückverschieben
+- Den isolierten Tutorial-Arbeitsordner schließen und mit einem leeren VS-Code-Fenster enden

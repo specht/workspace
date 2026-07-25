@@ -68,3 +68,5 @@ Der Fortschritt wird in `~/.hs-kbd-tutorial/.state.json` gespeichert.
 ## Datei- und Ordnerübungen
 
 Das Kapitel **Dateien, Ordner und Tabs** verwendet einen einzigen isolierten Arbeitsordner unter `~/.hs-kbd-tutorial/Tastatur-Tutorial`. Seine Struktur bleibt während des gesamten Kapitels sichtbar. Die einzelnen Schritte öffnen oder verändern nur die jeweils benötigten Einträge.
+
+Beim Öffnen und Schließen dieses Ordners lädt VS Code Web das Fenster neu. Die Erweiterung speichert deshalb den Übergang, aktiviert sich nach dem Neustart und öffnet die Tutorial-Ansicht automatisch wieder. Am Ende des Kapitels wird der Tutorial-Arbeitsordner geschlossen, sodass kein Übungsordner geöffnet bleibt.
