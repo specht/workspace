@@ -2,6 +2,7 @@
     "chat.agent.enabled": false,
     "chat.disableAIFeatures": true,
     "editor.minimap.enabled": false,
+    "keyboard.layout": "de",
     "files.exclude": {
         "**/.*": true
     },
