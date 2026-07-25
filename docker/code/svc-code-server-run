@@ -11,7 +11,7 @@ EXT_DIR=/workspace/.extensions
 EXTENSIONS=(
     "/app/extensions/hackschule-sidebar-init-0.1.0.vsix|hackschule.hackschule-sidebar-init"
     "/app/extensions/hackschule-checkpoints-0.6.0.vsix|hackschule.hackschule-checkpoints"
-    "/app/extensions/hackschule-keyboard-tutorial-0.1.0.vsix|gymnasiumsteglitz.hackschule-keyboard-tutorial"
+    "/app/extensions/hackschule-keyboard-tutorial-0.0.1.vsix|gymnasiumsteglitz.hackschule-keyboard-tutorial"
 )
 
 mkdir -p "$EXT_DIR"
