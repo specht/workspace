@@ -22,6 +22,20 @@ Die vollständige inhaltliche Übersicht steht in [`CURRICULUM.md`](CURRICULUM.m
 3. Mit `F5` eine Extension Development Host-Instanz starten.
 4. In der Activity Bar das Hackschule-Tastatursymbol öffnen.
 
+## Tastaturbelegung in der Schulumgebung
+
+Die Anzeigesprache von VS Code und die Tastaturbelegung sind zwei getrennte Einstellungen. Eine deutsche Oberfläche ist für den Unterricht sinnvoll, behebt aber keine vertauschten Tastenkombinationen.
+
+Für Linux-Arbeitsplätze und VS Code Web sollte die deutsche Tastaturbelegung bereits aktiv sein, bevor der Editor geöffnet wird. Falls VS Code bei Tastenkombinationen weiterhin die physische US-Tastenposition verwendet (zum Beispiel `Alt+Y` statt `Alt+Z`), empfiehlt sich in den zentral bereitgestellten Benutzereinstellungen:
+
+```json
+{
+    "keyboard.dispatch": "keyCode"
+}
+```
+
+Anschließend muss das VS-Code-Fenster neu geladen werden. Die Übung zum Zeilenumbruch nennt `Alt+Y` zusätzlich als Ausweichmöglichkeit, damit niemand an einer falsch erkannten Belegung hängen bleibt.
+
 ## Aufbau eines Tutorial-Schritts
 
 Die Reihenfolge der Schritte steht in `tutorial/sections.yaml`. Jeder Schlüssel verweist auf eine gleichnamige HTML-Datei im Verzeichnis `tutorial/`.

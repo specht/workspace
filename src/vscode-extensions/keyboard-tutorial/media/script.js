@@ -199,7 +199,10 @@ function escapeHtml(text) {
 function updateToc() {
     const resetRow = document.querySelector("#reset_tutorial_row");
     if (resetRow) {
-        resetRow.hidden = !Object.values(state).some(Boolean);
+        const tutorialComplete =
+            stepOrder.length > 0 &&
+            stepOrder.every(key => state[key] === true);
+        resetRow.hidden = !tutorialComplete;
     }
 
     for (const element of document.querySelectorAll('tr[data-type="section"], tr[data-type="step"]')) {
@@ -331,12 +334,12 @@ function clickNextStep() {
     resetStepRuntime();
     const completedSteps = stepOrder.filter(key => state[key]).length;
     document.querySelector("#instruction").innerHTML = `
-        <h2>Bis hierhin geschafft!</h2>
-        <p>Du hast ${completedSteps} von ${stepOrder.length} Tutorial-Schritten erledigt.</p>
-        <p>Über das Inhaltsverzeichnis kannst du einzelne Übungen jederzeit wiederholen.</p>
+        <h2>Tutorial abgeschlossen!</h2>
+        <p>Du hast alle ${completedSteps} Tutorial-Schritte erledigt.</p>
+        <p>Über das Inhaltsverzeichnis kannst du einzelne Übungen jederzeit wiederholen. Mit <strong>Gesamtes Tutorial zurücksetzen</strong> kannst du später noch einmal ganz von vorne beginnen.</p>
     `;
     const nextButton = document.querySelector("#bu_next");
-    nextButton.querySelector("span").textContent = "Zwischenstand erreicht";
+    nextButton.querySelector("span").textContent = "Tutorial abgeschlossen";
     nextButton.disabled = true;
 }
 

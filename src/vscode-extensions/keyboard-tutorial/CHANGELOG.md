@@ -1,7 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.1.0 - 2026-07-25
 
+- Die Versionsnummer wurde für die erste vollständige Unterrichtsfassung auf `0.1.0` angehoben.
+- **Gesamtes Tutorial zurücksetzen** erscheint erst, nachdem wirklich alle Schritte abgeschlossen wurden.
+- Die Zeilenumbruch-Übung nennt `Alt+Y` als Ausweichmöglichkeit, wenn VS Code Web eine deutsche Tastatur über physische US-Tastenpositionen auswertet.
 - Add a confirmed full-tutorial reset that clears progress and restores all practice files.
 
 - Das Tutorial ist als achtteiliges Curriculum abgeschlossen; geplante Kapitel zu Ansicht/Fokus, Terminal und Abschlussaufgabe wurden entfernt.
