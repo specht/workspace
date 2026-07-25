@@ -22,7 +22,8 @@ table.insertAdjacentHTML('beforeend', `
     <tr class="task-action">
         <td>${checkBox('s0')}</td>
         <td>
-            <button id="bu_move_tutorial_back" class="button">
+            <button id="bu_move_tutorial_back" class="button"
+                onclick="completeManualTask('s0', 'resetTutorialView')">
                 ← Tutorial zurück verschieben
             </button>
         </td>

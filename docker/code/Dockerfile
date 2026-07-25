@@ -158,7 +158,7 @@ RUN echo "export GEM_HOME=\$HOME/.gem" >> /root/.bashrc
 
 COPY hackschule-sidebar-init-0.1.0.vsix /app/extensions/hackschule-sidebar-init-0.1.0.vsix
 COPY hackschule-checkpoints-0.6.0.vsix /app/extensions/hackschule-checkpoints-0.6.0.vsix
-COPY hackschule-keyboard-tutorial-0.2.0.vsix /app/extensions/hackschule-keyboard-tutorial-0.2.0.vsix
+COPY hackschule-keyboard-tutorial-0.3.0.vsix /app/extensions/hackschule-keyboard-tutorial-0.3.0.vsix
 
 # Copy your custom init scripts (should be last, change this less frequently)
 COPY init-code-server-run /etc/s6-overlay/s6-rc.d/init-code-server/run
