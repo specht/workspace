@@ -6,4 +6,5 @@ wget -N -O docker/code/dart.deb https://storage.googleapis.com/dart-archive/chan
 cp src/vscode-extensions/sidebar-init/hackschule-sidebar-init-0.0.1.vsix docker/code/hackschule-sidebar-init-0.1.0.vsix
 cp src/vscode-extensions/checkpoints/hackschule-checkpoints-0.6.0.vsix docker/code/hackschule-checkpoints-0.6.0.vsix
 cp src/vscode-extensions/keyboard-tutorial/hackschule-keyboard-tutorial-0.5.1.vsix docker/code/hackschule-keyboard-tutorial-0.5.1.vsix
+cp src/vscode-extensions/bif-watcher/bif-authoring-tools-0.2.0.vsix docker/code/bif-authoring-tools-0.2.0.vsix
 docker build -t hs_code_server docker/code
