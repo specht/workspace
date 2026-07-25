@@ -7,14 +7,18 @@ image: workspace.webp
 <img class='r' style='width: 8em;' src='vscode.png'>
 
 <p class='abstract'>
-Der Workspace der Hackschule ist eine Online-Entwicklungsumgebung, die speziell für den Einsatz in der Schule entwickelt wurde.
-Es handelt sich dabei um eine Web-Version von Visual Studio Code, einem beliebten Code-Editor, der von vielen Entwicklerinnen und Entwicklern weltweit verwendet wird.
+Der Hackschule Workspace ist eine Entwicklungsumgebung im Browser. Du kannst Programme schreiben, Webseiten erstellen und Projekte bearbeiten, ohne vorher Software installieren zu müssen.
+Der Workspace basiert auf Visual Studio Code, einem Code-Editor, der von vielen Entwicklerinnen und Entwicklern verwendet wird. Er wurde für den Einsatz in der Schule vorbereitet und enthält bereits nützliche Werkzeuge, Programmiersprachen und Erweiterungen.
 </p>
 
-Du kannst eigene Programme schreiben, sie ausführen und testen, ohne dass du etwas installieren musst. Der Workspace ist bereits mit vielen nützlichen Werkzeugen und Bibliotheken ausgestattet, die dir den Einstieg in die Programmierung erleichtern.
+Du kannst eigene Programme schreiben, sie ausführen und testen. Deine Dateien werden automatisch gespeichert und stehen dir auch später wieder zur Verfügung – in der Schule genauso wie zu Hause.
 
-## Programmieren lernen kostet Zeit und Geduld
+### Lernen durch Ausprobieren
 
-Programmieren lernen ist ein Prozess, der viel Zeit und Geduld erfordert. Jeder, der programmieren lernt, hat diese Erfahrung gemacht. Es ist normal, dass du nicht alles auf Anhieb verstehst. Da die einzelnen Technologien oft sehr umfangreich sind, findest du im Workspace keine vollständige Dokumentation zu allen Funktionen. Stattdessen findest du  kleine Tutorials, die dir einen konkreten Einstieg in eine Technologie bieten. Danach kannst du durch Ausprobieren und Recherchieren lernen, wie du sie in deinen Projekten einsetzen kannst.
+Programmieren zu lernen braucht Zeit und Geduld. Es ist völlig normal, dass nicht alles sofort funktioniert oder verständlich ist. Fehler gehören dazu: Sie zeigen dir, an welcher Stelle du genauer hinschauen und etwas Neues herausfinden kannst.
 
-Wenn du nach dem Unterricht weiter an deinem Projekt arbeiten möchtest, kannst du den Workspace genauso von zu Hause oder unterwegs aus verwenden. Deine Dateien sind sicher gespeichert und du kannst sie jederzeit wieder öffnen.
+Im Workspace findest du deshalb keine vollständige Dokumentation zu jeder Technologie. Stattdessen gibt es kleine Tutorials, Beispiele und Aufgaben, die dir einen konkreten Einstieg geben. Danach kannst du durch Ausprobieren, Recherchieren und eigenes Weiterbauen lernen.
+
+### So geht es weiter
+
+Öffne deinen Workspace und sieh dir zunächst den Artikel **Dein erster Start im Workspace** an. Wenn du zum ersten Mal mit Visual Studio Code arbeitest, beginne anschließend im Bereich **Hackschule** mit dem **Keyboard Tutorial**.

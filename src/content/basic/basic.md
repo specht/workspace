@@ -92,7 +92,7 @@ Um BASIC zu beenden, gib `SYSTEM` ein und drücke <span class='key'>Enter</span>
 
 ### Fehler finden und beheben
 
-Wenn du einen Fehler im Code machst, wird Python eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `PRINT` das Wort `PRIN` zu schreiben:
+Wenn du einen Fehler im Code machst, wird BASIC eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `PRINT` das Wort `PRIN` zu schreiben:
 
 ```basic
 PRIN "Hello, World!"

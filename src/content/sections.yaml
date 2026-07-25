@@ -1,9 +1,97 @@
 - key: introduction
   label: Einführung
   icon: /images/rocket.png
+  description: |
+    Lerne den Hackschule Workspace kennen und finde dich in der
+    Entwicklungsumgebung zurecht. Hier erfährst du, wie du Projekte und Dateien
+    organisierst, deine Arbeit speicherst und mit Tutorials und Checkpoints
+    sicher experimentieren kannst.
   entries:
     - about
     - basics
+
+- key: graphics
+  compact: true
+  label: Grafik und Medien
+  icon: /images/palette.png
+  description: |
+    Erzeuge Bilder, Animationen und räumliche Szenen mit selbst geschriebenem
+    Code. Dabei beschäftigst du dich mit Pixeln, Farben, Formen, Koordinaten und
+    3D-Geometrie – und kannst sogar einen Blick in das Innere einer Bilddatei
+    werfen.
+  entries:
+    - drawing
+    # - .turtle (got test)
+    # - .drawing (koch curve)
+    - fire
+    - anaglyph
+  # - .sirds
+  # - .raytracing
+  # - .p5js
+  # - .glsl
+  # - .gif
+
+- key: writing
+  compact: true
+  label: Texte, Geschichten und Präsentationen
+  icon: /images/book.png
+  description: |
+    Computer können Texte nicht nur anzeigen, sondern auch strukturieren,
+    gestalten und in interaktive Erlebnisse verwandeln. Erstelle Dokumente,
+    Präsentationen und verzweigte Geschichten, in denen Leserinnen und Leser
+    eigene Entscheidungen treffen können.
+  entries:
+    - latex
+    - showerjs
+
+- key: networks
+  compact: true
+  label: Webseiten, Apps und Schnittstellen
+  icon: /images/telephone.png
+  description: |
+    Entwickle Webseiten und interaktive Anwendungen, die direkt im Browser
+    ausgeführt werden. Lerne außerdem, wie Programme über Schnittstellen mit
+    bestehenden Webdiensten kommunizieren und dort Aktionen auslösen können.
+  entries:
+    - static-website
+    - svelte
+    - hades
+
+- key: databases
+  compact: true
+  label: Daten, KI und Sicherheit
+  icon: /images/card-file-box.png
+  description: |
+    Speichere und durchsuche größere Datenmengen, entwickle eigene Datenbanken
+    und untersuche typische Sicherheitsprobleme. In weiteren Experimenten
+    erfährst du, wie Computer aus Beispieldaten Muster erkennen können.
+  entries:
+    - mysql
+    - videothek
+    - bobby_tables
+
+- key: advanced
+  compact: true
+  label: Fortgeschrittene Experimente
+  icon: /images/mirror-ball.png
+  entries:
+    - digits-experiment
+    - jpeg
+
+- key: linux
+  label: Computer, Terminal und Zusammenarbeit
+  icon: /images/penguin.png
+  description: |
+    Arbeite mit Dateien und Programmen über das Terminal und entdecke, wie
+    Computer über Netzwerke miteinander kommunizieren. Mit Git kannst du
+    Änderungen an deinen Projekten nachvollziehen, frühere Stände wiederherstellen
+    und gemeinsam mit anderen daran arbeiten.
+  entries:
+    - working-with-files
+    - tcpip
+    - git
+  # - .working-with-processes
+
 - key: programming_languages
   compact: true
   description: |
@@ -37,52 +125,3 @@
     - go
     - dart
     - rust
-- key: graphics
-  compact: true
-  label: Computergrafik
-  icon: /images/palette.png
-  entries:
-    - drawing
-    # - .turtle (got test)
-    # - .drawing (koch curve)
-    - fire
-    - anaglyph
-    - jpeg
-  # - .sirds
-  # - .raytracing
-  # - .p5js
-  # - .glsl
-  # - .gif
-- key: networks
-  compact: true
-  label: Netzwerke
-  icon: /images/telephone.png
-  entries:
-    - showerjs
-    - static-website
-    - svelte
-- key: databases
-  compact: true
-  label: Datenbanken
-  icon: /images/card-file-box.png
-  entries:
-    - mysql
-    - videothek
-    - bobby_tables
-- key: misc
-  compact: false
-  label: Verschiedenes
-  icon: /images/parrot.png
-  entries:
-    - digits-experiment
-    - latex
-    - hades
-  # - .flutter
-- key: linux
-  label: Linux und das Terminal
-  icon: /images/penguin.png
-  entries:
-    - working-with-files
-    - tcpip
-    - git
-  # - .working-with-processes

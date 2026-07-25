@@ -5,7 +5,7 @@ image: vs-code-welcome.webp:0:50
 # Die Basics
 
 <p class='abstract'>
-Eine kleine Tour durch die Benutzeroberfläche von Visual Studio Code, gefolgt von ein paar grundlegenden Hinweisen zur Arbeit mit Dateien und Verzeichnissen. Lerne die wichtigsten Shortcuts und Funktionen zum Bearbeiten von und Navigieren innerhalb von Textdateien kennen.
+Eine kleine Tour durch die Benutzeroberfläche von Visual Studio Code, gefolgt von grundlegenden Hinweisen zur Arbeit mit Dateien, Ordnern und Projekten. Lerne wichtige Shortcuts und Funktionen zum Bearbeiten von Text kennen und erfahre, wie du mit Checkpoints sichere Zwischenstände deiner Arbeit anlegst.
 </p>
 
 Wenn du den Workspace öffnest, siehst du die Entwicklungsumgebung Visual Studio Code:
@@ -14,9 +14,10 @@ Wenn du den Workspace öffnest, siehst du die Entwicklungsumgebung Visual Studio
 
 ## Die Benutzeroberfläche
 
-Am linken Rand sieht du einige Icons, die wichtig sind:
+Am linken Rand siehst du einige Icons, die wichtig sind:
 
 <table class='table'>
+<tr>
 <td><img class='sq-icon' src='explorer.webp'></td>
 <td>Explorer (<span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>E</span>) &ndash; hier siehst du alle Dateien und Unterordner des aktuell geöffneten Projekts</td>
 </tr>
@@ -35,6 +36,10 @@ Am linken Rand sieht du einige Icons, die wichtig sind:
 <tr>
 <td><img class='sq-icon' src='extensions.webp'></td>
 <td>Extensions (<span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>X</span>) &ndash; hier findest du viele nützliche Erweiterungen</td>
+</tr>
+<tr>
+<td><img class='sq-icon' src='keyboard-tutorial.webp'></td>
+<td>Hackschule Keyboard-Tutorial &ndash; hier lernst du die wichtigsten Funktionen der Tastatur kennen</td>
 </tr>
 </table>
 
@@ -59,106 +64,91 @@ Rechts oben siehst du mehrere Buttons, mit denen du das Layout anpassen oder ver
 </tr>
 </table>
 
-## Dateien, Verzeichnisse, Pfade
+## Dateien, Projekte, Verzeichnisse und Pfade
 
 <img src='directory-tree.webp' class='r' style='width: 15em;'>
 
-Wenn du am Computer arbeitest, speicherst du deine Arbeit in Dateien. Jede Datei hat einen Dateinamen (der normalerweise auch eine Erweiterung wie z. B. `.jpg` oder `.html` enthält) und befindet sich in einem Verzeichnis, das sich wiederum in einem anderen Verzeichnis befinden kann. So entsteht ein Verzeichnisbaum.
+Wenn du am Computer arbeitest, speicherst du deine Arbeit in Dateien. Jede Datei hat einen Dateinamen, der normalerweise auch eine Erweiterung wie `.jpg`, `.html`, `.py` oder `.rb` enthält. Die Dateiendung ist ein Teil des Namens und zeigt oft, um welche Art von Datei es sich handelt.
 
-Der vollständige Pfad zu einer Datei setzt sich dann aus allen Verzeichnissen und dem Dateinamen zusammen, z. B:
+Ein Projekt besteht normalerweise aus einem Ordner und den darin enthaltenen Dateien und Unterordnern. Im Explorer wird diese Struktur als Verzeichnisbaum dargestellt. Die Abbildung rechts zeigt ein Beispiel mit mehreren Dateien und Unterordnern.
 
-`/workspace/pictures/monkey.jpg`
+Der Pfad `pictures/monkey.jpg` beschreibt, wo sich die Datei `monkey.jpg` innerhalb eines Projektordners befindet. Der vollständige Pfad zu einer Datei setzt sich aus allen übergeordneten Verzeichnissen und dem Dateinamen zusammen, zum Beispiel:
 
-Unter Linux ist das oberste Verzeichnis immer `/`, unter Windows beginnt es immer mit einem Laufwerksbuchstaben wie z. B. `C:\`. Ein weiterer Unterschied zu Linux ist, dass unter Windows `\` statt `/` verwendet wird, um Verzeichnisse im Pfad voneinander abzutrennen.
+`/workspace/shower.js/pictures/monkey.jpg`
 
-Im Hackschule Workspace ist es so, dass du deine Projekte und Dateien im Verzeichnis `/workspace` ablegen kannst – es ist dein Home-Verzeichnisd. Du kannst dir in diesem Verzeichnis eine beliebige Verzeichnisstruktur anlegen.
+Unter Linux ist das oberste Verzeichnis immer `/`, unter Windows beginnt ein Pfad meistens mit einem Laufwerksbuchstaben wie `C:\`. Außerdem verwendet Windows normalerweise `\` statt `/`, um Verzeichnisse voneinander zu trennen.
 
-## Shortcuts
+Im Hackschule Workspace legst du deine Projekte und Dateien im Verzeichnis `/workspace` ab. Dort kannst du dir eine beliebige Ordnerstruktur anlegen. Deine Dateien bleiben gespeichert, wenn du den Browser schließt, und du kannst später von zu Hause oder von einem anderen Gerät aus weiterarbeiten.
 
-Zum Schluss noch ein paar Tipps zur Tastatur: es gibt einige praktische Funktionen, die es quasi überall gibt:
+## Checkpoints: Zwischenstände sichern
 
-<table class='table'>
-<tr>
-<td style='width: 1em;'><span class='key'>Strg</span><span class='key'>C</span></td>
-<td>Kopieren (copy)</td>
-</tr>
-<tr>
-<td><span class='key'>Strg</span><span class='key'>V</span></td>
-<td>Einfügen (paste)</td>
-</tr>
-<tr>
-<td><span class='key'>Strg</span><span class='key'>X</span></td>
-<td>Ausschneiden (cut)</td>
-</tr>
-<tr>
-<td><span class='key'>Strg</span><span class='key'>Z</span></td>
-<td>Rückgängig (undo)</td>
-</tr>
-</table>
+Mit der vorinstallierten Erweiterung **Checkpoints** kannst du einen Zwischenstand deines Projekts festhalten. Das ist besonders nützlich, bevor du eine größere Änderung ausprobierst.
+
+Ein guter Zeitpunkt für einen Checkpoint ist zum Beispiel:
+
+- bevor du funktionierenden Code grundlegend umbaust,
+- bevor du mehrere Dateien gleichzeitig änderst,
+- nachdem du eine wichtige Teilaufgabe abgeschlossen hast,
+- oder bevor du eine neue Idee ausprobierst, bei der du noch nicht weißt, ob sie funktioniert.
+
+Gib einem Checkpoint einen kurzen, verständlichen Namen, zum Beispiel:
+
+```text
+Navigation funktioniert
+```
+
+oder:
+
+```text
+Vor dem Umbau des Menüs
+```
+
+Wenn später etwas schiefgeht, kannst du zu einem früheren Zwischenstand zurückkehren.
+
+Um einen Checkpoint zu erstellen, wechsle links in den Explorer und klappe den Bereich **Checkpoints** auf. Klicke auf das Plus-Symbol, um einen neuen Checkpoint zu erstellen.
+
+<img src='create-checkpoint.webp' class='full'>
+
+Du kannst einen Namen für den Checkpoint eingeben und mit <span class='key'>Enter</span> bestätigen. 
+
+<img src='enter-checkpoint-name.webp' class='full'>
+
+Der Checkpoint wird dann gespeichert:
+
+<img src='checkpoint-created.webp' class='full'>
+
+Falls du später zu einem Checkpoint zurückkehren möchtest, klicke auf den entsprechenden Eintrag in der Liste:
+
+<img src='restore-checkpoint.webp' class='full'>
+
 
 <div class='hint'>
 <p>
-Dazu noch ein wichtiger Hinweis: In den unteren Ecken deiner Tastatur findest du ein paar sogenannte <em>Modifikatortasten</em>, z. B.
-<span class='key'>Strg</span>,
-<span class='key'>Shift</span>,
-<span class='key'>Alt</span>,
-<span class='key'>Win</span> und
-<span class='key'>AltGr</span>. Diese Tasten haben meistens keinen Effekt, wenn man sie alleine drückt, sondern sie werden für Tastenkombinationen verwendet, die meistens aus einer oder mehreren Hilfstasten und einer »richtigen« Taste bestehen. Um einen ausgewählten Text mit <span class='key'>Strg</span><span class='key'>C</span> zu kopieren, musst du also erst <span class='key'>Strg</span> gedrückt halten und dann einmal <span class='key'>C</span> tippen.
-</p>
-<p>
-Du kannst Modifikatortasten auch verwenden, um Sonderzeichen einzugeben, genauso wie du Großbuchstaben mit <span class='key'>Shift</span> (auch: Umschalttaste) eingeben kannst.
+Intern verwendet die Checkpoints-Erweiterung Git, um die Zwischenstände zu speichern, ohne dass du dich um die Details kümmern musst. Du kannst Checkpoints jederzeit wieder löschen, wenn du sie nicht mehr brauchst. Die gespeicherten Checkpoints werden separat von eventuell vorhandenen Commits in einem Git-Repository verwaltet.
 </p>
 </div>
 
+Wenn du sicher im Umgang mit Git bist, kannst du auch direkt Git verwenden, um deine Arbeit zu sichern.
 
-## Bearbeiten von Text
+## Tastatur und Textbearbeitung
 
-Gerade am Anfang kann es sein, dass du beim Tippen und Navigieren in einer Datei relativ langsam bist. Es ist aber wie mit so vielen Dingen: mit der Zeit kommt die Übung. 🤠 Wenn du eine gewissen Übung hast, bist du mit der Tastatur oft schneller, als wenn du erst zur Maus greifen musst, um an eine bestimmte Stelle zu klicken.
+Gerade am Anfang kann es sein, dass du beim Tippen, Markieren und Navigieren in einer Datei noch relativ langsam bist. Das ist völlig normal: Mit der Zeit kommt die Übung. 🤠 Wenn du etwas Erfahrung gesammelt hast, bist du mit der Tastatur oft schneller, als wenn du für jeden Arbeitsschritt erst zur Maus greifen musst.
 
-Du kannst Webseiten wie [keybr.com](https://www.keybr.com/) nutzen, um deine Tippgeschwindigkeit zu trainieren. Darüberhinaus wirst du schneller, wenn du ein paar wesentliche Tasten deiner Tastatur kennenlernst:
+### Das Keyboard-Tutorial starten
 
-### Navigation
+Im Hackschule Workspace ist das **Hackschule Keyboard-Tutorial** bereits installiert. Dort kannst du die wichtigsten Funktionen der Tastatur direkt in Visual Studio Code ausprobieren. Das Tutorial führt dich Schritt für Schritt durch Themen wie:
 
-Die folgenden Shortcuts funktionieren nicht nur in Visual Studio Code, sondern in fast allen anderen Programmen:
+- Navigation in einem Dokument,
+- Markieren und Bearbeiten von Text,
+- Suchen und Ersetzen,
+- Arbeiten mit mehreren Cursorpositionen,
+- Bearbeiten von Code,
+- sowie den Umgang mit Dateien, Ordnern und Tabs.
 
-<table class='table'>
-<tr>
-<td style='width: 14em;'><span class='key'>←</span> / <span class='key'>↑</span> / <span class='key'>→</span> / <span class='key'>↓</span></td>
-<td>bewegt den Cursor</td>
-</tr>
-<tr>
-<td><span class='key'>Pos1</span> / <span class='key'>Ende</span></td>
-<td>springt an den Anfang / das Ende einer Zeile</td>
-</tr>
-<tr>
-<td><span class='key'>Bild↑</span> / <span class='key'>Bild↓</span></td>
-<td>springt eine Seite hoch / runter</td>
-</tr>
-<tr>
-<td><span class='key'>Strg</span><span class='key'>←</span> / <span class='key'>Strg</span><span class='key'>→</span></td>
-<td>springt zum vorherigen / nächsten Wort</td>
-</tr>
-<tr>
-<td><span class='key'>Strg</span><span class='key'>Pos1</span> / <span class='key'>Strg</span><span class='key'>Ende</span></td>
-<td>springt an den Anfang / das Ende des Dokuments</td>
-</tr>
-<tr>
-</table>
+Klicke dazu links in der Aktivitätsleiste auf das Tastatur-Symbol. Anschließend öffnet sich der Bereich mit dem Keyboard-Tutorial:
 
-### Text auswählen und löschen
+<img class='full' src='keyboard-tutorial-pane.webp'>
 
-Halte <span class='key'>Shift</span> gedrückt, während du durch einen Text navigierst, um Text zu markieren.
+Beginne mit dem ersten Kapitel und arbeite die Übungen der Reihe nach durch. Das Tutorial erkennt viele deiner Arbeitsschritte automatisch und markiert erledigte Aufgaben mit einem grünen Haken. Deinen Fortschritt speichert es, sodass du später an derselben Stelle weitermachen kannst.
 
-Zum Löschen von einzelnen Zeichen gibt es zwei verschiedene Tasten, deren Unterschied man kennen sollte: <span style='width: 3em; display: inline-block;' class='key'>⟵</span> (Backspace) löscht das Zeichen links vom Cursor, während <span class='key'>Entf</span> das Zeichen rechts neben dem Cursor löscht. Oft gibt es Shortcuts, um ganze Zeilen zu löschen – in Visual Studio Code mit <span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>K</span>.
-
-
-### Tastaturlayouts
-
-Vielleicht fragst du dich irgendwann, wieso beim Programmieren oft so viele merkwürdige und kompliziert zu tippende Zeichen einzugeben sind. Denke bitte daran, dass die Welt der Computer und Programmiersprachen vor allem eine US-amerikanisch geprägte Welt ist. 
-Die fehlenden Umlaute in der englischen Sprache bieten die Möglichkeit, die Tastatur anders zu belegen und Zeichen wie `[`, `]`, `{`, `}`, `@`, `\`, `~` und `|` direkt zu erreichen, ohne dass man sich dabei die Finger verrenken muss. Das bedeutet, dass die deutsche Tastaturbelegung nicht unbedingt die beste Tastaturbelegung für das Programmieren ist.
-
-Hier siehst du eine Tastatur mit US-Layout:
-
-<img class='full' src='us-layout.webp'>
-
- Es gibt spezielle Tastaturlayouts, die extra für Programmiererinnen und Programmierer entwickelt wurden, z. B. das [Neo-Tastaturlayout](https://neo-layout.org/), das [Colemak-Layout](https://colemak.com/) oder das [Dvorak-Layout](https://dvorak-keyboard.com/). Wenn du dich für das Thema interessierst, kannst du dich gerne mal damit beschäftigen. Es ist aber kein Muss, um programmieren zu lernen. Viel wichtiger ist es, dass du programmieren übst, egal mit welcher Tastatur. 🤓
+Wenn du die Übungen im Keyboard-Tutorial abgeschlossen hast, kannst du außerdem Webseiten wie [keybr.com](https://www.keybr.com/) nutzen, um deine Tippgeschwindigkeit zu trainieren.
