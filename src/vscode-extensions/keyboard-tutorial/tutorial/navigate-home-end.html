@@ -51,11 +51,11 @@ handleOnDidChangeTextEditorSelection = function(e) {
         s.end.line === s.start.line && s.end.character === s.start.character) {
         document.querySelector('#s0 .check').classList.add('checked');
     }
-    if (s.start.line === 11 && s.start.character === 0 &&
+    if (s.start.line === 11 && s.start.character === 22 &&
         s.end.line === s.start.line && s.end.character === s.start.character) {
         document.querySelector('#s1 .check').classList.add('checked');
     }
-    if (s.start.line === 11 && s.start.character === 22 &&
+    if (s.start.line === 11 && s.start.character === 0 &&
         s.end.line === s.start.line && s.end.character === s.start.character) {
         document.querySelector('#s2 .check').classList.add('checked');
     }
@@ -74,11 +74,11 @@ table = document.querySelector('#table1');
 table.insertAdjacentHTML('beforeend',
     `<td style='width: 1.2em;' id="s1">
     ${checkBox()}
-    </td><td>Springe zum Anfang der Zeile (ganz zum Anfang)</td></tr>`);
+    </td><td>Springe zum Anfang der Zeile (hinter den Whitespace)</td></tr>`);
 table.insertAdjacentHTML('beforeend',
     `<td style='width: 1.2em;' id="s2">
     ${checkBox()}
-    </td><td>Springe zum Anfang der Zeile (hinter den Whitespace)</td></tr>`);
+    </td><td>Springe zum Anfang der Zeile (ganz zum Anfang)</td></tr>`);
 
 
 </script>
