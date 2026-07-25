@@ -2,7 +2,7 @@
     "name": "hackschule-keyboard-tutorial",
     "displayName": "Hackschule Keyboard Tutorial",
     "description": "Lerne die wichtigsten Grundlagen der Tastatur kennen",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "engines": {
         "vscode": "^1.91.0"
     },
