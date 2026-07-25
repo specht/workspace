@@ -1,0 +1,39 @@
+<yaml>
+workspace: tutorial/workspace/files-chapter
+sharedWorkspace: files
+sharedWorkspaceVersion: 2
+</yaml>
+
+<h2>Tutorial-Arbeitsordner schließen</h2>
+
+<p>
+    Für dieses Kapitel hat das Tutorial den eigenen Arbeitsordner
+    <code>Tastatur-Tutorial</code> geöffnet. Wenn du mit einem Projekt
+    fertig bist, kannst du den geöffneten Ordner über
+    <strong>Datei&nbsp;→ Ordner schließen</strong> wieder verlassen.
+</p>
+
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    In VS Code Web wird die Seite dabei neu geladen. Der folgende Button
+    schließt den Ordner und öffnet das Tutorial danach automatisch wieder,
+    damit du direkt auf der Abschlussseite landest.
+</div>
+
+<table id="table"></table>
+
+<script>
+const table = document.querySelector('#table');
+
+table.insertAdjacentHTML('beforeend', `
+    <tr class="task-action">
+        <td>${checkBox('s0')}</td>
+        <td>
+            <button class="button"
+                onclick="completeManualTask('s0', 'closeTutorialWorkspace')">
+                Tutorial-Arbeitsordner schließen
+            </button>
+        </td>
+    </tr>
+`);
+</script>
