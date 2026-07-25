@@ -99,8 +99,8 @@ sections:
     key: files-explorer-open
   - heading: Eine Datei schnell öffnen
     key: files-quick-open
-  - heading: Zwischen Tabs wechseln
-    key: files-switch-tabs
+  #- heading: Zwischen Tabs wechseln
+  #  key: files-switch-tabs
   - heading: Einen Tab schließen und wieder öffnen
     key: files-close-reopen-tab
   - heading: Eine neue Datei anlegen

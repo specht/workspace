@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+int bereit = 1;
+
 int main(void) {
     printf("Start\n");
     printf("Ende\n");

@@ -17,6 +17,11 @@ cursor: [1, 11]
 
 <table id="table"></table>
 
+<div class="hint">
+    <svg class="icon"><use href="#bulb"></use></svg>
+    Du musst den markierten Text nicht erst löschen, bevor du etwas Neues einfügst. Der eingefügte Text ersetzt den markierten Text automatisch.
+</div>
+
 <script>
 handleOnDidChangeTextDocument = function(e, contents) {
     const lines = contents.split('\n');
