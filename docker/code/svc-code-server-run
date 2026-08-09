@@ -138,6 +138,6 @@ HOME=/workspace exec \
             --extensions-dir "$EXT_DIR" \
             --disable-workspace-trust \
             --disable-update-check \
-            --app-name "Hackschule VS Code" \
+            --app-name "Hackschule Workspace" \
             --welcome-text "Herzlich Willkommen in der Hackschule" \
             $PROXY_DOMAIN_ARG

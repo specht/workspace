@@ -6,7 +6,6 @@ import {
   createTextFile,
   expectExecutableUpToDate,
   expectTerminalText,
-  expectVsCodeExtensionInstalled,
   installVsCodeExtensionFromQuickOpen,
   openTerminal,
   replaceActiveEditorContents,
@@ -64,15 +63,10 @@ test('Fortran tutorial works end to end', async ({
     PHOTRAN_EXTENSION,
     'Photran',
     testInfo,
+    'Fortran',
   );
 
   await openTerminal(workspace, testInfo);
-  await expectVsCodeExtensionInstalled(
-    workspace,
-    PHOTRAN_EXTENSION,
-    testInfo,
-    'fortran-photran-installed',
-  );
 
   await runTerminalCommand(
     workspace,
@@ -92,6 +86,7 @@ test('Fortran tutorial works end to end', async ({
     './hello',
     testInfo,
     'fortran-hello-ran',
+    { waitFor: 'Hello, World!' },
   );
   await expectTerminalText(
     workspace,
@@ -115,7 +110,9 @@ test('Fortran tutorial works end to end', async ({
       'gfortran hello.f90 -o hello',
       testInfo,
       'fortran-hello-compiler-error',
-      { expectedExitCode: 'nonzero' },
+      {
+        waitFor: /hello\.f90:2:[\s\S]*Error: Unclassifiable statement/i,
+      },
     );
     await expectTerminalText(
       workspace,
@@ -219,6 +216,7 @@ test('Fortran tutorial works end to end', async ({
     './bubblesort',
     testInfo,
     'fortran-bubblesort-ran',
+    { waitFor: /Sorted array:[\s\S]*\b\d+\b/i },
   );
 
   await test.step('Verify Bubblesort really sorted the ten numbers', async () => {

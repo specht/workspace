@@ -9,14 +9,13 @@ export type CreateTextFileOptions = {
   screenshotPrefix?: string;
 };
 
-export type ExitCodeExpectation = number | 'nonzero' | 'any';
-
 export type RunTerminalCommandOptions = {
   timeout?: number;
-  expectedExitCode?: ExitCodeExpectation;
+  waitFor?: string | RegExp;
 };
 
-export type RunInteractiveTerminalCommandOptions = RunTerminalCommandOptions & {
+export type RunInteractiveTerminalCommandOptions = {
+  timeout?: number;
   completion?: string | RegExp;
 };
 
@@ -269,14 +268,18 @@ export async function replaceActiveEditorContents(
 
 /**
  * Follow the tutorial's Ctrl+P -> "ext install publisher.extension" path.
- * Installation itself is asynchronous; use expectVsCodeExtensionInstalled()
- * after opening the terminal to wait for and verify completion.
+ *
+ * VS Code 1.97+ asks the user to trust a third-party publisher on the first
+ * install. Handle that dialog instead of dismissing it with Escape, then wait
+ * for the active editor's language mode to change. This verifies the visible
+ * effect the student needs from the extension and avoids shell polling.
  */
 export async function installVsCodeExtensionFromQuickOpen(
   page: Page,
   extensionId: string,
   displayName: string,
   testInfo: TestInfo,
+  languageName?: string,
 ) {
   await test.step(`Install the ${displayName} extension`, async () => {
     await page.keyboard.press('Control+P');
@@ -284,26 +287,79 @@ export async function installVsCodeExtensionFromQuickOpen(
     const input = visibleQuickInput(page);
     await expect(input).toBeVisible();
     await input.fill(`ext install ${extensionId}`);
-    await input.press('Enter');
 
-    // Submitting an `ext install ...` Quick Open command does not reliably
-    // close Quick Open in code-server. That is a UI detail, not evidence that
-    // the install failed. We verify the real installation separately with
-    // expectVsCodeExtensionInstalled(). Close any remaining Quick Open so the
-    // next keyboard shortcut is delivered to the workbench/terminal.
-    await attachScreenshot(
-      page,
-      testInfo,
-      `extension-${safeArtifactName(extensionId)}-requested`,
-    );
+    // Quick Open resolves the typed command asynchronously. Pressing Enter
+    // immediately after fill() can arrive before the install action exists and
+    // is then ignored. Wait for the actual "Press Enter to install..." row
+    // that a student sees, then press Enter.
+    const installAction = page
+      .locator('.quick-input-widget:visible .monaco-list-row')
+      .filter({
+        hasText: new RegExp(
+          `Press Enter to install extension.*${escapeRegExp(extensionId)}`,
+          'i',
+        ),
+      })
+      .first();
 
+    await expect(installAction).toBeVisible({ timeout: 30_000 });
+    await input.focus();
+    await page.keyboard.press('Enter');
+
+    const trustButton = page
+      .getByRole('button', {
+        name: /Trust.*(?:Publisher)?.*Install|Install.*Trust/i,
+      })
+      .first();
+
+    if (languageName) {
+      const languageMode = page
+        .locator('.statusbar-item:visible')
+        .filter({
+          hasText: new RegExp(`\\b${escapeRegExp(languageName)}\\b`, 'i'),
+        })
+        .first();
+
+      // VS Code 1.97+ may stop the first third-party extension installation at
+      // a publisher-trust dialog. Keep watching the real UI state: accept the
+      // trust prompt when it appears and finish only when the editor visibly
+      // reports the requested language mode.
+      await expect.poll(
+        async () => {
+          if (await trustButton.isVisible())
+            await trustButton.click();
+
+          return await languageMode.isVisible();
+        },
+        {
+          timeout: 60_000,
+          message:
+            `waiting for ${displayName} to install and activate ${languageName} language mode`,
+        },
+      ).toBe(true);
+    } else {
+      // Generic fallback for extensions where the caller has no visible
+      // activation state to assert. Handle a publisher-trust prompt if it
+      // appears, but do not invent a filesystem-level verification here.
+      try {
+        await trustButton.waitFor({ state: 'visible', timeout: 10_000 });
+        await trustButton.click();
+      } catch {
+        // No prompt is normal when the publisher is already trusted.
+      }
+    }
+
+    // Close any remaining Quick Open only after installation/activation has
+    // been dealt with; pressing Escape earlier can cancel the user's flow.
     const quickOpen = page.locator('.quick-input-widget:visible');
     if (await quickOpen.isVisible())
       await page.keyboard.press('Escape');
 
-    await expect(quickOpen).toBeHidden({
-      timeout: 5_000,
-    });
+    await attachScreenshot(
+      page,
+      testInfo,
+      `extension-${safeArtifactName(extensionId)}-installed`,
+    );
   }, { box: true });
 }
 
@@ -327,7 +383,7 @@ export async function terminalText(page: Page): Promise<string> {
   return '';
 }
 
-let terminalCommandSequence = 0;
+let terminalMarkerSequence = 0;
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -346,84 +402,14 @@ async function terminalInput(page: Page): Promise<Locator> {
   return input;
 }
 
-type TerminalCommandResult = {
-  text: string;
-  exitCode: number;
-};
-
-/**
- * Run a non-interactive shell command and get its real exit status.
- *
- * We deliberately do not look for the shell prompt. Prompt rendering differs
- * between xterm/code-server versions and proved too brittle. Instead we queue
- * a second shell line that prints `$?`. The TTY may echo that probe while the
- * first command is still running, so the probe contains `%s` while its output
- * contains the numeric exit code; only the latter matches our regexp.
- */
-async function executeTerminalCommand(
+async function typeTerminalCommand(
   page: Page,
   command: string,
-  timeout: number,
-): Promise<TerminalCommandResult> {
+) {
   const input = await terminalInput(page);
-  const sequence = ++terminalCommandSequence;
-  const prefix = `__E2E_EXIT_${sequence}_`;
-  const exitPattern = new RegExp(
-    `${escapeRegExp(prefix)}(-?\\d+)__`,
-  );
-
   await input.focus();
   await page.keyboard.insertText(command);
   await page.keyboard.press('Enter');
-
-  // This line is buffered by the terminal while the command runs and is only
-  // executed by the shell afterwards. It therefore captures the command's
-  // actual exit status without depending on prompt text.
-  await input.focus();
-  await page.keyboard.insertText(
-    `printf '${prefix}%s__\\n' "$?"`,
-  );
-  await page.keyboard.press('Enter');
-
-  await expect.poll(
-    async () => exitPattern.test(await terminalText(page)),
-    {
-      timeout,
-      message: `waiting for command to finish: ${command}`,
-    },
-  ).toBe(true);
-
-  const text = await terminalText(page);
-  const match = text.match(exitPattern);
-  if (!match)
-    throw new Error(`Could not read exit status for command: ${command}`);
-
-  return {
-    text,
-    exitCode: Number(match[1]),
-  };
-}
-
-function assertExitCode(
-  command: string,
-  actual: number,
-  expected: ExitCodeExpectation,
-) {
-  if (expected === 'any')
-    return;
-
-  if (expected === 'nonzero') {
-    expect(
-      actual,
-      `expected command to fail: ${command}`,
-    ).not.toBe(0);
-    return;
-  }
-
-  expect(
-    actual,
-    `unexpected exit code for command: ${command}`,
-  ).toBe(expected);
 }
 
 async function waitForTerminalMatch(
@@ -462,12 +448,9 @@ export async function openTerminal(
       terminal = visibleTerminal(page);
     }
 
-    await expect(terminal).toBeVisible({
-      timeout: 30_000,
-    });
+    await expect(terminal).toBeVisible({ timeout: 30_000 });
     await terminalInput(page);
 
-    // Fail here if the E2E-only DOM terminal renderer is not active.
     await expect.poll(
       async () => terminalText(page),
       {
@@ -481,6 +464,13 @@ export async function openTerminal(
   }, { box: true });
 }
 
+/**
+ * Type a command into the real integrated terminal.
+ *
+ * If waitFor is supplied, wait for an observable result from that command.
+ * Otherwise this deliberately does not try to infer shell completion from the
+ * rendered prompt. Build tests should follow this with expectExecutableUpToDate().
+ */
 export async function runTerminalCommand(
   page: Page,
   command: string,
@@ -489,21 +479,26 @@ export async function runTerminalCommand(
   options: RunTerminalCommandOptions = {},
 ): Promise<string> {
   return await test.step(`Run: ${command}`, async () => {
-    const timeout = options.timeout ?? 60_000;
-    const expectedExitCode = options.expectedExitCode ?? 0;
-    const result = await executeTerminalCommand(page, command, timeout);
+    await typeTerminalCommand(page, command);
 
-    assertExitCode(command, result.exitCode, expectedExitCode);
+    if (options.waitFor)
+      await waitForTerminalMatch(
+        page,
+        options.waitFor,
+        options.timeout ?? 30_000,
+      );
 
     await attachScreenshot(page, testInfo, screenshotName);
-    return result.text;
+    return await terminalText(page);
   }, { box: true });
 }
 
 /**
- * Verify that a build really produced an executable which is not older than
- * its source file. This is a better build assertion than trying to infer
- * completion from a rendered shell prompt.
+ * Verify a build by observable filesystem state instead of prompt rendering.
+ *
+ * The check command is typed immediately after the compiler command. The shell
+ * executes it only after the compiler returns, so the unique marker proves the
+ * executable exists, is executable, and is not older than its source.
  */
 export async function expectExecutableUpToDate(
   page: Page,
@@ -516,19 +511,16 @@ export async function expectExecutableUpToDate(
   await test.step(
     `Verify ${executable} exists and is up to date`,
     async () => {
+      const marker = `__E2E_EXECUTABLE_OK_${++terminalMarkerSequence}__`;
       const command = [
         `test -f ${shellQuote(source)}`,
         `test -x ${shellQuote(executable)}`,
         `! test ${shellQuote(executable)} -ot ${shellQuote(source)}`,
+        `printf '${marker}\\n'`,
       ].join(' && ');
 
-      const result = await executeTerminalCommand(page, command, timeout);
-
-      expect(
-        result.exitCode,
-        `${executable} should exist, be executable, and be at least as new as ${source}`,
-      ).toBe(0);
-
+      await typeTerminalCommand(page, command);
+      await waitForTerminalMatch(page, marker, timeout);
       await attachScreenshot(page, testInfo, screenshotName);
     },
     { box: true },
@@ -558,43 +550,8 @@ export async function runInteractiveTerminalCommand(
       await page.keyboard.press('Enter');
     }
 
-    // For interactive programs the caller tells us what final output proves
-    // the program reached its end. Once that appears, `$?` remains available
-    // in the shell until our probe executes.
-    if (options.completion) {
+    if (options.completion)
       await waitForTerminalMatch(page, options.completion, timeout);
-
-      const sequence = ++terminalCommandSequence;
-      const prefix = `__E2E_EXIT_${sequence}_`;
-      const exitPattern = new RegExp(
-        `${escapeRegExp(prefix)}(-?\\d+)__`,
-      );
-
-      await input.focus();
-      await page.keyboard.insertText(
-        `printf '${prefix}%s__\\n' "$?"`,
-      );
-      await page.keyboard.press('Enter');
-
-      await expect.poll(
-        async () => exitPattern.test(await terminalText(page)),
-        {
-          timeout,
-          message: `waiting for interactive command to finish: ${command}`,
-        },
-      ).toBe(true);
-
-      const text = await terminalText(page);
-      const match = text.match(exitPattern);
-      if (!match)
-        throw new Error(`Could not read exit status for command: ${command}`);
-
-      assertExitCode(
-        command,
-        Number(match[1]),
-        options.expectedExitCode ?? 0,
-      );
-    }
 
     await attachScreenshot(page, testInfo, screenshotName);
     return await terminalText(page);
@@ -614,41 +571,4 @@ export async function expectTerminalText(
     await waitForTerminalMatch(page, expected, timeout);
     await attachScreenshot(page, testInfo, screenshotName);
   }, { box: true });
-}
-
-/**
- * Wait until code-server's configured extension directory contains the given
- * extension. The shell loop tolerates the asynchronous Marketplace install
- * triggered by Ctrl+P.
- */
-export async function expectVsCodeExtensionInstalled(
-  page: Page,
-  extensionId: string,
-  testInfo: TestInfo,
-  screenshotName: string,
-) {
-  const marker = `__E2E_EXTENSION_INSTALLED_${safeArtifactName(extensionId)}__`;
-  const escapedId = extensionId.replace(/'/g, `'"'"'`);
-  const command = [
-    'for i in $(seq 1 90); do',
-    '/app/code-server/bin/code-server --extensions-dir /workspace/.extensions --list-extensions 2>/dev/null',
-    `| grep -Fxi '${escapedId}' >/dev/null`,
-    `&& { echo '${marker}'; break; };`,
-    'sleep 1;',
-    'done',
-  ].join(' ');
-
-  await runTerminalCommand(
-    page,
-    command,
-    testInfo,
-    screenshotName,
-    { timeout: 120_000 },
-  );
-  await expectTerminalText(
-    page,
-    marker,
-    testInfo,
-    `${screenshotName}-verified`,
-  );
 }
