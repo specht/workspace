@@ -250,13 +250,106 @@ Only explicitly shared ports should be reachable.
 * [ ] Browser testing with Playwright
 * [ ] Connect automated tests with existing tutorials
 
-### WebAssembly
+### raylib + WebAssembly
 
-* [ ] Compile a tiny C program to WebAssembly
-* [ ] Call it from JavaScript
-* [ ] Pass numbers/data between JavaScript and WASM
-* [ ] Use it for a visual computation
-* [ ] Possible connection to JPEG/image-processing tutorials
+Use raylib as a simple code-first environment for graphical programs and small games in C.
+
+The final result should run in the browser through WebAssembly so students can publish their programs like other Hackschule web projects.
+
+* [ ] Install/test a minimal raylib toolchain in the workspace
+* [ ] Create a window/canvas and draw basic shapes
+* [ ] Handle keyboard and mouse input
+* [ ] Add a simple game loop
+* [ ] Build a small graphical game or simulation
+* [ ] Compile the same C program to WebAssembly with Emscripten
+* [ ] Explain at a high level what the generated `.wasm` file is
+* [ ] Run the WebAssembly build in the browser
+* [ ] Publish the finished browser build on a Hackschule subdomain
+* [ ] Keep the build process understandable and avoid unnecessary framework/tooling magic
+
+Possible projects:
+
+* Pong
+* Breakout
+* Snake
+* Asteroids
+* Particle simulation
+* Cellular automaton
+
+This can serve as the main WebAssembly introduction rather than having a separate WASM tutorial.
+
+### Digital Audio
+
+Introduce sound synthesis and audio programming in the browser.
+
+A browser-based approach keeps the processing on the student's machine and avoids additional server infrastructure.
+
+* [ ] Start with a single oscillator and a 440 Hz tone
+* [ ] Compare sine, square, triangle and sawtooth waves
+* [ ] Change frequency and connect it to pitch
+* [ ] Control volume/amplitude
+* [ ] Introduce simple envelopes
+* [ ] Mix several oscillators
+* [ ] Visualize a waveform or frequency spectrum
+* [ ] Build a tiny synthesizer, sequencer or drum machine
+* [ ] Evaluate libraries students are interested in where they add something useful
+
+Practical requirement:
+
+* Students need headphones for classroom use.
+
+### Prolog
+
+Add a small introduction to logic programming using SWI-Prolog in the terminal.
+
+The goal is to expose students to a genuinely different programming paradigm rather than add another conventional language.
+
+* [ ] Introduce facts
+* [ ] Introduce rules
+* [ ] Ask queries
+* [ ] Show variables and pattern matching
+* [ ] Explore backtracking
+* [ ] Work with recursive rules
+* [ ] Build a small knowledge base
+* [ ] Use Prolog to solve a search or logic problem
+
+Possible projects:
+
+* Murder mystery
+* Route finding
+* Family or mythology relationships
+* Logic puzzle
+* Simple scheduling problem
+
+Avoid making the first tutorial about Prolog syntax alone; the interesting part is that the system searches for solutions from facts and rules.
+
+### WebGPU
+
+Add an advanced browser-based introduction to GPU and massively parallel computing.
+
+The main focus should be compute rather than another graphics API tutorial.
+
+* [ ] Verify the WebGPU setup on the classroom machines
+* [ ] Introduce the idea of many computations running in parallel
+* [ ] Write the smallest useful WGSL compute shader
+* [ ] Pass data from JavaScript to the GPU
+* [ ] Read or visualize the computed result
+* [ ] Compare a CPU implementation with a GPU implementation
+* [ ] Run a large particle simulation or cellular automaton
+* [ ] Discuss why GPUs are well suited to highly parallel workloads
+
+Possible projects:
+
+* 100,000-particle simulation
+* Conway's Game of Life
+* Reaction-diffusion
+* Image filters
+* Mandelbrot/fractal computation
+
+The conceptual goal is:
+
+> CPU: a few powerful workers  
+> GPU: many small workers doing similar jobs at the same time
 
 ### Git: Collaboration
 
