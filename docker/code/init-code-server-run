@@ -51,30 +51,3 @@ if [ -n "$(ls -A /workspace/.ssh 2>/dev/null)" ]; then
 fi
 
 usermod -d /workspace abc
-
-# Install Flutter/Dart VS Code support once per workspace.
-# Dart-Code.flutter is available from Open VSX, which code-server uses.
-if ! find /workspace/.extensions \
-        -maxdepth 1 \
-        -type d \
-        -name 'Dart-Code.flutter-*' \
-        -print -quit | grep -q .; then
-    echo "Installing Flutter VS Code extension..."
-    su -s /bin/bash abc -c \
-        'HOME=/workspace code-server \
-            --extensions-dir /workspace/.extensions \
-            --install-extension Dart-Code.flutter'
-fi
-
-# Install Jupyter extension
-if ! find /workspace/.extensions \
-        -maxdepth 1 \
-        -type d \
-        -name 'ms-toolsai.jupyter-*' \
-        -print -quit | grep -q .; then
-    echo "Installing Jupyter VS Code extension..."
-    su -s /bin/bash abc -c \
-        'HOME=/workspace code-server \
-            --extensions-dir /workspace/.extensions \
-            --install-extension ms-toolsai.jupyter'
-fi
