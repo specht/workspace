@@ -3,6 +3,9 @@
   "private": true,
   "scripts": {
     "test": "playwright test",
+    "test:browser": "playwright test --project=workspace-smoke",
+    "test:toolchains": "playwright test --project=toolchains",
+    "test:toolchains:reuse": "playwright test --project=toolchains --no-deps",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
     "report": "playwright show-report"

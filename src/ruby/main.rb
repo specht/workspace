@@ -2154,6 +2154,9 @@ class Main < Sinatra::Base
 
             if DEVELOPMENT && email.match?(/\Ae2e-\d+@example\.com\z/)
                 user_config['terminal.integrated.gpuAcceleration'] = 'off'
+                user_config['editor.autoIndent'] = 'none'
+                user_config['editor.formatOnType'] = false
+                user_config['editor.formatOnPaste'] = false
             end
 
             new_config = user_config.to_json
