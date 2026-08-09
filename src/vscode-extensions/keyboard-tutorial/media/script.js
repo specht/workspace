@@ -341,7 +341,6 @@ function showTutorialCompletion() {
     document.querySelector("#instruction").innerHTML = `
         <h2>Tutorial abgeschlossen!</h2>
         <p>Du hast alle ${completedSteps} Tutorial-Schritte erledigt.</p>
-        <p>Der Tutorial-Arbeitsordner ist geschlossen. VS Code ist wieder bereit für dein nächstes Projekt.</p>
         <p>Über das Inhaltsverzeichnis kannst du einzelne Übungen jederzeit wiederholen. Mit <strong>Gesamtes Tutorial zurücksetzen</strong> kannst du später noch einmal ganz von vorne beginnen.</p>
     `;
     const nextButton = document.querySelector("#bu_next");
