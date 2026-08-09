@@ -91,27 +91,27 @@ sections:
     key: indent-dart-block
   - heading: "Übung: Einen Codeabschnitt reparieren"
     key: code-editing-challenge
-- heading: Dateien, Ordner und Tabs
-  steps:
-  - heading: Explorer und Tutorial nebeneinander
-    key: files-layout-start
-  - heading: Dateien im Explorer öffnen
-    key: files-explorer-open
-  - heading: Eine Datei schnell öffnen
-    key: files-quick-open
-  #- heading: Zwischen Tabs wechseln
-  #  key: files-switch-tabs
-  - heading: Einen Tab schließen und wieder öffnen
-    key: files-close-reopen-tab
-  - heading: Eine neue Datei anlegen
-    key: files-create-save
-  - heading: Einen Ordner anlegen
-    key: files-create-folder
-  - heading: Dateien und Ordner umbenennen
-    key: files-rename
-  - heading: Dateien und Ordner löschen
-    key: files-delete
-  - heading: Tutorial zurück verschieben
-    key: files-layout-end
-  - heading: Tutorial-Arbeitsordner schließen
-    key: files-close-workspace
+# - heading: Dateien, Ordner und Tabs
+#  steps:
+# - heading: Explorer und Tutorial nebeneinander
+#   key: files-layout-start
+# - heading: Dateien im Explorer öffnen
+#   key: files-explorer-open
+# - heading: Eine Datei schnell öffnen
+#   key: files-quick-open
+# #- heading: Zwischen Tabs wechseln
+# #  key: files-switch-tabs
+# - heading: Einen Tab schließen und wieder öffnen
+#   key: files-close-reopen-tab
+# - heading: Eine neue Datei anlegen
+#   key: files-create-save
+# - heading: Einen Ordner anlegen
+#   key: files-create-folder
+# - heading: Dateien und Ordner umbenennen
+#   key: files-rename
+# - heading: Dateien und Ordner löschen
+#   key: files-delete
+# - heading: Tutorial zurück verschieben
+#   key: files-layout-end
+# - heading: Tutorial-Arbeitsordner schließen
+#   key: files-close-workspace
