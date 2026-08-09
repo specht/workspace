@@ -65,3 +65,16 @@ if ! find /workspace/.extensions \
             --extensions-dir /workspace/.extensions \
             --install-extension Dart-Code.flutter'
 fi
+
+# Install Jupyter extension
+if ! find /workspace/.extensions \
+        -maxdepth 1 \
+        -type d \
+        -name 'ms-toolsai.jupyter-*' \
+        -print -quit | grep -q .; then
+    echo "Installing Jupyter VS Code extension..."
+    su -s /bin/bash abc -c \
+        'HOME=/workspace code-server \
+            --extensions-dir /workspace/.extensions \
+            --install-extension ms-toolsai.jupyter'
+fi

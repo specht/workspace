@@ -255,6 +255,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         postgresql-client \
         python3 \
         python3-dev \
+        python3-gensim \
         python3-ipykernel \
         python3-mysql.connector \
         python3-pip \
