@@ -525,11 +525,19 @@ Um deine Webseite als statische Webseite zu exportieren, müssen wir erst einen 
 npm install -D @sveltejs/adapter-static
 ```
 
-Anschließend musst du den Adapter in der Datei `svelte.config.js` aktivieren. Öffne die Datei und ändere `adapter-auto` in `adapter-static`:
+Anschließend musst du den Adapter in der Datei `vite.config.js` aktivieren. Ändere dazu ganz oben die Zeile
 
-<img class='full' src='adapter-static.webp'>
+```js
+import adapter from '@sveltejs/adapter-auto';
+```
 
-Wir müssen Svelte jetzt noch mitteilen, dass wir die Webseite als statische Webseite exportieren möchten. Erstelle dazu eine neue Datei `src/routes/+layout.js` und füge den folgenden Code in das `<script>`-Tag ein:
+in
+
+```js
+import adapter from '@sveltejs/adapter-static';
+```
+
+Wir müssen Svelte jetzt noch mitteilen, dass wir die Webseite als statische Webseite exportieren möchten. Erstelle dazu eine neue Datei `src/routes/+layout.js` und füge den folgenden Code ein:
 
 ```js
 export const prerender = true;
