@@ -23,7 +23,7 @@ mkdir -p /workspace/{.extensions,.ssh}
     cp /root/.profile /workspace/.profile
 
 # fix permissions
-chown -R abc:abc /workspace
+# chown -R abc:abc /workspace
 
 chmod 700 /workspace/.ssh
 if [ -n "$(ls -A /workspace/.ssh)" ]; then
