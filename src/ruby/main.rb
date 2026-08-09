@@ -699,6 +699,7 @@ class Main < Sinatra::Base
                 server_name #{WEBSITE_HOST.split(':').first};
                 client_max_body_size 100M;
                 expires $expires;
+                add_header Permissions-Policy "local-fonts=()" always;
 
                 gzip on;
                 gzip_comp_level 6;
@@ -766,6 +767,7 @@ class Main < Sinatra::Base
                 client_max_body_size 100M;
                 access_log /var/log/nginx/access.log custom;
                 charset utf-8;
+                add_header Permissions-Policy "local-fonts=()" always;
 
                 # ----------------------------------
                 # /proxy/<port> → <token>-<port>.#{WEBSITE_HOST.split(':').first}
@@ -805,6 +807,7 @@ class Main < Sinatra::Base
                 client_max_body_size 100M;
                 access_log /var/log/nginx/access.log custom;
                 charset utf-8;
+                add_header Permissions-Policy "local-fonts=()" always;
 
                 set $hs_token $t;
 
