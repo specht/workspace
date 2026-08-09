@@ -144,6 +144,14 @@ html[data-bs-theme="dark"] {
 
             img {
                 background-color: rgba(0,0,0,0.5);
+
+                &.theme-image-light {
+                    display: none;
+                }
+
+                &.theme-image-dark {
+                    display: block;
+                }
             }
 
             .card-content {

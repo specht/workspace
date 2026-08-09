@@ -1248,8 +1248,17 @@ class Main < Sinatra::Base
                     meta = YAML.load(meta)
                     if meta['image']
                         parts = meta['image'].split(':')
-                        sha1 = convert_image(File.join(File.dirname(path), parts[0]))
+                        image_path = File.join(File.dirname(path), parts[0])
+                        sha1 = convert_image(image_path)
                         @@content[slug][:image] = "/cache/#{sha1}.webp"
+
+                        extension = File.extname(image_path)
+                        dark_image_path = image_path.delete_suffix(extension) + "-dark#{extension}"
+                        if File.exist?(dark_image_path)
+                            dark_sha1 = convert_image(dark_image_path)
+                            @@content[slug][:image_dark] = "/cache/#{dark_sha1}.webp"
+                        end
+
                         @@content[slug][:image_x] = (parts[1] || '50').to_i
                         @@content[slug][:image_y] = (parts[2] || '50').to_i
                         @@content[slug][:needs_contrast] = meta['needs_contrast']
@@ -2504,7 +2513,13 @@ class Main < Sinatra::Base
                         if content[:needs_contrast] == 'light'
                             additional_classes << 'dark-only-bg-contrast-light'
                         end
-                        io.puts "<img class='#{additional_classes.join(' ')}' src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='object-position: #{content[:image_x]}% #{content[:image_y]}%;'>"
+                        image_style = "object-position: #{content[:image_x]}% #{content[:image_y]}%;"
+                        if content[:image_dark]
+                            io.puts "<img class='#{(additional_classes + ['theme-image-light']).join(' ')}' src='#{content[:image].sub('.webp', '-1024.webp')}' style='#{image_style}'>"
+                            io.puts "<img class='#{(additional_classes + ['theme-image-dark']).join(' ')}' src='#{content[:image_dark].sub('.webp', '-1024.webp')}' style='#{image_style}'>"
+                        else
+                            io.puts "<img class='#{additional_classes.join(' ')}' src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='#{image_style}'>"
+                        end
                         io.puts "<div class='shade'></div>"
                         io.puts "<div class='card-content'>"
                         io.puts "#{content[:dev_only] ? '<span class="badge badge-sm bg-danger">dev</span> ' : ''}<h4>#{content[:title]}</h4>"

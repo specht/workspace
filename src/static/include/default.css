@@ -941,6 +941,10 @@ div.floatright > p {
             aspect-ratio: 16 / 9;
             object-fit: cover;
             object-position: 50% 50%;
+
+            &.theme-image-dark {
+                display: none;
+            }
         }
 
         .shade {
