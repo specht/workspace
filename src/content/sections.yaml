@@ -12,7 +12,7 @@
 
 - key: graphics
   compact: true
-  label: Grafik und Medien
+  label: Computergrafik
   icon: /images/palette.png
   description: |
     Erzeuge Bilder, Animationen und räumliche Szenen mit selbst geschriebenem
@@ -33,7 +33,7 @@
 
 - key: writing
   compact: true
-  label: Texte, Geschichten und Präsentationen
+  label: Texte & Präsentationen
   icon: /images/book.png
   description: |
     Computer können Texte nicht nur anzeigen, sondern auch strukturieren,
@@ -46,7 +46,7 @@
 
 - key: networks
   compact: true
-  label: Webseiten, Apps und Schnittstellen
+  label: Web & Schnittstellen
   icon: /images/telephone.png
   description: |
     Entwickle Webseiten und interaktive Anwendungen, die direkt im Browser
@@ -59,7 +59,7 @@
 
 - key: databases
   compact: true
-  label: Daten, KI und Sicherheit
+  label: Datenbanken
   icon: /images/card-file-box.png
   description: |
     Speichere und durchsuche größere Datenmengen, entwickle eigene Datenbanken
@@ -72,14 +72,14 @@
 
 - key: advanced
   compact: true
-  label: Fortgeschrittene Experimente
+  label: Experimente
   icon: /images/mirror-ball.png
   entries:
     - digits-experiment
     - jpeg
 
 - key: linux
-  label: Computer, Terminal und Zusammenarbeit
+  label: Terminal & Git
   icon: /images/penguin.png
   description: |
     Arbeite mit Dateien und Programmen über das Terminal und entdecke, wie
