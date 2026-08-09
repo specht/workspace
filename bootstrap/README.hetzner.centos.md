@@ -204,9 +204,6 @@ Nimm folgende Änderungen vor:
   - `LOGIN_CODE_SALT`
   - `MYSQL_ROOT_PASSWORD`
   - `MYSQL_PASSWORD_SALT`
-  - `POSTGRES_ROOT_PASSWORD`
-  - `POSTGRES_PASSWORD_SALT`
-  - `PGADMIN_PASSWORD`
   - `NEO4J_ROOT_PASSWORD`
   - `NEO4J_PASSWORD_SALT`
 - trage deine E-Mail-Adresse als Admin-User ein:

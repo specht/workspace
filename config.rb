@@ -14,8 +14,6 @@ DEV_NEO4J_PORT = 8021
 LOGS_PATH = DEVELOPMENT ? './logs' : "/home/#{ENV['USER']}/logs/#{PROJECT_NAME}"
 DATA_PATH = DEVELOPMENT ? './data' : "/mnt/hackschule/#{PROJECT_NAME}"
 MYSQL_DATA_PATH = File.join(DATA_PATH, 'mysql')
-POSTGRES_DATA_PATH = File.join(DATA_PATH, 'postgres')
-PGADMIN_DATA_PATH = File.join(DATA_PATH, 'pgadmin')
 NEO4J_USER_DATA_PATH = File.join(DATA_PATH, 'neo4j_user')
 USER_PATH = File.join(DATA_PATH, 'user')
 INTERNAL_PATH = File.join(DATA_PATH, 'internal')
@@ -129,7 +127,6 @@ if PROFILE.include?(:static)
         docker_compose[:services][:nginx][:depends_on] = [
             :ruby,
             :phpmyadmin,
-            :pgadmin,
             :neo4japp,
         ]
     end
@@ -218,45 +215,6 @@ docker_compose[:services][:phpmyadmin] = {
     },
 }
 
-docker_compose[:services][:postgres] = {
-    :image => 'postgres:16',
-    :volumes => ["#{POSTGRES_DATA_PATH}:/var/lib/postgresql/data"],
-    :restart => 'always',
-    :user => '1000',
-    :environment => {
-        'POSTGRES_PASSWORD' => POSTGRES_ROOT_PASSWORD,
-    },
-}
-
-docker_compose[:services][:pgadmin] = {
-    :image => 'dpage/pgadmin4:9.11',
-    :restart => 'always',
-    :volumes => [
-        "#{PGADMIN_DATA_PATH}:/var/lib/pgadmin",
-        "#{File.expand_path('docker/pgadmin4')}:/etc/pgadmin:ro",
-    ],
-    :depends_on => [:postgres],
-    :user => '1000',
-    :environment => {
-        'PGADMIN_DEFAULT_EMAIL' => 'default_account_dont_use@example.com',
-        'PGADMIN_DEFAULT_PASSWORD' => PGADMIN_PASSWORD,
-        'PGADMIN_CONFIG_WTF_CSRF_ENABLED' => 'False',
-        'PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION' => 'False',
-        'SCRIPT_NAME' => '/pgadmin',
-    },
-}
-
-# docker_compose[:services][:tensorflowjs] = {
-#     :image => 'evenchange4/docker-tfjs-converter',
-#     :volumes => ["#{INTERNAL_PATH}:/internal"],
-#     :restart => 'always',
-#     :tty => true,
-# }
-
-# docker_compose[:services].values.each do |x|
-#     x[:network_mode] = 'default'
-# end
-
 if DEVELOPMENT
     docker_compose[:services][:nginx][:ports] = ["0.0.0.0:#{DEV_NGINX_PORT}:80"]
     if PROFILE.include?(:neo4j)
@@ -276,7 +234,7 @@ docker_compose[:networks] = {
         :driver => 'bridge'
     }
 }
-[:nginx, :ruby, :mysql, :neo4j, :postgres].each do |service_name|
+[:nginx, :ruby, :mysql, :neo4j].each do |service_name|
     docker_compose[:services][service_name][:networks] << 'user'
 end
 unless DEVELOPMENT
@@ -325,14 +283,10 @@ end
 FileUtils::mkpath(WEB_CACHE_PATH)
 FileUtils::mkpath(File.join(DATA_PATH, 'tic80'))
 FileUtils::mkpath(MYSQL_DATA_PATH)
-FileUtils::mkpath(POSTGRES_DATA_PATH)
-FileUtils::mkpath(PGADMIN_DATA_PATH)
 FileUtils::mkpath(NEO4J_USER_DATA_PATH)
 FileUtils::mkpath(File.join(DATA_PATH, 'internal'))
 FileUtils::mkpath(File.join(DATA_PATH, 'brand'))
 FileUtils::mkpath(File.join(DATA_PATH, 'mysql'))
-FileUtils::mkpath(File.join(DATA_PATH, 'pgadmin'))
-FileUtils::mkpath(File.join(DATA_PATH, 'postgres'))
 FileUtils::mkpath(File.join(DATA_PATH, 'dl'))
 
 `docker compose 2> /dev/null`

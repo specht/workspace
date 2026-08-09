@@ -259,7 +259,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         perl \
         pgcli \
         php-cli \
-        postgresql-client \
         python3 \
         python3-dev \
         python3-ipykernel \

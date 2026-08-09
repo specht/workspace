@@ -134,59 +134,6 @@
 
             <hr>
 
-            <!-- <div class="row">
-                <div class="col-sm-6"><h2>Postgres-Datenbank</h2></div>
-                <div class="col-sm-6 btn-module">#{print_module_button(:pgadmin)}</div>
-            </div>
-            <p>
-                Du hast eine Postgres-Datenbank, die du im Workspace verwenden kannst. Du kannst Tabellen erstellen, Daten einfügen, abfragen und löschen.
-            </p>
-            <p>
-                Deine Zugangsdaten lauten:
-            </p>
-            <div class="row g-3 align-items-center mb-3 input-with-text-mod">
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text" style="width: 9em;">Host:</span>
-                        <input type="text" class="form-control" readonly value="postgres">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='postgres'><i class='bi bi-copy'></i>Kopieren</button>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text" style="width: 9em;">Benutzername:</span>
-                        <input type="text" class="form-control" readonly value="#{@session_user[:email].split('@').first.downcase}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email]}'><i class='bi bi-copy'></i>Kopieren</button>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text" style="width: 9em;">Datenbank:</span>
-                        <input type="text" class="form-control" readonly value="#{@session_user[:email].split('@').first.downcase}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email]}'><i class='bi bi-copy'></i>Kopieren</button>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text" style="width: 9em;">Passwort:</span>
-                        <input type="text" class="form-control" readonly value="#{Main.gen_password_for_email(@session_user[:email], POSTGRES_PASSWORD_SALT)}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{Main.gen_password_for_email(@session_user[:email], POSTGRES_PASSWORD_SALT)}'><i class='bi bi-copy'></i>Kopieren</button>
-                    </div>
-                </div>
-            </div>
-            <div class="hint">
-                Deine Zugangsdaten sind im Workspace in den Umgebungsvariablen <code>POSTGRES_HOST</code>, <code>POSTGRES_USER</code>, <code>POSTGRES_PASSWORD</code> und <code>POSTGRES_DB</code> hinterlegt, damit du keine Zugangsdaten im Quellcode deiner Programme speichern musst.
-            </div>
-            <h4>Postgres-Datenbank zurücksetzen</h4>
-            <p>
-                Hier kannst du deine Postgres-Datenbank zurücksetzen. Alle Tabellen und Daten werden gelöscht und deine Datenbank wird auf den Ursprungszustand zurückgesetzt.
-            </p>
-            <div>
-                <button id='bu_reset_postgres' class="btn btn-danger"><i class='bi bi-trash-fill'></i>Postgres-Datenbank zurücksetzen</button>
-            </div>
-
-            <hr> -->
-
             <div class="row">
                 <div class="col-sm-6"><h2>Neo4j-Datenbank</h2></div>
                 <div class="col-sm-6 btn-module">#{print_module_button(:neo4j)}</div>
@@ -441,19 +388,6 @@
                 api_call('/api/reset_mysql', {}, function(data) {
                     $('#div_reset_mysql_please_wait').hide();
                     $('#div_reset_mysql_success').show();
-                    $('#__template_modal .modal-footer .btn').eq(0).hide();
-                    $('#__template_modal .modal-footer .btn').eq(1).html(`<i class='bi bi-x-lg'></i>Schließen`);
-                });
-                return false;
-            });
-        });
-        $('#bu_reset_postgres').on('click', function() {
-            showTemplateModal('Postgres-Datenbank zurücksetzen', `<div>Bist du sicher, dass du deine Postgres-Datenbank zurücksetzen möchtest? Alle Tabellen und Daten werden gelöscht.</div><div id='div_reset_postgres_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog bi-spin'></i>Moment, deine Datenbank wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_postgres_success' style='display: none; margin-top: 1em;'><i class='text-success bi bi-check-lg'></i>&nbsp;Deine Datenbank wurde auf den Ursprungszustand zurückgesetzt.</div>`,
-            "<i class='bi bi-trash-fill'></i>Zurücksetzen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
-                $('#div_reset_postgres_please_wait').slideDown();
-                api_call('/api/reset_postgres', {}, function(data) {
-                    $('#div_reset_postgres_please_wait').hide();
-                    $('#div_reset_postgres_success').show();
                     $('#__template_modal .modal-footer .btn').eq(0).hide();
                     $('#__template_modal .modal-footer .btn').eq(1).html(`<i class='bi bi-x-lg'></i>Schließen`);
                 });

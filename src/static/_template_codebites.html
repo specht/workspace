@@ -315,17 +315,6 @@ window.addEventListener('load', function() {
         });
     });
 
-    $('#bu_pgadmin').on('click', function(e) {
-        $('#bu_pgadmin').prop('disabled', true);
-        $('#bu_pgadmin .bi').addClass('bi-spin');
-        api_call('/api/start_postgres', {}, function(data) {
-            $('#bu_pgadmin').prop('disabled', false);
-            $('#bu_pgadmin .bi').removeClass('bi-spin');
-            console.log('#{PGADMIN_WEB_ROOT}');
-            window.open('#{PGADMIN_WEB_ROOT}', '_blank');
-        });
-    });
-
     $('#bu_neo4j').on('click', function(e) {
         $('#bu_neo4j').prop('disabled', true);
         $('#bu_neo4j .bi').addClass('bi-spin');

@@ -503,17 +503,6 @@ window.addEventListener('load', function() {
         });
     });
 
-    $('#bu_pgadmin').on('click', function(e) {
-        $('#bu_pgadmin').prop('disabled', true);
-        $('#bu_pgadmin .bi').addClass('bi-spin');
-        api_call('/api/start_postgres', {}, function(data) {
-            $('#bu_pgadmin').prop('disabled', false);
-            $('#bu_pgadmin .bi').removeClass('bi-spin');
-            console.log('#{PGADMIN_WEB_ROOT}');
-            window.open('#{PGADMIN_WEB_ROOT}', '_blank');
-        });
-    });
-
     $('#bu_neo4j').on('click', function(e) {
         $('#bu_neo4j').prop('disabled', true);
         $('#bu_neo4j .bi').addClass('bi-spin');
@@ -593,7 +582,6 @@ window.addEventListener('load', function() {
                 <button style='#{(@session_user.nil? || (!@session_user[:show_workspace])) ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='bi bi-code-slash'></i>Workspace öffnen</button>
                 <a style='#{(@session_user.nil? ? 'display: none;' : '')}' href='/codebites' id='bu_codebites' class="btn btn-success"><i class='bi bi-star'></i>Code Bites</a>
                 <button style='#{(@session_user.nil? || (!@session_user[:show_phpmyadmin])) ? 'display: none;' : ''}' id='bu_phpmyadmin' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>phpMyAdmin</button>
-                <button style='#{(@session_user.nil? || (!@session_user[:show_pgadmin])) ? 'display: none;' : ''}' id='bu_pgadmin' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>pgAdmin</button>
                 <button style='#{(@session_user.nil? || (!@session_user[:show_neo4j])) ? 'display: none;' : ''}' id='bu_neo4j' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>Neo4j</button>
                 <a style='#{(@session_user.nil? || (!@session_user[:show_tic80])) ? 'display: none;' : ''}' href="/tic80/" class="btn btn-success" target="_blank"><i class='bi bi-keyboard'></i>TIC-80</a>
                 <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-primary"><i class='bi bi-person-vcard'></i>#{((@@invitations[(@session_user || {})[:email]] || {})[:name] || '')}</a>

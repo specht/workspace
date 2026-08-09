@@ -27,11 +27,10 @@ Faye::WebSocket.load_adapter('thin')
 CACHE_BUSTER = SecureRandom.alphanumeric(12)
 RUBOCOP_LAYOUT_CONFIG_PATH = "/tmp/rubocop_layout.yml"
 
-MODULE_ORDER = [:workspace, :phpmyadmin, :pgadmin, :neo4j, :tic80]
+MODULE_ORDER = [:workspace, :phpmyadmin, :neo4j, :tic80]
 MODULE_LABELS = {
     :workspace  => 'Workspace',
     :phpmyadmin => 'phpMyAdmin',
-    :pgadmin    => 'pgAdmin',
     :neo4j      => 'Neo4j',
     :tic80      => 'TIC-80',
 }
@@ -534,14 +533,6 @@ class Main < Sinatra::Base
             }
         end
 
-        # $neo4j.neo4j_query(<<~END_OF_QUERY, {:ts => Time.now.to_i})
-        #     MATCH (u:User)
-        #     WHERE u.temp_server_sid_for_pgadmin_expires <= $ts
-        #     REMOVE u.temp_server_sid_for_pgadmin_expires;
-        # END_OF_QUERY
-        # emails_and_server_tags = $neo4j.neo4j_query(<<~END_OF_QUERY).to_a.map { |x| [x['u.email'], x['u.server_sid']] }
-        #     MATCH (u:User) WHERE u.temp_server_sid_for_pgadmin_expires IS NOT NULL RETURN u.email, u.server_sid;
-        # END_OF_QUERY
         emails_and_server_tags = []
 
         # STDERR.puts "Got #{emails_and_server_tags.size} emails and server tags: #{emails_and_server_tags.to_yaml}"
@@ -1497,7 +1488,6 @@ class Main < Sinatra::Base
                 begin
                     STDERR.puts ">>> DB init worker: starting #{key}"
                     Main.init_mysql(job[:email])
-                    Main.init_postgres(job[:email])
                     Main.init_neo4j(job[:email])
                     STDERR.puts ">>> DB init worker: finished #{key}"
                 rescue => e
@@ -1789,57 +1779,6 @@ class Main < Sinatra::Base
             wait_thr.value
         end
         init_mysql(email)
-    end
-
-    def self.init_postgres(email)
-        postgres_password = Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)
-        login = email.split('@').first.downcase
-        STDERR.puts "Setting up Postgres user #{login} with database #{login}"
-
-        Open3.popen2("docker exec -i -e PGPASSWORD=#{POSTGRES_ROOT_PASSWORD} workspace_postgres_1 psql --user=postgres") do |stdin, stdout, wait_thr|
-            stdin.puts <<~END_OF_STRING
-                DO
-                $do$
-                BEGIN
-                    IF NOT EXISTS (
-                        SELECT FROM pg_catalog.pg_roles
-                        WHERE rolname = '#{login}'
-                    ) THEN
-                        CREATE USER "#{login}" WITH ENCRYPTED PASSWORD '#{postgres_password}';
-                    ELSE
-                        ALTER USER "#{login}" WITH ENCRYPTED PASSWORD '#{postgres_password}';
-                    END IF;
-                END
-                $do$;
-
-                SELECT 'CREATE DATABASE "#{login}"'
-                WHERE NOT EXISTS (
-                    SELECT FROM pg_database WHERE datname = '#{login}'
-                )\\gexec
-
-                ALTER DATABASE "#{login}" OWNER TO "#{login}";
-                REVOKE ALL PRIVILEGES ON DATABASE "#{login}" FROM public;
-            END_OF_STRING
-            stdin.close
-            wait_thr.value
-        end
-    end
-
-    def init_postgres(email)
-        Main.init_postgres(email)
-    end
-
-    def reset_postgres(email)
-        STDERR.puts "Removing database for Postgres user #{email}"
-        login = email.split('@').first.downcase
-        Open3.popen2("docker exec -i -e PGPASSWORD=#{POSTGRES_ROOT_PASSWORD} workspace_postgres_1 psql --user=postgres") do |stdin, stdout, wait_thr|
-            stdin.puts <<~END_OF_STRING
-                DROP DATABASE IF EXISTS "#{login}" WITH (FORCE);
-            END_OF_STRING
-            stdin.close
-            wait_thr.value
-        end
-        init_postgres(email)
     end
 
     def self.init_neo4j(email)
@@ -2225,11 +2164,11 @@ class Main < Sinatra::Base
             end
 
             network_name = "workspace_user"
-            STDERR.puts ">>> Getting IP addresses for mysql and postgres..."
+            STDERR.puts ">>> Getting IP address for mysql..."
             login = email.split('@').first.downcase
             mysql_login = db_email.split('@').first.downcase
             STDERR.puts ">>> Login is #{login}, MySQL login is #{mysql_login}"
-            command = "docker run --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(db_email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e POSTGRES_HOST=\"postgres\" -e POSTGRES_USER=\"#{login}\" -e POSTGRES_PASSWORD=\"#{Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)}\" -e POSTGRES_DATABASE=\"#{login}\"  -e NEO4J_URI=\"neo4j://neo4j:7687\" -e NEO4J_USERNAME=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)}\" -e NEO4J_DATABASE=\"#{mysql_login}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
+            command = "docker run --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(db_email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e NEO4J_URI=\"neo4j://neo4j:7687\" -e NEO4J_USERNAME=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)}\" -e NEO4J_DATABASE=\"#{mysql_login}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
             STDERR.puts ">>> Command:\n#{command}"
             with_timing("start_server #{container_name}: docker run") do
                 shell_ok(command, :timeout => shell_timeout(:docker_run))
@@ -2266,20 +2205,6 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         email = @session_user[:email]
         reset_mysql(email)
-        respond(:yay => 'sure')
-    end
-
-    post '/api/start_postgres' do
-        assert(user_logged_in?)
-        email = @session_user[:email]
-        init_postgres(email)
-        respond(:yay => 'sure')
-    end
-
-    post '/api/reset_postgres' do
-        assert(user_logged_in?)
-        email = @session_user[:email]
-        reset_postgres(email)
         respond(:yay => 'sure')
     end
 
@@ -4124,10 +4049,6 @@ class Main < Sinatra::Base
                     :path => "/", #"/#{fs_tag_for_email(email)}",
                     :httponly => true,
                     :secure => DEVELOPMENT ? false : true)
-                Thread.new do
-                    postgres_password = Main.gen_password_for_email(email, POSTGRES_PASSWORD_SALT)
-                    system("docker exec -i workspace_pgadmin_1 /venv/bin/python setup.py add-user #{email} #{postgres_password}")
-                end
             rescue
             end
             redirect "#{WEB_ROOT}/", 302
