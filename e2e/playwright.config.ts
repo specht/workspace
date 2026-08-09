@@ -50,6 +50,9 @@ export default defineConfig({
                 /.*\.browser\.spec\.ts/,
             ],
             workers: 1,
+
+            teardown: 'workspace-cleanup',
+
             use: {
                 launchOptions: {
                     args: [
