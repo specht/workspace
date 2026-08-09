@@ -1,16 +1,8 @@
+import { expect, test } from '@playwright/test';
 import type { Page, TestInfo } from '@playwright/test';
-import { E2E_LOGIN_CODE, expect, test } from './fixtures';
+import { attachScreenshot } from './reporting';
 
-async function attachScreenshot(
-  page: Page,
-  testInfo: TestInfo,
-  name: string,
-) {
-  await testInfo.attach(name, {
-    body: await page.screenshot(),
-    contentType: 'image/png',
-  });
-}
+export const E2E_LOGIN_CODE = '123456';
 
 export async function loginAsE2eUser(
   page: Page,
@@ -24,26 +16,22 @@ export async function loginAsE2eUser(
     });
 
     await test.step('Enter email address', async () => {
-        const emailInput = page.locator('#ti_email');
-
-        await emailInput.fill(email);
-        await emailInput.press('Tab');
-
-        await expect(page.locator('#bu_submit_email')).toBeEnabled();
+      const emailInput = page.locator('#ti_email');
+      await emailInput.fill(email);
+      await emailInput.press('Tab');
+      await expect(page.locator('#bu_submit_email')).toBeEnabled();
     });
 
     await test.step('Request login code', async () => {
-        await page.locator('#bu_submit_email').click();
-        await expect(page.locator('#ti_code')).toBeVisible();
+      await page.locator('#bu_submit_email').click();
+      await expect(page.locator('#ti_code')).toBeVisible();
     });
 
     await test.step('Enter development login code', async () => {
-        const codeInput = page.locator('#ti_code');
-
-        await codeInput.fill(E2E_LOGIN_CODE);
-        await codeInput.press('Tab');
-
-        await expect(page.locator('#bu_submit_code')).toBeEnabled();
+      const codeInput = page.locator('#ti_code');
+      await codeInput.fill(E2E_LOGIN_CODE);
+      await codeInput.press('Tab');
+      await expect(page.locator('#bu_submit_code')).toBeEnabled();
     });
 
     await test.step('Submit login', async () => {

@@ -1,12 +1,21 @@
 import { test as base, expect } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import {
+  expectVsCodeReady,
+  launchWorkspace,
+  loginAsE2eUser,
+  resetWorkspace,
+} from './workspace';
+
+type TestFixtures = {
+  freshWorkspace: Page;
+};
 
 type WorkerFixtures = {
   e2eEmail: string;
 };
 
-export const E2E_LOGIN_CODE = '123456';
-
-export const test = base.extend<{}, WorkerFixtures>({
+export const test = base.extend<TestFixtures, WorkerFixtures>({
   e2eEmail: [
     async ({}, use, workerInfo) => {
       // parallelIndex stays stable if Playwright has to restart a worker.
@@ -14,6 +23,16 @@ export const test = base.extend<{}, WorkerFixtures>({
     },
     { scope: 'worker' },
   ],
+
+  freshWorkspace: async ({ page, e2eEmail }, use, testInfo) => {
+    await loginAsE2eUser(page, e2eEmail, testInfo);
+    await resetWorkspace(page, testInfo);
+
+    const workspace = await launchWorkspace(page, testInfo);
+    await expectVsCodeReady(workspace, testInfo);
+
+    await use(workspace);
+  },
 });
 
 export { expect };

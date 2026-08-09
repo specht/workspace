@@ -42,6 +42,36 @@ screenshots attached, and every run records a complete Playwright trace. The
 HTML report therefore shows both the high-level tutorial steps and the detailed
 browser actions inside them.
 
+## Writing tutorial tests
+
+Tutorial tests should normally use the `freshWorkspace` fixture:
+
+```ts
+import { test } from './fixtures';
+
+test('my tutorial', async ({ freshWorkspace: workspace }, testInfo) => {
+  // workspace is a freshly reset, logged-in and fully loaded VS Code page.
+});
+```
+
+The fixture performs the common lifecycle for every test:
+
+1. log in with the worker's disposable E2E account;
+2. reset that user's server, files and VS Code profile;
+3. launch the workspace;
+4. wait until the VS Code workbench is ready.
+
+Reusable browser-level VS Code helpers live in `tests/vscode.ts`. They cover
+creating/saving text files, replacing editor contents, installing extensions,
+opening the integrated terminal, normal commands and interactive commands.
+`tests/tutorial.ts` provides `readTutorialFile(...)` so tests can reuse the
+actual example files from `src/content`. Keep tutorial-specific assertions in
+the corresponding `*.spec.ts` file.
+
+The FORTRAN test reads `hello.f90`, `factor.f90` and `bubblesort.f90` directly
+from `src/content/fortran`, so the E2E test always types the exact source code
+shown by the tutorial rather than maintaining duplicate copies.
+
 ## Parallel runs
 
 The suite defaults to one worker. Each concurrent worker gets an independent
