@@ -209,10 +209,12 @@ test(
         async () => {
           const command = [
             'rm -rf latex-tutorial',
-            'git clone --depth 1',
-            shellQuote(LATEX_REPOSITORY),
-            'latex-tutorial',
-          ].join(' ');
+            [
+              'git clone --depth 1',
+              shellQuote(LATEX_REPOSITORY),
+              'latex-tutorial',
+            ].join(' '),
+          ].join(' && ');
 
           const result = await run(
             command,

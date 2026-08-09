@@ -45,15 +45,21 @@ export default defineConfig({
     projects: [
         {
             name: 'workspace-smoke',
+
             testMatch: [
                 /workspace-smoke\.spec\.ts/,
                 /.*\.browser\.spec\.ts/,
             ],
+
             workers: 1,
 
             teardown: 'workspace-cleanup',
 
             use: {
+                // Use full Chromium's new headless mode instead of
+                // Playwright's separate chromium-headless-shell.
+                channel: 'chromium',
+
                 launchOptions: {
                     args: [
                         '--unsafely-treat-insecure-origin-as-secure=http://workspace.test:8025,*.workspace.test',
