@@ -23,10 +23,30 @@ mkdir -p /workspace/{.extensions,.ssh}
     cp /root/.profile /workspace/.profile
 
 # fix permissions
-# chown -R abc:abc /workspace
+#!/usr/bin/with-contenv bash
 
+# Make sure the home itself has the correct owner.
+chown abc:abc /workspace
+
+# Create our own directories with the correct ownership.
+install -d -m 755 -o abc -g abc /workspace/.extensions
+install -d -m 700 -o abc -g abc /workspace/.ssh
+
+# Initial shell configuration
+if [[ ! -f /workspace/.bashrc ]]; then
+    cp /root/.bashrc /workspace/.bashrc
+    chown abc:abc /workspace/.bashrc
+fi
+
+if [[ ! -f /workspace/.profile ]]; then
+    cp /root/.profile /workspace/.profile
+    chown abc:abc /workspace/.profile
+fi
+
+# SSH permissions
 chmod 700 /workspace/.ssh
-if [ -n "$(ls -A /workspace/.ssh)" ]; then
+
+if [ -n "$(ls -A /workspace/.ssh 2>/dev/null)" ]; then
     chmod 600 /workspace/.ssh/*
 fi
 
