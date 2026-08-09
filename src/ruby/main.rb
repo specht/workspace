@@ -1,5 +1,6 @@
 require './include/helper.rb'
 require './include/automatron.rb'
+require './include/trusted_template.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
@@ -4060,26 +4061,7 @@ class Main < Sinatra::Base
         end
         if path == '/tic80/'
             s = File.read(File.join(@@static_dir, '/tic80/index.html'))
-            while true
-                index = s.index('#{')
-                break if index.nil?
-                length = 2
-                balance = 1
-                while index + length < s.size && balance > 0
-                    c = s[index + length]
-                    balance -= 1 if c == '}'
-                    balance += 1 if c == '{'
-                    length += 1
-                end
-                code = s[index + 2, length - 3]
-                begin
-                    s[index, length] = eval(code).to_s || ''
-                rescue
-                    STDERR.puts "Error while evaluating:"
-                    STDERR.puts code
-                    raise
-                end
-            end
+            s = TrustedTemplate.render(s, binding)
             respond_raw_with_mimetype(s, 'text/html')
             return
         end
@@ -4156,33 +4138,7 @@ class Main < Sinatra::Base
                 if path.include?('codebites') && !path.include?('codebites_admin')
                     template = File.read(File.join(@@static_dir, '_template_codebites.html'))
                 end
-                template.sub!('#{CONTENT}', content)
-                s = template
-                while true
-                    index = s.index('#{')
-                    break if index.nil?
-                    length = 2
-                    balance = 1
-                    while index + length < s.size && balance > 0
-                        c = s[index + length]
-                        balance -= 1 if c == '}'
-                        balance += 1 if c == '{'
-                        length += 1
-                    end
-                    code = s[index + 2, length - 3]
-                    if code[0] != '<'
-                        begin
-                            s[index, length] = eval(code).to_s || ''
-                        rescue
-                            STDERR.puts "Error while evaluating:"
-                            STDERR.puts code
-                            raise
-                        end
-                    else
-                        s.sub!('#{', '&#35;{')
-                    end
-                end
-                s
+                TrustedTemplate.render_page(template, content, binding)
             end
         end
     end
