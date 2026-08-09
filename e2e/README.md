@@ -63,7 +63,10 @@ The fixture performs the common lifecycle for every test:
 
 Reusable browser-level VS Code helpers live in `tests/vscode.ts`. They cover
 creating/saving text files, replacing editor contents, installing extensions,
-opening the integrated terminal, normal commands and interactive commands.
+opening the integrated terminal, normal commands and interactive commands. Terminal
+commands are completed using their real shell exit status rather than rendered prompt
+text, and `expectExecutableUpToDate(...)` verifies compiled artifacts against their
+source files.
 `tests/tutorial.ts` provides `readTutorialFile(...)` so tests can reuse the
 actual example files from `src/content`. Keep tutorial-specific assertions in
 the corresponding `*.spec.ts` file.

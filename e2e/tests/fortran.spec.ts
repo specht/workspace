@@ -4,6 +4,7 @@ import {
   activateEditorTab,
   closeFolder,
   createTextFile,
+  expectExecutableUpToDate,
   expectTerminalText,
   expectVsCodeExtensionInstalled,
   installVsCodeExtensionFromQuickOpen,
@@ -79,6 +80,13 @@ test('Fortran tutorial works end to end', async ({
     testInfo,
     'fortran-hello-compiled',
   );
+  await expectExecutableUpToDate(
+    workspace,
+    'hello',
+    'hello.f90',
+    testInfo,
+    'fortran-hello-executable',
+  );
   await runTerminalCommand(
     workspace,
     './hello',
@@ -107,6 +115,7 @@ test('Fortran tutorial works end to end', async ({
       'gfortran hello.f90 -o hello',
       testInfo,
       'fortran-hello-compiler-error',
+      { expectedExitCode: 'nonzero' },
     );
     await expectTerminalText(
       workspace,
@@ -128,6 +137,13 @@ test('Fortran tutorial works end to end', async ({
       testInfo,
       'fortran-hello-fixed-compiled',
     );
+    await expectExecutableUpToDate(
+      workspace,
+      'hello',
+      'hello.f90',
+      testInfo,
+      'fortran-hello-fixed-executable',
+    );
   }, { box: true });
 
   await createTextFile(
@@ -146,6 +162,13 @@ test('Fortran tutorial works end to end', async ({
     testInfo,
     'fortran-factor-compiled',
   );
+  await expectExecutableUpToDate(
+    workspace,
+    'factor',
+    'factor.f90',
+    testInfo,
+    'fortran-factor-executable',
+  );
   await runInteractiveTerminalCommand(
     workspace,
     './factor',
@@ -157,6 +180,9 @@ test('Fortran tutorial works end to end', async ({
     ],
     testInfo,
     'fortran-factor-ran',
+    {
+      completion: /Prime factors of\s+123\s+:\s+3\s+41/i,
+    },
   );
   await expectTerminalText(
     workspace,
@@ -180,6 +206,13 @@ test('Fortran tutorial works end to end', async ({
     'gfortran bubblesort.f90 -o bubblesort',
     testInfo,
     'fortran-bubblesort-compiled',
+  );
+  await expectExecutableUpToDate(
+    workspace,
+    'bubblesort',
+    'bubblesort.f90',
+    testInfo,
+    'fortran-bubblesort-executable',
   );
   const bubblesortOutput = await runTerminalCommand(
     workspace,

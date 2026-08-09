@@ -9,8 +9,15 @@ export type CreateTextFileOptions = {
   screenshotPrefix?: string;
 };
 
+export type ExitCodeExpectation = number | 'nonzero' | 'any';
+
 export type RunTerminalCommandOptions = {
   timeout?: number;
+  expectedExitCode?: ExitCodeExpectation;
+};
+
+export type RunInteractiveTerminalCommandOptions = RunTerminalCommandOptions & {
+  completion?: string | RegExp;
 };
 
 export type TerminalInteraction = {
@@ -36,10 +43,6 @@ function visibleTerminal(page: Page): Locator {
 
 function safeArtifactName(value: string): string {
   return value.replace(/[^a-zA-Z0-9._-]+/g, '-');
-}
-
-function compactForEcho(value: string): string {
-  return value.replace(/\s+/g, '');
 }
 
 async function waitForUntitledEditor(page: Page) {
@@ -283,14 +286,24 @@ export async function installVsCodeExtensionFromQuickOpen(
     await input.fill(`ext install ${extensionId}`);
     await input.press('Enter');
 
-    await expect(input).toBeHidden({
-      timeout: 30_000,
-    });
+    // Submitting an `ext install ...` Quick Open command does not reliably
+    // close Quick Open in code-server. That is a UI detail, not evidence that
+    // the install failed. We verify the real installation separately with
+    // expectVsCodeExtensionInstalled(). Close any remaining Quick Open so the
+    // next keyboard shortcut is delivered to the workbench/terminal.
     await attachScreenshot(
       page,
       testInfo,
       `extension-${safeArtifactName(extensionId)}-requested`,
     );
+
+    const quickOpen = page.locator('.quick-input-widget:visible');
+    if (await quickOpen.isVisible())
+      await page.keyboard.press('Escape');
+
+    await expect(quickOpen).toBeHidden({
+      timeout: 5_000,
+    });
   }, { box: true });
 }
 
@@ -314,9 +327,14 @@ export async function terminalText(page: Page): Promise<string> {
   return '';
 }
 
-function countShellPrompts(text: string): number {
-  // Current Workspace prompts end in "$ " (or "# " for a root shell).
-  return (text.match(/[$#][ \u00a0]/g) ?? []).length;
+let terminalCommandSequence = 0;
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function shellQuote(value: string): string {
+  return `'${value.replace(/'/g, `'"'"'`)}'`;
 }
 
 async function terminalInput(page: Page): Promise<Locator> {
@@ -328,20 +346,84 @@ async function terminalInput(page: Page): Promise<Locator> {
   return input;
 }
 
-async function waitForTerminalCommandEcho(
+type TerminalCommandResult = {
+  text: string;
+  exitCode: number;
+};
+
+/**
+ * Run a non-interactive shell command and get its real exit status.
+ *
+ * We deliberately do not look for the shell prompt. Prompt rendering differs
+ * between xterm/code-server versions and proved too brittle. Instead we queue
+ * a second shell line that prints `$?`. The TTY may echo that probe while the
+ * first command is still running, so the probe contains `%s` while its output
+ * contains the numeric exit code; only the latter matches our regexp.
+ */
+async function executeTerminalCommand(
   page: Page,
   command: string,
-  timeout = 30_000,
-) {
-  const compactCommand = compactForEcho(command);
+  timeout: number,
+): Promise<TerminalCommandResult> {
+  const input = await terminalInput(page);
+  const sequence = ++terminalCommandSequence;
+  const prefix = `__E2E_EXIT_${sequence}_`;
+  const exitPattern = new RegExp(
+    `${escapeRegExp(prefix)}(-?\\d+)__`,
+  );
+
+  await input.focus();
+  await page.keyboard.insertText(command);
+  await page.keyboard.press('Enter');
+
+  // This line is buffered by the terminal while the command runs and is only
+  // executed by the shell afterwards. It therefore captures the command's
+  // actual exit status without depending on prompt text.
+  await input.focus();
+  await page.keyboard.insertText(
+    `printf '${prefix}%s__\\n' "$?"`,
+  );
+  await page.keyboard.press('Enter');
 
   await expect.poll(
-    async () => compactForEcho(await terminalText(page)),
+    async () => exitPattern.test(await terminalText(page)),
     {
       timeout,
-      message: `waiting for terminal to show command: ${command}`,
+      message: `waiting for command to finish: ${command}`,
     },
-  ).toContain(compactCommand);
+  ).toBe(true);
+
+  const text = await terminalText(page);
+  const match = text.match(exitPattern);
+  if (!match)
+    throw new Error(`Could not read exit status for command: ${command}`);
+
+  return {
+    text,
+    exitCode: Number(match[1]),
+  };
+}
+
+function assertExitCode(
+  command: string,
+  actual: number,
+  expected: ExitCodeExpectation,
+) {
+  if (expected === 'any')
+    return;
+
+  if (expected === 'nonzero') {
+    expect(
+      actual,
+      `expected command to fail: ${command}`,
+    ).not.toBe(0);
+    return;
+  }
+
+  expect(
+    actual,
+    `unexpected exit code for command: ${command}`,
+  ).toBe(expected);
 }
 
 async function waitForTerminalMatch(
@@ -408,27 +490,49 @@ export async function runTerminalCommand(
 ): Promise<string> {
   return await test.step(`Run: ${command}`, async () => {
     const timeout = options.timeout ?? 60_000;
-    const before = await terminalText(page);
-    const promptsBefore = countShellPrompts(before);
-    const input = await terminalInput(page);
+    const expectedExitCode = options.expectedExitCode ?? 0;
+    const result = await executeTerminalCommand(page, command, timeout);
 
-    await input.focus();
-    await page.keyboard.insertText(command);
-    await page.keyboard.press('Enter');
-
-    await waitForTerminalCommandEcho(page, command, Math.min(timeout, 30_000));
-
-    await expect.poll(
-      async () => countShellPrompts(await terminalText(page)),
-      {
-        timeout,
-        message: `waiting for command to finish: ${command}`,
-      },
-    ).toBeGreaterThan(promptsBefore);
+    assertExitCode(command, result.exitCode, expectedExitCode);
 
     await attachScreenshot(page, testInfo, screenshotName);
-    return await terminalText(page);
+    return result.text;
   }, { box: true });
+}
+
+/**
+ * Verify that a build really produced an executable which is not older than
+ * its source file. This is a better build assertion than trying to infer
+ * completion from a rendered shell prompt.
+ */
+export async function expectExecutableUpToDate(
+  page: Page,
+  executable: string,
+  source: string,
+  testInfo: TestInfo,
+  screenshotName: string,
+  timeout = 30_000,
+) {
+  await test.step(
+    `Verify ${executable} exists and is up to date`,
+    async () => {
+      const command = [
+        `test -f ${shellQuote(source)}`,
+        `test -x ${shellQuote(executable)}`,
+        `! test ${shellQuote(executable)} -ot ${shellQuote(source)}`,
+      ].join(' && ');
+
+      const result = await executeTerminalCommand(page, command, timeout);
+
+      expect(
+        result.exitCode,
+        `${executable} should exist, be executable, and be at least as new as ${source}`,
+      ).toBe(0);
+
+      await attachScreenshot(page, testInfo, screenshotName);
+    },
+    { box: true },
+  );
 }
 
 export async function runInteractiveTerminalCommand(
@@ -437,18 +541,15 @@ export async function runInteractiveTerminalCommand(
   interactions: TerminalInteraction[],
   testInfo: TestInfo,
   screenshotName: string,
-  options: RunTerminalCommandOptions = {},
+  options: RunInteractiveTerminalCommandOptions = {},
 ): Promise<string> {
   return await test.step(`Run interactively: ${command}`, async () => {
     const timeout = options.timeout ?? 60_000;
-    const before = await terminalText(page);
-    const promptsBefore = countShellPrompts(before);
     const input = await terminalInput(page);
 
     await input.focus();
     await page.keyboard.insertText(command);
     await page.keyboard.press('Enter');
-    await waitForTerminalCommandEcho(page, command, Math.min(timeout, 30_000));
 
     for (const interaction of interactions) {
       await waitForTerminalMatch(page, interaction.waitFor, timeout);
@@ -457,13 +558,43 @@ export async function runInteractiveTerminalCommand(
       await page.keyboard.press('Enter');
     }
 
-    await expect.poll(
-      async () => countShellPrompts(await terminalText(page)),
-      {
-        timeout,
-        message: `waiting for interactive command to finish: ${command}`,
-      },
-    ).toBeGreaterThan(promptsBefore);
+    // For interactive programs the caller tells us what final output proves
+    // the program reached its end. Once that appears, `$?` remains available
+    // in the shell until our probe executes.
+    if (options.completion) {
+      await waitForTerminalMatch(page, options.completion, timeout);
+
+      const sequence = ++terminalCommandSequence;
+      const prefix = `__E2E_EXIT_${sequence}_`;
+      const exitPattern = new RegExp(
+        `${escapeRegExp(prefix)}(-?\\d+)__`,
+      );
+
+      await input.focus();
+      await page.keyboard.insertText(
+        `printf '${prefix}%s__\\n' "$?"`,
+      );
+      await page.keyboard.press('Enter');
+
+      await expect.poll(
+        async () => exitPattern.test(await terminalText(page)),
+        {
+          timeout,
+          message: `waiting for interactive command to finish: ${command}`,
+        },
+      ).toBe(true);
+
+      const text = await terminalText(page);
+      const match = text.match(exitPattern);
+      if (!match)
+        throw new Error(`Could not read exit status for command: ${command}`);
+
+      assertExitCode(
+        command,
+        Number(match[1]),
+        options.expectedExitCode ?? 0,
+      );
+    }
 
     await attachScreenshot(page, testInfo, screenshotName);
     return await terminalText(page);
