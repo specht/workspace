@@ -453,8 +453,8 @@ COPY hackschule-sidebar-init-0.1.0.vsix \
 COPY hackschule-checkpoints-0.6.0.vsix \
     /app/extensions/hackschule-checkpoints-0.6.0.vsix
 
-COPY hackschule-keyboard-tutorial-0.5.1.vsix \
-    /app/extensions/hackschule-keyboard-tutorial-0.5.1.vsix
+COPY hackschule-keyboard-tutorial-0.5.2.vsix \
+    /app/extensions/hackschule-keyboard-tutorial-0.5.2.vsix
 
 COPY bif-authoring-tools-0.2.0.vsix \
     /app/extensions/bif-authoring-tools-0.2.0.vsix
