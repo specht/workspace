@@ -1,13 +1,43 @@
 {
-    "chat.agent.enabled": false,
     "chat.disableAIFeatures": true,
-    "terminal.integrated.suggest.enabled": false,
+
+    "telemetry.telemetryLevel": "off",
+    "telemetry.feedback.enabled": false,
+
     "editor.minimap.enabled": false,
-    "keyboard.layout": "de",
-    "files.exclude": {
-        "**/.*": true
-    },
     "files.autoSave": "off",
+    "files.dialog.defaultPath": "/workspace",
+    "files.exclude": {
+        ".hs-kbd-tutorial": true,
+        ".extensions": true,
+        ".ssh": true,
+        ".cache": true,
+        ".local": true,
+        ".config": true,
+        ".npm": true,
+        ".pub-cache": true,
+
+        ".bash_history": true,
+        ".bash_logout": true,
+        ".bashrc": true,
+        ".profile": true
+    },
+
+    "html.autoClosingTags": false,
+    "js/ts.autoClosingTags.enabled": false,
+
+    "terminal.integrated.suggest.enabled": false,
+
+    "keyboard.layout": "de",
+
+    "window.menuBarVisibility": "visible",
+    "workbench.secondarySideBar.defaultVisibility": "hidden",
+    "workbench.colorTheme": "Default Dark Modern",
+
+    "latex-workshop.latex.autoBuild.run": "onSave",
+    "latex-workshop.latex.outDir": "%DIR%",
+    "latex-workshop.latex.recipe.default": "latexmk (LuaLaTeX)",
+
     "latex-workshop.latex.tools": [
         {
             "name": "lualatex",
@@ -31,6 +61,7 @@
             ]
         }
     ],
+
     "latex-workshop.latex.recipes": [
         {
             "name": "LuaLaTeX",
@@ -45,8 +76,7 @@
             ]
         }
     ],
-    "latex-workshop.latex.recipe.default": "latexmk (LuaLaTeX)",
-    "latex-workshop.latex.outDir": "%DIR%",
+
     "latex-workshop.latex.clean.enabled": true,
     "latex-workshop.latex.clean.fileTypes": [
         "*.aux",
@@ -61,13 +91,5 @@
         "*.out",
         "*.toc",
         "*.run.xml"
-    ],
-    "latex-workshop.latex.autoBuild.run": "onSave",
-    "telemetry.feedback.enabled": false,
-    "telemetry.telemetryLevel": "off",
-    "window.menuBarVisibility": "visible",
-    "workbench.secondarySideBar.defaultVisibility": "hidden",
-    "workbench.colorTheme": "Default Dark Modern",
-    "html.autoClosingTags": false,
-    "js/ts.autoClosingTags.enabled": false
+    ]
 }
