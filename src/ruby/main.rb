@@ -1858,7 +1858,26 @@ class Main < Sinatra::Base
         dt = Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0 rescue 0
         STDERR.puts ">>> ERROR #{label} after #{format('%.3f', dt)}s: #{e.class}: #{e.message}"
         raise
-    end    
+    end
+
+    WORKSPACE_UID = 1000
+    WORKSPACE_GID = 1000
+
+    def ensure_user_directory(path)
+        FileUtils.mkdir_p(path)
+
+        # Only change the directories on the path, never recursively visit files.
+        current = path
+        while current.start_with?('/user/')
+            File.chown(WORKSPACE_UID, WORKSPACE_GID, current)
+            break if File.dirname(current) == '/user'
+            current = File.dirname(current)
+        end
+    end
+
+    def chown_user_file(path)
+        File.chown(WORKSPACE_UID, WORKSPACE_GID, path) if File.exist?(path)
+    end
 
     def start_server(email, test_tag = nil, server_tag: nil)
         email_with_test_tag = "#{email}#{test_tag}"
@@ -1866,22 +1885,48 @@ class Main < Sinatra::Base
 
         STDERR.puts ">>> Starting server with email #{email_with_test_tag} and container name #{container_name}"
 
-        system("mkdir -p /user/#{container_name}/config")
-        system("mkdir -p /user/#{container_name}/workspace")
-        if File.exist?("/user/#{container_name}/workspace/.bashrc")
-            contents = File.read("/user/#{container_name}/workspace/.bashrc")
-            unless contents.include?('GEM_HOME')
-                system("echo 'export GEM_HOME=\"$HOME/.gem\"' >> /user/#{container_name}/workspace/.bashrc")
-            end
+        user_path = "/user/#{container_name}"
+        config_path = "#{user_path}/config"
+        workspace_path = "#{user_path}/workspace"
+
+        FileUtils.mkdir_p(user_path)
+        FileUtils.mkdir_p(config_path)
+        FileUtils.mkdir_p(workspace_path)
+
+        # These are bind-mounted into the code-server container, whose user runs
+        # as UID/GID 1000. Only chown the mount points themselves here; never walk
+        # the whole workspace on every launch.
+        [user_path, config_path, workspace_path].each do |path|
+            File.chown(1000, 1000, path)
         end
-        # touch this file so that housekeeping won't shut down the server immediately
-        File.open("/user/#{container_name}/workspace/.hackschule", 'w') do |f|
+
+        # Files written by this Ruby process are created as root, so explicitly
+        # hand them to the code-server user after creating/updating them.
+        chown_user_file = lambda do |path|
+            File.chown(1000, 1000, path) if File.exist?(path)
+        end
+
+        bashrc_path = "#{workspace_path}/.bashrc"
+        if File.exist?(bashrc_path)
+            contents = File.read(bashrc_path)
+            unless contents.include?('GEM_HOME')
+                File.open(bashrc_path, 'a') do |f|
+                    f.puts 'export GEM_HOME="$HOME/.gem"'
+                end
+            end
+            chown_user_file.call(bashrc_path)
+        end
+
+        # Touch/update this file so housekeeping won't shut down the server immediately.
+        hackschule_path = "#{workspace_path}/.hackschule"
+        File.open(hackschule_path, 'w') do |f|
             f.puts "https://youtu.be/Akaa9xHaw7E"
         end
-        system("touch /user/#{container_name}/workspace/.hackschule")
+        chown_user_file.call(hackschule_path)
 
-        unless File.exist?("/user/#{container_name}/workspace/.gitconfig")
-            File.open("/user/#{container_name}/workspace/.gitconfig", 'w') do |f|
+        gitconfig_path = "#{workspace_path}/.gitconfig"
+        unless File.exist?(gitconfig_path)
+            File.open(gitconfig_path, 'w') do |f|
                 f.puts <<~END_OF_STRING
                     [init]
                         defaultBranch = main
@@ -1893,8 +1938,11 @@ class Main < Sinatra::Base
                 END_OF_STRING
             end
         end
-        unless File.exist?("/user/#{container_name}/workspace/.my.cnf")
-            File.open("/user/#{container_name}/workspace/.my.cnf", 'w') do |f|
+        chown_user_file.call(gitconfig_path)
+
+        my_cnf_path = "#{workspace_path}/.my.cnf"
+        unless File.exist?(my_cnf_path)
+            File.open(my_cnf_path, 'w') do |f|
                 f.puts <<~END_OF_STRING
                     [client]
                     user = #{email.split('@').first.downcase}
@@ -1905,8 +1953,11 @@ class Main < Sinatra::Base
                 END_OF_STRING
             end
         end
-        unless File.exist?("/user/#{container_name}/workspace/.myclirc")
-            File.open("/user/#{container_name}/workspace/.myclirc", 'w') do |f|
+        chown_user_file.call(my_cnf_path)
+
+        myclirc_path = "#{workspace_path}/.myclirc"
+        unless File.exist?(myclirc_path)
+            File.open(myclirc_path, 'w') do |f|
                 f.puts <<~END_OF_STRING
                     [main]
 
@@ -1916,7 +1967,7 @@ class Main < Sinatra::Base
 
                     # Multi-line mode allows breaking up the sql statements into multiple lines. If
                     # this is set to True, then the end of the statements must have a semi-colon.
-                    # If this is set to False then sql statements can't be split into multiple
+                    # If this is set to False then sql statements can't be split over multiple
                     # lines. End of line (return) is considered as the end of the statement.
                     multi_line = True
 
@@ -1928,7 +1979,7 @@ class Main < Sinatra::Base
                     # log_file location.
                     log_file = ~/.mycli.log
 
-                    # Default log level. Possible values: "CRITICAL", "ERROR", "WARNING", "INFO"
+                    # Default log level. Possible values are "CRITICAL", "ERROR", "WARNING", "INFO"
                     # and "DEBUG". "NONE" disables logging.
                     log_level = INFO
 
@@ -1956,7 +2007,7 @@ class Main < Sinatra::Base
                     # Can be further modified in [colors]
                     syntax_style = default
 
-                    # Keybindings: Possible values: emacs, vi.
+                    # Keybindings: Possible values are emacs, vi.
                     # Emacs mode: Ctrl-A is home, Ctrl-E is end. All emacs keybindings are available in the REPL.
                     # When Vi mode is enabled you can use modal editing features offered by Vi in the REPL.
                     key_bindings = emacs
@@ -2069,6 +2120,7 @@ class Main < Sinatra::Base
                 END_OF_STRING
             end
         end
+        chown_user_file.call(myclirc_path)
 
         STDERR.puts ">>> Getting server state"
         state = with_timing("start_server #{container_name}: docker inspect") do
@@ -2077,87 +2129,101 @@ class Main < Sinatra::Base
         STDERR.puts ">>> Server state is #{state.to_yaml}"
 
         unless state[:running]
-            config_path = "/user/#{container_name}/workspace/.local/share/code-server/User/settings.json"
-            unless File.exist?(config_path)
-                FileUtils.mkpath(File.dirname(config_path))
-                File.open(config_path, 'w') do |f|
+            vscode_settings_path = "#{workspace_path}/.local/share/code-server/User/settings.json"
+            ensure_user_directory(File.dirname(vscode_settings_path))
+
+            unless File.exist?(vscode_settings_path)
+                File.open(vscode_settings_path, 'w') do |f|
                     config = {}
-                    if test_tag
-                        config['workbench.colorTheme'] = 'Tomorrow Night Blue'
-                    end
+                    config['workbench.colorTheme'] = 'Tomorrow Night Blue' if test_tag
                     f.puts JSON.pretty_generate(config)
                 end
             end
-            user_config = JSON.parse(File.read(config_path))
+
+            user_config = JSON.parse(File.read(vscode_settings_path))
             original_config = user_config.to_json
             default_config = JSON.parse(File.read('default-vscode-settings.json'))
+
             default_config.each_pair do |k, v|
                 if v == true || v == false
-                    unless user_config.include?(k)
-                        user_config[k] = v
-                    end
+                    user_config[k] = v unless user_config.include?(k)
                 else
                     user_config[k] ||= v
                 end
             end
+
             new_config = user_config.to_json
             if original_config != new_config
-                File.open(config_path, 'w') do |f|
+                File.open(vscode_settings_path, 'w') do |f|
                     f.write JSON.pretty_generate(user_config)
                 end
             end
+            chown_user_file.call(vscode_settings_path)
 
             if test_tag
-                config_path = "/user/#{container_name}/workspace/.local/share/code-server/coder.json"
-                unless File.exist?(config_path)
-                    FileUtils.mkpath(File.dirname(config_path))
-                    File.open(config_path, 'w') do |f|
-                        config = {}
-                        config['query'] ||= {}
-                        config['query']['folder'] = '/workspace'
+                coder_config_path = "#{workspace_path}/.local/share/code-server/coder.json"
+                ensure_user_directory(File.dirname(coder_config_path))
+
+                unless File.exist?(coder_config_path)
+                    File.open(coder_config_path, 'w') do |f|
+                        config = {
+                            'query' => {
+                                'folder' => '/workspace'
+                            }
+                        }
                         f.write config.to_json
                     end
                 end
+                chown_user_file.call(coder_config_path)
             end
-            # {
-            #     "query": {
-            #       "folder": "/workspace"
-            #     }
-            #   }
-            # with_timing("start_server #{container_name}: chown -R") do
-            #     shell_ok("chown -R 1000:1000 /user/#{container_name}", :timeout => shell_timeout(:chown))
-            # end
-            
-            db_email = email
-            if test_tag
-                db_email = "#{email}-#{test_tag}"
-            end
+
+            db_email = test_tag ? "#{email}-#{test_tag}" : email
             STDERR.puts ">>> Enqueuing database initialization for #{db_email}"
             Main.enqueue_database_init(email: db_email)
 
             if test_tag
-                test_init_mark_path = "/user/#{container_name}/workspace/.test_init"
+                test_init_mark_path = "#{workspace_path}/.test_init"
+
                 unless File.exist?(test_init_mark_path)
                     sha1 = neo4j_query_expect_one(<<~END_OF_QUERY, {:test_tag => test_tag})['f.sha1']
                         MATCH (t:Test {tag: $test_tag})-[:USES]->(f:File)
                         RETURN f.sha1;
                     END_OF_QUERY
-                    # unpack files from archive
+
+                    # Unpack files from archive.
                     with_timing("start_server #{container_name}: unpack test archive") do
-                        shell_ok("tar xf /internal/test_archives/#{sha1} -C /user/#{container_name}/workspace", :timeout => shell_timeout(:tar))
+                        shell_ok(
+                            "tar xf /internal/test_archives/#{sha1} -C #{workspace_path}",
+                            :timeout => shell_timeout(:tar)
+                        )
                     end
-                    File.open(test_init_mark_path, 'w') do |f|
+
+                    # Test archives may contain arbitrary nested files. This is the one
+                    # place where a recursive ownership fix is necessary, and it only
+                    # happens once when the archive is initially unpacked.
+                    with_timing("start_server #{container_name}: chown unpacked test archive") do
+                        shell_ok(
+                            "chown -R 1000:1000 #{workspace_path}",
+                            :timeout => shell_timeout(:chown)
+                        )
                     end
-                    # check if we have a config file in the archive
-                    if File.exist?("/user/#{container_name}/workspace/.workspace/config.yaml")
-                        config = YAML.load(File.read("/user/#{container_name}/workspace/.workspace/config.yaml"))
+
+                    File.open(test_init_mark_path, 'w') do |_f|
+                    end
+                    chown_user_file.call(test_init_mark_path)
+
+                    # Check if we have a config file in the archive.
+                    workspace_config_path = "#{workspace_path}/.workspace/config.yaml"
+                    if File.exist?(workspace_config_path)
+                        config = YAML.load(File.read(workspace_config_path))
                         if config['vscode_config']
-                            config_path = "/user/#{container_name}/workspace/.local/share/code-server/User/settings.json"
-                            vscode_config = JSON.parse(File.read(config_path))
+                            vscode_config = JSON.parse(File.read(vscode_settings_path))
                             vscode_config.merge!(config['vscode_config'])
-                            File.open(config_path, 'w') do |f|
+
+                            File.open(vscode_settings_path, 'w') do |f|
                                 f.write vscode_config.to_json
                             end
+                            chown_user_file.call(vscode_settings_path)
                         end
                     end
                 end
@@ -2165,24 +2231,31 @@ class Main < Sinatra::Base
 
             network_name = "workspace_user"
             STDERR.puts ">>> Getting IP address for mysql..."
+
             login = email.split('@').first.downcase
             mysql_login = db_email.split('@').first.downcase
+
             STDERR.puts ">>> Login is #{login}, MySQL login is #{mysql_login}"
-            command = "docker run --cpus=2 -d --rm -e PUID=1000 -e GUID=1000 -e TZ=Europe/Berlin -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(db_email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e NEO4J_URI=\"neo4j://neo4j:7687\" -e NEO4J_USERNAME=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)}\" -e NEO4J_DATABASE=\"#{mysql_login}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
+
+            command = "docker run --cpus=2 -d --rm -e PUID=1000 -e PGID=1000 -e TZ=Europe/Berlin -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(db_email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e NEO4J_URI=\"neo4j://neo4j:7687\" -e NEO4J_USERNAME=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)}\" -e NEO4J_DATABASE=\"#{mysql_login}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
+
             STDERR.puts ">>> Command:\n#{command}"
+
             with_timing("start_server #{container_name}: docker run") do
                 shell_ok(command, :timeout => shell_timeout(:docker_run))
             end
+
             with_timing("start_server #{container_name}: refresh nginx") do
                 Main.refresh_nginx_config()
             end
         end
+
         return "#{server_tag}#{test_tag}" if server_tag
 
         begin
-            return "#{@session_user[:server_tag]}#{test_tag}"
+            "#{@session_user[:server_tag]}#{test_tag}"
         rescue
-            return ""
+            ""
         end
     end
 

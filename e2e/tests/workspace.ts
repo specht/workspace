@@ -7,7 +7,7 @@ async function attachScreenshot(
   name: string,
 ) {
   await testInfo.attach(name, {
-    body: await page.screenshot({ fullPage: true }),
+    body: await page.screenshot(),
     contentType: 'image/png',
   });
 }
