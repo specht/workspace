@@ -94,7 +94,7 @@ prinft("Hello, World!\n");
 Speichere die Datei und führe den Compiler erneut aus:
 
 ```bash
-gcc hello.cpp -o hello
+gcc hello.c -o hello
 ```
 
 <div class='hint'>
