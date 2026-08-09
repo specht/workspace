@@ -144,10 +144,12 @@ COPY --from=flutter \
     /opt/flutter \
     /opt/flutter
 
-# Flutter writes to its cache and Git metadata.
-# abc's numeric UID can change at container startup, so use permissions
-# rather than build-time ownership.
-RUN chmod -R a+rwX /opt/flutter/bin/cache /opt/flutter/.git \
+# The numeric UID of abc can change when linuxserver initializes
+# the container, so don't rely on build-time ownership.
+#
+# Each student runs in a separate container, therefore their changes
+# to the Flutter SDK remain isolated in that container's writable layer.
+RUN chmod -R a+rwX /opt/flutter \
     && git config --system --add safe.directory /opt/flutter
 
 # --------------------------------------------------------------------

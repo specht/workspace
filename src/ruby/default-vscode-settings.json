@@ -1,6 +1,7 @@
 {
     "chat.agent.enabled": false,
     "chat.disableAIFeatures": true,
+    "terminal.integrated.suggest.enabled": false,
     "editor.minimap.enabled": false,
     "keyboard.layout": "de",
     "files.exclude": {
