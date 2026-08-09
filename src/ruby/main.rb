@@ -2152,6 +2152,10 @@ class Main < Sinatra::Base
                 end
             end
 
+            if DEVELOPMENT && email.match?(/\Ae2e-\d+@example\.com\z/)
+                user_config['terminal.integrated.gpuAcceleration'] = 'off'
+            end
+
             new_config = user_config.to_json
             if original_config != new_config
                 File.open(vscode_settings_path, 'w') do |f|

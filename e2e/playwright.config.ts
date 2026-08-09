@@ -36,10 +36,5 @@ export default defineConfig({
     trace: 'on',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    launchOptions: {
-      // Keep the integrated terminal in VS Code's DOM renderer so Playwright
-      // can assert terminal output text instead of inspecting painted pixels.
-      args: ['--disable-gpu'],
-    },
   },
 });
