@@ -22,11 +22,26 @@ mkdir -p /workspace/{.extensions,.ssh}
 [[ ! -f /workspace/.profile ]] && \
     cp /root/.profile /workspace/.profile
 
-# fix permissions (ignore contents of /config/workspace)
-# find /config -path /config/workspace -prune -o -exec chown abc:abc {} +
+# fix permissions
 chown -R abc:abc /workspace
+
 chmod 700 /workspace/.ssh
 if [ -n "$(ls -A /workspace/.ssh)" ]; then
     chmod 600 /workspace/.ssh/*
 fi
+
 usermod -d /workspace abc
+
+# Install Flutter/Dart VS Code support once per workspace.
+# Dart-Code.flutter is available from Open VSX, which code-server uses.
+if ! find /workspace/.extensions \
+        -maxdepth 1 \
+        -type d \
+        -name 'Dart-Code.flutter-*' \
+        -print -quit | grep -q .; then
+    echo "Installing Flutter VS Code extension..."
+    su -s /bin/bash abc -c \
+        'HOME=/workspace code-server \
+            --extensions-dir /workspace/.extensions \
+            --install-extension Dart-Code.flutter'
+fi

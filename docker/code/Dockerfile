@@ -6,6 +6,7 @@ RUN usermod -d /workspace abc
 # Install system dependencies in one RUN to reduce layers and improve cache reuse
 RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get update && apt-get install --no-install-recommends -y \
+        curl git xz-utils libglu1-mesa \
         wget ruby ruby-dev libmagickcore-dev zip unzip \
         python3 python3-pip python3-dev python3-venv python3-ipykernel libmysqlclient-dev libmysqlclient21 python3-mysql.connector \
         mysql-client golang-go openjdk-17-jdk-headless nodejs lua5.4 htop \
@@ -121,6 +122,28 @@ RUN tlmgr option repository ctan && \
 COPY dart.deb /
 # Dart SDK install in one step
 RUN dpkg -i /dart.deb && rm /dart.deb
+
+COPY dart.deb /
+RUN dpkg -i /dart.deb && rm /dart.deb
+
+# --------------------------------------------------------------------
+# Flutter — web development
+# --------------------------------------------------------------------
+ARG FLUTTER_VERSION=3.44.7
+
+ENV FLUTTER_ROOT=/opt/flutter
+ENV PATH="${PATH}:${FLUTTER_ROOT}/bin"
+
+RUN wget -q \
+      "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz" \
+      -O /tmp/flutter.tar.xz \
+    && tar -xf /tmp/flutter.tar.xz -C /opt \
+    && rm /tmp/flutter.tar.xz \
+    && git config --system --add safe.directory /opt/flutter \
+    && flutter config --no-analytics \
+    && flutter precache --web \
+    && chown -R abc:abc /opt/flutter \
+    && flutter --version
 
 # Install Cypher Shell
 RUN curl -fsSL https://debian.neo4j.com/neotechnology.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/neo4j.gpg
