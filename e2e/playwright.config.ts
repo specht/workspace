@@ -34,20 +34,29 @@ export default defineConfig({
     ],
 
     /*
-     * The browser project creates a real fresh Workspace container.
+     * Browser-level tests create real fresh Workspace containers.
      *
-     * Toolchain tests depend on it and reuse that exact container via
-     * docker exec. They do not request Playwright's page/browser fixtures,
-     * therefore no Chrome instance is needed for the toolchain project.
+     * Keep this project on one worker because the toolchain project deliberately
+     * reuses e2e-0's running container after all browser tests have completed.
      *
-     * Toolchains intentionally use one worker: they all reuse e2e-0's
-     * running container and reset /workspace/.e2e between tests.
+     * Browser tests should be reserved for behavior that genuinely requires the
+     * browser, such as the Pixelflow Canvas webview.
      */
     projects: [
         {
             name: 'workspace-smoke',
-            testMatch: /workspace-smoke\.spec\.ts/,
-            teardown: 'workspace-cleanup',
+            testMatch: [
+                /workspace-smoke\.spec\.ts/,
+                /.*\.browser\.spec\.ts/,
+            ],
+            workers: 1,
+            use: {
+                launchOptions: {
+                    args: [
+                        '--unsafely-treat-insecure-origin-as-secure=http://workspace.test:8025,*.workspace.test',
+                    ],
+                },
+            },
         },
         {
             name: 'toolchains',
@@ -62,8 +71,13 @@ export default defineConfig({
     ],
 
     use: {
-        baseURL: process.env.E2E_BASE_URL ?? 'http://workspace.test:8025',
-        viewport: { width: 1600, height: 1000 },
+        baseURL:
+            process.env.E2E_BASE_URL ??
+            'http://workspace.test:8025',
+        viewport: {
+            width: 1600,
+            height: 1000,
+        },
         trace: 'on',
         screenshot: 'only-on-failure',
         video: 'retain-on-failure',
