@@ -144,6 +144,7 @@ COPY --from=flutter --chown=abc:abc \
     /opt/flutter \
     /opt/flutter
 
+RUN git config --system --add safe.directory /opt/flutter
 
 # --------------------------------------------------------------------
 # Environment
