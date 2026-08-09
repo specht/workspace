@@ -118,6 +118,52 @@ RUN git config --system --add safe.directory /opt/flutter \
 
 
 # ====================================================================
+# Emscripten + raylib WebAssembly
+# ====================================================================
+
+FROM ${CODE_SERVER_IMAGE} AS raylib-web
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG EMSCRIPTEN_VERSION=5.0.3
+ARG RAYLIB_VERSION=6.0
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    rm -f /etc/apt/apt.conf.d/docker-clean \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        git \
+        make \
+        python3 \
+        wget \
+        xz-utils
+
+# Emscripten
+RUN git clone https://github.com/emscripten-core/emsdk.git /opt/emsdk \
+    && cd /opt/emsdk \
+    && ./emsdk install ${EMSCRIPTEN_VERSION} \
+    && ./emsdk activate ${EMSCRIPTEN_VERSION}
+
+# raylib
+RUN wget -q \
+        "https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz" \
+        -O /tmp/raylib.tar.gz \
+    && mkdir /opt/raylib \
+    && tar xzf /tmp/raylib.tar.gz \
+        -C /opt/raylib \
+        --strip-components=1 \
+    && rm /tmp/raylib.tar.gz \
+    && cd /opt/emsdk \
+    && . ./emsdk_env.sh \
+    && cd /opt/raylib/src \
+    && make PLATFORM=PLATFORM_WEB -j"$(nproc)"
+
+RUN cd /opt/emsdk \
+    && . ./emsdk_env.sh \
+    && emcc --check
+
+# ====================================================================
 # Actual Hackschule image
 # ====================================================================
 
@@ -130,7 +176,7 @@ ARG HUGO_VERSION=0.148.1
 ARG POWERSHELL_VERSION=7.4.11
 
 # --------------------------------------------------------------------
-# Copy the two huge, stable SDKs FIRST.
+# Copy the large, stable SDKs/toolchains FIRST.
 #
 # This order is intentional. If we later change an apt package,
 # Docker can still reuse these layers.
@@ -144,13 +190,27 @@ COPY --from=flutter \
     /opt/flutter \
     /opt/flutter
 
+COPY --from=raylib-web \
+    /opt/emsdk \
+    /opt/emsdk
+
+COPY --from=raylib-web \
+    /opt/raylib \
+    /opt/raylib
+
+ENV EMSDK=/opt/emsdk
+ENV EM_CONFIG=/opt/emsdk/.emscripten
+ENV EM_CACHE=/opt/emsdk/upstream/emscripten/cache
+ENV PATH="/opt/emsdk/upstream/emscripten:${PATH}"
+
 # The numeric UID of abc can change when linuxserver initializes
 # the container, so don't rely on build-time ownership.
 #
 # Each student runs in a separate container, therefore their changes
 # to the Flutter SDK remain isolated in that container's writable layer.
 RUN chmod -R a+rwX /opt/flutter \
-    && git config --system --add safe.directory /opt/flutter
+    && git config --system --add safe.directory /opt/flutter \
+    && chmod -R a+rwX /opt/emsdk/upstream/emscripten/cache
 
 # --------------------------------------------------------------------
 # Environment
@@ -431,6 +491,17 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     && mktexlsr \
     && luaotfload-tool -u
 
+RUN emcc --check \
+    && printf 'int main(void) { return 0; }\n' > /tmp/emscripten-test.c \
+    && emcc /tmp/emscripten-test.c -o /tmp/emscripten-test.js \
+    && test -f /tmp/emscripten-test.wasm \
+    && test -f /opt/raylib/src/libraylib.web.a \
+    && test -f /opt/raylib/src/raylib.h \
+    && rm -f \
+        /tmp/emscripten-test.c \
+        /tmp/emscripten-test.js \
+        /tmp/emscripten-test.wasm \
+    && chmod -R a+rwX /opt/emsdk/upstream/emscripten/cache
 
 # --------------------------------------------------------------------
 # Ruby
