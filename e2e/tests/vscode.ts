@@ -94,12 +94,55 @@ async function openUntitledTextFileFromButton(page: Page) {
 }
 
 /**
- * The tutorial uses Ctrl+Alt+N for later examples. This shortcut should create
- * an untitled text editor directly.
+ * The tutorial uses Ctrl+Alt+N for later examples. The preceding step may have
+ * left focus in the terminal, so explicitly move focus back to the editor
+ * before sending a VS Code shortcut.
  */
 async function openUntitledTextFileFromShortcut(page: Page) {
+  const editor = visibleEditor(page);
+  await expect(editor).toBeVisible({ timeout: 30_000 });
+  await editor.click({ position: { x: 160, y: 40 } });
+
   await page.keyboard.press('Control+Alt+N');
   await waitForUntitledEditor(page);
+}
+
+/**
+ * Insert a block of text into Monaco as a paste, not as a stream of typed
+ * characters. Multi-line keyboard.insertText() interacts with Monaco's
+ * language auto-indentation: every newline may add indentation and then the
+ * indentation already present in the tutorial source is added again.
+ *
+ * Dispatching a paste event mirrors copying the tutorial's source into VS Code
+ * and preserves the source text exactly, independent of the active language's
+ * auto-indent rules. This deliberately avoids the system clipboard so the E2E
+ * suite also works on plain HTTP local development origins.
+ */
+async function pasteIntoActiveEditor(
+  page: Page,
+  contents: string,
+) {
+  const editor = visibleEditor(page);
+  await expect(editor).toBeVisible({ timeout: 30_000 });
+
+  await editor.click({ position: { x: 160, y: 40 } });
+
+  const input = editor.locator('textarea.inputarea').first();
+  await expect(input).toBeAttached({ timeout: 30_000 });
+  await input.focus();
+
+  await input.evaluate((element, text) => {
+    const transfer = new DataTransfer();
+    transfer.setData('text/plain', text);
+
+    const event = new ClipboardEvent('paste', {
+      bubbles: true,
+      cancelable: true,
+      clipboardData: transfer,
+    });
+
+    element.dispatchEvent(event);
+  }, contents);
 }
 
 async function saveUntitledFile(
@@ -198,10 +241,7 @@ export async function createTextFile(
       const editor = visibleEditor(page);
       await expect(editor).toBeVisible();
 
-      await editor.click({
-        position: { x: 160, y: 40 },
-      });
-      await page.keyboard.insertText(contents);
+      await pasteIntoActiveEditor(page, contents);
 
       await expect(editor.locator('.view-lines')).toContainText(
         firstContentLine,
@@ -251,11 +291,9 @@ export async function replaceActiveEditorContents(
     const editor = visibleEditor(page);
     await expect(editor).toBeVisible();
 
-    await editor.click({
-      position: { x: 160, y: 40 },
-    });
+    await editor.click({ position: { x: 160, y: 40 } });
     await page.keyboard.press('Control+A');
-    await page.keyboard.insertText(contents);
+    await pasteIntoActiveEditor(page, contents);
 
     await expect(editor.locator('.view-lines')).toContainText(expectedText);
     await page.keyboard.press('Control+S');
