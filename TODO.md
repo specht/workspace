@@ -197,6 +197,49 @@ Change the state and rebuild the interface.
 
 ---
 
+### Shared Live Apps / Classroom Network
+
+Allow students to explicitly share a running port with other authenticated Hackschule users.
+
+This should turn the individual workspaces into a small classroom network for client/server, WebSocket and multiplayer projects.
+
+* [ ] Detect student services listening on workspace ports
+* [ ] Keep ports private by default
+* [ ] Let a student share an individual port
+* [ ] Let the student give the shared service a short title
+* [ ] Show currently shared services from other students
+* [ ] Show the owner, title and port
+* [ ] Allow another student to open a shared web application directly
+* [ ] Support WebSocket connections through the shared route
+* [ ] Allow students' own programs to connect to another student's shared service
+* [ ] Keep VS Code, terminal, files and all non-shared ports inaccessible
+* [ ] Keep existing private workspace/session authorization unchanged
+* [ ] Allow the owner to revoke a share even when the underlying server is offline
+* [ ] Clearly distinguish persistent share metadata from whether the port is currently running
+* [ ] Use POST/DELETE-style actions for creating and revoking shares rather than GET routes
+* [ ] Handle stopped workspaces and stale/offline shares cleanly
+
+Possible classroom uses:
+
+* Shared pixel canvas
+* Multiplayer games
+* Chat servers
+* Student-built APIs
+* Client/server exercises between two groups
+* Protocol implementation exercises
+* Collaborative applications
+
+A useful end goal would be that a student can share a service and another student can either open it in the browser or connect to it from their own workspace, for example:
+
+```text
+curl http://anna:8000/
+nc ben 5000
+```
+
+Only explicitly shared ports should be reachable.
+
+---
+
 ## Possible Later Additions
 
 ### Automated Testing
