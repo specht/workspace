@@ -140,9 +140,15 @@ COPY --from=texlive \
     /usr/local/texlive \
     /usr/local/texlive
 
-COPY --from=flutter --chown=abc:abc \
+COPY --from=flutter \
     /opt/flutter \
     /opt/flutter
+
+# Flutter writes to its cache and Git metadata.
+# abc's numeric UID can change at container startup, so use permissions
+# rather than build-time ownership.
+RUN chmod -R a+rwX /opt/flutter/bin/cache /opt/flutter/.git \
+    && git config --system --add safe.directory /opt/flutter
 
 # --------------------------------------------------------------------
 # Environment
