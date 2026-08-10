@@ -4846,8 +4846,8 @@ class Main < Sinatra::Base
             end
             path = '/share.html'
         end
-        STDERR.puts "Requested path: #{path}"
-        STDERR.puts "Available content slugs: #{@@content.keys.join(', ')}"
+        # STDERR.puts "Requested path: #{path}"
+        # STDERR.puts "Available content slugs: #{@@content.keys.join(', ')}"
         if @@content.include?(path[1, path.size - 1])
             slug = path[1, path.size - 1]
             path = '/a.html'

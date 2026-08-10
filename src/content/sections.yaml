@@ -42,6 +42,7 @@
     eigene Entscheidungen treffen können.
   entries:
     - showerjs
+    - .bif
     - latex
 
 - key: networks

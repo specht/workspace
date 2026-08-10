@@ -263,8 +263,6 @@ We have Hugo in the Docker image, write a tutorial for that.
 
 ---
 
-
-
 ## Existing Tools / Discoverability
 
 ### Automatron / Formal Languages
@@ -317,6 +315,12 @@ Possible projects:
 * Cellular automaton
 
 This can serve as the main WebAssembly introduction rather than having a separate WASM tutorial.
+
+### PixelRAM Graphics
+
+After Pixelflow Canvas with Ruby, let students program highly performant low level framebuffer graphics via WASM.
+
+Old school graphics effects, Game of life, Mandelbrot set, etc.
 
 Also: doomgeneric + chocolatedescent
 
