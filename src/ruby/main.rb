@@ -952,6 +952,7 @@ class Main < Sinatra::Base
     end
 
     def self.parse_content
+        parse_started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         STDERR.puts "Parsing content..."
         hyphenation_map = {}
         File.read('/src/content/hyphenation.txt').split("\n").each do |line|
@@ -1010,7 +1011,20 @@ class Main < Sinatra::Base
         redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
         @@parse_content_count ||= 0
         @@parse_content_count += 1
+
+        # Kenney previews are already WebP files, so don't send every image through
+        # the generic image-cache pipeline below. That used to spawn one `cp`
+        # process per preview image. Copy the complete tree once, with one process,
+        # and let generated gallery HTML point at /cache/kenney/... directly.
+        if @@parse_content_count == 1 && !@@kenney.empty?
+            FileUtils.mkdir_p('/webcache/kenney')
+            unless system('cp', '-ru', '/src/content/anaglyph/kenney/.', '/webcache/kenney/')
+                raise 'Failed to prepare Kenney preview cache'
+            end
+        end
+
         paths.each do |entry|
+            entry_started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
             section = entry[:section]
             path = entry[:original_path]
             next if @@parse_content_count > 1 && entry[:kenney]
@@ -1070,12 +1084,8 @@ class Main < Sinatra::Base
 
                         Die folgenden Modelle stehen zur Auswahl:
 
-                        <div class='kenney-gallery'>
+                        __KENNEY_GALLERY__
                     EOS
-                    @@kenney[kit].each do |model|
-                        io.puts "<div><img src='kenney/#{kit}/#{model}.webp' data-noconvert='true'><div>#{model}</div></div>"
-                    end
-                    io.puts "</div>"
                     io.string
                 end
             end
@@ -1090,6 +1100,21 @@ class Main < Sinatra::Base
                     part
                 end
             end.join
+
+            # Keep the potentially huge gallery out of the hyphenation pass above.
+            # Otherwise every hyphenation-map entry rescans all preview <img> tags.
+            if entry[:kenney]
+                gallery = StringIO.open do |io|
+                    io.puts "<div class='kenney-gallery'>"
+                    @@kenney[entry[:path]].each do |model|
+                        io.puts "<div><img src='/cache/kenney/#{entry[:path]}/#{model}.webp'><div>#{model}</div></div>"
+                    end
+                    io.puts "</div>"
+                    io.string
+                end
+                markdown.sub!('__KENNEY_GALLERY__', gallery)
+            end
+
             slug = File.basename(path, '.md').sub(/^[0-9]+\-/, '').sub('+', '')
             html = redcarpet.render(markdown)
             root = Nokogiri::HTML(html)
@@ -1102,12 +1127,15 @@ class Main < Sinatra::Base
                 begin
                     src = img.attr('src')
                     next if src.nil?
+                    next if src.start_with?('/cache/')
                     image_path = File.join(File.dirname(path), src)
                     next unless File.exist?(image_path)
                     if img.attr('data-noconvert')
                         sha1 = Digest::SHA1.hexdigest(image_path)
-                        system("cp -pu \"#{image_path}\" /webcache/#{sha1}.#{image_path.split('.').last}")
-                        img['src'] = "/cache/#{sha1}.#{image_path.split('.').last}"
+                        extension = File.extname(image_path)
+                        target_path = "/webcache/#{sha1}#{extension}"
+                        FileUtils.cp(image_path, target_path) unless FileUtils.uptodate?(target_path, [image_path])
+                        img['src'] = "/cache/#{sha1}#{extension}"
                     else
                         sha1 = convert_image(image_path)
                         img['src'] = "/cache/#{sha1}.webp"
@@ -1130,7 +1158,8 @@ class Main < Sinatra::Base
                 image_path = File.join(File.dirname(path), src)
                 next unless File.exist?(image_path)
                 sha1 = Digest::SHA1.hexdigest(File.read(image_path))[0, 16]
-                system("cp -pu \"#{image_path}\" /webcache/#{sha1}.mp4")
+                target_path = "/webcache/#{sha1}.mp4"
+                FileUtils.cp(image_path, target_path) unless FileUtils.uptodate?(target_path, [image_path])
                 video['src'] = "/cache/#{sha1}.mp4"
             end
             root.css('a').each do |a|
@@ -1231,7 +1260,8 @@ class Main < Sinatra::Base
             #     end
             # end
             meta = root.css('.meta').first
-            STDERR.puts "Added content: #{slug}"
+            entry_elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - entry_started_at
+            STDERR.puts "Added content: #{slug} (#{format('%.3f', entry_elapsed)}s)"
             @@content[slug] = {
                 :html => html,
                 :dev_only => entry[:dev_only],
@@ -1274,6 +1304,8 @@ class Main < Sinatra::Base
                 end
             end
         end
+        parse_elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - parse_started_at
+        STDERR.puts "Finished parsing content in #{format('%.3f', parse_elapsed)}s"
     end
 
     def codebite_broadcast(email, payload)
@@ -2582,8 +2614,6 @@ class Main < Sinatra::Base
             du_for_fs_tag = JSON.parse(File.read('/internal/du_for_fs_tag.json'))
         rescue
         end
-
-        STDERR.puts "email_for_tag: #{email_for_tag.to_yaml}"
 
         info_for_tag = {}
         inspect_json = shell_capture("docker inspect workspace", :timeout => shell_timeout(:docker_inspect), :allow_failure => true)
