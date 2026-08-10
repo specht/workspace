@@ -1854,8 +1854,6 @@ class Main < Sinatra::Base
             'Submission/id',
             'Task/name',
             'Test/tag',
-            'TIC80Dir/path',
-            'TIC80File/path',
             'User/email',
             'User/server_tag',
             'User/share_tag',
@@ -3392,28 +3390,22 @@ class Main < Sinatra::Base
         redirect "#{WEB_ROOT}/tic80/export/1.1/#{tag}"
     end
 
+    # TIC-80's authoritative filesystem lives in the user's real Workspace.
+    # In the code-server container this same directory is visible as /workspace/TIC-80.
     TIC80_WORKSPACE_DIR = 'TIC-80'
     TIC80_MAX_SYNC_BYTES = 64 * 1024 * 1024
-    TIC80_LEGACY_MIGRATION_MARKER = 'tic80-legacy-migrated-v1'
 
     def tic80_storage_paths(email)
         container_name = fs_tag_for_email(email)
-        user_path = "/user/#{container_name}"
-        workspace_path = File.join(user_path, 'workspace')
+        workspace_path = File.join('/user', container_name, 'workspace')
         metadata_path = File.join('/internal', 'tic80', container_name)
-        root_path = File.join(workspace_path, TIC80_WORKSPACE_DIR)
-        lock_path = File.join(metadata_path, 'sync.lock')
-        marker_path = File.join(metadata_path, TIC80_LEGACY_MIGRATION_MARKER)
 
         ensure_user_directory(workspace_path)
         FileUtils.mkdir_p(metadata_path)
 
         {
-            :root => root_path,
-            :workspace => workspace_path,
-            :metadata => metadata_path,
-            :lock => lock_path,
-            :migration_marker => marker_path,
+            :root => File.join(workspace_path, TIC80_WORKSPACE_DIR),
+            :lock => File.join(metadata_path, 'sync.lock'),
         }
     end
 
@@ -3430,16 +3422,18 @@ class Main < Sinatra::Base
         parent = File.dirname(root)
         base = File.basename(root)
 
-        if File.symlink?(root)
-            raise "TIC-80 storage root must not be a symlink: #{root}"
-        end
+        raise "TIC-80 storage root must not be a symlink: #{root}" if File.symlink?(root)
         if File.exist?(root) && !File.directory?(root)
             raise "TIC-80 storage root is not a directory: #{root}"
         end
 
         unless File.directory?(root)
-            backups = Dir.glob(File.join(parent, "#{base}.backup-*")).select { |path| File.directory?(path) && !File.symlink?(path) }
-            stages = Dir.glob(File.join(parent, "#{base}.sync-*")).select { |path| File.directory?(path) && !File.symlink?(path) }
+            backups = Dir.glob(File.join(parent, "#{base}.backup-*")).select do |path|
+                File.directory?(path) && !File.symlink?(path)
+            end
+            stages = Dir.glob(File.join(parent, "#{base}.sync-*")).select do |path|
+                File.directory?(path) && !File.symlink?(path)
+            end
 
             candidate = (backups + stages).max_by do |path|
                 File.mtime(path) rescue Time.at(0)
@@ -3453,63 +3447,31 @@ class Main < Sinatra::Base
             end
         end
 
-        # Any leftovers here are from an interrupted or already-completed sync.
-        # This runs while holding the per-user TIC-80 lock, so no live sync can
-        # own one of these directories.
+        # Leftovers can only come from an interrupted/already-completed swap.
+        # We hold the per-user lock here, so no live TIC-80 sync owns them.
         Dir.glob(File.join(parent, "#{base}.backup-*")).each { |path| FileUtils.rm_rf(path) }
         Dir.glob(File.join(parent, "#{base}.sync-*")).each { |path| FileUtils.rm_rf(path) }
 
         File.chown(WORKSPACE_UID, WORKSPACE_GID, root)
     end
 
-    def tic80_relative_path(path, allow_empty: false)
+    def tic80_relative_path(path)
         raise ArgumentError, 'path must be a string' unless path.is_a?(String)
         raise ArgumentError, 'path contains a NUL byte' if path.include?("\0")
         raise ArgumentError, 'path is too long' if path.bytesize > 4096
 
         value = path.tr('\\', '/')
-        value = value.sub(%r{\A/+com\.nesbox\.tic/TIC-80/*}, '')
-        value = value.sub(%r{\A/+}, '')
+        raise ArgumentError, 'absolute paths are not allowed' if value.start_with?('/')
 
         parts = value.split('/').reject(&:empty?)
+        raise ArgumentError, 'empty path is not allowed' if parts.empty?
+
         parts.each do |part|
             raise ArgumentError, 'path traversal is not allowed' if part == '.' || part == '..'
             raise ArgumentError, 'path component is too long' if part.bytesize > 255
         end
 
-        relative = parts.join('/')
-        raise ArgumentError, 'empty path is not allowed' if relative.empty? && !allow_empty
-        relative
-    end
-
-    def tic80_path(root, path, allow_empty: false)
-        relative = tic80_relative_path(path, :allow_empty => allow_empty)
-        expanded_root = File.expand_path(root)
-        expanded = File.expand_path(File.join(expanded_root, relative))
-
-        unless expanded == expanded_root || expanded.start_with?(expanded_root + File::SEPARATOR)
-            raise ArgumentError, 'path escapes TIC-80 storage root'
-        end
-
-        [relative, expanded]
-    end
-
-    def tic80_atomic_write(path, contents)
-        FileUtils.mkdir_p(File.dirname(path))
-        temp_path = File.join(File.dirname(path), ".#{File.basename(path)}.tmp-#{SecureRandom.hex(8)}")
-
-        begin
-            File.open(temp_path, 'wb', 0o600) do |file|
-                file.write(contents)
-                file.flush
-                file.fsync
-            end
-            File.chown(WORKSPACE_UID, WORKSPACE_GID, temp_path)
-            File.rename(temp_path, path)
-            tic80_fsync_dir(File.dirname(path))
-        ensure
-            FileUtils.rm_f(temp_path)
-        end
+        parts.join('/')
     end
 
     def tic80_tree(root, include_contents: false)
@@ -3558,77 +3520,12 @@ class Main < Sinatra::Base
         }
     end
 
-    def tic80_legacy_path(relative)
-        "/com.nesbox.tic/TIC-80/#{relative}".sub(%r{/+$}, '')
-    end
-
-    def tic80_migrate_legacy_storage_unlocked!(email, paths)
-        marker = paths[:migration_marker]
-        return if File.exist?(marker)
-
-        root = paths[:root]
-        migrated_dirs = 0
-        migrated_files = 0
-
-        # Never overwrite a filesystem the user already has on disk. The legacy
-        # migration is only a one-time bridge away from the old Neo4j/blob store.
-        if Dir.children(root).empty?
-            dirs = []
-            files = []
-
-            neo4j_query(<<~END_OF_STRING, {:email => email}).each do |row|
-                MATCH (u:User {email: $email})-[r:HAS]->(f:TIC80Dir)
-                RETURN f, r;
-            END_OF_STRING
-                begin
-                    relative = tic80_relative_path(row['f'][:path])
-                    dirs << relative unless dirs.include?(relative)
-                    migrated_dirs += 1
-                rescue ArgumentError => e
-                    STDERR.puts ">>> TIC-80: skipping unsafe legacy directory #{row['f'][:path].inspect}: #{e.message}"
-                end
-            end
-
-            neo4j_query(<<~END_OF_STRING, {:email => email}).each do |row|
-                MATCH (u:User {email: $email})-[r:HAS]->(f:TIC80File)
-                RETURN f, r;
-            END_OF_STRING
-                sha1 = row['r'][:sha1].to_s
-                next unless sha1.match?(/\A[0-9a-f]{16}\z/)
-
-                blob_path = "/tic80/#{sha1[0, 2]}/#{sha1[2..]}"
-                next unless File.file?(blob_path)
-
-                begin
-                    relative = tic80_relative_path(row['f'][:path])
-                    files.reject! { |entry| entry[:path] == relative }
-                    files << {
-                        :path => relative,
-                        :contents => Base64.strict_encode64(File.binread(blob_path)),
-                    }
-                    migrated_files += 1
-                rescue ArgumentError => e
-                    STDERR.puts ">>> TIC-80: skipping unsafe legacy file #{row['f'][:path].inspect}: #{e.message}"
-                end
-            end
-
-            unless dirs.empty? && files.empty?
-                stage, _revision = tic80_build_stage!(root, :dirs => dirs, :files => files)
-                tic80_swap_tree!(root, stage)
-            end
-        end
-
-        tic80_atomic_write(marker, "migrated_at=#{Time.now.utc.strftime('%Y-%m-%dT%H:%M:%SZ')}\ndirs=#{migrated_dirs}\nfiles=#{migrated_files}\n")
-        STDERR.puts ">>> TIC-80: legacy migration complete for #{email}: #{migrated_dirs} dirs, #{migrated_files} files"
-    end
-
     def tic80_with_storage(email)
         paths = tic80_storage_paths(email)
 
         File.open(paths[:lock], File::RDWR | File::CREAT, 0o600) do |lock|
             lock.flock(File::LOCK_EX)
             tic80_recover_storage_unlocked!(paths)
-            tic80_migrate_legacy_storage_unlocked!(email, paths)
             yield paths
         ensure
             lock.flock(File::LOCK_UN) rescue nil
@@ -3644,7 +3541,10 @@ class Main < Sinatra::Base
         halt 413, { :error => 'tic80_sync_too_large' }.to_json if body.bytesize > max_body
 
         data = JSON.parse(body, :symbolize_names => true)
-        unless data.is_a?(Hash) && data[:base_revision].is_a?(String) && data[:dirs].is_a?(Array) && data[:files].is_a?(Array)
+        unless data.is_a?(Hash) &&
+               data[:base_revision].is_a?(String) &&
+               data[:dirs].is_a?(Array) &&
+               data[:files].is_a?(Array)
             halt 400, { :error => 'invalid_tic80_sync_request' }.to_json
         end
 
@@ -3758,37 +3658,7 @@ class Main < Sinatra::Base
         end
     end
 
-    def tic80_mutate_tree_unlocked!(root)
-        tree = tic80_tree(root, :include_contents => true)
-        original_revision = tree[:revision]
-
-        data = {
-            :dirs => tree[:dirs].dup,
-            :files => tree[:files].map do |entry|
-                {
-                    :path => entry[:path],
-                    :contents => entry[:contents],
-                    :mtime_ms => entry[:mtime_ms],
-                }
-            end,
-        }
-
-        yield data
-
-        stage, new_revision = tic80_build_stage!(root, data)
-        rechecked_revision = tic80_tree(root, :include_contents => false)[:revision]
-
-        if rechecked_revision != original_revision
-            FileUtils.rm_rf(stage)
-            raise Errno::EAGAIN, 'TIC-80 filesystem changed during update'
-        end
-
-        tic80_swap_tree!(root, stage)
-        new_revision
-    end
-
-    # New API used by the upstream-based TIC-80 build. The browser may keep an
-    # IDBFS/MEMFS cache, but this directory in /workspace is authoritative.
+    # Load the authoritative filesystem from /workspace/TIC-80.
     get '/api/tic80/fs' do
         assert(user_logged_in?)
 
@@ -3797,6 +3667,8 @@ class Main < Sinatra::Base
         end
     end
 
+    # Replace the authoritative filesystem atomically. The revision prevents a
+    # second browser tab or a direct code-server edit from being silently lost.
     post '/api/tic80/fs_sync' do
         assert(user_logged_in?)
         data = tic80_parse_sync_request
@@ -3814,9 +3686,8 @@ class Main < Sinatra::Base
             current_revision = tic80_tree(root, :include_contents => false)[:revision]
 
             if data[:base_revision] != current_revision
-                # A retry after a lost HTTP response is safe: if the desired tree
-                # is already the current tree, acknowledge it instead of reporting
-                # a false conflict.
+                # A retry after a lost HTTP response is safe: acknowledge it if
+                # the requested tree is already exactly what is on disk.
                 if new_revision == current_revision
                     FileUtils.rm_rf(stage)
                     next respond(:ok => true, :revision => current_revision, :already_applied => true)
@@ -3830,9 +3701,9 @@ class Main < Sinatra::Base
                 }.to_json
             end
 
-            # A direct edit from code-server does not honor our lock. Recompute the
-            # revision immediately before the swap so we do not knowingly overwrite
-            # an edit that happened while the replacement tree was being prepared.
+            # code-server does not honor our lock. Recheck just before the swap
+            # so an edit made while the new tree was being staged is not knowingly
+            # overwritten.
             rechecked_revision = tic80_tree(root, :include_contents => false)[:revision]
             if rechecked_revision != current_revision
                 FileUtils.rm_rf(stage)
@@ -3845,132 +3716,6 @@ class Main < Sinatra::Base
 
             tic80_swap_tree!(root, stage)
             respond(:ok => true, :revision => new_revision)
-        end
-    end
-
-    # Compatibility endpoints for the old Hackschule TIC-80 fork. They now use
-    # the real /workspace/TIC-80 directory instead of Neo4j and the /tic80 blob
-    # store. Once the upstream client has been deployed these can be removed.
-    get '/api/hs_get_all_stored_dirs_and_files' do
-        assert(user_logged_in?)
-
-        tic80_with_storage(@session_user[:email]) do |paths|
-            tree = tic80_tree(paths[:root], :include_contents => true)
-            dirs = tree[:dirs].map do |relative|
-                { :path => tic80_legacy_path(relative) }
-            end
-            files = tree[:files].map do |entry|
-                {
-                    :path => tic80_legacy_path(entry[:path]),
-                    :sha1 => entry[:sha256][0, 16],
-                    :contents => entry[:contents],
-                }
-            end
-            respond(:dirs => dirs, :files => files, :revision => tree[:revision])
-        end
-    end
-
-    post '/api/fs_write' do
-        assert(user_logged_in?)
-        max_size = TIC80_MAX_SYNC_BYTES
-        data = parse_request_data(
-            :required_keys => [:path, :file],
-            :types => {:path => String, :file => Hash},
-            :max_body_length => max_size * 2,
-            :max_string_length => max_size * 2
-        )
-
-        begin
-            relative = tic80_relative_path(data[:path])
-            contents = Base64.strict_decode64(data[:file]['contents'].to_s)
-            halt 413, { :error => 'tic80_file_too_large' }.to_json if contents.bytesize > max_size
-
-            tic80_with_storage(@session_user[:email]) do |paths|
-                revision = tic80_mutate_tree_unlocked!(paths[:root]) do |tree|
-                    tree[:files].reject! { |entry| entry[:path] == relative }
-                    tree[:dirs].delete(relative)
-                    tree[:files] << {
-                        :path => relative,
-                        :contents => Base64.strict_encode64(contents),
-                    }
-                end
-                respond(:ok => true, :path => relative, :revision => revision)
-            end
-        rescue ArgumentError => e
-            content_type :json
-            halt 400, { :error => 'invalid_tic80_file', :detail => e.message }.to_json
-        rescue Errno::EAGAIN
-            content_type :json
-            halt 409, { :error => 'tic80_sync_conflict' }.to_json
-        end
-    end
-
-    post '/api/fs_delfile' do
-        assert(user_logged_in?)
-        data = parse_request_data(:required_keys => [:path], :types => {:path => String})
-
-        begin
-            relative = tic80_relative_path(data[:path])
-            tic80_with_storage(@session_user[:email]) do |paths|
-                revision = tic80_mutate_tree_unlocked!(paths[:root]) do |tree|
-                    tree[:files].reject! { |entry| entry[:path] == relative }
-                end
-                respond(:ok => true, :path => relative, :revision => revision)
-            end
-        rescue ArgumentError => e
-            content_type :json
-            halt 400, { :error => 'invalid_tic80_path', :detail => e.message }.to_json
-        rescue Errno::EAGAIN
-            content_type :json
-            halt 409, { :error => 'tic80_sync_conflict' }.to_json
-        end
-    end
-
-    post '/api/fs_makedir' do
-        assert(user_logged_in?)
-        data = parse_request_data(:required_keys => [:path], :types => {:path => String})
-
-        begin
-            relative = tic80_relative_path(data[:path])
-            tic80_with_storage(@session_user[:email]) do |paths|
-                revision = tic80_mutate_tree_unlocked!(paths[:root]) do |tree|
-                    tree[:files].reject! { |entry| entry[:path] == relative }
-                    tree[:dirs] << relative unless tree[:dirs].include?(relative)
-                end
-                respond(:ok => true, :path => relative, :revision => revision)
-            end
-        rescue ArgumentError => e
-            content_type :json
-            halt 400, { :error => 'invalid_tic80_path', :detail => e.message }.to_json
-        rescue Errno::EAGAIN
-            content_type :json
-            halt 409, { :error => 'tic80_sync_conflict' }.to_json
-        end
-    end
-
-    post '/api/fs_deldir' do
-        assert(user_logged_in?)
-        data = parse_request_data(:required_keys => [:path], :types => {:path => String})
-
-        begin
-            relative = tic80_relative_path(data[:path])
-            prefix = relative + '/'
-
-            tic80_with_storage(@session_user[:email]) do |paths|
-                revision = tic80_mutate_tree_unlocked!(paths[:root]) do |tree|
-                    not_empty = tree[:dirs].any? { |path| path.start_with?(prefix) } ||
-                        tree[:files].any? { |entry| entry[:path].start_with?(prefix) }
-                    halt 409, { :error => 'tic80_directory_not_empty' }.to_json if not_empty
-                    tree[:dirs].delete(relative)
-                end
-                respond(:ok => true, :path => relative, :revision => revision)
-            end
-        rescue ArgumentError => e
-            content_type :json
-            halt 400, { :error => 'invalid_tic80_path', :detail => e.message }.to_json
-        rescue Errno::EAGAIN
-            content_type :json
-            halt 409, { :error => 'tic80_sync_conflict' }.to_json
         end
     end
 
