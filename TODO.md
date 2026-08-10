@@ -53,6 +53,63 @@ Follow-up work:
 
 ---
 
+### PixelRAM ✅
+
+Implemented and published in August 2026.
+
+PixelRAM is now the low-level graphics path for older students: a tiny software framebuffer library for fast pixel graphics, software rendering and old-school effects. raylib is only the private backend; student programs use the small PixelRAM API.
+
+* Source: https://github.com/specht/pixelram
+* Documentation: https://specht.github.io/pixelram/
+
+Completed:
+
+* [x] Publish `pixelram.c` + `pixelram.h` as a self-contained library
+* [x] Keep the public API independent of raylib
+* [x] Use simple snake_case functions such as `set_pixel()`, `get_pixel()` and `present()`
+* [x] Support `pixel_indexed8`, `pixel_rgb565`, `pixel_rgb24` and `pixel_rgba32`
+* [x] Expose direct framebuffer access for high-performance renderers and game ports
+* [x] Include the same 88 predefined palettes as Pixelflow Canvas
+* [x] Use the classic 256-color VGA palette by default
+* [x] Add keyboard, mouse, timing, fullscreen and pixel-aspect support
+* [x] Add configurable frame limiting with 60 FPS as the default
+* [x] Provide a Pixelflow-style fire demo as the bridge from Ruby to C
+* [x] Add detailed API documentation and GitHub Pages
+* [x] Add tests and CI
+* [x] Make pinned two-file downloads possible from a student project's Makefile
+
+Important teaching distinction:
+
+> Pixelflow Canvas is a language-independent canvas inside VS Code. PixelRAM is a compiled software framebuffer. The fire demo can connect the two because the algorithm stays almost unchanged while the execution model becomes much faster.
+
+Follow-up work:
+
+* [ ] Add a compact PixelRAM tutorial to the Workspace
+* [ ] Start with the existing fire demo as the transition from Pixelflow Canvas
+* [ ] Show the step from `set_pixel()` / `get_pixel()` to direct framebuffer memory
+* [ ] Revisit the old raycaster with PixelRAM
+* [ ] Revisit the old raytracer with PixelRAM
+* [ ] Add a small collection of low-level effects/projects: plasma, Game of Life, Mandelbrot, etc.
+* [ ] Decide how DOOM should appear: demo, advanced example or separate tutorial
+* [ ] Finish/stabilize the Chocolate Descent WebAssembly port before presenting it as a PixelRAM showcase
+
+---
+
+### raylib / WebAssembly Infrastructure ✅
+
+The underlying C/WebAssembly graphics toolchain is now working in the Workspace.
+
+* [x] raylib is available in the workspace image
+* [x] Emscripten builds raylib programs to WebAssembly
+* [x] Browser rendering, keyboard and mouse input work
+* [x] Pixel aspect-ratio handling works for low-resolution graphics
+* [x] Sound effects work in browser builds
+* [x] A DOOM-based demonstration runs through the framebuffer abstraction
+* [x] PixelRAM now provides the student-facing low-level framebuffer layer
+
+The remaining work is mainly **teaching material**, not infrastructure.
+
+---
 
 ## High Priority
 
@@ -60,9 +117,11 @@ Follow-up work:
 
 Build a small web server from scratch as a continuation of the TCP/IP tutorial.
 
-* [ ] Start with a manual HTTP response using `nc`
-* [ ] Inspect the request sent by the browser
-* [ ] Explain the HTTP request/response format
+The initial HTTP/netcat material has already been prototyped and debugged; the main remaining work is turning it into the complete server tutorial.
+
+* [x] Start with a manual HTTP response using `nc`
+* [x] Inspect the request sent by the browser
+* [x] Explain the HTTP request/response format
 * [ ] Write a minimal server using raw TCP sockets
 * [ ] Handle `GET /`
 * [ ] Add multiple routes
@@ -86,6 +145,8 @@ A good final step is to run the finished server in the workspace, share its port
 ### WebSockets
 
 Create a follow-up to the web-server tutorial showing persistent, bidirectional communication.
+
+A small Ruby WebSocket server + browser shared-canvas prototype already works, including use through Shared Live Apps. The remaining task is to turn that prototype into a clean teaching sequence.
 
 * [ ] Show why normal HTTP request/response is insufficient
 * [ ] Inspect the WebSocket handshake
@@ -194,33 +255,40 @@ The important goal is to show **why graph databases exist**, not merely teach Cy
 
 ### BIF / Interactive Fiction
 
-Add BIF as a first-class tutorial.
+Add BIF as a first-class tutorial, but keep the tutorial focused on the technology rather than presenting a large prewritten story.
 
-The tutorial should have a very low entry barrier and emphasize creative programming.
+The tutorial should have a very low entry barrier and emphasize creative programming. Use only tiny examples that are easy to inspect and modify.
 
-* [ ] Create a minimal first interactive story
+* [ ] Create a very small human-written starter story
+* [ ] Explain the basic BIF file structure
 * [ ] Add choices
 * [ ] Link multiple scenes
+* [ ] Show the story as a graph early
 * [ ] Introduce variables/state
 * [ ] Add conditional choices
-* [ ] Add inventory or flags
-* [ ] Introduce reusable structures where appropriate
-* [ ] Show the story as a graph
-* [ ] Include a larger creative assignment
+* [ ] Add inventory or flags as an advanced step
+* [ ] Show how to run and preview the story in the Workspace
+* [ ] Use **Shared Live Apps** for peer testing
+* [ ] End with an open creative assignment rather than another large starter story
+
+Important decision:
+
+> Do not use the Odyssey or other large AI-written stories as starter material. They distract from the technology, feel artificial, and make the example itself larger than the idea being taught.
+
+A tiny starter can be enough: two or three locations, one meaningful choice and perhaps one variable. The students' own stories should provide the scale and creativity.
 
 Possible final task:
 
-> Create your own interactive story with at least 10 scenes, multiple endings and at least one state-dependent path.
+> Create your own interactive story with multiple paths and endings. Add state-dependent behavior once the basic scene graph works.
 
-Use **Shared Live Apps** for peer testing before the finished story is published.
+Possible themes can be suggested, but they should not dominate the tutorial:
 
-Potential themes:
-
-* Mystery at school
-* Greek mythology
+* Mystery
 * Science fiction
 * Escape room
+* Mythology
 * Time travel
+
 
 ---
 
@@ -228,7 +296,7 @@ Potential themes:
 
 Add a compact Flutter tutorial rather than a complete Flutter course.
 
-Use Flutter Web so everything works inside the workspace.
+Use Flutter Web so everything works inside the workspace. Flutter Web has been verified in the Workspace and the existing sorting demo is a working starting point; what remains is tutorial authoring.
 
 * [ ] Create the smallest Flutter application
 * [ ] Explain widgets
@@ -282,22 +350,30 @@ For now, keep this as a **contextual teaching tool rather than a permanent main-
 
 ### Automated Testing
 
-* [ ] Unit tests
-* [ ] Assertions
-* [ ] Intentionally introduce bugs
-* [ ] Browser testing with Playwright
-* [ ] Connect automated tests with existing tutorials
+A Playwright-based E2E test setup for tutorials is already in use.
 
-### raylib + WebAssembly
+* [x] Establish browser-based E2E testing for Workspace tutorials
+* [x] Add toolchain coverage for the LaTeX tutorial
+* [x] Add coverage for Pixelflow Canvas
+* [ ] Make Pixelflow Canvas tests reliable in both headed and normal test runs
+* [ ] Add E2E coverage for more tutorials as they are touched
+* [ ] Add Shared Live Apps E2E coverage for share/unshare, authenticated access, WebSocket proxying and automatic unsharing
+* [ ] Keep tests focused on whether the documented student workflow actually works
 
-Use raylib as a simple code-first environment for graphical programs and small games in C.
 
-The final result should run in the browser through WebAssembly so students can publish their programs like other Hackschule web projects.
+### raylib + WebAssembly Tutorial
 
-* [ ] Install/test a minimal raylib toolchain in the workspace
-* [ ] Create a window/canvas and draw basic shapes
+The infrastructure is already working; this item is now about writing a **student-facing raylib tutorial**.
+
+Use raylib as the higher-level, code-first environment for graphical programs and small games in C. PixelRAM is the separate low-level framebuffer route.
+
+* [x] Install and test the raylib + Emscripten toolchain in the Workspace
+* [x] Verify native-style game loops, keyboard/mouse input and browser rendering
+* [x] Verify WebAssembly builds
+* [ ] Write the smallest raylib tutorial program
+* [ ] Draw basic shapes
 * [ ] Handle keyboard and mouse input
-* [ ] Add a simple game loop
+* [ ] Explain the game loop
 * [ ] Build a small graphical game or simulation
 * [ ] Compile the same C program to WebAssembly with Emscripten
 * [ ] Explain at a high level what the generated `.wasm` file is
@@ -312,17 +388,46 @@ Possible projects:
 * Snake
 * Asteroids
 * Particle simulation
-* Cellular automaton
 
-This can serve as the main WebAssembly introduction rather than having a separate WASM tutorial.
+This can serve as the main **high-level WebAssembly/game-programming** introduction. PixelRAM should cover the lower-level framebuffer route instead of trying to merge the two APIs.
 
-### PixelRAM Graphics
 
-After Pixelflow Canvas with Ruby, let students program highly performant low level framebuffer graphics via WASM.
+### PixelRAM Graphics Tutorial / Projects
 
-Old school graphics effects, Game of life, Mandelbrot set, etc.
+PixelRAM itself is complete and published; what remains is the teaching sequence.
 
-Also: doomgeneric + chocolatedescent
+Target group: older students who already understand basic programming and can benefit from seeing what happens below a normal graphics API.
+
+Suggested progression:
+
+* [ ] Start with the Pixelflow Canvas fire demo
+* [ ] Port the same fire algorithm to PixelRAM/C with minimal conceptual changes
+* [ ] Explain indexed color and palettes
+* [ ] Explain why the PixelRAM version is dramatically faster
+* [ ] Introduce direct framebuffer memory after `set_pixel()` / `get_pixel()`
+* [ ] Build a simple plasma or other classic demoscene effect
+* [ ] Implement Conway's Game of Life
+* [ ] Render the Mandelbrot set
+* [ ] Rebuild the existing raycaster with PixelRAM
+* [ ] Rebuild the existing raytracer with PixelRAM
+* [ ] Optionally introduce a simple software triangle/3D rasterizer
+* [ ] Use DOOM as an advanced demonstration of how far the framebuffer abstraction can go
+* [ ] Add Chocolate Descent when the WASM port is stable
+
+Pedagogical progression:
+
+```text
+Pixelflow Canvas / Ruby
+        ↓
+same pixel algorithm in PixelRAM / C
+        ↓
+direct framebuffer memory
+        ↓
+software rendering and performance
+```
+
+Do not turn PixelRAM into a second raylib. Drawing algorithms such as lines, circles, raycasters and rasterizers are valuable precisely because students can implement them on top of the framebuffer.
+
 
 ### Digital Audio
 
@@ -440,13 +545,17 @@ Revisit if we find an approach where the limitations themselves become pedagogic
 
 ## Suggested Order
 
-1. [ ] Web Server
-2. [ ] WebSockets
-3. [ ] Neo4j
-4. [ ] Cryptography
-5. [ ] BIF / Interactive Fiction
+1. [ ] BIF (Branched Interactive Fiction)
+2. [ ] Web Server
+3. [ ] WebSockets
+4. [ ] Neo4j
+5. [ ] Cryptography
 6. [ ] Flutter
+7. [ ] PixelRAM graphics tutorial / older-student projects
+8. [ ] raylib + WebAssembly tutorial
 
-The first two should form a continuous sequence after the existing TCP/IP tutorial.
+The Web Server and WebSockets tutorials should form a continuous sequence after the existing TCP/IP tutorial.
 
 **Shared Live Apps is already implemented infrastructure, not another tutorial to schedule.** Use it throughout the Web Server, WebSockets, BIF and Flutter material whenever students should be able to try each other's running projects.
+
+**PixelRAM and raylib should remain two distinct teaching routes:** raylib for higher-level games/graphics, PixelRAM for low-level framebuffer programming and software rendering.
