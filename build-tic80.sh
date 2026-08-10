@@ -16,9 +16,16 @@ docker build \
     -t "$BUILD_IMAGE" \
     "$ROOT/docker/tic80"
 
-rm -rf "$SOURCE_DIR"
-git clone https://github.com/nesbox/TIC-80.git "$SOURCE_DIR"
+if [[ -d "$SOURCE_DIR/.git" ]]; then
+    printf 'Reusing existing TIC-80 checkout in %s\n' "$SOURCE_DIR"
+    git -C "$SOURCE_DIR" fetch origin "$TIC80_REF"
+else
+    rm -rf "$SOURCE_DIR"
+    git clone https://github.com/nesbox/TIC-80.git "$SOURCE_DIR"
+fi
+
 git -C "$SOURCE_DIR" checkout --detach "$TIC80_REF"
+git -C "$SOURCE_DIR" reset --hard "$TIC80_REF"
 git -C "$SOURCE_DIR" submodule update --init --recursive
 
 # Replace TIC-80's browser-only IDBFS persistence with the Hackschule bridge.
@@ -65,7 +72,18 @@ for name, old, new in [
 path.write_text(source)
 PY
 
+# Older runs may have created root-owned files in the bind-mounted build tree.
+# Repair those once inside Docker; no host sudo is required.
+HOST_UID="$(id -u)"
+HOST_GID="$(id -g)"
 docker run --rm \
+    -v "$SOURCE_DIR:/src" \
+    "$BUILD_IMAGE" \
+    bash -lc "chown -R $HOST_UID:$HOST_GID /src/build"
+
+docker run --rm \
+    --user "$HOST_UID:$HOST_GID" \
+    -e HOME=/tmp \
     -v "$SOURCE_DIR:/src" \
     "$BUILD_IMAGE" \
     bash -lc '
