@@ -1,131 +1,123 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script type="text/javascript" src="umd.js"></script>
-    <title>TIC-80 tiny computer</title>
-
-    <style type="text/css">
-        @font-face {
-            font-family: '04b03Regular';
-            font-style: normal;
-            font-weight: 400;
-            font-display: swap;
-            src: url(04B_03__.TTF) format('truetype');
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            padding-top: 100px;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, .4);
-            font-family: '04b03Regular';
-        }
-
-        .modal-content {
-            font-size: min(5vw, 30px);
-            background-color: rgba(0, 0, 0, .6);
-            border-radius: 1em;
-            box-shadow: 0 0 .2em #fff;
-            backdrop-filter: blur(1em);
-            position: relative;
-            color: #fefefe;
-            margin: auto;
-            padding: .5em 1em;
-            width: min(20em, 90vw);
-        }
-
-        .close {
-            color: #ddd;
-            float: right;
-            font-size: 28px;
-            font-weight: 700;
-        }
-
-        .close:focus, .close:hover {
-            color: #fff;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        #game-frame > div {
-            font-size: 44px;
-            font-family: monospace;
-            font-weight: bold;
-        }
-
-        .game {
-            width: 100vw;
-            height: 100vh;
-        }
-
-        #upload-input {
-            display: none;
-        }
-
-        .upload-label {
-            cursor: pointer;
-            opacity: .6;
-        }
-
-        .upload-label:hover {
-            opacity: 1;
-        }
-    </style>
-</head>
-<body style="margin: 0; padding: 0;">
-    <div class="game" style="margin: 0; position: relative; background: #1a1c2c;">
-        <div id="game-frame" style="cursor: pointer; position: absolute; margin: 0 auto; opacity: 1; background: #1a1c2c; width: 100%; height: 100%;">
-            <div style="text-align: center; color: white; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
-                <p style="margin: 0; font-family: '04b03Regular';">- CLICK TO PLAY -</p>
-            </div>
-        </div>
-
-        <canvas style="width: 100%; height: 100%; margin: 0 auto; display: block; image-rendering: pixelated;"
-                id="canvas"
-                oncontextmenu="event.preventDefault()"
-                onmousedown="window.focus()"></canvas>
-    </div>
-
-    <div id="add-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <p style="text-align: center;">Please choose a file to upload.</p>
-            <p style="text-align: center;">
-                <label class="upload-label" for="upload-input">Choose file...</label>
-                <input type="file" id="upload-input">
+<style>
+    h2 {
+        margin: 1em 0;
+    }
+</style>
+<div class='container'>
+    <div class='row'>
+        <div class='col-md-12'>
+            <p class="mt-4" style="#{running_tests.empty? ? '' : 'display: none;'}">
+                Herzlich willkommen im <strong>Hackschule Workspace</strong>!
+                Hier kannst du direkt im Browser programmieren, ohne dass du irgendetwas installieren musst.
+                Probiere Pro&shy;gram&shy;mier&shy;spra&shy;chen und Technologien aus. Deine Dateien werden automatisch gespeichert
+                und sind von überall abrufbar – in der Schule genauso wie zu Hause.
             </p>
+            <div style='#{user_logged_in? ? 'display: none;' : ''}' class="row">
+                <div class="#{user_logged_in? ? 'col-lg-4 col-md-12 col-sm-12' : 'col-md-6'} mt-4">
+                    <h3><div class='squircle'><img src='/images/hacker.png'></div> Programmieren üben</h3>
+                    <p>
+                        Hier bekommst du deine eigene Programmier&shy;umgebung (Visual Studio Code), in der du direkt loslegen kannst, egal ob in Java, Python, Ruby, JavaScript, Go, Lua, C oder C++. Du kannst auch Dokumente mit L<span style='position: relative; font-size: 90%; top: -0.2em;'>A</span>T<span style='position: relative; top: 0.2em;'>E</span>X setzen.
+                    </p>
+                </div>
+                <div class="#{user_logged_in? ? 'col-lg-4 col-md-12 col-sm-12' : 'col-md-6'} mt-4">
+                    <h3><div class='squircle'><img src='/images/penguin.png'></div> Linux-Befehle lernen</h3>
+                    <p>
+                        Nutze das eingebaute Terminal, um Linux-Kommandos auszuführen und die Kommandozeile im Terminal kennen&shy;zu&shy;lernen. Du kannst auch eigene Shell-Skripte schreiben und ausführen.
+                    </p>
+                </div>
+                <div class="#{user_logged_in? ? 'col-lg-4 col-md-12 col-sm-12' : 'col-md-6'} mt-4">
+                    <h3><div class='squircle'><img src='/images/git.png'></div> Lerne den Umgang mit Git</h3>
+                    <p>
+                        Du kannst Git direkt im Workspace verwenden, um deine Projekte zu verwalten und mit anderen zu teilen. Du kannst auch GitHub-Repositories klonen und bearbeiten.
+                    </p>
+                </div>
+                <div class="col-md-6 mt-4" style="#{user_logged_in? ? 'display: none;' : ''}">
+                    <h3><div class='squircle'><img src='/images/key.png'></div> Wie komme ich rein?</h3>
+                    <p>
+                        Um den Hackschule Workspace zu nutzen, <a href='/login'>musst du dich anmelden</a>. Du brauchst dafür eine E-Mail-Adresse am Gymnasium Steglitz. Du kannst auch nach einer <a href='mailto:specht@hackschule.de'>Einladung</a> fragen.
+                    </p>
+                </div>
+                <hr class="mt-4">
+            </div>
+
+            <!-- <div class="row">
+                <div class="hscol">
+                    <a href="/about" class="tutorial_card3">
+                        <h4>Was ist der Hack&shy;schu&shy;le Work&shy;space?</h4>
+                        <div>
+                            <img class="" src="/cache/6e451920d423ffe5-1024.webp" style="object-position: 50% 50%;">
+                            <div class="card-content">
+                                <h4>Was ist der Hack&shy;schu&shy;le Work&shy;space?</h4>
+                                <div class="abstract">
+                                    Der Work&shy;space der Hack&shy;schu&shy;le ist eine On&shy;line-Ent&shy;wick&shy;lungs&shy;um&shy;ge&shy;bung, die spe&shy;ziell für den Einsatz in der Schule ent&shy;wick&shy;elt wur&shy;de.
+                                    Es handelt sich dabei um eine Web-Version von Visual Studio Code, einem be&shy;lieb&shy;ten Code-Editor, der von vielen Entwicklerinnen und Entwicklern welt&shy;weit ver&shy;wen&shy;det wird.
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="hscol">
+                    <a href="/about" class="tutorial_card3">
+                        <h4>Was ist der Hack&shy;schu&shy;le Work&shy;space?</h4>
+                        <div>
+                            <img class="" src="/cache/6e451920d423ffe5-1024.webp" style="object-position: 50% 50%;">
+                            <div class="card-content">
+                                <h4>Was ist der Hack&shy;schu&shy;le Work&shy;space?</h4>
+                                <div class="abstract">
+                                    Der Work&shy;space der Hack&shy;schu&shy;le ist eine On&shy;line-Ent&shy;wick&shy;lungs&shy;um&shy;ge&shy;bung, die spe&shy;ziell für den Einsatz in der Schule ent&shy;wick&shy;elt wur&shy;de.
+                                    Es handelt sich dabei um eine Web-Version von Visual Studio Code, einem be&shy;lieb&shy;ten Code-Editor, der von vielen Entwicklerinnen und Entwicklern welt&shy;weit ver&shy;wen&shy;det wird.
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="hscol">
+                    <a href="/about" class="tutorial_card3">
+                        <h4>Was ist der Hack&shy;schu&shy;le Work&shy;space?</h4>
+                        <div>
+                            <img class="" src="/cache/6e451920d423ffe5-1024.webp" style="object-position: 50% 50%;">
+                            <div class="card-content">
+                                <h4>Was ist der Hack&shy;schu&shy;le Work&shy;space?</h4>
+                                <div class="abstract">
+                                    Der Work&shy;space der Hack&shy;schu&shy;le ist eine On&shy;line-Ent&shy;wick&shy;lungs&shy;um&shy;ge&shy;bung, die spe&shy;ziell für den Einsatz in der Schule ent&shy;wick&shy;elt wur&shy;de.
+                                    Es handelt sich dabei um eine Web-Version von Visual Studio Code, einem be&shy;lieb&shy;ten Code-Editor, der von vielen Entwicklerinnen und Entwicklern welt&shy;weit ver&shy;wen&shy;det wird.
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="hscol hor3">
+                    <a href="/about" class="tutorial_card3">
+                        <h4>Was ist der Hack&shy;schu&shy;le Work&shy;space?</h4>
+                        <div>
+                            <img class="" src="/cache/6e451920d423ffe5-1024.webp" style="object-position: 50% 50%;">
+                            <div class="card-content">
+                                <h4>Was ist der Hack&shy;schu&shy;le Work&shy;space?</h4>
+                                <div class="abstract">
+                                    Der Work&shy;space der Hack&shy;schu&shy;le ist eine On&shy;line-Ent&shy;wick&shy;lungs&shy;um&shy;ge&shy;bung, die spe&shy;ziell für den Einsatz in der Schule ent&shy;wick&shy;elt wur&shy;de.
+                                    Es handelt sich dabei um eine Web-Version von Visual Studio Code, einem be&shy;lieb&shy;ten Code-Editor, der von vielen Entwicklerinnen und Entwicklern welt&shy;weit ver&shy;wen&shy;det wird.
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="hscol hor2 hor3">
+                    <a href="/about" class="tutorial_card3">
+                        <h4>Was ist der Hack&shy;schu&shy;le Work&shy;space?</h4>
+                        <div>
+                            <img class="" src="/cache/6e451920d423ffe5-1024.webp" style="object-position: 50% 50%;">
+                            <div class="card-content">
+                                <h4>Was ist der Hack&shy;schu&shy;le Work&shy;space?</h4>
+                                <div class="abstract">
+                                    Der Work&shy;space der Hack&shy;schu&shy;le ist eine On&shy;line-Ent&shy;wick&shy;lungs&shy;um&shy;ge&shy;bung, die spe&shy;ziell für den Einsatz in der Schule ent&shy;wick&shy;elt wur&shy;de.
+                                    Es handelt sich dabei um eine Web-Version von Visual Studio Code, einem be&shy;lieb&shy;ten Code-Editor, der von vielen Entwicklerinnen und Entwicklern welt&shy;weit ver&shy;wen&shy;det wird.
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div> -->
+            #{print_content_overview()}
         </div>
     </div>
-
-    <script type="text/javascript">
-        var Module = {
-            canvas: document.getElementById('canvas'),
-        };
-
-        const gameFrame = document.getElementById('game-frame');
-
-        gameFrame.addEventListener('click', function() {
-            const scriptTag = document.createElement('script');
-            scriptTag.src = `tic80.js?v=${Date.now()}`;
-            document.head.appendChild(scriptTag);
-
-            this.remove();
-
-            window.addEventListener('keydown', function(e) {
-                if (e.ctrlKey && (e.code === 'KeyS' || e.code === 'KeyR' || e.code === 'KeyK')) {
-                    e.preventDefault();
-                }
-            });
-        }, {once: true});
-    </script>
-</body>
-</html>
+</div>

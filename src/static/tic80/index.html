@@ -5,7 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript" src="umd.js"></script>
-
     <title>TIC-80 tiny computer</title>
 
     <style type="text/css">
@@ -16,6 +15,7 @@
             font-display: swap;
             src: url(04B_03__.TTF) format('truetype');
         }
+
         .modal {
             display: none;
             position: fixed;
@@ -26,44 +26,36 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color:rgba(0,0,0,.4);
+            background-color: rgba(0, 0, 0, .4);
+            font-family: '04b03Regular';
         }
+
         .modal-content {
             font-size: min(5vw, 30px);
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0, 0, 0, .6);
             border-radius: 1em;
-            box-shadow: 0 0 0.2em #fff;
+            box-shadow: 0 0 .2em #fff;
             backdrop-filter: blur(1em);
             position: relative;
             color: #fefefe;
             margin: auto;
-            padding: 0.5em 1em;
+            padding: .5em 1em;
             width: min(20em, 90vw);
-            -webkit-animation-name: animatetop;
-            -webkit-animation-duration: .4s;
-            animation-name: animatetop;
-            animation-duration:.4s
         }
-        @keyframes animatetop {
-            from {
-                top: -300px;
-                opacity: 0
-            } to {
-                top: 0;
-                opacity: 1;
-            }
-        }
+
         .close {
-            color: #dddddd;
+            color: #ddd;
             float: right;
             font-size: 28px;
             font-weight: 700;
         }
+
         .close:focus, .close:hover {
-            color: #ffffff;
+            color: #fff;
             text-decoration: none;
             cursor: pointer;
         }
+
         #game-frame > div {
             font-size: 44px;
             font-family: monospace;
@@ -75,140 +67,65 @@
             height: 100vh;
         }
 
-        .modal {
-            font-family: '04b03Regular';
-        }
-
         #upload-input {
             display: none;
         }
 
         .upload-label {
             cursor: pointer;
-            opacity: 0.6;
+            opacity: .6;
         }
+
         .upload-label:hover {
             opacity: 1;
         }
     </style>
 </head>
-<body style="margin:0; padding:0;">
-
+<body style="margin: 0; padding: 0;">
     <div class="game" style="margin: 0; position: relative; background: #1a1c2c;">
-
         <div id="game-frame" style="cursor: pointer; position: absolute; margin: 0 auto; opacity: 1; background: #1a1c2c; width: 100%; height: 100%;">
             <div style="text-align: center; color: white; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
                 <p style="margin: 0; font-family: '04b03Regular';">- CLICK TO PLAY -</p>
             </div>
-
         </div>
 
-        <canvas style="width: 100%; height: 100%; margin: 0 auto; display: block; image-rendering: pixelated;" id="canvas" oncontextmenu="event.preventDefault()" onmousedown="window.focus()"></canvas>
+        <canvas style="width: 100%; height: 100%; margin: 0 auto; display: block; image-rendering: pixelated;"
+                id="canvas"
+                oncontextmenu="event.preventDefault()"
+                onmousedown="window.focus()"></canvas>
     </div>
 
     <div id="add-modal" class="modal">
         <div class="modal-content">
-            <span class="close">&times</span>
+            <span class="close">&times;</span>
             <p style="text-align: center;">Please choose a file to upload.</p>
-            <p style="text-align: center;"><label class='upload-label' for='upload-input'>Choose file...</label><input type="file" id="upload-input"></input></p>
+            <p style="text-align: center;">
+                <label class="upload-label" for="upload-input">Choose file...</label>
+                <input type="file" id="upload-input">
+            </p>
         </div>
     </div>
 
     <script type="text/javascript">
         var Module = {
             canvas: document.getElementById('canvas'),
-            // arguments:['/cart/fbd6bf4692b9fff643442277911ceb97/cart.tic'],
         };
 
-        function _arrayBufferToBase64(buffer) {
-            var binary = '';
-            var bytes = new Uint8Array(buffer);
-            var len = bytes.byteLength;
-            for (var i = 0; i < len; i++) {
-                binary += String.fromCharCode(bytes[ i ]);
-            }
-            return window.btoa(binary);
-        }
+        const gameFrame = document.getElementById('game-frame');
 
-        Module.hs_load_initial_dirs_and_files = async function() {
-            for (let entry of Module.hs_initial_dirs) {
-                try {
-                    FS.mkdirTree(entry.path);
-                } catch (e) {
-                    console.log(e)
+        gameFrame.addEventListener('click', function() {
+            const scriptTag = document.createElement('script');
+            scriptTag.src = `tic80.js?v=${Date.now()}`;
+            document.head.appendChild(scriptTag);
+
+            this.remove();
+
+            window.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && (e.code === 'KeyS' || e.code === 'KeyR' || e.code === 'KeyK')) {
+                    e.preventDefault();
                 }
-            }
-            for (let entry of Module.hs_initial_files) {
-                try {
-                    FS.writeFile(entry.path, Uint8Array.from(atob(entry.contents), c => c.charCodeAt(0)), { canOwn: true });
-                } catch (e) {
-                    console.log(e)
-                }
-            }
-        }
-
-        Module.hs_fs_write = async function(filename, buffer, size) {
-            filename = UTF8ToString(filename);
-            buffer = HEAPU8.subarray(buffer, buffer + size);
-            let base64String = _arrayBufferToBase64(buffer);
-            let entry = {path: filename, file: { contents: base64String}};
-            await fetch('/api/fs_write', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(entry) })
-            .catch((error) => {});
-        }
-
-        Module.hs_fs_delfile = async function(path, workdir) {
-            path = UTF8ToString(path);
-            workdir = UTF8ToString(workdir);
-            if (workdir.trim() !== '') path = workdir + '/' + path;
-            let entry = {path: path};
-            await fetch('/api/fs_delfile', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(entry) })
-            .catch((error) => {});
-        }
-
-        Module.hs_fs_makedir = async function(path, workdir) {
-            path = UTF8ToString(path);
-            workdir = UTF8ToString(workdir);
-            if (workdir.trim() !== '') path = workdir + '/' + path;
-            let entry = {path: path};
-            await fetch('/api/fs_makedir', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(entry) })
-            .catch((error) => {});
-        }
-
-        Module.hs_fs_deldir = async function(path, workdir) {
-            path = UTF8ToString(path);
-            workdir = UTF8ToString(workdir);
-            if (workdir.trim() !== '') path = workdir + '/' + path;
-            let entry = {path: path};
-            await fetch('/api/fs_deldir', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(entry) })
-            .catch((error) => {});
-        }
-
-        const gameFrame = document.getElementById('game-frame')
-
-        function writeArrayToMemory(array, buffer) {
-            HEAP8.set(array, buffer);
-        }
-
-        fetch('/api/hs_get_all_stored_dirs_and_files', { method: 'GET', })
-        .then(response => response.json())
-        .then(data => {
-            Module.hs_initial_dirs = data.dirs;
-            Module.hs_initial_files = data.files;
-            gameFrame.addEventListener('click', function() {
-                let scriptTag = document.createElement('script'),
-                firstScriptTag = document.getElementsByTagName('script')[0];
-                scriptTag.src = `tic80.js?cache_buster=#{Random.rand(1000000)}`;
-                firstScriptTag.parentNode.insertBefore(scriptTag, firstScriptTag);
-                this.remove();
-                window.addEventListener('keydown', function(e) {
-                    if (e.ctrlKey && (e.code === 'KeyS' || e.code === 'KeyR' || e.code === 'KeyK')) {
-                        e.preventDefault();
-                    }
-                });
             });
-        })
-        .catch((error) => {
-        });
+        }, {once: true});
     </script>
 </body>
 </html>
