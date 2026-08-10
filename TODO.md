@@ -197,46 +197,42 @@ Change the state and rebuild the interface.
 
 ---
 
-### Shared Live Apps / Classroom Network
+### Shared Live Apps
 
-Allow students to explicitly share a running port with other authenticated Hackschule users.
+Allow students to explicitly share a running web port with other authenticated Hackschule users.
 
-This should turn the individual workspaces into a small classroom network for client/server, WebSocket and multiplayer projects.
+This should make it easy to show browser-based projects such as Anaglyph scenes, BIF stories, WebSocket demos and multiplayer applications before publishing them publicly.
 
-* [ ] Detect student services listening on workspace ports
+* [ ] Detect student web services listening on workspace ports
 * [ ] Keep ports private by default
 * [ ] Let a student share an individual port
-* [ ] Let the student give the shared service a short title
-* [ ] Show currently shared services from other students
-* [ ] Show the owner, title and port
-* [ ] Allow another student to open a shared web application directly
+* [ ] Use the port number as the app label; do not require a user-supplied title
+* [ ] Show the student's full name and port for every shared app
+* [ ] Show shared apps from the current user's group first
+* [ ] Show shared apps from all other groups in a second section
+* [ ] Allow another authenticated student to open a shared web application directly
 * [ ] Support WebSocket connections through the shared route
-* [ ] Allow students' own programs to connect to another student's shared service
 * [ ] Keep VS Code, terminal, files and all non-shared ports inaccessible
 * [ ] Keep existing private workspace/session authorization unchanged
+* [ ] Use a stable share URL for each user/port pair
+* [ ] Automatically deactivate a share when its port stops listening
+* [ ] Reusing the same port and sharing it again should reactivate the old URL
 * [ ] Allow the owner to revoke a share even when the underlying server is offline
-* [ ] Clearly distinguish persistent share metadata from whether the port is currently running
-* [ ] Use POST/DELETE-style actions for creating and revoking shares rather than GET routes
+* [ ] Keep a workspace container running while it has an active shared port
+* [ ] Use POST-style actions for creating and revoking shares rather than GET routes
 * [ ] Handle stopped workspaces and stale/offline shares cleanly
 
 Possible classroom uses:
 
+* Shared Anaglyph scenes
+* BIF / Interactive Fiction stories
 * Shared pixel canvas
-* Multiplayer games
-* Chat servers
-* Student-built APIs
-* Client/server exercises between two groups
-* Protocol implementation exercises
+* Multiplayer browser games
+* WebSocket demos
+* Student-built HTTP APIs
 * Collaborative applications
 
-A useful end goal would be that a student can share a service and another student can either open it in the browser or connect to it from their own workspace, for example:
-
-```text
-curl http://anna:8000/
-nc ben 5000
-```
-
-Only explicitly shared ports should be reachable.
+Only explicitly shared ports should be reachable, and only authenticated Workspace users should be able to open them.
 
 ---
 

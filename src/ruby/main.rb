@@ -500,6 +500,199 @@ class Main < Sinatra::Base
         end
     end
 
+    LIVE_APP_MIN_PORT = 1024
+    LIVE_APP_MAX_PORT = 65535
+    LIVE_APP_BLOCKED_PORTS = Set.new([8443])
+    LIVE_APP_PIN_PATH = '/internal/live_app_pins.json'
+
+    def self.live_app_port_allowed?(port)
+        port = port.to_i
+        port >= LIVE_APP_MIN_PORT && port <= LIVE_APP_MAX_PORT && !LIVE_APP_BLOCKED_PORTS.include?(port)
+    end
+
+    def self.live_app_open_ports_for_email(email)
+        fs_tag = fs_tag_for_email(email)
+        command = "docker exec hs_code_#{fs_tag} sh -c 'cat /proc/net/tcp /proc/net/tcp6 2>/dev/null'"
+        output = shell_capture(command, :timeout => shell_timeout(:docker_inspect), :allow_failure => true)
+        ports = Set.new
+
+        output.each_line do |line|
+            parts = line.strip.split(/\s+/)
+            next unless parts.size >= 4
+            next unless parts[3] == '0A' # TCP_LISTEN
+
+            local_address = parts[1]
+            next unless local_address && local_address.include?(':')
+            port = local_address.split(':').last.to_i(16)
+            ports << port if live_app_port_allowed?(port)
+        end
+
+        ports.to_a.sort
+    rescue => e
+        STDERR.puts ">>> Could not inspect live-app ports for #{email}: #{e.class}: #{e.message}"
+        []
+    end
+
+    def self.active_live_app_rows
+        2.times do
+            begin
+                return $neo4j.neo4j_query(<<~END_OF_QUERY).to_a
+                    MATCH (u:User)-[:SHARES_LIVE_APP]->(s:LiveAppShare {active: TRUE})
+                    RETURN u.email, s.port, s.tag;
+                END_OF_QUERY
+            rescue
+                $neo4j = Neo4jGlobal.new
+            end
+        end
+        []
+    end
+
+    def self.write_live_app_pins(rows)
+        fs_tags = rows.map { |row| fs_tag_for_email(row['u.email']) }.uniq.sort
+        FileUtils.mkdir_p(File.dirname(LIVE_APP_PIN_PATH))
+        tmp = "#{LIVE_APP_PIN_PATH}.tmp"
+        File.write(tmp, {:updated_at => Time.now.to_i, :fs_tags => fs_tags}.to_json)
+        File.rename(tmp, LIVE_APP_PIN_PATH)
+    rescue => e
+        STDERR.puts ">>> Could not write live-app pin file: #{e.class}: #{e.message}"
+    end
+
+    def self.reconcile_live_apps!(refresh_nginx: true)
+        rows = active_live_app_rows
+        open_ports_by_email = {}
+        stale_tags = []
+
+        rows.each do |row|
+            email = row['u.email']
+            open_ports_by_email[email] ||= live_app_open_ports_for_email(email).to_set
+            stale_tags << row['s.tag'] unless open_ports_by_email[email].include?(row['s.port'].to_i)
+        end
+
+        stale_tags.each do |tag|
+            $neo4j.neo4j_query(<<~END_OF_QUERY, :tag => tag, :updated_at => Time.now.to_i)
+                MATCH (s:LiveAppShare {tag: $tag})
+                SET s.active = FALSE, s.updated_at = $updated_at;
+            END_OF_QUERY
+        end
+
+        rows.reject! { |row| stale_tags.include?(row['s.tag']) }
+        write_live_app_pins(rows)
+
+        if refresh_nginx && !stale_tags.empty?
+            STDERR.puts ">>> Deactivated #{stale_tags.size} stale live-app share(s)."
+            refresh_nginx_config
+        end
+
+        rows
+    rescue => e
+        STDERR.puts ">>> Live-app reconciliation failed: #{e.class}: #{e.message}"
+        []
+    end
+
+    def live_app_url(tag)
+        scheme = DEVELOPMENT ? 'http' : 'https'
+        host = WEBSITE_HOST
+        "#{scheme}://live-#{tag}.#{host}/"
+    end
+
+    def print_live_apps
+        return '' unless user_logged_in?
+
+        email = @session_user[:email]
+        open_ports = Main.live_app_open_ports_for_email(email)
+        my_shares = {}
+        neo4j_query(<<~END_OF_QUERY, :email => email).each do |row|
+            MATCH (u:User {email: $email})-[:SHARES_LIVE_APP]->(s:LiveAppShare)
+            RETURN s;
+        END_OF_QUERY
+            share = row['s']
+            my_shares[share[:port].to_i] = share
+        end
+
+        active_apps = neo4j_query(<<~END_OF_QUERY).map do |row|
+            MATCH (u:User)-[:SHARES_LIVE_APP]->(s:LiveAppShare {active: TRUE})
+            RETURN u.email, s.port, s.tag;
+        END_OF_QUERY
+            owner_email = row['u.email']
+            next if owner_email == email
+            invitation = @@invitations[owner_email] || {}
+            {
+                :email => owner_email,
+                :name => invitation[:name] || owner_email,
+                :group => invitation[:group],
+                :port => row['s.port'].to_i,
+                :tag => row['s.tag'],
+            }
+        end.compact
+
+        my_group = (@@invitations[email] || {})[:group]
+        same_group, other_group = active_apps.partition { |app| app[:group] == my_group }
+        sorter = lambda { |app| [app[:name].to_s.downcase, app[:port]] }
+        same_group.sort_by!(&sorter)
+        other_group.sort_by!(&sorter)
+
+        render_apps = lambda do |apps|
+            return "<p class='text-body-secondary'>Zurzeit ist hier nichts geteilt.</p>" if apps.empty?
+            apps.map do |app|
+                name = CGI.escapeHTML(app[:name].to_s)
+                url = CGI.escapeHTML(live_app_url(app[:tag]))
+                "<a class='list-group-item list-group-item-action d-flex justify-content-between align-items-center' target='_blank' rel='noopener' href='#{url}'><strong>#{name}</strong><span class='badge text-bg-secondary'>Port #{app[:port]}</span></a>"
+            end.join
+        end
+
+        StringIO.open do |io|
+            io.puts "<section id='live-apps' class='my-4'>"
+            io.puts "<h2>Geteilte Apps</h2>"
+            io.puts "<p>Hier kannst du laufende Web-Apps mit anderen angemeldeten Workspace-Nutzern teilen.</p>"
+            io.puts "<h3>Meine offenen Ports</h3>"
+            if open_ports.empty?
+                io.puts "<p class='text-body-secondary'>Momentan wurde in deinem Workspace kein teilbarer Web-Port gefunden.</p>"
+            else
+                io.puts "<div class='list-group mb-4'>"
+                open_ports.each do |port|
+                    share = my_shares[port]
+                    active = share && share[:active] == true
+                    io.puts "<div class='list-group-item d-flex justify-content-between align-items-center'>"
+                    io.puts "<span><strong>Port #{port}</strong>#{active ? " <span class='badge text-bg-success ms-2'>geteilt</span>" : ''}</span>"
+                    if active
+                        url = CGI.escapeHTML(live_app_url(share[:tag]))
+                        io.puts "<span><a class='btn btn-sm btn-outline-secondary me-2' target='_blank' rel='noopener' href='#{url}'>Öffnen</a><button class='btn btn-sm btn-outline-danger' onclick=\"liveAppAction('unshare', #{port})\">Nicht mehr teilen</button></span>"
+                    else
+                        io.puts "<button class='btn btn-sm btn-primary' onclick=\"liveAppAction('share', #{port})\">Teilen</button>"
+                    end
+                    io.puts "</div>"
+                end
+                io.puts "</div>"
+            end
+
+            io.puts "<h3>Aus deiner Gruppe</h3>"
+            io.puts "<div class='list-group mb-4'>#{render_apps.call(same_group)}</div>" unless same_group.empty?
+            io.puts render_apps.call(same_group) if same_group.empty?
+            io.puts "<h3>Weitere geteilte Apps</h3>"
+            io.puts "<div class='list-group mb-4'>#{render_apps.call(other_group)}</div>" unless other_group.empty?
+            io.puts render_apps.call(other_group) if other_group.empty?
+            io.puts "</section>"
+            io.puts <<~HTML
+                <script>
+                async function liveAppAction(action, port) {
+                    try {
+                        const response = await fetch(`/api/live_apps/${action}`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({port: port})
+                        });
+                        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                        location.reload();
+                    } catch (error) {
+                        alert('Die Freigabe konnte nicht geändert werden. Bitte versuche es noch einmal.');
+                    }
+                }
+                </script>
+            HTML
+            io.string
+        end
+    end
+
     def workspace_url()
         if user_logged_in?
             server_tag = @session_user[:server_tag]
@@ -529,7 +722,8 @@ class Main < Sinatra::Base
                 :server_sid => nil,
                 :server_tag => nil,
                 :share_tag => nil,
-                :watch_tags => {} # watch_tag => server_id of watcher
+                :watch_tags => {}, # watch_tag => server_id of watcher
+                :live_apps => {},  # live share tag => port
             }
         end
 
@@ -583,6 +777,15 @@ class Main < Sinatra::Base
                 # watch_tag_ip_pairs << "#{watch_tag} #{running_servers[fs_tag][:ip]}:8443;"
                 running_servers[fs_tag][:watch_tags][watch_tag] = watcher[:server_sid]
             end
+        end
+
+        $neo4j.neo4j_query(<<~END_OF_QUERY).each do |row|
+            MATCH (u:User)-[:SHARES_LIVE_APP]->(s:LiveAppShare {active: TRUE})
+            RETURN u.email, s.port, s.tag;
+        END_OF_QUERY
+            fs_tag = fs_tag_for_email(row['u.email'])
+            next unless running_servers.include?(fs_tag)
+            running_servers[fs_tag][:live_apps][row['s.tag']] = row['s.port'].to_i
         end
 
         STDERR.puts ">>> Got running servers: #{running_servers.to_yaml}"
@@ -658,6 +861,24 @@ class Main < Sinatra::Base
                 default "";
                 #{running_servers.map { |fs_tag, info| if info[:server_sid] then "#{info[:server_tag]} #{info[:server_sid]};" else nil end}.compact.join("\n    ")}
                 #{running_servers.map { |fs_tag, info| if info[:server_tag] then info[:watch_tags].map { |watch_tag, server_sid | "#{watch_tag} #{server_sid};" }.flatten.compact.join("\n    ") else nil end}.compact.join("\n    ")}
+            }
+
+            # Shared live apps: stable tag -> workspace proxy + port
+            map $host $hs_live_tag {
+                default "";
+                ~^live-(?<lt>[a-z0-9]+)\.#{WEBSITE_HOST.split(':').first.gsub('.', '\\.')}$ $lt;
+            }
+            map $hs_live_tag $hs_live_upstream {
+                default "";
+                #{running_servers.map { |_fs_tag, info| info[:live_apps].map { |tag, _port| "#{tag} http://#{info[:ip]}:8443;" } }.flatten.join("\n    ")}
+            }
+            map $hs_live_tag $hs_live_port {
+                default "";
+                #{running_servers.map { |_fs_tag, info| info[:live_apps].map { |tag, port| "#{tag} #{port};" } }.flatten.join("\n    ")}
+            }
+            map $hs_live_upstream $hs_live_no_upstream {
+                ""      1;
+                default 0;
             }
 
             # deny if upstream missing
@@ -829,6 +1050,50 @@ class Main < Sinatra::Base
                     proxy_redirect ~^(https?://[a-z0-9]+-[0-9]+\\.#{WEBSITE_HOST.split(':').first.gsub('.', '\\.')})(/.*)$ $1$external_port$2;
 
                     proxy_pass $hs_upstream;
+                }
+            }
+
+            # ==========================================
+            # Shared live apps: live-<tag>.#{WEBSITE_HOST.split(':').first}
+            # ==========================================
+            server {
+                listen 80;
+                server_name ~^live-[a-z0-9]+\.#{WEBSITE_HOST.split(':').first.gsub('.', '\\.')}$;
+                client_max_body_size 100M;
+                access_log /var/log/nginx/access.log custom;
+                charset utf-8;
+
+                location = /_hs_live_auth {
+                    internal;
+                    proxy_pass http://ruby:9292/api/live_app_authorize;
+                    proxy_method GET;
+                    proxy_pass_request_body off;
+                    proxy_set_header Content-Length "";
+                    proxy_set_header Cookie $http_cookie;
+                }
+
+                location / {
+                    if ($hs_live_no_upstream) { return 404; }
+                    auth_request /_hs_live_auth;
+
+                    rewrite ^/(.*)$ /proxy/$hs_live_port/$1 break;
+                    include /etc/nginx/snippets/proxy_ws.conf;
+
+                    # Never expose Hackschule authentication material to student code.
+                    proxy_set_header Cookie "";
+                    proxy_set_header Authorization "";
+                    proxy_hide_header Set-Cookie;
+
+                    set $external_port "";
+                    if ($http_host ~* :(?<hp>\d+)$) { set $external_port :$hp; }
+
+                    proxy_redirect ~^/proxy/[0-9]+(/.*)$ $1;
+                    proxy_redirect ~^/proxy/[0-9]+/?$ /;
+                    proxy_redirect ~^https?://[^/]+/proxy/[0-9]+(/.*)$ $1;
+                    proxy_redirect ~^https?://[^/]+/proxy/[0-9]+/?$ /;
+                    proxy_redirect ~^(https?://live-[a-z0-9]+\.#{WEBSITE_HOST.split(':').first.gsub('.', '\\.')})(/.*)$ $1$external_port$2;
+
+                    proxy_pass $hs_live_upstream;
                 }
             }
 
@@ -1438,6 +1703,7 @@ class Main < Sinatra::Base
             'Database/name',
             'File/sha1',
             'Language/name',
+            'LiveAppShare/tag',
             'LoginRequest/tag',
             'Session/sid',
             'Solved/id',
@@ -1463,6 +1729,7 @@ class Main < Sinatra::Base
         @@client_ids_for_email = {}
         @@threads_for_client_id = {}
         $neo4j.setup_constraints_and_indexes(CONSTRAINTS_LIST, INDEX_LIST)
+        self.reconcile_live_apps!(:refresh_nginx => false)
         self.refresh_nginx_config()
 
         @@content = {}
@@ -1484,6 +1751,13 @@ class Main < Sinatra::Base
             loop do
                 system("ruby housekeeping.rb")
                 sleep 3600
+            end
+        end
+
+        Thread.new do
+            loop do
+                sleep 10
+                Main.reconcile_live_apps!
             end
         end
         # --- RuboCop server + config (layout-only formatting) ---
@@ -2301,8 +2575,13 @@ class Main < Sinatra::Base
     def stop_server(email)
         container_name = fs_tag_for_email(email)
 
-        shell_ok("docker kill hs_code_#{container_name}", :timeout => shell_timeout(:docker_kill), :allow_failure => true)
+        neo4j_query(<<~END_OF_QUERY, :email => email, :updated_at => Time.now.to_i)
+            MATCH (u:User {email: $email})-[:SHARES_LIVE_APP]->(s:LiveAppShare {active: TRUE})
+            SET s.active = FALSE, s.updated_at = $updated_at;
+        END_OF_QUERY
 
+        shell_ok("docker kill hs_code_#{container_name}", :timeout => shell_timeout(:docker_kill), :allow_failure => true)
+        Main.reconcile_live_apps!(:refresh_nginx => false)
         Main.refresh_nginx_config()
     end
 
@@ -2476,6 +2755,48 @@ class Main < Sinatra::Base
         respond(:yay => 'sure')
     end
 
+    get '/api/live_app_authorize' do
+        halt(user_logged_in? ? 204 : 401)
+    end
+
+    post '/api/live_apps/share' do
+        assert(user_logged_in?)
+        data = parse_request_data(:required_keys => [:port], :types => {:port => Integer})
+        port = data[:port]
+        assert(Main.live_app_port_allowed?(port), 'invalid_port')
+        assert(Main.live_app_open_ports_for_email(@session_user[:email]).include?(port), 'port_not_open')
+
+        tag = gen_share_tag()
+        row = neo4j_query_expect_one(<<~END_OF_QUERY, :email => @session_user[:email], :port => port, :tag => tag, :updated_at => Time.now.to_i)
+            MATCH (u:User {email: $email})
+            MERGE (u)-[:SHARES_LIVE_APP]->(s:LiveAppShare {port: $port})
+            ON CREATE SET s.tag = $tag, s.created_at = $updated_at
+            SET s.active = TRUE, s.updated_at = $updated_at
+            RETURN s;
+        END_OF_QUERY
+
+        Main.reconcile_live_apps!(:refresh_nginx => false)
+        Main.refresh_nginx_config()
+        share = row['s']
+        respond(:yay => 'sure', :port => port, :tag => share[:tag], :url => live_app_url(share[:tag]))
+    end
+
+    post '/api/live_apps/unshare' do
+        assert(user_logged_in?)
+        data = parse_request_data(:required_keys => [:port], :types => {:port => Integer})
+        port = data[:port]
+        assert(Main.live_app_port_allowed?(port), 'invalid_port')
+
+        neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email], :port => port, :updated_at => Time.now.to_i)
+            MATCH (u:User {email: $email})-[:SHARES_LIVE_APP]->(s:LiveAppShare {port: $port})
+            SET s.active = FALSE, s.updated_at = $updated_at;
+        END_OF_QUERY
+
+        Main.reconcile_live_apps!(:refresh_nginx => false)
+        Main.refresh_nginx_config()
+        respond(:yay => 'sure', :port => port)
+    end
+
     post '/api/share_server' do
         assert(user_logged_in?)
 
@@ -2614,6 +2935,8 @@ class Main < Sinatra::Base
             du_for_fs_tag = JSON.parse(File.read('/internal/du_for_fs_tag.json'))
         rescue
         end
+
+        STDERR.puts "email_for_tag: #{email_for_tag.to_yaml}"
 
         info_for_tag = {}
         inspect_json = shell_capture("docker inspect workspace", :timeout => shell_timeout(:docker_inspect), :allow_failure => true)
