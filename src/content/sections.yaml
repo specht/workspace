@@ -41,8 +41,8 @@
     Präsentationen und verzweigte Geschichten, in denen Leserinnen und Leser
     eigene Entscheidungen treffen können.
   entries:
-    - latex
     - showerjs
+    - latex
 
 - key: networks
   compact: true

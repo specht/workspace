@@ -8,7 +8,6 @@ inspect.first['Containers'].values.each do |container|
     name = container['Name']
     next unless name[0, 8] == 'hs_code_'
     fs_tag = name.sub('hs_code_', '')
-    ip = container['IPv4Address'].split('/').first
     running_servers << fs_tag
 end
 
