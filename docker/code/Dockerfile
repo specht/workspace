@@ -1,7 +1,35 @@
 # syntax=docker/dockerfile:1.7
 
-ARG CODE_SERVER_IMAGE=linuxserver/code-server:4.129.0
+# ====================================================================
+# Version pins
+#
+# Keep defaults here so upgrades are easy to find.
+# Each ARG is redeclared only immediately before the stage/layer that
+# consumes it, which avoids unnecessary BuildKit cache invalidation.
+# ====================================================================
 
+ARG CODE_SERVER_IMAGE=linuxserver/code-server:4.131.0
+
+ARG TL_YEAR=2026
+ARG FLUTTER_VERSION=3.44.9
+ARG EMSCRIPTEN_VERSION=6.0.6
+ARG RAYLIB_VERSION=6.0
+
+ARG NODE_MAJOR=24
+ARG GNUCOBOL_MAJOR=4
+ARG GUILE_VERSION=3.0
+ARG LUA_VERSION=5.4
+ARG JAVA_VERSION=25
+ARG SMALLTALK_VERSION=3.2.5
+ARG HUGO_VERSION=0.164.0
+ARG DOTNET_VERSION=10.0
+ARG POWERSHELL_VERSION=7.6.4
+ARG DART_VERSION=3.12.2
+
+ARG HACKSCHULE_SIDEBAR_INIT_VERSION=0.1.0
+ARG HACKSCHULE_CHECKPOINTS_VERSION=0.6.0
+ARG HACKSCHULE_KEYBOARD_TUTORIAL_VERSION=0.5.3
+ARG BIF_AUTHORING_TOOLS_VERSION=0.2.0
 
 # ====================================================================
 # TeX Live stage
@@ -13,7 +41,6 @@ ARG CODE_SERVER_IMAGE=linuxserver/code-server:4.129.0
 FROM ${CODE_SERVER_IMAGE} AS texlive
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG TL_YEAR=2025
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
@@ -30,6 +57,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         unzip \
         git \
         make
+
+ARG TL_YEAR
 
 RUN wget -q \
         https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz \
@@ -79,7 +108,6 @@ RUN /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/tlmgr \
 
 FROM ${CODE_SERVER_IMAGE} AS flutter
 
-ARG FLUTTER_VERSION=3.44.7
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
@@ -93,6 +121,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         wget \
         xz-utils \
         libglu1-mesa
+
+ARG FLUTTER_VERSION
 
 RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-downloads \
     set -eux; \
@@ -124,8 +154,6 @@ RUN git config --system --add safe.directory /opt/flutter \
 FROM ${CODE_SERVER_IMAGE} AS raylib-web
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG EMSCRIPTEN_VERSION=5.0.3
-ARG RAYLIB_VERSION=6.0
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
@@ -139,6 +167,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         wget \
         xz-utils
 
+ARG EMSCRIPTEN_VERSION
+
 # Emscripten
 RUN git clone https://github.com/emscripten-core/emsdk.git /opt/emsdk \
     && cd /opt/emsdk \
@@ -146,6 +176,8 @@ RUN git clone https://github.com/emscripten-core/emsdk.git /opt/emsdk \
     && ./emsdk activate ${EMSCRIPTEN_VERSION}
 
 # raylib
+ARG RAYLIB_VERSION
+
 RUN wget -q \
         "https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz" \
         -O /tmp/raylib.tar.gz \
@@ -170,10 +202,6 @@ RUN cd /opt/emsdk \
 FROM ${CODE_SERVER_IMAGE}
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG TL_YEAR=2025
-ARG DART_VERSION=3.8.2
-ARG HUGO_VERSION=0.148.1
-ARG POWERSHELL_VERSION=7.4.11
 
 # --------------------------------------------------------------------
 # Copy the large, stable SDKs/toolchains FIRST.
@@ -216,6 +244,8 @@ RUN chmod -R a+rwX /opt/flutter \
 # Environment
 # --------------------------------------------------------------------
 
+ARG TL_YEAR
+
 ENV TEXLIVE_DIR=/usr/local/texlive/${TL_YEAR}
 ENV PATH=${TEXLIVE_DIR}/bin/x86_64-linux:$PATH
 ENV MANPATH=${TEXLIVE_DIR}/texmf-dist/doc/man
@@ -242,10 +272,16 @@ RUN usermod -d /workspace abc
 # builds instead of downloading everything again after a cache miss.
 # --------------------------------------------------------------------
 
+ARG NODE_MAJOR
+ARG GNUCOBOL_MAJOR
+ARG GUILE_VERSION
+ARG LUA_VERSION
+ARG JAVA_VERSION
+
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     rm -f /etc/apt/apt.conf.d/docker-clean \
-    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && curl -fsSL "https://deb.nodesource.com/setup_${NODE_MAJOR}.x" | bash - \
     && apt-get update \
     && apt-get install --no-install-recommends -y \
         apt-transport-https \
@@ -271,11 +307,11 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         gfortran \
         ghostscript \
         git \
-        gnucobol4 \
+        gnucobol${GNUCOBOL_MAJOR} \
         gnupg \
         golang-go \
         graphviz \
-        guile-3.0 \
+        guile-${GUILE_VERSION} \
         host \
         htop \
         imagemagick \
@@ -301,7 +337,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         libsqlite3-dev \
         libssl-dev \
         libtiff5-dev \
-        lua5.4 \
+        lua${LUA_VERSION} \
         man-db \
         manpages \
         manpages-dev \
@@ -315,7 +351,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         nasm \
         nodejs \
         ntpdate \
-        openjdk-17-jdk-headless \
+        openjdk-${JAVA_VERSION}-jdk-headless \
         perl \
         pgcli \
         php-cli \
@@ -350,12 +386,14 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # Download is persistent between builds and compilation uses all CPUs.
 # --------------------------------------------------------------------
 
+ARG SMALLTALK_VERSION
+
 RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-downloads \
     set -eux; \
-    archive=/var/cache/hackschule-downloads/smalltalk-3.2.5.tar.gz; \
+    archive=/var/cache/hackschule-downloads/smalltalk-${SMALLTALK_VERSION}.tar.gz; \
     if [ ! -s "$archive" ]; then \
         wget -q \
-            https://ftp.fau.de/gnu/smalltalk/smalltalk-3.2.5.tar.gz \
+            "https://ftp.fau.de/gnu/smalltalk/smalltalk-${SMALLTALK_VERSION}.tar.gz" \
             -O "${archive}.tmp"; \
         mv "${archive}.tmp" "$archive"; \
     fi; \
@@ -375,6 +413,8 @@ RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-down
 # Hugo
 # --------------------------------------------------------------------
 
+ARG HUGO_VERSION
+
 RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-downloads \
     set -eux; \
     deb=/var/cache/hackschule-downloads/hugo_${HUGO_VERSION}_linux-amd64.deb; \
@@ -391,17 +431,21 @@ RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-down
 # .NET
 # --------------------------------------------------------------------
 
+ARG DOTNET_VERSION
+
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     add-apt-repository ppa:dotnet/backports -y \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
-        dotnet-sdk-9.0
+        dotnet-sdk-${DOTNET_VERSION}
 
 
 # --------------------------------------------------------------------
 # PowerShell
 # --------------------------------------------------------------------
+
+ARG POWERSHELL_VERSION
 
 RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-downloads \
     set -eux; \
@@ -426,6 +470,8 @@ RUN curl -qsL 'https://install.pwndbg.re' \
 # --------------------------------------------------------------------
 # Standalone Dart SDK
 # --------------------------------------------------------------------
+
+ARG DART_VERSION
 
 RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-downloads \
     set -eux; \
@@ -517,17 +563,22 @@ RUN echo 'export GEM_HOME=$HOME/.gem' >> /root/.bashrc
 # change frequently.
 # --------------------------------------------------------------------
 
-COPY hackschule-sidebar-init-0.1.0.vsix \
-    /app/extensions/hackschule-sidebar-init-0.1.0.vsix
+ARG HACKSCHULE_SIDEBAR_INIT_VERSION
+ARG HACKSCHULE_CHECKPOINTS_VERSION
+ARG HACKSCHULE_KEYBOARD_TUTORIAL_VERSION
+ARG BIF_AUTHORING_TOOLS_VERSION
 
-COPY hackschule-checkpoints-0.6.0.vsix \
-    /app/extensions/hackschule-checkpoints-0.6.0.vsix
+COPY hackschule-sidebar-init-${HACKSCHULE_SIDEBAR_INIT_VERSION}.vsix \
+    /app/extensions/hackschule-sidebar-init-${HACKSCHULE_SIDEBAR_INIT_VERSION}.vsix
 
-COPY hackschule-keyboard-tutorial-0.5.3.vsix \
-    /app/extensions/hackschule-keyboard-tutorial-0.5.3.vsix
+COPY hackschule-checkpoints-${HACKSCHULE_CHECKPOINTS_VERSION}.vsix \
+    /app/extensions/hackschule-checkpoints-${HACKSCHULE_CHECKPOINTS_VERSION}.vsix
 
-COPY bif-authoring-tools-0.2.0.vsix \
-    /app/extensions/bif-authoring-tools-0.2.0.vsix
+COPY hackschule-keyboard-tutorial-${HACKSCHULE_KEYBOARD_TUTORIAL_VERSION}.vsix \
+    /app/extensions/hackschule-keyboard-tutorial-${HACKSCHULE_KEYBOARD_TUTORIAL_VERSION}.vsix
+
+COPY bif-authoring-tools-${BIF_AUTHORING_TOOLS_VERSION}.vsix \
+    /app/extensions/bif-authoring-tools-${BIF_AUTHORING_TOOLS_VERSION}.vsix
 
 
 # --------------------------------------------------------------------

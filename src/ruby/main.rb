@@ -13,6 +13,7 @@ require 'open3'
 require 'redcarpet'
 require 'rouge'
 require 'securerandom'
+require 'shellwords'
 require 'set'
 require 'sinatra/base'
 require 'sinatra/cookies'
@@ -262,12 +263,12 @@ class Main < Sinatra::Base
     # Run a shell command with a hard timeout. We keep shell strings here because
     # the existing code already builds commands that rely on shell syntax and
     # environment interpolation.
-    def self.shell_capture(command, timeout: nil, allow_failure: false)
+    def self.shell_capture(command, timeout: nil, allow_failure: false, log_command: true)
         timeout ||= shell_timeout(:default)
         timeout = Integer(timeout)
 
         t0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-        STDERR.puts ">>> CMD BEGIN timeout=#{timeout}s: #{command}"
+        STDERR.puts ">>> CMD BEGIN timeout=#{timeout}s: #{command}" if log_command
 
         stdout_data = ''
         stderr_data = ''
@@ -334,7 +335,7 @@ class Main < Sinatra::Base
             raise "Command failed with status #{status&.exitstatus}: #{command}\n#{stderr_data}"
         end
 
-        STDERR.puts ">>> CMD END after #{format('%.3f', dt)}s status=#{status&.exitstatus}: #{command}"
+        STDERR.puts ">>> CMD END after #{format('%.3f', dt)}s status=#{status&.exitstatus}: #{command}" if log_command
         stdout_data
     end
 
@@ -503,6 +504,7 @@ class Main < Sinatra::Base
     LIVE_APP_MIN_PORT = 1024
     LIVE_APP_MAX_PORT = 65535
     LIVE_APP_BLOCKED_PORTS = Set.new([8443])
+    LIVE_APP_USER_UID = 1000
     LIVE_APP_PIN_PATH = '/internal/live_app_pins.json'
 
     def self.live_app_port_allowed?(port)
@@ -510,27 +512,133 @@ class Main < Sinatra::Base
         port >= LIVE_APP_MIN_PORT && port <= LIVE_APP_MAX_PORT && !LIVE_APP_BLOCKED_PORTS.include?(port)
     end
 
-    def self.live_app_open_ports_for_email(email)
+    def self.live_app_listening_sockets_for_email(email)
         fs_tag = fs_tag_for_email(email)
         command = "docker exec hs_code_#{fs_tag} sh -c 'cat /proc/net/tcp /proc/net/tcp6 2>/dev/null'"
-        output = shell_capture(command, :timeout => shell_timeout(:docker_inspect), :allow_failure => true)
-        ports = Set.new
+        output = shell_capture(command, :timeout => shell_timeout(:docker_inspect), :allow_failure => true, :log_command => false)
+        sockets = []
 
         output.each_line do |line|
             parts = line.strip.split(/\s+/)
-            next unless parts.size >= 4
+            next unless parts.size >= 10
             next unless parts[3] == '0A' # TCP_LISTEN
+            next unless parts[7].to_i == LIVE_APP_USER_UID
 
             local_address = parts[1]
             next unless local_address && local_address.include?(':')
             port = local_address.split(':').last.to_i(16)
-            ports << port if live_app_port_allowed?(port)
+            next unless live_app_port_allowed?(port)
+
+            sockets << {
+                :port => port,
+                :inode => parts[9],
+            }
         end
 
-        ports.to_a.sort
+        sockets.uniq { |socket| [socket[:port], socket[:inode]] }.sort_by { |socket| [socket[:port], socket[:inode].to_s] }
     rescue => e
-        STDERR.puts ">>> Could not inspect live-app ports for #{email}: #{e.class}: #{e.message}"
+        STDERR.puts ">>> Could not inspect live-app sockets for #{email}: #{e.class}: #{e.message}"
         []
+    end
+
+    def self.live_app_open_ports_for_email(email)
+        live_app_listening_sockets_for_email(email).map { |socket| socket[:port] }.uniq.sort
+    end
+
+    def self.live_app_open_port_signature_for_email(email)
+        live_app_listening_sockets_for_email(email).map { |socket| [socket[:port], socket[:inode]] }
+    end
+
+    def self.live_app_processes_for_email(email)
+        fs_tag = fs_tag_for_email(email)
+        script = <<~'SH'
+            for p in /proc/[0-9]*; do
+                pid=${p#/proc/}
+                [ -r "$p/comm" ] || continue
+                comm=$(tr '\t\n' '  ' < "$p/comm" 2>/dev/null)
+                for fd in "$p"/fd/*; do
+                    link=$(readlink "$fd" 2>/dev/null) || continue
+                    case "$link" in
+                        socket:\[*\])
+                            inode=${link#socket:\[}
+                            inode=${inode%\]}
+                            printf '%s\t%s\t%s\n' "$inode" "$pid" "$comm"
+                            ;;
+                    esac
+                done
+            done
+        SH
+        command = "docker exec -u #{LIVE_APP_USER_UID} hs_code_#{fs_tag} sh -c #{Shellwords.escape(script)}"
+        output = shell_capture(command, :timeout => shell_timeout(:docker_inspect), :allow_failure => true, :log_command => false)
+        processes = {}
+
+        output.each_line do |line|
+            inode, pid, process = line.chomp.split("\t", 3)
+            next if inode.to_s.empty?
+            processes[inode] ||= {
+                :pid => pid.to_i,
+                :process => process.to_s.strip,
+            }
+        end
+
+        processes
+    rescue => e
+        STDERR.puts ">>> Could not inspect live-app processes for #{email}: #{e.class}: #{e.message}"
+        {}
+    end
+
+    def self.live_app_open_port_details_for_email(email)
+        sockets = live_app_listening_sockets_for_email(email)
+        return [] if sockets.empty?
+
+        processes = live_app_processes_for_email(email)
+        by_port = {}
+
+        sockets.each do |socket|
+            process = processes[socket[:inode]] || {}
+            candidate = {
+                :port => socket[:port],
+                :pid => process[:pid],
+                :process => process[:process],
+            }
+            existing = by_port[socket[:port]]
+            if existing.nil? || (existing[:process].to_s.empty? && !candidate[:process].to_s.empty?)
+                by_port[socket[:port]] = candidate
+            end
+        end
+
+        by_port.values.sort_by { |entry| entry[:port] }
+    end
+
+    def self.ensure_live_app_ws!
+        @@live_app_ws_mutex ||= Mutex.new
+        @@live_app_ws_clients ||= {}
+    end
+
+    def self.register_live_app_ws(client_id, ws)
+        ensure_live_app_ws!
+        @@live_app_ws_mutex.synchronize do
+            @@live_app_ws_clients[client_id] = ws
+        end
+    end
+
+    def self.unregister_live_app_ws(client_id)
+        ensure_live_app_ws!
+        @@live_app_ws_mutex.synchronize do
+            @@live_app_ws_clients.delete(client_id)
+        end
+    end
+
+    def self.broadcast_live_app_refresh
+        ensure_live_app_ws!
+        clients = @@live_app_ws_mutex.synchronize { @@live_app_ws_clients.values.dup }
+        message = {:action => 'refresh_live_apps'}.to_json
+        clients.each do |ws|
+            begin
+                ws.send(message)
+            rescue
+            end
+        end
     end
 
     def self.active_live_app_rows
@@ -578,9 +686,12 @@ class Main < Sinatra::Base
         rows.reject! { |row| stale_tags.include?(row['s.tag']) }
         write_live_app_pins(rows)
 
-        if refresh_nginx && !stale_tags.empty?
-            STDERR.puts ">>> Deactivated #{stale_tags.size} stale live-app share(s)."
-            refresh_nginx_config
+        unless stale_tags.empty?
+            if refresh_nginx
+                STDERR.puts ">>> Deactivated #{stale_tags.size} stale live-app share(s)."
+                refresh_nginx_config
+            end
+            broadcast_live_app_refresh
         end
 
         rows
@@ -599,7 +710,7 @@ class Main < Sinatra::Base
         return '' unless user_logged_in?
 
         email = @session_user[:email]
-        open_ports = Main.live_app_open_ports_for_email(email)
+        open_port_details = Main.live_app_open_port_details_for_email(email)
         my_shares = {}
         neo4j_query(<<~END_OF_QUERY, :email => email).each do |row|
             MATCH (u:User {email: $email})-[:SHARES_LIVE_APP]->(s:LiveAppShare)
@@ -631,13 +742,10 @@ class Main < Sinatra::Base
         same_group.sort_by!(&sorter)
         other_group.sort_by!(&sorter)
 
-        render_apps = lambda do |apps|
-            return "<p class='text-body-secondary'>Zurzeit ist hier nichts geteilt.</p>" if apps.empty?
-            apps.map do |app|
-                name = CGI.escapeHTML(app[:name].to_s)
-                url = CGI.escapeHTML(live_app_url(app[:tag]))
-                "<a class='list-group-item list-group-item-action d-flex justify-content-between align-items-center' target='_blank' rel='noopener' href='#{url}'><strong>#{name}</strong><span class='badge text-bg-secondary'>Port #{app[:port]}</span></a>"
-            end.join
+        render_app = lambda do |app|
+            name = CGI.escapeHTML(app[:name].to_s)
+            url = CGI.escapeHTML(live_app_url(app[:tag]))
+            "<a class='list-group-item list-group-item-action d-flex justify-content-between align-items-center' target='_blank' rel='noopener' href='#{url}'><strong>#{name}</strong><span class='d-flex align-items-center gap-2'><span class='badge text-bg-secondary'>Port #{app[:port]}</span><i class='bi bi-box-arrow-up-right text-body-secondary'></i></span></a>"
         end
 
         StringIO.open do |io|
@@ -645,50 +753,42 @@ class Main < Sinatra::Base
             io.puts "<h2>Geteilte Apps</h2>"
             io.puts "<p>Hier kannst du laufende Web-Apps mit anderen angemeldeten Workspace-Nutzern teilen.</p>"
             io.puts "<h3>Meine offenen Ports</h3>"
-            if open_ports.empty?
+            if open_port_details.empty?
                 io.puts "<p class='text-body-secondary'>Momentan wurde in deinem Workspace kein teilbarer Web-Port gefunden.</p>"
             else
                 io.puts "<div class='list-group mb-4'>"
-                open_ports.each do |port|
+                open_port_details.each do |entry|
+                    port = entry[:port]
                     share = my_shares[port]
                     active = share && share[:active] == true
-                    io.puts "<div class='list-group-item d-flex justify-content-between align-items-center'>"
-                    io.puts "<span><strong>Port #{port}</strong>#{active ? " <span class='badge text-bg-success ms-2'>geteilt</span>" : ''}</span>"
+                    process_label = entry[:process].to_s.strip
+                    process_html = process_label.empty? ? '' : "<span class='small text-body-secondary text-truncate' style='min-width: 0;' title='Prozess: #{CGI.escapeHTML(process_label)}'><i class='bi bi-terminal me-1'></i>#{CGI.escapeHTML(process_label)}</span>"
+
+                    io.puts "<div class='list-group-item d-flex justify-content-between align-items-center gap-3'>"
+                    io.puts "<div class='d-flex align-items-center gap-2 flex-grow-1' style='min-width: 0;'><strong class='text-nowrap'>Port #{port}</strong>#{active ? "<span class='badge text-bg-success'>geteilt</span>" : ''}#{process_html}</div>"
                     if active
                         url = CGI.escapeHTML(live_app_url(share[:tag]))
-                        io.puts "<span><a class='btn btn-sm btn-outline-secondary me-2' target='_blank' rel='noopener' href='#{url}'>Öffnen</a><button class='btn btn-sm btn-outline-danger' onclick=\"liveAppAction('unshare', #{port})\">Nicht mehr teilen</button></span>"
+                        io.puts "<span class='text-nowrap'><a class='btn btn-sm btn-outline-secondary me-2' target='_blank' rel='noopener' href='#{url}'><i class='bi bi-box-arrow-up-right me-1'></i>Öffnen</a><button class='btn btn-sm btn-outline-danger' onclick=\"liveAppAction('unshare', #{port})\"><i class='bi bi-x-circle me-1'></i>Nicht mehr teilen</button></span>"
                     else
-                        io.puts "<button class='btn btn-sm btn-primary' onclick=\"liveAppAction('share', #{port})\">Teilen</button>"
+                        io.puts "<button class='btn btn-sm btn-primary text-nowrap' onclick=\"liveAppAction('share', #{port})\"><i class='bi bi-share me-1'></i>Teilen</button>"
                     end
                     io.puts "</div>"
                 end
                 io.puts "</div>"
             end
 
-            io.puts "<h3>Aus deiner Gruppe</h3>"
-            io.puts "<div class='list-group mb-4'>#{render_apps.call(same_group)}</div>" unless same_group.empty?
-            io.puts render_apps.call(same_group) if same_group.empty?
-            io.puts "<h3>Weitere geteilte Apps</h3>"
-            io.puts "<div class='list-group mb-4'>#{render_apps.call(other_group)}</div>" unless other_group.empty?
-            io.puts render_apps.call(other_group) if other_group.empty?
+            if active_apps.empty?
+                io.puts "<p class='text-body-secondary'>Zurzeit hat kein anderer Workspace-Nutzer eine laufende App freigegeben.</p>"
+            else
+                io.puts "<div class='list-group mb-4'>"
+                same_group.each { |app| io.puts render_app.call(app) }
+                unless same_group.empty? || other_group.empty?
+                    io.puts "<div class='list-group-item py-1 text-center small text-body-secondary bg-body-tertiary'>Andere Gruppen</div>"
+                end
+                other_group.each { |app| io.puts render_app.call(app) }
+                io.puts "</div>"
+            end
             io.puts "</section>"
-            io.puts <<~HTML
-                <script>
-                async function liveAppAction(action, port) {
-                    try {
-                        const response = await fetch(`/api/live_apps/${action}`, {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({port: port})
-                        });
-                        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                        location.reload();
-                    } catch (error) {
-                        alert('Die Freigabe konnte nicht geändert werden. Bitte versuche es noch einmal.');
-                    }
-                }
-                </script>
-            HTML
             io.string
         end
     end
@@ -2755,6 +2855,11 @@ class Main < Sinatra::Base
         respond(:yay => 'sure')
     end
 
+    get '/api/live_apps' do
+        assert(user_logged_in?)
+        respond(:html => print_live_apps())
+    end
+
     get '/api/live_app_authorize' do
         halt(user_logged_in? ? 204 : 401)
     end
@@ -2777,6 +2882,7 @@ class Main < Sinatra::Base
 
         Main.reconcile_live_apps!(:refresh_nginx => false)
         Main.refresh_nginx_config()
+        Main.broadcast_live_app_refresh
         share = row['s']
         respond(:yay => 'sure', :port => port, :tag => share[:tag], :url => live_app_url(share[:tag]))
     end
@@ -2794,6 +2900,7 @@ class Main < Sinatra::Base
 
         Main.reconcile_live_apps!(:refresh_nginx => false)
         Main.refresh_nginx_config()
+        Main.broadcast_live_app_refresh
         respond(:yay => 'sure', :port => port)
     end
 
@@ -3045,6 +3152,45 @@ class Main < Sinatra::Base
             end
             ws.send({:action => 'login_codes', :lines => filtered_lines}.to_json)
         end
+    end
+
+    get '/ws/live_apps' do
+        assert(user_logged_in?)
+        halt 400 unless Faye::WebSocket.websocket?(request.env)
+
+        email = @session_user[:email]
+        ws = Faye::WebSocket.new(request.env)
+        client_id = "#{request.env['HTTP_SEC_WEBSOCKET_KEY']}-#{SecureRandom.hex(4)}"
+        port_thread = nil
+
+        ws.on(:open) do |_event|
+            Main.register_live_app_ws(client_id, ws)
+            ws.send({:action => 'refresh_live_apps'}.to_json)
+
+            port_thread = Thread.new do
+                last_signature = Main.live_app_open_port_signature_for_email(email)
+                loop do
+                    sleep 2
+                    signature = Main.live_app_open_port_signature_for_email(email)
+                    if signature != last_signature
+                        last_signature = signature
+                        ws.send({:action => 'refresh_live_apps'}.to_json)
+                    end
+                end
+            end
+        end
+
+        ws.on(:close) do |_event|
+            port_thread&.kill
+            Main.unregister_live_app_ws(client_id)
+        end
+
+        ws.on(:error) do |_event|
+            port_thread&.kill
+            Main.unregister_live_app_ws(client_id)
+        end
+
+        ws.rack_response
     end
 
     get '/ws' do

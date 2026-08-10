@@ -38,7 +38,6 @@
             <p>
                 Der Workspace ist deine persönliche Visual Studio Code-Arbeitsumgebung. Hier kannst du Dateien erstellen, bearbeiten und löschen. Du kannst auch neue Dateien und Ordner erstellen und Dateien hochladen.
             </p>
-            #{print_live_apps()}
             <div class="row">
                 <div class="col-sm-6"><h4>Workspace teilen</h4></div>
                 <div class="col-sm-6 btn-module-4" style="margin-top: 0;">
@@ -65,6 +64,10 @@
             <div>
                 <button id='bu_reset_workspace' class="btn btn-danger"><i class='bi bi-trash-fill'></i>Workspace zurücksetzen</button>
             </div>
+
+            <hr>
+
+            <div id='live_apps_container'>#{print_live_apps()}</div>
 
             <hr>
 
@@ -360,7 +363,86 @@
         });
     }
 
+    let liveAppsSocket = null;
+    let liveAppsReconnectTimer = null;
+    let liveAppsRefreshInFlight = false;
+    let liveAppsRefreshAgain = false;
+
+    async function refresh_live_apps() {
+        if (liveAppsRefreshInFlight) {
+            liveAppsRefreshAgain = true;
+            return;
+        }
+
+        liveAppsRefreshInFlight = true;
+        try {
+            const response = await fetch('/api/live_apps', {credentials: 'same-origin'});
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            if (typeof data.html === 'string') {
+                $('#live_apps_container').html(data.html);
+            }
+        } catch (error) {
+            console.error('Could not refresh live apps:', error);
+        } finally {
+            liveAppsRefreshInFlight = false;
+            if (liveAppsRefreshAgain) {
+                liveAppsRefreshAgain = false;
+                refresh_live_apps();
+            }
+        }
+    }
+
+    async function liveAppAction(action, port) {
+        try {
+            const response = await fetch(`/api/live_apps/${action}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                credentials: 'same-origin',
+                body: JSON.stringify({port: port})
+            });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            await refresh_live_apps();
+        } catch (error) {
+            alert('Die Freigabe konnte nicht geändert werden. Bitte versuche es noch einmal.');
+        }
+    }
+
+    function connect_live_apps_socket() {
+        if (liveAppsReconnectTimer !== null) {
+            clearTimeout(liveAppsReconnectTimer);
+            liveAppsReconnectTimer = null;
+        }
+
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const socket = new WebSocket(`${protocol}//${window.location.host}/ws/live_apps`);
+        liveAppsSocket = socket;
+
+        socket.onmessage = function(event) {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.action === 'refresh_live_apps') {
+                    refresh_live_apps();
+                }
+            } catch (error) {
+                console.error('Could not parse live-app WebSocket message:', error);
+            }
+        };
+
+        socket.onclose = function() {
+            if (liveAppsSocket === socket) {
+                liveAppsSocket = null;
+                liveAppsReconnectTimer = setTimeout(connect_live_apps_socket, 2000);
+            }
+        };
+
+        socket.onerror = function() {
+            socket.close();
+        };
+    }
+
     window.addEventListener('load', function() {
+        connect_live_apps_socket();
         $('.bu-toggle-module').on('click', function(e) {
             let key = $(e.target).closest('button').data('module');
             api_call('/api/toggle_show_module', {module: key}, function(data) {

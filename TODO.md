@@ -197,6 +197,12 @@ Change the state and rebuild the interface.
 
 ---
 
+### Static website generators
+
+We have Hugo in the Docker image, write a tutorial for that.
+
+---
+
 ### Shared Live Apps
 
 Allow students to explicitly share a running web port with other authenticated Hackschule users.
