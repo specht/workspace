@@ -2715,32 +2715,33 @@ class Main < Sinatra::Base
                 end
                 @@threads_for_client_id[client_id] ||= {}
                 @@threads_for_client_id[client_id][:docker_stats] ||= Thread.new do
-                    command = "docker stats --format \"{{ json . }}\""
-                    lines = {}
-                    count = 0
-                    IO.popen(command).each_line do |line|
-                        if line[0].ord == 0x1b
-                            count = (count + 1) % 2
-                            ws.send({:stats => lines}.to_json)
-                            lines = {}
-                            line = line[line.index('{'), line.size]
+                    command = "docker stats --no-stream --format \"{{ json . }}\""
+                    loop do
+                        lines = {}
+                        IO.popen(command).each_line do |line|
+                            line.strip!
+                            next if line.empty?
+
+                            begin
+                                stat_line = JSON.parse(line)
+                            rescue JSON::ParserError => e
+                                STDERR.puts "Could not parse docker stats line: #{line.inspect}: #{e.message}"
+                                next
+                            end
+
+                            name = stat_line['Name'].to_s
+                            if name.start_with?('hs_code_')
+                                fs_tag = name.sub('hs_code_', '')
+                                email = email_for_tag[fs_tag]
+                                lines[fs_tag] = {
+                                    :name => (@@invitations[email] || {})[:name],
+                                    :group => (@@invitations[email] || {})[:group],
+                                    :stats => stat_line
+                                }
+                            end
                         end
-                        if line.include?(0x1b.chr)
-                            line = line[0, line.index(0x1b.chr)]
-                        end
-                        line.strip!
-                        next if line.empty?
-                        stat_line = JSON.parse(line)
-                        name = stat_line['Name']
-                        if name[0, 8] == 'hs_code_'
-                            fs_tag = name.sub('hs_code_', '')
-                            email = email_for_tag[fs_tag]
-                            lines[fs_tag] = {
-                                :name => (@@invitations[email] || {})[:name],
-                                :group => (@@invitations[email] || {})[:group],
-                                :stats => stat_line
-                            }
-                        end
+                        ws.send({:stats => lines}.to_json)
+                        sleep 1
                     end
                 end
                 @@threads_for_client_id[client_id][:host_stats] ||= Thread.new do
