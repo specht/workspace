@@ -545,6 +545,16 @@ class Main < Sinatra::Base
         live_app_listening_sockets_for_email(email).map { |socket| socket[:port] }.uniq.sort
     end
 
+    def self.live_app_socket_signature(sockets, port)
+        sockets
+            .select { |socket| socket[:port] == port.to_i }
+            .map { |socket| socket[:inode].to_s }
+            .reject(&:empty?)
+            .uniq
+            .sort
+            .join(',')
+    end
+
     def self.live_app_open_port_signature_for_email(email)
         live_app_listening_sockets_for_email(email).map { |socket| [socket[:port], socket[:inode]] }
     end
@@ -556,13 +566,14 @@ class Main < Sinatra::Base
                 pid=${p#/proc/}
                 [ -r "$p/comm" ] || continue
                 comm=$(tr '\t\n' '  ' < "$p/comm" 2>/dev/null)
+                cmd=$(tr '\000' ' ' < "$p/cmdline" 2>/dev/null | tr '\t\n' '  ')
                 for fd in "$p"/fd/*; do
                     link=$(readlink "$fd" 2>/dev/null) || continue
                     case "$link" in
                         socket:\[*\])
                             inode=${link#socket:\[}
                             inode=${inode%\]}
-                            printf '%s\t%s\t%s\n' "$inode" "$pid" "$comm"
+                            printf '%s\t%s\t%s\t%s\n' "$inode" "$pid" "$comm" "$cmd"
                             ;;
                     esac
                 done
@@ -573,11 +584,12 @@ class Main < Sinatra::Base
         processes = {}
 
         output.each_line do |line|
-            inode, pid, process = line.chomp.split("\t", 3)
+            inode, pid, process, command = line.chomp.split("\t", 4)
             next if inode.to_s.empty?
             processes[inode] ||= {
                 :pid => pid.to_i,
                 :process => process.to_s.strip,
+                :command => command.to_s.strip,
             }
         end
 
@@ -600,6 +612,7 @@ class Main < Sinatra::Base
                 :port => socket[:port],
                 :pid => process[:pid],
                 :process => process[:process],
+                :command => process[:command],
             }
             existing = by_port[socket[:port]]
             if existing.nil? || (existing[:process].to_s.empty? && !candidate[:process].to_s.empty?)
@@ -646,7 +659,7 @@ class Main < Sinatra::Base
             begin
                 return $neo4j.neo4j_query(<<~END_OF_QUERY).to_a
                     MATCH (u:User)-[:SHARES_LIVE_APP]->(s:LiveAppShare {active: TRUE})
-                    RETURN u.email, s.port, s.tag;
+                    RETURN u.email, s.port, s.tag, s.socket_signature;
                 END_OF_QUERY
             rescue
                 $neo4j = Neo4jGlobal.new
@@ -667,13 +680,23 @@ class Main < Sinatra::Base
 
     def self.reconcile_live_apps!(refresh_nginx: true)
         rows = active_live_app_rows
-        open_ports_by_email = {}
+        sockets_by_email = {}
         stale_tags = []
 
         rows.each do |row|
             email = row['u.email']
-            open_ports_by_email[email] ||= live_app_open_ports_for_email(email).to_set
-            stale_tags << row['s.tag'] unless open_ports_by_email[email].include?(row['s.port'].to_i)
+            port = row['s.port'].to_i
+            sockets_by_email[email] ||= live_app_listening_sockets_for_email(email)
+
+            current_signature = live_app_socket_signature(sockets_by_email[email], port)
+            shared_signature = row['s.socket_signature'].to_s
+
+            # A share belongs to this particular listening socket, not merely to
+            # the port number. A restarted server gets a new socket inode and
+            # therefore has to be explicitly shared again.
+            if current_signature.empty? || shared_signature.empty? || current_signature != shared_signature
+                stale_tags << row['s.tag']
+            end
         end
 
         stale_tags.each do |tag|
@@ -752,31 +775,52 @@ class Main < Sinatra::Base
             io.puts "<section id='live-apps' class='my-4'>"
             io.puts "<h2>Geteilte Apps</h2>"
             io.puts "<p>Hier kannst du laufende Web-Apps mit anderen angemeldeten Workspace-Nutzern teilen.</p>"
-            io.puts "<h3>Meine offenen Ports</h3>"
+            io.puts "<h3>Meine laufenden Web-Apps</h3>"
             if open_port_details.empty?
-                io.puts "<p class='text-body-secondary'>Momentan wurde in deinem Workspace kein teilbarer Web-Port gefunden.</p>"
+                io.puts "<p class='text-body-secondary'>In deinem Workspace läuft gerade keine teilbare Web-App.</p>"
             else
-                io.puts "<div class='list-group mb-4'>"
+                io.puts "<div class='table-responsive mb-4'>"
+                io.puts "<table class='table table-sm align-middle mb-0' style='table-layout: fixed; min-width: 720px;'>"
+                io.puts "<colgroup><col style='width: 6rem;'><col><col style='width: 8rem;'><col style='width: 18rem;'></colgroup>"
+                io.puts "<thead><tr><th>Port</th><th>Befehl</th><th>Status</th><th class='text-end'>Aktionen</th></tr></thead>"
+                io.puts "<tbody>"
                 open_port_details.each do |entry|
                     port = entry[:port]
                     share = my_shares[port]
                     active = share && share[:active] == true
-                    process_label = entry[:process].to_s.strip
-                    process_html = process_label.empty? ? '' : "<span class='small text-body-secondary text-truncate' style='min-width: 0;' title='Prozess: #{CGI.escapeHTML(process_label)}'><i class='bi bi-terminal me-1'></i>#{CGI.escapeHTML(process_label)}</span>"
+                    command_label = entry[:command].to_s.strip
+                    command_label = entry[:process].to_s.strip if command_label.empty?
+                    command_html = if command_label.empty?
+                        "<span class='text-body-secondary'>–</span>"
+                    else
+                        escaped_command = CGI.escapeHTML(command_label)
+                        "<div class='text-truncate' title='#{escaped_command}'>#{escaped_command}</div>"
+                    end
 
-                    io.puts "<div class='list-group-item d-flex justify-content-between align-items-center gap-3'>"
-                    io.puts "<div class='d-flex align-items-center gap-2 flex-grow-1' style='min-width: 0;'><strong class='text-nowrap'>Port #{port}</strong>#{active ? "<span class='badge text-bg-success'>geteilt</span>" : ''}#{process_html}</div>"
+                    status_html = if active
+                        "<span class='text-success text-nowrap'><i class='bi bi-check-circle-fill me-1'></i>Geteilt</span>"
+                    else
+                        "<span class='text-body-secondary text-nowrap'>Nicht geteilt</span>"
+                    end
+
+                    io.puts "<tr>"
+                    io.puts "<td>#{port}</td>"
+                    io.puts "<td style='min-width: 0; font-family: \"IBM Plex Mono\"; font-size: 90%;'>#{command_html}</td>"
+                    io.puts "<td>#{status_html}</td>"
+                    io.puts "<td class='text-end text-nowrap'>"
                     if active
                         url = CGI.escapeHTML(live_app_url(share[:tag]))
-                        io.puts "<span class='text-nowrap'><a class='btn btn-sm btn-outline-secondary me-2' target='_blank' rel='noopener' href='#{url}'><i class='bi bi-box-arrow-up-right me-1'></i>Öffnen</a><button class='btn btn-sm btn-outline-danger' onclick=\"liveAppAction('unshare', #{port})\"><i class='bi bi-x-circle me-1'></i>Nicht mehr teilen</button></span>"
+                        io.puts "<a class='btn btn-sm btn-secondary me-2' target='_blank' rel='noopener' href='#{url}'><i class='bi bi-box-arrow-up-right me-1'></i>Öffnen</a><button class='btn btn-sm btn-danger' onclick=\"liveAppAction('unshare', #{port})\"><i class='bi bi-x-circle me-1'></i>Nicht mehr teilen</button>"
                     else
-                        io.puts "<button class='btn btn-sm btn-primary text-nowrap' onclick=\"liveAppAction('share', #{port})\"><i class='bi bi-share me-1'></i>Teilen</button>"
+                        io.puts "<button class='btn btn-sm btn-primary' onclick=\"liveAppAction('share', #{port})\"><i class='bi bi-share me-1'></i>Teilen</button>"
                     end
-                    io.puts "</div>"
+                    io.puts "</td>"
+                    io.puts "</tr>"
                 end
-                io.puts "</div>"
+                io.puts "</tbody></table></div>"
             end
 
+            io.puts "<h3>Von anderen geteilt</h3>"
             if active_apps.empty?
                 io.puts "<p class='text-body-secondary'>Zurzeit hat kein anderer Workspace-Nutzer eine laufende App freigegeben.</p>"
             else
@@ -2869,14 +2913,17 @@ class Main < Sinatra::Base
         data = parse_request_data(:required_keys => [:port], :types => {:port => Integer})
         port = data[:port]
         assert(Main.live_app_port_allowed?(port), 'invalid_port')
-        assert(Main.live_app_open_ports_for_email(@session_user[:email]).include?(port), 'port_not_open')
+
+        sockets = Main.live_app_listening_sockets_for_email(@session_user[:email])
+        socket_signature = Main.live_app_socket_signature(sockets, port)
+        assert(!socket_signature.empty?, 'port_not_open')
 
         tag = gen_share_tag()
-        row = neo4j_query_expect_one(<<~END_OF_QUERY, :email => @session_user[:email], :port => port, :tag => tag, :updated_at => Time.now.to_i)
+        row = neo4j_query_expect_one(<<~END_OF_QUERY, :email => @session_user[:email], :port => port, :tag => tag, :socket_signature => socket_signature, :updated_at => Time.now.to_i)
             MATCH (u:User {email: $email})
             MERGE (u)-[:SHARES_LIVE_APP]->(s:LiveAppShare {port: $port})
             ON CREATE SET s.tag = $tag, s.created_at = $updated_at
-            SET s.active = TRUE, s.updated_at = $updated_at
+            SET s.active = TRUE, s.socket_signature = $socket_signature, s.updated_at = $updated_at
             RETURN s;
         END_OF_QUERY
 
@@ -3174,6 +3221,11 @@ class Main < Sinatra::Base
                     signature = Main.live_app_open_port_signature_for_email(email)
                     if signature != last_signature
                         last_signature = signature
+                        # A socket disappearing or being replaced may invalidate
+                        # an active share. Reconcile immediately while this
+                        # profile is open; the 10-second global monitor remains
+                        # the fallback when nobody is connected here.
+                        Main.reconcile_live_apps!
                         ws.send({:action => 'refresh_live_apps'}.to_json)
                     end
                 end

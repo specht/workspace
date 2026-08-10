@@ -1,6 +1,58 @@
 # Workspace TODO
 
-Ideas and missing tutorials for https://workspace.hackschule.de/.
+Ideas, missing tutorials, completed infrastructure and follow-up work for https://workspace.hackschule.de/.
+
+
+## Recently Completed
+
+### Shared Live Apps ✅
+
+Implemented in August 2026.
+
+Students can share a running browser-based application from their workspace with other authenticated Workspace users without publishing it publicly. This is now useful infrastructure for Web Server, WebSocket, BIF, Anaglyph, Flutter and multiplayer/collaborative projects.
+
+* [x] Detect TCP services listening in the student's workspace
+* [x] Only consider listeners owned by the workspace user; ignore root-owned/container-internal services
+* [x] Keep the workspace's own internal server port inaccessible
+* [x] Show the port and owning command for the student's running applications
+* [x] Keep all ports private by default
+* [x] Let the student explicitly share or unshare an individual port
+* [x] Use the port number as the app label; do not require a user-supplied title
+* [x] Show the student's full name and port for shared apps
+* [x] Show apps from the current user's group first, followed by a small separator and apps from other groups
+* [x] Require a valid Workspace login to open shared applications
+* [x] Support normal HTTP applications and WebSocket applications
+* [x] Keep VS Code, terminal, files and every non-shared port inaccessible
+* [x] Use a stable share URL for each user/port pair
+* [x] Reuse that stable URL when the user explicitly shares the same port again
+* [x] Bind an active share to the actual listening socket, not merely the port number
+* [x] Automatically deactivate the share when the server stops or a new process takes over the same port
+* [x] Keep a workspace container running while it has an active shared app
+* [x] Update the profile page live through WebSockets when ports or shares change
+* [x] Use POST actions for sharing and revoking
+* [x] Handle stopped workspaces and stale/offline shares cleanly
+
+Useful classroom scenarios:
+
+* Share a small HTTP server with a classmate
+* Peer-test BIF / Interactive Fiction stories before publishing
+* Share Anaglyph scenes before publishing
+* Run collaborative WebSocket exercises
+* Run multiplayer browser games
+* Share student-built HTTP APIs
+* Let groups test each other's browser applications
+
+Important principle:
+
+> A port becoming available does not make it public. A student must explicitly share the currently running application.
+
+Follow-up work:
+
+* [ ] Add E2E coverage for share/unshare, authenticated access, WebSocket proxying and automatic unsharing
+* [ ] Mention Shared Live Apps explicitly in the tutorials where it is useful
+
+---
+
 
 ## High Priority
 
@@ -27,6 +79,8 @@ Main idea:
 
 Avoid hiding the important parts behind a web framework.
 
+A good final step is to run the finished server in the workspace, share its port through **Shared Live Apps**, and have another student open it.
+
 ---
 
 ### WebSockets
@@ -50,6 +104,8 @@ Possible projects:
 * Tiny multiplayer world
 
 Prefer something more interesting than a basic chat application.
+
+**Shared Live Apps** means the final project can actually be used by other students in the class without first publishing it publicly.
 
 ---
 
@@ -156,6 +212,8 @@ Possible final task:
 
 > Create your own interactive story with at least 10 scenes, multiple endings and at least one state-dependent path.
 
+Use **Shared Live Apps** for peer testing before the finished story is published.
+
 Potential themes:
 
 * Mystery at school
@@ -185,6 +243,8 @@ Use Flutter Web so everything works inside the workspace.
 
 The existing sorting demo could be the basis for the tutorial.
 
+Use **Shared Live Apps** so students can show the running Flutter Web application to each other directly from their workspace.
+
 Important conceptual comparison:
 
 ```text
@@ -203,42 +263,20 @@ We have Hugo in the Docker image, write a tutorial for that.
 
 ---
 
-### Shared Live Apps
 
-Allow students to explicitly share a running web port with other authenticated Hackschule users.
 
-This should make it easy to show browser-based projects such as Anaglyph scenes, BIF stories, WebSocket demos and multiplayer applications before publishing them publicly.
+## Existing Tools / Discoverability
 
-* [ ] Detect student web services listening on workspace ports
-* [ ] Keep ports private by default
-* [ ] Let a student share an individual port
-* [ ] Use the port number as the app label; do not require a user-supplied title
-* [ ] Show the student's full name and port for every shared app
-* [ ] Show shared apps from the current user's group first
-* [ ] Show shared apps from all other groups in a second section
-* [ ] Allow another authenticated student to open a shared web application directly
-* [ ] Support WebSocket connections through the shared route
-* [ ] Keep VS Code, terminal, files and all non-shared ports inaccessible
-* [ ] Keep existing private workspace/session authorization unchanged
-* [ ] Use a stable share URL for each user/port pair
-* [ ] Automatically deactivate a share when its port stops listening
-* [ ] Reusing the same port and sharing it again should reactivate the old URL
-* [ ] Allow the owner to revoke a share even when the underlying server is offline
-* [ ] Keep a workspace container running while it has an active shared port
-* [ ] Use POST-style actions for creating and revoking shares rather than GET routes
-* [ ] Handle stopped workspaces and stale/offline shares cleanly
+### Automatron / Formal Languages
 
-Possible classroom uses:
+The Workspace already contains the Automatron page for deterministic finite automata and related formal-language exercises.
 
-* Shared Anaglyph scenes
-* BIF / Interactive Fiction stories
-* Shared pixel canvas
-* Multiplayer browser games
-* WebSocket demos
-* Student-built HTTP APIs
-* Collaborative applications
+For now, keep this as a **contextual teaching tool rather than a permanent main-navigation item**. Students normally need it only when the topic is being taught.
 
-Only explicitly shared ports should be reachable, and only authenticated Workspace users should be able to open them.
+* [ ] Link Automatron directly from relevant automata / formal-languages teaching material
+* [ ] Mention the direct URL in teacher-facing lesson notes so it is easy to hand out
+* [ ] Add a short description/example if students are expected to use it without teacher explanation
+* [ ] If more specialist standalone tools accumulate, consider a small **Werkzeuge** overview page instead of adding every tool to the primary navigation
 
 ---
 
@@ -406,3 +444,5 @@ Revisit if we find an approach where the limitations themselves become pedagogic
 6. [ ] Flutter
 
 The first two should form a continuous sequence after the existing TCP/IP tutorial.
+
+**Shared Live Apps is already implemented infrastructure, not another tutorial to schedule.** Use it throughout the Web Server, WebSockets, BIF and Flutter material whenever students should be able to try each other's running projects.
