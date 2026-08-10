@@ -390,7 +390,7 @@ Possible projects:
 
 The conceptual goal is:
 
-> CPU: a few powerful workers  
+> CPU: a few powerful workers
 > GPU: many small workers doing similar jobs at the same time
 
 ### Git: Collaboration
