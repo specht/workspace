@@ -278,6 +278,8 @@ Possible projects:
 
 This can serve as the main WebAssembly introduction rather than having a separate WASM tutorial.
 
+Also: doomgeneric + chocolatedescent
+
 ### Digital Audio
 
 Introduce sound synthesis and audio programming in the browser.
