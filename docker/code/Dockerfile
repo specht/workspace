@@ -231,6 +231,13 @@ ENV EM_CONFIG=/opt/emsdk/.emscripten
 ENV EM_CACHE=/opt/emsdk/upstream/emscripten/cache
 ENV PATH="/opt/emsdk/upstream/emscripten:${PATH}"
 
+# Make the built-in raylib installation available to emcc projects.
+ENV RAYLIB_ROOT=/opt/raylib
+ENV EMCC_CFLAGS="-I/opt/raylib/src -L/opt/raylib/src"
+
+RUN ln -s /opt/raylib/src/libraylib.web.a \
+          /opt/raylib/src/libraylib.a
+
 # The numeric UID of abc can change when linuxserver initializes
 # the container, so don't rely on build-time ownership.
 #
