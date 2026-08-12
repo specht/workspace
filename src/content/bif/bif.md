@@ -94,15 +94,9 @@ Die Datei <code>1.md</code> hat bei BIF eine besondere Bedeutung: Jede Geschicht
 
 ## Vorschau starten
 
-Damit du deine Geschichte im Browser ausprobieren kannst, brauchst du die Erweiterung **Live Server von Ritwick Dey**.
+Damit du deine Geschichte im Browser ausprobieren kannst, ist im Workspace bereits die Erweiterung **Live Server** installiert.
 
-Öffne links die Extensions, suche nach `Live Server` und installiere die Erweiterung von **Ritwick Dey**. Achte auf den Herausgeber, denn es gibt mehrere Erweiterungen mit sehr ähnlichen Namen.
-
-<!-- Screenshot: Live Server von Ritwick Dey in Extensions -->
-
-<img class='full' src='live-server.webp'>
-
-Nach der Installation solltest du unten rechts den Eintrag »Go Live« sehen.
+Unten rechts findest du den Eintrag »Go Live«.
 
 <!-- Screenshot: Go-Live-Button -->
 
@@ -272,7 +266,7 @@ Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kle
 
 - [Frage nach dem Materialschrank.](.)
 
-    > „Der ist abgeschlossen. Der kleine Schlüssel hängt hier neben der Tür.“
+    > "Der ist abgeschlossen. Der kleine Schlüssel hängt hier neben der Tür."
 
 - [Gehe zurück in den Flur.](2)
 ```
@@ -286,6 +280,18 @@ Der wichtige Unterschied ist der Punkt:
 Er bedeutet: **Bleibe auf dieser Seite.**
 
 Der eingerückte Text darunter erscheint erst, nachdem die Entscheidung ausgewählt wurde.
+
+Die Anführungszeichen kannst du dabei ganz normal mit der Taste `"` schreiben:
+
+```markdown
+> "Der ist abgeschlossen."
+```
+
+BIF stellt sie in der Geschichte automatisch als deutsche Anführungszeichen dar:
+
+```text
+„Der ist abgeschlossen.“
+```
 
 <!-- Screenshot: lokale Entscheidung vor dem Anklicken -->
 
@@ -371,7 +377,7 @@ Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kle
 
 - [Frage nach dem Materialschrank.](.)
 
-    > „Der ist abgeschlossen. Der kleine Schlüssel hängt hier neben der Tür.“
+    > "Der ist abgeschlossen. Der kleine Schlüssel hängt hier neben der Tür."
 
 - [Nimm den Schlüssel.](.)
 
@@ -593,7 +599,7 @@ Aus dem Nebenraum hörst du ein *leises Klopfen*.
 Ein Zitat:
 
 ```markdown
-> „Ich würde diese Tür nicht öffnen.“
+> "Ich würde diese Tür nicht öffnen."
 ```
 
 Eine Zwischenüberschrift innerhalb einer Seite:
