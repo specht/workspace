@@ -11,7 +11,7 @@ When a **trusted** workspace folder contains this marker at its root:
 the extension:
 
 1. checks whether the repository dependencies need installation;
-2. runs `npm install --no-audit --no-fund` when necessary;
+2. runs a reproducible `npm ci` when a lockfile exists, otherwise `npm install`, when necessary;
 3. starts `npm run dev` in that workspace-folder root;
 4. keeps the long-running command in a managed VS Code task;
 5. avoids duplicate tasks and stops its task when the folder or extension closes.
@@ -41,7 +41,13 @@ The marker can be empty and should be committed to Git. `package.json` must defi
 
 For repositories that declare dependencies, the extension checks the installed top-level packages and npm's own `node_modules/.package-lock.json`. It runs installation when a package is missing or when `package.json`, `package-lock.json`, or `npm-shrinkwrap.json` is newer.
 
-When installation is required, one managed task runs:
+When installation is required and `package-lock.json` or `npm-shrinkwrap.json` exists, one managed task runs:
+
+```bash
+npm ci --prefer-offline --no-audit --no-fund && npm run dev
+```
+
+For repositories without a lockfile, it falls back to:
 
 ```bash
 npm install --prefer-offline --no-audit --no-fund && npm run dev
@@ -51,7 +57,7 @@ Otherwise the same task starts directly with `npm run dev`.
 
 ## Workspace Trust
 
-The extension is disabled in untrusted workspaces. This is necessary because both `npm install` and `npm run dev` execute code from the opened repository.
+The extension is disabled in untrusted workspaces. This is necessary because dependency installation and `npm run dev` execute code from the opened repository.
 
 ## Local build
 

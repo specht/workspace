@@ -99,12 +99,15 @@ class BifProjectRunner {
                 return;
             }
             const install = await (0, core_1.dependencyInstallRequired)(folder.uri.fsPath);
+            const installCommand = install
+                ? await (0, core_1.dependencyInstallCommand)(folder.uri.fsPath)
+                : undefined;
             if (this.disposed || !(vscode.workspace.workspaceFolders ?? []).includes(folder)) {
                 return;
             }
             const definition = { type: TASK_TYPE, root: key };
-            const command = install
-                ? "npm install --prefer-offline --no-audit --no-fund && npm run dev"
+            const command = installCommand
+                ? `${installCommand} && npm run dev`
                 : "npm run dev";
             const task = new vscode.Task(definition, folder, "Development watcher", TASK_SOURCE, new vscode.ShellExecution(command, { cwd: folder.uri.fsPath }), []);
             task.isBackground = true;

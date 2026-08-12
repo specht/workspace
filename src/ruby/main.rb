@@ -1012,14 +1012,17 @@ class Main < Sinatra::Base
                 default "";
                 ~^live-(?<lt>[a-z0-9]+)\.#{WEBSITE_HOST.split(':').first.gsub('.', '\\.')}$ $lt;
             }
+
             map $hs_live_tag $hs_live_upstream {
                 default "";
                 #{running_servers.map { |_fs_tag, info| info[:live_apps].map { |tag, _port| "#{tag} http://#{info[:ip]}:8443;" } }.flatten.join("\n    ")}
             }
+
             map $hs_live_tag $hs_live_port {
                 default "";
                 #{running_servers.map { |_fs_tag, info| info[:live_apps].map { |tag, port| "#{tag} #{port};" } }.flatten.join("\n    ")}
             }
+
             map $hs_live_upstream $hs_live_no_upstream {
                 ""      1;
                 default 0;
@@ -1097,7 +1100,7 @@ class Main < Sinatra::Base
                     proxy_pass http://ruby:9292;
                 }
 
-                # Normalize /w/<token>  -> /w/<token>/
+                # Normalize /w/<token> -> /w/<token>/
                 location ~ ^/w/[a-z0-9]+$ {
                     return 301 $uri/$is_args$args;
                 }
@@ -1106,6 +1109,7 @@ class Main < Sinatra::Base
                     if ($hs_no_upstream) { return 404; }
                     if ($hs_private_missing_sid) { return 403; }
                     if ($hs_allowed = 0) { return 403; }
+
                     # strip /w/<token>
                     rewrite ^/w/[a-z0-9]+(.*)$ $1 break;
 
@@ -1126,7 +1130,7 @@ class Main < Sinatra::Base
                 add_header Permissions-Policy "local-fonts=()" always;
 
                 # ----------------------------------
-                # /proxy/<port> → <token>-<port>.#{WEBSITE_HOST.split(':').first}
+                # /proxy/<port> -> <token>-<port>.#{WEBSITE_HOST.split(':').first}
                 # ----------------------------------
                 location ~ ^/proxy/(?<p>\\d+)(?<rest>/.*)?$ {
                     if ($hs_no_upstream) { return 404; }
@@ -1176,22 +1180,18 @@ class Main < Sinatra::Base
 
                     include /etc/nginx/snippets/proxy_ws.conf;
 
-                    # Preserve local dev port, e.g. :8025.
-                    # Do not use $server_port here; nginx listens on 80 internally.
-                    set $external_port "";
-                    if ($http_host ~* :(?<hp>\\d+)$) { set $external_port :$hp; }
-
                     # First remove leaked /proxy/<port>/ redirects.
                     proxy_redirect ~^/proxy/[0-9]+(/.*)$ $1;
                     proxy_redirect ~^/proxy/[0-9]+/?$ /;
                     proxy_redirect ~^https?://[^/]+/proxy/[0-9]+(/.*)$ $1;
                     proxy_redirect ~^https?://[^/]+/proxy/[0-9]+/?$ /;
+                    proxy_redirect ~^//[^/]+/proxy/[0-9]+(/.*)$ $1;
+                    proxy_redirect ~^//[^/]+/proxy/[0-9]+/?$ /;
 
-                    # Then repair absolute redirects that lost the local dev port:
-                    #   http://token-5500.workspace.test/sub/
-                    # becomes:
-                    #   http://token-5500.workspace.test:8025/sub/
-                    proxy_redirect ~^(https?://[a-z0-9]+-[0-9]+\\.#{WEBSITE_HOST.split(':').first.gsub('.', '\\.')})(/.*)$ $1$external_port$2;
+                    # Any remaining absolute redirect must use the browser-visible host.
+                    # $http_host includes :8025 in development.
+                    proxy_redirect ~^(https?://)[^/]+(/.*)$ $1$http_host$2;
+                    proxy_redirect ~^//[^/]+(/.*)$ //$http_host$1;
 
                     proxy_pass $hs_upstream;
                 }
@@ -1228,14 +1228,17 @@ class Main < Sinatra::Base
                     proxy_set_header Authorization "";
                     proxy_hide_header Set-Cookie;
 
-                    set $external_port "";
-                    if ($http_host ~* :(?<hp>\d+)$) { set $external_port :$hp; }
-
                     proxy_redirect ~^/proxy/[0-9]+(/.*)$ $1;
                     proxy_redirect ~^/proxy/[0-9]+/?$ /;
                     proxy_redirect ~^https?://[^/]+/proxy/[0-9]+(/.*)$ $1;
                     proxy_redirect ~^https?://[^/]+/proxy/[0-9]+/?$ /;
-                    proxy_redirect ~^(https?://live-[a-z0-9]+\.#{WEBSITE_HOST.split(':').first.gsub('.', '\\.')})(/.*)$ $1$external_port$2;
+                    proxy_redirect ~^//[^/]+/proxy/[0-9]+(/.*)$ $1;
+                    proxy_redirect ~^//[^/]+/proxy/[0-9]+/?$ /;
+
+                    # Any remaining absolute redirect must use the browser-visible host.
+                    # $http_host includes :8025 in development.
+                    proxy_redirect ~^(https?://)[^/]+(/.*)$ $1$http_host$2;
+                    proxy_redirect ~^//[^/]+(/.*)$ //$http_host$1;
 
                     proxy_pass $hs_live_upstream;
                 }
@@ -1274,6 +1277,7 @@ class Main < Sinatra::Base
                     proxy_pass http://neo4j:7474;
                 }
             }
+
             server {
                 listen 80;
                 server_name bolt.#{WEBSITE_HOST.split(':').first};
@@ -1310,6 +1314,7 @@ class Main < Sinatra::Base
         File.open('/nginx/default.conf', 'w') do |f|
             f.puts nginx_config
         end
+
         STDERR.puts ">>> Sending HUP to nginx to reload nginx config"
         shell_ok("docker kill -s HUP workspace_nginx_1", :timeout => shell_timeout(:nginx_reload))
     end
@@ -1630,6 +1635,8 @@ class Main < Sinatra::Base
                     lexer = Rouge::Lexers::JSON.new
                 when 'lua'
                     lexer = Rouge::Lexers::Lua.new
+                when 'markdown'
+                    lexer = Rouge::Lexers::Markdown.new
                 when 'nasm'
                     lexer = Rouge::Lexers::Nasm.new
                 when 'pascal'

@@ -1,5 +1,9 @@
 import * as vscode from "vscode";
-import { BIF_MARKER_FILE, dependencyInstallRequired } from "./core";
+import {
+  BIF_MARKER_FILE,
+  dependencyInstallCommand,
+  dependencyInstallRequired,
+} from "./core";
 
 const TASK_TYPE = "bif-project-runner";
 const TASK_SOURCE = "BIF";
@@ -92,13 +96,16 @@ export class BifProjectRunner implements vscode.Disposable {
       }
 
       const install = await dependencyInstallRequired(folder.uri.fsPath);
+      const installCommand = install
+        ? await dependencyInstallCommand(folder.uri.fsPath)
+        : undefined;
       if (this.disposed || !(vscode.workspace.workspaceFolders ?? []).includes(folder)) {
         return;
       }
 
       const definition: BifTaskDefinition = { type: TASK_TYPE, root: key };
-      const command = install
-        ? "npm install --prefer-offline --no-audit --no-fund && npm run dev"
+      const command = installCommand
+        ? `${installCommand} && npm run dev`
         : "npm run dev";
       const task = new vscode.Task(
         definition,

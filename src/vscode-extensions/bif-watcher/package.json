@@ -1,8 +1,8 @@
 {
   "name": "bif-authoring-tools",
   "displayName": "BIF Authoring Tools",
-  "description": "Thin workspace launcher that installs BIF repository dependencies and runs npm run dev.",
-  "version": "0.2.0",
+  "description": "Thin workspace launcher that reproducibly installs BIF repository dependencies and runs npm run dev.",
+  "version": "0.2.1",
   "publisher": "gymnasiumsteglitz",
   "private": true,
   "license": "MIT",

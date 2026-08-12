@@ -5,6 +5,7 @@ const path = require("node:path");
 const { afterEach, test } = require("node:test");
 const {
   BIF_MARKER_FILE,
+  dependencyInstallCommand,
   dependencyInstallRequired,
   NPM_INSTALL_STATE_FILE,
 } = require("../dist/core.js");
@@ -66,6 +67,32 @@ test("requires npm's installation state for repositories with dependencies", asy
   const root = await temporaryProject({ dependencies: { chokidar: "^4.0.0" } });
   await installDependency(root, "chokidar");
   assert.equal(await dependencyInstallRequired(root), true);
+});
+
+test("uses npm ci when package-lock.json is present", async () => {
+  const root = await temporaryProject();
+  await createFileAt(path.join(root, "package-lock.json"));
+  assert.equal(
+    await dependencyInstallCommand(root),
+    "npm ci --prefer-offline --no-audit --no-fund",
+  );
+});
+
+test("uses npm ci when npm-shrinkwrap.json is present", async () => {
+  const root = await temporaryProject();
+  await createFileAt(path.join(root, "npm-shrinkwrap.json"));
+  assert.equal(
+    await dependencyInstallCommand(root),
+    "npm ci --prefer-offline --no-audit --no-fund",
+  );
+});
+
+test("falls back to npm install when no lockfile is present", async () => {
+  const root = await temporaryProject();
+  assert.equal(
+    await dependencyInstallCommand(root),
+    "npm install --prefer-offline --no-audit --no-fund",
+  );
 });
 
 test("skips installation when dependencies and metadata are current", async () => {

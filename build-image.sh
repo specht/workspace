@@ -49,8 +49,8 @@ cp \
     docker/code/hackschule-keyboard-tutorial-0.5.3.vsix
 
 cp \
-    src/vscode-extensions/bif-watcher/bif-authoring-tools-0.2.0.vsix \
-    docker/code/bif-authoring-tools-0.2.0.vsix
+    src/vscode-extensions/bif-watcher/bif-authoring-tools-0.2.1.vsix \
+    docker/code/bif-authoring-tools-0.2.1.vsix
 
 
 echo "=== Building code-server image ==="

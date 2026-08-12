@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1
+
+- Use `npm ci` for BIF repositories that contain `package-lock.json` or `npm-shrinkwrap.json`.
+- Keep `npm install` as the fallback for repositories without a lockfile.
+- Avoid rewriting a committed lockfile during automatic workspace setup.
+
 ## 0.2.0
 
 - Removed the bundled BIF analyzer, diagnostics adapter, watcher, and publication logic.

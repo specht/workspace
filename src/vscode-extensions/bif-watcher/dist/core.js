@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NPM_INSTALL_STATE_FILE = exports.BIF_MARKER_FILE = void 0;
 exports.dependencyInstallRequired = dependencyInstallRequired;
+exports.dependencyInstallCommand = dependencyInstallCommand;
 const fs = __importStar(require("node:fs/promises"));
 const path = __importStar(require("node:path"));
 exports.BIF_MARKER_FILE = ".bif-project";
@@ -107,5 +108,13 @@ async function dependencyInstallRequired(root) {
         }
     }
     return false;
+}
+/** Choose a reproducible npm install command when the project has a lockfile. */
+async function dependencyInstallCommand(root) {
+    const hasLockfile = (await pathExists(path.join(root, "package-lock.json"))) ||
+        (await pathExists(path.join(root, "npm-shrinkwrap.json")));
+    return hasLockfile
+        ? "npm ci --prefer-offline --no-audit --no-fund"
+        : "npm install --prefer-offline --no-audit --no-fund";
 }
 //# sourceMappingURL=core.js.map

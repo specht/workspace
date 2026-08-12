@@ -8,10 +8,10 @@ image: title.webp
     data-levels="h2,h3,h4">
 </div>
 
-# Interaktive Geschichten mit BIF
+# Interaktive Geschichten schreiben
 
 <p class='abstract'>
-Mit BIF kannst du interaktive Geschichten schreiben, bei denen die Leserinnen und Leser selbst entscheiden, wie es weitergeht. Die einzelnen Abschnitte deiner Geschichte schreibst du als einfache Markdown-Dateien und verbindest sie miteinander. Später kannst du Dialoge, Variablen, Bedingungen, Bilder und sogar kleine Programme hinzufügen. In diesem Tutorial lernst du die wichtigsten Möglichkeiten von BIF kennen und entwickelst anschließend deine eigene interaktive Geschichte.
+Mit BIF kannst du interaktive Geschichten schreiben, bei denen die Leserinnen und Leser selbst entscheiden, wie es weitergeht. Die einzelnen Abschnitte deiner Geschichte schreibst du als einfache Markdown-Dateien und verbindest sie miteinander. Später kannst du Dialoge, Variablen, Bedingungen und Bilder hinzufügen. In diesem Tutorial lernst du die wichtigsten Möglichkeiten von BIF kennen und entwickelst anschließend deine eigene interaktive Geschichte.
 </p>
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
@@ -46,7 +46,7 @@ Beantworte die Frage »Would you like to open the cloned repository?« mit »Ope
 
 <img class='full' src='open-yes-no.webp'>
 
-Wenn alles geklappt hat, siehst du links im Explorer unter anderem die Dateien `index.html` und `config.js`.
+Wenn alles geklappt hat, siehst du links im Explorer unter anderem die Dateien `config.js` und `index.html`.
 
 <!-- Screenshot: geöffnetes BIF-Projekt im Explorer -->
 

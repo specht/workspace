@@ -84,3 +84,14 @@ export async function dependencyInstallRequired(root: string): Promise<boolean> 
 
   return false;
 }
+
+/** Choose a reproducible npm install command when the project has a lockfile. */
+export async function dependencyInstallCommand(root: string): Promise<string> {
+  const hasLockfile =
+    (await pathExists(path.join(root, "package-lock.json"))) ||
+    (await pathExists(path.join(root, "npm-shrinkwrap.json")));
+
+  return hasLockfile
+    ? "npm ci --prefer-offline --no-audit --no-fund"
+    : "npm install --prefer-offline --no-audit --no-fund";
+}
