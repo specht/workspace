@@ -189,11 +189,19 @@ RUN wget -q \
     && cd /opt/emsdk \
     && . ./emsdk_env.sh \
     && cd /opt/raylib/src \
-    && make PLATFORM=PLATFORM_WEB -j"$(nproc)"
+    && make PLATFORM=PLATFORM_WEB -j"$(nproc)" \
+    && sysroot=/opt/emsdk/upstream/emscripten/cache/sysroot \
+    && install -m 644 libraylib.web.a "$sysroot/lib/wasm32-emscripten/libraylib.a" \
+    && install -m 644 raylib.h raymath.h rlgl.h rcamera.h "$sysroot/include/"
 
 RUN cd /opt/emsdk \
     && . ./emsdk_env.sh \
-    && emcc --check
+    && emcc --check \
+    && printf '#include <raylib.h>\nint main(void) { InitWindow(64, 64, "raylib"); CloseWindow(); return 0; }\n' \
+        > /tmp/raylib-test.c \
+    && emcc /tmp/raylib-test.c -lraylib -sUSE_GLFW=3 -o /tmp/raylib-test.js \
+    && test -f /tmp/raylib-test.wasm \
+    && rm -f /tmp/raylib-test.c /tmp/raylib-test.js /tmp/raylib-test.wasm
 
 # ====================================================================
 # Actual Hackschule image
@@ -222,21 +230,15 @@ COPY --from=raylib-web \
     /opt/emsdk \
     /opt/emsdk
 
-COPY --from=raylib-web \
-    /opt/raylib \
-    /opt/raylib
-
 ENV EMSDK=/opt/emsdk
 ENV EM_CONFIG=/opt/emsdk/.emscripten
 ENV EM_CACHE=/opt/emsdk/upstream/emscripten/cache
 ENV PATH="/opt/emsdk/upstream/emscripten:${PATH}"
 
-# Make the built-in raylib installation available to emcc projects.
-ENV RAYLIB_ROOT=/opt/raylib
-ENV EMCC_CFLAGS="-I/opt/raylib/src -L/opt/raylib/src"
-
-RUN ln -s /opt/raylib/src/libraylib.web.a \
-          /opt/raylib/src/libraylib.a
+# raylib is installed into the Emscripten sysroot in the raylib-web stage.
+# Projects can therefore use normal includes and linking:
+#   #include <raylib.h>
+#   emcc program.c -lraylib
 
 # The numeric UID of abc can change when linuxserver initializes
 # the container, so don't rely on build-time ownership.
@@ -548,12 +550,19 @@ RUN emcc --check \
     && printf 'int main(void) { return 0; }\n' > /tmp/emscripten-test.c \
     && emcc /tmp/emscripten-test.c -o /tmp/emscripten-test.js \
     && test -f /tmp/emscripten-test.wasm \
-    && test -f /opt/raylib/src/libraylib.web.a \
-    && test -f /opt/raylib/src/raylib.h \
+    && test -f /opt/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libraylib.a \
+    && test -f /opt/emsdk/upstream/emscripten/cache/sysroot/include/raylib.h \
+    && printf '#include <raylib.h>\nint main(void) { InitWindow(64, 64, "raylib"); CloseWindow(); return 0; }\n' \
+        > /tmp/raylib-test.c \
+    && emcc /tmp/raylib-test.c -lraylib -sUSE_GLFW=3 -o /tmp/raylib-test.js \
+    && test -f /tmp/raylib-test.wasm \
     && rm -f \
         /tmp/emscripten-test.c \
         /tmp/emscripten-test.js \
         /tmp/emscripten-test.wasm \
+        /tmp/raylib-test.c \
+        /tmp/raylib-test.js \
+        /tmp/raylib-test.wasm \
     && chmod -R a+rwX /opt/emsdk/upstream/emscripten/cache
 
 # --------------------------------------------------------------------
