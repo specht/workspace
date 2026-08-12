@@ -587,6 +587,9 @@ COPY hackschule-keyboard-tutorial-${HACKSCHULE_KEYBOARD_TUTORIAL_VERSION}.vsix \
 COPY bif-authoring-tools-${BIF_AUTHORING_TOOLS_VERSION}.vsix \
     /app/extensions/bif-authoring-tools-${BIF_AUTHORING_TOOLS_VERSION}.vsix
 
+COPY ritwickdey.LiveServer.vsix \
+    /app/extensions/ritwickdey.LiveServer.vsix
+
 
 # --------------------------------------------------------------------
 # Startup scripts — always last

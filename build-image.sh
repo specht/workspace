@@ -52,6 +52,10 @@ cp \
     src/vscode-extensions/bif-watcher/bif-authoring-tools-0.2.1.vsix \
     docker/code/bif-authoring-tools-0.2.1.vsix
 
+cp \
+    src/vscode-extensions/live-server/ritwickdey.LiveServer-5.7.10.vsix \
+    docker/code/ritwickdey.LiveServer.vsix
+
 
 echo "=== Building code-server image ==="
 

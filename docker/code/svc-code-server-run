@@ -13,6 +13,7 @@ EXTENSIONS=(
     "/app/extensions/hackschule-checkpoints-0.6.0.vsix|hackschule.hackschule-checkpoints"
     "/app/extensions/hackschule-keyboard-tutorial-0.5.3.vsix|gymnasiumsteglitz.hackschule-keyboard-tutorial"
     "/app/extensions/bif-authoring-tools-0.2.1.vsix|gymnasiumsteglitz.bif-authoring-tools"
+    "/app/extensions/ritwickdey.LiveServer.vsix|ritwickdey.LiveServer"
 )
 
 mkdir -p "$EXT_DIR"
@@ -86,8 +87,12 @@ install_or_update_extension() {
             --force \
             >/dev/null
 
-    elif [ "$installed_version" = "$wanted_version" ]; then
-        echo "$extension_id is already up to date: $installed_version"
+    elif dpkg --compare-versions "$installed_version" ge "$wanted_version"; then
+        if [ "$installed_version" = "$wanted_version" ]; then
+            echo "$extension_id is already up to date: $installed_version"
+        else
+            echo "$extension_id is newer than bundled version: $installed_version > $wanted_version"
+        fi
         return 0
 
     else

@@ -11,20 +11,20 @@ image: title.webp
 # Interaktive Geschichten schreiben
 
 <p class='abstract'>
-Mit BIF kannst du interaktive Geschichten schreiben, bei denen die Leserinnen und Leser selbst entscheiden, wie es weitergeht. Die einzelnen Abschnitte deiner Geschichte schreibst du als einfache Markdown-Dateien und verbindest sie miteinander. Später kannst du Dialoge, Variablen, Bedingungen und Bilder hinzufügen. In diesem Tutorial lernst du die wichtigsten Möglichkeiten von BIF kennen und entwickelst anschließend deine eigene interaktive Geschichte.
+Mit BIF kannst du interaktive Geschichten schreiben, bei denen die Leserinnen und Leser selbst entscheiden, wie es weitergeht. Die einzelnen Abschnitte deiner Geschichte schreibst du als einfache Markdown-Dateien und verbindest sie miteinander. In diesem Tutorial entwickelst du Schritt für Schritt eine kleine Geschichte und lernst dabei die wichtigsten Bausteine von BIF kennen: Seiten, Entscheidungen, Verzweigungen, lokale Aktionen, Variablen und Bedingungen.
 </p>
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
+## Repository klonen
+
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>.
 
 <!-- Screenshot: Workspace ohne geöffneten Ordner -->
 
 <img class='full' src='fresh-start.webp'>
 
-## Repository klonen
-
 Für diese Anleitung brauchst du das BIF-Repository. Klicke auf den blauen Button »Clone Repository« und gib die folgende URL ein:
 
-```bash
+```text
 https://github.com/specht/bif.git
 ```
 
@@ -34,99 +34,75 @@ Bestätige anschließend mit <span class='key'>Enter</span>.
 
 <img class='full' src='git-clone.webp'>
 
-Als nächstes musst du angeben, in welches Verzeichnis das Repository geklont werden soll. Bestätige den Standardpfad `/workspace/` mit <span class='key'>Enter</span>.
+Als nächstes musst du angeben, in welches Verzeichnis das Repository geklont werden soll. Bestätige den Standardpfad
+
+```text
+/workspace/
+```
+
+mit <span class='key'>Enter</span>.
 
 <!-- Screenshot: Auswahl von /workspace/ -->
 
 <img class='full' src='confirm-clone-path.webp'>
 
-Beantworte die Frage »Would you like to open the cloned repository?« mit »Open«.
+Beantworte anschließend die Frage »Would you like to open the cloned repository?« mit »Open«.
 
 <!-- Screenshot: Dialog zum Öffnen des geklonten Repositorys -->
 
 <img class='full' src='open-yes-no.webp'>
 
-Wenn alles geklappt hat, siehst du links im Explorer unter anderem die Dateien `config.js` und `index.html`.
-
 <!-- Screenshot: geöffnetes BIF-Projekt im Explorer -->
 
 <img class='full' src='bif-project.webp'>
 
-Im Hackschule-Workspace ist außerdem die Erweiterung »BIF Authoring Tools« installiert. Sie erkennt das BIF-Projekt automatisch und kümmert sich im Hintergrund um die Werkzeuge, die für die Entwicklungsansicht benötigt werden.
+Wenn alles geklappt hat, siehst du links im Explorer unter anderem den Ordner `pages-starter` sowie die Dateien `config.js` und `index.html`.
 
-<div class='hint'>
-Du musst für BIF normalerweise keine Befehle im Terminal eingeben. Speichere einfach deine Dateien und aktualisiere bei Bedarf die Vorschau.
-</div>
+## Geschichte starten
 
-## Eine eigene Geschichte anlegen
+Öffne im Explorer den Ordner `pages-starter` und darin die Datei `1.md`.
 
-Eine BIF-Geschichte besteht aus mehreren Markdown-Dateien. Wir legen für unsere kleine Beispielgeschichte zunächst einen neuen Ordner an.
+<!-- Screenshot: 1.md geöffnet -->
 
-Klicke im Explorer mit der rechten Maustaste in einen freien Bereich und wähle »New Folder«. Nenne den Ordner:
+<img class='full' src='story-begin.webp'>
 
-```text
-pages-meine-geschichte
-```
-
-<!-- Screenshot: neuer Ordner pages-meine-geschichte -->
-
-<img class='full' src='new-story-folder.webp'>
-
-Öffne jetzt die Datei `config.js`. Dort wird festgelegt, in welchem Ordner sich die Geschichte befindet.
-
-Ersetze den bisherigen Inhalt durch:
-
-```js
-export const path = "pages-meine-geschichte";
-```
-
-Speichere die Datei mit <span class='key'>Strg</span><span class='key'>S</span>.
-
-<div class='hint'>
-Der Name in <code>config.js</code> muss genau mit dem Namen deines Geschichtenordners übereinstimmen.
-</div>
-
-## Die erste Seite
-
-Erstelle im Ordner `pages-meine-geschichte` eine neue Datei mit dem Namen:
-
-```text
-1.md
-```
-
-Schreibe hinein:
+Dort steht bereits der Anfang unserer kleinen Geschichte:
 
 ```markdown
-# Der Flur
+# Nach Schulschluss
 
-Du stehst in einem leeren Flur. Eine Tür führt in ein kleines Büro.
+Du willst gerade gehen, da fällt dir ein: Deine Projektmappe liegt noch im Materialschrank.
 ```
 
-Die Endung `.md` steht für [Markdown](https://de.wikipedia.org/wiki/Markdown). Markdown ist eine einfache Schreibweise, mit der du normalen Text formatieren kannst.
+Die Endung `.md` steht für [Markdown](https://de.wikipedia.org/wiki/Markdown). Markdown ist eine einfache Schreibweise für Texte und eignet sich gut für interaktive Geschichten.
 
 Die Zeile
 
 ```markdown
-# Der Flur
+# Nach Schulschluss
 ```
 
-ist eine Überschrift. Das `#` am Anfang bedeutet, dass es sich um eine große Überschrift handelt.
+ist der **Titel der Geschichte**. Ein einzelnes `#` steht in Markdown für die größte Überschrift.
 
-Die Datei `1.md` hat bei BIF eine besondere Bedeutung: **Jede Geschichte beginnt bei Seite 1.**
+In einer BIF-Geschichte verwenden wir diese Überschrift für den Titel der gesamten Geschichte. Sie steht deshalb nur am Anfang von `1.md`. Die weiteren Seiten brauchen normalerweise keine eigene Überschrift.
 
-Speichere die Datei.
+Falls du innerhalb einer Seite doch einmal eine Zwischenüberschrift brauchst, verwendest du dafür `##`.
+
+<div class='hint'>
+Die Datei <code>1.md</code> hat bei BIF eine besondere Bedeutung: Jede Geschichte beginnt bei Seite 1.
+</div>
 
 ## Vorschau starten
 
-Damit du deine Geschichte im Browser ausprobieren kannst, brauchst du die Erweiterung »Live Server«.
+Damit du deine Geschichte im Browser ausprobieren kannst, brauchst du die Erweiterung **Live Server von Ritwick Dey**.
 
-Falls du sie noch nicht installiert hast, öffne links die Extensions, suche nach »Live Server« und klicke auf »Install«.
+Öffne links die Extensions, suche nach `Live Server` und installiere die Erweiterung von **Ritwick Dey**. Achte auf den Herausgeber, denn es gibt mehrere Erweiterungen mit sehr ähnlichen Namen.
 
-<!-- Screenshot: Live Server in Extensions -->
+<!-- Screenshot: Live Server von Ritwick Dey in Extensions -->
 
 <img class='full' src='live-server.webp'>
 
-Wenn alles geklappt hat, solltest du unten rechts den Eintrag »Go Live« sehen.
+Nach der Installation solltest du unten rechts den Eintrag »Go Live« sehen.
 
 <!-- Screenshot: Go-Live-Button -->
 
@@ -134,7 +110,7 @@ Wenn alles geklappt hat, solltest du unten rechts den Eintrag »Go Live« sehen.
 
 Klicke auf »Go Live«. Es öffnet sich ein neuer Tab mit deiner Geschichte.
 
-<div style='clear: both;'></div>
+BIF startet standardmäßig in der **Entwicklungsansicht**. Dort siehst du neben der Geschichte bereits den Graphen. Am Anfang besteht er nur aus einem einzigen Knoten für `1.md`. Du kannst die Geschichte direkt in dieser Ansicht ausprobieren; der Graph aktualisiert sich während des Schreibens automatisch.
 
 <!-- Screenshot: erste BIF-Seite im Browser -->
 
@@ -146,11 +122,11 @@ Klicke auf »Go Live«. Es öffnet sich ein neuer Tab mit deiner Geschichte.
 Tipp: Ziehe den Workspace und die Vorschau nebeneinander. Dann kannst du links schreiben und rechts direkt ausprobieren, was sich verändert hat.
 </div>
 
-## Eine zweite Seite
+## Zweite Seite
 
-Eine interaktive Geschichte wird interessant, wenn die Leserinnen und Leser Entscheidungen treffen können.
+Unsere Geschichte soll nicht auf der ersten Seite stehen bleiben.
 
-Erstelle im Ordner `pages-meine-geschichte` eine zweite Datei:
+Erstelle im Ordner `pages-starter` eine neue Datei:
 
 ```text
 2.md
@@ -159,24 +135,32 @@ Erstelle im Ordner `pages-meine-geschichte` eine zweite Datei:
 Schreibe hinein:
 
 ```markdown
-# Das Büro
-
-Eine Person sitzt an einem Schreibtisch und sieht von ihrem Bildschirm auf.
-
-- [Gehe zurück in den Flur.](1)
+Du stehst in einem leeren Flur. Links ist ein kleines Büro. Daneben führt eine Tür ins Treppenhaus. Am Ende steht ein verschlossener Materialschrank.
 ```
 
-Öffne anschließend wieder `1.md` und ergänze dort eine Entscheidung:
+Speichere die Datei.
+
+Damit besteht die Geschichte bereits aus zwei Seiten. Im Browser kommst du allerdings noch nicht von der ersten zur zweiten Seite. Dafür brauchen wir eine Entscheidung.
+
+## Entscheidungen
+
+Öffne wieder `1.md` und ergänze am Ende:
 
 ```markdown
-# Der Flur
-
-Du stehst in einem leeren Flur. Eine Tür führt in ein kleines Büro.
-
-- [Gehe in das Büro.](2)
+- [Gehe in den Flur.](2)
 ```
 
-Speichere beide Dateien und probiere die Geschichte aus.
+Die vollständige Datei sieht jetzt so aus:
+
+```markdown
+# Nach Schulschluss
+
+Du willst gerade gehen, da fällt dir ein: Deine Projektmappe liegt noch im Materialschrank.
+
+- [Gehe in den Flur.](2)
+```
+
+Speichere die Datei und probiere die Geschichte im Browser aus.
 
 <!-- Screenshot: erste anklickbare Entscheidung -->
 
@@ -187,16 +171,18 @@ Speichere beide Dateien und probiere die Geschichte aus.
 Die Zeile
 
 ```markdown
-- [Gehe in das Büro.](2)
+- [Gehe in den Flur.](2)
 ```
 
-besteht aus zwei wichtigen Teilen:
+besteht aus zwei wichtigen Teilen.
+
+Der Text
 
 ```text
-[Gehe in das Büro.]
+[Gehe in den Flur.]
 ```
 
-ist der Text, den die Leserin oder der Leser sieht.
+ist das, was die Leserin oder der Leser sieht.
 
 Die Zahl
 
@@ -204,7 +190,7 @@ Die Zahl
 (2)
 ```
 
-bedeutet: Wenn diese Entscheidung ausgewählt wird, geht die Geschichte mit `2.md` weiter.
+bedeutet: Nach dieser Entscheidung geht die Geschichte mit `2.md` weiter.
 
 <div class='hint books'>
 Achtung: Du schreibst bei einer Entscheidung <code>(2)</code> und nicht <code>(2.md)</code>. BIF weiß bereits, dass sich die Zahl auf eine Markdown-Datei bezieht.
@@ -212,141 +198,83 @@ Achtung: Du schreibst bei einer Entscheidung <code>(2)</code> und nicht <code>(2
 
 ## Verzweigungen
 
-Natürlich kann eine Seite auch mehrere Entscheidungen anbieten.
+Eine interaktive Geschichte wird interessanter, wenn nicht immer nur ein einziger Weg möglich ist.
 
-Erstelle eine neue Datei `3.md`:
-
-```markdown
-# Das Treppenhaus
-
-Eine Treppe führt nach oben und nach unten.
-
-- [Gehe zurück in den Flur.](1)
-```
-
-Ergänze jetzt in `1.md` eine zweite Entscheidung:
+Erstelle die Datei `3.md`:
 
 ```markdown
-# Der Flur
+Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kleiner Schlüssel an einem Haken.
 
-Du stehst in einem leeren Flur. Eine Tür führt in ein kleines Büro. Daneben befindet sich das Treppenhaus.
-
-- [Gehe in das Büro.](2)
-- [Gehe in das Treppenhaus.](3)
+- [Gehe zurück in den Flur.](2)
 ```
 
-Jetzt kann sich die Geschichte verzweigen.
+Erstelle außerdem die Datei `4.md`:
 
-<!-- Screenshot: zwei Entscheidungen auf Seite 1 -->
+```markdown
+Im Treppenhaus ist es still. Auf dem Absatz liegt nur ein vergessener Turnbeutel.
+
+- [Gehe zurück in den Flur.](2)
+```
+
+Öffne jetzt `2.md` und ergänze zwei Entscheidungen:
+
+```markdown
+Du stehst in einem leeren Flur. Links ist ein kleines Büro. Daneben führt eine Tür ins Treppenhaus. Am Ende steht ein verschlossener Materialschrank.
+
+- [Sieh im Büro nach.](3)
+- [Gehe ins Treppenhaus.](4)
+```
+
+Speichere die Dateien und probiere beide Wege aus.
+
+<!-- Screenshot: zwei Entscheidungen im Flur -->
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='branching-story.webp' style='max-width: 100%;'>
 </div>
 
-**Aufgabe:** Erstelle eine vierte Seite mit einem neuen Ort und füge irgendwo in deiner Geschichte eine Entscheidung ein, die zu dieser Seite führt.
+Die Geschichte verzweigt sich jetzt auf Seite 2. Beide Wege führen anschließend wieder zurück in den Flur.
 
-Du kannst zum Beispiel einen Keller, einen Klassenraum, einen Dachboden oder einen ganz anderen Ort verwenden.
+## Graph
 
-<div style='display: none;'>
+Der Graph ist in der Entwicklungsansicht bereits seit dem Start sichtbar. Jetzt, nachdem unsere Geschichte mehrere Seiten und Verzweigungen hat, lohnt sich ein genauerer Blick darauf.
 
-Eine mögliche Lösung wäre eine Datei `4.md`:
-
-```markdown
-# Der Keller
-
-Eine einzelne Lampe beleuchtet den Keller.
-
-- [Gehe zurück in den Flur.](1)
-```
-
-und die zusätzliche Entscheidung in `1.md`:
-
-```markdown
-- [Gehe in den Keller.](4)
-```
-
-</div>
-
-## Der Graph
-
-Schon bei wenigen Seiten kann es schwierig werden, den Überblick über alle Verbindungen zu behalten. Deshalb kann BIF deine Geschichte als **Graphen** anzeigen.
-
-Oben in der Entwicklungsansicht findest du einen kleinen Button, mit dem du zwischen der Geschichte und dem Graphen wechseln kannst.
-
-<!-- Screenshot: Button zum Wechseln zwischen Geschichte und Graph -->
-
-<img class='full' src='graph-button.webp'>
-
-Wechsle zur Graphansicht.
-
-<!-- Screenshot: Graph der kleinen Beispielgeschichte -->
+<!-- Screenshot: Graph der bisherigen Geschichte -->
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='first-graph.webp' style='max-width: 100%;'>
 </div>
 
-Jede Seite deiner Geschichte wird als Knoten dargestellt. Die Pfeile zeigen die Entscheidungen zwischen den Seiten.
+Jede Datei wird als Knoten dargestellt. Die Pfeile zeigen, welche Entscheidungen von einer Seite zu einer anderen führen.
 
-Bei unserer Geschichte führt zum Beispiel ein Pfeil von Seite 1 zu Seite 2, weil in `1.md` die folgende Entscheidung steht:
+Bei unserer Geschichte sieht man jetzt zum Beispiel:
 
-```markdown
-- [Gehe in das Büro.](2)
-```
+- Seite 1 führt zu Seite 2.
+- Seite 2 führt zu Seite 3 oder Seite 4.
+- Seite 3 und Seite 4 führen zurück zu Seite 2.
+
+So wird auch sichtbar, dass `1.md` nur der Einstieg ist. Später kehren wir nicht mehr auf diese Seite zurück.
 
 <div class='hint'>
 Je größer deine Geschichte wird, desto nützlicher wird der Graph. Du kannst damit schnell erkennen, welche Wege möglich sind und ob Teile deiner Geschichte gar nicht erreicht werden können.
 </div>
 
-## Text mit Markdown gestalten
+## Lokale Entscheidungen
 
-Die Seiten deiner Geschichte sind normale Markdown-Dateien. Deshalb kannst du deinen Text auf einfache Weise gestalten.
-
-Mit zwei Sternchen wird Text **fett**:
-
-```markdown
-Auf dem Tisch liegt ein **kleiner Schlüssel**.
-```
-
-Mit einem Sternchen wird Text *kursiv*:
-
-```markdown
-Aus dem Nebenraum hörst du ein *leises Klopfen*.
-```
-
-Eine wörtliche Rede kannst du zum Beispiel als Zitat schreiben:
-
-```markdown
-> „Ich würde diese Tür nicht öffnen“, sagt die Person.
-```
-
-Und mit weiteren `#` kannst du kleinere Überschriften erzeugen:
-
-```markdown
-## Ein Hinweis
-
-Hier könnte ein wichtiger Hinweis stehen.
-```
-
-**Aufgabe:** Ergänze eine deiner Seiten um etwas fett oder kursiv formatierten Text und eine kurze wörtliche Rede.
-
-## Dialoge und kleine Aktionen
-
-Nicht jede Entscheidung soll zu einer neuen Seite führen.
+Nicht jede Entscheidung soll zu einer anderen Seite führen.
 
 Vielleicht möchtest du mit einer Person sprechen, einen Gegenstand untersuchen oder eine Schublade öffnen. Dafür gibt es in BIF **lokale Entscheidungen**.
 
-Öffne `2.md` und ergänze:
+Öffne `3.md` und ändere den Inhalt zu:
 
 ```markdown
-# Das Büro
+Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kleiner Schlüssel an einem Haken.
 
-Eine Person sitzt an einem Schreibtisch und sieht von ihrem Bildschirm auf.
+- [Frage nach dem Materialschrank.](.)
 
-- [Frage, was hinter der Ausgangstür ist.](.)
+    > „Der ist abgeschlossen. Der kleine Schlüssel hängt hier neben der Tür.“
 
-    > „Keine Ahnung. Die Tür ist abgeschlossen.“
-
-- [Gehe zurück in den Flur.](1)
+- [Gehe zurück in den Flur.](2)
 ```
 
 Der wichtige Unterschied ist der Punkt:
@@ -359,7 +287,7 @@ Er bedeutet: **Bleibe auf dieser Seite.**
 
 Der eingerückte Text darunter erscheint erst, nachdem die Entscheidung ausgewählt wurde.
 
-<!-- Screenshot: Dialogentscheidung vor dem Anklicken -->
+<!-- Screenshot: lokale Entscheidung vor dem Anklicken -->
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='dialogue-before.webp' style='max-width: 100%;'>
@@ -367,144 +295,139 @@ Der eingerückte Text darunter erscheint erst, nachdem die Entscheidung ausgewä
 
 Klicke auf die Frage.
 
-<!-- Screenshot: Dialogentscheidung nach dem Anklicken -->
+<!-- Screenshot: lokale Entscheidung nach dem Anklicken -->
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='dialogue-after.webp' style='max-width: 100%;'>
 </div>
 
-Die gewählte Frage und die Antwort bleiben jetzt als Teil des Gesprächs sichtbar.
-
-<div class='hint books'>
-Achtung: Der Antworttext muss eingerückt sein. Setze vor jede Zeile der Antwort vier Leerzeichen. So erkennt BIF, dass die Antwort zu der Entscheidung darüber gehört.
-</div>
+Die vier Leerzeichen vor der Antwort sind wichtig. Sie zeigen BIF, dass dieser Text zu der Entscheidung darüber gehört.
 
 Lokale Entscheidungen eignen sich zum Beispiel für:
 
-* Gespräche
-* das Untersuchen eines Gegenstands
-* das Lesen eines Briefs
-* das Öffnen einer Schublade
-* das Betätigen eines Schalters
-* kleine Aktionen, die keinen neuen Ort benötigen
+- Gespräche
+- das Untersuchen eines Gegenstands
+- das Lesen eines Briefs
+- das Öffnen einer Schublade
+- das Betätigen eines Schalters
+- kleine Aktionen, die keinen neuen Ort benötigen
 
-**Aufgabe:** Füge dem Büro eine zweite Frage hinzu, die ebenfalls auf derselben Seite beantwortet wird.
+Wechsle danach noch einmal kurz zum Graphen. Die Frage im Büro hat keinen neuen Knoten erzeugt, weil sie innerhalb derselben Seite stattfindet.
 
-<div style='display: none;'>
+## Variablen
 
-Zum Beispiel:
+Bisher hängt der Verlauf nur davon ab, welche Seite gerade geöffnet wird. Eine Geschichte kann sich aber auch etwas **merken**.
 
-```markdown
-- [Frage, wie lange die Person schon hier sitzt.](.)
+In unserem Beispiel soll gespeichert werden, ob du den Schlüssel aus dem Büro genommen hast.
 
-    > „Seit heute Morgen.“
-```
-
-</div>
-
-Wechsle anschließend noch einmal zum Graphen.
-
-Du wirst sehen: Die zusätzlichen Fragen haben keine neuen Knoten erzeugt. Der Graph bleibt übersichtlich, weil die Unterhaltung innerhalb derselben Seite stattfindet.
-
-## Die Geschichte kann sich etwas merken
-
-Bisher hängt der weitere Verlauf nur davon ab, welche Seite du auswählst. BIF kann sich aber auch Dinge merken.
-
-Zum Beispiel könnte die Person im Büro einen Schlüssel besitzen. Erst wenn du nach diesem Schlüssel gefragt hast, kannst du später eine verschlossene Tür öffnen.
-
-Dafür verwenden wir eine **Variable**.
-
-Öffne `1.md` und füge direkt unter der Überschrift diesen Abschnitt ein:
+Öffne `1.md` und füge direkt unter dem Titel ein:
 
 ```html
 <script>
-has_key = has_key ?? false;
+has_key = false;
 </script>
 ```
 
-Die Variable heißt:
+Die Datei sieht jetzt so aus:
 
-```text
-has_key
+```markdown
+# Nach Schulschluss
+
+<script>
+has_key = false;
+</script>
+
+Du willst gerade gehen, da fällt dir ein: Deine Projektmappe liegt noch im Materialschrank.
+
+- [Gehe in den Flur.](2)
 ```
 
-und kann zwei Werte haben:
+`has_key` ist eine Variable. Der Wert
 
 ```text
-true
 false
 ```
 
-`true` bedeutet »ja« und `false` bedeutet »nein«.
+bedeutet hier: Du hast den Schlüssel noch nicht.
 
-Die Zeile
+Wir setzen diesen Anfangswert in `1.md`, weil diese Seite nur einmal am Anfang besucht wird.
 
-```js
-has_key = has_key ?? false;
-```
-
-bedeutet ungefähr:
-
-> Falls `has_key` noch keinen Wert hat, setze den Wert auf `false`. Ansonsten behalte den bisherigen Wert.
-
-So kann sich die Geschichte merken, ob der Schlüssel bereits gefunden wurde.
-
-<div class='hint'>
-Variablennamen dürfen keine Leerzeichen enthalten. Namen wie <code>has_key</code>, <code>door_open</code> oder <code>trust</code> sind möglich.
-</div>
-
-## Eine Entscheidung verändert den Zustand
-
-Gehe wieder zu `2.md` und ergänze eine weitere lokale Entscheidung:
+Öffne anschließend `3.md` und ergänze eine weitere lokale Entscheidung:
 
 ```markdown
-- [Frage nach einem Schlüssel.](.)
+- [Nimm den Schlüssel.](.)
 
     <script>
     has_key = true;
     </script>
 
-    Die Person gibt dir einen kleinen Schlüssel.
+    Du nimmst den kleinen Schlüssel vom Haken.
 ```
 
-Wenn diese Entscheidung ausgewählt wird, führt BIF den eingerückten `<script>`-Abschnitt aus.
+Die vollständige Datei kann jetzt so aussehen:
 
-Die Zeile
+```markdown
+Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kleiner Schlüssel an einem Haken.
 
-```js
-has_key = true;
+- [Frage nach dem Materialschrank.](.)
+
+    > „Der ist abgeschlossen. Der kleine Schlüssel hängt hier neben der Tür.“
+
+- [Nimm den Schlüssel.](.)
+
+    <script>
+    has_key = true;
+    </script>
+
+    Du nimmst den kleinen Schlüssel vom Haken.
+
+- [Gehe zurück in den Flur.](2)
 ```
 
-merkt sich, dass du den Schlüssel jetzt besitzt.
+Wenn die Entscheidung ausgewählt wird, ändert sich `has_key` von `false` zu `true`.
 
-<!-- Screenshot: Schlüssel-Dialog nach Auswahl -->
+Öffne in der Entwicklungsansicht den Bereich **State** und beobachte den Wert beim Spielen.
+
+<!-- Screenshot: Schlüssel genommen / State mit has_key: true -->
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='take-key.webp' style='max-width: 100%;'>
 </div>
 
-Damit haben wir zum ersten Mal eine Entscheidung getroffen, die **den späteren Verlauf der Geschichte verändert**.
+Damit hat eine Entscheidung zum ersten Mal etwas verändert, das auf einer späteren Seite noch wichtig sein kann.
 
-## Bedingte Entscheidungen
+<div class='hint'>
+Auf einer Seite, die mehrfach besucht werden kann, darfst du einen Anfangswert nicht einfach jedes Mal neu setzen. Für solche Fälle gibt es später zum Beispiel <code>has_key ??= false;</code>. Diese Schreibweise setzt den Wert nur dann, wenn die Variable noch gar keinen Wert hat. Für unsere Einstiegsgeschichte brauchen wir das nicht, weil <code>1.md</code> nur einmal besucht wird.
+</div>
 
-Jetzt soll im Flur eine verschlossene Ausgangstür erscheinen, die nur mit dem Schlüssel geöffnet werden kann.
+## Bedingungen
 
-Erstelle eine neue Datei `5.md`:
+Jetzt soll sich der Schlüssel auf den weiteren Verlauf auswirken.
+
+Erstelle zuerst die Datei `5.md`:
 
 ```markdown
-# Draußen
+Der Schlüssel passt.
 
-Du schließt die Tür auf und trittst nach draußen.
+Im Materialschrank liegt deine Projektmappe zwischen zwei Kartons. Du steckst sie ein. Jetzt kannst du endlich nach Hause.
 
-**Ende**
+**Ende.**
 ```
 
-Eine Seite ohne weitere Entscheidungen ist automatisch ein mögliches Ende der Geschichte.
-
-Ergänze jetzt in `1.md` eine weitere Entscheidung:
+Öffne danach `2.md` und ergänze eine Entscheidung zum Materialschrank:
 
 ```markdown
-- [Schließe die Ausgangstür auf.](5){condition="has_key"}
+- [Öffne den Materialschrank.](5){condition="has_key"}
+```
+
+Die vollständige Datei sieht jetzt so aus:
+
+```markdown
+Du stehst in einem leeren Flur. Links ist ein kleines Büro. Daneben führt eine Tür ins Treppenhaus. Am Ende steht ein verschlossener Materialschrank.
+
+- [Sieh im Büro nach.](3)
+- [Gehe ins Treppenhaus.](4)
+- [Öffne den Materialschrank.](5){condition="has_key"}
 ```
 
 Das Besondere steht hinter der Entscheidung:
@@ -519,10 +442,10 @@ Die Entscheidung wird nur angezeigt, wenn `has_key` den Wert `true` hat.
 
 Starte die Geschichte neu und probiere es aus:
 
-1. Gehe zunächst noch **nicht** ins Büro.
-2. Die Entscheidung zum Aufschließen der Tür sollte nicht sichtbar sein.
+1. Gehe in den Flur.
+2. Die Entscheidung zum Öffnen des Materialschranks sollte noch nicht sichtbar sein.
 3. Gehe ins Büro.
-4. Frage nach dem Schlüssel.
+4. Nimm den Schlüssel.
 5. Gehe zurück in den Flur.
 
 Jetzt sollte die neue Entscheidung erscheinen.
@@ -539,188 +462,87 @@ Jetzt sollte die neue Entscheidung erscheinen.
 <img src='unlocked-door.webp' style='max-width: 100%;'>
 </div>
 
-<div class='hint'>
-Mit Variablen und Bedingungen kannst du dafür sorgen, dass frühere Entscheidungen später Folgen haben. Dadurch muss eine interaktive Geschichte nicht einfach nur aus immer neuen Verzweigungen bestehen.
-</div>
-
-**Aufgabe:** Baue eine zweite Bedingung in deine Geschichte ein.
-
-Zum Beispiel:
-
-* eine Information, die man zuerst erfahren muss
-* einen Gegenstand, den man finden muss
-* eine Person, mit der man gesprochen haben muss
-* einen Schalter, den man betätigen muss
-
-<div style='display: none;'>
-
-Zum Beispiel könnte eine lokale Entscheidung eine Variable setzen:
-
-```markdown
-- [Lies den Zettel auf dem Tisch.](.)
-
-    <script>
-    knows_code = true;
-    </script>
-
-    Auf dem Zettel steht die Zahl 731.
-```
-
-Eine spätere Entscheidung kann davon abhängig sein:
-
-```markdown
-- [Gib den Code ein.](6){condition="knows_code"}
-```
-
-</div>
-
-## Text nur unter bestimmten Bedingungen anzeigen
-
-Bedingungen können nicht nur Entscheidungen steuern. Du kannst auch Text nur dann anzeigen lassen, wenn eine Bedingung erfüllt ist.
-
-Füge zum Beispiel in `1.md` ein:
-
-```html
-<p condition="has_key">
-Du spürst den kleinen Schlüssel in deiner Tasche.
-</p>
-```
-
-Dieser Satz erscheint nur, wenn `has_key` den Wert `true` besitzt.
-
-Du kannst eine Bedingung auch umkehren:
+Bedingungen können auch normalen Text steuern. Ergänze in `2.md` direkt vor den Entscheidungen:
 
 ```html
 <p condition="!has_key">
-Die Ausgangstür ist verschlossen.
+Der Materialschrank ist abgeschlossen.
+</p>
+
+<p condition="has_key">
+Du hast den kleinen Schlüssel dabei.
 </p>
 ```
 
-Das Ausrufezeichen `!` bedeutet hier ungefähr **nicht**.
+Das Ausrufezeichen in
 
 ```text
 !has_key
 ```
 
-bedeutet also:
+bedeutet hier ungefähr **nicht**. Der erste Absatz wird also nur angezeigt, solange du den Schlüssel noch nicht hast.
 
-> Du hast den Schlüssel nicht.
+Damit kann sich sogar die Beschreibung desselben Ortes verändern, obwohl du immer wieder dieselbe Datei `2.md` besuchst.
 
-Damit kann sich sogar die Beschreibung eines Ortes verändern, obwohl du immer dieselbe Seite besuchst.
-
-## Werte im Text anzeigen
-
-Variablen können nicht nur `true` oder `false` enthalten. Sie können zum Beispiel auch Zahlen oder Texte speichern.
-
-Ein möglicher Anfang einer Geschichte könnte so aussehen:
-
-```html
-<script>
-minutes = minutes ?? 10;
-</script>
-```
-
-Den aktuellen Wert kannst du mit doppelten eckigen Klammern direkt im Text anzeigen:
+Du kannst außerdem verhindern, dass der Schlüssel bei einem späteren Besuch im Büro noch einmal angeboten wird. Ergänze die Bedingung direkt an der lokalen Entscheidung:
 
 ```markdown
-Du hast noch [[ minutes ]] Minuten.
+- [Nimm den Schlüssel.](.){condition="!has_key"}
 ```
 
-Das Ergebnis könnte dann so aussehen:
-
-```text
-Du hast noch 10 Minuten.
-```
-
-Eine Entscheidung könnte die Zeit verändern:
-
-```markdown
-- [Durchsuche den Raum.](.)
-
-    <script>
-    minutes -= 2;
-    </script>
-
-    Die Suche kostet dich zwei Minuten.
-```
-
-Danach würde im weiteren Verlauf nur noch der neue Wert gespeichert.
+Nun verschwindet diese Möglichkeit, sobald `has_key` den Wert `true` hat.
 
 <div class='hint'>
-Du brauchst Zahlen und Variablen nicht für jede Geschichte. Benutze sie nur dann, wenn sie für deine Idee wirklich etwas bewirken.
+Mit Variablen und Bedingungen können frühere Entscheidungen später Folgen haben. Eine interaktive Geschichte muss deshalb nicht aus immer neuen Verzweigungen bestehen.
 </div>
 
-## Bilder verwenden
+## Ende
 
-Du kannst Bilder direkt in deine Geschichte einbauen.
+Öffne jetzt den Materialschrank.
 
-Lege dafür innerhalb von `pages-meine-geschichte` einen Ordner mit dem Namen `images` an:
+Die Datei `5.md` enthält keine weitere Entscheidung. Deshalb erkennt BIF diese Seite automatisch als mögliches Ende der Geschichte.
+
+<!-- Screenshot: Ende mit Neustart-Button -->
+
+Am Ende erscheint der Button
 
 ```text
-pages-meine-geschichte/
-├── 1.md
-├── 2.md
-├── 3.md
-└── images/
+Gedrückt halten, um erneut zu spielen
 ```
 
-Lege dort zum Beispiel eine Bilddatei mit dem Namen `door.jpg` ab.
+Er muss kurz gedrückt gehalten werden. So wird verhindert, dass der gesamte Spielstand versehentlich durch einen einfachen Klick gelöscht wird.
 
-In einer Markdown-Datei kannst du das Bild dann so anzeigen:
+Beim Neustart beginnt die Geschichte wieder bei `1.md`. Dadurch wird auch
 
-```markdown
-![Eine verschlossene Tür](images/door.jpg)
+```js
+has_key = false;
 ```
 
-Der Text in den eckigen Klammern beschreibt das Bild. Diese Beschreibung ist wichtig, damit die Geschichte auch mit Hilfstechnologien wie Screenreadern verständlich bleibt.
-
-<!-- Screenshot: BIF-Seite mit Bild -->
-
-<div style='text-align: center; margin: 1em 0;'>
-<img src='story-image.webp' style='max-width: 100%;'>
-</div>
-
-<div class='hint'>
-Speichere Bilder und andere Dateien, die zu deiner Geschichte gehören, am besten immer innerhalb deines Geschichtenordners.
-</div>
-
-## Audio und Video
-
-Du kannst auch Audio- und Videodateien verwenden.
-
-Eine Audiodatei kannst du zum Beispiel so einfügen:
-
-```html
-<audio controls src="audio/door.mp3"></audio>
-```
-
-Ein Video kannst du so einfügen:
-
-```html
-<video controls>
-    <source src="video/train.webm" type="video/webm">
-</video>
-```
-
-Dafür kannst du innerhalb deines Geschichtenordners entsprechende Unterordner wie `audio` oder `video` anlegen.
+erneut ausgeführt und der Anfangszustand ist wieder hergestellt.
 
 ## Fehler finden
 
-Beim Schreiben einer größeren Geschichte passieren leicht Fehler.
+Beim Schreiben passieren leicht Fehler.
 
-Vielleicht verweist eine Entscheidung auf eine Seite, die gar nicht existiert. Vielleicht hast du eine Bilddatei falsch geschrieben oder eine Seite angelegt, zu der kein Weg führt.
+Vielleicht verweist eine Entscheidung auf eine Seite, die gar nicht existiert. Vielleicht hast du einen Dateinamen falsch geschrieben oder eine Seite angelegt, zu der kein Weg führt.
 
-BIF überprüft deine Geschichte deshalb während des Schreibens.
+BIF überprüft die Geschichte deshalb während des Schreibens.
 
-Probiere absichtlich einen Fehler aus. Ändere in `1.md` zum Beispiel eine Entscheidung zu:
+Probiere absichtlich einen Fehler aus. Ändere in `2.md` vorübergehend:
 
 ```markdown
-- [Gehe in das Büro.](99)
+- [Sieh im Büro nach.](3)
+```
+
+zu:
+
+```markdown
+- [Sieh im Büro nach.](99)
 ```
 
 obwohl es keine Datei `99.md` gibt.
 
-Öffne anschließend die Entwicklungsansicht.
+Öffne anschließend die Entwicklungsansicht und den Bereich **Problems**.
 
 <!-- Screenshot: Problems-Ansicht mit fehlender Seite 99 -->
 
@@ -728,63 +550,163 @@ obwohl es keine Datei `99.md` gibt.
 
 BIF sollte jetzt anzeigen, dass das Ziel der Entscheidung fehlt.
 
-Korrigiere die Zahl anschließend wieder zu:
+Korrigiere die Zahl danach wieder zu:
 
 ```markdown
-- [Gehe in das Büro.](2)
+- [Sieh im Büro nach.](3)
 ```
 
 Die Fehlermeldung sollte verschwinden.
 
 BIF kann unter anderem auf folgende Probleme hinweisen:
 
-* fehlende Seiten
-* Seiten, die von nirgendwo erreicht werden können
-* fehlende Bilder oder andere Dateien
-* ungültige Bedingungen
-* Fehler in Skripten
+- fehlende Seiten
+- Seiten, die von nirgendwo erreicht werden können
+- fehlende Bilder oder andere Dateien
+- ungültige Bedingungen
+- Fehler in Skripten
 
 <div class='hint'>
 Schau beim Schreiben regelmäßig auf den Graphen und die Problems-Ansicht. Gerade bei größeren Geschichten findest du damit viele Fehler, bevor du die Geschichte komplett durchspielen musst.
 </div>
 
-## Den Graphen übersichtlicher machen
+## Weitere Möglichkeiten
 
-Bei einer größeren Geschichte kannst du Seiten im Graphen zu Bereichen zusammenfassen.
+Mit den Bausteinen aus der kleinen Geschichte kannst du bereits viele interaktive Geschichten schreiben. BIF kann darüber hinaus noch einiges mehr.
 
-Dafür kannst du ganz oben in einer Seite einen unsichtbaren Kommentar einfügen:
+### Markdown
 
-```markdown
-<!-- Gebäude -- Büro -->
+Für die normalen Texte kannst du die üblichen Markdown-Schreibweisen verwenden.
 
-# Das Büro
-```
-
-Der erste Teil
-
-```text
-Gebäude
-```
-
-ist die Gruppe.
-
-Der zweite Teil
-
-```text
-Büro
-```
-
-ist eine kurze Bezeichnung für den Knoten im Graphen.
-
-Eine andere Seite könnte zum Beispiel beginnen mit:
+Fetter Text:
 
 ```markdown
-<!-- Gebäude -- Flur -->
-
-# Der Flur
+Auf dem Tisch liegt ein **kleiner Schlüssel**.
 ```
 
-Mehrere Seiten mit derselben Gruppe werden in der Entwicklungsansicht zusammen dargestellt.
+Kursiver Text:
+
+```markdown
+Aus dem Nebenraum hörst du ein *leises Klopfen*.
+```
+
+Ein Zitat:
+
+```markdown
+> „Ich würde diese Tür nicht öffnen.“
+```
+
+Eine Zwischenüberschrift innerhalb einer Seite:
+
+```markdown
+## Ein Hinweis
+```
+
+Denke daran: `#` verwenden wir für den Titel der gesamten Geschichte. Für Unterüberschriften innerhalb einer Seite beginnt die Hierarchie bei `##`.
+
+### Bilder
+
+Bilder speicherst du am besten innerhalb deines Geschichtenordners, zum Beispiel:
+
+```text
+pages-meine-geschichte/
+├── 1.md
+├── 2.md
+└── images/
+    └── door.jpg
+```
+
+In Markdown kannst du das Bild so einfügen:
+
+```markdown
+![Eine verschlossene Tür](images/door.jpg)
+```
+
+Der Text in den eckigen Klammern beschreibt das Bild und hilft zum Beispiel Menschen, die einen Screenreader verwenden.
+
+<!-- Screenshot: BIF-Seite mit Bild -->
+
+<div style='text-align: center; margin: 1em 0;'>
+<img src='story-image.webp' style='max-width: 100%;'>
+</div>
+
+### Audio und Video
+
+Auch Audio- und Videodateien können Teil einer Geschichte sein:
+
+```html
+<audio controls src="audio/door.mp3"></audio>
+```
+
+oder:
+
+```html
+<video controls>
+    <source src="video/train.webm" type="video/webm">
+</video>
+```
+
+### Werte im Text
+
+Variablen können nicht nur `true` und `false`, sondern auch Zahlen oder Texte enthalten.
+
+Zum Beispiel:
+
+```html
+<script>
+points = 3;
+</script>
+```
+
+Mit doppelten eckigen Klammern kannst du einen Wert in den Text einsetzen:
+
+```markdown
+Du hast [[ points ]] Punkte.
+```
+
+Wenn eine Variable auf einer Seite einen Anfangswert bekommen soll, die mehrfach besucht werden kann, ist `??=` praktisch:
+
+```js
+points ??= 0;
+```
+
+Der Wert wird damit nur gesetzt, wenn `points` noch nicht existiert. Werte wie `0`, `false` oder ein bereits vorhandener Text bleiben unverändert.
+
+### Zufall
+
+Für manche Geschichten kann Zufall interessant sein.
+
+```js
+Math.w6()
+```
+
+würfelt mit einem sechsseitigen Würfel.
+
+```js
+Math.chance(50)
+```
+
+liefert mit einer Wahrscheinlichkeit von 50 Prozent `true`.
+
+Zufall eignet sich gut für kleine Überraschungen. Wichtige Folgen sind oft interessanter, wenn sie von vorherigen Entscheidungen abhängen.
+
+### Graph-Gruppen
+
+Bei größeren Geschichten kannst du Seiten im Graphen zu Bereichen zusammenfassen.
+
+Ganz oben in einer Seite kann zum Beispiel stehen:
+
+```markdown
+<!-- Schule -- Büro -->
+```
+
+Eine andere Seite könnte beginnen mit:
+
+```markdown
+<!-- Schule -- Flur -->
+```
+
+Diese Kommentare sind für die Leserinnen und Leser unsichtbar. Sie helfen nur dabei, den Graphen übersichtlich zu halten.
 
 <!-- Screenshot: Graph mit gruppierten Seiten -->
 
@@ -792,253 +714,107 @@ Mehrere Seiten mit derselben Gruppe werden in der Entwicklungsansicht zusammen d
 <img src='grouped-graph.webp' style='max-width: 100%;'>
 </div>
 
-Diese Kommentare verändern die Geschichte für die Leserinnen und Leser nicht. Sie helfen nur beim Schreiben.
+### JavaScript
 
-## Übungsaufgaben
-
-Jetzt kennst du bereits die wichtigsten Bausteine von BIF.
-
-Versuche eine oder mehrere der folgenden Aufgaben.
-
-### Ein Gespräch
-
-Baue eine Seite mit einer Person, die mindestens drei verschiedene Fragen beantwortet.
-
-Verwende dafür lokale Entscheidungen mit `(.)`.
-
-Mindestens eine Antwort soll eine weitere Frage freischalten.
-
-<div style='display: none;'>
-
-Zum Beispiel:
-
-```markdown
-<script>
-knows_box = knows_box ?? false;
-</script>
-
-- [Frage nach der Kiste.](.)
-
-    <script>
-    knows_box = true;
-    </script>
-
-    > „Die stand schon hier, als ich gekommen bin.“
-
-- [Frage, wer die Kiste gebracht hat.](.){condition="knows_box"}
-
-    > „Ich habe nur einen roten Lieferwagen gesehen.“
-```
-
-</div>
-
-### Ein Gegenstand
-
-Baue einen Gegenstand ein, den man finden oder erhalten kann.
-
-Eine spätere Entscheidung soll nur dann möglich sein, wenn man diesen Gegenstand besitzt.
-
-### Zwei verschiedene Enden
-
-Schreibe eine kleine Geschichte mit mindestens zwei verschiedenen Enden.
-
-Versuche dabei, nicht einfach nur am Anfang zwei völlig getrennte Wege zu bauen. Eine frühere Entscheidung soll sich erst später auswirken.
-
-### Eine eigene interaktive Geschichte
-
-Entwickle jetzt eine eigene Idee.
-
-Deine Geschichte sollte zunächst ungefähr diese Bestandteile enthalten:
-
-* mindestens fünf verschiedene Seiten
-* mindestens eine echte Verzweigung
-* mindestens einen Weg, der wieder zu einer früheren Seite zurückführt
-* mindestens einen lokalen Dialog oder eine lokale Aktion
-* mindestens eine Variable
-* mindestens eine bedingte Entscheidung
-* mindestens ein Ende
-
-Du kannst deine Geschichte danach beliebig erweitern.
-
-<div class='hint'>
-Plane nicht sofort zwanzig oder dreißig Seiten. Beginne mit wenigen Seiten, probiere sie aus und erweitere die Geschichte Schritt für Schritt. Der Graph hilft dir dabei, den Überblick zu behalten.
-</div>
-
-Falls dir noch eine Idee fehlt, kannst du zum Beispiel mit einer sehr einfachen Situation beginnen:
-
-* Du suchst einen verschwundenen Gegenstand.
-* Du musst rechtzeitig einen bestimmten Ort erreichen.
-* Du erkundest ein Gebäude.
-* Du versuchst herauszufinden, was passiert ist.
-* Du erzählst eine bekannte Sage aus einer anderen Perspektive.
-* Du lässt die Leserin oder den Leser eine historische Entscheidung treffen.
-
-Die eigentliche Geschichte, die Figuren und die Dialoge bestimmst du selbst.
-
-## Zufall
-
-Für manche Geschichten kann Zufall interessant sein.
-
-BIF besitzt dafür einige kleine Hilfsfunktionen.
-
-Mit
-
-```js
-Math.w6()
-```
-
-kannst du zum Beispiel einen normalen sechsseitigen Würfel werfen.
-
-```html
-<script>
-dice = Math.w6();
-</script>
-
-Du hast eine [[ dice ]] gewürfelt.
-```
-
-Bei jedem neuen Durchlauf kann ein anderes Ergebnis entstehen.
-
-Mit
-
-```js
-Math.chance(50)
-```
-
-kannst du eine Wahrscheinlichkeit angeben.
-
-Zum Beispiel:
-
-```html
-<script>
-found_note = Math.chance(50);
-</script>
-
-<p condition="found_note">
-Unter dem Schrank findest du einen Zettel.
-</p>
-
-<p condition="!found_note">
-Unter dem Schrank liegt nur Staub.
-</p>
-```
-
-`Math.chance(50)` bedeutet eine Chance von 50 Prozent.
-
-<div class='hint'>
-Zufall kann eine Geschichte abwechslungsreicher machen. Für wichtige Entscheidungen ist es aber oft interessanter, wenn das Ergebnis von vorherigen Entscheidungen der Spielerinnen und Spieler abhängt.
-</div>
-
-**Aufgabe:** Baue eine kleine Zufallsentscheidung in eine Geschichte ein. Probiere anschließend mehrmals einen Neustart aus.
-
-## Entscheidungen mit JavaScript
-
-Für die meisten Geschichten reichen die normalen Markdown-Entscheidungen vollkommen aus:
+Für normale Entscheidungen reichen die Markdown-Links fast immer aus:
 
 ```markdown
 - [Gehe nach links.](5)
 - [Gehe nach rechts.](6)
 ```
 
-Für besondere Fälle kann BIF Entscheidungen aber auch direkt in einem Skript erzeugen.
+Für besondere Fälle kann BIF Entscheidungen auch aus JavaScript erzeugen. Das ist eher eine fortgeschrittene Möglichkeit und normalerweise nicht nötig.
 
-```html
-<script>
-const direction = await presentChoice([
-    ['left', 'Gehe nach links'],
-    ['right', 'Gehe nach rechts'],
-]);
-
-if (direction === 'left') {
-    await goToPage('5');
-} else {
-    await goToPage('6');
-}
-</script>
-```
-
-Mit `presentChoice()` wird eine Auswahl angezeigt. Mit `goToPage()` kannst du anschließend zu einer Seite wechseln.
-
-<div class='hint books'>
-Für normale Verzweigungen solltest du weiterhin die einfachen Markdown-Links verwenden. JavaScript lohnt sich erst dann, wenn sich Entscheidungen nicht mehr einfach mit normalen Seiten und Bedingungen ausdrücken lassen.
+<div class='hint'>
+Benutze zusätzliche Technik nur dann, wenn sie deiner Geschichte etwas bringt. Mehr Variablen, Skripte oder Verzweigungen machen eine Geschichte nicht automatisch besser.
 </div>
 
-## Eine Geschichte überprüfen
+### Geschichte prüfen
 
-Während du arbeitest, überprüft BIF deine Geschichte automatisch.
-
-Du kannst am Ende zusätzlich eine vollständige Überprüfung im Terminal starten.
-
-Öffne ein Terminal und gib ein:
+Während du arbeitest, prüft BIF die Geschichte automatisch. Am Ende kannst du zusätzlich im Terminal eine vollständige Überprüfung starten:
 
 ```bash
 npm run check
 ```
 
-BIF untersucht dann die ausgewählte Geschichte und meldet gefundene Probleme.
-
 <!-- Screenshot: npm run check ohne Fehler -->
 
 <img class='full' src='check-story.webp'>
 
-Wenn keine Fehler gemeldet werden, ist die technische Struktur deiner Geschichte in Ordnung.
+Wenn keine Fehler gemeldet werden, ist die technische Struktur der Geschichte in Ordnung.
 
-Das bedeutet natürlich noch nicht, dass jede Entscheidung sinnvoll oder jeder Text fertig ist. Spiele deine Geschichte deshalb anschließend selbst noch einmal von Anfang bis Ende durch und lasse sie am besten auch von jemand anderem ausprobieren.
+Das bedeutet noch nicht, dass jede Entscheidung sinnvoll oder jeder Text fertig ist. Spiele die Geschichte deshalb selbst noch einmal durch und lasse sie am besten auch von jemand anderem ausprobieren.
 
-## Und jetzt?
+## Eigene Geschichte
 
-Die kleine Geschichte mit Flur, Büro und Schlüssel war nur dazu da, die Technik kennenzulernen.
+Die kleine Geschichte **Nach Schulschluss** war nur dazu da, die Technik kennenzulernen.
 
-Für deine eigene Geschichte brauchst du sie nicht weiterzuverwenden.
-
-Du kannst einen neuen Geschichtenordner anlegen, zum Beispiel:
+Für deine eigene Geschichte kannst du einen neuen Ordner anlegen, zum Beispiel:
 
 ```text
-pages-meine-neue-geschichte
+pages-meine-geschichte
 ```
 
-und anschließend in `config.js` auswählen:
+Lege darin wieder eine `1.md` an.
+
+Anschließend wählst du den neuen Geschichtenordner in `config.js` aus:
 
 ```js
-export const path = "pages-meine-neue-geschichte";
+export const path = "pages-meine-geschichte";
 ```
 
-Beginne wieder mit einer `1.md` und entwickle deine Geschichte von dort aus Schritt für Schritt.
+Damit beginnt dein eigenes Projekt wieder ganz klein.
 
-Die wichtigsten Bausteine kennst du jetzt:
+### Eine Idee entwickeln
+
+Bevor du viele Seiten anlegst, überlege dir zunächst, worum deine Geschichte geht.
+
+**Ausgangssituation**  
+Wo beginnt die Geschichte? Was ist gerade passiert?
+
+**Figur**  
+Wer handelt in der Geschichte? Was will diese Person?
+
+**Ziel**  
+Was soll gefunden, erreicht, verhindert oder herausgefunden werden?
+
+**Setting**  
+Wo und wann spielt die Geschichte? Was macht diesen Ort interessant?
+
+**Konflikt oder Hindernis**  
+Warum lässt sich das Ziel nicht einfach sofort erreichen?
+
+**Entscheidungen**  
+Was kann die Leserin oder der Leser wirklich entscheiden?
+
+**Folgen**  
+Welche Entscheidungen sollen später noch eine Rolle spielen?
+
+**Ende**  
+Woran merkt man, dass die Geschichte abgeschlossen ist? Kann es verschiedene Enden geben?
+
+Eine gute Entscheidung ist meistens interessanter als nur:
 
 ```text
-1.md
+Gehe nach links.
+Gehe nach rechts.
 ```
 
-startet eine Geschichte.
+Beide Möglichkeiten sollten einen Grund haben. Eine Entscheidung kann etwas über die Figur zeigen, eine Information preisgeben, einen Gegenstand kosten, Vertrauen verändern oder erst später Folgen haben.
 
-```markdown
-- [Gehe weiter.](2)
-```
+### Ideen
 
-führt zu einer anderen Seite.
+Falls dir noch eine Ausgangssituation fehlt, kannst du zum Beispiel mit einer dieser Ideen beginnen:
 
-```markdown
-- [Frage nach.](.)
+- Etwas Wichtiges ist verschwunden.
+- Du bekommst eine Nachricht, die nicht für dich bestimmt war.
+- Du musst rechtzeitig einen bestimmten Ort erreichen.
+- Du kommst an einen Ort, an dem etwas nicht stimmt.
+- Eine Person erzählt dir etwas, aber du weißt nicht, ob sie die Wahrheit sagt.
+- Du musst dich zwischen zwei Menschen oder zwei Zielen entscheiden.
+- Du erzählst eine Sage oder ein Märchen aus der Sicht einer Nebenfigur.
+- Du lässt die Leserinnen und Leser eine historische Situation aus einer bestimmten Perspektive erleben.
 
-    Eine Antwort erscheint.
-```
+Beginne nicht sofort mit zwanzig oder dreißig Seiten. Ein paar Seiten reichen für den Anfang. Spiele sie durch, schau auf den Graphen und erweitere die Geschichte Schritt für Schritt.
 
-bleibt auf derselben Seite.
-
-```html
-<script>
-has_key = true;
-</script>
-```
-
-merkt sich einen Zustand.
-
-```markdown
-- [Öffne die Tür.](3){condition="has_key"}
-```
-
-macht eine Entscheidung von diesem Zustand abhängig.
-
-Alles Weitere entsteht aus deiner Geschichte.
+Du musst auch nicht jede Funktion von BIF verwenden. Eine kleine Geschichte mit guten Entscheidungen ist besser als eine komplizierte Geschichte voller Technik, die eigentlich nichts bewirkt.
