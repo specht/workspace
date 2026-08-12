@@ -299,6 +299,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         bsdmainutils \
         build-essential \
         bwbasic \
+        byobu \
         ca-certificates \
         clang \
         cmake \
