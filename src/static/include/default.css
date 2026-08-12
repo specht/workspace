@@ -117,6 +117,11 @@ pre .na {
     color: #73a946 !important;
 }
 
+pre.wrap-code {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
 .rouge-table {
     padding: 0;
     font-size: 90%;

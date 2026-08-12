@@ -45,15 +45,11 @@ Nachdem das Verzeichnis geöffnet wurde, siehst du auf der linken Seite den Expl
 <img class='full' src='fresh-project.webp'>
 
 
-### Live Server-Erweiterung installieren
-
-Damit wir unsere Webseite jederzeit im Browser anschauen können, installieren wir eine Erweiterung. Öffne dazu links die Extensions, suche die Erweiterung »Live Server« und klicke auf »Install«, um die Erweiterung zu installieren:
-
-<img class='full' src='live-server.webp'>
+### Vorschau starten
 
 <img src='go-live.webp' class='r' style='width: 21em;'>
 
-Wenn alles geklappt hat, solltest du unten rechts den Eintrag »Go Live« sehen. Wenn du darauf klickst, öffnet sich ein neues Tab in deinem Browser mit der Vorschau deiner HTML-Seite. Deine Seite ist noch leer, aber das wird sich gleich ändern. Zumindest solltest du in der Titelzeile des Browserfenster schon den Seitentitel »Mein Titel« sehen.
+Unten rechts im Fenster siehst du den Eintrag »Go Live«. Wenn du darauf klickst, öffnet sich ein neues Tab in deinem Browser mit der Vorschau deiner HTML-Seite. Deine Seite ist noch leer, aber das wird sich gleich ändern. Zumindest solltest du in der Titelzeile des Browserfenster schon den Seitentitel »Mein Titel« sehen.
 
 <div style='clear: both;'></div>
 

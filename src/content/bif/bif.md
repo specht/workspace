@@ -1,11 +1,11 @@
-<div class='meta_no'>
-image: title.webp
+<div class='meta'>
+image: bif.webp
 </div>
 
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2,h3,h4">
+    data-levels="h2">
 </div>
 
 # Interaktive Geschichten schreiben
@@ -68,23 +68,20 @@ Wenn alles geklappt hat, siehst du links im Explorer unter anderem den Ordner `p
 
 Dort steht bereits der Anfang unserer kleinen Geschichte:
 
-```markdown
+```markdown_wrap
 # Nach Schulschluss
 
 Du willst gerade gehen, da fällt dir ein: Deine Projektmappe liegt noch im Materialschrank.
 ```
 
 Die Endung `.md` steht für [Markdown](https://de.wikipedia.org/wiki/Markdown). Markdown ist eine einfache Schreibweise für Texte und eignet sich gut für interaktive Geschichten.
-
 Die Zeile
 
-```markdown
+```markdown_wrap
 # Nach Schulschluss
 ```
 
-ist der **Titel der Geschichte**. Ein einzelnes `#` steht in Markdown für die größte Überschrift.
-
-In einer BIF-Geschichte verwenden wir diese Überschrift für den Titel der gesamten Geschichte. Sie steht deshalb nur am Anfang von `1.md`. Die weiteren Seiten brauchen normalerweise keine eigene Überschrift.
+ist der **Titel der Geschichte**. Ein einzelnes `#` steht in Markdown für die größte Überschrift. In einer BIF-Geschichte verwenden wir diese Überschrift für den Titel der gesamten Geschichte. Sie steht deshalb nur am Anfang von `1.md`. Die weiteren Seiten brauchen normalerweise keine eigene Überschrift.
 
 Falls du innerhalb einer Seite doch einmal eine Zwischenüberschrift brauchst, verwendest du dafür `##`.
 
@@ -94,59 +91,54 @@ Die Datei <code>1.md</code> hat bei BIF eine besondere Bedeutung: Jede Geschicht
 
 ## Vorschau starten
 
-Damit du deine Geschichte im Browser ausprobieren kannst, ist im Workspace bereits die Erweiterung **Live Server** installiert.
-
-Unten rechts findest du den Eintrag »Go Live«.
-
-<!-- Screenshot: Go-Live-Button -->
-
 <img src='go-live.webp' class='r' style='width: 21em;'>
 
-Klicke auf »Go Live«. Es öffnet sich ein neuer Tab mit deiner Geschichte.
+Damit du deine Geschichte im Browser ausprobieren kannst, ist im Workspace bereits die Erweiterung **Live Server** installiert.
+Klicke rechts unten auf »Go Live«. Es öffnet sich ein neuer Tab mit deiner Geschichte:
 
-BIF startet standardmäßig in der **Entwicklungsansicht**. Dort siehst du neben der Geschichte bereits den Graphen. Am Anfang besteht er nur aus einem einzigen Knoten für `1.md`. Du kannst die Geschichte direkt in dieser Ansicht ausprobieren; der Graph aktualisiert sich während des Schreibens automatisch.
+<div style='clear: both;'></div>
 
-<!-- Screenshot: erste BIF-Seite im Browser -->
+<img class='full' src='first-page.webp'>
 
-<div style='text-align: center; margin: 1em 0;'>
-<img src='first-page.webp' style='max-width: 100%;'>
-</div>
+BIF startet standardmäßig in der Entwicklungsansicht. Rechts siehst du die Geschichte, die momentan noch sehr kurz ist und noch keine Entscheidungsmöglichkeiten bietet. Mit dem Button rechts oben kannst du zwischen der Entwicklungsansicht und der Leseansicht hin- und herwechseln. Wenn du deine Geschichte später veröffentlichst, bekommen deine Leser:innen nur die Leseansicht zu sehen.
 
 <div class='hint'>
 Tipp: Ziehe den Workspace und die Vorschau nebeneinander. Dann kannst du links schreiben und rechts direkt ausprobieren, was sich verändert hat.
 </div>
 
+<img class='full' src='side-by-side.webp'>
+
 ## Zweite Seite
 
-Unsere Geschichte soll nicht auf der ersten Seite stehen bleiben.
+<img src='new-file.webp' class='r' style='width: 21em;'>
 
-Erstelle im Ordner `pages-starter` eine neue Datei:
-
-```text
-2.md
-```
+Unsere Geschichte soll nicht auf der ersten Seite stehen bleiben. Erstelle im Ordner `pages-starter` eine neue Datei, indem du auf das entsprechende Icon klickst. Nenne die Datei `2.md`.
 
 Schreibe hinein:
 
-```markdown
+```markdown_wrap
 Du stehst in einem leeren Flur. Links ist ein kleines Büro. Daneben führt eine Tür ins Treppenhaus. Am Ende steht ein verschlossener Materialschrank.
 ```
 
-Speichere die Datei.
+Speichere die Datei, indem du <span class='key'>Strg</span><span class='key'>S</span> drückst. Die Vorschau sollte nun so aussehen:
 
-Damit besteht die Geschichte bereits aus zwei Seiten. Im Browser kommst du allerdings noch nicht von der ersten zur zweiten Seite. Dafür brauchen wir eine Entscheidung.
+<div style='clear: both;'></div>
+
+<img class='full' src='unreachable-page.webp'>
+
+Damit besteht die Geschichte bereits aus zwei Seiten, allerdings gibt es noch keine Verbindung von der ersten zur zweiten Seite – dafür brauchen wir eine Entscheidung.
 
 ## Entscheidungen
 
 Öffne wieder `1.md` und ergänze am Ende:
 
-```markdown
+```markdown_wrap
 - [Gehe in den Flur.](2)
 ```
 
 Die vollständige Datei sieht jetzt so aus:
 
-```markdown
+```markdown_wrap
 # Nach Schulschluss
 
 Du willst gerade gehen, da fällt dir ein: Deine Projektmappe liegt noch im Materialschrank.
@@ -154,49 +146,26 @@ Du willst gerade gehen, da fällt dir ein: Deine Projektmappe liegt noch im Mate
 - [Gehe in den Flur.](2)
 ```
 
-Speichere die Datei und probiere die Geschichte im Browser aus.
+Speichere die Datei und probiere die Geschichte im Browser aus:
 
-<!-- Screenshot: erste anklickbare Entscheidung -->
+<img class='full' src='two-pages.webp'>
 
-<div style='text-align: center; margin: 1em 0;'>
-<img src='first-choice.webp' style='max-width: 100%;'>
-</div>
+Die Geschichte endet jetzt mit einer Entscheidungsmöglichkeit: wenn du in den Flur gehst, geht die Geschichte bei Seite 2 weiter. Links im Graphen siehst du immer, wo du dich gerade innerhalb der Geschichte befindest.
 
 Die Zeile
 
-```markdown
+```markdown_wrap
 - [Gehe in den Flur.](2)
 ```
 
-besteht aus zwei wichtigen Teilen.
-
-Der Text
-
-```text
-[Gehe in den Flur.]
-```
-
-ist das, was die Leserin oder der Leser sieht.
-
-Die Zahl
-
-```text
-(2)
-```
-
-bedeutet: Nach dieser Entscheidung geht die Geschichte mit `2.md` weiter.
-
-<div class='hint books'>
-Achtung: Du schreibst bei einer Entscheidung <code>(2)</code> und nicht <code>(2.md)</code>. BIF weiß bereits, dass sich die Zahl auf eine Markdown-Datei bezieht.
-</div>
+besteht aus zwei wichtigen Teilen: in eckigen Klammern steht der Text, der angezeigt wird und in runden Klammern steht die Seitenzahl, mit der es bei dieser Entscheidung weitergehen soll.
 
 ## Verzweigungen
 
 Eine interaktive Geschichte wird interessanter, wenn nicht immer nur ein einziger Weg möglich ist.
-
 Erstelle die Datei `3.md`:
 
-```markdown
+```markdown_wrap
 Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kleiner Schlüssel an einem Haken.
 
 - [Gehe zurück in den Flur.](2)
@@ -204,7 +173,7 @@ Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kle
 
 Erstelle außerdem die Datei `4.md`:
 
-```markdown
+```markdown_wrap
 Im Treppenhaus ist es still. Auf dem Absatz liegt nur ein vergessener Turnbeutel.
 
 - [Gehe zurück in den Flur.](2)
@@ -212,7 +181,7 @@ Im Treppenhaus ist es still. Auf dem Absatz liegt nur ein vergessener Turnbeutel
 
 Öffne jetzt `2.md` und ergänze zwei Entscheidungen:
 
-```markdown
+```markdown_wrap
 Du stehst in einem leeren Flur. Links ist ein kleines Büro. Daneben führt eine Tür ins Treppenhaus. Am Ende steht ein verschlossener Materialschrank.
 
 - [Sieh im Büro nach.](3)
@@ -223,31 +192,17 @@ Speichere die Dateien und probiere beide Wege aus.
 
 <!-- Screenshot: zwei Entscheidungen im Flur -->
 
-<div style='text-align: center; margin: 1em 0;'>
-<img src='branching-story.webp' style='max-width: 100%;'>
-</div>
+<img class='full' src='branching-story.webp'>
 
 Die Geschichte verzweigt sich jetzt auf Seite 2. Beide Wege führen anschließend wieder zurück in den Flur.
 
-## Graph
-
-Der Graph ist in der Entwicklungsansicht bereits seit dem Start sichtbar. Jetzt, nachdem unsere Geschichte mehrere Seiten und Verzweigungen hat, lohnt sich ein genauerer Blick darauf.
-
-<!-- Screenshot: Graph der bisherigen Geschichte -->
-
-<div style='text-align: center; margin: 1em 0;'>
-<img src='first-graph.webp' style='max-width: 100%;'>
-</div>
-
-Jede Datei wird als Knoten dargestellt. Die Pfeile zeigen, welche Entscheidungen von einer Seite zu einer anderen führen.
-
-Bei unserer Geschichte sieht man jetzt zum Beispiel:
+Jetzt, nachdem unsere Geschichte mehrere Seiten und Verzweigungen hat, lohnt sich ein genauerer Blick auf den Graphen auf der linken Seite: Jede Seite wird als Knoten dargestellt. Die Pfeile zeigen, welche Entscheidungen von einer Seite zu einer anderen führen. Bei unserer Geschichte sieht man jetzt zum Beispiel:
 
 - Seite 1 führt zu Seite 2.
 - Seite 2 führt zu Seite 3 oder Seite 4.
 - Seite 3 und Seite 4 führen zurück zu Seite 2.
 
-So wird auch sichtbar, dass `1.md` nur der Einstieg ist. Später kehren wir nicht mehr auf diese Seite zurück.
+So wird auch sichtbar, dass `1.md` nur der Einstieg ist. Später kehren wir nicht mehr auf diese Seite zurück. Du siehst auch, auf welcher Seite du dich gerade in der Geschichte befindest und welchen Pfad du bisher zurückgelegt hast.
 
 <div class='hint'>
 Je größer deine Geschichte wird, desto nützlicher wird der Graph. Du kannst damit schnell erkennen, welche Wege möglich sind und ob Teile deiner Geschichte gar nicht erreicht werden können.
@@ -261,7 +216,7 @@ Vielleicht möchtest du mit einer Person sprechen, einen Gegenstand untersuchen 
 
 Öffne `3.md` und ändere den Inhalt zu:
 
-```markdown
+```markdown_wrap
 Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kleiner Schlüssel an einem Haken.
 
 - [Frage nach dem Materialschrank.](.)
@@ -271,43 +226,15 @@ Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kle
 - [Gehe zurück in den Flur.](2)
 ```
 
-Der wichtige Unterschied ist der Punkt:
+Der wichtige Unterschied ist der Punkt: `(.)` – er bedeutet, dass die Geschichte auf dieser Seite bleiben soll. Der eingerückte Text darunter erscheint erst, nachdem die Entscheidung ausgewählt wurde.
 
-```text
-(.)
-```
+<!-- Screenshot: lokale Entscheidung -->
 
-Er bedeutet: **Bleibe auf dieser Seite.**
+<img class='full' src='local-choice.webp'>
 
-Der eingerückte Text darunter erscheint erst, nachdem die Entscheidung ausgewählt wurde.
+Die vier Leerzeichen vor der Antwort sind wichtig. Durch die Einrückung erkennt BIF, dass der eingerückte Text zur Entscheidung direkt darüber gehört. Alles, was nach dieser lokalen Entscheidung passieren soll, wird deshalb entsprechend eingerückt.
 
-Die Anführungszeichen kannst du dabei ganz normal mit der Taste `"` schreiben:
-
-```markdown
-> "Der ist abgeschlossen."
-```
-
-BIF stellt sie in der Geschichte automatisch als deutsche Anführungszeichen dar:
-
-```text
-„Der ist abgeschlossen.“
-```
-
-<!-- Screenshot: lokale Entscheidung vor dem Anklicken -->
-
-<div style='text-align: center; margin: 1em 0;'>
-<img src='dialogue-before.webp' style='max-width: 100%;'>
-</div>
-
-Klicke auf die Frage.
-
-<!-- Screenshot: lokale Entscheidung nach dem Anklicken -->
-
-<div style='text-align: center; margin: 1em 0;'>
-<img src='dialogue-after.webp' style='max-width: 100%;'>
-</div>
-
-Die vier Leerzeichen vor der Antwort sind wichtig. Sie zeigen BIF, dass dieser Text zu der Entscheidung darüber gehört.
+Probiere die neue Entscheidung aus. Nachdem du Frau Neumann gefragt hast, gehört die Frage zusammen mit ihrer Antwort zum bisherigen Verlauf. Sie steht nicht mehr bei den noch offenen Entscheidungsmöglichkeiten und kann während dieses Besuchs nicht noch einmal ausgewählt werden. Die Entscheidung »Gehe zurück in den Flur« bleibt dagegen weiterhin verfügbar.
 
 Lokale Entscheidungen eignen sich zum Beispiel für:
 
@@ -318,13 +245,9 @@ Lokale Entscheidungen eignen sich zum Beispiel für:
 - das Betätigen eines Schalters
 - kleine Aktionen, die keinen neuen Ort benötigen
 
-Wechsle danach noch einmal kurz zum Graphen. Die Frage im Büro hat keinen neuen Knoten erzeugt, weil sie innerhalb derselben Seite stattfindet.
-
 ## Variablen
 
-Bisher hängt der Verlauf nur davon ab, welche Seite gerade geöffnet wird. Eine Geschichte kann sich aber auch etwas **merken**.
-
-In unserem Beispiel soll gespeichert werden, ob du den Schlüssel aus dem Büro genommen hast.
+Bisher hängt der Verlauf nur davon ab, welche Seite gerade geöffnet wird. Eine Geschichte kann sich aber auch etwas **merken**. In unserem Beispiel soll gespeichert werden, ob du den Schlüssel aus dem Büro genommen hast.
 
 Öffne `1.md` und füge direkt unter dem Titel ein:
 
@@ -336,7 +259,7 @@ has_key = false;
 
 Die Datei sieht jetzt so aus:
 
-```markdown
+```markdown_wrap
 # Nach Schulschluss
 
 <script>
@@ -348,19 +271,11 @@ Du willst gerade gehen, da fällt dir ein: Deine Projektmappe liegt noch im Mate
 - [Gehe in den Flur.](2)
 ```
 
-`has_key` ist eine Variable. Der Wert
-
-```text
-false
-```
-
-bedeutet hier: Du hast den Schlüssel noch nicht.
-
-Wir setzen diesen Anfangswert in `1.md`, weil diese Seite nur einmal am Anfang besucht wird.
+`has_key` ist eine Variable. Der Wert `false` bedeutet hier: Du hast den Schlüssel noch nicht. Wir setzen diesen Anfangswert in `1.md`, weil diese Seite nur einmal am Anfang besucht wird.
 
 Öffne anschließend `3.md` und ergänze eine weitere lokale Entscheidung:
 
-```markdown
+```markdown_wrap
 - [Nimm den Schlüssel.](.)
 
     <script>
@@ -370,9 +285,9 @@ Wir setzen diesen Anfangswert in `1.md`, weil diese Seite nur einmal am Anfang b
     Du nimmst den kleinen Schlüssel vom Haken.
 ```
 
-Die vollständige Datei kann jetzt so aussehen:
+Die vollständige Datei sieht jetzt so aus:
 
-```markdown
+```markdown_wrap
 Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kleiner Schlüssel an einem Haken.
 
 - [Frage nach dem Materialschrank.](.)
@@ -390,29 +305,137 @@ Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kle
 - [Gehe zurück in den Flur.](2)
 ```
 
-Wenn die Entscheidung ausgewählt wird, ändert sich `has_key` von `false` zu `true`.
+Wenn du »Nimm den Schlüssel« auswählst, wird das Skript ausgeführt und `has_key` ändert sich von `false` zu `true`.
 
 Öffne in der Entwicklungsansicht den Bereich **State** und beobachte den Wert beim Spielen.
 
 <!-- Screenshot: Schlüssel genommen / State mit has_key: true -->
 
-<div style='text-align: center; margin: 1em 0;'>
-<img src='take-key.webp' style='max-width: 100%;'>
-</div>
+<img class='full' src='take-key.webp'>
 
-Damit hat eine Entscheidung zum ersten Mal etwas verändert, das auf einer späteren Seite noch wichtig sein kann.
+Die Geschichte hat sich damit zum ersten Mal etwas gemerkt. Solange du im Büro bleibst, sieht auch alles richtig aus: »Nimm den Schlüssel« ist bereits erledigt und kann nicht noch einmal ausgewählt werden.
 
-<div class='hint'>
-Auf einer Seite, die mehrfach besucht werden kann, darfst du einen Anfangswert nicht einfach jedes Mal neu setzen. Für solche Fälle gibt es später zum Beispiel <code>has_key ??= false;</code>. Diese Schreibweise setzt den Wert nur dann, wenn die Variable noch gar keinen Wert hat. Für unsere Einstiegsgeschichte brauchen wir das nicht, weil <code>1.md</code> nur einmal besucht wird.
-</div>
+Jetzt lohnt sich aber ein kleiner Test:
+
+1. Nimm den Schlüssel.
+2. Gehe zurück in den Flur.
+3. Betritt das Büro erneut.
+
+Nun stimmt plötzlich einiges nicht mehr. Der Schlüssel hängt laut Beschreibung wieder neben der Tür, du kannst ihn noch einmal nehmen und Frau Neumann behauptet weiterhin, dass er dort hängt. Gleichzeitig zeigt **State** immer noch:
+
+```text
+has_key: true
+```
+
+<!-- Screenshot: Büro nach erneutem Betreten, obwohl has_key true ist -->
+
+Das ist kein Fehler in der Variable. `has_key` hat sich korrekt gemerkt, dass du den Schlüssel besitzt.
+
+Der Grund liegt bei den lokalen Entscheidungen: BIF merkt sich innerhalb eines Besuchs, welche lokalen Entscheidungen bereits ausgeführt wurden. Wenn du eine Seite verlässt und später erneut betrittst, wird die Seite neu aufgebaut. Die lokalen Entscheidungen stehen dann zunächst wieder zur Verfügung.
+
+Ob etwas **dauerhaft für den weiteren Verlauf der Geschichte** passiert ist, speichern wir deshalb in Variablen. Jetzt müssen wir dafür sorgen, dass die Seite diesen gespeicherten Zustand auch berücksichtigt.
 
 ## Bedingungen
 
-Jetzt soll sich der Schlüssel auf den weiteren Verlauf auswirken.
+Dafür gibt es **Bedingungen**. Mit einer Bedingung können wir festlegen, dass Text oder eine Entscheidung nur in einem bestimmten Zustand der Geschichte erscheint.
 
-Erstelle zuerst die Datei `5.md`:
+Wir beheben zuerst das offensichtlichste Problem: Wenn du den Schlüssel schon besitzt, darf »Nimm den Schlüssel« bei einem späteren Besuch nicht noch einmal angeboten werden.
 
-```markdown
+Ergänze die Entscheidung in `3.md`:
+
+```markdown_wrap
+- [Nimm den Schlüssel.](.){condition="!has_key"}
+```
+
+Das Besondere steht hinter der Entscheidung:
+
+```text
+{condition="!has_key"}
+```
+
+`condition` bedeutet **Bedingung**. Das Ausrufezeichen vor `has_key` bedeutet **nicht**. Die Entscheidung erscheint also nur, wenn `has_key` nicht `true` ist – solange du den Schlüssel noch nicht hast.
+
+Speichere die Datei und probiere den Weg noch einmal aus: Schlüssel nehmen, in den Flur gehen und anschließend wieder ins Büro. Diesmal wird »Nimm den Schlüssel« nicht erneut angeboten.
+
+Damit ist aber erst ein Teil des Problems gelöst. Auch die Beschreibung des Büros behauptet noch, dass der Schlüssel am Haken hängt.
+
+Ändere den Anfang von `3.md`:
+
+```html_wrap
+Im Büro sitzt Frau Neumann an einem Schreibtisch.
+
+<p condition="!has_key">
+Neben der Tür hängt ein kleiner Schlüssel an einem Haken.
+</p>
+
+<p condition="has_key">
+Der Haken neben der Tür ist leer.
+</p>
+```
+
+BIF zeigt nun abhängig vom Wert von `has_key` genau einen der beiden Absätze an.
+
+Bedingungen können also nicht nur Entscheidungen, sondern auch normalen Text steuern. Dadurch kann sich derselbe Ort verändern, ohne dass wir dafür eine neue Seite anlegen müssen.
+
+Es gibt noch einen Widerspruch: Wenn du das Büro mit dem Schlüssel erneut betrittst, sollte Frau Neumann nicht wieder sagen, dass er neben der Tür hängt. Auch das können wir mit Bedingungen lösen.
+
+Die bisherige Frage soll nur erscheinen, solange du den Schlüssel noch nicht hast:
+
+```markdown_wrap
+- [Frage nach dem Materialschrank.](.){condition="!has_key"}
+
+    > "Der ist abgeschlossen. Der kleine Schlüssel hängt hier neben der Tür."
+```
+
+Sobald du den Schlüssel besitzt, bieten wir stattdessen eine passende Frage an:
+
+```markdown_wrap
+- [Frage, ob der Schlüssel zum Materialschrank passt.](.){condition="has_key"}
+
+    > "Ja, genau der ist für den Materialschrank."
+```
+
+`3.md` sieht damit vollständig so aus:
+
+```markdown_wrap
+Im Büro sitzt Frau Neumann an einem Schreibtisch.
+
+<p condition="!has_key">
+Neben der Tür hängt ein kleiner Schlüssel an einem Haken.
+</p>
+
+<p condition="has_key">
+Der Haken neben der Tür ist leer.
+</p>
+
+- [Frage nach dem Materialschrank.](.){condition="!has_key"}
+
+    > "Der ist abgeschlossen. Der kleine Schlüssel hängt hier neben der Tür."
+
+- [Nimm den Schlüssel.](.){condition="!has_key"}
+
+    <script>
+    has_key = true;
+    </script>
+
+    Du nimmst den kleinen Schlüssel vom Haken.
+
+- [Frage, ob der Schlüssel zum Materialschrank passt.](.){condition="has_key"}
+
+    > "Ja, genau der ist für den Materialschrank."
+
+- [Gehe zurück in den Flur.](2)
+```
+
+Probiere das Büro jetzt noch einmal von Anfang an aus. Wenn du den Schlüssel nimmst, verändert sich die Seite sofort: Der Haken ist leer und die passenden Entscheidungen ändern sich. Wenn du das Büro verlässt und erneut betrittst, bleibt die Geschichte trotzdem logisch, weil `has_key` weiterhin `true` ist.
+
+<!-- Screenshot: Büro nach dem Nehmen des Schlüssels -->
+
+Jetzt soll der Schlüssel auch außerhalb des Büros eine Folge haben.
+
+Erstelle die Datei `5.md`:
+
+```markdown_wrap
 Der Schlüssel passt.
 
 Im Materialschrank liegt deine Projektmappe zwischen zwei Kartons. Du steckst sie ein. Jetzt kannst du endlich nach Hause.
@@ -420,86 +443,52 @@ Im Materialschrank liegt deine Projektmappe zwischen zwei Kartons. Du steckst si
 **Ende.**
 ```
 
-Öffne danach `2.md` und ergänze eine Entscheidung zum Materialschrank:
+Öffne anschließend `2.md`. Auch der Flur kann auf den gespeicherten Zustand reagieren. Ersetze den Inhalt durch:
 
-```markdown
-- [Öffne den Materialschrank.](5){condition="has_key"}
-```
+```markdown_wrap
+Du stehst in einem leeren Flur. Links ist ein kleines Büro. Daneben führt eine Tür ins Treppenhaus.
 
-Die vollständige Datei sieht jetzt so aus:
+<p condition="!has_key">
+Am Ende steht ein verschlossener Materialschrank.
+</p>
 
-```markdown
-Du stehst in einem leeren Flur. Links ist ein kleines Büro. Daneben führt eine Tür ins Treppenhaus. Am Ende steht ein verschlossener Materialschrank.
+<p condition="has_key">
+Am Ende steht der Materialschrank. Du hast den passenden Schlüssel dabei.
+</p>
 
 - [Sieh im Büro nach.](3)
 - [Gehe ins Treppenhaus.](4)
 - [Öffne den Materialschrank.](5){condition="has_key"}
 ```
 
-Das Besondere steht hinter der Entscheidung:
-
-```text
-{condition="has_key"}
-```
-
-`condition` bedeutet **Bedingung**.
-
-Die Entscheidung wird nur angezeigt, wenn `has_key` den Wert `true` hat.
+Die Entscheidung zum Öffnen des Materialschranks wird nur angezeigt, wenn `has_key` den Wert `true` hat.
 
 Starte die Geschichte neu und probiere es aus:
 
 1. Gehe in den Flur.
-2. Die Entscheidung zum Öffnen des Materialschranks sollte noch nicht sichtbar sein.
+2. Die Entscheidung zum Öffnen des Materialschranks ist noch nicht sichtbar.
 3. Gehe ins Büro.
 4. Nimm den Schlüssel.
 5. Gehe zurück in den Flur.
 
-Jetzt sollte die neue Entscheidung erscheinen.
+Jetzt verändert sich die Beschreibung des Flurs und die neue Entscheidung erscheint.
 
 <!-- Screenshot: Flur ohne Schlüssel -->
 
-<div style='text-align: center; margin: 1em 0;'>
-<img src='locked-door.webp' style='max-width: 100%;'>
-</div>
+<img class='full' src='locked-door.webp'>
 
 <!-- Screenshot: Flur mit Schlüssel und zusätzlicher Entscheidung -->
 
-<div style='text-align: center; margin: 1em 0;'>
-<img src='unlocked-door.webp' style='max-width: 100%;'>
-</div>
+<img class='full' src='unlocked-door.webp'>
 
-Bedingungen können auch normalen Text steuern. Ergänze in `2.md` direkt vor den Entscheidungen:
+Damit haben Variablen und Bedingungen unterschiedliche Aufgaben:
 
-```html
-<p condition="!has_key">
-Der Materialschrank ist abgeschlossen.
-</p>
-
-<p condition="has_key">
-Du hast den kleinen Schlüssel dabei.
-</p>
-```
-
-Das Ausrufezeichen in
-
-```text
-!has_key
-```
-
-bedeutet hier ungefähr **nicht**. Der erste Absatz wird also nur angezeigt, solange du den Schlüssel noch nicht hast.
-
-Damit kann sich sogar die Beschreibung desselben Ortes verändern, obwohl du immer wieder dieselbe Datei `2.md` besuchst.
-
-Du kannst außerdem verhindern, dass der Schlüssel bei einem späteren Besuch im Büro noch einmal angeboten wird. Ergänze die Bedingung direkt an der lokalen Entscheidung:
-
-```markdown
-- [Nimm den Schlüssel.](.){condition="!has_key"}
-```
-
-Nun verschwindet diese Möglichkeit, sobald `has_key` den Wert `true` hat.
+- Eine **Variable** merkt sich einen Zustand der Geschichte, auch wenn du eine Seite verlässt.
+- Eine **Bedingung** entscheidet anhand dieses Zustands, welcher Text und welche Entscheidungen gerade sinnvoll sind.
+- Eine bereits ausgeführte **lokale Entscheidung** ist nur für den aktuellen Besuch abgeschlossen. Bei einem späteren Besuch sorgt der gespeicherte Zustand zusammen mit Bedingungen dafür, dass die Seite trotzdem konsistent bleibt.
 
 <div class='hint'>
-Mit Variablen und Bedingungen können frühere Entscheidungen später Folgen haben. Eine interaktive Geschichte muss deshalb nicht aus immer neuen Verzweigungen bestehen.
+Gerade beim Testen einer interaktiven Geschichte lohnt es sich, Orte mehrmals zu besuchen und Entscheidungen in unterschiedlicher Reihenfolge auszuprobieren. So fallen Widersprüche auf, die beim ersten Durchspielen leicht unbemerkt bleiben.
 </div>
 
 ## Ende
@@ -528,49 +517,47 @@ erneut ausgeführt und der Anfangszustand ist wieder hergestellt.
 
 ## Fehler finden
 
-Beim Schreiben passieren leicht Fehler.
+Beim Schreiben von Skripten kann leicht ein Tippfehler passieren. BIF überprüft deine Geschichte deshalb während des Schreibens und zeigt gefundene Probleme unten im Bereich **Problems** an.
 
-Vielleicht verweist eine Entscheidung auf eine Seite, die gar nicht existiert. Vielleicht hast du einen Dateinamen falsch geschrieben oder eine Seite angelegt, zu der kein Weg führt.
+Probiere das absichtlich aus. Öffne `3.md` und ändere vorübergehend
 
-BIF überprüft die Geschichte deshalb während des Schreibens.
-
-Probiere absichtlich einen Fehler aus. Ändere in `2.md` vorübergehend:
-
-```markdown
-- [Sieh im Büro nach.](3)
+```html_wrap
+<script>
+has_key = true;
+</script>
 ```
 
 zu:
 
-```markdown
-- [Sieh im Büro nach.](99)
+```html_wrap
+<script>
+has_key = ;
+</script>
 ```
 
-obwohl es keine Datei `99.md` gibt.
+Speichere die Datei.
 
-Öffne anschließend die Entwicklungsansicht und den Bereich **Problems**.
+BIF erkennt, dass das JavaScript nicht gültig ist. Im Bereich **Problems** siehst du, in welcher Datei und in welcher Zeile der Fehler gefunden wurde. Auch im Graphen wird die betroffene Seite als fehlerhaft markiert.
 
-<!-- Screenshot: Problems-Ansicht mit fehlender Seite 99 -->
+<!-- Screenshot: Problems mit JavaScript-Syntaxfehler -->
 
-<img class='full' src='missing-page-problem.webp'>
+<img class='full' src='script-error.webp'>
 
-BIF sollte jetzt anzeigen, dass das Ziel der Entscheidung fehlt.
+Korrigiere die Zeile anschließend wieder:
 
-Korrigiere die Zahl danach wieder zu:
-
-```markdown
-- [Sieh im Büro nach.](3)
+```js
+has_key = true;
 ```
 
-Die Fehlermeldung sollte verschwinden.
+Nach dem Speichern sollte der Fehler aus der Problems-Liste verschwinden.
 
 BIF kann unter anderem auf folgende Probleme hinweisen:
 
+- Fehler in Skripten
+- ungültige Bedingungen
 - fehlende Seiten
 - Seiten, die von nirgendwo erreicht werden können
 - fehlende Bilder oder andere Dateien
-- ungültige Bedingungen
-- Fehler in Skripten
 
 <div class='hint'>
 Schau beim Schreiben regelmäßig auf den Graphen und die Problems-Ansicht. Gerade bei größeren Geschichten findest du damit viele Fehler, bevor du die Geschichte komplett durchspielen musst.
@@ -586,25 +573,19 @@ Für die normalen Texte kannst du die üblichen Markdown-Schreibweisen verwenden
 
 Fetter Text:
 
-```markdown
+```markdown_wrap
 Auf dem Tisch liegt ein **kleiner Schlüssel**.
 ```
 
 Kursiver Text:
 
-```markdown
+```markdown_wrap
 Aus dem Nebenraum hörst du ein *leises Klopfen*.
-```
-
-Ein Zitat:
-
-```markdown
-> "Ich würde diese Tür nicht öffnen."
 ```
 
 Eine Zwischenüberschrift innerhalb einer Seite:
 
-```markdown
+```markdown_wrap
 ## Ein Hinweis
 ```
 
@@ -624,7 +605,7 @@ pages-meine-geschichte/
 
 In Markdown kannst du das Bild so einfügen:
 
-```markdown
+```markdown_wrap
 ![Eine verschlossene Tür](images/door.jpg)
 ```
 
@@ -632,9 +613,7 @@ Der Text in den eckigen Klammern beschreibt das Bild und hilft zum Beispiel Mens
 
 <!-- Screenshot: BIF-Seite mit Bild -->
 
-<div style='text-align: center; margin: 1em 0;'>
-<img src='story-image.webp' style='max-width: 100%;'>
-</div>
+<img class='full' src='story-image.webp'>
 
 ### Audio und Video
 
@@ -702,13 +681,13 @@ Bei größeren Geschichten kannst du Seiten im Graphen zu Bereichen zusammenfass
 
 Ganz oben in einer Seite kann zum Beispiel stehen:
 
-```markdown
+```markdown_wrap
 <!-- Schule -- Büro -->
 ```
 
 Eine andere Seite könnte beginnen mit:
 
-```markdown
+```markdown_wrap
 <!-- Schule -- Flur -->
 ```
 
@@ -716,15 +695,13 @@ Diese Kommentare sind für die Leserinnen und Leser unsichtbar. Sie helfen nur d
 
 <!-- Screenshot: Graph mit gruppierten Seiten -->
 
-<div style='text-align: center; margin: 1em 0;'>
-<img src='grouped-graph.webp' style='max-width: 100%;'>
-</div>
+<img class='full' src='grouped-graph.webp'>
 
 ### JavaScript
 
 Für normale Entscheidungen reichen die Markdown-Links fast immer aus:
 
-```markdown
+```markdown_wrap
 - [Gehe nach links.](5)
 - [Gehe nach rechts.](6)
 ```

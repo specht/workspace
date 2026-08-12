@@ -1591,6 +1591,14 @@ class Main < Sinatra::Base
                     lineno = true
                     language = language.sub(/_lineno$/, '')
                 end
+                wrap = false
+                if language =~ /_wrap$/
+                    wrap = true
+                    language = language.sub(/_wrap$/, '')
+                end
+
+                pre['class'] = [pre['class'], 'wrap-code'].compact.join(' ') if wrap
+
                 formatter = if lineno
                     Rouge::Formatters::HTMLTable.new(Rouge::Formatters::HTML.new)
                     # Rouge::Formatters::HTMLLineTable.new(Rouge::Formatters::HTML.new)

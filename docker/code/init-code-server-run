@@ -43,6 +43,20 @@ if [[ ! -f /workspace/.profile ]]; then
     chown abc:abc /workspace/.profile
 fi
 
+# Enable programmable Bash completion for both new and existing workspaces.
+# The package is installed in the image, but not every base-image .bashrc
+# sources it automatically.
+if ! grep -q '^[[:space:]]*source /usr/share/bash-completion/bash_completion' /workspace/.bashrc; then
+    cat >> /workspace/.bashrc <<'EOF'
+
+# Bash programmable completion (make targets, git commands, etc.)
+if [[ $- == *i* ]] && [[ -r /usr/share/bash-completion/bash_completion ]]; then
+    source /usr/share/bash-completion/bash_completion
+fi
+EOF
+    chown abc:abc /workspace/.bashrc
+fi
+
 # SSH permissions
 chmod 700 /workspace/.ssh
 

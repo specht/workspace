@@ -375,15 +375,11 @@ Dein Workspace sollte jetzt ungefähr so aussehen:
 
 Links siehst du die Verzeichnisse und Dateien, die gerade heruntergeladen wurden. Öffne die Datei `index.html`, indem du darauf klickst.
 
-## Live Server-Erweiterung installieren
-
-Bevor wir mit dem Schreiben der Präsentation beginnen, installieren wir eine Erweiterung, die uns eine Live-Vorschau unserer Präsentation zeigt. Öffne dazu links die Extensions, suche die Erweiterung »Live Server« und klicke auf »Install«. Anschließend sollte dein Workspace so aussehen:
-
-<img class='full' src='live-server.webp'>
+## Vorschau starten
 
 <img src='go-live.webp' class='r' style='width: 21em;'>
 
-Öffne nun wieder den Explorer und öffne die Datei `index.html`. Unten rechts findest du jetzt den Eintrag »Go Live«. Drück dort drauf und die Vorschau deiner Präsentation sollte sich in einem neuen Browsertab öffnen.
+Im Workspace ist bereits die Erweiterung »Live Server« installiert. Unten rechts findest du den Eintrag »Go Live«. Klicke darauf, um die Vorschau zu starten. Nun sollte sich die Vorschau deiner Präsentation in einem neuen Browsertab öffnen.
 
 Wenn du alles richtig gemacht hast, sollte dein Fenster so aussehen:
 

@@ -5,7 +5,7 @@ image: title.webp
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2,h3,h4">
+    data-levels="h2">
 </div>
 
 # 3D-Grafik mit Anaglyphen
@@ -40,16 +40,11 @@ Wenn du auf der linken Seite im Explorer nun die Datei `scene.ini` siehst, hast 
 
 <img class='full' src='lets-start.webp'>
 
-## Erweiterung installieren
-
-Bevor du loslegen kannst, musst du noch eine Erweiterung installieren.
-Öffne dazu links die Extensions, suche die Erweiterung »Live Server« und klicke auf »Install«, um die Erweiterung zu installieren:
-
-<img class='full' src='live-server.webp'>
+## Vorschau starten
 
 <img src='go-live.webp' class='r' style='width: 21em;'>
 
-Wenn alles geklappt hat, solltest du unten rechts den Eintrag »Go Live« sehen. Wenn du darauf klickst, öffnet sich ein neues Tab in deinem Browser mit deiner 3D-Szene, die anfangs nur aus einem einzigen Würfel besteht.
+Im Workspace ist bereits die Erweiterung »Live Server« installiert. Unten rechts findest du den Eintrag »Go Live«. Klicke darauf, um die Vorschau zu starten. Es öffnet sich ein neuer Tab in deinem Browser mit deiner 3D-Szene, die anfangs nur aus einem einzigen Würfel besteht.
 
 <div style='clear: both;'></div>
 
