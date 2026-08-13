@@ -1,4 +1,4 @@
-# Computergrafik in Echtzeit
+# Echtzeitgrafik mit C
 
 <div class='meta'>
 image: pixelram.webp
@@ -54,7 +54,9 @@ Wenn du später ein anderes Programm als `main.c` compilieren möchtest, musst d
 
 <img class='full' src='makefile.webp'>
 
-## PixelRAM
+## Grundlagen
+
+### Das erste Pixel
 
 Schauen wir uns den Quellcode von `main.c` einmal genauer an:
 
@@ -83,7 +85,7 @@ screen_open(320, 180, pixel_indexed8, "PixelRAM")
 - Position 160, 90 (also in der Mitte des Bildschirms)
 - Farbe 10 (hellgrün in der Standard-VGA-Palette)
 
-### 8-Bit-Farben
+### Farbpaletten
 
 Da wir den Modus `pixel_indexed8` aktiviert haben, können wir nicht beliebige RGB-Farben für jedes Pixel setzen, sondern nur einfache Bytes, die in eine vordefinierte Farbpalette verweisen. Welche Farbe der Pixel mit dem Wert 10 also tatsächlich hat, hängt von der aktuellen Palette ab.
 
@@ -106,7 +108,7 @@ Durch die veränderte Palette ist der Pixel jetzt blau und auch die Hintergrundf
 Man kann Computergrafiken auch animieren, indem man das Bild selbst unverändert lässt und nur die Palette animiert. Der PixelArt-Künstler Mark Ferrari hat viel mit diesem Trick gearbeitet, eine Auswahl seiner Werke findest du hier: <a href='https://www.effectgames.com/demos/canvascycle/' target='_blank'>https://www.effectgames.com/demos/canvascycle</a>.
 </div>
 
-## Alle Pixel
+### Alle Pixel
 
 Unser Bildschirm besteht aus 320 × 180 Pixeln, also insgesamt **57.600 Pixeln**. Natürlich wäre es unsinnig, für jeden davon einen eigenen `set_pixel`-Befehl zu schreiben. Stattdessen lassen wir den Computer die Positionen mit zwei ineinander verschachtelten Schleifen durchlaufen:
 
@@ -157,7 +159,9 @@ Jetzt bekommt nicht mehr jeder Pixel dieselbe Farbe. Stattdessen hängt seine Fa
 Probiere auch den CRT-Filter in der PixelRAM-Anzeige aus. Er simuliert Scanlines und die Farbmaske eines Röhrenbildschirms und passt besonders gut zur niedrigen Auflösung und den begrenzten Paletten.
 </div>
 
-## Abstand vom Mittelpunkt
+## Interferenzmuster
+
+### Abstand vom Mittelpunkt
 
 Als Nächstes wollen wir nicht nur die Position eines Pixels verwenden, sondern seinen Abstand zur Mitte des Bildschirms berechnen. Dafür benötigen wir die mathematische Funktion `sqrt`, weshalb wir oben im Programm eine weitere Bibliothek einbinden:
 
@@ -207,7 +211,7 @@ Pixel mit ungefähr demselben Abstand vom Mittelpunkt erhalten dieselbe Farbe. D
 
 Der Kreis ergibt sich allein aus der Berechnung für jeden einzelnen Pixel. Probiere aus, was passiert, wenn du die Zahl `6.0` größer oder kleiner machst.
 
-## Kreiswellen
+### Kreiswellen
 
 Unsere bisherigen Kreise haben harte Übergänge. Für einen wellenförmigen Verlauf können wir die mathematische Sinusfunktion verwenden. Sie liefert einen Wert, der sich regelmäßig zwischen -1 und 1 bewegt.
 
@@ -226,7 +230,7 @@ Durch `wave + 1.0` verschieben wir den Wertebereich von -1 ... 1 auf 0 ... 2. An
 
 Auch hier lohnt es sich zu experimentieren. Wenn du `distance * 0.12` beispielsweise durch `distance * 0.20` ersetzt, liegen die Wellen dichter zusammen. Mit einem kleineren Wert werden sie breiter.
 
-## Bewegung
+### Animation
 
 Bis jetzt berechnet unser Programm nur ein einziges Bild und beendet sich anschließend. Für eine Animation müssen wir dagegen immer wieder ein neues Bild berechnen. PixelRAM verwendet dafür eine Schleife, die so lange läuft, bis das Fenster geschlossen wird:
 
@@ -290,7 +294,7 @@ int main(void)
 
 Jetzt laufen die Wellen kontinuierlich über den Bildschirm. Der entscheidende Unterschied steckt in `t`: Da dieser Wert ständig größer wird, liefert die Sinusfunktion bei jedem Frame leicht andere Ergebnisse. Unsere Animation entsteht also nicht dadurch, dass wir einen fertigen Kreis verschieben, sondern dadurch, dass wir das komplette Bild immer wieder neu berechnen.
 
-## Die Wellenquelle bewegt sich
+### Die Wellenquelle bewegt sich
 
 Bisher liegt das Zentrum unserer Wellen fest in der Mitte des Bildschirms. Es gibt aber keinen Grund, warum dieser Punkt unbeweglich bleiben müsste. Mit `sin` und `cos` können wir seine Position gleichmäßig über den Bildschirm wandern lassen:
 
@@ -315,7 +319,7 @@ Die Werte von `sin` und `cos` bewegen sich gleichmäßig zwischen -1 und 1. Durc
 
 <img style='width: 100%;' src='moving-center.webp'>
 
-## Zwei Wellen treffen aufeinander
+### Zwei Wellen treffen aufeinander
 
 Mit einer einzigen Wellenquelle können wir bereits interessante Muster erzeugen. Spannender wird es, wenn wir eine zweite Quelle hinzufügen und beide Wellen miteinander kombinieren. Zunächst berechnen wir zwei Punkte, die sich mit unterschiedlichen Geschwindigkeiten über den Bildschirm bewegen:
 
@@ -344,7 +348,7 @@ double wave =
 
 An einigen Stellen sind beide Wellen gleichzeitig groß und verstärken sich gegenseitig, an anderen Stellen schwächen sie sich ab. Dieses Überlagern von Wellen nennt man **Interferenz**. Obwohl unser Programm nur zwei Entfernungen und zwei Sinuswerte berechnet, entsteht dadurch ein überraschend komplexes bewegtes Muster.
 
-## Das fertige Interferenzmuster
+### Das fertige Interferenzmuster
 
 Unser vollständiges Programm ist inzwischen erstaunlich kurz:
 
@@ -393,7 +397,7 @@ int main(void)
 
 Hinter der Animation steckt eine ganze Menge Arbeit: Bei 320 × 180 Pixeln berechnet unser Programm für jeden Frame 57.600 Pixel neu. Für jeden einzelnen davon bestimmen wir zwei Abstände und berechnen zwei Sinusfunktionen. Bei 60 Bildern pro Sekunde sind das mehr als **3 Millionen neu berechnete Pixel pro Sekunde**. Genau bei solchen Aufgaben zeigt sich, warum eine schnelle Sprache wie C gut für Animationen geeignet ist.
 
-## Experimente
+### Experimente
 
 Das fertige Programm eignet sich gut zum Experimentieren, weil schon kleine Änderungen an den Zahlen deutlich sichtbare Auswirkungen haben. Wenn du beispielsweise mehr Ringe möchtest, kannst du den Faktor hinter dem Abstand erhöhen:
 
@@ -667,4 +671,3 @@ In diesem Tutorial haben wir keine fertigen Formen gezeichnet. Stattdessen haben
 
 Dasselbe Grundprinzip lässt sich noch viel weiter treiben. Du könntest mit PixelRAM beispielsweise Fraktale und Partikelsimulationen programmieren, einen Raycaster oder Raytracer schreiben oder untersuchen, wie Bildformate wie JPEG ihre Daten wieder in Pixel verwandeln. Auch ein vollständiger Software-3D-Renderer beginnt letztlich bei derselben einfachen Frage:
 **Welche Farbe soll dieser Pixel haben?**
-
