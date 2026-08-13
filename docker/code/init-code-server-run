@@ -1,46 +1,90 @@
 #!/usr/bin/with-contenv bash
+set -euo pipefail
+
+WORKSPACE_UID="${PUID:-1000}"
+RUN_USER_FILE=/run/hackschule-workspace-user
+
+# linuxserver.io may alter account names during its own startup. Resolve the
+# workspace account by its stable numeric UID rather than the image-build name.
+BASE_USER="$(getent passwd "$WORKSPACE_UID" | cut -d: -f1)"
+if [ -z "$BASE_USER" ]; then
+    echo "ERROR: no workspace user found for UID $WORKSPACE_UID" >&2
+    exit 1
+fi
+
+sanitize_workspace_user() {
+    local raw="${1:-student}"
+    local clean
+
+    clean="$(
+        printf '%s' "$raw" |
+            tr '[:upper:]' '[:lower:]' |
+            sed -E 's/[^a-z0-9._-]+/-/g; s/^[.-]+//; s/[.-]+$//'
+    )"
+
+    [ -n "$clean" ] || clean=student
+
+    case "$clean" in
+        [a-z_]*) ;;
+        *) clean="user-$clean" ;;
+    esac
+
+    # Linux login names are safest when kept short and portable.
+    printf '%.32s\n' "$clean"
+}
+
+requested_user="$(sanitize_workspace_user "${WORKSPACE_USER:-student}")"
+workspace_user="$requested_user"
+
+# Avoid colliding with system accounts/groups already present in the image.
+# This is mainly for unusual addresses such as root@..., daemon@..., etc.
+suffix=1
+while { getent passwd "$workspace_user" >/dev/null 2>&1 && [ "$workspace_user" != "$BASE_USER" ]; } || \
+      { getent group "$workspace_user" >/dev/null 2>&1 && [ "$workspace_user" != "$BASE_USER" ]; }; do
+    suffix=$((suffix + 1))
+    workspace_user="$(sanitize_workspace_user "student-${requested_user}-${suffix}")"
+done
+
+base_group="$(id -gn "$BASE_USER")"
+
+if [ "$workspace_user" != "$BASE_USER" ]; then
+    echo "Renaming workspace user $BASE_USER -> $workspace_user"
+
+    # Rename the user first. Renaming its private group first can make the
+    # following usermod lookup fail on the linuxserver.io base image.
+    usermod -l "$workspace_user" -d /workspace "$BASE_USER"
+
+    # Keep matching user/group names when this is the user's private primary
+    # group. Numeric UID/GID remain unchanged.
+    if [ "$base_group" = "$BASE_USER" ]; then
+        groupmod -n "$workspace_user" "$base_group"
+    fi
+else
+    usermod -d /workspace "$BASE_USER"
+fi
+
+workspace_group="$(id -gn "$workspace_user")"
+printf '%s\n' "$workspace_user" > "$RUN_USER_FILE"
 
 mkdir -p /workspace/{.extensions,.ssh}
 
-# if [ -n "${SUDO_PASSWORD}" ] || [ -n "${SUDO_PASSWORD_HASH}" ]; then
-#     echo "setting up sudo access"
-#     if ! grep -q 'abc' /etc/sudoers; then
-#         echo "adding abc to sudoers"
-#         echo "abc ALL=(ALL:ALL) ALL" >> /etc/sudoers
-#     fi
-#     if [ -n "${SUDO_PASSWORD_HASH}" ]; then
-#         echo "setting sudo password using sudo password hash"
-#         sed -i "s|^abc:\!:|abc:${SUDO_PASSWORD_HASH}:|" /etc/shadow
-#     else
-#         echo "setting sudo password using SUDO_PASSWORD env var"
-#         echo -e "${SUDO_PASSWORD}\n${SUDO_PASSWORD}" | passwd abc
-#     fi
-# fi
-
-[[ ! -f /workspace/.bashrc ]] && \
-    cp /root/.bashrc /workspace/.bashrc
-[[ ! -f /workspace/.profile ]] && \
-    cp /root/.profile /workspace/.profile
-
-# fix permissions
-#!/usr/bin/with-contenv bash
-
-# Make sure the home itself has the correct owner.
-chown abc:abc /workspace
+# Make sure the home itself has the correct owner. The numeric UID/GID stay
+# unchanged, so existing workspace contents do not need a recursive chown.
+chown "$workspace_user:$workspace_group" /workspace
 
 # Create our own directories with the correct ownership.
-install -d -m 755 -o abc -g abc /workspace/.extensions
-install -d -m 700 -o abc -g abc /workspace/.ssh
+install -d -m 755 -o "$workspace_user" -g "$workspace_group" /workspace/.extensions
+install -d -m 700 -o "$workspace_user" -g "$workspace_group" /workspace/.ssh
 
 # Initial shell configuration
 if [[ ! -f /workspace/.bashrc ]]; then
     cp /root/.bashrc /workspace/.bashrc
-    chown abc:abc /workspace/.bashrc
+    chown "$workspace_user:$workspace_group" /workspace/.bashrc
 fi
 
 if [[ ! -f /workspace/.profile ]]; then
     cp /root/.profile /workspace/.profile
-    chown abc:abc /workspace/.profile
+    chown "$workspace_user:$workspace_group" /workspace/.profile
 fi
 
 # Enable programmable Bash completion for both new and existing workspaces.
@@ -54,7 +98,7 @@ if [[ $- == *i* ]] && [[ -r /usr/share/bash-completion/bash_completion ]]; then
     source /usr/share/bash-completion/bash_completion
 fi
 EOF
-    chown abc:abc /workspace/.bashrc
+    chown "$workspace_user:$workspace_group" /workspace/.bashrc
 fi
 
 # SSH permissions
@@ -63,5 +107,3 @@ chmod 700 /workspace/.ssh
 if [ -n "$(ls -A /workspace/.ssh 2>/dev/null)" ]; then
     chmod 600 /workspace/.ssh/*
 fi
-
-usermod -d /workspace abc

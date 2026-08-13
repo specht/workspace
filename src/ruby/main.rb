@@ -2326,6 +2326,21 @@ class Main < Sinatra::Base
     WORKSPACE_UID = 1000
     WORKSPACE_GID = 1000
 
+    # Turn the local part of an email address into a portable Unix login name.
+    # The container init script validates this again before renaming the image's
+    # build-time `abc` account. Keep this deterministic so logs are readable.
+    def self.workspace_login_for_email(email)
+        local = email.to_s.split('@', 2).first.to_s.downcase
+        login = local.gsub(/[^a-z0-9._-]+/, '-').gsub(/\A[.-]+|[.-]+\z/, '')
+        login = 'student' if login.empty?
+        login = "user-#{login}" unless login.match?(/\A[a-z_]/)
+        login[0, 32]
+    end
+
+    def workspace_login_for_email(email)
+        Main.workspace_login_for_email(email)
+    end
+
     def ensure_user_directory(path)
         FileUtils.mkdir_p(path)
 
@@ -2704,10 +2719,11 @@ class Main < Sinatra::Base
 
             login = email.split('@').first.downcase
             mysql_login = db_email.split('@').first.downcase
+            workspace_login = Main.workspace_login_for_email(email)
 
-            STDERR.puts ">>> Login is #{login}, MySQL login is #{mysql_login}"
+            STDERR.puts ">>> Login is #{login}, workspace login is #{workspace_login}, MySQL login is #{mysql_login}"
 
-            command = "docker run --cpus=2 -d --rm --hostname workspace -e PUID=1000 -e PGID=1000 -e TZ=Europe/Berlin -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(db_email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e NEO4J_URI=\"neo4j://neo4j:7687\" -e NEO4J_USERNAME=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)}\" -e NEO4J_DATABASE=\"#{mysql_login}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
+            command = "docker run --cpus=2 -d --rm --hostname workspace -e PUID=1000 -e PGID=1000 -e TZ=Europe/Berlin -e WORKSPACE_USER=#{Shellwords.escape(workspace_login)} -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(db_email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e NEO4J_URI=\"neo4j://neo4j:7687\" -e NEO4J_USERNAME=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)}\" -e NEO4J_DATABASE=\"#{mysql_login}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
 
             STDERR.puts ">>> Command:\n#{command}"
 

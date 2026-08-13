@@ -3,6 +3,21 @@ set -euo pipefail
 
 CODE_SERVER=/app/code-server/bin/code-server
 EXT_DIR=/workspace/.extensions
+RUN_USER_FILE=/run/hackschule-workspace-user
+
+if [ ! -s "$RUN_USER_FILE" ]; then
+    echo "ERROR: workspace user was not initialized" >&2
+    exit 1
+fi
+
+WORKSPACE_RUN_USER="$(cat "$RUN_USER_FILE")"
+
+if ! id "$WORKSPACE_RUN_USER" >/dev/null 2>&1; then
+    echo "ERROR: workspace user does not exist: $WORKSPACE_RUN_USER" >&2
+    exit 1
+fi
+
+WORKSPACE_RUN_GROUP="$(id -gn "$WORKSPACE_RUN_USER")"
 
 # Format:
 #   "/path/to/extension.vsix|publisher.extension-id"
@@ -121,7 +136,7 @@ for extension in "${EXTENSIONS[@]}"; do
     install_or_update_extension "$extension"
 done
 
-chown -R abc:abc "$EXT_DIR"
+chown -R "$WORKSPACE_RUN_USER:$WORKSPACE_RUN_GROUP" "$EXT_DIR"
 
 if [ -n "${PROXY_DOMAIN:-}" ]; then
     PROXY_DOMAIN_ARG="--proxy-domain=${PROXY_DOMAIN}"
@@ -129,13 +144,13 @@ else
     PROXY_DOMAIN_ARG=""
 fi
 
-HOME=/workspace exec \
+HOME=/workspace USER="$WORKSPACE_RUN_USER" LOGNAME="$WORKSPACE_RUN_USER" exec \
     s6-notifyoncheck \
         -d \
         -n 300 \
         -w 1000 \
         -c "nc -z 127.0.0.1 8443" \
-    s6-setuidgid abc \
+    s6-setuidgid "$WORKSPACE_RUN_USER" \
         "$CODE_SERVER" \
             --bind-addr 0.0.0.0:8443 \
             --disable-telemetry \
