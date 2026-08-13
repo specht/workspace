@@ -46,7 +46,7 @@ Beantworte die Frage »Would you like to open the cloned repository?« mit »Ope
 
 <img class='full' src='make.webp'>
 
-Du erhältst nun eine Datei `main.html`, die du anschauen kannst, indem du rechts unten auf »Go Live« drückst und dann die Datei auswählst. Passend zum Testprogramm solltest einen kleinen grünen Punkt in der Mitte des Bildes sehen:
+Du erhältst nun eine Datei `main.html`, die du anschauen kannst, indem du rechts unten auf »Go Live« drückst und dann die Datei auswählst. Passend zum Testprogramm solltest du einen kleinen grünen Punkt in der Mitte des Bildes sehen:
 
 <img src='green-dot.webp' style='width: 100%;'>
 
@@ -103,7 +103,7 @@ use_palette("sweetie_16");
 Durch die veränderte Palette ist der Pixel jetzt blau und auch die Hintergrundfarbe (Farbe 0) ist nicht mehr schwarz, sondern dunkelblau.
 
 <div class='hint info'>
-Man kann Computergrafiken auch dadurch animieren, indem man das Bild selbst so belässt, wie es ist und nur die Palette animiert. Der PixelArt-Künstler Mark Ferrari hat viel mit diesem Trick gearbeitet, eine Auswahl seiner Werke findest du hier: <a href='https://www.effectgames.com/demos/canvascycle/' target='_blank'>https://www.effectgames.com/demos/canvascycle</a>.
+Man kann Computergrafiken auch animieren, indem man das Bild selbst unverändert lässt und nur die Palette animiert. Der PixelArt-Künstler Mark Ferrari hat viel mit diesem Trick gearbeitet, eine Auswahl seiner Werke findest du hier: <a href='https://www.effectgames.com/demos/canvascycle/' target='_blank'>https://www.effectgames.com/demos/canvascycle</a>.
 </div>
 
 ## Alle Pixel
@@ -152,6 +152,10 @@ int main(void)
 Jetzt bekommt nicht mehr jeder Pixel dieselbe Farbe. Stattdessen hängt seine Farbe von seiner Position `x` und `y` ab. Wir haben also aufgehört, einzelne Objekte auf einen Bildschirm zu zeichnen: Unser Programm berechnet das gesamte Bild Pixel für Pixel. Genau dieses Prinzip werden wir in den nächsten Schritten weiter ausbauen.
 
 <img style='width: 100%' src='patches.webp'>
+
+<div class='hint'>
+Probiere auch den CRT-Filter in der PixelRAM-Anzeige aus. Er simuliert Scanlines und die Farbmaske eines Röhrenbildschirms und passt besonders gut zur niedrigen Auflösung und den begrenzten Paletten.
+</div>
 
 ## Abstand vom Mittelpunkt
 
@@ -557,6 +561,8 @@ Die beiden Werte `cr` und `ci` verändern sich langsam mit der Zeit, wodurch sic
 
 ### Bonus: Palette Cycling
 
+Bei allen bisherigen Animationen haben wir den Bildschirminhalt für jeden Frame neu berechnet. Mit einer Farbpalette gibt es aber noch einen ganz anderen Trick: Die Pixel können unverändert bleiben, während wir lediglich die Farben der Palette verändern. Im folgenden Beispiel wird der magische Kreis deshalb nur ein einziges Mal gezeichnet. In der Animationsschleife ändern wir anschließend ausschließlich acht Paletteneinträge – trotzdem sieht es so aus, als würde Energie durch das Muster wandern.
+
 ```c
 #include "pixelram.h"
 #include <math.h>
@@ -637,7 +643,6 @@ int main(void)
     screen_open(W, H, pixel_indexed8, "Palette Cycling: Magic");
 
     set_palette(0,  2,  3,  9);
-    set_palette(3, 35, 45, 70);
 
     cycle_magic(0);
     draw_scene();
@@ -652,6 +657,8 @@ int main(void)
 }
 ```
 
+Schau dir dazu besonders `draw_scene()` an: Die Funktion wird vor der Animationsschleife genau einmal aufgerufen. Innerhalb der Schleife stehen nur `cycle_magic(seconds())` und `present()`. Kein einziger Pixel wird dort neu gesetzt; die scheinbare Bewegung entsteht ausschließlich durch die animierte Palette.
+
 <img style='width: 100%;' src='magic.webp'>
 
 ## Wie geht es weiter?
@@ -659,6 +666,5 @@ int main(void)
 In diesem Tutorial haben wir keine fertigen Formen gezeichnet. Stattdessen haben wir für jeden Pixel selbst berechnet, welche Farbe dort erscheinen soll. Aus einem einzelnen Pixel wurde zunächst ein vollständiges berechnetes Bild, dann eine Kreiswelle, eine Animation und schließlich ein komplexes Interferenzmuster.
 
 Dasselbe Grundprinzip lässt sich noch viel weiter treiben. Du könntest mit PixelRAM beispielsweise Fraktale und Partikelsimulationen programmieren, einen Raycaster oder Raytracer schreiben oder untersuchen, wie Bildformate wie JPEG ihre Daten wieder in Pixel verwandeln. Auch ein vollständiger Software-3D-Renderer beginnt letztlich bei derselben einfachen Frage:
-
 **Welche Farbe soll dieser Pixel haben?**
 
