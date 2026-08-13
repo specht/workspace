@@ -11,20 +11,18 @@ image: pixelram.webp
 </div>
 
 <p class='abstract'>
-Mit PixelRAM programmierst du Computergrafik direkt Pixel für Pixel. Es gibt keine fertigen Befehle für Linien, Kreise oder Bilder: Dein Programm entscheidet selbst, welche Farbe an welcher Stelle des Bildschirms erscheinen soll. In diesem Tutorial schreiben wir ein kleines Programm in C und entwickeln daraus Schritt für Schritt ein animiertes Interferenzmuster.
+Mit PixelRAM programmierst du schnelle Computergrafik direkt in C. Statt fertige Zeichenbefehle zu verwenden, berechnet dein Programm selbst die Farbe jedes einzelnen Bildpunkts. In diesem Tutorial entwickeln wir daraus Schritt für Schritt ein animiertes Interferenzmuster und sehen, warum sich C besonders gut für solche rechenintensiven Grafikeffekte eignet.
 </p>
 
-Bei [Pixelflow Canvas](/drawing) kannst du mit einfachen Zeichenbefehlen schnell eigene Bilder und Animationen programmieren. PixelRAM geht noch einen Schritt tiefer: Hier arbeitest du direkt mit den Pixeln des Bildschirms und berechnest selbst, welche Farbe an welcher Position erscheinen soll. Das ist etwas aufwendiger, eröffnet aber ganz andere Möglichkeiten. Auf dieser Grundlage lassen sich zum Beispiel Fraktale, Partikelsimulationen, Raycaster, Raytracer, Bilddecoder oder eigene Software-Renderer entwickeln.
+Bei [Pixelflow Canvas](/drawing) kannst du mit einfachen Zeichenbefehlen schnell eigene Bilder und Animationen in Ruby programmieren. PixelRAM geht noch einen Schritt tiefer: Hier arbeitest du direkt mit den Pixeln des Bildschirms und berechnest selbst, welche Farbe an welcher Position erscheinen soll. Das ist etwas aufwendiger, eröffnet aber ganz andere Möglichkeiten. Auf dieser Grundlage lassen sich zum Beispiel Fraktale, Partikelsimulationen, Raycaster, Raytracer, Bilddecoder, eigene Software-Renderer oder ganze Spiele entwickeln.
 
-Dafür verwenden wir die Programmiersprache **C**. C ist näher an der Arbeitsweise eines Computers als beispielsweise Ruby und eignet sich besonders gut für Programme, die sehr viele Berechnungen schnell durchführen müssen. Genau das werden wir in diesem Tutorial tun: Am Ende berechnet unser Programm viele zehntausend Pixel für jedes einzelne Bild einer Animation.
-
-<div class='hint books'>
-Du musst für dieses Tutorial noch kein C-Profi sein. Wir erklären die wichtigsten Stellen direkt am Programm. Wenn du C anschließend genauer kennenlernen möchtest, findest du im Workspace auch ein eigenes <a href='/c'>C-Tutorial</a>.
-</div>
+Dafür verwenden wir die Programmiersprache C. Diese Sprache ist näher an der Arbeitsweise eines Computers als beispielsweise Ruby und eignet sich besonders gut für Programme, die sehr viele Berechnungen schnell durchführen müssen. Genau das werden wir in diesem Tutorial tun: Am Ende berechnet unser Programm viele zehntausend Pixel für jedes einzelne Bild einer Animation.
 
 ## Repository klonen
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und danach <span class='key'>F</span>.
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und danach <span class='key'>F</span>. Dein Work­space sollte jetzt ungefähr so aussehen:
+
+<img class='full' src='fresh-start.webp'>
 
 <!-- Screenshot: Workspace ohne geöffneten Ordner -->
 
@@ -32,23 +30,33 @@ Klicke auf den blauen Button »Clone Repository« und gib folgende Adresse ein:
 
 ```text
 https://github.com/specht/pixelram-starter.git
-````
-
-Bestätige mit <span class='key'>Enter</span>. Wähle anschließend als Zielverzeichnis
-
-```text
-/workspace/
 ```
 
-und öffne das geklonte Repository.
+<img class='full' src='git-clone.webp'>
 
-<!-- Screenshot: geöffnetes pixelram-starter -->
+Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <span class='key'>Enter</span>.
 
-Das Projekt ist absichtlich sehr klein. Für uns ist vor allem die Datei `main.c` interessant, denn darin steht das C-Programm, an dem wir arbeiten werden. Die Datei `Makefile` kümmert sich im Hintergrund darum, PixelRAM herunterzuladen und unser Programm für den Browser zu übersetzen. Du musst sie für dieses Tutorial nicht verändern.
+<img class='full' src='confirm-clone-path.webp'>
 
-## Das erste Pixel
+Beantworte die Frage »Would you like to open the cloned repository?« mit »Open«.
 
-Öffne die Datei `main.c`. Dort steht bereits ein vollständiges kleines Programm:
+<img class='full' src='open-yes-no.webp'>
+
+Öffne nun die Datei `main.c` und führe im Terminal `make` aus:
+
+<img class='full' src='make.webp'>
+
+Du erhältst nun eine Datei `main.html`, die du anschauen kannst, indem du rechts unten auf »Go Live« drückst und dann die Datei auswählst. Passend zum Testprogramm solltest einen kleinen grünen Punkt in der Mitte des Bildes sehen:
+
+<img src='green-dot.webp' style='width: 100%;'>
+
+Wenn du später ein anderes Programm als `main.c` compilieren möchtest, musst du den entsprechenden Eintrag im `Makefile` unter `PROGRAM` ändern. Falls deinem Programm Default-Argumente übergeben werden sollen, kannst du diese unter `ARGS` eintragen. Die übrigen Zeilen kannst du so lassen, wie sie sind.
+
+<img class='full' src='makefile.webp'>
+
+## PixelRAM
+
+Schauen wir uns den Quellcode von `main.c` einmal genauer an:
 
 ```c
 #include "pixelram.h"
@@ -64,54 +72,38 @@ int main(void)
 }
 ```
 
-Bevor wir uns den Quelltext genauer ansehen, probieren wir ihn aus. Öffne mit <span class='key'>Strg</span><span class='key'>J</span> ein Terminal und gib ein:
+Mit dem Befehl:
 
-```bash
-make
+```c
+screen_open(320, 180, pixel_indexed8, "PixelRAM")
 ```
 
-Beim ersten Aufruf lädt das Makefile PixelRAM herunter. Anschließend wird dein C-Programm kompiliert und es entsteht die Datei `main.html`, die unser Programm für den Browser enthält.
+öffnen wir einen Bildschirm mit 320 × 180 Pixeln, und mit `set_pixel(160, 90, 10)` setzen wir genau einen dieser Pixel, nämlich:
 
-<!-- Screenshot: make erfolgreich -->
+- Position 160, 90 (also in der Mitte des Bildschirms)
+- Farbe 10 (hellgrün in der Standard-VGA-Palette)
 
-Öffne `main.html` mit dem Live Server im Browser.
+### 8-Bit-Farben
 
-<!-- Screenshot: einzelner Pixel -->
+Da wir den Modus `pixel_indexed8` aktiviert haben, können wir nicht beliebige RGB-Farben für jedes Pixel setzen, sondern nur einfache Bytes, die in eine vordefinierte Farbpalette verweisen. Welche Farbe der Pixel mit dem Wert 10 also tatsächlich hat, hängt von der aktuellen Palette ab.
 
-Auf dem Bildschirm erscheint ein einzelner grüner Pixel. Das ist noch keine besonders spektakuläre Computergrafik, aber genau dieser eine Punkt enthält schon die Grundidee von PixelRAM. Mit `screen_open(320, 180, pixel_indexed8, "PixelRAM")` öffnen wir einen Bildschirm mit 320 × 180 Pixeln, und mit `set_pixel(160, 90, 10)` setzen wir genau einen dieser Pixel.
-
-Die ersten beiden Zahlen bei `set_pixel` geben die Position an. PixelRAM zählt die Koordinaten von links oben: Der Pixel ganz links oben liegt bei `(0, 0)`, nach rechts wird `x` größer und nach unten wird `y` größer. Die Position `(160, 90)` liegt deshalb ungefähr in der Mitte unseres Bildschirms. Die dritte Zahl bestimmt die Farbe des Pixels.
-
-<div class='hint'>
-Probiere ruhig andere Positionen aus, zum Beispiel <code>set_pixel(20, 30, 10);</code>. Speichere anschließend die Datei und führe erneut <code>make</code> aus.
+<div class='hint books'>
+Eine Übersicht über die eingebauten Paletten findest du unter <a href='https://specht.github.io/pixelram/palettes.html'>specht.github.io/pixelram/palettes.html</a>.
 </div>
 
-## Farben aus einer Palette
 
-Bei unserem Bildschirmmodus `pixel_indexed8` speichert jeder Pixel nicht direkt eine vollständige RGB-Farbe. Stattdessen enthält er nur eine Zahl zwischen 0 und 255, die auf eine Farbe in einer **Palette** verweist. Dieses Prinzip wurde früher häufig bei Computergrafik verwendet, weil ein einzelner Pixel dadurch sehr wenig Speicher benötigt.
-
-PixelRAM bringt viele fertige Farbpaletten mit. Ergänze direkt hinter `screen_open`:
+PixelRAM bringt viele fertige Farbpaletten mit. Ergänze vor oder nach dem `set_pixel`-Aufruf:
 
 ```c
 use_palette("sweetie_16");
 ```
 
-Die Palette `sweetie_16` enthält 16 Farben mit den Nummern 0 bis 15. Wenn du anschließend zum Beispiel
+<img src='sweetie-dot.webp' style='width: 100%;'>
 
-```c
-set_pixel(160, 90, 4);
-```
+Durch die veränderte Palette ist der Pixel jetzt blau und auch die Hintergrundfarbe (Farbe 0) ist nicht mehr schwarz, sondern dunkelblau.
 
-oder
-
-```c
-set_pixel(160, 90, 12);
-```
-
-verwendest, erscheint derselbe Pixel in unterschiedlichen Farben.
-
-<div class='hint'>
-Eine Übersicht über die eingebauten Paletten findest du unter <a href='https://specht.github.io/pixelram/palettes.html'>specht.github.io/pixelram/palettes.html</a>.
+<div class='hint info'>
+Man kann Computergrafiken auch dadurch animieren, indem man das Bild selbst so belässt, wie es ist und nur die Palette animiert. Der PixelArt-Künstler Mark Ferrari hat viel mit diesem Trick gearbeitet, eine Auswahl seiner Werke findest du hier: <a href='https://www.effectgames.com/demos/canvascycle/' target='_blank'>https://www.effectgames.com/demos/canvascycle</a>.
 </div>
 
 ## Alle Pixel
@@ -121,14 +113,15 @@ Unser Bildschirm besteht aus 320 × 180 Pixeln, also insgesamt **57.600 Pixeln**
 ```c
 for (int y = 0; y < 180; y++)
 {
-    for (int x = 0; x < 320; x++)
-    {
+    for (int x = 0; x < 320; x++) {
         set_pixel(x, y, 4);
     }
 }
 ```
 
 Die äußere Schleife läuft von oben nach unten durch alle Zeilen des Bildes. Für jede dieser Zeilen läuft die innere Schleife von links nach rechts durch alle Pixel. Auf diese Weise besucht das Programm jeden der 57.600 Bildpunkte genau einmal.
+
+<img style='width: 100%' src='yellow.webp'>
 
 Damit wir die Breite und Höhe unseres Bildes nicht an mehreren Stellen als Zahlen eintragen müssen, legen wir sie am Anfang des Programms fest:
 
@@ -156,9 +149,9 @@ int main(void)
 }
 ```
 
-<!-- Screenshot: farbiges Raster -->
+Jetzt bekommt nicht mehr jeder Pixel dieselbe Farbe. Stattdessen hängt seine Farbe von seiner Position `x` und `y` ab. Wir haben also aufgehört, einzelne Objekte auf einen Bildschirm zu zeichnen: Unser Programm berechnet das gesamte Bild Pixel für Pixel. Genau dieses Prinzip werden wir in den nächsten Schritten weiter ausbauen.
 
-Jetzt bekommt nicht mehr jeder Pixel dieselbe Farbe. Stattdessen hängt seine Farbe von seiner Position `x` und `y` ab. Wir haben also aufgehört, einzelne Objekte auf einen Bildschirm zu zeichnen: Unser Programm **berechnet das gesamte Bild Pixel für Pixel**. Genau dieses Prinzip werden wir in den nächsten Schritten weiter ausbauen.
+<img style='width: 100%' src='patches.webp'>
 
 ## Abstand vom Mittelpunkt
 
@@ -204,13 +197,15 @@ for (int y = 0; y < HEIGHT; y++)
 }
 ```
 
-<!-- Screenshot: konzentrische Farbringe -->
+Pixel mit ungefähr demselben Abstand vom Mittelpunkt erhalten dieselbe Farbe. Deshalb entstehen konzentrische Kreise, obwohl wir im Programm nirgendwo einen Kreis zeichnen:
 
-Pixel mit ungefähr demselben Abstand vom Mittelpunkt erhalten dieselbe Farbe. Deshalb entstehen konzentrische Kreise, obwohl wir im Programm nirgendwo einen Kreis zeichnen. Der Kreis ergibt sich allein aus der Berechnung für jeden einzelnen Pixel. Probiere aus, was passiert, wenn du die Zahl `6.0` größer oder kleiner machst.
+<img style='width: 100%' src='color-circles.webp'>
+
+Der Kreis ergibt sich allein aus der Berechnung für jeden einzelnen Pixel. Probiere aus, was passiert, wenn du die Zahl `6.0` größer oder kleiner machst.
 
 ## Kreiswellen
 
-Unsere bisherigen Kreise haben harte Übergänge. Für einen wellenförmigen Verlauf können wir die mathematische Sinusfunktion verwenden. Sie liefert einen Wert, der sich regelmäßig zwischen `-1` und `1` bewegt.
+Unsere bisherigen Kreise haben harte Übergänge. Für einen wellenförmigen Verlauf können wir die mathematische Sinusfunktion verwenden. Sie liefert einen Wert, der sich regelmäßig zwischen -1 und 1 bewegt.
 
 Ersetze die Farbberechnung durch:
 
@@ -221,9 +216,9 @@ int color = (int)((wave + 1.0) * 7.5);
 set_pixel(x, y, color);
 ```
 
-<!-- Screenshot: Sinusringe -->
+Durch `wave + 1.0` verschieben wir den Wertebereich von -1 ... 1 auf 0 ... 2. Anschließend multiplizieren wir mit 7.5 und erhalten Werte von ungefähr 0 bis 15, die direkt zu unserer 16-Farben-Palette passen. Aus den harten Farbringen sind dadurch regelmäßig wiederkehrende Kreiswellen geworden.
 
-Durch `wave + 1.0` verschieben wir den Wertebereich von `-1 ... 1` auf `0 ... 2`. Anschließend multiplizieren wir mit `7.5` und erhalten Werte von ungefähr 0 bis 15, die direkt zu unserer 16-Farben-Palette passen. Aus den harten Farbringen sind dadurch regelmäßig wiederkehrende Kreiswellen geworden.
+<img style='width: 100%;' src='sinus-rings.webp'>
 
 Auch hier lohnt es sich zu experimentieren. Wenn du `distance * 0.12` beispielsweise durch `distance * 0.20` ersetzt, liegen die Wellen dichter zusammen. Mit einem kleineren Wert werden sie breiter.
 
@@ -235,7 +230,9 @@ Bis jetzt berechnet unser Programm nur ein einziges Bild und beendet sich anschl
 while (!should_close())
 {
     // neues Bild berechnen
+    // ...
 
+    // neues Bild anzeigen
     present();
 }
 ```
@@ -263,11 +260,11 @@ int main(void)
     screen_open(WIDTH, HEIGHT, pixel_indexed8, "PixelRAM");
     use_palette("sweetie_16");
 
-    while (!should_close())
-    {
+    while (!should_close()) {
         double t = seconds();
 
         for (int y = 0; y < HEIGHT; y++)
+        {
             for (int x = 0; x < WIDTH; x++)
             {
                 double dx = x - WIDTH / 2.0;
@@ -277,7 +274,7 @@ int main(void)
                 double wave = sin(distance * 0.12 - t * 2.0);
                 set_pixel(x, y, (int)((wave + 1.0) * 7.5));
             }
-
+        }
         present();
     }
 
@@ -298,6 +295,10 @@ double cx = WIDTH / 2.0 + cos(t * 0.8) * 70.0;
 double cy = HEIGHT / 2.0 + sin(t * 1.1) * 40.0;
 ```
 
+<div class='hint info'>
+Du fragst dich sicherlich, wo diese beiden Zeilen hin gehören. Tipp: Schau genau hin, wovon <code>cx</code> und <code>cy</code> abhängen.
+</div>
+
 Statt den Abstand vom festen Mittelpunkt zu berechnen, verwenden wir jetzt `cx` und `cy`:
 
 ```c
@@ -306,9 +307,9 @@ double distance = hypot(x - cx, y - cy);
 
 Die Funktion `hypot` berechnet direkt den Abstand aus horizontalem und vertikalem Unterschied. Sie macht also dasselbe wie unsere vorherige Rechnung mit `sqrt(dx * dx + dy * dy)`, ist hier aber kürzer zu schreiben.
 
-<!-- Screenshot: bewegte Wellenquelle -->
+Die Werte von `sin` und `cos` bewegen sich gleichmäßig zwischen -1 und 1. Durch die Multiplikation mit 70.0 beziehungsweise 40.0 bestimmen wir, wie weit sich der Mittelpunkt horizontal und vertikal bewegen darf. Das Ergebnis ist eine Kreiswelle, deren Quelle selbst durch das Bild wandert.
 
-Die Werte von `sin` und `cos` bewegen sich gleichmäßig zwischen `-1` und `1`. Durch die Multiplikation mit `70.0` beziehungsweise `40.0` bestimmen wir, wie weit sich der Mittelpunkt horizontal und vertikal bewegen darf. Das Ergebnis ist eine Kreiswelle, deren Quelle selbst durch das Bild wandert.
+<img style='width: 100%;' src='moving-center.webp'>
 
 ## Zwei Wellen treffen aufeinander
 
@@ -384,13 +385,11 @@ int main(void)
 }
 ```
 
-<!-- Screenshot: fertige Interferenzringe mit CRT-Filter -->
+<img style='width: 100%' src='interference.webp'>
 
-Bewege die Maus an den unteren Rand der PixelRAM-Anzeige und aktiviere dort den **CRT-Filter**. Die niedrige Auflösung von 320 × 180 Pixeln und die begrenzte Farbpalette passen besonders gut zu diesem Effekt und erinnern an Computergrafik aus der Zeit, in der solche Techniken häufig verwendet wurden.
+Hinter der Animation steckt eine ganze Menge Arbeit: Bei 320 × 180 Pixeln berechnet unser Programm für jeden Frame 57.600 Pixel neu. Für jeden einzelnen davon bestimmen wir zwei Abstände und berechnen zwei Sinusfunktionen. Bei 60 Bildern pro Sekunde sind das mehr als **3 Millionen neu berechnete Pixel pro Sekunde**. Genau bei solchen Aufgaben zeigt sich, warum eine schnelle Sprache wie C gut für Animationen geeignet ist.
 
-Trotzdem steckt hinter dem Bild eine ganze Menge Arbeit: Bei 320 × 180 Pixeln berechnet unser Programm für jeden Frame 57.600 Pixel neu. Für jeden einzelnen davon bestimmen wir zwei Abstände und berechnen zwei Sinusfunktionen. Bei 60 Bildern pro Sekunde sind das mehr als **3 Millionen neu berechnete Pixel pro Sekunde**. Genau bei solchen Aufgaben zeigt sich, warum eine schnelle Sprache wie C gut zu PixelRAM passt.
-
-## Experimentiere!
+## Experimente
 
 Das fertige Programm eignet sich gut zum Experimentieren, weil schon kleine Änderungen an den Zahlen deutlich sichtbare Auswirkungen haben. Wenn du beispielsweise mehr Ringe möchtest, kannst du den Faktor hinter dem Abstand erhöhen:
 
@@ -407,13 +406,13 @@ sin(d1 * 0.12 - t * 1.0)
 Auch die Bewegungsbahn der Wellenquellen kannst du verändern. Aus
 
 ```c
-cos(t * 0.8) * 70.0
+cos(t * 0.8) * 70
 ```
 
 könnte beispielsweise
 
 ```c
-cos(t * 0.8) * 110.0
+cos(t * 0.8) * 110
 ```
 
 werden. Dann bewegt sich diese Quelle deutlich weiter über den Bildschirm. Du kannst auch eine dritte Wellenquelle ergänzen, unterschiedliche Geschwindigkeiten ausprobieren oder die Bewegungen so verändern, dass sich die Quellen außerhalb des sichtbaren Bildes befinden.
@@ -428,11 +427,13 @@ use_palette("aap_64");
 
 Achte dabei darauf, dass die Paletten unterschiedlich viele Farben enthalten. Unser aktueller Quelltext berechnet Werte zwischen 0 und 15 und passt deshalb direkt zu `sweetie_16`. Wenn du eine Palette mit einer anderen Anzahl von Farben vollständig ausnutzen möchtest, musst du auch die Berechnung des Farbwerts entsprechend verändern.
 
+<img style='width: 100%' src='fancy.webp'>
+
 ## Noch mehr PixelRAM
 
 Unser Interferenzmuster besteht vollständig aus Berechnungen, die wir selbst auf die Pixel anwenden. PixelRAM kennt weder Kreise noch Wellen und enthält auch keinen Befehl für einen Tunnel oder ein Fraktal. Genau das macht die Bibliothek interessant: Sie stellt nur den Bildschirm und seine Pixel bereit, während du entscheidest, welche Algorithmen darauf arbeiten sollen.
 
-Die folgenden beiden Programme zeigen, wie unterschiedlich die Ergebnisse sein können. Wir erklären sie nicht mehr Schritt für Schritt. Wenn dich ein Effekt interessiert, kopiere den Quelltext nach `main.c`, kompiliere ihn mit `make` und versuche anschließend selbst herauszufinden, was die einzelnen Teile bewirken.
+Die folgenden beiden Programme zeigen, wie unterschiedlich die Ergebnisse sein können.
 
 ### Tunnel
 
@@ -441,13 +442,14 @@ Bei einem klassischen Tunnel-Effekt berechnen wir für jeden Pixel seinen Abstan
 ```c
 #include "pixelram.h"
 #include <math.h>
+#include <stdint.h>
 
 #define W 320
 #define H 180
 
 int main(void)
 {
-    screen_open(W, H, pixel_indexed8, "PixelRAM Tunnel");
+    screen_open(W, H, pixel_rgb24, "PixelRAM Tunnel");
     use_palette("endesga_32");
 
     while (!should_close())
@@ -463,11 +465,30 @@ int main(void)
                 double d = hypot(dx, dy);
                 double a = atan2(dy, dx);
 
-                double rings = sin(540.0 / (d + 1) + t * 4);
-                double spokes = sin(a * 8 + t * 1.2);
+                double v =
+                    sin(540.0 / (d + 1) + t * 4) +
+                    sin(a * 8 + t * 1.2) + 2;
 
-                set_pixel(x, y,
-                    (int)((rings + spokes + 2) * 7.75));
+                double c = v * 7.75;
+                if (c < 0) c = 0;
+                if (c > 31) c = 31;
+
+                int i = (int)c, j = i < 31 ? i + 1 : 31;
+                double f = c - i;
+
+                uint8_t r0, g0, b0, r1, g1, b1;
+                get_palette(i, &r0, &g0, &b0);
+                get_palette(j, &r1, &g1, &b1);
+
+                double fade = (d - 10) / 30;
+                if (fade < 0) fade = 0;
+                if (fade > 1) fade = 1;
+                fade = fade * fade * (3 - 2 * fade);
+
+                set_pixel_rgb(x, y,
+                    (r0 + (r1 - r0) * f) * fade,
+                    (g0 + (g1 - g0) * f) * fade,
+                    (b0 + (b1 - b0) * f) * fade);
             }
 
         present();
@@ -477,9 +498,9 @@ int main(void)
 }
 ```
 
-<!-- Screenshot: Tunnel -->
-
 Die Funktion `atan2(dy, dx)` berechnet den Winkel eines Pixels zum Mittelpunkt. Gemeinsam mit dem Abstand `d` erhalten wir dadurch zwei Werte, aus denen das Muster auf der Tunnelwand berechnet werden kann. Das Grundprinzip ist trotzdem dasselbe wie zuvor: Jeder Pixel wird aus seiner Position und der aktuellen Zeit berechnet.
+
+<img style='width: 100%;' src='tunnel.webp'>
 
 ### Animierte Julia-Menge
 
@@ -530,9 +551,108 @@ int main(void)
 }
 ```
 
-<!-- Screenshot: Julia -->
-
 Die beiden Werte `cr` und `ci` verändern sich langsam mit der Zeit, wodurch sich auch die Form des Fraktals kontinuierlich verändert. Du musst die Mathematik hinter Julia-Mengen nicht vollständig verstehen, um mit dem Programm zu experimentieren. Schon kleine Änderungen an `-0.72`, `0.27` oder `0.08` können völlig andere Formen erzeugen.
+
+<img style='width: 100%;' src='julia.webp'>
+
+### Bonus: Palette Cycling
+
+```c
+#include "pixelram.h"
+#include <math.h>
+#include <stdint.h>
+
+#define W 320
+#define H 180
+
+static const uint8_t magic[8][3] = {
+    { 12,  10,  45},
+    { 35,  20, 100},
+    { 85,  30, 180},
+    {190,  45, 220},
+    {255, 180, 255},
+    {150, 245, 255},
+    { 30, 180, 255},
+    { 15,  70, 160}
+};
+
+static void draw_scene(void)
+{
+    double cx = W / 2.0, cy = H / 2.0;
+
+    for (int y = 0; y < H; y++)
+        for (int x = 0; x < W; x++)
+        {
+            double dx = x - cx, dy = y - cy;
+            double r = hypot(dx, dy);
+            double a = atan2(dy, dx);
+
+            int color = 0;
+
+            /* Outer halo. */
+            if (r > 67 && r < 71)
+                color = 8 + ((int)(a * 8 + 40) & 7);
+
+            /* Twelve radial marks. */
+            if (r > 51 && r < 64 && fabs(sin(a * 12)) < .16)
+                color = 8 + ((int)(r / 3 + a * 5) & 7);
+
+            /* Two spell rings. */
+            if ((r > 43 && r < 47) || (r > 29 && r < 33))
+                color = 8 + ((int)(a * 9 + r / 3) & 7);
+
+            /* Curved energy inside the circle. */
+            if (r < 28 &&
+                fabs(sin(r * .34 + a * 5)) < .38)
+                color = 8 + ((int)(r / 2 + a * 4) & 7);
+
+            /* Bright core. */
+            if (r < 9)
+                color = 8 + ((int)(r + a * 3) & 7);
+
+            set_pixel(x, y, color);
+        }
+}
+
+static void cycle_magic(double t)
+{
+    double p = fmod(t * 5.0, 8.0);
+    int shift = (int)p;
+    double f = p - shift;
+
+    for (int i = 0; i < 8; i++)
+    {
+        int a = (i + shift) & 7;
+        int b = (a + 1) & 7;
+
+        set_palette(8 + i,
+            magic[a][0] + (magic[b][0] - magic[a][0]) * f,
+            magic[a][1] + (magic[b][1] - magic[a][1]) * f,
+            magic[a][2] + (magic[b][2] - magic[a][2]) * f);
+    }
+}
+
+int main(void)
+{
+    screen_open(W, H, pixel_indexed8, "Palette Cycling: Magic");
+
+    set_palette(0,  2,  3,  9);
+    set_palette(3, 35, 45, 70);
+
+    cycle_magic(0);
+    draw_scene();
+
+    while (!should_close())
+    {
+        cycle_magic(seconds());
+        present();
+    }
+
+    screen_close();
+}
+```
+
+<img style='width: 100%;' src='magic.webp'>
 
 ## Wie geht es weiter?
 
