@@ -1372,10 +1372,8 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     align-content: start;
     flex: 1 1 auto;
     min-height: 0;
-    overflow-y: auto;
+    overflow-y: hidden;
     gap: 0.04rem;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
 }
 
 .autotoc-secondary a {

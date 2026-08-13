@@ -559,6 +559,95 @@ Schau beim Schreiben regelmäßig auf den Graphen und die Problems-Ansicht. Gera
 
 Mit den Bausteinen aus der kleinen Geschichte kannst du bereits viele interaktive Geschichten schreiben. BIF kann darüber hinaus noch einiges mehr.
 
+### Aussehen anpassen
+
+Das Aussehen deiner Geschichte stellst du ganz oben in `1.md` ein. Dafür kannst du einen sogenannten **Front-Matter-Block** verwenden. Er steht noch vor dem Titel der Geschichte.
+Am einfachsten wählst du ein fertiges Theme:
+
+```markdown_wrap
+---
+theme: mystery
+---
+
+# Nach Schulschluss
+```
+
+BIF bringt mehrere Themes mit: `default`, `paper`, `mystery`, `midnight`, `terminal` und `playful`.
+Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details wie Abstände und abgerundete Ecken. Du kannst es deshalb einfach so verwenden, wie es ist.
+
+<div class='row'>
+    <div class='col-md-4'>
+        <img src='theme-default.webp' style='width: 100%;' class='full-shadow'>
+    </div>
+    <div class='col-md-4'>
+        <img src='theme-paper.webp' style='width: 100%;' class='full-shadow'>
+    </div>
+    <div class='col-md-4'>
+        <img src='theme-mystery.webp' style='width: 100%;' class='full-shadow'>
+    </div>
+    <div class='col-md-4'>
+        <img src='theme-midnight.webp' style='width: 100%;' class='full-shadow'>
+    </div>
+    <div class='col-md-4'>
+        <img src='theme-terminal.webp' style='width: 100%;' class='full-shadow'>
+    </div>
+    <div class='col-md-4'>
+        <img src='theme-playful.webp' style='width: 100%;' class='full-shadow'>
+    </div>
+</div>
+
+Du kannst ein Theme aber auch verändern. Zum Beispiel:
+
+```markdown_wrap
+---
+theme: midnight
+accent: "#ff7a18"
+font_heading: Bungee
+---
+```
+
+`accent` ist die Akzentfarbe für Links und interaktive Elemente. Mit `font_heading` änderst du nur die Schrift der Überschriften.
+
+Du musst überhaupt kein Theme auswählen. Wenn du `theme:` weglässt, kannst du die Standarddarstellung selbst mit Farben und Schriften anpassen:
+
+```markdown_wrap
+---
+background: "#fff7fb"
+text: "#382d38"
+accent: "#9d3b77"
+font_body: Nunito
+font_heading: Fredoka
+---
+```
+
+Die drei Grundfarben haben unterschiedliche Aufgaben:
+
+- `background` – Hintergrund
+- `text` – normaler Text und Überschriften
+- `accent` – Links, Hervorhebungen und interaktive Elemente
+
+Die übrigen Farbtöne für Flächen, Rahmen und Schatten leitet BIF automatisch daraus ab. Du musst also nicht für jedes kleine Element eine eigene Farbe festlegen.
+
+Mit
+
+```markdown_wrap
+brightness: light
+```
+
+oder
+
+```markdown_wrap
+brightness: dark
+```
+
+kannst du eine helle oder dunkle Darstellung erzwingen. `brightness: system` folgt stattdessen der Einstellung des Geräts.
+
+Für `font_body` und `font_heading` kannst du den Namen einer Schrift von [Google Fonts](https://fonts.google.com/) eintragen. Schreibe den Namen genau so, wie er dort steht. BIF lädt die benötigten Schriftdateien beim Entwickeln automatisch herunter und speichert sie lokal im Ordner `bif-assets`. Diesen Ordner solltest du deshalb nicht selbst für Bilder oder andere Dateien verwenden.
+
+<div class='hint'>
+Gestaltung kann viel zur Stimmung beitragen. Eine Mystery-Geschichte darf anders aussehen als eine Komödie oder ein Terminal-Abenteuer. Achte aber darauf, dass der Text gut lesbar bleibt.
+</div>
+
 ### Markdown
 
 Für die normalen Texte kannst du die üblichen Markdown-Schreibweisen verwenden.
@@ -665,6 +754,20 @@ Math.chance(50)
 
 liefert mit einer Wahrscheinlichkeit von 50 Prozent `true`.
 
+Zum Ausprobieren kannst du zum Beispiel diesen Block auf eine Seite schreiben:
+
+```html_wrap
+<script>
+if (Math.chance(50)) {
+    print("Aus dem Treppenhaus hörst du Schritte.");
+} else {
+    print("Im Treppenhaus bleibt alles still.");
+}
+</script>
+```
+
+Lade die Seite mehrmals über einen Neustart der Geschichte. Mal hörst du die Schritte, mal bleibt es still.
+
 Zufall eignet sich gut für kleine Überraschungen. Wichtige Folgen sind oft interessanter, wenn sie von vorherigen Entscheidungen abhängen.
 
 ### Graph-Gruppen
@@ -698,27 +801,34 @@ Für normale Entscheidungen reichen die Markdown-Links fast immer aus:
 - [Gehe nach rechts.](6)
 ```
 
-Für besondere Fälle kann BIF Entscheidungen auch aus JavaScript erzeugen. Das ist eher eine fortgeschrittene Möglichkeit und normalerweise nicht nötig.
+JavaScript wird interessant, wenn Entscheidungen nicht einfach fest im Text stehen sollen, sondern erst aus Daten oder dem aktuellen Zustand der Geschichte entstehen.
+
+BIF stellt Skripten dafür unter anderem die Funktionen `print`, `presentChoice` und `goToPage` zur Verfügung. Das folgende Beispiel baut die Entscheidungsmöglichkeiten mit JavaScript zusammen. Wenn `has_key` den Wert `true` hat, kommt eine zusätzliche Möglichkeit dazu:
+
+```html_wrap
+<script>
+const choices = [
+    ["3", "Sieh im Büro nach."],
+    ["4", "Gehe ins Treppenhaus."]
+];
+
+if (has_key) {
+    print("Du spürst den kleinen Schlüssel in deiner Tasche.");
+    choices.push(["5", "Öffne den Materialschrank."]);
+}
+
+const target = await presentChoice(choices);
+await goToPage(target);
+</script>
+```
+
+`presentChoice` zeigt die erzeugten Entscheidungen an und liefert zurück, welcher Wert ausgewählt wurde. In diesem Beispiel ist das direkt die Nummer der Zielseite. `goToPage` öffnet anschließend diese Seite.
+
+Mit JavaScript könntest du auf diese Weise zum Beispiel Entscheidungen aus einer Liste erzeugen, kleine Rätsel programmieren oder Abläufe bauen, die mit normalen Markdown-Entscheidungen umständlich würden. Für die meisten Stellen einer Geschichte bleiben Markdown, Variablen und Bedingungen aber übersichtlicher.
 
 <div class='hint'>
 Benutze zusätzliche Technik nur dann, wenn sie deiner Geschichte etwas bringt. Mehr Variablen, Skripte oder Verzweigungen machen eine Geschichte nicht automatisch besser.
 </div>
-
-### Geschichte prüfen
-
-Während du arbeitest, prüft BIF die Geschichte automatisch. Am Ende kannst du zusätzlich im Terminal eine vollständige Überprüfung starten:
-
-```bash
-npm run check
-```
-
-<!-- Screenshot: npm run check ohne Fehler -->
-
-<img class='full' src='check-story.webp'>
-
-Wenn keine Fehler gemeldet werden, ist die technische Struktur der Geschichte in Ordnung.
-
-Das bedeutet noch nicht, dass jede Entscheidung sinnvoll oder jeder Text fertig ist. Spiele die Geschichte deshalb selbst noch einmal durch und lasse sie am besten auch von jemand anderem ausprobieren.
 
 ## Eigene Geschichte
 
@@ -742,40 +852,67 @@ Damit beginnt dein eigenes Projekt wieder ganz klein.
 
 ### Eine Idee entwickeln
 
-Bevor du viele Seiten anlegst, überlege dir zunächst, worum deine Geschichte geht.
-
-**Ausgangssituation**  
-Wo beginnt die Geschichte? Was ist gerade passiert?
+Beim Geschichtenerzählen gibt es keine allgemein gültige Liste wie die zwölf Prinzipien der Animation. Es gibt aber ein paar Bausteine, die fast immer helfen. Für eine BIF-Geschichte kannst du dir zunächst diese Fragen stellen.
 
 **Figur**  
-Wer handelt in der Geschichte? Was will diese Person?
+Wer handelt in der Geschichte? Was ist dieser Person wichtig? Eine Figur wird interessanter, wenn sie nicht nur irgendwo herumläuft, sondern etwas will.
 
 **Ziel**  
-Was soll gefunden, erreicht, verhindert oder herausgefunden werden?
+Was möchte die Figur erreichen, finden, verhindern oder herausbekommen? Ein klares Ziel gibt der Geschichte eine Richtung.
 
 **Setting**  
-Wo und wann spielt die Geschichte? Was macht diesen Ort interessant?
+Wo und wann spielt die Geschichte? Ein Schulgebäude nach Unterrichtsschluss fühlt sich anders an als dieselbe Schule während der großen Pause. Überlege, welche Orte, Geräusche, Gegenstände oder Regeln für dein Setting typisch sind.
 
 **Konflikt oder Hindernis**  
-Warum lässt sich das Ziel nicht einfach sofort erreichen?
+Warum kann die Figur ihr Ziel nicht sofort erreichen? Eine verschlossene Tür, eine Person, die nicht die Wahrheit sagt, zu wenig Zeit oder zwei Ziele, die nicht gleichzeitig erreicht werden können, erzeugen Spannung.
+
+**Plot oder Handlung**  
+Der Plot ist nicht nur eine Liste von Orten. Er beschreibt, was passiert und warum sich die Situation verändert. Eine einfache Grundform reicht oft schon:
+
+```text
+Eine Figur will etwas.
+Etwas steht im Weg.
+Sie muss handeln oder sich entscheiden.
+Die Entscheidung hat eine Folge.
+Dadurch entsteht eine neue Situation.
+```
+
+Diese Folge kann wieder zu einer neuen Entscheidung führen. So entwickelt sich die Handlung Schritt für Schritt.
 
 **Entscheidungen**  
-Was kann die Leserin oder der Leser wirklich entscheiden?
-
-**Folgen**  
-Welche Entscheidungen sollen später noch eine Rolle spielen?
-
-**Ende**  
-Woran merkt man, dass die Geschichte abgeschlossen ist? Kann es verschiedene Enden geben?
-
-Eine gute Entscheidung ist meistens interessanter als nur:
+Was darf die Leserin oder der Leser wirklich entscheiden? Interessant wird eine Entscheidung, wenn beide Möglichkeiten einen Grund haben. Statt nur
 
 ```text
 Gehe nach links.
 Gehe nach rechts.
 ```
 
-Beide Möglichkeiten sollten einen Grund haben. Eine Entscheidung kann etwas über die Figur zeigen, eine Information preisgeben, einen Gegenstand kosten, Vertrauen verändern oder erst später Folgen haben.
+könnte die Wahl zum Beispiel lauten:
+
+```text
+Folge den Stimmen aus dem dunklen Flur.
+Kehre zurück und hole Hilfe.
+```
+
+Jetzt steckt bereits ein kleiner Konflikt in der Entscheidung: Neugier gegen Vorsicht.
+
+**Folgen**  
+Eine gute Entscheidung verändert etwas. Manchmal sieht man die Folge sofort, manchmal erst später. Variablen und Bedingungen sind besonders nützlich für solche späteren Folgen: Eine Person erinnert sich an dein Verhalten, ein Gegenstand ist verbraucht oder ein neuer Weg wird möglich.
+
+**Ende**  
+Woran merkt man, dass die Geschichte abgeschlossen ist? Am Ende sollte sich etwas gegenüber dem Anfang verändert haben. Das Ziel kann erreicht oder verfehlt worden sein, eine Frage wurde beantwortet oder die Figur hat etwas verstanden. Eine interaktive Geschichte kann natürlich mehrere unterschiedliche Enden haben.
+
+Für interaktive Geschichten sind außerdem ein paar praktische Regeln hilfreich:
+
+- **Eine Seite braucht eine Aufgabe.** Sie sollte etwas zeigen, verändern oder zu einer interessanten Entscheidung führen.
+- **Entscheidungen dürfen wieder zusammenlaufen.** Du musst nicht nach jeder Wahl zwei völlig getrennte Geschichten weiterschreiben. Zwei Wege können später wieder am selben Ort zusammentreffen.
+- **Zeige Folgen.** Wenn eine Entscheidung wichtig war, sollte die Leserin oder der Leser irgendwann merken, was sie bewirkt hat.
+- **Verzweige nicht zu schnell.** Beginne mit wenigen Seiten und erweitere die Geschichte erst, wenn der bisherige Teil funktioniert. Der Graph hilft dir dabei.
+- **Teste ungewöhnliche Wege.** Besuche Orte erneut, triff Entscheidungen in anderer Reihenfolge und lass die Geschichte auch von jemand anderem spielen. Andere Menschen probieren oft Dinge aus, an die man beim Schreiben nicht gedacht hat.
+
+<div class='hint'>
+Eine kleine Geschichte braucht nicht alles. Für einen guten Anfang reichen oft schon eine Figur mit einem Ziel, ein Hindernis und zwei Entscheidungen, die unterschiedliche Folgen haben.
+</div>
 
 ### Ideen
 
