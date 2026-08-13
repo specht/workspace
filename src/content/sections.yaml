@@ -20,12 +20,13 @@
     3D-Geometrie – und kannst sogar einen Blick in das Innere einer Bilddatei
     werfen.
   entries:
+    - anaglyph
     - drawing
     # - .turtle (got test)
     # - .drawing (koch curve)
     - fire
-    - anaglyph
-  # - .sirds
+    - .pixelram
+  #  - .sirds
   # - .raytracing
   # - .p5js
   # - .glsl
@@ -41,8 +42,8 @@
     Präsentationen und verzweigte Geschichten, in denen Leserinnen und Leser
     eigene Entscheidungen treffen können.
   entries:
-    - showerjs
     - bif
+    - showerjs
     - latex
 
 - key: networks
