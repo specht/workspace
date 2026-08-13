@@ -5,7 +5,7 @@ image: bif.webp
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2">
+    data-levels="h2,h3">
 </div>
 
 # Interaktive Geschichten schreiben
