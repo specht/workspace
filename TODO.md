@@ -111,6 +111,44 @@ The remaining work is mainly **teaching material**, not infrastructure.
 
 ---
 
+### BIF / Interactive Fiction Tutorial ✅
+
+Published in August 2026.
+
+The BIF tutorial is now a first-class Workspace tutorial at https://workspace.hackschule.de/bif. It deliberately uses a tiny human-written school story, **Nach Schulschluss**, so the example stays small enough to understand while students gradually add the actual BIF concepts.
+
+Completed:
+
+* [x] Create a very small human-written starter story
+* [x] Explain the basic BIF file structure
+* [x] Add page choices and link multiple scenes
+* [x] Show the story graph early and use it throughout the tutorial
+* [x] Introduce local choices
+* [x] Introduce variables/state
+* [x] Add conditional text and conditional choices
+* [x] Use a persistent flag (`has_key`) so earlier actions affect later scenes
+* [x] Show how to run and preview the story in the Workspace
+* [x] Explain the Problems and State views
+* [x] Cover images, audio and video
+* [x] Add examples for values in text, randomness, graph groups and advanced JavaScript
+* [x] Document themes, brightness, custom colors and separate body/heading fonts
+* [x] End with guidance for developing an original story rather than another large starter
+* [x] Keep the Odyssey and other large AI-written stories out of the starter workflow
+
+Teaching approach:
+
+> Start with story structure and meaningful choices, then introduce state only when the simple story creates a real need for it. Technology should support the story rather than become the point of the exercise.
+
+The creative-writing section gives students a compact framework built around figure, goal, setting, conflict, plot, decisions, consequences and endings, plus practical advice for branching stories.
+
+Follow-up work:
+
+* [ ] Mention **Shared Live Apps** explicitly as an option for peer testing unfinished stories
+* [ ] Add E2E coverage for the documented BIF student workflow
+* [ ] Revisit the tutorial after the first teacher workshop and incorporate classroom feedback
+
+---
+
 ## High Priority
 
 ### Web Server
@@ -250,45 +288,6 @@ Possible questions:
 * Which actor has worked with the most directors?
 
 The important goal is to show **why graph databases exist**, not merely teach Cypher syntax.
-
----
-
-### BIF / Interactive Fiction
-
-Add BIF as a first-class tutorial, but keep the tutorial focused on the technology rather than presenting a large prewritten story.
-
-The tutorial should have a very low entry barrier and emphasize creative programming. Use only tiny examples that are easy to inspect and modify.
-
-* [ ] Create a very small human-written starter story
-* [ ] Explain the basic BIF file structure
-* [ ] Add choices
-* [ ] Link multiple scenes
-* [ ] Show the story as a graph early
-* [ ] Introduce variables/state
-* [ ] Add conditional choices
-* [ ] Add inventory or flags as an advanced step
-* [ ] Show how to run and preview the story in the Workspace
-* [ ] Use **Shared Live Apps** for peer testing
-* [ ] End with an open creative assignment rather than another large starter story
-
-Important decision:
-
-> Do not use the Odyssey or other large AI-written stories as starter material. They distract from the technology, feel artificial, and make the example itself larger than the idea being taught.
-
-A tiny starter can be enough: two or three locations, one meaningful choice and perhaps one variable. The students' own stories should provide the scale and creativity.
-
-Possible final task:
-
-> Create your own interactive story with multiple paths and endings. Add state-dependent behavior once the basic scene graph works.
-
-Possible themes can be suggested, but they should not dominate the tutorial:
-
-* Mystery
-* Science fiction
-* Escape room
-* Mythology
-* Time travel
-
 
 ---
 
@@ -545,17 +544,16 @@ Revisit if we find an approach where the limitations themselves become pedagogic
 
 ## Suggested Order
 
-1. [ ] BIF (Branched Interactive Fiction)
-2. [ ] Web Server
-3. [ ] WebSockets
-4. [ ] Neo4j
-5. [ ] Cryptography
-6. [ ] Flutter
-7. [ ] PixelRAM graphics tutorial / older-student projects
-8. [ ] raylib + WebAssembly tutorial
+1. [ ] Web Server
+2. [ ] WebSockets
+3. [ ] Neo4j
+4. [ ] Cryptography
+5. [ ] Flutter
+6. [ ] PixelRAM graphics tutorial / older-student projects
+7. [ ] raylib + WebAssembly tutorial
 
 The Web Server and WebSockets tutorials should form a continuous sequence after the existing TCP/IP tutorial.
 
-**Shared Live Apps is already implemented infrastructure, not another tutorial to schedule.** Use it throughout the Web Server, WebSockets, BIF and Flutter material whenever students should be able to try each other's running projects.
+**Shared Live Apps is already implemented infrastructure, not another tutorial to schedule.** Use it throughout the Web Server, WebSockets and Flutter material, and add it to the completed BIF tutorial where peer testing is useful.
 
 **PixelRAM and raylib should remain two distinct teaching routes:** raylib for higher-level games/graphics, PixelRAM for low-level framebuffer programming and software rendering.
