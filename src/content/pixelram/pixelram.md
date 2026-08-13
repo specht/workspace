@@ -105,7 +105,7 @@ use_palette("sweetie_16");
 Durch die veränderte Palette ist der Pixel jetzt blau und auch die Hintergrundfarbe (Farbe 0) ist nicht mehr schwarz, sondern dunkelblau.
 
 <div class='hint info'>
-Man kann Computergrafiken auch animieren, indem man das Bild selbst unverändert lässt und nur die Palette animiert. Der PixelArt-Künstler Mark Ferrari hat viel mit diesem Trick gearbeitet, eine Auswahl seiner Werke findest du hier: <a href='https://www.effectgames.com/demos/canvascycle/' target='_blank'>https://www.effectgames.com/demos/canvascycle</a>.
+Man kann Computergrafiken auch animieren, indem man das Bild selbst unverändert lässt und nur die Palette animiert. Der PixelArt-Künstler Mark Ferrari hat viel mit diesem Trick gearbeitet, eine Auswahl seiner Werke <a href='https://www.effectgames.com/demos/canvascycle/' target='_blank'>findest du hier</a>.
 </div>
 
 ### Alle Pixel
