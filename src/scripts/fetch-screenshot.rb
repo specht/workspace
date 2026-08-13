@@ -2,13 +2,26 @@
 
 hostname = `hostname`.strip
 
-path = case hostname
+paths = case hostname
 when 'vaka'
-    "/home/michael/Screenshots/"
+    [
+        "/home/michael/Screenshots/",
+        "/share/"
+    ]
 when 'vakadell'
-    "/home/michael/Pictures/Screenshots/"
+    [
+        "/home/michael/Pictures/Screenshots/"
+    ]
+else
+    abort "Unknown hostname: #{hostname}"
 end
-latest_path = Dir.glob(File.join(path, '*')).sort_by { |f| File.mtime(f) }.last
+
+latest_path = paths
+    .flat_map { |path| Dir.glob(File.join(path, '*')) }
+    .select { |f| File.file?(f) }
+    .max_by { |f| File.mtime(f) }
+
+abort "No screenshot found in: #{paths.join(', ')}" unless latest_path
 
 fuzz = 50
 

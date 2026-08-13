@@ -98,19 +98,13 @@ Klicke rechts unten auf »Go Live«. Es öffnet sich ein neuer Tab mit deiner Ge
 
 <div style='clear: both;'></div>
 
-<img class='full' src='first-page.webp'>
+<img class='full full-shadow scroll-right' src='first-page.webp'>
 
 BIF startet standardmäßig in der Entwicklungsansicht. Rechts siehst du die Geschichte, die momentan noch sehr kurz ist und noch keine Entscheidungsmöglichkeiten bietet. Mit dem Button rechts oben kannst du zwischen der Entwicklungsansicht und der Leseansicht hin- und herwechseln. Wenn du deine Geschichte später veröffentlichst, bekommen deine Leser:innen nur die Leseansicht zu sehen.
 
-<div class='hint'>
-Tipp: Ziehe den Workspace und die Vorschau nebeneinander. Dann kannst du links schreiben und rechts direkt ausprobieren, was sich verändert hat.
-</div>
-
-<img class='full' src='side-by-side.webp'>
-
 ## Zweite Seite
 
-<img src='new-file.webp' class='r' style='width: 21em;'>
+<img src='new-file.webp' class='r' style='width: 18em;'>
 
 Unsere Geschichte soll nicht auf der ersten Seite stehen bleiben. Erstelle im Ordner `pages-starter` eine neue Datei, indem du auf das entsprechende Icon klickst. Nenne die Datei `2.md`.
 
@@ -124,7 +118,7 @@ Speichere die Datei, indem du <span class='key'>Strg</span><span class='key'>S</
 
 <div style='clear: both;'></div>
 
-<img class='full' src='unreachable-page.webp'>
+<img class='full full-shadow scroll-right' src='unreachable-page.webp'>
 
 Damit besteht die Geschichte bereits aus zwei Seiten, allerdings gibt es noch keine Verbindung von der ersten zur zweiten Seite – dafür brauchen wir eine Entscheidung.
 
@@ -148,7 +142,7 @@ Du willst gerade gehen, da fällt dir ein: Deine Projektmappe liegt noch im Mate
 
 Speichere die Datei und probiere die Geschichte im Browser aus:
 
-<img class='full' src='two-pages.webp'>
+<img class='full full-shadow scroll-right' src='two-pages.webp'>
 
 Die Geschichte endet jetzt mit einer Entscheidungsmöglichkeit: wenn du in den Flur gehst, geht die Geschichte bei Seite 2 weiter. Links im Graphen siehst du immer, wo du dich gerade innerhalb der Geschichte befindest.
 
@@ -192,7 +186,7 @@ Speichere die Dateien und probiere beide Wege aus.
 
 <!-- Screenshot: zwei Entscheidungen im Flur -->
 
-<img class='full' src='branching-story.webp'>
+<img class='full full-shadow scroll-right' src='branching-story.webp'>
 
 Die Geschichte verzweigt sich jetzt auf Seite 2. Beide Wege führen anschließend wieder zurück in den Flur.
 
@@ -230,7 +224,7 @@ Der wichtige Unterschied ist der Punkt: `(.)` – er bedeutet, dass die Geschich
 
 <!-- Screenshot: lokale Entscheidung -->
 
-<img class='full' src='local-choice.webp'>
+<img class='full full-shadow scroll-right' src='local-choice.webp'>
 
 Die vier Leerzeichen vor der Antwort sind wichtig. Durch die Einrückung erkennt BIF, dass der eingerückte Text zur Entscheidung direkt darüber gehört. Alles, was nach dieser lokalen Entscheidung passieren soll, wird deshalb entsprechend eingerückt.
 
@@ -311,7 +305,7 @@ Wenn du »Nimm den Schlüssel« auswählst, wird das Skript ausgeführt und `has
 
 <!-- Screenshot: Schlüssel genommen / State mit has_key: true -->
 
-<img class='full' src='take-key.webp'>
+<img class='full full-shadow scroll-right' src='take-key.webp'>
 
 Die Geschichte hat sich damit zum ersten Mal etwas gemerkt. Solange du im Büro bleibst, sieht auch alles richtig aus: »Nimm den Schlüssel« ist bereits erledigt und kann nicht noch einmal ausgewählt werden.
 
@@ -475,11 +469,7 @@ Jetzt verändert sich die Beschreibung des Flurs und die neue Entscheidung ersch
 
 <!-- Screenshot: Flur ohne Schlüssel -->
 
-<img class='full' src='locked-door.webp'>
-
-<!-- Screenshot: Flur mit Schlüssel und zusätzlicher Entscheidung -->
-
-<img class='full' src='unlocked-door.webp'>
+<img class='full full-shadow scroll-right' src='locked-door.webp'>
 
 Damit haben Variablen und Bedingungen unterschiedliche Aufgaben:
 
@@ -493,7 +483,9 @@ Gerade beim Testen einer interaktiven Geschichte lohnt es sich, Orte mehrmals zu
 
 ## Ende
 
-Öffne jetzt den Materialschrank.
+Öffne jetzt den Materialschrank:
+
+<img class='full full-shadow scroll-right' src='unlocked-door.webp'>
 
 Die Datei `5.md` enthält keine weitere Entscheidung. Deshalb erkennt BIF diese Seite automatisch als mögliches Ende der Geschichte.
 
@@ -541,7 +533,7 @@ BIF erkennt, dass das JavaScript nicht gültig ist. Im Bereich **Problems** sieh
 
 <!-- Screenshot: Problems mit JavaScript-Syntaxfehler -->
 
-<img class='full' src='script-error.webp'>
+<img class='full full-shadow' src='script-error.webp'>
 
 Korrigiere die Zeile anschließend wieder:
 
@@ -606,14 +598,14 @@ pages-meine-geschichte/
 In Markdown kannst du das Bild so einfügen:
 
 ```markdown_wrap
-![Eine verschlossene Tür](images/door.jpg)
+![Ein Schlüssel hängt an der Wand](key.jpg)
 ```
 
 Der Text in den eckigen Klammern beschreibt das Bild und hilft zum Beispiel Menschen, die einen Screenreader verwenden.
 
 <!-- Screenshot: BIF-Seite mit Bild -->
 
-<img class='full' src='story-image.webp'>
+<img class='full full-shadow scroll-right' src='story-image.webp'>
 
 ### Audio und Video
 
@@ -695,7 +687,7 @@ Diese Kommentare sind für die Leserinnen und Leser unsichtbar. Sie helfen nur d
 
 <!-- Screenshot: Graph mit gruppierten Seiten -->
 
-<img class='full' src='grouped-graph.webp'>
+<img class='full full-shadow' src='grouped-graph.webp'>
 
 ### JavaScript
 

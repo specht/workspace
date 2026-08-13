@@ -410,6 +410,24 @@ function update_dark_mode() {
     // }
 }
 
+function initialize_right_scrolled_images() {
+    document.querySelectorAll('.scroll-x > img.full.scroll-right').forEach(img => {
+        function scroll_right() {
+            const container = img.parentElement;
+
+            if (container.scrollWidth > container.clientWidth) {
+                container.scrollLeft = container.scrollWidth;
+            }
+        }
+
+        if (img.complete) {
+            scroll_right();
+        } else {
+            img.addEventListener('load', scroll_right, { once: true });
+        }
+    });
+}
+
 window.addEventListener('DOMContentLoaded', function() {
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         system_brightness = 'dark';
@@ -550,6 +568,7 @@ window.addEventListener('load', function() {
             scrollElement.scrollLeft = scrollLeft - walk;
         });
     }
+    initialize_right_scrolled_images();
     install_autotoc();
 });
 </script>
