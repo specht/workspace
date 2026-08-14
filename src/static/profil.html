@@ -46,7 +46,7 @@
                 </div>
             </div>
             <p>
-                Wenn du jemandem deinen Workspace zeigen möchtest oder dir helfen lassen möchtest, kannst du deinen Workspace teilen. Du erhältst einen Link, den du weitergeben kannst. Jeder, der diesen Link hat, uneingeschränkten Zugriff auf deinen Workspace, auch ohne Anmeldung. Der Link ist solange gültig, bis du ihn deaktivierst.
+                Wenn du jemandem deinen Workspace zeigen möchtest oder dir helfen lassen möchtest, kannst du deinen Workspace teilen. Du erhältst einen Link, den du weitergeben kannst. Jeder, der diesen Link hat, hat uneingeschränkten Zugriff auf deinen Workspace, auch ohne Anmeldung. Der Link ist solange gültig, bis du ihn deaktivierst.
             </p>
             <div id='div_share_link' style="max-width: 100%; overflow-x: auto; #{(@session_user || {})[:share_tag] ? '' : 'display: none;'}" class="mt-2 mb-4">
                 <div style="display: table; margin-left: auto; margin-right: auto;" class="input-with-text-mod">
@@ -110,7 +110,7 @@
                     <div class="input-group">
                         <span class="input-group-text" style="width: 9em;">Datenbank:</span>
                         <input type="text" class="form-control" readonly value="#{@session_user[:email].split('@').first.downcase}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email]}'><i class='bi bi-copy'></i>Kopieren</button>
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email].split('@').first.downcase}'><i class='bi bi-copy'></i>Kopieren</button>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -177,7 +177,7 @@
                     <div class="input-group">
                         <span class="input-group-text" style="width: 9em;">Datenbank:</span>
                         <input type="text" class="form-control" readonly value="#{@session_user[:email].split('@').first.downcase}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email].split('@').first.downcase.gsub('.', '_')}'><i class='bi bi-copy'></i>Kopieren</button>
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email].split('@').first.downcase}'><i class='bi bi-copy'></i>Kopieren</button>
                     </div>
                 </div>
                 <div class="col-md-6">

@@ -31,6 +31,13 @@ Commit the resulting `package-lock.json` as well.
 npm test
 ```
 
+To run only the Shared Live Apps lifecycle coverage (including access control,
+HTTP, WebSocket, revocation, and listener replacement), use:
+
+```bash
+npx playwright test tests/shared-live-apps.browser.spec.ts --project=workspace-smoke
+```
+
 Open the HTML report:
 
 ```bash

@@ -1,6 +1,7 @@
 docker-compose.yaml
 data
 docker/ruby/Gemfile
+docker/ruby/Gemfile.lock
 logs
 src/ruby/credentials.rb
 src/ruby/invitations.txt

@@ -1,4 +1,4 @@
-FROM ruby:3.2-bookworm
+FROM ruby:3.2.11-bookworm
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   less \
@@ -34,8 +34,10 @@ RUN apt-get update && apt-get install -y \
 ENV TZ=Europe/Berlin
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN gem install bundler
+ARG BUNDLER_VERSION=4.0.17
+RUN gem install bundler --version "${BUNDLER_VERSION}"
 
 WORKDIR /app
-COPY Gemfile ./
-RUN bundle install
+COPY Gemfile Gemfile.lock ./
+RUN bundle config set frozen true \
+  && bundle install

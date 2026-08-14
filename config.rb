@@ -179,7 +179,7 @@ if PROFILE.include?(:neo4j)
 end
 
 docker_compose[:services][:mysql] = {
-    :image => 'mysql/mysql-server:8.0',
+    :image => 'mysql/mysql-server:8.0.32',
     :command => ["--require_secure_transport=OFF", "--mysqlx=0"],
     :volumes => ["#{MYSQL_DATA_PATH}:/var/lib/mysql"],
     :user => '1000',
@@ -191,7 +191,7 @@ docker_compose[:services][:mysql] = {
 }
 
 docker_compose[:services][:neo4j] = {
-    :image => 'neo4j:enterprise',
+    :image => 'neo4j:2026.06.0-enterprise',
     # :command => ["--default-authentication-plugin=mysql_native_password"],
     :volumes => ["#{NEO4J_USER_DATA_PATH}:/data"],
     :user => '1000',
@@ -205,7 +205,7 @@ docker_compose[:services][:neo4j] = {
 }
 
 docker_compose[:services][:phpmyadmin] = {
-    :image => 'phpmyadmin/phpmyadmin:5.2',
+    :image => 'phpmyadmin/phpmyadmin:5.2.3',
     :restart => 'always',
     :depends_on => [:mysql],
     :environment => {
@@ -255,7 +255,7 @@ end
 FileUtils::mkpath(LOGS_PATH)
 FileUtils::mkpath(File.join(LOGS_PATH, 'neo4j'))
 if PROFILE.include?(:dynamic)
-    FileUtils::cp('src/ruby/Gemfile', 'docker/ruby/')
+    FileUtils::cp(['src/ruby/Gemfile', 'src/ruby/Gemfile.lock'], 'docker/ruby/')
 end
 if PROFILE.include?(:neo4j)
     FileUtils::mkpath(NEO4J_DATA_PATH)

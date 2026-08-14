@@ -1,14 +1,20 @@
 source 'https://rubygems.org'
 
-gem 'sinatra', '~> 2.0'
-gem 'sinatra-contrib'
-gem 'faye'
-gem 'mail'
-gem 'mysql2'
-gem 'neo4j_bolt', '>=0.3.0'
-gem 'nokogiri'
-gem 'redcarpet'
-gem 'rerun'
-gem 'rouge'
-gem 'rubocop'
-gem 'thin', '< 2.0.0'
+ruby '3.2.11'
+
+gem 'sinatra', '~> 2.2.4'
+gem 'sinatra-contrib', '~> 2.2.4'
+gem 'faye', '~> 1.4'
+gem 'mail', '~> 2.9'
+gem 'mysql2', '~> 0.5.7'
+gem 'neo4j_bolt', '~> 0.3.0'
+gem 'nokogiri', '~> 1.19'
+gem 'redcarpet', '~> 3.6'
+gem 'rerun', '~> 0.14'
+gem 'rouge', '~> 5.1'
+gem 'rubocop', '~> 1.89'
+gem 'thin', '~> 1.8.2'
+
+group :test do
+  gem 'minitest', '~> 5.27'
+end
