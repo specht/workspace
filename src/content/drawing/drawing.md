@@ -16,7 +16,7 @@ In diesem Kapitel lernst du, wie du Pixelgrafiken programmieren kannst. Dazu ins
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp'>
+<img class='full' src='fresh-start.webp' alt=''>
 
 ## Pixelflow Canvas installieren
 
@@ -24,15 +24,15 @@ Falls du es noch nicht getan hast, musst du zuerst eine Erweiterung für Visual 
 
 ### VS Code-Erweiterung installieren
 
-Um Pixelgrafiken im Workspace programmieren zu können, benötigen wir die Erweiterung »Pixelflow Canvas«. Klicke dazu auf das Extensions-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;'> in der Seitenleiste und suche nach »Pixelflow Canvas«. Klicke auf »Install«, um die Erweiterung zu installieren.
+Um Pixelgrafiken im Workspace programmieren zu können, benötigen wir die Erweiterung »Pixelflow Canvas«. Klicke dazu auf das Extensions-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste und suche nach »Pixelflow Canvas«. Klicke auf »Install«, um die Erweiterung zu installieren.
 
-<img class='full' src='pixelflow-canvas-ext.webp'>
+<img class='full' src='pixelflow-canvas-ext.webp' alt=''>
 
 ### Rubygem installieren
 
 Um bequem von Ruby Befehle an das Canvas schicken zu können, benötigen wir das Rubygem »pixelflow_canvas«. Öffne das Terminal, indem du den Shortcut <kbd>Strg</kbd><kbd>J</kbd> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='got-terminal.webp'>
+<img class='full' src='got-terminal.webp' alt=''>
 
 Installiere es, indem du folgenden Befehl in das Terminal eingibst:
 
@@ -44,7 +44,7 @@ gem install pixelflow_canvas
 
 Wähle im Menü links oben »File« / »New Text File« (oder drücke <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd>), um eine neue Datei anzulegen:
 
-<img class='full' src='new-file.webp'>
+<img class='full' src='new-file.webp' alt=''>
 
 Schreibe den folgenden Code in die Datei:
 
@@ -58,15 +58,15 @@ end
 
 Da Visual Studio Code noch nicht weiß, dass es sich um Ruby-Code handelt, sieht dein Code noch etwas farblos aus:
 
-<img class='full' src='no-syntax-highlighting.webp'>
+<img class='full' src='no-syntax-highlighting.webp' alt=''>
 
 Speichere die Datei unter dem Dateinamen `rainbow.rb`, indem du <kbd>Strg</kbd><kbd>S</kbd> drückst und den Dateinamen eingibst.
 
-<img class='full' src='enter-filename.webp'>
+<img class='full' src='enter-filename.webp' alt=''>
 
 Dein Programm sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='syntax-highlighting.webp'>
+<img class='full' src='syntax-highlighting.webp' alt=''>
 
 Bevor wir das Programm ausführen können, müssen wir das Pixelflow Canvas öffnen. Drücke dazu
 <kbd>Strg</kbd><kbd>Shift</kbd><kbd>P</kbd> oder <kbd>F1</kbd>
@@ -76,15 +76,15 @@ und gib dann »Show Pixelflow Canvas« ein.
     <strong>Tipp:</strong> Du kannst auch einfach »pixel« eingeben, es werden dir dann automatisch alle Befehle angezeigt, die mit »Pixelflow Canvas« zu tun haben.
 </div>
 
-<img src='show-canvas.webp' class='full'>
+<img src='show-canvas.webp' class='full' alt=''>
 
 Du solltest jetzt ein neues Panel sehen, in dem das Pixelflow Canvas angezeigt wird:
 
-<img src='empty-canvas.webp' class='full'>
+<img src='empty-canvas.webp' class='full' alt=''>
 
 Führe das Programm aus, indem du im Terminal `ruby rainbow.rb` eingibst. Du solltest nun einen einzelnen, grünen Pixel in der Mitte der Zeichenfläche sehen:
 
-<img src='out1.webp' class='full'>
+<img src='out1.webp' class='full' alt='Ein einzelner grüner Pixel liegt in der Mitte einer schwarzen Fläche.'>
 
 Schauen wir uns den Code genauer an:
 
@@ -173,7 +173,7 @@ Pixelflow::Canvas.new(320, 180, :palette) do
 end
 ```
 
-<img src='out2.webp' class='r'>
+<img src='out2.webp' class='r' alt='Ein dunkeltürkiser Pixel liegt auf einer dunkelvioletten Fläche.'>
 
 Führe das Programm aus, indem du im Terminal `ruby rainbow.rb` eingibst (du kannst auch einfach den letzten Befehl wiederholen, indem du <kbd>↑</kbd> und <kbd>Enter</kbd> drückst).
 
@@ -197,7 +197,7 @@ Wir füllen die gesamte Zeichenfläche mit der Farbe 16 (hellblau), indem wir de
 
 Dein Bild sollte jetzt so aussehen:
 
-<img src='out3.webp' class='full'>
+<img src='out3.webp' class='full' alt='Die Zeichenfläche ist vollständig hellblau gefüllt.'>
 
 ## Hügelige Wiese zeichnen
 
@@ -358,7 +358,7 @@ draw_cubic_bezier(0, 170, 110, 140, 220, 140, 320, 170)
 
 Dein Bild sollte jetzt so aussehen:
 
-<img src='out4.webp' class='full'>
+<img src='out4.webp' class='full' alt='Drei geschwungene grüne Linien verlaufen über den hellblauen Hintergrund.'>
 
 ## Flächen füllen
 
@@ -371,7 +371,7 @@ flood_fill(0, 130)
 
 Der Punkt an der Stelle (0, 130) liegt zwischen den oberen beiden Kurven, und nun wird der Bereich zwischen diesen beiden Kurven mit der Farbe 7 (hellgrün) gefüllt. Dein Bild sollte danach so aussehen:
 
-<img src='out5.webp' class='full'>
+<img src='out5.webp' class='full' alt='Die Fläche zwischen den oberen Kurven ist hellgrün gefüllt.'>
 
 Füge anschließend die folgenden Zeilen hinzu, um die restlichen Flächen zu füllen:
 
@@ -384,7 +384,7 @@ flood_fill(0, 179)
 
 Dein Bild sollte jetzt so aussehen:
 
-<img src='out6.webp' class='full'>
+<img src='out6.webp' class='full' alt='Mehrere gefüllte grüne Hügel überlagern sich vor hellblauem Hintergrund.'>
 
 ## Regenbogen zeichnen
 
@@ -411,7 +411,7 @@ end
 
 Dein Bild sollte anschließend so aussehen:
 
-<img src='out7.webp' class='full'>
+<img src='out7.webp' class='full' alt='Ein gestreifter Regenbogen steigt hinter grünen Hügeln auf.'>
 
 ## Himmel zeichnen
 
@@ -439,7 +439,7 @@ remove_mask()
 
 Das fertige Bild sollte nun so aussehen:
 
-<img src='rainbow.webp' class='full'>
+<img src='rainbow.webp' class='full' alt='Fertige Pixelgrafik mit blau gestreiftem Himmel, Regenbogen und grünen Hügeln.'>
 
 ## Bild speichern
 

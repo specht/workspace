@@ -152,6 +152,6 @@ Der Zweck dieses Tutorials ist es also nicht, dich dazu zu ermutigen, in fremde 
 
 Ein kleiner Vergleich zum Schluß: Es ist in Ordnung, wenn du deine Fähigkeiten und ein Lockpicking-Set verwendest, um deine eigenen Schlösser zu öffnen, weil du z. B. den Schlüssel verloren hast. Sobald du allerdings fremde Schlösser ohne Erlaubnis öffnest, begehst du eine Straftat.
 
-<img class='full' src='xkcd-327-full.webp'>
+<img class='full' src='xkcd-327-full.webp' alt='Die Schule fragt eine Mutter, ob ihr Sohn „Robert’); DROP TABLE Students;--“ heißt; sie bestätigt „Little Bobby Tables“ und mahnt, Datenbankeingaben zu bereinigen.'>
 
 <em>Cartoon von Randall Munroe, [xkcd.com](https://xkcd.com/327/).</em>

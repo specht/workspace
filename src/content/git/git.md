@@ -21,14 +21,14 @@ In diesem Tutorial lernst du Git Schritt für Schritt kennen. Wir beginnen ganz 
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp'>
+<img class='full' src='fresh-start.webp' alt=''>
 
 Schließe die linken Seitenleiste, indem du <kbd>Strg</kbd><kbd>B</kbd> drückst, um mehr Platz zu haben.
 Öffne als nächstes das Terminal, indem du den Shortcut <kbd>Strg</kbd><kbd>J</kbd> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='got-terminal.webp'>
+<img class='full' src='got-terminal.webp' alt=''>
 
-<img src='terminal-maximize.webp' class='r' style='width: 25em;'>
+<img src='terminal-maximize.webp' class='r' style='width: 25em;' alt=''>
 
 Du kannst das Terminal auch maximieren, indem du auf den Pfeil in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du jederzeit mit <kbd>Strg</kbd><kbd>B</kbd> ein- und ausblenden.
 
@@ -40,7 +40,7 @@ mkdir git-tutorial
 
 Mit `ls -l` kannst du anschließend überprüfen, ob das Verzeichnis erstellt wurde (das `d` am Anfang der Zeile zeigt an, dass es sich um ein Verzeichnis handelt):
 
-<img class='full' src='mkdir-and-ls.webp'>
+<img class='full' src='mkdir-and-ls.webp' alt=''>
 
 <div class='hint books'>
 Falls du mehr über die Grundlagen der Kommandozeile erfahren möchtest, schau dir das <a href='/working-with-files'>Tutorial zu Dateien und Verzeichnissen</a> an.
@@ -58,11 +58,11 @@ cd alice
 
 Initialisiere jetzt ein neues Git-Repository mit dem Befehl `git init`:
 
-<img class='full' src='git-init.webp'>
+<img class='full' src='git-init.webp' alt=''>
 
 Mit dem Befehl `ls -la` kannst du sehen, dass ein verstecktes Verzeichnis namens `.git` erstellt wurde:
 
-<img class='full' src='dot-git-dir.webp'>
+<img class='full' src='dot-git-dir.webp' alt=''>
 
 Das `.git`-Verzeichnis enthält alle Informationen, die Git benötigt, um die Versionsgeschichte deines Projekts zu verwalten. Darin befindet sich später die gesamte Historie deiner Änderungen.
 
@@ -80,7 +80,7 @@ echo "Hello, world!" > hello.txt
 
 Überzeuge dich mit dem Befehl `cat hello.txt`, dass die Datei den erwarteten Inhalt hat:
 
-<img class='full' src='echo-hello-world.webp'>
+<img class='full' src='echo-hello-world.webp' alt=''>
 
 <div class='hint books'>
 Der Befehl <code>echo</code> gibt den angegebenen Text im Terminal aus. Mit dem Zeichen <code>&gt;</code> leitest du die Ausgabe in eine Datei um. Wenn die Datei noch nicht existiert, wird sie erstellt. Wenn sie bereits existiert, wird ihr Inhalt überschrieben. Der Befehl <code>cat</code> zeigt den Inhalt einer Datei im Terminal an.
@@ -88,7 +88,7 @@ Der Befehl <code>echo</code> gibt den angegebenen Text im Terminal aus. Mit dem 
 
 Verwende nun den Befehl `git status`, um den aktuellen Status des Repositories zu überprüfen:
 
-<img class='full' src='git-status.webp'>
+<img class='full' src='git-status.webp' alt=''>
 
 ## Die Staging Area
 
@@ -104,7 +104,7 @@ Durch <code>git add</code> sagen wir Git explizit, dass wir die Datei <code>hell
 
 Überprüfe den Status erneut mit `git status`:
 
-<img class='full' src='after-git-add.webp'>
+<img class='full' src='after-git-add.webp' alt=''>
 
 Die Ausgabe zeigt jetzt, dass die Datei `hello.txt` in der Staging Area bereitsteht, um committet zu werden.
 
@@ -118,7 +118,7 @@ git commit -m "initial commit"
 
 Die Ausgabe zeigt, dass ein neuer Commit erstellt wurde:
 
-<img class='full' src='first-commit.webp'>
+<img class='full' src='first-commit.webp' alt=''>
 
 Im `.git`-Verzeichnis ist jetzt ein [gerichteter, azyklischer Graph (DAG)](https://en.wikipedia.org/wiki/Directed_acyclic_graph) entstanden, der mehrere Knoten enthält, wobei jeder Knoten durch eine eindeutige SHA-1-Hash-ID identifiziert wird. Diese Knoten repräsentieren die verschiedenen Objekte in Git: Blobs, Trees und Commits.
 
@@ -135,7 +135,7 @@ Zusätzlich gibt es noch zwei Zeiger:
 
 Die Ausgabe von `git status` zeigt außerdem an, dass wir keine lokalen Änderungen haben, die noch nicht committet wurden und unser Arbeitsverzeichnis »sauber« ist:
 
-<img class='full' src='git-status-after-first-commit.webp'>
+<img class='full' src='git-status-after-first-commit.webp' alt=''>
 
 ## Dateien umbenennen
 
@@ -157,7 +157,7 @@ git commit -m "rename hello.txt to README.md"
 
 Die Ausgabe zeigt, dass ein neuer Commit erstellt wurde:
 
-<img class='full' src='git-mv.webp'>
+<img class='full' src='git-mv.webp' alt=''>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
 
@@ -169,23 +169,23 @@ Wie du siehst, sind die alten Objekte (Blob `af5626b` und Tree `ec947e3`) weiter
 
 Öffne jetzt das Verzeichnis `/workspace/git-tutorial/alice` in VS Code, indem du <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>Strg</kbd><kbd>O</kbd> drückst:
 
-<img class='full' src='open-dir.webp'>
+<img class='full' src='open-dir.webp' alt=''>
 
 Wähle das Verzeichnis `/workspace/git-tutorial/alice` aus und klicke auf »OK«:
 
-<img class='full' src='open-dir-2.webp'>
+<img class='full' src='open-dir-2.webp' alt=''>
 
 Öffne die Datei `README.md` und ändere `world` zu `planet` und füge eine neue Zeile hinzu:
 
-<img class='full' src='edit-readme.webp'>
+<img class='full' src='edit-readme.webp' alt=''>
 
 Speichere die Datei mit <kbd>Strg</kbd><kbd>S</kbd> und überprüfe den Status mit `git status` im Terminal:
 
-<img class='full' src='git-status-2.webp'>
+<img class='full' src='git-status-2.webp' alt=''>
 
 Überprüfe vor jedem Commit, welche Änderungen du vorgenommen hast, indem du den Befehl `git diff` ausführst:
 
-<img class='full' src='git-diff-2.webp'>
+<img class='full' src='git-diff-2.webp' alt=''>
 
 Du siehst jetzt die aktuellen Änderungen in deinem Arbeitsverzeichnis. Rote Zeilen (`–`) zeigen entfernte Zeilen an, während grüne Zeilen (`+`) hinzugefügte Zeilen darstellen.
 
@@ -209,7 +209,7 @@ Wie du sehen kannst, zeigen der `main`-Branch und `HEAD` jetzt auf den neuesten 
 
 Lass uns jetzt zu einem früheren Commit zurückkehren. Verwende den Befehl `git log`, um die Commit-Historie anzuzeigen:
 
-<img class='full' src='git-log.webp'>
+<img class='full' src='git-log.webp' alt=''>
 
 Du siehst eine Liste der Commits, beginnend mit dem neuesten Commit. Du siehst außerdem, dass der `main`-Branch auf den neuesten Commit zeigt und gerade ausgecheckt ist, da auch `HEAD` auf diesen Commit zeigt.
 
@@ -223,7 +223,7 @@ Wir checken nun eine frühere Version des Repositories aus, nämlich die Version
 git checkout HEAD~2
 ```
 
-<img class='full' src='detached-head.webp'>
+<img class='full' src='detached-head.webp' alt=''>
 
 <div class='hint danger'>
 Nachdem du einen älteren Commit ausgecheckt hast, befindest du dich in einem sogenannten »detached HEAD«-Zustand. In diesem Zustand zeigt <code>HEAD</code> nicht auf einen Branch, sondern direkt auf einen bestimmten Commit. Das heißt, dass es momentan keinen Branch gibt, der auf diesen Commit zeigt. Änderungen, die du in diesem Zustand vornimmst, werden daher auch nicht automatisch einem Branch zugeordnet. Wenn du später zu einem Branch zurückkehrst, gehen diese Änderungen verloren, sofern du sie nicht vorher in einem neuen Branch speicherst oder du dir die Commit-ID notierst.
@@ -231,7 +231,7 @@ Nachdem du einen älteren Commit ausgecheckt hast, befindest du dich in einem so
 
 Du siehst auch, dass die Datei `README.md` jetzt wieder `hello.txt` heißt und den ursprünglichen Inhalt »Hello, world!« hat:
 
-<img class='full' src='old-hello-world.webp'>
+<img class='full' src='old-hello-world.webp' alt=''>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
 
@@ -241,7 +241,7 @@ Du kannst sehen, dass der `main`-Branch unverändert bleibt und weiterhin auf de
 
 Um wieder zum `main`-Branch zurückzukehren, kannst du den Befehl `git checkout main` verwenden:
 
-<img class='full' src='git-checkout-main.webp'>
+<img class='full' src='git-checkout-main.webp' alt=''>
 
 Damit sind wir wieder im neuesten Zustand des Repositories. Der Git-Objektgraph sieht jetzt wieder folgendermaßen aus:
 
@@ -258,7 +258,7 @@ git branch feature
 git checkout feature
 ```
 
-<img class='full' src='feature-branch.webp'>
+<img class='full' src='feature-branch.webp' alt=''>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
 
@@ -282,11 +282,11 @@ gcc -o hello hello.c
 
 Du solltest die Meldung `Hello, World!` im Terminal sehen:
 
-<img class='full' src='compile-and-run.webp'>
+<img class='full' src='compile-and-run.webp' alt=''>
 
 Überprüfe den Status mit `git status`:
 
-<img class='full' src='git-status-3.webp'>
+<img class='full' src='git-status-3.webp' alt=''>
 
 Es sind zwei neue Dateien vorhanden: `hello.c` und `hello` (die ausführbare Datei). Wir möchten nur die Quellcodedatei `hello.c` zur Versionskontrolle hinzufügen, nicht jedoch die ausführbare Datei `hello`.
 
@@ -306,7 +306,7 @@ Du kannst auch Platzhalter verwenden, um mehrere Dateien oder Verzeichnisse zu i
 
 Speichere die Datei und überprüfe den Status erneut mit `git status`:
 
-<img class='full' src='git-status-4.webp'>
+<img class='full' src='git-status-4.webp' alt=''>
 
 Jetzt wird nur noch die Datei `hello.c` als untracked angezeigt, während die ausführbare Datei `hello` ignoriert wird. Aber auch die Datei `.gitignore` selbst ist noch nicht zur Versionskontrolle hinzugefügt worden, was wir unbedingt nachholen sollten. Füge beide Dateien zur Staging Area hinzu:
 
@@ -320,7 +320,7 @@ Erstelle anschließend einen neuen Commit:
 git commit -m "added hello.c"
 ```
 
-<img class='full' src='git-commit-feature.webp'>
+<img class='full' src='git-commit-feature.webp' alt=''>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
 
@@ -330,7 +330,7 @@ Wie du sehen kannst, zeigt der `feature`-Branch jetzt auf den neuesten Commit, d
 
 Wir können uns anzeigen lassen, welche Branches es gibt und auf welchen Commit sie zeigen, indem wir den Befehl `git branch` ausführen:
 
-<img class='full' src='git-branch.webp'>
+<img class='full' src='git-branch.webp' alt=''>
 
 Wie du siehst, gibt es momentan zwei Branches: `main` und `feature`. Der Stern (*) zeigt an, dass wir uns gerade im `feature`-Branch befinden.
 
@@ -342,7 +342,7 @@ git checkout main
 
 Dort passen wir – unabhängig vom `feature`-Branch – die Datei `README.md` an und fügen einen Smiley hinzu:
 
-<img class='full' src='smilez.webp'>
+<img class='full' src='smilez.webp' alt=''>
 
 <div class='hint info'>
 Wie du in der oberen Leiste sehen kannst, sind die Dateien <code>hello.c</code> und <code>.gitignore</code>, die gerade noch geöffnet waren, jetzt nicht mehr im Arbeitsverzeichnis vorhanden. Das liegt daran, dass wir zu einem anderen Branch gewechselt haben, in dem diese Dateien nicht existieren. Git passt das Arbeitsverzeichnis automatisch an den Zustand des ausgecheckten Branches an.
@@ -350,11 +350,11 @@ Wie du in der oberen Leiste sehen kannst, sind die Dateien <code>hello.c</code> 
 
 Es ist eine gute Angewohnheit, vor dem Committen die Änderungen mit `git diff` zu überprüfen:
 
-<img class='full' src='git-diff-5.webp'>
+<img class='full' src='git-diff-5.webp' alt=''>
 
 Wir erstellen jetzt einen neuen Commit:
 
-<img class='full' src='git-commit-5.webp'>
+<img class='full' src='git-commit-5.webp' alt=''>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
 
@@ -372,7 +372,7 @@ Wir möchten die Änderungen aus dem `feature`-Branch jedoch in den `main`-Branc
 git merge feature
 ```
 
-<img class='full' src='git-merge.webp'>
+<img class='full' src='git-merge.webp' alt=''>
 
 <div class='hint warning'>
 Beim Mergen ist es wichtig, dass du dich im Ziel-Branch befindest, also in dem Branch, in den du die Änderungen übernehmen möchtest. In diesem Fall möchten wir die Änderungen aus dem <code>feature</code>-Branch in den <code>main</code>-Branch übernehmen, also müssen wir uns zuerst im <code>main</code>-Branch befinden, bevor wir den Merge-Befehl ausführen.
@@ -390,7 +390,7 @@ Der `main`-Branch zeigt jetzt auf das aktuelle, vollständige Projekt und wir k�
 git branch -d feature
 ```
 
-<img class='full' src='delete-feature-branch.webp'>
+<img class='full' src='delete-feature-branch.webp' alt=''>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
 
@@ -437,7 +437,7 @@ source ~/.bashrc
 
 Jetzt hast du einen speziellen Git-Prompt, wenn du in einem Git-Repository arbeitest. Dieser Prompt zeigt dir immer den aktuellen Branch und den Status des Repositories an:
 
-<img class='full' src='git-prompt.webp'>
+<img class='full' src='git-prompt.webp' alt=''>
 
 ## Git Remotes
 
@@ -461,7 +461,7 @@ git init --bare
 
 Im Terminal sollte jetzt Folgendes zu sehen sein:
 
-<img class='full' src='git-init-bare.webp'>
+<img class='full' src='git-init-bare.webp' alt=''>
 
 <div class='hint info'>
 Ein »bare«-Repository ist ein spezieller Typ von Git-Repository, das kein Arbeitsverzeichnis enthält. Es wird hauptsächlich als zentrales Repository verwendet, auf das mehrere Entwickler zugreifen können, um ihre Änderungen zu pushen und zu pullen. In einem bare-Repository gibt es keine ausgecheckten Dateien, sondern nur die Git-Objekte und Metadaten.
@@ -469,7 +469,7 @@ Ein »bare«-Repository ist ein spezieller Typ von Git-Repository, das kein Arbe
 
 Mit dem Befehl `ls -l` kannst du sehen, dass in diesem Verzeichnis die üblichen Git-Ordner und -Dateien vorhanden sind, die sonst im <code>.git</code>-Verzeichnis eines normalen Repositories zu finden sind:
 
-<img class='full' src='ls-bare.webp'>
+<img class='full' src='ls-bare.webp' alt=''>
 
 Wir wechseln jetzt zurück in das Verzeichnis von Alice, um unser Remote-Repository zu verknüpfen:
 
@@ -480,7 +480,7 @@ git remote add origin ../remote-repo
 
 Der Befehl bewirkt nur, dass das Remote-Repository verknüpft wird, es gibt keine Ausgabe im Terminal. Ein Blick in die Datei `.git/config` zeigt jedoch, dass das Remote-Repository jetzt konfiguriert ist:
 
-<img class='full' src='remote-config.webp'>
+<img class='full' src='remote-config.webp' alt=''>
 
 
 <div class='hint info'>
@@ -493,7 +493,7 @@ Jetzt können wir unsere Änderungen an das Remote-Repository pushen. Verwende d
 git push -u origin main
 ```
 
-<img class='full' src='git-push-origin-main.webp'>
+<img class='full' src='git-push-origin-main.webp' alt=''>
 
 Die Option `-u` (oder `--set-upstream`) richtet eine Tracking-Verbindung zwischen dem lokalen `main`-Branch und dem Remote-Branch `origin/main` ein. Dadurch kannst du in Zukunft einfach `git push` oder `git pull` ausführen, ohne den Remote-Namen und den Branch-Namen angeben zu müssen (ansonsten müsstest du immer `git push origin main` schreiben).
 
@@ -519,7 +519,7 @@ Das Repository wird in ein neues Verzeichnis namens `remote-repo` geklont. Wechs
 cd remote-repo
 ```
 
-<img class='full' src='git-clone.webp'>
+<img class='full' src='git-clone.webp' alt=''>
 
 Bob hat jetzt eine vollständige Kopie des Repositories, einschließlich der gesamten Versionsgeschichte. Öffne die Datei `README.md` mit dem Editor `nano`, um sie zu bearbeiten:
 
@@ -527,11 +527,11 @@ Bob hat jetzt eine vollständige Kopie des Repositories, einschließlich der ges
 nano README.md
 ```
 
-<img class='full' src='bob-was-here.webp'>
+<img class='full' src='bob-was-here.webp' alt=''>
 
 Speichere die Datei mit <kbd>Strg</kbd><kbd>O</kbd> und <kbd>Enter</kbd> und schließe den Editor mit <kbd>Strg</kbd><kbd>X</kbd>. Mit `git diff` kann Bob seine Änderungen überprüfen:
 
-<img class='full' src='git-diff-bob.webp'>
+<img class='full' src='git-diff-bob.webp' alt=''>
 
 Wir haben nun drei Möglichkeiten, wie Bob seine Änderungen committen kann:
 
@@ -539,7 +539,7 @@ Wir haben nun drei Möglichkeiten, wie Bob seine Änderungen committen kann:
 2. `git commit -a -m "Bob was here"`
 3. `git commit -a` – bei dieser Variante öffnet sich ein Texteditor, in dem Bob seine Commit-Nachricht eingeben kann.
 
-<img class='full' src='bob-commit.webp'>
+<img class='full' src='bob-commit.webp' alt=''>
 
 <div class='hint info'>
 Achtung: Die Änderungen liegen immer noch komplett bei Bob lokal vor. Der Objektgraph in Bobs Repository ist gewachsen, aber das Remote-Repository hat davon noch nichts mitbekommen.
@@ -547,7 +547,7 @@ Achtung: Die Änderungen liegen immer noch komplett bei Bob lokal vor. Der Objek
 
 Um die Änderungen an das Remote-Repository zu senden, verwendet Bob den Befehl `git push`:
 
-<img class='full' src='bob-push.webp'>
+<img class='full' src='bob-push.webp' alt=''>
 
 Wechsle nun wieder in das Verzeichnis von Alice:
 
@@ -557,11 +557,11 @@ cd ~/git-tutorial/alice
 
 Mit dem Befehl `git pull` kann Alice die Änderungen von Bob in ihr lokales Repository holen und mit ihrem aktuellen Stand zusammenführen:
 
-<img class='full' src='alice-pull.webp'>
+<img class='full' src='alice-pull.webp' alt=''>
 
 Alice sieht, dass die Datei `README.md` aktualisiert wurde und jetzt auch Bobs Änderung enthält:
 
-<img class='full' src='alice-cat-readme.webp'>
+<img class='full' src='alice-cat-readme.webp' alt=''>
 
 ## Merge-Konflikte
 
@@ -579,11 +579,11 @@ Vorhin haben wir <code>&gt;</code> verwendet, um eine Ausgabe in eine Datei umzu
 
 Überprüfe die Änderungen mit `cat` und `git diff`:
 
-<img class='full' src='alice-conflict-edit-diff.webp'>
+<img class='full' src='alice-conflict-edit-diff.webp' alt=''>
 
 Alice committet ihre Änderungen und pusht sie zum Remote-Repository:
 
-<img class='full' src='alice-conflict-commit-push.webp'>
+<img class='full' src='alice-conflict-commit-push.webp' alt=''>
 
 Wechsle jetzt in Bobs Verzeichnis:
 
@@ -599,15 +599,15 @@ echo "HOLAAA" >> README.md
 
 Er überprüft seine Änderungen mit `git diff` und committet sie:
 
-<img class='full' src='bob-conflict-edit-diff-commit.webp'>
+<img class='full' src='bob-conflict-edit-diff-commit.webp' alt=''>
 
 Wenn Bob jetzt versucht, seine Änderungen zu pushen, erhält er eine Fehlermeldung, da Alice bereits Änderungen gepusht hat, die Bob noch nicht in seinem lokalen Repository hat:
 
-<img class='full' src='bob-conflict-push-error.webp'>
+<img class='full' src='bob-conflict-push-error.webp' alt=''>
 
 Um die Änderungen von Alice zu holen und mit seinen eigenen zusammenzuführen, führt Bob den Befehl `git pull` aus:
 
-<img class='full' src='bob-conflict-pull-error.webp'>
+<img class='full' src='bob-conflict-pull-error.webp' alt=''>
 
 Auch hier erhält Bob eine Fehlermeldung, die besagt, dass es einen Merge-Konflikt gibt, da divergente Branches existieren, also Alice und Bob gleichzeitig an derselben Datei gearbeitet haben. Für die Konfliktbehebung gibt es verschiedene Möglichkeiten, von denen wir jetzt eine Default-Strategie für unser lokales Repository wählen sollen. Die Möglichkeiten sind:
 
@@ -626,11 +626,11 @@ git config pull.rebase false
 git pull
 ```
 
-<img class='full' src='bob-pull-conflict.webp'>
+<img class='full' src='bob-pull-conflict.webp' alt=''>
 
 Wir sehen, dass Git den Merge-Konflikt in der Datei `README.md` markiert hat. Bob muss die Datei jetzt manuell bearbeiten, um den Konflikt zu lösen. Öffne die Datei `README.md` in einem Texteditor (`nano README.md`):
 
-<img class='full' src='bob-resolve-conflict.webp'>
+<img class='full' src='bob-resolve-conflict.webp' alt=''>
 
 Hier siehst du die Konfliktmarkierungen:
 
@@ -646,15 +646,15 @@ Die Markierungen `<<<<<<<`, `=======` und `>>>>>>>` zeigen die Bereiche an, in d
 
 Bob muss sich jetzt entscheiden, wie er den Konflikt lösen möchte. Er könnte zum Beispiel beide Änderungen manuell zusammenführen:
 
-<img class='full' src='bob-bonjour.webp'>
+<img class='full' src='bob-bonjour.webp' alt=''>
 
 Speichere die Datei und beende den Editor. Bob muss den Konflikt nun als gelöst markieren, indem er die Datei mit `git add` zur Staging Area hinzufügt. Anschließend kann er den Merge-Commit, der durch den Pull-Vorgang erstellt wurde und zunächst aufgrund des Konflikts unvollständig war, abschließen und danach seine Änderungen pushen:
 
-<img class='full' src='bob-complete-merge-push.webp'>
+<img class='full' src='bob-complete-merge-push.webp' alt=''>
 
 Alice hat von dem Merge-Konflikt nichts mitbekommen, da Bob den Konflikt lokal gelöst hat, bevor er seine Änderungen gepusht hat. Wenn Alice jetzt ihre Änderungen mit `git pull` holt, erhält sie die von Bob aktualisierte Datei `README.md`.
 
-<img class='full' src='alice-pull-after-conflict.webp'>
+<img class='full' src='alice-pull-after-conflict.webp' alt=''>
 
 ## Tags
 

@@ -5,7 +5,7 @@ image: pascal-logo.png
 # Pascal <span style='font-size: 80%;'>(1970)</span>
 
 <div class='floatright' style='width: 16em;'>
-    <img src='wirth.webp'>
+    <img src='wirth.webp' alt=''>
     <p>Niklaus Wirth</p>
 </div>
 
@@ -27,13 +27,13 @@ Pascal-Programme werden in Textdateien mit der Endung `.pas` geschrieben. Diese 
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp'>
+<img class='full' src='fresh-start.webp' alt=''>
 
 ### Quelltext schreiben
 
 Klicke auf »New File« und wähle als Dateityp »Text File«.
 
-<img class='full' src='choose-filename.webp'>
+<img class='full' src='choose-filename.webp' alt=''>
 
 Schreibe nun den folgenden Code in die Datei:
 
@@ -41,29 +41,29 @@ _include_file(hello.pas, pascal)
 
 Da Visual Studio Code noch nicht weiß, dass es sich um Pascal-Quelltext handelt, ist dein Programm momentan noch einfarbig, aber das wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
 
-<img class='full' src='no-syntax-highlighting.webp'>
+<img class='full' src='no-syntax-highlighting.webp' alt=''>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.pas` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.pas`.
 
-<img class='full' src='enter-filename.webp'>
+<img class='full' src='enter-filename.webp' alt=''>
 
-Da Pascal standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;'> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »Pascal Magic« und installiere sie.
+Da Pascal standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »Pascal Magic« und installiere sie.
 
-<img class='full' src='pascal-syntax.webp'>
+<img class='full' src='pascal-syntax.webp' alt=''>
 
 Alternativ kannst du auch <kbd>Strg</kbd><kbd>P</kbd> drücken und `ext install theangryepicbanana.language-pascal` eingeben, um die Erweiterung zu installieren.
 
 Anschließend solltest du dein Pascal-Programm farbig sehen:
 
-<img class='full' src='syntax-highlighting.webp'>
+<img class='full' src='syntax-highlighting.webp' alt=''>
 
 ### Kompilieren und ausführen
 
 Bevor wir das Programm ausführen können, müssen wir es kompilieren. Dadurch wird der Quelltext in Maschinencode übersetzt, den dein Computer ausführen kann.
 
-Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='lets-compile.webp'>
+<img class='full' src='lets-compile.webp' alt=''>
 
 Um das Programm zu kompilieren, gib folgenden Befehl ein:
 
@@ -77,7 +77,7 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>fp
 
 Wenn du keinen Fehler gemacht hast, wird das Programm erfolgreich kompiliert und die ausführbare Datei `hello` wird im selben Verzeichnis erstellt. Du kannst dies überprüfen, indem du dir die Dateien im aktuellen Verzeichnis mit `ls` oder `ls -l` anzeigen lässt:
 
-<img class='full' src='ls.webp'>
+<img class='full' src='ls.webp' alt=''>
 
 Die grüne Datei `hello` ist die ausführbare Datei – im Unterschied zu Windows, wo ausführbare Dateien die Endung `.exe` haben, haben ausführbare Dateien unter Linux keine Endung. Um das Programm auszuführen, gib folgenden Befehl ein:
 
@@ -115,7 +115,7 @@ Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugebe
 
 Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
-<img class='full' src='error.webp'>
+<img class='full' src='error.webp' alt=''>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 4) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
@@ -134,7 +134,7 @@ fpc factor.pas
 
 Falls du keine Fehlermeldung erhältst, kannst du das Programm ausführen und testen:
 
-<img class='full' src='try-factor.webp'>
+<img class='full' src='try-factor.webp' alt=''>
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Probiere aus, was passiert, wenn du die Zahl 100000 eingibst. Was könnte der Grund dafür sein?
 
@@ -155,7 +155,7 @@ fpc bubblesort.pas
 ```
 Falls du keine Fehlermeldung erhältst, kannst du das Programm ausführen und testen:
 
-<img class='full' src='bubblesort.webp'>
+<img class='full' src='bubblesort.webp' alt=''>
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
 
@@ -163,7 +163,7 @@ Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quellte
 
 Wenn du möchtest, kannst du eine kleine Zeitreise machen und wie früher in den 90ern programmieren. Vergrößere dein Terminal und gib einfach `fp bubblesort.pas` ein:
 
-<img class='full' src='fp.webp'>
+<img class='full' src='fp.webp' alt=''>
 
 In dieser Entwicklungsumgebung kannst du den Quelltext direkt bearbeiten und du kannst folgende Tasten verwenden:
 
@@ -180,11 +180,11 @@ Auch wenn es nicht so aussieht: in der FreePascal-Entwicklungsumgebung kann man 
 
 Bevor du ein Programm kompilieren kannst, musst du der Entwicklungsumgebung allerdings noch einen Hinweis geben, wo die benötigten Units zu finden sind. Klicke dazu auf »Options« und »Directories…«:
 
-<img class='full' src='options-dir-menu.webp'>
+<img class='full' src='options-dir-menu.webp' alt=''>
 
 …und trage dann den Pfad `/usr/lib/x86_64-linux-gnu/fpc/3.2.2/units/x86_64-linux/*` ein:
 
-<img class='full' src='fp-directory-added.webp'>
+<img class='full' src='fp-directory-added.webp' alt=''>
 
 ## Zusammenfassung
 

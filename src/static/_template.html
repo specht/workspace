@@ -43,6 +43,75 @@ pre table td {
     text-align: right;
 }
 
+.alt-review-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1em;
+    width: 100%;
+}
+
+.alt-review-footer-left {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    min-width: 0;
+}
+
+.alt-review-footer-right {
+    margin-left: auto;
+    text-align: right;
+}
+
+.alt-review-toggle {
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+}
+
+.alt-review-toggle input {
+    margin-right: 0.3em;
+}
+
+.alt-review-counts {
+    display: none;
+    align-items: center;
+    gap: 0.55em;
+    font-family: monospace;
+    font-size: 0.9em;
+    white-space: nowrap;
+}
+
+.alt-review-counts.visible {
+    display: inline-flex;
+}
+
+.alt-review-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+}
+
+.alt-review-count::before {
+    content: '';
+    display: inline-block;
+    width: 0.7em;
+    height: 0.7em;
+    border-radius: 50%;
+}
+
+.alt-review-count-ok::before {
+    background: #198754;
+}
+
+.alt-review-count-empty::before {
+    background: #ffc107;
+}
+
+.alt-review-count-missing::before {
+    background: #dc3545;
+}
+
 </style>
 
 <script>
@@ -436,6 +505,212 @@ window.addEventListener('DOMContentLoaded', function() {
     install_secondary_autotoc();
 });
 
+const ALT_REVIEW_STORAGE_KEY = 'hackschule-alt-review-enabled';
+const ALT_REVIEW_AVAILABLE = #{DEVELOPMENT ? 'true' : 'false'};
+
+function ensure_alt_review_style() {
+    if (document.getElementById('alt-review-style')) return;
+
+    const style = document.createElement('style');
+    style.id = 'alt-review-style';
+    style.textContent = `
+        .alt-review {
+            margin: 0.5rem 0 1.5rem;
+            padding: 0.65rem 0.8rem;
+            border: 3px solid;
+            border-radius: 0.4rem;
+            color: #111;
+            font-family: monospace;
+            font-size: 1rem;
+            line-height: 1.4;
+            text-align: left;
+        }
+
+        .alt-review-missing {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .alt-review-missing strong {
+            color: #b02a37;
+        }
+
+        .alt-review-empty {
+            border-color: #ffc107;
+            background: #fff3cd;
+        }
+
+        .alt-review-empty strong {
+            color: #664d03;
+        }
+
+        .alt-review-ok {
+            border-color: #198754;
+            background: #d1e7dd;
+        }
+
+        .alt-review-ok strong {
+            color: #0f5132;
+        }
+
+        .alt-review-media {
+            outline: 4px solid;
+            outline-offset: 2px;
+        }
+
+        .alt-review-media-missing {
+            outline-color: #dc3545;
+        }
+
+        .alt-review-media-empty {
+            outline-color: #ffc107;
+        }
+
+        .alt-review-media-ok {
+            outline-color: #198754;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+function clear_alt_review() {
+    document.querySelectorAll('.alt-review').forEach(el => el.remove());
+    document.querySelectorAll('.alt-review-media').forEach(el => {
+        el.classList.remove(
+            'alt-review-media',
+            'alt-review-media-missing',
+            'alt-review-media-empty',
+            'alt-review-media-ok'
+        );
+    });
+}
+
+function annotate_alt_review() {
+    clear_alt_review();
+    ensure_alt_review_style();
+
+    const counts = {
+        ok: 0,
+        empty: 0,
+        missing: 0
+    };
+
+    document.querySelectorAll('img, video').forEach(media => {
+        if (
+            media.closest('.header')
+            || media.closest('.menu')
+            || media.closest('footer')
+            || media.closest('.alt-review')
+        ) return;
+        const label = document.createElement('div');
+        label.className = 'alt-review';
+
+        let state = 'missing';
+
+        if (media.tagName === 'VIDEO') {
+            const ariaLabel = media.getAttribute('aria-label');
+
+            if (ariaLabel === null) {
+                state = 'missing';
+                label.innerHTML = '<strong>ARIA-LABEL FEHLT</strong>';
+            } else if (ariaLabel === '') {
+                state = 'empty';
+                label.innerHTML = '<strong>aria-label=""</strong> – bewusst leer';
+            } else {
+                state = 'ok';
+
+                const strong = document.createElement('strong');
+                strong.textContent = 'ARIA: ';
+                label.appendChild(strong);
+                label.append(document.createTextNode(ariaLabel));
+
+                const hasCaptions = media.querySelector('track[kind="captions"]') !== null;
+                if (!hasCaptions && !media.muted) {
+                    label.append(document.createTextNode(' – keine Untertitel vorhanden'));
+                }
+            }
+        } else {
+            const alt = media.getAttribute('alt');
+
+            if (alt === null) {
+                state = 'missing';
+                label.innerHTML = '<strong>ALT FEHLT</strong>';
+            } else if (alt === '') {
+                state = 'empty';
+                label.innerHTML = '<strong>alt=""</strong> – bewusst leer';
+            } else {
+                state = 'ok';
+
+                const strong = document.createElement('strong');
+                strong.textContent = 'ALT: ';
+                label.appendChild(strong);
+                label.append(document.createTextNode(alt));
+            }
+        }
+
+        counts[state]++;
+
+        label.classList.add(`alt-review-${state}`);
+
+        media.classList.add(
+            'alt-review-media',
+            `alt-review-media-${state}`
+        );
+
+        const wrapper = media.closest('.scroll-x');
+        (wrapper || media).insertAdjacentElement('afterend', label);
+    });
+
+    update_alt_review_counts(counts);
+}
+
+function update_alt_review_counts(counts) {
+    const container = document.getElementById('alt-review-counts');
+    if (!container) return;
+
+    document.getElementById('alt-review-count-ok').textContent = counts.ok;
+    document.getElementById('alt-review-count-empty').textContent = counts.empty;
+    document.getElementById('alt-review-count-missing').textContent = counts.missing;
+    container.classList.add('visible');
+}
+
+function hide_alt_review_counts() {
+    const container = document.getElementById('alt-review-counts');
+    if (container) container.classList.remove('visible');
+}
+
+function set_alt_review_enabled(enabled) {
+    if (!ALT_REVIEW_AVAILABLE) return;
+
+    localStorage.setItem(ALT_REVIEW_STORAGE_KEY, enabled ? '1' : '0');
+
+    const toggle = document.getElementById('alt-review-toggle');
+    if (toggle) toggle.checked = enabled;
+
+    if (enabled) {
+        annotate_alt_review();
+    } else {
+        clear_alt_review();
+        hide_alt_review_counts();
+    }
+}
+
+function install_alt_review_toggle() {
+    if (!ALT_REVIEW_AVAILABLE) return;
+
+    const toggle = document.getElementById('alt-review-toggle');
+    if (!toggle) return;
+
+    const enabled = localStorage.getItem(ALT_REVIEW_STORAGE_KEY) === '1';
+    toggle.checked = enabled;
+
+    toggle.addEventListener('change', function() {
+        set_alt_review_enabled(toggle.checked);
+    });
+
+    if (enabled) annotate_alt_review();
+}
+
 window.addEventListener('load', function() {
     install_clipboard_handler('.btn-clipboard');
     // check if the server tag has changed
@@ -560,6 +835,7 @@ window.addEventListener('load', function() {
     }
     initialize_right_scrolled_images();
     install_autotoc();
+    install_alt_review_toggle();
 });
 </script>
 
@@ -608,7 +884,14 @@ window.addEventListener('load', function() {
     </nav>
 
     <footer>
-        <a href='/impressum'>Impressum und Datenschutzerklärung</a>
+        <div class="alt-review-footer">
+            <div class="alt-review-footer-left">
+                #{DEVELOPMENT ? '<label class="alt-review-toggle"><input type="checkbox" id="alt-review-toggle">Alt-Texte prüfen</label><span class="alt-review-counts" id="alt-review-counts"><span class="alt-review-count alt-review-count-ok" title="Alt-/ARIA-Text vorhanden"><span id="alt-review-count-ok">0</span></span><span class="alt-review-count alt-review-count-empty" title="Bewusst leer"><span id="alt-review-count-empty">0</span></span><span class="alt-review-count alt-review-count-missing" title="Alt-/ARIA-Text fehlt"><span id="alt-review-count-missing">0</span></span></span>' : ''}
+            </div>
+            <div class="alt-review-footer-right">
+                <a href='/impressum'>Impressum und Datenschutzerklärung</a>
+            </div>
+        </div>
     </footer>
     <div class='please-reload' style='display: none;'>
         Die Verbindung zum Server wurde unterbrochen. Bitte lade die Seite neu.

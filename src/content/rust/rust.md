@@ -5,7 +5,7 @@ image: rust-logo.png
 # Rust <span style='font-size: 80%;'>(2012)</span>
 
 <div class='floatright' style='width: 16em;'>
-    <img src='hoare.webp'>
+    <img src='hoare.webp' alt=''>
     <p>
         Graydon Hoare
     </p>
@@ -23,13 +23,13 @@ Rust-Programme werden in Textdateien mit der Endung `.rs` geschrieben. Diese Dat
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp'>
+<img class='full' src='fresh-start.webp' alt=''>
 
 ### Quelltext schreiben
 
 Klicke auf »New File« und wähle als Dateityp »Text File«.
 
-<img class='full' src='choose-filename.webp'>
+<img class='full' src='choose-filename.webp' alt=''>
 
 Schreibe nun den folgenden Code in die Datei:
 
@@ -37,23 +37,23 @@ _include_file(hello.rs, rust)
 
 Da Visual Studio Code noch nicht weiß, dass es sich um Rust-Quelltext handelt, ist dein Programm momentan noch einfarbig, aber das wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
 
-<img class='full' src='no-syntax-highlighting.webp'>
+<img class='full' src='no-syntax-highlighting.webp' alt=''>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.rs` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.rs`.
 
-<img class='full' src='enter-filename.webp'>
+<img class='full' src='enter-filename.webp' alt=''>
 
 Sobald du die Datei gespeichert hast, wird sie automatisch als Rust-Datei erkannt und die Syntax wird hervorgehoben.
 
-<img class='full' src='syntax-highlighting.webp'>
+<img class='full' src='syntax-highlighting.webp' alt=''>
 
 ### Kompilieren und ausführen
 
 Bevor wir das Programm ausführen können, müssen wir es kompilieren. Dadurch wird der Quelltext in Maschinencode übersetzt, den dein Computer ausführen kann.
 
-Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='lets-compile.webp'>
+<img class='full' src='lets-compile.webp' alt=''>
 
 Vorher müssen wir noch Rust installieren. Gib folgenden Befehl im Terminal ein:
 
@@ -75,7 +75,7 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>ru
 
 Wenn du keinen Fehler gemacht hast, wird das Programm erfolgreich kompiliert und die ausführbare Datei `hello` wird im selben Verzeichnis erstellt. Du kannst dies überprüfen, indem du dir die Dateien im aktuellen Verzeichnis mit `ls` oder `ls -l` anzeigen lässt:
 
-<img class='full' src='ls.webp'>
+<img class='full' src='ls.webp' alt=''>
 
 Die grüne Datei `hello` ist die ausführbare Datei – im Unterschied zu Windows, wo ausführbare Dateien die Endung `.exe` haben, haben ausführbare Dateien unter Linux keine Endung. Um das Programm auszuführen, gib folgenden Befehl ein:
 
@@ -113,7 +113,7 @@ Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugebe
 
 Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
-<img class='full' src='hello-error.webp'>
+<img class='full' src='hello-error.webp' alt=''>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 2) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
@@ -132,7 +132,7 @@ rustc factor.rs
 
 Falls du keine Fehlermeldung erhältst, kannst du das Programm ausführen und testen:
 
-<img class='full' src='try-factor.webp'>
+<img class='full' src='try-factor.webp' alt=''>
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Rust auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Auch mit einer sehr großen Zahl wie 123456789123456789 kommt das Programm problemlos zurecht. Falls du auf eine Zahl stoßen solltest, die so groß ist, dass das Programm sehr lange braucht, kannst du das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen.
 
@@ -153,7 +153,7 @@ rustc bubblesort.rs
 ```
 Falls du keine Fehlermeldung erhältst, kannst du das Programm ausführen und testen:
 
-<img class='full' src='bubblesort.webp'>
+<img class='full' src='bubblesort.webp' alt=''>
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
 

@@ -16,7 +16,7 @@ Anaglyphen sind Bilder, bei denen zwei Bilder in verschiedenen Farben übereinan
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp'>
+<img class='full' src='fresh-start.webp' alt=''>
 
 ## Repository klonen
 
@@ -26,23 +26,23 @@ Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du 
 https://github.com/specht/anaglyph.git
 ```
 
-<img class='full' src='git-clone.webp'>
+<img class='full' src='git-clone.webp' alt=''>
 
 Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <kbd>Enter</kbd>.
 
-<img class='full' src='confirm-clone-path.webp'>
+<img class='full' src='confirm-clone-path.webp' alt=''>
 
 Beantworte die Frage »Would you like to open the cloned repository?« mit »Open«.
 
-<img class='full' src='open-yes-no.webp'>
+<img class='full' src='open-yes-no.webp' alt=''>
 
 Wenn du auf der linken Seite im Explorer nun die Datei `scene.ini` siehst, hast du alles richtig gemacht. Diese Datei enthält die Anweisungen für die 3D-Szene, die du erstellen wirst.
 
-<img class='full' src='lets-start.webp'>
+<img class='full' src='lets-start.webp' alt=''>
 
 ## Vorschau starten
 
-<img src='go-live.webp' class='r' style='width: 21em;'>
+<img src='go-live.webp' class='r' style='width: 21em;' alt=''>
 
 Im Workspace ist bereits die Erweiterung »Live Server« installiert. Unten rechts findest du den Eintrag »Go Live«. Klicke darauf, um die Vorschau zu starten. Es öffnet sich ein neuer Tab in deinem Browser mit deiner 3D-Szene, die anfangs nur aus einem einzigen Würfel besteht.
 
@@ -57,7 +57,7 @@ Tipp: Ziehe deinen Workspace und die Vorschau nebeneinander, damit du deine Änd
 Du solltest einen Würfel sehen, der in der Mitte des Bildschirms schwebt. Benutze die Maus, um die Szene zu drehen und zu zoomen.
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='box.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
+<img src='box.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein weißer Würfel schwebt im Raum.'>
 </div>
 
 
@@ -76,7 +76,7 @@ shape = sphere
 Speichere die Datei mit <kbd>Strg</kbd><kbd>S</kbd> und schaue dir die Vorschau an. Du solltest nun eine Kugel sehen:
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='sphere.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
+<img src='sphere.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Eine weiße Kugel schwebt im Raum.'>
 </div>
 
 <div class='hint'>
@@ -101,7 +101,7 @@ shape = sphere
 ```
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='sphere-with-grid.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
+<img src='sphere-with-grid.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Eine Kugel aus Gitternetzlinien schwebt über einem quadratischen Gitter.'>
 </div>
 
 
@@ -113,7 +113,7 @@ shape = sphere
 ```
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='sphere-with-torus.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
+<img src='sphere-with-torus.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein Ring umschließt eine Kugel.'>
 </div>
 
 ## Objekte verschieben
@@ -128,7 +128,7 @@ move = 100, 0, 0
 ```
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='box-move-right.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
+<img src='box-move-right.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein Würfel steht rechts vom Ursprung des Gitters.'>
 </div>
 
 Dabei gibt `move = 100, 0, 0` an, dass das Objekt um 100 Einheiten nach rechts verschoben wird. Die drei Werte stehen für die Verschiebung in den X-, Y- und Z-Richtungen.
@@ -153,7 +153,7 @@ Tipp: Du musst die Szene mit der Maus ein bisschen drehen, um alle Würfel gut z
 </div>
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='three-cubes.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
+<img src='three-cubes.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Vier Würfel spannen ein Koordinatensystem auf.'>
 </div>
 
 <div style='display: none;'>
@@ -194,7 +194,7 @@ move = 100, 0, 0
 ```
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='rotate-boxes.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
+<img src='rotate-boxes.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Drei Würfel stehen verdreht nebeneinander auf einem Gitter.'>
 </div>
 
 Du siehst hier ein Gitter und drei Würfel:
@@ -206,7 +206,7 @@ Du siehst hier ein Gitter und drei Würfel:
 **Aufgabe:** Versuche, die folgende Szene zu erstellen, indem du drei Würfel erstellst und rotierst:
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='cube-star.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
+<img src='cube-star.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Viele gedrehte Würfel bilden einen sternförmigen Ring.'>
 </div>
 
 <div style='display: none;'>
@@ -253,7 +253,7 @@ Achtung: Beim Programmieren musst du meistens Kommazahlen mit einem Punkt schrei
 </div>
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='scaled-spheres.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
+<img src='scaled-spheres.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Mehrere Kugeln werden entlang einer Reihe zunehmend größer.'>
 </div>
 
 Du kannst ein Objekt auch in alle drei Richtungen unterschiedlich skalieren, indem du drei Werte angibst:
@@ -268,13 +268,13 @@ scale = 1, 0.2, 1
 Hier wurde eine Kugel nur in der Y-Richtung verkleinert (auf 20%), sodass sie wie eine Scheibe aussieht:
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='pancake.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
+<img src='pancake.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Eine stark abgeflachte Kugel liegt wie ein Pfannkuchen auf dem Gitter.'>
 </div>
 
 **Aufgabe:** Versuche, die folgende Szene zu erstellen, indem du eine Box erstellst und sie auf die zehnfache Breite skalierst. Verschiebe die Box anschließend um 25 Einheiten nach oben, so dass sie auf dem Gitter aufliegt:
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='slab.webp' style='max-width: 100%;'>
+<img src='slab.webp' style='max-width: 100%;' alt='Eine rechteckiger Stab liegt auf dem Gitter.'>
 </div>
 
 ## Transformationen kombinieren
@@ -292,7 +292,7 @@ move = 100, 0, 0
 Hier wurde ein Würfel zuerst um 45 Grad um die Z-Achse gedreht und dann um 100 Einheiten nach rechts verschoben. Das Ergebnis sieht so aus:
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='rotate-then-move.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
+<img src='rotate-then-move.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein gedrehter Würfel bleibt seitlich auf dem Gitter stehen.'>
 </div>
 
 Dabei ist es wichtig, in welcher Reihenfolge du die Transformationen angibst. Wenn du zuerst verschiebst und dann drehst, sieht das Ergebnis anders aus:
@@ -305,7 +305,7 @@ move = 100, 0, 0
 rotate = 0, 0, 45
 ```
 <div style='text-align: center; margin: 1em 0;'>
-<img src='move-then-rotate.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
+<img src='move-then-rotate.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein verschobener Würfel schwebt nach der Drehung über dem Gitter.'>
 </div>
 
 Dieser Würfel schwebt jetzt über dem Gitter, weil er zuerst nach rechts verschoben wurde und danach erst um 45 Grad um die Z-Achse gedreht wurde, denn: jede Drehung findet immer um den Ursprung statt (und jede Skalierung auch).
@@ -315,16 +315,16 @@ Dieser Würfel schwebt jetzt über dem Gitter, weil er zuerst nach rechts versch
 Du kannst die Farben der Objekte kontrollieren, um verschiedene Effekte zu erzielen:
 
 <div style='text-align: center; margin: 1em 0; width: 100%;'>
-<img src='cone-white-black-white.webp' style='max-width: 23%;'>
-<img src='cone-white-black-off.webp' style='max-width: 23%;'>
-<img src='cone-white-black-shade.webp' style='max-width: 23%;'>
-<img src='cone-white-off-shade.webp' style='max-width: 23%;'>
+<img src='cone-white-black-white.webp' style='max-width: 23%;' alt='Weiß gefüllter Kegel mit schwarzen Konturen auf weißem Grund.'>
+<img src='cone-white-black-off.webp' style='max-width: 23%;' alt='Ungefüllter Kegel mit schwarzen Konturen auf weißem Grund.'>
+<img src='cone-white-black-shade.webp' style='max-width: 23%;' alt='Grau schattierter Kegel mit schwarzen Konturen auf weißem Grund.'>
+<img src='cone-white-off-shade.webp' style='max-width: 23%;' alt='Grau schattierter Kegel ohne Konturen auf weißem Grund.'>
 </div>
 <div style='text-align: center; margin: 1em 0; width: 100%; background-color: #000;'>
-<img src='cone-black-white-black.webp' style='max-width: 23%;'>
-<img src='cone-black-white-off.webp' style='max-width: 23%;'>
-<img src='cone-black-black-shade.webp' style='max-width: 23%;'>
-<img src='cone-black-off-shade.webp' style='max-width: 23%;'>
+<img src='cone-black-white-black.webp' style='max-width: 23%;' alt='Schwarz gefüllter Kegel mit weißen Konturen auf schwarzem Grund.'>
+<img src='cone-black-white-off.webp' style='max-width: 23%;' alt='Ungefüllter Kegel mit weißen Konturen auf schwarzem Grund.'>
+<img src='cone-black-black-shade.webp' style='max-width: 23%;' alt='Grau schattierter Kegel mit schwarzen Konturen auf schwarzem Grund.'>
+<img src='cone-black-off-shade.webp' style='max-width: 23%;' alt='Grau schattierter Kegel ohne Konturen auf schwarzem Grund.'>
 </div>
 
 Dafür stehen dir vier Befehle zur Verfügung:
@@ -345,7 +345,7 @@ stroke = off
 ```
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='3d-torus.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
+<img src='3d-torus.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein grau schattierter Ring schwebt über einem Gitter.'>
 </div>
 
 <div class='hint'>
@@ -357,9 +357,9 @@ Wenn du möchtest, kannst du auch bunte Farben verwenden. Gib dafür statt einer
 Versuche, eine oder mehrere der folgenden Szenen zu erstellen:
 
 <div style='text-align: center;'>
-<img src='ampel.png' style='width: 33%;'>
-<img src='eis.png' style='width: 33%;'>
-<img src='schneemann.png' style='width: 33%;'>
+<img src='ampel.png' style='width: 33%;' alt='Eine dreidimensionale Ampel mit rotem, gelbem und grünem Licht.'>
+<img src='eis.png' style='width: 33%;' alt='Eine Eistüte aus Kegel und drei farbigen Kugeln.'>
+<img src='schneemann.png' style='width: 33%;' alt='Ein Schneemann aus weißen Kugeln mit schwarzem Hut und orangefarbener Nase.'>
 </div>
 
 Erstelle dafür jeweils eine neue Datei (mit »File« / »New Text File«) und speichere sie unter einem passenden Namen, z. B. `ampel.ini`, `eis.ini` oder `schneemann.ini`. Du musst dann auf der Vorschauseite nur noch den passenden Dateinamen im Textfeld unten ändern, um die Szene zu sehen.
@@ -392,8 +392,8 @@ rotate = 0, t * 30, 0
 In diesem Beispiel wird der Torus um 30 Grad pro Sekunde um die Y-Achse gedreht. Das bedeutet, dass er nach 3 Sekunden 90 Grad geschafft hat und nach 12 Sekunden eine volle Umdrehung gemacht hat.
 
 <div style='text-align: center; margin: 1em 0;'>
-<video src='animation1.mp4' autoplay loop muted></video>
-</div>
+<video src='animation1.mp4' autoplay loop muted aria-label='Der Torus dreht sich gleichmäßig um die Y-Achse.'></video>
+</div>  
 
 **Profitipp:** Mit Hilfe der Sinus- und Cosinusfunktionen kannst du auch sanfte Bewegungen erzeugen:
 
@@ -404,13 +404,13 @@ rotate = cos(t * 2) * 10, 0, sin(t * 3) * 10
 ```
 
 <div style='text-align: center; margin: 1em 0;'>
-<video src='animation2.mp4' autoplay loop muted></video>
+<video src='animation2.mp4' autoplay loop muted aria-label='Ein Würfel wackelt im Raum hin und her.'></video>
 </div>
 
 **Aufgabe:** Erstelle eine Animation, bei der die Sonne in der Mitte steht und die Erde um die Sonne kreist. Der Mond soll dabei um die Erde kreisen:
 
 <div style='text-align: center; margin: 1em 0;'>
-<video src='animation3.mp4' autoplay loop muted style='max-width: 100%;'></video>
+<video src='animation3.mp4' autoplay loop muted style='max-width: 100%;' aria-label='Drei Kugeln bewegen sich wie Sonne, Erde und Mond umeinander.'></video>
 </div>
 
 ## Text
@@ -422,7 +422,7 @@ text = Hello!
 ```
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='hello.webp' style='max-width: 100%; min-height: 15em; object-fit: cover; object-position: center;'>
+<img src='hello.webp' style='max-width: 100%; min-height: 15em; object-fit: cover; object-position: center;' alt='Der weiße Schriftzug „Hello!“ schwebt im Raum.'>
 </div>
 
 Richtig gut sieht er aber erst mit einer 3D-Schattierung aus:
@@ -435,7 +435,7 @@ fill = #f9b935
 ```
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='hello-shade.webp' style='max-width: 100%; min-height: 15em; object-fit: cover; object-position: center;'>
+<img src='hello-shade.webp' style='max-width: 100%; min-height: 15em; object-fit: cover; object-position: center;' alt='Der gelb schattierte Schriftzug „Hello!“ schwebt im Raum.'>
 </div>
 
 ## 3D-Modelle
@@ -444,91 +444,91 @@ Du kannst auch 3D-Modelle in deine Szene einfügen. Auf der Website [kenney.nl](
 
 <div class='kenney-overview row'>
     <div class='col-sm-6'>
-        <a href='/blaster-kit'><img src='kenney/blaster-kit.png'></a>
+        <a href='/blaster-kit'><img src='kenney/blaster-kit.png' alt='Auswahl futuristischer Waffenmodelle aus dem Blaster Kit.'></a>
         <div>Blaster Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/car-kit'><img src='kenney/car-kit.png'></a>
+        <a href='/car-kit'><img src='kenney/car-kit.png' alt='Auswahl farbiger Auto- und Lastwagenmodelle aus dem Car Kit.'></a>
         <div>Car Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/castle-kit'><img src='kenney/castle-kit-sample.png'></a>
+        <a href='/castle-kit'><img src='kenney/castle-kit-sample.png' alt='Burganlage aus Türmen, Mauern und Toren des Castle Kits.'></a>
         <div>Castle Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/city-kit-commercial'><img src='kenney/city-kit-commercial-sample.png'></a>
+        <a href='/city-kit-commercial'><img src='kenney/city-kit-commercial-sample.png' alt='Geschäftsgebäude und Stadtmöbel des kommerziellen City Kits.'></a>
         <div>City Kit (Commercial)</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/city-kit-industrial'><img src='kenney/city-kit-industrial-sample.png'></a>
+        <a href='/city-kit-industrial'><img src='kenney/city-kit-industrial-sample.png' alt='Industriegebäude, Tanks und Rohre des industriellen City Kits.'></a>
         <div>City Kit (Industrial)</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/city-kit-roads'><img src='kenney/city-kit-roads-sample.png'></a>
+        <a href='/city-kit-roads'><img src='kenney/city-kit-roads-sample.png' alt='Straßenstücke, Kreuzungen und Verkehrsschilder des City Kits.'></a>
         <div>City Kit (Roads)</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/city-kit-suburban'><img src='kenney/city-kit-suburban-sample.png'></a>
+        <a href='/city-kit-suburban'><img src='kenney/city-kit-suburban-sample.png' alt='Wohnhäuser und Vorstadtobjekte des suburbanen City Kits.'></a>
         <div>City Kit (Suburban)</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/cube-pets'><img src='kenney/cube-pets.png'></a>
+        <a href='/cube-pets'><img src='kenney/cube-pets.png' alt='Mehrere würfelförmige Tierfiguren des Cube Pets Kits.'></a>
         <div>Cube Pets</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/factory-kit'><img src='kenney/factory-kit.png'></a>
+        <a href='/factory-kit'><img src='kenney/factory-kit.png' alt='Fabrikgebäude, Förderbänder und Maschinen des Factory Kits.'></a>
         <div>Factory Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/fantasy-town-kit'><img src='kenney/fantasy-town-kit.png'></a>
+        <a href='/fantasy-town-kit'><img src='kenney/fantasy-town-kit.png' alt='Fantasiehäuser, Türme und Marktstände des Fantasy Town Kits.'></a>
         <div>Fantasy Town Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/food-kit'><img src='kenney/food-kit.png'></a>
+        <a href='/food-kit'><img src='kenney/food-kit.png' alt='Auswahl dreidimensionaler Lebensmittel und Gerichte des Food Kits.'></a>
         <div>Food Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/graveyard-kit'><img src='kenney/graveyard-kit-sample.png'></a>
+        <a href='/graveyard-kit'><img src='kenney/graveyard-kit-sample.png' alt='Grabsteine, Gruften und kahle Bäume des Graveyard Kits.'></a>
         <div>Graveyard Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/holiday-kit'><img src='kenney/holiday-kit-sample.png'></a>
+        <a href='/holiday-kit'><img src='kenney/holiday-kit-sample.png' alt='Winterliche Figuren, Geschenke und Dekorationen des Holiday Kits.'></a>
         <div>Holiday Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/mini-arcade'><img src='kenney/mini-arcade-sample.png'></a>
+        <a href='/mini-arcade'><img src='kenney/mini-arcade-sample.png' alt='Bunte Spielautomaten und Zubehör des Mini Arcade Kits.'></a>
         <div>Mini Arcade</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/mini-characters'><img src='kenney/mini-characters.png'></a>
+        <a href='/mini-characters'><img src='kenney/mini-characters.png' alt='Auswahl kleiner menschlicher Figuren des Mini Characters Kits.'></a>
         <div>Mini Characters</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/mini-dungeon'><img src='kenney/mini-dungeon-sample.png'></a>
+        <a href='/mini-dungeon'><img src='kenney/mini-dungeon-sample.png' alt='Dungeonräume, Mauern und Requisiten des Mini Dungeon Kits.'></a>
         <div>Mini Dungeon</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/mini-market'><img src='kenney/mini-market-sample.png'></a>
+        <a href='/mini-market'><img src='kenney/mini-market-sample.png' alt='Marktstände, Regale und Waren des Mini Market Kits.'></a>
         <div>Mini Market</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/pirate-kit'><img src='kenney/pirate-kit-sample.png'></a>
+        <a href='/pirate-kit'><img src='kenney/pirate-kit-sample.png' alt='Piratenfiguren, Schiffe und Inselobjekte des Pirate Kits.'></a>
         <div>Pirate Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/platformer-kit'><img src='kenney/platformer-kit.png'></a>
+        <a href='/platformer-kit'><img src='kenney/platformer-kit.png' alt='Plattformen, Hindernisse und Figuren des Platformer Kits.'></a>
         <div>Platformer Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/survival-kit'><img src='kenney/survival-kit-sample.png'></a>
+        <a href='/survival-kit'><img src='kenney/survival-kit-sample.png' alt='Werkzeuge, Vorräte und Hütten des Survival Kits.'></a>
         <div>Survival Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/train-kit'><img src='kenney/train-kit.png'></a>
+        <a href='/train-kit'><img src='kenney/train-kit.png' alt='Lokomotiven, Waggons und Schienenstücke des Train Kits.'></a>
         <div>Train Kit</div>
     </div>
     <div class='col-sm-6'>
-        <a href='/watercraft-kit'><img src='kenney/watercraft-kit.png'></a>
+        <a href='/watercraft-kit'><img src='kenney/watercraft-kit.png' alt='Boote, Schiffe und Hafenobjekte des Watercraft Kits.'></a>
         <div>Watercraft Kit</div>
     </div>
 </div>
@@ -538,7 +538,7 @@ Du kannst auch 3D-Modelle in deine Szene einfügen. Auf der Website [kenney.nl](
 Wenn du viele Objekte platzieren möchtest, wirst du merken, dass du dafür viele Zeilen schreiben musst. Hier werden z. B. drei Würfel nebeneinander platziert:
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='3-cubes-row.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
+<img src='3-cubes-row.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Drei Würfel stehen in einer Reihe auf dem Gitter.'>
 </div>
 
 Für jeden Würfel werden zwei Zeilen geschrieben:
@@ -611,7 +611,7 @@ end
 In der äußeren Schleife nimmt `z` drei verschiedene Werte an und für jeden Durchlauf der äußeren Schleife nimmt `x` unabhängig von `z` ebenso drei Werte an. Diese beiden Werte können wir jetzt verwenden, um den Würfel in x- und z-Richtung zu verschieben. Das Ergebnis sieht dann so aus:
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='9-cubes-loop.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;'>
+<img src='9-cubes-loop.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;' alt='Neun Würfel sind in drei Reihen mit jeweils drei Würfeln angeordnet.'>
 </div>
 
 <div class='hint'>
@@ -621,5 +621,5 @@ Achtung: Achte darauf, bei verschachtelten Schleifen verschiedene Variablen für
 **Aufgabe:** Versuche, mit Hilfe von verschachtelten Schleifen ein Gitter aus 3x3x3 Würfeln zu bauen:
 
 <div style='text-align: center; margin: 1em 0;'>
-<img src='27-cubes-loop.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;'>
+<img src='27-cubes-loop.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;' alt='27 Würfel bilden ein räumliches Gitter aus drei mal drei mal drei Würfeln.'>
 </div>

@@ -343,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
 Erstelle eine Präsentation mit shower.js in HTML und CSS. Mach dich unabhängig von PowerPoint und Keynote und erstelle eine Präsentation, die in jedem modernen Browser vom Stick oder von der Cloud aus funktioniert.
 </p>
 
-<img class='full fit-width' src='showerjs.webp'>
+<img class='full fit-width' src='showerjs.webp' alt=''>
 
 In diesem Tutorial erstellen wir eine Präsentation mit Hilfe von [shower.js](https://github.com/shower/shower) auf der Grundlage von HTML und CSS. Das heißt, dass jeder Webbrowser deine Präsentation abspielen kann und du keine besondere Software brauchst. Du kannst shower.js hier [in Aktion sehen](https://shwr.me/).
 
@@ -351,7 +351,7 @@ In diesem Tutorial erstellen wir eine Präsentation mit Hilfe von [shower.js](ht
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp'>
+<img class='full' src='fresh-start.webp' alt=''>
 
 Wir holen uns eine Vorlage mit Hilfe von Git, damit du gleich loslegen kannst. Klicke dazu auf »Clone Repository« und füge die folgende URL ein:
 
@@ -359,25 +359,25 @@ Wir holen uns eine Vorlage mit Hilfe von Git, damit du gleich loslegen kannst. K
 https://git.nhcham.org/specht/shower.js.git
 ```
 
-<img class='full' src='git-clone.webp'>
+<img class='full' src='git-clone.webp' alt=''>
 
 Bestätige anschließend mit <kbd>Enter</kbd>. Danach musst du ein Verzeichnis wählen, in dem das Repository gespeichert werden soll. Wähle dafür den Ordner `/workspace`.
 
-<img class='full' src='choose-folder.webp'>
+<img class='full' src='choose-folder.webp' alt=''>
 
 Das Repository wird jetzt ins Verzeichnis `/workspace/shower.js` geklont. Öffne anschließend das Verzeichnis, indem du die Frage, ob das Repository jetzt geöffnet werden soll, mit »Open« beantwortest:
 
-<img class='full' src='open-yes-or-no.webp'>
+<img class='full' src='open-yes-or-no.webp' alt=''>
 
 Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='freshly-cloned.webp'>
+<img class='full' src='freshly-cloned.webp' alt=''>
 
 Links siehst du die Verzeichnisse und Dateien, die gerade heruntergeladen wurden. Öffne die Datei `index.html`, indem du darauf klickst.
 
 ## Vorschau starten
 
-<img src='go-live.webp' class='r' style='width: 21em;'>
+<img src='go-live.webp' class='r' style='width: 21em;' alt=''>
 
 Im Workspace ist bereits die Erweiterung »Live Server« installiert. Unten rechts findest du den Eintrag »Go Live«. Klicke darauf, um die Vorschau zu starten. Nun sollte sich die Vorschau deiner Präsentation in einem neuen Browsertab öffnen.
 
@@ -385,11 +385,11 @@ Wenn du alles richtig gemacht hast, sollte dein Fenster so aussehen:
 
 <div style='clear: both;'></div>
 
-<img class='full' src='live-preview.webp'>
+<img class='full' src='live-preview.webp' alt=''>
 
 Zieh das Tab aus dem Browser und ordne beide Fenster nebeneinander an, um deine Änderungen live in der Vorschau zu sehen:
 
-<img class='full' src='side-by-side.webp'>
+<img class='full' src='side-by-side.webp' alt=''>
 
 ## Präsentation schreiben
 
@@ -463,7 +463,7 @@ Dieser Abschnitt beginnt mit `<section class="slide">` und endet mit `</section>
 Alles, was zwischen diesen beiden Zeilen steht, gehört zu dieser einen Folie.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/meine-lieblingstiere.webp'>
+    <img src='screenshots/meine-lieblingstiere.webp' alt='Folie „Meine Lieblingstiere“ mit einer nummerierten Liste aus Pinguinen, Füchsen und Delfinen.'>
 </button>
 
 ```html
@@ -525,7 +525,7 @@ Längere Texte schreibst du nicht direkt lose in die Folie, sondern in Absätze.
 Ein Absatz beginnt mit `<p>` und endet mit `</p>`.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/warum-html.webp'>
+    <img src='screenshots/warum-html.webp' alt='Folie „Warum HTML?“ mit drei kurzen Absätzen zu Inhalt, Aussehen und Browserdarstellung.'>
 </button>
 
 
@@ -584,7 +584,7 @@ Die zweite Überschrift hilft dem Publikum mehr, weil sie schon eine kleine Auss
 Wenn du mehrere Gedanken auf einer Folie hast, kannst du mehrere Absätze verwenden:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/erste-webseite.webp'>
+    <img src='screenshots/erste-webseite.webp' alt='Folie „Meine erste Webseite“ mit einer Überschrift und drei Stichpunkten.'>
 </button>
 
 
@@ -615,7 +615,7 @@ Manchmal möchtest du innerhalb eines Absatzes eine neue Zeile beginnen, ohne ei
 Dafür gibt es `<br>`.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/ueber-mich.webp'>
+    <img src='screenshots/ueber-mich.webp' alt='Folie „Über mich“ mit einer kurzen persönlichen Vorstellung.'>
 </button>
 
 ```html
@@ -644,7 +644,7 @@ Wie du siehst, erhältst du durch <code>&lt;br&gt;</code> nur einen Zeilenumbruc
 Diese Folie ist technisch korrekt, aber als Präsentationsfolie wahrscheinlich zu voll:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/geschichte-des-internets.webp'>
+    <img src='screenshots/geschichte-des-internets.webp' alt='Folie „Kurze Geschichte des Internets“ mit einer nummerierten Zeitleiste.'>
 </button>
 
 ```html
@@ -663,7 +663,7 @@ Diese Folie ist technisch korrekt, aber als Präsentationsfolie wahrscheinlich z
 Oft ist es besser, den Text zu kürzen oder auf mehrere Folien zu verteilen:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/internet-verbindet-computer.webp'>
+    <img src='screenshots/internet-verbindet-computer.webp' alt='Folie „Das Internet verbindet Computer“ mit drei Punkten zu Geräten, Datenaustausch und weltweiter Verbindung.'>
 </button>
 
 ```html
@@ -705,7 +705,7 @@ In HTML gibt es zwei wichtige Arten von Listen:
 `li` steht für »list item«, also »Listenpunkt«.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/meine-projektidee.webp'>
+    <img src='screenshots/meine-projektidee.webp' alt='Folie „Meine Projektidee“ mit einer kurzen Beschreibung und drei Zielen.'>
 </button>
 
 ```html
@@ -738,7 +738,7 @@ Schreibe also nicht alle Punkte in ein einziges <code>&lt;li&gt;</code>, sondern
 Eine nummerierte Liste verwendest du, wenn die Reihenfolge wichtig ist:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/so-startest-du.webp'>
+    <img src='screenshots/so-startest-du.webp' alt='Folie „So startest du“ mit drei nummerierten Arbeitsschritten.'>
 </button>
 
 ```html
@@ -791,7 +791,7 @@ Eine Liste auf einer Folie sollte nicht zu lang sein.
 Diese Folie ist zu voll und stößt an den unteren Rand der Folie:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/vorteile-html-praesentationen-uebersicht.webp'>
+    <img src='screenshots/vorteile-html-praesentationen-uebersicht.webp' alt='Folie mit einer langen Liste von Vorteilen einer HTML-Präsentation.'>
 </button>
 
 ```html
@@ -814,7 +814,7 @@ Diese Folie ist zu voll und stößt an den unteren Rand der Folie:
 Oft ist es besser, nur die wichtigsten Punkte auf die Folie zu schreiben:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/vorteile-html-praesentationen-kurz.webp'>
+    <img src='screenshots/vorteile-html-praesentationen-kurz.webp' alt='Folie mit vier hervorgehobenen Vorteilen einer HTML-Präsentation.'>
 </button>
 
 ```html
@@ -879,7 +879,7 @@ Dafür gibt es in HTML kleine Tags, die mitten im Text stehen können.
 Solche Tags nennt man **Inline-Tags**, weil sie in einer Zeile im Text mitlaufen.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/wichtig-html-css.webp'>
+    <img src='screenshots/wichtig-html-css.webp' alt='Folie mit zwei hervorgehobenen Aussagen zu HTML und CSS.'>
 </button>
 
 ```html
@@ -905,7 +905,7 @@ Die wichtigsten Inline-Tags sind:
 Mit `<strong>` markierst du Wörter, die besonders wichtig sind:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/speichern-und-einblendungen.webp'>
+    <img src='screenshots/speichern-und-einblendungen.webp' alt='Folie mit einem fett hervorgehobenen Speicherhinweis und einem schrittweise eingeblendeten Tipp.'>
 </button>
 
 ```html
@@ -972,7 +972,7 @@ Für manche Themen brauchst du hochgestellte oder tiefgestellte Zeichen.
 Dafür gibt es `<sup>` und `<sub>`.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/formeln-im-text.webp'>
+    <img src='screenshots/formeln-im-text.webp' alt='Folie mit mathematischen Formeln innerhalb von Fließtext.'>
 </button>
 
 ```html
@@ -1026,7 +1026,7 @@ Es gibt zwei typische Arten von Formeln:
 - Eine **abgesetzte Formel** steht groß in einer eigenen Zeile.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/formeln-mit-katex.webp'>
+    <img src='screenshots/formeln-mit-katex.webp' alt='Folie mit mehreren einzeln gesetzten mathematischen Formeln.'>
 </button>
 
 ```html
@@ -1076,7 +1076,7 @@ H_2O             tiefgestellte 2
 Zum Beispiel:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/weitere-formeln.webp'>
+    <img src='screenshots/weitere-formeln.webp' alt='Folie mit Beispielen für Brüche, Wurzeln, Integrale und Summen.'>
 </button>
 
 ```html
@@ -1146,7 +1146,7 @@ per Drag & Drop vom eigenen Computer, per Zwischenablage und per wget im Termina
 
 Wenn du den File Explorer in VS Code öffnest, siehst du einen Ordner namens `pictures`, in dem alle Bilder liegen sollten, die du in deiner Präsentation verwenden möchtest. Klicke auf eine Bilddatei, um sie in der Vorschau zu sehen:
 
-<img class='full' src='file-explorer.webp'>
+<img class='full' src='file-explorer.webp' alt=''>
 
 Es gibt verschiedene Bilddateiformate, die dir begegnen werden:
 
@@ -1218,7 +1218,7 @@ Im Folgenden siehst du drei Möglichkeiten, wie du eine Bilddatei in den Ordner 
 
 Wenn du eine Bilddatei bereits auf deinem Computer hast, kannst du sie in den File Explorer von VS Code ziehen und dort im Verzeichnis `pictures` ablegen:
 
-<img src='drag-and-drop.webp' class='full'>
+<img src='drag-and-drop.webp' class='full' alt=''>
 
 <div class='hint'>
 Egal, wie du dein Bild in den Ordner bekommst: Achte darauf, deinen Bildern einen sinnvollen Dateinamen zu geben. Das erleichtert dir später die Arbeit, wenn du das Bild in deine Folie einfügen möchtest.
@@ -1230,17 +1230,17 @@ Du kannst auch ein Bild direkt in die Zwischenablage kopieren und dann in den Or
 
 Um ein Bild aus dem Internet in die Zwischenablage zu kopieren, kannst du mit der rechten Maustaste auf das Bild klicken und »Bild kopieren« oder »Copy Image« auswählen:
 
-<img src="copy-image.webp" class="full">
+<img src="copy-image.webp" class="full" alt=''>
 
 <!-- https://de.wikipedia.org/wiki/Japan#/media/Datei:Japanese_classroom.jpg -->
 
 Klicke jetzt im File Explorer auf ein Bild im Ordner `pictures` und drücke <kbd>Strg</kbd><kbd>V</kbd>, um das Bild in denselben Ordner einzufügen:
 
-<img src="confirm-paste.webp" class="full">
+<img src="confirm-paste.webp" class="full" alt=''>
 
 Du solltest die neue Datei sehen, die automatisch einen Namen wie `image.png` bekommt:
 
-<img src="image-pasted.webp" class="full">
+<img src="image-pasted.webp" class="full" alt=''>
 
 Am unteren Rand siehst du zwei wichtige Informationen:
 
@@ -1255,10 +1255,10 @@ Gib der Bilddatei jetzt einen sinnvollen Namen, zum Beispiel `classroom.png`:
 
 <div class='row' style='margin-bottom: 1em;'>
     <div class='col-md-6'>
-        <img src="rename-image.webp" class="full">
+        <img src="rename-image.webp" class="full" alt=''>
     </div>
     <div class='col-md-6'>
-        <img src="image-renamed.webp" class="full">
+        <img src="image-renamed.webp" class="full" alt=''>
     </div>
 </div>
 
@@ -1272,24 +1272,24 @@ Installiere dazu die Erweiterung »WebP Converter for VSCode«. Anschließend ka
 
 <div class='row' style='margin-bottom: 1em;'>
     <div class='col-md-6'>
-        <img src="install-webp-converter.webp" class="full">
+        <img src="install-webp-converter.webp" class="full" alt=''>
     </div>
     <div class='col-md-6'>
-        <img src="convert-to-webp.webp" class="full">
+        <img src="convert-to-webp.webp" class="full" alt=''>
     </div>
 </div>
 
 Du wirst nun nach der Qualität gefragt, die du verwenden möchtest. »Lossless« bedeutet, dass die Qualität des Bildes erhalten bleibt, aber die Dateigröße trotzdem deutlich kleiner wird – diese Option eignet sich am besten für Grafiken. »Lossy« bedeutet, dass die Qualität des Bildes etwas schlechter wird, aber die Dateigröße noch weiter reduziert wird – diese Option eignet sich am besten für Fotos. Für unser Foto eines Klassenzimmers wählen wir »Lossy« mit einer Qualität von 85%:
 
-<img src="convert-to-webp-step-1.webp" class="full">
+<img src="convert-to-webp-step-1.webp" class="full" alt=''>
 
 Mit einem Klick auf »Finish« wird die neue WebP-Datei erstellt, die deutlich kleiner ist als die ursprüngliche PNG-Datei:
 
-<img src="convert-to-webp-step-2.webp" class="full">
+<img src="convert-to-webp-step-2.webp" class="full" alt=''>
 
 Die neue Datei `classroom.webp` hat jetzt eine Dateigröße von nur 180 kB und sieht immer noch gut aus:
 
-<img src="webp-converted.webp" class="full">
+<img src="webp-converted.webp" class="full" alt=''>
 
 <div class='hint'>
 Bilder, die du mit <kbd>Strg</kbd><kbd>V</kbd> einfügst, werden oft als PNG-Dateien gespeichert.
@@ -1308,7 +1308,7 @@ Wenn die Bilddatei im richtigen Ordner liegt, kannst du sie mit dem Tag `<img>` 
 Dann fügst du es so ein:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/bild-zu-gross.webp'>
+    <img src='screenshots/bild-zu-gross.webp' alt='Ein Foto des Fuji ragt über den unteren Rand der Folie hinaus.'>
 </button>
 
 ```html
@@ -1373,7 +1373,7 @@ Mögliche Beispiele: width per style, vorhandene Hilfsklassen der Vorlage und ob
 Um die Größe eines Bildes anzupassen, kannst du CSS verwenden. Füge dazu ein `style`-Attribut zum `<img>`-Tag hinzu und schreibe die gewünschten CSS-Eigenschaften hinein.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/bild-hoehe-350px.webp'>
+    <img src='screenshots/bild-hoehe-350px.webp' alt='Das Fuji-Foto ist auf 350 Pixel Höhe skaliert und vollständig sichtbar.'>
 </button>
 
 ```html
@@ -1396,7 +1396,7 @@ In diesem Beispiel wird die Höhe des Bildes auf 350 Pixel festgelegt. Die Breit
 Falls du die Breite und die Höhe gleichzeitig festlegst, wird dein Bild verzerrt, wenn die angegebenen Werte nicht zum ursprünglichen Seitenverhältnis des Bildes passen:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/bild-breite-250px-und-hoehe-350px.webp'>
+    <img src='screenshots/bild-breite-250px-und-hoehe-350px.webp' alt='Das Fuji-Foto ist durch feste Breite und Höhe sichtbar verzerrt.'>
 </button>
 
 ```html
@@ -1416,7 +1416,7 @@ Falls du die Breite und die Höhe gleichzeitig festlegst, wird dein Bild verzerr
 Das Bild wurde zusammegestaucht und der Fuji ist jetzt spitzer als in Wirklichkeit. Um dieses Problem zu lösen, kannst du die CSS-Eigenschaft `object-fit` verwenden, um zu bestimmen, wie das Bild in den vorgegebenen Rahmen passt. Mit `object-fit: cover;` wird das Bild so skaliert, dass es den gesamten Rahmen ausfüllt, ohne das Seitenverhältnis zu verändern. Dabei wird das Bild aber so zugeschnitten, dass es nicht verzerrt wird:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/bild-breite-250px-und-hoehe-350px-cover.webp'>
+    <img src='screenshots/bild-breite-250px-und-hoehe-350px-cover.webp' alt='Das Fuji-Foto füllt unverzerrt einen schmalen Rahmen und wird seitlich beschnitten.'>
 </button>
 
 ```html
@@ -1437,7 +1437,7 @@ Das Bild wurde zusammegestaucht und der Fuji ist jetzt spitzer als in Wirklichke
 Wenn du den Fokus des Bildausschnitts anpassen möchtest, kannst du zusätzlich die Eigenschaft `object-position` verwenden. Zum Beispiel mit `object-position: 70% 0%;` wird der Fokus mehr auf die rechte Seite des Bildes gelegt:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/bild-breite-250px-und-hoehe-350px-cover-position.webp'>
+    <img src='screenshots/bild-breite-250px-und-hoehe-350px-cover-position.webp' alt='Der Bildausschnitt im schmalen Rahmen ist so verschoben, dass der Fuji sichtbar bleibt.'>
 </button>
 
 ```html
@@ -1465,7 +1465,7 @@ Die beiden Werte bei <code>object-position</code> geben an, wo der Fokus des Bil
 Um das Bild auf der Folie zu verschieben, kannst du die CSS-Eigenschaft `position: relative;` verwenden und dann mit `left`, und `top` angeben, wie weit das Bild von seiner ursprünglichen Position verschoben werden soll:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/bild-nach-rechts.webp'>
+    <img src='screenshots/bild-nach-rechts.webp' alt='Das schmale Fuji-Foto steht am rechten Rand der Folie.'>
 </button>
 
 ```html
@@ -1490,7 +1490,7 @@ Um das Bild auf der Folie zu verschieben, kannst du die CSS-Eigenschaft `positio
 Wenn du dein Bild mit abgerundeten Ecken oder einer Schattierung versehen möchtest, kannst du die CSS-Eigenschaft `border-radius` für abgerundete Ecken und `box-shadow` für Schattierung verwenden:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/bild-abgerundete-ecken-und-schattierung.webp'>
+    <img src='screenshots/bild-abgerundete-ecken-und-schattierung.webp' alt='Das Fuji-Foto hat abgerundete Ecken und einen Schlagschatten.'>
 </button>
 
 ```html
@@ -1564,7 +1564,7 @@ Wenn du für dein Bild eine Höhe mit `height` angibst, wird die Breite automati
 Dabei wird die Höhe auf 170 Pixel festgelegt, und die Breite wird so berechnet, dass das Seitenverhältnis von 2:3 eingehalten wird. Vergiss nicht, `object-fit: cover;` zu verwenden, damit dein Bild nicht verzerrt wird, wenn das Seitenverhältnis nicht zum ursprünglichen Seitenverhältnis des Bildes passt.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/feste-seitenverhaeltnisse.webp'>
+    <img src='screenshots/feste-seitenverhaeltnisse.webp' alt='Fünf Fuji-Bildausschnitte vergleichen die Seitenverhältnisse 2:3, 3:4, 1:1, 4:3 und 16:9.'>
 </button>
 
 ```html
@@ -1628,7 +1628,7 @@ Dabei wird die Höhe auf 170 Pixel festgelegt, und die Breite wird so berechnet,
 Du kannst ein Bild auch als Hintergrund verwenden, indem du ihm die CSS-Klasse `cover` zuweist:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/mount-fuji-hintergrund.webp'>
+    <img src='screenshots/mount-fuji-hintergrund.webp' alt='Das Fuji-Foto füllt die gesamte Folie als Hintergrund; weiße Schrift liegt darüber.'>
 </button>
 
 ```html
@@ -1655,7 +1655,7 @@ In dieser Folie haben wir außerdem der Folie selbst die Klasse `bright-text` zu
 Häufig möchte man ein Bild zeigen und daneben noch etwas Text. Um diesen Effekt zu erreichen, kannst du ein `<div>` mit der CSS-Klasse `side-by-side` verwenden, das zwei Kinder hat, die nebeneinander angeordnet werden:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/text-links-bild-rechts.webp'>
+    <img src='screenshots/text-links-bild-rechts.webp' alt='Zwei Textabsätze stehen links, ein hohes Fuji-Foto rechts.'>
 </button>
 
 ```html
@@ -1696,7 +1696,7 @@ Im Beispiel ist das erste Kind ein `<div>`, das zwei Absätze mit Text enthält,
 Wenn du die Reihenfolge der Kinder tauschst, wird das Bild auf der linken Seite und der Text auf der rechten Seite angezeigt:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/bild-links-text-rechts.webp'>
+    <img src='screenshots/bild-links-text-rechts.webp' alt='Ein hohes Fuji-Foto steht links, zwei Textabsätze rechts.'>
 </button>
 
 ```html
@@ -1780,7 +1780,7 @@ Hellgrauer Text auf weißem Hintergrund sieht vielleicht schick aus, ist aber of
 Wenn du nur ein einzelnes Element verändern möchtest, kannst du direkt ein `style`-Attribut verwenden.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/textfarbe-aendern.webp'>
+    <img src='screenshots/textfarbe-aendern.webp' alt='Die Überschrift ist dunkelblau, einzelne Textteile sind blau und rot hervorgehoben.'>
 </button>
 
 ```html
@@ -1822,7 +1822,7 @@ Mit `background` kannst du den Hintergrund eines Elements verändern.
 Das funktioniert zum Beispiel gut bei einer kleinen Infokarte.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/farbige-infokarte.webp'>
+    <img src='screenshots/farbige-infokarte.webp' alt='Eine hellblaue Infokarte mit blauem Rand hebt einen Tipp hervor.'>
 </button>
 
 ```html
@@ -1867,7 +1867,7 @@ Du kannst auch der ganzen Folie eine Hintergrundfarbe geben.
 Dazu setzt du die Farbe direkt auf das `<section>`-Element.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/dunkle-folie.webp'>
+    <img src='screenshots/dunkle-folie.webp' alt='Eine Folie mit dunkelblauem Hintergrund verwendet weiße und hellblaue Schrift.'>
 </button>
 
 ```html
@@ -1926,7 +1926,7 @@ Teile den Inhalt dann lieber auf mehrere Folien auf.
 Wenn du nur ein einzelnes Element verändern möchtest, kannst du wieder ein `style`-Attribut verwenden.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/grosser-absatz.webp'>
+    <img src='screenshots/grosser-absatz.webp' alt='Ein kurzer Absatz erscheint deutlich größer als normaler Fließtext.'>
 </button>
 
 ```html
@@ -1965,7 +1965,7 @@ Manchmal soll eine Folie nur eine wichtige Aussage zeigen.
 Dann darf der Text ruhig deutlich größer sein.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/grosse-aussage.webp'>
+    <img src='screenshots/grosse-aussage.webp' alt='Die Aussage „Das Internet verbindet Menschen weltweit.“ steht groß und mittig auf der Folie.'>
 </button>
 
 ```html
@@ -2004,7 +2004,7 @@ Manchmal brauchst du eine kleine Zusatzinformation, zum Beispiel eine Quelle, ei
 Dann kannst du die Schrift etwas kleiner machen.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/kleiner-hinweis.webp'>
+    <img src='screenshots/kleiner-hinweis.webp' alt='Unter normalem Text steht ein kleiner, grauer Hinweis.'>
 </button>
 
 ```html
@@ -2367,7 +2367,7 @@ Du musst dafür normalerweise nichts in deine Folie schreiben.
 Die Vorlage erzeugt dieses Ribbon selbst mit Hilfe dieser CSS-Regel:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/ausflug-nach-berlin.webp'>
+    <img src='screenshots/ausflug-nach-berlin.webp' alt='Folie „Unser Ausflug nach Berlin“ mit Stationen, Zeiten und kleinen Symbolen.'>
 </button>
 
 ```css
@@ -2404,7 +2404,7 @@ Wenn du nur die Farbe ändern möchtest, kannst du das vorhandene Ribbon behalte
 Schreibe diese Regel in `styles.css` unter den Kommentar `Eigene CSS-Regeln`:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/blaues-ribbon.webp'>
+    <img src='screenshots/blaues-ribbon.webp' alt='Die Seitenzahl erscheint in einem blauen Band in der rechten oberen Ecke.'>
 </button>
 
 ```css
@@ -2430,7 +2430,7 @@ Du kannst daraus auch einen Kreis machen.
 Auch diese Regel gehört in `styles.css`:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/runde-seitenzahl.webp'>
+    <img src='screenshots/runde-seitenzahl.webp' alt='Die Seitenzahl steht in einem blauen Kreis in der rechten oberen Ecke.'>
 </button>
 
 ```css
@@ -2468,7 +2468,7 @@ Manchmal soll die Seitenzahl sehr unauffällig sein.
 Dann kannst du Hintergrund und Form komplett entfernen:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/unauffaellige-seitenzahl.webp'>
+    <img src='screenshots/unauffaellige-seitenzahl.webp' alt='Die Seitenzahl steht klein und grau in der rechten unteren Ecke.'>
 </button>
 
 ```css
@@ -2506,7 +2506,7 @@ In der Starter-Vorlage gibt es dafür schon eine CSS-Regel in `styles.css`:
 Du musst also nur der Folie in `index.html` die zusätzliche Klasse `nopagenumber` geben:
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/keine-seitenzahl.webp'>
+    <img src='screenshots/keine-seitenzahl.webp' alt='Die Folie hat keine sichtbare Seitenzahl.'>
 </button>
 
 ```html
@@ -2569,7 +2569,7 @@ Genaue Positionierung ist eher für besondere Elemente gedacht: Logos, Hinweise,
 Mit `position: relative;` bleibt ein Element grundsätzlich an seiner normalen Stelle, wird aber optisch verschoben.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/element-relativ-verschoben.webp'>
+    <img src='screenshots/element-relativ-verschoben.webp' alt='Eine farbige Infokarte ist relativ zu ihrer ursprünglichen Position nach rechts unten verschoben.'>
 </button>
 
 ```html
@@ -2609,7 +2609,7 @@ Das Element wird dann aus dem normalen Textfluss herausgenommen.
 Andere Elemente machen keinen Platz mehr dafür.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/infokarte-absolute-position.webp'>
+    <img src='screenshots/infokarte-absolute-position.webp' alt='Eine farbige Infokarte liegt unabhängig vom Text am rechten unteren Folienrand.'>
 </button>
 
 ```html
@@ -2695,7 +2695,7 @@ Dieses äußere `<div>` bekommt `position: relative;`.
 Die Beschriftung darin bekommt `position: absolute;`.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/beschriftung-auf-bild.webp'>
+    <img src='screenshots/beschriftung-auf-bild.webp' alt='Eine halbtransparente Beschriftung liegt direkt auf dem unteren Rand des Fuji-Fotos.'>
 </button>
 
 ```html
@@ -2787,7 +2787,7 @@ Für zwei Spalten verwendest du ein äußeres `<div>` mit der Klasse `columns tw
 Jedes direkte Kind dieses `<div>` wird zu einer eigenen Spalte.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/zwei-textspalten.webp'>
+    <img src='screenshots/zwei-textspalten.webp' alt='Zwei gleich breite Textspalten stehen nebeneinander.'>
 </button>
 
 ```html
@@ -2839,7 +2839,7 @@ Du kannst auch Listen in Spalten setzen.
 Das ist praktisch, wenn du zwei Gruppen gegenüberstellen möchtest.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/zwei-spalten-listen.webp'>
+    <img src='screenshots/zwei-spalten-listen.webp' alt='Eine Pro-Liste und eine Contra-Liste stehen in zwei Spalten nebeneinander.'>
 </button>
 
 ```html
@@ -2884,7 +2884,7 @@ Für drei Spalten verwendest du `columns three`.
 Das funktioniert genauso wie bei zwei Spalten, nur mit drei direkten Kindern.
 
 <button class='shower-mini' type='button'>
-    <img src='screenshots/drei-spalten.webp'>
+    <img src='screenshots/drei-spalten.webp' alt='Drei gleich breite Spalten vergleichen HTML, CSS und JavaScript.'>
 </button>
 
 ```html

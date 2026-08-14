@@ -5,7 +5,7 @@ image: python-logo.png
 # Python <span style='font-size: 80%;'>(1991)</span>
 
 <div class='floatright' style='width: 16em;'>
-    <img src='guido.webp'>
+    <img src='guido.webp' alt=''>
     <p>Guido van Rossum</p>
 </div>
 
@@ -24,13 +24,13 @@ Python ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpre
 
 **Möglichkeit 1:** Python-Code in der Python-Shell ausführen
 
-Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='code-with-terminal.webp'>
+<img class='full' src='code-with-terminal.webp' alt=''>
 
 Starte nun die Python-Shell, indem du `python3` eingibst und dann <kbd>Enter</kbd> drückst. Du solltest eine Ausgabe wie diese sehen:
 
-<img class='full' src='python-repl.webp'>
+<img class='full' src='python-repl.webp' alt=''>
 
 Jetzt kannst du Python-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `print("Hello, world!")` und drücke <kbd>Enter</kbd>. Du solltest die Ausgabe `Hello, world!` sehen.
 
@@ -42,13 +42,13 @@ Python-Programme werden in Textdateien mit der Endung `.py` geschrieben. Ein Pyt
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp'>
+<img class='full' src='fresh-start.webp' alt=''>
 
 ### Quelltext schreiben
 
 Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <kbd>Enter</kbd>).
 
-<img class='full' src='choose-filename.webp'>
+<img class='full' src='choose-filename.webp' alt=''>
 
 Schreibe nun den folgenden Code in die Datei:
 
@@ -56,15 +56,15 @@ _include_file(hello.py, python)
 
 Da Visual Studio Code noch nicht weiß, dass es sich um Python-Quelltext handelt, ist dein Programm momentan noch einfarbig, aber das wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
 
-<img class='full' src='no-syntax-highlighting.webp'>
+<img class='full' src='no-syntax-highlighting.webp' alt=''>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.py` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.py`.
 
-<img class='full' src='enter-filename.webp'>
+<img class='full' src='enter-filename.webp' alt=''>
 
 Sobald du die Datei gespeichert hast, wird sie automatisch als Python-Datei erkannt und die Syntax wird hervorgehoben.
 
-<img class='full' src='syntax-highlighting.webp'>
+<img class='full' src='syntax-highlighting.webp' alt=''>
 
 ### Skript ausführen
 
@@ -82,7 +82,7 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>py
 
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
 
-<img class='full' src='hello.webp'>
+<img class='full' src='hello.webp' alt=''>
 
 ### Fehler finden und beheben
 
@@ -104,7 +104,7 @@ Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugebe
 
 Python sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
-<img class='full' src='hello-error.webp'>
+<img class='full' src='hello-error.webp' alt=''>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 1) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
@@ -127,15 +127,15 @@ Jetzt können wir das Skript direkt ausführen:
 ./hello.py
 ```
 
-<img class='full' src='shebang.webp'>
+<img class='full' src='shebang.webp' alt=''>
 
 ## Python-Skripte direkt in Visual Studio Code ausführen
 
-Visual Studio Code bietet auch eine integrierte Möglichkeit, Python-Skripte direkt auszuführen, ohne dass du das Skript jedesmal im Terminal ausführen musst. Dazu musst du die Python-Erweiterung installieren. Klicke dazu auf das Extensions-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;'> in der Seitenleiste und suche nach »Python«. Klicke auf »Install«, um die Erweiterung zu installieren.
+Visual Studio Code bietet auch eine integrierte Möglichkeit, Python-Skripte direkt auszuführen, ohne dass du das Skript jedesmal im Terminal ausführen musst. Dazu musst du die Python-Erweiterung installieren. Klicke dazu auf das Extensions-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste und suche nach »Python«. Klicke auf »Install«, um die Erweiterung zu installieren.
 
-<img class='full' src='python-ext.webp'>
+<img class='full' src='python-ext.webp' alt=''>
 
-Du kannst nun dein Skript einfach direkt aus dem Editor starten, indem du rechts oben auf das Run-Symbol <img src='../basics/run-button.webp' style='border-radius: 4px; height: 1.5em;'> klickst.
+Du kannst nun dein Skript einfach direkt aus dem Editor starten, indem du rechts oben auf das Run-Symbol <img src='../basics/run-button.webp' style='border-radius: 4px; height: 1.5em;' alt=''> klickst.
 
 ## Primfaktorzerlegung
 
@@ -147,7 +147,7 @@ _include_file(factor.py, python)
 
 Speichere die Datei unter dem Namen `factor.py` und führe sie aus:
 
-<img class='full' src='try-factor.webp'>
+<img class='full' src='try-factor.webp' alt=''>
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Python auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Wenn du allerdings eine sehr große Zahl wie 123456789123456789 verwendest, dauert die Berechnung sehr lange (probier es gern aus, du kannst das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen).
 
@@ -163,7 +163,7 @@ _include_file(bubblesort.py, python)
 
 Speichere das Skript unter dem Namen `bubblesort.py` und führe es aus:
 
-<img class='full' src='bubblesort.webp'>
+<img class='full' src='bubblesort.webp' alt=''>
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
 

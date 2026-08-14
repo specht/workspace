@@ -11,7 +11,7 @@ image: svelte5.webp
 # Frontend-Entwicklung mit Svelte
 
 <div class='floatright' style='width: 30em;'>
-    <img src='rich-harris.webp'>
+    <img src='rich-harris.webp' alt=''>
     <p>Rich Harris</p>
 </div>
 
@@ -32,11 +32,11 @@ Svelte ist ein modernes Frontend-Framework. Es gab vorher schon viele andere Fro
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp'>
+<img class='full' src='fresh-start.webp' alt=''>
 
 ### Svelte-Erweiterung installieren
 
-Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;'> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »Svelte for VS Code« und installiere sie.
+Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »Svelte for VS Code« und installiere sie.
 
 ### Svelte-Projekt erstellen
 
@@ -48,27 +48,27 @@ npx sv create rubik-timer
 
 Du wirst vermutlich gefragt, ob das `sv`-Paket installiert werden soll:
 
-<img class='full' src='npx-sv-create-proceed.webp'>
+<img class='full' src='npx-sv-create-proceed.webp' alt=''>
 
 Bestätige mit <kbd>Enter</kbd>. Du wirst nun gefragt, welches Template du verwenden möchtest. Wähle das Standard-Template »SvelteKit minimal« aus, indem du <kbd>Enter</kbd> drückst:
 
-<img class='full' src='npx-sv-create-template.webp'>
+<img class='full' src='npx-sv-create-template.webp' alt=''>
 
 Bei der nächsten Frage wäre die richtige Antwort »TypeScript«, aber da wir in diesem Tutorial kein TypeScript verwenden, sondern normales JavaScript, wähle hier bitte »No« aus:
 
-<img class='full' src='npx-sv-create-type-checking.webp'>
+<img class='full' src='npx-sv-create-type-checking.webp' alt=''>
 
 Du wirst als nächstes gefragt, ob du schon ein paar Plugins installieren möchtest. Da wir keine Plugins benötigen, kannst du einfach <kbd>Enter</kbd> drücken:
 
-<img class='full' src='npx-sv-create-plugins.webp'>
+<img class='full' src='npx-sv-create-plugins.webp' alt=''>
 
 Als letztes wirst du gefragt, welchen Paketmanager du verwenden möchtest. Wähle hier »npm« aus, indem du <kbd>Enter</kbd> drückst:
 
-<img class='full' src='npx-sv-create-package-manager.webp'>
+<img class='full' src='npx-sv-create-package-manager.webp' alt=''>
 
 Daraufhin musst du noch ein paar Sekunden warten, bis alle Abhängigkeiten installiert sind und das Projekt erstellt wurde. Wenn du die Meldung »Project created« siehst, hat alles geklappt:
 
-<img class='full' src='npx-sv-create-success.webp'>
+<img class='full' src='npx-sv-create-success.webp' alt=''>
 
 <div class='hint'>
 Falls du von vorne beginnen möchtest, kannst du einfach das Verzeichnis <code>/workspace/rubik-timer</code> löschen und von vorn beginnen.
@@ -76,17 +76,17 @@ Falls du von vorne beginnen möchtest, kannst du einfach das Verzeichnis <code>/
 
 Öffne nun das Verzeichnis, indem du entweder im Menü »File« / »Open Folder…« auswählst oder einfach <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>Strg</kbd><kbd>O</kbd> drückst. Wähle den Ordner `rubik-timer` aus:
 
-<img class='full' src='open-folder.webp'>
+<img class='full' src='open-folder.webp' alt=''>
 
 ## Development-Server starten
 
 Bevor wir den Entwicklungs-Server im Workspace starten können, müssen wir noch eine Kleinigkeit anpassen. Öffne die Datei `package.json` und ändere den Eintrag für `"dev"` von `"vite dev"` in `"vite dev --host --open"`.
 
-<img class='full' src='patch-package-json.webp'>
+<img class='full' src='patch-package-json.webp' alt=''>
 
 Öffne nun die Datei `vite.config.js` und füge einen Eintrag `server` hinzu, um den Server für Anfragen aus deinem Workspace zu öffnen:
 
-<img class='full' src='vite-config.webp'>
+<img class='full' src='vite-config.webp' alt=''>
 
 Du musst also den folgenden Eintrag hinzufügen:
 
@@ -108,7 +108,7 @@ npm run dev
 
 Wenn alles geklappt hat, sollte sich deine Webseite automatisch in einem neuen Tab öffnen:
 
-<img class='full border' src='welcome-to-svelte.webp'>
+<img class='full border' src='welcome-to-svelte.webp' alt='Die Svelte-Startseite bestätigt, dass das neue Projekt im Browser läuft.'>
 
 <div class='hint'>
 Tipp: Ziehe deinen Workspace und die Vorschau nebeneinander, damit du beide Fenster gleichzeitig sehen kannst.
@@ -196,7 +196,7 @@ Um die Stoppuhr zu programmieren, brauchen wir eine Idee, wie sie benutzt werden
 
 Daraus ergibt sich folgender Ablauf:
 
-<img class='full' src='logik.webp'>
+<img class='full' src='logik.webp' alt='Ein Ablaufdiagramm zeigt, welche Zustände es gibt und wie die Anwendung zwischen ihnen wechselt.'>
 
 Um den Zustand auf der Webseite zu speichern, deklarieren wir eine Variable `state` im `<script>`-Tag von `src/routes/+page.svelte`:
 
@@ -219,7 +219,7 @@ Wir können die Variable `state` jetzt in unserem HTML-Code verwenden, um den ak
 
 In deiner Vorschau sollte jetzt der Text »State = 0« erscheinen:
 
-<img class='full border' src='h1-and-state.webp'>
+<img class='full border' src='h1-and-state.webp' alt='Die Seite zeigt die Überschrift „Rubik’s Cube Timer“ und darunter den Zustand 0.'>
 
 ### Tastendruck erkennen
 
@@ -398,7 +398,7 @@ _include_file(+page.svelte, svelte)
 
 Deine Seite sollte jetzt so aussehen und funktionieren:
 
-<img class='full border' src='finished.webp'>
+<img class='full border' src='finished.webp' alt='Der einfache Rubik’s Cube Timer steht bei 00:00.00 und wartet auf das Gedrückthalten der Leertaste.'>
 
 ## Webseite erweitern
 
@@ -427,7 +427,7 @@ Wir können die Schriftart der Webseite ändern, um sie ansprechender zu gestalt
 
 Du solltest jetzt sehen, dass die Schriftart der Webseite geändert wurde. Wenn du die Seite aktualisierst, sollte sie jetzt so aussehen:
 
-<img class='full border' src='finished-pretty.webp'>
+<img class='full border' src='finished-pretty.webp' alt='Der gestaltete Timer zeigt auf grünem Hintergrund eine Zeit von 00:03.98.'>
 
 ### Bootstrap einbinden und Reset-Button hinzufügen
 
@@ -503,7 +503,7 @@ Das Icon wird jetzt in dem Button angezeigt. Du kannst die Größe des Icons än
 
 Wenn du die Seite jetzt aktualisierst, solltest du den Reset-Button mit dem Icon sehen:
 
-<img class='full border' src='finished-pretty-with-icon.webp'>
+<img class='full border' src='finished-pretty-with-icon.webp' alt='Der gestaltete Timer zeigt 00:22.80 und darunter einen Button zum Zurücksetzen.'>
 
 Du kannst dir hier auch andere Icons aussuchen: [https://icon-sets.iconify.design/](https://icon-sets.iconify.design/). Du kannst die Icons ganz einfach in deine Webseite einfügen, indem du den Namen des Icons in den `<Icon>`-Tag einfügst. Zum Beispiel:
 

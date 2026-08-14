@@ -5,7 +5,7 @@ image: js-logo.png
 # JavaScript <span style='font-size: 80%;'>(1995)</span>
 
 <div class='floatright' style='width: 16em;'>
-    <img src='eich.webp'>
+    <img src='eich.webp' alt=''>
     <p>
       Brendan Eich<br>
       <span style='font-size: 90%; opacity: 0.7;'>(Foto von James Duncan Davidson)</span>
@@ -29,13 +29,13 @@ In diesem Kapitel wollen wir uns jedoch auf JavaScript außerhalb des Browsers k
 
 **Möglichkeit 1:** JavaScript-Code in der Node.js-Shell ausführen
 
-Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='code-with-terminal.webp'>
+<img class='full' src='code-with-terminal.webp' alt=''>
 
 Starte nun die Node.js-Shell, indem du `node` eingibst und dann <kbd>Enter</kbd> drückst. Du solltest eine Ausgabe wie diese sehen:
 
-<img class='full' src='node-shell.webp'>
+<img class='full' src='node-shell.webp' alt=''>
 
 Jetzt kannst du JavaScript-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `console.log("Hello, world!");` und drücke <kbd>Enter</kbd>. Du solltest die Ausgabe `Hello, world!` sehen.
 
@@ -47,13 +47,13 @@ JavaScript-Programme werden in Textdateien mit der Endung `.js` geschrieben. Der
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp'>
+<img class='full' src='fresh-start.webp' alt=''>
 
 ### Quelltext schreiben
 
 Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <kbd>Enter</kbd>).
 
-<img class='full' src='choose-filename.webp'>
+<img class='full' src='choose-filename.webp' alt=''>
 
 Schreibe nun den folgenden Code in die Datei:
 
@@ -61,15 +61,15 @@ _include_file(hello.js, js)
 
 Da Visual Studio Code noch nicht weiß, dass es sich um JavaScript-Quelltext handelt, ist dein Programm momentan noch einfarbig, aber das wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
 
-<img class='full' src='no-syntax-highlighting.webp'>
+<img class='full' src='no-syntax-highlighting.webp' alt=''>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.js` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.js`.
 
-<img class='full' src='enter-filename.webp'>
+<img class='full' src='enter-filename.webp' alt=''>
 
 Sobald du die Datei gespeichert hast, wird sie automatisch als JavaScript-Datei erkannt und die Syntax wird hervorgehoben.
 
-<img class='full' src='syntax-highlighting.webp'>
+<img class='full' src='syntax-highlighting.webp' alt=''>
 
 ### Skript ausführen
 
@@ -87,7 +87,7 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>no
 
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
 
-<img class='full' src='hello.webp'>
+<img class='full' src='hello.webp' alt=''>
 
 ### Fehler finden und beheben
 
@@ -109,7 +109,7 @@ Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugebe
 
 Node.js sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
-<img class='full' src='hello-error.webp'>
+<img class='full' src='hello-error.webp' alt=''>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 1) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
@@ -132,7 +132,7 @@ Jetzt können wir das Skript direkt ausführen:
 ./hello.js
 ```
 
-<img class='full' src='shebang.webp'>
+<img class='full' src='shebang.webp' alt=''>
 
 ## Primfaktorzerlegung
 
@@ -144,7 +144,7 @@ _include_file(factor.js, js)
 
 Speichere die Datei unter dem Namen `factor.js` und führe sie aus:
 
-<img class='full' src='try-factor.webp'>
+<img class='full' src='try-factor.webp' alt=''>
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann JavaScript auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Auch mit einer sehr großen Zahl wie 123456789123456789 kommt das Programm problemlos zurecht. Falls du auf eine Zahl stoßen solltest, die so groß ist, dass das Programm sehr lange braucht, kannst du das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen.
 
@@ -160,7 +160,7 @@ _include_file(bubblesort.js, js)
 
 Speichere das Skript unter dem Namen `bubblesort.js` und führe es aus:
 
-<img class='full' src='bubblesort.webp'>
+<img class='full' src='bubblesort.webp' alt=''>
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
 

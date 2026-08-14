@@ -201,15 +201,15 @@ Dieser Artikel soll dir helfen, einen JPEG-Decoder zu implementieren. Dafür ist
 
 <div class='row'>
 <div class='col-md-4'>
-<a href='/rgb'><img src='title.webp' style='width: 100%;'></a>
+<a href='/rgb'><img src='title.webp' style='width: 100%;' alt=''></a>
 Farbräume
 </div>
 <div class='col-md-4'>
-<a href='/colorspace'><img src='colorspace.webp' style='width: 100%;'></a>
+<a href='/colorspace'><img src='colorspace.webp' style='width: 100%;' alt=''></a>
 Trennung von Helligkeit und Farbe
 </div>
 <div class='col-md-4'>
-<a href='/dct'><img src='dct.webp' style='width: 100%;'></a>
+<a href='/dct'><img src='dct.webp' style='width: 100%;' alt=''></a>
 Diskrete Kosinustransformation (DCT)
 </div>
 </div>
@@ -1261,7 +1261,7 @@ Nachdem alle Koeffizienten eines Blocks decodiert wurden, müssen wir die invers
 Du kannst folgende Formel für die iDCT verwenden:
 
 <div style="text-align: center; margin: 1em 0; max-width: 100%; overflow-x: auto;">
-    <img src="/jpeg/idct_formula.svg" class="dark-mode-aware" alt="IDCT formula" style="width: 720px;" />
+    <img src="/jpeg/idct_formula.svg" class="dark-mode-aware" alt="Formel der inversen diskreten Kosinustransformation für einen acht mal acht Pixel großen Block." style="width: 720px;" />
 </div>
 
 Da die resultierenden Werte nach der iDCT noch im Bereich von -128 bis 127 liegen, müssen wir sie um 128 verschieben, um den Bereich von 0 bis 255 zu erhalten.
@@ -1275,7 +1275,7 @@ Wenn wir 6 Blöcke decodiert haben (4&times;Y, 1&times;Cb, 1&times;Cr), können 
 Nachdem wir die Pixelwerte für die Y-, Cb- und Cr-Komponenten erhalten haben, müssen wir diese in den RGB-Farbraum konvertieren, um das Bild korrekt darstellen zu können. Die Konvertierung erfolgt mit den folgenden Formeln:
 
 <div style="text-align: center; margin: 1em 0; max-width: 100%; overflow-x: auto;">
-    <img src="/jpeg/rgb_formula.svg" class="dark-mode-aware" alt="RGB conversion formula" style="width: 490px;" />
+    <img src="/jpeg/rgb_formula.svg" class="dark-mode-aware" alt="Formeln zur Umrechnung von YCbCr-Farbwerten in Rot, Grün und Blau." style="width: 490px;" />
 </div>
 
 Anschließend müssen die RGB-Werte noch einmal auf den Bereich von 0 bis 255 beschränkt werden, da sie durch die Berechnung auch Werte außerhalb dieses Bereichs annehmen können.

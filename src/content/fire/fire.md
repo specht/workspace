@@ -10,7 +10,7 @@ image: fire.webp:73:0
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp'>
+<img class='full' src='fresh-start.webp' alt=''>
 
 <div class='hint books'>
 Dieses Tutorial geht davon aus, dass du bereits die Pixelflow Canvas-Erweiterung und das pixelflow_canvas rubygem installiert hast. Falls nicht, findest du die Anleitung hier in Abschnitt 1: <a href='/drawing'>»Pixelflow Canvas installieren«</a>.
@@ -41,7 +41,7 @@ end
 Starte das Pixelflow Canvas, indem du <kbd>Strg</kbd><kbd>Shift</kbd><kbd>P</kbd> oder <kbd>F1</kbd> drückst und dann »Show Pixelflow Canvas« eingibst.
 Führe das Programm aus, indem du im Terminal `ruby fire.rb` eingibst. Da standardmäßig die [VGA-Palette](https://specht.github.io/pixelflow_canvas_ruby/palettes.html#vga) verwendet wird, sehen wir die ersten 64 Farben der VGA-Palette:
 
-<img src='ramp0.webp' class='full'>
+<img src='ramp0.webp' class='full' alt='Die ersten 64 Farben der VGA-Palette.'>
 
 Diese 64 Farben sollen nun durch unseren Farbverlauf ersetzt werden. Dazu schauen wir uns den Farbverlauf im Detail an:
 
@@ -107,7 +107,7 @@ Hinweis: Achte auf die drei Punkte im Bereich <code>(0...16)</code>. Der dritte 
 
 Dein Bild sollte jetzt so aussehen:
 
-<img src='ramp1.webp' class='full'>
+<img src='ramp1.webp' class='full' alt='Der Anfang der Palette bildet einen Verlauf von Schwarz zu Dunkelrot.'>
 
 Im zweiten Abschnitt steigt der Grünwert von 0 auf 50% an, während Rot weiter von 50% auf 100% wächst. Blau bleibt weiterhin auf 0.
 Der Farbverlauf geht also von Dunkelrot (128, 0, 0) zu Orange (255, 128, 0). Füge folgenden Code direkt hinter dem `set_palette`-Aufruf ein:
@@ -118,7 +118,7 @@ set_palette(i + 16, i * 8 + 128, i * 8, 0);
 
 Dein Farbverlauf sollte nun so aussehen:
 
-<img src='ramp2.webp' class='full'>
+<img src='ramp2.webp' class='full' alt='Der Farbverlauf reicht von Schwarz über Rot bis Orange.'>
 
 Im dritten Abschnitt steigt der Grünwert von 50% auf 100% an, während Blau von 0 auf 50% ansteigt. Rot bleibt bei 100%. Der Farbverlauf geht also von Orange (255, 128, 0) zu Gelb (255, 255, 128). Füge folgenden Code ein:
 
@@ -128,7 +128,7 @@ set_palette(i + 32, 255, i * 8 + 128, i * 8);
 
 Dein Farbverlauf sollte nun so aussehen:
 
-<img src='ramp3.webp' class='full'>
+<img src='ramp3.webp' class='full' alt='Der Farbverlauf reicht von Schwarz über Rot und Orange bis Gelb.'>
 
 Im vierten Abschnitt steigt der Blauwert von 50% auf 100% an, während Rot und Grün bei 100% bleiben. Der Farbverlauf geht also von Gelb (255, 255, 128) zu Weiß (255, 255, 255). Füge folgenden Code ein:
 
@@ -138,7 +138,7 @@ set_palette(i + 48, 255, 255, i * 8 + 128);
 
 Geschafft! Dein Farbverlauf sollte nun so aussehen:
 
-<img src='ramp4.webp' class='full'>
+<img src='ramp4.webp' class='full' alt='Die fertige Feuerrampe verläuft von Schwarz über Rot, Orange und Gelb bis Weiß.'>
 
 ## Animations-Loop
 
@@ -154,7 +154,7 @@ Anmerkungen:
 
 Das Ergebnis sieht jetzt noch relativ unspektakulär aus, aber wir sehen schon das helle Rechteck am unteren Rand des Bildes (und auch wenn es noch nicht so aussieht, werden schon regelmäßig neue Frames gezeichnet):
 
-<img src='fire1.png' class='full' style='image-rendering: pixelated;'>
+<img src='fire1.png' class='full' style='image-rendering: pixelated;' alt='Ein heller gelbweißer Streifen bildet die unterste Zeile einer schwarzen Fläche.'>
 
 Um einen Feuereffekt zu erzielen, verwenden wir eine Technik aus der Bildbearbeitung, die als »Filterkernel« (bzw. Convolution Matrix oder Faltungsmatrix) bezeichnet wird.
 
@@ -197,7 +197,7 @@ Hier siehst du ein paar Beispiele:
 
 <div class='row'>
     <div class='col-md-4' style='position: relative;'>
-        <img class='kernel_img' src='kernel_identity.png' style='width: 100%; image-rendering: pixelated;'>
+        <img class='kernel_img' src='kernel_identity.png' style='width: 100%; image-rendering: pixelated;' alt=''>
         <div class='kernel'>
             <strong>Identity</strong>
             <table>
@@ -208,7 +208,7 @@ Hier siehst du ein paar Beispiele:
         </div>
     </div>
     <div class='col-md-4' style='position: relative;'>
-        <img class='kernel_img' src='kernel_boxblur.png' style='width: 100%; image-rendering: pixelated;'>
+        <img class='kernel_img' src='kernel_boxblur.png' style='width: 100%; image-rendering: pixelated;' alt=''>
         <div class='kernel'>
             <strong>Box blur</strong>
             <table>
@@ -219,7 +219,7 @@ Hier siehst du ein paar Beispiele:
         </div>
     </div>
     <div class='col-md-4' style='position: relative;'>
-        <img class='kernel_img' src='kernel_edge.png' style='width: 100%; image-rendering: pixelated;'>
+        <img class='kernel_img' src='kernel_edge.png' style='width: 100%; image-rendering: pixelated;' alt=''>
         <div class='kernel'>
             <strong>Edge detection</strong>
             <table>
@@ -236,7 +236,7 @@ Im ersten Beispiel (»Identity«) wird der Pixelwert unverändert übernommen un
 Wird ein Filterkernel wiederholt auf ein Bild angewendet, entsteht ein Effekt, der sich über die gesamte Bildfläche ausbreitet. Der Feuereffekt verwendet einen speziellen Filterkernel, der die Farben von Pixeln nach oben bewegt und dabei abkühlt. Der Filterkernel sieht folgendermaßen aus:
 
 <div style='max-width: 20em; margin-left: auto; margin-right: auto; position: relative;'>
-    <img class='kernel_img' src='kernel_fire.png' style='width: 100%; image-rendering: pixelated;'>
+    <img class='kernel_img' src='kernel_fire.png' style='width: 100%; image-rendering: pixelated;' alt=''>
     <div class='kernel'>
         <table>
             <tr><td>0</td><td>0</td><td>0</td></tr>
@@ -272,7 +272,7 @@ Wir gehen zeilenweise durch das Bild und in jeder Zeile betrachten wir jeden Pix
 
 Deine Animation sollte nach einer kleinen Weile nun so aussehen:
 
-<img src='fire2.png' class='full' style='image-rendering: pixelated;'>
+<img src='fire2.png' class='full' style='image-rendering: pixelated;' alt='Die Farbwerte steigen als weicher Verlauf vom hellen unteren Rand nach oben.'>
 
 Wir sehen, dass die hellen Pixel langsam nach oben wandern und dabei abkühlen, wobei sie eine andere Farbe annehmen. Das Problem ist jedoch, dass das Ergebnis zu glatt und nicht wirklich wie ein Feuer aussieht. Um das zu beheben, fügen wir noch ein paar zufällige Farbvariationen hinzu. Füge folgenden Code vor der `set_pixel`-Zeile ein:
 
@@ -283,7 +283,7 @@ c += rand(7) - 3
 
 Da uns `rand(7)` eine zufällige Zahl im Bereich von 0…6 zurückgibt, subtrahieren wir 3, um Werte von -3 bis +3 zu erhalten. Das Ergebnis wird dann auf den Mittelwert addiert, um eine zufällige Variation zu erzeugen. Das Ergebnis sieht schon vielversprechender aus:
 
-<img src='fire3.png' class='full' style='image-rendering: pixelated;'>
+<img src='fire3.png' class='full' style='image-rendering: pixelated;' alt='Das erste verrauschte Feuer enthält noch unpassende bunte Farbflecken.'>
 
 <div class='hint think'>
 Hast du eine Idee, woran es liegen könnte, dass wir in den hellen und dunklen Bereichen falsche Farben bekommen?
@@ -298,7 +298,7 @@ c = c.clamp(0, 63)
 
 Dein Ergebnis sollte nun so aussehen:
 
-<img src='fire4.png' class='full' style='image-rendering: pixelated;'>
+<img src='fire4.png' class='full' style='image-rendering: pixelated;' alt='Das korrigierte Feuer besteht aus gelben, orangefarbenen und roten Flammen.'>
 
 Wir sind nun fast fertig – wir müssen nur noch dafür sorgen, dass nicht die gesamte Luft »glüht« – wir können dies erreichen, in dem wir die zufällige Variation nur anwenden, wenn unser Pixel nicht schon ganz schwarz ist. Ändere die Zeile mit dem `rand`-Aufruf wie folgt:
 
@@ -312,7 +312,7 @@ In Ruby können wir statt der normalen <code>if</code>-Syntax auch die Kurzform 
 
 Dein Feuereffekt sollte nun so aussehen:
 
-<img src='fire5.png' class='full' style='image-rendering: pixelated;'>
+<img src='fire5.png' class='full' style='image-rendering: pixelated;' alt='Das fertige Pixelfeuer steigt vor schwarzem Hintergrund in gelben, orangefarbenen und roten Flammen auf.'>
 
 Das gesamte Programm sieht nun so aus:
 

@@ -10,14 +10,14 @@ In diesem Kapitel lernst du, wie du mit Linux Netzwerkverbindungen aufbaust und 
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp'>
+<img class='full' src='fresh-start.webp' alt=''>
 
 Schließe die linken Seitenleiste, indem du <kbd>Strg</kbd><kbd>B</kbd> drückst, um mehr Platz zu haben.
 Öffne als nächstes das Terminal, indem du den Shortcut <kbd>Strg</kbd><kbd>J</kbd> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='got-terminal.webp'>
+<img class='full' src='got-terminal.webp' alt=''>
 
-<img src='terminal-maximize.webp' class='r' style='width: 25em;'>
+<img src='terminal-maximize.webp' class='r' style='width: 25em;' alt=''>
 
 Du kannst das Terminal auch maximieren, indem du auf den Pfeil in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du jederzeit mit <kbd>Strg</kbd><kbd>B</kbd> ein- und ausblenden.
 
@@ -35,7 +35,7 @@ ifconfig
 
 Du solltest nun folgende Ausgabe sehen:
 
-<img class='full' src='ifconfig.webp'>
+<img class='full' src='ifconfig.webp' alt=''>
 
 Zu sehen sind zwei Netzwerkadapter:
 
@@ -67,7 +67,7 @@ ping 8.8.8.8
 
 Anschließend solltest du eine Ausgabe wie diese sehen:
 
-<img class='full' src='ping-8-8-8-8.webp'>
+<img class='full' src='ping-8-8-8-8.webp' alt=''>
 
 Der Befehl `ping` sendet ICMP-Pakete an die angegebene IP-Adresse und wartet auf eine Antwort.
 Wenn du eine Antwort bekommst, bedeutet das, dass du den anderen Rechner erreichen kannst.
@@ -85,7 +85,7 @@ ping 127.0.0.1
 
 Wie du siehst, ist die »Roundtrip Time« mit ca. 0,05 ms sehr viel kleiner:
 
-<img class='full' src='ping-127-0-0-1.webp'>
+<img class='full' src='ping-127-0-0-1.webp' alt=''>
 
 Wenn wir hingegen einen Server anpingen, der etwas weiter entfernt ist, z.B. einen Server in Peru, dann ist die »Roundtrip Time« etwas höher:
 
@@ -95,7 +95,7 @@ ping rubiomonocoat.pe
 
 Die Roundtrip Time beträgt jetzt ca. 14,5 ms:
 
-<img class='full' src='ping-rubiomonocoat.webp'>
+<img class='full' src='ping-rubiomonocoat.webp' alt=''>
 
 <div class='hint'>
 Statt einer IP-Adresse kannst du auch eine Domain, z.B. <code>google.com</code> oder <code>rubiomonocoat.pe</code>, angeben.
@@ -121,7 +121,7 @@ Wir haben hier noch den Parameter <code>-q 1</code> hinzugefügt, um nur ein Pak
 
 Anschließend solltest du eine Ausgabe wie diese sehen:
 
-<img class='full' src='traceroute-q-1-8-8-8-8.webp'>
+<img class='full' src='traceroute-q-1-8-8-8-8.webp' alt=''>
 
 Um `traceroute` zu verstehen, ist es wichtig zu wissen, dass jedes IP-Paket eine sogenannte »Time To Live« (TTL) hat. Diese TTL gibt an,
 wie viele Hops von einem zum nächsten Rechner maximal durchlaufen werden dürfen, bevor das Paket verworfen wird.
@@ -152,11 +152,11 @@ wget https://github.com/begilbert-sys/2048-in-C/raw/main/main.c
 
 Du solltest sehen, wie die Datei `main.c` heruntergeladen wird:
 
-<img class='full' src='wget-2048.webp'>
+<img class='full' src='wget-2048.webp' alt=''>
 
 Du solltest jetzt eine Datei `main.c` in deinem aktuellen Verzeichnis haben:
 
-<img class='full' src='ls-2048.webp'>
+<img class='full' src='ls-2048.webp' alt=''>
 
 Es handelt sich um ein Mini-Spiel, das in der [Programmiersprache C](/c) programmiert worden ist. Du kannst es mit dem Befehl `gcc` kompilieren und anschließend ausführen.
 
@@ -168,7 +168,7 @@ gcc main.c -o 2048 -lncurses -lm
 Das Spiel benötigt die Bibliotheken <code>ncurses</code> und <code>math</code>, weshalb wir dem Compiler mit den Option <code>-lncurses</code> und <code>-lm</code> mitteilen, dass er diese Bibliotheken einbinden soll.
 </div>
 
-<img class='full' src='ls-2048-bin.webp'>
+<img class='full' src='ls-2048-bin.webp' alt=''>
 
 Das Spiel ist jetzt kompiliert und kann mit dem Befehl `./2048` ausgeführt werden:
 
@@ -176,7 +176,7 @@ Das Spiel ist jetzt kompiliert und kann mit dem Befehl `./2048` ausgeführt werd
 ./2048
 ```
 
-<img class='full' src='2048.webp'>
+<img class='full' src='2048.webp' alt='Das Spiel 2048 läuft als vier mal vier großes Zahlenraster im Terminal.'>
 
 Du kannst das Spiel mit den Pfeiltasten steuern und mit <kbd>Strg</kbd><kbd>C</kbd> beenden.
 
@@ -194,7 +194,7 @@ curl https://gymnasiumsteglitz.de | less
 
 Verwende die Pfeiltasten, um durch die Webseite zu scrollen, und drücke <kbd>Q</kbd>, um `less` zu beenden.
 
-<img class='full' src='curl-gyst.webp'>
+<img class='full' src='curl-gyst.webp' alt=''>
 
 Du kannst `curl` auch verwenden, um dir die HTTP-Header anzuschauen, die ein Webserver zurücksendet:
 
@@ -202,7 +202,7 @@ Du kannst `curl` auch verwenden, um dir die HTTP-Header anzuschauen, die ein Web
 curl -I https://gymnasiumsteglitz.de
 ```
 
-<img class='full' src='curl-i-gyst.webp'>
+<img class='full' src='curl-i-gyst.webp' alt=''>
 
 `curl` ist ein sehr mächtiges Werkzeug, um mit Webseiten und APIs zu kommunizieren. Ein Beispiel für eine API ist die »Cat Facts« API, die dir zufällige Fakten über Katzen zurückgibt:
 
@@ -212,7 +212,7 @@ curl https://catfact.ninja/fact
 
 Die Ausgabe ist etwas schwer zu lesen:
 
-<img class='full' src='curl-catfact.webp'>
+<img class='full' src='curl-catfact.webp' alt=''>
 
 Die Antwort ist im JSON-Format formatiert. Dieses Format einigt sich hervorragend, um es in einem Programm oder Skript zu verarbeiten. Du kannst die Ausgabe auch mit `jq` formatieren, einem Werkzeug, das JSON-Daten in einer schönen und übersichtlichen Form ausgibt:
 
@@ -226,7 +226,7 @@ Wir haben hier noch die Option <code>-s</code an <code>curl</code> übergeben, u
 
 Die Ausgabe ist jetzt viel übersichtlicher:
 
-<img class='full' src='curl-catfact-jq.webp'>
+<img class='full' src='curl-catfact-jq.webp' alt=''>
 
 Du kannst die Abfrage beliebig oft wiederholen und solltest jedesmal einen zufälligen, neuen Fakt über Katzen erhalten.
 
@@ -247,9 +247,9 @@ telnet towel.blinkenlights.nl
 
 Du kannst jetzt die ASCII-Version von Star Wars sehen:
 
-<img class='full' src='starwars.webp'>
+<img class='full' src='starwars.webp' alt='Eine Star-Wars-Szene mit Raumschiff und Planeten wird aus Textzeichen im Terminal dargestellt.'>
 
-<img src='terminal-kill.webp' class='r' style='width: 25em;'>
+<img src='terminal-kill.webp' class='r' style='width: 25em;' alt=''>
 
 Da `telnet` etwas umständlich zu beenden ist, drücke einfach auf die Mülltonne in der rechten oberen Ecke des Terminals, um das Terminal zu schließen und anschließend auf das Pluszeichen, um ein neues Terminal zu öffnen.
 
@@ -297,7 +297,7 @@ In diesem Abschnitt lernst du den Befehl <code>netcat</code> kennen. Achtung: Pa
 
 Findet zunächst beide eure IP-Adressen heraus, indem ihr den Befehl `ifconfig` eingebt. Merkt euch eure IP-Adresse oder schreibt sie euch auf.
 
-<img class='full' src='nc-ifconfig.webp'>
+<img class='full' src='nc-ifconfig.webp' alt=''>
 
 In diesem Beispiel hat der erste Rechner die IP-Adresse `172.17.0.12` und der zweite Rechner die IP-Adresse `172.17.0.13`.
 
@@ -309,7 +309,7 @@ netcat -l -p 1234
 
 Die Parameter `-l` und `-p 1234` bedeuten, dass `netcat` auf dem Port 1234 (`-p 1234`) lauschen soll (`-l` steht für »listen«). Der Server (links) wartet jetzt darauf, dass sich ein Client verbindet:
 
-<img class='full' src='nc-listen.webp'>
+<img class='full' src='nc-listen.webp' alt=''>
 
 Anschließen verbindet sich der Client (rechts) mit dem Server:
 
@@ -323,7 +323,7 @@ Der Client verbindet sich mit dem Server unter der angegeben IP-Adresse auf dem 
 Falls sich der Client nicht mit dem Server verbinden kann, überprüft bitte, ob die IP-Adresse und der Port korrekt sind. Der Server muss den Port geöffnet haben, bevor sich der Client verbinden kann.
 </div>
 
-<img class='full' src='nc-connect.webp'>
+<img class='full' src='nc-connect.webp' alt=''>
 
 Sobald die Verbindung hergestellt ist, könnt ihr miteinander chatten! Ihr könnt nun Nachrichten hin- und herschicken. Wenn ihr fertig seid, könnt ihr die Verbindung beenden, indem ihr auf beiden Rechnern <kbd>Strg</kbd><kbd>C</kbd> drückt.
 

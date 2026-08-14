@@ -5,7 +5,7 @@ image: Java-Logo.png
 # Java <span style='font-size: 80%;'>(1995)</span>
 
 <div class='floatright' style='width: 16em;'>
-    <img src='gosling.webp'>
+    <img src='gosling.webp' alt=''>
     <p>
       James Gosling<br>
       <span style='font-size: 90%; opacity: 0.7;'>(Foto von Yuichi Sakuraba)</span>
@@ -24,13 +24,13 @@ Java-Programme werden in Textdateien mit der Endung `.java` geschrieben. Diese D
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp'>
+<img class='full' src='fresh-start.webp' alt=''>
 
 ### Quelltext schreiben
 
 Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <kbd>Enter</kbd>).
 
-<img class='full' src='choose-filename.webp'>
+<img class='full' src='choose-filename.webp' alt=''>
 
 Schreibe nun den folgenden Code in die Datei:
 
@@ -38,24 +38,24 @@ _include_file(HelloWorld.java, java)
 
 Da Visual Studio Code noch nicht weiß, dass es sich um Java-Quelltext handelt, ist dein Programm momentan noch einfarbig, aber das wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
 
-<img class='full' src='no-syntax-highlighting.webp'>
+<img class='full' src='no-syntax-highlighting.webp' alt=''>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `HelloWorld.java` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/HelloWorld.java`.
 
-<img class='full' src='enter-filename.webp'>
+<img class='full' src='enter-filename.webp' alt=''>
 
 Sobald du die Datei gespeichert hast, wird sie automatisch als Java-Datei erkannt und die Syntax wird hervorgehoben.
 
-<img class='full' src='syntax-highlighting.webp'>
+<img class='full' src='syntax-highlighting.webp' alt=''>
 
 ### Kompilieren und ausführen
 
 Bevor wir das Programm ausführen können, müssen wir es kompilieren.
 Dadurch wird der Quelltext des Programms in Bytecode übersetzt, den die Java Virtual Machine (JVM) ausführen kann.
 
-Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='code-with-terminal.webp'>
+<img class='full' src='code-with-terminal.webp' alt=''>
 
 Wir rufen jetzt den Java-Compiler `javac` auf, um das Programm zu übersetzen:
 
@@ -69,7 +69,7 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>ja
 
 Wenn du keinen Fehler gemacht hast, wird das Programm erfolgreich kompiliert und die Datei `HelloWorld.class` wird im selben Verzeichnis erstellt. Du kannst dies überprüfen, indem du dir die Dateien im aktuellen Verzeichnis mit `ls` oder `ls -l` anzeigen lässt:
 
-<img class='full' src='ls.webp'>
+<img class='full' src='ls.webp' alt=''>
 
 Die Datei `HelloWorld.class` ist die ausführbare Datei. Sie kann allerdings nicht direkt vom Computer ausgeführt werden, sondern muss von der Java Virtual Machine (JVM) ausgeführt werden.
 Um das Programm auszuführen, gib folgenden Befehl ein:
@@ -108,7 +108,7 @@ Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugebe
 
 Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
-<img class='full' src='hello-error.webp'>
+<img class='full' src='hello-error.webp' alt=''>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 3) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
@@ -128,7 +128,7 @@ javac Factor.java
 
 Falls du keine Fehlermeldung erhältst, kannst du das Programm ausführen und testen:
 
-<img class='full' src='try-factor.webp'>
+<img class='full' src='try-factor.webp' alt=''>
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Probiere aus, was passiert, wenn du die Zahl 3000000000 eingibst. Was könnte der Grund dafür sein?
 
@@ -149,7 +149,7 @@ javac BubbleSort.java
 ```
 Falls du keine Fehlermeldung erhältst, kannst du das Programm ausführen und testen:
 
-<img class='full' src='bubblesort.webp'>
+<img class='full' src='bubblesort.webp' alt=''>
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
 

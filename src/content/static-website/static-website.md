@@ -12,13 +12,13 @@ Immer, wenn du mit einem Webbrowser wie z. B. Firefox, Chrome oder Safari eine W
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp'>
+<img class='full' src='fresh-start.webp' alt=''>
 
 ### HTML-Datei anlegen
 
 Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <kbd>Enter</kbd>).
 
-<img class='full' src='choose-filename.webp'>
+<img class='full' src='choose-filename.webp' alt=''>
 
 Schreibe nun den folgenden Code in die Datei:
 
@@ -26,28 +26,28 @@ _include_file(template.html, html)
 
 Dein Fenster sollte jetzt ungefähr so aussehen (an dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind):
 
-<img class='full' src='unsaved.webp'>
+<img class='full' src='unsaved.webp' alt=''>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `website-test/index.html` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/website-test/index.html`.
 
-<img class='full' src='enter-filename.webp'>
+<img class='full' src='enter-filename.webp' alt=''>
 
 Da das Unterverzeichnis `website-test` noch nicht existiert, wirst du gefragt, ob es für dich erstellt werden soll. Bestätige dies mit <kbd>Enter</kbd>.
 
-<img class='full' src='create-folder.webp'>
+<img class='full' src='create-folder.webp' alt=''>
 
 Da wir nun in diesem Verzeichnis arbeiten wollen, kannst du es öffnen, indem du entweder im Menü »File« / »Open Folder…« auswählst oder einfach <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>Strg</kbd><kbd>O</kbd> drückst. Wähle den Ordner `website-test` aus:
 
-<img class='full' src='open-folder.webp'>
+<img class='full' src='open-folder.webp' alt=''>
 
 Nachdem das Verzeichnis geöffnet wurde, siehst du auf der linken Seite den Explorer. Hier siehst du alle Dateien und Ordner, die sich in diesem Verzeichnis befinden. Klicke auf die Datei `index.html`, um sie zu öffnen.
 
-<img class='full' src='fresh-project.webp'>
+<img class='full' src='fresh-project.webp' alt=''>
 
 
 ### Vorschau starten
 
-<img src='go-live.webp' class='r' style='width: 21em;'>
+<img src='go-live.webp' class='r' style='width: 21em;' alt=''>
 
 Unten rechts im Fenster siehst du den Eintrag »Go Live«. Wenn du darauf klickst, öffnet sich ein neues Tab in deinem Browser mit der Vorschau deiner HTML-Seite. Deine Seite ist noch leer, aber das wird sich gleich ändern. Zumindest solltest du in der Titelzeile des Browserfenster schon den Seitentitel »Mein Titel« sehen.
 
@@ -212,7 +212,7 @@ Beachte, dass wir den Text mit dem Link nun auch in einen Absatz (<code>&lt;p&gt
 </div>
 
 <div class='floatright' style='width: 32em;'>
-    <img src='ugly.webp' class='keep_padding'>
+    <img src='ugly.webp' class='keep_padding' alt='Die ungestaltete Webseite zeigt eine Überschrift, eine Liste, ein großes Hades-Bild, einen Link und eine Tabelle.'>
 </div>
 
 Deine Seite sollte in der Live-Vorschau jetzt so aussehen wie rechts abgebildet. Wenn du die Seite so siehst, hast du alles richtig gemacht. Wenn nicht, schau dir den Quelltext noch einmal genau an und achte darauf, dass du alle Tags richtig gesetzt hast. HTML ist sehr empfindlich gegenüber Fehlern. Wenn du z. B. ein schließendes Tag vergisst oder ein Tag falsch schreibst, wird die Seite nicht richtig angezeigt.
@@ -417,7 +417,7 @@ Mit `border-collapse: collapse;` sorgen wir dafür, dass die Ränder der Zellen 
 Deine Webseite sollte jetzt ungefähr so aussehen:
 
 <div class='floatright' style='width: 32em;'>
-    <img src='pretty.webp' class='keep_padding'>
+    <img src='pretty.webp' class='keep_padding' alt='Die gestaltete Webseite ordnet Überschrift, Text, Hades-Bild, Link und Tabelle mit Farben und Abständen übersichtlich an.'>
 </div>
 
 ## Tipps & Tricks

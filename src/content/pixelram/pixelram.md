@@ -22,7 +22,7 @@ Dafür verwenden wir die Programmiersprache C. Diese Sprache ist näher an der A
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und danach <kbd>F</kbd>. Dein Work­space sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp'>
+<img class='full' src='fresh-start.webp' alt=''>
 
 <!-- Screenshot: Workspace ohne geöffneten Ordner -->
 
@@ -32,27 +32,27 @@ Klicke auf den blauen Button »Clone Repository« und gib folgende Adresse ein:
 https://github.com/specht/pixelram-starter.git
 ```
 
-<img class='full' src='git-clone.webp'>
+<img class='full' src='git-clone.webp' alt=''>
 
 Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <kbd>Enter</kbd>.
 
-<img class='full' src='confirm-clone-path.webp'>
+<img class='full' src='confirm-clone-path.webp' alt=''>
 
 Beantworte die Frage »Would you like to open the cloned repository?« mit »Open«.
 
-<img class='full' src='open-yes-no.webp'>
+<img class='full' src='open-yes-no.webp' alt=''>
 
 Öffne nun die Datei `main.c` und führe im Terminal `make` aus:
 
-<img class='full' src='make.webp'>
+<img class='full' src='make.webp' alt=''>
 
 Du erhältst nun eine Datei `main.html`, die du anschauen kannst, indem du rechts unten auf »Go Live« drückst und dann die Datei auswählst. Passend zum Testprogramm solltest du einen kleinen grünen Punkt in der Mitte des Bildes sehen:
 
-<img src='green-dot.webp' style='width: 100%;'>
+<img src='green-dot.webp' style='width: 100%;' alt='Ein kleiner grüner Punkt leuchtet in der Mitte einer schwarzen Fläche.'>
 
 Wenn du später ein anderes Programm als `main.c` compilieren möchtest, musst du den entsprechenden Eintrag im `Makefile` unter `PROGRAM` ändern. Falls deinem Programm Default-Argumente übergeben werden sollen, kannst du diese unter `ARGS` eintragen. Die übrigen Zeilen kannst du so lassen, wie sie sind.
 
-<img class='full' src='makefile.webp'>
+<img class='full' src='makefile.webp' alt=''>
 
 ## Grundlagen
 
@@ -100,7 +100,7 @@ PixelRAM bringt viele fertige Farbpaletten mit. Ergänze vor oder nach dem `set_
 use_palette("sweetie_16");
 ```
 
-<img src='sweetie-dot.webp' style='width: 100%;'>
+<img src='sweetie-dot.webp' style='width: 100%;' alt='Ein heller Punkt liegt auf einem dunkelblauen Hintergrund.'>
 
 Durch die veränderte Palette ist der Pixel jetzt blau und auch die Hintergrundfarbe (Farbe 0) ist nicht mehr schwarz, sondern dunkelblau.
 
@@ -123,7 +123,7 @@ for (int y = 0; y < 180; y++)
 
 Die äußere Schleife läuft von oben nach unten durch alle Zeilen des Bildes. Für jede dieser Zeilen läuft die innere Schleife von links nach rechts durch alle Pixel. Auf diese Weise besucht das Programm jeden der 57.600 Bildpunkte genau einmal.
 
-<img style='width: 100%' src='yellow.webp'>
+<img style='width: 100%' src='yellow.webp' alt='Gelbe und orange Pixel bilden eine fein gemusterte Fläche.'>
 
 Damit wir die Breite und Höhe unseres Bildes nicht an mehreren Stellen als Zahlen eintragen müssen, legen wir sie am Anfang des Programms fest:
 
@@ -153,7 +153,7 @@ int main(void)
 
 Jetzt bekommt nicht mehr jeder Pixel dieselbe Farbe. Stattdessen hängt seine Farbe von seiner Position `x` und `y` ab. Wir haben also aufgehört, einzelne Objekte auf einen Bildschirm zu zeichnen: Unser Programm berechnet das gesamte Bild Pixel für Pixel. Genau dieses Prinzip werden wir in den nächsten Schritten weiter ausbauen.
 
-<img style='width: 100%' src='patches.webp'>
+<img style='width: 100%' src='patches.webp' alt='Diagonale Bänder aus bunten quadratischen Farbfeldern füllen die Fläche.'>
 
 <div class='hint'>
 Probiere auch den CRT-Filter in der PixelRAM-Anzeige aus. Er simuliert Scanlines und die Farbmaske eines Röhrenbildschirms und passt besonders gut zur niedrigen Auflösung und den begrenzten Paletten.
@@ -207,7 +207,7 @@ for (int y = 0; y < HEIGHT; y++)
 
 Pixel mit ungefähr demselben Abstand vom Mittelpunkt erhalten dieselbe Farbe. Deshalb entstehen konzentrische Kreise, obwohl wir im Programm nirgendwo einen Kreis zeichnen:
 
-<img style='width: 100%' src='color-circles.webp'>
+<img style='width: 100%' src='color-circles.webp' alt='Konzentrische Kreise wechseln zwischen kräftigen Regenbogenfarben.'>
 
 Der Kreis ergibt sich allein aus der Berechnung für jeden einzelnen Pixel. Probiere aus, was passiert, wenn du die Zahl `6.0` größer oder kleiner machst.
 
@@ -226,7 +226,7 @@ set_pixel(x, y, color);
 
 Durch `wave + 1.0` verschieben wir den Wertebereich von -1 ... 1 auf 0 ... 2. Anschließend multiplizieren wir mit 7.5 und erhalten Werte von ungefähr 0 bis 15, die direkt zu unserer 16-Farben-Palette passen. Aus den harten Farbringen sind dadurch regelmäßig wiederkehrende Kreiswellen geworden.
 
-<img style='width: 100%;' src='sinus-rings.webp'>
+<img style='width: 100%;' src='sinus-rings.webp' alt='Viele dünne konzentrische Ringe bilden einen farbigen Wellenverlauf.'>
 
 Auch hier lohnt es sich zu experimentieren. Wenn du `distance * 0.12` beispielsweise durch `distance * 0.20` ersetzt, liegen die Wellen dichter zusammen. Mit einem kleineren Wert werden sie breiter.
 
@@ -317,7 +317,7 @@ Die Funktion `hypot` berechnet direkt den Abstand aus horizontalem und vertikale
 
 Die Werte von `sin` und `cos` bewegen sich gleichmäßig zwischen -1 und 1. Durch die Multiplikation mit 70.0 beziehungsweise 40.0 bestimmen wir, wie weit sich der Mittelpunkt horizontal und vertikal bewegen darf. Das Ergebnis ist eine Kreiswelle, deren Quelle selbst durch das Bild wandert.
 
-<img style='width: 100%;' src='moving-center.webp'>
+<img style='width: 100%;' src='moving-center.webp' alt='Der Mittelpunkt der farbigen konzentrischen Ringe ist seitlich verschoben.'>
 
 ### Zwei Wellen treffen aufeinander
 
@@ -393,7 +393,7 @@ int main(void)
 }
 ```
 
-<img style='width: 100%' src='interference.webp'>
+<img style='width: 100%' src='interference.webp' alt='Blaue und violette Wellen bilden ein symmetrisches Interferenzmuster.'>
 
 Hinter der Animation steckt eine ganze Menge Arbeit: Bei 320 × 180 Pixeln berechnet unser Programm für jeden Frame 57.600 Pixel neu. Für jeden einzelnen davon bestimmen wir zwei Abstände und berechnen zwei Sinusfunktionen. Bei 60 Bildern pro Sekunde sind das mehr als **3 Millionen neu berechnete Pixel pro Sekunde**. Genau bei solchen Aufgaben zeigt sich, warum eine schnelle Sprache wie C gut für Animationen geeignet ist.
 
@@ -435,7 +435,7 @@ use_palette("aap_64");
 
 Achte dabei darauf, dass die Paletten unterschiedlich viele Farben enthalten. Unser aktueller Quelltext berechnet Werte zwischen 0 und 15 und passt deshalb direkt zu `sweetie_16`. Wenn du eine Palette mit einer anderen Anzahl von Farben vollständig ausnutzen möchtest, musst du auch die Berechnung des Farbwerts entsprechend verändern.
 
-<img style='width: 100%' src='fancy.webp'>
+<img style='width: 100%' src='fancy.webp' alt='Orange, gelbe und grüne Ringe wachsen zu einem organischen Zellmuster zusammen.'>
 
 ## Noch mehr PixelRAM
 
@@ -508,7 +508,7 @@ int main(void)
 
 Die Funktion `atan2(dy, dx)` berechnet den Winkel eines Pixels zum Mittelpunkt. Gemeinsam mit dem Abstand `d` erhalten wir dadurch zwei Werte, aus denen das Muster auf der Tunnelwand berechnet werden kann. Das Grundprinzip ist trotzdem dasselbe wie zuvor: Jeder Pixel wird aus seiner Position und der aktuellen Zeit berechnet.
 
-<img style='width: 100%;' src='tunnel.webp'>
+<img style='width: 100%;' src='tunnel.webp' alt='Strahlenförmige bunte Segmente laufen auf eine schwarze Tunnelöffnung zu.'>
 
 ### Animierte Julia-Menge
 
@@ -561,7 +561,7 @@ int main(void)
 
 Die beiden Werte `cr` und `ci` verändern sich langsam mit der Zeit, wodurch sich auch die Form des Fraktals kontinuierlich verändert. Du musst die Mathematik hinter Julia-Mengen nicht vollständig verstehen, um mit dem Programm zu experimentieren. Schon kleine Änderungen an `-0.72`, `0.27` oder `0.08` können völlig andere Formen erzeugen.
 
-<img style='width: 100%;' src='julia.webp'>
+<img style='width: 100%;' src='julia.webp' alt='Ein Julia-Fraktal bildet farbige Bänder und wiederkehrende Spiralformen.'>
 
 ### Bonus: Palette Cycling
 
@@ -663,7 +663,7 @@ int main(void)
 
 Schau dir dazu besonders `draw_scene()` an: Die Funktion wird vor der Animationsschleife genau einmal aufgerufen. Innerhalb der Schleife stehen nur `cycle_magic(seconds())` und `present()`. Kein einziger Pixel wird dort neu gesetzt; die scheinbare Bewegung entsteht ausschließlich durch die animierte Palette.
 
-<img style='width: 100%;' src='magic.webp'>
+<img style='width: 100%;' src='magic.webp' alt='Violette und türkise Spiralringe leuchten auf schwarzem Grund.'>
 
 ## Wie geht es weiter?
 

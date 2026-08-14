@@ -1589,7 +1589,7 @@ class Main < Sinatra::Base
                 gallery = StringIO.open do |io|
                     io.puts "<div class='kenney-gallery'>"
                     @@kenney[entry[:path]].each do |model|
-                        io.puts "<div><img src='/cache/kenney/#{entry[:path]}/#{model}.webp'><div>#{model}</div></div>"
+                        io.puts "<div><img alt='' src='/cache/kenney/#{entry[:path]}/#{model}.webp'><div>#{model}</div></div>"
                     end
                     io.puts "</div>"
                     io.string
@@ -3099,7 +3099,7 @@ class Main < Sinatra::Base
                     next if section[:entries].reject do |entry|
                         (!DEVELOPMENT) && @@content[entry][:dev_only]
                     end.empty?
-                    io.puts "<h2><div class='squircle'><img src='#{section[:icon]}'></div> #{section[:label]}</h2>"
+                    io.puts "<h2><div class='squircle'><img alt='' src='#{section[:icon]}'></div> #{section[:label]}</h2>"
                     if section[:description]
                         io.puts "<p style='margin-top: -1em; margin-bottom: 1em;'>#{section[:description]}</p>"
                     end
@@ -3127,10 +3127,10 @@ class Main < Sinatra::Base
                         end
                         image_style = "object-position: #{content[:image_x]}% #{content[:image_y]}%;"
                         if content[:image_dark]
-                            io.puts "<img class='#{(additional_classes + ['theme-image-light']).join(' ')}' src='#{content[:image].sub('.webp', '-1024.webp')}' style='#{image_style}'>"
-                            io.puts "<img class='#{(additional_classes + ['theme-image-dark']).join(' ')}' src='#{content[:image_dark].sub('.webp', '-1024.webp')}' style='#{image_style}'>"
+                            io.puts "<img alt='' class='#{(additional_classes + ['theme-image-light']).join(' ')}' src='#{content[:image].sub('.webp', '-1024.webp')}' style='#{image_style}'>"
+                            io.puts "<img alt='' class='#{(additional_classes + ['theme-image-dark']).join(' ')}' src='#{content[:image_dark].sub('.webp', '-1024.webp')}' style='#{image_style}'>"
                         else
-                            io.puts "<img class='#{additional_classes.join(' ')}' src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='#{image_style}'>"
+                            io.puts "<img alt='' class='#{additional_classes.join(' ')}' src='#{(content[:image] || '/images/white.webp').sub('.webp', '-1024.webp')}' style='#{image_style}'>"
                         end
                         io.puts "<div class='shade'></div>"
                         io.puts "<div class='card-content'>"
@@ -4897,7 +4897,7 @@ class Main < Sinatra::Base
                             if (solved_tasks.dig(email, task_id) || []).include?(lang)
                                 state = 2
                             end
-                            io.puts "<img src='/images/lang/#{lang.sub('javascript', 'js')}-128.png' class='state-#{state}'>"
+                            io.puts "<img alt='' src='/images/lang/#{lang.sub('javascript', 'js')}-128.png' class='state-#{state}'>"
                         end
                         io.puts "</td>"
                     end

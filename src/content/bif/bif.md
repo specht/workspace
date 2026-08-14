@@ -20,7 +20,7 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 
 <!-- Screenshot: Workspace ohne geöffneten Ordner -->
 
-<img class='full' src='fresh-start.webp'>
+<img class='full' src='fresh-start.webp' alt=''>
 
 Für diese Anleitung brauchst du das BIF-Repository. Klicke auf den blauen Button »Clone Repository« und gib die folgende URL ein:
 
@@ -32,7 +32,7 @@ Bestätige anschließend mit <kbd>Enter</kbd>.
 
 <!-- Screenshot: Clone Repository mit eingetragener BIF-URL -->
 
-<img class='full' src='git-clone.webp'>
+<img class='full' src='git-clone.webp' alt=''>
 
 Als nächstes musst du angeben, in welches Verzeichnis das Repository geklont werden soll. Bestätige den Standardpfad
 
@@ -44,17 +44,17 @@ mit <kbd>Enter</kbd>.
 
 <!-- Screenshot: Auswahl von /workspace/ -->
 
-<img class='full' src='confirm-clone-path.webp'>
+<img class='full' src='confirm-clone-path.webp' alt=''>
 
 Beantworte anschließend die Frage »Would you like to open the cloned repository?« mit »Open«.
 
 <!-- Screenshot: Dialog zum Öffnen des geklonten Repositorys -->
 
-<img class='full' src='open-yes-no.webp'>
+<img class='full' src='open-yes-no.webp' alt=''>
 
 <!-- Screenshot: geöffnetes BIF-Projekt im Explorer -->
 
-<img class='full' src='bif-project.webp'>
+<img class='full' src='bif-project.webp' alt=''>
 
 Wenn alles geklappt hat, siehst du links im Explorer unter anderem den Ordner `pages-starter` sowie die Dateien `config.js` und `index.html`.
 
@@ -64,7 +64,7 @@ Wenn alles geklappt hat, siehst du links im Explorer unter anderem den Ordner `p
 
 <!-- Screenshot: 1.md geöffnet -->
 
-<img class='full' src='story-begin.webp'>
+<img class='full' src='story-begin.webp' alt=''>
 
 Dort steht bereits der Anfang unserer kleinen Geschichte:
 
@@ -91,20 +91,20 @@ Die Datei <code>1.md</code> hat bei BIF eine besondere Bedeutung: Jede Geschicht
 
 ## Vorschau starten
 
-<img src='go-live.webp' class='r' style='width: 21em;'>
+<img src='go-live.webp' class='r' style='width: 21em;' alt=''>
 
 Damit du deine Geschichte im Browser ausprobieren kannst, ist im Workspace bereits die Erweiterung **Live Server** installiert.
 Klicke rechts unten auf »Go Live«. Es öffnet sich ein neuer Tab mit deiner Geschichte:
 
 <div style='clear: both;'></div>
 
-<img class='full full-shadow scroll-right' src='first-page.webp'>
+<img class='full full-shadow scroll-right' src='first-page.webp' alt='Der Story-Graph enthält eine Startseite; daneben erscheint der Beginn der Geschichte, allerdings noch ohne Entscheidungen.'>
 
 BIF startet standardmäßig in der Entwicklungsansicht. Rechts siehst du die Geschichte, die momentan noch sehr kurz ist und noch keine Entscheidungsmöglichkeiten bietet. Mit dem Button rechts oben kannst du zwischen der Entwicklungsansicht und der Leseansicht hin- und herwechseln. Wenn du deine Geschichte später veröffentlichst, bekommen deine Leser:innen nur die Leseansicht zu sehen.
 
 ## Zweite Seite
 
-<img src='new-file.webp' class='r' style='width: 18em;'>
+<img src='new-file.webp' class='r' style='width: 18em;' alt=''>
 
 Unsere Geschichte soll nicht auf der ersten Seite stehen bleiben. Erstelle im Ordner `pages-starter` eine neue Datei, indem du auf das entsprechende Icon klickst. Nenne die Datei `2.md`.
 
@@ -118,7 +118,7 @@ Speichere die Datei, indem du <kbd>Strg</kbd><kbd>S</kbd> drückst. Die Vorschau
 
 <div style='clear: both;'></div>
 
-<img class='full full-shadow scroll-right' src='unreachable-page.webp'>
+<img class='full full-shadow scroll-right' src='unreachable-page.webp' alt='Eine zweite Seite ist im Story-Graph nicht mit der Startseite verbunden und als unerreichbar markiert.'>
 
 Damit besteht die Geschichte bereits aus zwei Seiten, allerdings gibt es noch keine Verbindung von der ersten zur zweiten Seite – dafür brauchen wir eine Entscheidung.
 
@@ -142,7 +142,7 @@ Du willst gerade gehen, da fällt dir ein: Deine Projektmappe liegt noch im Mate
 
 Speichere die Datei und probiere die Geschichte im Browser aus:
 
-<img class='full full-shadow scroll-right' src='two-pages.webp'>
+<img class='full full-shadow scroll-right' src='two-pages.webp' alt='Zwei Seiten sind im Story-Graph durch eine Entscheidung miteinander verbunden.'>
 
 Die Geschichte endet jetzt mit einer Entscheidungsmöglichkeit: wenn du in den Flur gehst, geht die Geschichte bei Seite 2 weiter. Links im Graphen siehst du immer, wo du dich gerade innerhalb der Geschichte befindest.
 
@@ -186,7 +186,7 @@ Speichere die Dateien und probiere beide Wege aus.
 
 <!-- Screenshot: zwei Entscheidungen im Flur -->
 
-<img class='full full-shadow scroll-right' src='branching-story.webp'>
+<img class='full full-shadow scroll-right' src='branching-story.webp' alt='Der Story-Graph verzweigt sich vom Flur zu Büro und Treppenhaus.'>
 
 Die Geschichte verzweigt sich jetzt auf Seite 2. Beide Wege führen anschließend wieder zurück in den Flur.
 
@@ -224,7 +224,7 @@ Der wichtige Unterschied ist der Punkt: `(.)` – er bedeutet, dass die Geschich
 
 <!-- Screenshot: lokale Entscheidung -->
 
-<img class='full full-shadow scroll-right' src='local-choice.webp'>
+<img class='full full-shadow scroll-right' src='local-choice.webp' alt='Die Frage nach dem Materialschrank führt nicht zu einem Seitenwechsel, da es sich um eine lokale Entscheidung handelt.'>
 
 Die vier Leerzeichen vor der Antwort sind wichtig. Durch die Einrückung erkennt BIF, dass der eingerückte Text zur Entscheidung direkt darüber gehört. Alles, was nach dieser lokalen Entscheidung passieren soll, wird deshalb entsprechend eingerückt.
 
@@ -305,7 +305,7 @@ Wenn du »Nimm den Schlüssel« auswählst, wird das Skript ausgeführt und `has
 
 <!-- Screenshot: Schlüssel genommen / State mit has_key: true -->
 
-<img class='full full-shadow scroll-right' src='take-key.webp'>
+<img class='full full-shadow scroll-right' src='take-key.webp' alt='Nach dem Aufnehmen des Schlüssels verschwindet die lokale Entscheidung aus der Geschichte.'>
 
 Die Geschichte hat sich damit zum ersten Mal etwas gemerkt. Solange du im Büro bleibst, sieht auch alles richtig aus: »Nimm den Schlüssel« ist bereits erledigt und kann nicht noch einmal ausgewählt werden.
 
@@ -469,7 +469,7 @@ Jetzt verändert sich die Beschreibung des Flurs und die neue Entscheidung ersch
 
 <!-- Screenshot: Flur ohne Schlüssel -->
 
-<img class='full full-shadow scroll-right' src='locked-door.webp'>
+<img class='full full-shadow scroll-right' src='locked-door.webp' alt='Im Flur erscheint mit gespeichertem Schlüssel die neue Entscheidung „Öffne den Materialschrank“.'>
 
 Damit haben Variablen und Bedingungen unterschiedliche Aufgaben:
 
@@ -485,7 +485,7 @@ Gerade beim Testen einer interaktiven Geschichte lohnt es sich, Orte mehrmals zu
 
 Öffne jetzt den Materialschrank:
 
-<img class='full full-shadow scroll-right' src='unlocked-door.webp'>
+<img class='full full-shadow scroll-right' src='unlocked-door.webp' alt='Der geöffnete Materialschrank bildet das Ende der Geschichte; darunter erscheint der Neustart-Button.'>
 
 Die Datei `5.md` enthält keine weitere Entscheidung. Deshalb erkennt BIF diese Seite automatisch als mögliches Ende der Geschichte.
 
@@ -533,7 +533,7 @@ BIF erkennt, dass das JavaScript nicht gültig ist. Im Bereich **Problems** sieh
 
 <!-- Screenshot: Problems mit JavaScript-Syntaxfehler -->
 
-<img class='full full-shadow' src='script-error.webp'>
+<img class='full full-shadow' src='script-error.webp' alt='Der Problems-Bereich meldet den JavaScript-Syntaxfehler; die betroffene Seite ist im Graphen rot markiert.'>
 
 Korrigiere die Zeile anschließend wieder:
 
@@ -577,22 +577,22 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
 
 <div class='row'>
     <div class='col-md-4'>
-        <img src='theme-default.webp' style='width: 100%;' class='full-shadow'>
+        <img src='theme-default.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im hellen Standard-Theme.'>
     </div>
     <div class='col-md-4'>
-        <img src='theme-paper.webp' style='width: 100%;' class='full-shadow'>
+        <img src='theme-paper.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im cremefarbenen Paper-Theme mit Serifenschrift.'>
     </div>
     <div class='col-md-4'>
-        <img src='theme-mystery.webp' style='width: 100%;' class='full-shadow'>
+        <img src='theme-mystery.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im dunklen Mystery-Theme.'>
     </div>
     <div class='col-md-4'>
-        <img src='theme-midnight.webp' style='width: 100%;' class='full-shadow'>
+        <img src='theme-midnight.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im dunkelblauen Midnight-Theme.'>
     </div>
     <div class='col-md-4'>
-        <img src='theme-terminal.webp' style='width: 100%;' class='full-shadow'>
+        <img src='theme-terminal.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im schwarzen Terminal-Theme mit grüner Monospace-Schrift.'>
     </div>
     <div class='col-md-4'>
-        <img src='theme-playful.webp' style='width: 100%;' class='full-shadow'>
+        <img src='theme-playful.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im Playful-Theme mit abgerundeten Flächen.'>
     </div>
 </div>
 
@@ -694,7 +694,7 @@ Der Text in den eckigen Klammern beschreibt das Bild und hilft zum Beispiel Mens
 
 <!-- Screenshot: BIF-Seite mit Bild -->
 
-<img class='full full-shadow scroll-right' src='story-image.webp'>
+<img class='full full-shadow scroll-right' src='story-image.webp' alt='Ein Schlüsselbild ergänzt die Büroseite der Geschichte.'>
 
 ### Audio und Video
 
@@ -790,7 +790,7 @@ Diese Kommentare sind für die Leserinnen und Leser unsichtbar. Sie helfen nur d
 
 <!-- Screenshot: Graph mit gruppierten Seiten -->
 
-<img class='full full-shadow' src='grouped-graph.webp'>
+<img class='full full-shadow' src='grouped-graph.webp' alt='Farbig hinterlegte Gruppen gliedern den Story-Graphen in mehrere Bereiche.'>
 
 ### JavaScript
 
