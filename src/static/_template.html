@@ -188,7 +188,7 @@ function install_autotoc() {
         let div = $(containers[i]);
         div.data('autotoc-index', i);
         autotoc_containers.push(div[0]);
-        let item = $('<div>').text(div.data('label'));
+        let item = $('<button>', { type: 'button' }).text(div.data('label'));
         item.data('autotoc-index', i);
         item[0].addEventListener('click', function(e) {
             $('html')[0].scrollTop = $(containers[i]).find('h2')[0].offsetTop - 80;
@@ -611,12 +611,12 @@ window.addEventListener('load', function() {
     </div>
     #{CONTENT}
 
-    <div class="autotoc hidden">
+    <nav class="autotoc hidden" aria-label="Tutorialabschnitte">
         <div class="items"></div>
         <div class="progress_spots_sm"></div>
         <div class="progress_spots_lg"></div>
         <div class="progress_sm"></div>
-    </div>
+    </nav>
 
     <footer>
         <a href='/impressum'>Impressum und Datenschutzerklärung</a>

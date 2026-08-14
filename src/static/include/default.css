@@ -1166,24 +1166,28 @@ div.floatright > p {
     display: none;
 }
 
-.autotoc > .items > div {
+.autotoc > .items > button {
     display: inline-block;
     position: relative;
 
     width: 20em;
     margin-bottom: 0.5em;
     padding: 1em 2em;
+    border: 0;
 
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
     scroll-snap-align: center;
 
+    color: inherit;
+    background: transparent;
+    font: inherit;
     cursor: pointer;
     user-select: none;
 }
 
-.autotoc > .items > div.active {
+.autotoc > .items > button.active {
     position: relative;
     font-weight: bold;
 }
@@ -1243,6 +1247,7 @@ div.floatright > p {
     scroll-snap-type: x mandatory;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    pointer-events: none;
 }
 
 .autotoc > .progress_spots_lg > div {
@@ -1268,13 +1273,13 @@ div.floatright > p {
         padding: 1em 1em 0.6em;
     }
 
-    .autotoc > .items > div {
+    .autotoc > .items > button {
         width: 100%;
         margin-bottom: 0;
         padding: 0 1em;
     }
 
-    .autotoc > .items > div.active {
+    .autotoc > .items > button.active {
         font-weight: unset;
     }
 
