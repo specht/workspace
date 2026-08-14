@@ -462,17 +462,7 @@
             });
         });
         $('#bu_reset_workspace').on('click', function() {
-            showTemplateModal('Workspace zurücksetzen', `<div>Bist du sicher, dass du deinen Workspace zurücksetzen möchtest? Alle Dateien, Einstellungen und installierte Erweiterungen werden gelöscht.</div><div id='div_reset_workspace_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog bi-spin'></i>Moment, dein Workspace wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_workspace_success' style='display: none; margin-top: 1em;'><i class='text-success bi bi-check-lg'></i>&nbsp;Dein Workspace wurde auf den Ursprungszustand zurückgesetzt.</div>`,
-            "<i class='bi bi-trash-fill'></i>Zurücksetzen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
-                $('#div_reset_workspace_please_wait').slideDown();
-                api_call('/api/reset_server', {}, function(data) {
-                    $('#div_reset_workspace_please_wait').hide();
-                    $('#div_reset_workspace_success').show();
-                    $('#__template_modal .modal-footer .btn').eq(0).hide();
-                    $('#__template_modal .modal-footer .btn').eq(1).html(`<i class='bi bi-x-lg'></i>Schließen`);
-                });
-                return false;
-            });
+            show_workspace_reset_modal(#{@session_user[:email].to_json});
         });
         $('#bu_reset_mysql').on('click', function() {
             showTemplateModal('MySQL-Datenbank zurücksetzen', `<div>Bist du sicher, dass du deine MySQL-Datenbank zurücksetzen möchtest? Alle Tabellen und Daten werden gelöscht.</div><div id='div_reset_mysql_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog bi-spin'></i>Moment, deine Datenbank wird auf den Ursprungszustand zurückgesetzt…</div><div id='div_reset_mysql_success' style='display: none; margin-top: 1em;'><i class='text-success bi bi-check-lg'></i>&nbsp;Deine Datenbank wurde auf den Ursprungszustand zurückgesetzt.</div>`,

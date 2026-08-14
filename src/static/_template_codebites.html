@@ -258,12 +258,9 @@ window.addEventListener('load', function() {
         });
     });
     $('#bu_reset').on('click', function(e) {
-        showTemplateModal('Workspace zurücksetzen', 'Bist du sicher, dass du deinen Workspace zurücksetzen möchtest? Alle Dateien und deine installierten Erweiterungen werden gelöscht.',
-        "<i class='bi bi-trash-fill'></i>Zurücksetzen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
-            api_call('/api/reset_server', {}, function(data) {
-                // we need to reload the website to receive the updated server_tag and server_sid
-                window.location.reload();
-            });
+        show_workspace_reset_modal(#{(@session_user || {})[:email].to_json}, function() {
+            // we need to reload the website to receive the updated server_tag and server_sid
+            window.location.reload();
         });
     });
     $('#bu_share').on('click', function(e) {

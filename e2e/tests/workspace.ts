@@ -48,33 +48,82 @@ export async function loginAsE2eUser(
 
 export async function resetWorkspace(
   page: Page,
+  email: string,
   testInfo: TestInfo,
 ) {
   await test.step('Reset workspace state', async () => {
-    const result = await page.evaluate(async () => {
+    const postReset = async (confirmation?: string) => page.evaluate(async value => {
       const response = await fetch('/api/reset_server', {
         method: 'POST',
         credentials: 'include',
         headers: {
           'content-type': 'application/json',
         },
-        body: '{}',
+        body: JSON.stringify(value === undefined ? {} : {
+          confirmation: value,
+        }),
       });
 
       return {
         status: response.status,
         body: await response.text(),
       };
+    }, confirmation);
+
+    const missingConfirmation = await postReset();
+    expect(missingConfirmation.status).not.toBe(200);
+
+    const wrongConfirmation = await postReset(`wrong-${email}`);
+    expect(wrongConfirmation.status).not.toBe(200);
+
+    await page.goto('/profil');
+    await page.locator('#bu_reset_workspace').click();
+
+    const modal = page.locator('#__template_modal');
+    const input = modal.locator('#ti_reset_workspace_confirmation');
+    const confirmButton = modal.getByRole('button', {
+      name: 'Workspace endgültig zurücksetzen',
     });
+
+    await expect(modal.getByText(
+      'Dieser Vorgang kann nicht rückgängig gemacht werden.',
+    )).toBeVisible();
+    await expect(modal.locator('code')).toHaveText(email);
+    await expect(modal.getByText(
+      'Deine Daten in MySQL und Neo4j werden dabei nicht gelöscht.',
+    )).toBeVisible();
+    await expect(confirmButton).toBeDisabled();
+
+    await input.fill(`wrong-${email}`);
+    await expect(confirmButton).toBeDisabled();
+
+    await input.fill(email);
+    await expect(confirmButton).toBeEnabled();
+
+    const responsePromise = page.waitForResponse(response =>
+      response.url().endsWith('/api/reset_server')
+      && response.request().method() === 'POST',
+    );
+    await confirmButton.click();
+    await expect(input).toBeDisabled();
+    await expect(confirmButton).toBeDisabled();
+
+    const response = await responsePromise;
+    const result = {
+      status: response.status(),
+      body: await response.text(),
+    };
 
     expect(
       result.status,
       `reset_server returned ${result.status}: ${result.body}`,
     ).toBe(200);
 
-    // reset_server changes server_tag/server_sid. Reload to receive the
-    // updated server cookie before launching the fresh workspace.
-    await page.reload();
+    await expect(modal.locator('#div_reset_workspace_success')).toBeVisible();
+
+    // reset_server changes server_tag/server_sid. Return to the dashboard to
+    // receive the updated server cookie before launching the fresh workspace.
+    await page.goto('/');
     await expect(page.locator('#bu_launch')).toBeVisible();
     await attachScreenshot(page, testInfo, '02-workspace-reset');
   }, { box: true });

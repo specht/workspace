@@ -2981,6 +2981,9 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
 
         email = @session_user[:email]
+        data = parse_request_data(:required_keys => [:confirmation])
+        assert(data[:confirmation] == email, 'confirmation_mismatch')
+
         stop_server(email)
         container_name = fs_tag_for_email(email)
         system("rm -rf /user/#{container_name}")

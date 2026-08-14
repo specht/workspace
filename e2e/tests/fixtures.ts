@@ -33,7 +33,7 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
 
   freshWorkspace: async ({ page, e2eEmail }, use, testInfo) => {
     await loginAsE2eUser(page, e2eEmail, testInfo);
-    await resetWorkspace(page, testInfo);
+    await resetWorkspace(page, e2eEmail, testInfo);
     const workspace = await launchWorkspace(page, testInfo);
     await expectVsCodeReady(workspace, testInfo);
 

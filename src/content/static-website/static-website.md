@@ -153,12 +153,9 @@ VS Code kann die Einrückung auch automatisch aufräumen: Klicke mit der rechten
 </p>
 </div>
 
-<!-- TODO WEBSITE-PREVIEW: Screenshot nach dem Einfügen der Liste. Wenn das Bild ein anderes Seitenverhältnis hat, ergänze wie beim ersten Preview die passende aspect-ratio-Angabe.
-<button class='tutorial-preview' type='button'>
+<button class='tutorial-preview' type='button' style='--tutorial-preview-ratio: 1920 / 970;'>
     <img src='website-list.webp' alt='Die ungestaltete Axolotl-Webseite zeigt jetzt zusätzlich die Überschrift „Was ich spannend finde“ und eine Liste mit drei Stichpunkten.'>
 </button>
-<div class='tutorial-preview-clear'></div>
--->
 
 `<h2>` ist eine Überschrift der zweiten Ebene. Mit `<ul>` beginnt eine Liste mit Stichpunkten. Jeder einzelne Listenpunkt steht in einem `<li>`-Tag – `li` steht für »list item«.
 
@@ -168,7 +165,14 @@ Wenn du eine nummerierte Liste brauchst, kannst du statt `<ul>` einfach `<ol>` v
 Schreibe drei eigene Punkte über dein Thema. Es ist deine Seite – die Beispieltexte sind nur Platzhalter.
 </div>
 
+<div class='tutorial-preview-clear'></div>
+
+
 ### Einen Link einfügen
+
+<button class='tutorial-preview' type='button' style='--tutorial-preview-ratio: 1920 / 970;'>
+    <img src='website-link.webp' alt='Die ungestaltete Axolotl-Webseite zeigt unter der Liste zusätzlich den Link „Mehr über Axolotl erfahren“.'>
+</button>
 
 Das **H** in HTML steht für **Hypertext**. Eine der wichtigsten Ideen des World Wide Web ist, dass Dokumente miteinander verlinkt werden können.
 
@@ -180,14 +184,9 @@ Füge unter der Liste einen Link ein:
 </p>
 ```
 
-<!-- TODO WEBSITE-PREVIEW: Screenshot nach dem Einfügen des Links.
-<button class='tutorial-preview' type='button'>
-    <img src='website-link.webp' alt='Die ungestaltete Axolotl-Webseite zeigt unter der Liste zusätzlich den Link „Mehr über Axolotl erfahren“.'>
-</button>
-<div class='tutorial-preview-clear'></div>
--->
-
 Der Tag `<a>` macht einen Text anklickbar. Im Attribut `href` steht die Adresse, zu der der Link führt. Bei deinem eigenen Thema kannst du natürlich auf eine andere Seite verlinken.
+
+<div class='tutorial-preview-clear'></div>
 
 ### Ein Bild einfügen
 
