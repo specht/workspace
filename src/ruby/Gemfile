@@ -7,7 +7,10 @@ gem 'sinatra-contrib', '~> 4.2.1'
 gem 'faye', '~> 1.4'
 gem 'mail', '~> 2.9'
 gem 'mysql2', '~> 0.5.7'
-gem 'neo4j_bolt', '~> 0.3.0'
+# gem 'neo4j_bolt', '~> 0.3.0'
+gem 'neo4j_bolt',
+    git: 'https://github.com/specht/neo4j_bolt.git',
+    ref: 'e800e42d509ab5f59fc940dfd819bf951f4f1a7b'
 gem 'nokogiri', '~> 1.19'
 gem 'puma', '~> 8.0'
 gem 'rackup', '~> 2.3'
