@@ -73,11 +73,11 @@ Nachdem das Verzeichnis geöffnet wurde, siehst du links im Explorer deine Datei
 
 Unten rechts im Fenster findest du »Go Live«. Klicke darauf. In einem neuen Browsertab öffnet sich deine Webseite.
 
-Du solltest jetzt schon die Überschrift »Axolotl« und einen kurzen Text sehen. Mehr ist noch nicht passiert – aber du hast gerade deine erste eigene HTML-Seite im Browser geöffnet:
+Du solltest jetzt schon die Überschrift »Axolotl« und einen kurzen Text sehen. Mehr ist noch nicht passiert – aber du hast gerade deine erste eigene HTML-Seite im Browser geöffnet.
 
 <div style='clear: both;'></div>
 
-<button class='tutorial-preview' type='button' style='--tutorial-preview-ratio: 1920 / 970;'>
+<button class='tutorial-preview' type='button'>
     <img src='website-plain.webp' alt='Die ungestaltete Webseite zeigt die Überschrift „Axolotl“ und einen kurzen Absatz auf weißem Hintergrund.'>
 </button>
 
@@ -88,8 +88,6 @@ Tipp: Ziehe den Workspace und die Vorschau nebeneinander. Dann kannst du in <cod
 <div class='hint melting'>
 Falls sich die Vorschau einmal nicht automatisch aktualisiert, lade sie mit <kbd>Strg</kbd><kbd>R</kbd> oder <kbd>F5</kbd> neu.
 </div>
-
-<div class='tutorial-preview-clear'></div>
 
 ## Inhalt mit HTML
 
@@ -104,6 +102,8 @@ HTML steht für **Hypertext Markup Language**. HTML beschreibt nicht in erster L
 ```html
 <p>Ein kurzer Text.</p>
 ```
+
+<div class='tutorial-preview-clear'></div>
 
 Die Tags sind ineinander verschachtelt. Alles, was im Browser sichtbar auf der Seite steht, befindet sich in unserem Beispiel im `<body>`-Tag. Der `<head>` enthält dagegen Informationen **über** die Seite, zum Beispiel den Titel und die Zeichenkodierung.
 
@@ -127,6 +127,10 @@ Such dir spätestens jetzt ein eigenes Thema für deine Seite aus. Du kannst die
 
 ### Eine Liste hinzufügen
 
+<button class='tutorial-preview' type='button'>
+    <img src='website-list.webp' alt='Die ungestaltete Axolotl-Webseite zeigt jetzt zusätzlich die Überschrift „Was ich spannend finde“ und eine Liste mit drei Stichpunkten.'>
+</button>
+
 Auf unserer Beispielseite wollen wir drei Dinge sammeln, die an Axolotl interessant sind. Füge unter dem ersten Absatz Folgendes ein:
 
 ```html
@@ -149,13 +153,9 @@ Du kannst mehrere Zeilen markieren und mit <kbd>Tab</kbd> gemeinsam einrücken b
 </p>
 
 <p>
-VS Code kann die Einrückung auch automatisch aufräumen: Klicke mit der rechten Maustaste in die Datei und wähle »Format Document«. Das ist besonders praktisch, nachdem du einen größeren Codeblock eingefügt hast.
+VS Code kann die Einrückung auch automatisch aufräumen: Klicke mit der rechten Maustaste in die Datei und wähle »Format Document« oder drücke <kbd>Strg</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd>. Das ist besonders praktisch, nachdem du einen größeren Codeblock eingefügt hast.
 </p>
 </div>
-
-<button class='tutorial-preview' type='button' style='--tutorial-preview-ratio: 1920 / 970;'>
-    <img src='website-list.webp' alt='Die ungestaltete Axolotl-Webseite zeigt jetzt zusätzlich die Überschrift „Was ich spannend finde“ und eine Liste mit drei Stichpunkten.'>
-</button>
 
 `<h2>` ist eine Überschrift der zweiten Ebene. Mit `<ul>` beginnt eine Liste mit Stichpunkten. Jeder einzelne Listenpunkt steht in einem `<li>`-Tag – `li` steht für »list item«.
 
@@ -165,18 +165,17 @@ Wenn du eine nummerierte Liste brauchst, kannst du statt `<ul>` einfach `<ol>` v
 Schreibe drei eigene Punkte über dein Thema. Es ist deine Seite – die Beispieltexte sind nur Platzhalter.
 </div>
 
-<div class='tutorial-preview-clear'></div>
-
-
 ### Einen Link einfügen
-
-<button class='tutorial-preview' type='button' style='--tutorial-preview-ratio: 1920 / 970;'>
-    <img src='website-link.webp' alt='Die ungestaltete Axolotl-Webseite zeigt unter der Liste zusätzlich den Link „Mehr über Axolotl erfahren“.'>
-</button>
 
 Das **H** in HTML steht für **Hypertext**. Eine der wichtigsten Ideen des World Wide Web ist, dass Dokumente miteinander verlinkt werden können.
 
 Füge unter der Liste einen Link ein:
+
+<div class='tutorial-preview-clear'></div>
+
+<button class='tutorial-preview' type='button'>
+    <img src='website-link.webp' alt='Die ungestaltete Axolotl-Webseite zeigt unter der Liste zusätzlich den Link „Mehr über Axolotl erfahren“.'>
+</button>
 
 ```html
 <p>
@@ -186,27 +185,24 @@ Füge unter der Liste einen Link ein:
 
 Der Tag `<a>` macht einen Text anklickbar. Im Attribut `href` steht die Adresse, zu der der Link führt. Bei deinem eigenen Thema kannst du natürlich auf eine andere Seite verlinken.
 
-<div class='tutorial-preview-clear'></div>
-
 ### Ein Bild einfügen
 
 Ein Bild wird mit dem Tag `<img>` eingefügt. Für den ersten Versuch verwenden wir ein frei lizenziertes Axolotl-Foto von Wikimedia Commons, damit du noch keine Bilddatei in den Workspace übertragen musst.
 
 Füge das Bild **vor** der Überschrift ein:
 
-```html
-<img
-    src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Ambystoma_mexicanum_photo.jpg/960px-Ambystoma_mexicanum_photo.jpg"
-    alt="Ein hell gefärbter Axolotl in einem Aquarium"
->
-```
+<div class='tutorial-preview-clear'></div>
 
-<!-- TODO WEBSITE-PREVIEW: Screenshot nach dem Einfügen des Wikimedia-Commons-Bildes. Der Bildnachweis kann auf diesem Screenshot schon sichtbar sein, wenn du ihn direkt danach aufgenommen hast.
 <button class='tutorial-preview' type='button'>
     <img src='website-image.webp' alt='Die Axolotl-Webseite zeigt nun oberhalb der Überschrift ein großes Foto eines Axolotls.'>
 </button>
-<div class='tutorial-preview-clear'></div>
--->
+
+```html
+<img
+    src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Ambystoma_mexicanum_Natural_History_Museum_University_of_Pisa_2.jpg/330px-Ambystoma_mexicanum_Natural_History_Museum_University_of_Pisa_2.jpg"
+    alt="Ein Axolotl in einem Aquarium"
+>
+```
 
 Beim `<img>`-Tag gibt es zwei besonders wichtige Attribute:
 
@@ -215,19 +211,25 @@ Beim `<img>`-Tag gibt es zwei besonders wichtige Attribute:
 
 Anders als `<p>` oder `<h1>` enthält `<img>` keinen Text und braucht deshalb auch kein schließendes `</img>`.
 
-Das Foto stammt von **Nasreddine Nas'h** und steht auf Wikimedia Commons unter der Lizenz **CC BY-SA 4.0**. Füge außerdem am Ende deines `<main>`-Bereichs einen Bildnachweis ein:
+Das Foto stammt von **Lorenzo Tarocchi** und steht auf Wikimedia Commons unter der Lizenz **CC BY-SA 4.0**. Füge außerdem am Ende deines `<main>`-Bereichs einen Bildnachweis ein:
+
+<button class='tutorial-preview' type='button'>
+    <img src='website-image-with-credit.webp' alt='Die Axolotl-Webseite zeigt nun am Ende der Seite einen Bildnachweis.'>
+</button>
 
 ```html
 <p class="credit">
     Foto:
-    <a href="https://commons.wikimedia.org/wiki/File:Ambystoma_mexicanum_photo.jpg">
-        Nasreddine Nas'h / Wikimedia Commons
+    <a href="https://commons.wikimedia.org/wiki/File:Ambystoma_mexicanum_Natural_History_Museum_University_of_Pisa_2.jpg">
+        Lorenzo Tarocchi / Wikimedia Commons
     </a>,
     <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>
 </p>
 ```
 
 Wikimedia Commons erlaubt das direkte Einbinden seiner Bilder, also sogenanntes **Hotlinking**. Die Lizenzbedingungen gelten trotzdem. Für eine fertige eigene Webseite ist es meist robuster, die Bilddatei selbst im Projekt zu haben: Dann verschwindet sie nicht, wenn sich die Adresse auf einem fremden Server ändert.
+
+<div class='tutorial-preview-clear'></div>
 
 <div class='hint think'>
 Nicht jedes Bild, das du im Internet findest, darfst du einfach für deine Webseite verwenden. Bei Wikimedia Commons findest du viele Bilder mit freien Lizenzen. Schau auf der Dateiseite nach, wer das Bild gemacht hat und unter welcher Lizenz es steht.
@@ -238,7 +240,7 @@ Nicht jedes Bild, das du im Internet findest, darfst du einfach für deine Webse
 Der Alt-Text ist für Menschen wichtig, die das Bild nicht sehen können und zum Beispiel einen Screenreader verwenden. Er sollte kurz beschreiben, welche **zusätzliche Information** das Bild vermittelt. Für unser Foto passt zum Beispiel:
 
 ```html
-alt="Ein hell gefärbter Axolotl in einem Aquarium"
+alt="Ein Axolotl in einem Aquarium"
 ```
 
 Ein schlechter Alt-Text wäre:
@@ -267,7 +269,7 @@ Verwende für Bilder am besten einfache Dateinamen mit kleinen Buchstaben, ohne 
 
 Wenn du das Bild bereits auf deinem Computer gespeichert hast, kannst du es einfach aus deinem Dateimanager in den Explorer von VS Code ziehen. Lege es dort **neben `index.html`** ab.
 
-<img src='../showerjs/drag-and-drop.webp' class='full' alt=''>
+<img src='drag-and-drop.webp' class='full' alt=''>
 
 Anschließend sollte die Datei links im Explorer auftauchen. Wenn du auf sie klickst, zeigt VS Code eine Vorschau an.
 
@@ -293,8 +295,8 @@ Sobald die Bilddatei neben `index.html` liegt, brauchst du nicht mehr die lange 
 
 ```html
 <img
-    src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Ambystoma_mexicanum_photo.jpg/960px-Ambystoma_mexicanum_photo.jpg"
-    alt="Ein hell gefärbter Axolotl in einem Aquarium"
+    src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Ambystoma_mexicanum_Natural_History_Museum_University_of_Pisa_2.jpg/330px-Ambystoma_mexicanum_Natural_History_Museum_University_of_Pisa_2.jpg"
+    alt="Ein Axolotl in einem Aquarium"
 >
 ```
 
@@ -350,8 +352,8 @@ Schreibe nun in `styles.css`:
 ```css
 body {
     margin: 0;
-    background: #102522;
-    color: #f4f1e8;
+    background: #351c2b;
+    color: #fff2f6;
     font-family: system-ui, sans-serif;
 }
 
@@ -362,7 +364,7 @@ main {
 }
 
 a {
-    color: #7fe0cb;
+    color: #ff9fbd;
 }
 
 img {
@@ -379,12 +381,9 @@ img {
 
 Speichere die Datei. Die Änderung sollte sofort deutlich zu sehen sein: dunkler Hintergrund, helle Schrift, eine andere Linkfarbe und ein Bild mit abgerundeten Ecken.
 
-<!-- TODO WEBSITE-PREVIEW: Screenshot nach dem ersten CSS-Schritt.
 <button class='tutorial-preview' type='button'>
     <img src='website-styled.webp' alt='Die Axolotl-Webseite hat jetzt einen dunklen grünlichen Hintergrund, helle Schrift, türkisfarbene Links und ein Bild mit abgerundeten Ecken.'>
 </button>
-<div class='tutorial-preview-clear'></div>
--->
 
 ### Wie eine CSS-Regel funktioniert
 
@@ -415,8 +414,10 @@ beginnt der Selektor mit einem Punkt. Damit wird keine HTML-Tag-Art ausgewählt,
 Klassen sind praktisch, wenn du einzelne Elemente gezielt gestalten möchtest, ohne gleich alle Elemente derselben Art zu verändern.
 
 <div class='hint'>
-Neben Farbangaben wie <code>#102522</code> zeigt VS Code ein kleines Farbfeld an. Klicke darauf, wenn du eine andere Farbe ausprobieren möchtest. Du musst die Hexadezimalzahlen nicht auswendig lernen.
+Neben Farbangaben wie <code>#351c2b</code> zeigt VS Code ein kleines Farbfeld an. Klicke darauf, wenn du eine andere Farbe ausprobieren möchtest. Du musst die Hexadezimalzahlen nicht auswendig lernen.
 </div>
+
+<div class='tutorial-preview-clear'></div>
 
 ## Layout mit Flexbox
 
@@ -427,8 +428,8 @@ Zuerst müssen Bild und Text zwei getrennte Bereiche innerhalb von `<main>` sein
 ```html
 <main>
     <img
-        src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Ambystoma_mexicanum_photo.jpg/960px-Ambystoma_mexicanum_photo.jpg"
-        alt="Ein hell gefärbter Axolotl in einem Aquarium"
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Ambystoma_mexicanum_Natural_History_Museum_University_of_Pisa_2.jpg/330px-Ambystoma_mexicanum_Natural_History_Museum_University_of_Pisa_2.jpg"
+        alt="Ein Axolotl in einem Aquarium"
     >
 
     <section>
@@ -453,8 +454,8 @@ Zuerst müssen Bild und Text zwei getrennte Bereiche innerhalb von `<main>` sein
 
         <p class="credit">
             Foto:
-            <a href="https://commons.wikimedia.org/wiki/File:Ambystoma_mexicanum_photo.jpg">
-                Nasreddine Nas'h / Wikimedia Commons
+            <a href="https://commons.wikimedia.org/wiki/File:Ambystoma_mexicanum_Natural_History_Museum_University_of_Pisa_2.jpg">
+                Lorenzo Tarocchi / Wikimedia Commons
             </a>,
             <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>
         </p>
@@ -492,12 +493,9 @@ section {
 
 Speichere die Datei. Auf einem breiten Fenster sollten Bild und Text jetzt nebeneinander stehen.
 
-<!-- TODO WEBSITE-PREVIEW: Screenshot nach dem Flexbox-Schritt auf einem breiten Browserfenster.
 <button class='tutorial-preview' type='button'>
     <img src='website-flexbox.webp' alt='Die gestaltete Axolotl-Webseite zeigt das Bild links und den Text mit Überschrift, Liste und Link rechts daneben.'>
 </button>
-<div class='tutorial-preview-clear'></div>
--->
 
 Die wichtigsten neuen Eigenschaften sind:
 
@@ -510,6 +508,8 @@ Die wichtigsten neuen Eigenschaften sind:
 <div class='hint task'>
 Probiere bei <code>gap</code> und <code>width</code> andere Werte aus. Was passiert bei <code>width: 30%</code> oder <code>width: 60%</code>?
 </div>
+
+<div class='tutorial-preview-clear'></div>
 
 ## Auf kleinen Bildschirmen
 
@@ -537,6 +537,34 @@ Jetzt ergänzen wir am Ende von `styles.css` eine **Media Query**:
     }
 }
 ```
+
+Hier siehst du einen Vergleich vorher / nachher:
+
+<div class='row'>
+    <figure class='col-md-6 mb-4 text-center'>
+        <img
+            src='narrow-bad.webp'
+            class='img-fluid d-block mx-auto rounded-3'
+            style='max-height: 65vh;'
+            alt='Die Webseite auf einem schmalen Bildschirm vor der Anpassung: Bild und Text werden nebeneinander zusammengedrängt.'
+        >
+        <figcaption class='mt-2'>
+            <strong>Vorher:</strong> Das Flexbox-Layout wird zu schmal.
+        </figcaption>
+    </figure>
+
+    <figure class='col-md-6 mb-4 text-center'>
+        <img
+            src='narrow-good.webp'
+            class='img-fluid d-block mx-auto rounded-3'
+            style='max-height: 65vh;'
+            alt='Die Webseite auf einem schmalen Bildschirm nach der Anpassung: Bild und Text stehen untereinander.'
+        >
+        <figcaption class='mt-2'>
+            <strong>Nachher:</strong> Die Media Query ordnet alles untereinander an.
+        </figcaption>
+    </figure>
+</div>
 
 Die Regeln innerhalb der Media Query gelten nur, wenn das Browserfenster höchstens 700 Pixel breit ist.
 
