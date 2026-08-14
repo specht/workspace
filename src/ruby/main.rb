@@ -1365,6 +1365,74 @@ class Main < Sinatra::Base
         end
     end
 
+    DEFAULT_PAGE_DESCRIPTION = 'Der Hackschule Workspace ist eine browserbasierte Entwicklungsumgebung für den Informatikunterricht mit Visual Studio Code, Terminal, Git und zahlreichen Tutorials.'
+
+    def self.normalize_page_metadata_text(text)
+        CGI.unescapeHTML(text.to_s)
+            .delete("\u00ad")
+            .gsub(/\s+/, ' ')
+            .strip
+    end
+
+    def self.truncate_page_metadata_text(text, max_length = 180)
+        return text if text.length <= max_length
+
+        shortened = text[0, max_length + 1].sub(/\s+\S*\z/, '').rstrip
+        shortened = text[0, max_length].rstrip if shortened.empty?
+        "#{shortened}…"
+    end
+
+    def self.inject_page_metadata(html, request_path)
+        doc = Nokogiri::HTML(html)
+        body = doc.at_css('body') || doc
+        homepage = ['/', '/index.html'].include?(request_path)
+
+        heading = nil
+        unless homepage
+            heading = body.at_css('h1') || body.at_css('h2')
+        end
+
+        heading_text = normalize_page_metadata_text(heading&.text)
+        page_title = if heading_text.empty?
+            'Hackschule Workspace'
+        else
+            "#{heading_text} · Hackschule Workspace"
+        end
+
+        description_node = nil
+        description_node = body.at_css('.abstract') unless homepage
+        if description_node.nil?
+            description_node = body.css('p').find do |paragraph|
+                normalize_page_metadata_text(paragraph.text).length >= 40
+            end
+        end
+
+        description = normalize_page_metadata_text(description_node&.text)
+        description = DEFAULT_PAGE_DESCRIPTION if description.empty?
+        description = truncate_page_metadata_text(description)
+
+        escaped_title = CGI.escapeHTML(page_title)
+        escaped_description = CGI.escapeHTML(description)
+        description_tag = %(<meta name="description" content="#{escaped_description}">)
+
+        result = html.sub(
+            /<title\b[^>]*>.*?<\/title>/mi,
+            "<title>#{escaped_title}</title>"
+        )
+
+        description_pattern = /<meta\s+name=["']description["']\s+content=["'][^"']*["']\s*\/?>/i
+        if result.match?(description_pattern)
+            result = result.sub(description_pattern, description_tag)
+        else
+            result = result.sub(
+                /<\/title>/i,
+                "</title>\n    #{description_tag}"
+            )
+        end
+
+        result
+    end
+
     def self.parse_content
         parse_started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         STDERR.puts "Parsing content..."
@@ -4968,7 +5036,8 @@ class Main < Sinatra::Base
                 if path.include?('codebites') && !path.include?('codebites_admin')
                     template = File.read(File.join(@@static_dir, '_template_codebites.html'))
                 end
-                TrustedTemplate.render_page(template, content, binding)
+                rendered_page = TrustedTemplate.render_page(template, content, binding)
+                Main.inject_page_metadata(rendered_page, request.path)
             end
         end
     end
