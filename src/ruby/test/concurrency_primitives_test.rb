@@ -95,4 +95,17 @@ class ConcurrencyPrimitivesTest < Minitest::Test
             assert_equal before.mode & 07777, after.mode & 07777
         end
     end
+
+    def test_atomic_file_inherits_directory_ownership_for_a_new_file
+        Dir.mktmpdir do |directory|
+            path = File.join(directory, 'state.json')
+            directory_stat = File.stat(directory)
+
+            AtomicFile.write(path, 'contents')
+
+            file_stat = File.stat(path)
+            assert_equal directory_stat.uid, file_stat.uid
+            assert_equal directory_stat.gid, file_stat.gid
+        end
+    end
 end

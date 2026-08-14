@@ -993,7 +993,16 @@ class Main < Sinatra::Base
         AtomicFile.write('/nginx/default.conf', nginx_config)
 
         STDERR.puts ">>> Sending HUP to nginx to reload nginx config"
-        shell_ok("docker kill -s HUP workspace_nginx_1", :timeout => shell_timeout(:nginx_reload))
+        begin
+            shell_ok("docker kill -s HUP workspace_nginx_1", :timeout => shell_timeout(:nginx_reload))
+        rescue => hup_error
+            nginx_state = shell_capture(
+                "docker ps -a --filter name=^/workspace_nginx_1$ --format '{{.State}}'",
+                :timeout => shell_timeout(:docker_inspect)
+            ).strip
+            raise hup_error if nginx_state == 'running'
+            STDERR.puts ">>> nginx is not running yet (state: #{nginx_state.empty? ? 'absent' : nginx_state}); it will read the published config on startup"
+        end
     end
 
     private_class_method :refresh_nginx_config_locked

@@ -5,6 +5,7 @@ module AtomicFile
         directory = File.dirname(path)
         basename = File.basename(path)
         target_stat = File.stat(path) if File.exist?(path)
+        owner_stat = target_stat || File.stat(directory)
         temporary_path = File.join(
             directory,
             ".#{basename}.#{Process.pid}.#{Thread.current.object_id}.#{SecureRandom.hex(4)}.tmp"
@@ -16,8 +17,8 @@ module AtomicFile
             file.fsync
         end
 
+        File.chown(owner_stat.uid, owner_stat.gid, temporary_path)
         if target_stat
-            File.chown(target_stat.uid, target_stat.gid, temporary_path)
             File.chmod(target_stat.mode & 07777, temporary_path)
         end
         File.rename(temporary_path, path)
