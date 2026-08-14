@@ -82,16 +82,17 @@ Important teaching distinction:
 
 > Pixelflow Canvas is a language-independent canvas inside VS Code. PixelRAM is a compiled software framebuffer. The fire demo can connect the two because the algorithm stays almost unchanged while the execution model becomes much faster.
 
-Follow-up work:
+Workspace tutorial completed:
 
-* [ ] Add a compact PixelRAM tutorial to the Workspace
-* [ ] Start with the existing fire demo as the transition from Pixelflow Canvas
-* [ ] Show the step from `set_pixel()` / `get_pixel()` to direct framebuffer memory
-* [ ] Revisit the old raycaster with PixelRAM
-* [ ] Revisit the old raytracer with PixelRAM
-* [ ] Add a small collection of low-level effects/projects: plasma, Game of Life, Mandelbrot, etc.
-* [ ] Decide how DOOM should appear: demo, advanced example or separate tutorial
-* [ ] Finish/stabilize the Chocolate Descent WebAssembly port before presenting it as a PixelRAM showcase
+* [x] Publish a student-facing PixelRAM tutorial in the Workspace
+* [x] Start with the smallest possible framebuffer example
+* [x] Introduce indexed color and palettes
+* [x] Build up from individual pixels to calculations over the complete framebuffer
+* [x] Develop an interference pattern step by step
+* [x] Connect the visual result to animation, performance and low-level C programming
+* [x] Keep the tutorial focused on direct pixel access rather than turning PixelRAM into a drawing API
+
+Further optional PixelRAM projects are tracked below under **PixelRAM: Further Projects**.
 
 ---
 
@@ -391,42 +392,24 @@ Possible projects:
 This can serve as the main **high-level WebAssembly/game-programming** introduction. PixelRAM should cover the lower-level framebuffer route instead of trying to merge the two APIs.
 
 
-### PixelRAM Graphics Tutorial / Projects
+### PixelRAM: Further Projects
 
-PixelRAM itself is complete and published; what remains is the teaching sequence.
+The main PixelRAM tutorial is complete and published. Further work should extend it with optional projects for older students rather than create a second introductory teaching sequence.
 
-Target group: older students who already understand basic programming and can benefit from seeing what happens below a normal graphics API.
+Possible projects:
 
-Suggested progression:
-
-* [ ] Start with the Pixelflow Canvas fire demo
-* [ ] Port the same fire algorithm to PixelRAM/C with minimal conceptual changes
-* [ ] Explain indexed color and palettes
-* [ ] Explain why the PixelRAM version is dramatically faster
-* [ ] Introduce direct framebuffer memory after `set_pixel()` / `get_pixel()`
-* [ ] Build a simple plasma or other classic demoscene effect
+* [ ] Build a simple plasma or another classic demoscene effect
 * [ ] Implement Conway's Game of Life
 * [ ] Render the Mandelbrot set
 * [ ] Rebuild the existing raycaster with PixelRAM
 * [ ] Rebuild the existing raytracer with PixelRAM
-* [ ] Optionally introduce a simple software triangle/3D rasterizer
+* [ ] Optionally introduce a simple software triangle / 3D rasterizer
 * [ ] Use DOOM as an advanced demonstration of how far the framebuffer abstraction can go
 * [ ] Add Chocolate Descent when the WASM port is stable
 
-Pedagogical progression:
+Important principle:
 
-```text
-Pixelflow Canvas / Ruby
-        ↓
-same pixel algorithm in PixelRAM / C
-        ↓
-direct framebuffer memory
-        ↓
-software rendering and performance
-```
-
-Do not turn PixelRAM into a second raylib. Drawing algorithms such as lines, circles, raycasters and rasterizers are valuable precisely because students can implement them on top of the framebuffer.
-
+> Do not turn PixelRAM into a second raylib. Drawing algorithms such as lines, circles, raycasters and rasterizers are valuable precisely because students can implement them on top of the framebuffer.
 
 ### Digital Audio
 
@@ -549,11 +532,11 @@ Revisit if we find an approach where the limitations themselves become pedagogic
 3. [ ] Neo4j
 4. [ ] Cryptography
 5. [ ] Flutter
-6. [ ] PixelRAM graphics tutorial / older-student projects
-7. [ ] raylib + WebAssembly tutorial
+6. [ ] raylib + WebAssembly tutorial
+7. [ ] PixelRAM follow-up projects
 
 The Web Server and WebSockets tutorials should form a continuous sequence after the existing TCP/IP tutorial.
 
 **Shared Live Apps is already implemented infrastructure, not another tutorial to schedule.** Use it throughout the Web Server, WebSockets and Flutter material, and add it to the completed BIF tutorial where peer testing is useful.
 
-**PixelRAM and raylib should remain two distinct teaching routes:** raylib for higher-level games/graphics, PixelRAM for low-level framebuffer programming and software rendering.
+**PixelRAM and raylib should remain two distinct teaching routes:** raylib for higher-level games/graphics, PixelRAM for low-level framebuffer programming and software rendering. The introductory PixelRAM tutorial is already complete; future PixelRAM work should mainly add optional advanced projects.
