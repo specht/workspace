@@ -1,6 +1,7 @@
 require "neo4j_bolt"
 require "sinatra/base"
 require './include/constraints.rb'
+require './include/serialized_neo4j.rb'
 
 def debug(message, index = 0)
     index = 0
@@ -34,6 +35,7 @@ end
 
 class Neo4jGlobal
     include Neo4jBolt
+    prepend SerializedNeo4j
 end
 
 if NEED_NEO4J

@@ -1,5 +1,6 @@
 require './include/helper.rb'
 require './include/automatron.rb'
+require './include/atomic_file.rb'
 require './include/trusted_template.rb'
 require 'base64'
 require 'cgi'
@@ -524,7 +525,15 @@ class Main < Sinatra::Base
         end
     end
 
+    @@nginx_config_mutex = Mutex.new
+
     def self.refresh_nginx_config
+        @@nginx_config_mutex.synchronize do
+            refresh_nginx_config_locked
+        end
+    end
+
+    def self.refresh_nginx_config_locked
         STDERR.puts ">>> Refreshing nginx config..."
         running_servers = {}
         inspect = JSON.parse(shell_capture("docker network inspect workspace_user", :timeout => shell_timeout(:docker_network_inspect)))
@@ -973,24 +982,21 @@ class Main < Sinatra::Base
 
         STDERR.puts ">>> Writing nginx config..."
 
-        path = '/nginx-snippets/proxy_ws.conf'
-        File.open(path, 'w') do |f|
-            f.puts <<~END_OF_STRING
-                proxy_http_version 1.1;
-                proxy_set_header Host $http_host;
-                proxy_set_header Upgrade $http_upgrade;
-                proxy_set_header Connection upgrade;
-                proxy_set_header Accept-Encoding gzip;
-            END_OF_STRING
-        end
+        AtomicFile.write('/nginx-snippets/proxy_ws.conf', <<~END_OF_STRING)
+            proxy_http_version 1.1;
+            proxy_set_header Host $http_host;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection upgrade;
+            proxy_set_header Accept-Encoding gzip;
+        END_OF_STRING
 
-        File.open('/nginx/default.conf', 'w') do |f|
-            f.puts nginx_config
-        end
+        AtomicFile.write('/nginx/default.conf', nginx_config)
 
         STDERR.puts ">>> Sending HUP to nginx to reload nginx config"
         shell_ok("docker kill -s HUP workspace_nginx_1", :timeout => shell_timeout(:nginx_reload))
     end
+
+    private_class_method :refresh_nginx_config_locked
 
     def self.convert_image(image_path)
         image_sha1 = Digest::SHA1.hexdigest(File.read(image_path))[0, 16]
@@ -1493,14 +1499,14 @@ class Main < Sinatra::Base
 
     def codebite_broadcast(email, payload)
         msg = payload.is_a?(String) ? payload : payload.to_json
-        @@codebite_mutex.synchronize do
-            conns = (@@codebite_ws_clients[email] || {})
-            conns.each_value do |ws|
-                begin
-                    ws.send(msg)
-                rescue
-                    # ignore broken sockets; cleanup happens on close
-                end
+        conns = @@codebite_mutex.synchronize do
+            (@@codebite_ws_clients[email] || {}).values.dup
+        end
+        conns.each do |ws|
+            begin
+                ws.send(msg)
+            rescue
+                # ignore broken sockets; cleanup happens on close
             end
         end
     end
@@ -1544,18 +1550,41 @@ class Main < Sinatra::Base
         })
     end
 
+    def codebite_run_lock(email)
+        @@codebite_mutex.synchronize do
+            @@codebite_run_locks[email] ||= Mutex.new
+        end
+    end
+
+    @@load_invitations_mutex = Mutex.new
+    @@admin_ws_mutex = Mutex.new
+    @@mysql_database_locks_mutex = Mutex.new
+    @@mysql_database_locks = {}
+
+    def mysql_database_lock(email)
+        @@mysql_database_locks_mutex.synchronize do
+            @@mysql_database_locks[email] ||= Mutex.new
+        end
+    end
+
     def self.load_invitations
-        @@invitations = {}
-        @@user_groups = {}
-        @@user_group_order = []
+        @@load_invitations_mutex.synchronize do
+            load_invitations_locked
+        end
+    end
+
+    def self.load_invitations_locked
+        invitations = {}
+        user_groups = {}
+        user_group_order = []
 
         current_group = 'Administrator'
 
         ADMIN_USERS.each do |email|
-            @@user_group_order << current_group unless @@user_group_order.include?(current_group)
-            @@invitations[email] = { :group => current_group, :name => email }
-            @@user_groups[current_group] ||= []
-            @@user_groups[current_group] << email
+            user_group_order << current_group unless user_group_order.include?(current_group)
+            invitations[email] = { :group => current_group, :name => email }
+            user_groups[current_group] ||= []
+            user_groups[current_group] << email
         end
 
         current_group = '(keine Gruppe)'
@@ -1569,35 +1598,43 @@ class Main < Sinatra::Base
                     if line[0] == '>'
                         current_group = line[1, line.size - 1].strip
                         group_admins[current_group] ||= []
-                        @@user_group_order << current_group unless @@user_group_order.include?(current_group)
+                        user_group_order << current_group unless user_group_order.include?(current_group)
                     elsif line[0] == '+'
                         group_admins[current_group] << line[1, line.size - 1].strip.delete_prefix('<').delete_suffix('>')
                     else
                         parts = line.strip.split(' ')
                         email = parts.last.delete_prefix('<').delete_suffix('>').downcase
-                        unless @@invitations[email]
-                            @@user_groups[current_group] ||= []
-                            @@user_groups[current_group] << email
-                            @@invitations[email] = { :group => current_group }
+                        unless invitations[email]
+                            user_groups[current_group] ||= []
+                            user_groups[current_group] << email
+                            invitations[email] = { :group => current_group }
                         end
                         if parts.size > 1
                             name = parts[0, parts.size - 1].join(' ')
-                            @@invitations[email][:name] = name
+                            invitations[email][:name] = name
                         else
-                            @@invitations[email][:name] = email
+                            invitations[email][:name] = email
                         end
                     end
                 end
             end
         end
-        @@teachers = {}
+        teachers = {}
         group_admins.each_pair do |group, emails|
             emails.each do |email|
-                @@teachers[email] ||= Set.new()
-                @@teachers[email] << group
+                teachers[email] ||= Set.new()
+                teachers[email] << group
             end
         end
+
+        # Keep readers on the previous complete snapshot until parsing finishes.
+        @@invitations = invitations
+        @@user_groups = user_groups
+        @@user_group_order = user_group_order
+        @@teachers = teachers
     end
+
+    private_class_method :load_invitations_locked
 
     def self.prepare_downloads()
         unless File.exist?("/dl/working-with-files.tar.gz")
@@ -1662,6 +1699,7 @@ class Main < Sinatra::Base
         @@codebite_ws_clients ||= {}     # email => { client_id => ws }
         @@codebite_runs ||= {}           # email => { pid:, wait_thr:, threads:, started_at:, task:, language: }
         @@codebite_mutex ||= Mutex.new   # protects @@codebite_runs + @@codebite_ws_clients
+        @@codebite_run_locks ||= {}      # serializes start/stop lifecycle per user
 
         Thread.new do
             loop do
@@ -1855,8 +1893,8 @@ class Main < Sinatra::Base
         assert(@@invitations.include?(email), 'no_invitation_found')
 
         tag = RandomTag::generate(12)
-        srand(Digest::SHA2.hexdigest(LOGIN_CODE_SALT).to_i + (Time.now.to_f * 1000000).to_i)
-        random_code = (0..5).map { |x| rand(10).to_s }.join('')
+        random = Random.new(Digest::SHA2.hexdigest(LOGIN_CODE_SALT).to_i + (Time.now.to_f * 1000000).to_i)
+        random_code = (0..5).map { |_x| random.rand(10).to_s }.join('')
         random_code = '123456' if DEVELOPMENT
 
         # create user node if it doesn't already exist
@@ -1958,17 +1996,17 @@ class Main < Sinatra::Base
         sha2 = Digest::SHA256.new()
         sha2 << salt
         sha2 << email
-        srand(sha2.hexdigest.to_i(16))
+        random = Random.new(sha2.hexdigest.to_i(16))
         password = ''
         8.times do
-            c = chars.sample.dup
-            c.downcase! if [0, 1].sample == 1
+            c = chars.sample(:random => random).dup
+            c.downcase! if random.rand(2) == 1
             password += c
         end
         password += '-'
         4.times do
-            c = chars.sample.dup
-            c.downcase! if [0, 1].sample == 1
+            c = chars.sample(:random => random).dup
+            c.downcase! if random.rand(2) == 1
             password += c
         end
         password
@@ -2918,7 +2956,13 @@ class Main < Sinatra::Base
     end
 
     def broadcast_login_codes
-        return if @@clients.empty?
+        clients = @@admin_ws_mutex.synchronize do
+            @@clients.map do |client_id, ws|
+                [ws, @@email_for_client_id[client_id]]
+            end
+        end
+        return if clients.empty?
+
         lines = []
         neo4j_query(<<~END_OF_STRING).each do |row|
             MATCH (l:LoginRequest)-[:FOR]->(u:User)
@@ -2929,9 +2973,8 @@ class Main < Sinatra::Base
             next if @@teachers.include?(email)
             lines << { :email => email, :code => row['l.code'] }
         end
-        @@clients.each_pair do |client_id, ws|
+        clients.each do |ws, ws_email|
             filtered_lines = lines.select do |line|
-                ws_email = @@email_for_client_id[client_id]
                 email = line[:email]
                 group = @@invitations[email][:group]
                 ADMIN_USERS.include?(ws_email) ||(@@teachers[ws_email] || Set.new()).include?(group)
@@ -2948,10 +2991,12 @@ class Main < Sinatra::Base
             ws.on(:open) do |event|
                 client_id = request.env['HTTP_SEC_WEBSOCKET_KEY']
                 ws.send({:hello => 'world'})
-                @@clients[client_id] = ws
-                @@email_for_client_id[client_id] = @session_user[:email]
-                @@client_ids_for_email[@session_user[:email]] ||= []
-                @@client_ids_for_email[@session_user[:email]] << client_id
+                @@admin_ws_mutex.synchronize do
+                    @@clients[client_id] = ws
+                    @@email_for_client_id[client_id] = @session_user[:email]
+                    @@client_ids_for_email[@session_user[:email]] ||= []
+                    @@client_ids_for_email[@session_user[:email]] << client_id
+                end
                 email_for_tag = {}
                 neo4j_query(<<~END_OF_STRING).each do |row|
                     MATCH (u:User) RETURN u.email;
@@ -2959,8 +3004,7 @@ class Main < Sinatra::Base
                     email = row['u.email']
                     email_for_tag[fs_tag_for_email(email)] = email
                 end
-                @@threads_for_client_id[client_id] ||= {}
-                @@threads_for_client_id[client_id][:docker_stats] ||= Thread.new do
+                docker_stats_thread = Thread.new do
                     command = "docker stats --no-stream --format \"{{ json . }}\""
                     loop do
                         lines = {}
@@ -2990,7 +3034,7 @@ class Main < Sinatra::Base
                         sleep 1
                     end
                 end
-                @@threads_for_client_id[client_id][:host_stats] ||= Thread.new do
+                host_stats_thread = Thread.new do
                     loop do
                         data = {}
 
@@ -3035,23 +3079,42 @@ class Main < Sinatra::Base
                         sleep 5
                     end
                 end
+                keep_threads = @@admin_ws_mutex.synchronize do
+                    if @@clients.include?(client_id)
+                        @@threads_for_client_id[client_id] = {
+                            :docker_stats => docker_stats_thread,
+                            :host_stats => host_stats_thread,
+                        }
+                        true
+                    else
+                        false
+                    end
+                end
+                unless keep_threads
+                    docker_stats_thread.kill
+                    host_stats_thread.kill
+                end
                 broadcast_login_codes()
-                debug "Got #{@@clients.size} connected clients!"
+                client_count = @@admin_ws_mutex.synchronize { @@clients.size }
+                debug "Got #{client_count} connected clients!"
             end
 
             ws.on(:close) do |event|
                 client_id = request.env['HTTP_SEC_WEBSOCKET_KEY']
-                @@clients.delete(client_id) if @@clients.include?(client_id)
-                @@email_for_client_id.delete(client_id) if @@email_for_client_id.include?(client_id)
-                @@client_ids_for_email[@session_user[:email]].delete(client_id) if @@client_ids_for_email[@session_user[:email]].include?(client_id)
-                @@client_ids_for_email.delete(@session_user[:email]) if @@client_ids_for_email[@session_user[:email]].empty?
-                if @@threads_for_client_id.include?(client_id)
-                    @@threads_for_client_id[client_id].keys.each do |key|
-                        @@threads_for_client_id[client_id][key].kill
+                threads = nil
+                client_count = @@admin_ws_mutex.synchronize do
+                    @@clients.delete(client_id)
+                    @@email_for_client_id.delete(client_id)
+                    client_ids = @@client_ids_for_email[@session_user[:email]]
+                    if client_ids
+                        client_ids.delete(client_id)
+                        @@client_ids_for_email.delete(@session_user[:email]) if client_ids.empty?
                     end
-                    @@threads_for_client_id.delete(client_id)
+                    threads = @@threads_for_client_id.delete(client_id)
+                    @@clients.size
                 end
-                debug "Got #{@@clients.size} connected clients!"
+                (threads || {}).each_value { |thread| thread.kill }
+                debug "Got #{client_count} connected clients!"
             end
 
             ws.on(:message) do |msg|
@@ -3777,64 +3840,75 @@ class Main < Sinatra::Base
 
     post '/api/create_mysql_database' do
         assert(user_logged_in?)
-        count = neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email]})['count']
-            MATCH (u:User {email: $email})-[:HAS]->(d:Database {type: 'mysql'})
-            RETURN COUNT(d) AS count;
-        END_OF_STRING
-        assert(count < 4)
-        database_name = "db_#{RandomTag.generate(12)}"
-        client = Mysql2::Client.new(
-            host: 'mysql',
-            username: 'root',
-            password: MYSQL_ROOT_PASSWORD
-        )
-        login = @session_user[:email].split('@').first.downcase
-        client.query("CREATE DATABASE #{database_name};")
-        client.query("GRANT ALL ON `#{database_name}`.* TO '#{login}'@'%';")
-        client.query("FLUSH PRIVILEGES;")
-        neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :database_name => database_name})
-            MATCH (u:User {email: $email})
-            CREATE (d:Database {type: 'mysql', name: $database_name})<-[:HAS]-(u)
-            RETURN d;
-        END_OF_STRING
+        mysql_database_lock(@session_user[:email]).synchronize do
+            count = neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email]})['count']
+                MATCH (u:User {email: $email})-[:HAS]->(d:Database {type: 'mysql'})
+                RETURN COUNT(d) AS count;
+            END_OF_STRING
+            assert(count < 4)
+            database_name = "db_#{RandomTag.generate(12)}"
+            client = Mysql2::Client.new(
+                host: 'mysql',
+                username: 'root',
+                password: MYSQL_ROOT_PASSWORD
+            )
+            login = @session_user[:email].split('@').first.downcase
+            client.query("CREATE DATABASE #{database_name};")
+            client.query("GRANT ALL ON `#{database_name}`.* TO '#{login}'@'%';")
+            client.query("FLUSH PRIVILEGES;")
+            neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :database_name => database_name})
+                MATCH (u:User {email: $email})
+                CREATE (d:Database {type: 'mysql', name: $database_name})<-[:HAS]-(u)
+                RETURN d;
+            END_OF_STRING
+        end
         respond(:yay => 'sure')
     end
 
     post '/api/delete_mysql_database' do
         assert(user_logged_in?)
         data = parse_request_data(:required_keys => [:database])
-        client = Mysql2::Client.new(
-            host: 'mysql',
-            username: 'root',
-            password: MYSQL_ROOT_PASSWORD
-        )
-        is_user_db = (data[:database] == @session_user[:email].split('@').first.downcase)
-        client.query("DROP DATABASE IF EXISTS `#{data[:database]}`;")
-        neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :database => data[:database]})
-            MATCH (u:User {email: $email})-[:HAS]->(d:Database {type: 'mysql', name: $database})
-            DETACH DELETE d;
-        END_OF_STRING
-        if is_user_db
-            login = @session_user[:email].split('@').first.downcase
-            client.query("CREATE DATABASE `#{login}`;")
-            client.query("GRANT ALL ON `#{login}`.* TO '#{login}'@'%';")
-            client.query("FLUSH PRIVILEGES;")
+        mysql_database_lock(@session_user[:email]).synchronize do
+            client = Mysql2::Client.new(
+                host: 'mysql',
+                username: 'root',
+                password: MYSQL_ROOT_PASSWORD
+            )
+            is_user_db = (data[:database] == @session_user[:email].split('@').first.downcase)
+            client.query("DROP DATABASE IF EXISTS `#{data[:database]}`;")
+            neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :database => data[:database]})
+                MATCH (u:User {email: $email})-[:HAS]->(d:Database {type: 'mysql', name: $database})
+                DETACH DELETE d;
+            END_OF_STRING
+            if is_user_db
+                login = @session_user[:email].split('@').first.downcase
+                client.query("CREATE DATABASE `#{login}`;")
+                client.query("GRANT ALL ON `#{login}`.* TO '#{login}'@'%';")
+                client.query("FLUSH PRIVILEGES;")
+            end
         end
     end
 
+    @@codebite_content_mutex = Mutex.new
+
     def self.update_codebites
+        @@codebite_content_mutex.synchronize do
+            update_codebites_locked
+        end
+    end
+
+    def self.update_codebites_locked
         # In development we want live reload: re-parse on every call.
         # In production we want to travel light: parse once per process.
         unless DEVELOPMENT
-            @@codebite_sections ||= nil
-            @@codebite_tasks ||= nil
-            return if @@codebite_sections && @@codebite_tasks
+            return if defined?(@@codebite_sections) && @@codebite_sections &&
+                defined?(@@codebite_tasks) && @@codebite_tasks
         end
 
-        @@codebite_tasks = {}
+        codebite_tasks = {}
 
         sections_path = "/src/codebites/tasks/tasks.yaml"
-        @@codebite_sections = YAML.load_file(sections_path)
+        codebite_sections = YAML.load_file(sections_path)
 
         # Parse embedded @@sections from single-file tasks without executing the Ruby code.
         section_marker = "\n__END__\n"
@@ -3882,7 +3956,7 @@ class Main < Sinatra::Base
             nil
         end
 
-        @@codebite_sections.each do |section|
+        codebite_sections.each do |section|
             section.fetch('entries', []).each do |task_id|
                 task_rb_path = "/src/codebites/tasks/#{task_id}.rb"
                 next unless File.exist?(task_rb_path)
@@ -3900,7 +3974,7 @@ class Main < Sinatra::Base
                 difficulty = difficulty.to_i if difficulty
                 difficulty = nil unless difficulty && difficulty.between?(1, 5)
 
-                @@codebite_tasks[task_id] = {
+                codebite_tasks[task_id] = {
                     mtime: File.mtime(task_rb_path),
                     heading: heading,
                     difficulty: difficulty,
@@ -3909,7 +3983,12 @@ class Main < Sinatra::Base
                 }
             end
         end
+
+        @@codebite_sections = codebite_sections
+        @@codebite_tasks = codebite_tasks
     end
+
+    private_class_method :update_codebites_locked
 
     post '/api/codebites_get_tasks' do
         Main.update_codebites()
@@ -4117,6 +4196,7 @@ class Main < Sinatra::Base
     end
 
     post '/api/run_codebite' do
+        run_lock = nil
         assert(user_logged_in?)
         data = parse_request_data(required_keys: [:task, :language, :code], :max_body_length => 100 * 1024, :max_string_length => 100 * 1024, :max_value_lengths => { :code => 100 * 1024 })
 
@@ -4141,6 +4221,8 @@ class Main < Sinatra::Base
         assert(%w(ruby python javascript).include?(language))
 
         email = @session_user[:email]
+        run_lock = codebite_run_lock(email)
+        run_lock.lock
 
         # 0) kill any existing run for this user
         kill_codebite_run(email, reason: "new submission")
@@ -4150,9 +4232,7 @@ class Main < Sinatra::Base
         path = "/internal/codebites/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}"
         FileUtils.mkpath(File.dirname(path))
         unless File.exist?(path)
-            File.open(path, 'w') do |f|
-                f.write(code)
-            end
+            AtomicFile.write(path, code)
         end
         highlighted_path = "/internal/codebites/#{sha1[0, 2]}/#{sha1[2, sha1.size - 2]}.hl"
         unless File.exist?(highlighted_path)
@@ -4171,9 +4251,7 @@ class Main < Sinatra::Base
             formatted_code = formatter.format(lexer.lex(code))
             # use first 10 lines
             formatted_code = formatted_code.split("\n")[0, 10].join("\n")
-            File.open(highlighted_path, 'w') do |f|
-                f.write(formatted_code)
-            end
+            AtomicFile.write(highlighted_path, formatted_code)
         end
         ts = Time.now.to_i
         submission_id = Digest::SHA1.hexdigest("#{task}-#{language}-#{sha1}")
@@ -4235,6 +4313,17 @@ class Main < Sinatra::Base
         threads << Thread.new { stream_chunk.call("stdout", stdout) }
         threads << Thread.new { stream_chunk.call("stderr", stderr) }
 
+        @@codebite_mutex.synchronize do
+            @@codebite_runs[email] = {
+                pid: pid,
+                wait_thr: wait_thr,
+                threads: threads.dup,
+                started_at: Time.now.to_i,
+                task: task,
+                language: language
+            }
+        end
+
         # watcher thread to emit exit code
         watcher = Thread.new do
             status = wait_thr.value
@@ -4275,17 +4364,12 @@ class Main < Sinatra::Base
         end
 
         @@codebite_mutex.synchronize do
-            @@codebite_runs[email] = {
-                pid: pid,
-                wait_thr: wait_thr,
-                threads: threads + [watcher],
-                started_at: Time.now.to_i,
-                task: task,
-                language: language
-            }
+            run = @@codebite_runs[email]
+            run[:threads] << watcher if run && run[:pid] == pid
         end
-
         respond(yay: "running", pid: pid, code: code)
+    ensure
+        run_lock.unlock if run_lock&.owned?
     end
 
     post '/api/codebite_delete_submission' do
@@ -4304,14 +4388,14 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         email = @session_user[:email]
 
-        # If nothing is running, just be nice and say ok.
-        running = false
-        @@codebite_mutex.synchronize do
-            running = @@codebite_runs.key?(email)
-        end
+        running = codebite_run_lock(email).synchronize do
+            # If nothing is running, just be nice and say ok.
+            found = @@codebite_mutex.synchronize do
+                @@codebite_runs.key?(email)
+            end
 
-        if running
-            kill_codebite_run(email, reason: "stopped by user")
+            kill_codebite_run(email, reason: "stopped by user") if found
+            found
         end
 
         respond(yay: "stopped", running_was: running)

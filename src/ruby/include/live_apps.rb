@@ -4,6 +4,9 @@ class Main < Sinatra::Base
     LIVE_APP_BLOCKED_PORTS = Set.new([8443])
     LIVE_APP_USER_UID = 1000
     LIVE_APP_PIN_PATH = '/internal/live_app_pins.json'
+    @@live_app_ws_mutex = Mutex.new
+    @@live_app_ws_clients = {}
+    @@live_app_reconcile_mutex = Mutex.new
 
     def self.live_app_port_allowed?(port)
         port = port.to_i
@@ -121,27 +124,19 @@ class Main < Sinatra::Base
         by_port.values.sort_by { |entry| entry[:port] }
     end
 
-    def self.ensure_live_app_ws!
-        @@live_app_ws_mutex ||= Mutex.new
-        @@live_app_ws_clients ||= {}
-    end
-
     def self.register_live_app_ws(client_id, ws)
-        ensure_live_app_ws!
         @@live_app_ws_mutex.synchronize do
             @@live_app_ws_clients[client_id] = ws
         end
     end
 
     def self.unregister_live_app_ws(client_id)
-        ensure_live_app_ws!
         @@live_app_ws_mutex.synchronize do
             @@live_app_ws_clients.delete(client_id)
         end
     end
 
     def self.broadcast_live_app_refresh
-        ensure_live_app_ws!
         clients = @@live_app_ws_mutex.synchronize { @@live_app_ws_clients.values.dup }
         message = {:action => 'refresh_live_apps'}.to_json
         clients.each do |ws|
@@ -169,17 +164,21 @@ class Main < Sinatra::Base
     def self.write_live_app_pins(rows)
         fs_tags = rows.map { |row| fs_tag_for_email(row['u.email']) }.uniq.sort
         FileUtils.mkdir_p(File.dirname(LIVE_APP_PIN_PATH))
-        tmp = "#{LIVE_APP_PIN_PATH}.tmp"
-        File.write(tmp, {:updated_at => Time.now.to_i, :fs_tags => fs_tags}.to_json)
-        File.rename(tmp, LIVE_APP_PIN_PATH)
+        AtomicFile.write(LIVE_APP_PIN_PATH, {:updated_at => Time.now.to_i, :fs_tags => fs_tags}.to_json)
     rescue => e
         STDERR.puts ">>> Could not write live-app pin file: #{e.class}: #{e.message}"
     end
 
     def self.reconcile_live_apps!(refresh_nginx: true)
+        @@live_app_reconcile_mutex.synchronize do
+            reconcile_live_apps_locked!(refresh_nginx: refresh_nginx)
+        end
+    end
+
+    def self.reconcile_live_apps_locked!(refresh_nginx: true)
         rows = active_live_app_rows
         sockets_by_email = {}
-        stale_tags = []
+        stale_shares = []
 
         rows.each do |row|
             email = row['u.email']
@@ -193,23 +192,29 @@ class Main < Sinatra::Base
             # the port number. A restarted server gets a new socket inode and
             # therefore has to be explicitly shared again.
             if current_signature.empty? || shared_signature.empty? || current_signature != shared_signature
-                stale_tags << row['s.tag']
+                stale_shares << {
+                    :tag => row['s.tag'],
+                    :socket_signature => shared_signature,
+                }
             end
         end
 
-        stale_tags.each do |tag|
-            $neo4j.neo4j_query(<<~END_OF_QUERY, :tag => tag, :updated_at => Time.now.to_i)
+        deactivated_tags = stale_shares.filter_map do |share|
+            row = $neo4j.neo4j_query(<<~END_OF_QUERY, :tag => share[:tag], :socket_signature => share[:socket_signature], :updated_at => Time.now.to_i).first
                 MATCH (s:LiveAppShare {tag: $tag})
-                SET s.active = FALSE, s.updated_at = $updated_at;
+                WHERE s.active = TRUE AND COALESCE(s.socket_signature, '') = $socket_signature
+                SET s.active = FALSE, s.updated_at = $updated_at
+                RETURN COUNT(s) AS count;
             END_OF_QUERY
+            share[:tag] if row && row['count'].to_i == 1
         end
 
-        rows.reject! { |row| stale_tags.include?(row['s.tag']) }
+        rows.reject! { |row| deactivated_tags.include?(row['s.tag']) }
         write_live_app_pins(rows)
 
-        unless stale_tags.empty?
+        unless deactivated_tags.empty?
             if refresh_nginx
-                STDERR.puts ">>> Deactivated #{stale_tags.size} stale live-app share(s)."
+                STDERR.puts ">>> Deactivated #{deactivated_tags.size} stale live-app share(s)."
                 refresh_nginx_config
             end
             broadcast_live_app_refresh
@@ -220,6 +225,8 @@ class Main < Sinatra::Base
         STDERR.puts ">>> Live-app reconciliation failed: #{e.class}: #{e.message}"
         []
     end
+
+    private_class_method :reconcile_live_apps_locked!
 
     def live_app_url(tag)
         scheme = DEVELOPMENT ? 'http' : 'https'

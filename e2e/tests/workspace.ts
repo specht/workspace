@@ -24,7 +24,12 @@ export async function loginAsE2eUser(
 
     await test.step('Request login code', async () => {
       await page.locator('#bu_submit_email').click();
+      const codeSection = page.locator('#part1');
       await expect(page.locator('#ti_code')).toBeVisible();
+      // jQuery's slideDown makes the controls "visible" as soon as the
+      // animation starts. Wait until it stops moving before clicking a button
+      // whose hit target is otherwise able to slide away under suite load.
+      await expect(codeSection).not.toHaveAttribute('style', /overflow:\s*hidden/);
     });
 
     await test.step('Enter development login code', async () => {
