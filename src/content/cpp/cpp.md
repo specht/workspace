@@ -28,7 +28,7 @@ Heutzutage ist C++ immer noch äußerst relevant und weit verbreitet, insbesonde
 
 C++ ist eine Weiterentwicklung der [Programmiersprache C](/c) und hat viele Ähnlichkeiten mit dieser. Das heisst, dass man auch jedes C-Programm in C++ kompilieren kann. C++-Programme werden in Textdateien mit der Endung `.cpp` oder `.cc` geschrieben. Diese Dateien werden anschließend von einem Compiler in ausführbare Dateien übersetzt, die auf deinem Computer direkt ausgeführt werden können. Es gibt eine Vielzahl von Compilern, die du verwenden kannst, aber wir werden hier den freien »GNU C Compiler« `gcc` verwenden, der auf den meisten Systemen verfügbar ist.
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp'>
 
@@ -46,7 +46,7 @@ Da Visual Studio Code noch nicht weiß, dass es sich um C++-Quelltext handelt, i
 
 <img class='full' src='no-syntax-highlighting.webp'>
 
-Drücke nun <span class='key'>Strg</span><span class='key'>S</span>, um die Datei zu speichern. Gib `hello.cpp` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.cpp`.
+Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.cpp` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.cpp`.
 
 <img class='full' src='enter-filename.webp'>
 
@@ -58,7 +58,7 @@ Sobald du die Datei gespeichert hast, wird sie automatisch als C++-Datei erkannt
 
 Bevor wir das Programm ausführen können, müssen wir es kompilieren. Dadurch wird der Quelltext in Maschinencode übersetzt, den dein Computer ausführen kann.
 
-Öffne dazu ein Terminal, indem du entweder <span class='key'>Strg</span><span class='key'>J</span> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='cpp-lets-compile.webp'>
 
@@ -69,7 +69,7 @@ g++ hello.cpp -o hello
 ```
 
 <div class='hint'>
-Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>g++ he</code> und drücke <span class='key'>Tab</span>, um den Dateinamen automatisch zu <code>hello.cpp</code> vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
+Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>g++ he</code> und drücke <kbd>Tab</kbd>, um den Dateinamen automatisch zu <code>hello.cpp</code> vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
 </div>
 
 Wenn du keinen Fehler gemacht hast, wird das Programm erfolgreich kompiliert und die ausführbare Datei `hello` wird im selben Verzeichnis erstellt. Du kannst dies überprüfen, indem du dir die Dateien im aktuellen Verzeichnis mit `ls` oder `ls -l` anzeigen lässt:
@@ -107,7 +107,7 @@ g++ hello.cpp -o hello
 ```
 
 <div class='hint'>
-Nutze die Pfeiltaste hoch <span class='key'>↑</span>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
+Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
 Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
@@ -119,7 +119,7 @@ Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und z
 ## Primfaktorzerlegung
 
 Im zweiten Beispiel wollen wir eine Zahl in ihre Primfaktoren zerlegen. An diesem Beispiel kannst du sehen, wie man in C++ Benutzereingaben verarbeitet und Schleifen verwendet.
-Erstelle eine neue Datei mit <span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>N</span> und schreibe den folgenden Code hinein:
+Erstelle eine neue Datei mit <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd> und schreibe den folgenden Code hinein:
 
 _include_file(factor.cpp, cpp)
 

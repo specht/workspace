@@ -131,7 +131,7 @@ rows = query.execute(login, password).to_a
 ```
 
 <div class='hint'>
-Du kannst Zeilen in Ruby auskommentieren, indem du sie mit einem <code>#</code> beginnen lässt. Schneller geht es, wenn du die Zeilen markierst und dann <span class='key'>Strg</span><span class='key'>#</span> drückst (bzw. <span class='key'>Ctrl</span><span class='key'>/</span>, falls du ein US-Tastaturlayout verwendest).
+Du kannst Zeilen in Ruby auskommentieren, indem du sie mit einem <code>#</code> beginnen lässt. Schneller geht es, wenn du die Zeilen markierst und dann <kbd>Strg</kbd><kbd>#</kbd> drückst (bzw. <kbd>Ctrl</kbd><kbd>/</kbd>, falls du ein US-Tastaturlayout verwendest).
 </div>
 
 <div class='hint books'>

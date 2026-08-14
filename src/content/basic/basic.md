@@ -28,29 +28,29 @@ Du hast zwei Möglichkeiten, BASIC-Code auszuführen:
 
 **Möglichkeit 1:** BASIC-Code in der BASIC-Shell ausführen
 
-Öffne dazu ein Terminal, indem du entweder <span class='key'>Strg</span><span class='key'>J</span> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='code-with-terminal.webp'>
 
-Starte nun die BASIC-Shell, indem du `bwbasic` eingibst und dann <span class='key'>Enter</span> drückst. Du solltest eine Ausgabe wie diese sehen:
+Starte nun die BASIC-Shell, indem du `bwbasic` eingibst und dann <kbd>Enter</kbd> drückst. Du solltest eine Ausgabe wie diese sehen:
 
 <img class='full' src='bwbasic-repl.webp'>
 
-Jetzt kannst du BASIC-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `PRINT "Hello, world!"` und drücke <span class='key'>Enter</span>. Du solltest die Ausgabe `Hello, world!` sehen.
+Jetzt kannst du BASIC-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `PRINT "Hello, world!"` und drücke <kbd>Enter</kbd>. Du solltest die Ausgabe `Hello, world!` sehen.
 
-Du kannst die BASIC-Shell wieder beenden, indem du `SYSTEM` eingibst und <span class='key'>Enter</span> drückst oder einfach <span class='key'>Strg</span><span class='key'>D</span> drückst.
+Du kannst die BASIC-Shell wieder beenden, indem du `SYSTEM` eingibst und <kbd>Enter</kbd> drückst oder einfach <kbd>Strg</kbd><kbd>D</kbd> drückst.
 
 **Möglichkeit 2:** BASIC-Code in einer Textdatei speichern und ausführen
 
 BASIC-Programme werden in Textdateien mit der Endung `.bas` geschrieben. Ein BASIC-Interpreter liest anschließend den Quelltext und führt ihn aus.
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp'>
 
 ### Quelltext schreiben
 
-Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <span class='key'>Enter</span>).
+Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <kbd>Enter</kbd>).
 
 <img class='full' src='choose-filename.webp'>
 
@@ -62,7 +62,7 @@ Da Visual Studio Code noch nicht weiß, dass es sich um BASIC-Quelltext handelt,
 
 <img class='full' src='no-syntax-highlighting.webp'>
 
-Drücke nun <span class='key'>Strg</span><span class='key'>S</span>, um die Datei zu speichern. Gib `hello.bas` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.bas`.
+Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.bas` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.bas`.
 
 <img class='full' src='enter-filename.webp'>
 
@@ -74,21 +74,21 @@ Sobald du die Datei gespeichert hast, wird sie automatisch als BASIC-Datei erkan
 
 Um unser Programm auszuführen, müssen wir den BASIC-Interpreter aufrufen und ihm den Dateinamen unseres Programms übergeben.
 
-Öffne dazu ein Terminal, indem du <span class='key'>Strg</span><span class='key'>J</span> drückst und gib folgenden Befehl ein:
+Öffne dazu ein Terminal, indem du <kbd>Strg</kbd><kbd>J</kbd> drückst und gib folgenden Befehl ein:
 
 ```bash
 bwbasic hello.bas
 ```
 
 <div class='hint'>
-Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>bwbasic he</code> und drücke <span class='key'>Tab</span>, um den Dateinamen automatisch zu <code>hello.bas</code> vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
+Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>bwbasic he</code> und drücke <kbd>Tab</kbd>, um den Dateinamen automatisch zu <code>hello.bas</code> vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
 </div>
 
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
 
 <img class='full' src='hello.webp'>
 
-Um BASIC zu beenden, gib `SYSTEM` ein und drücke <span class='key'>Enter</span> oder drücke einfach <span class='key'>Strg</span><span class='key'>D</span>.
+Um BASIC zu beenden, gib `SYSTEM` ein und drücke <kbd>Enter</kbd> oder drücke einfach <kbd>Strg</kbd><kbd>D</kbd>.
 
 ### Fehler finden und beheben
 
@@ -105,7 +105,7 @@ bwbasic hello.bas
 ```
 
 <div class='hint'>
-Nutze die Pfeiltaste hoch <span class='key'>↑</span>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
+Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
 BASIC sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
@@ -118,7 +118,7 @@ Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und z
 
 Im zweiten Beispiel wollen wir eine Zahl in ihre Primfaktoren zerlegen.
 An diesem Beispiel kannst du sehen, wie man in BASIC Benutzereingaben verarbeitet und Schleifen verwendet.
-Erstelle eine neue Datei mit <span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>N</span> und schreibe den folgenden Code hinein:
+Erstelle eine neue Datei mit <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd> und schreibe den folgenden Code hinein:
 
 _include_file(factor.bas, basic)
 

@@ -1544,7 +1544,7 @@ class Main < Sinatra::Base
                     io.puts "# #{title}"
                     io.puts
                     io.puts <<~EOS
-                        Um das #{title} verwenden zu können, musst du es erst installieren. Öffne dazu ein Terminal, indem du <span class='key'>Strg</span><span class='key'>J</span> drückst. Führe dann den folgenden Befehl aus:
+                        Um das #{title} verwenden zu können, musst du es erst installieren. Öffne dazu ein Terminal, indem du <kbd>Strg</kbd><kbd>J</kbd> drückst. Führe dann den folgenden Befehl aus:
 
                         ```bash
                         ./download.rb #{kit}

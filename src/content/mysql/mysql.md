@@ -8,18 +8,18 @@ image: select-land.webp:25:0
 In diesem Kapitel lernst du, wie du MySQL-Datenbanken abfragen kannst. Dazu verwenden wir die Programmiersprache SQL, die speziell für Datenbanken entwickelt wurde. SQL steht für Structured Query Language und wird ausgesprochen wie »Sequel«.
 </p>
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp'>
 
-Schließe die linken Seitenleiste, indem du <span class='key'>Strg</span><span class='key'>B</span> drückst, um mehr Platz zu haben.
-Öffne als nächstes das Terminal, indem du den Shortcut <span class='key'>Strg</span><span class='key'>J</span> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
+Schließe die linken Seitenleiste, indem du <kbd>Strg</kbd><kbd>B</kbd> drückst, um mehr Platz zu haben.
+Öffne als nächstes das Terminal, indem du den Shortcut <kbd>Strg</kbd><kbd>J</kbd> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='got-terminal.webp'>
 
 <img src='terminal-maximize.webp' class='r' style='width: 25em;'>
 
-Du kannst das Terminal auch maximieren, indem du auf den Pfeil in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du jederzeit mit <span class='key'>Strg</span><span class='key'>B</span> ein- und ausblenden.
+Du kannst das Terminal auch maximieren, indem du auf den Pfeil in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du jederzeit mit <kbd>Strg</kbd><kbd>B</kbd> ein- und ausblenden.
 
 Im Terminal siehst du nun die Eingabeaufforderung, auch Prompt genannt, der dir u.a. anzeigt, in welchem Verzeichnis du dich befindest. Der Prompt sieht in etwa so aus:
 
@@ -72,18 +72,18 @@ less terra1.sql
 ```
 
 <div class='hint'>
-Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>less te</code> und drücke <span class='key'>Tab</span>, um den Dateinamen automatisch zu <code>terra1.sql</code> vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
+Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>less te</code> und drücke <kbd>Tab</kbd>, um den Dateinamen automatisch zu <code>terra1.sql</code> vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
 </div>
 
 Du siehst jetzt die ersten Zeilen der Datei:
 
 <img class='full' src='less.webp'>
 
-Nutze die Pfeiltasten <span class='key'>←</span><span class='key'>↑</span><span class='key'>→</span><span class='key'>↓</span> sowie <span class='key'>Bild↑</span><span class='key'>Bild↓</span>, um durch die Datei zu navigieren.
+Nutze die Pfeiltasten <kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> sowie <kbd>Bild↑</kbd><kbd>Bild↓</kbd>, um durch die Datei zu navigieren.
 
 Wenn du etwas nach unten scrollst, siehst du, dass in der Datei zwei Tabellen enthalten sind, die Informationen zu Ländern und Orten enthalten.
 
-Drücke <span class='key'>Q</span>, um `less` zu beenden.
+Drücke <kbd>Q</kbd>, um `less` zu beenden.
 
 ## Beispieldaten importieren
 
@@ -94,7 +94,7 @@ mysql < terra1.sql
 ```
 
 <div class='hint wink'>
-Hast du daran gedacht, die <span class='key'>Tab</span>-Taste zu verwenden, um den Dateinamen automatisch vervollständigen zu lassen?
+Hast du daran gedacht, die <kbd>Tab</kbd>-Taste zu verwenden, um den Dateinamen automatisch vervollständigen zu lassen?
 </div>
 
 Wenn alles geklappt hat, siehst du keine Ausgabe. Das ist ein gutes Zeichen, denn das bedeutet, dass der Import erfolgreich war:
@@ -113,7 +113,7 @@ Die Ausgabe sollte in etwa so aussehen:
 
 <img class='full' src='mycli-prompt.webp'>
 
-Um dir die Tabellen in der Datenbank anzeigen zu lassen, gib den Befehl `SHOW TABLES;` ein und drücke <span class='key'>Enter</span>:
+Um dir die Tabellen in der Datenbank anzeigen zu lassen, gib den Befehl `SHOW TABLES;` ein und drücke <kbd>Enter</kbd>:
 
 <img class='full' src='show-tables.webp'>
 
@@ -137,10 +137,10 @@ Um dir die Daten in einer Tabelle anzeigen zu lassen, kannst du den Befehl `SELE
 
 <img class='full' src='select-land.webp'>
 
-Du siehst nun alle Einträge in der Tabelle `land`. Eine Zeile entspricht einem Land in der Tabelle. Nutze die Pfeiltasten <span class='key'>←</span><span class='key'>↑</span><span class='key'>→</span><span class='key'>↓</span> sowie <span class='key'>Bild↑</span><span class='key'>Bild↓</span>, um durch die Tabelle zu navigieren.
+Du siehst nun alle Einträge in der Tabelle `land`. Eine Zeile entspricht einem Land in der Tabelle. Nutze die Pfeiltasten <kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> sowie <kbd>Bild↑</kbd><kbd>Bild↓</kbd>, um durch die Tabelle zu navigieren.
 
 <div class='hint'>
-Drücke <span class='key'>Q</span> (genau wie vorhin bei <code>less</code>), um zur Eingabeaufforderung von <code>mycli</code> zurückzukehren.
+Drücke <kbd>Q</kbd> (genau wie vorhin bei <code>less</code>), um zur Eingabeaufforderung von <code>mycli</code> zurückzukehren.
 </div>
 
 Der Befehl `SELECT *` bedeutet, dass alle Spalten ausgewählt werden sollen. Wenn du nur bestimmte Spalten anzeigen möchtest, kannst du diese explizit angeben. Gib z. B. den Befehl `SELECT name, hauptstadt FROM land;` ein, um dir nur die Spalten `name` und `hauptstadt` anzeigen zu lassen:
@@ -206,7 +206,7 @@ Du hast jetzt die einzelnen Bestandteile einer SQL-Abfrage kennengelernt:
 Du kannst diese Befehle kombinieren, um genau die Daten zu erhalten, die du benötigst.
 
 <div class='hint'>
-Um <code>mycli</code> zu beenden, gib einfach den Befehl <code>exit</code> ein oder verwende die Tastenkombination <span class='key'>Strg</span><span class='key'>D</span>.
+Um <code>mycli</code> zu beenden, gib einfach den Befehl <code>exit</code> ein oder verwende die Tastenkombination <kbd>Strg</kbd><kbd>D</kbd>.
 </div>
 
 ### Aufgaben

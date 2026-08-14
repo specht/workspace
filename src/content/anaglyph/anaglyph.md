@@ -14,13 +14,13 @@ image: title.webp
 Anaglyphen sind Bilder, bei denen zwei Bilder in verschiedenen Farben übereinandergelegt werden, um einen 3D-Effekt zu erzeugen. Farbfilter in der 3D-Brille trennen die beiden Bilder, sodass jedes Auge nur eines der Bilder sieht. Dadurch entsteht der Eindruck von Tiefe und räumlicher Wahrnehmung. In diesem Tutorial lernst du, wie du verschiedene Körper in 3D mit Anaglyphen darstellen kannst.
 </p>
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp'>
 
 ## Repository klonen
 
-Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du auf den blauen Button »Clone Repository« klickst. Gib die folgende URL ein und bestätige mit <span class='key'>Enter</span>:
+Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du auf den blauen Button »Clone Repository« klickst. Gib die folgende URL ein und bestätige mit <kbd>Enter</kbd>:
 
 ```bash
 https://github.com/specht/anaglyph.git
@@ -28,7 +28,7 @@ https://github.com/specht/anaglyph.git
 
 <img class='full' src='git-clone.webp'>
 
-Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <span class='key'>Enter</span>.
+Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <kbd>Enter</kbd>.
 
 <img class='full' src='confirm-clone-path.webp'>
 
@@ -73,14 +73,14 @@ shape = box
 shape = sphere
 ```
 
-Speichere die Datei mit <span class='key'>Strg</span><span class='key'>S</span> und schaue dir die Vorschau an. Du solltest nun eine Kugel sehen:
+Speichere die Datei mit <kbd>Strg</kbd><kbd>S</kbd> und schaue dir die Vorschau an. Du solltest nun eine Kugel sehen:
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='sphere.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;'>
 </div>
 
 <div class='hint'>
-Falls sich die Vorschau nicht automatisch aktualisiert, klicke auf den »Refresh«-Button in deinem Browser oder drücke <span class='key'>F5</span>.
+Falls sich die Vorschau nicht automatisch aktualisiert, klicke auf den »Refresh«-Button in deinem Browser oder drücke <kbd>F5</kbd>.
 </div>
 
 Probiere auch andere Formen aus, indem du den Wert für `shape` änderst. Hier sind die Formen, die du verwenden kannst:
@@ -377,7 +377,7 @@ shape = box
 Tipp: Statt eines Semikolons (<code>;</code>) kannst du auch ein Hashtag (<code>#</code>) verwenden, um eine Zeile auszukommentieren.
 </div>
 
-Um schnell ganze Blöcke auszukommentieren, kannst du mehrere Zeilen markieren und dann <span class='key'>Strg</span><span class='key'>K</span> und <span class='key'>Strg</span><span class='key'>C</span> (für »comment«) drücken. Um die Kommentare wieder zu entfernen, markiere die Zeilen und drücke <span class='key'>Strg</span><span class='key'>K</span> und <span class='key'>Strg</span><span class='key'>U</span> (für »uncomment«). Es gibt auch weitere Shortcuts dafür, die du im Menü finden kannst.
+Um schnell ganze Blöcke auszukommentieren, kannst du mehrere Zeilen markieren und dann <kbd>Strg</kbd><kbd>K</kbd> und <kbd>Strg</kbd><kbd>C</kbd> (für »comment«) drücken. Um die Kommentare wieder zu entfernen, markiere die Zeilen und drücke <kbd>Strg</kbd><kbd>K</kbd> und <kbd>Strg</kbd><kbd>U</kbd> (für »uncomment«). Es gibt auch weitere Shortcuts dafür, die du im Menü finden kannst.
 
 ## Animationen
 

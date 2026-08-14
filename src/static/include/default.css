@@ -133,7 +133,7 @@ pre.wrap-code {
     user-select: none;
 }
 
-.key {
+kbd {
     position: relative;
     top: -0.05em;
 
@@ -142,6 +142,8 @@ pre.wrap-code {
     border: 1px solid #ddd;
     border-radius: 0.2em;
 
+    color: inherit;
+    background-color: transparent;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 11pt;
 

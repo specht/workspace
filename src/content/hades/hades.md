@@ -12,13 +12,13 @@ Falls du die Altgriechisch-App nutzt, hast du sicherlich schon einige Aufgaben g
 Hinweis: Die Altgriechisch-App findest du hier für <a href='https://play.google.com/store/apps/details?id=de.gymnasiumsteglitz.agr_app' target='_blank'>Android</a>, für <a href='https://apps.apple.com/de/app/id1597703481' target='_blank'>iOS</a> und <a href='https://agr.gymnasiumsteglitz.de/' target='_blank'>im Web</a>.
 </div>
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp'>
 
 ## HTTParty installieren
 
-Bevor wir anfangen können, müssen wir ein Rubygem installieren, das uns hilft, HTTP-Anfragen zu senden. Öffne das Terminal, indem du den Shortcut <span class='key'>Strg</span><span class='key'>J</span> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
+Bevor wir anfangen können, müssen wir ein Rubygem installieren, das uns hilft, HTTP-Anfragen zu senden. Öffne das Terminal, indem du den Shortcut <kbd>Strg</kbd><kbd>J</kbd> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='got-terminal.webp'>
 
@@ -36,7 +36,7 @@ Wenn du die Meldung `3 gems installed` siehst, war die Installation erfolgreich:
 
 Normalerweise meldest du dich in der App an, indem du deine E-Mail-Adresse eingibst und dann einen Code erhältst, den du in die App eingibst. Diesen Code können wir auch über eine HTTP-Anfrage anfordern – genauso macht es die App sonst für uns.
 
-Wähle im Menü links oben »File« / »New Text File« (oder drücke <span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>N</span>), um eine neue Datei anzulegen:
+Wähle im Menü links oben »File« / »New Text File« (oder drücke <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd>), um eine neue Datei anzulegen:
 
 <img class='full' src='new-file.webp'>
 
@@ -65,7 +65,7 @@ Da Visual Studio Code noch nicht weiß, dass es sich um Ruby-Code handelt, sieht
 
 <img class='full' src='no-syntax-highlighting.webp'>
 
-Speichere die Datei unter dem Dateinamen `hades.rb`, indem du <span class='key'>Strg</span><span class='key'>S</span> drückst und den Dateinamen eingibst. 
+Speichere die Datei unter dem Dateinamen `hades.rb`, indem du <kbd>Strg</kbd><kbd>S</kbd> drückst und den Dateinamen eingibst.
 
 <img class='full' src='enter-filename.webp'>
 

@@ -20,7 +20,7 @@ Dafür verwenden wir die Programmiersprache C. Diese Sprache ist näher an der A
 
 ## Repository klonen
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und danach <span class='key'>F</span>. Dein Work­space sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und danach <kbd>F</kbd>. Dein Work­space sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp'>
 
@@ -34,7 +34,7 @@ https://github.com/specht/pixelram-starter.git
 
 <img class='full' src='git-clone.webp'>
 
-Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <span class='key'>Enter</span>.
+Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <kbd>Enter</kbd>.
 
 <img class='full' src='confirm-clone-path.webp'>
 

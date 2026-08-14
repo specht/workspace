@@ -349,7 +349,7 @@ In diesem Tutorial erstellen wir eine Präsentation mit Hilfe von [shower.js](ht
 
 ## Repository klonen
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp'>
 
@@ -361,7 +361,7 @@ https://git.nhcham.org/specht/shower.js.git
 
 <img class='full' src='git-clone.webp'>
 
-Bestätige anschließend mit <span class='key'>Enter</span>. Danach musst du ein Verzeichnis wählen, in dem das Repository gespeichert werden soll. Wähle dafür den Ordner `/workspace`.
+Bestätige anschließend mit <kbd>Enter</kbd>. Danach musst du ein Verzeichnis wählen, in dem das Repository gespeichert werden soll. Wähle dafür den Ordner `/workspace`.
 
 <img class='full' src='choose-folder.webp'>
 
@@ -424,14 +424,14 @@ So bleibt `index.html` übersichtlich: Dort stehen die Folien, während `styles.
 
 Du kannst jetzt damit beginnen, die Vorlage an deine Bedürfnisse anzupassen und deine Präsentation zu schreiben.
 
-Speichere deine Änderungen mit <span class='key'>Strg</span><span class='key'>S</span>, um den Effekt im Vorschaufenster zu sehen, falls dein Workspace Änderungen nicht schon automatisch speichert. Das kannst du im Menü unter »File« / »Auto Save« einstellen.
+Speichere deine Änderungen mit <kbd>Strg</kbd><kbd>S</kbd>, um den Effekt im Vorschaufenster zu sehen, falls dein Workspace Änderungen nicht schon automatisch speichert. Das kannst du im Menü unter »File« / »Auto Save« einstellen.
 
 <div class='hint'>
-Wenn du die Datei <code>index.html</code> bearbeitest, musst du vorsichtig sein, weil die Syntax relativ wichtig ist. Schon eine fehlende spitze Klammer kann dazu führen, dass mehrere Folien auf einmal nicht mehr sichtbar sind. Gehe also behutsam vor und verwende zur Not <span class='key'>Strg</span><span class='key'>Z</span>, um Änderungen rückgängig zu machen. Wenn du dir unsicher bist, ob deine Änderungen funktionieren, speichere sie und schau dir das Ergebnis in der Vorschau an. Du kannst sie immer noch rückgängig machen.
+Wenn du die Datei <code>index.html</code> bearbeitest, musst du vorsichtig sein, weil die Syntax relativ wichtig ist. Schon eine fehlende spitze Klammer kann dazu führen, dass mehrere Folien auf einmal nicht mehr sichtbar sind. Gehe also behutsam vor und verwende zur Not <kbd>Strg</kbd><kbd>Z</kbd>, um Änderungen rückgängig zu machen. Wenn du dir unsicher bist, ob deine Änderungen funktionieren, speichere sie und schau dir das Ergebnis in der Vorschau an. Du kannst sie immer noch rückgängig machen.
 </div>
 
 <div class='hint melting'>
-Falls sich deine Vorschau einmal nicht mehr aktualisieren sollte, kannst du die Seite einfach neu laden. Drück dafür <span class='key'>Strg</span><span class='key'>R</span> oder <span class='key'>F5</span>.
+Falls sich deine Vorschau einmal nicht mehr aktualisieren sollte, kannst du die Seite einfach neu laden. Drück dafür <kbd>Strg</kbd><kbd>R</kbd> oder <kbd>F5</kbd>.
 </div>
 
 ## Referenz: Folien gestalten
@@ -1234,7 +1234,7 @@ Um ein Bild aus dem Internet in die Zwischenablage zu kopieren, kannst du mit de
 
 <!-- https://de.wikipedia.org/wiki/Japan#/media/Datei:Japanese_classroom.jpg -->
 
-Klicke jetzt im File Explorer auf ein Bild im Ordner `pictures` und drücke <span class='key'>Strg</span><span class='key'>V</span>, um das Bild in denselben Ordner einzufügen:
+Klicke jetzt im File Explorer auf ein Bild im Ordner `pictures` und drücke <kbd>Strg</kbd><kbd>V</kbd>, um das Bild in denselben Ordner einzufügen:
 
 <img src="confirm-paste.webp" class="full">
 
@@ -1292,7 +1292,7 @@ Die neue Datei `classroom.webp` hat jetzt eine Dateigröße von nur 180 kB und s
 <img src="webp-converted.webp" class="full">
 
 <div class='hint'>
-Bilder, die du mit <span class='key'>Strg</span><span class='key'>V</span> einfügst, werden oft als PNG-Dateien gespeichert.
+Bilder, die du mit <kbd>Strg</kbd><kbd>V</kbd> einfügst, werden oft als PNG-Dateien gespeichert.
 Das ist für Screenshots gut, aber für Fotos manchmal unnötig groß.
 Im Profi-Abschnitt unten siehst du, wie du solche Dateien prüfen und umwandeln kannst.
 </div>

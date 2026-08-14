@@ -16,7 +16,7 @@ Mit BIF kannst du interaktive Geschichten schreiben, bei denen die Leserinnen un
 
 ## Repository klonen
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>.
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>.
 
 <!-- Screenshot: Workspace ohne geöffneten Ordner -->
 
@@ -28,7 +28,7 @@ Für diese Anleitung brauchst du das BIF-Repository. Klicke auf den blauen Butto
 https://github.com/specht/bif.git
 ```
 
-Bestätige anschließend mit <span class='key'>Enter</span>.
+Bestätige anschließend mit <kbd>Enter</kbd>.
 
 <!-- Screenshot: Clone Repository mit eingetragener BIF-URL -->
 
@@ -40,7 +40,7 @@ Als nächstes musst du angeben, in welches Verzeichnis das Repository geklont we
 /workspace/
 ```
 
-mit <span class='key'>Enter</span>.
+mit <kbd>Enter</kbd>.
 
 <!-- Screenshot: Auswahl von /workspace/ -->
 
@@ -114,7 +114,7 @@ Schreibe hinein:
 Du stehst in einem leeren Flur. Links ist ein kleines Büro. Daneben führt eine Tür ins Treppenhaus. Am Ende steht ein verschlossener Materialschrank.
 ```
 
-Speichere die Datei, indem du <span class='key'>Strg</span><span class='key'>S</span> drückst. Die Vorschau sollte nun so aussehen:
+Speichere die Datei, indem du <kbd>Strg</kbd><kbd>S</kbd> drückst. Die Vorschau sollte nun so aussehen:
 
 <div style='clear: both;'></div>
 

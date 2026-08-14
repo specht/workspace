@@ -20,13 +20,13 @@ LaTeX wird häufig an Universitäten, in der Wissenschaft und bei technischen Be
 
 In diesem Tutorial lernst du die Grundlagen von LaTeX anhand einer **Bewerbung**, eines **Lebenslaufs** und einer **schriftlichen Ausarbeitung** kennen.
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp'>
 
 ## Repository klonen
 
-Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du auf den blauen Button »Clone Repository« klickst. Gib die folgende URL ein und bestätige mit <span class='key'>Enter</span>:
+Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du auf den blauen Button »Clone Repository« klickst. Gib die folgende URL ein und bestätige mit <kbd>Enter</kbd>:
 
 ```bash
 https://github.com/specht/latex-tutorial.git
@@ -34,7 +34,7 @@ https://github.com/specht/latex-tutorial.git
 
 <img class='full' src='git-clone.webp'>
 
-Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <span class='key'>Enter</span>.
+Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <kbd>Enter</kbd>.
 
 <img class='full' src='confirm-clone-path.webp'>
 
@@ -53,13 +53,13 @@ Wechsle nun wieder zurück zum Explorer, indem du auf das Explorer-Symbol <img s
 _include_file(hello.tex, tex)
 
 Rechts oben findest du einen kleinen Button: »Build LaTeX project« 
-<img src='build-latex-project.webp' style='border-radius: 4px; height: 1.5em;'>. Drücke diesen Button, um dein LaTeX-Dokument zu compilieren (oder drücke <span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>B</span>). Währenddessen siehst du unten in der Zeile den Fortschritt der Compilierung (<i class='bi bi-arrow-repeat bi-spin'></i> Build), und wenn die compilierung abgeschlossen ist, siehst du ein grünes Häkchen (<i class='bi bi-check-lg'></i>):
+<img src='build-latex-project.webp' style='border-radius: 4px; height: 1.5em;'>. Drücke diesen Button, um dein LaTeX-Dokument zu compilieren (oder drücke <kbd>Strg</kbd><kbd>Alt</kbd><kbd>B</kbd>). Währenddessen siehst du unten in der Zeile den Fortschritt der Compilierung (<i class='bi bi-arrow-repeat bi-spin'></i> Build), und wenn die compilierung abgeschlossen ist, siehst du ein grünes Häkchen (<i class='bi bi-check-lg'></i>):
 
 <img class='full' src='latex-build.webp'>
 
 Wenn die compilierung erfolgreich war, solltest du eine
 PDF-Datei namens `hello.pdf` im selben Verzeichnis sehen. Klicke anschließend auf den Button rechts oben: »View LaTeX PDF file«
-<img src='view-latex-pdf-file.webp' style='border-radius: 4px; height: 1.5em;'> oder verwende den Shortcut <span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>V</span>, um die PDF-Datei neben deinem LaTeX-Quelltext anzuzeigen:
+<img src='view-latex-pdf-file.webp' style='border-radius: 4px; height: 1.5em;'> oder verwende den Shortcut <kbd>Strg</kbd><kbd>Alt</kbd><kbd>V</kbd>, um die PDF-Datei neben deinem LaTeX-Quelltext anzuzeigen:
 
 <img class='full' src='side-by-side.webp'>
 

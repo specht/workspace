@@ -19,23 +19,23 @@ Am linken Rand siehst du einige Icons, die wichtig sind:
 <table class='table'>
 <tr>
 <td><img class='sq-icon' src='explorer.webp'></td>
-<td>Explorer (<span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>E</span>) &ndash; hier siehst du alle Dateien und Unterordner des aktuell geöffneten Projekts</td>
+<td>Explorer (<kbd>Strg</kbd><kbd>Shift</kbd><kbd>E</kbd>) &ndash; hier siehst du alle Dateien und Unterordner des aktuell geöffneten Projekts</td>
 </tr>
 <tr>
 <td><img class='sq-icon' src='search.webp'></td>
-<td>Search (<span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>F</span>) &ndash; hier kannst du in allen Dateien innerhalb deines Projektes suchen</td>
+<td>Search (<kbd>Strg</kbd><kbd>Shift</kbd><kbd>F</kbd>) &ndash; hier kannst du in allen Dateien innerhalb deines Projektes suchen</td>
 </tr>
 <tr>
 <td><img class='sq-icon' src='source-control.webp'></td>
-<td>Source Control (<span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>G</span>) &ndash; hier geht es um Versionsverwaltung mit Git</td>
+<td>Source Control (<kbd>Strg</kbd><kbd>Shift</kbd><kbd>G</kbd>) &ndash; hier geht es um Versionsverwaltung mit Git</td>
 </tr>
 <tr>
 <td><img class='sq-icon' src='run-and-debug.webp'></td>
-<td>Run and Debug (<span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>D</span>) &ndash; hier können selbst geschriebene Programme ausgeführt werden</td>
+<td>Run and Debug (<kbd>Strg</kbd><kbd>Shift</kbd><kbd>D</kbd>) &ndash; hier können selbst geschriebene Programme ausgeführt werden</td>
 </tr>
 <tr>
 <td><img class='sq-icon' src='extensions.webp'></td>
-<td>Extensions (<span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>X</span>) &ndash; hier findest du viele nützliche Erweiterungen</td>
+<td>Extensions (<kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>) &ndash; hier findest du viele nützliche Erweiterungen</td>
 </tr>
 <tr>
 <td><img class='sq-icon' src='keyboard-tutorial.webp'></td>
@@ -52,15 +52,15 @@ Rechts oben siehst du mehrere Buttons, mit denen du das Layout anpassen oder ver
 </tr>
 <tr>
 <td style='width: 1em;'><img class='sq-icon' src='primary-side-bar.webp'></td>
-<td>Linke Seitenleiste (<span class='key'>Strg</span><span class='key'>B</span>)</td>
+<td>Linke Seitenleiste (<kbd>Strg</kbd><kbd>B</kbd>)</td>
 </tr>
 <tr>
 <td><img class='sq-icon' src='panel.webp'></td>
-<td>Panel (<span class='key'>Strg</span><span class='key'>J</span>) &ndash; hier ist für uns vor allem das Terminal interessant</td>
+<td>Panel (<kbd>Strg</kbd><kbd>J</kbd>) &ndash; hier ist für uns vor allem das Terminal interessant</td>
 </tr>
 <tr>
 <td><img class='sq-icon' src='secondary-side-bar.webp'></td>
-<td>Rechte Seitenleiste (<span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>B</span>)</td>
+<td>Rechte Seitenleiste (<kbd>Strg</kbd><kbd>Alt</kbd><kbd>B</kbd>)</td>
 </tr>
 </table>
 
@@ -109,7 +109,7 @@ Um einen Checkpoint zu erstellen, wechsle links in den Explorer und klappe den B
 
 <img src='create-checkpoint.webp' class='full'>
 
-Du kannst einen Namen für den Checkpoint eingeben und mit <span class='key'>Enter</span> bestätigen. 
+Du kannst einen Namen für den Checkpoint eingeben und mit <kbd>Enter</kbd> bestätigen.
 
 <img src='enter-checkpoint-name.webp' class='full'>
 

@@ -25,7 +25,7 @@ Pascal fand Anwendung in der Softwareentwicklung, insbesondere in den 1980er und
 
 Pascal-Programme werden in Textdateien mit der Endung `.pas` geschrieben. Diese Dateien werden anschließend von einem Compiler in ausführbare Dateien übersetzt, die auf deinem Computer direkt ausgeführt werden können. Früher waren der Compiler »Turbo Pascal« sehr verbreitet, heute wird meist der freie Compiler »Free Pascal« verwendet.
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp'>
 
@@ -43,15 +43,15 @@ Da Visual Studio Code noch nicht weiß, dass es sich um Pascal-Quelltext handelt
 
 <img class='full' src='no-syntax-highlighting.webp'>
 
-Drücke nun <span class='key'>Strg</span><span class='key'>S</span>, um die Datei zu speichern. Gib `hello.pas` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.pas`.
+Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.pas` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.pas`.
 
 <img class='full' src='enter-filename.webp'>
 
-Da Pascal standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;'> in der Seitenleiste oder drücke <span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>X</span>. Suche nach der Erweiterung »Pascal Magic« und installiere sie.
+Da Pascal standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;'> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »Pascal Magic« und installiere sie.
 
 <img class='full' src='pascal-syntax.webp'>
 
-Alternativ kannst du auch <span class='key'>Strg</span><span class='key'>P</span> drücken und `ext install theangryepicbanana.language-pascal` eingeben, um die Erweiterung zu installieren.
+Alternativ kannst du auch <kbd>Strg</kbd><kbd>P</kbd> drücken und `ext install theangryepicbanana.language-pascal` eingeben, um die Erweiterung zu installieren.
 
 Anschließend solltest du dein Pascal-Programm farbig sehen:
 
@@ -61,7 +61,7 @@ Anschließend solltest du dein Pascal-Programm farbig sehen:
 
 Bevor wir das Programm ausführen können, müssen wir es kompilieren. Dadurch wird der Quelltext in Maschinencode übersetzt, den dein Computer ausführen kann.
 
-Öffne dazu ein Terminal, indem du entweder <span class='key'>Strg</span><span class='key'>J</span> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='lets-compile.webp'>
 
@@ -72,7 +72,7 @@ fpc hello.pas
 ```
 
 <div class='hint'>
-Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>fpc he</code> und drücke <span class='key'>Tab</span>, um den Dateinamen automatisch zu <code>hello.pas</code> vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
+Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>fpc he</code> und drücke <kbd>Tab</kbd>, um den Dateinamen automatisch zu <code>hello.pas</code> vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
 </div>
 
 Wenn du keinen Fehler gemacht hast, wird das Programm erfolgreich kompiliert und die ausführbare Datei `hello` wird im selben Verzeichnis erstellt. Du kannst dies überprüfen, indem du dir die Dateien im aktuellen Verzeichnis mit `ls` oder `ls -l` anzeigen lässt:
@@ -110,7 +110,7 @@ fpc hello.pas
 ```
 
 <div class='hint'>
-Nutze die Pfeiltaste hoch <span class='key'>↑</span>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
+Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
 Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
@@ -122,7 +122,7 @@ Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und z
 ## Primfaktorzerlegung
 
 Im zweiten Beispiel wollen wir eine Zahl in ihre Primfaktoren zerlegen. An diesem Beispiel kannst du sehen, wie man in Pascal Benutzereingaben verarbeitet und Schleifen verwendet.
-Erstelle eine neue Datei mit <span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>N</span> und schreibe den folgenden Code hinein:
+Erstelle eine neue Datei mit <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd> und schreibe den folgenden Code hinein:
 
 _include_file(factor.pas, pascal)
 
@@ -168,10 +168,10 @@ Wenn du möchtest, kannst du eine kleine Zeitreise machen und wie früher in den
 In dieser Entwicklungsumgebung kannst du den Quelltext direkt bearbeiten und du kannst folgende Tasten verwenden:
 
 <table class='table'>
-<tr><td><span class='key'>F9</span></td><td>Kompilieren</td></tr>
-<tr><td><span class='key'>Strg</span><span class='key'>F9</span></td><td>Ausführen</td></tr>
-<tr><td><span class='key'>F2</span></td><td>Speichern</td></tr>
-<tr><td><span class='key'>Alt</span><span class='key'>X</span></td><td>Beenden</td></tr>
+<tr><td><kbd>F9</kbd></td><td>Kompilieren</td></tr>
+<tr><td><kbd>Strg</kbd><kbd>F9</kbd></td><td>Ausführen</td></tr>
+<tr><td><kbd>F2</kbd></td><td>Speichern</td></tr>
+<tr><td><kbd>Alt</kbd><kbd>X</kbd></td><td>Beenden</td></tr>
 </table>
 
 <div class='hint'>

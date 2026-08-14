@@ -44,7 +44,7 @@ html[data-bs-theme="dark"] {
         color: #e5185d;
         background-color: rgba(243, 132, 175, 0.08);
     }
-    .key {
+    kbd {
         border: 1px solid #555753;
         font-weight: bold;
     }

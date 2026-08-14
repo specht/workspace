@@ -19,18 +19,18 @@ Git löst dieses Problem, indem es die Entwicklung eines Projekts als eine Abfol
 
 In diesem Tutorial lernst du Git Schritt für Schritt kennen. Wir beginnen ganz lokal auf deinem eigenen Rechner und schauen uns zunächst an, wie Git Änderungen speichert und organisiert. Erst später werden wir darauf eingehen, wie Git auch die Zusammenarbeit mehrerer Personen an einem gemeinsamen Projekt unterstützt.
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp'>
 
-Schließe die linken Seitenleiste, indem du <span class='key'>Strg</span><span class='key'>B</span> drückst, um mehr Platz zu haben.
-Öffne als nächstes das Terminal, indem du den Shortcut <span class='key'>Strg</span><span class='key'>J</span> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
+Schließe die linken Seitenleiste, indem du <kbd>Strg</kbd><kbd>B</kbd> drückst, um mehr Platz zu haben.
+Öffne als nächstes das Terminal, indem du den Shortcut <kbd>Strg</kbd><kbd>J</kbd> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='got-terminal.webp'>
 
 <img src='terminal-maximize.webp' class='r' style='width: 25em;'>
 
-Du kannst das Terminal auch maximieren, indem du auf den Pfeil in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du jederzeit mit <span class='key'>Strg</span><span class='key'>B</span> ein- und ausblenden.
+Du kannst das Terminal auch maximieren, indem du auf den Pfeil in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du jederzeit mit <kbd>Strg</kbd><kbd>B</kbd> ein- und ausblenden.
 
 Erstelle als erstes ein Verzeichnis für dieses Tutorial, indem du im Terminal folgenden Befehl eingibst:
 
@@ -167,7 +167,7 @@ Wie du siehst, sind die alten Objekte (Blob `af5626b` und Tree `ec947e3`) weiter
 
 ## Dateien ändern
 
-Öffne jetzt das Verzeichnis `/workspace/git-tutorial/alice` in VS Code, indem du <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>Strg</span><span class='key'>O</span> drückst:
+Öffne jetzt das Verzeichnis `/workspace/git-tutorial/alice` in VS Code, indem du <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>Strg</kbd><kbd>O</kbd> drückst:
 
 <img class='full' src='open-dir.webp'>
 
@@ -179,7 +179,7 @@ Wähle das Verzeichnis `/workspace/git-tutorial/alice` aus und klicke auf »OK«
 
 <img class='full' src='edit-readme.webp'>
 
-Speichere die Datei mit <span class='key'>Strg</span><span class='key'>S</span> und überprüfe den Status mit `git status` im Terminal:
+Speichere die Datei mit <kbd>Strg</kbd><kbd>S</kbd> und überprüfe den Status mit `git status` im Terminal:
 
 <img class='full' src='git-status-2.webp'>
 
@@ -529,7 +529,7 @@ nano README.md
 
 <img class='full' src='bob-was-here.webp'>
 
-Speichere die Datei mit <span class='key'>Strg</span><span class='key'>O</span> und <span class='key'>Enter</span> und schließe den Editor mit <span class='key'>Strg</span><span class='key'>X</span>. Mit `git diff` kann Bob seine Änderungen überprüfen:
+Speichere die Datei mit <kbd>Strg</kbd><kbd>O</kbd> und <kbd>Enter</kbd> und schließe den Editor mit <kbd>Strg</kbd><kbd>X</kbd>. Mit `git diff` kann Bob seine Änderungen überprüfen:
 
 <img class='full' src='git-diff-bob.webp'>
 

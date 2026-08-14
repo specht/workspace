@@ -8,7 +8,7 @@ image: fire.webp:73:0
 »Demos« nannte man in der 90er Jahren kleine Programme, die spektakuläre Grafiken und Musik auf dem Bildschirm darstellten und dabei die Grenzen der verfügbaren Hardware ausreizten. Die Demoszene ist eine Subkultur, die sich um die Entwicklung von Demos und die Organisation von Demopartys dreht. In diesem Tutorial programmieren wir eine kleine Feueranimation in Ruby, die in der Demoszene relativ beliebt ist.
 </p>
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp'>
 
@@ -38,7 +38,7 @@ end
 ```
 
 
-Starte das Pixelflow Canvas, indem du <span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>P</span> oder <span class='key'>F1</span> drückst und dann »Show Pixelflow Canvas« eingibst.
+Starte das Pixelflow Canvas, indem du <kbd>Strg</kbd><kbd>Shift</kbd><kbd>P</kbd> oder <kbd>F1</kbd> drückst und dann »Show Pixelflow Canvas« eingibst.
 Führe das Programm aus, indem du im Terminal `ruby fire.rb` eingibst. Da standardmäßig die [VGA-Palette](https://specht.github.io/pixelflow_canvas_ruby/palettes.html#vga) verwendet wird, sehen wir die ersten 64 Farben der VGA-Palette:
 
 <img src='ramp0.webp' class='full'>
@@ -150,7 +150,7 @@ Anmerkungen:
 
 - In Zeile 3 legen wir die Größe für unsere Animation fest (256x128 Pixel).
 - In Zeile 5 wird »Double Buffering« aktiviert, damit wir dem Bildschirm nicht beim Zeichnen zuschauen müssen, sondern nur das fertige Ergebnis sehen, wenn wir fertig sind. Dafür ist es wichtig, dass wir in Zeile 22 den Befehl `flip()` aufrufen, damit der Bildschirm aktualisiert wird.
-- In Zeile 16 beginnt eine Endlosschleife, die die Animation Bild für Bild zeichnet. Da das Programm sich nun nicht mehr von selbst beendet, musst du es manuell abbrechen, indem du <span class='key'>Strg</span><span class='key'>C</span> drückst.
+- In Zeile 16 beginnt eine Endlosschleife, die die Animation Bild für Bild zeichnet. Da das Programm sich nun nicht mehr von selbst beendet, musst du es manuell abbrechen, indem du <kbd>Strg</kbd><kbd>C</kbd> drückst.
 
 Das Ergebnis sieht jetzt noch relativ unspektakulär aus, aber wir sehen schon das helle Rechteck am unteren Rand des Bildes (und auch wenn es noch nicht so aussieht, werden schon regelmäßig neue Frames gezeichnet):
 

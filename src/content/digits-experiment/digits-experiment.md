@@ -12,11 +12,11 @@ In diesem Artikel bekommst du eine Schritt-für-Schritt-Anleitung. Lies sie gena
 
 ## Vorbereitung
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Drücke <span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>E</span>, um die Seitenleiste mit dem Explorer-Tab zu öffnen. Dein Workspace sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>E</kbd>, um die Seitenleiste mit dem Explorer-Tab zu öffnen. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp'>
 
-Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du auf den blauen Button »Clone Repository« klickst. Gib die folgende URL ein und bestätige mit <span class='key'>Enter</span>:
+Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du auf den blauen Button »Clone Repository« klickst. Gib die folgende URL ein und bestätige mit <kbd>Enter</kbd>:
 
 ```bash
 https://github.com/specht/digits-experiment.git
@@ -24,7 +24,7 @@ https://github.com/specht/digits-experiment.git
 
 <img class='full' src='git-clone.webp'>
 
-Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <span class='key'>Enter</span>.
+Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <kbd>Enter</kbd>.
 
 <img class='full' src='confirm-clone-path.webp'>
 
@@ -36,7 +36,7 @@ Du siehst nun auf der linken Seite ein paar Verzeichnisse und Dateien, die wir f
 
 <img class='full' src='lets-start.webp'>
 
-Öffne nun ein Terminal, indem du z. B. <span class='key'>Strg</span><span class='key'>J</span> drückst:
+Öffne nun ein Terminal, indem du z. B. <kbd>Strg</kbd><kbd>J</kbd> drückst:
 
 <img class='full' src='got-terminal.webp'>
 
@@ -47,7 +47,7 @@ Starte nun das Skript `bootstrap.sh`, indem du den folgenden Befehl eingibst:
 ```
 
 <div class='hint'>
-Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>./bo</code> und drücke <span class='key'>Tab</span>, um den Dateinamen automatisch zu <code>./boostrap.sh</code> vervollständigen zu lassen. Drücke <span class='key'>Enter</span>, um das Skript auszuführen.
+Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>./bo</code> und drücke <kbd>Tab</kbd>, um den Dateinamen automatisch zu <code>./boostrap.sh</code> vervollständigen zu lassen. Drücke <kbd>Enter</kbd>, um das Skript auszuführen.
 </div>
 
 <img class='r' src='noticed-new-environment.webp' style='width: 25em;'>

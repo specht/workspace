@@ -14,7 +14,7 @@ image: rainbow.webp
 In diesem Kapitel lernst du, wie du Pixelgrafiken programmieren kannst. Dazu installieren wir das Paket »Pixelflow Canvas« und erstellen ein erstes Bild mit einer hügeligen Wiese aus Bézierkurven und einem Regenbogen aus konzentrischen Kreisen.
 </p>
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp'>
 
@@ -30,7 +30,7 @@ Um Pixelgrafiken im Workspace programmieren zu können, benötigen wir die Erwei
 
 ### Rubygem installieren
 
-Um bequem von Ruby Befehle an das Canvas schicken zu können, benötigen wir das Rubygem »pixelflow_canvas«. Öffne das Terminal, indem du den Shortcut <span class='key'>Strg</span><span class='key'>J</span> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
+Um bequem von Ruby Befehle an das Canvas schicken zu können, benötigen wir das Rubygem »pixelflow_canvas«. Öffne das Terminal, indem du den Shortcut <kbd>Strg</kbd><kbd>J</kbd> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='got-terminal.webp'>
 
@@ -42,7 +42,7 @@ gem install pixelflow_canvas
 
 ## Zeichenfläche ausprobieren
 
-Wähle im Menü links oben »File« / »New Text File« (oder drücke <span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>N</span>), um eine neue Datei anzulegen:
+Wähle im Menü links oben »File« / »New Text File« (oder drücke <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd>), um eine neue Datei anzulegen:
 
 <img class='full' src='new-file.webp'>
 
@@ -60,7 +60,7 @@ Da Visual Studio Code noch nicht weiß, dass es sich um Ruby-Code handelt, sieht
 
 <img class='full' src='no-syntax-highlighting.webp'>
 
-Speichere die Datei unter dem Dateinamen `rainbow.rb`, indem du <span class='key'>Strg</span><span class='key'>S</span> drückst und den Dateinamen eingibst. 
+Speichere die Datei unter dem Dateinamen `rainbow.rb`, indem du <kbd>Strg</kbd><kbd>S</kbd> drückst und den Dateinamen eingibst.
 
 <img class='full' src='enter-filename.webp'>
 
@@ -69,7 +69,7 @@ Dein Programm sollte jetzt ungefähr so aussehen:
 <img class='full' src='syntax-highlighting.webp'>
 
 Bevor wir das Programm ausführen können, müssen wir das Pixelflow Canvas öffnen. Drücke dazu
-<span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>P</span> oder <span class='key'>F1</span>
+<kbd>Strg</kbd><kbd>Shift</kbd><kbd>P</kbd> oder <kbd>F1</kbd>
 und gib dann »Show Pixelflow Canvas« ein.
 
 <div class='hint'>
@@ -175,7 +175,7 @@ end
 
 <img src='out2.webp' class='r'>
 
-Führe das Programm aus, indem du im Terminal `ruby rainbow.rb` eingibst (du kannst auch einfach den letzten Befehl wiederholen, indem du <span class='key'>↑</span> und <span class='key'>Enter</span> drückst).
+Führe das Programm aus, indem du im Terminal `ruby rainbow.rb` eingibst (du kannst auch einfach den letzten Befehl wiederholen, indem du <kbd>↑</kbd> und <kbd>Enter</kbd> drückst).
 
 Du solltest jetzt sehen, dass sich die Farben geändert haben – der Hintergrund ist nicht mehr schwarz, weil
 die Farbe 0 nun ein dunkles Lila ist und die Farbe 10 ist nun ein dunkles Türkis.

@@ -8,13 +8,13 @@ image: erd1.webp:0:50
 In diesem Kapitel entwickelst du eine Datenbank für eine Videothek, indem du ein Entity-Relationship-Diagramm erstellst und dieses in eine relationale Datenbank überführst. Anschließend lädst du Beispieldaten in die Datenbank und führst erste Abfragen durch. Das Datenmodell wird anschließend Schritt für Schritt erweitert.
 </p>
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp'>
 
 ## Repository klonen
 
-Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du auf den blauen Button »Clone Repository« klickst. Gib die folgende URL ein und bestätige mit <span class='key'>Enter</span>:
+Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du auf den blauen Button »Clone Repository« klickst. Gib die folgende URL ein und bestätige mit <kbd>Enter</kbd>:
 
 ```bash
 https://github.com/specht/videothek.git
@@ -22,7 +22,7 @@ https://github.com/specht/videothek.git
 
 <img class='full' src='git-clone.webp'>
 
-Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <span class='key'>Enter</span>.
+Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <kbd>Enter</kbd>.
 
 <img class='full' src='confirm-clone-path.webp'>
 
@@ -100,11 +100,11 @@ Die Daten sind in einem Format, das als JSON bekannt ist. JSON steht für »Java
 
 ## ER-Diagramm zeichnen
 
-Es gibt verschiedene Tools, um ein Entity-Relationship-Diagramm (ERD) zu erstellen. In diesem Tutorial verwenden wir die Erweiterung »ERD Editor« für Visual Studio Code. Um die Erweiterung zu installieren, klicke auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;'> in der Seitenleiste oder drücke <span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>X</span>. Suche nach der Erweiterung »ERD Editor« und installiere sie.
+Es gibt verschiedene Tools, um ein Entity-Relationship-Diagramm (ERD) zu erstellen. In diesem Tutorial verwenden wir die Erweiterung »ERD Editor« für Visual Studio Code. Um die Erweiterung zu installieren, klicke auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;'> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »ERD Editor« und installiere sie.
 
 <img class='full' src='install-erd-editor.webp'>
 
-Erstelle eine neue Datei mit <span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>N</span> und speichere die Datei unter dem Dateinamen `videothek.erd`, indem du <span class='key'>Strg</span><span class='key'>S</span> drückst, den Namen eingibst und mit <span class='key'>Enter</span> bestätigst.
+Erstelle eine neue Datei mit <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd> und speichere die Datei unter dem Dateinamen `videothek.erd`, indem du <kbd>Strg</kbd><kbd>S</kbd> drückst, den Namen eingibst und mit <kbd>Enter</kbd> bestätigst.
 
 <img class='full' src='choose-filename.webp'>
 
@@ -127,7 +127,7 @@ Wenn du fertig bist, kannst du das Diagramm speichern und den SQL-Code exportier
 
 <img class='full' src='export-schema-sql.webp'>
 
-Wähle als Dateinamen `videothek.sql` und bestätige mit <span class='key'>Enter</span>:
+Wähle als Dateinamen `videothek.sql` und bestätige mit <kbd>Enter</kbd>:
 
 <img class='full' src='choose-sql-filename.webp'>
 
@@ -191,7 +191,7 @@ ruby import-data.rb
 ```
 
 <div class='hint'>
-Falls du eine Fehlermeldung bekommst, in der von einem SQL-Syntaxfehler die Rede ist, befindest du vermutlich noch in <code>mycli</code>. Beende das Programm mit dem Befehl <code>exit</code> (oder drücke einfach <span class='key'>Strg</span><span class='key'>D</span>) und gib den Befehl im Terminal erneut ein.
+Falls du eine Fehlermeldung bekommst, in der von einem SQL-Syntaxfehler die Rede ist, befindest du vermutlich noch in <code>mycli</code>. Beende das Programm mit dem Befehl <code>exit</code> (oder drücke einfach <kbd>Strg</kbd><kbd>D</kbd>) und gib den Befehl im Terminal erneut ein.
 </div>
 
 Du solltest sehen, wie die Genres und Filme nach und nach importiert werden:
@@ -228,10 +228,10 @@ ruby videothek.rb
 
 <img class='full' src='videothek-start.webp'>
 
-Du kannst nun die Pfeiltasten <span class='key'>↑</span> und <span class='key'>↓</span>, die Eingabetaste <span class='key'>Enter</span> und die Escape-Taste <span class='key'>Esc</span> verwenden, um durch die Menüs zu navigieren.
+Du kannst nun die Pfeiltasten <kbd>↑</kbd> und <kbd>↓</kbd>, die Eingabetaste <kbd>Enter</kbd> und die Escape-Taste <kbd>Esc</kbd> verwenden, um durch die Menüs zu navigieren.
 
 <div class='hint'>
-Verwende die <span class='key'>Bild↑</span> und <span class='key'>Bild↓</span>-Tasten, um schneller durch die Menüs zu navigieren.
+Verwende die <kbd>Bild↑</kbd> und <kbd>Bild↓</kbd>-Tasten, um schneller durch die Menüs zu navigieren.
 </div>
 
 Wähle »Genres durchstöbern« und dann »Animation«, um eine Liste der Animationsfilme anzuzeigen:
@@ -286,7 +286,7 @@ ON movie.id = movie_genre.movie_id;
 ```
 
 <div class='hint'>
-Die <code>ON</code>-Klausel ist ein wichtiger Bestandteil von <code>JOIN</code>-Anweisungen. Wenn du sie vergisst, wird die Datenbank alle möglichen Kombinationen der Einträge aller beteiligten Tabellen zurückgeben, was zu einem sehr großen Ergebnis – in unserem Fall 16,7 Millionen Einträgen – führen kann. Du wirst merken, dass die Abfrage sehr lange dauert, du kannst die Ausführung mit <span class='key'>Strg</span><span class='key'>C</span> abbrechen.
+Die <code>ON</code>-Klausel ist ein wichtiger Bestandteil von <code>JOIN</code>-Anweisungen. Wenn du sie vergisst, wird die Datenbank alle möglichen Kombinationen der Einträge aller beteiligten Tabellen zurückgeben, was zu einem sehr großen Ergebnis – in unserem Fall 16,7 Millionen Einträgen – führen kann. Du wirst merken, dass die Abfrage sehr lange dauert, du kannst die Ausführung mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen.
 </div>
 
 Wir bekommen nun eine relativ große Tabelle, in der alle Filme mit ihren Genres aufgelistet sind. Ingesamt sind es über 6700 Einträge, obwohl es in unserer Datenbank nur ca. 2500 Filme gibt. Das liegt daran, dass jeder Film mehrere Genres haben kann und deshalb mehrfach durch die gestellte Abfrage zurückgegeben wird.

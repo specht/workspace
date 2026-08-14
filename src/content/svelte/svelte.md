@@ -30,13 +30,13 @@ Svelte ist ein modernes Frontend-Framework. Es gab vorher schon viele andere Fro
 
 ## Vorbereitung
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp'>
 
 ### Svelte-Erweiterung installieren
 
-Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;'> in der Seitenleiste oder drücke <span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>X</span>. Suche nach der Erweiterung »Svelte for VS Code« und installiere sie.
+Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;'> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »Svelte for VS Code« und installiere sie.
 
 ### Svelte-Projekt erstellen
 
@@ -50,7 +50,7 @@ Du wirst vermutlich gefragt, ob das `sv`-Paket installiert werden soll:
 
 <img class='full' src='npx-sv-create-proceed.webp'>
 
-Bestätige mit <span class='key'>Enter</span>. Du wirst nun gefragt, welches Template du verwenden möchtest. Wähle das Standard-Template »SvelteKit minimal« aus, indem du <span class='key'>Enter</span> drückst:
+Bestätige mit <kbd>Enter</kbd>. Du wirst nun gefragt, welches Template du verwenden möchtest. Wähle das Standard-Template »SvelteKit minimal« aus, indem du <kbd>Enter</kbd> drückst:
 
 <img class='full' src='npx-sv-create-template.webp'>
 
@@ -58,11 +58,11 @@ Bei der nächsten Frage wäre die richtige Antwort »TypeScript«, aber da wir i
 
 <img class='full' src='npx-sv-create-type-checking.webp'>
 
-Du wirst als nächstes gefragt, ob du schon ein paar Plugins installieren möchtest. Da wir keine Plugins benötigen, kannst du einfach <span class='key'>Enter</span> drücken:
+Du wirst als nächstes gefragt, ob du schon ein paar Plugins installieren möchtest. Da wir keine Plugins benötigen, kannst du einfach <kbd>Enter</kbd> drücken:
 
 <img class='full' src='npx-sv-create-plugins.webp'>
 
-Als letztes wirst du gefragt, welchen Paketmanager du verwenden möchtest. Wähle hier »npm« aus, indem du <span class='key'>Enter</span> drückst:
+Als letztes wirst du gefragt, welchen Paketmanager du verwenden möchtest. Wähle hier »npm« aus, indem du <kbd>Enter</kbd> drückst:
 
 <img class='full' src='npx-sv-create-package-manager.webp'>
 
@@ -74,7 +74,7 @@ Daraufhin musst du noch ein paar Sekunden warten, bis alle Abhängigkeiten insta
 Falls du von vorne beginnen möchtest, kannst du einfach das Verzeichnis <code>/workspace/rubik-timer</code> löschen und von vorn beginnen.
 </div>
 
-Öffne nun das Verzeichnis, indem du entweder im Menü »File« / »Open Folder…« auswählst oder einfach <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>Strg</span><span class='key'>O</span> drückst. Wähle den Ordner `rubik-timer` aus:
+Öffne nun das Verzeichnis, indem du entweder im Menü »File« / »Open Folder…« auswählst oder einfach <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>Strg</kbd><kbd>O</kbd> drückst. Wähle den Ordner `rubik-timer` aus:
 
 <img class='full' src='open-folder.webp'>
 
@@ -115,7 +115,7 @@ Tipp: Ziehe deinen Workspace und die Vorschau nebeneinander, damit du beide Fens
 </div>
 
 <div cass='hint'>
-Wenn etwas nicht funktioniert, kannst du den Server jederzeit beenden, indem du im Terminal <span class='key'>Strg</span><span class='key'>C</span> drückst. Du kannst den Server dann wieder neu starten, indem du <code>npm run dev</code> eingibst.
+Wenn etwas nicht funktioniert, kannst du den Server jederzeit beenden, indem du im Terminal <kbd>Strg</kbd><kbd>C</kbd> drückst. Du kannst den Server dann wieder neu starten, indem du <code>npm run dev</code> eingibst.
 </div>
 
 ## Webseite implementieren
@@ -132,7 +132,7 @@ Du kennst dich bereits mit HTML und CSS aus, und jetzt werden wir auch ein wenig
 ```
 
 <div class='hint'>
-Das Öffnen von Dateien geht besonders schnell, wenn du <span class='key'>Strg</span><span class='key'>P</span> drückst und dann den Dateinamen eingibst. Probier es einmal aus, indem du die Tastenkombination drückst und dann »page« eingibst! So kannst du die Datei schnell finden, ohne durch alle Ordner navigieren zu müssen.
+Das Öffnen von Dateien geht besonders schnell, wenn du <kbd>Strg</kbd><kbd>P</kbd> drückst und dann den Dateinamen eingibst. Probier es einmal aus, indem du die Tastenkombination drückst und dann »page« eingibst! So kannst du die Datei schnell finden, ohne durch alle Ordner navigieren zu müssen.
 </div>
 
 Du kannst den Code jetzt einfach löschen und durch den folgenden ersetzen:
@@ -248,7 +248,7 @@ onMount(() => {
 Wir definieren eine Funktion `handleKeyDown`, die den Zustand auf 1 setzt (wir werden die Logik später noch erweitern). Dann fügen wir im `onMount`-Hook einen Event-Listener hinzu, der die Funktion `handleKeyDown` aufruft, wenn die Leertaste gedrückt wird.
 
 <div class='hint'>
-Achte beim Einfügen von Code darauf, dass du eine einheitliche Einrückung verwendest. Mach dich mit den Möglichkeiten in VS Code vertraut, um den Code einzurücken. Du kannst z. B. den gesamten Code markieren und dann <span class='key'>Tab</span> drücken, um ihn einzurücken, oder <span class='key'>Shift</span><span class='key'>Tab</span>, um ihn wieder auszurücken. VS Code kann Code auch automatisch einrücken – drücke dazu <span class='key'>Strg</span><span class='key'>Shift</span><span class='key'>P</span> und gib »Reindent Lines« ein. Du kannst auch »Format Document« auswählen, um das gesamte Dokument zu formatieren.
+Achte beim Einfügen von Code darauf, dass du eine einheitliche Einrückung verwendest. Mach dich mit den Möglichkeiten in VS Code vertraut, um den Code einzurücken. Du kannst z. B. den gesamten Code markieren und dann <kbd>Tab</kbd> drücken, um ihn einzurücken, oder <kbd>Shift</kbd><kbd>Tab</kbd>, um ihn wieder auszurücken. VS Code kann Code auch automatisch einrücken – drücke dazu <kbd>Strg</kbd><kbd>Shift</kbd><kbd>P</kbd> und gib »Reindent Lines« ein. Du kannst auch »Format Document« auswählen, um das gesamte Dokument zu formatieren.
 </div>
 
 Wenn du die Seite jetzt aktualisierst und die Leertaste drückst, sollte sich der Zustand auf 1 ändern. Wenn du die Leertaste loslässt, bleibt der Zustand auf 1 stehen. Das liegt daran, dass wir noch keine Logik implementiert haben, um den Zustand zurückzusetzen. Du kannst die Seite aber neu laden, um den Zustand zurückzusetzen.
@@ -473,7 +473,7 @@ npm install @iconify/svelte
 ```
 
 <div class='hint'>
-Falls du den Entwicklungs-Server gerade laufen hast, musst du ihn jetzt stoppen (mit <span class='key'>Strg</span><span class='key'>C</span>) und anschließend den Befehl eingeben. Danach kannst du den Server wieder mit <code>npm run dev</code> starten.
+Falls du den Entwicklungs-Server gerade laufen hast, musst du ihn jetzt stoppen (mit <kbd>Strg</kbd><kbd>C</kbd>) und anschließend den Befehl eingeben. Danach kannst du den Server wieder mit <code>npm run dev</code> starten.
 </div>
 
 Wenn du das Paket installiert hast, kannst du die Icons ganz einfach in deine Webseite einfügen. Füge den folgenden Code in den `<script>`-Tag ein:

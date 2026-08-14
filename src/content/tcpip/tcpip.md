@@ -8,18 +8,18 @@ image: tcpip.webp
 In diesem Kapitel lernst du, wie du mit Linux Netzwerkverbindungen aufbaust und mit anderen Rechnern kommunizierst. Du wirst lernen, wie du die IP-Adresse deines Computers herausfindest, wie du andere Rechner im Netzwerk anpingst, Dateien mit <code>wget</code> herunterlädst und mit <code>curl</code> APIs abfragst. Außerdem wirst du lernen, wie du mit <code>netcat</code> chatten kannst.
 </p>
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp'>
 
-Schließe die linken Seitenleiste, indem du <span class='key'>Strg</span><span class='key'>B</span> drückst, um mehr Platz zu haben.
-Öffne als nächstes das Terminal, indem du den Shortcut <span class='key'>Strg</span><span class='key'>J</span> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
+Schließe die linken Seitenleiste, indem du <kbd>Strg</kbd><kbd>B</kbd> drückst, um mehr Platz zu haben.
+Öffne als nächstes das Terminal, indem du den Shortcut <kbd>Strg</kbd><kbd>J</kbd> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='got-terminal.webp'>
 
 <img src='terminal-maximize.webp' class='r' style='width: 25em;'>
 
-Du kannst das Terminal auch maximieren, indem du auf den Pfeil in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du jederzeit mit <span class='key'>Strg</span><span class='key'>B</span> ein- und ausblenden.
+Du kannst das Terminal auch maximieren, indem du auf den Pfeil in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du jederzeit mit <kbd>Strg</kbd><kbd>B</kbd> ein- und ausblenden.
 
 ## Eigene IP-Adresse herausfinden
 
@@ -27,7 +27,7 @@ Du kannst das Terminal auch maximieren, indem du auf den Pfeil in der rechten ob
 In diesem Abschnitt lernst du den Befehl <code>ifconfig</code> kennen.
 </div>
 
-Um die IP-Adresse deines Computers herauszufinden, gib einfach den Befehl `ifconfig` ein und drücke <span class='key'>Enter</span>:
+Um die IP-Adresse deines Computers herauszufinden, gib einfach den Befehl `ifconfig` ein und drücke <kbd>Enter</kbd>:
 
 ```bash
 ifconfig
@@ -72,7 +72,7 @@ Anschließend solltest du eine Ausgabe wie diese sehen:
 Der Befehl `ping` sendet ICMP-Pakete an die angegebene IP-Adresse und wartet auf eine Antwort.
 Wenn du eine Antwort bekommst, bedeutet das, dass du den anderen Rechner erreichen kannst.
 Die Pakete werden im Abstand von einer Sekunde gesendet, bis du den Befehl mit
-<span class='key'>Strg</span><span class='key'>C</span> abbrichst.
+<kbd>Strg</kbd><kbd>C</kbd> abbrichst.
 
 Die Angabe, die du unter »time« siehst, ist die Zeit in Millisekunden, die das Paket benötigt hat, um zum Ziel zu gelangen und zurück.
 Umso kleiner die Zeit, desto besser ist die Verbindung: im Bild oben beträgt die Zeit ca. 5,3 ms.
@@ -178,7 +178,7 @@ Das Spiel ist jetzt kompiliert und kann mit dem Befehl `./2048` ausgeführt werd
 
 <img class='full' src='2048.webp'>
 
-Du kannst das Spiel mit den Pfeiltasten steuern und mit <span class='key'>Strg</span><span class='key'>C</span> beenden.
+Du kannst das Spiel mit den Pfeiltasten steuern und mit <kbd>Strg</kbd><kbd>C</kbd> beenden.
 
 ## Mit APIs interagieren
 
@@ -192,7 +192,7 @@ Du kannst auch Dateien herunterladen, indem du den Befehl `curl` verwendest. Der
 curl https://gymnasiumsteglitz.de | less
 ```
 
-Verwende die Pfeiltasten, um durch die Webseite zu scrollen, und drücke <span class='key'>Q</span>, um `less` zu beenden.
+Verwende die Pfeiltasten, um durch die Webseite zu scrollen, und drücke <kbd>Q</kbd>, um `less` zu beenden.
 
 <img class='full' src='curl-gyst.webp'>
 
@@ -257,13 +257,13 @@ Da `telnet` etwas umständlich zu beenden ist, drücke einfach auf die Mülltonn
 
 <!--
 
-Um eine sichere Verbindung zu einem anderen Server aufzubauen, verwenden wir `ssh`. Dazu benötigen wir einen SSH-Schlüssel, den wir mit dem Befehl `ssh-keygen` erstellen können. Gib einfach den folgenden Befehl ein und drücke <span class='key'>Enter</span>, um den Schlüssel zu erstellen:
+Um eine sichere Verbindung zu einem anderen Server aufzubauen, verwenden wir `ssh`. Dazu benötigen wir einen SSH-Schlüssel, den wir mit dem Befehl `ssh-keygen` erstellen können. Gib einfach den folgenden Befehl ein und drücke <kbd>Enter</kbd>, um den Schlüssel zu erstellen:
 
 ```bash
 ssh-keygen
 ```
 
-Bestätige alle Abfragen mit <span class='key'>Enter</span>:
+Bestätige alle Abfragen mit <kbd>Enter</kbd>:
 
 <img class='full' src='ssh-keygen.webp'>
 
@@ -325,7 +325,7 @@ Falls sich der Client nicht mit dem Server verbinden kann, überprüft bitte, ob
 
 <img class='full' src='nc-connect.webp'>
 
-Sobald die Verbindung hergestellt ist, könnt ihr miteinander chatten! Ihr könnt nun Nachrichten hin- und herschicken. Wenn ihr fertig seid, könnt ihr die Verbindung beenden, indem ihr auf beiden Rechnern <span class='key'>Strg</span><span class='key'>C</span> drückt.
+Sobald die Verbindung hergestellt ist, könnt ihr miteinander chatten! Ihr könnt nun Nachrichten hin- und herschicken. Wenn ihr fertig seid, könnt ihr die Verbindung beenden, indem ihr auf beiden Rechnern <kbd>Strg</kbd><kbd>C</kbd> drückt.
 
 <div class='hint'>
 Der Zweck von <code>netcat</code> ist es eigentlich nicht, zu chatten. Man kann es verwenden, um ohne Protokoll oder Verschlüsselung Daten zwischen zwei Rechnern zu übertragen.

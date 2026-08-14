@@ -10,13 +10,13 @@ Immer, wenn du mit einem Webbrowser wie z. B. Firefox, Chrome oder Safari eine W
 
 ## Vorbereitung
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp'>
 
 ### HTML-Datei anlegen
 
-Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <span class='key'>Enter</span>).
+Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <kbd>Enter</kbd>).
 
 <img class='full' src='choose-filename.webp'>
 
@@ -28,15 +28,15 @@ Dein Fenster sollte jetzt ungefähr so aussehen (an dem weißen Punkt erkennst d
 
 <img class='full' src='unsaved.webp'>
 
-Drücke nun <span class='key'>Strg</span><span class='key'>S</span>, um die Datei zu speichern. Gib `website-test/index.html` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/website-test/index.html`.
+Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `website-test/index.html` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/website-test/index.html`.
 
 <img class='full' src='enter-filename.webp'>
 
-Da das Unterverzeichnis `website-test` noch nicht existiert, wirst du gefragt, ob es für dich erstellt werden soll. Bestätige dies mit <span class='key'>Enter</span>.
+Da das Unterverzeichnis `website-test` noch nicht existiert, wirst du gefragt, ob es für dich erstellt werden soll. Bestätige dies mit <kbd>Enter</kbd>.
 
 <img class='full' src='create-folder.webp'>
 
-Da wir nun in diesem Verzeichnis arbeiten wollen, kannst du es öffnen, indem du entweder im Menü »File« / »Open Folder…« auswählst oder einfach <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>Strg</span><span class='key'>O</span> drückst. Wähle den Ordner `website-test` aus:
+Da wir nun in diesem Verzeichnis arbeiten wollen, kannst du es öffnen, indem du entweder im Menü »File« / »Open Folder…« auswählst oder einfach <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>Strg</kbd><kbd>O</kbd> drückst. Wähle den Ordner `website-test` aus:
 
 <img class='full' src='open-folder.webp'>
 
@@ -63,10 +63,10 @@ Tipp: Ziehe deinen Workspace und die Vorschau nebeneinander, damit du deine Änd
 
 ### Titel der Seite ändern
 
-Im `<title>`-Tag steht der Titel der Seite, der in der Titelzeile des Browserfensters angezeigt wird. Ändere den Titel der Seite in »Meine erste Webseite« und speichere die Datei mit <span class='key'>Strg</span><span class='key'>S</span>. Du solltest jetzt den neuen Titel in der Titelzeile des Browserfensters sehen.
+Im `<title>`-Tag steht der Titel der Seite, der in der Titelzeile des Browserfensters angezeigt wird. Ändere den Titel der Seite in »Meine erste Webseite« und speichere die Datei mit <kbd>Strg</kbd><kbd>S</kbd>. Du solltest jetzt den neuen Titel in der Titelzeile des Browserfensters sehen.
 
 <div class='hint'>
-Tipp: Es kann manchmal passieren, dass sich die Vorschau nicht automatisch aktualisiert. Wenn das passiert, drücke einfach <span class='key'>F5</span>, um die Seite neu zu laden.
+Tipp: Es kann manchmal passieren, dass sich die Vorschau nicht automatisch aktualisiert. Wenn das passiert, drücke einfach <kbd>F5</kbd>, um die Seite neu zu laden.
 </div>
 
 ### Die Seite mit Inhalt füllen

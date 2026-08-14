@@ -36,29 +36,29 @@ Ruby ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpreti
 
 **Möglichkeit 1:** Ruby-Code in der Ruby-Shell ausführen
 
-Öffne dazu ein Terminal, indem du entweder <span class='key'>Strg</span><span class='key'>J</span> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='code-with-terminal.webp' data-scroll='33%'>
 
-Starte nun die Ruby-Shell, indem du `irb` eingibst und dann <span class='key'>Enter</span> drückst. Du solltest eine Ausgabe wie diese sehen:
+Starte nun die Ruby-Shell, indem du `irb` eingibst und dann <kbd>Enter</kbd> drückst. Du solltest eine Ausgabe wie diese sehen:
 
 <img class='full' src='irb.webp' data-scroll='5%'>
 
-Jetzt kannst du Ruby-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `puts "Hello, world!"` und drücke <span class='key'>Enter</span>. Du solltest die Ausgabe `Hello, world!` sehen.
+Jetzt kannst du Ruby-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `puts "Hello, world!"` und drücke <kbd>Enter</kbd>. Du solltest die Ausgabe `Hello, world!` sehen.
 
-Du kannst die Ruby-Shell wieder beenden, indem du `exit` eingibst und <span class='key'>Enter</span> drückst oder einfach <span class='key'>Strg</span><span class='key'>D</span> drückst.
+Du kannst die Ruby-Shell wieder beenden, indem du `exit` eingibst und <kbd>Enter</kbd> drückst oder einfach <kbd>Strg</kbd><kbd>D</kbd> drückst.
 
 **Möglichkeit 2:** Ruby-Code in einer Textdatei speichern und ausführen
 
 Ruby-Programme werden in Textdateien mit der Endung `.rb` geschrieben. Ein Ruby-Interpreter liest anschließend den Quelltext und führt ihn aus.
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <span class='key'>Strg</span><span class='key'>K</span> und dann <span class='key'>F</span>. Dein Workspace sollte jetzt ungefähr so aussehen:
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <img class='full' src='fresh-start.webp' data-scroll='28%'>
 
 ### Quelltext schreiben
 
-Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <span class='key'>Enter</span>).
+Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <kbd>Enter</kbd>).
 
 <img class='full' src='choose-filename.webp' data-scroll='20%'>
 
@@ -70,7 +70,7 @@ Da Visual Studio Code noch nicht weiß, dass es sich um Ruby-Quelltext handelt, 
 
 <img class='full' src='no-syntax-highlighting.webp'>
 
-Drücke nun <span class='key'>Strg</span><span class='key'>S</span>, um die Datei zu speichern. Gib `hello.rb` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.rb`.
+Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.rb` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.rb`.
 
 <img class='full' src='enter-filename.webp'>
 
@@ -82,14 +82,14 @@ Sobald du die Datei gespeichert hast, wird sie automatisch als Ruby-Datei erkann
 
 Um unser Programm auszuführen, müssen wir den Ruby-Interpreter aufrufen und ihm den Dateinamen unseres Programms übergeben.
 
-Öffne dazu ein Terminal, indem du <span class='key'>Strg</span><span class='key'>J</span> drückst und gib folgenden Befehl ein:
+Öffne dazu ein Terminal, indem du <kbd>Strg</kbd><kbd>J</kbd> drückst und gib folgenden Befehl ein:
 
 ```bash
 ruby hello.rb
 ```
 
 <div class='hint'>
-Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>ruby he</code> und drücke <span class='key'>Tab</span>, um den Dateinamen automatisch zu <code>hello.rb</code> vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
+Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>ruby he</code> und drücke <kbd>Tab</kbd>, um den Dateinamen automatisch zu <code>hello.rb</code> vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
 </div>
 
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
@@ -111,7 +111,7 @@ ruby hello.rb
 ```
 
 <div class='hint'>
-Nutze die Pfeiltaste hoch <span class='key'>↑</span>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
+Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
 Ruby sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
@@ -145,7 +145,7 @@ Jetzt können wir das Skript direkt ausführen:
 
 Im zweiten Beispiel wollen wir eine Zahl in ihre Primfaktoren zerlegen.
 An diesem Beispiel kannst du sehen, wie man in Ruby Benutzereingaben verarbeitet und Schleifen verwendet.
-Erstelle eine neue Datei mit <span class='key'>Strg</span><span class='key'>Alt</span><span class='key'>N</span> und schreibe den folgenden Code hinein:
+Erstelle eine neue Datei mit <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd> und schreibe den folgenden Code hinein:
 
 _include_file(factor.rb, ruby)
 
@@ -153,7 +153,7 @@ Speichere die Datei unter dem Namen `factor.rb` und führe sie aus:
 
 <img class='full' src='try-factor.webp'>
 
-Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Ruby auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Auch mit einer sehr großen Zahl wie 123456789123456789 kommt das Programm problemlos zurecht. Falls du auf eine Zahl stoßen solltest, die so groß ist, dass das Programm sehr lange braucht, kannst du das Programm mit <span class='key'>Strg</span><span class='key'>C</span> abbrechen.
+Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Ruby auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Auch mit einer sehr großen Zahl wie 123456789123456789 kommt das Programm problemlos zurecht. Falls du auf eine Zahl stoßen solltest, die so groß ist, dass das Programm sehr lange braucht, kannst du das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen.
 
 ## Bubblesort
 
