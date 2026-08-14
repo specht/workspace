@@ -28,9 +28,10 @@ Faye::WebSocket.load_adapter('thin')
 CACHE_BUSTER = SecureRandom.alphanumeric(12)
 RUBOCOP_LAYOUT_CONFIG_PATH = "/tmp/rubocop_layout.yml"
 
-MODULE_ORDER = [:workspace, :phpmyadmin, :neo4j, :tic80]
+MODULE_ORDER = [:workspace, :codebites, :phpmyadmin, :neo4j, :tic80]
 MODULE_LABELS = {
     :workspace  => 'Workspace',
+    :codebites  => 'Code Bites',
     :phpmyadmin => 'phpMyAdmin',
     :neo4j      => 'Neo4j',
     :tic80      => 'TIC-80',

@@ -42,19 +42,6 @@ image: showerjs.webp:0:80
     object-fit: cover;
 }
 
-.shower-mini::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-
-    border-radius: inherit;
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
-    pointer-events: none;
-
-    transition: box-shadow 160ms ease;
-}
-
 .shower-mini:hover,
 .shower-mini:focus-visible {
     box-shadow: 0 0.55rem 1.45rem rgba(0, 0, 0, 0.3);

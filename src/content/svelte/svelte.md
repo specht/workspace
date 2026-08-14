@@ -114,7 +114,7 @@ Wenn alles geklappt hat, sollte sich deine Webseite automatisch in einem neuen T
 Tipp: Ziehe deinen Workspace und die Vorschau nebeneinander, damit du beide Fenster gleichzeitig sehen kannst.
 </div>
 
-<div cass='hint'>
+<div class='hint'>
 Wenn etwas nicht funktioniert, kannst du den Server jederzeit beenden, indem du im Terminal <kbd>Strg</kbd><kbd>C</kbd> drückst. Du kannst den Server dann wieder neu starten, indem du <code>npm run dev</code> eingibst.
 </div>
 
