@@ -9,184 +9,6 @@ image: showerjs.webp:0:80
 </div>
 
 <style>
-.shower-mini {
-    box-sizing: border-box;
-    float: right;
-    position: relative;
-
-    width: min(28rem, 45%);
-    aspect-ratio: 16 / 9;
-    margin: 0.2rem 0 1.2rem 1.5rem;
-    padding: 0;
-
-    overflow: hidden;
-    border: 0;
-    border-radius: 10px;
-    box-shadow: 0 0.35rem 1.15rem rgba(0, 0, 0, 0.22);
-
-    background: white;
-    color: inherit;
-    text-decoration: none;
-    cursor: zoom-in;
-
-    transition:
-        box-shadow 160ms ease,
-        filter 160ms ease,
-        transform 160ms ease;
-}
-
-.shower-mini img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.shower-mini:hover,
-.shower-mini:focus-visible {
-    box-shadow: 0 0.55rem 1.45rem rgba(0, 0, 0, 0.3);
-    filter: brightness(1.03);
-}
-
-.shower-mini:hover::before,
-.shower-mini:focus-visible::before {
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.26);
-}
-
-.shower-mini:focus-visible {
-    outline: 0.18rem solid currentColor;
-    outline-offset: 0.3rem;
-}
-
-.shower-mini::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-
-    border-radius: inherit;
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
-    pointer-events: none;
-
-    transition: box-shadow 160ms ease;
-}
-
-.shower-mini:hover,
-.shower-mini:focus-visible {
-    box-shadow: 0 0.55rem 1.45rem rgba(0, 0, 0, 0.3);
-}
-
-.shower-mini:hover::before,
-.shower-mini:focus-visible::before {
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.26);
-}
-
-.shower-mini:focus-visible {
-    outline: 0.18rem solid currentColor;
-    outline-offset: 0.3rem;
-}
-
-.shower-mini-clear {
-    clear: both;
-}
-
-/* Eine einzige wiederverwendbare Lightbox für alle Mini-Folien. */
-.mini-lightbox {
-    width: 100vw;
-    height: 100vh;
-    max-width: none;
-    max-height: none;
-    margin: 0;
-    padding: 2rem;
-
-    border: 0;
-    background: transparent;
-    opacity: 0;
-
-    transition: opacity 180ms ease;
-}
-
-.mini-lightbox::backdrop {
-    background: rgba(0, 0, 0, 0.75);
-    opacity: 0;
-    transition: opacity 180ms ease;
-}
-
-.mini-lightbox[open] {
-    display: grid;
-    place-items: center;
-}
-
-.mini-lightbox.is-visible,
-.mini-lightbox.is-visible::backdrop {
-    opacity: 1;
-}
-
-.mini-lightbox-content {
-    position: relative;
-
-    width: min(1024px, calc(100vw - 4rem), calc((100vh - 4rem) * 16 / 9));
-    aspect-ratio: 16 / 9;
-
-    overflow: hidden;
-    border-radius: 10px;
-    box-shadow: 0 0.8rem 3rem rgba(0, 0, 0, 0.45);
-
-    background: white;
-
-    opacity: 0;
-    transform: scale(0.96);
-    transition:
-        opacity 180ms ease,
-        transform 180ms ease;
-}
-
-.mini-lightbox-content img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-.mini-lightbox.is-visible .mini-lightbox-content {
-    opacity: 1;
-    transform: scale(1);
-}
-
-.mini-lightbox-close {
-    position: fixed;
-    top: 1rem;
-    right: 1.4rem;
-    z-index: 1;
-
-    border: 0;
-    background: transparent;
-    color: white;
-
-    font-family: 'PT Sans', sans-serif;
-    font-size: 3rem;
-    line-height: 1;
-    cursor: pointer;
-}
-
-@media (max-width: 760px) {
-    .shower-mini {
-        float: none;
-        width: 100%;
-        margin: 1rem 0;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .shower-mini,
-    .shower-mini::before,
-    .mini-lightbox,
-    .mini-lightbox::backdrop,
-    .mini-lightbox-content {
-        transition: none;
-    }
-}
-
 .aspect-row {
     display: grid;
     grid-template-columns:
@@ -229,100 +51,6 @@ image: showerjs.webp:0:80
 }
 
 </style>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const ANIMATION_TIME = 180;
-
-    const lightbox = document.createElement('dialog');
-    lightbox.className = 'mini-lightbox';
-    lightbox.innerHTML = `
-        <button class='mini-lightbox-close' type='button' aria-label='Vorschau schließen'>×</button>
-        <div class='mini-lightbox-content'></div>
-    `;
-
-    document.body.appendChild(lightbox);
-
-    const content = lightbox.querySelector('.mini-lightbox-content');
-    const closeButton = lightbox.querySelector('.mini-lightbox-close');
-
-    function prepareMiniSlides() {
-        document.querySelectorAll('.shower-mini').forEach((mini) => {
-            const img = mini.querySelector('img');
-
-            if (!img) return;
-
-            if (!mini.getAttribute('aria-label')) {
-                mini.setAttribute(
-                    'aria-label',
-                    img.alt ? `${img.alt} vergrößern` : 'Beispiel vergrößern'
-                );
-            }
-        });
-    }
-
-    function openMiniSlide(mini) {
-        const previewImage = mini.querySelector('img');
-        if (!previewImage) return;
-
-        const image = document.createElement('img');
-        image.src = mini.dataset.full || previewImage.src;
-        image.alt = previewImage.alt || '';
-
-        content.replaceChildren(image);
-        lightbox.classList.remove('is-visible');
-
-        if (typeof lightbox.showModal === 'function') {
-            lightbox.showModal();
-        } else {
-            lightbox.setAttribute('open', '');
-        }
-
-        requestAnimationFrame(() => {
-            lightbox.classList.add('is-visible');
-        });
-    }
-
-    function closeMiniSlide() {
-        if (!lightbox.open) return;
-
-        lightbox.classList.remove('is-visible');
-
-        window.setTimeout(() => {
-            if (typeof lightbox.close === 'function') {
-                lightbox.close();
-            } else {
-                lightbox.removeAttribute('open');
-            }
-
-            content.replaceChildren();
-        }, ANIMATION_TIME);
-    }
-
-    document.addEventListener('click', (event) => {
-        const mini = event.target.closest('.shower-mini');
-        if (!mini) return;
-
-        event.preventDefault();
-        openMiniSlide(mini);
-    });
-
-    closeButton.addEventListener('click', closeMiniSlide);
-
-    lightbox.addEventListener('click', (event) => {
-        if (event.target === lightbox) {
-            closeMiniSlide();
-        }
-    });
-
-    lightbox.addEventListener('cancel', (event) => {
-        event.preventDefault();
-        closeMiniSlide();
-    });
-
-    prepareMiniSlides();
-});
-</script>
 
 # Eine Präsentation in HTML erstellen
 
@@ -449,7 +177,7 @@ Eine Folie ist in shower.js ein eigener Abschnitt in der Datei `index.html`.
 Dieser Abschnitt beginnt mit `<section class="slide">` und endet mit `</section>`.
 Alles, was zwischen diesen beiden Zeilen steht, gehört zu dieser einen Folie.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/meine-lieblingstiere.webp' alt='Folie „Meine Lieblingstiere“ mit einer nummerierten Liste aus Pinguinen, Füchsen und Delfinen.'>
 </button>
 
@@ -496,7 +224,7 @@ Man sieht dadurch besser, welche Teile zusammengehören:
 </section>
 ```
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 #### Text und Überschriften
 
@@ -511,7 +239,7 @@ In der Shower-Vorlage verwendest du dafür normalerweise `<h2>`.
 Längere Texte schreibst du nicht direkt lose in die Folie, sondern in Absätze.
 Ein Absatz beginnt mit `<p>` und endet mit `</p>`.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/warum-html.webp' alt='Folie „Warum HTML?“ mit drei kurzen Absätzen zu Inhalt, Aussehen und Browserdarstellung.'>
 </button>
 
@@ -570,7 +298,7 @@ Die zweite Überschrift hilft dem Publikum mehr, weil sie schon eine kleine Auss
 
 Wenn du mehrere Gedanken auf einer Folie hast, kannst du mehrere Absätze verwenden:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/erste-webseite.webp' alt='Folie „Meine erste Webseite“ mit einer Überschrift und drei Stichpunkten.'>
 </button>
 
@@ -601,7 +329,7 @@ Wenn du später Abstände verändern möchtest, ist CSS dafür der bessere Ort.
 Manchmal möchtest du innerhalb eines Absatzes eine neue Zeile beginnen, ohne einen neuen Absatz zu starten.
 Dafür gibt es `<br>`.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/ueber-mich.webp' alt='Folie „Über mich“ mit einer kurzen persönlichen Vorstellung.'>
 </button>
 
@@ -630,7 +358,7 @@ Wie du siehst, erhältst du durch <code>&lt;br&gt;</code> nur einen Zeilenumbruc
 
 Diese Folie ist technisch korrekt, aber als Präsentationsfolie wahrscheinlich zu voll:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/geschichte-des-internets.webp' alt='Folie „Kurze Geschichte des Internets“ mit einer nummerierten Zeitleiste.'>
 </button>
 
@@ -649,7 +377,7 @@ Diese Folie ist technisch korrekt, aber als Präsentationsfolie wahrscheinlich z
 
 Oft ist es besser, den Text zu kürzen oder auf mehrere Folien zu verteilen:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/internet-verbindet-computer.webp' alt='Folie „Das Internet verbindet Computer“ mit drei Punkten zu Geräten, Datenaustausch und weltweiter Verbindung.'>
 </button>
 
@@ -673,7 +401,7 @@ Wenn du beim Vortragen sowieso erklären möchtest, was auf der Folie steht, mus
 Die Folie soll deinen Vortrag unterstützen, nicht ihn vollständig ersetzen.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 #### Listen und Stichpunkte
 
@@ -691,7 +419,7 @@ In HTML gibt es zwei wichtige Arten von Listen:
 
 `li` steht für »list item«, also »Listenpunkt«.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/meine-projektidee.webp' alt='Folie „Meine Projektidee“ mit einer kurzen Beschreibung und drei Zielen.'>
 </button>
 
@@ -724,7 +452,7 @@ Schreibe also nicht alle Punkte in ein einziges <code>&lt;li&gt;</code>, sondern
 
 Eine nummerierte Liste verwendest du, wenn die Reihenfolge wichtig ist:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/so-startest-du.webp' alt='Folie „So startest du“ mit drei nummerierten Arbeitsschritten.'>
 </button>
 
@@ -777,7 +505,7 @@ Wenn du später einen Punkt einfügst oder löschst, stimmen die Zahlen automati
 Eine Liste auf einer Folie sollte nicht zu lang sein.
 Diese Folie ist zu voll und stößt an den unteren Rand der Folie:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/vorteile-html-praesentationen-uebersicht.webp' alt='Folie mit einer langen Liste von Vorteilen einer HTML-Präsentation.'>
 </button>
 
@@ -800,7 +528,7 @@ Diese Folie ist zu voll und stößt an den unteren Rand der Folie:
 
 Oft ist es besser, nur die wichtigsten Punkte auf die Folie zu schreiben:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/vorteile-html-praesentationen-kurz.webp' alt='Folie mit vier hervorgehobenen Vorteilen einer HTML-Präsentation.'>
 </button>
 
@@ -851,7 +579,7 @@ Wenn eine Liste merkwürdig aussieht, prüfe zuerst, ob jedes <code>&lt;li&gt;</
 Also zwischen <code>&lt;ul&gt;</code> und <code>&lt;/ul&gt;</code> oder zwischen <code>&lt;ol&gt;</code> und <code>&lt;/ol&gt;</code>.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 #### Wörter hervorheben
 
@@ -865,7 +593,7 @@ Dafür gibt es in HTML kleine Tags, die mitten im Text stehen können.
 
 Solche Tags nennt man **Inline-Tags**, weil sie in einer Zeile im Text mitlaufen.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/wichtig-html-css.webp' alt='Folie mit zwei hervorgehobenen Aussagen zu HTML und CSS.'>
 </button>
 
@@ -891,7 +619,7 @@ Die wichtigsten Inline-Tags sind:
 
 Mit `<strong>` markierst du Wörter, die besonders wichtig sind:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/speichern-und-einblendungen.webp' alt='Folie mit einem fett hervorgehobenen Speicherhinweis und einem schrittweise eingeblendeten Tipp.'>
 </button>
 
@@ -958,7 +686,7 @@ Im zweiten Beispiel würde der Browser versuchen, wirklich eine neue Folie zu be
 Für manche Themen brauchst du hochgestellte oder tiefgestellte Zeichen.
 Dafür gibt es `<sup>` und `<sub>`.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/formeln-im-text.webp' alt='Folie mit mathematischen Formeln innerhalb von Fließtext.'>
 </button>
 
@@ -998,7 +726,7 @@ Wenn du das schließende `</strong>` vergisst, kann es passieren, dass viel mehr
 Wenn plötzlich ein ganzer Abschnitt fett, kursiv oder in Code-Schrift erscheint, fehlt wahrscheinlich irgendwo ein schließendes Tag wie <code>&lt;/strong&gt;</code>, <code>&lt;/em&gt;</code> oder <code>&lt;/code&gt;</code>.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 
 #### Formeln mit KaTeX
@@ -1012,7 +740,7 @@ Es gibt zwei typische Arten von Formeln:
 - Eine **Inline-Formel** steht mitten im Satz.
 - Eine **abgesetzte Formel** steht groß in einer eigenen Zeile.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/formeln-mit-katex.webp' alt='Folie mit mehreren einzeln gesetzten mathematischen Formeln.'>
 </button>
 
@@ -1062,7 +790,7 @@ H_2O             tiefgestellte 2
 
 Zum Beispiel:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/weitere-formeln.webp' alt='Folie mit Beispielen für Brüche, Wurzeln, Integrale und Summen.'>
 </button>
 
@@ -1109,7 +837,7 @@ LaTeX-Formeln sind sehr praktisch, aber sie können eine Folie auch schnell übe
 Für Präsentationen sind wenige große und gut erklärte Formeln meistens besser als viele kleine Formeln auf einmal.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 ### Bilder
 
@@ -1294,7 +1022,7 @@ Wichtig wären Dateinamen, relative Pfade, Dateiendungen und ein kurzer Hinweis 
 Wenn die Bilddatei im richtigen Ordner liegt, kannst du sie mit dem Tag `<img>` in eine Folie einfügen. Angenommen, dein Bild heißt `fuji.jpg` und liegt im Ordner `pictures`.
 Dann fügst du es so ein:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/bild-zu-gross.webp' alt='Ein Foto des Fuji ragt über den unteren Rand der Folie hinaus.'>
 </button>
 
@@ -1309,7 +1037,7 @@ Dann fügst du es so ein:
 </section>
 ```
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 <div class='hint'>
 Wir ignorieren erst einmal, dass das eingefügte Bild zu groß ist und nicht auf die Folie passt – wir kümmern uns gleich darum.
@@ -1359,7 +1087,7 @@ Mögliche Beispiele: width per style, vorhandene Hilfsklassen der Vorlage und ob
 
 Um die Größe eines Bildes anzupassen, kannst du CSS verwenden. Füge dazu ein `style`-Attribut zum `<img>`-Tag hinzu und schreibe die gewünschten CSS-Eigenschaften hinein.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/bild-hoehe-350px.webp' alt='Das Fuji-Foto ist auf 350 Pixel Höhe skaliert und vollständig sichtbar.'>
 </button>
 
@@ -1376,13 +1104,13 @@ Um die Größe eines Bildes anzupassen, kannst du CSS verwenden. Füge dazu ein 
 </section>
 ```
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 In diesem Beispiel wird die Höhe des Bildes auf 350 Pixel festgelegt. Die Breite wird automatisch angepasst, damit das Seitenverhältnis erhalten bleibt. Du kannst auch die Breite festlegen, zum Beispiel mit `width: 250px;`, wodurch sich die Höhe automatisch anpasst.
 
 Falls du die Breite und die Höhe gleichzeitig festlegst, wird dein Bild verzerrt, wenn die angegebenen Werte nicht zum ursprünglichen Seitenverhältnis des Bildes passen:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/bild-breite-250px-und-hoehe-350px.webp' alt='Das Fuji-Foto ist durch feste Breite und Höhe sichtbar verzerrt.'>
 </button>
 
@@ -1402,7 +1130,7 @@ Falls du die Breite und die Höhe gleichzeitig festlegst, wird dein Bild verzerr
 
 Das Bild wurde zusammegestaucht und der Fuji ist jetzt spitzer als in Wirklichkeit. Um dieses Problem zu lösen, kannst du die CSS-Eigenschaft `object-fit` verwenden, um zu bestimmen, wie das Bild in den vorgegebenen Rahmen passt. Mit `object-fit: cover;` wird das Bild so skaliert, dass es den gesamten Rahmen ausfüllt, ohne das Seitenverhältnis zu verändern. Dabei wird das Bild aber so zugeschnitten, dass es nicht verzerrt wird:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/bild-breite-250px-und-hoehe-350px-cover.webp' alt='Das Fuji-Foto füllt unverzerrt einen schmalen Rahmen und wird seitlich beschnitten.'>
 </button>
 
@@ -1423,7 +1151,7 @@ Das Bild wurde zusammegestaucht und der Fuji ist jetzt spitzer als in Wirklichke
 
 Wenn du den Fokus des Bildausschnitts anpassen möchtest, kannst du zusätzlich die Eigenschaft `object-position` verwenden. Zum Beispiel mit `object-position: 70% 0%;` wird der Fokus mehr auf die rechte Seite des Bildes gelegt:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/bild-breite-250px-und-hoehe-350px-cover-position.webp' alt='Der Bildausschnitt im schmalen Rahmen ist so verschoben, dass der Fuji sichtbar bleibt.'>
 </button>
 
@@ -1451,7 +1179,7 @@ Die beiden Werte bei <code>object-position</code> geben an, wo der Fokus des Bil
 
 Um das Bild auf der Folie zu verschieben, kannst du die CSS-Eigenschaft `position: relative;` verwenden und dann mit `left`, und `top` angeben, wie weit das Bild von seiner ursprünglichen Position verschoben werden soll:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/bild-nach-rechts.webp' alt='Das schmale Fuji-Foto steht am rechten Rand der Folie.'>
 </button>
 
@@ -1470,13 +1198,13 @@ Um das Bild auf der Folie zu verschieben, kannst du die CSS-Eigenschaft `positio
 </section>
 ```
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 #### Abgerundete Ecken und Schattierung
 
 Wenn du dein Bild mit abgerundeten Ecken oder einer Schattierung versehen möchtest, kannst du die CSS-Eigenschaft `border-radius` für abgerundete Ecken und `box-shadow` für Schattierung verwenden:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/bild-abgerundete-ecken-und-schattierung.webp' alt='Das Fuji-Foto hat abgerundete Ecken und einen Schlagschatten.'>
 </button>
 
@@ -1550,7 +1278,7 @@ Wenn du für dein Bild eine Höhe mit `height` angibst, wird die Breite automati
 
 Dabei wird die Höhe auf 170 Pixel festgelegt, und die Breite wird so berechnet, dass das Seitenverhältnis von 2:3 eingehalten wird. Vergiss nicht, `object-fit: cover;` zu verwenden, damit dein Bild nicht verzerrt wird, wenn das Seitenverhältnis nicht zum ursprünglichen Seitenverhältnis des Bildes passt.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/feste-seitenverhaeltnisse.webp' alt='Fünf Fuji-Bildausschnitte vergleichen die Seitenverhältnisse 2:3, 3:4, 1:1, 4:3 und 16:9.'>
 </button>
 
@@ -1614,7 +1342,7 @@ Dabei wird die Höhe auf 170 Pixel festgelegt, und die Breite wird so berechnet,
 
 Du kannst ein Bild auch als Hintergrund verwenden, indem du ihm die CSS-Klasse `cover` zuweist:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/mount-fuji-hintergrund.webp' alt='Das Fuji-Foto füllt die gesamte Folie als Hintergrund; weiße Schrift liegt darüber.'>
 </button>
 
@@ -1641,7 +1369,7 @@ In dieser Folie haben wir außerdem der Folie selbst die Klasse `bright-text` zu
 
 Häufig möchte man ein Bild zeigen und daneben noch etwas Text. Um diesen Effekt zu erreichen, kannst du ein `<div>` mit der CSS-Klasse `side-by-side` verwenden, das zwei Kinder hat, die nebeneinander angeordnet werden:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/text-links-bild-rechts.webp' alt='Zwei Textabsätze stehen links, ein hohes Fuji-Foto rechts.'>
 </button>
 
@@ -1678,11 +1406,11 @@ Häufig möchte man ein Bild zeigen und daneben noch etwas Text. Um diesen Effek
 
 Im Beispiel ist das erste Kind ein `<div>`, das zwei Absätze mit Text enthält, und das zweite Kind ist ein `<img>`, das das Bild enthält. Das `<div>` und das `<img>` werden automatisch nebeneinander angeordnet.
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 Wenn du die Reihenfolge der Kinder tauschst, wird das Bild auf der linken Seite und der Text auf der rechten Seite angezeigt:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/bild-links-text-rechts.webp' alt='Ein hohes Fuji-Foto steht links, zwei Textabsätze rechts.'>
 </button>
 
@@ -1717,7 +1445,7 @@ Wenn du die Reihenfolge der Kinder tauschst, wird das Bild auf der linken Seite 
 </section>
 ```
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 <div class='hint'>
 Wozu benötigen wir das <code>&lt;div&gt;</code> um die Absätze? Wenn beide Absätze direkte Kinder des <code>&lt;div class="side-by-side"&gt;</code> wären, würden beide Absätze nebeneinander (»side-by-side«) angeordnet werden, was nicht das gewünschte Ergebnis wäre. Das innere <code>&lt;div&gt;</code> sorgt dafür, dass die beiden Absätze als eine Einheit behandelt werden und innerhalb dieses <code>&lt;div&gt;</code> ganz normal untereinander angeordnet werden.
@@ -1766,7 +1494,7 @@ Hellgrauer Text auf weißem Hintergrund sieht vielleicht schick aus, ist aber of
 
 Wenn du nur ein einzelnes Element verändern möchtest, kannst du direkt ein `style`-Attribut verwenden.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/textfarbe-aendern.webp' alt='Die Überschrift ist dunkelblau, einzelne Textteile sind blau und rot hervorgehoben.'>
 </button>
 
@@ -1801,14 +1529,14 @@ Das <code>style</code>-Attribut ist praktisch zum Ausprobieren.
 Wenn du dieselbe Gestaltung aber auf mehreren Folien verwenden möchtest, ist eine eigene CSS-Klasse meistens besser.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 ##### Einen Hintergrund färben
 
 Mit `background` kannst du den Hintergrund eines Elements verändern.
 Das funktioniert zum Beispiel gut bei einer kleinen Infokarte.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/farbige-infokarte.webp' alt='Eine hellblaue Infokarte mit blauem Rand hebt einen Tipp hervor.'>
 </button>
 
@@ -1846,14 +1574,14 @@ Wenn du einen farbigen Hintergrund verwendest, solltest du meistens auch die Tex
 So verhinderst du, dass der Text schlecht lesbar wird.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 ##### Die ganze Folie färben
 
 Du kannst auch der ganzen Folie eine Hintergrundfarbe geben.
 Dazu setzt du die Farbe direkt auf das `<section>`-Element.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/dunkle-folie.webp' alt='Eine Folie mit dunkelblauem Hintergrund verwendet weiße und hellblaue Schrift.'>
 </button>
 
@@ -1886,7 +1614,7 @@ Wenn du eine ganze Folie dunkel färbst, prüfe auch Links, Code-Stellen und and
 Manche Farben, die auf weißem Hintergrund gut aussehen, sind auf dunklem Hintergrund schwer lesbar.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 #### Schriftgrößen ändern
 
@@ -1912,7 +1640,7 @@ Teile den Inhalt dann lieber auf mehrere Folien auf.
 
 Wenn du nur ein einzelnes Element verändern möchtest, kannst du wieder ein `style`-Attribut verwenden.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/grosser-absatz.webp' alt='Ein kurzer Absatz erscheint deutlich größer als normaler Fließtext.'>
 </button>
 
@@ -1944,14 +1672,14 @@ Verändere Schriftgrößen gezielt.
 Wenn jeder Absatz eine andere Größe hat, wirkt die Folie schnell unruhig.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 ##### Eine besonders große Aussage
 
 Manchmal soll eine Folie nur eine wichtige Aussage zeigen.
 Dann darf der Text ruhig deutlich größer sein.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/grosse-aussage.webp' alt='Die Aussage „Das Internet verbindet Menschen weltweit.“ steht groß und mittig auf der Folie.'>
 </button>
 
@@ -1983,14 +1711,14 @@ Zu viel Abstand lässt die Zeilen auseinanderfallen.
 Zu wenig Abstand macht den Text schwer lesbar.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 ##### Kleine Zusatzinformationen
 
 Manchmal brauchst du eine kleine Zusatzinformation, zum Beispiel eine Quelle, einen Hinweis oder eine kurze Bemerkung.
 Dann kannst du die Schrift etwas kleiner machen.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/kleiner-hinweis.webp' alt='Unter normalem Text steht ein kleiner, grauer Hinweis.'>
 </button>
 
@@ -2021,7 +1749,7 @@ Mache wichtige Informationen nicht zu klein.
 Kleine Schrift eignet sich für Zusatzinformationen, aber nicht für Inhalte, die alle im Raum sicher lesen können sollen.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 <!--
 #### Schriftarten ändern
@@ -2048,7 +1776,7 @@ Es gibt einige allgemeine Schriftfamilien, die fast jeder Browser kennt:
 - `sans-serif` steht für eine Schrift ohne Endstriche, oft klar und modern.
 - `monospace` steht für eine Schrift, bei der alle Zeichen gleich breit sind. Das ist typisch für Code.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/schriftfamilien.webp'>
 </button>
 
@@ -2075,7 +1803,7 @@ Verwende nicht zu viele verschiedene Schriftarten in einer Präsentation.
 Eine Schrift für Überschriften und eine Schrift für normalen Text reichen meistens völlig aus.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 ##### Eine Schriftart herunterladen
 
@@ -2164,7 +1892,7 @@ Schreibe diese Regel in `styles.css`:
 
 Damit verwenden Absätze und Listenpunkte auf deinen Folien die neue Schriftart.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/schrift-fuer-text.webp'>
 </button>
 
@@ -2190,7 +1918,7 @@ Wenn du nur <code>.slide p</code> gestaltest, ändern sich Listenpunkte nicht un
 Darum ist <code>.slide li</code> hier wichtig.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 ##### Die Schrift für Überschriften ändern
 
@@ -2205,7 +1933,7 @@ Dafür verwendest du `h2`.
 
 Dann verwenden auch die Folienüberschriften die neue Schriftart.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/schrift-fuer-ueberschriften.webp'>
 </button>
 
@@ -2229,7 +1957,7 @@ Eine einheitliche Schriftart wirkt meistens ruhiger als viele verschiedene Schri
 Wenn du gerade erst anfängst, verwende lieber eine Schriftart für alles.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 ##### Überschrift und Text unterschiedlich gestalten
 
@@ -2269,7 +1997,7 @@ Danach kannst du sie so verwenden:
 }
 ```
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/zwei-schriftarten.webp'>
 </button>
 
@@ -2294,7 +2022,7 @@ Auffällige Schriften eignen sich oft besser für kurze Überschriften als für 
 Für Absätze und Listen solltest du eine gut lesbare Schrift verwenden.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 ##### Wenn die Schrift nicht angezeigt wird
 
@@ -2337,7 +2065,7 @@ Wenn du eine Schriftart testest, ändere zuerst nur eine einzige Stelle, zum Bei
 Wenn das funktioniert, kannst du danach Absätze und Listen anpassen.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 -->
 
 #### Seitenzahl-Ribbon ändern oder ausblenden
@@ -2353,7 +2081,7 @@ In der Standardvorlage von shower.js erscheint rechts oben automatisch ein rotes
 Du musst dafür normalerweise nichts in deine Folie schreiben.
 Die Vorlage erzeugt dieses Ribbon selbst mit Hilfe dieser CSS-Regel:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/ausflug-nach-berlin.webp' alt='Folie „Unser Ausflug nach Berlin“ mit Stationen, Zeiten und kleinen Symbolen.'>
 </button>
 
@@ -2383,14 +2111,14 @@ Die Variablen `--color-red` und `--ribbon-size` kommen ebenfalls aus der Vorlage
 `var(--color-red)` bedeutet: »Nimm den Wert der CSS-Variable `--color-red`.«
 So kann die Vorlage Farben und Größen an einer zentralen Stelle verwalten.
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 ##### Farbe des Standard-Ribbons ändern
 
 Wenn du nur die Farbe ändern möchtest, kannst du das vorhandene Ribbon behalten und nur die Hintergrundfarbe überschreiben.
 Schreibe diese Regel in `styles.css` unter den Kommentar `Eigene CSS-Regeln`:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/blaues-ribbon.webp' alt='Die Seitenzahl erscheint in einem blauen Band in der rechten oberen Ecke.'>
 </button>
 
@@ -2408,7 +2136,7 @@ Du kannst auch die vorhandene Shower-Farbvariable verwenden:
 }
 ```
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 ##### Eine runde Seitenzahl verwenden
 
@@ -2416,7 +2144,7 @@ Das Ribbon muss nicht wie ein Lesezeichen aussehen.
 Du kannst daraus auch einen Kreis machen.
 Auch diese Regel gehört in `styles.css`:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/runde-seitenzahl.webp' alt='Die Seitenzahl steht in einem blauen Kreis in der rechten oberen Ecke.'>
 </button>
 
@@ -2447,14 +2175,14 @@ Wichtig sind hier vor allem drei Dinge:
 - `border-radius: 50%;` macht aus der Fläche einen Kreis.
 - `left: auto; right: 55px;` platziert die Seitenzahl von rechts aus.
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 ##### Nur eine kleine Zahl unten rechts anzeigen
 
 Manchmal soll die Seitenzahl sehr unauffällig sein.
 Dann kannst du Hintergrund und Form komplett entfernen:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/unauffaellige-seitenzahl.webp' alt='Die Seitenzahl steht klein und grau in der rechten unteren Ecke.'>
 </button>
 
@@ -2478,7 +2206,7 @@ Dann kannst du Hintergrund und Form komplett entfernen:
 }
 ```
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 ##### Die Seitenzahl auf einer einzelnen Folie ausblenden
 
@@ -2492,7 +2220,7 @@ In der Starter-Vorlage gibt es dafür schon eine CSS-Regel in `styles.css`:
 
 Du musst also nur der Folie in `index.html` die zusätzliche Klasse `nopagenumber` geben:
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/keine-seitenzahl.webp' alt='Die Folie hat keine sichtbare Seitenzahl.'>
 </button>
 
@@ -2522,7 +2250,7 @@ Wenn du die Seitenzahl **auf allen Folien** ausblenden möchtest, kannst du dies
 }
 ```
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 #### Elemente genau platzieren
 
@@ -2555,7 +2283,7 @@ Genaue Positionierung ist eher für besondere Elemente gedacht: Logos, Hinweise,
 
 Mit `position: relative;` bleibt ein Element grundsätzlich an seiner normalen Stelle, wird aber optisch verschoben.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/element-relativ-verschoben.webp' alt='Eine farbige Infokarte ist relativ zu ihrer ursprünglichen Position nach rechts unten verschoben.'>
 </button>
 
@@ -2587,7 +2315,7 @@ Andere Elemente tun also so, als wäre das Element noch an seiner alten Position
 Deshalb eignet sich relative Positionierung nur für kleine Korrekturen.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 ##### Ein Element frei auf der Folie platzieren
 
@@ -2595,7 +2323,7 @@ Mit `position: absolute;` kannst du ein Element frei auf der Folie platzieren.
 Das Element wird dann aus dem normalen Textfluss herausgenommen.
 Andere Elemente machen keinen Platz mehr dafür.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/infokarte-absolute-position.webp' alt='Eine farbige Infokarte liegt unabhängig vom Text am rechten unteren Folienrand.'>
 </button>
 
@@ -2640,7 +2368,7 @@ zum Beispiel <code>left</code> und <code>top</code> oder <code>right</code> und 
 So ist klar, von welcher Ecke aus das Element platziert wird.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 ##### Die vier Richtungen
 
@@ -2681,7 +2409,7 @@ Dafür packst du Bild und Beschriftung gemeinsam in ein `<div>`.
 Dieses äußere `<div>` bekommt `position: relative;`.
 Die Beschriftung darin bekommt `position: absolute;`.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/beschriftung-auf-bild.webp' alt='Eine halbtransparente Beschriftung liegt direkt auf dem unteren Rand des Fuji-Fotos.'>
 </button>
 
@@ -2744,7 +2472,7 @@ In diesem Beispiel tauchen einige interessante CSS-Eigenschaften auf, die du vie
 - `text-align: center;` zentriert den Text horizontal in der Beschriftung
 - `font-size: 90%;` macht die Schrift etwas kleiner als die normale Schriftgröße, damit sie besser zum Bild passt
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 #### Mehrere Spalten verwenden
 
@@ -2773,7 +2501,7 @@ Wenn du dagegen nur ein einzelnes Logo, eine Beschriftung oder eine kleine Infok
 Für zwei Spalten verwendest du ein äußeres `<div>` mit der Klasse `columns two`.
 Jedes direkte Kind dieses `<div>` wird zu einer eigenen Spalte.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/zwei-textspalten.webp' alt='Zwei gleich breite Textspalten stehen nebeneinander.'>
 </button>
 
@@ -2818,14 +2546,14 @@ Achte darauf, dass die beiden Spalten ungefähr gleich viel Inhalt haben.
 Wenn eine Spalte sehr voll ist und die andere fast leer, wirkt die Folie schnell unausgewogen.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 ##### Listen in zwei Spalten
 
 Du kannst auch Listen in Spalten setzen.
 Das ist praktisch, wenn du zwei Gruppen gegenüberstellen möchtest.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/zwei-spalten-listen.webp' alt='Eine Pro-Liste und eine Contra-Liste stehen in zwei Spalten nebeneinander.'>
 </button>
 
@@ -2863,14 +2591,14 @@ Wenn du in jeder Spalte mehrere Elemente brauchst, zum Beispiel eine Überschrif
 So bleiben die Inhalte einer Spalte sauber zusammen.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 ##### Drei Spalten verwenden
 
 Für drei Spalten verwendest du `columns three`.
 Das funktioniert genauso wie bei zwei Spalten, nur mit drei direkten Kindern.
 
-<button class='shower-mini' type='button'>
+<button class='tutorial-preview' type='button'>
     <img src='screenshots/drei-spalten.webp' alt='Drei gleich breite Spalten vergleichen HTML, CSS und JavaScript.'>
 </button>
 
@@ -2905,7 +2633,7 @@ Drei Spalten eignen sich gut für kurze Begriffe, kleine Erklärungen oder einfa
 Für längere Absätze sind zwei Spalten meistens besser.
 </div>
 
-<div class='shower-mini-clear'></div>
+<div class='tutorial-preview-clear'></div>
 
 <!-- #### Wiederverwendbare CSS-Klassen schreiben -->
 

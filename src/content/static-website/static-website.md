@@ -77,7 +77,9 @@ Du solltest jetzt schon die Überschrift »Axolotl« und einen kurzen Text sehen
 
 <div style='clear: both;'></div>
 
-<img class='full full-shadow' src='website-plain.webp' alt=''>
+<button class='tutorial-preview' type='button' style='--tutorial-preview-ratio: 1920 / 970;'>
+    <img src='website-plain.webp' alt='Die ungestaltete Webseite zeigt die Überschrift „Axolotl“ und einen kurzen Absatz auf weißem Hintergrund.'>
+</button>
 
 <div class='hint'>
 Tipp: Ziehe den Workspace und die Vorschau nebeneinander. Dann kannst du in <code>index.html</code> etwas ändern, mit <kbd>Strg</kbd><kbd>S</kbd> speichern und sofort sehen, was im Browser passiert.
@@ -86,6 +88,8 @@ Tipp: Ziehe den Workspace und die Vorschau nebeneinander. Dann kannst du in <cod
 <div class='hint melting'>
 Falls sich die Vorschau einmal nicht automatisch aktualisiert, lade sie mit <kbd>Strg</kbd><kbd>R</kbd> oder <kbd>F5</kbd> neu.
 </div>
+
+<div class='tutorial-preview-clear'></div>
 
 ## Inhalt mit HTML
 
