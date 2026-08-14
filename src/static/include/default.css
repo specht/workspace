@@ -660,6 +660,13 @@ div.floatright > p {
     background-color: #f9f9f9;
 }
 
+@media (max-width: 767.999999px) {
+    p,
+    .hint {
+        text-align: left;
+    }
+}
+
 .hint::before {
     content: '';
     display: block;
