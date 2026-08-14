@@ -77,4 +77,22 @@ class ConcurrencyPrimitivesTest < Minitest::Test
             assert_empty Dir.glob(File.join(directory, '.*.tmp'))
         end
     end
+
+    def test_atomic_file_preserves_existing_file_metadata
+        Dir.mktmpdir do |directory|
+            path = File.join(directory, 'state.json')
+            File.binwrite(path, 'old contents')
+            File.chmod(0640, path)
+            before = File.stat(path)
+
+            AtomicFile.write(path, 'new contents')
+
+            after = File.stat(path)
+            assert_equal 'new contents', File.binread(path)
+            refute_equal before.ino, after.ino
+            assert_equal before.uid, after.uid
+            assert_equal before.gid, after.gid
+            assert_equal before.mode & 07777, after.mode & 07777
+        end
+    end
 end
