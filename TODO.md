@@ -150,6 +150,30 @@ Follow-up work:
 
 ---
 
+### Tutorial Review / Cleanup ✅
+
+A focused review of the existing tutorial collection was started in August 2026. The main goal is to improve the teaching sequence and remove small technical/editorial problems without turning the tutorials into a uniform template.
+
+Completed:
+
+* [x] Rewrite the static-website tutorial around one small coherent project with frequent visible results
+* [x] Keep image import practical for the browser-based Workspace and reuse the proven drag/drop and clipboard workflow
+* [x] Add responsive layout work with a clear before/after mobile comparison
+* [x] Extract the Shower.js miniature screenshot/lightbox into the reusable `tutorial-preview` component
+* [x] Use `tutorial-preview` as a visual anchor for rendered results in the static-website tutorial
+* [x] Remove the duplicated Shower.js preview/lightbox CSS during that extraction
+* [x] Clean up `sections.yaml`: keep the database description about databases and add a proper description for **Experimente**
+
+Remaining cleanup from the same review:
+
+* [ ] Svelte: fix small markup/editorial issues, put the `<style>` guidance in the correct place and clean up event-listener teardown
+* [ ] MySQL: use single quotes consistently for SQL strings, fix the misleading population-density example and reduce repeated file-download boilerplate
+* [ ] Git/GitHub: keep the technical depth but mark internals as optional/advanced and correct the implication that `git mv` is required for rename detection
+* [ ] Fact-check the programming-language tutorials, especially creator/date/history/lineage claims such as the simplified COBOL attribution
+* [ ] Remove the stray `</td></tr>` in `working-with-files.md`
+* [ ] Check `_template_codebites.html` for `lang="de"` and review the remaining manually authored homepage icon alt attributes
+
+
 ## High Priority
 
 ### Web Server
