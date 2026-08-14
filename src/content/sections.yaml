@@ -64,9 +64,9 @@
   label: Datenbanken
   icon: /images/card-file-box.png
   description: |
-    Speichere und durchsuche größere Datenmengen, entwickle eigene Datenbanken
-    und untersuche typische Sicherheitsprobleme. In weiteren Experimenten
-    erfährst du, wie Computer aus Beispieldaten Muster erkennen können.
+    Speichere, verknüpfe und durchsuche größere Datenmengen mit relationalen
+    Datenbanken. Lerne SQL kennen, entwickle eigene Datenbanken und untersuche
+    typische Sicherheitsprobleme wie SQL-Injection.
   entries:
     - mysql
     - videothek
@@ -76,6 +76,10 @@
   compact: true
   label: Experimente
   icon: /images/mirror-ball.png
+  description: |
+    Gehe einen Schritt tiefer und untersuche, wie Computer Bilder und Daten
+    verarbeiten. Trainiere ein kleines Modell zur Ziffernerkennung und wirf
+    einen Blick in den Aufbau von JPEG-Dateien.
   entries:
     - digits-experiment
     - jpeg
