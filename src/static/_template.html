@@ -387,7 +387,6 @@ function install_secondary_autotoc() {
 
 var brightness = `#{((@session_user || {})[:brightness] || 'auto')}`;
 var system_brightness = 'light';
-var dark_css_element = null;
 
 function update_dark_mode() {
     let dark = false;
@@ -399,16 +398,6 @@ function update_dark_mode() {
     } else {
         document.getElementsByTagName('html')[0].setAttribute('data-bs-theme', 'light');
     }
-    // if (dark_css_element !== null) {
-    //     dark_css_element.remove();
-    //     dark_css_element = null;
-    // }
-    // if (dark) {
-    //     dark_css_element = document.createElement('link');
-    //     dark_css_element.rel = 'stylesheet';
-    //     dark_css_element.href = `/include/dark.css?#{CACHE_BUSTER}`;
-    //     document.head.appendChild(dark_css_element);
-    // }
 }
 
 function initialize_right_scrolled_images() {
