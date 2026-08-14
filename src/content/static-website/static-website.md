@@ -153,6 +153,13 @@ VS Code kann die Einrückung auch automatisch aufräumen: Klicke mit der rechten
 </p>
 </div>
 
+<!-- TODO WEBSITE-PREVIEW: Screenshot nach dem Einfügen der Liste. Wenn das Bild ein anderes Seitenverhältnis hat, ergänze wie beim ersten Preview die passende aspect-ratio-Angabe.
+<button class='tutorial-preview' type='button'>
+    <img src='website-list.webp' alt='Die ungestaltete Axolotl-Webseite zeigt jetzt zusätzlich die Überschrift „Was ich spannend finde“ und eine Liste mit drei Stichpunkten.'>
+</button>
+<div class='tutorial-preview-clear'></div>
+-->
+
 `<h2>` ist eine Überschrift der zweiten Ebene. Mit `<ul>` beginnt eine Liste mit Stichpunkten. Jeder einzelne Listenpunkt steht in einem `<li>`-Tag – `li` steht für »list item«.
 
 Wenn du eine nummerierte Liste brauchst, kannst du statt `<ul>` einfach `<ol>` verwenden. Dann setzt der Browser die Nummern automatisch davor.
@@ -173,6 +180,13 @@ Füge unter der Liste einen Link ein:
 </p>
 ```
 
+<!-- TODO WEBSITE-PREVIEW: Screenshot nach dem Einfügen des Links.
+<button class='tutorial-preview' type='button'>
+    <img src='website-link.webp' alt='Die ungestaltete Axolotl-Webseite zeigt unter der Liste zusätzlich den Link „Mehr über Axolotl erfahren“.'>
+</button>
+<div class='tutorial-preview-clear'></div>
+-->
+
 Der Tag `<a>` macht einen Text anklickbar. Im Attribut `href` steht die Adresse, zu der der Link führt. Bei deinem eigenen Thema kannst du natürlich auf eine andere Seite verlinken.
 
 ### Ein Bild einfügen
@@ -187,6 +201,13 @@ Füge das Bild **vor** der Überschrift ein:
     alt="Ein hell gefärbter Axolotl in einem Aquarium"
 >
 ```
+
+<!-- TODO WEBSITE-PREVIEW: Screenshot nach dem Einfügen des Wikimedia-Commons-Bildes. Der Bildnachweis kann auf diesem Screenshot schon sichtbar sein, wenn du ihn direkt danach aufgenommen hast.
+<button class='tutorial-preview' type='button'>
+    <img src='website-image.webp' alt='Die Axolotl-Webseite zeigt nun oberhalb der Überschrift ein großes Foto eines Axolotls.'>
+</button>
+<div class='tutorial-preview-clear'></div>
+-->
 
 Beim `<img>`-Tag gibt es zwei besonders wichtige Attribute:
 
@@ -359,6 +380,13 @@ img {
 
 Speichere die Datei. Die Änderung sollte sofort deutlich zu sehen sein: dunkler Hintergrund, helle Schrift, eine andere Linkfarbe und ein Bild mit abgerundeten Ecken.
 
+<!-- TODO WEBSITE-PREVIEW: Screenshot nach dem ersten CSS-Schritt.
+<button class='tutorial-preview' type='button'>
+    <img src='website-styled.webp' alt='Die Axolotl-Webseite hat jetzt einen dunklen grünlichen Hintergrund, helle Schrift, türkisfarbene Links und ein Bild mit abgerundeten Ecken.'>
+</button>
+<div class='tutorial-preview-clear'></div>
+-->
+
 ### Wie eine CSS-Regel funktioniert
 
 Schau dir diese Regel an:
@@ -465,6 +493,13 @@ section {
 
 Speichere die Datei. Auf einem breiten Fenster sollten Bild und Text jetzt nebeneinander stehen.
 
+<!-- TODO WEBSITE-PREVIEW: Screenshot nach dem Flexbox-Schritt auf einem breiten Browserfenster.
+<button class='tutorial-preview' type='button'>
+    <img src='website-flexbox.webp' alt='Die gestaltete Axolotl-Webseite zeigt das Bild links und den Text mit Überschrift, Liste und Link rechts daneben.'>
+</button>
+<div class='tutorial-preview-clear'></div>
+-->
+
 Die wichtigsten neuen Eigenschaften sind:
 
 - `display: flex` ordnet die direkten Kinder von `<main>` als flexible Elemente an.
@@ -507,6 +542,13 @@ Jetzt ergänzen wir am Ende von `styles.css` eine **Media Query**:
 Die Regeln innerhalb der Media Query gelten nur, wenn das Browserfenster höchstens 700 Pixel breit ist.
 
 `flex-direction: column` sorgt dann dafür, dass Bild und Text wieder untereinander stehen. Das Bild bekommt mit `width: 100%` die gesamte verfügbare Breite.
+
+<!-- TODO WEBSITE-PREVIEW: Screenshot nach der Media Query in einem schmalen Browserfenster. Hier ist ein hochformatiges Preview sinnvoll; ergänze beim Einsetzen des Bildes die passende aspect-ratio-Angabe.
+<button class='tutorial-preview' type='button'>
+    <img src='website-mobile.webp' alt='Die Axolotl-Webseite in einem schmalen Browserfenster: Bild und Text stehen wieder untereinander und nutzen die verfügbare Breite.'>
+</button>
+<div class='tutorial-preview-clear'></div>
+-->
 
 Mach dein Browserfenster langsam breiter und schmaler. Du solltest genau sehen können, wann das Layout zwischen den beiden Varianten wechselt.
 
