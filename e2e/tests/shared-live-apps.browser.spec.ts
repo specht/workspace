@@ -2,6 +2,12 @@ import { expect, test } from './fixtures';
 
 const PORT = 43127;
 const APP_MARKER = 'Shared Live App E2E';
+const STUDENT_APP_BODY = [
+  `${APP_MARKER}: /student-app`,
+  'cookie=',
+  'authorization=',
+  '',
+].join('\n');
 
 const serverSource = `
 const crypto = require('node:crypto');
@@ -97,14 +103,28 @@ test('a student can share and revoke a live app', async ({
   const portRow = profile
     .locator('#live-apps tbody tr')
     .filter({has: profile.locator('td', {hasText: String(PORT)})});
+  const shareButton = portRow.getByRole('button', {
+    // The icon font contributes a glyph to the accessible name. Keep this
+    // case-sensitive and anchored so it cannot match "Nicht mehr teilen".
+    name: /Teilen$/,
+  });
+
+  const expectPortShareable = async () => {
+    await expect(portRow).toHaveCount(1, {timeout: 30_000});
+    await expect(
+      portRow.getByText('Nicht geteilt', {exact: true}),
+    ).toBeVisible();
+    await expect(shareButton).toBeVisible();
+  };
 
   const sharePort = async () => {
-    const responsePromise = profile.waitForResponse(response =>
-      response.url().endsWith('/api/live_apps/share')
-      && response.request().method() === 'POST',
-    );
-    await portRow.getByRole('button', {name: 'Teilen'}).click();
-    const response = await responsePromise;
+    const [response] = await Promise.all([
+      profile.waitForResponse(response =>
+        response.url().endsWith('/api/live_apps/share')
+        && response.request().method() === 'POST',
+      {timeout: 15_000}),
+      shareButton.click(),
+    ]);
     expect(response.status()).toBe(200);
 
     const result = await response.json() as {url: string};
@@ -116,14 +136,17 @@ test('a student can share and revoke a live app', async ({
   };
 
   const unsharePort = async () => {
-    const responsePromise = profile.waitForResponse(response =>
-      response.url().endsWith('/api/live_apps/unshare')
-      && response.request().method() === 'POST',
-    );
-    await portRow.getByRole('button', {name: 'Nicht mehr teilen'}).click();
-    const response = await responsePromise;
+    const [response] = await Promise.all([
+      profile.waitForResponse(response =>
+        response.url().endsWith('/api/live_apps/unshare')
+        && response.request().method() === 'POST',
+      {timeout: 15_000}),
+      portRow.getByRole('button', {
+        name: /Nicht mehr teilen$/,
+      }).click(),
+    ]);
     expect(response.status()).toBe(200);
-    await expect(portRow.getByRole('button', {name: 'Teilen'})).toBeVisible();
+    await expectPortShareable();
   };
 
   const expectUnavailable = async (url: string) => {
@@ -142,6 +165,33 @@ test('a student can share and revoke a live app', async ({
     } finally {
       await unavailablePage.close();
     }
+  };
+
+  const expectSharedHttpReady = async (url: string) => {
+    await expect.poll(async () => {
+      const response = await profile.context().request.get(url, {
+        failOnStatusCode: false,
+        headers: {
+          authorization: 'Bearer shared-live-app-e2e',
+        },
+      });
+
+      try {
+        return {
+          status: response.status(),
+          body: await response.text(),
+        };
+      } finally {
+        await response.dispose();
+      }
+    }, {
+      message: `Expected shared HTTP endpoint ${url} to become ready`,
+      timeout: 15_000,
+      intervals: [100, 250, 500, 1_000],
+    }).toEqual({
+      status: 200,
+      body: STUDENT_APP_BODY,
+    });
   };
 
   await workspaceContainer.writeFile(
@@ -179,9 +229,7 @@ test('a student can share and revoke a live app', async ({
       expect(profileUpdate.action).toBe('refresh_live_apps');
       await expect(portRow).toBeVisible();
       await expect(portRow).toContainText('shared-live-app-server.js');
-      await expect(
-        portRow.getByRole('button', {name: 'Teilen'}),
-      ).toBeVisible();
+      await expectPortShareable();
     });
 
     let sharedUrl = '';
@@ -189,16 +237,16 @@ test('a student can share and revoke a live app', async ({
       sharedUrl = await sharePort();
       expect(sharedUrl).toMatch(/^http:\/\/live-[a-z0-9]+\.workspace\.test:8025\/$/);
 
+      // The share API sends nginx a graceful-reload signal, but old workers
+      // may briefly serve the previous route map. Retry real HTTP requests so
+      // browser navigation begins only after the new shared endpoint is live.
+      await expectSharedHttpReady(`${sharedUrl}student-app`);
+
       const sharedPage = await profile.context().newPage();
       try {
-        await sharedPage.goto(`${sharedUrl}student-app`);
-        await expect(sharedPage.locator('body')).toHaveText(
-          [
-            `${APP_MARKER}: /student-app`,
-            'cookie=',
-            'authorization=',
-          ].join('\n'),
-        );
+        const response = await sharedPage.goto(`${sharedUrl}student-app`);
+        expect(response?.status()).toBe(200);
+        await expect(sharedPage.locator('body')).toHaveText(STUDENT_APP_BODY);
 
         const websocketMessage = await sharedPage.evaluate(async () => {
           const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -253,10 +301,7 @@ test('a student can share and revoke a live app', async ({
       await expectUnavailable(sharedUrl);
 
       await startServer();
-      await expect(portRow).toBeVisible({timeout: 30_000});
-      await expect(
-        portRow.getByRole('button', {name: 'Teilen'}),
-      ).toBeVisible();
+      await expectPortShareable();
       await expectUnavailable(sharedUrl);
     });
   } finally {

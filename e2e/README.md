@@ -38,6 +38,14 @@ HTTP, WebSocket, revocation, and listener replacement), use:
 npx playwright test tests/shared-live-apps.browser.spec.ts --project=workspace-smoke
 ```
 
+To run the browser/toolchain coverage for the BIF and PixelRAM tutorials, use:
+
+```bash
+npx playwright test tests/bif.browser.spec.ts --project=workspace-smoke
+npx playwright test tests/pixelram.browser.spec.ts --project=workspace-smoke
+npx playwright test tests/bif.browser.spec.ts tests/pixelram.browser.spec.ts --project=workspace-smoke
+```
+
 Open the HTML report:
 
 ```bash
