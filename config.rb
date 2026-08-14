@@ -153,9 +153,11 @@ if PROFILE.include?(:dynamic)
         :environment => env,
         :working_dir => '/src/ruby',
         :privileged => true,
+        # rackup's development middleware includes Rack::Lint, which rejects
+        # Faye's async hijack response before Puma can take over the socket.
         :entrypoint =>  DEVELOPMENT ?
-            'rerun -b --dir /src/ruby -s SIGKILL -- rackup --host 0.0.0.0' :
-            'rackup --host 0.0.0.0'
+            'rerun -b --dir /src/ruby -s SIGKILL -- rackup --server puma --env production --host 0.0.0.0' :
+            'rackup --server puma --env production --host 0.0.0.0'
     }
     if PROFILE.include?(:neo4j)
         docker_compose[:services][:ruby][:depends_on] ||= []

@@ -23,8 +23,6 @@ require './credentials.rb'
 Neo4jBolt.bolt_host = 'neo4japp'
 Neo4jBolt.bolt_port = 7687
 
-Faye::WebSocket.load_adapter('thin')
-
 CACHE_BUSTER = SecureRandom.alphanumeric(12)
 RUBOCOP_LAYOUT_CONFIG_PATH = "/tmp/rubocop_layout.yml"
 
@@ -145,6 +143,13 @@ end
 class Main < Sinatra::Base
     include Neo4jBolt
     helpers Sinatra::Cookies
+
+    set :host_authorization, {
+        :permitted_hosts => [
+            WEBSITE_HOST.split(':').first,
+            ".#{WEBSITE_HOST.split(':').first}",
+        ],
+    }
 
     helpers do
         def svg_from_dot(dot_str)
@@ -880,6 +885,7 @@ class Main < Sinatra::Base
                     proxy_method GET;
                     proxy_pass_request_body off;
                     proxy_set_header Content-Length "";
+                    proxy_set_header Host $http_host;
                     proxy_set_header Cookie $http_cookie;
                 }
 

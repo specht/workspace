@@ -151,8 +151,32 @@ test('a student can share and revoke a live app', async ({
 
   try {
     await test.step('Detect the student HTTP server', async () => {
+      const profileUpdatePromise = new Promise<string>((resolve, reject) => {
+        const timer = setTimeout(() => {
+          reject(new Error('Timed out waiting for live-app profile update'));
+        }, 10_000);
+
+        profile.on('websocket', socket => {
+          if (!socket.url().endsWith('/ws/live_apps'))
+            return;
+
+          socket.on('framereceived', event => {
+            clearTimeout(timer);
+            resolve(String(event.payload));
+          });
+          socket.on('socketerror', error => {
+            clearTimeout(timer);
+            reject(new Error(`Live-app profile WebSocket failed: ${error}`));
+          });
+        });
+      });
+
       await startServer();
       await profile.goto('/profil');
+      const profileUpdate = JSON.parse(
+        await profileUpdatePromise,
+      ) as {action?: string};
+      expect(profileUpdate.action).toBe('refresh_live_apps');
       await expect(portRow).toBeVisible();
       await expect(portRow).toContainText('shared-live-app-server.js');
       await expect(
