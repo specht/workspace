@@ -1,3 +1,9 @@
+// The Workspace may be installed manually from the browser menu,
+// but don't interrupt students with an automatic install prompt.
+window.addEventListener('beforeinstallprompt', function(event) {
+    event.preventDefault();
+});
+
 function show_error_message(message) {
     var div = $('<div>').css('text-align', 'center').css('padding', '15px').addClass('bg-light text-danger').html(message);
     $('.api_messages').empty();
