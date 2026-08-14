@@ -1107,6 +1107,13 @@ class Main < Sinatra::Base
     end
 
     def self.parse_content
+        @@parse_content_mutex ||= Mutex.new
+        @@parse_content_mutex.synchronize do
+            parse_content_locked
+        end
+    end
+
+    def self.parse_content_locked
         parse_started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         STDERR.puts "Parsing content..."
         hyphenation_map = {}
@@ -1115,21 +1122,22 @@ class Main < Sinatra::Base
             hyphenation_map[line.gsub('-', '')] = line.gsub('-', '&shy;')
         end
         sections = YAML.load(File.read('/src/content/sections.yaml'))
-        @@section_order = sections.map { |section| section['key'] }
-        @@sections = {}
+        section_order = sections.map { |section| section['key'] }
+        parsed_sections = {}
+        parsed_content = {}
         paths = []
         seen_paths = Set.new()
         sections.each do |section|
-            @@sections[section['key']] = {}
+            parsed_sections[section['key']] = {}
             section.each_pair do |k, v|
-                @@sections[section['key']][k.to_sym] = v
+                parsed_sections[section['key']][k.to_sym] = v
             end
-            if @@sections[section['key']][:description]
+            if parsed_sections[section['key']][:description]
                 hyphenation_map.each_pair do |a, b|
-                    @@sections[section['key']][:description].gsub!(a, b)
+                    parsed_sections[section['key']][:description].gsub!(a, b)
                 end
             end
-            @@sections[section['key']][:entries] = []
+            parsed_sections[section['key']][:entries] = []
             (section['entries'] || []).each do |path|
                 dev_only = path[0] == '.'
                 path = path.sub(/^\./, '')
@@ -1151,27 +1159,28 @@ class Main < Sinatra::Base
             end
         end
 
-        @@kenney = {}
+        parsed_kenney = {}
         Dir['/src/content/anaglyph/kenney/*/*.webp'].sort.each do |path|
             kit = path.split('/').last(2).first
             model = path.split('/').last(2).last.sub('.webp', '')
-            @@kenney[kit] ||= []
-            @@kenney[kit] << model
+            parsed_kenney[kit] ||= []
+            parsed_kenney[kit] << model
         end
 
-        @@kenney.keys.each do |kit|
+        parsed_kenney.keys.each do |kit|
             paths << {:section => 'misc', :path => kit, :original_path => "/src/content/anaglyph/#{kit}.md", :dev_only => false, :kenney => true, :extra => true}
         end
 
         redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
         @@parse_content_count ||= 0
         @@parse_content_count += 1
+        parse_content_count = @@parse_content_count
 
         # Kenney previews are already WebP files, so don't send every image through
         # the generic image-cache pipeline below. That used to spawn one `cp`
         # process per preview image. Copy the complete tree once, with one process,
         # and let generated gallery HTML point at /cache/kenney/... directly.
-        if @@parse_content_count == 1 && !@@kenney.empty?
+        if parse_content_count == 1 && !parsed_kenney.empty?
             FileUtils.mkdir_p('/webcache/kenney')
             unless system('cp', '-ru', '/src/content/anaglyph/kenney/.', '/webcache/kenney/')
                 raise 'Failed to prepare Kenney preview cache'
@@ -1182,7 +1191,7 @@ class Main < Sinatra::Base
             entry_started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
             section = entry[:section]
             path = entry[:original_path]
-            next if @@parse_content_count > 1 && entry[:kenney]
+            next if parse_content_count > 1 && entry[:kenney]
             markdown = nil
             unless entry[:kenney]
                 next unless path
@@ -1230,7 +1239,7 @@ class Main < Sinatra::Base
                         Du kannst dann mit dem Befehl `model` ein Modell zu deiner Szene hinzufügen, also z. B.:
 
                         ```ini
-                        model = #{kit}/#{@@kenney[kit].first}
+                        model = #{kit}/#{parsed_kenney[kit].first}
                         ```
 
                         <div class='hint'>
@@ -1261,7 +1270,7 @@ class Main < Sinatra::Base
             if entry[:kenney]
                 gallery = StringIO.open do |io|
                     io.puts "<div class='kenney-gallery'>"
-                    @@kenney[entry[:path]].each do |model|
+                    parsed_kenney[entry[:path]].each do |model|
                         io.puts "<div><img alt='' src='/cache/kenney/#{entry[:path]}/#{model}.webp'><div>#{model}</div></div>"
                     end
                     io.puts "</div>"
@@ -1427,51 +1436,60 @@ class Main < Sinatra::Base
             meta = root.css('.meta').first
             entry_elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - entry_started_at
             STDERR.puts "Added content: #{slug} (#{format('%.3f', entry_elapsed)}s)"
-            @@content[slug] = {
+            parsed_content[slug] = {
                 :html => html,
                 :dev_only => entry[:dev_only],
             }
             unless entry[:extra]
-                @@sections[section][:entries] << slug
+                parsed_sections[section][:entries] << slug
                 if meta
                     meta = YAML.load(meta)
                     if meta['image']
                         parts = meta['image'].split(':')
                         image_path = File.join(File.dirname(path), parts[0])
                         sha1 = convert_image(image_path)
-                        @@content[slug][:image] = "/cache/#{sha1}.webp"
+                        parsed_content[slug][:image] = "/cache/#{sha1}.webp"
 
                         extension = File.extname(image_path)
                         dark_image_path = image_path.delete_suffix(extension) + "-dark#{extension}"
                         if File.exist?(dark_image_path)
                             dark_sha1 = convert_image(dark_image_path)
-                            @@content[slug][:image_dark] = "/cache/#{dark_sha1}.webp"
+                            parsed_content[slug][:image_dark] = "/cache/#{dark_sha1}.webp"
                         end
 
-                        @@content[slug][:image_x] = (parts[1] || '50').to_i
-                        @@content[slug][:image_y] = (parts[2] || '50').to_i
-                        @@content[slug][:needs_contrast] = meta['needs_contrast']
+                        parsed_content[slug][:image_x] = (parts[1] || '50').to_i
+                        parsed_content[slug][:image_y] = (parts[2] || '50').to_i
+                        parsed_content[slug][:needs_contrast] = meta['needs_contrast']
                     end
                 end
                 begin
-                    @@content[slug][:title] = root.css('h1').first.to_s.sub('<h1>', '').sub('</h1>', '').strip
+                    parsed_content[slug][:title] = root.css('h1').first.to_s.sub('<h1>', '').sub('</h1>', '').strip
                 rescue
                 end
                 begin
-                    @@content[slug][:abstract] = root.css('.abstract').first.text
+                    parsed_content[slug][:abstract] = root.css('.abstract').first.text
                 rescue
                 end
                 begin
-                    @@content[slug][:image] ||= root.css('img').first.attr('src')
-                    @@content[slug][:image_x] ||= 50
-                    @@content[slug][:image_y] ||= 50
+                    parsed_content[slug][:image] ||= root.css('img').first.attr('src')
+                    parsed_content[slug][:image_x] ||= 50
+                    parsed_content[slug][:image_y] ||= 50
                 rescue
                 end
             end
         end
+        # Publish only complete parse results. Concurrent requests continue to
+        # read the previous complete snapshot while this method is working.
+        @@section_order = section_order
+        @@sections = parsed_sections
+        @@kenney = parsed_kenney
+        @@content = parsed_content
+
         parse_elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - parse_started_at
         STDERR.puts "Finished parsing content in #{format('%.3f', parse_elapsed)}s"
     end
+
+    private_class_method :parse_content_locked
 
     def codebite_broadcast(email, payload)
         msg = payload.is_a?(String) ? payload : payload.to_json

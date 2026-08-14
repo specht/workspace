@@ -16,9 +16,9 @@ Do not replay complete programming tutorials through Monaco. Earlier attempts
 became tests of Monaco selection, auto-indent, clipboard behavior, Quick Pick
 timing, xterm rendering, and keyboard focus instead of tests of Workspace.
 
-The browser smoke project intentionally leaves its `hs_code_*` container
-running. The toolchain project depends on the smoke project and reuses that
-exact container.
+Each browser worker intentionally leaves its `hs_code_*` container running.
+The toolchain project depends on the smoke project, remains serial, and reuses
+e2e-0's container after every browser worker has finished.
 
 ## 2. Toolchain/tutorial smoke tests via docker exec
 
@@ -170,7 +170,9 @@ toolchains
 ```
 
 The smoke project creates the container first. The toolchain project uses one
-worker and reuses `e2e-0@example.com`'s container.
+worker and reuses `e2e-0@example.com`'s container. Browser workers use distinct
+`e2e-N@example.com` accounts and containers; the cleanup project stops every
+container in the configured E2E user pool after dependent projects finish.
 
 Running:
 

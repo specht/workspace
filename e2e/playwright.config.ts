@@ -36,8 +36,9 @@ export default defineConfig({
     /*
      * Browser-level tests create real fresh Workspace containers.
      *
-     * Keep this project on one worker because the toolchain project deliberately
-     * reuses e2e-0's running container after all browser tests have completed.
+     * Each worker uses its own e2e-N account and Workspace container. The
+     * dependent toolchain project remains serial and deliberately reuses
+     * e2e-0's container after all browser tests have completed.
      *
      * Browser tests should be reserved for behavior that genuinely requires the
      * browser, such as the Pixelflow Canvas webview.
@@ -51,7 +52,7 @@ export default defineConfig({
                 /.*\.browser\.spec\.ts/,
             ],
 
-            workers: 1,
+            workers,
 
             teardown: 'workspace-cleanup',
 

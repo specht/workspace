@@ -92,8 +92,9 @@ shown by the tutorial rather than maintaining duplicate copies.
 
 ## Parallel runs
 
-The suite defaults to one worker. Each concurrent worker gets an independent
-disposable account based on Playwright's `parallelIndex`:
+The suite defaults to one worker. `workspace-smoke` honors `E2E_WORKERS`, and
+each concurrent browser worker gets an independent disposable account and
+Workspace container based on Playwright's `parallelIndex`:
 
 ```text
 e2e-0@example.com
@@ -106,6 +107,11 @@ For example:
 ```bash
 E2E_WORKERS=4 npm test
 ```
+
+The `toolchains` project intentionally remains serial. After all browser tests
+finish, it reuses e2e-0's running Workspace container. Final teardown stops all
+containers belonging to the configured E2E user pool, including unused or
+leftover `e2e-N` containers, without matching ordinary Workspace users.
 
 Eight E2E users are created by default. To increase both the pool and the
 number of workers:
