@@ -1,6 +1,145 @@
 <style>
-    h2 {
-        margin: 1em 0;
+    .profile-page {
+        padding-bottom: 2rem;
+    }
+
+    .profile-section {
+        padding: 1.25rem 0 2.5rem;
+        border-bottom: 1px solid rgba(var(--bs-body-color-rgb), 0.14);
+    }
+
+    .profile-section:last-child {
+        border-bottom: 0;
+    }
+
+    .profile-section > h2 {
+        margin: 0 0 1.25rem;
+        scroll-margin-top: 6rem;
+    }
+
+    .profile-subsection + .profile-subsection {
+        margin-top: 2.25rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(var(--bs-body-color-rgb), 0.1);
+    }
+
+    .profile-subsection-heading {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .profile-subsection-heading h3 {
+        margin: 0;
+    }
+
+    .btn-module-control,
+    .btn-module-control .btn {
+        max-width: 100%;
+    }
+
+    .btn-module-control .btn {
+        white-space: normal;
+    }
+
+    .profile-actions,
+    .profile-appearance-options {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .profile-share-link {
+        max-width: 52rem;
+    }
+
+    .profile-share-link .form-control,
+    .profile-credential .form-control {
+        min-width: 0;
+    }
+
+    .profile-danger-zone {
+        margin-top: 2rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid rgba(var(--bs-danger-rgb), 0.35);
+    }
+
+    .profile-danger-zone h3,
+    .profile-danger-zone h4 {
+        margin-top: 0;
+    }
+
+    .profile-credentials {
+        margin: 1rem 0;
+    }
+
+    .profile-credentials summary {
+        width: fit-content;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .profile-credential-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.9rem 1rem;
+        margin-top: 1rem;
+    }
+
+    .profile-credential label {
+        display: block;
+        margin-bottom: 0.3rem;
+        color: var(--bs-secondary-color);
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .profile-table-actions {
+        text-align: right;
+    }
+
+    @media (max-width: 767.98px) {
+        .profile-credential-grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .profile-section {
+            padding-bottom: 2rem;
+        }
+
+        .profile-actions > .btn,
+        .profile-actions > a,
+        .profile-subsection-heading .btn-module-control {
+            width: 100%;
+        }
+
+        .profile-share-link .input-group,
+        .profile-credential .input-group {
+            flex-wrap: wrap;
+        }
+
+        .profile-share-link .form-control,
+        .profile-credential .form-control {
+            flex-basis: 100%;
+            width: 100%;
+            border-radius: var(--bs-border-radius) !important;
+        }
+
+        .profile-share-link .btn,
+        .profile-credential .btn {
+            margin-top: 0.35rem;
+            border-radius: var(--bs-border-radius) !important;
+        }
+
+        .profile-share-link .btn {
+            width: 100%;
+        }
     }
 </style>
 <div class="modal" id="test_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style='z-index: 200000;'>
@@ -18,209 +157,209 @@
         </div>
     </div>
 </div>
-<div class="container-fluid" style="padding: 0.5em 0 0.5em 0;">
-    <div class="container" style="text-align: center; margin-bottom: -0.9em;">
-        <div class="btn-group" role="group" style="margin-bottom: 5px;">
-            <button type="button" class="bu-set-brightness btn btn-light  " data-brightness="light"><i class='bi bi-sun'></i>Hell            #{(@session_user[:brightness] || 'auto') == 'light' ? "<i class='bi bi-check-lg'></i>" : ''}</button>
-            <button type="button" class="bu-set-brightness btn btn-primary" data-brightness="auto"><i class='bi bi-moon-stars-fill'></i>Auto #{(@session_user[:brightness] || 'auto') == 'auto'  ? "<i class='bi bi-check-lg'></i>" : ''}</button>
-            <button type="button" class="bu-set-brightness btn btn-dark   " data-brightness="dark"><i class='bi bi-moon-fill'></i>Dunkel     #{(@session_user[:brightness] || 'auto') == 'dark'  ? "<i class='bi bi-check-lg'></i>" : ''}</button>
-        </div>
-        <a style="margin-left: 1em; margin-bottom: 5px;" class="btn btn-secondary" href="/logout"><i class='bi bi-box-arrow-in-right'></i>Abmelden</a>
-    </div>
-    <hr>
-</div>
-<div class='container'>
+<div class='container profile-page'>
     <div class='row'>
         <div class='col-md-12'>
-            <div class="row">
-                <div class="col-sm-12"><h2>Workspace</h2></div>
+            <div
+                class="autotoc-secondary-trigger"
+                data-title="Profil"
+                data-levels="h2">
             </div>
-            <p>
-                Der Workspace ist deine persönliche Visual Studio Code-Arbeitsumgebung. Hier kannst du Dateien erstellen, bearbeiten und löschen. Du kannst auch neue Dateien und Ordner erstellen und Dateien hochladen.
-            </p>
-            <div class="row">
-                <div class="col-sm-6"><h4>Workspace teilen</h4></div>
-                <div class="col-sm-6 btn-module-4" style="margin-top: 0;">
+
+            <section class="profile-section" aria-labelledby="workspace">
+                <h2 id="workspace">Workspace</h2>
+                <p>
+                    Der Workspace ist deine persönliche Visual Studio Code-Arbeitsumgebung. Hier kannst du Dateien erstellen, bearbeiten und löschen. Du kannst auch neue Dateien und Ordner erstellen und Dateien hochladen.
+                </p>
+                <div class="profile-actions mb-3">
+                    <button id="bu_launch_profile" class="btn btn-success bu-launch-workspace"><i class='bi bi-code-slash'></i>Workspace öffnen</button>
                     <button style='#{(@session_user || {})[:share_tag].nil? ? '' : 'display: none;'}' id='bu_share' class="btn btn-primary"><i class='bi bi-share'></i>Workspace teilen</button>
                     <button style='#{(@session_user || {})[:share_tag].nil? ? 'display: none;' : ''}' id='bu_stop_share' class="btn btn-primary"><i class='bi bi-trash-fill'></i>Teilen beenden</button>
                 </div>
-            </div>
-            <p>
-                Wenn du jemandem deinen Workspace zeigen möchtest oder dir helfen lassen möchtest, kannst du deinen Workspace teilen. Du erhältst einen Link, den du weitergeben kannst. Jeder, der diesen Link hat, hat uneingeschränkten Zugriff auf deinen Workspace, auch ohne Anmeldung. Der Link ist solange gültig, bis du ihn deaktivierst.
-            </p>
-            <div id='div_share_link' style="max-width: 100%; overflow-x: auto; #{(@session_user || {})[:share_tag] ? '' : 'display: none;'}" class="mt-2 mb-4">
-                <div style="display: table; margin-left: auto; margin-right: auto;" class="input-with-text-mod">
+                <p>
+                    Wenn du jemandem deinen Workspace zeigen möchtest oder dir helfen lassen möchtest, kannst du deinen Workspace teilen. Du erhältst einen Link, den du weitergeben kannst. Jeder, der diesen Link hat, hat uneingeschränkten Zugriff auf deinen Workspace, auch ohne Anmeldung. Der Link ist solange gültig, bis du ihn deaktivierst.
+                </p>
+                <div id='div_share_link' style="#{(@session_user || {})[:share_tag] ? '' : 'display: none;'}" class="profile-share-link mt-2 mb-4">
                     <div class="input-group">
-                        <span class="input-group-text">Freigabelink:</span>
-                        <input type="text" id='ti_share_link' style='width: 42em; max-width: 100%;' class="form-control" readonly value="#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}">
+                        <input type="text" id='ti_share_link' class="form-control" aria-label="Freigabelink" readonly value="#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}">
                         <button id='bu_copy_share_link' class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{WEB_ROOT}/share/#{(@session_user || {})[:share_tag]}'><i class='bi bi-copy'></i>Kopieren</button>
                     </div>
                 </div>
-            </div>
-            <h4>Workspace zurücksetzen</h4>
-            <p>
-                Hier kannst du deinen Workspace zurücksetzen. Alle Dateien, Einstellungen und installierte Erweiterungen werden gelöscht und dein Workspace wird auf den Ursprungszustand zurückgesetzt.
-            </p>
-            <div>
-                <button id='bu_reset_workspace' class="btn btn-danger"><i class='bi bi-trash-fill'></i>Workspace zurücksetzen</button>
-            </div>
 
-            <hr>
+                <div id='live_apps_container'>#{print_live_apps()}</div>
 
-            <div id='live_apps_container'>#{print_live_apps()}</div>
+                <div class="profile-danger-zone">
+                    <h3>Workspace zurücksetzen</h3>
+                    <p>
+                        Hier kannst du deinen Workspace zurücksetzen. Alle Dateien, Einstellungen und installierte Erweiterungen werden gelöscht und dein Workspace wird auf den Ursprungszustand zurückgesetzt.
+                    </p>
+                    <button id='bu_reset_workspace' class="btn btn-danger"><i class='bi bi-trash-fill'></i>Workspace zurücksetzen</button>
+                </div>
+            </section>
 
-            <hr>
+            <section class="profile-section" aria-labelledby="tools">
+                <h2 id="tools">Werkzeuge</h2>
+                <div class="profile-subsection">
+                    <div class="profile-subsection-heading">
+                        <h3>Code Bites</h3>
+                        <div class="btn-module-control">#{print_module_button(:codebites)}</div>
+                    </div>
+                    <p>
+                        Code Bites sind kleine Programmieraufgaben, die du direkt im Browser lösen kannst.
+                    </p>
+                </div>
 
-            <div class="row">
-                <div class="col-sm-6"><h2>Code Bites</h2></div>
-                <div class="col-sm-6 btn-module">#{print_module_button(:codebites)}</div>
-            </div>
-            <p>
-                Code Bites sind kleine Programmieraufgaben, die du direkt im Browser lösen kannst.
-            </p>
+                <div class="profile-subsection">
+                    <div class="profile-subsection-heading">
+                        <h3>TIC-80</h3>
+                        <div class="btn-module-control">#{print_module_button(:tic80)}</div>
+                    </div>
+                    <p>
+                        Der TIC-80 ist ein Fantasy-Computer für Spiele, Demos und Prototypen. Du kannst Programme in der Programmiersprache Lua schreiben und ausführen, aber auch andere Sprachen sind möglich. Im Unterschied zum TIC-80 auf <a href='https://tic80.com/create' target='_blank'>https://tic80.com/create</a> kannst du hier die Pro-Version verwenden und deine Dateien werden automatisch gespeichert, so dass du sie nicht verlierst.
+                    </p>
+                    <!-- <h4>TIC-80 zurücksetzen</h4>
+                    <p>
+                        Hiermit kannst du deinen TIC-80 zurücksetzen. Alle Dateien werden gelöscht und dein TIC-80 wird auf den Ursprungszustand zurückgesetzt.
+                    </p>
+                    <div>
+                        <button id='bu_reset_tic80' class="btn btn-danger"><i class='bi bi-trash-fill'></i>TIC-80 zurücksetzen</button>
+                    </div> -->
+                </div>
+            </section>
 
-            <hr>
-
-            <div class="row">
-                <div class="col-sm-6"><h2>MySQL-Datenbank</h2></div>
-                <div class="col-sm-6 btn-module">#{print_module_button(:phpmyadmin)}</div>
-            </div>
-            <p>
-                Du hast eine MySQL-Datenbank, die du im Workspace verwenden kannst. Du kannst Tabellen erstellen, Daten einfügen, abfragen und löschen.
-            </p>
-            <p>
-                Deine Zugangsdaten lauten:
-            </p>
-            <div class="row g-3 align-items-center mb-3 input-with-text-mod">
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text" style="width: 9em;">Host:</span>
-                        <input type="text" class="form-control" readonly value="mysql">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='mysql'><i class='bi bi-copy'></i>Kopieren</button>
+            <section class="profile-section" aria-labelledby="databases">
+                <h2 id="databases">Datenbanken</h2>
+                <div class="profile-subsection" id="mysql-database">
+                    <div class="profile-subsection-heading">
+                        <h3>MySQL</h3>
+                        <div class="btn-module-control">#{print_module_button(:phpmyadmin)}</div>
+                    </div>
+                    <p>
+                        Du hast eine MySQL-Datenbank, die du im Workspace verwenden kannst. Du kannst Tabellen erstellen, Daten einfügen, abfragen und löschen.
+                    </p>
+                    <details class="profile-credentials">
+                        <summary>MySQL-Zugangsdaten</summary>
+                        <div class="profile-credential-grid">
+                            <div class="profile-credential">
+                                <label for="mysql_host">Host</label>
+                                <div class="input-group">
+                                    <input id="mysql_host" type="text" class="form-control" readonly value="mysql">
+                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Host in die Zwischenablage kopieren' aria-label='MySQL-Host kopieren' data-clipboard-text='mysql'><i class='bi bi-copy'></i>Kopieren</button>
+                                </div>
+                            </div>
+                            <div class="profile-credential">
+                                <label for="mysql_username">Benutzername</label>
+                                <div class="input-group">
+                                    <input id="mysql_username" type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
+                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Benutzername in die Zwischenablage kopieren' aria-label='MySQL-Benutzername kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i>Kopieren</button>
+                                </div>
+                            </div>
+                            <div class="profile-credential">
+                                <label for="mysql_database">Datenbank</label>
+                                <div class="input-group">
+                                    <input id="mysql_database" type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
+                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Datenbank in die Zwischenablage kopieren' aria-label='MySQL-Datenbank kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i>Kopieren</button>
+                                </div>
+                            </div>
+                            <div class="profile-credential">
+                                <label for="mysql_password">Passwort</label>
+                                <div class="input-group">
+                                    <input id="mysql_password" type="password" class="form-control profile-secret" readonly autocomplete="off" spellcheck="false" value="#{Main.gen_password_for_email(@session_user[:email], MYSQL_PASSWORD_SALT)}">
+                                    <button type="button" class="btn btn-outline-secondary bu-toggle-secret" data-secret-target="mysql_password" aria-controls="mysql_password" aria-pressed="false" aria-label="MySQL-Passwort anzeigen"><i class="bi bi-eye"></i><span class="secret-toggle-label">Anzeigen</span></button>
+                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Passwort in die Zwischenablage kopieren' aria-label='MySQL-Passwort kopieren' data-clipboard-text='#{Main.gen_password_for_email(@session_user[:email], MYSQL_PASSWORD_SALT)}'><i class='bi bi-copy'></i>Kopieren</button>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                    <div class="hint">
+                        Deine Zugangsdaten sind im Workspace in den Umgebungsvariablen <code>MYSQL_HOST</code>, <code>MYSQL_USER</code>, <code>MYSQL_PASSWORD</code> und <code>MYSQL_DB</code> hinterlegt, damit du keine Zugangsdaten im Quellcode deiner Programme speichern musst.
+                    </div>
+                    <div class="profile-table-actions">
+                        <button id='bu_add_mysql_database' class="btn btn-success mt-3"><i class='bi bi-plus'></i>MySQL-Datenbank erstellen</button>
+                    </div>
+                    <div class="table-responsive mt-3">
+                        <table class="table table-sm" id="table_my_databases">
+                            <thead>
+                                <tr>
+                                    <th>Datenbank</th>
+                                    <th>Tabellen</th>
+                                    <th>Einträge</th>
+                                    <th>Speicherplatz</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text" style="width: 9em;">Benutzername:</span>
-                        <input type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i>Kopieren</button>
+
+                <div class="profile-subsection" id="neo4j-database">
+                    <div class="profile-subsection-heading">
+                        <h3>Neo4j</h3>
+                        <div class="btn-module-control">#{print_module_button(:neo4j)}</div>
+                    </div>
+                    <p>Du hast eine Neo4j-Datenbank, die du im Workspace verwenden kannst.</p>
+                    <details class="profile-credentials">
+                        <summary>Neo4j-Zugangsdaten</summary>
+                        <div class="profile-credential-grid">
+                            <div class="profile-credential">
+                                <label for="neo4j_host">Host</label>
+                                <div class="input-group">
+                                    <input id="neo4j_host" type="text" class="form-control" readonly value="neo4j">
+                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Host in die Zwischenablage kopieren' aria-label='Neo4j-Host kopieren' data-clipboard-text='neo4j'><i class='bi bi-copy'></i>Kopieren</button>
+                                </div>
+                            </div>
+                            <div class="profile-credential">
+                                <label for="neo4j_username">Benutzername</label>
+                                <div class="input-group">
+                                    <input id="neo4j_username" type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
+                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Benutzername in die Zwischenablage kopieren' aria-label='Neo4j-Benutzername kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i>Kopieren</button>
+                                </div>
+                            </div>
+                            <div class="profile-credential">
+                                <label for="neo4j_database">Datenbank</label>
+                                <div class="input-group">
+                                    <input id="neo4j_database" type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
+                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Datenbank in die Zwischenablage kopieren' aria-label='Neo4j-Datenbank kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i>Kopieren</button>
+                                </div>
+                            </div>
+                            <div class="profile-credential">
+                                <label for="neo4j_password">Passwort</label>
+                                <div class="input-group">
+                                    <input id="neo4j_password" type="password" class="form-control profile-secret" readonly autocomplete="off" spellcheck="false" value="#{Main.gen_password_for_email(@session_user[:email], NEO4J_PASSWORD_SALT)}">
+                                    <button type="button" class="btn btn-outline-secondary bu-toggle-secret" data-secret-target="neo4j_password" aria-controls="neo4j_password" aria-pressed="false" aria-label="Neo4j-Passwort anzeigen"><i class="bi bi-eye"></i><span class="secret-toggle-label">Anzeigen</span></button>
+                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Passwort in die Zwischenablage kopieren' aria-label='Neo4j-Passwort kopieren' data-clipboard-text='#{Main.gen_password_for_email(@session_user[:email], NEO4J_PASSWORD_SALT)}'><i class='bi bi-copy'></i>Kopieren</button>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                    <div class="hint">
+                        Deine Zugangsdaten sind im Workspace in den Umgebungsvariablen <code>NEO4J_URI</code>, <code>NEO4J_USERNAME</code>, <code>NEO4J_PASSWORD</code> und <code>NEO4J_DB</code> hinterlegt, damit du keine Zugangsdaten im Quellcode deiner Programme speichern musst.
+                    </div>
+                    <div class="profile-danger-zone">
+                        <h4>Neo4j-Datenbank zurücksetzen</h4>
+                        <p>Hier kannst du deine Neo4j-Datenbank zurücksetzen.</p>
+                        <button id='bu_reset_neo4j' class="btn btn-danger"><i class='bi bi-trash-fill'></i>Neo4j-Datenbank zurücksetzen</button>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text" style="width: 9em;">Datenbank:</span>
-                        <input type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i>Kopieren</button>
-                    </div>
+            </section>
+
+            <section class="profile-section" aria-labelledby="account-appearance">
+                <h2 id="account-appearance">Konto &amp; Darstellung</h2>
+                <p>Wähle die Darstellung der Workspace-Oberfläche.</p>
+                <div class="profile-appearance-options mb-4" role="group" aria-label="Darstellung">
+                    <button type="button" class="bu-set-brightness btn btn-light" data-brightness="light"><i class='bi bi-sun'></i>Hell #{(@session_user[:brightness] || 'auto') == 'light' ? "<i class='bi bi-check-lg'></i>" : ''}</button>
+                    <button type="button" class="bu-set-brightness btn btn-primary" data-brightness="auto"><i class='bi bi-moon-stars-fill'></i>Auto #{(@session_user[:brightness] || 'auto') == 'auto' ? "<i class='bi bi-check-lg'></i>" : ''}</button>
+                    <button type="button" class="bu-set-brightness btn btn-dark" data-brightness="dark"><i class='bi bi-moon-fill'></i>Dunkel #{(@session_user[:brightness] || 'auto') == 'dark' ? "<i class='bi bi-check-lg'></i>" : ''}</button>
                 </div>
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text" style="width: 9em;">Passwort:</span>
-                        <input type="text" class="form-control" readonly value="#{Main.gen_password_for_email(@session_user[:email], MYSQL_PASSWORD_SALT)}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{Main.gen_password_for_email(@session_user[:email], MYSQL_PASSWORD_SALT)}'><i class='bi bi-copy'></i>Kopieren</button>
-                    </div>
-                </div>
-            </div>
+                <a class="btn btn-secondary" href="/logout"><i class='bi bi-box-arrow-in-right'></i>Abmelden</a>
+            </section>
 
-            <div class="hint">
-                Deine Zugangsdaten sind im Workspace in den Umgebungsvariablen <code>MYSQL_HOST</code>, <code>MYSQL_USER</code>, <code>MYSQL_PASSWORD</code> und <code>MYSQL_DB</code> hinterlegt, damit du keine Zugangsdaten im Quellcode deiner Programme speichern musst.
-            </div>
-
-            <div style="text-align: right;">
-                <button id='bu_add_mysql_database' class="btn btn-success mt-3"><i class='bi bi-plus'></i>MySQL-Datenbank erstellen</button>
-            </div>
-
-            <div style="max-width: 100%; overflow-x: auto;" class="mt-3">
-                <table class="table table-sm" id="table_my_databases">
-                    <thead>
-                        <tr>
-                            <th>Datenbank</th>
-                            <th>Tabellen</th>
-                            <th>Einträge</th>
-                            <th>Speicherplatz</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-
-            <hr>
-
-            <div class="row">
-                <div class="col-sm-6"><h2>Neo4j-Datenbank</h2></div>
-                <div class="col-sm-6 btn-module">#{print_module_button(:neo4j)}</div>
-            </div>
-            <p>
-                Du hast eine Neo4j-Datenbank, die du im Workspace verwenden kannst.
-            </p>
-            <p>
-                Deine Zugangsdaten lauten:
-            </p>
-            <div class="row g-3 align-items-center mb-3 input-with-text-mod">
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text" style="width: 9em;">Host:</span>
-                        <input type="text" class="form-control" readonly value="neo4j">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='neo4j'><i class='bi bi-copy'></i>Kopieren</button>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text" style="width: 9em;">Benutzername:</span>
-                        <input type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i>Kopieren</button>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text" style="width: 9em;">Datenbank:</span>
-                        <input type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i>Kopieren</button>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text" style="width: 9em;">Passwort:</span>
-                        <input type="text" class="form-control" readonly value="#{Main.gen_password_for_email(@session_user[:email], NEO4J_PASSWORD_SALT)}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{Main.gen_password_for_email(@session_user[:email], NEO4J_PASSWORD_SALT)}'><i class='bi bi-copy'></i>Kopieren</button>
-                    </div>
-                </div>
-            </div>
-            <div class="hint">
-                Deine Zugangsdaten sind im Workspace in den Umgebungsvariablen <code>NEO4J_URI</code>, <code>NEO4J_USERNAME</code>, <code>NEO4J_PASSWORD</code> und <code>NEO4J_DB</code> hinterlegt, damit du keine Zugangsdaten im Quellcode deiner Programme speichern musst.
-            </div>
-            <h4>Neo4j-Datenbank zurücksetzen</h4>
-            <p>
-                Hier kannst du deine Neo4j-Datenbank zurücksetzen.
-            </p>
-            <div>
-                <button id='bu_reset_neo4j' class="btn btn-danger"><i class='bi bi-trash-fill'></i>Neo4j-Datenbank zurücksetzen</button>
-            </div>
-
-            <hr>            
-
-            <div class="row">
-                <div class="col-sm-6"><h2>TIC-80</h2></div>
-                <div class="col-sm-6 btn-module">#{print_module_button(:tic80)}</div>
-            </div>
-            <p>
-                Der TIC-80 ist ein Fantasy-Computer für Spiele, Demos und Prototypen. Du kannst Programme in der Programmiersprache Lua schreiben und ausführen, aber auch andere Sprachen sind möglich. Im Unterschied zum TIC-80 auf <a href='https://tic80.com/create' target='_blank'>https://tic80.com/create</a> kannst du hier die Pro-Version verwenden und deine Dateien werden automatisch gespeichert, so dass du sie nicht verlierst.
-
-            </p>
-            <!-- <h4>TIC-80 zurücksetzen</h4>
-            <p>
-                Hiermit kannst du deinen TIC-80 zurücksetzen. Alle Dateien werden gelöscht und dein TIC-80 wird auf den Ursprungszustand zurückgesetzt.
-            </p>
-            <div>
-                <button id='bu_reset_tic80' class="btn btn-danger"><i class='bi bi-trash-fill'></i>TIC-80 zurücksetzen</button>
-            </div> -->
-            <div style="#{teacher_logged_in? ? '' : 'display: none;'}">
-                <hr>
-                <div class="row">
-                    <div class="col-sm-6"><h2>Leistungsüberprüfungen</h2></div>
-                    <div class="col-sm-6 btn-module">
+            <section id="profile-for-teachers" class="profile-section" aria-labelledby="for-teachers" #{teacher_logged_in? ? '' : 'hidden'}>
+                <h2 id="for-teachers">Für Lehrkräfte</h2>
+                <div class="profile-subsection-heading">
+                    <h3>Leistungsüberprüfungen</h3>
+                    <div class="btn-module-control">
                         <button id='bu_upload_test_archive' class='btn btn-primary'><i class='bi bi-upload'></i>Leistungsüberprüfung hochladen</button>
                     </div>
                 </div>
@@ -230,7 +369,7 @@
                             Hier kannst du ein komprimiertes Verzeichnis hochladen, das du deinen Schülerinnen und Schülern in einer Leistungsüberprüfung
                             zur Verfügung stellen möchtest.
                         </p>
-                        <div style="max-width: 100%; overflow-x: auto;" class="mt-3">
+                        <div class="table-responsive mt-3">
                             <table class="table table-sm" id="table_my_test_archives">
                                 <thead>
                                     <tr>
@@ -248,7 +387,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
     </div>
 </div>
@@ -453,6 +592,20 @@
 
     window.addEventListener('load', function() {
         connect_live_apps_socket();
+        $('.bu-toggle-secret').on('click', function(e) {
+            let button = $(e.target).closest('button');
+            let input = document.getElementById(button.data('secret-target'));
+            if (!input) return;
+
+            let reveal = input.type === 'password';
+            input.type = reveal ? 'text' : 'password';
+            button.attr('aria-pressed', reveal ? 'true' : 'false');
+            button.attr('aria-label', `${input.id.startsWith('mysql') ? 'MySQL' : 'Neo4j'}-Passwort ${reveal ? 'verbergen' : 'anzeigen'}`);
+            button.find('.secret-toggle-label').text(reveal ? 'Verbergen' : 'Anzeigen');
+            button.find('.bi')
+                .toggleClass('bi-eye', !reveal)
+                .toggleClass('bi-eye-slash', reveal);
+        });
         $('.bu-toggle-module').on('click', function(e) {
             let key = $(e.target).closest('button').data('module');
             api_call('/api/toggle_show_module', {module: key}, function(data) {

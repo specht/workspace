@@ -278,9 +278,9 @@ class Main < Sinatra::Base
 
         StringIO.open do |io|
             io.puts "<section id='live-apps' class='my-4'>"
-            io.puts "<h2>Geteilte Apps</h2>"
+            io.puts "<h3>Geteilte Apps</h3>"
             io.puts "<p>Hier kannst du laufende Web-Apps mit anderen angemeldeten Workspace-Nutzern teilen.</p>"
-            io.puts "<h3>Meine laufenden Web-Apps</h3>"
+            io.puts "<h4>Meine laufenden Web-Apps</h4>"
             if open_port_details.empty?
                 io.puts "<p class='text-body-secondary'>In deinem Workspace läuft gerade keine teilbare Web-App.</p>"
             else
@@ -325,7 +325,7 @@ class Main < Sinatra::Base
                 io.puts "</tbody></table></div>"
             end
 
-            io.puts "<h3>Von anderen geteilt</h3>"
+            io.puts "<h4>Von anderen geteilt</h4>"
             if active_apps.empty?
                 io.puts "<p class='text-body-secondary'>Zurzeit hat kein anderer Workspace-Nutzer eine laufende App freigegeben.</p>"
             else

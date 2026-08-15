@@ -169,8 +169,8 @@ function check_server_online(server_tag, watch) {
     .then(response => {
         if (response.status === 200) {
             console.log('Server is online');
-            $('#bu_launch .bi').removeClass('bi-spin');
-            $('#bu_launch').prop('disabled', false);
+            $('.bu-launch-workspace .bi').removeClass('bi-spin');
+            $('.bu-launch-workspace').prop('disabled', false);
             $('#bu_launch_share .bi').removeClass('bi-spin');
             $('#bu_launch_share').prop('disabled', false);
             $('.bu-launch-test .bi').removeClass('bi-spin');
@@ -301,7 +301,8 @@ function install_secondary_autotoc() {
 
     let headings = Array.from(scope.querySelectorAll(levels.join(',')))
         .filter(heading => {
-            return !heading.closest('.autotoc')
+            return heading.getClientRects().length > 0
+                && !heading.closest('.autotoc')
                 && !heading.closest('.autotoc-secondary')
                 && !heading.closest('.header')
                 && !heading.closest('.menu')
@@ -721,9 +722,9 @@ window.addEventListener('load', function() {
         check_server_tag_update(server_tag);
     }
 
-    $('#bu_launch').on('click', function(e) {
-        $('#bu_launch').prop('disabled', true);
-        $('#bu_launch .bi').addClass('bi-spin');
+    $('.bu-launch-workspace').on('click', function(e) {
+        $('.bu-launch-workspace').prop('disabled', true);
+        $('.bu-launch-workspace .bi').addClass('bi-spin');
         api_call('/api/start_server', {}, function(data) {
             console.log(data);
             check_server_tag_update(data.server_tag);
@@ -863,7 +864,7 @@ window.addEventListener('load', function() {
         <div class="container">
             <div style='text-align: center; width: 100%;'>
                 <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="btn btn-success #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='bi bi-box-arrow-in-right'></i>Anmelden</a>
-                <button style='#{(@session_user.nil? || (!@session_user[:show_workspace])) ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success"><i class='bi bi-code-slash'></i>Workspace öffnen</button>
+                <button style='#{(@session_user.nil? || (!@session_user[:show_workspace])) ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success bu-launch-workspace"><i class='bi bi-code-slash'></i>Workspace öffnen</button>
                 <a style='#{(@session_user.nil? || (!@session_user[:show_codebites])) ? 'display: none;' : ''}' href='/codebites' id='bu_codebites' class="btn btn-success"><i class='bi bi-star'></i>Code Bites</a>
                 <button style='#{(@session_user.nil? || (!@session_user[:show_phpmyadmin])) ? 'display: none;' : ''}' id='bu_phpmyadmin' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>phpMyAdmin</button>
                 <button style='#{(@session_user.nil? || (!@session_user[:show_neo4j])) ? 'display: none;' : ''}' id='bu_neo4j' class="btn btn-success" target="_blank"><i class='bi bi-database-fill'></i>Neo4j</button>
