@@ -15,6 +15,7 @@ export default async function globalSetup() {
   const lines = ['> E2E'];
   for (let index = 0; index < userCount; index++)
     lines.push(`E2E Worker ${index} <e2e-${index}@example.com>`);
+  lines.push('E2E Peer <e2e-peer@example.com>');
 
   fs.writeFileSync(
     path.join(invitationsDir, '_e2e.txt'),

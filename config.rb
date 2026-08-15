@@ -169,12 +169,41 @@ docker_compose[:networks] = {
         :driver => 'bridge'
     },
     :user => {
-        :driver => 'bridge'
+        :driver => 'bridge',
+        :enable_ipv6 => false,
     }
 }
 [:nginx, :ruby, :mysql, :neo4j].each do |service_name|
-    docker_compose[:services][service_name][:networks] << 'user'
+    service = docker_compose[:services][service_name]
+    service[:networks] << 'user'
+    service[:labels] ||= []
+    service[:labels] << 'hackschule.workspace.peer_firewall.infrastructure=true'
 end
+
+docker_compose[:services][:peer_firewall] = {
+    :build => './docker/peer-firewall',
+    :network_mode => 'host',
+    :cap_drop => ['ALL'],
+    :cap_add => ['NET_ADMIN'],
+    :security_opt => ['no-new-privileges:true'],
+    :read_only => true,
+    :volumes => ['/var/run/docker.sock:/var/run/docker.sock:ro'],
+    :environment => {
+        'WORKSPACE_NETWORK' => "#{PROJECT_NAME}_user",
+        'INFRASTRUCTURE_LABEL' => 'hackschule.workspace.peer_firewall.infrastructure',
+        'PEER_TCP_PORTS' => '1234,40000-40999',
+        'PEER_UDP_PORTS' => '1234,40000-40999',
+    },
+    :restart => 'always',
+    :healthcheck => {
+        :test => ['CMD-SHELL', 'nft list table inet hackschule_workspace >/dev/null 2>&1'],
+        :interval => '5s',
+        :timeout => '2s',
+        :retries => 5,
+        :start_period => '5s',
+    },
+}
+
 unless DEVELOPMENT
     docker_compose[:services].values.each do |x|
         x[:restart] = :always

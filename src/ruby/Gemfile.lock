@@ -69,7 +69,7 @@ GEM
       connection_pool (~> 3.0)
       tzinfo (~> 2.0)
       zeitwerk (~> 2.6)
-    neo4j_bolt (0.4.1)
+    neo4j_bolt (0.4.2)
       gli (~> 2.22)
       neo4j-ruby-driver (= 6.2.1.beta.4)
       pry (~> 0.15)
@@ -192,7 +192,7 @@ DEPENDENCIES
   mail (~> 2.9)
   minitest (~> 5.27)
   mysql2 (~> 0.5.7)
-  neo4j_bolt (~> 0.4.1)
+  neo4j_bolt (~> 0.4.2)
   nokogiri (~> 1.19)
   puma (~> 8.0)
   rackup (~> 2.3)
@@ -242,7 +242,7 @@ CHECKSUMS
   mustermann (3.1.1) sha256=4c6170c7234d5499c345562ba7c7dfe73e1754286dcc1abb053064d66a127198
   mysql2 (0.5.7) sha256=ba09ede515a0ae8a7192040a1b778c0fb0f025fa5877e9be895cd325fa5e9d7b
   neo4j-ruby-driver (6.2.1.beta.4) sha256=d9276ce0d1c13ee2b6e2d4f88104e7d9e8848da155462849af727b0f6bdbbc54
-  neo4j_bolt (0.4.1) sha256=e29a15a555f2d1e032e9b96e58b72b0e2386a60f42750a63e7f87ef0b50341d4
+  neo4j_bolt (0.4.2) sha256=e6ea10ade4f378ea3f0e15aeccf5d1486a236757f288f139310e189021081eee
   net-imap (0.6.6) sha256=96aa4ee50df3060203e649efc341f53480b791d49e150f2fdebf68beb141a8df
   net-pop (0.1.2) sha256=848b4e982013c15b2f0382792268763b748cce91c9e91e36b0f27ed26420dff3
   net-protocol (0.2.2) sha256=aa73e0cba6a125369de9837b8d8ef82a61849360eba0521900e2c3713aa162a8
