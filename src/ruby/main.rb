@@ -275,7 +275,7 @@ class Main < Sinatra::Base
         timeout = Integer(timeout)
 
         t0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-        STDERR.puts ">>> CMD BEGIN timeout=#{timeout}s: #{command}" if log_command
+        # STDERR.puts ">>> CMD BEGIN timeout=#{timeout}s: #{command}" if log_command
 
         stdout_data = ''
         stderr_data = ''
@@ -342,7 +342,7 @@ class Main < Sinatra::Base
             raise "Command failed with status #{status&.exitstatus}: #{command}\n#{stderr_data}"
         end
 
-        STDERR.puts ">>> CMD END after #{format('%.3f', dt)}s status=#{status&.exitstatus}: #{command}" if log_command
+        # STDERR.puts ">>> CMD END after #{format('%.3f', dt)}s status=#{status&.exitstatus}: #{command}" if log_command
         stdout_data
     end
 
@@ -2406,11 +2406,11 @@ class Main < Sinatra::Base
         end
         chown_user_file.call(myclirc_path)
 
-        STDERR.puts ">>> Getting server state"
+        # STDERR.puts ">>> Getting server state"
         state = with_timing("start_server #{container_name}: docker inspect") do
             get_server_state(container_name)
         end
-        STDERR.puts ">>> Server state is #{state.to_yaml}"
+        # STDERR.puts ">>> Server state is #{state.to_yaml}"
 
         unless state[:running]
             vscode_settings_path = "#{workspace_path}/.local/share/code-server/User/settings.json"
@@ -2521,17 +2521,17 @@ class Main < Sinatra::Base
             end
 
             network_name = "workspace_user"
-            STDERR.puts ">>> Getting IP address for mysql..."
+            # STDERR.puts ">>> Getting IP address for mysql..."
 
             login = email.split('@').first.downcase
             mysql_login = db_email.split('@').first.downcase
             workspace_login = Main.workspace_login_for_email(email)
 
-            STDERR.puts ">>> Login is #{login}, workspace login is #{workspace_login}, MySQL login is #{mysql_login}"
+            # STDERR.puts ">>> Login is #{login}, workspace login is #{workspace_login}, MySQL login is #{mysql_login}"
 
             command = "docker run --cpus=2 -d --rm --hostname workspace -e PUID=1000 -e PGID=1000 -e TZ=Europe/Berlin -e WORKSPACE_USER=#{Shellwords.escape(workspace_login)} -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(db_email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e NEO4J_URI=\"neo4j://neo4j:7687\" -e NEO4J_USERNAME=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)}\" -e NEO4J_DATABASE=\"#{mysql_login}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
 
-            STDERR.puts ">>> Command:\n#{command}"
+            # STDERR.puts ">>> Command:\n#{command}"
 
             with_timing("start_server #{container_name}: docker run") do
                 shell_ok(command, :timeout => shell_timeout(:docker_run))
