@@ -102,15 +102,15 @@
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-text" style="width: 9em;">Benutzername:</span>
-                        <input type="text" class="form-control" readonly value="#{@session_user[:email].split('@').first.downcase}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email].split('@').first.downcase}'><i class='bi bi-copy'></i>Kopieren</button>
+                        <input type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i>Kopieren</button>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-text" style="width: 9em;">Datenbank:</span>
-                        <input type="text" class="form-control" readonly value="#{@session_user[:email].split('@').first.downcase}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email].split('@').first.downcase}'><i class='bi bi-copy'></i>Kopieren</button>
+                        <input type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i>Kopieren</button>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -169,15 +169,15 @@
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-text" style="width: 9em;">Benutzername:</span>
-                        <input type="text" class="form-control" readonly value="#{@session_user[:email].split('@').first.downcase}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email].split('@').first.downcase}'><i class='bi bi-copy'></i>Kopieren</button>
+                        <input type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i>Kopieren</button>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-text" style="width: 9em;">Datenbank:</span>
-                        <input type="text" class="form-control" readonly value="#{@session_user[:email].split('@').first.downcase}">
-                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:email].split('@').first.downcase}'><i class='bi bi-copy'></i>Kopieren</button>
+                        <input type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
+                        <button class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Eintrag in die Zwischenablage kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i>Kopieren</button>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -355,7 +355,7 @@
                     $(`<td>`).text(`${Object.keys(data.result.tables[database]).length}`).appendTo(row);
                     $(`<td>`).text(`${data.result.total[database].rows}`).appendTo(row);
                     $(`<td>`).text(`${bytes_to_str(data.result.total[database].size)}`).appendTo(row);
-                    let is_user_db = database === "#{@session_user[:email].split('@').first.downcase}";
+                    let is_user_db = database === "#{@session_user[:db_login]}";
                     let bu_delete = $(`<button>`).html(`<i class='bi bi-trash-fill'></i>${is_user_db ? 'Zurücksetzen' : 'Löschen'}`).addClass('btn btn-sm btn-danger');
                     bu_delete.on('click', function(e) {
                         showTemplateModal('Datenbank löschen', `Bist du sicher, dass du die Datenbank <code>${database}</code> ${is_user_db ? 'zurücksetzen' : 'löschen'} möchtest? Alle Tabellen und Daten werden gelöscht.`,

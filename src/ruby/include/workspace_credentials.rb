@@ -22,8 +22,4 @@ module WorkspaceCredentials
         end
         password
     end
-
-    def self.mysql_login_for_email(email)
-        email.split('@').first.downcase
-    end
 end

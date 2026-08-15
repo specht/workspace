@@ -1,6 +1,7 @@
 require './include/helper.rb'
 require './include/automatron.rb'
 require './include/atomic_file.rb'
+require './include/database_provisioning.rb'
 require './include/trusted_template.rb'
 require './include/workspace_credentials.rb'
 require 'base64'
@@ -1676,6 +1677,7 @@ class Main < Sinatra::Base
             'Task/name',
             'Test/tag',
             'User/email',
+            'User/db_login',
             'User/server_tag',
             'User/share_tag',
         ]
@@ -1757,8 +1759,8 @@ class Main < Sinatra::Base
 
                 begin
                     STDERR.puts ">>> DB init worker: starting #{key}"
-                    Main.init_mysql(job[:email])
-                    Main.init_neo4j(job[:email])
+                    Main.init_mysql(job[:email], job[:db_login])
+                    Main.init_neo4j(job[:email], job[:db_login])
                     STDERR.puts ">>> DB init worker: finished #{key}"
                 rescue => e
                     STDERR.puts ">>> DB init worker failed for #{key}: #{e.class}: #{e.message}"
@@ -1830,10 +1832,16 @@ class Main < Sinatra::Base
                 end
             end
         end
+        if @session_user && @session_user[:db_login].nil?
+            @session_user[:db_login] = Main.db_login_for_email(
+                @session_user[:email]
+            )
+        end
     end
 
-    def self.enqueue_database_init(email:)
-        key = "#{email}"
+    def self.enqueue_database_init(email:, db_login:)
+        DatabaseIdentity.validate!(db_login)
+        key = "#{email}:#{db_login}"
 
         STDERR.puts ">>> Waiting for DB init mutex to enqueue #{key}..."
         @@db_init_mutex.synchronize do
@@ -1842,7 +1850,8 @@ class Main < Sinatra::Base
             @@db_init_queued_keys << key
             @@db_init_queue << {
                 key: key,
-                email: email
+                email: email,
+                db_login: db_login,
             }
 
             STDERR.puts ">>> DB init queued: #{key}"
@@ -1912,6 +1921,7 @@ class Main < Sinatra::Base
             MERGE (n:User {email: $email})
             RETURN n;
         END_OF_QUERY
+        user[:db_login] = Main.db_login_for_email(email)
         unless user[:name]
             name = @@invitations[email][:name]
             user = neo4j_query_expect_one(<<~END_OF_QUERY, :email => email, :name => name)['n']
@@ -2005,100 +2015,74 @@ class Main < Sinatra::Base
         WorkspaceCredentials.password_for_email(email, salt)
     end
 
-    def self.init_mysql(email)
+    def self.db_login_for_email(email)
+        DatabaseIdentity::Neo4jAllocator.new($neo4j).allocate!(email)
+    end
+
+    def db_login_for_email(email)
+        Main.db_login_for_email(email)
+    end
+
+    def self.init_mysql(email, db_login)
+        DatabaseIdentity.validate!(db_login)
         mysql_password = Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT)
-        login = WorkspaceCredentials.mysql_login_for_email(email)
-        STDERR.puts "Setting up MySQL user #{login} with database #{login}"
+        STDERR.puts "Setting up MySQL user #{db_login} with database #{db_login}"
         Open3.popen2("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
-            stdin.puts "CREATE USER IF NOT EXISTS '#{login}'@'%' IDENTIFIED WITH caching_sha2_password BY '#{mysql_password}';"
-            stdin.puts "ALTER USER '#{login}'@'%' IDENTIFIED WITH caching_sha2_password BY '#{mysql_password}';"
-            stdin.puts "CREATE DATABASE IF NOT EXISTS `#{login}`;"
-            stdin.puts "GRANT ALL ON `#{login}`.* TO '#{login}'@'%';"
-            stdin.puts "FLUSH PRIVILEGES;"
+            DatabaseProvisioning.mysql_statements(db_login, mysql_password)
+                .each { |statement| stdin.puts statement }
             stdin.close
-            wait_thr.value
+            status = wait_thr.value
+            raise "MySQL provisioning failed for #{db_login}" unless status.success?
         end
     end
 
     def init_mysql(email)
-        Main.init_mysql(email)
+        Main.init_mysql(email, db_login_for_email(email))
     end
 
     def reset_mysql(email)
-        login = email.split('@').first.downcase
-        STDERR.puts "Removing database for MySQL user #{login}"
+        db_login = db_login_for_email(email)
+        STDERR.puts "Removing database for MySQL user #{db_login}"
         Open3.popen2("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
-            stdin.puts "DROP DATABASE IF EXISTS `#{login}`;"
+            stdin.puts "DROP DATABASE IF EXISTS `#{db_login}`;"
             stdin.close
-            wait_thr.value
+            status = wait_thr.value
+            raise "MySQL reset failed for #{db_login}" unless status.success?
         end
-        init_mysql(email)
+        Main.init_mysql(email, db_login)
     end
 
-    def self.init_neo4j(email)
+    def self.init_neo4j(email, db_login)
+        DatabaseIdentity.validate!(db_login)
         neo4j_password = Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)
-        login = email.split('@').first.downcase
-        database = login
-        STDERR.puts "Setting up Neo4j user #{login} with database #{login}"
+        STDERR.puts "Setting up Neo4j user #{db_login} with database #{db_login}"
 
         Open3.popen2("docker exec -i workspace_neo4j_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
-            stdin.puts <<~END_OF_STRING
-                CREATE USER `#{login}` IF NOT EXISTS SET PLAINTEXT PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED;
-                CREATE DATABASE `#{database}` IF NOT EXISTS;
-                CREATE ROLE `#{login}` IF NOT EXISTS;
-                GRANT ACCESS ON DATABASE `#{database}` TO `#{login}`;
-                GRANT ALL ON GRAPH `#{database}` TO `#{login}`;
-                GRANT CREATE NEW NODE LABEL ON DATABASE `#{database}` TO `#{login}`;
-                GRANT CREATE NEW RELATIONSHIP TYPE ON DATABASE `#{database}` TO `#{login}`;
-                GRANT CREATE NEW PROPERTY NAME ON DATABASE `#{database}` TO `#{login}`;
-                GRANT CREATE CONSTRAINTS ON DATABASE `#{database}` TO `#{login}`;
-                GRANT DROP CONSTRAINTS ON DATABASE `#{database}` TO `#{login}`;
-                GRANT SHOW CONSTRAINTS ON DATABASE `#{database}` TO `#{login}`;
-                GRANT CREATE INDEXES ON DATABASE `#{database}` TO `#{login}`;
-                GRANT DROP INDEXES ON DATABASE `#{database}` TO `#{login}`;
-                GRANT SHOW INDEXES ON DATABASE `#{database}` TO `#{login}`;
-                GRANT ROLE `#{login}` TO `#{login}`;
-                ALTER USER `#{login}` SET HOME DATABASE `#{database}`;
-            END_OF_STRING
+            DatabaseProvisioning.neo4j_statements(db_login, neo4j_password)
+                .each { |statement| stdin.puts statement }
             stdin.close
-            wait_thr.value
+            status = wait_thr.value
+            raise "Neo4j provisioning failed for #{db_login}" unless status.success?
         end
     end
 
     def init_neo4j(email)
-        Main.init_neo4j(email)
+        Main.init_neo4j(email, db_login_for_email(email))
     end
 
     def reset_neo4j(email)
-        neo4j_password = Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)
-        login = email.split('@').first.downcase
-        database = "#{login}"
+        db_login = db_login_for_email(email)
         Open3.popen2("docker exec -i workspace_neo4j_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
             stdin.puts <<~END_OF_STRING
-                DROP DATABASE `#{database}` IF EXISTS;
-                DROP USER `#{login}` IF EXISTS;
-                DROP ROLE `#{login}` IF EXISTS;
-                CREATE USER `#{login}` IF NOT EXISTS SET PLAINTEXT PASSWORD '#{neo4j_password}' CHANGE NOT REQUIRED;
-                CREATE DATABASE `#{database}` IF NOT EXISTS;
-                CREATE ROLE `#{login}` IF NOT EXISTS;
-                GRANT ACCESS ON DATABASE `#{database}` TO `#{login}`;
-                GRANT ALL ON GRAPH `#{database}` TO `#{login}`;
-                GRANT CREATE NEW NODE LABEL ON DATABASE `#{database}` TO `#{login}`;
-                GRANT CREATE NEW RELATIONSHIP TYPE ON DATABASE `#{database}` TO `#{login}`;
-                GRANT CREATE NEW PROPERTY NAME ON DATABASE `#{database}` TO `#{login}`;
-                GRANT CREATE CONSTRAINTS ON DATABASE `#{database}` TO `#{login}`;
-                GRANT DROP CONSTRAINTS ON DATABASE `#{database}` TO `#{login}`;
-                GRANT SHOW CONSTRAINTS ON DATABASE `#{database}` TO `#{login}`;
-                GRANT CREATE INDEXES ON DATABASE `#{database}` TO `#{login}`;
-                GRANT DROP INDEXES ON DATABASE `#{database}` TO `#{login}`;
-                GRANT SHOW INDEXES ON DATABASE `#{database}` TO `#{login}`;
-                GRANT ROLE `#{login}` TO `#{login}`;
-                ALTER USER `#{login}` SET HOME DATABASE `#{database}`;
+                DROP DATABASE `#{db_login}` IF EXISTS;
+                DROP USER `#{db_login}` IF EXISTS;
+                DROP ROLE `#{db_login}` IF EXISTS;
             END_OF_STRING
             stdin.close
-            wait_thr.value
+            status = wait_thr.value
+            raise "Neo4j reset failed for #{db_login}" unless status.success?
         end
-        init_neo4j(email)
+        Main.init_neo4j(email, db_login)
     end
 
     def with_timing(label)
@@ -2151,6 +2135,13 @@ class Main < Sinatra::Base
     def start_server(email, test_tag = nil, server_tag: nil)
         email_with_test_tag = "#{email}#{test_tag}"
         container_name = fs_tag_for_email(email_with_test_tag)
+        persisted_db_login = db_login_for_email(email)
+        database_email = test_tag ? "#{email}-#{test_tag}" : email
+        database_login = if test_tag
+            DatabaseIdentity.ephemeral_login(persisted_db_login, test_tag)
+        else
+            persisted_db_login
+        end
 
         STDERR.puts ">>> Starting server with email #{email_with_test_tag} and container name #{container_name}"
 
@@ -2210,18 +2201,11 @@ class Main < Sinatra::Base
         chown_user_file.call(gitconfig_path)
 
         my_cnf_path = "#{workspace_path}/.my.cnf"
-        unless File.exist?(my_cnf_path)
-            File.open(my_cnf_path, 'w') do |f|
-                f.puts <<~END_OF_STRING
-                    [client]
-                    user = #{email.split('@').first.downcase}
-                    password = #{Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT)}
-                    host = mysql
-                    database = #{email.split('@').first.downcase}
-                    port = 3306
-                END_OF_STRING
-            end
-        end
+        DatabaseProvisioning.sync_my_cnf(
+            my_cnf_path,
+            database_login,
+            Main.gen_password_for_email(database_email, MYSQL_PASSWORD_SALT),
+        )
         chown_user_file.call(my_cnf_path)
 
         myclirc_path = "#{workspace_path}/.myclirc"
@@ -2453,9 +2437,11 @@ class Main < Sinatra::Base
                 chown_user_file.call(coder_config_path)
             end
 
-            db_email = test_tag ? "#{email}-#{test_tag}" : email
-            STDERR.puts ">>> Enqueuing database initialization for #{db_email}"
-            Main.enqueue_database_init(email: db_email)
+            STDERR.puts ">>> Enqueuing database initialization for #{database_login}"
+            Main.enqueue_database_init(
+                :email => database_email,
+                :db_login => database_login,
+            )
 
             if test_tag
                 test_init_mark_path = "#{workspace_path}/.test_init"
@@ -2508,13 +2494,16 @@ class Main < Sinatra::Base
             network_name = "workspace_user"
             # STDERR.puts ">>> Getting IP address for mysql..."
 
-            login = email.split('@').first.downcase
-            mysql_login = db_email.split('@').first.downcase
             workspace_login = Main.workspace_login_for_email(email)
+            database_environment = DatabaseProvisioning.workspace_environment(
+                database_login,
+                Main.gen_password_for_email(database_email, MYSQL_PASSWORD_SALT),
+                Main.gen_password_for_email(database_email, NEO4J_PASSWORD_SALT),
+            )
 
-            # STDERR.puts ">>> Login is #{login}, workspace login is #{workspace_login}, MySQL login is #{mysql_login}"
+            # STDERR.puts ">>> Workspace login is #{workspace_login}, database login is #{database_login}"
 
-            command = "docker run --cpus=2 -d --rm --hostname workspace -e PUID=1000 -e PGID=1000 -e TZ=Europe/Berlin -e WORKSPACE_USER=#{Shellwords.escape(workspace_login)} -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"mysql\" -e MYSQL_USER=\"#{mysql_login}\" -e MYSQL_PASSWORD=\"#{Main.gen_password_for_email(db_email, MYSQL_PASSWORD_SALT)}\" -e MYSQL_DATABASE=\"#{mysql_login}\" -e NEO4J_URI=\"neo4j://neo4j:7687\" -e NEO4J_USERNAME=\"#{mysql_login}\" -e NEO4J_PASSWORD=\"#{Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT)}\" -e NEO4J_DATABASE=\"#{mysql_login}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
+            command = "docker run --cpus=2 -d --rm --hostname workspace -e PUID=1000 -e PGID=1000 -e TZ=Europe/Berlin -e WORKSPACE_USER=#{Shellwords.escape(workspace_login)} -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"#{database_environment['MYSQL_HOST']}\" -e MYSQL_USER=\"#{database_environment['MYSQL_USER']}\" -e MYSQL_PASSWORD=\"#{database_environment['MYSQL_PASSWORD']}\" -e MYSQL_DATABASE=\"#{database_environment['MYSQL_DATABASE']}\" -e NEO4J_URI=\"#{database_environment['NEO4J_URI']}\" -e NEO4J_USERNAME=\"#{database_environment['NEO4J_USERNAME']}\" -e NEO4J_PASSWORD=\"#{database_environment['NEO4J_PASSWORD']}\" -e NEO4J_DATABASE=\"#{database_environment['NEO4J_DATABASE']}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
 
             # STDERR.puts ">>> Command:\n#{command}"
 
@@ -3803,7 +3792,7 @@ class Main < Sinatra::Base
 
         result = {}
         databases = []
-        databases << @session_user[:email].split('@').first.downcase
+        databases << @session_user[:db_login]
         neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email]}).each do |row|
             MATCH (u:User {email: $email})-[:HAS]->(d:Database {type: 'mysql'})
             RETURN d.name AS name;
@@ -3846,7 +3835,7 @@ class Main < Sinatra::Base
                 username: 'root',
                 password: MYSQL_ROOT_PASSWORD
             )
-            login = @session_user[:email].split('@').first.downcase
+            login = @session_user[:db_login]
             client.query("CREATE DATABASE #{database_name};")
             client.query("GRANT ALL ON `#{database_name}`.* TO '#{login}'@'%';")
             client.query("FLUSH PRIVILEGES;")
@@ -3868,14 +3857,14 @@ class Main < Sinatra::Base
                 username: 'root',
                 password: MYSQL_ROOT_PASSWORD
             )
-            is_user_db = (data[:database] == @session_user[:email].split('@').first.downcase)
+            is_user_db = (data[:database] == @session_user[:db_login])
             client.query("DROP DATABASE IF EXISTS `#{data[:database]}`;")
             neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :database => data[:database]})
                 MATCH (u:User {email: $email})-[:HAS]->(d:Database {type: 'mysql', name: $database})
                 DETACH DELETE d;
             END_OF_STRING
             if is_user_db
-                login = @session_user[:email].split('@').first.downcase
+                login = @session_user[:db_login]
                 client.query("CREATE DATABASE `#{login}`;")
                 client.query("GRANT ALL ON `#{login}`.* TO '#{login}'@'%';")
                 client.query("FLUSH PRIVILEGES;")
