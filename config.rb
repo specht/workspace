@@ -117,8 +117,12 @@ if PROFILE.include?(:neo4j)
 end
 
 docker_compose[:services][:mysql] = {
-    :image => 'mysql/mysql-server:8.0.32',
-    :command => ["--require_secure_transport=OFF", "--mysqlx=0"],
+    :image => 'mysql:8.4.11',
+    :command => [
+        "--require_secure_transport=OFF",
+        "--mysqlx=0",
+        "--mysql-native-password=ON"
+    ],
     :volumes => ["#{MYSQL_DATA_PATH}:/var/lib/mysql"],
     :user => '1000',
     :restart => 'always',

@@ -2,6 +2,7 @@ require './include/helper.rb'
 require './include/automatron.rb'
 require './include/atomic_file.rb'
 require './include/trusted_template.rb'
+require './include/workspace_credentials.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
@@ -613,7 +614,7 @@ class Main < Sinatra::Base
             running_servers[fs_tag][:live_apps][row['s.tag']] = row['s.port'].to_i
         end
 
-        STDERR.puts ">>> Got running servers: #{running_servers.to_yaml}"
+        # STDERR.puts ">>> Got running servers: #{running_servers.to_yaml}"
 
         # STDERR.puts "watch_tag_ip_pairs:"
         # STDERR.puts watch_tag_ip_pairs.join("\n")
@@ -2001,32 +2002,16 @@ class Main < Sinatra::Base
     end
 
     def self.gen_password_for_email(email, salt)
-        chars = 'BCDFGHJKMNPQRSTVWXYZ23456789'.split('')
-        sha2 = Digest::SHA256.new()
-        sha2 << salt
-        sha2 << email
-        random = Random.new(sha2.hexdigest.to_i(16))
-        password = ''
-        8.times do
-            c = chars.sample(:random => random).dup
-            c.downcase! if random.rand(2) == 1
-            password += c
-        end
-        password += '-'
-        4.times do
-            c = chars.sample(:random => random).dup
-            c.downcase! if random.rand(2) == 1
-            password += c
-        end
-        password
+        WorkspaceCredentials.password_for_email(email, salt)
     end
 
     def self.init_mysql(email)
         mysql_password = Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT)
-        login = email.split('@').first.downcase
+        login = WorkspaceCredentials.mysql_login_for_email(email)
         STDERR.puts "Setting up MySQL user #{login} with database #{login}"
         Open3.popen2("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
-            stdin.puts "CREATE USER IF NOT EXISTS '#{login}'@'%' identified by '#{mysql_password}';"
+            stdin.puts "CREATE USER IF NOT EXISTS '#{login}'@'%' IDENTIFIED WITH caching_sha2_password BY '#{mysql_password}';"
+            stdin.puts "ALTER USER '#{login}'@'%' IDENTIFIED WITH caching_sha2_password BY '#{mysql_password}';"
             stdin.puts "CREATE DATABASE IF NOT EXISTS `#{login}`;"
             stdin.puts "GRANT ALL ON `#{login}`.* TO '#{login}'@'%';"
             stdin.puts "FLUSH PRIVILEGES;"
@@ -2118,10 +2103,10 @@ class Main < Sinatra::Base
 
     def with_timing(label)
         t0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-        STDERR.puts ">>> BEGIN #{label}"
+        # STDERR.puts ">>> BEGIN #{label}"
         result = yield
         dt = Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0
-        STDERR.puts ">>> END #{label} (#{format('%.3f', dt)}s)"
+        STDERR.puts ">>> COMPLETED #{label} (#{format('%.3f', dt)}s)"
         result
     rescue => e
         dt = Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0 rescue 0
