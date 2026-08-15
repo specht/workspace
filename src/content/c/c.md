@@ -10,7 +10,7 @@ image: c-logo.png
 </div>
 
 <p class='abstract'>
-Die Programmiersprache C wurde in den frühen 1970er Jahren von Dennis Ritchie bei Bell Labs entwickelt, um das Unix-Betriebssystem zu implementieren. C wurde für die Systemprogrammierung und die Entwicklung von Betriebssystemen verwendet, wobei Unix eines der bekanntesten Beispiele ist. Weitere bekannte Softwareprojekte, die in C geschrieben wurden, sind der Linux-Kernel, der Webserver Apache, der Python-Interpreter und das 3D-Computerspiele wie Doom.
+Die Programmiersprache C wurde in den frühen 1970er Jahren von Dennis Ritchie bei Bell Labs entwickelt, um das Unix-Betriebssystem zu implementieren. C wurde für die Systemprogrammierung und die Entwicklung von Betriebssystemen verwendet, wobei Unix eines der bekanntesten Beispiele ist. Weitere bekannte Softwareprojekte, die in C geschrieben wurden, sind der Linux-Kernel, der Webserver Apache, der Python-Interpreter und 3D-Computerspiele wie Doom.
 </p>
 
 Heutzutage ist C immer noch äußerst relevant und weit verbreitet. Sie bildet die Grundlage für viele moderne Programmiersprachen wie C++, C#, und Objective-C und wird weiterhin in der Entwicklung von Betriebssystemen, eingebetteten Systemen, Datenbanken und anderen Performance-kritischen Anwendungen eingesetzt. Die Sprache ist bekannt für ihre Effizienz, Portabilität und Nähe zur Hardware, was sie zu einer bevorzugten Wahl für Anwendungen macht, die eine hohe Leistung erfordern.
