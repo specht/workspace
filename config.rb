@@ -120,8 +120,8 @@ docker_compose[:services][:mysql] = {
     :image => 'mysql:8.4.11',
     :command => [
         "--require_secure_transport=OFF",
-        "--mysqlx=0",
-        "--mysql-native-password=ON"
+        "--mysqlx=0"
+        # "--mysql-native-password=ON"
     ],
     :volumes => ["#{MYSQL_DATA_PATH}:/var/lib/mysql"],
     :user => '1000',
