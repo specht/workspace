@@ -200,7 +200,7 @@ docker_compose[:services][:peer_firewall] = {
     },
     :restart => 'always',
     :healthcheck => {
-        :test => ['CMD-SHELL', 'nft list table inet hackschule_workspace >/dev/null 2>&1'],
+        :test => ['CMD-SHELL', 'nft list table bridge hackschule_workspace >/dev/null 2>&1'],
         :interval => '5s',
         :timeout => '2s',
         :retries => 5,
