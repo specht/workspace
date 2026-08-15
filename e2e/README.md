@@ -119,3 +119,68 @@ number of workers:
 ```bash
 E2E_USER_COUNT=16 E2E_WORKERS=16 npm test
 ```
+
+## Profile student-container resources
+
+Resource-limit values should be based on measurements from the real student
+container, not on guesses. The opt-in resource profiler launches an E2E student
+through the normal Workspace UI, keeps the VS Code session connected, and then
+runs representative commands inside that same `hs_code_*` container.
+
+It deliberately does **not** run as part of `npm test`. Run it explicitly on a
+Linux Docker host with cgroup v2:
+
+```bash
+npm run profile:resources
+```
+
+For measurements that will be used to choose production limits, repeat each
+workload a few times:
+
+```bash
+E2E_RESOURCE_RUNS=3 npm run profile:resources
+```
+
+`E2E_RESOURCE_SAMPLE_MS` controls the cgroup polling interval and defaults to
+10 ms. The profiler reads the container's cgroup from the host instead of
+starting a sampler process inside the container, so the measurement itself does
+not inflate the container's PID count.
+
+The current workloads are:
+
+- the real C `bubblesort.c` tutorial compiled with GCC;
+- the real C++ `bubblesort.cpp` tutorial compiled with G++;
+- a clone and `make` of the PixelRAM starter, exercising Emscripten;
+- a fresh Flutter project built for Web separately in debug and release modes;
+- a fresh minimal SvelteKit project built with `npm run build`;
+- the LaTeX tutorial's larger `wpgtr.tex` document through
+  `latexmk -lualatex`;
+- the real Python and Ruby Bubblesort tutorial programs, repeated sequentially
+  so the short interpreter runs are observable by the sampler.
+
+Preparation such as cloning and project scaffolding is kept outside the timed
+build where practical. Every measured run records both the idle baseline and
+the whole-container peak, which makes accumulated caches and the code-server
+baseline visible instead of hiding them.
+
+The profiler reads cgroup-v2 `memory.current` and `pids.current`. The memory
+counter is the whole cgroup usage, including descendants and reclaimable page
+cache. The PID counter is the kernel task/thread count relevant to Docker's
+`--pids-limit`, so it may be higher than a simple `ps` process count.
+
+Results are printed to the terminal and written to:
+
+```text
+e2e/test-results/resource-profile.json
+e2e/test-results/resource-profile.csv
+```
+
+Both files are also attached to the Playwright report. The JSON includes the
+container image, current CPU/memory/PID settings, tool versions, per-run
+baselines and peaks, and the highest values observed. It intentionally does not
+turn those measurements into proposed limits.
+
+The profiler refuses to run if the student container already has a memory or
+PID limit, because that would make the initial peak measurement circular. After
+limits have been chosen and added separately, use the normal E2E suite to verify
+that the workloads still pass under those limits.
