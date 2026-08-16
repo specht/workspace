@@ -335,7 +335,7 @@ async function ensureContext() {
     const browser = await ensureBrowser();
     context = await browser.newContext({
         viewport: { width: DEFAULT_PROFILE.width, height: DEFAULT_PROFILE.height },
-        deviceScaleFactor: zoom,
+        deviceScaleFactor: DEFAULT_PROFILE.zoom,
         colorScheme: DEFAULT_PROFILE.colorScheme,
         acceptDownloads: false,
     });

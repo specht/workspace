@@ -17,7 +17,7 @@ TUTORIAL_SCREENSHOT = {
     :workspace_user => 'student',
     :width => 1853,
     :height => 929,
-    :zoom => 1.5,
+    :zoom => 1.75,
     :color_scheme => 'dark',
 }.freeze
 LOGS_PATH = DEVELOPMENT ? './logs' : "/home/#{ENV['USER']}/logs/#{PROJECT_NAME}"
