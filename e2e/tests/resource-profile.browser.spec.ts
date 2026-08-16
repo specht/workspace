@@ -86,6 +86,7 @@ type Workload = {
   timeoutMs: number;
   prepare?: () => Promise<void>;
   beforeRun?: () => Promise<void>;
+  afterRun?: () => Promise<void>;
 };
 
 function positiveIntegerEnv(
@@ -634,6 +635,17 @@ if (PROFILE_ENABLED) {
       const latexDir =
         `${PROFILE_ROOT}/latex-tutorial`;
 
+      const stopFlutterGradle = async () => {
+        await expectCommandSuccess(
+          container,
+          './android/gradlew --stop',
+          {
+            workdir: flutterDir,
+            timeoutMs: 60_000,
+          },
+        );
+      };
+
       const workloads: Workload[] = [
         {
           id: 'c-gcc',
@@ -744,6 +756,7 @@ if (PROFILE_ENABLED) {
           workdir: flutterDir,
           timeoutMs: 360_000,
           beforeRun: async () => {
+            await stopFlutterGradle();
             await expectCommandSuccess(
               container,
               'rm -rf build .dart_tool/flutter_build android/.gradle',
@@ -752,6 +765,7 @@ if (PROFILE_ENABLED) {
               },
             );
           },
+          afterRun: stopFlutterGradle,
         },
         {
           id: 'flutter-android-release',
@@ -762,6 +776,7 @@ if (PROFILE_ENABLED) {
           workdir: flutterDir,
           timeoutMs: 360_000,
           beforeRun: async () => {
+            await stopFlutterGradle();
             await expectCommandSuccess(
               container,
               'rm -rf build .dart_tool/flutter_build android/.gradle',
@@ -770,6 +785,7 @@ if (PROFILE_ENABLED) {
               },
             );
           },
+          afterRun: stopFlutterGradle,
         },
         {
           id: 'svelte-npm',
@@ -893,28 +909,34 @@ if (PROFILE_ENABLED) {
           await test.step(
             `${workload.description} — run ${run}/${RUNS_PER_WORKLOAD}`,
             async () => {
-              if (workload.beforeRun)
-                await workload.beforeRun();
+              try {
+                if (workload.beforeRun)
+                  await workload.beforeRun();
 
-              /* Let short-lived cleanup/preparation processes leave the cgroup. */
-              await sleep(250);
+                /* Let short-lived cleanup/preparation processes leave the cgroup. */
+                await sleep(250);
 
-              const result = await profileCommand(
-                container,
-                cgroup.directory,
-                workload,
-                run,
-              );
-              results.push(result);
+                const result = await profileCommand(
+                  container,
+                  cgroup.directory,
+                  workload,
+                  run,
+                );
+                results.push(result);
 
-              console.log(
-                `[resource-profile] ${workload.id} run=${run} ` +
-                `peak=${bytesToMiB(result.peakMemoryBytes)} MiB ` +
-                `delta=${bytesToMiB(result.deltaMemoryBytes)} MiB ` +
-                `pids=${result.peakPids} ` +
-                `baseline_pids=${result.baselinePids} ` +
-                `duration=${result.durationMs} ms`,
-              );
+                console.log(
+                  `[resource-profile] ${workload.id} run=${run} ` +
+                  `peak=${bytesToMiB(result.peakMemoryBytes)} MiB ` +
+                  `delta=${bytesToMiB(result.deltaMemoryBytes)} MiB ` +
+                  `pids=${result.peakPids} ` +
+                  `baseline_pids=${result.baselinePids} ` +
+                  `duration=${result.durationMs} ms`,
+                );
+              }
+              finally {
+                if (workload.afterRun)
+                  await workload.afterRun();
+              }
             },
           );
         }

@@ -160,9 +160,14 @@ The current workloads are:
   so the short interpreter runs are observable by the sampler.
 
 Preparation such as cloning and project scaffolding is kept outside the timed
-build where practical. Every measured run records both the idle baseline and
-the whole-container peak, which makes accumulated caches and the code-server
-baseline visible instead of hiding them.
+build where practical. Long-lived Gradle daemons are stopped before and after
+Android runs so their heap and threads do not become the baseline for later
+measurements. Reclaimable filesystem page cache remains visible to
+`memory.current` and may still accumulate across workloads.
+
+Every measured run records both the idle baseline and the whole-container peak,
+which makes accumulated caches and the code-server baseline visible instead of
+hiding them.
 
 The profiler reads cgroup-v2 `memory.current` and `pids.current`. The memory
 counter is the whole cgroup usage, including descendants and reclaimable page
