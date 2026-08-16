@@ -2173,15 +2173,26 @@ class Main < Sinatra::Base
     WORKSPACE_UID = 1000
     WORKSPACE_GID = 1000
 
-    # Turn the local part of an email address into a portable Unix login name.
-    # The container init script validates this again before renaming the image's
-    # build-time `abc` account. Keep this deterministic so logs are readable.
-    def self.workspace_login_for_email(email)
-        local = email.to_s.split('@', 2).first.to_s.downcase
-        login = local.gsub(/[^a-z0-9._-]+/, '-').gsub(/\A[.-]+|[.-]+\z/, '')
+    # Turn the requested value into a portable Unix login name. The container
+    # init script validates this again before renaming the image's build-time
+    # `abc` account. Keep this deterministic so logs are readable.
+    def self.sanitize_workspace_login(value)
+        login = value.to_s.downcase
+        login = login.gsub(/[^a-z0-9._-]+/, '-').gsub(/\A[.-]+|[.-]+\z/, '')
         login = 'student' if login.empty?
         login = "user-#{login}" unless login.match?(/\A[a-z_]/)
         login[0, 32]
+    end
+
+    def self.workspace_login_for_email(email)
+        screenshot_email = ENV['TUTORIAL_SCREENSHOT_EMAIL'].to_s
+        screenshot_user = ENV['TUTORIAL_SCREENSHOT_WORKSPACE_USER'].to_s
+        if DEVELOPMENT && !screenshot_email.empty? &&
+            email.to_s.casecmp?(screenshot_email) && !screenshot_user.empty?
+            return sanitize_workspace_login(screenshot_user)
+        end
+
+        sanitize_workspace_login(email.to_s.split('@', 2).first)
     end
 
     def workspace_login_for_email(email)

@@ -11,6 +11,15 @@ STAGING = File::dirname(File::expand_path(__FILE__)).include?('staging')
 PROJECT_NAME = 'workspace'
 DEV_NGINX_PORT = 8025
 DEV_NEO4J_PORT = 8021
+TUTORIAL_SCREENSHOT = {
+    :email => 'screenshots@example.com',
+    :login_code => '123456',
+    :workspace_user => 'student',
+    :width => 1853,
+    :height => 929,
+    :zoom => 1.5,
+    :color_scheme => 'dark',
+}.freeze
 LOGS_PATH = DEVELOPMENT ? './logs' : "/home/#{ENV['USER']}/logs/#{PROJECT_NAME}"
 DATA_PATH = DEVELOPMENT ? './data' : "/mnt/hackschule/#{PROJECT_NAME}"
 MYSQL_DATA_PATH = File.join(DATA_PATH, 'mysql')
@@ -72,6 +81,10 @@ if PROFILE.include?(:dynamic)
     env = []
     env << 'DEVELOPMENT=1' if DEVELOPMENT
     env << 'STAGING=1' if STAGING
+    if DEVELOPMENT
+        env << "TUTORIAL_SCREENSHOT_EMAIL=#{TUTORIAL_SCREENSHOT[:email]}"
+        env << "TUTORIAL_SCREENSHOT_WORKSPACE_USER=#{TUTORIAL_SCREENSHOT[:workspace_user]}"
+    end
     docker_compose[:services][:ruby] = {
         :build => './docker/ruby',
         :volumes => ['./src:/src:ro',
@@ -110,8 +123,13 @@ if DEVELOPMENT && PROFILE.include?(:dynamic) && PROFILE.include?(:static)
         ],
         :environment => {
             'TUTORIAL_SCREENSHOT_BASE_URL' => WEB_ROOT,
-            'TUTORIAL_SCREENSHOT_EMAIL' => 'screenshots@example.com',
-            'TUTORIAL_SCREENSHOT_LOGIN_CODE' => '123456',
+            'TUTORIAL_SCREENSHOT_EMAIL' => TUTORIAL_SCREENSHOT[:email],
+            'TUTORIAL_SCREENSHOT_LOGIN_CODE' => TUTORIAL_SCREENSHOT[:login_code],
+            'TUTORIAL_SCREENSHOT_WORKSPACE_USER' => TUTORIAL_SCREENSHOT[:workspace_user],
+            'TUTORIAL_SCREENSHOT_WIDTH' => TUTORIAL_SCREENSHOT[:width].to_s,
+            'TUTORIAL_SCREENSHOT_HEIGHT' => TUTORIAL_SCREENSHOT[:height].to_s,
+            'TUTORIAL_SCREENSHOT_ZOOM' => TUTORIAL_SCREENSHOT[:zoom].to_s,
+            'TUTORIAL_SCREENSHOT_COLOR_SCHEME' => TUTORIAL_SCREENSHOT[:color_scheme],
         },
         :extra_hosts => [
             'host.docker.internal:host-gateway',
@@ -256,7 +274,7 @@ FileUtils::mkpath(INVITATIONS_PATH)
 if DEVELOPMENT
     File.write(
         File.join(INVITATIONS_PATH, '_tutorial_screenshots.txt'),
-        "> Tutorial Screenshots\nTutorial Screenshots <screenshots@example.com>\n"
+        "> Tutorial Screenshots\nTutorial Screenshots <#{TUTORIAL_SCREENSHOT[:email]}>\n"
     )
 end
 template_path = File.join(INVITATIONS_PATH, '_template.txt')

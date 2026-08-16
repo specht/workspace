@@ -9,20 +9,80 @@ import { chromium } from 'playwright';
 
 const execFileAsync = promisify(execFile);
 
+function positiveIntegerEnv(name, fallback) {
+    const value = Number.parseInt(process.env[name] || `${fallback}`, 10);
+    if (!Number.isInteger(value) || value <= 0) {
+        throw new Error(`${name} must be a positive integer`);
+    }
+    return value;
+}
+
+function positiveNumberEnv(name, fallback) {
+    const value = Number.parseFloat(process.env[name] || `${fallback}`);
+    if (!Number.isFinite(value) || value <= 0) {
+        throw new Error(`${name} must be a positive number`);
+    }
+    return value;
+}
+
+function colorSchemeEnv(name, fallback) {
+    const value = (process.env[name] || fallback).trim().toLowerCase();
+    if (value !== 'light' && value !== 'dark') {
+        throw new Error(`${name} must be "light" or "dark"`);
+    }
+    return value;
+}
+
 const CONTENT_ROOT = '/content';
 const USER_ROOT = '/user';
 const BASE_URL = process.env.TUTORIAL_SCREENSHOT_BASE_URL || 'http://workspace.test:8025';
 const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'screenshots@example.com';
+const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
-const GENERATOR_VERSION = 1;
+const GENERATOR_VERSION = 2;
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
 const DEFAULT_PROFILE = Object.freeze({
-    width: 1853,
-    height: 929,
-    zoom: 1,
+    width: positiveIntegerEnv('TUTORIAL_SCREENSHOT_WIDTH', 1853),
+    height: positiveIntegerEnv('TUTORIAL_SCREENSHOT_HEIGHT', 929),
+    zoom: positiveNumberEnv('TUTORIAL_SCREENSHOT_ZOOM', 1.5),
+    colorScheme: colorSchemeEnv('TUTORIAL_SCREENSHOT_COLOR_SCHEME', 'dark'),
 });
+const WORKBENCH_PARTS = Object.freeze({
+    'left-sidebar': {
+        selector: '.part.sidebar',
+        shortcut: 'Control+B',
+    },
+    'right-sidebar': {
+        selector: '.part.auxiliarybar',
+        shortcut: 'Control+Alt+B',
+    },
+    'bottom-panel': {
+        selector: '.part.panel',
+        shortcut: 'Control+J',
+    },
+});
+const SIMPLE_ACTIONS = new Set([
+    'close-folder',
+    'clone-confirm-url',
+    'clone-accept-destination',
+    'clone-open',
+    'go-live',
+    'preview-reload',
+    'preview-reset',
+    'show-left-sidebar',
+    'hide-left-sidebar',
+    'show-right-sidebar',
+    'hide-right-sidebar',
+    'show-bottom-panel',
+    'hide-bottom-panel',
+]);
+const WORKSPACE_SCREENSHOT_STYLE = `
+.notifications-toasts {
+    display: none !important;
+}
+`;
 
 let browserPromise = null;
 let context = null;
@@ -111,9 +171,7 @@ function parseRecipe(text) {
         const line = rawLine.trim();
         if (!line || line.startsWith('#')) continue;
 
-        if (line === 'close-folder' || line === 'clone-confirm-url' ||
-            line === 'clone-accept-destination' || line === 'clone-open' ||
-            line === 'go-live' || line === 'preview-reload' || line === 'preview-reset') {
+        if (SIMPLE_ACTIONS.has(line)) {
             recipe.actions.push({ type: line });
             continue;
         }
@@ -270,7 +328,7 @@ async function ensureContext() {
     context = await browser.newContext({
         viewport: { width: DEFAULT_PROFILE.width, height: DEFAULT_PROFILE.height },
         deviceScaleFactor: 1,
-        colorScheme: 'light',
+        colorScheme: DEFAULT_PROFILE.colorScheme,
         acceptDownloads: false,
     });
     dashboard = await context.newPage();
@@ -383,6 +441,21 @@ async function waitForWorkspaceWorkbench(page, workspaceUrl) {
                         state: 'visible',
                         timeout: Math.min(30_000, remaining),
                     });
+                    await page.waitForFunction(
+                        colorScheme => {
+                            const workbench = document.querySelector('.monaco-workbench');
+                            if (!workbench) return false;
+                            if (colorScheme === 'dark') {
+                                return workbench.classList.contains('vs-dark') ||
+                                    workbench.classList.contains('hc-black');
+                            }
+                            return workbench.classList.contains('vs') ||
+                                workbench.classList.contains('hc-light');
+                        },
+                        DEFAULT_PROFILE.colorScheme,
+                        { timeout: Math.min(30_000, remaining) },
+                    );
+                    await page.waitForTimeout(250);
                     return;
                 } catch (error) {
                     lastError = error.message;
@@ -454,15 +527,37 @@ function quickInput(page) {
     return page.locator('input.quick-input-box').last();
 }
 
+async function locatorIsVisible(locator) {
+    return locator.isVisible().catch(() => false);
+}
+
+async function setWorkbenchPartVisible(partName, visible) {
+    const spec = WORKBENCH_PARTS[partName];
+    if (!spec) throw new Error(`Unknown workbench part: ${partName}`);
+
+    const part = workspace.locator(spec.selector).first();
+    if ((await locatorIsVisible(part)) === visible) return;
+
+    await workspace.keyboard.press(spec.shortcut);
+    await part.waitFor({
+        state: visible ? 'visible' : 'hidden',
+        timeout: 10_000,
+    });
+    await workspace.waitForTimeout(150);
+}
+
 async function closeFolder() {
+    const noFolder = workspace.getByText('NO FOLDER OPENED', { exact: true }).first();
+    if ((await noFolder.count()) > 0) return;
+
     await workspace.keyboard.press('Control+K');
     await workspace.keyboard.press('KeyF');
-    await workspace.waitForTimeout(150);
+    await workspace.waitForTimeout(250);
 }
 
 async function cloneStart(url) {
     const cloneButton = workspace.getByText('Clone Repository', { exact: true }).first();
-    if (await isVisible(cloneButton)) {
+    if (await locatorIsVisible(cloneButton)) {
         await cloneButton.click();
     } else {
         await workspace.keyboard.press('Control+Shift+P');
@@ -572,6 +667,12 @@ async function clickPreview(label) {
 async function executeAction(action) {
     switch (action.type) {
     case 'close-folder': return closeFolder();
+    case 'show-left-sidebar': return setWorkbenchPartVisible('left-sidebar', true);
+    case 'hide-left-sidebar': return setWorkbenchPartVisible('left-sidebar', false);
+    case 'show-right-sidebar': return setWorkbenchPartVisible('right-sidebar', true);
+    case 'hide-right-sidebar': return setWorkbenchPartVisible('right-sidebar', false);
+    case 'show-bottom-panel': return setWorkbenchPartVisible('bottom-panel', true);
+    case 'hide-bottom-panel': return setWorkbenchPartVisible('bottom-panel', false);
     case 'clone-start': return cloneStart(action.url);
     case 'clone-confirm-url': return cloneConfirmUrl();
     case 'clone-accept-destination': return cloneAcceptDestination();
@@ -620,6 +721,7 @@ async function captureShot(shot, tutorialDirectory) {
             animations: 'disabled',
             fullPage: false,
             clip: { x: 0, y: top, width: shot.viewport.width, height },
+            style: shot.tab === 'workspace' ? WORKSPACE_SCREENSHOT_STYLE : undefined,
         });
         await execFileAsync('cwebp', ['-quiet', '-lossless', pngPath, '-o', temporaryWebp]);
         await fs.chmod(temporaryWebp, 0o644);
@@ -653,6 +755,10 @@ async function generateTutorial(payload) {
         playwright: PLAYWRIGHT_VERSION,
         workspace_image_id: `${payload?.workspace_image_id || 'unknown'}`,
         profile: DEFAULT_PROFILE,
+        screenshot_identity: {
+            email: SCREENSHOT_EMAIL,
+            workspace_user: SCREENSHOT_WORKSPACE_USER,
+        },
     }));
 
     const nextManifest = { version: 1, screenshots: {} };

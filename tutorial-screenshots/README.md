@@ -43,6 +43,12 @@ Recipes are intentionally line-oriented. The BIF pilot currently uses:
 
 ```text
 close-folder
+show-left-sidebar
+hide-left-sidebar
+show-right-sidebar
+hide-right-sidebar
+show-bottom-panel
+hide-bottom-panel
 clone-start: URL
 clone-confirm-url
 clone-accept-destination
@@ -68,8 +74,14 @@ selects the most recent earlier fenced code block containing all snippets separa
 by `||`. This keeps the visible tutorial code as the source of truth instead of
 duplicating it in the hidden recipe.
 
-The default screenshot profile is 1853x929 at zoom 1. A recipe only needs
-`viewport` or `zoom` when a particular tab should be captured differently.
+The global screenshot profile lives in `config.rb`. It defaults to 1853x929,
+150% zoom and a dark color scheme. A recipe only needs `viewport` or `zoom` when
+a particular tab should be captured differently. Workspace screenshots also hide
+VS Code notification toasts so startup warnings do not leak into tutorial images.
+
+The screenshot account still logs in as `screenshots@example.com`, but the Unix
+workspace user is configured separately and defaults to `student`. This keeps
+terminal prompts suitable for student-facing screenshots.
 
 If generation fails, the development server logs the error and continues parsing.
 An existing image remains usable; a genuinely missing image simply stays missing
