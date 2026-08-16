@@ -82,6 +82,13 @@ const WORKSPACE_SCREENSHOT_STYLE = `
 .notifications-toasts {
     display: none !important;
 }
+
+/* Toggling the primary sidebar can leave the Explorer welcome view focused.
+ * Keep the keyboard focus semantics intact while removing the transient focus
+ * decoration from the pixels written to tutorial screenshots. */
+.part.sidebar .welcome-view-content:focus {
+    outline: none !important;
+}
 `;
 
 let browserPromise = null;
@@ -328,7 +335,7 @@ async function ensureContext() {
     const browser = await ensureBrowser();
     context = await browser.newContext({
         viewport: { width: DEFAULT_PROFILE.width, height: DEFAULT_PROFILE.height },
-        deviceScaleFactor: 1,
+        deviceScaleFactor: zoom,
         colorScheme: DEFAULT_PROFILE.colorScheme,
         acceptDownloads: false,
     });
@@ -804,7 +811,7 @@ async function captureShot(shot, tutorialDirectory) {
                 y: topPixels / shot.zoom,
                 width: shot.viewport.width / shot.zoom,
                 height: heightPixels / shot.zoom,
-                scale: shot.zoom,
+                scale: 1,
             },
         });
         const png = Buffer.from(captured.data, 'base64');
