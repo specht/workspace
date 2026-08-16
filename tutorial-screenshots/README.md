@@ -44,6 +44,7 @@ Recipes are intentionally line-oriented. The BIF pilot currently uses:
 ```text
 close-folder
 show-left-sidebar
+left-sidebar-width: CSS_PIXELS
 hide-left-sidebar
 show-right-sidebar
 hide-right-sidebar
@@ -72,7 +73,10 @@ crop-bottom: PERCENT%
 `previous-code` means the last fenced code block before the recipe. `code:...`
 selects the most recent earlier fenced code block containing all snippets separated
 by `||`. This keeps the visible tutorial code as the source of truth instead of
-duplicating it in the hidden recipe.
+duplicating it in the hidden recipe. `left-sidebar-width` resizes the primary
+sidebar through VS Code's own sash, so the workbench layout reacts exactly as it
+does when the divider is dragged by hand. The width is specified in CSS pixels
+and is intentionally per recipe rather than a global screenshot setting.
 
 The global screenshot profile lives in `config.rb`. It defaults to 1853x929,
 150% browser-style zoom and a dark color scheme. The renderer gives the page the

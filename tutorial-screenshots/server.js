@@ -40,7 +40,7 @@ const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'screenshots@e
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
-const GENERATOR_VERSION = 6;
+const GENERATOR_VERSION = 7;
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
 const DEFAULT_PROFILE = Object.freeze({
@@ -89,6 +89,13 @@ const WORKSPACE_SCREENSHOT_STYLE = `
     outline: none !important;
 }
 
+/* The input itself should stay visibly focused, but code-server can move DOM
+ * focus to the Quick Input list while suggestions update. Chromium then draws
+ * an extra outline around the list that a normal click-and-type interaction
+ * does not show. Suppress both the list's native focus outline and VS Code's
+ * focused-row outline for screenshots. */
+.quick-input-widget .monaco-list:focus,
+.quick-input-widget .monaco-list:focus-visible,
 .quick-input-list > .monaco-list:focus .monaco-list-row.focused,
 .quick-input-tree > .monaco-list:focus .monaco-list-row.focused {
     outline: none !important;
@@ -204,6 +211,12 @@ function parseRecipe(text) {
         let match;
         if ((match = line.match(/^clone-start:\s*(.+)$/))) {
             recipe.actions.push({ type: 'clone-start', url: match[1].trim() });
+        } else if ((match = line.match(/^left-sidebar-width:\s*(\d+)$/))) {
+            const width = Number(match[1]);
+            if (width < 120 || width > 1000) {
+                throw new Error(`left-sidebar-width must be between 120 and 1000 CSS pixels: ${width}`);
+            }
+            recipe.actions.push({ type: 'left-sidebar-width', width });
         } else if ((match = line.match(/^open-file:\s*(.+)$/))) {
             recipe.actions.push({ type: 'open-file', path: safeRelativePath(match[1].trim()) });
         } else if ((match = line.match(/^click:\s*(.+)$/))) {
@@ -588,6 +601,67 @@ async function setWorkbenchPartVisible(partName, visible) {
     await workspace.waitForTimeout(150);
 }
 
+async function setLeftSidebarWidth(width) {
+    const sidebar = workspace.locator(WORKBENCH_PARTS['left-sidebar'].selector).first();
+    await sidebar.waitFor({ state: 'visible', timeout: 10_000 });
+
+    const sidebarBox = await sidebar.boundingBox();
+    if (!sidebarBox) throw new Error('Could not measure the left sidebar');
+
+    const edgeX = sidebarBox.x + sidebarBox.width;
+    const sashes = workspace.locator('.monaco-sash.vertical');
+    const sashCount = await sashes.count();
+    let sashBox = null;
+    let bestDistance = Number.POSITIVE_INFINITY;
+
+    for (let index = 0; index < sashCount; index += 1) {
+        const box = await sashes.nth(index).boundingBox();
+        if (!box) continue;
+
+        const verticalOverlap =
+            box.y < sidebarBox.y + sidebarBox.height &&
+            box.y + box.height > sidebarBox.y;
+        if (!verticalOverlap) continue;
+
+        const distance = Math.abs((box.x + box.width / 2) - edgeX);
+        if (distance < bestDistance) {
+            bestDistance = distance;
+            sashBox = box;
+        }
+    }
+
+    if (!sashBox || bestDistance > 12) {
+        throw new Error(`Could not find the left sidebar resize sash (nearest was ${bestDistance.toFixed(1)}px away)`);
+    }
+
+    const startX = sashBox.x + sashBox.width / 2;
+    const startY = Math.max(
+        sidebarBox.y + 20,
+        Math.min(
+            sashBox.y + sashBox.height / 2,
+            sidebarBox.y + sidebarBox.height - 20,
+        ),
+    );
+    const delta = width - sidebarBox.width;
+
+    await workspace.mouse.move(startX, startY);
+    await workspace.mouse.down();
+    await workspace.mouse.move(startX + delta, startY, { steps: 8 });
+    await workspace.mouse.up();
+
+    await workspace.waitForFunction(
+        expected => {
+            const sidebar = document.querySelector('.part.sidebar');
+            if (!sidebar) return false;
+            return Math.abs(sidebar.getBoundingClientRect().width - expected) <= 2;
+        },
+        width,
+        { timeout: 5_000 },
+    );
+
+    await workspace.waitForTimeout(150);
+}
+
 async function closeFolder() {
     const noFolder = workspace.getByText('NO FOLDER OPENED', { exact: true }).first();
     if ((await noFolder.count()) > 0) return;
@@ -610,7 +684,14 @@ async function cloneStart(url) {
     }
     const input = quickInput(workspace);
     await input.waitFor({ state: 'visible', timeout: 10_000 });
-    await input.fill(url);
+
+    // Match the real interaction: click into the field and type the URL. `fill()`
+    // changes the value in one synthetic step and code-server can leave the
+    // suggestion list itself focused, which produces an extra focus frame.
+    await input.click();
+    await input.press('Control+A');
+    await input.pressSequentially(url);
+    await input.focus();
 }
 
 async function cloneConfirmUrl() {
@@ -715,6 +796,7 @@ async function executeAction(action) {
     case 'hide-right-sidebar': return setWorkbenchPartVisible('right-sidebar', false);
     case 'show-bottom-panel': return setWorkbenchPartVisible('bottom-panel', true);
     case 'hide-bottom-panel': return setWorkbenchPartVisible('bottom-panel', false);
+    case 'left-sidebar-width': return setLeftSidebarWidth(action.width);
     case 'clone-start': return cloneStart(action.url);
     case 'clone-confirm-url': return cloneConfirmUrl();
     case 'clone-accept-destination': return cloneAcceptDestination();

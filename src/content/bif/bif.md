@@ -27,7 +27,7 @@ Hier nochmal als generierter Screenshot:
 <!-- tutorial-screenshot
 # Workspace ohne geöffneten Ordner
 show-left-sidebar
-hide-right-sidebar
+left-sidebar-width: 300
 -->
 
 <img class='full' src='fresh-start-gen.webp' alt=''>
