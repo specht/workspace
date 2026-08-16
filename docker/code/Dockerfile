@@ -32,6 +32,9 @@ ARG HUGO_VERSION=0.164.0
 ARG DOTNET_VERSION=10.0
 ARG POWERSHELL_VERSION=7.6.4
 ARG DART_VERSION=3.12.2
+ARG RUBY_VERSION=3.4.10
+ARG RUBY_API_VERSION=3.4.0
+ARG RUBY_SHA256=6f32ad662baafc228d12030dbcd284f83b034dd4337b300dc84ac74d11a1eb68
 
 ARG HACKSCHULE_SIDEBAR_INIT_VERSION=0.1.0
 ARG HACKSCHULE_CHECKPOINTS_VERSION=0.6.0
@@ -479,6 +482,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         libbz2-dev \
         libffi-dev \
         libgdbm-dev \
+        libgmp-dev \
         libglu1-mesa \
         libjpeg8-dev \
         liblzma-dev \
@@ -493,6 +497,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         libsqlite3-dev \
         libssl-dev \
         libtiff5-dev \
+        libyaml-dev \
         lua${LUA_VERSION} \
         man-db \
         manpages \
@@ -510,6 +515,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         openjdk-${JAVA_VERSION}-jdk-headless \
         perl \
         pgcli \
+        pkg-config \
         php-cli \
         python3 \
         python3-dev \
@@ -518,8 +524,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         python3-pip \
         python3-venv \
         rsync \
-        ruby \
-        ruby-dev \
         sbcl \
         software-properties-common \
         tar \
@@ -716,7 +720,48 @@ RUN emcc --check \
 # Ruby
 # --------------------------------------------------------------------
 
-RUN echo 'export GEM_HOME=$HOME/.gem' >> /root/.bashrc
+ARG RUBY_VERSION
+ARG RUBY_API_VERSION
+ARG RUBY_SHA256
+
+RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-downloads \
+    set -eux; \
+    archive=/var/cache/hackschule-downloads/ruby-${RUBY_VERSION}.tar.xz; \
+    if [ ! -s "$archive" ]; then \
+        ruby_series="${RUBY_VERSION%.*}"; \
+        wget -q \
+            "https://cache.ruby-lang.org/pub/ruby/${ruby_series}/ruby-${RUBY_VERSION}.tar.xz" \
+            -O "${archive}.tmp"; \
+        mv "${archive}.tmp" "$archive"; \
+    fi; \
+    printf '%s  %s\n' \
+        "${RUBY_SHA256}" \
+        "$archive" \
+        | sha256sum -c -; \
+    rm -rf /tmp/ruby; \
+    mkdir -p /tmp/ruby; \
+    tar -xf "$archive" \
+        -C /tmp/ruby \
+        --strip-components=1; \
+    cd /tmp/ruby; \
+    ./configure \
+        --prefix=/opt/ruby \
+        --disable-install-doc \
+        --disable-yjit; \
+    make -j"$(nproc)"; \
+    make install; \
+    test "$(/opt/ruby/bin/ruby -e 'print RUBY_VERSION')" = "${RUBY_VERSION}"; \
+    /opt/ruby/bin/gem --version; \
+    /opt/ruby/bin/bundle --version; \
+    cd /; \
+    rm -rf /tmp/ruby
+
+ENV RUBY_ROOT=/opt/ruby
+ENV GEM_HOME=/workspace/.gem/ruby/${RUBY_API_VERSION}
+ENV PATH="${GEM_HOME}/bin:${RUBY_ROOT}/bin:${PATH}"
+
+RUN test "$(command -v ruby)" = /opt/ruby/bin/ruby \
+    && test "$(gem environment home)" = "${GEM_HOME}"
 
 
 # --------------------------------------------------------------------
