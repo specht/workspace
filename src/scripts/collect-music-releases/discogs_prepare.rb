@@ -14,7 +14,7 @@ require 'uri'
 require 'zlib'
 
 class DiscogsDatasetBuilder
-  SOURCE_ROOT = 'https://discogs-data-dumps.s3.us-west-2.amazonaws.com/'
+  SOURCE_ROOT = 'https://data.discogs.com/'
   DATASET_TYPES = %w[artists masters releases].freeze
   EXCLUDED_ALBUM_DESCRIPTIONS = [
     'Compilation',
@@ -71,17 +71,69 @@ class DiscogsDatasetBuilder
     return validate_dump_date(@requested_dump_date) if @requested_dump_date
 
     STDERR.puts 'Finding the newest complete monthly Discogs dump...'
-    month = Date.new(Date.today.year, Date.today.month, 1)
 
-    18.times do
-      dump_date = month.strftime('%Y%m01')
-      if DATASET_TYPES.all? { |type| remote_file_available?(source_uri(type, dump_date)) }
-        return dump_date
-      end
-      month = month << 1
-    end
+    dates = available_dump_dates
+    return dates.max unless dates.empty?
 
     raise 'Could not find a complete Discogs dump in the last 18 months; use --dump-date YYYYMMDD'
+  end
+
+  def available_dump_dates
+    this_month = Date.new(Date.today.year, Date.today.month, 1)
+    cutoff = this_month << 17
+    types_by_date = Hash.new { |hash, key| hash[key] = Set.new }
+
+    (cutoff.year..this_month.year).each do |year|
+      html = request_text(index_uri(year))
+      html.scan(/discogs_(\d{8})_(artists|masters|releases)\.xml\.gz/) do |dump_date, type|
+        types_by_date[dump_date] << type
+      end
+    end
+
+    types_by_date.filter_map do |dump_date, types|
+      next unless DATASET_TYPES.all? { |type| types.include?(type) }
+
+      begin
+        date = Date.strptime(dump_date, '%Y%m%d')
+      rescue Date::Error
+        next
+      end
+
+      dump_date if date >= cutoff && date <= Date.today
+    end
+  end
+
+  def index_uri(year)
+    uri = URI(SOURCE_ROOT)
+    uri.query = URI.encode_www_form(prefix: "data/#{year}/")
+    uri
+  end
+
+  def request_text(uri, redirects_left = 5)
+    raise "Too many redirects while requesting #{uri}" if redirects_left.zero?
+
+    request = Net::HTTP::Get.new(uri)
+    request['User-Agent'] = 'workspace-discogs-dataset-builder/1.0'
+
+    response = Net::HTTP.start(
+      uri.host,
+      uri.port,
+      use_ssl: uri.scheme == 'https',
+      open_timeout: 30,
+      read_timeout: 60
+    ) { |http| http.request(request) }
+
+    case response
+    when Net::HTTPSuccess
+      response.body
+    when Net::HTTPRedirection
+      location = response['location']
+      raise "Redirect without Location while requesting #{uri}" unless location
+
+      request_text(URI.join(uri, location), redirects_left - 1)
+    else
+      raise "Request failed for #{uri}: #{response.code} #{response.message}"
+    end
   end
 
   def validate_dump_date(value)
@@ -101,46 +153,33 @@ class DiscogsDatasetBuilder
 
   def source_uri(type, dump_date = @dump_date)
     year = dump_date[0, 4]
-    URI.join(SOURCE_ROOT, "data/#{year}/#{dataset_name(type, dump_date)}")
+    uri = URI(SOURCE_ROOT)
+    uri.query = URI.encode_www_form(
+      download: "data/#{year}/#{dataset_name(type, dump_date)}"
+    )
+    uri
   end
 
   def dataset_path(type)
     File.join(@download_dir, dataset_name(type))
   end
 
-  def remote_file_available?(uri, redirects_left = 5)
-    raise "Too many redirects while checking #{uri}" if redirects_left.zero?
-
-    request = Net::HTTP::Head.new(uri)
-    request['User-Agent'] = 'workspace-discogs-dataset-builder/1.0'
-
-    response = Net::HTTP.start(
-      uri.host,
-      uri.port,
-      use_ssl: uri.scheme == 'https',
-      open_timeout: 15,
-      read_timeout: 30
-    ) { |http| http.request(request) }
-
-    case response
-    when Net::HTTPSuccess
-      true
-    when Net::HTTPRedirection
-      location = response['location']
-      location && remote_file_available?(URI.join(uri, location), redirects_left - 1)
-    else
-      false
-    end
-  rescue StandardError => e
-    STDERR.puts "  could not check #{uri}: #{e.message}"
+  def gzip_file?(path)
+    File.open(path, 'rb') { |file| file.read(2) == "\x1f\x8b".b }
+  rescue Errno::ENOENT
     false
   end
 
   def download(type)
     target = dataset_path(type)
     if File.exist?(target) && File.size?(target) && !@force_download
-      STDERR.puts "  using cached #{File.basename(target)}"
-      return
+      if gzip_file?(target)
+        STDERR.puts "  using cached #{File.basename(target)}"
+        return
+      end
+
+      STDERR.puts "  discarding invalid cached #{File.basename(target)} (not gzip data)"
+      FileUtils.rm_f(target)
     end
 
     uri = source_uri(type)
@@ -150,6 +189,11 @@ class DiscogsDatasetBuilder
     File.open(tmp, 'wb') do |file|
       request_to_file(uri, file)
     end
+
+    unless gzip_file?(tmp)
+      raise "Downloaded #{uri} is not gzip data; refusing to cache it as #{File.basename(target)}"
+    end
+
     File.rename(tmp, target)
   rescue StandardError
     FileUtils.rm_f(tmp) if tmp
