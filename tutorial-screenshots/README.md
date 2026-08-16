@@ -75,9 +75,12 @@ by `||`. This keeps the visible tutorial code as the source of truth instead of
 duplicating it in the hidden recipe.
 
 The global screenshot profile lives in `config.rb`. It defaults to 1853x929,
-150% zoom and a dark color scheme. A recipe only needs `viewport` or `zoom` when
-a particular tab should be captured differently. Workspace screenshots also hide
-VS Code notification toasts so startup warnings do not leak into tutorial images.
+150% browser-style zoom and a dark color scheme. The renderer implements zoom by
+changing the page's CSS viewport and device scale factor before capture, so VS
+Code performs a real layout pass instead of scaling an already-laid-out workbench.
+A recipe only needs `viewport` or `zoom` when a particular tab should be captured
+differently. Workspace screenshots also hide VS Code notification toasts so
+startup warnings do not leak into tutorial images.
 
 The screenshot account still logs in as `screenshots@example.com`, but the Unix
 workspace user is configured separately and defaults to `student`. This keeps

@@ -43,13 +43,6 @@ Bestätige anschließend mit <kbd>Enter</kbd>.
 
 <img class='full' src='git-clone.webp' alt=''>
 
-<!-- tutorial-screenshot
-crop-top: 33.5%
-crop-bottom: 33.6%
--->
-
-<img class='full' src='git-clone-gen.webp' alt=''>
-
 Als nächstes musst du angeben, in welches Verzeichnis das Repository geklont werden soll. Bestätige den Standardpfad
 
 ```text

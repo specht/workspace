@@ -40,7 +40,7 @@ const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'screenshots@e
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
-const GENERATOR_VERSION = 2;
+const GENERATOR_VERSION = 3;
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
 const DEFAULT_PROFILE = Object.freeze({
@@ -91,6 +91,7 @@ let loggedIn = false;
 let workspace = null;
 let preview = null;
 let generationQueue = Promise.resolve();
+const deviceMetricSessions = new WeakMap();
 
 function sha256(value) {
     return crypto.createHash('sha256').update(value).digest('hex');
@@ -691,24 +692,59 @@ async function executeAction(action) {
     }
 }
 
-async function applyZoom(page, zoom) {
-    await page.evaluate(value => {
-        document.documentElement.style.zoom = `${value}`;
-    }, zoom);
+async function applyViewportProfile(page, viewport, zoom) {
+    let session = deviceMetricSessions.get(page);
+    if (!session) {
+        session = await context.newCDPSession(page);
+        deviceMetricSessions.set(page, session);
+    }
+
+    // Browser zoom changes both the CSS viewport and device pixel ratio. CSS
+    // `zoom`, which we used before, only enlarges the already-laid-out workbench
+    // and therefore pushes the right-hand side outside the screenshot.
+    const cssViewport = {
+        width: Math.ceil(viewport.width / zoom),
+        height: Math.ceil(viewport.height / zoom),
+    };
+
+    await session.send('Emulation.setDeviceMetricsOverride', {
+        width: cssViewport.width,
+        height: cssViewport.height,
+        deviceScaleFactor: zoom,
+        mobile: false,
+        screenWidth: cssViewport.width,
+        screenHeight: cssViewport.height,
+    });
+
+    // Give VS Code two frames to react to the changed layout metrics.
+    await page.evaluate(() => new Promise(resolve => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
+    }));
+
+    return cssViewport;
 }
 
 async function captureShot(shot, tutorialDirectory) {
     const page = shot.tab === 'preview' ? preview : workspace;
     if (!page || page.isClosed()) throw new Error(`Screenshot requests unavailable tab: ${shot.tab}`);
 
-    await page.setViewportSize(shot.viewport);
-    await applyZoom(page, shot.zoom);
+    await applyViewportProfile(page, shot.viewport, shot.zoom);
     await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {});
     await page.waitForTimeout(100);
 
-    const top = Math.round(shot.viewport.height * shot.cropTop);
-    const bottom = Math.round(shot.viewport.height * shot.cropBottom);
-    const height = shot.viewport.height - top - bottom;
+    // Recipes express viewport and crop values in final screenshot pixels. The
+    // screenshot clip itself is in CSS pixels, so divide by the emulated zoom.
+    // Fractional clip dimensions are intentional: at 1853x929 / 150% they make
+    // Playwright emit exactly 1853x929 device pixels instead of 1854x930.
+    const topPixels = Math.round(shot.viewport.height * shot.cropTop);
+    const bottomPixels = Math.round(shot.viewport.height * shot.cropBottom);
+    const heightPixels = shot.viewport.height - topPixels - bottomPixels;
+    const clip = {
+        x: 0,
+        y: topPixels / shot.zoom,
+        width: shot.viewport.width / shot.zoom,
+        height: heightPixels / shot.zoom,
+    };
     const pngPath = `/tmp/tutorial-shot-${process.pid}-${crypto.randomBytes(6).toString('hex')}.png`;
     const target = path.join(tutorialDirectory, shot.target);
     const temporaryWebp = `${target}.tmp-${process.pid}-${Date.now()}`;
@@ -720,7 +756,8 @@ async function captureShot(shot, tutorialDirectory) {
             type: 'png',
             animations: 'disabled',
             fullPage: false,
-            clip: { x: 0, y: top, width: shot.viewport.width, height },
+            clip,
+            scale: 'device',
             style: shot.tab === 'workspace' ? WORKSPACE_SCREENSHOT_STYLE : undefined,
         });
         await execFileAsync('cwebp', ['-quiet', '-lossless', pngPath, '-o', temporaryWebp]);
