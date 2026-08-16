@@ -40,13 +40,14 @@ const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'screenshots@e
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
-const GENERATOR_VERSION = 5;
+const GENERATOR_VERSION = 6;
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
 const DEFAULT_PROFILE = Object.freeze({
     width: positiveIntegerEnv('TUTORIAL_SCREENSHOT_WIDTH', 1853),
     height: positiveIntegerEnv('TUTORIAL_SCREENSHOT_HEIGHT', 929),
     zoom: positiveNumberEnv('TUTORIAL_SCREENSHOT_ZOOM', 1.5),
+    desktopScaleFactor: positiveNumberEnv('TUTORIAL_SCREENSHOT_DESKTOP_SCALE_FACTOR', 1.203125),
     colorScheme: colorSchemeEnv('TUTORIAL_SCREENSHOT_COLOR_SCHEME', 'dark'),
 });
 const WORKBENCH_PARTS = Object.freeze({
@@ -83,13 +84,29 @@ const WORKSPACE_SCREENSHOT_STYLE = `
     display: none !important;
 }
 
-/* Toggling the primary sidebar can leave the Explorer welcome view focused.
- * Keep the keyboard focus semantics intact while removing the transient focus
- * decoration from the pixels written to tutorial screenshots. */
+/* Explorer welcome view can retain keyboard focus after opening the sidebar. */
 .part.sidebar .welcome-view-content:focus {
     outline: none !important;
 }
+
+.quick-input-list > .monaco-list:focus .monaco-list-row.focused,
+.quick-input-tree > .monaco-list:focus .monaco-list-row.focused {
+    outline: none !important;
+}
 `;
+
+function screenshotMetricsFor(viewport, zoom) {
+    const deviceScaleFactor = DEFAULT_PROFILE.desktopScaleFactor * zoom;
+    if (!Number.isFinite(deviceScaleFactor) || deviceScaleFactor <= 0) {
+        throw new Error(`Invalid effective device scale factor: ${deviceScaleFactor}`);
+    }
+
+    return {
+        width: Math.max(1, Math.round(viewport.width / deviceScaleFactor)),
+        height: Math.max(1, Math.round(viewport.height / deviceScaleFactor)),
+        deviceScaleFactor,
+    };
+}
 
 let browserPromise = null;
 let context = null;
@@ -333,9 +350,10 @@ async function ensureBrowser() {
 async function ensureContext() {
     if (context) return context;
     const browser = await ensureBrowser();
+    const metrics = screenshotMetricsFor(DEFAULT_PROFILE, DEFAULT_PROFILE.zoom);
     context = await browser.newContext({
-        viewport: { width: DEFAULT_PROFILE.width, height: DEFAULT_PROFILE.height },
-        deviceScaleFactor: DEFAULT_PROFILE.zoom,
+        viewport: { width: metrics.width, height: metrics.height },
+        deviceScaleFactor: metrics.deviceScaleFactor,
         colorScheme: DEFAULT_PROFILE.colorScheme,
         acceptDownloads: false,
     });
@@ -548,7 +566,7 @@ async function freshWorkspace() {
 }
 
 function quickInput(page) {
-    return page.locator('input.quick-input-box').last();
+    return page.locator('.quick-input-box input').last();
 }
 
 async function locatorIsVisible(locator) {
@@ -722,21 +740,18 @@ async function applyViewportProfile(page, viewport, zoom) {
         deviceMetricSessions.set(page, session);
     }
 
-    // Browser zoom makes fewer CSS pixels fit into the same physical viewport.
-    // Give VS Code that smaller layout viewport; Page.captureScreenshot() will
-    // scale it back to the requested bitmap dimensions later.
-    const cssViewport = {
-        width: Math.ceil(viewport.width / zoom),
-        height: Math.ceil(viewport.height / zoom),
-    };
+    // Match the measured manual setup: Linux desktop scale and Chrome page zoom
+    // are separate factors. Their product is the number of output pixels per CSS
+    // pixel in the final screenshot.
+    const metrics = screenshotMetricsFor(viewport, zoom);
 
     await session.send('Emulation.setDeviceMetricsOverride', {
-        width: cssViewport.width,
-        height: cssViewport.height,
-        deviceScaleFactor: 1,
+        width: metrics.width,
+        height: metrics.height,
+        deviceScaleFactor: metrics.deviceScaleFactor,
         mobile: false,
-        screenWidth: cssViewport.width,
-        screenHeight: cssViewport.height,
+        screenWidth: metrics.width,
+        screenHeight: metrics.height,
     });
 
     // Give VS Code two frames to react to the changed layout metrics.
@@ -744,7 +759,7 @@ async function applyViewportProfile(page, viewport, zoom) {
         requestAnimationFrame(() => requestAnimationFrame(resolve));
     }));
 
-    return { session, cssViewport };
+    return { session, metrics };
 }
 
 async function installWorkspaceScreenshotStyle(page) {
@@ -776,7 +791,7 @@ async function captureShot(shot, tutorialDirectory) {
     const page = shot.tab === 'preview' ? preview : workspace;
     if (!page || page.isClosed()) throw new Error(`Screenshot requests unavailable tab: ${shot.tab}`);
 
-    const { session } = await applyViewportProfile(page, shot.viewport, shot.zoom);
+    const { session, metrics } = await applyViewportProfile(page, shot.viewport, shot.zoom);
     await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {});
     await page.waitForTimeout(100);
 
@@ -808,9 +823,9 @@ async function captureShot(shot, tutorialDirectory) {
             captureBeyondViewport: false,
             clip: {
                 x: 0,
-                y: topPixels / shot.zoom,
-                width: shot.viewport.width / shot.zoom,
-                height: heightPixels / shot.zoom,
+                y: topPixels / metrics.deviceScaleFactor,
+                width: shot.viewport.width / metrics.deviceScaleFactor,
+                height: heightPixels / metrics.deviceScaleFactor,
                 scale: 1,
             },
         });
@@ -822,9 +837,8 @@ async function captureShot(shot, tutorialDirectory) {
         if (actual.width !== shot.viewport.width || actual.height !== heightPixels) {
             console.log(
                 `Chromium screenshot was ${actual.width}x${actual.height}; ` +
-                `normalizing to ${shot.viewport.width}x${heightPixels}`,
+                `expected ${shot.viewport.width}x${heightPixels}; keeping native pixels without resampling`,
             );
-            cwebpArgs.push('-resize', `${shot.viewport.width}`, `${heightPixels}`);
         }
         cwebpArgs.push(pngPath, '-o', temporaryWebp);
         await execFileAsync('cwebp', cwebpArgs);

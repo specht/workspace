@@ -42,7 +42,15 @@ Bestätige anschließend mit <kbd>Enter</kbd>.
 
 <!-- Screenshot: Clone Repository mit eingetragener BIF-URL -->
 
-<img class='full' src='git-clone.webp' alt=''>
+<!-- <img class='full' src='git-clone.webp' alt=''> -->
+
+<!-- tutorial-screenshot
+# Clone Repository mit eingetragener BIF-URL
+clone-start: https://github.com/specht/bif.git
+crop-bottom: 67%
+-->
+
+<img class='full' src='git-clone-gen.webp' alt=''>
 
 Als nächstes musst du angeben, in welches Verzeichnis das Repository geklont werden soll. Bestätige den Standardpfad
 
