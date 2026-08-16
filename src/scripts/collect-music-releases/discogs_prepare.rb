@@ -56,7 +56,12 @@ class DiscogsDatasetBuilder
       FileUtils.rm_f(canonical_release_path) if canonical_release_path
     end
 
-    artists, memberships = load_artists(albums.values.map { |album| album[:artist_id] }.to_set)
+    selected_artist_ids = albums.values.map { |album| album[:artist_id] }.to_set
+    artists, memberships = load_artists(selected_artist_ids)
+    if selected_artist_ids.any? && selected_artist_ids.none? { |artist_id| artists.key?(artist_id) }
+      raise "Could not resolve any of #{selected_artist_ids.size} selected artist IDs from the Discogs artist dump"
+    end
+
     albums.delete_if { |_id, album| !artists.key?(album[:artist_id]) }
     genres = normalize_genres(albums)
     tracks = flatten_tracks(albums)
@@ -671,21 +676,20 @@ class DiscogsDatasetBuilder
           next unless start_re.match?(line)
 
           collecting = true
+          selected = false
+          artist_id = nil
           prefix = line.dup
-          next unless line.include?(end_marker)
+          buffer = +''
         else
-          if artist_id.nil?
-            prefix << line
-            match = id_re.match(line)
-            if match
-              artist_id = match[1].to_i
-              selected = wanted_artist_ids.include?(artist_id)
-              buffer = prefix.dup if selected
-              prefix = +'' unless selected
-            end
-          elsif selected
-            buffer << line
-          end
+          prefix << line if artist_id.nil?
+          buffer << line if artist_id && selected
+        end
+
+        if artist_id.nil? && (match = id_re.match(prefix))
+          artist_id = match[1].to_i
+          selected = wanted_artist_ids.include?(artist_id)
+          buffer = prefix.dup if selected
+          prefix = +''
         end
 
         next unless collecting && line.include?(end_marker)
