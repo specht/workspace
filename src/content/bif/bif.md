@@ -61,11 +61,18 @@ crop-bottom: 54%
 
 Beantworte anschließend die Frage »Would you like to open the cloned repository?« mit »Open«.
 
-<!-- Screenshot: Dialog zum Öffnen des geklonten Repositorys -->
+<!-- tutorial-screenshot
+# Dialog zum Öffnen des geklonten Repositorys
+clone-accept-destination
+-->
 
 <img class='full' src='open-yes-no.webp' alt=''>
 
-<!-- Screenshot: geöffnetes BIF-Projekt im Explorer -->
+<!-- tutorial-screenshot
+# geöffnetes BIF-Projekt im Explorer
+clone-open
+sleep 2000
+-->
 
 <img class='full' src='bif-project.webp' alt=''>
 
