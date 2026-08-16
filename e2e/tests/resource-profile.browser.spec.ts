@@ -697,7 +697,7 @@ if (PROFILE_ENABLED) {
               container,
               [
                 'flutter create',
-                '--platforms=web',
+                '--platforms=web,android',
                 '--project-name=resource_profile_flutter',
                 'flutter-profile',
               ].join(' '),
@@ -729,6 +729,42 @@ if (PROFILE_ENABLED) {
             await expectCommandSuccess(
               container,
               'rm -rf build .dart_tool/flutter_build',
+              {
+                workdir: flutterDir,
+              },
+            );
+          },
+        },
+        {
+          id: 'flutter-android-debug',
+          description:
+            'Flutter Android debug APK build of the same fresh app',
+          command:
+            'flutter build apk --debug && test -s build/app/outputs/flutter-apk/app-debug.apk',
+          workdir: flutterDir,
+          timeoutMs: 360_000,
+          beforeRun: async () => {
+            await expectCommandSuccess(
+              container,
+              'rm -rf build .dart_tool/flutter_build android/.gradle',
+              {
+                workdir: flutterDir,
+              },
+            );
+          },
+        },
+        {
+          id: 'flutter-android-release',
+          description:
+            'Flutter Android release APK build of the same fresh app',
+          command:
+            'flutter build apk --release && test -s build/app/outputs/flutter-apk/app-release.apk',
+          workdir: flutterDir,
+          timeoutMs: 360_000,
+          beforeRun: async () => {
+            await expectCommandSuccess(
+              container,
+              'rm -rf build .dart_tool/flutter_build android/.gradle',
               {
                 workdir: flutterDir,
               },

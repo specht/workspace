@@ -15,7 +15,8 @@ ARG FLUTTER_VERSION=3.44.9
 ARG ANDROID_CMDLINE_TOOLS_VERSION=15859902
 ARG ANDROID_CMDLINE_TOOLS_SHA256=4e4c464f145a7512b57d088ac6c278c03c9eea610886b35a5e0804e74eedf583
 ARG ANDROID_PLATFORM=36
-ARG ANDROID_BUILD_TOOLS_VERSION=36.0.0
+ARG ANDROID_BUILD_TOOLS_VERSION=36.1.0
+ARG ANDROID_CMAKE_VERSION=3.22.1
 ARG ANDROID_NDK_VERSION=28.2.13676358
 ARG EMSCRIPTEN_VERSION=6.0.6
 ARG RAYLIB_VERSION=6.0
@@ -179,6 +180,7 @@ ARG ANDROID_CMDLINE_TOOLS_VERSION
 ARG ANDROID_CMDLINE_TOOLS_SHA256
 ARG ANDROID_PLATFORM
 ARG ANDROID_BUILD_TOOLS_VERSION
+ARG ANDROID_CMAKE_VERSION
 ARG ANDROID_NDK_VERSION
 
 ENV ANDROID_HOME=/opt/android-sdk
@@ -213,8 +215,10 @@ RUN yes \
             >/dev/null \
     && sdkmanager \
         --sdk_root="${ANDROID_HOME}" \
+        "platform-tools" \
         "platforms;android-${ANDROID_PLATFORM}" \
         "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" \
+        "cmake;${ANDROID_CMAKE_VERSION}" \
         "ndk;${ANDROID_NDK_VERSION}"
 
 
@@ -248,6 +252,12 @@ ENV GRADLE_USER_HOME=/opt/gradle-cache
 ENV PATH="${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin"
 
 RUN set -eux; \
+    mkdir -p "${GRADLE_USER_HOME}"; \
+    printf '%s\n' \
+        'org.gradle.jvmargs=-Xmx2G -XX:MaxMetaspaceSize=512m -XX:ReservedCodeCacheSize=256m -XX:+HeapDumpOnOutOfMemoryError' \
+        'org.gradle.workers.max=2' \
+        'kotlin.compiler.execution.strategy=in-process' \
+        > "${GRADLE_USER_HOME}/gradle.properties"; \
     flutter create \
         --empty \
         --platforms=android \
@@ -370,9 +380,10 @@ ENV PATH="/opt/emsdk/upstream/emscripten:${PATH}"
 # The numeric UID of abc can change when linuxserver initializes
 # the container, so don't rely on build-time ownership.
 #
-# Each student runs in a separate container, therefore their changes
-# to the Flutter SDK remain isolated in that container's writable layer.
-RUN chmod -R a+rwX /opt/flutter \
+# Keep the pinned Flutter SDK itself immutable. Flutter rewrites runtime
+# stamps under bin/cache during normal startup, so only that cache stays writable.
+RUN chmod -R a-w /opt/flutter \
+    && chmod -R a+rwX /opt/flutter/bin/cache \
     && git config --system --add safe.directory /opt/flutter \
     && chmod -R a+rwX /opt/gradle-cache \
     && chmod -R a+rwX /opt/emsdk/upstream/emscripten/cache

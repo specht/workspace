@@ -151,7 +151,8 @@ The current workloads are:
 - the real C `bubblesort.c` tutorial compiled with GCC;
 - the real C++ `bubblesort.cpp` tutorial compiled with G++;
 - a clone and `make` of the PixelRAM starter, exercising Emscripten;
-- a fresh Flutter project built for Web separately in debug and release modes;
+- a fresh Flutter project built for Web and Android APKs, each in debug and
+  release modes;
 - a fresh minimal SvelteKit project built with `npm run build`;
 - the LaTeX tutorial's larger `wpgtr.tex` document through
   `latexmk -lualatex`;
