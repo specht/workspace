@@ -40,7 +40,7 @@ const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'screenshots@e
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
-const GENERATOR_VERSION = 7;
+const GENERATOR_VERSION = 8;
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
 const DEFAULT_PROFILE = Object.freeze({
@@ -89,15 +89,12 @@ const WORKSPACE_SCREENSHOT_STYLE = `
     outline: none !important;
 }
 
-/* The input itself should stay visibly focused, but code-server can move DOM
- * focus to the Quick Input list while suggestions update. Chromium then draws
- * an extra outline around the list that a normal click-and-type interaction
- * does not show. Suppress both the list's native focus outline and VS Code's
- * focused-row outline for screenshots. */
-.quick-input-widget .monaco-list:focus,
-.quick-input-widget .monaco-list:focus-visible,
-.quick-input-list > .monaco-list:focus .monaco-list-row.focused,
-.quick-input-tree > .monaco-list:focus .monaco-list-row.focused {
+/* Keep the input's normal blue focus border, but suppress the separate outline
+ * VS Code paints around the logically focused Quick Input result row. The
+ * bundled code-server 4.131.0 VS Code CSS marks that row as .focused even
+ * while the text input owns keyboard focus. */
+.monaco-workbench .quick-input-widget .quick-input-list .monaco-list-row.focused,
+.monaco-workbench .quick-input-widget .quick-input-tree .monaco-list-row.focused {
     outline: none !important;
 }
 `;
@@ -649,6 +646,19 @@ async function setLeftSidebarWidth(width) {
     await workspace.mouse.move(startX + delta, startY, { steps: 8 });
     await workspace.mouse.up();
 
+    // The sash stays blue while the pointer is left on it. Move the synthetic
+    // mouse back into the sidebar, just as a human would before taking a
+    // screenshot, and wait for VS Code to clear its hover/active state.
+    await workspace.mouse.move(
+        sidebarBox.x + 20,
+        sidebarBox.y + sidebarBox.height / 2,
+    );
+    await workspace.waitForFunction(
+        () => !document.querySelector('.monaco-sash.hover, .monaco-sash.active'),
+        null,
+        { timeout: 2_000 },
+    );
+
     await workspace.waitForFunction(
         expected => {
             const sidebar = document.querySelector('.part.sidebar');
@@ -691,7 +701,23 @@ async function cloneStart(url) {
     await input.click();
     await input.press('Control+A');
     await input.pressSequentially(url);
-    await input.focus();
+
+    // Git providers can update the result list asynchronously after the final
+    // keystroke. Wait until Quick Input is no longer busy, then restore focus
+    // to the text field. This matches the settled state seen when the same URL
+    // is entered by hand instead of capturing the transient list-focus state.
+    await workspace.waitForFunction(
+        () => {
+            const progress = document.querySelector(
+                '.quick-input-progress.monaco-progress-container',
+            );
+            return !progress || !progress.classList.contains('active');
+        },
+        null,
+        { timeout: 5_000 },
+    ).catch(() => {});
+    await input.click();
+    await workspace.waitForTimeout(100);
 }
 
 async function cloneConfirmUrl() {
@@ -854,6 +880,9 @@ async function installWorkspaceScreenshotStyle(page) {
             document.documentElement.appendChild(style);
         }
         style.textContent = css;
+        return new Promise(resolve => {
+            requestAnimationFrame(() => requestAnimationFrame(resolve));
+        });
     }, WORKSPACE_SCREENSHOT_STYLE);
 }
 
