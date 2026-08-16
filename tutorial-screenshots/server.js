@@ -40,7 +40,7 @@ const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'screenshots@e
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
-const GENERATOR_VERSION = 3;
+const GENERATOR_VERSION = 5;
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
 const DEFAULT_PROFILE = Object.freeze({
@@ -492,6 +492,21 @@ async function waitForWorkspaceWorkbench(page, workspaceUrl) {
     ].join('\n'));
 }
 
+async function waitForFreshWorkspaceUi(page) {
+    // `.monaco-workbench` and the theme become available before all built-in
+    // contributions have finished starting. In particular, Explorer's
+    // "Clone Repository" welcome action appears a little later.
+    await page.getByText('NO FOLDER OPENED', { exact: false }).first().waitFor({
+        state: 'visible',
+        timeout: 30_000,
+    });
+    await page.getByText('Clone Repository', { exact: true }).first().waitFor({
+        state: 'visible',
+        timeout: 30_000,
+    });
+    await page.waitForTimeout(250);
+}
+
 async function freshWorkspace() {
     await ensureLoggedIn();
 
@@ -521,7 +536,8 @@ async function freshWorkspace() {
     const workspaceUrl = `${base.protocol}//${serverTag}.${base.hostname}${base.port ? `:${base.port}` : ''}/`;
     workspace = await context.newPage();
     await waitForWorkspaceWorkbench(workspace, workspaceUrl);
-    await workspace.setViewportSize({ width: DEFAULT_PROFILE.width, height: DEFAULT_PROFILE.height });
+    await applyViewportProfile(workspace, DEFAULT_PROFILE, DEFAULT_PROFILE.zoom);
+    await waitForFreshWorkspaceUi(workspace);
 }
 
 function quickInput(page) {
@@ -699,9 +715,9 @@ async function applyViewportProfile(page, viewport, zoom) {
         deviceMetricSessions.set(page, session);
     }
 
-    // Browser zoom changes both the CSS viewport and device pixel ratio. CSS
-    // `zoom`, which we used before, only enlarges the already-laid-out workbench
-    // and therefore pushes the right-hand side outside the screenshot.
+    // Browser zoom makes fewer CSS pixels fit into the same physical viewport.
+    // Give VS Code that smaller layout viewport; Page.captureScreenshot() will
+    // scale it back to the requested bitmap dimensions later.
     const cssViewport = {
         width: Math.ceil(viewport.width / zoom),
         height: Math.ceil(viewport.height / zoom),
@@ -710,7 +726,7 @@ async function applyViewportProfile(page, viewport, zoom) {
     await session.send('Emulation.setDeviceMetricsOverride', {
         width: cssViewport.width,
         height: cssViewport.height,
-        deviceScaleFactor: zoom,
+        deviceScaleFactor: 1,
         mobile: false,
         screenWidth: cssViewport.width,
         screenHeight: cssViewport.height,
@@ -721,14 +737,39 @@ async function applyViewportProfile(page, viewport, zoom) {
         requestAnimationFrame(() => requestAnimationFrame(resolve));
     }));
 
-    return cssViewport;
+    return { session, cssViewport };
+}
+
+async function installWorkspaceScreenshotStyle(page) {
+    await page.evaluate(css => {
+        const id = 'hackschule-tutorial-screenshot-style';
+        let style = document.getElementById(id);
+        if (!style) {
+            style = document.createElement('style');
+            style.id = id;
+            document.documentElement.appendChild(style);
+        }
+        style.textContent = css;
+    }, WORKSPACE_SCREENSHOT_STYLE);
+}
+
+function pngDimensions(buffer) {
+    if (buffer.length < 24 ||
+        buffer.readUInt32BE(0) !== 0x89504e47 ||
+        buffer.readUInt32BE(4) !== 0x0d0a1a0a) {
+        throw new Error('Chromium returned an invalid PNG screenshot');
+    }
+    return {
+        width: buffer.readUInt32BE(16),
+        height: buffer.readUInt32BE(20),
+    };
 }
 
 async function captureShot(shot, tutorialDirectory) {
     const page = shot.tab === 'preview' ? preview : workspace;
     if (!page || page.isClosed()) throw new Error(`Screenshot requests unavailable tab: ${shot.tab}`);
 
-    await applyViewportProfile(page, shot.viewport, shot.zoom);
+    const { session } = await applyViewportProfile(page, shot.viewport, shot.zoom);
     await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {});
     await page.waitForTimeout(100);
 
@@ -739,28 +780,47 @@ async function captureShot(shot, tutorialDirectory) {
     const topPixels = Math.round(shot.viewport.height * shot.cropTop);
     const bottomPixels = Math.round(shot.viewport.height * shot.cropBottom);
     const heightPixels = shot.viewport.height - topPixels - bottomPixels;
-    const clip = {
-        x: 0,
-        y: topPixels / shot.zoom,
-        width: shot.viewport.width / shot.zoom,
-        height: heightPixels / shot.zoom,
-    };
     const pngPath = `/tmp/tutorial-shot-${process.pid}-${crypto.randomBytes(6).toString('hex')}.png`;
     const target = path.join(tutorialDirectory, shot.target);
     const temporaryWebp = `${target}.tmp-${process.pid}-${Date.now()}`;
 
     await fs.mkdir(path.dirname(target), { recursive: true });
     try {
-        await page.screenshot({
-            path: pngPath,
-            type: 'png',
-            animations: 'disabled',
-            fullPage: false,
-            clip,
-            scale: 'device',
-            style: shot.tab === 'workspace' ? WORKSPACE_SCREENSHOT_STYLE : undefined,
+        if (shot.tab === 'workspace') {
+            await installWorkspaceScreenshotStyle(page);
+        }
+
+        // Playwright's screenshot scale is tied to the BrowserContext's device
+        // scale factor, so a later CDP device-metrics override did not enlarge
+        // the bitmap. Capture through CDP directly instead: the page is laid out
+        // at viewport/zoom CSS pixels, while clip.scale restores the configured
+        // final pixel dimensions.
+        const captured = await session.send('Page.captureScreenshot', {
+            format: 'png',
+            fromSurface: true,
+            captureBeyondViewport: false,
+            clip: {
+                x: 0,
+                y: topPixels / shot.zoom,
+                width: shot.viewport.width / shot.zoom,
+                height: heightPixels / shot.zoom,
+                scale: shot.zoom,
+            },
         });
-        await execFileAsync('cwebp', ['-quiet', '-lossless', pngPath, '-o', temporaryWebp]);
+        const png = Buffer.from(captured.data, 'base64');
+        const actual = pngDimensions(png);
+        await fs.writeFile(pngPath, png);
+
+        const cwebpArgs = ['-quiet', '-lossless'];
+        if (actual.width !== shot.viewport.width || actual.height !== heightPixels) {
+            console.log(
+                `Chromium screenshot was ${actual.width}x${actual.height}; ` +
+                `normalizing to ${shot.viewport.width}x${heightPixels}`,
+            );
+            cwebpArgs.push('-resize', `${shot.viewport.width}`, `${heightPixels}`);
+        }
+        cwebpArgs.push(pngPath, '-o', temporaryWebp);
+        await execFileAsync('cwebp', cwebpArgs);
         await fs.chmod(temporaryWebp, 0o644);
         await fs.rename(temporaryWebp, target);
         await inheritDirectoryOwnership(target, tutorialDirectory);
