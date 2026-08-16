@@ -16,6 +16,9 @@ require 'zlib'
 class DiscogsDatasetBuilder
   SOURCE_ROOT = 'https://data.discogs.com/'
   DATASET_TYPES = %w[artists masters releases].freeze
+  HTTP_RETRY_LIMIT = 8
+  HTTP_RETRY_BASE_DELAY = 60
+  HTTP_RETRY_MAX_DELAY = 300
   EXCLUDED_ALBUM_DESCRIPTIONS = [
     'Compilation',
     'Unofficial Release',
@@ -42,9 +45,17 @@ class DiscogsDatasetBuilder
     STDERR.puts "Downloading Discogs source data to #{@download_dir}..."
     DATASET_TYPES.each { |type| download(type) }
 
-    version_counts = count_master_versions
-    masters = load_popular_album_masters(version_counts)
-    albums = load_main_releases(masters)
+    canonical_release_path = nil
+    begin
+      main_release_ids = load_main_release_ids
+      version_counts, canonical_release_path = scan_releases(main_release_ids)
+      main_release_ids = nil
+      masters = load_popular_album_masters(version_counts)
+      albums = load_main_releases(masters, canonical_release_path)
+    ensure
+      FileUtils.rm_f(canonical_release_path) if canonical_release_path
+    end
+
     artists, memberships = load_artists(albums.values.map { |album| album[:artist_id] }.to_set)
     albums.delete_if { |_id, album| !artists.key?(album[:artist_id]) }
     genres = normalize_genres(albums)
@@ -109,7 +120,7 @@ class DiscogsDatasetBuilder
     uri
   end
 
-  def request_text(uri, redirects_left = 5)
+  def request_text(uri, redirects_left = 5, retry_attempt = 0)
     raise "Too many redirects while requesting #{uri}" if redirects_left.zero?
 
     request = Net::HTTP::Get.new(uri)
@@ -123,6 +134,11 @@ class DiscogsDatasetBuilder
       read_timeout: 60
     ) { |http| http.request(request) }
 
+    if response.code == '429'
+      retry_rate_limited(response, uri, retry_attempt)
+      return request_text(uri, redirects_left, retry_attempt + 1)
+    end
+
     case response
     when Net::HTTPSuccess
       response.body
@@ -130,10 +146,38 @@ class DiscogsDatasetBuilder
       location = response['location']
       raise "Redirect without Location while requesting #{uri}" unless location
 
-      request_text(URI.join(uri, location), redirects_left - 1)
+      request_text(URI.join(uri, location), redirects_left - 1, retry_attempt)
     else
       raise "Request failed for #{uri}: #{response.code} #{response.message}"
     end
+  end
+
+  def retry_rate_limited(response, uri, retry_attempt)
+    if retry_attempt >= HTTP_RETRY_LIMIT
+      raise "Discogs still returns 429 Too Many Requests for #{uri} after #{HTTP_RETRY_LIMIT} retries"
+    end
+
+    delay = retry_delay(response, retry_attempt)
+    STDERR.puts "  Discogs rate limit for #{uri}; retrying in #{delay} seconds..."
+    sleep delay
+  end
+
+  def retry_delay(response, retry_attempt)
+    retry_after = response['retry-after']
+    if retry_after
+      if retry_after.match?(/\A\d+\z/)
+        return [retry_after.to_i, 1].max
+      end
+
+      begin
+        seconds = (Time.httpdate(retry_after) - Time.now).ceil
+        return [seconds, 1].max if seconds.positive?
+      rescue ArgumentError
+        # Fall back to exponential backoff below.
+      end
+    end
+
+    [HTTP_RETRY_BASE_DELAY * (2**retry_attempt), HTTP_RETRY_MAX_DELAY].min
   end
 
   def validate_dump_date(value)
@@ -184,10 +228,24 @@ class DiscogsDatasetBuilder
 
     uri = source_uri(type)
     tmp = "#{target}.part"
+    FileUtils.rm_f(tmp) if @force_download
 
-    STDERR.puts "  downloading #{uri}"
-    File.open(tmp, 'wb') do |file|
-      request_to_file(uri, file)
+    if File.exist?(tmp) && File.size?(tmp) && !gzip_file?(tmp)
+      STDERR.puts "  discarding invalid partial #{File.basename(tmp)} (not gzip data)"
+      FileUtils.rm_f(tmp)
+    end
+
+    offset = File.exist?(tmp) ? File.size(tmp) : 0
+    if offset.positive?
+      STDERR.puts "  resuming #{uri} at byte #{offset}"
+    else
+      STDERR.puts "  downloading #{uri}"
+    end
+
+    mode = offset.positive? ? 'r+b' : 'wb'
+    File.open(tmp, mode) do |file|
+      file.seek(0, IO::SEEK_END)
+      request_to_file(uri, file, offset: offset)
     end
 
     unless gzip_file?(tmp)
@@ -196,15 +254,20 @@ class DiscogsDatasetBuilder
 
     File.rename(tmp, target)
   rescue StandardError
-    FileUtils.rm_f(tmp) if tmp
+    if tmp && File.exist?(tmp) && File.size?(tmp) && gzip_file?(tmp)
+      STDERR.puts "  keeping partial download #{tmp} for the next run"
+    else
+      FileUtils.rm_f(tmp) if tmp
+    end
     raise
   end
 
-  def request_to_file(uri, file, redirects_left = 5)
+  def request_to_file(uri, file, offset: 0, redirects_left: 5, retry_attempt: 0)
     raise "Too many redirects while downloading #{uri}" if redirects_left.zero?
 
     request = Net::HTTP::Get.new(uri)
     request['User-Agent'] = 'workspace-discogs-dataset-builder/1.0'
+    request['Range'] = "bytes=#{offset}-" if offset.positive?
 
     Net::HTTP.start(
       uri.host,
@@ -214,14 +277,43 @@ class DiscogsDatasetBuilder
       read_timeout: 180
     ) do |http|
       http.request(request) do |response|
+        if response.code == '429'
+          retry_rate_limited(response, uri, retry_attempt)
+          return request_to_file(
+            uri,
+            file,
+            offset: offset,
+            redirects_left: redirects_left,
+            retry_attempt: retry_attempt + 1
+          )
+        end
+
         case response
         when Net::HTTPSuccess
+          if offset.positive? && response.is_a?(Net::HTTPPartialContent)
+            content_range = response['content-range']
+            unless content_range&.start_with?("bytes #{offset}-")
+              raise "Server resumed #{uri} at an unexpected range: #{content_range.inspect}"
+            end
+          elsif offset.positive?
+            STDERR.puts '  server did not honor the Range request; restarting this file'
+            file.truncate(0)
+            file.rewind
+            offset = 0
+          end
+
           response.read_body { |chunk| file.write(chunk) }
         when Net::HTTPRedirection
           location = response['location']
           raise "Redirect without Location while downloading #{uri}" unless location
 
-          request_to_file(URI.join(uri, location), file, redirects_left - 1)
+          request_to_file(
+            URI.join(uri, location),
+            file,
+            offset: offset,
+            redirects_left: redirects_left - 1,
+            retry_attempt: retry_attempt
+          )
         else
           raise "Download failed for #{uri}: #{response.code} #{response.message}"
         end
@@ -229,22 +321,127 @@ class DiscogsDatasetBuilder
     end
   end
 
-  def count_master_versions
-    STDERR.puts 'Counting release versions per Discogs master...'
-    counts = []
-    master_id_re = /<master_id\b[^>]*>(\d+)<\/master_id>/
+  def load_main_release_ids
+    STDERR.puts 'Indexing canonical release IDs from Discogs masters...'
+    bitset = ''.b
+    count = 0
+    main_release_re = /<main_release>(\d+)<\/main_release>/
 
-    Zlib::GzipReader.open(dataset_path('releases')) do |gz|
+    Zlib::GzipReader.open(dataset_path('masters')) do |gz|
       gz.each_line do |line|
-        match = master_id_re.match(line)
+        match = main_release_re.match(line)
         next unless match
 
-        master_id = match[1].to_i
-        counts[master_id] = counts[master_id].to_i + 1
+        bitset_add(bitset, match[1].to_i)
+        count += 1
       end
     end
 
-    counts
+    STDERR.puts "  #{count} canonical release IDs indexed in #{format('%.1f', bitset.bytesize / 1_048_576.0)} MiB"
+    bitset
+  end
+
+  def bitset_add(bitset, id)
+    byte_index = id >> 3
+    if byte_index >= bitset.bytesize
+      bitset << "\0".b * (byte_index - bitset.bytesize + 1)
+    end
+
+    bitset.setbyte(byte_index, bitset.getbyte(byte_index) | (1 << (id & 7)))
+  end
+
+  def bitset_include?(bitset, id)
+    byte_index = id >> 3
+    return false if byte_index >= bitset.bytesize
+
+    (bitset.getbyte(byte_index) & (1 << (id & 7))).positive?
+  end
+
+  def scan_releases(main_release_ids)
+    STDERR.puts 'Scanning releases once for popularity and canonical release records...'
+    counts = []
+    spool_path = File.join(@download_dir, "discogs_#{@dump_date}_canonical-releases.tmp.gz")
+    FileUtils.rm_f(spool_path)
+
+    master_id_re = /<master_id\b[^>]*>(\d+)<\/master_id>/
+    release_start_re = /<release\b[^>]*\bid="(\d+)"[^>]*>/
+    end_marker = '</release>'
+    collecting = false
+    selected = false
+    release_id = nil
+    buffer = +''
+    release_count = 0
+    canonical_count = 0
+
+    Zlib::GzipWriter.open(spool_path, Zlib::BEST_SPEED) do |spool|
+      Zlib::GzipReader.open(dataset_path('releases')) do |gz|
+        gz.each_line do |line|
+          if (master_match = master_id_re.match(line))
+            master_id = master_match[1].to_i
+            counts[master_id] = counts[master_id].to_i + 1
+          end
+
+          unless collecting
+            start_match = release_start_re.match(line)
+            next unless start_match
+
+            release_id = start_match[1].to_i
+            selected = bitset_include?(main_release_ids, release_id)
+            collecting = true
+            buffer = line.dup if selected
+            release_count += 1
+            if (release_count % 1_000_000).zero?
+              STDERR.puts "  #{release_count} releases scanned..."
+            end
+          else
+            buffer << line if selected
+          end
+
+          next unless collecting && line.include?(end_marker)
+
+          if selected
+            write_spooled_release(spool, release_id, buffer)
+            canonical_count += 1
+          end
+
+          collecting = false
+          selected = false
+          release_id = nil
+          buffer = +''
+        end
+      end
+    end
+
+    STDERR.puts "  #{release_count} releases scanned, #{canonical_count} canonical releases spooled"
+    STDERR.puts "  temporary canonical spool: #{format('%.1f', File.size(spool_path) / 1_048_576.0)} MiB"
+    [counts, spool_path]
+  rescue StandardError
+    FileUtils.rm_f(spool_path) if spool_path
+    raise
+  end
+
+  def write_spooled_release(file, release_id, xml)
+    file.write("#{release_id}\t#{xml.bytesize}\n")
+    file.write(xml)
+  end
+
+  def each_spooled_release(path)
+    Zlib::GzipReader.open(path) do |gz|
+      while (header = gz.gets)
+        release_id_text, size_text = header.chomp.split("\t", 2)
+        unless release_id_text&.match?(/\A\d+\z/) && size_text&.match?(/\A\d+\z/)
+          raise "Invalid canonical release spool header: #{header.inspect}"
+        end
+
+        size = size_text.to_i
+        xml = gz.read(size)
+        unless xml && xml.bytesize == size
+          raise "Truncated canonical release spool record for release #{release_id_text}"
+        end
+
+        yield release_id_text.to_i, xml
+      end
+    end
   end
 
   def load_popular_album_masters(version_counts)
@@ -286,18 +483,16 @@ class DiscogsDatasetBuilder
     masters
   end
 
-  def load_main_releases(masters)
-    STDERR.puts 'Reading canonical releases and track lists...'
+  def load_main_releases(masters, spool_path)
+    STDERR.puts 'Reading popular canonical releases and track lists...'
     master_by_release_id = {}
     masters.each_value { |master| master_by_release_id[master[:discogs_release_id]] = master }
     albums = {}
 
-    each_selected_record(
-      dataset_path('releases'),
-      'release',
-      ->(release_id, _line) { master_by_release_id.key?(release_id) }
-    ) do |release_id, xml|
-      master = master_by_release_id.fetch(release_id)
+    each_spooled_release(spool_path) do |release_id, xml|
+      master = master_by_release_id[release_id]
+      next unless master
+
       doc = parse_xml(xml)
       release = doc.root
       next unless release
