@@ -20,7 +20,6 @@ module DatabaseProvisioning
         existing = neo4j_existing_identity_statements(login, password)
         [
             "CREATE USER `#{login}` IF NOT EXISTS SET PLAINTEXT PASSWORD #{quoted_password} CHANGE NOT REQUIRED;",
-            existing.first,
             "CREATE DATABASE `#{login}` IF NOT EXISTS;",
             *existing.drop(1),
         ]

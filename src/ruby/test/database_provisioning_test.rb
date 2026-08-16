@@ -50,6 +50,16 @@ class DatabaseProvisioningTest < Minitest::Test
         assert_equal escaped, DatabaseProvisioning.cypher_string("a\\b'c")
     end
 
+    def test_neo4j_creation_does_not_reset_a_new_user_to_the_same_password
+        statements = DatabaseProvisioning.neo4j_statements('student', 'password')
+
+        password_changes = statements.select do |statement|
+            statement.include?('SET PLAINTEXT PASSWORD')
+        end
+        assert_equal 1, password_changes.size
+        assert password_changes.first.start_with?('CREATE USER ')
+    end
+
     def test_neo4j_existing_identity_migration_does_not_create_user_or_database
         statements = DatabaseProvisioning.neo4j_existing_identity_statements(
             'student',
