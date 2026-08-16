@@ -88,7 +88,7 @@ if PROFILE.include?(:dynamic)
                     ],
         :environment => env,
         :working_dir => '/src/ruby',
-        :privileged => true,
+        #:privileged => true,
         # rackup's development middleware includes Rack::Lint, which rejects
         # Faye's async hijack response before Puma can take over the socket.
         :entrypoint =>  DEVELOPMENT ?
