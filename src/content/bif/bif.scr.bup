@@ -18,18 +18,12 @@ Mit BIF kannst du interaktive Geschichten schreiben, bei denen die Leserinnen un
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>.
 
-<!-- Screenshot: Workspace ohne geöffneten Ordner -->
-
-<img class='full' src='fresh-start.webp' alt=''>
-
-Hier nochmal als generierter Screenshot:
-
 <!-- tutorial-screenshot
 # Workspace ohne geöffneten Ordner
 close-folder
 -->
 
-<img class='full' src='fresh-start-gen.webp' alt=''>
+<img class='full' src='fresh-start.webp' alt=''>
 
 Für diese Anleitung brauchst du das BIF-Repository. Klicke auf den blauen Button »Clone Repository« und gib die folgende URL ein:
 
@@ -39,7 +33,12 @@ https://github.com/specht/bif.git
 
 Bestätige anschließend mit <kbd>Enter</kbd>.
 
-<!-- Screenshot: Clone Repository mit eingetragener BIF-URL -->
+<!-- tutorial-screenshot
+# Clone Repository mit eingetragener BIF-URL
+clone-start: https://github.com/specht/bif.git
+crop-top: 33.5%
+crop-bottom: 33.6%
+-->
 
 <img class='full' src='git-clone.webp' alt=''>
 
@@ -51,17 +50,28 @@ Als nächstes musst du angeben, in welches Verzeichnis das Repository geklont we
 
 mit <kbd>Enter</kbd>.
 
-<!-- Screenshot: Auswahl von /workspace/ -->
+<!-- tutorial-screenshot
+# Auswahl von /workspace/
+clone-confirm-url
+crop-top: 33.5%
+crop-bottom: 33.6%
+-->
 
 <img class='full' src='confirm-clone-path.webp' alt=''>
 
 Beantworte anschließend die Frage »Would you like to open the cloned repository?« mit »Open«.
 
-<!-- Screenshot: Dialog zum Öffnen des geklonten Repositorys -->
+<!-- tutorial-screenshot
+# Dialog zum Öffnen des geklonten Repositorys
+clone-accept-destination
+-->
 
 <img class='full' src='open-yes-no.webp' alt=''>
 
-<!-- Screenshot: geöffnetes BIF-Projekt im Explorer -->
+<!-- tutorial-screenshot
+# geöffnetes BIF-Projekt im Explorer
+clone-open
+-->
 
 <img class='full' src='bif-project.webp' alt=''>
 
@@ -71,7 +81,10 @@ Wenn alles geklappt hat, siehst du links im Explorer unter anderem den Ordner `p
 
 Öffne im Explorer den Ordner `pages-starter` und darin die Datei `1.md`.
 
-<!-- Screenshot: 1.md geöffnet -->
+<!-- tutorial-screenshot
+# 1.md geöffnet
+open-file: pages-starter/1.md
+-->
 
 <img class='full' src='story-begin.webp' alt=''>
 
@@ -107,6 +120,12 @@ Klicke rechts unten auf »Go Live«. Es öffnet sich ein neuer Tab mit deiner Ge
 
 <div style='clear: both;'></div>
 
+<!-- tutorial-screenshot
+# erste BIF-Vorschau
+go-live
+tab: preview
+-->
+
 <img class='full full-shadow scroll-right' src='first-page.webp' alt='Der Story-Graph enthält eine Startseite; daneben erscheint der Beginn der Geschichte, allerdings noch ohne Entscheidungen.'>
 
 BIF startet standardmäßig in der Entwicklungsansicht. Rechts siehst du die Geschichte, die momentan noch sehr kurz ist und noch keine Entscheidungsmöglichkeiten bietet. Mit dem Button rechts oben kannst du zwischen der Entwicklungsansicht und der Leseansicht hin- und herwechseln. Wenn du deine Geschichte später veröffentlichst, bekommen deine Leser:innen nur die Leseansicht zu sehen.
@@ -126,6 +145,12 @@ Du stehst in einem leeren Flur. Links ist ein kleines Büro. Daneben führt eine
 Speichere die Datei, indem du <kbd>Strg</kbd><kbd>S</kbd> drückst. Die Vorschau sollte nun so aussehen:
 
 <div style='clear: both;'></div>
+
+<!-- tutorial-screenshot
+write-file: pages-starter/2.md <- previous-code
+preview-reload
+tab: preview
+-->
 
 <img class='full full-shadow scroll-right' src='unreachable-page.webp' alt='Eine zweite Seite ist im Story-Graph nicht mit der Startseite verbunden und als unerreichbar markiert.'>
 
@@ -150,6 +175,12 @@ Du willst gerade gehen, da fällt dir ein: Deine Projektmappe liegt noch im Mate
 ```
 
 Speichere die Datei und probiere die Geschichte im Browser aus:
+
+<!-- tutorial-screenshot
+write-file: pages-starter/1.md <- previous-code
+preview-reset
+tab: preview
+-->
 
 <img class='full full-shadow scroll-right' src='two-pages.webp' alt='Zwei Seiten sind im Story-Graph durch eine Entscheidung miteinander verbunden.'>
 
@@ -193,7 +224,15 @@ Du stehst in einem leeren Flur. Links ist ein kleines Büro. Daneben führt eine
 
 Speichere die Dateien und probiere beide Wege aus.
 
-<!-- Screenshot: zwei Entscheidungen im Flur -->
+<!-- tutorial-screenshot
+# zwei Entscheidungen im Flur
+write-file: pages-starter/3.md <- code:Im Büro sitzt Frau Neumann||Gehe zurück in den Flur.
+write-file: pages-starter/4.md <- code:Im Treppenhaus ist es still.||vergessener Turnbeutel
+write-file: pages-starter/2.md <- previous-code
+preview-reset
+click: Gehe in den Flur.
+tab: preview
+-->
 
 <img class='full full-shadow scroll-right' src='branching-story.webp' alt='Der Story-Graph verzweigt sich vom Flur zu Büro und Treppenhaus.'>
 
@@ -231,7 +270,14 @@ Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kle
 
 Der wichtige Unterschied ist der Punkt: `(.)` – er bedeutet, dass die Geschichte auf dieser Seite bleiben soll. Der eingerückte Text darunter erscheint erst, nachdem die Entscheidung ausgewählt wurde.
 
-<!-- Screenshot: lokale Entscheidung -->
+<!-- tutorial-screenshot
+# lokale Entscheidung
+write-file: pages-starter/3.md <- previous-code
+preview-reset
+click: Gehe in den Flur.
+click: Sieh im Büro nach.
+tab: preview
+-->
 
 <img class='full full-shadow scroll-right' src='local-choice.webp' alt='Die Frage nach dem Materialschrank führt nicht zu einem Seitenwechsel, da es sich um eine lokale Entscheidung handelt.'>
 
@@ -312,7 +358,16 @@ Wenn du »Nimm den Schlüssel« auswählst, wird das Skript ausgeführt und `has
 
 Öffne in der Entwicklungsansicht den Bereich **State** und beobachte den Wert beim Spielen.
 
-<!-- Screenshot: Schlüssel genommen / State mit has_key: true -->
+<!-- tutorial-screenshot
+# Schlüssel genommen / State mit has_key: true
+write-file: pages-starter/1.md <- code:# Nach Schulschluss||has_key = false;||Gehe in den Flur.
+write-file: pages-starter/3.md <- previous-code
+preview-reset
+click: Gehe in den Flur.
+click: Sieh im Büro nach.
+click: Nimm den Schlüssel.
+tab: preview
+-->
 
 <img class='full full-shadow scroll-right' src='take-key.webp' alt='Nach dem Aufnehmen des Schlüssels verschwindet die lokale Entscheidung aus der Geschichte.'>
 
@@ -476,7 +531,18 @@ Starte die Geschichte neu und probiere es aus:
 
 Jetzt verändert sich die Beschreibung des Flurs und die neue Entscheidung erscheint.
 
-<!-- Screenshot: Flur ohne Schlüssel -->
+<!-- tutorial-screenshot
+# Flur mit gespeichertem Schlüssel
+write-file: pages-starter/3.md <- code:<p condition="!has_key">||Frage, ob der Schlüssel zum Materialschrank passt.||Nimm den Schlüssel.
+write-file: pages-starter/5.md <- code:Der Schlüssel passt.||**Ende.**
+write-file: pages-starter/2.md <- previous-code
+preview-reset
+click: Gehe in den Flur.
+click: Sieh im Büro nach.
+click: Nimm den Schlüssel.
+click: Gehe zurück in den Flur.
+tab: preview
+-->
 
 <img class='full full-shadow scroll-right' src='locked-door.webp' alt='Im Flur erscheint mit gespeichertem Schlüssel die neue Entscheidung „Öffne den Materialschrank“.'>
 
@@ -493,6 +559,11 @@ Gerade beim Testen einer interaktiven Geschichte lohnt es sich, Orte mehrmals zu
 ## Ende
 
 Öffne jetzt den Materialschrank:
+
+<!-- tutorial-screenshot
+click: Öffne den Materialschrank.
+tab: preview
+-->
 
 <img class='full full-shadow scroll-right' src='unlocked-door.webp' alt='Der geöffnete Materialschrank bildet das Ende der Geschichte; darunter erscheint der Neustart-Button.'>
 

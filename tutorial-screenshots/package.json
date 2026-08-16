@@ -1,0 +1,9 @@
+{
+  "name": "hackschule-tutorial-screenshots",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "dependencies": {
+    "playwright": "1.62.1"
+  }
+}

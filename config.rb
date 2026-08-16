@@ -101,6 +101,25 @@ if PROFILE.include?(:dynamic)
     end
 end
 
+if DEVELOPMENT && PROFILE.include?(:dynamic) && PROFILE.include?(:static)
+    docker_compose[:services][:tutorial_screenshots] = {
+        :build => './tutorial-screenshots',
+        :volumes => [
+            './src/content:/content',
+            "#{USER_PATH}:/user",
+        ],
+        :environment => {
+            'TUTORIAL_SCREENSHOT_BASE_URL' => WEB_ROOT,
+            'TUTORIAL_SCREENSHOT_EMAIL' => 'screenshots@example.com',
+            'TUTORIAL_SCREENSHOT_LOGIN_CODE' => '123456',
+        },
+        :extra_hosts => [
+            'host.docker.internal:host-gateway',
+        ],
+        :shm_size => '1gb',
+    }
+end
+
 if PROFILE.include?(:neo4j)
     docker_compose[:services][:neo4japp] = {
         :build => './docker/neo4j',
@@ -234,6 +253,12 @@ end
 FileUtils::mkpath(USER_PATH)
 FileUtils::mkpath(INTERNAL_PATH)
 FileUtils::mkpath(INVITATIONS_PATH)
+if DEVELOPMENT
+    File.write(
+        File.join(INVITATIONS_PATH, '_tutorial_screenshots.txt'),
+        "> Tutorial Screenshots\nTutorial Screenshots <screenshots@example.com>\n"
+    )
+end
 template_path = File.join(INVITATIONS_PATH, '_template.txt')
 File.open(template_path, 'w') do |f|
     f.puts <<~EOS

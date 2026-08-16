@@ -3,6 +3,7 @@ require './include/automatron.rb'
 require './include/atomic_file.rb'
 require './include/database_provisioning.rb'
 require './include/trusted_template.rb'
+require './include/tutorial_screenshots.rb'
 require './include/workspace_credentials.rb'
 require './include/workspace_runtime.rb'
 require 'base64'
@@ -1222,6 +1223,11 @@ class Main < Sinatra::Base
             unless entry[:kenney]
                 next unless path
                 markdown = File.read(path)
+                markdown = TutorialScreenshots.prepare(
+                    markdown,
+                    path,
+                    :generate => parse_content_count > 1,
+                )
                 markdown.gsub!(/_include_file\(([^)]+)\)/) do |match|
                     options = $1.split(',').map { |x| x.strip }
                     StringIO.open do |io|
