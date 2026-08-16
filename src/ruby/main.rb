@@ -1133,16 +1133,52 @@ class Main < Sinatra::Base
         result
     end
 
-    def self.parse_content
+    def self.content_catalog_signature
+        digest = Digest::SHA256.new
+        ['/src/content/sections.yaml', '/src/content/hyphenation.txt'].each do |path|
+            digest.update(File.binread(path))
+            digest.update("\0")
+        end
+        Dir['/src/content/**/*.md'].sort.each do |path|
+            digest.update(path)
+            digest.update("\0")
+        end
+        digest.hexdigest
+    end
+
+    def self.refresh_content_catalog
+        return unless DEVELOPMENT
+        signature = content_catalog_signature
+        return if defined?(@@content_catalog_signature) &&
+            @@content_catalog_signature == signature
+        parse_content
+    end
+
+    def self.refresh_tutorial(slug)
+        return unless DEVELOPMENT
+        refresh_content_catalog
+        path = if defined?(@@content_paths) && @@content_paths
+            @@content_paths[slug]
+        end
+        return unless path && File.file?(path)
+
+        # Generation is intentionally outside @@parse_content_mutex. The
+        # generator may launch a Workspace and make requests back to Ruby.
+        TutorialScreenshots.prepare(File.read(path), path)
+        parse_content(slug)
+    end
+
+    def self.parse_content(only_slug = nil)
         @@parse_content_mutex ||= Mutex.new
         @@parse_content_mutex.synchronize do
-            parse_content_locked
+            parse_content_locked(only_slug)
         end
     end
 
-    def self.parse_content_locked
+    def self.parse_content_locked(only_slug = nil)
+        partial = !only_slug.nil?
         parse_started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-        STDERR.puts "Parsing content..."
+        STDERR.puts(partial ? "Parsing content: #{only_slug}..." : "Parsing content...")
         hyphenation_map = {}
         File.read('/src/content/hyphenation.txt').split("\n").each do |line|
             line.strip!
@@ -1152,6 +1188,7 @@ class Main < Sinatra::Base
         section_order = sections.map { |section| section['key'] }
         parsed_sections = {}
         parsed_content = {}
+        parsed_content_paths = {}
         paths = []
         seen_paths = Set.new()
         sections.each do |section|
@@ -1186,16 +1223,33 @@ class Main < Sinatra::Base
             end
         end
 
-        parsed_kenney = {}
-        Dir['/src/content/anaglyph/kenney/*/*.webp'].sort.each do |path|
-            kit = path.split('/').last(2).first
-            model = path.split('/').last(2).last.sub('.webp', '')
-            parsed_kenney[kit] ||= []
-            parsed_kenney[kit] << model
+        parsed_kenney = if partial && defined?(@@kenney) && @@kenney
+            @@kenney
+        else
+            {}
+        end
+        unless partial
+            Dir['/src/content/anaglyph/kenney/*/*.webp'].sort.each do |path|
+                kit = path.split('/').last(2).first
+                model = path.split('/').last(2).last.sub('.webp', '')
+                parsed_kenney[kit] ||= []
+                parsed_kenney[kit] << model
+            end
+
+            parsed_kenney.keys.each do |kit|
+                paths << {:section => 'misc', :path => kit, :original_path => "/src/content/anaglyph/#{kit}.md", :dev_only => false, :kenney => true, :extra => true}
+            end
         end
 
-        parsed_kenney.keys.each do |kit|
-            paths << {:section => 'misc', :path => kit, :original_path => "/src/content/anaglyph/#{kit}.md", :dev_only => false, :kenney => true, :extra => true}
+        if partial
+            paths.select! do |entry|
+                entry_path = entry[:original_path]
+                next false unless entry_path
+                File.basename(entry_path, '.md')
+                    .sub(/^[0-9]+\-/, '')
+                    .sub('+', '') == only_slug
+            end
+            return false if paths.empty?
         end
 
         redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
@@ -1223,11 +1277,6 @@ class Main < Sinatra::Base
             unless entry[:kenney]
                 next unless path
                 markdown = File.read(path)
-                markdown = TutorialScreenshots.prepare(
-                    markdown,
-                    path,
-                    :generate => parse_content_count > 1,
-                )
                 markdown.gsub!(/_include_file\(([^)]+)\)/) do |match|
                     options = $1.split(',').map { |x| x.strip }
                     StringIO.open do |io|
@@ -1312,6 +1361,7 @@ class Main < Sinatra::Base
             end
 
             slug = File.basename(path, '.md').sub(/^[0-9]+\-/, '').sub('+', '')
+            parsed_content_paths[slug] = path unless entry[:kenney]
             html = redcarpet.render(markdown)
             root = Nokogiri::HTML(html)
             meta = root.css('.meta').first
@@ -1510,15 +1560,28 @@ class Main < Sinatra::Base
                 end
             end
         end
-        # Publish only complete parse results. Concurrent requests continue to
-        # read the previous complete snapshot while this method is working.
-        @@section_order = section_order
-        @@sections = parsed_sections
-        @@kenney = parsed_kenney
-        @@content = parsed_content
+        if partial
+            parsed_content.each_pair do |slug, content|
+                @@content[slug] = content
+            end
+            parsed_content_paths.each_pair do |slug, path|
+                @@content_paths[slug] = path
+            end
+        else
+            # Publish only complete parse results. Concurrent requests continue
+            # to read the previous complete snapshot while this method is working.
+            @@section_order = section_order
+            @@sections = parsed_sections
+            @@kenney = parsed_kenney
+            @@content = parsed_content
+            @@content_paths = parsed_content_paths
+            @@content_catalog_signature = content_catalog_signature
+        end
 
         parse_elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - parse_started_at
-        STDERR.puts "Finished parsing content in #{format('%.3f', parse_elapsed)}s"
+        label = partial ? "content #{only_slug}" : 'content'
+        STDERR.puts "Finished parsing #{label} in #{format('%.3f', parse_elapsed)}s"
+        true
     end
 
     private_class_method :parse_content_locked
@@ -2767,7 +2830,7 @@ class Main < Sinatra::Base
     end
 
     def print_content_overview()
-        Main.parse_content if DEVELOPMENT
+        Main.refresh_content_catalog if DEVELOPMENT
         html = StringIO.open do |io|
             running_tests = my_running_tests()
             if running_tests.empty?
@@ -4582,7 +4645,7 @@ class Main < Sinatra::Base
         path = request.path
         slug = nil
         if DEVELOPMENT && path =~ /^\/[a-zA-Z0-9_-]+$/
-            Main.parse_content()
+            Main.refresh_tutorial(path[1, path.size - 1])
         end
         running_tests = my_running_tests()
         if path[0, 7] == '/share/'

@@ -358,6 +358,66 @@ async function waitForWorkspaceStart() {
     throw new Error('Timed out waiting for tutorial screenshot Workspace to start');
 }
 
+async function waitForWorkspaceWorkbench(page, workspaceUrl) {
+    const deadline = Date.now() + 120_000;
+    let attempt = 0;
+    let lastStatus = null;
+    let lastError = '';
+    let lastTitle = '';
+    let lastBody = '';
+
+    while (Date.now() < deadline) {
+        attempt += 1;
+        try {
+            const response = await page.goto(workspaceUrl, {
+                waitUntil: 'domcontentloaded',
+                timeout: 15_000,
+            });
+            lastStatus = response?.status() ?? null;
+            lastError = '';
+
+            if (lastStatus !== null && lastStatus >= 200 && lastStatus < 400) {
+                try {
+                    const remaining = Math.max(1_000, deadline - Date.now());
+                    await page.locator('.monaco-workbench').waitFor({
+                        state: 'visible',
+                        timeout: Math.min(30_000, remaining),
+                    });
+                    return;
+                } catch (error) {
+                    lastError = error.message;
+                }
+            } else {
+                lastError = `HTTP ${lastStatus ?? 'no response'}`;
+            }
+        } catch (error) {
+            lastError = error.message;
+        }
+
+        lastTitle = await page.title().catch(() => '');
+        lastBody = await page.locator('body').innerText().catch(() => '');
+        lastBody = lastBody.replace(/\s+/g, ' ').trim().slice(0, 500);
+
+        if (lastStatus === 401 || lastStatus === 403) break;
+        if (Date.now() >= deadline) break;
+
+        console.log(
+            `Tutorial screenshot Workspace not ready yet ` +
+            `(attempt ${attempt}, status ${lastStatus ?? 'n/a'}); retrying...`,
+        );
+        await page.waitForTimeout(1_000);
+    }
+
+    throw new Error([
+        'Timed out waiting for the tutorial screenshot Workspace UI.',
+        `URL: ${workspaceUrl}`,
+        `Last HTTP status: ${lastStatus ?? 'n/a'}`,
+        `Last title: ${lastTitle || '(empty)'}`,
+        `Last page body: ${lastBody || '(empty)'}`,
+        `Last error: ${lastError || '(none)'}`,
+    ].join('\n'));
+}
+
 async function freshWorkspace() {
     await ensureLoggedIn();
 
@@ -386,8 +446,7 @@ async function freshWorkspace() {
     const base = new URL(BASE_URL);
     const workspaceUrl = `${base.protocol}//${serverTag}.${base.hostname}${base.port ? `:${base.port}` : ''}/`;
     workspace = await context.newPage();
-    await workspace.goto(workspaceUrl, { waitUntil: 'domcontentloaded', timeout: 180_000 });
-    await workspace.locator('.monaco-workbench').waitFor({ state: 'visible', timeout: 120_000 });
+    await waitForWorkspaceWorkbench(workspace, workspaceUrl);
     await workspace.setViewportSize({ width: DEFAULT_PROFILE.width, height: DEFAULT_PROFILE.height });
 }
 
