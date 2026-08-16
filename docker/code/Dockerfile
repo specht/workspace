@@ -380,10 +380,9 @@ ENV PATH="/opt/emsdk/upstream/emscripten:${PATH}"
 # The numeric UID of abc can change when linuxserver initializes
 # the container, so don't rely on build-time ownership.
 #
-# Keep the pinned Flutter SDK itself immutable. Flutter rewrites runtime
-# stamps under bin/cache during normal startup, so only that cache stays writable.
-RUN chmod -R a-w /opt/flutter \
-    && chmod -R a+rwX /opt/flutter/bin/cache \
+# Flutter treats parts of its SDK checkout as mutable tool state, including
+# packages/flutter_tools/.dart_tool, so the installation must stay writable.
+RUN chmod -R a+rwX /opt/flutter \
     && git config --system --add safe.directory /opt/flutter \
     && chmod -R a+rwX /opt/gradle-cache \
     && chmod -R a+rwX /opt/emsdk/upstream/emscripten/cache
