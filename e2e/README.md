@@ -180,7 +180,20 @@ container image, current CPU/memory/PID settings, tool versions, per-run
 baselines and peaks, and the highest values observed. It intentionally does not
 turn those measurements into proposed limits.
 
-The profiler refuses to run if the student container already has a memory or
-PID limit, because that would make the initial peak measurement circular. After
-limits have been chosen and added separately, use the normal E2E suite to verify
-that the workloads still pass under those limits.
+The profiler can run both before and after resource limits are enabled.
+
+Without limits, the result is marked `unconstrained` and can be used when
+choosing initial limits. With limits enabled, the result is marked
+`constrained` and is useful for verifying that representative workloads
+still have sufficient headroom.
+
+To explicitly require an unconstrained container, use:
+
+```bash
+E2E_RESOURCE_REQUIRE_UNLIMITED=1 E2E_RESOURCE_RUNS=3 npm run profile:resources
+```
+
+This deliberately fails if a memory or PID limit is already active.
+A constrained peak near a configured limit should not be interpreted as
+the workload's unconstrained resource requirement.
+

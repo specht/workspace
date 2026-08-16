@@ -4,6 +4,7 @@ require './include/atomic_file.rb'
 require './include/database_provisioning.rb'
 require './include/trusted_template.rb'
 require './include/workspace_credentials.rb'
+require './include/workspace_runtime.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
@@ -361,6 +362,17 @@ class Main < Sinatra::Base
         Main.shell_ok(command, :timeout => timeout, :allow_failure => allow_failure)
     end
 
+    def self.workspace_runtime
+        @workspace_runtime ||= WorkspaceRuntime::DirectDocker.new(
+            :capture => lambda { |command, **options| Main.shell_capture(command, **options) },
+            :ok => lambda { |command, **options| Main.shell_ok(command, **options) },
+        )
+    end
+
+    def workspace_runtime
+        Main.workspace_runtime
+    end
+
     # Background queue for workspace launches. This keeps long-running Docker,
     # chown, tar, and nginx-refresh work out of request handlers while still
     # deduplicating repeated launch clicks for the same workspace.
@@ -538,14 +550,11 @@ class Main < Sinatra::Base
     def self.refresh_nginx_config_locked
         STDERR.puts ">>> Refreshing nginx config..."
         running_servers = {}
-        inspect = JSON.parse(shell_capture("docker network inspect workspace_user", :timeout => shell_timeout(:docker_network_inspect)))
-        inspect.first['Containers'].values.each do |container|
-            name = container['Name']
-            next unless name[0, 8] == 'hs_code_'
-            fs_tag = name.sub('hs_code_', '')
-            ip = container['IPv4Address'].split('/').first
+        workspace_runtime.running_workspaces(
+            :timeout => shell_timeout(:docker_network_inspect),
+        ).each_pair do |fs_tag, workspace|
             running_servers[fs_tag] = {
-                :ip => ip,
+                :ip => workspace[:ip],
                 :server_sid => nil,
                 :server_tag => nil,
                 :share_tag => nil,
@@ -1999,16 +2008,10 @@ class Main < Sinatra::Base
     end
 
     def get_server_state(tag)
-        result = {}
-        result[:tag] = tag
-        result[:running] = false
-        inspect_json = shell_capture("docker inspect hs_code_#{tag}", :timeout => shell_timeout(:docker_inspect), :allow_failure => true)
-        inspect = inspect_json.strip.empty? ? [] : JSON.parse(inspect_json)
-        unless inspect.empty?
-            result[:running] = true
-            result[:ip] = inspect.first['NetworkSettings']['Networks']['workspace_user']['IPAddress']
-        end
-        result
+        workspace_runtime.workspace_state(
+            tag,
+            :timeout => shell_timeout(:docker_inspect),
+        )
     end
 
     def self.gen_password_for_email(email, salt)
@@ -2491,7 +2494,6 @@ class Main < Sinatra::Base
                 end
             end
 
-            network_name = "workspace_user"
             # STDERR.puts ">>> Getting IP address for mysql..."
 
             workspace_login = Main.workspace_login_for_email(email)
@@ -2503,12 +2505,15 @@ class Main < Sinatra::Base
 
             # STDERR.puts ">>> Workspace login is #{workspace_login}, database login is #{database_login}"
 
-            command = "docker run --cpus=4 --memory=4g --memory-swap=4g --pids-limit=256 -d --rm --hostname workspace -e PUID=1000 -e PGID=1000 -e TZ=Europe/Berlin -e WORKSPACE_USER=#{Shellwords.escape(workspace_login)} -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"#{database_environment['MYSQL_HOST']}\" -e MYSQL_USER=\"#{database_environment['MYSQL_USER']}\" -e MYSQL_PASSWORD=\"#{database_environment['MYSQL_PASSWORD']}\" -e MYSQL_DATABASE=\"#{database_environment['MYSQL_DATABASE']}\" -e NEO4J_URI=\"#{database_environment['NEO4J_URI']}\" -e NEO4J_USERNAME=\"#{database_environment['NEO4J_USERNAME']}\" -e NEO4J_PASSWORD=\"#{database_environment['NEO4J_PASSWORD']}\" -e NEO4J_DATABASE=\"#{database_environment['NEO4J_DATABASE']}\" -v #{PATH_TO_HOST_DATA}/user/#{container_name}/config:/config -v #{PATH_TO_HOST_DATA}/user/#{container_name}/workspace:/workspace --network #{network_name} #{test_tag ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{container_name} hs_code_server"
-
-            # STDERR.puts ">>> Command:\n#{command}"
-
             with_timing("start_server #{container_name}: docker run") do
-                shell_ok(command, :timeout => shell_timeout(:docker_run))
+                workspace_runtime.start_workspace(
+                    :fs_tag => container_name,
+                    :workspace_login => workspace_login,
+                    :database_environment => database_environment,
+                    :host_data_path => PATH_TO_HOST_DATA,
+                    :test_mode => !test_tag.nil?,
+                    :timeout => shell_timeout(:docker_run),
+                )
             end
 
             with_timing("start_server #{container_name}: refresh nginx") do
@@ -2533,7 +2538,10 @@ class Main < Sinatra::Base
             SET s.active = FALSE, s.updated_at = $updated_at;
         END_OF_QUERY
 
-        shell_ok("docker kill hs_code_#{container_name}", :timeout => shell_timeout(:docker_kill), :allow_failure => true)
+        workspace_runtime.stop_workspace(
+            container_name,
+            :timeout => shell_timeout(:docker_kill),
+        )
         Main.reconcile_live_apps!(:refresh_nginx => false)
         Main.refresh_nginx_config()
     end
@@ -2852,19 +2860,9 @@ class Main < Sinatra::Base
 
         STDERR.puts "email_for_tag: #{email_for_tag.to_yaml}"
 
-        info_for_tag = {}
-        inspect_json = shell_capture("docker inspect workspace", :timeout => shell_timeout(:docker_inspect), :allow_failure => true)
-        unless inspect_json.strip.empty?
-            JSON.parse(inspect_json).each do |entry|
-                entry['Containers'].each_pair do |id, container|
-                    name = container['Name']
-                    next unless name[0, 8] == 'hs_code_'
-                    info_for_tag[name.sub('hs_code_', '')] = {
-                        :ip => container['IPv4Address'],
-                    }
-                end
-            end
-        end
+        info_for_tag = workspace_runtime.workspace_network_info(
+            :timeout => shell_timeout(:docker_inspect),
+        )
 
         StringIO.open do |io|
             io.puts "<div style='max-width: 100%; overflow-x: auto;'>"
@@ -2988,30 +2986,15 @@ class Main < Sinatra::Base
                     email_for_tag[fs_tag_for_email(email)] = email
                 end
                 docker_stats_thread = Thread.new do
-                    command = "docker stats --no-stream --format \"{{ json . }}\""
                     loop do
                         lines = {}
-                        IO.popen(command).each_line do |line|
-                            line.strip!
-                            next if line.empty?
-
-                            begin
-                                stat_line = JSON.parse(line)
-                            rescue JSON::ParserError => e
-                                STDERR.puts "Could not parse docker stats line: #{line.inspect}: #{e.message}"
-                                next
-                            end
-
-                            name = stat_line['Name'].to_s
-                            if name.start_with?('hs_code_')
-                                fs_tag = name.sub('hs_code_', '')
-                                email = email_for_tag[fs_tag]
-                                lines[fs_tag] = {
-                                    :name => (@@invitations[email] || {})[:name],
-                                    :group => (@@invitations[email] || {})[:group],
-                                    :stats => stat_line
-                                }
-                            end
+                        workspace_runtime.workspace_stats.each_pair do |fs_tag, stat_line|
+                            email = email_for_tag[fs_tag]
+                            lines[fs_tag] = {
+                                :name => (@@invitations[email] || {})[:name],
+                                :group => (@@invitations[email] || {})[:group],
+                                :stats => stat_line
+                            }
                         end
                         ws.send({:stats => lines}.to_json)
                         sleep 1

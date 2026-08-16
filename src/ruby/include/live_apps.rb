@@ -15,25 +15,12 @@ class Main < Sinatra::Base
 
     def self.live_app_listening_sockets_for_email(email)
         fs_tag = fs_tag_for_email(email)
-        command = "docker exec hs_code_#{fs_tag} sh -c 'cat /proc/net/tcp /proc/net/tcp6 2>/dev/null'"
-        output = shell_capture(command, :timeout => shell_timeout(:docker_inspect), :allow_failure => true, :log_command => false)
-        sockets = []
-
-        output.each_line do |line|
-            parts = line.strip.split(/\s+/)
-            next unless parts.size >= 10
-            next unless parts[3] == '0A' # TCP_LISTEN
-            next unless parts[7].to_i == LIVE_APP_USER_UID
-
-            local_address = parts[1]
-            next unless local_address && local_address.include?(':')
-            port = local_address.split(':').last.to_i(16)
-            next unless live_app_port_allowed?(port)
-
-            sockets << {
-                :port => port,
-                :inode => parts[9],
-            }
+        sockets = workspace_runtime.live_app_sockets(
+            fs_tag,
+            :uid => LIVE_APP_USER_UID,
+            :timeout => shell_timeout(:docker_inspect),
+        ).select do |socket|
+            live_app_port_allowed?(socket[:port])
         end
 
         sockets.uniq { |socket| [socket[:port], socket[:inode]] }.sort_by { |socket| [socket[:port], socket[:inode].to_s] }
@@ -62,39 +49,11 @@ class Main < Sinatra::Base
 
     def self.live_app_processes_for_email(email)
         fs_tag = fs_tag_for_email(email)
-        script = <<~'SH'
-            for p in /proc/[0-9]*; do
-                pid=${p#/proc/}
-                [ -r "$p/comm" ] || continue
-                comm=$(tr '\t\n' '  ' < "$p/comm" 2>/dev/null)
-                cmd=$(tr '\000' ' ' < "$p/cmdline" 2>/dev/null | tr '\t\n' '  ')
-                for fd in "$p"/fd/*; do
-                    link=$(readlink "$fd" 2>/dev/null) || continue
-                    case "$link" in
-                        socket:\[*\])
-                            inode=${link#socket:\[}
-                            inode=${inode%\]}
-                            printf '%s\t%s\t%s\t%s\n' "$inode" "$pid" "$comm" "$cmd"
-                            ;;
-                    esac
-                done
-            done
-        SH
-        command = "docker exec -u #{LIVE_APP_USER_UID} hs_code_#{fs_tag} sh -c #{Shellwords.escape(script)}"
-        output = shell_capture(command, :timeout => shell_timeout(:docker_inspect), :allow_failure => true, :log_command => false)
-        processes = {}
-
-        output.each_line do |line|
-            inode, pid, process, command = line.chomp.split("\t", 4)
-            next if inode.to_s.empty?
-            processes[inode] ||= {
-                :pid => pid.to_i,
-                :process => process.to_s.strip,
-                :command => command.to_s.strip,
-            }
-        end
-
-        processes
+        workspace_runtime.live_app_processes(
+            fs_tag,
+            :uid => LIVE_APP_USER_UID,
+            :timeout => shell_timeout(:docker_inspect),
+        )
     rescue => e
         STDERR.puts ">>> Could not inspect live-app processes for #{email}: #{e.class}: #{e.message}"
         {}

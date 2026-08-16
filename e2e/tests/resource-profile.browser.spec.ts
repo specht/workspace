@@ -15,6 +15,8 @@ const execFileAsync = promisify(execFile);
 
 const PROFILE_ENABLED =
   process.env.E2E_RESOURCE_PROFILE === '1';
+const REQUIRE_UNLIMITED =
+  process.env.E2E_RESOURCE_REQUIRE_UNLIMITED === '1';
 const SAMPLE_INTERVAL_MS = positiveIntegerEnv(
   'E2E_RESOURCE_SAMPLE_MS',
   10,
@@ -565,14 +567,27 @@ if (PROFILE_ENABLED) {
       const pidsLimit =
         hostConfig.PidsLimit ?? 0;
 
-      expect(
-        memoryLimitBytes,
-        'Resource profiling must run before a student-container memory limit is enabled',
-      ).toBe(0);
-      expect(
-        pidsLimit <= 0,
-        'Resource profiling must run before a student-container PID limit is enabled',
-      ).toBe(true);
+      const constrained =
+        memoryLimitBytes > 0 ||
+        pidsLimit > 0;
+
+      if (REQUIRE_UNLIMITED) {
+        expect(
+          memoryLimitBytes,
+          'E2E_RESOURCE_REQUIRE_UNLIMITED=1 requires a student container without a memory limit',
+        ).toBe(0);
+
+        expect(
+          pidsLimit <= 0,
+          'E2E_RESOURCE_REQUIRE_UNLIMITED=1 requires a student container without a PID limit',
+        ).toBe(true);
+      }
+
+      console.log(
+        `[resource-profile] mode=${constrained ? 'constrained' : 'unconstrained'} ` +
+        `memory_limit=${memoryLimitBytes} ` +
+        `pids_limit=${pidsLimit}`,
+      );
 
       const cgroup = await findContainerCgroupDir(
         container.name,
@@ -920,6 +935,10 @@ if (PROFILE_ENABLED) {
           pidsLimit,
         },
         measurement: {
+          mode:
+            constrained
+              ? 'constrained'
+              : 'unconstrained',
           cgroup: cgroup.source,
           sampleIntervalMs:
             SAMPLE_INTERVAL_MS,
@@ -981,7 +1000,9 @@ if (PROFILE_ENABLED) {
         },
       );
 
-      console.log('\nResource profile summary (observed, not proposed limits):');
+      console.log(
+        `\nResource profile summary (${constrained ? 'constrained' : 'unconstrained'}):`,
+      );
       console.table(
         results.map(result => ({
           workload: result.workload,

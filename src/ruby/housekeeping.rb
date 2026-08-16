@@ -1,6 +1,12 @@
 #!/usr/bin/env ruby
 
 require 'json'
+require_relative 'include/workspace_runtime'
+
+runtime = WorkspaceRuntime::DirectDocker.new(
+    :capture => lambda { |command, **_options| `#{command}` },
+    :ok => lambda { |command, **_options| system(command) },
+)
 
 LIVE_APP_PIN_PATH = '/internal/live_app_pins.json'
 LIVE_APP_PIN_MAX_AGE = 60
@@ -16,15 +22,7 @@ rescue => e
     []
 end
 
-running_servers = []
-inspect = JSON.parse(`docker network inspect workspace_user`)
-inspect.first['Containers'].values.each do |container|
-    name = container['Name']
-    next unless name[0, 8] == 'hs_code_'
-    fs_tag = name.sub('hs_code_', '')
-    ip = container['IPv4Address'].split('/').first
-    running_servers << fs_tag
-end
+running_servers = runtime.running_workspaces.keys
 
 now = Time.now.to_i
 
@@ -40,7 +38,7 @@ running_servers.each do |fs_tag|
     age = now - Dir["/user/#{fs_tag}/**/*", "/user/#{fs_tag}/**/.*"].reject { |x| File.symlink?(x) }.map { |x| File.mtime(x).to_i }.max
     if age > 60 * 180
         STDERR.puts "Killing #{fs_tag} => #{age} seconds old"
-        system("docker kill hs_code_#{fs_tag}")
+        runtime.stop_workspace(fs_tag)
     end
 end
 
