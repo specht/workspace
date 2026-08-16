@@ -27,16 +27,18 @@ class DiscogsDatasetBuilder
     'Tour Recording'
   ].freeze
 
-  def initialize(output_dir:, min_versions: 50, dump_date: nil, force_download: false)
+  def initialize(output_dir:, min_artist_versions: 100, min_album_versions: 10, dump_date: nil, force_download: false)
     @output_dir = File.expand_path(output_dir)
     @download_dir = File.join(@output_dir, '.downloads')
-    @min_versions = min_versions
+    @min_artist_versions = min_artist_versions
+    @min_album_versions = min_album_versions
     @requested_dump_date = dump_date
     @force_download = force_download
   end
 
   def run
-    raise ArgumentError, '--min-versions must be at least 1' if @min_versions < 1
+    raise ArgumentError, '--min-artist-versions must be at least 1' if @min_artist_versions < 1
+    raise ArgumentError, '--min-album-versions must be at least 1' if @min_album_versions < 1
 
     FileUtils.mkdir_p(@download_dir)
     @dump_date = resolve_dump_date
@@ -50,13 +52,13 @@ class DiscogsDatasetBuilder
       main_release_ids = load_main_release_ids
       version_counts, canonical_release_path = scan_releases(main_release_ids)
       main_release_ids = nil
-      masters = load_popular_album_masters(version_counts)
+      masters = load_candidate_album_masters(version_counts)
       albums = load_main_releases(masters, canonical_release_path)
     ensure
       FileUtils.rm_f(canonical_release_path) if canonical_release_path
     end
 
-    selected_artist_ids = albums.values.map { |album| album[:artist_id] }.to_set
+    selected_artist_ids = select_popular_artists!(albums)
     artists, memberships = load_artists(selected_artist_ids)
     if selected_artist_ids.any? && selected_artist_ids.none? { |artist_id| artists.key?(artist_id) }
       raise "Could not resolve any of #{selected_artist_ids.size} selected artist IDs from the Discogs artist dump"
@@ -449,14 +451,14 @@ class DiscogsDatasetBuilder
     end
   end
 
-  def load_popular_album_masters(version_counts)
-    STDERR.puts "Selecting masters with at least #{@min_versions} release versions..."
+  def load_candidate_album_masters(version_counts)
+    STDERR.puts "Selecting candidate masters with at least #{@min_album_versions} release versions..."
     masters = {}
 
     each_selected_record(
       dataset_path('masters'),
       'master',
-      ->(id, _line) { version_counts[id].to_i >= @min_versions }
+      ->(id, _line) { version_counts[id].to_i >= @min_album_versions }
     ) do |master_id, xml|
       doc = parse_xml(xml)
       master = doc.root
@@ -484,7 +486,7 @@ class DiscogsDatasetBuilder
       }
     end
 
-    STDERR.puts "  #{masters.size} popular single-artist masters before album filtering"
+    STDERR.puts "  #{masters.size} candidate single-artist masters before album filtering"
     masters
   end
 
@@ -515,6 +517,25 @@ class DiscogsDatasetBuilder
 
     STDERR.puts "  #{albums.size} canonical albums retained"
     albums
+  end
+
+  def select_popular_artists!(albums)
+    artist_scores = Hash.new(0)
+    albums.each_value do |album|
+      artist_scores[album[:artist_id]] += album[:versions]
+    end
+
+    selected_artist_ids = artist_scores.filter_map do |artist_id, score|
+      artist_id if score >= @min_artist_versions
+    end.to_set
+
+    before = albums.size
+    albums.delete_if { |_id, album| !selected_artist_ids.include?(album[:artist_id]) }
+
+    STDERR.puts "Selecting artists with at least #{@min_artist_versions} combined album release versions..."
+    STDERR.puts "  #{selected_artist_ids.size} artists qualify; #{albums.size} of #{before} albums retained"
+
+    selected_artist_ids
   end
 
   def album_release?(release)
@@ -1038,15 +1059,18 @@ class DiscogsDatasetBuilder
 
       #{DATASET_TYPES.map { |type| "- #{source_uri(type)}" }.join("\n")}
 
-      The generated data contains canonical, single-artist album master releases whose
-      Discogs master has at least #{@min_versions} release versions. Compilations,
-      unofficial releases, reissues, remasters and tour recordings are excluded.
+      The generated data contains canonical, single-artist albums from artists whose
+      qualifying albums have at least #{@min_artist_versions} Discogs release versions
+      in aggregate. An individual album needs at least #{@min_album_versions} versions
+      before it contributes to that artist score or is included. Compilations, unofficial
+      releases, reissues, remasters and tour recordings are excluded.
 
       Discogs' public CC0 dump contains catalog metadata but not a directly comparable
       IMDb-style vote count. The `versions` field therefore acts as a reproducible
-      offline popularity proxy: an album with many pressings, territories and editions
-      has a higher value than one represented by only a few releases. Change the cutoff
-      with `--min-versions` when rebuilding the dataset.
+      offline popularity proxy. Artist selection uses the sum of `versions` across
+      qualifying albums, so artists with a substantial regional catalogue can qualify
+      even when no single album has an unusually large international release history.
+      Change the cutoffs with `--min-artist-versions` and `--min-album-versions`.
 
       ## Generated files
 
@@ -1114,11 +1138,15 @@ class DiscogsDatasetBuilder
       Useful options:
 
       ```sh
-      ./discogs_prepare.rb --min-versions 100
+      ./discogs_prepare.rb --min-artist-versions 150
+      ./discogs_prepare.rb --min-album-versions 15
+      ./discogs_prepare.rb --min-versions 15
       ./discogs_prepare.rb --dump-date 20260801
       ./discogs_prepare.rb --force-download
       ./discogs_prepare.rb --output /path/to/discogs
       ```
+
+      `--min-versions` remains as a compatibility alias for `--min-album-versions`.
 
       The original compressed Discogs files are cached in `.downloads/` so subsequent
       runs can reuse them. `--force-download` refreshes the selected dump.
@@ -1131,7 +1159,8 @@ end
 
 options = {
   output_dir: 'discogs',
-  min_versions: 50,
+  min_artist_versions: 100,
+  min_album_versions: 10,
   dump_date: nil,
   force_download: false
 }
@@ -1143,8 +1172,16 @@ parser = OptionParser.new do |opts|
     options[:output_dir] = dir
   end
 
-  opts.on('--min-versions N', Integer, 'Minimum Discogs release versions per album master (default: 50)') do |n|
-    options[:min_versions] = n
+  opts.on('--min-artist-versions N', Integer, 'Minimum combined album release versions per artist (default: 100)') do |n|
+    options[:min_artist_versions] = n
+  end
+
+  opts.on('--min-album-versions N', Integer, 'Minimum release versions per included album (default: 10)') do |n|
+    options[:min_album_versions] = n
+  end
+
+  opts.on('--min-versions N', Integer, 'Alias for --min-album-versions') do |n|
+    options[:min_album_versions] = n
   end
 
   opts.on('--dump-date YYYYMMDD', 'Use a specific monthly Discogs dump instead of auto-detecting the newest') do |value|

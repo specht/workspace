@@ -5,11 +5,15 @@ Discogs XML dumps. It replaces the old hand-maintained `wanted-artists.txt` work
 albums are selected automatically by a numeric popularity proxy.
 
 Discogs' public dump does not contain an IMDb-style vote count. The builder therefore
-uses the number of release versions attached to a Discogs master release: albums with
-many pressings, territories and editions have a higher `versions` value.
+uses the number of release versions attached to Discogs master releases. Each album
+keeps its own `versions` value, while artist popularity is measured by summing the
+version counts of that artist's qualifying albums.
 
-By default, canonical single-artist albums with at least 50 versions are included.
-Compilations, unofficial releases, reissues, remasters and tour recordings are skipped.
+By default, an individual album needs at least 10 versions and an artist needs at least
+100 versions across those qualifying albums. This lets artists with a substantial
+regional catalogue qualify even when no single album has an unusually large
+international release history. Compilations, unofficial releases, reissues, remasters
+and tour recordings are skipped.
 
 Run:
 
@@ -23,11 +27,15 @@ The script finds the newest complete monthly dump, downloads and caches `artists
 Useful options:
 
 ```sh
-./discogs_prepare.rb --min-versions 100
+./discogs_prepare.rb --min-artist-versions 150
+./discogs_prepare.rb --min-album-versions 15
+./discogs_prepare.rb --min-versions 15
 ./discogs_prepare.rb --dump-date 20260801
 ./discogs_prepare.rb --force-download
 ./discogs_prepare.rb --output /path/to/discogs
 ```
+
+`--min-versions` remains as a compatibility alias for `--min-album-versions`.
 
 Generated files:
 
