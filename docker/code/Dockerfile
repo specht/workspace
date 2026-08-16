@@ -12,6 +12,11 @@ ARG CODE_SERVER_IMAGE=linuxserver/code-server:4.131.0
 
 ARG TL_YEAR=2026
 ARG FLUTTER_VERSION=3.44.9
+ARG ANDROID_CMDLINE_TOOLS_VERSION=15859902
+ARG ANDROID_CMDLINE_TOOLS_SHA256=4e4c464f145a7512b57d088ac6c278c03c9eea610886b35a5e0804e74eedf583
+ARG ANDROID_PLATFORM=36
+ARG ANDROID_BUILD_TOOLS_VERSION=36.0.0
+ARG ANDROID_NDK_VERSION=28.2.13676358
 ARG EMSCRIPTEN_VERSION=6.0.6
 ARG RAYLIB_VERSION=6.0
 
@@ -143,8 +148,122 @@ ENV PATH="${PATH}:${FLUTTER_ROOT}/bin"
 
 RUN git config --system --add safe.directory /opt/flutter \
     && flutter config --no-analytics \
-    && flutter precache --web \
+    && flutter precache --web --android \
     && flutter --version
+
+
+# ====================================================================
+# Android SDK stage
+#
+# Keep the Android SDK separate from Flutter itself. This lets Flutter
+# and Android tooling be updated independently while keeping both large
+# downloads cacheable.
+# ====================================================================
+
+FROM ${CODE_SERVER_IMAGE} AS android-sdk
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG JAVA_VERSION
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    rm -f /etc/apt/apt.conf.d/docker-clean \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        openjdk-${JAVA_VERSION}-jdk-headless \
+        unzip \
+        wget
+
+ARG ANDROID_CMDLINE_TOOLS_VERSION
+ARG ANDROID_CMDLINE_TOOLS_SHA256
+ARG ANDROID_PLATFORM
+ARG ANDROID_BUILD_TOOLS_VERSION
+ARG ANDROID_NDK_VERSION
+
+ENV ANDROID_HOME=/opt/android-sdk
+ENV ANDROID_SDK_ROOT=/opt/android-sdk
+ENV PATH="${ANDROID_HOME}/cmdline-tools/latest/bin:${PATH}"
+
+RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-downloads \
+    set -eux; \
+    archive=/var/cache/hackschule-downloads/commandlinetools-linux-${ANDROID_CMDLINE_TOOLS_VERSION}_latest.zip; \
+    if [ ! -s "$archive" ]; then \
+        wget -q \
+            "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMDLINE_TOOLS_VERSION}_latest.zip" \
+            -O "${archive}.tmp"; \
+        mv "${archive}.tmp" "$archive"; \
+    fi; \
+    printf '%s  %s\n' \
+        "${ANDROID_CMDLINE_TOOLS_SHA256}" \
+        "$archive" \
+        | sha256sum -c -; \
+    rm -rf /tmp/android-cmdline-tools; \
+    mkdir -p /tmp/android-cmdline-tools "${ANDROID_HOME}/cmdline-tools"; \
+    unzip -q "$archive" -d /tmp/android-cmdline-tools; \
+    mv \
+        /tmp/android-cmdline-tools/cmdline-tools \
+        "${ANDROID_HOME}/cmdline-tools/latest"; \
+    rm -rf /tmp/android-cmdline-tools
+
+RUN yes \
+        | sdkmanager \
+            --sdk_root="${ANDROID_HOME}" \
+            --licenses \
+            >/dev/null \
+    && sdkmanager \
+        --sdk_root="${ANDROID_HOME}" \
+        "platforms;android-${ANDROID_PLATFORM}" \
+        "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" \
+        "ndk;${ANDROID_NDK_VERSION}"
+
+
+# ====================================================================
+# Flutter + Android verification/cache stage
+#
+# Build one tiny APK during the image build. Besides verifying the
+# complete toolchain, this leaves Gradle/AGP artifacts in a cache that
+# students can reuse instead of downloading them in every container.
+# ====================================================================
+
+FROM flutter AS flutter-android
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG JAVA_VERSION
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    rm -f /etc/apt/apt.conf.d/docker-clean \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        openjdk-${JAVA_VERSION}-jdk-headless
+
+COPY --from=android-sdk \
+    /opt/android-sdk \
+    /opt/android-sdk
+
+ENV ANDROID_HOME=/opt/android-sdk
+ENV ANDROID_SDK_ROOT=/opt/android-sdk
+ENV GRADLE_USER_HOME=/opt/gradle-cache
+ENV PATH="${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin"
+
+RUN set -eux; \
+    flutter create \
+        --empty \
+        --platforms=android \
+        /tmp/flutter_android_smoke; \
+    cd /tmp/flutter_android_smoke; \
+    flutter build apk --debug; \
+    test -s build/app/outputs/flutter-apk/app-debug.apk; \
+    cd /; \
+    rm -rf \
+        /tmp/flutter_android_smoke \
+        "${GRADLE_USER_HOME}/daemon"; \
+    find "${GRADLE_USER_HOME}" \
+        -type f \
+        -name '*.lock' \
+        -delete; \
+    chmod -R a+rwX "${GRADLE_USER_HOME}"
 
 
 # ====================================================================
@@ -226,6 +345,14 @@ COPY --from=flutter \
     /opt/flutter \
     /opt/flutter
 
+COPY --from=android-sdk \
+    /opt/android-sdk \
+    /opt/android-sdk
+
+COPY --from=flutter-android \
+    /opt/gradle-cache \
+    /opt/gradle-cache
+
 COPY --from=raylib-web \
     /opt/emsdk \
     /opt/emsdk
@@ -247,6 +374,7 @@ ENV PATH="/opt/emsdk/upstream/emscripten:${PATH}"
 # to the Flutter SDK remain isolated in that container's writable layer.
 RUN chmod -R a+rwX /opt/flutter \
     && git config --system --add safe.directory /opt/flutter \
+    && chmod -R a+rwX /opt/gradle-cache \
     && chmod -R a+rwX /opt/emsdk/upstream/emscripten/cache
 
 # --------------------------------------------------------------------
@@ -259,6 +387,11 @@ ENV TEXLIVE_DIR=/usr/local/texlive/${TL_YEAR}
 ENV PATH=${TEXLIVE_DIR}/bin/x86_64-linux:$PATH
 ENV MANPATH=${TEXLIVE_DIR}/texmf-dist/doc/man
 ENV INFOPATH=${TEXLIVE_DIR}/texmf-dist/doc/info
+
+ENV ANDROID_HOME=/opt/android-sdk
+ENV ANDROID_SDK_ROOT=/opt/android-sdk
+ENV GRADLE_USER_HOME=/opt/gradle-cache
+ENV PATH="${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin"
 
 ENV FLUTTER_ROOT=/opt/flutter
 
