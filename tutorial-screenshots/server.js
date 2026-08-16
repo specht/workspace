@@ -40,7 +40,7 @@ const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'screenshots@e
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
-const GENERATOR_VERSION = 8;
+const GENERATOR_VERSION = 9;
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
 const DEFAULT_PROFILE = Object.freeze({
@@ -89,12 +89,19 @@ const WORKSPACE_SCREENSHOT_STYLE = `
     outline: none !important;
 }
 
-/* Keep the input's normal blue focus border, but suppress the separate outline
- * VS Code paints around the logically focused Quick Input result row. The
- * bundled code-server 4.131.0 VS Code CSS marks that row as .focused even
- * while the text input owns keyboard focus. */
-.monaco-workbench .quick-input-widget .quick-input-list .monaco-list-row.focused,
-.monaco-workbench .quick-input-widget .quick-input-tree .monaco-list-row.focused {
+/* Keep the input's normal blue focus border, but make list-focus outlines inside
+ * Quick Input transparent. code-server 4.131.0's bundled VS Code paints these
+ * from theme variables, so overriding the variables is more robust than trying
+ * to out-specificity every list/tree focus selector. */
+.quick-input-widget {
+    --vscode-list-focusOutline: transparent !important;
+    --vscode-list-focusAndSelectionOutline: transparent !important;
+    --vscode-list-inactiveFocusOutline: transparent !important;
+}
+
+/* Fallback for a native/browser outline on the list container itself. */
+.quick-input-widget .quick-input-list > .monaco-list,
+.quick-input-widget .quick-input-tree > .monaco-list {
     outline: none !important;
 }
 `;
@@ -724,7 +731,23 @@ async function cloneConfirmUrl() {
     const input = quickInput(workspace);
     await input.waitFor({ state: 'visible', timeout: 10_000 });
     await input.press('Enter');
-    await workspace.waitForFunction(() => document.body.innerText.includes('/workspace'), null, { timeout: 20_000 });
+
+    // The repository destination is shown in a Quick Input <input>. Its value is
+    // not part of document.body.innerText, so waiting for "/workspace" in body
+    // text never succeeds on code-server 4.131.0. Wait for the destination
+    // picker itself instead.
+    await workspace.waitForFunction(
+        () => [...document.querySelectorAll('.quick-input-widget .quick-input-box input')]
+            .some(candidate => {
+                const rect = candidate.getBoundingClientRect();
+                return rect.width > 0 &&
+                    rect.height > 0 &&
+                    candidate.value.includes('/workspace');
+            }),
+        null,
+        { timeout: 20_000 },
+    );
+    await workspace.waitForTimeout(150);
 }
 
 async function cloneAcceptDestination() {

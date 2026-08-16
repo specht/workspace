@@ -18,19 +18,13 @@ Mit BIF kannst du interaktive Geschichten schreiben, bei denen die Leserinnen un
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>.
 
-<!-- Screenshot: Workspace ohne geöffneten Ordner -->
-
-<img class='full' src='fresh-start.webp' alt=''>
-
-Hier nochmal als generierter Screenshot:
-
 <!-- tutorial-screenshot
 # Workspace ohne geöffneten Ordner
 show-left-sidebar
 left-sidebar-width: 300
 -->
 
-<img class='full' src='fresh-start-gen.webp' alt=''>
+<img class='full' src='fresh-start.webp' alt=''>
 
 Für diese Anleitung brauchst du das BIF-Repository. Klicke auf den blauen Button »Clone Repository« und gib die folgende URL ein:
 
@@ -40,9 +34,6 @@ https://github.com/specht/bif.git
 
 Bestätige anschließend mit <kbd>Enter</kbd>.
 
-<!-- Screenshot: Clone Repository mit eingetragener BIF-URL -->
-
-<!-- <img class='full' src='git-clone.webp' alt=''> -->
 
 <!-- tutorial-screenshot
 # Clone Repository mit eingetragener BIF-URL
@@ -50,7 +41,7 @@ clone-start: https://github.com/specht/bif.git
 crop-bottom: 67%
 -->
 
-<img class='full' src='git-clone-gen.webp' alt=''>
+<img class='full' src='git-clone.webp' alt=''>
 
 Als nächstes musst du angeben, in welches Verzeichnis das Repository geklont werden soll. Bestätige den Standardpfad
 
@@ -60,7 +51,11 @@ Als nächstes musst du angeben, in welches Verzeichnis das Repository geklont we
 
 mit <kbd>Enter</kbd>.
 
-<!-- Screenshot: Auswahl von /workspace/ -->
+<!-- tutorial-screenshot
+# Auswahl von /workspace/
+clone-confirm-url
+crop-bottom: 54%
+-->
 
 <img class='full' src='confirm-clone-path.webp' alt=''>
 
