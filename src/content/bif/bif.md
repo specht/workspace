@@ -295,7 +295,7 @@ Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kle
 
 Der wichtige Unterschied ist der Punkt: `(.)` – er bedeutet, dass die Geschichte auf dieser Seite bleiben soll. Der eingerückte Text darunter erscheint erst, nachdem die Entscheidung ausgewählt wurde.
 
-<!-- tutorial-screenshot
+<!-- tutorial-screenshot_nono
 write-file: pages-starter/3.md <- previous-code (3-newer)
 wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/2.md
 preview-reload
@@ -303,12 +303,12 @@ tab: preview
 zoom: 1.25
 click: Fit graph
 sleep: 0.5
-click: Gehe in den Flur.
-wait-for-text: Sieh im Büro nach.
-click: Sieh im Büro nach.
-wait-for-text: Frage nach dem Materialschrank.
-click: Frage nach dem Materialschrank.
-wait-for-text: Gehe zurück in den Flur.
+#click: Gehe in den Flur.
+#wait-for-text: Sieh im Büro nach.
+#click: Sieh im Büro nach.
+#wait-for-text: Frage nach dem Materialschrank.
+#click: Frage nach dem Materialschrank.
+#wait-for-text: Gehe zurück in den Flur.
 sleep: 0.5
 -->
 
