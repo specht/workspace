@@ -51,7 +51,6 @@ Continue extracting coherent pieces from `main.rb` incrementally rather than att
 Do small editorial and technical fixes as the affected tutorials are touched.
 
 * [ ] Svelte: fix remaining markup/editorial issues and clean up event-listener teardown
-* [ ] MySQL: improve SQL consistency, fix the population-density example and reduce repetitive download boilerplate
 * [ ] Git/GitHub: mark low-level internals as optional/advanced and correct the implication that `git mv` is required for rename detection
 * [ ] Fact-check programming-language history, creator/date and lineage claims and use a consistent convention for the year shown in headings
 * [ ] Remove the stray `</td></tr>` in `working-with-files.md`
@@ -70,15 +69,89 @@ The Videothek dataset should become the common reference dataset for the relatio
 * [ ] Print useful sanity statistics after a refresh (movie/person/genre counts and similar checks)
 * [ ] Refresh the teaching dataset periodically rather than letting it become visibly stale
 * [ ] Do not auto-commit refreshed data; inspect the diff before replacing teaching data and screenshots
+* [ ] Extend the generated relational output so schema and data can also be imported separately while retaining one convenient complete SQL dump
 
 The SQL and Neo4j tutorials should consume the same underlying source data so that their modelling differences are real rather than contrived.
+
+
+
+### Database tutorial sequence
+
+Rework the existing database material as one coherent sequence **before starting the other new tutorial projects below**.
+
+Main progression:
+
+> query an existing relational database → model relational data → revisit the same domain as a graph → use SQL safely from application code
+
+The relational movie tutorial and the Neo4j tutorial should use the same curated IMDb-derived dataset. Bobby Tables should deliberately remain a small, isolated security lab rather than becoming part of the movie database.
+
+Students can create multiple MySQL databases in the Workspace. Use that capability to keep exercises isolated where useful, especially Bobby Tables. Students have one Neo4j database, so the Neo4j tutorial should use reset/reload of that database rather than assume that several independent Neo4j databases can be created.
+
+#### SQL introduction (`/mysql`)
+
+Keep the existing Terra dataset and the successful progression from simple `SELECT` queries to independent exercises, but get students to SQL much faster.
+
+* [ ] Remove most duplicated shell/terminal teaching from the opening and link to the Workspace basics where appropriate
+* [ ] Keep the dataset download/import short so `SHOW TABLES`, `DESCRIBE` and the first `SELECT` arrive early
+* [ ] Use single quotes consistently for SQL string literals
+* [ ] Fix/remove the population-density claim unless the query actually calculates population density
+* [ ] Introduce `COUNT`, `LIKE` and `DISTINCT` explicitly before exercises that require them
+* [ ] Keep the final independent query exercises and tighten wording/screenshots as needed
+* [ ] Stop before `JOIN`; let relationships between tables become the conceptual payoff of the movie tutorial
+
+#### Filmdatenbank mit MySQL (`/videothek`)
+
+Refocus the current Videothek chapter on relational modelling instead of making a Ruby console application the destination. Consider renaming the chapter from **Videothek mit MySQL** to **Filmdatenbank mit MySQL** so it pairs naturally with the Neo4j chapter.
+
+Keep the strongest existing ideas:
+
+* [ ] Start by inspecting a real movie JSON record and identify the entities/relationships hidden in it
+* [ ] Keep the ERD Editor, but make the modelling problem the lesson and the editor merely the tool used to express the solution
+* [ ] Build the first model from `movie`, `genre` and `movie_genre`
+* [ ] Make the n:m relationship and the composite `(movie_id, genre_id)` primary key explicit conceptual milestones
+* [ ] Export the ERD as SQL and inspect the generated `CREATE TABLE`, primary-key and foreign-key statements
+* [ ] Load the movie data directly from a data-only SQL dump after students have created the schema
+
+Make `JOIN` the central SQL idea of the chapter:
+
+* [ ] Develop the first movie/genre join incrementally instead of presenting a finished multi-table query
+* [ ] Use one `JOIN ... ON ...` step per relationship so the SQL mirrors the relational model clearly
+* [ ] Add meaningful movie questions that naturally introduce `GROUP BY`, `COUNT` and useful aggregations
+* [ ] Prefer questions students might actually ask of the dataset: films by genre, genres of a film, top-rated films, films per genre and similar examples
+
+Extend the model once, deliberately:
+
+* [ ] Introduce people and jobs only after the movie/genre model is understood
+* [ ] Let students reason about why `crew`, `job` and `movie_crew` are needed before revealing/completing the larger ERD
+* [ ] Load the complete dataset without requiring a second hand-written Ruby importer or a second tutorial-specific data pipeline
+* [ ] End with relational questions about actors/directors/collaborations whose increasing JOIN complexity creates a genuine reason to try a graph database next
+
+Remove accidental complexity from the core path:
+
+* [ ] Remove `gem install mysql2`, `gem install tty` and the Ruby import script from the core database-learning flow
+* [ ] Remove the deliberately crashing TTY Videothek application as the chapter's main payoff
+* [ ] Do not ask students to replace the importer and reset/rebuild the database halfway through the tutorial
+* [ ] If an application example remains, make it small and focused on parameterized queries rather than TTY/menu abstractions or Ruby metaprogramming
+
+Finish with an explicit bridge to the Neo4j tutorial: the same films, genres, people and jobs will be modelled again, but relationships become first-class graph relationships instead of join tables.
+
+#### Bobby Tables / SQL Injection
+
+Keep this as a compact experiment after the modelling tutorials: build a vulnerable query, exploit it, then fix the same program and repeat the attack.
+
+* [ ] Give the lab its own throwaway MySQL database; students can create multiple databases and should not need to disturb their movie database
+* [ ] Keep the current attack → observe → prepared-statement fix → retry progression
+* [ ] Remove any hard-coded generated database name such as `db_1234` from the starter workflow
+* [ ] Make parameterized/prepared statements the explicit security lesson and connect them back to any earlier application/database code
+* [ ] State clearly that the deliberately plain-text passwords are only for the SQL-injection lab and are not a model for real password storage
+* [ ] Keep the legal/ethical boundary clear but concise: only attack the supplied lab or systems for which students have explicit permission
 
 
 ## Tutorials
 
 The infrastructure is now mature enough that the main growth area should again be teaching material. Prefer tutorials that introduce genuinely new ideas rather than simply more installed technology.
 
-The seven tutorials below are the current main teaching projects.
+The seven tutorials below are the current main teaching projects. Complete the database tutorial pass above first; Neo4j is part of that pass, while the other new tutorial projects can follow afterwards.
 
 
 ### 1. Web Server
@@ -141,23 +214,27 @@ Main contrast:
 ```text
 MySQL:
 movie ← movie_genre → genre
-person ← movie_crew → movie
+crew  ← movie_crew → movie
+job   ← movie_crew
 
 Neo4j:
-(Movie)-[:HAS_GENRE]->(Genre)
-(Person)-[:ACTED_IN]->(Movie)
-(Person)-[:DIRECTED]->(Movie)
+(Movie)-[:IN_GENRE]->(Genre)
+(Person)-[:ACTOR|DIRECTOR|WRITER|...]->(Movie)
 ```
+
+This chapter should follow the reworked **Filmdatenbank mit MySQL** tutorial directly. Students should already know the domain and the relational model before they see it represented as a graph.
 
 * [ ] Start in Neo4j Browser with a tiny manually created movie graph
 * [ ] Introduce nodes, labels and properties immediately
 * [ ] Add relationships and visualize the first graph
 * [ ] Teach `MATCH` by asking questions about the tiny graph
-* [ ] Import a useful subset/full version of the familiar Videothek data
+* [ ] Load the familiar IMDb-derived movie dataset into the student's existing Neo4j database
+* [ ] Make reset/reload the documented clean-start workflow because students do not create several independent Neo4j databases
 * [ ] Compare equivalent SQL `JOIN` and Cypher relationship queries side by side
 * [ ] Discuss graph modelling choices rather than mechanically converting every SQL table to a node
 * [ ] Introduce paths and variable-length paths
 * [ ] Use actor/movie connections for a meaningful shortest-path exercise
+* [ ] Use repeated collaboration/co-star questions to show where graph traversal is substantially more natural than increasingly deep relational joins
 * [ ] Add aggregation only after traversal is understood
 * [ ] Show `cypher-shell` briefly so students see that Browser is only one Neo4j client
 * [ ] Query the same database from Ruby with the new `neo4j_bolt` wrapper
@@ -166,7 +243,7 @@ Before writing the Ruby part:
 
 * [ ] Decide whether `neo4j_bolt` belongs in the student image or should be installed explicitly as part of the tutorial
 
-The programming part should stay small: parameterized `neo4j_query`, simple result handling, and perhaps an artist/movie/person explorer. Do not make driver/session plumbing the lesson.
+The programming part should stay small: parameterized `neo4j_query`, simple result handling, and perhaps a movie/person/path explorer. Do not make driver/session plumbing the lesson.
 
 The existing Discogs music collector remains useful as an **optional larger graph dataset/project** after the Videothek comparison is understood.
 
