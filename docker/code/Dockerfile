@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.7
+# syntax=docker/dockerfile:1.14
 
 # ====================================================================
 # Version pins
@@ -335,7 +335,8 @@ RUN cd /opt/emsdk \
         > /tmp/raylib-test.c \
     && emcc /tmp/raylib-test.c -lraylib -sUSE_GLFW=3 -o /tmp/raylib-test.js \
     && test -f /tmp/raylib-test.wasm \
-    && rm -f /tmp/raylib-test.c /tmp/raylib-test.js /tmp/raylib-test.wasm
+    && rm -f /tmp/raylib-test.c /tmp/raylib-test.js /tmp/raylib-test.wasm \
+    && chmod -R a+rwX /opt/emsdk/upstream/emscripten/cache
 
 # ====================================================================
 # Actual Hackschule image
@@ -352,23 +353,23 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Docker can still reuse these layers.
 # --------------------------------------------------------------------
 
-COPY --from=texlive \
+COPY --link --from=texlive \
     /usr/local/texlive \
     /usr/local/texlive
 
-COPY --from=flutter \
+COPY --link --chmod=a+rwX --from=flutter \
     /opt/flutter \
     /opt/flutter
 
-COPY --from=android-sdk \
+COPY --link --from=android-sdk \
     /opt/android-sdk \
     /opt/android-sdk
 
-COPY --from=flutter-android \
+COPY --link --from=flutter-android \
     /opt/gradle-cache \
     /opt/gradle-cache
 
-COPY --from=raylib-web \
+COPY --link --from=raylib-web \
     /opt/emsdk \
     /opt/emsdk
 
@@ -385,12 +386,11 @@ ENV PATH="/opt/emsdk/upstream/emscripten:${PATH}"
 # The numeric UID of abc can change when linuxserver initializes
 # the container, so don't rely on build-time ownership.
 #
-# Flutter treats parts of its SDK checkout as mutable tool state, including
-# packages/flutter_tools/.dart_tool, so the installation must stay writable.
-RUN chmod -R a+rwX /opt/flutter \
-    && git config --system --add safe.directory /opt/flutter \
-    && chmod -R a+rwX /opt/gradle-cache \
-    && chmod -R a+rwX /opt/emsdk/upstream/emscripten/cache
+# Flutter's SDK checkout is writable because COPY --chmod applies the
+# permissions while creating the layer, avoiding a second copy-up layer.
+# The Gradle cache is already made writable in flutter-android, and the
+# Emscripten cache in raylib-web, before they are copied into this image.
+RUN git config --system --add safe.directory /opt/flutter
 
 # --------------------------------------------------------------------
 # Environment
@@ -679,24 +679,12 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     && mktexlsr \
     && luaotfload-tool -u
 
-RUN emcc --check \
-    && printf 'int main(void) { return 0; }\n' > /tmp/emscripten-test.c \
-    && emcc /tmp/emscripten-test.c -o /tmp/emscripten-test.js \
-    && test -f /tmp/emscripten-test.wasm \
+# raylib-web already compiled a real raylib program. Keep the final-image
+# check read-only so verifying the toolchain cannot copy the Emscripten cache
+# into another image layer.
+RUN command -v emcc \
     && test -f /opt/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libraylib.a \
-    && test -f /opt/emsdk/upstream/emscripten/cache/sysroot/include/raylib.h \
-    && printf '#include <raylib.h>\nint main(void) { InitWindow(64, 64, "raylib"); CloseWindow(); return 0; }\n' \
-        > /tmp/raylib-test.c \
-    && emcc /tmp/raylib-test.c -lraylib -sUSE_GLFW=3 -o /tmp/raylib-test.js \
-    && test -f /tmp/raylib-test.wasm \
-    && rm -f \
-        /tmp/emscripten-test.c \
-        /tmp/emscripten-test.js \
-        /tmp/emscripten-test.wasm \
-        /tmp/raylib-test.c \
-        /tmp/raylib-test.js \
-        /tmp/raylib-test.wasm \
-    && chmod -R a+rwX /opt/emsdk/upstream/emscripten/cache
+    && test -f /opt/emsdk/upstream/emscripten/cache/sysroot/include/raylib.h
 
 # --------------------------------------------------------------------
 # Ruby
