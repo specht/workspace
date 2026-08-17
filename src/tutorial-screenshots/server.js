@@ -5,6 +5,7 @@ import http from 'node:http';
 import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import { pathToFileURL } from 'node:url';
 import { chromium } from 'playwright';
 
 const execFileAsync = promisify(execFile);
@@ -37,7 +38,7 @@ const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'screenshots@e
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
-const GENERATOR_VERSION = 14;
+const GENERATOR_VERSION = 15;
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
 const DEFAULT_PROFILE = Object.freeze({
@@ -186,6 +187,53 @@ function safeRelativePath(value) {
         throw new Error(`Path escapes its root: ${value}`);
     }
     return normalized;
+}
+
+async function loadTutorialScreenshotHooks(tutorialDirectory) {
+    const hooksPath = path.join(tutorialDirectory, 'tutorial-screenshot-hooks.mjs');
+    let source;
+    try {
+        source = await fs.readFile(hooksPath, 'utf8');
+    } catch (error) {
+        if (error?.code === 'ENOENT') {
+            return {
+                sourceSha256: null,
+                writeFileSubdirectory: '',
+                waitForPreview: null,
+            };
+        }
+        throw error;
+    }
+
+    const sourceSha256 = sha256(source);
+    const moduleUrl = pathToFileURL(hooksPath);
+    moduleUrl.searchParams.set('sha256', sourceSha256);
+    const imported = await import(moduleUrl.href);
+    const hooks = imported.default ?? imported;
+
+    if (!hooks || typeof hooks !== 'object') {
+        throw new Error('tutorial-screenshot-hooks.mjs must export an object');
+    }
+    if (hooks.waitForPreview != null && typeof hooks.waitForPreview !== 'function') {
+        throw new Error('tutorial-screenshot-hooks.mjs waitForPreview must be a function');
+    }
+
+    const rawWriteFileSubdirectory = hooks.writeFileSubdirectory == null
+        ? ''
+        : `${hooks.writeFileSubdirectory}`.trim();
+
+    return {
+        sourceSha256,
+        writeFileSubdirectory: rawWriteFileSubdirectory
+            ? safeRelativePath(rawWriteFileSubdirectory)
+            : '',
+        waitForPreview: hooks.waitForPreview ?? null,
+    };
+}
+
+async function waitForPreviewReady(page, hooks) {
+    if (!hooks?.waitForPreview) return;
+    await hooks.waitForPreview({ page, timeout: 60_000 });
 }
 
 function parsePercent(value) {
@@ -1324,26 +1372,17 @@ async function openFile(relativePath) {
     await waitForEditorSettled(workspace);
 }
 
-async function goLive() {
+async function goLive(hooks) {
     const goLive = workspace.getByText('Go Live', { exact: true }).last();
     await goLive.waitFor({ state: 'visible', timeout: 30_000 });
     const popupPromise = context.waitForEvent('page', { timeout: 60_000 });
     await goLive.click();
     preview = await popupPromise;
     await preview.waitForLoadState('domcontentloaded');
-    await waitForBifPreview(preview);
+    await waitForPreviewReady(preview, hooks);
 }
 
-async function waitForBifPreview(page) {
-    await page.waitForSelector('#content', { state: 'attached', timeout: 60_000 });
-    await page.waitForFunction(
-        () => (document.querySelector('#content')?.innerText || '').trim().length > 0,
-        null,
-        { timeout: 60_000 },
-    );
-}
-
-async function previewReload(reset = false) {
+async function previewReload(reset = false, hooks = null) {
     if (!preview || preview.isClosed()) throw new Error('No preview tab is open');
     let previewSession = null;
     let injectedResetScript = null;
@@ -1363,7 +1402,7 @@ async function previewReload(reset = false) {
             waitUntil: 'domcontentloaded',
             timeout: 60_000,
         });
-        await waitForBifPreview(preview);
+        await waitForPreviewReady(preview, hooks);
     } finally {
         if (previewSession && injectedResetScript) {
             await previewSession.send('Page.removeScriptToEvaluateOnNewDocument', {
@@ -1376,13 +1415,18 @@ async function previewReload(reset = false) {
     }
 }
 
-async function writeWorkspaceFile(relativePath, contents) {
-    const root = path.join(USER_ROOT, fsTagForEmail(SCREENSHOT_EMAIL), 'workspace', 'bif');
+async function writeWorkspaceFile(relativePath, contents, hooks) {
+    const root = path.join(
+        USER_ROOT,
+        fsTagForEmail(SCREENSHOT_EMAIL),
+        'workspace',
+        hooks?.writeFileSubdirectory || '',
+    );
     const target = path.join(root, safeRelativePath(relativePath));
     const resolvedRoot = path.resolve(root);
     const resolvedTarget = path.resolve(target);
     if (!resolvedTarget.startsWith(`${resolvedRoot}${path.sep}`)) {
-        throw new Error(`Workspace path escaped BIF checkout: ${relativePath}`);
+        throw new Error(`Workspace path escaped configured write-file root: ${relativePath}`);
     }
     await fs.mkdir(path.dirname(target), { recursive: true });
     if (contents && typeof contents === 'object' && contents.sourcePath) {
@@ -1644,7 +1688,7 @@ async function applyShotViewportProfile(shot) {
     return true;
 }
 
-async function executeAction(action, targetTab) {
+async function executeAction(action, targetTab, hooks) {
     switch (action.type) {
     case 'close-folder': return closeFolder();
     case 'show-left-sidebar': return setWorkbenchPartVisible('left-sidebar', true);
@@ -1659,13 +1703,13 @@ async function executeAction(action, targetTab) {
     case 'clone-accept-destination': return cloneAcceptDestination();
     case 'clone-open': return cloneOpen();
     case 'open-file': return openFile(action.path);
-    case 'go-live': return goLive();
-    case 'write-file': return writeWorkspaceFile(action.path, action.contents);
+    case 'go-live': return goLive(hooks);
+    case 'write-file': return writeWorkspaceFile(action.path, action.contents, hooks);
     case 'wait-for-file': return waitForWorkspaceFile(action.path);
     case 'wait-for-file-newer': return waitForWorkspaceFileNewer(action.target, action.source);
     case 'close-tab': return closeTab(action.label);
-    case 'preview-reload': return previewReload(false);
-    case 'preview-reset': return previewReload(true);
+    case 'preview-reload': return previewReload(false, hooks);
+    case 'preview-reset': return previewReload(true, hooks);
     case 'click': return clickPreview(action);
     case 'hold': return holdPreview(action);
     case 'move-mouse': return moveMouse(action, targetTab);
@@ -1827,12 +1871,14 @@ async function generateTutorial(payload) {
     if (shots.length === 0) return { generated: 0, current: 0, screenshots: 0 };
 
     const tutorialDirectory = path.dirname(markdownPath);
+    const tutorialHooks = await loadTutorialScreenshotHooks(tutorialDirectory);
     const oldManifest = await readManifest(tutorialDirectory);
     const environmentFingerprint = sha256(JSON.stringify({
         generator_version: GENERATOR_VERSION,
         playwright: PLAYWRIGHT_VERSION,
         workspace_image_id: `${payload?.workspace_image_id || 'unknown'}`,
         profile: DEFAULT_PROFILE,
+        tutorial_hooks_sha256: tutorialHooks.sourceSha256,
         screenshot_identity: {
             email: SCREENSHOT_EMAIL,
             workspace_user: SCREENSHOT_WORKSPACE_USER,
@@ -1886,7 +1932,7 @@ async function generateTutorial(payload) {
             const source = action[SOURCE_LOCATION] || shotSource;
             console.log(`  line ${source?.line ?? '?'}: ${source?.text?.trim() || action.type}`);
             try {
-                await executeAction(action, shot.tab);
+                await executeAction(action, shot.tab, tutorialHooks);
                 await applyShotViewportProfile(shot);
             } catch (error) {
                 throw withSourceError(error, source);

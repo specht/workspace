@@ -1,0 +1,5 @@
+<!-- Schule -- Treppenhaus -->
+
+Im Treppenhaus ist es still. Auf dem Absatz liegt nur ein vergessener Turnbeutel.
+
+- [Gehe zurück in den Flur.](2)

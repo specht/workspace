@@ -17,7 +17,7 @@ An automated image has a comment immediately before it:
 
 ```html
 <!-- tutorial-screenshot
-clone-start: https://github.com/specht/bif.git
+clone-start: https://github.com/example/tutorial-project.git
 crop-top: 33.5%
 crop-bottom: 33.6%
 -->
@@ -41,11 +41,11 @@ To deliberately recreate every generated screenshot for one tutorial, run the
 helper from the repository root while the development services are running:
 
 ```bash
-src/scripts/recreate-screenshots.rb bif
+src/scripts/recreate-screenshots.rb my-tutorial
 ```
 
-The argument may also be a Markdown path such as `bif/bif.md` or
-`src/content/bif/bif.md`. Forced recreation ignores manifest freshness, replays
+The argument may also be a Markdown path such as `my-tutorial/my-tutorial.md` or
+`src/content/my-tutorial/my-tutorial.md`. Forced recreation ignores manifest freshness, replays
 the complete recipe chain, overwrites the generated images in place, and writes a
 fresh manifest. Manual tutorial images are untouched. The helper follows the
 screenshot-generator log while it runs, so target filenames and individual recipe
@@ -53,7 +53,7 @@ steps are visible directly in the terminal.
 
 ## Recipe language
 
-Recipes are intentionally line-oriented. The BIF pilot currently uses:
+Recipes are intentionally line-oriented. The engine currently supports:
 
 ```text
 close-folder
@@ -97,7 +97,7 @@ crop-bottom: PERCENT%
 Clone screenshots can pin the public repository to a full 40-character SHA-1:
 
 ```text
-clone-start: https://github.com/specht/bif.git @ b5215fa72545f05f00d2ba23865c4e2eeff691a2
+clone-start: https://github.com/example/tutorial-project.git @ 0123456789abcdef0123456789abcdef01234567
 ```
 
 Pinned repositories are cached automatically below
@@ -125,11 +125,11 @@ controls whose visible text is not a stable target.
 
 `hold` targets controls in the same way as `click`, but keeps the real Chromium
 pointer pressed for the requested duration before releasing it. Durations use an
-`s` suffix and must be between 0.05 and 30 seconds. For example, BIF's hold-to-
-confirm restart control can be driven without depending on its translated label:
+`s` suffix and must be between 0.05 and 30 seconds. For example, a hold-to-confirm
+control can be driven without depending on its visible label:
 
 ```text
-hold: 1.5s selector:.story-restart-control
+hold: 1.5s selector:.hold-confirm-control
 ```
 
 `move-mouse` moves the Chromium pointer to the center of exactly one element in
@@ -162,10 +162,11 @@ earlier fenced code block containing all snippets separated by `||`. This keeps
 the visible tutorial code as the source of truth instead of duplicating it in the
 hidden recipe.
 
-`file:RELATIVE_PATH` reads the source contents from a file next to the tutorial
-Markdown (or from a subdirectory beneath it). The file contents are included in
-the screenshot state hash, so editing that file invalidates the screenshot just
-like editing an inline code block.
+`file:RELATIVE_PATH` reads a file next to the tutorial Markdown (or from a
+subdirectory beneath it) as raw bytes and copies it without text decoding. The
+source SHA-256 is included in the screenshot state, so binary assets such as JPEG,
+PNG, WebP, or audio files are safe and still invalidate dependent screenshots when
+changed.
 
 `left-sidebar-width` resizes the primary sidebar through VS Code's own sash, so
 the workbench layout reacts exactly as it does when the divider is dragged by
@@ -178,6 +179,34 @@ observable readiness signal.
 by `tab` (`workspace` by default). Whitespace is normalized before matching, so
 text split across lines can still be used as a readiness signal. The wait times
 out after 60 seconds.
+
+## Tutorial-specific hooks
+
+The screenshot engine itself has no knowledge of individual tutorial applications.
+A tutorial that needs application-specific behavior can place
+`tutorial-screenshot-hooks.mjs` next to its Markdown. The optional module may
+export a default object such as:
+
+```js
+export default {
+    writeFileSubdirectory: 'project-directory',
+
+    async waitForPreview({ page, timeout }) {
+        await page.waitForSelector('#app-ready', { timeout });
+    },
+};
+```
+
+`writeFileSubdirectory` makes `write-file` paths relative to that directory below
+the screenshot user's Workspace instead of the Workspace root. This only affects
+`write-file`; `wait-for-file` and `wait-for-file-newer` remain explicitly relative
+to the Workspace root so their recipe paths stay unambiguous.
+
+`waitForPreview` runs after `DOMContentLoaded` whenever `go-live`,
+`preview-reload`, or `preview-reset` opens or reloads the preview. Tutorials that
+do not provide a hook simply continue after `DOMContentLoaded`. The hook file's
+SHA-256 is included in the environment fingerprint, so changing hook behavior
+invalidates that tutorial's generated screenshots automatically.
 
 The global screenshot profile lives in `config.rb`. It defaults to 1853x929 and
 150% browser-style zoom. The renderer deliberately does not choose a light or dark

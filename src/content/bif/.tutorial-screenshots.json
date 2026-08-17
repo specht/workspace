@@ -2,109 +2,114 @@
   "version": 1,
   "screenshots": {
     "fresh-start.webp": {
-      "state_hash": "ba7f1aa969c787d135200f0a4204c93464aea1efd6256e92e11a77b410adda03",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "state_hash": "5b51eac071b9ce84f99495dddf835e9389151e4e1e1231cdceb30c894b2b928f",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
       "output_sha256": "da63c6b8fcd1e01064dd95defc6da8b91731ce26d3154a6a0c52ece462b6842f"
     },
     "git-clone.webp": {
-      "state_hash": "6f451905778342a90f7a3e319180c3130eb4f5cbc6e3e64cac8f63d9cef492a3",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "state_hash": "774fade5c68eea43b93382762117a6db5dd5589b4391043c739ef310240ebd06",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
       "output_sha256": "b1a715cd75ba309f593fe4fab82f89dd03e05d71628712012f07f70897388ab1"
     },
     "confirm-clone-path.webp": {
-      "state_hash": "e5e1fc1fa7c18378fa877ef2199ee5b1c22f1220ddb7ba0d14b4f92bd894c5dd",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "state_hash": "67c5bde0c86428f2e34ae286d4dd04352c8002362cfe360f36d5f4248ff10bef",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
       "output_sha256": "ce8b4bf3e08046ddfc7e5a7f1ceb38b256bcf50bc44c9d678b9940665bf5e1a7"
     },
     "open-yes-no.webp": {
-      "state_hash": "549b00bd94299605ca516bbc2526d95b74e4bba6858f8218abcf96296ee9dac6",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "state_hash": "f054acf4cac9b78f6d703ca1ad0573ab72a719db05cf40563a402f5c15408c47",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
       "output_sha256": "8419a94fe58aceefa8caaf0cb1d71c701bc3628e0698000ca1e71ca77f9bae98"
     },
     "bif-project.webp": {
-      "state_hash": "749f29c13cbf83cf06d8a2bccd2f25ae949cc0d76c6fd75b66b2b56866469c85",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
-      "output_sha256": "cbd667995e5d450044469ba65e1b7f85ae8329afc1fde3c72c6171c9f2c0aba2"
+      "state_hash": "abbd9a32b1725c95b2c4fe3a8f5681c29a6254774a6c589cd3e6a6b538673952",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
+      "output_sha256": "d0743f685e140a95e9ddf02c78e3bed126ca9e84fe7623091b48f7248d3dcd6f"
     },
     "story-begin.webp": {
-      "state_hash": "6033741fe2bcb5280d69a2cdd0e6601eb04a907d42e24bfd1e4aa2097ed53f25",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
-      "output_sha256": "4dfe061b2f472cfe032e4dc9a98234400a5764b1713de0aa0137bc9e64e0a983"
+      "state_hash": "954d44f846938e239bc4bf1be1c7e00c87b4413915c12b5db2dc57b19429083c",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
+      "output_sha256": "32bd0f6550b4ac1324d90fa4dab36b422a6ee88aeb4ce11aed7091bb9fc82d32"
     },
     "first-page.webp": {
-      "state_hash": "d6f9e4bb682d6e71ea56723ac89ce30cb305122593cf4f91c1a17b43a4c91c17",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "state_hash": "a71e54e9349e0983ca2488b75281a3a96fb3a3d7b56f8220e17cfc54e258305e",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
       "output_sha256": "ef162407194078052867c32aa4c36913e27ff86253636f39935e6241817a1032"
     },
     "unreachable-page.webp": {
-      "state_hash": "9d34358f75baab45d0ce2cb98c29d89ac810ee67b5e8af21e2ea5b8f5bf67bef",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "state_hash": "eb0e07efe9139b43ebf082092fbdc325ed12eb24f075c8e0372566b6f59c5baf",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
       "output_sha256": "f7d927398bad36fb2473323f6a1a0cd553b77b1f106c7ef0da25f1614ea772e9"
     },
     "two-pages.webp": {
-      "state_hash": "b34501043092128b0926fe5c2f2fe40f866c4441a8524f4e5794a25977e47aad",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "state_hash": "764d31927aa9165d774ccb5dce8aa4ca4162eafa2408b9af5cde10749be24621",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
       "output_sha256": "12bff2489f2152198f1c29e5ab894cc9f3bac72d16017086dade9597249025be"
     },
     "branching-story.webp": {
-      "state_hash": "cca80adc40b5cc4d689ad5eabd7f15171409787fc3f37a926d64bafde43b4cf2",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "state_hash": "4cc95d3c5b7b4b23aaf63cb9ff563d039023c1391c0625873510b5ef6c08c627",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
       "output_sha256": "65b2cbd7ead6b9711dfe08a8ebb4f3702e2fe251917ba514e21cda73fd18f1d6"
     },
     "local-choice.webp": {
-      "state_hash": "4ac96e61c5aa064c46c5d496a33047b914f8ad4195e9507ca416087f97d02cdf",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "state_hash": "d029c527f46c272b152459adb6d82ca3d5a27fc2c69b1a54b7b3b2cbedf5e266",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
       "output_sha256": "2be626b080abdd3d9d0b76e8b1cfb8618ccf9d5d84cb3565cebe1be1f46ca7d6"
     },
     "locked-door.webp": {
-      "state_hash": "6631aa4c92bae35b63d05f40b7e1f9575ba7d0dc94afc205b31338a2f3f792a0",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "state_hash": "6ddfe719f7359aa5c34b6d550e587311c9ed4ee2df47c4939fc8d7829f8edf56",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
       "output_sha256": "99115cf9329e9fd27fc06c081abbfbf38310ebb2e7b544366cf8f432e6023b53"
     },
     "unlocked-door.webp": {
-      "state_hash": "c101a5a0b2fca04de45c9e0fc422fec3d56213d14121dcde5f1715334b32fd16",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "state_hash": "6f6dcb2dd4643d78ff2f04811a705e8183fd9b6952b739740277f956b547d4a1",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
       "output_sha256": "add37f733fc58f8d391a4a711e6d0d1d577ea2895e76e1e28d700214ce32ecd7"
     },
     "script-error.webp": {
-      "state_hash": "4a1b9ed789830db47be6c798cdef022d57d1e4eba96a00a5d8b99c600306dfd6",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
-      "output_sha256": "45cd6aac9081b6a501739d52991050eb4cd38e7a03d2e1a2164b63fc59828882"
+      "state_hash": "d9a17b226689debdf215b682989d17c7ed74ef87c8008e25ff193657a0973959",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
+      "output_sha256": "d4278efca76d7e9ff7a927383b4b717ad37b66abdf8553f52363952442c0f5a8"
     },
     "theme-default.webp": {
-      "state_hash": "9cb7c617871aee35c81ce18c806f5be66203dc66b52c852fa5fe9d6806f493aa",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "state_hash": "5c555ee98d8e54ff096c4c75a426aac4adbee99a7473c76797d6e61d2d0d898b",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
       "output_sha256": "62f7f4648059838416d6857605e8bc683179de854eb7c5da1fb58aabf6e58f08"
     },
     "theme-paper.webp": {
-      "state_hash": "bb0bb67a85da80c9fa165bb37c1f369cd32ad7cdf5a21c681208657c4cc84580",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "state_hash": "130e8f45f3980a00971f79424dc75a20e0fe10a0ec1bf2829070a3a083e376a1",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
       "output_sha256": "f4dd638d79d0f79c1b2bb9039d4c92aa1cf487614b754fe21130d3f8c23564f1"
     },
     "theme-playful.webp": {
-      "state_hash": "a50ac3b8a8dee2b9effc54689e971622b4f69e2a254c06effdec5dcb0f3cbe6a",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "state_hash": "116bf6f0602337ff115e17aa50327a34dbc077c7edea11ceb41c57bc0e57702f",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
       "output_sha256": "9a62c4160dcf0f02b198fd8db1c95c82358d84fa17a1188fe3b47168888fd3d8"
     },
     "theme-mystery.webp": {
-      "state_hash": "6a3841dc7d3ddf320982b5c0044dab1939c9abb5544dd40726a15b5cbd6adf0f",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "state_hash": "249c3139484ead45ba82b402f46a34ecfebc2e63c4df915b394a5e967f3df731",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
       "output_sha256": "3abb9cdd6fad958553cea56765ec3508fb0306aa0c81a0eca72a74a9a9acec98"
     },
     "theme-midnight.webp": {
-      "state_hash": "82dc941e55b35656057344a714b9ed23e90aa8b61e77dafe9d71b1ddf6d29319",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "state_hash": "4f477739e9c35cfd14f27279b37b621a31eccdee02e652009b95f461d48366f0",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
       "output_sha256": "29c2f7240d0eb204e46d7a9d74b036a18f25bb4616544bf449bc57d6aaa2d74d"
     },
     "theme-terminal.webp": {
-      "state_hash": "74f340296eee212213acc4d2c77b87ca42403767b45b99eb5c0c99a3dd56dac0",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "state_hash": "8080b8de23e89de207041720be4f494964d1a62289b684bf7fc308e15f03ca92",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
       "output_sha256": "fc6f3765ca7f0b63d0f4eef3df6cff89a1cb515a999a5cfd1bedea05c9d5237d"
     },
     "story-image.webp": {
-      "state_hash": "ba7c8d5ee03a253b6f3e9c09d8bf6a73cb8e3178fe39c7a58844add888f0e962",
-      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
-      "output_sha256": "f429c3d6b04a5524362fa67db86dfcf166275cb6e4ff3261707317eb89002752"
+      "state_hash": "75ebaf4df943c987e94b3e1d582024b1d3572e6fc08b21ddd8e4f5f531e12840",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
+      "output_sha256": "16c2af37f4769ac8aae3badb05e60410bbbd6933e36e2b2386de03b33b4d89b5"
+    },
+    "grouped-graph.webp": {
+      "state_hash": "c7e51bbe9cac61c47d1c9b85f18d8d2a73fb0c1e08ecebfb2dd2ce1e8d65d8a6",
+      "environment_fingerprint": "bbd507f405b9e1ee4a1d2a0e2801381a1977da1055143cc03e406ccb50acfd11",
+      "output_sha256": "9a12f41a95ad9f0cff601c4270885fb0c4eaaf44dd44cb2b05e6c6aa3aef3831"
     }
   }
 }

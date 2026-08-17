@@ -1,0 +1,15 @@
+<!-- Schule -- Flur -->
+
+Du stehst in einem leeren Flur. Links ist ein kleines Büro. Daneben führt eine Tür ins Treppenhaus.
+
+<p condition="!has_key">
+Am Ende steht ein verschlossener Materialschrank.
+</p>
+
+<p condition="has_key">
+Am Ende steht der Materialschrank. Du hast den passenden Schlüssel dabei.
+</p>
+
+- [Sieh im Büro nach.](3)
+- [Gehe ins Treppenhaus.](4)
+- [Öffne den Materialschrank.](5){condition="has_key"}

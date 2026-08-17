@@ -71,7 +71,8 @@ clone-accept-destination
 <!-- tutorial-screenshot
 # geöffnetes BIF-Projekt im Explorer
 clone-open
-# sleep: 10
+wait-for-file: bif/node_modules/markdown-it/LICENSE
+wait-for-file: bif/.story-tools/analysis.json
 -->
 
 <img class='full' src='bif-project.webp' alt=''>
@@ -84,7 +85,6 @@ Wenn alles geklappt hat, siehst du links im Explorer unter anderem den Ordner `p
 
 <!-- tutorial-screenshot
 # 1.md geöffnet
-wait-for-file: bif/.story-tools/analysis.json
 open-file: pages-starter/1.md
 close-tab: Welcome
 -->
@@ -394,7 +394,7 @@ Wenn du »Nimm den Schlüssel« auswählst, wird das Skript ausgeführt und `has
 
 <!-- Screenshot: Schlüssel genommen / State mit has_key: true -->
 
-<img class='full full-shadow scroll-right' src='take-key.webp' alt='Nach dem Aufnehmen des Schlüssels verschwindet die lokale Entscheidung aus der Geschichte.'>
+<img class='full full-shadow' src='take-key.webp' alt='Nach dem Aufnehmen des Schlüssels verschwindet die lokale Entscheidung aus der Geschichte.'>
 
 Die Geschichte hat sich damit zum ersten Mal etwas gemerkt. Solange du im Büro bleibst, sieht auch alles richtig aus: »Nimm den Schlüssel« ist bereits erledigt und kann nicht noch einmal ausgewählt werden.
 
@@ -715,8 +715,8 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     zoom: 2.75
     sleep: 0.5
     -->
-    <div class='col-md-4'>
-        <img src='theme-default.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im hellen Standard-Theme.'>
+    <div class='col-md-4 mb-3'>
+        <img src='theme-default.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im hellen Standard-Theme.'>
     </div>
     <!-- tutorial-screenshot
     write-file: pages-starter/1.md <- file:theme-paper.md.txt
@@ -726,8 +726,8 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     zoom: 2.75
     sleep: 0.5
     -->
-    <div class='col-md-4'>
-        <img src='theme-paper.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im cremefarbenen Paper-Theme mit Serifenschrift.'>
+    <div class='col-md-4 mb-3'>
+        <img src='theme-paper.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im cremefarbenen Paper-Theme mit Serifenschrift.'>
     </div>
     <!-- tutorial-screenshot
     write-file: pages-starter/1.md <- file:theme-playful.md.txt
@@ -737,8 +737,8 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     zoom: 2.75
     sleep: 0.5
     -->
-    <div class='col-md-4'>
-        <img src='theme-playful.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im Playful-Theme mit abgerundeten Flächen.'>
+    <div class='col-md-4 mb-3'>
+        <img src='theme-playful.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im Playful-Theme mit abgerundeten Flächen.'>
     </div>
     <!-- tutorial-screenshot
     write-file: pages-starter/1.md <- file:theme-mystery.md.txt
@@ -748,8 +748,8 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     zoom: 2.75
     sleep: 0.5
     -->
-    <div class='col-md-4'>
-        <img src='theme-mystery.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im dunklen Mystery-Theme.'>
+    <div class='col-md-4 mb-3'>
+        <img src='theme-mystery.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im dunklen Mystery-Theme.'>
     </div>
     <!-- tutorial-screenshot
     write-file: pages-starter/1.md <- file:theme-midnight.md.txt
@@ -759,8 +759,8 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     zoom: 2.75
     sleep: 0.5
     -->
-    <div class='col-md-4'>
-        <img src='theme-midnight.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im dunkelblauen Midnight-Theme.'>
+    <div class='col-md-4 mb-3'>
+        <img src='theme-midnight.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im dunkelblauen Midnight-Theme.'>
     </div>
     <!-- tutorial-screenshot
     write-file: pages-starter/1.md <- file:theme-terminal.md.txt
@@ -770,8 +770,8 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     zoom: 2.75
     sleep: 0.5
     -->
-    <div class='col-md-4'>
-        <img src='theme-terminal.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im schwarzen Terminal-Theme mit grüner Monospace-Schrift.'>
+    <div class='col-md-4 mb-3'>
+        <img src='theme-terminal.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im schwarzen Terminal-Theme mit grüner Monospace-Schrift.'>
     </div>
 </div>
 
@@ -879,7 +879,7 @@ write-file: pages-starter/key.jpg <- file:key.jpg
 wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
 tab: preview
 preview-reload
-# click: selector:.story-view-toggle
+click: selector:.story-view-toggle
 hold: 1.5s selector:.story-restart-control
 click: Gehe in den Flur.
 wait-for-text: Sieh im Büro nach.
@@ -985,7 +985,7 @@ Eine andere Seite könnte beginnen mit:
 Diese Kommentare sind für die Leserinnen und Leser unsichtbar. Sie helfen nur dabei, den Graphen übersichtlich zu halten.
 
 <!-- Screenshot: Graph mit gruppierten Seiten -->
-<!-- tutorial-screenshot-bobo
+<!-- tutorial-screenshot
 write-file: pages-starter/1.md <- file:1-with-groups.md.txt
 write-file: pages-starter/2.md <- file:2-with-groups.md.txt
 write-file: pages-starter/3.md <- file:3-with-groups.md.txt
@@ -996,6 +996,7 @@ tab: preview
 preview-reload
 hold: 1.5s selector:.story-restart-control
 move-mouse: No problems
+click: Fit graph
 zoom: 1.25
 sleep: 0.5
 -->
