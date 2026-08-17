@@ -112,7 +112,8 @@ test(
           const gradleCache = await run(
             '[ -n "$GRADLE_USER_HOME" ] && ' +
             '[ -d "$GRADLE_USER_HOME" ] && ' +
-            '[ -w "$GRADLE_USER_HOME" ]',
+            '[ -w "$GRADLE_USER_HOME" ]' +
+            '[ ! -e "$GRADLE_USER_HOME/daemon" ]',
           );
 
           expectSuccess(
