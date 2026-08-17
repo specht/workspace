@@ -369,6 +369,11 @@ COPY --link --chmod=a+rwX --from=flutter-android \
      /opt/gradle-cache \
      /opt/gradle-cache
 
+# COPY sets the permissions of the copied cache contents, but the destination
+# directory itself is created by Docker. Gradle must be able to create new
+# top-level directories such as daemon/ at runtime.
+RUN chmod 0777 /opt/gradle-cache
+
 COPY --link --from=raylib-web \
     /opt/emsdk \
     /opt/emsdk
