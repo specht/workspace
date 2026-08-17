@@ -1345,14 +1345,35 @@ async function waitForBifPreview(page) {
 
 async function previewReload(reset = false) {
     if (!preview || preview.isClosed()) throw new Error('No preview tab is open');
+    let previewSession = null;
+    let injectedResetScript = null;
     if (reset) {
-        await preview.evaluate(() => {
-            sessionStorage.clear();
-            localStorage.clear();
-        }).catch(() => {});
+        previewSession = await context.newCDPSession(preview);
+        const installed = await previewSession.send('Page.addScriptToEvaluateOnNewDocument', {
+            source: `
+                try { sessionStorage.clear(); } catch (error) {}
+                try { localStorage.clear(); } catch (error) {}
+            `,
+        });
+        injectedResetScript = installed.identifier;
     }
-    await preview.reload({ waitUntil: 'domcontentloaded', timeout: 60_000 });
-    await waitForBifPreview(preview);
+
+    try {
+        await preview.reload({
+            waitUntil: 'domcontentloaded',
+            timeout: 60_000,
+        });
+        await waitForBifPreview(preview);
+    } finally {
+        if (previewSession && injectedResetScript) {
+            await previewSession.send('Page.removeScriptToEvaluateOnNewDocument', {
+                identifier: injectedResetScript,
+            }).catch(() => {});
+        }
+        if (previewSession) {
+            await previewSession.detach().catch(() => {});
+        }
+    }
 }
 
 async function writeWorkspaceFile(relativePath, contents) {
