@@ -1,7 +1,7 @@
 data
 docker-compose.yaml
 docker/code/dart.deb
-docker/code/hackschule*.vsix
+docker/code/*.vsix
 docker/ruby/Gemfile
 docker/ruby/Gemfile.lock
 e2e/node_modules
