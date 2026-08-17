@@ -127,7 +127,9 @@ Klicke rechts unten auf »Go Live«. Es öffnet sich ein neuer Tab mit deiner Ge
 # erste BIF-Vorschau
 go-live
 tab: preview
-# zoom: 1.2
+zoom: 1.25
+click: Fit graph
+sleep: 0.5
 -->
 
 <img class='full full-shadow scroll-right' src='first-page.webp' alt='Der Story-Graph enthält eine Startseite; daneben erscheint der Beginn der Geschichte, allerdings noch ohne Entscheidungen.'>
@@ -154,9 +156,10 @@ Speichere die Datei, indem du <kbd>Strg</kbd><kbd>S</kbd> drückst. Die Vorschau
 write-file: pages-starter/2.md <- previous-code
 wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/2.md
 preview-reload
-click: Fit graph
-sleep: 1
 tab: preview
+zoom: 1.25
+click: Fit graph
+sleep: 0.5
 -->
 
 <img class='full full-shadow scroll-right' src='unreachable-page.webp' alt='Eine zweite Seite ist im Story-Graph nicht mit der Startseite verbunden und als unerreichbar markiert.'>
@@ -187,9 +190,10 @@ Speichere die Datei und probiere die Geschichte im Browser aus:
 write-file: pages-starter/1.md <- previous-code
 wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
 preview-reload
-click: Fit graph
-sleep: 1
 tab: preview
+zoom: 1.25
+click: Fit graph
+sleep: 0.5
 -->
 
 <img class='full full-shadow scroll-right' src='two-pages.webp' alt='Zwei Seiten sind im Story-Graph durch eine Entscheidung miteinander verbunden.'>

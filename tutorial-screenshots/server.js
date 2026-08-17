@@ -36,7 +36,7 @@ const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'screenshots@e
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
-const GENERATOR_VERSION = 10;
+const GENERATOR_VERSION = 11;
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
 const DEFAULT_PROFILE = Object.freeze({
@@ -122,6 +122,7 @@ let workspace = null;
 let preview = null;
 let generationQueue = Promise.resolve();
 const deviceMetricSessions = new WeakMap();
+const appliedViewportProfiles = new WeakMap();
 
 function sha256(value) {
     return crypto.createHash('sha256').update(value).digest('hex');
@@ -231,7 +232,7 @@ function parseRecipe(text) {
         } else if ((match = line.match(/^wait-for-text:\s*(.+)$/))) {
             const text = match[1].trim();
             recipe.actions.push({ type: 'wait-for-text', text });
-        } else if ((match = line.match(/^write-file:\s*(.+?)\s*<-\s*(previous-code|code:.+)$/))) {
+        } else if ((match = line.match(/^write-file:\s*(.+?)\s*<-\s*(previous-code|code:.+|file:.+)$/))) {
             recipe.actions.push({
                 type: 'write-file',
                 path: safeRelativePath(match[1].trim()),
@@ -275,7 +276,40 @@ function parseRecipe(text) {
     return recipe;
 }
 
-function parseTutorial(markdown, markdownPath) {
+async function resolveWriteFileSource(blocks, recipeStart, selector, markdownPath) {
+    if (!selector.startsWith('file:')) {
+        return findCodeSource(blocks, recipeStart, selector);
+    }
+
+    const relativeSource = safeRelativePath(selector.slice('file:'.length).trim());
+    const tutorialDirectory = path.resolve(
+        CONTENT_ROOT,
+        path.dirname(markdownPath),
+    );
+    const sourcePath = path.resolve(tutorialDirectory, relativeSource);
+
+    if (
+        sourcePath !== tutorialDirectory &&
+        !sourcePath.startsWith(`${tutorialDirectory}${path.sep}`)
+    ) {
+        throw new Error(`write-file source escaped the tutorial directory: ${relativeSource}`);
+    }
+
+    let stat;
+    try {
+        stat = await fs.stat(sourcePath);
+    } catch (error) {
+        if (error?.code === 'ENOENT') {
+            throw new Error(`write-file source does not exist: ${relativeSource}`);
+        }
+        throw error;
+    }
+    if (!stat.isFile()) throw new Error(`write-file source is not a file: ${relativeSource}`);
+
+    return fs.readFile(sourcePath, 'utf8');
+}
+
+async function parseTutorial(markdown, markdownPath) {
     const blocks = codeBlocks(markdown);
     const regex = /<!--\s*tutorial-screenshot\s*\n([\s\S]*?)-->/g;
     const shots = [];
@@ -296,13 +330,13 @@ function parseTutorial(markdown, markdownPath) {
             throw new Error(`Generated screenshot must use a relative tutorial image path: ${target}`);
         }
 
-        const resolvedActions = recipe.actions.map(action => {
+        const resolvedActions = await Promise.all(recipe.actions.map(async action => {
             if (action.type !== 'write-file') return action;
             return {
                 ...action,
-                contents: findCodeSource(blocks, match.index, action.source),
+                contents: await resolveWriteFileSource(blocks, match.index, action.source, markdownPath),
             };
-        });
+        }));
 
         const resolved = {
             target,
@@ -1128,6 +1162,18 @@ async function waitForText(text, targetTab) {
     );
 }
 
+function pageForTab(tab) {
+    return tab === 'preview' ? preview : workspace;
+}
+
+async function applyShotViewportProfile(shot) {
+    const page = pageForTab(shot.tab);
+    if (!page || page.isClosed()) return false;
+
+    await applyViewportProfile(page, shot.viewport, shot.zoom);
+    return true;
+}
+
 async function executeAction(action, targetTab) {
     switch (action.type) {
     case 'close-folder': return closeFolder();
@@ -1173,6 +1219,15 @@ async function applyViewportProfile(page, viewport, zoom) {
     // pixel in the final screenshot.
     const metrics = screenshotMetricsFor(viewport, zoom);
 
+    const profileKey = [
+        metrics.width,
+        metrics.height,
+        metrics.deviceScaleFactor,
+    ].join(':');
+    if (appliedViewportProfiles.get(page) === profileKey) {
+        return { session, metrics };
+    }
+
     await session.send('Emulation.setDeviceMetricsOverride', {
         width: metrics.width,
         height: metrics.height,
@@ -1187,6 +1242,7 @@ async function applyViewportProfile(page, viewport, zoom) {
         requestAnimationFrame(() => requestAnimationFrame(resolve));
     }));
 
+    appliedViewportProfiles.set(page, profileKey);
     return { session, metrics };
 }
 
@@ -1219,7 +1275,7 @@ function pngDimensions(buffer) {
 }
 
 async function captureShot(shot, tutorialDirectory) {
-    const page = shot.tab === 'preview' ? preview : workspace;
+    const page = pageForTab(shot.tab);
     if (!page || page.isClosed()) throw new Error(`Screenshot requests unavailable tab: ${shot.tab}`);
 
     const { session, metrics } = await applyViewportProfile(page, shot.viewport, shot.zoom);
@@ -1294,7 +1350,7 @@ async function generateTutorial(payload) {
     }
 
     const markdown = await fs.readFile(markdownPath, 'utf8');
-    const shots = parseTutorial(markdown, relativeMarkdown);
+    const shots = await parseTutorial(markdown, relativeMarkdown);
     if (shots.length === 0) return { generated: 0, current: 0, screenshots: 0 };
 
     const tutorialDirectory = path.dirname(markdownPath);
@@ -1339,7 +1395,16 @@ async function generateTutorial(payload) {
     let generated = 0;
     for (let index = 0; index < shots.length; index += 1) {
         const shot = shots[index];
-        for (const action of shot.actions) await executeAction(action, shot.tab);
+
+        // Layout-sensitive actions (for example clicking a graph control) must
+        // run at the same viewport/zoom as the screenshot itself. If the target
+        // tab is created by an action such as go-live, apply the profile as soon
+        // as it becomes available.
+        await applyShotViewportProfile(shot);
+        for (const action of shot.actions) {
+            await executeAction(action, shot.tab);
+            await applyShotViewportProfile(shot);
+        }
 
         if (stale[index]) {
             const outputSha256 = await captureShot(shot, tutorialDirectory);

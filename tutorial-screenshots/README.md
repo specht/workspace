@@ -58,6 +58,7 @@ open-file: PATH
 go-live
 write-file: PATH <- previous-code
 write-file: PATH <- code:UNIQUE TEXT||ANOTHER UNIQUE TEXT
+write-file: PATH <- file:RELATIVE_PATH
 preview-reload
 preview-reset
 click: BUTTON TEXT
@@ -76,6 +77,10 @@ crop-bottom: PERCENT%
 selects the most recent earlier fenced code block containing all snippets separated
 by `||`. This keeps the visible tutorial code as the source of truth instead of
 duplicating it in the hidden recipe. `left-sidebar-width` resizes the primary
+`file:RELATIVE_PATH` reads the source contents from a file next to the tutorial
+Markdown (or from a subdirectory beneath it). The file contents are included in
+the screenshot state hash, so editing that file invalidates the screenshot just
+like editing an inline code block.
 sidebar through VS Code's own sash, so the workbench layout reacts exactly as it
 does when the divider is dragged by hand. The width is specified in CSS pixels
 and is intentionally per recipe rather than a global screenshot setting.
@@ -94,9 +99,21 @@ screenshot generator waits until that theme has remained stable before running t
 recipe. The renderer gives the page the smaller CSS viewport that a browser has at
 that zoom level and then asks Chromium to capture that viewport at the requested
 scale. Thus VS Code lays itself out at 150% while the generated bitmap still has
-the configured 1853x929 pixels. A recipe only needs `viewport` or `zoom` when a
-particular tab should be captured differently. Workspace screenshots also hide VS
-Code notification toasts so startup warnings do not leak into tutorial images.
+the configured 1853x929 pixels.
+
+`viewport` and `zoom` describe the state in which the selected tab is operated as
+well as captured. The renderer applies that profile before recipe actions run and
+again as soon as a newly-created target tab becomes available. This means actions
+that depend on layout can safely follow a custom zoom, for example:
+
+```text
+zoom: 1.2
+click: Fit graph
+tab: preview
+```
+
+Workspace screenshots also hide VS Code notification toasts so startup warnings
+do not leak into tutorial images.
 
 The screenshot account still logs in as `screenshots@example.com`, but the Unix
 workspace user is configured separately and defaults to `student`. This keeps
