@@ -1,0 +1,27 @@
+\documentclass[tikz,border=6pt]{standalone}
+
+\usepackage{amsmath}
+\usepackage{unicode-math}
+
+\setmainfont{Latin Modern Roman}
+\setmathfont{Latin Modern Math}
+
+\begin{document}
+
+\[
+f(x,y)=\frac{1}{4}
+\sum_{u=0}^{7}\sum_{v=0}^{7}
+C(u)\,C(v)\,F(u,v)\,
+\cos\left(\frac{(2x+1)u\pi}{16}\right)\,
+\cos\left(\frac{(2y+1)v\pi}{16}\right)
+\]
+
+\[
+\text{mit } C(k)=
+\begin{cases}
+\frac{1}{\sqrt{2}}, & k=0 \\
+1, & k\neq 0
+\end{cases}
+\]
+
+\end{document}
