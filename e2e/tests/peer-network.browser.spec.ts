@@ -66,6 +66,52 @@ async function startHttpServer(
   }).toBe(0);
 }
 
+async function startUdpEchoServer(
+  container: WorkspaceContainer,
+  port: number,
+) {
+  const script = `/tmp/e2e-peer-udp-${port}.py`;
+  const result = await container.exec(
+    `cat > ${script} <<'PY'\n` +
+    `import socket\n` +
+    `s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)\n` +
+    `s.bind(("0.0.0.0", ${port}))\n` +
+    `while True:\n` +
+    `    data, address = s.recvfrom(65535)\n` +
+    `    s.sendto(data, address)\n` +
+    `PY\n` +
+    `nohup python3 ${script} ` +
+    `>/tmp/e2e-peer-udp-${port}.log 2>&1 </dev/null &`,
+    {workdir: '/'},
+  );
+
+  expect(
+    result.exitCode,
+    `Could not start UDP peer test server on ${port}: ${result.stderr}`,
+  ).toBe(0);
+
+  await expect.poll(async () => {
+    const probe = await container.exec(
+      `python3 - <<'PY'\n` +
+      `import socket\n` +
+      `s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)\n` +
+      `s.settimeout(0.5)\n` +
+      `s.sendto(b"probe", ("127.0.0.1", ${port}))\n` +
+      `try:\n` +
+      `    data, _ = s.recvfrom(1024)\n` +
+      `except OSError:\n` +
+      `    raise SystemExit(1)\n` +
+      `raise SystemExit(0 if data == b"probe" else 1)\n` +
+      `PY`,
+      {workdir: '/', timeoutMs: 2_000},
+    );
+    return probe.exitCode;
+  }, {
+    message: `UDP peer test server on ${port} should listen locally`,
+    timeout: 5_000,
+  }).toBe(0);
+}
+
 async function expectTcpBlocked(
   from: WorkspaceContainer,
   host: string,
@@ -90,7 +136,33 @@ async function expectTcpBlocked(
   ).toBe(0);
 }
 
-test('student peers only expose classroom networking ports', async ({
+async function expectUdpBlocked(
+  from: WorkspaceContainer,
+  host: string,
+  port: number,
+) {
+  const result = await from.exec(
+    `python3 - <<'PY'\n` +
+    `import socket\n` +
+    `s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)\n` +
+    `s.settimeout(1.0)\n` +
+    `s.sendto(b"probe", ("${host}", ${port}))\n` +
+    `try:\n` +
+    `    s.recvfrom(1024)\n` +
+    `except OSError:\n` +
+    `    raise SystemExit(0)\n` +
+    `raise SystemExit(1)\n` +
+    `PY`,
+    {workdir: '/', timeoutMs: 3_000},
+  );
+
+  expect(
+    result.exitCode,
+    `UDP ${host}:${port} unexpectedly reachable from ${from.name}`,
+  ).toBe(0);
+}
+
+test('student peers only expose TCP port 1234', async ({
   browser,
   freshWorkspace,
   e2eEmail,
@@ -116,29 +188,37 @@ test('student peers only expose classroom networking ports', async ({
     const peerIp = peerIpResult.stdout.trim();
     expect(peerIp).toMatch(/^\d+\.\d+\.\d+\.\d+$/);
 
-    // 1234 is the port used by the existing TCP/IP tutorial. 40404 exercises
-    // the new general-purpose 40000-40999 classroom range.
+    // 1234 is the one direct TCP port reserved for the existing TCP/IP
+    // tutorial. 40404 exercises the old 40000-40999 range and must be blocked.
     await startHttpServer(peer, 1234);
     await startHttpServer(peer, 40404);
     await startHttpServer(peer, 5500);
+    await startUdpEchoServer(peer, 1234);
+    await startUdpEchoServer(peer, 40404);
 
-    for (const port of [1234, 40404]) {
-      const allowed = await first.exec(
-        `printf 'GET / HTTP/1.0\\r\\n\\r\\n' | ` +
-        `timeout 3s netcat ${peerIp} ${port}`,
-        {workdir: '/', timeoutMs: 5_000},
-      );
+    const allowed = await first.exec(
+      `printf 'GET / HTTP/1.0\\r\\n\\r\\n' | ` +
+      `timeout 3s netcat ${peerIp} 1234`,
+      {workdir: '/', timeoutMs: 5_000},
+    );
 
-      expect(
-        allowed.exitCode,
-        `netcat peer connection to ${peerIp}:${port} failed:\n${allowed.stderr}`,
-      ).toBe(0);
-      expect(allowed.stdout).toContain('200 OK');
-    }
+    expect(
+      allowed.exitCode,
+      `netcat peer connection to ${peerIp}:1234 failed:\n${allowed.stderr}`,
+    ).toBe(0);
+    expect(allowed.stdout).toContain('200 OK');
+
+    // The former classroom range is no longer a peer-network exception.
+    await expectTcpBlocked(first, peerIp, 40404);
 
     // A normal development server must stay private unless Shared Live Apps
     // publishes it through nginx.
     await expectTcpBlocked(first, peerIp, 5500);
+
+    // UDP has no student-to-student exception, including on TCP's special
+    // tutorial port and the former classroom range.
+    await expectUdpBlocked(first, peerIp, 1234);
+    await expectUdpBlocked(first, peerIp, 40404);
 
     // Most importantly, nginx authentication must not be bypassable by talking
     // directly to another student's unauthenticated code-server listener.
@@ -162,7 +242,8 @@ test('student peers only expose classroom networking ports', async ({
     }
   } finally {
     await peer.exec(
-      `pkill -f '[p]ython3 -m http.server (1234|40404|5500)' || true`,
+      `pkill -f '[p]ython3 -m http.server (1234|40404|5500)' || true; ` +
+      `pkill -f '[p]ython3 /tmp/e2e-peer-udp-(1234|40404)\\.py' || true`,
       {workdir: '/'},
     );
     await peerContext.close();

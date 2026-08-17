@@ -302,7 +302,7 @@ Findet zunächst beide eure IP-Adressen heraus, indem ihr den Befehl `ifconfig` 
 In diesem Beispiel hat der erste Rechner die IP-Adresse `172.17.0.12` und der zweite Rechner die IP-Adresse `172.17.0.13`.
 
 <div class='hint'>
-Direkte Verbindungen zwischen zwei Workspaces sind absichtlich nur für Netzwerkexperimente freigeschaltet. Dieses Tutorial verwendet Port <code>1234</code>; für eigene Experimente könnt ihr außerdem die Ports <code>40000</code> bis <code>40999</code> verwenden. Andere Ports eines anderen Workspaces sind nicht direkt erreichbar.
+`netcat` verwendet in diesem Beispiel TCP. Port <code>1234</code> hat im Workspace eine besondere Rolle: Er ist der einzige TCP-Port, der für direkte Verbindungen zwischen zwei Schüler-Workspaces freigeschaltet ist. Andere TCP-Ports sowie UDP-Verbindungen zwischen Workspaces sind nicht direkt erreichbar. Browser-Anwendungen teilt ihr stattdessen über Shared Live Apps im <a href='/profil' target='_blank'>Profil</a>.
 </div>
 
 Einer von euch beiden ist der Server und der andere der Client. Der Server öffnet einen Port, auf dem der Client sich verbinden kann. Der Client verbindet sich dann mit dem Server. Nehmen wir mal an, links ist der Server und rechts ist der Client. Der Server öffnet den Port 1234:

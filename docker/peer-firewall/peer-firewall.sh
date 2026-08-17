@@ -4,8 +4,7 @@ set -eu
 DOCKER_SOCKET="${DOCKER_SOCKET:-/var/run/docker.sock}"
 WORKSPACE_NETWORK="${WORKSPACE_NETWORK:-workspace_user}"
 INFRASTRUCTURE_LABEL="${INFRASTRUCTURE_LABEL:-hackschule.workspace.peer_firewall.infrastructure}"
-PEER_TCP_PORTS="${PEER_TCP_PORTS:-1234,40000-40999}"
-PEER_UDP_PORTS="${PEER_UDP_PORTS:-1234,40000-40999}"
+PEER_TCP_PORTS="${PEER_TCP_PORTS:-1234}"
 SYNC_INTERVAL="${SYNC_INTERVAL:-2}"
 NFT_TABLE="hackschule_workspace"
 
@@ -78,13 +77,10 @@ EOF_RULES
         # Student-to-student ICMP remains useful for the networking tutorial.
         ip saddr @user_subnets ip daddr @user_subnets ip protocol icmp accept
 
-        # Direct peer connections are deliberately limited to classroom ports.
-        # Port 1234 keeps the existing netcat tutorial working; 40000-40999 is
-        # the general-purpose experiment range for new exercises.
+        # Direct peer connections are deliberately limited to the TCP port
+        # used by the existing netcat tutorial.
         ip saddr @user_subnets ip daddr @user_subnets tcp dport { ${PEER_TCP_PORTS} } accept
         ip saddr @user_subnets ip daddr @user_subnets tcp sport { ${PEER_TCP_PORTS} } ct state established accept
-        ip saddr @user_subnets ip daddr @user_subnets udp dport { ${PEER_UDP_PORTS} } accept
-        ip saddr @user_subnets ip daddr @user_subnets udp sport { ${PEER_UDP_PORTS} } ct state established accept
 
         # Everything else directly between student-side endpoints is private.
         # bridge/forward cannot use an ICMP reject verdict on the nftables
@@ -182,7 +178,7 @@ done
 # sets, so there is no fail-open initialization window.
 install_ruleset
 last_state="${subnet_elements}|${infrastructure_elements}"
-log "protecting ${WORKSPACE_NETWORK}; peer TCP/UDP ports: ${PEER_TCP_PORTS}"
+log "protecting ${WORKSPACE_NETWORK}; peer TCP ports: ${PEER_TCP_PORTS}; peer UDP disabled"
 log "active subnets: ${subnet_elements}; infrastructure: ${infrastructure_elements:-none}"
 
 while :; do

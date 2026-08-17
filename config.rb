@@ -237,8 +237,7 @@ docker_compose[:services][:peer_firewall] = {
     :environment => {
         'WORKSPACE_NETWORK' => "#{PROJECT_NAME}_user",
         'INFRASTRUCTURE_LABEL' => 'hackschule.workspace.peer_firewall.infrastructure',
-        'PEER_TCP_PORTS' => '1234,40000-40999',
-        'PEER_UDP_PORTS' => '1234,40000-40999',
+        'PEER_TCP_PORTS' => '1234',
     },
     :restart => 'always',
     :healthcheck => {

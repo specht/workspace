@@ -237,7 +237,7 @@ class Main < Sinatra::Base
 
         StringIO.open do |io|
             io.puts "<section id='live-apps' class='my-4'>"
-            io.puts "<h3>Geteilte Apps</h3>"
+            io.puts "<h3>Shared Live Apps</h3>"
             io.puts "<p>Hier kannst du laufende Web-Apps mit anderen angemeldeten Workspace-Nutzern teilen.</p>"
             io.puts "<h4>Meine laufenden Web-Apps</h4>"
             if open_port_details.empty?

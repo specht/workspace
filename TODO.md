@@ -7,19 +7,6 @@ The TODO should describe **what is still worth doing**, not serve as a changelog
 
 ## Infrastructure and Hardening
 
-### Student network isolation
-
-Student workspaces are isolated from each other by the peer firewall. Keep the policy deliberately narrow.
-
-* [ ] Allow direct student-to-student connections only on **TCP port 1234**, matching the existing TCP/IP tutorial
-* [ ] Remove the generic `40000-40999` peer range
-* [ ] Do not allow UDP peer traffic unless a future tutorial has a concrete need for it
-* [ ] Update the peer-network E2E test to enforce the final policy
-* [ ] Mention the special role of port 1234 in the TCP/IP tutorial
-
-Shared Live Apps remains the normal way for students to expose browser applications to other Workspace users.
-
-
 ### Authentication and sessions
 
 * [ ] Harden the login and session flow
