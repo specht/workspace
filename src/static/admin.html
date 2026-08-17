@@ -55,8 +55,14 @@
 <div class='container'>
     <div class='row'>
         <div class='col-md-12'>
+            <div
+                class="autotoc-secondary-trigger"
+                data-title="Administration"
+                data-levels="h2,h3,h4">
+            </div>
+
             <div id="login_codes_here" style="display: none;">
-                <h2>Anmelde-Codes</h2>
+                <h2 id="login-codes">Anmelde-Codes</h2>
                 <div style="max-width: 100%; overflow-x: auto;">
                     <table class="table table-sm" id="table_admin_workspaces">
                         <thead>
@@ -69,7 +75,7 @@
                     </table>
                 </div>
             </div>
-            <h2>Server</h2>
+            <h2 id="server">Server</h2>
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <div class="server-stats" id="stats-cpu">
@@ -118,7 +124,7 @@
                     </div>
                 </div>
             </div>
-            <h2>Workspaces</h2>
+            <h2 id="workspaces">Workspaces</h2>
             <div id="active_users_here"></div>
             #{print_workspaces()}
         </div>

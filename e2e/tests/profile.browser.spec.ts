@@ -34,22 +34,31 @@ test('student profile groups controls and protects credentials', async ({
 
   for (const database of ['mysql', 'neo4j'] as const) {
     const databaseName = database === 'mysql' ? 'MySQL' : 'Neo4j';
-    const details = page.locator(`#${database}-database .profile-credentials`);
+    const credentials = page.locator(
+      `#${database}-database .profile-credentials`,
+    );
     const password = page.locator(`#${database}_password`);
 
     // The accessible name intentionally changes between "anzeigen" and
     // "verbergen", so keep the locator valid for both states.
-    const toggle = details.getByRole('button', {
+    const toggle = credentials.getByRole('button', {
       name: new RegExp(
         `^${databaseName}-Passwort (anzeigen|verbergen)$`,
       ),
     });
 
-    await expect(details).not.toHaveAttribute('open', '');
-    await expect(password).toHaveAttribute('type', 'password');
-
-    await details.locator('summary').click();
+    await expect(credentials).toBeVisible();
+    await expect(
+      credentials.getByRole('heading', {
+        name: `${databaseName}-Zugangsdaten`,
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(
+      page.locator(`#${database}-database details.profile-credentials`),
+    ).toHaveCount(0);
     await expect(password).toBeVisible();
+    await expect(password).toHaveAttribute('type', 'password');
 
     await expect(toggle).toHaveAccessibleName(
       `${databaseName}-Passwort anzeigen`,
@@ -124,7 +133,9 @@ test('profile remains usable at a narrow viewport', async ({
   await loginAsE2eUser(page, e2eEmail, testInfo);
   await page.goto('/profil');
 
-  await page.locator('#mysql-database .profile-credentials summary').click();
+  await expect(
+    page.locator('#mysql-database .profile-credentials'),
+  ).toBeVisible();
   await expect(page.locator('#mysql_password')).toBeVisible();
   await expect(page.locator('.autotoc-secondary')).toBeHidden();
 
