@@ -879,15 +879,15 @@ write-file: pages-starter/key.jpg <- file:key.jpg
 wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
 tab: preview
 preview-reload
-click: selector:.story-view-toggle
+# click: selector:.story-view-toggle
 hold: 1.5s selector:.story-restart-control
 click: Gehe in den Flur.
 wait-for-text: Sieh im Büro nach.
 click: Sieh im Büro nach.
 wait-for-text: Gehe zurück in den Flur.
-move-mouse: No problems
+#move-mouse: No problems
 zoom: 1.25
-sleep: 0.5
+sleep: 1.5
 -->
 
 <img class='full full-shadow scroll-right' src='story-image.webp' alt='Ein Schlüsselbild ergänzt die Büroseite der Geschichte.'>
@@ -985,7 +985,20 @@ Eine andere Seite könnte beginnen mit:
 Diese Kommentare sind für die Leserinnen und Leser unsichtbar. Sie helfen nur dabei, den Graphen übersichtlich zu halten.
 
 <!-- Screenshot: Graph mit gruppierten Seiten -->
-
+<!-- tutorial-screenshot-bobo
+write-file: pages-starter/1.md <- file:1-with-groups.md.txt
+write-file: pages-starter/2.md <- file:2-with-groups.md.txt
+write-file: pages-starter/3.md <- file:3-with-groups.md.txt
+write-file: pages-starter/4.md <- file:4-with-groups.md.txt
+write-file: pages-starter/5.md <- file:5-with-groups.md.txt
+wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
+tab: preview
+preview-reload
+hold: 1.5s selector:.story-restart-control
+move-mouse: No problems
+zoom: 1.25
+sleep: 0.5
+-->
 <img class='full full-shadow' src='grouped-graph.webp' alt='Farbig hinterlegte Gruppen gliedern den Story-Graphen in mehrere Bereiche.'>
 
 ### JavaScript
