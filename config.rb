@@ -117,7 +117,10 @@ end
 
 if DEVELOPMENT && PROFILE.include?(:dynamic) && PROFILE.include?(:static)
     docker_compose[:services][:tutorial_screenshots] = {
-        :build => './tutorial-screenshots',
+        :build => {
+            :context => './src/tutorial-screenshots',
+            :dockerfile => '../../docker/tutorial-screenshots/Dockerfile',
+        },
         :volumes => [
             './src/content:/content',
             "#{USER_PATH}:/user",

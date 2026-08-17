@@ -251,6 +251,11 @@ tab: preview
 zoom: 1.25
 click: Fit graph
 sleep: 0.5
+click: Gehe in den Flur.
+wait-for-text: Sieh im Büro nach.
+click: Sieh im Büro nach.
+wait-for-text: Gehe zurück in den Flur.
+sleep: 0.5
 -->
 
 <img class='full full-shadow scroll-right' src='branching-story.webp' alt='Der Story-Graph verzweigt sich vom Flur zu Büro und Treppenhaus.'>
@@ -277,6 +282,7 @@ Vielleicht möchtest du mit einer Person sprechen, einen Gegenstand untersuchen 
 
 Öffne `3.md` und ändere den Inhalt zu:
 
+<!-- screenshot-code: 3-newer -->
 ```markdown_wrap
 Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kleiner Schlüssel an einem Haken.
 
@@ -289,7 +295,22 @@ Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kle
 
 Der wichtige Unterschied ist der Punkt: `(.)` – er bedeutet, dass die Geschichte auf dieser Seite bleiben soll. Der eingerückte Text darunter erscheint erst, nachdem die Entscheidung ausgewählt wurde.
 
-<!-- Screenshot: lokale Entscheidung -->
+<!-- tutorial-screenshot
+write-file: pages-starter/3.md <- previous-code (3-newer)
+wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/2.md
+preview-reload
+tab: preview
+zoom: 1.25
+click: Fit graph
+sleep: 0.5
+click: Gehe in den Flur.
+wait-for-text: Sieh im Büro nach.
+click: Sieh im Büro nach.
+wait-for-text: Frage nach dem Materialschrank.
+click: Frage nach dem Materialschrank.
+wait-for-text: Gehe zurück in den Flur.
+sleep: 0.5
+-->
 
 <img class='full full-shadow scroll-right' src='local-choice.webp' alt='Die Frage nach dem Materialschrank führt nicht zu einem Seitenwechsel, da es sich um eine lokale Entscheidung handelt.'>
 
