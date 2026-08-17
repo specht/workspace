@@ -51,6 +51,7 @@ hide-right-sidebar
 show-bottom-panel
 hide-bottom-panel
 clone-start: URL
+clone-start: URL <- local:REPO @ COMMIT
 clone-confirm-url
 clone-accept-destination
 clone-open
@@ -62,7 +63,7 @@ write-file: PATH <- code:UNIQUE TEXT||ANOTHER UNIQUE TEXT
 write-file: PATH <- file:RELATIVE_PATH
 preview-reload
 preview-reset
-click: BUTTON TEXT
+click: BUTTON OR LINK TEXT
 press: PlaywrightKey
 sleep: SECONDS
 wait-for-text: TEXT
@@ -73,6 +74,33 @@ zoom: NUMBER
 crop-top: PERCENT%
 crop-bottom: PERCENT%
 ```
+
+For tutorials that demonstrate cloning a public URL, development can use a local
+repository for the actual Git transport while keeping the URL shown to students:
+
+```text
+clone-start: https://github.com/specht/bif.git <- local:bif @ b5215fa
+```
+
+`local:bif` means the `bif` repository below the local Git root. By default that
+root is the parent directory of the Workspace checkout, which is convenient when
+repositories such as `workspace` and `bif` are siblings. Override it when needed
+before generating `docker-compose.yaml`:
+
+```bash
+TUTORIAL_SCREENSHOT_LOCAL_GIT_ROOT=/path/to/repos ./config.rb up -d
+```
+
+The commit must be either exactly seven hexadecimal characters or a full
+40-character SHA-1. The generator resolves it in the local repository, makes a
+private bare copy inside the disposable screenshot Workspace, points that copy's
+HEAD branch at the pinned commit, and configures Git's `insteadOf` rewriting so
+VS Code still clones the public URL entered in Quick Input. No network request is
+made for that clone. The local Git root is mounted read-only into the screenshot
+generator.
+
+`click` matches either an accessible button or an accessible link with the exact
+given name in the preview tab.
 
 `previous-code` means the last fenced code block before the recipe. When several
 blocks belong to the same step, put a `screenshot-code` marker immediately before
@@ -135,6 +163,13 @@ Workspace screenshots also hide VS Code notification toasts so startup warnings
 do not leak into tutorial images. The screenshot image configures Fontconfig with
 `hintslight`, matching a desktop configured for slight font hinting while leaving
 antialiasing and subpixel order at the container defaults.
+
+After a render that generated screenshots has returned its images, the generator
+immediately resets and starts another pristine screenshot Workspace in the
+background. The next render reuses that already-prepared Workspace instead of
+paying the reset/start/theme-settling cost again. If another reload arrives while
+preparation is still running, only a render that actually needs fresh screenshots
+waits for it; a reload whose screenshots are all current does not.
 
 The screenshot account still logs in as `screenshots@example.com`, but the Unix
 workspace user is configured separately and defaults to `student`. This keeps

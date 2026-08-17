@@ -19,6 +19,7 @@ TUTORIAL_SCREENSHOT = {
     :height => 929,
     :zoom => 1.5,
     :desktop_scale_factor => 1.203125,
+    :local_git_root => File.expand_path(ENV.fetch('TUTORIAL_SCREENSHOT_LOCAL_GIT_ROOT', '..'), __dir__),
 }.freeze
 LOGS_PATH = DEVELOPMENT ? './logs' : "/home/#{ENV['USER']}/logs/#{PROJECT_NAME}"
 DATA_PATH = DEVELOPMENT ? './data' : "/mnt/hackschule/#{PROJECT_NAME}"
@@ -120,6 +121,7 @@ if DEVELOPMENT && PROFILE.include?(:dynamic) && PROFILE.include?(:static)
         :volumes => [
             './src/content:/content',
             "#{USER_PATH}:/user",
+            "#{TUTORIAL_SCREENSHOT[:local_git_root]}:/local-git:ro",
         ],
         :environment => {
             'TUTORIAL_SCREENSHOT_BASE_URL' => WEB_ROOT,
@@ -130,6 +132,7 @@ if DEVELOPMENT && PROFILE.include?(:dynamic) && PROFILE.include?(:static)
             'TUTORIAL_SCREENSHOT_HEIGHT' => TUTORIAL_SCREENSHOT[:height].to_s,
             'TUTORIAL_SCREENSHOT_ZOOM' => TUTORIAL_SCREENSHOT[:zoom].to_s,
             'TUTORIAL_SCREENSHOT_DESKTOP_SCALE_FACTOR' => TUTORIAL_SCREENSHOT[:desktop_scale_factor].to_s,
+            'TUTORIAL_SCREENSHOT_LOCAL_GIT_ROOT' => '/local-git',
         },
         :extra_hosts => [
             'host.docker.internal:host-gateway',

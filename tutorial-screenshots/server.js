@@ -31,12 +31,13 @@ function sleep(seconds) {
 
 const CONTENT_ROOT = '/content';
 const USER_ROOT = '/user';
+const LOCAL_GIT_ROOT = process.env.TUTORIAL_SCREENSHOT_LOCAL_GIT_ROOT || '/local-git';
 const BASE_URL = process.env.TUTORIAL_SCREENSHOT_BASE_URL || 'http://workspace.test:8025';
 const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'screenshots@example.com';
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
-const GENERATOR_VERSION = 12;
+const GENERATOR_VERSION = 13;
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
 const DEFAULT_PROFILE = Object.freeze({
@@ -121,6 +122,8 @@ let loggedIn = false;
 let workspace = null;
 let preview = null;
 let generationQueue = Promise.resolve();
+let workspacePrepared = false;
+let workspacePreparationPromise = null;
 const deviceMetricSessions = new WeakMap();
 const appliedViewportProfiles = new WeakMap();
 
@@ -232,7 +235,20 @@ function parseRecipe(text) {
         }
 
         let match;
-        if ((match = line.match(/^clone-start:\s*(.+)$/))) {
+        if ((match = line.match(/^clone-start:\s*(\S+)\s+<-\s+local:(.+?)\s+@\s*(\S+)$/))) {
+            const commit = match[3].trim();
+            if (!/^(?:[0-9a-f]{7}|[0-9a-f]{40})$/i.test(commit)) {
+                throw new Error(
+                    `Local clone commit must be exactly 7 or 40 hexadecimal characters: ${commit}`,
+                );
+            }
+            recipe.actions.push({
+                type: 'clone-start',
+                url: match[1].trim(),
+                localRepo: safeRelativePath(match[2].trim()),
+                commit: commit.toLowerCase(),
+            });
+        } else if ((match = line.match(/^clone-start:\s*(.+)$/))) {
             recipe.actions.push({ type: 'clone-start', url: match[1].trim() });
         } else if ((match = line.match(/^left-sidebar-width:\s*(\d+)$/))) {
             const width = Number(match[1]);
@@ -651,7 +667,8 @@ async function waitForWorkbenchThemeSettled(page) {
     throw new Error('Timed out waiting for the Workspace color theme to settle');
 }
 
-async function freshWorkspace() {
+async function prepareFreshWorkspace() {
+    workspacePrepared = false;
     await ensureLoggedIn();
 
     for (const page of context.pages()) {
@@ -683,6 +700,41 @@ async function freshWorkspace() {
     await applyViewportProfile(workspace, DEFAULT_PROFILE, DEFAULT_PROFILE.zoom);
     await waitForFreshWorkspaceUi(workspace);
     await waitForWorkbenchThemeSettled(workspace);
+    workspacePrepared = true;
+}
+
+async function acquireFreshWorkspace() {
+    // A previous render may already be preparing the next pristine Workspace in
+    // the background. Only wait for that work when screenshots actually need a
+    // Workspace; a no-op tutorial reload remains immediate.
+    if (workspacePreparationPromise) {
+        await workspacePreparationPromise;
+    }
+
+    if (!workspacePrepared || !workspace || workspace.isClosed()) {
+        await prepareFreshWorkspace();
+    }
+
+    // The first recipe action consumes the prepared state. After this point the
+    // Workspace belongs to the current render and must never be reused as fresh.
+    workspacePrepared = false;
+}
+
+function scheduleFreshWorkspace() {
+    if (workspacePrepared || workspacePreparationPromise) return;
+
+    console.log('Preparing next tutorial screenshot Workspace in background...');
+    workspacePreparationPromise = prepareFreshWorkspace()
+        .then(() => {
+            console.log('Next tutorial screenshot Workspace is ready');
+        })
+        .catch(error => {
+            workspacePrepared = false;
+            console.error(`Could not prepare next tutorial screenshot Workspace: ${error.message}`);
+        })
+        .finally(() => {
+            workspacePreparationPromise = null;
+        });
 }
 
 function quickInput(page) {
@@ -791,7 +843,92 @@ async function closeFolder() {
     await workspace.waitForTimeout(250);
 }
 
-async function cloneStart(url) {
+async function prepareLocalCloneSource(url, localRepo, commit) {
+    const localRoot = path.resolve(LOCAL_GIT_ROOT);
+    const source = path.resolve(localRoot, safeRelativePath(localRepo));
+    if (
+        source !== localRoot &&
+        !source.startsWith(`${localRoot}${path.sep}`)
+    ) {
+        throw new Error(`Local clone source escaped ${LOCAL_GIT_ROOT}: ${localRepo}`);
+    }
+
+    let sourceStat;
+    try {
+        sourceStat = await fs.stat(source);
+    } catch (error) {
+        if (error?.code === 'ENOENT') {
+            throw new Error(`Local clone repository does not exist: ${localRepo}`);
+        }
+        throw error;
+    }
+    if (!sourceStat.isDirectory()) {
+        throw new Error(`Local clone repository is not a directory: ${localRepo}`);
+    }
+
+    const git = async args => execFileAsync(
+        'git',
+        ['-c', `safe.directory=${source}`, ...args],
+        { maxBuffer: 10 * 1024 * 1024 },
+    );
+
+    let fullCommit;
+    try {
+        const result = await git(['-C', source, 'rev-parse', '--verify', `${commit}^{commit}`]);
+        fullCommit = result.stdout.trim().toLowerCase();
+    } catch (error) {
+        const detail = `${error.stderr || error.message}`.trim();
+        throw new Error(
+            `Could not resolve local clone commit ${commit} in ${localRepo}: ${detail}`,
+        );
+    }
+    if (!/^[0-9a-f]{40}$/.test(fullCommit)) {
+        throw new Error(`Git returned an invalid commit for ${localRepo}: ${fullCommit}`);
+    }
+
+    let branch = 'tutorial-screenshot';
+    try {
+        const result = await git(['-C', source, 'symbolic-ref', '--quiet', '--short', 'HEAD']);
+        if (result.stdout.trim()) branch = result.stdout.trim();
+    } catch {
+        // Detached local repositories use the deterministic fallback branch.
+    }
+
+    const workspaceRoot = screenshotWorkspaceRoot();
+    const cacheRoot = path.join(workspaceRoot, '.tutorial-screenshot-git');
+    const cacheId = sha256(`${url}\0${localRepo}\0${fullCommit}`).slice(0, 16);
+    const target = path.join(cacheRoot, `${cacheId}.git`);
+    const workspaceTarget = `/workspace/.tutorial-screenshot-git/${cacheId}.git`;
+    const localUrl = `file://${workspaceTarget}`;
+    const gitConfig = path.join(workspaceRoot, '.gitconfig');
+
+    await fs.mkdir(cacheRoot, { recursive: true });
+    await fs.rm(target, { recursive: true, force: true });
+
+    try {
+        await git(['clone', '--quiet', '--bare', source, target]);
+        await execFileAsync('git', ['--git-dir', target, 'update-ref', `refs/heads/${branch}`, fullCommit]);
+        await execFileAsync('git', ['--git-dir', target, 'symbolic-ref', 'HEAD', `refs/heads/${branch}`]);
+        await execFileAsync('git', ['config', '--file', gitConfig, 'protocol.file.allow', 'always']);
+        await execFileAsync('git', ['config', '--file', gitConfig, `url.${localUrl}.insteadOf`, url]);
+        await execFileAsync('chown', ['-R', '1000:1000', cacheRoot]);
+        await fs.chown(gitConfig, 1000, 1000).catch(() => {});
+    } catch (error) {
+        const detail = `${error.stderr || error.message}`.trim();
+        throw new Error(`Could not prepare local clone ${localRepo}@${commit}: ${detail}`);
+    }
+
+    console.log(
+        `Tutorial screenshot Git clone uses ${localRepo}@${fullCommit.slice(0, 12)} for ${url}`,
+    );
+}
+
+async function cloneStart(action) {
+    const { url, localRepo, commit } = action;
+    if (localRepo) {
+        await prepareLocalCloneSource(url, localRepo, commit);
+    }
+
     const cloneButton = workspace.getByText('Clone Repository', { exact: true }).first();
     if (await locatorIsVisible(cloneButton)) {
         await cloneButton.click();
@@ -1163,8 +1300,18 @@ async function closeTab(label) {
 
 async function clickPreview(label) {
     if (!preview || preview.isClosed()) throw new Error('No preview tab is open');
-    const control = preview.getByRole('button', { name: label, exact: true });
-    await control.waitFor({ state: 'visible', timeout: 20_000 });
+    const buttons = preview.getByRole('button', { name: label, exact: true });
+    const links = preview.getByRole('link', { name: label, exact: true });
+    const control = buttons.or(links);
+    await control.first().waitFor({ state: 'visible', timeout: 20_000 });
+
+    const count = await control.count();
+    if (count !== 1) {
+        throw new Error(
+            `click expected exactly one button or link named ${JSON.stringify(label)}, found ${count}`,
+        );
+    }
+
     await control.click();
     await preview.waitForTimeout(150);
 }
@@ -1207,7 +1354,7 @@ async function executeAction(action, targetTab) {
     case 'show-bottom-panel': return setWorkbenchPartVisible('bottom-panel', true);
     case 'hide-bottom-panel': return setWorkbenchPartVisible('bottom-panel', false);
     case 'left-sidebar-width': return setLeftSidebarWidth(action.width);
-    case 'clone-start': return cloneStart(action.url);
+    case 'clone-start': return cloneStart(action);
     case 'clone-confirm-url': return cloneConfirmUrl();
     case 'clone-accept-destination': return cloneAcceptDestination();
     case 'clone-open': return cloneOpen();
@@ -1414,7 +1561,7 @@ async function generateTutorial(payload) {
         return { generated: 0, current: shots.length, screenshots: shots.length };
     }
 
-    await freshWorkspace();
+    await acquireFreshWorkspace();
     let generated = 0;
     for (let index = 0; index < shots.length; index += 1) {
         const shot = shots[index];
@@ -1444,6 +1591,9 @@ async function generateTutorial(payload) {
     }
 
     await writeManifest(tutorialDirectory, nextManifest);
+    if (generated > 0) {
+        scheduleFreshWorkspace();
+    }
     return { generated, current: shots.length - generated, screenshots: shots.length };
 }
 
