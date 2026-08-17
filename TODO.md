@@ -17,18 +17,16 @@ Improve supply-chain reproducibility gradually rather than trying to rewrite the
 
 * [ ] Add checksum verification for important downloaded release archives where upstream checksums are available
 * [ ] Consider digest pinning for important base images
-* [ ] Keep version pins centralized and easy to update
 
 
 ## Testing and Operations
 
 ### Continuous integration
 
-The Playwright suite now covers a growing number of real student workflows. Add automated execution without making every push run the most expensive tests.
+The Playwright suite now covers a growing number of real student workflows. Keep tutorial tests focused on whether the documented student workflow actually works, and add automated execution without making every push run the most expensive tests.
 
 * [ ] Add a small, fast CI gate for cheap checks
 * [ ] Run heavier browser/toolchain tests manually, nightly or on a suitable self-hosted runner
-* [ ] Keep tutorial tests focused on whether the documented student workflow actually works
 * [ ] Add E2E coverage when important tutorials are changed or newly written
 
 
@@ -44,7 +42,7 @@ This should make it immediately obvious which revision is running in production.
 Continue extracting coherent pieces from `main.rb` incrementally rather than attempting a rewrite.
 
 * [ ] Remove duplicated helper/setup definitions that now exist both in `helper.rb` and `main.rb`
-* [ ] Consider authentication/session handling as a future extraction candidate
+* [ ] Decide whether the remaining login/session routes should move into a dedicated module now that the authentication helpers are extracted
 * [ ] Consider workspace lifecycle / nginx management as another future extraction candidate
 
 
@@ -166,9 +164,6 @@ Neo4j:
 
 Before writing the Ruby part:
 
-* [ ] Make the current `neo4j_bolt` wrapper cleanly usable from a student workspace with the student's username/password/database
-* [ ] Prefer the existing `NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD` and `NEO4J_DATABASE` environment rather than credentials in source files
-* [ ] Verify/install a student Ruby version compatible with the current `neo4j_bolt` release
 * [ ] Decide whether `neo4j_bolt` belongs in the student image or should be installed explicitly as part of the tutorial
 
 The programming part should stay small: parameterized `neo4j_query`, simple result handling, and perhaps an artist/movie/person explorer. Do not make driver/session plumbing the lesson.
@@ -246,17 +241,11 @@ Change the state and rebuild the interface.
 
 #### Android build support
 
-Make Android compilation a supported Workspace workflow so that students can take home an actual app.
+Android compilation is a supported Workspace workflow. Before the tutorial is rolled out broadly, finish the remaining operational checks:
 
-The student image should include a **pinned, headless Android SDK toolchain**; Android Studio itself is not required.
-
-* [ ] Add pinned Android command-line tools to the Workspace Docker image
-* [ ] Add the Android SDK platform and build-tools versions required by the installed Flutter version
-* [ ] Configure Flutter to use the Workspace Android SDK
-* [ ] Add an image-build smoke test that creates a minimal Flutter Android project and successfully builds an APK
 * [ ] Measure memory and PID usage of `flutter build apk --debug` with the resource profiler
 * [ ] Re-check the planned student container limits against the Android/Gradle workload
-* [ ] Avoid installing unnecessary Android/NDK components unless the build actually requires them
+* [ ] Verify whether the currently pinned CMake/NDK components are needed by the normal tutorial build and remove them if not
 
 The tutorial should end with:
 

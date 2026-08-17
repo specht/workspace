@@ -13,13 +13,16 @@ Die veröffentlichten Tutorials findest du direkt auf der Startseite des Workspa
 Der Workspace bündelt bewusst unterschiedliche Bereiche der Informatik in einer gemeinsamen Umgebung. Dazu gehören unter anderem:
 
 - Programmierung in zahlreichen Sprachen – von BASIC, Pascal und C bis Python, JavaScript, Rust und weiteren
-- Webentwicklung mit HTML, CSS, JavaScript und modernen Frameworks
+- Webentwicklung mit HTML, CSS, JavaScript, modernen Frameworks und Shared Live Apps zum Teilen laufender Projekte
 - Computergrafik mit Pixelflow Canvas, PixelRAM und weiteren Werkzeugen
 - interaktive Geschichten mit BIF
-- relationale Datenbanken und SQL
+- relationale und Graphdatenbanken mit MySQL, Neo4j, SQL und Cypher
+- App-Entwicklung mit Flutter für Web und Android, einschließlich APK-Builds
 - Kommandozeile, Dateien, TCP/IP und Git
 - wissenschaftliche Dokumente mit LaTeX
 - HTML-Präsentationen mit shower.js
+
+Direkte Netzwerkverbindungen zwischen studentischen Workspaces sind bewusst eingeschränkt. Für Netzwerkübungen steht TCP-Port 1234 zur Verfügung; laufende Webanwendungen lassen sich kontrolliert über Shared Live Apps teilen.
 
 Die vollständige und aktuelle Übersicht der Tutorials wird aus den Inhalten des Workspace erzeugt; das README soll deshalb nur einen repräsentativen Überblick geben.
 
@@ -70,7 +73,7 @@ Wenn der Workspace gestartet ist, kannst du ihn im Browser unter <a href='http:/
 
 **Workspace-Image bauen**
 
-Das Bauen des Workspace-Images dauert relativ lange (bei mir ca. 30 Minuten), da alle notwendigen Pakete heruntergeladen und installiert werden müssen. Das Image ist ca. 13.5 GB groß.
+Das Bauen des Workspace-Images dauert beim ersten Mal relativ lange und benötigt mehrere Gigabyte Speicherplatz, da zahlreiche Compiler, SDKs und Werkzeuge heruntergeladen und installiert werden müssen.
 
 ```bash
 ./build-image.sh
@@ -92,7 +95,7 @@ Wenn du TIC-80 nutzen möchtest, musst du es einmalig kompilieren. Dazu musst du
 
 ## Entwicklung und Tests
 
-Für zentrale Workspace-Abläufe gibt es browserbasierte End-to-End-Tests mit Playwright. Sie prüfen reale Arbeitsabläufe im Workspace und verwenden nach Möglichkeit dieselben Beispiele, die auch in den Tutorials dokumentiert sind.
+Für zentrale Workspace-Abläufe gibt es End-to-End- und Toolchain-Tests mit Playwright. Sie prüfen unter anderem Anmeldung und Sessions, Workspace-Start, Profil, Shared Live Apps, die Netzwerkisolation sowie ausgewählte Tutorials und Werkzeugketten bis hin zum Flutter-Android-APK-Build. Nach Möglichkeit verwenden die Tests dieselben Beispiele, die auch in den Tutorials dokumentiert sind.
 
 Die Einrichtung und Ausführung der Tests ist in [`e2e/README.md`](e2e/README.md) beschrieben.
 
