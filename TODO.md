@@ -20,30 +20,6 @@ Student workspaces are isolated from each other by the peer firewall. Keep the p
 Shared Live Apps remains the normal way for students to expose browser applications to other Workspace users.
 
 
-### Resource limits for student workspaces
-
-The resource profiler now gives a realistic picture of whole-workspace memory and process use for representative student workloads. The remaining goal is to turn those measurements into generous containment limits without making normal classroom work feel constrained.
-
-Current candidate configuration:
-
-```text
---cpus=4
---memory=4g
---memory-swap=4g
---pids-limit=256
-```
-
-Before finalizing it:
-
-* [ ] Re-run the representative resource profile with a **4 CPU** workspace so increased compiler parallelism is reflected in the memory/PID measurements
-* [ ] Keep the 4 GiB memory / 256 PID candidates if Flutter, Emscripten, Svelte, LaTeX and ordinary work still have comfortable headroom
-* [ ] Apply the final CPU, memory, swap and PID limits to student containers
-* [ ] Add E2E coverage that inspects the configured container limits
-* [ ] Run the existing browser/toolchain suite under the final limits
-
-The goal is containment, not maximizing the number of students per server. A workspace should be able to burst when the server is otherwise quiet while one runaway program must not monopolize the host.
-
-
 ### Authentication and sessions
 
 * [ ] Harden the login and session flow
