@@ -1,3 +1,6 @@
+# One Discogs artist URL per line. Blank lines and comments are ignored.
+# Bare numeric Discogs artist IDs are accepted too.
+
 # Germany
 https://www.discogs.com/artist/45317-Die-Ärzte
 https://www.discogs.com/artist/255362-Die-Toten-Hosen

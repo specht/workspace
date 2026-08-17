@@ -27,38 +27,36 @@ class DiscogsDatasetBuilder
     'Tour Recording'
   ].freeze
 
-  def initialize(output_dir:, min_artist_versions: 100, min_album_versions: 10, dump_date: nil, force_download: false)
+  def initialize(output_dir:, wanted_artists_path:, dump_date: nil, force_download: false)
     @output_dir = File.expand_path(output_dir)
     @download_dir = File.join(@output_dir, '.downloads')
-    @min_artist_versions = min_artist_versions
-    @min_album_versions = min_album_versions
+    @wanted_artists_path = File.expand_path(wanted_artists_path)
     @requested_dump_date = dump_date
     @force_download = force_download
   end
 
   def run
-    raise ArgumentError, '--min-artist-versions must be at least 1' if @min_artist_versions < 1
-    raise ArgumentError, '--min-album-versions must be at least 1' if @min_album_versions < 1
+    wanted_artist_ids = load_wanted_artist_ids
 
     FileUtils.mkdir_p(@download_dir)
     @dump_date = resolve_dump_date
 
     STDERR.puts "Using Discogs dump #{@dump_date}."
+    STDERR.puts "Using #{wanted_artist_ids.size} artists from #{@wanted_artists_path}."
     STDERR.puts "Downloading Discogs source data to #{@download_dir}..."
     DATASET_TYPES.each { |type| download(type) }
 
+    masters = load_wanted_album_masters(wanted_artist_ids)
     canonical_release_path = nil
     begin
-      main_release_ids = load_main_release_ids
-      version_counts, canonical_release_path = scan_releases(main_release_ids)
-      main_release_ids = nil
-      masters = load_candidate_album_masters(version_counts)
+      version_counts, canonical_release_path = scan_releases(masters)
+      masters.each { |master_id, master| master[:versions] = version_counts[master_id].to_i }
       albums = load_main_releases(masters, canonical_release_path)
     ensure
       FileUtils.rm_f(canonical_release_path) if canonical_release_path
     end
 
-    selected_artist_ids = select_popular_artists!(albums)
+    selected_artist_ids = albums.values.map { |album| album[:artist_id] }.to_set
     artists, memberships = load_artists(selected_artist_ids)
     if selected_artist_ids.any? && selected_artist_ids.none? { |artist_id| artists.key?(artist_id) }
       raise "Could not resolve any of #{selected_artist_ids.size} selected artist IDs from the Discogs artist dump"
@@ -328,45 +326,77 @@ class DiscogsDatasetBuilder
     end
   end
 
-  def load_main_release_ids
-    STDERR.puts 'Indexing canonical release IDs from Discogs masters...'
-    bitset = ''.b
-    count = 0
-    main_release_re = /<main_release>(\d+)<\/main_release>/
+  def load_wanted_artist_ids
+    raise "Wanted artist list not found: #{@wanted_artists_path}" unless File.file?(@wanted_artists_path)
 
-    Zlib::GzipReader.open(dataset_path('masters')) do |gz|
-      gz.each_line do |line|
-        match = main_release_re.match(line)
-        next unless match
+    ids = Set.new
 
-        bitset_add(bitset, match[1].to_i)
-        count += 1
+    File.foreach(@wanted_artists_path, encoding: Encoding::UTF_8).with_index(1) do |line, line_number|
+      value = line.sub(/#.*/, '').strip
+      next if value.empty?
+
+      artist_id = if value.match?(/\A\d+\z/)
+                    value.to_i
+                  else
+                    match = value.match(%r{\Ahttps?://(?:www\.)?discogs\.com/artist/(\d+)(?:[-/?#].*)?\z}i)
+                    match && match[1].to_i
+                  end
+
+      unless artist_id&.positive?
+        raise "Invalid wanted artist on line #{line_number} of #{@wanted_artists_path}: #{line.strip.inspect}"
       end
+
+      ids << artist_id
     end
 
-    STDERR.puts "  #{count} canonical release IDs indexed in #{format('%.1f', bitset.bytesize / 1_048_576.0)} MiB"
-    bitset
+    raise "Wanted artist list is empty: #{@wanted_artists_path}" if ids.empty?
+
+    ids
   end
 
-  def bitset_add(bitset, id)
-    byte_index = id >> 3
-    if byte_index >= bitset.bytesize
-      bitset << "\0".b * (byte_index - bitset.bytesize + 1)
+  def load_wanted_album_masters(wanted_artist_ids)
+    STDERR.puts 'Selecting masters for wanted artists...'
+    masters = {}
+
+    each_wanted_master_record(dataset_path('masters'), wanted_artist_ids) do |master_id, artist_id, xml|
+      doc = parse_xml(xml)
+      master = doc.root
+      next unless master
+
+      main_release_id = integer_text(REXML::XPath.first(master, './main_release'))
+      year = integer_text(REXML::XPath.first(master, './year'))
+      title = text(REXML::XPath.first(master, './title'))
+      next unless main_release_id && year && title
+
+      genres = REXML::XPath.match(master, './genres/genre').map { |node| clean_text(node.text) }.reject(&:empty?).uniq
+      next if genres.empty?
+
+      masters[master_id] = {
+        id: master_id,
+        discogs_release_id: main_release_id,
+        artist_id: artist_id,
+        title: title,
+        year: year,
+        genres: genres
+      }
     end
 
-    bitset.setbyte(byte_index, bitset.getbyte(byte_index) | (1 << (id & 7)))
+    represented_artist_ids = masters.values.map { |master| master[:artist_id] }.to_set
+    missing_artist_ids = wanted_artist_ids - represented_artist_ids
+
+    STDERR.puts "  #{masters.size} single-artist masters found for #{represented_artist_ids.size} wanted artists"
+    unless missing_artist_ids.empty?
+      STDERR.puts "  warning: #{missing_artist_ids.size} wanted artists have no usable single-artist masters"
+    end
+
+    masters
   end
 
-  def bitset_include?(bitset, id)
-    byte_index = id >> 3
-    return false if byte_index >= bitset.bytesize
-
-    (bitset.getbyte(byte_index) & (1 << (id & 7))).positive?
-  end
-
-  def scan_releases(main_release_ids)
-    STDERR.puts 'Scanning releases once for popularity and canonical release records...'
-    counts = []
+  def scan_releases(masters)
+    STDERR.puts 'Scanning releases for version counts and canonical release records...'
+    wanted_master_ids = masters.keys.to_set
+    canonical_release_ids = masters.values.map { |master| master[:discogs_release_id] }.to_set
+    counts = Hash.new(0)
     spool_path = File.join(@download_dir, "discogs_#{@dump_date}_canonical-releases.tmp.gz")
     FileUtils.rm_f(spool_path)
 
@@ -385,7 +415,7 @@ class DiscogsDatasetBuilder
         gz.each_line do |line|
           if (master_match = master_id_re.match(line))
             master_id = master_match[1].to_i
-            counts[master_id] = counts[master_id].to_i + 1
+            counts[master_id] += 1 if wanted_master_ids.include?(master_id)
           end
 
           unless collecting
@@ -393,7 +423,7 @@ class DiscogsDatasetBuilder
             next unless start_match
 
             release_id = start_match[1].to_i
-            selected = bitset_include?(main_release_ids, release_id)
+            selected = canonical_release_ids.include?(release_id)
             collecting = true
             buffer = line.dup if selected
             release_count += 1
@@ -419,7 +449,7 @@ class DiscogsDatasetBuilder
       end
     end
 
-    STDERR.puts "  #{release_count} releases scanned, #{canonical_count} canonical releases spooled"
+    STDERR.puts "  #{release_count} releases scanned, #{canonical_count} wanted canonical releases spooled"
     STDERR.puts "  temporary canonical spool: #{format('%.1f', File.size(spool_path) / 1_048_576.0)} MiB"
     [counts, spool_path]
   rescue StandardError
@@ -451,47 +481,8 @@ class DiscogsDatasetBuilder
     end
   end
 
-  def load_candidate_album_masters(version_counts)
-    STDERR.puts "Selecting candidate masters with at least #{@min_album_versions} release versions..."
-    masters = {}
-
-    each_selected_record(
-      dataset_path('masters'),
-      'master',
-      ->(id, _line) { version_counts[id].to_i >= @min_album_versions }
-    ) do |master_id, xml|
-      doc = parse_xml(xml)
-      master = doc.root
-      next unless master
-
-      artist_ids = REXML::XPath.match(master, './artists/artist/id').map { |node| node.text.to_i }.reject(&:zero?).uniq
-      next unless artist_ids.size == 1
-
-      main_release_id = integer_text(REXML::XPath.first(master, './main_release'))
-      year = integer_text(REXML::XPath.first(master, './year'))
-      title = text(REXML::XPath.first(master, './title'))
-      next unless main_release_id && year && title
-
-      genres = REXML::XPath.match(master, './genres/genre').map { |node| clean_text(node.text) }.reject(&:empty?).uniq
-      next if genres.empty?
-
-      masters[master_id] = {
-        id: master_id,
-        discogs_release_id: main_release_id,
-        artist_id: artist_ids.first,
-        title: title,
-        year: year,
-        genres: genres,
-        versions: version_counts[master_id].to_i
-      }
-    end
-
-    STDERR.puts "  #{masters.size} candidate single-artist masters before album filtering"
-    masters
-  end
-
   def load_main_releases(masters, spool_path)
-    STDERR.puts 'Reading popular canonical releases and track lists...'
+    STDERR.puts 'Reading wanted canonical releases and track lists...'
     master_by_release_id = {}
     masters.each_value { |master| master_by_release_id[master[:discogs_release_id]] = master }
     albums = {}
@@ -517,25 +508,6 @@ class DiscogsDatasetBuilder
 
     STDERR.puts "  #{albums.size} canonical albums retained"
     albums
-  end
-
-  def select_popular_artists!(albums)
-    artist_scores = Hash.new(0)
-    albums.each_value do |album|
-      artist_scores[album[:artist_id]] += album[:versions]
-    end
-
-    selected_artist_ids = artist_scores.filter_map do |artist_id, score|
-      artist_id if score >= @min_artist_versions
-    end.to_set
-
-    before = albums.size
-    albums.delete_if { |_id, album| !selected_artist_ids.include?(album[:artist_id]) }
-
-    STDERR.puts "Selecting artists with at least #{@min_artist_versions} combined album release versions..."
-    STDERR.puts "  #{selected_artist_ids.size} artists qualify; #{albums.size} of #{before} albums retained"
-
-    selected_artist_ids
   end
 
   def album_release?(release)
@@ -681,6 +653,61 @@ class DiscogsDatasetBuilder
   end
 
 
+  def each_wanted_master_record(path, wanted_artist_ids, &handler)
+    start_re = /<master\b[^>]*\bid="(\d+)"[^>]*>/
+    end_marker = '</master>'
+    artists_end_marker = '</artists>'
+    collecting = false
+    decided = false
+    selected = false
+    master_id = nil
+    artist_id = nil
+    prefix = +''
+    buffer = +''
+
+    Zlib::GzipReader.open(path) do |gz|
+      gz.each_line do |line|
+        if !collecting
+          match = start_re.match(line)
+          next unless match
+
+          master_id = match[1].to_i
+          collecting = true
+          decided = false
+          selected = false
+          artist_id = nil
+          prefix = line.dup
+          buffer = +''
+        elsif decided
+          buffer << line if selected
+        else
+          prefix << line
+        end
+
+        if !decided && prefix.include?(artists_end_marker)
+          artists_xml = prefix[/<artists>(.*?)<\/artists>/m, 1]
+          artist_ids = artists_xml.to_s.scan(/<id>(\d+)<\/id>/).flatten.map!(&:to_i).reject(&:zero?).uniq
+          selected = artist_ids.size == 1 && wanted_artist_ids.include?(artist_ids.first)
+          artist_id = artist_ids.first if selected
+          buffer = prefix.dup if selected
+          prefix = +''
+          decided = true
+        end
+
+        next unless collecting && line.include?(end_marker)
+
+        handler.call(master_id, artist_id, buffer) if selected
+        collecting = false
+        decided = false
+        selected = false
+        master_id = nil
+        artist_id = nil
+        prefix = +''
+        buffer = +''
+      end
+    end
+  end
+
   def each_selected_artist_record(path, wanted_artist_ids, &handler)
     start_re = /<artist(?:\s|>)/
     id_re = /<id>(\d+)<\/id>/
@@ -720,39 +747,6 @@ class DiscogsDatasetBuilder
         selected = false
         artist_id = nil
         prefix = +''
-        buffer = +''
-      end
-    end
-  end
-
-  def each_selected_record(path, tag, selector, &handler)
-    start_re = /<#{Regexp.escape(tag)}\b[^>]*\bid="(\d+)"[^>]*>/
-    end_marker = "</#{tag}>"
-    collecting = false
-    selected = false
-    id = nil
-    buffer = +''
-
-    Zlib::GzipReader.open(path) do |gz|
-      gz.each_line do |line|
-        unless collecting
-          match = start_re.match(line)
-          next unless match
-
-          id = match[1].to_i
-          selected = selector.call(id, line)
-          collecting = true
-          buffer = line.dup if selected
-        else
-          buffer << line if selected
-        end
-
-        next unless collecting && line.include?(end_marker)
-
-        handler.call(id, buffer) if selected
-        collecting = false
-        selected = false
-        id = nil
         buffer = +''
       end
     end
@@ -1059,18 +1053,15 @@ class DiscogsDatasetBuilder
 
       #{DATASET_TYPES.map { |type| "- #{source_uri(type)}" }.join("\n")}
 
-      The generated data contains canonical, single-artist albums from artists whose
-      qualifying albums have at least #{@min_artist_versions} Discogs release versions
-      in aggregate. An individual album needs at least #{@min_album_versions} versions
-      before it contributes to that artist score or is included. Compilations, unofficial
-      releases, reissues, remasters and tour recordings are excluded.
+      The generated data contains canonical, single-artist albums by artists listed in
+      `#{File.basename(@wanted_artists_path)}`. Compilations, unofficial releases,
+      reissues, remasters and tour recordings are excluded. Albums also need a usable
+      year, genre and canonical track list, as required by the generated classroom schema.
 
-      Discogs' public CC0 dump contains catalog metadata but not a directly comparable
-      IMDb-style vote count. The `versions` field therefore acts as a reproducible
-      offline popularity proxy. Artist selection uses the sum of `versions` across
-      qualifying albums, so artists with a substantial regional catalogue can qualify
-      even when no single album has an unusually large international release history.
-      Change the cutoffs with `--min-artist-versions` and `--min-album-versions`.
+      The `versions` field contains the number of Discogs release versions attached to
+      each master release. It is retained as useful catalog metadata and can be used for
+      sorting or classroom queries, but it does not decide which artists or albums are
+      included. Artist selection comes only from `#{File.basename(@wanted_artists_path)}`.
 
       ## Generated files
 
@@ -1102,8 +1093,8 @@ class DiscogsDatasetBuilder
 
       `album.id` is the Discogs master-release ID and `album.discogs_release_id` is the
       canonical concrete release used for country and track information. `album.versions`
-      contains the release-version count used as the popularity proxy, so it is also
-      useful for sorting and classroom queries.
+      contains the number of Discogs release versions for that master, so it is useful
+      for sorting and classroom queries without affecting inclusion.
 
       ## Neo4j / Neo4jBolt
 
@@ -1132,21 +1123,17 @@ class DiscogsDatasetBuilder
       The builder automatically looks for the newest complete monthly Discogs dump:
 
       ```sh
-      ./discogs_prepare.rb
+      ./collect-music.rb
       ```
 
       Useful options:
 
       ```sh
-      ./discogs_prepare.rb --min-artist-versions 150
-      ./discogs_prepare.rb --min-album-versions 15
-      ./discogs_prepare.rb --min-versions 15
-      ./discogs_prepare.rb --dump-date 20260801
-      ./discogs_prepare.rb --force-download
-      ./discogs_prepare.rb --output /path/to/discogs
+      ./collect-music.rb --wanted-artists wanted-artists.txt
+      ./collect-music.rb --dump-date 20260801
+      ./collect-music.rb --force-download
+      ./collect-music.rb --output /path/to/discogs
       ```
-
-      `--min-versions` remains as a compatibility alias for `--min-album-versions`.
 
       The original compressed Discogs files are cached in `.downloads/` so subsequent
       runs can reuse them. `--force-download` refreshes the selected dump.
@@ -1159,29 +1146,20 @@ end
 
 options = {
   output_dir: 'discogs',
-  min_artist_versions: 100,
-  min_album_versions: 10,
+  wanted_artists_path: File.join(__dir__, 'wanted-artists.txt'),
   dump_date: nil,
   force_download: false
 }
 
 parser = OptionParser.new do |opts|
-  opts.banner = 'Usage: discogs_prepare.rb [options]'
+  opts.banner = 'Usage: collect-music.rb [options]'
 
   opts.on('-o', '--output DIR', 'Output directory (default: discogs)') do |dir|
     options[:output_dir] = dir
   end
 
-  opts.on('--min-artist-versions N', Integer, 'Minimum combined album release versions per artist (default: 100)') do |n|
-    options[:min_artist_versions] = n
-  end
-
-  opts.on('--min-album-versions N', Integer, 'Minimum release versions per included album (default: 10)') do |n|
-    options[:min_album_versions] = n
-  end
-
-  opts.on('--min-versions N', Integer, 'Alias for --min-album-versions') do |n|
-    options[:min_album_versions] = n
+  opts.on('--wanted-artists FILE', 'Discogs artist URL/ID list (default: wanted-artists.txt next to this script)') do |file|
+    options[:wanted_artists_path] = file
   end
 
   opts.on('--dump-date YYYYMMDD', 'Use a specific monthly Discogs dump instead of auto-detecting the newest') do |value|
