@@ -10,9 +10,11 @@ e2e/test-results
 invitations
 logs
 src/content/git/git-tutorial/alice
+src/kenney/previews/
 src/ruby/credentials.rb
 src/ruby/invitations.txt
 src/scripts/collect-music-releases/cache
+src/scripts/dump-*.txt
 src/static/include/bootstrap*/node_modules
 src/static/tic80
 src/tutorial-screenshots/node_modules
