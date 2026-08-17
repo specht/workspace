@@ -34,22 +34,7 @@
     "first-page.webp": {
       "state_hash": "3e828cce30b2fc21a0aeba01762e44753a1a98ed0be2c50bda0d16f651ab3faf",
       "environment_fingerprint": "a7c328422cddc173ea5b4a376e3d10f141a6ec432326c9f851c62d45a18dcd8a",
-      "output_sha256": "66dcdddb815684d0700379f4ea740a7324a9b7d4d07c70f9952c5449b5b0a8c8"
-    },
-    "unreachable-page.webp": {
-      "state_hash": "44d9c9f233eeef880143f0ba645b5e0ea9131a1bb358d22632d98dc5683a7ab8",
-      "environment_fingerprint": "a7c328422cddc173ea5b4a376e3d10f141a6ec432326c9f851c62d45a18dcd8a",
-      "output_sha256": "b8a74e8d3b63fdaa1e05e2269585d2a200d1390c9b5ce15a1313d18607c0c593"
-    },
-    "two-pages.webp": {
-      "state_hash": "e45411159b6dda63934f148de3d06000e2eff79c8dfba6fa9a12329f88471e53",
-      "environment_fingerprint": "a7c328422cddc173ea5b4a376e3d10f141a6ec432326c9f851c62d45a18dcd8a",
-      "output_sha256": "3de66d7c0eb12708a6e53a93b5e96e5c037c3439a0149fca2f545945c57dca4c"
-    },
-    "branching-story.webp": {
-      "state_hash": "daa602104c9f164a784384221336816b58a67f0445ac09ffa8c3e18b5f67a0de",
-      "environment_fingerprint": "a7c328422cddc173ea5b4a376e3d10f141a6ec432326c9f851c62d45a18dcd8a",
-      "output_sha256": "b71880639734779b34e14f748f4c1ffdb69c3bc11a29d85f311191615df95514"
+      "output_sha256": "fd2976efd8a615f96b74effbb149fa9c6221c5311b1949d124aef7ad0a287441"
     }
   }
 }

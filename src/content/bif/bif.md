@@ -152,7 +152,7 @@ Speichere die Datei, indem du <kbd>Strg</kbd><kbd>S</kbd> drückst. Die Vorschau
 
 <div style='clear: both;'></div>
 
-<!-- tutorial-screenshot
+<!-- tutorial-screenshot-nono
 write-file: pages-starter/2.md <- previous-code
 wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/2.md
 preview-reload
@@ -186,7 +186,7 @@ Du willst gerade gehen, da fällt dir ein: Deine Projektmappe liegt noch im Mate
 
 Speichere die Datei und probiere die Geschichte im Browser aus:
 
-<!-- tutorial-screenshot
+<!-- tutorial-screenshot-nono
 write-file: pages-starter/1.md <- previous-code
 wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
 preview-reload
@@ -241,7 +241,7 @@ Du stehst in einem leeren Flur. Links ist ein kleines Büro. Daneben führt eine
 
 Speichere die Dateien und probiere beide Wege aus.
 
-<!-- tutorial-screenshot
+<!-- tutorial-screenshot-nono
 write-file: pages-starter/3.md <- previous-code (3-new)
 write-file: pages-starter/4.md <- previous-code (4-new)
 write-file: pages-starter/2.md <- previous-code (2-new)
@@ -295,7 +295,7 @@ Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kle
 
 Der wichtige Unterschied ist der Punkt: `(.)` – er bedeutet, dass die Geschichte auf dieser Seite bleiben soll. Der eingerückte Text darunter erscheint erst, nachdem die Entscheidung ausgewählt wurde.
 
-<!-- tutorial-screenshot_nono
+<!-- tutorial-screenshot-nono
 write-file: pages-starter/3.md <- previous-code (3-newer)
 wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/2.md
 preview-reload
