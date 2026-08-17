@@ -271,6 +271,17 @@ function parsePreviewControlTarget(value) {
     return { label: target };
 }
 
+function parseMouseTarget(value) {
+    const target = value.trim();
+    if (target.startsWith('selector:')) {
+        const selector = target.slice('selector:'.length).trim();
+        if (!selector) throw new Error('Mouse target selector must not be empty');
+        return { selector };
+    }
+    if (!target) throw new Error('Mouse target text must not be empty');
+    return { text: target };
+}
+
 function parseRecipe(text, markdown, markdownPath, recipeStart) {
     const recipe = {
         tab: 'workspace',
@@ -354,6 +365,11 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
                 type: 'hold',
                 seconds,
                 ...valueAtSource(source, () => parsePreviewControlTarget(match[2])),
+            });
+        } else if ((match = line.match(/^move-mouse:\s*(.+)$/))) {
+            recipe.actions.push({
+                type: 'move-mouse',
+                ...valueAtSource(source, () => parseMouseTarget(match[1])),
             });
         } else if ((match = line.match(/^press:\s*(.+)$/))) {
             recipe.actions.push({ type: 'press', key: match[1].trim() });
@@ -1538,6 +1554,34 @@ async function holdPreview(action) {
     await preview.waitForTimeout(150);
 }
 
+async function moveMouse(action, targetTab) {
+    const page = targetTab === 'preview' ? preview : workspace;
+    if (!page || page.isClosed()) {
+        throw new Error(`move-mouse requests unavailable tab: ${targetTab}`);
+    }
+
+    let target;
+    let description;
+    if (action.selector) {
+        target = page.locator(action.selector);
+        description = `element matching selector ${JSON.stringify(action.selector)}`;
+    } else {
+        target = page.getByText(action.text, { exact: true });
+        description = `element with text ${JSON.stringify(action.text)}`;
+    }
+
+    await target.first().waitFor({ state: 'visible', timeout: 20_000 });
+    const count = await target.count();
+    if (count !== 1) {
+        throw new Error(`move-mouse expected exactly one ${description}, found ${count}`);
+    }
+
+    const box = await target.boundingBox();
+    if (!box) throw new Error(`move-mouse could not measure ${description}`);
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.waitForTimeout(150);
+}
+
 async function waitForText(text, targetTab) {
     const page = targetTab === 'preview' ? preview : workspace;
     if (!page || page.isClosed()) {
@@ -1590,6 +1634,7 @@ async function executeAction(action, targetTab) {
     case 'preview-reset': return previewReload(true);
     case 'click': return clickPreview(action);
     case 'hold': return holdPreview(action);
+    case 'move-mouse': return moveMouse(action, targetTab);
     case 'sleep': return sleep(action.seconds);
     case 'wait-for-text': return waitForText(action.text, targetTab);
     case 'press': {

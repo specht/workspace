@@ -577,6 +577,7 @@ wait-for-text: Frage nach dem Materialschrank.
 click: Nimm den Schlüssel.
 wait-for-text: Gehe zurück in den Flur.
 click: Gehe zurück in den Flur.
+move-mouse: No problems
 sleep: 0.5
 -->
 
@@ -595,6 +596,14 @@ Gerade beim Testen einer interaktiven Geschichte lohnt es sich, Orte mehrmals zu
 ## Ende
 
 Öffne jetzt den Materialschrank:
+
+<!-- tutorial-screenshot
+tab: preview
+zoom: 1.25
+click: Öffne den Materialschrank.
+move-mouse: No problems
+sleep: 0.5
+-->
 
 <img class='full full-shadow scroll-right' src='unlocked-door.webp' alt='Der geöffnete Materialschrank bildet das Ende der Geschichte; darunter erscheint der Neustart-Button.'>
 
@@ -642,8 +651,16 @@ Speichere die Datei.
 
 BIF erkennt, dass das JavaScript nicht gültig ist. Im Bereich **Problems** siehst du, in welcher Datei und in welcher Zeile der Fehler gefunden wurde. Auch im Graphen wird die betroffene Seite als fehlerhaft markiert.
 
-<!-- Screenshot: Problems mit JavaScript-Syntaxfehler -->
-
+<!-- tutorial-screenshot
+write-file: pages-starter/3.md <- file:3-with-error.md.txt
+wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/3.md
+preview-reload
+hold: 1.5s selector:.story-restart-control
+tab: preview
+zoom: 1.25
+click: Fit graph
+sleep: 0.5
+-->
 <img class='full full-shadow' src='script-error.webp' alt='Der Problems-Bereich meldet den JavaScript-Syntaxfehler; die betroffene Seite ist im Graphen rot markiert.'>
 
 Korrigiere die Zeile anschließend wieder:
@@ -683,27 +700,78 @@ theme: mystery
 # Nach Schulschluss
 ```
 
-BIF bringt mehrere Themes mit: `default`, `paper`, `mystery`, `midnight`, `terminal` und `playful`.
+BIF bringt mehrere Themes mit: `default`, `paper`, `playful`, `mystery`, `midnight` und `terminal`.
 Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details wie Abstände und abgerundete Ecken. Du kannst es deshalb einfach so verwenden, wie es ist.
 
 <div class='row'>
+    <!-- tutorial-screenshot
+    write-file: pages-starter/1.md <- file:theme-default.md.txt
+    wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
+    tab: preview
+    preview-reload
+    click: selector:.story-view-toggle
+    hold: 1.5s selector:.story-restart-control
+    move-mouse: Nach Schulschluss
+    zoom: 2.75
+    sleep: 0.5
+    -->
     <div class='col-md-4'>
         <img src='theme-default.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im hellen Standard-Theme.'>
     </div>
+    <!-- tutorial-screenshot
+    write-file: pages-starter/1.md <- file:theme-paper.md.txt
+    wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
+    tab: preview
+    preview-reload
+    zoom: 2.75
+    sleep: 0.5
+    -->
     <div class='col-md-4'>
         <img src='theme-paper.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im cremefarbenen Paper-Theme mit Serifenschrift.'>
     </div>
+    <!-- tutorial-screenshot
+    write-file: pages-starter/1.md <- file:theme-playful.md.txt
+    wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
+    tab: preview
+    preview-reload
+    zoom: 2.75
+    sleep: 0.5
+    -->
+    <div class='col-md-4'>
+        <img src='theme-playful.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im Playful-Theme mit abgerundeten Flächen.'>
+    </div>
+    <!-- tutorial-screenshot
+    write-file: pages-starter/1.md <- file:theme-mystery.md.txt
+    wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
+    tab: preview
+    preview-reload
+    zoom: 2.75
+    sleep: 0.5
+    -->
     <div class='col-md-4'>
         <img src='theme-mystery.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im dunklen Mystery-Theme.'>
     </div>
+    <!-- tutorial-screenshot
+    write-file: pages-starter/1.md <- file:theme-midnight.md.txt
+    wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
+    tab: preview
+    preview-reload
+    zoom: 2.75
+    sleep: 0.5
+    -->
     <div class='col-md-4'>
         <img src='theme-midnight.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im dunkelblauen Midnight-Theme.'>
     </div>
+    <!-- tutorial-screenshot
+    write-file: pages-starter/1.md <- file:theme-terminal.md.txt
+    wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
+    tab: preview
+    preview-reload
+    zoom: 2.75
+    sleep: 0.5
+    -->
     <div class='col-md-4'>
         <img src='theme-terminal.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im schwarzen Terminal-Theme mit grüner Monospace-Schrift.'>
-    </div>
-    <div class='col-md-4'>
-        <img src='theme-playful.webp' style='width: 100%;' class='full-shadow' alt='Die Geschichte im Playful-Theme mit abgerundeten Flächen.'>
     </div>
 </div>
 
@@ -804,6 +872,23 @@ In Markdown kannst du das Bild so einfügen:
 Der Text in den eckigen Klammern beschreibt das Bild und hilft zum Beispiel Menschen, die einen Screenreader verwenden.
 
 <!-- Screenshot: BIF-Seite mit Bild -->
+<!-- tutorial-screenshot
+write-file: pages-starter/1.md <- file:theme-default.md.txt
+write-file: pages-starter/3.md <- file:3-with-image.md.txt
+write-file: pages-starter/key.jpg <- file:key.jpg
+wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
+tab: preview
+preview-reload
+click: selector:.story-view-toggle
+hold: 1.5s selector:.story-restart-control
+click: Gehe in den Flur.
+wait-for-text: Sieh im Büro nach.
+click: Sieh im Büro nach.
+wait-for-text: Gehe zurück in den Flur.
+move-mouse: No problems
+zoom: 1.25
+sleep: 0.5
+-->
 
 <img class='full full-shadow scroll-right' src='story-image.webp' alt='Ein Schlüsselbild ergänzt die Büroseite der Geschichte.'>
 

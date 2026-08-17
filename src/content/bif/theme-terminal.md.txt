@@ -1,0 +1,9 @@
+---
+theme: terminal
+---
+
+# Nach Schulschluss
+
+Du willst gerade gehen, da fällt dir ein: Deine Projektmappe liegt noch im Materialschrank.
+
+- [Gehe in den Flur.](2)

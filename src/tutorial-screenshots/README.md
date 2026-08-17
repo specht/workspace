@@ -81,6 +81,8 @@ click: BUTTON OR LINK TEXT
 click: selector:CSS_SELECTOR
 hold: SECONDSs BUTTON OR LINK TEXT
 hold: SECONDSs selector:CSS_SELECTOR
+move-mouse: TEXT
+move-mouse: selector:CSS_SELECTOR
 press: PlaywrightKey
 sleep: SECONDS
 wait-for-text: TEXT
@@ -128,6 +130,16 @@ confirm restart control can be driven without depending on its translated label:
 
 ```text
 hold: 1.5s selector:.story-restart-control
+```
+
+`move-mouse` moves the Chromium pointer to the center of exactly one element in
+the currently selected screenshot tab. Without a prefix, the target is matched by
+exact visible text; prefix it with `selector:` to use a CSS selector instead. This
+is useful for parking the pointer on a neutral element before capture so a button
+does not remain in its hover state. For example:
+
+```text
+move-mouse: No problems
 ```
 
 `previous-code` means the last fenced code block before the recipe. When several
