@@ -36,7 +36,7 @@ const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'screenshots@e
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
-const GENERATOR_VERSION = 11;
+const GENERATOR_VERSION = 12;
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
 const DEFAULT_PROFILE = Object.freeze({
@@ -155,13 +155,26 @@ function parsePercent(value) {
 
 function codeBlocks(markdown) {
     const blocks = [];
+    const labels = new Set();
     const regex = /```[^\n]*\n([\s\S]*?)```/g;
     let match;
     while ((match = regex.exec(markdown)) !== null) {
+        const beforeFence = markdown.slice(0, match.index);
+        const labelMatch = /<!--\s*screenshot-code:\s*([^\r\n>]+?)\s*-->\s*$/.exec(beforeFence);
+        const label = labelMatch?.[1].trim() || null;
+
+        if (label) {
+            if (labels.has(label)) {
+                throw new Error(`Duplicate screenshot-code label: ${label}`);
+            }
+            labels.add(label);
+        }
+
         blocks.push({
             start: match.index,
             end: regex.lastIndex,
             contents: match[1].replace(/\n$/, ''),
+            label,
         });
     }
     return blocks;
@@ -172,6 +185,16 @@ function findCodeSource(blocks, recipeStart, selector) {
     if (selector === 'previous-code') {
         const block = before.at(-1);
         if (!block) throw new Error('previous-code requested before any fenced code block');
+        return block.contents;
+    }
+
+    const labelledPrevious = /^previous-code\s+\(([^)]+)\)$/.exec(selector);
+    if (labelledPrevious) {
+        const label = labelledPrevious[1].trim();
+        const block = before.find(candidate => candidate.label === label);
+        if (!block) {
+            throw new Error(`Could not find a previous code block labelled: ${label}`);
+        }
         return block.contents;
     }
 
@@ -232,7 +255,7 @@ function parseRecipe(text) {
         } else if ((match = line.match(/^wait-for-text:\s*(.+)$/))) {
             const text = match[1].trim();
             recipe.actions.push({ type: 'wait-for-text', text });
-        } else if ((match = line.match(/^write-file:\s*(.+?)\s*<-\s*(previous-code|code:.+|file:.+)$/))) {
+        } else if ((match = line.match(/^write-file:\s*(.+?)\s*<-\s*(previous-code(?:\s+\([^)]+\))?|code:.+|file:.+)$/))) {
             recipe.actions.push({
                 type: 'write-file',
                 path: safeRelativePath(match[1].trim()),

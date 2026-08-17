@@ -213,6 +213,7 @@ besteht aus zwei wichtigen Teilen: in eckigen Klammern steht der Text, der angez
 Eine interaktive Geschichte wird interessanter, wenn nicht immer nur ein einziger Weg möglich ist.
 Erstelle die Datei `3.md`:
 
+<!-- screenshot-code: 3-new -->
 ```markdown_wrap
 Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kleiner Schlüssel an einem Haken.
 
@@ -221,6 +222,7 @@ Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kle
 
 Erstelle außerdem die Datei `4.md`:
 
+<!-- screenshot-code: 4-new -->
 ```markdown_wrap
 Im Treppenhaus ist es still. Auf dem Absatz liegt nur ein vergessener Turnbeutel.
 
@@ -229,6 +231,7 @@ Im Treppenhaus ist es still. Auf dem Absatz liegt nur ein vergessener Turnbeutel
 
 Öffne jetzt `2.md` und ergänze zwei Entscheidungen:
 
+<!-- screenshot-code: 2-new -->
 ```markdown_wrap
 Du stehst in einem leeren Flur. Links ist ein kleines Büro. Daneben führt eine Tür ins Treppenhaus. Am Ende steht ein verschlossener Materialschrank.
 
@@ -238,7 +241,17 @@ Du stehst in einem leeren Flur. Links ist ein kleines Büro. Daneben führt eine
 
 Speichere die Dateien und probiere beide Wege aus.
 
-<!-- Screenshot: zwei Entscheidungen im Flur -->
+<!-- tutorial-screenshot
+write-file: pages-starter/3.md <- previous-code (3-new)
+write-file: pages-starter/4.md <- previous-code (4-new)
+write-file: pages-starter/2.md <- previous-code (2-new)
+wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/2.md
+preview-reload
+tab: preview
+zoom: 1.25
+click: Fit graph
+sleep: 0.5
+-->
 
 <img class='full full-shadow scroll-right' src='branching-story.webp' alt='Der Story-Graph verzweigt sich vom Flur zu Büro und Treppenhaus.'>
 

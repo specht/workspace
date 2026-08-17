@@ -57,6 +57,7 @@ clone-open
 open-file: PATH
 go-live
 write-file: PATH <- previous-code
+write-file: PATH <- previous-code (LABEL)
 write-file: PATH <- code:UNIQUE TEXT||ANOTHER UNIQUE TEXT
 write-file: PATH <- file:RELATIVE_PATH
 preview-reload
@@ -73,17 +74,35 @@ crop-top: PERCENT%
 crop-bottom: PERCENT%
 ```
 
-`previous-code` means the last fenced code block before the recipe. `code:...`
-selects the most recent earlier fenced code block containing all snippets separated
-by `||`. This keeps the visible tutorial code as the source of truth instead of
-duplicating it in the hidden recipe. `left-sidebar-width` resizes the primary
+`previous-code` means the last fenced code block before the recipe. When several
+blocks belong to the same step, put a `screenshot-code` marker immediately before
+a fence and reference it by label:
+
+````markdown
+<!-- screenshot-code: 3-new -->
+```markdown_wrap
+Contents for page 3.
+```
+````
+
+```text
+write-file: pages-starter/3.md <- previous-code (3-new)
+```
+
+Labels must be unique within the tutorial. `code:...` selects the most recent
+earlier fenced code block containing all snippets separated by `||`. This keeps
+the visible tutorial code as the source of truth instead of duplicating it in the
+hidden recipe.
+
 `file:RELATIVE_PATH` reads the source contents from a file next to the tutorial
 Markdown (or from a subdirectory beneath it). The file contents are included in
 the screenshot state hash, so editing that file invalidates the screenshot just
 like editing an inline code block.
-sidebar through VS Code's own sash, so the workbench layout reacts exactly as it
-does when the divider is dragged by hand. The width is specified in CSS pixels
-and is intentionally per recipe rather than a global screenshot setting.
+
+`left-sidebar-width` resizes the primary sidebar through VS Code's own sash, so
+the workbench layout reacts exactly as it does when the divider is dragged by
+hand. The width is specified in CSS pixels and is intentionally per recipe rather
+than a global screenshot setting.
 `sleep` pauses recipe execution for the given number of seconds (fractions are
 allowed, up to 300 seconds) and is useful when an application has no better
 observable readiness signal.
@@ -113,7 +132,9 @@ tab: preview
 ```
 
 Workspace screenshots also hide VS Code notification toasts so startup warnings
-do not leak into tutorial images.
+do not leak into tutorial images. The screenshot image configures Fontconfig with
+`hintslight`, matching a desktop configured for slight font hinting while leaving
+antialiasing and subpixel order at the container defaults.
 
 The screenshot account still logs in as `screenshots@example.com`, but the Unix
 workspace user is configured separately and defaults to `student`. This keeps
