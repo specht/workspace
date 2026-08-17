@@ -2,8 +2,6 @@
 
 Open infrastructure, maintenance and teaching work for the Hackschule Workspace.
 
-The TODO should describe **what is still worth doing**, not serve as a changelog. Completed work belongs in Git history and documentation.
-
 
 ## Infrastructure and Hardening
 
@@ -13,22 +11,11 @@ The TODO should describe **what is still worth doing**, not serve as a changelog
 * [ ] Review authentication-related logging and error handling
 * [ ] Add regression tests for the important login/session behaviour
 
-Keep security-sensitive implementation details out of this public TODO.
-
 
 ### Operational logging
 
 * [ ] Audit command/error logging so secrets and credentials cannot accidentally appear in logs
 * [ ] Prefer safe human-readable operation descriptions over dumping complete commands when commands fail
-
-
-### Reduce backend privileges
-
-The trusted Ruby backend needs Docker control, but it may not need every privilege currently granted to its container.
-
-* [ ] Test the complete application and E2E suite without `privileged: true` on the Ruby service
-* [ ] Keep the reduced configuration if everything still works
-* [ ] Revisit other broad container capabilities when there is a concrete opportunity to remove them safely
 
 
 ### Dependency and image verification
