@@ -74,7 +74,7 @@ test(
         'Flutter and the managed Android SDK are available',
         async () => {
           const flutter = await run(
-            'flutter --version | head -n 2',
+            'flutter --version',
           );
 
           expectSuccess(

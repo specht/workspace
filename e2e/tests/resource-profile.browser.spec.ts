@@ -489,7 +489,7 @@ async function collectVersions(
     gcc: 'gcc --version | head -n 1',
     gpp: 'g++ --version | head -n 1',
     emscripten: 'emcc --version | head -n 1',
-    flutter: 'flutter --version | head -n 2',
+    flutter: 'flutter --version',
     node: 'node --version',
     npm: 'npm --version',
     latexmk: 'latexmk -v | head -n 2',
