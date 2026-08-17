@@ -5,13 +5,6 @@ Open infrastructure, maintenance and teaching work for the Hackschule Workspace.
 
 ## Infrastructure and Hardening
 
-### Authentication and sessions
-
-* [ ] Harden the login and session flow
-* [ ] Review authentication-related logging and error handling
-* [ ] Add regression tests for the important login/session behaviour
-
-
 ### Operational logging
 
 * [ ] Audit command/error logging so secrets and credentials cannot accidentally appear in logs

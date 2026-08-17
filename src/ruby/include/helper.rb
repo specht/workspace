@@ -131,8 +131,7 @@ class Main < Sinatra::Base
             end
             result
         rescue
-            debug "Request was:"
-            debug data_str
+            debug "Invalid request body (#{data_str.bytesize} bytes)"
             raise
         end
     end

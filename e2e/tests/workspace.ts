@@ -40,7 +40,13 @@ export async function loginAsE2eUser(
     });
 
     await test.step('Submit login', async () => {
+      const responsePromise = page.waitForResponse(response =>
+        response.url().endsWith('/api/complete_login')
+        && response.request().method() === 'POST',
+      );
       await page.locator('#bu_submit_code').click();
+      const response = await responsePromise;
+      expect(response.status()).toBe(200);
       await page.waitForURL(url => url.pathname === '/');
     });
 

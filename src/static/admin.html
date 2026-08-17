@@ -129,6 +129,37 @@
 
     var invitations = #{@@invitations.to_json};
     var group_order = #{@@user_groups.keys.to_json};
+    var login_code_expiry_timer = null;
+
+    function render_login_codes(lines) {
+        if (login_code_expiry_timer !== null) {
+            clearTimeout(login_code_expiry_timer);
+            login_code_expiry_timer = null;
+        }
+
+        let now = Math.floor(Date.now() / 1000);
+        let active_lines = lines.filter((line) => line.expires_at > now);
+        let container = $('#login_codes_here');
+        let tbody = container.find('tbody');
+        tbody.empty();
+
+        if (active_lines.length === 0) {
+            container.hide();
+            return;
+        }
+
+        for (let line of active_lines) {
+            let row = $('<tr>').appendTo(tbody);
+            row.append($('<td>').text(line.email));
+            row.append($('<td>').text(line.code));
+        }
+        container.show();
+
+        let next_expiry = Math.min(...active_lines.map((line) => line.expires_at));
+        login_code_expiry_timer = setTimeout(function() {
+            render_login_codes(active_lines);
+        }, Math.max(50, next_expiry * 1000 - Date.now() + 50));
+    }
 
     function wrapLettersInSpan(input) {
         return input.replace(/([A-Za-z%]+)/g, "<span class='unit'>$1</span>");
@@ -277,19 +308,7 @@
                 }
             }
             if (data.action === 'login_codes') {
-                // console.log(data.lines);
-                if (data.lines.length === 0) {
-                    $('#login_codes_here').hide();
-                } else {
-                    let tbody = $('#login_codes_here').find('tbody');
-                    tbody.empty();
-                    for (let line of data.lines) {
-                        let row = $('<tr>').appendTo(tbody);
-                        row.append($('<td>').text(line.email));
-                        row.append($('<td>').text(line.code));
-                    }
-                    $('#login_codes_here').show();
-                }
+                render_login_codes(data.lines);
             }
         }
     }

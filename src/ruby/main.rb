@@ -1,6 +1,7 @@
 require './include/helper.rb'
 require './include/automatron.rb'
 require './include/atomic_file.rb'
+require './include/authentication.rb'
 require './include/database_provisioning.rb'
 require './include/trusted_template.rb'
 require './include/tutorial_screenshots.rb'
@@ -635,7 +636,16 @@ class Main < Sinatra::Base
             #                '$status $body_bytes_sent "$http_referer" '
             #                '"$http_user_agent" "$request_time"';
 
-            log_format custom '$host:$server_port uri=$uri token=$hs_token up=$hs_upstream share=$hs_is_share reqsid=$hs_required_sid cookie=$cookie_hs_server_sid allowed=$hs_allowed "$request" $status';
+            # Keep access logs useful without recording capability tokens, session
+            # cookies, workspace tags or one-time login URLs.
+            map $uri $hs_log_uri {
+                default $uri;
+                ~^/w/[a-z0-9]+(?:/|$) /w/[redacted];
+                ~^/share/[a-z0-9]+(?:/|$) /share/[redacted];
+                ~^/l/[a-z0-9]+(?:/|$) /l/[redacted];
+            }
+
+            log_format custom 'method=$request_method uri=$hs_log_uri status=$status share=$hs_is_share allowed=$hs_allowed';
 
             map_hash_bucket_size 128;
 
@@ -1647,6 +1657,7 @@ class Main < Sinatra::Base
 
     @@load_invitations_mutex = Mutex.new
     @@admin_ws_mutex = Mutex.new
+    @@login_request_mutex = Mutex.new
     @@mysql_database_locks_mutex = Mutex.new
     @@mysql_database_locks = {}
 
@@ -1858,58 +1869,71 @@ class Main < Sinatra::Base
     end
 
     before '*' do
+        origin_sensitive = %w(POST PUT PATCH DELETE).include?(request.request_method) ||
+            ['/ws', '/ws_codebites', '/logout'].include?(request.path)
+        if origin_sensitive && !Authentication.same_origin?(
+            :origin => request.env['HTTP_ORIGIN'],
+            :referer => request.env['HTTP_REFERER'],
+            :expected_origin => WEB_ROOT,
+        )
+            content_type :json
+            halt 403, { :error => 'invalid_origin' }.to_json
+        end
+
         @session_user = nil
-        if request.cookies.include?('hs_sid')
-            sid = request.cookies['hs_sid']
-            if (sid.is_a? String) && (sid =~ /^[0-9A-Za-z]+$/)
-                first_sid = sid.split(',').first
-                if first_sid =~ /^[0-9A-Za-z]+$/
-                    results = neo4j_query(<<~END_OF_QUERY, :sid => first_sid).to_a
-                        MATCH (s:Session {sid: $sid})-[:FOR]->(u:User)
-                        RETURN s, u;
-                    END_OF_QUERY
-                    if results.size == 1
-                        begin
-                            session = results.first['s']
-                            session_expiry = session[:expires]
-                            if DateTime.parse(session_expiry) > DateTime.now
-                                email = results.first['u'][:email]
-                                @session_user = {
-                                    :email => email.downcase,
-                                    :server_tag => results.first['u'][:server_tag],
-                                    :share_tag => results.first['u'][:share_tag],
-                                }
-                                results.first['u'].each_pair do |k, v|
-                                    next if @session_user.include?(k.to_sym)
-                                    @session_user[k.to_sym] = v
-                                end
-                                @session_user[:show_workspace] = true unless @session_user.include?(:show_workspace)
-                                # # set server_sid cookie if it's not set or out of date
-                                expires = Time.new + 3600 * 24 * 365
-                                [:hs_server_sid].each do |key|
-                                    if request.cookies[key.to_s] != results.first['u'][key.to_s.sub('hs_', '').to_sym]
-                                        response.set_cookie(key.to_s,
-                                            :domain => ".#{WEBSITE_HOST.split(':').first}",
-                                            :value => results.first['u'][key.to_s.sub('hs_', '').to_sym],
-                                            :expires => expires,
-                                            :path => '/',
-                                            :httponly => true,
-                                            :secure => DEVELOPMENT ? false : true
-                                        )
-                                    end
-                                end
-                            end
-                        rescue
-                            # something went wrong, delete the session
-                            results = neo4j_query(<<~END_OF_QUERY, :sid => first_sid).to_a
-                                MATCH (s:Session {sid: $sid})
-                                DETACH DELETE s;
-                            END_OF_QUERY
-                        end
+        sid = current_session_sid
+        if sid && sid.match?(/\A[0-9A-Za-z]+\z/)
+            results = neo4j_query(<<~END_OF_QUERY, :sid => sid).to_a
+                MATCH (s:Session {sid: $sid})-[:FOR]->(u:User)
+                RETURN s, u;
+            END_OF_QUERY
+
+            if results.size == 1
+                session = results.first['s']
+                session_expiry = begin
+                    DateTime.parse(session[:expires].to_s)
+                rescue ArgumentError, TypeError
+                    nil
+                end
+
+                if session_expiry && session_expiry > DateTime.now
+                    email = results.first['u'][:email]
+                    @session_user = {
+                        :email => email.downcase,
+                        :server_tag => results.first['u'][:server_tag],
+                        :share_tag => results.first['u'][:share_tag],
+                    }
+                    results.first['u'].each_pair do |k, v|
+                        next if @session_user.include?(k.to_sym)
+                        @session_user[k.to_sym] = v
                     end
+                    @session_user[:show_workspace] = true unless @session_user.include?(:show_workspace)
+
+                    expires = session_cookie_expiry
+                    if DEVELOPMENT || request.cookies.include?('hs_sid')
+                        set_session_cookie(sid, expires)
+                    end
+
+                    server_sid = results.first['u'][:server_sid]
+                    if server_sid && request.cookies['hs_server_sid'] != server_sid
+                        set_server_sid_cookie(server_sid, expires)
+                    end
+                else
+                    neo4j_query(<<~END_OF_QUERY, :sid => sid)
+                        MATCH (s:Session {sid: $sid})
+                        DETACH DELETE s;
+                    END_OF_QUERY
                 end
             end
         end
+
+        if sid && @session_user.nil?
+            clear_session_cookies
+        elsif sid.nil?
+            clear_domain_cookie('hs_server_sid') if request.cookies.include?('hs_server_sid')
+            clear_domain_cookie('hs_watch_tag') if request.cookies.include?('hs_watch_tag')
+        end
+
         if @session_user && @session_user[:db_login].nil?
             @session_user[:db_login] = Main.db_login_for_email(
                 @session_user[:email]
@@ -1971,6 +1995,97 @@ class Main < Sinatra::Base
         RandomTag::generate(48)
     end
 
+    def session_cookie_name
+        Authentication.session_cookie_name(:development => DEVELOPMENT)
+    end
+
+    def current_session_sid
+        raw = request.cookies[session_cookie_name]
+        raw ||= request.cookies['hs_sid'] unless DEVELOPMENT
+        return nil unless raw.is_a?(String)
+
+        raw.split(',').first
+    end
+
+    def session_cookie_expiry
+        Time.now + 3600 * 24 * Authentication::SESSION_LIFETIME_DAYS
+    end
+
+    def set_session_cookie(sid, expires = session_cookie_expiry)
+        response.set_cookie(
+            session_cookie_name,
+            Authentication.session_cookie_options(
+                :value => sid,
+                :expires => expires,
+                :development => DEVELOPMENT,
+            ),
+        )
+        clear_legacy_session_cookie
+    end
+
+    def set_server_sid_cookie(server_sid, expires = session_cookie_expiry)
+        response.set_cookie(
+            'hs_server_sid',
+            Authentication.domain_cookie_options(
+                :value => server_sid,
+                :expires => expires,
+                :domain => WEBSITE_HOST.split(':').first,
+                :development => DEVELOPMENT,
+            ),
+        )
+    end
+
+    def clear_legacy_session_cookie
+        response.set_cookie(
+            'hs_sid',
+            Authentication.domain_cookie_options(
+                :value => '',
+                :expires => Time.at(0),
+                :domain => WEBSITE_HOST.split(':').first,
+                :development => DEVELOPMENT,
+            ),
+        )
+    end
+
+    def clear_domain_cookie(name)
+        response.set_cookie(
+            name,
+            Authentication.domain_cookie_options(
+                :value => '',
+                :expires => Time.at(0),
+                :domain => WEBSITE_HOST.split(':').first,
+                :development => DEVELOPMENT,
+            ),
+        )
+    end
+
+    def clear_session_cookies
+        response.set_cookie(
+            session_cookie_name,
+            Authentication.session_cookie_options(
+                :value => '',
+                :expires => Time.at(0),
+                :development => DEVELOPMENT,
+            ),
+        )
+        clear_legacy_session_cookie
+        clear_domain_cookie('hs_server_sid')
+        clear_domain_cookie('hs_watch_tag')
+    end
+
+    def cleanup_login_requests
+        cleanup_params = {
+            :now => Time.now.to_i,
+            :max_attempts => Authentication::LOGIN_REQUEST_MAX_ATTEMPTS,
+        }
+        neo4j_query(<<~END_OF_QUERY, cleanup_params)
+            MATCH (l:LoginRequest)
+            WHERE COALESCE(l.expires_at, 0) <= $now
+               OR COALESCE(l.attempts, 0) >= $max_attempts
+            DETACH DELETE l;
+        END_OF_QUERY
+    end
+
     post '/api/request_login' do
         Main.load_invitations()
         data = parse_request_data(:required_keys => [:email])
@@ -1980,21 +2095,16 @@ class Main < Sinatra::Base
             candidates = @@invitations.keys.select do |x|
                 x[0, email.size] == email
             end
-            if candidates.size == 1
-                email = candidates.first
-            end
+            email = candidates.first if candidates.size == 1
         end
+
         unless @@invitations.include?(email)
-            respond(:error => 'no_invitation_found')
+            content_type :json
+            halt 404, { :error => 'no_invitation_found' }.to_json
         end
-        assert(@@invitations.include?(email), 'no_invitation_found')
 
-        tag = RandomTag::generate(12)
-        random = Random.new(Digest::SHA2.hexdigest(LOGIN_CODE_SALT).to_i + (Time.now.to_f * 1000000).to_i)
-        random_code = (0..5).map { |_x| random.rand(10).to_s }.join('')
-        random_code = '123456' if DEVELOPMENT
-
-        # create user node if it doesn't already exist
+        # Create the user node before the login-request lock. Neo4j's uniqueness
+        # constraint keeps this idempotent even if two browsers arrive together.
         user = neo4j_query_expect_one(<<~END_OF_QUERY, :email => email)['n']
             MERGE (n:User {email: $email})
             RETURN n;
@@ -2017,57 +2127,204 @@ class Main < Sinatra::Base
             END_OF_QUERY
         end
 
-        # remove all stale login requests
-        ts = Time.now.to_i - 60 * 10
-        neo4j_query(<<~END_OF_QUERY, {:ts => ts})
-            MATCH (l:LoginRequest)
-            WHERE COALESCE(l.ts_expiry, 0) < $ts
-            DETACH DELETE l;
-        END_OF_QUERY
-        # remove all pending login requests for this user
-        neo4j_query(<<~END_OF_QUERY, {:email => email})
-            MATCH (r:LoginRequest)-[:FOR]->(u:User {email: $email})
-            DETACH DELETE r;
-        END_OF_QUERY
-        # add new login requests for this user
-        neo4j_query_expect_one(<<~END_OF_QUERY, {:email => email, :tag => tag, :code => random_code, :now => Time.now.to_i})
-            MATCH (u:User {email: $email})
-            CREATE (r:LoginRequest)-[:FOR]->(u)
-            SET r.tag = $tag
-            SET r.code = $code
-            SET r.ts_expiry = $now
-            RETURN u.email;
-        END_OF_QUERY
+        login_request = @@login_request_mutex.synchronize do
+            cleanup_login_requests
+            now = Time.now.to_i
+            minimum_expiry = now + Authentication::LOGIN_REQUEST_RESEND_SECONDS
+            existing_params = {
+                :email => email,
+                :minimum_expiry => minimum_expiry,
+                :max_attempts => Authentication::LOGIN_REQUEST_MAX_ATTEMPTS,
+            }
+            existing = neo4j_query(<<~END_OF_QUERY, existing_params).to_a.first
+                MATCH (r:LoginRequest)-[:FOR]->(u:User {email: $email})
+                WHERE r.expires_at > $minimum_expiry
+                  AND COALESCE(r.attempts, 0) < $max_attempts
+                RETURN r
+                ORDER BY r.created_at DESC
+                LIMIT 1;
+            END_OF_QUERY
+
+            rate_state = neo4j_query_expect_one(<<~END_OF_QUERY, :email => email)
+                MATCH (u:User {email: $email})
+                RETURN COALESCE(u.login_request_created_at, 0) AS last_created_at;
+            END_OF_QUERY
+
+            if existing
+                request_node = existing['r']
+                resend = now - request_node[:last_sent_at].to_i >= Authentication::LOGIN_REQUEST_RESEND_SECONDS
+                if resend
+                    neo4j_query(<<~END_OF_QUERY, {:tag => request_node[:tag], :now => now})
+                        MATCH (r:LoginRequest {tag: $tag})
+                        SET r.last_sent_at = $now;
+                    END_OF_QUERY
+                end
+                {
+                    :tag => request_node[:tag],
+                    :code => request_node[:code],
+                    :send_mail => resend,
+                }
+            else
+                last_created_at = rate_state['last_created_at'].to_i
+                if now - last_created_at < Authentication::LOGIN_REQUEST_RESEND_SECONDS
+                    next { :rate_limited => true }
+                end
+
+                # Replace a nearly-expired request rather than handing the browser
+                # a code that may stop working a few seconds later.
+                neo4j_query(<<~END_OF_QUERY, {:email => email})
+                    MATCH (r:LoginRequest)-[:FOR]->(u:User {email: $email})
+                    DETACH DELETE r;
+                END_OF_QUERY
+
+                tag = RandomTag::generate(12)
+                code = Authentication.generate_login_code(:development => DEVELOPMENT)
+                expires_at = Authentication.login_request_expires_at(:now => now)
+                create_request_params = {
+                    :email => email,
+                    :tag => tag,
+                    :code => code,
+                    :created_at => now,
+                    :expires_at => expires_at,
+                }
+                neo4j_query_expect_one(<<~END_OF_QUERY, create_request_params)
+                    MATCH (u:User {email: $email})
+                    SET u.login_request_created_at = $created_at
+                    CREATE (r:LoginRequest)-[:FOR]->(u)
+                    SET r.tag = $tag,
+                        r.code = $code,
+                        r.created_at = $created_at,
+                        r.last_sent_at = $created_at,
+                        r.expires_at = $expires_at,
+                        r.attempts = 0
+                    RETURN u.email;
+                END_OF_QUERY
+                { :tag => tag, :code => code, :send_mail => true }
+            end
+        end
+
+        if login_request[:rate_limited]
+            content_type :json
+            halt 429, { :error => 'login_request_rate_limited' }.to_json
+        end
+
         broadcast_login_codes()
 
-        unless email.include?('@example.com')
-            STDERR.puts "Sending login code #{random_code} to #{email}... go to /l/#{tag}/#{random_code} to log in."
-            deliver_mail do
-                to email
-                # bcc SMTP_FROM
-                from SMTP_FROM
+        if login_request[:send_mail] && !email.include?('@example.com')
+            if DEVELOPMENT
+                STDERR.puts 'Not sending login code email in development mode.'
+            else
+                STDERR.puts 'Sending login code email to invited user.'
+                deliver_mail do
+                    to email
+                    # bcc SMTP_FROM
+                    from SMTP_FROM
 
-                subject "Dein Anmeldecode lautet #{random_code}"
+                    subject "Dein Anmeldecode lautet #{login_request[:code]}"
 
-                StringIO.open do |io|
-                    io.puts "<p>Hallo!</p>"
-                    io.puts "<p>Dein Anmeldecode lautet:</p>"
-                    io.puts "<p style='font-size: 200%;'>#{random_code}</p>"
-                    io.puts "<p>Der Code ist für zehn Minuten gültig. Nachdem du dich angemeldet hast, bleibst du für ein ganzes Jahr angemeldet (falls du dich nicht wieder abmeldest).</p>"
-                    io.puts "<p>Falls du diese E-Mail nicht angefordert hast, hat jemand versucht, sich mit deiner E-Mail-Adresse auf <a href='https://#{WEBSITE_HOST}/'>https://#{WEBSITE_HOST}/</a> anzumelden. In diesem Fall musst du nichts weiter tun (es sei denn, du befürchtest, dass jemand anderes Zugriff auf dein E-Mail-Konto hat – dann solltest du dein E-Mail-Passwort ändern).</p>"
-                    io.puts "<p>Viele Grüße,<br />Michael Specht</p>"
-                    io.string
+                    StringIO.open do |io|
+                        io.puts "<p>Hallo!</p>"
+                        io.puts "<p>Dein Anmeldecode lautet:</p>"
+                        io.puts "<p style='font-size: 200%;'>#{login_request[:code]}</p>"
+                        io.puts "<p>Der Code ist für zehn Minuten gültig. Nachdem du dich angemeldet hast, bleibst du für ein ganzes Jahr angemeldet (falls du dich nicht wieder abmeldest).</p>"
+                        io.puts "<p>Falls du diese E-Mail nicht angefordert hast, hat jemand versucht, sich mit deiner E-Mail-Adresse auf <a href='https://#{WEBSITE_HOST}/'>https://#{WEBSITE_HOST}/</a> anzumelden. In diesem Fall musst du nichts weiter tun (es sei denn, du befürchtest, dass jemand anderes Zugriff auf dein E-Mail-Konto hat – dann solltest du dein E-Mail-Passwort ändern).</p>"
+                        io.puts "<p>Viele Grüße,<br />Michael Specht</p>"
+                        io.string
+                    end
                 end
             end
         end
-        respond(:ok => 'yay', :tag => tag)
+        respond(:ok => 'yay', :tag => login_request[:tag])
+    end
+
+    post '/api/complete_login' do
+        data = parse_request_data(:required_keys => [:tag, :code])
+        tag = data[:tag].downcase.strip
+        code = data[:code].strip
+
+        unless Authentication.valid_login_tag?(tag) && Authentication.valid_login_code?(code)
+            content_type :json
+            halt 401, { :error => 'invalid_login_code' }.to_json
+        end
+
+        login_result = @@login_request_mutex.synchronize do
+            now = Time.now.to_i
+            row = neo4j_query(<<~END_OF_QUERY, :tag => tag).to_a.first
+                MATCH (r:LoginRequest {tag: $tag})-[:FOR]->(u:User)
+                RETURN r, u;
+            END_OF_QUERY
+
+            next nil unless row
+
+            request_node = row['r']
+            unless Authentication.login_request_active?(
+                :expires_at => request_node[:expires_at],
+                :attempts => request_node[:attempts],
+                :now => now,
+            )
+                neo4j_query(<<~END_OF_QUERY, :tag => tag)
+                    MATCH (r:LoginRequest {tag: $tag})
+                    DETACH DELETE r;
+                END_OF_QUERY
+                next nil
+            end
+
+            unless request_node[:code].to_s == code
+                attempts = request_node[:attempts].to_i + 1
+                if attempts >= Authentication::LOGIN_REQUEST_MAX_ATTEMPTS
+                    neo4j_query(<<~END_OF_QUERY, :tag => tag)
+                        MATCH (r:LoginRequest {tag: $tag})
+                        DETACH DELETE r;
+                    END_OF_QUERY
+                else
+                    neo4j_query(<<~END_OF_QUERY, {:tag => tag, :attempts => attempts})
+                        MATCH (r:LoginRequest {tag: $tag})
+                        SET r.attempts = $attempts;
+                    END_OF_QUERY
+                end
+                next nil
+            end
+
+            sid = RandomTag::generate(24)
+            session_expires = (DateTime.now + Authentication::SESSION_LIFETIME_DAYS).to_s
+            complete_params = {
+                :tag => tag,
+                :code => code,
+                :now => now,
+                :max_attempts => Authentication::LOGIN_REQUEST_MAX_ATTEMPTS,
+                :sid => sid,
+                :session_expires => session_expires,
+            }
+            neo4j_query_expect_one(<<~END_OF_QUERY, complete_params)
+                MATCH (r:LoginRequest {tag: $tag, code: $code})-[:FOR]->(u:User)
+                WHERE r.expires_at > $now
+                  AND COALESCE(r.attempts, 0) < $max_attempts
+                DETACH DELETE r
+                WITH u
+                REMOVE u.login_request_created_at
+                CREATE (s:Session {sid: $sid, expires: $session_expires})-[:FOR]->(u)
+                RETURN s.sid AS sid, u.email AS email, u.server_sid AS server_sid;
+            END_OF_QUERY
+        end
+
+        broadcast_login_codes()
+
+        unless login_result
+            content_type :json
+            halt 401, { :error => 'invalid_login_code' }.to_json
+        end
+
+        expires = session_cookie_expiry
+        set_session_cookie(login_result['sid'], expires)
+        set_server_sid_cookie(login_result['server_sid'], expires) if login_result['server_sid']
+        respond(:ok => 'yay')
     end
 
     post '/api/impersonate' do
         assert(admin_logged_in?)
         data = parse_request_data(:required_keys => [:email])
         email = data[:email]
-        sid = request.cookies['hs_sid']
+        sid = current_session_sid
         neo4j_query(<<~END_OF_STRING, {:sid => sid, :email => email})
             MATCH (s:Session {sid: $sid})-[r:FOR]->(:User), (u:User {email: $email})
             DELETE r
@@ -2759,14 +3016,16 @@ class Main < Sinatra::Base
 
         status = Main.wait_for_server_start_job(job)
 
-        expires = Time.new + 3600 * 24 * 365
-        response.set_cookie('hs_watch_tag',
-            :domain => ".#{WEBSITE_HOST.split(':').first}",
-            :value => watch_tag,
-            :expires => expires,
-            :path => "/", #"/#{fs_tag_for_email(email)}",
-            :httponly => true,
-            :secure => DEVELOPMENT ? false : true)
+        expires = session_cookie_expiry
+        response.set_cookie(
+            'hs_watch_tag',
+            Authentication.domain_cookie_options(
+                :value => watch_tag,
+                :expires => expires,
+                :domain => WEBSITE_HOST.split(':').first,
+                :development => DEVELOPMENT,
+            ),
+        )
         respond(
             :yay => 'sure',
             :watch_tag => watch_tag,
@@ -2915,13 +3174,7 @@ class Main < Sinatra::Base
     def print_workspaces()
         assert(teacher_logged_in?)
 
-        # remove all stale login requests
-        ts = Time.now.to_i - 60 * 10
-        neo4j_query(<<~END_OF_QUERY, {:ts => ts})
-            MATCH (l:LoginRequest)
-            WHERE COALESCE(l.ts_expiry, 0) < $ts
-            DETACH DELETE l;
-        END_OF_QUERY
+        cleanup_login_requests
 
         email_for_tag = {}
         registered_emails = []
@@ -3025,14 +3278,24 @@ class Main < Sinatra::Base
         return if clients.empty?
 
         lines = []
-        neo4j_query(<<~END_OF_STRING).each do |row|
+        active_params = {
+            :now => Time.now.to_i,
+            :max_attempts => Authentication::LOGIN_REQUEST_MAX_ATTEMPTS,
+        }
+        neo4j_query(<<~END_OF_STRING, active_params).each do |row|
             MATCH (l:LoginRequest)-[:FOR]->(u:User)
-            RETURN l.code, u.email
-            ORDER BY l.expiry;
+            WHERE l.expires_at > $now
+              AND COALESCE(l.attempts, 0) < $max_attempts
+            RETURN l.code, l.expires_at, u.email
+            ORDER BY l.expires_at;
         END_OF_STRING
             email = row['u.email']
             next if @@teachers.include?(email)
-            lines << { :email => email, :code => row['l.code'] }
+            lines << {
+                :email => email,
+                :code => row['l.code'],
+                :expires_at => row['l.expires_at'].to_i,
+            }
         end
         clients.each do |ws, ws_email|
             filtered_lines = lines.select do |line|
@@ -4700,59 +4963,23 @@ class Main < Sinatra::Base
             path = 'codebites.html'
         end
         if path[0, 3] == '/l/'
-            rest = path[3, path.size - 3].split('/')
-            path = '/index.html'
-            tag = rest[0]
-            code = rest[1]
-            begin
-                email = neo4j_query_expect_one(<<~END_OF_QUERY, {:tag => tag, :code => code})['email']
-                    MATCH (r:LoginRequest {tag: $tag, code: $code})-[:FOR]->(u:User)
-                    RETURN u.email AS email;
-                END_OF_QUERY
-                neo4j_query(<<~END_OF_QUERY, {:tag => tag, :code => code})
-                    MATCH (r:LoginRequest {tag: $tag, code: $code})-[:FOR]->(u:User)
-                    DETACH DELETE r;
-                END_OF_QUERY
-                broadcast_login_codes()
-                sid = RandomTag::generate(24)
-                neo4j_query_expect_one(<<~END_OF_QUERY, {:sid => sid, :email => email, :expires => (DateTime.now() + 365).to_s})
-                    MATCH (u:User {email: $email})
-                    WITH u
-                    CREATE (s:Session {sid: $sid, expires: $expires})-[:FOR]->(u)
-                    RETURN s.sid AS sid;
-                END_OF_QUERY
-                expires = Time.new + 3600 * 24 * 365
-                response.set_cookie('hs_sid',
-                    :domain => ".#{WEBSITE_HOST.split(':').first}",
-                    :value => sid,
-                    :expires => expires,
-                    :path => '/',
-                    :httponly => true,
-                    :secure => DEVELOPMENT ? false : true)
-                response.set_cookie('hs_server_sid',
-                    :domain => ".#{WEBSITE_HOST.split(':').first}",
-                    :value => server_sid_for_email(email),
-                    :expires => expires,
-                    :path => "/", #"/#{fs_tag_for_email(email)}",
-                    :httponly => true,
-                    :secure => DEVELOPMENT ? false : true)
-            rescue
-            end
-            redirect "#{WEB_ROOT}/", 302
+            # Login codes are intentionally redeemed through POST
+            # /api/complete_login so they never become part of browser history or
+            # ordinary access-log URLs. Old bookmarked/copied login URLs simply
+            # lead back to the login form.
+            redirect "#{WEB_ROOT}/login", 302
+            return
         end
         if path[0, 7] == '/logout'
             path = '/index.html'
-            neo4j_query(<<~END_OF_QUERY, {:sid => request.cookies['hs_sid']})
-                MATCH (s:Session {sid: $sid})
-                DETACH DELETE s;
-            END_OF_QUERY
-            response.set_cookie('hs_sid',
-                :domain => ".#{WEBSITE_HOST.split(':').first}",
-                :value => nil,
-                :expires => Time.new + 3600 * 24 * 365,
-                :path => '/',
-                :httponly => true,
-                :secure => DEVELOPMENT ? false : true)
+            sid = current_session_sid
+            if sid
+                neo4j_query(<<~END_OF_QUERY, :sid => sid)
+                    MATCH (s:Session {sid: $sid})
+                    DETACH DELETE s;
+                END_OF_QUERY
+            end
+            clear_session_cookies
             redirect "#{WEB_ROOT}/", 302
         end
         path = path + '.html' unless path.include?('.')

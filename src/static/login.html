@@ -30,14 +30,36 @@
                     tag = data.tag;
                     $('#part1').slideDown();
                     $('#ti_code').focus();
+                    return;
+                }
+
+                code_requested = false;
+                $('#ti_email').prop('readonly', false).prop('disabled', false);
+                $('#bu_submit_email').prop('disabled', false);
+                if (data.error === 'login_request_rate_limited') {
+                    show_error_message('Bitte warte einen Moment, bevor du einen neuen Anmeldecode anforderst.');
                 }
             });
         });
         $('#bu_submit_code').on('click', function(e) {
-            console.log('yay');
             e.preventDefault();
             let code = $('#ti_code').val().trim();
-            window.location.href = `/l/${tag}/${code}`;
+            let input = $('#ti_code');
+            let button = $('#bu_submit_code');
+
+            input.prop('disabled', true);
+            button.prop('disabled', true);
+
+            api_call('/api/complete_login', {tag: tag, code: code}, function(data) {
+                if (data.success) {
+                    window.location.href = '/';
+                    return;
+                }
+
+                input.prop('disabled', false).val('').focus();
+                button.prop('disabled', false);
+                show_error_message('Der Anmeldecode ist falsch oder nicht mehr gültig. Bitte versuche es erneut oder fordere einen neuen Code an.');
+            }, {no_please_wait: true});
         });
         $('#ti_email').on('keydown', function(e) {
             if (e.keyCode === 13) {
@@ -71,7 +93,7 @@
                             <button id='bu_submit_email' class="btn btn-primary" disabled><i class="bi bi-send-fill"></i>Code zusenden</button>
                         </div>
                         <div id='part1' class="input-group mb-3" style="display: none;">
-                            <input type="text" id='ti_code' class="form-control" placeholder="Bitte gib deinen 6-stelligen Code ein." autocomplete='off'>
+                            <input type="text" id='ti_code' class="form-control" placeholder="Bitte gib deinen 6-stelligen Code ein." inputmode='numeric' maxlength='6' pattern='[0-9]{6}' autocomplete='one-time-code'>
                             <button id='bu_submit_code' class="btn btn-primary"><i class="bi bi-box-arrow-in-right"></i>Anmelden</button>
                         </div>
                         <div class='api_messages' style='display: none;'></div>
