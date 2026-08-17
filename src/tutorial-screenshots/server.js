@@ -126,6 +126,47 @@ let workspacePrepared = false;
 let workspacePreparationPromise = null;
 const deviceMetricSessions = new WeakMap();
 const appliedViewportProfiles = new WeakMap();
+const SOURCE_LOCATION = Symbol('tutorial-screenshot-source-location');
+const TARGET_LOCATION = Symbol('tutorial-screenshot-target-location');
+
+function markdownSourceLocation(markdown, markdownPath, offset) {
+    const boundedOffset = Math.max(0, Math.min(offset, markdown.length));
+    let line = 1;
+    for (let index = 0; index < boundedOffset; index += 1) {
+        if (markdown.charCodeAt(index) === 10) line += 1;
+    }
+
+    const lineStart = markdown.lastIndexOf('\n', boundedOffset - 1) + 1;
+    const nextNewline = markdown.indexOf('\n', boundedOffset);
+    const lineEnd = nextNewline < 0 ? markdown.length : nextNewline;
+
+    return {
+        markdownPath,
+        line,
+        text: markdown.slice(lineStart, lineEnd),
+    };
+}
+
+function withSourceError(error, source) {
+    if (!source || error?.tutorialScreenshotSource) return error;
+
+    const original = error instanceof Error ? error : new Error(`${error}`);
+    const wrapped = new Error(
+        `${source.markdownPath}:${source.line}: ${original.message}\n` +
+        `Source: ${source.text || '(blank line)'}`,
+    );
+    wrapped.cause = original;
+    wrapped.tutorialScreenshotSource = source;
+    return wrapped;
+}
+
+function valueAtSource(source, callback) {
+    try {
+        return callback();
+    } catch (error) {
+        throw withSourceError(error, source);
+    }
+}
 
 function sha256(value) {
     return crypto.createHash('sha256').update(value).digest('hex');
@@ -156,7 +197,7 @@ function parsePercent(value) {
     return result;
 }
 
-function codeBlocks(markdown) {
+function codeBlocks(markdown, markdownPath) {
     const blocks = [];
     const labels = new Set();
     const regex = /```[^\n]*\n([\s\S]*?)```/g;
@@ -168,7 +209,11 @@ function codeBlocks(markdown) {
 
         if (label) {
             if (labels.has(label)) {
-                throw new Error(`Duplicate screenshot-code label: ${label}`);
+                const source = markdownSourceLocation(markdown, markdownPath, labelMatch.index);
+                throw withSourceError(
+                    new Error(`Duplicate screenshot-code label: ${label}`),
+                    source,
+                );
             }
             labels.add(label);
         }
@@ -215,7 +260,7 @@ function findCodeSource(blocks, recipeStart, selector) {
     throw new Error(`Unknown code source: ${selector}`);
 }
 
-function parseRecipe(text) {
+function parseRecipe(text, markdown, markdownPath, recipeStart) {
     const recipe = {
         tab: 'workspace',
         viewport: { width: DEFAULT_PROFILE.width, height: DEFAULT_PROFILE.height },
@@ -225,27 +270,50 @@ function parseRecipe(text) {
         actions: [],
     };
 
+    let rawOffset = 0;
+    let cropSource = null;
+    let lastSource = null;
+
     for (const rawLine of text.split('\n')) {
+        const lineOffset = rawOffset;
+        rawOffset += rawLine.length + 1;
         const line = rawLine.trim();
         if (!line || line.startsWith('#')) continue;
 
+        const source = markdownSourceLocation(
+            markdown,
+            markdownPath,
+            recipeStart + lineOffset,
+        );
+        recipe[SOURCE_LOCATION] ||= source;
+        lastSource = source;
+
         if (SIMPLE_ACTIONS.has(line)) {
-            recipe.actions.push({ type: line });
+            const action = { type: line };
+            action[SOURCE_LOCATION] = source;
+            recipe.actions.push(action);
             continue;
         }
 
+        const actionCount = recipe.actions.length;
         let match;
         if ((match = line.match(/^clone-start:\s*(\S+)\s+<-\s+local:(.+?)\s+@\s*(\S+)$/))) {
             const commit = match[3].trim();
             if (!/^(?:[0-9a-f]{7}|[0-9a-f]{40})$/i.test(commit)) {
-                throw new Error(
-                    `Local clone commit must be exactly 7 or 40 hexadecimal characters: ${commit}`,
+                throw withSourceError(
+                    new Error(
+                        `Local clone commit must be exactly 7 or 40 hexadecimal characters: ${commit}`,
+                    ),
+                    source,
                 );
             }
             recipe.actions.push({
                 type: 'clone-start',
                 url: match[1].trim(),
-                localRepo: safeRelativePath(match[2].trim()),
+                localRepo: valueAtSource(
+                    source,
+                    () => safeRelativePath(match[2].trim()),
+                ),
                 commit: commit.toLowerCase(),
             });
         } else if ((match = line.match(/^clone-start:\s*(.+)$/))) {
@@ -253,11 +321,17 @@ function parseRecipe(text) {
         } else if ((match = line.match(/^left-sidebar-width:\s*(\d+)$/))) {
             const width = Number(match[1]);
             if (width < 120 || width > 1000) {
-                throw new Error(`left-sidebar-width must be between 120 and 1000 CSS pixels: ${width}`);
+                throw withSourceError(
+                    new Error(`left-sidebar-width must be between 120 and 1000 CSS pixels: ${width}`),
+                    source,
+                );
             }
             recipe.actions.push({ type: 'left-sidebar-width', width });
         } else if ((match = line.match(/^open-file:\s*(.+)$/))) {
-            recipe.actions.push({ type: 'open-file', path: safeRelativePath(match[1].trim()) });
+            recipe.actions.push({
+                type: 'open-file',
+                path: valueAtSource(source, () => safeRelativePath(match[1].trim())),
+            });
         } else if ((match = line.match(/^click:\s*(.+)$/))) {
             recipe.actions.push({ type: 'click', label: match[1].trim() });
         } else if ((match = line.match(/^press:\s*(.+)$/))) {
@@ -265,7 +339,10 @@ function parseRecipe(text) {
         } else if ((match = line.match(/^sleep:\s*(.+)$/))) {
             const seconds = Number(match[1].trim());
             if (!Number.isFinite(seconds) || seconds < 0 || seconds > 300) {
-                throw new Error(`sleep must be between 0 and 300 seconds: ${match[1]}`);
+                throw withSourceError(
+                    new Error(`sleep must be between 0 and 300 seconds: ${match[1]}`),
+                    source,
+                );
             }
             recipe.actions.push({ type: 'sleep', seconds });
         } else if ((match = line.match(/^wait-for-text:\s*(.+)$/))) {
@@ -274,19 +351,19 @@ function parseRecipe(text) {
         } else if ((match = line.match(/^write-file:\s*(.+?)\s*<-\s*(previous-code(?:\s+\([^)]+\))?|code:.+|file:.+)$/))) {
             recipe.actions.push({
                 type: 'write-file',
-                path: safeRelativePath(match[1].trim()),
+                path: valueAtSource(source, () => safeRelativePath(match[1].trim())),
                 source: match[2].trim(),
             });
         } else if ((match = line.match(/^wait-for-file:\s*(.+)$/))) {
             recipe.actions.push({
                 type: 'wait-for-file',
-                path: safeRelativePath(match[1].trim()),
+                path: valueAtSource(source, () => safeRelativePath(match[1].trim())),
             });
         } else if ((match = line.match(/^wait-for-file-newer:\s*(.+?)\s*<-\s*(.+)$/))) {
             recipe.actions.push({
                 type: 'wait-for-file-newer',
-                target: safeRelativePath(match[1].trim()),
-                source: safeRelativePath(match[2].trim()),
+                target: valueAtSource(source, () => safeRelativePath(match[1].trim())),
+                source: valueAtSource(source, () => safeRelativePath(match[2].trim())),
             });
         } else if ((match = line.match(/^close-tab:\s*(.+)$/))) {
             recipe.actions.push({
@@ -299,18 +376,32 @@ function parseRecipe(text) {
             recipe.viewport = { width: Number(match[1]), height: Number(match[2]) };
         } else if ((match = line.match(/^zoom:\s*([0-9.]+)$/))) {
             recipe.zoom = Number.parseFloat(match[1]);
-            if (!Number.isFinite(recipe.zoom) || recipe.zoom <= 0) throw new Error(`Invalid zoom: ${match[1]}`);
+            if (!Number.isFinite(recipe.zoom) || recipe.zoom <= 0) {
+                throw withSourceError(new Error(`Invalid zoom: ${match[1]}`), source);
+            }
         } else if ((match = line.match(/^crop-top:\s*(.+)$/))) {
-            recipe.cropTop = parsePercent(match[1]);
+            cropSource = source;
+            recipe.cropTop = valueAtSource(source, () => parsePercent(match[1]));
         } else if ((match = line.match(/^crop-bottom:\s*(.+)$/))) {
-            recipe.cropBottom = parsePercent(match[1]);
+            cropSource = source;
+            recipe.cropBottom = valueAtSource(source, () => parsePercent(match[1]));
         } else {
-            throw new Error(`Unknown tutorial screenshot instruction: ${line}`);
+            throw withSourceError(
+                new Error(`Unknown tutorial screenshot instruction: ${line}`),
+                source,
+            );
+        }
+
+        for (let index = actionCount; index < recipe.actions.length; index += 1) {
+            recipe.actions[index][SOURCE_LOCATION] = source;
         }
     }
 
     if (recipe.cropTop + recipe.cropBottom >= 0.98) {
-        throw new Error('Top and bottom crop leave no useful screenshot area');
+        throw withSourceError(
+            new Error('Top and bottom crop leave no useful screenshot area'),
+            cropSource || lastSource || recipe[SOURCE_LOCATION],
+        );
     }
     return recipe;
 }
@@ -349,32 +440,65 @@ async function resolveWriteFileSource(blocks, recipeStart, selector, markdownPat
 }
 
 async function parseTutorial(markdown, markdownPath) {
-    const blocks = codeBlocks(markdown);
+    const blocks = codeBlocks(markdown, markdownPath);
     const regex = /<!--\s*tutorial-screenshot\s*\n([\s\S]*?)-->/g;
     const shots = [];
     let match;
     let previousState = sha256(`tutorial-screenshot-v${GENERATOR_VERSION}\0${markdownPath}`);
 
     while ((match = regex.exec(markdown)) !== null) {
-        const recipe = parseRecipe(match[1]);
+        const recipeStart = match.index + match[0].indexOf(match[1]);
+        const recipeSource = markdownSourceLocation(markdown, markdownPath, recipeStart);
+        let recipe;
+        try {
+            recipe = parseRecipe(match[1], markdown, markdownPath, recipeStart);
+        } catch (error) {
+            throw withSourceError(error, recipeSource);
+        }
+
         const afterComment = markdown.slice(regex.lastIndex);
         const nextRecipeIndex = afterComment.search(/<!--\s*tutorial-screenshot\b/);
         const imageMatch = /<img\b[^>]*\bsrc=['"]([^'"]+)['"][^>]*>/i.exec(afterComment);
         if (!imageMatch || (nextRecipeIndex >= 0 && imageMatch.index > nextRecipeIndex)) {
-            throw new Error(`tutorial-screenshot block at offset ${match.index} has no following <img>`);
+            throw withSourceError(
+                new Error('tutorial-screenshot block has no following <img>'),
+                recipeSource,
+            );
         }
 
-        const target = safeRelativePath(imageMatch[1]);
-        if (/^[a-z][a-z\d+.-]*:/i.test(target) || target.startsWith('/')) {
-            throw new Error(`Generated screenshot must use a relative tutorial image path: ${target}`);
+        const targetSource = markdownSourceLocation(
+            markdown,
+            markdownPath,
+            regex.lastIndex + imageMatch.index,
+        );
+        let target;
+        try {
+            target = safeRelativePath(imageMatch[1]);
+            if (/^[a-z][a-z\d+.-]*:/i.test(target) || target.startsWith('/')) {
+                throw new Error(`Generated screenshot must use a relative tutorial image path: ${target}`);
+            }
+        } catch (error) {
+            throw withSourceError(error, targetSource);
         }
 
         const resolvedActions = await Promise.all(recipe.actions.map(async action => {
             if (action.type !== 'write-file') return action;
-            return {
-                ...action,
-                contents: await resolveWriteFileSource(blocks, match.index, action.source, markdownPath),
-            };
+            try {
+                return {
+                    ...action,
+                    contents: await resolveWriteFileSource(
+                        blocks,
+                        match.index,
+                        action.source,
+                        markdownPath,
+                    ),
+                };
+            } catch (error) {
+                throw withSourceError(
+                    error,
+                    action[SOURCE_LOCATION] || recipeSource,
+                );
+            }
         }));
 
         const resolved = {
@@ -386,6 +510,9 @@ async function parseTutorial(markdown, markdownPath) {
             cropBottom: recipe.cropBottom,
             actions: resolvedActions,
         };
+        resolved[SOURCE_LOCATION] = recipe[SOURCE_LOCATION] || recipeSource;
+        resolved[TARGET_LOCATION] = targetSource;
+
         const stateHash = sha256(`${previousState}\0${JSON.stringify(resolved)}`);
         previousState = stateHash;
         shots.push({ ...resolved, stateHash });
@@ -1566,18 +1693,39 @@ async function generateTutorial(payload) {
     for (let index = 0; index < shots.length; index += 1) {
         const shot = shots[index];
 
+        console.log(`Tutorial screenshot ${relativeMarkdown} -> ${shot.target}`);
+
         // Layout-sensitive actions (for example clicking a graph control) must
         // run at the same viewport/zoom as the screenshot itself. If the target
         // tab is created by an action such as go-live, apply the profile as soon
         // as it becomes available.
-        await applyShotViewportProfile(shot);
-        for (const action of shot.actions) {
-            await executeAction(action, shot.tab);
+        const shotSource = shot[SOURCE_LOCATION] || shot[TARGET_LOCATION];
+        try {
             await applyShotViewportProfile(shot);
+        } catch (error) {
+            throw withSourceError(error, shotSource);
+        }
+
+        for (const action of shot.actions) {
+            const source = action[SOURCE_LOCATION] || shotSource;
+            console.log(`  line ${source?.line ?? '?'}: ${source?.text?.trim() || action.type}`);
+            try {
+                await executeAction(action, shot.tab);
+                await applyShotViewportProfile(shot);
+            } catch (error) {
+                throw withSourceError(error, source);
+            }
         }
 
         if (stale[index]) {
-            const outputSha256 = await captureShot(shot, tutorialDirectory);
+            const targetSource = shot[TARGET_LOCATION] || shotSource;
+            console.log(`  line ${targetSource?.line ?? '?'}: capture ${shot.target}`);
+            let outputSha256;
+            try {
+                outputSha256 = await captureShot(shot, tutorialDirectory);
+            } catch (error) {
+                throw withSourceError(error, targetSource);
+            }
             generated += 1;
             nextManifest.screenshots[shot.target] = {
                 state_hash: shot.stateHash,
