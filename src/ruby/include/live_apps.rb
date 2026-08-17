@@ -306,8 +306,33 @@ class Main < Sinatra::Base
         respond(:html => print_live_apps())
     end
 
+    def live_app_authorized?
+        return true if user_logged_in?
+
+        # The main session cookie is intentionally host-only, so live-* sibling
+        # hosts never receive it. hs_server_sid is already domain-scoped because
+        # nginx uses it to authorize private Workspace subdomains; here it is
+        # accepted only as a narrow proof of Workspace membership.
+        base_host = Regexp.escape(WEBSITE_HOST.split(':').first)
+        return false unless request.host.match?(/\Alive-[0-9a-z]+\.#{base_host}\z/)
+
+        server_sid = request.cookies['hs_server_sid']
+        return false unless server_sid.is_a?(String) &&
+            server_sid.match?(/\A[0-9A-Za-z]+\z/)
+
+        row = neo4j_query(<<~END_OF_QUERY, :server_sid => server_sid).first
+            MATCH (u:User {server_sid: $server_sid})
+            RETURN u.email
+            LIMIT 1;
+        END_OF_QUERY
+        !row.nil?
+    rescue => e
+        STDERR.puts ">>> Live-app authorization failed: #{e.class}: #{e.message}"
+        false
+    end
+
     get '/api/live_app_authorize' do
-        halt(user_logged_in? ? 204 : 401)
+        halt(live_app_authorized? ? 204 : 401)
     end
 
     post '/api/live_apps/share' do

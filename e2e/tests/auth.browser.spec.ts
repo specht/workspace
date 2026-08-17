@@ -70,6 +70,13 @@ function authTeacherEmail(e2eEmail: string): string {
   return `e2e-auth-teacher-${match[1]}@example.com`;
 }
 
+function authStudentEmail(e2eEmail: string): string {
+  const match = e2eEmail.match(/^e2e-(\d+)@example\.com$/);
+  if (!match)
+    throw new Error(`Unexpected E2E email: ${e2eEmail}`);
+  return `e2e-auth-student-${match[1]}@example.com`;
+}
+
 async function teacherAdminContext(
   browser: Browser,
   teacherEmail: string,
@@ -88,7 +95,8 @@ test('login codes are bounded, one-time and visible to the teacher', async ({
   page,
   e2eEmail,
 }, testInfo) => {
-  const firstTag = await requestLoginCode(page, e2eEmail);
+  const authEmail = authStudentEmail(e2eEmail);
+  const firstTag = await requestLoginCode(page, authEmail);
   const {context: teacherContext, page: teacherPage} = await teacherAdminContext(
     browser,
     authTeacherEmail(e2eEmail),
@@ -97,7 +105,7 @@ test('login codes are bounded, one-time and visible to the teacher', async ({
 
   const codeSection = teacherPage.locator('#login_codes_here');
   const studentCodeRow = () =>
-    codeSection.locator('tbody tr').filter({hasText: e2eEmail});
+    codeSection.locator('tbody tr').filter({hasText: authEmail});
 
   try {
     await expect(codeSection).toBeVisible();
@@ -127,7 +135,7 @@ test('login codes are bounded, one-time and visible to the teacher', async ({
       const forgedOrigin = new URL(baseUrl(testInfo));
       forgedOrigin.hostname = `student.${forgedOrigin.hostname}`;
       const forgedPost = await replayContext.request.post('/api/request_login', {
-        data: {email: e2eEmail},
+        data: {email: authEmail},
         headers: {origin: forgedOrigin.origin},
       });
       expect(forgedPost.status()).toBe(403);
@@ -177,7 +185,7 @@ test('login codes are bounded, one-time and visible to the teacher', async ({
     const lockoutContext = await browser.newContext({baseURL: baseUrl(testInfo)});
     const lockoutPage = await lockoutContext.newPage();
     try {
-      const lockoutTag = await requestLoginCode(lockoutPage, e2eEmail);
+      const lockoutTag = await requestLoginCode(lockoutPage, authEmail);
       await expect(codeSection).toBeVisible();
       await expect(studentCodeRow()).toContainText(E2E_LOGIN_CODE);
 
@@ -200,7 +208,7 @@ test('login codes are bounded, one-time and visible to the teacher', async ({
       );
       expect(lockedOut.status).toBe(401);
 
-      const throttled = await requestLoginDirect(lockoutPage, e2eEmail);
+      const throttled = await requestLoginDirect(lockoutPage, authEmail);
       expect(throttled.status).toBe(429);
       expect(throttled.body.error).toBe('login_request_rate_limited');
     } finally {

@@ -23,6 +23,11 @@ export default async function globalSetup() {
   for (let index = 0; index < userCount; index++)
     lines.push(`+ e2e-auth-teacher-${index}@example.com`);
 
+  // Auth-abuse tests intentionally leave their account rate-limited. Keep
+  // those accounts separate from the per-worker users used by browser tests.
+  for (let index = 0; index < userCount; index++)
+    lines.push(`E2E Auth Student ${index} <e2e-auth-student-${index}@example.com>`);
+
   for (let index = 0; index < userCount; index++)
     lines.push(`E2E Worker ${index} <e2e-${index}@example.com>`);
   lines.push('E2E Peer <e2e-peer@example.com>');
