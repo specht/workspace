@@ -2,39 +2,59 @@
   "version": 1,
   "screenshots": {
     "fresh-start.webp": {
-      "state_hash": "d8d4641e7ad33e8658d8fa111869a36a19e48512cb69ff91b0afe2889b9d1acb",
-      "environment_fingerprint": "a7c328422cddc173ea5b4a376e3d10f141a6ec432326c9f851c62d45a18dcd8a",
-      "output_sha256": "d02a6180053143a89fe8d00b336901eab1553cf2173d23b7f48f779d42003895"
+      "state_hash": "ba7f1aa969c787d135200f0a4204c93464aea1efd6256e92e11a77b410adda03",
+      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "output_sha256": "da63c6b8fcd1e01064dd95defc6da8b91731ce26d3154a6a0c52ece462b6842f"
     },
     "git-clone.webp": {
-      "state_hash": "573e3f83f7b5606e83369c93588d52ca8bf6d9220a101075335ab256eb59d8df",
-      "environment_fingerprint": "a7c328422cddc173ea5b4a376e3d10f141a6ec432326c9f851c62d45a18dcd8a",
-      "output_sha256": "25c72e6652fa2e713b008e18d921174bc71a58feb2ebbf4f5aada6669d97da8f"
+      "state_hash": "4d5f546d42fefd4dee525bedab9f6a69dd31e7571e39894e757fd67a80133a54",
+      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "output_sha256": "b1a715cd75ba309f593fe4fab82f89dd03e05d71628712012f07f70897388ab1"
     },
     "confirm-clone-path.webp": {
-      "state_hash": "460aa51bd70ac62e98f6f9397a40596dc58af1665f256d42bb3328fddca79409",
-      "environment_fingerprint": "a7c328422cddc173ea5b4a376e3d10f141a6ec432326c9f851c62d45a18dcd8a",
-      "output_sha256": "2feef8e18af11b1e5b7af239a0e1d552d46da251efbcddf103c60aa334b0e658"
+      "state_hash": "6c91b6fd472867fd48e815fc1e0eba5ca31b63ca1b36b7eaec1cace9884588e1",
+      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "output_sha256": "c88f55d48d35a919768478f0675c1926acb2b1bde531a8d6206db0263bdcee16"
     },
     "open-yes-no.webp": {
-      "state_hash": "67f1a57796e03eb2cacc952afbe69d2d93e89f40790a2d12f2b661f4b78cff80",
-      "environment_fingerprint": "a7c328422cddc173ea5b4a376e3d10f141a6ec432326c9f851c62d45a18dcd8a",
-      "output_sha256": "63f0ef4c251c58611fb23659d0b86e0a76956d3c37307b667dbe87cfbfc41ef2"
+      "state_hash": "8776acfe306fe4db1c097a62b46ccec9bd817bd821f8d362cb2124d4109e16b9",
+      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "output_sha256": "8419a94fe58aceefa8caaf0cb1d71c701bc3628e0698000ca1e71ca77f9bae98"
     },
     "bif-project.webp": {
-      "state_hash": "b6d437b4ad539c887dd5430d7d213718533346f1f442b834e82f36ff4a9337a3",
-      "environment_fingerprint": "a7c328422cddc173ea5b4a376e3d10f141a6ec432326c9f851c62d45a18dcd8a",
-      "output_sha256": "7b5a83749317e3b21d5de267b0401b2151d991183b030b6ef8cedfb329c7dbd6"
+      "state_hash": "8cf5107de8dd8fef9665496a307743f3fbde90684c254534263f448c91c0f279",
+      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "output_sha256": "cbd667995e5d450044469ba65e1b7f85ae8329afc1fde3c72c6171c9f2c0aba2"
     },
     "story-begin.webp": {
-      "state_hash": "9861e9bed304a9bf56d7f731c6c29a7387fb5a25fba3ea6723c517c3f9e905d9",
-      "environment_fingerprint": "a7c328422cddc173ea5b4a376e3d10f141a6ec432326c9f851c62d45a18dcd8a",
-      "output_sha256": "0d44289f50aa92d8556faee8e2667ac3379ec800c6383c87c7b8533bed0d0c95"
+      "state_hash": "b790e7402b1a5c3be25079db7ae6abd32b49cc7d2af8ee03125f6e4112e0bfb2",
+      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "output_sha256": "4dfe061b2f472cfe032e4dc9a98234400a5764b1713de0aa0137bc9e64e0a983"
     },
     "first-page.webp": {
-      "state_hash": "3e828cce30b2fc21a0aeba01762e44753a1a98ed0be2c50bda0d16f651ab3faf",
-      "environment_fingerprint": "a7c328422cddc173ea5b4a376e3d10f141a6ec432326c9f851c62d45a18dcd8a",
-      "output_sha256": "66dcdddb815684d0700379f4ea740a7324a9b7d4d07c70f9952c5449b5b0a8c8"
+      "state_hash": "354dbf8417f183ce5e6fd675cff2c69e842d5066a6937b75f301ebc2a002ceba",
+      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "output_sha256": "d103c1708e34695fa76c5ecaa42a1881da2d789e8176e2366e52d06f97ffca0c"
+    },
+    "unreachable-page.webp": {
+      "state_hash": "724faaa8b89fa020c42773955f1aeba5b0a47521666959075fb875dd72781391",
+      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "output_sha256": "f7d927398bad36fb2473323f6a1a0cd553b77b1f106c7ef0da25f1614ea772e9"
+    },
+    "two-pages.webp": {
+      "state_hash": "250eff7ab3193a0231f2ca421cbdbf0d61a46899f26c8491b42f41cb98f47027",
+      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "output_sha256": "12bff2489f2152198f1c29e5ab894cc9f3bac72d16017086dade9597249025be"
+    },
+    "branching-story.webp": {
+      "state_hash": "57fea20356cc538db6c164be91305d78092a96a89f5e024f84b947dd7303f0f3",
+      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "output_sha256": "65b2cbd7ead6b9711dfe08a8ebb4f3702e2fe251917ba514e21cda73fd18f1d6"
+    },
+    "local-choice.webp": {
+      "state_hash": "43d9a976c8b04dde060e07d1d69e7713eb3d9d72bc671818f15e7d88ec447b56",
+      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "output_sha256": "2be626b080abdd3d9d0b76e8b1cfb8618ccf9d5d84cb3565cebe1be1f46ca7d6"
     }
   }
 }
