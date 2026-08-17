@@ -1,0 +1,294 @@
+<div class='meta'>
+image: select-land.webp:25:0
+</div>
+
+# Einführung in SQL
+
+<p class='abstract'>
+In diesem Kapitel lernst du, wie du eine vorhandene MySQL-Datenbank mit SQL abfragst. Du lädst eine kleine Beispieldatenbank mit Länder- und Ortsdaten, untersuchst ihren Aufbau und formulierst dann eigene Abfragen mit <code>SELECT</code>, <code>WHERE</code>, <code>ORDER BY</code>, <code>LIMIT</code>, <code>COUNT</code>, <code>LIKE</code> und <code>DISTINCT</code>.
+</p>
+
+## Beispieldaten laden
+
+Für dieses Kapitel brauchst du nur wenige Befehle im Terminal. Wenn du mit dem Terminal noch nicht vertraut bist, schau vorher kurz in [Die Basics](/basics) und [Arbeiten mit Dateien](/working-with-files).
+
+Öffne das Terminal mit <kbd>Strg</kbd><kbd>J</kbd> und lade die Beispieldatenbank `terra1` herunter:
+
+```bash
+wget -q -O terra1.sql https://github.com/specht/workspace-files/raw/main/terra1.sql
+```
+
+Importiere sie anschließend in MySQL:
+
+```bash
+mysql < terra1.sql
+```
+
+Wenn der Import ohne Fehlermeldung endet, kannst du direkt mit SQL anfangen. Starte dazu `mycli`:
+
+```bash
+mycli
+```
+
+`mycli` ist ein MySQL-Client für das Terminal. Ab jetzt gibst du SQL-Befehle ein. Jeder SQL-Befehl endet mit einem Semikolon `;`.
+
+## Tabellen ansehen
+
+Lass dir zuerst anzeigen, welche Tabellen in der Datenbank vorhanden sind:
+
+```sql
+SHOW TABLES;
+```
+
+<!-- tutorial-screenshot-nono
+# Terra-Datenbank geladen und SHOW TABLES ausgeführt
+terminal-open
+terminal-maximize
+terminal-run: wget -q -O terra1.sql https://github.com/specht/workspace-files/raw/main/terra1.sql
+terminal-run: mysql < terra1.sql
+terminal-run: mycli
+terminal-run: SHOW TABLES;
+-->
+
+<img class='full' src='show-tables.webp' alt='mycli zeigt die beiden Tabellen land und ort der Terra-Beispieldatenbank.'>
+
+Die Datenbank enthält die Tabellen `land` und `ort`.
+
+Mit `DESCRIBE` kannst du dir den Aufbau einer Tabelle ansehen:
+
+```sql
+DESCRIBE land;
+```
+
+<!-- tutorial-screenshot-nono
+# Aufbau der Tabelle land
+terminal-run: DESCRIBE land;
+-->
+
+<img class='full' src='describe-land.webp' alt='Die Tabelle land enthält Spalten für Kürzel, Name, Einwohnerzahl, Fläche, Hauptstadt und Kontinent mit ihren Datentypen.'>
+
+Du siehst die Spalten der Tabelle und die jeweiligen Datentypen.
+
+<div class='hint task'>
+Untersuche mit <code>DESCRIBE ort;</code> auch die Tabelle <code>ort</code>. Welche Spalten gibt es und welche Datentypen haben sie?
+</div>
+
+## Daten mit SELECT anzeigen
+
+Mit `SELECT` fragst du Daten aus einer Tabelle ab. Das Sternchen `*` bedeutet: alle Spalten.
+
+```sql
+SELECT * FROM land;
+```
+
+<!-- tutorial-screenshot-nono
+# Alle Zeilen der Tabelle land
+terminal-run: SELECT * FROM land;
+-->
+
+<img class='full' src='select-land.webp' alt='Das Abfrageergebnis listet die Länder mit allen gespeicherten Spalten auf.'>
+
+Eine Zeile entspricht einem Land. Bei langen Ergebnissen zeigt `mycli` die Ausgabe seitenweise an. Mit <kbd>Q</kbd> kommst du wieder zur Eingabeaufforderung zurück.
+
+Meistens brauchst du nicht alle Spalten. Gib hinter `SELECT` nur die Spalten an, die dich interessieren:
+
+```sql
+SELECT name, hauptstadt FROM land;
+```
+
+Damit erhältst du nur die Namen der Länder und ihre Hauptstädte.
+
+<div class='hint'>
+SQL-Schlüsselwörter schreiben wir in diesem Tutorial groß, damit sie leicht zu erkennen sind. Für MySQL spielt die Groß- und Kleinschreibung dieser Schlüsselwörter keine Rolle.
+</div>
+
+## Zeilen mit WHERE filtern
+
+Mit `WHERE` legst du fest, welche Zeilen in das Ergebnis kommen sollen. So suchst du nach Deutschland:
+
+```sql
+SELECT * FROM land WHERE name = 'Deutschland';
+```
+
+<!-- tutorial-screenshot-nono
+# Mit WHERE nach Deutschland filtern
+terminal-key: q
+terminal-run: SELECT * FROM land WHERE name = 'Deutschland';
+-->
+
+<img class='full' src='select-land-where.webp' alt='Die gefilterte Tabelle enthält nur den Datensatz für Deutschland.'>
+
+Textwerte stehen in SQL in einfachen Anführungszeichen, zum Beispiel `'Deutschland'` oder `'Europa'`.
+
+Du kannst Bedingungen mit `AND` verbinden:
+
+```sql
+SELECT * FROM land WHERE einwohner < 5 AND flaeche > 1000000;
+```
+
+Diese Abfrage sucht Länder, die **beide** Bedingungen erfüllen: weniger als 5 Millionen Einwohner und mehr als 1 Million km² Fläche.
+
+<div class='hint'>
+Die Abfrage berechnet keine Bevölkerungsdichte. Dafür müsste die Einwohnerzahl durch die Fläche geteilt werden. Hier werden Einwohnerzahl und Fläche nur unabhängig voneinander gefiltert.
+</div>
+
+<div class='hint task'>
+Wie viele Einwohner hat Griechenland? Formuliere eine passende Abfrage und achte darauf, in welcher Einheit die Einwohnerzahl gespeichert ist.
+</div>
+
+## Ergebnisse sortieren
+
+Mit `ORDER BY` sortierst du das Ergebnis einer Abfrage. Standardmäßig wird aufsteigend sortiert:
+
+```sql
+SELECT name, einwohner FROM land ORDER BY einwohner;
+```
+
+Für eine absteigende Sortierung ergänzt du `DESC` (für »descending«):
+
+```sql
+SELECT name, einwohner FROM land ORDER BY einwohner DESC;
+```
+
+<!-- tutorial-screenshot-nono
+# Länder nach Einwohnerzahl absteigend sortiert
+terminal-run: SELECT name, einwohner FROM land ORDER BY einwohner DESC;
+-->
+
+<img class='full' src='select-land-order-by-desc.webp' alt='Die Länder sind nach Einwohnerzahl absteigend sortiert.'>
+
+## Anzahl der Ergebnisse begrenzen
+
+Mit `LIMIT` begrenzt du die Anzahl der ausgegebenen Zeilen. So erhältst du zum Beispiel die fünf einwohnerreichsten Länder:
+
+```sql
+SELECT name, einwohner
+FROM land
+ORDER BY einwohner DESC
+LIMIT 5;
+```
+
+Du kannst also mehrere Bestandteile einer Abfrage kombinieren. Sie werden in einer typischen `SELECT`-Abfrage in dieser Reihenfolge geschrieben: `SELECT`, `FROM`, `WHERE`, `ORDER BY`, `LIMIT`.
+
+## Zeilen mit COUNT zählen
+
+Mit der Funktion `COUNT` zählst du Zeilen. `COUNT(*)` zählt alle Zeilen des Ergebnisses:
+
+```sql
+SELECT COUNT(*) FROM land;
+```
+
+<!-- tutorial-screenshot-nono
+# Anzahl der Länder mit COUNT
+terminal-key: q
+terminal-run: SELECT COUNT(*) FROM land;
+-->
+
+<img class='full' src='count-land.webp' alt='COUNT gibt die Anzahl der Zeilen in der Tabelle land aus.'>
+
+`COUNT` lässt sich mit `WHERE` kombinieren. So zählst du nur Länder in Europa:
+
+```sql
+SELECT COUNT(*) FROM land WHERE kontinent = 'Europa';
+```
+
+Die Datenbank übernimmt damit nicht nur das Suchen, sondern auch das Zählen für dich.
+
+## Text mit LIKE durchsuchen
+
+Mit `=` suchst du nach einem exakten Wert. Wenn nur ein Teil des Textes feststeht, verwendest du `LIKE`.
+
+```sql
+SELECT name FROM land WHERE name LIKE '%land%';
+```
+
+<!-- tutorial-screenshot-nono
+# Ländernamen mit LIKE durchsuchen
+terminal-run: SELECT name FROM land WHERE name LIKE '%land%';
+-->
+
+<img class='full' src='like-land.webp' alt='LIKE findet Ländernamen, in denen die Zeichenfolge land vorkommt.'>
+
+Das Zeichen `%` steht bei `LIKE` für beliebig viele Zeichen. Das Muster `'%land%'` bedeutet also: Vor und nach `land` darf noch weiterer Text stehen.
+
+Mehrere Suchmuster kannst du mit `OR` verbinden:
+
+```sql
+SELECT name
+FROM land
+WHERE name LIKE '%arm%' OR name LIKE '%bein%';
+```
+
+Hier reicht es, wenn **eine** der beiden Bedingungen erfüllt ist.
+
+## Doppelte Werte mit DISTINCT entfernen
+
+Manchmal möchtest du wissen, welche verschiedenen Werte überhaupt vorkommen. Mit `DISTINCT` erscheint jeder Wert im Ergebnis nur einmal:
+
+```sql
+SELECT DISTINCT kontinent
+FROM land
+ORDER BY kontinent;
+```
+
+<!-- tutorial-screenshot-nono
+# Verschiedene Kontinente mit DISTINCT
+terminal-key: q
+terminal-run: SELECT DISTINCT kontinent FROM land ORDER BY kontinent;
+-->
+
+<img class='full' src='distinct-kontinent.webp' alt='DISTINCT gibt jeden in der Tabelle gespeicherten Kontinent nur einmal aus.'>
+
+Ohne `DISTINCT` würde für jedes Land erneut sein Kontinent ausgegeben. Mit `DISTINCT` erhältst du stattdessen die Menge der verschiedenen gespeicherten Werte.
+
+## Zusammenfassung
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table'>
+<thead>
+<tr><th>Bestandteil</th><th>Bedeutung</th></tr>
+</thead>
+<tbody>
+<tr><td><code>SELECT</code></td><td>Welche Spalten oder berechneten Werte sollen angezeigt werden?</td></tr>
+<tr><td><code>DISTINCT</code></td><td>Sollen doppelte Ergebniswerte entfernt werden?</td></tr>
+<tr><td><code>FROM</code></td><td>Aus welcher Tabelle kommen die Daten?</td></tr>
+<tr><td><code>WHERE</code></td><td>Welche Zeilen erfüllen die Bedingung?</td></tr>
+<tr><td><code>LIKE</code></td><td>Passt ein Text zu einem Suchmuster?</td></tr>
+<tr><td><code>ORDER&nbsp;BY</code></td><td>In welcher Reihenfolge sollen die Zeilen erscheinen?</td></tr>
+<tr><td><code>LIMIT</code></td><td>Wie viele Zeilen sollen höchstens ausgegeben werden?</td></tr>
+<tr><td><code>COUNT(...)</code></td><td>Wie viele Zeilen oder Werte gibt es?</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class='hint'>
+Um <code>mycli</code> zu beenden, gib <code>exit</code> ein oder drücke <kbd>Strg</kbd><kbd>D</kbd>.
+</div>
+
+### Aufgaben
+
+Beantworte die folgenden Fragen mit geeigneten SQL-Abfragen. Notiere jeweils die Abfrage und das Ergebnis. Formuliere deine Abfrage möglichst so, dass nur die benötigten Spalten ausgegeben werden.
+
+1. Gib eine Tabelle aller Länder aus. Zeige `name`, `einwohner` und `hauptstadt` und sortiere nach der Einwohnerzahl absteigend.
+
+2. Wie viele Länder gibt es in der Tabelle `land`?
+
+3. Wie viele Länder liegen in Europa?
+
+4. Welche Länder haben die Zeichenfolge »arm« oder »bein« im Namen?
+
+5. Welcher Ort hat die meisten Einwohner? Gib den Namen des Ortes, seine Einwohnerzahl und das gespeicherte Länderkürzel aus.
+
+6. Wie viele Orte aus Frankreich stehen in der Tabelle `ort`? Finde dafür zuerst in `land` heraus, welches Länderkürzel für Frankreich gespeichert ist.
+
+7. Gib die zehn bevölkerungsreichsten Orte Frankreichs aus.
+
+8. Gib jeweils drei Orte an, die die Zeichenfolge »arm« oder »bein« im Namen haben.
+
+9. Welche Orte in Deutschland liegen westlich von Aachen (6,046° Ost)?
+
+10. Welche verschiedenen Länderkürzel kommen in der Tabelle `ort` vor? Gib jedes Kürzel nur einmal aus und sortiere die Liste alphabetisch.
+
+<div class='hint'>
+In diesem Kapitel hast du Abfragen auf jeweils einer Tabelle formuliert. Im [Videothek-Tutorial](/videothek) geht es als nächstes darum, Daten auf mehrere zusammenhängende Tabellen aufzuteilen und diese Beziehungen gezielt zu nutzen.
+</div>
