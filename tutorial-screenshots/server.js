@@ -242,6 +242,12 @@ function parseRecipe(text) {
                 type: 'wait-for-file',
                 path: safeRelativePath(match[1].trim()),
             });
+        } else if ((match = line.match(/^wait-for-file-newer:\s*(.+?)\s*<-\s*(.+)$/))) {
+            recipe.actions.push({
+                type: 'wait-for-file-newer',
+                target: safeRelativePath(match[1].trim()),
+                source: safeRelativePath(match[2].trim()),
+            });
         } else if ((match = line.match(/^close-tab:\s*(.+)$/))) {
             recipe.actions.push({
                 type: 'close-tab',
@@ -994,6 +1000,67 @@ async function waitForWorkspaceFile(relativePath) {
     );
 }
 
+async function waitForWorkspaceFileNewer(targetRelativePath, sourceRelativePath) {
+    const root = path.resolve(
+        USER_ROOT,
+        fsTagForEmail(SCREENSHOT_EMAIL),
+        'workspace',
+    );
+
+    const resolveWorkspacePath = relativePath => {
+        const target = path.resolve(root, safeRelativePath(relativePath));
+
+        if (target !== root && !target.startsWith(`${root}${path.sep}`)) {
+            throw new Error(`Workspace path escaped its root: ${relativePath}`);
+        }
+
+        return target;
+    };
+
+    const sourcePath = resolveWorkspacePath(sourceRelativePath);
+    const targetPath = resolveWorkspacePath(targetRelativePath);
+
+    const sourceStat = await fs.stat(sourcePath, { bigint: true });
+
+    if (!sourceStat.isFile()) {
+        throw new Error(`Source is not a file: ${sourceRelativePath}`);
+    }
+
+    const sourceMtime = sourceStat.mtimeNs;
+    const deadline = Date.now() + 60_000;
+
+    let stableSignature = null;
+    let stableSince = 0;
+
+    while (Date.now() < deadline) {
+        try {
+            const stat = await fs.stat(targetPath, { bigint: true });
+
+            if (stat.isFile() && stat.mtimeNs > sourceMtime) {
+                const signature = `${stat.mtimeNs}:${stat.size}`;
+
+                if (signature !== stableSignature) {
+                    stableSignature = signature;
+                    stableSince = Date.now();
+                } else if (Date.now() - stableSince >= 250) {
+                    return;
+                }
+            } else {
+                stableSignature = null;
+            }
+        } catch (error) {
+            if (error?.code !== 'ENOENT') throw error;
+            stableSignature = null;
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    throw new Error(
+        `Timed out waiting for ${targetRelativePath} to become newer than ${sourceRelativePath}`,
+    );
+}
+
 async function closeTab(label) {
     const tabs = workspace.locator('.tabs-container .tab');
     const count = await tabs.count();
@@ -1079,6 +1146,7 @@ async function executeAction(action, targetTab) {
     case 'go-live': return goLive();
     case 'write-file': return writeWorkspaceFile(action.path, action.contents);
     case 'wait-for-file': return waitForWorkspaceFile(action.path);
+    case 'wait-for-file-newer': return waitForWorkspaceFileNewer(action.target, action.source);
     case 'close-tab': return closeTab(action.label);
     case 'preview-reload': return previewReload(false);
     case 'preview-reset': return previewReload(true);

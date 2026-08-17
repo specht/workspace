@@ -150,6 +150,15 @@ Speichere die Datei, indem du <kbd>Strg</kbd><kbd>S</kbd> drückst. Die Vorschau
 
 <div style='clear: both;'></div>
 
+<!-- tutorial-screenshot
+write-file: pages-starter/2.md <- previous-code
+wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/2.md
+preview-reload
+click: Fit graph
+sleep: 1
+tab: preview
+-->
+
 <img class='full full-shadow scroll-right' src='unreachable-page.webp' alt='Eine zweite Seite ist im Story-Graph nicht mit der Startseite verbunden und als unerreichbar markiert.'>
 
 Damit besteht die Geschichte bereits aus zwei Seiten, allerdings gibt es noch keine Verbindung von der ersten zur zweiten Seite – dafür brauchen wir eine Entscheidung.
@@ -173,6 +182,15 @@ Du willst gerade gehen, da fällt dir ein: Deine Projektmappe liegt noch im Mate
 ```
 
 Speichere die Datei und probiere die Geschichte im Browser aus:
+
+<!-- tutorial-screenshot
+write-file: pages-starter/1.md <- previous-code
+wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
+preview-reload
+click: Fit graph
+sleep: 1
+tab: preview
+-->
 
 <img class='full full-shadow scroll-right' src='two-pages.webp' alt='Zwei Seiten sind im Story-Graph durch eine Entscheidung miteinander verbunden.'>
 
