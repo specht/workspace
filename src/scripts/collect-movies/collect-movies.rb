@@ -50,7 +50,7 @@ class ImdbDatasetBuilder
 
     STDERR.puts
     STDERR.puts "Done. Wrote:"
-    %w[movies.txt crew.txt genres.txt mysql.sql neo4j.dump README.md].each do |name|
+    %w[movies.txt crew.txt genres.txt videothek-data.sql videothek-data.neo4j README.md].each do |name|
       STDERR.puts "  #{File.join(@output_dir, name)}"
     end
   end
@@ -302,7 +302,7 @@ class ImdbDatasetBuilder
   end
 
   def write_mysql(movies, crew, genres)
-    path = File.join(@output_dir, 'mysql.sql')
+    path = File.join(@output_dir, 'videothek-data.sql')
     jobs = jobs_for(movies)
 
     File.open(path, 'w') do |file|
@@ -311,7 +311,7 @@ class ImdbDatasetBuilder
         -- Generated: #{Time.now.utc.iso8601}
         --
         -- Import into an existing MySQL database, for example:
-        --   mysql -u USER -p DATABASE < mysql.sql
+        --   mysql -u USER -p DATABASE < videothek-data.sql
 
         SET NAMES utf8mb4;
         SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS;
@@ -450,7 +450,7 @@ class ImdbDatasetBuilder
   end
 
   def write_neo4j(movies, crew, genres)
-    path = File.join(@output_dir, 'neo4j.dump')
+    path = File.join(@output_dir, 'videothek-data.neo4j')
     movie_node_ids = {}
     crew_node_ids = {}
     genre_node_ids = {}
@@ -555,12 +555,12 @@ class ImdbDatasetBuilder
       - `movies.txt` — #{movie_count} movies, one JSON object per line
       - `crew.txt` — #{crew_count} people, one JSON object per line
       - `genres.txt` — #{genre_count} genres, one JSON object per line
-      - `mysql.sql` — creates the relational schema and inserts the complete dataset
-      - `neo4j.dump` — logical Neo4jBolt dump ready for `neo4j_bolt load`
+      - `videothek-data.sql` — creates the relational schema and inserts the complete dataset
+      - `videothek-data.neo4j` — logical Neo4jBolt dump ready for `neo4j_bolt load`
 
       ## MySQL
 
-      `mysql.sql` creates these tables:
+      `videothek-data.sql` creates these tables:
 
       - `movie`
       - `genre`
@@ -572,12 +572,12 @@ class ImdbDatasetBuilder
       Import it into an existing database with, for example:
 
       ```sh
-      mysql -u USER -p DATABASE < mysql.sql
+      mysql -u USER -p DATABASE < videothek-data.sql
       ```
 
       ## Neo4j / Neo4jBolt
 
-      `neo4j.dump` uses Neo4jBolt's textual logical dump format. It contains:
+      `videothek-data.neo4j` uses Neo4jBolt's textual logical dump format. It contains:
 
       - `Movie` nodes
       - `Person` nodes
@@ -588,7 +588,7 @@ class ImdbDatasetBuilder
       Load it into an empty Neo4j database with:
 
       ```sh
-      neo4j_bolt load neo4j.dump
+      neo4j_bolt load videothek-data.neo4j
       ```
 
       Neo4jBolt uses dump-local integer node IDs in this file to reconnect
@@ -612,19 +612,19 @@ class ImdbDatasetBuilder
 end
 
 options = {
-  output_dir: 'imdb',
+  output_dir: 'videothek',
   min_votes: 100_000,
   force_download: false
 }
 
 parser = OptionParser.new do |opts|
-  opts.banner = 'Usage: imdb_prepare.rb [options]'
+  opts.banner = 'Usage: collect-movies.rb [options]'
 
-  opts.on('-o', '--output DIR', 'Output directory (default: imdb)') do |dir|
+  opts.on('-o', '--output DIR', "Output directory (default: #{options[:output_dir]})") do |dir|
     options[:output_dir] = dir
   end
 
-  opts.on('--min-votes N', Integer, 'Minimum number of IMDb votes (default: 100000)') do |n|
+  opts.on('--min-votes N', Integer, "Minimum number of IMDb votes (default: #{options[:min_votes]})") do |n|
     options[:min_votes] = n
   end
 
