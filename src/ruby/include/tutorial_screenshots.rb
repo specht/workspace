@@ -29,6 +29,17 @@ module TutorialScreenshots
         markdown
     end
 
+    def self.recreate(relative_path)
+        unless relative_path.is_a?(String) &&
+                relative_path.end_with?('.md') &&
+                !relative_path.start_with?('/') &&
+                !relative_path.split('/').include?('..')
+            raise "invalid tutorial Markdown path: #{relative_path.inspect}"
+        end
+
+        request_generation(relative_path, :force => true)
+    end
+
     def self.workspace_image_id
         stdout, _stderr, status = Open3.capture3(
             'docker', 'image', 'inspect', WORKSPACE_IMAGE,
@@ -40,17 +51,18 @@ module TutorialScreenshots
         'unknown'
     end
 
-    def self.request_generation(relative_path)
+    def self.request_generation(relative_path, force: false)
         request = Net::HTTP::Post.new(ENDPOINT)
         request['content-type'] = 'application/json'
         request.body = JSON.generate({
             :markdown_path => relative_path,
             :workspace_image_id => workspace_image_id,
+            :force => force,
         })
 
         http = Net::HTTP.new(ENDPOINT.host, ENDPOINT.port)
         http.open_timeout = 1
-        http.read_timeout = 600
+        http.read_timeout = force ? 3600 : 600
         http.write_timeout = 5
         response = http.request(request)
 

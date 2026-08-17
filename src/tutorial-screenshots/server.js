@@ -37,7 +37,7 @@ const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'screenshots@e
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
-const GENERATOR_VERSION = 13;
+const GENERATOR_VERSION = 14;
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
 const DEFAULT_PROFILE = Object.freeze({
@@ -260,6 +260,17 @@ function findCodeSource(blocks, recipeStart, selector) {
     throw new Error(`Unknown code source: ${selector}`);
 }
 
+function parsePreviewControlTarget(value) {
+    const target = value.trim();
+    if (target.startsWith('selector:')) {
+        const selector = target.slice('selector:'.length).trim();
+        if (!selector) throw new Error('Preview control selector must not be empty');
+        return { selector };
+    }
+    if (!target) throw new Error('Preview control label must not be empty');
+    return { label: target };
+}
+
 function parseRecipe(text, markdown, markdownPath, recipeStart) {
     const recipe = {
         tab: 'workspace',
@@ -333,7 +344,23 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
                 path: valueAtSource(source, () => safeRelativePath(match[1].trim())),
             });
         } else if ((match = line.match(/^click:\s*(.+)$/))) {
-            recipe.actions.push({ type: 'click', label: match[1].trim() });
+            recipe.actions.push({
+                type: 'click',
+                ...valueAtSource(source, () => parsePreviewControlTarget(match[1])),
+            });
+        } else if ((match = line.match(/^hold:\s*([0-9]+(?:\.[0-9]+)?)s\s+(.+)$/))) {
+            const seconds = Number.parseFloat(match[1]);
+            if (seconds < 0.05 || seconds > 30) {
+                throw withSourceError(
+                    new Error(`hold must be between 0.05 and 30 seconds: ${match[1]}s`),
+                    source,
+                );
+            }
+            recipe.actions.push({
+                type: 'hold',
+                seconds,
+                ...valueAtSource(source, () => parsePreviewControlTarget(match[2])),
+            });
         } else if ((match = line.match(/^press:\s*(.+)$/))) {
             recipe.actions.push({ type: 'press', key: match[1].trim() });
         } else if ((match = line.match(/^sleep:\s*(.+)$/))) {
@@ -577,7 +604,11 @@ async function ensureBrowser() {
 
             return chromium.launch({
                 headless: true,
-                args: [`--host-resolver-rules=${hostRules}`],
+                args: [
+                    `--host-resolver-rules=${hostRules}`,
+                    '--disable-font-subpixel-positioning',
+                    '--font-render-hinting=none',
+                ],
             });
         })();
     }
@@ -1425,21 +1456,44 @@ async function closeTab(label) {
     await workspace.waitForTimeout(100);
 }
 
-async function clickPreview(label) {
+async function previewControl(action, verb) {
     if (!preview || preview.isClosed()) throw new Error('No preview tab is open');
-    const buttons = preview.getByRole('button', { name: label, exact: true });
-    const links = preview.getByRole('link', { name: label, exact: true });
-    const control = buttons.or(links);
-    await control.first().waitFor({ state: 'visible', timeout: 20_000 });
 
-    const count = await control.count();
-    if (count !== 1) {
-        throw new Error(
-            `click expected exactly one button or link named ${JSON.stringify(label)}, found ${count}`,
-        );
+    let control;
+    let description;
+    if (action.selector) {
+        control = preview.locator(action.selector);
+        description = `element matching selector ${JSON.stringify(action.selector)}`;
+    } else {
+        const buttons = preview.getByRole('button', { name: action.label, exact: true });
+        const links = preview.getByRole('link', { name: action.label, exact: true });
+        control = buttons.or(links);
+        description = `button or link named ${JSON.stringify(action.label)}`;
     }
 
+    await control.first().waitFor({ state: 'visible', timeout: 20_000 });
+    const count = await control.count();
+    if (count !== 1) {
+        throw new Error(`${verb} expected exactly one ${description}, found ${count}`);
+    }
+    return control;
+}
+
+async function clickPreview(action) {
+    const control = await previewControl(action, 'click');
     await control.click();
+    await preview.waitForTimeout(150);
+}
+
+async function holdPreview(action) {
+    const control = await previewControl(action, 'hold');
+    await control.hover();
+    await preview.mouse.down();
+    try {
+        await preview.waitForTimeout(action.seconds * 1000);
+    } finally {
+        await preview.mouse.up();
+    }
     await preview.waitForTimeout(150);
 }
 
@@ -1493,7 +1547,8 @@ async function executeAction(action, targetTab) {
     case 'close-tab': return closeTab(action.label);
     case 'preview-reload': return previewReload(false);
     case 'preview-reset': return previewReload(true);
-    case 'click': return clickPreview(action.label);
+    case 'click': return clickPreview(action);
+    case 'hold': return holdPreview(action);
     case 'sleep': return sleep(action.seconds);
     case 'wait-for-text': return waitForText(action.text, targetTab);
     case 'press': {
@@ -1637,6 +1692,7 @@ async function captureShot(shot, tutorialDirectory) {
 }
 
 async function generateTutorial(payload) {
+    const force = payload?.force === true;
     const relativeMarkdown = safeRelativePath(payload?.markdown_path);
     if (!relativeMarkdown.endsWith('.md')) throw new Error('markdown_path must name a Markdown file');
     const markdownPath = path.join(CONTENT_ROOT, relativeMarkdown);
@@ -1671,7 +1727,7 @@ async function generateTutorial(payload) {
         const previous = oldManifest.screenshots?.[shot.target];
         let exists = true;
         try { await fs.access(target); } catch { exists = false; }
-        const needsGeneration = !exists || previous?.state_hash !== shot.stateHash ||
+        const needsGeneration = force || !exists || previous?.state_hash !== shot.stateHash ||
             previous?.environment_fingerprint !== environmentFingerprint;
         stale.push(needsGeneration);
         if (!needsGeneration && previous) nextManifest.screenshots[shot.target] = previous;

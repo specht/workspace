@@ -37,6 +37,20 @@ invalidates the screenshots that follow it. Rebuilding `hs_code_server` changes
 the environment fingerprint and transparently regenerates the same named images
 on the next development reload.
 
+To deliberately recreate every generated screenshot for one tutorial, run the
+helper from the repository root while the development services are running:
+
+```bash
+src/scripts/recreate-screenshots.rb bif
+```
+
+The argument may also be a Markdown path such as `bif/bif.md` or
+`src/content/bif/bif.md`. Forced recreation ignores manifest freshness, replays
+the complete recipe chain, overwrites the generated images in place, and writes a
+fresh manifest. Manual tutorial images are untouched. The helper follows the
+screenshot-generator log while it runs, so target filenames and individual recipe
+steps are visible directly in the terminal.
+
 ## Recipe language
 
 Recipes are intentionally line-oriented. The BIF pilot currently uses:
@@ -64,6 +78,9 @@ write-file: PATH <- file:RELATIVE_PATH
 preview-reload
 preview-reset
 click: BUTTON OR LINK TEXT
+click: selector:CSS_SELECTOR
+hold: SECONDSs BUTTON OR LINK TEXT
+hold: SECONDSs selector:CSS_SELECTOR
 press: PlaywrightKey
 sleep: SECONDS
 wait-for-text: TEXT
@@ -100,7 +117,18 @@ made for that clone. The local Git root is mounted read-only into the screenshot
 generator.
 
 `click` matches either an accessible button or an accessible link with the exact
-given name in the preview tab.
+given name in the preview tab. Prefix the target with `selector:` to address a
+single preview element by CSS selector instead, which is useful for icon-only
+controls whose visible text is not a stable target.
+
+`hold` targets controls in the same way as `click`, but keeps the real Chromium
+pointer pressed for the requested duration before releasing it. Durations use an
+`s` suffix and must be between 0.05 and 30 seconds. For example, BIF's hold-to-
+confirm restart control can be driven without depending on its translated label:
+
+```text
+hold: 1.5s selector:.story-restart-control
+```
 
 `previous-code` means the last fenced code block before the recipe. When several
 blocks belong to the same step, put a `screenshot-code` marker immediately before
@@ -160,9 +188,9 @@ tab: preview
 ```
 
 Workspace screenshots also hide VS Code notification toasts so startup warnings
-do not leak into tutorial images. The screenshot image configures Fontconfig with
-`hintslight`, matching a desktop configured for slight font hinting while leaving
-antialiasing and subpixel order at the container defaults.
+do not leak into tutorial images. Chromium is launched with subpixel positioning
+and font hinting disabled explicitly, keeping text rasterization stable at the
+scaled screenshot profile without relying on a container-wide Fontconfig override.
 
 After a render that generated screenshots has returned its images, the generator
 immediately resets and starts another pristine screenshot Workspace in the

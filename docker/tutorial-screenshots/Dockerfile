@@ -8,8 +8,6 @@ RUN apt-get update \
         fonts-noto-core \
     && rm -rf /var/lib/apt/lists/*
 
-COPY fontconfig-slight-hinting.conf /etc/fonts/conf.d/99-tutorial-screenshot-hinting.conf
-
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
