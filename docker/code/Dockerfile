@@ -11,7 +11,7 @@
 ARG CODE_SERVER_IMAGE=linuxserver/code-server:4.131.0
 
 ARG TL_YEAR=2026
-ARG FLUTTER_VERSION=3.44.9
+ARG FLUTTER_VERSION=3.47.0
 ARG ANDROID_CMDLINE_TOOLS_VERSION=15859902
 ARG ANDROID_CMDLINE_TOOLS_SHA256=4e4c464f145a7512b57d088ac6c278c03c9eea610886b35a5e0804e74eedf583
 ARG ANDROID_PLATFORM=36
@@ -31,7 +31,6 @@ ARG SMALLTALK_VERSION=3.2.5
 ARG HUGO_VERSION=0.164.0
 ARG DOTNET_VERSION=10.0
 ARG POWERSHELL_VERSION=7.6.4
-ARG DART_VERSION=3.12.2
 ARG RUBY_VERSION=3.4.10
 ARG RUBY_API_VERSION=3.4.0
 ARG RUBY_SHA256=6f32ad662baafc228d12030dbcd284f83b034dd4337b300dc84ac74d11a1eb68
@@ -149,10 +148,10 @@ RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-down
         --strip-components=1
 
 ENV FLUTTER_ROOT=/opt/flutter
-ENV PATH="${PATH}:${FLUTTER_ROOT}/bin"
+ENV FLUTTER_SUPPRESS_ANALYTICS=true
+ENV PATH="${FLUTTER_ROOT}/bin:${PATH}"
 
 RUN git config --system --add safe.directory /opt/flutter \
-    && flutter config --no-analytics \
     && flutter precache --web --android \
     && flutter --version
 
@@ -410,10 +409,11 @@ ENV GRADLE_USER_HOME=/opt/gradle-cache
 ENV PATH="${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin"
 
 ENV FLUTTER_ROOT=/opt/flutter
+ENV FLUTTER_SUPPRESS_ANALYTICS=true
 
-# Append Flutter rather than prepend it:
-# the standalone Dart installation therefore remains the default `dart`.
-ENV PATH="${PATH}:${FLUTTER_ROOT}/bin"
+# Flutter ships the Dart SDK it was tested with. Keep both CLIs together
+# instead of mixing Flutter with a separately installed Dart release.
+ENV PATH="${FLUTTER_ROOT}/bin:${PATH}"
 
 
 # --------------------------------------------------------------------
@@ -625,24 +625,6 @@ RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-down
 
 RUN curl -qsL 'https://install.pwndbg.re' \
     | sh -s -- -t pwndbg-gdb
-
-
-# --------------------------------------------------------------------
-# Standalone Dart SDK
-# --------------------------------------------------------------------
-
-ARG DART_VERSION
-
-RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-downloads \
-    set -eux; \
-    deb=/var/cache/hackschule-downloads/dart_${DART_VERSION}-1_amd64.deb; \
-    if [ ! -s "$deb" ]; then \
-        wget -q \
-            "https://storage.googleapis.com/dart-archive/channels/stable/release/${DART_VERSION}/linux_packages/dart_${DART_VERSION}-1_amd64.deb" \
-            -O "${deb}.tmp"; \
-        mv "${deb}.tmp" "$deb"; \
-    fi; \
-    dpkg -i "$deb"
 
 
 # --------------------------------------------------------------------

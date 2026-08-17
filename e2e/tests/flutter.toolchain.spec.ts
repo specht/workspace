@@ -82,7 +82,20 @@ test(
             'Flutter version check',
           );
           expect(flutter.stdout).toContain(
-            'Flutter',
+            'Flutter 3.47.0',
+          );
+
+          const flutterEnvironment = await run(
+            [
+              'test "$(command -v flutter)" = /opt/flutter/bin/flutter',
+              'test "$(command -v dart)" = /opt/flutter/bin/dart',
+              'test "$FLUTTER_SUPPRESS_ANALYTICS" = true',
+            ].join(' && '),
+          );
+
+          expectSuccess(
+            flutterEnvironment,
+            'Flutter PATH and analytics configuration',
           );
 
           const androidSdk = await run(
