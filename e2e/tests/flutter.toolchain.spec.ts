@@ -108,6 +108,17 @@ test(
             androidSdk,
             'managed Android SDK check',
           );
+
+          const gradleCache = await run(
+            '[ -n "$GRADLE_USER_HOME" ] && ' +
+            '[ -d "$GRADLE_USER_HOME" ] && ' +
+            '[ -w "$GRADLE_USER_HOME" ]',
+          );
+
+          expectSuccess(
+            gradleCache,
+            'writable Gradle cache check',
+          );
         },
       );
 

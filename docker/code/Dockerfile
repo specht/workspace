@@ -365,9 +365,9 @@ COPY --link --from=android-sdk \
     /opt/android-sdk \
     /opt/android-sdk
 
-COPY --link --from=flutter-android \
-    /opt/gradle-cache \
-    /opt/gradle-cache
+COPY --link --chmod=a+rwX --from=flutter-android \
+     /opt/gradle-cache \
+     /opt/gradle-cache
 
 COPY --link --from=raylib-web \
     /opt/emsdk \
