@@ -31,7 +31,7 @@ function sleep(seconds) {
 
 const CONTENT_ROOT = '/content';
 const USER_ROOT = '/user';
-const LOCAL_GIT_ROOT = process.env.TUTORIAL_SCREENSHOT_LOCAL_GIT_ROOT || '/local-git';
+const GIT_CACHE_ROOT = process.env.TUTORIAL_SCREENSHOT_GIT_CACHE_ROOT || '/git-cache';
 const BASE_URL = process.env.TUTORIAL_SCREENSHOT_BASE_URL || 'http://workspace.test:8025';
 const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'screenshots@example.com';
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
@@ -308,23 +308,17 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
 
         const actionCount = recipe.actions.length;
         let match;
-        if ((match = line.match(/^clone-start:\s*(\S+)\s+<-\s+local:(.+?)\s+@\s*(\S+)$/))) {
-            const commit = match[3].trim();
-            if (!/^(?:[0-9a-f]{7}|[0-9a-f]{40})$/i.test(commit)) {
+        if ((match = line.match(/^clone-start:\s*(\S+)\s+@\s*(\S+)$/))) {
+            const commit = match[2].trim();
+            if (!/^[0-9a-f]{40}$/i.test(commit)) {
                 throw withSourceError(
-                    new Error(
-                        `Local clone commit must be exactly 7 or 40 hexadecimal characters: ${commit}`,
-                    ),
+                    new Error(`Pinned clone commit must be a full 40-character SHA-1: ${commit}`),
                     source,
                 );
             }
             recipe.actions.push({
                 type: 'clone-start',
                 url: match[1].trim(),
-                localRepo: valueAtSource(
-                    source,
-                    () => safeRelativePath(match[2].trim()),
-                ),
                 commit: commit.toLowerCase(),
             });
         } else if ((match = line.match(/^clone-start:\s*(.+)$/))) {
@@ -1001,90 +995,137 @@ async function closeFolder() {
     await workspace.waitForTimeout(250);
 }
 
-async function prepareLocalCloneSource(url, localRepo, commit) {
-    const localRoot = path.resolve(LOCAL_GIT_ROOT);
-    const source = path.resolve(localRoot, safeRelativePath(localRepo));
-    if (
-        source !== localRoot &&
-        !source.startsWith(`${localRoot}${path.sep}`)
-    ) {
-        throw new Error(`Local clone source escaped ${LOCAL_GIT_ROOT}: ${localRepo}`);
-    }
-
-    let sourceStat;
+async function resolveCachedCommit(repository, commit) {
     try {
-        sourceStat = await fs.stat(source);
-    } catch (error) {
-        if (error?.code === 'ENOENT') {
-            throw new Error(`Local clone repository does not exist: ${localRepo}`);
-        }
-        throw error;
-    }
-    if (!sourceStat.isDirectory()) {
-        throw new Error(`Local clone repository is not a directory: ${localRepo}`);
-    }
-
-    const git = async args => execFileAsync(
-        'git',
-        ['-c', `safe.directory=${source}`, ...args],
-        { maxBuffer: 10 * 1024 * 1024 },
-    );
-
-    let fullCommit;
-    try {
-        const result = await git(['-C', source, 'rev-parse', '--verify', `${commit}^{commit}`]);
-        fullCommit = result.stdout.trim().toLowerCase();
-    } catch (error) {
-        const detail = `${error.stderr || error.message}`.trim();
-        throw new Error(
-            `Could not resolve local clone commit ${commit} in ${localRepo}: ${detail}`,
+        const result = await execFileAsync(
+            'git',
+            ['--git-dir', repository, 'rev-parse', '--verify', `${commit}^{commit}`],
+            { maxBuffer: 20 * 1024 * 1024 },
         );
+        const fullCommit = result.stdout.trim().toLowerCase();
+        return /^[0-9a-f]{40}$/.test(fullCommit) ? fullCommit : null;
+    } catch {
+        return null;
     }
-    if (!/^[0-9a-f]{40}$/.test(fullCommit)) {
-        throw new Error(`Git returned an invalid commit for ${localRepo}: ${fullCommit}`);
+}
+
+async function preparePinnedCloneSource(url, commit) {
+    await fs.mkdir(GIT_CACHE_ROOT, { recursive: true });
+
+    const repositoryId = sha256(url).slice(0, 24);
+    const cachedRepository = path.join(GIT_CACHE_ROOT, `${repositoryId}.git`);
+    let cacheExists = false;
+
+    try {
+        const stat = await fs.stat(cachedRepository);
+        if (!stat.isDirectory()) {
+            throw new Error(`Git cache path is not a directory: ${cachedRepository}`);
+        }
+        cacheExists = true;
+    } catch (error) {
+        if (error?.code !== 'ENOENT') throw error;
+    }
+
+    if (!cacheExists) {
+        const temporary = `${cachedRepository}.tmp-${process.pid}-${crypto.randomBytes(6).toString('hex')}`;
+        console.log(`Tutorial screenshot Git cache: cloning ${url}`);
+        try {
+            await execFileAsync(
+                'git',
+                ['clone', '--quiet', '--mirror', url, temporary],
+                { maxBuffer: 20 * 1024 * 1024 },
+            );
+            await fs.rename(temporary, cachedRepository);
+            cacheExists = true;
+        } catch (error) {
+            await fs.rm(temporary, { recursive: true, force: true }).catch(() => {});
+            const detail = `${error.stderr || error.message}`.trim();
+            throw new Error(`Could not populate Git cache for ${url}: ${detail}`);
+        }
+    }
+
+    let fullCommit = await resolveCachedCommit(cachedRepository, commit);
+    if (fullCommit) {
+        console.log(
+            `Tutorial screenshot Git cache hit: ${url} @ ${fullCommit.slice(0, 12)}`,
+        );
+    } else {
+        console.log(
+            `Tutorial screenshot Git cache miss for ${commit.slice(0, 12)}; refreshing ${url}`,
+        );
+        try {
+            await execFileAsync(
+                'git',
+                ['--git-dir', cachedRepository, 'fetch', '--quiet', '--prune', 'origin'],
+                { maxBuffer: 20 * 1024 * 1024 },
+            );
+        } catch (error) {
+            const detail = `${error.stderr || error.message}`.trim();
+            throw new Error(`Could not refresh Git cache for ${url}: ${detail}`);
+        }
+
+        fullCommit = await resolveCachedCommit(cachedRepository, commit);
+        if (!fullCommit) {
+            throw new Error(
+                `Pinned commit ${commit} was not found in ${url} after refreshing the cache`,
+            );
+        }
     }
 
     let branch = 'tutorial-screenshot';
     try {
-        const result = await git(['-C', source, 'symbolic-ref', '--quiet', '--short', 'HEAD']);
+        const result = await execFileAsync(
+            'git',
+            ['--git-dir', cachedRepository, 'symbolic-ref', '--quiet', '--short', 'HEAD'],
+        );
         if (result.stdout.trim()) branch = result.stdout.trim();
     } catch {
-        // Detached local repositories use the deterministic fallback branch.
+        // Repositories without a symbolic HEAD use the deterministic fallback.
     }
 
     const workspaceRoot = screenshotWorkspaceRoot();
-    const cacheRoot = path.join(workspaceRoot, '.tutorial-screenshot-git');
-    const cacheId = sha256(`${url}\0${localRepo}\0${fullCommit}`).slice(0, 16);
-    const target = path.join(cacheRoot, `${cacheId}.git`);
-    const workspaceTarget = `/workspace/.tutorial-screenshot-git/${cacheId}.git`;
+    const workspaceCacheRoot = path.join(workspaceRoot, '.tutorial-screenshot-git');
+    const sourceId = sha256(`${url}\0${fullCommit}`).slice(0, 16);
+    const target = path.join(workspaceCacheRoot, `${sourceId}.git`);
+    const workspaceTarget = `/workspace/.tutorial-screenshot-git/${sourceId}.git`;
     const localUrl = `file://${workspaceTarget}`;
     const gitConfig = path.join(workspaceRoot, '.gitconfig');
 
-    await fs.mkdir(cacheRoot, { recursive: true });
+    await fs.mkdir(workspaceCacheRoot, { recursive: true });
     await fs.rm(target, { recursive: true, force: true });
 
     try {
-        await git(['clone', '--quiet', '--bare', source, target]);
-        await execFileAsync('git', ['--git-dir', target, 'update-ref', `refs/heads/${branch}`, fullCommit]);
+        await execFileAsync('git', ['init', '--quiet', '--bare', target]);
+        await execFileAsync(
+            'git',
+            [
+                '--git-dir', target,
+                'fetch', '--quiet', cachedRepository,
+                `${fullCommit}:refs/heads/${branch}`,
+            ],
+            { maxBuffer: 20 * 1024 * 1024 },
+        );
         await execFileAsync('git', ['--git-dir', target, 'symbolic-ref', 'HEAD', `refs/heads/${branch}`]);
         await execFileAsync('git', ['config', '--file', gitConfig, 'protocol.file.allow', 'always']);
         await execFileAsync('git', ['config', '--file', gitConfig, `url.${localUrl}.insteadOf`, url]);
-        await execFileAsync('chown', ['-R', '1000:1000', cacheRoot]);
+        await execFileAsync('chown', ['-R', '1000:1000', workspaceCacheRoot]);
         await fs.chown(gitConfig, 1000, 1000).catch(() => {});
     } catch (error) {
         const detail = `${error.stderr || error.message}`.trim();
-        throw new Error(`Could not prepare local clone ${localRepo}@${commit}: ${detail}`);
+        throw new Error(
+            `Could not prepare pinned clone ${url}@${fullCommit.slice(0, 12)}: ${detail}`,
+        );
     }
 
     console.log(
-        `Tutorial screenshot Git clone uses ${localRepo}@${fullCommit.slice(0, 12)} for ${url}`,
+        `Tutorial screenshot Git clone uses cached ${url} @ ${fullCommit.slice(0, 12)}`,
     );
 }
 
 async function cloneStart(action) {
-    const { url, localRepo, commit } = action;
-    if (localRepo) {
-        await prepareLocalCloneSource(url, localRepo, commit);
+    const { url, commit } = action;
+    if (commit) {
+        await preparePinnedCloneSource(url, commit);
     }
 
     const cloneButton = workspace.getByText('Clone Repository', { exact: true }).first();

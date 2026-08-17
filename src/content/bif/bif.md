@@ -37,7 +37,7 @@ Bestätige anschließend mit <kbd>Enter</kbd>.
 
 <!-- tutorial-screenshot
 # Clone Repository mit eingetragener BIF-URL
-clone-start: https://github.com/specht/bif.git
+clone-start: https://github.com/specht/bif.git @ b5215fa72545f05f00d2ba23865c4e2eeff691a2
 crop-bottom: 67%
 -->
 
@@ -480,6 +480,7 @@ Sobald du den Schlüssel besitzt, bieten wir stattdessen eine passende Frage an:
 
 `3.md` sieht damit vollständig so aus:
 
+<!-- screenshot-code: 3-cond -->
 ```markdown_wrap
 Im Büro sitzt Frau Neumann an einem Schreibtisch.
 
@@ -518,6 +519,7 @@ Jetzt soll der Schlüssel auch außerhalb des Büros eine Folge haben.
 
 Erstelle die Datei `5.md`:
 
+<!-- screenshot-code: 5-cond -->
 ```markdown_wrap
 Der Schlüssel passt.
 
@@ -528,6 +530,7 @@ Im Materialschrank liegt deine Projektmappe zwischen zwei Kartons. Du steckst si
 
 Öffne anschließend `2.md`. Auch der Flur kann auf den gespeicherten Zustand reagieren. Ersetze den Inhalt durch:
 
+<!-- screenshot-code: 2-cond -->
 ```markdown_wrap
 Du stehst in einem leeren Flur. Links ist ein kleines Büro. Daneben führt eine Tür ins Treppenhaus.
 
@@ -556,7 +559,26 @@ Starte die Geschichte neu und probiere es aus:
 
 Jetzt verändert sich die Beschreibung des Flurs und die neue Entscheidung erscheint.
 
-<!-- Screenshot: Flur ohne Schlüssel -->
+<!-- tutorial-screenshot
+write-file: pages-starter/2.md <- previous-code (2-cond)
+write-file: pages-starter/3.md <- previous-code (3-cond)
+write-file: pages-starter/5.md <- previous-code (5-cond)
+wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/2.md
+preview-reload
+hold: 1.5s selector:.story-restart-control
+tab: preview
+zoom: 1.25
+click: Fit graph
+sleep: 0.5
+click: Gehe in den Flur.
+wait-for-text: Sieh im Büro nach.
+click: Sieh im Büro nach.
+wait-for-text: Frage nach dem Materialschrank.
+click: Nimm den Schlüssel.
+wait-for-text: Gehe zurück in den Flur.
+click: Gehe zurück in den Flur.
+sleep: 0.5
+-->
 
 <img class='full full-shadow scroll-right' src='locked-door.webp' alt='Im Flur erscheint mit gespeichertem Schlüssel die neue Entscheidung „Öffne den Materialschrank“.'>
 

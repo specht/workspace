@@ -19,10 +19,10 @@ TUTORIAL_SCREENSHOT = {
     :height => 929,
     :zoom => 1.5,
     :desktop_scale_factor => 1.203125,
-    :local_git_root => File.expand_path(ENV.fetch('TUTORIAL_SCREENSHOT_LOCAL_GIT_ROOT', '..'), __dir__),
 }.freeze
 LOGS_PATH = DEVELOPMENT ? './logs' : "/home/#{ENV['USER']}/logs/#{PROJECT_NAME}"
 DATA_PATH = DEVELOPMENT ? './data' : "/mnt/hackschule/#{PROJECT_NAME}"
+TUTORIAL_SCREENSHOT_GIT_CACHE_PATH = File.join(DATA_PATH, 'tutorial-screenshot-git-cache')
 MYSQL_DATA_PATH = File.join(DATA_PATH, 'mysql')
 NEO4J_USER_DATA_PATH = File.join(DATA_PATH, 'neo4j_user')
 USER_PATH = File.join(DATA_PATH, 'user')
@@ -124,7 +124,7 @@ if DEVELOPMENT && PROFILE.include?(:dynamic) && PROFILE.include?(:static)
         :volumes => [
             './src/content:/content',
             "#{USER_PATH}:/user",
-            "#{TUTORIAL_SCREENSHOT[:local_git_root]}:/local-git:ro",
+            "#{TUTORIAL_SCREENSHOT_GIT_CACHE_PATH}:/git-cache",
         ],
         :environment => {
             'TUTORIAL_SCREENSHOT_BASE_URL' => WEB_ROOT,
@@ -135,7 +135,6 @@ if DEVELOPMENT && PROFILE.include?(:dynamic) && PROFILE.include?(:static)
             'TUTORIAL_SCREENSHOT_HEIGHT' => TUTORIAL_SCREENSHOT[:height].to_s,
             'TUTORIAL_SCREENSHOT_ZOOM' => TUTORIAL_SCREENSHOT[:zoom].to_s,
             'TUTORIAL_SCREENSHOT_DESKTOP_SCALE_FACTOR' => TUTORIAL_SCREENSHOT[:desktop_scale_factor].to_s,
-            'TUTORIAL_SCREENSHOT_LOCAL_GIT_ROOT' => '/local-git',
         },
         :extra_hosts => [
             'host.docker.internal:host-gateway',
@@ -277,6 +276,7 @@ end
 FileUtils::mkpath(USER_PATH)
 FileUtils::mkpath(INTERNAL_PATH)
 FileUtils::mkpath(INVITATIONS_PATH)
+FileUtils::mkpath(TUTORIAL_SCREENSHOT_GIT_CACHE_PATH) if DEVELOPMENT
 if DEVELOPMENT
     File.write(
         File.join(INVITATIONS_PATH, '_tutorial_screenshots.txt'),

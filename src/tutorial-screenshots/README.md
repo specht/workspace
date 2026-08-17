@@ -65,7 +65,7 @@ hide-right-sidebar
 show-bottom-panel
 hide-bottom-panel
 clone-start: URL
-clone-start: URL <- local:REPO @ COMMIT
+clone-start: URL @ SHA1
 clone-confirm-url
 clone-accept-destination
 clone-open
@@ -92,29 +92,29 @@ crop-top: PERCENT%
 crop-bottom: PERCENT%
 ```
 
-For tutorials that demonstrate cloning a public URL, development can use a local
-repository for the actual Git transport while keeping the URL shown to students:
+Clone screenshots can pin the public repository to a full 40-character SHA-1:
 
 ```text
-clone-start: https://github.com/specht/bif.git <- local:bif @ b5215fa
+clone-start: https://github.com/specht/bif.git @ b5215fa72545f05f00d2ba23865c4e2eeff691a2
 ```
 
-`local:bif` means the `bif` repository below the local Git root. By default that
-root is the parent directory of the Workspace checkout, which is convenient when
-repositories such as `workspace` and `bif` are siblings. Override it when needed
-before generating `docker-compose.yaml`:
+Pinned repositories are cached automatically below
+`data/tutorial-screenshot-git-cache`. The first pinned use of a URL creates a
+mirror in that cache. On later runs the generator checks whether the requested
+commit already exists locally; if it does, the remote Git server is not contacted.
+When a new pinned commit is requested, the existing mirror is refreshed once and
+the commit is checked again.
 
-```bash
-TUTORIAL_SCREENSHOT_LOCAL_GIT_ROOT=/path/to/repos ./config.rb up -d
-```
+For the actual VS Code interaction the generator makes a private bare copy from
+the cache inside the disposable screenshot Workspace, points its default branch at
+the pinned commit, and configures Git's `insteadOf` rewriting. VS Code therefore
+still shows and clones the public URL entered in Quick Input even though the Git
+transport is local. The persistent cache survives screenshot Workspace resets and
+screenshot-generator rebuilds. It can be deleted at any time to force a clean
+remote mirror on the next pinned clone.
 
-The commit must be either exactly seven hexadecimal characters or a full
-40-character SHA-1. The generator resolves it in the local repository, makes a
-private bare copy inside the disposable screenshot Workspace, points that copy's
-HEAD branch at the pinned commit, and configures Git's `insteadOf` rewriting so
-VS Code still clones the public URL entered in Quick Input. No network request is
-made for that clone. The local Git root is mounted read-only into the screenshot
-generator.
+Unpinned `clone-start: URL` keeps its existing behavior and clones from the remote
+normally.
 
 `click` matches either an accessible button or an accessible link with the exact
 given name in the preview tab. Prefix the target with `selector:` to address a

@@ -7,54 +7,59 @@
       "output_sha256": "da63c6b8fcd1e01064dd95defc6da8b91731ce26d3154a6a0c52ece462b6842f"
     },
     "git-clone.webp": {
-      "state_hash": "4d5f546d42fefd4dee525bedab9f6a69dd31e7571e39894e757fd67a80133a54",
+      "state_hash": "6f451905778342a90f7a3e319180c3130eb4f5cbc6e3e64cac8f63d9cef492a3",
       "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
       "output_sha256": "b1a715cd75ba309f593fe4fab82f89dd03e05d71628712012f07f70897388ab1"
     },
     "confirm-clone-path.webp": {
-      "state_hash": "6c91b6fd472867fd48e815fc1e0eba5ca31b63ca1b36b7eaec1cace9884588e1",
+      "state_hash": "e5e1fc1fa7c18378fa877ef2199ee5b1c22f1220ddb7ba0d14b4f92bd894c5dd",
       "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
-      "output_sha256": "c88f55d48d35a919768478f0675c1926acb2b1bde531a8d6206db0263bdcee16"
+      "output_sha256": "ce8b4bf3e08046ddfc7e5a7f1ceb38b256bcf50bc44c9d678b9940665bf5e1a7"
     },
     "open-yes-no.webp": {
-      "state_hash": "8776acfe306fe4db1c097a62b46ccec9bd817bd821f8d362cb2124d4109e16b9",
+      "state_hash": "549b00bd94299605ca516bbc2526d95b74e4bba6858f8218abcf96296ee9dac6",
       "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
       "output_sha256": "8419a94fe58aceefa8caaf0cb1d71c701bc3628e0698000ca1e71ca77f9bae98"
     },
     "bif-project.webp": {
-      "state_hash": "8cf5107de8dd8fef9665496a307743f3fbde90684c254534263f448c91c0f279",
+      "state_hash": "749f29c13cbf83cf06d8a2bccd2f25ae949cc0d76c6fd75b66b2b56866469c85",
       "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
       "output_sha256": "cbd667995e5d450044469ba65e1b7f85ae8329afc1fde3c72c6171c9f2c0aba2"
     },
     "story-begin.webp": {
-      "state_hash": "b790e7402b1a5c3be25079db7ae6abd32b49cc7d2af8ee03125f6e4112e0bfb2",
+      "state_hash": "6033741fe2bcb5280d69a2cdd0e6601eb04a907d42e24bfd1e4aa2097ed53f25",
       "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
-      "output_sha256": "4dfe061b2f472cfe032e4dc9a98234400a5764b1713de0aa0137bc9e64e0a983"
+      "output_sha256": "024d7f5502a8e1e9e677293acfd244f2d944d1e1f9e2c9175780d5134ab65ecc"
     },
     "first-page.webp": {
-      "state_hash": "354dbf8417f183ce5e6fd675cff2c69e842d5066a6937b75f301ebc2a002ceba",
+      "state_hash": "d6f9e4bb682d6e71ea56723ac89ce30cb305122593cf4f91c1a17b43a4c91c17",
       "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
-      "output_sha256": "d103c1708e34695fa76c5ecaa42a1881da2d789e8176e2366e52d06f97ffca0c"
+      "output_sha256": "ef162407194078052867c32aa4c36913e27ff86253636f39935e6241817a1032"
     },
     "unreachable-page.webp": {
-      "state_hash": "724faaa8b89fa020c42773955f1aeba5b0a47521666959075fb875dd72781391",
+      "state_hash": "9d34358f75baab45d0ce2cb98c29d89ac810ee67b5e8af21e2ea5b8f5bf67bef",
       "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
       "output_sha256": "f7d927398bad36fb2473323f6a1a0cd553b77b1f106c7ef0da25f1614ea772e9"
     },
     "two-pages.webp": {
-      "state_hash": "250eff7ab3193a0231f2ca421cbdbf0d61a46899f26c8491b42f41cb98f47027",
+      "state_hash": "b34501043092128b0926fe5c2f2fe40f866c4441a8524f4e5794a25977e47aad",
       "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
       "output_sha256": "12bff2489f2152198f1c29e5ab894cc9f3bac72d16017086dade9597249025be"
     },
     "branching-story.webp": {
-      "state_hash": "57fea20356cc538db6c164be91305d78092a96a89f5e024f84b947dd7303f0f3",
+      "state_hash": "cca80adc40b5cc4d689ad5eabd7f15171409787fc3f37a926d64bafde43b4cf2",
       "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
       "output_sha256": "65b2cbd7ead6b9711dfe08a8ebb4f3702e2fe251917ba514e21cda73fd18f1d6"
     },
     "local-choice.webp": {
-      "state_hash": "43d9a976c8b04dde060e07d1d69e7713eb3d9d72bc671818f15e7d88ec447b56",
+      "state_hash": "4ac96e61c5aa064c46c5d496a33047b914f8ad4195e9507ca416087f97d02cdf",
       "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
       "output_sha256": "2be626b080abdd3d9d0b76e8b1cfb8618ccf9d5d84cb3565cebe1be1f46ca7d6"
+    },
+    "locked-door.webp": {
+      "state_hash": "1accfc7c5e4d1269ed5d85bd9279462ba105d10c1dde1f8b66e9d286934a1c0d",
+      "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
+      "output_sha256": "6aea1fbb268ca3bd74a2ad59c4a47fe60f55579ddb33ab7bb6fe2e573d306f02"
     }
   }
 }
