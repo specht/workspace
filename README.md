@@ -12,15 +12,15 @@ Die veröffentlichten Tutorials findest du direkt auf der Startseite des Workspa
 
 Der Workspace bündelt bewusst unterschiedliche Bereiche der Informatik in einer gemeinsamen Umgebung. Dazu gehören unter anderem:
 
-- Programmierung in zahlreichen Sprachen – von [BASIC (Bywater BASIC)](https://sourceforge.net/projects/bwbasic/), [Pascal (Free Pascal)](https://www.freepascal.org/) und C mit [GCC](https://gcc.gnu.org/) oder [Clang](https://clang.llvm.org/) bis [Python](https://www.python.org/), [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript), [Rust](https://www.rust-lang.org/) und weiteren
-- Webentwicklung mit [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML), [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS), [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript), modernen Frameworks und Shared Live Apps zum Teilen laufender Projekte
-- Computergrafik mit [Pixelflow Canvas](https://github.com/specht/pixelflow_canvas_ruby), [PixelRAM](https://github.com/specht/pixelram) und weiteren Werkzeugen
-- interaktive Geschichten mit [BIF](https://github.com/specht/bif)
-- relationale und Graphdatenbanken mit [MySQL](https://www.mysql.com/), [Neo4j](https://neo4j.com/), SQL und [Cypher](https://neo4j.com/docs/cypher-manual/current/)
-- App-Entwicklung mit [Flutter](https://flutter.dev/) für Web und [Android](https://developer.android.com/), einschließlich APK-Builds
-- Kommandozeile, Dateien, TCP/IP und [Git](https://git-scm.com/)
-- wissenschaftliche Dokumente mit [LaTeX](https://www.latex-project.org/)
-- HTML-Präsentationen mit [shower.js](https://github.com/shower/shower)
+- Programmierung in zahlreichen Sprachen – von BASIC, Pascal und C bis Python, JavaScript, Rust und weiteren
+- Webentwicklung mit HTML, CSS, JavaScript, modernen Frameworks und Shared Live Apps zum Teilen laufender Projekte
+- Computergrafik mit Pixelflow Canvas, PixelRAM und weiteren Werkzeugen
+- interaktive Geschichten mit BIF
+- relationale und Graphdatenbanken mit MySQL, Neo4j, SQL und Cypher
+- App-Entwicklung mit Flutter für Web und Android, einschließlich APK-Builds
+- Kommandozeile, Dateien, TCP/IP und Git
+- wissenschaftliche Dokumente mit LaTeX
+- HTML-Präsentationen mit shower.js
 
 Direkte Netzwerkverbindungen zwischen studentischen Workspaces sind bewusst eingeschränkt. Für Netzwerkübungen steht TCP-Port 1234 zur Verfügung; laufende Webanwendungen lassen sich kontrolliert über Shared Live Apps teilen.
 
