@@ -19,7 +19,6 @@ TUTORIAL_SCREENSHOT = {
     :height => 929,
     :zoom => 1.5,
     :desktop_scale_factor => 1.203125,
-    :color_scheme => 'dark',
 }.freeze
 LOGS_PATH = DEVELOPMENT ? './logs' : "/home/#{ENV['USER']}/logs/#{PROJECT_NAME}"
 DATA_PATH = DEVELOPMENT ? './data' : "/mnt/hackschule/#{PROJECT_NAME}"
@@ -131,7 +130,6 @@ if DEVELOPMENT && PROFILE.include?(:dynamic) && PROFILE.include?(:static)
             'TUTORIAL_SCREENSHOT_HEIGHT' => TUTORIAL_SCREENSHOT[:height].to_s,
             'TUTORIAL_SCREENSHOT_ZOOM' => TUTORIAL_SCREENSHOT[:zoom].to_s,
             'TUTORIAL_SCREENSHOT_DESKTOP_SCALE_FACTOR' => TUTORIAL_SCREENSHOT[:desktop_scale_factor].to_s,
-            'TUTORIAL_SCREENSHOT_COLOR_SCHEME' => TUTORIAL_SCREENSHOT[:color_scheme],
         },
         :extra_hosts => [
             'host.docker.internal:host-gateway',

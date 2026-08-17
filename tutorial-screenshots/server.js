@@ -25,12 +25,8 @@ function positiveNumberEnv(name, fallback) {
     return value;
 }
 
-function colorSchemeEnv(name, fallback) {
-    const value = (process.env[name] || fallback).trim().toLowerCase();
-    if (value !== 'light' && value !== 'dark') {
-        throw new Error(`${name} must be "light" or "dark"`);
-    }
-    return value;
+function sleep(seconds) {
+    return new Promise(resolve => setTimeout(resolve, seconds * 1000));
 }
 
 const CONTENT_ROOT = '/content';
@@ -40,7 +36,7 @@ const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'screenshots@e
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
-const GENERATOR_VERSION = 9;
+const GENERATOR_VERSION = 10;
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
 const DEFAULT_PROFILE = Object.freeze({
@@ -48,7 +44,6 @@ const DEFAULT_PROFILE = Object.freeze({
     height: positiveIntegerEnv('TUTORIAL_SCREENSHOT_HEIGHT', 929),
     zoom: positiveNumberEnv('TUTORIAL_SCREENSHOT_ZOOM', 1.5),
     desktopScaleFactor: positiveNumberEnv('TUTORIAL_SCREENSHOT_DESKTOP_SCALE_FACTOR', 1.203125),
-    colorScheme: colorSchemeEnv('TUTORIAL_SCREENSHOT_COLOR_SCHEME', 'dark'),
 });
 const WORKBENCH_PARTS = Object.freeze({
     'left-sidebar': {
@@ -227,11 +222,30 @@ function parseRecipe(text) {
             recipe.actions.push({ type: 'click', label: match[1].trim() });
         } else if ((match = line.match(/^press:\s*(.+)$/))) {
             recipe.actions.push({ type: 'press', key: match[1].trim() });
+        } else if ((match = line.match(/^sleep:\s*(.+)$/))) {
+            const seconds = Number(match[1].trim());
+            if (!Number.isFinite(seconds) || seconds < 0 || seconds > 300) {
+                throw new Error(`sleep must be between 0 and 300 seconds: ${match[1]}`);
+            }
+            recipe.actions.push({ type: 'sleep', seconds });
+        } else if ((match = line.match(/^wait-for-text:\s*(.+)$/))) {
+            const text = match[1].trim();
+            recipe.actions.push({ type: 'wait-for-text', text });
         } else if ((match = line.match(/^write-file:\s*(.+?)\s*<-\s*(previous-code|code:.+)$/))) {
             recipe.actions.push({
                 type: 'write-file',
                 path: safeRelativePath(match[1].trim()),
                 source: match[2].trim(),
+            });
+        } else if ((match = line.match(/^wait-for-file:\s*(.+)$/))) {
+            recipe.actions.push({
+                type: 'wait-for-file',
+                path: safeRelativePath(match[1].trim()),
+            });
+        } else if ((match = line.match(/^close-tab:\s*(.+)$/))) {
+            recipe.actions.push({
+                type: 'close-tab',
+                label: match[1].trim(),
             });
         } else if ((match = line.match(/^tab:\s*(workspace|preview)$/))) {
             recipe.tab = match[1];
@@ -371,7 +385,6 @@ async function ensureContext() {
     context = await browser.newContext({
         viewport: { width: metrics.width, height: metrics.height },
         deviceScaleFactor: metrics.deviceScaleFactor,
-        colorScheme: DEFAULT_PROFILE.colorScheme,
         acceptDownloads: false,
     });
     dashboard = await context.newPage();
@@ -454,7 +467,7 @@ async function waitForWorkspaceStart() {
         if (result.status === 'failed') {
             throw new Error(`Tutorial screenshot Workspace failed to start: ${result.error || 'unknown error'}`);
         }
-        await new Promise(resolve => setTimeout(resolve, 250));
+        await sleep(0.25);
     }
     throw new Error('Timed out waiting for tutorial screenshot Workspace to start');
 }
@@ -484,21 +497,6 @@ async function waitForWorkspaceWorkbench(page, workspaceUrl) {
                         state: 'visible',
                         timeout: Math.min(30_000, remaining),
                     });
-                    await page.waitForFunction(
-                        colorScheme => {
-                            const workbench = document.querySelector('.monaco-workbench');
-                            if (!workbench) return false;
-                            if (colorScheme === 'dark') {
-                                return workbench.classList.contains('vs-dark') ||
-                                    workbench.classList.contains('hc-black');
-                            }
-                            return workbench.classList.contains('vs') ||
-                                workbench.classList.contains('hc-light');
-                        },
-                        DEFAULT_PROFILE.colorScheme,
-                        { timeout: Math.min(30_000, remaining) },
-                    );
-                    await page.waitForTimeout(250);
                     return;
                 } catch (error) {
                     lastError = error.message;
@@ -535,9 +533,9 @@ async function waitForWorkspaceWorkbench(page, workspaceUrl) {
 }
 
 async function waitForFreshWorkspaceUi(page) {
-    // `.monaco-workbench` and the theme become available before all built-in
-    // contributions have finished starting. In particular, Explorer's
-    // "Clone Repository" welcome action appears a little later.
+    // `.monaco-workbench` becomes available before all built-in contributions
+    // have finished starting. In particular, Explorer's "Clone Repository"
+    // welcome action appears a little later.
     await page.getByText('NO FOLDER OPENED', { exact: false }).first().waitFor({
         state: 'visible',
         timeout: 30_000,
@@ -547,6 +545,47 @@ async function waitForFreshWorkspaceUi(page) {
         timeout: 30_000,
     });
     await page.waitForTimeout(250);
+}
+
+async function waitForWorkbenchThemeSettled(page) {
+    const deadline = Date.now() + 30_000;
+    const stableForMs = 1_000;
+    let lastSignature = null;
+    let stableSince = null;
+
+    while (Date.now() < deadline) {
+        const state = await page.locator('.monaco-workbench').evaluate(workbench => {
+            const themeClass = ['hc-black', 'hc-light', 'vs-dark', 'vs']
+                .find(name => workbench.classList.contains(name));
+            if (!themeClass) return null;
+
+            const style = getComputedStyle(workbench);
+            return {
+                themeClass,
+                backgroundColor: style.backgroundColor,
+                foregroundColor: style.color,
+                editorBackground: style.getPropertyValue('--vscode-editor-background').trim(),
+            };
+        }).catch(() => null);
+
+        if (!state) {
+            lastSignature = null;
+            stableSince = null;
+        } else {
+            const signature = JSON.stringify(state);
+            if (signature !== lastSignature) {
+                lastSignature = signature;
+                stableSince = Date.now();
+            } else if (Date.now() - stableSince >= stableForMs) {
+                console.log(`Tutorial screenshot Workspace theme settled: ${state.themeClass}`);
+                return;
+            }
+        }
+
+        await sleep(0.1);
+    }
+
+    throw new Error('Timed out waiting for the Workspace color theme to settle');
 }
 
 async function freshWorkspace() {
@@ -580,6 +619,7 @@ async function freshWorkspace() {
     await waitForWorkspaceWorkbench(workspace, workspaceUrl);
     await applyViewportProfile(workspace, DEFAULT_PROFILE, DEFAULT_PROFILE.zoom);
     await waitForFreshWorkspaceUi(workspace);
+    await waitForWorkbenchThemeSettled(workspace);
 }
 
 function quickInput(page) {
@@ -768,19 +808,101 @@ async function cloneOpen() {
     );
 }
 
+async function waitForEditorSettled(page) {
+    await page.waitForFunction(
+        () => [...document.querySelectorAll('.monaco-editor .view-lines')]
+            .some(element => {
+                const rect = element.getBoundingClientRect();
+                return rect.width > 0 &&
+                    rect.height > 0 &&
+                    element.querySelector('.view-line');
+            }),
+        null,
+        { timeout: 10_000 },
+    );
+
+    await page.evaluate(() => new Promise((resolve, reject) => {
+        const candidates = [...document.querySelectorAll(
+            '.monaco-editor .view-lines'
+        )];
+
+        const viewLines = candidates.find(element => {
+            const rect = element.getBoundingClientRect();
+            return rect.width > 0 &&
+                rect.height > 0 &&
+                element.querySelector('.view-line');
+        });
+
+        if (!viewLines) {
+            reject(new Error('No visible Monaco editor found'));
+            return;
+        }
+
+        let settleTimer;
+        const timeoutTimer = setTimeout(() => {
+            observer.disconnect();
+            reject(new Error('Editor did not settle'));
+        }, 10_000);
+
+        const settled = () => {
+            clearTimeout(timeoutTimer);
+            observer.disconnect();
+            resolve();
+        };
+
+        const restartSettleTimer = () => {
+            clearTimeout(settleTimer);
+            settleTimer = setTimeout(settled, 400);
+        };
+
+        const observer = new MutationObserver(restartSettleTimer);
+        observer.observe(viewLines, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            characterData: true,
+        });
+
+        restartSettleTimer();
+    }));
+}
+
 async function openFile(relativePath) {
     await workspace.keyboard.press('Control+P');
+
     const input = quickInput(workspace);
     await input.waitFor({ state: 'visible', timeout: 10_000 });
     await input.fill(relativePath);
-    await input.press('Enter');
+
     const basename = path.posix.basename(relativePath);
+    const parent = path.posix.basename(path.posix.dirname(relativePath));
+
     await workspace.waitForFunction(
-        name => [...document.querySelectorAll('.tab .label-name, .tabs-container .label-name')]
-            .some(node => node.textContent?.trim() === name),
+        ({ basename, parent }) =>
+            [...document.querySelectorAll(
+                '.quick-input-list .monaco-list-row'
+            )].some(row => {
+                const text = row.innerText || '';
+                return text.includes(basename) &&
+                    (parent === '.' || text.includes(parent));
+            }),
+        { basename, parent },
+        { timeout: 10_000 },
+    );
+
+    await input.press('Enter');
+    await input.waitFor({ state: 'hidden', timeout: 10_000 });
+
+    await workspace.waitForFunction(
+        name =>
+            [...document.querySelectorAll(
+                '.tab .label-name, .tabs-container .label-name'
+            )].some(node => node.textContent?.trim() === name),
         basename,
         { timeout: 20_000 },
-    ).catch(() => workspace.waitForTimeout(300));
+    );
+
+    await waitForEditorSettled(workspace);
 }
 
 async function goLive() {
@@ -828,6 +950,93 @@ async function writeWorkspaceFile(relativePath, contents) {
     await fs.chown(target, 1000, 1000).catch(() => {});
 }
 
+function screenshotWorkspaceRoot() {
+    return path.join(
+        USER_ROOT,
+        fsTagForEmail(SCREENSHOT_EMAIL),
+        'workspace',
+    );
+}
+
+async function waitForWorkspaceFile(relativePath) {
+    const root = path.resolve(screenshotWorkspaceRoot());
+    const target = path.resolve(root, relativePath);
+
+    if (
+        target !== root &&
+        !target.startsWith(`${root}${path.sep}`)
+    ) {
+        throw new Error(`Workspace path escaped its root: ${relativePath}`);
+    }
+
+    const deadline = Date.now() + 60_000;
+
+    while (Date.now() < deadline) {
+        try {
+            const stat = await fs.stat(target);
+
+            if (stat.isFile()) {
+                return;
+            }
+
+            throw new Error(
+                `wait-for-file path exists but is not a file: ${relativePath}`,
+            );
+        } catch (error) {
+            if (error?.code !== 'ENOENT') throw error;
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    throw new Error(
+        `Timed out waiting for Workspace file: ${relativePath}`,
+    );
+}
+
+async function closeTab(label) {
+    const tabs = workspace.locator('.tabs-container .tab');
+    const count = await tabs.count();
+    let target = null;
+
+    for (let index = 0; index < count; index += 1) {
+        const tab = tabs.nth(index);
+        const name = await tab.locator('.label-name')
+            .textContent()
+            .catch(() => '');
+
+        if (name?.trim() === label) {
+            target = tab;
+            break;
+        }
+    }
+
+    // Already closed is the desired state.
+    if (!target) return;
+
+    await target.hover();
+
+    const closeButton = target.locator('.codicon-close').first();
+
+    if (await closeButton.count()) {
+        await closeButton.click();
+    } else {
+        // Fallback for a tab whose close control is not exposed until active.
+        await target.click();
+        await workspace.keyboard.press('Control+W');
+    }
+
+    await workspace.waitForFunction(
+        expected =>
+            ![...document.querySelectorAll('.tabs-container .tab .label-name')]
+                .some(node => node.textContent?.trim() === expected),
+        label,
+        { timeout: 10_000 },
+    );
+
+    await workspace.waitForTimeout(100);
+}
+
 async function clickPreview(label) {
     if (!preview || preview.isClosed()) throw new Error('No preview tab is open');
     const control = preview.getByRole('button', { name: label, exact: true });
@@ -836,7 +1045,23 @@ async function clickPreview(label) {
     await preview.waitForTimeout(150);
 }
 
-async function executeAction(action) {
+async function waitForText(text, targetTab) {
+    const page = targetTab === 'preview' ? preview : workspace;
+    if (!page || page.isClosed()) {
+        throw new Error(`wait-for-text requests unavailable tab: ${targetTab}`);
+    }
+
+    await page.waitForFunction(
+        expected => {
+            const normalize = value => `${value || ''}`.replace(/\s+/g, ' ').trim();
+            return normalize(document.body?.innerText).includes(normalize(expected));
+        },
+        text,
+        { timeout: 60_000 },
+    );
+}
+
+async function executeAction(action, targetTab) {
     switch (action.type) {
     case 'close-folder': return closeFolder();
     case 'show-left-sidebar': return setWorkbenchPartVisible('left-sidebar', true);
@@ -853,9 +1078,13 @@ async function executeAction(action) {
     case 'open-file': return openFile(action.path);
     case 'go-live': return goLive();
     case 'write-file': return writeWorkspaceFile(action.path, action.contents);
+    case 'wait-for-file': return waitForWorkspaceFile(action.path);
+    case 'close-tab': return closeTab(action.label);
     case 'preview-reload': return previewReload(false);
     case 'preview-reset': return previewReload(true);
     case 'click': return clickPreview(action.label);
+    case 'sleep': return sleep(action.seconds);
+    case 'wait-for-text': return waitForText(action.text, targetTab);
     case 'press': {
         const page = preview && !preview.isClosed() ? preview : workspace;
         return page.keyboard.press(action.key);
@@ -1042,7 +1271,7 @@ async function generateTutorial(payload) {
     let generated = 0;
     for (let index = 0; index < shots.length; index += 1) {
         const shot = shots[index];
-        for (const action of shot.actions) await executeAction(action);
+        for (const action of shot.actions) await executeAction(action, shot.tab);
 
         if (stale[index]) {
             const outputSha256 = await captureShot(shot, tutorialDirectory);

@@ -61,14 +61,19 @@ get_vsix_version() {
     printf '%s\n' "$version"
 }
 
-get_installed_version() {
-    local extension_id="$1"
-
+list_installed_extensions() {
     "$CODE_SERVER" \
         --extensions-dir "$EXT_DIR" \
         --list-extensions \
         --show-versions \
-        2>/dev/null |
+        2>/dev/null
+}
+
+get_installed_version() {
+    local snapshot="$1"
+    local extension_id="$2"
+
+    printf '%s\n' "$snapshot" |
         awk -F '@' -v wanted="$extension_id" '
             tolower($1) == tolower(wanted) {
                 print $2
@@ -77,63 +82,72 @@ get_installed_version() {
         '
 }
 
-install_or_update_extension() {
-    local entry="$1"
-    local vsix="${entry%%|*}"
-    local extension_id="${entry#*|}"
-    local wanted_version
-    local installed_version
-    local verified_version
+# Starting code-server's CLI is relatively expensive. A brand-new workspace used
+# to launch it once to check each extension, once to install it and once again to
+# verify it. Collect the state once, batch all required VSIX installs into a
+# single invocation, then verify the result once.
+if [ -n "$(find "$EXT_DIR" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]; then
+    INSTALLED_EXTENSIONS="$(list_installed_extensions)"
+else
+    INSTALLED_EXTENSIONS=""
+fi
+
+INSTALL_ARGS=()
+EXPECTED_EXTENSIONS=()
+
+for entry in "${EXTENSIONS[@]}"; do
+    vsix="${entry%%|*}"
+    extension_id="${entry#*|}"
 
     if [ ! -f "$vsix" ]; then
         echo "WARNING: VSIX not found: $vsix"
-        return 0
+        continue
     fi
 
     wanted_version="$(get_vsix_version "$vsix")"
-    installed_version="$(get_installed_version "$extension_id")"
+    installed_version="$(get_installed_version "$INSTALLED_EXTENSIONS" "$extension_id")"
+    EXPECTED_EXTENSIONS+=("$extension_id|$wanted_version")
 
     if [ -z "$installed_version" ]; then
         echo "Installing $extension_id version $wanted_version"
-
-        "$CODE_SERVER" \
-            --extensions-dir "$EXT_DIR" \
-            --install-extension "$vsix" \
-            --force \
-            >/dev/null
-
+        INSTALL_ARGS+=(--install-extension "$vsix")
     elif dpkg --compare-versions "$installed_version" ge "$wanted_version"; then
         if [ "$installed_version" = "$wanted_version" ]; then
             echo "$extension_id is already up to date: $installed_version"
         else
             echo "$extension_id is newer than bundled version: $installed_version > $wanted_version"
         fi
-        return 0
-
     else
         echo "Updating $extension_id: $installed_version -> $wanted_version"
-
-        "$CODE_SERVER" \
-            --extensions-dir "$EXT_DIR" \
-            --install-extension "$vsix" \
-            --force \
-            >/dev/null
+        INSTALL_ARGS+=(--install-extension "$vsix")
     fi
+done
 
-    # Verify because this runs unattended during workspace startup.
-    verified_version="$(get_installed_version "$extension_id")"
+if (( ${#INSTALL_ARGS[@]} > 0 )); then
+    "$CODE_SERVER" \
+        --extensions-dir "$EXT_DIR" \
+        "${INSTALL_ARGS[@]}" \
+        --force \
+        >/dev/null
 
-    if [ "$verified_version" != "$wanted_version" ]; then
+    # One verification pass after the whole batch.
+    VERIFIED_EXTENSIONS="$(list_installed_extensions)"
+else
+    VERIFIED_EXTENSIONS="$INSTALLED_EXTENSIONS"
+fi
+
+# Verify all bundled extensions. Newer locally installed versions are accepted,
+# matching the previous behavior.
+for expected in "${EXPECTED_EXTENSIONS[@]}"; do
+    extension_id="${expected%%|*}"
+    wanted_version="${expected#*|}"
+    verified_version="$(get_installed_version "$VERIFIED_EXTENSIONS" "$extension_id")"
+
+    if [ -z "$verified_version" ] || ! dpkg --compare-versions "$verified_version" ge "$wanted_version"; then
         echo "ERROR: Failed to install $extension_id version $wanted_version." >&2
         echo "Installed version is: ${verified_version:-not found}" >&2
-        return 1
+        exit 1
     fi
-
-    echo "Installed $extension_id version $verified_version"
-}
-
-for extension in "${EXTENSIONS[@]}"; do
-    install_or_update_extension "$extension"
 done
 
 chown -R "$WORKSPACE_RUN_USER:$WORKSPACE_RUN_GROUP" "$EXT_DIR"

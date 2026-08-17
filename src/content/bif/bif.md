@@ -71,7 +71,7 @@ clone-accept-destination
 <!-- tutorial-screenshot
 # geöffnetes BIF-Projekt im Explorer
 clone-open
-sleep 2000
+# sleep: 10
 -->
 
 <img class='full' src='bif-project.webp' alt=''>
@@ -82,7 +82,12 @@ Wenn alles geklappt hat, siehst du links im Explorer unter anderem den Ordner `p
 
 Öffne im Explorer den Ordner `pages-starter` und darin die Datei `1.md`.
 
-<!-- Screenshot: 1.md geöffnet -->
+<!-- tutorial-screenshot
+# 1.md geöffnet
+wait-for-file: bif/.story-tools/analysis.json
+open-file: pages-starter/1.md
+close-tab: Welcome
+-->
 
 <img class='full' src='story-begin.webp' alt=''>
 
@@ -117,6 +122,13 @@ Damit du deine Geschichte im Browser ausprobieren kannst, ist im Workspace berei
 Klicke rechts unten auf »Go Live«. Es öffnet sich ein neuer Tab mit deiner Geschichte:
 
 <div style='clear: both;'></div>
+
+<!-- tutorial-screenshot
+# erste BIF-Vorschau
+go-live
+tab: preview
+# zoom: 1.2
+-->
 
 <img class='full full-shadow scroll-right' src='first-page.webp' alt='Der Story-Graph enthält eine Startseite; daneben erscheint der Beginn der Geschichte, allerdings noch ohne Entscheidungen.'>
 

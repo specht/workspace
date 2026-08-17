@@ -62,6 +62,8 @@ preview-reload
 preview-reset
 click: BUTTON TEXT
 press: PlaywrightKey
+sleep: SECONDS
+wait-for-text: TEXT
 
 tab: workspace|preview
 viewport: WIDTHxHEIGHT
@@ -77,15 +79,24 @@ duplicating it in the hidden recipe. `left-sidebar-width` resizes the primary
 sidebar through VS Code's own sash, so the workbench layout reacts exactly as it
 does when the divider is dragged by hand. The width is specified in CSS pixels
 and is intentionally per recipe rather than a global screenshot setting.
+`sleep` pauses recipe execution for the given number of seconds (fractions are
+allowed, up to 300 seconds) and is useful when an application has no better
+observable readiness signal.
+`wait-for-text` waits until the given text is visibly present in the page selected
+by `tab` (`workspace` by default). Whitespace is normalized before matching, so
+text split across lines can still be used as a readiness signal. The wait times
+out after 60 seconds.
 
-The global screenshot profile lives in `config.rb`. It defaults to 1853x929,
-150% browser-style zoom and a dark color scheme. The renderer gives the page the
-smaller CSS viewport that a browser has at that zoom level and then asks Chromium
-to capture that viewport at the requested scale. Thus VS Code lays itself out at
-150% while the generated bitmap still has the configured 1853x929 pixels. A
-recipe only needs `viewport` or `zoom` when a particular tab should be captured
-differently. Workspace screenshots also hide VS Code notification toasts so
-startup warnings do not leak into tutorial images.
+The global screenshot profile lives in `config.rb`. It defaults to 1853x929 and
+150% browser-style zoom. The renderer deliberately does not choose a light or dark
+color scheme: code-server loads the Workspace's actual VS Code theme, and the
+screenshot generator waits until that theme has remained stable before running the
+recipe. The renderer gives the page the smaller CSS viewport that a browser has at
+that zoom level and then asks Chromium to capture that viewport at the requested
+scale. Thus VS Code lays itself out at 150% while the generated bitmap still has
+the configured 1853x929 pixels. A recipe only needs `viewport` or `zoom` when a
+particular tab should be captured differently. Workspace screenshots also hide VS
+Code notification toasts so startup warnings do not leak into tutorial images.
 
 The screenshot account still logs in as `screenshots@example.com`, but the Unix
 workspace user is configured separately and defaults to `student`. This keeps
