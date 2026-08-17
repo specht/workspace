@@ -102,9 +102,9 @@
       "output_sha256": "fc6f3765ca7f0b63d0f4eef3df6cff89a1cb515a999a5cfd1bedea05c9d5237d"
     },
     "story-image.webp": {
-      "state_hash": "d04b6d8ce2853145038771b5baf039fd82aa80fbb4dbf8bb89eb10c8a98c9509",
+      "state_hash": "ba7c8d5ee03a253b6f3e9c09d8bf6a73cb8e3178fe39c7a58844add888f0e962",
       "environment_fingerprint": "70a374a31fac9416d0f110e893b68971b50779db1383936492941f274731c72e",
-      "output_sha256": "16c2af37f4769ac8aae3badb05e60410bbbd6933e36e2b2386de03b33b4d89b5"
+      "output_sha256": "f429c3d6b04a5524362fa67db86dfcf166275cb6e4ff3261707317eb89002752"
     }
   }
 }

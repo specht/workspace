@@ -1,0 +1,29 @@
+<!-- Schule -- Büro -->
+
+Im Büro sitzt Frau Neumann an einem Schreibtisch.
+
+<p condition="!has_key">
+Neben der Tür hängt ein kleiner Schlüssel an einem Haken.
+</p>
+
+<p condition="has_key">
+Der Haken neben der Tür ist leer.
+</p>
+
+- [Frage nach dem Materialschrank.](.){condition="!has_key"}
+
+    > "Der ist abgeschlossen. Der kleine Schlüssel hängt hier neben der Tür."
+
+- [Nimm den Schlüssel.](.){condition="!has_key"}
+
+    <script>
+    has_key = true;
+    </script>
+
+    Du nimmst den kleinen Schlüssel vom Haken.
+
+- [Frage, ob der Schlüssel zum Materialschrank passt.](.){condition="has_key"}
+
+    > "Ja, genau der ist für den Materialschrank."
+
+- [Gehe zurück in den Flur.](2)
