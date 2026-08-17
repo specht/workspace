@@ -473,7 +473,11 @@ async function resolveWriteFileSource(blocks, recipeStart, selector, markdownPat
     }
     if (!stat.isFile()) throw new Error(`write-file source is not a file: ${relativeSource}`);
 
-    return fs.readFile(sourcePath, 'utf8');
+    const bytes = await fs.readFile(sourcePath);
+    return {
+        sourcePath,
+        sourceSha256: sha256(bytes),
+    };
 }
 
 async function parseTutorial(markdown, markdownPath) {
@@ -1360,8 +1364,17 @@ async function writeWorkspaceFile(relativePath, contents) {
         throw new Error(`Workspace path escaped BIF checkout: ${relativePath}`);
     }
     await fs.mkdir(path.dirname(target), { recursive: true });
-    const text = contents.endsWith('\n') ? contents : `${contents}\n`;
-    await fs.writeFile(target, text, 'utf8');
+    if (contents && typeof contents === 'object' && contents.sourcePath) {
+        const bytes = await fs.readFile(contents.sourcePath);
+        const sourceSha256 = sha256(bytes);
+        if (sourceSha256 !== contents.sourceSha256) {
+            throw new Error(`write-file source changed while generating screenshots: ${contents.sourcePath}`);
+        }
+        await fs.writeFile(target, bytes);
+    } else {
+        const text = contents.endsWith('\n') ? contents : `${contents}\n`;
+        await fs.writeFile(target, text, 'utf8');
+    }
     await fs.chown(target, 1000, 1000).catch(() => {});
 }
 
