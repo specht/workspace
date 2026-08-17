@@ -34,6 +34,42 @@ class DatabaseProvisioningTest < Minitest::Test
         assert_equal login, environment['NEO4J_DATABASE']
     end
 
+    def test_neo4j_uses_a_valid_role_name_for_database_logins_with_punctuation
+        login = 'e2e-0'
+        role = DatabaseProvisioning.neo4j_role_name(login)
+        statements = DatabaseProvisioning.neo4j_statements(login, 'password')
+        joined = statements.join("\n")
+
+        assert_equal 'workspace_e2e_dash_0', role
+        assert_includes joined, "CREATE USER `#{login}`"
+        assert_includes joined, "CREATE DATABASE `#{login}`"
+        assert_includes joined, "CREATE ROLE `#{role}` IF NOT EXISTS"
+        assert_includes joined, "GRANT ROLE `#{role}` TO `#{login}`"
+        refute_includes joined, "CREATE ROLE `#{login}`"
+    end
+
+    def test_neo4j_role_name_is_valid_and_collision_safe_for_supported_logins
+        assert_equal 'student42',
+            DatabaseProvisioning.neo4j_role_name('student42')
+        assert_equal 'workspace_2fast',
+            DatabaseProvisioning.neo4j_role_name('2fast')
+        assert_equal 'workspace_alice_dot_smith',
+            DatabaseProvisioning.neo4j_role_name('alice.smith')
+        assert_equal 'workspace_alice_dash_smith',
+            DatabaseProvisioning.neo4j_role_name('alice-smith')
+
+        %w[2fast alice.smith alice-smith].each do |login|
+            assert_match(
+                DatabaseProvisioning::NEO4J_ROLE_PATTERN,
+                DatabaseProvisioning.neo4j_role_name(login),
+            )
+        end
+        refute_equal(
+            DatabaseProvisioning.neo4j_role_name('alice.smith'),
+            DatabaseProvisioning.neo4j_role_name('alice-smith'),
+        )
+    end
+
     def test_mysql_creation_and_reset_explicitly_use_caching_sha2_password
         statements = DatabaseProvisioning.mysql_statements('student', 'password')
 

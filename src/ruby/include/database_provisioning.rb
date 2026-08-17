@@ -2,6 +2,8 @@ require_relative 'database_identity'
 require_relative 'atomic_file'
 
 module DatabaseProvisioning
+    NEO4J_ROLE_PATTERN = /\A[a-z][a-z0-9_]*\z/
+
     def self.mysql_statements(login, password)
         DatabaseIdentity.validate!(login)
         quoted_password = mysql_string(password)
@@ -34,23 +36,32 @@ module DatabaseProvisioning
     end
 
     def self.neo4j_existing_identity_statements(login, password)
+        role = neo4j_role_name(login)
         [
             *neo4j_existing_user_statements(login, password),
-            "CREATE ROLE `#{login}` IF NOT EXISTS;",
-            "GRANT ACCESS ON DATABASE `#{login}` TO `#{login}`;",
-            "GRANT ALL ON GRAPH `#{login}` TO `#{login}`;",
-            "GRANT CREATE NEW NODE LABEL ON DATABASE `#{login}` TO `#{login}`;",
-            "GRANT CREATE NEW RELATIONSHIP TYPE ON DATABASE `#{login}` TO `#{login}`;",
-            "GRANT CREATE NEW PROPERTY NAME ON DATABASE `#{login}` TO `#{login}`;",
-            "GRANT CREATE CONSTRAINTS ON DATABASE `#{login}` TO `#{login}`;",
-            "GRANT DROP CONSTRAINTS ON DATABASE `#{login}` TO `#{login}`;",
-            "GRANT SHOW CONSTRAINTS ON DATABASE `#{login}` TO `#{login}`;",
-            "GRANT CREATE INDEXES ON DATABASE `#{login}` TO `#{login}`;",
-            "GRANT DROP INDEXES ON DATABASE `#{login}` TO `#{login}`;",
-            "GRANT SHOW INDEXES ON DATABASE `#{login}` TO `#{login}`;",
-            "GRANT ROLE `#{login}` TO `#{login}`;",
+            "CREATE ROLE `#{role}` IF NOT EXISTS;",
+            "GRANT ACCESS ON DATABASE `#{login}` TO `#{role}`;",
+            "GRANT ALL ON GRAPH `#{login}` TO `#{role}`;",
+            "GRANT CREATE NEW NODE LABEL ON DATABASE `#{login}` TO `#{role}`;",
+            "GRANT CREATE NEW RELATIONSHIP TYPE ON DATABASE `#{login}` TO `#{role}`;",
+            "GRANT CREATE NEW PROPERTY NAME ON DATABASE `#{login}` TO `#{role}`;",
+            "GRANT CREATE CONSTRAINTS ON DATABASE `#{login}` TO `#{role}`;",
+            "GRANT DROP CONSTRAINTS ON DATABASE `#{login}` TO `#{role}`;",
+            "GRANT SHOW CONSTRAINTS ON DATABASE `#{login}` TO `#{role}`;",
+            "GRANT CREATE INDEXES ON DATABASE `#{login}` TO `#{role}`;",
+            "GRANT DROP INDEXES ON DATABASE `#{login}` TO `#{role}`;",
+            "GRANT SHOW INDEXES ON DATABASE `#{login}` TO `#{role}`;",
+            "GRANT ROLE `#{role}` TO `#{login}`;",
             "ALTER USER `#{login}` SET HOME DATABASE `#{login}`;",
         ]
+    end
+
+    def self.neo4j_role_name(login)
+        DatabaseIdentity.validate!(login)
+        return login if login.match?(NEO4J_ROLE_PATTERN)
+
+        encoded = login.gsub('-', '_dash_').gsub('.', '_dot_')
+        "workspace_#{encoded}"
     end
 
     def self.my_cnf(login, password)

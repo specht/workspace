@@ -2401,11 +2401,12 @@ class Main < Sinatra::Base
 
     def reset_neo4j(email)
         db_login = db_login_for_email(email)
+        role = DatabaseProvisioning.neo4j_role_name(db_login)
         Open3.popen2("docker exec -i workspace_neo4j_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
             stdin.puts <<~END_OF_STRING
                 DROP DATABASE `#{db_login}` IF EXISTS;
                 DROP USER `#{db_login}` IF EXISTS;
-                DROP ROLE `#{db_login}` IF EXISTS;
+                DROP ROLE `#{role}` IF EXISTS;
             END_OF_STRING
             stdin.close
             status = wait_thr.value
