@@ -636,6 +636,8 @@ class Main < Sinatra::Base
             #                '$status $body_bytes_sent "$http_referer" '
             #                '"$http_user_agent" "$request_time"';
 
+            map_hash_bucket_size 128;
+
             # Keep access logs useful without recording capability tokens, session
             # cookies, workspace tags or one-time login URLs.
             map $uri $hs_log_uri {
@@ -646,8 +648,6 @@ class Main < Sinatra::Base
             }
 
             log_format custom 'method=$request_method uri=$hs_log_uri status=$status share=$hs_is_share allowed=$hs_allowed';
-
-            map_hash_bucket_size 128;
 
             map $sent_http_content_type $expires {
                 default                         off;

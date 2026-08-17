@@ -146,23 +146,25 @@ test('login codes are bounded, one-time and visible to the teacher', async ({
     expect(sessionCookies).toHaveLength(1);
     const sessionCookie = sessionCookies[0];
     const serverCookie = mainCookies.find(cookie => cookie.name === 'hs_server_sid');
+    const mainHostname = new URL(baseUrl(testInfo)).hostname;
     expect(sessionCookie).toBeDefined();
     expect(sessionCookie?.httpOnly).toBe(true);
     expect(sessionCookie?.sameSite).toBe('Lax');
-    expect(sessionCookie?.domain).toBe(new URL(baseUrl(testInfo)).hostname);
+    expect(sessionCookie?.domain).toBe(mainHostname);
     expect(serverCookie).toBeDefined();
     expect(serverCookie?.httpOnly).toBe(true);
     expect(serverCookie?.sameSite).toBe('Lax');
+    expect(serverCookie?.domain).toBe(`.${mainHostname}`);
 
-    const sibling = new URL(baseUrl(testInfo));
-    sibling.hostname = `student.${sibling.hostname}`;
-    const siblingCookies = await page.context().cookies(sibling.toString());
-    expect(siblingCookies.some(cookie => cookie.name === 'hs_sid')).toBe(false);
-    expect(siblingCookies.some(cookie => cookie.name === 'hs_server_sid')).toBe(true);
+    // Playwright's BrowserContext.cookies(url) filter treats a cookie domain
+    // without a leading dot as a suffix match as well, so it cannot be used to
+    // distinguish a host-only cookie from a domain cookie here. The raw cookie
+    // domains above preserve that distinction: hs_sid is host-only, while
+    // hs_server_sid is deliberately shared with workspace subdomains.
 
     await page.goto('/logout');
     await page.waitForURL(url => url.pathname === '/');
-    await expect(page.getByRole('link', {name: 'Anmelden'})).toBeVisible();
+    await expect(page.locator('a.btn[href="/login"]')).toBeVisible();
     const loggedOutCookies = await page.context().cookies(baseUrl(testInfo));
     expect(loggedOutCookies.some(cookie => cookie.name === 'hs_sid')).toBe(false);
     expect(
