@@ -34,12 +34,12 @@
     "wget.webp": {
       "state_hash": "c860ae4cb490a8183b2b62b6d8732b5d0ce809e6a1a0751c16b798f000cb90fe",
       "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
-      "output_sha256": "0694b987e40676b14c168c03d8dfeb614cde181d6285d40f13ec6d621857f34f"
+      "output_sha256": "478c26aae0873d478bd92a0f7211c6fe835b1e1531c0411c226734597add8239"
     },
     "ls-lh.webp": {
       "state_hash": "821db6f8b2477089fa37f24e0ed85e5ef0d6344f84b983211da141256a8a828c",
       "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
-      "output_sha256": "8929d86c2885c3c014a4414888600b8570a34b97ce5412646ba7518edf2d5a7c"
+      "output_sha256": "93233c5250cce5f427c90f438a9c1618343e299e8a9a87fb8f3a6482d4946f37"
     }
   }
 }

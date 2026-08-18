@@ -1,0 +1,139 @@
+.tutorial-screenshot-monitor {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    font-family: monospace;
+    font-size: 0.9em;
+    white-space: nowrap;
+}
+
+.tutorial-screenshot-monitor progress {
+    width: 7em;
+    height: 0.65em;
+}
+
+.tutorial-screenshot-monitor.done {
+    color: #198754;
+}
+
+.tutorial-screenshot-monitor.error {
+    color: #dc3545;
+    white-space: normal;
+}
+
+.tutorial-screenshot-stale {
+    outline: 4px solid #ffc107;
+    outline-offset: 2px;
+    opacity: 0.72;
+}
+
+.tutorial-screenshot-stale-note {
+    margin: 0.45rem 0 1rem;
+    color: #856404;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.tutorial-screenshot-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    max-width: 100%;
+    margin: 0 auto 1rem;
+    border: 3px dashed #ffc107;
+    border-radius: 0.35rem;
+    background: rgba(255, 193, 7, 0.08);
+    color: inherit;
+    font-family: monospace;
+    text-align: center;
+}
+
+.tutorial-screenshot-placeholder span {
+    padding: 1rem;
+}
+
+.tutorial-screenshot-filmstrip {
+    display: none;
+    align-items: flex-end;
+    gap: 0.55rem;
+    width: 100%;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    overflow-x: auto;
+    border-top: 1px solid rgba(127, 127, 127, 0.35);
+}
+
+.tutorial-screenshot-filmstrip.visible {
+    display: flex;
+}
+
+.tutorial-screenshot-filmstrip-item {
+    flex: 0 0 auto;
+    max-width: 140px;
+    padding: 0.3rem;
+    border: 1px solid rgba(127, 127, 127, 0.45);
+    border-radius: 0.35rem;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-family: monospace;
+    font-size: 0.72rem;
+    text-align: left;
+}
+
+.tutorial-screenshot-filmstrip-item:hover,
+.tutorial-screenshot-filmstrip-item:focus-visible {
+    border-color: currentColor;
+}
+
+.tutorial-screenshot-filmstrip-item img {
+    display: block;
+    width: auto;
+    max-width: 128px;
+    height: 72px;
+    margin: 0 auto 0.25rem;
+    object-fit: contain;
+}
+
+.tutorial-screenshot-filmstrip-item span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tutorial-screenshot-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 300000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3vh 3vw;
+    background: rgba(0, 0, 0, 0.88);
+    cursor: zoom-out;
+}
+
+.tutorial-screenshot-lightbox figure {
+    max-width: 94vw;
+    max-height: 94vh;
+    margin: 0;
+    cursor: default;
+    text-align: center;
+}
+
+.tutorial-screenshot-lightbox img {
+    display: block;
+    max-width: 94vw;
+    max-height: 88vh;
+    margin: 0 auto;
+    object-fit: contain;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 1rem 3rem rgba(0, 0, 0, 0.55);
+}
+
+.tutorial-screenshot-lightbox figcaption {
+    margin-top: 0.5rem;
+    color: white;
+    font-family: monospace;
+}
