@@ -173,7 +173,7 @@ Im nächsten Schritt wollen wir unser Modell interaktiv im Webbrowser testen. Da
 
 <img class='full' src='convert-model.webp' alt=''>
 
-<img src='go-live.webp' class='r' style='width: 21em;' alt=''>
+<img src='../common/go-live.webp' class='r' style='width: 21em;' alt=''>
 
 Wenn das Modell erfolgreich konvertiert wurde, können wir es im Webbrowser testen. Klicke dazu rechts unten auf den Button »Go Live«.
 Du kannst nun links oben mit der Maus Ziffern schreiben und zuschauen, wie sich die Aktivierungen der Neuronen im Modell verändern. Du siehst die einzelnen Schichten und die Aktivierungen der Neuronen. Ganz rechts siehst du die Vorhersage des Modells.

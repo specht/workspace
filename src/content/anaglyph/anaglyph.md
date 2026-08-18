@@ -42,7 +42,7 @@ Wenn du auf der linken Seite im Explorer nun die Datei `scene.ini` siehst, hast 
 
 ## Vorschau starten
 
-<img src='go-live.webp' class='r' style='width: 21em;' alt=''>
+<img src='../common/go-live.webp' class='r' style='width: 21em;' alt=''>
 
 Im Workspace ist bereits die Erweiterung »Live Server« installiert. Unten rechts findest du den Eintrag »Go Live«. Klicke darauf, um die Vorschau zu starten. Es öffnet sich ein neuer Tab in deinem Browser mit deiner 3D-Szene, die anfangs nur aus einem einzigen Würfel besteht.
 

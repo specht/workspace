@@ -10,7 +10,7 @@ the normal authoring loop: reloading a tutorial is the trigger.
 A manual image needs no recipe:
 
 ```html
-<img class='full' src='go-live.webp' alt=''>
+<img class='full' src='welcome.webp' alt=''>
 ```
 
 An automated image has a comment immediately before it:
@@ -29,6 +29,16 @@ On a development reload, `git-clone.webp` is generated when it is missing or
 stale. A `.tutorial-screenshots.json` file in the same tutorial directory records
 the recipe-state hash and the Workspace image fingerprint. Both the generated
 WebP files and this manifest are normal source files and should be committed.
+
+In development the reload itself does not wait for Playwright. The generator first
+returns a fast freshness plan (including the final pixel dimensions), then queues
+stale screenshots in the background. Existing stale images stay visible with a
+warning outline; missing images use size-correct placeholders. While rendering is
+active, the tutorial footer shows replay progress and a filmstrip that receives
+each newly generated image as soon as it is written. Clicking a filmstrip image
+opens a large preview. When every generated screenshot is already current, none of
+that monitoring UI is shown. Production continues to use the committed tutorial
+images directly and never enables this live-preview path.
 
 The state hash is chained: each screenshot depends on its own recipe and on the
 state hash of every automated screenshot before it. `write-file` also includes the

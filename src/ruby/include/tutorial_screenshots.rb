@@ -6,6 +6,7 @@ require 'uri'
 module TutorialScreenshots
     MARKER = '<!-- tutorial-screenshot'
     ENDPOINT = URI('http://tutorial_screenshots:9393/generate')
+    STATUS_ENDPOINT = URI('http://tutorial_screenshots:9393/status')
     WORKSPACE_IMAGE = 'hs_code_server'
 
     def self.prepare(markdown, markdown_path, generate: true)
@@ -13,15 +14,15 @@ module TutorialScreenshots
         return markdown unless generate
         return markdown unless markdown.include?(MARKER)
 
-        relative_path = markdown_path.delete_prefix('/src/content/')
-        unless relative_path != markdown_path && !relative_path.include?('..')
+        relative_path = relative_markdown_path(markdown_path)
+        unless relative_path
             STDERR.puts ">>> Tutorial screenshots: refusing unexpected content path #{markdown_path.inspect}"
             return markdown
         end
 
-        response = request_generation(relative_path)
-        if response && response['generated'].to_i > 0
-            STDERR.puts ">>> Tutorial screenshots: generated #{response['generated']} image(s) for #{relative_path}"
+        response = request_generation(relative_path, :async => true)
+        if response && response['monitor']
+            STDERR.puts ">>> Tutorial screenshots: #{response['stale'].to_i} stale image(s) queued for #{relative_path}"
         end
         markdown
     rescue => e
@@ -30,14 +31,45 @@ module TutorialScreenshots
     end
 
     def self.recreate(relative_path)
-        unless relative_path.is_a?(String) &&
-                relative_path.end_with?('.md') &&
-                !relative_path.start_with?('/') &&
-                !relative_path.split('/').include?('..')
+        unless valid_relative_markdown_path?(relative_path)
             raise "invalid tutorial Markdown path: #{relative_path.inspect}"
         end
 
         request_generation(relative_path, :force => true)
+    end
+
+    def self.status(markdown_path)
+        relative_path = relative_markdown_path(markdown_path)
+        raise "invalid tutorial Markdown path: #{markdown_path.inspect}" unless relative_path
+
+        uri = STATUS_ENDPOINT.dup
+        uri.query = URI.encode_www_form(:markdown_path => relative_path)
+        request = Net::HTTP::Get.new(uri)
+
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.open_timeout = 1
+        http.read_timeout = 2
+        response = http.request(request)
+
+        unless response.is_a?(Net::HTTPSuccess)
+            raise "generator returned HTTP #{response.code}: #{response.body.to_s[0, 500]}"
+        end
+        JSON.parse(response.body)
+    end
+
+    def self.valid_relative_markdown_path?(relative_path)
+        relative_path.is_a?(String) &&
+            relative_path.end_with?('.md') &&
+            !relative_path.start_with?('/') &&
+            !relative_path.split('/').include?('..')
+    end
+
+    def self.relative_markdown_path(markdown_path)
+        return nil unless markdown_path.is_a?(String)
+        relative_path = markdown_path.delete_prefix('/src/content/')
+        return nil if relative_path == markdown_path
+        return nil unless valid_relative_markdown_path?(relative_path)
+        relative_path
     end
 
     def self.workspace_image_id
@@ -51,18 +83,19 @@ module TutorialScreenshots
         'unknown'
     end
 
-    def self.request_generation(relative_path, force: false)
+    def self.request_generation(relative_path, force: false, async: false)
         request = Net::HTTP::Post.new(ENDPOINT)
         request['content-type'] = 'application/json'
         request.body = JSON.generate({
             :markdown_path => relative_path,
             :workspace_image_id => workspace_image_id,
             :force => force,
+            :async => async,
         })
 
         http = Net::HTTP.new(ENDPOINT.host, ENDPOINT.port)
         http.open_timeout = 1
-        http.read_timeout = force ? 3600 : 600
+        http.read_timeout = force ? 3600 : 10
         http.write_timeout = 5
         response = http.request(request)
 

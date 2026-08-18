@@ -123,6 +123,7 @@ let loggedIn = false;
 let workspace = null;
 let preview = null;
 let generationQueue = Promise.resolve();
+const latestGenerationJobs = new Map();
 let workspacePrepared = false;
 let workspacePreparationPromise = null;
 let terminalShellReady = false;
@@ -2058,7 +2059,29 @@ async function captureShot(shot, tutorialDirectory) {
     return sha256(await fs.readFile(target));
 }
 
-async function generateTutorial(payload) {
+function screenshotOutputDimensions(shot) {
+    const topPixels = Math.round(shot.viewport.height * shot.cropTop);
+    const bottomPixels = Math.round(shot.viewport.height * shot.cropBottom);
+    return {
+        width: shot.viewport.width,
+        height: shot.viewport.height - topPixels - bottomPixels,
+    };
+}
+
+function generationStatusItem(shot, stale, missing, previous) {
+    const dimensions = screenshotOutputDimensions(shot);
+    return {
+        target: shot.target,
+        width: dimensions.width,
+        height: dimensions.height,
+        stale,
+        missing,
+        state: stale ? (missing ? 'missing' : 'stale') : 'current',
+        revision: previous?.output_sha256 || null,
+    };
+}
+
+async function buildGenerationPlan(payload) {
     const force = payload?.force === true;
     const relativeMarkdown = safeRelativePath(payload?.markdown_path);
     if (!relativeMarkdown.endsWith('.md')) throw new Error('markdown_path must name a Markdown file');
@@ -2071,9 +2094,25 @@ async function generateTutorial(payload) {
 
     const markdown = await fs.readFile(markdownPath, 'utf8');
     const shots = await parseTutorial(markdown, relativeMarkdown);
-    if (shots.length === 0) return { generated: 0, current: 0, screenshots: 0 };
-
     const tutorialDirectory = path.dirname(markdownPath);
+
+    if (shots.length === 0) {
+        return {
+            force,
+            relativeMarkdown,
+            markdownPath,
+            tutorialDirectory,
+            shots,
+            stale: [],
+            screenshots: [],
+            oldManifest: { version: 1, screenshots: {} },
+            nextManifest: { version: 1, screenshots: {} },
+            tutorialHooks: null,
+            environmentFingerprint: null,
+            fingerprint: sha256(`${relativeMarkdown}\0empty`),
+        };
+    }
+
     const tutorialHooks = await loadTutorialScreenshotHooks(tutorialDirectory);
     const oldManifest = await readManifest(tutorialDirectory);
     const environmentFingerprint = sha256(JSON.stringify({
@@ -2090,6 +2129,7 @@ async function generateTutorial(payload) {
 
     const nextManifest = { version: 1, screenshots: {} };
     const stale = [];
+    const screenshots = [];
 
     for (const shot of shots) {
         const target = path.join(tutorialDirectory, shot.target);
@@ -2099,26 +2139,188 @@ async function generateTutorial(payload) {
         const needsGeneration = force || !exists || previous?.state_hash !== shot.stateHash ||
             previous?.environment_fingerprint !== environmentFingerprint;
         stale.push(needsGeneration);
+        screenshots.push(generationStatusItem(shot, needsGeneration, !exists, previous));
         if (!needsGeneration && previous) nextManifest.screenshots[shot.target] = previous;
     }
+
+    const fingerprint = sha256(JSON.stringify({
+        relativeMarkdown,
+        force,
+        environmentFingerprint,
+        shots: shots.map(shot => ({
+            target: shot.target,
+            stateHash: shot.stateHash,
+        })),
+    }));
+
+    return {
+        force,
+        relativeMarkdown,
+        markdownPath,
+        tutorialDirectory,
+        shots,
+        stale,
+        screenshots,
+        oldManifest,
+        nextManifest,
+        tutorialHooks,
+        environmentFingerprint,
+        fingerprint,
+    };
+}
+
+async function finalizeCurrentPlan(plan) {
+    if (plan.shots.length > 0 &&
+        JSON.stringify(plan.oldManifest) !== JSON.stringify(plan.nextManifest)) {
+        await writeManifest(plan.tutorialDirectory, plan.nextManifest);
+    }
+}
+
+function currentGenerationSnapshot(plan) {
+    return {
+        status: 'current',
+        monitor: false,
+        markdown_path: plan.relativeMarkdown,
+        fingerprint: plan.fingerprint,
+        total: plan.shots.length,
+        completed: plan.shots.length,
+        stale: 0,
+        generated: 0,
+        current_target: null,
+        error: null,
+        screenshots: plan.screenshots,
+    };
+}
+
+function activeGenerationJob(job) {
+    return job && ['queued', 'preparing', 'running'].includes(job.status);
+}
+
+async function enqueueGeneration(payload) {
+    const plan = await buildGenerationPlan(payload);
+    const staleCount = plan.stale.filter(Boolean).length;
+
+    const existing = latestGenerationJobs.get(plan.relativeMarkdown);
+    if (activeGenerationJob(existing) && existing.fingerprint === plan.fingerprint) {
+        return existing;
+    }
+
+    // A different job for the same tutorial may still be about to overwrite the
+    // currently-valid files. Queue a reconciliation for the requested source
+    // state instead of declaring it current prematurely.
+    if (staleCount === 0 && !activeGenerationJob(existing)) {
+        await finalizeCurrentPlan(plan);
+        const snapshot = currentGenerationSnapshot(plan);
+        latestGenerationJobs.set(plan.relativeMarkdown, snapshot);
+        return snapshot;
+    }
+
+    const job = {
+        status: 'queued',
+        monitor: true,
+        markdown_path: plan.relativeMarkdown,
+        fingerprint: plan.fingerprint,
+        total: plan.shots.length,
+        completed: 0,
+        stale: staleCount,
+        generated: 0,
+        current_target: null,
+        error: null,
+        screenshots: plan.screenshots.map(item => ({ ...item })),
+    };
+    latestGenerationJobs.set(plan.relativeMarkdown, job);
+
+    const run = generationQueue.then(async () => {
+        try {
+            const result = await generateTutorial(payload, job);
+            job.status = 'done';
+            job.current_target = null;
+            job.finished_at = Date.now();
+            return result;
+        } catch (error) {
+            job.status = 'error';
+            job.current_target = null;
+            job.error = error.message;
+            job.finished_at = Date.now();
+            throw error;
+        }
+    });
+    generationQueue = run.catch(error => {
+        console.error(error);
+    });
+
+    return job;
+}
+
+function recordGenerationRequestError(payload, error) {
+    try {
+        const relativeMarkdown = safeRelativePath(payload?.markdown_path);
+        if (!relativeMarkdown.endsWith('.md')) return;
+        latestGenerationJobs.set(relativeMarkdown, {
+            status: 'error',
+            monitor: true,
+            markdown_path: relativeMarkdown,
+            total: 0,
+            completed: 0,
+            stale: 0,
+            generated: 0,
+            current_target: null,
+            error: error.message,
+            screenshots: [],
+        });
+    } catch {
+        // The original request error is more useful than a secondary path error.
+    }
+}
+
+async function generateTutorial(payload, progressJob = null) {
+    // Rebuild the fast plan when the queued job actually starts. Another job for
+    // the same tutorial may have changed its files/manifest while this one waited.
+    const plan = await buildGenerationPlan(payload);
+    const {
+        relativeMarkdown,
+        shots,
+        tutorialDirectory,
+        tutorialHooks,
+        oldManifest,
+        nextManifest,
+        environmentFingerprint,
+        stale,
+    } = plan;
+
+    if (progressJob) {
+        progressJob.total = shots.length;
+        progressJob.completed = 0;
+        progressJob.stale = stale.filter(Boolean).length;
+        progressJob.generated = 0;
+        progressJob.current_target = null;
+        progressJob.screenshots = plan.screenshots.map(item => ({ ...item }));
+    }
+
+    if (shots.length === 0) return { generated: 0, current: 0, screenshots: 0 };
 
     // Removed recipe entries disappear from the manifest. The image itself stays
     // in the tutorial directory and therefore instantly becomes a normal manual
     // tutorial image again.
-
     if (!stale.some(Boolean)) {
-        if (JSON.stringify(oldManifest) !== JSON.stringify(nextManifest)) {
-            await writeManifest(tutorialDirectory, nextManifest);
-        }
+        await finalizeCurrentPlan(plan);
+        if (progressJob) progressJob.completed = shots.length;
         return { generated: 0, current: shots.length, screenshots: shots.length };
     }
 
+    if (progressJob) progressJob.status = 'preparing';
     await acquireFreshWorkspace();
+    if (progressJob) progressJob.status = 'running';
+
     let generated = 0;
     for (let index = 0; index < shots.length; index += 1) {
         const shot = shots[index];
 
         console.log(`Tutorial screenshot ${relativeMarkdown} -> ${shot.target}`);
+        if (progressJob) {
+            progressJob.current_target = shot.target;
+            progressJob.screenshots[index].state = stale[index] ? 'rendering' : 'replaying';
+        }
 
         // Layout-sensitive actions (for example clicking a graph control) must
         // run at the same viewport/zoom as the screenshot itself. If the target
@@ -2170,10 +2372,22 @@ async function generateTutorial(payload) {
                 environment_fingerprint: environmentFingerprint,
                 output_sha256: outputSha256,
             };
+            if (progressJob) {
+                Object.assign(progressJob.screenshots[index], {
+                    stale: false,
+                    missing: false,
+                    state: 'fresh',
+                    revision: outputSha256,
+                });
+                progressJob.generated = generated;
+            }
             console.log(`Generated ${relativeMarkdown}: ${shot.target}`);
         } else {
             nextManifest.screenshots[shot.target] = oldManifest.screenshots[shot.target];
+            if (progressJob) progressJob.screenshots[index].state = 'current';
         }
+
+        if (progressJob) progressJob.completed = index + 1;
     }
 
     await writeManifest(tutorialDirectory, nextManifest);
@@ -2204,15 +2418,44 @@ async function readJson(request) {
 }
 
 const server = http.createServer(async (request, response) => {
-    if (request.method === 'GET' && request.url === '/health') {
+    const requestUrl = new URL(request.url, `http://127.0.0.1:${PORT}`);
+
+    if (request.method === 'GET' && requestUrl.pathname === '/health') {
         return sendJson(response, 200, { ok: true });
     }
-    if (request.method !== 'POST' || request.url !== '/generate') {
+    if (request.method === 'GET' && requestUrl.pathname === '/status') {
+        try {
+            const relativeMarkdown = safeRelativePath(requestUrl.searchParams.get('markdown_path'));
+            if (!relativeMarkdown.endsWith('.md')) {
+                throw new Error('markdown_path must name a Markdown file');
+            }
+            const job = latestGenerationJobs.get(relativeMarkdown);
+            return sendJson(response, 200, job || {
+                status: 'idle',
+                monitor: false,
+                markdown_path: relativeMarkdown,
+                screenshots: [],
+            });
+        } catch (error) {
+            return sendJson(response, 400, { error: error.message });
+        }
+    }
+    if (request.method !== 'POST' || requestUrl.pathname !== '/generate') {
         return sendJson(response, 404, { error: 'not_found' });
     }
 
     try {
         const payload = await readJson(request);
+        if (payload?.async === true && payload?.force !== true) {
+            try {
+                const result = await enqueueGeneration(payload);
+                return sendJson(response, 200, result);
+            } catch (error) {
+                recordGenerationRequestError(payload, error);
+                throw error;
+            }
+        }
+
         const job = generationQueue.then(() => generateTutorial(payload));
         generationQueue = job.catch(() => {});
         const result = await job;

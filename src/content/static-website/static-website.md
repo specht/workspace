@@ -69,7 +69,7 @@ Nachdem das Verzeichnis geöffnet wurde, siehst du links im Explorer deine Datei
 
 ### Vorschau starten
 
-<img src='go-live.webp' class='r' style='width: 19em;' alt=''>
+<img src='../common/go-live.webp' class='r' style='width: 19em;' alt=''>
 
 Unten rechts im Fenster findest du »Go Live«. Klicke darauf. In einem neuen Browsertab öffnet sich deine Webseite.
 

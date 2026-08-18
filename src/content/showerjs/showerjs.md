@@ -92,7 +92,7 @@ Links siehst du die Verzeichnisse und Dateien, die gerade heruntergeladen wurden
 
 ## Vorschau starten
 
-<img src='go-live.webp' class='r' style='width: 21em;' alt=''>
+<img src='../common/go-live.webp' class='r' style='width: 21em;' alt=''>
 
 Im Workspace ist bereits die Erweiterung »Live Server« installiert. Unten rechts findest du den Eintrag »Go Live«. Klicke darauf, um die Vorschau zu starten. Nun sollte sich die Vorschau deiner Präsentation in einem neuen Browsertab öffnen.
 

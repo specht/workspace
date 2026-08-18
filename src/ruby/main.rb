@@ -1383,6 +1383,9 @@ class Main < Sinatra::Base
                 begin
                     src = img.attr('src')
                     next if src.nil?
+                    if DEVELOPMENT && !src.start_with?('/cache/')
+                        img['data-tutorial-screenshot-source'] = src
+                    end
                     next if src.start_with?('/cache/')
                     image_path = File.join(File.dirname(path), src)
                     next unless File.exist?(image_path)
@@ -4919,6 +4922,56 @@ class Main < Sinatra::Base
             end
 
             io.string
+        end
+    end
+
+    if DEVELOPMENT
+        get '/api/tutorial_screenshots/status' do
+            slug = params['slug'].to_s
+            halt 400 unless slug.match?(/\A[a-zA-Z0-9_-]+\z/)
+
+            markdown_path = if defined?(@@content_paths) && @@content_paths
+                @@content_paths[slug]
+            end
+            halt 404 unless markdown_path && File.file?(markdown_path)
+
+            begin
+                headers 'Cache-Control' => 'no-store'
+                content_type :json
+                TutorialScreenshots.status(markdown_path).to_json
+            rescue => e
+                STDERR.puts ">>> Tutorial screenshot status unavailable: #{e.class}: #{e.message}"
+                status 503
+                content_type :json
+                {
+                    :status => 'unavailable',
+                    :monitor => false,
+                    :error => e.message,
+                }.to_json
+            end
+        end
+
+        get '/api/tutorial_screenshots/image' do
+            slug = params['slug'].to_s
+            target = params['target'].to_s
+            halt 400 unless slug.match?(/\A[a-zA-Z0-9_-]+\z/)
+            halt 400 unless target.end_with?('.webp') &&
+                !target.start_with?('/') &&
+                !target.split('/').include?('..')
+
+            markdown_path = if defined?(@@content_paths) && @@content_paths
+                @@content_paths[slug]
+            end
+            halt 404 unless markdown_path && File.file?(markdown_path)
+
+            tutorial_directory = File.expand_path(File.dirname(markdown_path))
+            image_path = File.expand_path(target, tutorial_directory)
+            halt 400 unless image_path.start_with?("#{tutorial_directory}/")
+            halt 404 unless File.file?(image_path)
+
+            headers 'Cache-Control' => 'no-store'
+            content_type 'image/webp'
+            File.binread(image_path)
         end
     end
 
