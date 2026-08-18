@@ -339,6 +339,7 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
         cropTerminalLines: null,
         cropTerminalSkipTop: 0,
         cropTerminalSkipBottom: 0,
+        terminalScrollBack: 0,
         actions: [],
     };
 
@@ -501,6 +502,15 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
                 source,
                 () => parseTerminalLineSkip(match[1], 'crop-terminal-skip-bottom'),
             );
+        } else if ((match = line.match(/^terminal-scroll-back:\s*(\d+)$/))) {
+            const lines = Number.parseInt(match[1], 10);
+            if (lines < 1 || lines > 200) {
+                throw withSourceError(
+                    new Error(`terminal-scroll-back must be between 1 and 200 lines: ${lines}`),
+                    source,
+                );
+            }
+            recipe.terminalScrollBack = lines;
         } else {
             throw withSourceError(
                 new Error(`Unknown tutorial screenshot instruction: ${line}`),
@@ -649,6 +659,9 @@ async function parseTutorial(markdown, markdownPath) {
         }
         if (recipe.cropTerminalSkipBottom > 0) {
             resolved.cropTerminalSkipBottom = recipe.cropTerminalSkipBottom;
+        }
+        if (recipe.terminalScrollBack > 0) {
+            resolved.terminalScrollBack = recipe.terminalScrollBack;
         }
         resolved[SOURCE_LOCATION] = recipe[SOURCE_LOCATION] || recipeSource;
         resolved[TARGET_LOCATION] = targetSource;
@@ -2059,6 +2072,78 @@ function pngDimensions(buffer) {
     };
 }
 
+async function scrollVisibleTerminalBack(page, lineCount) {
+    return page.evaluate(async lines => {
+        const terminals = [...document.querySelectorAll('.terminal.xterm')]
+            .filter(terminal => {
+                const rect = terminal.getBoundingClientRect();
+                return rect.width > 0 && rect.height > 0;
+            });
+
+        const terminal = terminals.at(-1);
+        if (!terminal) {
+            throw new Error(
+                'terminal-scroll-back requires a visible integrated terminal',
+            );
+        }
+
+        const viewport = terminal.querySelector('.xterm-viewport');
+        if (!viewport) {
+            throw new Error(
+                'terminal-scroll-back could not find the xterm viewport',
+            );
+        }
+
+        const rows = [...terminal.querySelectorAll('.xterm-rows > div')]
+            .map(row => row.getBoundingClientRect())
+            .filter(rect => rect.height > 0);
+
+        if (rows.length === 0) {
+            throw new Error(
+                'terminal-scroll-back could not measure a terminal row',
+            );
+        }
+
+        const rowHeight = rows[0].height;
+        const originalScrollTop = viewport.scrollTop;
+
+        viewport.scrollTop = Math.max(
+            0,
+            originalScrollTop - lines * rowHeight,
+        );
+
+        // Let xterm repaint the newly visible buffer rows.
+        await new Promise(resolve => {
+            requestAnimationFrame(() => requestAnimationFrame(resolve));
+        });
+
+        return originalScrollTop;
+    }, lineCount);
+}
+
+async function restoreVisibleTerminalScroll(page, scrollTop) {
+    await page.evaluate(async originalScrollTop => {
+        const terminals = [...document.querySelectorAll('.terminal.xterm')]
+            .filter(terminal => {
+                const rect = terminal.getBoundingClientRect();
+                return rect.width > 0 && rect.height > 0;
+            });
+
+        const terminal = terminals.at(-1);
+        const viewport = terminal?.querySelector('.xterm-viewport');
+        if (!viewport) return;
+
+        viewport.scrollTop = Math.min(
+            originalScrollTop,
+            Math.max(0, viewport.scrollHeight - viewport.clientHeight),
+        );
+
+        await new Promise(resolve => {
+            requestAnimationFrame(() => requestAnimationFrame(resolve));
+        });
+    }, scrollTop);
+}
+
 async function visibleTerminalCropGeometry(page) {
     return page.evaluate(() => {
         const terminals = [...document.querySelectorAll('.terminal.xterm')]
@@ -2123,83 +2208,200 @@ async function visibleTerminalCropGeometry(page) {
 
 async function captureShot(shot, tutorialDirectory) {
     const page = pageForTab(shot.tab);
-    if (!page || page.isClosed()) throw new Error(`Screenshot requests unavailable tab: ${shot.tab}`);
+    if (!page || page.isClosed()) {
+        throw new Error(`Screenshot requests unavailable tab: ${shot.tab}`);
+    }
 
-    const { session, metrics } = await applyViewportProfile(page, shot.viewport, shot.zoom);
+    const { session, metrics } = await applyViewportProfile(
+        page,
+        shot.viewport,
+        shot.zoom,
+    );
+
     await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {});
+
     if (shot.tab === 'workspace') {
         await waitForWorkspaceFont(page);
     }
-    await page.waitForTimeout(100);
 
-    // Recipes express viewport and crop values in final screenshot pixels. The
-    // screenshot clip itself is in CSS pixels, so divide by the emulated zoom.
-    // Fractional clip dimensions are intentional: at 1853x929 / 150% they make
-    // Playwright emit exactly 1853x929 device pixels instead of 1854x930.
-    let topPixels = Math.round(shot.viewport.height * shot.cropTop);
-    let bottomPixels = Math.round(shot.viewport.height * shot.cropBottom);
-    let heightPixels = shot.viewport.height - topPixels - bottomPixels;
+    let originalTerminalScrollTop = null;
 
-    if (shot.cropTerminalLines != null) {
-        const geometry = await visibleTerminalCropGeometry(page);
-        const crop = terminalLineCropPixels({
-            viewportHeight: shot.viewport.height,
-            deviceScaleFactor: metrics.deviceScaleFactor,
-            ...geometry,
-            lineCount: shot.cropTerminalLines,
-            skipTop: shot.cropTerminalSkipTop || 0,
-            skipBottom: shot.cropTerminalSkipBottom || 0,
-        });
-        ({ topPixels, bottomPixels, heightPixels } = crop);
-    }
-    const pngPath = `/tmp/tutorial-shot-${process.pid}-${crypto.randomBytes(6).toString('hex')}.png`;
-    const target = path.join(tutorialDirectory, shot.target);
-    const temporaryWebp = `${target}.tmp-${process.pid}-${Date.now()}`;
-
-    await fs.mkdir(path.dirname(target), { recursive: true });
     try {
-        if (shot.tab === 'workspace') {
-            await installWorkspaceScreenshotStyle(page);
-        }
-
-        // Playwright's screenshot scale is tied to the BrowserContext's device
-        // scale factor, so a later CDP device-metrics override did not enlarge
-        // the bitmap. Capture through CDP directly instead: the page is laid out
-        // at viewport/zoom CSS pixels, while clip.scale restores the configured
-        // final pixel dimensions.
-        const captured = await session.send('Page.captureScreenshot', {
-            format: 'png',
-            fromSurface: true,
-            captureBeyondViewport: false,
-            clip: {
-                x: 0,
-                y: topPixels / metrics.deviceScaleFactor,
-                width: shot.viewport.width / metrics.deviceScaleFactor,
-                height: heightPixels / metrics.deviceScaleFactor,
-                scale: 1,
-            },
-        });
-        const png = Buffer.from(captured.data, 'base64');
-        const actual = pngDimensions(png);
-        await fs.writeFile(pngPath, png);
-
-        const cwebpArgs = ['-quiet', '-lossless'];
-        if (actual.width !== shot.viewport.width || actual.height !== heightPixels) {
-            console.log(
-                `Chromium screenshot was ${actual.width}x${actual.height}; ` +
-                `expected ${shot.viewport.width}x${heightPixels}; keeping native pixels without resampling`,
+        // terminal-scroll-back affects only this screenshot. Remember the current
+        // xterm scroll position so it can be restored afterwards.
+        if (
+            shot.tab === 'workspace' &&
+            (shot.terminalScrollBack || 0) > 0
+        ) {
+            originalTerminalScrollTop = await scrollVisibleTerminalBack(
+                page,
+                shot.terminalScrollBack,
             );
         }
-        cwebpArgs.push(pngPath, '-o', temporaryWebp);
-        await execFileAsync('cwebp', cwebpArgs);
-        await fs.chmod(temporaryWebp, 0o644);
-        await fs.rename(temporaryWebp, target);
-        await inheritDirectoryOwnership(target, tutorialDirectory);
+
+        await page.waitForTimeout(100);
+
+        // Recipes express viewport and crop values in final screenshot pixels. The
+        // screenshot clip itself is in CSS pixels, so divide by the emulated zoom.
+        // Fractional clip dimensions are intentional: at 1853x929 / 150% they make
+        // Playwright emit exactly 1853x929 device pixels instead of 1854x930.
+        let topPixels = Math.round(
+            shot.viewport.height * shot.cropTop,
+        );
+        let bottomPixels = Math.round(
+            shot.viewport.height * shot.cropBottom,
+        );
+        let heightPixels =
+            shot.viewport.height - topPixels - bottomPixels;
+
+        // Important: measure the terminal only AFTER terminal-scroll-back has
+        // changed the visible xterm rows.
+        if (shot.cropTerminalLines != null) {
+            const geometry = await visibleTerminalCropGeometry(page);
+            const crop = terminalLineCropPixels({
+                viewportHeight: shot.viewport.height,
+                deviceScaleFactor: metrics.deviceScaleFactor,
+                ...geometry,
+                lineCount: shot.cropTerminalLines,
+                skipTop: shot.cropTerminalSkipTop || 0,
+                skipBottom: shot.cropTerminalSkipBottom || 0,
+            });
+
+            ({
+                topPixels,
+                bottomPixels,
+                heightPixels,
+            } = crop);
+        }
+
+        const pngPath =
+            `/tmp/tutorial-shot-${process.pid}-` +
+            `${crypto.randomBytes(6).toString('hex')}.png`;
+
+        const target = path.join(
+            tutorialDirectory,
+            shot.target,
+        );
+
+        const temporaryWebp =
+            `${target}.tmp-${process.pid}-${Date.now()}`;
+
+        await fs.mkdir(
+            path.dirname(target),
+            { recursive: true },
+        );
+
+        try {
+            if (shot.tab === 'workspace') {
+                await installWorkspaceScreenshotStyle(page);
+            }
+
+            // Playwright's screenshot scale is tied to the BrowserContext's device
+            // scale factor, so a later CDP device-metrics override did not enlarge
+            // the bitmap. Capture through CDP directly instead: the page is laid out
+            // at viewport/zoom CSS pixels, while clip.scale restores the configured
+            // final pixel dimensions.
+            const captured = await session.send(
+                'Page.captureScreenshot',
+                {
+                    format: 'png',
+                    fromSurface: true,
+                    captureBeyondViewport: false,
+                    clip: {
+                        x: 0,
+                        y: topPixels / metrics.deviceScaleFactor,
+                        width:
+                            shot.viewport.width /
+                            metrics.deviceScaleFactor,
+                        height:
+                            heightPixels /
+                            metrics.deviceScaleFactor,
+                        scale: 1,
+                    },
+                },
+            );
+
+            const png = Buffer.from(
+                captured.data,
+                'base64',
+            );
+
+            const actual = pngDimensions(png);
+            await fs.writeFile(pngPath, png);
+
+            const cwebpArgs = [
+                '-quiet',
+                '-lossless',
+            ];
+
+            if (
+                actual.width !== shot.viewport.width ||
+                actual.height !== heightPixels
+            ) {
+                console.log(
+                    `Chromium screenshot was ` +
+                    `${actual.width}x${actual.height}; ` +
+                    `expected ` +
+                    `${shot.viewport.width}x${heightPixels}; ` +
+                    `keeping native pixels without resampling`,
+                );
+            }
+
+            cwebpArgs.push(
+                pngPath,
+                '-o',
+                temporaryWebp,
+            );
+
+            await execFileAsync(
+                'cwebp',
+                cwebpArgs,
+            );
+
+            await fs.chmod(
+                temporaryWebp,
+                0o644,
+            );
+
+            await fs.rename(
+                temporaryWebp,
+                target,
+            );
+
+            await inheritDirectoryOwnership(
+                target,
+                tutorialDirectory,
+            );
+        } finally {
+            await fs.rm(
+                pngPath,
+                { force: true },
+            ).catch(() => {});
+
+            await fs.rm(
+                temporaryWebp,
+                { force: true },
+            ).catch(() => {});
+        }
+
+        return sha256(
+            await fs.readFile(target),
+        );
     } finally {
-        await fs.rm(pngPath, { force: true }).catch(() => {});
-        await fs.rm(temporaryWebp, { force: true }).catch(() => {});
+        // Never let an artificial screenshot scroll position leak into the
+        // following recipe, even if capture/conversion failed.
+        if (originalTerminalScrollTop !== null) {
+            await restoreVisibleTerminalScroll(
+                page,
+                originalTerminalScrollTop,
+            ).catch(error => {
+                console.warn(
+                    `Could not restore tutorial screenshot ` +
+                    `terminal scroll position: ${error.message}`,
+                );
+            });
+        }
     }
-    return sha256(await fs.readFile(target));
 }
 
 function screenshotOutputDimensions(shot) {

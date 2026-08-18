@@ -56,7 +56,7 @@ a:hover {
 code {
     font-family: '0xProto Nerd Font Mono', monospace;
     /* font-weight: bold; */
-    font-size: 95%;
+    font-size: 93%;
     color: #e5185d;
     background-color: rgba(243, 132, 175, 0.2);
     padding: 0 0.3em;
@@ -66,7 +66,7 @@ code {
 pre {
     font-family: '0xProto Nerd Font Mono', monospace;
     /* font-weight: bold; */
-    font-size: 95%;
+    font-size: 93%;
     padding: 0.5em 1em;
     border-radius: 0.5em;
 }
