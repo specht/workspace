@@ -97,6 +97,8 @@ Um die Beispieldatenbank in MySQL zu importieren, gib einfach den folgenden Befe
 mysql < terra1.sql
 ```
 
+Der Import geht relativ schnell und wenn alles geklappt hat, solltest du keine Ausgabe sehen:
+
 <!-- tutorial-screenshot
 press: Control+B
 press: Control+J
