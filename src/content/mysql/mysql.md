@@ -110,14 +110,6 @@ crop-terminal-lines: 2
 
 <img class='full' src='sql-import.webp' alt=''>
 
-<div class='hint wink'>
-Hast du daran gedacht, die <kbd>Tab</kbd>-Taste zu verwenden, um den Dateinamen automatisch vervollständigen zu lassen?
-</div>
-
-Wenn alles geklappt hat, siehst du keine Ausgabe. Das ist ein gutes Zeichen, denn das bedeutet, dass der Import erfolgreich war:
-
-<img class='full' src='import.webp' alt=''>
-
 ## Tabellenaufbau anzeigen
 
 Um mit MySQL zu arbeiten, verwenden wir `mycli`, einen MySQL-Client, der speziell für die Kommandozeile entwickelt wurde. Starte `mycli`, indem du den folgenden Befehl eingibst:
@@ -127,6 +119,13 @@ mycli
 ```
 
 Die Ausgabe sollte in etwa so aussehen:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: mycli
+sleep: 0.5
+crop-terminal-lines: 7
+-->
 
 <img class='full' src='mycli-prompt.webp' alt=''>
 
