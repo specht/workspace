@@ -745,15 +745,16 @@ async function ensureLoggedIn() {
     }), 'Tutorial screenshot login request');
     if (!requested.tag) throw new Error('Tutorial screenshot login request returned no tag');
 
-    // /l/<tag>/<code> creates the session and redirects to /. Do not follow that
-    // redirect: rendering / while Ruby is in parse_content() would recursively
-    // call parse_content() and deadlock on its mutex. The Set-Cookie header is
-    // still processed by Chromium before the manual redirect response is exposed.
-    await browserRequest(`/l/${encodeURIComponent(requested.tag)}/${encodeURIComponent(LOGIN_CODE)}`, {
-        method: 'GET',
-        body: null,
-        redirect: 'manual',
-    });
+    // Complete login through the same JSON API used by the normal login page.
+    // This creates the Session node and sets the current host-only session cookie
+    // without rendering /, which would recurse into parse_content() while a
+    // tutorial screenshot request is already in progress.
+    jsonResponse(await browserRequest('/api/complete_login', {
+        body: {
+            tag: requested.tag,
+            code: LOGIN_CODE,
+        },
+    }), 'Tutorial screenshot login completion');
 
     const probe = await browserRequest('/api/server_start_status', { body: {} });
     if (probe.status < 200 || probe.status >= 300) {
