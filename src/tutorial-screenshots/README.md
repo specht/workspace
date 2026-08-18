@@ -120,6 +120,7 @@ viewport: WIDTHxHEIGHT
 zoom: NUMBER
 crop-top: PERCENT%
 crop-bottom: PERCENT%
+crop-terminal-lines: LINES
 ```
 
 `tab` selects both the page to capture and the page used by the general
@@ -283,6 +284,17 @@ terminal-run: mycli
 terminal-run: SHOW TABLES;
 ```
 
+`crop-terminal-lines: N` is a capture directive for Workspace terminal screenshots.
+At capture time it finds the visible integrated terminal, keeps the top of its
+containing panel (including the panel header/tabs), and keeps the first `N`
+rendered xterm rows plus half of the actual rendered row height as padding. The
+measured CSS geometry is converted through the active viewport/zoom/device-scale
+profile, so the crop does not depend on fixed percentages or a configured font
+size. If fewer than `N` rendered rows are available, all available rows are kept
+and the padding is clamped to the terminal screen. `crop-terminal-lines` requires
+`tab: workspace` and cannot be combined with `crop-top` or `crop-bottom`; those
+combinations are validation errors.
+
 ### Files and editor state
 
 `open-file` opens a Workspace file through Quick Open and waits for the Monaco
@@ -387,7 +399,12 @@ immediately resets and starts another pristine screenshot Workspace in the
 background. The next render reuses that already-prepared Workspace instead of
 paying the reset/start/theme-settling cost again. If another reload arrives while
 preparation is still running, only a render that actually needs fresh screenshots
-waits for it; a reload whose screenshots are all current does not.
+waits for it; a reload whose screenshots are all current does not. Screenshot
+Workspace preparation also removes the screenshot account's additional MySQL
+databases and resets its provisioned MySQL and Neo4j databases through the
+application's normal per-user database list/delete/reset/provisioning paths, so
+repeated renders start from fresh database state. The normal student-facing
+Workspace reset itself continues to preserve database contents.
 
 The screenshot account still logs in as `screenshots@example.com`, but the Unix
 workspace user is configured separately and defaults to `student`. This keeps

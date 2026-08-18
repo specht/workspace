@@ -12,6 +12,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 COPY server.js ./server.js
+COPY crop.js ./crop.js
+COPY workspace-reset.js ./workspace-reset.js
 COPY fontconfig-rendering.conf /etc/fonts/conf.d/99-tutorial-screenshot-rendering.conf
 
 CMD ["node", "server.js"]

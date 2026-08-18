@@ -101,12 +101,11 @@ mysql < terra1.sql
 press: Control+B
 press: Control+J
 terminal-maximize
-#click: selector:.codicon-panel-maximize
 terminal-run: clear
 terminal-run: mysql < terra1.sql
 terminal-wait-for-prompt
 sleep: 0.5
-crop-top: 6.7%
+crop-terminal-lines: 2
 -->
 
 <img class='full' src='sql-import.webp' alt=''>

@@ -32,9 +32,9 @@
       "output_sha256": "f47f56606d18e3657b97dd47cd6d51f3e1212a9c69030ca23b00e4b0287f82e4"
     },
     "sql-import.webp": {
-      "state_hash": "b5287e50f73451fed351201bc75e932ecb0f4af1cbb7a7f4b7c8341f1f857b7f",
+      "state_hash": "96fa0eeb9e8414d985eff971a72c73199a7b4b8f3300564063b1e668b0d71fe0",
       "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
-      "output_sha256": "f45f0d22cd29f07908da247e39aca780c5c996ffa04e1420e04e3bb942e972d7"
+      "output_sha256": "53f124dc839aaf8ba8ab2eecad45965a4e18bc858612596cb1b68b9e315aa9ec"
     }
   }
 }

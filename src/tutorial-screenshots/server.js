@@ -6,6 +6,12 @@ import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { pathToFileURL } from 'node:url';
+import {
+    parseTerminalLineCropDirective,
+    terminalLineCropPixels,
+    validateCropDirectives,
+} from './crop.js';
+import { resetScreenshotDatabases } from './workspace-reset.js';
 import { chromium } from 'playwright';
 
 const execFileAsync = promisify(execFile);
@@ -328,11 +334,14 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
         zoom: DEFAULT_PROFILE.zoom,
         cropTop: 0,
         cropBottom: 0,
+        cropTerminalLines: null,
         actions: [],
     };
 
     let rawOffset = 0;
     let cropSource = null;
+    let cropTopSpecified = false;
+    let cropBottomSpecified = false;
     let lastSource = null;
 
     for (const rawLine of text.split('\n')) {
@@ -464,10 +473,18 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             }
         } else if ((match = line.match(/^crop-top:\s*(.+)$/))) {
             cropSource = source;
+            cropTopSpecified = true;
             recipe.cropTop = valueAtSource(source, () => parsePercent(match[1]));
         } else if ((match = line.match(/^crop-bottom:\s*(.+)$/))) {
             cropSource = source;
+            cropBottomSpecified = true;
             recipe.cropBottom = valueAtSource(source, () => parsePercent(match[1]));
+        } else if (line.startsWith('crop-terminal-lines:')) {
+            cropSource = source;
+            recipe.cropTerminalLines = valueAtSource(
+                source,
+                () => parseTerminalLineCropDirective(line),
+            );
         } else {
             throw withSourceError(
                 new Error(`Unknown tutorial screenshot instruction: ${line}`),
@@ -486,6 +503,15 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             cropSource || lastSource || recipe[SOURCE_LOCATION],
         );
     }
+    valueAtSource(
+        cropSource || lastSource || recipe[SOURCE_LOCATION],
+        () => validateCropDirectives({
+            cropTopSpecified,
+            cropBottomSpecified,
+            cropTerminalLines: recipe.cropTerminalLines,
+            tab: recipe.tab,
+        }),
+    );
     return recipe;
 }
 
@@ -597,6 +623,9 @@ async function parseTutorial(markdown, markdownPath) {
             cropBottom: recipe.cropBottom,
             actions: resolvedActions,
         };
+        if (recipe.cropTerminalLines != null) {
+            resolved.cropTerminalLines = recipe.cropTerminalLines;
+        }
         resolved[SOURCE_LOCATION] = recipe[SOURCE_LOCATION] || recipeSource;
         resolved[TARGET_LOCATION] = targetSource;
 
@@ -900,6 +929,12 @@ async function prepareFreshWorkspace() {
     jsonResponse(await browserRequest('/api/reset_server', {
         body: { confirmation: SCREENSHOT_EMAIL },
     }), 'Tutorial screenshot Workspace reset');
+
+    // A normal Workspace reset deliberately preserves database contents. A
+    // screenshot Workspace must be pristine across renders, so compose the same
+    // per-user database list/delete/reset/provisioning paths that the application
+    // exposes instead of implementing database cleanup in the screenshot service.
+    await resetScreenshotDatabases(browserRequest, jsonResponse);
 
     // The request after reset sees the newly generated server_sid and therefore
     // refreshes Chromium's private-workspace cookie without rendering a page.
@@ -1976,6 +2011,70 @@ function pngDimensions(buffer) {
     };
 }
 
+async function visibleTerminalCropGeometry(page) {
+    return page.evaluate(() => {
+        const terminals = [...document.querySelectorAll('.terminal.xterm')]
+            .filter(terminal => {
+                const rect = terminal.getBoundingClientRect();
+                return rect.width > 0 && rect.height > 0;
+            });
+        const terminal = terminals.at(-1);
+        if (!terminal) {
+            throw new Error(
+                'crop-terminal-lines requires a visible integrated terminal',
+            );
+        }
+
+        const panel = terminal.closest('.part.panel');
+        const screen = terminal.querySelector('.xterm-screen');
+        if (!panel || !screen) {
+            throw new Error(
+                'crop-terminal-lines could not measure the integrated terminal',
+            );
+        }
+
+        const panelRect = panel.getBoundingClientRect();
+        const screenRect = screen.getBoundingClientRect();
+        if (
+            panelRect.width <= 0 || panelRect.height <= 0 ||
+            screenRect.width <= 0 || screenRect.height <= 0
+        ) {
+            throw new Error(
+                'crop-terminal-lines could not measure the visible terminal geometry',
+            );
+        }
+
+        const rows = [...terminal.querySelectorAll('.xterm-rows > div')]
+            .map(row => {
+                const rect = row.getBoundingClientRect();
+                return {
+                    top: rect.top,
+                    bottom: rect.bottom,
+                    width: rect.width,
+                    height: rect.height,
+                };
+            })
+            .filter(row =>
+                row.width > 0 &&
+                row.height > 0 &&
+                row.bottom > screenRect.top &&
+                row.top < screenRect.bottom
+            )
+            .sort((left, right) => left.top - right.top)
+            .map(({ top, bottom, height }) => ({ top, bottom, height }));
+
+        if (rows.length === 0) {
+            throw new Error('crop-terminal-lines found no rendered terminal rows');
+        }
+
+        return {
+            panelTop: panelRect.top,
+            screenBottom: screenRect.bottom,
+            rows,
+        };
+    });
+}
+
 async function captureShot(shot, tutorialDirectory) {
     const page = pageForTab(shot.tab);
     if (!page || page.isClosed()) throw new Error(`Screenshot requests unavailable tab: ${shot.tab}`);
@@ -1988,9 +2087,20 @@ async function captureShot(shot, tutorialDirectory) {
     // screenshot clip itself is in CSS pixels, so divide by the emulated zoom.
     // Fractional clip dimensions are intentional: at 1853x929 / 150% they make
     // Playwright emit exactly 1853x929 device pixels instead of 1854x930.
-    const topPixels = Math.round(shot.viewport.height * shot.cropTop);
-    const bottomPixels = Math.round(shot.viewport.height * shot.cropBottom);
-    const heightPixels = shot.viewport.height - topPixels - bottomPixels;
+    let topPixels = Math.round(shot.viewport.height * shot.cropTop);
+    let bottomPixels = Math.round(shot.viewport.height * shot.cropBottom);
+    let heightPixels = shot.viewport.height - topPixels - bottomPixels;
+
+    if (shot.cropTerminalLines != null) {
+        const geometry = await visibleTerminalCropGeometry(page);
+        const crop = terminalLineCropPixels({
+            viewportHeight: shot.viewport.height,
+            deviceScaleFactor: metrics.deviceScaleFactor,
+            ...geometry,
+            lineCount: shot.cropTerminalLines,
+        });
+        ({ topPixels, bottomPixels, heightPixels } = crop);
+    }
     const pngPath = `/tmp/tutorial-shot-${process.pid}-${crypto.randomBytes(6).toString('hex')}.png`;
     const target = path.join(tutorialDirectory, shot.target);
     const temporaryWebp = `${target}.tmp-${process.pid}-${Date.now()}`;
