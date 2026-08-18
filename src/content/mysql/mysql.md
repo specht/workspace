@@ -131,6 +131,14 @@ crop-terminal-lines: 7
 
 Um dir die Tabellen in der Datenbank anzeigen zu lassen, gib den Befehl `SHOW TABLES;` ein und drücke <kbd>Enter</kbd>:
 
+<!-- tutorial-screenshot
+press: Control+L
+type: show tables;
+press: Enter
+sleep: 0.5
+#crop-terminal-lines: 8
+-->
+
 <img class='full' src='show-tables.webp' alt=''>
 
 <div class='hint'>

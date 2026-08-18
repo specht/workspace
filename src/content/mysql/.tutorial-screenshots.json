@@ -3,43 +3,48 @@
   "screenshots": {
     "fresh-start.webp": {
       "state_hash": "6789bf9942f36da5f980c052d9e2841b8c4f1d8f10984979db72455f8c5fad0b",
-      "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
+      "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
       "output_sha256": "b5f3f5ef0a72ba973385b2e979f66ab8d707aea9a71d917333791e62179b2ef6"
     },
     "open-folder.webp": {
       "state_hash": "77130da0c9d39a1e3d30e1c0b3b4f4dd935cc9463fc912eb3f90d4dac3c47a75",
-      "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
+      "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
       "output_sha256": "8da12dc37c4486971d5bfb3cce2860119f744f3dc9e70a8b4efb1ecb070c71d6"
     },
     "open-folder-confirm.webp": {
       "state_hash": "ef943e3548338b26b67b1ad8c677855c769ae2aed4e48ea3b3e7485a1220cc3b",
-      "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
+      "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
       "output_sha256": "b6e28442acc4b7ff187a175ac786740e94efd33ccb7ebcee7d2ab6113d5d432e"
     },
     "got-terminal.webp": {
       "state_hash": "8beabb481c3f3cab6df8eab06b81891de445dd9ebe20e710c06d475ff7b11dec",
-      "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
+      "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
       "output_sha256": "62a14bdf3c9442cb2aeb478fa72e752761df52c226ab6dbe25221f04afae41d8"
     },
     "wget.webp": {
       "state_hash": "cc2e6c7d001a8523ad9796d056ab85c496d468a57478d4687c5525e70a98b779",
-      "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
-      "output_sha256": "4236f6afaf54de58ad34f597ade8de7ffd4fccac386e53ac578ff9b70b0f810e"
+      "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
+      "output_sha256": "0b6c2aa2d54d356a2516f168dbdb79337769b7da21c18e735e6cdd25ecf6cc8f"
     },
     "terra1-sql.webp": {
       "state_hash": "73fd0835e456e74100af50390aad46c5354abe36e2ce68927a8384deab4ef5bb",
-      "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
+      "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
       "output_sha256": "f47f56606d18e3657b97dd47cd6d51f3e1212a9c69030ca23b00e4b0287f82e4"
     },
     "sql-import.webp": {
       "state_hash": "96fa0eeb9e8414d985eff971a72c73199a7b4b8f3300564063b1e668b0d71fe0",
-      "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
+      "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
       "output_sha256": "53f124dc839aaf8ba8ab2eecad45965a4e18bc858612596cb1b68b9e315aa9ec"
     },
     "mycli-prompt.webp": {
       "state_hash": "3366c3e23af22719c127c6e88d8e46b1e162fdb61ba2facc32ec624cc18370b8",
-      "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
-      "output_sha256": "52e3ef9eba58aa3d5c9461f6ec6c8d749ec8d69b8bb706e02a5999ecebc852f5"
+      "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
+      "output_sha256": "d29134df5eb04dab26c8ca266df63bf625fc108d82a0f8de8b6eac024edb071b"
+    },
+    "show-tables.webp": {
+      "state_hash": "74c152d01c1ed75e08d55188d5d29f545fb02bbd8314987bc161cf110247e1a5",
+      "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
+      "output_sha256": "b015f7a029a03116bfb8312665cfb50dc7606b5523a1c0c4ae9390f0dff05ebc"
     }
   }
 }

@@ -2759,7 +2759,7 @@ class Main < Sinatra::Base
             end
 
             if DEVELOPMENT && (
-                    email == 'screenshots@example.com' ||
+                    email == 'student@example.com' ||
                     email.match?(/\Ae2e-\d+@example\.com\z/)
                 )
                 user_config['terminal.integrated.gpuAcceleration'] = 'off'

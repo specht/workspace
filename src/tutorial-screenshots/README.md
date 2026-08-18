@@ -406,9 +406,7 @@ application's normal per-user database list/delete/reset/provisioning paths, so
 repeated renders start from fresh database state. The normal student-facing
 Workspace reset itself continues to preserve database contents.
 
-The screenshot account still logs in as `screenshots@example.com`, but the Unix
-workspace user is configured separately and defaults to `student`. This keeps
-terminal prompts suitable for student-facing screenshots.
+The screenshot account logs in as `student@example.com`.
 
 If a recipe action fails while a tutorial is being replayed, the generator first
 writes debug screenshots of the currently open Workspace and preview tabs (when
