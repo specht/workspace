@@ -22,6 +22,29 @@ Schließe die linken Seitenleiste, indem du <kbd>Strg</kbd><kbd>B</kbd> drückst
 Öffne als nächstes das Terminal, indem du den Shortcut <kbd>Strg</kbd><kbd>J</kbd> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <!-- tutorial-screenshot
+press: Control+K
+press: Control+O
+wait-for-input-value: /workspace/
+type: mysql-terra
+-->
+
+<img class='full' src='open-folder.webp' alt=''>
+
+<!-- tutorial-screenshot
+press: Enter
+wait-for-text: create it
+-->
+
+<img class='full' src='open-folder-confirm.webp' alt=''>
+
+<!-- tutorial-screenshot
+press: Enter
+sleep: 1
+-->
+
+<img class='full' src='open-folder-ready.webp' alt=''>
+
+<!-- tutorial-screenshot
 hide-left-sidebar
 terminal-open
 -->
