@@ -68,6 +68,7 @@ const SIMPLE_ACTIONS = new Set([
     'clone-open',
     'go-live',
     'terminal-open',
+    'terminal-wait-for-prompt',
     'terminal-maximize',
     'preview-reload',
     'preview-reset',
@@ -1017,9 +1018,7 @@ async function focusTerminal() {
     await workspace.waitForTimeout(150);
 }
 
-async function waitForInitialTerminalPrompt() {
-    if (terminalShellReady) return;
-
+async function waitForTerminalPrompt() {
     await workspace.waitForFunction(
         user => {
             const terminals = [...document.querySelectorAll('.terminal.xterm')]
@@ -1030,17 +1029,23 @@ async function waitForInitialTerminalPrompt() {
             const terminal = terminals.at(-1);
             if (!terminal) return false;
 
-            const rows = [...terminal.querySelectorAll('.xterm-rows > div')];
-            return rows.slice(-12).some(row => {
-                const text = (row.textContent || '').replace(/\s+/g, ' ').trim();
-                return text.includes(`${user}@workspace`) && /[#$]$/.test(text);
-            });
+            const lines = [...terminal.querySelectorAll('.xterm-rows > div')]
+                .map(row => (row.textContent || '').replace(/\s+/g, ' ').trim())
+                .filter(Boolean);
+            const lastLine = lines.at(-1) || '';
+            return lastLine.includes(`${user}@workspace`) && /[#$]$/.test(lastLine);
         },
         SCREENSHOT_WORKSPACE_USER,
-        { timeout: 30_000 },
+        { timeout: 60_000 },
     );
-    terminalShellReady = true;
     await workspace.waitForTimeout(150);
+}
+
+async function waitForInitialTerminalPrompt() {
+    if (terminalShellReady) return;
+
+    await waitForTerminalPrompt();
+    terminalShellReady = true;
 }
 
 async function terminalOpen() {
@@ -1833,6 +1838,7 @@ async function executeAction(action, targetTab, hooks) {
     case 'clone-open': return cloneOpen();
     case 'open-file': return openFile(action.path);
     case 'terminal-open': return terminalOpen();
+    case 'terminal-wait-for-prompt': return waitForTerminalPrompt();
     case 'terminal-maximize': return terminalMaximize();
     case 'terminal-run': return terminalRun(action.text);
     case 'terminal-key': return terminalKey(action.key);

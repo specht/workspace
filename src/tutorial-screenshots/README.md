@@ -71,6 +71,7 @@ clone-accept-destination
 clone-open
 open-file: PATH
 terminal-open
+terminal-wait-for-prompt
 terminal-maximize
 terminal-run: TEXT
 terminal-key: PlaywrightKey
@@ -102,6 +103,19 @@ crop-bottom: PERCENT%
 initial shell prompt (for example `student@workspace:~$`) and focuses the active
 terminal. Repeating it does not create another terminal or wait for Bash again,
 so later `terminal-run` instructions can also drive an interactive program.
+
+`terminal-wait-for-prompt` waits until the last non-empty line in the integrated
+terminal is a Bash prompt such as `student@workspace:~$`. This is useful after a
+foreground shell command when the next screenshot or action must not happen until
+the command has finished. For example:
+
+```text
+terminal-run: wget https://github.com/specht/workspace-files/raw/main/terra1.sql
+terminal-wait-for-prompt
+```
+
+Do not use it after starting an interactive program such as `mycli`, because Bash
+will not show another prompt until that program exits.
 
 `terminal-maximize` makes the panel containing the terminal fill the available
 workbench area and returns focus to the terminal. It is safe to repeat when the

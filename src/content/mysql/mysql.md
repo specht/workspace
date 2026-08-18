@@ -45,30 +45,19 @@ Die Ausgabe sollte in etwa so aussehen:
 <!-- tutorial-screenshot
 terminal-maximize
 terminal-run: wget https://github.com/specht/workspace-files/raw/main/terra1.sql
+terminal-wait-for-prompt
 -->
 
 <img class='full' src='wget.webp' alt=''>
 
-<div class='hint'>
-Lass dich nicht davon stören, dass die Ausgabe so umfangreich ist. Der Grund dafür ist, dass der Webserver die
-Anfrage auf eine andere URL umleitet (»302 Found«) und <code>wget</code> dieser Umleitung folgt. Die eigentliche Datei wird
-dann heruntergeladen (»200 OK«) und die Ausgabe von <code>wget</code> zeigt dir den Fortschritt an.
-</div>
-
 Das Programm `wget` können wir dazu verwenden, um Dateien aus dem Internet herunterzuladen.
 Die Datei wird standardmäßig im aktuellen Verzeichnis gespeichert. Schau nach, ob die Datei
-angekommen ist, indem du den Befehl `ls` (kurz für »list«) eingibst:
+angekommen ist, indem du den Befehl `ls -lh` (kurz für »list human-readable«) eingibst:
 
-<img class='full' src='ls.webp' alt=''>
-
-Viele Befehle auf der Kommandozeile haben Optionen, die stets hinter dem Befehlsnamen mit einem `-` beginnen.
-Probiere hier den Befehl `ls -l` (für »long«), um dir mehr Details anzeigen zu lassen:
-
-<img class='full' src='ls-l.webp' alt=''>
-
-Du siehst nun u.a., wie groß die Datei ist. Nutze den Befehl `ls -lh` (für »long human-readable«),
-um die Größe in einer besser lesbaren Form zu sehen:
-
+<!-- tutorial-screenshot
+terminal-run: ls -l
+terminal-wait-for-prompt
+-->
 <img class='full' src='ls-lh.webp' alt=''>
 
 Die Datei ist also 1,6 MB groß.
