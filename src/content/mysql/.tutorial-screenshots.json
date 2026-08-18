@@ -19,7 +19,7 @@
     "open-folder-ready.webp": {
       "state_hash": "543a8a86a1846b2ca9e01190fa53cfa762f201c110c6764a2aa5181b2cb7b2e6",
       "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
-      "output_sha256": "58a9a9d084b1f651ec0615a1e095ae5790fe31256a813d79f5f4b62359cf2168"
+      "output_sha256": "87930635c0243eb9cbf5bd93c51e3ebdd278e3f00b7e65565a7fd47cc641ddf8"
     },
     "got-terminal.webp": {
       "state_hash": "ed01b6aed8681af909d94848056a15c2533da3847cb4ab3eb44da95725f348dc",
@@ -34,12 +34,12 @@
     "wget.webp": {
       "state_hash": "d549c5a2c7ae2169ec6d8142ea8c9329c54f290ea9753a76fa2133cef555a9f8",
       "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
-      "output_sha256": "d1959f710cd45abdd2f238f2a4547d11ecdd8cd84539cb6e889dc90f50518d59"
+      "output_sha256": "090fa06b76d0380b6b17914d819299a13494a32c0cb7adefafea185c14cc9107"
     },
     "ls-lh.webp": {
       "state_hash": "cc595281890f88cfe016758af0ce2b19ff111f0c6bca6957a4b12921b99211ea",
       "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
-      "output_sha256": "cd212c05341e43e308832949cc19ff5fc5259c36cd9fe3d20a7728747e818282"
+      "output_sha256": "0c1167d41acf56d94b45dcfcbf501a33a0dfd54f21d9c5a4f978e94f0395cc54"
     }
   }
 }

@@ -21,7 +21,6 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 <!-- tutorial-screenshot
 # Workspace ohne geöffneten Ordner
 show-left-sidebar
-left-sidebar-width: 500
 -->
 
 <img class='full' src='fresh-start.webp' alt=''>
@@ -256,6 +255,7 @@ click: Fit graph
 sleep: 0.5
 click: Gehe in den Flur.
 wait-for-text: Sieh im Büro nach.
+sleep: 0.5
 click: Sieh im Büro nach.
 wait-for-text: Gehe zurück in den Flur.
 sleep: 0.5
@@ -309,8 +309,10 @@ click: Fit graph
 sleep: 0.5
 click: Gehe in den Flur.
 wait-for-text: Sieh im Büro nach.
+sleep: 0.5
 click: Sieh im Büro nach.
 wait-for-text: Frage nach dem Materialschrank.
+sleep: 0.5
 click: Frage nach dem Materialschrank.
 wait-for-text: Gehe zurück in den Flur.
 move-mouse: No problems
@@ -576,10 +578,13 @@ click: Fit graph
 sleep: 0.5
 click: Gehe in den Flur.
 wait-for-text: Sieh im Büro nach.
+sleep: 0.5
 click: Sieh im Büro nach.
 wait-for-text: Frage nach dem Materialschrank.
+sleep: 0.5
 click: Nimm den Schlüssel.
 wait-for-text: Gehe zurück in den Flur.
+sleep: 0.5
 click: Gehe zurück in den Flur.
 move-mouse: No problems
 sleep: 0.5
@@ -887,9 +892,10 @@ click: selector:.story-view-toggle
 hold: 1.5s selector:.story-restart-control
 click: Gehe in den Flur.
 wait-for-text: Sieh im Büro nach.
+sleep: 0.5
 click: Sieh im Büro nach.
 wait-for-text: Gehe zurück in den Flur.
-#move-mouse: No problems
+move-mouse: No problems
 zoom: 1.25
 sleep: 1.5
 -->

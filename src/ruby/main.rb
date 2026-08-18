@@ -1036,18 +1036,27 @@ class Main < Sinatra::Base
             STDERR.puts "Copying #{image_path} to cache..."
             FileUtils.cp(image_path, target_path)
         end
-        [1024, 512].each do |width|
-            target_path_width = "/webcache/#{image_sha1}-#{width}.webp"
-            unless FileUtils.uptodate?(target_path_width, [target_path])
-                command = "convert #{target_path} -resize #{width}x #{target_path_width}"
-                system(command)
-                if $? != 0
-                    STDERR.puts command
-                    STDERR.puts "...conversion of #{image_path} failed!"
-                end
-            end
-        end
         image_sha1
+    end
+
+    # Width-specific variants are only needed by overview cards. Restrict this
+    # to normal converted cache entries; data-noconvert images use a different key.
+    def self.ensure_image_width(image_url, width)
+        match = image_url&.match(%r{\A/cache/([0-9a-f]{16})\.webp\z})
+        return unless match
+
+        source_path = "/webcache/#{match[1]}.webp"
+        return unless File.exist?(source_path)
+
+        target_path = "/webcache/#{match[1]}-#{width}.webp"
+        return if FileUtils.uptodate?(target_path, [source_path])
+
+        command = "convert #{source_path} -resize #{width}x #{target_path}"
+        system(command)
+        if $? != 0
+            STDERR.puts command
+            STDERR.puts "...conversion of #{source_path} failed!"
+        end
     end
 
     def self.inject_autotoc(root, options = {})
@@ -3144,6 +3153,9 @@ class Main < Sinatra::Base
                         additional_classes = []
                         if content[:needs_contrast] == 'light'
                             additional_classes << 'dark-only-bg-contrast-light'
+                        end
+                        [content[:image], content[:image_dark]].compact.each do |image_url|
+                            Main.ensure_image_width(image_url, 1024)
                         end
                         image_style = "object-position: #{content[:image_x]}% #{content[:image_y]}%;"
                         if content[:image_dark]
