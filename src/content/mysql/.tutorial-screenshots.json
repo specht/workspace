@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "screenshots": {
+    "fresh-start.webp": {
+      "state_hash": "df93fde3d9dacd15b6e18f7e27782e0916bdf2038b292daf34a8ba6ebf6d1d86",
+      "environment_fingerprint": "de253875012729534ddebcdf749087eb021b6e0bc4056704d6be165a296060f4",
+      "output_sha256": "da63c6b8fcd1e01064dd95defc6da8b91731ce26d3154a6a0c52ece462b6842f"
+    },
+    "got-terminal.webp": {
+      "state_hash": "745da08ac870d85576b767bfb9fdcbdb98c536460ba25dab21d1c09d8732161b",
+      "environment_fingerprint": "de253875012729534ddebcdf749087eb021b6e0bc4056704d6be165a296060f4",
+      "output_sha256": "b65d73206934bb874466dac3d612fcb52e326d2852b074b92977003468caa2f6"
+    },
+    "mkdir-terra.webp": {
+      "state_hash": "b8904bd554dced4bf4596150aedea8c94b26fc655cb67f06ab4d9bec535eabe4",
+      "environment_fingerprint": "de253875012729534ddebcdf749087eb021b6e0bc4056704d6be165a296060f4",
+      "output_sha256": "354456b7d5c96b417d43161313f6d6b8c10261ace3cbdbd9a626b1ccef79c1cc"
+    },
+    "wget.webp": {
+      "state_hash": "1c6b4bf758a9b4765cd6eade7678ac3b6ec6858ecb1126f21018d3844fcd512c",
+      "environment_fingerprint": "de253875012729534ddebcdf749087eb021b6e0bc4056704d6be165a296060f4",
+      "output_sha256": "08a5c173078d05da7f13c58119908359d48b9bf317b9206c7a3924bcec556eb2"
+    },
+    "ls-lh.webp": {
+      "state_hash": "8800d75900547a4e6f63cbdd31f2c790dc0112e877912aabe241dbdcc457e63a",
+      "environment_fingerprint": "de253875012729534ddebcdf749087eb021b6e0bc4056704d6be165a296060f4",
+      "output_sha256": "e1d2bd9c50df2b2031df629b8dd0aae1e87877445c27de1ef673b8a5bb62a66e"
+    }
+  }
+}
