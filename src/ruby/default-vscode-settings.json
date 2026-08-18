@@ -27,12 +27,13 @@
     "js/ts.autoClosingTags.enabled": false,
 
     "terminal.integrated.suggest.enabled": false,
+    "terminal.integrated.stickyScroll.enabled": false,
 
     "keyboard.layout": "de",
 
     "window.menuBarVisibility": "visible",
     "workbench.secondarySideBar.defaultVisibility": "hidden",
-    "workbench.colorTheme": "Dark 2026",
+    "workbench.colorTheme": "Default Dark Modern",
 
     "latex-workshop.latex.autoBuild.run": "onSave",
     "latex-workshop.latex.outDir": "%DIR%",

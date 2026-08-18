@@ -20,13 +20,35 @@ export function parseTerminalLineCropDirective(line) {
     return parseTerminalLineCount(match[1]);
 }
 
+export function parseTerminalLineSkip(value, directive) {
+    const text = `${value}`.trim();
+    if (!/^\d+$/.test(text)) {
+        throw new Error(`${directive} must be a non-negative integer: ${value}`);
+    }
+
+    const count = Number(text);
+    if (!Number.isSafeInteger(count)) {
+        throw new Error(`${directive} must be a non-negative integer: ${value}`);
+    }
+    return count;
+}
+
 export function validateCropDirectives({
     cropTopSpecified,
     cropBottomSpecified,
     cropTerminalLines,
+    cropTerminalSkipTop = 0,
+    cropTerminalSkipBottom = 0,
     tab,
 }) {
-    if (cropTerminalLines == null) return;
+    if (cropTerminalLines == null) {
+        if (cropTerminalSkipTop > 0 || cropTerminalSkipBottom > 0) {
+            throw new Error(
+                'crop-terminal-skip-top and crop-terminal-skip-bottom require crop-terminal-lines',
+            );
+        }
+        return;
+    }
 
     if (cropTopSpecified || cropBottomSpecified) {
         throw new Error(
@@ -45,6 +67,8 @@ export function terminalLineCropPixels({
     screenBottom,
     rows,
     lineCount,
+    skipTop = 0,
+    skipBottom = 0,
 }) {
     if (!Number.isInteger(viewportHeight) || viewportHeight <= 0) {
         throw new Error(`Invalid screenshot viewport height: ${viewportHeight}`);
@@ -58,18 +82,36 @@ export function terminalLineCropPixels({
     if (!Array.isArray(rows) || rows.length === 0) {
         throw new Error('crop-terminal-lines found no rendered terminal rows');
     }
+    if (!Number.isSafeInteger(skipTop) || skipTop < 0) {
+        throw new Error(`Invalid terminal top skip: ${skipTop}`);
+    }
+    if (!Number.isSafeInteger(skipBottom) || skipBottom < 0) {
+        throw new Error(`Invalid terminal bottom skip: ${skipBottom}`);
+    }
+    if (skipTop + skipBottom >= rows.length) {
+        throw new Error(
+            'crop-terminal-lines skip values leave no rendered terminal rows',
+        );
+    }
+
+    const consideredRows = rows.slice(
+        skipTop,
+        skipBottom === 0 ? rows.length : rows.length - skipBottom,
+    );
 
     let keptRows;
     if (lineCount === 'auto') {
-        const lastNonEmptyIndex = rows.findLastIndex(row => !row.empty);
+        const lastNonEmptyIndex = consideredRows.findLastIndex(row => !row.empty);
         keptRows = Math.max(1, lastNonEmptyIndex + 1);
     } else {
-        keptRows = Math.min(lineCount, rows.length);
+        keptRows = Math.min(lineCount, consideredRows.length);
     }
-    const lastRow = rows[keptRows - 1];
+    const firstRow = consideredRows[0];
+    const lastRow = consideredRows[keptRows - 1];
     if (
         !Number.isFinite(panelTop) ||
         !Number.isFinite(screenBottom) ||
+        (skipTop > 0 && !Number.isFinite(firstRow?.top)) ||
         !Number.isFinite(lastRow?.bottom) ||
         !Number.isFinite(lastRow?.height) ||
         lastRow.height <= 0
@@ -84,9 +126,10 @@ export function terminalLineCropPixels({
         screenBottom,
         lastRow.bottom + lastRow.height * 0.5,
     );
+    const topCss = skipTop > 0 ? firstRow.top : panelTop;
     const topPixels = Math.max(
         0,
-        Math.min(viewportHeight - 1, Math.floor(panelTop * deviceScaleFactor)),
+        Math.min(viewportHeight - 1, Math.floor(topCss * deviceScaleFactor)),
     );
     const bottomEdgePixels = Math.max(
         topPixels + 1,

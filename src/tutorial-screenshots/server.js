@@ -8,6 +8,7 @@ import { promisify } from 'node:util';
 import { pathToFileURL } from 'node:url';
 import {
     parseTerminalLineCropDirective,
+    parseTerminalLineSkip,
     terminalLineCropPixels,
     validateCropDirectives,
 } from './crop.js';
@@ -335,6 +336,8 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
         cropTop: 0,
         cropBottom: 0,
         cropTerminalLines: null,
+        cropTerminalSkipTop: 0,
+        cropTerminalSkipBottom: 0,
         actions: [],
     };
 
@@ -485,6 +488,18 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
                 source,
                 () => parseTerminalLineCropDirective(line),
             );
+        } else if ((match = line.match(/^crop-terminal-skip-top:\s*(.+)$/))) {
+            cropSource = source;
+            recipe.cropTerminalSkipTop = valueAtSource(
+                source,
+                () => parseTerminalLineSkip(match[1], 'crop-terminal-skip-top'),
+            );
+        } else if ((match = line.match(/^crop-terminal-skip-bottom:\s*(.+)$/))) {
+            cropSource = source;
+            recipe.cropTerminalSkipBottom = valueAtSource(
+                source,
+                () => parseTerminalLineSkip(match[1], 'crop-terminal-skip-bottom'),
+            );
         } else {
             throw withSourceError(
                 new Error(`Unknown tutorial screenshot instruction: ${line}`),
@@ -509,6 +524,8 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             cropTopSpecified,
             cropBottomSpecified,
             cropTerminalLines: recipe.cropTerminalLines,
+            cropTerminalSkipTop: recipe.cropTerminalSkipTop,
+            cropTerminalSkipBottom: recipe.cropTerminalSkipBottom,
             tab: recipe.tab,
         }),
     );
@@ -625,6 +642,12 @@ async function parseTutorial(markdown, markdownPath) {
         };
         if (recipe.cropTerminalLines != null) {
             resolved.cropTerminalLines = recipe.cropTerminalLines;
+        }
+        if (recipe.cropTerminalSkipTop > 0) {
+            resolved.cropTerminalSkipTop = recipe.cropTerminalSkipTop;
+        }
+        if (recipe.cropTerminalSkipBottom > 0) {
+            resolved.cropTerminalSkipBottom = recipe.cropTerminalSkipBottom;
         }
         resolved[SOURCE_LOCATION] = recipe[SOURCE_LOCATION] || recipeSource;
         resolved[TARGET_LOCATION] = targetSource;
@@ -2096,6 +2119,8 @@ async function captureShot(shot, tutorialDirectory) {
             deviceScaleFactor: metrics.deviceScaleFactor,
             ...geometry,
             lineCount: shot.cropTerminalLines,
+            skipTop: shot.cropTerminalSkipTop || 0,
+            skipBottom: shot.cropTerminalSkipBottom || 0,
         });
         ({ topPixels, bottomPixels, heightPixels } = crop);
     }

@@ -10,6 +10,11 @@ Eine kleine Tour durch die Benutzeroberfläche von Visual Studio Code, gefolgt v
 
 Wenn du den Workspace öffnest, siehst du die Entwicklungsumgebung Visual Studio Code:
 
+<!-- tutorial-screenshot
+# Workspace ohne geöffneten Ordner
+show-left-sidebar
+-->
+
 <img class='full' src='vs-code-welcome.webp' data alt=''>
 
 ## Die Benutzeroberfläche

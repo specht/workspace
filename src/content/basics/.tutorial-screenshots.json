@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "screenshots": {
+    "vs-code-welcome.webp": {
+      "state_hash": "64570bdcb5b25b2e32428f40967c06bdfbb2218d2a63ef20a795a7430dffdd59",
+      "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
+      "output_sha256": "b5f3f5ef0a72ba973385b2e979f66ab8d707aea9a71d917333791e62179b2ef6"
+    }
+  }
+}

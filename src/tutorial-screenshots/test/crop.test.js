@@ -4,6 +4,7 @@ import test from 'node:test';
 import {
     parseTerminalLineCropDirective,
     parseTerminalLineCount,
+    parseTerminalLineSkip,
     terminalLineCropPixels,
     validateCropDirectives,
 } from '../crop.js';
@@ -27,6 +28,17 @@ test('crop-terminal-lines parses positive integers or auto only', () => {
         assert.throws(
             () => parseTerminalLineCount(value),
             /crop-terminal-lines must be a positive integer or auto/,
+        );
+    }
+});
+
+test('terminal crop skip directives parse non-negative integers only', () => {
+    assert.equal(parseTerminalLineSkip('0', 'crop-terminal-skip-top'), 0);
+    assert.equal(parseTerminalLineSkip(' 2 ', 'crop-terminal-skip-bottom'), 2);
+    for (const value of ['-1', '1.5', 'one', '9007199254740992']) {
+        assert.throws(
+            () => parseTerminalLineSkip(value, 'crop-terminal-skip-bottom'),
+            /crop-terminal-skip-bottom must be a non-negative integer/,
         );
     }
 });
@@ -70,6 +82,20 @@ test('crop-terminal-lines conflicts with manual crops and preview capture', () =
             tab: 'preview',
         }),
         /requires tab: workspace/,
+    );
+});
+
+test('terminal crop skips require crop-terminal-lines', () => {
+    assert.throws(
+        () => validateCropDirectives({
+            cropTopSpecified: false,
+            cropBottomSpecified: false,
+            cropTerminalLines: null,
+            cropTerminalSkipTop: 0,
+            cropTerminalSkipBottom: 1,
+            tab: 'workspace',
+        }),
+        /require crop-terminal-lines/,
     );
 });
 
@@ -165,4 +191,73 @@ test('terminal crop auto mode keeps at least one row when all visible rows are e
         keptRows: 1,
         availableRows: 2,
     });
+});
+
+test('terminal auto crop ignores skipped rows at the bottom', () => {
+    const crop = terminalLineCropPixels({
+        viewportHeight: 929,
+        deviceScaleFactor: 1.8,
+        panelTop: 34.25,
+        screenBottom: 500,
+        rows: [
+            { top: 60, bottom: 80, height: 20, empty: false },
+            { top: 80, bottom: 100, height: 20, empty: false },
+            { top: 100, bottom: 120, height: 20, empty: false },
+            { top: 120, bottom: 140, height: 20, empty: true },
+            { top: 140, bottom: 160, height: 20, empty: false },
+        ],
+        lineCount: 'auto',
+        skipBottom: 1,
+    });
+
+    assert.deepEqual(crop, {
+        topPixels: 61,
+        bottomPixels: 695,
+        heightPixels: 173,
+        keptRows: 3,
+        availableRows: 5,
+    });
+});
+
+test('terminal crop can skip rendered rows from the top', () => {
+    const crop = terminalLineCropPixels({
+        viewportHeight: 500,
+        deviceScaleFactor: 2,
+        panelTop: 10,
+        screenBottom: 300,
+        rows: [
+            { top: 40, bottom: 60, height: 20, empty: false },
+            { top: 60, bottom: 80, height: 20, empty: false },
+            { top: 80, bottom: 100, height: 20, empty: false },
+        ],
+        lineCount: 2,
+        skipTop: 1,
+    });
+
+    assert.deepEqual(crop, {
+        topPixels: 120,
+        bottomPixels: 280,
+        heightPixels: 100,
+        keptRows: 2,
+        availableRows: 3,
+    });
+});
+
+test('terminal crop rejects skip values that remove every rendered row', () => {
+    assert.throws(
+        () => terminalLineCropPixels({
+            viewportHeight: 300,
+            deviceScaleFactor: 2,
+            panelTop: 5,
+            screenBottom: 100,
+            rows: [
+                { top: 20, bottom: 40, height: 20, empty: false },
+                { top: 40, bottom: 60, height: 20, empty: false },
+            ],
+            lineCount: 'auto',
+            skipTop: 1,
+            skipBottom: 1,
+        }),
+        /leave no rendered terminal rows/,
+    );
 });

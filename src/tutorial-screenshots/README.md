@@ -121,6 +121,8 @@ zoom: NUMBER
 crop-top: PERCENT%
 crop-bottom: PERCENT%
 crop-terminal-lines: NUMBER|auto
+crop-terminal-skip-top: NUMBER
+crop-terminal-skip-bottom: NUMBER
 ```
 
 `tab` selects both the page to capture and the page used by the general
@@ -301,6 +303,22 @@ With `crop-terminal-lines: auto`, the generator keeps rows through the last
 visible non-empty terminal row, again with the same half-row padding. This is
 useful when the visible output height depends on the command you just ran and
 you simply want the screenshot to include all visible terminal content.
+
+`crop-terminal-skip-top: NUMBER` and `crop-terminal-skip-bottom: NUMBER` remove
+rendered xterm rows from consideration before the terminal crop is calculated.
+This is especially useful with `auto` when an interactive program reserves a
+status/help row at the bottom of the terminal:
+
+```text
+crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
+```
+
+A bottom skip can therefore hide an otherwise unrelated status row without
+hard-coding knowledge of that program into the screenshot engine. A top skip
+moves the top crop edge to the first remaining terminal row, so the panel header
+and the skipped terminal rows are omitted. Skip values must be non-negative
+integers and require `crop-terminal-lines`.
 
 `crop-terminal-lines` requires `tab: workspace` and cannot be combined with
 `crop-top` or `crop-bottom`; those combinations are validation errors.

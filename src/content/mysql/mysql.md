@@ -12,7 +12,6 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 
 <!-- tutorial-screenshot
 # Workspace ohne geöffneten Ordner
-sleep: 0.2
 show-left-sidebar
 -->
 
@@ -126,6 +125,7 @@ terminal-run: clear
 terminal-run: mycli
 sleep: 0.5
 crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
 -->
 
 <img class='full' src='mycli-prompt.webp' alt=''>
@@ -134,10 +134,11 @@ Um dir die Tabellen in der Datenbank anzeigen zu lassen, gib den Befehl `SHOW TA
 
 <!-- tutorial-screenshot
 press: Control+L
-type: show tables;
+type: show TABLES;
 press: Enter
 sleep: 0.5
 crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
 -->
 
 <img class='full' src='show-tables.webp' alt=''>
