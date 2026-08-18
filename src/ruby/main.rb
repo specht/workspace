@@ -4938,7 +4938,7 @@ class Main < Sinatra::Base
             begin
                 headers 'Cache-Control' => 'no-store'
                 content_type :json
-                TutorialScreenshots.status(markdown_path).to_json
+                respond(TutorialScreenshots.status(markdown_path))
             rescue => e
                 STDERR.puts ">>> Tutorial screenshot status unavailable: #{e.class}: #{e.message}"
                 status 503
@@ -4970,8 +4970,7 @@ class Main < Sinatra::Base
             halt 404 unless File.file?(image_path)
 
             headers 'Cache-Control' => 'no-store'
-            content_type 'image/webp'
-            File.binread(image_path)
+            respond_raw_with_mimetype(File.binread(image_path), 'image/webp')
         end
     end
 
