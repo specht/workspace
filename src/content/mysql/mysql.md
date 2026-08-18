@@ -2,10 +2,16 @@
 image: select-land.webp:25:0
 </div>
 
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3">
+</div>
+
 # Einführung in SQL
 
 <p class='abstract'>
-In diesem Kapitel lernst du, wie du MySQL-Datenbanken abfragen kannst. Dazu verwenden wir die Programmiersprache SQL, die speziell für Datenbanken entwickelt wurde. SQL steht für Structured Query Language und wird ausgesprochen wie »Sequel«.
+In diesem Kapitel lernst du, wie du MySQL-Da­ten­ban­ken abfragen kannst. Dazu verwenden wir SQL, die Structured Query Language. Wir beginnen mit einfachen Abfragen und kombinieren die einzelnen Bausteine anschließend zu eigenen Fragen an die Daten.
 </p>
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
@@ -52,7 +58,7 @@ terminal-open
 
 Du kannst das Terminal auch maximieren, indem du auf das Symbol in der rechten oberen Ecke des Terminals klickst.
 
-## Beispieldaten herunterladen
+## Beispieldaten laden
 
 Um MySQL kennenzulernen, benötigen wir eine Datenbank. Wir verwenden die Beispieldatenbank `terra1`, die du dir herunterladen kannst, indem du folgenden Befehl eingibst:
 
@@ -89,8 +95,6 @@ sleep: 0.5
 
 <img class='full' src='terra1-sql.webp' alt=''>
 
-## Beispieldaten importieren
-
 Um die Beispieldatenbank in MySQL zu importieren, gib einfach den folgenden Befehl ein:
 
 ```bash
@@ -112,7 +116,7 @@ crop-terminal-lines: auto
 
 <img class='full' src='sql-import.webp' alt=''>
 
-## Tabellenaufbau anzeigen
+## Die Datenbank erkunden
 
 Um mit MySQL zu arbeiten, verwenden wir `mycli`, einen MySQL-Client, der speziell für die Kommandozeile entwickelt wurde. Starte `mycli`, indem du den folgenden Befehl eingibst:
 
@@ -145,11 +149,17 @@ crop-terminal-skip-bottom: 1
 
 <img class='full' src='show-tables.webp' alt=''>
 
+Du siehst die beiden Tabellen `land` und `ort`.
+
 <div class='hint'>
-Die Groß- und Kleinschreibung spielt bei SQL-Befehlen keine Rolle. In diesem Artikel schreiben wir die Befehle in Großbuchstaben, um sie hervorzuheben. Du kannst sie aber auch in Kleinbuchstaben schreiben.
+SQL-Befehle schreiben wir in diesem Tutorial zur besseren Les­bar­keit in Großbuchstaben. Für MySQL spielt die Groß- und Kleinschreibung der hier ver­wen­deten SQL-Schlüsselwörter keine Rolle.
 </div>
 
-Du siehst nun die beiden Tabellen `land` und `ort`. Um dir den Aufbau einer Tabelle anzeigen zu lassen, kannst du den Befehl `DESCRIBE` verwenden. Gib z. B. den Befehl `DESCRIBE land;` ein, um dir den Aufbau der Tabelle `land` anzeigen zu lassen:
+Mit `DESCRIBE` kannst du untersuchen, welche Spalten eine Tabelle besitzt:
+
+```sql
+DESCRIBE land;
+```
 
 <!-- tutorial-screenshot
 press: Control+L
@@ -162,15 +172,15 @@ crop-terminal-skip-bottom: 1
 
 <img class='full' src='describe-land.webp' alt='Die Tabelle land enthält Spalten für Kürzel, Name, Einwohnerzahl, Fläche, Hauptstadt und Kontinent mit ihren Datentypen.'>
 
-Du siehst nun die Spalten der Tabelle `land` und deren Datentypen.
+Jede Spalte hat einen Namen und einen Datentyp. So erkennst du, welche Informationen in der Tabelle gespeichert werden.
 
 <div class='hint task'>
-Untersuche die Tabelle <code>ort</code> &ndash; welche Spalten gibt es und welche Datentypen haben sie?
+Untersuche auch die Tabelle <code>ort</code> &ndash; welche Spalten gibt es und welche Datentypen haben sie?
 </div>
 
-## Daten anzeigen
+## Daten mit SELECT anzeigen
 
-Um dir die Daten in einer Tabelle anzeigen zu lassen, kannst du den Befehl `SELECT` verwenden. Gib z. B. den Befehl `SELECT * FROM land;` ein, um dir alle Daten in der Tabelle `land` anzeigen zu lassen:
+Mit `SELECT` fragst du Daten aus einer Tabelle ab. Ein Stern `*` steht dabei für alle Spalten:
 
 <!-- tutorial-screenshot
 press: Control+L
@@ -181,13 +191,17 @@ sleep: 0.5
 
 <img class='full' src='select-land.webp' alt='Das Abfrageergebnis listet alle Länder mit ihren gespeicherten Daten auf.'>
 
-Du siehst nun alle Einträge in der Tabelle `land`. Eine Zeile entspricht einem Land in der Tabelle. Nutze die Pfeiltasten <kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> sowie <kbd>Bild↑</kbd><kbd>Bild↓</kbd>, um durch die Tabelle zu navigieren.
+Du siehst nun alle Einträge in der Tabelle `land`. Eine Zeile entspricht einem Land in der Tabelle. Nutze die Pfeiltasten <kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> sowie <kbd>Bild↑</kbd><kbd>Bild↓</kbd>, um durch die Ausgabe zu navigieren.
 
 <div class='hint'>
-Drücke <kbd>Q</kbd>, um zur Eingabeaufforderung von <code>mycli</code> zurückzukehren (genau wie bei <code>less</code>).
+Bei langen Ergebnissen zeigt <code>mycli</code> die Ausgabe seitenweise an. Drücke <kbd>Q</kbd>, um zur SQL-Eingabe zurückzukehren.
 </div>
 
-Der Befehl `SELECT *` bedeutet, dass alle Spalten ausgewählt werden sollen. Wenn du nur bestimmte Spalten anzeigen möchtest, kannst du diese explizit angeben. Gib z. B. den Befehl `SELECT name, hauptstadt FROM land;` ein, um dir nur die Spalten `name` und `hauptstadt` anzeigen zu lassen:
+Meistens brauchst du nicht alle Spalten. Schreibe die gewünschten Spaltennamen hinter `SELECT`, zum Beispiel:
+
+```sql
+SELECT name, hauptstadt FROM land;
+```
 
 <!-- tutorial-screenshot
 press: Q
@@ -199,9 +213,13 @@ sleep: 0.5
 
 <img class='full' src='select-land-columns.webp' alt='Das Abfrageergebnis enthält nur die Namen der Länder und ihrer Hauptstädte.'>
 
-## Zeilen filtern
+## Zeilen mit WHERE filtern
 
-Um nur bestimmte Zeilen anzuzeigen, kannst du den Befehl `WHERE` verwenden. Gib z. B. den Befehl `SELECT * FROM land WHERE name = 'Deutschland';` ein, um dir nur das Land Deutschland anzeigen zu lassen:
+Mit `WHERE` wählst du nur die Zeilen aus, die eine Bedingung erfüllen:
+
+```sql
+SELECT * FROM land WHERE name = 'Deutschland';
+```
 
 <!-- tutorial-screenshot
 press: Q
@@ -215,16 +233,18 @@ crop-terminal-skip-bottom: 1
 
 <img class='full' src='select-land-where.webp' alt='Die gefilterte Tabelle enthält nur den Datensatz für Deutschland.'>
 
-<div class='hint'>
-Statt der einfachen Anführungszeichen <code>'</code> kannst du auch doppelte Anführungszeichen <code>"</code> verwenden. Das ist besonders nützlich, wenn du Anführungszeichen in deinem Text hast, nach dem du filtern möchtest. Wichtig ist nur,
-dass du am Anfang und am Ende dieselben Anführungszeichen verwendest.
-</div>
+Texte stehen in SQL in einfachen Anführungszeichen, zum Beispiel `'Deutschland'`.
 
 <div class='hint task'>
 Wie viele Einwohner hat Griechenland? Welche Zahl erhältst du und wie ist sie zu interpretieren?
 </div>
 
-Du kannst auch mehrere Bedingungen kombinieren. Gib z. B. den Befehl `SELECT * FROM land WHERE einwohner < 5 AND flaeche > 1000000;` ein, um dir alle Länder anzeigen zu lassen, die weniger als 5 Millionen Einwohner haben und eine Fläche von mehr als 1 Million Quadratkilometern:
+Bedingungen lassen sich kombinieren. Mit `AND` müssen beide Bedingungen erfüllt sein:
+
+```sql
+SELECT * FROM land
+WHERE einwohner < 5 AND flaeche > 1000000;
+```
 
 <!-- tutorial-screenshot
 press: Control+L
@@ -238,13 +258,33 @@ crop-terminal-skip-bottom: 1
 
 <img class='full' src='select-land-where-and.webp' alt='Die kombinierte Bedingung liefert zwei sehr große Länder mit weniger als fünf Millionen Einwohnern.'>
 
-Wir sehen also nun die beiden Länder mit der niedrigsten Bevölkerungsdichte, die mindestens 1 Mio. km<sup>2</sup> groß sind.
+Das Ergebnis enthält genau die Länder, die beide Bedingungen erfüllen. Mit OR genügt dagegen eine der Bedingungen, zum Beispiel:
 
-## Zeilen sortieren
-
-Um die Zeilen in einer Tabelle zu sortieren, kannst du den Befehl `ORDER BY` verwenden. Gib z. B. den Befehl `SELECT * FROM land ORDER BY einwohner;` ein, um dir die Länder nach ihrer Einwohnerzahl sortiert anzeigen zu lassen:
+```sql
+SELECT name FROM land
+WHERE kontinent = 'Europa' OR kontinent = 'Asien';
+```
 
 <!-- tutorial-screenshot
+press: Control+L
+type: SELECT * FROM land WHERE kontinent = 'Europa' OR kontinent = 'Asien';
+press: Enter
+sleep: 0.5
+-->
+
+<img class='full' src='select-land-where-or.webp' alt='Die kombinierte Bedingung liefert zwei sehr große Länder mit weniger als fünf Millionen Einwohnern.'>
+
+
+## Zeilen mit ORDER BY sortieren
+
+Mit `ORDER BY` sortierst du ein Abfrageergebnis. Ohne weitere Angabe wird aufsteigend sortiert:
+
+```sql
+SELECT * FROM land ORDER BY einwohner;
+```
+
+<!-- tutorial-screenshot
+press: Q
 press: Control+L
 type: SELECT * FROM land ORDER BY einwohner;
 press: Enter
@@ -253,7 +293,11 @@ sleep: 0.5
 
 <img class='full' src='select-land-order-by.webp' alt='Die Länder sind nach Einwohnerzahl aufsteigend sortiert.'>
 
-Du siehst nun die Länder nach ihrer Einwohnerzahl sortiert. Standardmäßig wird aufsteigend sortiert. Um absteigend zu sortieren, füge das Schlüsselwort `DESC` (für »descending«) hinzu. Gib z. B. den Befehl `SELECT * FROM land ORDER BY einwohner DESC;` ein, um die Länder nach ihrer Einwohnerzahl absteigend sortiert anzeigen zu lassen:
+Für eine absteigende Sortierung ergänzt du DESC:
+
+```sql
+SELECT * FROM land ORDER BY einwohner DESC;
+```
 
 <!-- tutorial-screenshot
 press: Q
@@ -265,9 +309,13 @@ sleep: 0.5
 
 <img class='full' src='select-land-order-by-desc.webp' alt='Die Länder sind nach Einwohnerzahl absteigend sortiert.'>
 
-## Ausgabe begrenzen
+## Ausgabe mit LIMIT begrenzen
 
-Um die Anzahl der Zeilen zu begrenzen, die angezeigt werden, kannst du den Befehl `LIMIT` verwenden. Gib z. B. den Befehl `SELECT * FROM land LIMIT 5;` ein, um dir nur die ersten 5 Länder anzeigen zu lassen:
+Mit `LIMIT` begrenzt du die Anzahl der ausgegebenen Zeilen:
+
+```sql
+SELECT * FROM land LIMIT 5;
+```
 
 <!-- tutorial-screenshot
 press: Q
@@ -282,49 +330,130 @@ crop-terminal-skip-bottom: 1
 
 <img class='full' src='select-land-limit.webp' alt='Das begrenzte Abfrageergebnis enthält die ersten fünf Länder.'>
 
+`ORDER BY` und `LIMIT` lassen sich gut kombinieren. Damit kannst du zum Beispiel nach einer Spalte sortieren und anschließend nur die ersten zehn Treffer ausgeben.
+
+## Zeilen mit COUNT zählen
+
+`COUNT(*)` zählt, wie viele Zeilen ein Abfrageergebnis enthält:
+
+```sql
+SELECT COUNT(*) FROM land;
+```
+
+<!-- tutorial-screenshot
+press: Control+L
+terminal-run: SELECT COUNT(*) FROM land;
+sleep: 0.5
+crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
+-->
+
+<img class='full' src='select-count.webp' alt='COUNT zählt die Zeilen der Tabelle land.'>
+
+Auch `COUNT` kannst du mit `WHERE` kombinieren. So lässt sich zum Beispiel zählen, wie viele Datensätze eine bestimmte Bedingung erfüllen:
+
+```sql
+SELECT COUNT(*) FROM land WHERE kontinent = 'Asien';
+```
+
+<!-- tutorial-screenshot
+press: Control+L
+terminal-run: SELECT COUNT(*) FROM land WHERE kontinent = 'Asien';
+sleep: 0.5
+crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
+-->
+
+## Text mit LIKE durchsuchen
+
+Mit `LIKE` kannst du Text nach einem Muster durchsuchen. Das Prozentzeichen `%` steht dabei für beliebig viele Zeichen. Die folgende Abfrage findet Ländernamen, in denen `land` vorkommt:
+
+```sql
+SELECT name FROM land
+WHERE name LIKE '%land%'
+ORDER BY name;
+```
+
+<!-- tutorial-screenshot
+press: Control+L
+terminal-run: SELECT name FROM land WHERE name LIKE '%land%' ORDER BY name;
+sleep: 0.5
+crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
+-->
+
+<img class='full' src='select-like.webp' alt='LIKE findet Ländernamen, in denen die Zeichenfolge land vorkommt.'>
+
+`'land%'` würde dagegen nur Namen finden, die mit `land` beginnen, und `'%land'` nur Namen, die damit enden.
+
+## Unterschiedliche Werte mit DISTINCT anzeigen
+
+Wenn du nur sehen möchtest, welche **verschiedenen** Werte in einer Spalte vorkommen, verwendest du `DISTINCT`:
+
+```sql
+SELECT DISTINCT kontinent FROM land
+ORDER BY kontinent;
+```
+
+<!-- tutorial-screenshot
+press: Control+L
+terminal-run: SELECT DISTINCT kontinent FROM land ORDER BY kontinent;
+sleep: 0.5
+crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
+-->
+
+<img class='full' src='select-distinct.webp' alt='DISTINCT zeigt jeden unterschiedlichen Wert der Spalte Kontinent nur einmal.'>
+
+Dabei fällt etwas auf: In den Beispieldaten kommen sowohl `Europa` als auch `Europe` vor. Eine Datenbank speichert die Werte so, wie sie eingetragen wurden; uneinheitliche Daten verschwinden also nicht von selbst. Solche Auffälligkeiten lassen sich mit Abfragen entdecken.
+
 ## Zusammenfassung
 
-Du hast jetzt die einzelnen Bestandteile einer SQL-Abfrage kennengelernt:
+Du kennst jetzt die wichtigsten Bausteine, die wir für die folgenden Aufgaben benötigen:
 
 <div style='max-width: 100%; overflow-x: auto;'>
 <table class='table'>
 <thead>
-<tr><th>Befehl</th><th>Bedeutung</th></tr>
+<tr><th>Baustein</th><th>Bedeutung</th></tr>
 </thead>
 <tbody>
-<tr><td><code>SELECT</code></td><td>Was / Welche Spalten sollen angezeigt werden?</td></tr>
-<tr><td><code>FROM</code></td><td>Woher / Aus welcher Tabelle sollen die Daten kommen?</td></tr>
-<tr><td><code>WHERE</code></td><td>Filter / Welche Zeilen sollen angezeigt werden?</td></tr>
-<tr><td><code>ORDER&nbsp;BY</code></td><td>Sortierung / In welcher Reihenfolge sollen die Zeilen angezeigt werden?</td></tr>
-<tr><td><code>LIMIT</code></td><td>Anzahl / Wie viele Zeilen sollen angezeigt werden?</td></tr>
+<tr><td><code>SELECT</code></td><td>Welche Spalten oder berechneten Werte sollen ausgegeben werden?</td></tr>
+<tr><td><code>FROM</code></td><td>Aus welcher Tabelle kommen die Daten?</td></tr>
+<tr><td><code>WHERE</code></td><td>Welche Zeilen erfüllen die Bedingung?</td></tr>
+<tr><td><code>AND</code> / <code>OR</code></td><td>Wie werden mehrere Bedingungen verknüpft?</td></tr>
+<tr><td><code>ORDER&nbsp;BY</code></td><td>In welcher Reihenfolge werden die Zeilen ausgegeben?</td></tr>
+<tr><td><code>LIMIT</code></td><td>Wie viele Zeilen werden höchstens ausgegeben?</td></tr>
+<tr><td><code>COUNT(*)</code></td><td>Wie viele Zeilen enthält das Ergebnis?</td></tr>
+<tr><td><code>LIKE</code></td><td>Welche Texte passen zu einem Muster?</td></tr>
+<tr><td><code>DISTINCT</code></td><td>Welche unterschiedlichen Werte kommen vor?</td></tr>
 </tbody>
 </table>
 </div>
 
-Du kannst diese Befehle kombinieren, um genau die Daten zu erhalten, die du benötigst.
+Die Bausteine lassen sich kombinieren. Eine typische Abfrage kann beispielsweise filtern, sortieren und die Ausgabe anschließend begrenzen.
 
 <div class='hint'>
-Um <code>mycli</code> zu beenden, gib einfach den Befehl <code>exit</code> ein oder verwende die Tastenkombination <kbd>Strg</kbd><kbd>D</kbd>.
+Um <code>mycli</code> zu beenden, gib <code>exit</code> ein oder verwende <kbd>Strg</kbd><kbd>D</kbd>.
 </div>
 
-### Aufgaben
+## Aufgaben
 
-Beantworte die folgenden Fragen, indem du eine geeignete SQL-Abfrage formulierst. Notiere jeweils die Abfrage und dein Ergebnis. Formuliere die Abfrage möglichst so, dass du nur die benötigten Spalten erhältst.
+Beantworte die folgenden Fragen mit geeigneten SQL-Abfragen. Notiere jeweils deine Abfrage und das Ergebnis. Gib möglichst nur die Spalten aus, die du für die Antwort tatsächlich brauchst.
 
-1. Gib eine Tabelle aller Länder aus. Dabei sollen Name, Einwohner und die Hauptstadt angezeigt werden und die Tabelle soll nach der Einwohnerzahl absteigend sortiert sein.
+1. Gib alle Länder mit Name, Einwohnerzahl und Hauptstadt aus. Sortiere die Tabelle nach der Einwohnerzahl absteigend.
 
-2. Wie viele Länder gibt es in der Tabelle `land`?<br>_Hinweis: Du kannst bei <code>SELECT</code> statt Spaltennamen auch Funktionen verwenden, z. B. <code>SELECT COUNT(Name) ...</code> statt <code>SELECT Name ...</code>_.
+2. Wie viele Länder gibt es in der Tabelle `land`?
 
-3. Wie viele Länder liegen in Europa?
+3. Wie viele Länder liegen in Europa? Beachte die beiden unterschiedlichen Schreibweisen, die du mit `DISTINCT` entdeckt hast.
 
-4. Welche Länder haben das Wort »arm« oder »bein« im Namen?<br>_Hinweis: Du kannst nicht nur nach exakten Begriffen suchen, sondern auch nach Teilen von Begriffen, z. B. <code>WHERE Name LIKE '%land%'</code>, wenn du nach allen Ländern suchen möchtest, die den Begriff »land« im Namen haben._
+4. Welche Länder haben die Zeichenfolge `arm` oder `bein` im Namen?
 
-5. Welcher Ort hat die meisten Einwohner, wie viele Einwohner sind es und in welchem Land liegt dieser Ort?
+5. Welcher Ort hat die meisten Einwohner, wie viele Einwohner hat er und in welchem Land liegt er?
 
-6. Wie viele Orte gibt es in Frankreich?<br>_Hinweis: Es gibt natürlich mehr Orte in Frankreich, als in dieser Tabelle stehen, aber wir wollen diese Frage in Bezug auf die uns zur Verfügung stehenden Daten beantworten._
+6. Wie viele Orte aus Frankreich sind in der Tabelle `ort` gespeichert?
 
-7. Gib die 10 bevölkerungsreichsten Orte in Frankreich aus.
+7. Gib die zehn bevölkerungsreichsten Orte Frankreichs aus.
 
-8. Gib jeweils drei Orte an, die den Begriff »arm« oder »bein« im Namen haben.
+8. Finde jeweils drei Orte, deren Name die Zeichenfolge `arm` beziehungsweise `bein` enthält.
 
 9. Welche Orte in Deutschland liegen westlich von Aachen (6,046° Ost)?
