@@ -2050,18 +2050,16 @@ async function visibleTerminalCropGeometry(page) {
                 return {
                     top: rect.top,
                     bottom: rect.bottom,
-                    width: rect.width,
                     height: rect.height,
+                    empty: !row.textContent.trim(),
                 };
             })
             .filter(row =>
-                row.width > 0 &&
                 row.height > 0 &&
                 row.bottom > screenRect.top &&
                 row.top < screenRect.bottom
             )
-            .sort((left, right) => left.top - right.top)
-            .map(({ top, bottom, height }) => ({ top, bottom, height }));
+            .sort((left, right) => left.top - right.top);
 
         if (rows.length === 0) {
             throw new Error('crop-terminal-lines found no rendered terminal rows');

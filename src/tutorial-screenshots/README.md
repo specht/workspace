@@ -120,7 +120,7 @@ viewport: WIDTHxHEIGHT
 zoom: NUMBER
 crop-top: PERCENT%
 crop-bottom: PERCENT%
-crop-terminal-lines: LINES
+crop-terminal-lines: NUMBER|auto
 ```
 
 `tab` selects both the page to capture and the page used by the general
@@ -284,16 +284,26 @@ terminal-run: mycli
 terminal-run: SHOW TABLES;
 ```
 
-`crop-terminal-lines: N` is a capture directive for Workspace terminal screenshots.
-At capture time it finds the visible integrated terminal, keeps the top of its
-containing panel (including the panel header/tabs), and keeps the first `N`
-rendered xterm rows plus half of the actual rendered row height as padding. The
-measured CSS geometry is converted through the active viewport/zoom/device-scale
-profile, so the crop does not depend on fixed percentages or a configured font
-size. If fewer than `N` rendered rows are available, all available rows are kept
-and the padding is clamped to the terminal screen. `crop-terminal-lines` requires
-`tab: workspace` and cannot be combined with `crop-top` or `crop-bottom`; those
-combinations are validation errors.
+`crop-terminal-lines` is a capture directive for Workspace terminal
+screenshots. At capture time it finds the visible integrated terminal, keeps the
+top of its containing panel (including the panel header/tabs), and crops using
+the terminal's measured xterm row geometry. The measured CSS geometry is
+converted through the active viewport/zoom/device-scale profile, so the crop
+does not depend on fixed percentages or a configured font size.
+
+With `crop-terminal-lines: NUMBER`, the generator keeps the first `NUMBER`
+rendered terminal rows exactly as they appear, including blank rows, plus half
+of the actual rendered row height as padding. If fewer than `NUMBER` rendered
+rows are available, all available rows are kept and the padding is clamped to
+the terminal screen.
+
+With `crop-terminal-lines: auto`, the generator keeps rows through the last
+visible non-empty terminal row, again with the same half-row padding. This is
+useful when the visible output height depends on the command you just ran and
+you simply want the screenshot to include all visible terminal content.
+
+`crop-terminal-lines` requires `tab: workspace` and cannot be combined with
+`crop-top` or `crop-bottom`; those combinations are validation errors.
 
 ### Files and editor state
 

@@ -2,49 +2,49 @@
   "version": 1,
   "screenshots": {
     "fresh-start.webp": {
-      "state_hash": "6789bf9942f36da5f980c052d9e2841b8c4f1d8f10984979db72455f8c5fad0b",
+      "state_hash": "8ff163b5ab9b06d76a592cbf6aaaaafa2e8409ad346f3a6bb4e40431a8f45c42",
       "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
-      "output_sha256": "b5f3f5ef0a72ba973385b2e979f66ab8d707aea9a71d917333791e62179b2ef6"
+      "output_sha256": "fefcbebbbb4b57e472d0810df262e6d4c9976d9bbd5387bdb7d90bfaf24208ca"
     },
     "open-folder.webp": {
-      "state_hash": "77130da0c9d39a1e3d30e1c0b3b4f4dd935cc9463fc912eb3f90d4dac3c47a75",
+      "state_hash": "35996550583b7a50e9a91a9b914f6f8c33dd6f0b392a2baa8ec9a0466265ce6d",
       "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
-      "output_sha256": "8da12dc37c4486971d5bfb3cce2860119f744f3dc9e70a8b4efb1ecb070c71d6"
+      "output_sha256": "c30458740b0895503e6dbe74e37842728c249e4d863fa0e337483c4912252dc2"
     },
     "open-folder-confirm.webp": {
-      "state_hash": "ef943e3548338b26b67b1ad8c677855c769ae2aed4e48ea3b3e7485a1220cc3b",
+      "state_hash": "be53e0e2868210323a99b55cc6b1e03f64030c8f2e114e4425ebda717ed08df3",
       "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
-      "output_sha256": "b6e28442acc4b7ff187a175ac786740e94efd33ccb7ebcee7d2ab6113d5d432e"
+      "output_sha256": "cbaf97405da8290413f86c6495b612e54742bb0649953acc87438b74d69162c8"
     },
     "got-terminal.webp": {
-      "state_hash": "8beabb481c3f3cab6df8eab06b81891de445dd9ebe20e710c06d475ff7b11dec",
+      "state_hash": "c96297fc59faa613c580ff9d6545ea3a0ad789c903acec0d63d18305322e84ee",
       "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
-      "output_sha256": "62a14bdf3c9442cb2aeb478fa72e752761df52c226ab6dbe25221f04afae41d8"
+      "output_sha256": "8892b51a127f67fe02c716b424ca8ad3acb138619537931a8a5d0120c78d3aee"
     },
     "wget.webp": {
-      "state_hash": "cc2e6c7d001a8523ad9796d056ab85c496d468a57478d4687c5525e70a98b779",
+      "state_hash": "0aafd898fdec667f666017ac110c402e924adfaf24176458429b48d6a10f2e31",
       "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
-      "output_sha256": "0b6c2aa2d54d356a2516f168dbdb79337769b7da21c18e735e6cdd25ecf6cc8f"
+      "output_sha256": "b868bdf515ea973ea5a37644eacb8f8ac4bb9ed5414d92a2c7ed4e320c5c785f"
     },
     "terra1-sql.webp": {
-      "state_hash": "73fd0835e456e74100af50390aad46c5354abe36e2ce68927a8384deab4ef5bb",
+      "state_hash": "c6fa02bcef634b3b794e077190d7cdcf091bcbd7cfd5ab915b968bd102e71928",
       "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
-      "output_sha256": "f47f56606d18e3657b97dd47cd6d51f3e1212a9c69030ca23b00e4b0287f82e4"
+      "output_sha256": "b1a0321d41a727d33a74f96bb4055e0ef36498ce1051060b303a06f45c2701c3"
     },
     "sql-import.webp": {
-      "state_hash": "96fa0eeb9e8414d985eff971a72c73199a7b4b8f3300564063b1e668b0d71fe0",
+      "state_hash": "ad06d9ed998f724d9a4588b4d869b34a127790e17ed4f72e78a91548dd2e6500",
       "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
-      "output_sha256": "53f124dc839aaf8ba8ab2eecad45965a4e18bc858612596cb1b68b9e315aa9ec"
+      "output_sha256": "c61afc7cf4d064840a0bd34c7ebf713345b80a11240f1a8a9c1df08f69107266"
     },
     "mycli-prompt.webp": {
-      "state_hash": "3366c3e23af22719c127c6e88d8e46b1e162fdb61ba2facc32ec624cc18370b8",
+      "state_hash": "76f9414e3d02767d5068ad60766dbc86352922489d93d8d67fc079cd30e176f7",
       "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
-      "output_sha256": "d29134df5eb04dab26c8ca266df63bf625fc108d82a0f8de8b6eac024edb071b"
+      "output_sha256": "b870a0ea65627ca80837f7e13898e400481ebcb548e4f859220e68e04ca45ef6"
     },
     "show-tables.webp": {
-      "state_hash": "6aecc45c07ef72765fa5d08e9c48b1384b320d48abf9368576d0dc2ff7c700d9",
+      "state_hash": "7bec69cf6e8b40230e1d57532b03604c9b11b1f6898b0465b4e07bc5b66cdf12",
       "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
-      "output_sha256": "e5e32d85786142debf0e1fb2223dc365227b4063c0057e705fb2b575f3975c60"
+      "output_sha256": "4960fa2d1ebc58fb101354abaa3c02ec384c05814d442690fa000d615e784822"
     }
   }
 }

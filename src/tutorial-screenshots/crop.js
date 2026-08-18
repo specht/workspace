@@ -1,12 +1,15 @@
 export function parseTerminalLineCount(value) {
     const text = `${value}`.trim();
+    if (text === 'auto') {
+        return 'auto';
+    }
     if (!/^[1-9]\d*$/.test(text)) {
-        throw new Error(`crop-terminal-lines must be a positive integer: ${value}`);
+        throw new Error(`crop-terminal-lines must be a positive integer or auto: ${value}`);
     }
 
     const lineCount = Number(text);
     if (!Number.isSafeInteger(lineCount)) {
-        throw new Error(`crop-terminal-lines must be a positive integer: ${value}`);
+        throw new Error(`crop-terminal-lines must be a positive integer or auto: ${value}`);
     }
     return lineCount;
 }
@@ -49,14 +52,20 @@ export function terminalLineCropPixels({
     if (!Number.isFinite(deviceScaleFactor) || deviceScaleFactor <= 0) {
         throw new Error(`Invalid effective device scale factor: ${deviceScaleFactor}`);
     }
-    if (!Number.isSafeInteger(lineCount) || lineCount <= 0) {
+    if (!(lineCount === 'auto' || (Number.isSafeInteger(lineCount) && lineCount > 0))) {
         throw new Error(`Invalid terminal line count: ${lineCount}`);
     }
     if (!Array.isArray(rows) || rows.length === 0) {
         throw new Error('crop-terminal-lines found no rendered terminal rows');
     }
 
-    const keptRows = Math.min(lineCount, rows.length);
+    let keptRows;
+    if (lineCount === 'auto') {
+        const lastNonEmptyIndex = rows.findLastIndex(row => !row.empty);
+        keptRows = Math.max(1, lastNonEmptyIndex + 1);
+    } else {
+        keptRows = Math.min(lineCount, rows.length);
+    }
     const lastRow = rows[keptRows - 1];
     if (
         !Number.isFinite(panelTop) ||

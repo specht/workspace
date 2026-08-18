@@ -12,6 +12,7 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 
 <!-- tutorial-screenshot
 # Workspace ohne geöffneten Ordner
+sleep: 0.2
 show-left-sidebar
 -->
 
@@ -105,7 +106,7 @@ terminal-run: clear
 terminal-run: mysql < terra1.sql
 terminal-wait-for-prompt
 sleep: 0.5
-crop-terminal-lines: 2
+crop-terminal-lines: auto
 -->
 
 <img class='full' src='sql-import.webp' alt=''>
@@ -124,7 +125,7 @@ Die Ausgabe sollte in etwa so aussehen:
 terminal-run: clear
 terminal-run: mycli
 sleep: 0.5
-crop-terminal-lines: 7
+crop-terminal-lines: auto
 -->
 
 <img class='full' src='mycli-prompt.webp' alt=''>
@@ -136,7 +137,7 @@ press: Control+L
 type: show tables;
 press: Enter
 sleep: 0.5
-#crop-terminal-lines: 8
+crop-terminal-lines: auto
 -->
 
 <img class='full' src='show-tables.webp' alt=''>
