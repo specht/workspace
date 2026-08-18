@@ -38,7 +38,7 @@ const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'screenshots@e
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
-const GENERATOR_VERSION = 15;
+const GENERATOR_VERSION = 16;
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
 const DEFAULT_PROFILE = Object.freeze({
@@ -63,9 +63,6 @@ const WORKBENCH_PARTS = Object.freeze({
 });
 const SIMPLE_ACTIONS = new Set([
     'close-folder',
-    'clone-confirm-url',
-    'clone-accept-destination',
-    'clone-open',
     'go-live',
     'terminal-open',
     'terminal-wait-for-prompt',
@@ -312,25 +309,14 @@ function findCodeSource(blocks, recipeStart, selector) {
     throw new Error(`Unknown code source: ${selector}`);
 }
 
-function parsePreviewControlTarget(value) {
+function parseTarget(value) {
     const target = value.trim();
     if (target.startsWith('selector:')) {
         const selector = target.slice('selector:'.length).trim();
-        if (!selector) throw new Error('Preview control selector must not be empty');
+        if (!selector) throw new Error('Target selector must not be empty');
         return { selector };
     }
-    if (!target) throw new Error('Preview control label must not be empty');
-    return { label: target };
-}
-
-function parseMouseTarget(value) {
-    const target = value.trim();
-    if (target.startsWith('selector:')) {
-        const selector = target.slice('selector:'.length).trim();
-        if (!selector) throw new Error('Mouse target selector must not be empty');
-        return { selector };
-    }
-    if (!target) throw new Error('Mouse target text must not be empty');
+    if (!target) throw new Error('Target text must not be empty');
     return { text: target };
 }
 
@@ -402,12 +388,10 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             });
         } else if ((match = line.match(/^terminal-run:\s*(.+)$/))) {
             recipe.actions.push({ type: 'terminal-run', text: match[1].trim() });
-        } else if ((match = line.match(/^terminal-key:\s*(.+)$/))) {
-            recipe.actions.push({ type: 'terminal-key', key: match[1].trim() });
         } else if ((match = line.match(/^click:\s*(.+)$/))) {
             recipe.actions.push({
                 type: 'click',
-                ...valueAtSource(source, () => parsePreviewControlTarget(match[1])),
+                ...valueAtSource(source, () => parseTarget(match[1])),
             });
         } else if ((match = line.match(/^hold:\s*([0-9]+(?:\.[0-9]+)?)s\s+(.+)$/))) {
             const seconds = Number.parseFloat(match[1]);
@@ -420,13 +404,15 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             recipe.actions.push({
                 type: 'hold',
                 seconds,
-                ...valueAtSource(source, () => parsePreviewControlTarget(match[2])),
+                ...valueAtSource(source, () => parseTarget(match[2])),
             });
         } else if ((match = line.match(/^move-mouse:\s*(.+)$/))) {
             recipe.actions.push({
                 type: 'move-mouse',
-                ...valueAtSource(source, () => parseMouseTarget(match[1])),
+                ...valueAtSource(source, () => parseTarget(match[1])),
             });
+        } else if ((match = line.match(/^type:\s*(.+)$/))) {
+            recipe.actions.push({ type: 'type', text: match[1] });
         } else if ((match = line.match(/^press:\s*(.+)$/))) {
             recipe.actions.push({ type: 'press', key: match[1].trim() });
         } else if ((match = line.match(/^sleep:\s*(.+)$/))) {
@@ -441,6 +427,9 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
         } else if ((match = line.match(/^wait-for-text:\s*(.+)$/))) {
             const text = match[1].trim();
             recipe.actions.push({ type: 'wait-for-text', text });
+        } else if ((match = line.match(/^wait-for-input-value:\s*(.+)$/))) {
+            const text = match[1].trim();
+            recipe.actions.push({ type: 'wait-for-input-value', text });
         } else if ((match = line.match(/^write-file:\s*(.+?)\s*<-\s*(previous-code(?:\s+\([^)]+\))?|code:.+|file:.+)$/))) {
             recipe.actions.push({
                 type: 'write-file',
@@ -1093,12 +1082,6 @@ async function terminalRun(text) {
     await workspace.waitForTimeout(250);
 }
 
-async function terminalKey(key) {
-    await terminalOpen();
-    await workspace.keyboard.press(key);
-    await workspace.waitForTimeout(100);
-}
-
 async function setWorkbenchPartVisible(partName, visible) {
     const spec = WORKBENCH_PARTS[partName];
     if (!spec) throw new Error(`Unknown workbench part: ${partName}`);
@@ -1366,47 +1349,6 @@ async function cloneStart(action) {
     ).catch(() => {});
     await input.click();
     await workspace.waitForTimeout(100);
-}
-
-async function cloneConfirmUrl() {
-    const input = quickInput(workspace);
-    await input.waitFor({ state: 'visible', timeout: 10_000 });
-    await input.press('Enter');
-
-    // The repository destination is shown in a Quick Input <input>. Its value is
-    // not part of document.body.innerText, so waiting for "/workspace" in body
-    // text never succeeds on code-server 4.131.0. Wait for the destination
-    // picker itself instead.
-    await workspace.waitForFunction(
-        () => [...document.querySelectorAll('.quick-input-widget .quick-input-box input')]
-            .some(candidate => {
-                const rect = candidate.getBoundingClientRect();
-                return rect.width > 0 &&
-                    rect.height > 0 &&
-                    candidate.value.includes('/workspace');
-            }),
-        null,
-        { timeout: 20_000 },
-    );
-    await workspace.waitForTimeout(150);
-}
-
-async function cloneAcceptDestination() {
-    const input = quickInput(workspace);
-    await input.waitFor({ state: 'visible', timeout: 10_000 });
-    await input.press('Enter');
-    await workspace.getByRole('button', { name: 'Open', exact: true }).waitFor({ state: 'visible', timeout: 120_000 });
-}
-
-async function cloneOpen() {
-    const button = workspace.getByRole('button', { name: 'Open', exact: true });
-    await button.waitFor({ state: 'visible', timeout: 30_000 });
-    await button.click();
-    await workspace.waitForFunction(
-        () => document.body.innerText.includes('pages-starter') && document.body.innerText.includes('config.js'),
-        null,
-        { timeout: 60_000 },
-    );
 }
 
 async function waitForEditorSettled(page) {
@@ -1725,19 +1667,34 @@ async function closeTab(label) {
     await workspace.waitForTimeout(100);
 }
 
-async function previewControl(action, verb) {
-    if (!preview || preview.isClosed()) throw new Error('No preview tab is open');
+function pageForTab(tab) {
+    return tab === 'preview' ? preview : workspace;
+}
+
+function requirePageForTab(tab, actionName) {
+    const page = pageForTab(tab);
+    if (!page || page.isClosed()) {
+        throw new Error(`${actionName} requests unavailable tab: ${tab}`);
+    }
+    return page;
+}
+
+async function pageControl(action, verb, targetTab) {
+    const page = requirePageForTab(targetTab, verb);
 
     let control;
     let description;
     if (action.selector) {
-        control = preview.locator(action.selector);
+        control = page.locator(action.selector);
         description = `element matching selector ${JSON.stringify(action.selector)}`;
     } else {
-        const buttons = preview.getByRole('button', { name: action.label, exact: true });
-        const links = preview.getByRole('link', { name: action.label, exact: true });
+        const buttons = page.getByRole('button', { name: action.text, exact: true });
+        const links = page.getByRole('link', { name: action.text, exact: true });
         control = buttons.or(links);
-        description = `button or link named ${JSON.stringify(action.label)}`;
+        if (await control.count() === 0) {
+            control = page.getByText(action.text, { exact: true });
+        }
+        description = `control named ${JSON.stringify(action.text)}`;
     }
 
     await control.first().waitFor({ state: 'visible', timeout: 20_000 });
@@ -1745,32 +1702,51 @@ async function previewControl(action, verb) {
     if (count !== 1) {
         throw new Error(`${verb} expected exactly one ${description}, found ${count}`);
     }
-    return control;
+    return { page, control };
 }
 
-async function clickPreview(action) {
-    const control = await previewControl(action, 'click');
+async function clickControl(action, targetTab) {
+    const { page, control } = await pageControl(action, 'click', targetTab);
     await control.click();
-    await preview.waitForTimeout(150);
+    await page.waitForTimeout(150);
 }
 
-async function holdPreview(action) {
-    const control = await previewControl(action, 'hold');
+async function holdControl(action, targetTab) {
+    const { page, control } = await pageControl(action, 'hold', targetTab);
     await control.hover();
-    await preview.mouse.down();
+    await page.mouse.down();
     try {
-        await preview.waitForTimeout(action.seconds * 1000);
+        await page.waitForTimeout(action.seconds * 1000);
     } finally {
-        await preview.mouse.up();
+        await page.mouse.up();
     }
-    await preview.waitForTimeout(150);
+    await page.waitForTimeout(150);
+}
+
+async function typeText(text, targetTab) {
+    const page = requirePageForTab(targetTab, 'type');
+    await page.waitForFunction(
+        () => {
+            const element = document.activeElement;
+            return element instanceof HTMLInputElement ||
+                element instanceof HTMLTextAreaElement ||
+                element?.isContentEditable === true;
+        },
+        null,
+        { timeout: 10_000 },
+    );
+    await page.keyboard.insertText(text);
+    await page.waitForTimeout(100);
+}
+
+async function pressKey(key, targetTab) {
+    const page = requirePageForTab(targetTab, 'press');
+    await page.keyboard.press(key);
+    await page.waitForTimeout(100);
 }
 
 async function moveMouse(action, targetTab) {
-    const page = targetTab === 'preview' ? preview : workspace;
-    if (!page || page.isClosed()) {
-        throw new Error(`move-mouse requests unavailable tab: ${targetTab}`);
-    }
+    const page = requirePageForTab(targetTab, 'move-mouse');
 
     let target;
     let description;
@@ -1795,10 +1771,7 @@ async function moveMouse(action, targetTab) {
 }
 
 async function waitForText(text, targetTab) {
-    const page = targetTab === 'preview' ? preview : workspace;
-    if (!page || page.isClosed()) {
-        throw new Error(`wait-for-text requests unavailable tab: ${targetTab}`);
-    }
+    const page = requirePageForTab(targetTab, 'wait-for-text');
 
     await page.waitForFunction(
         expected => {
@@ -1810,8 +1783,20 @@ async function waitForText(text, targetTab) {
     );
 }
 
-function pageForTab(tab) {
-    return tab === 'preview' ? preview : workspace;
+async function waitForInputValue(text, targetTab) {
+    const page = requirePageForTab(targetTab, 'wait-for-input-value');
+
+    await page.waitForFunction(
+        expected => [...document.querySelectorAll('input, textarea')]
+            .some(element => {
+                const rect = element.getBoundingClientRect();
+                return rect.width > 0 &&
+                    rect.height > 0 &&
+                    `${element.value || ''}`.includes(expected);
+            }),
+        text,
+        { timeout: 60_000 },
+    );
 }
 
 async function applyShotViewportProfile(shot) {
@@ -1833,15 +1818,11 @@ async function executeAction(action, targetTab, hooks) {
     case 'hide-bottom-panel': return setWorkbenchPartVisible('bottom-panel', false);
     case 'left-sidebar-width': return setLeftSidebarWidth(action.width);
     case 'clone-start': return cloneStart(action);
-    case 'clone-confirm-url': return cloneConfirmUrl();
-    case 'clone-accept-destination': return cloneAcceptDestination();
-    case 'clone-open': return cloneOpen();
     case 'open-file': return openFile(action.path);
     case 'terminal-open': return terminalOpen();
     case 'terminal-wait-for-prompt': return waitForTerminalPrompt();
     case 'terminal-maximize': return terminalMaximize();
     case 'terminal-run': return terminalRun(action.text);
-    case 'terminal-key': return terminalKey(action.key);
     case 'go-live': return goLive(hooks);
     case 'write-file': return writeWorkspaceFile(action.path, action.contents, hooks);
     case 'wait-for-file': return waitForWorkspaceFile(action.path);
@@ -1849,15 +1830,14 @@ async function executeAction(action, targetTab, hooks) {
     case 'close-tab': return closeTab(action.label);
     case 'preview-reload': return previewReload(false, hooks);
     case 'preview-reset': return previewReload(true, hooks);
-    case 'click': return clickPreview(action);
-    case 'hold': return holdPreview(action);
+    case 'click': return clickControl(action, targetTab);
+    case 'hold': return holdControl(action, targetTab);
     case 'move-mouse': return moveMouse(action, targetTab);
+    case 'type': return typeText(action.text, targetTab);
+    case 'press': return pressKey(action.key, targetTab);
     case 'sleep': return sleep(action.seconds);
     case 'wait-for-text': return waitForText(action.text, targetTab);
-    case 'press': {
-        const page = preview && !preview.isClosed() ? preview : workspace;
-        return page.keyboard.press(action.key);
-    }
+    case 'wait-for-input-value': return waitForInputValue(action.text, targetTab);
     default: throw new Error(`Unsupported action: ${action.type}`);
     }
 }

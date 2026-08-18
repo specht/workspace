@@ -53,7 +53,8 @@ mit <kbd>Enter</kbd>.
 
 <!-- tutorial-screenshot
 # Auswahl von /workspace/
-clone-confirm-url
+press: Enter
+wait-for-input-value: /workspace/
 crop-bottom: 54%
 -->
 
@@ -63,14 +64,16 @@ Beantworte anschließend die Frage »Would you like to open the cloned repositor
 
 <!-- tutorial-screenshot
 # Dialog zum Öffnen des geklonten Repositorys
-clone-accept-destination
+press: Enter
+wait-for-text: Would you like to open the repository?
 -->
 
 <img class='full' src='open-yes-no.webp' alt=''>
 
 <!-- tutorial-screenshot
 # geöffnetes BIF-Projekt im Explorer
-clone-open
+click: Open
+wait-for-text: pages-starter
 wait-for-file: bif/node_modules/markdown-it/LICENSE
 wait-for-file: bif/.story-tools/analysis.json
 -->
