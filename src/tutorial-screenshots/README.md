@@ -70,6 +70,10 @@ clone-confirm-url
 clone-accept-destination
 clone-open
 open-file: PATH
+terminal-open
+terminal-maximize
+terminal-run: TEXT
+terminal-key: PlaywrightKey
 go-live
 write-file: PATH <- previous-code
 write-file: PATH <- previous-code (LABEL)
@@ -93,6 +97,28 @@ zoom: NUMBER
 crop-top: PERCENT%
 crop-bottom: PERCENT%
 ```
+
+`terminal-open` opens VS Code's integrated terminal if necessary and focuses the
+active terminal. Repeating it does not create another terminal.
+
+`terminal-maximize` makes the panel containing the terminal fill the available
+workbench area and returns focus to the terminal. It is safe to repeat when the
+panel is already maximized.
+
+`terminal-run` sends its text literally to the focused integrated terminal and
+then presses Enter. It deliberately does not distinguish between a shell and a
+program already running in the terminal, so the same instruction works for Bash,
+`mycli`, or another interactive command:
+
+```text
+terminal-run: wget -q -O terra1.sql https://github.com/specht/workspace-files/raw/main/terra1.sql
+terminal-run: mysql < terra1.sql
+terminal-run: mycli
+terminal-run: SHOW TABLES;
+```
+
+`terminal-key` presses one Playwright key in the terminal, for example
+`terminal-key: q`, `terminal-key: Escape`, or `terminal-key: Control+C`.
 
 Clone screenshots can pin the public repository to a full 40-character SHA-1:
 
