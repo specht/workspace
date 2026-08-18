@@ -67,6 +67,8 @@ const SIMPLE_ACTIONS = new Set([
     'clone-accept-destination',
     'clone-open',
     'go-live',
+    'terminal-open',
+    'terminal-maximize',
     'preview-reload',
     'preview-reset',
     'show-left-sidebar',
@@ -396,6 +398,10 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
                 type: 'open-file',
                 path: valueAtSource(source, () => safeRelativePath(match[1].trim())),
             });
+        } else if ((match = line.match(/^terminal-run:\s*(.+)$/))) {
+            recipe.actions.push({ type: 'terminal-run', text: match[1].trim() });
+        } else if ((match = line.match(/^terminal-key:\s*(.+)$/))) {
+            recipe.actions.push({ type: 'terminal-key', key: match[1].trim() });
         } else if ((match = line.match(/^click:\s*(.+)$/))) {
             recipe.actions.push({
                 type: 'click',
@@ -739,15 +745,16 @@ async function ensureLoggedIn() {
     }), 'Tutorial screenshot login request');
     if (!requested.tag) throw new Error('Tutorial screenshot login request returned no tag');
 
-    // /l/<tag>/<code> creates the session and redirects to /. Do not follow that
-    // redirect: rendering / while Ruby is in parse_content() would recursively
-    // call parse_content() and deadlock on its mutex. The Set-Cookie header is
-    // still processed by Chromium before the manual redirect response is exposed.
-    await browserRequest(`/l/${encodeURIComponent(requested.tag)}/${encodeURIComponent(LOGIN_CODE)}`, {
-        method: 'GET',
-        body: null,
-        redirect: 'manual',
-    });
+    // Complete login through the same JSON API used by the normal login page.
+    // This creates the Session node and sets the current host-only session cookie
+    // without rendering /, which would recurse into parse_content() while a
+    // tutorial screenshot request is already in progress.
+    jsonResponse(await browserRequest('/api/complete_login', {
+        body: {
+            tag: requested.tag,
+            code: LOGIN_CODE,
+        },
+    }), 'Tutorial screenshot login completion');
 
     const probe = await browserRequest('/api/server_start_status', { body: {} });
     if (probe.status < 200 || probe.status >= 300) {
@@ -963,6 +970,99 @@ function quickInput(page) {
 
 async function locatorIsVisible(locator) {
     return locator.isVisible().catch(() => false);
+}
+
+async function runVsCodeCommand(query, expectedText = query) {
+    const workbench = workspace.locator('.monaco-workbench');
+    await workbench.waitFor({ state: 'visible', timeout: 10_000 });
+
+    // Start from a predictable workbench focus before opening Quick Input. This
+    // mirrors the browser tests and avoids inheriting focus from a terminal,
+    // editor, or toolbar control.
+    await workbench.click({ position: { x: 500, y: 100 } });
+    await workspace.keyboard.press('Control+Shift+P');
+
+    const widget = workspace.locator('.quick-input-widget:visible');
+    await widget.waitFor({ state: 'visible', timeout: 10_000 });
+
+    const input = widget.locator('input').last();
+    await input.waitFor({ state: 'visible', timeout: 10_000 });
+    await input.fill(`>${query}`);
+
+    const row = widget
+        .locator('.monaco-list-row')
+        .filter({ hasText: expectedText })
+        .first();
+    await row.waitFor({ state: 'visible', timeout: 30_000 });
+
+    // Clicking the resolved command is less racy than pressing Enter while the
+    // command-palette result list is still updating.
+    await row.click();
+    await widget.waitFor({ state: 'hidden', timeout: 10_000 }).catch(() => {});
+}
+
+async function focusTerminal() {
+    const terminal = workspace.locator('.terminal.xterm:visible').last();
+    await terminal.waitFor({ state: 'visible', timeout: 30_000 });
+
+    const screen = terminal.locator('.xterm-screen').first();
+    await screen.waitFor({ state: 'visible', timeout: 10_000 });
+    await screen.click({ position: { x: 20, y: 20 } });
+
+    const textarea = terminal.locator('textarea.xterm-helper-textarea').first();
+    await textarea.waitFor({ state: 'attached', timeout: 10_000 });
+    await textarea.focus();
+    await workspace.waitForTimeout(150);
+}
+
+async function terminalOpen() {
+    const terminal = workspace.locator('.terminal.xterm:visible').last();
+    if (!(await locatorIsVisible(terminal))) {
+        await runVsCodeCommand('View: Toggle Terminal', 'Toggle Terminal');
+    }
+    await focusTerminal();
+}
+
+async function terminalMaximize() {
+    await terminalOpen();
+
+    const panel = workspace.locator('.part.panel').first();
+    const restore = panel.locator(
+        '[aria-label*="Restore Panel"], [title*="Restore Panel"]',
+    ).first();
+
+    if (!(await locatorIsVisible(restore))) {
+        const maximize = panel.locator(
+            '[aria-label*="Maximize Panel"], [title*="Maximize Panel"]',
+        ).first();
+
+        if (await locatorIsVisible(maximize)) {
+            await maximize.click();
+        } else {
+            // The title-bar action is normally present, but the command palette
+            // is a stable fallback if VS Code changes that toolbar markup.
+            await runVsCodeCommand(
+                'View: Toggle Maximized Panel',
+                'Toggle Maximized Panel',
+            );
+        }
+        await workspace.waitForTimeout(200);
+    }
+
+    await focusTerminal();
+}
+
+async function terminalRun(text) {
+    await terminalOpen();
+    await workspace.keyboard.insertText(text);
+    await workspace.keyboard.press('Enter');
+    await workspace.waitForTimeout(250);
+}
+
+async function terminalKey(key) {
+    await terminalOpen();
+    await workspace.keyboard.press(key);
+    await workspace.waitForTimeout(100);
 }
 
 async function setWorkbenchPartVisible(partName, visible) {
@@ -1703,6 +1803,10 @@ async function executeAction(action, targetTab, hooks) {
     case 'clone-accept-destination': return cloneAcceptDestination();
     case 'clone-open': return cloneOpen();
     case 'open-file': return openFile(action.path);
+    case 'terminal-open': return terminalOpen();
+    case 'terminal-maximize': return terminalMaximize();
+    case 'terminal-run': return terminalRun(action.text);
+    case 'terminal-key': return terminalKey(action.key);
     case 'go-live': return goLive(hooks);
     case 'write-file': return writeWorkspaceFile(action.path, action.contents, hooks);
     case 'wait-for-file': return waitForWorkspaceFile(action.path);
