@@ -74,7 +74,7 @@ terminal-run: clear
 terminal-run: wget https://github.com/specht/workspace-files/raw/main/terra1.sql
 terminal-wait-for-prompt
 wait-for-file: mysql-terra/terra1.sql
-sleep: 0.5
+sleep: 0.51
 -->
 
 <img class='full' src='wget.webp' alt=''>
@@ -139,6 +139,7 @@ crop-terminal-skip-bottom: 1
 Um dir die Tabellen in der Datenbank anzeigen zu lassen, gib den Befehl `SHOW TABLES;` ein und drücke <kbd>Enter</kbd>:
 
 <!-- tutorial-screenshot
+press: Control+L
 press: Control+L
 type: SHOW TABLES;
 press: Enter
@@ -363,6 +364,8 @@ sleep: 0.5
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
+
+<img class='full' src='select-count-where.webp' alt='COUNT zählt die Zeilen der Tabelle land.'>
 
 ## Text mit LIKE durchsuchen
 

@@ -719,7 +719,14 @@ async function ensureBrowser() {
                 headless: true,
                 args: [
                     `--host-resolver-rules=${hostRules}`,
-                    '--disable-font-subpixel-positioning',
+
+                    // Give headless Chromium a software-backed WebGL implementation.
+                    // This lets VS Code/xterm use its WebGL renderer even without a GPU.
+                    '--use-gl=angle',
+                    '--use-angle=swiftshader',
+                    '--enable-webgl',
+
+                    // '--disable-font-subpixel-positioning',
                     '--font-render-hinting=none',
                 ],
             });

@@ -29,6 +29,7 @@
 
     "terminal.integrated.fontFamily": "'0xProto Nerd Font Mono', monospace",
     "terminal.integrated.lineHeight": 1.0,
+    "terminal.integrated.customGlyphs": true,
     "terminal.integrated.suggest.enabled": false,
     "terminal.integrated.stickyScroll.enabled": false,
 
