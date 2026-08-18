@@ -127,6 +127,7 @@ let preview = null;
 let generationQueue = Promise.resolve();
 let workspacePrepared = false;
 let workspacePreparationPromise = null;
+let terminalShellReady = false;
 const deviceMetricSessions = new WeakMap();
 const appliedViewportProfiles = new WeakMap();
 const SOURCE_LOCATION = Symbol('tutorial-screenshot-source-location');
@@ -903,6 +904,7 @@ async function prepareFreshWorkspace() {
     }
     workspace = null;
     preview = null;
+    terminalShellReady = false;
 
     jsonResponse(await browserRequest('/api/reset_server', {
         body: { confirmation: SCREENSHOT_EMAIL },
@@ -1015,12 +1017,39 @@ async function focusTerminal() {
     await workspace.waitForTimeout(150);
 }
 
+async function waitForInitialTerminalPrompt() {
+    if (terminalShellReady) return;
+
+    await workspace.waitForFunction(
+        user => {
+            const terminals = [...document.querySelectorAll('.terminal.xterm')]
+                .filter(terminal => {
+                    const rect = terminal.getBoundingClientRect();
+                    return rect.width > 0 && rect.height > 0;
+                });
+            const terminal = terminals.at(-1);
+            if (!terminal) return false;
+
+            const rows = [...terminal.querySelectorAll('.xterm-rows > div')];
+            return rows.slice(-12).some(row => {
+                const text = (row.textContent || '').replace(/\s+/g, ' ').trim();
+                return text.includes(`${user}@workspace`) && /[#$]$/.test(text);
+            });
+        },
+        SCREENSHOT_WORKSPACE_USER,
+        { timeout: 30_000 },
+    );
+    terminalShellReady = true;
+    await workspace.waitForTimeout(150);
+}
+
 async function terminalOpen() {
     const terminal = workspace.locator('.terminal.xterm:visible').last();
     if (!(await locatorIsVisible(terminal))) {
         await runVsCodeCommand('View: Toggle Terminal', 'Toggle Terminal');
     }
     await focusTerminal();
+    await waitForInitialTerminalPrompt();
 }
 
 async function terminalMaximize() {

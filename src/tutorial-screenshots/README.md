@@ -98,8 +98,10 @@ crop-top: PERCENT%
 crop-bottom: PERCENT%
 ```
 
-`terminal-open` opens VS Code's integrated terminal if necessary and focuses the
-active terminal. Repeating it does not create another terminal.
+`terminal-open` opens VS Code's integrated terminal if necessary, waits for the
+initial shell prompt (for example `student@workspace:~$`) and focuses the active
+terminal. Repeating it does not create another terminal or wait for Bash again,
+so later `terminal-run` instructions can also drive an interactive program.
 
 `terminal-maximize` makes the panel containing the terminal fill the available
 workbench area and returns focus to the terminal. It is safe to repeat when the

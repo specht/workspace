@@ -10,24 +10,27 @@ In diesem Kapitel lernst du, wie du MySQL-Datenbanken abfragen kannst. Dazu verw
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+# Workspace ohne geöffneten Ordner
+show-left-sidebar
+left-sidebar-width: 300
+-->
+
 <img class='full' src='fresh-start.webp' alt=''>
 
 Schließe die linken Seitenleiste, indem du <kbd>Strg</kbd><kbd>B</kbd> drückst, um mehr Platz zu haben.
 Öffne als nächstes das Terminal, indem du den Shortcut <kbd>Strg</kbd><kbd>J</kbd> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
+
+<!-- tutorial-screenshot
+hide-left-sidebar
+terminal-open
+-->
 
 <img class='full' src='got-terminal.webp' alt=''>
 
 <img src='terminal-maximize.webp' class='r' style='width: 25em;' alt=''>
 
 Du kannst das Terminal auch maximieren, indem du auf den Pfeil in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du jederzeit mit <kbd>Strg</kbd><kbd>B</kbd> ein- und ausblenden.
-
-Im Terminal siehst du nun die Eingabeaufforderung, auch Prompt genannt, der dir u.a. anzeigt, in welchem Verzeichnis du dich befindest. Der Prompt sieht in etwa so aus:
-
-```bash
-abc@7a93efd91905:~$
-```
-
-Lass dich von dem Prompt nicht verwirren. Der Teil `abc` vor dem `@` ist dein Benutzername, der Teil `7a93efd91905` nach dem `@` ist der Name deines Computers, und der Teil nach dem `:` ist das aktuelle Verzeichnis. In diesem Fall ist das aktuelle Verzeichnis `~`, welches die Abkürzung für dein Home-Verzeichnis ist. Das `$` am Ende des Prompts zeigt an, dass du als normaler Benutzer angemeldet bist. Wenn du als Administrator angemeldet wärst, würde das `$` durch ein `#` ersetzt.
 
 ## Beispieldaten herunterladen
 
@@ -38,6 +41,11 @@ wget https://github.com/specht/workspace-files/raw/main/terra1.sql
 ```
 
 Die Ausgabe sollte in etwa so aussehen:
+
+<!-- tutorial-screenshot
+terminal-maximize
+terminal-run: wget https://github.com/specht/workspace-files/raw/main/terra1.sql
+-->
 
 <img class='full' src='wget.webp' alt=''>
 

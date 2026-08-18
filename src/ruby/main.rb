@@ -2746,8 +2746,14 @@ class Main < Sinatra::Base
                 end
             end
 
-            if DEVELOPMENT && email.match?(/\Ae2e-\d+@example\.com\z/)
+            if DEVELOPMENT && (
+                    email == 'screenshots@example.com' ||
+                    email.match?(/\Ae2e-\d+@example\.com\z/)
+                )
                 user_config['terminal.integrated.gpuAcceleration'] = 'off'
+            end
+
+            if DEVELOPMENT && email.match?(/\Ae2e-\d+@example\.com\z/)
                 user_config['editor.autoIndent'] = 'none'
                 user_config['editor.formatOnType'] = false
                 user_config['editor.formatOnPaste'] = false
