@@ -166,7 +166,7 @@ press: Control+L
 type: DESCRIBE land;
 press: Enter
 sleep: 0.5
-terminal-scroll-back: 6
+terminal-scroll-back: 1
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->

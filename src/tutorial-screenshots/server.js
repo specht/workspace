@@ -2073,75 +2073,35 @@ function pngDimensions(buffer) {
 }
 
 async function scrollVisibleTerminalBack(page, lineCount) {
-    return page.evaluate(async lines => {
-        const terminals = [...document.querySelectorAll('.terminal.xterm')]
-            .filter(terminal => {
-                const rect = terminal.getBoundingClientRect();
-                return rect.width > 0 && rect.height > 0;
-            });
+    await focusTerminal();
 
-        const terminal = terminals.at(-1);
-        if (!terminal) {
-            throw new Error(
-                'terminal-scroll-back requires a visible integrated terminal',
-            );
-        }
+    for (let index = 0; index < lineCount; index += 1) {
+        await page.keyboard.press('Control+Shift+ArrowUp');
+        await page.waitForTimeout(20);
+    }
 
-        const viewport = terminal.querySelector('.xterm-viewport');
-        if (!viewport) {
-            throw new Error(
-                'terminal-scroll-back could not find the xterm viewport',
-            );
-        }
+    // Give xterm a couple of frames to repaint the scrolled buffer.
+    await page.evaluate(() => new Promise(resolve => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
+    }));
 
-        const rows = [...terminal.querySelectorAll('.xterm-rows > div')]
-            .map(row => row.getBoundingClientRect())
-            .filter(rect => rect.height > 0);
-
-        if (rows.length === 0) {
-            throw new Error(
-                'terminal-scroll-back could not measure a terminal row',
-            );
-        }
-
-        const rowHeight = rows[0].height;
-        const originalScrollTop = viewport.scrollTop;
-
-        viewport.scrollTop = Math.max(
-            0,
-            originalScrollTop - lines * rowHeight,
-        );
-
-        // Let xterm repaint the newly visible buffer rows.
-        await new Promise(resolve => {
-            requestAnimationFrame(() => requestAnimationFrame(resolve));
-        });
-
-        return originalScrollTop;
-    }, lineCount);
+    // We only need to know how many lines to undo afterwards.
+    return lineCount;
 }
 
-async function restoreVisibleTerminalScroll(page, scrollTop) {
-    await page.evaluate(async originalScrollTop => {
-        const terminals = [...document.querySelectorAll('.terminal.xterm')]
-            .filter(terminal => {
-                const rect = terminal.getBoundingClientRect();
-                return rect.width > 0 && rect.height > 0;
-            });
+async function restoreVisibleTerminalScroll(page, lineCount) {
+    if (!lineCount) return;
 
-        const terminal = terminals.at(-1);
-        const viewport = terminal?.querySelector('.xterm-viewport');
-        if (!viewport) return;
+    await focusTerminal();
 
-        viewport.scrollTop = Math.min(
-            originalScrollTop,
-            Math.max(0, viewport.scrollHeight - viewport.clientHeight),
-        );
+    for (let index = 0; index < lineCount; index += 1) {
+        await page.keyboard.press('Control+Shift+ArrowDown');
+        await page.waitForTimeout(20);
+    }
 
-        await new Promise(resolve => {
-            requestAnimationFrame(() => requestAnimationFrame(resolve));
-        });
-    }, scrollTop);
+    await page.evaluate(() => new Promise(resolve => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
+    }));
 }
 
 async function visibleTerminalCropGeometry(page) {
