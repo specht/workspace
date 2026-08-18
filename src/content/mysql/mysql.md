@@ -140,7 +140,6 @@ Um dir die Tabellen in der Datenbank anzeigen zu lassen, gib den Befehl `SHOW TA
 
 <!-- tutorial-screenshot
 press: Control+L
-press: Control+L
 type: SHOW TABLES;
 press: Enter
 sleep: 0.5
@@ -381,8 +380,6 @@ ORDER BY name;
 press: Control+L
 terminal-run: SELECT name FROM land WHERE name LIKE '%land%' ORDER BY name;
 sleep: 0.5
-crop-terminal-lines: auto
-crop-terminal-skip-bottom: 1
 -->
 
 <img class='full' src='select-like.webp' alt='LIKE findet Ländernamen, in denen die Zeichenfolge land vorkommt.'>
@@ -399,6 +396,7 @@ ORDER BY kontinent;
 ```
 
 <!-- tutorial-screenshot
+press: Q
 press: Control+L
 terminal-run: SELECT DISTINCT kontinent FROM land ORDER BY kontinent;
 sleep: 0.5
