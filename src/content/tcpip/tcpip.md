@@ -17,7 +17,7 @@ Schließe die linken Seitenleiste, indem du <kbd>Strg</kbd><kbd>B</kbd> drückst
 
 <img class='full' src='got-terminal.webp' alt=''>
 
-<img src='terminal-maximize.webp' class='r' style='width: 25em;' alt=''>
+<img src='../common/maximize-terminal.webp' class='r' style='width: 25em;' alt=''>
 
 Du kannst das Terminal auch maximieren, indem du auf den Pfeil in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du jederzeit mit <kbd>Strg</kbd><kbd>B</kbd> ein- und ausblenden.
 

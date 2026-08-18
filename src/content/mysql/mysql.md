@@ -28,7 +28,23 @@ terminal-open
 
 <img class='full' src='got-terminal.webp' alt=''>
 
-<img src='terminal-maximize.webp' class='r' style='width: 25em;' alt=''>
+Erstelle nun das Verzeichnis `mysql-terra`, indem du folgenden Befehl eingibst:
+
+```bash
+mkdir mysql-terra
+```
+
+<!-- tutorial-screenshot
+terminal-maximize
+terminal-run: mkdir mysql-terra
+terminal-wait-for-prompt
+crop-top: 6.25%
+crop-bottom: 74%
+-->
+
+<img class='full' src='mkdir-terra.webp' alt=''>
+
+<img src='../common/maximize-terminal.webp' class='r' style='width: 25em;' alt=''>
 
 Du kannst das Terminal auch maximieren, indem du auf den Pfeil in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du jederzeit mit <kbd>Strg</kbd><kbd>B</kbd> ein- und ausblenden.
 
@@ -43,7 +59,7 @@ wget https://github.com/specht/workspace-files/raw/main/terra1.sql
 Die Ausgabe sollte in etwa so aussehen:
 
 <!-- tutorial-screenshot
-terminal-maximize
+terminal-run: clear
 terminal-run: wget https://github.com/specht/workspace-files/raw/main/terra1.sql
 terminal-wait-for-prompt
 -->
@@ -55,8 +71,11 @@ Die Datei wird standardmäßig im aktuellen Verzeichnis gespeichert. Schau nach,
 angekommen ist, indem du den Befehl `ls -lh` (kurz für »list human-readable«) eingibst:
 
 <!-- tutorial-screenshot
-terminal-run: ls -l
+terminal-run: clear
+terminal-run: ls -lh
 terminal-wait-for-prompt
+crop-top: 6.25%
+crop-bottom: 69%
 -->
 <img class='full' src='ls-lh.webp' alt=''>
 
