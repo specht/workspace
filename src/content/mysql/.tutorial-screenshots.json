@@ -16,30 +16,25 @@
       "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
       "output_sha256": "b6e28442acc4b7ff187a175ac786740e94efd33ccb7ebcee7d2ab6113d5d432e"
     },
-    "open-folder-ready.webp": {
-      "state_hash": "543a8a86a1846b2ca9e01190fa53cfa762f201c110c6764a2aa5181b2cb7b2e6",
-      "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
-      "output_sha256": "87930635c0243eb9cbf5bd93c51e3ebdd278e3f00b7e65565a7fd47cc641ddf8"
-    },
     "got-terminal.webp": {
-      "state_hash": "ed01b6aed8681af909d94848056a15c2533da3847cb4ab3eb44da95725f348dc",
+      "state_hash": "8beabb481c3f3cab6df8eab06b81891de445dd9ebe20e710c06d475ff7b11dec",
       "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
-      "output_sha256": "7f8abe449edd0e82b6876d35f8b315b51256c1f5a6092fb7b52d6ae1d0185496"
-    },
-    "mkdir-terra.webp": {
-      "state_hash": "9b718d704ea58f433d32ee9a9563e8c9f5cbe01aebf0481fca6dd5f4d96cc844",
-      "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
-      "output_sha256": "0d9c9e827c193d29eb08b32e20b75dce77ed445181f6fe78c165b22127ddfd4d"
+      "output_sha256": "62a14bdf3c9442cb2aeb478fa72e752761df52c226ab6dbe25221f04afae41d8"
     },
     "wget.webp": {
-      "state_hash": "d549c5a2c7ae2169ec6d8142ea8c9329c54f290ea9753a76fa2133cef555a9f8",
+      "state_hash": "cc2e6c7d001a8523ad9796d056ab85c496d468a57478d4687c5525e70a98b779",
       "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
-      "output_sha256": "090fa06b76d0380b6b17914d819299a13494a32c0cb7adefafea185c14cc9107"
+      "output_sha256": "4236f6afaf54de58ad34f597ade8de7ffd4fccac386e53ac578ff9b70b0f810e"
     },
-    "ls-lh.webp": {
-      "state_hash": "cc595281890f88cfe016758af0ce2b19ff111f0c6bca6957a4b12921b99211ea",
+    "terra1-sql.webp": {
+      "state_hash": "73fd0835e456e74100af50390aad46c5354abe36e2ce68927a8384deab4ef5bb",
       "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
-      "output_sha256": "0c1167d41acf56d94b45dcfcbf501a33a0dfd54f21d9c5a4f978e94f0395cc54"
+      "output_sha256": "f47f56606d18e3657b97dd47cd6d51f3e1212a9c69030ca23b00e4b0287f82e4"
+    },
+    "sql-import.webp": {
+      "state_hash": "a5fd5bb49c27ac32c337b7c71bc8d50c1d65a1bcf94e0516c56d9a50ee432f64",
+      "environment_fingerprint": "e9f73363c7d7c7485ea890b4d0b00f54144504aeac2645079c557447ab3fb07d",
+      "output_sha256": "3d5914d5eb9ebbf82d1629e3d7094731135e29baac220915b6697fd1a545117a"
     }
   }
 }

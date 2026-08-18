@@ -17,8 +17,7 @@ show-left-sidebar
 
 <img class='full' src='fresh-start.webp' alt=''>
 
-Schließe die linken Seitenleiste, indem du <kbd>Strg</kbd><kbd>B</kbd> drückst, um mehr Platz zu haben.
-Öffne als nächstes das Terminal, indem du den Shortcut <kbd>Strg</kbd><kbd>J</kbd> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
+Wir erstellen nun ein Verzeichnis für unser MySQL-Experiment. Klicke dazu auf »Open Folder« und gib `mysql-terra` ein:
 
 <!-- tutorial-screenshot
 press: Control+K
@@ -29,6 +28,8 @@ type: mysql-terra
 
 <img class='full' src='open-folder.webp' alt=''>
 
+Da das Verzeichnis noch nicht existiert, wirst du gefragt, ob das Verzeichnis erstellt werden soll. Bestätige die Frage mit <kbd>Enter</kbd>:
+
 <!-- tutorial-screenshot
 press: Enter
 wait-for-text: create it
@@ -36,39 +37,20 @@ wait-for-text: create it
 
 <img class='full' src='open-folder-confirm.webp' alt=''>
 
+Öffne anschließend das Terminal:
+
 <!-- tutorial-screenshot
 press: Enter
 sleep: 1
--->
-
-<img class='full' src='open-folder-ready.webp' alt=''>
-
-<!-- tutorial-screenshot
-hide-left-sidebar
+click: Next Up
 terminal-open
 -->
 
 <img class='full' src='got-terminal.webp' alt=''>
 
-Erstelle nun das Verzeichnis `mysql-terra`, indem du folgenden Befehl eingibst:
-
-```bash
-mkdir mysql-terra
-```
-
-<!-- tutorial-screenshot
-terminal-maximize
-terminal-run: mkdir mysql-terra
-terminal-wait-for-prompt
-crop-top: 6.25%
-crop-bottom: 74%
--->
-
-<img class='full' src='mkdir-terra.webp' alt=''>
-
 <img src='../common/maximize-terminal.webp' class='r' style='width: 25em;' alt=''>
 
-Du kannst das Terminal auch maximieren, indem du auf das Symbol in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du jederzeit mit <kbd>Strg</kbd><kbd>B</kbd> ein- und ausblenden.
+Du kannst das Terminal auch maximieren, indem du auf das Symbol in der rechten oberen Ecke des Terminals klickst.
 
 ## Beispieldaten herunterladen
 
@@ -81,47 +63,31 @@ wget https://github.com/specht/workspace-files/raw/main/terra1.sql
 Die Ausgabe sollte in etwa so aussehen:
 
 <!-- tutorial-screenshot
+terminal-maximize
 terminal-run: clear
 terminal-run: wget https://github.com/specht/workspace-files/raw/main/terra1.sql
 terminal-wait-for-prompt
+wait-for-file: mysql-terra/terra1.sql
+sleep: 0.5
 -->
 
 <img class='full' src='wget.webp' alt=''>
 
-Das Programm `wget` können wir dazu verwenden, um Dateien aus dem Internet herunterzuladen.
-Die Datei wird standardmäßig im aktuellen Verzeichnis gespeichert. Schau nach, ob die Datei
-angekommen ist, indem du den Befehl `ls -lh` (kurz für »list human-readable«) eingibst:
+Klicke auf die Datei, um sie zu öffnen. Es befinden sich Daten zu Ländern und Städten darin.
 
 <!-- tutorial-screenshot
-terminal-run: clear
-terminal-run: ls -lh
-terminal-wait-for-prompt
-crop-top: 6.25%
-crop-bottom: 69%
+open-file: terra1.sql
+press: Control+G
+press: 2
+press: 3
+press: 7
+press: 7
+press: Enter
+press: Control+J
+sleep: 0.5
 -->
-<img class='full' src='ls-lh.webp' alt=''>
 
-Die Datei ist also 1,6 MB groß.
-
-Um dir den Inhalt der Datei anzeigen zu lassen, kannst du den Befehl `less` verwenden. `less` ist ein Pager, der dir den Inhalt einer Datei seitenweise anzeigt. Um den Inhalt der Datei `terra1.sql` anzuzeigen, gib folgenden Befehl ein:
-
-```bash
-less terra1.sql
-```
-
-<div class='hint'>
-Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>less te</code> und drücke <kbd>Tab</kbd>, um den Dateinamen automatisch zu <code>terra1.sql</code> vervollständigen zu lassen. Du kannst danach ganz normal weiterschreiben.
-</div>
-
-Du siehst jetzt die ersten Zeilen der Datei:
-
-<img class='full' src='less.webp' alt=''>
-
-Nutze die Pfeiltasten <kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> sowie <kbd>Bild↑</kbd><kbd>Bild↓</kbd>, um durch die Datei zu navigieren.
-
-Wenn du etwas nach unten scrollst, siehst du, dass in der Datei zwei Tabellen enthalten sind, die Informationen zu Ländern und Orten enthalten.
-
-Drücke <kbd>Q</kbd>, um `less` zu beenden.
+<img class='full' src='terra1-sql.webp' alt=''>
 
 ## Beispieldaten importieren
 
@@ -130,6 +96,17 @@ Um die Beispieldatenbank in MySQL zu importieren, gib einfach den folgenden Befe
 ```bash
 mysql < terra1.sql
 ```
+
+<!-- tutorial-screenshot
+press: Control+B
+press: Control+J
+terminal-maximize
+#terminal-run: mysql < terra1.sql
+#terminal-wait-for-prompt
+sleep: 0.5
+-->
+
+<img class='full' src='sql-import.webp' alt=''>
 
 <div class='hint wink'>
 Hast du daran gedacht, die <kbd>Tab</kbd>-Taste zu verwenden, um den Dateinamen automatisch vervollständigen zu lassen?
