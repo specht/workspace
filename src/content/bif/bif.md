@@ -129,7 +129,6 @@ Klicke rechts unten auf »Go Live«. Es öffnet sich ein neuer Tab mit deiner Ge
 # erste BIF-Vorschau
 go-live
 tab: preview
-zoom: 1.25
 click: Fit graph
 sleep: 0.5
 -->
@@ -159,7 +158,6 @@ write-file: pages-starter/2.md <- previous-code
 wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/2.md
 preview-reload
 tab: preview
-zoom: 1.25
 click: Fit graph
 sleep: 0.5
 -->
@@ -193,7 +191,6 @@ write-file: pages-starter/1.md <- previous-code
 wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
 preview-reload
 tab: preview
-zoom: 1.25
 click: Fit graph
 sleep: 0.5
 -->
@@ -250,7 +247,6 @@ write-file: pages-starter/2.md <- previous-code (2-new)
 wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/2.md
 preview-reload
 tab: preview
-zoom: 1.25
 click: Fit graph
 sleep: 0.5
 click: Gehe in den Flur.
@@ -304,7 +300,6 @@ wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/2.md
 preview-reload
 hold: 1.5s selector:.story-restart-control
 tab: preview
-zoom: 1.25
 click: Fit graph
 sleep: 0.5
 click: Gehe in den Flur.
@@ -573,7 +568,6 @@ wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/2.md
 preview-reload
 hold: 1.5s selector:.story-restart-control
 tab: preview
-zoom: 1.25
 click: Fit graph
 sleep: 0.5
 click: Gehe in den Flur.
@@ -608,7 +602,6 @@ Gerade beim Testen einer interaktiven Geschichte lohnt es sich, Orte mehrmals zu
 
 <!-- tutorial-screenshot
 tab: preview
-zoom: 1.25
 click: Öffne den Materialschrank.
 move-mouse: No problems
 sleep: 0.5
@@ -666,7 +659,6 @@ wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/3.md
 preview-reload
 hold: 1.5s selector:.story-restart-control
 tab: preview
-zoom: 1.25
 click: Fit graph
 sleep: 0.5
 -->
@@ -721,7 +713,7 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     click: selector:.story-view-toggle
     hold: 1.5s selector:.story-restart-control
     move-mouse: Nach Schulschluss
-    zoom: 2.75
+    zoom: 2
     sleep: 0.5
     -->
     <div class='col-md-4 mb-3'>
@@ -732,7 +724,7 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
     tab: preview
     preview-reload
-    zoom: 2.75
+    zoom: 2
     sleep: 0.5
     -->
     <div class='col-md-4 mb-3'>
@@ -743,7 +735,7 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
     tab: preview
     preview-reload
-    zoom: 2.75
+    zoom: 2
     sleep: 0.5
     -->
     <div class='col-md-4 mb-3'>
@@ -754,7 +746,7 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
     tab: preview
     preview-reload
-    zoom: 2.75
+    zoom: 2
     sleep: 0.5
     -->
     <div class='col-md-4 mb-3'>
@@ -765,7 +757,7 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
     tab: preview
     preview-reload
-    zoom: 2.75
+    zoom: 2
     sleep: 0.5
     -->
     <div class='col-md-4 mb-3'>
@@ -776,7 +768,7 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
     tab: preview
     preview-reload
-    zoom: 2.75
+    zoom: 2
     sleep: 0.5
     -->
     <div class='col-md-4 mb-3'>
@@ -896,7 +888,6 @@ sleep: 0.5
 click: Sieh im Büro nach.
 wait-for-text: Gehe zurück in den Flur.
 move-mouse: No problems
-zoom: 1.25
 sleep: 1.5
 -->
 
@@ -1007,7 +998,6 @@ preview-reload
 hold: 1.5s selector:.story-restart-control
 move-mouse: No problems
 click: Fit graph
-zoom: 1.25
 sleep: 0.5
 -->
 <img class='full full-shadow' src='grouped-graph.webp' alt='Farbig hinterlegte Gruppen gliedern den Story-Graphen in mehrere Bereiche.'>

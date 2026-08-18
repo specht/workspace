@@ -397,19 +397,19 @@ do not provide a hook simply continue after `DOMContentLoaded`. The hook file's
 SHA-256 is included in the environment fingerprint, so changing hook behavior
 invalidates that tutorial's generated screenshots automatically.
 
-The global screenshot profile lives in `config.rb`. It defaults to 1853x929 and
-150% browser-style zoom. The renderer deliberately does not choose a light or dark
-color scheme: code-server loads the Workspace's actual VS Code theme, and the
-screenshot generator waits until that theme has remained stable before running the
-recipe. The renderer gives the page the smaller CSS viewport that a browser has at
-that zoom level and then asks Chromium to capture that viewport at the requested
-scale. Thus VS Code lays itself out at 150% while the generated bitmap still has
-the configured 1853x929 pixels.
+The global screenshot profile lives in `config.rb`. It defaults to a 1853x929
+viewport, 100% browser-style zoom, and a 2x capture scale. The renderer deliberately
+does not choose a light or dark color scheme: code-server loads the Workspace's
+actual VS Code theme, and the screenshot generator waits until that theme has
+remained stable before running the recipe. The page keeps its normal layout while
+Chromium renders the screenshot capture at the requested scale, so the default
+1853x929 viewport produces a 3706x1858 bitmap without resizing a smaller capture.
 
-`viewport` and `zoom` describe the state in which the selected tab is operated as
-well as captured. The renderer applies that profile before recipe actions run and
-again as soon as a newly-created target tab becomes available. This means actions
-that depend on layout can safely follow a custom zoom, for example:
+`viewport` and `zoom` describe the layout in which the selected tab is operated
+and captured. The global capture scale changes only the output resolution. The
+renderer applies the layout profile before recipe actions run and again as soon as
+a newly-created target tab becomes available. This means actions that intentionally
+depend on a custom layout zoom can continue to use it, for example:
 
 ```text
 zoom: 1.2

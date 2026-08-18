@@ -5,9 +5,21 @@ import {
     parseTerminalLineCropDirective,
     parseTerminalLineCount,
     parseTerminalLineSkip,
+    scalePixelDimensions,
     terminalLineCropPixels,
     validateCropDirectives,
 } from '../crop.js';
+
+test('capture scale multiplies native screenshot dimensions', () => {
+    assert.deepEqual(scalePixelDimensions(1000, 500, 2), {
+        width: 2000,
+        height: 1000,
+    });
+    assert.deepEqual(scalePixelDimensions(1000, 500, 1.5), {
+        width: 1500,
+        height: 750,
+    });
+});
 
 test('crop-terminal-lines directive parser recognizes integer and auto syntax', () => {
     assert.equal(parseTerminalLineCropDirective('crop-terminal-lines: 3'), 3);

@@ -30,6 +30,7 @@ press: Control+K
 press: Control+O
 wait-for-input-value: /workspace/
 type: mysql-terra
+crop-bottom: 55%
 -->
 
 <img class='full' src='open-folder.webp' alt=''>
@@ -39,6 +40,7 @@ Da das Verzeichnis noch nicht existiert, wirst du gefragt, ob das Verzeichnis er
 <!-- tutorial-screenshot
 press: Enter
 wait-for-text: create it
+crop-bottom: 83%
 -->
 
 <img class='full' src='open-folder-confirm.webp' alt=''>
@@ -166,7 +168,7 @@ press: Control+L
 type: DESCRIBE land;
 press: Enter
 sleep: 0.5
-terminal-scroll-back: 1
+terminal-scroll-back: 2
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->

@@ -1,3 +1,10 @@
+export function scalePixelDimensions(width, height, scale) {
+    return {
+        width: Math.max(1, Math.round(width * scale)),
+        height: Math.max(1, Math.round(height * scale)),
+    };
+}
+
 export function parseTerminalLineCount(value) {
     const text = `${value}`.trim();
     if (text === 'auto') {

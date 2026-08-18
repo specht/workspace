@@ -15,10 +15,11 @@ TUTORIAL_SCREENSHOT = {
     :email => 'student@example.com',
     :login_code => '123456',
     :workspace_user => 'student',
-    :width => 1853,
-    :height => 929,
-    :zoom => 1.5,
-    :desktop_scale_factor => 1.203125,
+    :width => 1853 / 1.8,
+    :height => 929 / 1.8,
+    :zoom => 1.0,
+    :capture_scale => 1.8,
+    :desktop_scale_factor => 1.0,
 }.freeze
 LOGS_PATH = DEVELOPMENT ? './logs' : "/home/#{ENV['USER']}/logs/#{PROJECT_NAME}"
 DATA_PATH = DEVELOPMENT ? './data' : "/mnt/hackschule/#{PROJECT_NAME}"
@@ -134,6 +135,7 @@ if DEVELOPMENT && PROFILE.include?(:dynamic) && PROFILE.include?(:static)
             'TUTORIAL_SCREENSHOT_WIDTH' => TUTORIAL_SCREENSHOT[:width].to_s,
             'TUTORIAL_SCREENSHOT_HEIGHT' => TUTORIAL_SCREENSHOT[:height].to_s,
             'TUTORIAL_SCREENSHOT_ZOOM' => TUTORIAL_SCREENSHOT[:zoom].to_s,
+            'TUTORIAL_SCREENSHOT_CAPTURE_SCALE' => TUTORIAL_SCREENSHOT[:capture_scale].to_s,
             'TUTORIAL_SCREENSHOT_DESKTOP_SCALE_FACTOR' => TUTORIAL_SCREENSHOT[:desktop_scale_factor].to_s,
         },
         :extra_hosts => [

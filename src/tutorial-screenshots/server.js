@@ -9,6 +9,7 @@ import { pathToFileURL } from 'node:url';
 import {
     parseTerminalLineCropDirective,
     parseTerminalLineSkip,
+    scalePixelDimensions,
     terminalLineCropPixels,
     validateCropDirectives,
 } from './crop.js';
@@ -45,14 +46,15 @@ const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'student@examp
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
-const GENERATOR_VERSION = 17;
+const GENERATOR_VERSION = 18;
 const WORKSPACE_FONT_FAMILY = '0xProto Nerd Font Mono';
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
 const DEFAULT_PROFILE = Object.freeze({
     width: positiveIntegerEnv('TUTORIAL_SCREENSHOT_WIDTH', 1853),
     height: positiveIntegerEnv('TUTORIAL_SCREENSHOT_HEIGHT', 929),
-    zoom: positiveNumberEnv('TUTORIAL_SCREENSHOT_ZOOM', 1.5),
+    zoom: positiveNumberEnv('TUTORIAL_SCREENSHOT_ZOOM', 1),
+    captureScale: positiveNumberEnv('TUTORIAL_SCREENSHOT_CAPTURE_SCALE', 2),
     desktopScaleFactor: positiveNumberEnv('TUTORIAL_SCREENSHOT_DESKTOP_SCALE_FACTOR', 1.203125),
 });
 const WORKBENCH_PARTS = Object.freeze({
@@ -2076,7 +2078,7 @@ async function scrollVisibleTerminalBack(page, lineCount) {
     await focusTerminal();
 
     for (let index = 0; index < lineCount; index += 1) {
-        await page.keyboard.press('Control+Shift+ArrowUp');
+        await page.mouse.wheel(0, -1);
         await page.waitForTimeout(20);
     }
 
@@ -2095,7 +2097,7 @@ async function restoreVisibleTerminalScroll(page, lineCount) {
     await focusTerminal();
 
     for (let index = 0; index < lineCount; index += 1) {
-        await page.keyboard.press('Control+Shift+ArrowDown');
+        await page.mouse.wheel(0, 1);
         await page.waitForTimeout(20);
     }
 
@@ -2256,11 +2258,9 @@ async function captureShot(shot, tutorialDirectory) {
                 await installWorkspaceScreenshotStyle(page);
             }
 
-            // Playwright's screenshot scale is tied to the BrowserContext's device
-            // scale factor, so a later CDP device-metrics override did not enlarge
-            // the bitmap. Capture through CDP directly instead: the page is laid out
-            // at viewport/zoom CSS pixels, while clip.scale restores the configured
-            // final pixel dimensions.
+            // Capture through CDP directly. The page keeps its viewport/zoom
+            // layout, while clip.scale asks Chromium to render a larger native
+            // snapshot without changing the page's persistent device metrics.
             const captured = await session.send(
                 'Page.captureScreenshot',
                 {
@@ -2276,7 +2276,7 @@ async function captureShot(shot, tutorialDirectory) {
                         height:
                             heightPixels /
                             metrics.deviceScaleFactor,
-                        scale: 1,
+                        scale: DEFAULT_PROFILE.captureScale,
                     },
                 },
             );
@@ -2287,6 +2287,11 @@ async function captureShot(shot, tutorialDirectory) {
             );
 
             const actual = pngDimensions(png);
+            const expected = scalePixelDimensions(
+                shot.viewport.width,
+                heightPixels,
+                DEFAULT_PROFILE.captureScale,
+            );
             await fs.writeFile(pngPath, png);
 
             const cwebpArgs = [
@@ -2295,14 +2300,14 @@ async function captureShot(shot, tutorialDirectory) {
             ];
 
             if (
-                actual.width !== shot.viewport.width ||
-                actual.height !== heightPixels
+                actual.width !== expected.width ||
+                actual.height !== expected.height
             ) {
                 console.log(
                     `Chromium screenshot was ` +
                     `${actual.width}x${actual.height}; ` +
                     `expected ` +
-                    `${shot.viewport.width}x${heightPixels}; ` +
+                    `${expected.width}x${expected.height}; ` +
                     `keeping native pixels without resampling`,
                 );
             }
@@ -2367,10 +2372,11 @@ async function captureShot(shot, tutorialDirectory) {
 function screenshotOutputDimensions(shot) {
     const topPixels = Math.round(shot.viewport.height * shot.cropTop);
     const bottomPixels = Math.round(shot.viewport.height * shot.cropBottom);
-    return {
-        width: shot.viewport.width,
-        height: shot.viewport.height - topPixels - bottomPixels,
-    };
+    return scalePixelDimensions(
+        shot.viewport.width,
+        shot.viewport.height - topPixels - bottomPixels,
+        DEFAULT_PROFILE.captureScale,
+    );
 }
 
 function generationStatusItem(shot, stale, missing, previous) {

@@ -2,9 +2,9 @@
   "version": 1,
   "screenshots": {
     "vs-code-welcome.webp": {
-      "state_hash": "64570bdcb5b25b2e32428f40967c06bdfbb2218d2a63ef20a795a7430dffdd59",
-      "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
-      "output_sha256": "b5f3f5ef0a72ba973385b2e979f66ab8d707aea9a71d917333791e62179b2ef6"
+      "state_hash": "26ac35a12af0585430a9096f987f1466874cdbf8e251a79c861dca5f1b8498bf",
+      "environment_fingerprint": "e68fecc2b34a0aa48d9668d3aff193f20c080895c9821198cf306ed57f16b19f",
+      "output_sha256": "b141df728f31925a8337594546283f1617d5d3b5a64583e5b262461a93a9b0cb"
     }
   }
 }
