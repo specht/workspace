@@ -4,6 +4,28 @@ set -euo pipefail
 # Explicitly enable BuildKit because the Dockerfile uses cache mounts.
 export DOCKER_BUILDKIT=1
 
+FONT_DIR="src/static/include/fonts/0xProtoNerdFontMono"
+FONT_ASSETS=(
+    "0xProtoNerdFontMono-Regular.woff2"
+    "0xProtoNerdFontMono-Bold.woff2"
+    "0xProtoNerdFontMono-Italic.woff2"
+    "LICENSE"
+    "NERD-FONTS-README.md"
+)
+
+echo "=== Checking 0xProto Nerd Font Mono assets ==="
+MISSING_FONT_ASSETS=0
+for asset in "${FONT_ASSETS[@]}"; do
+    if [ ! -s "${FONT_DIR}/${asset}" ]; then
+        echo "Missing required font asset: ${FONT_DIR}/${asset}" >&2
+        MISSING_FONT_ASSETS=1
+    fi
+done
+if [ "$MISSING_FONT_ASSETS" -ne 0 ]; then
+    echo "Add the required 0xProto Nerd Font Mono webfont and license files before building." >&2
+    exit 1
+fi
+
 echo "=== Building executor images ==="
 
 docker build \

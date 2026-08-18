@@ -667,6 +667,13 @@ class Main < Sinatra::Base
                 ''      close;
             }
 
+            # code-server HTML must arrive uncompressed so sub_filter can inject
+            # the webfont stylesheet. Keep gzip for JS/CSS/other assets.
+            map $http_accept $hs_code_accept_encoding {
+                default gzip;
+                ~*text/html "";
+            }
+
             # ---------------------------
             # Workspace token extraction
             # ---------------------------
@@ -816,7 +823,9 @@ class Main < Sinatra::Base
                     # strip /w/<token>
                     rewrite ^/w/[a-z0-9]+(.*)$ $1 break;
 
-                    include /etc/nginx/snippets/proxy_ws.conf;
+                    include /etc/nginx/snippets/proxy_ws_code.conf;
+                    sub_filter_once on;
+                    sub_filter '</head>' '<link rel="preload" href="/include/fonts/0xProtoNerdFontMono/0xProtoNerdFontMono-Regular.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/include/fonts.css?#{CACHE_BUSTER}"></head>';
                     proxy_pass $hs_upstream;
                 }
             }
@@ -851,12 +860,27 @@ class Main < Sinatra::Base
                     return 302 #{DEVELOPMENT ? 'http:' : 'https:'}//${t}-${p}.#{WEBSITE_HOST.split(':').first}$port$r$is_args$args;
                 }
 
+                # Browser-visible Hackschule fonts for the code-server workbench.
+                # These are public static assets; workspace authentication remains
+                # on the code-server proxy itself.
+                location = /include/fonts.css {
+                    root /usr/share/nginx/html;
+                    try_files $uri =404;
+                }
+
+                location ^~ /include/fonts/0xProtoNerdFontMono/ {
+                    root /usr/share/nginx/html;
+                    try_files $uri =404;
+                }
+
                 location / {
                     if ($hs_no_upstream) { return 404; }
                     if ($hs_private_missing_sid) { return 403; }
                     if ($hs_allowed = 0) { return 403; }
 
-                    include /etc/nginx/snippets/proxy_ws.conf;
+                    include /etc/nginx/snippets/proxy_ws_code.conf;
+                    sub_filter_once on;
+                    sub_filter '</head>' '<link rel="preload" href="/include/fonts/0xProtoNerdFontMono/0xProtoNerdFontMono-Regular.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/include/fonts.css?#{CACHE_BUSTER}"></head>';
                     proxy_pass $hs_upstream;
                 }
             }
@@ -1010,6 +1034,14 @@ class Main < Sinatra::Base
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection upgrade;
             proxy_set_header Accept-Encoding gzip;
+        END_OF_STRING
+
+        AtomicFile.write('/nginx-snippets/proxy_ws_code.conf', <<~END_OF_STRING)
+            proxy_http_version 1.1;
+            proxy_set_header Host $http_host;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection upgrade;
+            proxy_set_header Accept-Encoding $hs_code_accept_encoding;
         END_OF_STRING
 
         AtomicFile.write('/nginx/default.conf', nginx_config)
@@ -4067,13 +4099,14 @@ class Main < Sinatra::Base
                 <!DOCTYPE html>
                 <html>
                 <head>
+                    <link rel="stylesheet" href="/include/fonts.css?#{CACHE_BUSTER}">
                     <style>
                         body {
-                            font-family: 'Latin Modern Mono', monospace;
+                            font-family: '0xProto Nerd Font Mono', monospace;
                             font-size: 12pt;
                         }
                         pre {
-                            font-family: 'Latin Modern Mono', monospace;
+                            font-family: '0xProto Nerd Font Mono', monospace;
                             font-size: 12pt;
                             white-space: pre-wrap;
                         }

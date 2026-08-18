@@ -4,6 +4,7 @@
     "telemetry.telemetryLevel": "off",
     "telemetry.feedback.enabled": false,
 
+    "editor.fontFamily": "'0xProto Nerd Font Mono', monospace",
     "editor.minimap.enabled": false,
     "files.autoSave": "off",
     "files.dialog.defaultPath": "/workspace",
@@ -26,6 +27,8 @@
     "html.autoClosingTags": false,
     "js/ts.autoClosingTags.enabled": false,
 
+    "terminal.integrated.fontFamily": "'0xProto Nerd Font Mono', monospace",
+    "terminal.integrated.lineHeight": 1.0,
     "terminal.integrated.suggest.enabled": false,
     "terminal.integrated.stickyScroll.enabled": false,
 

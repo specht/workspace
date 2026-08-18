@@ -272,6 +272,27 @@
     src: url(fonts/0xProto/0xProto-Bold.ttf) format('truetype');
 }
 @font-face {
+    font-family: '0xProto Nerd Font Mono';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/0xProtoNerdFontMono/0xProtoNerdFontMono-Regular.woff2) format('woff2');
+}
+@font-face {
+    font-family: '0xProto Nerd Font Mono';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(fonts/0xProtoNerdFontMono/0xProtoNerdFontMono-Bold.woff2) format('woff2');
+}
+@font-face {
+    font-family: '0xProto Nerd Font Mono';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/0xProtoNerdFontMono/0xProtoNerdFontMono-Italic.woff2) format('woff2');
+}
+@font-face {
     font-family: 'PT Sans';
     font-style: normal;
     font-weight: 400;

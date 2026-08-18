@@ -45,7 +45,8 @@ const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'student@examp
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
-const GENERATOR_VERSION = 16;
+const GENERATOR_VERSION = 17;
+const WORKSPACE_FONT_FAMILY = '0xProto Nerd Font Mono';
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
 const DEFAULT_PROFILE = Object.freeze({
@@ -2022,6 +2023,23 @@ async function installWorkspaceScreenshotStyle(page) {
     }, WORKSPACE_SCREENSHOT_STYLE);
 }
 
+async function waitForWorkspaceFont(page) {
+    const loadedFaceCount = await page.evaluate(async family => {
+        const faces = await document.fonts.load(`16px "${family}"`);
+        await document.fonts.ready;
+        await new Promise(resolve => {
+            requestAnimationFrame(() => requestAnimationFrame(resolve));
+        });
+        return faces.length;
+    }, WORKSPACE_FONT_FAMILY);
+
+    if (loadedFaceCount === 0) {
+        throw new Error(
+            `Workspace webfont is not registered: ${WORKSPACE_FONT_FAMILY}`,
+        );
+    }
+}
+
 function pngDimensions(buffer) {
     if (buffer.length < 24 ||
         buffer.readUInt32BE(0) !== 0x89504e47 ||
@@ -2102,6 +2120,9 @@ async function captureShot(shot, tutorialDirectory) {
 
     const { session, metrics } = await applyViewportProfile(page, shot.viewport, shot.zoom);
     await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {});
+    if (shot.tab === 'workspace') {
+        await waitForWorkspaceFont(page);
+    }
     await page.waitForTimeout(100);
 
     // Recipes express viewport and crop values in final screenshot pixels. The

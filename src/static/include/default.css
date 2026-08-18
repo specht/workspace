@@ -54,9 +54,9 @@ a:hover {
 }
 
 code {
-    font-family: 'Latin Modern Mono', monospace;
-    font-weight: bold;
-    font-size: 110%;
+    font-family: '0xProto Nerd Font Mono', monospace;
+    /* font-weight: bold; */
+    font-size: 95%;
     color: #e5185d;
     background-color: rgba(243, 132, 175, 0.2);
     padding: 0 0.3em;
@@ -64,9 +64,9 @@ code {
 }
 
 pre {
-    font-family: 'Latin Modern Mono', monospace;
-    font-weight: bold;
-    font-size: 110%;
+    font-family: '0xProto Nerd Font Mono', monospace;
+    /* font-weight: bold; */
+    font-size: 95%;
     padding: 0.5em 1em;
     border-radius: 0.5em;
 }
@@ -144,7 +144,7 @@ kbd {
 
     color: inherit;
     background-color: transparent;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: '0xProto Nerd Font Mono', monospace;
     font-size: 11pt;
 
     box-shadow: 0.1em 0.1em 0.1em rgba(0, 0, 0, 0.3);
@@ -170,7 +170,7 @@ svg {
 }
 
 svg text[font-family='monospace'] {
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: '0xProto Nerd Font Mono', monospace;
     font-style: italic;
     font-size: 79%;
 }
@@ -975,7 +975,7 @@ div.floatright > p {
 
     div {
         text-align: center;
-        font-family: 'IBM Plex Mono', monospace;
+        font-family: '0xProto Nerd Font Mono', monospace;
         font-size: 90%;
 
         img {
