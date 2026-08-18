@@ -998,10 +998,8 @@ async function focusTerminal() {
     const terminal = workspace.locator('.terminal.xterm:visible').last();
     await terminal.waitFor({ state: 'visible', timeout: 30_000 });
 
-    const screen = terminal.locator('.xterm-screen').first();
-    await screen.waitFor({ state: 'visible', timeout: 10_000 });
-    await screen.click({ position: { x: 20, y: 20 } });
-
+    // Focus xterm's keyboard input directly. VS Code can place terminal widgets
+    // above the screen, so a pointer click on .xterm-screen can be intercepted.
     const textarea = terminal.locator('textarea.xterm-helper-textarea').first();
     await textarea.waitFor({ state: 'attached', timeout: 10_000 });
     await textarea.focus();
