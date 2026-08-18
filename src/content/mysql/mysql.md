@@ -134,7 +134,7 @@ Um dir die Tabellen in der Datenbank anzeigen zu lassen, gib den Befehl `SHOW TA
 
 <!-- tutorial-screenshot
 press: Control+L
-type: show TABLES;
+type: SHOW TABLES;
 press: Enter
 sleep: 0.5
 crop-terminal-lines: auto
@@ -149,6 +149,15 @@ Die Groß- und Kleinschreibung spielt bei SQL-Befehlen keine Rolle. In diesem Ar
 
 Du siehst nun die beiden Tabellen `land` und `ort`. Um dir den Aufbau einer Tabelle anzeigen zu lassen, kannst du den Befehl `DESCRIBE` verwenden. Gib z. B. den Befehl `DESCRIBE land;` ein, um dir den Aufbau der Tabelle `land` anzeigen zu lassen:
 
+<!-- tutorial-screenshot
+press: Control+L
+type: DESCRIBE land;
+press: Enter
+sleep: 0.5
+crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
+-->
+
 <img class='full' src='describe-land.webp' alt='Die Tabelle land enthält Spalten für Kürzel, Name, Einwohnerzahl, Fläche, Hauptstadt und Kontinent mit ihren Datentypen.'>
 
 Du siehst nun die Spalten der Tabelle `land` und deren Datentypen.
@@ -161,21 +170,46 @@ Untersuche die Tabelle <code>ort</code> &ndash; welche Spalten gibt es und welch
 
 Um dir die Daten in einer Tabelle anzeigen zu lassen, kannst du den Befehl `SELECT` verwenden. Gib z. B. den Befehl `SELECT * FROM land;` ein, um dir alle Daten in der Tabelle `land` anzeigen zu lassen:
 
+<!-- tutorial-screenshot
+press: Control+L
+type: SELECT * FROM land;
+press: Enter
+sleep: 0.5
+-->
+
 <img class='full' src='select-land.webp' alt='Das Abfrageergebnis listet alle Länder mit ihren gespeicherten Daten auf.'>
 
 Du siehst nun alle Einträge in der Tabelle `land`. Eine Zeile entspricht einem Land in der Tabelle. Nutze die Pfeiltasten <kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> sowie <kbd>Bild↑</kbd><kbd>Bild↓</kbd>, um durch die Tabelle zu navigieren.
 
 <div class='hint'>
-Drücke <kbd>Q</kbd> (genau wie vorhin bei <code>less</code>), um zur Eingabeaufforderung von <code>mycli</code> zurückzukehren.
+Drücke <kbd>Q</kbd>, um zur Eingabeaufforderung von <code>mycli</code> zurückzukehren (genau wie bei <code>less</code>).
 </div>
 
 Der Befehl `SELECT *` bedeutet, dass alle Spalten ausgewählt werden sollen. Wenn du nur bestimmte Spalten anzeigen möchtest, kannst du diese explizit angeben. Gib z. B. den Befehl `SELECT name, hauptstadt FROM land;` ein, um dir nur die Spalten `name` und `hauptstadt` anzeigen zu lassen:
+
+<!-- tutorial-screenshot
+press: Q
+press: Control+L
+type: SELECT name, hauptstadt FROM land;
+press: Enter
+sleep: 0.5
+-->
 
 <img class='full' src='select-land-columns.webp' alt='Das Abfrageergebnis enthält nur die Namen der Länder und ihrer Hauptstädte.'>
 
 ## Zeilen filtern
 
 Um nur bestimmte Zeilen anzuzeigen, kannst du den Befehl `WHERE` verwenden. Gib z. B. den Befehl `SELECT * FROM land WHERE name = 'Deutschland';` ein, um dir nur das Land Deutschland anzeigen zu lassen:
+
+<!-- tutorial-screenshot
+press: Q
+press: Control+L
+type: SELECT * FROM land WHERE name = 'Deutschland';
+press: Enter
+sleep: 0.5
+crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
+-->
 
 <img class='full' src='select-land-where.webp' alt='Die gefilterte Tabelle enthält nur den Datensatz für Deutschland.'>
 
@@ -190,6 +224,16 @@ Wie viele Einwohner hat Griechenland? Welche Zahl erhältst du und wie ist sie z
 
 Du kannst auch mehrere Bedingungen kombinieren. Gib z. B. den Befehl `SELECT * FROM land WHERE einwohner < 5 AND flaeche > 1000000;` ein, um dir alle Länder anzeigen zu lassen, die weniger als 5 Millionen Einwohner haben und eine Fläche von mehr als 1 Million Quadratkilometern:
 
+<!-- tutorial-screenshot
+press: Control+L
+type: SELECT * FROM land WHERE einwohner < 5 AND flaeche > 1000000;
+press: Enter
+sleep: 0.5
+press: Q
+crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
+-->
+
 <img class='full' src='select-land-where-and.webp' alt='Die kombinierte Bedingung liefert zwei sehr große Länder mit weniger als fünf Millionen Einwohnern.'>
 
 Wir sehen also nun die beiden Länder mit der niedrigsten Bevölkerungsdichte, die mindestens 1 Mio. km<sup>2</sup> groß sind.
@@ -198,15 +242,41 @@ Wir sehen also nun die beiden Länder mit der niedrigsten Bevölkerungsdichte, d
 
 Um die Zeilen in einer Tabelle zu sortieren, kannst du den Befehl `ORDER BY` verwenden. Gib z. B. den Befehl `SELECT * FROM land ORDER BY einwohner;` ein, um dir die Länder nach ihrer Einwohnerzahl sortiert anzeigen zu lassen:
 
+<!-- tutorial-screenshot
+press: Control+L
+type: SELECT * FROM land ORDER BY einwohner;
+press: Enter
+sleep: 0.5
+-->
+
 <img class='full' src='select-land-order-by.webp' alt='Die Länder sind nach Einwohnerzahl aufsteigend sortiert.'>
 
 Du siehst nun die Länder nach ihrer Einwohnerzahl sortiert. Standardmäßig wird aufsteigend sortiert. Um absteigend zu sortieren, füge das Schlüsselwort `DESC` (für »descending«) hinzu. Gib z. B. den Befehl `SELECT * FROM land ORDER BY einwohner DESC;` ein, um die Länder nach ihrer Einwohnerzahl absteigend sortiert anzeigen zu lassen:
+
+<!-- tutorial-screenshot
+press: Q
+press: Control+L
+type: SELECT * FROM land ORDER BY einwohner DESC;
+press: Enter
+sleep: 0.5
+-->
 
 <img class='full' src='select-land-order-by-desc.webp' alt='Die Länder sind nach Einwohnerzahl absteigend sortiert.'>
 
 ## Ausgabe begrenzen
 
 Um die Anzahl der Zeilen zu begrenzen, die angezeigt werden, kannst du den Befehl `LIMIT` verwenden. Gib z. B. den Befehl `SELECT * FROM land LIMIT 5;` ein, um dir nur die ersten 5 Länder anzeigen zu lassen:
+
+<!-- tutorial-screenshot
+press: Q
+press: Control+L
+type: SELECT * FROM land LIMIT 5;
+press: Enter
+sleep: 0.5
+press: Q
+crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
+-->
 
 <img class='full' src='select-land-limit.webp' alt='Das begrenzte Abfrageergebnis enthält die ersten fünf Länder.'>
 
