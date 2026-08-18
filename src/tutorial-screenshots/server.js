@@ -1810,69 +1810,62 @@ function filenameSafeFragment(value) {
 
 async function captureErrorTabs({
     tutorialDirectory,
-    relativeMarkdown,
     shot,
-    action,
-    source,
 }) {
     const errorDirectory = path.join(
         tutorialDirectory,
         '.tutorial-screenshot-errors',
     );
 
+    await fs.rm(errorDirectory, { recursive: true, force: true }).catch(() => {});
     await fs.mkdir(errorDirectory, { recursive: true });
 
-    const tutorialName = path.basename(
-        relativeMarkdown,
-        path.extname(relativeMarkdown),
+    const tabName = shot?.tab || 'workspace';
+    const page = pageForTab(tabName);
+    if (!page || page.isClosed()) return null;
+
+    const pngPath = `/tmp/tutorial-error-${process.pid}-${crypto.randomBytes(6).toString('hex')}.png`;
+    const target = path.join(errorDirectory, 'last-failed.webp');
+    const temporaryWebp = `${target}.tmp-${process.pid}-${Date.now()}`;
+
+    try {
+        const png = await page.screenshot({
+            type: 'png',
+            fullPage: false,
+        });
+        await fs.writeFile(pngPath, png);
+        await execFileAsync('cwebp', [
+            '-quiet',
+            '-lossless',
+            pngPath,
+            '-o',
+            temporaryWebp,
+        ]);
+        await fs.chmod(temporaryWebp, 0o644);
+        await fs.rename(temporaryWebp, target);
+        await inheritDirectoryOwnership(target, tutorialDirectory);
+    } finally {
+        await fs.rm(pngPath, { force: true }).catch(() => {});
+        await fs.rm(temporaryWebp, { force: true }).catch(() => {});
+    }
+
+    const revision = sha256(await fs.readFile(target));
+    const relativeTarget = path.posix.join(
+        '.tutorial-screenshot-errors',
+        'last-failed.webp',
     );
-    const actionName = filenameSafeFragment(action?.type);
-    const line = source?.line ?? 'unknown';
-    const shotName = filenameSafeFragment(shot?.target || 'shot');
-
-    const captures = [];
-
-    for (const [tabName, page] of [
-        ['workspace', workspace],
-        ['preview', preview],
-    ]) {
-        if (!page || page.isClosed()) continue;
-
-        const fileName = [
-            tutorialName,
-            `line-${line}`,
-            shotName,
-            actionName,
-            tabName,
-        ].join('-') + '.png';
-
-        const outputPath = path.join(errorDirectory, fileName);
-
-        try {
-            await page.screenshot({
-                path: outputPath,
-                type: 'png',
-                fullPage: false,
-            });
-
-            await fs.chmod(outputPath, 0o644);
-            await inheritDirectoryOwnership(outputPath, tutorialDirectory);
-
-            captures.push(
-                path.relative(CONTENT_ROOT, outputPath),
-            );
-        } catch (error) {
-            console.error(
-                `Could not capture failed tutorial screenshot ${tabName} tab: ${error.message}`,
-            );
-        }
-    }
-
-    if (captures.length > 0) {
-        console.error(
-            `Tutorial screenshot failure state captured: ${captures.join(', ')}`,
-        );
-    }
+    console.error(
+        `Tutorial screenshot failure state captured: ${path.relative(CONTENT_ROOT, target)}`,
+    );
+    return {
+        target: relativeTarget,
+        label: `${shot?.target || 'Screenshot'} · Fehler`,
+        stale: false,
+        missing: false,
+        state: 'error',
+        revision,
+        error_preview: true,
+    };
 }
 
 async function applyShotViewportProfile(shot) {
@@ -1884,8 +1877,7 @@ async function applyShotViewportProfile(shot) {
 }
 
 async function executeAction(action, targetTab, hooks) {
-    try {
-        switch (action.type) {
+    switch (action.type) {
         case 'close-folder': return closeFolder();
         case 'show-left-sidebar': return setWorkbenchPartVisible('left-sidebar', true);
         case 'hide-left-sidebar': return setWorkbenchPartVisible('left-sidebar', false);
@@ -1915,15 +1907,7 @@ async function executeAction(action, targetTab, hooks) {
         case 'sleep': return sleep(action.seconds);
         case 'wait-for-text': return waitForText(action.text, targetTab);
         case 'wait-for-input-value': return waitForInputValue(action.text, targetTab);
-        default: throw new Error(`Unsupported action: ${action.type}`);
-        }
-    } catch (error) {
-        try {
-            await captureActionErrorScreenshots(action, error);
-        } catch (captureError) {
-            console.error(`Could not capture tutorial screenshot debug images: ${captureError.message}`);
-        }
-        throw error;
+    default: throw new Error(`Unsupported action: ${action.type}`);
     }
 }
 
@@ -2341,17 +2325,21 @@ async function generateTutorial(payload, progressJob = null) {
                 await executeAction(action, shot.tab, tutorialHooks);
                 await applyShotViewportProfile(shot);
             } catch (error) {
-                await captureErrorTabs({
+                const errorPreview = await captureErrorTabs({
                     tutorialDirectory,
-                    relativeMarkdown,
                     shot,
-                    action,
-                    source,
                 }).catch(captureError => {
                     console.error(
                         `Could not capture tutorial screenshot failure state: ${captureError.message}`,
                     );
+                    return null;
                 });
+                if (progressJob && errorPreview) {
+                    progressJob.screenshots = progressJob.screenshots.filter(
+                        item => !item.error_preview,
+                    );
+                    progressJob.screenshots.push(errorPreview);
+                }
 
                 throw withSourceError(error, source);
             }

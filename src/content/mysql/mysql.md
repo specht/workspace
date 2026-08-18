@@ -13,7 +13,7 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 <!-- tutorial-screenshot
 # Workspace ohne geöffneten Ordner
 show-left-sidebar
-left-sidebar-width: 300
+# left-sidebar-width: 300
 -->
 
 <img class='full' src='fresh-start.webp' alt=''>

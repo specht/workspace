@@ -137,3 +137,11 @@
     color: white;
     font-family: monospace;
 }
+
+.tutorial-screenshot-filmstrip-item.error {
+    border-color: #dc3545;
+}
+
+.tutorial-screenshot-filmstrip-item.error span::before {
+    content: "⚠ ";
+}

@@ -21,7 +21,7 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 <!-- tutorial-screenshot
 # Workspace ohne geöffneten Ordner
 show-left-sidebar
-left-sidebar-width: 300
+left-sidebar-width: 500
 -->
 
 <img class='full' src='fresh-start.webp' alt=''>
@@ -313,6 +313,7 @@ click: Sieh im Büro nach.
 wait-for-text: Frage nach dem Materialschrank.
 click: Frage nach dem Materialschrank.
 wait-for-text: Gehe zurück in den Flur.
+move-mouse: No problems
 sleep: 0.5
 -->
 

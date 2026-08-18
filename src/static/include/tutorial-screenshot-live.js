@@ -3,7 +3,7 @@ const tutorialScreenshotFresh = new Set();
 const tutorialScreenshotPending = new Set();
 
 
-function ensure_tutorial_screenshot_ui() {
+function ensure_tutorial_screenshot_ui(showFilmstrip = false) {
     let monitor = document.getElementById('tutorial-screenshot-monitor');
     if (!monitor) {
         const footerLeft = document.querySelector('.alt-review-footer-left');
@@ -34,9 +34,13 @@ function ensure_tutorial_screenshot_ui() {
             strip = document.createElement('div');
             strip.id = 'tutorial-screenshot-filmstrip';
             strip.className = 'tutorial-screenshot-filmstrip';
-            strip.setAttribute('aria-label', 'Neu gerenderte Tutorial-Screenshots');
+            strip.setAttribute('aria-label', 'Tutorial-Screenshots');
             footer.appendChild(strip);
         }
+    }
+
+    if (showFilmstrip && strip) {
+        strip.classList.add('visible');
     }
 
     return { monitor, strip };
@@ -123,6 +127,16 @@ function tutorial_screenshot_image_url(slug, item) {
     return `/api/tutorial_screenshots/image?${params.toString()}`;
 }
 
+function tutorial_screenshot_item_label(item) {
+    return item.label || item.target;
+}
+
+function tutorial_screenshot_should_be_in_filmstrip(item) {
+    if (!item.revision) return false;
+    if (item.error_preview || item.state === 'error' || item.state === 'fresh') return true;
+    return item.stale === false;
+}
+
 function open_tutorial_screenshot_lightbox(src, target) {
     const overlay = document.createElement('div');
     overlay.className = 'tutorial-screenshot-lightbox';
@@ -154,8 +168,8 @@ function open_tutorial_screenshot_lightbox(src, target) {
 }
 
 function append_tutorial_screenshot_filmstrip(slug, item) {
-    const { strip } = ensure_tutorial_screenshot_ui();
-    if (!strip || !item.revision) return;
+    const { strip } = ensure_tutorial_screenshot_ui(true);
+    if (!strip || !tutorial_screenshot_should_be_in_filmstrip(item)) return;
 
     const key = `${item.target}:${item.revision}`;
     if (Array.from(strip.children).some(
@@ -166,20 +180,30 @@ function append_tutorial_screenshot_filmstrip(slug, item) {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'tutorial-screenshot-filmstrip-item';
+    button.classList.toggle('error', item.error_preview || item.state === 'error');
     button.dataset.tutorialScreenshotKey = key;
-    button.title = `${item.target} groß anzeigen`;
+    button.title = `${tutorial_screenshot_item_label(item)} groß anzeigen`;
 
     const img = document.createElement('img');
     img.src = src;
     img.alt = '';
     const label = document.createElement('span');
-    label.textContent = item.target;
+    label.textContent = tutorial_screenshot_item_label(item);
     button.append(img, label);
-    button.addEventListener('click', () => open_tutorial_screenshot_lightbox(src, item.target));
+    button.addEventListener('click', () => open_tutorial_screenshot_lightbox(src, tutorial_screenshot_item_label(item)));
 
     strip.appendChild(button);
     strip.classList.add('visible');
-    strip.scrollLeft = strip.scrollWidth;
+    requestAnimationFrame(() => {
+        strip.scrollLeft = strip.scrollWidth;
+    });
+}
+
+function sync_tutorial_screenshot_filmstrip(slug, snapshot) {
+    ensure_tutorial_screenshot_ui(true);
+    (snapshot.screenshots || []).forEach(item => {
+        append_tutorial_screenshot_filmstrip(slug, item);
+    });
 }
 
 function hot_swap_tutorial_screenshot(slug, item) {
@@ -227,7 +251,7 @@ function hot_swap_tutorial_screenshot(slug, item) {
 }
 
 function update_tutorial_screenshot_monitor(snapshot) {
-    const { monitor } = ensure_tutorial_screenshot_ui();
+    const { monitor } = ensure_tutorial_screenshot_ui(true);
     const text = document.getElementById('tutorial-screenshot-monitor-text');
     const progress = document.getElementById('tutorial-screenshot-progress');
     const icon = document.getElementById('tutorial-screenshot-monitor-icon');
@@ -272,6 +296,7 @@ async function fetch_tutorial_screenshot_status(slug) {
 }
 
 function apply_tutorial_screenshot_status(slug, snapshot) {
+    sync_tutorial_screenshot_filmstrip(slug, snapshot);
     (snapshot.screenshots || []).forEach(item => {
         if (item.stale) mark_tutorial_screenshot_stale(item);
         hot_swap_tutorial_screenshot(slug, item);
