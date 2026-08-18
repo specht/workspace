@@ -383,6 +383,10 @@ The screenshot account still logs in as `screenshots@example.com`, but the Unix
 workspace user is configured separately and defaults to `student`. This keeps
 terminal prompts suitable for student-facing screenshots.
 
+If a recipe action fails while a tutorial is being replayed, the generator first
+writes debug screenshots of the currently open Workspace and preview tabs (when
+present) to `.tutorial-screenshot-errors/` next to the tutorial Markdown.
+
 If generation fails, the development server logs the error and continues parsing.
 An existing image remains usable; a genuinely missing image simply stays missing
 until the next reload succeeds. Production never invokes the generator.

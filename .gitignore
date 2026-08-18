@@ -9,6 +9,7 @@ e2e/playwright-report
 e2e/test-results
 invitations
 logs
+**/.tutorial-screenshot-errors/
 src/content/git/git-tutorial/alice
 src/kenney/previews/
 src/ruby/credentials.rb

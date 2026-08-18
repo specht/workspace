@@ -1799,6 +1799,81 @@ async function waitForInputValue(text, targetTab) {
     );
 }
 
+function filenameSafeFragment(value) {
+    const normalized = `${value || ''}`
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    return normalized || 'action';
+}
+
+async function captureErrorTabs({
+    tutorialDirectory,
+    relativeMarkdown,
+    shot,
+    action,
+    source,
+}) {
+    const errorDirectory = path.join(
+        tutorialDirectory,
+        '.tutorial-screenshot-errors',
+    );
+
+    await fs.mkdir(errorDirectory, { recursive: true });
+
+    const tutorialName = path.basename(
+        relativeMarkdown,
+        path.extname(relativeMarkdown),
+    );
+    const actionName = filenameSafeFragment(action?.type);
+    const line = source?.line ?? 'unknown';
+    const shotName = filenameSafeFragment(shot?.target || 'shot');
+
+    const captures = [];
+
+    for (const [tabName, page] of [
+        ['workspace', workspace],
+        ['preview', preview],
+    ]) {
+        if (!page || page.isClosed()) continue;
+
+        const fileName = [
+            tutorialName,
+            `line-${line}`,
+            shotName,
+            actionName,
+            tabName,
+        ].join('-') + '.png';
+
+        const outputPath = path.join(errorDirectory, fileName);
+
+        try {
+            await page.screenshot({
+                path: outputPath,
+                type: 'png',
+                fullPage: false,
+            });
+
+            await fs.chmod(outputPath, 0o644);
+            await inheritDirectoryOwnership(outputPath, tutorialDirectory);
+
+            captures.push(
+                path.relative(CONTENT_ROOT, outputPath),
+            );
+        } catch (error) {
+            console.error(
+                `Could not capture failed tutorial screenshot ${tabName} tab: ${error.message}`,
+            );
+        }
+    }
+
+    if (captures.length > 0) {
+        console.error(
+            `Tutorial screenshot failure state captured: ${captures.join(', ')}`,
+        );
+    }
+}
+
 async function applyShotViewportProfile(shot) {
     const page = pageForTab(shot.tab);
     if (!page || page.isClosed()) return false;
@@ -1808,37 +1883,46 @@ async function applyShotViewportProfile(shot) {
 }
 
 async function executeAction(action, targetTab, hooks) {
-    switch (action.type) {
-    case 'close-folder': return closeFolder();
-    case 'show-left-sidebar': return setWorkbenchPartVisible('left-sidebar', true);
-    case 'hide-left-sidebar': return setWorkbenchPartVisible('left-sidebar', false);
-    case 'show-right-sidebar': return setWorkbenchPartVisible('right-sidebar', true);
-    case 'hide-right-sidebar': return setWorkbenchPartVisible('right-sidebar', false);
-    case 'show-bottom-panel': return setWorkbenchPartVisible('bottom-panel', true);
-    case 'hide-bottom-panel': return setWorkbenchPartVisible('bottom-panel', false);
-    case 'left-sidebar-width': return setLeftSidebarWidth(action.width);
-    case 'clone-start': return cloneStart(action);
-    case 'open-file': return openFile(action.path);
-    case 'terminal-open': return terminalOpen();
-    case 'terminal-wait-for-prompt': return waitForTerminalPrompt();
-    case 'terminal-maximize': return terminalMaximize();
-    case 'terminal-run': return terminalRun(action.text);
-    case 'go-live': return goLive(hooks);
-    case 'write-file': return writeWorkspaceFile(action.path, action.contents, hooks);
-    case 'wait-for-file': return waitForWorkspaceFile(action.path);
-    case 'wait-for-file-newer': return waitForWorkspaceFileNewer(action.target, action.source);
-    case 'close-tab': return closeTab(action.label);
-    case 'preview-reload': return previewReload(false, hooks);
-    case 'preview-reset': return previewReload(true, hooks);
-    case 'click': return clickControl(action, targetTab);
-    case 'hold': return holdControl(action, targetTab);
-    case 'move-mouse': return moveMouse(action, targetTab);
-    case 'type': return typeText(action.text, targetTab);
-    case 'press': return pressKey(action.key, targetTab);
-    case 'sleep': return sleep(action.seconds);
-    case 'wait-for-text': return waitForText(action.text, targetTab);
-    case 'wait-for-input-value': return waitForInputValue(action.text, targetTab);
-    default: throw new Error(`Unsupported action: ${action.type}`);
+    try {
+        switch (action.type) {
+        case 'close-folder': return closeFolder();
+        case 'show-left-sidebar': return setWorkbenchPartVisible('left-sidebar', true);
+        case 'hide-left-sidebar': return setWorkbenchPartVisible('left-sidebar', false);
+        case 'show-right-sidebar': return setWorkbenchPartVisible('right-sidebar', true);
+        case 'hide-right-sidebar': return setWorkbenchPartVisible('right-sidebar', false);
+        case 'show-bottom-panel': return setWorkbenchPartVisible('bottom-panel', true);
+        case 'hide-bottom-panel': return setWorkbenchPartVisible('bottom-panel', false);
+        case 'left-sidebar-width': return setLeftSidebarWidth(action.width);
+        case 'clone-start': return cloneStart(action);
+        case 'open-file': return openFile(action.path);
+        case 'terminal-open': return terminalOpen();
+        case 'terminal-wait-for-prompt': return waitForTerminalPrompt();
+        case 'terminal-maximize': return terminalMaximize();
+        case 'terminal-run': return terminalRun(action.text);
+        case 'go-live': return goLive(hooks);
+        case 'write-file': return writeWorkspaceFile(action.path, action.contents, hooks);
+        case 'wait-for-file': return waitForWorkspaceFile(action.path);
+        case 'wait-for-file-newer': return waitForWorkspaceFileNewer(action.target, action.source);
+        case 'close-tab': return closeTab(action.label);
+        case 'preview-reload': return previewReload(false, hooks);
+        case 'preview-reset': return previewReload(true, hooks);
+        case 'click': return clickControl(action, targetTab);
+        case 'hold': return holdControl(action, targetTab);
+        case 'move-mouse': return moveMouse(action, targetTab);
+        case 'type': return typeText(action.text, targetTab);
+        case 'press': return pressKey(action.key, targetTab);
+        case 'sleep': return sleep(action.seconds);
+        case 'wait-for-text': return waitForText(action.text, targetTab);
+        case 'wait-for-input-value': return waitForInputValue(action.text, targetTab);
+        default: throw new Error(`Unsupported action: ${action.type}`);
+        }
+    } catch (error) {
+        try {
+            await captureActionErrorScreenshots(action, error);
+        } catch (captureError) {
+            console.error(`Could not capture tutorial screenshot debug images: ${captureError.message}`);
+        }
+        throw error;
     }
 }
 
@@ -2050,10 +2134,23 @@ async function generateTutorial(payload) {
         for (const action of shot.actions) {
             const source = action[SOURCE_LOCATION] || shotSource;
             console.log(`  line ${source?.line ?? '?'}: ${source?.text?.trim() || action.type}`);
+
             try {
                 await executeAction(action, shot.tab, tutorialHooks);
                 await applyShotViewportProfile(shot);
             } catch (error) {
+                await captureErrorTabs({
+                    tutorialDirectory,
+                    relativeMarkdown,
+                    shot,
+                    action,
+                    source,
+                }).catch(captureError => {
+                    console.error(
+                        `Could not capture tutorial screenshot failure state: ${captureError.message}`,
+                    );
+                });
+
                 throw withSourceError(error, source);
             }
         }

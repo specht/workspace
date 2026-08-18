@@ -60,7 +60,7 @@ crop-bottom: 54%
 
 <img class='full' src='confirm-clone-path.webp' alt=''>
 
-Beantworte anschließend die Frage »Would you like to open the cloned repository?« mit »Open«.
+Beantworte anschließend die Frage »Would you like to open the repository?« mit »Open«.
 
 <!-- tutorial-screenshot
 # Dialog zum Öffnen des geklonten Repositorys
@@ -69,6 +69,8 @@ wait-for-text: Would you like to open the repository?
 -->
 
 <img class='full' src='open-yes-no.webp' alt=''>
+
+Wenn alles geklappt hat, siehst du links im Explorer unter anderem den Ordner `pages-starter` sowie die Dateien `config.js` und `index.html`.
 
 <!-- tutorial-screenshot
 # geöffnetes BIF-Projekt im Explorer
@@ -79,8 +81,6 @@ wait-for-file: bif/.story-tools/analysis.json
 -->
 
 <img class='full' src='bif-project.webp' alt=''>
-
-Wenn alles geklappt hat, siehst du links im Explorer unter anderem den Ordner `pages-starter` sowie die Dateien `config.js` und `index.html`.
 
 ## Geschichte starten
 

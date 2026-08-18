@@ -38,7 +38,7 @@ Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen 
 
 <img class='full' src='confirm-clone-path.webp' alt=''>
 
-Beantworte die Frage »Would you like to open the cloned repository?« mit »Open«.
+Beantworte die Frage »Would you like to open the repository?« mit »Open«.
 
 <img class='full' src='open-yes-no.webp' alt=''>
 

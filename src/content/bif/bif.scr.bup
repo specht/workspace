@@ -59,7 +59,7 @@ crop-bottom: 33.6%
 
 <img class='full' src='confirm-clone-path.webp' alt=''>
 
-Beantworte anschließend die Frage »Would you like to open the cloned repository?« mit »Open«.
+Beantworte anschließend die Frage »Would you like to open the repository?« mit »Open«.
 
 <!-- tutorial-screenshot
 # Dialog zum Öffnen des geklonten Repositorys
