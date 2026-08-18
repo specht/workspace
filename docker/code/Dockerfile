@@ -270,10 +270,13 @@ RUN set -eux; \
     cd /tmp/flutter_android_smoke; \
     flutter build apk --debug; \
     test -s build/app/outputs/flutter-apk/app-debug.apk; \
+    cd android; \
+    ./gradlew --stop; \
     cd /; \
     rm -rf \
         /tmp/flutter_android_smoke \
         "${GRADLE_USER_HOME}/daemon"; \
+    test ! -e "${GRADLE_USER_HOME}/daemon"; \
     find "${GRADLE_USER_HOME}" \
         -type f \
         -name '*.lock' \
