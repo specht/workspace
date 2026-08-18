@@ -42,9 +42,9 @@
       "output_sha256": "d29134df5eb04dab26c8ca266df63bf625fc108d82a0f8de8b6eac024edb071b"
     },
     "show-tables.webp": {
-      "state_hash": "74c152d01c1ed75e08d55188d5d29f545fb02bbd8314987bc161cf110247e1a5",
+      "state_hash": "6aecc45c07ef72765fa5d08e9c48b1384b320d48abf9368576d0dc2ff7c700d9",
       "environment_fingerprint": "f5975ce938bce7cdf399b404394c3dbaa494507b3367a4cc920497e6f5b6020b",
-      "output_sha256": "b015f7a029a03116bfb8312665cfb50dc7606b5523a1c0c4ae9390f0dff05ebc"
+      "output_sha256": "e5e32d85786142debf0e1fb2223dc365227b4063c0057e705fb2b575f3975c60"
     }
   }
 }
