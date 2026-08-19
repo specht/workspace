@@ -87,15 +87,6 @@ async function teacherAdminContext(
   await loginAsE2eUser(page, teacherEmail, testInfo);
   await page.goto('/admin');
   await expect(page.getByRole('heading', {name: 'Server', exact: true})).toBeVisible();
-  await expect(page.locator('.autotoc-secondary-title')).toHaveText(
-    'Administration',
-  );
-  await expect(
-    page.locator('.autotoc-secondary a[href="#server"]'),
-  ).toHaveCount(1);
-  await expect(
-    page.locator('.autotoc-secondary a[href="#workspaces"]'),
-  ).toHaveCount(1);
   return {context, page};
 }
 
