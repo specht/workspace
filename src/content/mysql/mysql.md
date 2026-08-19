@@ -185,6 +185,10 @@ Untersuche auch die Tabelle <code>ort</code> &ndash; welche Spalten gibt es und 
 
 Mit `SELECT` fragst du Daten aus einer Tabelle ab. Ein Stern `*` steht dabei für alle Spalten:
 
+```sql
+SELECT * FROM land;
+```
+
 <!-- tutorial-screenshot
 press: Control+L
 type: SELECT * FROM land;
@@ -327,6 +331,7 @@ type: SELECT * FROM land LIMIT 5;
 press: Enter
 sleep: 0.5
 press: Q
+terminal-scroll-back: 1
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
@@ -403,6 +408,7 @@ press: Q
 press: Control+L
 terminal-run: SELECT DISTINCT kontinent FROM land ORDER BY kontinent;
 sleep: 0.5
+terminal-scroll-back: 2
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
