@@ -1,7 +1,7 @@
 # Echtzeitgrafik mit C
 
 <div class='meta'>
-image: pixelram.webp
+image: patches.webp
 </div>
 
 <div
