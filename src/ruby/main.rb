@@ -213,6 +213,11 @@ class Main < Sinatra::Base
         Main.fs_tag_for_email(email)
     end
 
+    def self.test_demo_tag(email, test_tag)
+        digest = Digest::SHA2.hexdigest("#{email}:#{test_tag}")
+        "demo#{digest[0, 20]}"
+    end
+
     def self.tag_for_sid(sid)
         Digest::SHA2.hexdigest(LOGIN_CODE_SALT + sid)[0, 16].to_i(16).to_s(36)[0, 8].downcase
     end
@@ -597,6 +602,22 @@ class Main < Sinatra::Base
                 running_servers[fs_tag][:server_tag] = server_tag
                 running_servers[fs_tag][:share_tag] = user[:share_tag]
             end
+        end
+
+        # Teacher test demos use the same DNS-disabled test runtime as students,
+        # but live under a separate private workspace tag and are never shared.
+        $neo4j.neo4j_query(<<~END_OF_QUERY).each do |row|
+            MATCH (u:User)<-[:BELONGS_TO]-(t:Test)
+            RETURN u, t;
+        END_OF_QUERY
+            user = row['u']
+            test = row['t']
+            demo_tag = test_demo_tag(user[:email], test[:tag])
+            fs_tag = fs_tag_for_email("#{user[:email]}#{demo_tag}")
+            next unless running_servers.include?(fs_tag)
+
+            running_servers[fs_tag][:server_sid] = user[:server_sid]
+            running_servers[fs_tag][:server_tag] = "#{user[:server_tag]}#{demo_tag}"
         end
         # STDERR.puts "sid_ip_pairs:"
         # STDERR.puts sid_ip_pairs.join("\n")
@@ -2467,6 +2488,30 @@ class Main < Sinatra::Base
         Main.init_neo4j(email, db_login)
     end
 
+    def reset_test_demo_databases(email, demo_tag)
+        persisted_db_login = db_login_for_email(email)
+        db_login = DatabaseIdentity.ephemeral_login(persisted_db_login, demo_tag)
+        DatabaseIdentity.validate!(db_login)
+        database_email = "#{email}-#{demo_tag}"
+
+        Open3.popen2("docker exec -i workspace_mysql_1 mysql --user=root --password=#{MYSQL_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+            stdin.puts "DROP DATABASE IF EXISTS `#{db_login}`;"
+            stdin.close
+            status = wait_thr.value
+            raise "MySQL test demo reset failed for #{db_login}" unless status.success?
+        end
+
+        Open3.popen2("docker exec -i workspace_neo4j_1 bin/cypher-shell -u neo4j -p #{NEO4J_ROOT_PASSWORD}") do |stdin, stdout, wait_thr|
+            stdin.puts "DROP DATABASE `#{db_login}` IF EXISTS;"
+            stdin.close
+            status = wait_thr.value
+            raise "Neo4j test demo reset failed for #{db_login}" unless status.success?
+        end
+
+        Main.init_mysql(database_email, db_login)
+        Main.init_neo4j(database_email, db_login)
+    end
+
     def with_timing(label)
         t0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         # STDERR.puts ">>> BEGIN #{label}"
@@ -2525,13 +2570,13 @@ class Main < Sinatra::Base
         File.chown(WORKSPACE_UID, WORKSPACE_GID, path) if File.exist?(path)
     end
 
-    def start_server(email, test_tag = nil, server_tag: nil)
-        email_with_test_tag = "#{email}#{test_tag}"
+    def start_server(email, test_tag = nil, server_tag: nil, instance_tag: test_tag)
+        email_with_test_tag = "#{email}#{instance_tag}"
         container_name = fs_tag_for_email(email_with_test_tag)
         persisted_db_login = db_login_for_email(email)
-        database_email = test_tag ? "#{email}-#{test_tag}" : email
+        database_email = test_tag ? "#{email}-#{instance_tag}" : email
         database_login = if test_tag
-            DatabaseIdentity.ephemeral_login(persisted_db_login, test_tag)
+            DatabaseIdentity.ephemeral_login(persisted_db_login, instance_tag)
         else
             persisted_db_login
         end
@@ -2917,10 +2962,10 @@ class Main < Sinatra::Base
             end
         end
 
-        return "#{server_tag}#{test_tag}" if server_tag
+        return "#{server_tag}#{instance_tag}" if server_tag
 
         begin
-            "#{@session_user[:server_tag]}#{test_tag}"
+            "#{@session_user[:server_tag]}#{instance_tag}"
         rescue
             ""
         end
@@ -4058,6 +4103,52 @@ class Main < Sinatra::Base
         Main.refresh_nginx_config()
     end
 
+    post '/api/start_test_demo' do
+        assert(teacher_logged_in?)
+        data = parse_request_data(:required_keys => [:tag])
+        email = @session_user[:email]
+        test_tag = data[:tag]
+
+        neo4j_query_expect_one(<<~END_OF_QUERY, {:email => email, :test_tag => test_tag})
+            MATCH (:User {email: $email})<-[:BELONGS_TO]-(t:Test {tag: $test_tag})
+            RETURN t;
+        END_OF_QUERY
+
+        demo_tag = Main.test_demo_tag(email, test_tag)
+        base_server_tag = @session_user[:server_tag]
+        server_tag = "#{base_server_tag}#{demo_tag}"
+
+        job = Main.enqueue_server_start(
+            :email => email,
+            :test_tag => demo_tag,
+            :server_tag => server_tag
+        ) do
+            container_name = fs_tag_for_email("#{email}#{demo_tag}")
+            workspace_runtime.stop_workspace(
+                container_name,
+                :timeout => shell_timeout(:docker_kill),
+            )
+            FileUtils.rm_rf("/user/#{container_name}")
+            reset_test_demo_databases(email, demo_tag)
+            start_server(
+                email,
+                test_tag,
+                :server_tag => base_server_tag,
+                :instance_tag => demo_tag,
+            )
+        end
+
+        status = Main.wait_for_server_start_job(job)
+
+        respond(
+            :yay => 'sure',
+            :server_tag => server_tag,
+            :queued => ['queued', 'running'].include?(status[:status]),
+            :status => status[:status],
+            :error => status[:error]
+        )
+    end
+
     def my_user_group_order
         if admin_logged_in?
             @@user_group_order
@@ -4099,10 +4190,8 @@ class Main < Sinatra::Base
         entries
     end
 
-    get '/api/pdf_for_test/:tag' do
-        assert(teacher_logged_in?)
-        test_tag = params['tag']
-        html = StringIO.open do |io|
+    def test_results_html(emails, instance_tag)
+        StringIO.open do |io|
             io.puts <<~END_OF_STRING
                 <!DOCTYPE html>
                 <html>
@@ -4127,19 +4216,15 @@ class Main < Sinatra::Base
                 <body>
             END_OF_STRING
 
-            neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :test_tag => test_tag}).each do |row|
-                MATCH (u:User)-[:TAKES]->(t:Test {tag: $test_tag})-[:BELONGS_TO]->(:User {email: $email})
-                RETURN u.email;
-            END_OF_STRING
-                email = row['u.email']
-                email_with_test_tag = "#{email}#{test_tag}"
-                container_name = fs_tag_for_email(email_with_test_tag)
+            emails.each do |email|
+                container_name = fs_tag_for_email("#{email}#{instance_tag}")
+                display_name = (@@invitations[email] || {})[:name] || email
                 Dir["/user/#{container_name}/workspace/*"].each do |path|
                     if ['txt', 'dart', 'asm'].include?(path.split('.').last)
                         io.puts "<div class='file'>"
                         io.puts "<div style='display: flex; background-color: #ccc; padding: 0.25em 0.25em; font-weight: bold;'>"
                         io.puts "<div>#{File.basename(path)}</div>"
-                        io.puts "<div style='flex-grow: 1; text-align: right;'>#{@@invitations[email][:name]} | #{Time.now.strftime("%d.%m.%Y %H:%M Uhr")}</div>"
+                        io.puts "<div style='flex-grow: 1; text-align: right;'>#{display_name} | #{Time.now.strftime("%d.%m.%Y %H:%M Uhr")}</div>"
                         io.puts "</div>"
                         io.puts "<pre>"
                         lines = File.read(path).split("\n")
@@ -4157,7 +4242,29 @@ class Main < Sinatra::Base
 
             io.string
         end
-        respond_raw_with_mimetype(html, 'text/html')
+    end
+
+    get '/api/pdf_for_test/:tag' do
+        assert(teacher_logged_in?)
+        test_tag = params['tag']
+        emails = neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :test_tag => test_tag}).map { |row| row['u.email'] }
+            MATCH (u:User)-[:TAKES]->(t:Test {tag: $test_tag})-[:BELONGS_TO]->(:User {email: $email})
+            RETURN u.email;
+        END_OF_STRING
+        respond_raw_with_mimetype(test_results_html(emails, test_tag), 'text/html')
+    end
+
+    get '/api/pdf_for_test_demo/:tag' do
+        assert(teacher_logged_in?)
+        email = @session_user[:email]
+        test_tag = params['tag']
+        neo4j_query_expect_one(<<~END_OF_QUERY, {:email => email, :test_tag => test_tag})
+            MATCH (:User {email: $email})<-[:BELONGS_TO]-(t:Test {tag: $test_tag})
+            RETURN t;
+        END_OF_QUERY
+
+        demo_tag = Main.test_demo_tag(email, test_tag)
+        respond_raw_with_mimetype(test_results_html([email], demo_tag), 'text/html')
     end
 
     # SELECT

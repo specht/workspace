@@ -377,6 +377,7 @@
                                         <th>Löschen</th>
                                         <th>Gruppe</th>
                                         <th>Status</th>
+                                        <th>Test</th>
                                         <th>Ergebnisse</th>
                                     </tr>
                                 </thead>
@@ -424,6 +425,12 @@
                         let td = $(`<td>`).appendTo(row);
                         td.append(bu_start_stop);
                     }
+                    let bu_demo = $(`<button>`).html(`<i class='bi bi-box-arrow-up-right'></i>Testen`).addClass('btn btn-sm btn-primary');
+                    let bu_demo_pdf = $(`<button>`).html(`<i class='bi bi-printer-fill'></i>Druck testen`).addClass('btn btn-sm btn-secondary');
+                    let td_demo = $(`<td>`).appendTo(row);
+                    td_demo.append(bu_demo);
+                    td_demo.append('&nbsp;');
+                    td_demo.append(bu_demo_pdf);
                     let bu_results_pdf = $(`<button>`).html(`<i class='bi bi-printer-fill'></i>Drucken`).addClass('btn btn-sm btn-success');
                     let td = $(`<td>`).appendTo(row);
                     td.append(bu_results_pdf);
@@ -471,6 +478,21 @@
                                 });
                             });
                         }
+                    });
+                    bu_demo.on('click', function(e) {
+                        bu_demo.prop('disabled', true);
+                        bu_demo.find('.bi').addClass('bi-spin');
+                        api_call('/api/start_test_demo', {tag: entry.tag}, function(data2) {
+                            bu_demo.prop('disabled', false);
+                            bu_demo.find('.bi').removeClass('bi-spin');
+                            if (data2.success && data2.status !== 'failed') {
+                                check_server_tag_update(data2.server_tag);
+                                check_server_online(data2.server_tag);
+                            }
+                        });
+                    });
+                    bu_demo_pdf.on('click', function(e) {
+                        window.open(`/api/pdf_for_test_demo/${entry.tag}`, '_blank');
                     });
                     bu_results_pdf.on('click', function(e) {
                         window.open(`/api/pdf_for_test/${entry.tag}`, '_blank');

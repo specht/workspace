@@ -154,6 +154,21 @@ test('teacher profile shows the permission-protected teacher section', async ({
   page,
 }, testInfo) => {
   await loginAsE2eUser(page, E2E_TEACHER_EMAIL, testInfo);
+  await page.route('**/api/get_my_test_archives', async route => {
+    await route.fulfill({
+      json: {
+        success: true,
+        entries: [{
+          tag: 'testdemotag123456789012',
+          running: false,
+          size: '27.3 kB',
+          filename: 'workspace-package.tar.gz',
+          ts: 0,
+          count: 0,
+        }],
+      },
+    });
+  });
   await page.goto('/profil');
 
   await expect(page.locator('#profile-for-teachers')).toBeVisible();
@@ -166,6 +181,15 @@ test('teacher profile shows the permission-protected teacher section', async ({
   ).toBeVisible();
 
   await expect(page.locator('#bu_upload_test_archive')).toBeVisible();
+  await expect(
+    page.getByRole('columnheader', { name: 'Test', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Testen', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Druck testen', exact: true }),
+  ).toBeVisible();
 
   await expect(
     page.locator('.autotoc-secondary a[href="#for-teachers"]'),
