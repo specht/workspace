@@ -4083,6 +4083,9 @@ class Main < Sinatra::Base
         end
     end
 
+    # Starting or stopping a real test only changes whether assigned students
+    # are routed into their existing exam workspace. Their files and databases
+    # must survive any number of stop/start cycles.
     post '/api/start_test' do
         assert(teacher_logged_in?)
         data = parse_request_data(:required_keys => [:tag])
@@ -4118,6 +4121,8 @@ class Main < Sinatra::Base
         base_server_tag = @session_user[:server_tag]
         server_tag = "#{base_server_tag}#{demo_tag}"
 
+        # The destructive reset below is deliberately confined to the teacher's
+        # private demo namespace. Real student exam workspaces are never reset here.
         job = Main.enqueue_server_start(
             :email => email,
             :test_tag => demo_tag,

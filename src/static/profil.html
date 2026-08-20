@@ -480,16 +480,25 @@
                         }
                     });
                     bu_demo.on('click', function(e) {
-                        bu_demo.prop('disabled', true);
-                        bu_demo.find('.bi').addClass('bi-spin');
-                        api_call('/api/start_test_demo', {tag: entry.tag}, function(data2) {
-                            bu_demo.prop('disabled', false);
-                            bu_demo.find('.bi').removeClass('bi-spin');
-                            if (data2.success && data2.status !== 'failed') {
-                                check_server_tag_update(data2.server_tag);
-                                check_server_online(data2.server_tag);
-                            }
-                        });
+                        let text = `
+                            <p>Für die Testvorschau werden <strong>alle bisherigen Dateien und Datenbankinhalte zurückgesetzt</strong>.</p>
+                            <p>Anschließend öffnet sich ein frischer Prüfungs-Workspace – genau so, wie ihn Schülerinnen und Schüler beim ersten Start sehen.</p>
+                            <p>Die echten Prüfungs-Workspaces der Schülerinnen und Schüler sowie dein eigener Workspace werden dabei nicht verändert.</p>
+                        `;
+                        showTemplateModal('Frischen Prüfungs-Workspace öffnen', text,
+                            "<i class='bi bi-box-arrow-up-right'></i>Frischen Workspace öffnen", 'btn-primary',
+                            "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
+                                bu_demo.prop('disabled', true);
+                                bu_demo.find('.bi').addClass('bi-spin');
+                                api_call('/api/start_test_demo', {tag: entry.tag}, function(data2) {
+                                    bu_demo.prop('disabled', false);
+                                    bu_demo.find('.bi').removeClass('bi-spin');
+                                    if (data2.success && data2.status !== 'failed') {
+                                        check_server_tag_update(data2.server_tag);
+                                        check_server_online(data2.server_tag);
+                                    }
+                                });
+                            });
                     });
                     bu_demo_pdf.on('click', function(e) {
                         window.open(`/api/pdf_for_test_demo/${entry.tag}`, '_blank');

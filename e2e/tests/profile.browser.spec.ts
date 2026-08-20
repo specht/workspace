@@ -154,6 +154,7 @@ test('teacher profile shows the permission-protected teacher section', async ({
   page,
 }, testInfo) => {
   await loginAsE2eUser(page, E2E_TEACHER_EMAIL, testInfo);
+  let demoStartRequests = 0;
   await page.route('**/api/get_my_test_archives', async route => {
     await route.fulfill({
       json: {
@@ -166,6 +167,15 @@ test('teacher profile shows the permission-protected teacher section', async ({
           ts: 0,
           count: 0,
         }],
+      },
+    });
+  });
+  await page.route('**/api/start_test_demo', async route => {
+    demoStartRequests += 1;
+    await route.fulfill({
+      json: {
+        success: true,
+        status: 'failed',
       },
     });
   });
@@ -184,12 +194,30 @@ test('teacher profile shows the permission-protected teacher section', async ({
   await expect(
     page.getByRole('columnheader', { name: 'Test', exact: true }),
   ).toBeVisible();
-  await expect(
-    page.getByRole('button', { name: 'Testen', exact: true }),
-  ).toBeVisible();
+  const testButton = page.getByRole('button', { name: 'Testen', exact: true });
+  await expect(testButton).toBeVisible();
   await expect(
     page.getByRole('button', { name: 'Druck testen', exact: true }),
   ).toBeVisible();
+
+  await testButton.click();
+  const testDemoModal = page.locator('#__template_modal');
+  await expect(testDemoModal).toContainText(
+    'alle bisherigen Dateien und Datenbankinhalte zurückgesetzt',
+  );
+  await expect(testDemoModal).toContainText(
+    'werden dabei nicht verändert.',
+  );
+  expect(demoStartRequests).toBe(0);
+
+  await testDemoModal.getByRole('button', { name: 'Abbruch' }).click();
+  expect(demoStartRequests).toBe(0);
+
+  await testButton.click();
+  await testDemoModal.getByRole('button', {
+    name: 'Frischen Workspace öffnen',
+  }).click();
+  await expect.poll(() => demoStartRequests).toBe(1);
 
   await expect(
     page.locator('.autotoc-secondary a[href="#for-teachers"]'),
