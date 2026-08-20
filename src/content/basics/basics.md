@@ -17,6 +17,12 @@ image: vs-code-welcome.webp:0:50
             fill: #d8d8d8;
         }
     }
+    html[data-bs-theme="dark"] {
+        .basics-icon {
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background-color: rgba(0, 0, 0, 0.25);
+        }
+    }
 </style>
 
 # Die Basics
