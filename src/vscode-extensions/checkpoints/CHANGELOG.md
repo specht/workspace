@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1
+
+- Uses a VS Code-compatible activity bar container ID for the Checkpoints view.
+
 ## 0.6.0
 
 - Shows added and removed project bytes for every checkpoint.

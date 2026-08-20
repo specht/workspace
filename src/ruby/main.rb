@@ -674,6 +674,14 @@ class Main < Sinatra::Base
                 ~*text/html "";
             }
 
+            # Inject the browser-visible code font only into the code-server
+            # workbench document. Internal HTML such as the web-worker extension
+            # host has its own restrictive CSP and must remain untouched.
+            map $request_uri $hs_code_font_head {
+                default "</head>";
+                ~^/(?:w/[a-z0-9]+/)?(?:\\?.*)?$ '<link rel="preload" href="/include/fonts/0xProtoNerdFontMono/0xProtoNerdFontMono-Regular.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/include/fonts.css?#{CACHE_BUSTER}"></head>';
+            }
+
             # ---------------------------
             # Workspace token extraction
             # ---------------------------
@@ -825,7 +833,7 @@ class Main < Sinatra::Base
 
                     include /etc/nginx/snippets/proxy_ws_code.conf;
                     sub_filter_once on;
-                    sub_filter '</head>' '<link rel="preload" href="/include/fonts/0xProtoNerdFontMono/0xProtoNerdFontMono-Regular.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/include/fonts.css?#{CACHE_BUSTER}"></head>';
+                    sub_filter '</head>' $hs_code_font_head;
                     proxy_pass $hs_upstream;
                 }
             }
@@ -880,7 +888,7 @@ class Main < Sinatra::Base
 
                     include /etc/nginx/snippets/proxy_ws_code.conf;
                     sub_filter_once on;
-                    sub_filter '</head>' '<link rel="preload" href="/include/fonts/0xProtoNerdFontMono/0xProtoNerdFontMono-Regular.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/include/fonts.css?#{CACHE_BUSTER}"></head>';
+                    sub_filter '</head>' $hs_code_font_head;
                     proxy_pass $hs_upstream;
                 }
             }

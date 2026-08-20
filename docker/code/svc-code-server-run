@@ -25,7 +25,7 @@ WORKSPACE_RUN_GROUP="$(id -gn "$WORKSPACE_RUN_USER")"
 # Add additional extensions here later.
 EXTENSIONS=(
     "/app/extensions/hackschule-sidebar-init-0.1.0.vsix|hackschule.hackschule-sidebar-init"
-    "/app/extensions/hackschule-checkpoints-0.6.0.vsix|hackschule.hackschule-checkpoints"
+    "/app/extensions/hackschule-checkpoints-0.6.1.vsix|hackschule.hackschule-checkpoints"
     "/app/extensions/hackschule-keyboard-tutorial-0.5.3.vsix|gymnasiumsteglitz.hackschule-keyboard-tutorial"
     "/app/extensions/bif-authoring-tools-0.2.1.vsix|gymnasiumsteglitz.bif-authoring-tools"
     "/app/extensions/ritwickdey.LiveServer.vsix|ritwickdey.LiveServer"

@@ -2,7 +2,7 @@
   "name": "hackschule-checkpoints",
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "publisher": "hackschule",
   "license": "MIT",
   "engines": {
@@ -62,14 +62,14 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "hackschuleCheckpoints.container",
+          "id": "hackschuleCheckpoints-container",
           "title": "%view.containerTitle%",
           "icon": "resources/checkpoints.svg"
         }
       ]
     },
     "views": {
-      "hackschuleCheckpoints.container": [
+      "hackschuleCheckpoints-container": [
         {
           "id": "hackschuleCheckpoints.view",
           "name": "%view.name%",
