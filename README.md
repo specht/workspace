@@ -71,6 +71,21 @@ systemctl restart NetworkManager
 
 Wenn der Workspace gestartet ist, kannst du ihn im Browser unter <a href='http://workspace.test:8025'>http://workspace.test:8025</a> erreichen. Du solltest dich mit deiner E-Mail-Adresse (oder einem eindeutigen Präfix) und dem Code 123456 (fester Code in der Development-Umgebung) anmelden können. Um den eigentlichen Workspace (Visual Studio Code) zu starten, ist ein weiterer Schritt notwendig:
 
+Um Chrome dazu zu überreden, die lokale HTTP-Adresse als sicher anzusehen, kann man zusätzlich noch folgende Einstellung vornehmen:
+
+```
+sudo mkdir -p /etc/opt/chrome/policies/managed
+
+sudo tee /etc/opt/chrome/policies/managed/workspace-dev.json >/dev/null <<'EOF'
+{
+  "OverrideSecurityRestrictionsOnInsecureOrigin": [
+    "http://workspace.test:8025/",
+    "*.workspace.test"
+  ]
+}
+EOF
+```
+
 **Workspace-Image bauen**
 
 Das Bauen des Workspace-Images dauert beim ersten Mal relativ lange und benötigt mehrere Gigabyte Speicherplatz, da zahlreiche Compiler, SDKs und Werkzeuge heruntergeladen und installiert werden müssen.
