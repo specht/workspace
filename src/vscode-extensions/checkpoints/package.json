@@ -59,17 +59,8 @@
         "icon": "$(trash)"
       }
     ],
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "hackschuleCheckpoints-container",
-          "title": "%view.containerTitle%",
-          "icon": "resources/checkpoints.svg"
-        }
-      ]
-    },
     "views": {
-      "hackschuleCheckpoints-container": [
+      "explorer": [
         {
           "id": "hackschuleCheckpoints.view",
           "name": "%view.name%",

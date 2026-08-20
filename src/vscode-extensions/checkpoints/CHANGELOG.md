@@ -2,7 +2,7 @@
 
 ## 0.6.1
 
-- Uses a VS Code-compatible activity bar container ID for the Checkpoints view.
+- Keeps the Checkpoints view in Explorer instead of adding a separate Activity Bar container.
 
 ## 0.6.0
 

@@ -15,15 +15,12 @@ test("extension is branded as Hackschule Checkpoints", () => {
   assert.equal(german["view.name"], "Checkpoints");
 });
 
-test("checkpoint view container uses a valid VS Code id", () => {
+test("checkpoint view lives in Explorer", () => {
   const pkg = JSON.parse(read("package.json"));
-  const containers = pkg.contributes.viewsContainers.activitybar;
 
-  assert.equal(containers.length, 1);
-  const containerId = containers[0].id;
-  assert.match(containerId, /^[A-Za-z0-9_-]+$/);
-  assert.ok(pkg.contributes.views[containerId]);
-  assert.equal(pkg.contributes.views[containerId][0].id, "hackschuleCheckpoints.view");
+  assert.equal(pkg.contributes.viewsContainers, undefined);
+  assert.equal(pkg.contributes.views.explorer.length, 1);
+  assert.equal(pkg.contributes.views.explorer[0].id, "hackschuleCheckpoints.view");
 });
 
 test("checkpoint rows require explicit compare or restore actions", () => {
