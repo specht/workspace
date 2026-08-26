@@ -171,6 +171,7 @@
                 </p>
                 <div class="profile-actions mb-3">
                     <button id="bu_launch_profile" class="btn btn-success bu-launch-workspace"><i class='bi bi-code-slash'></i>Workspace öffnen</button>
+                    <button id="bu_restart_workspace" class="btn btn-outline-secondary"><i class='bi bi-arrow-clockwise'></i>Workspace neu starten</button>
                     <button style='#{(@session_user || {})[:share_tag].nil? ? '' : 'display: none;'}' id='bu_share' class="btn btn-primary"><i class='bi bi-share'></i>Workspace teilen</button>
                     <button style='#{(@session_user || {})[:share_tag].nil? ? 'display: none;' : ''}' id='bu_stop_share' class="btn btn-primary"><i class='bi bi-trash-fill'></i>Teilen beenden</button>
                 </div>
@@ -642,6 +643,57 @@
                     window.location.reload();
                 }
             });
+        });
+        $('#bu_restart_workspace').on('click', function() {
+            const content = `
+                <p>Alle laufenden Programme und Terminals im Workspace werden beendet.</p>
+                <p><strong>Deine Dateien, Einstellungen, installierten Erweiterungen und Datenbanken bleiben erhalten.</strong></p>
+                <p>Speichere offene Dateien, bevor du fortfährst.</p>
+                <div id='div_restart_workspace_please_wait' style='display: none; margin-top: 1em;'><i class='fa fa-cog bi-spin'></i>Moment, dein Workspace wird neu gestartet…</div>
+                <div id='div_restart_workspace_success' style='display: none; margin-top: 1em;'><i class='text-success bi bi-check-lg'></i>&nbsp;Dein Workspace wird neu gestartet. Du kannst ihn gleich wieder öffnen.</div>
+                <div id='div_restart_workspace_error' class='text-danger' style='display: none; margin-top: 1em;'>Der Workspace konnte nicht neu gestartet werden. Bitte versuche es noch einmal.</div>
+            `;
+            let submitting = false;
+
+            showTemplateModal(
+                'Workspace neu starten',
+                content,
+                "<i class='bi bi-arrow-clockwise'></i>Neu starten",
+                'btn-primary',
+                "<i class='bi bi-x-lg'></i>Abbrechen",
+                'btn-secondary',
+                function() {
+                    if (submitting) return false;
+                    submitting = true;
+
+                    const confirm_button = $('#__template_modal .modal-footer .btn').eq(0);
+                    const cancel_button = $('#__template_modal .modal-footer .btn').eq(1);
+                    confirm_button.prop('disabled', true);
+                    cancel_button.prop('disabled', true);
+                    $('#div_restart_workspace_error').hide();
+                    $('#div_restart_workspace_please_wait').slideDown();
+
+                    api_call('/api/restart_server', {}, function(data) {
+                        $('#div_restart_workspace_please_wait').hide();
+
+                        if (!data.success || data.status === 'failed') {
+                            submitting = false;
+                            confirm_button.prop('disabled', false);
+                            cancel_button.prop('disabled', false);
+                            $('#div_restart_workspace_error').show();
+                            return;
+                        }
+
+                        $('#div_restart_workspace_success').show();
+                        confirm_button.hide();
+                        cancel_button
+                            .prop('disabled', false)
+                            .html("<i class='bi bi-x-lg'></i>Schließen");
+                    }, {no_please_wait: true});
+
+                    return false;
+                }
+            );
         });
         $('#bu_reset_workspace').on('click', function() {
             show_workspace_reset_modal(#{@session_user[:email].to_json});

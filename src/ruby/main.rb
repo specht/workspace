@@ -3060,6 +3060,47 @@ class Main < Sinatra::Base
         )
     end
 
+    post '/api/restart_server' do
+        assert(user_logged_in?)
+
+        email = @session_user[:email]
+        active_workspace = neo4j_query_expect_one(<<~END_OF_QUERY, :email => email)
+            MATCH (u:User {email: $email})
+            OPTIONAL MATCH (u)-[:TAKES]->(t:Test {running: TRUE})
+            RETURN t;
+        END_OF_QUERY
+        test_tag = (active_workspace['t'] || {})[:tag]
+        base_server_tag = @session_user[:server_tag]
+        server_tag = "#{base_server_tag}#{test_tag}"
+
+        job = Main.enqueue_server_start(
+            :email => email,
+            :test_tag => test_tag,
+            :server_tag => server_tag
+        ) do
+            # The container is disposable. /workspace and /config are bind mounts,
+            # so killing it clears every process without deleting persisted work.
+            container_name = fs_tag_for_email("#{email}#{test_tag}")
+            workspace_runtime.stop_workspace(
+                container_name,
+                :timeout => shell_timeout(:docker_kill),
+            )
+            Main.reconcile_live_apps!(:refresh_nginx => false)
+            Main.refresh_nginx_config()
+            start_server(email, test_tag, :server_tag => base_server_tag)
+        end
+
+        status = Main.wait_for_server_start_job(job)
+
+        respond(
+            :yay => 'sure',
+            :server_tag => server_tag,
+            :queued => ['queued', 'running'].include?(status[:status]),
+            :status => status[:status],
+            :error => status[:error]
+        )
+    end
+
     post '/api/start_server_with_share_tag' do
         data = parse_request_data(:required_keys => [:share_tag])
         share_tag = data[:share_tag]

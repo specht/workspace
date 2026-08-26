@@ -8,6 +8,17 @@ test('student profile groups controls and protects credentials', async ({
   e2eEmail,
 }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
+  let restartRequests = 0;
+  await page.route('**/api/restart_server', async route => {
+    restartRequests += 1;
+    await route.fulfill({
+      json: {
+        success: true,
+        status: 'ready',
+        server_tag: 'restarttest',
+      },
+    });
+  });
   await page.goto('/profil');
 
   const expectedSections = [
@@ -25,6 +36,7 @@ test('student profile groups controls and protects credentials', async ({
   }
 
   await expect(page.locator('#bu_launch_profile')).toBeVisible();
+  await expect(page.locator('#bu_restart_workspace')).toBeVisible();
   await expect(page.locator('#live_apps_container')).toBeVisible();
   await expect(page.locator('#bu_reset_workspace')).toBeVisible();
   await expect(page.locator('#profile-for-teachers')).toBeHidden();
@@ -101,6 +113,30 @@ test('student profile groups controls and protects credentials', async ({
     'type',
     'password',
   );
+
+  await page.locator('#bu_restart_workspace').click();
+
+  const restartModal = page.locator('#__template_modal');
+  await expect(restartModal).toContainText(
+    'Alle laufenden Programme und Terminals im Workspace werden beendet.',
+  );
+  await expect(restartModal).toContainText(
+    'Deine Dateien, Einstellungen, installierten Erweiterungen und Datenbanken bleiben erhalten.',
+  );
+  await expect(
+    restartModal.locator('#ti_reset_workspace_confirmation'),
+  ).toHaveCount(0);
+  expect(restartRequests).toBe(0);
+
+  await restartModal.getByRole('button', {
+    name: 'Neu starten',
+    exact: true,
+  }).click();
+  await expect.poll(() => restartRequests).toBe(1);
+  await expect(restartModal).toContainText(
+    'Dein Workspace wird neu gestartet.',
+  );
+  await restartModal.getByRole('button', { name: 'Schließen' }).click();
 
   await page.locator('#bu_reset_workspace').click();
 
