@@ -5,6 +5,7 @@ module Authentication
     LOGIN_REQUEST_TTL_SECONDS = 10 * 60
     LOGIN_REQUEST_MAX_ATTEMPTS = 5
     LOGIN_REQUEST_RESEND_SECONDS = 60
+    QR_LOGIN_REQUEST_TTL_SECONDS = 5 * 60
     SESSION_LIFETIME_DAYS = 365
 
     def self.generate_login_code(development: false)
@@ -27,6 +28,18 @@ module Authentication
 
     def self.valid_login_code?(code)
         code.is_a?(String) && code.match?(/\A[0-9]{6}\z/)
+    end
+
+    def self.qr_login_request_expires_at(now: Time.now.to_i)
+        now.to_i + QR_LOGIN_REQUEST_TTL_SECONDS
+    end
+
+    def self.valid_qr_login_tag?(tag)
+        tag.is_a?(String) && tag.match?(/\A[0-9a-z]{16}\z/)
+    end
+
+    def self.valid_qr_login_secret?(secret)
+        secret.is_a?(String) && secret.match?(/\A[0-9a-z]{32}\z/)
     end
 
     def self.session_cookie_name(development:)

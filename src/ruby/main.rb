@@ -1731,6 +1731,7 @@ class Main < Sinatra::Base
     @@load_invitations_mutex = Mutex.new
     @@admin_ws_mutex = Mutex.new
     @@login_request_mutex = Mutex.new
+    @@qr_login_mutex = Mutex.new
     @@mysql_database_locks_mutex = Mutex.new
     @@mysql_database_locks = {}
 
@@ -1833,6 +1834,7 @@ class Main < Sinatra::Base
             'Language/name',
             'LiveAppShare/tag',
             'LoginRequest/tag',
+            'QrLoginRequest/tag',
             'Session/sid',
             'Solved/id',
             'Submission/id',
@@ -2157,6 +2159,232 @@ class Main < Sinatra::Base
                OR COALESCE(l.attempts, 0) >= $max_attempts
             DETACH DELETE l;
         END_OF_QUERY
+    end
+
+    def cleanup_qr_login_requests
+        neo4j_query(<<~END_OF_QUERY, :now => Time.now.to_i)
+            MATCH (q:QrLoginRequest)
+            WHERE COALESCE(q.expires_at, 0) <= $now
+            DETACH DELETE q;
+        END_OF_QUERY
+    end
+
+    post '/api/qr_login/start' do
+        headers 'Cache-Control' => 'no-store'
+        tag = RandomTag::generate(16)
+        browser_secret = RandomTag::generate(32)
+        approval_secret = RandomTag::generate(32)
+        now = Time.now.to_i
+        expires_at = Authentication.qr_login_request_expires_at(:now => now)
+        approval_url = "#{WEB_ROOT}/qr-login##{tag}.#{approval_secret}"
+
+        begin
+            svg, qr_error, qr_status = Open3.capture3(
+                'qrencode', '-t', 'SVG', '-m', '2', '-o', '-',
+                :stdin_data => approval_url,
+            )
+        rescue Errno::ENOENT => e
+            STDERR.puts ">>> QR login unavailable: #{e.message}"
+            content_type :json
+            halt 503, { :error => 'qr_login_unavailable' }.to_json
+        end
+        unless qr_status.success?
+            STDERR.puts ">>> qrencode failed: #{qr_error}"
+            content_type :json
+            halt 503, { :error => 'qr_login_unavailable' }.to_json
+        end
+
+        create_params = {
+            :tag => tag,
+            :browser_secret_sha256 => Digest::SHA256.hexdigest(browser_secret),
+            :approval_secret_sha256 => Digest::SHA256.hexdigest(approval_secret),
+            :created_at => now,
+            :expires_at => expires_at,
+        }
+        @@qr_login_mutex.synchronize do
+            cleanup_qr_login_requests
+            neo4j_query_expect_one(<<~END_OF_QUERY, create_params)
+                CREATE (q:QrLoginRequest {
+                    tag: $tag,
+                    browser_secret_sha256: $browser_secret_sha256,
+                    approval_secret_sha256: $approval_secret_sha256,
+                    created_at: $created_at,
+                    expires_at: $expires_at
+                })
+                RETURN q.tag;
+            END_OF_QUERY
+        end
+
+        payload = {
+            :status => 'pending',
+            :tag => tag,
+            :browser_secret => browser_secret,
+            :qr_image => "data:image/svg+xml;base64,#{Base64.strict_encode64(svg)}",
+            :expires_at => expires_at,
+        }
+        # The raw approval URL is useful to the browser tests, but production
+        # clients only receive the rendered QR code.
+        payload[:approval_url] = approval_url if DEVELOPMENT
+        respond(payload)
+    end
+
+    post '/api/qr_login/approve' do
+        headers 'Cache-Control' => 'no-store'
+        unless user_logged_in?
+            content_type :json
+            halt 401, { :error => 'qr_login_requires_login' }.to_json
+        end
+
+        data = parse_request_data(:required_keys => [:tag, :approval_secret])
+        tag = data[:tag].to_s.downcase.strip
+        approval_secret = data[:approval_secret].to_s.downcase.strip
+        unless Authentication.valid_qr_login_tag?(tag) &&
+               Authentication.valid_qr_login_secret?(approval_secret)
+            content_type :json
+            halt 400, { :error => 'invalid_qr_login_request' }.to_json
+        end
+
+        approval_params = {
+            :tag => tag,
+            :approval_secret_sha256 => Digest::SHA256.hexdigest(approval_secret),
+            :email => @session_user[:email],
+            :now => Time.now.to_i,
+        }
+        approval_status = @@qr_login_mutex.synchronize do
+            cleanup_qr_login_requests
+            row = neo4j_query(<<~END_OF_QUERY, approval_params).to_a.first
+                MATCH (q:QrLoginRequest {
+                    tag: $tag,
+                    approval_secret_sha256: $approval_secret_sha256
+                })
+                WHERE q.expires_at > $now
+                OPTIONAL MATCH (q)-[:APPROVED_BY]->(existing:User)
+                RETURN existing.email AS approved_email;
+            END_OF_QUERY
+            next :expired unless row
+
+            approved_email = row['approved_email']
+            next :claimed if approved_email && approved_email != @session_user[:email]
+
+            neo4j_query_expect_one(<<~END_OF_QUERY, approval_params)
+                MATCH (q:QrLoginRequest {
+                    tag: $tag,
+                    approval_secret_sha256: $approval_secret_sha256
+                })
+                WHERE q.expires_at > $now
+                MATCH (u:User {email: $email})
+                MERGE (q)-[:APPROVED_BY]->(u)
+                SET q.approved_at = $now
+                RETURN q.tag;
+            END_OF_QUERY
+            :approved
+        end
+
+        case approval_status
+        when :approved
+            respond(:status => 'approved')
+        when :claimed
+            content_type :json
+            halt 409, { :error => 'qr_login_already_approved' }.to_json
+        else
+            content_type :json
+            halt 410, { :error => 'qr_login_expired' }.to_json
+        end
+    end
+
+    post '/api/qr_login/status' do
+        headers 'Cache-Control' => 'no-store'
+        data = parse_request_data(:required_keys => [:tag, :browser_secret])
+        tag = data[:tag].to_s.downcase.strip
+        browser_secret = data[:browser_secret].to_s.downcase.strip
+        unless Authentication.valid_qr_login_tag?(tag) &&
+               Authentication.valid_qr_login_secret?(browser_secret)
+            content_type :json
+            halt 400, { :error => 'invalid_qr_login_request' }.to_json
+        end
+
+        lookup_params = {
+            :tag => tag,
+            :browser_secret_sha256 => Digest::SHA256.hexdigest(browser_secret),
+            :now => Time.now.to_i,
+        }
+        qr_result = @@qr_login_mutex.synchronize do
+            cleanup_qr_login_requests
+            row = neo4j_query(<<~END_OF_QUERY, lookup_params).to_a.first
+                MATCH (q:QrLoginRequest {
+                    tag: $tag,
+                    browser_secret_sha256: $browser_secret_sha256
+                })
+                WHERE q.expires_at > $now
+                OPTIONAL MATCH (q)-[:APPROVED_BY]->(u:User)
+                RETURN q.expires_at AS expires_at, u.email AS approved_email;
+            END_OF_QUERY
+            next { :status => :expired } unless row
+            unless row['approved_email']
+                next { :status => :pending, :expires_at => row['expires_at'].to_i }
+            end
+
+            sid = RandomTag::generate(24)
+            session_expires = (DateTime.now + Authentication::SESSION_LIFETIME_DAYS).to_s
+            complete_params = lookup_params.merge(
+                :email => row['approved_email'],
+                :sid => sid,
+                :session_expires => session_expires,
+            )
+            login_result = neo4j_query(<<~END_OF_QUERY, complete_params).to_a.first
+                MATCH (q:QrLoginRequest {
+                    tag: $tag,
+                    browser_secret_sha256: $browser_secret_sha256
+                })-[:APPROVED_BY]->(u:User {email: $email})
+                WHERE q.expires_at > $now
+                DETACH DELETE q
+                WITH u
+                CREATE (s:Session {sid: $sid, expires: $session_expires})-[:FOR]->(u)
+                RETURN s.sid AS sid, u.email AS email, u.server_sid AS server_sid;
+            END_OF_QUERY
+            next { :status => :expired } unless login_result
+
+            { :status => :approved, :login_result => login_result }
+        end
+
+        case qr_result[:status]
+        when :pending
+            respond(:status => 'pending', :expires_at => qr_result[:expires_at])
+        when :approved
+            expires = session_cookie_expiry
+            set_session_cookie(qr_result[:login_result]['sid'], expires)
+            server_sid = qr_result[:login_result]['server_sid']
+            set_server_sid_cookie(server_sid, expires) if server_sid
+            respond(:status => 'approved')
+        else
+            respond(:status => 'expired')
+        end
+    end
+
+    post '/api/qr_login/cancel' do
+        headers 'Cache-Control' => 'no-store'
+        data = parse_request_data(:required_keys => [:tag, :browser_secret])
+        tag = data[:tag].to_s.downcase.strip
+        browser_secret = data[:browser_secret].to_s.downcase.strip
+
+        if Authentication.valid_qr_login_tag?(tag) &&
+           Authentication.valid_qr_login_secret?(browser_secret)
+            cancel_params = {
+                :tag => tag,
+                :browser_secret_sha256 => Digest::SHA256.hexdigest(browser_secret),
+            }
+            @@qr_login_mutex.synchronize do
+                neo4j_query(<<~END_OF_QUERY, cancel_params)
+                    MATCH (q:QrLoginRequest {
+                        tag: $tag,
+                        browser_secret_sha256: $browser_secret_sha256
+                    })
+                    DETACH DELETE q;
+                END_OF_QUERY
+            end
+        end
+
+        respond(:status => 'cancelled')
     end
 
     post '/api/request_login' do

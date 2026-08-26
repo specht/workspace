@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   tzdata \
   sysstat \
   graphviz \
+  qrencode \
   build-essential \
   pkg-config \
   imagemagick \
