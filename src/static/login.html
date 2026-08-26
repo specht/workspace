@@ -6,15 +6,24 @@
         text-align: center;
     }
     #qr_code {
-        width: min(15rem, 75vw);
+        width: min(13rem, 60vw);
         height: auto;
         background: white;
         border-radius: 0.5rem;
         padding: 0.75rem;
+        float: right;
+        margin: 0 0 1rem 1.5rem;
     }
     .qr-login-code {
         font-size: 1.35rem;
         letter-spacing: 0.15em;
+    }
+    @media (max-width: 767.98px) {
+        #qr_code {
+            float: none;
+            display: block;
+            margin: 0 auto 1rem;
+        }
     }
 </style>
 <script>
@@ -213,25 +222,28 @@
                         <div id='part0' class="input-group mb-3">
                             <input type="email" id='ti_email' class="form-control" placeholder="Bitte gib deine E-Mail-Adresse ein" autocomplete='on'>
                             <button id='bu_submit_email' class="btn btn-primary" disabled><i class="bi bi-send-fill"></i>Code zusenden</button>
-                            <button id='bu_qr_login' type='button' class="btn btn-outline-secondary" aria-expanded='false' aria-controls='qr_login_panel' title='Mit QR-Code anmelden'><i class="bi bi-qr-code"></i><span class='d-none d-sm-inline'>&nbsp;QR-Code</span></button>
+                            <button id='bu_qr_login' type='button' class="btn btn-outline-secondary" aria-expanded='false' aria-controls='qr_login_panel' aria-label='Mit QR-Code anmelden' title='Mit QR-Code anmelden'><i class="bi bi-qr-code" style="margin-right: 0;"></i></button>
                         </div>
 
-                        <div id='qr_login_panel' class='border rounded p-3 p-md-4 mb-3 text-center' style='display: none;'>
-                            <h2 class='h4'>Mit dem Handy anmelden</h2>
-                            <p class='mb-3'>
-                                Scanne den QR-Code mit einem Handy oder Tablet, auf dem du im Workspace bereits angemeldet bist,
-                                und bestätige dort die Anmeldung dieses Computers.
-                            </p>
-                            <div id='qr_login_loading' class='text-secondary mb-3'>QR-Code wird erstellt …</div>
+                        <div id='qr_login_panel' class='border rounded p-3 p-md-4 mb-3' style='display: none;'>
+                            <h2 class='h4 text-center mb-3'>Mit dem Handy anmelden</h2>
+                            <div id='qr_login_loading' class='text-secondary text-center mb-3'>QR-Code wird erstellt …</div>
                             <div id='qr_login_ready' style='display: none;'>
-                                <p><img id='qr_code' alt='QR-Code zur Anmeldung'></p>
+                                <img id='qr_code' alt='QR-Code zur Anmeldung'>
+                                <p>
+                                    Scanne den QR-Code mit einem Handy oder Tablet, auf dem du im Workspace bereits angemeldet bist,
+                                    und bestätige dort die Anmeldung dieses Computers.
+                                </p>
                                 <p>
                                     Kontrollcode: <code id='qr_login_code' class='qr-login-code'></code><br>
+                                </p>
+                                <p>
                                     <span class='text-secondary small'>Der gleiche Code wird nach dem Scannen auf deinem Handy angezeigt.</span>
                                 </p>
                                 <p class='text-secondary small mb-0'>Der QR-Code ist fünf Minuten gültig und kann nur einmal verwendet werden.</p>
+                                <div class='clearfix'></div>
                             </div>
-                            <div id='qr_login_unavailable' class='text-secondary mb-0' style='display: none;'>
+                            <div id='qr_login_unavailable' class='text-secondary text-center mb-0' style='display: none;'>
                                 Die QR-Anmeldung ist gerade nicht verfügbar. Du kannst dich weiterhin per E-Mail anmelden.
                             </div>
                         </div>
