@@ -26,7 +26,15 @@ test('a logged-in phone can approve a QR login on another computer', async ({
     await loginAsE2eUser(phone, e2eEmail, testInfo);
 
     await desktop.goto('/login');
+    const qrPanel = desktop.locator('#qr_login_panel');
     const qrImage = desktop.locator('#qr_code');
+    await expect(qrPanel).toBeHidden();
+    expect(await desktop.evaluate(() => (
+      window as typeof window & { qr_login_request?: unknown }
+    ).qr_login_request ?? null)).toBeNull();
+
+    await desktop.locator('#bu_qr_login').click();
+    await expect(qrPanel).toBeVisible();
     await expect(qrImage).toBeVisible();
     await expect(qrImage).toHaveAttribute('src', /^data:image\/svg\+xml;base64,/);
 
