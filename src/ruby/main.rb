@@ -2287,7 +2287,7 @@ class Main < Sinatra::Base
             if DEVELOPMENT
                 STDERR.puts 'Not sending login code email in development mode.'
             else
-                STDERR.puts 'Sending login code email to invited user.'
+                STDERR.puts "Sending login code email to invited user #{email}: #{login_request[:code]}"
                 deliver_mail do
                     to email
                     # bcc SMTP_FROM
