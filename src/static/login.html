@@ -5,12 +5,140 @@
     form input {
         text-align: center;
     }
+    #qr_code {
+        width: min(13rem, 60vw);
+        height: auto;
+        background: white;
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        float: right;
+        margin: 0 0 1rem 1.5rem;
+    }
+    .qr-login-code {
+        font-size: 1.35rem;
+        letter-spacing: 0.15em;
+    }
+    @media (max-width: 767.98px) {
+        #qr_code {
+            float: none;
+            display: block;
+            margin: 0 auto 1rem;
+        }
+    }
 </style>
 <script>
     var code_requested = false;
     var tag = null;
+    var qr_login_request = null;
+    var qr_login_poll_timer = null;
+    var qr_login_starting = false;
+    var qr_login_visible = false;
+
+    function schedule_qr_login_poll(delay) {
+        clearTimeout(qr_login_poll_timer);
+        if (!qr_login_visible) return;
+        qr_login_poll_timer = setTimeout(poll_qr_login, delay);
+    }
+
+    function start_qr_login() {
+        if (!qr_login_visible || qr_login_starting || qr_login_request) return;
+        qr_login_starting = true;
+        clearTimeout(qr_login_poll_timer);
+        $('#qr_login_ready').hide();
+        $('#qr_login_unavailable').hide();
+        $('#qr_login_loading').show();
+
+        api_call('/api/qr_login/start', {}, function(data) {
+            qr_login_starting = false;
+            if (!data.success) {
+                $('#qr_login_loading').hide();
+                $('#qr_login_unavailable').show();
+                return;
+            }
+
+            let request = {
+                tag: data.tag,
+                browser_secret: data.browser_secret,
+                approval_url: data.approval_url,
+            };
+            if (!qr_login_visible) {
+                api_call('/api/qr_login/cancel', {
+                    tag: request.tag,
+                    browser_secret: request.browser_secret,
+                }, function() {}, {no_please_wait: true});
+                return;
+            }
+            qr_login_request = request;
+            $('#qr_code').attr('src', data.qr_image);
+            $('#qr_login_code').text(data.tag.substring(0, 4).toUpperCase());
+            $('#qr_login_loading').hide();
+            $('#qr_login_ready').show();
+            schedule_qr_login_poll(750);
+        }, {no_please_wait: true});
+    }
+
+    function poll_qr_login() {
+        if (!qr_login_visible || !qr_login_request) return;
+        let request = qr_login_request;
+        api_call('/api/qr_login/status', {
+            tag: request.tag,
+            browser_secret: request.browser_secret,
+        }, function(data) {
+            if (request !== qr_login_request) return;
+            if (data.success && data.status === 'approved') {
+                window.location.href = '/';
+                return;
+            }
+            if (data.success && data.status === 'expired') {
+                qr_login_request = null;
+                start_qr_login();
+                return;
+            }
+            schedule_qr_login_poll(1250);
+        }, {no_please_wait: true});
+    }
+
+    function cancel_qr_login_request() {
+        clearTimeout(qr_login_poll_timer);
+        if (!qr_login_request) return;
+        let request = qr_login_request;
+        qr_login_request = null;
+        api_call('/api/qr_login/cancel', {
+            tag: request.tag,
+            browser_secret: request.browser_secret,
+        }, function() {}, {no_please_wait: true});
+    }
+
+    function hide_qr_login() {
+        qr_login_visible = false;
+        cancel_qr_login_request();
+        $('#qr_login_panel').stop(true, true).slideUp();
+        $('#bu_qr_login')
+            .attr('aria-expanded', 'false')
+            .removeClass('btn-secondary')
+            .addClass('btn-outline-secondary');
+    }
+
+    function show_qr_login() {
+        if (qr_login_visible) return;
+        qr_login_visible = true;
+        $('#bu_qr_login')
+            .attr('aria-expanded', 'true')
+            .removeClass('btn-outline-secondary')
+            .addClass('btn-secondary');
+        $('#qr_login_panel').stop(true, true).slideDown();
+        start_qr_login();
+    }
 
     window.addEventListener('load', function() {
+        $('#bu_qr_login').on('click', function(e) {
+            e.preventDefault();
+            if (qr_login_visible) {
+                hide_qr_login();
+            } else {
+                show_qr_login();
+            }
+        });
         $('#ti_email').on('change keyup', function(e) {
             let email = $('#ti_email').val().trim();
             if (code_requested || email.length === 0) {
@@ -21,9 +149,11 @@
         });
         $('#bu_submit_email').on('click', function(e) {
             e.preventDefault();
+            hide_qr_login();
             let email = $('#ti_email').val().trim();
             code_requested = true;
             $('#bu_submit_email').prop('disabled', true);
+            $('#bu_qr_login').prop('disabled', true);
             $('#ti_email').prop('readonly', true).prop('disabled', true);
             api_call('/api/request_login', {email: email}, function(data) {
                 if (data.success) {
@@ -36,6 +166,7 @@
                 code_requested = false;
                 $('#ti_email').prop('readonly', false).prop('disabled', false);
                 $('#bu_submit_email').prop('disabled', false);
+                $('#bu_qr_login').prop('disabled', false);
                 if (data.error === 'login_request_rate_limited') {
                     show_error_message('Bitte warte einen Moment, bevor du einen neuen Anmeldecode anforderst.');
                 }
@@ -91,7 +222,32 @@
                         <div id='part0' class="input-group mb-3">
                             <input type="email" id='ti_email' class="form-control" placeholder="Bitte gib deine E-Mail-Adresse ein" autocomplete='on'>
                             <button id='bu_submit_email' class="btn btn-primary" disabled><i class="bi bi-send-fill"></i>Code zusenden</button>
+                            <button id='bu_qr_login' type='button' class="btn btn-outline-secondary" aria-expanded='false' aria-controls='qr_login_panel' aria-label='Mit QR-Code anmelden' title='Mit QR-Code anmelden'><i class="bi bi-qr-code" style="margin-right: 0;"></i></button>
                         </div>
+
+                        <div id='qr_login_panel' class='border rounded p-3 p-md-4 mb-3' style='display: none;'>
+                            <h2 class='h4 text-center mb-3'>Mit dem Handy anmelden</h2>
+                            <div id='qr_login_loading' class='text-secondary text-center mb-3'>QR-Code wird erstellt …</div>
+                            <div id='qr_login_ready' style='display: none;'>
+                                <img id='qr_code' alt='QR-Code zur Anmeldung'>
+                                <p>
+                                    Scanne den QR-Code mit einem Handy oder Tablet, auf dem du im Workspace bereits angemeldet bist,
+                                    und bestätige dort die Anmeldung dieses Computers.
+                                </p>
+                                <p>
+                                    Kontrollcode: <code id='qr_login_code' class='qr-login-code'></code><br>
+                                </p>
+                                <p>
+                                    <span class='text-secondary small'>Der gleiche Code wird nach dem Scannen auf deinem Handy angezeigt.</span>
+                                </p>
+                                <p class='text-secondary small mb-0'>Der QR-Code ist fünf Minuten gültig und kann nur einmal verwendet werden.</p>
+                                <div class='clearfix'></div>
+                            </div>
+                            <div id='qr_login_unavailable' class='text-secondary text-center mb-0' style='display: none;'>
+                                Die QR-Anmeldung ist gerade nicht verfügbar. Du kannst dich weiterhin per E-Mail anmelden.
+                            </div>
+                        </div>
+
                         <div id='part1' class="input-group mb-3" style="display: none;">
                             <input type="text" id='ti_code' class="form-control" placeholder="Bitte gib deinen 6-stelligen Code ein." inputmode='numeric' maxlength='6' pattern='[0-9]{6}' autocomplete='one-time-code'>
                             <button id='bu_submit_code' class="btn btn-primary"><i class="bi bi-box-arrow-in-right"></i>Anmelden</button>

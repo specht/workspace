@@ -32,6 +32,19 @@ class AuthenticationTest < Minitest::Test
         refute Authentication.valid_login_code?('12345x')
     end
 
+    def test_qr_login_request_expiry_and_input_shapes
+        now = 2_000
+        assert_equal now + 300, Authentication.qr_login_request_expires_at(:now => now)
+
+        assert Authentication.valid_qr_login_tag?('b' * 16)
+        refute Authentication.valid_qr_login_tag?('b' * 15)
+        refute Authentication.valid_qr_login_tag?('../' + ('b' * 13))
+
+        assert Authentication.valid_qr_login_secret?('c' * 32)
+        refute Authentication.valid_qr_login_secret?('c' * 31)
+        refute Authentication.valid_qr_login_secret?('C' * 32)
+    end
+
     def test_session_cookie_policy
         assert_equal 'hs_sid', Authentication.session_cookie_name(:development => true)
         assert_equal '__Host-hs_sid', Authentication.session_cookie_name(:development => false)

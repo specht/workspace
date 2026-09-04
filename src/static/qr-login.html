@@ -1,0 +1,105 @@
+<style>
+    .qr-confirm-card {
+        max-width: 34rem;
+        margin: 3rem auto;
+        text-align: center;
+    }
+    .qr-confirm-code {
+        font-size: 1.8rem;
+        letter-spacing: 0.15em;
+    }
+</style>
+<script>
+    var qr_login_tag = null;
+    var qr_login_approval_secret = null;
+
+    function show_qr_login_part(id) {
+        $('.qr-login-part').hide();
+        $(id).show();
+    }
+
+    window.addEventListener('load', function() {
+        let fragment = window.location.hash.substring(1);
+        let parts = fragment.split('.');
+        if (parts.length !== 2 || !/^[0-9a-z]{16}$/.test(parts[0]) || !/^[0-9a-z]{32}$/.test(parts[1])) {
+            show_qr_login_part('#qr_login_invalid');
+            return;
+        }
+
+        qr_login_tag = parts[0];
+        qr_login_approval_secret = parts[1];
+        history.replaceState(null, '', '/qr-login');
+        $('#qr_login_code').text(qr_login_tag.substring(0, 4).toUpperCase());
+        show_qr_login_part('#qr_login_confirm');
+
+        $('#bu_approve_qr_login').on('click', function(e) {
+            e.preventDefault();
+            let button = $(this);
+            button.prop('disabled', true);
+            api_call('/api/qr_login/approve', {
+                tag: qr_login_tag,
+                approval_secret: qr_login_approval_secret,
+            }, function(data) {
+                if (data.success) {
+                    show_qr_login_part('#qr_login_success');
+                    return;
+                }
+
+                button.prop('disabled', false);
+                if (data.error === 'qr_login_requires_login') {
+                    show_qr_login_part('#qr_login_needs_login');
+                } else if (data.error === 'qr_login_expired') {
+                    show_qr_login_part('#qr_login_expired');
+                } else if (data.error === 'qr_login_already_approved') {
+                    show_qr_login_part('#qr_login_claimed');
+                } else {
+                    show_qr_login_part('#qr_login_invalid');
+                }
+            }, {no_please_wait: true});
+        });
+    });
+</script>
+<div class='container'>
+    <div class='qr-confirm-card'>
+        <div id='qr_login_confirm' class='qr-login-part' style='display: none;'>
+            <h1>Computer anmelden</h1>
+            <p>
+                Du bist dabei, einen anderen Computer mit deinem Workspace-Konto anzumelden.
+                Vergleiche kurz den Code mit dem Code auf dem Computer:
+            </p>
+            <p><code id='qr_login_code' class='qr-confirm-code'></code></p>
+            <p>
+                <button id='bu_approve_qr_login' class='btn btn-primary btn-lg'>
+                    <i class='bi bi-qr-code-scan'></i>Computer anmelden
+                </button>
+            </p>
+            <p class='text-secondary small'>Der QR-Code ist nur fünf Minuten gültig und kann nur einmal verwendet werden.</p>
+        </div>
+
+        <div id='qr_login_success' class='qr-login-part' style='display: none;'>
+            <h1>Computer angemeldet</h1>
+            <p>Der andere Computer wird jetzt automatisch angemeldet. Du kannst dieses Fenster schließen.</p>
+        </div>
+
+        <div id='qr_login_needs_login' class='qr-login-part' style='display: none;'>
+            <h1>Nicht angemeldet</h1>
+            <p>Du bist auf diesem Gerät nicht mehr angemeldet. Melde dich zuerst beim Workspace an und scanne den QR-Code danach erneut.</p>
+            <p><a class='btn btn-primary' href='/login'>Zur Anmeldung</a></p>
+        </div>
+
+        <div id='qr_login_expired' class='qr-login-part' style='display: none;'>
+            <h1>QR-Code abgelaufen</h1>
+            <p>Bitte lass dir auf dem Computer einen neuen QR-Code anzeigen und scanne ihn erneut.</p>
+        </div>
+
+        <div id='qr_login_claimed' class='qr-login-part' style='display: none;'>
+            <h1>Bereits bestätigt</h1>
+            <p>Dieser QR-Code wurde bereits mit einem anderen Konto bestätigt. Verwende auf dem Computer einen neuen QR-Code.</p>
+        </div>
+
+        <div id='qr_login_invalid' class='qr-login-part' style='display: none;'>
+            <h1>Ungültiger QR-Code</h1>
+            <p>Dieser Link ist ungültig oder nicht mehr vollständig. Scanne den QR-Code auf dem Computer erneut.</p>
+        </div>
+    </div>
+</div>
