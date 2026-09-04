@@ -7,8 +7,9 @@ cursor: [3, 1]
 
 <p>
     Ein Kommentar bleibt im Text stehen, wird vom Programm aber nicht als
-    Befehl ausgeführt. Mit <key>Strg</key> + <key>/</key> schaltest du
-    Kommentare für die aktuelle oder die markierten Zeilen ein und aus.
+    Befehl ausgeführt. Mit
+    <span data-shortcut="toggle-line-comment"></span> schaltest du Kommentare
+    für die aktuelle oder die markierten Zeilen ein und aus.
 </p>
 
 <table id="table"></table>
@@ -81,7 +82,7 @@ table.insertAdjacentHTML('beforeend', `
         <td style="width: 1.2em;">${checkBox('s0')}</td>
         <td>
             Der Cursor steht in Zeile 3. Kommentiere diese Zeile mit
-            <key>Strg</key> + <key>/</key>.
+            <span data-shortcut="toggle-line-comment"></span>.
         </td>
     </tr>
 `);
@@ -101,7 +102,7 @@ table.insertAdjacentHTML('beforeend', `
         <td style="width: 1.2em;">${checkBox('s2')}</td>
         <td>
             Markiere die vollständigen Zeilen 2 bis 4 und kommentiere sie
-            gemeinsam mit <key>Strg</key> + <key>/</key>.
+            gemeinsam mit <span data-shortcut="toggle-line-comment"></span>.
         </td>
     </tr>
 `);

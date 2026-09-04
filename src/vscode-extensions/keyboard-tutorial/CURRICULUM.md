@@ -73,7 +73,7 @@ Das Tutorial folgt dem Prinzip **Learning by Doing**:
 
 ## 6. Mehrere Stellen gleichzeitig bearbeiten
 
-- Cursor untereinander mit Strg+Shift+Pfeil nach unten oder oben hinzufügen
+- Cursor untereinander mit der zur Umgebung passenden Tastenkombination hinzufügen
 - Mit Esc wieder zu einem Cursor zurückkehren
 - Das nächste gleiche Vorkommen mit Strg+D auswählen
 - Alle Vorkommen mit Strg+Shift+L auswählen
@@ -85,7 +85,7 @@ Das Tutorial folgt dem Prinzip **Learning by Doing**:
 
 Programmiersprachen werden als geeignete Beispiele für Bearbeitungstechniken verwendet. Die Übungen erklären jeweils nur die sichtbare Struktur, die für die Bearbeitung benötigt wird.
 
-- Einzelne und mehrere JavaScript-Zeilen mit Strg+/ kommentieren und entkommentieren
+- Einzelne und mehrere JavaScript-Zeilen mit der zur Tastaturbelegung passenden Tastenkombination kommentieren und entkommentieren
 - Einen Python-Block gleichmäßig einrücken
 - Einen eingerückten Python-Block als Einheit verschieben
 - Einen wiederkehrenden JavaScript-Namen an mehreren Stellen ändern

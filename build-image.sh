@@ -67,8 +67,8 @@ cp \
     docker/code/hackschule-checkpoints-0.6.1.vsix
 
 cp \
-    src/vscode-extensions/keyboard-tutorial/hackschule-keyboard-tutorial-0.5.3.vsix \
-    docker/code/hackschule-keyboard-tutorial-0.5.3.vsix
+    src/vscode-extensions/keyboard-tutorial/hackschule-keyboard-tutorial-0.5.4.vsix \
+    docker/code/hackschule-keyboard-tutorial-0.5.4.vsix
 
 cp \
     src/vscode-extensions/bif-watcher/bif-authoring-tools-0.2.1.vsix \

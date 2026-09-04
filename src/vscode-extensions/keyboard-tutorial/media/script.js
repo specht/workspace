@@ -6,6 +6,130 @@ let markedAsComplete = false;
 let stepCleanupCallbacks = [];
 let showingCompletion = false;
 
+const shortcutFallbackEnvironment = Object.freeze({
+    os: "windows",
+    keyboardLayout: "de",
+});
+
+let shortcutEnvironment = { ...shortcutFallbackEnvironment };
+
+function detectClientOperatingSystem() {
+    const platform =
+        navigator.userAgentData?.platform ??
+        navigator.platform ??
+        "";
+    const userAgent = navigator.userAgent ?? "";
+    const description = `${platform} ${userAgent}`;
+
+    if (/windows|win32|win64/i.test(description)) {
+        return "windows";
+    }
+    if (/macintosh|macintel|mac os/i.test(description)) {
+        return "mac";
+    }
+    if (/linux|x11/i.test(description)) {
+        return "linux";
+    }
+
+    return shortcutFallbackEnvironment.os;
+}
+
+function keyboardLayoutFromMap(layoutMap) {
+    const backslash = layoutMap.get("Backslash");
+    const slash = layoutMap.get("Slash");
+    const y = layoutMap.get("KeyY");
+    const z = layoutMap.get("KeyZ");
+
+    // On a German QWERTZ layout the physical US backslash key produces #.
+    if (backslash === "#" || (y === "z" && z === "y")) {
+        return "de";
+    }
+
+    if (slash === "/" && y === "y" && z === "z") {
+        return "us";
+    }
+
+    return shortcutFallbackEnvironment.keyboardLayout;
+}
+
+async function detectKeyboardLayout() {
+    if (!navigator.keyboard?.getLayoutMap) {
+        return shortcutFallbackEnvironment.keyboardLayout;
+    }
+
+    try {
+        return keyboardLayoutFromMap(
+            await navigator.keyboard.getLayoutMap(),
+        );
+    } catch (_error) {
+        // The API may be unavailable inside a webview even when the browser
+        // implements it. The school environment is Windows with a German
+        // keyboard, so that is the deliberately quiet fallback.
+        return shortcutFallbackEnvironment.keyboardLayout;
+    }
+}
+
+function shortcutKeys(name) {
+    const commandKey = shortcutEnvironment.os === "mac" ? "Cmd" : "Strg";
+
+    switch (name) {
+        case "toggle-line-comment":
+            return [
+                commandKey,
+                shortcutEnvironment.keyboardLayout === "us" ? "/" : "#",
+            ];
+        case "add-cursor-down":
+            if (shortcutEnvironment.os === "linux") {
+                return ["Strg", "Shift", "↓"];
+            }
+            if (shortcutEnvironment.os === "mac") {
+                return ["Cmd", "Alt", "↓"];
+            }
+            return ["Strg", "Alt", "Shift", "↓"];
+        case "add-cursor-up":
+            if (shortcutEnvironment.os === "linux") {
+                return ["Strg", "Shift", "↑"];
+            }
+            if (shortcutEnvironment.os === "mac") {
+                return ["Cmd", "Alt", "↑"];
+            }
+            return ["Strg", "Alt", "Shift", "↑"];
+        default:
+            return [];
+    }
+}
+
+function updateShortcutHints() {
+    for (const element of document.querySelectorAll(
+        "#instruction [data-shortcut]",
+    )) {
+        const keys = shortcutKeys(element.dataset.shortcut);
+        element.innerHTML = keys
+            .map(key => `<key>${escapeHtml(key)}</key>`)
+            .join(" + ");
+    }
+}
+
+async function refreshKeyboardLayout() {
+    shortcutEnvironment.keyboardLayout = await detectKeyboardLayout();
+    updateShortcutHints();
+}
+
+function initializeShortcutEnvironment() {
+    shortcutEnvironment.os = detectClientOperatingSystem();
+    updateShortcutHints();
+
+    // Start with the Windows/German fallback immediately, then improve it
+    // asynchronously if the browser exposes the Keyboard Map API.
+    void refreshKeyboardLayout();
+
+    if (navigator.keyboard?.addEventListener) {
+        navigator.keyboard.addEventListener("layoutchange", () => {
+            void refreshKeyboardLayout();
+        });
+    }
+}
+
 function nop() { }
 
 let handleOnDidChangeTextDocument = nop;
@@ -115,6 +239,7 @@ window.addEventListener("message", event => {
                 // Tutorial files are bundled with the extension and act as small,
                 // deliberately flexible exercise plug-ins.
                 eval(message.step.script ?? "");
+                updateShortcutHints();
                 applySnapshot(message.snapshot);
             } catch (error) {
                 console.error(error);
@@ -368,6 +493,8 @@ function clickSection(n) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+    initializeShortcutEnvironment();
+
     let number = 0;
     const tbody = document.querySelector("table.toc tbody");
     for (const section of sections.sections) {

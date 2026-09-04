@@ -26,6 +26,17 @@ Die vollständige inhaltliche Übersicht steht in [`CURRICULUM.md`](CURRICULUM.m
 
 Die Anzeigesprache von VS Code und die Tastaturbelegung sind zwei getrennte Einstellungen. Eine deutsche Oberfläche ist für den Unterricht sinnvoll, behebt aber keine vertauschten Tastenkombinationen.
 
+Einige Tastenkombinationen im Tutorial werden abhängig von der Client-Umgebung
+angezeigt. Das Webview erkennt Windows, Linux und macOS aus den Browserdaten. Wo
+die Keyboard Map API verfügbar ist, unterscheidet es außerdem eine deutsche von
+einer US-Tastaturbelegung. Änderungen der Tastaturbelegung werden über das
+`layoutchange`-Ereignis während eines laufenden Tutorials übernommen.
+
+Die Erkennung ist rein optional. Ausgangspunkt und Fallback sind Windows mit
+deutscher Tastaturbelegung; erfolgreich erkannte Teile der Umgebung überschreiben
+diese Vorgabe unabhängig voneinander. Im Tutorial wird immer nur die für die
+aktuell erkannte Umgebung gewählte Tastenkombination angezeigt.
+
 Für Linux-Arbeitsplätze und VS Code Web sollte die deutsche Tastaturbelegung bereits aktiv sein, bevor der Editor geöffnet wird. Falls VS Code bei Tastenkombinationen weiterhin die physische US-Tastenposition verwendet (zum Beispiel `Alt+Y` statt `Alt+Z`), empfiehlt sich in den zentral bereitgestellten Benutzereinstellungen:
 
 ```json

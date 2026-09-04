@@ -49,6 +49,40 @@ suite("Hackschule Keyboard Tutorial", () => {
         }
     });
 
+    test("environment-sensitive shortcuts use semantic placeholders", () => {
+        const sections = readSections();
+        const shortcutNames = new Set();
+
+        for (const section of sections.sections) {
+            for (const step of section.steps) {
+                const html = fs.readFileSync(
+                    path.join(tutorialRoot, `${step.key}.html`),
+                    "utf8",
+                );
+
+                for (const match of html.matchAll(
+                    /data-shortcut="([^"]+)"/g,
+                )) {
+                    shortcutNames.add(match[1]);
+                }
+
+                assert.ok(
+                    !html.includes("<key>Strg</key> + <key>/</key>"),
+                    `${step.key} hard-codes the line-comment shortcut`,
+                );
+            }
+        }
+
+        assert.deepStrictEqual(
+            Array.from(shortcutNames).sort(),
+            [
+                "add-cursor-down",
+                "add-cursor-up",
+                "toggle-line-comment",
+            ],
+        );
+    });
+
     test("every tutorial fixture referenced from YAML exists", () => {
         const sections = readSections();
 
