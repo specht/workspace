@@ -5,6 +5,7 @@ require './include/authentication.rb'
 require './include/database_provisioning.rb'
 require './include/trusted_template.rb'
 require './include/tutorial_screenshots.rb'
+require './include/test_workspace_package.rb'
 require './include/workspace_credentials.rb'
 require './include/workspace_runtime.rb'
 require 'base64'
@@ -243,6 +244,7 @@ class Main < Sinatra::Base
     #   HS_TIMEOUT_NGINX_RELOAD
     #   HS_TIMEOUT_CHOWN
     #   HS_TIMEOUT_TAR
+    #   HS_TIMEOUT_GIT
     #   HS_TIMEOUT_DOCKER_RUN
     #   HS_TIMEOUT_DOCKER_KILL
     #
@@ -265,6 +267,7 @@ class Main < Sinatra::Base
         :nginx_reload => timeout_seconds('HS_TIMEOUT_NGINX_RELOAD', 10),
         :chown => timeout_seconds('HS_TIMEOUT_CHOWN', 120),
         :tar => timeout_seconds('HS_TIMEOUT_TAR', 60),
+        :git => timeout_seconds('HS_TIMEOUT_GIT', 120),
         :docker_run => timeout_seconds('HS_TIMEOUT_DOCKER_RUN', 60),
         :docker_kill => timeout_seconds('HS_TIMEOUT_DOCKER_KILL', 10),
     }
@@ -2798,6 +2801,44 @@ class Main < Sinatra::Base
         File.chown(WORKSPACE_UID, WORKSPACE_GID, path) if File.exist?(path)
     end
 
+    def initialize_test_git(container_name, workspace_path, email)
+        pending_path = File.join(workspace_path, '.test_git_pending')
+        return false unless File.exist?(pending_path)
+
+        git_mode = TestWorkspacePackage.git_mode(workspace_path)
+        return false if git_mode == 'none'
+
+        display_name = (@@invitations[email] || {})[:name] || email.split('@').first
+        git = lambda do |*args|
+            command = [
+                'docker', 'exec', '-u', '1000:1000',
+                "hs_code_#{container_name}",
+                'git', '-C', '/workspace', *args,
+            ].map { |part| Shellwords.escape(part.to_s) }.join(' ')
+            shell_ok(command, :timeout => shell_timeout(:git))
+        end
+
+        git.call('init', '-b', 'main') if git_mode == 'fresh'
+        git.call('config', '--local', 'user.name', display_name)
+        git.call('config', '--local', 'user.email', email)
+        git.call('config', '--local', 'commit.gpgSign', 'false')
+
+        exclude_path = TestWorkspacePackage.write_git_exclude(workspace_path)
+        chown_user_file(exclude_path)
+
+        if git_mode == 'fresh'
+            git.call('add', '-A')
+            git.call('commit', '--allow-empty', '-m', 'Ausgangszustand')
+        end
+
+        FileUtils.rm_f(pending_path)
+        initialized_path = File.join(workspace_path, '.test_git_init')
+        File.open(initialized_path, 'w') do |_f|
+        end
+        chown_user_file(initialized_path)
+        true
+    end
+
     def start_server(email, test_tag = nil, server_tag: nil, instance_tag: test_tag)
         email_with_test_tag = "#{email}#{instance_tag}"
         container_name = fs_tag_for_email(email_with_test_tag)
@@ -3053,9 +3094,7 @@ class Main < Sinatra::Base
 
             unless File.exist?(vscode_settings_path)
                 File.open(vscode_settings_path, 'w') do |f|
-                    config = {}
-                    config['workbench.colorTheme'] = 'Tomorrow Night Blue' if test_tag
-                    f.puts JSON.pretty_generate(config)
+                    f.puts JSON.pretty_generate({})
                 end
             end
 
@@ -3124,7 +3163,9 @@ class Main < Sinatra::Base
                         RETURN f.sha1;
                     END_OF_QUERY
 
-                    # Unpack files from archive.
+                    # Unpack files from archive. Git handling is package-controlled:
+                    # fresh repositories are created by Workspace, preserve keeps an
+                    # uploaded repository intact, and none leaves Git completely alone.
                     with_timing("start_server #{container_name}: unpack test archive") do
                         shell_ok(
                             "tar xf /internal/test_archives/#{sha1} -C #{workspace_path}",
@@ -3142,24 +3183,34 @@ class Main < Sinatra::Base
                         )
                     end
 
+                    git_mode = TestWorkspacePackage.validate_git_layout!(workspace_path)
+                    package_vscode_config = TestWorkspacePackage.vscode_config(workspace_path)
+                    unless package_vscode_config.empty?
+                        vscode_config = JSON.parse(File.read(vscode_settings_path))
+                        vscode_config.merge!(package_vscode_config)
+
+                        File.open(vscode_settings_path, 'w') do |f|
+                            f.write JSON.pretty_generate(vscode_config)
+                        end
+                        chown_user_file.call(vscode_settings_path)
+                    end
+
+                    # Git is initialized/configured after the code-server container is
+                    # running so repository files are created directly as UID/GID 1000.
+                    # git.mode: none deliberately skips all Workspace Git handling.
+                    unless git_mode == 'none'
+                        git_pending_path = File.join(workspace_path, '.test_git_pending')
+                        File.open(git_pending_path, 'w') do |_f|
+                        end
+                        chown_user_file.call(git_pending_path)
+                    end
+
+                    # Only mark package extraction complete after its configuration was
+                    # parsed successfully. A malformed config can therefore be fixed and
+                    # retried without leaving a half-initialized test workspace.
                     File.open(test_init_mark_path, 'w') do |_f|
                     end
                     chown_user_file.call(test_init_mark_path)
-
-                    # Check if we have a config file in the archive.
-                    workspace_config_path = "#{workspace_path}/.workspace/config.yaml"
-                    if File.exist?(workspace_config_path)
-                        config = YAML.load(File.read(workspace_config_path))
-                        if config['vscode_config']
-                            vscode_config = JSON.parse(File.read(vscode_settings_path))
-                            vscode_config.merge!(config['vscode_config'])
-
-                            File.open(vscode_settings_path, 'w') do |f|
-                                f.write vscode_config.to_json
-                            end
-                            chown_user_file.call(vscode_settings_path)
-                        end
-                    end
                 end
             end
 
@@ -3184,7 +3235,18 @@ class Main < Sinatra::Base
                     :timeout => shell_timeout(:docker_run),
                 )
             end
+        end
 
+        needs_nginx_refresh = !state[:running]
+        git_pending_path = File.join(workspace_path, '.test_git_pending')
+        if test_tag && File.exist?(git_pending_path)
+            with_timing("start_server #{container_name}: initialize test git") do
+                initialize_test_git(container_name, workspace_path, email)
+            end
+            needs_nginx_refresh = true
+        end
+
+        if needs_nginx_refresh
             with_timing("start_server #{container_name}: refresh nginx") do
                 Main.refresh_nginx_config()
             end
@@ -4317,8 +4379,8 @@ class Main < Sinatra::Base
     post '/api/get_assigned_users_for_test' do
         assert(teacher_logged_in?)
         data = parse_request_data(:required_keys => [:tag])
-        emails = neo4j_query(<<~END_OF_STRING, {:tag => data[:tag]}).map { |x| x['u.email'] }
-            MATCH (u:User)-[:TAKES]->(t:Test {tag: $tag})
+        emails = neo4j_query(<<~END_OF_STRING, {:tag => data[:tag], :teacher_email => @session_user[:email]}).map { |x| x['u.email'] }
+            MATCH (:User {email: $teacher_email})<-[:BELONGS_TO]-(t:Test {tag: $tag})<-[:TAKES]-(u:User)
             RETURN u.email;
         END_OF_STRING
         respond(:emails => emails)
@@ -4465,24 +4527,75 @@ class Main < Sinatra::Base
     end
 
     def test_results_html(emails, instance_tag)
+        printed_at = Time.now.strftime("%d.%m.%Y %H:%M Uhr")
+        document_title = if emails.size == 1
+            display_name = (@@invitations[emails.first] || {})[:name] || emails.first
+            "Leistungsüberprüfung – #{display_name}"
+        else
+            'Leistungsüberprüfung – Ergebnisse'
+        end
+
         StringIO.open do |io|
             io.puts <<~END_OF_STRING
                 <!DOCTYPE html>
                 <html>
                 <head>
+                    <meta charset="utf-8">
+                    <title>#{CGI.escapeHTML(document_title)}</title>
                     <link rel="stylesheet" href="/include/fonts.css?#{CACHE_BUSTER}">
                     <style>
+                        @page {
+                            margin: 12mm;
+                        }
                         body {
                             font-family: '0xProto Nerd Font Mono', monospace;
-                            font-size: 12pt;
+                            font-size: 10pt;
+                        }
+                        .student + .student {
+                            break-before: page;
+                            page-break-before: always;
+                        }
+                        .student-heading {
+                            border-bottom: 2px solid #333;
+                            margin: 0 0 1em;
+                            padding-bottom: 0.35em;
+                        }
+                        .file {
+                            margin: 0 0 1.25em;
+                        }
+                        .file-header {
+                            align-items: baseline;
+                            background: #ddd;
+                            break-after: avoid;
+                            page-break-after: avoid;
+                            display: flex;
+                            font-weight: bold;
+                            gap: 1em;
+                            padding: 0.2em 0.35em;
+                        }
+                        .file-meta {
+                            flex-grow: 1;
+                            text-align: right;
                         }
                         pre {
                             font-family: '0xProto Nerd Font Mono', monospace;
-                            font-size: 12pt;
+                            font-size: 10pt;
+                            margin: 0.35em 0 0;
+                            overflow-wrap: anywhere;
                             white-space: pre-wrap;
                         }
-                        .file {
-                            page-break-before: always;
+                        .line-number {
+                            border-right: 1px solid #aaa;
+                            color: #777;
+                            display: inline-block;
+                            margin-right: 0.7em;
+                            padding-right: 0.7em;
+                            text-align: right;
+                            width: 3.5em;
+                        }
+                        .empty {
+                            color: #666;
+                            font-family: sans-serif;
                         }
                     </style>
                 </head>
@@ -4492,23 +4605,43 @@ class Main < Sinatra::Base
 
             emails.each do |email|
                 container_name = fs_tag_for_email("#{email}#{instance_tag}")
+                workspace_path = "/user/#{container_name}/workspace"
                 display_name = (@@invitations[email] || {})[:name] || email
-                Dir["/user/#{container_name}/workspace/*"].each do |path|
-                    if ['txt', 'dart', 'asm'].include?(path.split('.').last)
-                        io.puts "<div class='file'>"
-                        io.puts "<div style='display: flex; background-color: #ccc; padding: 0.25em 0.25em; font-weight: bold;'>"
-                        io.puts "<div>#{File.basename(path)}</div>"
-                        io.puts "<div style='flex-grow: 1; text-align: right;'>#{display_name} | #{Time.now.strftime("%d.%m.%Y %H:%M Uhr")}</div>"
-                        io.puts "</div>"
-                        io.puts "<pre>"
-                        lines = File.read(path).split("\n")
-                        lines.each_with_index do |line, index|
-                            io.puts sprintf("<span style='color: #888; border-right: 1px solid #888; padding-right: 1em;'>%4d</span> %s", index + 1, CGI.escapeHTML(line))
-                        end
-                        io.puts "</pre>"
-                        io.puts "</div>"
-                    end
+                escaped_name = CGI.escapeHTML(display_name)
+
+                io.puts "<section class='student'>"
+                io.puts "<h1 class='student-heading'>#{escaped_name}</h1>"
+
+                unless File.directory?(workspace_path)
+                    io.puts "<p class='empty'>Dieser Prüfungs-Workspace wurde noch nicht geöffnet.</p>"
+                    io.puts "</section>"
+                    next
                 end
+
+                files = TestWorkspacePackage.printable_files(workspace_path)
+                if files.empty?
+                    io.puts "<p class='empty'>Keine druckbaren Dateien gefunden.</p>"
+                end
+
+                files.each do |relative_path, path|
+                    io.puts "<div class='file'>"
+                    io.puts "<div class='file-header'>"
+                    io.puts "<div>#{CGI.escapeHTML(relative_path)}</div>"
+                    io.puts "<div class='file-meta'>#{escaped_name} | #{printed_at}</div>"
+                    io.puts "</div>"
+                    io.puts "<pre>"
+                    File.foreach(path).with_index(1) do |line, index|
+                        io.puts sprintf(
+                            "<span class='line-number'>%4d</span>%s",
+                            index,
+                            CGI.escapeHTML(line.chomp),
+                        )
+                    end
+                    io.puts "</pre>"
+                    io.puts "</div>"
+                end
+
+                io.puts "</section>"
             end
 
             io.puts "</body>"
@@ -4525,6 +4658,16 @@ class Main < Sinatra::Base
             MATCH (u:User)-[:TAKES]->(t:Test {tag: $test_tag})-[:BELONGS_TO]->(:User {email: $email})
             RETURN u.email;
         END_OF_STRING
+
+        requested_email = params['email'].to_s
+        unless requested_email.empty?
+            assert(emails.include?(requested_email), 'student is not assigned to this test')
+            emails = [requested_email]
+        end
+
+        emails.sort_by! do |email|
+            ((@@invitations[email] || {})[:name] || email).downcase
+        end
         respond_raw_with_mimetype(test_results_html(emails, test_tag), 'text/html')
     end
 

@@ -114,6 +114,9 @@ Für zentrale Workspace-Abläufe gibt es End-to-End- und Toolchain-Tests mit Pla
 
 Die Einrichtung und Ausführung der Tests ist in [`e2e/README.md`](e2e/README.md) beschrieben.
 
+Für die Erstellung von Paketen für Leistungsüberprüfungen gibt es eine eigene
+[Dokumentation](docs/test-workspace-packages.md).
+
 ## Betrieb auf einem Server
 
 Der Workspace ist für den Betrieb auf einem Server für eine Schule konzipiert. Die Installation funktioniert im Wesentlichen genau wie die lokale Installation, aber es gibt einen wichtigen Punkt zu beachten: Der Webserver hat vollen Zugriff auf Docker, da er Container starten und stoppen können muss. Das bedeutet, dass der Workspace isoliert auf einem eigenen Server laufen sollte.

@@ -228,21 +228,24 @@ test('teacher profile shows the permission-protected teacher section', async ({
 
   await expect(page.locator('#bu_upload_test_archive')).toBeVisible();
   await expect(
-    page.getByRole('columnheader', { name: 'Test', exact: true }),
+    page.getByRole('columnheader', { name: 'Vorschau', exact: true }),
   ).toBeVisible();
-  const testButton = page.getByRole('button', { name: 'Testen', exact: true });
+  const testButton = page.getByRole('button', { name: 'Workspace', exact: true });
   await expect(testButton).toBeVisible();
   await expect(
-    page.getByRole('button', { name: 'Druck testen', exact: true }),
+    page.getByRole('button', { name: 'Druckansicht', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Ergebnisse', exact: true }),
   ).toBeVisible();
 
   await testButton.click();
   const testDemoModal = page.locator('#__template_modal');
   await expect(testDemoModal).toContainText(
-    'alle bisherigen Dateien und Datenbankinhalte zurückgesetzt',
+    'vollständig von deinem normalen Workspace',
   );
   await expect(testDemoModal).toContainText(
-    'werden dabei nicht verändert.',
+    'nur deine bisherigen Vorschau-Dateien und Vorschau-Datenbanken zurückgesetzt',
   );
   expect(demoStartRequests).toBe(0);
 

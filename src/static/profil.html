@@ -368,6 +368,47 @@
                             Hier kannst du ein komprimiertes Verzeichnis hochladen, das du deinen Schülerinnen und Schülern in einer Leistungsüberprüfung
                             zur Verfügung stellen möchtest.
                         </p>
+                        <details class="mb-3">
+                            <summary>Workspace-Paket erstellen</summary>
+                            <p class="mt-2">
+                                Der Inhalt des Archivs wird direkt nach <code>/workspace</code> entpackt. Standardmäßig wird daraus ein neues
+                                lokales Git-Repository mit dem Commit <code>Ausgangszustand</code>. Für Git-Aufgaben kann ein vorhandenes
+                                Repository stattdessen vollständig erhalten oder Git ganz dem Prüfling überlassen werden.
+                            </p>
+                            <p>
+                                Optional steuert <code>.workspace/config.yaml</code> die Prüfungsfarbe, die Druckausgabe und zusätzliche
+                                VS-Code-Einstellungen:
+                            </p>
+                            <pre>workspace_package: 1
+
+exam:
+  color: blue
+
+git:
+  mode: fresh
+
+print:
+  exclude:
+    - "tests/**"
+    - "**/test_runner.*"
+
+vscode_config: {}</pre>
+                            <p>
+                                <code>git.mode</code> ist standardmäßig <code>fresh</code>. Mit <code>preserve</code> bleibt ein mitgeliefertes
+                                <code>.git</code>-Verzeichnis samt Historie, Branches und Index erhalten; <code>none</code> nimmt überhaupt keine
+                                Git-Einrichtung vor. Name und E-Mail-Adresse werden bei <code>fresh</code> und <code>preserve</code> repository-lokal gesetzt.
+                            </p>
+                            <p>
+                                <code>exam.color</code> kann <code>blue</code> oder <code>red</code> sein. Ohne <code>print.include</code>
+                                werden alle UTF-8-Textdateien rekursiv berücksichtigt; mit <code>print.exclude</code> lassen sich Hilfsdateien
+                                wie Test-Runner auslassen. Interne Workspace-Dateien werden automatisch nicht gedruckt.
+                            </p>
+                            <p class="mb-0">
+                                Wichtig: Packe den <em>Inhalt</em> des Arbeitsverzeichnisses einschließlich <code>.workspace</code>, nicht
+                                ein zusätzliches übergeordnetes Verzeichnis. Ein vorhandenes <code>.git</code> ist nur bei
+                                <code>git.mode: preserve</code> zulässig.
+                            </p>
+                        </details>
                         <div class="table-responsive mt-3">
                             <table class="table table-sm" id="table_my_test_archives">
                                 <thead>
@@ -378,7 +419,7 @@
                                         <th>Löschen</th>
                                         <th>Gruppe</th>
                                         <th>Status</th>
-                                        <th>Test</th>
+                                        <th>Vorschau</th>
                                         <th>Ergebnisse</th>
                                     </tr>
                                 </thead>
@@ -409,8 +450,8 @@
                     let row = $(`<tr>`).appendTo($('#table_my_test_archives tbody'));
                     row.data('tag', entry.tag);
                     $(`<td>`).html(`<code>${entry.tag.substr(0, 12)}</code>`).appendTo(row);
-                    $(`<td>`).html(`${entry.filename}`).appendTo(row);
-                    $(`<td>`).html(`${entry.size}`).appendTo(row);
+                    $(`<td>`).text(entry.filename).appendTo(row);
+                    $(`<td>`).text(entry.size).appendTo(row);
                     let bu_delete = $(`<button>`).html(`<i class='bi bi-trash-fill'></i>Löschen`).addClass('btn btn-sm btn-danger');
                     bu_delete.appendTo($(`<td>`).appendTo(row));
                     let bu_group = $(`<button>`).html(`<i class='bi bi-people-fill'></i>${entry.count} Person${entry.count == 1 ? '' : 'en'}`).addClass('btn btn-sm btn-secondary');
@@ -426,18 +467,16 @@
                         let td = $(`<td>`).appendTo(row);
                         td.append(bu_start_stop);
                     }
-                    let bu_demo = $(`<button>`).html(`<i class='bi bi-box-arrow-up-right'></i>Testen`).addClass('btn btn-sm btn-primary');
-                    let bu_demo_pdf = $(`<button>`).html(`<i class='bi bi-printer-fill'></i>Druck testen`).addClass('btn btn-sm btn-secondary');
+                    let bu_demo = $(`<button>`).html(`<i class='bi bi-box-arrow-up-right'></i>Workspace`).addClass('btn btn-sm btn-primary');
+                    let bu_demo_pdf = $(`<button>`).html(`<i class='bi bi-printer-fill'></i>Druckansicht`).addClass('btn btn-sm btn-secondary');
                     let td_demo = $(`<td>`).appendTo(row);
-                    td_demo.append(bu_demo);
-                    td_demo.append('&nbsp;');
-                    td_demo.append(bu_demo_pdf);
-                    let bu_results_pdf = $(`<button>`).html(`<i class='bi bi-printer-fill'></i>Drucken`).addClass('btn btn-sm btn-success');
+                    let preview_group = $(`<div class='btn-group btn-group-sm' role='group' aria-label='Vorschau'>`);
+                    preview_group.append(bu_demo);
+                    preview_group.append(bu_demo_pdf);
+                    td_demo.append(preview_group);
+                    let bu_results_pdf = $(`<button>`).html(`<i class='bi bi-printer-fill'></i>Ergebnisse`).addClass('btn btn-sm btn-success');
                     let td = $(`<td>`).appendTo(row);
                     td.append(bu_results_pdf);
-                    td.append('&nbsp;');
-                    // let bu_results_archive = $(`<button>`).html(`<i class='bi bi-file-earmark-zip-fill'></i>ZIP`).addClass('btn btn-sm btn-success');
-                    // td.append(bu_results_archive);
                     bu_delete.on('click', function(e) {
                         showTemplateModal('Leistungsüberprüfung löschen', 'Bist du sicher, dass du diese Leistungsüberprüfung löschen möchtest?',
                             "<i class='bi bi-trash-fill'></i>Löschen", 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
@@ -482,11 +521,11 @@
                     });
                     bu_demo.on('click', function(e) {
                         let text = `
-                            <p>Für die Testvorschau werden <strong>alle bisherigen Dateien und Datenbankinhalte zurückgesetzt</strong>.</p>
-                            <p>Anschließend öffnet sich ein frischer Prüfungs-Workspace – genau so, wie ihn Schülerinnen und Schüler beim ersten Start sehen.</p>
-                            <p>Die echten Prüfungs-Workspaces der Schülerinnen und Schüler sowie dein eigener Workspace werden dabei nicht verändert.</p>
+                            <p>Die Workspace-Vorschau ist vollständig von deinem normalen Workspace und von den echten Prüfungs-Workspaces getrennt.</p>
+                            <p>Beim Öffnen werden <strong>nur deine bisherigen Vorschau-Dateien und Vorschau-Datenbanken zurückgesetzt</strong>.</p>
+                            <p>Du erhältst anschließend genau den frischen Workspace, den auch Schülerinnen und Schüler beim ersten Start sehen.</p>
                         `;
-                        showTemplateModal('Frischen Prüfungs-Workspace öffnen', text,
+                        showTemplateModal('Workspace-Vorschau öffnen', text,
                             "<i class='bi bi-box-arrow-up-right'></i>Frischen Workspace öffnen", 'btn-primary',
                             "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
                                 bu_demo.prop('disabled', true);
@@ -505,7 +544,52 @@
                         window.open(`/api/pdf_for_test_demo/${entry.tag}`, '_blank');
                     });
                     bu_results_pdf.on('click', function(e) {
-                        window.open(`/api/pdf_for_test/${entry.tag}`, '_blank');
+                        api_call('/api/get_assigned_users_for_test', {tag: entry.tag}, function(data2) {
+                            if (!data2.success) return;
+
+                            let emails = data2.emails.slice();
+                            emails.sort(function(a, b) {
+                                let name_a = (invitations[a] || {}).name || a;
+                                let name_b = (invitations[b] || {}).name || b;
+                                return name_a.localeCompare(name_b, 'de');
+                            });
+
+                            showTemplateModal(
+                                'Ergebnisse drucken',
+                                `<p>Wähle eine Person oder drucke alle Ergebnisse gemeinsam.</p><div id='test_result_users_here'></div>`,
+                                "<i class='bi bi-printer-fill'></i>Alle drucken",
+                                'btn-success',
+                                "<i class='bi bi-x-lg'></i>Schließen",
+                                'btn-secondary',
+                                function() {
+                                    if (emails.length === 0) return false;
+                                    window.open(`/api/pdf_for_test/${entry.tag}`, '_blank');
+                                }
+                            );
+
+                            let container = $('#test_result_users_here');
+                            if (emails.length === 0) {
+                                container.append($('<p class="text-muted mb-0">').text('Dieser Leistungsüberprüfung ist noch niemand zugeordnet.'));
+                                $('#__template_modal .modal-footer .btn').eq(0).prop('disabled', true);
+                                return;
+                            }
+
+                            for (let email of emails) {
+                                let name = (invitations[email] || {}).name || email;
+                                let button = $('<button type="button">')
+                                    .addClass('btn btn-sm btn-outline-secondary')
+                                    .css({margin: '0.15rem 0.3rem 0.15rem 0'})
+                                    .html("<i class='bi bi-printer-fill'></i>")
+                                    .append(document.createTextNode(name));
+                                button.on('click', function() {
+                                    window.open(
+                                        `/api/pdf_for_test/${entry.tag}?email=${encodeURIComponent(email)}`,
+                                        '_blank'
+                                    );
+                                });
+                                container.append(button);
+                            }
+                        });
                     });
                 }
             }
