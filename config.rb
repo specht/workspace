@@ -153,7 +153,6 @@ if PROFILE.include?(:neo4j)
     }
     docker_compose[:services][:neo4japp][:environment] = [
         'NEO4J_AUTH=none',
-	'NEO4J_metrics_csv_enabled=false',
         # 'NEO4J_dbms_db_timezone=SYSTEM',
         # 'NEO4J_dbms_allow__upgrade=true',
         # 'NEO4J_metrics=false',
@@ -188,7 +187,6 @@ docker_compose[:services][:neo4j] = {
         'NEO4J_AUTH' => "neo4j/#{NEO4J_ROOT_PASSWORD}",
         'NEO4J_EDITION' => 'enterprise',
         'NEO4J_dbms_security_auth__enabled' => 'true',
-	'NEO4J_metrics_csv_enabled' => "false",
     },
 }
 

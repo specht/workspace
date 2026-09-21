@@ -52,6 +52,8 @@ Im Workspace ist bereits die Erweiterung »Live Server« installiert. Unten rech
 Tipp: Ziehe deinen Workspace und die Vorschau nebeneinander, damit du deine Änderungen live sehen kannst.
 </div>
 
+Unten links in der Vorschau findest du die Buttons »Anaglyph 3D« (für die Rot-Cyan-Brille), »Achsen« (zum Einblenden der Koordinatenachsen) und »Reset Camera« (um die Ansicht zurückzusetzen).
+
 ## Geometrische Objekte
 
 Du solltest einen Würfel sehen, der in der Mitte des Bildschirms schwebt. Benutze die Maus, um die Szene zu drehen und zu zoomen.
@@ -352,6 +354,8 @@ stroke = off
 Wenn du möchtest, kannst du auch bunte Farben verwenden. Gib dafür statt einer Zahl von 0.0 bis 1.0 einfach einen HTML-Farbcode wie z. B. <code>#4aa03f</code> an.
 </div>
 
+Du kannst auch die drei Farbanteile Rot, Grün und Blau einzeln angeben. Jeder Wert liegt zwischen `0` und `1`, z. B. `fill = 1, 0.5, 0` für Orange. Mit `strokeWeight = 4` kannst du außerdem die Dicke der Konturen verändern.
+
 ## Übungsaufgaben
 
 Versuche, eine oder mehrere der folgenden Szenen zu erstellen:
@@ -437,6 +441,16 @@ fill = #f9b935
 <div style='text-align: center; margin: 1em 0;'>
 <img src='hello-shade.webp' style='max-width: 100%; min-height: 15em; object-fit: cover; object-position: center;' alt='Der gelb schattierte Schriftzug „Hello!“ schwebt im Raum.'>
 </div>
+
+Bei 3D-Text kannst du zusätzlich die Schriftgröße mit `size`, die Tiefe mit `depth` und die horizontale Ausrichtung mit `align` (`left`, `center` oder `right`) einstellen:
+
+```ini
+text = Hallo Welt!
+size = 60
+depth = 12
+align = left
+shade = on
+```
 
 ## 3D-Modelle
 
@@ -577,7 +591,7 @@ Um eine Schleife zu verwenden, musst du dich genau an die Syntax halten. Dabei g
 - Eine Schleife beginnt mit `loop` und endet mit `end`.
 - Du musst eine Variable benennen, z. B. `x`.
 - Du musst mit `from` angeben, mit welchem Wert du beginnen möchtest.
-- Du musst mit `end` angeben, bis zu welchem Wert die Schleife laufen soll.
+- Du musst mit `to` angeben, bis zu welchem Wert die Schleife laufen soll.
 - Du _kannst_ mit `step` angeben, in welchen Schritten die Variable weiterlaufen soll. Wenn du `step` nicht angibst, wird eine Schrittgröße von 1 angenommen.
 
 Du kannst die oben abgebildete Schleife auch so formulieren:
@@ -591,7 +605,7 @@ end
 </pre>
 
 <div class='hint'>
-Warum funktioniert das? Wenn du die Werte 1 bis 3 in den Ausdruck (x - 2) * 100 einsetzt, siehst du, dass genau dieselben Werte (-100, 0 und 100) herauskommen. Du kannst aber grnauso auch die erste Schleife verwenden, falls du das leichter findest. Für den Computer macht es keinen Unterschied.
+Warum funktioniert das? Wenn du die Werte 1 bis 3 in den Ausdruck (x - 2) * 100 einsetzt, siehst du, dass genau dieselben Werte (-100, 0 und 100) herauskommen. Du kannst aber genauso auch die erste Schleife verwenden, falls du das leichter findest. Für den Computer macht es keinen Unterschied.
 </div>
 
 ### Verschachtelte Schleifen
@@ -622,4 +636,62 @@ Achtung: Achte darauf, bei verschachtelten Schleifen verschiedene Variablen für
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='27-cubes-loop.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;' alt='27 Würfel bilden ein räumliches Gitter aus drei mal drei mal drei Würfeln.'>
+</div>
+
+## Gruppen
+
+Bisher hast du jeden Körper einzeln verschoben, gedreht und skaliert. Mit einer **Gruppe** kannst du mehrere Körper gemeinsam bewegen. Schreibe dazu `group`, dann die Transformationen der Gruppe und anschließend die dazugehörigen Objekte. `end` beendet die Gruppe:
+
+```ini
+shape = grid
+
+group
+    rotate = 0, t * 30, 0
+    move = 0, 50, 0
+
+    shape = box
+    move = -100, -25, 0
+
+    shape = sphere
+    move = 100, 0, 0
+end
+```
+
+Hier stehen Würfel und Kugel auf entgegengesetzten Seiten des Gruppenmittelpunkts. Beide drehen sich gemeinsam um diesen Mittelpunkt, während die gesamte Gruppe nach rechts verschoben ist. Die `move`-Befehle bei den einzelnen Körpern bestimmen dagegen ihre Position **innerhalb** der Gruppe.
+
+<div class='hint'>
+Tipp: Du kannst auch Gruppen in Gruppen anlegen oder eine ganze Gruppe in einer Schleife wiederholen. Achte darauf, jede Gruppe mit einem eigenen <code>end</code> zu schließen.
+</div>
+
+## Eigene Formen definieren
+
+Wenn du dieselbe zusammengesetzte Figur mehrmals verwenden möchtest, musst du sie nicht jedes Mal neu schreiben. Mit `define` kannst du ihr einen Namen geben und sie danach wie eine Form mit `shape` verwenden. Zum Beispiel bauen wir einen Baum aus einem Stamm und einer Baumkrone:
+
+```ini
+define baum
+    shape = cylinder
+    scale = 0.2, 1, 0.2
+    move = 0, 50, 0
+    fill = #865c39
+
+    shape = cone
+    scale = 1.2
+    move = 0, 145, 0
+    fill = #2b8f45
+end
+
+shape = grid
+
+shape = baum
+move = -120, 0, 0
+
+shape = baum
+scale = 0.7
+move = 120, 0, 0
+```
+
+Die Definition zwischen `define baum` und `end` beschreibt den Aufbau eines Baums, zeichnet aber selbst noch nichts. Erst `shape = baum` fügt einen Baum in die Szene ein. Die beiden Bäume bestehen aus denselben Einzelteilen, können aber unabhängig voneinander verschoben, gedreht oder skaliert werden.
+
+<div class='hint'>
+Wichtig: Schreibe Transformationen für eine selbst definierte Form direkt unter <code>shape = baum</code>, ohne Leerzeile dazwischen. Eine Leerzeile beendet hier die Angaben für diese Instanz.
 </div>
