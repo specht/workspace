@@ -105,27 +105,45 @@ RUN wget -q \
         /tmp/install-tl.tar.gz \
         /tmp/texlive.profile
 
-# The basic TeX installation is now a separate cached layer: a missing
-# collection or tutorial dependency will not force install-tl to run again.
-# Prefer TeX Live's maintained collections over a long list of .sty names.
-# The four additional font packages cover the tutorial's XCharter Math and
-# legacy mathdesign/Bera examples without installing collection-fontsextra.
+# Keep only the compact official collections used for ordinary LuaLaTeX
+# documents. In particular, collection-latexextra and collection-bibtexextra
+# pull in hundreds/thousands of packages not needed by the tutorial.
+# TeX Live package names are not always the same as .sty names (e.g. tabularx
+# is supplied by latex-tools), so the exceptions below are TeX Live packages.
+# The scheme-basic installation above is a separately cached Docker layer.
 RUN /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/tlmgr install \
         collection-latexrecommended \
-        collection-latexextra \
         collection-fontsrecommended \
         collection-langgerman \
         collection-luatex \
-        collection-mathscience \
-        collection-bibtexextra \
         latexmk biber \
-        mathdesign bera xcharter xcharter-math \
+        fontspec polyglossia unicode-math biblatex siunitx \
+        microtype geometry hyperref parskip titlesec enumitem \
+        tabto-ltx wrapfig setspace fancyhdr framed colortbl subfigure \
+        mathdesign bera caption abstract nextpage listings \
+        xcharter xcharter-math koma-script \
     && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/tlmgr \
         option repository ctan \
     && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/mktexlsr \
     && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/lualatex --version \
     && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/latexmk -v \
     && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/biber --version
+
+# Verify the real tutorial *before* tagging this stage as a reusable toolchain.
+# A missing TeX dependency fails here, before Flutter/Android are built.
+# Keep the clone and generated PDF files out of the resulting image layer.
+ENV PATH="/usr/local/texlive/${TL_YEAR}/bin/x86_64-linux:${PATH}"
+RUN set -eu; \
+    git clone --depth 1 https://github.com/specht/latex-tutorial.git /tmp/latex-tutorial; \
+    cd /tmp/latex-tutorial; \
+    for file in hello.tex Bewerbung.tex CV.tex Ausarbeitung.tex Mathe.tex wpgtr.tex; do \
+        latexmk -lualatex -interaction=nonstopmode -halt-on-error -file-line-error "$file"; \
+        test -s "${file%.tex}.pdf"; \
+    done; \
+    test -s Ausarbeitung.bbl; \
+    grep -Fq mueller2022 Ausarbeitung.bbl; \
+    cd /; \
+    rm -rf /tmp/latex-tutorial
 
 # Do NOT run "tlmgr update --self --all" here.
 # This is a fresh installation already downloaded from CTAN.
