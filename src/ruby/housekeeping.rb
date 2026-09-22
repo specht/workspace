@@ -2,6 +2,7 @@
 
 require 'json'
 require_relative 'include/workspace_runtime'
+require_relative 'include/workspace_activity'
 
 runtime = WorkspaceRuntime::DirectDocker.new(
     :capture => lambda { |command, **_options| `#{command}` },
@@ -35,9 +36,19 @@ running_servers.each do |fs_tag|
         next
     end
 
-    age = now - Dir["/user/#{fs_tag}/**/*", "/user/#{fs_tag}/**/.*"].reject { |x| File.symlink?(x) }.map { |x| File.mtime(x).to_i }.max
-    if age > 60 * 180
-        STDERR.puts "Killing #{fs_tag} => #{age} seconds old"
+    # Background jobs (e.g. an APK decompiler) may write to /workspace
+    # indefinitely without anyone having the editor open. Only code-server's
+    # browser-connection heartbeat and the launch grace period count here.
+    last_activity = WorkspaceActivity.last_connected_at(fs_tag, :now => now)
+    unless last_activity
+        # Fail safe for an unexpected/legacy workspace without either marker.
+        STDERR.puts "Housekeeping: Keeping #{fs_tag}; no launch marker or browser heartbeat"
+        next
+    end
+
+    age = now - last_activity
+    if age > WorkspaceActivity::IDLE_TIMEOUT
+        STDERR.puts "Killing #{fs_tag} => #{age} seconds since browser activity/start"
         runtime.stop_workspace(fs_tag)
     end
 end
