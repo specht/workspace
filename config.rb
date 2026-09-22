@@ -186,6 +186,8 @@ docker_compose[:services][:neo4j] = {
         'NEO4J_ACCEPT_LICENSE_AGREEMENT' => 'yes',
         'NEO4J_AUTH' => "neo4j/#{NEO4J_ROOT_PASSWORD}",
         'NEO4J_EDITION' => 'enterprise',
+        # Disable the default CSV metrics exporter (one growing file per metric/database).
+        'NEO4J_server_metrics_csv_enabled' => 'false',
         'NEO4J_dbms_security_auth__enabled' => 'true',
     },
 }
