@@ -43,6 +43,24 @@
         }
     }
 
+    /* Keep the long list of running users inside its own horizontal scroller. */
+    #active_users_here {
+        max-width: 100%;
+        min-width: 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #active_users_here .workspace-group-table {
+        width: max-content;
+        min-width: 100%;
+    }
+
+    #active_users_here .workspace-group-table th,
+    #active_users_here .workspace-group-table td {
+        white-space: nowrap;
+    }
+
     .user_pill {
         padding: 0 0.2em;
         border-radius: 2px;
@@ -133,8 +151,6 @@
 
 <script>
 
-    var invitations = #{@@invitations.to_json};
-    var group_order = #{@@user_groups.keys.to_json};
     var login_code_expiry_timer = null;
 
     function render_login_codes(lines) {
@@ -269,7 +285,7 @@
                     let shorthand = name.split(/[\s@\.]/).map((x) => x[0]).join('');
                     if (!(group in row_for_group)) {
                         if (Object.keys(row_for_group).length === 0) {
-                            table = $(`<table class='table table-sm'>`);
+                            table = $(`<table class='table table-sm workspace-group-table'>`);
                             let thead = $(`<thead>`).appendTo(table);
                             let row = $(`<tr>`).appendTo(thead);
                             row.append($(`<th>`).text('Group'));

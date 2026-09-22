@@ -3609,6 +3609,16 @@ class Main < Sinatra::Base
         doc.to_html
     end
 
+    # Use the same server-side visibility rule for the initial table and the
+    # live WebSocket updates. A teacher may view only their assigned groups.
+    def workspace_user_visible_to?(email, viewer_email)
+        return false unless email
+        return true if ADMIN_USERS.include?(viewer_email)
+
+        group = @@invitations.dig(email, :group)
+        group && (@@teachers[viewer_email] || Set.new()).include?(group)
+    end
+
     def print_workspaces()
         assert(teacher_logged_in?)
 
@@ -3647,7 +3657,7 @@ class Main < Sinatra::Base
             @@user_group_order.each do |group|
                 sub = StringIO.open do |io2|
                     (@@user_groups[group] || []).each do |email|
-                        next unless (@@teachers[@session_user[:email]] || Set.new()).include?(group) || admin_logged_in? || email == @session_user[:email]
+                        next unless workspace_user_visible_to?(email, @session_user[:email])
                         user_tag = fs_tag_for_email(email)
                         next unless active_users.include?(user_tag)
                         io2.puts "<tr id='tr_hs_code_#{user_tag}'>"
@@ -3750,6 +3760,7 @@ class Main < Sinatra::Base
         if Faye::WebSocket.websocket?(request.env)
             ws = Faye::WebSocket.new(request.env)
 
+            viewer_email = @session_user[:email]
             ws.on(:open) do |event|
                 client_id = request.env['HTTP_SEC_WEBSOCKET_KEY']
                 ws.send({:hello => 'world'})
@@ -3771,6 +3782,7 @@ class Main < Sinatra::Base
                         lines = {}
                         workspace_runtime.workspace_stats.each_pair do |fs_tag, stat_line|
                             email = email_for_tag[fs_tag]
+                            next unless workspace_user_visible_to?(email, viewer_email)
                             lines[fs_tag] = {
                                 :name => (@@invitations[email] || {})[:name],
                                 :group => (@@invitations[email] || {})[:group],
