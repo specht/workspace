@@ -369,12 +369,7 @@ FROM ${CODE_SERVER_IMAGE}
 ARG DEBIAN_FRONTEND=noninteractive
 # These are independently built, locally tagged images. They contain the
 # completed toolchains, so a code-server-only rebuild need not execute the
-# heavy stages above. build-image.sh refreshes each tag before assembling.
-ARG TEXLIVE_SOURCE=hs_code_toolchain_texlive:stable
-ARG FLUTTER_SOURCE=hs_code_toolchain_flutter:stable
-ARG ANDROID_SOURCE=hs_code_toolchain_android:stable
-ARG GRADLE_SOURCE=hs_code_toolchain_gradle:stable
-ARG EMSCRIPTEN_SOURCE=hs_code_toolchain_emscripten:stable
+# heavy stages above. build-toolchains.sh refreshes each tag before assembling.
 
 # --------------------------------------------------------------------
 # Copy the large, stable SDKs/toolchains FIRST.
@@ -383,19 +378,19 @@ ARG EMSCRIPTEN_SOURCE=hs_code_toolchain_emscripten:stable
 # Docker can still reuse these layers.
 # --------------------------------------------------------------------
 
-COPY --link --from=${TEXLIVE_SOURCE} \
+COPY --link --from=hs_code_toolchain_texlive:stable \
     /usr/local/texlive \
     /usr/local/texlive
 
-COPY --link --chmod=a+rwX --from=${FLUTTER_SOURCE} \
+COPY --link --chmod=a+rwX --from=hs_code_toolchain_flutter:stable \
     /opt/flutter \
     /opt/flutter
 
-COPY --link --from=${ANDROID_SOURCE} \
+COPY --link --from=hs_code_toolchain_android:stable \
     /opt/android-sdk \
     /opt/android-sdk
 
-COPY --link --chmod=a+rwX --from=${GRADLE_SOURCE} \
+COPY --link --chmod=a+rwX --from=hs_code_toolchain_gradle:stable \
      /opt/gradle-cache \
      /opt/gradle-cache
 
@@ -404,7 +399,7 @@ COPY --link --chmod=a+rwX --from=${GRADLE_SOURCE} \
 # top-level directories such as daemon/ at runtime.
 RUN chmod 0777 /opt/gradle-cache
 
-COPY --link --from=${EMSCRIPTEN_SOURCE} \
+COPY --link --from=hs_code_toolchain_emscripten:stable \
     /opt/emsdk \
     /opt/emsdk
 
