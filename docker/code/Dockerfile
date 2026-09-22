@@ -107,7 +107,7 @@ RUN wget -q \
         fontspec polyglossia hyphen-german \
         unicode-math luaotfload \
         microtype xcolor geometry hyperref parskip \
-        titlesec enumitem tabularx tabto-ltx wrapfig \
+        titlesec enumitem tabto-ltx wrapfig \
         setspace biblatex siunitx \
         charter fancyhdr framed colortbl subfigure \
         mathdesign bera caption abstract nextpage listings \
