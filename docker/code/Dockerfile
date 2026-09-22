@@ -9,6 +9,11 @@
 # ====================================================================
 
 ARG CODE_SERVER_IMAGE=linuxserver/code-server:4.138.0
+# Pin the toolchain build environment independently of the code-server release.
+# Keep it compatible with the target code-server distribution (notably glibc).
+# Updating CODE_SERVER_IMAGE alone must not rebuild TeX/Flutter/Android/Emscripten.
+# Bump this separately when the underlying Linux distribution changes.
+ARG TOOLCHAIN_BASE_IMAGE=linuxserver/code-server:4.138.0
 
 ARG TL_YEAR=2026
 ARG FLUTTER_VERSION=3.47.0
@@ -47,7 +52,7 @@ ARG BIF_AUTHORING_TOOLS_VERSION=0.2.1
 # Changing normal packages in the final image will NOT reinstall TeX.
 # ====================================================================
 
-FROM ${CODE_SERVER_IMAGE} AS texlive
+FROM ${TOOLCHAIN_BASE_IMAGE} AS texlive
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -77,7 +82,7 @@ RUN wget -q \
         -C /tmp/install-tl \
         --strip-components=1 \
     && printf '%s\n' \
-        'selected_scheme scheme-full' \
+        'selected_scheme scheme-basic' \
         "TEXDIR /usr/local/texlive/${TL_YEAR}" \
         'TEXMFLOCAL /usr/local/texlive/texmf-local' \
         "TEXMFSYSCONFIG /usr/local/texlive/${TL_YEAR}/texmf-config" \
@@ -95,6 +100,25 @@ RUN wget -q \
     && /tmp/install-tl/install-tl \
         -profile /tmp/texlive.profile \
         -no-interaction \
+    && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/tlmgr install \
+        collection-latexrecommended \
+        collection-fontsrecommended \
+        latexmk biber \
+        fontspec polyglossia hyphen-german \
+        unicode-math luaotfload \
+        microtype xcolor geometry hyperref parskip \
+        titlesec enumitem tabularx tabto-ltx wrapfig \
+        setspace biblatex siunitx \
+        charter fancyhdr framed colortbl subfigure \
+        mathdesign bera caption abstract nextpage listings \
+        xcharter xcharter-math lm tex-gyre tex-gyre-math stix2-otf \
+        koma-script \
+    && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/tlmgr \
+        option repository ctan \
+    && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/mktexlsr \
+    && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/lualatex --version \
+    && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/latexmk -v \
+    && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/biber --version \
     && rm -rf \
         /tmp/install-tl \
         /tmp/install-tl.tar.gz \
@@ -103,11 +127,6 @@ RUN wget -q \
 # Do NOT run "tlmgr update --self --all" here.
 # This is a fresh installation already downloaded from CTAN.
 
-RUN /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/tlmgr \
-        option repository ctan \
-    && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/mktexlsr
-
-
 # ====================================================================
 # Flutter stage
 #
@@ -115,7 +134,7 @@ RUN /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/tlmgr \
 # download and precache itself again.
 # ====================================================================
 
-FROM ${CODE_SERVER_IMAGE} AS flutter
+FROM ${TOOLCHAIN_BASE_IMAGE} AS flutter
 
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -164,7 +183,7 @@ RUN git config --system --add safe.directory /opt/flutter \
 # downloads cacheable.
 # ====================================================================
 
-FROM ${CODE_SERVER_IMAGE} AS android-sdk
+FROM ${TOOLCHAIN_BASE_IMAGE} AS android-sdk
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG JAVA_VERSION
@@ -288,7 +307,7 @@ RUN set -eux; \
 # Emscripten + raylib WebAssembly
 # ====================================================================
 
-FROM ${CODE_SERVER_IMAGE} AS raylib-web
+FROM ${TOOLCHAIN_BASE_IMAGE} AS raylib-web
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -348,6 +367,14 @@ RUN cd /opt/emsdk \
 FROM ${CODE_SERVER_IMAGE}
 
 ARG DEBIAN_FRONTEND=noninteractive
+# These are independently built, locally tagged images. They contain the
+# completed toolchains, so a code-server-only rebuild need not execute the
+# heavy stages above. build-image.sh refreshes each tag before assembling.
+ARG TEXLIVE_SOURCE=hs_code_toolchain_texlive:stable
+ARG FLUTTER_SOURCE=hs_code_toolchain_flutter:stable
+ARG ANDROID_SOURCE=hs_code_toolchain_android:stable
+ARG GRADLE_SOURCE=hs_code_toolchain_gradle:stable
+ARG EMSCRIPTEN_SOURCE=hs_code_toolchain_emscripten:stable
 
 # --------------------------------------------------------------------
 # Copy the large, stable SDKs/toolchains FIRST.
@@ -356,19 +383,19 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Docker can still reuse these layers.
 # --------------------------------------------------------------------
 
-COPY --link --from=texlive \
+COPY --link --from=${TEXLIVE_SOURCE} \
     /usr/local/texlive \
     /usr/local/texlive
 
-COPY --link --chmod=a+rwX --from=flutter \
+COPY --link --chmod=a+rwX --from=${FLUTTER_SOURCE} \
     /opt/flutter \
     /opt/flutter
 
-COPY --link --from=android-sdk \
+COPY --link --from=${ANDROID_SOURCE} \
     /opt/android-sdk \
     /opt/android-sdk
 
-COPY --link --chmod=a+rwX --from=flutter-android \
+COPY --link --chmod=a+rwX --from=${GRADLE_SOURCE} \
      /opt/gradle-cache \
      /opt/gradle-cache
 
@@ -377,7 +404,7 @@ COPY --link --chmod=a+rwX --from=flutter-android \
 # top-level directories such as daemon/ at runtime.
 RUN chmod 0777 /opt/gradle-cache
 
-COPY --link --from=raylib-web \
+COPY --link --from=${EMSCRIPTEN_SOURCE} \
     /opt/emsdk \
     /opt/emsdk
 
