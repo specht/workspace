@@ -16,5 +16,5 @@ if (( available_kib < required_kib )); then
     exit 1
 fi
 
-printf 'Root space check: %.1f GiB free (minimum: %s GiB)\n' \
-    "$(awk -v k="$available_kib" 'BEGIN { print k / 1048576 }')" "$min_gib"
+printf 'Root space check: %s GiB free (minimum: %s GiB)\n' \
+    "$(LC_ALL=C awk -v k="$available_kib" 'BEGIN { printf "%.1f", k / 1048576 }')" "$min_gib"
