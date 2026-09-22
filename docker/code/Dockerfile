@@ -100,29 +100,32 @@ RUN wget -q \
     && /tmp/install-tl/install-tl \
         -profile /tmp/texlive.profile \
         -no-interaction \
-    && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/tlmgr install \
+    && rm -rf \
+        /tmp/install-tl \
+        /tmp/install-tl.tar.gz \
+        /tmp/texlive.profile
+
+# The basic TeX installation is now a separate cached layer: a missing
+# collection or tutorial dependency will not force install-tl to run again.
+# Prefer TeX Live's maintained collections over a long list of .sty names.
+# The four additional font packages cover the tutorial's XCharter Math and
+# legacy mathdesign/Bera examples without installing collection-fontsextra.
+RUN /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/tlmgr install \
         collection-latexrecommended \
+        collection-latexextra \
         collection-fontsrecommended \
+        collection-langgerman \
+        collection-luatex \
+        collection-mathscience \
+        collection-bibtexextra \
         latexmk biber \
-        fontspec polyglossia hyphen-german \
-        unicode-math luaotfload \
-        microtype xcolor geometry hyperref parskip \
-        titlesec enumitem tabto-ltx wrapfig \
-        setspace biblatex siunitx \
-        charter fancyhdr framed colortbl subfigure \
-        mathdesign bera caption abstract nextpage listings \
-        xcharter xcharter-math lm tex-gyre tex-gyre-math stix2-otf \
-        koma-script \
+        mathdesign bera xcharter xcharter-math \
     && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/tlmgr \
         option repository ctan \
     && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/mktexlsr \
     && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/lualatex --version \
     && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/latexmk -v \
-    && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/biber --version \
-    && rm -rf \
-        /tmp/install-tl \
-        /tmp/install-tl.tar.gz \
-        /tmp/texlive.profile
+    && /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/biber --version
 
 # Do NOT run "tlmgr update --self --all" here.
 # This is a fresh installation already downloaded from CTAN.
