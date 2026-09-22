@@ -143,6 +143,11 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     && fc-cache -f \
     && luaotfload-tool -u
 
+# The legacy mathdesign fonts need the LY1 (TeX'n'ANSI) encoding.
+# Keep this separate so the TeX Live and Lato layers remain cached.
+RUN tlmgr install ly1 \
+    && kpsewhich texnansi.enc
+
 RUN set -eu; \
     git clone --depth 1 https://github.com/specht/latex-tutorial.git /tmp/latex-tutorial; \
     cd /tmp/latex-tutorial; \
