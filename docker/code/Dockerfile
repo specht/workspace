@@ -133,6 +133,16 @@ RUN /usr/local/texlive/${TL_YEAR}/bin/x86_64-linux/tlmgr install \
 # A missing TeX dependency fails here, before Flutter/Android are built.
 # Keep the clone and generated PDF files out of the resulting image layer.
 ENV PATH="/usr/local/texlive/${TL_YEAR}/bin/x86_64-linux:${PATH}"
+
+# CV.tex uses \setsansfont{Lato}. Install the system font before verifying
+# the tutorial, in a separate layer so TeX Live packages stay cached.
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update \
+    && apt-get install -y --no-install-recommends fonts-lato \
+    && fc-cache -f \
+    && luaotfload-tool -u
+
 RUN set -eu; \
     git clone --depth 1 https://github.com/specht/latex-tutorial.git /tmp/latex-tutorial; \
     cd /tmp/latex-tutorial; \
@@ -719,6 +729,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         fonts-ibm-plex \
         fonts-inter \
         fonts-jetbrains-mono \
+        fonts-lato \
         fonts-liberation \
         fonts-lmodern \
         fonts-montserrat \
