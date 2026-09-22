@@ -556,7 +556,7 @@ Du kannst die Seite testen, indem du das <code>build</code>-Verzeichnis öffnest
 
 ### Deine Seite veröffentlichen
 
-Du kannst deine Webseite ganz einfach veröffentlichen, indem du sie auf einen Webserver hochlädst. Es gibt viele kostenlose Hosting-Anbieter, die dir helfen können, deine Webseite online zu stellen. Du kannst deine Seite aber auch gern kostenlos unter einer Subdomain von hackschule.de veröffentlichen (also z. B. meineseite.hackschule.de). Wenn du das möchtest, schreib einfach eine E-Mail an <a href="mailto:specht@gymnasiumsteglitz.de">specht@gymnasiumsteglitz.de</a>. Eine Anleitung, wie du auf deinen Webspace zugreifen kannst, findest du <a href="/custom-subdomain">hier</a>.
+Du kannst deine Webseite veröffentlichen, indem du sie auf einen Webserver hochlädst. Viele Hosting-Anbieter helfen dir dabei. Du kannst auch kostenlos eine Hackschule-Subdomain bekommen (z. B. `meineseite.hackschule.de`). Dafür verwendest du die gebauten statischen Dateien deiner App, nicht den laufenden Entwicklungsserver. In der [Anleitung zum eigenen Webspace](/custom-subdomain) erfährst du, wie du die Subdomain beantragst, was bei minderjährigen Schülerinnen und Schülern für die Einverständniserklärung nötig ist und wie du deine fertige Website hochlädst.
 
 <!--
 - Plugin installieren: Svelte for VS Code

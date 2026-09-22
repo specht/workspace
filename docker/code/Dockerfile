@@ -8,7 +8,7 @@
 # consumes it, which avoids unnecessary BuildKit cache invalidation.
 # ====================================================================
 
-ARG CODE_SERVER_IMAGE=linuxserver/code-server:4.138.0
+ARG CODE_SERVER_IMAGE=linuxserver/code-server:4.131.0
 
 ARG TL_YEAR=2026
 ARG FLUTTER_VERSION=3.47.0

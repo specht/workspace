@@ -296,6 +296,15 @@ class Main < Sinatra::Base
                 other_group.each { |app| io.puts render_app.call(app) }
                 io.puts "</div>"
             end
+
+            io.puts "<div class='border rounded p-3 mt-4'>"
+            io.puts "<h4>Deine eigene Website veröffentlichen</h4>"
+            io.puts "<p>Shared Live Apps sind nur für angemeldete Workspace-Nutzer sichtbar und laufen nur, solange dein Webserver läuft. Eine fertige statische Website kannst du dagegen dauerhaft und öffentlich unter einer eigenen Hackschule-Subdomain veröffentlichen.</p>"
+            io.puts "<div class='d-flex flex-wrap gap-2'>"
+            io.puts "<a class='btn btn-outline-primary' href='/custom-subdomain'><i class='bi bi-globe2 me-1'></i>Anleitung zum Veröffentlichen</a>"
+            io.puts "<a class='btn btn-outline-secondary' href='/docs/Nutzungsvereinbarung-Webhosting-Hackschule.pdf' download><i class='bi bi-file-earmark-pdf me-1'></i>Einverständniserklärung (PDF)</a>"
+            io.puts "</div>"
+            io.puts "</div>"
             io.puts "</section>"
             io.string
         end

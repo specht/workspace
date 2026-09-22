@@ -1,6 +1,10 @@
 # Deine eigene Subdomain
 
-Um deine eigene Subdomain zu bekommen, musst du zuerst ein SSH-Schlüsselpaar erstellen (falls du noch keins hast).
+Eine eigene Hackschule-Subdomain ist öffentlicher Webspace für deine **fertige, statische Website**. Im Gegensatz zu [Shared Live Apps](/profil#live-apps) ist deine Website damit auch ohne Workspace-Anmeldung erreichbar und bleibt online, wenn dein Workspace nicht läuft. Das Angebot ist kostenlos; du bekommst eine Subdomain von `hackschule.de`, keine selbst registrierte Domain.
+
+## Einverständniserklärung
+
+Wenn du noch minderjährig bist, benötigen wir vor der öffentlichen Freischaltung das Einverständnis einer sorgeberechtigten Person. Lade die [Einverständniserklärung als PDF](/docs/Nutzungsvereinbarung-Webhosting.pdf) herunter, lass sie unterschreiben und gib sie bei deiner Lehrkraft ab. Das Formular erklärt auch, dass deine Website öffentlich und nicht nur innerhalb des Workspace sichtbar ist.
 
 ## Schlüsselpaar erstellen
 
@@ -33,7 +37,7 @@ Das sollte z. B. so aussehen:
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHx1j3zKyFZybh2BRyiaiGj7KceAPyzHGy6gM0gHp43j abc@757c63b27d58
 ```
 
-Schicke den kompletten öffentlichen Schlüssel an <a href='mailto:specht@gymnasiumsteglitz.de'>specht@gymnasiumsteglitz.de</a> und gib an, welche Subdomain du haben möchtest. Du bekommst als Antwort eine E-Mail, in der zwei Dinge stehen:
+Wenn die Einverständniserklärung (sofern erforderlich) abgegeben ist, schicke den kompletten öffentlichen Schlüssel an <a href='mailto:specht@gymnasiumsteglitz.de'>specht@gymnasiumsteglitz.de</a> und gib an, welche Subdomain du haben möchtest. Du bekommst als Antwort eine E-Mail, in der zwei Dinge stehen:
 
 - die Subdomain, die du bekommen hast (z. B. `cobolultras.hackschule.de`)
 - dein Nutzername für die Subdomain (z. B. `max`)

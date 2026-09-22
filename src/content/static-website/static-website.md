@@ -621,6 +621,8 @@ Wenn du beim Ausprobieren etwas kaputtmachst, ist das kein Problem. Mit <kbd>Str
 
 Bis jetzt läuft die Seite nur über »Go Live« in deinem eigenen Workspace. Eine statische Webseite besteht aber nur aus Dateien wie HTML, CSS und Bildern und lässt sich deshalb sehr einfach auf einen Webserver kopieren. Im Workspace kannst du deine Seite kostenlos unter einer Hackschule-Subdomain veröffentlichen; wie das funktioniert, steht in der [Anleitung zum eigenen Webspace](/custom-subdomain).
 
+Die Website ist dann öffentlich und nicht nur für angemeldete Workspace-Nutzer sichtbar. Wenn du noch minderjährig bist, gib bitte vorher die [unterschriebene Einverständniserklärung (PDF)](/docs/Nutzungsvereinbarung-Webhosting.pdf) bei deiner Lehrkraft ab.
+
 Achte beim Veröffentlichen darauf, dass **alle Dateien deines Projekts** mitkommen, die deine Seite benötigt – also zum Beispiel:
 
 ```text
