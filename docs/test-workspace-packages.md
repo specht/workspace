@@ -50,6 +50,12 @@ workspace_package: 1
 
 exam:
   color: blue
+  setup:
+    once:
+      - dart --disable-analytics
+    # Optional: on every new container start, not every browser reload.
+    # every_start:
+    #   - echo "Prüfungs-Workspace gestartet"
 
 git:
   mode: fresh
@@ -83,6 +89,36 @@ Abhängigkeiten und speichert die geprüften VSIX-Dateien serverseitig. Bei eine
 Fehler erscheint eine Meldung; das Paket wird nicht als Prüfung freigegeben.
 Im Prüfungs-Workspace und in der Vorschau werden die Dateien offline installiert.
 Bereits hochgeladene Prüfungen behalten ihre festgehaltenen Versionen.
+
+### Einmalige und wiederholte Startbefehle
+
+Unter `exam.setup.once` kannst du Befehle deklarieren, die für jede Person und
+auch für die eigene Vorschau genau einmal erfolgreich ausgeführt werden sollen.
+`exam.setup.every_start` wird bei **jedem neuen Containerstart** ausgeführt,
+nicht bei einem bloßen Neuladen der Browserseite. Beide Optionen sind optional:
+
+```yaml
+exam:
+  setup:
+    once:
+      - dart --disable-analytics
+    every_start:
+      - echo "Prüfungs-Workspace gestartet"
+```
+
+Die Befehle laufen in `/workspace` als normaler Workspace-Benutzer (`HOME=/workspace`),
+**nicht als root**. Sie laufen offline, nach der Installation der deklarierten
+Erweiterungen und vor dem Öffnen von code-server. Ein fehlgeschlagener Befehl
+verhindert den Editorstart; er wird beim nächsten Containerstart erneut versucht.
+Ein `once`-Befehl wird erst nach erfolgreichem Abschluss als erledigt markiert.
+Die Markierungen liegen im persistenten, prüfungsspezifischen `/config`-Mount
+und sind weder Teil der Abgabe noch im normalen Workspace vorhanden.
+
+Beim Upload werden maximal zwölf Befehle pro Liste mit jeweils höchstens
+2048 Bytes akzeptiert. Jeder Befehl hat beim Start ein Zeitlimit von 120 Sekunden.
+Da diese Befehle auf dem Server ausgeführt werden, sollten nur vertrauenswürdige
+Prüfungspakete hochgeladen werden. Eine bereits hochgeladene Prüfung muss erneut
+hochgeladen werden, damit neue Setup-Befehle in ihr festgeschrieben werden.
 
 ### Prüfungsfarbe
 

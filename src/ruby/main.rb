@@ -4370,7 +4370,7 @@ class Main < Sinatra::Base
             SET t.ts = $ts
             RETURN f.sha1;
         END_OF_STRING
-        respond(:yay => 'sure')
+        respond(:success => true, :yay => 'sure')
     rescue TestWorkspaceExtensions::Error, TestWorkspacePackage::ConfigError => e
         STDERR.puts "Exam upload rejected: #{e.class}: #{e.message}"
         status 422

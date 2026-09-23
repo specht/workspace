@@ -81,6 +81,33 @@ module TestWorkspacePackage
         raise ConfigError, "#{CONFIG_RELATIVE_PATH} ist kein gültiges YAML: #{e.message}"
     end
 
+    # Exam setup runs as the workspace user, with HOME and cwd set to /workspace.
+    # Upload-time validation keeps invalid setup from reaching any student.
+    def self.setup_commands(workspace_path)
+        exam = load_config(workspace_path).fetch('exam', {})
+        raise ConfigError, 'exam muss ein YAML-Objekt enthalten.' unless exam.is_a?(Hash)
+
+        setup = exam.fetch('setup', {})
+        raise ConfigError, 'exam.setup muss ein YAML-Objekt enthalten.' unless setup.is_a?(Hash)
+        unknown = setup.keys - ['once', 'every_start']
+        unless unknown.empty?
+            raise ConfigError, "Unbekannte exam.setup-Optionen: #{unknown.join(', ')}"
+        end
+
+        result = {}
+        ['once', 'every_start'].each do |kind|
+            commands = setup.fetch(kind, [])
+            unless commands.is_a?(Array) && commands.length <= 12 && commands.all? { |command|
+                    command.is_a?(String) && !command.strip.empty? &&
+                        command.bytesize <= 2048 && !command.include?("\0")
+                }
+                raise ConfigError,
+                    "exam.setup.#{kind} muss eine Liste von höchstens 12 nichtleeren Befehlen (je maximal 2048 Bytes) sein."
+            end
+            result[kind] = commands
+        end
+        result
+    end
 
     def self.git_mode(workspace_path)
         config = load_config(workspace_path)

@@ -83,12 +83,13 @@ module TestWorkspaceExtensions
             # first student launch; keep the original archive unchanged.
             TestWorkspacePackage.validate_git_layout!(dir)
             TestWorkspacePackage.vscode_config(dir)
+            setup = TestWorkspacePackage.setup_commands(dir)
             config = TestWorkspacePackage.load_config(dir)
             roots = requested(config)
             resolved = {}
             visiting = {}
             roots.each { |entry| resolve!(entry['id'], entry['version'], resolved, visiting, cache: cache) }
-            {'version' => 1, 'extensions' => resolved.values}
+            {'version' => 1, 'extensions' => resolved.values, 'setup' => setup}
         end
     end
 

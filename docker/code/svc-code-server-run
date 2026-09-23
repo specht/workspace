@@ -216,6 +216,54 @@ done
 
 chown -R "$WORKSPACE_RUN_USER:$WORKSPACE_RUN_GROUP" "$EXT_DIR"
 
+# The backend locks exam setup commands into the offline manifest at upload.
+# Run after installing extensions but before code-server accepts connections.
+# The exam's /config mount persists across container restarts and is separate
+# from the normal student Workspace and its submitted files.
+if [ -f "$EXAM_MANIFEST" ]; then
+    HOME=/workspace USER="$WORKSPACE_RUN_USER" LOGNAME="$WORKSPACE_RUN_USER" \
+        s6-setuidgid "$WORKSPACE_RUN_USER" python3 - "$EXAM_MANIFEST" <<'PYEXAMSETUP'
+import hashlib
+import json
+import os
+import subprocess
+import sys
+
+with open(sys.argv[1], encoding='utf-8') as stream:
+    setup = json.load(stream).get('setup', {})
+if not isinstance(setup, dict) or set(setup) - {'once', 'every_start'}:
+    raise ValueError('Invalid exam setup configuration')
+
+for kind in ('once', 'every_start'):
+    commands = setup.get(kind, [])
+    if not (isinstance(commands, list) and len(commands) <= 12 and all(
+            isinstance(command, str) and command.strip() and
+            len(command.encode('utf-8')) <= 2048 and '\0' not in command
+            for command in commands)):
+        raise ValueError(f'Invalid exam setup commands: {kind}')
+
+# The subprocess inherits HOME=/workspace and runs as the actual student user,
+# never as root. The container cannot use the network during an exam.
+marker_dir = '/config/.exam-setup'
+for kind in ('once', 'every_start'):
+    for index, command in enumerate(setup.get(kind, []), 1):
+        marker = None
+        if kind == 'once':
+            os.makedirs(marker_dir, mode=0o700, exist_ok=True)
+            digest = hashlib.sha256(command.encode('utf-8')).hexdigest()[:20]
+            marker = os.path.join(marker_dir, f'{index}-{digest}.done')
+            if os.path.isfile(marker):
+                continue
+        print(f'Exam setup ({kind} {index})', flush=True)
+        subprocess.run(['/bin/bash', '-c', command], cwd='/workspace', check=True, timeout=120)
+        if marker:
+            # Only successful commands are marked complete. A failed command
+            # blocks code-server startup and is retried on the next launch.
+            with open(marker, 'x', encoding='utf-8') as stream:
+                stream.write('ok\n')
+PYEXAMSETUP
+fi
+
 if [ -n "${PROXY_DOMAIN:-}" ]; then
     PROXY_DOMAIN_ARG="--proxy-domain=${PROXY_DOMAIN}"
 else

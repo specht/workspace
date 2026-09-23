@@ -381,7 +381,7 @@
                                 einschließlich versteckter Dateien und Verzeichnisse in das gleichnamige Archiv
                                 im Elternverzeichnis:
                             </p>
-                            <pre>tar -czf "../$(basename "$PWD").tar.gz" .</pre>
+                            <pre>tar -czvf "../$(basename "$PWD").tar.gz" .</pre>
                             <p>
                                 Auch <code>.git</code> wird mitgepackt. Ist es vorhanden, wähle
                                 <code>git.mode: preserve</code>; bei <code>fresh</code> und <code>none</code>
