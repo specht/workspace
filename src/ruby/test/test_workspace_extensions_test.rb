@@ -6,6 +6,28 @@ require_relative '../include/test_workspace_package'
 require_relative '../include/test_workspace_extensions'
 
 class TestWorkspaceExtensionsTest < Minitest::Test
+    def test_http_stream_handles_grouped_chunks
+        response = Object.new
+        def response.read_body
+            yield 'first'
+            yield ['second', 'third']
+        end
+        chunks = []
+        TestWorkspaceExtensions.each_http_chunk(response) { |part| chunks << part }
+        assert_equal ['first', 'second', 'third'], chunks
+        assert_equal 16, chunks.sum(&:bytesize)
+    end
+
+    def test_http_stream_rejects_non_string_chunks
+        response = Object.new
+        def response.read_body
+            yield ['valid', 17]
+        end
+        assert_raises(TestWorkspaceExtensions::Error) do
+            TestWorkspaceExtensions.each_http_chunk(response) { |_part| }
+        end
+    end
+
     def test_requested_extensions_support_ids_and_versions
         assert_equal [
             {'id' => 'Dart-Code.dart-code', 'version' => nil},

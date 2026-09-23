@@ -4374,6 +4374,11 @@ class Main < Sinatra::Base
     rescue TestWorkspaceExtensions::Error, TestWorkspacePackage::ConfigError => e
         status 422
         respond(:error => e.message)
+    rescue StandardError => e
+        STDERR.puts "Exam upload failed: #{e.class}: #{e.message}"
+        STDERR.puts Array(e.backtrace).first(25).join("\n")
+        status 500
+        respond(:error => 'Interner Fehler beim Vorbereiten des Prüfungspakets. Bitte Server-Log prüfen.')
     end
 
     post '/api/get_my_test_archives' do

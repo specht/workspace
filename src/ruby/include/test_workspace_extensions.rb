@@ -155,6 +155,17 @@ module TestWorkspaceExtensions
 
     # HTTPS-only, bounded downloads. Redirects must remain at the registry or
     # its known object-storage host; arbitrary URLs from package YAML are never used.
+    # Process HTTP response chunks as strings, including grouped chunks.
+    def self.each_http_chunk(response)
+        response.read_body do |part|
+            parts = part.is_a?(Array) ? part : [part]
+            parts.each do |chunk|
+                raise Error, "Ungültiger HTTP-Datenblock: #{chunk.class}" unless chunk.is_a?(String)
+                yield chunk
+            end
+        end
+    end
+
     def self.fetch(url, limit:, destination: nil, redirects: 4)
         uri = URI.parse(url)
         allowed = uri.host == 'open-vsx.org' || uri.host == 'storage.googleapis.com' ||
@@ -170,7 +181,7 @@ module TestWorkspaceExtensions
                     buffer = +'' unless destination
                     if destination
                         File.open(destination, 'wb') do |file|
-                            r.read_body do |part|
+                            each_http_chunk(r) do |part|
                                 bytes += part.bytesize
                                 raise Error, 'Der Erweiterungs-Download ist zu groß.' if bytes > limit
                                 file.write(part)
@@ -178,7 +189,7 @@ module TestWorkspaceExtensions
                         end
                     end
                     unless destination
-                        r.read_body do |part|
+                        each_http_chunk(r) do |part|
                             bytes += part.bytesize
                             raise Error, 'Die Registry-Antwort ist zu groß.' if bytes > limit
                             buffer << part
