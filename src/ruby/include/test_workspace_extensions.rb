@@ -168,8 +168,8 @@ module TestWorkspaceExtensions
 
     def self.fetch(url, limit:, destination: nil, redirects: 4)
         uri = URI.parse(url)
-        allowed = uri.host == 'open-vsx.org' || uri.host == 'storage.googleapis.com' ||
-            uri.host&.end_with?('.open-vsx.org')
+        allowed = uri.host == 'open-vsx.org' || uri.host == 'openvsx.eclipsecontent.org' ||
+            uri.host == 'storage.googleapis.com' || uri.host&.end_with?('.open-vsx.org')
         raise Error, 'Ungültiger Erweiterungs-Download-Link.' unless uri.is_a?(URI::HTTPS) && allowed && !uri.userinfo
         raise Error, 'Zu viele Download-Weiterleitungen.' if redirects < 0
         response = nil

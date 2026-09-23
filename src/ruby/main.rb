@@ -4372,13 +4372,16 @@ class Main < Sinatra::Base
         END_OF_STRING
         respond(:yay => 'sure')
     rescue TestWorkspaceExtensions::Error, TestWorkspacePackage::ConfigError => e
+        STDERR.puts "Exam upload rejected: #{e.class}: #{e.message}"
         status 422
-        respond(:error => e.message)
+        content_type :json
+        JSON.generate(:success => false, :error => e.message)
     rescue StandardError => e
         STDERR.puts "Exam upload failed: #{e.class}: #{e.message}"
         STDERR.puts Array(e.backtrace).first(25).join("\n")
         status 500
-        respond(:error => 'Interner Fehler beim Vorbereiten des Prüfungspakets. Bitte Server-Log prüfen.')
+        content_type :json
+        JSON.generate(:success => false, :error => 'Interner Fehler beim Vorbereiten des Prüfungspakets. Bitte Server-Log prüfen.')
     end
 
     post '/api/get_my_test_archives' do
