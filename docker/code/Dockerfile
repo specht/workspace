@@ -477,6 +477,7 @@ ENV PATH="${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin"
 
 ENV FLUTTER_ROOT=/opt/flutter
 ENV FLUTTER_SUPPRESS_ANALYTICS=true
+ENV DART_SUPPRESS_ANALYTICS=true
 
 # Flutter ships the Dart SDK it was tested with. Keep both CLIs together
 # instead of mixing Flutter with a separately installed Dart release.

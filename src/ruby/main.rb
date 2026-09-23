@@ -4567,9 +4567,12 @@ class Main < Sinatra::Base
                             break-before: page;
                             page-break-before: always;
                         }
-                        .student-heading {
-                            border-bottom: 2px solid #333;
-                            margin: 0 0 1em;
+                        .student-meta {
+                            border-bottom: 1px solid #999;
+                            color: #555;
+                            font-size: 9pt;
+                            margin: 0 0 0.8em;
+                            text-align: right;
                             padding-bottom: 0.35em;
                         }
                         .file {
@@ -4622,7 +4625,7 @@ class Main < Sinatra::Base
                 escaped_name = CGI.escapeHTML(display_name)
 
                 io.puts "<section class='student'>"
-                io.puts "<h1 class='student-heading'>#{escaped_name}</h1>"
+                io.puts "<div class='student-meta'>#{escaped_name} | #{printed_at}</div>"
 
                 unless File.directory?(workspace_path)
                     io.puts "<p class='empty'>Dieser Prüfungs-Workspace wurde noch nicht geöffnet.</p>"
@@ -4639,7 +4642,6 @@ class Main < Sinatra::Base
                     io.puts "<div class='file'>"
                     io.puts "<div class='file-header'>"
                     io.puts "<div>#{CGI.escapeHTML(relative_path)}</div>"
-                    io.puts "<div class='file-meta'>#{escaped_name} | #{printed_at}</div>"
                     io.puts "</div>"
                     io.puts "<pre>"
                     File.foreach(path).with_index(1) do |line, index|
