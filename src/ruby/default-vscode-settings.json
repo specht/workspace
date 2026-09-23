@@ -11,6 +11,7 @@
     "files.exclude": {
         ".hs-kbd-tutorial": true,
         ".extensions": true,
+        ".exam-extensions": true,
         ".ssh": true,
         ".cache": true,
         ".local": true,

@@ -3,6 +3,9 @@ FROM ruby:3.4.10-bookworm
 RUN apt-get update && apt-get install -y --no-install-recommends \
   less \
   curl \
+  tar \
+  unzip \
+  bzip2 \
   bash \
   tzdata \
   sysstat \

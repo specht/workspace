@@ -362,6 +362,7 @@
                         <button id='bu_upload_test_archive' class='btn btn-primary'><i class='bi bi-upload'></i>Leistungsüberprüfung hochladen</button>
                     </div>
                 </div>
+                <div id="test_archive_upload_status" class="small mb-2" role="status" aria-live="polite"></div>
                 <div class="row">
                     <div class="col-md-12">
                         <p>
@@ -376,15 +377,15 @@
                                 Repository stattdessen vollständig erhalten oder Git ganz dem Prüfling überlassen werden.
                             </p>
                             <p>
-                                Erzeuge das Archiv im Elternverzeichnis deines Aufgabenordners. Der Punkt am Ende des
-                                Befehls packt dessen <em>gesamten Inhalt</em> einschließlich <code>.workspace</code> und
-                                <code>.gitignore</code> direkt in das Archiv:
+                                Öffne ein Terminal <em>im Aufgabenordner</em> und packe den gesamten Inhalt
+                                einschließlich versteckter Dateien und Verzeichnisse in das gleichnamige Archiv
+                                im Elternverzeichnis:
                             </p>
-                            <pre>tar --exclude='./.git' \
-    -czf 2026-09-23-workspace-package.tar.gz \
-    -C 2026-09-23-workspace-package .</pre>
+                            <pre>tar -czf "../$(basename "$PWD").tar.gz" .</pre>
                             <p>
-                                Bei <code>git.mode: preserve</code> lasse <code>--exclude='./.git'</code> weg.
+                                Auch <code>.git</code> wird mitgepackt. Ist es vorhanden, wähle
+                                <code>git.mode: preserve</code>; bei <code>fresh</code> und <code>none</code>
+                                ist ein mitgeliefertes <code>.git</code> nicht zulässig.
                                 Keine privaten Schlüssel, Zugangsdaten oder Cache-Ordner mitpacken.
                             </p>
                             <p>
@@ -399,6 +400,9 @@ exam:
 git:
   mode: fresh
 
+extensions:
+  - Dart-Code.dart-code
+
 print:
   exclude:
     - "tests/**"
@@ -409,6 +413,8 @@ vscode_config: {}</pre>
                                 <code>git.mode</code> ist standardmäßig <code>fresh</code>. Mit <code>preserve</code> bleibt ein mitgeliefertes
                                 <code>.git</code>-Verzeichnis samt Historie, Branches und Index erhalten; <code>none</code> nimmt überhaupt keine
                                 Git-Einrichtung vor. Name und E-Mail-Adresse werden bei <code>fresh</code> und <code>preserve</code> repository-lokal gesetzt.
+                                Über <code>extensions</code> deklarierte Erweiterungen werden beim Upload geprüft und heruntergeladen;
+                                in Prüfungs-Workspaces werden sie ohne Netzwerkzugriff installiert. Optional: <code>id</code> und <code>version</code> angeben.
                             </p>
                             <p>
                                 <code>exam.color</code> wählt das vollständige VS-Code-Farbschema <code>Tomorrow Night Blue</code>
@@ -837,21 +843,30 @@ vscode_config: {}</pre>
             fileInput.addEventListener('change', handleFileUpload);
             fileInput.click();
 
-            function handleFileUpload(event) {
+            async function handleFileUpload(event) {
                 const file = event.target.files[0];
+                if (!file) return;
+                const statusBox = $('#test_archive_upload_status');
+                const button = $('#bu_upload_test_archive');
                 const formData = new FormData();
                 formData.append('file', file);
-
-                fetch('/api/upload_test_archive', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
+                button.prop('disabled', true);
+                statusBox.removeClass('text-danger text-success').text('Paket prüfen und Erweiterungen vorbereiten …');
+                try {
+                    const response = await fetch('/api/upload_test_archive', {
+                        method: 'POST', body: formData
+                    });
+                    const data = await response.json();
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.error || 'Der Upload ist fehlgeschlagen.');
+                    }
+                    statusBox.addClass('text-success').text('Paket wurde geprüft und hochgeladen.');
                     refresh_test_archives();
-                })
-                .catch(error => {
-                });
+                } catch (error) {
+                    statusBox.addClass('text-danger').text(error.message);
+                } finally {
+                    button.prop('disabled', false);
+                }
             }
         });
         refresh_test_archives();

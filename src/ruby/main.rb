@@ -6,6 +6,7 @@ require './include/database_provisioning.rb'
 require './include/trusted_template.rb'
 require './include/tutorial_screenshots.rb'
 require './include/test_workspace_package.rb'
+require './include/test_workspace_extensions.rb'
 require './include/workspace_credentials.rb'
 require './include/workspace_runtime.rb'
 require 'base64'
@@ -3212,6 +3213,11 @@ class Main < Sinatra::Base
                     end
                     chown_user_file.call(test_init_mark_path)
                 end
+
+                # Prepare the same offline extension bundle for demos and students.
+                # Re-stage on every container launch so stale or altered files are
+                # never trusted by the privileged startup script.
+                TestWorkspaceExtensions.stage!(tag: test_tag, workspace_path: workspace_path)
             end
 
             # STDERR.puts ">>> Getting IP address for mysql..."
@@ -4337,13 +4343,23 @@ class Main < Sinatra::Base
         filename = entry['filename']
         blob = entry['tempfile'].read
         sha1 = Digest::SHA1.hexdigest(blob)
-        debug "Got a file called #{filename} with #{blob.size} bytes."
-        FileUtils.mkpath('/internal/test_archives')
-        File.open("/internal/test_archives/#{sha1}", 'w') do |f|
-            f.write blob
-        end
-        ts = Time.now.to_i
         tag = RandomTag.generate(24)
+        debug "Got a file called #{filename} with #{blob.size} bytes."
+
+        # Validate the actual uploaded bytes and resolve/download every VSIX
+        # before creating a visible Test entry. The original archive is kept
+        # untouched; extension files and the locked manifest live beside it.
+        Dir.mktmpdir('exam-upload-') do |dir|
+            incoming = File.join(dir, 'package.tar.gz')
+            File.binwrite(incoming, blob)
+            manifest = TestWorkspaceExtensions.prepare!(incoming, tag: tag)
+            FileUtils.mkdir_p(TestWorkspaceExtensions::ARCHIVES)
+            archive_path = File.join(TestWorkspaceExtensions::ARCHIVES, sha1)
+            File.binwrite(archive_path, blob) unless File.file?(archive_path)
+            TestWorkspaceExtensions.publish!(manifest, tag: tag)
+        end
+
+        ts = Time.now.to_i
         neo4j_query_expect_one(<<~END_OF_STRING, {:tag => tag, :email => @session_user[:email], :sha1 => sha1, :size => blob.size, :filename => filename, :ts => ts})
             MATCH (u:User {email: $email})
             MERGE (f:File {sha1: $sha1})
@@ -4355,6 +4371,9 @@ class Main < Sinatra::Base
             RETURN f.sha1;
         END_OF_STRING
         respond(:yay => 'sure')
+    rescue TestWorkspaceExtensions::Error, TestWorkspacePackage::ConfigError => e
+        status 422
+        respond(:error => e.message)
     end
 
     post '/api/get_my_test_archives' do
@@ -4384,6 +4403,9 @@ class Main < Sinatra::Base
             MATCH (u:User {email: $email})<-[:BELONGS_TO]->(t:Test {tag: $tag})
             DETACH DELETE t;
         END_OF_STRING
+        # The shared content-addressed VSIX cache is retained: other exams
+        # may still reference these files.
+        FileUtils.rm_f(File.join(TestWorkspaceExtensions::MANIFESTS, "#{data[:tag]}.json"))
         Main.refresh_nginx_config()
         respond(:ok => 'sure')
     end

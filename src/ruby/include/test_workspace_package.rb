@@ -18,6 +18,7 @@ module TestWorkspacePackage
 
     INTERNAL_GIT_EXCLUDES = [
         '.workspace/',
+        '.exam-extensions/',
         '.cache/',
         '.config/',
         '.extensions/',

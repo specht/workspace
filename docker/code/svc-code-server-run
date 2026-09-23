@@ -92,6 +92,45 @@ else
     INSTALLED_EXTENSIONS=""
 fi
 
+# Exam extension bundles are prepared by the backend during upload. Nothing
+# is downloaded in an exam container, which may have no DNS or internet access.
+EXAM_EXTENSIONS=()
+EXAM_EXPECTED=()
+EXAM_MANIFEST=/workspace/.exam-extensions/manifest.json
+if [ -f "$EXAM_MANIFEST" ]; then
+    EXAM_ROWS="$(python3 - "$EXAM_MANIFEST" <<'PYEXAM'
+import json, re, sys
+with open(sys.argv[1], encoding='utf-8') as stream:
+    data = json.load(stream)
+if data.get('version') != 1 or not isinstance(data.get('extensions'), list):
+    raise ValueError('Invalid exam extension manifest')
+for entry in data['extensions']:
+    ext_id, version, sha = (entry.get(k) for k in ('id', 'version', 'sha256'))
+    if not (isinstance(ext_id, str) and re.fullmatch(r'[A-Za-z][A-Za-z0-9-]*\.[A-Za-z][A-Za-z0-9-]*', ext_id)
+            and isinstance(version, str) and re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?', version)
+            and isinstance(sha, str) and re.fullmatch(r'[0-9a-f]{64}', sha)):
+        raise ValueError('Invalid exam extension entry')
+    print('|'.join((ext_id, version, sha)))
+PYEXAM
+    )"
+    while IFS='|' read -r extension_id wanted_version sha; do
+        [ -n "$extension_id" ] || continue
+        vsix="/workspace/.exam-extensions/${sha}.vsix"
+        if [ ! -f "$vsix" ] || [ "$(sha256sum "$vsix" | cut -d' ' -f1)" != "$sha" ]; then
+            echo "ERROR: Exam extension missing or corrupted: $extension_id" >&2
+            exit 1
+        fi
+        # A package cannot override a bundled Hackschule extension.
+        for builtin in "${EXTENSIONS[@]}"; do
+            if [ "${builtin#*|}" = "$extension_id" ]; then
+                echo "ERROR: Exam extension conflicts with bundled extension: $extension_id" >&2
+                exit 1
+            fi
+        done
+        EXAM_EXTENSIONS+=("$vsix|$extension_id|$wanted_version")
+    done <<< "$EXAM_ROWS"
+fi
+
 INSTALL_ARGS=()
 EXPECTED_EXTENSIONS=()
 
@@ -123,6 +162,21 @@ for entry in "${EXTENSIONS[@]}"; do
     fi
 done
 
+# Exam versions are exact, even if a newer version happened to be installed in
+# this isolated workspace previously. The same files are used for the preview.
+for entry in "${EXAM_EXTENSIONS[@]}"; do
+    vsix="${entry%%|*}"
+    details="${entry#*|}"
+    extension_id="${details%%|*}"
+    wanted_version="${details#*|}"
+    EXAM_EXPECTED+=("$extension_id|$wanted_version")
+    installed_version="$(get_installed_version "$INSTALLED_EXTENSIONS" "$extension_id")"
+    if [ "$installed_version" != "$wanted_version" ]; then
+        echo "Installing exam extension $extension_id version $wanted_version"
+        INSTALL_ARGS+=(--install-extension "$vsix")
+    fi
+done
+
 if (( ${#INSTALL_ARGS[@]} > 0 )); then
     "$CODE_SERVER" \
         --extensions-dir "$EXT_DIR" \
@@ -146,6 +200,16 @@ for expected in "${EXPECTED_EXTENSIONS[@]}"; do
     if [ -z "$verified_version" ] || ! dpkg --compare-versions "$verified_version" ge "$wanted_version"; then
         echo "ERROR: Failed to install $extension_id version $wanted_version." >&2
         echo "Installed version is: ${verified_version:-not found}" >&2
+        exit 1
+    fi
+done
+
+for expected in "${EXAM_EXPECTED[@]}"; do
+    extension_id="${expected%%|*}"
+    wanted_version="${expected#*|}"
+    verified_version="$(get_installed_version "$VERIFIED_EXTENSIONS" "$extension_id")"
+    if [ "$verified_version" != "$wanted_version" ]; then
+        echo "ERROR: Exam extension $extension_id requires $wanted_version, found ${verified_version:-none}." >&2
         exit 1
     fi
 done

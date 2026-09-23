@@ -23,19 +23,18 @@ Ein minimales Paket kann so aussehen:
 Die Dateien und Verzeichnisse nach `AUFGABE.md` sind vollständig
 unterrichtsabhängig. Das Paket ist nicht an eine Programmiersprache gebunden.
 
-Wechsle in das Verzeichnis, **in dem** der Aufgabenordner liegt. Dieses
-Beispiel legt das Archiv neben dem Aufgabenordner an, enthält aber direkt dessen
-Inhalt einschließlich `.workspace`, `.gitignore` und anderer versteckter Dateien:
+Wechsle **in den Aufgabenordner**. Dieses Kommando legt das gleichnamige
+Archiv eine Ebene höher an und packt seinen gesamten Inhalt direkt hinein,
+einschließlich `.workspace`, `.gitignore` und `.git`, sofern vorhanden:
 
 ```bash
-tar --exclude='./.git' \
-    -czf 2026-09-23-workspace-package.tar.gz \
-    -C 2026-09-23-workspace-package .
+tar -czf "../$(basename "$PWD").tar.gz" .
 ```
 
-`--exclude='./.git'` ist für `git.mode: fresh` gedacht. Bei `git.mode: preserve`
-muss diese Option entfallen, damit die vorhandene Git-Historie mit ins Archiv
-kommt. Packe keine privaten Schlüssel, Zugangsdaten oder lokalen Cache-Ordner ein.
+Der Name des Aufgabenordners muss nicht eingetippt werden. Enthält das Paket
+`.git`, muss in `.workspace/config.yaml` `git.mode: preserve` stehen. Bei
+`git.mode: fresh` oder `none` wird ein mitgeliefertes `.git` abgelehnt.
+Packe keine privaten Schlüssel, Zugangsdaten oder lokalen Cache-Ordner ein.
 
 Für normale Leistungsüberprüfungen gehört kein `.git`-Verzeichnis in das Paket.
 Für Aufgaben, bei denen ein vorhandener Git-Verlauf selbst Teil der Aufgabe ist,
@@ -55,6 +54,9 @@ exam:
 git:
   mode: fresh
 
+extensions:
+  - Dart-Code.dart-code
+
 print:
   exclude:
     - "tests/**"
@@ -63,6 +65,24 @@ print:
 vscode_config:
   editor.minimap.enabled: false
 ```
+
+### Erweiterungen
+
+Optional lassen sich benötigte VS-Code-Erweiterungen deklarieren:
+
+```yaml
+extensions:
+  - Dart-Code.dart-code
+  - id: example.extension
+    version: "1.2.3"
+```
+
+Die Versionsangabe ist optional. Beim Upload lädt der Workspace die angegebene
+Version oder löst die aktuelle Version auf, lädt außerdem die deklarierten
+Abhängigkeiten und speichert die geprüften VSIX-Dateien serverseitig. Bei einem
+Fehler erscheint eine Meldung; das Paket wird nicht als Prüfung freigegeben.
+Im Prüfungs-Workspace und in der Vorschau werden die Dateien offline installiert.
+Bereits hochgeladene Prüfungen behalten ihre festgehaltenen Versionen.
 
 ### Prüfungsfarbe
 
