@@ -204,6 +204,7 @@ RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-down
 
 ENV FLUTTER_ROOT=/opt/flutter
 ENV FLUTTER_SUPPRESS_ANALYTICS=true
+ENV DART_SUPPRESS_ANALYTICS=true
 ENV PATH="${FLUTTER_ROOT}/bin:${PATH}"
 
 RUN git config --system --add safe.directory /opt/flutter \
