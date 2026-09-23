@@ -16,8 +16,9 @@ class TestWorkspacePackageTest < Minitest::Test
 
             config = TestWorkspacePackage.vscode_config(dir)
             assert_equal false, config['editor.minimap.enabled']
-            assert_equal '#005a9c', config.dig('workbench.colorCustomizations', 'statusBar.background')
-            assert_equal '#101010', config.dig('workbench.colorCustomizations', 'editor.background')
+            assert_equal 'Tomorrow Night Blue', config['workbench.colorTheme']
+            assert_equal false, config['window.autoDetectColorScheme']
+            assert_equal({'editor.background' => '#101010'}, config['workbench.colorCustomizations'])
         end
     end
 
@@ -30,10 +31,9 @@ class TestWorkspacePackageTest < Minitest::Test
                   color: red
             YAML
 
-            assert_equal(
-                '#a31515',
-                TestWorkspacePackage.vscode_config(dir).dig('workbench.colorCustomizations', 'activityBar.background'),
-            )
+            config = TestWorkspacePackage.vscode_config(dir)
+            assert_equal 'Red', config['workbench.colorTheme']
+            assert_equal({}, config['workbench.colorCustomizations'])
         end
     end
 
@@ -41,7 +41,9 @@ class TestWorkspacePackageTest < Minitest::Test
         Dir.mktmpdir do |dir|
             FileUtils.mkdir_p(File.join(dir, '.workspace'))
             FileUtils.mkdir_p(File.join(dir, 'src', 'nested'))
-            FileUtils.mkdir_p(File.join(dir, 'tests'))
+            FileUtils.mkdir_p(File.join(dir, 'tests', 'nested', 'deeper'))
+            FileUtils.mkdir_p(File.join(dir, '.cache', 'Microsoft', 'DeveloperTools'))
+            FileUtils.mkdir_p(File.join(dir, 'src', '.build', 'generated'))
             File.write(File.join(dir, '.workspace', 'config.yaml'), <<~YAML)
                 workspace_package: 1
                 print:
@@ -53,12 +55,36 @@ class TestWorkspacePackageTest < Minitest::Test
             File.write(File.join(dir, 'src', 'solution.weird'), "answer\n")
             File.write(File.join(dir, 'src', 'nested', 'test_runner.weird'), "runner\n")
             File.write(File.join(dir, 'tests', 'hidden.txt'), "test\n")
+            File.write(File.join(dir, 'tests', 'nested', 'deeper', 'also_hidden.txt'), "test\n")
+            File.write(File.join(dir, '.cache', 'Microsoft', 'DeveloperTools', 'deviceid'), "secret\n")
+            File.write(File.join(dir, 'src', '.build', 'generated', 'artifact.txt'), "hidden\n")
+            File.write(File.join(dir, '.gitignore'), "*.bak\n")
             File.binwrite(File.join(dir, 'src', 'binary.dat'), "\x00\x01\x02")
 
             assert_equal(
-                ['README', 'src/solution.weird'],
+                ['.gitignore', 'README', 'src/solution.weird'],
                 TestWorkspacePackage.printable_files(dir).map(&:first),
             )
+        end
+    end
+
+    def test_print_include_keeps_nested_source_but_not_hidden_directories
+        Dir.mktmpdir do |dir|
+            FileUtils.mkdir_p(File.join(dir, '.workspace'))
+            FileUtils.mkdir_p(File.join(dir, 'src', 'nested', '.cache'))
+            File.write(File.join(dir, '.workspace', 'config.yaml'), <<~YAML)
+                workspace_package: 1
+                print:
+                  include:
+                    - "src/**"
+                  exclude:
+                    - "src/nested/ignore/**"
+            YAML
+            FileUtils.mkdir_p(File.join(dir, 'src', 'nested', 'ignore', 'deep'))
+            File.write(File.join(dir, 'src', 'nested', 'solution.txt'), "yes\n")
+            File.write(File.join(dir, 'src', 'nested', '.cache', 'deviceid'), "no\n")
+            File.write(File.join(dir, 'src', 'nested', 'ignore', 'deep', 'secret.txt'), "no\n")
+            assert_equal ['src/nested/solution.txt'], TestWorkspacePackage.printable_files(dir).map(&:first)
         end
     end
 

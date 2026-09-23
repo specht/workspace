@@ -23,13 +23,19 @@ Ein minimales Paket kann so aussehen:
 Die Dateien und Verzeichnisse nach `AUFGABE.md` sind vollständig
 unterrichtsabhängig. Das Paket ist nicht an eine Programmiersprache gebunden.
 
-Ein Archiv, das auch das versteckte Verzeichnis `.workspace` enthält, kann zum
-Beispiel so erzeugt werden:
+Wechsle in das Verzeichnis, **in dem** der Aufgabenordner liegt. Dieses
+Beispiel legt das Archiv neben dem Aufgabenordner an, enthält aber direkt dessen
+Inhalt einschließlich `.workspace`, `.gitignore` und anderer versteckter Dateien:
 
 ```bash
-cd mein-test
-tar -czf ../leistungsueberpruefung.tar.gz .
+tar --exclude='./.git' \
+    -czf 2026-09-23-workspace-package.tar.gz \
+    -C 2026-09-23-workspace-package .
 ```
+
+`--exclude='./.git'` ist für `git.mode: fresh` gedacht. Bei `git.mode: preserve`
+muss diese Option entfallen, damit die vorhandene Git-Historie mit ins Archiv
+kommt. Packe keine privaten Schlüssel, Zugangsdaten oder lokalen Cache-Ordner ein.
 
 Für normale Leistungsüberprüfungen gehört kein `.git`-Verzeichnis in das Paket.
 Für Aufgaben, bei denen ein vorhandener Git-Verlauf selbst Teil der Aufgabe ist,
@@ -61,14 +67,18 @@ vscode_config:
 ### Prüfungsfarbe
 
 `exam.color` kann `blue` oder `red` sein. Wenn die Angabe fehlt, wird `blue`
-verwendet. Die Farbe wird auf deutlich sichtbare Teile der VS-Code-Oberfläche
-angewendet, damit ein Prüfungs-Workspace aus einiger Entfernung erkennbar ist.
+verwendet. Die Einstellung wählt das integrierte VS-Code-Farbschema
+`Tomorrow Night Blue` bzw. `Red` für die gesamte Oberfläche einschließlich
+Editor, Willkommensseite und Panels. Änderungen gelten für neu erzeugte
+Prüfungs-Workspaces, nicht rückwirkend für bereits entpackte Prüfungen.
 
 ### Druckausgabe
 
 Ohne weitere Konfiguration werden alle rekursiv gefundenen UTF-8-Textdateien
-gedruckt. Binärdateien sowie interne Workspace-Dateien wie `.git`,
-`.workspace`, `.local` oder `.test_init` werden automatisch ausgelassen.
+gedruckt. Binärdateien, versteckte Verzeichnisse auf jeder Ebene (z. B.
+`.cache`, `.git`, `.workspace`, `src/.cache`) sowie interne Workspace-Dateien
+wie `.test_init` werden automatisch ausgelassen. Einzelne versteckte Dateien
+wie `.gitignore` können dagegen gedruckt werden.
 
 Mit `print.exclude` lassen sich zusätzliche Dateien über Glob-Muster
 ausschließen:

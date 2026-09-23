@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'find'
 require 'yaml'
 
 module TestWorkspacePackage
@@ -9,43 +10,10 @@ module TestWorkspacePackage
     DEFAULT_GIT_MODE = 'fresh'
     GIT_MODES = ['fresh', 'preserve', 'none'].freeze
 
-    EXAM_COLOR_CUSTOMIZATIONS = {
-        'blue' => {
-            'activityBar.background' => '#005a9c',
-            'activityBar.foreground' => '#ffffff',
-            'activityBar.inactiveForeground' => '#d6ecff',
-            'sideBar.background' => '#0b3d63',
-            'sideBar.foreground' => '#ffffff',
-            'sideBarSectionHeader.background' => '#005a9c',
-            'sideBarSectionHeader.foreground' => '#ffffff',
-            'statusBar.background' => '#005a9c',
-            'statusBar.foreground' => '#ffffff',
-            'editorGroupHeader.tabsBackground' => '#0b3d63',
-            'tab.activeBackground' => '#005a9c',
-            'tab.activeForeground' => '#ffffff',
-            'tab.inactiveBackground' => '#0b3d63',
-            'tab.inactiveForeground' => '#d6ecff',
-            'titleBar.activeBackground' => '#005a9c',
-            'titleBar.activeForeground' => '#ffffff',
-        },
-        'red' => {
-            'activityBar.background' => '#a31515',
-            'activityBar.foreground' => '#ffffff',
-            'activityBar.inactiveForeground' => '#ffdada',
-            'sideBar.background' => '#651414',
-            'sideBar.foreground' => '#ffffff',
-            'sideBarSectionHeader.background' => '#a31515',
-            'sideBarSectionHeader.foreground' => '#ffffff',
-            'statusBar.background' => '#a31515',
-            'statusBar.foreground' => '#ffffff',
-            'editorGroupHeader.tabsBackground' => '#651414',
-            'tab.activeBackground' => '#a31515',
-            'tab.activeForeground' => '#ffffff',
-            'tab.inactiveBackground' => '#651414',
-            'tab.inactiveForeground' => '#ffdada',
-            'titleBar.activeBackground' => '#a31515',
-            'titleBar.activeForeground' => '#ffffff',
-        },
+    # Built-in VS Code themes cover the editor, welcome page, panels and chrome.
+    EXAM_COLOR_THEMES = {
+        'blue' => 'Tomorrow Night Blue',
+        'red' => 'Red',
     }.freeze
 
     INTERNAL_GIT_EXCLUDES = [
@@ -170,20 +138,22 @@ module TestWorkspacePackage
         raise ConfigError, 'exam muss ein YAML-Objekt enthalten.' unless exam_config.is_a?(Hash)
 
         color = (exam_config['color'] || DEFAULT_EXAM_COLOR).to_s
-        unless EXAM_COLOR_CUSTOMIZATIONS.key?(color)
+        unless EXAM_COLOR_THEMES.key?(color)
             raise ConfigError, "Unbekannte exam.color-Farbe #{color.inspect}; erlaubt sind blue und red."
         end
 
-        result = package_settings.dup
-        color_customizations = EXAM_COLOR_CUSTOMIZATIONS[color]
-        if color_customizations
-            package_customizations = package_settings['workbench.colorCustomizations']
-            unless package_customizations.nil? || package_customizations.is_a?(Hash)
-                raise ConfigError, 'workbench.colorCustomizations muss ein Objekt enthalten.'
-            end
-            result['workbench.colorCustomizations'] =
-                color_customizations.merge(package_customizations || {})
+        package_customizations = package_settings['workbench.colorCustomizations']
+        unless package_customizations.nil? || package_customizations.is_a?(Hash)
+            raise ConfigError, 'workbench.colorCustomizations muss ein Objekt enthalten.'
         end
+
+        result = package_settings.dup
+        # An exam's own theme wins over the regular Workspace's persisted theme.
+        result['workbench.colorTheme'] = EXAM_COLOR_THEMES[color]
+        result['window.autoDetectColorScheme'] = false
+        # Clear old exam-specific accent overrides instead of carrying them
+        # into the complete built-in theme. Keep explicitly supplied overrides.
+        result['workbench.colorCustomizations'] = package_customizations || {}
         result
     end
 
@@ -195,15 +165,27 @@ module TestWorkspacePackage
         include_patterns = patterns(print_config['include'])
         exclude_patterns = INTERNAL_PRINT_EXCLUDES + patterns(print_config['exclude'])
 
-        Dir.glob(File.join(workspace_path, '**', '*'), File::FNM_DOTMATCH)
-            .select { |path| File.file?(path) && !File.symlink?(path) }
-            .map { |path| [path.delete_prefix("#{workspace_path}/"), path] }
-            .reject { |relative_path, _path| matches_any?(exclude_patterns, relative_path) }
-            .select do |relative_path, _path|
-                include_patterns.empty? || matches_any?(include_patterns, relative_path)
+        workspace_path = File.expand_path(workspace_path)
+        files = []
+        Find.find(workspace_path) do |path|
+            next if path == workspace_path
+            relative_path = path.delete_prefix("#{workspace_path}/")
+
+            # Do not traverse hidden directories (including nested .cache,
+            # .git, .workspace, etc.) or follow symlinks into other trees.
+            next if File.symlink?(path)
+            if File.directory?(path)
+                Find.prune if File.basename(path).start_with?('.') ||
+                    matches_any?(exclude_patterns, relative_path)
+                next
             end
-            .select { |_relative_path, path| text_file?(path) }
-            .sort_by(&:first)
+
+            next unless File.file?(path)
+            next if matches_any?(exclude_patterns, relative_path)
+            next unless include_patterns.empty? || matches_any?(include_patterns, relative_path)
+            files << [relative_path, path] if text_file?(path)
+        end
+        files.sort_by(&:first)
     end
 
     def self.write_git_exclude(workspace_path)
@@ -242,7 +224,15 @@ module TestWorkspacePackage
     private_class_method :patterns
 
     def self.matches_any?(patterns, relative_path)
-        patterns.any? { |pattern| File.fnmatch?(pattern, relative_path, FNM_FLAGS) }
+        patterns.any? do |pattern|
+            File.fnmatch?(pattern, relative_path, FNM_FLAGS) ||
+                # File.fnmatch? with FNM_PATHNAME does not let a trailing **
+                # match multiple directory levels. Treat a final /** as a tree.
+                (pattern.end_with?('/**') && (
+                    File.fnmatch?(pattern.delete_suffix('/**'), relative_path, FNM_FLAGS) ||
+                    File.fnmatch?("#{pattern}/*", relative_path, FNM_FLAGS)
+                ))
+        end
     end
     private_class_method :matches_any?
 end

@@ -376,6 +376,18 @@
                                 Repository stattdessen vollständig erhalten oder Git ganz dem Prüfling überlassen werden.
                             </p>
                             <p>
+                                Erzeuge das Archiv im Elternverzeichnis deines Aufgabenordners. Der Punkt am Ende des
+                                Befehls packt dessen <em>gesamten Inhalt</em> einschließlich <code>.workspace</code> und
+                                <code>.gitignore</code> direkt in das Archiv:
+                            </p>
+                            <pre>tar --exclude='./.git' \
+    -czf 2026-09-23-workspace-package.tar.gz \
+    -C 2026-09-23-workspace-package .</pre>
+                            <p>
+                                Bei <code>git.mode: preserve</code> lasse <code>--exclude='./.git'</code> weg.
+                                Keine privaten Schlüssel, Zugangsdaten oder Cache-Ordner mitpacken.
+                            </p>
+                            <p>
                                 Optional steuert <code>.workspace/config.yaml</code> die Prüfungsfarbe, die Druckausgabe und zusätzliche
                                 VS-Code-Einstellungen:
                             </p>
@@ -399,9 +411,11 @@ vscode_config: {}</pre>
                                 Git-Einrichtung vor. Name und E-Mail-Adresse werden bei <code>fresh</code> und <code>preserve</code> repository-lokal gesetzt.
                             </p>
                             <p>
-                                <code>exam.color</code> kann <code>blue</code> oder <code>red</code> sein. Ohne <code>print.include</code>
-                                werden alle UTF-8-Textdateien rekursiv berücksichtigt; mit <code>print.exclude</code> lassen sich Hilfsdateien
-                                wie Test-Runner auslassen. Interne Workspace-Dateien werden automatisch nicht gedruckt.
+                                <code>exam.color</code> wählt das vollständige VS-Code-Farbschema <code>Tomorrow Night Blue</code>
+                                oder <code>Red</code>, auch für Editor und Willkommensseite. Ohne <code>print.include</code> werden alle
+                                UTF-8-Textdateien rekursiv berücksichtigt; mit <code>print.exclude</code> lassen sich Hilfsdateien
+                                wie Test-Runner auslassen. Versteckte Verzeichnisse wie <code>.cache</code> werden auf jeder Ebene
+                                automatisch von der Druckausgabe ausgeschlossen.
                             </p>
                             <p class="mb-0">
                                 Wichtig: Packe den <em>Inhalt</em> des Arbeitsverzeichnisses einschließlich <code>.workspace</code>, nicht
