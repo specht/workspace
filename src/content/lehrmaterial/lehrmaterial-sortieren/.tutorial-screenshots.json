@@ -2,9 +2,19 @@
   "version": 1,
   "screenshots": {
     "sorting-sandbox.webp": {
-      "state_hash": "aa3145c43bef561c7351ee23eae58cfe27a9cedbb87f1586ffcec6a4342f8f17",
-      "environment_fingerprint": "8f8c295964e93539778aa00bdfc3f6dacb269d16277da04692b9051547778a01",
-      "output_sha256": "9ab8db9dbcfbfa3802167ca275dc51c89c1ac3754af3ccd101fec6cca11b1175"
+      "state_hash": "ed491b0025f017f0cc62100191ac7542db2d02de09f61fd3bdd91fdd5f7d8ed5",
+      "environment_fingerprint": "b3010268ba85cf42ff31981ae54d38402f52108b113b9c2af50bd3a5a8b0eb8d",
+      "output_sha256": "cc03df93b1419ba68c047fb48cefc87887f3de0b5448c68a5b43731fe6ed3710"
+    },
+    "sorting-race.webp": {
+      "state_hash": "53c453a2572cd9dd37a3586a9fb8791b60c40313663ef5d3242ce2e29a5a9a38",
+      "environment_fingerprint": "b3010268ba85cf42ff31981ae54d38402f52108b113b9c2af50bd3a5a8b0eb8d",
+      "output_sha256": "f60ca6d1e9c17c9c4a6789d30abc9b608192a9d1009ba3d7d3e9aa41d5b81c9b"
+    },
+    "sorting-analyze.webp": {
+      "state_hash": "572f75fd805c6e234903d0abfbcc845d93acf4520724bfca5e6d00fa46a32cb8",
+      "environment_fingerprint": "b3010268ba85cf42ff31981ae54d38402f52108b113b9c2af50bd3a5a8b0eb8d",
+      "output_sha256": "c5a391fb6abe8363411abd308df0fa2290dc31fc98701043a54680140707ea5f"
     }
   }
 }

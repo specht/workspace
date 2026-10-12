@@ -2,9 +2,19 @@
   "version": 1,
   "screenshots": {
     "cpu-sandbox.webp": {
-      "state_hash": "004cc447646cc872ff8e61963fd34cef910d23efe5a2496ea2ccbd0ce6fc5213",
-      "environment_fingerprint": "8f8c295964e93539778aa00bdfc3f6dacb269d16277da04692b9051547778a01",
-      "output_sha256": "6926aceaf03afec95489fc5cda365c869822b87952ab0cfb286466cc7d0d3bfc"
+      "state_hash": "797121ff0f978b68796c8a2f1c2c9cab2c2638a4aaed143ad6286a38666e23cf",
+      "environment_fingerprint": "b3010268ba85cf42ff31981ae54d38402f52108b113b9c2af50bd3a5a8b0eb8d",
+      "output_sha256": "7107bcc03b2bd3abf85008b3694969dfa0db62b73a1689e4f8628f1490000500"
+    },
+    "cpu-cycles.webp": {
+      "state_hash": "c324601effefff0513f858214cd2de99966949d1edad0179b397c31e165356a6",
+      "environment_fingerprint": "b3010268ba85cf42ff31981ae54d38402f52108b113b9c2af50bd3a5a8b0eb8d",
+      "output_sha256": "5313a0ae6e8644cc3bd2caa3f8da0b20b9c20bf674820093ab080c6d8861d208"
+    },
+    "cpu-cube.webp": {
+      "state_hash": "f5262d57cb38083e36f84fede99c36ff5d9e2ebaf9b40325bcfb70e25da38635",
+      "environment_fingerprint": "b3010268ba85cf42ff31981ae54d38402f52108b113b9c2af50bd3a5a8b0eb8d",
+      "output_sha256": "17bc96ea52c1f34d41d5d59352f4ff66f0453fc33e0ba3a7651e8265fdee9415"
     }
   }
 }

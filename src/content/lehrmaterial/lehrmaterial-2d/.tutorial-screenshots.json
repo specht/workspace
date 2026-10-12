@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "screenshots": {
+    "game-studio-level.webp": {
+      "state_hash": "41e1e1986708038b23c68658b434b8ed80475467f63ee19713adfdc11093a06c",
+      "environment_fingerprint": "b3010268ba85cf42ff31981ae54d38402f52108b113b9c2af50bd3a5a8b0eb8d",
+      "output_sha256": "c820e8db6e91a798941ac9676fba6818f78150b2543940755f37fcbf214397e6"
+    },
+    "game-studio-spielen.webp": {
+      "state_hash": "4ce0a947a9adac827cfc6f823b14840ffecd72e4b0ba6cebe9e018e3600afbe8",
+      "environment_fingerprint": "b3010268ba85cf42ff31981ae54d38402f52108b113b9c2af50bd3a5a8b0eb8d",
+      "output_sha256": "f1b0a3a115efe0a84d531671d6332e3f5f79195b29616bee44686f51b88ba135"
+    },
+    "game-studio-sprites.webp": {
+      "state_hash": "2b2efce84d6ffe9554f32d2e54a867da53ce57c7249c736e6858f8236065e5f4",
+      "environment_fingerprint": "b3010268ba85cf42ff31981ae54d38402f52108b113b9c2af50bd3a5a8b0eb8d",
+      "output_sha256": "e8b5b40ff0517e30ab01fadb431bd038ed43792556fd8ddbf10590f01320f068"
+    }
+  }
+}
