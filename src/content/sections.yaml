@@ -1,3 +1,12 @@
+- key: teaching
+  teacher_only: true
+  label: Material für Lehrkräfte
+  icon: /images/book.png
+  description: |
+    Werkzeuge und Anregungen für den Informatikunterricht.
+  entries:
+    - lehrmaterial
+
 - key: introduction
   label: Einführung
   icon: /images/rocket.png

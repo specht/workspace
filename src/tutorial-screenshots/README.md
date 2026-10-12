@@ -98,6 +98,7 @@ write-file: PATH <- file:RELATIVE_PATH
 wait-for-file: PATH
 wait-for-file-newer: TARGET <- SOURCE
 go-live
+preview-port: PORT
 preview-reload
 preview-reset
 
@@ -130,6 +131,12 @@ interaction instructions (`click`, `hold`, `move-mouse`, `type`, `press`,
 `wait-for-text`, and `wait-for-input-value`). It defaults to `workspace`. Actions
 such as `terminal-open`, `open-file`, and `clone-start` always operate on the
 Workspace because that is part of their meaning.
+
+`preview-port: PORT` opens a web app started in the screenshot Workspace via
+its existing authenticated `/proxy/PORT/` route, then makes it the `preview`
+tab. Ports 1024–65535 are accepted. The action retries startup for up to three
+minutes, so an app can be launched in the background with `terminal-run` and
+captured with `tab: preview`, even if it binds only to 127.0.0.1.
 
 ### General interaction
 

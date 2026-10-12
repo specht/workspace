@@ -405,6 +405,12 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             });
         } else if ((match = line.match(/^terminal-run:\s*(.+)$/))) {
             recipe.actions.push({ type: 'terminal-run', text: match[1].trim() });
+        } else if ((match = line.match(/^preview-port:\s*(\d+)$/))) {
+            const port = Number(match[1]);
+            if (port < 1024 || port > 65535) {
+                throw withSourceError(new Error(`Invalid preview port: ${port}`), source);
+            }
+            recipe.actions.push({ type: 'preview-port', port });
         } else if ((match = line.match(/^click:\s*(.+)$/))) {
             recipe.actions.push({
                 type: 'click',
@@ -1538,6 +1544,34 @@ async function goLive(hooks) {
     await waitForPreviewReady(preview, hooks);
 }
 
+async function openPreviewPort(port, hooks) {
+    // Workspace's /proxy/<port>/ endpoint redirects to its authenticated
+    // <server-tag>-<port> subdomain. This also reaches loopback-only servers.
+    const url = new URL(`/proxy/${port}/`, workspace.url()).href;
+    if (preview && !preview.isClosed()) await preview.close();
+    preview = await context.newPage();
+    const deadline = Date.now() + 180_000;
+    let lastError = 'application not ready';
+    while (Date.now() < deadline) {
+        try {
+            const response = await preview.goto(url, {
+                waitUntil: 'domcontentloaded',
+                timeout: 15_000,
+            });
+            if (response?.ok()) {
+                await waitForPreviewReady(preview, hooks);
+                return;
+            }
+            lastError = `HTTP ${response?.status() ?? 'no response'}`;
+            if (response?.status() === 403) break;
+        } catch (error) {
+            lastError = error.message;
+        }
+        await sleep(2);
+    }
+    throw new Error(`Preview on port ${port} unavailable: ${lastError}`);
+}
+
 async function previewReload(reset = false, hooks = null) {
     if (!preview || preview.isClosed()) throw new Error('No preview tab is open');
     let previewSession = null;
@@ -1972,6 +2006,7 @@ async function executeAction(action, targetTab, hooks) {
         case 'terminal-maximize': return terminalMaximize();
         case 'terminal-run': return terminalRun(action.text);
         case 'go-live': return goLive(hooks);
+        case 'preview-port': return openPreviewPort(action.port, hooks);
         case 'write-file': return writeWorkspaceFile(action.path, action.contents, hooks);
         case 'wait-for-file': return waitForWorkspaceFile(action.path);
         case 'wait-for-file-newer': return waitForWorkspaceFileNewer(action.target, action.source);

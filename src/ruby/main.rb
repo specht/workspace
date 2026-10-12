@@ -1609,6 +1609,7 @@ class Main < Sinatra::Base
             parsed_content[slug] = {
                 :html => html,
                 :dev_only => entry[:dev_only],
+                :teacher_only => parsed_sections.dig(section, :teacher_only) == true,
             }
             unless entry[:extra]
                 parsed_sections[section][:entries] << slug
@@ -3569,6 +3570,7 @@ class Main < Sinatra::Base
             if running_tests.empty?
                 @@section_order.each do |section_key|
                     section = @@sections[section_key]
+                    next if section[:teacher_only] && !teacher_account_logged_in?
                     next if section[:entries].reject do |entry|
                         (!DEVELOPMENT) && @@content[entry][:dev_only]
                     end.empty?
@@ -5620,6 +5622,13 @@ class Main < Sinatra::Base
     get '/*' do
         path = request.path
         slug = nil
+        # Authorize before refreshing tutorial content or rendering its HTML.
+        requested_slug = path.delete_prefix('/')
+        if (@@content[requested_slug] || {})[:teacher_only]
+            this_is_a_page_for_logged_in_users!
+            Main.load_invitations()
+            halt 403 unless teacher_account_logged_in?
+        end
         if DEVELOPMENT && path =~ /^\/[a-zA-Z0-9_-]+$/
             Main.refresh_tutorial(path[1, path.size - 1])
         end

@@ -15,6 +15,8 @@ export default async function globalSetup() {
   const lines = [
     '> E2E Teachers',
     'E2E Teacher <e2e-teacher@example.com>',
+    'E2E Materials Teacher <e2e-materials-teacher@example.com>',
+    '* e2e-materials-teacher@example.com',
   ];
   for (let index = 0; index < userCount; index++)
     lines.push(`E2E Auth Teacher ${index} <e2e-auth-teacher-${index}@example.com>`);
