@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "screenshots": {
+    "cpu-sandbox.webp": {
+      "state_hash": "004cc447646cc872ff8e61963fd34cef910d23efe5a2496ea2ccbd0ce6fc5213",
+      "environment_fingerprint": "8f8c295964e93539778aa00bdfc3f6dacb269d16277da04692b9051547778a01",
+      "output_sha256": "6926aceaf03afec95489fc5cda365c869822b87952ab0cfb286466cc7d0d3bfc"
+    }
+  }
+}

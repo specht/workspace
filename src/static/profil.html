@@ -354,6 +354,12 @@
                 <a class="btn btn-secondary" href="/logout"><i class='bi bi-box-arrow-in-right'></i>Abmelden</a>
             </section>
 
+            <section id="profile-teaching-materials" class="profile-section" aria-labelledby="teaching-materials" #{teacher_account_logged_in? ? '' : 'hidden'}>
+                <h2 id="teaching-materials">Lehrmaterial</h2>
+                <p>Unterrichtsmaterialien, interaktive Werkzeuge und Anregungen für den Informatikunterricht.</p>
+                <a href="/lehrmaterial" class="btn btn-primary"><i class="bi bi-journal-code"></i>Lehrmaterial öffnen</a>
+            </section>
+
             <section id="profile-for-teachers" class="profile-section" aria-labelledby="for-teachers" #{teacher_logged_in? ? '' : 'hidden'}>
                 <h2 id="for-teachers">Für Lehrkräfte</h2>
                 <div class="profile-subsection-heading">

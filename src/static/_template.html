@@ -864,8 +864,7 @@ window.addEventListener('load', function() {
     </div>
     <div class="menu" style="#{running_tests.empty? ? '': 'display: none;'}">
         <div class="container">
-            <div class='d-flex align-items-center flex-wrap gap-2'>
-                <div class='flex-grow-1 text-center'>
+            <div style='text-align: center; width: 100%;'>
                 <a style='#{@session_user.nil? ? '' : 'display: none;'}' class="btn btn-success #{path == '/login.html' ? 'active' : ''}" href="/login"><i class='bi bi-box-arrow-in-right'></i>Anmelden</a>
                 <button style='#{(@session_user.nil? || (!@session_user[:show_workspace])) ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success bu-launch-workspace"><i class='bi bi-code-slash'></i>Workspace öffnen</button>
                 <a style='#{(@session_user.nil? || (!@session_user[:show_codebites])) ? 'display: none;' : ''}' href='/codebites' id='bu_codebites' class="btn btn-success"><i class='bi bi-star'></i>Code Bites</a>
@@ -874,8 +873,6 @@ window.addEventListener('load', function() {
                 <a style='#{(@session_user.nil? || (!@session_user[:show_tic80])) ? 'display: none;' : ''}' href="/tic80/" class="btn btn-success" target="_blank"><i class='bi bi-keyboard'></i>TIC-80</a>
                 <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-primary"><i class='bi bi-person-vcard'></i>#{((@@invitations[(@session_user || {})[:email]] || {})[:name] || '')}</a>
                 <a href='/admin' style='#{teacher_logged_in? ? '' : 'display: none;'}' class="btn btn-warning"><i class='bi bi-wrench-adjustable'></i>Administration</a>
-                </div>
-                <a href='/lehrmaterial' style='#{teacher_account_logged_in? ? '' : 'display: none;'}' class="btn btn-primary ms-auto #{request.path == '/lehrmaterial' || request.path.start_with?('/lehrmaterial-') ? 'active' : ''}"><i class='bi bi-journal-code'></i>Lehrmaterial</a>
             </div>
         </div>
     </div>

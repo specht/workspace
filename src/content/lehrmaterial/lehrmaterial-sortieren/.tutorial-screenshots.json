@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "screenshots": {
+    "sorting-sandbox.webp": {
+      "state_hash": "aa3145c43bef561c7351ee23eae58cfe27a9cedbb87f1586ffcec6a4342f8f17",
+      "environment_fingerprint": "8f8c295964e93539778aa00bdfc3f6dacb269d16277da04692b9051547778a01",
+      "output_sha256": "9ab8db9dbcfbfa3802167ca275dc51c89c1ac3754af3ccd101fec6cca11b1175"
+    }
+  }
+}
