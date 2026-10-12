@@ -5,6 +5,7 @@ require './include/authentication.rb'
 require './include/database_provisioning.rb'
 require './include/trusted_template.rb'
 require './include/tutorial_screenshots.rb'
+require './include/teacher_roles.rb'
 require './include/test_workspace_package.rb'
 require './include/test_workspace_extensions.rb'
 require './include/workspace_credentials.rb'
@@ -1755,6 +1756,7 @@ class Main < Sinatra::Base
         invitations = {}
         user_groups = {}
         user_group_order = []
+        explicit_teacher_emails = Set.new
 
         current_group = 'Administrator'
 
@@ -1778,7 +1780,13 @@ class Main < Sinatra::Base
                         group_admins[current_group] ||= []
                         user_group_order << current_group unless user_group_order.include?(current_group)
                     elsif line[0] == '+'
-                        group_admins[current_group] << line[1, line.size - 1].strip.delete_prefix('<').delete_suffix('>')
+                        # + grants administration of the current group, as before.
+                        email = TeacherRoles.normalize_email(line[1..])
+                        (group_admins[current_group] ||= []) << email if email
+                    elsif line[0] == '*'
+                        # * designates a teacher without granting group privileges.
+                        email = TeacherRoles.normalize_email(line[1..])
+                        explicit_teacher_emails << email if email
                     else
                         parts = line.strip.split(' ')
                         email = parts.last.delete_prefix('<').delete_suffix('>').downcase
@@ -1804,12 +1812,19 @@ class Main < Sinatra::Base
                 teachers[email] << group
             end
         end
+        teacher_emails = TeacherRoles.resolve(
+            :invited_emails => invitations.keys,
+            :administrators => ADMIN_USERS,
+            :group_administrators => teachers.keys,
+            :designated_teachers => explicit_teacher_emails,
+        )
 
         # Keep readers on the previous complete snapshot until parsing finishes.
         @@invitations = invitations
         @@user_groups = user_groups
         @@user_group_order = user_group_order
-        @@teachers = teachers
+        @@teachers = teachers # group administration rights only
+        @@teacher_emails = teacher_emails # teachers, with or without group rights
     end
 
     private_class_method :load_invitations_locked
@@ -2054,6 +2069,13 @@ class Main < Sinatra::Base
         return (!@session_user.nil?)
     end
 
+    # Teaching resources are available to designated teachers without any
+    # access to group administration, students' accounts, or test archives.
+    def teacher_account_logged_in?
+        user_logged_in? && @@teacher_emails.include?(@session_user[:email])
+    end
+
+    # Existing administrative permissions stay tied to + group assignments.
     def teacher_logged_in?
         admin_logged_in? || (user_logged_in? && @@teachers.include?(@session_user[:email]))
     end
@@ -5629,8 +5651,10 @@ class Main < Sinatra::Base
             redirect "#{WEB_ROOT}/tic80/", 302
             return
         end
-        if path == '/admin' && teacher_logged_in?
+        if path == '/admin'
+            this_is_a_page_for_logged_in_users!
             Main.load_invitations()
+            halt 403 unless teacher_logged_in?
         end
         if path == '/tic80/'
             s = File.read(File.join(@@static_dir, '/tic80/index.html'))
