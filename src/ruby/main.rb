@@ -1220,7 +1220,8 @@ class Main < Sinatra::Base
 
     def self.content_catalog_signature
         digest = Digest::SHA256.new
-        ['/src/content/sections.yaml', '/src/content/hyphenation.txt'].each do |path|
+        ['/src/content/sections.yaml', '/src/content/lehrmaterial/sections.yaml',
+         '/src/content/hyphenation.txt'].each do |path|
             digest.update(File.binread(path))
             digest.update("\0")
         end
@@ -1269,8 +1270,16 @@ class Main < Sinatra::Base
             line.strip!
             hyphenation_map[line.gsub('-', '')] = line.gsub('-', '&shy;')
         end
-        sections = YAML.load(File.read('/src/content/sections.yaml'))
-        section_order = sections.map { |section| section['key'] }
+        # Keep the student and teacher catalogs independent while sharing the
+        # Markdown renderer, image cache, and screenshot generator.
+        student_sections = YAML.load(File.read('/src/content/sections.yaml'))
+        teaching_sections = YAML.load(File.read('/src/content/lehrmaterial/sections.yaml'))
+        section_order = student_sections.map { |section| section['key'] }
+        teaching_section_order = teaching_sections.map { |section| section['key'] }
+        sections = student_sections.map { |section| section.merge('catalog' => 'student') } +
+            teaching_sections.map do |section|
+                section.merge('catalog' => 'teaching', 'teacher_only' => true)
+            end
         parsed_sections = {}
         parsed_content = {}
         parsed_content_paths = {}
@@ -1290,8 +1299,10 @@ class Main < Sinatra::Base
             (section['entries'] || []).each do |path|
                 dev_only = path[0] == '.'
                 path = path.sub(/^\./, '')
-                seen_paths << path
-                original_path = Dir["/src/content/#{path}/*.md"].reject { |x| x.include?('+') }.first
+                raise "duplicate content slug: #{path}" unless seen_paths.add?(path)
+                content_root = section['catalog'] == 'teaching' ?
+                    '/src/content/lehrmaterial' : '/src/content'
+                original_path = Dir["#{content_root}/#{path}/*.md"].reject { |x| x.include?('+') }.first
                 paths << {:section => section['key'], :path => path, :original_path => original_path, :dev_only => dev_only}
             end
         end
@@ -1618,14 +1629,19 @@ class Main < Sinatra::Base
                     if meta['image']
                         parts = meta['image'].split(':')
                         image_path = File.join(File.dirname(path), parts[0])
-                        sha1 = convert_image(image_path)
-                        parsed_content[slug][:image] = "/cache/#{sha1}.webp"
+                        if File.file?(image_path)
+                            sha1 = convert_image(image_path)
+                            parsed_content[slug][:image] = "/cache/#{sha1}.webp"
 
-                        extension = File.extname(image_path)
-                        dark_image_path = image_path.delete_suffix(extension) + "-dark#{extension}"
-                        if File.exist?(dark_image_path)
-                            dark_sha1 = convert_image(dark_image_path)
-                            parsed_content[slug][:image_dark] = "/cache/#{dark_sha1}.webp"
+                            extension = File.extname(image_path)
+                            dark_image_path = image_path.delete_suffix(extension) + "-dark#{extension}"
+                            if File.exist?(dark_image_path)
+                                dark_sha1 = convert_image(dark_image_path)
+                                parsed_content[slug][:image_dark] = "/cache/#{dark_sha1}.webp"
+                            end
+                        else
+                            # A generated screenshot may not exist on first load.
+                            parsed_content[slug][:image] = '/images/keyboard.png'
                         end
 
                         parsed_content[slug][:image_x] = (parts[1] || '50').to_i
@@ -1660,6 +1676,7 @@ class Main < Sinatra::Base
             # Publish only complete parse results. Concurrent requests continue
             # to read the previous complete snapshot while this method is working.
             @@section_order = section_order
+            @@teaching_section_order = teaching_section_order
             @@sections = parsed_sections
             @@kenney = parsed_kenney
             @@content = parsed_content
@@ -3563,14 +3580,16 @@ class Main < Sinatra::Base
         return "#{sprintf('%1.1f', ai_Size.to_f / 1024.0 / 1024.0 / 1024.0 / 1024.0)} TB"
     end
 
-    def print_content_overview()
+    def print_content_overview(catalog = :student)
         Main.refresh_content_catalog if DEVELOPMENT
+        assert([:student, :teaching].include?(catalog))
+        assert(teacher_account_logged_in?) if catalog == :teaching
         html = StringIO.open do |io|
-            running_tests = my_running_tests()
+            running_tests = catalog == :teaching ? [] : my_running_tests()
             if running_tests.empty?
-                @@section_order.each do |section_key|
+                section_order = catalog == :teaching ? @@teaching_section_order : @@section_order
+                section_order.each do |section_key|
                     section = @@sections[section_key]
-                    next if section[:teacher_only] && !teacher_account_logged_in?
                     next if section[:entries].reject do |entry|
                         (!DEVELOPMENT) && @@content[entry][:dev_only]
                     end.empty?
@@ -5622,9 +5641,12 @@ class Main < Sinatra::Base
     get '/*' do
         path = request.path
         slug = nil
-        # Authorize before refreshing tutorial content or rendering its HTML.
+        # Guard the complete teacher namespace before a development reload can
+        # discover a newly added article that was not yet in @@content.
         requested_slug = path.delete_prefix('/')
-        if (@@content[requested_slug] || {})[:teacher_only]
+        if ['lehrmaterial', 'lehrmaterial.html'].include?(requested_slug) ||
+            requested_slug.start_with?('lehrmaterial-') ||
+            (@@content[requested_slug] || {})[:teacher_only]
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
             halt 403 unless teacher_account_logged_in?

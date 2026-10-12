@@ -1,0 +1,10 @@
+- key: teaching-tools
+  label: Interaktive Werkzeuge
+  icon: /images/keyboard.png
+  description: |
+    Werkzeuge für den Informatikunterricht: Lernende experimentieren mit
+    Algorithmen, Datenstrukturen und einem einfachen Prozessor.
+  entries:
+    - lehrmaterial-sortieren
+    - lehrmaterial-datenstrukturen
+    - lehrmaterial-cpu

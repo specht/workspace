@@ -21,18 +21,34 @@ Lea Lehrerin <lea@example.org>
 - Die in `ADMIN_USERS` eingetragenen Benutzer gelten ebenfalls als Lehrkräfte.
 - Markierungen ohne passende Einladung berechtigen nicht zur Anmeldung.
 
-Die Seite `/lehrmaterial` und ihre Kachel in der Startseitenübersicht sind nur
-für angemeldete Lehrkräfte sichtbar. Andere angemeldete Benutzer erhalten auf
-der direkten URL einen HTTP-403-Status; nicht angemeldete Benutzer werden zur
-Anmeldung weitergeleitet. Die bisherigen Verwaltungsrechte und
-Leistungsüberprüfungs-Funktionen bleiben ausschließlich an `+` bzw.
-`ADMIN_USERS` gebunden.
+Der Button **Lehrmaterial** steht für Lehrkräfte rechts im Kopfmenü. Unter
+`/lehrmaterial` findet sich eine eigene Übersicht mit denselben Tutorial-Karten
+wie auf der Startseite. Die normale Startseite zeigt ausschließlich den
+Schülerkatalog aus `src/content/sections.yaml`.
 
-Screenshots in der Lehrmaterial-Seite verwenden das vorhandene
-`<!-- tutorial-screenshot ... -->`-System und werden im Entwicklungsmodus durch
-Aufruf von `/lehrmaterial` erzeugt. Die neuen `preview-port`-Anweisungen
-öffnen dafür das laufende Webinterface der Sandbox über die bestehende
-Workspace-Portweiterleitung. Die generierten `.webp`-Dateien samt
-`.tutorial-screenshots.json` gehören nach Prüfung ins Repository; ohne diese
-Bilder sind im Produktivbetrieb zunächst Platzhalter bzw. fehlende Bilder
-sichtbar.
+Die Lehrerübersicht wird unabhängig davon über
+`src/content/lehrmaterial/sections.yaml` gepflegt. Die dort aufgeführten
+Markdown-Artikel liegen unter `src/content/lehrmaterial/<slug>/<slug>.md`.
+Der Slug beginnt mit `lehrmaterial-` und ist weltweit eindeutig. Neue Rubriken
+und Artikel erscheinen automatisch im Lehrerbereich; die gewohnten
+Markdown-, Inhaltsverzeichnis-, Bild- und Screenshot-Mechanismen werden geteilt.
+
+Nicht angemeldete Benutzer werden bei geschützten Seiten zur Anmeldung
+weitergeleitet; andere angemeldete Benutzer erhalten HTTP 403. Die bisherigen
+Verwaltungsrechte und Funktionen für Leistungsüberprüfungen bleiben
+unverändert an `+` bzw. `ADMIN_USERS` gebunden.
+
+Die Artikel verwenden das vorhandene `<!-- tutorial-screenshot ... -->`-System.
+Jeder Artikel erzeugt seinen eigenen Screenshot im Entwicklungsmodus; der
+entsprechende Screenshot dient nach erfolgreicher Erzeugung auch als Kachelbild.
+Der Snapshot-Dienst benötigt nach Änderungen an `server.js` einen Neubau:
+
+```bash
+./config.rb up -d --build tutorial_screenshots
+```
+
+Die Sandbox-Beispiele verwenden die Ports 18080, 18081 und 18765 im
+**isolierten Screenshot-Workspace**, nicht auf dem Server-Host. Die erzeugten
+`.webp`-Dateien und `.tutorial-screenshots.json` müssen nach Prüfung ins
+Repository aufgenommen werden. Bei noch fehlenden Screenshots erscheint
+vorübergehend ein neutrales Kartenbild.
