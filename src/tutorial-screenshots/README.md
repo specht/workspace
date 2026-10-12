@@ -99,6 +99,9 @@ wait-for-file: PATH
 wait-for-file-newer: TARGET <- SOURCE
 go-live
 preview-port: PORT
+preview-url: https://2d.hackschule.de/
+preview-load-game: RELATIVE_WORKSPACE_JSON_PATH
+select-option: CSS_SELECTOR = VALUE
 preview-reload
 preview-reset
 
@@ -137,6 +140,18 @@ its existing authenticated `/proxy/PORT/` route, then makes it the `preview`
 tab. Ports 1024–65535 are accepted. The action retries startup for up to three
 minutes, so an app can be launched in the background with `terminal-run` and
 captured with `tab: preview`, even if it binds only to 127.0.0.1.
+
+`select-option` selects the given value in a real HTML `<select>` on the active
+tab and triggers the normal change event. For example,
+`select-option: #structure = avl` picks a completed AVL implementation.
+
+`preview-url` is deliberately restricted to the public 2D Game Studio at
+`https://2d.hackschule.de/`. `preview-load-game` loads the generated JSON of
+the five-level *Pip und das letzte Licht* demo from the screenshot Workspace,
+relative to `/workspace`, into that site's in-browser editor. It does not
+save or publish anything remotely. Generate the JSON reproducibly from a
+pinned `specht/2d` Git checkout with `npm ci && npm run demo` in `rezepte/tools`.
+The site itself is live; the game content is pinned to the checked-out commit.
 
 ### General interaction
 

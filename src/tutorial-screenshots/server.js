@@ -46,7 +46,7 @@ const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'student@examp
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
-const GENERATOR_VERSION = 18;
+const GENERATOR_VERSION = 19;
 const WORKSPACE_FONT_FAMILY = '0xProto Nerd Font Mono';
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
@@ -411,6 +411,20 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
                 throw withSourceError(new Error(`Invalid preview port: ${port}`), source);
             }
             recipe.actions.push({ type: 'preview-port', port });
+        } else if ((match = line.match(/^preview-url:\s*(.+)$/))) {
+            // External screenshots are restricted to the public 2D Game Studio.
+            const url = match[1].trim();
+            if (url !== 'https://2d.hackschule.de/') {
+                throw withSourceError(new Error(`Disallowed preview-url: ${url}`), source);
+            }
+            recipe.actions.push({ type: 'preview-url', url });
+        } else if ((match = line.match(/^preview-load-game:\s*(.+)$/))) {
+            recipe.actions.push({
+                type: 'preview-load-game',
+                path: valueAtSource(source, () => safeRelativePath(match[1].trim())),
+            });
+        } else if ((match = line.match(/^select-option:\s*(#[^\s=]+)\s*=\s*(\S+)$/))) {
+            recipe.actions.push({ type: 'select-option', selector: match[1], value: match[2] });
         } else if ((match = line.match(/^click:\s*(.+)$/))) {
             recipe.actions.push({
                 type: 'click',
@@ -1572,6 +1586,64 @@ async function openPreviewPort(port, hooks) {
     throw new Error(`Preview on port ${port} unavailable: ${lastError}`);
 }
 
+async function openPreviewUrl(url, hooks) {
+    if (url !== 'https://2d.hackschule.de/') {
+        throw new Error(`External preview URL not allowed: ${url}`);
+    }
+    if (preview && !preview.isClosed()) await preview.close();
+    preview = await context.newPage();
+    const response = await preview.goto(url, {
+        waitUntil: 'domcontentloaded', timeout: 60_000,
+    });
+    if (!response?.ok()) throw new Error(`Game Studio returned HTTP ${response?.status()}`);
+    await waitForPreviewReady(preview, hooks);
+}
+
+async function loadPreviewGame(relativePath) {
+    if (!preview || preview.isClosed()) throw new Error('No preview tab is open');
+    if (!relativePath.endsWith('.json')) throw new Error('preview-load-game requires JSON');
+    const root = path.resolve(screenshotWorkspaceRoot());
+    const target = path.resolve(root, safeRelativePath(relativePath));
+    if (!target.startsWith(`${root}${path.sep}`)) {
+        throw new Error(`Game JSON is outside the screenshot workspace: ${relativePath}`);
+    }
+    // Built from a checked-out, pinned demo game. No public game code or
+    // mutable latest-version lookup is involved; nothing is saved remotely.
+    const data = JSON.parse(await fs.readFile(target, 'utf8'));
+    if (data?.properties?.title !== 'Pip und das letzte Licht' ||
+        !Array.isArray(data.levels) || data.levels.length < 5 ||
+        !Array.isArray(data.sprites) || data.sprites.length < 10) {
+        throw new Error('Pinned Pip demo is incomplete or unexpected');
+    }
+    await preview.waitForFunction(
+        () => !!window.game?.level_editor && typeof window.game._load === 'function',
+        null,
+        { timeout: 120_000 },
+    );
+    await preview.evaluate(gameData => {
+        // The application's own loader refreshes sprites, layers and menus.
+        // This is only an in-browser editing state, not a POST to /api/save_game.
+        window.game.data = gameData;
+        window.game._load();
+    }, data);
+    await preview.waitForFunction(
+        () => window.game?.data?.properties?.title === 'Pip und das letzte Licht' &&
+            window.game.data.levels.length >= 5,
+        null,
+        { timeout: 30_000 },
+    );
+}
+
+async function selectOption(action, targetTab) {
+    const page = requirePageForTab(targetTab, 'select-option');
+    const select = page.locator(action.selector);
+    await select.waitFor({ state: 'visible', timeout: 20_000 });
+    const count = await select.count();
+    if (count !== 1) throw new Error(`select-option expected one ${action.selector}; found ${count}`);
+    await select.selectOption(action.value);
+    await page.waitForTimeout(150);
+}
+
 async function previewReload(reset = false, hooks = null) {
     if (!preview || preview.isClosed()) throw new Error('No preview tab is open');
     let previewSession = null;
@@ -2007,6 +2079,9 @@ async function executeAction(action, targetTab, hooks) {
         case 'terminal-run': return terminalRun(action.text);
         case 'go-live': return goLive(hooks);
         case 'preview-port': return openPreviewPort(action.port, hooks);
+        case 'preview-url': return openPreviewUrl(action.url, hooks);
+        case 'preview-load-game': return loadPreviewGame(action.path);
+        case 'select-option': return selectOption(action, targetTab);
         case 'write-file': return writeWorkspaceFile(action.path, action.contents, hooks);
         case 'wait-for-file': return waitForWorkspaceFile(action.path);
         case 'wait-for-file-newer': return waitForWorkspaceFileNewer(action.target, action.source);

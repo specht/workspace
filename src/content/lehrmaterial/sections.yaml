@@ -2,9 +2,10 @@
   label: Interaktive Werkzeuge
   icon: /images/keyboard.png
   description: |
-    Werkzeuge für den Informatikunterricht: Lernende experimentieren mit
-    Algorithmen, Datenstrukturen und einem einfachen Prozessor.
+    Programmieren, experimentieren, Spiele gestalten: vier Werkzeuge mit
+    Beispielen, Unterrichtsideen und echten Ansichten der laufenden Anwendungen.
   entries:
     - lehrmaterial-sortieren
     - lehrmaterial-datenstrukturen
     - lehrmaterial-cpu
+    - lehrmaterial-2d
