@@ -21,7 +21,7 @@ derselben Maschine ein texturiertes 3D-Labyrinth.
 <tr><th>Die Lehrkraft …</th><td>sieht in <strong>Class progress</strong> alle Lösungen und vergleicht sie nach Bytes und Takten</td></tr>
 </table>
 
-## 1. Mit einer Demo anfangen
+## Mit einer Demo anfangen
 
 Ein simulierter Prozessor wird erst dann spannend, wenn man sieht, was er kann. Zur
 CPU Sandbox gehören **26 Beispielprogramme**, von der Addition zweier Zahlen bis zu
@@ -57,7 +57,7 @@ Snake, Plasma, Conways Game of Life, einen Sternenflug, einen rotierenden Würfe
 Orgel mit Arpeggios und eine Landschaft mit Wasserspiegelung. Das Feuer `09-fire` passt
 übrigens samt Bildschirm in 256 Byte Speicher; das Programm selbst ist 80 Byte lang.
 
-## 2. Drei Ausbaustufen, eine Befehlssprache
+## Drei Ausbaustufen, eine Befehlssprache
 
 Die MiniCPU gibt es in drei Stufen. Jede behält alles von der vorherigen und fügt genau
 eine Idee hinzu, sodass nichts umgelernt werden muss:
@@ -89,7 +89,7 @@ wenn man A mit 0 statt mit 5 startet – und warum steht danach ausgerechnet 128
 Wer diese Frage beantworten kann, hat Überlauf, Flags und 8-Bit-Arithmetik verstanden.
 </div>
 
-## 3. In einen Befehl hineinsehen
+## In einen Befehl hineinsehen
 
 **Step** führt einen Befehl aus, **Step back** nimmt ihn zurück. Neben jeder
 Quelltextzeile stehen Adresse und Maschinenbytes; geänderte Speicherzellen leuchten auf.
@@ -133,7 +133,7 @@ zu sprechen lohnt:
 - 8-Bit-Arithmetik läuft über: 255 + 1 ergibt 0, und das Carry-Flag ist gesetzt.
 - Zeit kosten **Takte, nicht Zeilen**.
 
-## 4. Von Assembler zu C
+## Von Assembler zu C
 
 Ab MiniCPU 8S lassen sich Programme auch in MiniC schreiben, einer kleinen Variante von
 C, die beim Tippen übersetzt wird. Versteckt wird dabei nichts: Neben jeder C-Zeile
@@ -160,7 +160,7 @@ Der Würfel aus `18-cube.c` nutzt eine Sinustabelle in Festkommaarithmetik, Pers
 das Ausblenden verdeckter Flächen, Schattierung und Seitenwechsel (page flipping) gegen
 Flackern – und die Füllroutine ist von Hand in Assembler geschrieben.
 
-## 5. Aufgaben mit automatischer Prüfung
+## Aufgaben mit automatischer Prüfung
 
 Sechzehn Aufgaben prüfen sich selbst: vom Addieren zweier Bytes über Fibonacci,
 Multiplikation und Sortieren bis zu einem Schachbrettmuster; dazu Aufgaben speziell für C

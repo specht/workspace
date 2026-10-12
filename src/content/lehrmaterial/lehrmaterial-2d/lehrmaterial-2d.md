@@ -35,7 +35,7 @@ Burg im Gewitter und einen versunkenen Garten, um den Zauberschlüssel zu holen.
 hat fünf Level und einen Laden und zeigt fast alles, was das Studio kann. Es eignet sich
 hervorragend als Einstieg: erst spielen, dann nachsehen, wie es gemacht ist.
 
-## 1. Welten bauen und Regeln verknüpfen
+## Welten bauen und Regeln verknüpfen
 
 Im **Level-Editor** setzen die Lernenden ihre Sprites in Ebenen auf ein Raster. Daraus
 entstehen Plattformen, Leitern, Wasser, Förderbänder, Aufzüge, Fallen, Gegner, Türen,
@@ -86,7 +86,7 @@ das Tor nur für drei Sekunden: Schafft man den Weg? Danach erklären die Lernen
 Rätsel anhand der Signal-Übersicht in eigenen Worten: Wenn …, dann … .
 </div>
 
-## 2. Testen, beobachten, verbessern
+## Testen, beobachten, verbessern
 
 Mit der Taste <kbd>T</kbd> startet das Level an der Stelle, auf die die Maus zeigt –
 so lässt sich eine knifflige Passage hundertmal hintereinander ausprobieren, ohne
@@ -123,7 +123,7 @@ Spielerin hängen? Wo ist unklar, was zu tun ist? Daraus entsteht eine konkrete 
 und eine zweite Testrunde, in der sich zeigt, ob sie geholfen hat.
 </div>
 
-## 3. Figuren zeichnen und zum Leben erwecken
+## Figuren zeichnen und zum Leben erwecken
 
 Im **Sprite-Editor** zeichnen die Lernenden Pixelbilder mit Stift, Formen, Füllen,
 Spiegeln, Umfärben und Onion Skinning. Eine Figur hat mehrere **Zustände** mit eigenen
@@ -159,7 +159,7 @@ beschreiben – patrouillieren, verfolgen, suchen – und was löst den Wechsel 
 aus? Hier lässt sich das Prinzip eines Zustandsautomaten am eigenen Gegner entdecken.
 </div>
 
-## 4. Die Spielwelt als Netz
+## Die Spielwelt als Netz
 
 Ausgänge verbinden Level miteinander – nicht nur der Reihe nach, sondern auch zu
 Nebenleveln wie Sigis Laden im Demospiel, aus denen man wieder zurückkehrt. Die
@@ -182,7 +182,7 @@ Ausgänge gerichtete Kanten. „Kann man jedes Level erreichen?“ und „Kommt 
 Level wieder heraus?“ sind Fragen nach Erreichbarkeit, die das Studio selbst beantwortet –
 und die man zuerst von Hand beantworten lassen kann.
 
-## 5. Selbstständig lernen mit der Hilfe
+## Selbstständig lernen mit der Hilfe
 
 Der Reiter **Hilfe** enthält zwölf *Erste Schritte* und über sechzig **Rezepte** – vom
 ersten Sprung über Schlüssel und Zähler bis zu klugen Gegnern. Jedes Rezept zeigt eine

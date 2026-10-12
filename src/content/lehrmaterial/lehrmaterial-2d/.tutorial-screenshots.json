@@ -2,19 +2,29 @@
   "version": 1,
   "screenshots": {
     "game-studio-level.webp": {
-      "state_hash": "41e1e1986708038b23c68658b434b8ed80475467f63ee19713adfdc11093a06c",
+      "state_hash": "e516c35fab52cdce250f66c5ea4da0f9030258cc208464832151fff95c1635fa",
       "environment_fingerprint": "b3010268ba85cf42ff31981ae54d38402f52108b113b9c2af50bd3a5a8b0eb8d",
-      "output_sha256": "c820e8db6e91a798941ac9676fba6818f78150b2543940755f37fcbf214397e6"
+      "output_sha256": "f0c1d6122e9b9c51c590e31812f40cd4b387f1c64c38e8d29ba639e015a61b1f"
     },
     "game-studio-spielen.webp": {
-      "state_hash": "4ce0a947a9adac827cfc6f823b14840ffecd72e4b0ba6cebe9e018e3600afbe8",
+      "state_hash": "6e3a364111867d8652784ceb2097f1ffd6558d89ef8933380b553b5d59e3946d",
       "environment_fingerprint": "b3010268ba85cf42ff31981ae54d38402f52108b113b9c2af50bd3a5a8b0eb8d",
-      "output_sha256": "f1b0a3a115efe0a84d531671d6332e3f5f79195b29616bee44686f51b88ba135"
+      "output_sha256": "c0be45a25c94a34b796b478921f44ae4e3e1a07207c4f38273376c5ccd5b985d"
     },
     "game-studio-sprites.webp": {
-      "state_hash": "2b2efce84d6ffe9554f32d2e54a867da53ce57c7249c736e6858f8236065e5f4",
+      "state_hash": "710c955441d0b4265cd812329ee4d5bac8a4920c786f3336d8787e4bc84dea73",
       "environment_fingerprint": "b3010268ba85cf42ff31981ae54d38402f52108b113b9c2af50bd3a5a8b0eb8d",
-      "output_sha256": "e8b5b40ff0517e30ab01fadb431bd038ed43792556fd8ddbf10590f01320f068"
+      "output_sha256": "9fc009eeecdba4f437a3e300408e18f3af22e9fbd8dc8b13bb1f2f5f9232d799"
+    },
+    "game-studio-levelkarte.webp": {
+      "state_hash": "0ac0aef681c95038859f488fc1a08672858dc70b03e7331bb160d3009fd072f2",
+      "environment_fingerprint": "b3010268ba85cf42ff31981ae54d38402f52108b113b9c2af50bd3a5a8b0eb8d",
+      "output_sha256": "bcfee070f50d51483660672439a70bdd5143cfaa7cbcb311777bfaa07fe24ff4"
+    },
+    "game-studio-hilfe.webp": {
+      "state_hash": "0f17feb0562eed02a965542b49c0b784c9f13ba6b826ae2c010b46679273a87b",
+      "environment_fingerprint": "b3010268ba85cf42ff31981ae54d38402f52108b113b9c2af50bd3a5a8b0eb8d",
+      "output_sha256": "7159d5c444b291a3edd94e64123d6ebd740be3d85d16a8048bbee9708e0af9e7"
     }
   }
 }

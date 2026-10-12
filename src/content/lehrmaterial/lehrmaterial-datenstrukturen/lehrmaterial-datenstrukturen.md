@@ -35,7 +35,7 @@ Jede Struktur gibt es als unfertigen **Starter** und als vollständiges
 Eingabefeld oben tippen sie Methodenaufrufe wie `insert(30); insert(20)`, drücken
 Enter und können den Ablauf dann Schritt für Schritt vor- und zurückspulen.
 
-## 1. Ein abstrakter Datentyp, mehrere Speicherformen
+## Ein abstrakter Datentyp, mehrere Speicherformen
 
 Ein **Stack** arbeitet nach dem LIFO-, eine **Queue** nach dem FIFO-Prinzip – aber
 dasselbe Verhalten lässt sich mit einem festen Array, einem Ringpuffer oder
@@ -84,7 +84,7 @@ wenn sie sich nach außen richtig verhält **und** ihr Inneres stimmt – etwa w
 Zyklus enthält. Ungültige Indizes, volle Arrays und doppelte Werte sind fester
 Bestandteil der Prüfung.
 
-## 2. Bäume, Rekursion und AVL-Rotationen
+## Bäume, Rekursion und AVL-Rotationen
 
 Bei **binären Suchbäumen** wird die Suchinvariante sichtbar: links das Kleinere, rechts
 das Größere. Rekursive Aufrufe lassen sich Schritt für Schritt verfolgen; man sieht, an
@@ -118,7 +118,7 @@ Kontrast: Was passiert mit einem gewöhnlichen Suchbaum, wenn man 1, 2, 3, … 1
 nach einfügt?
 </div>
 
-## 3. Hash-Tabellen: Die Lernenden entscheiden
+## Hash-Tabellen: Die Lernenden entscheiden
 
 Die Hash-Tabelle löst Kollisionen durch **Verkettung** (separate chaining). Anzahl der
 Buckets und Hashfunktion legen die Lernenden in ihrer eigenen Klasse fest – die Tests
@@ -157,7 +157,7 @@ Referenzbeispiele der Sandbox lösen das in jeder Sprache anders
 Anlass, über die Definition von „Rest“ zu sprechen.
 </div>
 
-## 4. Arbeiten wie in echten Projekten
+## Arbeiten wie in echten Projekten
 
 Einige Werkzeuge machen die Sandbox im Alltag besonders brauchbar:
 

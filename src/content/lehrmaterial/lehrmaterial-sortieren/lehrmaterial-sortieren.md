@@ -62,7 +62,7 @@ Verfahren – genau das Modell, in dem man die untere Schranke von *n* log *n*
 Vergleichen beweist. Für Verfahren wie Merge Sort steht eine zweite, gleich lange
 Liste `scratch` als Zwischenspeicher bereit.
 
-## 1. Explore: Dem eigenen Code beim Arbeiten zusehen
+## Explore: Dem eigenen Code beim Arbeiten zusehen
 
 Im Reiter **Explore** steht links der Quelltext, der direkt im Browser bearbeitet,
 formatiert und gespeichert wird. Rechts läuft der Algorithmus Schritt für Schritt: Die
@@ -111,7 +111,7 @@ Fehler gehören zum Erkenntnisweg und werden gut sichtbar gemacht: Ein
 (etwa ein Index außerhalb der Liste) in der Konsole, und eine Endlosschleife wird nach
 wenigen Sekunden gestoppt. Ausgaben mit `print(...)` landen ebenfalls in der Konsole.
 
-## 2. Race: Gleicher Auftrag, ungleiche Arbeit
+## Race: Gleicher Auftrag, ungleiche Arbeit
 
 Im Reiter **Race** treten zwei bis vier Algorithmen mit **exakt derselben Eingabe**
 gegeneinander an. Jede Bahn macht pro Takt gleich viele Schritte; wer zuerst fertig
@@ -141,7 +141,7 @@ Bahn stehen deshalb auch die gezählten Lese-, Schreib- und Vergleichsoperatione
 Dass Schritte, Lesen, Schreiben und Vergleichen zu unterschiedlichen Ranglisten führen
 können, ist selbst schon ein guter Gesprächsanlass: Was heißt eigentlich „schneller“?
 
-## 3. Analyze: Vom Gefühl zur Wachstumsfunktion
+## Analyze: Vom Gefühl zur Wachstumsfunktion
 
 **Analyze** lässt alle Algorithmen der Klasse auf Listen mit 32 bis 2048 Elementen
 laufen – alle mit denselben Eingaben – und zeichnet den Aufwand als Kurve.
@@ -177,7 +177,7 @@ Eingabe tauscht Bubble Sort deshalb genau so oft, wie Insertion Sort verschiebt.
 große Unterschied liegt woanders. Wo?
 </div>
 
-## 4. Check: Korrekt, stabil – oder nur zufällig richtig?
+## Check: Korrekt, stabil – oder nur zufällig richtig?
 
 **Check** testet einen Algorithmus auf vielen Eingaben und zeigt bei einem Fehler die
 Liste, an der er scheitert. Außerdem prüft er die **Stabilität**: Behalten gleiche
@@ -190,7 +190,6 @@ aber nicht stabil:
 <!-- screenshot-code: selection-sort -->
 ```python
 from sorting_sandbox import Colors, Elements, SortingAlgorithm
-
 
 class SelectionSort(SortingAlgorithm):
     name = "Selection Sort"
