@@ -1,258 +1,253 @@
 # Workspace TODO
 
-Open infrastructure, maintenance and teaching work for the Hackschule Workspace.
+Where the Hackschule Workspace is going, how it gets there, and the open
+maintenance work. Rewritten in October 2026 after a review of all teaching
+material; the review document has the evidence for the findings below.
 
 
-## Infrastructure and Hardening
+## Direction
 
-### Operational logging
+The Workspace supports a teacher who is in the room. The teacher explains,
+talks with students and decides what happens next. The Workspace takes over the
+work that does not need a person:
 
-* [ ] Audit command/error logging so secrets and credentials cannot accidentally appear in logs
-* [ ] Prefer safe human-readable operation descriptions over dumping complete commands when commands fail
+1. **Setup** – nothing to install, the same environment at school and at home.
+2. **Making the invisible visible** – one instrument per concept (Sorting,
+   Data Structures and CPU sandboxes, the ER workshop, later a query stepper).
+3. **Telling right from wrong** – checks that judge behaviour, not form, so any
+   correct solution passes.
+4. **Showing the teacher the room** – who is done, who is stuck, on which task.
 
+Principles:
 
-### Dependency and image verification
-
-Improve supply-chain reproducibility gradually rather than trying to rewrite the complete Docker build at once.
-
-* [ ] Add checksum verification for important downloaded release archives where upstream checksums are available
-* [ ] Consider digest pinning for important base images
-
-
-## Testing and Operations
-
-### Continuous integration
-
-The Playwright suite now covers a growing number of real student workflows. Keep tutorial tests focused on whether the documented student workflow actually works, and add automated execution without making every push run the most expensive tests.
-
-* [ ] Add a small, fast CI gate for cheap checks
-* [ ] Run heavier browser/toolchain tests manually, nightly or on a suitable self-hosted runner
-* [ ] Add E2E coverage when important tutorials are changed or newly written
+* Everything runs in the browser and continues at home.
+* Everything is generated reproducibly: screenshots, diagrams, datasets.
+* Checks accept every correct solution (as the Data Structures sandbox does with
+  hash functions); a check that rejects a valid answer is a bug.
+* Shared data across topics: the same movies and music appear in ER modelling,
+  SQL, Neo4j and small applications.
 
 
-### Deployment visibility
+### Content model: prose, reference, tasks
 
-* [ ] Show the deployed short Git commit SHA somewhere in the admin area
+Today every page is called a tutorial and mixes three different kinds of content.
+Split them, so each can do its own job:
 
-This should make it immediately obvious which revision is running in production.
+| Kind | What it is | Who uses it how | Examples today |
+| --- | --- | --- | --- |
+| **Prose** | the story of an activity: why, what we build, what to notice | read with the teacher, in order | most of BIF, Anaglyph, PixelRAM |
+| **Reference** | facts to look up: syntax, commands, options, fonts | searched while working, in any order | shower.js "Referenz", LaTeX fonts, SQL building blocks table, the language gallery |
+| **Tasks** | something to do, with a check | done by the student, seen by the teacher | `hint task` boxes, Code Bites, sandbox checks |
 
-
-### Ruby cleanup
-
-Continue extracting coherent pieces from `main.rb` incrementally rather than attempting a rewrite.
-
-* [ ] Remove duplicated helper/setup definitions that now exist both in `helper.rb` and `main.rb`
-* [ ] Decide whether the remaining login/session routes should move into a dedicated module now that the authentication helpers are extracted
-* [ ] Consider workspace lifecycle / nginx management as another future extraction candidate
-
-
-## Existing Tutorial Cleanup
-
-Do small editorial and technical fixes as the affected tutorials are touched.
-
-* [ ] Svelte: fix remaining markup/editorial issues and clean up event-listener teardown
-* [ ] Git/GitHub: mark low-level internals as optional/advanced and correct the implication that `git mv` is required for rename detection
-* [ ] Fact-check programming-language history, creator/date and lineage claims and use a consistent convention for the year shown in headings
-* [ ] Remove the stray `</td></tr>` in `working-with-files.md`
-* [ ] Review `_template_codebites.html` language metadata and remaining manually authored homepage image alt attributes
-* [ ] On narrow screens, consider left-aligning long tutorial paragraphs instead of using global justified text
-* [ ] Add a small `prefers-reduced-motion` pass for Workspace-owned transitions/animations
-
-
-### Videothek source data
-
-The Videothek dataset should become the common reference dataset for the relational MySQL material and the new Neo4j tutorial.
-
-* [ ] Locate the existing IMDb data collection/conversion script
-* [ ] Turn refreshing `movies.txt`, `genres.txt` and `crew.txt` into one reproducible command
-* [ ] Keep the generated files deterministic enough that changes can be reviewed sensibly in Git
-* [ ] Print useful sanity statistics after a refresh (movie/person/genre counts and similar checks)
-* [ ] Refresh the teaching dataset periodically rather than letting it become visibly stale
-* [ ] Do not auto-commit refreshed data; inspect the diff before replacing teaching data and screenshots
-* [ ] Extend the generated relational output so schema and data can also be imported separately while retaining one convenient complete SQL dump
-
-The SQL and Neo4j tutorials should consume the same underlying source data so that their modelling differences are real rather than contrived.
+* [ ] **Pages become activities.** Prose that embeds tasks and links reference
+  entries. Decide the name shown to students (candidates: *Projekt* for pages that
+  end with a product, *Labor* for pages that explore a phenomenon with an
+  instrument, *Grundlagen* for skills like files, Git and first SQL).
+* [ ] **Reference as its own layer.** One searchable reference area; entries are
+  small Markdown files (`reference/sql/join.md`, `reference/latex/fonts.md`) that
+  pages link with a macro and that open beside the editor. Move the long reference
+  parts out of shower.js and LaTeX first.
+* [ ] **Tasks as files.** A task is a small file with a statement, optional hints
+  and a check, included in a page with a macro (`_task(sql-terra-07)`), shown as an
+  interactive block when the student is logged in (they usually are), and as a plain
+  task box otherwise. Existing `hint task` boxes are the first candidates.
+* [ ] **Check types**, smallest first:
+  * answer: a number or short text compared with the expected answer
+  * SQL: a query run against a fixture database, result set compared (ordered only
+    if the task asks for `ORDER BY`), plus a shuffled second fixture so hard-coded ids fail
+  * code: the Code Bites judge (Python, JavaScript, Ruby)
+  * workspace state: a file, a commit, a table or a running server exists, as the
+    keyboard tutorial already detects student actions
+  * reflection: free text without a check, collected for the teacher
+* [ ] **One progress model** for page tasks, Code Bites and the sandboxes' Check,
+  so the teacher view can show all of them.
+* [ ] **Page metadata** in the existing `<div class='meta'>` YAML: `duration`,
+  `level`, `requires`, `next`; shown on catalog cards and as a generated
+  "Wie geht es weiter?" box at the end of a page.
+* [ ] **Teacher notes per page** in the Lehrmaterial area: goals, time, typical
+  mistakes, solutions to the page's tasks.
 
 
+## Roadmap
 
-### Database tutorial sequence
+A writing and development order, not a prerequisite chain for students. Each phase
+unblocks the next.
 
-Rework the existing database material as one coherent sequence **before starting the other new tutorial projects below**.
 
-Main progression:
+### Phase 1 – Datasets
 
-> query an existing relational database → model relational data → revisit the same domain as a graph → use SQL safely from application code
+Both collectors now write the same files through `src/scripts/lib/classroom_dataset.rb`:
+`mysql.sql`, `mysql-schema.sql`, `mysql-data.sql`, `mysql-data-<part>.sql`,
+`neo4j.dump`, plus JSON Lines and a generated README.
 
-The relational movie tutorial and the Neo4j tutorial should use the same curated IMDb-derived dataset. Bobby Tables should deliberately remain a small, isolated security lab rather than becoming part of the movie database.
+* [x] Remove duplicate credits in `collect-movies` (IMDb lists a person once per character; `actress` → `actor` adds more)
+* [x] Refuse to write a table with a duplicate primary key (the old `videothek-data.sql` stopped on import with ERROR 1062)
+* [x] Readable string literals instead of hex, hex only for strings with backslashes or control characters
+* [x] Schema-only, data-only and per-part data dumps (`movies` then `crew`; `albums`, `tracks`, `members`)
+* [x] Prefer the German title IMDb displays in Germany; drop impossible death years (Homer: born 850, died 800)
+* [x] Print a sanity summary after every build
+* [ ] Rebuild the movie dataset with `collect-movies.rb` and publish it to `specht/videothek`; review the diff first, do not auto-commit
+* [ ] Decide where the generated music dataset lives (a `specht/musikdatenbank` repository next to `specht/videothek`?) and publish it
+* [ ] A student command `load-dataset movies|music [--schema|--data|--part NAME] [--neo4j]` that loads into the student's database (or a named extra database)
+* [ ] Refresh both datasets periodically rather than letting them go stale
 
-Students can create multiple MySQL databases in the Workspace. Use that capability to keep exercises isolated where useful, especially Bobby Tables. Students have one Neo4j database, so the Neo4j tutorial should use reset/reload of that database rather than assume that several independent Neo4j databases can be created.
+
+### Phase 2 – Database sequence
+
+> query an existing database → model → query related tables → the same data as a graph → SQL safely from code
+
+Movies and music run in parallel from the modelling chapter on: half the class can
+work with Die Ärzte while the other half works with Nosferatu – same skills,
+different answers, and students choose what they care about. Bobby Tables stays a
+small, isolated security lab with its own throwaway database. Students can create
+several MySQL databases but have one Neo4j database, so Neo4j uses reset/reload.
 
 #### SQL introduction (`/mysql`)
 
-Keep the existing Terra dataset and the successful progression from simple `SELECT` queries to independent exercises, but get students to SQL much faster.
+Done in August 2026: single quotes, `COUNT`/`LIKE`/`DISTINCT` before the exercises,
+the population-density claim removed, the chapter stops before `JOIN`.
 
-* [ ] Remove most duplicated shell/terminal teaching from the opening and link to the Workspace basics where appropriate
-* [ ] Keep the dataset download/import short so `SHOW TABLES`, `DESCRIBE` and the first `SELECT` arrive early
-* [ ] Use single quotes consistently for SQL string literals
-* [ ] Fix/remove the population-density claim unless the query actually calculates population density
-* [ ] Introduce `COUNT`, `LIKE` and `DISTINCT` explicitly before exercises that require them
-* [ ] Keep the final independent query exercises and tighten wording/screenshots as needed
-* [ ] Stop before `JOIN`; let relationships between tables become the conceptual payoff of the movie tutorial
+* [ ] Shorten the opening further (folder, terminal) and link the Workspace basics
+* [ ] Turn the 9 exercises into checked SQL tasks
+* [ ] Fix the alt texts of the OR and COUNT…WHERE screenshots; the OR example shows `SELECT name`, its recipe runs `SELECT *`
+* [ ] Delete the leftover `mysql/mysql.new.md.txt`
 
-#### Filmdatenbank mit MySQL (`/videothek`)
+#### ER workshop (prototype: "ER-Werkstatt")
 
-Refocus the current Videothek chapter on relational modelling instead of making a Ruby console application the destination. Consider renaming the chapter from **Videothek mit MySQL** to **Filmdatenbank mit MySQL** so it pairs naturally with the Neo4j chapter.
+A text DSL for ER models; the Chen diagram, a crow's-foot diagram (conceptual or as
+tables), the relational schema and MySQL DDL are generated, with every translation
+step explained. Keywords are strictly English:
 
-Keep the strongest existing ideas:
+```text
+entity Film
+  id: int, key
+  titel: text
+  bewertung: decimal(3,1), optional
 
-* [ ] Start by inspecting a real movie JSON record and identify the entities/relationships hidden in it
-* [ ] Keep the ERD Editor, but make the modelling problem the lesson and the editor merely the tool used to express the solution
-* [ ] Build the first model from `movie`, `genre` and `movie_genre`
-* [ ] Make the n:m relationship and the composite `(movie_id, genre_id)` primary key explicit conceptual milestones
-* [ ] Export the ERD as SQL and inspect the generated `CREATE TABLE`, primary-key and foreign-key statements
-* [ ] Load the movie data directly from a data-only SQL dump after students have created the schema
+entity Exemplar
+  nummer: int, key
 
-Make `JOIN` the central SQL idea of the chapter:
+relationship hat: Film 1:n Exemplar
+relationship leiht: Kunde n:m Exemplar
+  ausleihe: datetime, key
+  rückgabe: datetime, optional
+```
 
-* [ ] Develop the first movie/genre join incrementally instead of presenting a finished multi-table query
-* [ ] Use one `JOIN ... ON ...` step per relationship so the SQL mirrors the relational model clearly
-* [ ] Add meaningful movie questions that naturally introduce `GROUP BY`, `COUNT` and useful aggregations
-* [ ] Prefer questions students might actually ask of the dataset: films by genre, genres of a film, top-rated films, films per genre and similar examples
+* [ ] Bring it into the Workspace as an `.er` file type with a live preview pane (like the BIF and Pixelflow previews)
+* [ ] `_include_er(model.er, chen|crowsfoot|tables)` for pages, so ER diagrams are generated and never go stale
+* [ ] Min–max cardinalities (`Film (1,1) : (0,n) Exemplar`) → `NULL`/`NOT NULL` and crow's-foot circle and bar
+* [ ] Requirement checks against the generated schema: "a film can have several genres" (two inserts succeed), "a loan needs an existing copy" (insert fails)
+* [ ] Later, if the curriculum needs them: weak entities, generalisation
 
-Extend the model once, deliberately:
+#### Modelling chapter (new, short)
 
-* [ ] Introduce people and jobs only after the movie/genre model is understood
-* [ ] Let students reason about why `crew`, `job` and `movie_crew` are needed before revealing/completing the larger ERD
-* [ ] Load the complete dataset without requiring a second hand-written Ruby importer or a second tutorial-specific data pipeline
-* [ ] End with relational questions about actors/directors/collaborations whose increasing JOIN complexity creates a genuine reason to try a graph database next
+* [ ] From a short story to an ER model in the DSL; Chen and crow's foot
+* [ ] Translation rules for 1:1, 1:n and n:m; relationship attributes
+* [ ] One flat table with update, insert and delete anomalies as the reason for splitting tables
 
-Remove accidental complexity from the core path:
+#### Filmdatenbank / Musikdatenbank (draft: `_drafts/filmdatenbank.md`)
 
-* [ ] Remove `gem install mysql2`, `gem install tty` and the Ruby import script from the core database-learning flow
-* [ ] Remove the deliberately crashing TTY Videothek application as the chapter's main payoff
-* [ ] Do not ask students to replace the importer and reset/rebuild the database halfway through the tutorial
-* [ ] If an application example remains, make it small and focused on parameterized queries rather than TTY/menu abstractions or Ruby metaprogramming
+Keep from the draft: start from a real JSON record, one `JOIN … ON …` per relationship,
+`GROUP BY` with real questions, the actor-pair queries that motivate Neo4j.
 
-Finish with an explicit bridge to the Neo4j tutorial: the same films, genres, people and jobs will be modelled again, but relationships become first-class graph relationships instead of join tables.
+* [x] Use the generated dumps (`mysql-data-movies.sql`, `mysql-data-crew.sql`); fix the clone recipe's dialog text
+* [ ] Create the schema from the student's ER model instead of hand-drawn ERD Editor tables and manual screenshots
+* [ ] Add the 1:n case: `Film 1:n Exemplar`, `Kunde leiht Exemplar` with loan and return date → relationship attributes, `NULL`, `LEFT JOIN` ("which copies are out?", "which films were never rented?")
+* [ ] Integrity experiments: insert a `movie_genre` row for a missing film, delete a genre still in use, then `ON DELETE`
+* [ ] The first Nosferatu queries filter by title only and mix the 1922 and 2024 films: make it the lesson "a title is not a key"
+* [ ] Music twin of the chapter on the Discogs dataset
+* [ ] Bridge to Neo4j: the same films, people and genres, relationships as first-class graph relationships
+* [ ] Replace `/videothek` and retire its Ruby/TTY importer and crashing app; keep any application example small and focused on parameterized queries
 
-#### Bobby Tables / SQL Injection
+#### Neo4j (draft: `_drafts/neo4j-filmdatenbank.md`)
 
-Keep this as a compact experiment after the modelling tutorials: build a vulnerable query, exploit it, then fix the same program and repeat the attack.
+Teach why graph databases exist, not only Cypher syntax.
 
-* [ ] Give the lab its own throwaway MySQL database; students can create multiple databases and should not need to disturb their movie database
-* [ ] Keep the current attack → observe → prepared-statement fix → retry progression
-* [ ] Remove any hard-coded generated database name such as `db_1234` from the starter workflow
-* [ ] Make parameterized/prepared statements the explicit security lesson and connect them back to any earlier application/database code
-* [ ] State clearly that the deliberately plain-text passwords are only for the SQL-injection lab and are not a model for real password storage
-* [ ] Keep the legal/ethical boundary clear but concise: only attack the supplied lab or systems for which students have explicit permission
+* [x] Load `neo4j.dump` from the dataset (file renamed in both collectors)
+* [ ] Start with a tiny manually created movie graph: nodes, labels, properties, relationships, `MATCH`
+* [ ] Reset/reload as the documented clean-start workflow
+* [ ] SQL `JOIN` and Cypher side by side; graph modelling choices instead of converting every table to a node
+* [ ] Paths, variable-length paths, a shortest-path exercise on actor/movie connections
+* [ ] Aggregation only after traversal is understood
+* [ ] Show `cypher-shell` briefly; query from Ruby with the `neo4j_bolt` wrapper (decide whether it belongs in the student image)
+* [ ] The Discogs music graph (`MEMBER_OF`, `RELEASED`, `HAS_TRACK`) as the second dataset
+
+#### SQL Injection (`/bobby_tables`)
+
+* [ ] Own throwaway database, no hard-coded `db_1234` in `login.rb`
+* [ ] Add the missing `gem install mysql2 tty-prompt` (not in the student image)
+* [ ] Keep attack → observe → prepared statement → retry; mark the tasks as tasks (`hint books` today)
+* [ ] Say that the plain-text passwords exist only for the lab; keep the legal boundary short
+* [ ] Spelling: "heisst", "Schluß"
 
 
-## Tutorials
+### Phase 3 – Checked tasks
 
-The infrastructure is now mature enough that the main growth area should again be teaching material. Prefer tutorials that introduce genuinely new ideas rather than simply more installed technology.
+* [ ] Task file format and `_task()` macro (see Content model)
+* [ ] SQL executor for Code Bites: fixture database + expected rows; MySQL in a throwaway schema keeps checks consistent with the pages (SQLite accepts `GROUP BY` queries MySQL rejects with `ONLY_FULL_GROUP_BY`)
+* [ ] First users: the SQL introduction, the Filmdatenbank, SQL Injection
+* [ ] Workspace-state checks for setup steps (repository cloned, server running)
+* [ ] Link the matching Code Bites tasks from each programming-language page
 
-The seven tutorials below are the current main teaching projects. Complete the database tutorial pass above first; Neo4j is part of that pass, while the other new tutorial projects can follow afterwards.
+
+### Phase 4 – Teacher view
+
+* [ ] One live view per class across page tasks, Code Bites and sandboxes: who is done, who is stuck where
+* [ ] Teacher notes with solutions for every page, starting with the database chapter
+* [ ] Show `duration`, `level`, `requires` on catalog cards
 
 
-### 1. Web Server
+### Phase 5 – New instruments and pages
 
-Continue directly from the existing TCP/IP tutorial and write the server in **Ruby** using raw TCP sockets.
+Prefer pages that introduce genuinely new ideas rather than more installed technology.
+Prioritise creative, visible material that also works with younger students; the order
+below is a writing priority, not a prerequisite chain.
 
-Main idea:
+1. raylib + WebAssembly
+2. Hugo / static site generators
+3. Flutter
+4. Web server
+5. WebSockets
+6. Cryptography
+
+Plus, from the review:
+
+* [ ] **Query stepper / database sandbox**: FROM → JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT with the intermediate table after each step; class repository and Class progress like the other sandboxes
+* [ ] **JPEG decoder project**: the interactive Huffman section is excellent, but iDCT, MCU and colour conversion get one paragraph each and there is nothing to implement; a staged decoder with a check per stage
+
+
+#### 1. Web server
+
+Continue directly from the TCP/IP page and write the server in **Ruby** using raw TCP sockets.
 
 > TCP → HTTP → browser → web server
 
-Ruby is used here because the socket code stays close to the conceptual model and does not hide HTTP behind a framework.
-
-* [ ] Connect the tutorial explicitly to the TCP/IP tutorial and port 1234
+* [ ] Connect explicitly to the TCP/IP page and port 1234
 * [ ] Begin with the smallest `TCPServer` that accepts a connection
 * [ ] Inspect a browser/`curl` HTTP request as plain text
 * [ ] Send a minimal valid HTTP response manually
-* [ ] Handle `GET /`
-* [ ] Parse the request line into method/path/version
-* [ ] Add multiple routes
-* [ ] Return `404 Not Found`
-* [ ] Serve HTML
-* [ ] Serve a small set of static files
-* [ ] Read query parameters
-* [ ] Optionally handle one small `POST` request
+* [ ] Handle `GET /`, parse the request line into method/path/version, add routes, return `404 Not Found`
+* [ ] Serve HTML and a small set of static files
+* [ ] Read query parameters; optionally handle one small `POST` request
 * [ ] Finish by sharing the running server through Shared Live Apps
+* [ ] Take over the useful part of the Hades page (HTTP POST, JSON, a session header) against a practice API inside the Workspace
 
 Do not introduce Sinatra/Rack/Node/Flask here. The point is to discover that a web server is initially just a TCP server that speaks HTTP.
 
+#### 2. WebSockets
 
-### 2. WebSockets
-
-Follow the web-server tutorial with persistent, bidirectional communication.
-
-Use a **Ruby server + browser JavaScript client**. Keep Ruby on the server so the networking progression remains continuous; introduce JavaScript because it is the language running in the browser.
+Ruby server + browser JavaScript client, so the networking progression stays continuous.
 
 * [ ] Show why repeated HTTP request/response is awkward for a real-time application
-* [ ] Inspect the WebSocket upgrade request and `101 Switching Protocols` response at a useful level
-* [ ] Explain the handshake without turning the tutorial into a complete protocol implementation exercise
-* [ ] Establish a WebSocket connection from browser JavaScript
-* [ ] Send messages browser → Ruby server
-* [ ] Send messages Ruby server → browser
-* [ ] Support several simultaneously connected browsers
-* [ ] Broadcast state changes to all clients
-* [ ] Build a genuinely collaborative project rather than stopping at chat
-* [ ] Use Shared Live Apps so classmates can join the running project
+* [ ] Inspect the upgrade request and `101 Switching Protocols` at a useful level, without a full protocol implementation
+* [ ] Messages browser → server and server → browser; several clients; broadcast state changes
+* [ ] Build a genuinely collaborative project rather than stopping at chat; share via Shared Live Apps
 
-Preferred project: **shared pixel canvas**. Other possible follow-ups include multiplayer Pong, collaborative cursors, classroom voting or a tiny multiplayer world.
+Preferred project: **shared pixel canvas**. Alternatives: multiplayer Pong, collaborative cursors, classroom voting, a tiny multiplayer world. If manual frame parsing becomes distracting, provide a tiny framing helper after the handshake is understood.
 
-If manual frame parsing becomes distracting, provide a tiny framing helper after students have understood the opening handshake.
+#### 3. Cryptography in the terminal
 
-
-### 3. Neo4j
-
-Teach **why graph databases exist**, not merely Cypher syntax.
-
-Reuse the **Videothek** data from the MySQL tutorial. Students should encounter the same domain twice: first as normalized tables/foreign keys/join tables, then as nodes/relationships/paths.
-
-Main contrast:
-
-```text
-MySQL:
-movie ← movie_genre → genre
-crew  ← movie_crew → movie
-job   ← movie_crew
-
-Neo4j:
-(Movie)-[:IN_GENRE]->(Genre)
-(Person)-[:ACTOR|DIRECTOR|WRITER|...]->(Movie)
-```
-
-This chapter should follow the reworked **Filmdatenbank mit MySQL** tutorial directly. Students should already know the domain and the relational model before they see it represented as a graph.
-
-* [ ] Start in Neo4j Browser with a tiny manually created movie graph
-* [ ] Introduce nodes, labels and properties immediately
-* [ ] Add relationships and visualize the first graph
-* [ ] Teach `MATCH` by asking questions about the tiny graph
-* [ ] Load the familiar IMDb-derived movie dataset into the student's existing Neo4j database
-* [ ] Make reset/reload the documented clean-start workflow because students do not create several independent Neo4j databases
-* [ ] Compare equivalent SQL `JOIN` and Cypher relationship queries side by side
-* [ ] Discuss graph modelling choices rather than mechanically converting every SQL table to a node
-* [ ] Introduce paths and variable-length paths
-* [ ] Use actor/movie connections for a meaningful shortest-path exercise
-* [ ] Use repeated collaboration/co-star questions to show where graph traversal is substantially more natural than increasingly deep relational joins
-* [ ] Add aggregation only after traversal is understood
-* [ ] Show `cypher-shell` briefly so students see that Browser is only one Neo4j client
-* [ ] Query the same database from Ruby with the new `neo4j_bolt` wrapper
-
-Before writing the Ruby part:
-
-* [ ] Decide whether `neo4j_bolt` belongs in the student image or should be installed explicitly as part of the tutorial
-
-The programming part should stay small: parameterized `neo4j_query`, simple result handling, and perhaps a movie/person/path explorer. Do not make driver/session plumbing the lesson.
-
-The existing Discogs music collector remains useful as an **optional larger graph dataset/project** after the Videothek comparison is understood.
-
-
-### 4. Cryptography in the Terminal
-
-Make this feel like a laboratory: perform an operation, change something, and observe what cryptography does.
-
-Organize the tutorial around four questions:
+A laboratory around four questions:
 
 > Has this data changed? → hashes
 >
@@ -262,364 +257,156 @@ Organize the tutorial around four questions:
 >
 > How can a server recognize me without receiving my password? → public-key authentication
 
-* [ ] Hash a file with `sha256sum`
-* [ ] Change one byte and observe that the digest changes completely
-* [ ] Compare identical copies and explain what a hash can/cannot prove
-* [ ] Explain why plain SHA-256 is not an appropriate password-storage scheme
-* [ ] Introduce salts and dedicated password hashing conceptually; do not invent a home-grown password scheme
-* [ ] Encrypt and decrypt a real file symmetrically with OpenSSL
-* [ ] Try decryption with the wrong password
-* [ ] Generate and inspect an Ed25519 key pair
-* [ ] Sign a small text/document
-* [ ] Verify the signature using the public key
-* [ ] Modify the signed data and observe verification fail
-* [ ] Clearly distinguish **secrecy** (encryption) from **authenticity/integrity** (signature)
-* [ ] Connect the public/private-key idea to SSH authentication and the existing Git material
-* [ ] Show a public-key fingerprint and connect the ending back to hashes
+* [ ] `sha256sum`, change one byte, compare copies; what a hash can and cannot prove
+* [ ] Why plain SHA-256 is not password storage; salts and dedicated password hashing conceptually
+* [ ] Encrypt/decrypt a file symmetrically with OpenSSL; try the wrong password
+* [ ] Generate and inspect an Ed25519 key pair; sign, verify, modify, fail
+* [ ] Distinguish secrecy (encryption) from authenticity/integrity (signature)
+* [ ] Connect public keys to SSH and the Git material; end with a key fingerprint (back to hashes)
 
-Before finalizing the signing section, test which installed command-line tool gives the cleanest classroom workflow (`ssh-keygen -Y`, OpenSSL or GPG). Keep the mathematics and cipher internals optional.
+Before finalizing signing, test which tool gives the cleanest classroom workflow (`ssh-keygen -Y`, OpenSSL or GPG). Keep mathematics and cipher internals optional.
 
-
-### 5. Flutter
-
-Write a compact Flutter tutorial that starts in the browser but makes clear that Flutter is a genuine cross-platform application framework, not merely another way to build web pages.
-
-Main idea:
+#### 4. Flutter
 
 > Develop in the browser, then turn the same project into a real installable app.
 
-Use the existing Dart material as background knowledge. The Bubblesort example is useful only as a short bridge into Flutter's state model; the finished project should feel like an actual app.
-
-Suggested teaching sequence:
-
-* [ ] Create the smallest Flutter project with web **and Android** targets enabled
-* [ ] Run it in the browser and introduce hot reload
-* [ ] Explain widgets and simple layout
-* [ ] Handle button presses
-* [ ] Reuse a Dart list and render it as widgets
-* [ ] Change the list without rebuilding the UI and use the result to motivate state
-* [ ] Introduce `StatefulWidget` and `setState`
-* [ ] Build a small ranking / favorites app rather than stopping at a sorting demo
-* [ ] Add entries with a text field
-* [ ] Add sorting and filtering
-* [ ] Extract at least one custom widget
-* [ ] Add one small implicit animation if useful
-* [ ] Run and share the browser version through Shared Live Apps
-
-Useful conceptual contrast:
+* [ ] Smallest project with web **and Android** targets; hot reload; widgets and layout; button presses
+* [ ] A Dart list rendered as widgets; changing it without rebuilding motivates state; `StatefulWidget` and `setState`
+* [ ] A small ranking/favorites app: text field, sorting and filtering, one custom widget, maybe one implicit animation
+* [ ] Share the browser version through Shared Live Apps
+* [ ] End with `flutter build apk --debug` and where to find the APK; install on a phone
 
 ```text
-HTML/JavaScript:
-Find an element and change it.
-
-Flutter:
-Change the state and rebuild the interface.
+HTML/JavaScript: find an element and change it.
+Flutter:         change the state and rebuild the interface.
 ```
 
-#### Android build support
-
-Android compilation is a supported Workspace workflow. Before the tutorial is rolled out broadly, finish the remaining operational checks:
+Android build support, before broad rollout:
 
 * [ ] Measure memory and PID usage of `flutter build apk --debug` with the resource profiler
-* [ ] Re-check the planned student container limits against the Android/Gradle workload
-* [ ] Verify whether the currently pinned CMake/NDK components are needed by the normal tutorial build and remove them if not
+* [ ] Re-check student container limits against the Android/Gradle workload
+* [ ] Check whether the pinned CMake/NDK components are needed and remove them if not
 
-The tutorial should end with:
+APK rather than App Bundle for the introduction; no release signing or Play Store accounts (mention `flutter build appbundle` as a follow-up). iOS: the same source can target iOS, but builds need macOS, Xcode and Apple signing; mention a Mac or a cloud build service such as Codemagic; keep App Store details optional.
 
-```bash
-flutter build apk --debug
-```
+#### 5. raylib + WebAssembly
 
-and explain where the generated APK can be found.
-
-Students with Android devices should then be able to:
+The higher-level C graphics/game route; PixelRAM stays the low-level framebuffer route.
 
 ```text
-build APK in Workspace
-        ↓
-download app-debug.apk
-        ↓
-allow installation from that browser/file manager
-        ↓
-install the APK
-        ↓
-launch their own app from the phone
+PixelRAM: you get pixels and implement drawing/rendering ideas yourself.
+raylib:   you get shapes, input, textures/sound primitives and build the game.
 ```
 
-This is intentionally different from Play Store publishing. For the introductory tutorial:
+Preferred project: **Breakout**, asset-free if possible.
 
-* use an APK because it can be installed directly on a device
-* explain that an Android App Bundle (`.aab`) is normally used for store publishing
-* do not require students to create release signing keys or Play Store accounts
-* mention release signing and `flutter build appbundle` only as a follow-up for students who want to publish an app more formally
+* [ ] Window + one primitive; the game loop `input → update → draw → repeat`; movement per second with `GetFrameTime()`
+* [ ] Keyboard and mouse input, paddle, ball with a `Vector2` velocity, wall/paddle collision
+* [ ] A grid of bricks, score, win/lose/restart
+* [ ] Only then: the Emscripten build behind `make`, `C → .wasm + browser glue`, why the browser owns the event loop
+* [ ] Hide backend-specific Emscripten details in the Makefile; publish the web build on a Hackschule subdomain
 
-#### iOS / iPhone
+Do not turn PixelRAM into a second raylib by adding drawing primitives for convenience.
 
-Explain that the **same Flutter source code can also target iOS**, but the build and installation path is different.
-
-The Workspace itself is Linux-based, so it should not pretend to offer local iOS compilation.
-
-* [ ] Explain that normal Flutter iOS builds require macOS, Xcode and Apple code signing/provisioning
-* [ ] Explain that installing an app on an iPhone is not the same simple APK-sideloading workflow available on Android
-* [ ] Mention that students with access to a Mac can continue the same Flutter project there
-* [ ] Mention a cloud macOS build service such as Codemagic as an optional route for building iOS versions
-* [ ] Make clear that signed iOS distribution still requires the appropriate Apple developer/signing setup
-* [ ] Keep App Store / alternative EU distribution details optional; they are deployment topics, not part of the introductory Flutter lesson
-
-The main classroom payoff remains:
-
-> Build in the browser, then install the same project as a real Android app.
-
-The iOS section should show that Flutter is genuinely cross-platform while being transparent about Apple's additional build and signing requirements.
-
-
-### 6. raylib + WebAssembly
-
-Use raylib as the **higher-level C graphics/game route** and keep PixelRAM as the separate low-level framebuffer route.
-
-Core contrast:
-
-```text
-PixelRAM:
-You get pixels and implement drawing/rendering ideas yourself.
-
-raylib:
-You get shapes, input, textures/sound primitives and build the game.
-```
-
-The tutorial should be mostly about making a small game; WebAssembly is the final explanation of how the same C program becomes browser software.
-
-Preferred project: **Breakout**.
-
-* [ ] Start with the smallest raylib program: window + one primitive
-* [ ] Explain the game loop as `input → update state → draw → repeat`
-* [ ] Move an object automatically
-* [ ] Use `GetFrameTime()` so movement is expressed per second rather than per frame
-* [ ] Add keyboard and mouse input
-* [ ] Build the Breakout paddle
-* [ ] Add a moving ball with a `Vector2` velocity
-* [ ] Add wall/paddle collision
-* [ ] Add an array/grid of bricks
-* [ ] Destroy bricks and track game state/score
-* [ ] Add win/lose/restart behaviour
-
-Keep the core game asset-free if possible: rectangles, circles, lines, text and color are enough. Sounds/textures/particles can be optional polish.
-
-Only after the game works:
-
-* [ ] Reveal the Emscripten build command behind the supplied/simple `make` workflow
-* [ ] Explain `C → Emscripten → .wasm + browser glue` at a high level
-* [ ] Explain why the browser owns the event loop and how the per-frame callback differs from a native `while` loop
-* [ ] Avoid backend-specific or obscure Emscripten details in student code; hide them in the project Makefile where possible
-* [ ] Publish the finished static web build on a Hackschule subdomain
-
-Do not turn PixelRAM into a second raylib by adding drawing primitives simply for convenience.
-
-
-### 7. Hugo / Static Site Generators
-
-Frame this as **build and publish your own multi-page website or blog**, not as a tour of Hugo features.
-
-Connect directly to the existing static HTML/CSS tutorial:
+#### 6. Hugo / static site generators
 
 > One HTML page is easy to maintain by hand. What happens when 20 or 50 pages all need the same navigation, header and footer?
 
-* [ ] Begin with the duplication problem: repeated HTML across several pages
-* [ ] Create a minimal Hugo site without relying on a downloaded theme
-* [ ] Write the first article/page in Markdown
-* [ ] Use `hugo server` for live local preview
-* [ ] Introduce minimal front matter: `title`, `date`, `draft`
-* [ ] Build a shared base HTML layout
-* [ ] Insert `.Title` and `.Content`
-* [ ] Add several pages/posts
-* [ ] Build a list/home template that automatically discovers new content
-* [ ] Keep Go-template syntax to the small subset students actually need
-* [ ] Add a shared CSS file and let students design the site themselves
-* [ ] Introduce tags as one useful example of generated navigation/grouping
-* [ ] Make the source/output distinction explicit: Hugo is a build tool, not something that runs on the web server
-* [ ] Run `hugo` and inspect the generated `public/` directory
-* [ ] Publish **`public/`** to the student's Hackschule webspace/subdomain
+* [ ] Begin with the duplication problem; a minimal site without a downloaded theme
+* [ ] First page in Markdown, `hugo server`, minimal front matter (`title`, `date`, `draft`)
+* [ ] A shared base layout with `.Title` and `.Content`; several pages; a list/home template that discovers new content
+* [ ] Only the Go-template subset students need; their own CSS; tags as one example of generated navigation
+* [ ] Source vs output: run `hugo`, inspect `public/`, publish it to the student's webspace
 
-Possible projects include a personal homepage, gaming/music/film blog, portfolio, recipe collection, project diary or review site.
+No third-party themes, Hugo Modules, multilingual sites, custom output formats, complex shortcodes or deployment pipelines in the introduction.
 
-Do not require third-party themes, Hugo Modules, multilingual sites, custom output formats, complex shortcodes or deployment pipelines in the introductory tutorial.
 
+## Existing pages: findings from the October 2026 review
 
-## Tutorial Follow-ups
+| Page | Action |
+| --- | --- |
+| Pixelflow drawing, Fire | add tasks (own scene; blue flame, wind direction) |
+| shower.js | split into a short activity and a reference section |
+| LaTeX | rewrite around writing one short paper from scratch (sections, environments, references, tables, a formula, BibTeX); today it compiles templates; typos "compilierung", "Bereicht", `litatur.bib` |
+| Svelte | fix markup/editorial issues, clean up event-listener teardown, remove the draft outline comment at the end |
+| Hades | only useful for one school's Greek app and needs a real e-mail login; script uses `agr.nhcham.org`, the text links `agr.gymnasiumsteglitz.de`; move its ideas into the web-server page and retire it |
+| Ziffernerkennung | collect handwriting in the browser instead of print + 300 dpi scan; predict-then-run tasks; discuss overfitting (training loss 10⁻⁴); a shared preinstalled environment instead of 500 MB download and 2 GB per student; typos "boostrap", "Kenrel", "beboachten", "des die" |
+| TCP/IP | rework as the first half of TCP → HTTP → web server: layers, ports, handshake; the Peru server (14.5 ms) is presented as far away next to Google (5.3 ms); remove the commented-out SSH block; broken `<code>-s</code an`; typos "einigt sich", "gar keinen Fall", "Anschließen", "in diesem Beispiele", "Umso kleiner … desto" |
+| Git/GitHub | mark low-level internals as optional/advanced; correct the implication that `git mv` is required for rename detection |
+| Files and directories | remove the stray `</td></tr>` |
+| Programming languages | fact-check history, creator/date and lineage claims; one convention for the year in headings |
 
-### Homepage / tutorial organization
+Platform-wide:
 
-As the new tutorials land, reorganize `sections.yaml` by **conceptual area** rather than creating a separate “new tutorials” section.
+* [ ] A macro for the repeated opening (close folder, clone, open) with generated screenshots; 37 pages repeat it by hand
+* [ ] Convert manual screenshots to recipes when a page is touched (about 800 manual images, 45 generated)
+* [ ] E2E coverage for the database sequence, Git and TCP/IP (8 pages are covered today)
+* [ ] Review `_template_codebites.html` language metadata and remaining manually authored homepage image alt attributes
+* [ ] On narrow screens, consider left-aligning long paragraphs instead of global justified text
+* [ ] A small `prefers-reduced-motion` pass for Workspace-owned transitions and animations
+* [ ] Mention Shared Live Apps in BIF for peer-testing unfinished stories, and wherever sharing a running app helps
+* [ ] Revisit BIF after the teacher workshop and incorporate classroom feedback
+* [ ] Link Automatron from formal-language material and teacher notes; add a short introduction if students use it alone
 
-Target headings and homepage order:
 
-1. Einführung
-2. Grafik & Spiele
-3. Texte & Präsentationen
-4. Websites & Apps
-5. Terminal, Netzwerk & Sicherheit
-6. Datenbanken
-7. Experimente
-8. Programmiersprachen
+### Homepage organisation
 
-Keep **Einführung** first so new students can always find orientation and the basic Workspace workflow. Immediately after that, prefer creative and visible projects that also work well with younger students before moving into the more technical infrastructure-oriented material.
+Reorganize `sections.yaml` by conceptual area as new pages land, together with the
+page kinds from the content model:
 
-Suggested order inside the main sections:
+1. Einführung – About → Basics
+2. Grafik & Spiele – Pixelflow Canvas → Anaglyph 3D → Fire → PixelRAM → raylib + WebAssembly
+3. Texte & Präsentationen – BIF → shower.js → LaTeX
+4. Websites & Apps – HTML/CSS → Hugo → Svelte → Flutter
+5. Terminal, Netzwerk & Sicherheit – Files → Git → TCP/IP → Web Server → WebSockets → Cryptography
+6. Datenbanken – SQL → Modellieren → Filmdatenbank/Musikdatenbank → Neo4j → SQL Injection
+7. Experimente – Digit Recognition → JPEG
+8. Programmiersprachen – keep the gallery
 
-```text
-Einführung
-  About → Basics
+Keep Einführung first. Keep related progressions adjacent, but do not present the
+homepage as a mandatory course; pages link their prerequisites and follow-ups.
 
-Grafik & Spiele
-  Pixelflow Canvas → Anaglyph 3D → Fire → PixelRAM → raylib + WebAssembly
 
-Texte & Präsentationen
-  BIF → shower.js → LaTeX
+## Infrastructure and operations
 
-Websites & Apps
-  HTML/CSS → Hugo → Svelte → Flutter
+### Operational logging
 
-Terminal, Netzwerk & Sicherheit
-  Working with Files → Git → TCP/IP → Web Server → WebSockets → Hades → Cryptography
+* [ ] Audit command/error logging so secrets and credentials cannot appear in logs
+* [ ] Prefer safe human-readable operation descriptions over dumping complete commands when commands fail
 
-Datenbanken
-  MySQL → Videothek → Neo4j → Bobby Tables
+### Dependency and image verification
 
-Experimente
-  Digit Recognition → JPEG
+Improve supply-chain reproducibility gradually rather than rewriting the Docker build at once.
 
-Programmiersprachen
-  Keep the existing language gallery.
-```
+* [ ] Checksum verification for important downloaded release archives where upstream checksums exist
+* [ ] Consider digest pinning for important base images
 
-Keep strongly related progressions adjacent, but do not present the homepage as a mandatory linear course. Individual tutorials should link explicitly to useful prerequisites and natural follow-ups.
+### Continuous integration
 
+Keep tutorial tests focused on whether the documented student workflow actually works.
 
-### Shared Live Apps in existing tutorials
+* [ ] A small, fast CI gate for cheap checks
+* [ ] Heavier browser/toolchain tests manually, nightly or on a suitable self-hosted runner
+* [ ] E2E coverage when important pages are changed or newly written
 
-Shared Live Apps is infrastructure, not a separate tutorial.
+### Deployment visibility
 
-* [ ] Mention it in BIF as an option for peer-testing unfinished stories
-* [ ] Add it to other tutorials where sharing a running application is genuinely useful
+* [ ] Show the deployed short Git commit SHA in the admin area
 
+### Ruby cleanup
 
-### BIF workshop feedback
+Continue extracting coherent pieces from `main.rb` incrementally.
 
-* [ ] Revisit the BIF tutorial after the teacher workshop and incorporate useful classroom feedback
+* [ ] Remove helper/setup definitions duplicated in `helper.rb` and `main.rb`
+* [ ] Decide whether the remaining login/session routes move into a dedicated module
+* [ ] Workspace lifecycle / nginx management as a future extraction candidate
 
 
-### Automatron / Formal Languages
+## Later ideas
 
-Keep Automatron as a contextual teaching tool rather than adding every specialist tool to the main navigation.
-
-* [ ] Link it directly from relevant formal-language / automata material
-* [ ] Mention the direct URL in teacher-facing lesson notes where useful
-* [ ] Add a short introduction if students are expected to use it independently
-
-
-## Later Tutorial Ideas
-
-These are worthwhile directions, but not all need to become tutorials soon.
-
-
-### Prolog
-
-Expose students to a genuinely different programming paradigm.
-
-* facts, rules and queries
-* variables and pattern matching
-* backtracking
-* recursive rules
-* a small knowledge base
-* a search/logic problem such as route finding, a mystery or a logic puzzle
-
-
-### Digital Audio
-
-Browser-based sound synthesis would add a new creative computing area without extra server infrastructure.
-
-* oscillators and waveforms
-* frequency/pitch and amplitude
-* envelopes
-* mixing
-* waveform/spectrum visualization
-* a tiny synthesizer, sequencer or drum machine
-
-Practical requirement: headphones in the classroom.
-
-
-### WebGPU / Parallel Computing
-
-If classroom browser support is reliable, focus primarily on compute rather than introducing yet another graphics API.
-
-* smallest useful WGSL compute shader
-* moving data between JavaScript and the GPU
-* CPU vs. GPU comparison
-* a highly parallel workload such as particles, cellular automata, image processing or fractals
-
-
-### Git Collaboration
-
-Extend the existing Git material when collaborative workflows become useful.
-
-* branches
-* merge
-* merge conflicts
-* pull requests
-* working with another student
-* basic CI/testing
-
-
-### Data Formats
-
-Possible compact tutorial or collection connecting several existing topics.
-
-* text vs. binary data
-* CSV
-* JSON
-* character encodings
-* hex dumps
-* connections to JPEG and network protocols
-
-
-### PixelRAM: Further Projects
-
-The introductory PixelRAM tutorial is complete. Future additions should be optional projects for students who want to go deeper.
-
-Possible projects:
-
-* plasma / classic demoscene effect
-* Conway's Game of Life
-* Mandelbrot set
-* raycaster
-* raytracer
-* simple software triangle/rasterizer
-* advanced game-port demonstrations
-
-Important principle:
-
-> Do not turn PixelRAM into a second raylib. Drawing and rendering algorithms are valuable precisely because students can implement them themselves on top of the framebuffer.
-
-
-## Suggested Order for Remaining Major Tutorial Work
-
-Prioritize the more enticing, creative material first, especially projects that can also work with younger students. The infrastructure-heavy topics remain important, but they do not need to be the first new material students encounter.
-
-1. raylib + WebAssembly
-2. Hugo / Static Site Generators
-3. Flutter
-4. Web Server
-5. WebSockets
-6. Cryptography
-7. Neo4j
-
-This is a **writing/development priority**, not a prerequisite chain.
-
-* raylib adds another highly visual project path and complements PixelRAM without replacing it.
-* Hugo gives students a real website/blog they can keep publishing and connects naturally to the existing HTML/CSS material.
-* Flutter adds a polished app-building route with immediate visual feedback.
-* Web Server and WebSockets should then be written together as one continuous sequence after TCP/IP.
-* Cryptography adds a practical security lab using real command-line tools.
-* Neo4j can come after the Videothek refresh/import path and `neo4j_bolt` student setup are ready, allowing the SQL-vs-graph comparison to be done properly rather than rushed.
-
-The homepage order remains independent of this development priority: **Einführung first, then Grafik & Spiele, Texte & Präsentationen, Websites & Apps, Terminal/Netzwerk/Sicherheit, Datenbanken, Experimente and Programmiersprachen**.
+* **Prolog** – facts, rules, queries, pattern matching, backtracking, recursive rules, a small knowledge base, a logic puzzle
+* **Digital audio** – oscillators, frequency and amplitude, envelopes, mixing, waveform/spectrum views, a tiny synthesizer or drum machine (headphones needed)
+* **WebGPU / parallel computing** – a minimal WGSL compute shader, CPU vs GPU, particles, cellular automata, image processing or fractals
+* **Git collaboration** – branches, merge, conflicts, pull requests, working with another student, basic CI
+* **Data formats** – text vs binary, CSV, JSON, encodings, hex dumps; connects JPEG and network protocols
+* **PixelRAM projects** – plasma, Game of Life, Mandelbrot, raycaster, raytracer, a software rasterizer; do not turn PixelRAM into a second raylib

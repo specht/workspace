@@ -150,13 +150,13 @@ Bestätige `/workspace/` als Ziel und öffne das Repository.
 Darin liegt die Datei:
 
 ```text
-videothek-data.neo4j
+neo4j.dump
 ```
 
 Sie ist ein logischer Dump für `neo4j_bolt`. Im Workspace sind Host, Benutzername, Passwort und Datenbank bereits als Umgebungsvariablen eingerichtet. Deshalb reicht zum Import:
 
 ```bash
-neo4j_bolt load videothek-data.neo4j
+neo4j_bolt load neo4j.dump
 ```
 
 <div class='hint'>
@@ -167,7 +167,7 @@ Der Import erwartet eine leere Neo4j-Datenbank. Falls du dort bereits experiment
 show-bottom-panel
 terminal-open
 terminal-maximize
-terminal-run: neo4j_bolt load videothek-data.neo4j
+terminal-run: neo4j_bolt load neo4j.dump
 terminal-wait-for-prompt
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1

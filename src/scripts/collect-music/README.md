@@ -40,9 +40,16 @@ Useful options:
 Generated files:
 
 - `artists.txt`, `albums.txt`, `tracks.txt`, `genres.txt` — JSON Lines source data
-- `mysql.sql` — complete MySQL schema and data import
+- `mysql.sql` — schema and complete data
+- `mysql-schema.sql`, `mysql-data.sql` — schema only and data only
+- `mysql-data-albums.sql`, `mysql-data-tracks.sql`, `mysql-data-members.sql` — data in
+  parts, for tutorials that build the schema step by step
 - `neo4j.dump` — logical dump compatible with `neo4j_bolt load`
 - `README.md` — generated provenance, schema and import documentation
+
+The file names are shared with `collect-movies` and written by `../lib/classroom_dataset.rb`,
+which also refuses to write a table with a duplicate primary key and prints a sanity
+summary at the end of the build.
 
 The generated Neo4j graph contains `Artist`, `Album`, `Track` and `Genre` nodes with
 `RELEASED`, `HAS_TRACK`, `IN_GENRE` and `MEMBER_OF` relationships. The MySQL schema

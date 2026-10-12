@@ -25,7 +25,7 @@ clone-start: https://github.com/specht/videothek.git
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
-wait-for-text: Would you like to open the cloned repository?
+wait-for-text: Would you like to open the repository?
 click: Open
 wait-for-text: movies.txt
 open-file: movies.txt
@@ -234,7 +234,7 @@ mysql < filmdatenbank.sql
 Die Tabellen existieren jetzt, enthalten aber noch keine Filme. Die aufbereiteten Daten liegen bereits als SQL-`INSERT`-Anweisungen vor. Für den ersten Teil des Kapitels laden wir nur Filme, Genres und ihre Beziehungen:
 
 ```bash
-mysql < movie-genre-data.sql
+mysql < mysql-data-movies.sql
 ```
 
 Starte danach `mycli` und überprüfe die Tabellen:
@@ -253,7 +253,7 @@ terminal-open
 terminal-maximize
 terminal-run: mysql < filmdatenbank.sql
 terminal-wait-for-prompt
-terminal-run: mysql < movie-genre-data.sql
+terminal-run: mysql < mysql-data-movies.sql
 terminal-wait-for-prompt
 terminal-run: mycli
 terminal-run: SHOW TABLES;
@@ -581,7 +581,7 @@ mysql < filmdatenbank-erweiterung.sql
 Danach können die vorbereiteten Personen-, Tätigkeits- und Zuordnungsdaten geladen werden:
 
 ```bash
-mysql < crew-data.sql
+mysql < mysql-data-crew.sql
 ```
 
 <!-- tutorial-screenshot
@@ -590,7 +590,7 @@ press: Control+D
 terminal-wait-for-prompt
 terminal-run: mysql < filmdatenbank-erweiterung.sql
 terminal-wait-for-prompt
-terminal-run: mysql < crew-data.sql
+terminal-run: mysql < mysql-data-crew.sql
 terminal-wait-for-prompt
 terminal-run: mycli
 terminal-run: SHOW TABLES;

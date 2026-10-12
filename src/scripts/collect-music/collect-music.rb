@@ -13,6 +13,8 @@ require 'time'
 require 'uri'
 require 'zlib'
 
+require_relative '../lib/classroom_dataset'
+
 class DiscogsDatasetBuilder
   SOURCE_ROOT = 'https://data.discogs.com/'
   DATASET_TYPES = %w[artists masters releases].freeze
@@ -70,15 +72,24 @@ class DiscogsDatasetBuilder
     write_albums(albums)
     write_tracks(tracks)
     write_genres(genres)
-    write_mysql(albums, artists, memberships, genres, tracks)
+    mysql = mysql_writer(albums, artists, memberships, genres, tracks)
+    mysql.write
     write_neo4j(albums, artists, memberships, genres, tracks)
     write_readme(albums.size, artists.size, tracks.size, genres.size, memberships.size)
 
     STDERR.puts
-    STDERR.puts 'Done. Wrote:'
-    %w[artists.txt albums.txt tracks.txt genres.txt mysql.sql neo4j.dump README.md].each do |name|
-      STDERR.puts "  #{File.join(@output_dir, name)}"
+    STDERR.puts "Done. Wrote to #{@output_dir}:"
+    (%w[artists.txt albums.txt tracks.txt genres.txt] + mysql.files + [ClassroomDataset::NEO4J_FILE, 'README.md']).each do |name|
+      STDERR.puts "  #{name}"
     end
+    ClassroomDataset.report('Sanity check:', {
+      'artists' => artists.size,
+      'albums' => albums.size,
+      'tracks' => tracks.size,
+      'genres' => genres.size,
+      'band memberships' => memberships.size,
+      'years' => "#{albums.values.map { |album| album[:year] }.min}-#{albums.values.map { |album| album[:year] }.max}"
+    })
   end
 
   private
@@ -819,220 +830,148 @@ class DiscogsDatasetBuilder
     end
   end
 
-  def write_mysql(albums, artists, memberships, genres, tracks)
-    path = File.join(@output_dir, 'mysql.sql')
+  def mysql_writer(albums, artists, memberships, genres, tracks)
+    by_id = albums.values.sort_by { |album| album[:id] }
+    tables = [
+      ClassroomDataset::Table.new(name: 'artist', columns: %w[id name born died], primary_key: %w[id],
+                                  rows: artists.values.sort_by { |artist| artist[:id] }.map do |artist|
+                                    [artist[:id], artist[:name], artist[:born], artist[:died]]
+                                  end),
+      ClassroomDataset::Table.new(name: 'genre', columns: %w[id name], primary_key: %w[id],
+                                  rows: genres.map { |genre| [genre[:id], genre[:name]] }),
+      ClassroomDataset::Table.new(name: 'album', columns: %w[id discogs_release_id artist_id title year country versions],
+                                  primary_key: %w[id],
+                                  rows: by_id.map do |album|
+                                    [album[:id], album[:discogs_release_id], album[:artist_id], album[:title],
+                                     album[:year], album[:country], album[:versions]]
+                                  end),
+      ClassroomDataset::Table.new(name: 'album_genre', columns: %w[album_id genre_id], primary_key: %w[album_id genre_id],
+                                  rows: by_id.flat_map { |album| album[:genres].map { |genre_id| [album[:id], genre_id] } }),
+      ClassroomDataset::Table.new(name: 'track', columns: %w[album_id number title duration], primary_key: %w[album_id number],
+                                  rows: tracks.map { |track| [track[:album_id], track[:number], track[:title], track[:duration]] }),
+      ClassroomDataset::Table.new(name: 'artist_part_of', columns: %w[member_id band_id], primary_key: %w[member_id band_id],
+                                  rows: memberships)
+    ]
 
-    File.open(path, 'w') do |file|
-      file.puts <<~SQL
-        -- Generated from the Discogs monthly data dumps at #{SOURCE_ROOT}
-        -- Dump date: #{@dump_date}
-        -- Generated: #{Time.now.utc.iso8601}
-        --
-        -- Import into an existing MySQL database, for example:
-        --   mysql -u USER -p DATABASE < mysql.sql
-
-        SET NAMES utf8mb4;
-        SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS;
-        SET FOREIGN_KEY_CHECKS=0;
-
-        DROP TABLE IF EXISTS `artist_part_of`;
-        DROP TABLE IF EXISTS `album_genre`;
-        DROP TABLE IF EXISTS `track`;
-        DROP TABLE IF EXISTS `album`;
-        DROP TABLE IF EXISTS `genre`;
-        DROP TABLE IF EXISTS `artist`;
-
-        CREATE TABLE `artist` (
-          `id` INT NOT NULL,
-          `name` TEXT NOT NULL,
-          `born` INT NULL,
-          `died` INT NULL,
-          PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-        CREATE TABLE `genre` (
-          `id` INT NOT NULL,
-          `name` VARCHAR(255) NOT NULL,
-          PRIMARY KEY (`id`),
-          UNIQUE KEY `uq_genre_name` (`name`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-        CREATE TABLE `album` (
-          `id` INT NOT NULL,
-          `discogs_release_id` INT NOT NULL,
-          `artist_id` INT NOT NULL,
-          `title` TEXT NOT NULL,
-          `year` INT NOT NULL,
-          `country` VARCHAR(255) NULL,
-          `versions` INT NOT NULL,
-          PRIMARY KEY (`id`),
-          KEY `idx_album_artist` (`artist_id`),
-          KEY `idx_album_year` (`year`),
-          KEY `idx_album_versions` (`versions`),
-          CONSTRAINT `fk_album_artist`
-            FOREIGN KEY (`artist_id`) REFERENCES `artist` (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-        CREATE TABLE `track` (
-          `album_id` INT NOT NULL,
-          `number` INT NOT NULL,
-          `title` TEXT NOT NULL,
-          `duration` INT NULL,
-          PRIMARY KEY (`album_id`, `number`),
-          CONSTRAINT `fk_track_album`
-            FOREIGN KEY (`album_id`) REFERENCES `album` (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-        CREATE TABLE `album_genre` (
-          `album_id` INT NOT NULL,
-          `genre_id` INT NOT NULL,
-          PRIMARY KEY (`album_id`, `genre_id`),
-          KEY `idx_album_genre_genre` (`genre_id`),
-          CONSTRAINT `fk_album_genre_album`
-            FOREIGN KEY (`album_id`) REFERENCES `album` (`id`),
-          CONSTRAINT `fk_album_genre_genre`
-            FOREIGN KEY (`genre_id`) REFERENCES `genre` (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-        CREATE TABLE `artist_part_of` (
-          `member_id` INT NOT NULL,
-          `band_id` INT NOT NULL,
-          PRIMARY KEY (`member_id`, `band_id`),
-          KEY `idx_artist_part_of_band` (`band_id`),
-          CONSTRAINT `fk_artist_part_of_member`
-            FOREIGN KEY (`member_id`) REFERENCES `artist` (`id`),
-          CONSTRAINT `fk_artist_part_of_band`
-            FOREIGN KEY (`band_id`) REFERENCES `artist` (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-      SQL
-
-      write_mysql_rows(file, 'artist', %w[id name born died], artists.values.sort_by { |artist| artist[:id] }.map do |artist|
-        [artist[:id], artist[:name], artist[:born], artist[:died]]
-      end)
-
-      write_mysql_rows(file, 'genre', %w[id name], genres.map { |genre| [genre[:id], genre[:name]] })
-
-      write_mysql_rows(file, 'album', %w[id discogs_release_id artist_id title year country versions],
-                       albums.values.sort_by { |album| album[:id] }.map do |album|
-        [album[:id], album[:discogs_release_id], album[:artist_id], album[:title], album[:year], album[:country], album[:versions]]
-      end)
-
-      write_mysql_rows(file, 'track', %w[album_id number title duration], tracks.map do |track|
-        [track[:album_id], track[:number], track[:title], track[:duration]]
-      end)
-
-      album_genres = albums.values.sort_by { |album| album[:id] }.flat_map do |album|
-        album[:genres].map { |genre_id| [album[:id], genre_id] }
-      end
-      write_mysql_rows(file, 'album_genre', %w[album_id genre_id], album_genres)
-      write_mysql_rows(file, 'artist_part_of', %w[member_id band_id], memberships)
-
-      file.puts
-      file.puts 'SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;'
-    end
+    ClassroomDataset::MysqlWriter.new(
+      output_dir: @output_dir,
+      header: [
+        "Generated from the Discogs monthly data dumps at #{SOURCE_ROOT}",
+        "Dump date: #{@dump_date}",
+        "Generated: #{Time.now.utc.iso8601}"
+      ],
+      schema: MYSQL_SCHEMA,
+      tables: tables,
+      parts: { 'albums' => %w[artist genre album album_genre], 'tracks' => %w[track], 'members' => %w[artist_part_of] }
+    )
   end
 
-  def write_mysql_rows(file, table, columns, rows, batch_size: 1_000)
-    return if rows.empty?
+  MYSQL_SCHEMA = <<~SQL
+    CREATE TABLE `artist` (
+      `id` INT NOT NULL,
+      `name` TEXT NOT NULL,
+      `born` INT NULL,
+      `died` INT NULL,
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-    quoted_columns = columns.map { |column| "`#{column}`" }.join(', ')
-    rows.each_slice(batch_size) do |batch|
-      file.puts
-      file.puts "INSERT INTO `#{table}` (#{quoted_columns}) VALUES"
-      file.puts batch.map { |row| "  (#{row.map { |value| mysql_literal(value) }.join(', ')})" }.join(",\n")
-      file.puts ';'
-    end
-  end
+    CREATE TABLE `genre` (
+      `id` INT NOT NULL,
+      `name` VARCHAR(255) NOT NULL,
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `uq_genre_name` (`name`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-  def mysql_literal(value)
-    case value
-    when nil
-      'NULL'
-    when Integer
-      value.to_s
-    when String
-      encoded = value.encode(Encoding::UTF_8)
-      "_utf8mb4 0x#{encoded.unpack1('H*')}"
-    else
-      raise "Unsupported MySQL value: #{value.inspect}"
-    end
-  end
+    CREATE TABLE `album` (
+      `id` INT NOT NULL,
+      `discogs_release_id` INT NOT NULL,
+      `artist_id` INT NOT NULL,
+      `title` TEXT NOT NULL,
+      `year` INT NOT NULL,
+      `country` VARCHAR(255) NULL,
+      `versions` INT NOT NULL,
+      PRIMARY KEY (`id`),
+      KEY `idx_album_artist` (`artist_id`),
+      KEY `idx_album_year` (`year`),
+      KEY `idx_album_versions` (`versions`),
+      CONSTRAINT `fk_album_artist`
+        FOREIGN KEY (`artist_id`) REFERENCES `artist` (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+    CREATE TABLE `track` (
+      `album_id` INT NOT NULL,
+      `number` INT NOT NULL,
+      `title` TEXT NOT NULL,
+      `duration` INT NULL,
+      PRIMARY KEY (`album_id`, `number`),
+      CONSTRAINT `fk_track_album`
+        FOREIGN KEY (`album_id`) REFERENCES `album` (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+    CREATE TABLE `album_genre` (
+      `album_id` INT NOT NULL,
+      `genre_id` INT NOT NULL,
+      PRIMARY KEY (`album_id`, `genre_id`),
+      KEY `idx_album_genre_genre` (`genre_id`),
+      CONSTRAINT `fk_album_genre_album`
+        FOREIGN KEY (`album_id`) REFERENCES `album` (`id`),
+      CONSTRAINT `fk_album_genre_genre`
+        FOREIGN KEY (`genre_id`) REFERENCES `genre` (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+    CREATE TABLE `artist_part_of` (
+      `member_id` INT NOT NULL,
+      `band_id` INT NOT NULL,
+      PRIMARY KEY (`member_id`, `band_id`),
+      KEY `idx_artist_part_of_band` (`band_id`),
+      CONSTRAINT `fk_artist_part_of_member`
+        FOREIGN KEY (`member_id`) REFERENCES `artist` (`id`),
+      CONSTRAINT `fk_artist_part_of_band`
+        FOREIGN KEY (`band_id`) REFERENCES `artist` (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  SQL
 
   def write_neo4j(albums, artists, memberships, genres, tracks)
-    path = File.join(@output_dir, 'neo4j.dump')
-    artist_node_ids = {}
-    album_node_ids = {}
-    genre_node_ids = {}
-    track_node_ids = {}
-    next_node_id = 0
+    ClassroomDataset.write_neo4j(File.join(@output_dir, ClassroomDataset::NEO4J_FILE)) do |neo4j|
+      artist_nodes = {}
+      album_nodes = {}
+      genre_nodes = {}
+      track_nodes = {}
 
-    File.open(path, 'w') do |file|
       artists.values.sort_by { |artist| artist[:id] }.each do |artist|
-        node_id = next_node_id
-        next_node_id += 1
-        artist_node_ids[artist[:id]] = node_id
-        write_neo4j_node(file, node_id, ['Artist'], artist)
+        artist_nodes[artist[:id]] = neo4j.node(['Artist'], artist)
       end
 
       albums.values.sort_by { |album| album[:id] }.each do |album|
-        node_id = next_node_id
-        next_node_id += 1
-        album_node_ids[album[:id]] = node_id
         properties = album.reject { |key, _value| %i[tracks genres artist_id].include?(key) }
-        write_neo4j_node(file, node_id, ['Album'], properties)
+        album_nodes[album[:id]] = neo4j.node(['Album'], properties)
       end
 
-      genres.each do |genre|
-        node_id = next_node_id
-        next_node_id += 1
-        genre_node_ids[genre[:id]] = node_id
-        write_neo4j_node(file, node_id, ['Genre'], genre)
-      end
+      genres.each { |genre| genre_nodes[genre[:id]] = neo4j.node(['Genre'], genre) }
 
       tracks.each do |track|
-        node_id = next_node_id
-        next_node_id += 1
-        track_node_ids[[track[:album_id], track[:number]]] = node_id
         properties = track.merge(id: "#{track[:album_id]}:#{track[:number]}")
-        write_neo4j_node(file, node_id, ['Track'], properties)
+        track_nodes[[track[:album_id], track[:number]]] = neo4j.node(['Track'], properties)
       end
 
       albums.values.sort_by { |album| album[:id] }.each do |album|
-        album_node = album_node_ids.fetch(album[:id])
-        artist_node = artist_node_ids[album[:artist_id]]
-        write_neo4j_relationship(file, artist_node, album_node, 'RELEASED') if artist_node
-
-        album[:genres].each do |genre_id|
-          write_neo4j_relationship(file, album_node, genre_node_ids.fetch(genre_id), 'IN_GENRE')
-        end
+        album_node = album_nodes.fetch(album[:id])
+        artist_node = artist_nodes[album[:artist_id]]
+        neo4j.relationship(artist_node, album_node, 'RELEASED') if artist_node
+        album[:genres].each { |genre_id| neo4j.relationship(album_node, genre_nodes.fetch(genre_id), 'IN_GENRE') }
       end
 
       tracks.each do |track|
-        write_neo4j_relationship(
-          file,
-          album_node_ids.fetch(track[:album_id]),
-          track_node_ids.fetch([track[:album_id], track[:number]]),
-          'HAS_TRACK',
-          number: track[:number]
-        )
+        neo4j.relationship(album_nodes.fetch(track[:album_id]), track_nodes.fetch([track[:album_id], track[:number]]),
+                           'HAS_TRACK', number: track[:number])
       end
 
       memberships.each do |member_id, band_id|
-        member_node = artist_node_ids[member_id]
-        band_node = artist_node_ids[band_id]
-        next unless member_node && band_node
-
-        write_neo4j_relationship(file, member_node, band_node, 'MEMBER_OF')
+        member_node = artist_nodes[member_id]
+        band_node = artist_nodes[band_id]
+        neo4j.relationship(member_node, band_node, 'MEMBER_OF') if member_node && band_node
       end
     end
-  end
-
-  def write_neo4j_node(file, id, labels, properties)
-    file.puts "n #{JSON.generate(id: id, labels: labels, properties: properties)}"
-  end
-
-  def write_neo4j_relationship(file, from, to, type, properties = {})
-    file.puts "r #{JSON.generate(from: from, to: to, type: type, properties: properties)}"
   end
 
   def write_readme(album_count, artist_count, track_count, genre_count, membership_count)
@@ -1069,8 +1008,15 @@ class DiscogsDatasetBuilder
       - `albums.txt` — #{album_count} albums, one JSON object per line
       - `tracks.txt` — #{track_count} tracks, one JSON object per line
       - `genres.txt` — #{genre_count} genres, one JSON object per line
-      - `mysql.sql` — creates the relational schema and inserts the complete dataset
+      - `mysql.sql` — schema and complete data
+      - `mysql-schema.sql` — schema only
+      - `mysql-data.sql` — data only, for a schema built in class
+      - `mysql-data-albums.sql` — data only: `artist`, `genre`, `album`, `album_genre`
+      - `mysql-data-tracks.sql` — data only: `track` (load after the albums)
+      - `mysql-data-members.sql` — data only: `artist_part_of` (load after the albums)
       - `neo4j.dump` — logical Neo4jBolt dump ready for `neo4j_bolt load`
+
+      Every classroom dataset (also the IMDb movie dataset) uses these file names.
 
       The dataset also contains #{membership_count} artist-to-band membership links.
 
@@ -1088,7 +1034,7 @@ class DiscogsDatasetBuilder
       Import it into an existing database with, for example:
 
       ```sh
-      mysql -u USER -p DATABASE < mysql.sql
+      mysql < mysql.sql
       ```
 
       `album.id` is the Discogs master-release ID and `album.discogs_release_id` is the
@@ -1171,6 +1117,7 @@ parser = OptionParser.new do |opts|
   end
 end
 
-parser.parse!
-
-DiscogsDatasetBuilder.new(**options).run
+if $PROGRAM_NAME == __FILE__
+  parser.parse!
+  DiscogsDatasetBuilder.new(**options).run
+end

@@ -10,6 +10,8 @@ require 'time'
 require 'uri'
 require 'zlib'
 
+require_relative '../lib/classroom_dataset'
+
 class ImdbDatasetBuilder
   SOURCE_URL = 'https://datasets.imdbws.com/'
 
@@ -26,6 +28,7 @@ class ImdbDatasetBuilder
     @download_dir = File.join(@output_dir, '.downloads')
     @min_votes = min_votes
     @force_download = force_download
+    @stats = Hash.new(0)
   end
 
   def run
@@ -44,15 +47,17 @@ class ImdbDatasetBuilder
     write_movies(movies)
     write_crew(crew)
     write_genres(genres)
-    write_mysql(movies, crew, genres)
+    mysql = mysql_writer(movies, crew, genres)
+    mysql.write
     write_neo4j(movies, crew, genres)
     write_readme(movies.size, crew.size, genres.size)
 
     STDERR.puts
-    STDERR.puts "Done. Wrote:"
-    %w[movies.txt crew.txt genres.txt videothek-data.sql videothek-data.neo4j README.md].each do |name|
-      STDERR.puts "  #{File.join(@output_dir, name)}"
+    STDERR.puts "Done. Wrote to #{@output_dir}:"
+    (%w[movies.txt crew.txt genres.txt] + mysql.files + [ClassroomDataset::NEO4J_FILE, 'README.md']).each do |name|
+      STDERR.puts "  #{name}"
     end
+    report(movies, crew, genres)
   end
 
   private
@@ -109,7 +114,8 @@ class ImdbDatasetBuilder
   def each_tsv(name)
     path = File.join(@download_dir, name)
 
-    Zlib::GzipReader.open(path) do |gz|
+    # IMDb files are UTF-8, whatever the locale of the shell running the build
+    Zlib::GzipReader.open(path, external_encoding: Encoding::UTF_8) do |gz|
       headers = gz.readline.chomp.split("\t", -1)
       gz.each_line do |line|
         values = line.chomp.split("\t", -1)
@@ -183,22 +189,34 @@ class ImdbDatasetBuilder
     [movies, movie_ids, genres]
   end
 
+  # Several German titles can exist (display title, working title, festival
+  # title, a literal translation). The one IMDb displays in Germany wins; a title
+  # without a type comes next; any other type only if nothing better exists.
   def add_german_titles(movies, movie_ids)
     STDERR.puts 'Parsing German titles...'
+    best = {}
 
     each_tsv('title.akas.tsv.gz') do |row|
       imdb_id = row['titleId']
       next unless movie_ids.include?(imdb_id)
       next unless row['region'] == 'DE'
 
-      movie = movies.fetch(imdb_id)
-      next if movie[:german_title]
-
-      known_titles = [movie[:title], movie[:original_title]].compact
       title = row['title']
-      next if known_titles.include?(title)
+      next if missing?(title)
 
-      movie[:german_title] = title
+      types = missing?(row['types']) ? [] : row['types'].split(/[,\u0002]/)
+      rank = if types.include?('imdbDisplay') then 0
+             elsif types.empty? then 1
+             else 2
+             end
+      best[imdb_id] = [rank, title] if best[imdb_id].nil? || rank < best[imdb_id][0]
+    end
+
+    # a German display title equal to the English or original title means the
+    # film has no title of its own in Germany
+    best.each do |imdb_id, (_rank, title)|
+      movie = movies.fetch(imdb_id)
+      movie[:german_title] = title unless [movie[:title], movie[:original_title]].include?(title)
     end
   end
 
@@ -216,6 +234,13 @@ class ImdbDatasetBuilder
       movie = movies.fetch(imdb_id)
       movie[:crew] ||= {}
       movie[:crew][category] ||= []
+      # IMDb lists a person once per character, and actress -> actor merges
+      # two categories: keep each person once per job, or (movie, person, job)
+      # would not be unique in movie_crew
+      if movie[:crew][category].include?(row['nconst'])
+        @stats[:duplicate_principals] += 1
+        next
+      end
       movie[:crew][category] << row['nconst']
       people_ids << row['nconst']
     end
@@ -240,7 +265,15 @@ class ImdbDatasetBuilder
         name: row['primaryName'],
         birth_year: row['birthYear'].to_i
       }
-      person[:death_year] = row['deathYear'].to_i unless missing?(row['deathYear'])
+      unless missing?(row['deathYear'])
+        death_year = row['deathYear'].to_i
+        # years before the common era carry no sign in IMDb (Homer: 850, 800)
+        if death_year < person[:birth_year]
+          @stats[:impossible_life_dates] += 1
+        else
+          person[:death_year] = death_year
+        end
+      end
       crew[imdb_id] = person
     end
 
@@ -301,224 +334,142 @@ class ImdbDatasetBuilder
     job_ids
   end
 
-  def write_mysql(movies, crew, genres)
-    path = File.join(@output_dir, 'videothek-data.sql')
+  def mysql_writer(movies, crew, genres)
     jobs = jobs_for(movies)
-
-    File.open(path, 'w') do |file|
-      file.puts <<~SQL
-        -- Generated from the IMDb non-commercial datasets at #{SOURCE_URL}
-        -- Generated: #{Time.now.utc.iso8601}
-        --
-        -- Import into an existing MySQL database, for example:
-        --   mysql -u USER -p DATABASE < videothek-data.sql
-
-        SET NAMES utf8mb4;
-        SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS;
-        SET FOREIGN_KEY_CHECKS=0;
-
-        DROP TABLE IF EXISTS `movie_crew`;
-        DROP TABLE IF EXISTS `movie_genre`;
-        DROP TABLE IF EXISTS `job`;
-        DROP TABLE IF EXISTS `crew`;
-        DROP TABLE IF EXISTS `genre`;
-        DROP TABLE IF EXISTS `movie`;
-
-        CREATE TABLE `movie` (
-          `id` INT NOT NULL,
-          `title` TEXT NOT NULL,
-          `original_title` TEXT NULL,
-          `german_title` TEXT NULL,
-          `year` INT NOT NULL,
-          `runtime` INT NOT NULL,
-          `rating` DECIMAL(3,1) NOT NULL,
-          PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-        CREATE TABLE `genre` (
-          `id` INT NOT NULL,
-          `name` VARCHAR(255) NOT NULL,
-          PRIMARY KEY (`id`),
-          UNIQUE KEY `uq_genre_name` (`name`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-        CREATE TABLE `crew` (
-          `id` INT NOT NULL,
-          `name` TEXT NOT NULL,
-          `birth_year` INT NOT NULL,
-          `death_year` INT NULL,
-          PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-        CREATE TABLE `job` (
-          `id` INT NOT NULL,
-          `title` VARCHAR(255) NOT NULL,
-          PRIMARY KEY (`id`),
-          UNIQUE KEY `uq_job_title` (`title`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-        CREATE TABLE `movie_genre` (
-          `movie_id` INT NOT NULL,
-          `genre_id` INT NOT NULL,
-          PRIMARY KEY (`movie_id`, `genre_id`),
-          KEY `idx_movie_genre_genre` (`genre_id`),
-          CONSTRAINT `fk_movie_genre_movie`
-            FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`),
-          CONSTRAINT `fk_movie_genre_genre`
-            FOREIGN KEY (`genre_id`) REFERENCES `genre` (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-        CREATE TABLE `movie_crew` (
-          `movie_id` INT NOT NULL,
-          `crew_id` INT NOT NULL,
-          `job_id` INT NOT NULL,
-          PRIMARY KEY (`movie_id`, `crew_id`, `job_id`),
-          KEY `idx_movie_crew_crew` (`crew_id`),
-          KEY `idx_movie_crew_job` (`job_id`),
-          CONSTRAINT `fk_movie_crew_movie`
-            FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`),
-          CONSTRAINT `fk_movie_crew_crew`
-            FOREIGN KEY (`crew_id`) REFERENCES `crew` (`id`),
-          CONSTRAINT `fk_movie_crew_job`
-            FOREIGN KEY (`job_id`) REFERENCES `job` (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-      SQL
-
-      write_mysql_rows(file, 'genre', %w[id name], genres.sort_by { |genre| genre[:id] }.map do |genre|
-        [genre[:id], genre[:name]]
-      end)
-
-      write_mysql_rows(file, 'crew', %w[id name birth_year death_year], crew.values.sort_by { |person| person[:id] }.map do |person|
-        [person[:id], person[:name], person[:birth_year], person[:death_year]]
-      end)
-
-      write_mysql_rows(file, 'job', %w[id title], jobs.map { |title, id| [id, title] }.sort_by(&:first))
-
-      write_mysql_rows(file, 'movie', %w[id title original_title german_title year runtime rating],
-                       movies.values.sort_by { |movie| movie[:id] }.map do |movie|
-        [movie[:id], movie[:title], movie[:original_title], movie[:german_title],
-         movie[:year], movie[:runtime], movie[:rating]]
-      end)
-
-      movie_genres = []
-      movie_crew = []
-      movies.values.sort_by { |movie| movie[:id] }.each do |movie|
-        movie[:genres].each { |genre_id| movie_genres << [movie[:id], genre_id] }
-        next unless movie[:crew]
-
-        movie[:crew].each do |job, crew_ids|
-          crew_ids.each { |crew_id| movie_crew << [movie[:id], crew_id, jobs.fetch(job)] }
-        end
+    by_id = movies.values.sort_by { |movie| movie[:id] }
+    movie_genres = by_id.flat_map { |movie| movie[:genres].map { |genre_id| [movie[:id], genre_id] } }
+    movie_crew = by_id.flat_map do |movie|
+      (movie[:crew] || {}).flat_map do |job, crew_ids|
+        crew_ids.map { |crew_id| [movie[:id], crew_id, jobs.fetch(job)] }
       end
-
-      write_mysql_rows(file, 'movie_genre', %w[movie_id genre_id], movie_genres)
-      write_mysql_rows(file, 'movie_crew', %w[movie_id crew_id job_id], movie_crew)
-
-      file.puts
-      file.puts 'SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;'
     end
+
+    tables = [
+      ClassroomDataset::Table.new(name: 'genre', columns: %w[id name], primary_key: %w[id],
+                                  rows: genres.sort_by { |genre| genre[:id] }.map { |genre| [genre[:id], genre[:name]] }),
+      ClassroomDataset::Table.new(name: 'movie', columns: %w[id title original_title german_title year runtime rating],
+                                  primary_key: %w[id],
+                                  rows: by_id.map do |movie|
+                                    [movie[:id], movie[:title], movie[:original_title], movie[:german_title],
+                                     movie[:year], movie[:runtime], movie[:rating]]
+                                  end),
+      ClassroomDataset::Table.new(name: 'movie_genre', columns: %w[movie_id genre_id], primary_key: %w[movie_id genre_id],
+                                  rows: movie_genres),
+      ClassroomDataset::Table.new(name: 'crew', columns: %w[id name birth_year death_year], primary_key: %w[id],
+                                  rows: crew.values.sort_by { |person| person[:id] }.map do |person|
+                                    [person[:id], person[:name], person[:birth_year], person[:death_year]]
+                                  end),
+      ClassroomDataset::Table.new(name: 'job', columns: %w[id title], primary_key: %w[id],
+                                  rows: jobs.map { |title, id| [id, title] }.sort_by(&:first)),
+      ClassroomDataset::Table.new(name: 'movie_crew', columns: %w[movie_id crew_id job_id],
+                                  primary_key: %w[movie_id crew_id job_id], rows: movie_crew)
+    ]
+
+    ClassroomDataset::MysqlWriter.new(
+      output_dir: @output_dir,
+      header: [
+        "Generated from the IMDb non-commercial datasets at #{SOURCE_URL}",
+        "Generated: #{Time.now.utc.iso8601}"
+      ],
+      schema: MYSQL_SCHEMA,
+      tables: tables,
+      # the Filmdatenbank tutorial first models movies and genres, then adds people
+      parts: { 'movies' => %w[genre movie movie_genre], 'crew' => %w[crew job movie_crew] }
+    )
   end
 
-  def write_mysql_rows(file, table, columns, rows, batch_size: 1_000)
-    return if rows.empty?
+  MYSQL_SCHEMA = <<~SQL
+    CREATE TABLE `genre` (
+      `id` INT NOT NULL,
+      `name` VARCHAR(255) NOT NULL,
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `uq_genre_name` (`name`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-    quoted_columns = columns.map { |column| "`#{column}`" }.join(', ')
-    rows.each_slice(batch_size) do |batch|
-      file.puts
-      file.puts "INSERT INTO `#{table}` (#{quoted_columns}) VALUES"
-      file.puts batch.map { |row| "  (#{row.map { |value| mysql_literal(value) }.join(', ')})" }.join(",\n")
-      file.puts ';'
-    end
-  end
+    CREATE TABLE `movie` (
+      `id` INT NOT NULL,
+      `title` VARCHAR(255) NOT NULL,
+      `original_title` VARCHAR(255) NULL,
+      `german_title` VARCHAR(255) NULL,
+      `year` INT NOT NULL,
+      `runtime` INT NOT NULL,
+      `rating` DECIMAL(3,1) NOT NULL,
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-  def mysql_literal(value)
-    case value
-    when nil
-      'NULL'
-    when Integer
-      value.to_s
-    when Float
-      raise "Cannot write non-finite number #{value.inspect} to MySQL" unless value.finite?
+    CREATE TABLE `movie_genre` (
+      `movie_id` INT NOT NULL,
+      `genre_id` INT NOT NULL,
+      PRIMARY KEY (`movie_id`, `genre_id`),
+      KEY `idx_movie_genre_genre` (`genre_id`),
+      CONSTRAINT `fk_movie_genre_movie`
+        FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`),
+      CONSTRAINT `fk_movie_genre_genre`
+        FOREIGN KEY (`genre_id`) REFERENCES `genre` (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-      value.to_s
-    when String
-      encoded = value.encode(Encoding::UTF_8)
-      "_utf8mb4 0x#{encoded.unpack1('H*')}"
-    else
-      raise "Unsupported MySQL value: #{value.inspect}"
-    end
-  end
+    CREATE TABLE `crew` (
+      `id` INT NOT NULL,
+      `name` VARCHAR(255) NOT NULL,
+      `birth_year` INT NOT NULL,
+      `death_year` INT NULL,
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+    CREATE TABLE `job` (
+      `id` INT NOT NULL,
+      `title` VARCHAR(255) NOT NULL,
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `uq_job_title` (`title`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+    CREATE TABLE `movie_crew` (
+      `movie_id` INT NOT NULL,
+      `crew_id` INT NOT NULL,
+      `job_id` INT NOT NULL,
+      PRIMARY KEY (`movie_id`, `crew_id`, `job_id`),
+      KEY `idx_movie_crew_crew` (`crew_id`),
+      KEY `idx_movie_crew_job` (`job_id`),
+      CONSTRAINT `fk_movie_crew_movie`
+        FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`),
+      CONSTRAINT `fk_movie_crew_crew`
+        FOREIGN KEY (`crew_id`) REFERENCES `crew` (`id`),
+      CONSTRAINT `fk_movie_crew_job`
+        FOREIGN KEY (`job_id`) REFERENCES `job` (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  SQL
 
   def write_neo4j(movies, crew, genres)
-    path = File.join(@output_dir, 'videothek-data.neo4j')
-    movie_node_ids = {}
-    crew_node_ids = {}
-    genre_node_ids = {}
-    next_node_id = 0
+    ClassroomDataset.write_neo4j(File.join(@output_dir, ClassroomDataset::NEO4J_FILE)) do |neo4j|
+      movie_nodes = {}
+      crew_nodes = {}
+      genre_nodes = {}
 
-    File.open(path, 'w') do |file|
       movies.values.sort_by { |movie| movie[:id] }.each do |movie|
-        node_id = next_node_id
-        next_node_id += 1
-        movie_node_ids[movie[:id]] = node_id
-
-        properties = {
-          id: movie[:id],
-          title: movie[:title],
-          year: movie[:year],
-          runtime: movie[:runtime],
-          rating: movie[:rating]
-        }
+        properties = movie.slice(:id, :title, :year, :runtime, :rating)
         properties[:original_title] = movie[:original_title] if movie[:original_title]
         properties[:german_title] = movie[:german_title] if movie[:german_title]
-        write_neo4j_node(file, node_id, ['Movie'], properties)
+        movie_nodes[movie[:id]] = neo4j.node(['Movie'], properties)
       end
 
       crew.values.sort_by { |person| person[:id] }.each do |person|
-        node_id = next_node_id
-        next_node_id += 1
-        crew_node_ids[person[:id]] = node_id
-
-        properties = {
-          id: person[:id],
-          name: person[:name],
-          birth_year: person[:birth_year]
-        }
-        properties[:death_year] = person[:death_year] if person[:death_year]
-        write_neo4j_node(file, node_id, ['Person'], properties)
+        crew_nodes[person[:id]] = neo4j.node(['Person'], person.slice(:id, :name, :birth_year, :death_year))
       end
 
       genres.sort_by { |genre| genre[:id] }.each do |genre|
-        node_id = next_node_id
-        next_node_id += 1
-        genre_node_ids[genre[:id]] = node_id
-        write_neo4j_node(file, node_id, ['Genre'], id: genre[:id], name: genre[:name])
+        genre_nodes[genre[:id]] = neo4j.node(['Genre'], id: genre[:id], name: genre[:name])
       end
 
       movies.values.sort_by { |movie| movie[:id] }.each do |movie|
-        from = movie_node_ids.fetch(movie[:id])
-        movie[:genres].each do |genre_id|
-          write_neo4j_relationship(file, from, genre_node_ids.fetch(genre_id), 'IN_GENRE')
-        end
+        from = movie_nodes.fetch(movie[:id])
+        movie[:genres].each { |genre_id| neo4j.relationship(from, genre_nodes.fetch(genre_id), 'IN_GENRE') }
 
-        next unless movie[:crew]
-
-        movie[:crew].each do |job, crew_ids|
+        (movie[:crew] || {}).each do |job, crew_ids|
           type = neo4j_relationship_type(job)
-          crew_ids.each do |crew_id|
-            write_neo4j_relationship(file, crew_node_ids.fetch(crew_id), from, type)
-          end
+          crew_ids.each { |crew_id| neo4j.relationship(crew_nodes.fetch(crew_id), from, type) }
         end
       end
     end
-  end
-
-  def write_neo4j_node(file, id, labels, properties)
-    file.puts "n #{JSON.generate(id: id, labels: labels, properties: properties)}"
-  end
-
-  def write_neo4j_relationship(file, from, to, type, properties = {})
-    file.puts "r #{JSON.generate(from: from, to: to, type: type, properties: properties)}"
   end
 
   def neo4j_relationship_type(job)
@@ -526,6 +477,23 @@ class ImdbDatasetBuilder
     raise "Cannot derive Neo4j relationship type from #{job.inspect}" if type.empty?
 
     type
+  end
+
+  def report(movies, crew, genres)
+    credits = movies.values.sum { |movie| (movie[:crew] || {}).values.sum(&:size) }
+    titles = movies.values.group_by { |movie| movie[:title] }.select { |_title, list| list.size > 1 }
+    notes = []
+    notes << "#{titles.size} titles occur more than once (e.g. #{titles.keys.first(3).join(', ')}): a title is not a key" if titles.any?
+    ClassroomDataset.report('Sanity check:', {
+      'movies' => movies.size,
+      'people' => crew.size,
+      'genres' => genres.size,
+      'credits (movie, person, job)' => credits,
+      'movies with a German title' => movies.values.count { |movie| movie[:german_title] },
+      'years' => "#{movies.values.map { |m| m[:year] }.min}-#{movies.values.map { |m| m[:year] }.max}",
+      'duplicate credits removed' => @stats[:duplicate_principals],
+      'impossible death years dropped' => @stats[:impossible_life_dates]
+    }, notes)
   end
 
   def write_readme(movie_count, crew_count, genre_count)
@@ -547,37 +515,51 @@ class ImdbDatasetBuilder
 
       The generated data contains only non-adult titles of type `movie` with a known
       year, runtime and genre, and with at least #{@min_votes} IMDb votes at generation
-      time. German alternative titles are added when available. `actress` principals
-      are normalized to the `actor` category, matching the original classroom dataset.
+      time. German titles are added when available, preferring the title IMDb displays
+      in Germany. `actress` principals are normalized to the `actor` category, matching
+      the original classroom dataset. Death years before the birth year (ancient authors,
+      whose years carry no sign in IMDb) are dropped.
 
       ## Generated files
 
       - `movies.txt` — #{movie_count} movies, one JSON object per line
       - `crew.txt` — #{crew_count} people, one JSON object per line
       - `genres.txt` — #{genre_count} genres, one JSON object per line
-      - `videothek-data.sql` — creates the relational schema and inserts the complete dataset
-      - `videothek-data.neo4j` — logical Neo4jBolt dump ready for `neo4j_bolt load`
+      - `mysql.sql` — schema and complete data
+      - `mysql-schema.sql` — schema only
+      - `mysql-data.sql` — data only, for a schema built in class
+      - `mysql-data-movies.sql` — data only: `genre`, `movie`, `movie_genre`
+      - `mysql-data-crew.sql` — data only: `crew`, `job`, `movie_crew`
+      - `neo4j.dump` — logical Neo4jBolt dump ready for `neo4j_bolt load`
+
+      Every classroom dataset (also the Discogs music dataset) uses these file names.
 
       ## MySQL
 
-      `videothek-data.sql` creates these tables:
+      The relational schema has the tables `movie`, `genre`, `movie_genre`, `crew`,
+      `job` and `movie_crew`. `movie_crew` connects a movie, a person and a job; a person
+      appears once per job and movie, even if IMDb lists several characters.
 
-      - `movie`
-      - `genre`
-      - `crew`
-      - `job`
-      - `movie_genre`
-      - `movie_crew`
-
-      Import it into an existing database with, for example:
+      Load everything into the current database:
 
       ```sh
-      mysql -u USER -p DATABASE < videothek-data.sql
+      mysql < mysql.sql
       ```
+
+      Or load the data step by step into tables created in class (the column names must
+      match):
+
+      ```sh
+      mysql < mysql-data-movies.sql
+      mysql < mysql-data-crew.sql
+      ```
+
+      Titles are not unique: two films may share a title (e.g. *Nosferatu*, 1922 and
+      2024), so queries identify a film by its `id` or by title and year.
 
       ## Neo4j / Neo4jBolt
 
-      `videothek-data.neo4j` uses Neo4jBolt's textual logical dump format. It contains:
+      `neo4j.dump` uses Neo4jBolt's textual logical dump format. It contains:
 
       - `Movie` nodes
       - `Person` nodes
@@ -588,7 +570,7 @@ class ImdbDatasetBuilder
       Load it into an empty Neo4j database with:
 
       ```sh
-      neo4j_bolt load videothek-data.neo4j
+      neo4j_bolt load neo4j.dump
       ```
 
       Neo4jBolt uses dump-local integer node IDs in this file to reconnect
@@ -633,6 +615,7 @@ parser = OptionParser.new do |opts|
   end
 end
 
-parser.parse!
-
-ImdbDatasetBuilder.new(**options).run
+if $PROGRAM_NAME == __FILE__
+  parser.parse!
+  ImdbDatasetBuilder.new(**options).run
+end
