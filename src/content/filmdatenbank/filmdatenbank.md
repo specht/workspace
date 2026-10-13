@@ -109,7 +109,7 @@ wait-for-text: FILMDATENBANK
 write-file: filmdatenbank/film.er <- previous-code
 open-file: film.er
 close-tab: Welcome
-left-sidebar-width: 260
+hide-left-sidebar
 press: Control+K
 press: v
 wait-for-text: Neu anordnen
@@ -229,7 +229,7 @@ type: SHOW TABLES;
 press: Enter
 wait-for-text: 3 rows in set
 # mycli keeps 8 rows free below its prompt and scrolls the query away if the terminal is too short
-viewport: 1853x1000
+viewport: 1029x560
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->

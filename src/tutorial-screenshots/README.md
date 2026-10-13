@@ -515,13 +515,20 @@ do not provide a hook simply continue after `DOMContentLoaded`. The hook file's
 SHA-256 is included in the environment fingerprint, so changing hook behavior
 invalidates that tutorial's generated screenshots automatically.
 
-The global screenshot profile lives in `config.rb`. It defaults to a 1853x929
-viewport, 100% browser-style zoom, and a 2x capture scale. The renderer deliberately
+The global screenshot profile lives in `config.rb`. It reproduces the look of
+the hand-made screenshots, a small browser window at a high zoom: a
+1029x516 CSS-pixel viewport (`1853 / 1.8` by `929 / 1.8`) captured at scale
+1.8, so the default image is 1853x929 pixels. The renderer deliberately
 does not choose a light or dark color scheme: code-server loads the Workspace's
 actual VS Code theme, and the screenshot generator waits until that theme has
 remained stable before running the recipe. The page keeps its normal layout while
-Chromium renders the screenshot capture at the requested scale, so the default
-1853x929 viewport produces a 3706x1858 bitmap without resizing a smaller capture.
+Chromium renders the screenshot capture at the requested scale.
+
+A recipe's `viewport` is in the same CSS pixels. To keep the look of the other
+screenshots, change only what needs to change and keep the width at 1029:
+`viewport: 1029x560` gives the terminal two more rows. `viewport: 1853x1000`
+would lay the Workspace out on almost twice the area, and everything in the
+image looks small.
 
 `viewport` and `zoom` describe the layout in which the selected tab is operated
 and captured. The global capture scale changes only the output resolution. The
