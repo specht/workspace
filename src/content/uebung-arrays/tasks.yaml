@@ -1,0 +1,40 @@
+# Übungsset »Arrays«: Aufgaben aus Code Bites (src/codebites/tasks).
+# Gelöst ist eine Aufgabe, sobald ihr Code im Code-Editor alle Tests besteht.
+# Format: docs/aufgaben.md
+format: 1
+activity: uebung-arrays
+tasks:
+  - id: array-sum
+    title: Summe mehrerer Zahlen berechnen
+    prompt: 'Implementiere eine Funktion `array_sum`, die die Summe aller Zahlen in einem Array berechnet.'
+    check:
+      type: code
+      codebite: array_sum
+
+  - id: array-max
+    title: Größte Zahl finden
+    prompt: 'Implementiere eine Funktion `find_max`, die die größte Zahl in einem Array findet.'
+    check:
+      type: code
+      codebite: array_max
+
+  - id: array-swap-first-last
+    title: Erstes und letztes Element tauschen
+    prompt: 'Implementiere eine Funktion `swap_first_last`, die das erste und das letzte Element eines Arrays vertauscht.'
+    check:
+      type: code
+      codebite: array_swap_first_last
+
+  - id: array-reverse
+    title: Array umkehren
+    prompt: 'Implementiere eine Funktion `array_reverse`, die die Reihenfolge der Elemente in einem Array umkehrt.'
+    check:
+      type: code
+      codebite: array_reverse
+
+  - id: array-rotate-left
+    title: Array nach links rotieren
+    prompt: 'Implementiere eine Funktion `array_rotate_left`, die die Elemente eines Arrays um eine Position nach links rotiert.'
+    check:
+      type: code
+      codebite: array_rotate_left

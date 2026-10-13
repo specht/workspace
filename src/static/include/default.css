@@ -1897,3 +1897,106 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 .class-live-list li > div > p:last-child {
     margin-bottom: 0;
 }
+
+/* Start page for students (StudentHome) */
+
+.student-home {
+    margin: 1.5em 0 2em;
+}
+
+.student-home h2 {
+    margin: 0 0 0.6em;
+}
+
+.student-home-label {
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #5c636a;
+    margin: 0 0 0.6em;
+}
+
+.student-home-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16em, 1fr));
+    gap: 0.8em;
+}
+
+.student-home-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45em;
+    padding: 0.9em 1em;
+    border: 1px solid #e3e3e3;
+    border-radius: 0.75em;
+    color: inherit;
+    text-decoration: none;
+}
+
+.student-home-card:hover {
+    text-decoration: none;
+    border-color: #0b5ed7;
+}
+
+.shc-title {
+    font-weight: 600;
+}
+
+.shc-bar {
+    display: flex;
+    gap: 3px;
+}
+
+.shc-mark {
+    flex: 1;
+    height: 7px;
+    border-radius: 4px;
+    background-color: #dee2e6;
+}
+
+.shc-done { background-color: #198754; }
+.shc-wrong { background-color: #e0a100; }
+.shc-stale { background-color: #fd7e14; }
+
+.shc-count,
+.shc-next {
+    font-size: 90%;
+    color: #5c636a;
+}
+
+.student-home-empty,
+.student-home-finished {
+    color: #5c636a;
+}
+
+.student-home-finished {
+    margin-top: 0.8em;
+    font-size: 90%;
+}
+
+/* Kind and progress on catalog cards */
+
+.tutorial_card3 .card-content .card-badges {
+    position: absolute;
+    top: -2.3em;
+    left: 0.8em;
+    display: flex;
+    gap: 0.35em;
+}
+
+.card-kind,
+.card-progress {
+    padding: 0.1em 0.6em;
+    border-radius: 1em;
+    font-size: 80%;
+    font-weight: 600;
+    background-color: rgba(255, 255, 255, 0.92);
+    color: #333;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.card-progress-done {
+    background-color: #198754;
+    color: #fff;
+}

@@ -76,6 +76,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Tabler Icons (MIT) als gebündeltes Sprite in `src/static/include/tabler/`,
   zunächst für die Klassenübersicht; Liste in `icons.txt`, neu bauen mit
   `src/ruby/tools/build_tabler_sprite.rb`.
+- Code Bites wird zu Übungen: »Programmieren üben« im Katalog mit drei
+  Übungen (Zahlen, Arrays, Strings) und 17 Aufgabenkarten der Prüfart `code`.
+  Gelöst wird weiter im Code-Editor; wer dort alle Tests besteht, ist auf der
+  Karte und in der Klassenübersicht abgehakt. Der Knopf »Code Bites« in der
+  Menüleiste und sein Schalter im Profil entfallen; `/codebites` bleibt
+  erreichbar.
+- Startseite: angemeldete Lernende sehen »Weitermachen« mit ihren
+  angefangenen Aktivitäten und der nächsten offenen Aufgabe. Katalogkarten
+  zeigen die Art der Aktivität und den eigenen Stand.
 - Neue Neo4j-Knoten `TaskState` und `TaskAttempt` (Constraint
   `TaskState/key`, Index `TaskAttempt/task`); sie werden beim Start von selbst
   angelegt.

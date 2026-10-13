@@ -31,7 +31,7 @@ module TaskSpec
         'measure' => 'later',
         'command' => 'later',
         'scene' => 'later',
-        'code' => 'later',
+        'code' => 'M5',
         'sql' => 'later',
     }.freeze
 
@@ -50,6 +50,7 @@ module TaskSpec
     ].freeze
     SUBMIT_REQUIRES_KEYS = %w[html_parses scene_loads min_objects].freeze
     GIT_EXPECT_KEYS = %w[has_remote min_commits committed pushed].freeze
+    CODE_LANGUAGES = %w[ruby python javascript].freeze
 
     # Keys allowed in feedback[].when, per check type.
     WHEN_KEYS = {
@@ -352,6 +353,9 @@ module TaskSpec
         when 'code'
             allowed += %w[codebite languages]
             errors << 'codebite must name a Code Bites task' unless check['codebite'].to_s =~ /\A[a-z0-9_-]+\z/
+            if check.key?('languages') && !(string_list?(check['languages']) && (check['languages'] - CODE_LANGUAGES).empty?)
+                errors << "languages must be a list of #{CODE_LANGUAGES.join(', ')}"
+            end
         when 'sql'
             allowed += %w[database expect_query compare]
             errors << 'expect_query is required' unless nonempty_string?(check['expect_query'])

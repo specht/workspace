@@ -12,6 +12,7 @@ module PageKinds
         'labor' => 'Labor',
         'grundlagen' => 'Grundlagen',
         'galerie' => 'Galerie',
+        'uebung' => 'Übung',
     }.freeze
     REFERENCE_PREFIX = 'reference/'
 

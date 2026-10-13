@@ -1,0 +1,75 @@
+# Übungsset »Zahlen«: Aufgaben aus Code Bites (src/codebites/tasks).
+# Gelöst ist eine Aufgabe, sobald ihr Code im Code-Editor alle Tests besteht.
+# Format: docs/aufgaben.md
+format: 1
+activity: uebung-zahlen
+tasks:
+  - id: add-numbers
+    title: Summe zweier Zahlen berechnen
+    prompt: 'Implementiere eine Funktion `add_numbers`, die die Summe von zwei Zahlen berechnet.'
+    check:
+      type: code
+      codebite: add_numbers
+
+  - id: max-of-two
+    title: Maximum von zwei Zahlen bestimmen
+    prompt: 'Implementiere eine Funktion `max`, die die größere von zwei Zahlen zurückgibt.'
+    check:
+      type: code
+      codebite: max_of_two
+
+  - id: even
+    title: Gerade Zahl erkennen
+    prompt: 'Implementiere eine Funktion `is_even`, die überprüft, ob eine Zahl gerade ist.'
+    check:
+      type: code
+      codebite: even
+
+  - id: factorial
+    title: Fakultät berechnen
+    prompt: 'Implementiere eine Funktion `factorial`, die die Fakultät einer Zahl berechnet. Die Fakultät einer Zahl n (geschrieben als n!) ist das Produkt aller positiven ganzen Zahlen von 1 bis n.'
+    check:
+      type: code
+      codebite: factorial
+
+  - id: fibonacci
+    title: Fibonacci-Zahl berechnen
+    prompt: 'Implementiere eine Funktion `fibonacci`, die die n-te Fibonacci-Zahl berechnet.'
+    check:
+      type: code
+      codebite: fibonacci
+
+  - id: gcd
+    title: Größten gemeinsamen Teiler berechnen
+    prompt: 'Implementiere eine Funktion `gcd`, die den größten gemeinsamen Teiler (greatest common divisor, GCD) von zwei Zahlen berechnet. Du kannst dafür z. B. den Algorithmus von Euklid verwenden.'
+    check:
+      type: code
+      codebite: gcd
+
+  - id: pythagorean-triplet
+    title: Pythagoreisches Tripel überprüfen
+    prompt: 'Implementiere eine Funktion `pythagorean_triplet`, die überprüft, ob drei gegebene Zahlen ein pythagoreisches Tripel bilden. Ein pythagoreisches Tripel besteht aus drei positiven ganzen Zahlen a, b und c, die die Gleichung a² + b² = c² erfüllen. Achtung: Die Reihenfolge der Zahlen ist nicht festgelegt, d.h. es könnte auch a² + c² = b² oder b² + c² = a² sein.'
+    check:
+      type: code
+      codebite: pythagorean_triplet
+
+  - id: prime
+    title: Primzahl erkennen
+    prompt: 'Implementiere eine Funktion `is_prime`, die überprüft, ob eine Zahl eine Primzahl ist.'
+    check:
+      type: code
+      codebite: prime
+
+  - id: find-missing-number
+    title: Fehlende Zahl in einer Zahlenfolge finden
+    prompt: 'Gegeben ist ein Array von ganzen Zahlen, die eigentlich eine aufeinanderfolgende Zahlenfolge bilden. Allerdings fehlt genau eine Zahl.'
+    check:
+      type: code
+      codebite: find_missing_number
+
+  - id: primegen
+    title: Primzahlen generieren
+    prompt: 'Implementiere eine Funktion `generate_primes`, die alle Primzahlen bis zu einer gegebenen Zahl n zurückgibt.'
+    check:
+      type: code
+      codebite: primegen

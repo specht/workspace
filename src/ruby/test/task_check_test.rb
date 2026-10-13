@@ -207,4 +207,32 @@ class TaskCheckTest < Minitest::Test
             end
         end
     end
+
+    def test_code_tasks_follow_code_bites
+        task = { 'id' => 'summe', 'check' => { 'type' => 'code', 'codebite' => 'array_sum' } }
+        assert_equal :unavailable, TaskCheck.check(task, '', variables: {}).status
+        open = TaskCheck.check(task, '', variables: {}, code_solved: ->(name) { assert_equal 'array_sum', name; [] })
+        assert_equal :invalid, open.status
+        refute open.counts?
+        done = TaskCheck.check(task, '', variables: {}, code_solved: ->(_) { %w[python ruby] })
+        assert_equal :correct, done.status
+        assert_equal 'Gelöst in Python und Ruby.', done.message
+        only_js = task.merge('check' => task['check'].merge('languages' => ['javascript']))
+        other = TaskCheck.check(only_js, '', variables: {}, code_solved: ->(_) { ['python'] })
+        assert_equal :invalid, other.status
+        assert_includes other.message, 'In Python zählt sie hier nicht; erlaubt ist JavaScript.'
+    end
+
+    def test_every_code_task_names_an_existing_code_bite
+        root = File.expand_path('../../content', __dir__)
+        found = 0
+        Dir[File.join(root, '*/tasks.yaml')].each do |path|
+            TaskSpec.load_file(path)['tasks'].each do |t|
+                next unless t['check']['type'] == 'code'
+                found += 1
+                assert File.file?(File.expand_path("../../codebites/tasks/#{t['check']['codebite']}.rb", __dir__)), "#{path}: #{t['check']['codebite']}"
+            end
+        end
+        assert_equal 17, found
+    end
 end

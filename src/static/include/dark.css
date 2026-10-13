@@ -251,6 +251,25 @@ html[data-bs-theme="dark"] {
     .class-live-note {
         color: #adb5bd;
     }
+    .student-home-card {
+        border-color: #33332f;
+    }
+    .shc-mark { background-color: #33332f; }
+    .student-home-label,
+    .shc-count,
+    .shc-next,
+    .student-home-empty,
+    .student-home-finished {
+        color: #adb5bd;
+    }
+    .card-kind,
+    .card-progress {
+        background-color: rgba(21, 21, 20, 0.88);
+        color: #e7e6e1;
+    }
+    .card-progress-done {
+        background-color: #146c43;
+    }
     .task-feedback pre code {
         color: #e7e6e1;
         background: none;

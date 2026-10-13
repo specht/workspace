@@ -7,6 +7,7 @@ require './include/task_check.rb'
 require './include/task_card.rb'
 require './include/task_store.rb'
 require './include/class_board.rb'
+require './include/student_home.rb'
 require './include/atomic_file.rb'
 require './include/authentication.rb'
 require './include/database_provisioning.rb'
@@ -3818,12 +3819,41 @@ class Main < Sinatra::Base
         output.nil? ? nil : GitCheck.parse(output)
     end
 
+    # Languages in which a person has solved a Code Bites task.
+    def codebite_solved_languages(email, codebite)
+        neo4j_query(<<~END_OF_QUERY, :email => email, :task => codebite).map { |row| row['lang'] }
+            MATCH (:User {email: $email})<-[:BY]-(s:Solved)-[:FOR]->(:Task {name: $task}), (s)-[:IN]->(l:Language)
+            RETURN DISTINCT l.name AS lang;
+        END_OF_QUERY
+    end
+
+    # A Code Bites task was just solved: tick every practice-set task that
+    # points to it (check type code), so the class board shows it without
+    # the student pressing anything.
+    def sync_code_tasks(email, codebite)
+        languages = codebite_solved_languages(email, codebite)
+        @@content.each_value do |c|
+            next unless c[:tasks]
+
+            c[:tasks][:by_id].each do |id, task|
+                next unless task['check']['type'] == 'code' && task['check']['codebite'] == codebite
+
+                found = { :key => "#{c[:tasks][:activity]}/#{id}", :task => task, :version => TaskSpec.check_version(task) }
+                result = TaskCheck.check(task, '', :code_solved => lambda { |_| languages })
+                next unless result.status == :correct
+
+                store_task_result(found, 'correct', result.message.to_s.sub(/\.\z/, ''), email)
+            end
+        end
+    rescue StandardError => e
+        STDERR.puts "sync_code_tasks #{codebite} #{email}: #{e.class}: #{e.message}"
+    end
+
     def submission_path(task_key, email = @session_user[:email])
         File.join(SUBMISSIONS_ROOT, "#{TaskStore.state_key(email, task_key)}.tar.gz")
     end
 
-    def store_task_result(found, status, answer)
-        email = @session_user[:email]
+    def store_task_result(found, status, answer, email = @session_user[:email])
         key = TaskStore.state_key(email, found[:key])
         now = Time.now.to_i
         previous = neo4j_query(<<~END_OF_QUERY, :email => email, :key => key).first
@@ -3895,18 +3925,47 @@ class Main < Sinatra::Base
         end
     end
 
-    # Activities that place tasks on their page: [[activity, title, tasks]].
-    def class_activities
-        @@content.values.select { |c| c[:tasks] && !(c[:tasks][:on_page] || []).empty? && !c[:dev_only] }
-            .map do |c|
+    # Activities that place tasks on their page, with their tasks in page
+    # order: [{ slug:, activity:, title:, tasks: [{ id:, title:, type:, version:, prediction: }] }]
+    def activities_with_tasks
+        @@content.select { |_, c| c[:tasks] && !(c[:tasks][:on_page] || []).empty? && (DEVELOPMENT || !c[:dev_only]) && !c[:teacher_only] }
+            .map do |slug, c|
                 tasks = c[:tasks][:on_page].map do |id|
                     t = c[:tasks][:by_id][id]
                     { :id => id, :title => t['title'], :type => t['check']['type'],
                       :version => TaskSpec.check_version(t), :prediction => t['prediction'] == true }
                 end
-                [c[:tasks][:activity], c[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', ''), tasks]
+                { :slug => slug, :activity => c[:tasks][:activity],
+                  :title => c[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', ''), :tasks => tasks }
             end
-            .sort_by { |_, title, _| title.downcase }
+    end
+
+    # Activities for the class board: [[activity, title, tasks]].
+    def class_activities
+        activities_with_tasks.map { |a| [a[:activity], a[:title], a[:tasks]] }.sort_by { |_, title, _| title.downcase }
+    end
+
+    # The logged-in person's TaskStates as { 'activity/id' => state }, once per request.
+    def my_task_states
+        return {} unless user_logged_in?
+
+        @my_task_states ||= neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email]).to_h { |row| [row['s'][:task], row['s']] }
+            MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState)
+            RETURN s;
+        END_OF_QUERY
+    end
+
+    def my_progress
+        @my_progress ||= StudentHome.progress(activities_with_tasks, my_task_states)
+    end
+
+    # Start page for logged-in students: where to continue (M5).
+    def student_home
+        return '' unless user_logged_in? && tasks_visible?
+        return '' unless my_running_tests.empty?
+
+        name = (@@invitations[@session_user[:email]] || {})[:name] || ''
+        StudentHome.html(:name => name, :progress => my_progress)
     end
 
     def class_board_states(emails, activity)
@@ -4012,6 +4071,10 @@ class Main < Sinatra::Base
                         end
                         io.puts "<div class='shade'></div>"
                         io.puts "<div class='card-content'>"
+                        if catalog == :student
+                            entry = user_logged_in? && tasks_visible? ? my_progress.find { |p| p[:slug] == slug } : nil
+                            io.puts StudentHome.card_badges(content[:kind], entry)
+                        end
                         io.puts "#{content[:dev_only] ? '<span class="badge badge-sm bg-danger">dev</span> ' : ''}<h4>#{content[:title]}</h4>"
                         io.puts "<div class='abstract'>#{content[:abstract]}</div>"
                         io.puts "</div>"
@@ -4730,7 +4793,8 @@ class Main < Sinatra::Base
         result = TaskCheck.check(found[:task], data[:answer],
             :variables => task_variables(found[:task], found[:key]),
             :workspace => task_workspace_files,
-            :git => lambda { |repo| task_git_state(repo) })
+            :git => lambda { |repo| task_git_state(repo) },
+            :code_solved => lambda { |codebite| codebite_solved_languages(@session_user[:email], codebite) })
         answer = data[:answer]
         if (plan = result.plan)
             # submit: copy the files now; the stored answer says what was handed in.
@@ -5890,6 +5954,7 @@ class Main < Sinatra::Base
                     MERGE (s)-[:FOR]->(t)
                     MERGE (s)-[:IN]->(l)
                 END_OF_STRING
+                sync_code_tasks(email, task)
             end
 
             @@codebite_mutex.synchronize do

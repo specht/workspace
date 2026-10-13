@@ -89,13 +89,19 @@ module TaskCard
                 io << "<div class='task-reads'>#{reads_line(check, h)}</div>"
             end
             label = case
+                when type == 'code' then 'Stand holen'
                 when type == 'reflection' then 'Speichern'
                 when type == 'submit' then 'Abgeben'
                 when task['prediction'] then 'Vermutung abgeben'
                 else 'Prüfen'
             end
             io << "<div class='task-actions'>"
-            io << "<button type='submit' class='btn btn-success task-submit'><i class='bi bi-check2'></i>#{label}</button>"
+            if type == 'code'
+                io << "<a class='btn btn-success task-open' href='/codebites/#{h.(check['codebite'])}'><i class='bi bi-code-slash'></i>Im Code-Editor lösen</a>"
+                io << "<button type='submit' class='btn btn-outline-secondary btn-sm task-submit'>#{label}</button>"
+            else
+                io << "<button type='submit' class='btn btn-success task-submit'><i class='bi bi-check2'></i>#{label}</button>"
+            end
             io << "<button type='button' class='btn btn-link btn-sm task-delete' hidden>Meine Antwort löschen</button>"
             io << '</div>'
             io << '</form>'
@@ -124,6 +130,9 @@ module TaskCard
             files = (check['scan'] || []).map { |f| path.("#{check['root']}/#{f}") }
             "Liest #{files.join(' und ')}"
         when 'git' then "Liest <code>git status</code> in #{path.(check['repo'])}, ändert nichts"
+        when 'code'
+            langs = (check['languages'] || %w[ruby python javascript]).map { |l| { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript' }[l] || l }
+            "Code Bites: <code>#{h.(check['codebite'])}</code>, in #{h.(langs.join(', '))}. Ist sie gelöst, wird sie hier von selbst abgehakt."
         when 'submit'
             if check['pick']
                 "Kopiert die gewählte Datei, höchstens #{size.(check['max_size'] || '20MB')}"

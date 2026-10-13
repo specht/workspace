@@ -89,7 +89,7 @@ image: tcpip.webp
 
 | Feld | Bedeutung |
 | --- | --- |
-| `kind` | `projekt`, `labor`, `grundlagen`, `galerie` oder `reference` |
+| `kind` | `projekt`, `labor`, `grundlagen`, `galerie`, `uebung` oder `reference`; steht als Etikett auf der Karte im Katalog |
 | `topic` | Schlüssel eines Abschnitts aus `sections.yaml`, für die Sortierung nach Thema |
 | `duration` | Freier Text, so wie er auf der Karte stehen soll |
 | `requires` | Aktivitäten, die vorher sinnvoll sind |
@@ -224,7 +224,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `measure` | Messwert der Lernenden gegen eine eigene Messung | Ausgabe eines Befehls | Workspace | später |
 | `command` | Ausgabe eines Befehls der Lernenden | Ausgabe | Workspace | später |
 | `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace | später |
-| `code` | Code-Bites-Aufgabe | Code | Code-Bites-Judge | später |
+| `code` | Code-Bites-Aufgabe | Code | Code-Bites-Judge | M5 |
 | `sql` | Ergebnis einer Abfrage | Abfrage | Datenbank | später |
 
 »Server« heißt: Der Server liest die Datei als Text und wertet sie aus, ohne
@@ -459,6 +459,36 @@ Fehlt die Zeile, bleibt alles wie bisher.
 `status` ist `correct`, `wrong`, `sent` (Reflexion gespeichert), `invalid`
 (nicht lesbar, z. B. keine Zahl; zählt nicht) oder `unavailable` (gerade nicht
 prüfbar, z. B. Workspace aus; zählt nicht).
+
+## Übungen aus Code Bites
+
+Die Aufgaben von Code Bites stehen als Übungen im Katalog unter »Programmieren
+üben« (`uebung-zahlen`, `uebung-arrays`, `uebung-strings`). Jede Karte hat die
+Prüfart `code`:
+
+```yaml
+check:
+  type: code
+  codebite: array_sum            # Datei in src/codebites/tasks/
+  languages: [python, ruby]      # freiwillig; ohne: Ruby, Python, JavaScript
+```
+
+Gelöst wird weiter im Code-Editor von Code Bites (`/codebites/<name>`), mit
+seinen Tests. Besteht der Code dort alle Tests, hakt der Server jede Karte ab,
+die auf diese Aufgabe zeigt, und die Klassenübersicht zeigt es. »Stand holen«
+auf der Karte übernimmt Aufgaben, die vor M5 gelöst wurden. Eine neue
+Code-Bites-Aufgabe erscheint als Übung, sobald sie in einer `tasks.yaml` steht.
+Code Bites hat dafür keinen eigenen Knopf mehr in der Menüleiste.
+
+## Startseite
+
+Angemeldete Lernende sehen oben auf der Startseite »Weitermachen«: die
+Aktivitäten, in denen sie schon etwas geprüft haben, mit einem Balken pro
+Aufgabe (grün erledigt, gelb noch falsch, orange geändert, grau offen) und
+einem Link zur nächsten offenen Aufgabe. Fertige Aktivitäten stehen darunter.
+Im Katalog trägt jede Karte ihre Art (`kind`) und, wenn angefangen, den Stand
+(»2/5«). Ohne `TASKS_ENABLED` sieht die Startseite für Lernende aus wie
+bisher; nur die Etiketten der Art kommen dazu.
 
 ## Klassenübersicht
 

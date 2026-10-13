@@ -10,6 +10,19 @@
     - about
     - basics
 
+- key: practice
+  compact: true
+  label: Programmieren üben
+  icon: /images/hacker.png
+  description: |
+    Kurze Aufgaben, die du im Code-Editor in Ruby, Python oder JavaScript löst.
+    Automatische Tests sagen dir sofort, ob deine Funktion stimmt. Gut für
+    zwischendurch, auch ohne Workspace.
+  entries:
+    - uebung-zahlen
+    - uebung-arrays
+    - uebung-strings
+
 - key: graphics
   compact: true
   label: Computergrafik
