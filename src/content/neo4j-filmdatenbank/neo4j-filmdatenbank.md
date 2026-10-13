@@ -33,16 +33,16 @@ Das funktioniert. Aber die letzte Frage dort, wer besonders oft mit wem gespielt
 
 Im Graphen gibt es drei Arten von **Knoten**: `Movie`, `Person` und `Genre`. Zwischen ihnen liegen **Beziehungen**, und jede Beziehung hat einen **Typ**:
 
-```text
-(Movie)-[:IN_GENRE]->(Genre)
+```cypher
+(:Movie)-[:IN_GENRE]->(:Genre)
 
-(Person)-[:ACTOR]->(Movie)
-(Person)-[:DIRECTOR]->(Movie)
-(Person)-[:WRITER]->(Movie)
-(Person)-[:PRODUCER]->(Movie)
-(Person)-[:COMPOSER]->(Movie)
-(Person)-[:CINEMATOGRAPHER]->(Movie)
-(Person)-[:EDITOR]->(Movie)
+(:Person)-[:ACTOR]->(:Movie)
+(:Person)-[:DIRECTOR]->(:Movie)
+(:Person)-[:WRITER]->(:Movie)
+(:Person)-[:PRODUCER]->(:Movie)
+(:Person)-[:COMPOSER]->(:Movie)
+(:Person)-[:CINEMATOGRAPHER]->(:Movie)
+(:Person)-[:EDITOR]->(:Movie)
 ```
 
 Die Typen sind die Tätigkeiten aus der Tabelle `job`, nur in Großbuchstaben, so wie man sie in Cypher üblicherweise schreibt.
@@ -59,7 +59,7 @@ Man muss eine relationale Datenbank nicht immer so in einen Graphen übersetzen.
 
 Ein Knoten hat ein **Label**, das sagt, was für ein Ding er ist, und **Eigenschaften** mit Werten. »Back to the Future« sieht im Graphen ungefähr so aus:
 
-```text
+```cypher
 (:Movie {
   id: 1207,
   title: "Back to the Future",
@@ -71,7 +71,7 @@ Ein Knoten hat ein **Label**, das sagt, was für ein Ding er ist, und **Eigensch
 
 `Movie` ist das Label, `id`, `title`, `german_title`, `year` und `runtime` sind Eigenschaften. Ein Genre und eine Person sehen so aus:
 
-```text
+```cypher
 (:Genre { id: 5, name: "Comedy" })
 
 (:Person { id: 3141, name: "Michael J. Fox", birth_year: 1961 })
@@ -79,11 +79,11 @@ Ein Knoten hat ein **Label**, das sagt, was für ein Ding er ist, und **Eigensch
 
 Eine Beziehung verbindet zwei Knoten und zeigt in eine Richtung:
 
-```text
+```cypher
 (:Person { name: "Robert Zemeckis" })-[:DIRECTOR]->(:Movie { title: "Back to the Future" })
 ```
 
-Runde Klammern stehen für Knoten, eckige für Beziehungen, der Name hinter dem Doppelpunkt für den Typ. Diese Schreibweise ist schon fast Cypher.
+Runde Klammern stehen für Knoten, eckige für Beziehungen. Der Name hinter dem Doppelpunkt ist bei einem Knoten sein Label, bei einer Beziehung ihr Typ. Das ist schon Cypher: Genau so schreibst du gleich deine Abfragen.
 
 ## Die Filmdaten laden
 
@@ -252,7 +252,7 @@ Ein Knoten im Muster braucht keinen Namen, wenn du ihn später nicht mehr verwen
 
 ```text
 SQL:     movie JOIN movie_genre JOIN genre WHERE genre.name = 'Animation'
-Cypher:  (Movie)-[:IN_GENRE]->(Genre {name: 'Animation'})
+Cypher:  (:Movie)-[:IN_GENRE]->(:Genre {name: 'Animation'})
 ```
 
 <div class='hint task'>
@@ -336,8 +336,8 @@ Ein Gegenstück zum Fremdschlüssel braucht der Graph nicht: Eine Beziehung verb
 
 Jetzt die Frage, mit der die Filmdatenbank aufgehört hat: Welche zwei Schauspielerinnen oder Schauspieler standen besonders oft gemeinsam vor der Kamera? Im Graphen ist das ein Muster aus zwei Personen und einem gemeinsamen Film:
 
-```text
-(Person)-[:ACTOR]->(Movie)<-[:ACTOR]-(Person)
+```cypher
+(:Person)-[:ACTOR]->(:Movie)<-[:ACTOR]-(:Person)
 ```
 
 _task(paare)

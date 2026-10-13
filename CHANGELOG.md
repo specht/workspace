@@ -181,6 +181,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   im Vergleich zu SQL, Schlüssel und Indizes, Schauspielpaare, Wege durch den
   Graphen; sechs Aufgaben und eine Notiz für Lehrkräfte. Vorerst nur in der
   Entwicklung im Katalog, bis `neo4j.dump` veröffentlicht ist.
+- Code-Blöcke mit ```` ```cypher ```` sind eingefärbt
+  (`src/ruby/include/cypher_lexer.rb`): Labels, Beziehungstypen und
+  Eigenschaften in denselben Farben wie Entitäten, Beziehungen und Attribute
+  in ```` ```er ````. Die Muster in »Filmdatenbank als Graph« sind jetzt echtes
+  Cypher (`(:Movie)` statt `(Movie)`).
 
 ### Geändert
 

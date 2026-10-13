@@ -32,6 +32,7 @@ require 'open3'
 require 'redcarpet'
 require 'rouge'
 require './include/er_lexer.rb'
+require './include/cypher_lexer.rb'
 require 'securerandom'
 require 'shellwords'
 require 'set'
@@ -1397,6 +1398,9 @@ class Main < Sinatra::Base
                 lexer = Rouge::Lexers::CSharp.new
             when 'css'
                 lexer = Rouge::Lexers::CSS.new
+            when 'cypher'
+                lexer = Rouge::Lexers::WorkspaceCypher.new
+                pre['class'] = [pre['class'], 'code-cypher'].compact.join(' ')
             when 'dart'
                 lexer = Rouge::Lexers::Dart.new
             when 'er'
