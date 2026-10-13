@@ -137,26 +137,55 @@ Wenn später etwas schiefgeht, kannst du zu einem früheren Zwischenstand zurüc
 Um einen Checkpoint zu erstellen, wechsle links in den Explorer und klappe den Bereich **Checkpoints** auf. Klicke auf das Plus-Symbol, um einen neuen Checkpoint zu erstellen.
 
 <!-- tutorial-screenshot
-# Workspace ohne geöffneten Ordner
+# Ordner checkpoint-test mit einer README.md öffnen
+write-file: checkpoint-test/README.md <- file:checkpoint-test-README.txt
+press: Control+K
+press: Control+O
+wait-for-input-value: /workspace/
+type: checkpoint-test
+press: Enter
+wait-for-input-value: /workspace/checkpoint-test/
+press: Enter
+wait-for-text: README.md
+open-file: README.md
+close-tab: Welcome
 left-sidebar-width: 400
-write-file: checkpoint-test/README.md <- code:#Hello||This is just a test.
-open-file: checkpoint-test/README.md
 click: Checkpoints
+move-mouse: selector:.pane-header a[aria-label="Checkpoint erstellen"]
+sleep: 1.5
 -->
-<img src='create-checkpoint-temp.webp' class='full' alt=''>
-
 
 <img src='create-checkpoint.webp' class='full' alt=''>
 
-Du kannst einen Namen für den Checkpoint eingeben und mit <kbd>Enter</kbd> bestätigen.
+Beim ersten Checkpoint in einem Ordner, der noch kein Git-Projekt ist, fragt VS Code, ob der Ordner für Checkpoints vorbereitet werden soll. Bestätige mit »Projekt vorbereiten«. Danach kannst du einen Namen für den Checkpoint eingeben und mit <kbd>Enter</kbd> bestätigen.
+
+<!-- tutorial-screenshot
+click: selector:.pane-header a[aria-label="Checkpoint erstellen"]
+wait-for-text: Projekt vorbereiten
+click: Projekt vorbereiten
+wait-for-text: Du kannst dem Checkpoint einen Namen geben
+-->
 
 <img src='enter-checkpoint-name.webp' class='full' alt=''>
 
 Der Checkpoint wird dann gespeichert:
 
+<!-- tutorial-screenshot
+press: Enter
+wait-for-text: Checkpoint 1
+move-mouse: selector:.monaco-editor .view-lines
+sleep: 1
+-->
+
 <img src='checkpoint-created.webp' class='full' alt=''>
 
 Falls du später zu einem Checkpoint zurückkehren möchtest, klicke auf den entsprechenden Eintrag in der Liste:
+
+<!-- tutorial-screenshot
+move-mouse: Checkpoint 1
+move-mouse: selector:a[aria-label="Diesen Checkpoint wiederherstellen"]
+sleep: 1.5
+-->
 
 <img src='restore-checkpoint.webp' class='full' alt=''>
 
