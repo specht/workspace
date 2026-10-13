@@ -196,8 +196,7 @@ uses the general instructions; `:clear` removes earlier result frames:
 ```text
 neo4j-browser
 tab: preview
-viewport: 1853x1260
-zoom: 1.8
+viewport: 1029x700
 click: selector:[data-testid=main-editor] .cm-content
 press: Control+A
 type: :clear
@@ -207,12 +206,6 @@ type: MATCH (n) RETURN n LIMIT 25;
 press: Control+Enter
 wait-for-text: Started streaming 25 records
 ```
-
-The graph is a `<canvas>`. With the default profile the page renders at device
-pixel ratio 1 and the capture enlarges it by 1.8, which makes canvas content
-blurry (text and SVG are rendered sharp at any scale). `zoom: 1.8` with a
-viewport given in final pixels keeps the layout (1029x700 CSS pixels) and lets
-the canvas draw at full resolution; the image then has twice the pixels.
 
 ### General interaction
 
@@ -550,6 +543,13 @@ does not choose a light or dark color scheme: code-server loads the Workspace's
 actual VS Code theme, and the screenshot generator waits until that theme has
 remained stable before running the recipe. The page keeps its normal layout while
 Chromium renders the screenshot capture at the requested scale.
+
+The Workspace renders at device pixel ratio 1 and the capture enlarges it by
+1.8; its screenshots are DOM text and SVG, which Chromium draws sharp at any
+capture scale. A preview tab renders at device pixel ratio 1.8 and is captured
+unscaled, so a `<canvas>` (the Game Studio, an anaglyph scene, the Neo4j graph)
+draws at full resolution instead of being enlarged. Both give the same image
+size for the same layout.
 
 A recipe's `viewport` is in the same CSS pixels. To keep the look of the other
 screenshots, change only what needs to change and keep the width at 1029:

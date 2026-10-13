@@ -2316,12 +2316,22 @@ async function applyViewportProfile(page, viewport, zoom) {
     // Match the measured manual setup: Linux desktop scale and Chrome page zoom
     // are separate factors. Their product is the number of output pixels per CSS
     // pixel in the final screenshot.
-    const metrics = screenshotMetricsFor(viewport, zoom);
+    // A preview tab (a web app, the Neo4j Browser, the Game Studio) renders at
+    // the capture resolution and is captured unscaled, so a <canvas> draws
+    // sharp instead of being enlarged. The Workspace renders at its layout
+    // scale and the capture enlarges it: its screenshots are DOM text, sharp
+    // either way, and stay exactly as they were.
+    const renderScale = page === workspace ? 1 : DEFAULT_PROFILE.captureScale;
+    const metrics = {
+        ...screenshotMetricsFor(viewport, zoom),
+        captureScale: DEFAULT_PROFILE.captureScale / renderScale,
+    };
 
     const profileKey = [
         metrics.width,
         metrics.height,
         metrics.deviceScaleFactor,
+        renderScale,
     ].join(':');
     if (appliedViewportProfiles.get(page) === profileKey) {
         return { session, metrics };
@@ -2330,7 +2340,7 @@ async function applyViewportProfile(page, viewport, zoom) {
     await session.send('Emulation.setDeviceMetricsOverride', {
         width: metrics.width,
         height: metrics.height,
-        deviceScaleFactor: metrics.deviceScaleFactor,
+        deviceScaleFactor: metrics.deviceScaleFactor * renderScale,
         mobile: false,
         screenWidth: metrics.width,
         screenHeight: metrics.height,
@@ -2595,7 +2605,7 @@ async function captureShot(shot, tutorialDirectory) {
                         height:
                             heightPixels /
                             metrics.deviceScaleFactor,
-                        scale: DEFAULT_PROFILE.captureScale,
+                        scale: metrics.captureScale,
                     },
                 },
             );
@@ -2723,7 +2733,7 @@ async function captureVideo(shot, tutorialDirectory, hooks) {
         y: topPixels / metrics.deviceScaleFactor,
         width: shot.viewport.width / metrics.deviceScaleFactor,
         height: heightPixels / metrics.deviceScaleFactor,
-        scale: DEFAULT_PROFILE.captureScale,
+        scale: metrics.captureScale,
     };
 
     const target = path.join(tutorialDirectory, shot.target);
