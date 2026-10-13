@@ -37,6 +37,17 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   einer Handbuch-Seite stehen »Handbuch › Abschnitt« und die
   Aktivitäten, die sie verwenden. Inhalte aus dem Handbuch sind türkis markiert.
 - Menüpunkt »Handbuch« für alle, auch ohne Anmeldung.
+- Aufgabenkarten: `_task(id)` setzt eine Aufgabe aus der `tasks.yaml` in die
+  Seite. Der Workspace prüft Antworten, Auswahl, Zahlen und Reflexionen
+  (`answer`, `choice`, `number`, `reflection`) und merkt sich das Ergebnis.
+  Lernende können ihre Antwort jederzeit selbst löschen. Erste Aufgaben in
+  »TCP/IP-Verbindungen« (5 Stück).
+- Aufgaben sind für Lernende ausgeschaltet, bis eine Installation
+  `TASKS_ENABLED = true` in `credentials.rb` setzt. Lehrkräfte sehen sie
+  vorher schon als Vorschau.
+- Neue Neo4j-Knoten `TaskState` und `TaskAttempt` (Constraint
+  `TaskState/key`, Index `TaskAttempt/task`); sie werden beim Start von selbst
+  angelegt.
 
 ### Geändert
 

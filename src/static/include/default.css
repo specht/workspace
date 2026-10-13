@@ -1514,3 +1514,168 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 .page-reference h2 {
     color: #0f5f58;
 }
+
+/* Task cards (TaskCard, tasks.js). Blue like the activity label: tasks
+   belong to the activity, teal stays for the Handbuch. */
+
+.task-card {
+    margin: 1.5em 0;
+    padding: 1em 1.2em 0.8em;
+    border: 1px solid #d6e2f5;
+    border-left: 4px solid #0b5ed7;
+    border-radius: 0.5em;
+    background-color: #f8fbff;
+}
+
+.task-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3em 0.8em;
+    margin-bottom: 0.5em;
+}
+
+.task-number {
+    padding: 0.1em 0.7em;
+    border-radius: 1em;
+    background-color: #e7f0fe;
+    color: #0b4fb3;
+    font-size: 85%;
+    font-weight: 600;
+}
+
+.task-title {
+    font-weight: 600;
+    font-size: 110%;
+}
+
+.task-status {
+    margin-left: auto;
+}
+
+.task-badge {
+    font-size: 85%;
+    white-space: nowrap;
+}
+
+.task-badge .bi,
+.task-later .bi,
+.task-submit .bi {
+    margin-right: 0.35em;
+}
+
+.task-badge-correct { color: #146c43; }
+.task-badge-wrong { color: #8a5300; }
+.task-badge-sent { color: #0b4fb3; }
+.task-badge-stale { color: #8a5300; }
+
+.task-preview {
+    padding: 0.1em 0.6em;
+    border-radius: 1em;
+    background-color: #f7f2fc;
+    color: #5b2f8f;
+    font-size: 80%;
+}
+
+.task-prompt > p:last-child {
+    margin-bottom: 0.6em;
+}
+
+.task-card .task-form {
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.task-form .task-input {
+    max-width: 32em;
+}
+
+.task-form textarea.task-input {
+    max-width: none;
+}
+
+.task-number-input {
+    max-width: 16em;
+}
+
+.task-options {
+    margin: 0.2em 0 0.4em;
+}
+
+.task-options .form-check {
+    margin-bottom: 0.25em;
+}
+
+.task-options-note,
+.task-words {
+    font-size: 85%;
+    color: #5c636a;
+    margin: 0.3em 0;
+}
+
+.task-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em;
+    margin: 0.6em 0 0.3em;
+}
+
+.task-hint {
+    margin: 0.4em 0;
+}
+
+.task-hint > summary,
+.task-solution > summary {
+    cursor: pointer;
+    color: #0b4fb3;
+}
+
+.task-feedback:empty {
+    display: none;
+}
+
+.task-feedback {
+    margin: 0.6em 0 0.2em;
+    padding: 0.6em 0.9em;
+    border-radius: 0.4em;
+}
+
+.task-feedback > .task-message > p:last-child {
+    margin-bottom: 0;
+}
+
+.task-feedback-correct { background-color: #e3f4ea; }
+.task-feedback-wrong { background-color: #fdf0dc; }
+.task-feedback-sent { background-color: #e7f0fe; }
+.task-feedback-invalid,
+.task-feedback-unavailable { background-color: #f1f3f5; }
+
+.task-solution {
+    margin-top: 0.5em;
+}
+
+.task-later {
+    color: #5c636a;
+    font-style: italic;
+}
+
+.task-login-note {
+    display: none;
+    font-size: 90%;
+    color: #5c636a;
+}
+
+.task-logged-out .task-login-note {
+    display: block;
+}
+
+.task-missing {
+    margin: 1em 0;
+    padding: 0.5em 1em;
+    border: 1px dashed #dc3545;
+    color: #b02a37;
+}

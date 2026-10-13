@@ -2,6 +2,10 @@ require './include/helper.rb'
 require './include/automatron.rb'
 require './include/content_parts.rb'
 require './include/page_kinds.rb'
+require './include/task_spec.rb'
+require './include/task_check.rb'
+require './include/task_card.rb'
+require './include/task_store.rb'
 require './include/atomic_file.rb'
 require './include/authentication.rb'
 require './include/database_provisioning.rb'
@@ -1452,6 +1456,29 @@ class Main < Sinatra::Base
         end
     end
 
+    # Replaces the task slots left by TaskCard.mark_slots with task cards,
+    # numbered in page order.
+    def self.insert_task_cards(root, task_slots, page_tasks, redcarpet, hyphenation_map, path)
+        render = lambda do |md|
+            text = md.to_s.dup
+            hyphenation_map.each_pair { |a, b| text.gsub!(a, b) }
+            redcarpet.render(text)
+        end
+        number = 0
+        root.css('div.task-slot').each do |slot|
+            id = task_slots[slot['data-slot'].to_i]
+            task = page_tasks && page_tasks[:by_id][id]
+            html = if task
+                number += 1
+                TaskCard.html(task, :activity => page_tasks[:activity], :number => number, :render => render)
+            else
+                STDERR.puts "#{path}: _task(#{id}): no such task in tasks.yaml"
+                TaskCard.missing_html(id)
+            end
+            slot.replace(root.fragment(html))
+        end
+    end
+
     def self.parse_content(only_slug = nil)
         @@parse_content_mutex ||= Mutex.new
         @@parse_content_mutex.synchronize do
@@ -1581,6 +1608,8 @@ class Main < Sinatra::Base
             markdown = nil
             page_meta = {}
             page_references = []
+            page_tasks = nil
+            task_slots = []
             unless entry[:kenney]
                 next unless path
                 markdown = File.read(path)
@@ -1621,6 +1650,21 @@ class Main < Sinatra::Base
                     :warn => content_warning)
                 markdown = ContentParts.fill_variables(markdown, { 'template' => page_meta['template'] })
                 markdown = ContentParts.mark_parts(markdown)
+                # Tasks (docs/aufgaben.md): tasks.yaml next to the page holds
+                # them, _task(id) on a line of its own places a card.
+                tasks_path = File.join(File.dirname(path), 'tasks.yaml')
+                if File.file?(tasks_path)
+                    begin
+                        task_data = TaskSpec.load_file(tasks_path)
+                        page_tasks = {
+                            :activity => task_data['activity'],
+                            :by_id => task_data['tasks'].to_h { |t| [t['id'], t] },
+                        }
+                    rescue TaskSpec::Error, Psych::Exception => e
+                        STDERR.puts "#{tasks_path}: tasks not loaded: #{e.message}"
+                    end
+                end
+                markdown, task_slots = TaskCard.mark_slots(markdown)
             else
                 kit = entry[:path]
                 markdown = StringIO.open do |io|
@@ -1673,6 +1717,7 @@ class Main < Sinatra::Base
                 end
                 md
             end
+            insert_task_cards(root, task_slots, page_tasks, redcarpet, hyphenation_map, path) unless task_slots.empty?
             inject_autotoc(root)
 
             html = root.to_html
@@ -1695,6 +1740,9 @@ class Main < Sinatra::Base
                 :duration => page_meta['duration'],
                 :references => page_references,
             }
+            if page_tasks
+                parsed_content[slug][:tasks] = page_tasks.merge(:on_page => task_slots & page_tasks[:by_id].keys)
+            end
             # Teacher note next to the page (docs/aufgaben.md): rendered like the
             # page, shown only to teachers by teacher_note_panel.
             note_path = File.join(File.dirname(path), ContentParts::NOTE_FILE)
@@ -1957,6 +2005,7 @@ class Main < Sinatra::Base
             'Solved/id',
             'Submission/id',
             'Task/name',
+            'TaskState/key',
             'Test/tag',
             'User/email',
             'User/db_login',
@@ -1966,6 +2015,7 @@ class Main < Sinatra::Base
         INDEX_LIST = [
             'Submission/success',
             'Test/running',
+            'TaskAttempt/task',
         ]
 
         setup = SetupDatabase.new()
@@ -3671,6 +3721,101 @@ class Main < Sinatra::Base
         PageKinds.container_class(slug)
     end
 
+    # --- Tasks (docs/aufgaben.md) --------------------------------------------
+
+    # Task cards are off for students until an instance sets
+    # TASKS_ENABLED = true in credentials.rb. Teachers always see them, so
+    # they can try tasks before switching them on.
+    def tasks_enabled_for_everyone?
+        defined?(TASKS_ENABLED) && TASKS_ENABLED == true
+    end
+
+    def tasks_visible?
+        tasks_enabled_for_everyone? || teacher_account_logged_in?
+    end
+
+    # Hides the cards, or loads tasks.js, depending on who is looking.
+    def task_page_setup(slug)
+        tasks = (@@content[slug] || {})[:tasks]
+        return '' if tasks.nil? || tasks[:on_page].nil? || tasks[:on_page].empty?
+        return "<style>.task-card { display: none; }</style>" unless tasks_visible?
+
+        config = {
+            :activity => tasks[:activity],
+            :loggedIn => user_logged_in?,
+            :preview => !tasks_enabled_for_everyone?,
+        }
+        "<script>window.TASK_PAGE = #{config.to_json};</script>" \
+            "<script src='/include/tasks.js?#{CACHE_BUSTER}'></script>"
+    end
+
+    # The task for 'activity/id', with its check version, or nil.
+    def find_task(key)
+        activity, id = key.to_s.split('/', 2)
+        return nil unless activity.to_s =~ /\A[a-z0-9_-]+\z/ && id.to_s =~ TaskSpec::ID_PATTERN
+
+        entry = @@content.values.find { |c| (c[:tasks] || {})[:activity] == activity }
+        task = entry && entry[:tasks][:by_id][id]
+        return nil unless task
+
+        { :key => "#{activity}/#{id}", :task => task, :version => TaskSpec.check_version(task) }
+    end
+
+    # Values of the ${...} variables a task uses, for the logged-in person.
+    # A value is nil when it cannot be known right now (Workspace not running).
+    def task_variables(task, key)
+        names = TaskCheck.variables_used(task['check'])
+        email = @session_user[:email]
+        vars = {}
+        if names.include?('workspace.ip')
+            state = begin
+                get_server_state(fs_tag_for_email(email))
+            rescue StandardError
+                nil
+            end
+            vars['workspace.ip'] = state && state[:running] ? state[:ip] : nil
+        end
+        if names.include?('workspace.live_url')
+            server_tag = @session_user[:server_tag]
+            vars['workspace.live_url'] = server_tag ? WEB_ROOT.sub('//', "//#{server_tag}-5500.") : nil
+        end
+        if names.include?('person.codeword')
+            vars['person.codeword'] = TaskCheck.codeword("#{LOGIN_CODE_SALT}:task-codeword", email, key)
+        end
+        vars
+    end
+
+    def render_task_markdown(markdown)
+        return nil if markdown.nil? || markdown.to_s.strip.empty?
+
+        @@task_redcarpet ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
+        @@task_redcarpet.render(markdown.to_s)
+    end
+
+    def store_task_result(found, status, answer)
+        email = @session_user[:email]
+        key = TaskStore.state_key(email, found[:key])
+        now = Time.now.to_i
+        previous = neo4j_query(<<~END_OF_QUERY, :email => email, :key => key).first
+            MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState {key: $key})
+            RETURN s;
+        END_OF_QUERY
+        props = TaskStore.next_state(previous && previous['s'],
+            :task => found[:key], :version => found[:version], :status => status,
+            :answer => answer, :now => now)
+        neo4j_query(<<~END_OF_QUERY, props.merge(:email => email, :key => key))
+            MATCH (u:User {email: $email})
+            MERGE (s:TaskState {key: $key})
+            MERGE (u)-[:HAS_TASK_STATE]->(s)
+            SET s.task = $task, s.version = $version, s.status = $status,
+                s.last_answer = $last_answer, s.attempts = $attempts,
+                s.first_status = $first_status, s.first_correct = $first_correct,
+                s.updated = $updated
+            CREATE (a:TaskAttempt {task: $task, version: $version, status: $status, ts: $updated})-[:BY]->(u);
+        END_OF_QUERY
+        TaskStore.public_state(props, found[:version])
+    end
+
     # The teacher note of a page (lehrkraft.md), for teachers only.
     def teacher_note_panel(slug)
         note = (@@content[slug] || {})[:teacher_note]
@@ -4438,6 +4583,71 @@ class Main < Sinatra::Base
         END_OF_STRING
 
         respond(:yay => 'sure')
+    end
+
+    # Checks an answer and, if it counts, remembers it (docs/aufgaben.md).
+    post '/api/task/check' do
+        assert(user_logged_in?)
+        assert(tasks_visible?)
+        data = parse_request_data(:required_keys => [:task, :answer],
+            :max_body_length => 16384,
+            :max_value_lengths => {:task => 120, :answer => TaskStore::MAX_ANSWER})
+        found = find_task(data[:task])
+        halt 404 if found.nil?
+
+        result = TaskCheck.check(found[:task], data[:answer],
+            :variables => task_variables(found[:task], found[:key]))
+        state = result.counts? ? store_task_result(found, result.status.to_s, data[:answer]) : nil
+        respond(
+            :status => result.status.to_s,
+            :message => render_task_markdown(result.message),
+            :solution => render_task_markdown(result.solution),
+            :state => state,
+        )
+    end
+
+    # The logged-in person's stored answers for the tasks of one activity.
+    post '/api/task/states' do
+        assert(user_logged_in?)
+        assert(tasks_visible?)
+        data = parse_request_data(:required_keys => [:activity], :max_value_lengths => {:activity => 64})
+        activity = data[:activity]
+        assert(activity =~ /\A[a-z0-9_-]+\z/)
+        entry = @@content.values.find { |c| (c[:tasks] || {})[:activity] == activity }
+        halt 404 if entry.nil?
+
+        states = {}
+        neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email], :prefix => "#{activity}/").each do |row|
+            MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState)
+            WHERE s.task STARTS WITH $prefix
+            RETURN s;
+        END_OF_QUERY
+            stored = row['s']
+            id = stored[:task].to_s.split('/', 2)[1]
+            task = entry[:tasks][:by_id][id]
+            next if task.nil?
+            states[id] = TaskStore.public_state(stored, TaskSpec.check_version(task))
+        end
+        respond(:states => states)
+    end
+
+    # Deletes the logged-in person's answer and attempts for one task. Always
+    # allowed, also when tasks are switched off again.
+    post '/api/task/delete' do
+        assert(user_logged_in?)
+        data = parse_request_data(:required_keys => [:task], :max_value_lengths => {:task => 120})
+        task = data[:task]
+        assert(task =~ /\A[a-z0-9_-]+\/[a-z0-9-]+\z/)
+        email = @session_user[:email]
+        neo4j_query(<<~END_OF_QUERY, :email => email, :key => TaskStore.state_key(email, task))
+            MATCH (:User {email: $email})-[:HAS_TASK_STATE]->(s:TaskState {key: $key})
+            DETACH DELETE s;
+        END_OF_QUERY
+        neo4j_query(<<~END_OF_QUERY, :email => email, :task => task)
+            MATCH (a:TaskAttempt {task: $task})-[:BY]->(:User {email: $email})
+            DETACH DELETE a;
+        END_OF_QUERY
+        respond(:deleted => true)
     end
 
     def print_module_button(key)

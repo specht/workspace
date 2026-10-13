@@ -51,6 +51,10 @@ und die Subnetzmaske (`netmask`) sowie die Gesamtmenge der bisher übertragenen 
 
 Es kann sein, dass du statt eines `eth0`-Adapters einen anderen Netzwerkadapter hast, z.B. `enp0s3` oder auch `wlp2s0`, falls du über WLAN verbunden bist. Das ist in Ordnung – die Befehle funktionieren genauso.
 
+_task(adresse)
+
+_task(loopback)
+
 ## Andere Rechner anpingen
 
 <div class='hint books'>
@@ -102,6 +106,8 @@ Statt einer IP-Adresse kannst du auch eine Domain, z.B. <code>google.com</code> 
 Die Domain wird dann mit Hilfe eines DNS-Servers in eine IP-Adresse aufgelöst.
 </div>
 
+_task(lichtgeschwindigkeit)
+
 ## Den Pfad von IP-Paketen verfolgen
 
 <div class='hint books'>
@@ -126,6 +132,8 @@ Anschließend solltest du eine Ausgabe wie diese sehen:
 Um `traceroute` zu verstehen, ist es wichtig zu wissen, dass jedes IP-Paket eine sogenannte »Time To Live« (TTL) hat. Diese TTL gibt an,
 wie viele Hops von einem zum nächsten Rechner maximal durchlaufen werden dürfen, bevor das Paket verworfen wird.
 
+_task(ttl-drei)
+
 `traceroute` funktioniert, indem es zuerst ein Paket mit TTL 1 an den Zielrechner sendet.
 Das Paket wird wegen der geringen TTL beim ersten Router verworfen, der dann eine Fehlermeldung
 zurücksendet. `traceroute` weiß nun, dass der erste Router auf dem Weg zum Zielrechner ist
@@ -136,6 +144,8 @@ Dieses Mal wird das Paket den ersten Router passieren und beim zweiten Router ve
 
 Ein Stern `*` in der Ausgabe bedeutet, dass der Router das Paket verworfen hat, ohne eine Fehlermeldung zurückzusenden, weshalb hier keine IP-Adresse angezeigt werden kann.
 Eine ausführlichere Erklärung findest du in diesem [Blogpost](https://blog.davidvarghese.dev/posts/traceroute-explained/) von David Varghese.
+
+_task(traceroute-erklaeren)
 
 ## Dateien herunterladen
 

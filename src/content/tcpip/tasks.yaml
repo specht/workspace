@@ -1,5 +1,6 @@
 # Aufgaben zu »Wie Rechner sich finden« (TCP/IP-Verbindungen).
-# Format: docs/aufgaben.md. Noch nicht in der Seite eingebunden.
+# Format: docs/aufgaben.md. In tcpip.md stehen bisher: adresse, loopback,
+# lichtgeschwindigkeit, ttl-drei, traceroute-erklaeren (die übrigen brauchen M3).
 format: 1
 activity: tcpip
 tasks:
@@ -47,8 +48,8 @@ tasks:
   - id: lichtgeschwindigkeit
     title: Mindestens wie lange?
     prompt: |
-      Licht ist in einer Glasfaser etwa 200 000 km pro Sekunde schnell. Berlin
-      und Lima liegen rund 11 100 km auseinander. Wie viele Millisekunden
+      Licht ist in einer Glasfaser etwa 200 000 km pro Sekunde schnell. Berlin
+      und Lima liegen rund 11 100 km auseinander. Wie viele Millisekunden
       dauert ein Hin und Zurück mindestens?
     check:
       type: number
@@ -60,7 +61,7 @@ tasks:
         say: Das ist nur eine Richtung. Ein Roundtrip geht hin und zurück.
       - when: { between: [0, 1] }
         say: Das sind Sekunden. Gefragt sind Millisekunden.
-    solution: 2 × 11 100 km ÷ 200 000 km/s = 0,111 s, also etwa 111 ms.
+    solution: 2 × 11 100 km ÷ 200 000 km/s = 0,111 s, also etwa 111 ms.
 
   - id: standort
     title: Wo steht der Server wirklich?

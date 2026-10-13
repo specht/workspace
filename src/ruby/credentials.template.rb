@@ -38,3 +38,7 @@ if defined? Mail
     }
     end
 end
+
+# Aufgabenkarten für Lernende einschalten (docs/aufgaben.md). Ohne diese
+# Zeile sehen nur Lehrkräfte die Aufgaben, als Vorschau.
+# TASKS_ENABLED = true

@@ -359,20 +359,80 @@ tasks:
 Im Klassenboard sieht die Lehrkraft dann nicht nur, wer gepusht hat, sondern
 auch, wer Änderungen hat und nie gepusht hat, und warum.
 
+## Aufgaben auf der Seite
+
+`_task(id)` auf einer eigenen Zeile setzt die Aufgabe `id` aus der
+`tasks.yaml` neben der Seite als Karte an diese Stelle. Die Karten werden in
+der Reihenfolge der Seite nummeriert (»Aufgabe 3«, bei `prediction: true`
+»Vermutung 3«). In Codeblöcken bleibt `_task(...)` stehen. Fehlt die Aufgabe in
+der `tasks.yaml`, steht an ihrer Stelle ein roter Hinweis.
+
+Die Karte enthält nie, wogegen geprüft wird: `expect`, `correct` und
+`solution` bleiben auf dem Server. Die Lösung kommt erst nach einer richtigen
+Antwort mit der Rückmeldung.
+
+Seit M2 prüft der Workspace `answer`, `choice`, `number` und `reflection`.
+Karten anderer Arten zeigen bis M3 »Zeig dein Ergebnis deiner Lehrkraft«.
+
+### Einschalten
+
+Aufgaben sind für Lernende zunächst ausgeschaltet. Lehrkräfte sehen sie
+trotzdem, mit dem Vermerk »Vorschau für Lehrkräfte«, und können sie
+ausprobieren. Für alle eingeschaltet werden sie in `credentials.rb`:
+
+```ruby
+TASKS_ENABLED = true
+```
+
+Fehlt die Zeile, bleibt alles wie bisher.
+
+### Schnittstelle
+
+| Aufruf | Daten | Antwort |
+| --- | --- | --- |
+| `POST /api/task/check` | `task` (`tcpip/adresse`), `answer` | `status`, `message`, `solution`, `state` |
+| `POST /api/task/states` | `activity` | gespeicherte Antworten der angemeldeten Person |
+| `POST /api/task/delete` | `task` | löscht Antwort und Versuche der angemeldeten Person |
+
+`status` ist `correct`, `wrong`, `sent` (Reflexion gespeichert), `invalid`
+(nicht lesbar, z. B. keine Zahl; zählt nicht) oder `unavailable` (gerade nicht
+prüfbar, z. B. Workspace aus; zählt nicht).
+
 ## Was gespeichert wird
 
-- Pro Person und Aufgabe: Status, letzte Eingabe, Zeitpunkt, Version der
-  Aufgabe, und was die Prüfung gelesen hat.
-- Abgaben als Kopie der genannten Dateien.
-- Sehen können das nur die Person selbst und die Lehrkräfte ihrer Gruppen.
-- Lernende löschen eigene Antworten und Abgaben, wann sie wollen. Mit dem
-  Konto verschwindet alles.
+In Neo4j, nur für Antworten, die zählen:
+
+- `(:User)-[:HAS_TASK_STATE]->(:TaskState)` pro Person und Aufgabe: Aufgabe,
+  Version der Prüfung, Status, letzte Eingabe, Zahl der Versuche, Status des
+  ersten Versuchs, Zeitpunkt der ersten richtigen Antwort, letzte Änderung.
+  Der Schlüssel ist ein Hash aus E-Mail-Adresse und Aufgabe.
+- `(:TaskAttempt)-[:BY]->(:User)` pro Versuch: Aufgabe, Version, Status und
+  Zeitpunkt, ohne den Text der Antwort. Daraus entsteht in M4 die Übersicht
+  für die Klasse.
+- Ab M3: Abgaben als Kopie der genannten Dateien.
+
+Sehen können das nur die Person selbst und ihre Lehrkräfte (ab M4 in der
+Übersicht der Klasse). Lernende löschen
+ihre Antwort zu einer Aufgabe auf der Karte (»Meine Antwort löschen«), wann sie
+wollen, auch wenn Aufgaben wieder ausgeschaltet sind. Wer ein Konto von Hand
+entfernt, löscht die Aufgabendaten mit:
+
+```cypher
+MATCH (u:User {email: $email})
+OPTIONAL MATCH (u)-[:HAS_TASK_STATE]->(s:TaskState)
+OPTIONAL MATCH (a:TaskAttempt)-[:BY]->(u)
+DETACH DELETE s, a;
+```
+
+Ändert sich die Prüfung einer Aufgabe (eine neue Version), zeigt die Karte
+»Aufgabe geändert, bitte neu prüfen«, und die Zählung beginnt neu.
 
 ## Eine tasks.yaml prüfen
 
 ```bash
-cd src/ruby && ruby test/task_spec_test.rb
+cd src/ruby && ruby test/task_spec_test.rb && ruby test/task_card_test.rb
 ```
 
-Der Test liest alle `tasks.yaml` unter `src/content` und meldet jede
-Abweichung mit Aufgabe und Feld.
+Die Tests lesen alle `tasks.yaml` unter `src/content` und melden jede
+Abweichung mit Aufgabe und Feld. Außerdem prüfen sie, dass jedes `_task()` auf
+einer Seite eine Aufgabe in der `tasks.yaml` daneben hat.
