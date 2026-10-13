@@ -96,7 +96,8 @@
     }
 
     // message and solution are HTML rendered on the server from the task
-    // file; the student's own answer is never part of them.
+    // file; anything from the student (command output, SQL results) is
+    // escaped there before it becomes part of them.
     function showFeedback(card, status, message, solution, read, warnings) {
         const box = card.querySelector('.task-feedback');
         box.className = 'task-feedback task-feedback-' + status;
@@ -229,10 +230,18 @@
                 e.preventDefault();
                 submit(card);
             });
+            // SQL: Enter makes a new line, Ctrl+Enter (Cmd+Enter) checks.
+            const sql = card.querySelector('.task-sql');
+            if (sql) sql.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                    e.preventDefault();
+                    submit(card);
+                }
+            });
             const del = card.querySelector('.task-delete');
             if (del) {
                 if (card.dataset.type === 'submit') del.textContent = 'Abgabe löschen';
-                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
+                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
                 del.addEventListener('click', function () { remove(card); });
             }
             loadOptions(card);

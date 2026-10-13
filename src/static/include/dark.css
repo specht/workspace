@@ -334,4 +334,8 @@ html[data-bs-theme="dark"] {
         border-left-color: #2fb36d;
     }
     .class-template-outdated strong { color: #f0a54a; }
+    .task-read th,
+    .task-read td {
+        border-bottom-color: rgba(255, 255, 255, 0.12);
+    }
 }

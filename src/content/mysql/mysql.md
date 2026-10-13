@@ -1,5 +1,6 @@
 <div class='meta'>
 image: select-land.webp:25:0
+kind: grundlagen
 </div>
 
 <div
@@ -177,9 +178,11 @@ crop-terminal-skip-bottom: 1
 
 Jede Spalte hat einen Namen und einen Datentyp. So erkennst du, welche Informationen in der Tabelle gespeichert werden.
 
-<div class='hint task'>
+<div class='hint task tasks-off-only'>
 Untersuche auch die Tabelle <code>ort</code> &ndash; welche Spalten gibt es und welche Datentypen haben sie?
 </div>
+
+_task(ort-land)
 
 ## Daten mit SELECT anzeigen
 
@@ -242,9 +245,13 @@ crop-terminal-skip-bottom: 1
 
 Texte stehen in SQL in einfachen Anführungszeichen, zum Beispiel `'Deutschland'`.
 
-<div class='hint task'>
+<div class='hint task tasks-off-only'>
 Wie viele Einwohner hat Griechenland? Welche Zahl erhältst du und wie ist sie zu interpretieren?
 </div>
+
+_task(griechenland)
+
+_task(einwohner-einheit)
 
 Bedingungen lassen sich kombinieren. Mit `AND` müssen beide Bedingungen erfüllt sein:
 
@@ -448,22 +455,41 @@ Um <code>mycli</code> zu beenden, gib <code>exit</code> ein oder verwende <kbd>S
 
 ## Aufgaben
 
-Beantworte die folgenden Fragen mit geeigneten SQL-Abfragen. Notiere jeweils deine Abfrage und das Ergebnis. Gib möglichst nur die Spalten aus, die du für die Antwort tatsächlich brauchst.
+Beantworte die folgenden Fragen mit geeigneten SQL-Abfragen. Gib möglichst nur die Spalten aus, die du für die Antwort tatsächlich brauchst.
 
-1. Gib alle Länder mit Name, Einwohnerzahl und Hauptstadt aus. Sortiere die Tabelle nach der Einwohnerzahl absteigend.
+<div class='tasks-off-only'>
+<p>Notiere jeweils deine Abfrage und das Ergebnis.</p>
+<ol>
+<li>Gib alle Länder mit Name, Einwohnerzahl und Hauptstadt aus. Sortiere die Tabelle nach der Einwohnerzahl absteigend.</li>
+<li>Wie viele Länder gibt es in der Tabelle <code>land</code>?</li>
+<li>Wie viele Länder liegen in Europa? Beachte die beiden unterschiedlichen Schreibweisen, die du mit <code>DISTINCT</code> entdeckt hast.</li>
+<li>Welche Länder haben die Zeichenfolge <code>arm</code> oder <code>bein</code> im Namen?</li>
+<li>Welcher Ort hat die meisten Einwohner, wie viele Einwohner hat er und in welchem Land liegt er?</li>
+<li>Wie viele Orte aus Frankreich sind in der Tabelle <code>ort</code> gespeichert?</li>
+<li>Gib die zehn bevölkerungsreichsten Orte Frankreichs aus.</li>
+<li>Finde jeweils drei Orte, deren Name die Zeichenfolge <code>arm</code> beziehungsweise <code>bein</code> enthält.</li>
+<li>Welche Orte in Deutschland liegen westlich von Aachen (6,046° Ost)?</li>
+</ol>
+</div>
 
-2. Wie viele Länder gibt es in der Tabelle `land`?
+<p class='tasks-on-only'>Schreib deine Abfrage in das Feld unter der Aufgabe, so wie du sie in <code>mycli</code> eingeben würdest. Der Workspace führt sie in deiner eigenen Datenbank aus, zeigt dir dein Ergebnis und sagt, ob es passt. Er liest dabei nur; deine Daten bleiben, wie sie sind.</p>
 
-3. Wie viele Länder liegen in Europa? Beachte die beiden unterschiedlichen Schreibweisen, die du mit `DISTINCT` entdeckt hast.
+_task(laender-sortiert)
 
-4. Welche Länder haben die Zeichenfolge `arm` oder `bein` im Namen?
+_task(anzahl-laender)
 
-5. Welcher Ort hat die meisten Einwohner, wie viele Einwohner hat er und in welchem Land liegt er?
+_task(anzahl-europa)
 
-6. Wie viele Orte aus Frankreich sind in der Tabelle `ort` gespeichert?
+_task(arm-bein)
 
-7. Gib die zehn bevölkerungsreichsten Orte Frankreichs aus.
+_task(groesster-ort)
 
-8. Finde jeweils drei Orte, deren Name die Zeichenfolge `arm` beziehungsweise `bein` enthält.
+_task(orte-frankreich)
 
-9. Welche Orte in Deutschland liegen westlich von Aachen (6,046° Ost)?
+_task(top10-frankreich)
+
+_task(drei-arm)
+
+_task(drei-bein)
+
+_task(westlich-aachen)

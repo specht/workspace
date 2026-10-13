@@ -2114,8 +2114,36 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     font-size: 90%;
 }
 
-.task-command {
+.task-command,
+.task-sql {
     font-family: '0xProto Nerd Font Mono', monospace;
+}
+
+.task-sql {
+    font-size: 90%;
+    min-height: 6em;
+}
+
+/* SQL check: the student's result as a small table. */
+.task-read table {
+    margin: 0.4em 0;
+    border-collapse: collapse;
+    font-size: 90%;
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.task-read th,
+.task-read td {
+    padding: 0.15em 0.6em;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.task-read th {
+    font-weight: 600;
 }
 
 .student-home-cards + .student-home-label {

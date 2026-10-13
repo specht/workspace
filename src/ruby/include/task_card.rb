@@ -90,6 +90,9 @@ module TaskCard
                 end
                 io << '</div>'
                 io << "<div class='task-reads'>Der Workspace misst danach selbst nach, in deinem Workspace, und vergleicht.</div>"
+            when 'sql'
+                io << "<textarea class='form-control task-input task-sql' name='answer' rows='4' spellcheck='false' autocapitalize='off' placeholder='SELECT …' aria-labelledby='#{h.(field)}-title'></textarea>"
+                io << "<div class='task-reads'>Läuft in deiner eigenen MySQL-Datenbank, angemeldet als du, und liest nur: eine Abfrage mit <code>SELECT</code>, höchstens #{SqlCheck::MAX_MS / 1000} Sekunden. <kbd>Strg</kbd>+<kbd>Enter</kbd> prüft.</div>"
             when 'command'
                 io << "<input type='text' class='form-control task-input task-command' name='answer' spellcheck='false' autocomplete='off' placeholder='Befehl' aria-labelledby='#{h.(field)}-title'>"
                 io << "<div class='task-reads'>Läuft in deinem Workspace in <code>/workspace</code>, wie im Terminal, höchstens #{(check['timeout'] || 10).to_i} Sekunden.</div>"
@@ -105,7 +108,7 @@ module TaskCard
             end
             label = case
                 when type == 'code' then 'Stand holen'
-                when type == 'command' then 'Ausführen und prüfen'
+                when type == 'command' || type == 'sql' then 'Ausführen und prüfen'
                 when type == 'reflection' then 'Speichern'
                 when type == 'submit' then 'Abgeben'
                 when task['prediction'] then 'Vermutung abgeben'

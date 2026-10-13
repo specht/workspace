@@ -11,7 +11,7 @@ module ClassBoard
     # it are currently wrong, and at least MIN_FOR_PATTERN students tried.
     OFTEN_WRONG_SHARE = 1.0 / 3
     MIN_FOR_PATTERN = 3
-    TEXT_TYPES = %w[answer number reflection].freeze
+    TEXT_TYPES = %w[answer number reflection sql].freeze
 
     Cell = Struct.new(:status, :attempts, :answer, :updated, :first_status, :stuck, keyword_init: true)
 

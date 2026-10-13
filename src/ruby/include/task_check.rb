@@ -6,6 +6,7 @@ require_relative 'git_check'
 require_relative 'submission_store'
 require_relative 'measure_check'
 require_relative 'scene_check'
+require_relative 'sql_check'
 
 # Checks a student's answer to a task (docs/aufgaben.md, »Prüfen«).
 #
@@ -18,7 +19,7 @@ module TaskCheck
     ANSWER_TYPES = %w[answer choice number reflection].freeze
     FILE_TYPES = %w[files html css references].freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit code measure command scene]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit code measure command scene sql]).freeze
     LANGUAGE_NAMES = { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript' }.freeze
 
     # status:
@@ -62,7 +63,9 @@ module TaskCheck
     #              that Code Bites task (from the Code Bites results)
     # runner:      lambda(command, timeout) -> { output:, status:, timed_out: },
     #              runs in the person's container as them; nil if not running
-    def self.check(task, answer, variables: {}, workspace: nil, git: nil, code_solved: nil, runner: nil)
+    # sql:         lambda(query) -> result, runs in the person's own MySQL
+    #              database as them, read-only (SqlCheck); nil if unreachable
+    def self.check(task, answer, variables: {}, workspace: nil, git: nil, code_solved: nil, runner: nil, sql: nil)
         check = task['check']
         type = check['type']
         unless RUNS.include?(type)
@@ -72,6 +75,7 @@ module TaskCheck
         return check_code(task, check, code_solved) if type == 'code'
         return check_run(task, check, answer, runner) if %w[measure command].include?(type)
         return check_scene(task, check, workspace, runner) if type == 'scene'
+        return check_sql(task, check, answer, sql) if type == 'sql'
         return check_workspace(task, check, answer, workspace, git, runner) unless ANSWER_TYPES.include?(type)
 
         missing = variables_used(check).reject { |name| variables[name].is_a?(String) && !variables[name].empty? }
@@ -108,6 +112,13 @@ module TaskCheck
         end
         Result.new(:status => status, :message => message, :read => read,
             :solution => status == :correct ? task['solution'] : nil)
+    end
+
+    # sql: the query runs in the person's own database (SqlCheck).
+    def self.check_sql(task, check, answer, sql)
+        status, message, read, note, problem = SqlCheck.check(task, check, answer, sql)
+        Result.new(:status => status, :message => message, :read => read, :problem => problem,
+            :warnings => note ? [note] : nil, :solution => status == :correct ? task['solution'] : nil)
     end
 
     # code: solved in the Code Bites editor, in one of the allowed languages.

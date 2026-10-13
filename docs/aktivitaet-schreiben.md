@@ -91,6 +91,7 @@ Welche Prüfart für welchen Zweck:
 | Schreibt der Befehl die richtige Ausgabe? | `command` |
 | Steht in der 3D-Szene, was verlangt ist? | `scene` |
 | Eine Programmieraufgabe mit Tests | `code` (Code Bites) |
+| Liefert die SQL-Abfrage das Richtige? | `sql` |
 
 Drei Faustregeln:
 

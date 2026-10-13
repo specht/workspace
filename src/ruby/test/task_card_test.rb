@@ -79,14 +79,20 @@ class TaskCardTest < Minitest::Test
         assert_includes html, 'Speichern'
     end
 
-    def test_later_types_have_no_form
+    def test_sql_card
         task = { 'id' => 'kunden', 'title' => 'Alle Kunden', 'prompt' => 'Frag alle Kunden ab.',
-                 'check' => { 'type' => 'sql', 'database' => 'shop', 'expect_query' => 'SELECT * FROM kunden' } }
+                 'check' => { 'type' => 'sql', 'expect_query' => 'SELECT * FROM kunden' } }
         assert_empty TaskSpec.validate_task(task)
         html = TaskCard.html(task, activity: 'sql', number: 1, render: RENDER)
-        refute_includes html, '<form'
-        assert_includes html, 'noch nicht selbst prüfen'
-        refute_includes html, 'task-login-note'
+        assert_includes html, "<textarea class='form-control task-input task-sql' name='answer'"
+        assert_includes html, 'Ausführen und prüfen'
+        assert_includes html, 'angemeldet als du, und liest nur'
+        refute_includes html, 'SELECT * FROM kunden'
+    end
+
+    # Every check type in the format can be checked now.
+    def test_every_type_runs
+        assert_empty TaskSpec::AVAILABLE.keys - TaskCheck::RUNS
     end
 
     def test_scene_card_names_file_and_viewer

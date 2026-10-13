@@ -3754,14 +3754,17 @@ class Main < Sinatra::Base
     def task_page_setup(slug)
         tasks = (@@content[slug] || {})[:tasks]
         return '' if tasks.nil? || tasks[:on_page].nil? || tasks[:on_page].empty?
-        return "<style>.task-card { display: none; }</style>" unless tasks_visible?
+        return "<style>.task-card, .tasks-on-only { display: none; }</style>" unless tasks_visible?
 
         config = {
             :activity => tasks[:activity],
             :loggedIn => user_logged_in?,
             :preview => !tasks_enabled_for_everyone?,
         }
-        "<script>window.TASK_PAGE = #{config.to_json};</script>" \
+        # Text that only stands in for the cards (an exercise list) is hidden
+        # while the cards are shown.
+        "<style>.tasks-off-only { display: none; }</style>" \
+            "<script>window.TASK_PAGE = #{config.to_json};</script>" \
             "<script src='/include/tasks.js?#{CACHE_BUSTER}'></script>"
     end
 
@@ -3792,6 +3795,17 @@ class Main < Sinatra::Base
         @@content.select { |_, c| c[:template] && !c[:dev_only] }
             .map { |slug, c| [slug, c[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', ''), c[:template]] }
             .sort_by { |_, title, _| title.downcase }
+    end
+
+    # sql tasks: the person's own MySQL database, logged in as them (never
+    # as root), read-only per query (SqlCheck.mysql_runner).
+    def task_sql_runner
+        email = @session_user[:email]
+        login = @session_user[:db_login] || db_login_for_email(email)
+        return nil if login.nil? || !DatabaseIdentity.valid?(login)
+
+        SqlCheck.mysql_runner(:host => 'mysql', :username => login, :database => login,
+            :password => Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT))
     end
 
     # The task for 'activity/id', with its check version, or nil.
@@ -3833,7 +3847,7 @@ class Main < Sinatra::Base
     def render_task_markdown(markdown)
         return nil if markdown.nil? || markdown.to_s.strip.empty?
 
-        @@task_redcarpet ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true})
+        @@task_redcarpet ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true, :tables => true})
         @@task_redcarpet.render(markdown.to_s)
     end
 
@@ -4968,7 +4982,11 @@ class Main < Sinatra::Base
             :runner => lambda { |command, seconds|
                 workspace_runtime.run_command(fs_tag_for_email(@session_user[:email]), :command => command,
                     :uid => "#{WORKSPACE_UID}:#{WORKSPACE_GID}", :seconds => [[seconds.to_i, 1].max, 30].min)
-            })
+            },
+            :sql => found[:task]['check']['type'] == 'sql' ? task_sql_runner : nil)
+        if result.problem == :reference_failed
+            STDERR.puts "SQL task #{found[:key]}: the reference query failed for #{@session_user[:email]}"
+        end
         answer = data[:answer]
         if (plan = result.plan)
             # submit: copy the files now; the stored answer says what was handed in.

@@ -102,6 +102,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Reihen, Gitter und Umlaufbahnen; Fehler des Viewers erscheinen wörtlich.
   Alle zwölf Anaglyph-Aufgaben stehen jetzt auf der Seite; eine abgegebene
   Szene muss sich laden lassen.
+- Prüfart `sql`: Lernende schreiben eine `SELECT`-Abfrage; sie läuft in
+  ihrer eigenen MySQL-Datenbank, als sie selbst, nur lesend und mit
+  Zeitlimit, und wird mit dem Ergebnis einer Musterabfrage verglichen. Die
+  Karte zeigt das eigene Ergebnis als Tabelle. »Einführung in SQL« hat jetzt
+  13 Aufgaben; die alte Aufgabenliste erscheint nur noch, wenn Aufgaben
+  ausgeschaltet sind (`tasks-off-only`).
 - Neue Version einer Vorlage: Auf der Seite einer Aktivität mit `template`
   sieht der Workspace nach, ob der Klon in `/workspace` die neueste Version
   enthält, und sagt sonst »Es gibt eine neue Version der CPU Sandbox! Du

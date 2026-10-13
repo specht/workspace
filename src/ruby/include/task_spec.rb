@@ -2,6 +2,7 @@ require 'digest'
 require 'json'
 require 'set'
 require 'yaml'
+require_relative 'sql_check'
 
 # Format and validation of an activity's tasks.yaml (see docs/aufgaben.md).
 #
@@ -32,7 +33,7 @@ module TaskSpec
         'command' => 'M6',
         'scene' => 'M6',
         'code' => 'M5',
-        'sql' => 'later',
+        'sql' => 'M6',
     }.freeze
 
     # Check types that need the network; they are never used in exams.
@@ -68,7 +69,7 @@ module TaskSpec
         'reflection' => [],
         'submit' => [],
         'code' => [],
-        'sql' => [],
+        'sql' => %w[same_result_as query_matches],
     }.freeze
 
     class Error < StandardError
@@ -357,8 +358,30 @@ module TaskSpec
                 errors << "languages must be a list of #{CODE_LANGUAGES.join(', ')}"
             end
         when 'sql'
-            allowed += %w[database expect_query compare]
-            errors << 'expect_query is required' unless nonempty_string?(check['expect_query'])
+            allowed += %w[expect_query compare rows sorted_by extra_columns tables setup]
+            queries = check['expect_query'].is_a?(Array) ? check['expect_query'] : [check['expect_query']]
+            if queries.empty? || !queries.all? { |q| nonempty_string?(q) }
+                errors << 'expect_query must be a query or a list of queries'
+            else
+                queries.each_with_index do |q, i|
+                    _, refusal = SqlCheck.single_select(q)
+                    errors << "expect_query[#{i}] must be a single SELECT: #{refusal}" if refusal
+                end
+            end
+            errors << 'compare must be same or subset' if check.key?('compare') && !%w[same subset].include?(check['compare'])
+            errors << 'rows must be a positive number' if check.key?('rows') && !(check['rows'].is_a?(Integer) && check['rows'] > 0)
+            errors << 'rows needs compare: subset' if check.key?('rows') && check['compare'] != 'subset'
+            if check.key?('sorted_by') && check['sorted_by'].to_s !~ /\A\s*\d+(\s+(ASC|DESC))?(\s*,\s*\d+(\s+(ASC|DESC))?)*\s*\z/i
+                errors << 'sorted_by must name result columns, like "2 DESC" or "1, 3"'
+            end
+            errors << 'extra_columns must be note, ok or wrong' if check.key?('extra_columns') && !%w[note ok wrong].include?(check['extra_columns'])
+            if check.key?('tables')
+                tables = check['tables']
+                unless tables.is_a?(Hash) && !tables.empty? && tables.all? { |k, v| k.to_s =~ /\A[A-Za-z_][A-Za-z0-9_]*\z/ && (v.nil? || (v.is_a?(Integer) && v >= 0)) }
+                    errors << 'tables must map table names to their row count (or ~)'
+                end
+            end
+            errors << 'setup must be text' if check.key?('setup') && !nonempty_string?(check['setup'])
         end
         extra = check.keys - allowed
         errors << "unknown keys for #{type}: #{extra.join(', ')}" unless extra.empty?
@@ -376,8 +399,12 @@ module TaskSpec
                 next
             end
             extra = entry['when'].keys - WHEN_KEYS.fetch(type, [])
+            if entry['when'].key?('same_result_as')
+                _, refusal = SqlCheck.single_select(entry['when']['same_result_as'].to_s)
+                errors << "feedback[#{i}].when.same_result_as must be a single SELECT" if refusal
+            end
             errors << "feedback[#{i}].when: #{type} knows #{WHEN_KEYS.fetch(type, []).join(', ').then { |s| s.empty? ? 'no conditions' : s }}" unless extra.empty?
-            %w[matches output_matches source_matches].each do |k|
+            %w[matches output_matches source_matches query_matches].each do |k|
                 errors.concat(regex_errors(entry['when'][k], "feedback[#{i}].when.#{k}")) if entry['when'].key?(k)
             end
         end

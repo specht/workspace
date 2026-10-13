@@ -6,7 +6,7 @@ alle, die Inhalte schreiben, auch an Lehrkräfte anderer Schulen mit eigener
 Installation.
 
 **Stand:** Format 1, Meilenstein M6. Aufgabenkarten auf den Seiten, alle
-Prüfarten außer `sql`, Abgaben, die Klassenübersicht, Übungen aus
+Prüfarten, Abgaben, die Klassenübersicht, Übungen aus
 Code Bites und die Startseite für Lernende. Was ab wann läuft, steht in der
 Tabelle der Prüfarten.
 
@@ -230,7 +230,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `command` | Ausgabe eines Befehls der Lernenden | Ausgabe | Workspace | M6 |
 | `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace | M6 |
 | `code` | Code-Bites-Aufgabe | Code | Code-Bites-Judge | M5 |
-| `sql` | Ergebnis einer Abfrage | Abfrage | Datenbank | später |
+| `sql` | Ergebnis einer `SELECT`-Abfrage gegen das einer Musterabfrage | Abfrage | eigene MySQL-Datenbank, nur lesend | M6 |
 
 »Server« heißt: Der Server liest die Datei als Text und wertet sie aus, ohne
 etwas auszuführen. »Workspace« heißt: Ein festes Prüfskript läuft per
@@ -412,6 +412,62 @@ hat« steht jedes Objekt mit Zeile, Position und Größe. Die Karte nennt Datei
 und Viewer: »Liest `/workspace/anaglyph/latte.ini` mit deinem Viewer
 `/workspace/anaglyph/include/script.js`«.
 
+### sql
+
+Seit M6. Beispiele stehen in `src/content/mysql/tasks.yaml` (»Einführung in
+SQL«, Beispieldaten `terra1.sql`).
+
+```yaml
+check:
+  type: sql
+  expect_query: SELECT Name, Einwohner, Hauptstadt FROM land ORDER BY Einwohner DESC
+  sorted_by: 2 DESC            # Reihenfolge zählt, Gleichstände egal
+  tables: { land: 197 }        # die Beispieldaten müssen so da sein
+  setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+feedback:
+  - when: { same_result_as: "SELECT COUNT(*) FROM land WHERE Kontinent = 'Europa'" }
+    say: Das sind nur die Länder mit `Europa`.
+  - when: { query_matches: 'order\s+by\s+einwohner\s*;?\s*$' }
+    say: Sortiert ist es, aber aufsteigend.
+```
+
+Lernende schreiben eine Abfrage in ein Textfeld (<kbd>Strg</kbd>+<kbd>Enter</kbd>
+prüft). Der Server führt sie in **ihrer eigenen** MySQL-Datenbank aus,
+angemeldet als sie selbst, nie als `root`, und dort auch die Musterabfrage aus
+`expect_query`. Verglichen werden die Ergebnisse, nicht der Text der Abfrage:
+`COUNT(name)` statt `COUNT(*)`, andere Spaltennamen, eine andere Reihenfolge
+der Spalten oder eine Unterabfrage statt `ORDER BY … LIMIT 1` zählen genauso.
+
+Nur lesen (Regel 1):
+
+- Angenommen wird genau eine Abfrage, die mit `SELECT` oder `WITH` beginnt.
+  Alles andere (`DELETE`, `DROP`, zwei Befehle mit `;`, `INTO OUTFILE`,
+  ausführbare Kommentare `/*! … */`) lehnt der Server ab, ohne es zu senden.
+- Sie läuft in `START TRANSACTION READ ONLY` mit `max_execution_time` von
+  5 Sekunden; danach wird die Verbindung geschlossen, MySQL rollt zurück.
+- Höchstens 5000 Zeilen werden gelesen.
+
+| Feld | Bedeutung |
+| --- | --- |
+| `expect_query` | Musterabfrage, oder eine Liste davon; eine passende reicht |
+| `compare` | `same` (Standard): dieselben Zeilen. `subset`: jede Zeile ist eine der Musterzeilen, keine doppelt (»Finde drei Orte …«), mit `rows` für die Anzahl |
+| `sorted_by` | Spalten des Musterergebnisses, nach denen sortiert sein muss, z. B. `2 DESC` oder `1, 3`. Die Richtung kommt aus der Musterabfrage; gleiche Werte dürfen in beliebiger Reihenfolge stehen. Ohne das Feld ist die Reihenfolge egal |
+| `extra_columns` | Mehr Spalten als nötig: `note` (Standard, richtig mit Hinweis), `ok` oder `wrong` |
+| `tables` | Tabellen und ihre Zeilenzahl in den Beispieldaten (`~` für »egal«). Fehlt eine oder stimmt die Zahl nicht, wird nicht geprüft: Sonst wäre nach einem `DELETE` eine leere Antwort richtig |
+| `setup` | Satz, wie man die Beispieldaten lädt; steht bei fehlenden Daten dabei |
+
+Rückmeldungen: `same_result_as` (das Ergebnis gleicht dem einer typischen
+falschen Abfrage) und `query_matches` (regulärer Ausdruck auf den Text, ohne
+Groß- und Kleinschreibung; greift auch bei Fehlermeldungen von MySQL, etwa
+`6,046` statt `6.046`). Sonst sagt die Karte, was nicht passt: zu viele oder
+zu wenige Zeilen oder Spalten, eine Zeile, die nicht dazugehört (aus dem
+eigenen Ergebnis), die Reihenfolge. Fehlermeldungen von MySQL erscheinen
+wörtlich, mit einem Satz dazu für die häufigen (Syntax, unbekannte Tabelle
+oder Spalte, `GROUP BY`). Unter »Was der Workspace gelesen hat« steht das
+eigene Ergebnis als Tabelle, die ersten 10 Zeilen, so wie MySQL es liefert;
+Werte aus der Datenbank werden dabei maskiert. Lehrkräfte sehen die Abfragen
+in der Klassenübersicht.
+
 ## Beispiel: Begleiter für eine Sandbox
 
 Die Sandboxes bleiben eigenständig. Eine kleine Aktivität im Workspace kann
@@ -503,6 +559,12 @@ die eingebaute Rückmeldung für einen Fall.
 | `css` | `missing`, `marker_missing`, `parse_error`, `too_few_rules` |
 | `references` | `missing`, `external`, `outside_root`, `local_missing` |
 | `git` | `no_repo`, `not_git`, `no_remote`, `no_identity`, `uncommitted`, `too_few_commits`, `detached`, `no_upstream`, `not_pushed` |
+
+Text, der nur die Karten ersetzt (etwa eine nummerierte Aufgabenliste),
+steht in einem Element mit `class='tasks-off-only'` und verschwindet, sobald
+die Karten zu sehen sind. Umgekehrt erscheint `class='tasks-on-only'` nur mit
+den Karten. Beides muss HTML sein, weil Markdown in HTML-Blöcken nicht
+gelesen wird.
 
 ### Einschalten
 
