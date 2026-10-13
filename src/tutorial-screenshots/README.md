@@ -90,7 +90,13 @@ src/scripts/recreate-screenshots.rb my-tutorial      # everything in one tutoria
 src/scripts/recreate-screenshots.rb --all            # everything in every tutorial
 src/scripts/recreate-screenshots.rb --stale          # only what is out of date, all tutorials
 src/scripts/recreate-screenshots.rb --stale bif      # only what is out of date in one tutorial
+src/scripts/recreate-screenshots.rb --status         # render nothing: state of each generated file,
+                                                     # generated and manual images per page, total
 ```
+
+Every run ends with the same overview for the tutorials it rendered. The state
+comes from the generator's `POST /plan`, which builds the plan of a render
+without rendering or queuing anything.
 
 `--all` and `--stale` skip `src/content/_drafts`. `--stale` is what a
 development reload does in the background, but for every tutorial at once and

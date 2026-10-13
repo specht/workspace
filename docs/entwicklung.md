@@ -69,7 +69,12 @@ src/scripts/recreate-screenshots.rb bif           # alles in einem Tutorial, auc
 src/scripts/recreate-screenshots.rb --all         # alles in allen Tutorials
 src/scripts/recreate-screenshots.rb --stale       # nur Veraltetes, alle Tutorials, und warten
 src/scripts/recreate-screenshots.rb --stale bif   # nur Veraltetes in einem Tutorial
+src/scripts/recreate-screenshots.rb --status      # nichts rendern: Stand jedes erzeugten Bildes (✓/✗),
+                                                  # erzeugte und von Hand gemachte Bilder je Seite, Summe
+src/scripts/recreate-screenshots.rb --help
 ```
+
+Jeder Lauf endet mit derselben Übersicht für die gerenderten Tutorials.
 
 Rendert der Generator gerade etwas (zum Beispiel mit dem Skript), und ein
 Seitenaufruf würde weiteres Rendern anstoßen, pausiert das automatische

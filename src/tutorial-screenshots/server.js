@@ -3255,6 +3255,17 @@ const server = http.createServer(async (request, response) => {
             return sendJson(response, 400, { error: error.message });
         }
     }
+    // The state of each generated file, without rendering or queuing anything
+    // (recreate-screenshots.rb --status).
+    if (request.method === 'POST' && requestUrl.pathname === '/plan') {
+        try {
+            const payload = await readJson(request);
+            const plan = await buildGenerationPlan({ ...payload, force: false });
+            return sendJson(response, 200, { markdown_path: plan.relativeMarkdown, screenshots: plan.screenshots });
+        } catch (error) {
+            return sendJson(response, 400, { error: error.message });
+        }
+    }
     if (requestUrl.pathname === '/auto-render') {
         if (request.method === 'POST') {
             const payload = await readJson(request).catch(() => ({}));

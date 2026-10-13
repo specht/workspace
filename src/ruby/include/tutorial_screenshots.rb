@@ -8,6 +8,7 @@ module TutorialScreenshots
     ENDPOINT = URI('http://tutorial_screenshots:9393/generate')
     STATUS_ENDPOINT = URI('http://tutorial_screenshots:9393/status')
     AUTO_RENDER_ENDPOINT = URI('http://tutorial_screenshots:9393/auto-render')
+    PLAN_ENDPOINT = URI('http://tutorial_screenshots:9393/plan')
     WORKSPACE_IMAGE = 'hs_code_server'
 
     def self.prepare(markdown, markdown_path, generate: true)
@@ -64,6 +65,21 @@ module TutorialScreenshots
         unless response.is_a?(Net::HTTPSuccess)
             raise "generator returned HTTP #{response.code}: #{response.body.to_s[0, 500]}"
         end
+        JSON.parse(response.body)
+    end
+
+    # The state of each generated file of a tutorial, without rendering:
+    # { 'screenshots' => [{ 'target', 'kind', 'state' (current|stale|missing) }] }
+    def self.plan(relative_path)
+        raise "invalid tutorial Markdown path: #{relative_path.inspect}" unless valid_relative_markdown_path?(relative_path)
+        request = Net::HTTP::Post.new(PLAN_ENDPOINT)
+        request['content-type'] = 'application/json'
+        request.body = JSON.generate({ :markdown_path => relative_path, :workspace_look => workspace_look })
+        http = Net::HTTP.new(PLAN_ENDPOINT.host, PLAN_ENDPOINT.port)
+        http.open_timeout = 1
+        http.read_timeout = 60
+        response = http.request(request)
+        raise "generator returned HTTP #{response.code}: #{response.body.to_s[0, 300]}" unless response.is_a?(Net::HTTPSuccess)
         JSON.parse(response.body)
     end
 
