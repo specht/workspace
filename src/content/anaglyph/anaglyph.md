@@ -2,6 +2,7 @@
 image: title.webp
 kind: projekt
 template: https://github.com/specht/anaglyph.git
+template_name: der Anaglyph-Vorlage
 </div>
 
 <div

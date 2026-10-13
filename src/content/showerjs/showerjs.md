@@ -5,6 +5,7 @@ topic: writing
 duration: 2 bis 3 Doppelstunden
 reference: [workspace, html-folien]
 template: https://git.nhcham.org/specht/shower.js.git
+template_name: der shower.js-Vorlage
 </div>
 
 <div

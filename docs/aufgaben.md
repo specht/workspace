@@ -86,6 +86,7 @@ duration: 2 Doppelstunden
 requires: [working-with-files]
 reference: [netzwerk]
 template: https://git.nhcham.org/specht/shower.js.git
+template_name: der shower.js-Vorlage
 image: tcpip.webp
 </div>
 ```
@@ -97,7 +98,8 @@ image: tcpip.webp
 | `duration` | Freier Text, so wie er auf der Karte stehen soll |
 | `requires` | Aktivitäten, die vorher sinnvoll sind |
 | `reference` | Handbuch-Seiten, auf die `_uses()` verweist |
-| `template` | Adresse der Vorlage zum Klonen; andere Schulen können hier einen Spiegel eintragen |
+| `template` | Adresse der Vorlage zum Klonen (`https://…`); andere Schulen können hier einen Spiegel eintragen. Im Text `${template}`; der Workspace sagt Lernenden, wenn es eine neue Version gibt (siehe unten) |
+| `template_name` | Name der Vorlage im Genitiv, für »Es gibt eine neue Version der CPU Sandbox!«; ohne das Feld: »… von `cpu-sandbox`« |
 | `class_repo` | Adresse des Klassen-Repositorys, zum Beispiel für die Sandboxes; im Text `${class_repo}` |
 
 Über jeder Seite steht ein schmaler Streifen, der sagt, was sie ist:
@@ -610,6 +612,52 @@ Wer was sieht:
 - Steht eine Adresse in mehreren Gruppen (Klasse 10b und WP 10), erscheint sie
   in jeder davon. Für alles andere im Workspace zählt weiter die erste Gruppe.
 - Lehrkräfte mit `*` ohne eigene Gruppe sehen keine Klassenübersicht.
+
+## Neue Version einer Vorlage
+
+Sandboxes, der Anaglyph-Viewer, BIF und andere Vorlagen werden
+weiterentwickelt, während Lernende mit ihrem Klon arbeiten. Auf der Seite
+einer Aktivität mit `template` sieht der Workspace deshalb nach, ob der Klon
+in `/workspace/<Name des Repositorys>` die neueste Version enthält. Wenn
+nicht, steht unter der Einleitung:
+
+> **Es gibt eine neue Version der CPU Sandbox!** Du solltest `git pull`
+> ausführen:
+>
+>     cd /workspace/cpu-sandbox
+>     git pull
+
+Mit einem Knopf »Erledigt? Noch einmal nachsehen« und einem Link auf den
+Handbuch-Teil `workspace#neue-version`, der erklärt, was zu tun ist, wenn
+`git pull` abbricht.
+
+Der Workspace holt nie selbst etwas. So läuft die Prüfung:
+
+1. Der Server fragt die Adresse aus `template` nach dem aktuellen Commit, so
+   wie `git ls-remote` es tut (HTTPS, `<adresse>/info/refs`). Das ist immer
+   die öffentliche Adresse von der Seite, nie ein Repository von Lernenden.
+   Die Antwort merkt er sich 10 Minuten, einen Fehler 2 Minuten.
+2. Ein festes Skript (`TemplateFreshness::SCRIPT`) läuft im laufenden
+   Workspace der Person, als diese Person: Ist der Ordner ein eigenes
+   Repository, zeigt `origin` auf die Vorlage, und ist der Commit schon in
+   `HEAD` enthalten? Es benutzt nur lesende Befehle (`git rev-parse`,
+   `git config --get`, `git cat-file -e`, `git merge-base --is-ancestor`),
+   ohne Sperrdateien (`GIT_OPTIONAL_LOCKS=0`) und ohne nachzuladen
+   (`GIT_NO_LAZY_FETCH=1`).
+3. Einen Hinweis gibt es nur, wenn `origin` die Vorlage ist und ihr Commit
+   fehlt, auch wenn er schon geholt, aber noch nicht übernommen ist. Eigene
+   Commits obendrauf zählen als aktuell. Hat jemand den Ordner auf ein
+   eigenes Repository umgestellt, kein Klon, Workspace aus: kein Hinweis.
+
+Wie die Aufgaben erscheint der Hinweis nur, wenn `TASKS_ENABLED` an ist (für
+Lehrkräfte immer). In der Klassenübersicht prüft **Vorlage aktuell?** dasselbe
+für die ganze Gruppe und listet, wer eine alte Version hat, wer nicht geklont
+hat und wessen Workspace nicht läuft. Gespeichert wird nichts.
+
+| Aufruf | Daten | Antwort |
+| --- | --- | --- |
+| `POST /api/template/status` | `slug` der Seite | `status` (`outdated`, `current`, `absent`, `other`, `unavailable`), `notice` |
+| `POST /api/class/template_status` | `group`, `slug` | `results` je E-Mail-Adresse, `reachable`, `folder` |
 
 ## Was gespeichert wird
 

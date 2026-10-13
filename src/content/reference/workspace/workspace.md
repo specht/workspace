@@ -6,7 +6,7 @@ kind: reference
 # Workspace: Grundgriffe
 
 <p class='abstract'>
-Handgriffe, die viele Aktivitäten brauchen: eine Vorlage aus einem Git-Repository klonen und die Live-Vorschau starten. Aktivitäten binden diese Abschnitte ein, damit sie überall gleich aussehen.
+Handgriffe, die viele Aktivitäten brauchen: eine Vorlage aus einem Git-Repository klonen, eine neue Version davon holen und die Live-Vorschau starten. Aktivitäten binden diese Abschnitte ein, damit sie überall gleich aussehen.
 </p>
 
 <!-- part: repository-klonen -->
@@ -31,6 +31,27 @@ Bestätige mit <kbd>Enter</kbd>. Danach wählst du das Verzeichnis, in dem das R
 Das Repository wird jetzt in einen Unterordner von `/workspace` geklont, der so heißt wie das Repository. Beantworte die Frage, ob es jetzt geöffnet werden soll, mit »Open«:
 
 <img class='full' src='open-yes-or-no.webp' alt='Die Frage, ob das geklonte Repository geöffnet werden soll.'>
+<!-- /part -->
+
+<!-- part: neue-version -->
+## Eine neue Version der Vorlage holen
+
+Vorlagen wie die Sandboxes oder der Anaglyph-Viewer werden weiterentwickelt. Wenn du eine geklont hast, sieht der Workspace auf der Seite der Aktivität nach, ob es inzwischen eine neuere Version gibt, und sagt es dir. Er holt sie nie von selbst; das machst du im Ordner der Vorlage, zum Beispiel:
+
+```bash
+cd /workspace/cpu-sandbox
+git pull
+```
+
+Bricht `git pull` mit **Your local changes to the following files would be overwritten** ab, hast du eine Datei geändert, die auch in der neuen Version anders ist. Leg deine Änderungen kurz beiseite, hol die neue Version und nimm deine Änderungen danach zurück:
+
+```bash
+git stash
+git pull
+git stash pop
+```
+
+Meldet Git **divergent branches**, hast du selbst etwas committet. Dann hilft `git pull --no-rebase`; öffnet sich ein Editor für eine Commit-Nachricht, speichere sie unverändert und schließe ihn. Meldet Git einen **Konflikt**: nichts löschen, nichts überschreiben, nach Hilfe fragen. Deine Änderungen sind nicht weg, `git stash list` zeigt sie.
 <!-- /part -->
 
 <!-- part: live-server -->

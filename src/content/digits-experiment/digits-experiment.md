@@ -1,5 +1,7 @@
 <div class='meta'>
 image: interactive-3.webp:0:50
+template: https://github.com/specht/digits-experiment.git
+template_name: des Digits-Experiments
 </div>
 
 # Trainiere ein neuronales Netzwerk
@@ -19,7 +21,7 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du auf den blauen Button »Clone Repository« klickst. Gib die folgende URL ein und bestätige mit <kbd>Enter</kbd>:
 
 ```bash
-https://github.com/specht/digits-experiment.git
+${template}
 ```
 
 <img class='full' src='git-clone.webp' alt=''>

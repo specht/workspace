@@ -2121,3 +2121,78 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 .student-home-cards + .student-home-label {
     margin-top: 1.4em;
 }
+
+/* »Es gibt eine neue Version …« on an activity page (template_notice.js). */
+.template-notice {
+    display: flex;
+    gap: 0.75em;
+    margin: 0.5em 0 1.25em;
+    padding: 0.75em 1em;
+    border-left: 4px solid #0d6efd;
+    border-radius: 0.4em;
+    background-color: #eaf2ff;
+}
+
+.template-notice-icon .ti {
+    width: 1.4em;
+    height: 1.4em;
+    color: #0d6efd;
+    margin-top: 0.1em;
+}
+
+.template-notice-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.template-notice-body pre {
+    margin: 0.5em 0;
+    padding: 0.5em 0.8em;
+    border-radius: 0.4em;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.template-notice-body pre code {
+    padding: 0;
+    background: none;
+    color: inherit;
+}
+
+.template-notice-body p:last-of-type {
+    margin-bottom: 0.5em;
+}
+
+.template-notice-done {
+    border-left-color: #198754;
+    background-color: #e8f5ee;
+}
+
+.class-template {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em;
+    margin: 0.5em 0 1em;
+}
+
+.class-template .form-select {
+    width: auto;
+    max-width: 100%;
+}
+
+.class-template-results {
+    flex-basis: 100%;
+}
+
+.class-template-results:empty {
+    display: none;
+}
+
+.class-template-list {
+    padding-left: 1.2em;
+    margin-bottom: 0.5em;
+}
+
+.class-template-outdated strong {
+    color: #b35c00;
+}

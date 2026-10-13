@@ -1,5 +1,7 @@
 <div class='meta'>
 image: bif.webp
+template: https://github.com/specht/bif.git
+template_name: der BIF-Vorlage
 </div>
 
 <div
@@ -28,7 +30,7 @@ show-left-sidebar
 Für diese Anleitung brauchst du das BIF-Repository. Klicke auf den blauen Button »Clone Repository« und gib die folgende URL ein:
 
 ```text
-https://github.com/specht/bif.git
+${template}
 ```
 
 Bestätige anschließend mit <kbd>Enter</kbd>.

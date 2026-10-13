@@ -317,4 +317,21 @@ html[data-bs-theme="dark"] {
     .teacher-note > summary {
         color: #cdb0f2;
     }
+    .template-notice {
+        background-color: #172a45;
+        border-left-color: #4d8ff0;
+    }
+    .template-notice-icon .ti { color: #8db8f5; }
+    .template-notice-body pre {
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+    .template-notice-body pre code {
+        color: #e7e6e1;
+        background: none;
+    }
+    .template-notice-done {
+        background-color: #15301f;
+        border-left-color: #2fb36d;
+    }
+    .class-template-outdated strong { color: #f0a54a; }
 }

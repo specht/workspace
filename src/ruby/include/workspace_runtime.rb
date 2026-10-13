@@ -141,10 +141,18 @@ module WorkspaceRuntime
         # student (GitCheck::STATUS_SCRIPT) and returns its output, or nil if
         # the container is not running. repo is a checked relative path.
         def git_status(fs_tag, repo:, uid:, script:, timeout: nil)
+            run_script(fs_tag, :script => script, :args => ["/workspace/#{repo}"], :uid => uid, :timeout => timeout)
+        end
+
+        # Runs a fixed script from the server's code (never text from a
+        # student) in the student's container as the student, with checked
+        # arguments ($1, $2, …). Returns its output, or nil if the container is
+        # not running.
+        def run_script(fs_tag, script:, args:, uid:, timeout: nil)
             return nil unless workspace_state(fs_tag, :timeout => timeout)[:running]
 
             command = Shellwords.join(['docker', 'exec', '-u', uid, "hs_code_#{fs_tag}",
-                'sh', '-c', script, 'sh', "/workspace/#{repo}"])
+                'sh', '-c', script, 'sh', *args])
             @capture.call(command, :timeout => timeout, :allow_failure => true, :log_command => false)
         end
 

@@ -8,6 +8,7 @@ require './include/task_card.rb'
 require './include/task_store.rb'
 require './include/class_board.rb'
 require './include/student_home.rb'
+require './include/template_freshness.rb'
 require './include/atomic_file.rb'
 require './include/authentication.rb'
 require './include/database_provisioning.rb'
@@ -1741,6 +1742,9 @@ class Main < Sinatra::Base
                 :kind => page_meta['kind'],
                 :duration => page_meta['duration'],
                 :references => page_references,
+                # Template to clone (template:, template_name:), for the
+                # »new version« hint; nil if the page has none.
+                :template => TemplateFreshness.from_meta(page_meta),
             }
             if page_tasks
                 parsed_content[slug][:tasks] = page_tasks.merge(:on_page => task_slots & page_tasks[:by_id].keys)
@@ -2040,6 +2044,8 @@ class Main < Sinatra::Base
         self.refresh_nginx_config()
 
         @@content = {}
+        # Current commit of each template (docs/aufgaben.md, »Neue Version einer Vorlage«).
+        @@template_latest = TemplateFreshness::LatestCache.new
         self.parse_content()
         self.load_invitations()
         self.prepare_downloads()
@@ -3759,6 +3765,35 @@ class Main < Sinatra::Base
             "<script src='/include/tasks.js?#{CACHE_BUSTER}'></script>"
     end
 
+    # On a page with a template: loads template_notice.js, which asks
+    # /api/template/status in the background. Same switch as the tasks.
+    def template_notice_setup(slug)
+        template = (@@content[slug] || {})[:template]
+        return '' if template.nil? || !user_logged_in? || !tasks_visible?
+
+        "<script>window.TEMPLATE_PAGE = #{{ :slug => slug }.to_json};</script>" \
+            "<script src='/include/template_notice.js?#{CACHE_BUSTER}'></script>"
+    end
+
+    # :outdated, :current, :absent, :other or :unavailable for one person's
+    # clone of a template (TemplateFreshness). Reads only.
+    def template_status_for(email, template)
+        latest = @@template_latest.get(template[:url])
+        return :unavailable if latest.nil?
+
+        output = workspace_runtime.run_script(fs_tag_for_email(email), :script => TemplateFreshness::SCRIPT,
+            :args => ["/workspace/#{template[:folder]}", latest],
+            :uid => "#{WORKSPACE_UID}:#{WORKSPACE_GID}", :timeout => 10)
+        TemplateFreshness.status(template, latest, TemplateFreshness.parse(output))
+    end
+
+    # Pages that name a template: [[slug, title, template]], by title.
+    def template_pages
+        @@content.select { |_, c| c[:template] && !c[:dev_only] }
+            .map { |slug, c| [slug, c[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', ''), c[:template]] }
+            .sort_by { |_, title, _| title.downcase }
+    end
+
     # The task for 'activity/id', with its check version, or nil.
     def find_task(key)
         activity, id = key.to_s.split('/', 2)
@@ -4094,6 +4129,26 @@ class Main < Sinatra::Base
         io
     end
 
+    # »Haben alle die neueste Version?« for the pages with a template; the
+    # current activity's template is preselected.
+    def class_template_html(group, activity_key)
+        pages = template_pages
+        return '' if pages.empty?
+
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        current = @@content.find { |_, c| (c[:tasks] || {})[:activity] == activity_key && c[:template] }&.first
+        io = +"<div class='class-template' data-group='#{h.(group)}'>"
+        io << "<label for='class-template-select'>Vorlage aktuell?</label>"
+        io << "<select class='form-select form-select-sm class-template-select' id='class-template-select'>"
+        pages.each do |slug, title, t|
+            io << "<option value='#{h.(slug)}' data-folder='#{h.(t[:folder])}'#{slug == current ? ' selected' : ''}>#{h.(title)} (#{h.(t[:folder])})</option>"
+        end
+        io << "</select><button type='button' class='btn btn-sm btn-outline-primary class-template-check'>In den Workspaces nachsehen</button>"
+        io << "<div class='class-live-note'>Sieht nach, ob <code>/workspace/…</code> die neueste Version der Vorlage enthält. Holt nichts und ändert nichts; <code>git pull</code> machen die Lernenden selbst.</div>"
+        io << "<div class='class-template-results' aria-live='polite'></div></div>"
+        io
+    end
+
     def class_board_page
         groups = class_groups
         activities = class_activities
@@ -4124,6 +4179,7 @@ class Main < Sinatra::Base
             end
             io << "<div class='class-live-note'>Liest die Dateien der Gruppe so, wie die Karte sie liest, und ändert nichts. Der Stand der Lernenden bleibt, wie er ist.</div></div>"
         end
+        io << class_template_html(group, activity_key)
         io << "<p class='class-board-link'><a href='/#{h.(@@content.find { |_, c| (c[:tasks] || {})[:activity] == activity_key }&.first)}'>#{h.(title)}</a> · #{members.size} Personen in #{h.(group)}</p>"
         io << ClassBoard.html(board, :activity => activity_key,
             :submission_url => lambda { |email, id| "/api/task/submission/#{activity_key}/#{id}?email=#{CGI.escape(email)}" })
@@ -5025,6 +5081,61 @@ class Main < Sinatra::Base
         # Markdown is rendered here, not in the threads: one renderer is shared.
         results.each_value { |r| r[:message] = render_task_markdown(r[:message]) }
         respond(:results => results, :checked_at => Time.now.to_i)
+    end
+
+    # Is the logged-in person's clone of the page's template out of date?
+    # Looks only; the notice tells them to run git pull themselves.
+    post '/api/template/status' do
+        assert(user_logged_in?)
+        assert(tasks_visible?)
+        data = parse_request_data(:required_keys => [:slug], :max_value_lengths => {:slug => 120})
+        template = (@@content[data[:slug]] || {})[:template]
+        halt 404 if template.nil?
+
+        status = template_status_for(@session_user[:email], template)
+        respond(:status => status.to_s,
+            :notice => status == :outdated ? render_task_markdown(TemplateFreshness.notice(template)) : nil)
+    end
+
+    # Teachers: the same look for every student of a group. Stores nothing,
+    # tells no one; the teacher decides whether to say »git pull«.
+    post '/api/class/template_status' do
+        assert(user_logged_in?)
+        Main.load_invitations()
+        data = parse_request_data(:required_keys => [:group, :slug], :max_value_lengths => {:group => 200, :slug => 120})
+        halt 403 unless class_groups.include?(data[:group])
+        template = (@@content[data[:slug]] || {})[:template]
+        halt 404 if template.nil?
+
+        latest = @@template_latest.get(template[:url])
+        members = class_members(data[:group])
+        results = {}
+        if latest
+            lock = Mutex.new
+            queue = Queue.new
+            members.each { |m| queue << m }
+            workers = Array.new([4, members.size].min) do
+                Thread.new do
+                    loop do
+                        m = begin
+                            queue.pop(true)
+                        rescue ThreadError
+                            break
+                        end
+                        status = begin
+                            template_status_for(m[:email], template)
+                        rescue StandardError => e
+                            STDERR.puts "template_status #{data[:slug]} #{m[:email]}: #{e.class}: #{e.message}"
+                            :unavailable
+                        end
+                        lock.synchronize { results[m[:email]] = status.to_s }
+                    end
+                end
+            end
+            workers.each(&:join)
+        end
+        respond(:results => results, :reachable => !latest.nil?, :folder => template[:folder],
+            :students_see_notice => tasks_enabled_for_everyone? ? true : false, :checked_at => Time.now.to_i)
     end
 
     # The logged-in person's stored answers for the tasks of one activity.

@@ -2,6 +2,8 @@
 
 <div class='meta'>
 image: patches.webp
+template: https://github.com/specht/pixelram-starter.git
+template_name: des PixelRAM-Starters
 </div>
 
 <div
@@ -29,7 +31,7 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 Klicke auf den blauen Button »Clone Repository« und gib folgende Adresse ein:
 
 ```text
-https://github.com/specht/pixelram-starter.git
+${template}
 ```
 
 <img class='full' src='git-clone.webp' alt=''>

@@ -157,6 +157,15 @@ class WorkspaceRuntimeTest < Minitest::Test
         assert_equal true, options[:allow_failure]
     end
 
+    def test_run_script_passes_arguments
+        @capture_outputs << JSON.generate([{ 'NetworkSettings' => { 'Networks' => { 'workspace_user' => { 'IPAddress' => '172.20.0.9' } } } }])
+        @capture_outputs << "STATE current\n"
+        output = @runtime.run_script('abc', :script => 'echo "$1 $2"', :args => ['/workspace/anaglyph', 'a' * 40], :uid => '1000:1000', :timeout => 10)
+        assert_equal "STATE current\n", output
+        command, = @captures.last
+        assert_equal "docker exec -u 1000:1000 hs_code_abc sh -c echo\\ \\\"\\$1\\ \\$2\\\" sh /workspace/anaglyph #{'a' * 40}", command
+    end
+
     def test_run_command
         @capture_outputs << JSON.generate([{ 'NetworkSettings' => { 'Networks' => { 'workspace_user' => { 'IPAddress' => '172.20.0.9' } } } }])
         @capture_outputs << "Cats sleep.\n__EXIT 0\n"

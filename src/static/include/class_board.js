@@ -89,6 +89,65 @@
         });
     }
 
+    // »Vorlage aktuell?«: who lacks the template's newest commit. Nothing is
+    // pulled; the list says who should run git pull.
+    const LABELS = {
+        outdated: 'Alte Version, sollte git pull ausführen',
+        current: 'Neueste Version',
+        absent: 'Nicht geklont',
+        other: 'Ordner ist kein Klon dieser Vorlage',
+        unavailable: 'Workspace läuft nicht',
+    };
+    const ORDER = ['outdated', 'absent', 'other', 'unavailable', 'current'];
+    const template = document.querySelector('.class-template');
+    if (template) {
+        const button = template.querySelector('.class-template-check');
+        const select = template.querySelector('.class-template-select');
+        const box = template.querySelector('.class-template-results');
+        button.addEventListener('click', function () {
+            const old = button.textContent;
+            button.disabled = true;
+            button.textContent = old + ' …';
+            api_call('/api/class/template_status', { group: template.dataset.group, slug: select.value }, function (data) {
+                button.disabled = false;
+                button.textContent = old;
+                if (!data.success) return;
+                box.innerHTML = '';
+                const folder = '/workspace/' + data.folder;
+                const p = document.createElement('p');
+                if (!data.reachable) {
+                    p.textContent = 'Die Adresse der Vorlage hat gerade nicht geantwortet. Versuch es gleich noch einmal.';
+                    box.appendChild(p);
+                    return;
+                }
+                const emails = Object.keys(data.results).sort((a, b) => nameFor(a).localeCompare(nameFor(b)));
+                const count = (status) => emails.filter((e) => data.results[e] === status).length;
+                const time = new Date((data.checked_at || 0) * 1000).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+                p.textContent = 'Stand ' + time + ': ' + count('current') + ' von ' + emails.length +
+                    ' haben die neueste Version in ' + folder + ', ' + count('outdated') + ' eine alte.';
+                box.appendChild(p);
+                const ul = document.createElement('ul');
+                ul.className = 'class-template-list';
+                ORDER.filter((s) => s !== 'current' && count(s) > 0).forEach((status) => {
+                    const li = document.createElement('li');
+                    li.className = 'class-template-' + status;
+                    const label = document.createElement('strong');
+                    label.textContent = LABELS[status] + ': ';
+                    li.appendChild(label);
+                    li.appendChild(document.createTextNode(emails.filter((e) => data.results[e] === status).map(nameFor).join(', ')));
+                    ul.appendChild(li);
+                });
+                box.appendChild(ul);
+                if (count('outdated') > 0 && data.students_see_notice) {
+                    const hint = document.createElement('p');
+                    hint.className = 'class-live-note';
+                    hint.innerHTML = 'Die Betroffenen sehen auf der Seite der Aktivität selbst den Hinweis, <code>git pull</code> auszuführen.';
+                    box.appendChild(hint);
+                }
+            });
+        });
+    }
+
     document.querySelectorAll('.class-live-check').forEach((button) => {
         button.addEventListener('click', function () {
             const live = button.closest('.class-live');

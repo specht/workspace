@@ -102,6 +102,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Reihen, Gitter und Umlaufbahnen; Fehler des Viewers erscheinen wörtlich.
   Alle zwölf Anaglyph-Aufgaben stehen jetzt auf der Seite; eine abgegebene
   Szene muss sich laden lassen.
+- Neue Version einer Vorlage: Auf der Seite einer Aktivität mit `template`
+  sieht der Workspace nach, ob der Klon in `/workspace` die neueste Version
+  enthält, und sagt sonst »Es gibt eine neue Version der CPU Sandbox! Du
+  solltest `git pull` ausführen«. Er holt nie selbst etwas. In der
+  Klassenübersicht prüft »Vorlage aktuell?« die ganze Gruppe. Neues Feld
+  `template_name`; `template` steht jetzt auch bei BIF, LaTeX, PixelRAM,
+  Videothek und dem Digits-Experiment. Neuer Handbuch-Teil
+  `workspace#neue-version`.
 - Neue Neo4j-Knoten `TaskState` und `TaskAttempt` (Constraint
   `TaskState/key`, Index `TaskAttempt/task`); sie werden beim Start von selbst
   angelegt.
@@ -120,3 +128,6 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 - Keine Änderung nötig. Die Prüfart `scene` braucht `node` im Workspace-Image
   (ist dort schon vorhanden).
+- Für den Hinweis auf neue Versionen braucht der Server ausgehende
+  HTTPS-Verbindungen zu den Adressen aus `template` (GitHub, GitLab).
+  Kommt keine Antwort, erscheint einfach kein Hinweis.

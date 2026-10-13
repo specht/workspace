@@ -55,7 +55,8 @@ dem passenden Abschnitt:
 | `kind` | `projekt`, `labor`, `grundlagen`, `uebung` oder `galerie`; steht auf der Karte |
 | `duration` | Freier Text, zum Beispiel »2 Doppelstunden« |
 | `reference` | Handbuch-Seiten, die die Aktivität braucht; erscheinen oben auf der Seite |
-| `template` | Adresse einer Vorlage zum Klonen; im Text `${template}` |
+| `template` | Adresse einer Vorlage zum Klonen (`https://…`); im Text `${template}`. Der Workspace sagt Lernenden, wenn ihr Klon veraltet ist |
+| `template_name` | Name der Vorlage im Genitiv, z. B. `der CPU Sandbox` |
 | `class_repo` | Adresse eines Klassen-Repositorys; im Text `${class_repo}` |
 
 Danach: ein Titel (`# …`), ein kurzer Absatz `<p class='abstract'>` für die

@@ -1,5 +1,7 @@
 <div class='meta'>
 image: latex-logo.png
+template: https://github.com/specht/latex-tutorial.git
+template_name: der LaTeX-Vorlage
 </div>
 
 <div
@@ -29,7 +31,7 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du auf den blauen Button »Clone Repository« klickst. Gib die folgende URL ein und bestätige mit <kbd>Enter</kbd>:
 
 ```bash
-https://github.com/specht/latex-tutorial.git
+${template}
 ```
 
 <img class='full' src='git-clone.webp' alt=''>
