@@ -35,44 +35,21 @@ class StudentHomeTest < Minitest::Test
         assert_nil p[2][:next]
     end
 
-    def test_html
-        html = StudentHome.html(:progress => progress)
-        assert_includes html, "<h2 id='student-home-title'>Deine Aktivitäten</h2>"
-        refute_includes html, 'Hallo'
+    def test_html_shows_only_pinned_activities
+        assert_equal '', StudentHome.html(:progress => progress)
+        pinned = [{ :slug => 'tcpip', :title => 'TCP/IP', :group => '10b' },
+                  { :slug => 'latex', :title => 'LaTeX', :abstract => 'Setze <b>Formeln</b>.', :group => 'WP 10' }]
+        html = StudentHome.html(:progress => progress, :pinned => pinned)
+        assert_includes html, 'Von deiner Lehrkraft'
         assert_includes html, "href='/tcpip#aufgabe-loopback'"
-        assert_includes html, 'Weiter mit: Loopback'
         assert_includes html, '1 von 3 erledigt'
-        assert_includes html, "Fertig: <a href='/uebung-strings'>Übung: Strings</a>"
-        assert_includes StudentHome.html(:progress => []), 'Du hast noch keine Aufgabe geprüft'
+        assert_includes html, 'Angeheftet für 10b'
+        assert_includes html, 'Setze Formeln.'
+        refute_includes html, 'uebung-strings'
     end
 
     def test_card_badges
-        assert_equal '', StudentHome.card_badges(nil, nil)
-        assert_includes StudentHome.card_badges('uebung', nil), 'Übung'
-        assert_includes StudentHome.card_badges('projekt', { :done => 2, :total => 2 }), 'card-progress-done'
-    end
-
-    def test_hidden_activities_come_back_when_worked_on
-        p = progress
-        html = StudentHome.html(:progress => p, :hidden => { 'tcpip' => 30 })
-        refute_includes html, "data-slug='tcpip'"
-        assert_includes html, '1 angefangene Aktivität ist ausgeblendet'
-        assert_includes html, 'student-home-unhide'
-        html = StudentHome.html(:progress => p, :hidden => { 'tcpip' => 29 })
-        assert_includes html, "data-slug='tcpip'"
-        assert_includes html, "class='shc-hide'"
-    end
-
-    def test_pinned_activities_come_first_and_cannot_be_hidden
-        pinned = [{ :slug => 'tcpip', :title => 'TCP/IP', :group => '10b' },
-                  { :slug => 'latex', :title => 'LaTeX', :abstract => 'Setze <b>Formeln</b>.', :group => 'WP 10' }]
-        html = StudentHome.html(:progress => progress, :pinned => pinned, :hidden => { 'tcpip' => 99 })
-        assert html.index('Von deiner Lehrkraft') < html.index('Weitermachen')
-        pinned_part = html[html.index('Von deiner Lehrkraft')...html.index('Weitermachen')]
-        assert_includes pinned_part, "data-slug='tcpip'"
-        assert_includes pinned_part, 'Angeheftet für 10b'
-        assert_includes pinned_part, 'Setze Formeln.'
-        refute_includes pinned_part, 'shc-hide'
-        assert_equal 1, html.scan("data-slug='tcpip'").size
+        assert_equal '', StudentHome.card_badges(nil)
+        assert_includes StudentHome.card_badges('uebung'), 'Übung'
     end
 end

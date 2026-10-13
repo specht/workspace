@@ -299,13 +299,9 @@ html[data-bs-theme="dark"] {
     .student-home-finished {
         color: #adb5bd;
     }
-    .card-kind,
-    .card-progress {
+    .card-kind {
         background-color: rgba(21, 21, 20, 0.88);
         color: #e7e6e1;
-    }
-    .card-progress-done {
-        background-color: #146c43;
     }
     .task-feedback pre,
     .template-notice-body pre {

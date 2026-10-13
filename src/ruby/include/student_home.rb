@@ -1,11 +1,11 @@
 require 'cgi'
 require_relative 'icons'
 
-# The student's part of the start page (M5): where to continue, built from
-# the stored TaskStates. Plain Ruby, tested on its own.
+# The student's part of the start page (M5): activities a teacher pinned,
+# with progress built from the stored TaskStates. The catalog cards show no
+# progress; an activity shows it on its own page. Plain Ruby, tested on its own.
 module StudentHome
     DONE = %w[correct sent].freeze
-    MAX_SHOWN = 4
 
     # activities: [{ slug:, activity:, title:, tasks: [{ id:, title:, version: }] }]
     #             tasks in page order
@@ -39,58 +39,21 @@ module StudentHome
         CGI.escapeHTML(text.to_s)
     end
 
-    # Is an activity hidden from »Weitermachen«? hidden: { slug => time hidden }.
-    # It comes back as soon as the person works on it again.
-    def self.hidden?(entry, hidden)
-        ts = hidden[entry[:slug]]
-        !ts.nil? && ts.to_i >= entry[:updated].to_i
-    end
-
-    # pinned: activities a teacher pinned for one of the person's groups,
-    #         [{ slug:, title:, abstract:, group: }], shown first, cannot be hidden
-    # hidden: { slug => time } the person has hidden from »Weitermachen«
-    def self.html(progress:, pinned: [], hidden: {})
-        io = +"<section class='student-home' aria-labelledby='student-home-title'>"
-        io << "<h2 id='student-home-title'>Deine Aktivitäten</h2>"
+    # Activities a teacher pinned for one of the person's groups, at the top
+    # of the start page. Nothing else: progress shows on the catalog cards.
+    # pinned: [{ slug:, title:, abstract:, group: }]
+    # progress: as from progress(), to show how far the person got
+    def self.html(progress:, pinned: [])
+        return '' if pinned.empty?
         by_slug = progress.to_h { |p| [p[:slug], p] }
-        pinned_slugs = pinned.map { |p| p[:slug] }
-
-        unless pinned.empty?
-            io << "<h3 class='student-home-label'>#{Icons.tabler('pin')} Von deiner Lehrkraft</h3><div class='student-home-cards'>"
-            pinned.each { |p| io << card(p[:slug], p[:title], by_slug[p[:slug]], :abstract => p[:abstract], :pinned => p[:group]) }
-            io << '</div>'
-        end
-
-        rest = progress.reject { |p| pinned_slugs.include?(p[:slug]) }
-        open = rest.reject { |p| p[:done] == p[:total] }
-        visible = open.reject { |p| hidden?(p, hidden) }
-        hidden_count = open.size - visible.size
-        if !visible.empty?
-            io << "<h3 class='student-home-label'>Weitermachen</h3><div class='student-home-cards'>"
-            visible.first(MAX_SHOWN).each { |p| io << card(p[:slug], p[:title], p, :hideable => true) }
-            io << '</div>'
-        elsif pinned.empty?
-            finished = rest.any? { |p| p[:done] == p[:total] }
-            text = if hidden_count > 0 then 'Alles, was du angefangen hast, ist ausgeblendet oder fertig. Such dir unten etwas Neues aus.'
-                elsif finished then 'Alles, was du angefangen hast, ist fertig. Such dir unten etwas Neues aus.'
-                else 'Du hast noch keine Aufgabe geprüft. Such dir unten eine Aktivität aus, zum Beispiel eine Übung unter »Programmieren üben«.'
-            end
-            io << "<p class='student-home-empty'>#{text}</p>"
-        end
-        if hidden_count > 0
-            io << "<p class='student-home-hidden'>#{hidden_count == 1 ? '1 angefangene Aktivität ist' : "#{hidden_count} angefangene Aktivitäten sind"} ausgeblendet. " \
-                  "<button type='button' class='btn btn-link btn-sm student-home-unhide'>#{Icons.tabler('eye')}Wieder zeigen</button></p>"
-        end
-        finished = rest.select { |p| p[:done] == p[:total] }
-        unless finished.empty?
-            links = finished.first(8).map { |p| "<a href='/#{h(p[:slug])}'>#{h(p[:title])}</a>" }
-            io << "<p class='student-home-finished'>Fertig: #{links.join(' · ')}</p>"
-        end
-        io << '</section>'
+        io = +"<section class='student-home' aria-labelledby='student-home-title'>"
+        io << "<h2 id='student-home-title' class='student-home-label'>#{Icons.tabler('pin')} Von deiner Lehrkraft</h2><div class='student-home-cards'>"
+        pinned.each { |p| io << card(p[:slug], p[:title], by_slug[p[:slug]], :abstract => p[:abstract], :pinned => p[:group]) }
+        io << '</div></section>'
         io
     end
 
-    def self.card(slug, title, entry, abstract: nil, pinned: nil, hideable: false)
+    def self.card(slug, title, entry, abstract: nil, pinned: nil)
         link = entry && entry[:next] ? "/#{h(slug)}#aufgabe-#{h(entry[:next][:id])}" : "/#{h(slug)}"
         io = +"<div class='student-home-card#{pinned ? ' student-home-pinned' : ''}' data-slug='#{h(slug)}'>"
         io << "<a class='shc-link' href='#{link}'>"
@@ -106,26 +69,18 @@ module StudentHome
         end
         io << "<span class='shc-pinned-by'>Angeheftet für #{h(pinned)}</span>" if pinned
         io << '</a>'
-        if hideable
-            io << "<button type='button' class='shc-hide' title='Ausblenden, bis du hier weiterarbeitest' aria-label='#{h(title)} ausblenden'>#{Icons.tabler('eye-off')}</button>"
-        end
         io << '</div>'
         io
     end
 
-    # Small label for a catalog card: kind and, if started, progress.
+    # Small label for a catalog card: its kind.
     KIND_LABELS = {
         'projekt' => 'Projekt', 'labor' => 'Labor', 'grundlagen' => 'Grundlagen',
         'galerie' => 'Galerie', 'uebung' => 'Übung',
     }.freeze
 
-    def self.card_badges(kind, progress_entry)
-        parts = []
-        parts << "<span class='card-kind'>#{h(KIND_LABELS[kind.to_s])}</span>" if KIND_LABELS[kind.to_s]
-        if progress_entry
-            klass = progress_entry[:done] == progress_entry[:total] ? 'card-progress card-progress-done' : 'card-progress'
-            parts << "<span class='#{klass}'>#{progress_entry[:done]}/#{progress_entry[:total]}</span>"
-        end
-        parts.empty? ? '' : "<div class='card-badges'>#{parts.join}</div>"
+    def self.card_badges(kind)
+        label = KIND_LABELS[kind.to_s]
+        label ? "<div class='card-badges'><span class='card-kind'>#{h(label)}</span></div>" : ''
     end
 end

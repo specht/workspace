@@ -4020,18 +4020,7 @@ class Main < Sinatra::Base
         (@@content[slug] || {})[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '').strip
     end
 
-    # { slug => time } the person has hidden from »Weitermachen«.
-    def my_hidden_activities
-        row = neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email]).first
-            MATCH (u:User {email: $email}) RETURN u.home_hidden AS hidden;
-        END_OF_QUERY
-        Array(row && row['hidden']).to_h do |entry|
-            slug, ts = entry.to_s.split(':', 2)
-            [slug, ts.to_i]
-        end
-    end
-
-    # Start page for logged-in students: pinned activities, where to continue (M5).
+    # Start page for logged-in students: activities a teacher pinned (M5).
     def student_home
         return '' unless user_logged_in? && tasks_visible?
         return '' unless my_running_tests.empty?
@@ -4040,29 +4029,7 @@ class Main < Sinatra::Base
         pinned = pins_for_groups(my_groups).select { |p| allowed.include?(p[:slug]) }.uniq { |p| p[:slug] }.map do |p|
             { :slug => p[:slug], :title => plain_title(p[:slug]), :abstract => @@content[p[:slug]][:abstract], :group => p[:group] }
         end
-        StudentHome.html(:progress => my_progress, :pinned => pinned, :hidden => my_hidden_activities) +
-            "<script src='/include/home.js?#{CACHE_BUSTER}'></script>"
-    end
-
-    # Hide an activity from »Weitermachen« until the person works on it again.
-    post '/api/home/hide' do
-        assert(user_logged_in?)
-        data = parse_request_data(:required_keys => [:slug], :max_value_lengths => {:slug => 100})
-        slug = data[:slug]
-        assert(slug =~ /\A[a-z0-9_-]+\z/)
-        neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email], :prefix => "#{slug}:", :entry => "#{slug}:#{Time.now.to_i}")
-            MATCH (u:User {email: $email})
-            SET u.home_hidden = [x IN coalesce(u.home_hidden, []) WHERE NOT x STARTS WITH $prefix] + [$entry];
-        END_OF_QUERY
-        respond(:hidden => slug)
-    end
-
-    post '/api/home/unhide_all' do
-        assert(user_logged_in?)
-        neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email])
-            MATCH (u:User {email: $email}) SET u.home_hidden = [];
-        END_OF_QUERY
-        respond(:yay => 'sure')
+        StudentHome.html(:progress => my_progress, :pinned => pinned)
     end
 
     # Teachers pin an activity for a group; it shows first on the students' start page.
@@ -4250,10 +4217,7 @@ class Main < Sinatra::Base
                         end
                         io.puts "<div class='shade'></div>"
                         io.puts "<div class='card-content'>"
-                        if catalog == :student
-                            entry = user_logged_in? && tasks_visible? ? my_progress.find { |p| p[:slug] == slug } : nil
-                            io.puts StudentHome.card_badges(content[:kind], entry)
-                        end
+                        io.puts StudentHome.card_badges(content[:kind]) if catalog == :student
                         io.puts "#{content[:dev_only] ? '<span class="badge badge-sm bg-danger">dev</span> ' : ''}<h4>#{content[:title]}</h4>"
                         io.puts "<div class='abstract'>#{content[:abstract]}</div>"
                         io.puts "</div>"

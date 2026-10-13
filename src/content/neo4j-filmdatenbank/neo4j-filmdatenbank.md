@@ -1,4 +1,5 @@
 <div class='meta'>
+image: neo4j-browser-path.webp:0:100
 kind: projekt
 topic: databases
 duration: 2 Doppelstunden

@@ -1,5 +1,5 @@
 <div class='meta'>
-image: filmdatenbank.webp:50:20
+image: er-preview.webp:50:50
 kind: projekt
 topic: databases
 duration: 3 Doppelstunden

@@ -2191,8 +2191,7 @@ h3[id] {
     gap: 0.35em;
 }
 
-.card-kind,
-.card-progress {
+.card-kind {
     padding: 0.1em 0.6em;
     border-radius: 1em;
     font-size: 80%;
@@ -2200,11 +2199,6 @@ h3[id] {
     background-color: rgba(255, 255, 255, 0.92);
     color: #333;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.card-progress-done {
-    background-color: #198754;
-    color: #fff;
 }
 
 /* measure and command cards */
