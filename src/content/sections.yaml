@@ -96,7 +96,7 @@
     typische Sicherheitsprobleme wie SQL-Injection.
   entries:
     - mysql
-    - videothek
+    - filmdatenbank
     - bobby_tables
 
 - key: advanced

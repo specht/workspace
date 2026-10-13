@@ -7,6 +7,8 @@ require_relative 'submission_store'
 require_relative 'measure_check'
 require_relative 'scene_check'
 require_relative 'sql_check'
+require_relative 'er_check'
+require_relative 'schema_check'
 
 # Checks a student's answer to a task (docs/aufgaben.md, »Prüfen«).
 #
@@ -19,7 +21,7 @@ module TaskCheck
     ANSWER_TYPES = %w[answer choice number reflection].freeze
     FILE_TYPES = %w[files html css references].freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit code measure command scene sql]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit code measure command scene sql er schema]).freeze
     LANGUAGE_NAMES = { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript' }.freeze
 
     # status:
@@ -78,6 +80,8 @@ module TaskCheck
         return check_run(task, check, answer, runner) if %w[measure command].include?(type)
         return check_scene(task, check, workspace, runner) if type == 'scene'
         return check_sql(task, check, answer, sql, sql_env) if type == 'sql'
+        return check_er(task, check, workspace, runner) if type == 'er'
+        return check_schema(task, check, sql, sql_env) if type == 'schema'
         return check_workspace(task, check, answer, workspace, git, runner) unless ANSWER_TYPES.include?(type)
 
         missing = variables_used(check).reject { |name| variables[name].is_a?(String) && !variables[name].empty? }
@@ -121,6 +125,35 @@ module TaskCheck
         status, message, read, note, problem = SqlCheck.check(task, check, answer, sql, env || {})
         Result.new(:status => status, :message => message, :read => read, :problem => problem,
             :warnings => note ? [note] : nil, :solution => status == :correct ? task['solution'] : nil)
+    end
+
+    # schema: the tables in the person's own database (SchemaCheck).
+    def self.check_schema(task, check, sql, env = {})
+        status, message, read, note, problem = SchemaCheck.check(task, check, sql, env || {})
+        Result.new(:status => status, :message => message, :read => read, :problem => problem,
+            :warnings => note ? [note] : nil, :solution => status == :correct ? task['solution'] : nil)
+    end
+
+    NOT_RUNNING_ER = 'Starte zuerst deinen Workspace. Dein Modell liest die ER-Werkstatt in deinem Workspace.'
+
+    # er: an ER model in a .er file, read by the ER-Werkstatt core (ErCheck).
+    def self.check_er(task, check, workspace, runner)
+        return Result.new(:status => :unavailable, :message => NO_WORKSPACE) if workspace.nil?
+        return Result.new(:status => :unavailable, :message => 'Die ER-Werkstatt fehlt auf dem Server. Sag deiner Lehrkraft Bescheid.') unless ErCheck.available?
+
+        file = check['file']
+        if workspace.entry(file)[:type] != :file
+            other = workspace.other_case(file)
+            hint = other ? " Es gibt aber `#{other}`; Groß- und Kleinschreibung zählen." : " Lege sie im Ordner `#{File.dirname(file)}` an."
+            return Result.new(:status => :wrong, :problem => :missing, :message => "`#{file}` gibt es nicht.#{hint}")
+        end
+        result = runner&.call(ErCheck.command(file), 15)
+        return Result.new(:status => :unavailable, :message => NOT_RUNNING_ER) if result.nil?
+        return Result.new(:status => :unavailable, :message => 'Das Lesen des Modells hat zu lange gedauert. Versuch es gleich noch einmal.') if result[:timed_out]
+
+        status, problem, message, read = ErCheck.evaluate(task, check, ErCheck.parse(result[:output]))
+        Result.new(:status => status, :problem => problem, :message => message, :read => read,
+            :solution => status == :correct ? task['solution'] : nil)
     end
 
     # code: solved in the Code Bites editor, in one of the allowed languages.

@@ -3,6 +3,8 @@ require 'json'
 require 'set'
 require 'yaml'
 require_relative 'sql_check'
+require_relative 'er_check'
+require_relative 'schema_check'
 
 # Format and validation of an activity's tasks.yaml (see docs/aufgaben.md).
 #
@@ -34,6 +36,8 @@ module TaskSpec
         'scene' => 'M6',
         'code' => 'M5',
         'sql' => 'M6',
+        'er' => 'M7',
+        'schema' => 'M7',
     }.freeze
 
     # Check types that need the network; they are never used in exams.
@@ -70,6 +74,8 @@ module TaskSpec
         'submit' => [],
         'code' => [],
         'sql' => %w[same_result_as query_matches],
+        'er' => %w[problem],
+        'schema' => %w[problem],
     }.freeze
 
     class Error < StandardError
@@ -382,6 +388,16 @@ module TaskSpec
                 end
             end
             errors << 'setup must be text' if check.key?('setup') && !nonempty_string?(check['setup'])
+        when 'er'
+            # Runs the ER-Werkstatt core on a .er file in the Workspace.
+            allowed += %w[file entities relationships tables]
+            errors.concat(path_errors(check['file'], 'file'))
+            errors << 'file must end in .er' if nonempty_string?(check['file']) && !check['file'].end_with?('.er')
+            errors.concat(ErCheck.spec_errors(check))
+        when 'schema'
+            # Reads information_schema of the person's database, as them.
+            allowed += %w[tables setup]
+            errors.concat(SchemaCheck.spec_errors(check))
         end
         extra = check.keys - allowed
         errors << "unknown keys for #{type}: #{extra.join(', ')}" unless extra.empty?

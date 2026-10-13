@@ -4,35 +4,30 @@
     #{print_content_overview(:reference)}
 </div>
 <script>
-// Filters the Handbuch index: a block stays when its title, section or one
-// of its headings contains every word typed; matching headings stay visible.
+// Filters the Handbuch index: a card stays when its title or label contains
+// every word typed (then with all its links), or when some of its links do
+// (then only those).
 (function () {
     var input = document.getElementById('reference-filter');
     if (!input) return;
     var norm = function (s) { return (s || '').toLowerCase().replace(/\u00ad/g, ''); };
-    var blocks = Array.prototype.slice.call(document.querySelectorAll('.reference-block'));
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.reference-card'));
     var empty = document.querySelector('.reference-filter-empty');
     input.addEventListener('input', function () {
         var words = norm(input.value).split(/\s+/).filter(Boolean);
+        var matches = function (text) { return words.every(function (w) { return text.indexOf(w) >= 0; }); };
         var any = false;
-        blocks.forEach(function (block) {
-            var head = norm(block.querySelector('h2').textContent + ' ' + block.querySelector('.reference-block-label').textContent);
-            var matches = function (text) { return words.every(function (w) { return text.indexOf(w) >= 0; }); };
-            var blockHit = words.length === 0 || matches(head);
+        cards.forEach(function (card) {
+            var head = norm(card.querySelector('h2').textContent + ' ' + card.querySelector('.reference-card-label').textContent);
+            var cardHit = words.length === 0 || matches(head);
             var itemHit = false;
-            block.querySelectorAll('.reference-outline > li').forEach(function (li) {
-                var headHit = blockHit || matches(norm(li.querySelector('a').textContent));
-                var childHit = false;
-                li.querySelectorAll('li').forEach(function (child) {
-                    var hit = headHit || matches(norm(child.textContent));
-                    child.hidden = !hit;
-                    if (hit) childHit = true;
-                });
-                li.hidden = !(headHit || childHit);
-                if (!li.hidden) itemHit = true;
+            card.querySelectorAll('.reference-outline li').forEach(function (li) {
+                var hit = cardHit || matches(norm(li.textContent));
+                li.hidden = !hit;
+                if (hit) itemHit = true;
             });
-            block.hidden = !(blockHit || itemHit);
-            if (!block.hidden) any = true;
+            card.hidden = !(cardHit || itemHit);
+            if (!card.hidden) any = true;
         });
         if (empty) empty.hidden = any;
     });

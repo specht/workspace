@@ -163,6 +163,9 @@ class Main < Sinatra::Base
     include Neo4jBolt
     helpers Sinatra::Cookies
 
+    # Pages that were renamed; old links and bookmarks lead to the new page.
+    MOVED_PAGES = { 'videothek' => 'filmdatenbank' }.freeze
+
     # Handbuch: reference pages, served under /reference/<slug>.
     REFERENCE_ROOT = '/src/content/reference'
     REFERENCE_SECTIONS_PATH = '/src/content/reference/sections.yaml'
@@ -5030,8 +5033,8 @@ class Main < Sinatra::Base
                 workspace_runtime.run_command(fs_tag_for_email(@session_user[:email]), :command => command,
                     :uid => "#{WORKSPACE_UID}:#{WORKSPACE_GID}", :seconds => [[seconds.to_i, 1].max, 30].min)
             },
-            :sql => found[:task]['check']['type'] == 'sql' ? task_sql_runner : nil,
-            :sql_env => found[:task]['check']['type'] == 'sql' ? task_sql_env : {})
+            :sql => %w[sql schema].include?(found[:task]['check']['type']) ? task_sql_runner : nil,
+            :sql_env => %w[sql schema].include?(found[:task]['check']['type']) ? task_sql_env : {})
         if result.problem == :reference_failed
             STDERR.puts "SQL task #{found[:key]}: the reference query failed for #{@session_user[:email]}"
         end
@@ -6585,6 +6588,10 @@ class Main < Sinatra::Base
         end
         # STDERR.puts "Requested path: #{path}"
         # STDERR.puts "Available content slugs: #{@@content.keys.join(', ')}"
+        if (moved = MOVED_PAGES[path[1, path.size - 1]])
+            redirect "#{WEB_ROOT}/#{moved}", 301
+            return
+        end
         if @@content.include?(path[1, path.size - 1])
             slug = path[1, path.size - 1]
             path = '/a.html'

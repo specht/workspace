@@ -702,6 +702,7 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
     } else if (mode === '--sql') {
         process.stdout.write(core.toSQL(result.tables, { source: path.basename(file) }));
     } else {
-        process.stdout.write(core.diagram(text, kind).svg + '\n');
+        // A white background, like »Als SVG speichern«: the file is also read on dark pages.
+        process.stdout.write(core.diagram(text, kind, { background: '#ffffff' }).svg + '\n');
     }
 }

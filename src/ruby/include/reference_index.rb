@@ -51,22 +51,35 @@ module ReferenceIndex
     end
 
     # pages: [{ slug:, title:, outline:, section_label:, section_icon: }]
+    #
+    # One grid of equal cards. A card is a chapter: an h2 of a page with the
+    # h3 headings below it. A page whose h2 headings have no h3 below them is
+    # one card with its h2 headings. So a long page spreads over several cards
+    # and the grid stays even, however long each page is.
     def self.html(pages)
         return "<p>Hier gibt es noch keine Seiten.</p>" if pages.empty?
 
         io = +"<div class='reference-index'>"
         io << "<div class='reference-filter'><input type='search' class='form-control' id='reference-filter' " \
               "placeholder='Im Handbuch suchen, z. B. Bild, Farbe, SSH' aria-label='Im Handbuch suchen' autocomplete='off'></div>"
-        io << "<div class='reference-blocks'>"
+        io << "<div class='reference-cards'>"
         pages.each do |page|
             url = "/#{page[:slug]}"
-            io << "<section class='reference-block'>"
-            io << "<div class='reference-block-label'>"
-            io << "<img alt='' src='#{h(page[:section_icon])}'>" if page[:section_icon]
-            io << "#{h(page[:section_label])}</div>"
-            io << "<h2 data-autotoc='ignore'><a href='#{h(url)}'>#{page[:title]}</a></h2>"
-            io << outline_html(url, page[:outline] || [])
-            io << '</section>'
+            cards(page[:title], page[:outline] || []).each do |card|
+                io << "<section class='reference-card'>"
+                io << "<a class='reference-card-label' href='#{h(url)}'>"
+                io << "<img alt='' src='#{h(page[:section_icon])}'>" if page[:section_icon]
+                head = card[:head]
+                # A chapter card names its page, a whole-page card its section.
+                io << "#{h(head ? strip_tags(page[:title]) : page[:section_label])}</a>"
+                io << "<h2 data-autotoc='ignore'><a href='#{h(head ? "#{url}##{head[:id]}" : url)}'>#{h(head ? head[:text] : strip_tags(page[:title]))}</a></h2>"
+                unless card[:items].empty?
+                    io << "<ul class='reference-outline'>"
+                    card[:items].each { |item| io << "<li><a href='#{h(url)}##{h(item[:id])}'>#{h(item[:text])}</a></li>" }
+                    io << '</ul>'
+                end
+                io << '</section>'
+            end
         end
         io << '</div>'
         io << "<p class='reference-filter-empty' hidden>Nichts gefunden. Versuch ein anderes Wort.</p>"
@@ -74,10 +87,12 @@ module ReferenceIndex
         io
     end
 
-    # h2 headings as a list, the h3 headings below each as a run of links.
-    def self.outline_html(url, outline)
-        return '' if outline.empty?
+    def self.strip_tags(html)
+        CGI.unescapeHTML(html.to_s.gsub(/<[^>]*>/, '')).delete("\u00ad").strip
+    end
 
+    # [{ head: h2 item or nil (the page itself), items: [...] }]
+    def self.cards(title, outline)
         groups = []
         outline.each do |item|
             if item[:level] == 2 || groups.empty?
@@ -86,20 +101,9 @@ module ReferenceIndex
                 groups.last[:items] << item
             end
         end
-        io = +"<ul class='reference-outline'>"
-        groups.each do |group|
-            head = group[:head]
-            # A heading with subheadings reads as a group label, one without as a link.
-            css = group[:items].empty? ? '' : " class='reference-outline-head'"
-            io << "<li><a#{css} href='#{h(url)}##{h(head[:id])}'>#{h(head[:text])}</a>"
-            unless group[:items].empty?
-                io << "<ul>"
-                group[:items].each { |item| io << "<li><a href='#{h(url)}##{h(item[:id])}'>#{h(item[:text])}</a></li>" }
-                io << '</ul>'
-            end
-            io << '</li>'
-        end
-        io << '</ul>'
-        io
+        return [{ :head => nil, :items => [] }] if groups.empty?
+        return [{ :head => nil, :items => groups.map { |g| g[:head] } }] if groups.all? { |g| g[:items].empty? }
+
+        groups
     end
 end

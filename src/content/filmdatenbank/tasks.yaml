@@ -1,0 +1,315 @@
+# Aufgaben zu »Filmdatenbank mit MySQL«. Format: docs/aufgaben.md.
+# er liest /workspace/filmdatenbank/film.er mit der ER-Werkstatt im Workspace,
+# schema und sql lesen die eigene MySQL-Datenbank, angemeldet als die Person.
+# Die Namen der Tabellen und Spalten stehen fest, weil die Filmdaten
+# (movie-archive/mysql-data-movies.sql, mysql-data-crew.sql) sie erwarten.
+format: 1
+activity: filmdatenbank
+tasks:
+  - id: eine-spalte
+    title: Genres in einer Spalte?
+    prompt: |
+      Warum ist eine Spalte `genres` in der Tabelle der Filme, in der zum
+      Beispiel `Action, Sci-Fi` steht, ungünstig?
+    check:
+      type: choice
+      options:
+        - Weil MySQL keine Kommas in Texten speichern kann.
+        - Weil man dann für jede Frage nach einem Genre in jedem Text suchen muss, und niemand verhindert `Sci-Fi` neben `SciFi`.
+        - Weil ein Text höchstens 255 Zeichen lang sein darf.
+        - Weil Genres immer Zahlen sein müssen.
+      correct: 1
+    solution: |
+      Ein Wert pro Zelle: Dann kann die Datenbank Genres zählen, vergleichen
+      und sicherstellen, dass es jedes Genre nur einmal gibt.
+
+  - id: modell-filme
+    title: Filme und Genres
+    prompt: |
+      Schreib das Modell mit `movie`, `genre` und der Beziehung `has_genre` in
+      `filmdatenbank/film.er`.
+    check:
+      type: er
+      file: filmdatenbank/film.er
+      entities:
+        - name: movie
+          key: [id]
+          attributes: ["title: text", "original_title: text, optional", "german_title: text, optional", "year: int", "runtime: int"]
+        - name: genre
+          key: [id]
+          attributes: ["name: text, unique"]
+      relationships:
+        - between: [movie, genre]
+          cardinality: n:m
+      tables:
+        - name: movie_genre
+          columns: [movie_id, genre_id]
+          primary_key: [movie_id, genre_id]
+    feedback:
+      - when: { problem: cardinality }
+        say: Ein Film kann mehrere Genres haben, und zu einem Genre gehören viele Filme. Auf beiden Seiten steht also »viele«.
+      - when: { problem: missing_table }
+        say: Aus der Beziehung soll die Tabelle `movie_genre` werden. Schreib zuerst `movie`, dann `genre`, also `movie n:m genre`.
+
+  - id: vorhersage-n1
+    title: Was wäre bei n:1?
+    prompt: |
+      Angenommen, jeder Film hätte nur ein einziges Genre, und du schreibst
+      `relationship has_genre: movie n:1 genre`. Was passiert in der
+      Tabellenansicht? Überleg zuerst, dann probier es aus und stell `n:m`
+      wieder her.
+    prediction: true
+    check:
+      type: choice
+      options:
+        - Nichts, `movie_genre` bleibt, wie sie ist.
+        - "`movie_genre` verschwindet, und `movie` bekommt eine Spalte `genre_id`."
+        - "`movie_genre` verschwindet, und `genre` bekommt eine Spalte `movie_id`."
+        - Es entstehen zwei Tabellen zwischen `movie` und `genre`.
+      correct: 1
+    solution: |
+      Bei n:1 gehört zu jedem Film genau ein Genre. Das passt in eine Spalte
+      der Tabelle `movie`: den Fremdschlüssel `genre_id`. Eine eigene Tabelle
+      braucht nur eine Beziehung, bei der auf beiden Seiten »viele« steht.
+
+  - id: tabellen-filme
+    title: Tabellen anlegen
+    prompt: Erzeuge `film.sql` und führe es mit `mysql < film.sql` aus.
+    check:
+      type: schema
+      tables:
+        - name: movie
+          columns: [id, title, original_title, german_title, year, runtime]
+          primary_key: [id]
+        - name: genre
+          columns: [id, name]
+          primary_key: [id]
+        - name: movie_genre
+          primary_key: [movie_id, genre_id]
+          foreign_keys: ["movie_id -> movie.id", "genre_id -> genre.id"]
+      setup: Erzeuge in der ER-Werkstatt das SQL und führe im Ordner `filmdatenbank` `mysql < film.sql` aus.
+
+  - id: daten-filme
+    title: Filmdaten geladen
+    prompt: Lade `mysql-data-movies.sql` in deine Datenbank.
+    check:
+      type: schema
+      tables:
+        - name: movie
+          min_rows: 100
+        - name: genre
+          min_rows: 10
+        - name: movie_genre
+          min_rows: 100
+      setup: Lege zuerst die Tabellen mit `mysql < film.sql` an.
+
+  - id: anzahl-filme
+    title: Wie viele Filme?
+    prompt: Schreib eine Abfrage, die zählt, wie viele Filme in der Tabelle `movie` stehen.
+    check:
+      type: sql
+      expect_query: SELECT COUNT(*) FROM movie
+      tables: { movie: ~ }
+      setup: Lade zuerst die Filmdaten, wie unter »Filmdaten laden« beschrieben.
+
+  - id: genres-matrix
+    title: Die Genres von »The Matrix«
+    prompt: Welche Genres hat »The Matrix« aus dem Jahr 1999? Gefragt sind nur die Namen der Genres.
+    check:
+      type: sql
+      expect_query: |
+        SELECT genre.name
+        FROM movie
+        JOIN movie_genre ON movie.id = movie_genre.movie_id
+        JOIN genre ON movie_genre.genre_id = genre.id
+        WHERE movie.title = 'The Matrix' AND movie.year = 1999
+      tables: { movie: ~, genre: ~, movie_genre: ~ }
+      setup: Lade zuerst die Filmdaten, wie unter »Filmdaten laden« beschrieben.
+    feedback:
+      - when:
+          same_result_as: |
+            SELECT movie_genre.genre_id
+            FROM movie
+            JOIN movie_genre ON movie.id = movie_genre.movie_id
+            WHERE movie.title = 'The Matrix' AND movie.year = 1999
+        say: Das sind die IDs der Genres. Für ihre Namen fehlt noch ein `JOIN` mit `genre`.
+      - when: { query_matches: '\A(?![\s\S]*\bon\b)[\s\S]*\bjoin\b' }
+        say: Zu jedem `JOIN` gehört ein `ON`, das sagt, welche Zeilen zusammengehören.
+
+  - id: animation
+    title: Animationsfilme
+    prompt: Zeig alle Animationsfilme (Genre `Animation`) mit Titel und Erscheinungsjahr, die ältesten zuerst.
+    check:
+      type: sql
+      expect_query: |
+        SELECT movie.title, movie.year
+        FROM movie
+        JOIN movie_genre ON movie.id = movie_genre.movie_id
+        JOIN genre ON movie_genre.genre_id = genre.id
+        WHERE genre.name = 'Animation'
+        ORDER BY movie.year
+      sorted_by: 2
+      tables: { movie: ~, genre: ~, movie_genre: ~ }
+      setup: Lade zuerst die Filmdaten, wie unter »Filmdaten laden« beschrieben.
+    feedback:
+      - when: { query_matches: '\A(?![\s\S]*\bon\b)[\s\S]*\bjoin\b' }
+        say: Zu jedem `JOIN` gehört ein `ON`, das sagt, welche Zeilen zusammengehören.
+
+  - id: filme-pro-genre
+    title: Filme pro Genre
+    prompt: Wie viele Filme gibt es in jedem Genre? Zeig den Namen des Genres und die Anzahl, die größten Genres zuerst.
+    check:
+      type: sql
+      expect_query:
+        - |
+          SELECT genre.name, COUNT(*)
+          FROM genre
+          JOIN movie_genre ON genre.id = movie_genre.genre_id
+          GROUP BY genre.id, genre.name
+          ORDER BY COUNT(*) DESC
+        - |
+          SELECT genre.name, COUNT(movie_genre.movie_id)
+          FROM genre
+          LEFT JOIN movie_genre ON genre.id = movie_genre.genre_id
+          GROUP BY genre.id, genre.name
+          ORDER BY COUNT(movie_genre.movie_id) DESC
+      sorted_by: 2 DESC
+      tables: { genre: ~, movie_genre: ~ }
+      setup: Lade zuerst die Filmdaten, wie unter »Filmdaten laden« beschrieben.
+    feedback:
+      - when: { same_result_as: 'SELECT COUNT(*) FROM movie_genre' }
+        say: Das sind alle Zuordnungen zusammen. Mit `GROUP BY genre.name` zählst du jedes Genre für sich.
+
+  - id: modell-crew
+    title: Menschen und Tätigkeiten
+    prompt: Ergänze `film.er` um `crew`, `job` und die dreistellige Beziehung `credit`.
+    check:
+      type: er
+      file: filmdatenbank/film.er
+      entities:
+        - name: movie
+          key: [id]
+        - name: genre
+          key: [id]
+        - name: crew
+          key: [id]
+          attributes: ["name: text", "birth_year: int, optional", "death_year: int, optional"]
+        - name: job
+          key: [id]
+          attributes: ["title: text, unique"]
+      relationships:
+        - between: [movie, genre]
+          cardinality: n:m
+        - between: [movie, crew, job]
+          table: movie_crew
+      tables:
+        - name: movie_crew
+          columns: [movie_id, crew_id, job_id]
+          primary_key: [movie_id, crew_id, job_id]
+    feedback:
+      - when: { problem: missing_relationship }
+        say: "Film, Person und Tätigkeit gehören in eine Beziehung, mit Kommas aufgezählt, zum Beispiel `relationship credit: movie, crew, job as movie_crew`."
+
+  - id: tabellen-crew
+    title: Alles neu angelegt und geladen
+    prompt: |
+      Erzeuge das SQL neu und führe `film.sql`, `mysql-data-movies.sql` und
+      `mysql-data-crew.sql` nacheinander aus.
+    check:
+      type: schema
+      tables:
+        - name: movie
+          min_rows: 100
+        - name: movie_genre
+          min_rows: 100
+        - name: crew
+          columns: [id, name, birth_year, death_year]
+          primary_key: [id]
+          min_rows: 100
+        - name: job
+          columns: [id, title]
+          primary_key: [id]
+          min_rows: 3
+        - name: movie_crew
+          primary_key: [movie_id, crew_id, job_id]
+          foreign_keys: ["movie_id -> movie.id", "crew_id -> crew.id", "job_id -> job.id"]
+          min_rows: 100
+      setup: Führe im Ordner `filmdatenbank` `mysql < film.sql` aus und lade dann beide Datendateien.
+    feedback:
+      - when: { problem: rows }
+        say: Eine Tabelle ist leer. `film.sql` löscht alle Tabellen; lade danach `mysql-data-movies.sql` und `mysql-data-crew.sql`, in dieser Reihenfolge.
+
+  - id: besetzung-matrix
+    title: Wer spielt in »The Matrix«?
+    prompt: Wer hat in »The Matrix« (1999) mitgespielt? Gefragt sind nur die Namen, Tätigkeit `actor`.
+    check:
+      type: sql
+      expect_query: |
+        SELECT crew.name
+        FROM movie
+        JOIN movie_crew ON movie.id = movie_crew.movie_id
+        JOIN crew ON movie_crew.crew_id = crew.id
+        JOIN job ON movie_crew.job_id = job.id
+        WHERE movie.title = 'The Matrix' AND movie.year = 1999 AND job.title = 'actor'
+      tables: { movie: ~, movie_crew: ~, crew: ~, job: ~ }
+      setup: Lade zuerst die Personen, wie unter »Das Modell wächst« beschrieben.
+    feedback:
+      - when:
+          same_result_as: |
+            SELECT crew.name
+            FROM movie
+            JOIN movie_crew ON movie.id = movie_crew.movie_id
+            JOIN crew ON movie_crew.crew_id = crew.id
+            WHERE movie.title = 'The Matrix' AND movie.year = 1999
+        say: Das sind alle, die an dem Film beteiligt waren. Gefragt sind nur die mit der Tätigkeit `actor`; dafür brauchst du noch `job`.
+
+  - id: nolan
+    title: Christopher Nolan
+    prompt: Bei welchen Filmen hat Christopher Nolan Regie geführt (`director`)? Zeig Titel und Jahr, nach dem Jahr sortiert.
+    check:
+      type: sql
+      expect_query: |
+        SELECT movie.title, movie.year
+        FROM crew
+        JOIN movie_crew ON crew.id = movie_crew.crew_id
+        JOIN job ON movie_crew.job_id = job.id
+        JOIN movie ON movie_crew.movie_id = movie.id
+        WHERE crew.name = 'Christopher Nolan' AND job.title = 'director'
+        ORDER BY movie.year
+      sorted_by: 2
+      tables: { movie: ~, movie_crew: ~, crew: ~, job: ~ }
+      setup: Lade zuerst die Personen, wie unter »Das Modell wächst« beschrieben.
+
+  - id: viel-regie
+    title: Viel Regie
+    prompt: |
+      Wer hat bei mindestens fünf Filmen der Datenbank Regie geführt? Zeig den
+      Namen und die Anzahl der Filme, die meisten zuerst.
+    check:
+      type: sql
+      expect_query: |
+        SELECT crew.name, COUNT(*)
+        FROM crew
+        JOIN movie_crew ON crew.id = movie_crew.crew_id
+        JOIN job ON movie_crew.job_id = job.id
+        WHERE job.title = 'director'
+        GROUP BY crew.id, crew.name
+        HAVING COUNT(*) >= 5
+        ORDER BY COUNT(*) DESC
+      sorted_by: 2 DESC
+      tables: { movie_crew: ~, crew: ~, job: ~ }
+      setup: Lade zuerst die Personen, wie unter »Das Modell wächst« beschrieben.
+    feedback:
+      - when: { query_matches: 'where[\s\S]*count\s*\(' }
+        say: In `WHERE` kann noch nicht gezählt werden, dort wird zeilenweise gefiltert. Bedingungen an Gruppen gehören hinter `HAVING`.
+
+  - id: neue-frage
+    title: Was fehlt dem Modell?
+    prompt: |
+      Denk dir eine Frage an die Filmdatenbank aus, die dieses Modell nicht
+      beantworten kann, zum Beispiel für eine Videothek oder ein Kino. Was
+      müsste das Modell zusätzlich enthalten: welche Entitäten, welche
+      Beziehungen mit welcher Kardinalität?
+    check:
+      type: reflection
+      min_words: 20

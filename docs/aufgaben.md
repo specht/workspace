@@ -231,6 +231,8 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace | M6 |
 | `code` | Code-Bites-Aufgabe | Code | Code-Bites-Judge | M5 |
 | `sql` | Ergebnis einer `SELECT`-Abfrage gegen das einer Musterabfrage | Abfrage | eigene MySQL-Datenbank, nur lesend | M6 |
+| `er` | ER-Modell: Entitäten, Schlüssel, Attribute, Beziehungen, Kardinalitäten und die Tabellen, die daraus werden | eine `.er`-Datei | Workspace (ER-Werkstatt) | M7 |
+| `schema` | Tabellen der eigenen Datenbank: Spalten, Primär- und Fremdschlüssel, Zeilenzahl | `information_schema` | eigene MySQL-Datenbank, nur lesend | M7 |
 
 »Server« heißt: Der Server liest die Datei als Text und wertet sie aus, ohne
 etwas auszuführen. »Workspace« heißt: Ein festes Prüfskript läuft per
@@ -476,6 +478,71 @@ haben, ob die Tabelle in einer anderen eigenen Datenbank liegt, ob der
 Workspace läuft und welche Datenbank `/workspace/.my.cnf` nennt (ohne
 Passwort). Die Prüfung selbst braucht keinen laufenden Workspace.
 
+### er
+
+Seit M7. Beispiel: `src/content/filmdatenbank/tasks.yaml` (»Filmdatenbank mit MySQL«).
+Lernende schreiben ihr Modell als Text in eine `.er`-Datei; die
+ER-Werkstatt in VS Code zeigt es als Diagramm und erzeugt das SQL
+(`src/vscode-extensions/er/README.md`). Die Prüfung liest die Datei mit dem
+Kern der ER-Werkstatt (`core/er-core.js`), derselben Datei, die auch die
+Erweiterung benutzt; er läuft mit `node` im Workspace der Person. Ein Modell
+bedeutet so überall dasselbe.
+
+```yaml
+check:
+  type: er
+  file: filmdatenbank/film.er
+  entities:
+    - name: movie
+      key: [id]
+      attributes: [title, "year: int, optional"]   # wie in der .er-Datei
+  relationships:
+    - between: [movie, genre]
+      cardinality: n:m             # in der Reihenfolge von between
+    - between: [movie, crew, job]
+      table: movie_crew            # verlangt `as movie_crew`
+  tables:                          # was aus dem Modell wird, wie bei schema
+    - name: movie_genre
+      primary_key: [movie_id, genre_id]
+      foreign_keys: ["movie_id -> movie.id", "genre_id -> genre"]
+```
+
+Was nicht genannt ist, ist frei: weitere Entitäten, Attribute und Beziehungen
+stören nicht. Ein Attribut wird so geschrieben wie im Modell; Typ und
+Markierungen (`key`, `optional`, `unique`) zählen nur, wenn sie dastehen.
+Eine Beziehung wird an ihren Entitäten erkannt, nicht am Namen; `1:n`
+zwischen `[genre, movie]` ist dasselbe wie `n:1` zwischen `[movie, genre]`,
+`m` und `n` bedeuten beide »viele«. Fehler im Modell kommen zuerst, mit
+Zeilennummer, so wie die Erweiterung sie unterstreicht.
+
+Unter der Rückmeldung steht, was im Modell steht: Entitäten mit ihren
+Attributen (Schlüssel fett), Beziehungen und die Tabellen, die daraus werden.
+
+### schema
+
+Seit M7. Liest den Aufbau der eigenen Datenbank aus `information_schema`,
+angemeldet als die Person, nur lesend, wie `sql`. Zeilen zählt die Prüfung
+nur für Tabellen mit `rows` oder `min_rows`.
+
+```yaml
+check:
+  type: schema
+  tables:
+    - name: movie
+      columns: [id, title, year]   # müssen da sein; weitere sind erlaubt
+      primary_key: [id]
+      min_rows: 1                  # oder rows: genau so viele
+    - name: movie_genre
+      foreign_keys: ["movie_id -> movie.id", "genre_id -> genre"]
+  setup: Lege die Tabellen mit `mysql < film.sql` an.
+```
+
+Ein Fremdschlüssel ohne Spalte nach dem Punkt zeigt auf den Primärschlüssel
+der anderen Tabelle. `setup` steht dabei, wenn Tabellen fehlen. Unter der
+Rückmeldung stehen alle Tabellen der Datenbank mit Spalten und Typen,
+Primärschlüssel fett, Fremdschlüssel und, wo gezählt, die Zeilenzahl. Ist die
+Datenbank nicht erreichbar, sagt die Karte dasselbe wie bei `sql`.
+
 ## Beispiel: Begleiter für eine Sandbox
 
 Die Sandboxes bleiben eigenständig. Eine kleine Aktivität im Workspace kann
@@ -567,6 +634,8 @@ die eingebaute Rückmeldung für einen Fall.
 | `css` | `missing`, `marker_missing`, `parse_error`, `too_few_rules` |
 | `references` | `missing`, `external`, `outside_root`, `local_missing` |
 | `git` | `no_repo`, `not_git`, `no_remote`, `no_identity`, `uncommitted`, `too_few_commits`, `detached`, `no_upstream`, `not_pushed` |
+| `er` | `missing`, `errors`, `missing_entity`, `key`, `missing_attribute`, `attribute`, `missing_relationship`, `cardinality`, `missing_table`, `missing_column`, `primary_key`, `foreign_key` |
+| `schema` | `no_tables`, `missing_table`, `missing_column`, `primary_key`, `foreign_key`, `rows` |
 
 Text, der nur die Karten ersetzt (etwa eine nummerierte Aufgabenliste),
 steht in einem Element mit `class='tasks-off-only'` und verschwindet, sobald

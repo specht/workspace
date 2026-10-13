@@ -1,6 +1,15 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# Builds the classroom movie dataset (the Filmdatenbank) from Wikidata.
+#
+# Which films: those with many IMDb votes, read from IMDb's public
+# title.ratings and title.basics files. Only the IMDb IDs are used, to find
+# the films in Wikidata (property P345); nothing from IMDb is published.
+# Everything in the output (titles, years, runtimes, genres, people, their
+# jobs, birth and death years) comes from Wikidata, which is CC0.
+
+require 'digest'
 require 'fileutils'
 require 'json'
 require 'net/http'
@@ -12,45 +21,396 @@ require 'zlib'
 
 require_relative '../lib/classroom_dataset'
 
-class ImdbDatasetBuilder
+# Talks to the Wikidata Query Service politely: one request at a time, a pause
+# between requests, Retry-After on 429, and every answer cached on disk so a
+# second run (or a run after an interruption) asks only for what is missing.
+class WikidataClient
+  ENDPOINT = URI('https://query.wikidata.org/sparql')
+  USER_AGENT = 'hackschule-workspace-movie-dataset/2.0 (https://github.com/specht/workspace; classroom dataset)'
+
+  attr_reader :requests
+
+  def initialize(cache_dir:, pause: 1.0, offline: false)
+    @cache_dir = cache_dir
+    @pause = pause
+    @offline = offline
+    @requests = 0
+    FileUtils.mkdir_p(@cache_dir)
+  end
+
+  # Returns the bindings as [{ 'var' => 'value' }].
+  def select(query)
+    path = File.join(@cache_dir, "#{Digest::SHA1.hexdigest(query)}.json")
+    body = File.exist?(path) ? File.read(path) : fetch(query, path)
+    JSON.parse(body).dig('results', 'bindings').map { |row| row.transform_values { |v| v['value'] } }
+  end
+
+  private
+
+  def fetch(query, path)
+    raise "Not cached and --offline given: #{query[0, 120]}" if @offline
+
+    attempts = 0
+    loop do
+      attempts += 1
+      sleep @pause if @requests.positive?
+      @requests += 1
+      request = Net::HTTP::Post.new(ENDPOINT)
+      request['User-Agent'] = USER_AGENT
+      request['Accept'] = 'application/sparql-results+json'
+      request.set_form_data('query' => query)
+      response = Net::HTTP.start(ENDPOINT.host, ENDPOINT.port, use_ssl: true, open_timeout: 30, read_timeout: 90) do |http|
+        http.request(request)
+      end
+      case response
+      when Net::HTTPSuccess
+        File.write("#{path}.part", response.body)
+        File.rename("#{path}.part", path)
+        return response.body
+      when Net::HTTPTooManyRequests, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeout, Net::HTTPBadGateway
+        raise "Wikidata keeps refusing (#{response.code}); try again later" if attempts >= 6
+
+        wait = [response['Retry-After'].to_i, 5 * attempts].max
+        STDERR.puts "  Wikidata says #{response.code}, waiting #{wait}s"
+        sleep wait
+      else
+        raise "Wikidata query failed: #{response.code} #{response.message}\n#{response.body.to_s[0, 500]}"
+      end
+    end
+  end
+end
+
+# Which films to include: IMDb IDs of non-adult feature films with at least
+# min_votes votes, most voted first. Reads IMDb's public files, keeps only IDs.
+class ImdbSelection
   SOURCE_URL = 'https://datasets.imdbws.com/'
+  FILES = %w[title.ratings.tsv.gz title.basics.tsv.gz].freeze
 
-  DATASETS = %w[
-    title.ratings.tsv.gz
-    title.basics.tsv.gz
-    title.akas.tsv.gz
-    title.principals.tsv.gz
-    name.basics.tsv.gz
-  ].freeze
-
-  def initialize(output_dir:, min_votes: 100_000, force_download: false)
-    @output_dir = File.expand_path(output_dir)
-    @download_dir = File.join(@output_dir, '.downloads')
+  def initialize(download_dir:, min_votes:, force_download: false)
+    @download_dir = download_dir
     @min_votes = min_votes
     @force_download = force_download
+  end
+
+  def ids
+    FileUtils.mkdir_p(@download_dir)
+    FILES.each { |name| download(name) }
+    votes = {}
+    each_tsv('title.ratings.tsv.gz') do |row|
+      n = row['numVotes'].to_i
+      votes[row['tconst']] = n if n >= @min_votes
+    end
+    films = []
+    each_tsv('title.basics.tsv.gz') do |row|
+      next unless votes.key?(row['tconst']) && row['titleType'] == 'movie' && row['isAdult'] == '0'
+
+      films << row['tconst']
+    end
+    films.sort_by { |id| [-votes[id], id] }
+  end
+
+  private
+
+  def download(name)
+    target = File.join(@download_dir, name)
+    if File.size?(target) && !@force_download
+      STDERR.puts "  using cached #{name}"
+      return
+    end
+    STDERR.puts "  downloading #{SOURCE_URL}#{name}"
+    uri = URI.join(SOURCE_URL, name)
+    File.open("#{target}.part", 'wb') do |file|
+      Net::HTTP.start(uri.host, uri.port, use_ssl: true, open_timeout: 30, read_timeout: 120) do |http|
+        http.request(Net::HTTP::Get.new(uri)) do |response|
+          raise "Download failed for #{uri}: #{response.code}" unless response.is_a?(Net::HTTPSuccess)
+
+          response.read_body { |chunk| file.write(chunk) }
+        end
+      end
+    end
+    File.rename("#{target}.part", target)
+  end
+
+  def each_tsv(name)
+    Zlib::GzipReader.open(File.join(@download_dir, name), external_encoding: Encoding::UTF_8) do |gz|
+      headers = gz.readline.chomp.split("\t", -1)
+      gz.each_line { |line| yield headers.zip(line.chomp.split("\t", -1)).to_h }
+    end
+  end
+end
+
+class WikidataMovieBuilder
+  # Wikidata property -> job title in the dataset, and how many people per
+  # film and job are kept (the best known ones, by number of Wikipedia articles).
+  JOBS = {
+    'P161' => ['actor', 10],
+    'P57' => ['director', 5],
+    'P58' => ['writer', 5],
+    'P86' => ['composer', 3],
+    'P162' => ['producer', 5],
+    'P344' => ['cinematographer', 3],
+    'P1040' => ['editor', 3]
+  }.freeze
+
+  # English genre labels in Wikidata are many and fine-grained ("neo-noir",
+  # "superhero film"). They map to a small set of genre names, like the ones
+  # people know from film sites. A label may give several genres.
+  GENRES = [
+    [/\baction\b|martial arts|superhero|disaster|swashbuckler/, 'Action'],
+    [/adventure|swashbuckler/, 'Adventure'],
+    [/animat|anime|stop-motion/, 'Animation'],
+    [/biographical|biopic/, 'Biography'],
+    [/comedy|satir|parody|farce/, 'Comedy'],
+    [/crime|gangster|heist|noir|mafia|detective/, 'Crime'],
+    [/documentary/, 'Documentary'],
+    [/drama|melodrama|tragedy/, 'Drama'],
+    [/family|children/, 'Family'],
+    [/fantasy|fairy tale|sword and sorcery/, 'Fantasy'],
+    [/historical|history|period|epic film/, 'History'],
+    [/horror|slasher|zombie|vampire|splatter/, 'Horror'],
+    [/\bmusical\b/, 'Musical'],
+    [/\bmusic\b|concert|rockumentary/, 'Music'],
+    [/mystery|whodunit|detective/, 'Mystery'],
+    [/romance|romantic/, 'Romance'],
+    [/science fiction|sci-fi|cyberpunk|space opera|dystopi|post-apocalyptic|time travel/, 'Sci-Fi'],
+    [/\bsports?\b|boxing|baseball|football|basketball/, 'Sport'],
+    [/thriller|suspense|\bspy\b|espionage|psychological/, 'Thriller'],
+    [/\bwar\b|anti-war/, 'War'],
+    [/western/, 'Western']
+  ].freeze
+
+  MINUTE = 'http://www.wikidata.org/entity/Q7727'
+  HOUR = 'http://www.wikidata.org/entity/Q25235'
+  SECOND = 'http://www.wikidata.org/entity/Q11574'
+
+  def initialize(output_dir:, min_votes: 100_000, force_download: false, offline: false, pause: 1.0, selection: nil, wikidata: nil)
+    @output_dir = File.expand_path(output_dir)
+    @min_votes = min_votes
+    @selection = selection || ImdbSelection.new(download_dir: File.join(@output_dir, '.downloads'), min_votes: min_votes,
+                                                force_download: force_download)
+    @wikidata = wikidata || WikidataClient.new(cache_dir: File.join(@output_dir, '.wikidata-cache'), pause: pause, offline: offline)
     @stats = Hash.new(0)
   end
 
   def run
-    FileUtils.mkdir_p(@download_dir)
+    STDERR.puts "Choosing films (IMDb votes >= #{@min_votes})..."
+    imdb_ids = @selection.ids
+    STDERR.puts "  #{imdb_ids.size} films"
 
-    STDERR.puts "Downloading IMDb source data to #{@download_dir}..."
-    DATASETS.each { |name| download(name) }
+    STDERR.puts 'Reading films from Wikidata...'
+    films = load_films(imdb_ids)
+    STDERR.puts 'Reading genres...'
+    genre_labels = load_genres(films)
+    STDERR.puts 'Reading cast and crew...'
+    credits = load_credits(films)
+    STDERR.puts 'Reading people...'
+    people = load_people(credits.values.flatten(1).map(&:last).uniq)
 
-    ratings = load_ratings
-    movies, movie_ids, genres = load_movies(ratings)
-    add_german_titles(movies, movie_ids)
-    people_ids = add_principals(movies, movie_ids)
-    crew, crew_ids = load_people(people_ids)
-    replace_imdb_person_ids(movies, crew_ids)
+    movies, crew, genres = assemble(films, genre_labels, credits, people)
+    write(movies, crew, genres)
+  end
 
-    write_movies(movies)
-    write_crew(crew)
-    write_genres(genres)
+  # --- reading -----------------------------------------------------------------
+
+  def self.qid(uri)
+    uri.to_s.split('/').last
+  end
+
+  # "1999-03-31T00:00:00Z" -> 1999, "-0500-01-01T00:00:00Z" -> -500
+  def self.year(value)
+    m = value.to_s.match(/\A(-?)0*(\d+)-/)
+    return nil unless m
+
+    year = m[2].to_i
+    m[1] == '-' ? -year : year
+  end
+
+  def self.minutes(amount, unit)
+    value = amount.to_f
+    case unit
+    when MINUTE, nil then value
+    when HOUR then value * 60
+    when SECOND then value / 60
+    end&.round
+  end
+
+  def self.genres_for(label)
+    text = label.to_s.downcase
+    GENRES.select { |pattern, _| text.match?(pattern) }.map(&:last).uniq
+  end
+
+  def literal_list(values)
+    values.map { |v| "\"#{v.gsub(/[^a-z0-9]/i, '')}\"" }.join(' ')
+  end
+
+  def entity_list(qids)
+    qids.map { |q| "wd:#{q.gsub(/[^Q0-9]/, '')}" }.join(' ')
+  end
+
+  # imdb id -> { qid:, en:, de:, original:, years: [], minutes: [] }, in the
+  # order of imdb_ids (most voted first).
+  def load_films(imdb_ids)
+    films = {}
+    imdb_ids.each_slice(200).with_index do |batch, i|
+      STDERR.puts "  #{i * 200}/#{imdb_ids.size}" if (i % 5).zero?
+      rows = @wikidata.select(<<~SPARQL)
+        SELECT ?imdb ?film ?en ?de ?original ?date ?amount ?unit WHERE {
+          VALUES ?imdb { #{literal_list(batch)} }
+          ?film wdt:P345 ?imdb .
+          OPTIONAL { ?film rdfs:label ?en FILTER(LANG(?en) = "en") }
+          OPTIONAL { ?film rdfs:label ?de FILTER(LANG(?de) = "de") }
+          OPTIONAL { ?film wdt:P1476 ?original }
+          OPTIONAL { ?film wdt:P577 ?date }
+          OPTIONAL { ?film p:P2047 ?ds . ?ds a wikibase:BestRank ; psv:P2047 [ wikibase:quantityAmount ?amount ; wikibase:quantityUnit ?unit ] }
+        }
+      SPARQL
+      rows.each do |row|
+        film = (films[row['imdb']] ||= { qid: self.class.qid(row['film']), years: [], minutes: [] })
+        next if film[:qid] != self.class.qid(row['film']) # one IMDb ID on two items: keep the first
+
+        film[:en] ||= row['en']
+        film[:de] ||= row['de']
+        film[:original] ||= row['original']
+        film[:years] << self.class.year(row['date']) if row['date']
+        film[:minutes] << self.class.minutes(row['amount'], row['unit']) if row['amount']
+      end
+    end
+    @stats[:not_in_wikidata] = imdb_ids.count { |id| !films.key?(id) }
+    imdb_ids.filter_map { |id| films[id] && [id, films[id]] }.to_h
+  end
+
+  # qid -> [English genre labels]
+  def load_genres(films)
+    labels = Hash.new { |h, k| h[k] = [] }
+    films.values.map { |f| f[:qid] }.each_slice(200) do |batch|
+      @wikidata.select(<<~SPARQL).each { |row| labels[self.class.qid(row['film'])] << row['label'] }
+        SELECT ?film ?label WHERE {
+          VALUES ?film { #{entity_list(batch)} }
+          ?film wdt:P136 ?genre .
+          ?genre rdfs:label ?label FILTER(LANG(?label) = "en")
+        }
+      SPARQL
+    end
+    labels
+  end
+
+  # qid -> [[job, person qid]], the best known people per job first
+  def load_credits(films)
+    credits = Hash.new { |h, k| h[k] = [] }
+    films.values.map { |f| f[:qid] }.each_slice(40).with_index do |batch, i|
+      STDERR.puts "  #{i * 40}/#{films.size}" if (i % 10).zero?
+      unions = JOBS.keys.map { |p| "{ ?film wdt:#{p} ?person BIND(\"#{p}\" AS ?prop) }" }.join(" UNION\n  ")
+      rows = @wikidata.select(<<~SPARQL)
+        SELECT ?film ?prop ?person ?links WHERE {
+          VALUES ?film { #{entity_list(batch)} }
+          #{unions}
+          ?person wdt:P31 wd:Q5 ; wikibase:sitelinks ?links .
+        }
+      SPARQL
+      rows.group_by { |r| [self.class.qid(r['film']), r['prop']] }.each do |(film, prop), list|
+        job, keep = JOBS.fetch(prop)
+        people = list.map { |r| [self.class.qid(r['person']), r['links'].to_i] }.uniq.sort_by { |q, links| [-links, q] }
+        @stats[:people_left_out] += [people.size - keep, 0].max
+        people.first(keep).each { |qid, _| credits[film] << [job, qid] }
+      end
+    end
+    credits
+  end
+
+  # qid -> { name:, birth_year:, death_year: }
+  def load_people(qids)
+    people = {}
+    qids.each_slice(300).with_index do |batch, i|
+      STDERR.puts "  #{i * 300}/#{qids.size}" if (i % 5).zero?
+      rows = @wikidata.select(<<~SPARQL)
+        SELECT ?person ?en ?de ?mul ?birth ?death WHERE {
+          VALUES ?person { #{entity_list(batch)} }
+          OPTIONAL { ?person rdfs:label ?en FILTER(LANG(?en) = "en") }
+          OPTIONAL { ?person rdfs:label ?de FILTER(LANG(?de) = "de") }
+          OPTIONAL { ?person rdfs:label ?mul FILTER(LANG(?mul) = "mul") }
+          OPTIONAL { ?person wdt:P569 ?birth }
+          OPTIONAL { ?person wdt:P570 ?death }
+        }
+      SPARQL
+      rows.each do |row|
+        person = (people[self.class.qid(row['person'])] ||= { births: [], deaths: [] })
+        person[:name] ||= row['en'] || row['mul'] || row['de']
+        person[:births] << self.class.year(row['birth']) if row['birth']
+        person[:deaths] << self.class.year(row['death']) if row['death']
+      end
+    end
+    people.transform_values do |p|
+      birth = p[:births].compact.min
+      death = p[:deaths].compact.min
+      if birth && death && death < birth
+        @stats[:impossible_life_dates] += 1
+        death = nil
+      end
+      { name: p[:name], birth_year: birth, death_year: death }
+    end
+  end
+
+  # --- building the tables -------------------------------------------------------
+
+  def assemble(films, genre_labels, credits, people)
+    kept = films.values.select do |f|
+      ok = f[:en] && !f[:years].compact.empty? && !f[:minutes].compact.empty?
+      @stats[:films_without_title_year_or_runtime] += 1 unless ok
+      ok
+    end
+    rows = kept.map do |f|
+      title = f[:en]
+      original = f[:original] if f[:original] && f[:original] != title
+      german = f[:de] if f[:de] && ![title, original].include?(f[:de])
+      { qid: f[:qid], title: title, original_title: original, german_title: german,
+        year: f[:years].compact.min, runtime: f[:minutes].compact.max,
+        genre_names: genre_labels[f[:qid]].flat_map { |l| self.class.genres_for(l) }.uniq.sort }
+    end
+    rows.sort_by! { |m| [m[:year], m[:title].downcase, m[:qid][1..].to_i] }
+    rows.each_with_index { |m, i| m[:id] = i + 1 }
+    @stats[:films_without_genre] = rows.count { |m| m[:genre_names].empty? }
+
+    genre_names = rows.flat_map { |m| m[:genre_names] }.uniq.sort
+    genres = genre_names.each_with_index.map { |name, i| { id: i + 1, name: name } }
+    genre_id = genres.to_h { |g| [g[:name], g[:id]] }
+
+    crew_id = {}
+    crew = []
+    movies = rows.map do |m|
+      by_job = Hash.new { |h, k| h[k] = [] }
+      credits[m[:qid]].each do |job, person_qid|
+        person = people[person_qid]
+        next unless person && person[:name]
+
+        crew_id[person_qid] ||= begin
+          crew << { id: crew.size + 1, wikidata: person_qid, name: person[:name],
+                    birth_year: person[:birth_year], death_year: person[:death_year] }
+          crew.size
+        end
+        by_job[job] << crew_id[person_qid] unless by_job[job].include?(crew_id[person_qid])
+      end
+      { id: m[:id], wikidata: m[:qid], title: m[:title], original_title: m[:original_title],
+        german_title: m[:german_title], year: m[:year], runtime: m[:runtime],
+        genres: m[:genre_names].map { |n| genre_id.fetch(n) }, crew: by_job.to_h }
+    end
+    [movies, crew, genres]
+  end
+
+  def jobs_for(movies)
+    order = JOBS.values.map(&:first)
+    used = movies.flat_map { |m| m[:crew].keys }.uniq
+    (order & used).each_with_index.to_h { |job, i| [job, i + 1] }
+  end
+
+  def write(movies, crew, genres)
+    FileUtils.mkdir_p(@output_dir)
+    write_jsonl('movies.txt', movies.map(&:compact))
+    write_jsonl('crew.txt', crew.map(&:compact))
+    write_jsonl('genres.txt', genres)
     mysql = mysql_writer(movies, crew, genres)
     mysql.write
     write_neo4j(movies, crew, genres)
-    write_readme(movies.size, crew.size, genres.size)
+    write_readme(movies, crew, genres)
 
     STDERR.puts
     STDERR.puts "Done. Wrote to #{@output_dir}:"
@@ -60,315 +420,36 @@ class ImdbDatasetBuilder
     report(movies, crew, genres)
   end
 
-  private
-
-  def download(name)
-    target = File.join(@download_dir, name)
-    if File.exist?(target) && File.size?(target) && !@force_download
-      STDERR.puts "  using cached #{name}"
-      return
-    end
-
-    url = URI.join(SOURCE_URL, name)
-    tmp = "#{target}.part"
-
-    STDERR.puts "  downloading #{url}"
-    File.open(tmp, 'wb') do |file|
-      request_to_file(url, file)
-    end
-    File.rename(tmp, target)
-  rescue StandardError
-    FileUtils.rm_f(tmp) if tmp
-    raise
-  end
-
-  def request_to_file(uri, file, redirects_left = 5)
-    raise "Too many redirects while downloading #{uri}" if redirects_left.zero?
-
-    request = Net::HTTP::Get.new(uri)
-    request['User-Agent'] = 'imdb-dataset-builder/1.0'
-
-    Net::HTTP.start(
-      uri.host,
-      uri.port,
-      use_ssl: uri.scheme == 'https',
-      open_timeout: 30,
-      read_timeout: 120
-    ) do |http|
-      http.request(request) do |response|
-        case response
-        when Net::HTTPSuccess
-          response.read_body { |chunk| file.write(chunk) }
-        when Net::HTTPRedirection
-          location = response['location']
-          raise "Redirect without Location while downloading #{uri}" unless location
-
-          request_to_file(URI.join(uri, location), file, redirects_left - 1)
-        else
-          raise "Download failed for #{uri}: #{response.code} #{response.message}"
-        end
-      end
-    end
-  end
-
-  def each_tsv(name)
-    path = File.join(@download_dir, name)
-
-    # IMDb files are UTF-8, whatever the locale of the shell running the build
-    Zlib::GzipReader.open(path, external_encoding: Encoding::UTF_8) do |gz|
-      headers = gz.readline.chomp.split("\t", -1)
-      gz.each_line do |line|
-        values = line.chomp.split("\t", -1)
-        yield headers.zip(values).to_h
-      end
-    end
-  end
-
-  def load_ratings
-    STDERR.puts 'Parsing ratings...'
-    ratings = {}
-
-    each_tsv('title.ratings.tsv.gz') do |row|
-      votes = row['numVotes'].to_i
-      next if votes < @min_votes
-
-      ratings[row['tconst']] = row['averageRating'].to_f
-    end
-
-    ratings
-  end
-
-  def load_movies(ratings)
-    STDERR.puts 'Parsing titles...'
-
-    movie_ids = Set.new
-    movies = {}
-    movie_id_by_imdb_id = {}
-    genre_id_by_name = {}
-    genres = []
-
-    each_tsv('title.basics.tsv.gz') do |row|
-      next unless row['titleType'] == 'movie'
-      next unless row['isAdult'] == '0'
-      next if missing?(row['runtimeMinutes'])
-      next if missing?(row['startYear'])
-      next if missing?(row['genres'])
-
-      imdb_id = row['tconst']
-      rating = ratings[imdb_id]
-      next unless rating
-
-      movie_ids << imdb_id
-      movie_id_by_imdb_id[imdb_id] ||= movie_id_by_imdb_id.size + 1
-
-      genre_ids = row['genres'].split(',').map do |name|
-        genre_id_by_name[name] ||= begin
-          id = genres.size + 1
-          genres << { id: id, name: name }
-          id
-        end
-      end
-
-      movie = {
-        id: movie_id_by_imdb_id.fetch(imdb_id),
-        title: row['primaryTitle'],
-        year: row['startYear'].to_i,
-        runtime: row['runtimeMinutes'].to_i,
-        genres: genre_ids,
-        rating: rating
-      }
-
-      original_title = row['originalTitle']
-      if !missing?(original_title) && original_title != row['primaryTitle']
-        movie[:original_title] = original_title
-      end
-
-      movies[imdb_id] = movie
-    end
-
-    [movies, movie_ids, genres]
-  end
-
-  # Several German titles can exist (display title, working title, festival
-  # title, a literal translation). The one IMDb displays in Germany wins; a title
-  # without a type comes next; any other type only if nothing better exists.
-  def add_german_titles(movies, movie_ids)
-    STDERR.puts 'Parsing German titles...'
-    best = {}
-
-    each_tsv('title.akas.tsv.gz') do |row|
-      imdb_id = row['titleId']
-      next unless movie_ids.include?(imdb_id)
-      next unless row['region'] == 'DE'
-
-      title = row['title']
-      next if missing?(title)
-
-      types = missing?(row['types']) ? [] : row['types'].split(/[,\u0002]/)
-      rank = if types.include?('imdbDisplay') then 0
-             elsif types.empty? then 1
-             else 2
-             end
-      best[imdb_id] = [rank, title] if best[imdb_id].nil? || rank < best[imdb_id][0]
-    end
-
-    # a German display title equal to the English or original title means the
-    # film has no title of its own in Germany
-    best.each do |imdb_id, (_rank, title)|
-      movie = movies.fetch(imdb_id)
-      movie[:german_title] = title unless [movie[:title], movie[:original_title]].include?(title)
-    end
-  end
-
-  def add_principals(movies, movie_ids)
-    STDERR.puts 'Parsing principals...'
-    people_ids = Set.new
-
-    each_tsv('title.principals.tsv.gz') do |row|
-      imdb_id = row['tconst']
-      next unless movie_ids.include?(imdb_id)
-
-      category = row['category']
-      category = 'actor' if category == 'actress'
-
-      movie = movies.fetch(imdb_id)
-      movie[:crew] ||= {}
-      movie[:crew][category] ||= []
-      # IMDb lists a person once per character, and actress -> actor merges
-      # two categories: keep each person once per job, or (movie, person, job)
-      # would not be unique in movie_crew
-      if movie[:crew][category].include?(row['nconst'])
-        @stats[:duplicate_principals] += 1
-        next
-      end
-      movie[:crew][category] << row['nconst']
-      people_ids << row['nconst']
-    end
-
-    people_ids
-  end
-
-  def load_people(people_ids)
-    STDERR.puts 'Parsing names...'
-
-    crew = {}
-    crew_id_by_imdb_id = {}
-
-    each_tsv('name.basics.tsv.gz') do |row|
-      imdb_id = row['nconst']
-      next unless people_ids.include?(imdb_id)
-      next if missing?(row['birthYear'])
-
-      crew_id_by_imdb_id[imdb_id] ||= crew_id_by_imdb_id.size + 1
-      person = {
-        id: crew_id_by_imdb_id.fetch(imdb_id),
-        name: row['primaryName'],
-        birth_year: row['birthYear'].to_i
-      }
-      unless missing?(row['deathYear'])
-        death_year = row['deathYear'].to_i
-        # years before the common era carry no sign in IMDb (Homer: 850, 800)
-        if death_year < person[:birth_year]
-          @stats[:impossible_life_dates] += 1
-        else
-          person[:death_year] = death_year
-        end
-      end
-      crew[imdb_id] = person
-    end
-
-    [crew, crew_id_by_imdb_id]
-  end
-
-  def replace_imdb_person_ids(movies, crew_id_by_imdb_id)
-    movies.each_value do |movie|
-      next unless movie[:crew]
-
-      movie[:crew].each do |category, people|
-        movie[:crew][category] = people.filter_map { |imdb_id| crew_id_by_imdb_id[imdb_id] }
-      end
-      movie[:crew].delete_if { |_category, people| people.empty? }
-      movie.delete(:crew) if movie[:crew].empty?
-    end
-  end
-
-  def write_movies(movies)
-    path = File.join(@output_dir, 'movies.txt')
-    sorted = movies.values.sort_by { |movie| [movie[:year], movie[:title].downcase] }
-
-    File.open(path, 'w') do |file|
-      sorted.each { |movie| file.puts(JSON.generate(movie)) }
-    end
-  end
-
-  def write_crew(crew)
-    path = File.join(@output_dir, 'crew.txt')
-    sorted = crew.values.sort_by { |person| [person[:birth_year], person[:name].downcase] }
-
-    File.open(path, 'w') do |file|
-      sorted.each { |person| file.puts(JSON.generate(person)) }
-    end
-  end
-
-  def write_genres(genres)
-    path = File.join(@output_dir, 'genres.txt')
-
-    File.open(path, 'w') do |file|
-      genres.each { |genre| file.puts(JSON.generate(genre)) }
-    end
-  end
-
-  def sorted_movies(movies)
-    movies.values.sort_by { |movie| [movie[:year], movie[:title].downcase, movie[:id]] }
-  end
-
-  def jobs_for(movies)
-    job_ids = {}
-    sorted_movies(movies).each do |movie|
-      next unless movie[:crew]
-
-      movie[:crew].each_key do |job|
-        job_ids[job] ||= job_ids.size + 1
-      end
-    end
-    job_ids
+  def write_jsonl(name, rows)
+    File.open(File.join(@output_dir, name), 'w') { |file| rows.each { |row| file.puts(JSON.generate(row)) } }
   end
 
   def mysql_writer(movies, crew, genres)
     jobs = jobs_for(movies)
-    by_id = movies.values.sort_by { |movie| movie[:id] }
-    movie_genres = by_id.flat_map { |movie| movie[:genres].map { |genre_id| [movie[:id], genre_id] } }
-    movie_crew = by_id.flat_map do |movie|
-      (movie[:crew] || {}).flat_map do |job, crew_ids|
-        crew_ids.map { |crew_id| [movie[:id], crew_id, jobs.fetch(job)] }
-      end
+    movie_genres = movies.flat_map { |m| m[:genres].map { |g| [m[:id], g] } }
+    movie_crew = movies.flat_map do |m|
+      m[:crew].flat_map { |job, ids| ids.map { |c| [m[:id], c, jobs.fetch(job)] } }
     end
-
     tables = [
       ClassroomDataset::Table.new(name: 'genre', columns: %w[id name], primary_key: %w[id],
-                                  rows: genres.sort_by { |genre| genre[:id] }.map { |genre| [genre[:id], genre[:name]] }),
-      ClassroomDataset::Table.new(name: 'movie', columns: %w[id title original_title german_title year runtime rating],
+                                  rows: genres.map { |g| [g[:id], g[:name]] }),
+      ClassroomDataset::Table.new(name: 'movie', columns: %w[id title original_title german_title year runtime],
                                   primary_key: %w[id],
-                                  rows: by_id.map do |movie|
-                                    [movie[:id], movie[:title], movie[:original_title], movie[:german_title],
-                                     movie[:year], movie[:runtime], movie[:rating]]
-                                  end),
+                                  rows: movies.map { |m| [m[:id], m[:title], m[:original_title], m[:german_title], m[:year], m[:runtime]] }),
       ClassroomDataset::Table.new(name: 'movie_genre', columns: %w[movie_id genre_id], primary_key: %w[movie_id genre_id],
                                   rows: movie_genres),
       ClassroomDataset::Table.new(name: 'crew', columns: %w[id name birth_year death_year], primary_key: %w[id],
-                                  rows: crew.values.sort_by { |person| person[:id] }.map do |person|
-                                    [person[:id], person[:name], person[:birth_year], person[:death_year]]
-                                  end),
+                                  rows: crew.map { |p| [p[:id], p[:name], p[:birth_year], p[:death_year]] }),
       ClassroomDataset::Table.new(name: 'job', columns: %w[id title], primary_key: %w[id],
-                                  rows: jobs.map { |title, id| [id, title] }.sort_by(&:first)),
+                                  rows: jobs.map { |title, id| [id, title] }),
       ClassroomDataset::Table.new(name: 'movie_crew', columns: %w[movie_id crew_id job_id],
                                   primary_key: %w[movie_id crew_id job_id], rows: movie_crew)
     ]
-
     ClassroomDataset::MysqlWriter.new(
       output_dir: @output_dir,
       header: [
-        "Generated from the IMDb non-commercial datasets at #{SOURCE_URL}",
+        'Movie data from Wikidata (https://www.wikidata.org/), CC0 1.0.',
+        "Films chosen by number of IMDb votes (>= #{@min_votes}); no IMDb data is included.",
         "Generated: #{Time.now.utc.iso8601}"
       ],
       schema: MYSQL_SCHEMA,
@@ -378,6 +459,8 @@ class ImdbDatasetBuilder
     )
   end
 
+  # The schema the Filmdatenbank tutorial builds from its ER model
+  # (src/content/filmdatenbank/film-2.er); the column lists must stay the same.
   MYSQL_SCHEMA = <<~SQL
     CREATE TABLE `genre` (
       `id` INT NOT NULL,
@@ -393,7 +476,6 @@ class ImdbDatasetBuilder
       `german_title` VARCHAR(255) NULL,
       `year` INT NOT NULL,
       `runtime` INT NOT NULL,
-      `rating` DECIMAL(3,1) NOT NULL,
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -411,7 +493,7 @@ class ImdbDatasetBuilder
     CREATE TABLE `crew` (
       `id` INT NOT NULL,
       `name` VARCHAR(255) NOT NULL,
-      `birth_year` INT NOT NULL,
+      `birth_year` INT NULL,
       `death_year` INT NULL,
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -444,178 +526,136 @@ class ImdbDatasetBuilder
       movie_nodes = {}
       crew_nodes = {}
       genre_nodes = {}
-
-      movies.values.sort_by { |movie| movie[:id] }.each do |movie|
-        properties = movie.slice(:id, :title, :year, :runtime, :rating)
-        properties[:original_title] = movie[:original_title] if movie[:original_title]
-        properties[:german_title] = movie[:german_title] if movie[:german_title]
-        movie_nodes[movie[:id]] = neo4j.node(['Movie'], properties)
+      movies.each do |m|
+        movie_nodes[m[:id]] = neo4j.node(['Movie'], m.slice(:id, :title, :original_title, :german_title, :year, :runtime).compact)
       end
-
-      crew.values.sort_by { |person| person[:id] }.each do |person|
-        crew_nodes[person[:id]] = neo4j.node(['Person'], person.slice(:id, :name, :birth_year, :death_year))
-      end
-
-      genres.sort_by { |genre| genre[:id] }.each do |genre|
-        genre_nodes[genre[:id]] = neo4j.node(['Genre'], id: genre[:id], name: genre[:name])
-      end
-
-      movies.values.sort_by { |movie| movie[:id] }.each do |movie|
-        from = movie_nodes.fetch(movie[:id])
-        movie[:genres].each { |genre_id| neo4j.relationship(from, genre_nodes.fetch(genre_id), 'IN_GENRE') }
-
-        (movie[:crew] || {}).each do |job, crew_ids|
-          type = neo4j_relationship_type(job)
-          crew_ids.each { |crew_id| neo4j.relationship(crew_nodes.fetch(crew_id), from, type) }
+      crew.each { |p| crew_nodes[p[:id]] = neo4j.node(['Person'], p.slice(:id, :name, :birth_year, :death_year).compact) }
+      genres.each { |g| genre_nodes[g[:id]] = neo4j.node(['Genre'], id: g[:id], name: g[:name]) }
+      movies.each do |m|
+        from = movie_nodes.fetch(m[:id])
+        m[:genres].each { |g| neo4j.relationship(from, genre_nodes.fetch(g), 'IN_GENRE') }
+        m[:crew].each do |job, ids|
+          ids.each { |c| neo4j.relationship(crew_nodes.fetch(c), from, job.upcase) }
         end
       end
     end
   end
 
-  def neo4j_relationship_type(job)
-    type = job.to_s.upcase.gsub(/[^A-Z0-9_]/, '_').gsub(/_+/, '_').sub(/\A_+/, '').sub(/_+\z/, '')
-    raise "Cannot derive Neo4j relationship type from #{job.inspect}" if type.empty?
-
-    type
-  end
-
   def report(movies, crew, genres)
-    credits = movies.values.sum { |movie| (movie[:crew] || {}).values.sum(&:size) }
-    titles = movies.values.group_by { |movie| movie[:title] }.select { |_title, list| list.size > 1 }
+    credits = movies.sum { |m| m[:crew].values.sum(&:size) }
+    titles = movies.group_by { |m| m[:title] }.select { |_t, list| list.size > 1 }
     notes = []
     notes << "#{titles.size} titles occur more than once (e.g. #{titles.keys.first(3).join(', ')}): a title is not a key" if titles.any?
+    notes << 'check by hand what the tutorial asks about: The Matrix (1999), Christopher Nolan, Animation, at least five directors with five films'
     ClassroomDataset.report('Sanity check:', {
       'movies' => movies.size,
       'people' => crew.size,
-      'genres' => genres.size,
+      'genres' => "#{genres.size} (#{genres.map { |g| g[:name] }.join(', ')})",
       'credits (movie, person, job)' => credits,
-      'movies with a German title' => movies.values.count { |movie| movie[:german_title] },
-      'years' => "#{movies.values.map { |m| m[:year] }.min}-#{movies.values.map { |m| m[:year] }.max}",
-      'duplicate credits removed' => @stats[:duplicate_principals],
-      'impossible death years dropped' => @stats[:impossible_life_dates]
+      'movies with a German title' => movies.count { |m| m[:german_title] },
+      'years' => "#{movies.map { |m| m[:year] }.min}-#{movies.map { |m| m[:year] }.max}",
+      'IMDb IDs not found in Wikidata' => @stats[:not_in_wikidata],
+      'films without English title, year or runtime (left out)' => @stats[:films_without_title_year_or_runtime],
+      'films without a known genre (kept)' => @stats[:films_without_genre],
+      'people left out (beyond the limit per job)' => @stats[:people_left_out],
+      'impossible death years dropped' => @stats[:impossible_life_dates],
+      'Wikidata requests (not cached)' => @wikidata.requests
     }, notes)
   end
 
-  def write_readme(movie_count, crew_count, genre_count)
-    path = File.join(@output_dir, 'README.md')
-    generated_at = Time.now.utc.iso8601
+  def write_readme(movies, crew, genres)
+    File.write(File.join(@output_dir, 'README.md'), <<~README)
+      # Movie dataset (Wikidata)
 
-    File.write(path, <<~README)
-      # IMDb-derived movie dataset
+      Films, genres and the people who made them, for the *Filmdatenbank mit MySQL*
+      activity of the Hackschule Workspace. Built with `src/scripts/collect-movies` from
+      https://github.com/specht/workspace.
 
-      This directory was generated from the IMDb datasets published at:
+      Generated: #{Time.now.utc.iso8601}
 
-      #{SOURCE_URL}
+      ## Source and licence
 
-      Generated: #{generated_at}
+      All data comes from [Wikidata](https://www.wikidata.org/), which is available
+      under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/): it may be
+      copied, changed and shared without asking. Each film and person in `movies.txt`
+      and `crew.txt` carries its Wikidata item ID (`wikidata`).
 
-      Source files used:
+      Which films are included was decided with the number of user votes in IMDb's
+      public `title.ratings` file: non-adult feature films with at least #{@min_votes}
+      votes. Those films were looked up in Wikidata by their IMDb ID (property P345).
+      Nothing else from IMDb is used or included.
 
-      #{DATASETS.map { |name| "- #{SOURCE_URL}#{name}" }.join("\n")}
+      - `title`: English label; `german_title`: German label, if different;
+        `original_title`: P1476, if different
+      - `year`: earliest publication date (P577); `runtime`: duration in minutes (P2047)
+      - genres: P136, mapped to #{genres.size} names (#{genres.map { |g| g[:name] }.join(', ')});
+        a film may have none
+      - people: cast member (P161, the 10 best known per film), director (P57),
+        screenwriter (P58, as `writer`), composer (P86), producer (P162), director of
+        photography (P344, as `cinematographer`) and film editor (P1040, as `editor`),
+        only humans; best known means: most Wikipedia articles
+      - `birth_year`, `death_year`: P569, P570; may be empty
 
-      The generated data contains only non-adult titles of type `movie` with a known
-      year, runtime and genre, and with at least #{@min_votes} IMDb votes at generation
-      time. German titles are added when available, preferring the title IMDb displays
-      in Germany. `actress` principals are normalized to the `actor` category, matching
-      the original classroom dataset. Death years before the birth year (ancient authors,
-      whose years carry no sign in IMDb) are dropped.
+      Wikidata is edited by many people. A wrong date or a missing genre is best fixed
+      there, and the next build picks it up.
 
-      ## Generated files
+      ## Files
 
-      - `movies.txt` — #{movie_count} movies, one JSON object per line
-      - `crew.txt` — #{crew_count} people, one JSON object per line
-      - `genres.txt` — #{genre_count} genres, one JSON object per line
+      - `movies.txt` — #{movies.size} movies, one JSON object per line
+      - `crew.txt` — #{crew.size} people, one JSON object per line
+      - `genres.txt` — #{genres.size} genres, one JSON object per line
       - `mysql.sql` — schema and complete data
       - `mysql-schema.sql` — schema only
       - `mysql-data.sql` — data only, for a schema built in class
       - `mysql-data-movies.sql` — data only: `genre`, `movie`, `movie_genre`
       - `mysql-data-crew.sql` — data only: `crew`, `job`, `movie_crew`
-      - `neo4j.dump` — logical Neo4jBolt dump ready for `neo4j_bolt load`
+      - `neo4j.dump` — logical Neo4jBolt dump for `neo4j_bolt load`
 
-      Every classroom dataset (also the Discogs music dataset) uses these file names.
+      Every classroom dataset (also the music dataset) uses these file names.
 
       ## MySQL
 
-      The relational schema has the tables `movie`, `genre`, `movie_genre`, `crew`,
-      `job` and `movie_crew`. `movie_crew` connects a movie, a person and a job; a person
-      appears once per job and movie, even if IMDb lists several characters.
-
-      Load everything into the current database:
-
-      ```sh
-      mysql < mysql.sql
-      ```
-
-      Or load the data step by step into tables created in class (the column names must
-      match):
+      Tables: `movie`, `genre`, `movie_genre`, `crew`, `job`, `movie_crew`.
+      `movie_crew` connects a movie, a person and a job; a person appears once per job
+      and movie. Titles are not unique, so a film is identified by its `id`, or by
+      title and year.
 
       ```sh
-      mysql < mysql-data-movies.sql
+      mysql < mysql.sql                 # everything
+      mysql < mysql-data-movies.sql     # or step by step into tables built in class
       mysql < mysql-data-crew.sql
       ```
 
-      Titles are not unique: two films may share a title (e.g. *Nosferatu*, 1922 and
-      2024), so queries identify a film by its `id` or by title and year.
+      ## Neo4j
 
-      ## Neo4j / Neo4jBolt
-
-      `neo4j.dump` uses Neo4jBolt's textual logical dump format. It contains:
-
-      - `Movie` nodes
-      - `Person` nodes
-      - `Genre` nodes
-      - `(Movie)-[:IN_GENRE]->(Genre)` relationships
-      - `(Person)-[:ACTOR|DIRECTOR|WRITER|...]->(Movie)` relationships
-
-      Load it into an empty Neo4j database with:
+      `Movie`, `Person` and `Genre` nodes; `(Movie)-[:IN_GENRE]->(Genre)` and
+      `(Person)-[:ACTOR|DIRECTOR|WRITER|…]->(Movie)`.
 
       ```sh
       neo4j_bolt load neo4j.dump
       ```
-
-      Neo4jBolt uses dump-local integer node IDs in this file to reconnect
-      relationships while loading; these are not Neo4j database-internal IDs.
-
-      ## Source cache and provenance
-
-      The original compressed IMDb files are cached in `.downloads/` so the script can
-      be run again without downloading them again. Use `--force-download` to refresh
-      them.
-
-      IMDb data is provided by IMDb. See the IMDb dataset page and its linked terms for
-      the conditions that apply to use of the source data. This generated README is only
-      a provenance note and does not replace those terms.
     README
-  end
-
-  def missing?(value)
-    value.nil? || value == '\\N'
   end
 end
 
 options = {
-  output_dir: 'videothek',
+  output_dir: 'movie-archive',
   min_votes: 100_000,
-  force_download: false
+  force_download: false,
+  offline: false,
+  pause: 1.0
 }
 
 parser = OptionParser.new do |opts|
   opts.banner = 'Usage: collect-movies.rb [options]'
-
-  opts.on('-o', '--output DIR', "Output directory (default: #{options[:output_dir]})") do |dir|
-    options[:output_dir] = dir
-  end
-
-  opts.on('--min-votes N', Integer, "Minimum number of IMDb votes (default: #{options[:min_votes]})") do |n|
-    options[:min_votes] = n
-  end
-
-  opts.on('--force-download', 'Download all IMDb source files again') do
-    options[:force_download] = true
-  end
+  opts.on('-o', '--output DIR', "Output directory (default: #{options[:output_dir]})") { |dir| options[:output_dir] = dir }
+  opts.on('--min-votes N', Integer, "Films with at least N IMDb votes (default: #{options[:min_votes]})") { |n| options[:min_votes] = n }
+  opts.on('--force-download', 'Download the IMDb vote files again') { options[:force_download] = true }
+  opts.on('--offline', 'Use only cached Wikidata answers') { options[:offline] = true }
+  opts.on('--pause SECONDS', Float, "Pause between Wikidata requests (default: #{options[:pause]})") { |s| options[:pause] = s }
 end
 
 if $PROGRAM_NAME == __FILE__
   parser.parse!
-  ImdbDatasetBuilder.new(**options).run
+  WikidataMovieBuilder.new(**options).run
 end

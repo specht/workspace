@@ -29,6 +29,7 @@ EXTENSIONS=(
     "/app/extensions/hackschule-keyboard-tutorial-0.5.4.vsix|gymnasiumsteglitz.hackschule-keyboard-tutorial"
     "/app/extensions/bif-authoring-tools-0.2.1.vsix|gymnasiumsteglitz.bif-authoring-tools"
     "/app/extensions/ritwickdey.LiveServer.vsix|ritwickdey.LiveServer"
+    "/app/extensions/hackschule-er-0.1.0.vsix|hackschule.hackschule-er"
 )
 
 mkdir -p "$EXT_DIR"

@@ -1,0 +1,4 @@
+test/**
+*.vsix
+node_modules/**
+core/*.test.cjs

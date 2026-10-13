@@ -1,0 +1,55 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "ER-Modell",
+  "scopeName": "source.er",
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#entity" },
+    { "include": "#relationship" },
+    { "include": "#attribute" }
+  ],
+  "repository": {
+    "comment": {
+      "match": "#.*$",
+      "name": "comment.line.number-sign.er"
+    },
+    "entity": {
+      "match": "^(entity)\\s+([\\p{L}_][\\p{L}\\p{N}_]*)",
+      "captures": {
+        "1": { "name": "keyword.control.er" },
+        "2": { "name": "entity.name.type.er" }
+      }
+    },
+    "relationship": {
+      "begin": "^(relationship)\\s+([\\p{L}_][\\p{L}\\p{N}_]*)\\s*(:)",
+      "beginCaptures": {
+        "1": { "name": "keyword.control.er" },
+        "2": { "name": "entity.name.function.er" },
+        "3": { "name": "punctuation.separator.er" }
+      },
+      "end": "$",
+      "patterns": [
+        { "include": "#comment" },
+        { "match": "\\b[1nm]\\s*:\\s*[1nm]\\b", "name": "constant.numeric.cardinality.er" },
+        { "match": "\\bas\\b", "name": "keyword.control.er" },
+        { "match": ",", "name": "punctuation.separator.er" },
+        { "match": "[\\p{L}_][\\p{L}\\p{N}_]*", "name": "entity.name.type.er" }
+      ]
+    },
+    "attribute": {
+      "begin": "^(\\s+)([\\p{L}_][\\p{L}\\p{N}_]*)\\s*(:)?",
+      "beginCaptures": {
+        "2": { "name": "variable.other.property.er" },
+        "3": { "name": "punctuation.separator.er" }
+      },
+      "end": "$",
+      "patterns": [
+        { "include": "#comment" },
+        { "match": "\\b(int|text|varchar|decimal|float|date|datetime|bool)\\b", "name": "support.type.er" },
+        { "match": "\\bkey\\b", "name": "storage.modifier.key.er" },
+        { "match": "\\b(optional|unique)\\b", "name": "storage.modifier.er" },
+        { "match": "\\d+", "name": "constant.numeric.er" }
+      ]
+    }
+  }
+}

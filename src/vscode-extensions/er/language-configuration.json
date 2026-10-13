@@ -1,0 +1,24 @@
+{
+  "comments": {
+    "lineComment": "#"
+  },
+  "brackets": [
+    ["(", ")"]
+  ],
+  "autoClosingPairs": [
+    { "open": "(", "close": ")" }
+  ],
+  "surroundingPairs": [
+    ["(", ")"]
+  ],
+  "onEnterRules": [
+    {
+      "beforeText": "^(entity|relationship)\\b.*$",
+      "action": { "indent": "indent" }
+    }
+  ],
+  "indentationRules": {
+    "increaseIndentPattern": "^(entity|relationship)\\b.*$",
+    "decreaseIndentPattern": "^\\s*$"
+  }
+}

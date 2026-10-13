@@ -17,7 +17,6 @@ entity movie
   german_title: text, optional
   year: int
   runtime: int
-  rating: decimal(3,1)
 
 entity genre
   id: int, key
@@ -53,7 +52,7 @@ test('the Filmdatenbank becomes the tables of the dataset', () => {
     assert.deepEqual(mc.pk, ['movie_id', 'crew_id', 'job_id']);
     const movie = result.tables.find((t) => t.name === 'movie');
     assert.equal(movie.columns.find((c) => c.name === 'original_title').nullable, true);
-    assert.equal(movie.columns.find((c) => c.name === 'rating').type, 'DECIMAL(3,1)');
+    assert.equal(movie.columns.find((c) => c.name === 'runtime').type, 'INT');
     assert.deepEqual(result.tables.find((t) => t.name === 'genre').uniques, [['name']]);
 });
 

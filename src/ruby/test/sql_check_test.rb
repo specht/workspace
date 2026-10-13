@@ -201,6 +201,13 @@ class SqlCheckTest < Minitest::Test
         assert_includes result.message, 'hat 0 Zeilen, die Beispieldaten haben 4'
     end
 
+    def test_check_needs_rows_from_the_reference
+        r, = runner(answers("SELECT COUNT(*) FROM land WHERE Kontinent IN ('Europa', 'Europe')" => { :columns => ['COUNT(*)'], :rows => [] }))
+        result = TaskCheck.check(task, 'SELECT 1', sql: r)
+        assert_equal [:unavailable, :no_data], [result.status, result.problem]
+        assert_includes result.message, 'Lade zuerst die Beispieldaten'
+    end
+
     def test_check_unreachable
         assert_equal :unavailable, TaskCheck.check(task, 'SELECT 1', sql: nil).status
         r, = runner(answers('SELECT COUNT(*) FROM `land`' => { :error => { :code => 2003, :message => "Can't connect" } }))

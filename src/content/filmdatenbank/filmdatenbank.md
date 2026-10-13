@@ -1,0 +1,409 @@
+<div class='meta'>
+image: filmdatenbank.webp:50:20
+kind: projekt
+topic: databases
+duration: 3 Doppelstunden
+requires: [mysql]
+</div>
+
+# Filmdatenbank mit MySQL
+
+<p class='abstract'>
+Du entwirfst eine Datenbank für Filme, ihre Genres und die Menschen, die an ihnen mitgearbeitet haben. Das Modell schreibst du als Text, die ER-Werkstatt in VS Code zeichnet daraus Diagramme und erzeugt das SQL für die Tabellen. Danach lädst du echte Filmdaten hinein und setzt mit <code>JOIN</code> wieder zusammen, was das Modell auf mehrere Tabellen verteilt hat.
+</p>
+
+In der »Einführung in SQL« hast du eine fertige Datenbank abgefragt. Jetzt baust du selbst eine: vom Modell über das Diagramm zu den Tabellen und dann zu den Abfragen. Alles, was du dabei schreibst, sind Dateien in deinem Workspace, die du behältst.
+
+## Ein Film als Datensatz
+
+So könnte ein Film aussehen, wenn ein Programm ihn als JSON verschickt:
+
+```json
+{
+  "id": 1207,
+  "title": "The Matrix",
+  "german_title": "Matrix",
+  "year": 1999,
+  "runtime": 136,
+  "genres": ["Action", "Sci-Fi"],
+  "crew": {
+    "director": ["Lana Wachowski", "Lilly Wachowski"],
+    "actor": ["Keanu Reeves", "Laurence Fishburne", "Carrie-Anne Moss"],
+    "composer": ["Don Davis"]
+  }
+}
+```
+
+Für den Austausch ist das bequem: Alles über einen Film steht an einer Stelle. Für eine Datenbank, die viele Fragen beantworten soll, ist es ungünstig. »Welche Filme sind Sci-Fi?« hieße, in jedem Film die Liste `genres` zu durchsuchen. Und wer bei fünf Filmen Regie geführt hat, stünde fünfmal mit seinem Namen da, vielleicht einmal anders geschrieben.
+
+In dem Datensatz stecken verschiedene Arten von Dingen: **Filme**, **Genres**, **Personen** und das, was eine Person bei einem Film gemacht hat, die **Tätigkeit**. In einer relationalen Datenbank bekommt jede Art ihre eigene Tabelle, und die Beziehungen zwischen ihnen werden eigens gespeichert.
+
+_task(eine-spalte)
+
+## Einen Ordner anlegen
+
+Schließe zuerst einen geöffneten Ordner: <kbd>Strg</kbd><kbd>K</kbd>, dann <kbd>F</kbd>. Öffne dann mit <kbd>Strg</kbd><kbd>K</kbd> und <kbd>Strg</kbd><kbd>O</kbd> den Ordner `filmdatenbank`. Weil es ihn noch nicht gibt, fragt VS Code, ob er angelegt werden soll; bestätige mit <kbd>Enter</kbd>.
+
+<!-- tutorial-screenshot
+close-folder
+press: Control+K
+press: Control+O
+wait-for-input-value: /workspace/
+type: filmdatenbank
+crop-bottom: 55%
+-->
+
+<img class='full' src='open-folder.webp' alt='Im Dialog »Ordner öffnen« steht /workspace/filmdatenbank.'>
+
+Lege im Ordner eine neue Datei `film.er` an: Klicke im Explorer auf das Symbol »Neue Datei« und tippe den Namen. Die Endung `.er` ist wichtig, an ihr erkennt VS Code ein ER-Modell.
+
+## Das Modell als Text
+
+Ein ER-Modell (Entity-Relationship-Modell) beschreibt, welche Dinge es gibt (**Entitäten**), welche Eigenschaften sie haben (**Attribute**) und wie sie zusammenhängen (**Beziehungen**). Du schreibst es als Text. Fang mit Filmen und Genres an:
+
+```er
+# Filme und ihre Genres
+
+entity movie
+  id: int, key
+  title: text
+  original_title: text, optional
+  german_title: text, optional
+  year: int
+  runtime: int
+
+entity genre
+  id: int, key
+  name: text, unique
+
+relationship has_genre: movie n:m genre
+```
+
+So liest du das:
+
+- `entity movie` legt die Entität `movie` an. Die eingerückten Zeilen darunter sind ihre Attribute: Name, Doppelpunkt, Typ.
+- Typen: `int` für ganze Zahlen, `text` für Text bis 255 Zeichen. Es gibt auch `varchar(n)`, `decimal(p,s)`, `float`, `date`, `datetime` und `bool`.
+- `key` markiert den **Schlüssel**: das Attribut, das jeden Film eindeutig bestimmt. Titel taugen dafür nicht, es gibt mehrere Filme mit demselben Titel.
+- `optional` heißt: darf leer bleiben. Nicht jeder Film hat einen eigenen deutschen Titel.
+- `unique` heißt: kein Wert darf doppelt vorkommen. Jedes Genre gibt es nur einmal.
+- `relationship has_genre: movie n:m genre` verbindet Filme und Genres. `n:m` ist die **Kardinalität**: Ein Film hat mehrere Genres, und zu einem Genre gehören viele Filme. Weitere Möglichkeiten sind `1:1`, `1:n` und `n:1`.
+
+Bezeichner schreibst du klein und englisch, ohne Leerzeichen und Umlaute; für mehrere Wörter nimmst du `_`. Die Namen sind nicht beliebig: Die Filmdaten, die du später lädst, erwarten genau diese Tabellen und Spalten.
+
+Während du tippst, unterstreicht VS Code Fehler rot und erklärt sie, wenn du mit der Maus darüberfährst. Alle Fehler stehen auch im Bereich »Probleme« (<kbd>Strg</kbd><kbd>Shift</kbd><kbd>M</kbd>).
+
+_task(modell-filme)
+
+## Dasselbe Modell als Diagramm
+
+Klicke oben rechts im Editor auf »ER-Diagramm anzeigen« (oder <kbd>Strg</kbd><kbd>K</kbd>, dann <kbd>V</kbd>). Neben deinem Text erscheint das Modell als Diagramm, und es ändert sich mit, während du schreibst.
+
+<!-- tutorial-screenshot
+press: Enter
+wait-for-text: create it
+press: Enter
+sleep: 1
+click: Next Up
+write-file: filmdatenbank/film.er <- previous-code
+open-file: film.er
+press: Control+K
+press: v
+sleep: 2
+-->
+
+<img class='full' src='er-preview.webp' alt='Links das Modell film.er im Editor, rechts die ER-Werkstatt mit dem Chen-Diagramm von movie und genre.'>
+
+Oben in der Vorschau wählst du zwischen drei Darstellungen desselben Modells.
+
+**Chen.** Rechtecke sind Entitäten, Rauten Beziehungen, Ellipsen Attribute. Schlüssel sind unterstrichen. An den Linien steht die Kardinalität. Diese Darstellung findest du in vielen Schulbüchern.
+
+<img src='film-1-chen.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Chen-Diagramm: movie und genre als Rechtecke, verbunden über die Raute has_genre mit n und m, Attribute als Ellipsen.'>
+
+**Krähenfuß.** Jede Entität ist ein Kasten mit ihren Attributen. Das Linienende zeigt die Kardinalität: ein Strich heißt »eins«, der gespreizte Krähenfuß »viele«.
+
+<img src='film-1-crowfoot.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Krähenfuß-Diagramm: movie und genre, an beiden Enden der Linie ein Krähenfuß.'>
+
+**Tabellen.** So wird das Modell in der Datenbank gespeichert. Aus jeder Entität wird eine Tabelle. Die n:m-Beziehung wird zu einer eigenen Tabelle `movie_genre`: In ihr steht pro Zeile ein Paar aus Film und Genre, nur mit den beiden IDs.
+
+<img src='film-1-tables.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Tabellendiagramm: movie und genre, dazwischen die Tabelle movie_genre mit movie_id und genre_id, beide PK und FK.'>
+
+In `movie_genre` steht `PK-FK` vor beiden Spalten:
+
+- **FK**, Fremdschlüssel: `movie_id` verweist auf eine `id` in `movie`, `genre_id` auf eine `id` in `genre`. Die Datenbank lässt nur IDs zu, die es dort gibt.
+- **PK**, Primärschlüssel: Beide Spalten **zusammen** bestimmen eine Zeile eindeutig. `movie_id` allein reicht nicht, ein Film hat mehrere Genres. Das nennt man einen zusammengesetzten Primärschlüssel.
+
+Unter dem Diagramm stehen die Tabellen noch einmal als Liste und, aufgeklappt, »So wurde übersetzt«: Schritt für Schritt, was aus welchem Teil des Modells geworden ist.
+
+Die Kästen kannst du mit der Maus verschieben. Die Positionen merkt sich die ER-Werkstatt in der versteckten Datei `.film.er.layout.json` neben deinem Modell; »Neu anordnen« ordnet alles wieder automatisch an.
+
+_task(vorhersage-n1)
+
+## Die Tabellen anlegen
+
+Klicke in der Vorschau auf »SQL erzeugen«. Neben `film.er` entsteht die Datei `film.sql`:
+
+```sql
+-- Erzeugt aus film.er mit der ER-Werkstatt 0.1.0.
+-- Nicht von Hand ändern: Beim nächsten Erzeugen wird diese Datei überschrieben.
+-- Vorhandene Tabellen mit diesen Namen werden gelöscht, samt Inhalt.
+
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS movie, genre, movie_genre;
+SET FOREIGN_KEY_CHECKS = 1;
+
+CREATE TABLE movie (
+  id              INT NOT NULL,
+  title           VARCHAR(255) NOT NULL,
+  original_title  VARCHAR(255) NULL,
+  german_title    VARCHAR(255) NULL,
+  year            INT NOT NULL,
+  runtime         INT NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE genre (
+  id    INT NOT NULL,
+  name  VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE (name)
+);
+
+CREATE TABLE movie_genre (
+  movie_id  INT NOT NULL,
+  genre_id  INT NOT NULL,
+  PRIMARY KEY (movie_id, genre_id)
+);
+
+ALTER TABLE movie_genre
+  ADD FOREIGN KEY (movie_id)
+  REFERENCES movie (id);
+
+ALTER TABLE movie_genre
+  ADD FOREIGN KEY (genre_id)
+  REFERENCES genre (id);
+```
+
+- `DROP TABLE IF EXISTS` löscht die Tabellen, falls es sie schon gibt. So kannst du ein geändertes Modell jederzeit mit demselben Befehl neu anlegen. Dabei geht ihr Inhalt verloren.
+- `CREATE TABLE` legt eine Tabelle an. `NOT NULL` steht bei allem, was nicht `optional` ist.
+- `PRIMARY KEY` legt den Primärschlüssel fest, `UNIQUE` verbietet doppelte Werte.
+- `FOREIGN KEY … REFERENCES movie (id)` macht aus `movie_id` einen Fremdschlüssel auf `movie`.
+
+Öffne ein Terminal (<kbd>Strg</kbd><kbd>J</kbd>) und gib die Datei an MySQL:
+
+```bash
+mysql < film.sql
+```
+
+Wenn alles klappt, gibt `mysql` nichts aus.
+
+<!-- tutorial-screenshot
+click: selector:.editor-actions a[aria-label="SQL erzeugen"]
+wait-for-file: filmdatenbank/film.sql
+show-bottom-panel
+terminal-open
+terminal-maximize
+terminal-run: clear
+terminal-run: mysql < film.sql
+terminal-wait-for-prompt
+terminal-run: mysql -e 'SHOW TABLES'
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
+<img class='full' src='show-tables.webp' alt='Im Terminal zeigt mysql -e "SHOW TABLES" die Tabellen genre, movie und movie_genre.'>
+
+_task(tabellen-filme)
+
+## Filmdaten laden
+
+Die Tabellen sind angelegt, aber leer. Lade die Filme, Genres und ihre Zuordnungen herunter und gib sie an MySQL:
+
+```bash
+wget https://github.com/specht/workspace-files/raw/main/movie-archive/mysql-data-movies.sql
+mysql < mysql-data-movies.sql
+```
+
+Schau dir `mysql-data-movies.sql` ruhig an. Es sind lauter `INSERT`-Befehle, und jeder nennt die Spalten, in die er schreibt, zum Beispiel `INSERT INTO movie (id, title, original_title, …)`. Deshalb müssen die Namen in deinem Modell genau stimmen. Meldet MySQL `Unknown column` oder `Table … doesn't exist`, vergleiche die Namen in `film.er` mit der Meldung, erzeuge das SQL neu und fang mit `mysql < film.sql` wieder an.
+
+<div class='hint'>
+Die Filme stammen aus <a href='https://www.wikidata.org/'>Wikidata</a>, einer freien Wissensdatenbank, die jede und jeder weiterverwenden darf. Woher die Daten genau kommen und wie sie ausgewählt wurden, steht in der <code>README.md</code> neben den Dateien.
+</div>
+
+_task(daten-filme)
+
+Starte `mycli` und sieh dich um, wie in der »Einführung in SQL«:
+
+```sql
+SELECT * FROM movie LIMIT 5;
+SELECT * FROM movie_genre LIMIT 5;
+```
+
+_task(anzahl-filme)
+
+## JOIN: Beziehungen wieder zusammensetzen
+
+In der »Einführung in SQL« kamen die Antworten aus einer Tabelle. Jetzt hast du die Daten mit Absicht verteilt. Welche Genres hat »The Matrix«? `movie` kennt den Film, aber nicht seine Genres:
+
+```sql
+SELECT id, title, year
+FROM movie
+WHERE title = 'The Matrix';
+```
+
+Die Zuordnung steht in `movie_genre`. Also verbindest du `movie` mit `movie_genre`:
+
+```sql
+SELECT movie.title, movie_genre.genre_id
+FROM movie
+JOIN movie_genre ON movie.id = movie_genre.movie_id
+WHERE movie.title = 'The Matrix';
+```
+
+`JOIN` verbindet Zeilen aus zwei Tabellen. `ON` sagt, welche Zeilen zusammengehören: die, bei denen `movie.id` und `movie_genre.movie_id` gleich sind. Weil es zwei Tabellen mit einer Spalte `id` geben kann, schreibst du den Tabellennamen davor, `movie.id`.
+
+Jetzt hast du die IDs der Genres. Für ihre Namen folgst du der nächsten Linie im Tabellendiagramm, von `movie_genre` zu `genre`:
+
+```sql
+SELECT movie.title, genre.name
+FROM movie
+JOIN movie_genre ON movie.id = movie_genre.movie_id
+JOIN genre ON movie_genre.genre_id = genre.id
+WHERE movie.title = 'The Matrix';
+```
+
+<div class='hint'>
+Jedes <code>JOIN … ON …</code> folgt einer Linie im Tabellendiagramm. Wenn du dort den Weg von einer Tabelle zur anderen findest, hast du die Abfrage schon fast. Vergisst du <code>ON</code>, verbindet MySQL jede Zeile mit jeder: Aus einigen tausend Filmen und Zuordnungen werden Millionen Zeilen.
+</div>
+
+_task(genres-matrix)
+
+_task(animation)
+
+### Zählen pro Gruppe
+
+Mit `COUNT(*)` zählst du Zeilen. Mit `GROUP BY` teilst du das Ergebnis vorher in Gruppen und zählst jede Gruppe für sich:
+
+```sql
+SELECT genre.name, COUNT(*)
+FROM genre
+JOIN movie_genre ON genre.id = movie_genre.genre_id
+GROUP BY genre.id, genre.name;
+```
+
+Alle Zeilen mit demselben Genre werden zu einer zusammengefasst, und `COUNT(*)` zählt, wie viele es waren.
+
+_task(filme-pro-genre)
+
+## Das Modell wächst: Menschen und Tätigkeiten
+
+Bisher fehlt die `crew` aus dem Datensatz vom Anfang. Wer hat bei »The Matrix« Regie geführt? In welchen Filmen hat eine Person mitgespielt? Dafür braucht das Modell Personen und ihre Tätigkeiten.
+
+Überlege, bevor du weiterliest: Eine Person arbeitet an vielen Filmen, an einem Film arbeiten viele Personen. Und eine Person kann bei **einem** Film mehrere Tätigkeiten haben, etwa Regie führen und das Drehbuch schreiben. Zwischen welchen Entitäten besteht die Beziehung?
+
+Sie verbindet drei Entitäten auf einmal: Film, Person und Tätigkeit. Ergänze `film.er` um zwei Entitäten und eine dreistellige Beziehung:
+
+```er
+# Personen und was sie bei einem Film gemacht haben
+
+entity crew
+  id: int, key
+  name: text
+  birth_year: int, optional
+  death_year: int, optional
+
+entity job
+  id: int, key
+  title: text, unique
+
+relationship credit: movie, crew, job as movie_crew
+```
+
+- Eine Beziehung zwischen mehr als zwei Entitäten zählst du mit Kommas auf. Sie wird immer zu einer eigenen Tabelle.
+- Ohne `as` hieße diese Tabelle `movie_crew_job`. Die Filmdaten erwarten `movie_crew`, deshalb gibst du den Namen mit `as movie_crew` vor.
+- `job` enthält Tätigkeiten wie `actor`, `director` oder `composer`.
+
+<img src='film-2-chen.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Chen-Diagramm mit movie, genre, crew und job; die Raute credit verbindet movie, crew und job.'>
+
+In der Tabellenansicht siehst du `movie_crew` mit drei Fremdschlüsseln, die zusammen den Primärschlüssel bilden. So kann dieselbe Person bei einem Film mehrere Tätigkeiten haben, aber dieselbe Kombination aus Film, Person und Tätigkeit nicht zweimal vorkommen.
+
+<img src='film-2-tables.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Tabellendiagramm mit movie, genre, movie_genre, crew, job und movie_crew; movie_crew hat drei Spalten, alle PK und FK.'>
+
+_task(modell-crew)
+
+Erzeuge das SQL neu und lege die Tabellen an. Weil `film.sql` mit `DROP TABLE` beginnt, sind danach auch `movie` und `genre` wieder leer. Lade deshalb beide Datendateien:
+
+```bash
+wget https://github.com/specht/workspace-files/raw/main/movie-archive/mysql-data-crew.sql
+mysql < film.sql
+mysql < mysql-data-movies.sql
+mysql < mysql-data-crew.sql
+```
+
+<div class='hint'>
+In einer echten Datenbank, deren Daten nirgends sonst liegen, würdest du nicht alles löschen und neu laden. Dort ergänzt man nur, was neu ist: <code>CREATE TABLE</code> für die neuen Tabellen, <code>ALTER TABLE</code> für neue Spalten. Hier liegen die Daten in Dateien, deshalb ist Neuanlegen der einfachere und sichere Weg.
+</div>
+
+_task(tabellen-crew)
+
+## Durch mehrere Beziehungen zu einer Person
+
+Wer hat bei »The Matrix« Regie geführt? Im Tabellendiagramm führt der Weg von `movie` über `movie_crew` zu `crew`, und die Tätigkeit steht in `job`. Jeder Schritt wird ein `JOIN`:
+
+```sql
+SELECT crew.name
+FROM movie
+JOIN movie_crew ON movie.id = movie_crew.movie_id
+JOIN crew ON movie_crew.crew_id = crew.id
+JOIN job ON movie_crew.job_id = job.id
+WHERE movie.title = 'The Matrix' AND job.title = 'director';
+```
+
+_task(besetzung-matrix)
+
+_task(nolan)
+
+Mit `GROUP BY` zählst du auch hier. Und wenn du nur Gruppen sehen willst, die eine Bedingung erfüllen, schreibst du sie hinter `HAVING`. `WHERE` filtert Zeilen, bevor gruppiert wird, `HAVING` filtert die fertigen Gruppen:
+
+```sql
+SELECT genre.name, COUNT(*)
+FROM genre
+JOIN movie_genre ON genre.id = movie_genre.genre_id
+GROUP BY genre.id, genre.name
+HAVING COUNT(*) >= 100;
+```
+
+_task(viel-regie)
+
+## Wer spielt mit wem?
+
+Eine einfache Frage: Welche zwei Schauspielerinnen oder Schauspieler standen besonders oft gemeinsam vor der Kamera? Die Datenbank kann sie beantworten, aber die Abfrage braucht jede Tabelle zweimal, einmal für jede der beiden Personen:
+
+```sql
+SELECT a.name, b.name, COUNT(*) AS together
+FROM movie_crew AS ma
+JOIN movie_crew AS mb ON ma.movie_id = mb.movie_id
+JOIN job AS ja ON ma.job_id = ja.id
+JOIN job AS jb ON mb.job_id = jb.id
+JOIN crew AS a ON ma.crew_id = a.id
+JOIN crew AS b ON mb.crew_id = b.id
+WHERE ja.title = 'actor' AND jb.title = 'actor' AND a.id < b.id
+GROUP BY a.id, a.name, b.id, b.name
+ORDER BY together DESC
+LIMIT 10;
+```
+
+`AS ma` gibt einer Tabelle einen zweiten Namen, damit sie zweimal vorkommen kann. `a.id < b.id` sorgt dafür, dass jedes Paar nur einmal gezählt wird und niemand mit sich selbst. Du musst die Abfrage nicht Zeile für Zeile nachbauen; probier sie aus.
+
+Fragen, die von Person zu Film zu Person und weiter wandern, werden in SQL schnell lang. Graphdatenbanken wie Neo4j speichern genau diese Wege und machen solche Fragen kurz.
+
+_task(neue-frage)
+
+## Zusammenfassung
+
+- Ein **ER-Modell** beschreibt Entitäten, ihre Attribute und Beziehungen. In der ER-Werkstatt schreibst du es als Text in eine `.er`-Datei und siehst es als Chen-, Krähenfuß- oder Tabellendiagramm.
+- Ein **Primärschlüssel** bestimmt eine Zeile eindeutig, ein **Fremdschlüssel** verweist auf eine Zeile einer anderen Tabelle.
+- Eine **n:m-Beziehung** und jede Beziehung zwischen drei Entitäten wird eine eigene Tabelle mit einem **zusammengesetzten Primärschlüssel**.
+- Aus dem Modell entsteht SQL (`CREATE TABLE`, `PRIMARY KEY`, `FOREIGN KEY`), das du mit `mysql < film.sql` ausführst.
+- Mit `JOIN … ON …` setzt du verteilte Daten wieder zusammen, einen Schritt pro Linie im Tabellendiagramm. `GROUP BY` bildet Gruppen, `HAVING` filtert sie.
+
+Dein Modell `film.er`, das erzeugte `film.sql` und die Diagramme, die du mit »Als SVG speichern« sicherst, liegen in `/workspace/filmdatenbank`. Sie gehören dir; du kannst sie herunterladen oder in ein eigenes Repository legen.

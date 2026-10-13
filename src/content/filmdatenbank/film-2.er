@@ -1,0 +1,29 @@
+# Filme und ihre Genres
+
+entity movie
+  id: int, key
+  title: text
+  original_title: text, optional
+  german_title: text, optional
+  year: int
+  runtime: int
+
+entity genre
+  id: int, key
+  name: text, unique
+
+relationship has_genre: movie n:m genre
+
+# Personen und was sie bei einem Film gemacht haben
+
+entity crew
+  id: int, key
+  name: text
+  birth_year: int, optional
+  death_year: int, optional
+
+entity job
+  id: int, key
+  title: text, unique
+
+relationship credit: movie, crew, job as movie_crew

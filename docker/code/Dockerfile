@@ -44,6 +44,7 @@ ARG HACKSCHULE_SIDEBAR_INIT_VERSION=0.1.0
 ARG HACKSCHULE_CHECKPOINTS_VERSION=0.6.1
 ARG HACKSCHULE_KEYBOARD_TUTORIAL_VERSION=0.5.4
 ARG BIF_AUTHORING_TOOLS_VERSION=0.2.1
+ARG HACKSCHULE_ER_VERSION=0.1.0
 
 # ====================================================================
 # TeX Live stage
@@ -814,6 +815,7 @@ ARG HACKSCHULE_SIDEBAR_INIT_VERSION
 ARG HACKSCHULE_CHECKPOINTS_VERSION
 ARG HACKSCHULE_KEYBOARD_TUTORIAL_VERSION
 ARG BIF_AUTHORING_TOOLS_VERSION
+ARG HACKSCHULE_ER_VERSION
 
 COPY hackschule-sidebar-init-${HACKSCHULE_SIDEBAR_INIT_VERSION}.vsix \
     /app/extensions/hackschule-sidebar-init-${HACKSCHULE_SIDEBAR_INIT_VERSION}.vsix
@@ -829,6 +831,9 @@ COPY bif-authoring-tools-${BIF_AUTHORING_TOOLS_VERSION}.vsix \
 
 COPY ritwickdey.LiveServer.vsix \
     /app/extensions/ritwickdey.LiveServer.vsix
+
+COPY hackschule-er-${HACKSCHULE_ER_VERSION}.vsix \
+    /app/extensions/hackschule-er-${HACKSCHULE_ER_VERSION}.vsix
 
 
 # --------------------------------------------------------------------

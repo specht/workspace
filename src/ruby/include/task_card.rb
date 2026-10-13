@@ -152,6 +152,8 @@ module TaskCard
         when 'scene'
             viewer = File.join(File.dirname(check['file'].to_s), 'include', 'script.js')
             "Liest #{path.(check['file'])} mit deinem Viewer #{path.(viewer)}, in deinem Workspace"
+        when 'er' then "Liest #{path.(check['file'])} mit der ER-Werkstatt, in deinem Workspace"
+        when 'schema' then 'Liest den Aufbau deiner MySQL-Datenbank, angemeldet als du, und ändert nichts'
         when 'code'
             langs = (check['languages'] || %w[ruby python javascript]).map { |l| { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript' }[l] || l }
             "Code Bites: <code>#{h.(check['codebite'])}</code>, in #{h.(langs.join(', '))}. Ist sie gelöst, wird sie hier von selbst abgehakt."

@@ -1,0 +1,123 @@
+# Offline test of the movie collector: canned Wikidata answers, no network.
+#   ruby collect_movies_test.rb
+require 'minitest/autorun'
+require 'tmpdir'
+load File.join(__dir__, 'collect-movies.rb')
+
+class CollectMoviesTest < Minitest::Test
+    E = 'http://www.wikidata.org/entity/'
+
+    class Selection
+        def ids = %w[tt0133093 tt0114709 tt9999999 tt0000001]
+    end
+
+    # Answers by what the query asks for.
+    class Wikidata
+        attr_reader :requests, :queries
+
+        def initialize
+            @requests = 0
+            @queries = []
+        end
+
+        def select(query)
+            @queries << query
+            e = CollectMoviesTest::E
+            if query.include?('wdt:P345')
+                [
+                    { 'imdb' => 'tt0133093', 'film' => "#{e}Q83495", 'en' => 'The Matrix', 'de' => 'Matrix', 'original' => 'The Matrix',
+                      'date' => '1999-03-31T00:00:00Z', 'amount' => '+136', 'unit' => "#{e}Q7727" },
+                    { 'imdb' => 'tt0133093', 'film' => "#{e}Q83495", 'en' => 'The Matrix', 'de' => 'Matrix',
+                      'date' => '1999-06-17T00:00:00Z', 'amount' => '+136', 'unit' => "#{e}Q7727" },
+                    { 'imdb' => 'tt0114709', 'film' => "#{e}Q171048", 'en' => 'Toy Story', 'de' => 'Toy Story',
+                      'date' => '1995-11-22T00:00:00Z', 'amount' => '+1.35', 'unit' => "#{e}Q25235" },
+                    # no runtime: left out
+                    { 'imdb' => 'tt0000001', 'film' => "#{e}Q1", 'en' => 'Short', 'date' => '1894-01-01T00:00:00Z' },
+                ]
+            elsif query.include?('wdt:P136')
+                [
+                    { 'film' => "#{e}Q83495", 'label' => 'action film' },
+                    { 'film' => "#{e}Q83495", 'label' => 'science fiction film' },
+                    { 'film' => "#{e}Q83495", 'label' => 'cyberpunk' },
+                    { 'film' => "#{e}Q171048", 'label' => 'computer-animated film' },
+                    { 'film' => "#{e}Q171048", 'label' => 'comedy film' },
+                ]
+            elsif query.include?('wdt:P161')
+                [
+                    { 'film' => "#{e}Q83495", 'prop' => 'P57', 'person' => "#{e}Q9545711", 'links' => '40' },
+                    { 'film' => "#{e}Q83495", 'prop' => 'P57', 'person' => "#{e}Q9544977", 'links' => '42' },
+                    { 'film' => "#{e}Q83495", 'prop' => 'P58', 'person' => "#{e}Q9545711", 'links' => '40' },
+                    { 'film' => "#{e}Q83495", 'prop' => 'P161', 'person' => "#{e}Q43416", 'links' => '100' },
+                    { 'film' => "#{e}Q171048", 'prop' => 'P161', 'person' => "#{e}Q2263", 'links' => '90' },
+                    { 'film' => "#{e}Q171048", 'prop' => 'P86', 'person' => "#{e}Q500", 'links' => '5' },
+                ]
+            elsif query.include?('wdt:P569')
+                [
+                    { 'person' => "#{e}Q9545711", 'en' => 'Lana Wachowski', 'birth' => '1965-06-21T00:00:00Z' },
+                    { 'person' => "#{e}Q9544977", 'en' => 'Lilly Wachowski', 'birth' => '1967-12-29T00:00:00Z' },
+                    { 'person' => "#{e}Q43416", 'en' => 'Keanu Reeves', 'birth' => '1964-09-02T00:00:00Z' },
+                    { 'person' => "#{e}Q2263", 'en' => 'Tom Hanks', 'birth' => '1956-07-09T00:00:00Z' },
+                    # only a German label, impossible death year
+                    { 'person' => "#{e}Q500", 'de' => 'Randy Newman', 'birth' => '1943-11-28T00:00:00Z', 'death' => '1900-01-01T00:00:00Z' },
+                ]
+            else
+                raise "unexpected query #{query}"
+            end
+        end
+    end
+
+    def build
+        Dir.mktmpdir do |dir|
+            wikidata = Wikidata.new
+            builder = WikidataMovieBuilder.new(output_dir: dir, selection: Selection.new, wikidata: wikidata)
+            capture_io { builder.run }
+            files = Dir.children(dir).to_h { |f| [f, File.read(File.join(dir, f))] }
+            yield files, wikidata
+        end
+    end
+
+    def test_helpers
+        assert_equal 1999, WikidataMovieBuilder.year('1999-03-31T00:00:00Z')
+        assert_equal(-500, WikidataMovieBuilder.year('-0500-01-01T00:00:00Z'))
+        assert_equal 81, WikidataMovieBuilder.minutes('+1.35', WikidataMovieBuilder::HOUR)
+        assert_equal 2, WikidataMovieBuilder.minutes('120', WikidataMovieBuilder::SECOND)
+        assert_equal %w[Action Sci-Fi], WikidataMovieBuilder.genres_for('superhero science fiction film').sort
+        assert_equal ['War'], WikidataMovieBuilder.genres_for('war film')
+        assert_equal [], WikidataMovieBuilder.genres_for('award-winning film')
+        assert_equal ['Animation'], WikidataMovieBuilder.genres_for('computer-animated film')
+    end
+
+    def test_build
+        build do |files, wikidata|
+            movies = files['movies.txt'].lines.map { |l| JSON.parse(l) }
+            assert_equal ['Toy Story', 'The Matrix'], movies.map { |m| m['title'] }, 'sorted by year, the film without runtime left out'
+            toy, matrix = movies
+            assert_equal 81, toy['runtime']
+            assert_nil toy['german_title'], 'same as the title'
+            assert_equal 'Matrix', matrix['german_title']
+            assert_nil matrix['original_title']
+            assert_equal 1999, matrix['year']
+            assert_equal 'Q83495', matrix['wikidata']
+            genres = files['genres.txt'].lines.map { |l| JSON.parse(l)['name'] }
+            assert_equal %w[Action Animation Comedy Sci-Fi], genres
+
+            data = files['mysql-data-movies.sql']
+            assert_includes data, 'INSERT INTO `movie` (`id`, `title`, `original_title`, `german_title`, `year`, `runtime`) VALUES'
+            refute_includes files['mysql.sql'], 'rating'
+            crew_sql = files['mysql-data-crew.sql']
+            assert_includes crew_sql, "'Randy Newman', 1943, NULL"
+            assert_includes crew_sql, "(1, 'actor')"
+            refute_includes files['mysql.sql'], 'imdb', 'no IMDb data in the output'
+            assert_includes files['README.md'], 'CC0'
+            assert_includes files['neo4j.dump'], 'DIRECTOR'
+
+            crew = files['crew.txt'].lines.map { |l| JSON.parse(l) }
+            lana = crew.find { |p| p['name'] == 'Lana Wachowski' }
+            matrix_jobs = matrix['crew'].transform_values { |ids| ids.map { |id| crew.find { |p| p['id'] == id }['name'] } }
+            assert_equal ['Lilly Wachowski', 'Lana Wachowski'], matrix_jobs['director'], 'best known first'
+            assert_equal ['Lana Wachowski'], matrix_jobs['writer']
+            assert_equal 1, crew.count { |p| p['id'] == lana['id'] }, 'one person, two jobs'
+            assert(wikidata.queries.all? { |q| q.include?('SELECT') })
+        end
+    end
+end

@@ -1,0 +1,115 @@
+{
+  "name": "hackschule-er",
+  "displayName": "ER-Werkstatt",
+  "description": "ER-Modelle als Text (.er): Chen- und Krähenfuß-Diagramm daneben, Tabellen und MySQL-Schema auf Knopfdruck.",
+  "version": "0.1.0",
+  "publisher": "hackschule",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.91.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Education"
+  ],
+  "extensionKind": [
+    "workspace"
+  ],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:er"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "er",
+        "aliases": [
+          "ER-Modell",
+          "er"
+        ],
+        "extensions": [
+          ".er"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "er",
+        "scopeName": "source.er",
+        "path": "./syntaxes/er.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "hackschuleEr.showPreview",
+        "title": "ER-Diagramm anzeigen",
+        "category": "ER-Werkstatt",
+        "icon": "$(type-hierarchy)"
+      },
+      {
+        "command": "hackschuleEr.generateSql",
+        "title": "SQL erzeugen",
+        "category": "ER-Werkstatt",
+        "icon": "$(database)"
+      },
+      {
+        "command": "hackschuleEr.saveDiagram",
+        "title": "Diagramm als SVG speichern",
+        "category": "ER-Werkstatt"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "hackschuleEr.showPreview",
+          "when": "editorLangId == er",
+          "group": "navigation@1"
+        },
+        {
+          "command": "hackschuleEr.generateSql",
+          "when": "editorLangId == er",
+          "group": "navigation@2"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "hackschuleEr.showPreview",
+          "when": "resourceExtname == .er",
+          "group": "navigation"
+        },
+        {
+          "command": "hackschuleEr.generateSql",
+          "when": "resourceExtname == .er",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "hackschuleEr.showPreview",
+          "when": "editorLangId == er"
+        },
+        {
+          "command": "hackschuleEr.generateSql",
+          "when": "editorLangId == er"
+        },
+        {
+          "command": "hackschuleEr.saveDiagram",
+          "when": "editorLangId == er"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "hackschuleEr.showPreview",
+        "key": "ctrl+k v",
+        "mac": "cmd+k v",
+        "when": "editorLangId == er"
+      }
+    ]
+  },
+  "scripts": {
+    "test": "node --test test/*.test.cjs core/*.test.cjs",
+    "package": "npm test && node pack.cjs"
+  }
+}

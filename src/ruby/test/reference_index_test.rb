@@ -35,13 +35,21 @@ class ReferenceIndexTest < Minitest::Test
             { :slug => 'reference/gitlab', :title => 'Git und GitLab',
               :section_label => 'Git', :section_icon => '/images/penguin.png',
               :outline => [{ :level => 2, :text => 'SSH-Schlüssel', :id => 'ssh-schluessel' },
-                           { :level => 3, :text => 'Schlüssel <anlegen>', :id => 'anlegen' }] },
+                           { :level => 2, :text => 'Git sagen, wer du bist', :id => 'git-name' }] },
+            { :slug => 'reference/html-folien', :title => 'HTML-Folien',
+              :section_label => 'Präsentationen',
+              :outline => [{ :level => 2, :text => 'Grundlagen', :id => 'grundlagen' },
+                           { :level => 3, :text => 'Listen <ul>', :id => 'listen' },
+                           { :level => 2, :text => 'Bilder', :id => 'bilder' },
+                           { :level => 3, :text => 'Zuschneiden', :id => 'zuschneiden' }] },
         ])
         doc = Nokogiri::HTML(html)
-        assert_equal ['/reference/gitlab#ssh-schluessel', '/reference/gitlab#anlegen'],
-            doc.css('.reference-outline a').map { |a| a['href'] }
-        assert_equal 'Schlüssel <anlegen>', doc.css('.reference-outline ul a').first.text
-        assert_equal 1, doc.css('.reference-block-label img').size
-        assert_equal 0, doc.css('.reference-block > img, .tutorial_card3').size
+        cards = doc.css('.reference-card')
+        assert_equal ['Git und GitLab', 'Grundlagen', 'Bilder'], cards.map { |c| c.at_css('h2').text }
+        assert_equal ['/reference/gitlab#ssh-schluessel', '/reference/gitlab#git-name'], cards[0].css('li a').map { |a| a['href'] }
+        assert_equal 'Listen <ul>', cards[1].at_css('li a').text
+        assert_equal '/reference/html-folien#grundlagen', cards[1].at_css('h2 a')['href']
+        assert_equal 1, doc.css('.reference-card-label img').size
+        assert_equal 0, doc.css('.tutorial_card3').size
     end
 end

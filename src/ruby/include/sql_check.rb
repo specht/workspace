@@ -508,6 +508,12 @@ module SqlCheck
             end
             expected << normalize(result)
         end
+        # A reference that finds nothing cannot tell right from wrong: an
+        # empty answer would pass. Most likely the data is not loaded yet.
+        if expected.all? { |e| e[:rows].empty? }
+            return [:unavailable, "Die Musterlösung findet in deiner Datenbank nichts, vermutlich fehlen die Daten. #{check['setup'] || ''}".strip,
+                diagnosis(check, runner, env), nil, :no_data]
+        end
 
         result = runner.call(query)
         stop = connection_stop(check, env, result)

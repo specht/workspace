@@ -118,6 +118,23 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   `template_name`; `template` steht jetzt auch bei BIF, LaTeX, PixelRAM,
   Videothek und dem Digits-Experiment. Neuer Handbuch-Teil
   `workspace#neue-version`.
+- ER-Werkstatt: VS Code-Erweiterung `hackschule-er` im Workspace-Image.
+  ER-Modelle werden als Text in `.er`-Dateien geschrieben; daneben erscheinen
+  sie als Chen-, Krähenfuß- und Tabellendiagramm (Kästen verschiebbar), Fehler
+  werden unterstrichen, »SQL erzeugen« schreibt das MySQL-Schema, »Als SVG
+  speichern« das Diagramm. Kern und Kommandozeile:
+  `src/vscode-extensions/er/core/er-core.js`.
+- Prüfarten `er` (Entitäten, Schlüssel, Attribute, Beziehungen,
+  Kardinalitäten und die entstehenden Tabellen eines `.er`-Modells, gelesen mit
+  dem Kern der ER-Werkstatt im Workspace) und `schema` (Spalten, Primär- und
+  Fremdschlüssel und Zeilenzahl in der eigenen MySQL-Datenbank, nur lesend).
+- »Filmdatenbank mit MySQL« ersetzt »Videothek mit MySQL«: vom Modell in der
+  ER-Werkstatt über `mysql < film.sql` zu `JOIN`, `GROUP BY` und `HAVING`,
+  mit 15 Aufgaben und einer Notiz für Lehrkräfte. `/videothek` leitet weiter.
+  Ruby, das Import-Skript und der ERD Editor werden nicht mehr gebraucht.
+- Filmdaten aus Wikidata (CC0): `src/scripts/collect-movies` wählt die Filme
+  nach der Zahl der IMDb-Stimmen, übernimmt aber nur Daten aus Wikidata. Die
+  Spalte `rating` entfällt; `crew.birth_year` darf leer sein.
 - Neue Neo4j-Knoten `TaskState` und `TaskAttempt` (Constraint
   `TaskState/key`, Index `TaskAttempt/task`); sie werden beim Start von selbst
   angelegt.
@@ -133,8 +150,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Die Kopfleiste hat einen starken Knopf (»Workspace öffnen« bzw.
   »Anmelden«); alle anderen sehen gleich aus, die aktuelle Seite ist markiert.
   Das Profil steht rechts und zeigt den Namen oder die E-Mail-Adresse.
-- Die Startseite begrüßt ohne bekannten Namen mit dem Teil der E-Mail-Adresse
-  vor dem `@`.
+- Die Startseite begrüßt ohne bekannten Namen mit der ganzen E-Mail-Adresse.
+- Das Handbuch zeigt alle Kapitel als gleich große Karten mit ihren
+  Überschriften als Links, ohne Bilder, und hat ein Suchfeld. Überschriften auf
+  Handbuch-Seiten haben Anker.
+- SQL-Aufgaben prüfen nicht, wenn die Musterabfrage nichts findet (meist
+  fehlen dann die Daten); sie sagen das und wie man die Daten lädt.
 - Die drei Sandboxes haben einen eigenen Abschnitt im Katalog statt
   »Terminal & Git«.
 - Sprünge zu einer Aufgabe (»Weitermachen«) landen unter der Abschnittsleiste.
@@ -149,8 +170,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Für Betreibende
 
-- Keine Änderung nötig. Die Prüfart `scene` braucht `node` im Workspace-Image
-  (ist dort schon vorhanden).
+- Keine Änderung nötig. Die Prüfarten `scene` und `er` brauchen `node` im
+  Workspace-Image (ist dort schon vorhanden). Für die ER-Werkstatt muss das
+  Workspace-Image neu gebaut werden (`build-image.sh`).
+- Die Filmdatenbank lädt ihre Daten mit `wget` aus
+  `specht/workspace-files/movie-archive/`; andere Schulen können die Dateien
+  mit `src/scripts/collect-movies` selbst bauen.
 - Für den Hinweis auf neue Versionen braucht der Server ausgehende
   HTTPS-Verbindungen zu den Adressen aus `template` (GitHub, GitLab).
   Kommt keine Antwort, erscheint einfach kein Hinweis.

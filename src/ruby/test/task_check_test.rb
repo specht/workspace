@@ -236,4 +236,26 @@ class TaskCheckTest < Minitest::Test
         end
         assert_equal 17, found
     end
+
+    def test_er_reads_the_model_in_the_workspace
+        skip 'node is not installed' unless system('node --version > /dev/null 2>&1')
+        task = { 'id' => 'modell', 'check' => { 'type' => 'er', 'file' => 'film/film.er',
+            'entities' => [{ 'name' => 'movie', 'key' => ['id'] }] } }
+        Dir.mktmpdir do |tmp|
+            ws = WorkspaceFiles.new(tmp)
+            runner = lambda do |command, _seconds|
+                out = IO.popen(['sh', '-c', command], :chdir => tmp, &:read)
+                { :output => out, :status => 0, :timed_out => false }
+            end
+            assert_equal :unavailable, TaskCheck.check(task, '', workspace: nil).status
+            missing = TaskCheck.check(task, '', workspace: ws, runner: runner)
+            assert_equal [:wrong, :missing], [missing.status, missing.problem]
+            FileUtils.mkdir_p(File.join(tmp, 'film'))
+            File.write(File.join(tmp, 'film/film.er'), "entity movie\n  id: int, key\n  title: text\n")
+            assert_equal TaskCheck::NOT_RUNNING_ER, TaskCheck.check(task, '', workspace: ws, runner: nil).message
+            result = TaskCheck.check(task, '', workspace: ws, runner: runner)
+            assert_equal :correct, result.status, result.message
+            assert_includes result.read, '`movie`: **id**, title'
+        end
+    end
 end

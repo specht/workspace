@@ -359,8 +359,8 @@ html[data-bs-theme="dark"] {
         border-bottom-color: rgba(255, 255, 255, 0.12);
     }
     .task-result p { color: #adb5bd; }
-    .reference-block { border-top-color: #33332f; }
-    .reference-block-label,
+    .reference-card { border-color: #33332f; }
+    .reference-card-label,
     .reference-filter-empty {
         color: #adb5bd;
     }

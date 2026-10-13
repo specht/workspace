@@ -20,3 +20,4 @@ src/static/include/bootstrap*/node_modules
 src/static/tic80
 src/tutorial-screenshots/node_modules
 temp
+src/scripts/collect-movies/movie-archive
