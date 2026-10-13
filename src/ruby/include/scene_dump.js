@@ -10,8 +10,14 @@
 //
 //   node -e "$(cat scene_dump.js)" <script.js> <scene.ini> <t1,t2,…>
 //
-// Prints JSON: { errors: [...], times: [...], objects: [{ line, kind, shape,
-// name, model, text, at: [{ t, pos, scale, rot }] }] }
+// Prints JSON: { errors: [...], times: [...], background, objects: [{ line,
+// kind, shape, name, model, text, fill, at: [{ t, pos, scale, rot }] }] }
+//
+// fill and background are colours as the viewer applies them at the first
+// time: { rgb: [r, g, b] } with 0..1, { css: 'yellow' } for a colour name or
+// code (the server resolves it), or 'off'. fill works like a pen: it stays
+// for every later object, and push/pop (groups) save and restore it.
+// background repaints the canvas, so the last one wins.
 const fs = require('fs');
 const vm = require('vm');
 
@@ -105,18 +111,47 @@ function apply(m, transforms, t) {
 }
 
 const round = (x) => Math.round(x * 100) / 100;
+
+function sceneColor(raw, t) {
+    if (raw === undefined || raw === null) return undefined;
+    if (raw === 'off') return 'off';
+    if (raw === 'shade') return { rgb: [1, 1, 1] };
+    if (Array.isArray(raw)) {
+        return { rgb: raw.slice(0, 3).map((part) => round(Math.min(1, Math.max(0, value(part, t))))) };
+    }
+    const text = String(raw).trim();
+    try {
+        const v = value(text, t);
+        if (Number.isFinite(v)) {
+            const grey = round(Math.min(1, Math.max(0, v)));
+            return { rgb: [grey, grey, grey] };
+        }
+    } catch (e) {
+        // not an expression: a colour name or code
+    }
+    return { css: text.toLowerCase() };
+}
 const objects = [];
 const reported = new Set();
 
+const firstTime = times[0];
+let background = { rgb: [1, 1, 1] };
 for (const t of times) {
     let m = I();
+    let fill = { rgb: [1, 1, 1] };
     const stack = [];
     let index = 0;
     for (const entry of parsed.objects) {
         try {
             if (entry.command === 'push') {
-                stack.push(m);
+                stack.push({ m, fill });
                 m = apply(m, entry.transform, t);
+            }
+            if (t === firstTime && entry.background !== undefined) {
+                background = sceneColor(entry.background, t) ?? background;
+            }
+            if (entry.fill !== undefined) {
+                fill = sceneColor(entry.fill, t) ?? fill;
             }
             if (entry.shape || entry.model || entry.text !== undefined) {
                 const w = apply(m, entry.transform, t);
@@ -135,6 +170,7 @@ for (const t of times) {
                         model: entry.model || null,
                         text: entry.text === undefined ? null : String(entry.text),
                         name: entry.name === undefined ? null : String(entry.name),
+                        fill,
                         at: [],
                     };
                 }
@@ -142,7 +178,9 @@ for (const t of times) {
                 index++;
             }
             if (entry.command === 'pop') {
-                m = stack.length > 0 ? stack.pop() : I();
+                const saved = stack.length > 0 ? stack.pop() : { m: I(), fill: { rgb: [1, 1, 1] } };
+                m = saved.m;
+                fill = saved.fill;
             }
         } catch (e) {
             const message = `Zeile ${entry._lineStart}: ${e.message}`;
@@ -153,5 +191,6 @@ for (const t of times) {
         }
     }
 }
+out.background = background;
 out.objects = objects.filter(Boolean);
 finish();

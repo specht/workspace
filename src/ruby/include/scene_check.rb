@@ -1,5 +1,6 @@
 require 'json'
 require 'shellwords'
+require_relative 'scene_color'
 
 # Check type scene (docs/aufgaben.md): what is where in an Anaglyph scene.
 #
@@ -68,20 +69,59 @@ module SceneCheck
             name = o['name'] ? " »#{o['name']}«" : ''
             size = size_of(o)
             "- Zeile #{o['line']}: #{what}#{name} bei #{pos_text(o['at'].first['pos'])}" +
-                (size ? ", Größe #{size.map { |v| fmt(v) }.join(' × ')}" : '')
+                (size ? ", Größe #{size.map { |v| fmt(v) }.join(' × ')}" : '') +
+                (o.key?('fill') ? ", Farbe #{SceneColor.describe(o['fill'])}" : '')
         end
         more = objects.size > 15 ? "\n- … und #{objects.size - 15} weitere" : ''
-        "#{objects.size} #{objects.size == 1 ? 'Objekt' : 'Objekte'} in der Szene:\n\n#{lines.join("\n")}#{more}"
+        background = dump['background'] ? "\n\nHintergrund: #{SceneColor.describe(dump['background'])}" : ''
+        "#{objects.size} #{objects.size == 1 ? 'Objekt' : 'Objekte'} in der Szene:\n\n#{lines.join("\n")}#{more}#{background}"
+    end
+
+    def self.color_family(obj)
+        SceneColor.family(SceneColor.rgb(obj['fill']))
+    end
+
+    # The objects an expectation is about: its shape, name and colour.
+    def self.candidates(m, objects)
+        families = m['color'] && Array(m['color'])
+        objects.select do |o|
+            (m['shape'].nil? || o['shape'] == m['shape']) &&
+                (m['name'].nil? || o['name'] == m['name']) &&
+                (families.nil? || families.include?(color_family(o)))
+        end
+    end
+
+    # Accusative articles: »ich finde einen Würfel / eine Kugel / ein Gitter«.
+    ARTICLES = {
+        :m => %w[einen keinen], :f => %w[eine keine], :n => %w[ein kein],
+    }.freeze
+    GENDER = {
+        'box' => :m, 'cylinder' => :m, 'cone' => :m, 'torus' => :m,
+        'sphere' => :f, 'teapot' => :f, 'plane' => :f, 'grid' => :n,
+    }.freeze
+
+    # »eine Kugel in Gelb oder Orange«; negated: »keine Kugel in Gelb«
+    def self.what_text(m, negated: false)
+        article = ARTICLES[GENDER[m['shape'].to_s] || :n][negated ? 1 : 0]
+        thing = m['shape'] && NAMES[m['shape'].to_s] ? "#{article} #{shape_name(m['shape'])}" : "#{negated ? 'kein' : 'ein'} Objekt"
+        colour = m['color'] ? " in #{SceneColor.german_list(m['color'])}" : ''
+        name = m['name'] ? " mit `name = #{m['name']}`" : ''
+        "#{thing}#{colour}#{name}"
     end
 
     # Returns [ok, problem, message] for one expectation.
-    def self.match(m, objects, all)
+    # matchers: all expectations of the check, so orbits can name another
+    # one by its label.
+    def self.match(m, objects, all, matchers = [])
         shape = m['shape']
-        candidates = objects.select { |o| (shape.nil? || o['shape'] == shape) && (m['name'].nil? || o['name'] == m['name']) }
-        label = m['name'] ? "»#{m['name']}«" : shape_name(shape, 2)
+        candidates = candidates(m, objects)
+        label = m['label'] ? "»#{m['label']}«" : (m['name'] ? "»#{m['name']}«" : shape_name(shape, 2))
 
-        if m['name'] && candidates.empty?
-            return [false, :missing_object, "Ich finde kein Objekt mit `name = #{m['name']}`#{shape ? " (eine #{shape_name(shape)})" : ''}."]
+        if (m['name'] || m['color']) && candidates.empty?
+            for_label = m['label'] ? " für #{label}" : ''
+            others = m['color'] ? objects.select { |o| shape.nil? || o['shape'] == shape } : []
+            seen = others.empty? ? '' : " Ich sehe #{others.first(4).map { |o| "#{shape_name(o['shape'])} in #{SceneColor::GERMAN[color_family(o)] || 'unbekannter Farbe'} (Zeile #{o['line']})" }.join(', ')}."
+            return [false, :missing_object, "Ich finde #{what_text(m, negated: true)}#{for_label}.#{seen}"]
         end
         if m.key?('count') && candidates.size != m['count']
             return [false, :count, "Ich finde #{candidates.size} #{shape_name(shape, candidates.size)}, verlangt #{m['count'] == 1 ? "ist #{shape == 'box' ? 'einer' : 'eins'}" : "sind #{m['count']}"}."]
@@ -170,8 +210,19 @@ module SceneCheck
             end
         end
         if (center_name = m['orbits'])
-            center = all.find { |o| o['name'] == center_name }
-            return [false, :missing_object, "Ich finde kein Objekt mit `name = #{center_name}`."] unless center
+            # orbits names another expectation by its label, or an object by name.
+            other = matchers.find { |x| x['label'] == center_name }
+            if other
+                centers = candidates(other, objects)
+                return [false, :missing_object, "Ich finde #{what_text(other)} für »#{center_name}« nicht."] if centers.empty?
+                if centers.size > 1
+                    return [false, :ambiguous, "Ich finde #{centers.size} Objekte, die »#{center_name}« sein könnten (Zeilen #{centers.map { |o| o['line'] }.join(', ')}). Gib ihnen verschiedene Farben."]
+                end
+                center = centers.first
+            else
+                center = all.find { |o| o['name'] == center_name }
+                return [false, :missing_object, "Ich finde kein Objekt mit `name = #{center_name}`."] unless center
+            end
 
             candidates.each do |o|
                 distances = o['at'].each_index.map do |i|
@@ -214,9 +265,16 @@ module SceneCheck
 
             return feedback(task, objects, source, [:wrong, :source, "Benutze in `#{file}` `#{word}`.", read])
         end
+        if (wanted = check['background'])
+            family = SceneColor.family(SceneColor.rgb(dump['background']))
+            unless Array(wanted).include?(family)
+                message = "Der Hintergrund ist #{SceneColor.describe(dump['background'])}, verlangt ist #{SceneColor.german_list(wanted)}. `background = …` ändert ihn."
+                return feedback(task, objects, source, [:wrong, :background, message, read])
+            end
+        end
         matchers = check['expect'].is_a?(Hash) ? [check['expect']] : check['expect']
         matchers.each do |m|
-            ok, problem, message = match(m, objects, dump['objects'])
+            ok, problem, message = match(m, objects, dump['objects'], matchers)
             next if ok
 
             return feedback(task, objects, source, [:wrong, problem, message, read])
@@ -224,7 +282,7 @@ module SceneCheck
         [:correct, nil, 'Passt.', read]
     end
 
-    # Feedback rules: found/missing positions and source_matches.
+    # Feedback rules: found/missing positions, source_matches and problem.
     def self.feedback(task, objects, source, result)
         (task['feedback'] || []).each do |entry|
             w = entry['when']
@@ -238,7 +296,8 @@ module SceneCheck
                     false
                 end
             end
-            next unless ok && (w['found'] || w['missing'] || w['source_matches'])
+            ok &&= result[1].to_s == w['problem'].to_s if w['problem']
+            next unless ok && (w['found'] || w['missing'] || w['source_matches'] || w['problem'])
 
             return [result[0], result[1], entry['say'], result[3]]
         end

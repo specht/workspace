@@ -215,6 +215,9 @@ html[data-bs-theme="dark"] {
     .reference-include-link a {
         color: #5fcfc1;
     }
+    .color-swatch {
+        border-color: rgba(255, 255, 255, 0.35);
+    }
     .reference-include-done,
     .reference-include-done .bi {
         color: #7fd8cc;

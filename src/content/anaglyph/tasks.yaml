@@ -59,16 +59,16 @@ tasks:
           rotate_z: { spacing: 30, modulo: 90 }
     solution: Drei Würfel mit `rotate = 0, 0, -30`, ohne Drehung und `rotate = 0, 0, 30`.
 
-  - id: latte
-    title: Die Latte
+  - id: balken
+    title: Der Balken
     prompt: |
-      Mach in `latte.ini` aus einem Würfel eine Latte, die zehnmal so breit ist,
-      und leg sie so auf das Gitter, dass sie nicht darin versinkt. Ein Würfel
-      ist 50 Einheiten groß.
-    file: anaglyph/latte.ini
+      Mach in `balken.ini` aus einem Würfel einen Balken, der zehnmal so breit
+      ist, und leg ihn so auf das Gitter, dass er nicht darin versinkt. Ein
+      Würfel ist 50 Einheiten groß.
+    file: anaglyph/balken.ini
     check:
       type: scene
-      file: anaglyph/latte.ini
+      file: anaglyph/balken.ini
       ignore: [grid]
       expect:
         - { shape: box, count: 1, size: [500, 50, 50], bottom_y: 0 }
@@ -157,21 +157,32 @@ tasks:
   - id: sonnensystem
     title: Sonne, Erde, Mond
     prompt: |
-      Baue in `sonnensystem.ini`: In der Mitte steht die Sonne. Die Erde kreist
-      um die Sonne, und der Mond kreist um die Erde. Gib den drei Kugeln Namen,
-      damit der Workspace sie findet: `name = sonne`, `name = erde` und
-      `name = mond`, jeweils direkt unter ihrem `shape = sphere`.
+      Baue in `sonnensystem.ini` ein kleines Weltall: Der Hintergrund ist
+      schwarz. In der Mitte steht eine gelbe Sonne, eine blaue Erde kreist um
+      die Sonne, und ein weißer Mond kreist um die Erde. Der Workspace erkennt
+      die drei Kugeln an ihren Farben.
     file: anaglyph/sonnensystem.ini
     check:
       type: scene
       file: anaglyph/sonnensystem.ini
       ignore: [grid]
       at_times: [0, 1, 2, 3]
+      background: black
       expect:
-        - { name: sonne, shape: sphere, moves: false }
-        - { name: erde, shape: sphere, orbits: sonne }
-        - { name: mond, shape: sphere, orbits: erde }
-    solution: Siehe `lehrkraft/sonnensystem.ini`.
+        - { label: Sonne, shape: sphere, color: [yellow, orange], moves: false }
+        - { label: Erde, shape: sphere, color: [blue, cyan], orbits: Sonne }
+        - { label: Mond, shape: sphere, color: [white, grey], orbits: Erde }
+    feedback:
+      - when: { problem: orbit, source_matches: '^\s*rotate[^\n]*\n\s*move' }
+        say: |
+          Steht bei dir `rotate` vor `move`? Dann dreht sich die Kugel erst um
+          sich selbst und wird danach verschoben: Sie bleibt an ihrem Platz.
+          Zum Kreisen erst verschieben, dann drehen.
+    solution: |
+      Die Erde wird erst um `300, 0, 0` verschoben und dann mit
+      `rotate = 0, t * 30, 0` um den Ursprung gedreht. Der Mond wird erst um
+      die Erde gedreht und dann wie die Erde bewegt, am einfachsten mit zwei
+      Gruppen ineinander.
 
   - id: galerie
     title: Ab in die Galerie

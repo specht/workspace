@@ -162,6 +162,18 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   gleich (E-Mail-Adresse und Aufgabe als Seed). Antworten, `correct` und
   `picked` zählen weiter nach `tasks.yaml`; `shuffle: false` schaltet das
   für eine Aufgabe ab.
+- Tutorial-Screenshots: Vor einem `<video>` erzeugt ein Rezept mit
+  `record: 8s` (und `fps:`) das Video, Bild für Bild mit fester Zeit über den
+  neuen Hook `setPreviewTime`, kodiert mit ffmpeg. Das Anaglyph-Tutorial hat
+  Rezepte für seine Screenshots und alle drei Animationen.
+  `src/scripts/recreate-screenshots.rb` kennt `--all` und `--stale`.
+- Prüfart `scene` erkennt Farben: `color: yellow` (oder eine Liste von
+  Farbfamilien) wählt Objekte nach ihrer Füllfarbe aus, `background: black`
+  prüft den Hintergrund, `label` benennt einen Eintrag für Rückmeldungen und
+  `orbits`. Die Rückmeldung zeigt bei jedem Objekt, welche Farbe der Viewer
+  liest. Feedback in `scene` kann zusätzlich auf `problem` achten.
+- Handbuch-Seite »Farben angeben«: Farbnamen, Farbcodes mit `#`, Rot-, Grün-
+  und Blauanteile, Kontrast. Das Anaglyph-Tutorial verweist darauf.
 
 ### Geändert
 
@@ -199,6 +211,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Abgaben mit `pick`: Die Liste der Dateien wird neu gelesen, sobald man
   sie anklickt oder zur Seite zurückkehrt. Eine eben im Workspace angelegte
   Szene steht also gleich darin; die Auswahl bleibt, solange die Datei da ist.
+- Tutorial-Screenshots werden seltener neu erzeugt: Ein neu gebautes
+  Workspace-Image zählt nur noch, wenn sich die code-server-Version ändert,
+  und Zuschnitt oder Dateiname eines früheren Rezepts machen spätere nicht
+  mehr ungültig. Bestehende Manifeste bleiben gültig.
+- Anaglyphen: »Die Latte« heißt jetzt »Der Balken« (`balken.ini`, Aufgabe
+  `balken`). »Sonne, Erde, Mond« verlangt eine gelbe Sonne, eine blaue Erde,
+  einen weißen Mond und einen schwarzen Hintergrund statt `name = …`, das das
+  Tutorial nie eingeführt hat. Wer `latte` schon gelöst hat, sieht die
+  Aufgabe wieder offen.
 
 ### Für Betreibende
 

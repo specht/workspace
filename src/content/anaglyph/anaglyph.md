@@ -3,6 +3,7 @@ image: title.webp
 kind: projekt
 template: https://github.com/specht/anaglyph.git
 template_name: der Anaglyph-Vorlage
+reference: [farben]
 </div>
 
 <div
@@ -19,6 +20,11 @@ Anaglyphen sind Bilder, bei denen zwei Bilder in verschiedenen Farben übereinan
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+# Workspace ohne geöffneten Ordner
+show-left-sidebar
+-->
+
 <img class='full' src='fresh-start.webp' alt=''>
 
 ## Repository klonen
@@ -29,17 +35,42 @@ Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du 
 ${template}
 ```
 
+<!-- tutorial-screenshot
+# Clone Repository mit eingetragener Anaglyph-URL
+clone-start: https://github.com/specht/anaglyph.git @ ec080795f88b538b382398fb91a8e234df3e0c0c
+crop-bottom: 67%
+-->
+
 <img class='full' src='git-clone.webp' alt=''>
 
 Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <kbd>Enter</kbd>.
+
+<!-- tutorial-screenshot
+# Auswahl von /workspace/
+press: Enter
+wait-for-input-value: /workspace/
+crop-bottom: 54%
+-->
 
 <img class='full' src='confirm-clone-path.webp' alt=''>
 
 Beantworte die Frage »Would you like to open the repository?« mit »Open«.
 
+<!-- tutorial-screenshot
+# Dialog zum Öffnen des geklonten Repositorys
+press: Enter
+wait-for-text: Would you like to open the repository?
+-->
+
 <img class='full' src='open-yes-no.webp' alt=''>
 
 Wenn du auf der linken Seite im Explorer nun die Datei `scene.ini` siehst, hast du alles richtig gemacht. Diese Datei enthält die Anweisungen für die 3D-Szene, die du erstellen wirst.
+
+<!-- tutorial-screenshot
+# geöffnetes Anaglyph-Projekt im Explorer
+click: Open
+wait-for-text: scene.ini
+-->
 
 <img class='full' src='lets-start.webp' alt=''>
 
@@ -61,6 +92,17 @@ Unten links in der Vorschau findest du die Buttons »Anaglyph 3D« (für die Rot
 
 Du solltest einen Würfel sehen, der in der Mitte des Bildschirms schwebt. Benutze die Maus, um die Szene zu drehen und zu zoomen.
 
+<!-- tutorial-screenshot
+# erste Vorschau: der Würfel aus scene.ini, mit Anaglyph-Farben
+go-live
+tab: preview
+click: Anaglyph 3D
+move-mouse: selector:canvas
+sleep: 0.5
+crop-top: 27%
+crop-bottom: 27%
+-->
+
 <div style='text-align: center; margin: 1em 0;'>
 <img src='box.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein weißer Würfel schwebt im Raum.'>
 </div>
@@ -79,6 +121,16 @@ shape = sphere
 ```
 
 Speichere die Datei mit <kbd>Strg</kbd><kbd>S</kbd> und schaue dir die Vorschau an. Du solltest nun eine Kugel sehen:
+
+<!-- tutorial-screenshot
+# Kugel
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+crop-top: 27%
+crop-bottom: 27%
+-->
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='sphere.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Eine weiße Kugel schwebt im Raum.'>
@@ -109,6 +161,16 @@ shape = grid
 shape = sphere
 ```
 
+<!-- tutorial-screenshot
+# Kugel über dem Gitter
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+crop-top: 27%
+crop-bottom: 27%
+-->
+
 <div style='text-align: center; margin: 1em 0;'>
 <img src='sphere-with-grid.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Eine Kugel aus Gitternetzlinien schwebt über einem quadratischen Gitter.'>
 </div>
@@ -120,6 +182,16 @@ Du kannst auch mehrere Formen kombinieren, indem du sie untereinander schreibst.
 shape = torus
 shape = sphere
 ```
+
+<!-- tutorial-screenshot
+# Ring um eine Kugel
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+crop-top: 27%
+crop-bottom: 27%
+-->
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='sphere-with-torus.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein Ring umschließt eine Kugel.'>
@@ -135,6 +207,16 @@ shape = grid
 shape = box
 move = 100, 0, 0
 ```
+
+<!-- tutorial-screenshot
+# verschobener Würfel
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+crop-top: 27%
+crop-bottom: 27%
+-->
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='box-move-right.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein Würfel steht rechts vom Ursprung des Gitters.'>
@@ -163,10 +245,6 @@ Ab jetzt baust du jede Szene in einer eigenen Datei, dann bleiben alle erhalten.
 Tipp: Du musst die Szene mit der Maus ein bisschen drehen, um alle Würfel gut zu sehen.
 </div>
 
-<div style='text-align: center; margin: 1em 0;'>
-<img src='three-cubes.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Vier Würfel spannen ein Koordinatensystem auf.'>
-</div>
-
 <div style='display: none;'>
 
 ```ini
@@ -185,6 +263,22 @@ move = 0, 0, 100
 ```
 
 </div>
+
+<!-- tutorial-screenshot
+# vier Würfel (Lösung der Aufgabe)
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+crop-top: 27%
+crop-bottom: 27%
+-->
+
+<div style='text-align: center; margin: 1em 0;'>
+<img src='three-cubes.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Vier Würfel spannen ein Koordinatensystem auf.'>
+</div>
+
+
 
 _task(vier-wuerfel)
 
@@ -206,6 +300,16 @@ rotate = 30, 0, 0
 move = 100, 0, 0
 ```
 
+<!-- tutorial-screenshot
+# gedrehte Würfel
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+crop-top: 27%
+crop-bottom: 27%
+-->
+
 <div style='text-align: center; margin: 1em 0;'>
 <img src='rotate-boxes.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Drei Würfel stehen verdreht nebeneinander auf einem Gitter.'>
 </div>
@@ -217,10 +321,6 @@ Du siehst hier ein Gitter und drei Würfel:
 - der dritte Würfel ist um 30 Grad um die X-Achse gedreht und nach rechts verschoben
 
 **Aufgabe:** Versuche, die folgende Szene zu erstellen, indem du drei Würfel erstellst und rotierst:
-
-<div style='text-align: center; margin: 1em 0;'>
-<img src='cube-star.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Viele gedrehte Würfel bilden einen sternförmigen Ring.'>
-</div>
 
 <div style='display: none;'>
 
@@ -235,6 +335,22 @@ shape = box
 rotate = 0, 0, 30
 ```
 </div>
+
+<!-- tutorial-screenshot
+# Würfelstern (Lösung der Aufgabe)
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+crop-top: 27%
+crop-bottom: 27%
+-->
+
+<div style='text-align: center; margin: 1em 0;'>
+<img src='cube-star.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Viele gedrehte Würfel bilden einen sternförmigen Ring.'>
+</div>
+
+
 
 _task(wuerfelstern)
 
@@ -267,6 +383,16 @@ In diesem Beispiel siehst du ein Gitter und drei Kugeln:
 Achtung: Beim Programmieren musst du meistens Kommazahlen mit einem Punkt schreiben, also <code>1.8</code> und nicht <code>1,8</code>. Wenn du ein Komma eingibst, werden die Nachkommastellen ignoriert und die Zahl wird als ganze Zahl interpretiert.
 </div>
 
+<!-- tutorial-screenshot
+# skalierte Kugeln
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+crop-top: 27%
+crop-bottom: 27%
+-->
+
 <div style='text-align: center; margin: 1em 0;'>
 <img src='scaled-spheres.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Mehrere Kugeln werden entlang einer Reihe zunehmend größer.'>
 </div>
@@ -282,17 +408,49 @@ scale = 1, 0.2, 1
 
 Hier wurde eine Kugel nur in der Y-Richtung verkleinert (auf 20%), sodass sie wie eine Scheibe aussieht:
 
+<!-- tutorial-screenshot
+# flache Kugel
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+crop-top: 27%
+crop-bottom: 27%
+-->
+
 <div style='text-align: center; margin: 1em 0;'>
 <img src='pancake.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Eine stark abgeflachte Kugel liegt wie ein Pfannkuchen auf dem Gitter.'>
 </div>
 
 **Aufgabe:** Versuche, die folgende Szene zu erstellen, indem du eine Box erstellst und sie auf die zehnfache Breite skalierst. Verschiebe die Box anschließend um 25 Einheiten nach oben, so dass sie auf dem Gitter aufliegt:
 
-<div style='text-align: center; margin: 1em 0;'>
-<img src='slab.webp' style='max-width: 100%;' alt='Eine rechteckiger Stab liegt auf dem Gitter.'>
+<div style='display: none;'>
+
+```ini
+shape = grid
+
+shape = box
+scale = 10, 1, 1
+move = 0, 25, 0
+```
+
 </div>
 
-_task(latte)
+<!-- tutorial-screenshot
+# Balken (Lösung der Aufgabe)
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+crop-top: 27%
+crop-bottom: 27%
+-->
+
+<div style='text-align: center; margin: 1em 0;'>
+<img src='slab.webp' style='max-width: 100%;' alt='Ein langer, flacher Balken liegt auf dem Gitter.'>
+</div>
+
+_task(balken)
 
 ## Transformationen kombinieren
 
@@ -307,6 +465,16 @@ move = 100, 0, 0
 ```
 
 Hier wurde ein Würfel zuerst um 45 Grad um die Z-Achse gedreht und dann um 100 Einheiten nach rechts verschoben. Das Ergebnis sieht so aus:
+
+<!-- tutorial-screenshot
+# erst drehen, dann verschieben
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+crop-top: 27%
+crop-bottom: 27%
+-->
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='rotate-then-move.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein gedrehter Würfel bleibt seitlich auf dem Gitter stehen.'>
@@ -323,6 +491,16 @@ shape = box
 move = 100, 0, 0
 rotate = 0, 0, 45
 ```
+<!-- tutorial-screenshot
+# erst verschieben, dann drehen
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+crop-top: 27%
+crop-bottom: 27%
+-->
+
 <div style='text-align: center; margin: 1em 0;'>
 <img src='move-then-rotate.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein verschobener Würfel schwebt nach der Drehung über dem Gitter.'>
 </div>
@@ -365,15 +543,44 @@ shade = on
 stroke = off
 ```
 
+<!-- tutorial-screenshot
+# schattierter Ring
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+crop-top: 27%
+crop-bottom: 27%
+-->
+
 <div style='text-align: center; margin: 1em 0;'>
 <img src='3d-torus.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein grau schattierter Ring schwebt über einem Gitter.'>
 </div>
 
-<div class='hint'>
-Wenn du möchtest, kannst du auch bunte Farben verwenden. Gib dafür statt einer Zahl von 0.0 bis 1.0 einfach einen HTML-Farbcode wie z. B. <code>#4aa03f</code> an.
-</div>
+### Bunte Farben
 
-Du kannst auch die drei Farbanteile Rot, Grün und Blau einzeln angeben. Jeder Wert liegt zwischen `0` und `1`, z. B. `fill = 1, 0.5, 0` für Orange. Mit `strokeWeight = 4` kannst du außerdem die Dicke der Konturen verändern.
+Statt einer Zahl von `0.0` bis `1.0` kannst du jede Farbe angeben, die auch eine Webseite kennt: einen englischen Farbnamen wie `gold` oder `skyblue`, einen Farbcode wie `#4aa03f` oder die drei Anteile Rot, Grün und Blau, jeweils von `0` bis `1`:
+
+```ini
+background = navy
+
+fill = gold
+shape = sphere
+move = -150, 0, 0
+
+fill = #4aa03f
+shape = box
+
+fill = 1, 0.5, 0
+shape = cone
+move = 150, 0, 0
+```
+
+`fill` wirkt wie ein Stift: Die Farbe gilt für alle Objekte, die danach kommen, bis du eine neue wählst. Welche Namen es gibt und wie Farbcodes funktionieren, steht im Handbuch unter [Farben angeben](/reference/farben).
+
+_uses(farbnamen, farbcodes, rgb)
+
+Mit `strokeWeight = 4` kannst du außerdem die Dicke der Konturen verändern.
 
 ## Übungsaufgaben
 
@@ -414,6 +621,16 @@ rotate = 0, t * 30, 0
 
 In diesem Beispiel wird der Torus um 30 Grad pro Sekunde um die Y-Achse gedreht. Das bedeutet, dass er nach 3 Sekunden 90 Grad geschafft hat und nach 12 Sekunden eine volle Umdrehung gemacht hat.
 
+<!-- tutorial-screenshot
+# Ring, der sich dreht (eine halbe Umdrehung, dann sieht er wieder gleich aus)
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+viewport: 420x400
+record: 6s
+-->
+
 <div style='text-align: center; margin: 1em 0;'>
 <video src='animation1.mp4' autoplay loop muted aria-label='Der Torus dreht sich gleichmäßig um die Y-Achse.'></video>
 </div>  
@@ -428,14 +645,34 @@ shape = box
 rotate = cos(t * 2) * 10, 0, sin(t * 3) * 10
 ```
 
+<!-- tutorial-screenshot
+# wackelnder Würfel (cos(2t) und sin(3t) wiederholen sich nach 2π Sekunden)
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+viewport: 380x360
+record: 6.28s
+-->
+
 <div style='text-align: center; margin: 1em 0;'>
 <video src='animation2.mp4' autoplay loop muted aria-label='Ein Würfel wackelt im Raum hin und her.'></video>
 </div>
 
-**Aufgabe:** Erstelle eine Animation, bei der die Sonne in der Mitte steht und die Erde um die Sonne kreist. Der Mond soll dabei um die Erde kreisen:
+**Aufgabe:** Erstelle eine Animation, bei der eine gelbe Sonne in der Mitte steht und eine blaue Erde um die Sonne kreist. Ein weißer Mond soll dabei um die Erde kreisen, und der Hintergrund ist schwarz wie das Weltall:
+
+<!-- tutorial-screenshot
+# Sonne, Erde, Mond: eine Erdumrundung dauert 12 Sekunden
+write-file: scene.ini <- file:sonnensystem.ini
+sleep: 1
+preview-reload
+tab: preview
+viewport: 1029x382
+record: 12s
+-->
 
 <div style='text-align: center; margin: 1em 0;'>
-<video src='animation3.mp4' autoplay loop muted style='max-width: 100%;' aria-label='Drei Kugeln bewegen sich wie Sonne, Erde und Mond umeinander.'></video>
+<video src='animation3.mp4' autoplay loop muted style='max-width: 100%;' aria-label='Vor schwarzem Hintergrund kreist eine blaue Erde um eine gelbe Sonne, ein weißer Mond kreist um die Erde.'></video>
 </div>
 
 _task(sonnensystem)
@@ -447,6 +684,16 @@ Du kannst Text in deine Szene einfügen, indem du den Befehl `text` verwendest:
 ```ini
 text = Hello!
 ```
+
+<!-- tutorial-screenshot
+# Text
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+crop-top: 27%
+crop-bottom: 27%
+-->
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='hello.webp' style='max-width: 100%; min-height: 15em; object-fit: cover; object-position: center;' alt='Der weiße Schriftzug „Hello!“ schwebt im Raum.'>
@@ -460,6 +707,16 @@ shade = on
 stroke = off
 fill = #f9b935
 ```
+
+<!-- tutorial-screenshot
+# schattierter Text
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+crop-top: 27%
+crop-bottom: 27%
+-->
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='hello-shade.webp' style='max-width: 100%; min-height: 15em; object-fit: cover; object-position: center;' alt='Der gelb schattierte Schriftzug „Hello!“ schwebt im Raum.'>

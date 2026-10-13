@@ -1466,6 +1466,16 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     text-align: right;
 }
 
+/* Handbuch »Farben angeben«: a small sample next to a colour name */
+.color-swatch {
+    display: inline-block;
+    width: 1.4em;
+    height: 1.4em;
+    vertical-align: middle;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    border-radius: 0.25em;
+}
+
 .uses {
     display: flex;
     flex-wrap: wrap;

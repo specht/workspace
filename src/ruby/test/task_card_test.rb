@@ -96,10 +96,10 @@ class TaskCardTest < Minitest::Test
     end
 
     def test_scene_card_names_file_and_viewer
-        task = TaskSpec.load_file(File.expand_path('../../content/anaglyph/tasks.yaml', __dir__))['tasks'].find { |t| t['id'] == 'latte' }
+        task = TaskSpec.load_file(File.expand_path('../../content/anaglyph/tasks.yaml', __dir__))['tasks'].find { |t| t['id'] == 'balken' }
         html = TaskCard.html(task, activity: 'anaglyph', number: 1, render: RENDER)
         assert_includes html, '<form'
-        assert_includes html, 'Liest <code>/workspace/anaglyph/latte.ini</code> mit deinem Viewer <code>/workspace/anaglyph/include/script.js</code>'
+        assert_includes html, 'Liest <code>/workspace/anaglyph/balken.ini</code> mit deinem Viewer <code>/workspace/anaglyph/include/script.js</code>'
     end
 
     def test_measure_and_command_cards

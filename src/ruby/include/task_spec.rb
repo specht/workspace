@@ -5,6 +5,7 @@ require 'yaml'
 require_relative 'sql_check'
 require_relative 'er_check'
 require_relative 'schema_check'
+require_relative 'scene_color'
 
 # Format and validation of an activity's tasks.yaml (see docs/aufgaben.md).
 #
@@ -52,6 +53,7 @@ module TaskSpec
     HTML_EXPECT_KEYS = %w[parses slides first_slide_changed img].freeze
     SCENE_MATCHER_KEYS = %w[
         shape name at count min rows size bottom_y rotate_z lattice min_spacing moves orbits
+        color label
     ].freeze
     SUBMIT_REQUIRES_KEYS = %w[html_parses scene_loads min_objects].freeze
     GIT_EXPECT_KEYS = %w[has_remote min_commits committed pushed identity].freeze
@@ -64,7 +66,7 @@ module TaskSpec
         'number' => %w[equals between],
         'measure' => %w[field between],
         'command' => %w[output_matches],
-        'scene' => %w[found missing source_matches],
+        'scene' => %w[found missing source_matches problem],
         'html' => %w[problem],
         'css' => %w[problem],
         'files' => %w[problem],
@@ -302,7 +304,8 @@ module TaskSpec
             end
             errors << 'expect.external must be none or allowed' if expect.is_a?(Hash) && expect.key?('external') && !%w[none allowed].include?(expect['external'])
         when 'scene'
-            allowed += %w[file at_times ignore expect source]
+            allowed += %w[file at_times ignore expect source background]
+            errors.concat(color_errors(check['background'], 'background')) if check.key?('background')
             errors.concat(path_errors(check['file'], 'file'))
             errors << 'at_times must be a list of numbers' if check.key?('at_times') && !(check['at_times'].is_a?(Array) && !check['at_times'].empty? && check['at_times'].all? { |t| t.is_a?(Numeric) })
             errors << 'ignore must be a list of shapes' if check.key?('ignore') && !string_list?(check['ignore'])
@@ -318,7 +321,11 @@ module TaskSpec
                     %w[at size lattice].each do |k|
                         errors << "expect[#{i}].#{k} must be three numbers" if m.key?(k) && !(m[k].is_a?(Array) && m[k].size == 3 && m[k].all? { |v| v.is_a?(Numeric) })
                     end
+                    errors.concat(color_errors(m['color'], "expect[#{i}].color")) if m.key?('color')
+                    errors << "expect[#{i}].label must be text" if m.key?('label') && !nonempty_string?(m['label'])
                 end
+                labels = matchers.select { |m| m.is_a?(Hash) && m['label'] }.map { |m| m['label'] }
+                errors << 'labels must be different' if labels.uniq.size != labels.size
             else
                 errors << 'expect must list what the scene contains'
             end
@@ -457,6 +464,14 @@ module TaskSpec
 
     def self.string_list?(value)
         value.is_a?(Array) && !value.empty? && value.all? { |v| nonempty_string?(v) }
+    end
+
+    # A colour family (yellow) or a list of them ([yellow, orange]).
+    def self.color_errors(value, name)
+        families = value.is_a?(Array) ? value : [value]
+        return [] if !families.empty? && families.all? { |f| SceneColor::FAMILIES.include?(f) }
+
+        ["#{name} must be one or more of #{SceneColor::FAMILIES.join(', ')}"]
     end
 
     def self.path_errors(value, name)

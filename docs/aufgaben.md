@@ -208,8 +208,8 @@ Jede Prüfung bringt eigene Rückmeldungen mit, die zeigen, was sie gelesen hat.
 Mit `feedback` kommen Sätze für typische Fehler dazu. Die Bedingungen in
 `when` hängen von der Prüfart ab: `answer` kennt `equals` und `matches`,
 `number` kennt `equals` und `between`, `choice` kennt `picked`, `command`
-kennt `output_matches`, `scene` kennt `found`, `missing` und
-`source_matches`.
+kennt `output_matches`, `scene` kennt `found`, `missing`,
+`source_matches` und `problem`.
 
 ### Versionen
 
@@ -420,15 +420,30 @@ check:
   file: anaglyph/sonnensystem.ini
   ignore: [grid]                # Formen, die nicht mitzählen
   at_times: [0, 1, 2, 3]
+  background: black             # Farbfamilie des Hintergrunds
   expect:
-    - { name: sonne, shape: sphere, moves: false }
-    - { name: erde, shape: sphere, orbits: sonne }
+    - { label: Sonne, shape: sphere, color: [yellow, orange], moves: false }
+    - { label: Erde, shape: sphere, color: [blue, cyan], orbits: Sonne }
   source:
     contains: [group]           # Wörter, die im Text vorkommen müssen
 ```
 
-Jeder Eintrag in `expect` wählt Objekte aus (`shape`, `name` für
-`name = …` in der Szene) und verlangt etwas von ihnen:
+Jeder Eintrag in `expect` wählt Objekte aus und verlangt etwas von ihnen.
+Ausgewählt wird mit `shape`, mit `color` (eine Farbfamilie oder eine Liste
+davon) und mit `name` für `name = …` in der Szene. `label` ist nur der Name in
+den Rückmeldungen (»Ich finde keine Kugel in Gelb oder Orange für »Sonne««)
+und das Ziel von `orbits`.
+
+Farben statt Namen: Das Tutorial führt `name` nirgends ein, Farben dagegen
+schon, und eine gelbe Sonne ist eine natürliche Aufgabe. `scene_dump.js`
+verfolgt `fill` wie der Viewer, als Stift, der für alle folgenden Objekte gilt
+und den eine Gruppe beim `end` zurücksetzt; `background` gilt für die ganze
+Szene. Der Server ordnet jede Farbe einer Familie zu
+(`src/ruby/include/scene_color.rb`): `white`, `grey`, `black`, `red`,
+`orange`, `brown`, `yellow`, `green`, `cyan`, `blue`, `purple`, `pink`. So
+zählt `gold`, `#f9c80e` und `1, 0.8, 0` gleichermaßen als gelb. Unter »Was der
+Workspace gelesen hat« steht bei jedem Objekt, was geschrieben wurde und was
+daraus wurde: »Farbe gold (#ffd700, Gelb)«.
 
 | Feld | Verlangt |
 | --- | --- |
@@ -440,11 +455,11 @@ Jeder Eintrag in `expect` wählt Objekte aus (`shape`, `name` für
 | `lattice: [3, 3, 3]`, `min_spacing` | vollständiges Gitter, Mindestabstand |
 | `rows` | so viele gleich lange Reihen, keine zwei Objekte an derselben Stelle |
 | `moves: true/false` | bewegt sich zwischen den Zeitpunkten oder nicht |
-| `orbits: <name>` | Abstand zum genannten Objekt bleibt gleich, die Richtung ändert sich |
+| `orbits: <label>` | Abstand zu dem Objekt, das der Eintrag mit diesem `label` findet (oder zum Objekt mit `name = …`), bleibt gleich, die Richtung ändert sich |
 
 Positionen haben eine Toleranz von 2 Einheiten. Unter »Was der Workspace gelesen
 hat« steht jedes Objekt mit Zeile, Position und Größe. Die Karte nennt Datei
-und Viewer: »Liest `/workspace/anaglyph/latte.ini` mit deinem Viewer
+und Viewer: »Liest `/workspace/anaglyph/balken.ini` mit deinem Viewer
 `/workspace/anaglyph/include/script.js`«.
 
 ### sql

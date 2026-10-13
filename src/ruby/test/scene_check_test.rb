@@ -67,10 +67,10 @@ class SceneCheckTest < Minitest::Test
     end
 
     def test_plank
-        scene('latte.ini', "shape = box\nscale = 10, 1, 1\nmove = 0, 25, 0\n")
-        assert_equal :correct, check('latte').status, check('latte').message
-        scene('latte.ini', "shape = box\nscale = 10, 1, 1\n")
-        r = check('latte')
+        scene('balken.ini', "shape = box\nscale = 10, 1, 1\nmove = 0, 25, 0\n")
+        assert_equal :correct, check('balken').status, check('balken').message
+        scene('balken.ini', "shape = box\nscale = 10, 1, 1\n")
+        r = check('balken')
         assert_equal :bottom, r.problem
         assert_includes r.message, 'y = -25'
         assert_includes r.message, 'versinkt'
@@ -84,16 +84,87 @@ class SceneCheckTest < Minitest::Test
         assert_equal :lattice, check('wuerfelgitter').problem
     end
 
-    def test_solar_system
-        good = "shape = sphere\nname = sonne\n\ngroup\nmove = 300, 0, 0\nrotate = 0, t * 30, 0\nshape = sphere\nname = erde\nscale = 0.3, 0.3, 0.3\n\n  group\n  move = 60, 0, 0\n  rotate = 0, t * 90, 0\n  shape = sphere\n  name = mond\n  scale = 0.1, 0.1, 0.1\n  end\nend\n"
-        scene('sonnensystem.ini', good)
+    SOLAR = <<~INI
+        background = 0
+        shade = on
+        stroke = off
+
+        fill = gold
+        shape = sphere
+
+        group
+            move = 300, 0, 0
+            rotate = 0, t * 30, 0
+
+            fill = #3a6ee8
+            shape = sphere
+            scale = 0.3
+
+            group
+                move = 60, 0, 0
+                rotate = 0, t * 90, 0
+
+                fill = 1, 1, 1
+                shape = sphere
+                scale = 0.1
+            end
+        end
+    INI
+
+    def test_solar_system_by_colour
+        scene('sonnensystem.ini', SOLAR)
         r = check('sonnensystem')
         assert_equal :correct, r.status, r.message
-        # Earth spinning in place instead of orbiting.
-        scene('sonnensystem.ini', good.sub("move = 300, 0, 0\nrotate = 0, t * 30, 0", "rotate = 0, t * 30, 0\nmove = 300, 0, 0"))
+        assert_includes r.read, 'Farbe gold (#ffd700, Gelb)'
+        assert_includes r.read, 'Farbe #3a6ee8 (Blau)'
+        assert_includes r.read, 'Hintergrund: #000000 (Schwarz)'
+
+        # A white background.
+        scene('sonnensystem.ini', SOLAR.sub("background = 0\n", ''))
+        r = check('sonnensystem')
+        assert_equal :background, r.problem
+        assert_includes r.message, 'Der Hintergrund ist #ffffff (Weiß), verlangt ist Schwarz.'
+
+        # A red sun: says what it sees instead.
+        scene('sonnensystem.ini', SOLAR.sub('fill = gold', 'fill = red'))
+        r = check('sonnensystem')
+        assert_equal :missing_object, r.problem
+        assert_includes r.message, 'Ich finde keine Kugel in Gelb oder Orange für »Sonne«.'
+        assert_includes r.message, 'Kugel in Rot (Zeile 6)'
+
+        # Earth spinning in place instead of orbiting: the hint about the order.
+        scene('sonnensystem.ini', SOLAR.sub("move = 300, 0, 0\n    rotate = 0, t * 30, 0", "rotate = 0, t * 30, 0\n    move = 300, 0, 0"))
         r = check('sonnensystem')
         assert_equal :orbit, r.problem
-        assert_includes r.message, '»erde« kreist nicht um »sonne«'
+        assert_includes r.message, 'Steht bei dir `rotate` vor `move`?'
+
+        # Two yellow spheres: which one is the sun?
+        scene('sonnensystem.ini', SOLAR.sub("fill = #3a6ee8\n", "fill = #3a6ee8\n    shape = sphere\n    fill = yellow\n    move = 0, 200, 0\n\n    fill = #3a6ee8\n"))
+        r = check('sonnensystem')
+        refute_equal :correct, r.status
+    end
+
+    # The tutorial's own solution, which is also the scene of animation3.mp4.
+    def test_tutorial_solar_system_solves_the_task
+        scene('sonnensystem.ini', File.read(File.expand_path('../../content/anaglyph/sonnensystem.ini', __dir__)))
+        r = check('sonnensystem')
+        assert_equal :correct, r.status, r.message
+    end
+
+    def test_fill_is_a_pen_that_groups_restore
+        scene('farben.ini', "fill = red\nshape = box\n\ngroup\n    fill = blue\n    shape = sphere\nend\n\nshape = cone\n")
+        dump = SceneCheck.parse(Open3.capture2('sh', '-c', SceneCheck.command('anaglyph/farben.ini', [0]), chdir: @tmp).first)
+        assert_equal [{ 'css' => 'red' }, { 'css' => 'blue' }, { 'css' => 'red' }], dump['objects'].map { |o| o['fill'] }
+        assert_equal({ 'rgb' => [1, 1, 1] }, dump['background'])
+    end
+
+    def test_objects_by_name_still_work
+        named = "shape = sphere\nname = sonne\n\ngroup\nmove = 300, 0, 0\nrotate = 0, t * 30, 0\nshape = sphere\nname = erde\nend\n"
+        scene('benannt.ini', named)
+        task = { 'id' => 'benannt', 'check' => { 'type' => 'scene', 'file' => 'anaglyph/benannt.ini', 'at_times' => [0, 1, 2],
+                 'expect' => [{ 'name' => 'sonne', 'moves' => false }, { 'name' => 'erde', 'orbits' => 'sonne' }] } }
+        r = TaskCheck.check(task, '', variables: {}, workspace: @ws, runner: @runner)
+        assert_equal :correct, r.status, r.message
     end
 
     def test_avenue_with_define

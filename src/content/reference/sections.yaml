@@ -19,6 +19,15 @@
   entries:
     - html-folien
 
+- key: reference-colors
+  label: Farben
+  icon: /images/palette.png
+  description: |
+    Farben mit Namen, Farbcodes oder Rot-, Grün- und Blauanteilen angeben, in
+    CSS und im Anaglyph-Viewer.
+  entries:
+    - farben
+
 - key: reference-git
   label: Git und GitLab
   icon: /images/penguin.png
