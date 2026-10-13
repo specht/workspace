@@ -132,6 +132,7 @@ go-live
 preview-port: PORT
 preview-url: https://2d.hackschule.de/
 preview-load-game: RELATIVE_WORKSPACE_JSON_PATH
+neo4j-browser
 select-option: CSS_SELECTOR = VALUE
 preview-reload
 preview-reset
@@ -186,6 +187,32 @@ relative to `/workspace`, into that site's in-browser editor. It does not
 save or publish anything remotely. Generate the JSON reproducibly from a
 pinned `specht/2d` Git checkout with `npm ci && npm run demo` in `rezepte/tools`.
 The site itself is live; the game content is pinned to the checked-out commit.
+
+`neo4j-browser` opens the screenshot account's Neo4j Browser as the `preview`
+tab, the way the »Neo4j« button in the menu does (`/api/start_neo4j`), and logs
+in with the username and password from the profile page. Everything after that
+uses the general instructions; `:clear` removes earlier result frames:
+
+```text
+neo4j-browser
+tab: preview
+viewport: 1853x1260
+zoom: 1.8
+click: selector:[data-testid=main-editor] .cm-content
+press: Control+A
+type: :clear
+press: Control+Enter
+press: Control+A
+type: MATCH (n) RETURN n LIMIT 25;
+press: Control+Enter
+wait-for-text: Started streaming 25 records
+```
+
+The graph is a `<canvas>`. With the default profile the page renders at device
+pixel ratio 1 and the capture enlarges it by 1.8, which makes canvas content
+blurry (text and SVG are rendered sharp at any scale). `zoom: 1.8` with a
+viewport given in final pixels keeps the layout (1029x700 CSS pixels) and lets
+the canvas draw at full resolution; the image then has twice the pixels.
 
 ### General interaction
 

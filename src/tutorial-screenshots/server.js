@@ -93,6 +93,7 @@ const WORKBENCH_PARTS = Object.freeze({
 const SIMPLE_ACTIONS = new Set([
     'close-folder',
     'go-live',
+    'neo4j-browser',
     'terminal-open',
     'terminal-wait-for-prompt',
     'terminal-maximize',
@@ -1702,6 +1703,42 @@ async function openPreviewUrl(url, hooks) {
     await waitForPreviewReady(preview, hooks);
 }
 
+// The screenshot account's Neo4j Browser as the preview tab, opened like the
+// »Neo4j« button in the menu (/api/start_neo4j) and logged in with the
+// username and password its profile page shows, as a student would.
+async function openNeo4jBrowser() {
+    const start = jsonResponse(await browserRequest('/api/start_neo4j'), 'Neo4j Browser start');
+    if (!start.browser_url) throw new Error('/api/start_neo4j returned no browser_url');
+
+    const profile = await browserRequest('/profil', { method: 'GET', body: null });
+    if (profile.status !== 200) throw new Error(`Profile page returned HTTP ${profile.status}`);
+    const credentials = await dashboard.evaluate(html => {
+        const page = new DOMParser().parseFromString(html, 'text/html');
+        return {
+            username: page.querySelector('#neo4j_username')?.value || '',
+            password: page.querySelector('#neo4j_password')?.value || '',
+        };
+    }, profile.body);
+    if (!credentials.username || !credentials.password) {
+        throw new Error('The profile page shows no Neo4j username and password');
+    }
+
+    if (preview && !preview.isClosed()) await preview.close();
+    preview = await context.newPage();
+    const response = await preview.goto(start.browser_url, {
+        waitUntil: 'domcontentloaded', timeout: 60_000,
+    });
+    if (!response?.ok()) throw new Error(`Neo4j Browser returned HTTP ${response?.status()}`);
+
+    const username = preview.locator('input[name=username]');
+    await username.waitFor({ state: 'visible', timeout: 60_000 });
+    await username.fill(credentials.username);
+    await preview.locator('input[name=password]').fill(credentials.password);
+    await preview.getByRole('button', { name: 'Connect', exact: true }).click();
+    await preview.locator('input[name=password]').waitFor({ state: 'hidden', timeout: 30_000 });
+    await preview.locator('[data-testid=main-editor] .cm-content').waitFor({ state: 'visible', timeout: 30_000 });
+}
+
 async function loadPreviewGame(relativePath) {
     if (!preview || preview.isClosed()) throw new Error('No preview tab is open');
     if (!relativePath.endsWith('.json')) throw new Error('preview-load-game requires JSON');
@@ -2248,6 +2285,7 @@ async function executeAction(action, targetTab, hooks) {
         case 'go-live': return goLive(hooks);
         case 'preview-port': return openPreviewPort(action.port, hooks);
         case 'preview-url': return openPreviewUrl(action.url, hooks);
+        case 'neo4j-browser': return openNeo4jBrowser();
         case 'preview-load-game': return loadPreviewGame(action.path);
         case 'select-option': return selectOption(action, targetTab);
         case 'write-file': return writeWorkspaceFile(action.path, action.contents, hooks);
