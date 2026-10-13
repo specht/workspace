@@ -222,6 +222,13 @@ SHOW TABLES;
 <!-- tutorial-screenshot
 click: selector:.editor-actions a[aria-label="SQL erzeugen"]
 wait-for-file: filmdatenbank/film.sql
+# mycli keeps rows free below its prompt for its menu. Without the status bar
+# (never visible in a cropped terminal shot) the terminal has the one row more
+# that SHOW TABLES with three tables needs to stay in view.
+press: Control+Shift+P
+type: Toggle Status Bar Visibility
+wait-for-text: View: Toggle Status Bar Visibility
+press: Enter
 show-bottom-panel
 terminal-open
 terminal-maximize
@@ -234,8 +241,6 @@ press: Control+L
 type: SHOW TABLES;
 press: Enter
 wait-for-text: 3 rows in set
-# mycli keeps 8 rows free below its prompt and scrolls the query away if the terminal is too short
-viewport: 1029x560
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->

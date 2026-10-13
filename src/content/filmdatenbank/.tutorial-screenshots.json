@@ -11,13 +11,13 @@
       "state_hash": "5ab9745701a91db86449a7283185446b46d3449e4827fb6483450ad0a0938803",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "workspace_look": "4.138.0-ls366",
-      "output_sha256": "b752d9aabc5eae35ba0c2f3963e80f483be4ef46f92bf68422e39aa061e7c5d4"
+      "output_sha256": "1f4be07921b9650d474f31ce245264831a7a9f89a493dcdf09e7c24868f39f5c"
     },
     "show-tables.webp": {
-      "state_hash": "d302e87c135f5bf22a24405ff69a81ebeec856438ba2289ee53cf29c7becad5a",
+      "state_hash": "03a6c6ad7d4cab01375b3653aab9d971579bb5a37d07705ceb5c5d098a101779",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "workspace_look": "4.138.0-ls366",
-      "output_sha256": "b1c648d349183f839094fb733b43149831c9db2771af508e73fa8d29bf983abb"
+      "output_sha256": "03bb18abf6bd4596e372534b4efeb96af33a1a96a095258e77f4c7a507efc290"
     }
   }
 }
