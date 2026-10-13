@@ -146,4 +146,13 @@ class TaskCardTest < Minitest::Test
         assert_includes html, 'Stand holen'
         assert_includes html, 'Code Bites: <code>array_sum</code>, in Ruby, Python, JavaScript'
     end
+
+    # docs/vorlage-aktivitaet is what authors copy; it must stay valid.
+    def test_the_template_for_authors_is_valid
+        dir = File.expand_path('../../../docs/vorlage-aktivitaet', __dir__)
+        tasks = TaskSpec.load_file(File.join(dir, 'tasks.yaml'))['tasks'].map { |t| t['id'] }
+        _, ids = TaskCard.mark_slots(File.read(File.join(dir, 'vorlage-aktivitaet.md'), encoding: 'UTF-8'))
+        assert_equal tasks, ids
+        assert File.file?(File.join(dir, 'lehrkraft.md'))
+    end
 end

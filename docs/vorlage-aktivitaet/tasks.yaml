@@ -1,0 +1,36 @@
+# Aufgaben zur Vorlage. Format: docs/aufgaben.md
+# Beim Kopieren: activity muss genau so heißen wie der Ordner.
+format: 1
+activity: vorlage-aktivitaet
+tasks:
+  - id: was-siehst-du
+    title: Was siehst du?
+    prompt: Welche Spalte der Ausgabe von `ls -la` sagt, wem eine Datei gehört?
+    check:
+      type: choice
+      options:
+        - Die erste
+        - Die dritte
+        - Die letzte
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Die erste Spalte zeigt die Rechte, nicht den Besitzer.
+
+  - id: eigene-datei
+    title: Eine eigene Datei
+    prompt: In `/workspace/notizen` liegt eine Datei `start.txt`.
+    check:
+      type: files
+      path: notizen/start.txt
+      expect:
+        exists: true
+        format: text
+    hint: '`mkdir notizen` legt den Ordner an, `touch notizen/start.txt` die Datei.'
+
+  - id: in-eigenen-worten
+    title: In eigenen Worten
+    prompt: Was hast du heute gelernt? Zwei oder drei Sätze reichen.
+    check:
+      type: reflection
+      min_words: 15

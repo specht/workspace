@@ -117,6 +117,19 @@ Die Einrichtung und Ausführung der Tests ist in [`e2e/README.md`](e2e/README.md
 Für die Erstellung von Paketen für Leistungsüberprüfungen gibt es eine eigene
 [Dokumentation](docs/test-workspace-packages.md).
 
+## Eigene Aktivitäten und Aufgaben
+
+Aktivitäten, Aufgaben, die der Workspace selbst prüft, Handbuch-Seiten und
+Notizen für Lehrkräfte sind Dateien in `src/content/`. Wie man eine eigene
+Aktivität schreibt, steht in [docs/aktivitaet-schreiben.md](docs/aktivitaet-schreiben.md),
+mit einer Vorlage zum Kopieren in [docs/vorlage-aktivitaet/](docs/vorlage-aktivitaet/).
+Alle Felder und Prüfarten beschreibt [docs/aufgaben.md](docs/aufgaben.md).
+
+Aufgaben sind für Lernende ausgeschaltet, bis `credentials.rb` die Zeile
+`TASKS_ENABLED = true` enthält; Lehrkräfte sehen sie vorher als Vorschau.
+Welche Version installiert ist und was sich geändert hat, steht in
+[CHANGELOG.md](CHANGELOG.md).
+
 ## Betrieb auf einem Server
 
 Der Workspace ist für den Betrieb auf einem Server für eine Schule konzipiert. Die Installation funktioniert im Wesentlichen genau wie die lokale Installation, aber es gibt einen wichtigen Punkt zu beachten: Der Webserver hat vollen Zugriff auf Docker, da er Container starten und stoppen können muss. Das bedeutet, dass der Workspace isoliert auf einem eigenen Server laufen sollte.

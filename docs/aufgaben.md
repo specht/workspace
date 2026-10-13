@@ -5,11 +5,14 @@ Aufgaben geschrieben werden, die der Workspace selbst prüft. Es richtet sich an
 alle, die Inhalte schreiben, auch an Lehrkräfte anderer Schulen mit eigener
 Installation.
 
-**Stand:** Format 1, Meilenstein M1. Es gibt das Aufgabenformat und seine
-Prüfung (`src/ruby/include/task_spec.rb`), Handbuch-Seiten unter
-`/reference`, die Platzhalter `_include()` und `_uses()` und Notizen für
-Lehrkräfte. Seiten binden noch keine Aufgaben ein, und geprüft wird noch
-nichts. Was ab wann läuft, steht in der Tabelle der Prüfarten.
+**Stand:** Format 1, Meilenstein M6. Aufgabenkarten auf den Seiten, alle
+Prüfarten außer `scene` und `sql`, Abgaben, die Klassenübersicht, Übungen aus
+Code Bites und die Startseite für Lernende. Was ab wann läuft, steht in der
+Tabelle der Prüfarten.
+
+Wer eine eigene Aktivität schreiben will, fängt mit
+[aktivitaet-schreiben.md](aktivitaet-schreiben.md) an; dieses Dokument ist
+das Nachschlagewerk dazu.
 
 ## Die fünf Bausteine
 

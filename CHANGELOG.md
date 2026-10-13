@@ -89,6 +89,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   einer eigenen Messung im Workspace der Person (ping, traceroute, curl);
   Befehle laufen im eigenen Workspace mit Zeitlimit, die Ausgabe wird
   geprüft. Alle TCP/IP-Aufgaben außer dem Codewort stehen jetzt auf der Seite.
+- Anleitung für Lehrkräfte, die eigene Aktivitäten schreiben:
+  `docs/aktivitaet-schreiben.md`, mit Vorlage in `docs/vorlage-aktivitaet/`
+  (ein Test hält sie gültig). Hinweis darauf im README.
 - Neue Neo4j-Knoten `TaskState` und `TaskAttempt` (Constraint
   `TaskState/key`, Index `TaskAttempt/task`); sie werden beim Start von selbst
   angelegt.
