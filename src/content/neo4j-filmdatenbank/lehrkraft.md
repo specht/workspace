@@ -1,0 +1,14 @@
+Die Fortsetzung der »Filmdatenbank mit MySQL«: dieselben Daten, als Graph. Sie setzt voraus, dass die Lernenden `JOIN` und `GROUP BY` kennen, denn die Vergleiche mit SQL tragen das Kapitel.
+
+<table class='table'>
+<tr><th>Ordner</th><td><code>/workspace/filmdatenbank</code> (wie im MySQL-Kapitel); darin nur die heruntergeladene <code>neo4j.dump</code></td></tr>
+<tr><th>Daten</th><td><code>movie-archive/neo4j.dump</code> aus <code>specht/workspace-files</code>, gebaut von <code>src/scripts/collect-movies</code> zusammen mit den MySQL-Dateien, also dieselben Filme, Genres und Personen. Knoten <code>Movie</code>, <code>Person</code>, <code>Genre</code>; Beziehungen <code>IN_GENRE</code> und je eine pro Tätigkeit (<code>ACTOR</code>, <code>DIRECTOR</code>, <code>WRITER</code>, <code>PRODUCER</code>, <code>COMPOSER</code>, <code>CINEMATOGRAPHER</code>, <code>EDITOR</code>). Der Dump enthält nur Daten; Schlüssel und Indizes legen die Lernenden selbst an.</td></tr>
+<tr><th>Werkzeuge</th><td><code>neo4j_bolt load</code> zum Laden und <code>cypher-shell</code> für Tabellen im Terminal; beide lesen <code>NEO4J_URI</code>, <code>NEO4J_USERNAME</code>, <code>NEO4J_PASSWORD</code> und <code>NEO4J_DATABASE</code> aus dem Workspace. Der Neo4j Browser (Knopf »Neo4j« im Menü, sobald Neo4j im Profil eingeschaltet ist) zeigt Graphen; angemeldet wird dort mit den Daten aus dem Profil, die eigene Datenbank ist die Heimdatenbank.</td></tr>
+<tr><th>Was gelesen wird</th><td>Nichts. Eine Prüfart für Cypher gibt es noch nicht; die Aufgaben fragen nach dem Modell und nach Mustern. Die Abfrage-Übungen stehen als Kästen im Text.</td></tr>
+</table>
+
+**Wo es hakt.** Die Pfeilrichtung (eine Abfrage in die falsche Richtung liefert nichts, ohne Fehler) und dass gleiche Namen im Muster denselben Knoten bedeuten. Die Aufgaben »Die Pfeilrichtung« und »Das richtige Muster« zielen darauf. Bei den Paaren hilft es, die Vorhersage (sechs Zeilen für drei Personen) an der Tafel aufzulösen, bevor `a.id < b.id` erklärt wird.
+
+**Neu laden.** `neo4j_bolt load` erwartet eine leere Datenbank. Wer schon experimentiert hat, setzt Neo4j im Profil zurück und lädt noch einmal; die Schlüssel sind danach auch weg.
+
+**Noch offen, bevor das Kapitel im Katalog erscheint:** `neo4j.dump` muss in `specht/workspace-files/movie-archive/` liegen, das Workspace-Image braucht `neo4j_bolt` (ab dieser Version im Dockerfile), und die Screenshots aus dem Neo4j Browser fehlen noch (im Text als Kommentar markiert). Bis dahin steht die Seite nur in der Entwicklung im Katalog.

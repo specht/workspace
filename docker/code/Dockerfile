@@ -38,6 +38,7 @@ ARG DOTNET_VERSION=10.0
 ARG POWERSHELL_VERSION=7.6.4
 ARG RUBY_VERSION=3.4.10
 ARG RUBY_API_VERSION=3.4.0
+ARG NEO4J_BOLT_VERSION=0.5.0
 ARG RUBY_SHA256=6f32ad662baafc228d12030dbcd284f83b034dd4337b300dc84ac74d11a1eb68
 
 ARG HACKSCHULE_SIDEBAR_INIT_VERSION=0.1.0
@@ -802,6 +803,16 @@ ENV PATH="${GEM_HOME}/bin:${RUBY_ROOT}/bin:${PATH}"
 
 RUN test "$(command -v ruby)" = /opt/ruby/bin/ruby \
     && test "$(gem environment home)" = "${GEM_HOME}"
+
+# neo4j_bolt (MIT, https://github.com/specht/neo4j_bolt): `neo4j_bolt load`
+# fills the student's Neo4j database from a dump (Filmdatenbank als Graph).
+# It reads NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD and NEO4J_DATABASE.
+# Installed next to Ruby, not into GEM_HOME, which lies in /workspace.
+ARG NEO4J_BOLT_VERSION
+RUN GEM_HOME=/opt/ruby/lib/ruby/gems/${RUBY_API_VERSION} \
+        /opt/ruby/bin/gem install --no-document --bindir /opt/ruby/bin \
+        neo4j_bolt -v "${NEO4J_BOLT_VERSION}" \
+    && neo4j_bolt --version
 
 
 # --------------------------------------------------------------------

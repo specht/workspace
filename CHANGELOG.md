@@ -176,6 +176,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   und Blauanteile, Kontrast. Das Anaglyph-Tutorial verweist darauf.
 - Code-Blöcke mit ```` ```er ```` sind auf der Website eingefärbt wie in der
   ER-Werkstatt (`src/ruby/include/er_lexer.rb`, ein Rouge-Lexer).
+- Neue Aktivität »Filmdatenbank als Graph mit Neo4j« (`neo4j-filmdatenbank`),
+  die Fortsetzung der Filmdatenbank: dieselben Daten aus `neo4j.dump`, Cypher
+  im Vergleich zu SQL, Schlüssel und Indizes, Schauspielpaare, Wege durch den
+  Graphen; sechs Aufgaben und eine Notiz für Lehrkräfte. Vorerst nur in der
+  Entwicklung im Katalog, bis `neo4j.dump` veröffentlicht ist.
 
 ### Geändert
 
@@ -230,6 +235,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Datei. Die Vorschau zoomt (−, +, »Einpassen«, Strg + Mausrad) und springt
   beim Tippen und Ziehen nicht mehr: Die Ansicht bleibt, Kästen bleiben
   stehen, nur neue werden platziert.
+- Profil: Der Hinweis nennt die Umgebungsvariable richtig, `NEO4J_DATABASE`
+  statt `NEO4J_DB`.
 
 ### Für Betreibende
 
@@ -242,3 +249,6 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Für den Hinweis auf neue Versionen braucht der Server ausgehende
   HTTPS-Verbindungen zu den Adressen aus `template` (GitHub, GitLab).
   Kommt keine Antwort, erscheint einfach kein Hinweis.
+- Das Workspace-Image enthält `neo4j_bolt` (Gem, Version im Dockerfile als
+  `NEO4J_BOLT_VERSION`). Neu bauen mit `build-image.sh`.
+

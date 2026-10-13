@@ -97,6 +97,7 @@
   entries:
     - mysql
     - filmdatenbank
+    - .neo4j-filmdatenbank
     - bobby_tables
 
 - key: advanced

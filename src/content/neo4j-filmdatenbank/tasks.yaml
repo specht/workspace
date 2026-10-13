@@ -1,0 +1,114 @@
+# Aufgaben zu »Filmdatenbank als Graph mit Neo4j«. Format: docs/aufgaben.md.
+# Noch keine Prüfart liest Neo4j; die Aufgaben fragen, was man am Modell und
+# an Cypher verstanden hat. Die Abfrage-Übungen stehen als Kästen im Text.
+format: 1
+activity: neo4j-filmdatenbank
+tasks:
+  - id: zwischentabelle
+    title: Wo ist movie_genre geblieben?
+    prompt: |
+      In MySQL ordnete die Tabelle `movie_genre` Filme ihren Genres zu. Was
+      wird im Graphen aus ihr?
+    check:
+      type: choice
+      options:
+        - Ein eigener Knoten mit dem Label `MovieGenre`.
+        - Beziehungen vom Typ `IN_GENRE` zwischen `Movie` und `Genre`.
+        - Eine Eigenschaft `genres` an jedem `Movie`-Knoten.
+        - Nichts, Neo4j braucht dafür weiterhin eine Tabelle.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Ein Knoten pro Zuordnung ginge, aber er hätte nichts Eigenes zu speichern. Die Zuordnung selbst ist eine Verbindung.
+      - when: { picked: 2 }
+        say: Dann stünden Genres wieder als Liste im Film, wie im JSON vom Anfang der Filmdatenbank. Wer fragt »Welche Filme sind Comedy?«, müsste in jedem Film suchen.
+
+  - id: taetigkeit
+    title: Wo steckt die Tätigkeit?
+    prompt: |
+      Wo steht im Graphen, dass Robert Zemeckis bei »Back to the Future«
+      Regie geführt hat, und nicht etwa mitgespielt?
+    check:
+      type: choice
+      options:
+        - Im Typ der Beziehung, `DIRECTOR`.
+        - In einer Eigenschaft `job` am Knoten von Robert Zemeckis.
+        - In einem Knoten `Job` mit dem Namen `director`.
+        - Im Label des Personenknotens, `:Director`.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Dieselbe Person kann bei einem Film Regie führen und bei einem anderen schreiben. Die Tätigkeit gehört zur Verbindung von Person und Film, nicht zur Person.
+      - when: { picked: 3 }
+        say: Ein Label beschreibt, was ein Knoten ist. Robert Zemeckis ist eine Person, Regie hat er nur bei bestimmten Filmen geführt.
+
+  - id: richtung
+    title: Die Pfeilrichtung
+    prompt: |
+      Was findet `MATCH (g:Genre)-[:IN_GENRE]->(m:Movie) RETURN m`?
+    check:
+      type: choice
+      options:
+        - Alle Filme mit einem Genre, wie mit dem Pfeil in die andere Richtung.
+        - Nichts, denn alle `IN_GENRE`-Beziehungen zeigen vom Film zum Genre.
+        - Alle Genres.
+        - Eine Fehlermeldung, weil die Richtung falsch ist.
+      correct: 1
+    hint: Die Daten legen jede `IN_GENRE`-Beziehung vom Film zum Genre an. Probier es aus.
+    solution: |
+      Ein Muster mit Pfeil passt nur auf Beziehungen in dieser Richtung. Keine
+      verläuft vom Genre zum Film, also gibt es kein Ergebnis, aber auch keinen
+      Fehler. Ohne Spitze, `(g:Genre)-[:IN_GENRE]-(m:Movie)`, passt jede
+      Richtung.
+
+  - id: muster
+    title: Das richtige Muster
+    prompt: |
+      Gesucht sind Personen, die in einem Film mitgespielt **und** bei
+      demselben Film Regie geführt haben. Welches Muster findet sie?
+    check:
+      type: choice
+      options:
+        - '`(p:Person)-[:ACTOR]->(m:Movie), (q:Person)-[:DIRECTOR]->(m)`'
+        - '`(p:Person)-[:ACTOR]->(m:Movie)<-[:DIRECTOR]-(p)`'
+        - '`(p:Person)-[:ACTOR]->(:Movie)<-[:DIRECTOR]-(:Person)`'
+        - '`(p:Person)-[:ACTOR|DIRECTOR]->(m:Movie)`'
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Hier dürfen `p` und `q` verschiedene Menschen sein. Dass es dieselbe Person ist, sagt das Muster nur, wenn beide Enden denselben Namen tragen.
+      - when: { picked: 2 }
+        say: Der Knoten am Ende von `DIRECTOR` hat keinen Namen, also kann es jede Person sein.
+      - when: { picked: 3 }
+        say: '`ACTOR|DIRECTOR` heißt »das eine oder das andere«. Gefragt sind beide Beziehungen.'
+
+  - id: paare
+    title: Wie viele Paare?
+    prompt: |
+      In einem Film spielen drei Personen mit. Wie viele Zeilen liefert
+      `MATCH (a:Person)-[:ACTOR]->(m)<-[:ACTOR]-(b:Person) RETURN a.name, b.name`
+      für diesen Film, also **ohne** `WHERE a.id < b.id`?
+    prediction: true
+    check:
+      type: choice
+      options:
+        - '3'
+        - '6'
+        - '9'
+        - '1'
+      correct: 1
+    solution: |
+      Sechs: Jedes der drei Paare kommt zweimal vor, als (A, B) und als (B, A).
+      Mit sich selbst wird niemand gepaart, weil eine Beziehung in einem Muster
+      nur einmal verwendet wird. `a.id < b.id` lässt von jedem Paar genau eine
+      Reihenfolge übrig: drei Zeilen.
+
+  - id: vergleich
+    title: MySQL oder Neo4j?
+    prompt: |
+      Du hast dieselben Filmdaten in MySQL und in Neo4j abgefragt. Nenne eine
+      Frage, die du lieber in MySQL stellst, und eine, die du lieber in Neo4j
+      stellst, und begründe beides.
+    check:
+      type: reflection
+      min_words: 30
