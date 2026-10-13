@@ -41,7 +41,7 @@ which name their columns. Change both together.
 
 At the end the script prints a sanity summary (counts, films left out, people beyond
 the limit per job, genres). Check it, and check by hand what the tutorial asks about
-(*The Matrix* from 1999, Christopher Nolan, the genre Animation, several people with
+(*Back to the Future* from 1985, Christopher Nolan, the genre Animation, several people with
 at least five films as director), before publishing to
 https://github.com/specht/workspace-files under `movie-archive/`. Do not publish the
 `.downloads/` and `.wikidata-cache/` folders.

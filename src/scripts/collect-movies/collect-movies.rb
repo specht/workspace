@@ -594,7 +594,7 @@ class WikidataMovieBuilder
     titles = movies.group_by { |m| m[:title] }.select { |_t, list| list.size > 1 }
     notes = []
     notes << "#{titles.size} titles occur more than once (e.g. #{titles.keys.first(3).join(', ')}): a title is not a key" if titles.any?
-    notes << 'check by hand what the tutorial asks about: The Matrix (1999), Christopher Nolan, Animation, at least five directors with five films'
+    notes << 'check by hand what the tutorial asks about: Back to the Future (1985), Christopher Nolan, Animation, at least five directors with five films'
     ClassroomDataset.report('Sanity check:', {
       'movies' => movies.size,
       'people' => crew.size,

@@ -112,9 +112,9 @@ tasks:
       tables: { movie: ~ }
       setup: Lade zuerst die Filmdaten, wie unter »Filmdaten laden« beschrieben.
 
-  - id: genres-matrix
-    title: Die Genres von »The Matrix«
-    prompt: Welche Genres hat »The Matrix« aus dem Jahr 1999? Gefragt sind nur die Namen der Genres.
+  - id: genres-film
+    title: Die Genres von »Back to the Future«
+    prompt: Welche Genres hat »Back to the Future« aus dem Jahr 1985? Gefragt sind nur die Namen der Genres.
     check:
       type: sql
       expect_query: |
@@ -122,7 +122,7 @@ tasks:
         FROM movie
         JOIN movie_genre ON movie.id = movie_genre.movie_id
         JOIN genre ON movie_genre.genre_id = genre.id
-        WHERE movie.title = 'The Matrix' AND movie.year = 1999
+        WHERE movie.title = 'Back to the Future' AND movie.year = 1985
       tables: { movie: ~, genre: ~, movie_genre: ~ }
       setup: Lade zuerst die Filmdaten, wie unter »Filmdaten laden« beschrieben.
     feedback:
@@ -131,7 +131,7 @@ tasks:
             SELECT movie_genre.genre_id
             FROM movie
             JOIN movie_genre ON movie.id = movie_genre.movie_id
-            WHERE movie.title = 'The Matrix' AND movie.year = 1999
+            WHERE movie.title = 'Back to the Future' AND movie.year = 1985
         say: Das sind die IDs der Genres. Für ihre Namen fehlt noch ein `JOIN` mit `genre`.
       - when: { query_matches: '\A(?![\s\S]*\bon\b)[\s\S]*\bjoin\b' }
         say: Zu jedem `JOIN` gehört ein `ON`, das sagt, welche Zeilen zusammengehören.
@@ -239,9 +239,9 @@ tasks:
       - when: { problem: rows }
         say: Eine Tabelle ist leer. `film.sql` löscht alle Tabellen; lade danach `mysql-data-movies.sql` und `mysql-data-crew.sql`, in dieser Reihenfolge.
 
-  - id: besetzung-matrix
-    title: Wer spielt in »The Matrix«?
-    prompt: Wer hat in »The Matrix« (1999) mitgespielt? Gefragt sind nur die Namen, Tätigkeit `actor`.
+  - id: besetzung-film
+    title: Wer spielt in »Back to the Future«?
+    prompt: Wer hat in »Back to the Future« (1985) mitgespielt? Gefragt sind nur die Namen, Tätigkeit `actor`.
     check:
       type: sql
       expect_query: |
@@ -250,7 +250,7 @@ tasks:
         JOIN movie_crew ON movie.id = movie_crew.movie_id
         JOIN crew ON movie_crew.crew_id = crew.id
         JOIN job ON movie_crew.job_id = job.id
-        WHERE movie.title = 'The Matrix' AND movie.year = 1999 AND job.title = 'actor'
+        WHERE movie.title = 'Back to the Future' AND movie.year = 1985 AND job.title = 'actor'
       tables: { movie: ~, movie_crew: ~, crew: ~, job: ~ }
       setup: Lade zuerst die Personen, wie unter »Das Modell wächst« beschrieben.
     feedback:
@@ -260,7 +260,7 @@ tasks:
             FROM movie
             JOIN movie_crew ON movie.id = movie_crew.movie_id
             JOIN crew ON movie_crew.crew_id = crew.id
-            WHERE movie.title = 'The Matrix' AND movie.year = 1999
+            WHERE movie.title = 'Back to the Future' AND movie.year = 1985
         say: Das sind alle, die an dem Film beteiligt waren. Gefragt sind nur die mit der Tätigkeit `actor`; dafür brauchst du noch `job`.
 
   - id: nolan
