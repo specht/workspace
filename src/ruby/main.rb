@@ -3788,6 +3788,11 @@ class Main < Sinatra::Base
             :loggedIn => user_logged_in?,
             :preview => !tasks_enabled_for_everyone?,
         }
+        # Choice options in an order of their own for each person (tasks.js
+        # moves them; the values stay the original option numbers).
+        if user_logged_in?
+            config[:order] = TaskCard.option_orders(@session_user[:email], tasks[:activity], tasks[:on_page], tasks[:by_id])
+        end
         # Text that only stands in for the cards (an exercise list) is hidden
         # while the cards are shown.
         "<style>.tasks-off-only { display: none; }</style>" \

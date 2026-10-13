@@ -170,4 +170,29 @@ class TaskCardTest < Minitest::Test
         assert_equal tasks, ids
         assert File.file?(File.join(dir, 'lehrkraft.md'))
     end
+
+    def test_option_order_is_stable_per_person_and_differs_between_people
+        a = TaskCard.option_order('lena@example.org', 'git/staging', 4)
+        assert_equal a, TaskCard.option_order('lena@example.org', 'git/staging', 4)
+        assert_equal [0, 1, 2, 3], a.sort
+        orders = %w[a b c d e f g h i j].map { |p| TaskCard.option_order("#{p}@example.org", 'git/staging', 4) }
+        assert_operator orders.uniq.size, :>, 5
+        refute_equal TaskCard.option_order('lena@example.org', 'git/staging', 4), TaskCard.option_order('lena@example.org', 'git/konflikt', 4)
+        assert_equal [0, 1, 2], TaskCard.option_order('', 'git/staging', 3)
+        assert_equal [0], TaskCard.option_order('lena@example.org', 'git/staging', 1)
+        # Pinned so a Ruby update cannot reshuffle what students already saw.
+        assert_equal [3, 0, 2, 1], TaskCard.option_order('tom@example.org', 'git/staging', 4)
+    end
+
+    def test_option_orders_only_for_shuffled_choice_tasks
+        tasks = {
+            'a' => { 'check' => { 'type' => 'choice', 'options' => %w[x y z], 'correct' => 0 } },
+            'b' => { 'check' => { 'type' => 'choice', 'options' => %w[x y], 'correct' => 0, 'shuffle' => false } },
+            'c' => { 'check' => { 'type' => 'answer', 'expect' => ['x'] } },
+        }
+        orders = TaskCard.option_orders('lena@example.org', 'demo', %w[a b c], tasks)
+        assert_equal ['a'], orders.keys
+        assert_equal TaskCard.option_order('lena@example.org', 'demo/a', 3), orders['a']
+    end
+
 end

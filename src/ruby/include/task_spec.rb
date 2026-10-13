@@ -186,6 +186,7 @@ module TaskSpec
             unless !correct.empty? && correct.all? { |c| c.is_a?(Integer) && c >= 0 && c < options.size }
                 errors << 'correct must be the number of an option, counted from 0'
             end
+            errors << 'shuffle must be true or false' if check.key?('shuffle') && ![true, false].include?(check['shuffle'])
         when 'number'
             allowed += %w[expect tolerance unit placeholder]
             errors << 'expect must be a number' unless check['expect'].is_a?(Numeric)

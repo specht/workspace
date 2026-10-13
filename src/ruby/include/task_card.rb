@@ -1,4 +1,5 @@
 require 'cgi'
+require 'digest'
 require_relative 'task_check'
 
 # HTML of a task card on an activity page (docs/aufgaben.md, »Aufgaben auf
@@ -170,6 +171,36 @@ module TaskCard
                 "Kopiert #{(check['paths'] || []).map { |p| path.(p) }.join(', ')}#{without.empty? ? '' : " ohne #{without.join(', ')}"}, höchstens #{size.(check['max_size'] || '20MB')}"
             end
         else ''
+        end
+    end
+
+    # The order in which one person sees the options of a choice task: the
+    # same every time for this person and task, different for the neighbour,
+    # so »the third answer« cannot be passed on. Positions only; every option
+    # keeps its original number as its value, so answers, correct and
+    # feedback (picked) still count from the order in tasks.yaml.
+    # A plain Fisher-Yates on SHA-256, so the order never changes with Ruby.
+    def self.option_order(person, task_key, count)
+        order = (0...count).to_a
+        return order if person.to_s.empty? || count < 2
+
+        digest = Digest::SHA256.digest("#{person}\n#{task_key}")
+        (count - 1).downto(1) do |i|
+            digest = Digest::SHA256.digest(digest)
+            j = digest.unpack1('Q>') % (i + 1)
+            order[i], order[j] = order[j], order[i]
+        end
+        order
+    end
+
+    # { id => order } for the choice tasks on a page that are shuffled
+    # (all, unless check.shuffle is false). tasks: { id => task }.
+    def self.option_orders(person, activity, ids, tasks)
+        ids.each_with_object({}) do |id, orders|
+            check = (tasks[id] || {})['check'] || {}
+            next unless check['type'] == 'choice' && check['shuffle'] != false
+
+            orders[id] = option_order(person, "#{activity}/#{id}", Array(check['options']).size)
         end
     end
 

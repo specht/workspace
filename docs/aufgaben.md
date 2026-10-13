@@ -267,6 +267,14 @@ check: { type: number, expect: 111, tolerance: 6, unit: ms }
 check: { type: reflection, min_words: 20 }
 ```
 
+Jede Person sieht die Optionen einer `choice`-Aufgabe in ihrer eigenen
+Reihenfolge, immer derselben (Seed: E-Mail-Adresse und Aufgabe, siehe
+`TaskCard.option_order`). »Die dritte Antwort« lässt sich so nicht
+weitersagen. Nur die Plätze ändern sich: `correct`, `picked` in `feedback`
+und die gespeicherten Antworten zählen weiter in der Reihenfolge aus
+`tasks.yaml`. Wo die Reihenfolge selbst etwas bedeutet (»Alle oben
+genannten«), schaltet `shuffle: false` das ab.
+
 ### files
 
 ```yaml

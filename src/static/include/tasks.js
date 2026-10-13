@@ -257,8 +257,21 @@
         }, { no_please_wait: true });
     }
 
+    // Choice options in this person's own order (page.order, from the
+    // server). Only their places change; each keeps its original number as
+    // its value, which is what is checked and stored.
+    function arrangeOptions(card) {
+        const order = (page.order || {})[cardId(card)];
+        const fieldset = card.querySelector('.task-options');
+        if (!order || !fieldset) return;
+        const options = Array.from(fieldset.querySelectorAll('.form-check'));
+        if (options.length !== order.length) return;
+        order.forEach((i) => fieldset.appendChild(options[i]));
+    }
+
     function setup() {
         cards().forEach((card) => {
+            arrangeOptions(card);
             if (page.preview) {
                 const note = document.createElement('span');
                 note.className = 'task-preview';

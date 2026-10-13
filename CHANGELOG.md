@@ -158,6 +158,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Prüfart `git` ohne `repo` mit `expect: { identity: true }`: Kennt Git
   Namen und E-Mail-Adresse, und sind es nicht die Beispielwerte aus dem
   Handbuch? Neue Aufgabe »Git kennt dich« in den drei Sandbox-Begleitern.
+- Auswahlaufgaben mischen ihre Optionen für jede Person anders, aber immer
+  gleich (E-Mail-Adresse und Aufgabe als Seed). Antworten, `correct` und
+  `picked` zählen weiter nach `tasks.yaml`; `shuffle: false` schaltet das
+  für eine Aufgabe ab.
 
 ### Geändert
 
