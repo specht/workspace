@@ -196,19 +196,43 @@
     }
 
     // Submit tasks with pick: list the matching files in the Workspace.
+    // The list is read again whenever the dropdown gets focus or the page
+    // comes back into view, so a file made in the Workspace tab a moment ago
+    // shows up. The choice survives as long as the file is still there.
     function loadOptions(card) {
         const select = card.querySelector('.task-pick');
-        if (!select) return;
+        if (!select || select.dataset.loading) return;
+        select.dataset.loading = '1';
         api_call('/api/task/options', { task: card.dataset.task }, function (data) {
+            delete select.dataset.loading;
             if (!data.success) return;
-            (data.options || []).forEach((path) => {
+            const paths = data.options || [];
+            const current = Array.from(select.options).slice(1).map((o) => o.value);
+            if (paths.join('\n') === current.join('\n')) return;
+            const chosen = select.value || select.dataset.stored || '';
+            while (select.options.length > 1) select.remove(1);
+            paths.forEach((path) => {
                 const option = document.createElement('option');
                 option.value = path;
                 option.textContent = path;
                 select.appendChild(option);
             });
-            if (select.dataset.stored) select.value = select.dataset.stored;
+            select.value = paths.indexOf(chosen) >= 0 ? chosen : '';
         }, { no_please_wait: true });
+    }
+
+    function pickCards() {
+        return cards().filter((card) => card.querySelector('.task-pick'));
+    }
+
+    function watchPicks() {
+        pickCards().forEach((card) => {
+            card.querySelector('.task-pick').addEventListener('focus', function () { loadOptions(card); });
+        });
+        window.addEventListener('focus', function () { pickCards().forEach(loadOptions); });
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) pickCards().forEach(loadOptions);
+        });
     }
 
     // _include(…, done: id): once task id is solved, its Handbuch box
@@ -306,7 +330,10 @@
             }
             loadOptions(card);
         });
-        if (page.loggedIn) loadStates();
+        if (page.loggedIn) {
+            loadStates();
+            watchPicks();
+        }
     }
 
     if (document.readyState === 'loading')

@@ -196,6 +196,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   schreibt dorthin.
 - Eine Seite ist immer `<slug>.md` aus ihrem Ordner. Bisher war es die erste
   `.md`-Datei; bei allen vorhandenen Seiten ist das dieselbe.
+- Abgaben mit `pick`: Die Liste der Dateien wird neu gelesen, sobald man
+  sie anklickt oder zur Seite zurückkehrt. Eine eben im Workspace angelegte
+  Szene steht also gleich darin; die Auswahl bleibt, solange die Datei da ist.
 
 ### Für Betreibende
 

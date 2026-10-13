@@ -364,7 +364,8 @@ check:
 Der Server kopiert die Dateien beim Abgeben. Lernende sehen ihre Abgabe, geben
 jederzeit neu ab und können sie löschen. Repositories werden dabei nicht
 angefasst. Bei `pick` wählen Lernende auf der Karte eine der passenden Dateien
-aus ihrem Workspace. `requires: { html_parses: true }` lehnt eine Abgabe ab,
+aus ihrem Workspace; die Liste wird beim Anklicken und beim Zurückkehren zur
+Seite neu gelesen. `requires: { html_parses: true }` lehnt eine Abgabe ab,
 deren HTML-Dateien nicht zusammenpassende Tags haben, und nennt die Zeile.
 `requires: { scene_loads: true, min_objects: 5 }` lädt eine abgegebene Szene
 mit dem Viewer der Person (wie bei `scene`) und lehnt sie ab, wenn der Viewer
