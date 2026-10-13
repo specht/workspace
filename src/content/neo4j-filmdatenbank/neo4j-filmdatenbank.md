@@ -9,7 +9,7 @@ requires: [filmdatenbank]
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2">
+    data-levels="h2,h3">
 </div>
 
 # Filmdatenbank als Graph mit Neo4j
@@ -18,7 +18,9 @@ requires: [filmdatenbank]
 In der »Filmdatenbank mit MySQL« hast du Filme, Genres und Personen auf Tabellen verteilt und mit <code>JOIN</code> wieder zusammengesetzt. Jetzt speicherst du dieselben Daten als <strong>Graph</strong> in Neo4j: Filme, Personen und Genres werden zu Knoten, ihre Beziehungen zu direkten Verbindungen. Du lernst die Abfragesprache <strong>Cypher</strong> kennen und siehst, warum Fragen wie »Wer arbeitet oft mit wem?« in einem Graphen kurz werden.
 </p>
 
-## Dieselben Daten, ein anderes Modell
+## Vom Tabellenmodell zum Graphen
+
+### Dieselben Daten, ein anderes Modell
 
 Am Ende der Filmdatenbank hattest du sechs Tabellen: `movie`, `genre`, `movie_genre`, `crew`, `job` und `movie_crew`. Für die Genres eines Films führte der Weg durch eine Zwischentabelle, für die Menschen sogar durch zwei:
 
@@ -56,7 +58,7 @@ _task(taetigkeit)
 Man muss eine relationale Datenbank nicht immer so in einen Graphen übersetzen. Wir wählen dieses Modell, weil bei unseren Filmdaten gerade die Verbindungen zwischen Filmen, Genres und Personen interessant sind.
 </div>
 
-## Knoten haben Eigenschaften
+### Knoten haben Eigenschaften
 
 Ein Knoten hat ein **Label**, das sagt, was für ein Ding er ist, und **Eigenschaften** mit Werten. »Back to the Future« sieht im Graphen ungefähr so aus:
 
@@ -86,7 +88,9 @@ Eine Beziehung verbindet zwei Knoten und zeigt in eine Richtung:
 
 Runde Klammern stehen für Knoten, eckige für Beziehungen. Der Name hinter dem Doppelpunkt ist bei einem Knoten sein Label, bei einer Beziehung ihr Typ. Das ist schon Cypher: Genau so schreibst du gleich deine Abfragen.
 
-## Die Filmdaten laden
+## Loslegen
+
+### Die Filmdaten laden
 
 Schalte zuerst in deinem [Profil](/profil) unter »Datenbanken« **Neo4j** ein. Du hast dann eine eigene, leere Neo4j-Datenbank, und oben im Menü erscheint der Knopf »Neo4j«. Im Workspace stehen deine Zugangsdaten in den Umgebungsvariablen `NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD` und `NEO4J_DATABASE`; die Werkzeuge unten lesen sie von selbst.
 
@@ -121,7 +125,7 @@ crop-terminal-lines: auto
 <code>neo4j_bolt load</code> erwartet eine leere Datenbank. Hast du schon etwas ausprobiert, setze deine Neo4j-Datenbank im Profil zurück und lade dann noch einmal.
 </div>
 
-## Zwei Werkzeuge für Abfragen
+### Zwei Werkzeuge für Abfragen
 
 Abfragen schreibst du in **Cypher**. Dafür gibt es zwei Werkzeuge:
 
@@ -174,7 +178,9 @@ LIMIT 10;
 
 Probier das auch für `Person` und `Genre` aus.
 
-## Einen bestimmten Film finden
+## Erste Abfragen
+
+### Einen bestimmten Film finden
 
 Wie in SQL filterst du mit `WHERE`:
 
@@ -216,7 +222,7 @@ crop-terminal-lines: auto
 Wie lang ist »Toy Story« aus dem Jahr 1995, und wie heißt der Film auf Deutsch?
 </div>
 
-## Beziehungen folgen
+### Beziehungen folgen
 
 Jetzt kommt der Unterschied zu MySQL. Welche Genres hat »Back to the Future«? In MySQL brauchtest du dafür zwei `JOIN`s, über `movie_genre` zu `genre`. Im Graphen liegt die Beziehung schon da, und du schreibst sie als Muster hin:
 
@@ -244,7 +250,7 @@ Das ist die Idee von Cypher: **Du beschreibst den Ausschnitt des Graphen, den du
 
 _task(richtung)
 
-## Alle Beteiligten eines Films
+### Alle Beteiligten eines Films
 
 Zu einem Film führen Beziehungen verschiedener Typen. Lässt du den Typ weg, passt jede:
 
@@ -263,7 +269,7 @@ ORDER BY job, p.name;
 
 In MySQL war die Tätigkeit eine eigene Tabelle, die du mit einem weiteren `JOIN` nachschlagen musstest. Hier ist sie Teil der Beziehung.
 
-## Filme eines Genres
+### Filme eines Genres
 
 ```cypher
 MATCH (m:Movie)-[:IN_GENRE]->(:Genre {name: 'Animation'})
@@ -288,7 +294,7 @@ Schreib Cypher-Abfragen für diese Fragen:
 </ol>
 </div>
 
-## Zählen
+### Zählen
 
 Auch Cypher kennt `count()`, `avg()`, `min()` und `max()`. Wie viele Filme gibt es pro Genre?
 
@@ -306,7 +312,7 @@ RETURN g.name, count(m) AS movies, round(avg(m.runtime)) AS minutes
 ORDER BY minutes DESC;
 ```
 
-## Wer führte Regie?
+### Wer führte Regie?
 
 In MySQL brauchte die Frage »Wer führte bei ›Back to the Future‹ Regie?« drei `JOIN`s. Im Graphen ist das gesuchte Muster fast schon die Antwort:
 
@@ -356,7 +362,9 @@ CREATE INDEX person_name IF NOT EXISTS FOR (p:Person) ON (p.name);
 Ein Gegenstück zum Fremdschlüssel braucht der Graph nicht: Eine Beziehung verbindet immer zwei Knoten, die es wirklich gibt. Eine Beziehung zu einer <code>id</code>, die es nicht gibt, kann gar nicht entstehen.
 </div>
 
-## Wer spielt mit wem?
+## Muster über mehrere Schritte
+
+### Wer spielt mit wem?
 
 Jetzt die Frage, mit der die Filmdatenbank aufgehört hat: Welche zwei Schauspielerinnen oder Schauspieler standen besonders oft gemeinsam vor der Kamera? Im Graphen ist das ein Muster aus zwei Personen und einem gemeinsamen Film:
 
@@ -398,7 +406,7 @@ sleep: 1
 
 <img class='full' src='neo4j-browser-pairs.webp' alt='Neo4j Browser: Tabelle der zehn Schauspielpaare mit den meisten gemeinsamen Filmen.'>
 
-## Regie und Kamera
+### Regie und Kamera
 
 Gibt es Paare aus Regie und Kamera, die immer wieder zusammenarbeiten? Das Muster ändert sich nur bei den Typen:
 
@@ -412,7 +420,7 @@ ORDER BY together DESC;
 
 `WITH` reicht Zwischenergebnisse weiter, hier die Zahl gemeinsamer Filme. Das `WHERE` danach filtert die fertigen Paare, so wie `HAVING` in SQL. In MySQL hätte die Frage `movie_crew`, `job` und `crew` je zweimal gebraucht; hier unterscheiden die Typen `DIRECTOR` und `CINEMATOGRAPHER` die beiden Rollen.
 
-## Wege durch den Graphen
+### Wege durch den Graphen
 
 Ein Graph kann auch nach **Wegen** gefragt werden: Wie hängen zwei Personen über Filme zusammen?
 

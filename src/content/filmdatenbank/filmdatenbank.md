@@ -10,7 +10,7 @@ reference: [er-modelle]
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2">
+    data-levels="h2,h3">
 </div>
 
 # Filmdatenbank mit MySQL
@@ -21,7 +21,9 @@ Du entwirfst eine Datenbank für Filme, ihre Genres und die Menschen, die an ihn
 
 In der »Einführung in SQL« hast du eine fertige Datenbank abgefragt. Jetzt baust du selbst eine: vom Modell über das Diagramm zu den Tabellen und dann zu den Abfragen. Alles, was du dabei schreibst, sind Dateien in deinem Workspace, die du behältst.
 
-## Ein Film als Datensatz
+## Vom Datensatz zum Modell
+
+### Ein Film als Datensatz
 
 So könnte ein Film aussehen, wenn ein Programm ihn als JSON verschickt:
 
@@ -47,7 +49,7 @@ In dem Datensatz stecken verschiedene Arten von Dingen: **Filme**, **Genres**, *
 
 _task(eine-spalte)
 
-## Einen Ordner anlegen
+### Einen Ordner anlegen
 
 Schließe zuerst einen geöffneten Ordner: <kbd>Strg</kbd><kbd>K</kbd>, dann <kbd>F</kbd>. Öffne dann mit <kbd>Strg</kbd><kbd>K</kbd> und <kbd>Strg</kbd><kbd>O</kbd> den Ordner `filmdatenbank`. Weil es ihn noch nicht gibt, fragt VS Code, ob er angelegt werden soll; bestätige mit <kbd>Enter</kbd>.
 
@@ -64,7 +66,7 @@ crop-bottom: 55%
 
 Lege im Ordner eine neue Datei `film.er` an: Klicke im Explorer auf das Symbol »Neue Datei« und tippe den Namen. Die Endung `.er` ist wichtig, an ihr erkennt VS Code ein ER-Modell.
 
-## Das Modell als Text
+### Das Modell als Text
 
 Ein ER-Modell (Entity-Relationship-Modell) beschreibt, welche Dinge es gibt (**Entitäten**), welche Eigenschaften sie haben (**Attribute**) und wie sie zusammenhängen (**Beziehungen**). Du schreibst es als Text. Fang mit Filmen und Genres an:
 
@@ -103,7 +105,7 @@ Während du tippst, unterstreicht VS Code Fehler rot und erklärt sie, wenn du m
 
 _task(modell-filme)
 
-## Dasselbe Modell als Diagramm
+### Dasselbe Modell als Diagramm
 
 Klicke oben rechts im Editor auf »ER-Diagramm anzeigen« (oder <kbd>Strg</kbd><kbd>K</kbd>, dann <kbd>V</kbd>). Neben deinem Text erscheint das Modell als Diagramm, und es ändert sich mit, während du schreibst.
 
@@ -153,7 +155,9 @@ _uses(uebersetzung, diagramme)
 
 _task(vorhersage-n1)
 
-## Die Tabellen anlegen
+## Vom Modell zur Datenbank
+
+### Die Tabellen anlegen
 
 Klicke in der Vorschau auf »SQL erzeugen«. Neben `film.er` entsteht die Datei `film.sql`:
 
@@ -249,7 +253,7 @@ crop-terminal-skip-bottom: 1
 
 _task(tabellen-filme)
 
-## Filmdaten laden
+### Filmdaten laden
 
 Die Tabellen sind angelegt, aber leer. Beende `mycli` mit `exit` oder <kbd>Strg</kbd><kbd>D</kbd>. Lade dann die Filme, Genres und ihre Zuordnungen herunter und gib sie an MySQL:
 
@@ -331,7 +335,9 @@ Alle Zeilen mit demselben Genre werden zu einer zusammengefasst, und `COUNT(*)` 
 
 _task(filme-pro-genre)
 
-## Das Modell wächst: Menschen und Tätigkeiten
+## Menschen und Tätigkeiten
+
+### Das Modell wächst
 
 Bisher fehlt die `crew` aus dem Datensatz vom Anfang. Wer hat bei »Back to the Future« Regie geführt? In welchen Filmen hat eine Person mitgespielt? Dafür braucht das Modell Personen und ihre Tätigkeiten.
 
@@ -382,7 +388,7 @@ In einer echten Datenbank, deren Daten nirgends sonst liegen, würdest du nicht 
 
 _task(tabellen-crew)
 
-## Durch mehrere Beziehungen zu einer Person
+### Durch mehrere Beziehungen zu einer Person
 
 Starte wieder `mycli`. Wer hat bei »Back to the Future« Regie geführt? Im Tabellendiagramm führt der Weg von `movie` über `movie_crew` zu `crew`, und die Tätigkeit steht in `job`. Jeder Schritt wird ein `JOIN`:
 
@@ -411,7 +417,7 @@ HAVING COUNT(*) >= 100;
 
 _task(viel-regie)
 
-## Wer spielt mit wem?
+### Wer spielt mit wem?
 
 Eine einfache Frage: Welche zwei Schauspielerinnen oder Schauspieler standen besonders oft gemeinsam vor der Kamera? Die Datenbank kann sie beantworten, aber die Abfrage braucht jede Tabelle zweimal, einmal für jede der beiden Personen:
 
