@@ -272,6 +272,37 @@ input.error {
     margin-bottom: 5px;
 }
 
+/* Header: one strong button (Workspace öffnen / Anmelden), the rest quiet
+   and alike; the current page is marked. */
+.btn-menu {
+    --bs-btn-color: #343a40;
+    --bs-btn-bg: #fff;
+    --bs-btn-border-color: #d6d8db;
+    --bs-btn-hover-color: #212529;
+    --bs-btn-hover-bg: #f1f3f5;
+    --bs-btn-hover-border-color: #c4c8cc;
+    --bs-btn-active-color: #0b5394;
+    --bs-btn-active-bg: #e7f0fb;
+    --bs-btn-active-border-color: #9ec2ec;
+    --bs-btn-focus-shadow-rgb: 108, 117, 125;
+}
+
+.btn-menu i.bi {
+    color: #6c757d;
+}
+
+.btn-menu.active i.bi {
+    color: inherit;
+}
+
+.btn-menu-profile {
+    max-width: 18em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: top;
+}
+
 .menu a:hover,
 a.btn:hover {
     text-decoration: none;
@@ -1518,6 +1549,15 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 /* Task cards (TaskCard, tasks.js). Blue like the activity label: tasks
    belong to the activity, teal stays for the Handbuch. */
 
+/* The section bar (.autotoc) is fixed at the top; jumps to a task or a
+   heading (»Weitermachen«, #aufgabe-…) must land below it. */
+.task-card,
+.reference-part,
+h2[id],
+h3[id] {
+    scroll-margin-top: 5em;
+}
+
 .task-card {
     margin: 1.5em 0;
     padding: 1em 1.2em 0.8em;
@@ -1695,6 +1735,10 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     padding: 0.6em 0.8em;
     border-radius: 0.4em;
     background-color: rgba(255, 255, 255, 0.75);
+    /* The page's code theme (gruvbox) has light text for dark boxes. */
+    color: #212529;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 
 .task-feedback pre code {
@@ -2089,7 +2133,7 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     padding: 0.1em 0.6em;
     border-radius: 1em;
     font-size: 80%;
-    font-weight: 600;
+    font-weight: 400;
     background-color: rgba(255, 255, 255, 0.92);
     color: #333;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
@@ -2124,7 +2168,18 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     min-height: 6em;
 }
 
-/* SQL check: the student's result as a small table. */
+/* SQL check: the student's result as a small table, in view. */
+.task-result {
+    margin-top: 0.6em;
+    font-size: 90%;
+}
+
+.task-result p {
+    margin-bottom: 0.3em;
+    color: #5c636a;
+}
+
+.task-result table,
 .task-read table {
     margin: 0.4em 0;
     border-collapse: collapse;
@@ -2134,6 +2189,8 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     overflow-x: auto;
 }
 
+.task-result th,
+.task-result td,
 .task-read th,
 .task-read td {
     padding: 0.15em 0.6em;
@@ -2142,6 +2199,7 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     white-space: nowrap;
 }
 
+.task-result th,
 .task-read th {
     font-weight: 600;
 }
@@ -2178,6 +2236,7 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     padding: 0.5em 0.8em;
     border-radius: 0.4em;
     background-color: rgba(255, 255, 255, 0.8);
+    color: #212529;
 }
 
 .template-notice-body pre code {

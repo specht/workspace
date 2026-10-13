@@ -261,24 +261,28 @@ module SqlCheck
         mapping = assign(expected, given, mode)
         return [:wrong, difference(expected, given, mode), nil] if mapping.nil?
 
-        if check['sorted_by'] && (bad = order_problem(expected, given, mapping, sort_columns(check['sorted_by'])))
-            return [:wrong, "Die Zeilen stimmen, aber die Reihenfolge noch nicht: #{row_text(bad[0])} steht vor #{row_text(bad[1])}.", nil]
-        end
-
+        # Columns first (strict by default): the student sees their own
+        # result table and can tell which columns are too many.
         extra = (0...n).to_a - mapping
         note = nil
         unless extra.empty?
             names = extra.map { |j| code(given[:columns][j]) }.join(', ')
-            case check['extra_columns'] || 'note'
-            when 'wrong'
-                return [:wrong, "Die nötigen Spalten stimmen, aber #{extra.size == 1 ? 'die Spalte' : 'die Spalten'} #{names} #{extra.size == 1 ? 'gehört' : 'gehören'} nicht dazu.", nil]
-            when 'note'
-                note = if extra.size > 3
-                    "Für die Antwort #{m == 1 ? 'reicht eine Spalte' : "reichen #{m} Spalten"} statt #{n}. Schreib hinter `SELECT` nur die, nach denen gefragt ist."
-                else
-                    "Für die Antwort #{extra.size == 1 ? 'brauchst du die Spalte' : 'brauchst du die Spalten'} #{names} nicht."
-                end
+            many = if extra.size > 3
+                "Deine Abfrage liefert #{n} Spalten, gefragt #{m == 1 ? 'ist nur eine' : "sind nur #{m}"}. Schreib hinter `SELECT` nur die Spalten, nach denen gefragt ist."
+            else
+                "Die Zeilen stimmen, aber #{extra.size == 1 ? 'die Spalte' : 'die Spalten'} #{names} #{extra.size == 1 ? 'gehört' : 'gehören'} nicht dazu. Schreib hinter `SELECT` nur die Spalten, nach denen gefragt ist."
             end
+            case check['extra_columns'] || 'wrong'
+            when 'wrong' then return [:wrong, many, nil]
+            when 'note'
+                note = extra.size > 3 ?
+                    "Für die Antwort #{m == 1 ? 'reicht eine Spalte' : "reichen #{m} Spalten"} statt #{n}." :
+                    "Für die Antwort #{extra.size == 1 ? 'brauchst du die Spalte' : 'brauchst du die Spalten'} #{names} nicht."
+            end
+        end
+
+        if check['sorted_by'] && (bad = order_problem(expected, given, mapping, sort_columns(check['sorted_by'])))
+            return [:wrong, "Die Zeilen stimmen, aber die Reihenfolge noch nicht: #{row_text(bad[0].values_at(*mapping))} steht vor #{row_text(bad[1].values_at(*mapping))}.", nil]
         end
         [:correct, nil, note]
     end

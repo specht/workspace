@@ -12,6 +12,28 @@ function show_error_message(message) {
     button.on('click', function(e) { e.preventDefault(); $('.api_messages').hide(); });
 }
 
+// In-page confirmation instead of the browser's confirm(): the page's own
+// modal (#__template_modal, showTemplateModal in the page template).
+// options: { title, text, confirm, icon, danger }
+function confirm_dialog(options, on_confirm) {
+    const esc = (t) => $('<div>').text(t || '').html();
+    if (typeof showTemplateModal !== 'function' || $('#__template_modal').length === 0) {
+        if (window.confirm(options.text)) on_confirm();
+        return;
+    }
+    // A question needs a small dialog; the shared modal is large by default.
+    const dialog = $('#__template_modal .modal-dialog');
+    if (dialog.hasClass('modal-lg')) {
+        dialog.removeClass('modal-lg');
+        $('#__template_modal').one('hidden.bs.modal', function () { dialog.addClass('modal-lg'); });
+    }
+    showTemplateModal(esc(options.title), `<p class='mb-0 text-start'>${esc(options.text)}</p>`,
+        `<i class='bi ${options.icon || 'bi-check-lg'}'></i>${esc(options.confirm || 'OK')}`,
+        options.danger ? 'btn-danger' : 'btn-primary',
+        "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-outline-secondary',
+        function () { on_confirm(); });
+}
+
 function show_success_message(message) {
     var div = $('<div>').css('text-align', 'center').css('padding', '15px').addClass('bg-light text-success').html(message);
     $('.api_messages').empty();

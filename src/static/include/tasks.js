@@ -118,7 +118,13 @@
             });
             box.appendChild(ul);
         }
-        if (read) {
+        if (read && card.dataset.type === 'sql' && status !== 'unavailable') {
+            // SQL: the student's own result is the point, always in view.
+            const div = document.createElement('div');
+            div.className = 'task-result';
+            div.innerHTML = read;
+            box.appendChild(div);
+        } else if (read) {
             const details = document.createElement('details');
             details.className = 'task-read';
             const summary = document.createElement('summary');
@@ -169,8 +175,15 @@
     }
 
     function remove(card) {
-        const what = card.dataset.type === 'submit' ? 'Deine Abgabe' : 'Deine gespeicherte Antwort zu dieser Aufgabe';
-        if (!window.confirm(what + ' löschen? Das kann nicht rückgängig gemacht werden.')) return;
+        const submit = card.dataset.type === 'submit';
+        confirm_dialog({
+            title: submit ? 'Abgabe löschen?' : 'Antwort löschen?',
+            text: (submit ? 'Deine Abgabe' : 'Deine gespeicherte Antwort zu dieser Aufgabe') + ' wird gelöscht. Das kann nicht rückgängig gemacht werden.',
+            confirm: 'Löschen', icon: 'bi-trash', danger: true,
+        }, function () { reallyRemove(card); });
+    }
+
+    function reallyRemove(card) {
         api_call('/api/task/delete', { task: card.dataset.task }, function (data) {
             if (!data.success) return;
             if (card.dataset.type === 'submit') showSubmission(card, null);

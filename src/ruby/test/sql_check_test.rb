@@ -62,11 +62,17 @@ class SqlCheckTest < Minitest::Test
     def test_extra_columns
         e = res(%w[Name], ['Armenien'], ['Elfenbeinküste'])
         g = res(%w[LNR Name Einwohner], ['AM', 'Armenien', BigDecimal('3.34')], ['CI', 'Elfenbeinküste', BigDecimal('20.3')])
-        status, _, note = S.compare({}, e, g)
+        # Strict by default.
+        status, message, = S.compare({}, e, g)
+        assert_equal :wrong, status
+        assert_equal 'Die Zeilen stimmen, aber die Spalten `LNR`, `Einwohner` gehören nicht dazu. Schreib hinter `SELECT` nur die Spalten, nach denen gefragt ist.', message
+        status, _, note = S.compare({ 'extra_columns' => 'note' }, e, g)
         assert_equal :correct, status
         assert_equal 'Für die Antwort brauchst du die Spalten `LNR`, `Einwohner` nicht.', note
         assert_nil S.compare({ 'extra_columns' => 'ok' }, e, g)[2]
-        assert_equal :wrong, S.compare({ 'extra_columns' => 'wrong' }, e, g)[0]
+        # SELECT *: one sentence, not a list of every column.
+        wide = res(%w[a b c d e Name], ['1', '2', '3', '4', '5', 'Armenien'], ['1', '2', '3', '4', '6', 'Elfenbeinküste'])
+        assert_includes S.compare({}, e, wide)[1], 'Deine Abfrage liefert 6 Spalten, gefragt ist nur eine.'
     end
 
     def test_row_counts_and_differences

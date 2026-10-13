@@ -50,6 +50,24 @@ module StudentHome
         first.include?('@') ? '' : first
     end
 
+    # What to call the person: the first name if there is a name, otherwise
+    # from the e-mail address: »anna.berg@…« -> »Anna«, »specht@…« -> »specht«.
+    def self.greeting_name(name, email = nil)
+        first = first_name(name)
+        return first unless first.empty?
+
+        address = [email, name].map(&:to_s).find { |a| a.include?('@') }
+        return '' if address.nil?
+
+        local = address.split('@').first.to_s
+        parts = local.split(/[._-]+/).reject(&:empty?)
+        if parts.size > 1 && parts.first =~ /\A[[:alpha:]]{2,}\z/
+            parts.first.capitalize
+        else
+            local
+        end
+    end
+
     # Is an activity hidden from »Weitermachen«? hidden: { slug => time hidden }.
     # It comes back as soon as the person works on it again.
     def self.hidden?(entry, hidden)
@@ -60,9 +78,9 @@ module StudentHome
     # pinned: activities a teacher pinned for one of the person's groups,
     #         [{ slug:, title:, abstract:, group: }], shown first, cannot be hidden
     # hidden: { slug => time } the person has hidden from »Weitermachen«
-    def self.html(name:, progress:, pinned: [], hidden: {})
+    def self.html(name:, progress:, pinned: [], hidden: {}, email: nil)
         io = +"<section class='student-home' aria-labelledby='student-home-title'>"
-        first = first_name(name)
+        first = greeting_name(name, email)
         io << "<h2 id='student-home-title'>#{first.empty? ? 'Hallo' : "Hallo #{h(first)}"}</h2>"
         by_slug = progress.to_h { |p| [p[:slug], p] }
         pinned_slugs = pinned.map { |p| p[:slug] }

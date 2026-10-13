@@ -14,6 +14,20 @@ html[data-bs-theme="dark"] {
     .squircle {
         background-image: url(/images/squircle-dark.png);
     }
+    .btn-menu {
+        --bs-btn-color: #dcdbd6;
+        --bs-btn-bg: #1f1f1d;
+        --bs-btn-border-color: #3a3a37;
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #2a2a28;
+        --bs-btn-hover-border-color: #4a4a46;
+        --bs-btn-active-color: #cfe2fb;
+        --bs-btn-active-bg: #172a45;
+        --bs-btn-active-border-color: #2b4a73;
+    }
+    .btn-menu i.bi {
+        color: #a3a29d;
+    }
     p {
         color: #ccccc9;
     }
@@ -286,6 +300,10 @@ html[data-bs-theme="dark"] {
     .card-progress-done {
         background-color: #146c43;
     }
+    .task-feedback pre,
+    .template-notice-body pre {
+        color: #e7e6e1;
+    }
     .task-feedback pre code {
         color: #e7e6e1;
         background: none;
@@ -334,8 +352,11 @@ html[data-bs-theme="dark"] {
         border-left-color: #2fb36d;
     }
     .class-template-outdated strong { color: #f0a54a; }
+    .task-result th,
+    .task-result td,
     .task-read th,
     .task-read td {
         border-bottom-color: rgba(255, 255, 255, 0.12);
     }
+    .task-result p { color: #adb5bd; }
 }

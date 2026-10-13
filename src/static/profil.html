@@ -692,7 +692,7 @@ vscode_config: {}</pre>
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             await refresh_live_apps();
         } catch (error) {
-            alert('Die Freigabe konnte nicht geändert werden. Bitte versuche es noch einmal.');
+            show_error_message('Die Freigabe konnte nicht geändert werden. Bitte versuche es noch einmal.');
         }
     }
 

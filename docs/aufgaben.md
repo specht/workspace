@@ -452,7 +452,7 @@ Nur lesen (Regel 1):
 | `expect_query` | Musterabfrage, oder eine Liste davon; eine passende reicht |
 | `compare` | `same` (Standard): dieselben Zeilen. `subset`: jede Zeile ist eine der Musterzeilen, keine doppelt (»Finde drei Orte …«), mit `rows` für die Anzahl |
 | `sorted_by` | Spalten des Musterergebnisses, nach denen sortiert sein muss, z. B. `2 DESC` oder `1, 3`. Die Richtung kommt aus der Musterabfrage; gleiche Werte dürfen in beliebiger Reihenfolge stehen. Ohne das Feld ist die Reihenfolge egal |
-| `extra_columns` | Mehr Spalten als nötig: `note` (Standard, richtig mit Hinweis), `ok` oder `wrong` |
+| `extra_columns` | Mehr Spalten als nötig: `wrong` (Standard: nur die gefragten Spalten), `note` (richtig mit Hinweis) oder `ok`. Wer mehrere Spaltenauswahlen gelten lassen will, gibt mehrere `expect_query` an |
 | `tables` | Tabellen und ihre Zeilenzahl in den Beispieldaten (`~` für »egal«). Fehlt eine oder stimmt die Zahl nicht, wird nicht geprüft: Sonst wäre nach einem `DELETE` eine leere Antwort richtig |
 | `setup` | Satz, wie man die Beispieldaten lädt; steht bei fehlenden Daten dabei |
 
@@ -463,8 +463,8 @@ Groß- und Kleinschreibung; greift auch bei Fehlermeldungen von MySQL, etwa
 zu wenige Zeilen oder Spalten, eine Zeile, die nicht dazugehört (aus dem
 eigenen Ergebnis), die Reihenfolge. Fehlermeldungen von MySQL erscheinen
 wörtlich, mit einem Satz dazu für die häufigen (Syntax, unbekannte Tabelle
-oder Spalte, `GROUP BY`). Unter »Was der Workspace gelesen hat« steht das
-eigene Ergebnis als Tabelle, die ersten 10 Zeilen, so wie MySQL es liefert;
+oder Spalte, `GROUP BY`). Unter der Rückmeldung steht immer das eigene
+Ergebnis als Tabelle, die ersten 10 Zeilen, so wie MySQL es liefert;
 Werte aus der Datenbank werden dabei maskiert. Lehrkräfte sehen die Abfragen
 in der Klassenübersicht.
 

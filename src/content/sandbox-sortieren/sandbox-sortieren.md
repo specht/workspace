@@ -1,7 +1,7 @@
 <div class='meta'>
 image: sorting-sandbox.webp
 kind: projekt
-topic: linux
+topic: sandboxes
 reference: [gitlab]
 template: https://github.com/specht/sorting-sandbox.git
 class_repo: git@git.nhcham.org:specht/sorting-sandbox-algorithms-2026.git

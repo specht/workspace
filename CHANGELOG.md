@@ -124,6 +124,21 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- SQL-Aufgaben: Das eigene Ergebnis steht immer sichtbar als Tabelle unter
+  der Rückmeldung. Gefragt sind genau die verlangten Spalten (`extra_columns`
+  ist jetzt standardmäßig `wrong`); Fehlermeldungen von MySQL sind auch im
+  hellen Modus lesbar und werden umgebrochen.
+- Keine Browser-Popups mehr: Löschen fragt in einem eigenen Dialog nach,
+  Fehler erscheinen als Meldung auf der Seite.
+- Die Kopfleiste hat einen starken Knopf (»Workspace öffnen« bzw.
+  »Anmelden«); alle anderen sehen gleich aus, die aktuelle Seite ist markiert.
+  Das Profil steht rechts und zeigt den Namen oder die E-Mail-Adresse.
+- Die Startseite begrüßt ohne bekannten Namen mit dem Teil der E-Mail-Adresse
+  vor dem `@`.
+- Die drei Sandboxes haben einen eigenen Abschnitt im Katalog statt
+  »Terminal & Git«.
+- Sprünge zu einer Aufgabe (»Weitermachen«) landen unter der Abschnittsleiste.
+
 - »Eine Präsentation in HTML erstellen« ist kürzer: Der Referenzteil steht
   jetzt unter `/reference/html-folien`. Alte Links auf Abschnitte der Seite
   führen dorthin weiter. Die Mini-Folien liegen in

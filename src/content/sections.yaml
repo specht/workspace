@@ -23,6 +23,20 @@
     - uebung-arrays
     - uebung-strings
 
+- key: sandboxes
+  compact: true
+  label: Sandboxes
+  icon: /images/hammer-and-wrench.png
+  description: |
+    Größere Programmieraufgaben in eigenständigen Apps: Datenstrukturen selbst
+    bauen, Sortierverfahren vergleichen, eine kleine CPU programmieren. Jede
+    Sandbox prüft deinen Code mit eigenen Tests; mit Git gibst du ihn an die
+    Klasse weiter.
+  entries:
+    - sandbox-datenstrukturen
+    - sandbox-sortieren
+    - sandbox-cpu
+
 - key: graphics
   compact: true
   label: Computergrafik
@@ -109,9 +123,6 @@
     - working-with-files
     - tcpip
     - git
-    - sandbox-datenstrukturen
-    - sandbox-sortieren
-    - sandbox-cpu
   # - .working-with-processes
 
 - key: programming_languages

@@ -42,7 +42,8 @@ class StudentHomeTest < Minitest::Test
         assert_includes html, 'Weiter mit: Loopback'
         assert_includes html, '1 von 3 erledigt'
         assert_includes html, "Fertig: <a href='/uebung-strings'>Übung: Strings</a>"
-        assert_includes StudentHome.html(:name => 'x@y.de', :progress => []), "<h2 id='student-home-title'>Hallo</h2>"
+        assert_includes StudentHome.html(:name => 'x@y.de', :progress => []), "<h2 id='student-home-title'>Hallo x</h2>"
+        assert_includes StudentHome.html(:name => '', :progress => []), "<h2 id='student-home-title'>Hallo</h2>"
         assert_includes StudentHome.html(:name => 'Ada', :progress => []), 'Du hast noch keine Aufgabe geprüft'
         assert_includes StudentHome.html(:name => '<b>', :progress => []), '&lt;b&gt;'
     end
@@ -51,6 +52,17 @@ class StudentHomeTest < Minitest::Test
         assert_equal '', StudentHome.card_badges(nil, nil)
         assert_includes StudentHome.card_badges('uebung', nil), 'Übung'
         assert_includes StudentHome.card_badges('projekt', { :done => 2, :total => 2 }), 'card-progress-done'
+    end
+
+    def test_greeting_name_from_email
+        assert_equal 'Michael', StudentHome.greeting_name('Dr. Michael Specht', 'specht@example.org')
+        assert_equal 'Anna', StudentHome.greeting_name('', 'anna.berg@example.org')
+        assert_equal 'Anna', StudentHome.greeting_name('anna_berg@example.org')
+        assert_equal 'specht', StudentHome.greeting_name('specht@gymnasiumsteglitz.de', 'specht@gymnasiumsteglitz.de')
+        assert_equal 'a.b', StudentHome.greeting_name(nil, 'a.b@example.org')
+        assert_equal '', StudentHome.greeting_name(nil, nil)
+        html = StudentHome.html(:name => '', :email => 'specht@example.org', :progress => [])
+        assert_includes html, '>Hallo specht</h2>'
     end
 
     def test_first_name_skips_titles

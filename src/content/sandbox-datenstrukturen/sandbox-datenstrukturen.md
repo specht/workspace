@@ -1,7 +1,7 @@
 <div class='meta'>
 image: data-structures-sandbox.webp
 kind: projekt
-topic: linux
+topic: sandboxes
 reference: [gitlab]
 template: https://github.com/specht/data-structures-sandbox.git
 class_repo: git@git.nhcham.org:specht/data-structure-sandbox-structures-2026.git

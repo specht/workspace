@@ -4088,7 +4088,7 @@ class Main < Sinatra::Base
         pinned = pins_for_groups(my_groups).select { |p| allowed.include?(p[:slug]) }.uniq { |p| p[:slug] }.map do |p|
             { :slug => p[:slug], :title => plain_title(p[:slug]), :abstract => @@content[p[:slug]][:abstract], :group => p[:group] }
         end
-        StudentHome.html(:name => name, :progress => my_progress, :pinned => pinned, :hidden => my_hidden_activities) +
+        StudentHome.html(:name => name, :email => @session_user[:email], :progress => my_progress, :pinned => pinned, :hidden => my_hidden_activities) +
             "<script src='/include/home.js?#{CACHE_BUSTER}'></script>"
     end
 

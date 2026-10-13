@@ -27,7 +27,9 @@ tasks:
     prompt: Schreib eine Abfrage, die zeigt, wie viele Einwohner Griechenland hat.
     check:
       type: sql
-      expect_query: SELECT Einwohner FROM land WHERE Name = 'Griechenland'
+      expect_query:
+        - SELECT Einwohner FROM land WHERE Name = 'Griechenland'
+        - SELECT Name, Einwohner FROM land WHERE Name = 'Griechenland'
       tables: { land: 197 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     feedback:
@@ -136,37 +138,36 @@ tasks:
 
   - id: top10-frankreich
     title: Die zehn größten Orte Frankreichs
-    prompt: Gib die zehn bevölkerungsreichsten Orte Frankreichs aus.
+    prompt: Gib die Namen der zehn bevölkerungsreichsten Orte Frankreichs aus (wenn du willst, mit ihrer Einwohnerzahl).
     check:
       type: sql
-      expect_query: SELECT Name FROM ort WHERE Land = 'Frankreich' ORDER BY Einwohner DESC LIMIT 10
-      extra_columns: ok
+      expect_query:
+        - SELECT Name FROM ort WHERE Land = 'Frankreich' ORDER BY Einwohner DESC LIMIT 10
+        - SELECT Name, Einwohner FROM ort WHERE Land = 'Frankreich' ORDER BY Einwohner DESC LIMIT 10
       tables: { ort: 26314 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     solution: "`SELECT Name, Einwohner FROM ort WHERE Land = 'Frankreich' ORDER BY Einwohner DESC LIMIT 10;`"
 
   - id: drei-arm
     title: Drei Orte mit »arm«
-    prompt: Finde drei Orte, deren Name die Zeichenfolge `arm` enthält.
+    prompt: Finde drei Orte, deren Name die Zeichenfolge `arm` enthält, und gib ihre Namen aus.
     check:
       type: sql
       expect_query: SELECT Name FROM ort WHERE Name LIKE '%arm%'
       compare: subset
       rows: 3
-      extra_columns: ok
       tables: { ort: 26314 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     solution: "`SELECT Name FROM ort WHERE Name LIKE '%arm%' LIMIT 3;`"
 
   - id: drei-bein
     title: Drei Orte mit »bein«
-    prompt: Und drei Orte, deren Name `bein` enthält.
+    prompt: Und drei Orte, deren Name `bein` enthält, ebenfalls mit ihren Namen.
     check:
       type: sql
       expect_query: SELECT Name FROM ort WHERE Name LIKE '%bein%'
       compare: subset
       rows: 3
-      extra_columns: ok
       tables: { ort: 26314 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     solution: "`SELECT Name FROM ort WHERE Name LIKE '%bein%' LIMIT 3;`"
@@ -176,8 +177,9 @@ tasks:
     prompt: Welche Orte in Deutschland liegen westlich von Aachen (6,046° Ost)?
     check:
       type: sql
-      expect_query: SELECT Name FROM ort WHERE Land = 'Deutschland' AND Laenge < 6.046
-      extra_columns: ok
+      expect_query:
+        - SELECT Name FROM ort WHERE Land = 'Deutschland' AND Laenge < 6.046
+        - SELECT Name, Laenge FROM ort WHERE Land = 'Deutschland' AND Laenge < 6.046
       tables: { ort: 26314 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     feedback:
