@@ -8,28 +8,28 @@
       "output_sha256": "a7a2c3ba114e5d1a9146d0425cdf7946ae33ebf0b777b4f1f387177e7e2a8450"
     },
     "neo4j-browser-graph.webp": {
-      "state_hash": "9138abb7a41bf09cb95be113d674dc04cefb0aa8f1f198e8ac611b6dea584375",
+      "state_hash": "c75b68c50c966cc6d50bf5ba4481568f97f707c3d34535ee6b64d469199bf50f",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "workspace_look": "4.138.0-ls366",
-      "output_sha256": "a1c31ca6f68eebb1293e58f50b7ddfb55ba0c926b69868d388f5a9ed6d8ad1db"
+      "output_sha256": "5587b995e6916748f2d5a9e39b68d1f3487268af8a2f0cce0e35317577ef2aa1"
     },
     "cypher-shell-film.webp": {
-      "state_hash": "c4cb776f8ae0fc72bdfa1dc994de47b136dc49b3b6091452d49a00b8d14b362c",
+      "state_hash": "313e71561e5f486c852e906d4602b086ddce2daa621eb7183f750bb31871c0c2",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "workspace_look": "4.138.0-ls366",
-      "output_sha256": "69ae9ebc113447da56a219f96c1716460c06f3d72d76cee2b44c2d8ff9949594"
+      "output_sha256": "123dddb7dc92be000f6a087d0d2f5d1a015ff59eaf66b702af333924741c7dc7"
     },
     "neo4j-browser-pairs.webp": {
-      "state_hash": "a2ebacdae0ab9de58c96e601659ae3f817645ded058812b5d681bef887faca41",
+      "state_hash": "82e54a6b949d5199ed3c080f60552cf954fc9ddd67579653a1bd9fcdb4e32daa",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "workspace_look": "4.138.0-ls366",
-      "output_sha256": "caa6b3defa13a5b5e3652bf219c4ec89eb02ece91652cb2a9416d0bff53b1186"
+      "output_sha256": "9baf3c4993969c0d7aa4f0843e1a08838f5ef4bd6072dcc07e3d74b7a7330a96"
     },
     "neo4j-browser-path.webp": {
-      "state_hash": "638a3ac393e3e65324e410b5695b9c87f762fc20d8942ebaba62453f6f8c6e93",
+      "state_hash": "908474cf4f1817cdde0a87299e78bf5ca3dd5200da6e2045861552bf32119d33",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "workspace_look": "4.138.0-ls366",
-      "output_sha256": "ac5dd94098c2b4ad3aad953e2e14893131905e7499d943e6fc490c3bb5a2e263"
+      "output_sha256": "ff0eb0d929fc23a16ccb1ef88b89de5a45f4087e3903490279d6534ebc7d60c1"
     }
   }
 }

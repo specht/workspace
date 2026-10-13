@@ -139,10 +139,8 @@ LIMIT 25;
 # Neo4j Browser: die ersten 25 Knoten als Graph
 neo4j-browser
 tab: preview
-# Same layout width and scale as the VS Code shots, a little taller for the
-# graph. zoom: 1.8 lets the graph canvas draw at the capture resolution.
-viewport: 1853x1260
-zoom: 1.8
+# Same width and scale as the VS Code shots, a little taller for the graph
+viewport: 1029x700
 click: selector:button[aria-label="Database overview"]
 click: selector:[data-testid=main-editor] .cm-content
 type: MATCH (n) RETURN n LIMIT 25;
@@ -382,8 +380,7 @@ Wie in SQL sorgt `a.id < b.id` dafür, dass jedes Paar einmal vorkommt und niema
 <!-- tutorial-screenshot
 # Neo4j Browser: die Schauspielpaare als Tabelle
 tab: preview
-viewport: 1853x1260
-zoom: 1.8
+viewport: 1029x700
 click: selector:[data-testid=main-editor] .cm-content
 press: Control+A
 type: :clear
@@ -419,32 +416,30 @@ ORDER BY together DESC;
 Ein Graph kann auch nach **Wegen** gefragt werden: Wie hängen zwei Personen über Filme zusammen?
 
 ```cypher
-MATCH (a:Person {name: 'Michael J. Fox'}), (b:Person {name: 'Hans Zimmer'})
-MATCH path = shortestPath((a)-[*..8]-(b))
-WHERE none(n IN nodes(path) WHERE n:Genre)
+MATCH (a:Person {name: 'Dwayne Johnson'}), (b:Person {name: 'Eddie Murphy'})
+MATCH path = shortestPath((a)-[:ACTOR*..8]-(b))
 RETURN path;
 ```
 
-`[*..8]` heißt: ein Weg aus höchstens acht Beziehungen, egal welchen Typs und in welche Richtung. Ohne die Zeile mit `WHERE` führt der kürzeste Weg über ein Genre: Michael J. Fox spielt in »The Frighteners«, einem Krimi wie »The Dark Knight«, zu dem Hans Zimmer die Musik geschrieben hat. Das stimmt, sagt aber nichts darüber, wer mit wem gearbeitet hat. `none(n IN nodes(path) WHERE n:Genre)` verlangt, dass kein Knoten auf dem Weg ein Genre ist. Dann führt der Weg über »Back to the Future Part II« und den Kameramann Dean Cundey, der auch »The Holiday« gedreht hat. Im Neo4j Browser siehst du das Ergebnis als Kette aus Personen und Filmen.
+`[:ACTOR*..8]` heißt: ein Weg aus höchstens acht `ACTOR`-Beziehungen, in welche Richtung auch immer. Er führt also nur über Filme und die Menschen, die darin mitgespielt haben: Dwayne Johnson stand mit Samuel L. Jackson für »The Other Guys« vor der Kamera, und Samuel L. Jackson mit Eddie Murphy für »Coming to America«. Im Neo4j Browser siehst du das Ergebnis als Kette aus Personen und Filmen. Ohne `:ACTOR` darf der Weg jede Beziehung nehmen und führt dann über das Genre `Action`. Das stimmt, sagt aber nichts darüber, wer mit wem gearbeitet hat.
 
 <!-- tutorial-screenshot
-# Neo4j Browser: der kürzeste Weg von Michael J. Fox zu Hans Zimmer
+# Neo4j Browser: der kürzeste Weg von Dwayne Johnson zu Eddie Murphy
 tab: preview
-viewport: 1853x1260
-zoom: 1.8
+viewport: 1029x700
 click: selector:[data-testid=main-editor] .cm-content
 press: Control+A
 type: :clear
 press: Control+Enter
 press: Control+A
-type: MATCH (a:Person {name: 'Michael J. Fox'}), (b:Person {name: 'Hans Zimmer'}) MATCH path = shortestPath((a)-[*..8]-(b)) WHERE none(n IN nodes(path) WHERE n:Genre) RETURN path;
+type: MATCH (a:Person {name: 'Dwayne Johnson'}), (b:Person {name: 'Eddie Murphy'}) MATCH path = shortestPath((a)-[:ACTOR*..8]-(b)) RETURN path;
 press: Control+Enter
 wait-for-text: Started streaming 1 record
 move-mouse: selector:[data-testid=main-editor]
 sleep: 3
 -->
 
-<img class='full' src='neo4j-browser-path.webp' alt='Neo4j Browser: der Weg von Michael J. Fox über Back to the Future Part II, Dean Cundey und The Holiday zu Hans Zimmer.'>
+<img class='full' src='neo4j-browser-path.webp' alt='Neo4j Browser: der Weg von Dwayne Johnson über The Other Guys, Samuel L. Jackson und Coming to America zu Eddie Murphy.'>
 
 <div class='hint task'>
 Such dir zwei Personen aus, die nichts miteinander zu tun zu haben scheinen. Über welche Filme und welche anderen Menschen sind sie verbunden? Findet Neo4j keinen Weg, gibt es in unseren Daten keinen mit höchstens acht Schritten.
