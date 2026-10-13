@@ -272,6 +272,7 @@ async function loadTutorialScreenshotHooks(tutorialDirectory) {
                 writeFileSubdirectory: '',
                 waitForPreview: null,
                 setPreviewTime: null,
+                actions: {},
             };
         }
         throw error;
@@ -292,6 +293,11 @@ async function loadTutorialScreenshotHooks(tutorialDirectory) {
     if (hooks.setPreviewTime != null && typeof hooks.setPreviewTime !== 'function') {
         throw new Error('tutorial-screenshot-hooks.mjs setPreviewTime must be a function');
     }
+    const actions = hooks.actions ?? {};
+    if (typeof actions !== 'object' ||
+        Object.values(actions).some(action => typeof action !== 'function')) {
+        throw new Error('tutorial-screenshot-hooks.mjs actions must map names to functions');
+    }
 
     const rawWriteFileSubdirectory = hooks.writeFileSubdirectory == null
         ? ''
@@ -304,7 +310,20 @@ async function loadTutorialScreenshotHooks(tutorialDirectory) {
             : '',
         waitForPreview: hooks.waitForPreview ?? null,
         setPreviewTime: hooks.setPreviewTime ?? null,
+        actions,
     };
+}
+
+// hook: NAME ARGS runs actions.NAME from the tutorial's hooks on the page the
+// recipe's tab selects, for what only that tutorial's application knows how
+// to do (the anaglyph viewer's camera, for example).
+async function runHookAction(action, targetTab, hooks) {
+    const run = hooks?.actions?.[action.name];
+    if (!run) {
+        throw new Error(`hook: ${action.name} needs actions.${action.name} in tutorial-screenshot-hooks.mjs`);
+    }
+    const page = requirePageForTab(targetTab, `hook: ${action.name}`);
+    await run({ page, args: action.args, timeout: 60_000 });
 }
 
 async function waitForPreviewReady(page, hooks) {
@@ -527,6 +546,8 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
                 );
             }
             recipe.actions.push({ type: 'sleep', seconds });
+        } else if ((match = line.match(/^hook:\s*([a-z][a-z0-9-]*)(?:\s+(.*))?$/))) {
+            recipe.actions.push({ type: 'hook', name: match[1], args: (match[2] || '').trim() });
         } else if ((match = line.match(/^wait-for-text:\s*(.+)$/))) {
             const text = match[1].trim();
             recipe.actions.push({ type: 'wait-for-text', text });
@@ -882,6 +903,10 @@ async function ensureContext() {
         viewport: { width: metrics.width, height: metrics.height },
         deviceScaleFactor: metrics.deviceScaleFactor,
         acceptDownloads: false,
+    });
+    // A crashed tab otherwise surfaces only as "Not attached to an active page".
+    context.on('page', page => {
+        page.on('crash', () => console.warn(`Tutorial screenshot tab crashed: ${page.url()}`));
     });
     dashboard = await context.newPage();
     return context;
@@ -2300,6 +2325,7 @@ async function executeAction(action, targetTab, hooks) {
         case 'type': return typeText(action.text, targetTab);
         case 'press': return pressKey(action.key, targetTab);
         case 'sleep': return sleep(action.seconds);
+        case 'hook': return runHookAction(action, targetTab, hooks);
         case 'wait-for-text': return waitForText(action.text, targetTab);
         case 'wait-for-input-value': return waitForInputValue(action.text, targetTab);
     default: throw new Error(`Unsupported action: ${action.type}`);
