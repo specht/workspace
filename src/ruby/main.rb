@@ -8,6 +8,7 @@ require './include/task_card.rb'
 require './include/task_store.rb'
 require './include/class_board.rb'
 require './include/student_home.rb'
+require './include/reference_index.rb'
 require './include/template_freshness.rb'
 require './include/atomic_file.rb'
 require './include/authentication.rb'
@@ -1721,6 +1722,8 @@ class Main < Sinatra::Base
                 md
             end
             insert_task_cards(root, task_slots, page_tasks, redcarpet, hyphenation_map, path) unless task_slots.empty?
+            # Reference pages: every h2 and h3 gets an anchor for the Handbuch index.
+            outline = parsed_sections.dig(section, :catalog) == 'reference' ? ReferenceIndex.anchor_headings(root) : nil
             inject_autotoc(root)
 
             html = root.to_html
@@ -1745,6 +1748,7 @@ class Main < Sinatra::Base
                 # Template to clone (template:, template_name:), for the
                 # »new version« hint; nil if the page has none.
                 :template => TemplateFreshness.from_meta(page_meta),
+                :outline => outline,
             }
             if page_tasks
                 parsed_content[slug][:tasks] = page_tasks.merge(:on_page => task_slots & page_tasks[:by_id].keys)
@@ -4242,6 +4246,18 @@ class Main < Sinatra::Base
                     when :teaching then @@teaching_section_order
                     when :reference then (defined?(@@reference_section_order) ? @@reference_section_order : [])
                     else @@section_order
+                end
+                if catalog == :reference
+                    pages = section_order.flat_map do |section_key|
+                        section = @@sections[section_key]
+                        section[:entries].reject { |entry| (!DEVELOPMENT) && @@content[entry][:dev_only] }.map do |slug|
+                            content = @@content[slug]
+                            { :slug => slug, :title => content[:title],
+                              :outline => content[:outline], :section_label => section[:label], :section_icon => section[:icon] }
+                        end
+                    end
+                    io.puts ReferenceIndex.html(pages)
+                    section_order = []
                 end
                 section_order.each do |section_key|
                     section = @@sections[section_key]

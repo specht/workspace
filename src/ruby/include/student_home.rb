@@ -51,21 +51,12 @@ module StudentHome
     end
 
     # What to call the person: the first name if there is a name, otherwise
-    # from the e-mail address: »anna.berg@…« -> »Anna«, »specht@…« -> »specht«.
+    # the whole e-mail address (a guessed name from it reads oddly).
     def self.greeting_name(name, email = nil)
         first = first_name(name)
         return first unless first.empty?
 
-        address = [email, name].map(&:to_s).find { |a| a.include?('@') }
-        return '' if address.nil?
-
-        local = address.split('@').first.to_s
-        parts = local.split(/[._-]+/).reject(&:empty?)
-        if parts.size > 1 && parts.first =~ /\A[[:alpha:]]{2,}\z/
-            parts.first.capitalize
-        else
-            local
-        end
+        [email, name].map { |a| a.to_s.strip }.find { |a| a.include?('@') } || ''
     end
 
     # Is an activity hidden from »Weitermachen«? hidden: { slug => time hidden }.

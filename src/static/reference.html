@@ -1,5 +1,40 @@
 <div class='container'>
     <h1 class='mt-4'>Handbuch</h1>
-    <p>Kurz und vollständig: Befehle, Formate und Handgriffe, auf die viele Aktivitäten verweisen. Hier steht keine Geschichte, nur das, was man beim Arbeiten nachsehen will.</p>
+    <p>Befehle, Formate und Handgriffe zum Nachsehen. Aktivitäten verweisen auf diese Abschnitte; hier stehen sie alle auf einen Blick.</p>
     #{print_content_overview(:reference)}
 </div>
+<script>
+// Filters the Handbuch index: a block stays when its title, section or one
+// of its headings contains every word typed; matching headings stay visible.
+(function () {
+    var input = document.getElementById('reference-filter');
+    if (!input) return;
+    var norm = function (s) { return (s || '').toLowerCase().replace(/\u00ad/g, ''); };
+    var blocks = Array.prototype.slice.call(document.querySelectorAll('.reference-block'));
+    var empty = document.querySelector('.reference-filter-empty');
+    input.addEventListener('input', function () {
+        var words = norm(input.value).split(/\s+/).filter(Boolean);
+        var any = false;
+        blocks.forEach(function (block) {
+            var head = norm(block.querySelector('h2').textContent + ' ' + block.querySelector('.reference-block-label').textContent);
+            var matches = function (text) { return words.every(function (w) { return text.indexOf(w) >= 0; }); };
+            var blockHit = words.length === 0 || matches(head);
+            var itemHit = false;
+            block.querySelectorAll('.reference-outline > li').forEach(function (li) {
+                var headHit = blockHit || matches(norm(li.querySelector('a').textContent));
+                var childHit = false;
+                li.querySelectorAll('li').forEach(function (child) {
+                    var hit = headHit || matches(norm(child.textContent));
+                    child.hidden = !hit;
+                    if (hit) childHit = true;
+                });
+                li.hidden = !(headHit || childHit);
+                if (!li.hidden) itemHit = true;
+            });
+            block.hidden = !(blockHit || itemHit);
+            if (!block.hidden) any = true;
+        });
+        if (empty) empty.hidden = any;
+    });
+})();
+</script>
