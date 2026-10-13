@@ -61,6 +61,18 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Klassen-Repositorys steht im Meta-Block (`class_repo`).
 - Alle elf Aufgaben in »Eine Präsentation in HTML erstellen« und die
   2048-Aufgabe in »TCP/IP-Verbindungen« stehen jetzt auf der Seite.
+- Klassenübersicht unter `/klasse` (Menüpunkt »Klassen« für Lehrkräfte mit
+  Gruppe): Lernende × Aufgaben einer Aktivität, wer hängt, was häufig falsch
+  ist, Antworten zum Nachlesen und Abgaben zum Herunterladen. »Jetzt in den
+  Workspaces nachsehen« prüft eine Workspace-Aufgabe sofort für die ganze
+  Gruppe, ohne etwas zu speichern.
+- Eine Adresse kann in mehreren Gruppen stehen (Klasse und Kurs); die
+  Klassenübersicht zeigt sie in jeder. Für alles andere zählt wie bisher die
+  erste Gruppe.
+- Lehrmaterial listet die Aktivitäten mit einer Notiz für Lehrkräfte.
+- Tabler Icons (MIT) als gebündeltes Sprite in `src/static/include/tabler/`,
+  zunächst für die Klassenübersicht; Liste in `icons.txt`, neu bauen mit
+  `src/ruby/tools/build_tabler_sprite.rb`.
 - Neue Neo4j-Knoten `TaskState` und `TaskAttempt` (Constraint
   `TaskState/key`, Index `TaskAttempt/task`); sie werden beim Start von selbst
   angelegt.

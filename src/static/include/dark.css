@@ -228,6 +228,29 @@ html[data-bs-theme="dark"] {
     .task-solution > summary {
         color: #8db8f5;
     }
+    .class-board th,
+    .class-board td {
+        border-bottom-color: #33332f;
+    }
+    .class-board .cb-name {
+        background-color: #151514;
+    }
+    .cb-correct, .cb-live-correct { color: #6fd39b; }
+    .cb-sent { color: #8db8f5; }
+    .cb-wrong, .cb-live-wrong, .cb-stale { color: #f0c27a; }
+    .cb-none { color: #5c636a; }
+    .cb-stuck {
+        background-color: #3d1a1d;
+        color: #f19aa1;
+    }
+    .cb-often-wrong {
+        background-color: #3a2c12;
+    }
+    .cb-task-title,
+    .class-board tfoot td,
+    .class-live-note {
+        color: #adb5bd;
+    }
     .task-feedback pre code {
         color: #e7e6e1;
         background: none;

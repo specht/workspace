@@ -457,6 +457,46 @@ Fehlt die Zeile, bleibt alles wie bisher.
 (nicht lesbar, z. B. keine Zahl; zählt nicht) oder `unavailable` (gerade nicht
 prüfbar, z. B. Workspace aus; zählt nicht).
 
+## Klassenübersicht
+
+Unter `/klasse` (Menüpunkt »Klassen«) sehen Lehrkräfte für eine Gruppe und
+eine Aktivität, wer welche Aufgabe gelöst hat:
+
+| Icon (Tabler) | Bedeutung |
+| --- | --- |
+| `check` | gelöst |
+| `send` | abgegeben oder Reflexion gespeichert |
+| `x` mit Zahl | noch nicht gelöst, nach so vielen Versuchen; rot hinterlegt ab 3 Versuchen (»hängt«) |
+| `refresh` | die Aufgabe hat sich geändert, die Antwort ist von vorher |
+| `minus` | noch nicht bearbeitet |
+
+Die Icons stammen aus [Tabler Icons](https://tabler.io/icons) (MIT) und liegen
+als Sprite in `src/static/include/tabler/tabler.svg`; welche Icons darin sind,
+steht in `icons.txt` daneben. `src/ruby/tools/build_tabler_sprite.rb` baut das
+Sprite neu, `Icons.tabler('check')` (`src/ruby/include/icons.rb`) setzt eins
+in eine Seite.
+
+Die Zeile »Klasse« zählt, wie viele fertig sind und wie viele hängen; bei
+Vermutungen auch, wie viele richtig vermutet haben. Eine Spalte ist gelb, wenn
+mindestens ein Drittel derer, die es versucht haben, gerade falsch liegt
+(»häufig falsch«), ab drei Personen. Darunter stehen die Antworten und
+Reflexionen zum Nachlesen und die Abgaben zum Herunterladen.
+
+**Jetzt in den Workspaces nachsehen** führt eine Aufgabe, die im Workspace
+nachsieht (`files`, `html`, `css`, `references`, `git`), sofort für alle in
+der Gruppe aus, ohne dass jemand »Prüfen« drücken muss. Das Ergebnis erscheint
+blau umrandet in der Tabelle und darunter als Liste mit der Rückmeldung, die
+die Person selbst sehen würde. Gespeichert wird dabei nichts; der Stand der
+Lernenden bleibt, wie er ist. `git` braucht einen laufenden Workspace.
+
+Wer was sieht:
+
+- Administratorinnen und Administratoren sehen alle Gruppen.
+- Lehrkräfte mit `+` in einer Einladungsdatei sehen diese Gruppe.
+- Steht eine Adresse in mehreren Gruppen (Klasse 10b und WP 10), erscheint sie
+  in jeder davon. Für alles andere im Workspace zählt weiter die erste Gruppe.
+- Lehrkräfte mit `*` ohne eigene Gruppe sehen keine Klassenübersicht.
+
 ## Was gespeichert wird
 
 In Neo4j, nur für Antworten, die zählen:
@@ -466,15 +506,14 @@ In Neo4j, nur für Antworten, die zählen:
   ersten Versuchs, Zeitpunkt der ersten richtigen Antwort, letzte Änderung.
   Der Schlüssel ist ein Hash aus E-Mail-Adresse und Aufgabe.
 - `(:TaskAttempt)-[:BY]->(:User)` pro Versuch: Aufgabe, Version, Status und
-  Zeitpunkt, ohne den Text der Antwort. Daraus entsteht in M4 die Übersicht
-  für die Klasse.
+  Zeitpunkt, ohne den Text der Antwort.
 - Abgaben (seit M3) als `.tar.gz` unter `/internal/submissions/`, benannt nach
   dem Schlüssel des `TaskState`. Eine neue Abgabe ersetzt die alte erst, wenn
   sie vollständig geschrieben ist. Symbolische Links werden nicht mit
   abgegeben. Lernende laden ihre Abgabe auf der Karte herunter.
 
-Sehen können das nur die Person selbst und ihre Lehrkräfte (ab M4 in der
-Übersicht der Klasse). Lernende löschen
+Sehen können das nur die Person selbst und die Lehrkräfte ihrer Gruppen, in
+der Klassenübersicht. Lernende löschen
 ihre Antwort zu einer Aufgabe auf der Karte (»Meine Antwort löschen«), wann sie
 wollen, auch wenn Aufgaben wieder ausgeschaltet sind. Wer ein Konto von Hand
 entfernt, löscht die Aufgabendaten mit:

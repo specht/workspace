@@ -1737,3 +1737,163 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     --bs-table-bg: transparent;
     background-color: transparent;
 }
+
+/* Tabler icons from the bundled sprite (Icons.tabler, include/tabler/) */
+
+.ti {
+    width: 1.15em;
+    height: 1.15em;
+    vertical-align: -0.2em;
+}
+
+/* Class board (/klasse, ClassBoard) */
+
+.class-board-select {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8em 1.5em;
+    margin: 1em 0;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+}
+
+.class-board-select label {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.class-board-select .form-select {
+    width: auto;
+}
+
+.class-live {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em;
+    margin: 0.5em 0 1em;
+}
+
+.class-live-note {
+    flex-basis: 100%;
+    font-size: 85%;
+    color: #5c636a;
+}
+
+.class-board-scroll {
+    overflow-x: auto;
+    margin: 0.5em 0 1.5em;
+}
+
+.class-board {
+    border-collapse: collapse;
+    font-size: 90%;
+}
+
+.class-board th,
+.class-board td {
+    padding: 0.3em 0.5em;
+    border-bottom: 1px solid #e3e3e3;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.class-board .cb-name {
+    text-align: left;
+    position: sticky;
+    left: 0;
+    background-color: #fff;
+}
+
+.class-board thead th.cb-task {
+    vertical-align: bottom;
+    max-width: 7em;
+    white-space: normal;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.cb-task-number {
+    display: block;
+    font-weight: 600;
+}
+
+.cb-task-title {
+    display: block;
+    font-size: 85%;
+    color: #5c636a;
+}
+
+.cb-cell {
+    font-size: 110%;
+    cursor: default;
+}
+
+.cb-cell small {
+    font-size: 70%;
+    margin-left: 0.1em;
+}
+
+.cb-correct, .cb-live-correct { color: #146c43; }
+.cb-sent { color: #0b4fb3; }
+.cb-wrong, .cb-live-wrong { color: #8a5300; }
+.cb-stale { color: #8a5300; }
+.cb-none { color: #adb5bd; }
+.cb-live-unavailable, .cb-live-invalid { color: #6c757d; }
+
+.cb-stuck {
+    background-color: #fde2e1;
+    color: #b02a37;
+}
+
+.cb-live {
+    outline: 2px solid #0b5ed7;
+    outline-offset: -3px;
+    border-radius: 4px;
+}
+
+.cb-often-wrong {
+    background-color: #fdf0dc;
+}
+
+.class-board tfoot td {
+    font-size: 80%;
+    color: #5c636a;
+    vertical-align: top;
+}
+
+.cb-total {
+    font-weight: 600;
+}
+
+.class-answers {
+    margin: 0.6em 0;
+}
+
+.class-answers > summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.class-answers ul {
+    margin: 0.4em 0 0.8em;
+}
+
+.cb-answer-name {
+    font-weight: 600;
+    margin-right: 0.4em;
+}
+
+.cb-answer-text {
+    white-space: pre-wrap;
+}
+
+.class-live-list li {
+    margin-bottom: 0.6em;
+}
+
+.class-live-list li > div > p:last-child {
+    margin-bottom: 0;
+}

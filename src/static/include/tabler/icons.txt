@@ -1,0 +1,8 @@
+# Tabler icons in the sprite tabler.svg, as <style>/<name>.
+# After changing this list: see src/ruby/tools/build_tabler_sprite.rb
+outline/check
+outline/x
+outline/send
+outline/refresh
+outline/minus
+outline/help

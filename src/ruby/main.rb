@@ -6,6 +6,7 @@ require './include/task_spec.rb'
 require './include/task_check.rb'
 require './include/task_card.rb'
 require './include/task_store.rb'
+require './include/class_board.rb'
 require './include/atomic_file.rb'
 require './include/authentication.rb'
 require './include/database_provisioning.rb'
@@ -1904,6 +1905,10 @@ class Main < Sinatra::Base
         user_groups = {}
         user_group_order = []
         explicit_teacher_emails = Set.new
+        # Every group an address is listed in, in file order. invitations[email][:group]
+        # stays the first one, as before; the class board uses all of them, so a
+        # student can be in 10b and in the WP course.
+        group_members = {}
 
         current_group = 'Administrator'
 
@@ -1937,6 +1942,8 @@ class Main < Sinatra::Base
                     else
                         parts = line.strip.split(' ')
                         email = parts.last.delete_prefix('<').delete_suffix('>').downcase
+                        members = (group_members[current_group] ||= [])
+                        members << email unless members.include?(email)
                         unless invitations[email]
                             user_groups[current_group] ||= []
                             user_groups[current_group] << email
@@ -1972,6 +1979,7 @@ class Main < Sinatra::Base
         @@user_group_order = user_group_order
         @@teachers = teachers # group administration rights only
         @@teacher_emails = teacher_emails # teachers, with or without group rights
+        @@group_members = group_members # all memberships, for the class board
     end
 
     private_class_method :load_invitations_locked
@@ -3847,6 +3855,108 @@ class Main < Sinatra::Base
             "<div class='teacher-note-body'>#{note}</div></details>"
     end
 
+    # Activities with a teacher note (lehrkraft.md), listed in Lehrmaterial.
+    def print_teacher_notes_overview
+        return '' unless teacher_account_logged_in?
+
+        entries = @@content.select { |slug, c| c[:teacher_note] && !c[:dev_only] && !c[:teacher_only] }
+            .map { |slug, c| [slug, c[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '')] }
+            .sort_by { |_, title| title.downcase }
+        return '' if entries.empty?
+
+        items = entries.map { |slug, title| "<li><a href='/#{CGI.escapeHTML(slug)}'>#{CGI.escapeHTML(title)}</a></li>" }
+        "<h2 class='mt-4'>Notizen zu Aktivitäten</h2>" \
+            "<p>Diese Aktivitäten haben eine Notiz für Lehrkräfte: Ablauf, Stolpersteine, was die Aufgaben prüfen. Du findest sie oben auf der jeweiligen Seite.</p>" \
+            "<ul class='teacher-notes-list'>#{items.join}</ul>" \
+            "<p>Was deine Gruppen in diesen Aktivitäten geschafft haben, steht in der <a href='/klasse'>Klassenübersicht</a>.</p>"
+    end
+
+    # --- Class board (docs/aufgaben.md, »Klassenübersicht«) ---------------------
+
+    # Groups whose class board the logged-in person may see: administrators see
+    # all, group administrators (+ in the invitation files) their groups.
+    def class_groups
+        return [] unless user_logged_in?
+
+        groups = (defined?(@@group_members) ? @@group_members : {}).keys
+        return groups.sort_by { |g| @@user_group_order.index(g) || 0 } if admin_logged_in?
+
+        own = @@teachers[@session_user[:email]] || Set.new
+        groups.select { |g| own.include?(g) }.sort_by { |g| @@user_group_order.index(g) || 0 }
+    end
+
+    def class_member?(group, email)
+        class_groups.include?(group) && (@@group_members[group] || []).include?(email)
+    end
+
+    def class_members(group)
+        (@@group_members[group] || []).map do |email|
+            { :email => email, :name => ((@@invitations[email] || {})[:name] || email) }
+        end
+    end
+
+    # Activities that place tasks on their page: [[activity, title, tasks]].
+    def class_activities
+        @@content.values.select { |c| c[:tasks] && !(c[:tasks][:on_page] || []).empty? && !c[:dev_only] }
+            .map do |c|
+                tasks = c[:tasks][:on_page].map do |id|
+                    t = c[:tasks][:by_id][id]
+                    { :id => id, :title => t['title'], :type => t['check']['type'],
+                      :version => TaskSpec.check_version(t), :prediction => t['prediction'] == true }
+                end
+                [c[:tasks][:activity], c[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', ''), tasks]
+            end
+            .sort_by { |_, title, _| title.downcase }
+    end
+
+    def class_board_states(emails, activity)
+        states = {}
+        neo4j_query(<<~END_OF_QUERY, :emails => emails, :prefix => "#{activity}/").each do |row|
+            MATCH (u:User)-[:HAS_TASK_STATE]->(s:TaskState)
+            WHERE u.email IN $emails AND s.task STARTS WITH $prefix
+            RETURN u.email AS email, s;
+        END_OF_QUERY
+            id = row['s'][:task].to_s.split('/', 2)[1]
+            (states[row['email']] ||= {})[id] = row['s']
+        end
+        states
+    end
+
+    def class_board_page
+        groups = class_groups
+        activities = class_activities
+        group = groups.include?(params['group']) ? params['group'] : groups.first
+        activity = activities.find { |a, _, _| a == params['activity'] } || activities.first
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        io = +"<form class='class-board-select' method='get' action='/klasse'>"
+        io << "<label>Gruppe <select class='form-select' name='group' onchange='this.form.submit()'>"
+        groups.each { |g| io << "<option value='#{h.(g)}'#{g == group ? ' selected' : ''}>#{h.(g)} (#{(@@group_members[g] || []).size})</option>" }
+        io << "</select></label><label>Aktivität <select class='form-select' name='activity' onchange='this.form.submit()'>"
+        activities.each { |a, title, _| io << "<option value='#{h.(a)}'#{activity && a == activity[0] ? ' selected' : ''}>#{h.(title)}</option>" }
+        io << "</select></label><noscript><button class='btn btn-primary'>Anzeigen</button></noscript></form>"
+        return io + "<p>Noch keine Aktivität hat Aufgaben auf ihrer Seite.</p>" if activity.nil?
+        return io + "<p>Du betreust noch keine Gruppe.</p>" if group.nil?
+
+        activity_key, title, tasks = activity
+        members = class_members(group)
+        states = class_board_states(members.map { |m| m[:email] }, activity_key)
+        board = ClassBoard.build(members, tasks, states)
+        live = tasks.select { |t| (TaskCheck::FILE_TYPES + ['git']).include?(t[:type]) }
+        unless live.empty?
+            io << "<div class='class-live' data-group='#{h.(group)}'>"
+            io << "<span>Jetzt in den Workspaces nachsehen:</span>"
+            live.each do |t|
+                n = tasks.index(t) + 1
+                io << "<button type='button' class='btn btn-sm btn-outline-primary class-live-check' data-task='#{h.(activity_key)}/#{h.(t[:id])}'>#{n}. #{h.(t[:title])}</button>"
+            end
+            io << "<div class='class-live-note'>Liest die Dateien der Gruppe so, wie die Karte sie liest, und ändert nichts. Der Stand der Lernenden bleibt, wie er ist.</div></div>"
+        end
+        io << "<p class='class-board-link'><a href='/#{h.(@@content.find { |_, c| (c[:tasks] || {})[:activity] == activity_key }&.first)}'>#{h.(title)}</a> · #{members.size} Personen in #{h.(group)}</p>"
+        io << ClassBoard.html(board, :activity => activity_key,
+            :submission_url => lambda { |email, id| "/api/task/submission/#{activity_key}/#{id}?email=#{CGI.escape(email)}" })
+        io
+    end
+
     def print_content_overview(catalog = :student)
         Main.refresh_content_catalog if DEVELOPMENT
         assert([:student, :teaching, :reference].include?(catalog))
@@ -4658,16 +4768,81 @@ class Main < Sinatra::Base
         respond(:options => options)
     end
 
-    # The logged-in person's own submission as .tar.gz.
+    # A submission as .tar.gz: the logged-in person's own, or, with ?email=,
+    # that of a student in a group the logged-in teacher looks after.
     get '/api/task/submission/:activity/:id' do
         assert(user_logged_in?)
         found = find_task("#{params[:activity]}/#{params[:id]}")
         halt 404 if found.nil?
-        path = submission_path(found[:key])
+        email = @session_user[:email]
+        if params['email'] && params['email'] != email
+            Main.load_invitations()
+            allowed = class_groups.any? { |g| (@@group_members[g] || []).include?(params['email']) }
+            halt 403 unless allowed
+            email = params['email']
+        end
+        path = submission_path(found[:key], email)
         halt 404 unless File.file?(path)
 
+        suffix = email == @session_user[:email] ? '' : "-#{email.split('@').first.gsub(/[^a-zA-Z0-9._-]/, '')}"
         respond_raw_with_mimetype_and_filename(File.binread(path), 'application/gzip',
-            "#{params[:activity]}-#{params[:id]}.tar.gz")
+            "#{params[:activity]}-#{params[:id]}#{suffix}.tar.gz")
+    end
+
+    # Teachers: run a Workspace task (files, html, css, references, git) for
+    # every student of a group right now. Reads only; stores nothing, so the
+    # students' own results stay as they are.
+    post '/api/class/check_now' do
+        assert(user_logged_in?)
+        Main.load_invitations()
+        data = parse_request_data(:required_keys => [:group, :task], :max_value_lengths => {:group => 200, :task => 120})
+        halt 403 unless class_groups.include?(data[:group])
+        found = find_task(data[:task])
+        halt 404 if found.nil?
+        type = found[:task]['check']['type']
+        halt 400 unless (TaskCheck::FILE_TYPES + ['git']).include?(type)
+
+        members = class_members(data[:group])
+        results = {}
+        lock = Mutex.new
+        queue = Queue.new
+        members.each { |m| queue << m }
+        workers = Array.new([4, members.size].min) do
+            Thread.new do
+                loop do
+                    m = begin
+                        queue.pop(true)
+                    rescue ThreadError
+                        break
+                    end
+                    fs_tag = fs_tag_for_email(m[:email])
+                    path = "/user/#{fs_tag}/workspace"
+                    ws = File.directory?(path) ? WorkspaceFiles.new(path) : nil
+                    git = lambda do |repo|
+                        output = workspace_runtime.git_status(fs_tag, :repo => repo,
+                            :uid => "#{WORKSPACE_UID}:#{WORKSPACE_GID}", :script => GitCheck::STATUS_SCRIPT, :timeout => 15)
+                        output.nil? ? nil : GitCheck.parse(output)
+                    end
+                    result = begin
+                        TaskCheck.check(found[:task], '', :variables => {}, :workspace => ws, :git => git)
+                    rescue StandardError => e
+                        STDERR.puts "check_now #{found[:key]} #{m[:email]}: #{e.class}: #{e.message}"
+                        TaskCheck::Result.new(:status => :unavailable, :message => 'Konnte nicht geprüft werden.')
+                    end
+                    lock.synchronize do
+                        results[m[:email]] = {
+                            :status => result.status.to_s,
+                            :problem => result.problem.to_s,
+                            :message => result.message,
+                        }
+                    end
+                end
+            end
+        end
+        workers.each(&:join)
+        # Markdown is rendered here, not in the threads: one renderer is shared.
+        results.each_value { |r| r[:message] = render_task_markdown(r[:message]) }
+        respond(:results => results, :checked_at => Time.now.to_i)
     end
 
     # The logged-in person's stored answers for the tasks of one activity.
@@ -6065,6 +6240,11 @@ class Main < Sinatra::Base
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
             halt 403 unless teacher_logged_in?
+        end
+        if path == '/klasse'
+            this_is_a_page_for_logged_in_users!
+            Main.load_invitations()
+            halt 403 if class_groups.empty?
         end
         if path == '/tic80/'
             s = File.read(File.join(@@static_dir, '/tic80/index.html'))
