@@ -33,6 +33,7 @@ require 'redcarpet'
 require 'rouge'
 require './include/er_lexer.rb'
 require './include/cypher_lexer.rb'
+require './include/code_highlight.rb'
 require 'securerandom'
 require 'shellwords'
 require 'set'
@@ -1357,104 +1358,12 @@ class Main < Sinatra::Base
                 a['target'] = '_blank'
             end
         end
-        root.css('pre').each do |pre|
-            code = pre.css('code').first
-            next if code.nil?
-            language = code.attr('class')
-            lineno = false
-            if language =~ /_lineno$/
-                lineno = true
-                language = language.sub(/_lineno$/, '')
-            end
-            wrap = false
-            if language =~ /_wrap$/
-                wrap = true
-                language = language.sub(/_wrap$/, '')
-            end
-
-            pre['class'] = [pre['class'], 'wrap-code'].compact.join(' ') if wrap
-
-            formatter = if lineno
-                Rouge::Formatters::HTMLTable.new(Rouge::Formatters::HTML.new)
-                # Rouge::Formatters::HTMLLineTable.new(Rouge::Formatters::HTML.new)
-            else
-                Rouge::Formatters::HTML.new
-            end
-            lexer = nil
-            case language
-            when 'bash'
-                lexer = Rouge::Lexers::Shell.new
-            when 'basic'
-                lexer = Rouge::Lexers::VisualBasic.new
-            when 'bibtex'
-                lexer = Rouge::Lexers::BibTeX.new
-            when 'c'
-                lexer = Rouge::Lexers::C.new
-            when 'clisp'
-                lexer = Rouge::Lexers::CommonLisp.new
-            when 'cpp'
-                lexer = Rouge::Lexers::Cpp.new
-            when 'cs'
-                lexer = Rouge::Lexers::CSharp.new
-            when 'css'
-                lexer = Rouge::Lexers::CSS.new
-            when 'cypher'
-                lexer = Rouge::Lexers::WorkspaceCypher.new
-                pre['class'] = [pre['class'], 'code-cypher'].compact.join(' ')
-            when 'dart'
-                lexer = Rouge::Lexers::Dart.new
-            when 'er'
-                lexer = Rouge::Lexers::ER.new
-                pre['class'] = [pre['class'], 'code-er'].compact.join(' ')
-            when 'erlang'
-                lexer = Rouge::Lexers::Erlang.new
-            when 'fortran'
-                lexer = Rouge::Lexers::Fortran.new
-            when 'go'
-                lexer = Rouge::Lexers::Go.new
-            when 'html'
-                lexer = Rouge::Lexers::HTML.new
-            when 'ini'
-                lexer = Rouge::Lexers::INI.new
-            when 'java'
-                lexer = Rouge::Lexers::Java.new
-            when 'js'
-                lexer = Rouge::Lexers::Javascript.new
-            when 'json'
-                lexer = Rouge::Lexers::JSON.new
-            when 'lua'
-                lexer = Rouge::Lexers::Lua.new
-            when 'markdown'
-                lexer = Rouge::Lexers::Markdown.new
-            when 'nasm'
-                lexer = Rouge::Lexers::Nasm.new
-            when 'pascal'
-                lexer = Rouge::Lexers::Pascal.new
-            when 'python'
-                lexer = Rouge::Lexers::Python.new
-            when 'ruby'
-                lexer = Rouge::Lexers::Ruby.new
-            when 'rust'
-                lexer = Rouge::Lexers::Rust.new
-            when 'smalltalk'
-                lexer = Rouge::Lexers::Smalltalk.new
-            when 'sql'
-                lexer = Rouge::Lexers::SQL.new
-            when 'svelte'
-                lexer = Rouge::Lexers::Svelte.new
-            when 'tex'
-                lexer = Rouge::Lexers::TeX.new
-            when 'text'
-                lexer = Rouge::Lexers::PlainText.new
-            end
-            next if lexer.nil?
-            pre.content = ''
-            # if lineno
-            #     pre << "<div style='border-bottom: 1px solid white;display: inline-table;width: 100%;margin-bottom: 0.5em;padding-bottom: 0.5em;font-style: italic;font-weight: normal;'>HelloWorld.java (124 Bytes)</div>"
-            # end
-            pre << formatter.format(lexer.lex(code.text))
-        end
+        highlight_code(root)
         root
+    end
+
+    def self.highlight_code(root)
+        CodeHighlight.apply(root)
     end
 
     # _include() leaves two marker divs around the included part (see
@@ -1508,7 +1417,9 @@ class Main < Sinatra::Base
                 STDERR.puts "#{path}: _task(#{id}): no such task in tasks.yaml"
                 TaskCard.missing_html(id)
             end
-            slot.replace(root.fragment(html))
+            fragment = root.fragment(html)
+            highlight_code(fragment)
+            slot.replace(fragment)
         end
     end
 
@@ -3919,6 +3830,8 @@ class Main < Sinatra::Base
         return nil if markdown.nil? || markdown.to_s.strip.empty?
 
         @@task_redcarpet ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true, :tables => true})
+        # Feedback boxes are light and style plain code themselves
+        # (.task-feedback pre code), so no highlighting here.
         @@task_redcarpet.render(markdown.to_s)
     end
 

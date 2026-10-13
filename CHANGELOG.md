@@ -247,6 +247,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Erweiterung schlägt dann `primary key` vor. Filmdatenbank, Handbuch und
   Prüfart `er` sprechen von `primary key`. Der Text zum Krähenfuß sagt, warum
   das erste Diagramm keinen Strich zeigt, und zeigt ihn im Tabellendiagramm.
+- Code in Aufgabenkarten ist eingefärbt wie im Text der Seite; bisher sah ein
+  Code-Block in einer Aufgabe aus wie lauter einzelne Inline-Code-Stücke. Ein
+  Code-Block ohne Sprache wird wie ```` ```text ```` dargestellt.
 
 ### Für Betreibende
 
