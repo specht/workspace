@@ -4169,7 +4169,7 @@ class Main < Sinatra::Base
                         section = @@sections[section_key]
                         section[:entries].reject { |entry| (!DEVELOPMENT) && @@content[entry][:dev_only] }.map do |slug|
                             content = @@content[slug]
-                            { :slug => slug, :title => content[:title], :abstract => content[:abstract],
+                            { :slug => slug, :title => content[:title],
                               :outline => content[:outline], :sections => content[:search_sections],
                               :section_label => section[:label], :section_icon => section[:icon] }
                         end

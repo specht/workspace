@@ -99,9 +99,9 @@ module ReferenceIndex
         part['id'] if part && part.name == 'div' && part['class'].to_s.split.include?('reference-part')
     end
 
-    # pages: [{ slug:, title:, abstract:, outline:, sections:, section_label:, section_icon: }]
+    # pages: [{ slug:, title:, outline:, sections:, section_label:, section_icon: }]
     #
-    # One card per page: its area, title and abstract, then its chapters (h2)
+    # One card per page: its area and title, then its chapters (h2)
     # as links, each with its sections (h3) in one line. While a search is
     # typed, a list of matching sections replaces the cards (reference.html).
     def self.html(pages)
@@ -119,8 +119,6 @@ module ReferenceIndex
             io << "<img alt='' src='#{h(page[:section_icon])}'>" if page[:section_icon]
             io << "#{h(page[:section_label])}</div>"
             io << "<h2 data-autotoc='ignore'><a href='#{h(url)}'>#{h(strip_tags(page[:title]))}</a></h2>"
-            abstract = strip_tags(page[:abstract])
-            io << "<p class='reference-card-abstract'>#{h(abstract)}</p>" unless abstract.empty?
             chapters = chapters(page[:outline] || [])
             leads = (page[:sections] || []).to_h { |section| [section[:id], section[:lead]] }
             unless chapters.empty?
