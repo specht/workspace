@@ -14,6 +14,17 @@ import {
     validateCropDirectives,
 } from './crop.js';
 import { resetScreenshotDatabases } from './workspace-reset.js';
+import {
+    chainStateHashes,
+    checkRecordForTarget,
+    entryIsCurrent,
+    findRecipeTarget,
+    frameTimes,
+    isVideoTarget,
+    parseFps,
+    parseRecordSeconds,
+    videoEncodeArgs,
+} from './plan.js';
 import { chromium } from 'playwright';
 
 const execFileAsync = promisify(execFile);
@@ -46,7 +57,10 @@ const SCREENSHOT_EMAIL = process.env.TUTORIAL_SCREENSHOT_EMAIL || 'student@examp
 const SCREENSHOT_WORKSPACE_USER = process.env.TUTORIAL_SCREENSHOT_WORKSPACE_USER || 'student';
 const LOGIN_CODE = process.env.TUTORIAL_SCREENSHOT_LOGIN_CODE || '123456';
 const PORT = Number.parseInt(process.env.PORT || '9393', 10);
+// Part of every state hash: bumping it re-renders every screenshot of every
+// tutorial. Recipe features that do not change existing images need no bump.
 const GENERATOR_VERSION = 19;
+const DEFAULT_VIDEO_FPS = 30;
 const WORKSPACE_FONT_FAMILY = '0xProto Nerd Font Mono';
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
@@ -212,6 +226,7 @@ async function loadTutorialScreenshotHooks(tutorialDirectory) {
                 sourceSha256: null,
                 writeFileSubdirectory: '',
                 waitForPreview: null,
+                setPreviewTime: null,
             };
         }
         throw error;
@@ -229,6 +244,9 @@ async function loadTutorialScreenshotHooks(tutorialDirectory) {
     if (hooks.waitForPreview != null && typeof hooks.waitForPreview !== 'function') {
         throw new Error('tutorial-screenshot-hooks.mjs waitForPreview must be a function');
     }
+    if (hooks.setPreviewTime != null && typeof hooks.setPreviewTime !== 'function') {
+        throw new Error('tutorial-screenshot-hooks.mjs setPreviewTime must be a function');
+    }
 
     const rawWriteFileSubdirectory = hooks.writeFileSubdirectory == null
         ? ''
@@ -240,6 +258,7 @@ async function loadTutorialScreenshotHooks(tutorialDirectory) {
             ? safeRelativePath(rawWriteFileSubdirectory)
             : '',
         waitForPreview: hooks.waitForPreview ?? null,
+        setPreviewTime: hooks.setPreviewTime ?? null,
     };
 }
 
@@ -342,6 +361,8 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
         cropTerminalSkipTop: 0,
         cropTerminalSkipBottom: 0,
         terminalScrollBack: 0,
+        record: null,
+        fps: null,
         actions: [],
     };
 
@@ -524,6 +545,10 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
                 source,
                 () => parseTerminalLineSkip(match[1], 'crop-terminal-skip-bottom'),
             );
+        } else if ((match = line.match(/^record:\s*(.+)$/))) {
+            recipe.record = valueAtSource(source, () => parseRecordSeconds(match[1]));
+        } else if ((match = line.match(/^fps:\s*(.+)$/))) {
+            recipe.fps = valueAtSource(source, () => parseFps(match[1]));
         } else if ((match = line.match(/^terminal-scroll-back:\s*(\d+)$/))) {
             const lines = Number.parseInt(match[1], 10);
             if (lines < 1 || lines > 200) {
@@ -545,6 +570,15 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
         }
     }
 
+    if (recipe.fps != null && recipe.record == null) {
+        throw withSourceError(new Error('fps needs record: SECONDSs'), lastSource || recipe[SOURCE_LOCATION]);
+    }
+    if (recipe.record != null && (recipe.cropTerminalLines != null || recipe.terminalScrollBack > 0)) {
+        throw withSourceError(
+            new Error('record cannot be combined with terminal crops or terminal-scroll-back'),
+            lastSource || recipe[SOURCE_LOCATION],
+        );
+    }
     if (recipe.cropTop + recipe.cropBottom >= 0.98) {
         throw withSourceError(
             new Error('Top and bottom crop leave no useful screenshot area'),
@@ -607,7 +641,6 @@ async function parseTutorial(markdown, markdownPath) {
     const regex = /<!--\s*tutorial-screenshot\s*\n([\s\S]*?)-->/g;
     const shots = [];
     let match;
-    let previousState = sha256(`tutorial-screenshot-v${GENERATOR_VERSION}\0${markdownPath}`);
 
     while ((match = regex.exec(markdown)) !== null) {
         const recipeStart = match.index + match[0].indexOf(match[1]);
@@ -620,11 +653,10 @@ async function parseTutorial(markdown, markdownPath) {
         }
 
         const afterComment = markdown.slice(regex.lastIndex);
-        const nextRecipeIndex = afterComment.search(/<!--\s*tutorial-screenshot\b/);
-        const imageMatch = /<img\b[^>]*\bsrc=['"]([^'"]+)['"][^>]*>/i.exec(afterComment);
-        if (!imageMatch || (nextRecipeIndex >= 0 && imageMatch.index > nextRecipeIndex)) {
+        const targetMatch = findRecipeTarget(afterComment);
+        if (!targetMatch) {
             throw withSourceError(
-                new Error('tutorial-screenshot block has no following <img>'),
+                new Error('tutorial-screenshot block has no following <img> or <video>'),
                 recipeSource,
             );
         }
@@ -632,14 +664,15 @@ async function parseTutorial(markdown, markdownPath) {
         const targetSource = markdownSourceLocation(
             markdown,
             markdownPath,
-            regex.lastIndex + imageMatch.index,
+            regex.lastIndex + targetMatch.index,
         );
         let target;
         try {
-            target = safeRelativePath(imageMatch[1]);
+            target = safeRelativePath(targetMatch.src);
             if (/^[a-z][a-z\d+.-]*:/i.test(target) || target.startsWith('/')) {
                 throw new Error(`Generated screenshot must use a relative tutorial image path: ${target}`);
             }
+            checkRecordForTarget(target, recipe.record);
         } catch (error) {
             throw withSourceError(error, targetSource);
         }
@@ -685,14 +718,22 @@ async function parseTutorial(markdown, markdownPath) {
         if (recipe.terminalScrollBack > 0) {
             resolved.terminalScrollBack = recipe.terminalScrollBack;
         }
+        // Only videos carry these, so images hash exactly as before.
+        if (recipe.record != null) {
+            resolved.record = recipe.record;
+            resolved.fps = recipe.fps ?? DEFAULT_VIDEO_FPS;
+        }
         resolved[SOURCE_LOCATION] = recipe[SOURCE_LOCATION] || recipeSource;
         resolved[TARGET_LOCATION] = targetSource;
-
-        const stateHash = sha256(`${previousState}\0${JSON.stringify(resolved)}`);
-        previousState = stateHash;
-        shots.push({ ...resolved, stateHash });
+        shots.push(resolved);
     }
 
+    // See plan.js: a shot depends on the actions before it, not on their crops.
+    const hashes = chainStateHashes(
+        shots,
+        sha256(`tutorial-screenshot-v${GENERATOR_VERSION}\0${markdownPath}`),
+    );
+    shots.forEach((shot, index) => Object.assign(shot, hashes[index]));
     return shots;
 }
 
@@ -2479,6 +2520,83 @@ async function captureShot(shot, tutorialDirectory) {
     }
 }
 
+// record: SECONDSs before a <video>: the same clip as a screenshot, once per
+// frame. Time is not left to the clock: for every frame the tutorial's hook
+// setPreviewTime({ page, seconds }) puts the app at exactly that moment and
+// waits until it has drawn it, so a slow machine makes the same video as a
+// fast one. Afterwards setPreviewTime({ page, seconds: null }) hands the
+// page back to real time. ffmpeg turns the frames into .mp4 or .webm.
+async function captureVideo(shot, tutorialDirectory, hooks) {
+    if (!hooks?.setPreviewTime) {
+        throw new Error(
+            'record needs setPreviewTime({ page, seconds }) in tutorial-screenshot-hooks.mjs',
+        );
+    }
+    const page = pageForTab(shot.tab);
+    if (!page || page.isClosed()) {
+        throw new Error(`Video requests unavailable tab: ${shot.tab}`);
+    }
+
+    const { session, metrics } = await applyViewportProfile(page, shot.viewport, shot.zoom);
+    await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {});
+    if (shot.tab === 'workspace') {
+        await waitForWorkspaceFont(page);
+        await installWorkspaceScreenshotStyle(page);
+    }
+
+    const topPixels = Math.round(shot.viewport.height * shot.cropTop);
+    const bottomPixels = Math.round(shot.viewport.height * shot.cropBottom);
+    const heightPixels = shot.viewport.height - topPixels - bottomPixels;
+    const clip = {
+        x: 0,
+        y: topPixels / metrics.deviceScaleFactor,
+        width: shot.viewport.width / metrics.deviceScaleFactor,
+        height: heightPixels / metrics.deviceScaleFactor,
+        scale: DEFAULT_PROFILE.captureScale,
+    };
+
+    const target = path.join(tutorialDirectory, shot.target);
+    const extension = path.extname(target);
+    const temporaryVideo = `${target}.tmp-${process.pid}-${Date.now()}${extension}`;
+    const frameDirectory = await fs.mkdtemp(`/tmp/tutorial-video-${process.pid}-`);
+    await fs.mkdir(path.dirname(target), { recursive: true });
+
+    try {
+        const times = frameTimes(shot.record, shot.fps);
+        for (let index = 0; index < times.length; index += 1) {
+            await hooks.setPreviewTime({ page, seconds: times[index], timeout: 30_000 });
+            const captured = await session.send('Page.captureScreenshot', {
+                format: 'png',
+                fromSurface: true,
+                captureBeyondViewport: false,
+                clip,
+            });
+            await fs.writeFile(
+                path.join(frameDirectory, `frame-${String(index).padStart(5, '0')}.png`),
+                Buffer.from(captured.data, 'base64'),
+            );
+        }
+        console.log(`  ${times.length} frames at ${shot.fps} fps`);
+
+        await execFileAsync('ffmpeg', videoEncodeArgs({
+            framePattern: path.join(frameDirectory, 'frame-%05d.png'),
+            fps: shot.fps,
+            output: temporaryVideo,
+        }), { maxBuffer: 16 * 1024 * 1024 });
+        await fs.chmod(temporaryVideo, 0o644);
+        await fs.rename(temporaryVideo, target);
+        await inheritDirectoryOwnership(target, tutorialDirectory);
+    } finally {
+        await hooks.setPreviewTime({ page, seconds: null, timeout: 30_000 }).catch(error => {
+            console.warn(`Could not hand the preview back to real time: ${error.message}`);
+        });
+        await fs.rm(frameDirectory, { recursive: true, force: true }).catch(() => {});
+        await fs.rm(temporaryVideo, { force: true }).catch(() => {});
+    }
+
+    return sha256(await fs.readFile(target));
+}
+
 function screenshotOutputDimensions(shot) {
     const topPixels = Math.round(shot.viewport.height * shot.cropTop);
     const bottomPixels = Math.round(shot.viewport.height * shot.cropBottom);
@@ -2493,6 +2611,7 @@ function generationStatusItem(shot, stale, missing, previous) {
     const dimensions = screenshotOutputDimensions(shot);
     return {
         target: shot.target,
+        kind: isVideoTarget(shot.target) ? 'video' : 'image',
         width: dimensions.width,
         height: dimensions.height,
         stale,
@@ -2536,10 +2655,14 @@ async function buildGenerationPlan(payload) {
 
     const tutorialHooks = await loadTutorialScreenshotHooks(tutorialDirectory);
     const oldManifest = await readManifest(tutorialDirectory);
+    // The Workspace image counts only through its look (the code-server
+    // version, payload.workspace_look): rebuilding the image for a new
+    // extension or toolchain must not re-render every tutorial. Use
+    // src/scripts/recreate-screenshots.rb when such a change is visible.
+    const workspaceLook = `${payload?.workspace_look || 'unknown'}`;
     const environmentFingerprint = sha256(JSON.stringify({
         generator_version: GENERATOR_VERSION,
         playwright: PLAYWRIGHT_VERSION,
-        workspace_image_id: `${payload?.workspace_image_id || 'unknown'}`,
         profile: DEFAULT_PROFILE,
         tutorial_hooks_sha256: tutorialHooks.sourceSha256,
         screenshot_identity: {
@@ -2557,11 +2680,20 @@ async function buildGenerationPlan(payload) {
         const previous = oldManifest.screenshots?.[shot.target];
         let exists = true;
         try { await fs.access(target); } catch { exists = false; }
-        const needsGeneration = force || !exists || previous?.state_hash !== shot.stateHash ||
-            previous?.environment_fingerprint !== environmentFingerprint;
+        const needsGeneration = force || !exists ||
+            !entryIsCurrent(previous, shot, { environmentFingerprint, workspaceLook });
         stale.push(needsGeneration);
         screenshots.push(generationStatusItem(shot, needsGeneration, !exists, previous));
-        if (!needsGeneration && previous) nextManifest.screenshots[shot.target] = previous;
+        if (!needsGeneration) {
+            // Current: record today's hashes (this also moves entries from
+            // older generator versions to the new fields, without rendering).
+            nextManifest.screenshots[shot.target] = {
+                ...previous,
+                state_hash: shot.stateHash,
+                environment_fingerprint: environmentFingerprint,
+                workspace_look: workspaceLook === 'unknown' ? (previous.workspace_look ?? 'unknown') : workspaceLook,
+            };
+        }
     }
 
     const fingerprint = sha256(JSON.stringify({
@@ -2586,6 +2718,7 @@ async function buildGenerationPlan(payload) {
         nextManifest,
         tutorialHooks,
         environmentFingerprint,
+        workspaceLook,
         fingerprint,
     };
 }
@@ -2703,9 +2836,9 @@ async function generateTutorial(payload, progressJob = null) {
         shots,
         tutorialDirectory,
         tutorialHooks,
-        oldManifest,
         nextManifest,
         environmentFingerprint,
+        workspaceLook,
         stale,
     } = plan;
 
@@ -2787,7 +2920,9 @@ async function generateTutorial(payload, progressJob = null) {
             console.log(`  line ${targetSource?.line ?? '?'}: capture ${shot.target}`);
             let outputSha256;
             try {
-                outputSha256 = await captureShot(shot, tutorialDirectory);
+                outputSha256 = shot.record != null
+                    ? await captureVideo(shot, tutorialDirectory, tutorialHooks)
+                    : await captureShot(shot, tutorialDirectory);
             } catch (error) {
                 throw withSourceError(error, targetSource);
             }
@@ -2795,6 +2930,7 @@ async function generateTutorial(payload, progressJob = null) {
             nextManifest.screenshots[shot.target] = {
                 state_hash: shot.stateHash,
                 environment_fingerprint: environmentFingerprint,
+                workspace_look: workspaceLook,
                 output_sha256: outputSha256,
             };
             if (progressJob) {
@@ -2807,9 +2943,9 @@ async function generateTutorial(payload, progressJob = null) {
                 progressJob.generated = generated;
             }
             console.log(`Generated ${relativeMarkdown}: ${shot.target}`);
-        } else {
-            nextManifest.screenshots[shot.target] = oldManifest.screenshots[shot.target];
-            if (progressJob) progressJob.screenshots[index].state = 'current';
+        } else if (progressJob) {
+            // buildGenerationPlan already put the current entry into nextManifest.
+            progressJob.screenshots[index].state = 'current';
         }
 
         if (progressJob) progressJob.completed = index + 1;

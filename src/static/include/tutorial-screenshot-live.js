@@ -132,6 +132,8 @@ function tutorial_screenshot_item_label(item) {
 }
 
 function tutorial_screenshot_should_be_in_filmstrip(item) {
+    // The filmstrip shows still images; generated videos just replace their file.
+    if (item.kind === 'video') return false;
     if (!item.revision) return false;
     if (item.error_preview || item.state === 'error' || item.state === 'fresh') return true;
     return item.stale === false;

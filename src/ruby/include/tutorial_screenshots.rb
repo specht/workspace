@@ -38,6 +38,15 @@ module TutorialScreenshots
         request_generation(relative_path, :force => true)
     end
 
+    # Renders only what is out of date, and waits for it (src/scripts/recreate-screenshots.rb --stale).
+    def self.refresh(relative_path)
+        unless valid_relative_markdown_path?(relative_path)
+            raise "invalid tutorial Markdown path: #{relative_path.inspect}"
+        end
+
+        request_generation(relative_path)
+    end
+
     def self.status(markdown_path)
         relative_path = relative_markdown_path(markdown_path)
         raise "invalid tutorial Markdown path: #{markdown_path.inspect}" unless relative_path
@@ -72,15 +81,28 @@ module TutorialScreenshots
         relative_path
     end
 
-    def self.workspace_image_id
-        stdout, _stderr, status = Open3.capture3(
-            'docker', 'image', 'inspect', WORKSPACE_IMAGE,
-            '--format', '{{.Id}}'
-        )
-        return stdout.strip if status.success? && !stdout.strip.empty?
-        'unknown'
+    # What the Workspace looks like in a screenshot: the code-server release
+    # the image is built on (the label linuxserver/code-server sets, which
+    # hs_code_server inherits). Rebuilding the image for a new extension or
+    # toolchain keeps it, so screenshots are not re-rendered for that.
+    # 'unknown' if docker cannot tell; the generator never treats that as a
+    # change.
+    LOOK_LABELS = ['org.opencontainers.image.version', 'build_version'].freeze
+
+    def self.workspace_look
+        format = LOOK_LABELS.map { |label| "{{ index .Config.Labels \"#{label}\" }}" }.join('|')
+        stdout, _stderr, status = Open3.capture3('docker', 'image', 'inspect', WORKSPACE_IMAGE, '--format', format)
+        return 'unknown' unless status.success?
+
+        look_from_labels(stdout)
     rescue
         'unknown'
+    end
+
+    # »4.138.0-ls300|Linuxserver.io version:- …« -> »4.138.0-ls300«.
+    def self.look_from_labels(output)
+        value = output.to_s.strip.split('|').map(&:strip).find { |v| !v.empty? && v != '<no value>' }
+        value || 'unknown'
     end
 
     def self.request_generation(relative_path, force: false, async: false)
@@ -88,14 +110,14 @@ module TutorialScreenshots
         request['content-type'] = 'application/json'
         request.body = JSON.generate({
             :markdown_path => relative_path,
-            :workspace_image_id => workspace_image_id,
+            :workspace_look => workspace_look,
             :force => force,
             :async => async,
         })
 
         http = Net::HTTP.new(ENDPOINT.host, ENDPOINT.port)
         http.open_timeout = 1
-        http.read_timeout = force ? 3600 : 10
+        http.read_timeout = async ? 10 : 3600
         http.write_timeout = 5
         response = http.request(request)
 
@@ -115,5 +137,5 @@ module TutorialScreenshots
         STDERR.puts ">>> Tutorial screenshots unavailable: #{message}"
     end
 
-    private_class_method :workspace_image_id, :request_generation, :warn_once
+    private_class_method :workspace_look, :request_generation, :warn_once
 end

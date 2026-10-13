@@ -27,7 +27,7 @@ crop-bottom: 33.6%
 
 On a development reload, `git-clone.webp` is generated when it is missing or
 stale. A `.tutorial-screenshots.json` file in the same tutorial directory records
-the recipe-state hash and the Workspace image fingerprint. Both the generated
+the recipe-state hash, the environment fingerprint and the Workspace look. Both the generated
 WebP files and this manifest are normal source files and should be committed.
 
 In development the reload itself does not wait for Playwright. The generator first
@@ -40,19 +40,50 @@ opens a large preview. When every generated screenshot is already current, none 
 that monitoring UI is shown. Production continues to use the committed tutorial
 images directly and never enables this live-preview path.
 
-The state hash is chained: each screenshot depends on its own recipe and on the
-state hash of every automated screenshot before it. `write-file` also includes the
-selected tutorial code block in the hash. Editing an early step therefore
-invalidates the screenshots that follow it. Rebuilding `hs_code_server` changes
-the environment fingerprint and transparently regenerates the same named images
-on the next development reload.
+### When is a screenshot re-rendered?
 
-To deliberately recreate every generated screenshot for one tutorial, run the
-helper from the repository root while the development services are running:
+A generated file is rendered again when one of these changed:
+
+- **its own recipe**: actions, `tab`, `viewport`, `zoom`, crops, target name,
+  `record`/`fps`, and the code a `write-file` takes from the tutorial;
+- **the actions of an earlier recipe** in the same tutorial (and the `tab`,
+  `viewport` and `zoom` they ran at), because they change what is on screen
+  later. A crop or a file name of an earlier recipe does not count: it only
+  shapes that earlier file;
+- **the environment fingerprint**: `GENERATOR_VERSION`, the Playwright version,
+  the screenshot profile from `config.rb`, the screenshot identity, and the
+  tutorial's `tutorial-screenshot-hooks.mjs`;
+- **the Workspace look**: the code-server release `hs_code_server` is built on
+  (its `org.opencontainers.image.version` label, read by the Ruby service). If
+  Docker cannot tell, the look is `unknown`, and that never counts as a change;
+- or the file is missing.
+
+Rebuilding `hs_code_server` for a new extension, toolchain or font does **not**
+re-render anything. When such a change is visible in screenshots (a new
+extension in the sidebar, a different terminal prompt), render the affected
+tutorials deliberately with the helper below. Until generator 19 every rebuild
+re-rendered every tutorial: on 13 October all 22 BIF screenshots were rendered
+again although no recipe had changed, and 17 of them came out byte-identical.
+
+Manifests from generator 19 stay valid: an entry without `workspace_look` is
+accepted when it matches the old state hash, and the manifest moves to the new
+fields on the next development reload without rendering anything.
+
+### Rendering on purpose
+
+Run the helper from the repository root while the development services are
+running:
 
 ```bash
-src/scripts/recreate-screenshots.rb my-tutorial
+src/scripts/recreate-screenshots.rb my-tutorial      # everything in one tutorial
+src/scripts/recreate-screenshots.rb --all            # everything in every tutorial
+src/scripts/recreate-screenshots.rb --stale          # only what is out of date, all tutorials
+src/scripts/recreate-screenshots.rb --stale bif      # only what is out of date in one tutorial
 ```
+
+`--all` and `--stale` skip `src/content/_drafts`. `--stale` is what a
+development reload does in the background, but for every tutorial at once and
+waiting until it is done.
 
 The argument may also be a Markdown path such as `my-tutorial/my-tutorial.md` or
 `src/content/my-tutorial/my-tutorial.md`. Forced recreation ignores manifest freshness, replays
@@ -120,6 +151,8 @@ wait-for-input-value: TEXT
 
 # Screenshot target and capture
 tab: workspace|preview
+record: SECONDSs          (only before a <video>)
+fps: NUMBER               (with record; default 30)
 viewport: WIDTHxHEIGHT
 zoom: NUMBER
 crop-top: PERCENT%
@@ -391,6 +424,41 @@ than a global screenshot setting.
 allowed, up to 300 seconds). Prefer an observable readiness instruction such as
 `wait-for-text`, `wait-for-input-value`, or `wait-for-file` whenever one exists.
 
+## Videos
+
+A recipe may also stand before a `<video>` whose `src` (or the `src` of its
+first `<source>`) ends in `.mp4` or `.webm`. Such a recipe needs `record:`;
+`record:` before an `<img>` is an error.
+
+```html
+<!-- tutorial-screenshot
+# Der Torus dreht sich
+write-file: scene.ini <- previous-code
+tab: preview
+preview-reload
+record: 12s
+fps: 30
+crop-top: 20%
+crop-bottom: 20%
+-->
+
+<video src='animation1.mp4' autoplay loop muted></video>
+```
+
+The video shows the same clip a screenshot of that tab would, frame by frame.
+The generator does not let the clock run during capture. For every frame it
+calls the tutorial's hook `setPreviewTime({ page, seconds })` with the frame's
+time (0, 1/fps, 2/fps, …), and the hook puts the application at exactly that
+moment and waits until it has drawn it. Slow and fast machines therefore make
+the same video, and a 12-second video can take longer than 12 seconds to
+render. After the last frame the generator calls
+`setPreviewTime({ page, seconds: null })`, so later recipes see the page in
+real time again. ffmpeg (installed in the generator image) encodes H.264 in
+`yuv420p` with `+faststart` for `.mp4`, VP9 for `.webm`; an odd width or height
+loses one pixel. A recipe with `record:` but no `setPreviewTime` hook fails
+with a message saying so. Videos do not appear in the filmstrip; they replace
+their file like any other generated output.
+
 ## Tutorial-specific hooks
 
 The screenshot engine itself has no knowledge of individual tutorial applications.
@@ -404,6 +472,12 @@ export default {
 
     async waitForPreview({ page, timeout }) {
         await page.waitForSelector('#app-ready', { timeout });
+    },
+
+    // Only needed for videos (record:). seconds is null when the recording
+    // is over and the page should run in real time again.
+    async setPreviewTime({ page, seconds, timeout }) {
+        await page.evaluate(t => window.app.showTime(t), seconds);
     },
 };
 ```
