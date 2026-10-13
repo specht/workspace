@@ -222,7 +222,11 @@ by exact visible text; prefix it with `selector:` to use a CSS selector instead.
 This is useful for parking the pointer on a neutral element before capture so a
 button does not remain in its hover state.
 
-`wait-for-text` waits up to 60 seconds until the selected page contains the given
+`click`, `hold`, `move-mouse` and `select-option` give up after 10 seconds
+when their element does not show up or cannot be used: they address something
+that is already on screen, and a mistyped selector should fail fast.
+
+`wait-for-text` waits up to 30 seconds until the selected page contains the given
 visible text. Whitespace is normalized before matching. `wait-for-input-value`
 performs the same kind of readiness check against visible `<input>` and
 `<textarea>` values. The latter is useful for VS Code Quick Input because input

@@ -61,6 +61,11 @@ const PORT = Number.parseInt(process.env.PORT || '9393', 10);
 // tutorial. Recipe features that do not change existing images need no bump.
 const GENERATOR_VERSION = 19;
 const DEFAULT_VIDEO_FPS = 30;
+// A recipe step that addresses an element already on screen fails fast, so a
+// wrong selector costs seconds; waiting for the application to get somewhere
+// (compiling, cloning) gets longer.
+const ACTION_TIMEOUT_MS = 10_000;
+const WAIT_FOR_TEXT_TIMEOUT_MS = 30_000;
 const WORKSPACE_FONT_FAMILY = '0xProto Nerd Font Mono';
 const PLAYWRIGHT_VERSION = '1.62.1';
 const MANIFEST_NAME = '.tutorial-screenshots.json';
@@ -1678,10 +1683,10 @@ async function loadPreviewGame(relativePath) {
 async function selectOption(action, targetTab) {
     const page = requirePageForTab(targetTab, 'select-option');
     const select = page.locator(action.selector);
-    await select.waitFor({ state: 'visible', timeout: 20_000 });
+    await select.waitFor({ state: 'visible', timeout: ACTION_TIMEOUT_MS });
     const count = await select.count();
     if (count !== 1) throw new Error(`select-option expected one ${action.selector}; found ${count}`);
-    await select.selectOption(action.value);
+    await select.selectOption(action.value, { timeout: ACTION_TIMEOUT_MS });
     await page.waitForTimeout(150);
 }
 
@@ -1932,7 +1937,7 @@ async function pageControl(action, verb, targetTab) {
         description = `control named ${JSON.stringify(action.text)}`;
     }
 
-    await control.first().waitFor({ state: 'visible', timeout: 20_000 });
+    await control.first().waitFor({ state: 'visible', timeout: ACTION_TIMEOUT_MS });
     const count = await control.count();
     if (count !== 1) {
         throw new Error(`${verb} expected exactly one ${description}, found ${count}`);
@@ -1942,13 +1947,13 @@ async function pageControl(action, verb, targetTab) {
 
 async function clickControl(action, targetTab) {
     const { page, control } = await pageControl(action, 'click', targetTab);
-    await control.click();
+    await control.click({ timeout: ACTION_TIMEOUT_MS });
     await page.waitForTimeout(150);
 }
 
 async function holdControl(action, targetTab) {
     const { page, control } = await pageControl(action, 'hold', targetTab);
-    await control.hover();
+    await control.hover({ timeout: ACTION_TIMEOUT_MS });
     await page.mouse.down();
     try {
         await page.waitForTimeout(action.seconds * 1000);
@@ -1993,7 +1998,7 @@ async function moveMouse(action, targetTab) {
         description = `element with text ${JSON.stringify(action.text)}`;
     }
 
-    await target.first().waitFor({ state: 'visible', timeout: 20_000 });
+    await target.first().waitFor({ state: 'visible', timeout: ACTION_TIMEOUT_MS });
     const count = await target.count();
     if (count !== 1) {
         throw new Error(`move-mouse expected exactly one ${description}, found ${count}`);
@@ -2014,7 +2019,7 @@ async function waitForText(text, targetTab) {
             return normalize(document.body?.innerText).includes(normalize(expected));
         },
         text,
-        { timeout: 60_000 },
+        { timeout: WAIT_FOR_TEXT_TIMEOUT_MS },
     );
 }
 
@@ -2030,7 +2035,7 @@ async function waitForInputValue(text, targetTab) {
                     `${element.value || ''}`.includes(expected);
             }),
         text,
-        { timeout: 60_000 },
+        { timeout: WAIT_FOR_TEXT_TIMEOUT_MS },
     );
 }
 
