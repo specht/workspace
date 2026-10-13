@@ -57,13 +57,29 @@ module ReferenceIndex
             id = heading['id'] || part_id(heading)
             next nil unless id
             text = +''
+            lead = nil
             node = heading.next_sibling
             while node && !(node.element? && %w[h2 h3].include?(node.name))
                 text << ' ' << plain_text(node) unless node.element? && %w[script style].include?(node.name)
+                lead ||= clean(node.text) if node.element? && node.name == 'p' && !clean(node.text).empty?
                 node = node.next_sibling
             end
-            { :id => id, :heading => heading_text(heading), :text => text.delete("\u00ad").gsub(/\s+/, ' ').strip[0, 4000] }
+            { :id => id, :heading => heading_text(heading), :text => clean(text)[0, 4000], :lead => lead }
         end.compact
+    end
+
+    def self.clean(text)
+        text.to_s.delete("\u00ad").gsub(/\s+/, ' ').strip
+    end
+
+    # The first sentence of a section, for a chapter without sections of its
+    # own: »Farbnamen« gets a line like a chapter of »HTML-Folien« has.
+    def self.lead_sentence(text, limit = 110)
+        text = text.to_s.strip
+        return nil if text.empty?
+        sentence = text[/\A.+?[.!?](?=\s|\z)/] || text
+        return sentence if sentence.size <= limit
+        "#{sentence[0, limit].sub(/\s+\S*\z/, '')} …"
     end
 
     BLOCKS = %w[p li td th tr dt dd div pre br h4 h5 h6 table ul ol blockquote figcaption].freeze
@@ -106,14 +122,17 @@ module ReferenceIndex
             abstract = strip_tags(page[:abstract])
             io << "<p class='reference-card-abstract'>#{h(abstract)}</p>" unless abstract.empty?
             chapters = chapters(page[:outline] || [])
+            leads = (page[:sections] || []).to_h { |section| [section[:id], section[:lead]] }
             unless chapters.empty?
                 io << "<ul class='reference-outline'>"
                 chapters.each do |chapter|
                     io << "<li><a href='#{h(url)}##{h(chapter[:head][:id])}'>#{h(chapter[:head][:text])}</a>"
-                    unless chapter[:items].empty?
+                    if !chapter[:items].empty?
                         io << "<span class='reference-outline-sub'>"
                         io << chapter[:items].map { |item| "<a href='#{h(url)}##{h(item[:id])}'>#{h(item[:text])}</a>" }.join(' · ')
                         io << '</span>'
+                    elsif (lead = lead_sentence(leads[chapter[:head][:id]]))
+                        io << "<span class='reference-outline-sub'>#{h(lead)}</span>"
                     end
                     io << '</li>'
                 end

@@ -2437,15 +2437,19 @@ h3[id] {
     padding: 0.2em 0;
 }
 
-.reference-outline > li > a {
-    font-weight: 600;
-}
-
+/* Muted links: a dark, desaturated blue that is still recognisable as a
+   link, semi-bold only for the chapters. */
 .reference-outline a {
+    color: #2c4f7c;
     text-decoration: none;
 }
 
+.reference-outline > li > a {
+    font-weight: 500;
+}
+
 .reference-outline a:hover {
+    color: #0d6efd;
     text-decoration: underline;
 }
 
@@ -2454,6 +2458,10 @@ h3[id] {
     font-size: 0.9rem;
     line-height: 1.5;
     color: #888;
+}
+
+.reference-outline-sub a {
+    color: #5a7394;
 }
 
 .reference-results {
@@ -2491,9 +2499,9 @@ h3[id] {
 .reference-result-heading {
     display: block;
     margin: 0.15em 0;
-    color: #0d6efd;
+    color: #2c4f7c;
     font-size: 1.1rem;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .reference-result-snippet {

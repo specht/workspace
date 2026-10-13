@@ -45,10 +45,21 @@ class ReferenceIndexTest < Minitest::Test
         sections = ReferenceIndex.search_sections(root)
         assert_equal %w[ssh fehler name], sections.map { |s| s[:id] }
         assert_equal 'Zeige den öffentlichen Schlüssel an: cat ~/.ssh/id_ed25519.pub', sections[0][:text]
+        assert_equal 'Zeige den öffentlichen Schlüssel an:', sections[0][:lead]
+        assert_nil sections[2][:lead]
         assert_includes sections[1][:text], 'publickey'
         assert_includes sections[1][:text], 'Schlüssel'
         assert_includes sections[1][:text], 'bool wahr oder falsch text Zeichen'
         assert_equal '', sections[2][:text]
+    end
+
+    def test_lead_sentence
+        assert_nil ReferenceIndex.lead_sentence('')
+        assert_equal 'Kurz: so.', ReferenceIndex.lead_sentence('Kurz: so. Und weiter.')
+        assert_equal 'Ein Satz ohne Ende', ReferenceIndex.lead_sentence('Ein Satz ohne Ende')
+        long = ReferenceIndex.lead_sentence('Wort ' * 40)
+        assert long.size <= 112
+        assert long.end_with?(' …')
     end
 
     def test_index_has_one_card_per_page_and_a_search_index
@@ -57,7 +68,8 @@ class ReferenceIndexTest < Minitest::Test
               :section_label => 'Git', :section_icon => '/images/penguin.png',
               :outline => [{ :level => 2, :text => 'SSH-Schlüssel', :id => 'ssh-schluessel' },
                            { :level => 2, :text => 'Git sagen, wer du bist', :id => 'git-name' }],
-              :sections => [{ :id => 'ssh-schluessel', :heading => 'SSH-Schlüssel', :text => 'publickey </script>' }] },
+              :sections => [{ :id => 'ssh-schluessel', :heading => 'SSH-Schlüssel', :text => 'publickey </script>', :lead => 'publickey </script>' },
+                            { :id => 'git-name', :heading => 'Git sagen, wer du bist', :text => 'x', :lead => 'Jeder Commit trägt einen Namen. Den sagst du Git einmal.' }] },
             { :slug => 'reference/html-folien', :title => 'HTML-Folien',
               :section_label => 'Präsentationen',
               :outline => [{ :level => 2, :text => 'Grundlagen', :id => 'grundlagen' },
@@ -71,6 +83,7 @@ class ReferenceIndexTest < Minitest::Test
         assert_equal 'Einmal einrichten.', cards[0].at_css('.reference-card-abstract').text
         assert_equal ['/reference/gitlab#ssh-schluessel', '/reference/gitlab#git-name'], cards[0].css('.reference-outline > li > a').map { |a| a['href'] }
         assert_equal 'Listen <ul> · Text', cards[1].at_css('.reference-outline-sub').text
+        assert_equal ['publickey </script>', 'Jeder Commit trägt einen Namen.'], cards[0].css('.reference-outline-sub').map(&:text)
         assert_equal 1, doc.css('.reference-card-label img').size
         script = doc.at_css('#reference-search-index')
         refute_includes script.inner_html, '</script>'
