@@ -21,12 +21,12 @@ So könnte ein Film aussehen, wenn ein Programm ihn als JSON verschickt:
 
 ```json
 {
-  "id": 1207,
+  "id": 233,
   "title": "Back to the Future",
   "german_title": "Zurück in die Zukunft",
   "year": 1985,
-  "runtime": 116,
-  "genres": ["Comedy", "Sci-Fi"],
+  "runtime": 115,
+  "genres": ["Adventure", "Comedy", "Sci-Fi"],
   "crew": {
     "director": ["Robert Zemeckis"],
     "actor": ["Michael J. Fox", "Christopher Lloyd", "Lea Thompson"],
@@ -105,13 +105,15 @@ Klicke oben rechts im Editor auf »ER-Diagramm anzeigen« (oder <kbd>Strg</kbd><
 press: Enter
 wait-for-text: create it
 press: Enter
-sleep: 1
-click: Next Up
+wait-for-text: FILMDATENBANK
 write-file: filmdatenbank/film.er <- previous-code
 open-file: film.er
+close-tab: Welcome
+left-sidebar-width: 260
 press: Control+K
 press: v
-sleep: 2
+wait-for-text: Neu anordnen
+sleep: 1
 -->
 
 <img class='full' src='er-preview.webp' alt='Links das Modell film.er im Editor, rechts die ER-Werkstatt mit dem Chen-Diagramm von movie und genre.'>
@@ -201,7 +203,15 @@ ALTER TABLE movie_genre
 mysql < film.sql
 ```
 
-Wenn alles klappt, gibt `mysql` nichts aus.
+Wenn alles klappt, gibt `mysql` nichts aus. Ob die Tabellen da sind, siehst du in `mycli`. Starte es und gib `SHOW TABLES;` ein:
+
+```bash
+mycli
+```
+
+```sql
+SHOW TABLES;
+```
 
 <!-- tutorial-screenshot
 click: selector:.editor-actions a[aria-label="SQL erzeugen"]
@@ -212,23 +222,32 @@ terminal-maximize
 terminal-run: clear
 terminal-run: mysql < film.sql
 terminal-wait-for-prompt
-terminal-run: mysql -e 'SHOW TABLES'
-terminal-wait-for-prompt
+terminal-run: mycli
+wait-for-text: student>
+press: Control+L
+type: SHOW TABLES;
+press: Enter
+wait-for-text: 3 rows in set
+# mycli keeps 8 rows free below its prompt and scrolls the query away if the terminal is too short
+viewport: 1853x1000
 crop-terminal-lines: auto
+crop-terminal-skip-bottom: 1
 -->
 
-<img class='full' src='show-tables.webp' alt='Im Terminal zeigt mysql -e "SHOW TABLES" die Tabellen genre, movie und movie_genre.'>
+<img class='full' src='show-tables.webp' alt='In mycli zeigt SHOW TABLES die Tabellen genre, movie und movie_genre.'>
 
 _task(tabellen-filme)
 
 ## Filmdaten laden
 
-Die Tabellen sind angelegt, aber leer. Lade die Filme, Genres und ihre Zuordnungen herunter und gib sie an MySQL:
+Die Tabellen sind angelegt, aber leer. Beende `mycli` mit `exit` oder <kbd>Strg</kbd><kbd>D</kbd>. Lade dann die Filme, Genres und ihre Zuordnungen herunter und gib sie an MySQL:
 
 ```bash
 wget https://github.com/specht/workspace-files/raw/main/movie-archive/mysql-data-movies.sql
 mysql < mysql-data-movies.sql
 ```
+
+Am Ende meldet MySQL für jede der drei Tabellen `OK`: Es hat sich angesehen, was jetzt darin steht, damit spätere Abfragen schnell sind.
 
 Schau dir `mysql-data-movies.sql` ruhig an. Es sind lauter `INSERT`-Befehle, und jeder nennt die Spalten, in die er schreibt, zum Beispiel `INSERT INTO movie (id, title, original_title, …)`. Deshalb müssen die Namen in deinem Modell genau stimmen. Meldet MySQL `Unknown column` oder `Table … doesn't exist`, vergleiche die Namen in `film.er` mit der Meldung, erzeuge das SQL neu und fang mit `mysql < film.sql` wieder an.
 
@@ -238,7 +257,7 @@ Die Filme stammen aus <a href='https://www.wikidata.org/'>Wikidata</a>, einer fr
 
 _task(daten-filme)
 
-Starte `mycli` und sieh dich um, wie in der »Einführung in SQL«:
+Starte wieder `mycli` und sieh dich um, wie in der »Einführung in SQL«:
 
 ```sql
 SELECT * FROM movie LIMIT 5;
@@ -337,7 +356,7 @@ In der Tabellenansicht siehst du `movie_crew` mit drei Fremdschlüsseln, die zus
 
 _task(modell-crew)
 
-Erzeuge das SQL neu und lege die Tabellen an. Weil `film.sql` mit `DROP TABLE` beginnt, sind danach auch `movie` und `genre` wieder leer. Lade deshalb beide Datendateien:
+Erzeuge das SQL neu, beende `mycli` und lege die Tabellen an. Weil `film.sql` mit `DROP TABLE` beginnt, sind danach auch `movie` und `genre` wieder leer. Lade deshalb beide Datendateien:
 
 ```bash
 wget https://github.com/specht/workspace-files/raw/main/movie-archive/mysql-data-crew.sql
@@ -354,7 +373,7 @@ _task(tabellen-crew)
 
 ## Durch mehrere Beziehungen zu einer Person
 
-Wer hat bei »Back to the Future« Regie geführt? Im Tabellendiagramm führt der Weg von `movie` über `movie_crew` zu `crew`, und die Tätigkeit steht in `job`. Jeder Schritt wird ein `JOIN`:
+Starte wieder `mycli`. Wer hat bei »Back to the Future« Regie geführt? Im Tabellendiagramm führt der Weg von `movie` über `movie_crew` zu `crew`, und die Tätigkeit steht in `job`. Jeder Schritt wird ein `JOIN`:
 
 ```sql
 SELECT crew.name
