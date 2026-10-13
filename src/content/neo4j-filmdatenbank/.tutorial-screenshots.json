@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "screenshots": {
+    "neo4j-load.webp": {
+      "state_hash": "6706cfa375f58d6dc2b0943875b2c196e3d5c6afe80434a5f53d6251ef85fe75",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "19efb7554e99723f0a49f062560cac21b9137324832ccd6ff845c0cac25d9d1b"
+    },
+    "cypher-shell-film.webp": {
+      "state_hash": "484765756d7fb4f253d4b0ae3b20c7c738bef119b96edefe19080bb8987ceda1",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "02b01969e70e7de4bd6a0f231948f137f88d9c7fb47693c3f57c34f8f21bb4b5"
+    }
+  }
+}
