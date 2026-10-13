@@ -662,7 +662,10 @@
     }
 
     // Colours as CSS variables with light defaults, so a page can theme them.
-    const STYLE = `
+    // Every rule is limited to the diagram (.er-diagram): an SVG embedded in a
+    // page carries its <style> into the whole page, and names like .row or
+    // .card would otherwise restyle the page's own elements.
+    const STYLE_RULES = `
     .ln{stroke:var(--er-muted,#6b7280);stroke-width:1.3;fill:none}
     .ent{fill:var(--er-shape,#fff);stroke:var(--er-ink,#1f2937);stroke-width:1.8}
     .rel{fill:var(--er-pen-soft,#e8effc);stroke:var(--er-pen,#2b5fb4);stroke-width:1.6}
@@ -679,6 +682,7 @@
     .tag.pk{fill:var(--er-red,#b42318)}
     .typ{font-family:"IBM Plex Mono",monospace;font-size:11px;fill:var(--er-muted,#6b7280);dominant-baseline:central;text-anchor:end}
     .lbl{font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:12px;fill:var(--er-pen,#2b5fb4);font-style:italic;text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke:var(--er-paper,#fff);stroke-width:5px}`;
+    const STYLE = STYLE_RULES.replace(/(^|\})\s*(\.[^{]+)\{/g, '$1\n    .er-diagram $2{');
 
     // The SVG of a laid-out graph, as a string.
     function renderSVG(graph, options) {
@@ -687,7 +691,7 @@
         const byId = new Map(nodes.map((n) => [n.id, n]));
         const vb = opts.viewBox || viewBox(nodes);
         const S = [];
-        S.push(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.join(' ')}" width="${vb[2]}" height="${vb[3]}" role="img" aria-label="${esc(opts.title)}">`);
+        S.push(`<svg xmlns="http://www.w3.org/2000/svg" class="er-diagram" viewBox="${vb.join(' ')}" width="${vb[2]}" height="${vb[3]}" role="img" aria-label="${esc(opts.title)}">`);
         S.push(`<style>${STYLE}</style>`);
         if (opts.background) S.push(`<rect x="${vb[0]}" y="${vb[1]}" width="${vb[2]}" height="${vb[3]}" fill="${esc(opts.background)}"/>`);
         const f = (v) => v.toFixed(1);

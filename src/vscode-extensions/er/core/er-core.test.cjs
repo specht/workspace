@@ -188,7 +188,12 @@ test('diagrams: deterministic, kept positions, escaped labels', () => {
         const a = core.diagram(FILM, kind);
         const b = core.diagram(FILM, kind);
         assert.equal(a.svg, b.svg, `${kind} is deterministic`);
-        assert.match(a.svg, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="[-\d]+ [-\d]+ \d+ \d+"/);
+        assert.match(a.svg, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" class="er-diagram" viewBox="[-\d]+ [-\d]+ \d+ \d+"/);
+        // An SVG embedded in a page carries its <style> into the page: every
+        // rule must stay inside the diagram (.row would hit Bootstrap's grid).
+        const rules = a.svg.match(/<style>([\s\S]*?)<\/style>/)[1].split('\n').map((l) => l.trim()).filter(Boolean);
+        assert.ok(rules.length > 10);
+        for (const rule of rules) assert.match(rule, /^\.er-diagram \.[\w.-]+\{/);
         assert.equal((a.svg.match(/<g /g) || []).length, (a.svg.match(/<\/g>/g) || []).length);
     }
     const chen = core.diagram(FILM, 'chen');
