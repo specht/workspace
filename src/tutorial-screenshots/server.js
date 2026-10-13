@@ -105,6 +105,45 @@ const SIMPLE_ACTIONS = new Set([
     'show-bottom-panel',
     'hide-bottom-panel',
 ]);
+// Chromium draws no mouse pointer into screenshots. show-mouse draws one where
+// the recipe last put the mouse: move-mouse, click and hold set the position;
+// an action that may click on its own (open-file, close-tab, …) forgets it, so
+// a pointer is never drawn where the mouse no longer is.
+const MOUSE_NEUTRAL_ACTIONS = new Set([
+    'press', 'type', 'sleep', 'write-file', 'select-option',
+    'wait-for-text', 'wait-for-input-value', 'wait-for-file', 'wait-for-file-newer',
+    'terminal-wait-for-prompt',
+]);
+let mousePosition = null; // { page, x, y } in CSS pixels
+// 24x24 shapes, drawn at 24 CSS pixels; hotspot is the point the mouse is at.
+const MOUSE_POINTERS = Object.freeze({
+    arrow: {
+        hotspot: [3, 2],
+        svg: '<path d="M3 2 V19.5 L7.3 15.6 L10.2 22 L13.2 20.7 L10.4 14.5 H16.2 Z" ' +
+            'fill="#fff" stroke="#000" stroke-width="1.2" stroke-linejoin="round"/>',
+    },
+    pointer: {
+        hotspot: [8.5, 2],
+        svg: '<path d="M8.5 2 C9.4 2 10 2.7 10 3.5 V10.2 C10 9.4 10.6 8.8 11.5 8.8 ' +
+            'C12.4 8.8 13 9.4 13 10.2 V10.8 C13 10 13.6 9.5 14.5 9.5 C15.4 9.5 16 10.1 16 10.9 ' +
+            'V11.5 C16 10.8 16.6 10.3 17.4 10.3 C18.3 10.3 18.9 10.9 18.9 11.7 V16.5 ' +
+            'C18.9 19.6 16.9 22 13.9 22 H11.6 C9.8 22 8.6 21.2 7.6 19.8 L4.1 14.6 ' +
+            'C3.6 13.9 3.8 12.9 4.5 12.5 C5.2 12.1 6.1 12.3 6.6 13 L7 13.6 V3.5 ' +
+            'C7 2.7 7.6 2 8.5 2 Z" fill="#fff" stroke="#000" stroke-width="1.1" ' +
+            'stroke-linejoin="round"/>' +
+            '<path d="M10 10.2 V14.5 M13 10.8 V14.5 M16 11.5 V14.5" stroke="#000" ' +
+            'stroke-width="1" stroke-linecap="round"/>',
+    },
+    text: {
+        hotspot: [12, 12],
+        svg: '<path d="M9 4 C10.8 4 12 4.6 12 6 C12 4.6 13.2 4 15 4 M12 6 V18 ' +
+            'M9 20 C10.8 20 12 19.4 12 18 C12 19.4 13.2 20 15 20" fill="none" stroke="#fff" ' +
+            'stroke-width="3.2" stroke-linecap="round"/>' +
+            '<path d="M9 4 C10.8 4 12 4.6 12 6 C12 4.6 13.2 4 15 4 M12 6 V18 ' +
+            'M9 20 C10.8 20 12 19.4 12 18 C12 19.4 13.2 20 15 20" fill="none" stroke="#000" ' +
+            'stroke-width="1.2" stroke-linecap="round"/>',
+    },
+});
 const WORKSPACE_SCREENSHOT_STYLE = `
 .notifications-toasts {
     display: none !important;
@@ -550,6 +589,8 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
                 source,
                 () => parseTerminalLineSkip(match[1], 'crop-terminal-skip-bottom'),
             );
+        } else if (line === 'show-mouse') {
+            recipe.showMouse = true;
         } else if ((match = line.match(/^record:\s*(.+)$/))) {
             recipe.record = valueAtSource(source, () => parseRecordSeconds(match[1]));
         } else if ((match = line.match(/^fps:\s*(.+)$/))) {
@@ -575,6 +616,9 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
         }
     }
 
+    if (recipe.showMouse && recipe.record != null) {
+        throw withSourceError(new Error('show-mouse works for images, not with record'), lastSource || recipe[SOURCE_LOCATION]);
+    }
     if (recipe.fps != null && recipe.record == null) {
         throw withSourceError(new Error('fps needs record: SECONDSs'), lastSource || recipe[SOURCE_LOCATION]);
     }
@@ -722,6 +766,9 @@ async function parseTutorial(markdown, markdownPath) {
         }
         if (recipe.terminalScrollBack > 0) {
             resolved.terminalScrollBack = recipe.terminalScrollBack;
+        }
+        if (recipe.showMouse) {
+            resolved.showMouse = true;
         }
         // Only videos carry these, so images hash exactly as before.
         if (recipe.record != null) {
@@ -1947,13 +1994,19 @@ async function pageControl(action, verb, targetTab) {
 
 async function clickControl(action, targetTab) {
     const { page, control } = await pageControl(action, 'click', targetTab);
+    // Playwright clicks the middle of the element; it may be gone afterwards.
+    await control.scrollIntoViewIfNeeded({ timeout: ACTION_TIMEOUT_MS });
+    const box = await control.boundingBox();
     await control.click({ timeout: ACTION_TIMEOUT_MS });
+    if (box) rememberMousePosition(page, box);
     await page.waitForTimeout(150);
 }
 
 async function holdControl(action, targetTab) {
     const { page, control } = await pageControl(action, 'hold', targetTab);
     await control.hover({ timeout: ACTION_TIMEOUT_MS });
+    const box = await control.boundingBox();
+    if (box) rememberMousePosition(page, box);
     await page.mouse.down();
     try {
         await page.waitForTimeout(action.seconds * 1000);
@@ -2007,7 +2060,48 @@ async function moveMouse(action, targetTab) {
     const box = await target.boundingBox();
     if (!box) throw new Error(`move-mouse could not measure ${description}`);
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    rememberMousePosition(page, box);
     await page.waitForTimeout(150);
+}
+
+function rememberMousePosition(page, box) {
+    mousePosition = { page, x: box.x + box.width / 2, y: box.y + box.height / 2 };
+}
+
+// The pointer's shape follows the CSS cursor under it, as on a real screen:
+// a hand over links and buttons, an I-beam over text input, else the arrow.
+async function installMousePointer(page) {
+    if (!mousePosition || mousePosition.page !== page) {
+        throw new Error(
+            'show-mouse needs move-mouse, click or hold on this tab after the last ' +
+            'action that moves the mouse itself',
+        );
+    }
+    await page.evaluate(({ x, y, pointers }) => {
+        let cursor = 'auto';
+        for (let element = document.elementFromPoint(x, y); element; element = element.parentElement) {
+            cursor = getComputedStyle(element).cursor;
+            if (cursor !== 'auto') break;
+        }
+        const pointer = pointers[cursor] || pointers.arrow;
+        const overlay = document.createElement('div');
+        overlay.id = 'hackschule-tutorial-screenshot-mouse';
+        overlay.style.cssText = `position: fixed; z-index: 2147483647; pointer-events: none;
+            left: ${x - pointer.hotspot[0]}px; top: ${y - pointer.hotspot[1]}px;
+            width: 24px; height: 24px;
+            filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.35));`;
+        overlay.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">${pointer.svg}</svg>`;
+        document.documentElement.appendChild(overlay);
+        return new Promise(resolve => {
+            requestAnimationFrame(() => requestAnimationFrame(resolve));
+        });
+    }, { x: mousePosition.x, y: mousePosition.y, pointers: MOUSE_POINTERS });
+}
+
+async function removeMousePointer(page) {
+    await page.evaluate(() => {
+        document.getElementById('hackschule-tutorial-screenshot-mouse')?.remove();
+    });
 }
 
 async function waitForText(text, targetTab) {
@@ -2116,6 +2210,7 @@ async function applyShotViewportProfile(shot) {
 }
 
 async function executeAction(action, targetTab, hooks) {
+    if (!MOUSE_NEUTRAL_ACTIONS.has(action.type)) mousePosition = null;
     switch (action.type) {
         case 'close-folder': return closeFolder();
         case 'show-left-sidebar': return setWorkbenchPartVisible('left-sidebar', true);
@@ -2421,6 +2516,9 @@ async function captureShot(shot, tutorialDirectory) {
             if (shot.tab === 'workspace') {
                 await installWorkspaceScreenshotStyle(page);
             }
+            if (shot.showMouse) {
+                await installMousePointer(page);
+            }
 
             // Capture through CDP directly. The page keeps its viewport/zoom
             // layout, while clip.scale asks Chromium to render a larger native
@@ -2502,6 +2600,9 @@ async function captureShot(shot, tutorialDirectory) {
                 tutorialDirectory,
             );
         } finally {
+            if (shot.showMouse) {
+                await removeMousePointer(page).catch(() => {});
+            }
             await fs.rm(
                 pngPath,
                 { force: true },
@@ -2877,6 +2978,7 @@ async function generateTutorial(payload, progressJob = null) {
 
     if (progressJob) progressJob.status = 'preparing';
     await acquireFreshWorkspace();
+    mousePosition = null;
     if (progressJob) progressJob.status = 'running';
 
     let generated = 0;

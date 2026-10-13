@@ -160,6 +160,7 @@ crop-bottom: PERCENT%
 crop-terminal-lines: NUMBER|auto
 crop-terminal-skip-top: NUMBER
 crop-terminal-skip-bottom: NUMBER
+show-mouse
 ```
 
 `tab` selects both the page to capture and the page used by the general
@@ -225,6 +226,21 @@ button does not remain in its hover state.
 `click`, `hold`, `move-mouse` and `select-option` give up after 10 seconds
 when their element does not show up or cannot be used: they address something
 that is already on screen, and a mistyped selector should fail fast.
+
+`show-mouse` draws a mouse pointer into the screenshot. Chromium does not
+draw one, so the generator puts a pointer where the recipe last moved the
+mouse with `move-mouse`, `click` or `hold`. Its shape follows the CSS cursor
+under it, as on a real screen: a hand over buttons and links, an I-beam over
+text, otherwise the arrow. Actions that may click on their own (`open-file`,
+`close-tab`, `clone-start` and other Workspace actions) forget the position;
+`show-mouse` after one of them, without a new `move-mouse`, is an error rather
+than a pointer in the wrong place. It works for images, not with `record`.
+
+```text
+move-mouse: selector:.pane-header a[aria-label="Checkpoint erstellen"]
+sleep: 1.5
+show-mouse
+```
 
 `wait-for-text` waits up to 30 seconds until the selected page contains the given
 visible text. Whitespace is normalized before matching. `wait-for-input-value`
