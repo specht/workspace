@@ -7,11 +7,29 @@
       "workspace_look": "4.138.0-ls366",
       "output_sha256": "a7a2c3ba114e5d1a9146d0425cdf7946ae33ebf0b777b4f1f387177e7e2a8450"
     },
-    "cypher-shell-film.webp": {
-      "state_hash": "0b59104a7c8f8e0ee58da4b0411538145a78d9e8c8b1d9ca92984ca32eae84bc",
+    "neo4j-browser-graph.webp": {
+      "state_hash": "9138abb7a41bf09cb95be113d674dc04cefb0aa8f1f198e8ac611b6dea584375",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "workspace_look": "4.138.0-ls366",
-      "output_sha256": "7f5268b2f414acf51e49bb52ef61f08ba717963dcbf1d66a539615f0b2d9735b"
+      "output_sha256": "a1c31ca6f68eebb1293e58f50b7ddfb55ba0c926b69868d388f5a9ed6d8ad1db"
+    },
+    "cypher-shell-film.webp": {
+      "state_hash": "c4cb776f8ae0fc72bdfa1dc994de47b136dc49b3b6091452d49a00b8d14b362c",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "69ae9ebc113447da56a219f96c1716460c06f3d72d76cee2b44c2d8ff9949594"
+    },
+    "neo4j-browser-pairs.webp": {
+      "state_hash": "a2ebacdae0ab9de58c96e601659ae3f817645ded058812b5d681bef887faca41",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "caa6b3defa13a5b5e3652bf219c4ec89eb02ece91652cb2a9416d0bff53b1186"
+    },
+    "neo4j-browser-path.webp": {
+      "state_hash": "638a3ac393e3e65324e410b5695b9c87f762fc20d8942ebaba62453f6f8c6e93",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "ac5dd94098c2b4ad3aad953e2e14893131905e7499d943e6fc490c3bb5a2e263"
     }
   }
 }

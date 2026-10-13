@@ -135,7 +135,27 @@ RETURN n
 LIMIT 25;
 ```
 
-<!-- Screenshot von Hand: Neo4j Browser mit MATCH (n) RETURN n LIMIT 25 als Graph -->
+<!-- tutorial-screenshot
+# Neo4j Browser: die ersten 25 Knoten als Graph
+neo4j-browser
+tab: preview
+# Same layout width and scale as the VS Code shots, a little taller for the
+# graph. zoom: 1.8 lets the graph canvas draw at the capture resolution.
+viewport: 1853x1260
+zoom: 1.8
+click: selector:button[aria-label="Database overview"]
+click: selector:[data-testid=main-editor] .cm-content
+type: MATCH (n) RETURN n LIMIT 25;
+press: Control+Enter
+wait-for-text: Started streaming 25 records
+sleep: 2
+click: selector:button[aria-label="Zoom in"]
+click: selector:button[aria-label="Zoom in"]
+move-mouse: Results overview
+sleep: 2
+-->
+
+<img class='full' src='neo4j-browser-graph.webp' alt='Neo4j Browser: Das Ergebnis von MATCH (n) RETURN n LIMIT 25 als Graph aus Filmknoten.'>
 
 Die Abfrage bedeutet:
 
@@ -359,7 +379,26 @@ LIMIT 10;
 
 Wie in SQL sorgt `a.id < b.id` dafür, dass jedes Paar einmal vorkommt und niemand mit sich selbst. Der Rest ist das Muster selbst: zwei Personen, ein Film, zweimal `ACTOR`. Vergleich das mit der SQL-Abfrage, die jede Tabelle zweimal brauchte.
 
-<!-- Screenshot von Hand: Neo4j Browser mit der Tabelle der Schauspielpaare -->
+<!-- tutorial-screenshot
+# Neo4j Browser: die Schauspielpaare als Tabelle
+tab: preview
+viewport: 1853x1260
+zoom: 1.8
+click: selector:[data-testid=main-editor] .cm-content
+press: Control+A
+type: :clear
+press: Control+Enter
+press: Control+A
+type: MATCH (a:Person)-[:ACTOR]->(m:Movie)<-[:ACTOR]-(b:Person) WHERE a.id < b.id RETURN a.name, b.name, count(m) AS together ORDER BY together DESC LIMIT 10;
+press: Control+Enter
+wait-for-text: Started streaming 10 records
+click: Table
+wait-for-text: together
+move-mouse: selector:[data-testid=main-editor]
+sleep: 1
+-->
+
+<img class='full' src='neo4j-browser-pairs.webp' alt='Neo4j Browser: Tabelle der zehn Schauspielpaare mit den meisten gemeinsamen Filmen.'>
 
 ## Regie und Kamera
 
@@ -388,7 +427,24 @@ RETURN path;
 
 `[*..8]` heißt: ein Weg aus höchstens acht Beziehungen, egal welchen Typs und in welche Richtung. Ohne die Zeile mit `WHERE` führt der kürzeste Weg über ein Genre: Michael J. Fox spielt in »The Frighteners«, einem Krimi wie »The Dark Knight«, zu dem Hans Zimmer die Musik geschrieben hat. Das stimmt, sagt aber nichts darüber, wer mit wem gearbeitet hat. `none(n IN nodes(path) WHERE n:Genre)` verlangt, dass kein Knoten auf dem Weg ein Genre ist. Dann führt der Weg über »Back to the Future Part II« und den Kameramann Dean Cundey, der auch »The Holiday« gedreht hat. Im Neo4j Browser siehst du das Ergebnis als Kette aus Personen und Filmen.
 
-<!-- Screenshot von Hand: Neo4j Browser mit einem kürzesten Weg zwischen zwei Personen -->
+<!-- tutorial-screenshot
+# Neo4j Browser: der kürzeste Weg von Michael J. Fox zu Hans Zimmer
+tab: preview
+viewport: 1853x1260
+zoom: 1.8
+click: selector:[data-testid=main-editor] .cm-content
+press: Control+A
+type: :clear
+press: Control+Enter
+press: Control+A
+type: MATCH (a:Person {name: 'Michael J. Fox'}), (b:Person {name: 'Hans Zimmer'}) MATCH path = shortestPath((a)-[*..8]-(b)) WHERE none(n IN nodes(path) WHERE n:Genre) RETURN path;
+press: Control+Enter
+wait-for-text: Started streaming 1 record
+move-mouse: selector:[data-testid=main-editor]
+sleep: 3
+-->
+
+<img class='full' src='neo4j-browser-path.webp' alt='Neo4j Browser: der Weg von Michael J. Fox über Back to the Future Part II, Dean Cundey und The Holiday zu Hans Zimmer.'>
 
 <div class='hint task'>
 Such dir zwei Personen aus, die nichts miteinander zu tun zu haben scheinen. Über welche Filme und welche anderen Menschen sind sie verbunden? Findet Neo4j keinen Weg, gibt es in unseren Daten keinen mit höchstens acht Schritten.
