@@ -1,4 +1,4 @@
-# Aktivitäten, Aufgaben und Nachschlagen
+# Aktivitäten, Aufgaben und Handbuch
 
 Dieses Dokument beschreibt, wie Inhalte im Workspace aufgebaut sind und wie
 Aufgaben geschrieben werden, die der Workspace selbst prüft. Es richtet sich an
@@ -6,7 +6,7 @@ alle, die Inhalte schreiben, auch an Lehrkräfte anderer Schulen mit eigener
 Installation.
 
 **Stand:** Format 1, Meilenstein M1. Es gibt das Aufgabenformat und seine
-Prüfung (`src/ruby/include/task_spec.rb`), Nachschlage-Seiten unter
+Prüfung (`src/ruby/include/task_spec.rb`), Handbuch-Seiten unter
 `/reference`, die Platzhalter `_include()` und `_uses()` und Notizen für
 Lehrkräfte. Seiten binden noch keine Aufgaben ein, und geprüft wird noch
 nichts. Was ab wann läuft, steht in der Tabelle der Prüfarten.
@@ -17,7 +17,7 @@ nichts. Was ab wann läuft, steht in der Tabelle der Prüfarten.
 | --- | --- | --- |
 | Aktivität | Text zum Lesen und Mitmachen: Projekt, Labor, Grundlagen oder Galerie | `src/content/<slug>/<slug>.md` |
 | Aufgabe | Ein Schritt in einer Aktivität, den der Workspace prüft | `src/content/<slug>/tasks.yaml` |
-| Nachschlagen | Kurz und vollständig, ohne Geschichte; von vielen Aktivitäten verlinkt | `src/content/reference/<slug>/<slug>.md`, Adresse `/reference/<slug>` |
+| Handbuch | Kurz und vollständig, ohne Geschichte; von vielen Aktivitäten verlinkt | `src/content/reference/<slug>/<slug>.md`, Adresse `/reference/<slug>` |
 | Werkzeug | Etwas, womit man arbeitet: Workspace, Datenbanken, ER-Werkstatt, die Sandboxes, das 2D Game Studio | eigene Seiten oder eigene Projekte |
 | Klasse | Gruppen aus den Einladungslisten; eine Person kann in mehreren sein | `data/invitations/*.txt` |
 
@@ -40,7 +40,7 @@ diese Regeln.
    Datei, in der gearbeitet wird. Eine Abgabe ist eine Kopie, die die
    Lernenden sehen, ersetzen und löschen können.
 4. **Beim ersten Mal ausführlich, danach eine Zeile.** Klonen, Live Server,
-   `git push`: einmal Schritt für Schritt im Nachschlagen, in der Aktivität
+   `git push`: einmal Schritt für Schritt im Handbuch, in der Aktivität
    dann ein Satz mit Link. Wer etwas noch nie gemacht hat, bekommt die lange
    Fassung angezeigt.
 5. **Adressen und Werkzeuge bleiben offen.** Vorschau mit URL, Terminal,
@@ -57,7 +57,7 @@ src/content/showerjs/
 └── *.webp             Bilder, auch aus Screenshot-Rezepten
 
 src/content/reference/
-├── sections.yaml      Katalog der Nachschlage-Seiten
+├── sections.yaml      Katalog der Handbuch-Seiten
 └── html-folien/
     └── html-folien.md
 ```
@@ -93,20 +93,20 @@ image: tcpip.webp
 | `topic` | Schlüssel eines Abschnitts aus `sections.yaml`, für die Sortierung nach Thema |
 | `duration` | Freier Text, so wie er auf der Karte stehen soll |
 | `requires` | Aktivitäten, die vorher sinnvoll sind |
-| `reference` | Nachschlage-Seiten, auf die `_uses()` verweist |
+| `reference` | Handbuch-Seiten, auf die `_uses()` verweist |
 | `template` | Adresse der Vorlage zum Klonen; andere Schulen können hier einen Spiegel eintragen |
 
 Über jeder Seite steht ein schmaler Streifen, der sagt, was sie ist:
 
 - **Aktivität:** die Art aus `kind` (ohne `kind`: »Aktivität«), die Dauer aus
-  `duration` und Links zu den Nachschlage-Seiten aus `reference` und aus
+  `duration` und Links zu den Handbuch-Seiten aus `reference` und aus
   jedem `_include()` der Seite.
-- **Nachschlage-Seite:** »Nachschlagen › Abschnitt« und »Wird verwendet in«
+- **Handbuch-Seite:** »Handbuch › Abschnitt« und »Wird verwendet in«
   mit allen Aktivitäten, die die Seite nennen oder Teile daraus einbinden.
 
-Alles, was aus dem Nachschlagen stammt, ist türkis markiert: Nachschlage-Seiten
+Alles, was aus dem Handbuch stammt, ist türkis markiert: Handbuch-Seiten
 selbst und die eingebetteten Kästen in Aktivitäten. Im Menü führt
-»Nachschlagen« zur Übersicht.
+»Handbuch« zur Übersicht.
 
 ## Platzhalter im Text
 
@@ -116,12 +116,12 @@ Platzhalter ersetzt, bevor Redcarpet den Text liest.
 | Platzhalter | Ergebnis | Ab |
 | --- | --- | --- |
 | `_task(adresse)` | Die Aufgabe `adresse` aus `tasks.yaml` an dieser Stelle | M2 |
-| `_include(workspace#repository-klonen)` | Der Teil `repository-klonen` der Nachschlage-Seite `workspace`, eingebettet in einem Kasten mit Link | M1 |
-| `_uses(ifconfig, ping)` | Kleine Marken, die zu den Teilen `ifconfig` und `ping` der Nachschlage-Seiten aus `reference` führen | M1 |
+| `_include(workspace#repository-klonen)` | Der Teil `repository-klonen` der Handbuch-Seite `workspace`, eingebettet in einem Kasten mit Link | M1 |
+| `_uses(ifconfig, ping)` | Kleine Marken, die zu den Teilen `ifconfig` und `ping` der Handbuch-Seiten aus `reference` führen | M1 |
 
-### Teile einer Nachschlage-Seite
+### Teile einer Handbuch-Seite
 
-Eine Nachschlage-Seite gliedert sich in Teile. Ein Teil beginnt mit einer
+Eine Handbuch-Seite gliedert sich in Teile. Ein Teil beginnt mit einer
 Markierung und endet am nächsten Teil, an `<!-- /part -->` oder am Ende der
 Datei:
 
@@ -135,13 +135,13 @@ Klicke auf »Clone Repository« und füge die Adresse der Vorlage ein:
 <!-- /part -->
 ```
 
-- Auf der Nachschlage-Seite selbst wird die Markierung zu einem Sprungziel:
+- Auf der Handbuch-Seite selbst wird die Markierung zu einem Sprungziel:
   `/reference/workspace#repository-klonen`.
 - Bei `_include()` fällt die erste Überschrift des Teils weg, weil die
   Aktivität ihre eigene schreibt. Relative Bildpfade werden passend
   umgeschrieben.
 - `${template}` wird durch das Feld `template` der einbindenden Seite ersetzt,
-  auf der Nachschlage-Seite selbst durch »[Adresse der Vorlage]«. Andere
+  auf der Handbuch-Seite selbst durch »[Adresse der Vorlage]«. Andere
   `${…}`, etwa in JavaScript-Beispielen, bleiben unverändert.
 - Ein fehlender Teil bricht nichts: Die Seite zeigt »Baustein fehlt«, und das
   Server-Log nennt Datei und Platzhalter.

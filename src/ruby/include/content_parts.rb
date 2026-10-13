@@ -1,3 +1,4 @@
+require 'cgi'
 require 'pathname'
 require 'yaml'
 
@@ -73,6 +74,23 @@ module ContentParts
 
     # Drops the first heading of an included part: the including page writes
     # its own heading.
+    # Text of the page's first-level heading (nil if there is none).
+    def self.page_title(markdown)
+        line = markdown.lines.find { |l| l =~ /^#\s+\S/ }
+        line && plain(line.sub(/^#\s+/, ''))
+    end
+
+    # Text of the heading a part starts with (nil if it starts without one).
+    def self.heading_text(text)
+        line = text.lines.find { |l| !l.strip.empty? }
+        line && line.start_with?('#') ? plain(line.sub(/^#+\s*/, '')) : nil
+    end
+
+    # Heading text without Markdown marks.
+    def self.plain(text)
+        text.to_s.strip.gsub(/[`*_]/, '').gsub(/<[^>]*>/, '').strip
+    end
+
     def self.strip_leading_heading(text)
         lines = text.lines
         index = lines.index { |line| !line.strip.empty? }
@@ -114,6 +132,8 @@ module ContentParts
                 next "<div class='hint'>Baustein fehlt: #{slug}##{part}</div>"
             end
 
+            source = File.read(file, encoding: 'UTF-8')
+            label = [page_title(source), heading_text(text)].compact.uniq.join(' › ')
             text = strip_leading_heading(text)
             text = rewrite_relative_sources(text, from_dir: File.dirname(file), to_dir: page_dir)
             text.scan(VARIABLE).flatten.uniq.each do |name|
@@ -121,7 +141,8 @@ module ContentParts
             end
             text = fill_variables(text, variables)
             "\n<div class='reference-include-begin'></div>\n\n#{text}\n\n" \
-                "<div class='reference-include-end' data-href='/reference/#{slug}##{part}'></div>\n"
+                "<div class='reference-include-end' data-href='/reference/#{slug}##{part}' " \
+                "data-label='#{CGI.escapeHTML(label.empty? ? slug : label)}'></div>\n"
         end
     end
 

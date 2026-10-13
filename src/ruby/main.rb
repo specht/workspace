@@ -155,7 +155,7 @@ class Main < Sinatra::Base
     include Neo4jBolt
     helpers Sinatra::Cookies
 
-    # Nachschlagen: reference pages, served under /reference/<slug>.
+    # Handbuch: reference pages, served under /reference/<slug>.
     REFERENCE_ROOT = '/src/content/reference'
     REFERENCE_SECTIONS_PATH = '/src/content/reference/sections.yaml'
 
@@ -1441,7 +1441,11 @@ class Main < Sinatra::Base
             end
             next unless node
             link = root.document.create_element('p', 'class' => 'reference-include-link')
-            anchor = root.document.create_element('a', 'Im Nachschlagen ansehen', 'href' => node['data-href'])
+            # The tooltip names where the text comes from, like the breadcrumb
+            # on the reference page: »Workspace: Grundgriffe › Repository klonen«.
+            anchor = root.document.create_element('a', 'href' => node['data-href'], 'title' => node['data-label'].to_s)
+            anchor.add_child(root.document.create_element('i', 'class' => 'bi bi-book'))
+            anchor.add_child(root.document.create_text_node('Im Handbuch nachschlagen'))
             link.add_child(anchor)
             box.add_child(link)
             node.remove
@@ -1468,7 +1472,7 @@ class Main < Sinatra::Base
         # Markdown renderer, image cache, and screenshot generator.
         student_sections = YAML.load(File.read('/src/content/sections.yaml'))
         teaching_sections = YAML.load(File.read('/src/content/lehrmaterial/sections.yaml'))
-        # Reference pages (Nachschlagen) live in their own catalog and are
+        # Reference pages (Handbuch) live in their own catalog and are
         # served under /reference/<slug>. The catalog is optional.
         reference_sections = File.exist?(REFERENCE_SECTIONS_PATH) ?
             (YAML.load(File.read(REFERENCE_SECTIONS_PATH)) || []) : []

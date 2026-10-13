@@ -88,6 +88,7 @@ class ContentPartsTest < Minitest::Test
         assert_includes out, "src='../reference/workspace/git-clone.webp'"
         assert_includes out, "<div class='reference-include-begin'></div>"
         assert_includes out, "data-href='/reference/workspace#klonen'"
+        assert_match(/data-label='[^']+ › Repository klonen'/, out)
     end
 
     def test_missing_part_and_variable_warn_but_do_not_break

@@ -31,7 +31,7 @@ class PageKindsTest < Minitest::Test
     def test_activity_without_meta_is_still_an_activity
         html = PageKinds.header('tcpip', content.merge('tcpip' => { :title => 'X' }), sections)
         assert_includes html, 'Aktivität'
-        refute_includes html, 'Zum Nachschlagen'
+        refute_includes html, 'Im Handbuch'
         refute_includes html, 'bi-clock'
     end
 

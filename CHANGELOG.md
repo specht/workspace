@@ -23,20 +23,20 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - `src/ruby/include/task_spec.rb` prüft `tasks.yaml`-Dateien;
   `src/ruby/test/task_spec_test.rb` prüft alle Aufgaben im Inhaltsordner.
 - Erste Aufgabendateien für TCP/IP (12), Anaglyphen (12) und shower.js (11).
-- Nachschlagen: eigener Katalog in `src/content/reference/`, Übersicht unter
+- Handbuch: eigener Katalog in `src/content/reference/`, Übersicht unter
   `/reference`, Seiten unter `/reference/<slug>`. Erste Seiten: »Workspace:
   Grundgriffe« und »HTML-Folien gestalten«.
 - Platzhalter `_include(seite#teil)` und `_uses(teil, …)` sowie Teile in
-  Nachschlage-Seiten (`<!-- part: name -->`), siehe `docs/aufgaben.md`.
+  Handbuch-Seiten (`<!-- part: name -->`), siehe `docs/aufgaben.md`.
 - Notizen für Lehrkräfte: `lehrkraft.md` neben einer Seite erscheint für
   Lehrkräfte als aufklappbare Notiz über der Aktivität.
 - Neue, freiwillige Felder im Meta-Block: `kind`, `topic`, `duration`,
   `requires`, `reference`, `template`.
-- Aktivitäten und Nachschlage-Seiten sehen unterschiedlich aus: Über einer
-  Aktivität stehen Art, Dauer und die Nachschlage-Seiten, die sie nutzt; über
-  einer Nachschlage-Seite stehen »Nachschlagen › Abschnitt« und die
-  Aktivitäten, die sie verwenden. Nachschlage-Inhalte sind türkis markiert.
-- Menüpunkt »Nachschlagen« für alle, auch ohne Anmeldung.
+- Aktivitäten und Handbuch-Seiten sehen unterschiedlich aus: Über einer
+  Aktivität stehen Art, Dauer und die Handbuch-Seiten, die sie nutzt; über
+  einer Handbuch-Seite stehen »Handbuch › Abschnitt« und die
+  Aktivitäten, die sie verwenden. Inhalte aus dem Handbuch sind türkis markiert.
+- Menüpunkt »Handbuch« für alle, auch ohne Anmeldung.
 
 ### Geändert
 

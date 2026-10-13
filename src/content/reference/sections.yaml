@@ -1,4 +1,4 @@
-# Katalog der Nachschlage-Seiten, erreichbar unter /reference/<slug>.
+# Katalog der Handbuch-Seiten, erreichbar unter /reference/<slug>.
 # Format wie src/content/sections.yaml; die Schlüssel beginnen mit reference-,
 # damit sie sich nicht mit den Abschnitten der Startseite überschneiden.
 - key: reference-workspace

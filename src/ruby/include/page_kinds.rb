@@ -3,7 +3,7 @@ require 'cgi'
 # The strip above a content page that says what kind of page it is
 # (docs/aufgaben.md): an activity shows its kind, its duration and the
 # reference pages it uses; a reference page shows where it sits in
-# Nachschlagen and which activities use it.
+# Handbuch and which activities use it.
 #
 # Works on the plain hashes in @@content, so it can be tested on its own.
 module PageKinds
@@ -54,8 +54,8 @@ module PageKinds
             section = sections[entry[:section]] || {}
             label = section[:label].to_s.gsub('&shy;', '')
             used = used_by(slug, content, development: development)
-            html = +"<nav class='page-kind page-kind-reference' aria-label='Nachschlagen'>"
-            html << "<span class='page-kind-label'><a href='/reference'><i class='bi bi-book'></i>Nachschlagen</a>"
+            html = +"<nav class='page-kind page-kind-reference' aria-label='Handbuch'>"
+            html << "<span class='page-kind-label'><a href='/reference'><i class='bi bi-book'></i>Handbuch</a>"
             html << "<span class='page-kind-sep' aria-hidden='true'>›</span>#{h.(label)}" unless label.empty?
             html << '</span>'
             unless used.empty?
@@ -77,7 +77,7 @@ module PageKinds
                 title = plain_title(ref)
                 "<a href='/#{h.(ref_slug)}'><i class='bi bi-book'></i>#{h.(title.empty? ? name : title)}</a>"
             end.compact
-            html << "<span class='page-kind-links'>Zum Nachschlagen: #{refs.join(' ')}</span>" unless refs.empty?
+            html << "<span class='page-kind-links'>Im Handbuch: #{refs.join(' ')}</span>" unless refs.empty?
             html << '</div>'
         end
         html

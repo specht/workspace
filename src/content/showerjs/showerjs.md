@@ -75,7 +75,7 @@ Am Ende der Datei findest du diesen Kommentar:
  */
 ```
 
-Wenn im Nachschlagen CSS-Beispiele gezeigt werden, gehören sie normalerweise **unter diesen Kommentar in `styles.css`**.
+Wenn im Handbuch CSS-Beispiele gezeigt werden, gehören sie normalerweise **unter diesen Kommentar in `styles.css`**.
 So bleibt `index.html` übersichtlich: Dort stehen die Folien, während `styles.css` für das Aussehen zuständig ist.
 
 Du kannst jetzt damit beginnen, die Vorlage an deine Bedürfnisse anzupassen und deine Präsentation zu schreiben.
@@ -88,7 +88,7 @@ Wenn du die Datei <code>index.html</code> bearbeitest, musst du vorsichtig sein,
 
 ## Folien gestalten
 
-Wie du Text, Listen, Formeln, Bilder, Farben, Schriften und Spalten auf deine Folien bekommst, steht im Nachschlagen unter [HTML-Folien gestalten](/reference/html-folien). Du musst nichts der Reihe nach lesen. Such dir die Stelle heraus, die zu deinem Problem passt:
+Wie du Text, Listen, Formeln, Bilder, Farben, Schriften und Spalten auf deine Folien bekommst, steht im Handbuch unter [HTML-Folien gestalten](/reference/html-folien). Du musst nichts der Reihe nach lesen. Such dir die Stelle heraus, die zu deinem Problem passt:
 
 - [Grundlagen](/reference/html-folien#grundlagen): Aufbau einer Folie, Text, Listen, Hervorhebungen, Formeln
 - [Bilddateien](/reference/html-folien#bilddateien): Bilder in den Ordner `pictures` bekommen, Formate, Dateinamen, WebP
@@ -104,7 +104,7 @@ Der besondere Vorteil bei dieser Art von Präsentation ist, dass sie in jedem mo
 Du kannst deine Präsentation auch online stellen, zum Beispiel direkt in der Hackschule. <a href="/custom-subdomain">Hier erfährst du, wie das geht.</a>
 
 <script>
-// Die Abschnitte zum Gestalten stehen jetzt im Nachschlagen. Alte Links wie
+// Die Abschnitte zum Gestalten stehen jetzt im Handbuch. Alte Links wie
 // /showerjs#bilder-einfügen führen dorthin weiter, wenn es den Abschnitt
 // hier nicht mehr gibt.
 window.addEventListener('load', function () {

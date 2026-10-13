@@ -1452,7 +1452,7 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 }
 
 /* Page kinds: activity strip and reference breadcrumb (PageKinds.header).
-   Teal marks everything that comes from Nachschlagen, on reference pages
+   Teal marks everything that comes from Handbuch, on reference pages
    and in the include boxes of activities. */
 
 .page-kind {
@@ -1465,7 +1465,8 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     color: #5c636a;
 }
 
-.page-kind .bi {
+.page-kind .bi,
+.reference-include-link .bi {
     margin-right: 0.35em;
 }
 

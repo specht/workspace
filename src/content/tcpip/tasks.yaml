@@ -151,7 +151,7 @@ tasks:
         not_matching: '^[{"\[]'
     feedback:
       - when: { output_matches: '^"' }
-        say: Fast. Die Ausgabe steht noch in Anführungszeichen. Schau im Nachschlagen bei jq nach, was -r bewirkt.
+        say: Fast. Die Ausgabe steht noch in Anführungszeichen. Schau im Handbuch bei jq nach, was -r bewirkt.
       - when: { output_matches: '^\{' }
         say: Die Ausgabe ist noch JSON. Wähle mit jq nur das Feld fact aus.
     solution: '`curl -s https://catfact.ninja/fact | jq -r .fact`'
