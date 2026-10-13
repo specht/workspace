@@ -63,14 +63,21 @@ button:focus-visible { outline: 1px solid var(--vscode-focusBorder); outline-off
 .problems ul { margin: 4px 0 0; padding-left: 18px; }
 .problems a { color: var(--vscode-textLink-foreground); }
 
+/* A fixed window onto the diagram: the diagram keeps its size while you
+   type or drag, and the board scrolls. Zoom with the buttons or Ctrl+wheel. */
 .board {
+    height: 65vh;
+    min-height: 240px;
     border: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.35));
     border-radius: 4px;
     overflow: auto;
+    overflow-anchor: none;
     touch-action: none;
 }
 
-.board svg { display: block; width: 100%; height: auto; max-height: 75vh; user-select: none; }
+.board svg { display: block; user-select: none; }
+.zoom button { min-width: 2.2em; }
+.zoom-level { min-width: 3.5em; color: var(--vscode-descriptionForeground); font-variant-numeric: tabular-nums; }
 .board .node { cursor: grab; }
 .board.stale svg { opacity: 0.45; }
 .empty { padding: 24px; color: var(--vscode-descriptionForeground); line-height: 1.6; }

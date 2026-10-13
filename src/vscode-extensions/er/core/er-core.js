@@ -426,9 +426,78 @@
         return { nodes, edges };
     }
 
+    // Angles in (-PI, PI].
+    function normAngle(a) {
+        let x = a % (Math.PI * 2);
+        if (x <= -Math.PI) x += Math.PI * 2;
+        if (x > Math.PI) x -= Math.PI * 2;
+        return x;
+    }
+
+    // Where k attributes go around their owner, as angles: in the gaps
+    // between the owner's lines to relationships (taken), each gap getting
+    // attributes in proportion to its size, evenly spaced inside it. Without
+    // lines, evenly around the owner starting at the top. Clockwise, so the
+    // attributes keep the order in which they are written.
+    function attributeAngles(k, taken) {
+        if (k === 0) return [];
+        const full = Math.PI * 2;
+        if (taken.length === 0) {
+            return Array.from({ length: k }, (_, i) => normAngle(-Math.PI / 2 + full * i / k));
+        }
+        const sorted = taken.map(normAngle).sort((a, b) => a - b);
+        // Keep clear of each line, so narrow gaps between two lines stay empty.
+        const margin = 0.45;
+        let gaps = sorted.map((a, i) => {
+            const b = i + 1 < sorted.length ? sorted[i + 1] : sorted[0] + full;
+            return { from: a + margin, size: b - a - 2 * margin };
+        }).filter((g) => g.size > 0.6);
+        if (gaps.length === 0) {
+            gaps = sorted.map((a, i) => {
+                const b = i + 1 < sorted.length ? sorted[i + 1] : sorted[0] + full;
+                return { from: a, size: b - a };
+            });
+        }
+        // Largest remainder: whole shares first, the rest to the largest leftovers.
+        const total = gaps.reduce((s, g) => s + g.size, 0) || full;
+        const exact = gaps.map((g) => (k * g.size) / total);
+        const count = exact.map(Math.floor);
+        let left = k - count.reduce((s, c) => s + c, 0);
+        exact.map((x, i) => ({ i, rest: x - Math.floor(x) }))
+            .sort((a, b) => b.rest - a.rest || gaps[b.i].size - gaps[a.i].size || a.i - b.i)
+            .forEach(({ i }) => { if (left > 0) { count[i] += 1; left -= 1; } });
+        const angles = [];
+        gaps.forEach((g, i) => {
+            for (let j = 0; j < count[i]; j++) angles.push(normAngle(g.from + (g.size * (j + 0.5)) / count[i]));
+        });
+        // Clockwise from the top: the first attribute is the one nearest to 12 o'clock.
+        const fromTop = (a) => normAngle(a + Math.PI / 2) + (normAngle(a + Math.PI / 2) < 0 ? full : 0);
+        return angles.sort((a, b) => fromTop(a) - fromTop(b));
+    }
+
+    // How far attributes sit from their owner's centre: far enough that the
+    // ellipses clear the owner and do not touch each other.
+    function attributeRing(owner, attrs, angles) {
+        let rx = owner.w / 2 + Math.max(...attrs.map((a) => a.w / 2)) + 34;
+        let ry = owner.h / 2 + Math.max(...attrs.map((a) => a.h / 2)) + 30;
+        const overlap = () => attrs.some((a, i) => attrs.some((b, j) => {
+            if (j <= i) return false;
+            const ax = Math.cos(angles[i]) * rx; const ay = Math.sin(angles[i]) * ry;
+            const bx = Math.cos(angles[j]) * rx; const by = Math.sin(angles[j]) * ry;
+            return Math.abs(ax - bx) < (a.w + b.w) / 2 + 10 && Math.abs(ay - by) < (a.h + b.h) / 2 + 6;
+        }));
+        for (let i = 0; i < 12 && overlap(); i++) { rx *= 1.12; ry *= 1.12; }
+        return { rx, ry };
+    }
+
     // Places the nodes: deterministic (same model, same picture). positions:
     // { id: { x, y } } from earlier (dragged boxes stay where they are).
     // Returns the positions of all nodes.
+    //
+    // Entities, relationships and boxes are placed first, each entity
+    // claiming room for the ring of its attributes. Attributes are placed
+    // last, around their owner in the gaps between its relationship lines,
+    // so no attribute sits on a line and they are spread evenly.
     function layout(graph, positions) {
         const { nodes, edges } = graph;
         const kept = positions || {};
@@ -442,6 +511,27 @@
             }
             return false;
         };
+        const attrsOf = new Map();
+        for (const n of nodes.filter((x) => x.kind === 'A')) {
+            if (!attrsOf.has(n.owner)) attrsOf.set(n.owner, []);
+            attrsOf.get(n.owner).push(n);
+        }
+        // How far the attributes of a node reach from its centre (0 without).
+        const ringOf = (n) => {
+            const list = attrsOf.get(n.id);
+            if (!list) return 0;
+            const ring = attributeRing(n, list, attributeAngles(list.length, []));
+            return Math.max(ring.rx, ring.ry);
+        };
+        // Room a node needs: itself, plus the ring of its attributes.
+        const reach = (n) => {
+            const own = Math.max(n.w, n.h) / 2;
+            const list = attrsOf.get(n.id);
+            if (!list) return own;
+            const ring = attributeRing(n, list, attributeAngles(list.length, []));
+            return Math.max(ring.rx, ring.ry) + Math.max(...list.map((a) => a.w / 2));
+        };
+
         const main = nodes.filter((n) => n.kind === 'E' || n.kind === 'T' || n.kind === 'N');
         main.forEach((n, i) => {
             if (take(n)) return;
@@ -456,34 +546,29 @@
             n.x = ends.reduce((s, e) => s + e.x, 0) / ends.length + (same ? 160 : 0);
             n.y = ends.reduce((s, e) => s + e.y, 0) / ends.length + (same ? 0 : 12);
         }
-        const attrsOf = new Map();
-        for (const n of nodes.filter((x) => x.kind === 'A')) {
-            if (!attrsOf.has(n.owner)) attrsOf.set(n.owner, []);
-            attrsOf.get(n.owner).push(n);
-        }
-        for (const [owner, list] of attrsOf) {
-            const o = byId.get(owner);
-            list.forEach((n, i) => {
-                if (take(n)) return;
-                const away = Math.atan2(o.y, o.x || 0.001);
-                const spread = Math.min(Math.PI * 1.6, 0.6 * list.length);
-                const ang = away + (list.length === 1 ? 0 : -spread / 2 + spread * i / (list.length - 1));
-                n.x = o.x + Math.cos(ang) * 110; n.y = o.y + Math.sin(ang) * 85;
-            });
-        }
+
+        const placed = nodes.filter((n) => n.kind !== 'A');
+        const room = new Map(placed.map((n) => [n.id, reach(n)]));
+        const ring = new Map(placed.map((n) => [n.id, ringOf(n)]));
+        // A relationship sits in a gap of its entities' rings, so the two only
+        // keep their own sizes apart; the line length does the rest.
+        const linked = new Set(edges.filter((e) => e.kind === 'rel').flatMap((e) => [`${e.a}|${e.b}`, `${e.b}|${e.a}`]));
         const iters = fixed.size ? 160 : 420;
         for (let it = 0; it < iters; it++) {
             const t = 1 - it / iters;
-            for (let i = 0; i < nodes.length; i++) {
-                const a = nodes[i];
-                for (let j = i + 1; j < nodes.length; j++) {
-                    const b = nodes[j];
+            for (let i = 0; i < placed.length; i++) {
+                const a = placed[i];
+                for (let j = i + 1; j < placed.length; j++) {
+                    const b = placed[j];
                     let dx = b.x - a.x;
                     let dy = b.y - a.y;
                     const d = Math.hypot(dx, dy) || 0.01;
-                    const min = (Math.max(a.w, a.h) + Math.max(b.w, b.h)) / 2 + 26;
-                    if (d < min * 1.6) {
-                        const f = ((min * 1.6 - d) / d) * 0.12 * t;
+                    // Neighbouring rings may interleave a little.
+                    const min = linked.has(`${a.id}|${b.id}`)
+                        ? (Math.max(a.w, a.h) + Math.max(b.w, b.h)) / 2 + 26
+                        : (room.get(a.id) + room.get(b.id)) * 0.8 + 26;
+                    if (d < min * 1.25) {
+                        const f = ((min * 1.25 - d) / d) * 0.12 * t;
                         dx *= f; dy *= f;
                         if (!fixed.has(a.id)) { a.x -= dx; a.y -= dy; }
                         if (!fixed.has(b.id)) { b.x += dx; b.y += dy; }
@@ -491,10 +576,13 @@
                 }
             }
             for (const e of edges) {
+                if (e.kind === 'attr') continue;
                 const a = byId.get(e.a);
                 const b = byId.get(e.b);
                 if (!a || !b || a === b) continue;
-                const want = e.kind === 'attr' ? 105 : e.kind === 'cf' ? 250 : 175;
+                // A relationship line runs between the attributes and ends
+                // just beyond their ring.
+                const want = e.kind === 'cf' ? 250 : Math.max(160, ring.get(b.id) + Math.max(a.w, a.h) / 2 + 20);
                 let dx = b.x - a.x;
                 let dy = b.y - a.y;
                 const d = Math.hypot(dx, dy) || 0.01;
@@ -504,6 +592,25 @@
                 if (!fixed.has(b.id)) { b.x -= dx; b.y -= dy; }
             }
         }
+
+        for (const [owner, list] of attrsOf) {
+            const o = byId.get(owner);
+            if (!o) continue;
+            // The directions of the owner's lines to relationships or entities.
+            const taken = edges
+                .filter((e) => e.kind !== 'attr' && (e.a === owner || e.b === owner))
+                .map((e) => byId.get(e.a === owner ? e.b : e.a))
+                .filter((other) => other && other !== o)
+                .map((other) => Math.atan2(other.y - o.y, other.x - o.x));
+            const free = list.filter((n) => !take(n));
+            const angles = attributeAngles(free.length, taken);
+            const ring = attributeRing(o, free, angles);
+            free.forEach((n, i) => {
+                n.x = o.x + Math.cos(angles[i]) * ring.rx;
+                n.y = o.y + Math.sin(angles[i]) * ring.ry;
+            });
+        }
+
         const out = {};
         for (const n of nodes) {
             n.x = Math.round(n.x * 10) / 10;
@@ -620,7 +727,10 @@
                 const len = Math.hypot(ax - p.x, ay - p.y) || 1;
                 const ux = (ax - p.x) / len;
                 const uy = (ay - p.y) / len;
-                S.push(`<text class="card" x="${f(p.x + ux * 14 - uy * 10)}" y="${f(p.y + uy * 14 + ux * 10)}">${esc(e.card)}</text>`);
+                // The second line of a relationship with itself runs parallel
+                // to the first; its label goes on the other side.
+                const side = e.offset ? -1 : 1;
+                S.push(`<text class="card" x="${f(p.x + ux * 14 - uy * 10 * side)}" y="${f(p.y + uy * 14 + ux * 10 * side)}">${esc(e.card)}</text>`);
             }
         }
         for (const n of nodes) {
@@ -664,7 +774,7 @@
 
     return {
         VERSION, parse, transform, compile, toSQL, summary, sqlName, sqlType, joinTableName,
-        chenGraph, crowfootGraph, layout, renderSVG, diagram, estimateWidth, esc,
+        chenGraph, crowfootGraph, layout, renderSVG, diagram, estimateWidth, esc, viewBox,
     };
 });
 

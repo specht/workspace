@@ -185,6 +185,41 @@ test('diagrams: deterministic, kept positions, escaped labels', () => {
     assert.equal(core.esc('<a href="x">'), '&lt;a href=&quot;x&quot;&gt;');
 });
 
+test('chen: attributes spread around their entity, clear of relationship lines', () => {
+    const { graph } = core.diagram(FILM, 'chen');
+    const byId = new Map(graph.nodes.map((n) => [n.id, n]));
+    const angle = (from, to) => Math.atan2(to.y - from.y, to.x - from.x);
+    const gap = (a, b) => { const d = Math.abs(a - b) % (2 * Math.PI); return Math.min(d, 2 * Math.PI - d); };
+    for (const owner of graph.nodes.filter((n) => n.kind === 'E')) {
+        const attrs = graph.nodes.filter((n) => n.owner === owner.id);
+        const lines = graph.edges.filter((e) => e.kind === 'rel' && e.b === owner.id).map((e) => angle(owner, byId.get(e.a)));
+        const angles = attrs.map((a) => angle(owner, a));
+        // No attribute sits on a line to a relationship.
+        for (const a of angles) for (const l of lines) assert.ok(gap(a, l) > 0.4, `${owner.label}: attribute on a line`);
+        // No two attributes of one entity overlap.
+        attrs.forEach((a, i) => attrs.slice(i + 1).forEach((b) => {
+            assert.ok(Math.abs(a.x - b.x) >= (a.w + b.w) / 2 || Math.abs(a.y - b.y) >= (a.h + b.h) / 2, `${a.label} and ${b.label} overlap`);
+        }));
+    }
+});
+
+test('chen: attributes keep their order, clockwise from the top', () => {
+    const { graph } = core.diagram('entity book\n  id: int, key\n  title: text\n  year: int\n  pages: int\n', 'chen');
+    const book = graph.nodes.find((n) => n.id === 'E:book');
+    const attrs = graph.nodes.filter((n) => n.kind === 'A');
+    assert.deepEqual(attrs.map((a) => a.label), ['id', 'title', 'year', 'pages']);
+    // Alone: evenly around the box, the first one on top.
+    assert.ok(attrs[0].y < book.y && Math.abs(attrs[0].x - book.x) < 1);
+    assert.ok(attrs[1].x > book.x && attrs[2].y > book.y && attrs[3].x < book.x);
+});
+
+test('chen: the two cardinalities of a relationship with itself do not overlap', () => {
+    const svg = core.diagram('entity employee\n  id: int, key\nrelationship manages: employee 1:n employee\n', 'chen').svg;
+    const cards = [...svg.matchAll(/<text class="card" x="([-\d.]+)" y="([-\d.]+)">/g)].map((m) => [Number(m[1]), Number(m[2])]);
+    assert.equal(cards.length, 2);
+    assert.ok(Math.hypot(cards[0][0] - cards[1][0], cards[0][1] - cards[1][1]) > 14);
+});
+
 test('command line: --json, --sql, --svg', () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'er-'));
     const file = path.join(dir, 'film.er');

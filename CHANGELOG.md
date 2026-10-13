@@ -225,6 +225,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Filmdatenbank: Statt »The Matrix« dient »Back to the Future« (1985) als
   Beispiel, im Datensatz vom Anfang und in den JOIN-Aufgaben (jetzt
   `genres-film` und `besetzung-film`).
+- ER-Werkstatt: Im Chen-Diagramm stehen die Attribute gleichmäßig um ihre
+  Entität, zwischen den Linien zu den Beziehungen und in der Reihenfolge der
+  Datei. Die Vorschau zoomt (−, +, »Einpassen«, Strg + Mausrad) und springt
+  beim Tippen und Ziehen nicht mehr: Die Ansicht bleibt, Kästen bleiben
+  stehen, nur neue werden platziert.
 
 ### Für Betreibende
 

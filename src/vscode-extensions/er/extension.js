@@ -170,6 +170,10 @@ class Preview {
   <div class="seg" role="group" aria-label="Darstellung">
     <button type="button" data-kind="chen">Chen</button><button type="button" data-kind="crowfoot">Krähenfuß</button><button type="button" data-kind="tables">Tabellen</button>
   </div>
+  <div class="seg zoom" role="group" aria-label="Zoom">
+    <button type="button" data-zoom="out" title="Verkleinern (Strg + Mausrad)" aria-label="Verkleinern">−</button><button type="button" data-zoom="fit" title="Das ganze Diagramm zeigen">Einpassen</button><button type="button" data-zoom="in" title="Vergrößern (Strg + Mausrad)" aria-label="Vergrößern">+</button>
+  </div>
+  <span id="zoom-level" class="zoom-level" aria-live="polite"></span>
   <span class="spacer"></span>
   <button type="button" class="act" data-act="reset" title="Alle Kästen neu anordnen">Neu anordnen</button>
   <button type="button" class="act" data-act="svg" title="Dieses Diagramm als SVG-Datei neben dem Modell speichern">Als SVG speichern</button>

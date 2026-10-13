@@ -10,7 +10,9 @@ In VS Code, a `.er` file gets:
   »Probleme«);
 - »ER-Diagramm anzeigen« (button in the editor title, <kbd>Ctrl</kbd>+<kbd>K</kbd>
   <kbd>V</kbd>): a preview beside the editor with Chen, Krähenfuß and Tabellen,
-  the relational schema and »So wurde übersetzt«. Boxes can be dragged; their
+  the relational schema and »So wurde übersetzt«. Zoom with −, + and
+  »Einpassen« or Ctrl + mouse wheel; typing never rescales the view, and
+  boxes stay where they are while you type. Boxes can be dragged; their
   positions are kept in the hidden `.film.er.layout.json` next to the model
   (delete it, or press »Neu anordnen«, for a fresh layout);
 - »SQL erzeugen«: writes `film.sql` next to the model. A file the ER-Werkstatt
