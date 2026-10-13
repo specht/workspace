@@ -61,11 +61,11 @@ Ein Knoten hat ein **Label**, das sagt, was für ein Ding er ist, und **Eigensch
 
 ```cypher
 (:Movie {
-  id: 1207,
+  id: 233,
   title: "Back to the Future",
   german_title: "Zurück in die Zukunft",
   year: 1985,
-  runtime: 116
+  runtime: 115
 })
 ```
 
@@ -74,7 +74,7 @@ Ein Knoten hat ein **Label**, das sagt, was für ein Ding er ist, und **Eigensch
 ```cypher
 (:Genre { id: 5, name: "Comedy" })
 
-(:Person { id: 3141, name: "Michael J. Fox", birth_year: 1961 })
+(:Person { id: 2493, name: "Michael J. Fox", birth_year: 1961 })
 ```
 
 Eine Beziehung verbindet zwei Knoten und zeigt in eine Richtung:
@@ -100,6 +100,7 @@ neo4j_bolt load neo4j.dump
 
 <!-- tutorial-screenshot
 # neo4j.dump geladen
+hide-left-sidebar
 show-bottom-panel
 terminal-open
 terminal-maximize
@@ -180,9 +181,13 @@ RETURN m.title, m.german_title, m.runtime;
 
 <!-- tutorial-screenshot
 # cypher-shell mit einer ersten Abfrage
+terminal-run: clear
 terminal-run: cypher-shell
-terminal-run: MATCH (m:Movie {title: 'Back to the Future', year: 1985}) RETURN m.title, m.german_title, m.runtime;
-sleep: 2
+wait-for-text: student@student>
+press: Control+L
+type: MATCH (m:Movie {title: 'Back to the Future', year: 1985}) RETURN m.title, m.german_title, m.runtime;
+press: Enter
+wait-for-text: 1 row
 crop-terminal-lines: auto
 -->
 
@@ -377,10 +382,11 @@ Ein Graph kann auch nach **Wegen** gefragt werden: Wie hängen zwei Personen üb
 ```cypher
 MATCH (a:Person {name: 'Michael J. Fox'}), (b:Person {name: 'Hans Zimmer'})
 MATCH path = shortestPath((a)-[*..8]-(b))
+WHERE none(n IN nodes(path) WHERE n:Genre)
 RETURN path;
 ```
 
-`[*..8]` heißt: ein Weg aus höchstens acht Beziehungen, egal welchen Typs und in welche Richtung. Im Neo4j Browser siehst du das Ergebnis als Kette aus Personen und Filmen.
+`[*..8]` heißt: ein Weg aus höchstens acht Beziehungen, egal welchen Typs und in welche Richtung. Ohne die Zeile mit `WHERE` führt der kürzeste Weg über ein Genre: Michael J. Fox spielt in »The Frighteners«, einem Krimi wie »The Dark Knight«, zu dem Hans Zimmer die Musik geschrieben hat. Das stimmt, sagt aber nichts darüber, wer mit wem gearbeitet hat. `none(n IN nodes(path) WHERE n:Genre)` verlangt, dass kein Knoten auf dem Weg ein Genre ist. Dann führt der Weg über »Back to the Future Part II« und den Kameramann Dean Cundey, der auch »The Holiday« gedreht hat. Im Neo4j Browser siehst du das Ergebnis als Kette aus Personen und Filmen.
 
 <!-- Screenshot von Hand: Neo4j Browser mit einem kürzesten Weg zwischen zwei Personen -->
 
