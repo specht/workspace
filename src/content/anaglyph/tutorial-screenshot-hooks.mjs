@@ -32,8 +32,9 @@ export default {
     // Recipe instructions only this viewer understands (hook: NAME ARGS).
     actions: {
         // hook: camera ROT_X ROT_Y DISTANCE [CENTER_X CENTER_Y CENTER_Z]
-        // Angles in degrees. »Reset Camera« is 20 20 -300; a larger distance
-        // looks from farther away. Set at once, without the orbit animation.
+        // Angles in degrees. »Reset Camera« is 20 20 -300. The distance moves
+        // the scene towards the camera: -450 is closer than -300, 0 farther.
+        // Set at once, without the orbit animation.
         async camera({ page, args, timeout }) {
             const values = args.split(/\s+/).filter(Boolean).map(Number);
             if (![3, 6].includes(values.length) || values.some(value => !Number.isFinite(value))) {

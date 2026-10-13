@@ -670,6 +670,8 @@ sleep: 1
 preview-reload
 tab: preview
 viewport: 420x400
+hook: hide-controls
+hook: camera 20 20 -150
 record: 6s
 -->
 
@@ -694,6 +696,8 @@ sleep: 1
 preview-reload
 tab: preview
 viewport: 380x360
+hook: hide-controls
+hook: camera 20 20 -150
 record: 6.28s
 -->
 
@@ -710,6 +714,8 @@ sleep: 1
 preview-reload
 tab: preview
 viewport: 1029x382
+hook: hide-controls
+hook: camera 50 20 100
 record: 12s
 -->
 
