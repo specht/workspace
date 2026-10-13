@@ -1,6 +1,7 @@
 require './include/helper.rb'
 require './include/automatron.rb'
 require './include/content_parts.rb'
+require './include/page_kinds.rb'
 require './include/atomic_file.rb'
 require './include/authentication.rb'
 require './include/database_provisioning.rb'
@@ -1574,6 +1575,8 @@ class Main < Sinatra::Base
             path = entry[:original_path]
             next if parse_content_count > 1 && entry[:kenney]
             markdown = nil
+            page_meta = {}
+            page_references = []
             unless entry[:kenney]
                 next unless path
                 markdown = File.read(path)
@@ -1604,6 +1607,7 @@ class Main < Sinatra::Base
                 # inserts a part of a reference page, _uses(a, b) links to parts,
                 # and part markers become anchors on the reference page itself.
                 page_meta = ContentParts.meta(markdown)
+                page_references = PageKinds.references_of(page_meta, markdown, ContentParts::INCLUDE)
                 content_warning = lambda { |message| STDERR.puts "#{path}: #{message}" }
                 markdown = ContentParts.expand_includes(markdown,
                     :page_dir => File.dirname(path), :reference_root => REFERENCE_ROOT,
@@ -1681,6 +1685,11 @@ class Main < Sinatra::Base
                 :html => html,
                 :dev_only => entry[:dev_only],
                 :teacher_only => parsed_sections.dig(section, :teacher_only) == true,
+                # What kind of page this is (PageKinds.header shows it).
+                :section => section,
+                :kind => page_meta['kind'],
+                :duration => page_meta['duration'],
+                :references => page_references,
             }
             # Teacher note next to the page (docs/aufgaben.md): rendered like the
             # page, shown only to teachers by teacher_note_panel.
@@ -3646,6 +3655,16 @@ class Main < Sinatra::Base
             return "#{sprintf('%1.1f', ai_Size.to_f / 1024.0 / 1024.0 / 1024.0)} GB"
         end
         return "#{sprintf('%1.1f', ai_Size.to_f / 1024.0 / 1024.0 / 1024.0 / 1024.0)} TB"
+    end
+
+    # The strip above a content page: activity (kind, duration, reference
+    # pages it uses) or reference page (where it sits, who uses it).
+    def page_kind_header(slug)
+        PageKinds.header(slug, @@content, @@sections, :development => DEVELOPMENT)
+    end
+
+    def page_kind_class(slug)
+        PageKinds.container_class(slug)
     end
 
     # The teacher note of a page (lehrkraft.md), for teachers only.

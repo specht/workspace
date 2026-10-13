@@ -32,6 +32,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Lehrkräfte als aufklappbare Notiz über der Aktivität.
 - Neue, freiwillige Felder im Meta-Block: `kind`, `topic`, `duration`,
   `requires`, `reference`, `template`.
+- Aktivitäten und Nachschlage-Seiten sehen unterschiedlich aus: Über einer
+  Aktivität stehen Art, Dauer und die Nachschlage-Seiten, die sie nutzt; über
+  einer Nachschlage-Seite stehen »Nachschlagen › Abschnitt« und die
+  Aktivitäten, die sie verwenden. Nachschlage-Inhalte sind türkis markiert.
+- Menüpunkt »Nachschlagen« für alle, auch ohne Anmeldung.
 
 ### Geändert
 

@@ -182,8 +182,30 @@ html[data-bs-theme="dark"] {
     }    
 
     .reference-include {
-        border-color: #33332f;
-        background-color: #1c1c1a;
+        border-color: #23423e;
+        border-left-color: #2fb3a5;
+        background-color: #15201f;
+    }
+    .page-kind {
+        color: #adb5bd;
+    }
+    .page-kind-activity .page-kind-label {
+        background-color: #172a45;
+        color: #8db8f5;
+    }
+    .page-kind-reference .page-kind-label {
+        background-color: #133430;
+        color: #7fd8cc;
+    }
+    .page-kind-activity .page-kind-links a,
+    .reference-include-link a {
+        color: #5fcfc1;
+    }
+    .page-reference h1 {
+        border-bottom-color: #2fb3a5;
+    }
+    .page-reference h2 {
+        color: #7fd8cc;
     }
     .uses a,
     .uses span {

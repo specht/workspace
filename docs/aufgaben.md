@@ -96,6 +96,18 @@ image: tcpip.webp
 | `reference` | Nachschlage-Seiten, auf die `_uses()` verweist |
 | `template` | Adresse der Vorlage zum Klonen; andere Schulen können hier einen Spiegel eintragen |
 
+Über jeder Seite steht ein schmaler Streifen, der sagt, was sie ist:
+
+- **Aktivität:** die Art aus `kind` (ohne `kind`: »Aktivität«), die Dauer aus
+  `duration` und Links zu den Nachschlage-Seiten aus `reference` und aus
+  jedem `_include()` der Seite.
+- **Nachschlage-Seite:** »Nachschlagen › Abschnitt« und »Wird verwendet in«
+  mit allen Aktivitäten, die die Seite nennen oder Teile daraus einbinden.
+
+Alles, was aus dem Nachschlagen stammt, ist türkis markiert: Nachschlage-Seiten
+selbst und die eingebetteten Kästen in Aktivitäten. Im Menü führt
+»Nachschlagen« zur Übersicht.
+
 ## Platzhalter im Text
 
 Wie die vorhandenen `_include_file()` und `_include_svg()` werden diese

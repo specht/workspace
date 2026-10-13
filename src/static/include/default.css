@@ -1399,9 +1399,10 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 .reference-include {
     margin: 1em 0;
     padding: 0.8em 1em 0.2em;
-    border: 1px solid #e3e3e3;
+    border: 1px solid #cfe7e3;
+    border-left: 4px solid #0f766e;
     border-radius: 0.5em;
-    background-color: #fbfbfa;
+    background-color: #f4fbfa;
 }
 
 .reference-include-link {
@@ -1448,4 +1449,67 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 
 .teacher-note-body {
     padding: 0 1em 0.5em;
+}
+
+/* Page kinds: activity strip and reference breadcrumb (PageKinds.header).
+   Teal marks everything that comes from Nachschlagen, on reference pages
+   and in the include boxes of activities. */
+
+.page-kind {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em 1.2em;
+    margin: 1.5em 0 -0.5em;
+    font-size: 90%;
+    color: #5c636a;
+}
+
+.page-kind .bi {
+    margin-right: 0.35em;
+}
+
+.page-kind-label {
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.page-kind-activity .page-kind-label {
+    background-color: #e7f0fe;
+    color: #0b4fb3;
+}
+
+.page-kind-reference .page-kind-label {
+    background-color: #dff3f0;
+    color: #0f5f58;
+}
+
+.page-kind-reference .page-kind-label a {
+    color: inherit;
+}
+
+.page-kind-sep {
+    margin: 0 0.5em;
+    font-weight: 400;
+}
+
+.page-kind-links a {
+    margin-left: 0.4em;
+    white-space: nowrap;
+}
+
+.page-kind-activity .page-kind-links a,
+.reference-include-link a {
+    color: #0f766e;
+}
+
+.page-reference h1 {
+    padding-bottom: 0.3em;
+    border-bottom: 3px solid #0f766e;
+}
+
+.page-reference h2 {
+    color: #0f5f58;
 }

@@ -4,9 +4,10 @@
     }
 </style>
 
-<div class='container'>
+<div class='container #{page_kind_class(slug)}'>
     <div class='row'>
         <div class='col-md-12'>
+            #{page_kind_header(slug)}
             #{teacher_note_panel(slug)}
             #{@@content[slug][:html]}
         </div>
