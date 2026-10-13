@@ -7,6 +7,12 @@ requires: [mysql]
 reference: [er-modelle]
 </div>
 
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2">
+</div>
+
 # Filmdatenbank mit MySQL
 
 <p class='abstract'>
