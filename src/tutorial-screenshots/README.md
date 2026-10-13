@@ -133,6 +133,7 @@ preview-port: PORT
 preview-url: https://2d.hackschule.de/
 preview-load-game: RELATIVE_WORKSPACE_JSON_PATH
 neo4j-browser
+hook: NAME ARGS
 select-option: CSS_SELECTOR = VALUE
 preview-reload
 preview-reset
@@ -520,6 +521,20 @@ export default {
     // is over and the page should run in real time again.
     async setPreviewTime({ page, seconds, timeout }) {
         await page.evaluate(t => window.app.showTime(t), seconds);
+    },
+};
+```
+
+`actions` adds recipe instructions only this tutorial's application knows,
+called as `hook: NAME ARGS` on the page the recipe's `tab` selects. The
+anaglyph tutorial sets the viewer's camera this way
+(`hook: camera 20 20 -450`) and switches its anaglyph mode
+(`hook: anaglyph off`):
+
+```js
+export default {
+    actions: {
+        async camera({ page, args, timeout }) { /* ... */ },
     },
 };
 ```
