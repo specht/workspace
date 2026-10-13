@@ -5,7 +5,7 @@ kind: reference
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2">
+    data-levels="h2,h3">
 </div>
 
 # Farben angeben
@@ -14,8 +14,10 @@ kind: reference
 Wie du dem Computer eine Farbe nennst: mit einem Namen wie <code>gold</code>, mit einem Farbcode wie <code>#f9c80e</code> oder mit Anteilen von Rot, Grün und Blau. Das gilt für CSS in Webseiten und HTML-Folien und genauso für <code>fill</code>, <code>stroke</code> und <code>background</code> im Anaglyph-Viewer.
 </p>
 
+## Eine Farbe angeben
+
 <!-- part: farbnamen -->
-## Farbnamen
+### Farbnamen
 
 Der einfachste Weg: Du schreibst den englischen Namen der Farbe. Browser kennen 148 Namen, von `red` bis `rebeccapurple`. Groß- und Kleinschreibung ist egal, Leerzeichen gibt es nicht (`lightblue`, nicht `light blue`). Ein paar, die du oft brauchst:
 
@@ -47,7 +49,7 @@ Alle 148 Namen mit ihren Farben findest du in der [Liste von MDN](https://develo
 <!-- /part -->
 
 <!-- part: farbcodes -->
-## Farbcodes mit `#`
+### Farbcodes mit `#`
 
 Ein Farbcode wie `#f9c80e` besteht aus drei Paaren: Rot (`f9`), Grün (`c8`) und Blau (`0e`). Jedes Paar ist eine Hexadezimalzahl von `00` (nichts von dieser Farbe) bis `ff` (so viel wie möglich, 255). Licht mischt sich anders als Malfarbe: Rot und Grün ergeben Gelb, alle drei ganz ergeben Weiß.
 
@@ -72,7 +74,7 @@ fill = #3a6ee8
 <!-- /part -->
 
 <!-- part: rgb -->
-## Rot, Grün und Blau einzeln
+### Rot, Grün und Blau einzeln
 
 In CSS schreibst du die drei Anteile als Zahlen von 0 bis 255:
 

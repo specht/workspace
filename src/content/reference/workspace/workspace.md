@@ -9,8 +9,10 @@ kind: reference
 Handgriffe, die viele Aktivitäten brauchen: eine Vorlage aus einem Git-Repository klonen, eine neue Version davon holen und die Live-Vorschau starten. Aktivitäten binden diese Abschnitte ein, damit sie überall gleich aussehen.
 </p>
 
+## Vorlagen
+
 <!-- part: repository-klonen -->
-## Repository klonen
+### Repository klonen
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
@@ -34,7 +36,7 @@ Das Repository wird jetzt in einen Unterordner von `/workspace` geklont, der so 
 <!-- /part -->
 
 <!-- part: neue-version -->
-## Eine neue Version der Vorlage holen
+### Eine neue Version der Vorlage holen
 
 Vorlagen wie die Sandboxes oder der Anaglyph-Viewer werden weiterentwickelt. Wenn du eine geklont hast, sieht der Workspace auf der Seite der Aktivität nach, ob es inzwischen eine neuere Version gibt, und sagt es dir. Er holt sie nie von selbst; das machst du im Ordner der Vorlage, zum Beispiel:
 

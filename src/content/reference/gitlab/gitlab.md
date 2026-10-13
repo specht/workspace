@@ -6,7 +6,7 @@ kind: reference
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2">
+    data-levels="h2,h3">
 </div>
 
 # Git und GitLab: Zugang und Veröffentlichen
@@ -17,8 +17,10 @@ Was du einmal einrichtest, damit dein Workspace bei GitLab Repositories klonen u
 
 Im Workspace ist `~` dein Ordner `/workspace`. `~/.ssh` ist also `/workspace/.ssh`.
 
+## Einmal einrichten
+
 <!-- part: ssh-schluessel -->
-## SSH-Schlüssel für GitLab
+### SSH-Schlüssel für GitLab
 
 Mit einem SSH-Schlüssel meldet sich dein Workspace beim GitLab-Server an, ohne dass du jedes Mal ein Passwort eingibst. Melde dich zuerst auf [git.nhcham.org](https://git.nhcham.org/) an. Prüfe dann im Terminal, ob du schon einen Schlüssel hast:
 
@@ -52,7 +54,7 @@ Meldet SSH `Permission denied (publickey)`, fehlt der Schlüssel in GitLab, oder
 <!-- /part -->
 
 <!-- part: git-name -->
-## Git sagen, wer du bist
+### Git sagen, wer du bist
 
 Jeder Commit trägt einen Namen und eine E-Mail-Adresse. Trage deinen echten Namen und die E-Mail-Adresse deines GitLab-Kontos ein:
 

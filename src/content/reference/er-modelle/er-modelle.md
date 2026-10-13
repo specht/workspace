@@ -5,7 +5,7 @@ kind: reference
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2">
+    data-levels="h2,h3">
 </div>
 
 # ER-Modelle als Text
@@ -82,8 +82,10 @@ window.addEventListener('DOMContentLoaded', function () {
 </script>
 <!-- /part -->
 
+## Ein Modell schreiben
+
 <!-- part: aufbau -->
-## Aufbau einer Datei
+### Aufbau einer Datei
 
 Eine `.er`-Datei besteht aus Entitäten und Beziehungen, in beliebiger Reihenfolge. Was hinter `#` steht, ist ein Kommentar. Leere Zeilen sind egal.
 
@@ -104,7 +106,7 @@ Alle Namen schreibst du klein, mit Buchstaben, Ziffern und `_`, ohne Leerzeichen
 <!-- /part -->
 
 <!-- part: attribute -->
-## Entitäten und Attribute
+### Entitäten und Attribute
 
 `entity name` beginnt eine Entität. Jede eingerückte Zeile darunter ist ein Attribut: `name: typ` und danach, mit Kommas, Markierungen.
 
@@ -141,7 +143,7 @@ entity book
 <!-- /part -->
 
 <!-- part: beziehungen -->
-## Beziehungen und Kardinalitäten
+### Beziehungen und Kardinalitäten
 
 ```er
 relationship name: entity_a KARDINALITÄT entity_b
@@ -177,8 +179,10 @@ relationship takes: student n:m course
 **Eigener Tabellenname**: Mit `as name` am Ende bestimmst du, wie die Tabelle einer Beziehung heißt.
 <!-- /part -->
 
+## Was die ER-Werkstatt daraus macht
+
 <!-- part: uebersetzung -->
-## Vom Modell zu Tabellen
+### Vom Modell zu Tabellen
 
 So übersetzt die ER-Werkstatt ein Modell. In der Vorschau steht es für dein Modell unter »So wurde übersetzt«.
 
@@ -199,7 +203,7 @@ Ein Fremdschlüssel heißt nach der Tabelle, auf die er zeigt, und deren Schlüs
 <!-- /part -->
 
 <!-- part: diagramme -->
-## Die drei Diagramme
+### Die drei Diagramme
 
 <div class='scroll-x'><table class='table table-sm reference-table'>
 <thead><tr><th>Ansicht</th><th>Was du siehst</th></tr></thead>
@@ -211,8 +215,10 @@ Ein Fremdschlüssel heißt nach der Tabelle, auf die er zeigt, und deren Schlüs
 </table></div>
 <!-- /part -->
 
+## Werkzeuge
+
 <!-- part: werkstatt -->
-## Die ER-Werkstatt in VS Code
+### Die ER-Werkstatt in VS Code
 
 Eine Datei mit der Endung `.er` öffnet VS Code mit der ER-Werkstatt.
 
@@ -230,7 +236,7 @@ Eine Datei mit der Endung `.er` öffnet VS Code mit der ER-Werkstatt.
 <!-- /part -->
 
 <!-- part: kommandozeile -->
-## Auf der Kommandozeile
+### Auf der Kommandozeile
 
 Die ER-Werkstatt ist eine JavaScript-Datei, die auch ohne VS Code läuft, zum Beispiel für Skripte. Im Workspace liegt sie im Ordner der Erweiterung; die Quelle ist `src/vscode-extensions/er/core/er-core.js` im Repository des Workspaces.
 
