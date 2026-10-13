@@ -2,9 +2,14 @@
   "version": 1,
   "screenshots": {
     "vs-code-welcome.webp": {
-      "state_hash": "26ac35a12af0585430a9096f987f1466874cdbf8e251a79c861dca5f1b8498bf",
-      "environment_fingerprint": "db16a8ce324470464b5c6b7f34b76be2efd19945eb23a571867f62778aa88465",
+      "state_hash": "7b8c8bb8b511c8616af247bde929e7644ba79506d0006a11c8067e749d9de5d5",
+      "environment_fingerprint": "edd848bc1700e2a408eae4b8bbf06dd979d34f261d9908e54973f8990d1acf94",
       "output_sha256": "71470941b8975f035f619d751e2fa012068f29b456e5223cb6cf3c513ed6d4e6"
+    },
+    "create-checkpoint-temp.webp": {
+      "state_hash": "58578f11d4a1fe3a344441fd41b900daf228727893557bee09a94f40c6940725",
+      "environment_fingerprint": "edd848bc1700e2a408eae4b8bbf06dd979d34f261d9908e54973f8990d1acf94",
+      "output_sha256": "a9a9f3ee81124afc7b2a08feeef6a47677bf46f4fde6eca21a5e792cb3231085"
     }
   }
 }

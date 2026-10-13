@@ -136,6 +136,16 @@ Wenn später etwas schiefgeht, kannst du zu einem früheren Zwischenstand zurüc
 
 Um einen Checkpoint zu erstellen, wechsle links in den Explorer und klappe den Bereich **Checkpoints** auf. Klicke auf das Plus-Symbol, um einen neuen Checkpoint zu erstellen.
 
+<!-- tutorial-screenshot
+# Workspace ohne geöffneten Ordner
+left-sidebar-width: 400
+write-file: checkpoint-test/README.md <- code:#Hello||This is just a test.
+open-file: checkpoint-test/README.md
+click: Checkpoints
+-->
+<img src='create-checkpoint-temp.webp' class='full' alt=''>
+
+
 <img src='create-checkpoint.webp' class='full' alt=''>
 
 Du kannst einen Namen für den Checkpoint eingeben und mit <kbd>Enter</kbd> bestätigen.
