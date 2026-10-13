@@ -30,7 +30,7 @@ module TaskSpec
         'git' => 'M3',
         'measure' => 'M6',
         'command' => 'M6',
-        'scene' => 'later',
+        'scene' => 'M6',
         'code' => 'M5',
         'sql' => 'later',
     }.freeze

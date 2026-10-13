@@ -97,6 +97,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   eine Gruppe an; diese stehen ganz oben und lassen sich nicht ausblenden.
   Die Begrüßung lässt Titel wie »Dr.« weg. Neuer Knoten `Pin` (Constraint
   `Pin/key`).
+- Prüfart `scene`: Der Workspace liest eine Anaglyph-Szene mit dem Viewer
+  der Person in ihrem eigenen Workspace und prüft Formen, Positionen, Größen,
+  Reihen, Gitter und Umlaufbahnen; Fehler des Viewers erscheinen wörtlich.
+  Alle zwölf Anaglyph-Aufgaben stehen jetzt auf der Seite; eine abgegebene
+  Szene muss sich laden lassen.
 - Neue Neo4j-Knoten `TaskState` und `TaskAttempt` (Constraint
   `TaskState/key`, Index `TaskAttempt/task`); sie werden beim Start von selbst
   angelegt.
@@ -113,4 +118,5 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Für Betreibende
 
-- Keine Änderung nötig.
+- Keine Änderung nötig. Die Prüfart `scene` braucht `node` im Workspace-Image
+  (ist dort schon vorhanden).

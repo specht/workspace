@@ -88,6 +88,7 @@ Welche Prüfart für welchen Zweck:
 | Ist alles committet und gepusht? | `git` |
 | Abgeben | `submit` |
 | Schreibt der Befehl die richtige Ausgabe? | `command` |
+| Steht in der 3D-Szene, was verlangt ist? | `scene` |
 | Eine Programmieraufgabe mit Tests | `code` (Code Bites) |
 
 Drei Faustregeln:

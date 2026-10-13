@@ -146,6 +146,9 @@ module TaskCard
             files = (check['scan'] || []).map { |f| path.("#{check['root']}/#{f}") }
             "Liest #{files.join(' und ')}"
         when 'git' then "Liest <code>git status</code> in #{path.(check['repo'])}, ändert nichts"
+        when 'scene'
+            viewer = File.join(File.dirname(check['file'].to_s), 'include', 'script.js')
+            "Liest #{path.(check['file'])} mit deinem Viewer #{path.(viewer)}, in deinem Workspace"
         when 'code'
             langs = (check['languages'] || %w[ruby python javascript]).map { |l| { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript' }[l] || l }
             "Code Bites: <code>#{h.(check['codebite'])}</code>, in #{h.(langs.join(', '))}. Ist sie gelöst, wird sie hier von selbst abgehakt."

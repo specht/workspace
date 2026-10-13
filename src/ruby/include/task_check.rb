@@ -5,6 +5,7 @@ require_relative 'file_checks'
 require_relative 'git_check'
 require_relative 'submission_store'
 require_relative 'measure_check'
+require_relative 'scene_check'
 
 # Checks a student's answer to a task (docs/aufgaben.md, »Prüfen«).
 #
@@ -17,7 +18,7 @@ module TaskCheck
     ANSWER_TYPES = %w[answer choice number reflection].freeze
     FILE_TYPES = %w[files html css references].freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit code measure command]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit code measure command scene]).freeze
     LANGUAGE_NAMES = { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript' }.freeze
 
     # status:
@@ -70,7 +71,8 @@ module TaskCheck
         end
         return check_code(task, check, code_solved) if type == 'code'
         return check_run(task, check, answer, runner) if %w[measure command].include?(type)
-        return check_workspace(task, check, answer, workspace, git) unless ANSWER_TYPES.include?(type)
+        return check_scene(task, check, workspace, runner) if type == 'scene'
+        return check_workspace(task, check, answer, workspace, git, runner) unless ANSWER_TYPES.include?(type)
 
         missing = variables_used(check).reject { |name| variables[name].is_a?(String) && !variables[name].empty? }
         unless missing.empty?
@@ -125,7 +127,49 @@ module TaskCheck
     end
 
     # files, html, css, references, git and submit.
-    def self.check_workspace(task, check, answer, workspace, git)
+    NOT_RUNNING_SCENE = 'Starte zuerst deinen Workspace. Die Szene liest dein eigener Viewer in deinem Workspace.'
+
+    # Runs scene_dump.js for one file in the person's Workspace.
+    def self.scene_dump(file, times, runner)
+        result = runner&.call(SceneCheck.command(file, times), 15)
+        return [nil, :not_running] if result.nil?
+        return [nil, :timeout] if result[:timed_out]
+
+        [SceneCheck.parse(result[:output]), nil]
+    end
+
+    # scene: what is where in an Anaglyph scene (SceneCheck).
+    def self.check_scene(task, check, workspace, runner)
+        return Result.new(:status => :unavailable, :message => NO_WORKSPACE) if workspace.nil?
+
+        file = check['file']
+        viewer = File.join(File.dirname(file), 'include', 'script.js')
+        if workspace.entry(file)[:type] != :file
+            other = workspace.other_case(file)
+            hint = other ? " Es gibt aber `#{other}`; Groß- und Kleinschreibung zählen." : " Lege die Datei im Ordner `#{File.dirname(file)}` an."
+            return Result.new(:status => :wrong, :problem => :missing, :message => "`#{file}` gibt es nicht.#{hint}")
+        end
+        if workspace.entry(viewer)[:type] != :file
+            return Result.new(:status => :unavailable, :problem => :no_viewer,
+                :message => "Ich finde den Viewer nicht (`#{viewer}`). Liegt die Vorlage in `/workspace/#{File.dirname(file)}`?")
+        end
+        source = begin
+            workspace.read_text(file, :max => 1_000_000)
+        rescue WorkspaceFiles::Refused => e
+            return Result.new(:status => :wrong, :problem => e.problem, :message => e.message)
+        end
+        dump, failure = scene_dump(file, check['at_times'] || [0], runner)
+        return Result.new(:status => :unavailable, :message => NOT_RUNNING_SCENE) if failure == :not_running
+        if failure == :timeout
+            return Result.new(:status => :wrong, :problem => :timeout, :message => 'Die Szene braucht zu lange zum Lesen. Steht irgendwo eine Rechnung, die nie fertig wird?')
+        end
+
+        status, problem, message, read = SceneCheck.evaluate(task, check, dump, source)
+        Result.new(:status => status, :problem => problem, :message => message, :read => read,
+            :solution => status == :correct ? task['solution'] : nil)
+    end
+
+    def self.check_workspace(task, check, answer, workspace, git, runner = nil)
         type = check['type']
         return Result.new(:status => :unavailable, :message => NO_WORKSPACE) if workspace.nil?
 
@@ -134,6 +178,24 @@ module TaskCheck
                 plan = SubmissionStore.plan(workspace, check, :picked => answer.to_s.strip)
             rescue SubmissionStore::Refused => e
                 return Result.new(:status => :invalid, :message => e.message, :problem => e.problem)
+            end
+            requires = check['requires'] || {}
+            if (requires['scene_loads'] || requires['min_objects']) && runner
+                plan.files.select { |f| f[:path].end_with?('.ini') }.each do |f|
+                    dump, failure = scene_dump(f[:path], [0], runner)
+                    return Result.new(:status => :unavailable, :message => NOT_RUNNING_SCENE) if failure == :not_running
+                    if dump.nil? || !(dump['errors'] || []).empty?
+                        first = dump && dump['errors'].first
+                        return Result.new(:status => :invalid, :problem => :scene_error,
+                            :message => "Der Viewer meldet Fehler in `#{f[:path]}`#{first ? ": #{first}" : ''}. Repariere das vor der Abgabe.")
+                    end
+                    count = dump['objects'].reject { |o| o['shape'] == 'grid' }.size
+                    if requires['min_objects'] && count < requires['min_objects']
+                        return Result.new(:status => :invalid, :problem => :too_few_objects,
+                            :message => "In `#{f[:path]}` stehen #{count} Objekte; für die Galerie sind mindestens #{requires['min_objects']} verlangt.")
+                    end
+                end
+                plan.notes.reject! { |n| n.include?('prüft der Workspace noch nicht') }
             end
             message = "Abgegeben. Deine Lehrkraft sieht genau diesen Stand. Du kannst jederzeit neu abgeben oder die Abgabe löschen."
             return Result.new(:status => :sent, :message => message, :plan => plan,

@@ -6,7 +6,7 @@ alle, die Inhalte schreiben, auch an Lehrkräfte anderer Schulen mit eigener
 Installation.
 
 **Stand:** Format 1, Meilenstein M6. Aufgabenkarten auf den Seiten, alle
-Prüfarten außer `scene` und `sql`, Abgaben, die Klassenübersicht, Übungen aus
+Prüfarten außer `sql`, Abgaben, die Klassenübersicht, Übungen aus
 Code Bites und die Startseite für Lernende. Was ab wann läuft, steht in der
 Tabelle der Prüfarten.
 
@@ -226,7 +226,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `submit` | Abgabe: Kopie von Dateien, optional für die Galerie | Dateien in `/workspace` | Server | M3 |
 | `measure` | Messwert der Lernenden gegen eine eigene Messung | Ausgabe eines Befehls | Workspace | M6 |
 | `command` | Ausgabe eines Befehls der Lernenden | Ausgabe | Workspace | M6 |
-| `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace | später |
+| `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace | M6 |
 | `code` | Code-Bites-Aufgabe | Code | Code-Bites-Judge | M5 |
 | `sql` | Ergebnis einer Abfrage | Abfrage | Datenbank | später |
 
@@ -334,8 +334,10 @@ jederzeit neu ab und können sie löschen. Repositories werden dabei nicht
 angefasst. Bei `pick` wählen Lernende auf der Karte eine der passenden Dateien
 aus ihrem Workspace. `requires: { html_parses: true }` lehnt eine Abgabe ab,
 deren HTML-Dateien nicht zusammenpassende Tags haben, und nennt die Zeile.
-`scene_loads` und `min_objects` prüft der Workspace erst mit `scene`; bis dahin
-nimmt er die Abgabe an und sagt das dazu. Die Galerie (`gallery: true`) kommt
+`requires: { scene_loads: true, min_objects: 5 }` lädt eine abgegebene Szene
+mit dem Viewer der Person (wie bei `scene`) und lehnt sie ab, wenn der Viewer
+Fehler meldet oder weniger Objekte findet. Läuft der Workspace nicht, nimmt der
+Server die Abgabe an und sagt dazu, dass die Szene nicht geprüft wurde. Die Galerie (`gallery: true`) kommt
 mit der Klassenübersicht.
 
 ### measure, command, scene
@@ -364,8 +366,49 @@ Ausgabe (höchstens 64 kB) wird mit `output` verglichen: `lines`, `matching`,
 `not_matching`; Rückmeldungen mit `when: { output_matches: … }`. Unter »Was
 der Workspace gelesen hat« steht der Befehl mit seiner Ausgabe.
 
-`scene` braucht das Werkzeug `scene-dump` aus dem Anaglyph-Projekt und kommt
-später.
+`scene` (seit M6): prüft eine Szene des Anaglyph-Viewers. Der Server liest
+dafür nichts selbst aus: Er schickt ein kleines Skript (`scene_dump.js`) mit
+`node` in den laufenden Workspace der Person, als diese Person. Es lädt den
+Viewer, der neben der Szene liegt (`anaglyph/include/script.js`), liest die
+Szene mit dessen eigenem Parser und rechnet aus, wo jedes Objekt steht, wie
+groß es ist und wie es gedreht ist, zu den Zeitpunkten aus `at_times`
+(Standard: nur `t = 0`). Gezeichnet wird nichts, und es ist genau der Viewer,
+den die Person auch in der Vorschau sieht; Fehlermeldungen des Viewers
+erscheinen wörtlich in der Rückmeldung. Ausdrücke wie `t * 30` laufen nur im
+Workspace, mit Zeitlimit.
+
+```yaml
+check:
+  type: scene
+  file: anaglyph/sonnensystem.ini
+  ignore: [grid]                # Formen, die nicht mitzählen
+  at_times: [0, 1, 2, 3]
+  expect:
+    - { name: sonne, shape: sphere, moves: false }
+    - { name: erde, shape: sphere, orbits: sonne }
+  source:
+    contains: [group]           # Wörter, die im Text vorkommen müssen
+```
+
+Jeder Eintrag in `expect` wählt Objekte aus (`shape`, `name` für
+`name = …` in der Szene) und verlangt etwas von ihnen:
+
+| Feld | Verlangt |
+| --- | --- |
+| `count`, `min` | genau so viele, mindestens so viele |
+| `at: [x, y, z]` | mit `count`: alle dort; sonst: eines dort |
+| `size: [b, h, t]` | Größe nach dem Skalieren (Würfel 50, Kugel 100, …), 2 % Toleranz |
+| `bottom_y` | Unterkante auf dieser Höhe (»liegt auf dem Gitter«) |
+| `rotate_z: { spacing, modulo }` | Drehungen um z in gleichen Abständen |
+| `lattice: [3, 3, 3]`, `min_spacing` | vollständiges Gitter, Mindestabstand |
+| `rows` | so viele gleich lange Reihen, keine zwei Objekte an derselben Stelle |
+| `moves: true/false` | bewegt sich zwischen den Zeitpunkten oder nicht |
+| `orbits: <name>` | Abstand zum genannten Objekt bleibt gleich, die Richtung ändert sich |
+
+Positionen haben eine Toleranz von 2 Einheiten. Unter »Was der Workspace gelesen
+hat« steht jedes Objekt mit Zeile, Position und Größe. Die Karte nennt Datei
+und Viewer: »Liest `/workspace/anaglyph/latte.ini` mit deinem Viewer
+`/workspace/anaglyph/include/script.js`«.
 
 ## Beispiel: Begleiter für eine Sandbox
 

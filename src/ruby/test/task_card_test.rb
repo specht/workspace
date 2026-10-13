@@ -80,11 +80,20 @@ class TaskCardTest < Minitest::Test
     end
 
     def test_later_types_have_no_form
-        task = TaskSpec.load_file(File.expand_path('../../content/anaglyph/tasks.yaml', __dir__))['tasks'].find { |t| t['check']['type'] == 'scene' }
-        html = TaskCard.html(task, activity: 'anaglyph', number: 1, render: RENDER)
+        task = { 'id' => 'kunden', 'title' => 'Alle Kunden', 'prompt' => 'Frag alle Kunden ab.',
+                 'check' => { 'type' => 'sql', 'database' => 'shop', 'expect_query' => 'SELECT * FROM kunden' } }
+        assert_empty TaskSpec.validate_task(task)
+        html = TaskCard.html(task, activity: 'sql', number: 1, render: RENDER)
         refute_includes html, '<form'
         assert_includes html, 'noch nicht selbst prüfen'
         refute_includes html, 'task-login-note'
+    end
+
+    def test_scene_card_names_file_and_viewer
+        task = TaskSpec.load_file(File.expand_path('../../content/anaglyph/tasks.yaml', __dir__))['tasks'].find { |t| t['id'] == 'latte' }
+        html = TaskCard.html(task, activity: 'anaglyph', number: 1, render: RENDER)
+        assert_includes html, '<form'
+        assert_includes html, 'Liest <code>/workspace/anaglyph/latte.ini</code> mit deinem Viewer <code>/workspace/anaglyph/include/script.js</code>'
     end
 
     def test_measure_and_command_cards

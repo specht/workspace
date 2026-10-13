@@ -1,5 +1,7 @@
 <div class='meta'>
 image: title.webp
+kind: projekt
+template: https://github.com/specht/anaglyph.git
 </div>
 
 <div
@@ -23,7 +25,7 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du auf den blauen Button »Clone Repository« klickst. Gib die folgende URL ein und bestätige mit <kbd>Enter</kbd>:
 
 ```bash
-https://github.com/specht/anaglyph.git
+${template}
 ```
 
 <img class='full' src='git-clone.webp' alt=''>
@@ -85,6 +87,10 @@ Speichere die Datei mit <kbd>Strg</kbd><kbd>S</kbd> und schaue dir die Vorschau 
 Falls sich die Vorschau nicht automatisch aktualisiert, klicke auf den »Refresh«-Button in deinem Browser oder drücke <kbd>F5</kbd>.
 </div>
 
+Damit der Workspace deine Szene prüfen kann, lass die Kugel für den Moment in `scene.ini` stehen:
+
+_task(kugel)
+
 Probiere auch andere Formen aus, indem du den Wert für `shape` änderst. Hier sind die Formen, die du verwenden kannst:
 
 - `box` für einen Würfel
@@ -143,6 +149,8 @@ Die Richtungen sind wie folgt:
 
 Ein positiver Wert verschiebt das Objekt also nach rechts (X), nach oben (Y) oder nach vorne (Z), während ein negativer Wert es nach links, nach unten oder nach hinten verschiebt.
 
+Ab jetzt baust du jede Szene in einer eigenen Datei, dann bleiben alle erhalten. Lege dafür eine neue Datei an (»File« / »New Text File«) und speichere sie mit <kbd>Strg</kbd><kbd>S</kbd> im Ordner `anaglyph` unter dem Namen aus der Aufgabe, hier also als `/workspace/anaglyph/vier-wuerfel.ini`. Damit die Vorschau diese Datei zeigt, trägst du unten im Textfeld der Vorschau `vier-wuerfel.ini` statt `scene.ini` ein.
+
 **Aufgabe:** Versuche, die folgende Szene zu erstellen, indem du vier Würfel erstellst:
 
 - ein Würfel in der Mitte
@@ -176,6 +184,8 @@ move = 0, 0, 100
 ```
 
 </div>
+
+_task(vier-wuerfel)
 
 ## Objekte rotieren
 
@@ -224,6 +234,8 @@ shape = box
 rotate = 0, 0, 30
 ```
 </div>
+
+_task(wuerfelstern)
 
 ## Objekte skalieren
 
@@ -279,6 +291,8 @@ Hier wurde eine Kugel nur in der Y-Richtung verkleinert (auf 20%), sodass sie wi
 <img src='slab.webp' style='max-width: 100%;' alt='Eine rechteckiger Stab liegt auf dem Gitter.'>
 </div>
 
+_task(latte)
+
 ## Transformationen kombinieren
 
 Verschiebungen, Drehungen und Skalierungen nennt man auch Transformationen. Du kannst mehrere Transformationen kombinieren, indem du sie hintereinander schreibst. Zum Beispiel:
@@ -297,6 +311,8 @@ Hier wurde ein Würfel zuerst um 45 Grad um die Z-Achse gedreht und dann um 100 
 <img src='rotate-then-move.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein gedrehter Würfel bleibt seitlich auf dem Gitter stehen.'>
 </div>
 
+_task(reihenfolge)
+
 Dabei ist es wichtig, in welcher Reihenfolge du die Transformationen angibst. Wenn du zuerst verschiebst und dann drehst, sieht das Ergebnis anders aus:
 
 ```ini
@@ -311,6 +327,8 @@ rotate = 0, 0, 45
 </div>
 
 Dieser Würfel schwebt jetzt über dem Gitter, weil er zuerst nach rechts verschoben wurde und danach erst um 45 Grad um die Z-Achse gedreht wurde, denn: jede Drehung findet immer um den Ursprung statt (und jede Skalierung auch).
+
+_task(reihenfolge-erklaeren)
 
 ## Farben und Schattierung
 
@@ -399,6 +417,8 @@ In diesem Beispiel wird der Torus um 30 Grad pro Sekunde um die Y-Achse gedreht.
 <video src='animation1.mp4' autoplay loop muted aria-label='Der Torus dreht sich gleichmäßig um die Y-Achse.'></video>
 </div>  
 
+_task(umdrehung)
+
 **Profitipp:** Mit Hilfe der Sinus- und Cosinusfunktionen kannst du auch sanfte Bewegungen erzeugen:
 
 ```ini
@@ -416,6 +436,8 @@ rotate = cos(t * 2) * 10, 0, sin(t * 3) * 10
 <div style='text-align: center; margin: 1em 0;'>
 <video src='animation3.mp4' autoplay loop muted style='max-width: 100%;' aria-label='Drei Kugeln bewegen sich wie Sonne, Erde und Mond umeinander.'></video>
 </div>
+
+_task(sonnensystem)
 
 ## Text
 
@@ -582,6 +604,8 @@ end
 
 …erhältst du genau dasselbe Bild. Dabei lassen wir eine Variable `x` in 100er-Schritten von -100 bis 100 laufen, wodurch drei Würfel an den gewünschten Positionen gezeichnet werden.
 
+_task(wie-viele)
+
 <div class='hint'>
 Tipp: Rücke das Innere einer Schleife ein (wie oben z. B. mit Tab oder ein 4 Leerzeichen), um den Überblick zu behalten.
 </div>
@@ -637,6 +661,8 @@ Achtung: Achte darauf, bei verschachtelten Schleifen verschiedene Variablen für
 <div style='text-align: center; margin: 1em 0;'>
 <img src='27-cubes-loop.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;' alt='27 Würfel bilden ein räumliches Gitter aus drei mal drei mal drei Würfeln.'>
 </div>
+
+_task(wuerfelgitter)
 
 ## Gruppen
 
@@ -695,3 +721,13 @@ Die Definition zwischen `define baum` und `end` beschreibt den Aufbau eines Baum
 <div class='hint'>
 Wichtig: Schreibe Transformationen für eine selbst definierte Form direkt unter <code>shape = baum</code>, ohne Leerzeile dazwischen. Eine Leerzeile beendet hier die Angaben für diese Instanz.
 </div>
+
+**Aufgabe:** Pflanze eine Allee: zwei Reihen Bäume links und rechts eines Wegs.
+
+_task(allee)
+
+## Deine Szene abgeben
+
+Zum Schluss suchst du dir deine schönste Szene aus. Sie kann aus einer der Aufgaben stammen oder ganz neu sein, Hauptsache, sie liegt als `.ini`-Datei im Ordner `/workspace/anaglyph`. Deine Abgabe ist eine Kopie: Du kannst danach weiter an der Datei arbeiten, eine neue Version abgeben oder deine Abgabe wieder löschen.
+
+_task(galerie)

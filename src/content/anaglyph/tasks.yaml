@@ -1,7 +1,9 @@
 # Aufgaben zu »3D-Szenen mit Anaglyphen«.
-# Format: docs/aufgaben.md. Noch nicht in der Seite eingebunden.
+# Format: docs/aufgaben.md.
 # Jede Bauaufgabe hat ihre eigene Datei im Ordner anaglyph/; am Ende liegen
 # alle Szenen nebeneinander und lassen sich im Viewer über das Dateifeld laden.
+# Die Szenen prüft der Viewer der Lernenden selbst (anaglyph/include/script.js),
+# in ihrem Workspace: Prüfart scene.
 format: 1
 activity: anaglyph
 tasks:
@@ -146,18 +148,19 @@ tasks:
 
   - id: umdrehung
     title: Eine Umdrehung
-    prompt: Der Ring dreht sich mit `rotate = 0, t * 30, 0`. Nach wie vielen Sekunden hat er sich einmal ganz gedreht?
+    prompt: Ein Ring dreht sich mit `rotate = 0, t * 45, 0`. Nach wie vielen Sekunden hat er sich einmal ganz gedreht?
     check:
       type: number
-      expect: 12
+      expect: 8
       unit: s
 
   - id: sonnensystem
     title: Sonne, Erde, Mond
     prompt: |
       Baue in `sonnensystem.ini`: In der Mitte steht die Sonne. Die Erde kreist
-      um die Sonne, und der Mond kreist um die Erde. Tipp: Eine Gruppe darf
-      eine andere Gruppe enthalten.
+      um die Sonne, und der Mond kreist um die Erde. Gib den drei Kugeln Namen,
+      damit der Workspace sie findet: `name = sonne`, `name = erde` und
+      `name = mond`, jeweils direkt unter ihrem `shape = sphere`.
     file: anaglyph/sonnensystem.ini
     check:
       type: scene
@@ -173,8 +176,9 @@ tasks:
   - id: galerie
     title: Ab in die Galerie
     prompt: |
-      Gib deine schönste Szene ab. Sie erscheint in der Galerie deiner Klasse.
-      Du kannst jederzeit eine neue abgeben oder deine Abgabe löschen.
+      Gib deine schönste Szene ab. Deine Lehrkraft sieht sie in der
+      Klassenübersicht. Du kannst jederzeit eine neue abgeben oder deine Abgabe
+      löschen.
     check:
       type: submit
       pick: anaglyph/*.ini
