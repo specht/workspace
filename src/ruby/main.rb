@@ -1464,6 +1464,11 @@ class Main < Sinatra::Base
                 node = following
             end
             next unless node
+            # _include(…, done: id): tasks.js folds the box once task id is solved.
+            if node['data-done']
+                box['data-done'] = node['data-done']
+                box['data-title'] = node['data-title'].to_s
+            end
             link = root.document.create_element('p', 'class' => 'reference-include-link')
             # The tooltip names where the text comes from, like the breadcrumb
             # on the reference page: »Workspace: Grundgriffe › Repository klonen«.

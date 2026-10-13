@@ -211,6 +211,37 @@
         }, { no_please_wait: true });
     }
 
+    // _include(…, done: id): once task id is solved, its Handbuch box
+    // shrinks to one line. Only when the page loads, never while someone reads.
+    function foldDoneIncludes() {
+        document.querySelectorAll('.reference-include[data-done]').forEach((box) => {
+            const card = document.getElementById('aufgabe-' + box.dataset.done);
+            if (!card || card.dataset.status !== 'correct') return;
+            const line = document.createElement('p');
+            line.className = 'reference-include-done';
+            const icon = document.createElement('i');
+            icon.className = 'bi bi-check-circle-fill';
+            line.appendChild(icon);
+            line.appendChild(document.createTextNode((box.dataset.title || 'Erledigt') + ': erledigt, '));
+            const link = document.createElement('a');
+            link.href = '#' + card.id;
+            link.textContent = card.querySelector('.task-number').textContent;
+            line.appendChild(link);
+            line.appendChild(document.createTextNode(' ist gelöst.'));
+            const show = document.createElement('button');
+            show.type = 'button';
+            show.className = 'btn btn-link btn-sm';
+            show.textContent = 'Anzeigen';
+            show.addEventListener('click', function () {
+                box.classList.remove('reference-include-folded');
+                line.remove();
+            });
+            line.appendChild(show);
+            box.prepend(line);
+            box.classList.add('reference-include-folded');
+        });
+    }
+
     function loadStates() {
         api_call('/api/task/states', { activity: page.activity }, function (data) {
             if (!data.success) return;
@@ -222,6 +253,7 @@
                 const del = card.querySelector('.task-delete');
                 if (del) del.hidden = false;
             });
+            foldDoneIncludes();
         }, { no_please_wait: true });
     }
 

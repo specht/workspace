@@ -107,6 +107,9 @@ class TaskSpecTest < Minitest::Test
         assert_empty errors_for('type' => 'git', 'repo' => 'data-structures-sandbox', 'expect' => { 'has_remote' => true, 'committed' => true, 'pushed' => true })
         refute_empty errors_for('type' => 'git', 'repo' => 'data-structures-sandbox', 'expect' => { 'pushed' => false })
         refute_empty errors_for('type' => 'git', 'repo' => 'data-structures-sandbox', 'expect' => { 'force_push' => true })
+        assert_empty errors_for('type' => 'git', 'expect' => { 'identity' => true })
+        refute_empty errors_for('type' => 'git', 'expect' => { 'identity' => true, 'pushed' => true })
+        refute_empty errors_for('type' => 'git', 'expect' => { 'identity' => false })
     end
 
     def test_check_version_ignores_wording_but_not_grading

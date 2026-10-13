@@ -114,6 +114,15 @@ Handbuch (`src/content/reference/`) und wird eingebunden:
 _include(workspace#repository-klonen)
 ```
 
+Folgt dem Kasten eine Aufgabe, die prüft, ob die Anleitung befolgt wurde,
+nenn sie mit `done:`. Ist sie gelöst, schrumpft der Kasten auf eine Zeile:
+
+```markdown
+_include(gitlab#git-name, done: git-name)
+
+_task(git-name)
+```
+
 Auf der Handbuch-Seite ist ein Teil mit `<!-- part: name -->` und
 `<!-- /part -->` markiert. Wenn ein Teil fehlt, den du brauchst, schreib ihn
 dort hinzu, statt ihn in deine Seite zu kopieren. Dann profitieren alle

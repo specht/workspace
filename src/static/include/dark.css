@@ -215,6 +215,10 @@ html[data-bs-theme="dark"] {
     .reference-include-link a {
         color: #5fcfc1;
     }
+    .reference-include-done,
+    .reference-include-done .bi {
+        color: #7fd8cc;
+    }
     .page-reference h1 {
         border-bottom-color: #2fb3a5;
     }

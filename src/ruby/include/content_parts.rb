@@ -11,7 +11,9 @@ module ContentParts
     NAME = /[a-z0-9][a-z0-9-]*/
     PART_MARKER = /^<!--\s*part:\s*(#{NAME})\s*-->[ \t]*$/
     PART_END = /^<!--\s*\/part\s*-->[ \t]*$/
-    INCLUDE = /_include\(\s*(#{NAME})#(#{NAME})\s*\)/
+    # _include(slug#part) or _include(slug#part, done: task-id): with done,
+    # the box shrinks to one line once that task on the page is solved.
+    INCLUDE = /_include\(\s*(#{NAME})#(#{NAME})\s*(?:,\s*done:\s*(#{NAME})\s*)?\)/
     USES = /_uses\(([^)\n]*)\)/
     # Page variables that parts may use. Only these names are replaced, so
     # ${...} in JavaScript or shell examples stays untouched.
@@ -127,10 +129,11 @@ module ContentParts
 
     # Replaces _include(slug#part) with that part of the reference page,
     # framed by two marker divs that the renderer turns into one box.
+    # done: names a task on the page; tasks.js folds the box once it is solved.
     # ${name} in the part is replaced from variables (e.g. the page's template).
     def self.expand_includes(markdown, page_dir:, reference_root:, variables: {}, warn: nil)
         markdown.gsub(INCLUDE) do
-            slug, part = $1, $2
+            slug, part, done = $1, $2, $3
             file = reference_file(reference_root, slug)
             text = file && parts(File.read(file, encoding: 'UTF-8'))[part]
             if text.nil?
@@ -139,17 +142,24 @@ module ContentParts
             end
 
             source = File.read(file, encoding: 'UTF-8')
-            label = [page_title(source), heading_text(text)].compact.uniq.join(' › ')
+            title = heading_text(text)
+            label = [page_title(source), title].compact.uniq.join(' › ')
             text = strip_leading_heading(text)
             text = rewrite_relative_sources(text, from_dir: File.dirname(file), to_dir: page_dir)
             text.scan(VARIABLE).flatten.uniq.each do |name|
                 warn&.call("_include(#{slug}##{part}): ${#{name}} has no value on this page") if variables[name].nil?
             end
             text = fill_variables(text, variables)
+            done_attrs = done ? " data-done='#{done}' data-title='#{CGI.escapeHTML(title || label)}'" : ''
             "\n<div class='reference-include-begin'></div>\n\n#{text}\n\n" \
                 "<div class='reference-include-end' data-href='/reference/#{slug}##{part}' " \
-                "data-label='#{CGI.escapeHTML(label.empty? ? slug : label)}'></div>\n"
+                "data-label='#{CGI.escapeHTML(label.empty? ? slug : label)}'#{done_attrs}></div>\n"
         end
+    end
+
+    # Task ids named by _include(…, done: id) in a page's Markdown.
+    def self.done_tasks(markdown)
+        markdown.scan(INCLUDE).map { |m| m[2] }.compact
     end
 
     # Replaces the known ${name} variables with the page's values, or with a

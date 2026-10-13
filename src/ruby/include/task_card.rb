@@ -148,7 +148,12 @@ module TaskCard
         when 'references'
             files = (check['scan'] || []).map { |f| path.("#{check['root']}/#{f}") }
             "Liest #{files.join(' und ')}"
-        when 'git' then "Liest <code>git status</code> in #{path.(check['repo'])}, ändert nichts"
+        when 'git'
+            if check['repo'].to_s.empty?
+                'Liest <code>git config user.name</code> und <code>user.email</code> in deinem Workspace, ändert nichts'
+            else
+                "Liest <code>git status</code> in #{path.(check['repo'])}, ändert nichts"
+            end
         when 'scene'
             viewer = File.join(File.dirname(check['file'].to_s), 'include', 'script.js')
             "Liest #{path.(check['file'])} mit deinem Viewer #{path.(viewer)}, in deinem Workspace"

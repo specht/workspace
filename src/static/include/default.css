@@ -1436,6 +1436,30 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     background-color: #f4fbfa;
 }
 
+/* _include(…, done: id) once the task is solved: one line instead of the box */
+.reference-include-folded {
+    padding-bottom: 0.8em;
+}
+
+.reference-include-folded > :not(.reference-include-done) {
+    display: none;
+}
+
+.reference-include-done {
+    margin: 0;
+    color: #0f5f58;
+}
+
+.reference-include-done .bi {
+    margin-right: 0.4em;
+    color: #0f766e;
+}
+
+.reference-include-done .btn-link {
+    padding: 0 0 0 0.5em;
+    vertical-align: baseline;
+}
+
 .reference-include-link {
     margin-top: 0.5em;
     font-size: 90%;

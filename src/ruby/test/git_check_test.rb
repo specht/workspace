@@ -63,6 +63,26 @@ class GitCheckTest < Minitest::Test
         assert_equal :no_identity, GitCheck.evaluate('sandbox', { 'min_commits' => 1 }, parse(['COUNT 9', 'REMOTE origin']))[1]
     end
 
+    def test_identity_without_repository
+        expect = { 'identity' => true }
+        ok, problem, message = GitCheck.evaluate('', expect, parse(['NAME Lena Muster']))
+        refute ok
+        assert_equal :no_identity, problem
+        assert_includes message, 'Git kennt deine E-Mail-Adresse noch nicht'
+        refute_includes message, 'deinen Namen'
+        assert_includes GitCheck.evaluate('', expect, parse([]))[2], 'deinen Namen und deine E-Mail-Adresse'
+        problem, message = GitCheck.evaluate('', expect, parse(['NAME Vorname Nachname', 'EMAIL lena@example.org']))[1, 2]
+        assert_equal :placeholder, problem
+        assert_includes message, '`Vorname Nachname`'
+        assert GitCheck.evaluate('', expect, parse(['NAME Lena Muster', 'EMAIL lena@example.org']))[0]
+        assert_equal "`git config user.name`: `Lena Muster`\n\n`git config user.email`: nicht gesetzt",
+            GitCheck.describe('', parse(['NAME Lena Muster']))
+        # With a repository, identity is checked after the repository itself.
+        state = parse(['COUNT 1', 'REMOTE origin', 'STATUS ## main...origin/main'])
+        assert_equal :no_identity, GitCheck.evaluate('sandbox', { 'has_remote' => true, 'identity' => true }, state)[1]
+        assert_equal :no_repo, GitCheck.evaluate('sandbox', { 'identity' => true }, parse(['NOREPO']))[1]
+    end
+
     # Runs the real script against real repositories (needs git and sh).
     def test_script_against_real_repositories
         skip 'git not installed' unless system('git --version > /dev/null 2>&1')
@@ -102,7 +122,12 @@ class GitCheckTest < Minitest::Test
             assert_equal 2, state[:mine]
             assert_equal({ :repo => false, :git => false }, run.(File.join(tmp, 'nope')))
             FileUtils.mkdir_p(File.join(tmp, 'plain'))
-            assert_equal({ :repo => true, :git => false }, run.(File.join(tmp, 'plain')))
+            assert_equal({ :repo => true, :git => false, :email => 't@x' }, run.(File.join(tmp, 'plain')))
+            # Identity is read outside any repository, from git config --global.
+            assert_equal :no_identity, GitCheck.evaluate('', { 'identity' => true }, run.(tmp))[1]
+            system(env, 'git', 'config', '--global', 'user.name', 'Tara Test')
+            assert GitCheck.evaluate('', { 'identity' => true }, run.(tmp))[0]
+            assert_includes GitCheck.describe('', run.(tmp)), '`Tara Test`'
             # Reading the status must not rewrite the index.
             index = File.join(work, '.git', 'index')
             sleep 1.1

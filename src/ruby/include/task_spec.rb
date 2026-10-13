@@ -54,7 +54,7 @@ module TaskSpec
         shape name at count min rows size bottom_y rotate_z lattice min_spacing moves orbits
     ].freeze
     SUBMIT_REQUIRES_KEYS = %w[html_parses scene_loads min_objects].freeze
-    GIT_EXPECT_KEYS = %w[has_remote min_commits committed pushed].freeze
+    GIT_EXPECT_KEYS = %w[has_remote min_commits committed pushed identity].freeze
     CODE_LANGUAGES = %w[ruby python javascript].freeze
 
     # Keys allowed in feedback[].when, per check type.
@@ -345,14 +345,16 @@ module TaskSpec
         when 'git'
             # Reads the state of a repository in the student's Workspace
             # (git status, run inside the container). Never changes it.
+            # Without repo it only asks who Git thinks you are (identity).
             allowed += %w[repo expect]
-            errors.concat(path_errors(check['repo'], 'repo'))
             expect = check['expect']
+            identity_only = expect.is_a?(Hash) && expect.keys == ['identity']
+            errors.concat(path_errors(check['repo'], 'repo')) unless identity_only && !check.key?('repo')
             unless expect.is_a?(Hash) && !expect.empty? && (expect.keys - GIT_EXPECT_KEYS).empty?
                 errors << "expect knows #{GIT_EXPECT_KEYS.join(', ')}"
             end
             if expect.is_a?(Hash)
-                (expect.keys & %w[committed pushed has_remote]).each do |k|
+                (expect.keys & %w[committed pushed has_remote identity]).each do |k|
                     errors << "expect.#{k} must be true" unless expect[k] == true
                 end
                 errors << 'expect.min_commits must be a positive whole number' if expect.key?('min_commits') && !(expect['min_commits'].is_a?(Integer) && expect['min_commits'] > 0)

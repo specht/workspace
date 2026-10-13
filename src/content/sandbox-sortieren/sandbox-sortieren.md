@@ -38,7 +38,9 @@ _include(gitlab#ssh-schluessel)
 
 _task(ssh-schluessel)
 
-_include(gitlab#git-name)
+_include(gitlab#git-name, done: git-name)
+
+_task(git-name)
 
 ## Einmalig: Klonen
 

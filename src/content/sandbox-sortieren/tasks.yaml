@@ -22,6 +22,19 @@ tasks:
           `ssh-keygen -t ed25519 -C "Vorname Nachname"` und bestätige alle
           Rückfragen mit Enter.
 
+  - id: git-name
+    title: Git kennt dich
+    prompt: Git kennt deinen Namen und die E-Mail-Adresse deines GitLab-Kontos.
+    check:
+      type: git
+      expect:
+        identity: true
+    feedback:
+      - when: { problem: placeholder }
+        say: |
+          Du hast das Beispiel abgeschrieben. Setze zwischen die
+          Anführungszeichen deinen echten Namen und deine E-Mail-Adresse.
+
   - id: geklont
     title: Die Sandbox ist da
     prompt: |

@@ -253,7 +253,7 @@ module TaskCheck
         end
 
         if type == 'git'
-            repo = check['repo']
+            repo = check['repo'].to_s
             state = if %i[missing].include?(workspace.entry(repo)[:type])
                 { :repo => false, :git => false }
             else

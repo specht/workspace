@@ -173,6 +173,20 @@ class TaskCheckTest < Minitest::Test
         end
     end
 
+    def test_git_identity_asks_the_container_about_the_workspace
+        task = { 'id' => 'git-name', 'check' => { 'type' => 'git', 'expect' => { 'identity' => true } },
+                 'feedback' => [{ 'when' => { 'problem' => 'placeholder' }, 'say' => 'Abgeschrieben.' }] }
+        with_workspace do |_tmp, ws|
+            state = GitCheck.parse("NAME Vorname Nachname\nEMAIL lena@example.org\nNOGIT\n")
+            result = TaskCheck.check(task, '', variables: {}, workspace: ws, git: ->(repo) { assert_equal '', repo; state })
+            assert_equal :placeholder, result.problem
+            assert_includes result.message, 'Abgeschrieben.'
+            assert_includes result.read, '`lena@example.org`'
+            state = GitCheck.parse("NAME Lena Muster\nEMAIL lena@example.org\nNOGIT\n")
+            assert_equal :correct, TaskCheck.check(task, '', variables: {}, workspace: ws, git: ->(_) { state }).status
+        end
+    end
+
     def test_submit_plans_and_does_not_count_refusals
         with_workspace do |tmp, ws|
             result = TaskCheck.check(showerjs['abgabe'], '', variables: {}, workspace: ws)

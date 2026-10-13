@@ -151,6 +151,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Neue Neo4j-Knoten `TaskState` und `TaskAttempt` (Constraint
   `TaskState/key`, Index `TaskAttempt/task`); sie werden beim Start von selbst
   angelegt.
+- `_include(seite#teil, done: aufgabe)`: Ist die genannte Aufgabe auf der
+  Seite gelöst, zeigt der Handbuch-Kasten beim nächsten Laden nur noch eine
+  Zeile mit »Anzeigen«. Die drei Sandbox-Seiten nutzen das für »Git sagen,
+  wer du bist«.
+- Prüfart `git` ohne `repo` mit `expect: { identity: true }`: Kennt Git
+  Namen und E-Mail-Adresse, und sind es nicht die Beispielwerte aus dem
+  Handbuch? Neue Aufgabe »Git kennt dich« in den drei Sandbox-Begleitern.
 
 ### Geändert
 

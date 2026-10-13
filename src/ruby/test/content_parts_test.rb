@@ -91,6 +91,23 @@ class ContentPartsTest < Minitest::Test
         assert_match(/data-label='[^']+ › Repository klonen'/, out)
     end
 
+    def test_include_with_done_names_the_task_that_folds_it
+        out = ContentParts.expand_includes('_include(workspace#klonen, done: geklont)', page_dir: @page, reference_root: @reference)
+        assert_includes out, "data-done='geklont' data-title='Repository klonen'"
+        refute_includes ContentParts.expand_includes('_include(workspace#klonen)', page_dir: @page, reference_root: @reference), 'data-done'
+        assert_equal ['geklont'], ContentParts.done_tasks("_include(workspace#klonen, done: geklont)\n_include(workspace#terminal)")
+    end
+
+    # done: must name a task that the same page shows, or nothing ever folds.
+    def test_every_done_task_is_on_its_page
+        Dir[File.join(CONTENT, '*', '*.md')].each do |file|
+            markdown = File.read(file, encoding: 'UTF-8')
+            ContentParts.done_tasks(markdown).each do |id|
+                assert_match(/^_task\(#{Regexp.escape(id)}\)\s*$/, markdown, "#{file}: done: #{id} has no _task(#{id})")
+            end
+        end
+    end
+
     def test_missing_part_and_variable_warn_but_do_not_break
         warnings = []
         out = ContentParts.expand_includes('_include(workspace#fehlt) _include(workspace#klonen)',

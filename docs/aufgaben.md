@@ -123,6 +123,7 @@ Platzhalter ersetzt, bevor Redcarpet den Text liest.
 | --- | --- | --- |
 | `_task(adresse)` | Die Aufgabe `adresse` aus `tasks.yaml` an dieser Stelle | M2 |
 | `_include(workspace#repository-klonen)` | Der Teil `repository-klonen` der Handbuch-Seite `workspace`, eingebettet in einem Kasten mit Link | M1 |
+| `_include(gitlab#git-name, done: git-name)` | Wie oben; ist die Aufgabe `git-name` auf dieser Seite gelöst, zeigt der Kasten beim nächsten Laden nur noch eine Zeile | M7 |
 | `_uses(ifconfig, ping)` | Kleine Marken, die zu den Teilen `ifconfig` und `ping` der Handbuch-Seiten aus `reference` führen | M1 |
 
 ### Teile einer Handbuch-Seite
@@ -146,6 +147,11 @@ Klicke auf »Clone Repository« und füge die Adresse der Vorlage ein:
 - Bei `_include()` fällt die erste Überschrift des Teils weg, weil die
   Aktivität ihre eigene schreibt. Relative Bildpfade werden passend
   umgeschrieben.
+- Mit `done: id` faltet sich der Kasten, sobald die Aufgabe `id` gelöst ist:
+  »✓ Git sagen, wer du bist: erledigt, Aufgabe 2 ist gelöst. Anzeigen«. Das
+  passiert nur beim Laden der Seite, nie während jemand liest. Die Aufgabe
+  muss auf derselben Seite stehen (ein Test prüft das). So gilt auch für
+  eingebundene Anleitungen: beim ersten Mal ausführlich, danach eine Zeile.
 - `${template}` wird durch das Feld `template` der einbindenden Seite ersetzt,
   auf der Handbuch-Seite selbst durch »[Adresse der Vorlage]«. Andere
   `${…}`, etwa in JavaScript-Beispielen, bleiben unverändert.
@@ -320,6 +326,20 @@ raten. `min_commits` zählt nur die Commits der Person selbst, erkannt an der
 E-Mail-Adresse aus `git config user.email`; ist keine eingetragen, sagt die
 Karte, wie man das nachholt. Ist `repo` nur ein Ordner in einem anderen
 Repository, sagt die Karte auch das.
+
+Ohne `repo` und nur mit `identity: true` fragt die Karte, wer Git zu sein
+glaubt: `git config user.name` und `user.email`, gelesen in `/workspace` im
+Container der Person. Fehlt eins, nennt sie die beiden Befehle; stehen dort
+noch die Beispielwerte aus dem Handbuch (»Vorname Nachname«,
+»deine.mail@example.org«), sagt sie das (`problem: placeholder`). Mit `repo`
+zusammen wird `identity` nach dem Repository geprüft.
+
+```yaml
+check:
+  type: git
+  expect:
+    identity: true
+```
 
 ### submit
 

@@ -14,12 +14,14 @@ module GitCheck
     STATUS_SCRIPT = <<~'SH'
         cd "$1" 2>/dev/null || { echo "NOREPO"; exit 0; }
         export GIT_OPTIONAL_LOCKS=0 GIT_TERMINAL_PROMPT=0
+        name=$(git config user.name 2>/dev/null | head -n 1)
+        email=$(git config user.email 2>/dev/null | head -n 1)
+        [ -n "$name" ] && echo "NAME $name"
+        [ -n "$email" ] && echo "EMAIL $email"
         git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "NOGIT"; exit 0; }
         echo "TOP $(git rev-parse --show-toplevel 2>/dev/null)"
         echo "COUNT $(git rev-list --count HEAD 2>/dev/null || echo 0)"
-        email=$(git config user.email 2>/dev/null)
         if [ -n "$email" ]; then
-            echo "EMAIL $email"
             echo "MINE $(git log --format=%ae 2>/dev/null | grep -cxF -- "$email")"
         fi
         git remote 2>/dev/null | sed 's/^/REMOTE /'
@@ -38,7 +40,8 @@ module GitCheck
             line = line.chomp
             case line
             when 'NOREPO' then return { :repo => false, :git => false }
-            when 'NOGIT' then return { :repo => true, :git => false }
+            when 'NOGIT' then return { :repo => true, :git => false }.merge(state.slice(:name, :email))
+            when /\ANAME (.+)\z/ then state[:name] = $1.strip
             when /\ATOP (.*)\z/ then state[:top] = $1
             when /\ACOUNT (\d+)\z/ then state[:commits] = $1.to_i
             when /\AEMAIL (.+)\z/ then state[:email] = $1.strip
@@ -84,6 +87,7 @@ module GitCheck
 
     # What was read, for the student.
     def self.describe(repo, state)
+        return identity_line(state) if repo.to_s.empty?
         return "#{code(repo)} gibt es nicht." unless state[:repo]
         return "#{code(repo)} ist kein Git-Repository." unless state[:git]
 
@@ -105,6 +109,36 @@ module GitCheck
         lines.join("\n\n")
     end
 
+    # git config user.name and user.email, as Git sees them in /workspace.
+    def self.identity_line(state)
+        name = state[:name] ? code(state[:name]) : 'nicht gesetzt'
+        email = state[:email] ? code(state[:email]) : 'nicht gesetzt'
+        "`git config user.name`: #{name}\n\n`git config user.email`: #{email}"
+    end
+
+    # The example values from the Handbuch, copied unchanged.
+    PLACEHOLDER_NAMES = ['Vorname Nachname'].freeze
+    PLACEHOLDER_EMAILS = ['deine.mail@example.org'].freeze
+    SET_IDENTITY = "```\ngit config --global user.name \"Vorname Nachname\"\ngit config --global user.email \"deine.mail@example.org\"\n```"
+
+    # [ok, problem, message] for expect identity: Git knows a name and an
+    # e-mail address, and they are not the examples from the Handbuch.
+    def self.evaluate_identity(state)
+        missing = []
+        missing << 'deinen Namen' unless state[:name]
+        missing << 'deine E-Mail-Adresse' unless state[:email]
+        unless missing.empty?
+            return [false, :no_identity, "Git kennt #{missing.join(' und ')} noch nicht. Ohne beides kannst du nicht committen. Im Terminal, mit deinen eigenen Angaben:\n\n#{SET_IDENTITY}"]
+        end
+        copied = []
+        copied << "den Namen #{code(state[:name])}" if PLACEHOLDER_NAMES.include?(state[:name])
+        copied << "die E-Mail-Adresse #{code(state[:email])}" if PLACEHOLDER_EMAILS.include?(state[:email])
+        unless copied.empty?
+            return [false, :placeholder, "Git kennt #{copied.join(' und ')} aus dem Beispiel. Setze deine eigenen Angaben ein und führe den Befehl noch einmal aus."]
+        end
+        [true, nil, nil]
+    end
+
     # What to git add: the one folder all changes are in (»lena/«), else -A.
     def self.add_target(paths)
         tops = paths.map { |p| p.include?('/') ? p.split('/').first : nil }.uniq
@@ -114,6 +148,9 @@ module GitCheck
     # Returns [ok, problem, message] for the expectations of a git check.
     # root is where repo lies (the Workspace folder as the container sees it).
     def self.evaluate(repo, expect, state, root: '/workspace')
+        # Without a repo, only who Git thinks you are (git config --global).
+        return evaluate_identity(state) if repo.to_s.empty?
+
         unless state[:repo]
             return [false, :no_repo, "#{code(repo)} gibt es in deinem Workspace nicht. Hast du das Repository geklont? Es gehört nach `/workspace/#{repo}`."]
         end
@@ -127,9 +164,13 @@ module GitCheck
         if expect['has_remote'] && state[:remotes].empty?
             return [false, :no_remote, "Das Repository #{code(repo)} kennt kein Remote, also keinen Ort, an den es pushen kann. `git remote -v` zeigt nichts."]
         end
+        if expect['identity']
+            result = evaluate_identity(state)
+            return result unless result.first
+        end
         # Without a name and e-mail Git refuses to commit, so this comes first.
         if expect['min_commits'] && state[:email].nil?
-            return [false, :no_identity, "Git weiß noch nicht, wer du bist. Ohne Namen und E-Mail-Adresse kannst du nicht committen. Im Terminal:\n\n```\ngit config --global user.name \"Vorname Nachname\"\ngit config --global user.email \"deine.mail@example.org\"\n```"]
+            return [false, :no_identity, "Git weiß noch nicht, wer du bist. Ohne Namen und E-Mail-Adresse kannst du nicht committen. Im Terminal:\n\n#{SET_IDENTITY}"]
         end
         if expect['committed'] && !state[:changes].empty?
             paths = state[:changes].map { |_, path| path }
