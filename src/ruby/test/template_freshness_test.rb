@@ -69,6 +69,22 @@ class TemplateFreshnessTest < Minitest::Test
         assert_equal 4, calls.size
     end
 
+    def test_refresh_asks_at_once_and_later_views_see_the_answer
+        now = 1000
+        calls = []
+        answer = 'a' * 40
+        cache = TF::LatestCache.new(:clock => -> { now }, :fetcher => lambda { |url| calls << url; answer })
+        assert_equal answer, cache.get('u')
+        answer = 'b' * 40
+        assert_equal 'a' * 40, cache.get('u'), 'remembered for an hour'
+        assert_equal 'b' * 40, cache.refresh('u')
+        assert_equal 'b' * 40, cache.get('u')
+        assert_equal 2, calls.size
+        now += 3599
+        cache.get('u')
+        assert_equal 2, calls.size
+    end
+
     # --- the script, against real repositories --------------------------------
 
     def git(dir, *args)

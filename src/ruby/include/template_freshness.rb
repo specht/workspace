@@ -104,10 +104,11 @@ module TemplateFreshness
         nil
     end
 
-    # Remembers the answer per template for a while, so that page views do
-    # not each ask the host. Failures are remembered for a shorter time.
+    # Remembers the answer per template for an hour, so that page views do
+    # not each ask the host; nothing asks in the background. A teacher can
+    # ask again at once (refresh). Failures are remembered for a shorter time.
     class LatestCache
-        def initialize(ttl: 600, failure_ttl: 120, clock: -> { Time.now.to_i }, fetcher: TemplateFreshness.method(:fetch_head))
+        def initialize(ttl: 3600, failure_ttl: 120, clock: -> { Time.now.to_i }, fetcher: TemplateFreshness.method(:fetch_head))
             @ttl = ttl
             @failure_ttl = failure_ttl
             @clock = clock
@@ -123,6 +124,17 @@ module TemplateFreshness
                 return entry[:sha] if entry && now < entry[:until]
             end
             sha = @fetcher.call(url)
+            @lock.synchronize do
+                @entries[url] = { :sha => sha, :until => now + (sha ? @ttl : @failure_ttl) }
+            end
+            sha
+        end
+
+        # Asks the host again, whatever is remembered: a teacher's »Neueste
+        # Version neu abfragen«. Page views after it see the new answer.
+        def refresh(url)
+            sha = @fetcher.call(url)
+            now = @clock.call
             @lock.synchronize do
                 @entries[url] = { :sha => sha, :until => now + (sha ? @ttl : @failure_ttl) }
             end

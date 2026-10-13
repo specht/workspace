@@ -46,6 +46,10 @@ class StudentHomeTest < Minitest::Test
         assert_includes html, 'Angeheftet für 10b'
         assert_includes html, 'Setze Formeln.'
         refute_includes html, 'uebung-strings'
+        refute_includes html, 'shc-template'
+        with_template = StudentHome.html(:progress => progress,
+            :pinned => [{ :slug => 'sandbox-cpu', :title => 'CPU', :group => '12', :template_folder => 'cpu-sandbox' }])
+        assert_includes with_template, "class='shc-template' data-slug='sandbox-cpu' data-folder='cpu-sandbox'"
     end
 
     def test_card_badges

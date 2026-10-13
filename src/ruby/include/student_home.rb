@@ -41,19 +41,23 @@ module StudentHome
 
     # Activities a teacher pinned for one of the person's groups, at the top
     # of the start page. Nothing else: progress shows on the catalog cards.
-    # pinned: [{ slug:, title:, abstract:, group: }]
+    # pinned: [{ slug:, title:, abstract:, group:, template_folder: }]; with a
+    # template, home_templates.js fills in whether the person's clone is current
     # progress: as from progress(), to show how far the person got
     def self.html(progress:, pinned: [])
         return '' if pinned.empty?
         by_slug = progress.to_h { |p| [p[:slug], p] }
         io = +"<section class='student-home' aria-labelledby='student-home-title'>"
         io << "<h2 id='student-home-title' class='student-home-label'>#{Icons.tabler('pin')} Von deiner Lehrkraft</h2><div class='student-home-cards'>"
-        pinned.each { |p| io << card(p[:slug], p[:title], by_slug[p[:slug]], :abstract => p[:abstract], :pinned => p[:group]) }
+        pinned.each do |p|
+            io << card(p[:slug], p[:title], by_slug[p[:slug]], :abstract => p[:abstract], :pinned => p[:group],
+                       :template_folder => p[:template_folder])
+        end
         io << '</div></section>'
         io
     end
 
-    def self.card(slug, title, entry, abstract: nil, pinned: nil)
+    def self.card(slug, title, entry, abstract: nil, pinned: nil, template_folder: nil)
         link = entry && entry[:next] ? "/#{h(slug)}#aufgabe-#{h(entry[:next][:id])}" : "/#{h(slug)}"
         io = +"<div class='student-home-card#{pinned ? ' student-home-pinned' : ''}' data-slug='#{h(slug)}'>"
         io << "<a class='shc-link' href='#{link}'>"
@@ -68,6 +72,9 @@ module StudentHome
             io << "<span class='shc-next'>#{h(abstract.to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '').strip)}</span>"
         end
         io << "<span class='shc-pinned-by'>Angeheftet für #{h(pinned)}</span>" if pinned
+        if template_folder
+            io << "<span class='shc-template' data-slug='#{h(slug)}' data-folder='#{h(template_folder)}' aria-live='polite'></span>"
+        end
         io << '</a>'
         io << '</div>'
         io

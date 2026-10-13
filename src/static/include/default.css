@@ -2180,6 +2180,14 @@ h3[id] {
     color: #5c636a;
 }
 
+.shc-template {
+    font-size: 90%;
+    color: #5c636a;
+}
+
+.shc-template-current { color: #146c43; }
+.shc-template-outdated { color: #8a5300; font-weight: 500; }
+
 .student-home-empty,
 .student-home-finished {
     color: #5c636a;

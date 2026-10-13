@@ -4029,9 +4029,12 @@ class Main < Sinatra::Base
 
         allowed = pinnable_slugs
         pinned = pins_for_groups(my_groups).select { |p| allowed.include?(p[:slug]) }.uniq { |p| p[:slug] }.map do |p|
-            { :slug => p[:slug], :title => plain_title(p[:slug]), :abstract => @@content[p[:slug]][:abstract], :group => p[:group] }
+            { :slug => p[:slug], :title => plain_title(p[:slug]), :abstract => @@content[p[:slug]][:abstract], :group => p[:group],
+              :template_folder => (@@content[p[:slug]][:template] || {})[:folder] }
         end
-        StudentHome.html(:progress => my_progress, :pinned => pinned)
+        html = StudentHome.html(:progress => my_progress, :pinned => pinned)
+        html += "<script src='/include/home_templates.js?#{CACHE_BUSTER}'></script>" if pinned.any? { |p| p[:template_folder] }
+        html
     end
 
     # Teachers pin an activity for a group; it shows first on the students' start page.
@@ -4110,6 +4113,8 @@ class Main < Sinatra::Base
             io << "<option value='#{h.(slug)}' data-folder='#{h.(t[:folder])}'#{slug == current ? ' selected' : ''}>#{h.(title)} (#{h.(t[:folder])})</option>"
         end
         io << "</select><button type='button' class='btn btn-sm btn-outline-primary class-template-check'>In den Workspaces nachsehen</button>"
+        io << "<button type='button' class='btn btn-sm btn-link class-template-check' data-force='yes' " \
+              "title='Sonst fragt der Workspace die Vorlage höchstens einmal pro Stunde'>Neueste Version neu abfragen</button>"
         io << "<div class='class-live-note'>Sieht nach, ob <code>/workspace/…</code> die neueste Version der Vorlage enthält. Holt nichts und ändert nichts; <code>git pull</code> machen die Lernenden selbst.</div>"
         io << "<div class='class-template-results' aria-live='polite'></div></div>"
         io
@@ -5089,12 +5094,14 @@ class Main < Sinatra::Base
     post '/api/class/template_status' do
         assert(user_logged_in?)
         Main.load_invitations()
-        data = parse_request_data(:required_keys => [:group, :slug], :max_value_lengths => {:group => 200, :slug => 120})
+        data = parse_request_data(:required_keys => [:group, :slug], :optional_keys => [:force],
+            :max_value_lengths => {:group => 200, :slug => 120})
         halt 403 unless class_groups.include?(data[:group])
         template = (@@content[data[:slug]] || {})[:template]
         halt 404 if template.nil?
 
-        latest = @@template_latest.get(template[:url])
+        # force: ask the template's host now instead of the remembered answer.
+        latest = data[:force] == 'yes' ? @@template_latest.refresh(template[:url]) : @@template_latest.get(template[:url])
         members = class_members(data[:group])
         results = {}
         if latest

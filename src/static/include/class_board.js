@@ -101,14 +101,17 @@
     const ORDER = ['outdated', 'absent', 'other', 'unavailable', 'current'];
     const template = document.querySelector('.class-template');
     if (template) {
-        const button = template.querySelector('.class-template-check');
         const select = template.querySelector('.class-template-select');
         const box = template.querySelector('.class-template-results');
-        button.addEventListener('click', function () {
+        // data-force='yes': ask the template's host now, not the answer
+        // remembered for up to an hour.
+        template.querySelectorAll('.class-template-check').forEach((button) => button.addEventListener('click', function () {
             const old = button.textContent;
             button.disabled = true;
             button.textContent = old + ' …';
-            api_call('/api/class/template_status', { group: template.dataset.group, slug: select.value }, function (data) {
+            const request = { group: template.dataset.group, slug: select.value };
+            if (button.dataset.force) request.force = button.dataset.force;
+            api_call('/api/class/template_status', request, function (data) {
                 button.disabled = false;
                 button.textContent = old;
                 if (!data.success) return;
@@ -145,7 +148,7 @@
                     box.appendChild(hint);
                 }
             });
-        });
+        }));
     }
 
     document.querySelectorAll('.class-live-check').forEach((button) => {
