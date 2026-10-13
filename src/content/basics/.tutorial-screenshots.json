@@ -3,8 +3,8 @@
   "screenshots": {
     "vs-code-welcome.webp": {
       "state_hash": "26ac35a12af0585430a9096f987f1466874cdbf8e251a79c861dca5f1b8498bf",
-      "environment_fingerprint": "e68fecc2b34a0aa48d9668d3aff193f20c080895c9821198cf306ed57f16b19f",
-      "output_sha256": "b141df728f31925a8337594546283f1617d5d3b5a64583e5b262461a93a9b0cb"
+      "environment_fingerprint": "db16a8ce324470464b5c6b7f34b76be2efd19945eb23a571867f62778aa88465",
+      "output_sha256": "71470941b8975f035f619d751e2fa012068f29b456e5223cb6cf3c513ed6d4e6"
     }
   }
 }
