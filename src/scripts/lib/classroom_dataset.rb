@@ -111,6 +111,12 @@ module ClassroomDataset
       tables.each { |table| write_rows(file, table) }
       file.puts
       file.puts 'SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;'
+      # Right after a large import InnoDB has no statistics for the new rows
+      # yet, and a join over several tables can take a minute instead of a
+      # second (Filmdatenbank, "Wer spielt mit wem?"). The import prints one
+      # "OK" line per table for it.
+      file.puts
+      file.puts "ANALYZE TABLE #{tables.map { |table| "`#{table.name}`" }.join(', ')};"
     end
 
     def write_rows(file, table, batch_size: 1_000)

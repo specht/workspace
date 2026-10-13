@@ -258,7 +258,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Workspace-Image neu gebaut werden (`build-image.sh`).
 - Die Filmdatenbank lädt ihre Daten mit `wget` aus
   `specht/workspace-files/movie-archive/`; andere Schulen können die Dateien
-  mit `src/scripts/collect-movies` selbst bauen.
+  mit `src/scripts/collect-movies` selbst bauen. Die Datendateien enden mit
+  `ANALYZE TABLE`: Ohne aktuelle Statistik dauert »Wer spielt mit wem?« direkt
+  nach dem Import 50 Sekunden statt einer. Neu erzeugen geht ohne Netz mit
+  `./collect-movies.rb --offline --output …/workspace-files/movie-archive`.
 - Für den Hinweis auf neue Versionen braucht der Server ausgehende
   HTTPS-Verbindungen zu den Adressen aus `template` (GitHub, GitLab).
   Kommt keine Antwort, erscheint einfach kein Hinweis.
