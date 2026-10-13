@@ -66,7 +66,7 @@ Ein ER-Modell (Entity-Relationship-Modell) beschreibt, welche Dinge es gibt (**E
 # Filme und ihre Genres
 
 entity movie
-  id: int, key
+  id: int, primary key
   title: text
   original_title: text, optional
   german_title: text, optional
@@ -74,7 +74,7 @@ entity movie
   runtime: int
 
 entity genre
-  id: int, key
+  id: int, primary key
   name: text, unique
 
 relationship has_genre: movie n:m genre
@@ -84,7 +84,7 @@ So liest du das:
 
 - `entity movie` legt die Entität `movie` an. Die eingerückten Zeilen darunter sind ihre Attribute: Name, Doppelpunkt, Typ.
 - Typen: `int` für ganze Zahlen, `text` für Text bis 255 Zeichen. Es gibt auch `varchar(n)`, `decimal(p,s)`, `float`, `date`, `datetime` und `bool`.
-- `key` markiert den **Schlüssel**: das Attribut, das jeden Film eindeutig bestimmt. Titel taugen dafür nicht, es gibt mehrere Filme mit demselben Titel.
+- `primary key` markiert den **Primärschlüssel**: das Attribut, das jeden Film eindeutig bestimmt. Titel taugen dafür nicht, es gibt mehrere Filme mit demselben Titel. In SQL heißt er genauso, `PRIMARY KEY`.
 - `optional` heißt: darf leer bleiben. Nicht jeder Film hat einen eigenen deutschen Titel.
 - `unique` heißt: kein Wert darf doppelt vorkommen. Jedes Genre gibt es nur einmal.
 - `relationship has_genre: movie n:m genre` verbindet Filme und Genres. `n:m` ist die **Kardinalität**: Ein Film hat mehrere Genres, und zu einem Genre gehören viele Filme. Weitere Möglichkeiten sind `1:1`, `1:n` und `n:1`.
@@ -118,11 +118,11 @@ sleep: 2
 
 Oben in der Vorschau wählst du zwischen drei Darstellungen desselben Modells.
 
-**Chen.** Rechtecke sind Entitäten, Rauten Beziehungen, Ellipsen Attribute. Schlüssel sind unterstrichen. An den Linien steht die Kardinalität. Diese Darstellung findest du in vielen Schulbüchern.
+**Chen.** Rechtecke sind Entitäten, Rauten Beziehungen, Ellipsen Attribute. Primärschlüssel sind unterstrichen. An den Linien steht die Kardinalität. Diese Darstellung findest du in vielen Schulbüchern.
 
 <img src='film-1-chen.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Chen-Diagramm: movie und genre als Rechtecke, verbunden über die Raute has_genre mit n und m, Attribute als Ellipsen.'>
 
-**Krähenfuß.** Jede Entität ist ein Kasten mit ihren Attributen. Das Linienende zeigt die Kardinalität: ein Strich heißt »eins«, der gespreizte Krähenfuß »viele«.
+**Krähenfuß.** Jede Entität ist ein Kasten mit ihren Attributen. Das Linienende zeigt die Kardinalität: Der gespreizte Krähenfuß heißt »viele«, ein Querstrich heißt »eins«. Weil `has_genre` eine n:m-Beziehung ist, siehst du hier an beiden Enden einen Krähenfuß und keinen Strich.
 
 <img src='film-1-crowfoot.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Krähenfuß-Diagramm: movie und genre, an beiden Enden der Linie ein Krähenfuß.'>
 
@@ -130,7 +130,9 @@ Oben in der Vorschau wählst du zwischen drei Darstellungen desselben Modells.
 
 <img src='film-1-tables.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Tabellendiagramm: movie und genre, dazwischen die Tabelle movie_genre mit movie_id und genre_id, beide PK und FK.'>
 
-In `movie_genre` steht `PK-FK` vor beiden Spalten:
+Jetzt siehst du auch den Strich für »eins«: Die Linien führen von `movie_genre` zu `movie` und zu `genre`, mit dem Krähenfuß bei `movie_genre` und dem Strich am anderen Ende. Zu einem Film gehören viele Zeilen in `movie_genre`, aber jede Zeile gehört zu genau einem Film.
+
+In `movie_genre` steht `PK·FK` vor beiden Spalten:
 
 - **FK**, Fremdschlüssel: `movie_id` verweist auf eine `id` in `movie`, `genre_id` auf eine `id` in `genre`. Die Datenbank lässt nur IDs zu, die es dort gibt.
 - **PK**, Primärschlüssel: Beide Spalten **zusammen** bestimmen eine Zeile eindeutig. `movie_id` allein reicht nicht, ein Film hat mehrere Genres. Das nennt man einen zusammengesetzten Primärschlüssel.
@@ -311,13 +313,13 @@ Sie verbindet drei Entitäten auf einmal: Film, Person und Tätigkeit. Ergänze 
 # Personen und was sie bei einem Film gemacht haben
 
 entity crew
-  id: int, key
+  id: int, primary key
   name: text
   birth_year: int, optional
   death_year: int, optional
 
 entity job
-  id: int, key
+  id: int, primary key
   title: text, unique
 
 relationship credit: movie, crew, job as movie_crew

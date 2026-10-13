@@ -237,6 +237,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   stehen, nur neue werden platziert.
 - Profil: Der Hinweis nennt die Umgebungsvariable richtig, `NEO4J_DATABASE`
   statt `NEO4J_DB`.
+- ER-Werkstatt 0.2.0: Der Primärschlüssel heißt im Modell `primary key`, wie
+  in SQL (`id: int, primary key`). `key` allein funktioniert weiter; die
+  Erweiterung schlägt dann `primary key` vor. Filmdatenbank, Handbuch und
+  Prüfart `er` sprechen von `primary key`. Der Text zum Krähenfuß sagt, warum
+  das erste Diagramm keinen Strich zeigt, und zeigt ihn im Tabellendiagramm.
 
 ### Für Betreibende
 
@@ -251,4 +256,5 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Kommt keine Antwort, erscheint einfach kein Hinweis.
 - Das Workspace-Image enthält `neo4j_bolt` (Gem, Version im Dockerfile als
   `NEO4J_BOLT_VERSION`). Neu bauen mit `build-image.sh`.
+- Neue ER-Werkstatt `hackschule-er-0.2.0.vsix`: Workspace-Image neu bauen.
 

@@ -8,12 +8,12 @@ require_relative '../include/task_spec'
 class ErCheckTest < Minitest::Test
     FILM = <<~ER
         entity movie
-          id: int, key
+          id: int, primary key
           title: text
           year: int, optional
 
         entity genre
-          id: int, key
+          id: int, primary key
           name: text, unique
 
         relationship has_genre: movie n:m genre
@@ -81,7 +81,7 @@ class ErCheckTest < Minitest::Test
     end
 
     def test_key_and_attributes
-        _, problem, message, = evaluate(FILM.sub('  id: int, key', '  id: int').sub('title: text', 'title: text, key'))
+        _, problem, message, = evaluate(FILM.sub('  id: int, primary key', '  id: int').sub('title: text', 'title: text, primary key'))
         assert_equal :key, problem
         assert_includes message, 'Der Schlüssel von `movie` ist `title`, verlangt ist `id`'
 
@@ -117,7 +117,7 @@ class ErCheckTest < Minitest::Test
     end
 
     def test_three_way_relationship_and_its_table
-        model = FILM + "\nentity crew\n  id: int, key\n  name: text\n\nentity job\n  id: int, key\n  name: text\n\nrelationship credit: movie, crew, job\n"
+        model = FILM + "\nentity crew\n  id: int, primary key\n  name: text\n\nentity job\n  id: int, primary key\n  name: text\n\nrelationship credit: movie, crew, job\n"
         check = CHECK.merge('relationships' => [{ 'between' => %w[job movie crew], 'table' => 'movie_crew' }])
         _, problem, message, = evaluate(model, check)
         assert_equal :missing_table, problem

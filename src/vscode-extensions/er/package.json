@@ -2,7 +2,7 @@
   "name": "hackschule-er",
   "displayName": "ER-Werkstatt",
   "description": "ER-Modelle als Text (.er): Chen- und Krähenfuß-Diagramm daneben, Tabellen und MySQL-Schema auf Knopfdruck.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "hackschule",
   "license": "MIT",
   "engines": {

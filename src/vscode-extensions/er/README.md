@@ -32,12 +32,12 @@ so a model means the same everywhere.
 ```
 # comments start with #
 entity movie
-  id: int, key
+  id: int, primary key
   title: text
   german_title: text, optional
 
 entity genre
-  id: int, key
+  id: int, primary key
   name: text, unique
 
 relationship has_genre: movie n:m genre              # table movie_genre
@@ -49,7 +49,8 @@ relationship loan: customer n:m copy                 # attributes of a relations
 - Keywords and identifiers are English and lower case; messages for students
   are German.
 - Types: `int`, `text` (VARCHAR(255)), `varchar(n)`, `decimal(p,s)`, `float`,
-  `date`, `datetime`, `bool`. Flags: `key`, `optional`, `unique`.
+  `date`, `datetime`, `bool`. Flags: `primary key`, `optional`, `unique`
+  (`key` still works and gets a warning suggesting `primary key`).
 - Cardinalities: `1:1`, `1:n`, `n:1`, `n:m`. A three-way relationship lists its
   entities with commas. Indented lines under a relationship are its attributes;
   they end up in the table that holds the relationship.

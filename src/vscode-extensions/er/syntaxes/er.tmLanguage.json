@@ -46,7 +46,7 @@
       "patterns": [
         { "include": "#comment" },
         { "match": "\\b(int|text|varchar|decimal|float|date|datetime|bool)\\b", "name": "support.type.er" },
-        { "match": "\\bkey\\b", "name": "storage.modifier.key.er" },
+        { "match": "\\b(?:primary\\s+key|key)\\b", "name": "storage.modifier.key.er" },
         { "match": "\\b(optional|unique)\\b", "name": "storage.modifier.er" },
         { "match": "\\d+", "name": "constant.numeric.er" }
       ]

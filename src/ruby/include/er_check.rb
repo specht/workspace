@@ -60,7 +60,8 @@ module ErCheck
     # "year: int, optional" -> { name: 'year', type: 'int', flags: ['optional'] }
     def self.parse_attribute(text)
         name, rest = text.to_s.split(':', 2)
-        parts = rest.to_s.split(/,(?![^(]*\))/).map { |p| p.strip.downcase }.reject(&:empty?)
+        # »primary key« and the older »key« mean the same.
+        parts = rest.to_s.split(/,(?![^(]*\))/).map { |p| p.strip.downcase.sub(/\Aprimary\s+key\z/, 'key') }.reject(&:empty?)
         type = parts.first && !FLAGS.include?(parts.first) ? parts.shift.gsub(/\s+/, '') : nil
         { :name => name.to_s.strip, :type => type, :flags => parts }
     end
@@ -155,7 +156,7 @@ module ErCheck
             keys = entity['attributes'].select { |a| a['key'] }.map { |a| a['name'] }
             if spec['key'] && keys != spec['key']
                 if keys.empty?
-                    return [false, :key, "#{code(name)} hat noch keinen Schlüssel. Markiere #{spec['key'].size == 1 ? 'das Attribut' : 'die Attribute'} #{TableExpect.list(spec['key'])} mit `key`, zum Beispiel `#{spec['key'].first}: int, key`."]
+                    return [false, :key, "#{code(name)} hat noch keinen Schlüssel. Markiere #{spec['key'].size == 1 ? 'das Attribut' : 'die Attribute'} #{TableExpect.list(spec['key'])} mit `primary key`, zum Beispiel `#{spec['key'].first}: int, primary key`."]
                 end
                 return [false, :key, "Der Schlüssel von #{code(name)} ist #{TableExpect.list(keys)}, verlangt ist #{TableExpect.list(spec['key'])}."]
             end
@@ -171,7 +172,7 @@ module ErCheck
                 want[:flags].each do |flag|
                     next if have[flag]
 
-                    what = { 'optional' => 'darf leer bleiben (`optional`)', 'unique' => 'muss eindeutig sein (`unique`)', 'key' => 'gehört zum Schlüssel (`key`)' }[flag]
+                    what = { 'optional' => 'darf leer bleiben (`optional`)', 'unique' => 'muss eindeutig sein (`unique`)', 'key' => 'gehört zum Primärschlüssel (`primary key`)' }[flag]
                     return [false, :attribute, "#{code("#{name}.#{want[:name]}")} #{what}; das steht noch nicht im Modell."]
                 end
             end

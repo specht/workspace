@@ -21,11 +21,11 @@ Schreib links ein Modell; rechts erscheint es als Diagramm, darunter die Tabelle
 
 <div class='er-playground'>
 <textarea class='form-control er-playground-input' spellcheck='false' autocapitalize='off' aria-label='ER-Modell'>entity student
-  id: int, key
+  id: int, primary key
   name: text
 
 entity course
-  id: int, key
+  id: int, primary key
   title: text, unique
 
 relationship takes: student n:m course
@@ -90,17 +90,17 @@ Eine `.er`-Datei besteht aus Entitäten und Beziehungen, in beliebiger Reihenfol
 ```er
 # Filme und ihre Genres
 entity movie
-  id: int, key
+  id: int, primary key
   title: text
 
 entity genre
-  id: int, key
+  id: int, primary key
   name: text, unique
 
 relationship has_genre: movie n:m genre
 ```
 
-Alle Namen schreibst du klein, mit Buchstaben, Ziffern und `_`, ohne Leerzeichen und Umlaute: `german_title`, nicht `deutscher Titel`. Aus den Namen werden später Tabellen und Spalten. Die Schlüsselwörter sind Englisch: `entity`, `relationship`, `key`, `optional`, `unique`, `as`.
+Alle Namen schreibst du klein, mit Buchstaben, Ziffern und `_`, ohne Leerzeichen und Umlaute: `german_title`, nicht `deutscher Titel`. Aus den Namen werden später Tabellen und Spalten. Die Schlüsselwörter sind Englisch: `entity`, `relationship`, `primary key`, `optional`, `unique`, `as`.
 <!-- /part -->
 
 <!-- part: attribute -->
@@ -125,7 +125,7 @@ Alle Namen schreibst du klein, mit Buchstaben, Ziffern und `_`, ohne Leerzeichen
 <div class='scroll-x'><table class='table table-sm reference-table'>
 <thead><tr><th>Markierung</th><th>Bedeutung</th></tr></thead>
 <tbody>
-<tr><td><code>key</code></td><td>gehört zum Schlüssel: bestimmt jeden Datensatz eindeutig. Jede Entität braucht einen. Mehrere <code>key</code>-Attribute bilden zusammen den Schlüssel.</td></tr>
+<tr><td><code>primary key</code></td><td>gehört zum Primärschlüssel: bestimmt jeden Datensatz eindeutig. Jede Entität braucht einen. Mehrere Attribute mit <code>primary key</code> bilden ihn zusammen. Das ältere <code>key</code> funktioniert noch, die ER-Werkstatt schlägt dann <code>primary key</code> vor.</td></tr>
 <tr><td><code>optional</code></td><td>darf leer bleiben (<code>NULL</code>). Ohne die Markierung muss immer ein Wert da sein (<code>NOT NULL</code>).</td></tr>
 <tr><td><code>unique</code></td><td>kein Wert darf doppelt vorkommen</td></tr>
 </tbody>
@@ -133,7 +133,7 @@ Alle Namen schreibst du klein, mit Buchstaben, Ziffern und `_`, ohne Leerzeichen
 
 ```er
 entity book
-  isbn: varchar(17), key
+  isbn: varchar(17), primary key
   title: text
   price: decimal(6,2), optional
   published: date
@@ -185,7 +185,7 @@ So übersetzt die ER-Werkstatt ein Modell. In der Vorschau steht es für dein Mo
 <div class='scroll-x'><table class='table table-sm reference-table'>
 <thead><tr><th>Im Modell</th><th>In der Datenbank</th></tr></thead>
 <tbody>
-<tr><td>Entität</td><td>eine Tabelle mit demselben Namen; die <code>key</code>-Attribute bilden den Primärschlüssel</td></tr>
+<tr><td>Entität</td><td>eine Tabelle mit demselben Namen; die Attribute mit <code>primary key</code> bilden den Primärschlüssel</td></tr>
 <tr><td><code>1:n</code> oder <code>n:1</code></td><td>keine eigene Tabelle. Die Tabelle auf der n-Seite bekommt einen Fremdschlüssel auf die 1-Seite, z. B. <code>city_id</code> in <code>student</code>. Er darf nicht leer sein.</td></tr>
 <tr><td><code>1:1</code></td><td>keine eigene Tabelle. Die zweite Entität bekommt einen Fremdschlüssel auf die erste, mit <code>UNIQUE</code></td></tr>
 <tr><td><code>n:m</code></td><td>eine eigene Tabelle <code>a_b</code> (z. B. <code>movie_genre</code>) mit den Schlüsseln beider Seiten als Fremdschlüssel; zusammen sind sie der Primärschlüssel</td></tr>

@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.2.0
+
+- `primary key` marks the key, as in SQL; `key` alone still works and gets a
+  warning suggesting `primary key`.
 
 - Chen: attributes are spread evenly around their entity, in the gaps
   between its relationship lines, in the order they are written (clockwise

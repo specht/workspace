@@ -1,7 +1,7 @@
 # Filme und ihre Genres
 
 entity movie
-  id: int, key
+  id: int, primary key
   title: text
   original_title: text, optional
   german_title: text, optional
@@ -9,7 +9,7 @@ entity movie
   runtime: int
 
 entity genre
-  id: int, key
+  id: int, primary key
   name: text, unique
 
 relationship has_genre: movie n:m genre

@@ -11,7 +11,7 @@ const core = require('./er-core.js');
 // the dataset from src/scripts/collect-movies (same table and column names).
 const FILM = `# Filmdatenbank
 entity movie
-  id: int, key
+  id: int, primary key
   title: text
   original_title: text, optional
   german_title: text, optional
@@ -19,17 +19,17 @@ entity movie
   runtime: int
 
 entity genre
-  id: int, key
+  id: int, primary key
   name: text, unique
 
 entity crew
-  id: int, key
+  id: int, primary key
   name: text
   birth_year: int
   death_year: int, optional
 
 entity job
-  id: int, key
+  id: int, primary key
   title: text, unique
 
 relationship has_genre: movie n:m genre
@@ -69,14 +69,14 @@ test('SQL starts by dropping the tables and names its source', () => {
 
 test('1:n puts the foreign key on the n side, 1:1 makes it unique', () => {
     const { model, result } = core.compile(`entity movie
-  id: int, key
+  id: int, primary key
 entity copy
-  number: int, key
+  number: int, primary key
 relationship has: movie 1:n copy
 entity class
-  name: varchar(10), key
+  name: varchar(10), primary key
 entity teacher
-  short: varchar(5), key
+  short: varchar(5), primary key
 relationship leads: teacher 1:1 class
 `);
     assert.deepEqual(model.errors, []);
@@ -89,13 +89,13 @@ relationship leads: teacher 1:1 class
 });
 
 test('n:1 is the same as 1:n the other way round', () => {
-    const a = core.compile('entity a\n  id: int, key\nentity b\n  id: int, key\nrelationship r: b n:1 a\n').result;
+    const a = core.compile('entity a\n  id: int, primary key\nentity b\n  id: int, primary key\nrelationship r: b n:1 a\n').result;
     assert.deepEqual(a.tables.find((t) => t.name === 'b').fks, [{ cols: ['a_id'], refTable: 'a', refCols: ['id'] }]);
 });
 
 test('a relationship of an entity with itself', () => {
     const { model, result } = core.compile(`entity person
-  id: int, key
+  id: int, primary key
 relationship follows: person n:m person
 relationship mentor: person 1:n person
 `);
@@ -109,16 +109,36 @@ relationship mentor: person 1:n person
 
 test('relationship attributes go into the join table', () => {
     const { result } = core.compile(`entity customer
-  id: int, key
+  id: int, primary key
 entity copy
-  number: int, key
+  number: int, primary key
 relationship rents: customer n:m copy as rental
-  start: datetime, key
+  start: datetime, primary key
   back: datetime, optional
 `);
     const rental = result.tables.find((t) => t.name === 'rental');
     assert.deepEqual(rental.pk, ['customer_id', 'copy_number', 'start']);
     assert.equal(rental.columns.find((c) => c.name === 'back').nullable, true);
+});
+
+test('primary key is the key; key alone still works, with a hint', () => {
+    const now = core.compile('entity movie\n  id: int, primary key\n  title: text\n');
+    assert.deepEqual(now.model.errors, []);
+    assert.deepEqual(now.model.warnings, []);
+    assert.equal(now.model.entities[0].attrs[0].key, true);
+    assert.deepEqual(now.result.tables[0].pk, ['id']);
+    const old = core.compile('entity movie\n  id: int, key\n');
+    assert.deepEqual(old.model.errors, []);
+    assert.equal(old.model.entities[0].attrs[0].key, true);
+    assert.match(old.model.warnings[0].msg, /Schreib »primary key« statt »key«/);
+    assert.equal(old.model.warnings[0].line, 2);
+    const loud = core.compile('entity movie\n  id: int, Primary Key\n  code: text, Key\n');
+    assert.deepEqual(loud.model.errors.map((p) => p.msg).slice(0, 2), [
+        '»Primary Key« schreibst du klein: »primary key«.',
+        '»Key« schreibst du klein: »primary key«.',
+    ]);
+    const none = core.compile('entity movie\n  title: text\n');
+    assert.match(none.model.errors[0].msg, /braucht einen Primärschlüssel \(»primary key«\)/);
 });
 
 test('problems are German, with line and columns', () => {
@@ -142,14 +162,14 @@ relationship x: movie n:m film
 });
 
 test('every entity needs a key; a name is used once', () => {
-    const { model } = core.compile('entity a\n  name: text\nentity a\n  id: int, key\n');
+    const { model } = core.compile('entity a\n  name: text\nentity a\n  id: int, primary key\n');
     const msgs = model.errors.map((p) => p.msg).join('\n');
-    assert.match(msgs, /braucht ein Schlüsselattribut/);
+    assert.match(msgs, /braucht einen Primärschlüssel/);
     assert.match(msgs, /gibt es schon/);
 });
 
 test('a clash between a join table and an entity is reported', () => {
-    const { model } = core.compile('entity movie\n  id: int, key\nentity genre\n  id: int, key\nentity movie_genre\n  id: int, key\nrelationship g: movie n:m genre\n');
+    const { model } = core.compile('entity movie\n  id: int, primary key\nentity genre\n  id: int, primary key\nentity movie_genre\n  id: int, primary key\nrelationship g: movie n:m genre\n');
     assert.match(model.errors.map((p) => p.msg).join('\n'), /bräuchte eine Tabelle `movie_genre`.*»as«/);
 });
 
@@ -180,7 +200,7 @@ test('diagrams: deterministic, kept positions, escaped labels', () => {
     const tables = core.diagram(FILM, 'tables');
     assert.match(tables.svg, />movie_crew</);
     assert.match(tables.svg, /class="tag pk"[^>]*>PK·FK</);
-    const tricky = core.diagram('entity Bücher\n  id: int, key\n', 'chen');
+    const tricky = core.diagram('entity Bücher\n  id: int, primary key\n', 'chen');
     assert.match(tricky.svg, />Bücher</);
     assert.equal(core.esc('<a href="x">'), '&lt;a href=&quot;x&quot;&gt;');
 });
@@ -204,7 +224,7 @@ test('chen: attributes spread around their entity, clear of relationship lines',
 });
 
 test('chen: attributes keep their order, clockwise from the top', () => {
-    const { graph } = core.diagram('entity book\n  id: int, key\n  title: text\n  year: int\n  pages: int\n', 'chen');
+    const { graph } = core.diagram('entity book\n  id: int, primary key\n  title: text\n  year: int\n  pages: int\n', 'chen');
     const book = graph.nodes.find((n) => n.id === 'E:book');
     const attrs = graph.nodes.filter((n) => n.kind === 'A');
     assert.deepEqual(attrs.map((a) => a.label), ['id', 'title', 'year', 'pages']);
@@ -214,7 +234,7 @@ test('chen: attributes keep their order, clockwise from the top', () => {
 });
 
 test('chen: the two cardinalities of a relationship with itself do not overlap', () => {
-    const svg = core.diagram('entity employee\n  id: int, key\nrelationship manages: employee 1:n employee\n', 'chen').svg;
+    const svg = core.diagram('entity employee\n  id: int, primary key\nrelationship manages: employee 1:n employee\n', 'chen').svg;
     const cards = [...svg.matchAll(/<text class="card" x="([-\d.]+)" y="([-\d.]+)">/g)].map((m) => [Number(m[1]), Number(m[2])]);
     assert.equal(cards.length, 2);
     assert.ok(Math.hypot(cards[0][0] - cards[1][0], cards[0][1] - cards[1][1]) > 14);

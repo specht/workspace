@@ -117,7 +117,7 @@
             }
             const m = s.match(RE_ATTR);
             if (!m) {
-                errors.push(problem(line, 'Attribute schreibst du als »name: typ, zusatz«, zum Beispiel »id: int, key«.', raw));
+                errors.push(problem(line, 'Attribute schreibst du als »name: typ, zusatz«, zum Beispiel »id: int, primary key«.', raw));
                 return;
             }
             const attr = { name: m[1], type: 'text', key: false, optional: false, unique: false, line };
@@ -125,15 +125,23 @@
             for (const part of splitTopLevel(m[2] || '')) {
                 const at = raw.indexOf(part, offset);
                 const p = part.replace(/\s+/g, '');
-                if (RE_TYPE.test(p)) attr.type = p;
+                // »primary key«, as in SQL; »key« alone still works, with a hint.
+                if (/^primary\s+key$/.test(part.trim())) attr.key = true;
+                else if (/^primary\s+key$/i.test(part.trim())) {
+                    errors.push(problem(line, `»${part}« schreibst du klein: »primary key«.`, raw, at, at + part.length));
+                } else if (p === 'key') {
+                    attr.key = true;
+                    warnings.push(problem(line, 'Schreib »primary key« statt »key«: So heißt der Primärschlüssel auch in SQL.', raw, at, at + part.length));
+                } else if (RE_TYPE.test(p)) attr.type = p;
                 else if (FLAGS.includes(p)) attr[p] = true;
                 else if (RE_TYPE.test(p.toLowerCase()) || FLAGS.includes(p.toLowerCase())) {
-                    errors.push(problem(line, `»${part}« schreibst du klein: »${p.toLowerCase()}«.`, raw, at, at + part.length));
+                    const lower = p.toLowerCase() === 'key' ? 'primary key' : p.toLowerCase();
+                    errors.push(problem(line, `»${part}« schreibst du klein: »${lower}«.`, raw, at, at + part.length));
                 } else {
-                    errors.push(problem(line, `»${part}« ist weder ein Datentyp (${TYPE_LIST}) noch ein Zusatz (key, optional, unique).`, raw, at, at + part.length));
+                    errors.push(problem(line, `»${part}« ist weder ein Datentyp (${TYPE_LIST}) noch ein Zusatz (primary key, optional, unique).`, raw, at, at + part.length));
                 }
             }
-            if (attr.key && attr.optional) errors.push(problem(line, 'Ein Schlüsselattribut kann nicht optional sein.', raw));
+            if (attr.key && attr.optional) errors.push(problem(line, 'Ein Attribut des Primärschlüssels kann nicht optional sein.', raw));
             if (current.attrs.some((a) => a.name.toLowerCase() === attr.name.toLowerCase())) {
                 errors.push(problem(line, `Das Attribut »${attr.name}« gibt es hier schon.`, raw));
             }
@@ -146,7 +154,7 @@
             if (byName.has(k)) errors.push(problem(e.line, `Die Entität »${e.name}« gibt es schon.`));
             byName.set(k, e);
             if (!e.attrs.some((a) => a.key)) {
-                errors.push(problem(e.line, `»${e.name}« braucht ein Schlüsselattribut (»key«), das jeden Datensatz eindeutig macht.`));
+                errors.push(problem(e.line, `»${e.name}« braucht einen Primärschlüssel (»primary key«), der jeden Datensatz eindeutig macht.`));
             }
         }
         const relNames = new Set();
@@ -266,7 +274,7 @@
                 if (isOne) t.uniques.push(cols.map((c) => c.name));
                 for (const ra of relAttrs) {
                     t.columns.push({ name: ra.name, type: ra.type, nullable: ra.nullable });
-                    if (ra.key) warnings.push(problem(r.line, `Bei einer ${r.cardText.join(':')}-Beziehung wird »${ra.name}« ein normales Attribut von \`${t.name}\`; »key« wirkt hier nicht.`));
+                    if (ra.key) warnings.push(problem(r.line, `Bei einer ${r.cardText.join(':')}-Beziehung wird »${ra.name}« ein normales Attribut von \`${t.name}\`; »primary key« wirkt hier nicht.`));
                 }
                 if (r.table) warnings.push(problem(r.line, `»as« gilt nur für Beziehungen mit eigener Tabelle (n:m oder mehrstellig).`));
                 const fk = cols.map((c) => c.name).join(', ');

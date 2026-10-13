@@ -557,7 +557,10 @@ check:
 
 Was nicht genannt ist, ist frei: weitere Entitäten, Attribute und Beziehungen
 stören nicht. Ein Attribut wird so geschrieben wie im Modell; Typ und
-Markierungen (`key`, `optional`, `unique`) zählen nur, wenn sie dastehen.
+Markierungen (`primary key`, `optional`, `unique`) zählen nur, wenn sie
+dastehen; `key` in der Aufgabe und das ältere `key` im Modell meinen dasselbe
+wie `primary key`. `key: [id]` unter einer Entität nennt die Attribute ihres
+Primärschlüssels.
 Eine Beziehung wird an ihren Entitäten erkannt, nicht am Namen; `1:n`
 zwischen `[genre, movie]` ist dasselbe wie `n:1` zwischen `[movie, genre]`,
 `m` und `n` bedeuten beide »viele«. Fehler im Modell kommen zuerst, mit

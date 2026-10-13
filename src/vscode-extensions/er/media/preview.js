@@ -74,7 +74,7 @@
         if (!use || use.model.entities.length === 0) {
             shown = null;
             zoomLevel.textContent = '';
-            board.innerHTML = '<p class="empty">Schreib links ein Modell, zum Beispiel:<br><code>entity movie</code><br><code>&nbsp;&nbsp;id: int, key</code></p>';
+            board.innerHTML = '<p class="empty">Schreib links ein Modell, zum Beispiel:<br><code>entity movie</code><br><code>&nbsp;&nbsp;id: int, primary key</code></p>';
             schemaBox.innerHTML = '';
             stepsBox.innerHTML = '';
             return;
