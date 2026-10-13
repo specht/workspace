@@ -1924,19 +1924,118 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 }
 
 .student-home-card {
+    position: relative;
+    border: 1px solid #e3e3e3;
+    border-radius: 0.75em;
+}
+
+.student-home-card:hover {
+    border-color: #0b5ed7;
+}
+
+.student-home-pinned {
+    border-color: #0b5ed7;
+    border-width: 2px;
+}
+
+.shc-link {
     display: flex;
     flex-direction: column;
     gap: 0.45em;
-    padding: 0.9em 1em;
-    border: 1px solid #e3e3e3;
-    border-radius: 0.75em;
+    height: 100%;
+    padding: 0.9em 2.6em 0.9em 1em;
     color: inherit;
     text-decoration: none;
 }
 
-.student-home-card:hover {
+.shc-link:hover {
     text-decoration: none;
-    border-color: #0b5ed7;
+}
+
+.shc-hide {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    padding: 0.2em 0.35em;
+    border: none;
+    border-radius: 0.4em;
+    background: none;
+    color: #adb5bd;
+    line-height: 1;
+}
+
+.shc-hide:hover,
+.shc-hide:focus-visible {
+    color: #495057;
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+.shc-pinned-by {
+    font-size: 80%;
+    color: #0b5ed7;
+}
+
+.student-home-label .ti {
+    margin-right: 0.2em;
+}
+
+.student-home-hidden {
+    margin-top: 0.6em;
+    font-size: 90%;
+    color: #5c636a;
+}
+
+.student-home-hidden .btn-link {
+    padding: 0 0.2em;
+    vertical-align: baseline;
+}
+
+.student-home-hidden .ti {
+    margin-right: 0.25em;
+}
+
+.class-pins {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em 0.8em;
+    margin: 0.5em 0 1em;
+}
+
+.class-pins .ti {
+    margin-right: 0.2em;
+}
+
+.class-pin {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2em;
+    padding: 0.1em 0.3em 0.1em 0.7em;
+    border: 1px solid #b6d0f7;
+    border-radius: 1em;
+    background-color: #e7f0fe;
+}
+
+.class-unpin {
+    border: none;
+    background: none;
+    padding: 0 0.2em;
+    color: #5c636a;
+    line-height: 1;
+}
+
+.class-pins-none {
+    color: #6c757d;
+}
+
+.class-pin-select {
+    width: auto;
+}
+
+.class-pins-note {
+    flex-basis: 100%;
+    font-size: 85%;
+    color: #5c636a;
 }
 
 .shc-title {
@@ -2017,4 +2116,8 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 
 .task-command {
     font-family: '0xProto Nerd Font Mono', monospace;
+}
+
+.student-home-cards + .student-home-label {
+    margin-top: 1.4em;
 }

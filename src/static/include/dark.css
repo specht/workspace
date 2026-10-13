@@ -254,7 +254,23 @@ html[data-bs-theme="dark"] {
     .student-home-card {
         border-color: #33332f;
     }
-    .shc-mark { background-color: #33332f; }
+    .shc-open { background-color: #3a3a36; }
+    .student-home-pinned { border-color: #4d8ff0; }
+    .shc-pinned-by { color: #8db8f5; }
+    .shc-hide:hover,
+    .shc-hide:focus-visible {
+        color: #e7e6e1;
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+    .student-home-hidden,
+    .class-pins-note {
+        color: #adb5bd;
+    }
+    .class-pin {
+        border-color: #2b4a73;
+        background-color: #172a45;
+    }
+    .class-unpin { color: #adb5bd; }
     .student-home-label,
     .shc-count,
     .shc-next,

@@ -510,7 +510,22 @@ Aktivitäten, in denen sie schon etwas geprüft haben, mit einem Balken pro
 Aufgabe (grün erledigt, gelb noch falsch, orange geändert, grau offen) und
 einem Link zur nächsten offenen Aufgabe. Fertige Aktivitäten stehen darunter.
 Im Katalog trägt jede Karte ihre Art (`kind`) und, wenn angefangen, den Stand
-(»2/5«). Ohne `TASKS_ENABLED` sieht die Startseite für Lernende aus wie
+(»2/5«).
+
+Lernende probieren viel aus; nicht alles, was sie anfangen, soll ewig oben
+stehen. Mit dem Auge-Symbol blenden sie eine Aktivität aus »Weitermachen« aus.
+Sie kommt von selbst zurück, sobald sie dort wieder etwas prüfen; »Wieder
+zeigen« holt alle ausgeblendeten zurück.
+
+Lehrkräfte heften in der Klassenübersicht Aktivitäten für eine Gruppe an.
+Angeheftetes steht bei allen in der Gruppe ganz oben unter »Von deiner
+Lehrkraft«, auch wenn sie noch nichts angefangen haben, und lässt sich nicht
+ausblenden. Das geht mit jeder Aktivität aus dem Katalog, auch ohne Aufgaben.
+Gespeichert wird das als `(:Pin {key, group, slug, by, ts})` und bei den
+Lernenden als Liste `home_hidden` am `User`.
+
+Die Begrüßung nimmt den Vornamen aus der Einladungsliste und lässt Titel wie
+»Dr.« oder »Prof.« weg. Ohne `TASKS_ENABLED` sieht die Startseite für Lernende aus wie
 bisher; nur die Etiketten der Art kommen dazu.
 
 ## Klassenübersicht

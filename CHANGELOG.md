@@ -92,6 +92,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Anleitung für Lehrkräfte, die eigene Aktivitäten schreiben:
   `docs/aktivitaet-schreiben.md`, mit Vorlage in `docs/vorlage-aktivitaet/`
   (ein Test hält sie gültig). Hinweis darauf im README.
+- Startseite: Lernende blenden angefangene Aktivitäten aus, bis sie dort
+  weiterarbeiten. Lehrkräfte heften in der Klassenübersicht Aktivitäten für
+  eine Gruppe an; diese stehen ganz oben und lassen sich nicht ausblenden.
+  Die Begrüßung lässt Titel wie »Dr.« weg. Neuer Knoten `Pin` (Constraint
+  `Pin/key`).
 - Neue Neo4j-Knoten `TaskState` und `TaskAttempt` (Constraint
   `TaskState/key`, Index `TaskAttempt/task`); sie werden beim Start von selbst
   angelegt.

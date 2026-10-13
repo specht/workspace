@@ -6,3 +6,6 @@ outline/send
 outline/refresh
 outline/minus
 outline/help
+outline/pin
+outline/eye-off
+outline/eye

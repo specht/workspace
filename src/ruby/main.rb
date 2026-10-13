@@ -2015,6 +2015,7 @@ class Main < Sinatra::Base
             'Submission/id',
             'Task/name',
             'TaskState/key',
+            'Pin/key',
             'Test/tag',
             'User/email',
             'User/db_login',
@@ -3959,13 +3960,102 @@ class Main < Sinatra::Base
         @my_progress ||= StudentHome.progress(activities_with_tasks, my_task_states)
     end
 
-    # Start page for logged-in students: where to continue (M5).
+    # Groups the logged-in person is a member of (all of them, not only the first).
+    def my_groups
+        return [] unless user_logged_in? && defined?(@@group_members)
+
+        @@group_members.select { |_, members| members.include?(@session_user[:email]) }.keys
+    end
+
+    # Activities teachers pinned for groups: [{ slug:, group:, ts: }].
+    def pins_for_groups(groups)
+        return [] if groups.empty?
+
+        neo4j_query(<<~END_OF_QUERY, :groups => groups).map { |row| { :slug => row['p'][:slug], :group => row['p'][:group], :ts => row['p'][:ts] } }
+            MATCH (p:Pin) WHERE p.group IN $groups
+            RETURN p ORDER BY p.ts DESC;
+        END_OF_QUERY
+    end
+
+    # Activities a student may see in the catalog (and a teacher may pin).
+    def pinnable_slugs
+        @@section_order.flat_map { |key| (@@sections[key] || {})[:entries] || [] }
+            .select { |slug| @@content[slug] && (DEVELOPMENT || !@@content[slug][:dev_only]) }
+    end
+
+    def plain_title(slug)
+        (@@content[slug] || {})[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '').strip
+    end
+
+    # { slug => time } the person has hidden from »Weitermachen«.
+    def my_hidden_activities
+        row = neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email]).first
+            MATCH (u:User {email: $email}) RETURN u.home_hidden AS hidden;
+        END_OF_QUERY
+        Array(row && row['hidden']).to_h do |entry|
+            slug, ts = entry.to_s.split(':', 2)
+            [slug, ts.to_i]
+        end
+    end
+
+    # Start page for logged-in students: pinned activities, where to continue (M5).
     def student_home
         return '' unless user_logged_in? && tasks_visible?
         return '' unless my_running_tests.empty?
 
         name = (@@invitations[@session_user[:email]] || {})[:name] || ''
-        StudentHome.html(:name => name, :progress => my_progress)
+        allowed = pinnable_slugs
+        pinned = pins_for_groups(my_groups).select { |p| allowed.include?(p[:slug]) }.uniq { |p| p[:slug] }.map do |p|
+            { :slug => p[:slug], :title => plain_title(p[:slug]), :abstract => @@content[p[:slug]][:abstract], :group => p[:group] }
+        end
+        StudentHome.html(:name => name, :progress => my_progress, :pinned => pinned, :hidden => my_hidden_activities) +
+            "<script src='/include/home.js?#{CACHE_BUSTER}'></script>"
+    end
+
+    # Hide an activity from »Weitermachen« until the person works on it again.
+    post '/api/home/hide' do
+        assert(user_logged_in?)
+        data = parse_request_data(:required_keys => [:slug], :max_value_lengths => {:slug => 100})
+        slug = data[:slug]
+        assert(slug =~ /\A[a-z0-9_-]+\z/)
+        neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email], :prefix => "#{slug}:", :entry => "#{slug}:#{Time.now.to_i}")
+            MATCH (u:User {email: $email})
+            SET u.home_hidden = [x IN coalesce(u.home_hidden, []) WHERE NOT x STARTS WITH $prefix] + [$entry];
+        END_OF_QUERY
+        respond(:hidden => slug)
+    end
+
+    post '/api/home/unhide_all' do
+        assert(user_logged_in?)
+        neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email])
+            MATCH (u:User {email: $email}) SET u.home_hidden = [];
+        END_OF_QUERY
+        respond(:yay => 'sure')
+    end
+
+    # Teachers pin an activity for a group; it shows first on the students' start page.
+    post '/api/class/pin' do
+        assert(user_logged_in?)
+        Main.load_invitations()
+        data = parse_request_data(:required_keys => [:group, :slug], :max_value_lengths => {:group => 200, :slug => 100})
+        halt 403 unless class_groups.include?(data[:group])
+        halt 404 unless pinnable_slugs.include?(data[:slug])
+        neo4j_query(<<~END_OF_QUERY, :key => "#{data[:group]}|#{data[:slug]}", :group => data[:group], :slug => data[:slug], :by => @session_user[:email], :ts => Time.now.to_i)
+            MERGE (p:Pin {key: $key})
+            SET p.group = $group, p.slug = $slug, p.by = $by, p.ts = $ts;
+        END_OF_QUERY
+        respond(:pinned => data[:slug])
+    end
+
+    post '/api/class/unpin' do
+        assert(user_logged_in?)
+        Main.load_invitations()
+        data = parse_request_data(:required_keys => [:group, :slug], :max_value_lengths => {:group => 200, :slug => 100})
+        halt 403 unless class_groups.include?(data[:group])
+        neo4j_query(<<~END_OF_QUERY, :key => "#{data[:group]}|#{data[:slug]}")
+            MATCH (p:Pin {key: $key}) DETACH DELETE p;
+        END_OF_QUERY
+        respond(:unpinned => data[:slug])
     end
 
     def class_board_states(emails, activity)
@@ -3981,6 +4071,29 @@ class Main < Sinatra::Base
         states
     end
 
+    # Pinned activities of a group, with controls to pin and unpin.
+    def class_pins_html(group)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        pins = pins_for_groups([group])
+        io = +"<div class='class-pins' data-group='#{h.(group)}'>"
+        io << "<span class='class-pins-label'>#{Icons.tabler('pin')} Angeheftet für #{h.(group)}:</span>"
+        if pins.empty?
+            io << "<span class='class-pins-none'>nichts</span>"
+        else
+            pins.each do |p|
+                io << "<span class='class-pin'><a href='/#{h.(p[:slug])}'>#{h.(plain_title(p[:slug]))}</a>"
+                io << "<button type='button' class='class-unpin' data-slug='#{h.(p[:slug])}' title='Lösen' aria-label='#{h.(plain_title(p[:slug]))} lösen'>#{Icons.tabler('x')}</button></span>"
+            end
+        end
+        io << "<select class='form-select form-select-sm class-pin-select' aria-label='Aktivität zum Anheften'><option value=''>Aktivität anheften …</option>"
+        pinned = pins.map { |p| p[:slug] }
+        pinnable_slugs.reject { |s| pinned.include?(s) }.sort_by { |s| plain_title(s).downcase }.each do |s|
+            io << "<option value='#{h.(s)}'>#{h.(plain_title(s))}</option>"
+        end
+        io << "</select><div class='class-pins-note'>Angeheftetes steht bei allen in der Gruppe oben auf der Startseite und lässt sich dort nicht ausblenden.</div></div>"
+        io
+    end
+
     def class_board_page
         groups = class_groups
         activities = class_activities
@@ -3993,6 +4106,7 @@ class Main < Sinatra::Base
         io << "</select></label><label>Aktivität <select class='form-select' name='activity' onchange='this.form.submit()'>"
         activities.each { |a, title, _| io << "<option value='#{h.(a)}'#{activity && a == activity[0] ? ' selected' : ''}>#{h.(title)}</option>" }
         io << "</select></label><noscript><button class='btn btn-primary'>Anzeigen</button></noscript></form>"
+        io << class_pins_html(group) if group
         return io + "<p>Noch keine Aktivität hat Aufgaben auf ihrer Seite.</p>" if activity.nil?
         return io + "<p>Du betreust noch keine Gruppe.</p>" if group.nil?
 

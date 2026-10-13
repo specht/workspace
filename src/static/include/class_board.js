@@ -70,6 +70,25 @@
         box.appendChild(ul);
     }
 
+    // Pin and unpin activities for the group (shown first on students' start page).
+    const pins = document.querySelector('.class-pins');
+    if (pins) {
+        const select = pins.querySelector('.class-pin-select');
+        if (select) select.addEventListener('change', function () {
+            if (!select.value) return;
+            api_call('/api/class/pin', { group: pins.dataset.group, slug: select.value }, function (data) {
+                if (data.success) window.location.reload();
+            });
+        });
+        pins.querySelectorAll('.class-unpin').forEach((button) => {
+            button.addEventListener('click', function () {
+                api_call('/api/class/unpin', { group: pins.dataset.group, slug: button.dataset.slug }, function (data) {
+                    if (data.success) window.location.reload();
+                });
+            });
+        });
+    }
+
     document.querySelectorAll('.class-live-check').forEach((button) => {
         button.addEventListener('click', function () {
             const live = button.closest('.class-live');
