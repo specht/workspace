@@ -2000,3 +2000,21 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     background-color: #198754;
     color: #fff;
 }
+
+/* measure and command cards */
+
+.task-measure {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 16em);
+    gap: 0.4em 0.8em;
+    align-items: center;
+}
+
+.task-measure-label {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 90%;
+}
+
+.task-command {
+    font-family: '0xProto Nerd Font Mono', monospace;
+}

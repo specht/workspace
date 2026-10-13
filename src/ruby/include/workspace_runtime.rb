@@ -148,6 +148,29 @@ module WorkspaceRuntime
             @capture.call(command, :timeout => timeout, :allow_failure => true, :log_command => false)
         end
 
+        RUN_SCRIPT = <<~'SH'
+            out=$(timeout -k 2 "$2" sh -c "$1" 2>&1 < /dev/null)
+            code=$?
+            printf '%s' "$out" | head -c 65536
+            printf '\n__EXIT %s\n' "$code"
+        SH
+
+        # Runs a command in the student's container as the student, in
+        # /workspace, with a time limit (check types measure and command).
+        # Returns { output:, status:, timed_out: } or nil if the container is
+        # not running. Output is cut at 64 kB.
+        def run_command(fs_tag, command:, uid:, seconds:)
+            return nil unless workspace_state(fs_tag, :timeout => 10)[:running]
+
+            line = Shellwords.join(['docker', 'exec', '-u', uid, '-w', '/workspace', '-e', 'HOME=/workspace',
+                "hs_code_#{fs_tag}", 'sh', '-c', RUN_SCRIPT, 'sh', command, seconds.to_i.to_s])
+            raw = @capture.call(line, :timeout => seconds.to_i + 10, :allow_failure => true, :log_command => false).to_s
+            m = raw.match(/\n__EXIT (\d+)\n?\z/)
+            status = m ? m[1].to_i : nil
+            output = m ? raw[0...m.begin(0)] : raw
+            { :output => output, :status => status, :timed_out => [124, 137].include?(status) }
+        end
+
         def live_app_processes(fs_tag, uid:, timeout: nil)
             script = <<~'SH'
                 for p in /proc/[0-9]*; do

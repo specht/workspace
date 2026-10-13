@@ -1,5 +1,6 @@
 require 'minitest/autorun'
 require 'stringio'
+require 'open3'
 require_relative '../include/workspace_runtime'
 
 class WorkspaceRuntimeTest < Minitest::Test
@@ -154,5 +155,31 @@ class WorkspaceRuntimeTest < Minitest::Test
         command, options = @captures.last
         assert_equal "docker exec -u 1000:1000 hs_code_abc sh -c echo\\ \\\"\\$1\\\" sh /workspace/my\\ repo", command
         assert_equal true, options[:allow_failure]
+    end
+
+    def test_run_command
+        @capture_outputs << JSON.generate([{ 'NetworkSettings' => { 'Networks' => { 'workspace_user' => { 'IPAddress' => '172.20.0.9' } } } }])
+        @capture_outputs << "Cats sleep.\n__EXIT 0\n"
+        result = @runtime.run_command('abc', :command => 'curl -s x | jq -r .fact', :uid => '1000:1000', :seconds => 10)
+        assert_equal({ :output => 'Cats sleep.', :status => 0, :timed_out => false }, result)
+        command, options = @captures.last
+        assert_includes command, 'docker exec -u 1000:1000 -w /workspace -e HOME\\=/workspace hs_code_abc sh -c'
+        assert_includes command, 'curl\\ -s\\ x\\ \\|\\ jq\\ -r\\ .fact 10'
+        assert_equal 20, options[:timeout]
+
+        @capture_outputs << JSON.generate([{ 'NetworkSettings' => { 'Networks' => { 'workspace_user' => { 'IPAddress' => '172.20.0.9' } } } }])
+        @capture_outputs << "\n__EXIT 124\n"
+        assert @runtime.run_command('abc', :command => 'sleep 99', :uid => '1000:1000', :seconds => 2)[:timed_out]
+
+        @capture_outputs << '[]'
+        assert_nil @runtime.run_command('abc', :command => 'ls', :uid => '1000:1000', :seconds => 2)
+    end
+
+    # The script itself, run locally with sh.
+    def test_run_script_locally
+        out, = Open3.capture2('sh', '-c', WorkspaceRuntime::DirectDocker::RUN_SCRIPT, 'sh', 'echo hallo; exit 3', '5')
+        assert_equal "hallo\n__EXIT 3\n", out
+        out, = Open3.capture2('sh', '-c', WorkspaceRuntime::DirectDocker::RUN_SCRIPT, 'sh', 'sleep 5', '1')
+        assert_match(/__EXIT 124/, out)
     end
 end

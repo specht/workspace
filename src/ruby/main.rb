@@ -4794,7 +4794,11 @@ class Main < Sinatra::Base
             :variables => task_variables(found[:task], found[:key]),
             :workspace => task_workspace_files,
             :git => lambda { |repo| task_git_state(repo) },
-            :code_solved => lambda { |codebite| codebite_solved_languages(@session_user[:email], codebite) })
+            :code_solved => lambda { |codebite| codebite_solved_languages(@session_user[:email], codebite) },
+            :runner => lambda { |command, seconds|
+                workspace_runtime.run_command(fs_tag_for_email(@session_user[:email]), :command => command,
+                    :uid => "#{WORKSPACE_UID}:#{WORKSPACE_GID}", :seconds => [[seconds.to_i, 1].max, 30].min)
+            })
         answer = data[:answer]
         if (plan = result.plan)
             # submit: copy the files now; the stored answer says what was handed in.

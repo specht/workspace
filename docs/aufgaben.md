@@ -221,8 +221,8 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `references` | Adressen in `src`, `href`, `url()`, `@import`: extern oder vorhanden | HTML- und CSS-Dateien | Server | M3 |
 | `git` | Remote vorhanden, alles committet, alles gepusht | `git status` eines Repositories | Workspace | M3 |
 | `submit` | Abgabe: Kopie von Dateien, optional für die Galerie | Dateien in `/workspace` | Server | M3 |
-| `measure` | Messwert der Lernenden gegen eine eigene Messung | Ausgabe eines Befehls | Workspace | später |
-| `command` | Ausgabe eines Befehls der Lernenden | Ausgabe | Workspace | später |
+| `measure` | Messwert der Lernenden gegen eine eigene Messung | Ausgabe eines Befehls | Workspace | M6 |
+| `command` | Ausgabe eines Befehls der Lernenden | Ausgabe | Workspace | M6 |
 | `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace | später |
 | `code` | Code-Bites-Aufgabe | Code | Code-Bites-Judge | M5 |
 | `sql` | Ergebnis einer Abfrage | Abfrage | Datenbank | später |
@@ -338,11 +338,31 @@ mit der Klassenübersicht.
 ### measure, command, scene
 
 Beispiele stehen in `src/content/tcpip/tasks.yaml` und
-`src/content/anaglyph/tasks.yaml`. `measure` vergleicht eine Eingabe mit
-einer Messung, die der Server im Workspace selbst macht (`extract`:
-`ping_rtt_avg`, `ping_hops`, `ping_reply_country`, `traceroute_hops`,
-`http_header:<Name>`). `scene` braucht das Werkzeug `scene-dump` aus dem
-Anaglyph-Projekt.
+`src/content/anaglyph/tasks.yaml`.
+
+`measure` (seit M6): Lernende tragen einen Messwert ein, für jedes Feld einen.
+Danach führt der Server den Befehl aus `run` selbst aus, im laufenden
+Workspace der Person, als diese Person, und liest den Wert mit `extract` aus:
+`ping_rtt_avg`, `ping_hops` (aus der TTL der Antwort), `ping_reply_country`
+(aus der Endung des Rechners, der antwortet), `traceroute_hops` oder
+`http_header:<Name>`. Zahlen vergleicht er mit `tolerance` oder
+`tolerance_percent`; Werte unter 1 gelten als gleich, wenn beide unter 1
+liegen (Loopback). Texte vergleicht er ohne Groß- und Kleinschreibung,
+`nginx` passt zu `nginx/1.24.0`, `Belgium` zu `Belgien`. Die Rückmeldung
+nennt den eigenen Messwert: »8.8.8.8: Du hast 40 ms eingetragen, meine Messung
+ergibt gerade 10,2 ms.« Der Befehl kommt immer aus der Aufgabe, nie von den
+Lernenden. Im Prüfungsmodus gibt es kein Netz; deshalb ist `measure` dort
+gesperrt.
+
+`command` (seit M6): Lernende tippen einen Befehl. Er läuft in ihrem eigenen
+Workspace, als sie selbst, in `/workspace`, mit dem Zeitlimit aus `timeout`
+(höchstens 30 Sekunden), so als hätten sie ihn im Terminal eingegeben. Die
+Ausgabe (höchstens 64 kB) wird mit `output` verglichen: `lines`, `matching`,
+`not_matching`; Rückmeldungen mit `when: { output_matches: … }`. Unter »Was
+der Workspace gelesen hat« steht der Befehl mit seiner Ausgabe.
+
+`scene` braucht das Werkzeug `scene-dump` aus dem Anaglyph-Projekt und kommt
+später.
 
 ## Beispiel: Begleiter für eine Sandbox
 

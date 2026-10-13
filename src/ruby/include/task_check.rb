@@ -4,6 +4,7 @@ require_relative 'task_spec'
 require_relative 'file_checks'
 require_relative 'git_check'
 require_relative 'submission_store'
+require_relative 'measure_check'
 
 # Checks a student's answer to a task (docs/aufgaben.md, »Prüfen«).
 #
@@ -16,7 +17,7 @@ module TaskCheck
     ANSWER_TYPES = %w[answer choice number reflection].freeze
     FILE_TYPES = %w[files html css references].freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit code]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit code measure command]).freeze
     LANGUAGE_NAMES = { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript' }.freeze
 
     # status:
@@ -58,7 +59,9 @@ module TaskCheck
     #            is not running
     # code_solved: lambda(codebite) -> languages in which the person has solved
     #              that Code Bites task (from the Code Bites results)
-    def self.check(task, answer, variables: {}, workspace: nil, git: nil, code_solved: nil)
+    # runner:      lambda(command, timeout) -> { output:, status:, timed_out: },
+    #              runs in the person's container as them; nil if not running
+    def self.check(task, answer, variables: {}, workspace: nil, git: nil, code_solved: nil, runner: nil)
         check = task['check']
         type = check['type']
         unless RUNS.include?(type)
@@ -66,6 +69,7 @@ module TaskCheck
                 :message => 'Diese Aufgabe kann der Workspace noch nicht selbst prüfen. Zeig dein Ergebnis deiner Lehrkraft.')
         end
         return check_code(task, check, code_solved) if type == 'code'
+        return check_run(task, check, answer, runner) if %w[measure command].include?(type)
         return check_workspace(task, check, answer, workspace, git) unless ANSWER_TYPES.include?(type)
 
         missing = variables_used(check).reject { |name| variables[name].is_a?(String) && !variables[name].empty? }
@@ -90,6 +94,18 @@ module TaskCheck
                 'Das stimmt noch nicht.'
         end
         result
+    end
+
+    # measure and command run in the person's Workspace (MeasureCheck).
+    def self.check_run(task, check, answer, runner)
+        runner ||= ->(_command, _timeout) { nil }
+        status, message, read = if check['type'] == 'measure'
+            MeasureCheck.measure(check, answer, runner)
+        else
+            MeasureCheck.command(task, check, answer, runner)
+        end
+        Result.new(:status => status, :message => message, :read => read,
+            :solution => status == :correct ? task['solution'] : nil)
     end
 
     # code: solved in the Code Bites editor, in one of the allowed languages.

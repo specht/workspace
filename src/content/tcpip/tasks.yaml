@@ -1,7 +1,6 @@
 # Aufgaben zu »Wie Rechner sich finden« (TCP/IP-Verbindungen).
-# Format: docs/aufgaben.md. In tcpip.md stehen bisher: adresse, loopback,
-# lichtgeschwindigkeit, ttl-drei, traceroute-erklaeren, spiel-2048. Die übrigen
-# brauchen measure, command oder den Bot für das Codewort.
+# Format: docs/aufgaben.md. Alle Aufgaben stehen in tcpip.md, außer codewort:
+# dafür fehlt noch der Bot, der das Codewort nennt.
 format: 1
 activity: tcpip
 tasks:
@@ -153,7 +152,7 @@ tasks:
         not_matching: '^[{"\[]'
     feedback:
       - when: { output_matches: '^"' }
-        say: Fast. Die Ausgabe steht noch in Anführungszeichen. Schau im Handbuch bei jq nach, was -r bewirkt.
+        say: Fast. Die Ausgabe steht noch in Anführungszeichen. `jq --help` zeigt dir, was die Option `-r` bewirkt.
       - when: { output_matches: '^\{' }
         say: Die Ausgabe ist noch JSON. Wähle mit jq nur das Feld fact aus.
     solution: '`curl -s https://catfact.ninja/fact | jq -r .fact`'

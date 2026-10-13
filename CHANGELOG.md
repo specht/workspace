@@ -85,6 +85,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Startseite: angemeldete Lernende sehen »Weitermachen« mit ihren
   angefangenen Aktivitäten und der nächsten offenen Aufgabe. Katalogkarten
   zeigen die Art der Aktivität und den eigenen Stand.
+- Prüfarten `measure` und `command`: Messwerte vergleicht der Server mit
+  einer eigenen Messung im Workspace der Person (ping, traceroute, curl);
+  Befehle laufen im eigenen Workspace mit Zeitlimit, die Ausgabe wird
+  geprüft. Alle TCP/IP-Aufgaben außer dem Codewort stehen jetzt auf der Seite.
 - Neue Neo4j-Knoten `TaskState` und `TaskAttempt` (Constraint
   `TaskState/key`, Index `TaskAttempt/task`); sie werden beim Start von selbst
   angelegt.

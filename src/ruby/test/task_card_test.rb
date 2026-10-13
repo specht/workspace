@@ -80,10 +80,24 @@ class TaskCardTest < Minitest::Test
     end
 
     def test_later_types_have_no_form
-        html = card('entfernungen')
+        task = TaskSpec.load_file(File.expand_path('../../content/anaglyph/tasks.yaml', __dir__))['tasks'].find { |t| t['check']['type'] == 'scene' }
+        html = TaskCard.html(task, activity: 'anaglyph', number: 1, render: RENDER)
         refute_includes html, '<form'
         assert_includes html, 'noch nicht selbst prüfen'
         refute_includes html, 'task-login-note'
+    end
+
+    def test_measure_and_command_cards
+        html = card('entfernungen')
+        assert_equal 3, html.scan("class='form-control task-measure-input'").size
+        assert_includes html, ">rubiomonocoat.pe</label>"
+        assert_includes html, "<span class='input-group-text'>ms</span>"
+        refute_includes html, 'ping -c'
+        html = card('katzenfakt')
+        assert_includes html, 'task-command'
+        assert_includes html, 'höchstens 10 Sekunden'
+        assert_includes html, 'Ausführen und prüfen'
+        refute_includes html, 'jq -r'
     end
 
     def test_workspace_cards_name_the_files_they_read

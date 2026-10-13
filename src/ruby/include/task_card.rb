@@ -78,6 +78,21 @@ module TaskCard
                 if check['min_words']
                     io << "<div class='task-words'>Mindestens #{check['min_words'].to_i} Wörter. Nur du und deine Lehrkraft können die Antwort lesen.</div>"
                 end
+            when 'measure'
+                io << "<div class='task-measure'>"
+                check['fields'].each_with_index do |f, i|
+                    id = "#{field}-m#{i}"
+                    io << "<label class='task-measure-label' for='#{h.(id)}'>#{h.(f['label'])}</label>"
+                    io << "<div class='input-group task-number-input'>"
+                    io << "<input type='text' class='form-control task-measure-input' id='#{h.(id)}' autocomplete='off'#{check['compare'] == 'text' ? '' : " inputmode='decimal'"}>"
+                    io << "<span class='input-group-text'>#{h.(check['unit'])}</span>" if check['unit']
+                    io << '</div>'
+                end
+                io << '</div>'
+                io << "<div class='task-reads'>Der Workspace misst danach selbst nach, in deinem Workspace, und vergleicht.</div>"
+            when 'command'
+                io << "<input type='text' class='form-control task-input task-command' name='answer' spellcheck='false' autocomplete='off' placeholder='Befehl' aria-labelledby='#{h.(field)}-title'>"
+                io << "<div class='task-reads'>Läuft in deinem Workspace in <code>/workspace</code>, wie im Terminal, höchstens #{(check['timeout'] || 10).to_i} Sekunden.</div>"
             when 'submit'
                 if check['pick']
                     io << "<label class='task-pick-label' for='#{h.(field)}-pick'>Welche Datei gibst du ab?</label>"
@@ -90,6 +105,7 @@ module TaskCard
             end
             label = case
                 when type == 'code' then 'Stand holen'
+                when type == 'command' then 'Ausführen und prüfen'
                 when type == 'reflection' then 'Speichern'
                 when type == 'submit' then 'Abgeben'
                 when task['prediction'] then 'Vermutung abgeben'

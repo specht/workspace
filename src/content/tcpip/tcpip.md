@@ -106,7 +106,11 @@ Statt einer IP-Adresse kannst du auch eine Domain, z.B. <code>google.com</code> 
 Die Domain wird dann mit Hilfe eines DNS-Servers in eine IP-Adresse aufgelöst.
 </div>
 
+_task(entfernungen)
+
 _task(lichtgeschwindigkeit)
+
+_task(standort)
 
 ## Den Pfad von IP-Paketen verfolgen
 
@@ -146,6 +150,8 @@ Ein Stern `*` in der Ausgabe bedeutet, dass der Router das Paket verworfen hat, 
 Eine ausführlichere Erklärung findest du in diesem [Blogpost](https://blog.davidvarghese.dev/posts/traceroute-explained/) von David Varghese.
 
 _task(traceroute-erklaeren)
+
+_task(router-zaehlen)
 
 ## Dateien herunterladen
 
@@ -216,6 +222,8 @@ curl -I https://gymnasiumsteglitz.de
 
 <img class='full' src='curl-i-gyst.webp' alt=''>
 
+_task(webserver)
+
 `curl` ist ein sehr mächtiges Werkzeug, um mit Webseiten und APIs zu kommunizieren. Ein Beispiel für eine API ist die »Cat Facts« API, die dir zufällige Fakten über Katzen zurückgibt:
 
 ```bash
@@ -241,6 +249,8 @@ Die Ausgabe ist jetzt viel übersichtlicher:
 <img class='full' src='curl-catfact-jq.webp' alt=''>
 
 Du kannst die Abfrage beliebig oft wiederholen und solltest jedesmal einen zufälligen, neuen Fakt über Katzen erhalten.
+
+_task(katzenfakt)
 
 Es gibt eine Vielzahl von APIs, die du mit `curl` abfragen kannst. Manche davon sind frei zugänglich, aber einige benötigen einen API-Schlüssel. Die Dokumentation der API sollte dir sagen, wie du den Schlüssel erhältst und wie du ihn in deinen Abfragen verwendest. Jemand hat sich die Mühe gemacht und eine Liste von [Public APIs](https://github.com/public-apis/public-apis) zusammengestellt, die du durchsuchen kannst.
 

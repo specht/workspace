@@ -124,7 +124,8 @@ class TaskCheckTest < Minitest::Test
     end
 
     def test_types_from_later_milestones_are_unavailable
-        result = TaskCheck.check(tcpip['entfernungen'], 'x', variables: {})
+        scene = TaskSpec.load_file(File.expand_path('../../content/anaglyph/tasks.yaml', __dir__))['tasks'].find { |t| t['check']['type'] == 'scene' }
+        result = TaskCheck.check(scene, 'x', variables: {})
         assert_equal :unavailable, result.status
         refute result.counts?
     end

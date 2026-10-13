@@ -34,6 +34,9 @@
     }
 
     function readAnswer(card) {
+        if (card.dataset.type === 'measure') {
+            return JSON.stringify(Array.from(card.querySelectorAll('.task-measure-input')).map((input) => input.value));
+        }
         if (card.dataset.type === 'choice') {
             return Array.from(card.querySelectorAll('.form-check-input:checked'))
                 .map((input) => input.value).join(',');
@@ -71,6 +74,14 @@
                 select.value = parts[0];
             }
             showSubmission(card, answer || null);
+            return;
+        }
+        if (card.dataset.type === 'measure') {
+            let values = [];
+            try { values = JSON.parse(answer || '[]'); } catch (e) { values = []; }
+            card.querySelectorAll('.task-measure-input').forEach((input, i) => {
+                input.value = values[i] || '';
+            });
             return;
         }
         if (card.dataset.type === 'choice') {
@@ -221,7 +232,7 @@
             const del = card.querySelector('.task-delete');
             if (del) {
                 if (card.dataset.type === 'submit') del.textContent = 'Abgabe löschen';
-                else if (['answer', 'choice', 'number', 'reflection'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
+                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
                 del.addEventListener('click', function () { remove(card); });
             }
             loadOptions(card);
