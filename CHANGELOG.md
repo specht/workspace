@@ -174,6 +174,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   liest. Feedback in `scene` kann zusätzlich auf `problem` achten.
 - Handbuch-Seite »Farben angeben«: Farbnamen, Farbcodes mit `#`, Rot-, Grün-
   und Blauanteile, Kontrast. Das Anaglyph-Tutorial verweist darauf.
+- Code-Blöcke mit ```` ```er ```` sind auf der Website eingefärbt wie in der
+  ER-Werkstatt (`src/ruby/include/er_lexer.rb`, ein Rouge-Lexer).
 
 ### Geändert
 

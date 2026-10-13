@@ -31,6 +31,7 @@ require 'faye/websocket'
 require 'open3'
 require 'redcarpet'
 require 'rouge'
+require './include/er_lexer.rb'
 require 'securerandom'
 require 'shellwords'
 require 'set'
@@ -1398,6 +1399,9 @@ class Main < Sinatra::Base
                 lexer = Rouge::Lexers::CSS.new
             when 'dart'
                 lexer = Rouge::Lexers::Dart.new
+            when 'er'
+                lexer = Rouge::Lexers::ER.new
+                pre['class'] = [pre['class'], 'code-er'].compact.join(' ')
             when 'erlang'
                 lexer = Rouge::Lexers::Erlang.new
             when 'fortran'
