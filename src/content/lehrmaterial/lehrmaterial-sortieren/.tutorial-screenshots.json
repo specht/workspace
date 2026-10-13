@@ -2,19 +2,28 @@
   "version": 1,
   "screenshots": {
     "sorting-sandbox.webp": {
-      "state_hash": "ed491b0025f017f0cc62100191ac7542db2d02de09f61fd3bdd91fdd5f7d8ed5",
-      "environment_fingerprint": "b3010268ba85cf42ff31981ae54d38402f52108b113b9c2af50bd3a5a8b0eb8d",
-      "output_sha256": "cc03df93b1419ba68c047fb48cefc87887f3de0b5448c68a5b43731fe6ed3710"
+      "state_hash": "abb193bff4bb918854d656d958cbc5961fe8975aa61697ace6c802c054a49bcb",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "e88fb6626401491baaccd3b278541e502f722f8cae0b6a33006e559a12e5c9b3"
     },
     "sorting-race.webp": {
-      "state_hash": "53c453a2572cd9dd37a3586a9fb8791b60c40313663ef5d3242ce2e29a5a9a38",
-      "environment_fingerprint": "b3010268ba85cf42ff31981ae54d38402f52108b113b9c2af50bd3a5a8b0eb8d",
-      "output_sha256": "f60ca6d1e9c17c9c4a6789d30abc9b608192a9d1009ba3d7d3e9aa41d5b81c9b"
+      "state_hash": "c8e1a6f5dea892a5d09aa94e966fde867e7a1f88c5d9fad23f2d6ba0eb58a6e1",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "976f846c3f6fba19e0e29bf4a0396b65546f182211f6f393f4b946ad2820e7d0"
     },
     "sorting-analyze.webp": {
-      "state_hash": "572f75fd805c6e234903d0abfbcc845d93acf4520724bfca5e6d00fa46a32cb8",
-      "environment_fingerprint": "b3010268ba85cf42ff31981ae54d38402f52108b113b9c2af50bd3a5a8b0eb8d",
-      "output_sha256": "c5a391fb6abe8363411abd308df0fa2290dc31fc98701043a54680140707ea5f"
+      "state_hash": "b4bab3a86fc66117a1b1e33ca91040fec8cc461111963f94561a1d1fc1535d76",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "73eb04e61141a16c0245ecfe09866b71420e70c552909d51c11def24c9fcabd9"
+    },
+    "sorting-check.webp": {
+      "state_hash": "d0a34ac098935f16b9d80f6df1b58ba5f18174f7fa01f8ce51cb0d0755b21eec",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "a6657e3c8c9b4357cbd12d1e27065aac828f2f943ae06a91df5abf46d22f4a5b"
     }
   }
 }

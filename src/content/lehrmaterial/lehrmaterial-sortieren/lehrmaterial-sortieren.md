@@ -124,7 +124,7 @@ viewport: 1600x900
 click: selector:#tab-race
 wait-for-text: Insertion Sort
 click: selector:#race-start
-sleep: 3
+wait-for-text: 1st
 -->
 <img class='full' src='sorting-race.webp' alt='Race: Bubble Sort und Insertion Sort sortieren dieselbe Liste, Insertion Sort ist zuerst fertig.'>
 
@@ -210,6 +210,7 @@ write-file: sorting-sandbox/algorithms/demo/selection_sort.py <- previous-code (
 tab: preview
 viewport: 1600x900
 click: selector:#tab-explore
+click: selector:#stop
 click: selector:#explore-picker .picker-button
 type: Selection
 wait-for-text: Selection Sort

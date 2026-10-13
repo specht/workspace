@@ -62,7 +62,7 @@ click: selector:#call-input
 press: Control+A
 type: insert(0,7); insert(1,3); insert(1,5); insert(3,9)
 press: Enter
-wait-for-text: steps ready
+wait-for-text: Ran 4 calls
 sleep: 1
 click: selector:#last
 sleep: 1
@@ -96,13 +96,13 @@ Derselbe Baum, diesmal in Python implementiert, nach sechs Einfügungen:
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1600x900
-select-option: #structure = avl
+select-option: #structure = avl:.py
 wait-for-text: demo/my_avl.py
 click: selector:#call-input
 press: Control+A
 type: insert(30); insert(20); insert(10); insert(25); insert(40); insert(35)
 press: Enter
-wait-for-text: steps ready · avl
+wait-for-text: Ran 6 calls
 sleep: 1
 click: selector:#last
 sleep: 1
@@ -134,7 +134,7 @@ click: selector:#call-input
 press: Control+A
 type: insert(-7); insert(4); insert(12); insert(19); insert(27)
 press: Enter
-wait-for-text: steps ready · hash
+wait-for-text: Ran 5 calls
 sleep: 1
 click: selector:#last
 sleep: 1

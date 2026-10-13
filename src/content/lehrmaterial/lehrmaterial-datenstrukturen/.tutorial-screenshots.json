@@ -2,9 +2,22 @@
   "version": 1,
   "screenshots": {
     "data-structures-sandbox.webp": {
-      "state_hash": "31aa059260d8cb3f0b9ffb7a9f0c1365fddf76c1f2d875ad33012bffd2f63b10",
-      "environment_fingerprint": "8f8c295964e93539778aa00bdfc3f6dacb269d16277da04692b9051547778a01",
-      "output_sha256": "8084f701a96311d6d8f49484bbb49a630b7cf9464af04f4c4e1f5c04ac2692c0"
+      "state_hash": "0ea4eedc12d21e17b769111b912938ff58d8c3c679be1b57ba8a8819ab325ec2",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "13a6a65ed9dce7039ee6689cfc99906280fd99cec52ab5199523f293c90911ee"
+    },
+    "data-structures-avl.webp": {
+      "state_hash": "b36c33c022ac2208c3851fade7b42450890f2f86ae820ef69241d97fde3c4019",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "056a8c584afac1481b361018768857bf960d7faf6806ebd6511156d482e3cfe7"
+    },
+    "data-structures-hash.webp": {
+      "state_hash": "379840762d4c8a17cd13829ed3e0447936ec8be7d0902329c12828fdc7319f7e",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "286e6a3ed8a66a1d7f165837f409d120742d0200115e9c470360add14938f30e"
     }
   }
 }
