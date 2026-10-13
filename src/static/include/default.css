@@ -45,6 +45,15 @@ p {
     text-align: justify;
 }
 
+/* Links: a petrol blue between the teal of the Handbuch and the blue of the
+   activities, darker (not brighter) on hover. Bootstrap reads these. */
+:root {
+    --bs-link-color: #135e86;
+    --bs-link-color-rgb: 19, 94, 134;
+    --bs-link-hover-color: #0c4566;
+    --bs-link-hover-color-rgb: 12, 69, 102;
+}
+
 a {
     text-decoration: none;
 }
@@ -2437,20 +2446,9 @@ h3[id] {
     padding: 0.2em 0;
 }
 
-/* Muted links: a dark, desaturated blue that is still recognisable as a
-   link, semi-bold only for the chapters. */
-.reference-outline a {
-    color: #2c4f7c;
-    text-decoration: none;
-}
-
+/* Chapters semi-bold only; colours are the site's link colours. */
 .reference-outline > li > a {
     font-weight: 500;
-}
-
-.reference-outline a:hover {
-    color: #0d6efd;
-    text-decoration: underline;
 }
 
 .reference-outline-sub {
@@ -2460,9 +2458,6 @@ h3[id] {
     color: #888;
 }
 
-.reference-outline-sub a {
-    color: #5a7394;
-}
 
 .reference-results {
     display: flex;
@@ -2499,7 +2494,7 @@ h3[id] {
 .reference-result-heading {
     display: block;
     margin: 0.15em 0;
-    color: #2c4f7c;
+    color: var(--bs-link-color);
     font-size: 1.1rem;
     font-weight: 500;
 }
