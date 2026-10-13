@@ -1,0 +1,167 @@
+# Aufgaben zu »Wie Rechner sich finden« (TCP/IP-Verbindungen).
+# Format: docs/aufgaben.md. Noch nicht in der Seite eingebunden.
+format: 1
+activity: tcpip
+tasks:
+  - id: adresse
+    title: Deine Adresse
+    prompt: |
+      Wie lautet die IPv4-Adresse deines Adapters `eth0`? Im Bild oben steht
+      eine andere als bei dir.
+    check:
+      type: answer
+      expect: ${workspace.ip}
+      placeholder: z. B. 172.17.0.42
+    hint: Suche unter `eth0` die Zeile, die mit `inet` beginnt.
+    feedback:
+      - when: { matches: '^127\.' }
+        say: Das ist die Adresse von `lo`. Gesucht ist die von `eth0`.
+
+  - id: loopback
+    title: Abkürzung zu dir selbst
+    prompt: Wohin geht ein Paket, das du an `127.0.0.1` schickst?
+    check:
+      type: choice
+      options:
+        - Zum Router der Schule
+        - Zu einem Server von Google
+        - Es verlässt den Rechner nicht
+        - Zum Workspace der Person neben dir
+      correct: 2
+
+  - id: entfernungen
+    title: Drei Entfernungen
+    prompt: |
+      Miss die Roundtrip-Zeit zu `127.0.0.1`, zu `8.8.8.8` und zu
+      `rubiomonocoat.pe`, einem Server mit peruanischer Domain. Trage jeweils
+      einen typischen Wert in Millisekunden ein.
+    check:
+      type: measure
+      unit: ms
+      tolerance_percent: 50
+      fields:
+        - { label: 127.0.0.1, run: ping -c 3 -q 127.0.0.1, extract: ping_rtt_avg }
+        - { label: 8.8.8.8, run: ping -c 3 -q 8.8.8.8, extract: ping_rtt_avg }
+        - { label: rubiomonocoat.pe, run: ping -c 3 -q rubiomonocoat.pe, extract: ping_rtt_avg }
+
+  - id: lichtgeschwindigkeit
+    title: Mindestens wie lange?
+    prompt: |
+      Licht ist in einer Glasfaser etwa 200 000 km pro Sekunde schnell. Berlin
+      und Lima liegen rund 11 100 km auseinander. Wie viele Millisekunden
+      dauert ein Hin und Zurück mindestens?
+    check:
+      type: number
+      expect: 111
+      tolerance: 6
+      unit: ms
+    feedback:
+      - when: { between: [50, 61] }
+        say: Das ist nur eine Richtung. Ein Roundtrip geht hin und zurück.
+      - when: { between: [0, 1] }
+        say: Das sind Sekunden. Gefragt sind Millisekunden.
+    solution: 2 × 11 100 km ÷ 200 000 km/s = 0,111 s, also etwa 111 ms.
+
+  - id: standort
+    title: Wo steht der Server wirklich?
+    prompt: |
+      Deine Messung war viel schneller als das Licht. Lies in deiner
+      `ping`-Ausgabe genau nach, wer dir antwortet. In welchem Land steht der
+      Server vermutlich?
+    check:
+      type: measure
+      compare: text
+      fields:
+        - { label: Land, run: ping -c 1 -W 2 rubiomonocoat.pe, extract: ping_reply_country }
+    hint: Schau in die Zeilen, die mit »64 bytes from« beginnen.
+    solution: |
+      Es antwortet `linweb443.webhosting.be`, ein belgischer Hoster. Die Endung
+      `.pe` sagt nichts über den Standort.
+
+  - id: ttl-drei
+    title: Ein Paket mit TTL 3
+    prompt: Ein Paket startet mit TTL 3, und das Ziel ist weit weg. Was passiert?
+    prediction: true
+    check:
+      type: choice
+      options:
+        - Es wird nach drei Sekunden verworfen.
+        - Der dritte Router verwirft es und meldet sich beim Absender.
+        - Es wird höchstens dreimal neu gesendet.
+        - Jeder der drei ersten Router schickt eine Kopie zurück.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: TTL hat nichts mit Zeit zu tun, sondern mit Routern.
+
+  - id: router-zaehlen
+    title: Router zählen, ohne traceroute
+    prompt: |
+      Auch `ping` zeigt eine TTL: die der Antwort, wenn sie bei dir ankommt.
+      Linux-Server schicken ihre Antworten meist mit TTL 64 los. Wie viele
+      Router lagen zwischen dir und dem Server von `rubiomonocoat.pe`? Prüfe
+      deine Vermutung danach mit `traceroute`.
+    check:
+      type: measure
+      tolerance: 1
+      fields:
+        - { label: Router, run: ping -c 3 rubiomonocoat.pe, extract: ping_hops }
+
+  - id: traceroute-erklaeren
+    title: In eigenen Worten
+    prompt: Erkläre in zwei oder drei Sätzen, wie `traceroute` die Router auf dem Weg herausfindet.
+    check:
+      type: reflection
+      min_words: 20
+
+  - id: spiel-2048
+    title: Ein Spiel aus dem Netz
+    prompt: |
+      Lade 2048 herunter und übersetze es. Die Aufgabe ist gelöst, sobald in
+      deinem Workspace ein ausführbares Programm `2048` liegt.
+    file: '2048'
+    check:
+      type: files
+      path: '2048'
+      expect:
+        exists: true
+        executable: true
+        format: elf
+    hint: Hast du `gcc` mit `-o 2048` aufgerufen?
+
+  - id: webserver
+    title: Welcher Server?
+    prompt: Welche Software nennt der Webserver von `gymnasiumsteglitz.de` im Header `Server`?
+    check:
+      type: measure
+      compare: text
+      fields:
+        - { label: Server, run: curl -sI https://gymnasiumsteglitz.de, extract: 'http_header:Server' }
+
+  - id: katzenfakt
+    title: Nur der Fakt
+    prompt: |
+      Schreibe einen Befehl, der nur den Text des Fakts ausgibt: ohne Klammern,
+      ohne `length` und ohne Anführungszeichen.
+    check:
+      type: command
+      timeout: 10
+      output:
+        lines: 1
+        not_matching: '^[{"\[]'
+    feedback:
+      - when: { output_matches: '^"' }
+        say: Fast. Die Ausgabe steht noch in Anführungszeichen. Schau im Nachschlagen bei jq nach, was -r bewirkt.
+      - when: { output_matches: '^\{' }
+        say: Die Ausgabe ist noch JSON. Wähle mit jq nur das Feld fact aus.
+    solution: '`curl -s https://catfact.ninja/fact | jq -r .fact`'
+
+  - id: codewort
+    title: Codewort vom Bot
+    prompt: |
+      Verbinde dich mit `netcat hackbot 1234`. Der Bot nennt dir ein Codewort.
+      Es ist für jede Person anders.
+    check:
+      type: answer
+      expect: ${person.codeword}
+      case_sensitive: false

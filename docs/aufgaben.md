@@ -1,0 +1,334 @@
+# Aktivitäten, Aufgaben und Nachschlagen
+
+Dieses Dokument beschreibt, wie Inhalte im Workspace aufgebaut sind und wie
+Aufgaben geschrieben werden, die der Workspace selbst prüft. Es richtet sich an
+alle, die Inhalte schreiben, auch an Lehrkräfte anderer Schulen mit eigener
+Installation.
+
+**Stand:** Format 1, Meilenstein M0. Das Format und seine Prüfung
+(`src/ruby/include/task_spec.rb`) gibt es; Seiten binden Aufgaben noch nicht
+ein, und geprüft wird noch nichts. Was ab wann läuft, steht in der Tabelle
+der Prüfarten.
+
+## Die fünf Bausteine
+
+| Baustein | Was es ist | Wo es liegt |
+| --- | --- | --- |
+| Aktivität | Text zum Lesen und Mitmachen: Projekt, Labor, Grundlagen oder Galerie | `src/content/<slug>/<slug>.md` |
+| Aufgabe | Ein Schritt in einer Aktivität, den der Workspace prüft | `src/content/<slug>/tasks.yaml` |
+| Nachschlagen | Kurz und vollständig, ohne Geschichte; von vielen Aktivitäten verlinkt | `src/content/reference/<slug>/<slug>.md`, Adresse `/reference/<slug>` |
+| Werkzeug | Etwas, womit man arbeitet: Workspace, Datenbanken, ER-Werkstatt, die Sandboxes, das 2D Game Studio | eigene Seiten oder eigene Projekte |
+| Klasse | Gruppen aus den Einladungslisten; eine Person kann in mehreren sein | `data/invitations/*.txt` |
+
+Die Sandboxes und das 2D Game Studio bleiben eigenständige Projekte. Der
+Workspace verlinkt sie und kann lesen, was in einem Workspace liegt, ändert
+aber nichts an ihnen.
+
+## Fünf Regeln
+
+Der Workspace soll Einzelheiten nicht verstecken: echte Dateien, echte Pfade,
+speichern, Ergebnis ansehen. Aufgaben und Prüfungen halten sich deshalb an
+diese Regeln.
+
+1. **Die Prüfung liest nur.** Sie schaut sich die Dateien der Lernenden an wie
+   eine Lehrkraft über die Schulter. Sie schreibt, verschiebt und repariert
+   nichts und verändert keine Git-Repositories.
+2. **Jede Rückmeldung zeigt, was wirklich da ist:** Dateiname, Zeile, Größe,
+   Format, Pfad, Git-Stand. Nicht nur »richtig« oder »falsch«.
+3. **Ergebnisse sind Dateien im eigenen Ordner.** Eine Bauaufgabe nennt die
+   Datei, in der gearbeitet wird. Eine Abgabe ist eine Kopie, die die
+   Lernenden sehen, ersetzen und löschen können.
+4. **Beim ersten Mal ausführlich, danach eine Zeile.** Klonen, Live Server,
+   `git push`: einmal Schritt für Schritt im Nachschlagen, in der Aktivität
+   dann ein Satz mit Link. Wer etwas noch nie gemacht hat, bekommt die lange
+   Fassung angezeigt.
+5. **Adressen und Werkzeuge bleiben offen.** Vorschau mit URL, Terminal,
+   Explorer. Nichts davon verschwindet hinter einer eigenen Oberfläche.
+
+## Dateien einer Aktivität
+
+```text
+src/content/showerjs/
+├── showerjs.md        Aktivität: Text mit Platzhaltern für Aufgaben
+├── tasks.yaml         Aufgaben mit ihren Prüfungen
+├── lehrkraft.md       Notiz für Lehrkräfte (nur für Lehrkräfte sichtbar)
+├── lehrkraft/         Lösungsdateien (werden nie ausgeliefert)
+└── *.webp             Bilder, auch aus Screenshot-Rezepten
+
+src/content/reference/
+├── sections.yaml      Katalog der Nachschlage-Seiten
+└── html-folien/
+    └── html-folien.md
+```
+
+Dateien im Inhaltsordner werden nur ausgeliefert, wenn eine Seite sie als Bild
+oder Video einbindet. Lösungen können deshalb gefahrlos neben der Aktivität
+liegen.
+
+## Metadaten
+
+Der YAML-Block am Anfang einer Seite bekommt neue, freiwillige Felder. Seiten
+ohne sie funktionieren unverändert weiter.
+
+```html
+<div class='meta'>
+kind: labor
+topic: networks
+duration: 2 Doppelstunden
+requires: [working-with-files]
+reference: [netzwerk]
+template: https://git.nhcham.org/specht/shower.js.git
+image: tcpip.webp
+</div>
+```
+
+| Feld | Bedeutung |
+| --- | --- |
+| `kind` | `projekt`, `labor`, `grundlagen`, `galerie` oder `reference` |
+| `topic` | Schlüssel eines Abschnitts aus `sections.yaml`, für die Sortierung nach Thema |
+| `duration` | Freier Text, so wie er auf der Karte stehen soll |
+| `requires` | Aktivitäten, die vorher sinnvoll sind |
+| `reference` | Nachschlage-Seiten, auf die `_uses()` verweist |
+| `template` | Adresse der Vorlage zum Klonen; andere Schulen können hier einen Spiegel eintragen |
+
+## Platzhalter im Text
+
+Wie die vorhandenen `_include_file()` und `_include_svg()` werden diese
+Platzhalter ersetzt, bevor Redcarpet den Text liest.
+
+| Platzhalter | Ergebnis |
+| --- | --- |
+| `_task(adresse)` | Die Aufgabe `adresse` aus `tasks.yaml` an dieser Stelle |
+| `_include(workspace#terminal)` | Der Abschnitt `terminal` der Nachschlage-Seite `workspace`, eingebettet |
+| `_uses(ifconfig, ping)` | Kleine Marken, die zu `#ifconfig` und `#ping` der Nachschlage-Seiten aus `reference` führen |
+
+## tasks.yaml
+
+```yaml
+format: 1
+activity: tcpip            # muss dem Ordnernamen entsprechen
+tasks:
+  - id: adresse            # a–z, 0–9 und -, eindeutig in der Aktivität
+    title: Deine Adresse
+    prompt: |
+      Wie lautet die IPv4-Adresse deines Adapters `eth0`?
+    check:
+      type: answer
+      expect: ${workspace.ip}
+    hint: Suche unter `eth0` die Zeile, die mit `inet` beginnt.
+    feedback:
+      - when: { matches: '^127\.' }
+        say: Das ist die Adresse von `lo`. Gesucht ist die von `eth0`.
+```
+
+### Felder einer Aufgabe
+
+| Feld | Pflicht | Bedeutung |
+| --- | --- | --- |
+| `id` | ja | Kennung; zusammen mit der Aktivität weltweit eindeutig: `tcpip/adresse` |
+| `title` | ja | Kurzer Name, erscheint in Listen und im Klassenboard |
+| `prompt` | ja | Die Aufgabe in Markdown |
+| `check` | ja | Wie geprüft wird; alles, was über richtig und falsch entscheidet, steht hier |
+| `file` | nein | Die Datei, in der gearbeitet wird, relativ zu `/workspace`; wird bei der Aufgabe angezeigt |
+| `hint` | nein | Hinweis, den man aufklappen kann |
+| `feedback` | nein | Eigene Rückmeldungen für typische Fehler |
+| `prediction` | nein | `true`: Vorhersage; nur der erste Versuch zählt fürs Klassenboard, danach darf ausprobiert werden |
+| `solution` | nein | Lösung; nur Lehrkräfte sehen sie |
+| `exam` | nein | `false`: nie in einer Leistungsüberprüfung; Prüfarten mit Netz sind dort ohnehin gesperrt |
+
+### Variablen
+
+In `expect` können Werte stehen, die der Server pro Person kennt.
+
+| Variable | Wert |
+| --- | --- |
+| `${workspace.ip}` | IP-Adresse des eigenen Workspace |
+| `${workspace.live_url}` | Adresse des eigenen Live Servers, z. B. `https://q7k2m-5500.workspace.hackschule.de` |
+| `${person.codeword}` | Ein Codewort, das für jede Person anders ist |
+
+### Rückmeldungen
+
+Jede Prüfung bringt eigene Rückmeldungen mit, die zeigen, was sie gelesen hat.
+Mit `feedback` kommen Sätze für typische Fehler dazu. Die Bedingungen in
+`when` hängen von der Prüfart ab: `answer` kennt `equals` und `matches`,
+`number` kennt `equals` und `between`, `choice` kennt `picked`, `command`
+kennt `output_matches`, `scene` kennt `found`, `missing` und
+`source_matches`.
+
+### Versionen
+
+Jede Aufgabe hat eine Version, die aus ihrem `check` berechnet wird. Ändert
+sich die Bewertung, ändert sich die Version, und frühere Ergebnisse erscheinen
+als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` oder
+`hint` ändern die Version nicht.
+
+## Prüfarten
+
+| Art | Prüft | Liest | Läuft | Ab |
+| --- | --- | --- | --- | --- |
+| `answer` | Text, Adresse oder regulären Ausdruck | die Eingabe | Server | M2 |
+| `choice` | Auswahl aus Antworten | die Eingabe | Server | M2 |
+| `number` | Zahl mit Toleranz | die Eingabe | Server | M2 |
+| `reflection` | nichts; Freitext geht ans Klassenboard | die Eingabe | Server | M2 |
+| `files` | ob es Dateien gibt, Namen, Größe, Format nach den ersten Bytes, ausführbar | Dateien in `/workspace` | Server | M3 |
+| `html` | Folien, Überschriften, offene Tags, Bildpfade, alt-Texte | eine HTML-Datei | Server | M3 |
+| `css` | eigene Regeln, offene Klammern | eine CSS-Datei | Server | M3 |
+| `references` | Adressen in `src`, `href`, `url()`, `@import`: extern oder vorhanden | HTML- und CSS-Dateien | Server | M3 |
+| `git` | Remote vorhanden, alles committet, alles gepusht | `git status` eines Repositories | Workspace | M3 |
+| `submit` | Abgabe: Kopie von Dateien, optional für die Galerie | Dateien in `/workspace` | Server | M3 |
+| `measure` | Messwert der Lernenden gegen eine eigene Messung | Ausgabe eines Befehls | Workspace | später |
+| `command` | Ausgabe eines Befehls der Lernenden | Ausgabe | Workspace | später |
+| `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace | später |
+| `code` | Code-Bites-Aufgabe | Code | Code-Bites-Judge | später |
+| `sql` | Ergebnis einer Abfrage | Abfrage | Datenbank | später |
+
+»Server« heißt: Der Server liest die Datei als Text und wertet sie aus, ohne
+etwas auszuführen. »Workspace« heißt: Ein festes Prüfskript läuft per
+`docker exec` im Workspace der Person, mit ihren Rechten und einer Zeitgrenze.
+Alles, was etwas ausführt oder dekodiert, läuft dort, nie auf dem Server: Git
+(eine `.git/config` kann Befehle auslösen), Bilder, die Ausdrücke des
+Anaglyph-Viewers.
+
+### answer
+
+```yaml
+check:
+  type: answer
+  compare: url                 # text (Standard), url oder regex
+  expect: ${workspace.live_url}/pictures/fuji.jpg
+```
+
+`expect` darf eine Liste sein. Groß- und Kleinschreibung zählt nur mit
+`case_sensitive: true`; bei `url` zählt sie im Pfad immer.
+
+### choice, number, reflection
+
+```yaml
+check: { type: choice, options: [A, B, C], correct: 1 }      # gezählt ab 0
+check: { type: number, expect: 111, tolerance: 6, unit: ms }
+check: { type: reflection, min_words: 20 }
+```
+
+### files
+
+```yaml
+check:
+  type: files
+  path: shower.js/pictures
+  template: [fuji.jpg, monkey.jpg]   # Dateien der Vorlage zählen nicht als neu
+  show: listing                      # gelesene Liste immer mit anzeigen
+  expect:
+    new_files: { min: 1 }
+    name: '^[a-z0-9-]+\.(jpe?g|png|webp)$'
+    format_matches_extension: true
+    max_size: 500kB
+```
+
+Für eine einzelne Datei: `exists`, `executable` und `format` (z. B. `elf`).
+
+### html, css, references
+
+```yaml
+check:
+  type: html
+  file: shower.js/index.html
+  expect:
+    parses: true
+    slides: { selector: section.slide, min_own: 5, each_has: h2, template_titles: [...] }
+    img: { min: 1, src_exists: case_sensitive, alt: required }
+  warn: { words_per_slide: 60 }
+```
+
+`css` kennt `after_marker`, `parses` und `min_rules`. `references` kennt
+`root`, `scan`, `external: none` und `local_exist: true`.
+
+### git
+
+```yaml
+check:
+  type: git
+  repo: data-structures-sandbox
+  expect:
+    has_remote: true
+    committed: true
+    pushed: true
+```
+
+Liest nur: `git status --porcelain --branch` im Workspace. Die Rückmeldung
+nennt den Stand und den nächsten Schritt mit den echten Dateinamen, zum
+Beispiel: »3 Dateien geändert, aber nicht committet: `structures/lena/…`.
+Im Terminal: `git add -A` und `git commit -m "…"`. Danach `git push`.«
+`pushed` vergleicht mit dem zuletzt bekannten Stand des Remotes; die Prüfung
+holt nichts aus dem Netz.
+
+### submit
+
+```yaml
+check:
+  type: submit
+  paths: [shower.js]           # oder pick: anaglyph/*.ini für eine einzelne Datei
+  exclude: [shower.js/.git]
+  max_size: 20MB
+  gallery: false
+  requires: { html_parses: true }
+```
+
+Der Server kopiert die Dateien beim Abgeben. Lernende sehen ihre Abgabe, geben
+jederzeit neu ab und können sie löschen. Repositories werden dabei nicht
+angefasst.
+
+### measure, command, scene
+
+Beispiele stehen in `src/content/tcpip/tasks.yaml` und
+`src/content/anaglyph/tasks.yaml`. `measure` vergleicht eine Eingabe mit
+einer Messung, die der Server im Workspace selbst macht (`extract`:
+`ping_rtt_avg`, `ping_hops`, `ping_reply_country`, `traceroute_hops`,
+`http_header:<Name>`). `scene` braucht das Werkzeug `scene-dump` aus dem
+Anaglyph-Projekt.
+
+## Beispiel: Begleiter für eine Sandbox
+
+Die Sandboxes bleiben eigenständig. Eine kleine Aktivität im Workspace kann
+trotzdem begleiten, besonders wenn neue Lernende Git noch nicht kennen: Sie
+liest nur, was im eigenen Workspace liegt, und sagt, was als Nächstes fehlt.
+
+```yaml
+activity: datenstrukturen-start
+tasks:
+  - id: geklont
+    title: Die Sandbox ist da
+    prompt: Klone dein Klassen-Repository nach `/workspace/data-structures-sandbox`.
+    check:
+      type: files
+      path: data-structures-sandbox/structures
+      expect: { exists: true }
+
+  - id: abgegeben
+    title: Committet und gepusht
+    prompt: Dein Stand ist committet und gepusht, damit deine Lehrkraft ihn in »Class progress« sieht.
+    check:
+      type: git
+      repo: data-structures-sandbox
+      expect: { has_remote: true, committed: true, pushed: true }
+```
+
+Im Klassenboard sieht die Lehrkraft dann nicht nur, wer gepusht hat, sondern
+auch, wer Änderungen hat und nie gepusht hat, und warum.
+
+## Was gespeichert wird
+
+- Pro Person und Aufgabe: Status, letzte Eingabe, Zeitpunkt, Version der
+  Aufgabe, und was die Prüfung gelesen hat.
+- Abgaben als Kopie der genannten Dateien.
+- Sehen können das nur die Person selbst und die Lehrkräfte ihrer Gruppen.
+- Lernende löschen eigene Antworten und Abgaben, wann sie wollen. Mit dem
+  Konto verschwindet alles.
+
+## Eine tasks.yaml prüfen
+
+```bash
+cd src/ruby && ruby test/task_spec_test.rb
+```
+
+Der Test liest alle `tasks.yaml` unter `src/content` und meldet jede
+Abweichung mit Aufgabe und Feld.

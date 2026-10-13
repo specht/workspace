@@ -1,0 +1,170 @@
+# Aufgaben zu »Deine Präsentation in HTML« (shower.js).
+# Format: docs/aufgaben.md. Noch nicht in der Seite eingebunden.
+format: 1
+activity: showerjs
+tasks:
+  - id: vorlage
+    title: Die Vorlage
+    prompt: Die Vorlage liegt in `/workspace/shower.js`, mit `index.html` und `styles.css`.
+    check:
+      type: files
+      path: shower.js
+      show: listing
+      expect:
+        exists: true
+
+  - id: adresse
+    title: Datei und Adresse
+    prompt: |
+      Unter welcher Adresse liefert dein Live Server das Bild
+      `pictures/fuji.jpg` aus? Probiere sie in einem neuen Tab aus.
+    check:
+      type: answer
+      compare: url
+      expect: ${workspace.live_url}/pictures/fuji.jpg
+    feedback:
+      - when: { matches: '/pictures/Fuji\.jpg$' }
+        say: Fast. Der Server unterscheidet Groß- und Kleinschreibung. Die Datei heißt fuji.jpg.
+
+  - id: titelfolie
+    title: Deine Titelfolie
+    prompt: Die erste Folie trägt dein Thema und deinen Namen statt der Platzhalter der Vorlage.
+    file: shower.js/index.html
+    check:
+      type: html
+      file: shower.js/index.html
+      expect:
+        first_slide_changed:
+          placeholders: [Titel deiner Präsentation, Dein Name]
+
+  - id: fuenf-folien
+    title: Fünf eigene Folien
+    prompt: |
+      Deine Präsentation hat mindestens fünf eigene Folien, jede mit
+      Überschrift. Folien aus der Vorlage, die du nicht brauchst, löschst du.
+    file: shower.js/index.html
+    check:
+      type: html
+      file: shower.js/index.html
+      expect:
+        parses: true
+        slides:
+          selector: section.slide
+          min_own: 5
+          each_has: h2
+          template_titles:
+            - Titel deiner Präsentation
+            - Schreib deine Präsentation in HTML!
+            - Fließtext auf deinen Folien
+            - Listen sind super
+            - Bild mit Text
+            - Apropos Bilder...
+            - Mehrere Spalten
+            - Zitate
+            - Tabellen können hilfreich sein
+            - Hebe Zeilen oder Zellen hervor...
+            - Wähle eindrucksvolle Bilder
+            - Schritt für Schritt
+            - Platzierung von Elementen
+            - Bedienung mit der Tastatur
+            - Los geht's!
+      warn:
+        words_per_slide: 60
+
+  - id: eigenes-bild
+    title: Ein eigenes Bild
+    prompt: |
+      In `pictures/` liegt ein eigenes Bild mit einem guten Namen, im
+      passenden Format und nicht größer als 500 kB.
+    check:
+      type: files
+      path: shower.js/pictures
+      template: [fuji.jpg, monkey.jpg, sky.jpg, titelfolie.jpg]
+      show: listing
+      expect:
+        new_files: { min: 1 }
+        name: '^[a-z0-9-]+\.(jpe?g|png|webp|svg|gif)$'
+        format_matches_extension: true
+        max_size: 500kB
+
+  - id: umbenennen
+    title: Umbenennen ist nicht umwandeln
+    prompt: Du benennst `classroom.png` in `classroom.webp` um. Was passiert mit der Datei?
+    prediction: true
+    check:
+      type: choice
+      options:
+        - Sie wird zu einem WebP und dabei kleiner.
+        - Sie bleibt ein PNG, nur der Name ist anders.
+        - Sie geht kaputt und lässt sich nicht mehr öffnen.
+        - Der Browser wandelt sie beim Anzeigen um.
+      correct: 1
+    solution: |
+      Ob eine Datei ein PNG ist, steht in ihren ersten Bytes, nicht im Namen:
+      `xxd classroom.webp | head -1` zeigt am Anfang `89 50 4E 47`.
+
+  - id: bild-auf-folie
+    title: Das Bild auf die Folie
+    prompt: |
+      Mindestens eine Folie zeigt ein Bild aus `pictures/`, mit `alt`-Text.
+      Jeder Pfad führt zu einer Datei, die es gibt.
+    file: shower.js/index.html
+    check:
+      type: html
+      file: shower.js/index.html
+      expect:
+        img:
+          min: 1
+          src_exists: case_sensitive
+          alt: required
+
+  - id: eigene-regel
+    title: Eine eigene Regel
+    prompt: In `styles.css` steht unter dem Kommentar mindestens eine eigene Regel, und die Datei ist fehlerfrei.
+    file: shower.js/styles.css
+    check:
+      type: css
+      file: shower.js/styles.css
+      after_marker: Eigene CSS-Regeln
+      expect:
+        parses: true
+        min_rules: 1
+
+  - id: alles-im-ordner
+    title: Alles im Ordner
+    prompt: |
+      Deine Präsentation lädt nichts aus dem Netz: Jedes Bild, jedes
+      Stylesheet und jede Schrift liegt in `shower.js/`.
+    check:
+      type: references
+      root: shower.js
+      scan: [index.html, styles.css]
+      expect:
+        external: none
+        local_exist: true
+
+  - id: file-adresse
+    title: Eine andere Adresse
+    prompt: |
+      Lade den Ordner herunter und öffne `index.html` von deinem eigenen
+      Rechner oder Stick. Was steht jetzt in der Adresszeile des Browsers?
+    check:
+      type: answer
+      compare: regex
+      expect: '^file://.*index\.html(#.*)?$'
+    feedback:
+      - when: { matches: '^https?://' }
+        say: Das ist noch die Adresse des Live Servers. Öffne index.html auf deinem Rechner mit einem Doppelklick.
+
+  - id: abgabe
+    title: Abgabe
+    prompt: |
+      Gib deine Präsentation ab. Deine Lehrkraft sieht genau diesen Stand. Du
+      kannst jederzeit neu abgeben oder deine Abgabe löschen.
+    check:
+      type: submit
+      paths: [shower.js]
+      exclude: [shower.js/.git]
+      max_size: 20MB
+      requires:
+        html_parses: true

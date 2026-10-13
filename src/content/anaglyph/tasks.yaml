@@ -1,0 +1,185 @@
+# Aufgaben zu »3D-Szenen mit Anaglyphen«.
+# Format: docs/aufgaben.md. Noch nicht in der Seite eingebunden.
+# Jede Bauaufgabe hat ihre eigene Datei im Ordner anaglyph/; am Ende liegen
+# alle Szenen nebeneinander und lassen sich im Viewer über das Dateifeld laden.
+format: 1
+activity: anaglyph
+tasks:
+  - id: kugel
+    title: Eine Kugel
+    prompt: Mach aus dem Würfel in `scene.ini` eine Kugel.
+    file: anaglyph/scene.ini
+    check:
+      type: scene
+      file: anaglyph/scene.ini
+      ignore: [grid]
+      expect:
+        - { shape: sphere, count: 1 }
+
+  - id: vier-wuerfel
+    title: Vier Würfel
+    prompt: |
+      Lege die Datei `vier-wuerfel.ini` an und baue darin vier Würfel: einen in
+      der Mitte, einen rechts daneben, einen darüber und einen davor.
+    file: anaglyph/vier-wuerfel.ini
+    check:
+      type: scene
+      file: anaglyph/vier-wuerfel.ini
+      ignore: [grid]
+      expect:
+        - { shape: box, at: [0, 0, 0] }
+        - { shape: box, at: [100, 0, 0] }
+        - { shape: box, at: [0, 100, 0] }
+        - { shape: box, at: [0, 0, 100] }
+    feedback:
+      - when: { found: [0, 0, -100], missing: [0, 0, 100] }
+        say: Der Würfel »davor« steht hinten. Vorne ist +z.
+      - when: { found: [0, -100, 0], missing: [0, 100, 0] }
+        say: Der Würfel »darüber« steht unten. Oben ist +y.
+    solution: |
+      Vier `shape = box`, verschoben um `0, 0, 0`, `100, 0, 0`, `0, 100, 0`
+      und `0, 0, 100`.
+
+  - id: wuerfelstern
+    title: Der Würfelstern
+    prompt: |
+      Baue in `wuerfelstern.ini` den Stern aus dem Bild: genau drei Würfel, die
+      alle im Ursprung stehen.
+    file: anaglyph/wuerfelstern.ini
+    check:
+      type: scene
+      file: anaglyph/wuerfelstern.ini
+      ignore: [grid]
+      expect:
+        - shape: box
+          count: 3
+          at: [0, 0, 0]
+          rotate_z: { spacing: 30, modulo: 90 }
+    solution: Drei Würfel mit `rotate = 0, 0, -30`, ohne Drehung und `rotate = 0, 0, 30`.
+
+  - id: latte
+    title: Die Latte
+    prompt: |
+      Mach in `latte.ini` aus einem Würfel eine Latte, die zehnmal so breit ist,
+      und leg sie so auf das Gitter, dass sie nicht darin versinkt. Ein Würfel
+      ist 50 Einheiten groß.
+    file: anaglyph/latte.ini
+    check:
+      type: scene
+      file: anaglyph/latte.ini
+      ignore: [grid]
+      expect:
+        - { shape: box, count: 1, size: [500, 50, 50], bottom_y: 0 }
+    feedback:
+      - when: { source_matches: 'scale\s*=\s*\d+\s*,\s*\d+\s*$' }
+        say: Steht da ein Komma in einer Kommazahl? Kommazahlen schreibst du mit Punkt.
+    solution: '`scale = 10, 1, 1` und `move = 0, 25, 0`.'
+
+  - id: reihenfolge
+    title: Wo landet der Würfel?
+    prompt: |
+      Ein Würfel wird erst um `100, 0, 0` verschoben und dann um `0, 0, 45`
+      gedreht. Wo liegt danach sein Mittelpunkt? Erst überlegen, dann
+      ausprobieren.
+    prediction: true
+    check:
+      type: choice
+      options:
+        - bei (100, 0, 0), nur schräg gestellt
+        - bei etwa (71, 71, 0), schräg über dem Gitter
+        - bei (0, 100, 0), genau über dem Ursprung
+        - bei (145, 0, 0), etwas weiter rechts
+      correct: 1
+
+  - id: reihenfolge-erklaeren
+    title: In eigenen Worten
+    prompt: |
+      Was passiert mit einem Würfel, den du erst skalierst und dann
+      verschiebst, und was, wenn du es andersherum machst? Erkläre den
+      Unterschied in zwei oder drei Sätzen.
+    check:
+      type: reflection
+      min_words: 20
+
+  - id: wie-viele
+    title: Wie viele?
+    prompt: |
+      Wie viele Würfel zeichnet `loop x from -100 to 100 step 100`, wenn du
+      `step 100` durch `step 50` ersetzt?
+    prediction: true
+    check:
+      type: number
+      expect: 5
+
+  - id: wuerfelgitter
+    title: Ein Würfel aus Würfeln
+    prompt: Baue in `wuerfelgitter.ini` mit Schleifen einen großen Würfel aus 3 × 3 × 3 kleinen Würfeln.
+    file: anaglyph/wuerfelgitter.ini
+    check:
+      type: scene
+      file: anaglyph/wuerfelgitter.ini
+      ignore: [grid]
+      expect:
+        - { shape: box, lattice: [3, 3, 3], min_spacing: 50 }
+      source:
+        contains: [loop]
+    solution: Drei verschachtelte Schleifen über x, y und z.
+
+  - id: allee
+    title: Eine Allee
+    prompt: |
+      Pflanze in `allee.ini` zwei Reihen mit je fünf Bäumen, links und rechts
+      eines Wegs. Benutze `define` und eine Schleife.
+    file: anaglyph/allee.ini
+    check:
+      type: scene
+      file: anaglyph/allee.ini
+      ignore: [grid]
+      expect:
+        - { shape: cylinder, count: 10, rows: 2 }
+        - { shape: cone, count: 10, rows: 2 }
+      source:
+        contains: [define, loop]
+    feedback:
+      - when: { source_matches: 'shape\s*=\s*\w+\s*\n\s*\n\s*(move|rotate|scale)' }
+        say: Nach `shape = baum` steht eine Leerzeile. Die Transformation darunter gilt dann nicht mehr dem Baum.
+
+  - id: umdrehung
+    title: Eine Umdrehung
+    prompt: Der Ring dreht sich mit `rotate = 0, t * 30, 0`. Nach wie vielen Sekunden hat er sich einmal ganz gedreht?
+    check:
+      type: number
+      expect: 12
+      unit: s
+
+  - id: sonnensystem
+    title: Sonne, Erde, Mond
+    prompt: |
+      Baue in `sonnensystem.ini`: In der Mitte steht die Sonne. Die Erde kreist
+      um die Sonne, und der Mond kreist um die Erde. Tipp: Eine Gruppe darf
+      eine andere Gruppe enthalten.
+    file: anaglyph/sonnensystem.ini
+    check:
+      type: scene
+      file: anaglyph/sonnensystem.ini
+      ignore: [grid]
+      at_times: [0, 1, 2, 3]
+      expect:
+        - { name: sonne, shape: sphere, moves: false }
+        - { name: erde, shape: sphere, orbits: sonne }
+        - { name: mond, shape: sphere, orbits: erde }
+    solution: Siehe `lehrkraft/sonnensystem.ini`.
+
+  - id: galerie
+    title: Ab in die Galerie
+    prompt: |
+      Gib deine schönste Szene ab. Sie erscheint in der Galerie deiner Klasse.
+      Du kannst jederzeit eine neue abgeben oder deine Abgabe löschen.
+    check:
+      type: submit
+      pick: anaglyph/*.ini
+      max_size: 1MB
+      gallery: true
+      requires:
+        scene_loads: true
+        min_objects: 5
