@@ -3808,6 +3808,37 @@ class Main < Sinatra::Base
             :password => Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT))
     end
 
+    # What an sql check names when it cannot run: which database, which login,
+    # whether the Workspace runs, what /workspace/.my.cnf says (never the
+    # password). The last two are only looked up when needed.
+    def task_sql_env
+        email = @session_user[:email]
+        login = @session_user[:db_login] || db_login_for_email(email)
+        {
+            :login => login, :database => login, :host => 'mysql',
+            :workspace => lambda {
+                state = begin
+                    get_server_state(fs_tag_for_email(email))
+                rescue StandardError
+                    nil
+                end
+                state.nil? ? nil : state[:running] == true
+            },
+            :my_cnf => lambda {
+                ws = task_workspace_files
+                next nil if ws.nil?
+                next :missing unless ws.entry('.my.cnf')[:type] == :file
+
+                text = begin
+                    ws.read_text('.my.cnf', :max => 4096)
+                rescue StandardError
+                    ''
+                end
+                text.scan(/^\s*(user|database)\s*=\s*(\S+)\s*$/).to_h
+            },
+        }
+    end
+
     # The task for 'activity/id', with its check version, or nil.
     def find_task(key)
         activity, id = key.to_s.split('/', 2)
@@ -4983,7 +5014,8 @@ class Main < Sinatra::Base
                 workspace_runtime.run_command(fs_tag_for_email(@session_user[:email]), :command => command,
                     :uid => "#{WORKSPACE_UID}:#{WORKSPACE_GID}", :seconds => [[seconds.to_i, 1].max, 30].min)
             },
-            :sql => found[:task]['check']['type'] == 'sql' ? task_sql_runner : nil)
+            :sql => found[:task]['check']['type'] == 'sql' ? task_sql_runner : nil,
+            :sql_env => found[:task]['check']['type'] == 'sql' ? task_sql_env : {})
         if result.problem == :reference_failed
             STDERR.puts "SQL task #{found[:key]}: the reference query failed for #{@session_user[:email]}"
         end

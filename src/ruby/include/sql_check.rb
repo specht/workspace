@@ -353,52 +353,162 @@ module SqlCheck
         "#{said}\n\n```\n#{text.gsub('```', "'''")}\n```"
     end
 
-    # MySQL client errors (2xxx) and refused logins: not the student's query.
+    # Errors that are not about the student's query: the server cannot be
+    # reached (2xxx), the login is refused (1045), the database is missing
+    # (1049) or closed to this login (1044).
     def self.unreachable?(error)
         code = error[:code].to_i
-        code >= 2000 && code < 3000 || code == 1045
+        (code >= 2000 && code < 3000) || [1044, 1045, 1049].include?(code)
     end
 
-    # --- checking ---------------------------------------------------------------
+    # The short sentence for such an error; the diagnosis has the details.
+    def self.connection_message(error, env)
+        db = env[:database] ? "`#{env[:database]}`" : 'deine Datenbank'
+        case error && error[:code].to_i
+        when nil then "Für #{db} fehlen die Anmeldedaten, deshalb kann ich nicht nachsehen."
+        when 1045 then "Die Anmeldung an #{db} klappt nicht."
+        when 1049 then "Die Datenbank #{db} gibt es auf dem Datenbankserver nicht."
+        when 1044 then "Die Anmeldung klappt, aber #{db} darf ich damit nicht öffnen."
+        else 'Der Datenbankserver antwortet gerade nicht. Versuch es gleich noch einmal.'
+        end
+    end
+
+    def self.call(value)
+        value.respond_to?(:call) ? value.call : value
+    end
+
+    def self.fence(text)
+        "```\n#{text.to_s.strip.gsub('```', "'''")}\n```"
+    end
+
+    # Markdown: what was looked at and what was found, so that a missing
+    # table or a broken login can be told apart (shown when a check cannot
+    # run). error: the MySQL error that stopped it, if any. counts: rows found
+    # per required table (nil: missing).
+    def self.diagnosis(check, runner, env, error: nil, counts: {})
+        db = env[:database]
+        out = []
+        out << "- **Datenbank:** `#{db || '?'}` auf `#{env[:host] || '?'}`, angemeldet als `#{env[:login] || '?'}`"
+        if error
+            out << "- **MySQL meldet** (#{error[:code]}):"
+            out << ''
+            out << fence(error[:message])
+            out << ''
+        elsif runner
+            tables = runner.call('SHOW TABLES')
+            if tables && !tables[:error]
+                names = tables[:rows].map { |r| r[0].to_s }
+                shown = names.first(20).map { |n| "`#{n.tr('`', "'")}`" }.join(', ')
+                out << "- **Tabellen in `#{db}`:** #{names.empty? ? 'keine' : shown}#{names.size > 20 ? " und #{names.size - 20} weitere" : ''}"
+            end
+            (check['tables'] || {}).each do |name, rows|
+                next unless counts.key?(name)
+
+                found = counts[name]
+                state = if found.nil? then 'fehlt'
+                    elsif rows && found != rows then "#{lines(found)}, die Beispieldaten haben #{rows}"
+                    else "#{lines(found)}, passt"
+                end
+                out << "- **`#{name}`:** #{state}"
+            end
+            wanted = (check['tables'] || {}).keys.select { |n| counts.key?(n) && counts[n].nil? }
+            unless wanted.empty?
+                list = wanted.map { |n| "'#{n}'" }.join(', ')
+                other = runner.call("SELECT table_schema, table_name FROM information_schema.tables WHERE table_name IN (#{list}) AND table_schema <> DATABASE()")
+                if other && !other[:error] && !other[:rows].empty?
+                    places = other[:rows].map { |schema, table| "`#{table}` in `#{schema}`" }.uniq.first(5).join(', ')
+                    out << "- **Gefunden in einer anderen Datenbank:** #{places}. Geprüft wird aber `#{db}`, die Datenbank, die `mysql` und `mycli` in deinem Workspace von selbst öffnen."
+                end
+            end
+        end
+        running = call(env[:workspace])
+        unless running.nil?
+            out << "- **Workspace:** #{running ? 'läuft' : 'läuft gerade nicht. Zum Laden der Beispieldaten brauchst du ihn: Starte ihn und öffne ein Terminal.'}"
+        end
+        my_cnf = call(env[:my_cnf])
+        if my_cnf.is_a?(Hash) && my_cnf['database']
+            same = my_cnf['database'] == db
+            out << "- **`/workspace/.my.cnf`:** Datenbank `#{my_cnf['database']}`#{same ? '' : ". Das ist nicht die geprüfte Datenbank `#{db}`; sag deiner Lehrkraft Bescheid."}"
+        elsif my_cnf == :missing
+            out << '- **`/workspace/.my.cnf`:** fehlt. Die Datei entsteht beim Start deines Workspaces.'
+        end
+        out.join("\n")
+    end
+
+    # Before the student's query runs: are the database and the sample data
+    # there? Returns nil or a result tuple for check.
+    def self.preflight(check, runner, env)
+        if runner.nil?
+            return [:unavailable, connection_message(nil, env), diagnosis(check, nil, env), nil, :unreachable]
+        end
+
+        counts = {}
+        (check['tables'] || {}).each do |name, _rows|
+            result = runner.call("SELECT COUNT(*) FROM `#{name}`")
+            stop = connection_stop(check, env, result)
+            return stop if stop
+
+            if result[:error] && result[:error][:code].to_i != 1146
+                return [:unavailable, "Die Tabelle `#{name}` lässt sich nicht lesen.", diagnosis(check, nil, env, :error => result[:error]), nil, :no_data]
+            end
+            counts[name] = result[:error] ? nil : result[:rows].dig(0, 0).to_i
+        end
+        missing = counts.select { |_, c| c.nil? }.keys
+        unless missing.empty?
+            names = missing.map { |n| "`#{n}`" }.join(' und ')
+            message = "In deiner Datenbank#{env[:database] ? " `#{env[:database]}`" : ''} gibt es #{missing.size == 1 ? 'die Tabelle' : 'die Tabellen'} #{names} nicht. #{check['setup'] || ''}".strip
+            return [:unavailable, message, diagnosis(check, runner, env, :counts => counts), nil, :no_data]
+        end
+        changed = counts.find { |name, c| check['tables'][name] && c != check['tables'][name] }
+        if changed
+            name, count = changed
+            message = "Die Tabelle `#{name}` hat #{lines(count)}, die Beispieldaten haben #{check['tables'][name]}. Hast du etwas geändert? #{check['setup'] || ''}".strip
+            return [:unavailable, message, diagnosis(check, runner, env, :counts => counts), nil, :data_changed]
+        end
+        nil
+    end
+
+    # nil, or the result tuple when the database itself cannot be used.
+    def self.connection_stop(check, env, result)
+        error = result.nil? ? { :code => 2000, :message => 'Keine Antwort vom Datenbankserver.' } : result[:error]
+        return nil unless error && unreachable?(error)
+
+        [:unavailable, connection_message(error, env), diagnosis(check, nil, env, :error => error), nil, :unreachable]
+    end
 
     # Returns [status, message, read, note, problem].
-    def self.check(task, check, answer, runner)
+    # env: { login:, database:, host:, workspace: (bool or lambda), my_cnf: (Hash, :missing or lambda) },
+    #      only used to explain why a check could not run
+    def self.check(task, check, answer, runner, env = {})
         query, refusal = single_select(answer)
         return [:invalid, refusal, nil, nil, :refused] if query.nil?
-        return [:unavailable, UNREACHABLE, nil, nil, :unreachable] if runner.nil?
 
         # The sample data must be there as loaded, or an empty table would
         # make an empty answer right.
-        (check['tables'] || {}).each do |name, rows|
-            result = runner.call("SELECT COUNT(*) FROM `#{name}`")
-            return [:unavailable, UNREACHABLE, nil, nil, :unreachable] if result.nil? || (result[:error] && unreachable?(result[:error]))
+        stop = preflight(check, runner, env)
+        return stop if stop
 
-            if result[:error]
-                return [:unavailable, "In deiner Datenbank gibt es die Tabelle `#{name}` nicht. #{check['setup'] || ''}".strip, nil, nil, :no_data]
-            end
-            count = result[:rows].dig(0, 0).to_i
-            if rows && count != rows
-                return [:unavailable, "Die Tabelle `#{name}` hat #{lines(count)}, die Beispieldaten haben #{rows}. Hast du etwas geändert? #{check['setup'] || ''}".strip, nil, nil, :data_changed]
-            end
-        end
-
-        references = Array(check['expect_query'])
         expected = []
-        references.each do |reference|
+        Array(check['expect_query']).each do |reference|
             result = runner.call(reference)
-            return [:unavailable, UNREACHABLE, nil, nil, :unreachable] if result.nil? || (result[:error] && unreachable?(result[:error]))
+            stop = connection_stop(check, env, result)
+            return stop if stop
 
             if result[:error]
-                if result[:error][:code].to_i == 1146 || result[:error][:code].to_i == 1054
-                    return [:unavailable, "In deiner Datenbank fehlen die Daten für diese Aufgabe. #{check['setup'] || ''}".strip, nil, nil, :no_data]
+                if [1146, 1054].include?(result[:error][:code].to_i)
+                    return [:unavailable, "In deiner Datenbank fehlen Daten für diese Aufgabe. #{check['setup'] || ''}".strip,
+                        diagnosis(check, nil, env, :error => result[:error]), nil, :no_data]
                 end
-                return [:unavailable, 'Die Musterlösung dieser Aufgabe lässt sich gerade nicht ausführen. Sag deiner Lehrkraft Bescheid.', nil, nil, :reference_failed]
+                return [:unavailable, 'Die Musterlösung dieser Aufgabe lässt sich gerade nicht ausführen. Sag deiner Lehrkraft Bescheid.',
+                    diagnosis(check, nil, env, :error => result[:error]), nil, :reference_failed]
             end
             expected << normalize(result)
         end
 
         result = runner.call(query)
-        return [:unavailable, UNREACHABLE, nil, nil, :unreachable] if result.nil? || (result[:error] && unreachable?(result[:error]))
+        stop = connection_stop(check, env, result)
+        return stop if stop
+
         if result[:error]
             # A typical mistake can also show as an error (6,046 instead of 6.046).
             say = feedback(task, check, query, nil, runner)
@@ -416,8 +526,6 @@ module SqlCheck
         say = feedback(task, check, query, given, runner)
         [:wrong, say || outcomes.first[1], read, nil, :result]
     end
-
-    UNREACHABLE = 'Deine Datenbank ist gerade nicht erreichbar. Versuch es gleich noch einmal.'
 
     # A typical mistake: the student's result equals that of a known wrong
     # query (same_result_as), or the query itself looks like one (query_matches).

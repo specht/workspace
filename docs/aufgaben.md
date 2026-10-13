@@ -468,6 +468,14 @@ eigene Ergebnis als Tabelle, die ersten 10 Zeilen, so wie MySQL es liefert;
 Werte aus der Datenbank werden dabei maskiert. Lehrkräfte sehen die Abfragen
 in der Klassenübersicht.
 
+Kann die Karte nicht prüfen, sagt sie genau, woran es liegt, und klappt das
+Nachgesehene auf: welche Datenbank auf welchem Server mit welcher Anmeldung,
+die Meldung von MySQL (Anmeldung abgelehnt, Datenbank unbekannt, Server nicht
+erreichbar), welche Tabellen es gibt und wie viele Zeilen die geforderten
+haben, ob die Tabelle in einer anderen eigenen Datenbank liegt, ob der
+Workspace läuft und welche Datenbank `/workspace/.my.cnf` nennt (ohne
+Passwort). Die Prüfung selbst braucht keinen laufenden Workspace.
+
 ## Beispiel: Begleiter für eine Sandbox
 
 Die Sandboxes bleiben eigenständig. Eine kleine Aktivität im Workspace kann

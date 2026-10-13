@@ -65,7 +65,9 @@ module TaskCheck
     #              runs in the person's container as them; nil if not running
     # sql:         lambda(query) -> result, runs in the person's own MySQL
     #              database as them, read-only (SqlCheck); nil if unreachable
-    def self.check(task, answer, variables: {}, workspace: nil, git: nil, code_solved: nil, runner: nil, sql: nil)
+    # sql_env:     what to name when the database cannot be used (login,
+    #              database, host, workspace running, .my.cnf); see SqlCheck
+    def self.check(task, answer, variables: {}, workspace: nil, git: nil, code_solved: nil, runner: nil, sql: nil, sql_env: {})
         check = task['check']
         type = check['type']
         unless RUNS.include?(type)
@@ -75,7 +77,7 @@ module TaskCheck
         return check_code(task, check, code_solved) if type == 'code'
         return check_run(task, check, answer, runner) if %w[measure command].include?(type)
         return check_scene(task, check, workspace, runner) if type == 'scene'
-        return check_sql(task, check, answer, sql) if type == 'sql'
+        return check_sql(task, check, answer, sql, sql_env) if type == 'sql'
         return check_workspace(task, check, answer, workspace, git, runner) unless ANSWER_TYPES.include?(type)
 
         missing = variables_used(check).reject { |name| variables[name].is_a?(String) && !variables[name].empty? }
@@ -115,8 +117,8 @@ module TaskCheck
     end
 
     # sql: the query runs in the person's own database (SqlCheck).
-    def self.check_sql(task, check, answer, sql)
-        status, message, read, note, problem = SqlCheck.check(task, check, answer, sql)
+    def self.check_sql(task, check, answer, sql, env = {})
+        status, message, read, note, problem = SqlCheck.check(task, check, answer, sql, env || {})
         Result.new(:status => status, :message => message, :read => read, :problem => problem,
             :warnings => note ? [note] : nil, :solution => status == :correct ? task['solution'] : nil)
     end

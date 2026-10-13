@@ -127,6 +127,8 @@
             const body = document.createElement('div');
             body.innerHTML = read;
             details.appendChild(body);
+            // Could not check: what was looked at is the diagnosis, show it.
+            if (status === 'unavailable') details.open = true;
             box.appendChild(details);
         }
         if (solution) {

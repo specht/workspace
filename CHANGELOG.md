@@ -105,7 +105,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Prüfart `sql`: Lernende schreiben eine `SELECT`-Abfrage; sie läuft in
   ihrer eigenen MySQL-Datenbank, als sie selbst, nur lesend und mit
   Zeitlimit, und wird mit dem Ergebnis einer Musterabfrage verglichen. Die
-  Karte zeigt das eigene Ergebnis als Tabelle. »Einführung in SQL« hat jetzt
+  Karte zeigt das eigene Ergebnis als Tabelle. Kann sie nicht prüfen, nennt
+  sie Datenbank, Anmeldung, die Meldung von MySQL, vorhandene Tabellen, den
+  Workspace und `.my.cnf`. »Einführung in SQL« hat jetzt
   13 Aufgaben; die alte Aufgabenliste erscheint nur noch, wenn Aufgaben
   ausgeschaltet sind (`tasks-off-only`).
 - Neue Version einer Vorlage: Auf der Seite einer Aktivität mit `template`

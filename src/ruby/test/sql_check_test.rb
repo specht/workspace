@@ -201,6 +201,66 @@ class SqlCheckTest < Minitest::Test
         assert_equal :unreachable, TaskCheck.check(task, 'SELECT 1', sql: r).problem
     end
 
+    ENV_ANNA = {
+        :login => 'anna', :database => 'anna', :host => 'mysql',
+        :workspace => -> { false },
+        :my_cnf => -> { { 'user' => 'anna', 'database' => 'anna' } },
+    }.freeze
+
+    def test_diagnosis_when_the_table_is_missing
+        r, = runner(answers(
+            'SELECT COUNT(*) FROM `land`' => { :error => { :code => 1146, :message => "Table 'anna.land' doesn't exist" } },
+            'SHOW TABLES' => { :columns => ['Tables_in_anna'], :rows => [['kunden']] },
+            "SELECT table_schema, table_name FROM information_schema.tables WHERE table_name IN ('land') AND table_schema <> DATABASE()" =>
+                { :columns => %w[table_schema table_name], :rows => [%w[db_x7k land]] },
+        ))
+        result = TaskCheck.check(task, 'SELECT 1', sql: r, sql_env: ENV_ANNA)
+        assert_equal :unavailable, result.status
+        assert_equal :no_data, result.problem
+        assert_includes result.message, 'In deiner Datenbank `anna` gibt es die Tabelle `land` nicht.'
+        read = result.read
+        assert_includes read, '- **Datenbank:** `anna` auf `mysql`, angemeldet als `anna`'
+        assert_includes read, '- **Tabellen in `anna`:** `kunden`'
+        assert_includes read, '- **`land`:** fehlt'
+        assert_includes read, '`land` in `db_x7k`. Geprüft wird aber `anna`'
+        assert_includes read, '- **Workspace:** läuft gerade nicht.'
+        assert_includes read, '- **`/workspace/.my.cnf`:** Datenbank `anna`'
+        refute_includes read, 'nicht die geprüfte'
+    end
+
+    def test_diagnosis_names_the_login_problem
+        r, = runner(answers('SELECT COUNT(*) FROM `land`' => { :error => { :code => 1045, :message => "Access denied for user 'anna'@'172.18.0.5' (using password: YES)" } }))
+        env = ENV_ANNA.merge(:workspace => -> { true }, :my_cnf => -> { { 'database' => 'anna_alt' } })
+        result = TaskCheck.check(task, 'SELECT 1', sql: r, sql_env: env)
+        assert_equal :unreachable, result.problem
+        assert_equal 'Die Anmeldung an `anna` klappt nicht.', result.message
+        assert_includes result.read, "- **MySQL meldet** (1045):\n\n```\nAccess denied for user 'anna'"
+        assert_includes result.read, '- **Workspace:** läuft'
+        assert_includes result.read, 'Datenbank `anna_alt`. Das ist nicht die geprüfte Datenbank `anna`'
+
+        r, = runner(answers('SELECT COUNT(*) FROM `land`' => { :error => { :code => 1049, :message => "Unknown database 'anna'" } }))
+        assert_equal 'Die Datenbank `anna` gibt es auf dem Datenbankserver nicht.', TaskCheck.check(task, 'SELECT 1', sql: r, sql_env: ENV_ANNA).message
+        r, = runner(answers('SELECT COUNT(*) FROM `land`' => { :error => { :code => 2005, :message => "Unknown MySQL server host 'mysql'" } }))
+        result = TaskCheck.check(task, 'SELECT 1', sql: r, sql_env: ENV_ANNA.merge(:my_cnf => -> { :missing }))
+        assert_includes result.message, 'antwortet gerade nicht'
+        assert_includes result.read, "Unknown MySQL server host 'mysql'"
+        assert_includes result.read, '`/workspace/.my.cnf`:** fehlt'
+        result = TaskCheck.check(task, 'SELECT 1', sql: nil, sql_env: ENV_ANNA)
+        assert_includes result.message, 'fehlen die Anmeldedaten'
+        assert_includes result.read, '- **Datenbank:** `anna`'
+    end
+
+    def test_diagnosis_for_changed_data
+        r, = runner(answers(
+            'SELECT COUNT(*) FROM `land`' => { :columns => ['COUNT(*)'], :rows => [['0']] },
+            'SHOW TABLES' => { :columns => ['Tables_in_anna'], :rows => [['land'], ['ort']] },
+        ))
+        result = TaskCheck.check(task, 'SELECT 1', sql: r, sql_env: ENV_ANNA)
+        assert_equal :data_changed, result.problem
+        assert_includes result.read, '- **Tabellen in `anna`:** `land`, `ort`'
+        assert_includes result.read, '- **`land`:** 0 Zeilen, die Beispieldaten haben 4'
+    end
+
     def test_table_escapes_cells
         t = S.table(res(%w[a b], ['x|y', nil]))
         assert_includes t, '| x\\|y | *NULL* |'
