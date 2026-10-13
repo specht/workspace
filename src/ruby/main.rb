@@ -1664,6 +1664,7 @@ class Main < Sinatra::Base
             insert_task_cards(root, task_slots, page_tasks, redcarpet, hyphenation_map, path) unless task_slots.empty?
             # Reference pages: every h2 and h3 gets an anchor for the Handbuch index.
             outline = parsed_sections.dig(section, :catalog) == 'reference' ? ReferenceIndex.anchor_headings(root) : nil
+            search_sections = outline ? ReferenceIndex.search_sections(root) : nil
             inject_autotoc(root)
 
             html = root.to_html
@@ -1689,6 +1690,7 @@ class Main < Sinatra::Base
                 # »new version« hint; nil if the page has none.
                 :template => TemplateFreshness.from_meta(page_meta),
                 :outline => outline,
+                :search_sections => search_sections,
             }
             if page_tasks
                 parsed_content[slug][:tasks] = page_tasks.merge(:on_page => task_slots & page_tasks[:by_id].keys)
@@ -4167,8 +4169,9 @@ class Main < Sinatra::Base
                         section = @@sections[section_key]
                         section[:entries].reject { |entry| (!DEVELOPMENT) && @@content[entry][:dev_only] }.map do |slug|
                             content = @@content[slug]
-                            { :slug => slug, :title => content[:title],
-                              :outline => content[:outline], :section_label => section[:label], :section_icon => section[:icon] }
+                            { :slug => slug, :title => content[:title], :abstract => content[:abstract],
+                              :outline => content[:outline], :sections => content[:search_sections],
+                              :section_label => section[:label], :section_icon => section[:icon] }
                         end
                     end
                     io.puts ReferenceIndex.html(pages)

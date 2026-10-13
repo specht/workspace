@@ -1,8 +1,9 @@
 require 'cgi'
+require 'json'
 
-# The Handbuch start page: one block per reference page with its headings as
-# links, so a reader finds »Bilder zuschneiden« without opening every page.
-# No pictures; this is an index to look things up, not a menu to browse.
+# The Handbuch start page: one card per reference page with its chapters as
+# links, and a full-text search over every section, so a reader finds
+# »Bilder zuschneiden« or the »public key« without opening every page.
 module ReferenceIndex
     UMLAUTS = { 'ä' => 'ae', 'ö' => 'oe', 'ü' => 'ue', 'ß' => 'ss', 'Ä' => 'ae', 'Ö' => 'oe', 'Ü' => 'ue' }.freeze
 
@@ -25,11 +26,10 @@ module ReferenceIndex
         root.css('h2, h3').map do |heading|
             text = heading_text(heading)
             next nil if text.empty?
-            part = heading.previous_element
             id = if heading['id']
                 heading['id']
-            elsif part && part.name == 'div' && part['class'].to_s.split.include?('reference-part')
-                part['id']
+            elsif part_id(heading)
+                part_id(heading)
             else
                 base = slug(text)
                 base = 'abschnitt' if base.empty?
@@ -50,39 +50,84 @@ module ReferenceIndex
         CGI.escapeHTML(text.to_s)
     end
 
-    # pages: [{ slug:, title:, outline:, section_label:, section_icon: }]
+    # The text of each h2 and h3 section of an anchored page, for the search:
+    # [{ id:, heading:, text: }]. A section runs to the next h2 or h3.
+    def self.search_sections(root)
+        root.css('h2, h3').map do |heading|
+            id = heading['id'] || part_id(heading)
+            next nil unless id
+            text = +''
+            node = heading.next_sibling
+            while node && !(node.element? && %w[h2 h3].include?(node.name))
+                text << ' ' << plain_text(node) unless node.element? && %w[script style].include?(node.name)
+                node = node.next_sibling
+            end
+            { :id => id, :heading => heading_text(heading), :text => text.delete("\u00ad").gsub(/\s+/, ' ').strip[0, 4000] }
+        end.compact
+    end
+
+    BLOCKS = %w[p li td th tr dt dd div pre br h4 h5 h6 table ul ol blockquote figcaption].freeze
+
+    # Text of a node with a space after each block, so table cells and list
+    # items do not run into each other (»falsch BOOLEAN«, not »falschBOOLEAN«).
+    def self.plain_text(node)
+        return node.text unless node.element?
+        copy = node.dup
+        copy.css(BLOCKS.join(', ')).each { |block| block.add_next_sibling(Nokogiri::XML::Text.new(' ', block.document)) }
+        copy.text
+    end
+
+    # The id of the part marker right before a heading, which is its anchor.
+    def self.part_id(heading)
+        part = heading.previous_element
+        part['id'] if part && part.name == 'div' && part['class'].to_s.split.include?('reference-part')
+    end
+
+    # pages: [{ slug:, title:, abstract:, outline:, sections:, section_label:, section_icon: }]
     #
-    # One grid of equal cards. A card is a chapter: an h2 of a page with the
-    # h3 headings below it. A page whose h2 headings have no h3 below them is
-    # one card with its h2 headings. So a long page spreads over several cards
-    # and the grid stays even, however long each page is.
+    # One card per page: its area, title and abstract, then its chapters (h2)
+    # as links, each with its sections (h3) in one line. While a search is
+    # typed, a list of matching sections replaces the cards (reference.html).
     def self.html(pages)
         return "<p>Hier gibt es noch keine Seiten.</p>" if pages.empty?
 
         io = +"<div class='reference-index'>"
-        io << "<div class='reference-filter'><input type='search' class='form-control' id='reference-filter' " \
-              "placeholder='Im Handbuch suchen, z. B. Bild, Farbe, SSH' aria-label='Im Handbuch suchen' autocomplete='off'></div>"
+        io << "<div class='reference-search'><i class='bi bi-search' aria-hidden='true'></i><input type='search' class='form-control' id='reference-filter' " \
+              "placeholder='Im Handbuch suchen, z. B. Bild zuschneiden, SSH, primary key' aria-label='Im Handbuch suchen' autocomplete='off'></div>"
+        io << "<div class='reference-results' hidden aria-live='polite'></div>"
         io << "<div class='reference-cards'>"
         pages.each do |page|
             url = "/#{page[:slug]}"
-            cards(page[:title], page[:outline] || []).each do |card|
-                io << "<section class='reference-card'>"
-                io << "<a class='reference-card-label' href='#{h(url)}'>"
-                io << "<img alt='' src='#{h(page[:section_icon])}'>" if page[:section_icon]
-                head = card[:head]
-                # A chapter card names its page, a whole-page card its section.
-                io << "#{h(head ? strip_tags(page[:title]) : page[:section_label])}</a>"
-                io << "<h2 data-autotoc='ignore'><a href='#{h(head ? "#{url}##{head[:id]}" : url)}'>#{h(head ? head[:text] : strip_tags(page[:title]))}</a></h2>"
-                unless card[:items].empty?
-                    io << "<ul class='reference-outline'>"
-                    card[:items].each { |item| io << "<li><a href='#{h(url)}##{h(item[:id])}'>#{h(item[:text])}</a></li>" }
-                    io << '</ul>'
+            io << "<section class='reference-card'>"
+            io << "<div class='reference-card-label'>"
+            io << "<img alt='' src='#{h(page[:section_icon])}'>" if page[:section_icon]
+            io << "#{h(page[:section_label])}</div>"
+            io << "<h2 data-autotoc='ignore'><a href='#{h(url)}'>#{h(strip_tags(page[:title]))}</a></h2>"
+            abstract = strip_tags(page[:abstract])
+            io << "<p class='reference-card-abstract'>#{h(abstract)}</p>" unless abstract.empty?
+            chapters = chapters(page[:outline] || [])
+            unless chapters.empty?
+                io << "<ul class='reference-outline'>"
+                chapters.each do |chapter|
+                    io << "<li><a href='#{h(url)}##{h(chapter[:head][:id])}'>#{h(chapter[:head][:text])}</a>"
+                    unless chapter[:items].empty?
+                        io << "<span class='reference-outline-sub'>"
+                        io << chapter[:items].map { |item| "<a href='#{h(url)}##{h(item[:id])}'>#{h(item[:text])}</a>" }.join(' · ')
+                        io << '</span>'
+                    end
+                    io << '</li>'
                 end
-                io << '</section>'
+                io << '</ul>'
             end
+            io << '</section>'
         end
         io << '</div>'
-        io << "<p class='reference-filter-empty' hidden>Nichts gefunden. Versuch ein anderes Wort.</p>"
+        index = pages.map do |page|
+            { :url => "/#{page[:slug]}", :page => strip_tags(page[:title]), :area => page[:section_label].to_s,
+              :sections => (page[:sections] || []).map { |s| { :id => s[:id], :heading => s[:heading], :text => s[:text] } } }
+        end
+        # </script> inside the text must not end the script element.
+        io << "<script type='application/json' id='reference-search-index'>#{index.to_json.gsub('</', '<\\/')}</script>"
         io << '</div>'
         io
     end
@@ -91,8 +136,9 @@ module ReferenceIndex
         CGI.unescapeHTML(html.to_s.gsub(/<[^>]*>/, '')).delete("\u00ad").strip
     end
 
-    # [{ head: h2 item or nil (the page itself), items: [...] }]
-    def self.cards(title, outline)
+    # The page's h2 headings, each with the h3 headings below it:
+    # [{ head:, items: [...] }]. h3 headings before the first h2 stand alone.
+    def self.chapters(outline)
         groups = []
         outline.each do |item|
             if item[:level] == 2 || groups.empty?
@@ -101,9 +147,6 @@ module ReferenceIndex
                 groups.last[:items] << item
             end
         end
-        return [{ :head => nil, :items => [] }] if groups.empty?
-        return [{ :head => nil, :items => groups.map { |g| g[:head] } }] if groups.all? { |g| g[:items].empty? }
-
         groups
     end
 end

@@ -1,35 +1,115 @@
 <div class='container'>
     <h1 class='mt-4'>Handbuch</h1>
-    <p>Befehle, Formate und Handgriffe zum Nachsehen. Aktivitäten verweisen auf diese Abschnitte; hier stehen sie alle auf einen Blick.</p>
+    <p class='reference-intro'>Befehle, Formate und Handgriffe zum Nachsehen. Aktivitäten verweisen auf diese Abschnitte; hier stehen sie alle auf einen Blick.</p>
     #{print_content_overview(:reference)}
 </div>
 <script>
-// Filters the Handbuch index: a card stays when its title or label contains
-// every word typed (then with all its links), or when some of its links do
-// (then only those).
+// Handbuch search: while something is typed, the sections that contain every
+// word replace the cards, those with the words in their heading first. Each
+// result links to its section and shows where the words occur. The query
+// stays in the address (?q=), so »back« from a result returns to the list.
 (function () {
     var input = document.getElementById('reference-filter');
-    if (!input) return;
-    var norm = function (s) { return (s || '').toLowerCase().replace(/\u00ad/g, ''); };
-    var cards = Array.prototype.slice.call(document.querySelectorAll('.reference-card'));
-    var empty = document.querySelector('.reference-filter-empty');
-    input.addEventListener('input', function () {
-        var words = norm(input.value).split(/\s+/).filter(Boolean);
-        var matches = function (text) { return words.every(function (w) { return text.indexOf(w) >= 0; }); };
-        var any = false;
-        cards.forEach(function (card) {
-            var head = norm(card.querySelector('h2').textContent + ' ' + card.querySelector('.reference-card-label').textContent);
-            var cardHit = words.length === 0 || matches(head);
-            var itemHit = false;
-            card.querySelectorAll('.reference-outline li').forEach(function (li) {
-                var hit = cardHit || matches(norm(li.textContent));
-                li.hidden = !hit;
-                if (hit) itemHit = true;
-            });
-            card.hidden = !(cardHit || itemHit);
-            if (!card.hidden) any = true;
+    var data = document.getElementById('reference-search-index');
+    if (!input || !data) return;
+    var index = JSON.parse(data.textContent);
+    var cards = document.querySelector('.reference-cards');
+    var results = document.querySelector('.reference-results');
+    var esc = function (s) {
+        return s.replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
         });
-        if (empty) empty.hidden = any;
+    };
+
+    // The text with every occurrence of the words in <mark>.
+    var mark = function (text, words) {
+        var lower = text.toLowerCase();
+        var ranges = [];
+        words.forEach(function (w) {
+            for (var i = lower.indexOf(w); i >= 0; i = lower.indexOf(w, i + w.length)) ranges.push([i, i + w.length]);
+        });
+        ranges.sort(function (a, b) { return a[0] - b[0]; });
+        var out = '', at = 0;
+        ranges.forEach(function (r) {
+            if (r[0] < at) { if (r[1] > at) { out += '<mark>' + esc(text.slice(at, r[1])) + '</mark>'; at = r[1]; } return; }
+            out += esc(text.slice(at, r[0])) + '<mark>' + esc(text.slice(r[0], r[1])) + '</mark>';
+            at = r[1];
+        });
+        return out + esc(text.slice(at));
+    };
+
+    // About two lines of text around the first word found.
+    var snippet = function (text, words) {
+        var lower = text.toLowerCase();
+        var first = Math.min.apply(null, words.map(function (w) {
+            var i = lower.indexOf(w);
+            return i < 0 ? Infinity : i;
+        }));
+        if (first === Infinity) first = 0;
+        var start = Math.max(0, first - 60);
+        if (start > 0) start = text.indexOf(' ', start) + 1;
+        var end = Math.min(text.length, start + 200);
+        if (end < text.length) end = text.lastIndexOf(' ', end);
+        return (start > 0 ? '… ' : '') + mark(text.slice(start, end), words) + (end < text.length ? ' …' : '');
+    };
+
+    var search = function (query) {
+        var words = query.toLowerCase().split(/\s+/).filter(Boolean);
+        var hits = [];
+        index.forEach(function (page, p) {
+            page.sections.forEach(function (section, s) {
+                var heading = section.heading.toLowerCase();
+                var all = page.page.toLowerCase() + ' ' + heading + ' ' + section.text.toLowerCase();
+                if (!words.every(function (w) { return all.indexOf(w) >= 0; })) return;
+                var score = words.filter(function (w) { return heading.indexOf(w) >= 0; }).length;
+                hits.push({ page: page, section: section, score: score, order: p * 1000 + s });
+            });
+        });
+        hits.sort(function (a, b) { return b.score - a.score || a.order - b.order; });
+        return { words: words, hits: hits.slice(0, 40) };
+    };
+
+    var show = function () {
+        var query = input.value.trim();
+        var url = new URL(window.location.href);
+        if (query) url.searchParams.set('q', query); else url.searchParams.delete('q');
+        history.replaceState(history.state, '', url);
+        if (!query) {
+            results.hidden = true;
+            cards.hidden = false;
+            return;
+        }
+        var found = search(query);
+        results.innerHTML = found.hits.length === 0
+            ? "<p class='reference-results-empty'>Nichts gefunden. Versuch ein anderes Wort.</p>"
+            : found.hits.map(function (hit) {
+                return "<a class='reference-result' href='" + esc(hit.page.url + '#' + hit.section.id) + "'>" +
+                    "<span class='reference-result-path'>" + esc(hit.page.page.indexOf(hit.page.area) === 0 ? hit.page.page : hit.page.area + ' · ' + hit.page.page) + '</span>' +
+                    "<span class='reference-result-heading'>" + mark(hit.section.heading, found.words) + '</span>' +
+                    (hit.section.text ? "<span class='reference-result-snippet'>" + snippet(hit.section.text, found.words) + '</span>' : '') +
+                    '</a>';
+            }).join('');
+        results.hidden = false;
+        cards.hidden = true;
+    };
+
+    input.addEventListener('input', show);
+    input.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter') return;
+        var first = results.querySelector('.reference-result');
+        if (first && !results.hidden) window.location.href = first.href;
     });
+    document.addEventListener('keydown', function (e) {
+        if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+        var tag = (document.activeElement || {}).tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || (document.activeElement || {}).isContentEditable) return;
+        e.preventDefault();
+        input.focus();
+    });
+    var initial = new URL(window.location.href).searchParams.get('q');
+    if (initial) {
+        input.value = initial;
+        show();
+    }
 })();
 </script>

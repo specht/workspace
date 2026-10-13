@@ -362,11 +362,20 @@ html[data-bs-theme="dark"] {
         border-bottom-color: rgba(255, 255, 255, 0.12);
     }
     .task-result p { color: #adb5bd; }
-    .reference-card { border-color: #33332f; }
+    .reference-card,
+    .reference-result,
+    .reference-outline { border-color: #33332f; }
     .reference-card-label,
-    .reference-filter-empty {
+    .reference-result-path,
+    .reference-results-empty,
+    .reference-intro,
+    .reference-card-abstract,
+    .reference-result-snippet,
+    .reference-outline-sub {
         color: #adb5bd;
     }
+    .reference-result-heading { color: #6ea8fe; }
+    .reference-result mark { background-color: #5c4a12; }
     .er-playground-output { border-color: #33332f; }
     .er-playground-problems { color: #f19aa1; }
 }
