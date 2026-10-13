@@ -1721,3 +1721,12 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     border: 1px dashed #dc3545;
     color: #b02a37;
 }
+
+/* Tables inside coloured boxes (teacher notes, Handbuch includes, task
+   cards) take the box's background instead of Bootstrap's table colour. */
+.teacher-note .table,
+.reference-include .table,
+.task-card .table {
+    --bs-table-bg: transparent;
+    background-color: transparent;
+}
