@@ -36,16 +36,14 @@ class StudentHomeTest < Minitest::Test
     end
 
     def test_html
-        html = StudentHome.html(:name => 'Lena Muster', :progress => progress)
-        assert_includes html, 'Hallo Lena'
+        html = StudentHome.html(:progress => progress)
+        assert_includes html, "<h2 id='student-home-title'>Deine Aktivitäten</h2>"
+        refute_includes html, 'Hallo'
         assert_includes html, "href='/tcpip#aufgabe-loopback'"
         assert_includes html, 'Weiter mit: Loopback'
         assert_includes html, '1 von 3 erledigt'
         assert_includes html, "Fertig: <a href='/uebung-strings'>Übung: Strings</a>"
-        assert_includes StudentHome.html(:name => 'x@y.de', :progress => []), "<h2 id='student-home-title'>Hallo x@y.de</h2>"
-        assert_includes StudentHome.html(:name => '', :progress => []), "<h2 id='student-home-title'>Hallo</h2>"
-        assert_includes StudentHome.html(:name => 'Ada', :progress => []), 'Du hast noch keine Aufgabe geprüft'
-        assert_includes StudentHome.html(:name => '<b>', :progress => []), '&lt;b&gt;'
+        assert_includes StudentHome.html(:progress => []), 'Du hast noch keine Aufgabe geprüft'
     end
 
     def test_card_badges
@@ -54,32 +52,13 @@ class StudentHomeTest < Minitest::Test
         assert_includes StudentHome.card_badges('projekt', { :done => 2, :total => 2 }), 'card-progress-done'
     end
 
-    def test_greeting_name_from_email
-        assert_equal 'Michael', StudentHome.greeting_name('Dr. Michael Specht', 'specht@example.org')
-        assert_equal 'anna.berg@example.org', StudentHome.greeting_name('', 'anna.berg@example.org')
-        assert_equal 'anna_berg@example.org', StudentHome.greeting_name('anna_berg@example.org')
-        assert_equal 'specht@gymnasiumsteglitz.de', StudentHome.greeting_name('specht@gymnasiumsteglitz.de', 'specht@gymnasiumsteglitz.de')
-        assert_equal '', StudentHome.greeting_name(nil, nil)
-        html = StudentHome.html(:name => '', :email => 'specht@example.org', :progress => [])
-        assert_includes html, '>Hallo specht@example.org</h2>'
-    end
-
-    def test_first_name_skips_titles
-        assert_equal 'Michael', StudentHome.first_name('Dr. Michael Specht')
-        assert_equal 'Anna', StudentHome.first_name('Prof. Dr. Anna Schmidt')
-        assert_equal 'Lena', StudentHome.first_name('Lena Muster')
-        assert_equal 'Kim', StudentHome.first_name('Kim')
-        assert_equal '', StudentHome.first_name('kim@example.org')
-        assert_includes StudentHome.html(:name => 'Dr. Michael Specht', :progress => []), 'Hallo Michael<'
-    end
-
     def test_hidden_activities_come_back_when_worked_on
         p = progress
-        html = StudentHome.html(:name => 'Lena', :progress => p, :hidden => { 'tcpip' => 30 })
+        html = StudentHome.html(:progress => p, :hidden => { 'tcpip' => 30 })
         refute_includes html, "data-slug='tcpip'"
         assert_includes html, '1 angefangene Aktivität ist ausgeblendet'
         assert_includes html, 'student-home-unhide'
-        html = StudentHome.html(:name => 'Lena', :progress => p, :hidden => { 'tcpip' => 29 })
+        html = StudentHome.html(:progress => p, :hidden => { 'tcpip' => 29 })
         assert_includes html, "data-slug='tcpip'"
         assert_includes html, "class='shc-hide'"
     end
@@ -87,7 +66,7 @@ class StudentHomeTest < Minitest::Test
     def test_pinned_activities_come_first_and_cannot_be_hidden
         pinned = [{ :slug => 'tcpip', :title => 'TCP/IP', :group => '10b' },
                   { :slug => 'latex', :title => 'LaTeX', :abstract => 'Setze <b>Formeln</b>.', :group => 'WP 10' }]
-        html = StudentHome.html(:name => 'Lena', :progress => progress, :pinned => pinned, :hidden => { 'tcpip' => 99 })
+        html = StudentHome.html(:progress => progress, :pinned => pinned, :hidden => { 'tcpip' => 99 })
         assert html.index('Von deiner Lehrkraft') < html.index('Weitermachen')
         pinned_part = html[html.index('Von deiner Lehrkraft')...html.index('Weitermachen')]
         assert_includes pinned_part, "data-slug='tcpip'"

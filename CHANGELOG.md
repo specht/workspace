@@ -95,7 +95,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Startseite: Lernende blenden angefangene Aktivitäten aus, bis sie dort
   weiterarbeiten. Lehrkräfte heften in der Klassenübersicht Aktivitäten für
   eine Gruppe an; diese stehen ganz oben und lassen sich nicht ausblenden.
-  Die Begrüßung lässt Titel wie »Dr.« weg. Neuer Knoten `Pin` (Constraint
+  Neuer Knoten `Pin` (Constraint
   `Pin/key`).
 - Prüfart `scene`: Der Workspace liest eine Anaglyph-Szene mit dem Viewer
   der Person in ihrem eigenen Workspace und prüft Formen, Positionen, Größen,
@@ -166,7 +166,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Die Kopfleiste hat einen starken Knopf (»Workspace öffnen« bzw.
   »Anmelden«); alle anderen sehen gleich aus, die aktuelle Seite ist markiert.
   Das Profil steht rechts und zeigt den Namen oder die E-Mail-Adresse.
-- Die Startseite begrüßt ohne bekannten Namen mit der ganzen E-Mail-Adresse.
+- Die Startseite begrüßt nicht mehr mit »Hallo …«; über den eigenen
+  Aktivitäten steht schlicht »Deine Aktivitäten«. Wer angemeldet ist, steht
+  wie bisher rechts in der Kopfleiste.
 - Das Handbuch zeigt alle Kapitel als gleich große Karten mit ihren
   Überschriften als Links, ohne Bilder, und hat ein Suchfeld. Überschriften auf
   Handbuch-Seiten haben Anker.

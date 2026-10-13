@@ -39,26 +39,6 @@ module StudentHome
         CGI.escapeHTML(text.to_s)
     end
 
-    # Words before the first name that are titles, not names.
-    TITLES = %w[dr dr. prof prof. herr frau hr. fr. dipl. dipl.-ing. ing. mag. stud. str str. ostr ostr. studienrat studienrätin].freeze
-
-    # »Dr. Michael Specht« -> »Michael«. An e-mail address gives nothing.
-    def self.first_name(name)
-        words = name.to_s.strip.split(/\s+/)
-        words.shift while words.size > 1 && (TITLES.include?(words.first.downcase) || words.first.end_with?('.'))
-        first = words.first.to_s
-        first.include?('@') ? '' : first
-    end
-
-    # What to call the person: the first name if there is a name, otherwise
-    # the whole e-mail address (a guessed name from it reads oddly).
-    def self.greeting_name(name, email = nil)
-        first = first_name(name)
-        return first unless first.empty?
-
-        [email, name].map { |a| a.to_s.strip }.find { |a| a.include?('@') } || ''
-    end
-
     # Is an activity hidden from »Weitermachen«? hidden: { slug => time hidden }.
     # It comes back as soon as the person works on it again.
     def self.hidden?(entry, hidden)
@@ -69,10 +49,9 @@ module StudentHome
     # pinned: activities a teacher pinned for one of the person's groups,
     #         [{ slug:, title:, abstract:, group: }], shown first, cannot be hidden
     # hidden: { slug => time } the person has hidden from »Weitermachen«
-    def self.html(name:, progress:, pinned: [], hidden: {}, email: nil)
+    def self.html(progress:, pinned: [], hidden: {})
         io = +"<section class='student-home' aria-labelledby='student-home-title'>"
-        first = greeting_name(name, email)
-        io << "<h2 id='student-home-title'>#{first.empty? ? 'Hallo' : "Hallo #{h(first)}"}</h2>"
+        io << "<h2 id='student-home-title'>Deine Aktivitäten</h2>"
         by_slug = progress.to_h { |p| [p[:slug], p] }
         pinned_slugs = pinned.map { |p| p[:slug] }
 

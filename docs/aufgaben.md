@@ -712,8 +712,7 @@ ausblenden. Das geht mit jeder Aktivität aus dem Katalog, auch ohne Aufgaben.
 Gespeichert wird das als `(:Pin {key, group, slug, by, ts})` und bei den
 Lernenden als Liste `home_hidden` am `User`.
 
-Die Begrüßung nimmt den Vornamen aus der Einladungsliste und lässt Titel wie
-»Dr.« oder »Prof.« weg. Ohne `TASKS_ENABLED` sieht die Startseite für Lernende aus wie
+Über allem steht »Deine Aktivitäten«, ohne Begrüßung mit Namen. Ohne `TASKS_ENABLED` sieht die Startseite für Lernende aus wie
 bisher; nur die Etiketten der Art kommen dazu.
 
 ## Klassenübersicht
