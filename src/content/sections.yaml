@@ -97,6 +97,8 @@
     - tcpip
     - git
     - sandbox-datenstrukturen
+    - sandbox-sortieren
+    - sandbox-cpu
   # - .working-with-processes
 
 - key: programming_languages

@@ -55,10 +55,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Abgaben (`submit`): eine Kopie der genannten Dateien als `.tar.gz` unter
   `/internal/submissions/`; Lernende laden sie herunter, geben neu ab oder
   löschen sie.
-- Neue Aktivität »Mit der Data Structures Sandbox arbeiten« unter »Terminal &
-  Git«: begleitet Einrichtung, Klonen und Veröffentlichen und prüft am Ende
+- Neue Aktivitäten »Mit der Data Structures Sandbox arbeiten«, »Mit der
+  Sorting Sandbox arbeiten« und »Mit der CPU Sandbox arbeiten« unter »Terminal
+  & Git«: begleiten Einrichtung, Klonen und Veröffentlichen und prüfen am Ende
   jeder Stunde, ob alles committet und gepusht ist. Die Adresse des
-  Klassen-Repositorys steht im Meta-Block (`class_repo`).
+  Klassen-Repositorys steht jeweils im Meta-Block (`class_repo`).
+- Handbuch-Seite »Git und GitLab«: SSH-Schlüssel, Name und E-Mail für Git, was
+  tun, wenn ein Push abgelehnt wird. Die drei Sandbox-Seiten binden sie ein.
 - Alle elf Aufgaben in »Eine Präsentation in HTML erstellen« und die
   2048-Aufgabe in »TCP/IP-Verbindungen« stehen jetzt auf der Seite.
 - Klassenübersicht unter `/klasse` (Menüpunkt »Klassen« für Lehrkräfte mit

@@ -18,3 +18,12 @@
     Schriften, Seitenzahlen, Platzierung und Spalten.
   entries:
     - html-folien
+
+- key: reference-git
+  label: Git und GitLab
+  icon: /images/penguin.png
+  description: |
+    Einmal einrichten und dann immer wieder brauchen: SSH-Schlüssel, Name und
+    E-Mail für Git, und was zu tun ist, wenn ein Push abgelehnt wird.
+  entries:
+    - gitlab

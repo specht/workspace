@@ -1,0 +1,83 @@
+# Begleiter zur Sorting Sandbox. Die Sandbox selbst bleibt ein eigenes Projekt;
+# diese Aufgaben lesen nur, was im Workspace liegt.
+# Format: docs/aufgaben.md
+format: 1
+activity: sandbox-sortieren
+tasks:
+  - id: ssh-schluessel
+    title: Dein Schlüssel
+    prompt: Dein öffentlicher SSH-Schlüssel liegt in `~/.ssh/id_ed25519.pub`.
+    check:
+      type: files
+      path: .ssh/id_ed25519.pub
+      expect:
+        exists: true
+        format: text
+    hint: |
+      `~` ist im Workspace `/workspace`. `ls ~/.ssh` zeigt, was dort liegt.
+    feedback:
+      - when: { problem: missing }
+        say: |
+          Es gibt noch keinen Schlüssel. Erzeuge ihn mit
+          `ssh-keygen -t ed25519 -C "Vorname Nachname"` und bestätige alle
+          Rückfragen mit Enter.
+
+  - id: geklont
+    title: Die Sandbox ist da
+    prompt: |
+      Die App liegt in `~/sorting-sandbox`, das Klassen-Repository darin in `algorithms`.
+    check:
+      type: files
+      path: sorting-sandbox/algorithms
+      expect:
+        exists: true
+    feedback:
+      - when: { problem: missing }
+        say: |
+          `sorting-sandbox/algorithms` gibt es nicht. Hast du das Klassen-Repository
+          geklont, und zwar **im** Ordner `sorting-sandbox` und unter dem Namen
+          `algorithms`?
+
+  - id: klassen-repository
+    title: Ein eigenes Repository
+    prompt: |
+      `algorithms` ist ein eigenes Git-Repository und weiß, wohin es pushen kann.
+    check:
+      type: git
+      repo: sorting-sandbox/algorithms
+      expect:
+        has_remote: true
+
+  - id: nur-dein-ordner
+    title: Was gehört in deinen Commit?
+    prompt: |
+      Im Klassen-Repository arbeiten alle. Mit welchem Befehl nimmst du nur
+      deine eigenen Dateien in den nächsten Commit auf?
+    check:
+      type: choice
+      options:
+        - '`git add -A` im Ordner `sorting-sandbox`'
+        - '`git add DEIN_NAME/` im Ordner `algorithms`'
+        - '`git add algorithms/` im Ordner `sorting-sandbox`'
+        - '`git commit -a` im Ordner `algorithms`'
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Im Ordner `sorting-sandbox` liegt die App. Die ändert nur deine Lehrkraft.
+      - when: { picked: 3 }
+        say: '`git commit -a` nimmt jede geänderte Datei mit, auch fremde, wenn du sie aus Versehen verändert hast.'
+
+  - id: veroeffentlicht
+    title: Committet und gepusht
+    prompt: |
+      Deine Arbeit ist committet und gepusht. Erst dann sieht deine Lehrkraft
+      sie in »Class progress« und die anderen nach `git pull` in ihrer App.
+      Prüfe das am Ende jeder Stunde.
+    check:
+      type: git
+      repo: sorting-sandbox/algorithms
+      expect:
+        has_remote: true
+        min_commits: 1
+        committed: true
+        pushed: true

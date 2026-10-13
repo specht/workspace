@@ -2,7 +2,7 @@
 image: data-structures-sandbox.webp
 kind: projekt
 topic: linux
-reference: [workspace]
+reference: [gitlab]
 template: https://github.com/specht/data-structures-sandbox.git
 class_repo: git@git.nhcham.org:specht/data-structure-sandbox-structures-2026.git
 </div>
@@ -33,24 +33,11 @@ Die Karten auf dieser Seite schauen in deinem Workspace nach und sagen dir, was 
 
 ## Einmalig: Zugang zu GitLab
 
-Melde dich auf [git.nhcham.org](https://git.nhcham.org/) an. Erzeuge dann im Terminal einen SSH-Schlüssel, falls `ls ~/.ssh/id_ed25519.pub` noch keinen findet, und bestätige alle Rückfragen mit Enter:
-
-```bash
-ssh-keygen -t ed25519 -C "Vorname Nachname"
-cat ~/.ssh/id_ed25519.pub
-```
-
-Kopiere die ganze Zeile, die mit `ssh-ed25519` beginnt, nach GitLab unter **Edit profile → Access → SSH keys → Add new key**. Die Datei `~/.ssh/id_ed25519` ohne `.pub` ist dein privater Schlüssel. Den gibst du nie weiter.
+_include(gitlab#ssh-schluessel)
 
 _task(ssh-schluessel)
 
-Sag Git zum Schluss, wer du bist, und teste die Verbindung:
-
-```bash
-git config --global user.name "Vorname Nachname"
-git config --global user.email "deine.mail@example.org"
-ssh -T git@git.nhcham.org
-```
+_include(gitlab#git-name)
 
 ## Einmalig: Klonen
 
@@ -99,9 +86,9 @@ git push
 
 _task(nur-dein-ordner)
 
-Lehnt Git den Push ab, lösche nichts und frag nach.
-
 _task(veroeffentlicht)
+
+_include(gitlab#push-abgelehnt)
 
 ## Beim nächsten Mal
 

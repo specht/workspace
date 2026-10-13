@@ -349,8 +349,11 @@ Anaglyph-Projekt.
 Die Sandboxes bleiben eigenständig. Eine kleine Aktivität im Workspace kann
 trotzdem begleiten, besonders wenn neue Lernende Git noch nicht kennen: Sie
 liest nur, was im eigenen Workspace liegt, und sagt, was als Nächstes fehlt.
-Die fertige Seite dazu ist `src/content/sandbox-datenstrukturen/`
-(»Mit der Data Structures Sandbox arbeiten«); hier der Kern:
+Fertige Seiten gibt es für alle drei Sandboxes: `sandbox-datenstrukturen`,
+`sandbox-sortieren` und `sandbox-cpu` unter `src/content/`. Was alle drei
+brauchen (SSH-Schlüssel, `git config`, abgelehnter Push), steht einmal im
+Handbuch unter `reference/gitlab` und wird mit `_include()` eingebunden. Hier
+der Kern der Aufgaben:
 
 ```yaml
 activity: datenstrukturen-start
