@@ -163,14 +163,16 @@ module WorkspaceRuntime
             printf '\n__EXIT %s\n' "$code"
         SH
 
-        # Runs a command in the student's container as the student, in
-        # /workspace, with a time limit (check types measure and command).
+        # Runs a command in the student's container, in /workspace, with a time
+        # limit (check types measure and command). uid is the student for the
+        # task's own commands (measure) and a guest without write access for
+        # what students type (command); home is $HOME for that user.
         # Returns { output:, status:, timed_out: } or nil if the container is
         # not running. Output is cut at 64 kB.
-        def run_command(fs_tag, command:, uid:, seconds:)
+        def run_command(fs_tag, command:, uid:, seconds:, home: '/workspace')
             return nil unless workspace_state(fs_tag, :timeout => 10)[:running]
 
-            line = Shellwords.join(['docker', 'exec', '-u', uid, '-w', '/workspace', '-e', 'HOME=/workspace',
+            line = Shellwords.join(['docker', 'exec', '-u', uid, '-w', '/workspace', '-e', "HOME=#{home}",
                 "hs_code_#{fs_tag}", 'sh', '-c', RUN_SCRIPT, 'sh', command, seconds.to_i.to_s])
             raw = @capture.call(line, :timeout => seconds.to_i + 10, :allow_failure => true, :log_command => false).to_s
             m = raw.match(/\n__EXIT (\d+)\n?\z/)

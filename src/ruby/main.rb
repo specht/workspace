@@ -1322,6 +1322,19 @@ class Main < Sinatra::Base
                 raise
             end
         end
+        # A script next to the page (<script src='x.js'>), e.g. the ER-Werkstatt
+        # core for the Handbuch playground: served from the cache by content
+        # hash, so a changed file is never stale in a browser.
+        root.css('script[src]').each do |script|
+            src = script['src'].to_s
+            next if src.empty? || src.start_with?('/') || src =~ /\A[a-z]+:/i
+            script_path = File.join(File.dirname(path), src)
+            next unless File.file?(script_path)
+            sha1 = Digest::SHA1.hexdigest(File.binread(script_path))[0, 16]
+            target_path = "/webcache/#{sha1}.js"
+            FileUtils.cp(script_path, target_path) unless File.exist?(target_path)
+            script['src'] = "/cache/#{sha1}.js"
+        end
         root.css('svg').each do |img|
             if img.classes.include?('full')
                 img.wrap("<div class='scroll-x'>")
@@ -2952,6 +2965,8 @@ class Main < Sinatra::Base
     end
 
     WORKSPACE_UID = 1000
+    # nobody: runs commands that students type into a task card.
+    GUEST_UID = '65534:65534'
     WORKSPACE_GID = 1000
 
     # Turn the requested value into a portable Unix login name. The container
@@ -5032,6 +5047,12 @@ class Main < Sinatra::Base
             :runner => lambda { |command, seconds|
                 workspace_runtime.run_command(fs_tag_for_email(@session_user[:email]), :command => command,
                     :uid => "#{WORKSPACE_UID}:#{WORKSPACE_GID}", :seconds => [[seconds.to_i, 1].max, 30].min)
+            },
+            # What the person typed runs as a guest: it can read /workspace but
+            # not change or delete anything there (rule 1, checks only read).
+            :guest_runner => lambda { |command, seconds|
+                workspace_runtime.run_command(fs_tag_for_email(@session_user[:email]), :command => command,
+                    :uid => GUEST_UID, :home => '/tmp', :seconds => [[seconds.to_i, 1].max, 30].min)
             },
             :sql => %w[sql schema].include?(found[:task]['check']['type']) ? task_sql_runner : nil,
             :sql_env => %w[sql schema].include?(found[:task]['check']['type']) ? task_sql_env : {})

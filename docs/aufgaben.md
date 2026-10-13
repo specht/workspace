@@ -364,8 +364,12 @@ Lernenden. Im Prüfungsmodus gibt es kein Netz; deshalb ist `measure` dort
 gesperrt.
 
 `command` (seit M6): Lernende tippen einen Befehl. Er läuft in ihrem eigenen
-Workspace, als sie selbst, in `/workspace`, mit dem Zeitlimit aus `timeout`
-(höchstens 30 Sekunden), so als hätten sie ihn im Terminal eingegeben. Die
+Workspace in `/workspace`, mit dem Zeitlimit aus `timeout` (höchstens 30
+Sekunden), aber nicht als sie selbst, sondern als Gast (`nobody`, `HOME=/tmp`):
+Er kann lesen und ins Netz, aber in `/workspace` nichts anlegen, ändern oder
+löschen, und keine Prozesse der Person beenden. Ein `rm -rf ~` in der Karte
+scheitert an fehlenden Rechten (Regel 1). Dateien, die nur für die Person
+lesbar sind (etwa `~/.ssh`), sieht der Gast nicht. Die
 Ausgabe (höchstens 64 kB) wird mit `output` verglichen: `lines`, `matching`,
 `not_matching`; Rückmeldungen mit `when: { output_matches: … }`. Unter »Was
 der Workspace gelesen hat« steht der Befehl mit seiner Ausgabe.

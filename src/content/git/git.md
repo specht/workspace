@@ -108,6 +108,8 @@ Durch <code>git add</code> sagen wir Git explizit, dass wir die Datei <code>hell
 
 Die Ausgabe zeigt jetzt, dass die Datei `hello.txt` in der Staging Area bereitsteht, um committet zu werden.
 
+_task(staging)
+
 ## Einen Commit erstellen
 
 Um die Änderungen dauerhaft im Repository zu speichern, verwende den Befehl `git commit`. Füge die Option `-m` hinzu, um eine Commit-Nachricht anzugeben, die beschreibt, was du geändert hast (falls du die Nachricht weglässt, öffnet Git einen Texteditor, in dem du die Nachricht eingeben kannst):
@@ -136,6 +138,8 @@ Zusätzlich gibt es noch zwei Zeiger:
 Die Ausgabe von `git status` zeigt außerdem an, dass wir keine lokalen Änderungen haben, die noch nicht committet wurden und unser Arbeitsverzeichnis »sauber« ist:
 
 <img class='full' src='git-status-after-first-commit.webp' alt=''>
+
+_task(erster-commit)
 
 ## Dateien umbenennen
 
@@ -205,6 +209,8 @@ _include_svg(graph2.svg)
 
 Wie du sehen kannst, zeigen der `main`-Branch und `HEAD` jetzt auf den neuesten Commit, der die Datei `README.md` mit dem aktualisierten Inhalt enthält. Da der Inhalt verändert wurde, musste ein neuer Blob angelegt werden. Die alten Knoten bleiben weiterhin im Graphen erhalten.
 
+_task(drei-commits)
+
 ## Zeitreise
 
 Lass uns jetzt zu einem früheren Commit zurückkehren. Verwende den Befehl `git log`, um die Commit-Historie anzuzeigen:
@@ -216,6 +222,8 @@ Du siehst eine Liste der Commits, beginnend mit dem neuesten Commit. Du siehst a
 <div class='hint info'>
 Was heißt »ausgecheckt«? In Git bedeutet »auschecken«, dass du den Zustand des Repositories zu einem bestimmten Commit wiederherstellst. Wenn du einen Commit auscheckst, ändert Git die Dateien in deinem Arbeitsverzeichnis so, dass sie dem Zustand entsprechen, der in diesem Commit gespeichert ist. Standardmäßig zeigt <code>HEAD</code> auf den neuesten Commit im aktuellen Branch. Wenn du jedoch einen älteren Commit auscheckst, verschiebst du <code>HEAD</code> auf diesen älteren Commit, und dein Arbeitsverzeichnis wird entsprechend aktualisiert.
 </div>
+
+_task(head-zwei)
 
 Wir checken nun eine frühere Version des Repositories aus, nämlich die Version `HEAD~2`, also zwei Commits vor dem aktuellen `HEAD`:
 
@@ -289,6 +297,8 @@ Du solltest die Meldung `Hello, World!` im Terminal sehen:
 <img class='full' src='git-status-3.webp' alt=''>
 
 Es sind zwei neue Dateien vorhanden: `hello.c` und `hello` (die ausführbare Datei). Wir möchten nur die Quellcodedatei `hello.c` zur Versionskontrolle hinzufügen, nicht jedoch die ausführbare Datei `hello`.
+
+_task(gitignore)
 
 <div class='hint warning'>
 Es gibt bestimmte Arten von Dateien, die nicht in ein Git-Repository aufgenommen werden sollten, wie z.B. ausführbare Dateien, temporäre Dateien oder sensible Informationen wie Zugangsdaten oder API-Schlüssel. Um zu verhindern, dass solche Dateien versehentlich hinzugefügt werden, kannst du eine Datei namens <code>.gitignore</code> erstellen. In dieser Datei kannst du Muster definieren, die Git anweisen, bestimmte Dateien oder Verzeichnisse zu ignorieren. Und genau das machen wir jetzt.
@@ -398,6 +408,8 @@ _include_svg(graph9.svg)
 
 Obwohl es nun keinen `feature`-Branch mehr gibt, sieht man immer noch Spuren davon im Graphen, da es Verzweigungen und Zusammenführungen in der Versionsgeschichte gibt. Der Vorteil des Feature-Branches war, dass wir isoliert an einer neuen Funktion arbeiten konnten, ohne den Haupt-Branch zu beeinflussen. Nachdem die Funktion fertig war, konnten wir sie problemlos in den Haupt-Branch integrieren.
 
+_task(gemergt)
+
 <div class='hint books'>
 Wenn es dir wichtig ist, dass dein <code>main</code>-Branch stabil bleibt, solltest du den <code>feature</code>-Branch nicht ungeprüft in den <code>main</code>-Branch mergen. Hole vorher alle Änderungen aus dem <code>main</code>-Branch in deinen <code>feature</code>-Branch, teste alles gründlich und führe erst dann den Merge durch.
 </div>
@@ -496,6 +508,8 @@ git push -u origin main
 <img class='full' src='git-push-origin-main.webp' alt=''>
 
 Die Option `-u` (oder `--set-upstream`) richtet eine Tracking-Verbindung zwischen dem lokalen `main`-Branch und dem Remote-Branch `origin/main` ein. Dadurch kannst du in Zukunft einfach `git push` oder `git pull` ausführen, ohne den Remote-Namen und den Branch-Namen angeben zu müssen (ansonsten müsstest du immer `git push origin main` schreiben).
+
+_task(gepusht)
 
 ## Git Clone
 
@@ -632,6 +646,8 @@ Wir sehen, dass Git den Merge-Konflikt in der Datei `README.md` markiert hat. Bo
 
 <img class='full' src='bob-resolve-conflict.webp' alt=''>
 
+_task(konflikt)
+
 Hier siehst du die Konfliktmarkierungen:
 
 ```c
@@ -654,6 +670,8 @@ Speichere die Datei und beende den Editor. Bob muss den Konflikt nun als gelöst
 
 Alice hat von dem Merge-Konflikt nichts mitbekommen, da Bob den Konflikt lokal gelöst hat, bevor er seine Änderungen gepusht hat. Wenn Alice jetzt ihre Änderungen mit `git pull` holt, erhält sie die von Bob aktualisierte Datei `README.md`.
 
+_task(bob)
+
 <img class='full' src='alice-pull-after-conflict.webp' alt=''>
 
 ## Tags
@@ -667,6 +685,8 @@ git tag -a v1.0 -m "v1.0 release"
 <div class='hint info'>
 Der Befehl <code>git tag -a</code> erstellt einen annotierten Tag. Annotierte Tags enthalten zusätzliche Informationen wie den Tag-Namen, die Commit-ID, den Autor und eine Nachricht. Dies ist nützlich, um wichtige Punkte in der Versionsgeschichte zu markieren.
 </div>
+
+_task(tags)
 
 So können wir später leicht zu diesem Punkt in der Geschichte zurückkehren, wenn wir z.B. ein Release erstellen möchten. Um Tags zu pushen, verwenden wir den Befehl `git push` mit dem Tag-Namen:
 
@@ -730,6 +750,8 @@ git revert HEAD
 <div class='hint warning'>
 Denke daran, dass Knoten im Git-Objektgraphen niemals gelöscht werden. Selbst wenn du einen Commit rückgängig machst, bleibt der ursprüngliche Commit weiterhin in der Versionsgeschichte erhalten – es wird nur ein neuer Commit erstellt, der die Änderungen des ursprünglichen Commits aufhebt.
 </div>
+
+_task(rueckgaengig)
 
 ## Zusammenfassung
 

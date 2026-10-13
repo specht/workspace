@@ -27,3 +27,11 @@
     E-Mail für Git, und was zu tun ist, wenn ein Push abgelehnt wird.
   entries:
     - gitlab
+
+- key: reference-databases
+  label: Datenbanken
+  icon: /images/card-file-box.png
+  description: |
+    ER-Modelle als Text schreiben und in Tabellen übersetzen.
+  entries:
+    - er-modelle

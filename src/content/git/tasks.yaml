@@ -1,0 +1,167 @@
+# Aufgaben zu »Versionsverwaltung mit Git«. Format: docs/aufgaben.md.
+# Die git-Prüfungen lesen git status in /workspace/git-tutorial/alice und
+# .../bob/remote-repo im laufenden Workspace und ändern nichts.
+format: 1
+activity: git
+tasks:
+  - id: erster-commit
+    title: Der erste Commit
+    prompt: Lege in `git-tutorial/alice` ein Repository an und committe `hello.txt`.
+    check:
+      type: git
+      repo: git-tutorial/alice
+      expect:
+        min_commits: 1
+    feedback:
+      - when: { problem: no_repo }
+        say: Es gibt noch keinen Ordner `/workspace/git-tutorial/alice`. Lege ihn mit `mkdir -p git-tutorial/alice` an.
+      - when: { problem: not_git }
+        say: Der Ordner ist noch kein Repository. Führe darin `git init` aus.
+
+  - id: staging
+    title: Was macht git add?
+    prompt: Du hast `hello.txt` geändert und `git add hello.txt` ausgeführt. Wo steht die Änderung jetzt?
+    check:
+      type: choice
+      options:
+        - Schon in einem Commit, also für immer in der Geschichte.
+        - In der Staging Area. Erst der nächste `git commit` nimmt sie in die Geschichte auf.
+        - Nur in der Datei, Git weiß noch nichts davon.
+        - Auf dem Server, von dem das Repository kommt.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Noch nicht. `git add` legt die Änderung bereit; in die Geschichte kommt sie erst mit `git commit`.
+
+  - id: drei-commits
+    title: Umbenannt und geändert
+    prompt: Benenne `hello.txt` in `README.md` um, ändere die Datei und committe beides, wie oben beschrieben.
+    check:
+      type: git
+      repo: git-tutorial/alice
+      expect:
+        committed: true
+        min_commits: 3
+
+  - id: head-zwei
+    title: HEAD~2
+    prompt: Was zeigt dein Arbeitsverzeichnis nach `git checkout HEAD~2`?
+    prediction: true
+    check:
+      type: choice
+      options:
+        - Den Stand von zwei Commits vor dem aktuellen, ohne dass sich `main` bewegt.
+        - Den Stand von vor zwei Stunden.
+        - Den aktuellen Stand; die letzten zwei Commits sind gelöscht.
+        - Nur die zwei Dateien, die zuletzt geändert wurden.
+      correct: 0
+    feedback:
+      - when: { picked: 2 }
+        say: Gelöscht wird nichts. `main` zeigt weiter auf den neuesten Commit; mit `git checkout main` bist du wieder dort.
+
+  - id: gitignore
+    title: Warum .gitignore?
+    prompt: Warum soll die ausführbare Datei `hello` nicht ins Repository?
+    check:
+      type: choice
+      options:
+        - Weil Git keine Dateien ohne Endung speichern kann.
+        - Weil sie aus `hello.c` jederzeit neu entsteht; ins Repository gehört die Quelle, nicht das Ergebnis.
+        - Weil ausführbare Dateien Viren sein könnten.
+        - Weil Git nur Textdateien speichern kann.
+      correct: 1
+
+  - id: gemergt
+    title: Feature gemergt
+    prompt: Merge den Branch `feature` in `main`, sodass `git status` nichts mehr meldet.
+    check:
+      type: git
+      repo: git-tutorial/alice
+      expect:
+        committed: true
+        min_commits: 5
+    feedback:
+      - when: { problem: uncommitted }
+        say: Es gibt noch Dateien, die Git meldet. Steht `hello` noch dabei, fehlt die Zeile `hello` in `.gitignore` oder `.gitignore` ist nicht committet.
+
+  - id: gepusht
+    title: Alice pusht
+    prompt: Verknüpfe Alices Repository mit `remote-repo` und pushe `main`.
+    check:
+      type: git
+      repo: git-tutorial/alice
+      expect:
+        has_remote: true
+        pushed: true
+
+  - id: konflikt
+    title: Konfliktmarkierungen
+    prompt: |
+      Bob sieht nach `git pull` diese Stelle in `README.md`. Was steht zwischen
+      `<<<<<<< HEAD` und `=======`?
+
+      ```
+      <<<<<<< HEAD
+      HOLAAA
+      =======
+      HEYYYY
+      >>>>>>> ef91739
+      ```
+    check:
+      type: choice
+      options:
+        - Bobs eigene Änderung, so wie sie in seinem letzten Commit steht.
+        - Die Änderung von Alice, die vom Remote kommt.
+        - Der Stand von vor beiden Änderungen.
+        - Was Git als Lösung vorschlägt.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Andersherum. `HEAD` ist Bobs eigener Stand; Alices Änderung steht unter `=======`, bis zur Commit-ID.
+    solution: |
+      Bob entscheidet, was stehen bleibt, löscht alle drei Markierungszeilen,
+      und schließt den Merge mit `git add README.md` und `git commit` ab.
+
+  - id: bob
+    title: Bob hat aufgelöst
+    prompt: Löse Bobs Konflikt, schließe den Merge ab und pushe.
+    check:
+      type: git
+      repo: git-tutorial/bob/remote-repo
+      expect:
+        has_remote: true
+        committed: true
+        pushed: true
+    feedback:
+      - when: { problem: no_repo }
+        say: Bobs Klon liegt in `git-tutorial/bob/remote-repo`. Klone ihn mit `git clone ../remote-repo` im Ordner `git-tutorial/bob`.
+      - when: { problem: uncommitted }
+        say: Der Merge ist noch nicht abgeschlossen. Nach dem Bearbeiten von `README.md` kommen `git add README.md` und `git commit`, dann `git push`.
+
+  - id: tags
+    title: Tags pushen
+    prompt: Du hast `git tag -a v1.0 -m "v1.0 release"` und dann `git push` ausgeführt. Ist der Tag auf dem Remote?
+    check:
+      type: choice
+      options:
+        - Ja, `git push` überträgt alles.
+        - Nein, Tags pushst du extra, mit `git push origin v1.0` oder `git push origin --tags`.
+        - Nur wenn der Tag annotiert ist.
+      correct: 1
+
+  - id: rueckgaengig
+    title: Aus der Staging Area holen
+    prompt: Du hast `README.md` mit `git add` bereitgelegt, willst die Änderung aber noch nicht committen und auch nicht verlieren. Welcher Befehl?
+    check:
+      type: choice
+      options:
+        - "`git restore README.md`"
+        - "`git restore --staged README.md`"
+        - "`git revert HEAD`"
+        - "`rm README.md`"
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Vorsicht, `git restore README.md` verwirft die Änderung in der Datei. `--staged` nimmt sie nur aus der Staging Area.
+      - when: { picked: 2 }
+        say: "`git revert` macht einen ganzen Commit rückgängig. Hier gibt es noch keinen Commit."

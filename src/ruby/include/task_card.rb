@@ -95,7 +95,7 @@ module TaskCard
                 io << "<div class='task-reads'>Läuft in deiner eigenen MySQL-Datenbank, angemeldet als du, und liest nur: eine Abfrage mit <code>SELECT</code>, höchstens #{SqlCheck::MAX_MS / 1000} Sekunden. <kbd>Strg</kbd>+<kbd>Enter</kbd> prüft.</div>"
             when 'command'
                 io << "<input type='text' class='form-control task-input task-command' name='answer' spellcheck='false' autocomplete='off' placeholder='Befehl' aria-labelledby='#{h.(field)}-title'>"
-                io << "<div class='task-reads'>Läuft in deinem Workspace in <code>/workspace</code>, wie im Terminal, höchstens #{(check['timeout'] || 10).to_i} Sekunden.</div>"
+                io << "<div class='task-reads'>Läuft in deinem Workspace in <code>/workspace</code>, höchstens #{(check['timeout'] || 10).to_i} Sekunden, als Gast: Der Befehl kann lesen, aber nichts verändern oder löschen.</div>"
             when 'submit'
                 if check['pick']
                     io << "<label class='task-pick-label' for='#{h.(field)}-pick'>Welche Datei gibst du ab?</label>"

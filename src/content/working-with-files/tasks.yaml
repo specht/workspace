@@ -1,0 +1,159 @@
+# Aufgaben zu »Dateien und Verzeichnisse«. Format: docs/aufgaben.md.
+# Die Beispieldateien kommen aus workspace-files/working-with-files.tar.gz und
+# liegen nach dem Entpacken in /workspace/working-with-files. Die Zahlen unten
+# stammen aus diesem Archiv (Stand 2024-08-20).
+format: 1
+activity: working-with-files
+tasks:
+  - id: entpackt
+    title: Beispieldateien entpackt
+    prompt: Lade das Archiv herunter und entpacke es mit `tar xvf` in deinem Home-Verzeichnis.
+    check:
+      type: files
+      path: working-with-files/alice.txt
+      expect:
+        format: text
+    feedback:
+      - when: { problem: missing }
+        say: Entpackt wird mit `tar xvf working-with-files.tar.gz`, und zwar in `~`, also in `/workspace`. Danach gibt es dort den Ordner `working-with-files`.
+
+  - id: versteckt
+    title: Die versteckte Datei
+    prompt: Wie heißt die versteckte Datei im Ordner `working-with-files`?
+    check:
+      type: answer
+      expect: .hidden
+    feedback:
+      - when: { equals: hidden }
+        say: Fast. Der Punkt am Anfang gehört zum Namen; er macht die Datei erst unsichtbar.
+    hint: '`ls` zeigt sie nicht, `ls -la` schon.'
+
+  - id: zeilenende
+    title: Windows oder Linux?
+    prompt: Woran erkennst du im Hexdump von `alice.txt`, dass es eine Windows-Textdatei ist?
+    check:
+      type: choice
+      options:
+        - Jede Zeile endet mit den Bytes `0d 0a`.
+        - Jede Zeile endet mit dem Byte `0a`.
+        - Zwischen den Wörtern steht `20`.
+        - Die Datei beginnt mit `4d 5a`.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Ein einzelnes `0a` ist das Zeilenende unter Linux. Windows schreibt davor noch `0d`.
+      - when: { picked: 2 }
+        say: "`20` ist das Leerzeichen, das gibt es in jeder Textdatei."
+
+  - id: nano
+    title: Eine Datei mit nano
+    prompt: Schreib mit `nano` ein paar Wörter in `hello-nano.txt` im Ordner `working-with-files` und speichere.
+    check:
+      type: files
+      path: working-with-files/hello-nano.txt
+      expect:
+        format: text
+    feedback:
+      - when: { problem: wrong_format }
+        say: Die Datei ist noch leer. In `nano` speicherst du mit <kbd>Strg</kbd><kbd>O</kbd> und <kbd>Enter</kbd>.
+
+  - id: vim
+    title: Eine Datei mit vim
+    prompt: Schreib mit `vim` eine Zeile in `hello-vim.txt` im Ordner `working-with-files` und speichere mit `:wq`.
+    check:
+      type: files
+      path: working-with-files/hello-vim.txt
+      expect:
+        format: text
+    feedback:
+      - when: { problem: missing }
+        say: Die Datei entsteht erst beim Speichern. In `vim`, nach <kbd>Esc</kbd>, mit `:w` oder `:wq`.
+      - when: { problem: wrong_format }
+        say: Die Datei ist noch leer. Mit <kbd>i</kbd> kommst du in den Einfügemodus, dann tippen, dann <kbd>Esc</kbd> und `:wq`.
+
+  - id: alice-zeilen
+    title: Wie oft Alice?
+    prompt: In wie vielen Zeilen von `alice.txt` steht `Alice`, genau so geschrieben?
+    check:
+      type: number
+      expect: 398
+    feedback:
+      - when: { equals: 400 }
+        say: Das ist mit `-i`, also auch `ALICE`. Gefragt ist genau `Alice`.
+      - when: { equals: 401 }
+        say: Das ist, wie oft das Wort vorkommt. Gefragt ist, in wie vielen Zeilen; manche Zeilen enthalten es zweimal.
+    hint: '`grep` zeigt die Zeilen, `wc -l` zählt sie. Mit `|` verbindest du beides.'
+
+  - id: woerter
+    title: Die Wortliste
+    prompt: Speichere die Liste aller verschiedenen Wörter mit `>` in `words.txt`.
+    check:
+      type: files
+      path: working-with-files/words.txt
+      expect:
+        format: text
+    feedback:
+      - when: { problem: wrong_format }
+        say: "`words.txt` ist leer. Steht `>` am Ende der ganzen Pipeline, hinter `uniq -i`?"
+
+  - id: zork
+    title: Zork übersetzt
+    prompt: Entpacke `zork.zip` und übersetze das Spiel mit `make`.
+    check:
+      type: files
+      path: working-with-files/zork-master/zork
+      expect:
+        format: elf
+        executable: true
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch kein Programm `zork`. Führe `make` im Ordner `zork-master` aus, nicht daneben.
+
+  - id: bestie
+    title: Tab, Tab, Tab
+    prompt: In welchem Jahr erschien das Album »Die Bestie in Menschengestalt« von Die Ärzte?
+    check:
+      type: number
+      expect: 1993
+    hint: Das Jahr steht im Dateinamen. Unter `music-releases/Germany` geht es weiter; die <kbd>Tab</kbd>-Taste hilft bei Leerzeichen und Umlauten.
+
+  - id: welcome
+    title: Dateien mit »welcome«
+    prompt: |
+      Wie viele **Dateien** in `music-releases` enthalten das Wort »welcome«,
+      egal ob groß oder klein geschrieben?
+    check:
+      type: number
+      expect: 56
+    feedback:
+      - when: { equals: 72 }
+        say: Das sind die Zeilen. Manche Dateien enthalten das Wort mehrmals. `grep -l` gibt jede Datei nur einmal aus.
+      - when: { equals: 0 }
+        say: Ohne `-i` findet `grep` nichts, denn »Welcome« steht überall groß geschrieben.
+    hint: "`grep -ril welcome .` listet die Dateien, `wc -l` zählt die Zeilen der Ausgabe."
+
+  - id: sandbox
+    title: Aufgeräumt
+    prompt: |
+      Arbeite den Abschnitt »Kopieren, verschieben und löschen« durch, bis
+      `jay.webm` in `sandbox/nested` liegt.
+    check:
+      type: files
+      path: working-with-files/sandbox/nested/jay.webm
+      expect:
+        exists: true
+    feedback:
+      - when: { problem: missing }
+        say: Sieh mit `tree working-with-files/sandbox` nach, wo `jay.webm` gerade liegt. `mv jay.webm nested` musst du im Ordner `sandbox` ausführen.
+
+  - id: papierkorb
+    title: Und wenn rm danebengeht?
+    prompt: Du hast mit `rm` die falsche Datei gelöscht. Was jetzt?
+    check:
+      type: choice
+      options:
+        - Sie liegt im Papierkorb, von dort holst du sie zurück.
+        - Mit `rm -u` machst du das Löschen rückgängig.
+        - Sie ist weg. Hilft nur eine Kopie, die du vorher woanders hattest, etwa in Git.
+        - "`rmdir` holt sie zurück."
+      correct: 2

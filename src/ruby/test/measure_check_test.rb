@@ -69,15 +69,18 @@ class MeasureCheckTest < Minitest::Test
     def test_command
         task = tasks['katzenfakt']
         out = lambda { |text| ->(_command, _timeout) { { :output => text, :status => 0 } } }
-        ok = TaskCheck.check(task, 'curl -s https://catfact.ninja/fact | jq -r .fact', variables: {}, runner: out.("Cats sleep a lot.\n"))
+        ok = TaskCheck.check(task, 'curl -s https://catfact.ninja/fact | jq -r .fact', variables: {}, guest_runner: out.("Cats sleep a lot.\n"))
         assert_equal :correct, ok.status
         assert_includes ok.read, 'Cats sleep a lot.'
-        assert_match(/Anführungszeichen/, TaskCheck.check(task, 'x', variables: {}, runner: out.("\"Cats sleep.\"\n")).message)
-        assert_match(/noch JSON/, TaskCheck.check(task, 'x', variables: {}, runner: out.("{\"fact\": \"x\"}\n")).message)
-        assert_match(/2 Zeilen/, TaskCheck.check(task, 'x', variables: {}, runner: out.("a\nb\n")).message)
-        timed = TaskCheck.check(task, 'sleep 99', variables: {}, runner: ->(_, _) { { :output => '', :timed_out => true } })
+        assert_match(/Anführungszeichen/, TaskCheck.check(task, 'x', variables: {}, guest_runner: out.("\"Cats sleep.\"\n")).message)
+        assert_match(/noch JSON/, TaskCheck.check(task, 'x', variables: {}, guest_runner: out.("{\"fact\": \"x\"}\n")).message)
+        assert_match(/2 Zeilen/, TaskCheck.check(task, 'x', variables: {}, guest_runner: out.("a\nb\n")).message)
+        timed = TaskCheck.check(task, 'sleep 99', variables: {}, guest_runner: ->(_, _) { { :output => '', :timed_out => true } })
         assert_match(/länger als 10 Sekunden/, timed.message)
-        assert_equal :invalid, TaskCheck.check(task, '', variables: {}, runner: out.('')).status
-        assert_equal :invalid, TaskCheck.check(task, "ls\nrm x", variables: {}, runner: out.('')).status
+        assert_equal :invalid, TaskCheck.check(task, '', variables: {}, guest_runner: out.('')).status
+        assert_equal :invalid, TaskCheck.check(task, "ls\nrm x", variables: {}, guest_runner: out.('')).status
+        # A typed command never runs as the person: without a guest runner it does not run at all.
+        student = ->(_c, _t) { raise 'must not run as the student' }
+        assert_equal :unavailable, TaskCheck.check(task, 'rm -rf ~', variables: {}, runner: student).status
     end
 end

@@ -180,6 +180,11 @@ class WorkspaceRuntimeTest < Minitest::Test
         @capture_outputs << "\n__EXIT 124\n"
         assert @runtime.run_command('abc', :command => 'sleep 99', :uid => '1000:1000', :seconds => 2)[:timed_out]
 
+        @capture_outputs << JSON.generate([{ 'NetworkSettings' => { 'Networks' => { 'workspace_user' => { 'IPAddress' => '172.20.0.9' } } } }])
+        @capture_outputs << "x\n__EXIT 0\n"
+        @runtime.run_command('abc', :command => 'ls', :uid => '65534:65534', :seconds => 2, :home => '/tmp')
+        assert_includes @captures.last.first, 'docker exec -u 65534:65534 -w /workspace -e HOME\\=/tmp hs_code_abc'
+
         @capture_outputs << '[]'
         assert_nil @runtime.run_command('abc', :command => 'ls', :uid => '1000:1000', :seconds => 2)
     end

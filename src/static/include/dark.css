@@ -364,4 +364,6 @@ html[data-bs-theme="dark"] {
     .reference-filter-empty {
         color: #adb5bd;
     }
+    .er-playground-output { border-color: #33332f; }
+    .er-playground-problems { color: #f19aa1; }
 }

@@ -4,6 +4,7 @@ kind: projekt
 topic: databases
 duration: 3 Doppelstunden
 requires: [mysql]
+reference: [er-modelle]
 </div>
 
 # Filmdatenbank mit MySQL
@@ -90,6 +91,8 @@ So liest du das:
 
 Bezeichner schreibst du klein und englisch, ohne Leerzeichen und Umlaute; für mehrere Wörter nimmst du `_`. Die Namen sind nicht beliebig: Die Filmdaten, die du später lädst, erwarten genau diese Tabellen und Spalten.
 
+_uses(attribute, beziehungen)
+
 Während du tippst, unterstreicht VS Code Fehler rot und erklärt sie, wenn du mit der Maus darüberfährst. Alle Fehler stehen auch im Bereich »Probleme« (<kbd>Strg</kbd><kbd>Shift</kbd><kbd>M</kbd>).
 
 _task(modell-filme)
@@ -135,6 +138,8 @@ In `movie_genre` steht `PK-FK` vor beiden Spalten:
 Unter dem Diagramm stehen die Tabellen noch einmal als Liste und, aufgeklappt, »So wurde übersetzt«: Schritt für Schritt, was aus welchem Teil des Modells geworden ist.
 
 Die Kästen kannst du mit der Maus verschieben. Die Positionen merkt sich die ER-Werkstatt in der versteckten Datei `.film.er.layout.json` neben deinem Modell; »Neu anordnen« ordnet alles wieder automatisch an.
+
+_uses(uebersetzung, diagramme)
 
 _task(vorhersage-n1)
 

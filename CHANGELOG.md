@@ -124,6 +124,19 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   werden unterstrichen, »SQL erzeugen« schreibt das MySQL-Schema, »Als SVG
   speichern« das Diagramm. Kern und Kommandozeile:
   `src/vscode-extensions/er/core/er-core.js`.
+- Handbuch-Seite »ER-Modelle als Text« (`/reference/er-modelle`): Syntax,
+  Übersetzung in Tabellen, die drei Diagramme, die ER-Werkstatt in VS Code und
+  auf der Kommandozeile, mit einem Feld zum Ausprobieren, das denselben Kern
+  im Browser nutzt. Skripte neben einer Seite (`<script src='x.js'>`) werden
+  wie Bilder über `/cache/` ausgeliefert.
+- »Dateien und Verzeichnisse« hat 12 Aufgaben: entpackte Beispieldateien,
+  mit `nano` und `vim` geschriebene Dateien, die Wortliste, das übersetzte
+  Zork, Zahlen, die man mit `grep`, `wc` und der Tab-Ergänzung findet, und
+  eine Notiz für Lehrkräfte.
+- Aufgaben für »Versionsverwaltung mit Git« (11: Commits, Merge, Remote,
+  Konflikt, jeweils aus `git status` des eigenen Repositorys) und »Statische
+  Webseiten mit HTML & CSS« (10, mit Abgabe), jeweils mit Notiz für
+  Lehrkräfte.
 - Prüfarten `er` (Entitäten, Schlüssel, Attribute, Beziehungen,
   Kardinalitäten und die entstehenden Tabellen eines `.er`-Modells, gelesen mit
   dem Kern der ER-Werkstatt im Workspace) und `schema` (Spalten, Primär- und
@@ -141,6 +154,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Sicherheit: Befehle, die Lernende in eine Aufgabe vom Typ `command` tippen,
+  laufen nicht mehr als die Person, sondern als Gast (`nobody`): Sie können
+  `/workspace` lesen, aber nichts darin ändern oder löschen.
 - SQL-Aufgaben: Das eigene Ergebnis steht immer sichtbar als Tabelle unter
   der Rückmeldung. Gefragt sind genau die verlangten Spalten (`extra_columns`
   ist jetzt standardmäßig `wrong`); Fehlermeldungen von MySQL sind auch im

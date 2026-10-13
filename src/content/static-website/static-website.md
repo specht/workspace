@@ -67,6 +67,8 @@ Nachdem das Verzeichnis geöffnet wurde, siehst du links im Explorer deine Datei
 
 <img class='full' src='fresh-project.webp' alt=''>
 
+_task(index)
+
 ### Vorschau starten
 
 <img src='../common/go-live.webp' class='r' style='width: 19em;' alt=''>
@@ -88,6 +90,8 @@ Tipp: Ziehe den Workspace und die Vorschau nebeneinander. Dann kannst du in <cod
 <div class='hint melting'>
 Falls sich die Vorschau einmal nicht automatisch aktualisiert, lade sie mit <kbd>Strg</kbd><kbd>R</kbd> oder <kbd>F5</kbd> neu.
 </div>
+
+_task(live)
 
 ## Inhalt mit HTML
 
@@ -235,6 +239,8 @@ Wikimedia Commons erlaubt das direkte Einbinden seiner Bilder, also sogenanntes 
 Nicht jedes Bild, das du im Internet findest, darfst du einfach für deine Webseite verwenden. Bei Wikimedia Commons findest du viele Bilder mit freien Lizenzen. Schau auf der Dateiseite nach, wer das Bild gemacht hat und unter welcher Lizenz es steht.
 </div>
 
+_task(alt-text)
+
 ### Was gehört in den Alt-Text?
 
 Der Alt-Text ist für Menschen wichtig, die das Bild nicht sehen können und zum Beispiel einen Screenreader verwenden. Er sollte kurz beschreiben, welche **zusätzliche Information** das Bild vermittelt. Für unser Foto passt zum Beispiel:
@@ -322,6 +328,10 @@ Wenn dein Bild nicht erscheint, prüfe zuerst ganz genau:
 Wenn du ein eigenes Bild hast, ersetze jetzt das Axolotl-Foto. Passe auch den Alt-Text an. Wenn du das Bild selbst fotografiert oder gezeichnet hast, brauchst du den Bildnachweis aus unserem Beispiel natürlich nicht mehr.
 </div>
 
+_task(eigenes-bild)
+
+_task(bilddatei)
+
 ## Aussehen mit CSS
 
 Bis jetzt haben wir mit HTML beschrieben, **was** auf der Seite steht. Der Browser entscheidet noch weitgehend selbst, wie Überschriften, Listen und Links aussehen. Dafür gibt es CSS: **Cascading Style Sheets**. Mit CSS legst du Farben, Schriftarten, Größen, Abstände und das Layout fest. Wir schreiben das CSS in eine eigene Datei, damit Inhalt und Gestaltung getrennt bleiben.
@@ -381,6 +391,8 @@ img {
 
 Speichere die Datei. Die Änderung sollte sofort deutlich zu sehen sein: dunkler Hintergrund, helle Schrift, eine andere Linkfarbe und ein Bild mit abgerundeten Ecken.
 
+_task(css)
+
 <button class='tutorial-preview' type='button'>
     <img src='website-styled.webp' alt='Die Axolotl-Webseite hat jetzt einen dunklen grünlichen Hintergrund, helle Schrift, türkisfarbene Links und ein Bild mit abgerundeten Ecken.'>
 </button>
@@ -412,6 +424,8 @@ beginnt der Selektor mit einem Punkt. Damit wird keine HTML-Tag-Art ausgewählt,
 ```
 
 Klassen sind praktisch, wenn du einzelne Elemente gezielt gestalten möchtest, ohne gleich alle Elemente derselben Art zu verändern.
+
+_task(selektor)
 
 <div class='hint'>
 Neben Farbangaben wie <code>#351c2b</code> zeigt VS Code ein kleines Farbfeld an. Klicke darauf, wenn du eine andere Farbe ausprobieren möchtest. Du musst die Hexadezimalzahlen nicht auswendig lernen.
@@ -505,6 +519,8 @@ Die wichtigsten neuen Eigenschaften sind:
 - `width: 45%` gibt dem Bild knapp die Hälfte der Breite.
 - `flex: 1` erlaubt dem Textbereich, den übrigen Platz einzunehmen.
 
+_task(breite)
+
 <div class='hint task'>
 Probiere bei <code>gap</code> und <code>width</code> andere Werte aus. Was passiert bei <code>width: 30%</code> oder <code>width: 60%</code>?
 </div>
@@ -537,6 +553,8 @@ Jetzt ergänzen wir am Ende von `styles.css` eine **Media Query**:
     }
 }
 ```
+
+_task(media-query)
 
 Hier siehst du einen Vergleich vorher / nachher:
 
@@ -616,6 +634,8 @@ a:hover {
 <div class='hint think'>
 Wenn du beim Ausprobieren etwas kaputtmachst, ist das kein Problem. Mit <kbd>Strg</kbd><kbd>Z</kbd> kannst du Änderungen rückgängig machen. Am meisten lernst du hier, wenn du Werte veränderst und beobachtest, was passiert.
 </div>
+
+_task(abgabe)
 
 ## Deine Seite veröffentlichen
 

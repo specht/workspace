@@ -2358,3 +2358,69 @@ h3[id] {
 .reference-filter-empty {
     color: #5c636a;
 }
+
+/* Handbuch »ER-Modelle als Text«: model on the left, diagram on the right. */
+.er-playground {
+    display: grid;
+    grid-template-columns: minmax(16em, 2fr) 3fr;
+    gap: 0.8em 1em;
+    margin: 1em 0 1.5em;
+}
+
+.er-playground-input {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 90%;
+    min-height: 22em;
+    resize: vertical;
+}
+
+.er-playground-output {
+    border: 1px solid #e3e3e3;
+    border-radius: 0.5em;
+    padding: 0.6em;
+    min-width: 0;
+    background-color: #fff;
+}
+
+.er-playground-diagram svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 30em;
+    margin-top: 0.5em;
+}
+
+.er-playground-problems {
+    color: #b02a37;
+    font-size: 90%;
+    margin-top: 0.4em;
+}
+
+.er-playground-details {
+    grid-column: 1 / -1;
+}
+
+.er-playground-details summary {
+    cursor: pointer;
+}
+
+.er-playground-sql {
+    max-height: 24em;
+    overflow: auto;
+}
+
+@media (max-width: 720px) {
+    .er-playground {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Tables of prose on Handbuch pages wrap; the first column (a name) does not. */
+.table.reference-table td,
+.table.reference-table th {
+    white-space: normal;
+}
+
+.table.reference-table td:first-child {
+    white-space: nowrap;
+}

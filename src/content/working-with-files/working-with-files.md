@@ -103,6 +103,8 @@ Du solltest jetzt zusätzlich zur heruntergelandenen Archivdatei ein Verzeichnis
 `working-with-files` sehen. Du erkennst an dem `d` am Anfang der Zeile, dass es sich um ein
 Verzeichnis handelt.
 
+_task(entpackt)
+
 <div class='hint'>
 Um dein Terminal aufzuräumen, kannst du den Befehl <code>clear</code> verwenden oder einfach die Tastenkombination <kbd>Strg</kbd><kbd>L</kbd> drücken.
 </div>
@@ -140,6 +142,8 @@ Lass dir anschließend die Inhalte des Verzeichnisses mit `ls -l` anzeigen:
 <div class='hint'>
 Es gibt noch eine versteckte Datei in diesem Verzeichnis, die du dir mit dem Befehl <code>ls -la</code> (für »long all«) anzeigen lassen kannst. Versteckte Dateien beginnen unter Linux mit einem Punkt.
 </div>
+
+_task(versteckt)
 
 Gib nun den Befehl `file *` ein und drücke die Eingabetaste. Der Stern `*` ist ein Platzhalter, der für alle Dateien im aktuellen Verzeichnis steht. Der Befehl `file` zeigt den Dateityp einer Datei an und mit `file *` können wir also den Dateityp aller Dateien im aktuellen Verzeichnis anzeigen.
 
@@ -213,6 +217,8 @@ Ignoriere die rechte Hälfte der Tabelle &ndash; die Werte von 128 bis 255 sind 
 
 Wenn du dir den Hexdump genau anschaust, findest du z. B. Leerzeichen (`20`) und Zeilenumbrüche (`0d` `0a`), auch CRLF genannt. Hieran erkennst du, dass es sich um eine Windows-Textdatei handelt. Linux-Textdateien verwenden nur ein LF (`0a`) als Zeilenumbruch (trotzdem kann Linux mit beiden Arten von Textdateien umgehen).
 
+_task(zeilenende)
+
 Du kannst die Dateien natürlich auch in Visual Studio Code öffnen, indem du die linke Seitenleiste mit <kbd>Strg</kbd><kbd>B</kbd> einblendest und dann auf »Open Folder« klickst (oder einfach die Abkürzung <kbd>Strg</kbd><kbd>K</kbd>+<kbd>O</kbd> verwendest). Wähle das Verzeichnis `working-with-files` aus und klicke auf »OK«.
 
 <img class='full' src='open-folder.webp' alt=''>
@@ -257,6 +263,8 @@ Gib den Befehl `nano hello-nano.txt` ein, um eine neue Datei zu öffnen. Du kann
 
 <img class='full' src='hello-nano-saved.webp' alt=''>
 
+_task(nano)
+
 ### Dateien bearbeiten mit `vim`
 
 Gib den Befehl `vim hello-vim.txt` ein, um eine neue Datei zu öffnen. `vim` hat verschiedene Modi, die du mit der Taste <kbd>Esc</kbd> wechseln kannst. Im Befehlsmodus kannst du Befehle eingeben, um Text zu bearbeiten. Im Einfügemodus kannst du Text eingeben. Um in den Einfügemodus zu wechseln, drücke <kbd>i</kbd> (für »insert«). Um den Eingabemodus zu verlassen und zum Befehlsmodus zurückzukehren, drücke <kbd>Esc</kbd>. Um `vim` zu beenden, wechsle in den Befehlsmodus und gib `:q` ein. Wenn du deine Änderungen speichern möchtest, gib `:w` ein. Wenn du `vim` beenden und deine Änderungen speichern möchtest, gib `:wq` ein.
@@ -278,6 +286,8 @@ Falls du mehr über `vim` lernen und den Umgang mit diesem Editor trainieren mö
 <div class='hint'>
 <code>vimtutor</code> lässt sich, genau wie <code>vim</code> selbst, mit <kbd>:</kbd>, <kbd>q</kbd> und <kbd>Enter</kbd> beenden.
 </div>
+
+_task(vim)
 
 ### Dateien bearbeiten mit `emacs`
 
@@ -312,6 +322,8 @@ Wir haben nun ein paar weitere Stellen gefunden. Wenn du die Zeilennummer sehen 
 <img class='full' src='grep-in-everybody.webp' alt=''>
 
 `grep` ist ein sehr mächtiges Programm mit einer Vielzahl von Optionen. Du kannst z. B. reguläre Ausdrücke verwenden, um nach komplexeren Mustern zu suchen. Gib `man grep` ein, um die manpage von `grep` zu lesen und mehr über die verschiedenen Optionen zu erfahren.
+
+_task(alice-zeilen)
 
 Wir wollen nun alle Wörter aus der Datei `alice.txt` extrahieren. Gib dazu den folgenden Befehl ein:
 
@@ -369,6 +381,8 @@ Wir können unser Ergebnis auch in einer Datei speichern, indem wir die Ausgabe 
 grep -o -E "[A-Za-z]+" alice.txt | sort | uniq -i > words.txt
 ```
 <img class='full' src='alice-redirect-to-file.webp' alt=''>
+
+_task(woerter)
 
 Es gibt noch zwei weitere Befehle, die nützlich sind, wenn man nur den Anfang oder das Ende einer Datei oder einer Ausgabe sehen möchte. Nutze `head`, um die ersten 10 Zeilen einer Datei oder einer Ausgabe zu sehen:
 
@@ -449,6 +463,8 @@ Anders als unter Windows kannst du hier nicht einfach <code>zork</code> eingeben
 
 Falls du [Zork](https://de.wikipedia.org/wiki/Zork) beenden möchtest, bevor du das Spiel durchgespielt hast, kannst du dies durch die Eingabe von `quit` erreichen.
 
+_task(zork)
+
 Verlasse nun wieder das Verzeichnis `zork-master`, indem du `cd ..` eingibst. Wir werden nun das Archiv `music-releases.tar.bz2` entpacken:
 
 ```bash
@@ -500,6 +516,8 @@ less Albums/2016\ -\ 君の名は。.txt
 <div class='hint'>
 Lass dir nun das Album »Die Bestie in Menschengestalt« der Band »Die Ärzte« anzeigen. Wenn du das geschafft hast, hast du die Navigation im Dateisystem und die Tab-Ergänzung gemeistert!
 </div>
+
+_task(bestie)
 
 <img class='full' src='bestie.webp' alt=''>
 
@@ -577,6 +595,8 @@ grep -ri welcome .
 Dabei stehen die Optionen `-r` für »recursive« (rekursiv) und `-i` für »ignore case« (Groß- und Kleinschreibung ignorieren). Der Punkt `.` steht für das aktuelle Verzeichnis. Es bedeutet also: untersuche alle Dateien im aktuellen Verzeichnis und allen Unterverzeichnissen. Wenn du den Befehl ausführst, siehst du alle Dateien, die das Wort »welcome« enthalten:
 
 <img class='full' src='grep-ri-welcome.webp' alt=''>
+
+_task(welcome)
 
 ## Dateien und Verzeichnisse kopieren, verschieben und löschen
 
@@ -665,6 +685,8 @@ Du siehst nun, dass die Datei `jay.webm` nicht mehr im Verzeichnis `sandbox` ist
 
 <img class='full' src='mv-jay.webp' alt=''>
 
+_task(sandbox)
+
 Du kannst `mv` auch verwenden, um Dateien umzubenennen. Versuche, die Datei `alice.txt` in `alice-in-wonderland.txt` umzubenennen:
 
 ```bash
@@ -728,6 +750,8 @@ rm -r zork-master
 ```
 
 <img class='full' src='rm-r-zork.webp' alt=''>
+
+_task(papierkorb)
 
 ## Zusammenfassung
 

@@ -64,12 +64,15 @@ module TaskCheck
     # code_solved: lambda(codebite) -> languages in which the person has solved
     #              that Code Bites task (from the Code Bites results)
     # runner:      lambda(command, timeout) -> { output:, status:, timed_out: },
-    #              runs in the person's container as them; nil if not running
+    #              runs in the person's container as them; nil if not running.
+    #              Only for commands that come from the task or from us.
+    # guest_runner: the same, but as a guest user that can read /workspace and
+    #              not change it: for commands the person typed (command)
     # sql:         lambda(query) -> result, runs in the person's own MySQL
     #              database as them, read-only (SqlCheck); nil if unreachable
     # sql_env:     what to name when the database cannot be used (login,
     #              database, host, workspace running, .my.cnf); see SqlCheck
-    def self.check(task, answer, variables: {}, workspace: nil, git: nil, code_solved: nil, runner: nil, sql: nil, sql_env: {})
+    def self.check(task, answer, variables: {}, workspace: nil, git: nil, code_solved: nil, runner: nil, guest_runner: nil, sql: nil, sql_env: {})
         check = task['check']
         type = check['type']
         unless RUNS.include?(type)
@@ -77,7 +80,7 @@ module TaskCheck
                 :message => 'Diese Aufgabe kann der Workspace noch nicht selbst prüfen. Zeig dein Ergebnis deiner Lehrkraft.')
         end
         return check_code(task, check, code_solved) if type == 'code'
-        return check_run(task, check, answer, runner) if %w[measure command].include?(type)
+        return check_run(task, check, answer, type == 'command' ? guest_runner : runner) if %w[measure command].include?(type)
         return check_scene(task, check, workspace, runner) if type == 'scene'
         return check_sql(task, check, answer, sql, sql_env) if type == 'sql'
         return check_er(task, check, workspace, runner) if type == 'er'
@@ -108,7 +111,8 @@ module TaskCheck
         result
     end
 
-    # measure and command run in the person's Workspace (MeasureCheck).
+    # measure and command run in the person's Workspace (MeasureCheck);
+    # command, typed by the person, only ever with the guest runner (rule 1).
     def self.check_run(task, check, answer, runner)
         runner ||= ->(_command, _timeout) { nil }
         status, message, read = if check['type'] == 'measure'

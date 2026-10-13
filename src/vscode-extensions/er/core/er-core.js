@@ -117,7 +117,7 @@
             }
             const m = s.match(RE_ATTR);
             if (!m) {
-                errors.push(problem(line, 'Attribute schreibst du als »name: type, zusatz«, zum Beispiel »id: int, key«.', raw));
+                errors.push(problem(line, 'Attribute schreibst du als »name: typ, zusatz«, zum Beispiel »id: int, key«.', raw));
                 return;
             }
             const attr = { name: m[1], type: 'text', key: false, optional: false, unique: false, line };
@@ -249,7 +249,7 @@
                 const extra = relAttrs.filter((x) => x.key).map((x) => x.name);
                 const who = ends.map((e) => e.name);
                 const what = r.nary ? `Die Beziehung ${r.name} verbindet ${who.slice(0, -1).join(', ')} und ${who[who.length - 1]}` : `Die n:m-Beziehung ${r.name} zwischen ${who[0]} und ${who[1]}`;
-                steps.push({ tag: r.nary ? `${ends.length}-stellig` : 'n:m', text: `${what} und bekommt eine eigene Tabelle \`${t.name}\`. Sie enthält die Schlüssel ${r.nary ? 'aller' : 'beider'} Seiten als Fremdschlüssel; zusammen${extra.length ? ` mit \`${extra.join(', ')}\`` : ''} bilden sie den Primärschlüssel \`(${t.pk.join(', ')})\`.` +
+                steps.push({ tag: r.nary ? `${ends.length}-stellig` : 'n:m', text: `${what}${r.nary ? ' und' : ''} bekommt eine eigene Tabelle \`${t.name}\`. Sie enthält die Schlüssel ${r.nary ? 'aller' : 'beider'} Seiten als Fremdschlüssel; zusammen${extra.length ? ` mit \`${extra.join(', ')}\`` : ''} bilden sie den Primärschlüssel \`(${t.pk.join(', ')})\`.` +
                     (relAttrs.length ? ` Die Attribute der Beziehung (${relAttrs.map((x) => `\`${x.name}\``).join(', ')}) kommen in diese Tabelle.` : '') });
             } else {
                 // 1:n, n:1 or 1:1: the foreign key goes to the n side (for 1:1: the right side, made unique)
@@ -272,7 +272,7 @@
                 const fk = cols.map((c) => c.name).join(', ');
                 steps.push({ tag: isOne ? '1:1' : '1:n', text: isOne
                     ? `Die 1:1-Beziehung ${r.name}: \`${t.name}\` bekommt den Fremdschlüssel \`${fk}\`, der zusätzlich eindeutig (UNIQUE) ist. So gehört zu jedem Datensatz höchstens ein Partner.`
-                    : `Die 1:n-Beziehung ${r.name}: Jede Zeile in \`${t.name}\` merkt sich mit dem Fremdschlüssel \`${fk}\`, zu welchem ${one.name} sie gehört. Eine eigene Tabelle ist nicht nötig.` +
+                    : `Die 1:n-Beziehung ${r.name}: Jede Zeile in \`${t.name}\` merkt sich mit dem Fremdschlüssel \`${fk}\`, zu welcher Zeile in \`${one.name}\` sie gehört. Eine eigene Tabelle ist nicht nötig.` +
                       (relAttrs.length ? ` Die Attribute der Beziehung kommen ebenfalls in \`${t.name}\`.` : '') });
             }
         }

@@ -13,6 +13,7 @@ require 'digest'
 require 'fileutils'
 require 'json'
 require 'net/http'
+require 'openssl'
 require 'optparse'
 require 'set'
 require 'time'
@@ -47,6 +48,13 @@ class WikidataClient
 
   private
 
+  # Gave up on a query: it timed out on the server or the connection kept
+  # breaking. Callers may split the batch and try the halves.
+  class Failed < StandardError; end
+
+  NETWORK_ERRORS = [EOFError, Errno::ECONNRESET, Errno::ECONNREFUSED, Errno::EPIPE, Net::OpenTimeout,
+                    Net::ReadTimeout, OpenSSL::SSL::SSLError, SocketError, IOError].freeze
+
   def fetch(query, path)
     raise "Not cached and --offline given: #{query[0, 120]}" if @offline
 
@@ -59,8 +67,18 @@ class WikidataClient
       request['User-Agent'] = USER_AGENT
       request['Accept'] = 'application/sparql-results+json'
       request.set_form_data('query' => query)
-      response = Net::HTTP.start(ENDPOINT.host, ENDPOINT.port, use_ssl: true, open_timeout: 30, read_timeout: 90) do |http|
-        http.request(request)
+      begin
+        response = Net::HTTP.start(ENDPOINT.host, ENDPOINT.port, use_ssl: true, open_timeout: 30, read_timeout: 90) do |http|
+          http.request(request)
+        end
+      rescue *NETWORK_ERRORS => e
+        # The query service drops the connection when a query runs into its
+        # 60 s limit; a dropped connection is also just the network.
+        raise Failed, "connection broke #{attempts} times (#{e.class})" if attempts >= 3
+
+        STDERR.puts "  connection broke (#{e.class}), trying again in #{10 * attempts}s"
+        sleep 10 * attempts
+        next
       end
       case response
       when Net::HTTPSuccess
@@ -68,11 +86,16 @@ class WikidataClient
         File.rename("#{path}.part", path)
         return response.body
       when Net::HTTPTooManyRequests, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeout, Net::HTTPBadGateway
-        raise "Wikidata keeps refusing (#{response.code}); try again later" if attempts >= 6
+        raise Failed, "Wikidata keeps refusing (#{response.code})" if attempts >= 6
 
         wait = [response['Retry-After'].to_i, 5 * attempts].max
         STDERR.puts "  Wikidata says #{response.code}, waiting #{wait}s"
         sleep wait
+      when Net::HTTPInternalServerError
+        # A query that ran too long comes back as 500 with a TimeoutException.
+        raise Failed, 'query timed out on the server' if response.body.to_s.include?('TimeoutException') || attempts >= 2
+
+        sleep 5
       else
         raise "Wikidata query failed: #{response.code} #{response.message}\n#{response.body.to_s[0, 500]}"
       end
@@ -253,17 +276,19 @@ class WikidataMovieBuilder
     films = {}
     imdb_ids.each_slice(200).with_index do |batch, i|
       STDERR.puts "  #{i * 200}/#{imdb_ids.size}" if (i % 5).zero?
-      rows = @wikidata.select(<<~SPARQL)
-        SELECT ?imdb ?film ?en ?de ?original ?date ?amount ?unit WHERE {
-          VALUES ?imdb { #{literal_list(batch)} }
-          ?film wdt:P345 ?imdb .
-          OPTIONAL { ?film rdfs:label ?en FILTER(LANG(?en) = "en") }
-          OPTIONAL { ?film rdfs:label ?de FILTER(LANG(?de) = "de") }
-          OPTIONAL { ?film wdt:P1476 ?original }
-          OPTIONAL { ?film wdt:P577 ?date }
-          OPTIONAL { ?film p:P2047 ?ds . ?ds a wikibase:BestRank ; psv:P2047 [ wikibase:quantityAmount ?amount ; wikibase:quantityUnit ?unit ] }
-        }
-      SPARQL
+      rows = select_split(batch) do |part|
+        <<~SPARQL
+          SELECT ?imdb ?film ?en ?de ?original ?date ?amount ?unit WHERE {
+            VALUES ?imdb { #{literal_list(part)} }
+            ?film wdt:P345 ?imdb .
+            OPTIONAL { ?film rdfs:label ?en FILTER(LANG(?en) = "en") }
+            OPTIONAL { ?film rdfs:label ?de FILTER(LANG(?de) = "de") }
+            OPTIONAL { ?film wdt:P1476 ?original }
+            OPTIONAL { ?film wdt:P577 ?date }
+            OPTIONAL { ?film p:P2047 ?ds . ?ds a wikibase:BestRank ; psv:P2047 [ wikibase:quantityAmount ?amount ; wikibase:quantityUnit ?unit ] }
+          }
+        SPARQL
+      end
       rows.each do |row|
         film = (films[row['imdb']] ||= { qid: self.class.qid(row['film']), years: [], minutes: [] })
         next if film[:qid] != self.class.qid(row['film']) # one IMDb ID on two items: keep the first
@@ -283,30 +308,51 @@ class WikidataMovieBuilder
   def load_genres(films)
     labels = Hash.new { |h, k| h[k] = [] }
     films.values.map { |f| f[:qid] }.each_slice(200) do |batch|
-      @wikidata.select(<<~SPARQL).each { |row| labels[self.class.qid(row['film'])] << row['label'] }
-        SELECT ?film ?label WHERE {
-          VALUES ?film { #{entity_list(batch)} }
-          ?film wdt:P136 ?genre .
-          ?genre rdfs:label ?label FILTER(LANG(?label) = "en")
-        }
-      SPARQL
+      rows = select_split(batch) do |part|
+        <<~SPARQL
+          SELECT ?film ?label WHERE {
+            VALUES ?film { #{entity_list(part)} }
+            ?film wdt:P136 ?genre .
+            ?genre rdfs:label ?label FILTER(LANG(?label) = "en")
+          }
+        SPARQL
+      end
+      rows.each { |row| labels[self.class.qid(row['film'])] << row['label'] }
     end
     labels
+  end
+
+  # Runs a query for a batch; if the query service gives up on it, the batch
+  # is split in halves (down to one item) instead of failing the whole build.
+  def select_split(batch, &query)
+    @wikidata.select(query.call(batch))
+  rescue WikidataClient::Failed => e
+    raise if batch.size <= 1
+
+    STDERR.puts "  #{e.message}; splitting a batch of #{batch.size}"
+    half = batch.size / 2
+    select_split(batch[0, half], &query) + select_split(batch[half..], &query)
   end
 
   # qid -> [[job, person qid]], the best known people per job first
   def load_credits(films)
     credits = Hash.new { |h, k| h[k] = [] }
-    films.values.map { |f| f[:qid] }.each_slice(40).with_index do |batch, i|
-      STDERR.puts "  #{i * 40}/#{films.size}" if (i % 10).zero?
-      unions = JOBS.keys.map { |p| "{ ?film wdt:#{p} ?person BIND(\"#{p}\" AS ?prop) }" }.join(" UNION\n  ")
-      rows = @wikidata.select(<<~SPARQL)
-        SELECT ?film ?prop ?person ?links WHERE {
-          VALUES ?film { #{entity_list(batch)} }
-          #{unions}
-          ?person wdt:P31 wd:Q5 ; wikibase:sitelinks ?links .
-        }
-      SPARQL
+    unions = JOBS.keys.map { |p| "{ ?film wdt:#{p} ?person BIND(\"#{p}\" AS ?prop) }" }.join(" UNION\n  ")
+    films.values.map { |f| f[:qid] }.each_slice(20).with_index do |batch, i|
+      STDERR.puts "  #{i * 20}/#{films.size}" if (i % 20).zero?
+      # The optimizer hint keeps the order as written: films first, then their
+      # people. Otherwise the service may start from all humans and time out.
+      rows = select_split(batch) do |part|
+        <<~SPARQL
+          SELECT ?film ?prop ?person ?links WHERE {
+            hint:Query hint:optimizer "None" .
+            VALUES ?film { #{entity_list(part)} }
+            #{unions}
+            ?person wdt:P31 wd:Q5 .
+            ?person wikibase:sitelinks ?links .
+          }
+        SPARQL
+      end
       rows.group_by { |r| [self.class.qid(r['film']), r['prop']] }.each do |(film, prop), list|
         job, keep = JOBS.fetch(prop)
         people = list.map { |r| [self.class.qid(r['person']), r['links'].to_i] }.uniq.sort_by { |q, links| [-links, q] }
@@ -322,16 +368,18 @@ class WikidataMovieBuilder
     people = {}
     qids.each_slice(300).with_index do |batch, i|
       STDERR.puts "  #{i * 300}/#{qids.size}" if (i % 5).zero?
-      rows = @wikidata.select(<<~SPARQL)
-        SELECT ?person ?en ?de ?mul ?birth ?death WHERE {
-          VALUES ?person { #{entity_list(batch)} }
-          OPTIONAL { ?person rdfs:label ?en FILTER(LANG(?en) = "en") }
-          OPTIONAL { ?person rdfs:label ?de FILTER(LANG(?de) = "de") }
-          OPTIONAL { ?person rdfs:label ?mul FILTER(LANG(?mul) = "mul") }
-          OPTIONAL { ?person wdt:P569 ?birth }
-          OPTIONAL { ?person wdt:P570 ?death }
-        }
-      SPARQL
+      rows = select_split(batch) do |part|
+        <<~SPARQL
+          SELECT ?person ?en ?de ?mul ?birth ?death WHERE {
+            VALUES ?person { #{entity_list(part)} }
+            OPTIONAL { ?person rdfs:label ?en FILTER(LANG(?en) = "en") }
+            OPTIONAL { ?person rdfs:label ?de FILTER(LANG(?de) = "de") }
+            OPTIONAL { ?person rdfs:label ?mul FILTER(LANG(?mul) = "mul") }
+            OPTIONAL { ?person wdt:P569 ?birth }
+            OPTIONAL { ?person wdt:P570 ?death }
+          }
+        SPARQL
+      end
       rows.each do |row|
         person = (people[self.class.qid(row['person'])] ||= { births: [], deaths: [] })
         person[:name] ||= row['en'] || row['mul'] || row['de']

@@ -76,6 +76,28 @@ class CollectMoviesTest < Minitest::Test
         end
     end
 
+    # The query service gives up on credit queries with more than one film:
+    # the builder splits the batch and still gets everything.
+    class SlowWikidata < Wikidata
+        def select(query)
+            if query.include?('wdt:P161') && query.scan(/wd:Q\d+/).uniq.size > 2
+                @queries << query
+                raise WikidataClient::Failed, 'query timed out on the server'
+            end
+            super
+        end
+    end
+
+    def test_slow_batches_are_split
+        Dir.mktmpdir do |dir|
+            wikidata = SlowWikidata.new
+            capture_io { WikidataMovieBuilder.new(output_dir: dir, selection: Selection.new, wikidata: wikidata).run }
+            movies = File.readlines(File.join(dir, 'movies.txt')).map { |l| JSON.parse(l) }
+            assert_equal ['Lilly Wachowski', 'Lana Wachowski'].size, movies.last['crew']['director'].size
+            assert(wikidata.queries.count { |q| q.include?('wdt:P161') } >= 3, 'tried the whole batch, then halves')
+        end
+    end
+
     def test_helpers
         assert_equal 1999, WikidataMovieBuilder.year('1999-03-31T00:00:00Z')
         assert_equal(-500, WikidataMovieBuilder.year('-0500-01-01T00:00:00Z'))

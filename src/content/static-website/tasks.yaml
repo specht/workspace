@@ -1,0 +1,144 @@
+# Aufgaben zu »Statische Webseiten mit HTML & CSS«. Format: docs/aufgaben.md.
+# Die Seite liegt in /workspace/website-test; geprüft werden nur Dateien darin.
+format: 1
+activity: static-website
+tasks:
+  - id: index
+    title: Die erste Seite
+    prompt: Speichere die Seite als `website-test/index.html`.
+    check:
+      type: html
+      file: website-test/index.html
+      expect:
+        parses: true
+    feedback:
+      - when: { problem: missing }
+        say: "`/workspace/website-test/index.html` gibt es noch nicht. Beim Speichern gibst du `website-test/index.html` als Namen ein; VS Code legt den Ordner dann an."
+
+  - id: live
+    title: Die Adresse deiner Seite
+    prompt: Unter welcher Adresse zeigt »Go Live« deine Seite? Kopiere sie aus der Adresszeile.
+    check:
+      type: answer
+      compare: url
+      expect:
+        - ${workspace.live_url}/
+        - ${workspace.live_url}/index.html
+    feedback:
+      - when: { matches: '^file:' }
+        say: Das ist eine Datei auf deinem Rechner. Gesucht ist die Adresse, die »Go Live« im neuen Tab öffnet.
+      - when: { matches: '127\.0\.0\.1|localhost' }
+        say: Diese Adresse gilt nur im Workspace selbst. Nimm die aus der Adresszeile des Tabs, den »Go Live« geöffnet hat.
+
+  - id: alt-text
+    title: Ein guter Alt-Text
+    prompt: Welcher `alt`-Text passt am besten zu einem Foto eines Axolotls im Aquarium?
+    check:
+      type: choice
+      options:
+        - '`alt="Bild"`'
+        - '`alt="IMG_2034.jpg"`'
+        - '`alt="Ein rosa Axolotl mit Kiemenbüscheln in einem Aquarium"`'
+        - '`alt=""`'
+      correct: 2
+    feedback:
+      - when: { picked: 3 }
+        say: Ein leerer Alt-Text ist richtig für Bilder, die nur Schmuck sind. Dieses Foto zeigt, worum es auf der Seite geht.
+
+  - id: eigenes-bild
+    title: Dein eigenes Bild
+    prompt: |
+      Lege ein eigenes Bild neben `index.html` und binde es mit einem
+      relativen Pfad und einem Alt-Text ein.
+    check:
+      type: html
+      file: website-test/index.html
+      expect:
+        parses: true
+        img:
+          min: 1
+          src_exists: case_sensitive
+          alt: required
+    feedback:
+      - when: { problem: image_missing }
+        say: Den Pfad gibt es nicht. Liegt die Datei wirklich neben `index.html`, und stimmt die Endung (`.jpg` oder `.jpeg`, `.png`)?
+
+  - id: bilddatei
+    title: Die Bilddatei
+    prompt: "Prüfe die Bilddatei selbst: Passt die Endung zum Inhalt, und ist sie nicht zu groß?"
+    check:
+      type: files
+      path: website-test
+      template: [index.html, styles.css]
+      show: listing
+      expect:
+        new_files: { min: 1 }
+        format_matches_extension: true
+        max_size: 5MB
+    feedback:
+      - when: { problem: too_big }
+        say: Das Bild ist sehr groß; die Seite lädt dann lange. Verkleinere es, zum Beispiel mit einem Bildprogramm, auf 1000 bis 2000 Pixel Breite.
+
+  - id: css
+    title: Gestaltet mit CSS
+    prompt: Lege `styles.css` an, binde die Datei in `index.html` ein und schreibe die Regeln von oben hinein.
+    check:
+      type: css
+      file: website-test/styles.css
+      expect:
+        parses: true
+        min_rules: 5
+
+  - id: selektor
+    title: Was ist .credit?
+    prompt: Welche Elemente meint der Selektor `.credit`?
+    check:
+      type: choice
+      options:
+        - Alle `<credit>`-Elemente.
+        - Alle Elemente mit `class="credit"`.
+        - Das Element mit `id="credit"`.
+        - Alle Links, die auf eine Bildquelle zeigen.
+      correct: 1
+    feedback:
+      - when: { picked: 2 }
+        say: Eine `id` wählst du mit `#credit` aus. Der Punkt steht für eine Klasse.
+
+  - id: breite
+    title: Mehr Platz fürs Bild
+    prompt: Was passiert, wenn du bei `main > img` die Breite von `45%` auf `60%` änderst?
+    prediction: true
+    check:
+      type: choice
+      options:
+        - Das Bild wird breiter, der Text daneben schmaler.
+        - Das Bild wird breiter, der Text rutscht darunter.
+        - Nichts, Flexbox legt die Breite selbst fest.
+        - Das Bild wird höher, aber nicht breiter.
+      correct: 0
+    solution: "Der Textbereich hat `flex: 1` und nimmt, was übrig bleibt. Bekommt das Bild mehr, bleibt für den Text weniger."
+
+  - id: media-query
+    title: Wann gilt die Media Query?
+    prompt: "Wann gelten die Regeln in `@media (max-width: 700px) { … }`?"
+    check:
+      type: choice
+      options:
+        - Wenn das Browserfenster höchstens 700 Pixel breit ist.
+        - Wenn das Fenster mindestens 700 Pixel breit ist.
+        - Nur auf Handys.
+        - Immer, aber erst nach 700 Millisekunden.
+      correct: 0
+
+  - id: abgabe
+    title: Abgabe
+    prompt: |
+      Gib deine Webseite ab, wenn sie zu deinem Thema passt. Deine Lehrkraft
+      sieht genau diesen Stand. Du kannst jederzeit neu abgeben oder die
+      Abgabe löschen.
+    check:
+      type: submit
+      paths: [website-test]
+      max_size: 20MB
+      requires:
+        html_parses: true
