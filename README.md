@@ -117,6 +117,10 @@ Die Einrichtung und Ausführung der Tests ist in [`e2e/README.md`](e2e/README.md
 Für die Erstellung von Paketen für Leistungsüberprüfungen gibt es eine eigene
 [Dokumentation](docs/test-workspace-packages.md).
 
+Die Handgriffe im Alltag (welche Änderung was neu bauen muss, Tests,
+Screenshots und Videos der Tutorials neu erzeugen, VS-Code-Erweiterungen
+bauen, Datenbank sichern) stehen in [docs/entwicklung.md](docs/entwicklung.md).
+
 ## Eigene Aktivitäten und Aufgaben
 
 Aktivitäten, Aufgaben, die der Workspace selbst prüft, Handbuch-Seiten und
