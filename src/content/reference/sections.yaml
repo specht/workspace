@@ -1,0 +1,20 @@
+# Katalog der Nachschlage-Seiten, erreichbar unter /reference/<slug>.
+# Format wie src/content/sections.yaml; die Schlüssel beginnen mit reference-,
+# damit sie sich nicht mit den Abschnitten der Startseite überschneiden.
+- key: reference-workspace
+  label: Workspace
+  icon: /images/rocket.png
+  description: |
+    Handgriffe, die viele Aktivitäten brauchen: Repositories klonen und die
+    Live-Vorschau starten.
+  entries:
+    - workspace
+
+- key: reference-presentations
+  label: Präsentationen
+  icon: /images/book.png
+  description: |
+    Folien mit HTML und CSS gestalten: Text, Listen, Formeln, Bilder, Farben,
+    Schriften, Seitenzahlen, Platzierung und Spalten.
+  entries:
+    - html-folien

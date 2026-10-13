@@ -5,10 +5,11 @@ Aufgaben geschrieben werden, die der Workspace selbst prüft. Es richtet sich an
 alle, die Inhalte schreiben, auch an Lehrkräfte anderer Schulen mit eigener
 Installation.
 
-**Stand:** Format 1, Meilenstein M0. Das Format und seine Prüfung
-(`src/ruby/include/task_spec.rb`) gibt es; Seiten binden Aufgaben noch nicht
-ein, und geprüft wird noch nichts. Was ab wann läuft, steht in der Tabelle
-der Prüfarten.
+**Stand:** Format 1, Meilenstein M1. Es gibt das Aufgabenformat und seine
+Prüfung (`src/ruby/include/task_spec.rb`), Nachschlage-Seiten unter
+`/reference`, die Platzhalter `_include()` und `_uses()` und Notizen für
+Lehrkräfte. Seiten binden noch keine Aufgaben ein, und geprüft wird noch
+nichts. Was ab wann läuft, steht in der Tabelle der Prüfarten.
 
 ## Die fünf Bausteine
 
@@ -65,6 +66,10 @@ Dateien im Inhaltsordner werden nur ausgeliefert, wenn eine Seite sie als Bild
 oder Video einbindet. Lösungen können deshalb gefahrlos neben der Aktivität
 liegen.
 
+`lehrkraft.md` wird wie die Seite gerendert und erscheint für Lehrkräfte als
+aufklappbare »Notiz für Lehrkräfte« über der Aktivität. Andere sehen sie nicht.
+Eine Seite ist immer `<slug>.md`; `lehrkraft.md` wird nie zur Seite.
+
 ## Metadaten
 
 Der YAML-Block am Anfang einer Seite bekommt neue, freiwillige Felder. Seiten
@@ -96,11 +101,38 @@ image: tcpip.webp
 Wie die vorhandenen `_include_file()` und `_include_svg()` werden diese
 Platzhalter ersetzt, bevor Redcarpet den Text liest.
 
-| Platzhalter | Ergebnis |
-| --- | --- |
-| `_task(adresse)` | Die Aufgabe `adresse` aus `tasks.yaml` an dieser Stelle |
-| `_include(workspace#terminal)` | Der Abschnitt `terminal` der Nachschlage-Seite `workspace`, eingebettet |
-| `_uses(ifconfig, ping)` | Kleine Marken, die zu `#ifconfig` und `#ping` der Nachschlage-Seiten aus `reference` führen |
+| Platzhalter | Ergebnis | Ab |
+| --- | --- | --- |
+| `_task(adresse)` | Die Aufgabe `adresse` aus `tasks.yaml` an dieser Stelle | M2 |
+| `_include(workspace#repository-klonen)` | Der Teil `repository-klonen` der Nachschlage-Seite `workspace`, eingebettet in einem Kasten mit Link | M1 |
+| `_uses(ifconfig, ping)` | Kleine Marken, die zu den Teilen `ifconfig` und `ping` der Nachschlage-Seiten aus `reference` führen | M1 |
+
+### Teile einer Nachschlage-Seite
+
+Eine Nachschlage-Seite gliedert sich in Teile. Ein Teil beginnt mit einer
+Markierung und endet am nächsten Teil, an `<!-- /part -->` oder am Ende der
+Datei:
+
+```markdown
+<!-- part: repository-klonen -->
+## Repository klonen
+
+Klicke auf »Clone Repository« und füge die Adresse der Vorlage ein:
+
+    ${template}
+<!-- /part -->
+```
+
+- Auf der Nachschlage-Seite selbst wird die Markierung zu einem Sprungziel:
+  `/reference/workspace#repository-klonen`.
+- Bei `_include()` fällt die erste Überschrift des Teils weg, weil die
+  Aktivität ihre eigene schreibt. Relative Bildpfade werden passend
+  umgeschrieben.
+- `${template}` wird durch das Feld `template` der einbindenden Seite ersetzt,
+  auf der Nachschlage-Seite selbst durch »[Adresse der Vorlage]«. Andere
+  `${…}`, etwa in JavaScript-Beispielen, bleiben unverändert.
+- Ein fehlender Teil bricht nichts: Die Seite zeigt »Baustein fehlt«, und das
+  Server-Log nennt Datei und Platzhalter.
 
 ## tasks.yaml
 

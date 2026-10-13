@@ -1,0 +1,130 @@
+require 'minitest/autorun'
+require 'tmpdir'
+require 'fileutils'
+require_relative '../include/content_parts'
+
+class ContentPartsTest < Minitest::Test
+    CONTENT = File.expand_path('../../content', __dir__)
+
+    def setup
+        @root = Dir.mktmpdir
+        @reference = File.join(@root, 'reference')
+        FileUtils.mkdir_p(File.join(@reference, 'workspace'))
+        File.write(File.join(@reference, 'workspace', 'workspace.md'), <<~MD)
+            # Workspace
+
+            <!-- part: klonen -->
+            ## Repository klonen
+
+            Klone `${template}`.
+
+            <img class='full' src='git-clone.webp' alt=''>
+            <!-- /part -->
+
+            Zwischentext.
+
+            <!-- part: terminal -->
+            ## Terminal öffnen
+
+            Drücke <kbd>Strg</kbd><kbd>J</kbd>.
+        MD
+        @page = File.join(@root, 'showerjs')
+        FileUtils.mkdir_p(@page)
+    end
+
+    def teardown
+        FileUtils.rm_rf(@root)
+    end
+
+    def test_page_file_prefers_own_name_and_never_the_teacher_note
+        File.write(File.join(@page, 'lehrkraft.md'), 'Notiz')
+        File.write(File.join(@page, 'showerjs.md'), 'Seite')
+        assert_equal File.join(@page, 'showerjs.md'), ContentParts.page_file(@page, 'showerjs')
+        FileUtils.rm(File.join(@page, 'showerjs.md'))
+        File.write(File.join(@page, 'zzz.md'), 'andere Seite')
+        assert_equal File.join(@page, 'zzz.md'), ContentParts.page_file(@page, 'showerjs')
+    end
+
+    def test_every_catalog_entry_resolves_to_its_own_page
+        %w[sections.yaml lehrmaterial/sections.yaml reference/sections.yaml].each do |catalog|
+            path = File.join(CONTENT, catalog)
+            next unless File.exist?(path)
+            root = File.dirname(path)
+            YAML.safe_load(File.read(path, encoding: 'UTF-8')).each do |section|
+                (section['entries'] || []).each do |entry|
+                    name = entry.sub(/\A\./, '')
+                    file = ContentParts.page_file(File.join(root, name), name)
+                    refute_nil file, "#{catalog}: #{name}"
+                    refute_equal ContentParts::NOTE_FILE, File.basename(file)
+                end
+            end
+        end
+    end
+
+    def test_parts_end_at_end_marker_next_part_or_file_end
+        parts = ContentParts.parts(File.read(File.join(@reference, 'workspace', 'workspace.md'), encoding: 'UTF-8'))
+        assert_equal %w[klonen terminal], parts.keys
+        refute_includes parts['klonen'], 'Zwischentext'
+        assert parts['terminal'].end_with?('<kbd>J</kbd>.')
+    end
+
+    def test_mark_parts_turns_markers_into_anchors
+        marked = ContentParts.mark_parts("<!-- part: klonen -->\n## Klonen\n<!-- /part -->\n")
+        assert_includes marked, "<div id='klonen' class='reference-part'></div>"
+        refute_includes marked, '/part'
+    end
+
+    def test_include_inserts_part_without_heading_with_variables_and_fixed_paths
+        warnings = []
+        out = ContentParts.expand_includes(
+            "Vorher\n\n_include(workspace#klonen)\n\nNachher",
+            page_dir: @page, reference_root: @reference,
+            variables: { 'template' => 'https://example.org/vorlage.git' },
+            warn: ->(m) { warnings << m },
+        )
+        assert_empty warnings
+        refute_includes out, '## Repository klonen'
+        assert_includes out, 'Klone `https://example.org/vorlage.git`.'
+        assert_includes out, "src='../reference/workspace/git-clone.webp'"
+        assert_includes out, "<div class='reference-include-begin'></div>"
+        assert_includes out, "data-href='/reference/workspace#klonen'"
+    end
+
+    def test_missing_part_and_variable_warn_but_do_not_break
+        warnings = []
+        out = ContentParts.expand_includes('_include(workspace#fehlt) _include(workspace#klonen)',
+            page_dir: @page, reference_root: @reference, warn: ->(m) { warnings << m })
+        assert_includes out, 'Baustein fehlt: workspace#fehlt'
+        assert_includes out, 'Klone `[Adresse der Vorlage]`.'
+        assert_equal 2, warnings.size
+    end
+
+    def test_only_known_variables_are_filled
+        text = 'Klone ${template}; in JavaScript: `${name}` und ${HOME}'
+        assert_equal 'Klone https://x.git; in JavaScript: `${name}` und ${HOME}',
+            ContentParts.fill_variables(text, 'template' => 'https://x.git')
+        assert_equal 'Klone [Adresse der Vorlage]; in JavaScript: `${name}` und ${HOME}',
+            ContentParts.fill_variables(text)
+    end
+
+    def test_include_file_placeholder_is_left_alone
+        text = '_include_file(beispiel.c, c)'
+        assert_equal text, ContentParts.expand_includes(text, page_dir: @page, reference_root: @reference)
+    end
+
+    def test_uses_links_into_listed_reference_pages
+        warnings = []
+        out = ContentParts.expand_uses('_uses(terminal, gibtsnicht)', references: ['workspace'],
+            reference_root: @reference, warn: ->(m) { warnings << m })
+        assert_includes out, "<a href='/reference/workspace#terminal'>terminal</a>"
+        assert_includes out, '<span>gibtsnicht</span>'
+        assert_equal 1, warnings.size
+    end
+
+    def test_meta_is_read_safely
+        md = "<div class='meta'>\nkind: projekt\nreference: [workspace]\n</div>\n\n# Titel"
+        assert_equal({ 'kind' => 'projekt', 'reference' => ['workspace'] }, ContentParts.meta(md))
+        assert_equal({}, ContentParts.meta("<div class='meta'>\n: : kaputt\n</div>"))
+        assert_equal({}, ContentParts.meta('# ohne Meta'))
+    end
+end

@@ -5,7 +5,8 @@ import path from "node:path";
 
 const HTML_PATH = "shower.js/demo.html";
 const BASE_URL = "http://127.0.0.1:5500/demo.html?full";
-const OUT_DIR = "screenshots";
+// The mini-slide screenshots belong to the reference page HTML-Folien gestalten.
+const OUT_DIR = "../reference/html-folien/screenshots";
 
 // 1920x1080 gives normal Full HD slides.
 // Set DEVICE_SCALE_FACTOR to 2 for 3840x2160 output.

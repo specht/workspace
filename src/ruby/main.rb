@@ -1,5 +1,6 @@
 require './include/helper.rb'
 require './include/automatron.rb'
+require './include/content_parts.rb'
 require './include/atomic_file.rb'
 require './include/authentication.rb'
 require './include/database_provisioning.rb'
@@ -152,6 +153,10 @@ end
 class Main < Sinatra::Base
     include Neo4jBolt
     helpers Sinatra::Cookies
+
+    # Nachschlagen: reference pages, served under /reference/<slug>.
+    REFERENCE_ROOT = '/src/content/reference'
+    REFERENCE_SECTIONS_PATH = '/src/content/reference/sections.yaml'
 
     set :host_authorization, {
         :permitted_hosts => [
@@ -1221,7 +1226,8 @@ class Main < Sinatra::Base
     def self.content_catalog_signature
         digest = Digest::SHA256.new
         ['/src/content/sections.yaml', '/src/content/lehrmaterial/sections.yaml',
-         '/src/content/hyphenation.txt'].each do |path|
+         REFERENCE_SECTIONS_PATH, '/src/content/hyphenation.txt'].each do |path|
+            next unless File.exist?(path)
             digest.update(File.binread(path))
             digest.update("\0")
         end
@@ -1254,6 +1260,193 @@ class Main < Sinatra::Base
         parse_content(slug)
     end
 
+    # Renders the Markdown of a content file to a Nokogiri document:
+    # hyphenation, Redcarpet, reference include boxes, cached images and
+    # videos, external links and syntax highlighting. The block may change the
+    # Markdown after hyphenation (the Kenney gallery uses this).
+    def self.render_content_markdown(markdown, path, redcarpet, hyphenation_map)
+        parts = markdown.split(/(```.*?```)/m)
+        markdown = parts.map.with_index do |part, i|
+            if i.odd?
+                part
+            else
+                hyphenation_map.each_pair do |a, b|
+                    part.gsub!(a, b)
+                end
+                part
+            end
+        end.join
+
+        markdown = yield(markdown) if block_given?
+        html = redcarpet.render(markdown)
+        root = Nokogiri::HTML(html)
+        wrap_reference_includes(root)
+
+        root.css('img').each do |img|
+            begin
+                src = img.attr('src')
+                next if src.nil?
+                if DEVELOPMENT && !src.start_with?('/cache/')
+                    img['data-tutorial-screenshot-source'] = src
+                end
+                next if src.start_with?('/cache/')
+                image_path = File.join(File.dirname(path), src)
+                next unless File.exist?(image_path)
+                if img.attr('data-noconvert')
+                    sha1 = Digest::SHA1.hexdigest(image_path)
+                    extension = File.extname(image_path)
+                    target_path = "/webcache/#{sha1}#{extension}"
+                    FileUtils.cp(image_path, target_path) unless FileUtils.uptodate?(target_path, [image_path])
+                    img['src'] = "/cache/#{sha1}#{extension}"
+                else
+                    sha1 = convert_image(image_path)
+                    img['src'] = "/cache/#{sha1}.webp"
+                end
+                if img.classes.include?('full')
+                    img.wrap("<div class='scroll-x'>")
+                end
+            rescue
+                STDERR.puts img.to_s
+                raise
+            end
+        end
+        root.css('svg').each do |img|
+            if img.classes.include?('full')
+                img.wrap("<div class='scroll-x'>")
+            end
+        end
+        root.css('video').each do |video|
+            src = video.attr('src')
+            image_path = File.join(File.dirname(path), src)
+            next unless File.exist?(image_path)
+            sha1 = Digest::SHA1.hexdigest(File.read(image_path))[0, 16]
+            target_path = "/webcache/#{sha1}.mp4"
+            FileUtils.cp(image_path, target_path) unless FileUtils.uptodate?(target_path, [image_path])
+            video['src'] = "/cache/#{sha1}.mp4"
+        end
+        root.css('a').each do |a|
+            href = a.attr('href')
+            if href.index('https://') == 0
+                a['target'] = '_blank'
+            end
+        end
+        root.css('pre').each do |pre|
+            code = pre.css('code').first
+            next if code.nil?
+            language = code.attr('class')
+            lineno = false
+            if language =~ /_lineno$/
+                lineno = true
+                language = language.sub(/_lineno$/, '')
+            end
+            wrap = false
+            if language =~ /_wrap$/
+                wrap = true
+                language = language.sub(/_wrap$/, '')
+            end
+
+            pre['class'] = [pre['class'], 'wrap-code'].compact.join(' ') if wrap
+
+            formatter = if lineno
+                Rouge::Formatters::HTMLTable.new(Rouge::Formatters::HTML.new)
+                # Rouge::Formatters::HTMLLineTable.new(Rouge::Formatters::HTML.new)
+            else
+                Rouge::Formatters::HTML.new
+            end
+            lexer = nil
+            case language
+            when 'bash'
+                lexer = Rouge::Lexers::Shell.new
+            when 'basic'
+                lexer = Rouge::Lexers::VisualBasic.new
+            when 'bibtex'
+                lexer = Rouge::Lexers::BibTeX.new
+            when 'c'
+                lexer = Rouge::Lexers::C.new
+            when 'clisp'
+                lexer = Rouge::Lexers::CommonLisp.new
+            when 'cpp'
+                lexer = Rouge::Lexers::Cpp.new
+            when 'cs'
+                lexer = Rouge::Lexers::CSharp.new
+            when 'css'
+                lexer = Rouge::Lexers::CSS.new
+            when 'dart'
+                lexer = Rouge::Lexers::Dart.new
+            when 'erlang'
+                lexer = Rouge::Lexers::Erlang.new
+            when 'fortran'
+                lexer = Rouge::Lexers::Fortran.new
+            when 'go'
+                lexer = Rouge::Lexers::Go.new
+            when 'html'
+                lexer = Rouge::Lexers::HTML.new
+            when 'ini'
+                lexer = Rouge::Lexers::INI.new
+            when 'java'
+                lexer = Rouge::Lexers::Java.new
+            when 'js'
+                lexer = Rouge::Lexers::Javascript.new
+            when 'json'
+                lexer = Rouge::Lexers::JSON.new
+            when 'lua'
+                lexer = Rouge::Lexers::Lua.new
+            when 'markdown'
+                lexer = Rouge::Lexers::Markdown.new
+            when 'nasm'
+                lexer = Rouge::Lexers::Nasm.new
+            when 'pascal'
+                lexer = Rouge::Lexers::Pascal.new
+            when 'python'
+                lexer = Rouge::Lexers::Python.new
+            when 'ruby'
+                lexer = Rouge::Lexers::Ruby.new
+            when 'rust'
+                lexer = Rouge::Lexers::Rust.new
+            when 'smalltalk'
+                lexer = Rouge::Lexers::Smalltalk.new
+            when 'sql'
+                lexer = Rouge::Lexers::SQL.new
+            when 'svelte'
+                lexer = Rouge::Lexers::Svelte.new
+            when 'tex'
+                lexer = Rouge::Lexers::TeX.new
+            when 'text'
+                lexer = Rouge::Lexers::PlainText.new
+            end
+            next if lexer.nil?
+            pre.content = ''
+            # if lineno
+            #     pre << "<div style='border-bottom: 1px solid white;display: inline-table;width: 100%;margin-bottom: 0.5em;padding-bottom: 0.5em;font-style: italic;font-weight: normal;'>HelloWorld.java (124 Bytes)</div>"
+            # end
+            pre << formatter.format(lexer.lex(code.text))
+        end
+        root
+    end
+
+    # _include() leaves two marker divs around the included part (see
+    # ContentParts.expand_includes); everything between them becomes one box
+    # with a link to the part on its reference page.
+    def self.wrap_reference_includes(root)
+        root.css('div.reference-include-begin').each do |start|
+            box = root.document.create_element('div', 'class' => 'reference-include')
+            start.add_previous_sibling(box)
+            node = start.next_sibling
+            start.remove
+            while node && !(node.element? && node['class'] == 'reference-include-end')
+                following = node.next_sibling
+                box.add_child(node)
+                node = following
+            end
+            next unless node
+            link = root.document.create_element('p', 'class' => 'reference-include-link')
+            anchor = root.document.create_element('a', 'Im Nachschlagen ansehen', 'href' => node['data-href'])
+            link.add_child(anchor)
+            box.add_child(link)
+            node.remove
+        end
+    end
+
     def self.parse_content(only_slug = nil)
         @@parse_content_mutex ||= Mutex.new
         @@parse_content_mutex.synchronize do
@@ -1274,12 +1467,18 @@ class Main < Sinatra::Base
         # Markdown renderer, image cache, and screenshot generator.
         student_sections = YAML.load(File.read('/src/content/sections.yaml'))
         teaching_sections = YAML.load(File.read('/src/content/lehrmaterial/sections.yaml'))
+        # Reference pages (Nachschlagen) live in their own catalog and are
+        # served under /reference/<slug>. The catalog is optional.
+        reference_sections = File.exist?(REFERENCE_SECTIONS_PATH) ?
+            (YAML.load(File.read(REFERENCE_SECTIONS_PATH)) || []) : []
         section_order = student_sections.map { |section| section['key'] }
         teaching_section_order = teaching_sections.map { |section| section['key'] }
+        reference_section_order = reference_sections.map { |section| section['key'] }
         sections = student_sections.map { |section| section.merge('catalog' => 'student') } +
             teaching_sections.map do |section|
                 section.merge('catalog' => 'teaching', 'teacher_only' => true)
-            end
+            end +
+            reference_sections.map { |section| section.merge('catalog' => 'reference') }
         parsed_sections = {}
         parsed_content = {}
         parsed_content_paths = {}
@@ -1299,11 +1498,16 @@ class Main < Sinatra::Base
             (section['entries'] || []).each do |path|
                 dev_only = path[0] == '.'
                 path = path.sub(/^\./, '')
-                raise "duplicate content slug: #{path}" unless seen_paths.add?(path)
-                content_root = section['catalog'] == 'teaching' ?
-                    '/src/content/lehrmaterial' : '/src/content'
-                original_path = Dir["#{content_root}/#{path}/*.md"].reject { |x| x.include?('+') }.first
-                paths << {:section => section['key'], :path => path, :original_path => original_path, :dev_only => dev_only}
+                content_root = case section['catalog']
+                    when 'teaching' then '/src/content/lehrmaterial'
+                    when 'reference' then REFERENCE_ROOT
+                    else '/src/content'
+                end
+                slug = section['catalog'] == 'reference' ? "reference/#{path}" : path
+                raise "duplicate content slug: #{slug}" unless seen_paths.add?(slug)
+                # <name>.md is the page; a teacher note (lehrkraft.md) never is.
+                original_path = ContentParts.page_file("#{content_root}/#{path}", path)
+                paths << {:section => section['key'], :path => path, :slug => slug, :original_path => original_path, :dev_only => dev_only}
             end
         end
         Dir['/src/content/**/+*.md'].each do |path|
@@ -1341,9 +1545,9 @@ class Main < Sinatra::Base
             paths.select! do |entry|
                 entry_path = entry[:original_path]
                 next false unless entry_path
-                File.basename(entry_path, '.md')
+                (entry[:slug] || File.basename(entry_path, '.md')
                     .sub(/^[0-9]+\-/, '')
-                    .sub('+', '') == only_slug
+                    .sub('+', '')) == only_slug
             end
             return false if paths.empty?
         end
@@ -1396,6 +1600,19 @@ class Main < Sinatra::Base
                         io.string
                     end
                 end
+                # Reference building blocks (docs/aufgaben.md): _include(slug#part)
+                # inserts a part of a reference page, _uses(a, b) links to parts,
+                # and part markers become anchors on the reference page itself.
+                page_meta = ContentParts.meta(markdown)
+                content_warning = lambda { |message| STDERR.puts "#{path}: #{message}" }
+                markdown = ContentParts.expand_includes(markdown,
+                    :page_dir => File.dirname(path), :reference_root => REFERENCE_ROOT,
+                    :variables => { 'template' => page_meta['template'] }, :warn => content_warning)
+                markdown = ContentParts.expand_uses(markdown,
+                    :references => page_meta['reference'], :reference_root => REFERENCE_ROOT,
+                    :warn => content_warning)
+                markdown = ContentParts.fill_variables(markdown, { 'template' => page_meta['template'] })
+                markdown = ContentParts.mark_parts(markdown)
             else
                 kit = entry[:path]
                 markdown = StringIO.open do |io|
@@ -1430,181 +1647,24 @@ class Main < Sinatra::Base
                     io.string
                 end
             end
-            parts = markdown.split(/(```.*?```)/m)
-            markdown = parts.map.with_index do |part, i|
-                if i.odd?
-                    part
-                else
-                    hyphenation_map.each_pair do |a, b|
-                        part.gsub!(a, b)
-                    end
-                    part
-                end
-            end.join
-
-            # Keep the potentially huge gallery out of the hyphenation pass above.
-            # Otherwise every hyphenation-map entry rescans all preview <img> tags.
-            if entry[:kenney]
-                gallery = StringIO.open do |io|
-                    io.puts "<div class='kenney-gallery'>"
-                    parsed_kenney[entry[:path]].each do |model|
-                        io.puts "<div><img alt='' src='/cache/kenney/#{entry[:path]}/#{model}.webp'><div>#{model}</div></div>"
-                    end
-                    io.puts "</div>"
-                    io.string
-                end
-                markdown.sub!('__KENNEY_GALLERY__', gallery)
-            end
-
-            slug = File.basename(path, '.md').sub(/^[0-9]+\-/, '').sub('+', '')
+            slug = entry[:slug] || File.basename(path, '.md').sub(/^[0-9]+\-/, '').sub('+', '')
             parsed_content_paths[slug] = path unless entry[:kenney]
-            html = redcarpet.render(markdown)
-            root = Nokogiri::HTML(html)
-            meta = root.css('.meta').first
-            if meta
-                meta = YAML.load(meta)
-            end
-
-            root.css('img').each do |img|
-                begin
-                    src = img.attr('src')
-                    next if src.nil?
-                    if DEVELOPMENT && !src.start_with?('/cache/')
-                        img['data-tutorial-screenshot-source'] = src
+            root = render_content_markdown(markdown, path, redcarpet, hyphenation_map) do |md|
+                # Keep the potentially huge gallery out of the hyphenation pass above.
+                # Otherwise every hyphenation-map entry rescans all preview <img> tags.
+                if entry[:kenney]
+                    gallery = StringIO.open do |io|
+                        io.puts "<div class='kenney-gallery'>"
+                        parsed_kenney[entry[:path]].each do |model|
+                            io.puts "<div><img alt='' src='/cache/kenney/#{entry[:path]}/#{model}.webp'><div>#{model}</div></div>"
+                        end
+                        io.puts "</div>"
+                        io.string
                     end
-                    next if src.start_with?('/cache/')
-                    image_path = File.join(File.dirname(path), src)
-                    next unless File.exist?(image_path)
-                    if img.attr('data-noconvert')
-                        sha1 = Digest::SHA1.hexdigest(image_path)
-                        extension = File.extname(image_path)
-                        target_path = "/webcache/#{sha1}#{extension}"
-                        FileUtils.cp(image_path, target_path) unless FileUtils.uptodate?(target_path, [image_path])
-                        img['src'] = "/cache/#{sha1}#{extension}"
-                    else
-                        sha1 = convert_image(image_path)
-                        img['src'] = "/cache/#{sha1}.webp"
-                    end
-                    if img.classes.include?('full')
-                        img.wrap("<div class='scroll-x'>")
-                    end
-                rescue
-                    STDERR.puts img.to_s
-                    raise
+                    md.sub!('__KENNEY_GALLERY__', gallery)
                 end
+                md
             end
-            root.css('svg').each do |img|
-                if img.classes.include?('full')
-                    img.wrap("<div class='scroll-x'>")
-                end
-            end
-            root.css('video').each do |video|
-                src = video.attr('src')
-                image_path = File.join(File.dirname(path), src)
-                next unless File.exist?(image_path)
-                sha1 = Digest::SHA1.hexdigest(File.read(image_path))[0, 16]
-                target_path = "/webcache/#{sha1}.mp4"
-                FileUtils.cp(image_path, target_path) unless FileUtils.uptodate?(target_path, [image_path])
-                video['src'] = "/cache/#{sha1}.mp4"
-            end
-            root.css('a').each do |a|
-                href = a.attr('href')
-                if href.index('https://') == 0
-                    a['target'] = '_blank'
-                end
-            end
-            root.css('pre').each do |pre|
-                code = pre.css('code').first
-                next if code.nil?
-                language = code.attr('class')
-                lineno = false
-                if language =~ /_lineno$/
-                    lineno = true
-                    language = language.sub(/_lineno$/, '')
-                end
-                wrap = false
-                if language =~ /_wrap$/
-                    wrap = true
-                    language = language.sub(/_wrap$/, '')
-                end
-
-                pre['class'] = [pre['class'], 'wrap-code'].compact.join(' ') if wrap
-
-                formatter = if lineno
-                    Rouge::Formatters::HTMLTable.new(Rouge::Formatters::HTML.new)
-                    # Rouge::Formatters::HTMLLineTable.new(Rouge::Formatters::HTML.new)
-                else
-                    Rouge::Formatters::HTML.new
-                end
-                lexer = nil
-                case language
-                when 'bash'
-                    lexer = Rouge::Lexers::Shell.new
-                when 'basic'
-                    lexer = Rouge::Lexers::VisualBasic.new
-                when 'bibtex'
-                    lexer = Rouge::Lexers::BibTeX.new
-                when 'c'
-                    lexer = Rouge::Lexers::C.new
-                when 'clisp'
-                    lexer = Rouge::Lexers::CommonLisp.new
-                when 'cpp'
-                    lexer = Rouge::Lexers::Cpp.new
-                when 'cs'
-                    lexer = Rouge::Lexers::CSharp.new
-                when 'css'
-                    lexer = Rouge::Lexers::CSS.new
-                when 'dart'
-                    lexer = Rouge::Lexers::Dart.new
-                when 'erlang'
-                    lexer = Rouge::Lexers::Erlang.new
-                when 'fortran'
-                    lexer = Rouge::Lexers::Fortran.new
-                when 'go'
-                    lexer = Rouge::Lexers::Go.new
-                when 'html'
-                    lexer = Rouge::Lexers::HTML.new
-                when 'ini'
-                    lexer = Rouge::Lexers::INI.new
-                when 'java'
-                    lexer = Rouge::Lexers::Java.new
-                when 'js'
-                    lexer = Rouge::Lexers::Javascript.new
-                when 'json'
-                    lexer = Rouge::Lexers::JSON.new
-                when 'lua'
-                    lexer = Rouge::Lexers::Lua.new
-                when 'markdown'
-                    lexer = Rouge::Lexers::Markdown.new
-                when 'nasm'
-                    lexer = Rouge::Lexers::Nasm.new
-                when 'pascal'
-                    lexer = Rouge::Lexers::Pascal.new
-                when 'python'
-                    lexer = Rouge::Lexers::Python.new
-                when 'ruby'
-                    lexer = Rouge::Lexers::Ruby.new
-                when 'rust'
-                    lexer = Rouge::Lexers::Rust.new
-                when 'smalltalk'
-                    lexer = Rouge::Lexers::Smalltalk.new
-                when 'sql'
-                    lexer = Rouge::Lexers::SQL.new
-                when 'svelte'
-                    lexer = Rouge::Lexers::Svelte.new
-                when 'tex'
-                    lexer = Rouge::Lexers::TeX.new
-                when 'text'
-                    lexer = Rouge::Lexers::PlainText.new
-                end
-                next if lexer.nil?
-                pre.content = ''
-                # if lineno
-                #     pre << "<div style='border-bottom: 1px solid white;display: inline-table;width: 100%;margin-bottom: 0.5em;padding-bottom: 0.5em;font-style: italic;font-weight: normal;'>HelloWorld.java (124 Bytes)</div>"
-                # end
-                pre << formatter.format(lexer.lex(code.text))
-            end
-
             inject_autotoc(root)
 
             html = root.to_html
@@ -1622,6 +1682,13 @@ class Main < Sinatra::Base
                 :dev_only => entry[:dev_only],
                 :teacher_only => parsed_sections.dig(section, :teacher_only) == true,
             }
+            # Teacher note next to the page (docs/aufgaben.md): rendered like the
+            # page, shown only to teachers by teacher_note_panel.
+            note_path = File.join(File.dirname(path), ContentParts::NOTE_FILE)
+            if !entry[:kenney] && File.file?(note_path)
+                note_root = render_content_markdown(File.read(note_path), note_path, redcarpet, hyphenation_map)
+                parsed_content[slug][:teacher_note] = (note_root.at_css('body') || note_root).inner_html
+            end
             unless entry[:extra]
                 parsed_sections[section][:entries] << slug
                 if meta
@@ -1677,6 +1744,7 @@ class Main < Sinatra::Base
             # to read the previous complete snapshot while this method is working.
             @@section_order = section_order
             @@teaching_section_order = teaching_section_order
+            @@reference_section_order = reference_section_order
             @@sections = parsed_sections
             @@kenney = parsed_kenney
             @@content = parsed_content
@@ -3580,14 +3648,27 @@ class Main < Sinatra::Base
         return "#{sprintf('%1.1f', ai_Size.to_f / 1024.0 / 1024.0 / 1024.0 / 1024.0)} TB"
     end
 
+    # The teacher note of a page (lehrkraft.md), for teachers only.
+    def teacher_note_panel(slug)
+        note = (@@content[slug] || {})[:teacher_note]
+        return '' if note.nil? || !teacher_account_logged_in?
+
+        "<details class='teacher-note'><summary>Notiz für Lehrkräfte</summary>" \
+            "<div class='teacher-note-body'>#{note}</div></details>"
+    end
+
     def print_content_overview(catalog = :student)
         Main.refresh_content_catalog if DEVELOPMENT
-        assert([:student, :teaching].include?(catalog))
+        assert([:student, :teaching, :reference].include?(catalog))
         assert(teacher_account_logged_in?) if catalog == :teaching
         html = StringIO.open do |io|
-            running_tests = catalog == :teaching ? [] : my_running_tests()
+            running_tests = catalog == :student ? my_running_tests() : []
             if running_tests.empty?
-                section_order = catalog == :teaching ? @@teaching_section_order : @@section_order
+                section_order = case catalog
+                    when :teaching then @@teaching_section_order
+                    when :reference then (defined?(@@reference_section_order) ? @@reference_section_order : [])
+                    else @@section_order
+                end
                 section_order.each do |section_key|
                     section = @@sections[section_key]
                     next if section[:entries].reject do |entry|
@@ -5651,7 +5732,7 @@ class Main < Sinatra::Base
             Main.load_invitations()
             halt 403 unless teacher_account_logged_in?
         end
-        if DEVELOPMENT && path =~ /^\/[a-zA-Z0-9_-]+$/
+        if DEVELOPMENT && path =~ /^\/(reference\/)?[a-zA-Z0-9_-]+$/
             Main.refresh_tutorial(path[1, path.size - 1])
         end
         running_tests = my_running_tests()

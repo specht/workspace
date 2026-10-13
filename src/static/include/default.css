@@ -1393,3 +1393,59 @@ body.has-autotoc-secondary.autotoc-primary-visible {
         padding-bottom: 0;
     }
 }
+
+/* Content model: reference includes, uses chips, teacher notes (docs/aufgaben.md) */
+
+.reference-include {
+    margin: 1em 0;
+    padding: 0.8em 1em 0.2em;
+    border: 1px solid #e3e3e3;
+    border-radius: 0.5em;
+    background-color: #fbfbfa;
+}
+
+.reference-include-link {
+    margin-top: 0.5em;
+    font-size: 90%;
+    text-align: right;
+}
+
+.uses {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4em;
+    margin: -0.3em 0 0.8em;
+}
+
+.uses a,
+.uses span {
+    padding: 0.05em 0.6em;
+    border-radius: 1em;
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 85%;
+    background-color: #fbefd9;
+    color: #7a4a00;
+}
+
+.uses a:hover {
+    text-decoration: none;
+    background-color: #f6e0b5;
+}
+
+.teacher-note {
+    margin: 1em 0 1.5em;
+    border: 1px solid #d9c9ee;
+    border-radius: 0.5em;
+    background-color: #f7f2fc;
+}
+
+.teacher-note > summary {
+    padding: 0.5em 1em;
+    cursor: pointer;
+    font-weight: 600;
+    color: #5b2f8f;
+}
+
+.teacher-note-body {
+    padding: 0 1em 0.5em;
+}

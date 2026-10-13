@@ -23,6 +23,25 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - `src/ruby/include/task_spec.rb` prüft `tasks.yaml`-Dateien;
   `src/ruby/test/task_spec_test.rb` prüft alle Aufgaben im Inhaltsordner.
 - Erste Aufgabendateien für TCP/IP (12), Anaglyphen (12) und shower.js (11).
+- Nachschlagen: eigener Katalog in `src/content/reference/`, Übersicht unter
+  `/reference`, Seiten unter `/reference/<slug>`. Erste Seiten: »Workspace:
+  Grundgriffe« und »HTML-Folien gestalten«.
+- Platzhalter `_include(seite#teil)` und `_uses(teil, …)` sowie Teile in
+  Nachschlage-Seiten (`<!-- part: name -->`), siehe `docs/aufgaben.md`.
+- Notizen für Lehrkräfte: `lehrkraft.md` neben einer Seite erscheint für
+  Lehrkräfte als aufklappbare Notiz über der Aktivität.
+- Neue, freiwillige Felder im Meta-Block: `kind`, `topic`, `duration`,
+  `requires`, `reference`, `template`.
+
+### Geändert
+
+- »Eine Präsentation in HTML erstellen« ist kürzer: Der Referenzteil steht
+  jetzt unter `/reference/html-folien`. Alte Links auf Abschnitte der Seite
+  führen dorthin weiter. Die Mini-Folien liegen in
+  `src/content/reference/html-folien/screenshots/`; `screenshot-range.mjs`
+  schreibt dorthin.
+- Eine Seite ist immer `<slug>.md` aus ihrem Ordner. Bisher war es die erste
+  `.md`-Datei; bei allen vorhandenen Seiten ist das dieselbe.
 
 ### Für Betreibende
 

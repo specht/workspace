@@ -180,4 +180,21 @@ html[data-bs-theme="dark"] {
         border-left-color: #18abe5;
         font-weight: 400;
     }    
+
+    .reference-include {
+        border-color: #33332f;
+        background-color: #1c1c1a;
+    }
+    .uses a,
+    .uses span {
+        background-color: #3a2c12;
+        color: #f0c27a;
+    }
+    .teacher-note {
+        border-color: #4a3a63;
+        background-color: #221b2d;
+    }
+    .teacher-note > summary {
+        color: #cdb0f2;
+    }
 }
