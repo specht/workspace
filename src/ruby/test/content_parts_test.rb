@@ -128,4 +128,10 @@ class ContentPartsTest < Minitest::Test
         assert_equal({}, ContentParts.meta("<div class='meta'>\n: : kaputt\n</div>"))
         assert_equal({}, ContentParts.meta('# ohne Meta'))
     end
+    def test_page_variables
+        vars = ContentParts.page_variables('template' => ' https://x.git ', 'class_repo' => '', 'other' => 'y')
+        assert_equal({ 'template' => 'https://x.git', 'class_repo' => nil }, vars)
+        assert_equal 'git clone [Adresse des Klassen-Repositorys] structures',
+            ContentParts.fill_variables('git clone ${class_repo} structures', vars)
+    end
 end

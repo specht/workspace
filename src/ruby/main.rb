@@ -1644,11 +1644,11 @@ class Main < Sinatra::Base
                 content_warning = lambda { |message| STDERR.puts "#{path}: #{message}" }
                 markdown = ContentParts.expand_includes(markdown,
                     :page_dir => File.dirname(path), :reference_root => REFERENCE_ROOT,
-                    :variables => { 'template' => page_meta['template'] }, :warn => content_warning)
+                    :variables => ContentParts.page_variables(page_meta), :warn => content_warning)
                 markdown = ContentParts.expand_uses(markdown,
                     :references => page_meta['reference'], :reference_root => REFERENCE_ROOT,
                     :warn => content_warning)
-                markdown = ContentParts.fill_variables(markdown, { 'template' => page_meta['template'] })
+                markdown = ContentParts.fill_variables(markdown, ContentParts.page_variables(page_meta))
                 markdown = ContentParts.mark_parts(markdown)
                 # Tasks (docs/aufgaben.md): tasks.yaml next to the page holds
                 # them, _task(id) on a line of its own places a card.

@@ -17,6 +17,11 @@ module GitCheck
         git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "NOGIT"; exit 0; }
         echo "TOP $(git rev-parse --show-toplevel 2>/dev/null)"
         echo "COUNT $(git rev-list --count HEAD 2>/dev/null || echo 0)"
+        email=$(git config user.email 2>/dev/null)
+        if [ -n "$email" ]; then
+            echo "EMAIL $email"
+            echo "MINE $(git log --format=%ae 2>/dev/null | grep -cxF -- "$email")"
+        fi
         git remote 2>/dev/null | sed 's/^/REMOTE /'
         git -c core.fsmonitor=false -c core.untrackedCache=false status --porcelain=v1 --branch -uall 2>/dev/null | head -n 300 | sed 's/^/STATUS /'
     SH
@@ -36,6 +41,8 @@ module GitCheck
             when 'NOGIT' then return { :repo => true, :git => false }
             when /\ATOP (.*)\z/ then state[:top] = $1
             when /\ACOUNT (\d+)\z/ then state[:commits] = $1.to_i
+            when /\AEMAIL (.+)\z/ then state[:email] = $1.strip
+            when /\AMINE (\d+)\z/ then state[:mine] = $1.to_i
             when /\AREMOTE (.+)\z/ then state[:remotes] << $1.strip
             when /\ASTATUS ## (.*)\z/ then state.merge!(parse_branch($1))
             when /\ASTATUS (..) (.*)\z/ then state[:changes] << [$1, $2]
@@ -83,7 +90,8 @@ module GitCheck
         lines = []
         lines << "Repository #{code(repo)}, Branch #{code(state[:branch] || '?')}" +
             (state[:upstream] ? " → #{code(state[:upstream])}" : ' (ohne Remote-Branch)')
-        lines << "#{plural(state[:commits], 'Commit', 'Commits')}, Remotes: #{state[:remotes].empty? ? 'keine' : state[:remotes].join(', ')}"
+        mine = state[:mine] ? " (#{state[:mine]} von #{code(state[:email])})" : ''
+        lines << "#{plural(state[:commits], 'Commit', 'Commits')}#{mine}, Remotes: #{state[:remotes].empty? ? 'keine' : state[:remotes].join(', ')}"
         if state[:ahead].to_i > 0 || state[:behind].to_i > 0
             lines << "#{state[:ahead].to_i} noch nicht gepusht, #{state[:behind].to_i} noch nicht geholt"
         end
@@ -95,6 +103,12 @@ module GitCheck
             lines << "`git status` meldet:\n\n```\n#{shown.join("\n")}#{more}\n```"
         end
         lines.join("\n\n")
+    end
+
+    # What to git add: the one folder all changes are in (»lena/«), else -A.
+    def self.add_target(paths)
+        tops = paths.map { |p| p.include?('/') ? p.split('/').first : nil }.uniq
+        tops.size == 1 && tops.first ? "#{tops.first}/" : '-A'
     end
 
     # Returns [ok, problem, message] for the expectations of a git check.
@@ -113,8 +127,9 @@ module GitCheck
         if expect['has_remote'] && state[:remotes].empty?
             return [false, :no_remote, "Das Repository #{code(repo)} kennt kein Remote, also keinen Ort, an den es pushen kann. `git remote -v` zeigt nichts."]
         end
-        if expect['min_commits'] && state[:commits] < expect['min_commits']
-            return [false, :too_few_commits, "In #{code(repo)} gibt es #{plural(state[:commits], 'Commit', 'Commits')}, verlangt #{expect['min_commits'] == 1 ? 'ist einer' : "sind #{expect['min_commits']}"}."]
+        # Without a name and e-mail Git refuses to commit, so this comes first.
+        if expect['min_commits'] && state[:email].nil?
+            return [false, :no_identity, "Git weiß noch nicht, wer du bist. Ohne Namen und E-Mail-Adresse kannst du nicht committen. Im Terminal:\n\n```\ngit config --global user.name \"Vorname Nachname\"\ngit config --global user.email \"deine.mail@example.org\"\n```"]
         end
         if expect['committed'] && !state[:changes].empty?
             paths = state[:changes].map { |_, path| path }
@@ -122,8 +137,20 @@ module GitCheck
             more = paths.size > 3 ? " und #{paths.size - 3} weitere" : ''
             untracked = state[:changes].all? { |xy, _| xy == '??' }
             what = untracked ? 'neu und noch nie committet' : 'geändert, aber nicht committet'
-            push = expect['pushed'] ? ' Danach `git push`.' : ''
-            return [false, :uncommitted, "#{plural(paths.size, 'Datei ist', 'Dateien sind')} #{what}: #{shown}#{more}. Im Terminal, im Ordner #{code(repo)}: `git add -A` und `git commit -m \"…\"` mit einem Satz, was du gemacht hast.#{push}"]
+            steps = ["cd /workspace/#{repo}"]
+            steps << 'git pull' if expect['pushed'] && state[:upstream]
+            steps << "git add #{add_target(paths)}"
+            steps << 'git commit -m "Was du gemacht hast"'
+            steps << 'git push' if expect['pushed']
+            return [false, :uncommitted, "#{plural(paths.size, 'Datei ist', 'Dateien sind')} #{what}: #{shown}#{more}.\n\nIm Terminal:\n\n```\n#{steps.join("\n")}\n```\n\nSchreib in die Commit-Nachricht in einem Satz, was du gemacht hast."]
+        end
+        if expect['min_commits']
+            if state[:mine].to_i.zero?
+                return [false, :too_few_commits, "Von dir (#{code(state[:email])}) gibt es in #{code(repo)} noch keinen Commit. Lege deine Dateien an, dann `git add` und `git commit`."]
+            end
+            if state[:mine].to_i < expect['min_commits']
+                return [false, :too_few_commits, "In #{code(repo)} gibt es #{plural(state[:mine].to_i, 'Commit', 'Commits')} von #{code(state[:email])}, verlangt #{expect['min_commits'] == 1 ? 'ist einer' : "sind #{expect['min_commits']}"}."]
+            end
         end
         if expect['pushed']
             if state[:detached]
@@ -134,8 +161,11 @@ module GitCheck
                 remote = state[:remotes].first || 'origin'
                 return [false, :no_upstream, "Der Branch #{code(branch)} ist noch mit keinem Branch auf dem Server verbunden. Im Terminal: `git push -u #{remote} #{branch}`. Danach reicht `git push`."]
             end
+            if state[:ahead].to_i > 0 && state[:behind].to_i > 0
+                return [false, :not_pushed, "Dein Stand und der auf dem Server sind auseinandergelaufen: #{plural(state[:ahead], 'Commit', 'Commits')} von dir fehlen dort, #{plural(state[:behind], 'Commit', 'Commits')} von anderen fehlen bei dir. Im Terminal:\n\n```\ncd /workspace/#{repo}\ngit pull\ngit push\n```\n\nLehnt Git das ab, lösche nichts und frag nach."]
+            end
             if state[:ahead].to_i > 0
-                return [false, :not_pushed, "#{plural(state[:ahead], 'Commit ist', 'Commits sind')} noch nicht gepusht. Im Terminal, im Ordner #{code(repo)}: `git push`."]
+                return [false, :not_pushed, "#{plural(state[:ahead], 'Commit ist', 'Commits sind')} noch nicht gepusht. Im Terminal:\n\n```\ncd /workspace/#{repo}\ngit push\n```"]
             end
         end
         [true, nil, nil]

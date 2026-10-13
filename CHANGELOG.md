@@ -55,6 +55,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Abgaben (`submit`): eine Kopie der genannten Dateien als `.tar.gz` unter
   `/internal/submissions/`; Lernende laden sie herunter, geben neu ab oder
   löschen sie.
+- Neue Aktivität »Mit der Data Structures Sandbox arbeiten« unter »Terminal &
+  Git«: begleitet Einrichtung, Klonen und Veröffentlichen und prüft am Ende
+  jeder Stunde, ob alles committet und gepusht ist. Die Adresse des
+  Klassen-Repositorys steht im Meta-Block (`class_repo`).
 - Alle elf Aufgaben in »Eine Präsentation in HTML erstellen« und die
   2048-Aufgabe in »TCP/IP-Verbindungen« stehen jetzt auf der Seite.
 - Neue Neo4j-Knoten `TaskState` und `TaskAttempt` (Constraint

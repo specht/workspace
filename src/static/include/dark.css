@@ -228,6 +228,10 @@ html[data-bs-theme="dark"] {
     .task-solution > summary {
         color: #8db8f5;
     }
+    .task-feedback pre code {
+        color: #e7e6e1;
+        background: none;
+    }
     .task-feedback-correct { background-color: #15301f; }
     .task-feedback-wrong { background-color: #3a2c12; }
     .task-feedback-sent { background-color: #172a45; }

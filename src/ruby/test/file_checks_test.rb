@@ -224,4 +224,17 @@ class FileChecksTest < Minitest::Test
         outcome = run_check('eigenes-bild')
         assert_includes outcome.read, 'Link (wird nicht gelesen)'
     end
+
+    def test_missing_file_lists_the_folder_without_opening_files
+        ssh = File.join(@root, '.ssh')
+        FileUtils.mkdir_p(ssh)
+        File.write(File.join(ssh, 'id_ed25519'), "-----BEGIN OPENSSH PRIVATE KEY-----\n")
+        check = { 'type' => 'files', 'path' => '.ssh/id_ed25519.pub', 'expect' => { 'exists' => true } }
+        opened = []
+        @ws.define_singleton_method(:head) { |rel, bytes = 64| opened << rel; super(rel, bytes) }
+        outcome = FileChecks.files(check, @ws)
+        assert_equal :missing, outcome.problem
+        assert_includes outcome.read, 'id_ed25519'
+        assert_empty opened
+    end
 end

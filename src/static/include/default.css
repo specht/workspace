@@ -1690,7 +1690,14 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     font-size: 90%;
 }
 
-.task-read pre code {
+.task-feedback pre {
+    margin: 0.5em 0;
+    padding: 0.6em 0.8em;
+    border-radius: 0.4em;
+    background-color: rgba(255, 255, 255, 0.75);
+}
+
+.task-feedback pre code {
     padding: 0;
     background: none;
     color: inherit;

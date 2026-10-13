@@ -92,7 +92,9 @@ module FileChecks
     end
 
     # A listing of a folder as a Markdown code block.
-    def self.listing(files, rel)
+    # formats: false lists names and sizes only, without opening any file
+    # (used when a path is missing, so a folder like .ssh is never read).
+    def self.listing(files, rel, formats: true)
         entries = files.list(rel)
         return "#{code(rel)} ist leer." if entries.empty?
 
@@ -102,8 +104,12 @@ module FileChecks
                 when :dir then 'Ordner'
                 when :symlink then 'Link (wird nicht gelesen)'
                 when :file
-                    format = detect_format(files.head("#{rel}/#{e[:name]}".sub(%r{\A/}, ''), 64), e[:size]) rescue 'unknown'
-                    "#{size_text(e[:size])}, #{FORMATS[format]}"
+                    if formats
+                        format = detect_format(files.head("#{rel}/#{e[:name]}".sub(%r{\A/}, ''), 64), e[:size]) rescue 'unknown'
+                        "#{size_text(e[:size])}, #{FORMATS[format]}"
+                    else
+                        size_text(e[:size])
+                    end
                 else 'kein normaler Eintrag'
             end
             "#{e[:name].ljust(width)}  #{detail}"
@@ -129,7 +135,7 @@ module FileChecks
         entry = ws.entry(path)
         show = check['show'] == 'listing'
         parent = path.include?('/') ? File.dirname(path) : ''
-        read_parent = lambda { ws.entry(parent)[:type] == :dir ? listing(ws, parent) : nil }
+        read_parent = lambda { ws.entry(parent)[:type] == :dir ? listing(ws, parent, :formats => false) : nil }
 
         case entry[:type]
         when :missing

@@ -17,7 +17,13 @@ module ContentParts
     # ${...} in JavaScript or shell examples stays untouched.
     VARIABLES = {
         'template' => '[Adresse der Vorlage]',
+        'class_repo' => '[Adresse des Klassen-Repositorys]',
     }.freeze
+
+    # The page's values for VARIABLES, from its meta block.
+    def self.page_variables(meta)
+        VARIABLES.keys.to_h { |name| [name, meta[name].is_a?(String) && !meta[name].strip.empty? ? meta[name].strip : nil] }
+    end
     VARIABLE = /\$\{(#{VARIABLES.keys.join('|')})\}/
     NOTE_FILE = 'lehrkraft.md'
 

@@ -32,8 +32,11 @@ class GitCheckTest < Minitest::Test
         refute ok
         assert_equal :uncommitted, problem
         assert_includes message, '2 Dateien sind geändert, aber nicht committet: `structures/lena/stack.py`, `structures/lena/queue.py`'
-        assert_includes message, '`git add -A`'
-        assert_includes message, 'Danach `git push`.'
+        assert_includes message, "cd /workspace/sandbox\ngit pull\ngit add structures/\ngit commit"
+        assert_includes message, "\ngit push\n"
+        assert_equal 'lena/', GitCheck.add_target(['lena/a.py', 'lena/b/c.py'])
+        assert_equal '-A', GitCheck.add_target(['lena/a.py', 'README.md'])
+        assert_equal '-A', GitCheck.add_target(['lena/a.py', 'tom/b.py'])
         assert_includes GitCheck.describe('sandbox', state), ' M structures/lena/stack.py'
     end
 
@@ -41,6 +44,10 @@ class GitCheckTest < Minitest::Test
         state = parse(['COUNT 5', 'REMOTE origin', 'STATUS ## main...origin/main [ahead 2]'])
         assert_equal :not_pushed, GitCheck.evaluate('sandbox', EXPECT, state)[1]
         assert_includes GitCheck.evaluate('sandbox', EXPECT, state)[2], '2 Commits sind noch nicht gepusht'
+        state = parse(['COUNT 5', 'REMOTE origin', 'STATUS ## main...origin/main [ahead 1, behind 3]'])
+        message = GitCheck.evaluate('sandbox', EXPECT, state)[2]
+        assert_includes message, 'auseinandergelaufen: 1 Commit von dir fehlen dort, 3 Commits von anderen'
+        assert_includes message, "git pull\ngit push"
         state = parse(['COUNT 1', 'REMOTE origin', 'STATUS ## feature'])
         assert_includes GitCheck.evaluate('sandbox', EXPECT, state)[2], '`git push -u origin feature`'
         state = parse(['COUNT 1', 'STATUS ## main'])
@@ -48,9 +55,12 @@ class GitCheckTest < Minitest::Test
     end
 
     def test_all_good
-        state = parse(['COUNT 9', 'REMOTE origin', 'STATUS ## main...origin/main'])
+        state = parse(['COUNT 9', 'EMAIL lena@example.org', 'MINE 3', 'REMOTE origin', 'STATUS ## main...origin/main'])
         assert GitCheck.evaluate('sandbox', EXPECT.merge('min_commits' => 3), state)[0]
-        assert_equal :too_few_commits, GitCheck.evaluate('sandbox', { 'min_commits' => 10 }, state)[1]
+        problem, message = GitCheck.evaluate('sandbox', { 'min_commits' => 4 }, state)[1, 2]
+        assert_equal :too_few_commits, problem
+        assert_includes message, '3 Commits von `lena@example.org`'
+        assert_equal :no_identity, GitCheck.evaluate('sandbox', { 'min_commits' => 1 }, parse(['COUNT 9', 'REMOTE origin']))[1]
     end
 
     # Runs the real script against real repositories (needs git and sh).
@@ -58,6 +68,7 @@ class GitCheckTest < Minitest::Test
         skip 'git not installed' unless system('git --version > /dev/null 2>&1')
         Dir.mktmpdir do |tmp|
             env = { 'GIT_AUTHOR_NAME' => 'T', 'GIT_AUTHOR_EMAIL' => 't@x', 'GIT_COMMITTER_NAME' => 'T', 'GIT_COMMITTER_EMAIL' => 't@x', 'HOME' => tmp }
+            system(env, 'git', 'config', '--global', 'user.email', 't@x')
             remote = File.join(tmp, 'remote.git')
             work = File.join(tmp, 'work')
             system(env, 'git', 'init', '-q', '--bare', '-b', 'main', remote)
@@ -87,6 +98,8 @@ class GitCheckTest < Minitest::Test
             state = run.(work)
             assert_equal :not_pushed, GitCheck.evaluate('work', EXPECT, state, root: tmp)[1]
             assert_equal 2, state[:commits]
+            assert_equal 't@x', state[:email]
+            assert_equal 2, state[:mine]
             assert_equal({ :repo => false, :git => false }, run.(File.join(tmp, 'nope')))
             FileUtils.mkdir_p(File.join(tmp, 'plain'))
             assert_equal({ :repo => true, :git => false }, run.(File.join(tmp, 'plain')))

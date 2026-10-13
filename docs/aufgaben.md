@@ -95,6 +95,7 @@ image: tcpip.webp
 | `requires` | Aktivitäten, die vorher sinnvoll sind |
 | `reference` | Handbuch-Seiten, auf die `_uses()` verweist |
 | `template` | Adresse der Vorlage zum Klonen; andere Schulen können hier einen Spiegel eintragen |
+| `class_repo` | Adresse des Klassen-Repositorys, zum Beispiel für die Sandboxes; im Text `${class_repo}` |
 
 Über jeder Seite steht ein schmaler Streifen, der sagt, was sie ist:
 
@@ -308,7 +309,10 @@ geändert, aber nicht committet: `lena/stack.py`, … Im Terminal, im Ordner
 `structures`: `git add -A` und `git commit -m "…"`. Danach `git push`.«
 `pushed` vergleicht mit dem zuletzt bekannten Stand des Remotes; die Prüfung
 holt nichts aus dem Netz. Ist der Workspace aus, sagt die Karte das, statt zu
-raten.
+raten. `min_commits` zählt nur die Commits der Person selbst, erkannt an der
+E-Mail-Adresse aus `git config user.email`; ist keine eingetragen, sagt die
+Karte, wie man das nachholt. Ist `repo` nur ein Ordner in einem anderen
+Repository, sagt die Karte auch das.
 
 ### submit
 
@@ -345,6 +349,8 @@ Anaglyph-Projekt.
 Die Sandboxes bleiben eigenständig. Eine kleine Aktivität im Workspace kann
 trotzdem begleiten, besonders wenn neue Lernende Git noch nicht kennen: Sie
 liest nur, was im eigenen Workspace liegt, und sagt, was als Nächstes fehlt.
+Die fertige Seite dazu ist `src/content/sandbox-datenstrukturen/`
+(»Mit der Data Structures Sandbox arbeiten«); hier der Kern:
 
 ```yaml
 activity: datenstrukturen-start
@@ -425,7 +431,7 @@ die eingebaute Rückmeldung für einen Fall.
 | `html` | `missing`, `parse_error`, `no_slides`, `first_slide_unchanged`, `too_few_slides`, `slide_without_heading`, `too_few_images`, `alt_missing`, `image_case`, `image_missing` |
 | `css` | `missing`, `marker_missing`, `parse_error`, `too_few_rules` |
 | `references` | `missing`, `external`, `outside_root`, `local_missing` |
-| `git` | `no_repo`, `not_git`, `no_remote`, `too_few_commits`, `uncommitted`, `detached`, `no_upstream`, `not_pushed` |
+| `git` | `no_repo`, `not_git`, `no_remote`, `no_identity`, `uncommitted`, `too_few_commits`, `detached`, `no_upstream`, `not_pushed` |
 
 ### Einschalten
 
