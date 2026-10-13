@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import dns from 'node:dns/promises';
 import fs from 'node:fs/promises';
+import fsSync from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 import { execFile } from 'node:child_process';
@@ -192,6 +193,28 @@ let loggedIn = false;
 let workspace = null;
 let preview = null;
 let generationQueue = Promise.resolve();
+// Jobs queued or running, from page views and explicit runs alike.
+let pendingJobs = 0;
+// Automatic rendering on page views (development). Paused by hand from the
+// status bar, or by itself when a page view would start rendering while
+// another job is under way (an explicit run, for example), so browsing never
+// interferes with it. Explicit runs (recreate-screenshots.rb) ignore it. Kept
+// next to the Git cache, so it survives restarts and rebuilds.
+const AUTO_RENDER_FILE = path.join(GIT_CACHE_ROOT, '.auto-render.json');
+let autoRender = { enabled: true, reason: null };
+try {
+    const stored = JSON.parse(fsSync.readFileSync(AUTO_RENDER_FILE, 'utf8'));
+    if (typeof stored.enabled === 'boolean') autoRender = { enabled: stored.enabled, reason: stored.reason ?? null };
+} catch {}
+
+async function setAutoRender(enabled, reason = null) {
+    autoRender = { enabled, reason: enabled ? null : reason };
+    await fs.writeFile(AUTO_RENDER_FILE, JSON.stringify(autoRender)).catch(error => {
+        console.warn(`Could not store the auto-render state: ${error.message}`);
+    });
+    console.log(`Tutorial screenshot auto-render ${enabled ? 'resumed' : `paused (${reason})`}`);
+}
+
 const latestGenerationJobs = new Map();
 let workspacePrepared = false;
 let workspacePreparationPromise = null;
@@ -2976,6 +2999,26 @@ async function enqueueGeneration(payload) {
         return snapshot;
     }
 
+    if (autoRender.enabled && pendingJobs > 0) await setAutoRender(false, 'busy');
+    if (!autoRender.enabled) {
+        // Stale images keep their warning outline; nothing is queued.
+        const paused = {
+            status: 'paused',
+            monitor: true,
+            markdown_path: plan.relativeMarkdown,
+            fingerprint: plan.fingerprint,
+            total: plan.shots.length,
+            completed: 0,
+            stale: staleCount,
+            generated: 0,
+            current_target: null,
+            error: null,
+            screenshots: plan.screenshots.map(item => ({ ...item })),
+        };
+        latestGenerationJobs.set(plan.relativeMarkdown, paused);
+        return paused;
+    }
+
     const job = {
         status: 'queued',
         monitor: true,
@@ -2991,6 +3034,7 @@ async function enqueueGeneration(payload) {
     };
     latestGenerationJobs.set(plan.relativeMarkdown, job);
 
+    pendingJobs += 1;
     const run = generationQueue.then(async () => {
         try {
             const result = await generateTutorial(payload, job);
@@ -3004,6 +3048,8 @@ async function enqueueGeneration(payload) {
             job.error = error.message;
             job.finished_at = Date.now();
             throw error;
+        } finally {
+            pendingJobs -= 1;
         }
     });
     generationQueue = run.catch(error => {
@@ -3199,15 +3245,23 @@ const server = http.createServer(async (request, response) => {
                 throw new Error('markdown_path must name a Markdown file');
             }
             const job = latestGenerationJobs.get(relativeMarkdown);
-            return sendJson(response, 200, job || {
+            return sendJson(response, 200, { ...(job || {
                 status: 'idle',
                 monitor: false,
                 markdown_path: relativeMarkdown,
                 screenshots: [],
-            });
+            }), auto_render: autoRender });
         } catch (error) {
             return sendJson(response, 400, { error: error.message });
         }
+    }
+    if (requestUrl.pathname === '/auto-render') {
+        if (request.method === 'POST') {
+            const payload = await readJson(request).catch(() => ({}));
+            if (typeof payload.enabled !== 'boolean') return sendJson(response, 400, { error: 'enabled must be true or false' });
+            await setAutoRender(payload.enabled, 'manual');
+        }
+        return sendJson(response, 200, autoRender);
     }
     if (request.method !== 'POST' || requestUrl.pathname !== '/generate') {
         return sendJson(response, 404, { error: 'not_found' });
@@ -3225,7 +3279,8 @@ const server = http.createServer(async (request, response) => {
             }
         }
 
-        const job = generationQueue.then(() => generateTutorial(payload));
+        pendingJobs += 1;
+        const job = generationQueue.then(() => generateTutorial(payload)).finally(() => { pendingJobs -= 1; });
         generationQueue = job.catch(() => {});
         const result = await job;
         sendJson(response, 200, result);

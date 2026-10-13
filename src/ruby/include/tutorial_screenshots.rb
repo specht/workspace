@@ -7,6 +7,7 @@ module TutorialScreenshots
     MARKER = '<!-- tutorial-screenshot'
     ENDPOINT = URI('http://tutorial_screenshots:9393/generate')
     STATUS_ENDPOINT = URI('http://tutorial_screenshots:9393/status')
+    AUTO_RENDER_ENDPOINT = URI('http://tutorial_screenshots:9393/auto-render')
     WORKSPACE_IMAGE = 'hs_code_server'
 
     def self.prepare(markdown, markdown_path, generate: true)
@@ -63,6 +64,20 @@ module TutorialScreenshots
         unless response.is_a?(Net::HTTPSuccess)
             raise "generator returned HTTP #{response.code}: #{response.body.to_s[0, 500]}"
         end
+        JSON.parse(response.body)
+    end
+
+    # Pauses or resumes rendering on page views (the status bar's button).
+    # Explicit runs (recreate-screenshots.rb) render either way.
+    def self.set_auto_render(enabled)
+        request = Net::HTTP::Post.new(AUTO_RENDER_ENDPOINT)
+        request['content-type'] = 'application/json'
+        request.body = JSON.generate({ :enabled => enabled == true })
+        http = Net::HTTP.new(AUTO_RENDER_ENDPOINT.host, AUTO_RENDER_ENDPOINT.port)
+        http.open_timeout = 1
+        http.read_timeout = 5
+        response = http.request(request)
+        raise "generator returned HTTP #{response.code}" unless response.is_a?(Net::HTTPSuccess)
         JSON.parse(response.body)
     end
 

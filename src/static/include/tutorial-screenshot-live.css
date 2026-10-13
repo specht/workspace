@@ -21,6 +21,15 @@
     white-space: normal;
 }
 
+.tutorial-screenshot-monitor.paused {
+    color: #8a5300;
+}
+
+.tutorial-screenshot-auto-toggle {
+    padding: 0 0.3em;
+    font-size: inherit;
+}
+
 .tutorial-screenshot-stale {
     outline: 4px solid #ffc107;
     outline-offset: 2px;

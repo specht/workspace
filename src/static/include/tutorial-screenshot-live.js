@@ -22,7 +22,12 @@ function ensure_tutorial_screenshot_ui(showFilmstrip = false) {
             progress.id = 'tutorial-screenshot-progress';
             progress.max = 1;
             progress.value = 0;
-            monitor.append(icon, text, progress);
+            const toggle = document.createElement('button');
+            toggle.id = 'tutorial-screenshot-auto-toggle';
+            toggle.type = 'button';
+            toggle.className = 'btn btn-link btn-sm tutorial-screenshot-auto-toggle';
+            toggle.hidden = true;
+            monitor.append(icon, text, progress, toggle);
             footerLeft.appendChild(monitor);
         }
     }
@@ -262,6 +267,8 @@ function update_tutorial_screenshot_monitor(snapshot) {
     monitor.classList.add('visible');
     monitor.classList.toggle('error', snapshot.status === 'error');
     monitor.classList.toggle('done', snapshot.status === 'done');
+    monitor.classList.toggle('paused', snapshot.status === 'paused');
+    update_tutorial_screenshot_auto_toggle(snapshot);
 
     const total = Math.max(1, Number(snapshot.total) || 1);
     const completed = Math.min(total, Number(snapshot.completed) || 0);
@@ -269,6 +276,15 @@ function update_tutorial_screenshot_monitor(snapshot) {
     progress.value = completed;
 
     icon.className = 'bi';
+    if (snapshot.status === 'paused') {
+        icon.classList.add('bi-pause-circle');
+        const why = snapshot.auto_render?.reason === 'busy' ? ', weil gerade ein anderer Auftrag lief' : '';
+        const stale = snapshot.stale ? ` · ${snapshot.stale} veraltet` : '';
+        text.textContent = `Automatisches Rendern pausiert${why}${stale}`;
+        progress.hidden = true;
+        return;
+    }
+    progress.hidden = false;
     if (snapshot.status === 'done') {
         icon.classList.add('bi-check-lg');
         text.textContent = `Screenshots fertig · ${snapshot.generated || 0} neu`;
@@ -286,6 +302,32 @@ function update_tutorial_screenshot_monitor(snapshot) {
         const target = snapshot.current_target ? ` · ${snapshot.current_target}` : '';
         text.textContent = `Screenshots ${completed}/${snapshot.total || 0}${target}`;
     }
+}
+
+// »Fortsetzen« while rendering on page views is paused, »Pausieren« while it
+// runs. Pausing lets the current job finish; explicit runs
+// (recreate-screenshots.rb) render either way.
+function update_tutorial_screenshot_auto_toggle(snapshot) {
+    const toggle = document.getElementById('tutorial-screenshot-auto-toggle');
+    if (!toggle) return;
+    const paused = snapshot.status === 'paused' || snapshot.auto_render?.enabled === false;
+    const running = ['queued', 'preparing', 'running'].includes(snapshot.status);
+    toggle.hidden = !(paused || running);
+    toggle.textContent = paused ? 'Fortsetzen' : 'Pausieren';
+    toggle.onclick = () => {
+        toggle.disabled = true;
+        api_call('/api/tutorial_screenshots/auto_render', { mode: paused ? 'on' : 'off' }, function (data) {
+            toggle.disabled = false;
+            if (paused) {
+                window.location.reload();
+            } else {
+                snapshot.auto_render = data;
+                toggle.textContent = 'Fortsetzen';
+                const text = document.getElementById('tutorial-screenshot-monitor-text');
+                if (text) text.textContent = 'Pausiert, der laufende Auftrag wird noch beendet';
+            }
+        }, { no_please_wait: true });
+    };
 }
 
 async function fetch_tutorial_screenshot_status(slug) {
@@ -319,7 +361,14 @@ async function install_tutorial_screenshot_live_preview() {
         return;
     }
 
-    if (snapshot.monitor !== true) return;
+    if (snapshot.monitor !== true) {
+        // Nothing to render here, but say that rendering is paused, so it can
+        // be resumed from any tutorial.
+        if (snapshot.auto_render?.enabled === false) {
+            update_tutorial_screenshot_monitor({ ...snapshot, status: 'paused', stale: 0 });
+        }
+        return;
+    }
     apply_tutorial_screenshot_status(slug, snapshot);
 
     const poll = async () => {

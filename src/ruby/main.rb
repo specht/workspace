@@ -6425,6 +6425,13 @@ class Main < Sinatra::Base
     end
 
     if DEVELOPMENT
+        post '/api/tutorial_screenshots/auto_render' do
+            data = parse_request_data(:required_keys => [:mode])
+            halt 400 unless %w[on off].include?(data[:mode])
+            content_type :json
+            respond(TutorialScreenshots.set_auto_render(data[:mode] == 'on'))
+        end
+
         get '/api/tutorial_screenshots/status' do
             slug = params['slug'].to_s
             halt 400 unless slug.match?(/\A[a-zA-Z0-9_-]+\z/)

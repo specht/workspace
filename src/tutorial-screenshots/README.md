@@ -40,6 +40,17 @@ opens a large preview. When every generated screenshot is already current, none 
 that monitoring UI is shown. Production continues to use the committed tutorial
 images directly and never enables this live-preview path.
 
+### Pausing rendering on page views
+
+A page view only renders while automatic rendering is on. When a page view
+would start rendering while the generator is busy with another job (an
+explicit run of the helper below, for example), automatic rendering pauses
+itself instead, so looking around the site never interferes with that run.
+The footer then says »Automatisches Rendern pausiert« with a »Fortsetzen«
+button; while rendering runs, it offers »Pausieren« (the current job still
+finishes). The state is stored in `.auto-render.json` in the Git cache and
+survives restarts and rebuilds. The helper below renders either way.
+
 ### When is a screenshot re-rendered?
 
 A generated file is rendered again when one of these changed:

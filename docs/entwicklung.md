@@ -71,6 +71,13 @@ src/scripts/recreate-screenshots.rb --stale       # nur Veraltetes, alle Tutoria
 src/scripts/recreate-screenshots.rb --stale bif   # nur Veraltetes in einem Tutorial
 ```
 
+Rendert der Generator gerade etwas (zum Beispiel mit dem Skript), und ein
+Seitenaufruf würde weiteres Rendern anstoßen, pausiert das automatische
+Rendern bei Seitenaufrufen von selbst. Die Fußzeile zeigt dann
+»Automatisches Rendern pausiert« und den Knopf »Fortsetzen«; solange
+gerendert wird, steht dort »Pausieren«. Der Zustand bleibt über Neustarts
+erhalten. Das Skript rendert immer, auch wenn pausiert ist.
+
 Ein neu gebautes Workspace-Image erzeugt **nichts** neu, solange die
 code-server-Version gleich bleibt. Sieht man eine Änderung am Image in
 Screenshots (neue Erweiterung in der Seitenleiste), rendert man die
