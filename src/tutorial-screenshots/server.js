@@ -1731,7 +1731,15 @@ async function writeWorkspaceFile(relativePath, contents, hooks) {
     if (!resolvedTarget.startsWith(`${resolvedRoot}${path.sep}`)) {
         throw new Error(`Workspace path escaped configured write-file root: ${relativePath}`);
     }
-    await fs.mkdir(path.dirname(target), { recursive: true });
+    // Directories created here belong to the Workspace user, like the file:
+    // owned by root, Git and the editor could not write into them.
+    const firstCreated = await fs.mkdir(path.dirname(target), { recursive: true });
+    if (firstCreated) {
+        for (let directory = path.dirname(target); ; directory = path.dirname(directory)) {
+            await fs.chown(directory, 1000, 1000).catch(() => {});
+            if (directory === firstCreated || directory === path.dirname(directory)) break;
+        }
+    }
     if (contents && typeof contents === 'object' && contents.sourcePath) {
         const bytes = await fs.readFile(contents.sourcePath);
         const sourceSha256 = sha256(bytes);
