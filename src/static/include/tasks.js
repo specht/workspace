@@ -6,6 +6,7 @@
         correct: ['task-badge-correct', 'bi-check-circle-fill', 'gelöst'],
         wrong: ['task-badge-wrong', 'bi-arrow-repeat', 'noch nicht gelöst'],
         sent: ['task-badge-sent', 'bi-send-check', 'gespeichert'],
+        submitted: ['task-badge-sent', 'bi-send-check', 'abgegeben'],
         stale: ['task-badge-stale', 'bi-exclamation-circle', 'Aufgabe geändert, bitte neu prüfen'],
     };
 
@@ -20,7 +21,7 @@
     function setBadge(card, status) {
         const el = card.querySelector('.task-status');
         el.innerHTML = '';
-        const label = STATUS_LABELS[status];
+        const label = STATUS_LABELS[status === 'sent' && card.dataset.type === 'submit' ? 'submitted' : status];
         if (!label) return;
         const span = document.createElement('span');
         span.className = 'task-badge ' + label[0];
@@ -41,7 +42,37 @@
         return input ? input.value : '';
     }
 
+    // What a submission holds, with a link to download it.
+    function showSubmission(card, summary) {
+        let box = card.querySelector('.task-submission');
+        if (!summary) {
+            if (box) box.remove();
+            return;
+        }
+        if (!box) {
+            box = document.createElement('div');
+            box.className = 'task-submission';
+            card.querySelector('.task-actions').before(box);
+        }
+        box.innerHTML = '';
+        box.appendChild(document.createTextNode('Deine Abgabe: ' + summary + ' · '));
+        const link = document.createElement('a');
+        link.href = '/api/task/submission/' + card.dataset.task;
+        link.textContent = 'herunterladen';
+        box.appendChild(link);
+    }
+
     function writeAnswer(card, answer) {
+        if (card.dataset.type === 'submit') {
+            const select = card.querySelector('.task-pick');
+            const parts = String(answer || '').split(' · ');
+            if (select && parts.length > 1) {
+                select.dataset.stored = parts[0];
+                select.value = parts[0];
+            }
+            showSubmission(card, answer || null);
+            return;
+        }
         if (card.dataset.type === 'choice') {
             const picked = String(answer || '').split(',');
             card.querySelectorAll('.form-check-input').forEach((input) => {
@@ -55,7 +86,7 @@
 
     // message and solution are HTML rendered on the server from the task
     // file; the student's own answer is never part of them.
-    function showFeedback(card, status, message, solution) {
+    function showFeedback(card, status, message, solution, read, warnings) {
         const box = card.querySelector('.task-feedback');
         box.className = 'task-feedback task-feedback-' + status;
         box.innerHTML = '';
@@ -64,6 +95,27 @@
             div.className = 'task-message';
             div.innerHTML = message;
             box.appendChild(div);
+        }
+        if (warnings && warnings.length > 0) {
+            const ul = document.createElement('ul');
+            ul.className = 'task-warnings';
+            warnings.forEach((w) => {
+                const li = document.createElement('li');
+                li.innerHTML = w;
+                ul.appendChild(li);
+            });
+            box.appendChild(ul);
+        }
+        if (read) {
+            const details = document.createElement('details');
+            details.className = 'task-read';
+            const summary = document.createElement('summary');
+            summary.textContent = 'Was der Workspace gelesen hat';
+            details.appendChild(summary);
+            const body = document.createElement('div');
+            body.innerHTML = read;
+            details.appendChild(body);
+            box.appendChild(details);
         }
         if (solution) {
             const details = document.createElement('details');
@@ -79,7 +131,7 @@
     }
 
     function setBusy(card, busy) {
-        card.querySelectorAll('button, input, textarea').forEach((el) => {
+        card.querySelectorAll('button, input, textarea, select').forEach((el) => {
             el.disabled = busy;
         });
     }
@@ -93,23 +145,42 @@
                 showFeedback(card, 'unavailable', '<p>Das hat gerade nicht geklappt. Versuch es gleich noch einmal.</p>');
                 return;
             }
-            showFeedback(card, data.status, data.message, data.solution);
+            showFeedback(card, data.status, data.message, data.solution, data.read, data.warnings);
             if (data.state) {
                 setBadge(card, data.state.status);
                 card.querySelector('.task-delete').hidden = false;
+                if (card.dataset.type === 'submit') showSubmission(card, data.state.answer);
             }
         }, { no_please_wait: true });
     }
 
     function remove(card) {
-        if (!window.confirm('Deine gespeicherte Antwort zu dieser Aufgabe löschen? Das kann nicht rückgängig gemacht werden.')) return;
+        const what = card.dataset.type === 'submit' ? 'Deine Abgabe' : 'Deine gespeicherte Antwort zu dieser Aufgabe';
+        if (!window.confirm(what + ' löschen? Das kann nicht rückgängig gemacht werden.')) return;
         api_call('/api/task/delete', { task: card.dataset.task }, function (data) {
             if (!data.success) return;
-            writeAnswer(card, '');
+            if (card.dataset.type === 'submit') showSubmission(card, null);
+            else writeAnswer(card, '');
             setBadge(card, null);
             delete card.dataset.status;
             card.querySelector('.task-delete').hidden = true;
             showFeedback(card, 'sent', '<p>Gelöscht.</p>');
+        }, { no_please_wait: true });
+    }
+
+    // Submit tasks with pick: list the matching files in the Workspace.
+    function loadOptions(card) {
+        const select = card.querySelector('.task-pick');
+        if (!select) return;
+        api_call('/api/task/options', { task: card.dataset.task }, function (data) {
+            if (!data.success) return;
+            (data.options || []).forEach((path) => {
+                const option = document.createElement('option');
+                option.value = path;
+                option.textContent = path;
+                select.appendChild(option);
+            });
+            if (select.dataset.stored) select.value = select.dataset.stored;
         }, { no_please_wait: true });
     }
 
@@ -148,7 +219,11 @@
                 submit(card);
             });
             const del = card.querySelector('.task-delete');
-            if (del) del.addEventListener('click', function () { remove(card); });
+            if (del) {
+                if (card.dataset.type === 'submit') del.textContent = 'Abgabe löschen';
+                del.addEventListener('click', function () { remove(card); });
+            }
+            loadOptions(card);
         });
         if (page.loggedIn) loadStates();
     }

@@ -3792,6 +3792,28 @@ class Main < Sinatra::Base
         @@task_redcarpet.render(markdown.to_s)
     end
 
+    SUBMISSIONS_ROOT = '/internal/submissions'
+
+    # The student's Workspace folder on the server, read-only, or nil if the
+    # Workspace was never opened.
+    def task_workspace_files
+        path = "/user/#{fs_tag_for_email(@session_user[:email])}/workspace"
+        File.directory?(path) ? WorkspaceFiles.new(path) : nil
+    end
+
+    # git status of a repository, read inside the student's running container.
+    def task_git_state(repo)
+        WorkspaceFiles.clean(repo)
+        output = workspace_runtime.git_status(fs_tag_for_email(@session_user[:email]),
+            :repo => repo, :uid => "#{WORKSPACE_UID}:#{WORKSPACE_GID}",
+            :script => GitCheck::STATUS_SCRIPT, :timeout => 15)
+        output.nil? ? nil : GitCheck.parse(output)
+    end
+
+    def submission_path(task_key, email = @session_user[:email])
+        File.join(SUBMISSIONS_ROOT, "#{TaskStore.state_key(email, task_key)}.tar.gz")
+    end
+
     def store_task_result(found, status, answer)
         email = @session_user[:email]
         key = TaskStore.state_key(email, found[:key])
@@ -4596,14 +4618,56 @@ class Main < Sinatra::Base
         halt 404 if found.nil?
 
         result = TaskCheck.check(found[:task], data[:answer],
-            :variables => task_variables(found[:task], found[:key]))
-        state = result.counts? ? store_task_result(found, result.status.to_s, data[:answer]) : nil
+            :variables => task_variables(found[:task], found[:key]),
+            :workspace => task_workspace_files,
+            :git => lambda { |repo| task_git_state(repo) })
+        answer = data[:answer]
+        if (plan = result.plan)
+            # submit: copy the files now; the stored answer says what was handed in.
+            files = plan.files.size
+            answer = [data[:answer].to_s.strip, "#{files == 1 ? '1 Datei' : "#{files} Dateien"}, #{SubmissionStore.size_text(plan.total)}"].reject(&:empty?).join(' · ')
+            begin
+                SubmissionStore.write(task_workspace_files, plan, submission_path(found[:key]))
+            rescue StandardError => e
+                STDERR.puts "Submission #{found[:key]} failed: #{e.class}: #{e.message}"
+                result = TaskCheck::Result.new(:status => :unavailable,
+                    :message => 'Die Abgabe hat nicht geklappt, vermutlich hat sich gerade eine Datei geändert. Versuch es gleich noch einmal.')
+            end
+        end
+        state = result.counts? ? store_task_result(found, result.status.to_s, answer) : nil
         respond(
             :status => result.status.to_s,
             :message => render_task_markdown(result.message),
             :solution => render_task_markdown(result.solution),
+            :read => render_task_markdown(result.read),
+            :warnings => (result.warnings || []).map { |w| render_task_markdown(w) },
             :state => state,
         )
+    end
+
+    # Files a submit task with pick: offers from the student's Workspace.
+    post '/api/task/options' do
+        assert(user_logged_in?)
+        assert(tasks_visible?)
+        data = parse_request_data(:required_keys => [:task], :max_value_lengths => {:task => 120})
+        found = find_task(data[:task])
+        halt 404 if found.nil? || found[:task]['check']['pick'].nil?
+
+        ws = task_workspace_files
+        options = ws ? SubmissionStore.candidates(ws, found[:task]['check']['pick']) : []
+        respond(:options => options)
+    end
+
+    # The logged-in person's own submission as .tar.gz.
+    get '/api/task/submission/:activity/:id' do
+        assert(user_logged_in?)
+        found = find_task("#{params[:activity]}/#{params[:id]}")
+        halt 404 if found.nil?
+        path = submission_path(found[:key])
+        halt 404 unless File.file?(path)
+
+        respond_raw_with_mimetype_and_filename(File.binread(path), 'application/gzip',
+            "#{params[:activity]}-#{params[:id]}.tar.gz")
     end
 
     # The logged-in person's stored answers for the tasks of one activity.
@@ -4647,6 +4711,7 @@ class Main < Sinatra::Base
             MATCH (a:TaskAttempt {task: $task})-[:BY]->(:User {email: $email})
             DETACH DELETE a;
         END_OF_QUERY
+        FileUtils.rm_f(submission_path(task, email))
         respond(:deleted => true)
     end
 

@@ -80,10 +80,28 @@ class TaskCardTest < Minitest::Test
     end
 
     def test_later_types_have_no_form
-        html = card('spiel-2048')
+        html = card('entfernungen')
         refute_includes html, '<form'
         assert_includes html, 'noch nicht selbst prüfen'
         refute_includes html, 'task-login-note'
+    end
+
+    def test_workspace_cards_name_the_files_they_read
+        html = card('spiel-2048')
+        assert_includes html, 'Sieht nach in <code>/workspace/2048</code>'
+        assert_includes html, 'Prüfen'
+        refute_includes html, 'task-input'
+        shower = TaskSpec.load_file(File.expand_path('../../content/showerjs/tasks.yaml', __dir__))['tasks'].to_h { |t| [t['id'], t] }
+        card = ->(id) { TaskCard.html(shower[id], activity: 'showerjs', number: 1, render: RENDER) }
+        assert_includes card.('eigene-regel'), 'Liest <code>/workspace/shower.js/styles.css</code>'
+        assert_includes card.('alles-im-ordner'), '<code>/workspace/shower.js/index.html</code> und <code>/workspace/shower.js/styles.css</code>'
+        abgabe = card.('abgabe')
+        assert_includes abgabe, 'Kopiert <code>/workspace/shower.js</code> ohne <code>.git</code>, höchstens 20 MB'
+        assert_includes abgabe, 'Abgeben'
+        anaglyph = TaskSpec.load_file(File.expand_path('../../content/anaglyph/tasks.yaml', __dir__))['tasks'].to_h { |t| [t['id'], t] }
+        galerie = TaskCard.html(anaglyph['galerie'], activity: 'anaglyph', number: 1, render: RENDER)
+        assert_includes galerie, "data-pick='anaglyph/*.ini'"
+        assert_includes galerie, '<select'
     end
 
     def test_every_task_on_a_page_exists

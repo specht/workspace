@@ -235,6 +235,10 @@ html[data-bs-theme="dark"] {
     .task-feedback-unavailable { background-color: #222326; }
     .task-options-note,
     .task-words,
+    .task-reads,
+    .task-submission,
+    .task-pick-label,
+    .task-read > summary,
     .task-later,
     .task-login-note {
         color: #adb5bd;

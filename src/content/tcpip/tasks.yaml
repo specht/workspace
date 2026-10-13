@@ -1,6 +1,7 @@
 # Aufgaben zu »Wie Rechner sich finden« (TCP/IP-Verbindungen).
 # Format: docs/aufgaben.md. In tcpip.md stehen bisher: adresse, loopback,
-# lichtgeschwindigkeit, ttl-drei, traceroute-erklaeren (die übrigen brauchen M3).
+# lichtgeschwindigkeit, ttl-drei, traceroute-erklaeren, spiel-2048. Die übrigen
+# brauchen measure, command oder den Bot für das Codewort.
 format: 1
 activity: tcpip
 tasks:

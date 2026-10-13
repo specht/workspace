@@ -142,4 +142,17 @@ class WorkspaceRuntimeTest < Minitest::Test
         assert command.start_with?('docker exec -u 1000 hs_code_abcdefghijklmnop sh -c ')
         assert_equal({:timeout => 10, :allow_failure => true, :log_command => false}, options)
     end
+    def test_git_status_runs_only_in_a_running_container
+        @capture_outputs << '[]'
+        assert_nil @runtime.git_status('abc', :repo => 'sandbox/structures', :uid => '1000:1000', :script => 'echo "$1"', :timeout => 5)
+        assert_equal 1, @captures.size
+
+        @capture_outputs << JSON.generate([{ 'NetworkSettings' => { 'Networks' => { 'workspace_user' => { 'IPAddress' => '172.20.0.9' } } } }])
+        @capture_outputs << "STATUS ## main\n"
+        output = @runtime.git_status('abc', :repo => 'my repo', :uid => '1000:1000', :script => 'echo "$1"', :timeout => 5)
+        assert_equal "STATUS ## main\n", output
+        command, options = @captures.last
+        assert_equal "docker exec -u 1000:1000 hs_code_abc sh -c echo\\ \\\"\\$1\\\" sh /workspace/my\\ repo", command
+        assert_equal true, options[:allow_failure]
+    end
 end

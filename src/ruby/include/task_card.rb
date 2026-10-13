@@ -78,9 +78,19 @@ module TaskCard
                 if check['min_words']
                     io << "<div class='task-words'>Mindestens #{check['min_words'].to_i} Wörter. Nur du und deine Lehrkraft können die Antwort lesen.</div>"
                 end
+            when 'submit'
+                if check['pick']
+                    io << "<label class='task-pick-label' for='#{h.(field)}-pick'>Welche Datei gibst du ab?</label>"
+                    io << "<select class='form-select task-input task-pick' id='#{h.(field)}-pick' name='answer' data-pick='#{h.(check['pick'])}'>"
+                    io << "<option value=''>Datei aus #{h.(File.dirname(check['pick']))}/ wählen …</option></select>"
+                end
+                io << "<div class='task-reads'>#{reads_line(check, h)}</div>"
+            else
+                io << "<div class='task-reads'>#{reads_line(check, h)}</div>"
             end
             label = case
                 when type == 'reflection' then 'Speichern'
+                when type == 'submit' then 'Abgeben'
                 when task['prediction'] then 'Vermutung abgeben'
                 else 'Prüfen'
             end
@@ -100,6 +110,29 @@ module TaskCard
         io << "<div class='task-login-note'><a href='/login'>Melde dich an</a>, damit der Workspace deine Antwort prüfen und speichern kann.</div>" if runs
         io << '</section>'
         io
+    end
+
+    # Which files a Workspace check reads or copies, with their real paths
+    # (rule 5: addresses stay visible).
+    def self.reads_line(check, h)
+        path = ->(rel) { "<code>/workspace/#{h.(rel)}</code>" }
+        size = ->(text) { h.(text.to_s.sub(/\A(\d+(?:\.\d+)?)\s*(B|kB|MB)\z/, '\\1 \\2')) }
+        case check['type']
+        when 'files' then "Sieht nach in #{path.(check['path'])}"
+        when 'html', 'css' then "Liest #{path.(check['file'])}"
+        when 'references'
+            files = (check['scan'] || []).map { |f| path.("#{check['root']}/#{f}") }
+            "Liest #{files.join(' und ')}"
+        when 'git' then "Liest <code>git status</code> in #{path.(check['repo'])}, ändert nichts"
+        when 'submit'
+            if check['pick']
+                "Kopiert die gewählte Datei, höchstens #{size.(check['max_size'] || '20MB')}"
+            else
+                without = (check['exclude'] || []).map { |e| "<code>#{h.(File.basename(e))}</code>" }
+                "Kopiert #{(check['paths'] || []).map { |p| path.(p) }.join(', ')}#{without.empty? ? '' : " ohne #{without.join(', ')}"}, höchstens #{size.(check['max_size'] || '20MB')}"
+            end
+        else ''
+        end
     end
 
     # Shown where _task(id) names a task that tasks.yaml does not have.

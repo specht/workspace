@@ -1,4 +1,6 @@
 require 'minitest/autorun'
+require 'tmpdir'
+require 'fileutils'
 require_relative '../include/task_check'
 
 class TaskCheckTest < Minitest::Test
@@ -122,9 +124,65 @@ class TaskCheckTest < Minitest::Test
     end
 
     def test_types_from_later_milestones_are_unavailable
-        result = TaskCheck.check(tcpip['spiel-2048'], 'x', variables: {})
+        result = TaskCheck.check(tcpip['entfernungen'], 'x', variables: {})
         assert_equal :unavailable, result.status
         refute result.counts?
+    end
+
+    def test_workspace_checks_need_a_workspace
+        result = TaskCheck.check(tcpip['spiel-2048'], '', variables: {})
+        assert_equal :unavailable, result.status
+        assert_equal TaskCheck::NO_WORKSPACE, result.message
+    end
+
+    def with_workspace
+        Dir.mktmpdir do |tmp|
+            FileUtils.mkdir_p(File.join(tmp, 'shower.js'))
+            File.write(File.join(tmp, 'shower.js', 'index.html'), "<section class='slide'><h2>A</h2></section>")
+            yield tmp, WorkspaceFiles.new(tmp)
+        end
+    end
+
+    def test_file_check_results_and_feedback_by_problem
+        with_workspace do |tmp, ws|
+            result = TaskCheck.check(showerjs['vorlage'], '', variables: {}, workspace: ws)
+            assert_equal :correct, result.status
+            assert_includes result.read, 'index.html'
+            task = tcpip['spiel-2048']
+            result = TaskCheck.check(task, '', variables: {}, workspace: ws)
+            assert_equal :wrong, result.status
+            assert_equal :missing, result.problem
+            task = task.merge('feedback' => [{ 'when' => { 'problem' => 'missing' }, 'say' => 'Erst übersetzen.' }])
+            assert_equal 'Erst übersetzen.', TaskCheck.check(task, '', variables: {}, workspace: ws).message
+        end
+    end
+
+    def test_git_check_uses_the_state_from_the_container
+        task = { 'id' => 'push', 'check' => { 'type' => 'git', 'repo' => 'sandbox', 'expect' => { 'pushed' => true } } }
+        with_workspace do |tmp, ws|
+            # Missing folder: no need to ask the container.
+            result = TaskCheck.check(task, '', variables: {}, workspace: ws, git: ->(_) { flunk 'not asked' })
+            assert_equal :no_repo, result.problem
+            FileUtils.mkdir_p(File.join(tmp, 'sandbox'))
+            assert_equal :unavailable, TaskCheck.check(task, '', variables: {}, workspace: ws, git: ->(_) { nil }).status
+            state = GitCheck.parse("COUNT 2\nREMOTE origin\nSTATUS ## main...origin/main [ahead 1]\n")
+            result = TaskCheck.check(task, '', variables: {}, workspace: ws, git: ->(repo) { assert_equal 'sandbox', repo; state })
+            assert_equal :not_pushed, result.problem
+            assert_includes result.read, '1 noch nicht gepusht'
+        end
+    end
+
+    def test_submit_plans_and_does_not_count_refusals
+        with_workspace do |tmp, ws|
+            result = TaskCheck.check(showerjs['abgabe'], '', variables: {}, workspace: ws)
+            assert_equal :sent, result.status
+            assert_equal ['shower.js/index.html'], result.plan.files.map { |f| f[:path] }
+            assert_includes result.read, '1 Datei'
+            File.write(File.join(tmp, 'shower.js', 'index.html'), "<section>\n<div>\n</section>")
+            result = TaskCheck.check(showerjs['abgabe'], '', variables: {}, workspace: ws)
+            assert_equal :invalid, result.status
+            refute result.counts?
+        end
     end
 
     def test_codeword_is_stable_and_personal

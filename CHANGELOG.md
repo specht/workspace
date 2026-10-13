@@ -45,6 +45,18 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Aufgaben sind für Lernende ausgeschaltet, bis eine Installation
   `TASKS_ENABLED = true` in `credentials.rb` setzt. Lehrkräfte sehen sie
   vorher schon als Vorschau.
+- Aufgaben, die im Workspace nachsehen: `files` (Dateien, Formate,
+  Dateinamen, Größen), `html` (Tags passen zusammen, Folien, Bilder mit
+  `alt`), `css` (Klammern, Doppelpunkte, Semikolons, eigene Regeln),
+  `references` (nichts aus dem Netz, alle Pfade stimmen) und `git`
+  (committet und gepusht?). Die Rückmeldung nennt Datei und Zeile und zeigt,
+  was gelesen wurde. Der Server folgt dabei keinen symbolischen Links und
+  führt Git nur im Workspace der Person aus, nur lesend.
+- Abgaben (`submit`): eine Kopie der genannten Dateien als `.tar.gz` unter
+  `/internal/submissions/`; Lernende laden sie herunter, geben neu ab oder
+  löschen sie.
+- Alle elf Aufgaben in »Eine Präsentation in HTML erstellen« und die
+  2048-Aufgabe in »TCP/IP-Verbindungen« stehen jetzt auf der Seite.
 - Neue Neo4j-Knoten `TaskState` und `TaskAttempt` (Constraint
   `TaskState/key`, Index `TaskAttempt/task`); sie werden beim Start von selbst
   angelegt.

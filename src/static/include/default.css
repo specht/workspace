@@ -1658,6 +1658,48 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     margin-top: 0.5em;
 }
 
+.task-reads,
+.task-submission,
+.task-pick-label {
+    font-size: 90%;
+    color: #5c636a;
+    margin: 0.3em 0;
+}
+
+.task-pick {
+    max-width: 24em;
+}
+
+.task-warnings {
+    margin: 0.5em 0 0;
+    padding-left: 1.2em;
+}
+
+.task-read {
+    margin-top: 0.5em;
+    font-size: 90%;
+}
+
+.task-read > summary {
+    cursor: pointer;
+    color: #5c636a;
+}
+
+.task-read pre {
+    margin: 0.4em 0;
+    font-size: 90%;
+}
+
+.task-read pre code {
+    padding: 0;
+    background: none;
+    color: inherit;
+}
+
+.task-read p:last-child {
+    margin-bottom: 0;
+}
+
 .task-later {
     color: #5c636a;
     font-style: italic;

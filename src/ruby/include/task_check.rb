@@ -1,16 +1,22 @@
 require 'openssl'
 require 'uri'
 require_relative 'task_spec'
+require_relative 'file_checks'
+require_relative 'git_check'
+require_relative 'submission_store'
 
 # Checks a student's answer to a task (docs/aufgaben.md, »Prüfen«).
 #
-# Only the types that need nothing but the answer itself run here: answer,
-# choice, number and reflection. Everything that looks into the Workspace
-# comes in M3. This module never touches Neo4j, Docker or HTTP; the caller
-# passes in the values of ${...} variables it could find out.
+# answer, choice, number and reflection need only the answer. files, html,
+# css and references read the student's Workspace folder through
+# WorkspaceFiles; git gets the repository state from the caller (read inside
+# the container); submit plans a copy that the caller then stores. This
+# module never touches Neo4j, Docker or HTTP itself.
 module TaskCheck
+    ANSWER_TYPES = %w[answer choice number reflection].freeze
+    FILE_TYPES = %w[files html css references].freeze
     # Types this version can check.
-    RUNS = %w[answer choice number reflection].freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit]).freeze
 
     # status:
     #   :correct, :wrong   – checked; counts as an attempt
@@ -21,7 +27,11 @@ module TaskCheck
     #                        running, type not available yet); does not count
     # message:  Markdown for the student
     # solution: Markdown, only with :correct and if the task has one
-    Result = Struct.new(:status, :message, :solution, keyword_init: true) do
+    # read:     Markdown, what a Workspace check actually read
+    # warnings: Markdown hints that do not make the task fail
+    # problem:  code of what was missing (file checks)
+    # plan:     the files a submit check will copy (SubmissionStore::Plan)
+    Result = Struct.new(:status, :message, :solution, :read, :warnings, :problem, :plan, keyword_init: true) do
         def counts?
             %i[correct wrong sent].include?(status)
         end
@@ -39,13 +49,20 @@ module TaskCheck
         Yak Zebra Elch Falke Kranich Pinguin Schnecke Taube
     ].freeze
 
-    def self.check(task, answer, variables: {})
+    NO_WORKSPACE = 'Dein Workspace-Ordner ist noch leer. Öffne den Workspace einmal, dann kann ich nachsehen.'
+    NOT_RUNNING = 'Starte zuerst deinen Workspace. Den Stand von Git liest der Workspace in deinem laufenden Workspace.'
+
+    # workspace: WorkspaceFiles for the student's folder, or nil if there is none
+    # git:       lambda(repo) -> GitCheck.parse result, or nil if the Workspace
+    #            is not running
+    def self.check(task, answer, variables: {}, workspace: nil, git: nil)
         check = task['check']
         type = check['type']
         unless RUNS.include?(type)
             return Result.new(:status => :unavailable,
                 :message => 'Diese Aufgabe kann der Workspace noch nicht selbst prüfen. Zeig dein Ergebnis deiner Lehrkraft.')
         end
+        return check_workspace(task, check, answer, workspace, git) unless ANSWER_TYPES.include?(type)
 
         missing = variables_used(check).reject { |name| variables[name].is_a?(String) && !variables[name].empty? }
         unless missing.empty?
@@ -69,6 +86,48 @@ module TaskCheck
                 'Das stimmt noch nicht.'
         end
         result
+    end
+
+    # files, html, css, references, git and submit.
+    def self.check_workspace(task, check, answer, workspace, git)
+        type = check['type']
+        return Result.new(:status => :unavailable, :message => NO_WORKSPACE) if workspace.nil?
+
+        if type == 'submit'
+            begin
+                plan = SubmissionStore.plan(workspace, check, :picked => answer.to_s.strip)
+            rescue SubmissionStore::Refused => e
+                return Result.new(:status => :invalid, :message => e.message, :problem => e.problem)
+            end
+            message = "Abgegeben. Deine Lehrkraft sieht genau diesen Stand. Du kannst jederzeit neu abgeben oder die Abgabe löschen."
+            return Result.new(:status => :sent, :message => message, :plan => plan,
+                :read => SubmissionStore.describe(plan.files, plan.total), :warnings => plan.notes)
+        end
+
+        if type == 'git'
+            repo = check['repo']
+            state = if %i[missing].include?(workspace.entry(repo)[:type])
+                { :repo => false, :git => false }
+            else
+                git&.call(repo)
+            end
+            return Result.new(:status => :unavailable, :message => NOT_RUNNING) if state.nil?
+
+            ok, problem, message = GitCheck.evaluate(repo, check['expect'] || {}, state)
+            outcome = FileChecks::Outcome.new(:ok => ok, :problem => problem, :message => message,
+                :read => GitCheck.describe(repo, state), :warnings => [])
+        else
+            outcome = FileChecks.send(type, check, workspace)
+        end
+
+        if outcome.ok
+            Result.new(:status => :correct, :message => 'Passt.', :solution => task['solution'],
+                :read => outcome.read, :warnings => outcome.warnings || [])
+        else
+            say = (task['feedback'] || []).find { |entry| entry['when']['problem'].to_s == outcome.problem.to_s }
+            Result.new(:status => :wrong, :message => say ? say['say'] : outcome.message, :problem => outcome.problem,
+                :read => outcome.read, :warnings => outcome.warnings || [])
+        end
     end
 
     # Names of the ${...} variables a check uses.

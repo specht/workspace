@@ -190,6 +190,8 @@ Das Spiel ist jetzt kompiliert und kann mit dem Befehl `./2048` ausgeführt werd
 
 Du kannst das Spiel mit den Pfeiltasten steuern und mit <kbd>Strg</kbd><kbd>C</kbd> beenden.
 
+_task(spiel-2048)
+
 ## Mit APIs interagieren
 
 <div class='hint books'>

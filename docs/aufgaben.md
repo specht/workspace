@@ -298,12 +298,17 @@ check:
     pushed: true
 ```
 
-Liest nur: `git status --porcelain --branch` im Workspace. Die Rückmeldung
-nennt den Stand und den nächsten Schritt mit den echten Dateinamen, zum
-Beispiel: »3 Dateien geändert, aber nicht committet: `structures/lena/…`.
-Im Terminal: `git add -A` und `git commit -m "…"`. Danach `git push`.«
+Liest nur, und zwar im laufenden Workspace der Person, als diese Person:
+`git status --porcelain --branch`, `git remote` und die Zahl der Commits
+(`src/ruby/include/git_check.rb`). `GIT_OPTIONAL_LOCKS=0` verhindert, dass
+dabei auch nur der Index neu geschrieben wird. Der Server selbst führt nie Git
+auf einem Repository von Lernenden aus. Die Rückmeldung nennt den Stand und den
+nächsten Schritt mit den echten Dateinamen, zum Beispiel: »3 Dateien sind
+geändert, aber nicht committet: `lena/stack.py`, … Im Terminal, im Ordner
+`structures`: `git add -A` und `git commit -m "…"`. Danach `git push`.«
 `pushed` vergleicht mit dem zuletzt bekannten Stand des Remotes; die Prüfung
-holt nichts aus dem Netz.
+holt nichts aus dem Netz. Ist der Workspace aus, sagt die Karte das, statt zu
+raten.
 
 ### submit
 
@@ -319,7 +324,12 @@ check:
 
 Der Server kopiert die Dateien beim Abgeben. Lernende sehen ihre Abgabe, geben
 jederzeit neu ab und können sie löschen. Repositories werden dabei nicht
-angefasst.
+angefasst. Bei `pick` wählen Lernende auf der Karte eine der passenden Dateien
+aus ihrem Workspace. `requires: { html_parses: true }` lehnt eine Abgabe ab,
+deren HTML-Dateien nicht zusammenpassende Tags haben, und nennt die Zeile.
+`scene_loads` und `min_objects` prüft der Workspace erst mit `scene`; bis dahin
+nimmt er die Abgabe an und sagt das dazu. Die Galerie (`gallery: true`) kommt
+mit der Klassenübersicht.
 
 ### measure, command, scene
 
@@ -352,9 +362,13 @@ tasks:
     prompt: Dein Stand ist committet und gepusht, damit deine Lehrkraft ihn in »Class progress« sieht.
     check:
       type: git
-      repo: data-structures-sandbox
+      repo: data-structures-sandbox/structures
       expect: { has_remote: true, committed: true, pushed: true }
 ```
+
+`repo` ist das Klassen-Repository `structures` im Sandbox-Ordner, nicht die
+Sandbox selbst. Die Prüfung hilft nur, wenn die Lernenden im Workspace
+arbeiten; auf dem eigenen Rechner kann der Workspace nichts lesen.
 
 Im Klassenboard sieht die Lehrkraft dann nicht nur, wer gepusht hat, sondern
 auch, wer Änderungen hat und nie gepusht hat, und warum.
@@ -371,8 +385,47 @@ Die Karte enthält nie, wogegen geprüft wird: `expect`, `correct` und
 `solution` bleiben auf dem Server. Die Lösung kommt erst nach einer richtigen
 Antwort mit der Rückmeldung.
 
-Seit M2 prüft der Workspace `answer`, `choice`, `number` und `reflection`.
-Karten anderer Arten zeigen bis M3 »Zeig dein Ergebnis deiner Lehrkraft«.
+Der Workspace prüft `answer`, `choice`, `number` und `reflection` (seit M2)
+sowie `files`, `html`, `css`, `references`, `git` und `submit` (seit M3).
+Karten der übrigen Arten zeigen »Zeig dein Ergebnis deiner Lehrkraft«.
+
+Karten, die im Workspace nachsehen, nennen unter dem Text die echten Pfade, die
+sie lesen (»Liest `/workspace/shower.js/index.html`«). Die Rückmeldung nennt
+Datei und Zeile, und unter »Was der Workspace gelesen hat« steht, was die
+Prüfung gefunden hat: eine Liste der Dateien mit Größe und Format, die Folien
+mit ihren Überschriften, die Bilder mit `src` und `alt`, die Ausgabe von
+`git status`.
+
+### Wie Dateien gelesen werden
+
+Der Server liest den Workspace-Ordner direkt (`/user/<tag>/workspace`), auch
+wenn der Workspace aus ist, über `src/ruby/include/workspace_files.rb`:
+
+- Pfade dürfen nicht absolut sein und kein `..` enthalten.
+- Symbolische Links werden nie verfolgt, auch nicht in Ordnern auf dem Weg.
+  Eine Karte sagt dann: »… ist ein symbolischer Link. Links liest der
+  Workspace nicht.«
+- Nach dem Öffnen fragt der Server den Kernel, welche Datei er wirklich
+  geöffnet hat, und liest sie nur, wenn sie im Workspace liegt.
+- Dateien werden höchstens bis 2 MB gelesen. Bilder werden nicht dekodiert;
+  ihr Format erkennt der Server an den ersten Bytes.
+
+HTML und CSS liest ein eigener, kleiner Parser (`html_lite.rb`,
+`css_lite.rb`). Er ist absichtlich strenger als ein Browser und nennt die
+Zeile, in der Tags oder Klammern nicht zusammenpassen.
+
+### Problem-Codes
+
+Mit `feedback: [{ when: { problem: <code> }, say: … }]` ersetzt eine Aufgabe
+die eingebaute Rückmeldung für einen Fall.
+
+| Art | Codes |
+| --- | --- |
+| `files` | `missing`, `symlink`, `wrong_type`, `wrong_format`, `not_executable`, `no_new_files`, `bad_name`, `format_mismatch`, `too_big` |
+| `html` | `missing`, `parse_error`, `no_slides`, `first_slide_unchanged`, `too_few_slides`, `slide_without_heading`, `too_few_images`, `alt_missing`, `image_case`, `image_missing` |
+| `css` | `missing`, `marker_missing`, `parse_error`, `too_few_rules` |
+| `references` | `missing`, `external`, `outside_root`, `local_missing` |
+| `git` | `no_repo`, `not_git`, `no_remote`, `too_few_commits`, `uncommitted`, `detached`, `no_upstream`, `not_pushed` |
 
 ### Einschalten
 
@@ -409,7 +462,10 @@ In Neo4j, nur für Antworten, die zählen:
 - `(:TaskAttempt)-[:BY]->(:User)` pro Versuch: Aufgabe, Version, Status und
   Zeitpunkt, ohne den Text der Antwort. Daraus entsteht in M4 die Übersicht
   für die Klasse.
-- Ab M3: Abgaben als Kopie der genannten Dateien.
+- Abgaben (seit M3) als `.tar.gz` unter `/internal/submissions/`, benannt nach
+  dem Schlüssel des `TaskState`. Eine neue Abgabe ersetzt die alte erst, wenn
+  sie vollständig geschrieben ist. Symbolische Links werden nicht mit
+  abgegeben. Lernende laden ihre Abgabe auf der Karte herunter.
 
 Sehen können das nur die Person selbst und ihre Lehrkräfte (ab M4 in der
 Übersicht der Klasse). Lernende löschen

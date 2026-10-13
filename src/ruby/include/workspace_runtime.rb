@@ -137,6 +137,17 @@ module WorkspaceRuntime
             sockets
         end
 
+        # Runs a fixed, read-only script in the student's container as the
+        # student (GitCheck::STATUS_SCRIPT) and returns its output, or nil if
+        # the container is not running. repo is a checked relative path.
+        def git_status(fs_tag, repo:, uid:, script:, timeout: nil)
+            return nil unless workspace_state(fs_tag, :timeout => timeout)[:running]
+
+            command = Shellwords.join(['docker', 'exec', '-u', uid, "hs_code_#{fs_tag}",
+                'sh', '-c', script, 'sh', "/workspace/#{repo}"])
+            @capture.call(command, :timeout => timeout, :allow_failure => true, :log_command => false)
+        end
+
         def live_app_processes(fs_tag, uid:, timeout: nil)
             script = <<~'SH'
                 for p in /proc/[0-9]*; do
