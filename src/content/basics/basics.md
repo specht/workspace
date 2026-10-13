@@ -153,6 +153,7 @@ left-sidebar-width: 400
 click: Checkpoints
 move-mouse: selector:.pane-header a[aria-label="Checkpoint erstellen"]
 sleep: 1.5
+show-mouse
 -->
 
 <img src='create-checkpoint.webp' class='full' alt=''>
@@ -185,6 +186,7 @@ Falls du später zu einem Checkpoint zurückkehren möchtest, klicke auf den ent
 move-mouse: Checkpoint 1
 move-mouse: selector:a[aria-label="Diesen Checkpoint wiederherstellen"]
 sleep: 1.5
+show-mouse
 -->
 
 <img src='restore-checkpoint.webp' class='full' alt=''>
