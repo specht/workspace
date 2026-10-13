@@ -96,9 +96,12 @@ Du solltest einen Würfel sehen, der in der Mitte des Bildschirms schwebt. Benut
 # erste Vorschau: der Würfel aus scene.ini, mit Anaglyph-Farben
 go-live
 tab: preview
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
 click: Anaglyph 3D
-move-mouse: selector:canvas
+move-mouse: selector:canvas#defaultCanvas0
 sleep: 0.5
+hook: camera 20 20 -420
 crop-top: 27%
 crop-bottom: 27%
 -->
@@ -128,6 +131,9 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: camera 20 20 -450
 crop-top: 27%
 crop-bottom: 27%
 -->
@@ -167,6 +173,9 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: camera 20 20 -450
 crop-top: 27%
 crop-bottom: 27%
 -->
@@ -189,6 +198,9 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: camera 20 20 -450
 crop-top: 27%
 crop-bottom: 27%
 -->
@@ -214,6 +226,9 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: camera 20 20 -420
 crop-top: 27%
 crop-bottom: 27%
 -->
@@ -270,8 +285,11 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
-crop-top: 27%
-crop-bottom: 27%
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: camera 30 -45 -550 50 40 50
+crop-top: 16%
+crop-bottom: 16%
 -->
 
 <div style='text-align: center; margin: 1em 0;'>
@@ -306,6 +324,9 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: camera 20 20 -430
 crop-top: 27%
 crop-bottom: 27%
 -->
@@ -342,6 +363,9 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: camera 20 20 -420
 crop-top: 27%
 crop-bottom: 27%
 -->
@@ -389,6 +413,9 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: camera 20 20 -400
 crop-top: 27%
 crop-bottom: 27%
 -->
@@ -414,6 +441,9 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: camera 20 20 -560
 crop-top: 27%
 crop-bottom: 27%
 -->
@@ -442,6 +472,9 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: camera 20 20 -450
 crop-top: 27%
 crop-bottom: 27%
 -->
@@ -472,6 +505,9 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: camera 20 20 -450 50 35 0
 crop-top: 27%
 crop-bottom: 27%
 -->
@@ -497,6 +533,9 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: camera 20 20 -450 50 35 0
 crop-top: 27%
 crop-bottom: 27%
 -->
@@ -549,6 +588,9 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: camera 20 20 -450
 crop-top: 27%
 crop-bottom: 27%
 -->
@@ -621,7 +663,7 @@ rotate = 0, t * 30, 0
 
 In diesem Beispiel wird der Torus um 30 Grad pro Sekunde um die Y-Achse gedreht. Das bedeutet, dass er nach 3 Sekunden 90 Grad geschafft hat und nach 12 Sekunden eine volle Umdrehung gemacht hat.
 
-<!-- tutorial-screenshot
+<!-- paused tutorial-screenshot
 # Ring, der sich dreht (eine halbe Umdrehung, dann sieht er wieder gleich aus)
 write-file: scene.ini <- previous-code
 sleep: 1
@@ -645,7 +687,7 @@ shape = box
 rotate = cos(t * 2) * 10, 0, sin(t * 3) * 10
 ```
 
-<!-- tutorial-screenshot
+<!-- paused tutorial-screenshot
 # wackelnder Würfel (cos(2t) und sin(3t) wiederholen sich nach 2π Sekunden)
 write-file: scene.ini <- previous-code
 sleep: 1
@@ -661,7 +703,7 @@ record: 6.28s
 
 **Aufgabe:** Erstelle eine Animation, bei der eine gelbe Sonne in der Mitte steht und eine blaue Erde um die Sonne kreist. Ein weißer Mond soll dabei um die Erde kreisen, und der Hintergrund ist schwarz wie das Weltall:
 
-<!-- tutorial-screenshot
+<!-- paused tutorial-screenshot
 # Sonne, Erde, Mond: eine Erdumrundung dauert 12 Sekunden
 write-file: scene.ini <- file:sonnensystem.ini
 sleep: 1
@@ -691,6 +733,10 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: anaglyph off
+hook: camera 20 20 -420
 crop-top: 27%
 crop-bottom: 27%
 -->
@@ -714,6 +760,10 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: anaglyph off
+hook: camera 20 20 -420
 crop-top: 27%
 crop-bottom: 27%
 -->
