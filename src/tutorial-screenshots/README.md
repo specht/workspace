@@ -243,7 +243,9 @@ show-mouse
 ```
 
 `wait-for-text` waits up to 30 seconds until the selected page contains the given
-visible text. Whitespace is normalized before matching. `wait-for-input-value`
+visible text, including the text of its frames (VS Code webviews such as the
+ER-Werkstatt or the Markdown preview are iframes). Whitespace is normalized
+before matching. `wait-for-input-value`
 performs the same kind of readiness check against visible `<input>` and
 `<textarea>` values. The latter is useful for VS Code Quick Input because input
 values are not part of `document.body.innerText`.

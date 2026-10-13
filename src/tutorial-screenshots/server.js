@@ -842,11 +842,21 @@ async function ensureBrowser() {
                 'EXCLUDE localhost',
             ].join(',');
             console.log(`Tutorial screenshot browser routing: ${hostRules}`);
+            // Development runs on plain http. VS Code webviews (the ER-Werkstatt,
+            // the Markdown preview) need a service worker, which browsers allow
+            // only in a secure context; students on https have one.
+            // A Workspace's subdomain changes with every reset: a hostname
+            // pattern (no scheme, no port) covers all of them.
+            const secureOrigins = `${new URL(BASE_URL).origin},*.${hostname}`;
 
             return chromium.launch({
                 headless: true,
+                // The full Chromium in headless mode, not chrome-headless-shell:
+                // only it honours --unsafely-treat-insecure-origin-as-secure.
+                channel: 'chromium',
                 args: [
                     `--host-resolver-rules=${hostRules}`,
+                    `--unsafely-treat-insecure-origin-as-secure=${secureOrigins}`,
 
                     // Give headless Chromium a software-backed WebGL implementation.
                     // This lets VS Code/xterm use its WebGL renderer even without a GPU.
@@ -2104,17 +2114,26 @@ async function removeMousePointer(page) {
     });
 }
 
+// Frames count too: VS Code shows webviews (the ER-Werkstatt, the Markdown
+// preview) in iframes, whose text the page's own body does not contain.
 async function waitForText(text, targetTab) {
     const page = requirePageForTab(targetTab, 'wait-for-text');
+    const containsText = expected => {
+        const normalize = value => `${value || ''}`.replace(/\s+/g, ' ').trim();
+        return normalize(document.body?.innerText).includes(normalize(expected));
+    };
 
-    await page.waitForFunction(
-        expected => {
-            const normalize = value => `${value || ''}`.replace(/\s+/g, ' ').trim();
-            return normalize(document.body?.innerText).includes(normalize(expected));
-        },
-        text,
-        { timeout: WAIT_FOR_TEXT_TIMEOUT_MS },
-    );
+    const deadline = Date.now() + WAIT_FOR_TEXT_TIMEOUT_MS;
+    for (;;) {
+        for (const frame of page.frames()) {
+            // A frame may go away while it is being read.
+            if (await frame.evaluate(containsText, text).catch(() => false)) return;
+        }
+        if (Date.now() > deadline) {
+            throw new Error(`wait-for-text: ${JSON.stringify(text)} did not appear within ${WAIT_FOR_TEXT_TIMEOUT_MS / 1000} s`);
+        }
+        await page.waitForTimeout(200);
+    }
 }
 
 async function waitForInputValue(text, targetTab) {
