@@ -44,6 +44,13 @@ echo '=== Building code-server candidate ==='
 bash docker/code/check-root-space.sh
 docker build -t hs_code_server:candidate docker/code
 
+echo '=== Checking the bundled VS Code extensions in the candidate ==='
+# svc-code-server-run only warns about a missing VSIX when a Workspace starts,
+# so a version bump that misses it would silently drop the extension.
+docker run --rm --entrypoint /bin/sh hs_code_server:candidate -c \
+    'for vsix in "$@"; do test -f "$vsix" || { echo "Missing in the image: $vsix (docker/code/svc-code-server-run)" >&2; exit 1; }; done' \
+    sh $(grep -o '/app/extensions/[^|]*\.vsix' docker/code/svc-code-server-run)
+
 echo '=== Verifying the LaTeX tutorial in the candidate ==='
 docker run --rm --user 0 --entrypoint /bin/bash \
     -e HOME=/tmp \

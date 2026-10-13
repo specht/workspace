@@ -265,4 +265,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Das Workspace-Image enthält `neo4j_bolt` (Gem, Version im Dockerfile als
   `NEO4J_BOLT_VERSION`). Neu bauen mit `build-image.sh`.
 - Neue ER-Werkstatt `hackschule-er-0.2.0.vsix`: Workspace-Image neu bauen.
+- `build-image.sh` bricht ab, bevor es `hs_code_server:latest` taggt, wenn eine
+  `.vsix` aus `docker/code/svc-code-server-run` im Image fehlt. Bisher startete
+  ein Workspace dann still ohne die Erweiterung.
 

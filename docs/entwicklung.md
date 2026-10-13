@@ -102,8 +102,12 @@ Ins Workspace-Image kommt eine neue `.vsix` so:
 2. In `build-image.sh` die `cp`-Zeile auf den neuen Dateinamen setzen.
 3. In `docker/code/Dockerfile` die passende `ARG …_VERSION` oben anpassen
    (z. B. `HACKSCHULE_ER_VERSION`).
-4. `./build-image.sh`. Das Skript baut zuerst einen Kandidaten, prüft das
-   LaTeX-Tutorial darin und taggt erst dann `hs_code_server:latest`.
+4. In `docker/code/svc-code-server-run` den Dateinamen in `EXTENSIONS`
+   anpassen. Dieses Skript installiert die Erweiterung beim Start des
+   Workspaces; fehlt die Datei, überspringt es sie nur mit einer Warnung.
+5. `./build-image.sh`. Das Skript baut zuerst einen Kandidaten, prüft, ob jede
+   `.vsix` aus `svc-code-server-run` darin liegt, prüft das LaTeX-Tutorial und
+   taggt erst dann `hs_code_server:latest`.
 
 Zum schnellen Ausprobieren ohne neues Image: in einem laufenden Workspace
 »Extensions« → »…« → »Install from VSIX…« und die Datei auswählen.
