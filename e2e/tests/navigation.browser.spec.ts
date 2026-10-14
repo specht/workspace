@@ -6,7 +6,7 @@ import { loginAsE2eUser } from './workspace';
 // order.
 test('the bar at the top leads back to the start page', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
-  for (const path of ['/feuerwerk', '/reference']) {
+  for (const path of ['/feuerwerk', '/reference/farben']) {
     await page.goto(path);
     const bar = page.locator('nav.autotoc');
     await expect(bar).toHaveJSProperty('inert', true);
@@ -18,4 +18,9 @@ test('the bar at the top leads back to the start page', async ({ page, e2eEmail 
   }
   // Not on the start page itself.
   await expect(page.locator('nav.autotoc .autotoc-home')).toHaveCount(0);
+  // No bar on the Handbuch overview.
+  await page.goto('/reference');
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await page.waitForTimeout(500);
+  await expect(page.locator('nav.autotoc')).toHaveClass(/hidden/);
 });

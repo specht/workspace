@@ -314,11 +314,14 @@ function install_autotoc() {
 
     // Every page gets the bar once its header has scrolled away: the way
     // back to the start page, and the chapters or else the page's title.
-    // Not on the start page itself: there is nowhere to go back to.
+    // Not on the start page itself: there is nowhere to go back to. The
+    // Handbuch overview has its own search and cards; a bar would only
+    // repeat its title.
     if (window.location.pathname === '/') {
         autotoc.find('.autotoc-home').remove();
         if (!got_autotoc) return;
     }
+    if (window.location.pathname === '/reference' && !got_autotoc) return;
     if (!got_autotoc) {
         const h1 = document.querySelector('.container h1, h1');
         autotoc.addClass('autotoc-no-items');
