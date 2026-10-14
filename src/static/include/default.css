@@ -1494,6 +1494,105 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     display: block;
 }
 
+/* Handed-in Anaglyph scenes (anaglyph_preview.js): the picture on the task
+   card, the class gallery and the full-size view */
+
+.task-scene-preview {
+    margin: 0.8em 0;
+}
+
+.task-scene-preview img {
+    display: block;
+    width: 100%;
+    max-width: 32em;
+    aspect-ratio: 16 / 10;
+    border: 1px solid rgba(var(--bs-body-color-rgb), 0.15);
+    border-radius: 0.3em;
+    background: rgba(var(--bs-body-color-rgb), 0.05);
+    margin-bottom: 0.4em;
+}
+
+.task-scene-preview-status {
+    font-size: 0.85em;
+    opacity: 0.75;
+}
+
+.scene-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16em, 1fr));
+    gap: 1em;
+    margin: 1em 0 2em;
+}
+
+.scene-gallery-item {
+    margin: 0;
+}
+
+.scene-gallery-item button {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 1px solid rgba(var(--bs-body-color-rgb), 0.15);
+    border-radius: 0.3em;
+    background: rgba(var(--bs-body-color-rgb), 0.05);
+    overflow: hidden;
+    cursor: zoom-in;
+}
+
+.scene-gallery-item img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+}
+
+.scene-gallery-item figcaption {
+    margin-top: 0.3em;
+    font-size: 0.9em;
+}
+
+.scene-gallery-failed figcaption::after {
+    content: ' · ließ sich nicht zeichnen';
+    opacity: 0.7;
+}
+
+.scene-gallery-errors figcaption::after {
+    content: ' · der Viewer meldet Fehler';
+    opacity: 0.7;
+}
+
+.scene-present {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    background: #111;
+}
+
+.scene-present-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.4em 0.6em;
+    color: #eee;
+}
+
+.scene-present-name {
+    font-weight: 600;
+}
+
+.scene-present-space {
+    flex: 1;
+}
+
+.scene-present-frame {
+    flex: 1;
+    width: 100%;
+    border: 0;
+    background: #fff;
+}
+
 /* Image and video variants (media_variants.js): the toggles in the corner
    (the glasses for anaglyph pictures, the tube screen for CRT pictures) */
 

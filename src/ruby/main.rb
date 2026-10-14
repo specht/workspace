@@ -11,6 +11,7 @@ require './include/class_board.rb'
 require './include/student_home.rb'
 require './include/reference_index.rb'
 require './include/template_freshness.rb'
+require './include/anaglyph_viewer.rb'
 require './include/atomic_file.rb'
 require './include/authentication.rb'
 require './include/database_provisioning.rb'
@@ -3749,8 +3750,10 @@ class Main < Sinatra::Base
         end
         # Text that only stands in for the cards (an exercise list) is hidden
         # while the cards are shown.
+        previews = tasks[:on_page].any? { |id| (tasks[:by_id][id] || {}).dig('check', 'preview') == 'anaglyph' }
         "<style>.tasks-off-only { display: none; }</style>" \
             "<script>window.TASK_PAGE = #{config.to_json};</script>" \
+            "#{previews ? "<script src='/include/anaglyph_preview.js?#{CACHE_BUSTER}'></script>" : ''}" \
             "<script src='/include/tasks.js?#{CACHE_BUSTER}'></script>"
     end
 
@@ -3950,6 +3953,57 @@ class Main < Sinatra::Base
         end
     rescue StandardError => e
         STDERR.puts "sync_code_tasks #{codebite} #{email}: #{e.class}: #{e.message}"
+    end
+
+    # A submit task that shows its scenes with the Anaglyph viewer, or 404.
+    def anaglyph_preview_task(key)
+        found = find_task(key)
+        check = found && found[:task]['check']
+        halt 404 unless check && check['type'] == 'submit' && check['preview'] == 'anaglyph'
+        found
+    end
+
+    # Whose submission »who« is (ich: one's own, otherwise the state key), if
+    # the logged-in person may see it: their own, or one of a group they teach.
+    def anaglyph_submission_owner(task_key, who)
+        own = @session_user[:email]
+        return own if who == 'ich' || who == TaskStore.state_key(own, task_key)
+        Main.load_invitations()
+        class_groups.each do |group|
+            (@@group_members[group] || []).each do |email|
+                return email if TaskStore.state_key(email, task_key) == who
+            end
+        end
+        nil
+    end
+
+    # preview: anaglyph tasks on the class page: a picture of every handed-in
+    # scene (anaglyph_preview.js); a click shows the scenes full size.
+    def class_scene_galleries_html(activity_key, tasks, members)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        io = +''
+        tasks.each do |t|
+            found = find_task("#{activity_key}/#{t[:id]}")
+            check = found && found[:task]['check']
+            next unless check && check['type'] == 'submit' && check['preview'] == 'anaglyph'
+            handed_in = members.select { |m| File.file?(submission_path(found[:key], m[:email])) }
+            io << "<h3 class='scene-gallery-title'>Galerie: #{h.(t[:title])}</h3>"
+            if handed_in.empty?
+                io << "<p>Noch hat niemand eine Szene abgegeben.</p>"
+                next
+            end
+            io << "<p class='scene-gallery-note'>Jede Szene aus der Ansicht, die in ihrer Datei unter <code>camera = …</code> steht. Ein Klick zeigt sie groß; dort lässt sie sich drehen, und die Pfeiltasten blättern weiter.</p>"
+            io << "<div class='scene-gallery'>"
+            handed_in.each do |m|
+                scene = "abgaben/#{found[:key]}/#{TaskStore.state_key(m[:email], found[:key])}.ini"
+                io << "<figure class='scene-gallery-item' data-scene='#{h.(scene)}' data-name='#{h.(m[:name])}'>"
+                io << "<button type='button' title='Groß ansehen'><img alt='Die Szene von #{h.(m[:name])}'></button>"
+                io << "<figcaption>#{h.(m[:name])}</figcaption></figure>"
+            end
+            io << "</div>"
+        end
+        io << "<script src='/include/anaglyph_preview.js?#{CACHE_BUSTER}'></script>" unless io.empty?
+        io
     end
 
     def submission_path(task_key, email = @session_user[:email])
@@ -4221,6 +4275,7 @@ class Main < Sinatra::Base
         io << "<p class='class-board-link'><a href='/#{h.(@@content.find { |_, c| (c[:tasks] || {})[:activity] == activity_key }&.first)}'>#{h.(title)}</a> · #{members.size} Personen in #{h.(group)}</p>"
         io << ClassBoard.html(board, :activity => activity_key,
             :submission_url => lambda { |email, id| "/api/task/submission/#{activity_key}/#{id}?email=#{CGI.escape(email)}" })
+        io << class_scene_galleries_html(activity_key, tasks, members)
         io
     end
 
@@ -5084,6 +5139,56 @@ class Main < Sinatra::Base
         suffix = email == @session_user[:email] ? '' : "-#{email.split('@').first.gsub(/[^a-zA-Z0-9._-]/, '')}"
         respond_raw_with_mimetype_and_filename(File.binread(path), 'application/gzip',
             "#{params[:activity]}-#{params[:id]}#{suffix}.tar.gz")
+    end
+
+    # The Anaglyph viewer on the site (AnaglyphViewer, check option preview:
+    # anaglyph): pictures of handed-in scenes on the task card and in the class
+    # gallery. vorschau/ is the file someone is about to hand in, read from
+    # their Workspace; abgaben/ a handed-in scene (ich: one's own), for that
+    # person and the teachers of their groups. Everything else is the viewer
+    # itself and the Kenney kits it loads.
+    get '/anaglyph-viewer/*' do
+        assert(user_logged_in?)
+        rel = params['splat'].first.to_s
+        if (m = rel.match(%r{\Avorschau/([a-z0-9_-]+)/([^/]+)/([^/]+\.ini)\z}))
+            found = anaglyph_preview_task("#{m[1]}/#{m[2]}")
+            ws = task_workspace_files
+            halt 404 if ws.nil?
+            pick = found[:task]['check']['pick']
+            dir = File.dirname(pick)
+            path = dir == '.' ? m[3] : "#{dir}/#{m[3]}"
+            halt 404 unless SubmissionStore.candidates(ws, pick).include?(path)
+            text = begin
+                ws.read_text(path, max: 1_000_000)
+            rescue StandardError
+                nil
+            end
+            halt 404 if text.nil?
+            response.headers['Cache-Control'] = 'no-store'
+            respond_raw_with_mimetype(text, 'text/plain; charset=utf-8')
+        elsif (m = rel.match(%r{\Aabgaben/([a-z0-9_-]+)/([^/]+)/(ich|[0-9a-f]{32})\.ini\z}))
+            found = anaglyph_preview_task("#{m[1]}/#{m[2]}")
+            email = anaglyph_submission_owner(found[:key], m[3])
+            halt 404 if email.nil?
+            text = begin
+                AnaglyphViewer.scene_from_submission(submission_path(found[:key], email))
+            rescue StandardError
+                nil
+            end
+            halt 404 if text.nil?
+            response.headers['Cache-Control'] = 'no-store'
+            respond_raw_with_mimetype(text, 'text/plain; charset=utf-8')
+        else
+            path = begin
+                AnaglyphViewer.file(rel)
+            rescue StandardError => e
+                STDERR.puts "Anaglyph viewer: #{e.message}"
+                halt 503
+            end
+            halt 404 if path.nil?
+            response.headers['Cache-Control'] = 'public, max-age=3600'
+            respond_raw_with_mimetype(File.binread(path), AnaglyphViewer.mime(path))
+        end
     end
 
     # Teachers: run a Workspace task (TaskCheck::LIVE_TYPES) for

@@ -187,14 +187,17 @@ tasks:
   - id: galerie
     title: Ab in die Galerie
     prompt: |
-      Gib deine schönste Szene ab. Deine Lehrkraft sieht sie in der
-      Klassenübersicht. Du kannst jederzeit eine neue abgeben oder deine Abgabe
-      löschen.
+      Gib deine schönste Szene ab. In der Galerie deiner Klasse erscheint sie aus
+      der Ansicht, die in ihrer Zeile `camera = …` steht: Stell die Kamera in der
+      Vorschau ein, kopiere sie mit »Kamera kopieren« in die Datei, und prüfe
+      hier im Bild, wie die Szene aussehen wird. Du kannst jederzeit eine neue
+      abgeben oder deine Abgabe löschen.
     check:
       type: submit
       pick: anaglyph/*.ini
       max_size: 1MB
       gallery: true
+      preview: anaglyph
       requires:
         scene_loads: true
         min_objects: 5

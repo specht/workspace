@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   curl \
   tar \
   unzip \
+  wget \
   bzip2 \
   bash \
   tzdata \

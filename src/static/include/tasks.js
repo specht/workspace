@@ -45,9 +45,48 @@
         return input ? input.value : '';
     }
 
+    // preview: anaglyph (anaglyph_preview.js): a picture of the scene as the
+    // class gallery will show it, from its own camera line, with a button to
+    // look at it full size. scene is a path below /anaglyph-viewer/.
+    function showScenePreview(card, scene, caption) {
+        let box = card.querySelector('.task-scene-preview');
+        if (!scene || !window.AnaglyphPreview) {
+            if (box) box.remove();
+            return;
+        }
+        if (!box) {
+            box = document.createElement('div');
+            box.className = 'task-scene-preview';
+            card.querySelector('.task-actions').before(box);
+        }
+        const token = String(Date.now() + Math.random());
+        box.dataset.token = token;
+        box.innerHTML = '';
+        const text = document.createElement('p');
+        text.textContent = caption;
+        const img = document.createElement('img');
+        img.alt = 'Die Szene, wie die Galerie sie zeigt.';
+        const status = document.createElement('p');
+        status.className = 'task-scene-preview-status';
+        status.textContent = 'Die Szene wird gezeichnet …';
+        box.append(text, img, status);
+        window.AnaglyphPreview.picture(scene).then((result) => {
+            if (box.dataset.token !== token) return;
+            img.src = result.picture;
+            status.textContent = result.errors ? 'Der Viewer meldet Fehler in dieser Szene: ' + result.errors : '';
+        }).catch((error) => {
+            if (box.dataset.token !== token) return;
+            status.textContent = error.message;
+        });
+    }
+
     // What a submission holds, with a link to download it.
     function showSubmission(card, summary) {
         let box = card.querySelector('.task-submission');
+        if (card.dataset.preview === 'anaglyph') {
+            showScenePreview(card, summary ? 'abgaben/' + card.dataset.task + '/ich.ini' : null,
+                'Deine Abgabe, so wie sie in der Galerie erscheint:');
+        }
         if (!summary) {
             if (box) box.remove();
             return;
@@ -329,6 +368,14 @@
                 del.addEventListener('click', function () { remove(card); });
             }
             loadOptions(card);
+            const pick = card.querySelector('.task-pick');
+            if (pick && card.dataset.preview === 'anaglyph') {
+                pick.addEventListener('change', function () {
+                    if (!pick.value) return;
+                    showScenePreview(card, 'vorschau/' + card.dataset.task + '/' + pick.value.split('/').pop(),
+                        'Vorschau: So würde ' + pick.value.split('/').pop() + ' in der Galerie erscheinen.');
+                });
+            }
         });
         if (page.loggedIn) {
             loadStates();

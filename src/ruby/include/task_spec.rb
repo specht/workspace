@@ -339,7 +339,9 @@ module TaskSpec
                 end
             end
         when 'submit'
-            allowed += %w[paths pick exclude max_size gallery requires]
+            allowed += %w[paths pick exclude max_size gallery preview requires]
+            errors << 'preview knows anaglyph' if check.key?('preview') && check['preview'] != 'anaglyph'
+            errors << 'preview: anaglyph needs pick: …/*.ini' if check['preview'] == 'anaglyph' && !check['pick'].to_s.end_with?('.ini')
             errors.concat(path_errors(check['pick'], 'pick')) if check.key?('pick')
             errors << 'use either paths or pick' if check.key?('paths') && check.key?('pick')
             errors << 'paths must be a list' if check.key?('paths') && !string_list?(check['paths'])

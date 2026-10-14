@@ -37,6 +37,7 @@ module TaskCard
 
         io = +''
         io << "<section class='task-card' id='aufgabe-#{h.(task['id'])}' data-task='#{h.(key)}' data-type='#{h.(type)}'"
+        io << " data-preview='#{h.(task['check']['preview'])}'" if task['check'].is_a?(Hash) && task['check']['preview']
         io << " data-prediction='1'" if task['prediction']
         io << " aria-labelledby='#{h.(field)}-title'>"
         io << "<div class='task-head'>"

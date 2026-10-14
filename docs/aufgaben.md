@@ -383,6 +383,16 @@ Fehler meldet oder weniger Objekte findet. Läuft der Workspace nicht, nimmt der
 Server die Abgabe an und sagt dazu, dass die Szene nicht geprüft wurde. Die Galerie (`gallery: true`) kommt
 mit der Klassenübersicht.
 
+`preview: anaglyph` (nur mit `pick: …/*.ini`) zeichnet Anaglyph-Szenen mit dem
+Viewer aus `specht/anaglyph`, den der Server in der Version
+`AnaglyphViewer::COMMIT` beim ersten Gebrauch von GitHub holt (nie als Kopie in
+diesem Repository); Kenney-Kits lädt er bei Bedarf mit dem `download.rb` der
+Vorlage. Die Karte zeigt die ausgewählte Datei und danach die Abgabe so, wie
+die Galerie sie zeigt: aus der Zeile `camera = …` der Szene, immer bei
+1280 × 800, damit das Bild überall gleich aussieht. Auf der Klassenseite steht
+unter der Tabelle eine Galerie aller Abgaben; ein Klick zeigt eine Szene groß
+im Viewer, drehbar, mit den Pfeiltasten zur nächsten.
+
 ### measure, command, scene
 
 Beispiele stehen in `src/content/tcpip/tasks.yaml` und
