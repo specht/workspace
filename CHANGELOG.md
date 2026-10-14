@@ -429,6 +429,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   später immer wieder in <kbd>Strg</kbd><kbd>P</kbd> auf. Sie sind jetzt
   ausgeschlossen (`**/.hs-kbd-tutorial/**` in `files.exclude`); VS Code
   nimmt sie beim nächsten Start auch aus dem gespeicherten Verlauf.
+- Das Profil hat keinen Abschnitt »Notizen für Lehrkräfte« mehr; die
+  Notizen stehen oben auf den Aktivitäten. `/lehrmaterial` führt zum
+  »Einstieg für Lehrkräfte«.
 - Lange Code-Blöcke (ab 20 Zeilen) stehen in derselben etwas kleineren
   Schrift wie die Listings aus `_include_file`.
 - Die Kurzzeile eines eingeklappten Handbuch-Kastens zeigt Tasten als

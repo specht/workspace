@@ -187,8 +187,8 @@ class Main < Sinatra::Base
         # The 2D Game Studio is a playground of its own; Lehrmaterial had only
         # its page and the list of teacher notes, which is in the profile now.
         'lehrmaterial-2d' => 'https://2d.hackschule.de/',
-        'lehrmaterial' => 'profil#profile-teaching-materials',
-        'lehrmaterial.html' => 'profil#profile-teaching-materials',
+        'lehrmaterial' => 'lehrmaterial-einstieg',
+        'lehrmaterial.html' => 'lehrmaterial-einstieg',
         # »HTML-Folien gestalten« became four Handbuch pages for web pages and
         # slides alike (2026-10); most of it is on the HTML page.
         'reference/html-folien' => 'reference/html',
@@ -4220,21 +4220,6 @@ class Main < Sinatra::Base
             "<script>document.querySelector('.teacher-note-toggle').addEventListener('click', function () {" \
             "var open = this.getAttribute('aria-expanded') !== 'true'; this.setAttribute('aria-expanded', open);" \
             "document.getElementById('teacher-note').hidden = !open; });</script>"
-    end
-
-    # Activities with a teacher note (lehrkraft.md), listed in the profile.
-    def print_teacher_notes_overview
-        return '' unless teacher_account_logged_in?
-
-        entries = @@content.select { |slug, c| c[:teacher_note] && !c[:dev_only] && !c[:teacher_only] }
-            .map { |slug, c| [slug, c[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '')] }
-            .sort_by { |_, title| title.downcase }
-        return '' if entries.empty?
-
-        items = entries.map { |slug, title| "<li><a href='/#{CGI.escapeHTML(slug)}'>#{CGI.escapeHTML(title)}</a></li>" }
-        "<p>Diese Aktivitäten haben eine Notiz für Lehrkräfte: Ablauf, Unterrichtsideen, Stolpersteine, was die Aufgaben prüfen. Du findest sie oben auf der jeweiligen Seite.</p>" \
-            "<ul class='teacher-notes-list'>#{items.join}</ul>" \
-            "<p>Was deine Gruppen in diesen Aktivitäten geschafft haben, steht in der <a href='/klasse'>Klassenübersicht</a>.</p>"
     end
 
     # --- Class board (docs/aufgaben.md, »Klassenübersicht«) ---------------------

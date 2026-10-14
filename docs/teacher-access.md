@@ -37,7 +37,7 @@ Lea Lehrerin <lea@example.org>
 
 | | Lernende | Lehrkraft (`*`) | Lehrkraft (`+`) | Admin |
 | --- | --- | --- | --- | --- |
-| Notizen für Lehrkräfte (Profil, Aktivitäten) | | ✓ | ✓ | ✓ |
+| Notizen für Lehrkräfte (auf den Aktivitäten) | | ✓ | ✓ | ✓ |
 | Klassenseite `/klasse` für die eigenen Gruppen | | | ✓ | ✓ alle |
 | Anmelde-Codes der eigenen Gruppen (Klassenseite) | | | ✓ | ✓ |
 | Workspace öffnen, Nachahmen | | | ✓ eigene Gruppen | ✓ alle |
@@ -80,8 +80,8 @@ erklärt neuen Lehrkräften die erste Stunde: Anmeldung mit den Codes am Beamer,
 die Reiter der Klassenseite, Abgaben ansehen, das Testkonto und »Nachahmen«,
 die Notiz für Lehrkräfte und was der Server speichert. Die Klassenseite weist
 mit »Neu hier?« darauf hin, bis die Lehrkraft den Hinweis ausblendet (in
-diesem Browser); der Link neben der Überschrift bleibt. Im Profil steht er
-über den Notizen für Lehrkräfte. Die Bilder (16:9, doppelte Pixeldichte)
+diesem Browser); der Link neben der Überschrift bleibt. `/lehrmaterial`
+führt ebenfalls dorthin. Die Bilder (16:9, doppelte Pixeldichte)
 nimmt ein Skript mit den E2E-Konten unter erfundenen Namen auf und räumt
 danach wieder auf; nach Änderungen an der Klassenseite neu aufnehmen:
 
