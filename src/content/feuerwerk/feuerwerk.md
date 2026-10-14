@@ -104,7 +104,7 @@ int main(void)
 <!-- tutorial-screenshot
 # Klonen wie im Handbuch »Workspace«, dann den Funken übersetzen
 show-left-sidebar
-clone-start: https://github.com/specht/pixelram-starter.git @ c29cb44cf618d3e4a33f1b3ee692d41fde32b449
+clone-start: https://github.com/specht/pixelram-starter.git @ 8f36e382554999421d77687c69f7541ca2c4afb7
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
