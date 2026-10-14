@@ -2018,6 +2018,22 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 
 .color-mixer-codes code {
     cursor: copy;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Fixed columns: the values change with every slider step and must not
+   push the table around. */
+.color-mixer-codes {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.color-mixer-codes th {
+    width: 11em;
+}
+
+.color-mixer-codes td {
+    overflow-wrap: anywhere;
 }
 
 @media (max-width: 640px) {
