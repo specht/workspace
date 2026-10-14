@@ -10,6 +10,15 @@
   entries:
     - workspace
 
+- key: reference-shortcuts
+  label: Shortcuts
+  icon: /images/keyboard.png
+  description: |
+    Bewegen, markieren, bearbeiten, suchen und mehrere Cursor, mit der
+    Tastatur statt der Maus; vieles davon gilt in fast jedem Programm.
+  entries:
+    - shortcuts
+
 - key: reference-terminal
   label: Terminal
   icon: /images/penguin.png

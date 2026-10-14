@@ -1,5 +1,6 @@
 <div class='meta'>
 image: keyboard-tutorial.webp:0:30
+reference: [shortcuts]
 duration: 2 bis 3 Doppelstunden
 </div>
 
@@ -67,11 +68,15 @@ _task(tastatur)
 
 Mit Pfeiltasten, wortweise mit <kbd>Strg</kbd>, mit <kbd>Pos1</kbd> und <kbd>Ende</kbd>, seitenweise und an Anfang und Ende der Datei springen, zu einer bestimmten Zeile gehen und lange Zeilen umbrechen.
 
+_uses(bewegen)
+
 _task(navigieren)
 
 ### Text markieren
 
 Mit der Maus und mit <kbd>Shift</kbd> und den Pfeiltasten markieren, Wörter, Zeilen und alles auf einmal auswählen.
+
+_uses(markieren)
 
 _task(markieren)
 
@@ -79,11 +84,15 @@ _task(markieren)
 
 Löschen, ersetzen, rückgängig machen, kopieren, ausschneiden und einfügen, ganze Zeilen verschieben und verdoppeln, mehrere Zeilen einrücken und speichern.
 
+_uses(bearbeiten, zeilen)
+
 _task(bearbeiten)
 
 ### Suchen und Ersetzen
 
 Mit <kbd>Strg</kbd><kbd>F</kbd> suchen, Groß- und Kleinschreibung beachten, mit <kbd>Strg</kbd><kbd>H</kbd> einzelne oder alle Treffer ersetzen.
+
+_uses(suchen)
 
 _task(suchen)
 
@@ -91,14 +100,18 @@ _task(suchen)
 
 Mehrere Cursor untereinander setzen, mit <kbd>Strg</kbd><kbd>D</kbd> das nächste gleiche Wort dazunehmen und an vielen Stellen auf einmal tippen.
 
+_uses(mehrere-cursor)
+
 _task(mehrere-stellen)
 
 ### Code bearbeiten
 
 Zeilen auskommentieren, Blöcke einrücken, verschieben und kopieren, ohne die Einrückung zu zerstören, und am Ende einen kaputten Codeabschnitt reparieren. Die Beispiele sind in verschiedenen Programmiersprachen; du musst keine davon kennen.
 
+_uses(code)
+
 _task(code)
 
 ## Und danach?
 
-Wenn du alle Kapitel geschafft hast, kannst du auf Seiten wie [keybr.com](https://www.keybr.com/) deine Tippgeschwindigkeit trainieren. Die Tastenkürzel brauchst du ab jetzt in jeder Aktivität: in den [Grundlagen](/basics) zum Beispiel, oder wenn du in der [Filmdatenbank](/filmdatenbank) lange SQL-Abfragen umbaust.
+Alle Shortcuts aus dem Tutorial stehen zum Nachschlagen im Handbuch unter [Shortcuts](/reference/shortcuts). Wenn du alle Kapitel geschafft hast, kannst du auf Seiten wie [keybr.com](https://www.keybr.com/) deine Tippgeschwindigkeit trainieren. Die Tastenkürzel brauchst du ab jetzt in jeder Aktivität: in den [Grundlagen](/basics) zum Beispiel, oder wenn du in der [Filmdatenbank](/filmdatenbank) lange SQL-Abfragen umbaust.
