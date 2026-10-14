@@ -195,6 +195,15 @@ module TaskCheck
     # files, html, css, references, git and submit.
     NOT_RUNNING_SCENE = 'Starte zuerst deinen Workspace. Die Szene liest dein eigener Viewer in deinem Workspace.'
 
+    # »steht kein Objekt«, »steht 1 Objekt«, »stehen 3 Objekte«.
+    def self.objects_phrase(count)
+        case count
+        when 0 then 'steht kein Objekt'
+        when 1 then 'steht 1 Objekt'
+        else "stehen #{count} Objekte"
+        end
+    end
+
     # Runs scene_dump.js for one file in the person's Workspace.
     def self.scene_dump(file, times, runner)
         result = runner&.call(SceneCheck.command(file, times), 15)
@@ -264,7 +273,7 @@ module TaskCheck
                     count = dump['objects'].reject { |o| o['shape'] == 'grid' }.size
                     if requires['min_objects'] && count < requires['min_objects']
                         return Result.new(:status => :invalid, :problem => :too_few_objects,
-                            :message => "In `#{f[:path]}` stehen #{count} Objekte; für die Galerie sind mindestens #{requires['min_objects']} verlangt.")
+                            :message => "In `#{f[:path]}` #{TaskCheck.objects_phrase(count)}; für die Galerie sind mindestens #{requires['min_objects']} verlangt.")
                     end
                 end
                 plan.notes.reject! { |n| n.include?('prüft der Workspace noch nicht') }

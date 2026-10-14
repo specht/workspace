@@ -77,12 +77,12 @@ window.AnaglyphPreview = (function () {
         overlay.setAttribute('aria-modal', 'true');
         overlay.innerHTML =
             "<div class='scene-present-bar'>" +
-            "<button type='button' class='btn btn-sm btn-light' data-step='-1' title='Vorherige Szene (←)'><i class='bi bi-chevron-left'></i></button>" +
+            "<button type='button' class='scene-present-button' data-step='-1' title='Vorherige Szene (←)' aria-label='Vorherige Szene'><i class='bi bi-chevron-left'></i></button>" +
             "<span class='scene-present-name'></span>" +
-            "<button type='button' class='btn btn-sm btn-light' data-step='1' title='Nächste Szene (→)'><i class='bi bi-chevron-right'></i></button>" +
+            "<button type='button' class='scene-present-button' data-step='1' title='Nächste Szene (→)' aria-label='Nächste Szene'><i class='bi bi-chevron-right'></i></button>" +
             "<span class='scene-present-space'></span>" +
-            "<button type='button' class='btn btn-sm btn-light scene-present-full' title='Vollbild'><i class='bi bi-arrows-fullscreen'></i></button>" +
-            "<button type='button' class='btn btn-sm btn-light scene-present-close' title='Schließen (Esc)'><i class='bi bi-x-lg'></i></button>" +
+            "<button type='button' class='scene-present-button scene-present-full' title='Vollbild' aria-label='Vollbild'><i class='bi bi-fullscreen'></i></button>" +
+            "<button type='button' class='scene-present-button scene-present-close' title='Schließen (Esc)' aria-label='Schließen'><i class='bi bi-x-lg'></i></button>" +
             "</div><iframe class='scene-present-frame'></iframe>";
         const frame = overlay.querySelector('iframe');
         const name = overlay.querySelector('.scene-present-name');
@@ -97,6 +97,7 @@ window.AnaglyphPreview = (function () {
         function close() {
             window.removeEventListener('message', onMessage);
             document.removeEventListener('keydown', onKey);
+            document.removeEventListener('fullscreenchange', onFullscreen);
             if (document.fullscreenElement === overlay) document.exitFullscreen().catch(() => {});
             overlay.remove();
         }
@@ -117,10 +118,19 @@ window.AnaglyphPreview = (function () {
         overlay.querySelectorAll('[data-step]').forEach((button) => button.addEventListener('click', () => show(current + Number(button.dataset.step))));
         overlay.querySelectorAll('[data-step]').forEach((button) => { button.hidden = items.length < 2; });
         overlay.querySelector('.scene-present-close').addEventListener('click', close);
-        overlay.querySelector('.scene-present-full').addEventListener('click', () => {
+        const full = overlay.querySelector('.scene-present-full');
+        full.addEventListener('click', () => {
             if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
             else overlay.requestFullscreen?.().catch(() => {});
         });
+        // The button says what it does next: into full screen or out of it.
+        const onFullscreen = () => {
+            const on = document.fullscreenElement === overlay;
+            full.querySelector('.bi').className = on ? 'bi bi-fullscreen-exit' : 'bi bi-fullscreen';
+            full.title = on ? 'Vollbild beenden' : 'Vollbild';
+            full.setAttribute('aria-label', full.title);
+        };
+        document.addEventListener('fullscreenchange', onFullscreen);
         window.addEventListener('message', onMessage);
         document.addEventListener('keydown', onKey);
         document.body.appendChild(overlay);

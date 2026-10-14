@@ -49,6 +49,11 @@ module FileChecks
         Outcome.new(:ok => false, :problem => problem, :message => message, :read => read, :warnings => warnings)
     end
 
+    # »1 Zeile«, »12 Zeilen«.
+    def self.lines_text(count)
+        count == 1 ? '1 Zeile' : "#{count} Zeilen"
+    end
+
     def self.code(text)
         "`#{text.to_s.gsub('`', "'")}`"
     end
@@ -239,7 +244,7 @@ module FileChecks
             shown = doc.problems.first(MAX_SHOWN).map { |p| "- Zeile #{p.line}: #{p.message}" }
             more = doc.problems.size > MAX_SHOWN ? "\n\nUnd #{doc.problems.size - MAX_SHOWN} weitere Stellen." : ''
             return failed(:parse_error, "In #{code(file)} passen Tags nicht zusammen:\n\n#{shown.join("\n")}#{more}",
-                :read => "#{code(file)}: #{source.lines.size} Zeilen")
+                :read => "#{code(file)}: #{lines_text(source.lines.size)}")
         end
 
         selector = (expect['slides'] || {})['selector'] || 'section.slide'
@@ -330,7 +335,7 @@ module FileChecks
             end
         end
 
-        ok(:read => read_lines.empty? ? "#{code(file)}: #{source.lines.size} Zeilen, Tags passen zusammen." : read_lines.join("\n\n"), :warnings => warnings)
+        ok(:read => read_lines.empty? ? "#{code(file)}: #{lines_text(source.lines.size)}, Tags passen zusammen." : read_lines.join("\n\n"), :warnings => warnings)
     rescue WorkspaceFiles::Refused => e
         refused(e)
     end

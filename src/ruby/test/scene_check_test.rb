@@ -196,6 +196,7 @@ class SceneCheckTest < Minitest::Test
         r = TaskCheck.check(task, 'anaglyph/bunt.ini', variables: {}, workspace: @ws, runner: @runner)
         assert_equal :invalid, r.status
         assert_includes r.message, 'mindestens 5 verlangt'
+        assert_includes r.message, 'steht 1 Objekt;'
         scene('bunt.ini', (["shape = box"] * 5).join("\n\n") + "\n")
         r = TaskCheck.check(task, 'anaglyph/bunt.ini', variables: {}, workspace: @ws, runner: @runner)
         assert_equal :sent, r.status

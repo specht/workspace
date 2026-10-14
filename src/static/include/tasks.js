@@ -111,7 +111,8 @@
             if (result.errors) {
                 showFeedback(card, 'invalid', '<p>Der Viewer meldet Fehler in ' + file + '. Repariere das vor der Abgabe; die Meldung steht unter dem Bild.</p>');
             } else if (min && result.objects !== null && result.objects < min) {
-                showFeedback(card, 'invalid', '<p>In ' + file + ' stehen ' + result.objects + ' Objekte; für die Galerie sind mindestens ' + min + ' verlangt.</p>');
+                const count = result.objects === 0 ? 'steht kein Objekt' : result.objects === 1 ? 'steht 1 Objekt' : 'stehen ' + result.objects + ' Objekte';
+                showFeedback(card, 'invalid', '<p>In ' + file + ' ' + count + '; für die Galerie sind mindestens ' + min + ' verlangt.</p>');
             } else {
                 return go();
             }

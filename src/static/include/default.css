@@ -1653,9 +1653,36 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 .scene-present-bar {
     display: flex;
     align-items: center;
-    gap: 0.5em;
-    padding: 0.4em 0.6em;
+    gap: 0.25em;
+    padding: 0.3em 0.5em;
     color: #eee;
+}
+
+/* Icons only, like the copy button: quiet until the pointer is on them. */
+.scene-present-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: none;
+    border-radius: 0.5rem;
+    background: none;
+    color: #bbb;
+    font-size: 1.1rem;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.scene-present-button:hover,
+.scene-present-button:focus-visible {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+.scene-present-button:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.6);
+    outline-offset: 1px;
 }
 
 .scene-present-name {
