@@ -25,5 +25,5 @@ Die Beispiele bilden einen durchgehenden Weg in sieben Kapiteln; jedes endet mit
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>keine für den Einstieg; Binär- und Hexadezimalzahlen helfen, werden aber auch nebenbei gelernt</td></tr>
 <tr><th>Sprachen</th><td>Assembler für die MiniCPU, später MiniC (eine kleine Variante von C)</td></tr>
-<tr><th>Stand der Bilder</th><td><a href='https://github.com/specht/cpu-sandbox/commit/730060800243aaa5fa1622b6b94567c9857fa1a0'><code>7300608</code></a> (12.10.2026); <a href='https://github.com/specht/cpu-sandbox/blob/730060800243aaa5fa1622b6b94567c9857fa1a0/docs/teaching.md'>Leitfaden mit Fragen zu jedem Beispiel</a>, <a href='https://github.com/specht/cpu-sandbox/blob/730060800243aaa5fa1622b6b94567c9857fa1a0/README.md'>README</a></td></tr>
+<tr><th>Stand der Bilder</th><td><a href='https://github.com/specht/cpu-sandbox/commit/976c731d03cf0331898befab7bffd7afb94c81d4'><code>976c731</code></a> (14.10.2026); <a href='https://github.com/specht/cpu-sandbox/blob/976c731d03cf0331898befab7bffd7afb94c81d4/docs/teaching.md'>Leitfaden mit Fragen zu jedem Beispiel</a>, <a href='https://github.com/specht/cpu-sandbox/blob/976c731d03cf0331898befab7bffd7afb94c81d4/README.md'>README</a></td></tr>
 </table>

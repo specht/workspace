@@ -26,7 +26,7 @@ Zur CPU Sandbox gehören **26 Beispielprogramme**, von der Addition zweier Zahle
 
 <!-- tutorial-screenshot
 terminal-open
-terminal-run: cd /workspace && git clone -q https://github.com/specht/cpu-sandbox.git && cd cpu-sandbox && git checkout -q 730060800243aaa5fa1622b6b94567c9857fa1a0
+terminal-run: cd /workspace && git clone -q https://github.com/specht/cpu-sandbox.git && cd cpu-sandbox && git checkout -q 976c731d03cf0331898befab7bffd7afb94c81d4
 terminal-wait-for-prompt
 terminal-run: cd /workspace/cpu-sandbox && mkdir -p programs && (nohup ./run --port 18765 > /tmp/cpu-sandbox.log 2>&1 < /dev/null &)
 terminal-wait-for-prompt
@@ -80,6 +80,8 @@ click: selector:#clock
 press: End
 click: selector:#run
 sleep: 10
+# am Anfang eines Bildes anhalten: dann steht ein fertiges Bild im RAM
+hook: stop-at frame:
 crop-element: #screen-box
 -->
 <figure><img src='gallery-inferno.webp' alt='Ein feines, flackerndes Flammenmeer von Weiß über Gelb bis Rot.'><figcaption><code>15-inferno.asm</code> Inferno: ein Feuer, in dem jedes Pixel die Hitze seiner Nachbarn aufnimmt</figcaption></figure>

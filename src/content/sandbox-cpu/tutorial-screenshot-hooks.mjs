@@ -33,6 +33,36 @@ export default {
             await sleep(300);
         },
 
+        // hook: stop-at LABEL: sets a breakpoint on the first line that
+        // starts with LABEL and waits until the program stops there. A
+        // program that draws in place and waits for vsync at LABEL has a
+        // finished frame in RAM at that moment, and the paused screen shows
+        // RAM as it is. Running alone, it would only be clean if the browser
+        // reached the clock: a busy one slows machine time down, and one
+        // frame then spans several of the screen's pictures. Loading another
+        // program clears the breakpoint.
+        async 'stop-at'({ page, args }) {
+            const label = args.trim();
+            if (!label) throw new Error('hook: stop-at LABEL');
+            const found = await page.evaluate((text) => {
+                const cm = document.querySelector('.CodeMirror')?.CodeMirror;
+                if (!cm) return 'no editor';
+                for (let i = 0; i < cm.lineCount(); i += 1) {
+                    if (cm.getLine(i).startsWith(text)) {
+                        CodeMirror.signal(cm, 'gutterClick', cm, i, 'cm-breakpoints', new MouseEvent('mousedown'));
+                        return null;
+                    }
+                }
+                return `no line starts with ${text}`;
+            }, label);
+            if (found) throw new Error(`hook: stop-at: ${found}`);
+            await page.waitForFunction(
+                () => /Breakpoint in line \d+/.test(document.body.innerText),
+                null, { timeout: 30000 },
+            );
+            await sleep(300);
+        },
+
         // hook: play-breakout SECONDS: launches the ball again and again and
         // moves the paddle back and forth, so bricks go all over the wall.
         async 'play-breakout'({ page, args }) {
