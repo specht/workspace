@@ -1710,6 +1710,43 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     padding: 0 1em 0.5em;
 }
 
+/* Long paths and names in tables wrap instead of making the page wider than
+   a phone screen (a table is only as narrow as its longest word). */
+.table code {
+    overflow-wrap: anywhere;
+}
+
+/* On a phone: the teacher note runs from edge to edge, its label-and-text
+   tables put the label above its text, and a Handbuch table that does not
+   fit scrolls sideways by itself instead of widening the page. */
+@media (max-width: 576px) {
+    .teacher-note {
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        border-left: none;
+        border-right: none;
+        border-radius: 0;
+    }
+    .teacher-note-body .table th,
+    .teacher-note-body .table td {
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .reference-table {
+        display: block;
+        overflow-x: auto;
+    }
+    .teacher-note-body .table tr,
+    .teacher-note-body .table th,
+    .teacher-note-body .table td {
+        display: block;
+    }
+    .teacher-note-body .table th {
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+}
+
 /* Page kinds: activity strip and reference breadcrumb (PageKinds.header).
    Teal marks everything that comes from Handbuch, on reference pages
    and in the include boxes of activities. */
