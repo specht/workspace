@@ -36,9 +36,24 @@ Lua ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpretie
 
 Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+# Ein frischer Workspace ohne Ordner, das Terminal offen
+hide-left-sidebar
+terminal-open
+sleep: 0.5
+-->
+
 <img class='full' src='code-with-terminal.webp' alt=''>
 
 Starte nun die Lua-Shell, indem du `lua` eingibst und dann <kbd>Enter</kbd> drückst. Du solltest eine Ausgabe wie diese sehen:
+
+<!-- tutorial-screenshot
+press: Control+l
+terminal-run: lua
+wait-for-text: Copyright
+sleep: 0.5
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='lua-shell.webp' alt=''>
 
@@ -52,11 +67,28 @@ Lua-Programme werden in Textdateien mit der Endung `.lua` geschrieben. Der Lua-I
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+# Die Shell wieder verlassen, das Terminal schließen
+press: Control+d
+terminal-wait-for-prompt
+press: Control+l
+press: Control+j
+show-left-sidebar
+sleep: 0.5
+-->
+
 <img class='full' src='fresh-start.webp' alt=''>
 
 ### Quelltext schreiben
 
 Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <kbd>Enter</kbd>).
+
+<!-- tutorial-screenshot
+click: New File...
+wait-for-text: Text File
+sleep: 0.5
+crop-bottom: 77%
+-->
 
 <img class='full' src='choose-filename.webp' alt=''>
 
@@ -66,13 +98,39 @@ _include_file(hello.lua, lua)
 
 Da Visual Studio Code noch nicht weiß, dass es sich um Lua-Quelltext handelt, ist dein Programm momentan noch einfarbig, aber das wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
 
+<!-- tutorial-screenshot
+# Das Programm in eine noch namenlose Datei
+press: Enter
+sleep: 1
+hide-left-sidebar
+type: <- file:hello.lua
+sleep: 0.5
+crop-bottom: 82%
+-->
+
 <img class='full' src='no-syntax-highlighting.webp' alt=''>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.lua` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.lua`.
 
+<!-- tutorial-screenshot
+press: Control+s
+wait-for-text: Save As
+press: Control+a
+type: /workspace/hello.lua
+sleep: 0.5
+crop-bottom: 82%
+-->
+
 <img class='full' src='enter-filename.webp' alt=''>
 
 Sobald du die Datei gespeichert hast, wird sie automatisch als Lua-Datei erkannt und die Syntax wird hervorgehoben.
+
+<!-- tutorial-screenshot
+press: Enter
+wait-for-file: hello.lua
+sleep: 1.5
+crop-bottom: 78%
+-->
 
 <img class='full' src='syntax-highlighting.webp' alt=''>
 
@@ -91,6 +149,15 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>lu
 </div>
 
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
+
+<!-- tutorial-screenshot
+hide-left-sidebar
+terminal-open
+press: Control+l
+terminal-run: lua hello.lua
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='hello.webp' alt=''>
 
@@ -113,6 +180,16 @@ Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugebe
 </div>
 
 Lua sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
+
+<!-- tutorial-screenshot
+# Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
+write-file: hello.lua <- file:hello-error.lua
+terminal-maximize
+press: Control+l
+terminal-run: lua hello.lua
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='hello-error.webp' alt=''>
 
@@ -137,6 +214,21 @@ Jetzt können wir das Skript direkt ausführen:
 ./hello.lua
 ```
 
+<!-- tutorial-screenshot
+# Das Shebang über dem Programm; Editor und Terminal zusammen
+write-file: hello.lua <- file:hello-shebang.lua
+click: selector:.part.panel [aria-label*="Restore Panel"]
+open-file: hello.lua
+terminal-open
+press: Control+l
+terminal-run: chmod +x hello.lua
+terminal-wait-for-prompt
+terminal-run: ./hello.lua
+terminal-wait-for-prompt
+move-mouse: selector:.part.statusbar
+sleep: 0.5
+-->
+
 <img class='full' src='shebang.webp' alt=''>
 
 ## Primfaktorzerlegung
@@ -148,6 +240,17 @@ Erstelle eine neue Datei mit <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd> und schre
 _include_file(factor.lua, lua)
 
 Speichere die Datei unter dem Namen `factor.lua` und führe sie aus:
+
+<!-- tutorial-screenshot
+write-file: factor.lua <- file:factor.lua
+terminal-maximize
+press: Control+l
+terminal-run: lua factor.lua
+wait-for-text: number:
+terminal-run: 123
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='try-factor.webp' alt=''>
 
@@ -164,6 +267,14 @@ Erstelle eine neue Datei und schreibe den folgenden Code hinein:
 _include_file(bubblesort.lua, lua)
 
 Speichere das Skript unter dem Namen `bubblesort.lua` und führe es aus:
+
+<!-- tutorial-screenshot
+write-file: bubblesort.lua <- file:bubblesort.lua
+press: Control+l
+terminal-run: lua bubblesort.lua
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='bubblesort.webp' alt=''>
 

@@ -37,9 +37,24 @@ Du hast zwei Möglichkeiten, BASIC-Code auszuführen:
 
 Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+# Ein frischer Workspace ohne Ordner, das Terminal offen
+hide-left-sidebar
+terminal-open
+sleep: 0.5
+-->
+
 <img class='full' src='code-with-terminal.webp' alt=''>
 
 Starte nun die BASIC-Shell, indem du `bwbasic` eingibst und dann <kbd>Enter</kbd> drückst. Du solltest eine Ausgabe wie diese sehen:
+
+<!-- tutorial-screenshot
+press: Control+l
+terminal-run: bwbasic
+wait-for-text: bwBASIC:
+sleep: 0.5
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='bwbasic-repl.webp' alt=''>
 
@@ -53,11 +68,28 @@ BASIC-Programme werden in Textdateien mit der Endung `.bas` geschrieben. Ein BAS
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+# Die Shell wieder verlassen, das Terminal schließen
+terminal-run: SYSTEM
+terminal-wait-for-prompt
+press: Control+l
+press: Control+j
+show-left-sidebar
+sleep: 0.5
+-->
+
 <img class='full' src='fresh-start.webp' alt=''>
 
 ### Quelltext schreiben
 
 Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <kbd>Enter</kbd>).
+
+<!-- tutorial-screenshot
+click: New File...
+wait-for-text: Text File
+sleep: 0.5
+crop-bottom: 77%
+-->
 
 <img class='full' src='choose-filename.webp' alt=''>
 
@@ -67,13 +99,39 @@ _include_file(hello.bas, basic)
 
 Da Visual Studio Code noch nicht weiß, dass es sich um BASIC-Quelltext handelt, ist dein Programm momentan noch einfarbig, aber das wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
 
+<!-- tutorial-screenshot
+# Das Programm in eine noch namenlose Datei
+press: Enter
+sleep: 1
+hide-left-sidebar
+type: <- file:hello.bas
+sleep: 0.5
+crop-bottom: 82%
+-->
+
 <img class='full' src='no-syntax-highlighting.webp' alt=''>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.bas` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.bas`.
 
+<!-- tutorial-screenshot
+press: Control+s
+wait-for-text: Save As
+press: Control+a
+type: /workspace/hello.bas
+sleep: 0.5
+crop-bottom: 82%
+-->
+
 <img class='full' src='enter-filename.webp' alt=''>
 
 Sobald du die Datei gespeichert hast, wird sie automatisch als BASIC-Datei erkannt und die Syntax wird hervorgehoben.
+
+<!-- tutorial-screenshot
+press: Enter
+wait-for-file: hello.bas
+sleep: 1.5
+crop-bottom: 78%
+-->
 
 <img class='full' src='syntax-highlighting.webp' alt=''>
 
@@ -92,6 +150,19 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>bw
 </div>
 
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
+
+<!-- tutorial-screenshot
+hide-left-sidebar
+terminal-open
+# Mit dem Begrüßungstext von bwbasic passt alles nur ins ganze Terminal
+terminal-maximize
+press: Control+l
+terminal-run: bwbasic hello.bas
+# bwbasic bleibt danach in seiner eigenen Eingabe (bwBASIC:)
+wait-for-text: Hello, World!
+sleep: 0.5
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='hello.webp' alt=''>
 
@@ -117,6 +188,19 @@ Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugebe
 
 BASIC sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
+<!-- tutorial-screenshot
+# Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
+terminal-run: SYSTEM
+terminal-wait-for-prompt
+write-file: hello.bas <- file:hello-error.bas
+terminal-maximize
+press: Control+l
+terminal-run: bwbasic hello.bas
+wait-for-text: not found
+sleep: 0.5
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='hello-error.webp' alt=''>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 1) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
@@ -130,6 +214,20 @@ Erstelle eine neue Datei mit <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd> und schre
 _include_file(factor.bas, basic)
 
 Speichere die Datei unter dem Namen `factor.bas` und führe sie aus:
+
+<!-- tutorial-screenshot
+terminal-run: SYSTEM
+terminal-wait-for-prompt
+write-file: factor.bas <- file:factor.bas
+terminal-maximize
+press: Control+l
+terminal-run: bwbasic factor.bas
+wait-for-text: number:
+terminal-run: 123
+wait-for-text: Prime factors
+sleep: 1
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='factor.webp' alt=''>
 
@@ -146,6 +244,17 @@ Erstelle eine neue Datei und schreibe den folgenden Code hinein:
 _include_file(bubblesort.bas, basic)
 
 Speichere das Skript unter dem Namen `bubblesort.bas` und führe es aus:
+
+<!-- tutorial-screenshot
+terminal-run: SYSTEM
+terminal-wait-for-prompt
+write-file: bubblesort.bas <- file:bubblesort.bas
+press: Control+l
+terminal-run: bwbasic bubblesort.bas
+wait-for-text: Sorted array
+sleep: 1
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='bubblesort.webp' alt=''>
 

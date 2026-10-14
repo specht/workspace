@@ -34,9 +34,24 @@ Smalltalk ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit inter
 
 Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+# Ein frischer Workspace ohne Ordner, das Terminal offen
+hide-left-sidebar
+terminal-open
+sleep: 0.5
+-->
+
 <img class='full' src='code-with-terminal.webp' alt=''>
 
 Starte nun die Smalltalk-Shell, indem du `gst` eingibst und dann <kbd>Enter</kbd> drückst. Du solltest eine Ausgabe wie diese sehen:
+
+<!-- tutorial-screenshot
+press: Control+l
+terminal-run: gst
+wait-for-text: st>
+sleep: 0.5
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='gst.webp' alt=''>
 
@@ -50,11 +65,28 @@ Smalltalk-Programme werden in Textdateien mit der Endung `.st` geschrieben. Ein 
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+# Die Shell wieder verlassen, das Terminal schließen
+terminal-run: ObjectMemory quit
+terminal-wait-for-prompt
+press: Control+l
+press: Control+j
+show-left-sidebar
+sleep: 0.5
+-->
+
 <img class='full' src='fresh-start.webp' alt=''>
 
 ### Quelltext schreiben
 
 Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <kbd>Enter</kbd>).
+
+<!-- tutorial-screenshot
+click: New File...
+wait-for-text: Text File
+sleep: 0.5
+crop-bottom: 77%
+-->
 
 <img class='full' src='choose-filename.webp' alt=''>
 
@@ -64,9 +96,28 @@ _include_file(hello.st, smalltalk)
 
 Da Visual Studio Code noch nicht weiß, dass es sich um Smalltalk-Quelltext handelt, ist dein Programm momentan noch einfarbig, aber das wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
 
+<!-- tutorial-screenshot
+# Das Programm in eine noch namenlose Datei
+press: Enter
+sleep: 1
+hide-left-sidebar
+type: <- file:hello.st
+sleep: 0.5
+crop-bottom: 82%
+-->
+
 <img class='full' src='no-syntax-highlighting.webp' alt=''>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.st` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.st`.
+
+<!-- tutorial-screenshot
+press: Control+s
+wait-for-text: Save As
+press: Control+a
+type: /workspace/hello.st
+sleep: 0.5
+crop-bottom: 82%
+-->
 
 <img class='full' src='enter-filename.webp' alt=''>
 
@@ -74,13 +125,44 @@ Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.s
 Achte darauf, dass du deine Datei nicht aus Versehen <code>hello.st.</code> (mit einem Punkt am Ende) nennst, da Visual Studio Code als Dateiname <code>Transcript show: 'Hello, World!'; cr.</code> vorschlägt.
 </div>
 
-Da Smalltalk standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »Pharo Language Support« und installiere sie.
+Da Smalltalk standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »Pharo Language Support« und installiere sie. Die Erweiterung bringt eine zweite Erweiterung mit. Weil beide Herausgeber nicht verifiziert sind, fragt Visual Studio Code, ob du ihnen vertraust; bestätige mit »Trust Publishers & Install«.
+
+<!-- tutorial-screenshot
+# Speichern, dann die Erweiterung im Marketplace
+press: Enter
+wait-for-file: hello.st
+sleep: 1
+press: Control+Shift+x
+wait-for-text: Marketplace
+type: Pharo Language Support
+sleep: 3
+crop-bottom: 50%
+-->
 
 <img class='full' src='smalltalk-syntax.webp' alt=''>
 
 Alternativ kannst du auch <kbd>Strg</kbd><kbd>P</kbd> drücken und `ext install badetitou.pharo-language-server` eingeben, um die Erweiterung zu installieren.
 
 Anschließend solltest du dein Smalltalk-Programm farbig sehen:
+
+<!-- tutorial-screenshot
+# Die Erweiterung installieren, wie es der Text als zweiten Weg
+# nennt; danach ist der Code farbig
+press: Control+p
+type: ext install badetitou.pharo-language-server
+wait-for-text: Press Enter to install extension
+press: Enter
+# Der Herausgeber ist nicht verifiziert: VS Code fragt nach
+wait-for-text: Trust Publishers & Install
+click: Trust Publishers & Install
+sleep: 10
+# Neu öffnen: erst dann kennt VS Code die Sprache
+close-tab: hello.st
+open-file: hello.st
+hide-left-sidebar
+sleep: 2
+crop-bottom: 78%
+-->
 
 <img class='full' src='syntax-highlighting.webp' alt=''>
 
@@ -99,6 +181,15 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>gs
 </div>
 
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
+
+<!-- tutorial-screenshot
+hide-left-sidebar
+terminal-open
+press: Control+l
+terminal-run: gst hello.st
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='hello.webp' alt=''>
 
@@ -122,6 +213,16 @@ Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugebe
 
 Smalltalk sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
+<!-- tutorial-screenshot
+# Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
+write-file: hello.st <- file:hello-error.st
+terminal-maximize
+press: Control+l
+terminal-run: gst hello.st
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='hello-error.webp' alt=''>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 1) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
@@ -144,6 +245,23 @@ Jetzt können wir das Skript direkt ausführen:
 ```bash
 ./hello.st
 ```
+<!-- tutorial-screenshot
+# Das Shebang über dem Programm; Editor und Terminal zusammen
+write-file: hello.st <- file:hello-shebang.st
+click: selector:.part.panel [aria-label*="Restore Panel"]
+open-file: hello.st
+terminal-open
+press: Control+l
+terminal-run: chmod +x hello.st
+terminal-wait-for-prompt
+terminal-run: ./hello.st
+terminal-wait-for-prompt
+# Mitten im Editor zeigt nichts einen Tooltip (in der Statusleiste
+# liegt dort »Spaces: 4«)
+move-mouse: selector:.part.editor
+sleep: 0.5
+-->
+
 <img class='full' src='shebang.webp' alt=''>
 
 ## Primfaktorzerlegung
@@ -161,6 +279,17 @@ gst factor.st
 
 Falls du keine Fehlermeldung erhältst, kannst du das Programm ausführen und testen:
 
+<!-- tutorial-screenshot
+write-file: factor.st <- file:factor.st
+terminal-maximize
+press: Control+l
+terminal-run: gst factor.st
+wait-for-text: number:
+terminal-run: 123
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='try-factor.webp' alt=''>
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Smalltalk auch Zahlen wie 3000000000 und 123456789123456789 in Sekundenbruchteilen zerlegen, allerdings beendet sich das Programm nicht (probier es gern aus, du kannst das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen). Falls du einen sachdienlichen Hinweis hast, schreib bitte eine E-Mail an <a href='mailto:specht@gymnasiumsteglitz.de'>specht@gymnasiumsteglitz.de</a>.
@@ -176,6 +305,14 @@ Erstelle eine neue Datei und schreibe den folgenden Code hinein:
 _include_file(bubblesort.st, smalltalk)
 
 Speichere das Skript unter dem Namen `bubblesort.st` und führe es aus:
+
+<!-- tutorial-screenshot
+write-file: bubblesort.st <- file:bubblesort.st
+press: Control+l
+terminal-run: gst bubblesort.st
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='bubblesort.webp' alt=''>
 

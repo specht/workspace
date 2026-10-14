@@ -31,11 +31,24 @@ Java-Programme werden in Textdateien mit der Endung `.java` geschrieben. Diese D
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+# Ein frischer Workspace ohne Ordner
+show-left-sidebar
+sleep: 0.5
+-->
+
 <img class='full' src='fresh-start.webp' alt=''>
 
 ### Quelltext schreiben
 
 Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <kbd>Enter</kbd>).
+
+<!-- tutorial-screenshot
+click: New File...
+wait-for-text: Text File
+sleep: 0.5
+crop-bottom: 77%
+-->
 
 <img class='full' src='choose-filename.webp' alt=''>
 
@@ -45,13 +58,39 @@ _include_file(HelloWorld.java, java)
 
 Da Visual Studio Code noch nicht weiß, dass es sich um Java-Quelltext handelt, ist dein Programm momentan noch einfarbig, aber das wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
 
+<!-- tutorial-screenshot
+# Das Programm in eine noch namenlose Datei
+press: Enter
+sleep: 1
+hide-left-sidebar
+type: <- file:HelloWorld.java
+sleep: 0.5
+crop-bottom: 60%
+-->
+
 <img class='full' src='no-syntax-highlighting.webp' alt=''>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `HelloWorld.java` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/HelloWorld.java`.
 
+<!-- tutorial-screenshot
+press: Control+s
+wait-for-text: Save As
+press: Control+a
+type: /workspace/HelloWorld.java
+sleep: 0.5
+crop-bottom: 82%
+-->
+
 <img class='full' src='enter-filename.webp' alt=''>
 
 Sobald du die Datei gespeichert hast, wird sie automatisch als Java-Datei erkannt und die Syntax wird hervorgehoben.
+
+<!-- tutorial-screenshot
+press: Enter
+wait-for-file: HelloWorld.java
+sleep: 1.5
+crop-bottom: 56%
+-->
 
 <img class='full' src='syntax-highlighting.webp' alt=''>
 
@@ -61,6 +100,12 @@ Bevor wir das Programm ausführen können, müssen wir es kompilieren.
 Dadurch wird der Quelltext des Programms in Bytecode übersetzt, den die Java Virtual Machine (JVM) ausführen kann.
 
 Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+
+<!-- tutorial-screenshot
+hide-left-sidebar
+terminal-open
+sleep: 0.5
+-->
 
 <img class='full' src='code-with-terminal.webp' alt=''>
 
@@ -75,6 +120,15 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>ja
 </div>
 
 Wenn du keinen Fehler gemacht hast, wird das Programm erfolgreich kompiliert und die Datei `HelloWorld.class` wird im selben Verzeichnis erstellt. Du kannst dies überprüfen, indem du dir die Dateien im aktuellen Verzeichnis mit `ls` oder `ls -l` anzeigen lässt:
+
+<!-- tutorial-screenshot
+press: Control+l
+terminal-run: javac HelloWorld.java
+terminal-wait-for-prompt
+terminal-run: ls -l
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='ls.webp' alt=''>
 
@@ -115,6 +169,16 @@ Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugebe
 
 Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
+<!-- tutorial-screenshot
+# Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
+write-file: HelloWorld.java <- file:error-HelloWorld.java
+terminal-maximize
+press: Control+l
+terminal-run: javac HelloWorld.java
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='hello-error.webp' alt=''>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 3) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
@@ -134,6 +198,19 @@ javac Factor.java
 ```
 
 Falls du keine Fehlermeldung erhältst, kannst du das Programm ausführen und testen:
+
+<!-- tutorial-screenshot
+write-file: Factor.java <- file:Factor.java
+terminal-maximize
+press: Control+l
+terminal-run: javac Factor.java
+terminal-wait-for-prompt
+terminal-run: java Factor
+wait-for-text: number:
+terminal-run: 123
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='try-factor.webp' alt=''>
 
@@ -155,6 +232,16 @@ Speichere die Datei unter dem Namen `BubbleSort.java`. Kompiliere das Programm:
 javac BubbleSort.java
 ```
 Falls du keine Fehlermeldung erhältst, kannst du das Programm ausführen und testen:
+
+<!-- tutorial-screenshot
+write-file: BubbleSort.java <- file:BubbleSort.java
+press: Control+l
+terminal-run: javac BubbleSort.java
+terminal-wait-for-prompt
+terminal-run: java BubbleSort
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='bubblesort.webp' alt=''>
 

@@ -30,11 +30,24 @@ Dart-Programme werden in Textdateien mit der Endung `.dart` geschrieben. Diese D
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+# Ein frischer Workspace ohne Ordner
+show-left-sidebar
+sleep: 0.5
+-->
+
 <img class='full' src='fresh-start.webp' alt=''>
 
 ### Quelltext schreiben
 
 Klicke auf »New File« und wähle als Dateityp »Text File«.
+
+<!-- tutorial-screenshot
+click: New File...
+wait-for-text: Text File
+sleep: 0.5
+crop-bottom: 77%
+-->
 
 <img class='full' src='choose-filename.webp' alt=''>
 
@@ -44,13 +57,39 @@ _include_file(hello.dart, dart)
 
 Da Visual Studio Code noch nicht weiß, dass es sich um Dart-Quelltext handelt, ist dein Programm momentan noch einfarbig, aber das wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
 
+<!-- tutorial-screenshot
+# Das Programm in eine noch namenlose Datei
+press: Enter
+sleep: 1
+hide-left-sidebar
+type: <- file:hello.dart
+sleep: 0.5
+crop-bottom: 60%
+-->
+
 <img class='full' src='no-syntax-highlighting.webp' alt=''>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.dart` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.dart`.
 
+<!-- tutorial-screenshot
+press: Control+s
+wait-for-text: Save As
+press: Control+a
+type: /workspace/hello.dart
+sleep: 0.5
+crop-bottom: 82%
+-->
+
 <img class='full' src='enter-filename.webp' alt=''>
 
 Sobald du die Datei gespeichert hast, wird sie automatisch als Dart-Datei erkannt und die Syntax wird hervorgehoben.
+
+<!-- tutorial-screenshot
+press: Enter
+wait-for-file: hello.dart
+sleep: 1.5
+crop-bottom: 56%
+-->
 
 <img class='full' src='syntax-highlighting.webp' alt=''>
 
@@ -70,6 +109,16 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>da
 
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
 
+<!-- tutorial-screenshot
+# Der erste Lauf: Dart erklärt die Telemetrie, das braucht Platz
+hide-left-sidebar
+terminal-maximize
+press: Control+l
+terminal-run: dart run hello.dart
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='hello-telemetry.webp' alt=''>
 
 ### Was ist Telemetrie?
@@ -82,9 +131,23 @@ dart --disable-analytics
 
 Du solltest nun eine Bestätigung sehen, dass die Telemetrie deaktiviert wurde:
 
+<!-- tutorial-screenshot
+press: Control+l
+terminal-run: dart --disable-analytics
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='disable-analytics.webp' alt=''>
 
 Wenn wir das Programm erneut ausführen, sollte es die Nachricht `Hello, World!` ohne die Meldung zur Telemetrie ausgeben:
+
+<!-- tutorial-screenshot
+press: Control+l
+terminal-run: dart run hello.dart
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='hello-again.webp' alt=''>
 
@@ -94,7 +157,7 @@ Dart kann Quelltext für viele verschiedene Plattformen kompilieren, z. B. für 
 
 ### Fehler finden und beheben
 
-Wenn du einen Fehler im Code machst, wird Ruby eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `print` das Wort `prin` zu schreiben:
+Wenn du einen Fehler im Code machst, wird Dart eine Fehlermeldung ausgeben. Versuche zum Beispiel, statt `print` das Wort `prin` zu schreiben:
 
 ```dart
 prin('Hello, World!');
@@ -112,6 +175,16 @@ Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugebe
 
 Dart sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
+<!-- tutorial-screenshot
+# Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
+write-file: hello.dart <- file:hello-error.dart
+terminal-maximize
+press: Control+l
+terminal-run: dart run hello.dart
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='hello-error.webp' alt=''>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 2) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
@@ -125,6 +198,17 @@ Erstelle eine neue Datei mit <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd> und schre
 _include_file(factor.dart, dart)
 
 Speichere die Datei unter dem Namen `factor.dart` und führe sie aus:
+
+<!-- tutorial-screenshot
+write-file: factor.dart <- file:factor.dart
+terminal-maximize
+press: Control+l
+terminal-run: dart run factor.dart
+wait-for-text: number:
+terminal-run: 123
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='try-factor.webp' alt=''>
 
@@ -141,6 +225,14 @@ Erstelle eine neue Datei und schreibe den folgenden Code hinein:
 _include_file(bubblesort.dart, dart)
 
 Speichere das Skript unter dem Namen `bubblesort.dart` und führe es aus:
+
+<!-- tutorial-screenshot
+write-file: bubblesort.dart <- file:bubblesort.dart
+press: Control+l
+terminal-run: dart run bubblesort.dart
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='bubblesort.webp' alt=''>
 

@@ -400,6 +400,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Erzeugte Screenshots auch für »Statische Webseiten mit HTML & CSS« (alle
   Bilder, mit den Ständen der Beispielseite in `lehrkraft/`) und für die
   geklonte Shower-Vorlage.
+- Erzeugte statt von Hand gemachte Screenshots für alle 19
+  Programmiersprachen-Tutorials (Python, C, C++, C#, Java, Go, Rust, Dart,
+  JavaScript, Lua, Ruby, BASIC, Fortran, COBOL, Pascal, Smalltalk, Lisp,
+  Erlang, Assembler). Die Bilder aus August 2024 zeigten ein altes VS Code,
+  eine Eingabeaufforderung wie `abc@992fa5e1a3fe` und ältere Versionen der
+  Sprachen; jedes neue Bild wurde neben das alte gelegt und zeigt denselben
+  Schritt. Die Fehlerbilder zeigen jetzt den Fehler, den der Text beschreibt
+  (`hello-error.*`). Wo eine Erweiterung nach »Trust Publisher & Install«
+  fragt, sagt der Text das jetzt. Das Assembler-Tutorial hat das fehlende
+  Bubblesort-Programm (`nasm/bubblesort.asm`) bekommen.
 
 - Behoben: »Git kennt dich« schlug fehl, obwohl `git config --global` Name
   und E-Mail kannte. Die Prüfung lief mit dem `HOME` des Images (`/config`)

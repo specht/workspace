@@ -38,9 +38,24 @@ In diesem Kapitel wollen wir uns jedoch auf JavaScript außerhalb des Browsers k
 
 Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+# Ein frischer Workspace ohne Ordner, das Terminal offen
+hide-left-sidebar
+terminal-open
+sleep: 0.5
+-->
+
 <img class='full' src='code-with-terminal.webp' alt=''>
 
 Starte nun die Node.js-Shell, indem du `node` eingibst und dann <kbd>Enter</kbd> drückst. Du solltest eine Ausgabe wie diese sehen:
+
+<!-- tutorial-screenshot
+press: Control+l
+terminal-run: node
+wait-for-text: Welcome to Node.js
+sleep: 0.5
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='node-shell.webp' alt=''>
 
@@ -54,11 +69,28 @@ JavaScript-Programme werden in Textdateien mit der Endung `.js` geschrieben. Der
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+# Die Shell wieder verlassen, das Terminal schließen
+press: Control+d
+terminal-wait-for-prompt
+press: Control+l
+press: Control+j
+show-left-sidebar
+sleep: 0.5
+-->
+
 <img class='full' src='fresh-start.webp' alt=''>
 
 ### Quelltext schreiben
 
 Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <kbd>Enter</kbd>).
+
+<!-- tutorial-screenshot
+click: New File...
+wait-for-text: Text File
+sleep: 0.5
+crop-bottom: 77%
+-->
 
 <img class='full' src='choose-filename.webp' alt=''>
 
@@ -68,13 +100,39 @@ _include_file(hello.js, js)
 
 Da Visual Studio Code noch nicht weiß, dass es sich um JavaScript-Quelltext handelt, ist dein Programm momentan noch einfarbig, aber das wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
 
+<!-- tutorial-screenshot
+# Das Programm in eine noch namenlose Datei
+press: Enter
+sleep: 1
+hide-left-sidebar
+type: <- file:hello.js
+sleep: 0.5
+crop-bottom: 82%
+-->
+
 <img class='full' src='no-syntax-highlighting.webp' alt=''>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.js` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.js`.
 
+<!-- tutorial-screenshot
+press: Control+s
+wait-for-text: Save As
+press: Control+a
+type: /workspace/hello.js
+sleep: 0.5
+crop-bottom: 82%
+-->
+
 <img class='full' src='enter-filename.webp' alt=''>
 
 Sobald du die Datei gespeichert hast, wird sie automatisch als JavaScript-Datei erkannt und die Syntax wird hervorgehoben.
+
+<!-- tutorial-screenshot
+press: Enter
+wait-for-file: hello.js
+sleep: 1.5
+crop-bottom: 78%
+-->
 
 <img class='full' src='syntax-highlighting.webp' alt=''>
 
@@ -93,6 +151,15 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>no
 </div>
 
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
+
+<!-- tutorial-screenshot
+hide-left-sidebar
+terminal-open
+press: Control+l
+terminal-run: node hello.js
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='hello.webp' alt=''>
 
@@ -116,6 +183,16 @@ Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugebe
 
 Node.js sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
+<!-- tutorial-screenshot
+# Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
+write-file: hello.js <- file:hello-error.js
+terminal-maximize
+press: Control+l
+terminal-run: node hello.js
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='hello-error.webp' alt=''>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 1) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
@@ -125,7 +202,7 @@ Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und z
 Bisher musst du, um dein Skript auszuführen, immer den Node.js-Interpreter explizit aufrufen. Wenn du dein Skript wie ein normales Programm ausführen möchtest, kannst du ein sogenanntes Shebang am Anfang deiner Datei hinzufügen. Das Shebang besteht aus einer Raute `#` gefolgt von einem Ausrufezeichen `!` und dem Pfad zum Lua-Interpreter. In unserem Fall sieht das so aus:
 
 ```js
-#!/usr/bin/env nodejs
+#!/usr/bin/env node
 ```
 
 Füge diese Zeile ganz oben in deinem Skript ein und speichere die Datei. Bevor wir das Skript ausführen können, müssen wir es noch ausführbar machen. Das machen wir mit dem Befehl `chmod`:
@@ -139,6 +216,21 @@ Jetzt können wir das Skript direkt ausführen:
 ./hello.js
 ```
 
+<!-- tutorial-screenshot
+# Das Shebang über dem Programm; Editor und Terminal zusammen
+write-file: hello.js <- file:hello-shebang.js
+click: selector:.part.panel [aria-label*="Restore Panel"]
+open-file: hello.js
+terminal-open
+press: Control+l
+terminal-run: chmod +x hello.js
+terminal-wait-for-prompt
+terminal-run: ./hello.js
+terminal-wait-for-prompt
+move-mouse: selector:.part.statusbar
+sleep: 0.5
+-->
+
 <img class='full' src='shebang.webp' alt=''>
 
 ## Primfaktorzerlegung
@@ -150,6 +242,17 @@ Erstelle eine neue Datei mit <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd> und schre
 _include_file(factor.js, js)
 
 Speichere die Datei unter dem Namen `factor.js` und führe sie aus:
+
+<!-- tutorial-screenshot
+write-file: factor.js <- file:factor.js
+terminal-maximize
+press: Control+l
+terminal-run: node factor.js
+wait-for-text: number:
+terminal-run: 123
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='try-factor.webp' alt=''>
 
@@ -166,6 +269,14 @@ Erstelle eine neue Datei und schreibe den folgenden Code hinein:
 _include_file(bubblesort.js, js)
 
 Speichere das Skript unter dem Namen `bubblesort.js` und führe es aus:
+
+<!-- tutorial-screenshot
+write-file: bubblesort.js <- file:bubblesort.js
+press: Control+l
+terminal-run: node bubblesort.js
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='bubblesort.webp' alt=''>
 

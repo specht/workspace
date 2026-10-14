@@ -28,11 +28,24 @@ Fortran-Programme werden in Textdateien mit der Endung `.f90` geschrieben. Diese
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+# Ein frischer Workspace ohne Ordner
+show-left-sidebar
+sleep: 0.5
+-->
+
 <img class='full' src='fresh-start.webp' alt=''>
 
 ### Quelltext schreiben
 
 Klicke auf »New File« und wähle als Dateityp »Text File«.
+
+<!-- tutorial-screenshot
+click: New File...
+wait-for-text: Text File
+sleep: 0.5
+crop-bottom: 77%
+-->
 
 <img class='full' src='choose-filename.webp' alt=''>
 
@@ -42,19 +55,69 @@ _include_file(hello.f90, fortran)
 
 Da Visual Studio Code noch nicht weiß, dass es sich um Fortran-Quelltext handelt, ist dein Programm momentan noch einfarbig, aber das wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
 
+<!-- tutorial-screenshot
+# Das Programm in eine noch namenlose Datei
+press: Enter
+sleep: 1
+hide-left-sidebar
+type: <- file:hello.f90
+sleep: 0.5
+crop-bottom: 60%
+-->
+
 <img class='full' src='no-syntax-highlighting.webp' alt=''>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.f90` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.f90`.
 
+<!-- tutorial-screenshot
+press: Control+s
+wait-for-text: Save As
+press: Control+a
+type: /workspace/hello.f90
+sleep: 0.5
+crop-bottom: 82%
+-->
+
 <img class='full' src='enter-filename.webp' alt=''>
 
-Da Fortran standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »Photran« und installiere sie.
+Da Fortran standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »Photran« und installiere sie. Weil der Herausgeber nicht verifiziert ist, fragt Visual Studio Code, ob du ihm vertraust; bestätige mit »Trust Publisher & Install«.
+
+<!-- tutorial-screenshot
+# Speichern, dann die Erweiterung im Marketplace
+press: Enter
+wait-for-file: hello.f90
+sleep: 1
+press: Control+Shift+x
+wait-for-text: Marketplace
+type: photran
+sleep: 3
+crop-bottom: 50%
+-->
 
 <img class='full' src='fortran-syntax.webp' alt=''>
 
 Alternativ kannst du auch <kbd>Strg</kbd><kbd>P</kbd> drücken und `ext install fiuba.photran-lsp-client-vscode` eingeben, um die Erweiterung zu installieren.
 
 Anschließend solltest du dein Fortran-Programm farbig sehen:
+
+<!-- tutorial-screenshot
+# Die Erweiterung installieren, wie es der Text als zweiten Weg
+# nennt; danach ist der Code farbig
+press: Control+p
+type: ext install fiuba.photran-lsp-client-vscode
+wait-for-text: Press Enter to install extension
+press: Enter
+# Der Herausgeber ist nicht verifiziert: VS Code fragt nach
+wait-for-text: Trust Publisher & Install
+click: Trust Publisher & Install
+sleep: 10
+# Neu öffnen: erst dann kennt VS Code die Sprache
+close-tab: hello.f90
+open-file: hello.f90
+hide-left-sidebar
+sleep: 2
+crop-bottom: 56%
+-->
 
 <img class='full' src='syntax-highlighting.webp' alt=''>
 
@@ -63,6 +126,12 @@ Anschließend solltest du dein Fortran-Programm farbig sehen:
 Bevor wir das Programm ausführen können, müssen wir es kompilieren. Dadurch wird der Quelltext in Maschinencode übersetzt, den dein Computer ausführen kann.
 
 Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+
+<!-- tutorial-screenshot
+hide-left-sidebar
+terminal-open
+sleep: 0.5
+-->
 
 <img class='full' src='lets-compile.webp' alt=''>
 
@@ -77,6 +146,15 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>gf
 </div>
 
 Wenn du keinen Fehler gemacht hast, wird das Programm erfolgreich kompiliert und die ausführbare Datei `hello` wird im selben Verzeichnis erstellt. Du kannst dies überprüfen, indem du dir die Dateien im aktuellen Verzeichnis mit `ls` oder `ls -l` anzeigen lässt:
+
+<!-- tutorial-screenshot
+press: Control+l
+terminal-run: gfortran hello.f90 -o hello
+terminal-wait-for-prompt
+terminal-run: ls -l
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='ls.webp' alt=''>
 
@@ -116,6 +194,16 @@ Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugebe
 
 Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
 
+<!-- tutorial-screenshot
+# Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
+write-file: hello.f90 <- file:hello-error.f90
+terminal-maximize
+press: Control+l
+terminal-run: gfortran hello.f90 -o hello
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='error.webp' alt=''>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 2) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
@@ -134,6 +222,19 @@ gfortran factor.f90 -o factor
 ```
 
 Falls du keine Fehlermeldung erhältst, kannst du das Programm ausführen und testen:
+
+<!-- tutorial-screenshot
+write-file: factor.f90 <- file:factor.f90
+terminal-maximize
+press: Control+l
+terminal-run: gfortran factor.f90 -o factor
+terminal-wait-for-prompt
+terminal-run: ./factor
+wait-for-text: number:
+terminal-run: 123
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='try-factor.webp' alt=''>
 
@@ -155,6 +256,16 @@ Speichere die Datei unter dem Namen `bubblesort.f90`. Kompiliere das Programm:
 gfortran bubblesort.f90 -o bubblesort
 ```
 Falls du keine Fehlermeldung erhältst, kannst du das Programm ausführen und testen:
+
+<!-- tutorial-screenshot
+write-file: bubblesort.f90 <- file:bubblesort.f90
+press: Control+l
+terminal-run: gfortran bubblesort.f90 -o bubblesort
+terminal-wait-for-prompt
+terminal-run: ./bubblesort
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='bubblesort.webp' alt=''>
 

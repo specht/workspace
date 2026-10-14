@@ -45,9 +45,24 @@ Ruby ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpreti
 
 Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+# Ein frischer Workspace ohne Ordner, das Terminal offen
+hide-left-sidebar
+terminal-open
+sleep: 0.5
+-->
+
 <img class='full' src='code-with-terminal.webp' data-scroll='33%' alt=''>
 
 Starte nun die Ruby-Shell, indem du `irb` eingibst und dann <kbd>Enter</kbd> drückst. Du solltest eine Ausgabe wie diese sehen:
+
+<!-- tutorial-screenshot
+press: Control+l
+terminal-run: irb
+wait-for-text: irb(main)
+sleep: 0.5
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='irb.webp' data-scroll='5%' alt=''>
 
@@ -61,11 +76,28 @@ Ruby-Programme werden in Textdateien mit der Endung `.rb` geschrieben. Ein Ruby-
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+# Die Shell wieder verlassen, das Terminal schließen
+terminal-run: exit
+terminal-wait-for-prompt
+press: Control+l
+press: Control+j
+show-left-sidebar
+sleep: 0.5
+-->
+
 <img class='full' src='fresh-start.webp' data-scroll='28%' alt=''>
 
 ### Quelltext schreiben
 
 Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <kbd>Enter</kbd>).
+
+<!-- tutorial-screenshot
+click: New File...
+wait-for-text: Text File
+sleep: 0.5
+crop-bottom: 77%
+-->
 
 <img class='full' src='choose-filename.webp' data-scroll='20%' alt=''>
 
@@ -75,13 +107,39 @@ _include_file(hello.rb, ruby)
 
 Da Visual Studio Code noch nicht weiß, dass es sich um Ruby-Quelltext handelt, ist dein Programm momentan noch einfarbig, aber das wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
 
+<!-- tutorial-screenshot
+# Das Programm in eine noch namenlose Datei
+press: Enter
+sleep: 1
+hide-left-sidebar
+type: <- file:hello.rb
+sleep: 0.5
+crop-bottom: 82%
+-->
+
 <img class='full' src='no-syntax-highlighting.webp' alt=''>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.rb` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.rb`.
 
+<!-- tutorial-screenshot
+press: Control+s
+wait-for-text: Save As
+press: Control+a
+type: /workspace/hello.rb
+sleep: 0.5
+crop-bottom: 82%
+-->
+
 <img class='full' src='enter-filename.webp' alt=''>
 
 Sobald du die Datei gespeichert hast, wird sie automatisch als Ruby-Datei erkannt und die Syntax wird hervorgehoben.
+
+<!-- tutorial-screenshot
+press: Enter
+wait-for-file: hello.rb
+sleep: 1.5
+crop-bottom: 78%
+-->
 
 <img class='full' src='syntax-highlighting.webp' alt=''>
 
@@ -100,6 +158,15 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>ru
 </div>
 
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
+
+<!-- tutorial-screenshot
+hide-left-sidebar
+terminal-open
+press: Control+l
+terminal-run: ruby hello.rb
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='hello.webp' alt=''>
 
@@ -122,6 +189,16 @@ Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugebe
 </div>
 
 Ruby sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
+
+<!-- tutorial-screenshot
+# Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
+write-file: hello.rb <- file:hello-error.rb
+terminal-maximize
+press: Control+l
+terminal-run: ruby hello.rb
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='hello-error.webp' alt=''>
 
@@ -146,6 +223,21 @@ Jetzt können wir das Skript direkt ausführen:
 ./hello.rb
 ```
 
+<!-- tutorial-screenshot
+# Das Shebang über dem Programm; Editor und Terminal zusammen
+write-file: hello.rb <- file:hello-shebang.rb
+click: selector:.part.panel [aria-label*="Restore Panel"]
+open-file: hello.rb
+terminal-open
+press: Control+l
+terminal-run: chmod +x hello.rb
+terminal-wait-for-prompt
+terminal-run: ./hello.rb
+terminal-wait-for-prompt
+move-mouse: selector:.part.statusbar
+sleep: 0.5
+-->
+
 <img class='full' src='shebang.webp' alt=''>
 
 ## Primfaktorzerlegung
@@ -157,6 +249,17 @@ Erstelle eine neue Datei mit <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd> und schre
 _include_file(factor.rb, ruby)
 
 Speichere die Datei unter dem Namen `factor.rb` und führe sie aus:
+
+<!-- tutorial-screenshot
+write-file: factor.rb <- file:factor.rb
+terminal-maximize
+press: Control+l
+terminal-run: ruby factor.rb
+wait-for-text: number:
+terminal-run: 123
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='try-factor.webp' alt=''>
 
@@ -173,6 +276,14 @@ Erstelle eine neue Datei und schreibe den folgenden Code hinein:
 _include_file(bubblesort.rb, ruby)
 
 Speichere das Skript unter dem Namen `bubblesort.rb` und führe es aus:
+
+<!-- tutorial-screenshot
+write-file: bubblesort.rb <- file:bubblesort.rb
+press: Control+l
+terminal-run: ruby bubblesort.rb
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='bubblesort.webp' alt=''>
 
