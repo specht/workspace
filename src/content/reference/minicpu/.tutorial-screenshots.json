@@ -1,0 +1,23 @@
+{
+  "screenshots": {
+    "bytes.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "f39f66734a5559a3b47af0e9206f0700edddce753cd9738133f8e4d38579f693",
+      "state_hash": "633f63dd5e07babf8f047ef29f36894552219e8f8b5305becd1312bc0410d08c",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "flags.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "6f2cdfeb61d0ba234a16b8d04a31918de600b78185bd1821d69a0bd53f55c8df",
+      "state_hash": "341811d32181ca9e83fb57f762fd0250861b3c5b34073b0280be7673280b96cf",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "stack.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "cdbc6fa9b07fb71593b09182a97acc593f3bbeb8e4de1e021fab9c6c77ecbbeb",
+      "state_hash": "51ff1ce6f6ee13c76322ab7c15281ba6ef51fa339ce366d7c14b237687c809ee",
+      "workspace_look": "4.138.0-ls366"
+    }
+  },
+  "version": 1
+}
