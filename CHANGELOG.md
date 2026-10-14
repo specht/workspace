@@ -362,6 +362,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   ohne dass seine Seiten wegfallen. `/profil` führt Abgemeldete zur
   Anmeldung statt zu einem Serverfehler. Auf dem Handy scrollen breite
   Formeln und Tabellen für sich, statt die Seite zu verbreitern.
+- Barrierefreiheit: Die Symbole in Knöpfen sind als Schmuck markiert. Bisher
+  las ein Screenreader das Symbolzeichen mit, etwa »\uF116 Neu starten«.
 - Erzeugte Screenshots auch für »Statische Webseiten mit HTML & CSS« (alle
   Bilder, mit den Ständen der Beispielseite in `lehrkraft/`) und für die
   geklonte Shower-Vorlage.

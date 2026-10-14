@@ -179,6 +179,29 @@ function install_code_copy() {
     });
 }
 
+// Bootstrap icons (<i class="bi …">) draw their symbol with CSS, and the
+// browser counts it into the name of a button: a screen reader would read
+// »\uF116 Neu starten«. The icons are decoration, also those that scripts
+// add later; an icon that stands alone carries its meaning in a title or
+// aria-label of its button.
+document.addEventListener('DOMContentLoaded', function () {
+    const selector = 'i.bi:not([aria-hidden]):not([aria-label])';
+    const hide = function (root) {
+        if (root.matches && root.matches(selector)) root.setAttribute('aria-hidden', 'true');
+        if (root.querySelectorAll) root.querySelectorAll(selector).forEach(function (icon) {
+            icon.setAttribute('aria-hidden', 'true');
+        });
+    };
+    hide(document);
+    new MutationObserver(function (records) {
+        records.forEach(function (record) {
+            record.addedNodes.forEach(function (node) {
+                if (node.nodeType === 1) hide(node);
+            });
+        });
+    }).observe(document.body, { childList: true, subtree: true });
+});
+
 function showTemplateModal(title, text, confirm_label, confirm_class,
     cancel_label, cancel_class, confirm_callback) {
     $('#__template_modal .modal-title').html(title);

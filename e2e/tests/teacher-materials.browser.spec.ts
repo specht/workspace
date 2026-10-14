@@ -18,8 +18,9 @@ test('designated teacher finds the teacher notes in the profile', async ({ page 
   await expect(section).toBeVisible();
   await expect(section.locator('a[href="/sandbox-sortieren"]')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Administration' })).toHaveCount(0);
-  const response = await page.goto('/admin');
-  expect(response?.status()).toBe(403);
+  // A 403 without a body makes page.goto throw in Chromium; ask directly.
+  const response = await page.request.get('/admin');
+  expect(response.status()).toBe(403);
 });
 
 test('group administrator keeps teacher notes and administration', async ({ page }, testInfo) => {
