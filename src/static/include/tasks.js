@@ -18,16 +18,29 @@
         return card.dataset.task.split('/')[1];
     }
 
-    function setBadge(card, status) {
+    // celebrate: the task was just solved; the tick draws itself.
+    function setBadge(card, status, celebrate) {
         const el = card.querySelector('.task-status');
         el.innerHTML = '';
         const label = STATUS_LABELS[status === 'sent' && card.dataset.type === 'submit' ? 'submitted' : status];
         if (!label) return;
         const span = document.createElement('span');
         span.className = 'task-badge ' + label[0];
-        const icon = document.createElement('i');
-        icon.className = 'bi ' + label[1];
-        span.appendChild(icon);
+        if (status === 'correct') {
+            span.insertAdjacentHTML('beforeend', "<svg class='task-tick' viewBox='0 0 24 24' aria-hidden='true'>" +
+                "<circle class='task-tick-disc' cx='12' cy='12' r='11'/>" +
+                "<path class='task-tick-mark' d='M6.8 12.6l3.4 3.4 7-7.4'/></svg>");
+        } else {
+            const icon = document.createElement('i');
+            icon.className = 'bi ' + label[1];
+            span.appendChild(icon);
+        }
+        if (celebrate) {
+            span.classList.add('task-badge-celebrate');
+            card.classList.remove('task-solved-now');
+            void card.offsetWidth;
+            card.classList.add('task-solved-now');
+        }
         span.appendChild(document.createTextNode(label[2]));
         el.appendChild(span);
         card.dataset.status = status;
@@ -266,7 +279,7 @@
             }
             showFeedback(card, data.status, data.message, data.solution, data.read, data.warnings);
             if (data.state) {
-                setBadge(card, data.state.status);
+                setBadge(card, data.state.status, data.status === 'correct' && card.dataset.status !== 'correct');
                 card.querySelector('.task-delete').hidden = false;
                 if (card.dataset.type === 'submit') showSubmission(card, data.state.answer);
             }

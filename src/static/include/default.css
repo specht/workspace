@@ -2221,6 +2221,99 @@ h3[id] {
 }
 
 .task-badge-correct { color: #146c43; }
+
+/* The tick of a solved task: a green disc with a white tick. Just solved,
+   it pops in with a little wind-up, the tick draws itself and a ring
+   spreads out; the card glows once. */
+.task-tick {
+    width: 1.15em;
+    height: 1.15em;
+    margin-right: 0.35em;
+    vertical-align: -0.2em;
+    overflow: visible;
+}
+
+.task-tick-disc { fill: #1f9d55; }
+
+.task-tick-mark {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 18;
+}
+
+.task-badge-celebrate {
+    position: relative;
+    display: inline-block;
+}
+
+.task-badge-celebrate .task-tick {
+    transform-origin: 50% 50%;
+    animation: task-tick-pop 0.6s both;
+}
+
+.task-badge-celebrate .task-tick-mark {
+    animation: task-tick-draw 0.35s cubic-bezier(0.65, 0, 0.35, 1) 0.32s both;
+}
+
+.task-badge-celebrate::before {
+    content: '';
+    position: absolute;
+    left: 0.575em;
+    top: 50%;
+    width: 1.15em;
+    height: 1.15em;
+    margin: -0.575em 0 0 -0.575em;
+    border-radius: 50%;
+    border: 2px solid #1f9d55;
+    opacity: 0;
+    pointer-events: none;
+    animation: task-tick-ring 0.7s cubic-bezier(0.2, 0.6, 0.3, 1) 0.3s;
+}
+
+.task-card.task-solved-now {
+    animation: task-card-glow 1.2s ease-out;
+}
+
+@keyframes task-tick-pop {
+    0% {
+        transform: scale(0) rotate(-90deg);
+        animation-timing-function: cubic-bezier(0.2, 0, 0.4, 1);
+    }
+    55% {
+        transform: scale(1.25) rotate(8deg);
+        animation-timing-function: cubic-bezier(0.3, 0, 0.3, 1);
+    }
+    100% {
+        transform: scale(1) rotate(0);
+    }
+}
+
+@keyframes task-tick-draw {
+    from { stroke-dashoffset: 18; }
+    to { stroke-dashoffset: 0; }
+}
+
+@keyframes task-tick-ring {
+    0% { transform: scale(0.8); opacity: 0.7; }
+    100% { transform: scale(2.1); opacity: 0; }
+}
+
+@keyframes task-card-glow {
+    0% { box-shadow: 0 0 0 0 rgba(31, 157, 85, 0.45); }
+    100% { box-shadow: 0 0 0 0.9em rgba(31, 157, 85, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .task-badge-celebrate .task-tick,
+    .task-badge-celebrate .task-tick-mark,
+    .task-badge-celebrate::before,
+    .task-card.task-solved-now {
+        animation: none;
+    }
+}
 .task-badge-wrong { color: #8a5300; }
 .task-badge-sent { color: #0b4fb3; }
 .task-badge-stale { color: #8a5300; }
