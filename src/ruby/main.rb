@@ -6710,6 +6710,11 @@ class Main < Sinatra::Base
             Main.load_invitations()
             halt 403 unless teacher_logged_in?
         end
+        # The profile is about the logged-in person; without one it would
+        # fail while drawing its buttons.
+        if path == '/profil'
+            this_is_a_page_for_logged_in_users!
+        end
         if path == '/klasse'
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
