@@ -213,6 +213,39 @@
         "hello-shade-anaglyph.webp": "0b4161f69e38ce030517d992d0c30a4c0e913b51090bd4109321b7b0ff7ce883",
         "hello-shade-dark-anaglyph.webp": "b6c3ac0d99399b84a03df135df842a3af54f68e60fb7573886b4fa10ed71ed1c"
       }
+    },
+    "3-cubes-row.webp": {
+      "state_hash": "e795da59107ca048d53fddf4f65cf25fc666b3d81cc3034e21e5cfbe953d4329",
+      "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "6c45dbaa39dfac71d053c872c74e0ebcad39e5dfdd6405d8cbb9f9a7ca2e1162",
+      "variants": {
+        "3-cubes-row-dark.webp": "281d1179ea22cc3c9a96ea1d40d1e69731e96e2d2a7db56529697fcf520a0771",
+        "3-cubes-row-anaglyph.webp": "880af0f220572df8b3dd74f65cd91837c47c765743917e45b7eeea0ba68d24eb",
+        "3-cubes-row-dark-anaglyph.webp": "d1a329a4bb69fb0631b806bd4ecd069db1cfdbcb4adeec226dcfddeffdb2b749"
+      }
+    },
+    "9-cubes-loop.webp": {
+      "state_hash": "a3eaec1f98398c9f23d1204d4c5d86b4dbb1fda7bc85e1708f4eac16bc8b6e2e",
+      "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "59609a87c233db35f0e841628604a069c476c1f284c114d599f2f2b7a93ef96c",
+      "variants": {
+        "9-cubes-loop-dark.webp": "2657642c1dfd39d712482351dec99207cf1ca656c9afc6c764b2d1b00c636efc",
+        "9-cubes-loop-anaglyph.webp": "5eacb65f51c16913671a3ecc832671ff9a696961cf08273113ce5e39c3d359bb",
+        "9-cubes-loop-dark-anaglyph.webp": "6bd222b61b4cc8aacd6fbcdcd89887dbcc05b163640a1c1de0e1c19e5d62b609"
+      }
+    },
+    "27-cubes-loop.webp": {
+      "state_hash": "98a7316ad538fb2b3afa88fb0b027ac2281a454ccdf4013b2ed8868523b931dd",
+      "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "1d0fc63f991ba6cc57aa57d1330605012b26dad493c589f7a841e80a1f3563e7",
+      "variants": {
+        "27-cubes-loop-dark.webp": "3d8ea660e9217d115d31c2f504e053658de344e7c9e81e21c9fbef8fa7be63a8",
+        "27-cubes-loop-anaglyph.webp": "0e584521b709506afa5aec62f814327c68d36263cc281e0c76d7421dddec6ea9",
+        "27-cubes-loop-dark-anaglyph.webp": "c3c13b42263414fb70e77513ea0155d5d6a98b47530121aa0336351cc3cd78ce"
+      }
     }
   }
 }

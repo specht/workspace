@@ -891,13 +891,7 @@ Je mehr Körper eine Szene hat, desto länger wird die Datei. Schleifen, Gruppen
 
 ### Schleifen
 
-Wenn du viele Objekte platzieren möchtest, wirst du merken, dass du dafür viele Zeilen schreiben musst. Hier werden z. B. drei Würfel nebeneinander platziert:
-
-<div style='text-align: center; margin: 1em 0;'>
-<img src='3-cubes-row.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Drei Würfel stehen in einer Reihe auf dem Gitter.'>
-</div>
-
-Für jeden Würfel werden zwei Zeilen geschrieben:
+Wenn du viele Objekte platzieren möchtest, wirst du merken, dass du dafür viele Zeilen schreiben musst. Hier werden z. B. drei Würfel nebeneinander platziert, mit zwei Zeilen für jeden Würfel:
 
 ```ini
 shape = grid
@@ -912,15 +906,34 @@ shape = box
 move = 100, 0, 0
 ```
 
+<!-- tutorial-screenshot
+# drei Würfel in einer Reihe
+write-file: scene.ini <- previous-code
+sleep: 1
+preview-reload
+tab: preview
+variants: dark anaglyph
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: camera 20 20 -430
+crop-top: 27%
+crop-bottom: 27%
+-->
+
+<div style='text-align: center; margin: 1em 0;'>
+<img src='3-cubes-row.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Drei Würfel stehen in einer Reihe auf dem Gitter.'>
+</div>
+
 Du kannst ähnliche Zeilen zu einer Schleife zusammenfassen. Wenn du z. B. schreibst:
 
-<pre>shape = <span class='s'>grid</span>
+```ini
+shape = grid
 
-loop x <span class='s'>from</span> -100 <span class='s'>to</span> 100 <span class='s'>step</span> 100
-    shape = <span class='s'>box</span>
-    move = <span class='s'>x, 0, 0</span>
+loop x from -100 to 100 step 100
+    shape = box
+    move = x, 0, 0
 end
-</pre>
+```
 
 …erhältst du genau dasselbe Bild. Dabei lassen wir eine Variable `x` in 100er-Schritten von -100 bis 100 laufen, wodurch drei Würfel an den gewünschten Positionen gezeichnet werden.
 
@@ -940,13 +953,14 @@ Um eine Schleife zu verwenden, musst du dich genau an die Syntax halten. Dabei g
 
 Du kannst die oben abgebildete Schleife auch so formulieren:
 
-<pre>shape = <span class='s'>grid</span>
+```ini
+shape = grid
 
-loop x <span class='s'>from</span> 1 <span class='s'>to</span> 3
-    shape = <span class='s'>box</span>
-    move = <span class='s'>(x - 2) * 100, 0, 0</span>
+loop x from 1 to 3
+    shape = box
+    move = (x - 2) * 100, 0, 0
 end
-</pre>
+```
 
 <div class='hint'>
 Warum funktioniert das? Wenn du die Werte 1 bis 3 in den Ausdruck (x - 2) * 100 einsetzt, siehst du, dass genau dieselben Werte (-100, 0 und 100) herauskommen. Du kannst aber genauso auch die erste Schleife verwenden, falls du das leichter findest. Für den Computer macht es keinen Unterschied.
@@ -956,17 +970,32 @@ Warum funktioniert das? Wenn du die Werte 1 bis 3 in den Ausdruck (x - 2) * 100 
 
 Schleifen können auch verschachtelt werden. Das heisst: du schreibst erst eine äußere Schleife mit einer Variablen, und darin eine innere Schleife mit einer anderen Variablen, z. B.:
 
-<pre>shape = <span class='s'>grid</span>
+```ini
+shape = grid
 
-loop z <span class='s'>from</span> -100 <span class='s'>to</span> 100 <span class='s'>step</span> 100
-    loop x <span class='s'>from</span> -100 <span class='s'>to</span> 100 <span class='s'>step</span> 100
-        shape = <span class='s'>box</span>
-        move = <span class='s'>x, 0, z</span>
+loop z from -100 to 100 step 100
+    loop x from -100 to 100 step 100
+        shape = box
+        move = x, 0, z
     end
 end
-</pre>
+```
 
 In der äußeren Schleife nimmt `z` drei verschiedene Werte an und für jeden Durchlauf der äußeren Schleife nimmt `x` unabhängig von `z` ebenso drei Werte an. Diese beiden Werte können wir jetzt verwenden, um den Würfel in x- und z-Richtung zu verschieben. Das Ergebnis sieht dann so aus:
+
+<!-- tutorial-screenshot
+# neun Würfel aus zwei verschachtelten Schleifen
+write-file: scene.ini <- code:loop z from -100 to 100 step 100||move = x, 0, z
+sleep: 1
+preview-reload
+tab: preview
+variants: dark anaglyph
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: camera 30 20 -300
+crop-top: 16%
+crop-bottom: 16%
+-->
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='9-cubes-loop.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;' alt='Neun Würfel sind in drei Reihen mit jeweils drei Würfeln angeordnet.'>
@@ -977,6 +1006,20 @@ Achtung: Achte darauf, bei verschachtelten Schleifen verschiedene Variablen für
 </div>
 
 **Aufgabe:** Versuche, mit Hilfe von verschachtelten Schleifen ein Gitter aus 3x3x3 Würfeln zu bauen:
+
+<!-- tutorial-screenshot
+# 27 Würfel: die Lösung der Aufgabe steht nicht auf der Seite, sondern daneben
+write-file: scene.ini <- file:wuerfelgitter.ini
+sleep: 1
+preview-reload
+tab: preview
+variants: dark anaglyph
+# Your browser window for the hand-made shots: 1906 CSS pixels wide
+zoom: 0.54
+hook: camera 25 30 -100 0 100 0
+crop-top: 16%
+crop-bottom: 16%
+-->
 
 <div style='text-align: center; margin: 1em 0;'>
 <img src='27-cubes-loop.webp' style='max-width: 100%; min-height: 20em; object-fit: cover; object-position: center;' alt='27 Würfel bilden ein räumliches Gitter aus drei mal drei mal drei Würfeln.'>
