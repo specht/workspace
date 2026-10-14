@@ -72,3 +72,15 @@ Lernende sehen: Aufgaben, Abgaben, die Galerie, Leistungsüberprüfungen.
 »Nachahmen« braucht dort keinen Satz. Bei den meisten Mail-Anbietern kommen
 Anmelde-Codes für `+test` im eigenen Postfach an; man kann sich also auch
 direkt als Testkonto anmelden.
+
+## Einstieg für Lehrkräfte
+
+`/lehrmaterial-einstieg` (`src/content/lehrmaterial/lehrmaterial-einstieg/`)
+erklärt neuen Lehrkräften die erste Stunde: Anmeldung mit den Codes am Beamer,
+die Reiter der Klassenseite, Abgaben ansehen, das Testkonto und »Nachahmen«,
+die Notiz für Lehrkräfte und was der Server speichert. Die Klassenseite weist
+mit »Neu hier?« darauf hin, bis die Lehrkraft den Hinweis ausblendet (in
+diesem Browser); der Link neben der Überschrift bleibt. Im Profil steht er
+über den Notizen für Lehrkräfte. Die Bilder sind von Hand gemacht, mit den
+E2E-Konten unter erfundenen Namen; nach Änderungen an der Klassenseite neu
+aufnehmen.

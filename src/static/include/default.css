@@ -2788,6 +2788,42 @@ h3[id] {
 }
 
 /* Class page: group, tabs, toolbar (class_board_page). */
+.class-board-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.3em 1em;
+}
+
+.class-help-link .bi {
+    margin-right: 0.4em;
+}
+
+.class-welcome {
+    display: flex;
+    align-items: center;
+    gap: 0.9em;
+    margin: 0.5em 0 1em;
+    padding: 0.8em 1em;
+    border: 1px solid #b6d4fe;
+    border-radius: 0.6em;
+    background-color: #eef5ff;
+}
+
+.class-welcome[hidden] {
+    display: none;
+}
+
+.class-welcome > .bi {
+    font-size: 1.6em;
+    color: #0b5ed7;
+}
+
+.class-welcome > div {
+    flex: 1;
+}
+
 .class-board-select .class-codes-show {
     margin-left: auto;
 }

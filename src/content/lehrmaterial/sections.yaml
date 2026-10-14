@@ -1,0 +1,10 @@
+# Seiten nur für Lehrkräfte (docs/teacher-access.md). Wer keine Lehrkraft
+# ist, bekommt unter /lehrmaterial-… eine 403.
+- key: lehrmaterial-start
+  label: Für Lehrkräfte
+  icon: /images/book.png
+  description: |
+    Wie der Workspace im Unterricht funktioniert: Anmeldung, Klassenseite,
+    Abgaben, ausprobieren und nachsehen.
+  entries:
+    - lehrmaterial-einstieg

@@ -270,6 +270,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Workspace mit CPU und RAM; eine Zeile leuchtet gelb, solange ihr Workspace
   arbeitet.
 
+- »Einstieg für Lehrkräfte« (nur für Lehrkräfte): Anmeldung mit den Codes am
+  Beamer, die Klassenseite, Abgaben, das Testkonto und was der Server
+  speichert, mit Bildern. Die Klassenseite und das Profil weisen darauf hin.
+
 ### Geändert
 
 - Sicherheit: Befehle, die Lernende in eine Aufgabe vom Typ `command` tippen,

@@ -424,3 +424,17 @@
         });
     });
 })();
+
+// »Neu hier?« on the class page, until the teacher hides it (this browser).
+(function () {
+    const box = document.querySelector('.class-welcome');
+    if (!box) return;
+    const KEY = 'hackschule-class-welcome-hidden';
+    let hidden = false;
+    try { hidden = localStorage.getItem(KEY) === '1'; } catch (e) {}
+    box.hidden = hidden;
+    box.querySelector('.class-welcome-close').addEventListener('click', () => {
+        box.hidden = true;
+        try { localStorage.setItem(KEY, '1'); } catch (e) {}
+    });
+})();
