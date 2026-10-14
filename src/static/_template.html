@@ -586,7 +586,41 @@ function initialize_right_scrolled_images() {
     });
 }
 
+// Handbuch tables on a phone (default.css, .reference-table below 576px):
+// each row is a block, the cells below each other. Cells get their column
+// heading as a label (data-label) where the value alone would not say what
+// it is: in a column of short values, and in every column of a table whose
+// rows begin with a heading of their own. Short values stand side by side
+// (reference-cell-inline).
+function prepare_reference_tables() {
+    document.querySelectorAll('table.reference-table').forEach(function (table) {
+        const heads = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+        const rows = Array.from(table.querySelectorAll('tbody tr'));
+        const columns = [];
+        rows.forEach(function (tr) {
+            let col = 0;
+            Array.from(tr.children).forEach(function (cell) {
+                (columns[col] = columns[col] || []).push(cell);
+                col += cell.colSpan || 1;
+            });
+        });
+        const longest = columns.map(cells => Math.max(0, ...cells.map(c => c.textContent.trim().length)));
+        rows.forEach(function (tr) {
+            const rowHead = tr.firstElementChild && tr.firstElementChild.tagName === 'TH' && tr.children.length > 1;
+            let col = 0;
+            Array.from(tr.children).forEach(function (cell) {
+                const short = longest[col] <= 18;
+                if (cell.tagName === 'TD' && col > 0 && heads[col] && (rowHead || short)) cell.dataset.label = heads[col];
+                if (cell.tagName === 'TD' && col > 0 && short && !rowHead) cell.classList.add('reference-cell-inline');
+                col += cell.colSpan || 1;
+            });
+        });
+        table.classList.add('reference-table-prepared');
+    });
+}
+
 window.addEventListener('DOMContentLoaded', function() {
+    prepare_reference_tables();
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         system_brightness = 'dark';
     }

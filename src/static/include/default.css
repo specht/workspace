@@ -3983,6 +3983,62 @@ h3[id] {
     white-space: nowrap;
 }
 
+/* On a phone a Handbuch table is a list: each row a block, its cells below
+   each other, short values side by side, labelled with their column
+   (prepare_reference_tables in _template.html). */
+@media (max-width: 575.98px) {
+    .table.reference-table.reference-table-prepared,
+    .reference-table-prepared tbody,
+    .reference-table-prepared tr,
+    .reference-table-prepared td,
+    .reference-table-prepared th {
+        display: block;
+        width: auto;
+    }
+
+    .reference-table-prepared thead {
+        display: none;
+    }
+
+    .reference-table-prepared tr {
+        padding: 0.45em 0;
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+
+    .table.reference-table-prepared tr > td,
+    .table.reference-table-prepared tr > th {
+        padding: 0.1em 0;
+        border: 0;
+        white-space: normal;
+        text-align: left;
+        background: transparent;
+    }
+
+    .table.reference-table-prepared tr > th {
+        font-weight: 600;
+    }
+
+    .table.reference-table-prepared td.reference-cell-inline {
+        display: inline-block;
+        margin-right: 1.1em;
+    }
+
+    .reference-table-prepared td:empty {
+        display: none;
+    }
+
+    .reference-table-prepared td[data-label]::before {
+        content: attr(data-label) ": ";
+        color: var(--bs-secondary-color);
+    }
+
+    .reference-table-prepared tr.minicpu-family {
+        padding: 0.3em 0.4em;
+        margin-top: 0.6em;
+        background-color: var(--bs-tertiary-bg);
+    }
+}
+
 /* A task card at work (tasks.js setBusy): the spinner where the icon was. */
 .task-submit .spinner-border {
     margin-right: 0.4em;

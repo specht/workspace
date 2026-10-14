@@ -534,6 +534,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   kannte die Seite nicht), die Aktivität nutzte das x86-Schema von NASM.
   Ein Test prüft, dass jede Sprache an einem Code-Block bekannt ist; dabei
   fiel ```` ```javascript ```` auf (p5.js), das jetzt wie `js` gefärbt wird.
+- Handbuch-Tabellen auf dem Handy: Jede Zeile steht als Block untereinander,
+  kurze Werte nebeneinander und mit ihrer Spaltenüberschrift beschriftet
+  (»Bytes: 2«). Nichts ist mehr breiter als der Bildschirm.
+- Ein Test für die Erweiterungen der Leistungsüberprüfungen braucht kein
+  `zip` mehr, das im Ruby-Image fehlt.
 - Die Listen der erzeugten Screenshots (`.tutorial-screenshots.json`) sind
   nach Namen sortiert. Ein Rendern in anderer Reihenfolge ändert die Datei
   nicht mehr.
