@@ -14,7 +14,9 @@ import {
     frameTimes,
     parseFps,
     parseRecordSeconds,
+    parseVariants,
     sha256,
+    variantTargets,
     videoEncodeArgs,
 } from '../plan.js';
 
@@ -63,6 +65,20 @@ test('record and fps are checked, and only videos record', () => {
     assert.throws(() => checkRecordForTarget('sphere.webp', 8), /needs a <video>/);
     checkRecordForTarget('animation1.mp4', 8);
     checkRecordForTarget('sphere.webp', null);
+});
+
+test('variants name one file per combination, in recipe order', () => {
+    assert.deepEqual(variantTargets('box.webp', ['dark', 'anaglyph']), [
+        { on: ['dark'], target: 'box-dark.webp' },
+        { on: ['anaglyph'], target: 'box-anaglyph.webp' },
+        { on: ['dark', 'anaglyph'], target: 'box-dark-anaglyph.webp' },
+    ]);
+    assert.deepEqual(variantTargets('a/spin.mp4', ['dark']), [{ on: ['dark'], target: 'a/spin-dark.mp4' }]);
+    assert.deepEqual(variantTargets('box.webp', undefined), []);
+    assert.deepEqual(parseVariants(' dark  anaglyph '), ['dark', 'anaglyph']);
+    assert.throws(() => parseVariants('dark dark'), /twice/);
+    assert.throws(() => parseVariants('Dark'), /Invalid/);
+    assert.throws(() => parseVariants('a b c d'), /one to three/);
 });
 
 test('frames start at zero and are evenly spaced', () => {

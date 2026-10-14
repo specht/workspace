@@ -77,6 +77,32 @@ export function frameTimes(seconds, fps) {
 
 // What later shots depend on: the actions and the page layout they ran at.
 // Crops, the output name and capture settings shape only this shot's file.
+// The files a shot with variants writes besides its own: one per non-empty
+// combination of variants switched on, named in recipe order
+// (variants: dark anaglyph -> x-dark.webp, x-anaglyph.webp, x-dark-anaglyph.webp).
+export function variantTargets(target, variants = []) {
+    const extension = target.slice(target.lastIndexOf('.'));
+    const base = target.slice(0, -extension.length);
+    const result = [];
+    for (let mask = 1; mask < (1 << variants.length); mask += 1) {
+        const on = variants.filter((_, index) => mask & (1 << index));
+        result.push({ on, target: `${base}-${on.join('-')}${extension}` });
+    }
+    return result;
+}
+
+export function parseVariants(value) {
+    const names = value.trim().split(/\s+/).filter(Boolean);
+    if (names.length === 0 || names.length > 3) {
+        throw new Error(`variants needs one to three names, got: ${value}`);
+    }
+    for (const name of names) {
+        if (!/^[a-z][a-z0-9]*$/.test(name)) throw new Error(`Invalid variant name: ${name}`);
+    }
+    if (new Set(names).size !== names.length) throw new Error(`A variant is named twice: ${value}`);
+    return names;
+}
+
 export function stateParts(shot) {
     return { tab: shot.tab, viewport: shot.viewport, zoom: shot.zoom, actions: shot.actions };
 }

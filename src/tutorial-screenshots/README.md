@@ -179,11 +179,15 @@ viewport: WIDTHxHEIGHT
 zoom: NUMBER
 crop-top: PERCENT%
 crop-bottom: PERCENT%
+crop-left: PERCENT%
+crop-right: PERCENT%
+crop-element: SELECTOR
 crop-terminal-lines: NUMBER|auto
 crop-terminal-skip-top: NUMBER
 crop-terminal-skip-bottom: NUMBER
 show-mouse
 sharp-canvas
+variants: NAME [NAME [NAME]]
 ```
 
 `tab` selects both the page to capture and the page used by the general
@@ -268,6 +272,19 @@ button does not remain in its hover state.
 `click`, `hold`, `move-mouse` and `select-option` give up after 10 seconds
 when their element does not show up or cannot be used: they address something
 that is already on screen, and a mistyped selector should fail fast.
+
+`variants: NAMES` captures the shot (image or video) once more for every
+combination of the named variants switched on. The tutorial's hooks switch
+them: `variants: { NAME: async ({ page, on, timeout }) => … }` in
+`tutorial-screenshot-hooks.mjs`, where `on` says whether this variant should
+be on. The shot itself is captured with all of them off, and they are off
+again afterwards, also when the shot is only replayed. The extra files are
+named after the variants in recipe order: `variants: dark anaglyph` on
+`box.webp` writes `box-dark.webp`, `box-anaglyph.webp` and
+`box-dark-anaglyph.webp`. The site knows the names `dark` and `anaglyph`
+(main.rb `add_media_variants`, `media_variants.js`): the dark file in the
+dark theme, the anaglyph file once the reader switches on the glasses button
+in the image's corner. A missing combination falls back to the closest one.
 
 `sharp-canvas` renders the Workspace at capture resolution for this shot.
 Normally the Workspace renders at its layout scale and the capture enlarges it:
@@ -457,6 +474,14 @@ integers and require `crop-terminal-lines`.
 
 `crop-terminal-lines` requires `tab: workspace` and cannot be combined with
 `crop-top` or `crop-bottom`; those combinations are validation errors.
+
+`crop-left` and `crop-right` cut the sides off, in percent of the width like
+`crop-top` and `crop-bottom`, for a detail such as one corner of the status bar.
+They work for screenshots, not for videos, PDF pages or graphs.
+
+`crop-element: SELECTOR` crops a screenshot to exactly the box of the first
+element the CSS selector matches, such as the screen of an emulator. It
+replaces the other crops.
 
 ### Files and editor state
 

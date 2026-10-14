@@ -26,6 +26,8 @@ import {
     isVideoTarget,
     parseFps,
     parseRecordSeconds,
+    parseVariants,
+    variantTargets,
     videoEncodeArgs,
 } from './plan.js';
 import { chromium } from 'playwright';
@@ -325,6 +327,12 @@ async function loadTutorialScreenshotHooks(tutorialDirectory) {
         throw new Error('tutorial-screenshot-hooks.mjs actions must map names to functions');
     }
 
+    const variants = hooks.variants ?? {};
+    if (typeof variants !== 'object' ||
+        Object.values(variants).some(variant => typeof variant !== 'function')) {
+        throw new Error('tutorial-screenshot-hooks.mjs variants must map names to functions');
+    }
+
     const rawWriteFileSubdirectory = hooks.writeFileSubdirectory == null
         ? ''
         : `${hooks.writeFileSubdirectory}`.trim();
@@ -337,7 +345,21 @@ async function loadTutorialScreenshotHooks(tutorialDirectory) {
         waitForPreview: hooks.waitForPreview ?? null,
         setPreviewTime: hooks.setPreviewTime ?? null,
         actions,
+        variants,
     };
+}
+
+// variants: NAMES switches each variant through variants.NAME({ page, on })
+// from the tutorial's hooks; on lists the ones to switch on, all others go off.
+async function setVariants(shot, hooks, on) {
+    const page = requirePageForTab(shot.tab, 'variants');
+    for (const name of shot.variants) {
+        const run = hooks?.variants?.[name];
+        if (!run) {
+            throw new Error(`variants: ${name} needs variants.${name} in tutorial-screenshot-hooks.mjs`);
+        }
+        await run({ page, on: on.includes(name), timeout: 60_000 });
+    }
 }
 
 // hook: NAME ARGS runs actions.NAME from the tutorial's hooks on the page the
@@ -447,6 +469,8 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
         zoom: DEFAULT_PROFILE.zoom,
         cropTop: 0,
         cropBottom: 0,
+        cropLeft: 0,
+        cropRight: 0,
         cropTerminalLines: null,
         cropTerminalSkipTop: 0,
         cropTerminalSkipBottom: 0,
@@ -633,6 +657,12 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             cropSource = source;
             cropBottomSpecified = true;
             recipe.cropBottom = valueAtSource(source, () => parsePercent(match[1]));
+        } else if ((match = line.match(/^crop-left:\s*(.+)$/))) {
+            cropSource = source;
+            recipe.cropLeft = valueAtSource(source, () => parsePercent(match[1]));
+        } else if ((match = line.match(/^crop-right:\s*(.+)$/))) {
+            cropSource = source;
+            recipe.cropRight = valueAtSource(source, () => parsePercent(match[1]));
         } else if (line.startsWith('crop-terminal-lines:')) {
             cropSource = source;
             recipe.cropTerminalLines = valueAtSource(
@@ -651,10 +681,15 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
                 source,
                 () => parseTerminalLineSkip(match[1], 'crop-terminal-skip-bottom'),
             );
+        } else if ((match = line.match(/^crop-element:\s*(?:selector:)?(.+)$/))) {
+            cropSource = source;
+            recipe.cropElement = match[1].trim();
         } else if (line === 'show-mouse') {
             recipe.showMouse = true;
         } else if (line === 'sharp-canvas') {
             recipe.sharpCanvas = true;
+        } else if ((match = line.match(/^variants:\s*(.+)$/))) {
+            recipe.variants = valueAtSource(source, () => parseVariants(match[1]));
         } else if ((match = line.match(/^pdf-page:\s*(\S+)\s+(\d+)(?:\s+(.+))?$/))) {
             recipe.pdfPage = {
                 path: valueAtSource(source, () => safeRelativePath(match[1])),
@@ -704,6 +739,12 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             lastSource || recipe[SOURCE_LOCATION],
         );
     }
+    if (recipe.variants && (recipe.pdfPage || recipe.gitGraph)) {
+        throw withSourceError(
+            new Error('variants needs a screenshot or a video, not pdf-page or git-graph'),
+            lastSource || recipe[SOURCE_LOCATION],
+        );
+    }
     if (recipe.showMouse && recipe.record != null) {
         throw withSourceError(new Error('show-mouse works for images, not with record'), lastSource || recipe[SOURCE_LOCATION]);
     }
@@ -714,6 +755,27 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
         throw withSourceError(
             new Error('record cannot be combined with terminal crops or terminal-scroll-back'),
             lastSource || recipe[SOURCE_LOCATION],
+        );
+    }
+    if (recipe.cropElement && (recipe.cropTop > 0 || recipe.cropBottom > 0 || recipe.cropLeft > 0 ||
+        recipe.cropRight > 0 || recipe.cropTerminalLines != null || recipe.record != null ||
+        recipe.pdfPage || recipe.gitGraph)) {
+        throw withSourceError(
+            new Error('crop-element replaces the other crops and works for screenshots only'),
+            cropSource || lastSource || recipe[SOURCE_LOCATION],
+        );
+    }
+    if (recipe.cropLeft + recipe.cropRight >= 0.98) {
+        throw withSourceError(
+            new Error('Left and right crop leave no useful screenshot area'),
+            cropSource || lastSource || recipe[SOURCE_LOCATION],
+        );
+    }
+    if ((recipe.cropLeft > 0 || recipe.cropRight > 0) &&
+        (recipe.record != null || recipe.pdfPage || recipe.gitGraph)) {
+        throw withSourceError(
+            new Error('crop-left and crop-right work for screenshots only'),
+            cropSource || lastSource || recipe[SOURCE_LOCATION],
         );
     }
     if (recipe.cropTop + recipe.cropBottom >= 0.98) {
@@ -861,6 +923,13 @@ async function parseTutorial(markdown, markdownPath) {
         }
         if (recipe.sharpCanvas) {
             resolved.sharpCanvas = true;
+        }
+        // Only shots that crop sideways carry these, so all others hash as before.
+        if (recipe.cropLeft > 0) resolved.cropLeft = recipe.cropLeft;
+        if (recipe.cropRight > 0) resolved.cropRight = recipe.cropRight;
+        if (recipe.cropElement) resolved.cropElement = recipe.cropElement;
+        if (recipe.variants) {
+            resolved.variants = recipe.variants;
         }
         // Only graphs carry this, so images hash exactly as before.
         // Only PDF pages carry this, so images hash exactly as before.
@@ -2668,6 +2737,21 @@ async function captureShot(shot, tutorialDirectory) {
         );
         let heightPixels =
             shot.viewport.height - topPixels - bottomPixels;
+        let leftPixels = Math.round(shot.viewport.width * (shot.cropLeft || 0));
+        let widthPixels = shot.viewport.width - leftPixels -
+            Math.round(shot.viewport.width * (shot.cropRight || 0));
+
+        // crop-element: the picture is exactly that element's box.
+        if (shot.cropElement) {
+            const element = page.locator(shot.cropElement).first();
+            await element.waitFor({ state: 'visible', timeout: ACTION_TIMEOUT_MS });
+            const box = await element.boundingBox();
+            if (!box) throw new Error(`crop-element could not measure ${shot.cropElement}`);
+            leftPixels = box.x * metrics.deviceScaleFactor;
+            topPixels = box.y * metrics.deviceScaleFactor;
+            widthPixels = box.width * metrics.deviceScaleFactor;
+            heightPixels = box.height * metrics.deviceScaleFactor;
+        }
 
         // Important: measure the terminal only AFTER terminal-scroll-back has
         // changed the visible xterm rows.
@@ -2724,10 +2808,10 @@ async function captureShot(shot, tutorialDirectory) {
                     fromSurface: true,
                     captureBeyondViewport: false,
                     clip: {
-                        x: 0,
+                        x: leftPixels / metrics.deviceScaleFactor,
                         y: topPixels / metrics.deviceScaleFactor,
                         width:
-                            shot.viewport.width /
+                            widthPixels /
                             metrics.deviceScaleFactor,
                         height:
                             heightPixels /
@@ -2744,7 +2828,7 @@ async function captureShot(shot, tutorialDirectory) {
 
             const actual = pngDimensions(png);
             const expected = scalePixelDimensions(
-                shot.viewport.width,
+                widthPixels,
                 heightPixels,
                 DEFAULT_PROFILE.captureScale,
             );
@@ -2968,8 +3052,10 @@ async function capturePdfPage(shot, tutorialDirectory) {
 function screenshotOutputDimensions(shot) {
     const topPixels = Math.round(shot.viewport.height * shot.cropTop);
     const bottomPixels = Math.round(shot.viewport.height * shot.cropBottom);
+    const leftPixels = Math.round(shot.viewport.width * (shot.cropLeft || 0));
+    const rightPixels = Math.round(shot.viewport.width * (shot.cropRight || 0));
     return scalePixelDimensions(
-        shot.viewport.width,
+        shot.viewport.width - leftPixels - rightPixels,
         shot.viewport.height - topPixels - bottomPixels,
         DEFAULT_PROFILE.captureScale,
     );
@@ -3047,7 +3133,9 @@ async function buildGenerationPlan(payload) {
         const target = path.join(tutorialDirectory, shot.target);
         const previous = oldManifest.screenshots?.[shot.target];
         let exists = true;
-        try { await fs.access(target); } catch { exists = false; }
+        for (const file of [shot.target, ...variantTargets(shot.target, shot.variants).map(variant => variant.target)]) {
+            try { await fs.access(path.join(tutorialDirectory, file)); } catch { exists = false; }
+        }
         const needsGeneration = force || !exists ||
             !entryIsCurrent(previous, shot, { environmentFingerprint, workspaceLook });
         stale.push(needsGeneration);
@@ -3307,18 +3395,39 @@ async function generateTutorial(payload, progressJob = null) {
             }
         }
 
+        // The shot itself shows every variant off, also when it is only
+        // replayed, so the next shot starts from the same state either way.
+        if (shot.variants) {
+            try {
+                await setVariants(shot, tutorialHooks, []);
+            } catch (error) {
+                throw withSourceError(error, shotSource);
+            }
+        }
+
         if (stale[index]) {
             const targetSource = shot[TARGET_LOCATION] || shotSource;
             console.log(`  line ${targetSource?.line ?? '?'}: capture ${shot.target}`);
-            let outputSha256;
-            try {
-                outputSha256 = shot.pdfPage
-                    ? await capturePdfPage(shot, tutorialDirectory)
+            const capture = (target) => {
+                const variantShot = { ...shot, target };
+                return shot.pdfPage
+                    ? capturePdfPage(variantShot, tutorialDirectory)
                     : shot.gitGraph
-                    ? await captureGitGraph(shot, tutorialDirectory)
+                    ? captureGitGraph(variantShot, tutorialDirectory)
                     : shot.record != null
-                        ? await captureVideo(shot, tutorialDirectory, tutorialHooks)
-                        : await captureShot(shot, tutorialDirectory);
+                        ? captureVideo(variantShot, tutorialDirectory, tutorialHooks)
+                        : captureShot(variantShot, tutorialDirectory);
+            };
+            let outputSha256;
+            const variantSha256 = {};
+            try {
+                outputSha256 = await capture(shot.target);
+                for (const variant of variantTargets(shot.target, shot.variants)) {
+                    console.log(`  capture ${variant.target}`);
+                    await setVariants(shot, tutorialHooks, variant.on);
+                    variantSha256[variant.target] = await capture(variant.target);
+                }
+                if (shot.variants) await setVariants(shot, tutorialHooks, []);
             } catch (error) {
                 throw withSourceError(error, targetSource);
             }
@@ -3329,6 +3438,9 @@ async function generateTutorial(payload, progressJob = null) {
                 workspace_look: workspaceLook,
                 output_sha256: outputSha256,
             };
+            if (shot.variants) {
+                nextManifest.screenshots[shot.target].variants = variantSha256;
+            }
             if (progressJob) {
                 Object.assign(progressJob.screenshots[index], {
                     stale: false,
