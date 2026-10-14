@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <script type="text/javascript" src="umd.js"></script>
-    <title>TIC-80 tiny computer</title>
+    <title>TIC-80</title>
 
     <style type="text/css">
         @font-face {
@@ -85,12 +85,13 @@
     <div class="game" style="margin: 0; position: relative; background: #1a1c2c;">
         <div id="game-frame" style="cursor: pointer; position: absolute; margin: 0 auto; opacity: 1; background: #1a1c2c; width: 100%; height: 100%;">
             <div style="text-align: center; color: white; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
-                <p style="margin: 0; font-family: '04b03Regular';">- CLICK TO PLAY -</p>
+                <p style="margin: 0; font-family: '04b03Regular';">- KLICKEN ZUM STARTEN -</p>
             </div>
         </div>
 
-        <canvas style="width: 100%; height: 100%; margin: 0 auto; display: block; image-rendering: pixelated;"
+        <canvas style="width: 100%; height: 100%; margin: 0 auto; display: block; image-rendering: pixelated; touch-action: none;"
                 id="canvas"
+                tabindex="0"
                 oncontextmenu="event.preventDefault()"
                 onmousedown="window.focus()"></canvas>
     </div>
@@ -98,9 +99,9 @@
     <div id="add-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <p style="text-align: center;">Please choose a file to upload.</p>
+            <p style="text-align: center;">Wähle eine Datei aus, die TIC-80 bekommen soll.</p>
             <p style="text-align: center;">
-                <label class="upload-label" for="upload-input">Choose file...</label>
+                <label class="upload-label" for="upload-input">Datei auswählen …</label>
                 <input type="file" id="upload-input">
             </p>
         </div>
@@ -109,6 +110,7 @@
     <script type="text/javascript">
         var Module = {
             canvas: document.getElementById('canvas'),
+            arguments: [],
         };
 
         const gameFrame = document.getElementById('game-frame');
@@ -119,6 +121,8 @@
             document.head.appendChild(scriptTag);
 
             this.remove();
+            // Keys go to the canvas (TIC-80's sokol layer listens there).
+            document.getElementById('canvas').focus();
 
             window.addEventListener('keydown', function(e) {
                 if (e.ctrlKey && (e.code === 'KeyS' || e.code === 'KeyR' || e.code === 'KeyK')) {

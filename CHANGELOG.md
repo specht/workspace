@@ -429,6 +429,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   später immer wieder in <kbd>Strg</kbd><kbd>P</kbd> auf. Sie sind jetzt
   ausgeschlossen (`**/.hs-kbd-tutorial/**` in `files.exclude`); VS Code
   nimmt sie beim nächsten Start auch aus dem gespeicherten Verlauf.
+- TIC-80 1.3.1 statt einer Entwicklerversion von Juli, mit Forth als neuer
+  Sprache. Speichern im Workspace ist robuster: TIC-80 schickt nur die
+  Dateien, die es geändert hat. Hat sich eine Datei außerhalb von TIC-80
+  geändert (VS Code, `git pull`), bleibt sie, und der Stand aus TIC-80
+  landet daneben, etwa in `spiel (TIC-80).tic`. Bisher blockierte jede
+  Änderung im Ordner `TIC-80` alle weiteren Speicherungen, bis man neu lud,
+  und das verlor den Stand im Browser. Was außerhalb geändert wurde, sieht
+  TIC-80, sobald das Fenster wieder den Fokus hat. Meldungen auf Deutsch.
 - Git-Aufgaben (»Git kennt dich«, »Committet und gepusht« …) prüfen auch,
   wenn der Workspace aus ist: in einem Lese-Container mit demselben Image,
   ohne Netz, der Ordner nur lesbar. Bisher hieß es dann »Starte zuerst
@@ -484,6 +492,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Für Betreibende
 
+- TIC-80 einmal neu bauen: `./build-tic80.sh` (TIC-80 1.3.1, sokol-Schicht;
+  `tic80.js` und `tic80.wasm` stehen nicht in Git). Das Build-Image braucht
+  jetzt `gcc-multilib` für Forth; `docker/tic80/Dockerfile` installiert es.
 - Keine Änderung nötig. Die Prüfarten `scene` und `er` brauchen `node` im
   Workspace-Image (ist dort schon vorhanden). Für die ER-Werkstatt muss das
   Workspace-Image neu gebaut werden (`build-image.sh`).
