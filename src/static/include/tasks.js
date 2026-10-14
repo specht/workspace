@@ -206,15 +206,22 @@
     // message and solution are HTML rendered on the server from the task
     // file; anything from the student (command output, SQL results) is
     // escaped there before it becomes part of them.
+    // In view: the first paragraph of the message, the result of an SQL
+    // query and the way to the solution. Everything else (the rest of the
+    // message, hints, what the Workspace read) waits behind »Details«, so
+    // nobody has to read more than they ask for.
     function showFeedback(card, status, message, solution, read, warnings) {
         const box = card.querySelector('.task-feedback');
         box.className = 'task-feedback task-feedback-' + status;
         box.innerHTML = '';
+        const more = document.createElement('div');
         if (message) {
             const div = document.createElement('div');
             div.className = 'task-message';
             div.innerHTML = message;
             box.appendChild(div);
+            const blocks = Array.from(div.children);
+            if (blocks.length > 1) blocks.slice(1).forEach((el) => more.appendChild(el));
         }
         if (warnings && warnings.length > 0) {
             const ul = document.createElement('ul');
@@ -224,7 +231,7 @@
                 li.innerHTML = w;
                 ul.appendChild(li);
             });
-            box.appendChild(ul);
+            more.appendChild(ul);
         }
         if (read && card.dataset.type === 'sql' && status !== 'unavailable') {
             // SQL: the student's own result is the point, always in view.
@@ -233,16 +240,21 @@
             div.innerHTML = read;
             box.appendChild(div);
         } else if (read) {
+            const title = document.createElement('p');
+            title.className = 'task-read-title';
+            title.textContent = 'Was der Workspace gelesen hat:';
+            more.appendChild(title);
+            const body = document.createElement('div');
+            body.innerHTML = read;
+            more.appendChild(body);
+        }
+        if (more.childNodes.length > 0) {
             const details = document.createElement('details');
             details.className = 'task-read';
             const summary = document.createElement('summary');
-            summary.textContent = 'Was der Workspace gelesen hat';
+            summary.textContent = 'Details';
             details.appendChild(summary);
-            const body = document.createElement('div');
-            body.innerHTML = read;
-            details.appendChild(body);
-            // Could not check: what was looked at is the diagnosis, show it.
-            if (status === 'unavailable') details.open = true;
+            details.appendChild(more);
             box.appendChild(details);
         }
         if (solution) {

@@ -2450,6 +2450,15 @@ h3[id] {
     font-size: 90%;
 }
 
+.task-read-title {
+    margin: 0.6em 0 0.2em;
+    font-weight: 600;
+}
+
+.task-read .task-warnings {
+    margin-top: 0.4em;
+}
+
 .task-read > summary {
     cursor: pointer;
     color: #5c636a;
