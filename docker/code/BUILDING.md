@@ -12,7 +12,7 @@ five stages **sequentially**, saving each result as a locally tagged image:
 Re-running it uses BuildKit's existing cache for unchanged stage instructions.
 The final Dockerfile imports directories from those five images via `COPY`.
 
-`./build-image-optimized.sh` refreshes those stages, builds a *candidate*, clones the
+`./build-image.sh` refreshes those stages, builds a *candidate*, clones the
 real `specht/latex-tutorial` repository, compiles its six example documents
 with `latexmk -lualatex`, checks the bibliography and only then updates the
 `hs_code_server:latest` tag. A candidate that fails validation leaves the

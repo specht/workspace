@@ -6018,10 +6018,24 @@ class Main < Sinatra::Base
         respond(:yay => 'sure')
     end
 
+    # Only one's own databases: the main one (db_login, reset instead) and
+    # the ones created in the profile. Anything else was dropped before,
+    # for any logged-in user who knew a name.
+    def self.own_mysql_database?(email, db_login, name)
+        return false unless name.is_a?(String) && name.match?(/\A[A-Za-z0-9_]{1,64}\z/)
+        return true if name == db_login
+
+        !$neo4j.neo4j_query(<<~END_OF_STRING, {:email => email, :name => name}).first.nil?
+            MATCH (u:User {email: $email})-[:HAS]->(d:Database {type: 'mysql', name: $name})
+            RETURN d.name;
+        END_OF_STRING
+    end
+
     post '/api/delete_mysql_database' do
         assert(user_logged_in?)
         data = parse_request_data(:required_keys => [:database])
         mysql_database_lock(@session_user[:email]).synchronize do
+            assert(Main.own_mysql_database?(@session_user[:email], @session_user[:db_login], data[:database]), 'not_your_database')
             client = Mysql2::Client.new(
                 host: 'mysql',
                 username: 'root',

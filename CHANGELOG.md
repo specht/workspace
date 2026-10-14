@@ -549,6 +549,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   nach Namen sortiert. Ein Rendern in anderer Reihenfolge ändert die Datei
   nicht mehr.
 
+- Behoben: Jede angemeldete Person konnte über das Profil eine beliebige
+  MySQL-Datenbank löschen, wenn sie deren Namen kannte. Gelöscht werden
+  jetzt nur die eigene Datenbank (zurückgesetzt) und die selbst
+  angelegten; Namen aus anderen Zeichen als Buchstaben, Ziffern und `_`
+  werden abgelehnt.
 - Behoben: »Git kennt dich« schlug fehl, obwohl `git config --global` Name
   und E-Mail kannte. Die Prüfung lief mit dem `HOME` des Images (`/config`)
   statt mit dem der Lernenden (`/workspace`) und fand `.gitconfig` nicht.
@@ -585,7 +590,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Das Workspace-Image bekommt `php-mysql` (PDO-Treiber `pdo_mysql` und
   `mysqli`), damit PHP-Programme die MySQL-Datenbanken erreichen. Eine
   eigene, kleine Schicht kurz vor den Erweiterungen; Image neu bauen
-  (`./build-image-optimized.sh`).
+  (`./build-image.sh`).
 
 - TIC-80 einmal neu bauen: `./build-tic80.sh` (TIC-80 1.3.1, sokol-Schicht;
   `tic80.js` und `tic80.wasm` stehen nicht in Git). Das Build-Image braucht
