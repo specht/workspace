@@ -476,7 +476,7 @@ Lade die Seite mehrmals über einen Neustart der Geschichte. Mal hörst du die S
 Zufall eignet sich gut für kleine Überraschungen. Wichtige Folgen sind oft interessanter, wenn sie von vorherigen Entscheidungen abhängen.
 
 <!-- part: gruppen -->
-<!-- short: `<!-- Schule -- Büro -->` ganz oben auf einer Seite fasst Seiten im Graphen zu Bereichen zusammen. -->
+<!-- short: Eine Kommentarzeile ganz oben auf einer Seite, etwa mit `Schule -- Büro`, fasst Seiten im Graphen zu Bereichen zusammen. -->
 ## Graph-Gruppen
 
 Bei größeren Geschichten kannst du Seiten im Graphen zu Bereichen zusammenfassen.

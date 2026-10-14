@@ -246,6 +246,23 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   stellt. Dafür kennt die Prüfart `html` jetzt `elements`, `css` kennt
   `declares` und `linked_from`.
 
+- BIF »Interaktive Geschichten schreiben«: 13 Aufgaben entlang der
+  Geschichte bis zur eigenen Geschichte und ihrer Abgabe, eine Notiz für
+  Lehrkräfte und die neue Prüfart `story`, die liest, was BIF selbst über die
+  Geschichte herausgefunden hat (`.story-tools/analysis.json`), ohne etwas
+  auszuführen.
+- Handbuch »Interaktive Geschichten mit BIF« (`/reference/bif`): die
+  Schreibweisen zum Nachschlagen und was BIFs Meldungen unter »Problems«
+  bedeuten; die Aktivität bindet die Teile ein.
+- MySQL: nach `ORDER BY`, `LIMIT`, `COUNT`, `LIKE` und `DISTINCT` je eine
+  kurze Aufgabe.
+- Klassenseite: Abgaben öffnen sich im Browser, mit Dateien, Quelltext und
+  »Starten« für Webseiten und BIF-Geschichten. Sie laufen auf einem eigenen
+  Host, `abgaben.<host>`, in einer Sandbox ohne Zugriff auf die Sitzung der
+  Lehrkraft.
+- Klassenseite: Wer eine Gruppe betreut, ohne in ihr zu stehen, sieht die
+  eigenen Versuche und Abgaben in einer Zeile »Du (Lehrkraft)«.
+
 ### Geändert
 
 - Sicherheit: Befehle, die Lernende in eine Aufgabe vom Typ `command` tippen,
@@ -368,6 +385,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Bilder, mit den Ständen der Beispielseite in `lehrkraft/`) und für die
   geklonte Shower-Vorlage.
 
+- Aufgabenkarten: klarer und lebendiger. Farbe zeigt den Stand, Antworten
+  sind Kacheln, ein gelöster Haken erscheint animiert neben dem Knopf. Was
+  ein Check liest, steht hinter einem (i); Einzelheiten eines Ergebnisses
+  und die Lösung öffnen sich erst auf Nachfrage.
+- Farben: Der Farbmischer springt nicht mehr, und der Hinweis auf Farben,
+  die ein Bildschirm nicht zeigen kann, ist weg.
+- Handbuch: Die Seite heißt »Tastatur-Shortcuts«.
+
 ### Für Betreibende
 
 - Keine Änderung nötig. Die Prüfarten `scene` und `er` brauchen `node` im
@@ -399,4 +424,6 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   `/internal/anaglyph-viewer/`) und zu `kenney.nl` (Modelle, erst wenn eine
   Szene sie braucht). Ohne Netz gibt es keine Bilder; Abgaben funktionieren
   trotzdem.
-
+- Abgaben im Browser kommen von `abgaben.<host>`. Der Platzhalter-Eintrag
+  im DNS und das Zertifikat für `*.<host>` decken das schon ab; die
+  nginx-Konfiguration schreibt der Server selbst.
