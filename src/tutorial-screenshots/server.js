@@ -1681,27 +1681,38 @@ async function waitForEditorSettled(page) {
 }
 
 async function openFile(relativePath) {
-    await workspace.keyboard.press('Control+P');
-
     const input = quickInput(workspace);
-    await input.waitFor({ state: 'visible', timeout: 10_000 });
-    await input.fill(relativePath);
-
     const basename = path.posix.basename(relativePath);
     const parent = path.posix.basename(path.posix.dirname(relativePath));
 
-    await workspace.waitForFunction(
-        ({ basename, parent }) =>
-            [...document.querySelectorAll(
-                '.quick-input-list .monaco-list-row'
-            )].some(row => {
-                const text = row.innerText || '';
-                return text.includes(basename) &&
-                    (parent === '.' || text.includes(parent));
-            }),
-        { basename, parent },
-        { timeout: 10_000 },
-    );
+    // Quick Open knows a file a recipe just wrote only once VS Code's file
+    // index has caught up, which takes from no time to several seconds. Ask
+    // again until it lists the file, as a person would.
+    const deadline = Date.now() + 30_000;
+    for (;;) {
+        await workspace.keyboard.press('Control+P');
+        await input.waitFor({ state: 'visible', timeout: 10_000 });
+        await input.fill(relativePath);
+        const found = await workspace.waitForFunction(
+            ({ basename, parent }) =>
+                [...document.querySelectorAll(
+                    '.quick-input-list .monaco-list-row'
+                )].some(row => {
+                    const text = row.innerText || '';
+                    return text.includes(basename) &&
+                        (parent === '.' || text.includes(parent));
+                }),
+            { basename, parent },
+            { timeout: 3_000 },
+        ).then(() => true, () => false);
+        if (found) break;
+        await input.press('Escape');
+        await input.waitFor({ state: 'hidden', timeout: 10_000 });
+        if (Date.now() > deadline) {
+            throw new Error(`open-file: Quick Open does not list ${relativePath}`);
+        }
+        await workspace.waitForTimeout(1_000);
+    }
 
     await input.press('Enter');
     await input.waitFor({ state: 'hidden', timeout: 10_000 });

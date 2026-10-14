@@ -442,7 +442,8 @@ integers and require `crop-terminal-lines`.
 ### Files and editor state
 
 `open-file` opens a Workspace file through Quick Open and waits for the Monaco
-editor to settle. `close-tab` closes an editor tab by its exact label and is a
+editor to settle. A file a recipe has just written may take a few seconds to
+appear in Quick Open; `open-file` asks again until it does (up to 30 seconds). `close-tab` closes an editor tab by its exact label and is a
 no-op when that tab is already closed.
 
 `wait-for-file` waits up to 60 seconds for a file below the screenshot user's
@@ -509,7 +510,11 @@ What HEAD stands for (its commit, tree and blobs) is in full colour, older
 history faded, author details hidden. Commits get new ids on every render
 (their dates change); blobs and trees keep theirs, so the text may name them
 (»Hello, world!« is always `af5626b`). The graphs and the screenshots around
-them come from the same repository, so their ids agree with each other.
+them come from the same repository, so their ids agree with each other, as
+long as they come from the same run: every replay makes new commits, and
+`--stale` captures only the stale files. After changing a Git recipe, render
+the whole tutorial (`recreate-screenshots.rb git`) so that screenshots and
+graphs show the same commit ids again.
 
 `terminal-wait-for-prompt` also accepts the second line of bash-git-prompt
 (`19:09 $`), which the Git tutorial installs halfway through.
