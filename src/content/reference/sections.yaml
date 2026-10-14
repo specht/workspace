@@ -73,3 +73,13 @@
     ER-Modelle als Text schreiben und in Tabellen übersetzen.
   entries:
     - er-modelle
+
+- key: reference-stories
+  label: Interaktive Geschichten
+  icon: /images/books.png
+  description: |
+    Die Schreibweisen von BIF zum Nachschlagen: Seiten, Entscheidungen,
+    Variablen und Bedingungen, Aussehen, Bilder und Zufall, und was die
+    Meldungen unter »Problems« bedeuten.
+  entries:
+    - bif

@@ -60,54 +60,6 @@
       "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
       "workspace_look": "4.138.0-ls366",
       "output_sha256": "a260b8bf7778c6873db64fa9116fab670f51979d632d308976017c527b2c24b6"
-    },
-    "theme-default.webp": {
-      "state_hash": "938d08291f61a90bc3891e76ad261a6bfa1e2c632711cc5a92b4f5526106e35d",
-      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "4bdb9a8332e03711ac3d9be70540c2188cd36b0177a7e8ac234bac813c90b2a9"
-    },
-    "theme-paper.webp": {
-      "state_hash": "6dd6ef90469dc8438642b1249a2984bd325be6a1e91c84f01a379db8cbcecf5e",
-      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "3fc7d7de575a84c99baee7de900684f6ae12163571fd5d880249be3554585904"
-    },
-    "theme-playful.webp": {
-      "state_hash": "3b8a46d0643355be1de489fdb4bacac455f711300b7bcd6b852764c7f9c34379",
-      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "6f4a8b69cb7b740f6da6e25c7ab79327d3cae87d0de9f42d480243e81ebde137"
-    },
-    "theme-mystery.webp": {
-      "state_hash": "1c849cecda7ee15726da4d42215ec135fa7b1e7b0e05d49bcc925ae5fdf299e5",
-      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "72ad82ae3b5fdbc0174a1c62b3ac913abea797af44051f619a7b56caa44a4aa2"
-    },
-    "theme-midnight.webp": {
-      "state_hash": "0ca1018b3b27e52f8be633a8fe625a05ac8730dedb49b9f8b5d9babde04b216c",
-      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "39f8605fb79e1bbf334456d40bacdff88b42f2034dcc656edc58f52d8863bbed"
-    },
-    "theme-terminal.webp": {
-      "state_hash": "73616a7fc9b4b0d90922e3482479712232806b1a90c74ad294d4c06758ee101a",
-      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "5d7ae955d42aca09eed7080a312474aa1dd58518bed0fed5963bf9784a23d7b5"
-    },
-    "story-image.webp": {
-      "state_hash": "8836e4888000507fe5db40285affa84b28362bd3de920ad99d4b0df9bb36e549",
-      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "71b66ef468ae75e05d1049dafb0eba157cf469f31672733d3a082c531f6baa78"
-    },
-    "grouped-graph.webp": {
-      "state_hash": "ade95a488289c2cc6e87fa2f5a52e80eb018a726d0ec592a79cde2c43ba6e974",
-      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "404015adab9d020b1ec2ad7f053f9817b29b45bb3ea7fcd9d04fcfafd656e5fa"
     }
   }
 }

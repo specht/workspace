@@ -3,6 +3,7 @@ image: bif.webp
 kind: projekt
 template: https://github.com/specht/bif.git
 template_name: der BIF-Vorlage
+reference: [workspace, bif]
 </div>
 
 <div
@@ -80,6 +81,8 @@ Falls du innerhalb einer Seite doch einmal eine Zwischenüberschrift brauchst, v
 <div class='hint'>
 Die Datei <code>1.md</code> hat bei BIF eine besondere Bedeutung: Jede Geschichte beginnt bei Seite 1.
 </div>
+
+Im Handbuch: _uses(seiten)
 
 ### Vorschau starten
 
@@ -177,6 +180,8 @@ Die Zeile
 ```
 
 besteht aus zwei wichtigen Teilen: in eckigen Klammern steht der Text, der angezeigt wird und in runden Klammern steht die Seitenzahl, mit der es bei dieser Entscheidung weitergehen soll.
+
+Im Handbuch: _uses(entscheidungen)
 
 _task(entscheidung)
 
@@ -306,6 +311,8 @@ Lokale Entscheidungen eignen sich zum Beispiel für:
 - das Betätigen eines Schalters
 - kleine Aktionen, die keinen neuen Ort benötigen
 
+Im Handbuch: _uses(lokal)
+
 _task(lokal)
 
 ## Variablen und Bedingungen
@@ -381,6 +388,8 @@ Wenn du »Nimm den Schlüssel« auswählst, wird das Skript ausgeführt und `has
 <img class='full full-shadow' src='take-key.webp' alt='Nach dem Aufnehmen des Schlüssels verschwindet die lokale Entscheidung aus der Geschichte.'>
 
 Die Geschichte hat sich damit zum ersten Mal etwas gemerkt. Solange du im Büro bleibst, sieht auch alles richtig aus: »Nimm den Schlüssel« ist bereits erledigt und kann nicht noch einmal ausgewählt werden.
+
+Im Handbuch: _uses(variablen)
 
 Jetzt lohnt sich aber ein kleiner Test:
 
@@ -577,6 +586,8 @@ Damit haben Variablen und Bedingungen unterschiedliche Aufgaben:
 - Eine **Bedingung** entscheidet anhand dieses Zustands, welcher Text und welche Entscheidungen gerade sinnvoll sind.
 - Eine bereits ausgeführte **lokale Entscheidung** ist nur für den aktuellen Besuch abgeschlossen. Bei einem späteren Besuch sorgt der gespeicherte Zustand zusammen mit Bedingungen dafür, dass die Seite trotzdem konsistent bleibt.
 
+Im Handbuch: _uses(bedingungen)
+
 _task(schluessel)
 
 <div class='hint'>
@@ -615,6 +626,8 @@ has_key = false;
 ```
 
 erneut ausgeführt und der Anfangszustand ist wieder hergestellt.
+
+Im Handbuch: _uses(ende)
 
 _task(ende)
 
@@ -669,6 +682,8 @@ BIF kann unter anderem auf folgende Probleme hinweisen:
 - Seiten, die von nirgendwo erreicht werden können
 - fehlende Bilder oder andere Dateien
 
+Im Handbuch: _uses(probleme)
+
 <div class='hint'>
 Schau beim Schreiben regelmäßig auf den Graphen und die Problems-Ansicht. Gerade bei größeren Geschichten findest du damit viele Fehler, bevor du die Geschichte komplett durchspielen musst.
 </div>
@@ -679,355 +694,35 @@ Mit den Bausteinen aus der kleinen Geschichte kannst du bereits viele interaktiv
 
 ### Aussehen anpassen
 
-Das Aussehen deiner Geschichte stellst du ganz oben in `1.md` ein. Dafür kannst du einen sogenannten **Front-Matter-Block** verwenden. Er steht noch vor dem Titel der Geschichte.
-Am einfachsten wählst du ein fertiges Theme:
-
-```markdown_wrap
----
-theme: mystery
----
-
-# Nach Schulschluss
-```
-
-BIF bringt mehrere Themes mit: `default`, `paper`, `playful`, `mystery`, `midnight` und `terminal`.
-Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details wie Abstände und abgerundete Ecken. Du kannst es deshalb einfach so verwenden, wie es ist.
-
-<div class='row'>
-    <!-- tutorial-screenshot
-    write-file: pages-starter/1.md <- file:theme-default.md.txt
-    wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
-    tab: preview
-    preview-reload
-    click: selector:.story-view-toggle
-    hold: 1.5s selector:.story-restart-control
-    move-mouse: Nach Schulschluss
-    zoom: 2
-    sleep: 0.5
-    -->
-    <div class='col-md-4 mb-3'>
-        <img src='theme-default.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im hellen Standard-Theme.'>
-    </div>
-    <!-- tutorial-screenshot
-    write-file: pages-starter/1.md <- file:theme-paper.md.txt
-    wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
-    tab: preview
-    preview-reload
-    zoom: 2
-    sleep: 0.5
-    -->
-    <div class='col-md-4 mb-3'>
-        <img src='theme-paper.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im cremefarbenen Paper-Theme mit Serifenschrift.'>
-    </div>
-    <!-- tutorial-screenshot
-    write-file: pages-starter/1.md <- file:theme-playful.md.txt
-    wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
-    tab: preview
-    preview-reload
-    zoom: 2
-    sleep: 0.5
-    -->
-    <div class='col-md-4 mb-3'>
-        <img src='theme-playful.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im Playful-Theme mit abgerundeten Flächen.'>
-    </div>
-    <!-- tutorial-screenshot
-    write-file: pages-starter/1.md <- file:theme-mystery.md.txt
-    wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
-    tab: preview
-    preview-reload
-    zoom: 2
-    sleep: 0.5
-    -->
-    <div class='col-md-4 mb-3'>
-        <img src='theme-mystery.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im dunklen Mystery-Theme.'>
-    </div>
-    <!-- tutorial-screenshot
-    write-file: pages-starter/1.md <- file:theme-midnight.md.txt
-    wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
-    tab: preview
-    preview-reload
-    zoom: 2
-    sleep: 0.5
-    -->
-    <div class='col-md-4 mb-3'>
-        <img src='theme-midnight.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im dunkelblauen Midnight-Theme.'>
-    </div>
-    <!-- tutorial-screenshot
-    write-file: pages-starter/1.md <- file:theme-terminal.md.txt
-    wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
-    tab: preview
-    preview-reload
-    zoom: 2
-    sleep: 0.5
-    -->
-    <div class='col-md-4 mb-3'>
-        <img src='theme-terminal.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im schwarzen Terminal-Theme mit grüner Monospace-Schrift.'>
-    </div>
-</div>
-
-Du kannst ein Theme aber auch verändern. Zum Beispiel:
-
-```markdown_wrap
----
-theme: midnight
-accent: "#ff7a18"
-font_heading: Bungee
----
-```
-
-`accent` ist die Akzentfarbe für Links und interaktive Elemente. Mit `font_heading` änderst du nur die Schrift der Überschriften.
-
-Du musst überhaupt kein Theme auswählen. Wenn du `theme:` weglässt, kannst du die Standarddarstellung selbst mit Farben und Schriften anpassen:
-
-```markdown_wrap
----
-background: "#fff7fb"
-text: "#382d38"
-accent: "#9d3b77"
-font_body: Nunito
-font_heading: Fredoka
----
-```
-
-Die drei Grundfarben haben unterschiedliche Aufgaben:
-
-- `background` – Hintergrund
-- `text` – normaler Text und Überschriften
-- `accent` – Links, Hervorhebungen und interaktive Elemente
-
-Die übrigen Farbtöne für Flächen, Rahmen und Schatten leitet BIF automatisch daraus ab. Du musst also nicht für jedes kleine Element eine eigene Farbe festlegen.
-
-Mit
-
-```markdown_wrap
-brightness: light
-```
-
-oder
-
-```markdown_wrap
-brightness: dark
-```
-
-kannst du eine helle oder dunkle Darstellung erzwingen. `brightness: system` folgt stattdessen der Einstellung des Geräts.
-
-Für `font_body` und `font_heading` kannst du den Namen einer Schrift von [Google Fonts](https://fonts.google.com/) eintragen. Schreibe den Namen genau so, wie er dort steht. BIF lädt die benötigten Schriftdateien beim Entwickeln automatisch herunter und speichert sie lokal im Ordner `bif-assets`. Diesen Ordner solltest du deshalb nicht selbst für Bilder oder andere Dateien verwenden.
-
-<div class='hint'>
-Gestaltung kann viel zur Stimmung beitragen. Eine Mystery-Geschichte darf anders aussehen als eine Komödie oder ein Terminal-Abenteuer. Achte aber darauf, dass der Text gut lesbar bleibt.
-</div>
+_include(bif#aussehen)
 
 ### Markdown
 
-Für die normalen Texte kannst du die üblichen Markdown-Schreibweisen verwenden.
-
-Fetter Text:
-
-```markdown_wrap
-Auf dem Tisch liegt ein **kleiner Schlüssel**.
-```
-
-Kursiver Text:
-
-```markdown_wrap
-Aus dem Nebenraum hörst du ein *leises Klopfen*.
-```
-
-Eine Zwischenüberschrift innerhalb einer Seite:
-
-```markdown_wrap
-## Ein Hinweis
-```
-
-Denke daran: `#` verwenden wir für den Titel der gesamten Geschichte. Für Unterüberschriften innerhalb einer Seite beginnt die Hierarchie bei `##`.
+_include(bif#markdown)
 
 ### Bilder
 
-Bilder speicherst du am besten innerhalb deines Geschichtenordners, zum Beispiel:
-
-```text
-pages-meine-geschichte/
-├── 1.md
-├── 2.md
-└── images/
-    └── door.jpg
-```
-
-In Markdown kannst du das Bild so einfügen:
-
-```markdown_wrap
-![Ein Schlüssel hängt an der Wand](key.jpg)
-```
-
-Der Text in den eckigen Klammern beschreibt das Bild und hilft zum Beispiel Menschen, die einen Screenreader verwenden.
-
-<!-- Screenshot: BIF-Seite mit Bild -->
-<!-- tutorial-screenshot
-write-file: pages-starter/1.md <- file:theme-default.md.txt
-write-file: pages-starter/3.md <- file:3-with-image.md.txt
-write-file: pages-starter/key.jpg <- file:key.jpg
-wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
-tab: preview
-preview-reload
-click: selector:.story-view-toggle
-hold: 1.5s selector:.story-restart-control
-click: Gehe in den Flur.
-wait-for-text: Sieh im Büro nach.
-sleep: 0.5
-click: Sieh im Büro nach.
-wait-for-text: Gehe zurück in den Flur.
-move-mouse: No problems
-sleep: 1.5
--->
-
-<img class='full full-shadow scroll-right' src='story-image.webp' alt='Ein Schlüsselbild ergänzt die Büroseite der Geschichte.'>
+_include(bif#bilder)
 
 ### Audio und Video
 
-Auch Audio- und Videodateien können Teil einer Geschichte sein:
-
-```html
-<audio controls src="audio/door.mp3"></audio>
-```
-
-oder:
-
-```html
-<video controls>
-    <source src="video/train.webm" type="video/webm">
-</video>
-```
+_include(bif#medien)
 
 ### Werte im Text
 
-Variablen können nicht nur `true` und `false`, sondern auch Zahlen oder Texte enthalten.
-
-Zum Beispiel:
-
-```html
-<script>
-points = 3;
-</script>
-```
-
-Mit doppelten eckigen Klammern kannst du einen Wert in den Text einsetzen:
-
-```markdown
-Du hast [[ points ]] Punkte.
-```
-
-Wenn eine Variable auf einer Seite einen Anfangswert bekommen soll, die mehrfach besucht werden kann, ist `??=` praktisch:
-
-```js
-points ??= 0;
-```
-
-Der Wert wird damit nur gesetzt, wenn `points` noch nicht existiert. Werte wie `0`, `false` oder ein bereits vorhandener Text bleiben unverändert.
+_include(bif#werte)
 
 ### Zufall
 
-Für manche Geschichten kann Zufall interessant sein.
-
-```js
-Math.w6()
-```
-
-würfelt mit einem sechsseitigen Würfel.
-
-```js
-Math.chance(50)
-```
-
-liefert mit einer Wahrscheinlichkeit von 50 Prozent `true`.
-
-Zum Ausprobieren kannst du zum Beispiel diesen Block auf eine Seite schreiben:
-
-```html_wrap
-<script>
-if (Math.chance(50)) {
-    print("Aus dem Treppenhaus hörst du Schritte.");
-} else {
-    print("Im Treppenhaus bleibt alles still.");
-}
-</script>
-```
-
-Lade die Seite mehrmals über einen Neustart der Geschichte. Mal hörst du die Schritte, mal bleibt es still.
-
-Zufall eignet sich gut für kleine Überraschungen. Wichtige Folgen sind oft interessanter, wenn sie von vorherigen Entscheidungen abhängen.
+_include(bif#zufall)
 
 ### Graph-Gruppen
 
-Bei größeren Geschichten kannst du Seiten im Graphen zu Bereichen zusammenfassen.
-
-Ganz oben in einer Seite kann zum Beispiel stehen:
-
-```markdown_wrap
-<!-- Schule -- Büro -->
-```
-
-Eine andere Seite könnte beginnen mit:
-
-```markdown_wrap
-<!-- Schule -- Flur -->
-```
-
-Diese Kommentare sind für die Leserinnen und Leser unsichtbar. Sie helfen nur dabei, den Graphen übersichtlich zu halten.
-
-<!-- Screenshot: Graph mit gruppierten Seiten -->
-<!-- tutorial-screenshot
-write-file: pages-starter/1.md <- file:1-with-groups.md.txt
-write-file: pages-starter/2.md <- file:2-with-groups.md.txt
-write-file: pages-starter/3.md <- file:3-with-groups.md.txt
-write-file: pages-starter/4.md <- file:4-with-groups.md.txt
-write-file: pages-starter/5.md <- file:5-with-groups.md.txt
-wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
-tab: preview
-preview-reload
-hold: 1.5s selector:.story-restart-control
-move-mouse: No problems
-click: Fit graph
-sleep: 0.5
--->
-<img class='full full-shadow' src='grouped-graph.webp' alt='Farbig hinterlegte Gruppen gliedern den Story-Graphen in mehrere Bereiche.'>
+_include(bif#gruppen)
 
 ### JavaScript
 
-Für normale Entscheidungen reichen die Markdown-Links fast immer aus:
-
-```markdown_wrap
-- [Gehe nach links.](5)
-- [Gehe nach rechts.](6)
-```
-
-JavaScript wird interessant, wenn Entscheidungen nicht einfach fest im Text stehen sollen, sondern erst aus Daten oder dem aktuellen Zustand der Geschichte entstehen.
-
-BIF stellt Skripten dafür unter anderem die Funktionen `print`, `presentChoice` und `goToPage` zur Verfügung. Das folgende Beispiel baut die Entscheidungsmöglichkeiten mit JavaScript zusammen. Wenn `has_key` den Wert `true` hat, kommt eine zusätzliche Möglichkeit dazu:
-
-```html_wrap
-<script>
-const choices = [
-    ["3", "Sieh im Büro nach."],
-    ["4", "Gehe ins Treppenhaus."]
-];
-
-if (has_key) {
-    print("Du spürst den kleinen Schlüssel in deiner Tasche.");
-    choices.push(["5", "Öffne den Materialschrank."]);
-}
-
-const target = await presentChoice(choices);
-await goToPage(target);
-</script>
-```
-
-`presentChoice` zeigt die erzeugten Entscheidungen an und liefert zurück, welcher Wert ausgewählt wurde. In diesem Beispiel ist das direkt die Nummer der Zielseite. `goToPage` öffnet anschließend diese Seite.
-
-Mit JavaScript könntest du auf diese Weise zum Beispiel Entscheidungen aus einer Liste erzeugen, kleine Rätsel programmieren oder Abläufe bauen, die mit normalen Markdown-Entscheidungen umständlich würden. Für die meisten Stellen einer Geschichte bleiben Markdown, Variablen und Bedingungen aber übersichtlicher.
-
-<div class='hint'>
-Benutze zusätzliche Technik nur dann, wenn sie deiner Geschichte etwas bringt. Mehr Variablen, Skripte oder Verzweigungen machen eine Geschichte nicht automatisch besser.
-</div>
+_include(bif#javascript)
 
 ## Eigene Geschichte
 
@@ -1048,6 +743,8 @@ export const path = "pages-meine-geschichte";
 ```
 
 Damit beginnt dein eigenes Projekt wieder ganz klein.
+
+Im Handbuch: _uses(eigener-ordner)
 
 _task(eigener-ordner)
 

@@ -8,7 +8,7 @@ Neben der Tür hängt ein kleiner Schlüssel an einem Haken.
 Der Haken neben der Tür ist leer.
 </p>
 
-![Ein Schlüssel hängt an der Wand](key.jpg)
+![Ein Schlüssel hängt an der Wand](images/key.jpg)
 
 - [Frage nach dem Materialschrank.](.){condition="!has_key"}
 
