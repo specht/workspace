@@ -636,6 +636,8 @@ Während deine Szene angezeigt wird, läuft im Hintergrund eine Uhr mit. Die Anz
 
 ```ini
 shade = on
+stroke = off
+fill = gold
 shape = torus
 rotate = 0, t * 30, 0
 ```
@@ -655,7 +657,7 @@ record: 6s
 -->
 
 <div style='text-align: center; margin: 1em 0;'>
-<video src='animation1.mp4' autoplay loop muted aria-label='Der Torus dreht sich gleichmäßig um die Y-Achse.'></video>
+<video src='animation1.mp4' autoplay loop muted aria-label='Ein goldener Torus dreht sich gleichmäßig um die Y-Achse.'></video>
 </div>  
 
 _task(umdrehung)
@@ -664,6 +666,8 @@ _task(umdrehung)
 
 ```ini
 shade = on
+stroke = off
+fill = orange
 shape = box
 rotate = cos(t * 2) * 10, 0, sin(t * 3) * 10
 ```
@@ -681,7 +685,7 @@ record: 6.28s
 -->
 
 <div style='text-align: center; margin: 1em 0;'>
-<video src='animation2.mp4' autoplay loop muted aria-label='Ein Würfel wackelt im Raum hin und her.'></video>
+<video src='animation2.mp4' autoplay loop muted aria-label='Ein orangefarbener Würfel wackelt im Raum hin und her.'></video>
 </div>
 
 **Aufgabe:** Erstelle eine Animation, bei der eine gelbe Sonne in der Mitte steht und eine blaue Erde um die Sonne kreist. Ein weißer Mond soll dabei um die Erde kreisen, und der Hintergrund ist schwarz wie das Weltall:
@@ -694,7 +698,7 @@ preview-reload
 tab: preview
 viewport: 1029x382
 hook: hide-controls
-hook: camera 50 20 100
+hook: camera 10 0 250
 record: 12s
 -->
 
