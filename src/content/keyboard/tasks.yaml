@@ -1,0 +1,56 @@
+# Aufgaben zum Keyboard-Tutorial. Format: docs/aufgaben.md.
+# Jede Aufgabe ist ein Kapitel des Tutorials (keyboard-Prüfung): erledigt,
+# wenn alle Schritte des Kapitels in /workspace/.hs-kbd-tutorial/.state.json
+# abgehakt sind. Die Schritte stehen in
+# src/vscode-extensions/keyboard-tutorial/tutorial/sections.yaml.
+format: 1
+activity: keyboard
+tasks:
+  - id: tastatur
+    title: Die Tastatur
+    prompt: Erledige im Keyboard-Tutorial das Kapitel »Die Tastatur«.
+    check:
+      type: keyboard
+      section: Die Tastatur
+
+  - id: navigieren
+    title: Navigieren im Dokument
+    prompt: Erledige das Kapitel »Navigieren im Dokument«.
+    check:
+      type: keyboard
+      section: Navigieren im Dokument
+
+  - id: markieren
+    title: Text markieren
+    prompt: Erledige das Kapitel »Text markieren«.
+    check:
+      type: keyboard
+      section: Text markieren
+
+  - id: bearbeiten
+    title: Text bearbeiten
+    prompt: Erledige das Kapitel »Text bearbeiten«.
+    check:
+      type: keyboard
+      section: Text bearbeiten
+
+  - id: suchen
+    title: Suchen und Ersetzen
+    prompt: Erledige das Kapitel »Suchen und Ersetzen«.
+    check:
+      type: keyboard
+      section: Suchen und Ersetzen
+
+  - id: mehrere-stellen
+    title: Mehrere Stellen gleichzeitig
+    prompt: Erledige das Kapitel »Mehrere Stellen gleichzeitig bearbeiten«.
+    check:
+      type: keyboard
+      section: Mehrere Stellen gleichzeitig bearbeiten
+
+  - id: code
+    title: Code bearbeiten
+    prompt: Erledige das Kapitel »Code bearbeiten«.
+    check:
+      type: keyboard
+      section: Code bearbeiten

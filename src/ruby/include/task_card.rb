@@ -145,6 +145,7 @@ module TaskCard
         size = ->(text) { h.(text.to_s.sub(/\A(\d+(?:\.\d+)?)\s*(B|kB|MB)\z/, '\\1 \\2')) }
         case check['type']
         when 'files' then "Sieht nach in #{path.(check['path'])}"
+        when 'keyboard' then "Liest #{path.('.hs-kbd-tutorial/.state.json')}, den Fortschritt des Keyboard-Tutorials"
         when 'html', 'css' then "Liest #{path.(check['file'])}"
         when 'references'
             files = (check['scan'] || []).map { |f| path.("#{check['root']}/#{f}") }

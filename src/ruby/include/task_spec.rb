@@ -5,6 +5,7 @@ require 'yaml'
 require_relative 'sql_check'
 require_relative 'er_check'
 require_relative 'schema_check'
+require_relative 'keyboard_check'
 require_relative 'scene_color'
 
 # Format and validation of an activity's tasks.yaml (see docs/aufgaben.md).
@@ -39,6 +40,7 @@ module TaskSpec
         'sql' => 'M6',
         'er' => 'M7',
         'schema' => 'M7',
+        'keyboard' => 'M7',
     }.freeze
 
     # Check types that need the network; they are never used in exams.
@@ -78,6 +80,7 @@ module TaskSpec
         'sql' => %w[same_result_as query_matches],
         'er' => %w[problem],
         'schema' => %w[problem],
+        'keyboard' => %w[problem],
     }.freeze
 
     class Error < StandardError
@@ -408,6 +411,10 @@ module TaskSpec
             # Reads information_schema of the person's database, as them.
             allowed += %w[tables setup]
             errors.concat(SchemaCheck.spec_errors(check))
+        when 'keyboard'
+            # Reads the Keyboard-Tutorial's state file in /workspace.
+            allowed += %w[section]
+            errors.concat(KeyboardCheck.spec_errors(check))
         end
         extra = check.keys - allowed
         errors << "unknown keys for #{type}: #{extra.join(', ')}" unless extra.empty?

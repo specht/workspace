@@ -4170,7 +4170,7 @@ class Main < Sinatra::Base
         members = class_members(group)
         states = class_board_states(members.map { |m| m[:email] }, activity_key)
         board = ClassBoard.build(members, tasks, states)
-        live = tasks.select { |t| (TaskCheck::FILE_TYPES + ['git']).include?(t[:type]) }
+        live = tasks.select { |t| TaskCheck::LIVE_TYPES.include?(t[:type]) }
         unless live.empty?
             io << "<div class='class-live' data-group='#{h.(group)}'>"
             io << "<span>Jetzt in den Workspaces nachsehen:</span>"
@@ -5049,7 +5049,7 @@ class Main < Sinatra::Base
             "#{params[:activity]}-#{params[:id]}#{suffix}.tar.gz")
     end
 
-    # Teachers: run a Workspace task (files, html, css, references, git) for
+    # Teachers: run a Workspace task (TaskCheck::LIVE_TYPES) for
     # every student of a group right now. Reads only; stores nothing, so the
     # students' own results stay as they are.
     post '/api/class/check_now' do
@@ -5060,7 +5060,7 @@ class Main < Sinatra::Base
         found = find_task(data[:task])
         halt 404 if found.nil?
         type = found[:task]['check']['type']
-        halt 400 unless (TaskCheck::FILE_TYPES + ['git']).include?(type)
+        halt 400 unless TaskCheck::LIVE_TYPES.include?(type)
 
         members = class_members(data[:group])
         results = {}

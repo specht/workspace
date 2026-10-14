@@ -9,6 +9,7 @@ require_relative 'scene_check'
 require_relative 'sql_check'
 require_relative 'er_check'
 require_relative 'schema_check'
+require_relative 'keyboard_check'
 
 # Checks a student's answer to a task (docs/aufgaben.md, »Prüfen«).
 #
@@ -20,8 +21,11 @@ require_relative 'schema_check'
 module TaskCheck
     ANSWER_TYPES = %w[answer choice number reflection].freeze
     FILE_TYPES = %w[files html css references].freeze
+    # Types the class board can check for a whole group at once: they only
+    # read files or git status (/api/class/check_now).
+    LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit code measure command scene sql er schema]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit code measure command scene sql er schema keyboard]).freeze
     LANGUAGE_NAMES = { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript' }.freeze
 
     # status:
@@ -85,6 +89,7 @@ module TaskCheck
         return check_sql(task, check, answer, sql, sql_env) if type == 'sql'
         return check_er(task, check, workspace, runner) if type == 'er'
         return check_schema(task, check, sql, sql_env) if type == 'schema'
+        return check_keyboard(task, check, workspace) if type == 'keyboard'
         return check_workspace(task, check, answer, workspace, git, runner) unless ANSWER_TYPES.include?(type)
 
         missing = variables_used(check).reject { |name| variables[name].is_a?(String) && !variables[name].empty? }
@@ -136,6 +141,17 @@ module TaskCheck
         status, message, read, note, problem = SchemaCheck.check(task, check, sql, env || {})
         Result.new(:status => status, :message => message, :read => read, :problem => problem,
             :warnings => note ? [note] : nil, :solution => status == :correct ? task['solution'] : nil)
+    end
+
+    # keyboard: one section of the Keyboard-Tutorial, from its state file
+    # (KeyboardCheck). Read like a file; the Workspace need not run.
+    def self.check_keyboard(task, check, workspace)
+        return Result.new(:status => :unavailable, :message => NO_WORKSPACE) if workspace.nil?
+
+        state, problem = KeyboardCheck.read_state(workspace)
+        status, problem, message, read = KeyboardCheck.evaluate(check, state, problem)
+        Result.new(:status => status, :problem => problem, :message => message, :read => read,
+            :solution => status == :correct ? task['solution'] : nil)
     end
 
     NOT_RUNNING_ER = 'Starte zuerst deinen Workspace. Dein Modell liest die ER-Werkstatt in deinem Workspace.'

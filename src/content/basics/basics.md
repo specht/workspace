@@ -204,21 +204,4 @@ Wenn du sicher im Umgang mit Git bist, kannst du auch direkt Git verwenden, um d
 
 Gerade am Anfang kann es sein, dass du beim Tippen, Markieren und Navigieren in einer Datei noch relativ langsam bist. Das ist völlig normal: Mit der Zeit kommt die Übung. 🤠 Wenn du etwas Erfahrung gesammelt hast, bist du mit der Tastatur oft schneller, als wenn du für jeden Arbeitsschritt erst zur Maus greifen musst.
 
-### Das Keyboard-Tutorial starten
-
-Im Hackschule Workspace ist das **Hackschule Keyboard-Tutorial** bereits installiert. Dort kannst du die wichtigsten Funktionen der Tastatur direkt in Visual Studio Code ausprobieren. Das Tutorial führt dich Schritt für Schritt durch Themen wie:
-
-- Navigation in einem Dokument,
-- Markieren und Bearbeiten von Text,
-- Suchen und Ersetzen,
-- Arbeiten mit mehreren Cursorpositionen,
-- Bearbeiten von Code,
-- sowie den Umgang mit Dateien, Ordnern und Tabs.
-
-Klicke dazu links in der Aktivitätsleiste auf das Tastatur-Symbol. Anschließend öffnet sich der Bereich mit dem Keyboard-Tutorial:
-
-<img class='full' src='keyboard-tutorial-pane.webp' alt=''>
-
-Beginne mit dem ersten Kapitel und arbeite die Übungen der Reihe nach durch. Das Tutorial erkennt viele deiner Arbeitsschritte automatisch und markiert erledigte Aufgaben mit einem grünen Haken. Deinen Fortschritt speichert es, sodass du später an derselben Stelle weitermachen kannst.
-
-Wenn du die Übungen im Keyboard-Tutorial abgeschlossen hast, kannst du außerdem Webseiten wie [keybr.com](https://www.keybr.com/) nutzen, um deine Tippgeschwindigkeit zu trainieren.
+Im Hackschule Workspace ist dafür das **Keyboard-Tutorial** installiert: Klicke links in der Aktivitätsleiste auf das Tastatur-Symbol. In sieben Kapiteln übst du dort Navigieren, Markieren, Bearbeiten, Suchen und Ersetzen, mehrere Cursor und das Bearbeiten von Code. Was in den Kapiteln vorkommt, steht in der Aktivität [Keyboard-Tutorial](/keyboard); dort kannst du auch nachsehen lassen, welche Kapitel du schon geschafft hast.

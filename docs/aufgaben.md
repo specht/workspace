@@ -248,6 +248,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `sql` | Ergebnis einer `SELECT`-Abfrage gegen das einer Musterabfrage | Abfrage | eigene MySQL-Datenbank, nur lesend | M6 |
 | `er` | ER-Modell: Entitäten, Schlüssel, Attribute, Beziehungen, Kardinalitäten und die Tabellen, die daraus werden | eine `.er`-Datei | Workspace (ER-Werkstatt) | M7 |
 | `schema` | Tabellen der eigenen Datenbank: Spalten, Primär- und Fremdschlüssel, Zeilenzahl | `information_schema` | eigene MySQL-Datenbank, nur lesend | M7 |
+| `keyboard` | ein Kapitel des Keyboard-Tutorials: alle Schritte abgehakt | `/workspace/.hs-kbd-tutorial/.state.json` | Server | M7 |
 
 »Server« heißt: Der Server liest die Datei als Text und wertet sie aus, ohne
 etwas auszuführen. »Workspace« heißt: Ein festes Prüfskript läuft per
@@ -577,6 +578,22 @@ Zeilennummer, so wie die Erweiterung sie unterstreicht.
 
 Unter der Rückmeldung steht, was im Modell steht: Entitäten mit ihren
 Attributen (Schlüssel fett), Beziehungen und die Tabellen, die daraus werden.
+
+### keyboard
+
+```yaml
+check:
+  type: keyboard
+  section: Text markieren
+```
+
+Das Keyboard-Tutorial (die Erweiterung in `src/vscode-extensions/keyboard-tutorial`)
+hakt jeden erledigten Schritt in `~/.hs-kbd-tutorial/.state.json` ab. Die
+Aufgabe ist gelöst, wenn alle Schritte des Kapitels `section` abgehakt sind;
+welche das sind, steht in der `tutorial/sections.yaml` der Erweiterung, aus
+der sie auch gebaut wird. Die Rückmeldung nennt die Schritte, die noch
+fehlen. Der Server liest nur die Datei, der Workspace muss nicht laufen; die
+Klassenübersicht kann das Kapitel deshalb auch für alle auf einmal prüfen.
 
 ### schema
 
