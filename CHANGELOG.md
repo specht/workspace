@@ -416,6 +416,17 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   »Dein eigenes Bild« mit Ideen und einer Abgabe von `bild.rb` und
   `bild.png`, eine Notiz für Lehrkräfte und erzeugte Screenshots. Die Seite
   nennt die Meldung, wenn die Zeichenfläche nicht offen ist.
+- »Frontend-Entwicklung mit Svelte« auf SvelteKit 3 gebracht (`sv` 1.1,
+  Einstellungen in `vite.config.js`), mit neun Aufgaben, einer Abgabe des
+  gebauten Ordners `build`, einer Notiz für Lehrkräfte und erzeugten
+  Screenshots aller Schritte, von `npx sv create` bis `npm run build`. Die
+  Vorschau läuft über den Reiter »Ports«; dafür braucht der
+  Entwicklungsserver `host: '127.0.0.1'`, das die Seite erklärt.
+- Prüfart `css` kennt `style_tags: true` und liest dann nur den
+  `<style>`-Block, etwa einer Svelte-Komponente. `html` versteht
+  Svelte-Ausdrücke wie `disabled={state < 3}` in Attributen.
+- Die Kurzzeile eines eingeklappten Handbuch-Kastens zeigt Tasten als
+  `<kbd>`, wie im übrigen Text; vorher standen die Tags als Text da.
 - Handbuch »Workspace«: neuer Teil »Erweiterung installieren«, mit der Frage
   »Trust Publisher & Install«. »Farben« nennt die RGB-Schreibweise von
   Pixelflow Canvas.

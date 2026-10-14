@@ -171,4 +171,19 @@ class ContentPartsTest < Minitest::Test
         assert_equal 'git clone [Adresse des Klassen-Repositorys] structures',
             ContentParts.fill_variables('git clone ${class_repo} structures', vars)
     end
+    # A short line shows `code` and <kbd>keys</kbd>; any other tag outside
+    # backticks would appear as text.
+    def test_short_lines_have_no_other_html_outside_code
+        Dir[File.join(CONTENT, 'reference', '*', '*.md')].each do |file|
+            File.read(file).scan(/<!-- short: (.*?) -->/) do |(line)|
+                outside = line.gsub(/`[^`]*`/, '').gsub(%r{</?kbd>}, '')
+                refute_match(/<\/?[a-zA-Z][^>]*>/, outside, "#{File.basename(file)}: #{line}")
+            end
+        end
+    end
+
+    def test_inline_html_keys_and_code
+        assert_equal 'Ordner schließen: <kbd>Strg</kbd><kbd>K</kbd>, dann <kbd>F</kbd>; <code>&lt;kbd&gt;</code> &lt;b&gt;x&lt;/b&gt;',
+            ContentParts.inline_html('Ordner schließen: <kbd>Strg</kbd><kbd>K</kbd>, dann <kbd>F</kbd>; `<kbd>` <b>x</b>')
+    end
 end

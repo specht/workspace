@@ -18,7 +18,7 @@ Handgriffe, die viele Aktivitäten brauchen: das Terminal öffnen, eine Vorlage 
 ## Erste Schritte
 
 <!-- part: terminal-oeffnen -->
-<!-- short: Kein Ordner offen (Strg+K, dann F), Seitenleiste zu (Strg+B), Terminal auf (Strg+J). -->
+<!-- short: Kein Ordner offen (<kbd>Strg</kbd><kbd>K</kbd>, dann <kbd>F</kbd>), Seitenleiste zu (<kbd>Strg</kbd><kbd>B</kbd>), Terminal auf (<kbd>Strg</kbd><kbd>J</kbd>). -->
 ### Terminal öffnen
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
@@ -49,7 +49,7 @@ Mit dem Symbol rechts oben im Terminal kannst du es maximieren. Die linke Seiten
 ## Vorlagen
 
 <!-- part: repository-klonen -->
-<!-- short: Ordner schließen (Strg+K, dann F), »Clone Repository« mit der Adresse unten, Zielordner `/workspace`, dann »Open«. -->
+<!-- short: Ordner schließen (<kbd>Strg</kbd><kbd>K</kbd>, dann <kbd>F</kbd>), »Clone Repository« mit der Adresse unten, Zielordner `/workspace`, dann »Open«. -->
 ### Repository klonen
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:

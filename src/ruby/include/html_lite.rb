@@ -275,6 +275,21 @@ module HtmlLite
                     end
                     attrs[name] ||= source[pos + 1...close]
                     pos = close + 1
+                elsif quote == '{'
+                    # A Svelte expression, disabled={state < 3}: up to the
+                    # matching }, so its < and > are not taken for tags.
+                    depth = 0
+                    close = pos
+                    while close < source.size
+                        depth += 1 if source[close] == '{'
+                        depth -= 1 if source[close] == '}'
+                        break if depth.zero?
+
+                        close += 1
+                    end
+                    return [nil, attrs, "Bei `#{name}=` in `<%s>` fehlt die schließende `}`."] if close >= source.size
+                    attrs[name] ||= source[pos..close]
+                    pos = close + 1
                 else
                     m = source.match(/\G([^\s>]*)/, pos)
                     attrs[name] ||= m[1]

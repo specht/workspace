@@ -1,0 +1,158 @@
+# Aufgaben zu »Frontend-Entwicklung mit Svelte«.
+# Format: docs/aufgaben.md.
+format: 1
+activity: svelte
+tasks:
+  - id: projekt
+    title: Das Projekt ist angelegt
+    prompt: |
+      Lege mit `npx sv create rubik-timer` das Projekt in
+      `/workspace/rubik-timer` an.
+    check:
+      type: files
+      path: rubik-timer/package.json
+      expect:
+        format: text
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/rubik-timer/package.json`. Hast du `npx sv create rubik-timer` im Ordner `/workspace` aufgerufen und alle Fragen beantwortet, bis »You're all set!« kam?
+
+  - id: grundgeruest
+    title: Die Überschrift in der Mitte
+    prompt: |
+      Ersetze den Inhalt von `src/routes/+page.svelte` durch das Gerüst mit
+      `<div class="main">` und der Überschrift, und rücke `.main` mit Flexbox
+      in die Mitte.
+    file: rubik-timer/src/routes/+page.svelte
+    check:
+      type: css
+      file: rubik-timer/src/routes/+page.svelte
+      style_tags: true
+      expect:
+        parses: true
+        declares:
+          - { selector: .main, property: display, value: flex }
+          - { selector: .main, property: flex-direction, value: column }
+          - { selector: .main, property: align-items, value: center }
+    feedback:
+      - when: { problem: no_style }
+        say: In `src/routes/+page.svelte` gibt es noch keinen `<style>`-Teil. Die Regel für `.main` gehört zwischen `<style>` und `</style>`.
+      - when: { problem: missing_declaration }
+        say: Die Regel für `.main` ist noch nicht vollständig. Vergleiche sie Zeile für Zeile mit dem Text; vor allem `display`, `flex-direction` und `align-items`.
+
+  - id: fehlstart
+    title: Zu kurz gedrückt
+    prompt: |
+      Die Stoppuhr steht im Zustand 0. Du drückst die Leertaste und lässt sie
+      nach 0,2 Sekunden wieder los. In welchem Zustand ist sie danach?
+    check:
+      type: number
+      expect: 0
+      tolerance: 0
+    hint: Verfolge den Weg im Ablaufdiagramm. Wie lange muss die Taste mindestens gedrückt sein?
+    feedback:
+      - when: { equals: 1 }
+        say: Im Zustand 1 ist sie, solange du drückst. Was passiert beim Loslassen, wenn die 500 ms noch nicht um sind?
+      - when: { equals: 2 }
+        say: In Zustand 2 kommt sie erst nach 500 ms. 0,2 Sekunden sind 200 ms.
+      - when: { equals: 3 }
+        say: Laufen würde sie nur, wenn sie vorher grün war, also mindestens 500 ms gedrückt.
+    solution: Zustand 0. Beim Drücken geht es in Zustand 1; wer vor 500 ms loslässt, landet wieder in 0. So startet ein versehentlicher kurzer Druck die Messung nicht.
+
+  - id: dollar-state
+    title: Ohne $state
+    prediction: true
+    prompt: |
+      Was würde passieren, wenn du statt `let state = $state(0);` nur
+      `let state = 0;` schreibst und dann die Leertaste drückst? Überleg
+      erst, dann probier es aus und schreib danach wieder `$state(0)`.
+    check:
+      type: choice
+      options:
+        - Die Seite zeigt weiter »State = 0«, obwohl die Variable 1 ist
+        - Die Seite zeigt »State = 1«, genau wie mit $state
+        - Die Seite bleibt leer, weil Svelte einen Fehler meldet
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Woher sollte Svelte wissen, dass es die Seite neu zeichnen muss? Genau das sagt ihm `$state`.
+      - when: { picked: 2 }
+        say: Die Komponente lädt ohne Fehler. Svelte warnt höchstens im Terminal, dass sich die Anzeige nie ändern wird.
+    solution: Ohne `$state` ist `state` eine gewöhnliche Variable. `handleKeyDown` ändert sie, aber Svelte erfährt nichts davon und lässt die Seite, wie sie ist. Mit `$state` merkt Svelte jede Änderung und aktualisiert alles, was den Wert zeigt.
+
+  - id: global
+    title: Warum :global?
+    prompt: |
+      Warum steht `.ready` im CSS in `:global(` … `)`?
+    check:
+      type: choice
+      options:
+        - Weil die Klasse erst später durch JavaScript dazukommt und Svelte die Regel sonst als unbenutzt weglassen würde
+        - Weil die Regel sonst nur auf dem Handy gilt
+        - Weil grüne Hintergründe in Svelte immer global sein müssen
+        - Weil die Regel sonst auch für andere Seiten gälte
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Mit dem Handy hat `:global` nichts zu tun. Schau dir an, wann die Klasse `ready` an die Anzeige kommt.
+      - when: { picked: 2 }
+        say: Die Farbe spielt keine Rolle. Es geht darum, ob Svelte die Klasse beim Übersetzen im HTML findet.
+      - when: { picked: 3 }
+        say: Andersherum. Ohne `:global` gilt CSS in Svelte nur in dieser Komponente; `:global` hebt das auf.
+    solution: Svelte schaut beim Übersetzen nach, welche Klassen im HTML der Komponente vorkommen, und lässt Regeln für andere weg. `ready` kommt erst mit `classList.add` dazu, wenn das Programm läuft. `:global` sagt Svelte, dass die Regel trotzdem gebraucht wird.
+
+  - id: timer
+    title: Die Anzeige steht
+    prompt: |
+      Bau die Stoppuhr fertig: In `src/routes/+page.svelte` gibt es die
+      Anleitung und die Anzeige mit der Klasse `timer`.
+    file: rubik-timer/src/routes/+page.svelte
+    check:
+      type: html
+      file: rubik-timer/src/routes/+page.svelte
+      expect:
+        parses: true
+        elements:
+          - { selector: div.main h1 }
+          - { selector: p.timer, say: "Ich finde kein `<p class=\"timer\">`. Die Anzeige steht in `<div class=\"main\">`, unter der Anleitung: `<p class=\"timer\">{@html timerString}</p>`" }
+
+  - id: reset
+    title: Der Reset-Button
+    prompt: |
+      Ergänze den Reset-Button mit der ID `bu_reset` und dem Icon.
+    file: rubik-timer/src/routes/+page.svelte
+    check:
+      type: html
+      file: rubik-timer/src/routes/+page.svelte
+      expect:
+        parses: true
+        elements:
+          - { selector: 'button#bu_reset', say: "Ich finde keinen `<button id=\"bu_reset\">` in `src/routes/+page.svelte`." }
+          - { selector: 'button#bu_reset Icon', say: "Der Button hat noch kein Icon. Schreib `<Icon icon=\"material-symbols:device-reset-rounded\" class=\"icon\" />` direkt vor »Reset«." }
+
+  - id: build
+    title: Die statische Webseite
+    prompt: |
+      Baue die statische Webseite mit `npm run build`, sodass sie in
+      `/workspace/rubik-timer/build` liegt.
+    check:
+      type: html
+      file: rubik-timer/build/index.html
+      expect:
+        elements:
+          - { selector: p.timer, say: "In `build/index.html` steht keine Anzeige mit der Klasse `timer`. Hast du nach der letzten Änderung noch einmal `npm run build` aufgerufen?" }
+          - { selector: 'button#bu_reset' }
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/rubik-timer/build/index.html`. Ist `npm run build` ohne Fehler durchgelaufen? Ohne `src/routes/+layout.js` mit `export const prerender = true;` schreibt der statische Adapter keine `index.html`.
+
+  - id: abgabe
+    title: Dein Timer
+    prompt: |
+      Gib die gebaute Webseite ab, den Ordner `rubik-timer/build`. Deine
+      Lehrkraft kann sie im Browser starten; du kannst jederzeit neu
+      abgeben.
+    check:
+      type: submit
+      paths: [rubik-timer/build]
+      max_size: 5MB

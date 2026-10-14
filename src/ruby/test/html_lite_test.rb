@@ -105,4 +105,15 @@ class HtmlLiteTest < Minitest::Test
         assert_empty doc.problems
         assert_equal '3 < 4 und 5 > 2', doc.at('p').text
     end
+    # Svelte: an attribute value in braces may contain < and >.
+    def test_svelte_brace_values
+        doc = HtmlLite.parse("<button id=\"r\" disabled={state < 3} onclick={() => { go(); }}>Reset</button>\n<p>{x > 1}</p>\n")
+        assert_empty doc.problems
+        button = doc.at('button#r')
+        assert_equal '{state < 3}', button.attrs['disabled']
+        assert_equal '{() => { go(); }}', button.attrs['onclick']
+        assert_equal 1, doc.select('p').size
+
+        refute_empty HtmlLite.parse("<button disabled={state < 3>Reset</button>").problems
+    end
 end

@@ -157,7 +157,7 @@ Klicke auf »Clone Repository« und füge die Adresse der Vorlage ein:
   »Kein Ordner offen (Strg+K, dann F), Seitenleiste zu (Strg+B), Terminal auf
   (Strg+J). Kennst du schon aus »Versionsverwaltung mit Git«. Anleitung
   anzeigen«. Die Zeile schreibt der Teil selbst, direkt unter seiner
-  Markierung: `<!-- short: … -->` (nur `Code` wird ausgezeichnet, `${template}`
+  Markierung: `<!-- short: … -->` (nur `Code` und `<kbd>`-Tasten werden ausgezeichnet, `${template}`
   wird ersetzt). Ohne `short:` steht dort die Überschrift des Teils. Wer nicht
   angemeldet ist oder keine Aufgaben sieht, bekommt immer den ganzen Kasten.
 - `${template}` wird durch das Feld `template` der einbindenden Seite ersetzt,
@@ -344,7 +344,10 @@ check:
 ```
 
 Werte vergleicht die Prüfung ohne Groß- und Kleinschreibung und ohne
-`!important`. `references` kennt `root`, `scan`, `external: none` und
+`!important`. Mit `style_tags: true` liest `css` nur, was in einer Datei
+zwischen `<style>` und `</style>` steht, etwa in einer Svelte-Komponente;
+Zeilennummern bleiben die der Datei. Fehlt der Block, sagt die Karte das
+(`problem: no_style`). `references` kennt `root`, `scan`, `external: none` und
 `local_exist: true`.
 
 ### git
@@ -784,7 +787,7 @@ die eingebaute Rückmeldung für einen Fall.
 | --- | --- |
 | `files` | `missing`, `symlink`, `wrong_type`, `wrong_format`, `not_executable`, `no_new_files`, `bad_name`, `format_mismatch`, `too_big` |
 | `html` | `missing`, `parse_error`, `no_slides`, `first_slide_unchanged`, `too_few_slides`, `slide_without_heading`, `too_few_images`, `alt_missing`, `image_case`, `image_missing` |
-| `css` | `missing`, `marker_missing`, `parse_error`, `too_few_rules` |
+| `css` | `missing`, `no_style`, `marker_missing`, `parse_error`, `too_few_rules`, `missing_declaration`, `not_linked` |
 | `references` | `missing`, `external`, `outside_root`, `local_missing` |
 | `git` | `no_repo`, `not_git`, `no_remote`, `no_identity`, `uncommitted`, `too_few_commits`, `detached`, `no_upstream`, `not_pushed` |
 | `er` | `missing`, `errors`, `missing_entity`, `key`, `missing_attribute`, `attribute`, `missing_relationship`, `cardinality`, `missing_table`, `missing_column`, `primary_key`, `foreign_key` |

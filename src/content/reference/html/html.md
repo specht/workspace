@@ -335,7 +335,7 @@ Ein Attribut wie `href` steht immer im öffnenden Tag, in der Form `name="wert"`
 <!-- /part -->
 
 <!-- part: bilddateien -->
-<!-- short: Ein Bild gehört als Datei ins Projekt: per Drag & Drop in den Explorer oder mit Strg+V aus der Zwischenablage, mit einem einfachen Namen wie `fuji.jpg`. -->
+<!-- short: Ein Bild gehört als Datei ins Projekt: per Drag & Drop in den Explorer oder mit <kbd>Strg</kbd><kbd>V</kbd> aus der Zwischenablage, mit einem einfachen Namen wie `fuji.jpg`. -->
 ## Bilddateien ins Projekt holen
 
 Bevor ein Bild auf der Seite erscheinen kann, muss die Bilddatei in deinem Projekt liegen. In der Shower-Vorlage gibt es dafür den Ordner `pictures`; bei einer eigenen Webseite legst du Bilder neben `index.html` oder in einen eigenen Ordner wie `bilder`.

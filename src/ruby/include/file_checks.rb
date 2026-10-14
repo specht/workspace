@@ -375,10 +375,28 @@ module FileChecks
 
     # --- css ------------------------------------------------------------------
 
+    # Only what stands inside <style>…</style>, for a .svelte or .html file;
+    # everything else becomes spaces, so offsets and line numbers stay true.
+    # nil if there is no style block.
+    def self.style_blocks(source)
+        kept = source.gsub(/[^\n]/, ' ')
+        found = false
+        source.scan(%r{<style\b[^>]*>(.*?)</style>}im) do
+            from, to = $~.offset(1)
+            kept[from...to] = source[from...to]
+            found = true
+        end
+        found ? kept : nil
+    end
+
     def self.css(check, ws)
         file = check['file']
         source = ws.read_text(file)
         expect = check['expect'] || {}
+        if check['style_tags']
+            source = style_blocks(source)
+            return failed(:no_style, "In #{code(file)} steht kein `<style>`-Block. Die CSS-Regeln gehören zwischen `<style>` und `</style>`.") if source.nil?
+        end
         parsed = CssLite.parse(source)
         marker_at = nil
         if check['after_marker']
@@ -389,7 +407,7 @@ module FileChecks
         end
         rules = marker_at ? parsed.rules.select { |r| r.offset > marker_at } : parsed.rules
         marker_line = marker_at ? source[0, marker_at].count("\n") + 1 : nil
-        read = "#{rules.size} Regeln#{marker_line ? " unter »#{check['after_marker']}« (ab Zeile #{marker_line})" : ''} in #{code(file)}" +
+        read = "#{rules.size} Regeln#{marker_line ? " unter »#{check['after_marker']}« (ab Zeile #{marker_line})" : ''}#{check['style_tags'] ? ' im `<style>`-Block' : ''} in #{code(file)}" +
             (rules.empty? ? '.' : ":\n\n" + rules.first(10).map { |r| "- Zeile #{r.line}: `#{r.selector}`" }.join("\n"))
         if expect['parses'] && !parsed.problems.empty?
             shown = parsed.problems.first(MAX_SHOWN).map { |p| "- Zeile #{p.line}: #{p.message}" }

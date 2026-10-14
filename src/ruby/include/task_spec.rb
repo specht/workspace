@@ -312,7 +312,8 @@ module TaskSpec
                 end
             end
         when 'css'
-            allowed += %w[file after_marker linked_from expect]
+            allowed += %w[file after_marker linked_from style_tags expect]
+            errors << 'style_tags: true or false' if check.key?('style_tags') && ![true, false].include?(check['style_tags'])
             errors.concat(path_errors(check['file'], 'file'))
             errors.concat(path_errors(check['linked_from'], 'linked_from')) if check.key?('linked_from')
             expect = check['expect']

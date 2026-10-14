@@ -1,6 +1,9 @@
 <div class='meta'>
 image: svelte5.webp
 kind: projekt
+duration: 3 Doppelstunden
+requires: [static-website]
+reference: [workspace, html, css, layout]
 </div>
 
 <div
@@ -16,116 +19,213 @@ kind: projekt
     <p>Rich Harris</p>
 </div>
 
-
 <p class='abstract'>
-In diesem Tutorial werden wir die Grundlagen von Svelte kennenlernen und eine einfache Anwendung erstellen. Svelte ist ein modernes Frontend-Framework, das es dir ermöglicht, interaktive Webseiten zu erstellen. Du kannst damit z. B. kleine Spiele oder Webanwendungen entwickeln. In diesem Tutorial werden wir einen »Rubik's Cube Timer« programmieren – also eine Stoppuhr, die die Zeit misst, die du für das Lösen eines Rubik's Cube benötigst.
+In diesem Projekt lernst du die Grundlagen von Svelte kennen und baust eine kleine Webanwendung: einen »Rubik's Cube Timer«, also eine Stoppuhr, die misst, wie lange du zum Lösen eines Zauberwürfels brauchst. Svelte ist ein modernes Frontend-Framework für interaktive Webseiten, von kleinen Spielen bis zu großen Anwendungen. Am Ende machst du daraus eine statische Webseite und gibst sie ab.
 </p>
 
 <p class='hint'>
-Bevor du dieses Tutorial beginnst, solltest du dich ein wenig mit HTML und CSS auskennen. Wenn du noch nie mit diesen Technologien gearbeitet hast, empfehlen wir dir, zuerst das <a href='/static-website'>Tutorial zu Statischen Webseiten</a> durchzuarbeiten.
+Bevor du anfängst, solltest du dich ein wenig mit HTML und CSS auskennen. Wenn du noch nie damit gearbeitet hast, mach zuerst <a href='/static-website'>Statische Webseiten mit HTML & CSS</a>.
 </p>
 
 ## Was ist Svelte?
 
 Svelte ist ein modernes Frontend-Framework. Es gab vorher schon viele andere Frontend-Frameworks, wie z. B. [React](https://react.dev/) (2013), [Vue](https://vuejs.org/) (2014) und [Angular](https://angular.dev/) (2016). Diese Frameworks haben alle ihre Vor- und Nachteile. [Svelte](https://svelte.dev/) ist ein relativ neues Framework, das 2016 von Rich Harris – einem Journalisten und Softwareentwickler – entwickelt wurde.
 
+Zu Svelte gehört SvelteKit: Es baut aus deinen Komponenten eine ganze Webseite, startet einen Entwicklungsserver, der jede Änderung sofort zeigt, und macht am Ende fertige Dateien daraus.
+
 ## Vorbereitung
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
-
-<img class='full' src='fresh-start.webp' alt=''>
+_include(workspace#terminal-oeffnen)
 
 ### Svelte-Erweiterung installieren
 
-Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »Svelte for VS Code« und installiere sie.
+Damit Visual Studio Code Svelte-Dateien versteht und farbig darstellt, brauchst du die Erweiterung »Svelte for VS Code« vom Herausgeber `svelte`, Kennung `svelte.svelte-vscode`.
+
+_include(workspace#erweiterung-installieren)
 
 ### Svelte-Projekt erstellen
 
-Um ein neues Svelte-Projekt zu erstellen, öffne ein Terminal und gib folgenden Befehl ein:
+Ein neues Svelte-Projekt legst du im Terminal an, im Ordner `/workspace`:
 
 ```bash
 npx sv create rubik-timer
 ```
 
-Du wirst vermutlich gefragt, ob das `sv`-Paket installiert werden soll:
+`npx` lädt das Programm `sv` herunter und startet es. Beim ersten Mal fragt es, ob es das darf:
 
-<img class='full' src='npx-sv-create-proceed.webp' alt=''>
+<!-- tutorial-screenshot
+hide-left-sidebar
+terminal-open
+terminal-maximize
+press: Control+l
+terminal-run: npx sv create rubik-timer
+wait-for-text: Ok to proceed?
+sleep: 0.5
+crop-terminal-lines: auto
+-->
 
-Bestätige mit <kbd>Enter</kbd>. Du wirst nun gefragt, welches Template du verwenden möchtest. Wähle das Standard-Template »SvelteKit minimal« aus, indem du <kbd>Enter</kbd> drückst:
+<img class='full' src='npx-sv-create-proceed.webp' alt='Das Terminal fragt »Need to install the following packages: sv … Ok to proceed? (y)«.'>
 
-<img class='full' src='npx-sv-create-template.webp' alt=''>
+Bestätige mit <kbd>Enter</kbd>. Danach stellt `sv` ein paar Fragen. Mit den Pfeiltasten wählst du eine Antwort, mit <kbd>Enter</kbd> bestätigst du sie. Als Erstes geht es um die Vorlage. Nimm »SvelteKit minimal«, die schon ausgewählt ist:
 
-Bei der nächsten Frage wäre die richtige Antwort »TypeScript«, aber da wir in diesem Tutorial kein TypeScript verwenden, sondern normales JavaScript, wähle hier bitte »No« aus:
+<!-- tutorial-screenshot
+press: Enter
+wait-for-text: Which template would you like?
+sleep: 0.5
+crop-terminal-lines: auto
+-->
 
-<img class='full' src='npx-sv-create-type-checking.webp' alt=''>
+<img class='full' src='npx-sv-create-template.webp' alt='Die Frage »Which template would you like?« mit der Auswahl »SvelteKit minimal«.'>
 
-Du wirst als nächstes gefragt, ob du schon ein paar Plugins installieren möchtest. Da wir keine Plugins benötigen, kannst du einfach <kbd>Enter</kbd> drücken:
+Bei der nächsten Frage geht es um TypeScript. Wir schreiben in diesem Projekt normales JavaScript, deshalb wählst du mit zweimal <kbd>↓</kbd> »No«:
 
-<img class='full' src='npx-sv-create-plugins.webp' alt=''>
+<!-- tutorial-screenshot
+press: Enter
+wait-for-text: Add type checking with TypeScript?
+press: ArrowDown
+press: ArrowDown
+sleep: 0.5
+crop-terminal-lines: auto
+-->
 
-Als letztes wirst du gefragt, welchen Paketmanager du verwenden möchtest. Wähle hier »npm« aus, indem du <kbd>Enter</kbd> drückst:
+<img class='full' src='npx-sv-create-type-checking.webp' alt='Die Frage »Add type checking with TypeScript?« mit der Auswahl »No«.'>
 
-<img class='full' src='npx-sv-create-package-manager.webp' alt=''>
+Danach bietet `sv` Erweiterungen für dein Projekt an. Wir brauchen keine; drücke einfach <kbd>Enter</kbd>, ohne etwas anzukreuzen:
 
-Daraufhin musst du noch ein paar Sekunden warten, bis alle Abhängigkeiten installiert sind und das Projekt erstellt wurde. Wenn du die Meldung »Project created« siehst, hat alles geklappt:
+<!-- tutorial-screenshot
+press: Enter
+wait-for-text: What would you like to add to your project?
+sleep: 0.5
+crop-terminal-lines: auto
+-->
 
-<img class='full' src='npx-sv-create-success.webp' alt=''>
+<img class='full' src='npx-sv-create-plugins.webp' alt='Die Frage »What would you like to add to your project?« mit einer Liste von Erweiterungen, keine angekreuzt.'>
+
+Jetzt ist das Projekt angelegt. Zum Schluss fragt `sv`, womit es die Bibliotheken installieren soll, die das Projekt braucht. Nimm »npm«, das schon ausgewählt ist:
+
+<!-- tutorial-screenshot
+press: Enter
+wait-for-text: Which one should we use to install dependencies?
+sleep: 0.5
+crop-terminal-lines: auto
+-->
+
+<img class='full' src='npx-sv-create-package-manager.webp' alt='Die Meldung »Project created« und darunter die Frage nach dem Paketmanager mit der Auswahl »npm«.'>
+
+Nach ein paar Sekunden sind alle Bibliotheken installiert. Steht am Ende »You're all set!«, hat alles geklappt:
+
+<!-- tutorial-screenshot
+press: Enter
+wait-for-text: You're all set!
+terminal-wait-for-prompt: 300
+crop-terminal-lines: auto
+-->
+
+<img class='full' src='npx-sv-create-success.webp' alt='Das Ende der Ausgabe mit den nächsten Schritten und »You’re all set!«.'>
+
+Den Hinweis auf eine neue Version von npm kannst du übergehen.
+
+_task(projekt)
 
 <div class='hint'>
 Falls du von vorne beginnen möchtest, kannst du einfach das Verzeichnis <code>/workspace/rubik-timer</code> löschen und von vorn beginnen.
 </div>
 
-Öffne nun das Verzeichnis, indem du entweder im Menü »File« / »Open Folder…« auswählst oder einfach <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>Strg</kbd><kbd>O</kbd> drückst. Wähle den Ordner `rubik-timer` aus:
+Öffne nun den Ordner des Projekts, indem du im Menü »File« / »Open Folder…« auswählst oder <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>Strg</kbd><kbd>O</kbd> drückst. Wähle den Ordner `/workspace/rubik-timer`:
 
-<img class='full' src='open-folder.webp' alt=''>
+<!-- tutorial-screenshot
+click: selector:.part.panel [aria-label*="Restore Panel"]
+press: Control+j
+press: Control+k
+press: Control+o
+wait-for-text: Open Folder
+press: Control+a
+type: /workspace/rubik-timer/
+sleep: 1
+crop-bottom: 60%
+-->
 
-## Development-Server starten
+<img class='full' src='open-folder.webp' alt='Der Dialog »Open Folder« mit dem Pfad /workspace/rubik-timer/.'>
 
-Bevor wir den Entwicklungs-Server im Workspace starten können, müssen wir noch eine Kleinigkeit anpassen. Öffne die Datei `package.json` und ändere den Eintrag für `"dev"` von `"vite dev"` in `"vite dev --host --open"`.
+## Den Entwicklungsserver starten
 
-<img class='full' src='patch-package-json.webp' alt=''>
+Der Entwicklungsserver zeigt deine Seite im Browser und lädt sie neu, sobald du eine Datei speicherst. Vorher braucht er zwei Einstellungen, damit dein Workspace die Vorschau an deinen Browser weiterleiten kann. Öffne die Datei `vite.config.js` und ergänze nach `export default defineConfig({` den Eintrag `server`:
 
-Öffne nun die Datei `vite.config.js` und füge einen Eintrag `server` hinzu, um den Server für Anfragen aus deinem Workspace zu öffnen:
-
-<img class='full' src='vite-config.webp' alt=''>
-
-Du musst also den folgenden Eintrag hinzufügen:
-
-```json
-server: {
-    allowedHosts: true
-}
+```js
+export default defineConfig({
+	server: {
+		host: '127.0.0.1',
+		allowedHosts: true
+	},
+	plugins: [
 ```
 
+- `host: '127.0.0.1'`: Der Server wartet unter dieser Adresse auf Anfragen. Dort sucht ihn die Weiterleitung deines Workspaces. Von außerhalb deines Workspaces ist er so nicht zu erreichen.
+- `allowedHosts: true`: Der Server beantwortet auch Anfragen, die über die Adresse der Weiterleitung kommen, nicht nur solche an `localhost`.
+
 <div class='hint'>
-Achte auf das Komma am Ende der Zeile darüber! Wenn du das Komma vergisst, wird die Datei nicht richtig interpretiert und du bekommst eine Fehlermeldung.
+Achte auf das Komma nach der schließenden Klammer <code>}</code>: Es trennt <code>server</code> von <code>plugins</code>. Fehlt es, meldet der Server beim Start einen Fehler mit der Zeile.
 </div>
 
-Anschließend kannst du den Entwicklungs-Server starten, indem du im Terminal folgenden Befehl eingibst:
+So sieht der Anfang der Datei danach aus:
+
+<!-- tutorial-screenshot
+# Enter öffnet den Ordner; das Fenster lädt neu
+press: Enter
+sleep: 5
+write-file: vite.config.js <- file:vite.config.js
+open-file: vite.config.js
+hide-left-sidebar
+sleep: 2
+crop-bottom: 45%
+-->
+
+<img class='full' src='vite-config.webp' alt='Die Datei vite.config.js mit dem neuen Eintrag server mit host und allowedHosts vor plugins.'>
+
+Starte jetzt im Terminal den Entwicklungsserver. Das Terminal öffnet sich im Ordner `rubik-timer`, weil du ihn geöffnet hast:
 
 ```bash
 npm run dev
 ```
 
-Wenn alles geklappt hat, sollte sich deine Webseite automatisch in einem neuen Tab öffnen:
+Der Server läuft auf Port 5173. Visual Studio Code leitet diesen Port an eine Adresse weiter, die dein Browser erreicht. Du findest sie im Reiter »Ports« neben »Terminal«, in der Spalte »Forwarded Address«:
+
+<!-- tutorial-screenshot
+terminal-open
+press: Control+l
+terminal-run: npm run dev
+wait-for-text: Local:
+sleep: 5
+click: Ports
+sleep: 2
+move-mouse: selector:.part.editor
+crop-element: .part.panel
+-->
+
+<img class='full' src='ports.webp' alt='Der Reiter »Ports«: Port 5173, daneben die weitergeleitete Adresse und der laufende Prozess.'>
+
+Klicke mit gedrückter <kbd>Strg</kbd>-Taste auf die Adresse. Deine Seite öffnet sich in einem neuen Tab:
+
+<!-- tutorial-screenshot
+preview-port: 5173
+tab: preview
+wait-for-text: Welcome to SvelteKit
+sleep: 1
+-->
 
 <img class='full border' src='welcome-to-svelte.webp' alt='Die Svelte-Startseite bestätigt, dass das neue Projekt im Browser läuft.'>
 
 <div class='hint'>
-Tipp: Ziehe deinen Workspace und die Vorschau nebeneinander, damit du beide Fenster gleichzeitig sehen kannst.
-</div>
-
-<div class='hint'>
-Wenn etwas nicht funktioniert, kannst du den Server jederzeit beenden, indem du im Terminal <kbd>Strg</kbd><kbd>C</kbd> drückst. Du kannst den Server dann wieder neu starten, indem du <code>npm run dev</code> eingibst.
+Tipp: Leg deinen Workspace und die Vorschau nebeneinander, damit du beide Fenster gleichzeitig siehst. Den Server beendest du im Terminal mit <kbd>Strg</kbd><kbd>C</kbd>; mit <code>npm run dev</code> startest du ihn wieder. Die Adresse im Reiter »Ports« bleibt dieselbe.
 </div>
 
 ## Webseite implementieren
 
-Jetzt, wo wir alles eingerichtet haben, können wir mit dem Programmieren beginnen. Wir werden eine einfache Stoppuhr erstellen, die die Zeit misst, die du für das Lösen eines Rubikwürfels benötigst.
+Jetzt, wo alles eingerichtet ist, programmieren wir die Stoppuhr.
 
-Du kennst dich bereits mit HTML und CSS aus, und jetzt werden wir auch ein wenig JavaScript verwenden, um die Webseite interaktiv zu machen. Bei Svelte werden alle drei Technologien in einer Datei kombiniert, die eine Komponente darstellt. Eine Komponente ist ein wiederverwendbarer Baustein, der eine bestimmte Funktionalität bereitstellt. In unserem Fall wird die Komponente die Stoppuhr darstellen.
+Du kennst dich bereits mit HTML und CSS aus, und jetzt kommt ein wenig JavaScript dazu, damit die Seite auf Tasten reagiert. Bei Svelte stehen alle drei in einer Datei, einer Komponente. Eine Komponente ist ein Baustein einer Webseite, mit eigenem Inhalt, eigenem Aussehen und eigenem Verhalten. Unsere Komponente ist die Stoppuhr.
 
-Öffne die Datei `src/routes/+page.svelte`. Diese Datei enthält den Quelltext für unsere Webseite. Du solltest etwas Code sehen, der ungefähr so aussieht:
+Öffne die Datei `src/routes/+page.svelte`. Sie enthält die Startseite, die du gerade im Browser siehst:
 
 ```html
 <h1>Welcome to SvelteKit</h1>
@@ -133,10 +233,10 @@ Du kennst dich bereits mit HTML und CSS aus, und jetzt werden wir auch ein wenig
 ```
 
 <div class='hint'>
-Das Öffnen von Dateien geht besonders schnell, wenn du <kbd>Strg</kbd><kbd>P</kbd> drückst und dann den Dateinamen eingibst. Probier es einmal aus, indem du die Tastenkombination drückst und dann »page« eingibst! So kannst du die Datei schnell finden, ohne durch alle Ordner navigieren zu müssen.
+Dateien öffnest du am schnellsten mit <kbd>Strg</kbd><kbd>P</kbd> und einem Teil des Namens. Probier es aus: <kbd>Strg</kbd><kbd>P</kbd> und dann »page«.
 </div>
 
-Du kannst den Code jetzt einfach löschen und durch den folgenden ersetzen:
+Lösche den Code und ersetze ihn durch diesen:
 
 ```html
 <script>
@@ -150,13 +250,13 @@ Du kannst den Code jetzt einfach löschen und durch den folgenden ersetzen:
 </style>
 ```
 
-Du siehst drei Abschnitte:
+Die Datei hat drei Abschnitte:
 
-- `<script>`: Hier kommt der JavaScript-Code hin, der die Logik der Webseite enthält.
-- `<div class="main">`: Hier kommt der HTML-Code hin, der die Struktur der Webseite definiert. Wir haben ein `<div>`-Element mit der Klasse `main` erstellt, das den Titel der Webseite enthält.
-- `<style>`: Hier kommt der CSS-Code hin, der das Aussehen der Seite bestimmt.
+- `<script>`: Hier kommt der JavaScript-Code hin, der das Verhalten der Seite festlegt.
+- `<div class="main">`: Hier steht das HTML, also der Inhalt der Seite: ein `<div>` mit der Klasse `main` und darin die Überschrift.
+- `<style>`: Hier kommt das CSS hin, das das Aussehen bestimmt. Es gilt nur für diese Komponente.
 
-Wir beginnen mit dem CSS-Code für die Webseite. Füge den folgenden Code in den `<style>`-Tag ein, um den Inhalt des `.main`-Elements zu zentrieren:
+Wir beginnen mit dem CSS. Schreib die folgende Regel zwischen `<style>` und `</style>`, um den Inhalt von `.main` in die Mitte der Seite zu rücken:
 
 ```css
 .main {
@@ -170,20 +270,33 @@ Wir beginnen mit dem CSS-Code für die Webseite. Füge den folgenden Code in den
 }
 ```
 
-Wenn du jetzt die Seite aktualisierst, solltest du den Titel »Rubik's Cube Timer« in der Mitte der Seite sehen. Allerdings stört am rechten Rand noch ein Scrollbalken, den wir mit folgendem CSS-Code in der Datei `src/app.html` entfernen können:
+`display: flex` mit `flex-direction: column` stellt die Elemente untereinander, `align-items: center` rückt sie waagerecht in die Mitte, `justify-content: center` senkrecht. Damit es senkrecht eine Mitte gibt, ist `.main` mit `min-height: 100vh` mindestens so hoch wie das Browserfenster. `user-select: none` verhindert, dass beim Tippen auf dem Handy Text markiert wird.
 
-```css
-html,
-body {
-    margin: 0;
-}
+_uses(flexbox)
+
+<!-- tutorial-screenshot
+write-file: src/routes/+page.svelte <- file:page-start.svelte
+tab: preview
+wait-for-text: Rubik's Cube Timer
+sleep: 1
+-->
+
+<img class='full border' src='h1-centered.webp' alt='Die Überschrift »Rubik’s Cube Timer« steht in der Mitte der Seite.'>
+
+_task(grundgeruest)
+
+Die Überschrift steht jetzt in der Mitte. Rechts erscheint aber ein Scrollbalken: Der Browser gibt der Seite einen Rand von ein paar Pixeln, und zusammen mit den 100 % Höhe von `.main` ist sie dadurch etwas höher als das Fenster. Den Rand entfernst du für die ganze Seite in der Datei `src/app.html`. Sie ist das Gerüst um alle Komponenten. Schreib in ihren `<head>`, vor die Zeile `%sveltekit.head%`:
+
+```html
+<style>
+    html,
+    body {
+        margin: 0;
+    }
+</style>
 ```
 
-Füge den Code in einen `<style>`-Tag in der Datei `src/app.html` ein (am besten nach dem `</body>`). Wenn du die Seite jetzt aktualisierst, sollte der Scrollbalken verschwunden sein.
-
-<div class='hint'>
-Füge den CSS-Code in einem <code>&lt;style&gt;</code>-Tag in der Datei <code>src/app.html</code> ein, am besten nach dem <code>&lt;/body&gt;</code>-Tag.
-</div>
+Speichere, und der Scrollbalken ist verschwunden.
 
 ### Modellierung
 
@@ -199,7 +312,9 @@ Daraus ergibt sich folgender Ablauf:
 
 <img class='full' src='logik.webp' alt='Ein Ablaufdiagramm zeigt, welche Zustände es gibt und wie die Anwendung zwischen ihnen wechselt.'>
 
-Um den Zustand auf der Webseite zu speichern, deklarieren wir eine Variable `state` im `<script>`-Tag von `src/routes/+page.svelte`:
+_task(fehlstart)
+
+Um den Zustand zu speichern, deklarieren wir eine Variable `state` im `<script>`-Teil von `src/routes/+page.svelte`:
 
 ```js
 let state = $state(0);
@@ -210,27 +325,34 @@ let state = $state(0);
 // 4 : timer stopped
 ```
 
-Die Variable ist keine normale JavaScript-Variable, sondern eine Svelte-Variable – man erkennt es daran, dass sie in `$state(` ... `)` steht. Das bedeutet, dass wir sie in unseren HTML-Code einbauen können und die Seite automatisch aktualisiert wird, wenn sich der Wert der Variable ändert. Das ist eine der Stärken von Svelte: Es macht es einfach, interaktive Webseiten zu erstellen!
+Das ist keine gewöhnliche JavaScript-Variable, sondern ein Zustand von Svelte: Man erkennt es an `$state(` … `)`. Du kannst ihn ins HTML schreiben, und Svelte ändert die Seite von selbst, sobald sich der Wert ändert. Das ist eine der Stärken von Svelte.
 
-Wir können die Variable `state` jetzt in unserem HTML-Code verwenden, um den aktuellen Zustand der Stoppuhr anzuzeigen. Füge den folgenden Code in den `<div class="main">`-Tag unterhalb der Überschrift ein:
+Zeig den Zustand auf der Seite an. Schreib unter die Überschrift in `<div class="main">`:
 
 ```html
 <p>State = {state}</p>
 ```
 
-In deiner Vorschau sollte jetzt der Text »State = 0« erscheinen:
+Was in geschweiften Klammern steht, ist JavaScript; Svelte setzt seinen Wert ein. In der Vorschau steht jetzt »State = 0«:
+
+<!-- tutorial-screenshot
+write-file: src/routes/+page.svelte <- file:page-state.svelte
+tab: preview
+wait-for-text: State = 0
+sleep: 1
+-->
 
 <img class='full border' src='h1-and-state.webp' alt='Die Seite zeigt die Überschrift „Rubik’s Cube Timer“ und darunter den Zustand 0.'>
 
 ### Tastendruck erkennen
 
-Um zu erkennen, wann die Leertaste gedrückt wird, müssen wir einen Event-Listener hinzufügen. Das sollten wir tun, nachdem die Seite vollständig geladen ist. Dafür brauchen wir den `onMount`-Lifecycle-Hook von Svelte. Dieser Hook wird aufgerufen, wenn die Komponente in den DOM eingefügt wird. Füge den folgenden Code ganz oben in den `<script>`-Tag ein:
+Um zu erkennen, wann die Leertaste gedrückt wird, brauchen wir einen Event-Listener: eine Funktion, die der Browser bei jedem Tastendruck aufruft. Anmelden können wir ihn erst, wenn die Seite im Browser steht. Dafür gibt es in Svelte `onMount`: Was du an `onMount` übergibst, läuft, sobald die Komponente auf der Seite ist. Schreib ganz oben in den `<script>`-Teil:
 
 ```js
 import { onMount } from 'svelte';
 ```
 
-Wir können nun den `onMount`-Hook verwenden, um den Event-Listener hinzuzufügen. Füge den folgenden Code an das Ende des `<script>`-Tags ein:
+Und an das Ende des `<script>`-Teils:
 
 ```js
 function handleKeyDown() {
@@ -246,15 +368,17 @@ onMount(() => {
 });
 ```
 
-Wir definieren eine Funktion `handleKeyDown`, die den Zustand auf 1 setzt (wir werden die Logik später noch erweitern). Dann fügen wir im `onMount`-Hook einen Event-Listener hinzu, der die Funktion `handleKeyDown` aufruft, wenn die Leertaste gedrückt wird.
+Die Funktion `handleKeyDown` setzt den Zustand auf 1; die ganze Logik folgt später. In `onMount` melden wir einen Event-Listener an, der bei jedem Tastendruck nachsieht, ob es die Leertaste war, und dann `handleKeyDown` aufruft.
 
 <div class='hint'>
-Achte beim Einfügen von Code darauf, dass du eine einheitliche Einrückung verwendest. Mach dich mit den Möglichkeiten in VS Code vertraut, um den Code einzurücken. Du kannst z. B. den gesamten Code markieren und dann <kbd>Tab</kbd> drücken, um ihn einzurücken, oder <kbd>Shift</kbd><kbd>Tab</kbd>, um ihn wieder auszurücken. VS Code kann Code auch automatisch einrücken – drücke dazu <kbd>Strg</kbd><kbd>Shift</kbd><kbd>P</kbd> und gib »Reindent Lines« ein. Du kannst auch »Format Document« auswählen, um das gesamte Dokument zu formatieren.
+Achte beim Einfügen von Code darauf, dass du eine einheitliche Einrückung verwendest. Du kannst z. B. mehrere Zeilen markieren und mit <kbd>Tab</kbd> einrücken oder mit <kbd>Shift</kbd><kbd>Tab</kbd> ausrücken. Visual Studio Code kann das ganze Dokument auch selbst ordnen: <kbd>Strg</kbd><kbd>Shift</kbd><kbd>P</kbd> und »Format Document«.
 </div>
 
-Wenn du die Seite jetzt aktualisierst und die Leertaste drückst, sollte sich der Zustand auf 1 ändern. Wenn du die Leertaste loslässt, bleibt der Zustand auf 1 stehen. Das liegt daran, dass wir noch keine Logik implementiert haben, um den Zustand zurückzusetzen. Du kannst die Seite aber neu laden, um den Zustand zurückzusetzen.
+Drückst du jetzt in der Vorschau die Leertaste, springt der Zustand auf 1. Lässt du sie los, bleibt er bei 1 stehen: Noch setzt ihn nichts zurück. Lade die Seite neu, dann beginnt er wieder bei 0.
 
-Wir fügen eine Funktion `handleKeyUp` hinzu, die den Zustand zurücksetzt, wenn die Leertaste losgelassen wird. Füge den folgenden Code hinter `handleKeyDown` ein:
+_task(dollar-state)
+
+Wir ergänzen eine Funktion `handleKeyUp`, die den Zustand zurücksetzt, wenn die Leertaste losgelassen wird. Schreib sie hinter `handleKeyDown`:
 
 ```js
 function handleKeyUp() {
@@ -262,7 +386,7 @@ function handleKeyUp() {
 }
 ```
 
-Füge außerdem zwei weitere Event-Listener in `onMount` hinzu, der die Funktion `handleKeyUp` aufruft, wenn die Leertaste losgelassen wird:
+Und in `onMount` einen zweiten Event-Listener, der beim Loslassen der Leertaste `handleKeyUp` aufruft:
 
 ```js
 document.addEventListener("keyup", (e) => {
@@ -272,16 +396,18 @@ document.addEventListener("keyup", (e) => {
 });
 ```
 
-Du solltest jetzt sehen, wie der Zustand auf 0 zurückgesetzt wird, wenn du die Leertaste loslässt.
+Jetzt springt der Zustand beim Loslassen wieder auf 0.
 
-Damit der Timer auch auf dem Handy funktioniert, wo es keine Leertaste gibt, fügen wir noch einen weiteren Event-Listener im `onMount`-Hook hinzu, der auf das Antippen des Bildschirms reagiert:
+Damit der Timer auch auf dem Handy funktioniert, wo es keine Leertaste gibt, reagieren zwei weitere Event-Listener in `onMount` auf das Antippen des Bildschirms:
 
 ```js
 document.addEventListener("touchstart", () => handleKeyDown());
 document.addEventListener("touchend", () => handleKeyUp());
 ```
 
-Wir fügen noch noch ein paar Variablen oben im `<script>`-Tag hinzu (unter `let state`):
+### Die Zeit messen
+
+Oben im `<script>`-Teil, unter `let state`, kommen drei weitere Variablen dazu:
 
 ```js
 let t0 = 0;
@@ -289,11 +415,11 @@ let timerString = $state("00:00<span class='small'>.00</span>");
 let timeoutId = null;
 ```
 
-- `t0` ist die Startzeit des Timers – hiermit berechnen wir später die Zeit, die seit dem Start vergangen ist.
-- `timerString` ist der Text, der auf der Webseite angezeigt wird. Wir verwenden hier HTML, um die Zeit mit hunderstel Sekunden anzuzeigen. Die CSS-Klasse `small` soll dafür sorgen, dass die hunderstel Sekunden kleiner dargestellt werden – wir definieren sie später. Dieser Variable verwendet auch wieder `$state` von Svelte, damit sie im HTML automatisch aktualisiert wird, wenn sich der Wert ändert.
-- `timeoutId` ist eine ID, die wir später verwenden werden, um den 500 ms-Timeout abzubrechen, falls die Leertaste vorher losgelassen wird.
+- `t0` ist die Startzeit. Daraus berechnen wir später, wie viel Zeit seit dem Start vergangen ist.
+- `timerString` ist der Text der Anzeige. Er enthält HTML, damit die Hundertstelsekunden in einem eigenen `<span>` mit der Klasse `small` stehen und kleiner erscheinen. Auch er ist mit `$state` ein Zustand, damit die Anzeige sich ändert, wenn er sich ändert.
+- `timeoutId` brauchen wir, um die 500 ms Wartezeit abzubrechen, falls die Leertaste vorher losgelassen wird.
 
-Im `.main`-Element fügen wir jetzt noch eine Anleitung und den eigentlichen Timer hinzu:
+In `.main` kommen eine Anleitung und die eigentliche Anzeige dazu:
 
 ```html
 <p>
@@ -303,7 +429,9 @@ Im `.main`-Element fügen wir jetzt noch eine Anleitung und den eigentlichen Tim
 <p class="timer">{@html timerString}</p>
 ```
 
-Im CSS-Abschnitt fügen wir noch ein paar Zeilen hinzu, um den Timer zu formatieren:
+`{@html …}` setzt den Text als HTML ein. Mit `{timerString}` stünde das `<span>` als Text auf der Seite.
+
+Im `<style>`-Teil formatieren ein paar Regeln die Anzeige:
 
 ```css
 .timer {
@@ -324,9 +452,11 @@ Im CSS-Abschnitt fügen wir noch ein paar Zeilen hinzu, um den Timer zu formatie
 }
 ```
 
-Da Svelte normalerweise allen Code, der nicht verwendet wird, aus Effizienzgründen entfernt, müssen wir CSS-Klassen, die nicht von Anfang an schon im HTML-Code vorhanden sind, mit `:global(`...`)` kennzeichnen. Das ist hier der Fall, weil die CSS-Klassen `ready` und `small` erst später durch JavaScript-Funktionen hinzugefügt werden.
+Svelte lässt CSS-Regeln weg, die zu nichts im HTML der Komponente passen. Die Klassen `ready` und `small` kommen aber erst später dazu, durch JavaScript. Deshalb stehen sie in `:global(` … `)`: So bleiben die Regeln erhalten.
 
-Wir brauchen eine Funktion, die die Timeranzeige, also die Variable `timerString`, aktualisiert. Füge den folgenden Code in das `<script>`-Tag ein (vor `handleKeyDown`):
+_task(global)
+
+Jetzt eine Funktion, die die Anzeige, also `timerString`, auf den neuesten Stand bringt. Schreib sie in den `<script>`-Teil, vor `handleKeyDown`:
 
 ```js
 function updateTimer() {
@@ -351,10 +481,10 @@ function updateTimer() {
 ```
 
 <div class='hint'>
-Die Funktion bricht sofort ab, wenn der Zustand nicht 3 ist. Anderenfalls wird die vergangene Zeit berechnet und in der Variable `timerString` gespeichert. Diese wird dann automatisch aktualisiert, weil wir sie mit `$state` deklariert haben. Anschließend wird mit Hilfe von `requestAnimationFrame` die Funktion `updateTimer` erneut aufgerufen. Das sorgt dafür, dass die Funktion so oft wie möglich aufgerufen wird, ohne den Browser zu überlasten.
+Die Funktion bricht sofort ab, wenn der Zustand nicht 3 ist. Sonst berechnet sie die vergangene Zeit in Sekunden und schreibt sie als Minuten, Sekunden und Hundertstel in <code>timerString</code>. <code>Date.now()</code> ist die aktuelle Zeit in Millisekunden. Zum Schluss bittet sie mit <code>requestAnimationFrame</code> den Browser, sie vor dem nächsten Bild noch einmal aufzurufen. So läuft die Anzeige flüssig mit, ohne den Browser zu überlasten.
 </div>
 
-Die Funktion `handleKeyDown` muss jetzt noch angepasst werden, damit sie korrekt zwischen den einzelnen Zuständen wechselt:
+`handleKeyDown` wechselt jetzt richtig zwischen den Zuständen:
 
 ```js
 function handleKeyDown() {
@@ -372,11 +502,9 @@ function handleKeyDown() {
 }
 ```
 
-Wenn der Zustand 0 ist, wird er auf 1 gesetzt und ein Timeout von 500 ms gestartet. Am Ende dieses Timeouts wird geschaut, ob der Zustand immer noch 1 ist. Wenn ja, wird er auf 2 gesetzt und die Klasse `ready` zur Timeranzeige hinzugefügt. Diese Klasse sorgt dafür, dass die Stoppuhr grün wird.
+Im Zustand 0 springt sie in Zustand 1 und stellt mit `setTimeout` einen Wecker auf 500 ms. Klingelt er und ist der Zustand dann immer noch 1, geht es in Zustand 2, und die Anzeige bekommt die Klasse `ready`, die sie grün färbt. Im Zustand 3 hält ein Tastendruck die Stoppuhr an: Zustand 4.
 
-Ist der Zustand jedoch 3, wird er auf 4 gesetzt (die Stoppuhr wird gestoppt).
-
-Die Funktion `handleKeyUp` muss ebenfalls angepasst werden:
+Auch `handleKeyUp` bekommt die ganze Logik:
 
 ```js
 function handleKeyUp() {
@@ -391,23 +519,32 @@ function handleKeyUp() {
 }
 ```
 
-Wenn die Taste losgelassen wird, während wir noch im Zustand 1 sind, wird der Zustand auf 0 zurückgesetzt und der 500 ms-Timeout abgebrochen. Wenn der Zustand 2 ist, wird er auf 3 gesetzt und die aktuelle Zeit in der Variable `t0` gespeichert. Außerdem wird mit dem Befehl `requestAnimationFrame(updateTimer)` die Funktion `updateTimer` einmalig aufgerufen, die die Timeranzeige aktualisiert und dann dafür sorgt, dass sie immer wieder aufgerufen wird.
+Lässt du die Taste im Zustand 1 los, geht es zurück in Zustand 0, und der Wecker wird abgestellt. Im Zustand 2 beginnt die Messung: Zustand 3, die Startzeit kommt in `t0`, und `requestAnimationFrame(updateTimer)` ruft `updateTimer` zum ersten Mal auf.
 
-Der ganzen Code für die Datei `src/routes/+page.svelte` sieht jetzt so aus:
+So sieht `src/routes/+page.svelte` jetzt aus:
 
 _include_file(+page.svelte, svelte)
 
-Deine Seite sollte jetzt so aussehen und funktionieren:
+<!-- tutorial-screenshot
+write-file: src/routes/+page.svelte <- file:+page.svelte
+tab: preview
+wait-for-text: Halte die Leertaste
+sleep: 1
+-->
 
 <img class='full border' src='finished.webp' alt='Der einfache Rubik’s Cube Timer steht bei 00:00.00 und wartet auf das Gedrückthalten der Leertaste.'>
 
+Probier es aus: Halte die Leertaste gedrückt, bis die Anzeige grün wird, lass los, und drück sie noch einmal, um die Zeit anzuhalten.
+
+_task(timer)
+
 ## Webseite erweitern
 
-Jetzt, wo die Stoppuhr funktioniert, können wir uns um das Styling kümmern. Wir haben bereits ein paar CSS-Regeln hinzugefügt, aber es gibt noch ein paar Dinge, die wir verbessern können.
+Die Stoppuhr funktioniert. Jetzt kümmern wir uns um das Aussehen.
 
 ### Bessere Schriftarten
 
-Wir können die Schriftart der Webseite ändern, um sie ansprechender zu gestalten. Dazu verwenden wir Google Fonts. Füge den folgenden Code in den `<head>`-Tag der Datei `src/app.html` ein (vor `%sveltekit.head%`):
+Schönere Schriften holen wir von Google Fonts. Schreib in den `<head>` von `src/app.html`, vor `%sveltekit.head%`:
 
 ```html_copy
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -415,44 +552,60 @@ Wir können die Schriftart der Webseite ändern, um sie ansprechender zu gestalt
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
 ```
 
-Ändere außerdem den CSS-Code in der Datei `src/routes/+page.svelte`, so dass die Schriftarten verwendet werden:
+Ergänze dann in `src/routes/+page.svelte` in der Regel `.main` die Zeile `font-family: Quicksand;` und in der Regel `.timer` die Zeile `font-family: "IBM Plex Mono";`:
 
 ```css
 .main {
     font-family: Quicksand;
+    …
 }
 .timer {
     font-family: "IBM Plex Mono";
+    …
 }
 ```
 
-Du solltest jetzt sehen, dass die Schriftart der Webseite geändert wurde. Wenn du die Seite aktualisierst, sollte sie jetzt so aussehen:
+Nach dem Speichern zeigt die Seite die neuen Schriften:
 
-<img class='full border' src='finished-pretty.webp' alt='Der gestaltete Timer zeigt auf grünem Hintergrund eine Zeit von 00:03.98.'>
+<!-- tutorial-screenshot
+write-file: src/app.html <- file:app.html
+write-file: src/routes/+page.svelte <- file:page-fonts.svelte
+# Vite braucht einen Moment für die neue app.html
+sleep: 3
+tab: preview
+preview-reload
+# Erst wenn Svelte die Seite übernommen hat, hört sie auf die Leertaste
+sleep: 2
+click: selector:h1
+hook: solve 3.9
+sleep: 1
+-->
+
+<img class='full border' src='finished-pretty.webp' alt='Der gestaltete Timer ist grün und zeigt eine angehaltene Zeit von knapp vier Sekunden.'>
 
 ### Bootstrap einbinden und Reset-Button hinzufügen
 
-[Bootstrap](https://getbootstrap.com/) ist ein beliebtes CSS-Framework, das dir hilft, deine Webseite schnell und einfach zu gestalten. Du kannst es einbinden, indem du den folgenden Code in den `<head>`-Tag der Datei `src/app.html` einfügst:
+[Bootstrap](https://getbootstrap.com/) ist ein beliebtes CSS-Framework, das dir hilft, deine Webseite schnell und einfach zu gestalten. Du bindest es ein, indem du in den `<head>` von `src/app.html` schreibst:
 
 ```html_copy
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
 ```
 
-Jetzt kannst du Bootstrap-Klassen verwenden, um deine Webseite zu gestalten. Unter anderem stellt Bootstrap Klassen zum Styling von Buttons zur Verfügung, die wir für unseren Reset-Button verwenden können. Füge den folgenden Code in den `<div class="main">`-Tag ein, um einen Reset-Button hinzuzufügen:
+Bootstrap bringt unter anderem Klassen für Buttons mit. Damit bauen wir einen Reset-Button. Schreib in `<div class="main">`, unter die Anzeige:
 
 ```html
 <button
     id="bu_reset"
     class="btn btn-lg {state < 3 ? 'btn-outline-secondary' : 'btn-warning'}"
-    disabled={state < 3 ? "disabled" : ""}
+    disabled={state < 3}
     onclick={resetTimer}>
     Reset
 </button>
 ```
 
-Wir definieren hier einen Button mit der ID `bu_reset`, der die Klasse `btn` von Bootstrap hat. Außerdem verwenden wir die Klasse `btn-outline-secondary` (graue Umrandung), wenn `state` kleiner als 3 ist, und ansonsten die Klasse `btn-warning` (gelbe Farbe). Außerdem wird der Button deaktiviert, wenn `state` kleiner als 3 ist. Wenn der Button geklickt wird, wird die Funktion `resetTimer` aufgerufen.
+Der Button hat die ID `bu_reset` und die Bootstrap-Klasse `btn`. Solange `state` kleiner als 3 ist, bekommt er dazu die Klasse `btn-outline-secondary` (grau umrandet) und ist abgeschaltet (`disabled`), sonst die Klasse `btn-warning` (gelb). Ein Klick ruft die Funktion `resetTimer` auf.
 
-Wir müssen jetzt noch eine Funktion `resetTimer` hinzufügen, die den Timer zurücksetzt. Füge den folgenden Code in das `<script>`-Tag ein (z. B. nach der Funktion `updateTimer`):
+Die fehlt noch. Schreib sie in den `<script>`-Teil, zum Beispiel nach `updateTimer`:
 
 ```js
 function resetTimer() {
@@ -467,32 +620,38 @@ function resetTimer() {
 
 ### Icons einbinden
 
-Auf dem Reset-Button fehlt noch ein Icon. Wir verwenden dafür [Iconify](https://iconify.design/), eine Sammlung von Icons, die du ganz einfach in deine Webseite einfügen kannst. Um die Icons zu verwenden, müssen wir das Iconify-Paket installieren. Das geht ganz einfach mit dem folgenden Befehl:
+Auf dem Reset-Button fehlt noch ein Icon. Dafür verwenden wir [Iconify](https://iconify.design/), eine Sammlung von über 200 000 Icons. Iconify kommt als Paket ins Projekt. Halte dazu den Entwicklungsserver mit <kbd>Strg</kbd><kbd>C</kbd> an und installiere das Paket:
 
 ```bash
 npm install @iconify/svelte
 ```
 
-<div class='hint'>
-Falls du den Entwicklungs-Server gerade laufen hast, musst du ihn jetzt stoppen (mit <kbd>Strg</kbd><kbd>C</kbd>) und anschließend den Befehl eingeben. Danach kannst du den Server wieder mit <code>npm run dev</code> starten.
-</div>
+<!-- tutorial-screenshot
+terminal-open
+terminal-maximize
+press: Control+c
+terminal-wait-for-prompt
+press: Control+l
+terminal-run: npm install @iconify/svelte
+terminal-wait-for-prompt: 120
+crop-terminal-lines: auto
+-->
 
-Wenn du das Paket installiert hast, kannst du die Icons ganz einfach in deine Webseite einfügen. Füge den folgenden Code in den `<script>`-Tag ein:
+<img class='full' src='iconify-install.webp' alt='Im Terminal meldet npm install @iconify/svelte, wie viele Pakete es hinzugefügt hat.'>
+
+Starte den Server danach wieder mit `npm run dev`. Jetzt kannst du Icons verwenden. Schreib oben in den `<script>`-Teil:
 
 ```js
 import Icon from '@iconify/svelte';
 ```
-Füge dann den folgenden Code in den `<button>`-Tag ein (genau vor dem Label »Reset«), um das Icon anzuzeigen:
+
+und in den `<button>`, direkt vor »Reset«:
 
 ```html
 <Icon icon="material-symbols:device-reset-rounded" class="icon" />
 ```
 
-<div class='hint'>
-Denke daran, dass du den Entwicklungs-Server neu starten musst, damit du die Seite aufrufen kannst.
-</div>
-
-Das Icon wird jetzt in dem Button angezeigt. Du kannst die Größe des Icons ändern, indem du die CSS-Klasse `icon` anpasst. Füge den folgenden Code in den `<style>`-Tag ein:
+Mit dieser Regel im `<style>`-Teil bekommt das Icon etwas Abstand und Größe:
 
 ```css
 :global(.btn .icon) {
@@ -502,31 +661,42 @@ Das Icon wird jetzt in dem Button angezeigt. Du kannst die Größe des Icons än
 }
 ```
 
-Wenn du die Seite jetzt aktualisierst, solltest du den Reset-Button mit dem Icon sehen:
+Nach einer gemessenen Zeit leuchtet der Button gelb:
 
-<img class='full border' src='finished-pretty-with-icon.webp' alt='Der gestaltete Timer zeigt 00:22.80 und darunter einen Button zum Zurücksetzen.'>
+<!-- tutorial-screenshot
+# Den Server wieder starten; preview-port wartet, bis er antwortet
+terminal-run: npm run dev
+write-file: src/routes/+page.svelte <- file:page-final.svelte
+preview-port: 5173
+tab: preview
+wait-for-text: Reset
+sleep: 2
+click: selector:h1
+hook: solve 2.5
+sleep: 1
+-->
 
-Du kannst dir hier auch andere Icons aussuchen: [https://icon-sets.iconify.design/](https://icon-sets.iconify.design/). Du kannst die Icons ganz einfach in deine Webseite einfügen, indem du den Namen des Icons in den `<Icon>`-Tag einfügst. Zum Beispiel:
+<img class='full border' src='finished-pretty-with-icon.webp' alt='Der gestaltete Timer zeigt eine angehaltene Zeit und darunter einen gelben Button »Reset« mit Icon.'>
+
+Andere Icons findest du unter [https://icon-sets.iconify.design/](https://icon-sets.iconify.design/). Den Namen eines Icons schreibst du in `icon="…"`, zum Beispiel:
 
 ```html
 <Icon icon="mdi:home" class="icon" />
 ```
 
-<div class='hint'>
-Es kann sein, dass deine Icons etwas verzögert angezeigt werden. Das ist aber nur in der Vorschau so. Wenn du die Seite als statische Webseite exportierst, werden die Icons sofort angezeigt.
-</div>
+_task(reset)
 
 ## Statische Webseite exportieren
 
-Um deine Webseite online zu stellen, bietet es sich an, sie als statische Webseite zu exportieren. Das bedeutet, dass die Webseite in eine HTML-Datei umgewandelt wird, die du dann auf einem Webserver hosten kannst. Gegenüber dynamischen Webseiten, die bei jedem Aufruf neu generiert werden, sind statische Webseiten schneller und benötigen weniger Ressourcen. Außerdem verzichtest du so auf eine relativ große Angriffsfläche, die ein Backend mit sich bringen kann.
+Um deine Webseite online zu stellen, machst du aus ihr eine statische Webseite: fertige HTML-, CSS- und JavaScript-Dateien, die jeder Webserver ausliefern kann, ohne dass dort Svelte läuft. Statische Webseiten sind schnell, brauchen wenig und bieten Angreifern kaum eine Angriffsfläche.
 
-Um deine Webseite als statische Webseite zu exportieren, müssen wir erst einen statischen Adapter für Svelte installieren. Das geht ganz einfach mit dem folgenden Befehl:
+Dafür brauchst du einen anderen Adapter, den statischen. Halte den Entwicklungsserver an und installiere ihn:
 
 ```bash
 npm install -D @sveltejs/adapter-static
 ```
 
-Anschließend musst du den Adapter in der Datei `vite.config.js` aktivieren. Ändere dazu ganz oben die Zeile
+Ändere dann in `vite.config.js` die erste Zeile von
 
 ```js
 import adapter from '@sveltejs/adapter-auto';
@@ -538,41 +708,48 @@ in
 import adapter from '@sveltejs/adapter-static';
 ```
 
-Wir müssen Svelte jetzt noch mitteilen, dass wir die Webseite als statische Webseite exportieren möchten. Erstelle dazu eine neue Datei `src/routes/+layout.js` und füge den folgenden Code ein:
+Außerdem muss SvelteKit wissen, dass es jede Seite schon beim Bauen fertig ausrechnen soll. Lege dazu eine neue Datei `src/routes/+layout.js` an, mit dieser Zeile:
 
 ```js
 export const prerender = true;
 ```
 
-Anschließend kannst du den statischen Build erstellen, indem du im Terminal folgenden Befehl eingibst:
+Jetzt kannst du die statische Webseite bauen:
 
 ```bash
 npm run build
 ```
-Wenn alles geklappt hat, solltest du ein neues Verzeichnis `build` in deinem Verzeichnis sehen, das alle Dateien enthält, die du für deine Webseite benötigst.
+
+<!-- tutorial-screenshot
+# Mehr Zeilen für die lange Ausgabe von npm run build
+viewport: 1029x700
+terminal-maximize
+press: Control+c
+terminal-wait-for-prompt
+terminal-run: npm install -D @sveltejs/adapter-static
+terminal-wait-for-prompt: 120
+terminal-run: sed -i 's#@sveltejs/adapter-auto#@sveltejs/adapter-static#' vite.config.js && echo 'export const prerender = true;' > src/routes/+layout.js
+terminal-wait-for-prompt
+press: Control+l
+terminal-run: npm run build
+terminal-wait-for-prompt: 120
+crop-terminal-lines: auto
+# Die Zeile mit der Eingabeaufforderung steht nur halb im Bild
+crop-terminal-skip-bottom: 1
+-->
+
+<img class='full' src='build.webp' alt='Das Ende der Ausgabe von npm run build: »Using @sveltejs/adapter-static«, »Wrote site to "build"« und »done«.'>
+
+Steht am Ende »Wrote site to "build"«, liegen alle Dateien deiner Webseite im neuen Ordner `build`: eine `index.html` und daneben der Ordner `_app` mit CSS und JavaScript.
 
 <div class='hint'>
-Du kannst die Seite testen, indem du das <code>build</code>-Verzeichnis öffnest und den Live-Server startest. Sie sollte genauso aussehen und funktionieren wie die Seite, die du mit dem Entwicklungs-Server siehst.
+Du kannst die gebaute Seite testen: Öffne den Ordner <code>build</code> und starte die <a href='/reference/workspace#live-server'>Live-Vorschau</a>. Sie sollte genauso aussehen und funktionieren wie die Seite vom Entwicklungsserver.
 </div>
+
+_task(build)
+
+_task(abgabe)
 
 ### Deine Seite veröffentlichen
 
-Du kannst deine Webseite veröffentlichen, indem du sie auf einen Webserver hochlädst. Viele Hosting-Anbieter helfen dir dabei. Du kannst auch kostenlos eine Hackschule-Subdomain bekommen (z. B. `meineseite.hackschule.de`). Dafür verwendest du die gebauten statischen Dateien deiner App, nicht den laufenden Entwicklungsserver. In der [Anleitung zum eigenen Webspace](/custom-subdomain) erfährst du, wie du die Subdomain beantragst, was bei minderjährigen Schülerinnen und Schülern für die Einverständniserklärung nötig ist und wie du deine fertige Website hochlädst.
-
-<!--
-- Plugin installieren: Svelte for VS Code
-- npx sv create rubik-timer
-- npm install
-- npm run dev
-- Stoppuhr implementieren (Schritt für Schritt)
-- npm install @iconify/svelte
-- Icons unter: https://icon-sets.iconify.design/
-- statischen Build aktivieren
-- npm run build
-- Extras:
-  - Google Fonts
-  - Reset-Button
-  - Bootstrap
-  - Icons
-- -> Hosten auf eigener Subdomain von hackschule.de
--->
+Du kannst deine Webseite veröffentlichen, indem du sie auf einen Webserver hochlädst. Viele Hosting-Anbieter helfen dir dabei. Du kannst auch kostenlos eine Hackschule-Subdomain bekommen (z. B. `meineseite.hackschule.de`). Dafür verwendest du die gebauten Dateien aus `build`, nicht den laufenden Entwicklungsserver. In der [Anleitung zum eigenen Webspace](/custom-subdomain) erfährst du, wie du die Subdomain beantragst, was bei minderjährigen Schülerinnen und Schülern für die Einverständniserklärung nötig ist und wie du deine fertige Website hochlädst.

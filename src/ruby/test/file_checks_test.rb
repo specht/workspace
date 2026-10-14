@@ -267,6 +267,27 @@ class FileChecksTest < Minitest::Test
         assert_includes outcome.message, 'href="styles.css"'
     end
 
+    # style_tags: only the <style> block of a Svelte component counts; the
+    # script above it is not CSS, and line numbers stay those of the file.
+    def test_css_style_tags
+        routes = File.join(@root, 'rubik-timer', 'src', 'routes')
+        FileUtils.mkdir_p(routes)
+        page = File.join(routes, '+page.svelte')
+        File.write(page, "<script>\n    import { onMount } from \"svelte\";\n    let state = $state(0);\n</script>\n\n<div class=\"main\"><h1>Timer</h1></div>\n\n<style>\n    .main {\n        display: flex;\n        flex-direction: column;\n    }\n</style>\n")
+        check = { 'type' => 'css', 'file' => 'rubik-timer/src/routes/+page.svelte', 'style_tags' => true,
+                  'expect' => { 'parses' => true, 'declares' => [{ 'selector' => '.main', 'property' => 'display', 'value' => 'flex' }] } }
+        outcome = FileChecks.css(check, @ws)
+        assert outcome.ok, outcome.message
+        assert_includes outcome.read, 'im `<style>`-Block'
+        assert_includes outcome.read, 'Zeile 9: `.main`'
+
+        File.write(page, "<script>\n    let state = $state(0);\n</script>\n\n<div class=\"main\"></div>\n\n<style>\n    .main {\n        display: block;\n    }\n</style>\n")
+        assert_equal :missing_declaration, FileChecks.css(check, @ws).problem
+
+        File.write(page, "<div class=\"main\"></div>\n")
+        assert_equal :no_style, FileChecks.css(check, @ws).problem
+    end
+
     # html elements: so many elements of a kind, with an attribute.
     def test_html_elements
         site = File.join(@root, 'website-test')

@@ -170,10 +170,16 @@ module ContentParts
         markdown.scan(INCLUDE).map { |slug, part, _| "#{slug}##{part}" }.uniq
     end
 
-    # A short line of Markdown as HTML: only `code` is understood, everything
-    # else is escaped.
+    # A short line of Markdown as HTML: only `code` and <kbd>keys</kbd> are
+    # understood, everything else is escaped. Inside `code`, <kbd> is text.
     def self.inline_html(text)
-        CGI.escapeHTML(text.to_s).gsub(/`([^`]+)`/) { "<code>#{$1}</code>" }
+        text.to_s.split(/(`[^`]+`)/).map do |piece|
+            if piece.start_with?('`') && piece.end_with?('`') && piece.size > 1
+                "<code>#{CGI.escapeHTML(piece[1...-1])}</code>"
+            else
+                CGI.escapeHTML(piece).gsub(%r{&lt;kbd&gt;([^&<>]+?)&lt;/kbd&gt;}) { "<kbd>#{$1}</kbd>" }
+            end
+        end.join
     end
 
     # Task ids named by _include(…, done: id) in a page's Markdown.
