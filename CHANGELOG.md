@@ -429,6 +429,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   später immer wieder in <kbd>Strg</kbd><kbd>P</kbd> auf. Sie sind jetzt
   ausgeschlossen (`**/.hs-kbd-tutorial/**` in `files.exclude`); VS Code
   nimmt sie beim nächsten Start auch aus dem gespeicherten Verlauf.
+- Der Knopf »TIC-80« im Menü und der Tab zeigen TIC-80s kleinen Computer.
 - TIC-80 1.3.1 statt einer Entwicklerversion von Juli, mit Forth als neuer
   Sprache. Speichern im Workspace ist robuster: TIC-80 schickt nur die
   Dateien, die es geändert hat. Hat sich eine Datei außerhalb von TIC-80
