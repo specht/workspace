@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "screenshots": {
+    "make.webp": {
+      "state_hash": "0908255e115044f16decc7eaab951dcc640849e8a124a849082a1f8cbcb7dc1f",
+      "environment_fingerprint": "7c82b7c75b1de918145ea41c64f18db233fde8556accdcc9a2a033da2690e772",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "7cf306c8d5885fd91afa9cb004fa250b0a4188002a7877700a5fa9438ce9c078"
+    },
+    "green-dot.webp": {
+      "state_hash": "eca40b3fde8cdddc7d45ab7cbba38ec72bb9d56375e7d47e481e58981d1f92b1",
+      "environment_fingerprint": "7c82b7c75b1de918145ea41c64f18db233fde8556accdcc9a2a033da2690e772",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "275259e22e963d94a0ac37ab57a85bf1d8a90f2ec1050b77985457c9dd6ae4a7",
+      "variants": {
+        "green-dot-crt.webp": "c0524774b299344887ff2be7b2ef66fd962cd62f4cf5cedc419167537e4708ea"
+      }
+    },
+    "patches.webp": {
+      "state_hash": "edf7924486d9c8dea0641a9ecff67cc500884e7c64f5efa2f9828f9bc7d42e8a",
+      "environment_fingerprint": "7c82b7c75b1de918145ea41c64f18db233fde8556accdcc9a2a033da2690e772",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "e71b5e219540738326874b6dc6994232b5c4b86d4a56461bd6d2f7bedc365f52",
+      "variants": {
+        "patches-crt.webp": "fcd0bc85e8584d8c6b8c5f89c7149b3e9cc7cd5b3371d6c7acfa2eb4f2b3f327"
+      }
+    },
+    "formel-mal.webp": {
+      "state_hash": "02131e99e927fbf6b6dd225444bc7742285448900815d6245bdb3bcd8d843513",
+      "environment_fingerprint": "7c82b7c75b1de918145ea41c64f18db233fde8556accdcc9a2a033da2690e772",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "b185070731570ad3f280a062978040c63f9ad64b6fbe06c952febdfb6d1d86bd",
+      "variants": {
+        "formel-mal-crt.webp": "e8e35cf7c0624f84588ab0c1828bee46f04f5b1b9226c08c5def5549abd1e4af"
+      }
+    },
+    "formel-kreise.webp": {
+      "state_hash": "b2e18a81c8ef8112466e1874429334effc04ad38ea05a30900326526f1b01e51",
+      "environment_fingerprint": "7c82b7c75b1de918145ea41c64f18db233fde8556accdcc9a2a033da2690e772",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "5d9301ca0f513c5974ce69b5513b2f92d514e38c65052479b515713e50f82897",
+      "variants": {
+        "formel-kreise-crt.webp": "b88329a0c8d769fa04c91c50572f5812fbc88ea9d889641b4c2fd1032e59a0e6"
+      }
+    },
+    "formel-sierpinski.webp": {
+      "state_hash": "34cfb2213b5303d1444803964bdf46a58892a87d7db9181830852d2cddd0bb92",
+      "environment_fingerprint": "7c82b7c75b1de918145ea41c64f18db233fde8556accdcc9a2a033da2690e772",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "f1609ed4e3866ac0093beed3012f329c43a02f5c2b9603d910828b3fe0ae239e",
+      "variants": {
+        "formel-sierpinski-crt.webp": "b20c3971a2c19b8eb973465ccea1d92c723c0bbb07973103b00e012b0833d733"
+      }
+    },
+    "formel-xor.webp": {
+      "state_hash": "0d81d54e05d510c82fcb2e895692cdec57b6baec3e8a04910d10494a4e2f5fa2",
+      "environment_fingerprint": "7c82b7c75b1de918145ea41c64f18db233fde8556accdcc9a2a033da2690e772",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "a9b16ff166a479676fd7beb568806a16f5f959c1865b955980f89d03c997e1dc",
+      "variants": {
+        "formel-xor-crt.webp": "ab2bfbad5ec776548847a8258089568c763049d1c16df5904ed52e1c3003ef64"
+      }
+    },
+    "color-circles.webp": {
+      "state_hash": "9565fb7c9be2e0948aab4db106247e4eb5c560baca019262f34b9182a16cc72e",
+      "environment_fingerprint": "7c82b7c75b1de918145ea41c64f18db233fde8556accdcc9a2a033da2690e772",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "71678247739a53b56aef78d5301ea39859beae5ac6fcf19b46df1598ad1ba1d3",
+      "variants": {
+        "color-circles-crt.webp": "c0c6fb5979dda8146419b75669ca567324476bf87fbe33924c0242e45c8a607e"
+      }
+    },
+    "sinus-rings.webp": {
+      "state_hash": "9aac5337f61f14aa8b2dc4af84ee3f0d43f5cc375b79c4c7cc45c32a6deafec7",
+      "environment_fingerprint": "7c82b7c75b1de918145ea41c64f18db233fde8556accdcc9a2a033da2690e772",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "6e89e3a8f6c2b386090ddc0cdfdaa334a823066d0bd5f9a92514e9cd036540cf",
+      "variants": {
+        "sinus-rings-crt.webp": "9a191dad6278f8a9e782348d4321d4a38052fa7fde8147f1c1ea75400b85d610"
+      }
+    },
+    "wellen.mp4": {
+      "state_hash": "2606878b98fd6041375741888151135733ef8c9c6cf4e71c1459f8a13a1aa95d",
+      "environment_fingerprint": "7c82b7c75b1de918145ea41c64f18db233fde8556accdcc9a2a033da2690e772",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "98f395422e5110e811943a3613af0d4aa6b9e3c5d44a7128948aecac47295946",
+      "variants": {
+        "wellen-crt.mp4": "770d8aa05a9f9f0cda60b13467f773c9bf43c18b75859ecbc205e173878e8482"
+      }
+    },
+    "interference.webp": {
+      "state_hash": "0e0daa082a3bf44681ee19e194601399b56f9d6aa70bdeabb47e90d65337622e",
+      "environment_fingerprint": "7c82b7c75b1de918145ea41c64f18db233fde8556accdcc9a2a033da2690e772",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "9fb04fd3dc91d1c577f27ff5c6336fdce5662b0c1a47d8a5c418875466e906f2",
+      "variants": {
+        "interference-crt.webp": "f891aa69f0a231be55441deb808ff47df1dbad5b595f167a6ddcc4721d658a9d"
+      }
+    },
+    "lichtspur-fahren.webp": {
+      "state_hash": "19d858f586f25df9c72cd1f78474f319dd4d6894879b9aa02c1614ce52ebe225",
+      "environment_fingerprint": "7c82b7c75b1de918145ea41c64f18db233fde8556accdcc9a2a033da2690e772",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "c16d56aa02f538358ecc8e2955533e14a0d67882447d5576ea1f5950389c96f6",
+      "variants": {
+        "lichtspur-fahren-crt.webp": "4a1ca922b264cab0946e88b77da1b35273c22ce8c855683cc08c75a507e43771"
+      }
+    },
+    "lichtspur.webp": {
+      "state_hash": "f24be1cbe4563b25df0f6fed3325da880b29e27011b5d630ccea8f6bec303c32",
+      "environment_fingerprint": "7c82b7c75b1de918145ea41c64f18db233fde8556accdcc9a2a033da2690e772",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "8bfbdfdd3cc4fdb38115ef9099cb76190c23188ab109cfaa077cf9ee24dd4785",
+      "variants": {
+        "lichtspur-crt.webp": "05f631d80aff82d39ea36f279985d4098d48876b8f98c965567bbdd4d2153994"
+      }
+    }
+  }
+}

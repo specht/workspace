@@ -1,7 +1,7 @@
 # Echtzeitgrafik mit C
 
 <div class='meta'>
-image: patches.webp
+image: interference.webp
 template: https://github.com/specht/pixelram-starter.git
 template_name: des PixelRAM-Starters
 </div>
@@ -13,36 +13,92 @@ template_name: des PixelRAM-Starters
 </div>
 
 <p class='abstract'>
-Mit PixelRAM programmierst du schnelle Computergrafik direkt in C. Statt fertige Zeichenbefehle zu verwenden, berechnet dein Programm selbst die Farbe jedes einzelnen Bildpunkts. In diesem Tutorial entwickeln wir daraus Schritt für Schritt ein animiertes Interferenzmuster und sehen, warum sich C besonders gut für solche rechenintensiven Grafikeffekte eignet.
+Mit PixelRAM programmierst du schnelle Computergrafik direkt in C. Es gibt keine Befehle für Linien, Kreise oder Figuren: Dein Programm bestimmt die Farbe jedes einzelnen Bildpunkts selbst. Daraus entstehen in diesem Tutorial bewegte Wellenmuster und ein Spiel für zwei an einer Tastatur.
 </p>
 
-Bei [Pixelflow Canvas](/drawing) kannst du mit einfachen Zeichenbefehlen schnell eigene Bilder und Animationen in Ruby programmieren. PixelRAM geht noch einen Schritt tiefer: Hier arbeitest du direkt mit den Pixeln des Bildschirms und berechnest selbst, welche Farbe an welcher Position erscheinen soll. Das ist etwas aufwendiger, eröffnet aber ganz andere Möglichkeiten. Auf dieser Grundlage lassen sich zum Beispiel Fraktale, Partikelsimulationen, Raycaster, Raytracer, Bilddecoder, eigene Software-Renderer oder ganze Spiele entwickeln.
+<div class='screen-gallery'>
+<figure>
+<img src='interference.webp' alt='Bunte Wellenringe von zwei Quellen überlagern sich.'>
+<figcaption>Zwei Wellen, die sich überlagern: 57.600 Pixel, 60-mal pro Sekunde neu berechnet</figcaption>
+</figure>
+<figure>
+<img src='lichtspur.webp' alt='Eine orange und eine türkise Spur winden sich durch ein umrandetes Spielfeld.'>
+<figcaption>»Lichtspur«: ein Spiel für zwei, mit Tastatur, Zusammenstößen und Punkten</figcaption>
+</figure>
+<figure>
+<img src='crystal-caves.webp' alt='Ein Level aus Crystal Caves: ein Bergmann vor einer Mine mit Steinwänden und Holzbalken.'>
+<figcaption>Crystal Caves, ein Spiel von 1991, läuft vollständig auf PixelRAM</figcaption>
+</figure>
+</div>
 
-Dafür verwenden wir die Programmiersprache C. Diese Sprache ist näher an der Arbeitsweise eines Computers als beispielsweise Ruby und eignet sich besonders gut für Programme, die sehr viele Berechnungen schnell durchführen müssen. Genau das werden wir in diesem Tutorial tun: Am Ende berechnet unser Programm viele zehntausend Pixel für jedes einzelne Bild einer Animation.
+Bei [Pixelflow Canvas](/drawing) zeichnest du mit einfachen Befehlen in Ruby. PixelRAM geht eine Ebene tiefer: Der Bildschirm ist ein Stück Speicher, in dem für jeden Bildpunkt eine Zahl steht, und dein Programm schreibt diese Zahlen. Das ist der Bildschirm, wie ihn die ersten PCs hatten, und alles andere baust du dir selbst: Muster, Animationen, Spiele, Fraktale, eigene 3D-Grafik.
 
-## Repository klonen
+Dafür verwenden wir C. Die Sprache ist nah an der Arbeitsweise des Computers und schnell genug, um für jedes Bild zehntausende Pixel einzeln auszurechnen, im Browser, 60-mal pro Sekunde.
 
-Für diese Anleitung brauchst du die Pixelram-Vorlage:
+## Einrichten
+
+### Repository klonen
+
+Für diese Anleitung brauchst du die PixelRAM-Vorlage:
 
 _include(workspace#repository-klonen)
 
-Öffne nun die Datei `main.c` und führe im Terminal `make` aus:
+### Übersetzen und ansehen
 
-<img class='full' src='make.webp' alt=''>
+Öffne die Datei `main.c` und gib im Terminal ein:
 
-Du erhältst nun eine Datei `main.html`, die du anschauen kannst, indem du rechts unten auf »Go Live« drückst und dann die Datei auswählst. Passend zum Testprogramm solltest du einen kleinen grünen Punkt in der Mitte des Bildes sehen:
+```bash
+make
+```
 
-<img src='green-dot.webp' style='width: 100%;' alt='Ein kleiner grüner Punkt leuchtet in der Mitte einer schwarzen Fläche.'>
+Beim ersten Mal lädt `make` die Bibliothek PixelRAM herunter. Dann übersetzt es `main.c` in die Datei `main.html`: Dein C-Programm läuft als WebAssembly im Browser.
 
-Wenn du später ein anderes Programm als `main.c` compilieren möchtest, musst du den entsprechenden Eintrag im `Makefile` unter `PROGRAM` ändern. Falls deinem Programm Default-Argumente übergeben werden sollen, kannst du diese unter `ARGS` eintragen. Die übrigen Zeilen kannst du so lassen, wie sie sind.
+<!-- tutorial-screenshot
+# Klonen wie im Handbuch »Workspace« (oben eingebunden), dann make im Terminal
+show-left-sidebar
+clone-start: https://github.com/specht/pixelram-starter.git @ c29cb44cf618d3e4a33f1b3ee692d41fde32b449
+press: Enter
+wait-for-input-value: /workspace/
+press: Enter
+wait-for-text: Would you like to open the repository?
+click: Open
+wait-for-text: main.c
+open-file: main.c
+terminal-open
+terminal-run: make
+terminal-wait-for-prompt: 180
+-->
+<img class='full' src='make.webp' alt='Der Workspace mit main.c im Editor; im Terminal darunter hat make die Datei main.html erzeugt.'>
 
-<img class='full' src='makefile.webp' alt=''>
+<img src='../reference/workspace/go-live.webp' class='r' style='width: 21em;' alt=''>
 
-## Grundlagen
+Klicke unten rechts auf »Go Live«. Im neuen Tab siehst du die Dateien des Projekts; klicke dort auf `main.html`. Du solltest einen kleinen grünen Punkt in der Mitte sehen:
+
+<div style='clear: both;'></div>
+
+<!-- tutorial-screenshot
+go-live
+tab: preview
+variants: crt
+viewport: 800x450
+hook: open main.html
+crop-element: #canvas
+-->
+<img class='full' src='green-dot.webp' alt='Ein kleiner grüner Punkt leuchtet in der Mitte einer schwarzen Fläche.'>
+
+<div class='hint'>
+<strong>Röhrenbildschirm:</strong> Fährst du mit der Maus über das Bild, erscheinen unten rechts drei Knöpfe. Der mittlere schaltet den CRT-Filter ein (oder <kbd>F6</kbd>): Scanlines und die gewölbte Scheibe eines alten Röhrenbildschirms, passend zu den großen Pixeln. Die Bilder auf dieser Seite haben dafür oben rechts einen eigenen Knopf mit demselben Zeichen <svg class='icon-crt' viewBox='0 0 24 24' aria-hidden='true'><rect x='3' y='4' width='18' height='15' rx='2'/><path d='M7 8h10M7 11.5h10M7 15h10'/></svg>.
+</div>
+
+<div class='hint'>
+<strong>So arbeitest du ab jetzt:</strong> Datei ändern und speichern, im Terminal <code>make</code>, dann die Vorschau neu laden, falls sie es nicht von selbst tut. Findet <code>make</code> einen Fehler, nennt es die Zeile in deiner Datei, und <code>main.html</code> bleibt, wie sie war. Lies die erste Fehlermeldung zuerst, die übrigen sind oft nur Folgefehler.
+</div>
+
+## Ein Bild aus einer Formel
 
 ### Das erste Pixel
 
-Schauen wir uns den Quellcode von `main.c` einmal genauer an:
+So sieht `main.c` aus:
 
 ```c
 #include "pixelram.h"
@@ -58,283 +114,212 @@ int main(void)
 }
 ```
 
-Mit dem Befehl:
+`screen_open(320, 180, pixel_indexed8, "PixelRAM")` öffnet einen Bildschirm mit 320 × 180 Pixeln. `set_pixel(160, 90, 10)` setzt genau einen davon: an der Stelle x = 160, y = 90, also in der Mitte, auf die Farbe 10. Der Punkt (0, 0) liegt links oben, y wächst nach unten.
 
-```c
-screen_open(320, 180, pixel_indexed8, "PixelRAM")
-```
-
-öffnen wir einen Bildschirm mit 320 × 180 Pixeln, und mit `set_pixel(160, 90, 10)` setzen wir genau einen dieser Pixel, nämlich:
-
-- Position 160, 90 (also in der Mitte des Bildschirms)
-- Farbe 10 (hellgrün in der Standard-VGA-Palette)
-
-### Farbpaletten
-
-Da wir den Modus `pixel_indexed8` aktiviert haben, können wir nicht beliebige RGB-Farben für jedes Pixel setzen, sondern nur einfache Bytes, die in eine vordefinierte Farbpalette verweisen. Welche Farbe der Pixel mit dem Wert 10 also tatsächlich hat, hängt von der aktuellen Palette ab.
-
-<div class='hint books'>
-Eine Übersicht über die eingebauten Paletten findest du unter <a href='https://specht.github.io/pixelram/palettes.html'>specht.github.io/pixelram/palettes.html</a>.
-</div>
-
-
-PixelRAM bringt viele fertige Farbpaletten mit. Ergänze vor oder nach dem `set_pixel`-Aufruf:
-
-```c
-use_palette("sweetie_16");
-```
-
-<img src='sweetie-dot.webp' style='width: 100%;' alt='Ein heller Punkt liegt auf einem dunkelblauen Hintergrund.'>
-
-Durch die veränderte Palette ist der Pixel jetzt blau und auch die Hintergrundfarbe (Farbe 0) ist nicht mehr schwarz, sondern dunkelblau.
-
-<div class='hint info'>
-Man kann Computergrafiken auch animieren, indem man das Bild selbst unverändert lässt und nur die Palette animiert. Der PixelArt-Künstler Mark Ferrari hat viel mit diesem Trick gearbeitet, eine Auswahl seiner Werke <a href='https://www.effectgames.com/demos/canvascycle/' target='_blank'>findest du hier</a>.
-</div>
+Im Modus `pixel_indexed8` ist jedes Pixel ein Byte, eine Zahl von 0 bis 255. Welche Farbe zu einer Zahl gehört, legt eine **Palette** fest: In der Standardpalette ist 10 ein helles Grün und 0 Schwarz.
 
 ### Alle Pixel
 
-Unser Bildschirm besteht aus 320 × 180 Pixeln, also insgesamt **57.600 Pixeln**. Natürlich wäre es unsinnig, für jeden davon einen eigenen `set_pixel`-Befehl zu schreiben. Stattdessen lassen wir den Computer die Positionen mit zwei ineinander verschachtelten Schleifen durchlaufen:
-
-```c
-for (int y = 0; y < 180; y++)
-{
-    for (int x = 0; x < 320; x++) {
-        set_pixel(x, y, 4);
-    }
-}
-```
-
-Die äußere Schleife läuft von oben nach unten durch alle Zeilen des Bildes. Für jede dieser Zeilen läuft die innere Schleife von links nach rechts durch alle Pixel. Auf diese Weise besucht das Programm jeden der 57.600 Bildpunkte genau einmal.
-
-<img style='width: 100%' src='yellow.webp' alt='Gelbe und orange Pixel bilden eine fein gemusterte Fläche.'>
-
-Damit wir die Breite und Höhe unseres Bildes nicht an mehreren Stellen als Zahlen eintragen müssen, legen wir sie am Anfang des Programms fest:
-
-```c
-#define WIDTH  320
-#define HEIGHT 180
-```
-
-Ändere dein vollständiges Programm nun zu:
+Der Bildschirm hat 320 × 180 = **57.600 Pixel**. Für jedes einen eigenen `set_pixel`-Befehl zu schreiben, wäre unsinnig. Stattdessen laufen zwei verschachtelte Schleifen über alle Zeilen und darin über alle Spalten, und eine Funktion `color` sagt für jedes Pixel, welche Farbe es bekommt. Ersetze den Inhalt von `main.c` durch:
 
 ```c
 #include "pixelram.h"
 
-#define WIDTH  320
-#define HEIGHT 180
+#define W 320
+#define H 180
+
+int color(int x, int y)
+{
+    return (x / 20 + y / 20) % 16;
+}
 
 int main(void)
 {
-    screen_open(WIDTH, HEIGHT, pixel_indexed8, "PixelRAM");
+    screen_open(W, H, pixel_indexed8, "PixelRAM");
     use_palette("sweetie_16");
 
-    for (int y = 0; y < HEIGHT; y++)
-        for (int x = 0; x < WIDTH; x++)
-            set_pixel(x, y, (x / 20 + y / 20) % 16);
+    for (int y = 0; y < H; y++)
+        for (int x = 0; x < W; x++)
+            set_pixel(x, y, color(x, y));
+
+    return 0;
 }
 ```
 
-Jetzt bekommt nicht mehr jeder Pixel dieselbe Farbe. Stattdessen hängt seine Farbe von seiner Position `x` und `y` ab. Wir haben also aufgehört, einzelne Objekte auf einen Bildschirm zu zeichnen: Unser Programm berechnet das gesamte Bild Pixel für Pixel. Genau dieses Prinzip werden wir in den nächsten Schritten weiter ausbauen.
+`#define W 320` gibt der Breite einen Namen, damit die Zahl nur an einer Stelle steht. `use_palette("sweetie_16")` wählt eine Palette mit 16 Farben, die Nummern 0 bis 15. Deshalb rechnet `color` am Ende `% 16`: Der Rest beim Teilen durch 16 liegt immer zwischen 0 und 15.
 
-<img style='width: 100%' src='patches.webp' alt='Diagonale Bänder aus bunten quadratischen Farbfeldern füllen die Fläche.'>
+<!-- tutorial-screenshot
+write-file: main.c <- previous-code
+terminal-open
+terminal-run: make
+terminal-wait-for-prompt
+tab: preview
+variants: crt
+viewport: 800x450
+hook: open main.html
+crop-element: #canvas
+-->
+<img class='full' src='patches.webp' alt='Diagonale Bänder aus bunten quadratischen Farbfeldern füllen die Fläche.'>
 
-<div class='hint'>
-Probiere auch den CRT-Filter in der PixelRAM-Anzeige aus. Er simuliert Scanlines und die Farbmaske eines Röhrenbildschirms und passt besonders gut zur niedrigen Auflösung und den begrenzten Paletten.
+`x / 20` ist eine Ganzzahldivision: Für x = 0 bis 19 kommt 0 heraus, für 20 bis 39 kommt 1 heraus, und so weiter. So entstehen Felder von 20 × 20 Pixeln. Dein Programm zeichnet keine Quadrate. Es beantwortet für jedes Pixel einzeln die Frage: **Welche Farbe hast du?** Darum geht es auf dieser ganzen Seite.
+
+### Formeln ausprobieren
+
+Ändere nur die Zeile mit `return` in `color`. Jede dieser Formeln ergibt ein ganz anderes Bild:
+
+<div class='screen-gallery'>
+<figure>
+<!-- tutorial-screenshot
+write-file: main.c <- code:int color(int x, int y)||return (x / 20 + y / 20) % 16;
+terminal-open
+terminal-run: sed -i 's|return (x / 20 + y / 20) % 16;|return (x * y / 64) % 16;|' main.c && make
+terminal-wait-for-prompt
+tab: preview
+variants: crt
+viewport: 800x450
+hook: open main.html
+crop-element: #canvas
+-->
+<img src='formel-mal.webp' alt='Bunte Hyperbelbögen laufen von der linken oberen Ecke aus.'>
+<figcaption><code>return (x * y / 64) % 16;</code></figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: main.c <- code:int color(int x, int y)||return (x / 20 + y / 20) % 16;
+terminal-open
+terminal-run: sed -i 's|return (x / 20 + y / 20) % 16;|return (x * x + y * y) / 256 % 16;|' main.c && make
+terminal-wait-for-prompt
+tab: preview
+variants: crt
+viewport: 800x450
+hook: open main.html
+crop-element: #canvas
+-->
+<img src='formel-kreise.webp' alt='Viertelkreise in Regenbogenfarben um die linke obere Ecke, nach außen immer enger.'>
+<figcaption><code>return (x * x + y * y) / 256 % 16;</code></figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: main.c <- code:int color(int x, int y)||return (x / 20 + y / 20) % 16;
+terminal-open
+terminal-run: sed -i 's|return (x / 20 + y / 20) % 16;|return (x \& y) == 0 ? 12 : 0;|' main.c && make
+terminal-wait-for-prompt
+tab: preview
+variants: crt
+viewport: 800x450
+hook: open main.html
+crop-element: #canvas
+-->
+<img src='formel-sierpinski.webp' alt='Weiße Dreiecke, die aus immer kleineren Dreiecken bestehen.'>
+<figcaption><code>return (x & y) == 0 ? 12 : 0;</code></figcaption>
+</figure>
+<figure>
+<!-- tutorial-screenshot
+write-file: main.c <- code:int color(int x, int y)||return (x / 20 + y / 20) % 16;
+terminal-open
+terminal-run: sed -i 's|return (x / 20 + y / 20) % 16;|return (x ^ y) / 8 % 16;|' main.c && make
+terminal-wait-for-prompt
+tab: preview
+variants: crt
+viewport: 800x450
+hook: open main.html
+crop-element: #canvas
+-->
+<img src='formel-xor.webp' alt='Ein Muster aus bunten Quadraten in sich wiederholenden, verschachtelten Blöcken.'>
+<figcaption><code>return (x ^ y) / 8 % 16;</code></figcaption>
+</figure>
 </div>
 
-## Interferenzmuster
+Die dritte Formel zeichnet das **Sierpinski-Dreieck**, ein Fraktal. `x & y` verknüpft die beiden Zahlen Bit für Bit: Ein Bit des Ergebnisses ist 1, wenn es in x **und** in y 1 ist. Das Pixel wird weiß (Farbe 12), wenn x und y keine einzige 1 an derselben Stelle haben. `?` und `:` sind ein Wenn-dann-sonst in einer Zeile. `x ^ y` in der vierten Formel ist das bitweise exklusive Oder.
+
+<div class='hint task'>
+<strong>Erfinde eigene Formeln.</strong> Was passiert, wenn du in der zweiten Formel <code>x</code> durch <code>x - 160</code> und <code>y</code> durch <code>y - 90</code> ersetzt? Wie bekommst du senkrechte Streifen, wie ein Schachbrett? Achte darauf, dass das Ergebnis zwischen 0 und 15 liegt.
+</div>
+
+### Farbpaletten
+
+Dieselben Zahlen sehen mit einer anderen Palette ganz anders aus. Ersetze `"sweetie_16"` zum Beispiel durch `"pico_8"` (16 Farben), `"endesga_32"` (32 Farben) oder `"aap_64"` (64 Farben). Hat eine Palette mehr Farben, kannst du statt `% 16` auch `% 32` oder `% 64` rechnen.
+
+<div class='hint books'>
+Alle eingebauten Paletten siehst du unter <a href='https://specht.github.io/pixelram/palettes.html' target='_blank'>specht.github.io/pixelram/palettes.html</a>. Mit <code>set_palette(nummer, rot, grün, blau)</code> stellst du dir eine einzelne Farbe selbst ein, jeweils mit Werten von 0 bis 255.
+</div>
+
+## Wellen
+
+Jetzt wird die Formel für `color` eine Rechnung mit Abständen und Winkelfunktionen, und am Ende bewegt sich alles.
 
 ### Abstand vom Mittelpunkt
 
-Als Nächstes wollen wir nicht nur die Position eines Pixels verwenden, sondern seinen Abstand zur Mitte des Bildschirms berechnen. Dafür benötigen wir die mathematische Funktion `sqrt`, weshalb wir oben im Programm eine weitere Bibliothek einbinden:
+Wie weit ist ein Pixel von der Mitte des Bildschirms entfernt? Der Satz des Pythagoras sagt es: Mit `dx` und `dy`, dem Abstand nach rechts und nach unten, ist der Abstand `sqrt(dx * dx + dy * dy)`. Für `sqrt` brauchst du die Mathematik-Bibliothek: Schreib `#include <math.h>` unter die erste Zeile und ändere `color` so:
 
 ```c
-#include <math.h>
-```
-
-Innerhalb unserer beiden Schleifen bestimmen wir zunächst den horizontalen und vertikalen Abstand des aktuellen Pixels vom Mittelpunkt:
-
-```c
-double dx = x - WIDTH / 2.0;
-double dy = y - HEIGHT / 2.0;
-```
-
-Aus diesen beiden Werten können wir mit dem Satz des Pythagoras den tatsächlichen Abstand berechnen:
-
-```c
-double distance = sqrt(dx * dx + dy * dy);
-```
-
-Verwenden wir diesen Abstand für die Farbauswahl, entstehen automatisch kreisförmige Muster:
-
-```c
-int color = ((int)(distance / 6.0)) % 16;
-set_pixel(x, y, color);
-```
-
-Der vollständige Inhalt der beiden Schleifen lautet damit:
-
-```c
-for (int y = 0; y < HEIGHT; y++)
+int color(int x, int y)
 {
-    for (int x = 0; x < WIDTH; x++)
-    {
-        double dx = x - WIDTH / 2.0;
-        double dy = y - HEIGHT / 2.0;
-        double distance = sqrt(dx * dx + dy * dy);
+    double dx = x - W / 2.0;
+    double dy = y - H / 2.0;
+    double distance = sqrt(dx * dx + dy * dy);
 
-        set_pixel(x, y, ((int)(distance / 6.0)) % 16);
-    }
+    return (int)(distance / 6.0) % 16;
 }
 ```
 
-Pixel mit ungefähr demselben Abstand vom Mittelpunkt erhalten dieselbe Farbe. Deshalb entstehen konzentrische Kreise, obwohl wir im Programm nirgendwo einen Kreis zeichnen:
+`double` ist eine Kommazahl. `W / 2.0` statt `W / 2` sorgt dafür, dass C mit Kommazahlen rechnet. `(int)` schneidet die Nachkommastellen ab, denn `%` geht nur mit ganzen Zahlen.
 
-<img style='width: 100%' src='color-circles.webp' alt='Konzentrische Kreise wechseln zwischen kräftigen Regenbogenfarben.'>
+<!-- tutorial-screenshot
+write-file: main.c <- code:int color(int x, int y)||return (x / 20 + y / 20) % 16;
+terminal-open
+terminal-run: sed -i -e 's|#include "pixelram.h"|#include "pixelram.h"\n#include <math.h>|' -e 's|    return (x / 20 + y / 20) % 16;|    double dx = x - W / 2.0;\n    double dy = y - H / 2.0;\n    double distance = sqrt(dx * dx + dy * dy);\n\n    return (int)(distance / 6.0) % 16;|' main.c
+terminal-wait-for-prompt
+terminal-run: make
+terminal-wait-for-prompt
+tab: preview
+variants: crt
+viewport: 800x450
+hook: open main.html
+crop-element: #canvas
+-->
+<img class='full' src='color-circles.webp' alt='Konzentrische Kreise in kräftigen Regenbogenfarben.'>
 
-Der Kreis ergibt sich allein aus der Berechnung für jeden einzelnen Pixel. Probiere aus, was passiert, wenn du die Zahl `6.0` größer oder kleiner machst.
+Pixel mit ungefähr demselben Abstand bekommen dieselbe Farbe. So entstehen Kreise, obwohl das Programm keinen einzigen Kreis zeichnet. Probiere aus, was passiert, wenn du `6.0` größer oder kleiner machst.
 
 ### Kreiswellen
 
-Unsere bisherigen Kreise haben harte Übergänge. Für einen wellenförmigen Verlauf können wir die mathematische Sinusfunktion verwenden. Sie liefert einen Wert, der sich regelmäßig zwischen -1 und 1 bewegt.
-
-Ersetze die Farbberechnung durch:
+Die Ringe haben harte Kanten. Weicher wird es mit der Sinusfunktion: `sin` liefert Werte, die gleichmäßig zwischen −1 und 1 hin- und herpendeln. Ersetze die letzte Zeile von `color`:
 
 ```c
 double wave = sin(distance * 0.12);
-int color = (int)((wave + 1.0) * 7.5);
-
-set_pixel(x, y, color);
+return (int)((wave + 1.0) * 7.5);
 ```
 
-Durch `wave + 1.0` verschieben wir den Wertebereich von -1 ... 1 auf 0 ... 2. Anschließend multiplizieren wir mit 7.5 und erhalten Werte von ungefähr 0 bis 15, die direkt zu unserer 16-Farben-Palette passen. Aus den harten Farbringen sind dadurch regelmäßig wiederkehrende Kreiswellen geworden.
+`wave + 1.0` liegt zwischen 0 und 2, mal 7,5 ergibt das 0 bis 15: genau die 16 Farben der Palette. `distance * 0.20` statt `0.12` rückt die Wellen enger zusammen.
 
-<img style='width: 100%;' src='sinus-rings.webp' alt='Viele dünne konzentrische Ringe bilden einen farbigen Wellenverlauf.'>
+<!-- tutorial-screenshot
+terminal-open
+terminal-run: sed -i 's|    return (int)(distance / 6.0) % 16;|    double wave = sin(distance * 0.12);\n    return (int)((wave + 1.0) * 7.5);|' main.c
+terminal-wait-for-prompt
+terminal-run: make
+terminal-wait-for-prompt
+tab: preview
+variants: crt
+viewport: 800x450
+hook: open main.html
+crop-element: #canvas
+-->
+<img class='full' src='sinus-rings.webp' alt='Viele konzentrische Ringe mit weichen Farbverläufen.'>
 
-Auch hier lohnt es sich zu experimentieren. Wenn du `distance * 0.12` beispielsweise durch `distance * 0.20` ersetzt, liegen die Wellen dichter zusammen. Mit einem kleineren Wert werden sie breiter.
+### Bewegung
 
-### Animation
-
-Bis jetzt berechnet unser Programm nur ein einziges Bild und beendet sich anschließend. Für eine Animation müssen wir dagegen immer wieder ein neues Bild berechnen. PixelRAM verwendet dafür eine Schleife, die so lange läuft, bis das Fenster geschlossen wird:
+Bisher rechnet das Programm ein einziges Bild und ist dann fertig. Für eine Animation braucht es eine Schleife, die immer wieder ein neues Bild berechnet, bis jemand die Seite schließt:
 
 ```c
 while (!should_close())
 {
-    // neues Bild berechnen
-    // ...
-
-    // neues Bild anzeigen
-    present();
+    // ein Bild berechnen
+    present();   // und zeigen
 }
 ```
 
-Mit `present()` teilen wir PixelRAM mit, dass das aktuelle Bild fertig ist und angezeigt werden kann. Anschließend beginnt die Schleife wieder von vorne und berechnet den nächsten Frame. Zusätzlich können wir mit `seconds()` abfragen, wie viel Zeit seit dem Start des Programms vergangen ist.
-
-Wenn wir diese Zeit in die Sinusfunktion einbauen, beginnt sich unsere Welle zu bewegen:
-
-```c
-double t = seconds();
-double wave = sin(distance * 0.12 - t * 2.0);
-```
-
-Das vollständige Programm sieht nun so aus:
-
-```c
-#include "pixelram.h"
-#include <math.h>
-
-#define WIDTH  320
-#define HEIGHT 180
-
-int main(void)
-{
-    screen_open(WIDTH, HEIGHT, pixel_indexed8, "PixelRAM");
-    use_palette("sweetie_16");
-
-    while (!should_close()) {
-        double t = seconds();
-
-        for (int y = 0; y < HEIGHT; y++)
-        {
-            for (int x = 0; x < WIDTH; x++)
-            {
-                double dx = x - WIDTH / 2.0;
-                double dy = y - HEIGHT / 2.0;
-                double distance = sqrt(dx * dx + dy * dy);
-
-                double wave = sin(distance * 0.12 - t * 2.0);
-                set_pixel(x, y, (int)((wave + 1.0) * 7.5));
-            }
-        }
-        present();
-    }
-
-    screen_close();
-}
-```
-
-<!-- Screenshot: animierte Ringe -->
-
-Jetzt laufen die Wellen kontinuierlich über den Bildschirm. Der entscheidende Unterschied steckt in `t`: Da dieser Wert ständig größer wird, liefert die Sinusfunktion bei jedem Frame leicht andere Ergebnisse. Unsere Animation entsteht also nicht dadurch, dass wir einen fertigen Kreis verschieben, sondern dadurch, dass wir das komplette Bild immer wieder neu berechnen.
-
-### Die Wellenquelle bewegt sich
-
-Bisher liegt das Zentrum unserer Wellen fest in der Mitte des Bildschirms. Es gibt aber keinen Grund, warum dieser Punkt unbeweglich bleiben müsste. Mit `sin` und `cos` können wir seine Position gleichmäßig über den Bildschirm wandern lassen:
-
-```c
-double cx = WIDTH / 2.0 + cos(t * 0.8) * 70.0;
-double cy = HEIGHT / 2.0 + sin(t * 1.1) * 40.0;
-```
-
-<div class='hint info'>
-Du fragst dich sicherlich, wo diese beiden Zeilen hin gehören. Tipp: Schau genau hin, wovon <code>cx</code> und <code>cy</code> abhängen.
-</div>
-
-Statt den Abstand vom festen Mittelpunkt zu berechnen, verwenden wir jetzt `cx` und `cy`:
-
-```c
-double distance = hypot(x - cx, y - cy);
-```
-
-Die Funktion `hypot` berechnet direkt den Abstand aus horizontalem und vertikalem Unterschied. Sie macht also dasselbe wie unsere vorherige Rechnung mit `sqrt(dx * dx + dy * dy)`, ist hier aber kürzer zu schreiben.
-
-Die Werte von `sin` und `cos` bewegen sich gleichmäßig zwischen -1 und 1. Durch die Multiplikation mit 70.0 beziehungsweise 40.0 bestimmen wir, wie weit sich der Mittelpunkt horizontal und vertikal bewegen darf. Das Ergebnis ist eine Kreiswelle, deren Quelle selbst durch das Bild wandert.
-
-<img style='width: 100%;' src='moving-center.webp' alt='Der Mittelpunkt der farbigen konzentrischen Ringe ist seitlich verschoben.'>
-
-### Zwei Wellen treffen aufeinander
-
-Mit einer einzigen Wellenquelle können wir bereits interessante Muster erzeugen. Spannender wird es, wenn wir eine zweite Quelle hinzufügen und beide Wellen miteinander kombinieren. Zunächst berechnen wir zwei Punkte, die sich mit unterschiedlichen Geschwindigkeiten über den Bildschirm bewegen:
-
-```c
-double ax = WIDTH / 2.0 + cos(t * 0.8) * 70.0;
-double ay = HEIGHT / 2.0 + sin(t * 1.1) * 40.0;
-
-double bx = WIDTH / 2.0 + cos(t * 1.3) * 90.0;
-double by = HEIGHT / 2.0 + sin(t * 0.7) * 50.0;
-```
-
-Für jeden Pixel bestimmen wir anschließend seinen Abstand zu beiden Quellen:
-
-```c
-double d1 = hypot(x - ax, y - ay);
-double d2 = hypot(x - bx, y - by);
-```
-
-Aus jedem Abstand erzeugen wir eine eigene Welle und addieren die beiden Werte:
-
-```c
-double wave =
-    sin(d1 * 0.12 - t * 2.0) +
-    sin(d2 * 0.12 + t * 2.3);
-```
-
-An einigen Stellen sind beide Wellen gleichzeitig groß und verstärken sich gegenseitig, an anderen Stellen schwächen sie sich ab. Dieses Überlagern von Wellen nennt man **Interferenz**. Obwohl unser Programm nur zwei Entfernungen und zwei Sinuswerte berechnet, entsteht dadurch ein überraschend komplexes bewegtes Muster.
-
-### Das fertige Interferenzmuster
-
-Unser vollständiges Programm ist inzwischen erstaunlich kurz:
+`present()` zeigt das fertige Bild und wartet bis zum nächsten, höchstens 60-mal pro Sekunde. `seconds()` sagt, wie viele Sekunden seit dem Start vergangen sind. Steckt diese Zeit in der Sinusfunktion, wandern die Wellen nach außen. Hier das ganze Programm:
 
 ```c
 #include "pixelram.h"
@@ -345,13 +330,68 @@ Unser vollständiges Programm ist inzwischen erstaunlich kurz:
 
 int main(void)
 {
-    screen_open(W, H, pixel_indexed8, "PixelRAM Interference");
+    screen_open(W, H, pixel_indexed8, "PixelRAM");
     use_palette("sweetie_16");
 
     while (!should_close())
     {
         double t = seconds();
 
+        for (int y = 0; y < H; y++)
+            for (int x = 0; x < W; x++)
+            {
+                double distance = hypot(x - W / 2.0, y - H / 2.0);
+                double wave = sin(distance * 0.12 - t * 2.0);
+                set_pixel(x, y, (int)((wave + 1.0) * 7.5));
+            }
+
+        present();
+    }
+
+    screen_close();
+    return 0;
+}
+```
+
+`hypot(dx, dy)` rechnet dasselbe wie `sqrt(dx * dx + dy * dy)`, nur kürzer. Die Funktion `color` ist verschwunden, weil die Farbe jetzt auch von `t` abhängt; die Rechnung steht direkt in der Schleife.
+
+<!-- tutorial-screenshot
+write-file: main.c <- previous-code
+terminal-open
+terminal-run: make
+terminal-wait-for-prompt
+tab: preview
+variants: crt
+viewport: 640x360
+hook: open main.html
+# sin(distance * 0.12 - t * 2.0) wiederholt sich nach π Sekunden
+record: 3.14s
+-->
+<video src='wellen.mp4' autoplay loop muted playsinline style='width: 100%; max-width: 640px;'></video>
+
+Kein Kreis wird verschoben: Das Programm rechnet jedes Bild komplett neu, und weil `t` wächst, liefert `sin` jedes Mal ein wenig andere Werte.
+
+### Zwei Wellen treffen sich
+
+Die Quelle der Wellen muss nicht in der Mitte bleiben. Mit `cos` und `sin` der Zeit wandert ein Punkt in Schleifen über den Bildschirm. Nimm zwei solche Quellen, rechne für jedes Pixel beide Wellen aus und zähle sie zusammen:
+
+```c
+#include "pixelram.h"
+#include <math.h>
+
+#define W 320
+#define H 180
+
+int main(void)
+{
+    screen_open(W, H, pixel_indexed8, "Interferenz");
+    use_palette("sweetie_16");
+
+    while (!should_close())
+    {
+        double t = seconds();
+
+        // zwei Wellenquellen, die durchs Bild wandern
         double ax = W / 2.0 + cos(t * 0.8) * 70;
         double ay = H / 2.0 + sin(t * 1.1) * 40;
         double bx = W / 2.0 + cos(t * 1.3) * 90;
@@ -363,9 +403,7 @@ int main(void)
                 double d1 = hypot(x - ax, y - ay);
                 double d2 = hypot(x - bx, y - by);
 
-                double wave =
-                    sin(d1 * 0.12 - t * 2.0) +
-                    sin(d2 * 0.12 + t * 2.3);
+                double wave = sin(d1 * 0.12 - t * 2.0) + sin(d2 * 0.12 + t * 2.3);
 
                 set_pixel(x, y, (int)((wave + 2) * 3.75));
             }
@@ -374,284 +412,337 @@ int main(void)
     }
 
     screen_close();
+    return 0;
 }
 ```
 
-<img style='width: 100%' src='interference.webp' alt='Blaue und violette Wellen bilden ein symmetrisches Interferenzmuster.'>
+Wo beide Wellen gleichzeitig oben sind, verstärken sie sich, wo die eine oben und die andere unten ist, löschen sie sich aus. Das nennt man **Interferenz**. Die Summe liegt zwischen −2 und 2, deshalb rechnet die letzte Zeile `(wave + 2) * 3.75`.
 
-Hinter der Animation steckt eine ganze Menge Arbeit: Bei 320 × 180 Pixeln berechnet unser Programm für jeden Frame 57.600 Pixel neu. Für jeden einzelnen davon bestimmen wir zwei Abstände und berechnen zwei Sinusfunktionen. Bei 60 Bildern pro Sekunde sind das mehr als **3 Millionen neu berechnete Pixel pro Sekunde**. Genau bei solchen Aufgaben zeigt sich, warum eine schnelle Sprache wie C gut für Animationen geeignet ist.
+<!-- tutorial-screenshot
+write-file: main.c <- previous-code
+terminal-open
+terminal-run: make
+terminal-wait-for-prompt
+tab: preview
+variants: crt
+viewport: 800x450
+hook: open main.html
+# nach 3,6 Sekunden: die beiden Quellen nah beieinander, ein ruhiges Muster
+hook: at 3.6
+crop-element: #canvas
+-->
+<img class='full' src='interference.webp' alt='Bunte Wellenringe von zwei Quellen überlagern sich zu einem verwickelten Muster.'>
 
-### Experimente
+Für jedes Bild berechnet das Programm 57.600 Pixel mit je zwei Abständen und zwei Sinuswerten. Bei 60 Bildern pro Sekunde sind das über **3 Millionen Pixel pro Sekunde**. Für solche Rechnungen ist C gemacht.
 
-Das fertige Programm eignet sich gut zum Experimentieren, weil schon kleine Änderungen an den Zahlen deutlich sichtbare Auswirkungen haben. Wenn du beispielsweise mehr Ringe möchtest, kannst du den Faktor hinter dem Abstand erhöhen:
+<div class='hint task'>
+<strong>Experimente.</strong> Mehr Ringe mit <code>d1 * 0.18</code>, langsamere Wellen mit <code>t * 1.0</code>, weitere Wege mit <code>cos(t * 0.8) * 110</code>. Füge eine dritte Quelle hinzu: Wie musst du dann die letzte Zeile ändern, damit die Farben wieder zwischen 0 und 15 liegen? Und wie sieht es mit <code>"aap_64"</code> und 64 Farben aus?
+</div>
 
-```c
-sin(d1 * 0.18 - t * 2.0)
+## Ein Spiel: Lichtspur
+
+Zwei Spuren fahren über das Spielfeld und ziehen eine Linie hinter sich her. Wer in eine Linie oder an die Wand fährt, verliert die Runde. Gespielt wird zu zweit an einer Tastatur, mit <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> und mit den Pfeiltasten.
+
+Das Spiel bekommt eine eigene Datei. Lege `lichtspur.c` neben `main.c` an und übersetze sie mit:
+
+```bash
+make PROGRAM=lichtspur
 ```
 
-Mit einem kleineren Zeitfaktor laufen die Wellen langsamer:
+Das ergibt `lichtspur.html`, die du in der Vorschau öffnest. So kann jedes Programm im Ordner seine eigene Datei haben.
 
-```c
-sin(d1 * 0.12 - t * 1.0)
-```
-
-Auch die Bewegungsbahn der Wellenquellen kannst du verändern. Aus
-
-```c
-cos(t * 0.8) * 70
-```
-
-könnte beispielsweise
-
-```c
-cos(t * 0.8) * 110
-```
-
-werden. Dann bewegt sich diese Quelle deutlich weiter über den Bildschirm. Du kannst auch eine dritte Wellenquelle ergänzen, unterschiedliche Geschwindigkeiten ausprobieren oder die Bewegungen so verändern, dass sich die Quellen außerhalb des sichtbaren Bildes befinden.
-
-Natürlich kannst du außerdem mit den Farbpaletten experimentieren. PixelRAM bringt viele davon bereits mit:
-
-```c
-use_palette("pico_8");
-use_palette("endesga_32");
-use_palette("aap_64");
-```
-
-Achte dabei darauf, dass die Paletten unterschiedlich viele Farben enthalten. Unser aktueller Quelltext berechnet Werte zwischen 0 und 15 und passt deshalb direkt zu `sweetie_16`. Wenn du eine Palette mit einer anderen Anzahl von Farben vollständig ausnutzen möchtest, musst du auch die Berechnung des Farbwerts entsprechend verändern.
-
-<img style='width: 100%' src='fancy.webp' alt='Orange, gelbe und grüne Ringe wachsen zu einem organischen Zellmuster zusammen.'>
-
-## Noch mehr PixelRAM
-
-Unser Interferenzmuster besteht vollständig aus Berechnungen, die wir selbst auf die Pixel anwenden. PixelRAM kennt weder Kreise noch Wellen und enthält auch keinen Befehl für einen Tunnel oder ein Fraktal. Genau das macht die Bibliothek interessant: Sie stellt nur den Bildschirm und seine Pixel bereit, während du entscheidest, welche Algorithmen darauf arbeiten sollen.
-
-Die folgenden beiden Programme zeigen, wie unterschiedlich die Ergebnisse sein können.
-
-### Tunnel
-
-Bei einem klassischen Tunnel-Effekt berechnen wir für jeden Pixel seinen Abstand und seinen Winkel zum Mittelpunkt des Bildschirms. Aus beiden Werten entstehen kreisförmige Strukturen und radiale Streifen, die sich so verändern, dass der Eindruck eines Fluges durch einen Tunnel entsteht.
+### Eine Spur, die fährt
 
 ```c
 #include "pixelram.h"
-#include <math.h>
-#include <stdint.h>
 
-#define W 320
-#define H 180
+#define W 160
+#define H 90
 
 int main(void)
 {
-    screen_open(W, H, pixel_rgb24, "PixelRAM Tunnel");
-    use_palette("endesga_32");
+    screen_open(W, H, pixel_indexed8, "Lichtspur");
+    use_palette("sweetie_16");
+    set_target_fps(30);
+
+    int x = 20, y = H / 2;   // Position
+    int dx = 1, dy = 0;      // Richtung: nach rechts
 
     while (!should_close())
     {
-        double t = seconds();
-        double cx = W / 2.0 + sin(t * 0.7) * 18;
-        double cy = H / 2.0 + cos(t * 0.9) * 10;
+        if (key_pressed(pixel_key_up))    { dx = 0;  dy = -1; }
+        if (key_pressed(pixel_key_down))  { dx = 0;  dy = 1;  }
+        if (key_pressed(pixel_key_left))  { dx = -1; dy = 0;  }
+        if (key_pressed(pixel_key_right)) { dx = 1;  dy = 0;  }
 
-        for (int y = 0; y < H; y++)
-            for (int x = 0; x < W; x++)
-            {
-                double dx = x - cx, dy = y - cy;
-                double d = hypot(dx, dy);
-                double a = atan2(dy, dx);
-
-                double v =
-                    sin(540.0 / (d + 1) + t * 4) +
-                    sin(a * 8 + t * 1.2) + 2;
-
-                double c = v * 7.75;
-                if (c < 0) c = 0;
-                if (c > 31) c = 31;
-
-                int i = (int)c, j = i < 31 ? i + 1 : 31;
-                double f = c - i;
-
-                uint8_t r0, g0, b0, r1, g1, b1;
-                get_palette(i, &r0, &g0, &b0);
-                get_palette(j, &r1, &g1, &b1);
-
-                double fade = (d - 10) / 30;
-                if (fade < 0) fade = 0;
-                if (fade > 1) fade = 1;
-                fade = fade * fade * (3 - 2 * fade);
-
-                set_pixel_rgb(x, y,
-                    (r0 + (r1 - r0) * f) * fade,
-                    (g0 + (g1 - g0) * f) * fade,
-                    (b0 + (b1 - b0) * f) * fade);
-            }
+        x += dx;
+        y += dy;
+        set_pixel(x, y, 11);
 
         present();
     }
 
     screen_close();
+    return 0;
 }
 ```
 
-Die Funktion `atan2(dy, dx)` berechnet den Winkel eines Pixels zum Mittelpunkt. Gemeinsam mit dem Abstand `d` erhalten wir dadurch zwei Werte, aus denen das Muster auf der Tunnelwand berechnet werden kann. Das Grundprinzip ist trotzdem dasselbe wie zuvor: Jeder Pixel wird aus seiner Position und der aktuellen Zeit berechnet.
+Klicke in die Vorschau, damit sie die Tasten bekommt, und steuere mit den Pfeiltasten. Drei Dinge sind neu:
 
-<img style='width: 100%;' src='tunnel.webp' alt='Strahlenförmige bunte Segmente laufen auf eine schwarze Tunnelöffnung zu.'>
+- Das Spielfeld hat nur 160 × 90 Pixel, also große Pixel, und `set_target_fps(30)` macht 30 Schritte pro Sekunde.
+- `key_pressed` ist in genau dem Bild wahr, in dem eine Taste heruntergedrückt wurde. `dx` und `dy` merken sich die Richtung, und jedes Bild geht die Spur einen Pixel weiter.
+- Das Programm löscht den Bildschirm nie. Jedes gesetzte Pixel bleibt stehen, so entsteht die Spur von selbst.
 
-### Animierte Julia-Menge
+<!-- tutorial-screenshot
+write-file: lichtspur.c <- previous-code
+terminal-open
+terminal-run: make PROGRAM=lichtspur
+terminal-wait-for-prompt
+tab: preview
+variants: crt
+viewport: 800x450
+hook: open lichtspur.html
+# Die Spur fährt los, sobald die Seite geladen ist: neu laden, dann gleich lenken.
+preview-reload
+hook: play 1 ArrowUp 0.4 ArrowLeft 0.4 ArrowDown 1
+hook: freeze
+crop-element: #canvas
+-->
+<img class='full' src='lichtspur-fahren.webp' alt='Eine türkise Linie fährt nach rechts, macht eine Schleife und kreuzt dabei ihre eigene Spur.'>
 
-Noch überraschender wird es bei einem Fraktal. Hier wird für jeden Pixel dieselbe kleine Rechnung immer wieder ausgeführt. Je nachdem, wie lange die Werte dabei klein bleiben, bekommt der Pixel eine andere Farbe. Aus dieser einfachen Regel entstehen sehr komplexe Formen.
+Noch kannst du deine eigene Spur kreuzen und aus dem Bild fahren. Das ändert sich jetzt.
+
+### Wände und Zusammenstöße
+
+Was auf dem Bildschirm steht, ist Speicher, und Speicher kann man lesen: `get_pixel(x, y)` gibt die Farbnummer eines Pixels zurück. Ist das Feld, auf das die Spur fahren will, nicht mehr 0 (der Hintergrund), dann steht dort eine Wand oder eine Spur, und es kracht. Du brauchst keine Liste der Linien und keine Rechnung mit Rechtecken: Der Bildschirm selbst ist das Spielfeld.
+
+Zeichne vor der Schleife einen Rahmen in Farbe 14:
+
+```c
+for (int x = 0; x < W; x++)
+{
+    set_pixel(x, 0, 14);
+    set_pixel(x, H - 1, 14);
+}
+for (int y = 0; y < H; y++)
+{
+    set_pixel(0, y, 14);
+    set_pixel(W - 1, y, 14);
+}
+```
+
+Und prüfe nach jedem Schritt, bevor das neue Pixel gesetzt wird:
+
+```c
+x += dx;
+y += dy;
+if (get_pixel(x, y) != 0)
+    crashed = true;
+
+set_pixel(x, y, crashed ? 2 : 11);
+```
+
+Dazu gehören eine Variable `bool crashed = false;` vor der Schleife und ein `if (!crashed)` um alles, was in der Schleife lenkt und fährt, denn nach dem Zusammenstoß soll die Spur stehen bleiben. Die Unfallstelle wird rot (Farbe 2).
+
+<div class='hint think'>
+<strong>Zum Nachdenken:</strong> Warum musst du zuerst mit <code>get_pixel</code> nachsehen und erst danach <code>set_pixel</code> aufrufen? Und was passiert, wenn du direkt in die Gegenrichtung lenkst?
+</div>
+
+### Zu zweit
+
+Für zwei Spuren bräuchtest du alle Variablen doppelt: `x1`, `y1`, `dx1`, `x2`, … Übersichtlicher ist ein `struct`, das alles zusammenfasst, was zu einer Spur gehört. Funktionen wie `drive` bekommen dann einen Zeiger auf eine Spur, `Player *p`, und erreichen ihre Teile mit `p->x`. So arbeitet derselbe Code für beide. Hier das ganze Spiel:
 
 ```c
 #include "pixelram.h"
-#include <math.h>
 
-#define W 320
-#define H 180
-#define ITER 48
+#define W 160
+#define H 90
+#define WALL 14
+#define CRASH 12
 
-int main(void)
+typedef struct
 {
-    screen_open(W, H, pixel_indexed8, "PixelRAM Julia");
-    use_palette("aap_64");
+    int x, y;      // Position
+    int dx, dy;    // Richtung
+    int color;
+    bool crashed;
+    int wins;
+} Player;
 
-    while (!should_close())
+void draw_field(Player *a, Player *b)
+{
+    clear(0);
+    for (int x = 0; x < W; x++)
     {
-        double t = seconds();
-        double cr = -0.72 + cos(t * 0.17) * 0.08;
-        double ci =  0.27 + sin(t * 0.13) * 0.08;
-
-        for (int y = 0; y < H; y++)
-            for (int x = 0; x < W; x++)
-            {
-                double zx = (x - W / 2.0) * 3.0 / W;
-                double zy = (y - H / 2.0) * 2.0 / H;
-                int i = 0;
-
-                while (zx * zx + zy * zy < 4 && i < ITER)
-                {
-                    double xx = zx * zx - zy * zy + cr;
-                    zy = 2 * zx * zy + ci;
-                    zx = xx;
-                    i++;
-                }
-
-                set_pixel(x, y,
-                    i == ITER ? 0 : 1 + i * 62 / ITER);
-            }
-
-        present();
+        set_pixel(x, 0, WALL);
+        set_pixel(x, H - 1, WALL);
     }
-
-    screen_close();
-}
-```
-
-Die beiden Werte `cr` und `ci` verändern sich langsam mit der Zeit, wodurch sich auch die Form des Fraktals kontinuierlich verändert. Du musst die Mathematik hinter Julia-Mengen nicht vollständig verstehen, um mit dem Programm zu experimentieren. Schon kleine Änderungen an `-0.72`, `0.27` oder `0.08` können völlig andere Formen erzeugen.
-
-<img style='width: 100%;' src='julia.webp' alt='Ein Julia-Fraktal bildet farbige Bänder und wiederkehrende Spiralformen.'>
-
-### Bonus: Palette Cycling
-
-Bei allen bisherigen Animationen haben wir den Bildschirminhalt für jeden Frame neu berechnet. Mit einer Farbpalette gibt es aber noch einen ganz anderen Trick: Die Pixel können unverändert bleiben, während wir lediglich die Farben der Palette verändern. Im folgenden Beispiel wird der magische Kreis deshalb nur ein einziges Mal gezeichnet. In der Animationsschleife ändern wir anschließend ausschließlich acht Paletteneinträge – trotzdem sieht es so aus, als würde Energie durch das Muster wandern.
-
-```c
-#include "pixelram.h"
-#include <math.h>
-#include <stdint.h>
-
-#define W 320
-#define H 180
-
-static const uint8_t magic[8][3] = {
-    { 12,  10,  45},
-    { 35,  20, 100},
-    { 85,  30, 180},
-    {190,  45, 220},
-    {255, 180, 255},
-    {150, 245, 255},
-    { 30, 180, 255},
-    { 15,  70, 160}
-};
-
-static void draw_scene(void)
-{
-    double cx = W / 2.0, cy = H / 2.0;
-
     for (int y = 0; y < H; y++)
-        for (int x = 0; x < W; x++)
-        {
-            double dx = x - cx, dy = y - cy;
-            double r = hypot(dx, dy);
-            double a = atan2(dy, dx);
+    {
+        set_pixel(0, y, WALL);
+        set_pixel(W - 1, y, WALL);
+    }
 
-            int color = 0;
-
-            /* Outer halo. */
-            if (r > 67 && r < 71)
-                color = 8 + ((int)(a * 8 + 40) & 7);
-
-            /* Twelve radial marks. */
-            if (r > 51 && r < 64 && fabs(sin(a * 12)) < .16)
-                color = 8 + ((int)(r / 3 + a * 5) & 7);
-
-            /* Two spell rings. */
-            if ((r > 43 && r < 47) || (r > 29 && r < 33))
-                color = 8 + ((int)(a * 9 + r / 3) & 7);
-
-            /* Curved energy inside the circle. */
-            if (r < 28 &&
-                fabs(sin(r * .34 + a * 5)) < .38)
-                color = 8 + ((int)(r / 2 + a * 4) & 7);
-
-            /* Bright core. */
-            if (r < 9)
-                color = 8 + ((int)(r + a * 3) & 7);
-
-            set_pixel(x, y, color);
-        }
+    // Siege als Punkte in der oberen Wand: links a, rechts b
+    for (int i = 0; i < a->wins; i++)
+        set_pixel(2 + 2 * i, 0, a->color);
+    for (int i = 0; i < b->wins; i++)
+        set_pixel(W - 3 - 2 * i, 0, b->color);
 }
 
-static void cycle_magic(double t)
+void start(Player *p, int x, int dx)
 {
-    double p = fmod(t * 5.0, 8.0);
-    int shift = (int)p;
-    double f = p - shift;
+    p->x = x;
+    p->y = H / 2;
+    p->dx = dx;
+    p->dy = 0;
+    p->crashed = false;
+}
 
-    for (int i = 0; i < 8; i++)
-    {
-        int a = (i + shift) & 7;
-        int b = (a + 1) & 7;
+void steer(Player *p, pixel_key up, pixel_key down, pixel_key left, pixel_key right)
+{
+    // Umdrehen geht nicht: nur abbiegen
+    if (key_pressed(up)    && p->dy == 0) { p->dx = 0;  p->dy = -1; }
+    if (key_pressed(down)  && p->dy == 0) { p->dx = 0;  p->dy = 1;  }
+    if (key_pressed(left)  && p->dx == 0) { p->dx = -1; p->dy = 0;  }
+    if (key_pressed(right) && p->dx == 0) { p->dx = 1;  p->dy = 0;  }
+}
 
-        set_palette(8 + i,
-            magic[a][0] + (magic[b][0] - magic[a][0]) * f,
-            magic[a][1] + (magic[b][1] - magic[a][1]) * f,
-            magic[a][2] + (magic[b][2] - magic[a][2]) * f);
-    }
+void drive(Player *p)
+{
+    p->x += p->dx;
+    p->y += p->dy;
+    if (get_pixel(p->x, p->y) != 0)
+        p->crashed = true;
 }
 
 int main(void)
 {
-    screen_open(W, H, pixel_indexed8, "Palette Cycling: Magic");
+    screen_open(W, H, pixel_indexed8, "Lichtspur");
+    use_palette("sweetie_16");
+    set_target_fps(30);
 
-    set_palette(0,  2,  3,  9);
+    Player a = { .color = 3 };    // Orange, fährt mit WASD
+    Player b = { .color = 11 };   // Türkis, fährt mit den Pfeiltasten
 
-    cycle_magic(0);
-    draw_scene();
+    bool running = false;   // Die Leertaste startet jede Runde.
+    draw_field(&a, &b);
 
     while (!should_close())
     {
-        cycle_magic(seconds());
+        if (running)
+        {
+            steer(&a, pixel_key_w, pixel_key_s, pixel_key_a, pixel_key_d);
+            steer(&b, pixel_key_up, pixel_key_down, pixel_key_left, pixel_key_right);
+
+            drive(&a);
+            drive(&b);
+            if (a.x == b.x && a.y == b.y)   // frontal ineinander
+                a.crashed = b.crashed = true;
+
+            set_pixel(a.x, a.y, a.crashed ? CRASH : a.color);
+            set_pixel(b.x, b.y, b.crashed ? CRASH : b.color);
+
+            if (a.crashed || b.crashed)
+            {
+                running = false;
+                if (!a.crashed) a.wins++;
+                if (!b.crashed) b.wins++;
+            }
+        }
+        else if (key_pressed(pixel_key_space))
+        {
+            draw_field(&a, &b);
+            start(&a, 20, 1);
+            start(&b, W - 21, -1);
+            running = true;
+        }
+
         present();
     }
 
     screen_close();
+    return 0;
 }
 ```
 
-Schau dir dazu besonders `draw_scene()` an: Die Funktion wird vor der Animationsschleife genau einmal aufgerufen. Innerhalb der Schleife stehen nur `cycle_magic(seconds())` und `present()`. Kein einziger Pixel wird dort neu gesetzt; die scheinbare Bewegung entsteht ausschließlich durch die animierte Palette.
+<!-- tutorial-screenshot
+write-file: lichtspur.c <- previous-code
+terminal-open
+terminal-run: make PROGRAM=lichtspur
+terminal-wait-for-prompt
+tab: preview
+variants: crt
+viewport: 800x450
+hook: open lichtspur.html
+# Runde 1: Türkis fährt in die Wand. Runde 2: beide kurven, Orange fährt in die türkise Spur.
+hook: play Space 0.5 ArrowUp 2.5 Space 0.3 KeyW ArrowDown 0.8 KeyD ArrowLeft 0.9 KeyS ArrowUp 0.6 KeyD ArrowLeft 0.8 KeyS ArrowDown 0.7 KeyA 0.6 ArrowRight 0.5 KeyS ArrowUp 3
+crop-element: #canvas
+-->
+<img class='full' src='lichtspur.webp' alt='Zweite Runde: Eine orange und eine türkise Spur haben sich durchs Spielfeld gewunden, bis eine verunglückt ist; die Unfallstelle leuchtet weiß. Links in der oberen Wand steht ein orangefarbener Siegpunkt.'>
 
-<img style='width: 100%;' src='magic.webp' alt='Violette und türkise Spiralringe leuchten auf schwarzem Grund.'>
+Mit der <kbd>Leertaste</kbd> beginnt eine Runde. Beide Spuren fahren im selben Bild einen Schritt, und erst danach wird gezeichnet. Deshalb ist es gerecht, wenn beide gleichzeitig verunglücken: Dann gewinnt niemand. Die Punkte stehen als Pixel in der oberen Wand.
+
+<div class='hint task'>
+<strong>Bau das Spiel aus.</strong> Ein paar Ideen, von leicht bis knifflig:
+<ul>
+<li><strong>Schneller werden:</strong> Erhöhe mit <code>set_target_fps</code> das Tempo, je länger eine Runde dauert.</li>
+<li><strong>Hindernisse:</strong> Setze in <code>draw_field</code> ein paar Blöcke in Wandfarbe ins Feld, mit <code>rand()</code> aus <code>&lt;stdlib.h&gt;</code> jedes Mal woanders.</li>
+<li><strong>Lücken:</strong> Lass jede Spur ab und zu ein paar Pixel nicht zeichnen. Durch die Lücken kann man hindurchfahren.</li>
+<li><strong>Computergegner:</strong> Spur b lenkt selbst. Sie schaut mit <code>get_pixel(b.x + b.dx, b.y + b.dy)</code> ein Feld voraus und biegt ab, wenn dort etwas ist. Wie kann sie auch weiter vorausschauen?</li>
+</ul>
+</div>
+
+Die Maus fragst du mit `mouse_position(&x, &y)` und `mouse_button_down(pixel_mouse_left)` ab, alle weiteren Tasten heißen wie `pixel_key_a` oder `pixel_key_enter`. Die ganze Liste steht in der [Dokumentation](https://specht.github.io/pixelram/input.html).
+
+## Mehr PixelRAM
+
+### Beispiele im Starter
+
+Im Ordner `beispiele` der Vorlage liegen fertige Programme. Jedes übersetzt du mit `make PROGRAM=…` und öffnest die passende HTML-Datei:
+
+```bash
+make PROGRAM=beispiele/tunnel
+```
+
+<div class='screen-gallery'>
+<figure>
+<img src='tunnel.webp' alt='Strahlenförmige bunte Segmente laufen auf eine dunkle Tunnelöffnung zu.'>
+<figcaption><code>beispiele/tunnel</code>: Abstand und Winkel jedes Pixels zur Mitte ergeben einen Flug durch einen Tunnel.</figcaption>
+</figure>
+<figure>
+<img src='julia.webp' alt='Ein Julia-Fraktal mit farbigen Bändern und Spiralformen.'>
+<figcaption><code>beispiele/julia</code>: Für jedes Pixel immer wieder dieselbe kleine Rechnung: ein Fraktal, das sich langsam verwandelt.</figcaption>
+</figure>
+<figure>
+<img src='magic.webp' alt='Violette und türkise Ringe eines Zauberkreises leuchten auf dunklem Grund.'>
+<figcaption><code>beispiele/magie</code>: Der Kreis wird nur einmal gezeichnet. Bewegung bringt allein die Palette, die sich in der Schleife dreht.</figcaption>
+</figure>
+</div>
+
+Dazu kommen `beispiele/feuer`, ein Feuer, in dem jedes Pixel die Hitze seiner Nachbarn darunter aufnimmt, und `beispiele/sterne`, ein Flug durch 400 Sterne in 3D. Kopiere ein Beispiel neben `main.c` und verändere es: Das ist oft der schnellste Weg zu einer eigenen Idee.
+
+<div class='hint info'>
+Der Palettentrick aus <code>beispiele/magie</code> heißt <strong>Color Cycling</strong>. Der Künstler Mark Ferrari hat damit ganze Landschaften mit Regen, Schnee und Wasser zum Leben erweckt, ohne ein einziges Pixel zu verändern. <a href='https://www.effectgames.com/demos/canvascycle/' target='_blank'>Hier kannst du seine Bilder ansehen.</a>
+</div>
+
+### Ganze Spiele
+
+PixelRAM ist klein, aber kein Spielzeug. Dieselben wenigen Befehle, die du kennst, tragen auch Spiele aus den Neunzigerjahren, die damals ganz ähnlich programmiert wurden: Ein Programm schreibt Pixel in den Speicher. **Crystal Caves** (1991) ist ein Jump-and-Run, dessen erste Episode frei verteilt werden darf. Probier es aus:
+
+```bash
+make crystal
+```
+
+Das lädt PixelRAM mit seinen Spiele-Anpassungen und den Quelltext von OpenCrystalCaves, einer freien Neuprogrammierung des Spiels, und übersetzt alles. Das dauert ein, zwei Minuten. Dann öffnest du `spiele/crystal.html` in der Vorschau. Du läufst mit den Pfeiltasten, springst mit <kbd>Z</kbd> und schießt mit <kbd>X</kbd>.
+
+<img class='full' src='crystal-caves.webp' alt='Ein Level aus Crystal Caves: der Bergmann Mylo vor einer Mine mit Steinwänden, Holzbalken und einem Schild »Danger«.'>
+
+Die Grafik des Spiels kommt am Ende als Pixel in genau dem Speicher an, den du mit `set_pixel` beschreibst, und die Tasten kommen über `key_down` und `poll_key_event` herein. Wie das Spiel an PixelRAM angeschlossen ist, steht in [`ports/crystal`](https://github.com/specht/pixelram/tree/main/ports/crystal) im Repository von PixelRAM. Wer die Originaldateien besitzt, kann auf dieselbe Weise auch **Prince of Persia** und **Descent** übersetzen ([Anleitung](https://github.com/specht/pixelram/blob/main/PORTS.md)).
 
 ## Wie geht es weiter?
 
-In diesem Tutorial haben wir keine fertigen Formen gezeichnet. Stattdessen haben wir für jeden Pixel selbst berechnet, welche Farbe dort erscheinen soll. Aus einem einzelnen Pixel wurde zunächst ein vollständiges berechnetes Bild, dann eine Kreiswelle, eine Animation und schließlich ein komplexes Interferenzmuster.
-
-Dasselbe Grundprinzip lässt sich noch viel weiter treiben. Du könntest mit PixelRAM beispielsweise Fraktale und Partikelsimulationen programmieren, einen Raycaster oder Raytracer schreiben oder untersuchen, wie Bildformate wie JPEG ihre Daten wieder in Pixel verwandeln. Auch ein vollständiger Software-3D-Renderer beginnt letztlich bei derselben einfachen Frage:
+Auf dieser Seite hast du keine einzige fertige Form gezeichnet. Aus einer Formel wurde ein Bild, aus einer Welle eine Animation und aus einem gelesenen Pixel ein Spiel. Dieselbe Frage trägt noch viel weiter, bis zu eigener 3D-Grafik:
 **Welche Farbe soll dieser Pixel haben?**
+
+Die ganze Bibliothek mit allen Befehlen ist unter [specht.github.io/pixelram](https://specht.github.io/pixelram/) beschrieben.
