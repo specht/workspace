@@ -1,0 +1,169 @@
+{
+  "version": 1,
+  "inputManifest": [
+    {
+      "path": "config.js",
+      "sha256": "103b5b03eeb853fa0b80ee691259e060d5163233d90c13d65360cca62d23c275"
+    },
+    {
+      "path": "pages-starter/1.md",
+      "sha256": "ea693d9505686692c7a6d1d5f2432119e5e9ce65d65b673fc058daf9b6e1e1f9"
+    },
+    {
+      "path": "pages-starter/2.md",
+      "sha256": "23ea15326c44c0644eac493c1033e3066726a1bf98ddf594847b9385206b418e"
+    },
+    {
+      "path": "pages-starter/3.md",
+      "sha256": "b8a8b975f85be78600229b8b3e947384795ac2fb9791334001f9d980eaa4522b"
+    },
+    {
+      "path": "pages-starter/4.md",
+      "sha256": "5ed7ab4c47b08c0bbb4bc10415a1cc5f914d7415e4095a3b6e34988e13eed1e8"
+    },
+    {
+      "path": "pages-starter/5.md",
+      "sha256": "28e13a604726e6a5dbc6f5672c126bd132c3da6d0a54754fa1bf40b058bdab48"
+    }
+  ],
+  "project": {
+    "root": ".",
+    "title": "Nach Schulschluss",
+    "pagesPath": "pages-starter",
+    "startPage": "1"
+  },
+  "summary": {
+    "pages": 5,
+    "reachablePages": 5,
+    "unreachablePages": 0,
+    "links": 6,
+    "groups": 0,
+    "scripts": 2,
+    "pageScripts": 1,
+    "resultScripts": 1,
+    "pageChoices": 6,
+    "localChoices": 3,
+    "resultBlocks": 3,
+    "conditions": 8,
+    "expressions": 0,
+    "images": 0,
+    "errors": 0,
+    "warnings": 0,
+    "info": 0
+  },
+  "diagnostics": [],
+  "graph": {
+    "pages": [
+      {
+        "id": "1",
+        "file": "pages-starter/1.md",
+        "links": [
+          {
+            "kind": "page",
+            "target": "2",
+            "rawTarget": "2",
+            "text": "Gehe in den Flur.",
+            "condition": null,
+            "line": 9,
+            "local": false
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "file": "pages-starter/2.md",
+        "links": [
+          {
+            "kind": "page",
+            "target": "3",
+            "rawTarget": "3",
+            "text": "Sieh im Büro nach.",
+            "condition": null,
+            "line": 11,
+            "local": false
+          },
+          {
+            "kind": "page",
+            "target": "4",
+            "rawTarget": "4",
+            "text": "Gehe ins Treppenhaus.",
+            "condition": null,
+            "line": 12,
+            "local": false
+          },
+          {
+            "kind": "page",
+            "target": "5",
+            "rawTarget": "5",
+            "text": "Öffne den Materialschrank.",
+            "condition": "has_key",
+            "line": 13,
+            "local": false
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "file": "pages-starter/3.md",
+        "links": [
+          {
+            "kind": "local",
+            "target": null,
+            "rawTarget": ".",
+            "text": "Frage nach dem Materialschrank.",
+            "condition": "!has_key",
+            "line": 11,
+            "local": true
+          },
+          {
+            "kind": "local",
+            "target": null,
+            "rawTarget": ".",
+            "text": "Nimm den Schlüssel.",
+            "condition": "!has_key",
+            "line": 15,
+            "local": true
+          },
+          {
+            "kind": "local",
+            "target": null,
+            "rawTarget": ".",
+            "text": "Frage, ob der Schlüssel zum Materialschrank passt.",
+            "condition": "has_key",
+            "line": 23,
+            "local": true
+          },
+          {
+            "kind": "page",
+            "target": "2",
+            "rawTarget": "2",
+            "text": "Gehe zurück in den Flur.",
+            "condition": null,
+            "line": 27,
+            "local": false
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "file": "pages-starter/4.md",
+        "links": [
+          {
+            "kind": "page",
+            "target": "2",
+            "rawTarget": "2",
+            "text": "Gehe zurück in den Flur.",
+            "condition": null,
+            "line": 3,
+            "local": false
+          }
+        ]
+      },
+      {
+        "id": "5",
+        "file": "pages-starter/5.md",
+        "links": []
+      }
+    ]
+  }
+}

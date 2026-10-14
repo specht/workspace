@@ -6,6 +6,7 @@ require_relative 'sql_check'
 require_relative 'er_check'
 require_relative 'schema_check'
 require_relative 'keyboard_check'
+require_relative 'story_check'
 require_relative 'scene_color'
 require_relative 'html_lite'
 
@@ -32,6 +33,7 @@ module TaskSpec
         'html' => 'M3',
         'css' => 'M3',
         'references' => 'M3',
+        'story' => 'M7',
         'submit' => 'M3',
         'git' => 'M3',
         'measure' => 'M6',
@@ -74,6 +76,7 @@ module TaskSpec
         'css' => %w[problem],
         'files' => %w[problem],
         'references' => %w[problem],
+        'story' => %w[problem],
         'git' => %w[problem],
         'reflection' => [],
         'submit' => [],
@@ -331,6 +334,20 @@ module TaskSpec
                 errors << 'expect knows external and local_exist'
             end
             errors << 'expect.external must be none or allowed' if expect.is_a?(Hash) && expect.key?('external') && !%w[none allowed].include?(expect['external'])
+        when 'story'
+            allowed += %w[project expect]
+            errors.concat(path_errors(check['project'], 'project'))
+            expect = check['expect']
+            if !expect.is_a?(Hash) || expect.empty? || !(expect.keys - StoryCheck::KEYS).empty?
+                errors << "expect knows #{StoryCheck::KEYS.join(', ')}"
+            else
+                StoryCheck::MINIMUMS.keys.push('endings').each do |key|
+                    errors << "expect.#{key} must be a number of at least 1" if expect.key?(key) && !(expect[key].is_a?(Integer) && expect[key] >= 1)
+                end
+                %w[all_reachable no_errors own_story].each do |key|
+                    errors << "expect.#{key} must be true" if expect.key?(key) && expect[key] != true
+                end
+            end
         when 'scene'
             allowed += %w[file at_times ignore expect source background]
             errors.concat(color_errors(check['background'], 'background')) if check.key?('background')

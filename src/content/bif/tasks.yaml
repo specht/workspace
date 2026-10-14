@@ -1,0 +1,185 @@
+# Aufgaben zu »Interaktive Geschichten schreiben«. Format: docs/aufgaben.md.
+# Die Geschichte liegt in /workspace/bif. Die story-Prüfungen lesen, was BIF
+# selbst über sie herausgefunden hat (bif/.story-tools/analysis.json, von den
+# BIF Authoring Tools im Workspace geschrieben); sie führen nichts aus.
+format: 1
+activity: bif
+tasks:
+  - id: vorlage
+    title: Die Vorlage
+    prompt: Klone die BIF-Vorlage nach `/workspace/bif`.
+    check:
+      type: files
+      path: bif/pages-starter/1.md
+      expect:
+        exists: true
+    feedback:
+      - when: { problem: missing }
+        say: "`/workspace/bif/pages-starter/1.md` gibt es noch nicht. Klone die Vorlage wie oben beschrieben; als Ordner schlägt VS Code `/workspace/` vor, darin entsteht `bif`."
+
+  - id: zweite-seite
+    title: Eine zweite Seite
+    prompt: In deiner Geschichte gibt es die Seite `2.md`.
+    check:
+      type: story
+      project: bif
+      expect:
+        pages: 2
+
+  - id: entscheidung
+    title: Die erste Entscheidung
+    prompt: Eine Entscheidung auf Seite 1 führt zu Seite 2, und jede Seite ist erreichbar.
+    check:
+      type: story
+      project: bif
+      expect:
+        choices: 1
+        all_reachable: true
+        no_errors: true
+
+  - id: verzweigung
+    title: Zwei Wege
+    prompt: Vom Flur führen zwei Entscheidungen in Büro und Treppenhaus, und von dort geht es zurück.
+    check:
+      type: story
+      project: bif
+      expect:
+        pages: 4
+        choices: 4
+        all_reachable: true
+        no_errors: true
+
+  - id: punkt
+    title: Was bedeutet der Punkt?
+    prompt: "Was passiert, wenn jemand `- [Frage nach dem Materialschrank.](.)` auswählt?"
+    prediction: true
+    check:
+      type: choice
+      options:
+        - Die Geschichte springt zurück zu Seite 1.
+        - Die Geschichte bleibt auf derselben Seite, und der eingerückte Text darunter erscheint.
+        - Die Geschichte endet.
+        - Nichts, ein Punkt ist keine Seite. BIF meldet einen Fehler.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Zu Seite 1 käme man mit `(1)`. Der Punkt steht für »diese Seite«.
+      - when: { picked: 3 }
+        say: Der Punkt ist Absicht. Er steht für »diese Seite«.
+    solution: |
+      `(.)` bedeutet »auf dieser Seite bleiben«. Der Text, der mit vier
+      Leerzeichen darunter eingerückt ist, erscheint erst nach der Auswahl.
+
+  - id: lokal
+    title: Eine lokale Entscheidung
+    prompt: Im Büro kann man Frau Neumann fragen, ohne die Seite zu verlassen.
+    check:
+      type: story
+      project: bif
+      expect:
+        local_choices: 1
+        no_errors: true
+    feedback:
+      - when: { problem: too_few_local_choices }
+        say: "Ich finde noch keine lokale Entscheidung. Sie führt mit `(.)` auf dieselbe Seite: `- [Frage nach dem Materialschrank.](.)`, die Antwort darunter mit vier Leerzeichen eingerückt."
+
+  - id: anfangswert
+    title: Warum in 1.md?
+    prompt: "Warum steht `has_key = false;` in `1.md` und nicht in `3.md`, dem Büro?"
+    check:
+      type: choice
+      options:
+        - Weil Skripte nur in `1.md` erlaubt sind.
+        - Weil `1.md` nur einmal am Anfang besucht wird. Im Büro würde der Schlüssel bei jedem Besuch wieder verschwinden.
+        - Weil `3.md` sonst zu lang wird.
+        - Das ist egal, es funktioniert an beiden Stellen gleich.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Skripte dürfen auf jeder Seite stehen, auch im Büro steht gleich eins (`has_key = true;`).
+      - when: { picked: 3 }
+        say: Was passiert, wenn du den Schlüssel nimmst, in den Flur gehst und das Büro wieder betrittst? Das Skript im Büro liefe dann noch einmal.
+    solution: |
+      Ein Skript läuft bei jedem Besuch der Seite. In `1.md` setzt es den
+      Anfangswert genau einmal; im Büro hätte man den Schlüssel nach jedem
+      Besuch wieder verloren.
+
+  - id: schluessel
+    title: Der Schlüssel
+    prompt: Ein Skript setzt `has_key`, und Bedingungen zeigen im Büro und im Flur nur, was gerade passt.
+    check:
+      type: story
+      project: bif
+      expect:
+        scripts: 2
+        conditions: 3
+        no_errors: true
+    feedback:
+      - when: { problem: too_few_scripts }
+        say: "Ich finde noch keine zwei Skripte. Eins steht in `1.md` (`has_key = false;`), eins unter »Nimm den Schlüssel« in `3.md` (`has_key = true;`), dort mit vier Leerzeichen eingerückt."
+      - when: { problem: too_few_conditions }
+        say: "Es fehlen noch Bedingungen. Die erste steht hinter »Nimm den Schlüssel«: `{condition=\"!has_key\"}`."
+
+  - id: ende
+    title: Ein Ende
+    prompt: Die Geschichte hat ein Ende, jede Seite ist erreichbar, und BIF meldet keine Fehler.
+    check:
+      type: story
+      project: bif
+      expect:
+        pages: 5
+        endings: 1
+        all_reachable: true
+        no_errors: true
+
+  - id: eigener-ordner
+    title: Dein eigener Ordner
+    prompt: "`config.js` wählt deinen eigenen Geschichtenordner aus, und darin steht eine `1.md`."
+    check:
+      type: story
+      project: bif
+      expect:
+        own_story: true
+        pages: 1
+        no_errors: true
+
+  - id: eigene-geschichte
+    title: Deine Geschichte
+    prompt: |
+      Deine eigene Geschichte hat mindestens fünf Seiten, vier Entscheidungen
+      zwischen ihnen und ein Ende. Jede Seite ist erreichbar, und BIF meldet
+      keine Fehler.
+    check:
+      type: story
+      project: bif
+      expect:
+        own_story: true
+        pages: 5
+        choices: 4
+        endings: 1
+        all_reachable: true
+        no_errors: true
+
+  - id: folgen
+    title: Eine Entscheidung mit Folgen
+    prompt: In deiner Geschichte merkt sich eine Variable etwas, und eine Bedingung reagiert später darauf.
+    check:
+      type: story
+      project: bif
+      expect:
+        own_story: true
+        scripts: 1
+        conditions: 1
+        no_errors: true
+
+  - id: abgabe
+    title: Abgabe
+    prompt: |
+      Gib deine Geschichte ab, wenn sie fertig ist. Deine Lehrkraft sieht genau
+      diesen Stand und kann ihn durchspielen. Du kannst jederzeit neu abgeben
+      oder die Abgabe löschen.
+    check:
+      type: submit
+      paths: [bif]
+      exclude: [bif/.git, bif/node_modules, bif/.story-tools, bif/engine/tests, bif/engine/test-fixtures, bif/engine/dev, bif/playwright-report, bif/test-results]
+      max_size: 30MB

@@ -44,6 +44,8 @@ wait-for-file: bif/.story-tools/analysis.json
 
 <img class='full' src='bif-project.webp' alt=''>
 
+_task(vorlage)
+
 ### Geschichte starten
 
 Öffne im Explorer den Ordner `pages-starter` und darin die Datei `1.md`.
@@ -133,6 +135,8 @@ sleep: 0.5
 
 Damit besteht die Geschichte bereits aus zwei Seiten, allerdings gibt es noch keine Verbindung von der ersten zur zweiten Seite – dafür brauchen wir eine Entscheidung.
 
+_task(zweite-seite)
+
 ### Entscheidungen
 
 Öffne wieder `1.md` und ergänze am Ende:
@@ -173,6 +177,8 @@ Die Zeile
 ```
 
 besteht aus zwei wichtigen Teilen: in eckigen Klammern steht der Text, der angezeigt wird und in runden Klammern steht die Seitenzahl, mit der es bei dieser Entscheidung weitergehen soll.
+
+_task(entscheidung)
 
 ### Verzweigungen
 
@@ -240,6 +246,8 @@ So wird auch sichtbar, dass `1.md` nur der Einstieg ist. Später kehren wir nich
 Je größer deine Geschichte wird, desto nützlicher wird der Graph. Du kannst damit schnell erkennen, welche Wege möglich sind und ob Teile deiner Geschichte gar nicht erreicht werden können.
 </div>
 
+_task(verzweigung)
+
 ### Lokale Entscheidungen
 
 Nicht jede Entscheidung soll zu einer anderen Seite führen.
@@ -258,6 +266,8 @@ Im Büro sitzt Frau Neumann an einem Schreibtisch. Neben der Tür hängt ein kle
 
 - [Gehe zurück in den Flur.](2)
 ```
+
+_task(punkt)
 
 Der wichtige Unterschied ist der Punkt: `(.)` – er bedeutet, dass die Geschichte auf dieser Seite bleiben soll. Der eingerückte Text darunter erscheint erst, nachdem die Entscheidung ausgewählt wurde.
 
@@ -295,6 +305,8 @@ Lokale Entscheidungen eignen sich zum Beispiel für:
 - das Öffnen einer Schublade
 - das Betätigen eines Schalters
 - kleine Aktionen, die keinen neuen Ort benötigen
+
+_task(lokal)
 
 ## Variablen und Bedingungen
 
@@ -389,6 +401,8 @@ Das ist kein Fehler in der Variable. `has_key` hat sich korrekt gemerkt, dass du
 Der Grund liegt bei den lokalen Entscheidungen: BIF merkt sich innerhalb eines Besuchs, welche lokalen Entscheidungen bereits ausgeführt wurden. Wenn du eine Seite verlässt und später erneut betrittst, wird die Seite neu aufgebaut. Die lokalen Entscheidungen stehen dann zunächst wieder zur Verfügung.
 
 Ob etwas **dauerhaft für den weiteren Verlauf der Geschichte** passiert ist, speichern wir deshalb in Variablen. Jetzt müssen wir dafür sorgen, dass die Seite diesen gespeicherten Zustand auch berücksichtigt.
+
+_task(anfangswert)
 
 ### Bedingungen
 
@@ -563,6 +577,8 @@ Damit haben Variablen und Bedingungen unterschiedliche Aufgaben:
 - Eine **Bedingung** entscheidet anhand dieses Zustands, welcher Text und welche Entscheidungen gerade sinnvoll sind.
 - Eine bereits ausgeführte **lokale Entscheidung** ist nur für den aktuellen Besuch abgeschlossen. Bei einem späteren Besuch sorgt der gespeicherte Zustand zusammen mit Bedingungen dafür, dass die Seite trotzdem konsistent bleibt.
 
+_task(schluessel)
+
 <div class='hint'>
 Gerade beim Testen einer interaktiven Geschichte lohnt es sich, Orte mehrmals zu besuchen und Entscheidungen in unterschiedlicher Reihenfolge auszuprobieren. So fallen Widersprüche auf, die beim ersten Durchspielen leicht unbemerkt bleiben.
 </div>
@@ -599,6 +615,8 @@ has_key = false;
 ```
 
 erneut ausgeführt und der Anfangszustand ist wieder hergestellt.
+
+_task(ende)
 
 ## Fehler finden
 
@@ -1031,6 +1049,8 @@ export const path = "pages-meine-geschichte";
 
 Damit beginnt dein eigenes Projekt wieder ganz klein.
 
+_task(eigener-ordner)
+
 ### Eine Idee entwickeln
 
 Beim Geschichtenerzählen gibt es keine allgemein gültige Liste wie die zwölf Prinzipien der Animation. Es gibt aber ein paar Bausteine, die fast immer helfen. Für eine BIF-Geschichte kannst du dir zunächst diese Fragen stellen.
@@ -1111,3 +1131,11 @@ Falls dir noch eine Ausgangssituation fehlt, kannst du zum Beispiel mit einer di
 Beginne nicht sofort mit zwanzig oder dreißig Seiten. Ein paar Seiten reichen für den Anfang. Spiele sie durch, schau auf den Graphen und erweitere die Geschichte Schritt für Schritt.
 
 Du musst auch nicht jede Funktion von BIF verwenden. Eine kleine Geschichte mit guten Entscheidungen ist besser als eine komplizierte Geschichte voller Technik, die eigentlich nichts bewirkt.
+
+### Abgeben
+
+_task(eigene-geschichte)
+
+_task(folgen)
+
+_task(abgabe)

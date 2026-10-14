@@ -101,6 +101,37 @@ test('a student can author and play the BIF starter story', async ({
       }).toBe(0);
     });
 
+    await test.step('Task cards read the analysis BIF wrote', async () => {
+      const check = async (task: string) => {
+        const response = await workspace.request.post('/api/task/check', {
+          data: { task: `bif/${task}`, answer: '' },
+        });
+        expect(response.ok(), `checking ${task}`).toBe(true);
+        return response.json();
+      };
+
+      for (const task of ['vorlage', 'zweite-seite', 'entscheidung']) {
+        const result = await check(task);
+        expect(result.status, `${task}: ${result.message}`).toBe('correct');
+      }
+      const ending = await check('ende');
+      expect(ending.status).toBe('wrong');
+      expect(ending.message).toContain('2 Seiten');
+      expect(ending.read).toContain('Nach Schulschluss');
+
+      const handIn = await check('abgabe');
+      expect(handIn.status, handIn.message).toBe('sent');
+      // The story, index.html, config.js and engine/runtime; no
+      // node_modules, .git or BIF's own tests.
+      expect(handIn.read).not.toContain('node_modules');
+      expect(handIn.read).not.toContain('.git/');
+      expect(handIn.state.answer).toMatch(/^\d+ Dateien, [\d,]+ (kB|MB)$/);
+
+      for (const task of ['vorlage', 'zweite-seite', 'entscheidung', 'ende', 'abgabe']) {
+        await workspace.request.post('/api/task/delete', { data: { task: `bif/${task}` } });
+      }
+    });
+
     app = await startLiveServer(
       workspace,
       container,

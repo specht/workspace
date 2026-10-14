@@ -6,9 +6,10 @@ require_relative 'workspace_files'
 require_relative 'html_lite'
 require_relative 'css_lite'
 require_relative 'task_spec'
+require_relative 'story_check'
 
 # The check types that read files in a student's Workspace on the server
-# (docs/aufgaben.md): files, html, css and references. They only read,
+# (docs/aufgaben.md): files, html, css, references and story. They only read,
 # through WorkspaceFiles, and never execute or decode anything.
 #
 # Each check returns an Outcome:
@@ -451,6 +452,35 @@ module FileChecks
         end
     rescue WorkspaceFiles::Refused
         false
+    end
+
+    # --- story ----------------------------------------------------------------
+
+    # A BIF story, from the analysis BIF writes in the Workspace (StoryCheck).
+    def self.story(check, ws)
+        project = check['project']
+        file = "#{project}/#{StoryCheck::ANALYSIS}"
+        if ws.entry(project)[:type] != :dir
+            return failed(:no_project, "Den Ordner #{code(project)} gibt es in deinem Workspace noch nicht. Klone zuerst die BIF-Vorlage.")
+        end
+        if ws.entry(file)[:type] != :file
+            return failed(:no_analysis, "BIF hat deine Geschichte noch nicht gelesen: #{code(file)} fehlt. Öffne deinen Workspace und darin den Ordner #{code(project)}; BIF liest die Geschichte, sobald du eine Seite speicherst.")
+        end
+        analysis = begin
+            JSON.parse(ws.read_text(file))
+        rescue JSON::ParserError
+            return failed(:no_analysis, "#{code(file)} ist unvollständig. Speichere eine Seite deiner Geschichte, dann schreibt BIF die Datei neu.")
+        end
+        sha256_of = lambda do |rel|
+            Digest::SHA256.hexdigest(ws.read("#{project}/#{rel}"))
+        rescue WorkspaceFiles::Refused
+            nil
+        end
+        read = StoryCheck.describe(analysis, project)
+        ok, problem, message = StoryCheck.evaluate(analysis, check['expect'] || {}, :project => project, :sha256_of => sha256_of)
+        ok ? ok(:read => read) : failed(problem, message, :read => read)
+    rescue WorkspaceFiles::Refused => e
+        refused(e)
     end
 
     # --- references -----------------------------------------------------------

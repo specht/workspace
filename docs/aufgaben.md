@@ -248,6 +248,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `er` | ER-Modell: Entitäten, Schlüssel, Attribute, Beziehungen, Kardinalitäten und die Tabellen, die daraus werden | eine `.er`-Datei | Workspace (ER-Werkstatt) | M7 |
 | `schema` | Tabellen der eigenen Datenbank: Spalten, Primär- und Fremdschlüssel, Zeilenzahl | `information_schema` | eigene MySQL-Datenbank, nur lesend | M7 |
 | `keyboard` | ein Kapitel des Keyboard-Tutorials: alle Schritte abgehakt | `/workspace/.hs-kbd-tutorial/.state.json` | Server | M7 |
+| `story` | BIF-Geschichte: Seiten, Entscheidungen, Bedingungen, Enden, Fehler, erreichbar | `<projekt>/.story-tools/analysis.json`, die BIF selbst schreibt | Server | M7 |
 
 »Server« heißt: Der Server liest die Datei als Text und wertet sie aus, ohne
 etwas auszuführen. »Workspace« heißt: Ein festes Prüfskript läuft per
@@ -639,6 +640,37 @@ der sie auch gebaut wird. Die Rückmeldung nennt die Schritte, die noch
 fehlen. Der Server liest nur die Datei, der Workspace muss nicht laufen; die
 Klassenübersicht kann das Kapitel deshalb auch für alle auf einmal prüfen.
 
+### story
+
+```yaml
+check:
+  type: story
+  project: bif
+  expect:
+    pages: 5            # mindestens so viele Seiten
+    choices: 4          # Entscheidungen, die zu einer anderen Seite führen
+    local_choices: 1    # Entscheidungen mit (.)
+    conditions: 1       # condition="…" an Text oder Entscheidungen
+    scripts: 1          # <script>-Blöcke
+    images: 1
+    endings: 1          # erreichbare Seiten ohne Entscheidung zu einer anderen
+    all_reachable: true # keine Seite, die man von 1.md aus nicht erreicht
+    no_errors: true     # BIF meldet keine Fehler (Warnungen zählen nicht)
+    own_story: true     # config.js wählt einen anderen Ordner als pages-starter
+```
+
+Für [BIF](https://github.com/specht/bif). Die Erweiterung »BIF Authoring
+Tools« im Workspace analysiert die Geschichte bei jedem Speichern und schreibt
+das Ergebnis nach `<projekt>/.story-tools/analysis.json`; daraus zeichnet BIF
+den Graphen und die Problems-Liste. Der Server liest nur diese Datei und führt
+nichts aus. Ob sie zur Geschichte passt, sieht er an den SHA-256-Summen darin
+(`inputManifest`): Hat jemand eine Seite geändert, ohne dass der Workspace lief,
+heißt es »Öffne deinen Workspace und speichere eine Seite« (`problem: stale`).
+Die Rückmeldung nennt Datei und Zeile; die häufigen Meldungen von BIF (fehlende
+Seite, unerreichbare Seite, Fehler in Skript, Bedingung oder Ausdruck,
+fehlendes Bild) stehen auf Deutsch da, alle anderen so, wie BIF sie schreibt.
+Die Klassenübersicht kann `story` für alle auf einmal prüfen.
+
 ### schema
 
 Seit M7. Liest den Aufbau der eigenen Datenbank aus `information_schema`,
@@ -757,6 +789,7 @@ die eingebaute Rückmeldung für einen Fall.
 | `git` | `no_repo`, `not_git`, `no_remote`, `no_identity`, `uncommitted`, `too_few_commits`, `detached`, `no_upstream`, `not_pushed` |
 | `er` | `missing`, `errors`, `missing_entity`, `key`, `missing_attribute`, `attribute`, `missing_relationship`, `cardinality`, `missing_table`, `missing_column`, `primary_key`, `foreign_key` |
 | `schema` | `no_tables`, `missing_table`, `missing_column`, `primary_key`, `foreign_key`, `rows` |
+| `story` | `no_project`, `no_analysis`, `stale`, `starter`, `errors`, `too_few_pages`, `too_few_choices`, `too_few_local_choices`, `too_few_conditions`, `too_few_scripts`, `too_few_images`, `unreachable`, `too_few_endings` |
 
 Text, der nur die Karten ersetzt (etwa eine nummerierte Aufgabenliste),
 steht in einem Element mit `class='tasks-off-only'` und verschwindet, sobald
@@ -857,8 +890,13 @@ mindestens ein Drittel derer, die es versucht haben, gerade falsch liegt
 (»häufig falsch«), ab drei Personen. Darunter stehen die Antworten und
 Reflexionen zum Nachlesen und die Abgaben zum Herunterladen.
 
+Wer als Lehrkraft eine Gruppe betreut, ohne selbst in ihr zu stehen, sieht
+die eigenen Versuche und Abgaben in einer eigenen Zeile »Du (Lehrkraft)« unter
+der Klasse, sobald sie eine Aufgabe der Aktivität bearbeitet hat. Die Zeile
+zählt nicht zur Klasse.
+
 **Jetzt in den Workspaces nachsehen** führt eine Aufgabe, die im Workspace
-nachsieht (`files`, `html`, `css`, `references`, `git`), sofort für alle in
+nachsieht (`files`, `html`, `css`, `references`, `story`, `git`), sofort für alle in
 der Gruppe aus, ohne dass jemand »Prüfen« drücken muss. Das Ergebnis erscheint
 blau umrandet in der Tabelle und darunter als Liste mit der Rückmeldung, die
 die Person selbst sehen würde. Gespeichert wird dabei nichts; der Stand der
