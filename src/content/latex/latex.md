@@ -152,10 +152,12 @@ wait-for-file-newer: latex-tutorial/fonts.pdf <- latex-tutorial/fonts.tex
 pdf-page: latex-tutorial/fonts.pdf 7 Latin Modern Roman
 -->
 <img class='full' src='fonts/latin-modern-roman.webp' alt='Schriftprobe in Latin Modern Roman mit Überschrift, Fließtext und Beispielzeichen.'>
+
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 8 Latin Modern Sans
 -->
 <img class='full' src='fonts/latin-modern-sans.webp' alt='Schriftprobe in Latin Modern Sans mit Überschrift, Fließtext und Beispielzeichen.'>
+
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 12 CMU Typewriter Text
 -->
@@ -169,10 +171,12 @@ Diese Schriftarten sind gut geeignet für längere Texte, wie z. B. Bücher oder
 pdf-page: latex-tutorial/fonts.pdf 13 Nimbus Roman
 -->
 <img class='full' src='fonts/nimbus-roman.webp' alt='Schriftprobe in Nimbus Roman mit Überschrift, Fließtext und Beispielzeichen.'>
+
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 14 XCharter
 -->
 <img class='full' src='fonts/xcharter.webp' alt='Schriftprobe in XCharter mit Überschrift, Fließtext und Beispielzeichen.'>
+
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 15 Vollkorn
 -->
@@ -186,10 +190,12 @@ Diese Schriftarten sind modern und serifenlos, was sie gut geeignet macht für A
 pdf-page: latex-tutorial/fonts.pdf 16 Inter
 -->
 <img class='full' src='fonts/inter.webp' alt='Schriftprobe in Inter mit Überschrift, Fließtext und Beispielzeichen.'>
+
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 17 IBM Plex Sans
 -->
 <img class='full' src='fonts/ibm-plex-sans.webp' alt='Schriftprobe in IBM Plex Sans mit Überschrift, Fließtext und Beispielzeichen.'>
+
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 18 Ubuntu
 -->
@@ -203,10 +209,12 @@ Monospace-Schriften sind Schriftarten, bei denen jedes Zeichen die gleiche Breit
 pdf-page: latex-tutorial/fonts.pdf 22 JetBrains Mono
 -->
 <img class='full' src='fonts/jetbrains-mono.webp' alt='Schriftprobe in JetBrains Mono mit Überschrift, Fließtext und Beispielzeichen.'>
+
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 23 Anonymous Pro
 -->
 <img class='full' src='fonts/anonymous-pro.webp' alt='Schriftprobe in Anonymous Pro mit Überschrift, Fließtext und Beispielzeichen.'>
+
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 24 IBM Plex Mono
 -->
@@ -220,14 +228,17 @@ Diese Schriftarten sind kreativ und gut lesbar, was sie ideal macht für Übersc
 pdf-page: latex-tutorial/fonts.pdf 25 Atkinson Hyperlegible
 -->
 <img class='full' src='fonts/atkinson-hyperlegible.webp' alt='Schriftprobe in Atkinson Hyperlegible mit Überschrift, Fließtext und Beispielzeichen.'>
+
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 26 Comic Neue
 -->
 <img class='full' src='fonts/comic-neue.webp' alt='Schriftprobe in Comic Neue mit Überschrift, Fließtext und Beispielzeichen.'>
+
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 27 Montserrat
 -->
 <img class='full' src='fonts/montserrat.webp' alt='Schriftprobe in Montserrat mit Überschrift, Fließtext und Beispielzeichen.'>
+
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 28 Comfortaa
 -->
@@ -248,22 +259,27 @@ Achte auf die Bezeichner rechts oben im Bild - um z. B. `Latin Modern Roman` und
 pdf-page: latex-tutorial/fonts.pdf 1 Latin Modern Math
 -->
 <img class='full' src='fonts/latin-modern-math.webp' alt='Schriftprobe in Latin Modern Math mit Fließtext und mathematischen Formeln.'>
+
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 2 XCharter Math
 -->
 <img class='full' src='fonts/xcharter-math.webp' alt='Schriftprobe in XCharter Math mit Fließtext und mathematischen Formeln.'>
+
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 4 TeX Gyre Termes Math
 -->
 <img class='full' src='fonts/tex-gyre-termes-math.webp' alt='Schriftprobe in TeX Gyre Termes Math mit Fließtext und mathematischen Formeln.'>
+
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 3 TeX Gyre Pagella Math
 -->
 <img class='full' src='fonts/tex-gyre-pagella-math.webp' alt='Schriftprobe in TeX Gyre Pagella Math mit Fließtext und mathematischen Formeln.'>
+
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 5 TeX Gyre Schola Math
 -->
 <img class='full' src='fonts/tex-gyre-schola-math.webp' alt='Schriftprobe in TeX Gyre Schola Math mit Fließtext und mathematischen Formeln.'>
+
 <!-- tutorial-screenshot
 pdf-page: latex-tutorial/fonts.pdf 6 TeX Gyre Bonum Math
 -->
