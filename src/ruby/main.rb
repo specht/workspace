@@ -4082,13 +4082,14 @@ class Main < Sinatra::Base
         File.directory?(path) ? WorkspaceFiles.new(path) : nil
     end
 
-    # git status of a repository, read inside the student's running container.
+    # git status of a repository, read as the student in their container, or
+    # in a reader container if it is not running (WorkspaceRuntime).
     def task_git_state(repo)
         WorkspaceFiles.clean(repo)
         output = workspace_runtime.git_status(fs_tag_for_email(@session_user[:email]),
             :repo => repo, :uid => "#{WORKSPACE_UID}:#{WORKSPACE_GID}",
-            :script => GitCheck::STATUS_SCRIPT, :timeout => 15)
-        output.nil? ? nil : GitCheck.parse(output)
+            :script => GitCheck::STATUS_SCRIPT, :timeout => 30, :host_data_path => PATH_TO_HOST_DATA)
+        GitCheck.complete?(output) ? GitCheck.parse(output) : nil
     end
 
     # Languages in which a person has solved a Code Bites task.
@@ -5575,8 +5576,9 @@ class Main < Sinatra::Base
                     ws = File.directory?(path) ? WorkspaceFiles.new(path) : nil
                     git = lambda do |repo|
                         output = workspace_runtime.git_status(fs_tag, :repo => repo,
-                            :uid => "#{WORKSPACE_UID}:#{WORKSPACE_GID}", :script => GitCheck::STATUS_SCRIPT, :timeout => 15)
-                        output.nil? ? nil : GitCheck.parse(output)
+                            :uid => "#{WORKSPACE_UID}:#{WORKSPACE_GID}", :script => GitCheck::STATUS_SCRIPT, :timeout => 30,
+                            :host_data_path => PATH_TO_HOST_DATA)
+                        GitCheck.complete?(output) ? GitCheck.parse(output) : nil
                     end
                     result = begin
                         TaskCheck.check(found[:task], '', :variables => {}, :workspace => ws, :git => git)

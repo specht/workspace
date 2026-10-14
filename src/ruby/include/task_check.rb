@@ -60,7 +60,7 @@ module TaskCheck
     ].freeze
 
     NO_WORKSPACE = 'Dein Workspace-Ordner ist noch leer. Öffne den Workspace einmal, dann kann ich nachsehen.'
-    NOT_RUNNING = 'Starte zuerst deinen Workspace. Den Stand von Git liest der Workspace in deinem laufenden Workspace.'
+    NOT_RUNNING = 'Den Stand von Git konnte ich gerade nicht lesen. Versuch es gleich noch einmal; klappt es dann immer noch nicht, starte deinen Workspace und prüfe dort.'
 
     # workspace: WorkspaceFiles for the student's folder, or nil if there is none
     # git:       lambda(repo) -> GitCheck.parse result, or nil if the Workspace

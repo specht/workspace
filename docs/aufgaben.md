@@ -362,7 +362,10 @@ check:
     pushed: true
 ```
 
-Liest nur, und zwar im laufenden Workspace der Person, als diese Person:
+Liest nur, als die Person, in ihrem laufenden Workspace oder, wenn der aus
+ist, in einem Lese-Container: dasselbe Image ohne code-server, ohne Netz, der
+Ordner der Person nur lesbar eingebunden, nach der Prüfung wieder weg. Gelesen
+werden
 `git status --porcelain --branch`, `git remote` und die Zahl der Commits
 (`src/ruby/include/git_check.rb`). `GIT_OPTIONAL_LOCKS=0` verhindert, dass
 dabei auch nur der Index neu geschrieben wird. Der Server selbst führt nie Git
@@ -371,8 +374,8 @@ nächsten Schritt mit den echten Dateinamen, zum Beispiel: »3 Dateien sind
 geändert, aber nicht committet: `lena/stack.py`, … Im Terminal, im Ordner
 `structures`: `git add -A` und `git commit -m "…"`. Danach `git push`.«
 `pushed` vergleicht mit dem zuletzt bekannten Stand des Remotes; die Prüfung
-holt nichts aus dem Netz. Ist der Workspace aus, sagt die Karte das, statt zu
-raten. `min_commits` zählt nur die Commits der Person selbst, erkannt an der
+holt nichts aus dem Netz. Lässt sich der Stand gar nicht lesen, sagt die
+Karte das, statt zu raten. `min_commits` zählt nur die Commits der Person selbst, erkannt an der
 E-Mail-Adresse aus `git config user.email`; ist keine eingetragen, sagt die
 Karte, wie man das nachholt. Ist `repo` nur ein Ordner in einem anderen
 Repository, sagt die Karte auch das.

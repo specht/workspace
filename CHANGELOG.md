@@ -429,6 +429,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   später immer wieder in <kbd>Strg</kbd><kbd>P</kbd> auf. Sie sind jetzt
   ausgeschlossen (`**/.hs-kbd-tutorial/**` in `files.exclude`); VS Code
   nimmt sie beim nächsten Start auch aus dem gespeicherten Verlauf.
+- Git-Aufgaben (»Git kennt dich«, »Committet und gepusht« …) prüfen auch,
+  wenn der Workspace aus ist: in einem Lese-Container mit demselben Image,
+  ohne Netz, der Ordner nur lesbar. Bisher hieß es dann »Starte zuerst
+  deinen Workspace«, auch auf der Klassenseite.
 - Klassenseite: »Zurück« im Browser schließt die Anmelde-Codes und den
   Abgabe-Viewer, statt die Seite zu verlassen. »Vorlage aktuell?« steht auf
   einer Linie mit »Jetzt nachsehen«.

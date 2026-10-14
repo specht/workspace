@@ -33,6 +33,12 @@ module GitCheck
         ['docker', 'exec', '-u', uid, '-e', 'HOME=/workspace', "hs_code_#{fs_tag}", 'sh', '-c', STATUS_SCRIPT, 'sh', "/workspace/#{repo}"]
     end
 
+    # Did STATUS_SCRIPT run to the end? It always prints one of these; empty
+    # output means the reader itself failed (no container, timeout).
+    def self.complete?(output)
+        output.to_s.match?(/^(NOREPO|NOGIT|TOP )/)
+    end
+
     # Reads the output of STATUS_SCRIPT.
     def self.parse(output)
         state = { :repo => true, :git => true, :remotes => [], :commits => 0, :changes => [] }

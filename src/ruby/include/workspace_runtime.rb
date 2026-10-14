@@ -142,11 +142,38 @@ module WorkspaceRuntime
             sockets
         end
 
-        # Runs a fixed, read-only script in the student's container as the
-        # student (GitCheck::STATUS_SCRIPT) and returns its output, or nil if
-        # the container is not running. repo is a checked relative path.
-        def git_status(fs_tag, repo:, uid:, script:, timeout: nil)
-            run_script(fs_tag, :script => script, :args => ["/workspace/#{repo}"], :uid => uid, :timeout => timeout)
+        # Runs a fixed, read-only script as the student (GitCheck::
+        # STATUS_SCRIPT) and returns its output. repo is a checked relative
+        # path. In the running container if there is one; otherwise, with
+        # host_data_path, in a reader container (git_status_offline). nil if
+        # neither could read.
+        def git_status(fs_tag, repo:, uid:, script:, timeout: nil, host_data_path: nil)
+            output = run_script(fs_tag, :script => script, :args => ["/workspace/#{repo}"], :uid => uid, :timeout => timeout)
+            return output unless output.nil?
+            return nil if host_data_path.nil?
+
+            git_status_offline(fs_tag, :repo => repo, :uid => uid, :script => script,
+                :host_data_path => host_data_path, :timeout => timeout)
+        end
+
+        # The same script for a Workspace that is not running: a container of
+        # the same image that lives only for this, without code-server, as the
+        # student, without network, with the student's folder mounted
+        # read-only. Git still never runs on the server itself, and nothing in
+        # the folder can change. nil if the folder does not exist.
+        def git_status_offline(fs_tag, repo:, uid:, script:, host_data_path:, timeout: nil)
+            command = Shellwords.join(offline_args(fs_tag, :repo => repo, :uid => uid, :script => script,
+                :host_data_path => host_data_path))
+            @capture.call(command, :timeout => timeout, :allow_failure => true, :log_command => false)
+        end
+
+        def offline_args(fs_tag, repo:, uid:, script:, host_data_path:)
+            ['docker', 'run', '--rm', '--network', 'none', '--read-only', '--tmpfs', '/tmp',
+             '--cpus', '1', '--memory', '256m', '--pids-limit', '64',
+             '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
+             '-u', uid, '-e', 'HOME=/workspace',
+             '-v', "#{host_data_path}/user/#{fs_tag}/workspace:/workspace:ro",
+             '--entrypoint', 'sh', WORKSPACE_IMAGE, '-c', script, 'sh', "/workspace/#{repo}"]
         end
 
         # Runs a fixed script from the server's code (never text from a
