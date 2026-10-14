@@ -263,7 +263,8 @@ double: LDA A, [SP+1]       ; [SP+0] ist die Rücksprungadresse
 
 <!-- tutorial-screenshot
 tab: preview
-viewport: 1600x900
+# lower window: the RAM panel holds its 16 rows without empty space
+viewport: 1600x800
 write-file: cpu-sandbox/programs/handbuch/hb-double.asm <- previous-code
 sleep: 2
 click: selector:#program-picker .picker-button
