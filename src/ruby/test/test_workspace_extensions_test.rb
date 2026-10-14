@@ -2,10 +2,32 @@ require 'minitest/autorun'
 require 'minitest/mock'
 require 'tmpdir'
 require 'fileutils'
+require 'zlib'
 require_relative '../include/test_workspace_package'
 require_relative '../include/test_workspace_extensions'
 
 class TestWorkspaceExtensionsTest < Minitest::Test
+    # A .vsix is a zip archive. This writes one without the zip command,
+    # which the Ruby image does not have (it only needs unzip): every file
+    # stored uncompressed, {name => content}.
+    def write_zip(path, files)
+        out = ''.b
+        central = ''.b
+        files.each do |name, content|
+            name = name.b
+            content = content.b
+            crc = Zlib.crc32(content)
+            offset = out.bytesize
+            out << [0x04034b50, 20, 0, 0, 0, 0, crc, content.bytesize, content.bytesize, name.bytesize, 0].pack('VvvvvvVVVvv')
+            out << name << content
+            central << [0x02014b50, 20, 20, 0, 0, 0, 0, crc, content.bytesize, content.bytesize,
+                name.bytesize, 0, 0, 0, 0, 0, offset].pack('VvvvvvvVVVvvvvvVV') << name
+        end
+        out << central
+        out << [0x06054b50, 0, 0, files.size, files.size, central.bytesize, out.bytesize - central.bytesize, 0].pack('VvvvvVVv')
+        File.binwrite(path, out)
+    end
+
     def test_http_stream_handles_grouped_chunks
         response = Object.new
         def response.read_body
@@ -69,14 +91,11 @@ class TestWorkspaceExtensionsTest < Minitest::Test
             vsix = {}
             ['publisher.first', 'publisher.second'].each do |id|
                 publisher, name = id.split('.')
-                source = File.join(dir, id)
-                FileUtils.mkdir_p(File.join(source, 'extension'))
                 data = {'publisher' => publisher, 'name' => name, 'version' => '1.2.3',
                     'engines' => {'vscode' => '^1.90.0'}}
                 data['extensionDependencies'] = ['publisher.second'] if name == 'first'
-                File.write(File.join(source, 'extension', 'package.json'), JSON.generate(data))
                 vsix[id] = File.join(dir, "#{id}.vsix")
-                Dir.chdir(source) { system('zip', '-q', '-r', vsix[id], 'extension', exception: true) }
+                write_zip(vsix[id], 'extension/package.json' => JSON.generate(data))
             end
             fetcher = ->(url, **_) do
                 id = url.include?('/first/') ? 'publisher.first' : 'publisher.second'
