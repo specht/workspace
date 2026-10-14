@@ -2183,9 +2183,12 @@ async function typeText(text, targetTab) {
     await page.waitForFunction(
         () => {
             const element = document.activeElement;
+            // Monaco (also small ones like the Extensions search) takes text
+            // through a div with the EditContext API, not a <textarea>.
             return element instanceof HTMLInputElement ||
                 element instanceof HTMLTextAreaElement ||
-                element?.isContentEditable === true;
+                element?.isContentEditable === true ||
+                element?.closest?.('.monaco-editor') != null;
         },
         null,
         { timeout: 10_000 },

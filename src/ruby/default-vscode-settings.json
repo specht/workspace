@@ -47,6 +47,8 @@
     "latex-workshop.latex.outDir": "%DIR%",
     "latex-workshop.latex.auxDir": "%DIR%/.build",
     "latex-workshop.latex.recipe.default": "latexmk (LuaLaTeX)",
+    "latex-workshop.latex.build.forceRecipeUsage": true,
+    "latex-workshop.latex.build.enableMagicComments": false,
 
     "latex-workshop.latex.tools": [
         {

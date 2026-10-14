@@ -30,7 +30,26 @@ _include(workspace#repository-klonen)
 
 ## LaTeX Workshop installieren
 
-Um uns die Arbeit mit LaTeX zu erleichtern, verwenden wir die Erweiterung »LaTeX Workshop«. Diese Erweiterung bietet viele nützliche Funktionen, wie z. B. das automatische Compilieren von LaTeX-Dokumenten, Syntaxhervorhebung und Vorschauen. Klicke dazu auf das Extensions-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste und suche nach »LaTeX Workshop«. Klicke auf »Install«, um die Erweiterung zu installieren.
+Um uns die Arbeit mit LaTeX zu erleichtern, verwenden wir die Erweiterung »LaTeX Workshop«. Diese Erweiterung bietet viele nützliche Funktionen, wie z. B. das automatische Compilieren von LaTeX-Dokumenten, Syntaxhervorhebung und Vorschauen. Klicke dazu auf das Extensions-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste und suche nach »LaTeX Workshop«. Klicke auf »Install«, um die Erweiterung zu installieren. Visual Studio Code fragt dich dann, ob du dem Herausgeber »James-Yu« vertraust; bestätige mit »Trust Publisher & Install«.
+
+<!-- tutorial-screenshot
+# Klonen wie im Handbuch »Workspace« (oben eingebunden)
+press: Control+Shift+E
+wait-for-text: Clone Repository
+clone-start: https://github.com/specht/latex-tutorial.git @ e66bfeeb5291c5d901b5eadaa3b65e81e8a7750c
+press: Enter
+wait-for-input-value: /workspace/
+press: Enter
+wait-for-text: Would you like to open the repository?
+click: Open
+wait-for-text: hello.tex
+press: Control+Shift+X
+sleep: 2
+type: latex workshop
+wait-for-text: James-Yu
+sleep: 2
+crop-bottom: 50%
+-->
 
 <img class='full' src='latex-workshop-ext.webp' alt=''>
 
@@ -39,13 +58,44 @@ Wechsle nun wieder zurück zum Explorer, indem du auf das Explorer-Symbol <img s
 _include_file(hello.tex, tex)
 
 Rechts oben findest du einen kleinen Button: »Build LaTeX project« 
-<img src='build-latex-project.webp' style='border-radius: 4px; height: 1.5em;' alt=''>. Drücke diesen Button, um dein LaTeX-Dokument zu compilieren (oder drücke <kbd>Strg</kbd><kbd>Alt</kbd><kbd>B</kbd>). Währenddessen siehst du unten in der Zeile den Fortschritt der Compilierung (<i class='bi bi-arrow-repeat bi-spin'></i> Build), und wenn die compilierung abgeschlossen ist, siehst du ein grünes Häkchen (<i class='bi bi-check-lg'></i>):
+<img src='build-latex-project.webp' style='border-radius: 4px; height: 1.5em;' alt=''>. Drücke diesen Button, um dein LaTeX-Dokument zu compilieren (oder drücke <kbd>Strg</kbd><kbd>Alt</kbd><kbd>B</kbd>). Währenddessen siehst du unten in der Zeile den Fortschritt der Compilierung (<i class='bi bi-arrow-repeat bi-spin'></i> Build), und wenn die Compilierung abgeschlossen ist, siehst du ein grünes Häkchen (<i class='bi bi-check-lg'></i>):
+
+<!-- tutorial-screenshot
+# Installieren: nur dieses eine »Install« (die Suche oben zeigt mehrere)
+press: Control+A
+type: @id:james-yu.latex-workshop
+sleep: 2
+click: selector:.extensions-viewlet .extension-action.install:not(.hide)
+wait-for-text: Do you trust the publisher
+click: Trust Publisher & Install
+wait-for-text: Uninstall
+# alle Editoren schließen (Erweiterung, Welcome): Strg+K, dann W
+press: Control+K
+press: KeyW
+sleep: 1
+press: Control+Shift+E
+open-file: hello.tex
+hide-left-sidebar
+sleep: 2
+press: Control+Alt+B
+sleep: 0.8
+crop-top: 92%
+-->
 
 <img class='full' src='latex-build.webp' alt=''>
 
-Wenn die compilierung erfolgreich war, solltest du eine
-PDF-Datei namens `hello.pdf` im selben Verzeichnis sehen. Klicke anschließend auf den Button rechts oben: »View LaTeX PDF file«
+Wenn die Compilierung erfolgreich war, solltest du eine
+PDF-Datei namens `hello.pdf` im selben Verzeichnis sehen. Die Hilfsdateien, die LaTeX dabei anlegt (`.aux`, `.log` und andere), landen im Ordner `.build`, den der Explorer nicht anzeigt: Neben deinen `.tex`-Dateien liegen nur die PDFs. Klicke anschließend auf den Button rechts oben: »View LaTeX PDF file«
 <img src='view-latex-pdf-file.webp' style='border-radius: 4px; height: 1.5em;' alt=''> oder verwende den Shortcut <kbd>Strg</kbd><kbd>Alt</kbd><kbd>V</kbd>, um die PDF-Datei neben deinem LaTeX-Quelltext anzuzeigen:
+
+<!-- tutorial-screenshot
+wait-for-file-newer: latex-tutorial/hello.pdf <- latex-tutorial/hello.tex
+sleep: 2
+press: Control+Alt+V
+wait-for-text: Hallo LaTeX
+move-mouse: selector:.monaco-editor .view-lines
+sleep: 2
+-->
 
 <img class='full' src='side-by-side.webp' alt='LaTeX-Quelltext und die daraus erzeugte PDF-Vorschau stehen nebeneinander.'>
 
@@ -54,6 +104,18 @@ Das Dokument sieht noch nicht besonders spektakulär aus, deswegen schauen wir u
 ## Bewerbung
 
 Öffne als nächstes die Datei `Bewerbung.tex`. Diese Datei enthält eine Vorlage für eine Bewerbung, die du anpassen kannst. Wenn du die Datei compilierst und die PDF-Datei anschaust, sollte sie ungefähr so aussehen:
+
+<!-- tutorial-screenshot
+press: Control+1
+open-file: Bewerbung.tex
+sleep: 1
+press: Control+Alt+B
+wait-for-file-newer: latex-tutorial/Bewerbung.pdf <- latex-tutorial/Bewerbung.tex
+sleep: 2
+press: Control+Alt+V
+sleep: 5
+move-mouse: selector:.monaco-editor .view-lines
+-->
 
 <img class='full' src='side-by-side-bewerbung.webp' alt='LaTeX-Quelltext und die daraus gesetzte einseitige Bewerbung stehen nebeneinander.'>
 
@@ -75,41 +137,98 @@ Achte auf den Bezeichner rechts oben im Bild - um z. B. `Latin Modern Roman` zu 
 \setmainfont{Latin Modern Roman}
 ```
 
+<!-- tutorial-screenshot
+# Die Schriftproben: fonts/fonts.tex, im Workspace mit dessen Schriften gesetzt.
+# Seite N ist die N-te \showfont-Zeile in fonts.tex.
+write-file: latex-tutorial/fonts.tex <- file:fonts/fonts.tex
+press: Control+1
+open-file: fonts.tex
+sleep: 1
+press: Control+Alt+B
+sleep: 20
+wait-for-file-newer: latex-tutorial/fonts.pdf <- latex-tutorial/fonts.tex
+pdf-page: latex-tutorial/fonts.pdf 7 Latin Modern Roman
+-->
 <img class='full' src='fonts/latin-modern-roman.webp' alt='Schriftprobe in Latin Modern Roman mit Überschrift, Fließtext und Beispielzeichen.'>
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 8 Latin Modern Sans
+-->
 <img class='full' src='fonts/latin-modern-sans.webp' alt='Schriftprobe in Latin Modern Sans mit Überschrift, Fließtext und Beispielzeichen.'>
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 12 CMU Typewriter Text
+-->
 <img class='full' src='fonts/cmu-typewriter-text.webp' alt='Schriftprobe in CMU Typewriter Text mit Überschrift, Fließtext und Beispielzeichen.'>
 
 ### Buch- und Textschriften (für längere Texte)
 
 Diese Schriftarten sind gut geeignet für längere Texte, wie z. B. Bücher oder Berichte. Sie sind angenehm zu lesen und haben ein professionelles Aussehen.
 
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 13 Nimbus Roman
+-->
 <img class='full' src='fonts/nimbus-roman.webp' alt='Schriftprobe in Nimbus Roman mit Überschrift, Fließtext und Beispielzeichen.'>
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 14 XCharter
+-->
 <img class='full' src='fonts/xcharter.webp' alt='Schriftprobe in XCharter mit Überschrift, Fließtext und Beispielzeichen.'>
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 15 Vollkorn
+-->
 <img class='full' src='fonts/vollkorn.webp' alt='Schriftprobe in Vollkorn mit Überschrift, Fließtext und Beispielzeichen.'>
 
 ### Moderne serifenlose Schriften (Arbeitsblätter, Präsentationen)
 
 Diese Schriftarten sind modern und serifenlos, was sie gut geeignet macht für Arbeitsblätter, Präsentationen oder andere Dokumente, die ein zeitgemäßes Aussehen erfordern.
 
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 16 Inter
+-->
 <img class='full' src='fonts/inter.webp' alt='Schriftprobe in Inter mit Überschrift, Fließtext und Beispielzeichen.'>
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 17 IBM Plex Sans
+-->
 <img class='full' src='fonts/ibm-plex-sans.webp' alt='Schriftprobe in IBM Plex Sans mit Überschrift, Fließtext und Beispielzeichen.'>
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 18 Ubuntu
+-->
 <img class='full' src='fonts/ubuntu.webp' alt='Schriftprobe in Ubuntu mit Überschrift, Fließtext und Beispielzeichen.'>
 
 ### Monospace-Schriften
 
 Monospace-Schriften sind Schriftarten, bei denen jedes Zeichen die gleiche Breite hat. Sie werden oft für Code, Terminal-Ausgaben und Informatik-Dokumente verwendet.
 
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 22 JetBrains Mono
+-->
 <img class='full' src='fonts/jetbrains-mono.webp' alt='Schriftprobe in JetBrains Mono mit Überschrift, Fließtext und Beispielzeichen.'>
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 23 Anonymous Pro
+-->
 <img class='full' src='fonts/anonymous-pro.webp' alt='Schriftprobe in Anonymous Pro mit Überschrift, Fließtext und Beispielzeichen.'>
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 24 IBM Plex Mono
+-->
 <img class='full' src='fonts/ibm-plex-mono.webp' alt='Schriftprobe in IBM Plex Mono mit Überschrift, Fließtext und Beispielzeichen.'>
 
 ### Kreative Schriftarten (für Überschriften, Plakate)
 
 Diese Schriftarten sind kreativ und gut lesbar, was sie ideal macht für Überschriften, Plakate oder andere Dokumente, die Aufmerksamkeit erregen sollen.
 
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 25 Atkinson Hyperlegible
+-->
 <img class='full' src='fonts/atkinson-hyperlegible.webp' alt='Schriftprobe in Atkinson Hyperlegible mit Überschrift, Fließtext und Beispielzeichen.'>
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 26 Comic Neue
+-->
 <img class='full' src='fonts/comic-neue.webp' alt='Schriftprobe in Comic Neue mit Überschrift, Fließtext und Beispielzeichen.'>
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 27 Montserrat
+-->
 <img class='full' src='fonts/montserrat.webp' alt='Schriftprobe in Montserrat mit Überschrift, Fließtext und Beispielzeichen.'>
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 28 Comfortaa
+-->
 <img class='full' src='fonts/comfortaa.webp' alt='Schriftprobe in Comfortaa mit Überschrift, Fließtext und Beispielzeichen.'>
 
 ### Schriftarten mit mathematischer Unterstützung
@@ -123,12 +242,29 @@ Achte auf die Bezeichner rechts oben im Bild - um z. B. `Latin Modern Roman` und
 \setmathfont{Latin Modern Math}
 ```
 
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 1 Latin Modern Math
+-->
 <img class='full' src='fonts/latin-modern-math.webp' alt='Schriftprobe in Latin Modern Math mit Fließtext und mathematischen Formeln.'>
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 2 XCharter Math
+-->
 <img class='full' src='fonts/xcharter-math.webp' alt='Schriftprobe in XCharter Math mit Fließtext und mathematischen Formeln.'>
-<img class='full' src='fonts/stix-two-math.webp' alt='Schriftprobe in STIX Two Math mit Fließtext und mathematischen Formeln.'>
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 4 TeX Gyre Termes Math
+-->
 <img class='full' src='fonts/tex-gyre-termes-math.webp' alt='Schriftprobe in TeX Gyre Termes Math mit Fließtext und mathematischen Formeln.'>
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 3 TeX Gyre Pagella Math
+-->
 <img class='full' src='fonts/tex-gyre-pagella-math.webp' alt='Schriftprobe in TeX Gyre Pagella Math mit Fließtext und mathematischen Formeln.'>
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 5 TeX Gyre Schola Math
+-->
 <img class='full' src='fonts/tex-gyre-schola-math.webp' alt='Schriftprobe in TeX Gyre Schola Math mit Fließtext und mathematischen Formeln.'>
+<!-- tutorial-screenshot
+pdf-page: latex-tutorial/fonts.pdf 6 TeX Gyre Bonum Math
+-->
 <img class='full' src='fonts/tex-gyre-bonum-math.webp' alt='Schriftprobe in TeX Gyre Bonum Math mit Fließtext und mathematischen Formeln.'>
 
 <div class='hint'>
@@ -139,6 +275,18 @@ Du kannst auch eigene Schriftarten verwenden, wenn du die entsprechenden Schrift
 
 In der Datei `CV.tex` findest du eine Vorlage für einen Lebenslauf, die du anpassen kannst. Wenn du die Datei compilierst und die PDF-Datei anschaust, sollte sie ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+press: Control+1
+open-file: CV.tex
+sleep: 1
+press: Control+Alt+B
+wait-for-file-newer: latex-tutorial/CV.pdf <- latex-tutorial/CV.tex
+sleep: 2
+press: Control+Alt+V
+sleep: 5
+move-mouse: selector:.monaco-editor .view-lines
+-->
+
 <img class='full' src='cv.webp' alt='Ein einseitiger Lebenslauf mit Profilbild, Kontaktdaten, Ausbildung, Erfahrung und Kenntnissen.'>
 
 Wenn du eine Datei `photo.jpg` im selben Verzeichnis hast, wird sie automatisch in den Lebenslauf eingebunden.
@@ -146,6 +294,18 @@ Wenn du eine Datei `photo.jpg` im selben Verzeichnis hast, wird sie automatisch 
 ## Schriftliche Ausarbeitung
 
 Falls du eine schriftliche Ausarbeitung oder einen Bericht schreiben musst, kannst du die Vorlage in der Datei `Ausarbeitung.tex` verwenden. Diese Vorlage enthält bereits eine Struktur für eine wissenschaftliche Arbeit, einschließlich Titelblatt, Inhaltsverzeichnis, Abschnitte und Literaturverzeichnis. Wenn du die Datei compilierst und die PDF-Datei anschaust, sollte sie ungefähr so aussehen:
+
+<!-- tutorial-screenshot
+press: Control+1
+open-file: Ausarbeitung.tex
+sleep: 1
+press: Control+Alt+B
+wait-for-file-newer: latex-tutorial/Ausarbeitung.pdf <- latex-tutorial/Ausarbeitung.tex
+sleep: 2
+press: Control+Alt+V
+sleep: 5
+move-mouse: selector:.monaco-editor .view-lines
+-->
 
 <img class='full' src='ausarbeitung.webp' alt='Eine schriftliche Ausarbeitung mit Titelblatt, Inhaltsverzeichnis und gegliederten Kapiteln.'>
 
@@ -164,10 +324,35 @@ In dieser Datei kannst du deine Literaturangaben hinzufügen, indem du die entsp
 
 Ein Bereicht, in dem LaTeX besonders glänzt, ist die Darstellung von mathematischen Formeln. LaTeX bietet eine Vielzahl von Möglichkeiten, um komplexe mathematische Ausdrücke klar und professionell darzustellen. In der Datei `Mathe.tex` findest du bereits einige Beispiele für mathematische Formeln, die du anpassen und erweitern kannst:
 
+<!-- tutorial-screenshot
+press: Control+1
+open-file: Mathe.tex
+sleep: 1
+press: Control+Alt+B
+wait-for-file-newer: latex-tutorial/Mathe.pdf <- latex-tutorial/Mathe.tex
+sleep: 2
+press: Control+Alt+V
+sleep: 5
+move-mouse: selector:.monaco-editor .view-lines
+-->
+
 <img class='full' src='mathe.webp' alt='Eine PDF-Seite mit Beispielen für Brüche, Wurzeln, Summen, Integrale, Matrizen und Fallunterscheidungen.'>
 
 ## Ein ganzes Buch
 
 Zum Abschluss dieses Tutorials findest du in der Datei `wpgtr.tex` eine LaTeX-Datei für ein ganzes Buch: »Why's (Poignant) Guide to Ruby« von [*\_why the lucky stiff*](https://tmewett.com/whytheluckystiff/). Diese Datei enthält die gesamte Struktur eines Buches, einschließlich Inhaltsverzeichnis, Kapiteln, Bildern und Formatierungen. Wenn du die Datei compilierst und die PDF-Datei anschaust, sollte sie ungefähr so aussehen:
+
+<!-- tutorial-screenshot
+press: Control+1
+open-file: wpgtr.tex
+sleep: 1
+press: Control+Alt+B
+sleep: 45
+wait-for-file-newer: latex-tutorial/wpgtr.pdf <- latex-tutorial/wpgtr.tex
+sleep: 2
+press: Control+Alt+V
+sleep: 5
+move-mouse: selector:.monaco-editor .view-lines
+-->
 
 <img class='full' src='wpgtr.webp' alt='Ein gesetztes Buch mit Inhaltsverzeichnis, Kapiteln, Fließtext und Illustrationen.'>

@@ -1,0 +1,185 @@
+{
+  "version": 1,
+  "screenshots": {
+    "latex-workshop-ext.webp": {
+      "state_hash": "4951f95930519e202b4078e97266f0bbd638eefba11822a1b5df9c09f6ff2b92",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "65a930a9616e4e5447dece96c4e69bd87623a1d689bc8f78cb69bf1d75126a53"
+    },
+    "latex-build.webp": {
+      "state_hash": "d9783b78f159ec73422c197b5bcc2f628079439ea55a412faa8577750260093d",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "9326688e9d35cbf7954fd4e1ef61be3fbe85309a2d868224a94e9ede54e0e285"
+    },
+    "side-by-side.webp": {
+      "state_hash": "8de341ee69acdc7a9de2fc90f9192b610b650ea9eb982e11cc9e9c3b52d471e4",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "7dc7326ca30c24f2e5b388efc0feba3ff50b59d0f71c1b60f1137d24242ce03c"
+    },
+    "side-by-side-bewerbung.webp": {
+      "state_hash": "26cd1ca47bca2b7950f72efc493df8b77d09b9af9c4f6fb72494a520755a69ca",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "b36d90edab155c3c10513c36ffcef0e857fa90de8cd61cd5b66ca44254bd26ef"
+    },
+    "fonts/latin-modern-roman.webp": {
+      "state_hash": "bce97ba0bdfc1e0b86d2d8f84df26d2d402e6f6a7e3c85e31fe359eaba3679ca",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "a48de041c0ef80a68f19d69afb2f99f96591048f58e4e931e9efdea640d624c5"
+    },
+    "fonts/latin-modern-sans.webp": {
+      "state_hash": "61df4d9ed2724f4219b642c5c03b951bd7e326fad14a29fe56c7eb97131807d7",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "eed7b02649969fd90ceac5a221c8ca440ddc5d72b247742cea235ed6544769bb"
+    },
+    "fonts/cmu-typewriter-text.webp": {
+      "state_hash": "362bc53121425001c29ca03f5ff04eb93d19a33c7c15e1aa646ee5d4c625c823",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "67e7547edd2e8164e34af7aa11336130b5f4220a3f987c8dddde2b05aafe2c79"
+    },
+    "fonts/nimbus-roman.webp": {
+      "state_hash": "9644f8bcd6e84e067356013ee8d23c1f2ddcc4ca1ac603281b85778c9811fca8",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "8e2a4f40c7c68c60df5a4c6262fbbc31e509cf9b3927f5b7b2ca448d94ee207c"
+    },
+    "fonts/xcharter.webp": {
+      "state_hash": "17888e042a3779e895baba7a7b2447a91424ee2b33a7116446313aafe3be815b",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "6cf8f61fab706950865b994a7db6be2a3de05afc310993795623e62ed110aa6d"
+    },
+    "fonts/vollkorn.webp": {
+      "state_hash": "99a3478371261229fa1a4d5705a730915ef28996308135503e48694bfc9921c8",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "c0c27905812caf65dd4ed6fdf382537284f4311e33c0c45198d2e1669ed3626b"
+    },
+    "fonts/inter.webp": {
+      "state_hash": "de5acf8936574553e4f67b83e216cc95a58c81d9bf1abae0ec88e1a39704d399",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "f02aa7b690038d1d33753af171bb8d30c64539851f3ea56ef1b81ea46a44d589"
+    },
+    "fonts/ibm-plex-sans.webp": {
+      "state_hash": "0dd4e9b0671c4f929c4588494a5eea89e495f4b1c8b52758b45f49c2c0fe1cb2",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "dfad456a4748e4d7e66f881aa0d56dcc489263bf525275853c5c59b693aca90d"
+    },
+    "fonts/ubuntu.webp": {
+      "state_hash": "656c55b754fdfc69e2b5cf794452a1b8ec540a36be7f9677d3c4d7174210edd7",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "73c84176b83ff51621a7201e612e0f29aec51fabf10aa151633f904d52557eb1"
+    },
+    "fonts/jetbrains-mono.webp": {
+      "state_hash": "820472536330f73ad4801a0bef51c296ce04c5383ce09012cbdbaefd7cc42d54",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "5d1d5a1e07015615aeb27850daeef09d37ecc4e4bc9d581d6ee1714c88deafde"
+    },
+    "fonts/anonymous-pro.webp": {
+      "state_hash": "ba5d0b94c918aa8ed123bb9c4fa375eb4a61d67ba3085ef2e782509dba24bac2",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "4a02d4572926f2ff13bf26dac76d154447c8587264a035729e8529454281794f"
+    },
+    "fonts/ibm-plex-mono.webp": {
+      "state_hash": "12a18231966fe95d9560c2e8905dcde7a7fef89cbdaffb3a0cfcf65e4d19ec98",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "75283fc65c0db9fce8d36ca2029cb9635fddbf7fb3336a532d2e950a3ae05de0"
+    },
+    "fonts/atkinson-hyperlegible.webp": {
+      "state_hash": "4d50d0786ebad097b0fc834a18c4e8405352d4af1bc26f39e60b7d13292093bb",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "91c5d3a553a0267205cda3d38fc5d6ac7ed7c825f6280390c15ffe4a05678849"
+    },
+    "fonts/comic-neue.webp": {
+      "state_hash": "f01b99b976b8dd1af6838416a6c60827bc6c2c12620506186a773dccdf11c051",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "13a97696084f5fc3ec719d83bc60ab694f47c732e8bf852633214ce0905bca98"
+    },
+    "fonts/montserrat.webp": {
+      "state_hash": "7a607a7de6a17170d62a22211a5f04da7e473ea012d4a63b8f5fcb07fe80e97c",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "824244df2ceb60ca49b060ad5e753f6e2af46dc22e69c4f1f5b9c4aaa71eef32"
+    },
+    "fonts/comfortaa.webp": {
+      "state_hash": "9e2fc1b0d5fb61ef431a1fd90f3dccdb76fab21a7261d3437d5332d85881d823",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "885420baff2ef13841c08f02be0d0e5c43e9953b66b8a6c617d2e60a787585a9"
+    },
+    "fonts/latin-modern-math.webp": {
+      "state_hash": "0bb841393fce44c18e4547100c9d553973f07c100dff325024bf03e686ce1571",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "e831b70c8a54cb1c324e40803c7997d9daca641e275dfd25d90904736fecec35"
+    },
+    "fonts/xcharter-math.webp": {
+      "state_hash": "78eea855454f54d88040066f2dd03607489333c9586534e6e236b34ab704f8dc",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "5b9ecbf7e3f55a5bb4ba6b3d2887728710ae89d280ef3a49c27bfc9b8ec03143"
+    },
+    "fonts/tex-gyre-termes-math.webp": {
+      "state_hash": "c13ea685f28a7e7621b3f777a9d82429c7c75c17bc5543440f6634f2beec25b9",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "11245179ed42595df78ea2c5add5c7bb0f6331af5fe3545250046031eba43353"
+    },
+    "fonts/tex-gyre-pagella-math.webp": {
+      "state_hash": "97418e13030c0dcbdee1587389571215ef12c3a230bd8dc22a6719c2405453f8",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "6b85dd4693197eba5f1597b7b8a14fbc69ddd061746314c586a9a94a3068f2cc"
+    },
+    "fonts/tex-gyre-schola-math.webp": {
+      "state_hash": "e9454aaef3d872c857c1deb91d5adb12da89f846529241d374c7d97485cf9101",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "6390eaf3245479d115db50bfa43976bf97e249c5b819a6accb8e38a33fc57b23"
+    },
+    "fonts/tex-gyre-bonum-math.webp": {
+      "state_hash": "d21746c597a6278877a2b3654d4bfa15233d9da8486f85cd269e5711c828b630",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "6ae4ef10ff56788865511b6adb4d000fa4e25e16a89cfe12c016ebf781e966c8"
+    },
+    "cv.webp": {
+      "state_hash": "5acbc321b461d6277cab7aa9efb76a3d149b2b3dc0786c10a1763b7db4830df3",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "893628261e18c2aa155094be40a973999da4d15618cf65bfe3afde6410409495"
+    },
+    "ausarbeitung.webp": {
+      "state_hash": "4cfbb94d9ddfdc41f2b10d7d1a414d47e270f625508a77089011ff7eb7a05d06",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "39f77b48eb4ea57fd0311315fa5394b79be146f5c903544de13685dec5dc0a87"
+    },
+    "mathe.webp": {
+      "state_hash": "6cbb2329f45cec6afb6c04c82ba90e507b310ec07bb2088a085584bed220db35",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "25609e719aef0c2823253e9ae327b8d547a82c0212bd0ddc401f14c9b1d1e6cb"
+    },
+    "wpgtr.webp": {
+      "state_hash": "04bcbaa88c2a04f560d2a5f6621490a5cc47224c61b13bdb1b26184e27047565",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "65965b1144a685ac7345f07b5de72b184749cc7a2f9aebbb346f026ebc217dc8"
+    }
+  }
+}
