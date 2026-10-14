@@ -56,7 +56,7 @@ Beim ersten Mal lädt `make` die Bibliothek PixelRAM herunter. Dann übersetzt e
 <!-- tutorial-screenshot
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann make im Terminal
 show-left-sidebar
-clone-start: https://github.com/specht/pixelram-starter.git @ c29cb44cf618d3e4a33f1b3ee692d41fde32b449
+clone-start: https://github.com/specht/pixelram-starter.git @ 8f36e382554999421d77687c69f7541ca2c4afb7
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -707,14 +707,47 @@ make PROGRAM=beispiele/tunnel
 
 <div class='screen-gallery'>
 <figure>
+<!-- tutorial-screenshot
+terminal-open
+terminal-run: make PROGRAM=beispiele/tunnel
+terminal-wait-for-prompt
+tab: preview
+variants: crt
+viewport: 800x450
+hook: open beispiele/tunnel.html
+hook: at 2.5
+crop-element: #canvas
+-->
 <img src='tunnel.webp' alt='Strahlenförmige bunte Segmente laufen auf eine dunkle Tunnelöffnung zu.'>
 <figcaption><code>beispiele/tunnel</code>: Abstand und Winkel jedes Pixels zur Mitte ergeben einen Flug durch einen Tunnel.</figcaption>
 </figure>
 <figure>
+<!-- tutorial-screenshot
+terminal-open
+terminal-run: make PROGRAM=beispiele/julia
+terminal-wait-for-prompt
+tab: preview
+variants: crt
+viewport: 800x450
+hook: open beispiele/julia.html
+hook: at 6
+crop-element: #canvas
+-->
 <img src='julia.webp' alt='Ein Julia-Fraktal mit farbigen Bändern und Spiralformen.'>
 <figcaption><code>beispiele/julia</code>: Für jedes Pixel immer wieder dieselbe kleine Rechnung: ein Fraktal, das sich langsam verwandelt.</figcaption>
 </figure>
 <figure>
+<!-- tutorial-screenshot
+terminal-open
+terminal-run: make PROGRAM=beispiele/magie
+terminal-wait-for-prompt
+tab: preview
+variants: crt
+viewport: 800x450
+hook: open beispiele/magie.html
+hook: at 1.2
+crop-element: #canvas
+-->
 <img src='magic.webp' alt='Violette und türkise Ringe eines Zauberkreises leuchten auf dunklem Grund.'>
 <figcaption><code>beispiele/magie</code>: Der Kreis wird nur einmal gezeichnet. Bewegung bringt allein die Palette, die sich in der Schleife dreht.</figcaption>
 </figure>
@@ -728,7 +761,7 @@ Der Palettentrick aus <code>beispiele/magie</code> heißt <strong>Color Cycling<
 
 ### Ganze Spiele
 
-PixelRAM ist klein, aber kein Spielzeug. Dieselben wenigen Befehle, die du kennst, tragen auch Spiele aus den Neunzigerjahren, die damals ganz ähnlich programmiert wurden: Ein Programm schreibt Pixel in den Speicher. **Crystal Caves** (1991) ist ein Jump-and-Run, dessen erste Episode frei verteilt werden darf. Probier es aus:
+PixelRAM ist klein, aber kein Spielzeug. Dieselben wenigen Befehle, die du kennst, tragen auch Spiele aus den Neunzigerjahren, die damals ganz ähnlich programmiert wurden: Ein Programm schreibt Pixel in den Speicher. Sogar DOOM läuft auf PixelRAM. **Crystal Caves** (1991) ist ein Jump-and-Run, dessen erste Episode frei verteilt werden darf. Probier es aus:
 
 ```bash
 make crystal
@@ -738,7 +771,7 @@ Das lädt PixelRAM mit seinen Spiele-Anpassungen und den Quelltext von OpenCryst
 
 <img class='full' src='crystal-caves.webp' alt='Ein Level aus Crystal Caves: der Bergmann Mylo vor einer Mine mit Steinwänden, Holzbalken und einem Schild »Danger«.'>
 
-Die Grafik des Spiels kommt am Ende als Pixel in genau dem Speicher an, den du mit `set_pixel` beschreibst, und die Tasten kommen über `key_down` und `poll_key_event` herein. Wie das Spiel an PixelRAM angeschlossen ist, steht in [`ports/crystal`](https://github.com/specht/pixelram/tree/main/ports/crystal) im Repository von PixelRAM. Wer die Originaldateien besitzt, kann auf dieselbe Weise auch **Prince of Persia** und **Descent** übersetzen ([Anleitung](https://github.com/specht/pixelram/blob/main/PORTS.md)).
+Die Grafik des Spiels kommt am Ende als Pixel in genau dem Speicher an, den du mit `set_pixel` beschreibst, und die Tasten kommen über `key_down` und `poll_key_event` herein. Wie das Spiel an PixelRAM angeschlossen ist, steht in [`ports/crystal`](https://github.com/specht/pixelram/tree/main/ports/crystal) im Repository von PixelRAM. Wer die Originaldateien besitzt, kann auf dieselbe Weise auch [**Prince of Persia**](https://github.com/specht/pixelram/tree/main/ports/prince) und [**Descent**](https://github.com/specht/pixelram/tree/main/ports/descent) übersetzen.
 
 ## Wie geht es weiter?
 
