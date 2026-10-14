@@ -20,6 +20,10 @@ template_name: der Sorting Sandbox
 In der Sorting Sandbox schreibst du Sortieralgorithmen in Dart, Python, JavaScript oder Java und siehst dann zu, wie dein eigener Code arbeitet. Du lässt Verfahren gegeneinander antreten, misst ihren Aufwand und findest heraus, warum zwei richtige Algorithmen trotzdem sehr unterschiedlich gut sein können.
 </p>
 
+<div class='hint'>
+<strong>Vier Sprachen, eine App:</strong> Du schreibst deine Algorithmen in <strong>Dart, Python, JavaScript oder Java</strong>, in der Sprache, die du lernst oder magst. Alle Verfahren treten in derselben App gegeneinander an, egal in welcher Sprache sie geschrieben sind. In einer Klasse kann also jede und jeder eine andere Sprache wählen.
+</div>
+
 ## Worum es geht
 
 Deine Klasse hat ein gemeinsames Repository, in dem alle eure Algorithmen liegen. Was du veröffentlichst, erscheint ohne Neustart bei allen anderen und muss sich dort im Rennen und in der Messung bewähren.

@@ -20,6 +20,10 @@ template_name: der Data Structures Sandbox
 In der Data Structures Sandbox programmierst du Listen, Stacks, Queues, Bäume, Heaps und Hash-Tabellen selbst, in Dart, Python, JavaScript oder Java, und siehst bei jedem Methodenaufruf, was in deinem Speicher passiert: welche Zelle beschrieben wird, welche Referenz umgebogen wird, welcher Knoten rotiert.
 </p>
 
+<div class='hint'>
+<strong>Vier Sprachen, eine App:</strong> Du programmierst deine Datenstrukturen in <strong>Dart, Python, JavaScript oder Java</strong>, in der Sprache, die du lernst oder magst. Darstellung und Tests sind für alle vier dieselben. In einer Klasse kann also jede und jeder eine andere Sprache wählen, und ihr vergleicht trotzdem dieselben Strukturen.
+</div>
+
 ## Worum es geht
 
 Die meisten Programmiersprachen bringen fertige Listen, Mengen und Wörterbücher mit. Gerade deshalb bleibt oft unklar, was darin eigentlich passiert. In der Sandbox gibt es diese Abkürzung nicht: Eine Array-Liste besteht aus **acht festen Speicherzellen**, eine verkettete Liste aus **Knoten mit `next`-Referenz**, und die Größe ist ein Feld `size`, das du selbst pflegst. Die Darstellung zeigt genau diesen Speicher; sie räumt nichts auf und rechnet nichts nach.
