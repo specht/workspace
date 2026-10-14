@@ -2012,6 +2012,10 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     margin: 0;
 }
 
+.color-mixer-gamut.is-off {
+    visibility: hidden;
+}
+
 .color-mixer-codes code {
     cursor: copy;
 }

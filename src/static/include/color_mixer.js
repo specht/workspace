@@ -138,7 +138,10 @@
         sliders.l.nextElementSibling.textContent = `${round(lch.l * 100, 1)} %`;
         sliders.c.nextElementSibling.textContent = round(lch.c, 3).toFixed(3);
         sliders.h.nextElementSibling.textContent = `${Math.round(lch.h)}°`;
-        gamut.hidden = !clipped;
+        // The note keeps its room even when invisible, so nothing below
+        // jumps while the sliders move in and out of what a screen shows.
+        gamut.classList.toggle('is-off', !clipped);
+        gamut.setAttribute('aria-hidden', clipped ? 'false' : 'true');
 
         const shown = rgbToOklch(rgb);
         code('hex').textContent = color;

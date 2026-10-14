@@ -1721,7 +1721,12 @@ class Main < Sinatra::Base
             search_sections = outline ? ReferenceIndex.search_sections(root) : nil
             inject_autotoc(root)
 
-            html = root.to_html
+            # Scripts a page loads itself (the colour mixer) get a fresh
+            # address with each version, like default.css: nginx lets
+            # browsers keep /include/*.js forever.
+            html = root.to_html.gsub(%r{(<script src=['"]/include/[a-z_]+\.js)(['"])}) do
+                "#{$1}?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}#{$2}"
+            end
             # root.css('h2, h3, h4, h5, h6').each do |e|
             #     if slug == 'c'
             #         level = e.name.sub('h', '').to_i
