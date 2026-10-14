@@ -1418,7 +1418,7 @@ class Main < Sinatra::Base
             end
             link = root.document.create_element('p', 'class' => 'reference-include-link')
             # The tooltip names where the text comes from, like the breadcrumb
-            # on the reference page: »Workspace: Grundgriffe › Repository klonen«.
+            # on the reference page: »Workspace: Grundlagen › Repository klonen«.
             anchor = root.document.create_element('a', 'href' => node['data-href'], 'title' => node['data-label'].to_s)
             anchor.add_child(root.document.create_element('i', 'class' => 'bi bi-book'))
             anchor.add_child(root.document.create_text_node('Im Handbuch nachschlagen'))

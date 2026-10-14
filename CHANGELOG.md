@@ -25,7 +25,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Erste Aufgabendateien für TCP/IP (12), Anaglyphen (12) und shower.js (11).
 - Handbuch: eigener Katalog in `src/content/reference/`, Übersicht unter
   `/reference`, Seiten unter `/reference/<slug>`. Erste Seiten: »Workspace:
-  Grundgriffe« und »HTML-Folien gestalten«.
+  Grundlagen« und »HTML-Folien gestalten«.
 - Platzhalter `_include(seite#teil)` und `_uses(teil, …)` sowie Teile in
   Handbuch-Seiten (`<!-- part: name -->`), siehe `docs/aufgaben.md`.
 - Notizen für Lehrkräfte: `lehrkraft.md` neben einer Seite erscheint für
