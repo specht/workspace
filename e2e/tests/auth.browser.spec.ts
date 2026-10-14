@@ -120,6 +120,13 @@ test('login codes are bounded, one-time and visible to the teacher', async ({
     await teacherPage.keyboard.press('Escape');
     await expect(projector).toHaveCount(0);
 
+    // The browser's Back button closes the codes and stays on the class page.
+    await teacherPage.getByRole('button', {name: 'Anmelde-Codes zeigen'}).click();
+    await expect(projector).toBeVisible();
+    await teacherPage.goBack();
+    await expect(projector).toHaveCount(0);
+    expect(new URL(teacherPage.url()).pathname).toBe('/klasse');
+
     const codeInput = page.locator('#ti_code');
     await codeInput.fill(E2E_LOGIN_CODE);
     await codeInput.press('Tab');

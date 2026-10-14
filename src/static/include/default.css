@@ -3561,6 +3561,11 @@ h3[id] {
     margin: 0.5em 0 1em;
 }
 
+/* In the toolbar the margin would push the button above its neighbours. */
+.class-toolbar .class-template {
+    margin: 0;
+}
+
 .class-template .form-select {
     width: auto;
     max-width: 100%;

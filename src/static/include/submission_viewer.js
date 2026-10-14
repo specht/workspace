@@ -22,14 +22,18 @@
         return (bytes / 1000000).toFixed(1).replace('.', ',').replace(/,0$/, '') + ' MB';
     }
 
-    function close() {
+    // Like the login codes: Back closes the viewer, not the page.
+    function close(fromHistory) {
         if (!viewer) return;
         viewer.remove();
         viewer = null;
         document.body.classList.remove('subview-open');
         document.removeEventListener('keydown', onKey);
         if (lastFocus) lastFocus.focus();
+        if (fromHistory !== true && history.state && history.state.subview) history.back();
     }
+
+    window.addEventListener('popstate', () => close(true));
 
     function onKey(e) {
         if (e.key === 'Escape') close();
@@ -111,7 +115,12 @@
     }
 
     function show(link, viewUrl, data) {
-        close();
+        if (viewer) {
+            viewer.remove();
+            viewer = null;
+        } else {
+            history.pushState({ subview: true }, '');
+        }
         const textUrl = viewUrl.replace('/api/task/submission_view/', '/api/task/submission_text/');
         viewer = el('div', 'subview');
         const dialog = el('div', 'subview-dialog');

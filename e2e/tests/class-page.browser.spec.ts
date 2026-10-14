@@ -46,3 +46,12 @@ test('the class page remembers the group and each group\'s activity', async ({ p
   await page.goto('/klasse');
   await expect(page.locator('.class-board-select select')).toHaveValue('E2E');
 });
+
+test('toolbar buttons sit on one line', async ({ page }, testInfo) => {
+  await loginAsE2eUser(page, 'e2e-teacher@example.com', testInfo);
+  await page.goto('/klasse?group=E2E&tab=fortschritt&activity=sandbox-datenstrukturen');
+  const live = await page.getByRole('button', { name: 'Jetzt nachsehen' }).boundingBox();
+  const template = await page.getByRole('button', { name: 'Vorlage aktuell?' }).boundingBox();
+  expect(live && template).toBeTruthy();
+  expect(Math.abs((live!.y + live!.height / 2) - (template!.y + template!.height / 2))).toBeLessThan(1);
+});

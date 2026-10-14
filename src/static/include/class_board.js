@@ -254,13 +254,19 @@
         fitProjector();
     }
 
-    function closeProjector() {
+    // Opening adds a history entry, so the browser's Back button closes the
+    // codes instead of leaving the class page; closing otherwise takes the
+    // entry away again.
+    function closeProjector(fromHistory) {
         if (!projector) return;
         projector.remove();
         projector = null;
         document.body.classList.remove('subview-open');
         document.removeEventListener('keydown', projectorKey);
+        if (fromHistory !== true && history.state && history.state.classCodes) history.back();
     }
+
+    window.addEventListener('popstate', () => closeProjector(true));
 
     function projectorKey(e) {
         if (e.key === 'Escape') closeProjector();
@@ -268,6 +274,7 @@
 
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.class-codes-show')) return;
+        history.pushState({ classCodes: true }, '');
         projector = document.createElement('div');
         projector.className = 'class-codes-projector';
         projector.setAttribute('role', 'dialog');
