@@ -77,7 +77,8 @@ function authStudentEmail(e2eEmail: string): string {
   return `e2e-auth-student-${match[1]}@example.com`;
 }
 
-async function teacherAdminContext(
+// Group teachers see their group's login codes on the class page.
+async function teacherClassContext(
   browser: Browser,
   teacherEmail: string,
   testInfo: TestInfo,
@@ -85,8 +86,8 @@ async function teacherAdminContext(
   const context = await browser.newContext({baseURL: baseUrl(testInfo)});
   const page = await context.newPage();
   await loginAsE2eUser(page, teacherEmail, testInfo);
-  await page.goto('/admin');
-  await expect(page.getByRole('heading', {name: 'Server', exact: true})).toBeVisible();
+  await page.goto('/klasse?group=E2E');
+  await expect(page.getByRole('heading', {name: 'Klassenübersicht', exact: true})).toBeVisible();
   return {context, page};
 }
 
@@ -97,13 +98,13 @@ test('login codes are bounded, one-time and visible to the teacher', async ({
 }, testInfo) => {
   const authEmail = authStudentEmail(e2eEmail);
   const firstTag = await requestLoginCode(page, authEmail);
-  const {context: teacherContext, page: teacherPage} = await teacherAdminContext(
+  const {context: teacherContext, page: teacherPage} = await teacherClassContext(
     browser,
     authTeacherEmail(e2eEmail),
     testInfo,
   );
 
-  const codeSection = teacherPage.locator('#login_codes_here');
+  const codeSection = teacherPage.locator('.class-login-codes');
   const studentCodeRow = () =>
     codeSection.locator('tbody tr').filter({hasText: authEmail});
 

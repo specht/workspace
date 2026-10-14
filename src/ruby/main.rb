@@ -10,6 +10,7 @@ require './include/task_store.rb'
 require './include/class_board.rb'
 require './include/student_home.rb'
 require './include/group_visibility.rb'
+require './include/look_in.rb'
 require './include/reference_index.rb'
 require './include/template_freshness.rb'
 require './include/anaglyph_viewer.rb'
@@ -1932,11 +1933,13 @@ class Main < Sinatra::Base
                             user_groups[current_group] << email
                             invitations[email] = { :group => current_group }
                         end
+                        # In several groups, the name may stand in just one of
+                        # the lines; a line with only the address keeps it.
                         if parts.size > 1
                             name = parts[0, parts.size - 1].join(' ')
                             invitations[email][:name] = name
                         else
-                            invitations[email][:name] = email
+                            invitations[email][:name] ||= email
                         end
                     end
                 end
@@ -1948,6 +1951,23 @@ class Main < Sinatra::Base
                 teachers[email] ||= Set.new()
                 teachers[email] << group
             end
+        end
+        # Every group administrator has a test account, alone in a test group
+        # of its own that only this teacher administers: to try hand-ins,
+        # galleries and exams as a student would, away from the real classes
+        # (LookIn). The test groups come last.
+        test_accounts = {}
+        teachers.keys.each do |teacher|
+            test_email = LookIn.test_account_email(teacher)
+            next if test_email.nil? || invitations[test_email]
+            teacher_name = (invitations[teacher] || {})[:name] || teacher.split('@').first
+            test_group = "Testgruppe (#{teacher_name})"
+            test_accounts[test_email] = teacher
+            group_members[test_group] = [test_email]
+            user_groups[test_group] = [test_email]
+            user_group_order << test_group unless user_group_order.include?(test_group)
+            invitations[test_email] = { :group => test_group, :name => "Testkonto (#{teacher_name})" }
+            teachers[teacher] << test_group
         end
         teacher_emails = TeacherRoles.resolve(
             :invited_emails => invitations.keys,
@@ -1963,6 +1983,7 @@ class Main < Sinatra::Base
         @@teachers = teachers # group administration rights only
         @@teacher_emails = teacher_emails # teachers, with or without group rights
         @@group_members = group_members # all memberships, for the class board
+        @@test_accounts = test_accounts # test account email => its teacher
     end
 
     private_class_method :load_invitations_locked
@@ -2145,6 +2166,8 @@ class Main < Sinatra::Base
                         @session_user[k.to_sym] = v
                     end
                     @session_user[:show_workspace] = true unless @session_user.include?(:show_workspace)
+                    # Set while a teacher looks at the site as this student.
+                    @impersonated_by = session[:impersonated_by]
 
                     expires = session_cookie_expiry
                     if DEVELOPMENT || request.cookies.include?('hs_sid')
@@ -2556,23 +2579,10 @@ class Main < Sinatra::Base
         respond(:status => 'cancelled')
     end
 
-    post '/api/request_login' do
-        Main.load_invitations()
-        data = parse_request_data(:required_keys => [:email])
-        email = data[:email].downcase.strip
-
-        unless @@invitations.include?(email)
-            candidates = @@invitations.keys.select do |x|
-                x[0, email.size] == email
-            end
-            email = candidates.first if candidates.size == 1
-        end
-
-        unless @@invitations.include?(email)
-            content_type :json
-            halt 404, { :error => 'no_invitation_found' }.to_json
-        end
-
+    # The account of an invited person, created as at its first login: a
+    # teacher may look into a student (or its test account) that has never
+    # logged in.
+    def ensure_user_account(email)
         # Create the user node before the login-request lock. Neo4j's uniqueness
         # constraint keeps this idempotent even if two browsers arrive together.
         user = neo4j_query_expect_one(<<~END_OF_QUERY, :email => email)['n']
@@ -2596,6 +2606,28 @@ class Main < Sinatra::Base
                 SET u.server_sid = COALESCE(u.server_sid, $server_sid)
             END_OF_QUERY
         end
+        user
+    end
+
+    post '/api/request_login' do
+        Main.load_invitations()
+        data = parse_request_data(:required_keys => [:email])
+        email = data[:email].downcase.strip
+
+        unless @@invitations.include?(email)
+            # A test account (specht+test@…) does not make »specht« ambiguous.
+            candidates = @@invitations.keys.select do |x|
+                x[0, email.size] == email && !@@test_accounts.key?(x)
+            end
+            email = candidates.first if candidates.size == 1
+        end
+
+        unless @@invitations.include?(email)
+            content_type :json
+            halt 404, { :error => 'no_invitation_found' }.to_json
+        end
+
+        user = ensure_user_account(email)
 
         login_request = @@login_request_mutex.synchronize do
             cleanup_login_requests
@@ -2790,17 +2822,115 @@ class Main < Sinatra::Base
         respond(:ok => 'yay')
     end
 
+    # Who may look into whose account (LookIn): administrators into anyone's,
+    # teachers into their own students'.
+    def may_look_in?(email)
+        Main.load_invitations()
+        LookIn.allowed?(@session_user && @session_user[:email], email,
+            :admins => ADMIN_USERS, :teachers => @@teachers, :group_members => @@group_members)
+    end
+
+    # The reason a teacher gave for looking in, kept for the student's
+    # notice; nil (and a 400) when a teacher gave none.
+    def record_look_in(email, kind, reason_text)
+        # A test account is the teachers' own: no reason, no notice.
+        return if @@test_accounts.key?(email)
+
+        reason = LookIn.reason(reason_text, :admin => admin_logged_in?)
+        halt 400, { :error => 'reason_missing' }.to_json if reason.nil?
+        return if reason.empty?
+
+        by = @session_user[:email]
+        neo4j_query(<<~END_OF_QUERY, :email => email, :ts => Time.now.to_i, :kind => kind, :reason => reason,
+            MATCH (u:User {email: $email})
+            CREATE (l:LookIn {ts: $ts, kind: $kind, reason: $reason, by_email: $by_email, by_name: $by_name, seen: false})-[:FOR]->(u);
+        END_OF_QUERY
+            :by_email => by, :by_name => ((@@invitations[by] || {})[:name] || by))
+    end
+
+    # As the student: the session belongs to it until »Zurück«, and remembers
+    # who started (impersonated_by), also across a second impersonation.
     post '/api/impersonate' do
-        assert(admin_logged_in?)
-        data = parse_request_data(:required_keys => [:email])
-        email = data[:email]
+        assert(teacher_logged_in?)
+        data = parse_request_data(:required_keys => [:email], :optional_keys => [:reason],
+            :max_body_length => 2048, :max_string_length => 1024)
+        email = data[:email].to_s.downcase
+        halt 403 unless may_look_in?(email)
+        record_look_in(email, 'impersonate', data[:reason])
+        ensure_user_account(email)
         sid = current_session_sid
-        neo4j_query(<<~END_OF_STRING, {:sid => sid, :email => email})
+        neo4j_query(<<~END_OF_STRING, {:sid => sid, :email => email, :by => @session_user[:email]})
             MATCH (s:Session {sid: $sid})-[r:FOR]->(:User), (u:User {email: $email})
             DELETE r
-            CREATE (s)-[:FOR]->(u);
+            CREATE (s)-[:FOR]->(u)
+            SET s.impersonated_by = COALESCE(s.impersonated_by, $by);
         END_OF_STRING
         respond(:yay => 'sure')
+    end
+
+    # Back to one's own account after an impersonation.
+    post '/api/stop_impersonation' do
+        assert(user_logged_in?)
+        halt 400 unless @impersonated_by
+        neo4j_query(<<~END_OF_STRING, {:sid => current_session_sid, :email => @impersonated_by})
+            MATCH (s:Session {sid: $sid})-[r:FOR]->(:User), (u:User {email: $email})
+            DELETE r
+            CREATE (s)-[:FOR]->(u)
+            REMOVE s.impersonated_by;
+        END_OF_STRING
+        respond(:yay => 'sure')
+    end
+
+    # The student has read who looked into its account.
+    post '/api/look_ins_seen' do
+        assert(user_logged_in?)
+        halt 403 if @impersonated_by
+        neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email])
+            MATCH (l:LookIn {seen: false})-[:FOR]->(:User {email: $email})
+            SET l.seen = true;
+        END_OF_QUERY
+        respond(:yay => 'sure')
+    end
+
+    # Who looked into this student's account, newest first.
+    def look_ins(only_unseen: false, limit: 20)
+        return [] unless user_logged_in?
+
+        neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email], :unseen => only_unseen, :limit => limit).map { |row| row['l'] }
+            MATCH (l:LookIn)-[:FOR]->(:User {email: $email})
+            WHERE NOT $unseen OR l.seen = false
+            RETURN l ORDER BY l.ts DESC LIMIT $limit;
+        END_OF_QUERY
+    end
+
+    # In the profile: who looked into this account lately, and why.
+    def look_ins_profile_html
+        looks = look_ins(:limit => 20)
+        return '' if looks.empty?
+
+        items = looks.map { |l| "<li>#{LookIn.notice_html(l)}</li>" }.join
+        "<h3 class='mt-4'>Wer sich dein Konto angesehen hat</h3>" \
+            "<p>Lehrkräfte können sich deinen Workspace und deine Seiten ansehen, etwa um dir bei einem Fehler zu helfen oder eine Abgabe anzuschauen. Hier steht, wer das zuletzt getan hat und warum.</p>" \
+            "<ul class='look-in-list mb-4'>#{items}</ul>"
+    end
+
+    # The bar at the top: as a student for a teacher, or the student's
+    # notice that someone looked in.
+    def look_in_bar_html
+        return '' unless user_logged_in?
+
+        if @impersonated_by
+            name = (@@invitations[@session_user[:email]] || {})[:name] || @session_user[:email]
+            return "<div class='look-in-bar look-in-bar-impersonating'><i class='bi bi-person-vcard'></i>" \
+                "<span>Du siehst die Seite als <strong>#{CGI.escapeHTML(name)}</strong>.</span>" \
+                "<button type='button' class='btn btn-sm btn-light bu-stop-impersonation'>Zurück zu deinem Konto</button></div>"
+        end
+        unseen = look_ins(:only_unseen => true)
+        return '' if unseen.empty?
+
+        lines = unseen.reverse.map { |l| "<p>#{LookIn.notice_html(l)}</p>" }.join
+        "<div class='look-in-bar look-in-bar-notice'><i class='bi bi-info-circle'></i><div>#{lines}</div>" \
+            "<button type='button' class='btn btn-sm btn-outline-secondary bu-look-ins-seen'>Verstanden</button></div>"
     end
 
     def get_server_state(tag)
@@ -3588,12 +3718,14 @@ class Main < Sinatra::Base
 
     post '/api/start_server_as_admin' do
         assert(teacher_logged_in?)
-        data = parse_request_data(:required_keys => [:email])
+        data = parse_request_data(:required_keys => [:email], :optional_keys => [:reason],
+            :max_body_length => 2048, :max_string_length => 1024)
         email = data[:email]
-        # Only the workspace of a student in one of the teacher's groups, as
-        # the admin page shows it; the address alone used to be enough.
-        Main.load_invitations()
-        halt 403 unless workspace_user_visible_to?(email, @session_user[:email])
+        # Only the workspace of a student in one of the teacher's groups;
+        # the address alone used to be enough. The reason reaches the student.
+        halt 403 unless may_look_in?(email)
+        record_look_in(email, 'workspace', data[:reason])
+        ensure_user_account(email)
 
         # purge all WATCHING relationships (should be zero or one)
         neo4j_query(<<~END_OF_QUERY, {:email_self => @session_user[:email]})
@@ -4237,6 +4369,38 @@ class Main < Sinatra::Base
         io
     end
 
+    # The people of a group on the class page: login codes while someone is
+    # waiting, and for every student whether its workspace runs, with
+    # »Workspace öffnen« and »Nachahmen« (LookIn). class_board.js fills
+    # the codes and the status from the teachers' websocket.
+    def class_people_html(group)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        test_group = class_members(group).all? { |m| @@test_accounts.key?(m[:email]) }
+        io = +"<section class='class-people' data-group='#{h.(group)}'>"
+        io << "<div class='class-login-codes' hidden><h2>Anmelde-Codes</h2>" \
+            "<p>Diese Personen aus #{h.(group)} warten gerade auf ihren Code:</p>" \
+            "<table class='table table-sm'><tbody></tbody></table></div>"
+        io << "<details class='class-people-list'#{test_group ? ' open' : ''}><summary>#{test_group ? 'Dein Testkonto' : "Lernende und ihre Workspaces (#{class_members(group).size})"}</summary>"
+        if test_group
+            io << "<p>Mit deinem Testkonto probierst du aus, was Lernende sehen: Aufgaben, Abgaben, die Galerie und Leistungsüberprüfungen. Es gehört nur zu dieser Gruppe, die nur du siehst.</p>"
+        end
+        io << "<table class='table table-sm align-middle'><tbody>"
+        class_members(group).each do |m|
+            email = m[:email]
+            test = @@test_accounts.key?(email)
+            io << "<tr data-email='#{h.(email)}'><td>#{h.(m[:name])}</td>"
+            io << "<td class='class-ws-status' data-fs-tag='#{h.(fs_tag_for_email(email))}'>Workspace aus</td><td class='text-end'>"
+            if may_look_in?(email)
+                attrs = "data-email='#{h.(email)}' data-name='#{h.(m[:name])}'#{test ? " data-test='1'" : ''}"
+                io << "<button type='button' class='btn btn-sm btn-outline-secondary bu-class-open-workspace' #{attrs}><i class='bi bi-code-slash'></i>Workspace öffnen</button> "
+                io << "<button type='button' class='btn btn-sm btn-outline-secondary bu-class-impersonate' #{attrs}><i class='bi bi-person-vcard'></i>Nachahmen</button>"
+            end
+            io << "</td></tr>"
+        end
+        io << "</tbody></table></details></section>"
+        io
+    end
+
     def class_board_page
         groups = class_groups
         activities = class_activities
@@ -4250,6 +4414,7 @@ class Main < Sinatra::Base
         activities.each { |a, title, _| io << "<option value='#{h.(a)}'#{activity && a == activity[0] ? ' selected' : ''}>#{h.(title)}</option>" }
         io << "</select></label><noscript><button class='btn btn-primary'>Anzeigen</button></noscript></form>"
         io << class_pins_html(group) if group
+        io << class_people_html(group) if group
         return io + "<p>Noch keine Aktivität hat Aufgaben auf ihrer Seite.</p>" if activity.nil?
         return io + "<p>Du betreust noch keine Gruppe.</p>" if group.nil?
 
@@ -4573,7 +4738,9 @@ class Main < Sinatra::Base
                         sleep 1
                     end
                 end
-                host_stats_thread = Thread.new do
+                # The server's own figures are for administrators; teachers
+                # get their students' login codes and workspaces (class page).
+                host_stats_thread = admin_logged_in? && Thread.new do
                     loop do
                         data = {}
 
@@ -4631,7 +4798,7 @@ class Main < Sinatra::Base
                 end
                 unless keep_threads
                     docker_stats_thread.kill
-                    host_stats_thread.kill
+                    host_stats_thread.kill if host_stats_thread
                 end
                 broadcast_login_codes()
                 client_count = @@admin_ws_mutex.synchronize { @@clients.size }
@@ -4652,7 +4819,7 @@ class Main < Sinatra::Base
                     threads = @@threads_for_client_id.delete(client_id)
                     @@clients.size
                 end
-                (threads || {}).each_value { |thread| thread.kill }
+                (threads || {}).each_value { |thread| thread.kill if thread }
                 debug "Got #{client_count} connected clients!"
             end
 
@@ -5501,6 +5668,10 @@ class Main < Sinatra::Base
     post '/api/test_toggle_user' do
         assert(teacher_logged_in?)
         data = parse_request_data(:required_keys => [:tag, :email])
+        # An exam restricts a person's interface: only one's own students
+        # (and test accounts), the address alone used to be enough.
+        Main.load_invitations()
+        halt 403 unless admin_logged_in? || workspace_user_visible_to?(data[:email], @session_user[:email])
         count = neo4j_query(<<~END_OF_STRING, {:tag => data[:tag], :email => data[:email]}).size
             MATCH (u:User {email: $email})-[:TAKES]->(t:Test {tag: $tag})
             RETURN u.email;
@@ -6721,10 +6892,12 @@ class Main < Sinatra::Base
             redirect "#{WEB_ROOT}/tic80/", 302
             return
         end
+        # Teachers find their groups' login codes and workspaces on the class
+        # page; the admin page (server, all workspaces) is for administrators.
         if path == '/admin'
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
-            halt 403 unless teacher_logged_in?
+            halt 403 unless admin_logged_in?
         end
         # The profile is about the logged-in person; without one it would
         # fail while drawing its buttons.

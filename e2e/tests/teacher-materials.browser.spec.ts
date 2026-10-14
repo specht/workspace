@@ -23,9 +23,14 @@ test('designated teacher finds the teacher notes in the profile', async ({ page 
   expect(response.status()).toBe(403);
 });
 
-test('group administrator keeps teacher notes and administration', async ({ page }, testInfo) => {
+// Group administrators find login codes and their students' workspaces on
+// the class page; the admin page is for administrators (October 2026).
+test('group administrator keeps teacher notes and the class page, not the admin page', async ({ page }, testInfo) => {
   await loginAsE2eUser(page, 'e2e-teacher@example.com', testInfo);
   await page.goto('/profil');
   await expect(page.locator('#profile-teaching-materials')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Administration' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Klassen', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Administration' })).toHaveCount(0);
+  const response = await page.request.get('/admin');
+  expect(response.status()).toBe(403);
 });

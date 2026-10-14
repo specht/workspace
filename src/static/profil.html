@@ -350,6 +350,7 @@
                     <button type="button" class="bu-set-brightness btn btn-primary" data-brightness="auto"><i class='bi bi-moon-stars-fill'></i>Auto #{(@session_user[:brightness] || 'auto') == 'auto' ? "<i class='bi bi-check-lg'></i>" : ''}</button>
                     <button type="button" class="bu-set-brightness btn btn-dark" data-brightness="dark"><i class='bi bi-moon-fill'></i>Dunkel #{(@session_user[:brightness] || 'auto') == 'dark' ? "<i class='bi bi-check-lg'></i>" : ''}</button>
                 </div>
+                #{look_ins_profile_html}
                 <a class="btn btn-secondary" href="/logout"><i class='bi bi-box-arrow-in-right'></i>Abmelden</a>
             </section>
 

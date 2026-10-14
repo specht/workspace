@@ -374,8 +374,17 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Behoben: Lehrkräfte konnten mit einer E-Mail-Adresse jeden Workspace
   öffnen, nicht nur die ihrer Gruppen.
 - Lernende in mehreren Gruppen (etwa Klasse 12 und LK) sehen alle
-  Lehrkräfte dieser Gruppen auf der Verwaltungsseite: Anmelde-Code und
-  Workspace. Wer mehrere Gruppen betreut, wählt dort, wessen Codes er sieht.
+  Lehrkräfte dieser Gruppen: Anmelde-Code und Workspace. Der Name muss nur in
+  einer Zeile der Einladungen stehen.
+- Lehrkräfte finden auf der Klassenseite die Anmelde-Codes ihrer Gruppe und
+  bei jeder Person »Workspace öffnen« und »Nachahmen«; mit »Zurück zu
+  deinem Konto« geht es zurück. Vorher nennen sie in einem Satz den Grund,
+  den die Person bei der nächsten Anmeldung liest. Jede Lehrkraft hat ein
+  Testkonto in einer eigenen Testgruppe, um alles aus Sicht der Lernenden
+  auszuprobieren. Die Verwaltungsseite ist nur noch für Admins.
+  Beschreibung: `docs/teacher-access.md`.
+- Behoben: Lehrkräfte konnten mit einer Adresse jede Person in ihre
+  Leistungsüberprüfung aufnehmen, nicht nur ihre eigenen Lernenden.
 
 ### Für Betreibende
 

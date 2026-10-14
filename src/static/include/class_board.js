@@ -166,3 +166,109 @@
         });
     });
 })();
+
+// The people of a group (main.rb class_people_html): the login codes of the
+// group while someone is waiting, whether each workspace runs, and looking
+// into a student's account. Codes and workspaces come over the teachers'
+// websocket, as on the admin page.
+(function () {
+    const people = document.querySelector('.class-people');
+    if (!people) return;
+    const group = people.dataset.group;
+    const REASON_KEY = 'hackschule-look-in-reason';
+
+    function nameFor(email) {
+        const row = people.querySelector('tr[data-email="' + CSS.escape(email) + '"] td');
+        return row ? row.textContent : email;
+    }
+
+    function showCodes(lines) {
+        const box = people.querySelector('.class-login-codes');
+        const tbody = box.querySelector('tbody');
+        const now = Math.floor(Date.now() / 1000);
+        const mine = (lines || []).filter((l) => l.expires_at > now && (l.groups || []).indexOf(group) >= 0);
+        tbody.innerHTML = '';
+        mine.forEach((l) => {
+            const tr = document.createElement('tr');
+            [nameFor(l.email), l.email, l.code].forEach((text, i) => {
+                const td = document.createElement('td');
+                td.textContent = text;
+                if (i === 2) td.className = 'class-login-code';
+                tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        });
+        box.hidden = mine.length === 0;
+    }
+
+    function showRunning(stats) {
+        people.querySelectorAll('.class-ws-status').forEach((td) => {
+            const running = Object.prototype.hasOwnProperty.call(stats || {}, td.dataset.fsTag);
+            td.textContent = running ? 'Workspace läuft' : 'Workspace aus';
+            td.classList.toggle('class-ws-running', running);
+        });
+    }
+
+    function connect() {
+        const ws = new WebSocket((location.port === '8025' ? 'ws://' : 'wss://') + location.host + '/ws');
+        ws.onmessage = (event) => {
+            let data;
+            try { data = JSON.parse(event.data); } catch (e) { return; }
+            if (data.action === 'login_codes') showCodes(data.lines);
+            if (data.stats) showRunning(data.stats);
+        };
+        ws.onclose = () => setTimeout(connect, 5000);
+    }
+    connect();
+
+    // Before looking in: one sentence for the student, the last one prefilled,
+    // so that grading a task across the class needs it only once.
+    function askReason(name, title, go) {
+        let last = '';
+        try { last = localStorage.getItem(REASON_KEY) || ''; } catch (e) {}
+        const id = 'look-in-reason';
+        showTemplateModal(
+            $('<div>').text(title).html(),
+            "<p>Schreib in einem Satz, warum. " + $('<div>').text(name).html() +
+            " liest ihn bei der nächsten Anmeldung, zum Beispiel: »Ich sehe mir deine Abgabe zu Aufgabe 3 an.«</p>" +
+            "<textarea class='form-control' id='" + id + "' rows='2' maxlength='300'></textarea>" +
+            "<p class='text-danger mt-2 mb-0' id='" + id + "-missing' hidden>Bitte schreib einen kurzen Satz.</p>",
+            "<i class='bi bi-check-lg'></i>Weiter", 'btn-primary',
+            "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-secondary',
+            function () {
+                const reason = $('#' + id).val().trim();
+                if (reason.length < 5) {
+                    $('#' + id + '-missing').prop('hidden', false);
+                    return false;
+                }
+                try { localStorage.setItem(REASON_KEY, reason); } catch (e) {}
+                go(reason);
+            });
+        $('#' + id).val(last);
+        setTimeout(() => $('#' + id).trigger('focus').trigger('select'), 300);
+    }
+
+    people.addEventListener('click', (e) => {
+        const button = e.target.closest('.bu-class-impersonate, .bu-class-open-workspace');
+        if (!button) return;
+        const email = button.dataset.email;
+        const impersonate = button.classList.contains('bu-class-impersonate');
+        const go = (reason) => {
+            button.disabled = true;
+            if (impersonate) {
+                api_call('/api/impersonate', { email: email, reason: reason }, function (data) {
+                    if (data.success !== false) location.href = '/';
+                });
+            } else {
+                api_call('/api/start_server_as_admin', { email: email, reason: reason }, function (data) {
+                    button.disabled = false;
+                    check_server_tag_update(data.watch_tag);
+                    check_server_online(data.watch_tag, true);
+                });
+            }
+        };
+        // The test account is the teacher's own: no sentence, no notice.
+        if (button.dataset.test) go('');
+        else askReason(button.dataset.name, impersonate ? button.dataset.name + ' nachahmen' : 'Workspace von ' + button.dataset.name + ' öffnen', go);
+    });
+})();

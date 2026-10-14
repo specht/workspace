@@ -3218,3 +3218,88 @@ h3[id] {
 .login-code-group[hidden] {
     display: none;
 }
+
+/* The bar under the menu: a teacher looking at the site as a student, or
+   the student's calm notice that a teacher looked in (look_in_bar_html). */
+.look-in-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75em;
+    max-width: 1320px;
+    margin: 0.8em auto 0;
+    padding: 0.6em 1em;
+    border-radius: 0.6em;
+}
+
+.look-in-bar > div,
+.look-in-bar > span {
+    flex: 1;
+}
+
+.look-in-bar p {
+    margin: 0;
+}
+
+.look-in-bar .bi {
+    font-size: 1.3em;
+}
+
+.look-in-bar-impersonating {
+    background: #fff3cd;
+    color: #664d03;
+}
+
+.look-in-bar-notice {
+    background: #e7f1f8;
+    color: #1d3d55;
+}
+
+[data-bs-theme=dark] .look-in-bar-impersonating {
+    background: #3d3214;
+    color: #ffe59a;
+}
+
+[data-bs-theme=dark] .look-in-bar-notice {
+    background: #1b2b38;
+    color: #cfe3f3;
+}
+
+/* Class page: the people of a group (class_people_html). */
+.class-people {
+    margin: 1.5em 0;
+}
+
+.class-login-codes {
+    margin-bottom: 1em;
+    padding: 0.8em 1em;
+    border-radius: 0.6em;
+    background: #e7f1f8;
+}
+
+.class-login-codes h2 {
+    font-size: 1.2rem;
+    margin: 0 0 0.3em;
+}
+
+.class-login-code {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 120%;
+    letter-spacing: 0.1em;
+}
+
+.class-people-list summary {
+    font-weight: 600;
+    margin-bottom: 0.5em;
+}
+
+.class-ws-status {
+    color: #6c757d;
+}
+
+.class-ws-status.class-ws-running {
+    color: #198754;
+}
+
+[data-bs-theme=dark] .class-login-codes {
+    background: #1b2b38;
+}

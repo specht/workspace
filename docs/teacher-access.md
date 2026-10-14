@@ -1,54 +1,74 @@
-# Lehrkräfte und Lehrmaterial
+# Lehrkräfte, Gruppen und Einladungen
 
-Die Einladungsliste unter `data/invitations/*.txt` (im Container:
-`/invitations/*.txt`) trennt zwei Dinge, die bisher gekoppelt waren:
-Lehrkraftstatus und Gruppenadministration.
+Die Einladungslisten liegen unter `data/invitations/*.txt` (im Container:
+`/invitations/*.txt`). Die Dateien werden in alphabetischer Reihenfolge
+gelesen.
 
 ```text
-> Kurs 9a
-Max Mustermann <max@example.org>
+> Klasse 12
+Lena Muster <lena@example.org>
+Tom Beispiel <tom@example.org>
++ specht@example.org
+
+> LK Informatik
+lena@example.org
+Mia Test <mia@example.org>
++ specht@example.org
+
+> Lehrkräfte
+Dr. Michael Specht <specht@example.org>
 Lea Lehrerin <lea@example.org>
 * lea@example.org
-+ max@example.org
 ```
 
-- Normale Zeilen laden Benutzer ein und ordnen sie ihrer ersten Gruppe zu.
-- `* email@example.org` (alternativ `* <email@example.org>`) kennzeichnet
-  einen **bereits eingeladenen** Benutzer als Lehrkraft. Dies gewährt nur
-  Zugriff auf die Rubrik **Lehrmaterial**, keine administrativen Rechte.
-- `+ email@example.org` ist unverändert: Die Person verwaltet die aktuelle
-  Gruppe und gilt ebenfalls als Lehrkraft. `*` ist dann überflüssig.
-- Die in `ADMIN_USERS` eingetragenen Benutzer gelten ebenfalls als Lehrkräfte.
-- Markierungen ohne passende Einladung berechtigen nicht zur Anmeldung.
+- `> Name` beginnt eine Gruppe.
+- Normale Zeilen laden eine Person ein und machen sie zum Mitglied der Gruppe.
+  Eine Person darf in mehreren Gruppen stehen (Klasse 12 und LK). Ihr Name
+  muss nur in einer Zeile stehen; eine Zeile mit nur der Adresse behält ihn.
+- `+ email` macht die Person zur Lehrkraft, die diese Gruppe betreut. Sie
+  muss außerdem irgendwo als normale Zeile eingeladen sein, sonst kann sie
+  sich nicht anmelden.
+- `* email` kennzeichnet eine eingeladene Person als Lehrkraft ohne Gruppe:
+  Sie sieht die Notizen für Lehrkräfte, betreut aber niemanden.
+- `ADMIN_USERS` in `credentials.rb` sind Administratorinnen und
+  Administratoren: Sie sehen alles.
 
-Der Button **Lehrmaterial** steht für Lehrkräfte rechts im Kopfmenü. Unter
-`/lehrmaterial` findet sich eine eigene Übersicht mit denselben Tutorial-Karten
-wie auf der Startseite. Die normale Startseite zeigt ausschließlich den
-Schülerkatalog aus `src/content/sections.yaml`.
+## Wer was sieht
 
-Die Lehrerübersicht wird unabhängig davon über
-`src/content/lehrmaterial/sections.yaml` gepflegt. Die dort aufgeführten
-Markdown-Artikel liegen unter `src/content/lehrmaterial/<slug>/<slug>.md`.
-Der Slug beginnt mit `lehrmaterial-` und ist weltweit eindeutig. Neue Rubriken
-und Artikel erscheinen automatisch im Lehrerbereich; die gewohnten
-Markdown-, Inhaltsverzeichnis-, Bild- und Screenshot-Mechanismen werden geteilt.
+| | Lernende | Lehrkraft (`*`) | Lehrkraft (`+`) | Admin |
+| --- | --- | --- | --- | --- |
+| Notizen für Lehrkräfte (Profil, Aktivitäten) | | ✓ | ✓ | ✓ |
+| Klassenseite `/klasse` für die eigenen Gruppen | | | ✓ | ✓ alle |
+| Anmelde-Codes der eigenen Gruppen (Klassenseite) | | | ✓ | ✓ |
+| Workspace öffnen, Nachahmen | | | ✓ eigene Gruppen | ✓ alle |
+| Leistungsüberprüfungen | | | ✓ eigene Gruppen | ✓ |
+| Verwaltungsseite `/admin` (Server, alle Workspaces) | | | | ✓ |
 
-Nicht angemeldete Benutzer werden bei geschützten Seiten zur Anmeldung
-weitergeleitet; andere angemeldete Benutzer erhalten HTTP 403. Die bisherigen
-Verwaltungsrechte und Funktionen für Leistungsüberprüfungen bleiben
-unverändert an `+` bzw. `ADMIN_USERS` gebunden.
+Eine Lehrkraft sieht eine Person, sobald sie **eine** ihrer Gruppen betreut,
+nicht nur die erste der Person (`GroupVisibility`). Andere Lehrkräfte und
+Admins kann sie weder öffnen noch ansehen (`LookIn.allowed?`).
 
-Die Artikel verwenden das vorhandene `<!-- tutorial-screenshot ... -->`-System.
-Jeder Artikel erzeugt seinen eigenen Screenshot im Entwicklungsmodus; der
-entsprechende Screenshot dient nach erfolgreicher Erzeugung auch als Kachelbild.
-Der Snapshot-Dienst benötigt nach Änderungen an `server.js` einen Neubau:
+## Hineinschauen
 
-```bash
-./config.rb up -d --build tutorial_screenshots
-```
+Auf der Klassenseite stehen bei jeder Person zwei Knöpfe:
 
-Die Sandbox-Beispiele verwenden die Ports 18080, 18081 und 18765 im
-**isolierten Screenshot-Workspace**, nicht auf dem Server-Host. Die erzeugten
-`.webp`-Dateien und `.tutorial-screenshots.json` müssen nach Prüfung ins
-Repository aufgenommen werden. Bei noch fehlenden Screenshots erscheint
-vorübergehend ein neutrales Kartenbild.
+- **Workspace öffnen** öffnet ihren Workspace in VS Code.
+- **Nachahmen** zeigt die Website so, wie die Person sie sieht. Eine Leiste
+  oben sagt das und führt mit »Zurück zu deinem Konto« zurück.
+
+Vorher fragt ein Dialog nach einem Satz, warum (»Ich sehe mir deine Abgabe zu
+Aufgabe 3 an.«). Der letzte Satz ist vorausgefüllt; beim Durchsehen einer
+ganzen Klasse genügt er also einmal. Die Person findet den Satz bei der
+nächsten Anmeldung in einer ruhigen Leiste (»Verstanden«) und danach in
+ihrem Profil. Noten gehören nie hierher. Admins dürfen ohne Satz
+hineinschauen (Support); dann erfährt die Person nichts.
+
+## Testkonto
+
+Jede Lehrkraft mit `+` hat ein Testkonto, `adresse+test@domain`, allein in
+einer eigenen **Testgruppe (Name)**, die nur sie sieht und die in der
+Gruppenauswahl der Klassenseite zuletzt steht. Damit probiert sie aus, was
+Lernende sehen: Aufgaben, Abgaben, die Galerie, Leistungsüberprüfungen.
+»Nachahmen« braucht dort keinen Satz. Bei den meisten Mail-Anbietern kommen
+Anmelde-Codes für `+test` im eigenen Postfach an; man kann sich also auch
+direkt als Testkonto anmelden.
