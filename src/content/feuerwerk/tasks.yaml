@@ -1,0 +1,91 @@
+# Aufgaben zu »Feuerwerk aus Partikeln«.
+# Format: docs/aufgaben.md.
+format: 1
+activity: feuerwerk
+tasks:
+  - id: erster-funke
+    title: Der erste Funke
+    prompt: |
+      Schreib das Programm mit dem Funken in `feuerwerk.c` und übersetze es mit
+      `make PROGRAM=feuerwerk`.
+    file: pixelram-starter/feuerwerk.c
+    check:
+      type: files
+      path: pixelram-starter/feuerwerk.html
+      expect:
+        format: text
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `feuerwerk.html`. Steht im Terminal nach `make PROGRAM=feuerwerk` ein Fehler? Die erste Meldung nennt die Zeile.
+
+  - id: wurfhoehe
+    title: Wie hoch steigt der Funke?
+    prediction: true
+    prompt: |
+      Ein Funke startet senkrecht nach oben mit `vy = -100`, also 100 Pixel pro
+      Sekunde, und `GRAVITY` ist 40. Wie viele Pixel steigt er, bevor er
+      umkehrt? Rechne erst, dann probier es aus: Setze im Programm `vx = 0` und
+      `vy = -100`.
+    check:
+      type: number
+      expect: 125
+      tolerance: 3
+      unit: Pixel
+    hint: |
+      Er wird jede Sekunde um 40 Pixel pro Sekunde langsamer. Wie lange dauert
+      es bis zum Stillstand, und wie schnell war er im Mittel?
+    feedback:
+      - when: { between: [240, 260] }
+        say: Das wäre die Höhe, wenn er die ganze Zeit mit 100 Pixeln pro Sekunde flöge. Er wird aber langsamer, im Mittel ist er nur halb so schnell.
+      - when: { between: [2, 3] }
+        say: Das ist die Zeit bis zum Umkehrpunkt, in Sekunden. Gefragt ist die Höhe.
+    solution: Bis zum Stillstand dauert es 100 ÷ 40 = 2,5 Sekunden, im Mittel fliegt er 50 Pixel pro Sekunde, also 2,5 × 50 = 125 Pixel. Allgemein h = v² ÷ (2g).
+
+  - id: luecke
+    title: Wer rückt nach?
+    prompt: |
+      In `particles` leben 10 Funken, an den Stellen 0 bis 9. Der Funke an
+      Stelle 3 verlischt. Was steht danach an Stelle 3?
+    check:
+      type: choice
+      options:
+        - Der Funke, der vorher an Stelle 4 stand
+        - Der Funke, der vorher an Stelle 9 stand
+        - Nichts, die Stelle bleibt frei, bis ein neuer Funke kommt
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: So wäre es, wenn alle folgenden Funken eine Stelle nach vorne rücken. Das Programm schiebt aber nur einen.
+      - when: { picked: 2 }
+        say: Dann hätte das Array Lücken, und `count` würde nicht mehr stimmen. Schau dir die Zeile `particles[i] = particles[count - 1];` an.
+    solution: Der letzte Funke (Stelle 9) rückt an Stelle 3, und `count` wird 9. Die Reihenfolge ist egal, und es geht gleich schnell, egal wie viele Funken leben.
+
+  - id: startgeschwindigkeit
+    title: Wie schnell muss die Rakete sein?
+    prompt: |
+      Eine Rakete soll 160 Pixel hoch steigen, bei `GRAVITY` 40. Mit wie
+      vielen Pixeln pro Sekunde muss sie starten? Gib die Zahl ohne
+      Vorzeichen an.
+    check:
+      type: number
+      expect: 113
+      tolerance: 1.5
+      unit: Pixel pro Sekunde
+    hint: Die Formel steht in `launch`. Was ist dort `H - target_y`?
+    feedback:
+      - when: { between: [-115, -111] }
+        say: Richtig gerechnet, aber ohne Vorzeichen, bitte. Nach oben ist im Programm negativ.
+      - when: { between: [79, 81] }
+        say: Das ist √(40 × 160). Die Formel hat noch eine 2 unter der Wurzel.
+    solution: v = √(2 × 40 × 160) = √12800 ≈ 113 Pixel pro Sekunde.
+
+  - id: abgabe
+    title: Dein Feuerwerk
+    prompt: |
+      Bau mindestens eine der Ideen am Ende der Seite in dein Feuerwerk ein,
+      oder eine eigene, und gib die Datei ab. Deine Lehrkraft sieht genau
+      diesen Stand; du kannst jederzeit neu abgeben.
+    check:
+      type: submit
+      pick: pixelram-starter/*.c
+      max_size: 200kB

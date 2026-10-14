@@ -42,6 +42,7 @@
     # - .drawing (koch curve)
     - fire
     - pixelram
+    - feuerwerk
   #  - .sirds
   # - .raytracing
   # - .p5js

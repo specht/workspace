@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "screenshots": {
+    "funke-make.webp": {
+      "state_hash": "3f54b304ff9ae50f2bed8762ed48ad38f63fc8c51bfed3fc71ffbf7c57bfaafb",
+      "environment_fingerprint": "7a1fa226558d49e402aeafd9dc1f5d7c61bde8b0ec1b8e9d0bb6072d74db6b97",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "b512ed84a6f6e34a0bc4611c52e6f85ac41e6403af8e04b7a758f052ae28b0f6"
+    },
+    "funke.webp": {
+      "state_hash": "3bcea115187ae9f9f41f0e947b6b7ace06822befb0687164ba657cb637dc2a92",
+      "environment_fingerprint": "7a1fa226558d49e402aeafd9dc1f5d7c61bde8b0ec1b8e9d0bb6072d74db6b97",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "9aa2ad8caf48a016bfa7bbd46131d81f0496e7e5f2ae7d5b57c3e5e89ed68e77",
+      "variants": {
+        "funke-crt.webp": "38d75f1f74ee080d991cf5e67d37970183b095ed3bd6fb9df0edfdd752ed2a5b"
+      }
+    },
+    "explosion.webp": {
+      "state_hash": "d641843f08662f2c9fbd1ad72e68fd9c43e6565aa866c51bbfa7acf86c3d87e2",
+      "environment_fingerprint": "7a1fa226558d49e402aeafd9dc1f5d7c61bde8b0ec1b8e9d0bb6072d74db6b97",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "b1d8e521d70a0144b79331480fbd7b2fa7072333c9d360e630a11256dfe3f685",
+      "variants": {
+        "explosion-crt.webp": "fa1896c3b76c01e0cc3b3b90cfd20000cb5d819a9585eb95fce1b548b8d74da6"
+      }
+    },
+    "feuerwerk.webp": {
+      "state_hash": "0bf6a0bf3e46c32a4460ab7ba3e5aa46bacfba204a78dfdea63546158538d98e",
+      "environment_fingerprint": "7a1fa226558d49e402aeafd9dc1f5d7c61bde8b0ec1b8e9d0bb6072d74db6b97",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "213079ca712f56f62281982f0b6856f466bb9deeaac3c707d654319d8acf4a2b",
+      "variants": {
+        "feuerwerk-crt.webp": "263d3e19b96a681285bf71026e7c78c16e8225578c8625d429cc1a0c458c1ba7"
+      }
+    }
+  }
+}
