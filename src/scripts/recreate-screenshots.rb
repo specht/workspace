@@ -113,6 +113,9 @@ end
 # Local images and videos a page shows: <img>, <video> and <source> sources
 # and Markdown images, without addresses that point elsewhere.
 local_media = lambda do |markdown|
+    # Examples in code blocks (<img src="pictures/fuji.jpg">) are no images
+    # of the page.
+    markdown = markdown.gsub(/^[ \t]*```.*?^[ \t]*```/m, '')
     sources = markdown.scan(/<(?:img|video|source)\b[^>]*\bsrc=['"]([^'"]+)['"]/i).flatten +
               markdown.scan(/!\[[^\]]*\]\(([^)\s]+)/).flatten
     sources.map { |src| src.split(/[?#]/, 2).first }
