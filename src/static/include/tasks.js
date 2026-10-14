@@ -230,7 +230,7 @@
     }
 
     function setDisabled(card, disabled) {
-        card.querySelectorAll('button, input, textarea, select').forEach((el) => {
+        card.querySelectorAll('button:not(.task-reads-toggle), input, textarea, select').forEach((el) => {
             el.disabled = disabled;
         });
     }
@@ -440,6 +440,18 @@
             watchPicks();
         }
     }
+
+    // (i) on a card: what the check reads, shown on request. Delegated, so
+    // it works on every card, also those whose form is set up later.
+    document.addEventListener('click', function (e) {
+        const info = e.target.closest('.task-reads-toggle');
+        if (!info) return;
+        const reads = document.getElementById(info.getAttribute('aria-controls'));
+        if (!reads) return;
+        const open = info.getAttribute('aria-expanded') !== 'true';
+        info.setAttribute('aria-expanded', open ? 'true' : 'false');
+        reads.hidden = !open;
+    });
 
     if (document.readyState === 'loading')
         document.addEventListener('DOMContentLoaded', setup);

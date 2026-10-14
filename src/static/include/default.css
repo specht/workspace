@@ -2314,6 +2314,22 @@ h3[id] {
     margin-top: 0.5em;
 }
 
+.task-reads-toggle {
+    margin-left: auto;
+    border: 0;
+    background: none;
+    padding: 0.2em 0.3em;
+    line-height: 1;
+    color: #868e96;
+    font-size: 110%;
+    border-radius: 50%;
+}
+
+.task-reads-toggle:hover,
+.task-reads-toggle[aria-expanded='true'] {
+    color: #0b5ed7;
+}
+
 .task-reads,
 .task-submission,
 .task-pick-label {
