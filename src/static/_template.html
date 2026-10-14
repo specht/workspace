@@ -880,7 +880,7 @@ window.addEventListener('load', function() {
                 <a href='/reference' class="btn btn-menu #{request.path.start_with?('/reference') ? 'active' : ''}"#{request.path.start_with?('/reference') ? " aria-current='page'" : ''}><i class='bi bi-book'></i>Handbuch</a>
                 <a href='/klasse' style='#{teacher_logged_in? ? '' : 'display: none;'}' class="btn btn-menu #{request.path == '/klasse' ? 'active' : ''}"#{request.path == '/klasse' ? " aria-current='page'" : ''}><i class='bi bi-people'></i>Klassen</a>
                 <a href='/admin' style='#{teacher_logged_in? ? '' : 'display: none;'}' class="btn btn-menu #{request.path == '/admin' ? 'active' : ''}"><i class='bi bi-wrench-adjustable'></i>Administration</a>
-                <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-menu btn-menu-profile #{request.path == '/profil' ? 'active' : ''}" title='Profil'><i class='bi bi-person-circle'></i>#{CGI.escapeHTML(((@@invitations[(@session_user || {})[:email]] || {})[:name]).to_s.strip.empty? ? (@session_user || {})[:email].to_s : (@@invitations[(@session_user || {})[:email]] || {})[:name].to_s)}</a>
+                <a href='/profil' style='#{@session_user.nil? ? 'display: none;' : ''}' class="btn btn-menu btn-menu-profile #{request.path == '/profil' ? 'active' : ''}" title='Profil'><i class='bi bi-person-badge'></i>#{CGI.escapeHTML(((@@invitations[(@session_user || {})[:email]] || {})[:name]).to_s.strip.empty? ? (@session_user || {})[:email].to_s : (@@invitations[(@session_user || {})[:email]] || {})[:name].to_s)}</a>
             </div>
         </div>
     </div>
