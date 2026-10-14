@@ -926,7 +926,9 @@ div.floatright > p {
 
 /* Tutorial cards, current layout */
 
+/* A flex box, so that the cards in a row are equally tall. */
 .hscol {
+    display: flex;
     flex: 0 0 auto;
     width: 100%;
     min-width: 0;
@@ -1015,12 +1017,17 @@ div.floatright > p {
                 -webkit-box-orient: vertical;
             }
 
+            /* Justified like a column, the label at the right edge above
+               it; the browser hyphenates German (lang='de'), so long words
+               do not leave holes. */
             .abstract {
                 display: -webkit-box;
                 overflow: hidden;
                 color: #555;
                 font-size: 0.95rem;
                 line-height: 1.4;
+                text-align: justify;
+                hyphens: auto;
                 text-overflow: ellipsis;
                 -webkit-line-clamp: 3;
                 -webkit-box-orient: vertical;
@@ -2658,18 +2665,38 @@ h3[id] {
 
 /* Kind and progress on catalog cards */
 
-/* The kind: a quiet line of small capitals above the title, part of the
-   text rather than a sticker on the picture. */
-.tutorial_card3 .card-content .card-badges {
+/* The kind: quiet small capitals at the right end of the title's row,
+   part of the text rather than a sticker on the picture. The row is one
+   line tall: a kind that does not fit next to the title wraps into the
+   second line and is not shown; the title keeps its room. */
+.tutorial_card3 .card-content .card-title-row {
     display: flex;
-    gap: 0.35em;
-    margin: 0 0 0.2em;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 0.75em;
+    height: 1.5rem;
+    margin-bottom: 8px;
+    overflow: hidden;
+
+    h4 {
+        flex: 0 1 auto;
+        min-width: 0;
+        max-width: 100%;
+        margin: 0;
+        line-height: 1.5rem;
+    }
+
+    .card-badges {
+        display: flex;
+        gap: 0.35em;
+        margin-left: auto;
+    }
 }
 
 .card-kind {
     color: #6b7680;
     font-size: 0.72rem;
-    font-weight: 600;
+    font-weight: 400;
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }

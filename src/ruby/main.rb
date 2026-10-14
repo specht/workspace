@@ -4347,8 +4347,12 @@ class Main < Sinatra::Base
                         end
                         io.puts "<div class='shade'></div>"
                         io.puts "<div class='card-content'>"
-                        io.puts StudentHome.card_badges(content[:kind]) if catalog == :student
+                        # Title and kind share one line; a kind that does not
+                        # fit next to the title is left out (default.css).
+                        io.puts "<div class='card-title-row'>"
                         io.puts "#{content[:dev_only] ? '<span class="badge badge-sm bg-danger">dev</span> ' : ''}<h4>#{content[:title]}</h4>"
+                        io.puts StudentHome.card_badges(content[:kind]) if catalog == :student
+                        io.puts "</div>"
                         io.puts "<div class='abstract'>#{content[:abstract]}</div>"
                         io.puts "</div>"
                         io.puts "</div>"
