@@ -1,5 +1,5 @@
 <div class='meta'>
-image: data-structures-sandbox.webp
+image: data-structures-avl.webp
 kind: projekt
 topic: sandboxes
 reference: [gitlab]
@@ -107,6 +107,9 @@ wait-for-text: Ran 4 calls
 sleep: 1
 click: selector:#last
 sleep: 1
+click: selector:#fit-scene
+move-mouse: selector:.scene-hint
+sleep: 1
 -->
 <img class='full' src='data-structures-sandbox.webp' alt='Einfach verkettete Liste in Java nach vier Einfügungen: Knoten und next-Referenzen neben dem Quelltext.'>
 
@@ -133,6 +136,9 @@ wait-for-text: Ran 6 calls
 sleep: 1
 click: selector:#last
 sleep: 1
+click: selector:#fit-scene
+move-mouse: selector:.scene-hint
+sleep: 1
 -->
 <img class='full' src='data-structures-avl.webp' alt='AVL-Baum in Python nach sechs Einfügungen und zwei Rotationen.'>
 
@@ -156,6 +162,9 @@ press: Enter
 wait-for-text: Ran 5 calls
 sleep: 1
 click: selector:#last
+sleep: 1
+click: selector:#fit-scene
+move-mouse: selector:.scene-hint
 sleep: 1
 -->
 <img class='full' src='data-structures-hash.webp' alt='Hash-Tabelle mit acht Buckets, in denen sich kollidierende Schlüssel zu Ketten verbinden.'>
