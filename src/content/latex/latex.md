@@ -89,6 +89,7 @@ PDF-Datei namens `hello.pdf` im selben Verzeichnis sehen. Die Hilfsdateien, die 
 <img src='view-latex-pdf-file.webp' style='border-radius: 4px; height: 1.5em;' alt=''> oder verwende den Shortcut <kbd>Strg</kbd><kbd>Alt</kbd><kbd>V</kbd>, um die PDF-Datei neben deinem LaTeX-Quelltext anzuzeigen:
 
 <!-- tutorial-screenshot
+sharp-canvas
 wait-for-file-newer: latex-tutorial/hello.pdf <- latex-tutorial/hello.tex
 sleep: 2
 press: Control+Alt+V
@@ -106,6 +107,7 @@ Das Dokument sieht noch nicht besonders spektakulär aus, deswegen schauen wir u
 Öffne als nächstes die Datei `Bewerbung.tex`. Diese Datei enthält eine Vorlage für eine Bewerbung, die du anpassen kannst. Wenn du die Datei compilierst und die PDF-Datei anschaust, sollte sie ungefähr so aussehen:
 
 <!-- tutorial-screenshot
+sharp-canvas
 press: Control+1
 open-file: Bewerbung.tex
 sleep: 1
@@ -276,6 +278,7 @@ Du kannst auch eigene Schriftarten verwenden, wenn du die entsprechenden Schrift
 In der Datei `CV.tex` findest du eine Vorlage für einen Lebenslauf, die du anpassen kannst. Wenn du die Datei compilierst und die PDF-Datei anschaust, sollte sie ungefähr so aussehen:
 
 <!-- tutorial-screenshot
+sharp-canvas
 press: Control+1
 open-file: CV.tex
 sleep: 1
@@ -296,6 +299,7 @@ Wenn du eine Datei `photo.jpg` im selben Verzeichnis hast, wird sie automatisch 
 Falls du eine schriftliche Ausarbeitung oder einen Bericht schreiben musst, kannst du die Vorlage in der Datei `Ausarbeitung.tex` verwenden. Diese Vorlage enthält bereits eine Struktur für eine wissenschaftliche Arbeit, einschließlich Titelblatt, Inhaltsverzeichnis, Abschnitte und Literaturverzeichnis. Wenn du die Datei compilierst und die PDF-Datei anschaust, sollte sie ungefähr so aussehen:
 
 <!-- tutorial-screenshot
+sharp-canvas
 press: Control+1
 open-file: Ausarbeitung.tex
 sleep: 1
@@ -325,6 +329,7 @@ In dieser Datei kannst du deine Literaturangaben hinzufügen, indem du die entsp
 Ein Bereicht, in dem LaTeX besonders glänzt, ist die Darstellung von mathematischen Formeln. LaTeX bietet eine Vielzahl von Möglichkeiten, um komplexe mathematische Ausdrücke klar und professionell darzustellen. In der Datei `Mathe.tex` findest du bereits einige Beispiele für mathematische Formeln, die du anpassen und erweitern kannst:
 
 <!-- tutorial-screenshot
+sharp-canvas
 press: Control+1
 open-file: Mathe.tex
 sleep: 1
@@ -343,6 +348,7 @@ move-mouse: selector:.monaco-editor .view-lines
 Zum Abschluss dieses Tutorials findest du in der Datei `wpgtr.tex` eine LaTeX-Datei für ein ganzes Buch: »Why's (Poignant) Guide to Ruby« von [*\_why the lucky stiff*](https://tmewett.com/whytheluckystiff/). Diese Datei enthält die gesamte Struktur eines Buches, einschließlich Inhaltsverzeichnis, Kapiteln, Bildern und Formatierungen. Wenn du die Datei compilierst und die PDF-Datei anschaust, sollte sie ungefähr so aussehen:
 
 <!-- tutorial-screenshot
+sharp-canvas
 press: Control+1
 open-file: wpgtr.tex
 sleep: 1

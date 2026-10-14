@@ -13,18 +13,6 @@
       "workspace_look": "4.138.0-ls366",
       "output_sha256": "9326688e9d35cbf7954fd4e1ef61be3fbe85309a2d868224a94e9ede54e0e285"
     },
-    "side-by-side.webp": {
-      "state_hash": "8de341ee69acdc7a9de2fc90f9192b610b650ea9eb982e11cc9e9c3b52d471e4",
-      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "7dc7326ca30c24f2e5b388efc0feba3ff50b59d0f71c1b60f1137d24242ce03c"
-    },
-    "side-by-side-bewerbung.webp": {
-      "state_hash": "26cd1ca47bca2b7950f72efc493df8b77d09b9af9c4f6fb72494a520755a69ca",
-      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "b36d90edab155c3c10513c36ffcef0e857fa90de8cd61cd5b66ca44254bd26ef"
-    },
     "fonts/latin-modern-roman.webp": {
       "state_hash": "bce97ba0bdfc1e0b86d2d8f84df26d2d402e6f6a7e3c85e31fe359eaba3679ca",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
@@ -157,29 +145,41 @@
       "workspace_look": "4.138.0-ls366",
       "output_sha256": "6ae4ef10ff56788865511b6adb4d000fa4e25e16a89cfe12c016ebf781e966c8"
     },
-    "cv.webp": {
-      "state_hash": "5acbc321b461d6277cab7aa9efb76a3d149b2b3dc0786c10a1763b7db4830df3",
+    "side-by-side.webp": {
+      "state_hash": "add2acf9319e50808a368bc2bffdc60a407b1797e00dbbfbaaa6d05ba3416579",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "workspace_look": "4.138.0-ls366",
-      "output_sha256": "893628261e18c2aa155094be40a973999da4d15618cf65bfe3afde6410409495"
+      "output_sha256": "332b2454941dfbd137a3031b088439a8773b4c41491edc1c54ef0276376812ef"
+    },
+    "side-by-side-bewerbung.webp": {
+      "state_hash": "83ab4b1e2b3e95904d31275594b655dabcb75c7bdaf2bc6f850f5883184d29b8",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "2156ec1ea90e0af78cfb680c98fb223e7770fd45d7c7072b4094fe2aec28bb0a"
+    },
+    "cv.webp": {
+      "state_hash": "bb325a10b136e6bad1681f9b217f8a61d09b48aed59e1c63da7f1001190fadda",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "5a81e8e8531b06aee6531f67780d6ac2f89060ea601f9cf70611821b87569fe3"
     },
     "ausarbeitung.webp": {
-      "state_hash": "4cfbb94d9ddfdc41f2b10d7d1a414d47e270f625508a77089011ff7eb7a05d06",
+      "state_hash": "d33a3204af65efed0a84e699e60e5429335e66c7b82a7cbca29517b56dde471d",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "workspace_look": "4.138.0-ls366",
-      "output_sha256": "39f77b48eb4ea57fd0311315fa5394b79be146f5c903544de13685dec5dc0a87"
+      "output_sha256": "9e0e2f1a2a205dd20b95e6dea2de28f058a94e28d49d7ac661b29294f6935dae"
     },
     "mathe.webp": {
-      "state_hash": "6cbb2329f45cec6afb6c04c82ba90e507b310ec07bb2088a085584bed220db35",
+      "state_hash": "2a3edd397444fb4cd9e93cdb48d47cec902b948fef07c7fc3653532f2c6935fd",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "workspace_look": "4.138.0-ls366",
-      "output_sha256": "25609e719aef0c2823253e9ae327b8d547a82c0212bd0ddc401f14c9b1d1e6cb"
+      "output_sha256": "d4cd4f1504499932be56d4b9989a17e0bdc5843e219139c33b59676432dcdb3c"
     },
     "wpgtr.webp": {
-      "state_hash": "04bcbaa88c2a04f560d2a5f6621490a5cc47224c61b13bdb1b26184e27047565",
+      "state_hash": "90bda5193eb3826e3d9d72843782251489fc1fb7083c5b7ae2a92f3f1c097991",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "workspace_look": "4.138.0-ls366",
-      "output_sha256": "65965b1144a685ac7345f07b5de72b184749cc7a2f9aebbb346f026ebc217dc8"
+      "output_sha256": "35260b366f19a2e3a92950fe3ad591cda8e187ba01f60dbf8f45a6d9f52567db"
     }
   }
 }

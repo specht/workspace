@@ -653,6 +653,8 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             );
         } else if (line === 'show-mouse') {
             recipe.showMouse = true;
+        } else if (line === 'sharp-canvas') {
+            recipe.sharpCanvas = true;
         } else if ((match = line.match(/^pdf-page:\s*(\S+)\s+(\d+)(?:\s+(.+))?$/))) {
             recipe.pdfPage = {
                 path: valueAtSource(source, () => safeRelativePath(match[1])),
@@ -856,6 +858,9 @@ async function parseTutorial(markdown, markdownPath) {
         }
         if (recipe.showMouse) {
             resolved.showMouse = true;
+        }
+        if (recipe.sharpCanvas) {
+            resolved.sharpCanvas = true;
         }
         // Only graphs carry this, so images hash exactly as before.
         // Only PDF pages carry this, so images hash exactly as before.
@@ -2379,7 +2384,7 @@ async function applyShotViewportProfile(shot) {
     const page = pageForTab(shot.tab);
     if (!page || page.isClosed()) return false;
 
-    await applyViewportProfile(page, shot.viewport, shot.zoom);
+    await applyViewportProfile(page, shot.viewport, shot.zoom, shot.sharpCanvas);
     return true;
 }
 
@@ -2425,7 +2430,7 @@ async function executeAction(action, targetTab, hooks) {
     }
 }
 
-async function applyViewportProfile(page, viewport, zoom) {
+async function applyViewportProfile(page, viewport, zoom, sharpCanvas = false) {
     let session = deviceMetricSessions.get(page);
     if (!session) {
         session = await context.newCDPSession(page);
@@ -2439,8 +2444,10 @@ async function applyViewportProfile(page, viewport, zoom) {
     // the capture resolution and is captured unscaled, so a <canvas> draws
     // sharp instead of being enlarged. The Workspace renders at its layout
     // scale and the capture enlarges it: its screenshots are DOM text, sharp
-    // either way, and stay exactly as they were.
-    const renderScale = page === workspace ? 1 : DEFAULT_PROFILE.captureScale;
+    // either way, and stay exactly as they were. A shot with sharp-canvas
+    // renders the Workspace at capture resolution too, for a <canvas> inside
+    // it such as the PDF in LaTeX Workshop's viewer.
+    const renderScale = page === workspace && !sharpCanvas ? 1 : DEFAULT_PROFILE.captureScale;
     const metrics = {
         ...screenshotMetricsFor(viewport, zoom),
         captureScale: DEFAULT_PROFILE.captureScale / renderScale,
@@ -2623,6 +2630,7 @@ async function captureShot(shot, tutorialDirectory) {
         page,
         shot.viewport,
         shot.zoom,
+        shot.sharpCanvas,
     );
 
     await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {});
@@ -2837,7 +2845,7 @@ async function captureVideo(shot, tutorialDirectory, hooks) {
         throw new Error(`Video requests unavailable tab: ${shot.tab}`);
     }
 
-    const { session, metrics } = await applyViewportProfile(page, shot.viewport, shot.zoom);
+    const { session, metrics } = await applyViewportProfile(page, shot.viewport, shot.zoom, shot.sharpCanvas);
     await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {});
     if (shot.tab === 'workspace') {
         await waitForWorkspaceFont(page);

@@ -183,6 +183,7 @@ crop-terminal-lines: NUMBER|auto
 crop-terminal-skip-top: NUMBER
 crop-terminal-skip-bottom: NUMBER
 show-mouse
+sharp-canvas
 ```
 
 `tab` selects both the page to capture and the page used by the general
@@ -267,6 +268,12 @@ button does not remain in its hover state.
 `click`, `hold`, `move-mouse` and `select-option` give up after 10 seconds
 when their element does not show up or cannot be used: they address something
 that is already on screen, and a mistyped selector should fail fast.
+
+`sharp-canvas` renders the Workspace at capture resolution for this shot.
+Normally the Workspace renders at its layout scale and the capture enlarges it:
+DOM text is redrawn sharp at the larger size, but a `<canvas>` keeps its
+smaller pixel buffer and comes out blurry. The PDF in LaTeX Workshop's viewer
+is such a canvas. Preview tabs always render at capture resolution.
 
 `show-mouse` draws a mouse pointer into the screenshot. Chromium does not
 draw one, so the generator puts a pointer where the recipe last moved the
