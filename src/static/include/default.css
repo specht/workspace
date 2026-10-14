@@ -2175,34 +2175,68 @@ h3[id] {
 }
 
 .task-card {
-    margin: 1.5em 0;
-    padding: 1em 1.2em 0.8em;
+    margin: 1.75em 0;
+    padding: 1.1em 1.25em 0.9em;
     border: 1px solid #d6e2f5;
-    border-left: 4px solid #0b5ed7;
-    border-radius: 0.5em;
+    border-left: 5px solid #0b5ed7;
+    border-radius: 0.6em;
     background-color: #f8fbff;
+    box-shadow: 0 1px 3px rgba(11, 79, 179, 0.06);
+    transition: border-color 0.4s, background-color 0.4s;
+}
+
+/* The card says how far it is: green once solved or handed in, amber while
+   not yet; a guess (Vermutung) is violet until it is answered. */
+.task-card[data-prediction] {
+    border-left-color: #7b4fc9;
+}
+
+.task-card[data-status='correct'],
+.task-card[data-status='sent'] {
+    border-left-color: #1f9d55;
+    background-color: #f5fbf7;
+    border-color: #cfe9d9;
+}
+
+.task-card[data-status='wrong'],
+.task-card[data-status='stale'] {
+    border-left-color: #e0a030;
 }
 
 .task-head {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.3em 0.8em;
-    margin-bottom: 0.5em;
+    gap: 0.35em 0.7em;
+    margin-bottom: 0.6em;
 }
 
 .task-number {
-    padding: 0.1em 0.7em;
+    padding: 0.15em 0.75em;
     border-radius: 1em;
     background-color: #e7f0fe;
     color: #0b4fb3;
-    font-size: 85%;
-    font-weight: 600;
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    transition: background-color 0.4s, color 0.4s;
+}
+
+.task-card[data-prediction] .task-number {
+    background-color: #f1eafb;
+    color: #5b2f8f;
+}
+
+.task-card[data-status='correct'] .task-number,
+.task-card[data-status='sent'] .task-number {
+    background-color: #d9f2e3;
+    color: #146c43;
 }
 
 .task-title {
-    font-weight: 600;
-    font-size: 110%;
+    font-weight: 700;
+    font-size: 115%;
+    line-height: 1.3;
 }
 
 .task-status {
@@ -2210,8 +2244,20 @@ h3[id] {
 }
 
 .task-badge {
-    font-size: 85%;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15em 0.65em;
+    border-radius: 1em;
+    font-size: 80%;
+    font-weight: 600;
     white-space: nowrap;
+}
+
+.task-badge .task-tick {
+    width: 1em;
+    height: 1em;
+    margin-right: 0.3em;
+    vertical-align: 0;
 }
 
 .task-badge .bi,
@@ -2220,7 +2266,7 @@ h3[id] {
     margin-right: 0.35em;
 }
 
-.task-badge-correct { color: #146c43; }
+.task-badge-correct { color: #146c43; background-color: #d9f2e3; }
 
 /* The tick of a solved task: a green disc with a white tick. Just solved,
    the one next to the button pops in with a little wind-up, draws itself
@@ -2315,13 +2361,14 @@ h3[id] {
     .task-done-tick-new .task-tick,
     .task-done-tick-new .task-tick-mark,
     .task-done-tick-new::before,
-    .task-card.task-solved-now {
+    .task-card.task-solved-now,
+    .task-feedback {
         animation: none;
     }
 }
-.task-badge-wrong { color: #8a5300; }
-.task-badge-sent { color: #0b4fb3; }
-.task-badge-stale { color: #8a5300; }
+.task-badge-wrong { color: #7a4a00; background-color: #fcebcc; }
+.task-badge-sent { color: #146c43; background-color: #d9f2e3; }
+.task-badge-stale { color: #7a4a00; background-color: #fcebcc; }
 
 .task-preview {
     padding: 0.1em 0.6em;
@@ -2331,8 +2378,12 @@ h3[id] {
     font-size: 80%;
 }
 
+.task-prompt {
+    line-height: 1.55;
+}
+
 .task-prompt > p:last-child {
-    margin-bottom: 0.6em;
+    margin-bottom: 0.75em;
 }
 
 .task-card .task-form {
@@ -2356,11 +2407,64 @@ h3[id] {
 }
 
 .task-options {
-    margin: 0.2em 0 0.4em;
+    margin: 0.2em 0 0.5em;
+    max-width: 42em;
 }
 
+/* Answers as tiles: the whole tile can be clicked, the choice stands out,
+   and after checking it turns green or amber. */
 .task-options .form-check {
-    margin-bottom: 0.25em;
+    position: relative;
+    margin-bottom: 0.45em;
+    padding: 0.55em 0.85em 0.55em 2.5em;
+    border: 1.5px solid #d6e2f5;
+    border-radius: 0.55em;
+    background-color: #fff;
+    transition: border-color 0.15s, background-color 0.15s, transform 0.1s;
+}
+
+.task-options .form-check-input {
+    position: relative;
+    z-index: 1;
+    margin-left: -1.65em;
+    cursor: pointer;
+}
+
+.task-options .form-check-label {
+    cursor: pointer;
+}
+
+.task-options .form-check-label::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+}
+
+.task-options .form-check:hover {
+    border-color: #8db8f5;
+}
+
+.task-options .form-check:active {
+    transform: scale(0.99);
+}
+
+.task-options .form-check:has(.form-check-input:checked) {
+    border-color: #0b5ed7;
+    background-color: #eef4ff;
+}
+
+.task-card[data-status='correct'] .task-options .form-check:has(.form-check-input:checked) {
+    border-color: #1f9d55;
+    background-color: #e8f6ee;
+}
+
+.task-card[data-status='wrong'] .task-options .form-check:has(.form-check-input:checked) {
+    border-color: #e0a030;
+    background-color: #fdf4e3;
+}
+
+.task-options .form-check:has(.form-check-input:disabled) {
+    opacity: 0.75;
 }
 
 .task-options-note,
@@ -2393,14 +2497,53 @@ h3[id] {
 }
 
 .task-feedback {
-    margin: 0.6em 0 0.2em;
-    padding: 0.6em 0.9em;
-    border-radius: 0.4em;
+    display: flex;
+    gap: 0.65em;
+    align-items: flex-start;
+    margin: 0.75em 0 0.2em;
+    padding: 0.7em 1em;
+    border-radius: 0.55em;
+    border-left: 4px solid transparent;
+    line-height: 1.5;
+    animation: task-feedback-in 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
 }
 
-.task-feedback > .task-message > p:last-child {
+.task-feedback-icon {
+    flex-shrink: 0;
+    font-size: 1.25em;
+    line-height: 1.2;
+}
+
+.task-feedback-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.task-feedback-correct .task-feedback-icon { color: #1f9d55; }
+.task-feedback-wrong .task-feedback-icon { color: #c98a10; }
+.task-feedback-sent .task-feedback-icon { color: #0b5ed7; }
+.task-feedback-invalid .task-feedback-icon,
+.task-feedback-unavailable .task-feedback-icon { color: #6c757d; }
+
+.task-feedback-correct { border-left-color: #1f9d55; }
+.task-feedback-wrong { border-left-color: #e0a030; }
+.task-feedback-sent { border-left-color: #0b5ed7; }
+.task-feedback-invalid,
+.task-feedback-unavailable { border-left-color: #adb5bd; }
+
+.task-feedback-correct .task-message > p:first-child {
+    font-weight: 600;
+}
+
+@keyframes task-feedback-in {
+    from { opacity: 0; transform: translateY(-0.4em); }
+    to { opacity: 1; transform: none; }
+}
+
+.task-feedback-body > .task-message > p:last-child {
     margin-bottom: 0;
 }
+
 
 .task-feedback-correct { background-color: #e3f4ea; }
 .task-feedback-wrong { background-color: #fdf0dc; }

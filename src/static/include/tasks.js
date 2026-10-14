@@ -206,6 +206,12 @@
     // message and solution are HTML rendered on the server from the task
     // file; anything from the student (command output, SQL results) is
     // escaped there before it becomes part of them.
+    // Stars when it is right; a light bulb, not a cross, when it is not yet.
+    const FEEDBACK_ICONS = {
+        correct: 'bi-stars', wrong: 'bi-lightbulb', sent: 'bi-send-check',
+        invalid: 'bi-info-circle', unavailable: 'bi-info-circle',
+    };
+
     // In view: the first paragraph of the message, the result of an SQL
     // query and the way to the solution. Everything else (the rest of the
     // message, hints, what the Workspace read) waits behind »Details«, so
@@ -214,12 +220,19 @@
         const box = card.querySelector('.task-feedback');
         box.className = 'task-feedback task-feedback-' + status;
         box.innerHTML = '';
+        const icon = document.createElement('i');
+        icon.className = 'bi task-feedback-icon ' + (FEEDBACK_ICONS[status] || 'bi-info-circle');
+        icon.setAttribute('aria-hidden', 'true');
+        box.appendChild(icon);
+        const content = document.createElement('div');
+        content.className = 'task-feedback-body';
+        box.appendChild(content);
         const more = document.createElement('div');
         if (message) {
             const div = document.createElement('div');
             div.className = 'task-message';
             div.innerHTML = message;
-            box.appendChild(div);
+            content.appendChild(div);
             const blocks = Array.from(div.children);
             if (blocks.length > 1) blocks.slice(1).forEach((el) => more.appendChild(el));
         }
@@ -238,7 +251,7 @@
             const div = document.createElement('div');
             div.className = 'task-result';
             div.innerHTML = read;
-            box.appendChild(div);
+            content.appendChild(div);
         } else if (read) {
             const title = document.createElement('p');
             title.className = 'task-read-title';
@@ -255,7 +268,7 @@
             summary.textContent = 'Details';
             details.appendChild(summary);
             details.appendChild(more);
-            box.appendChild(details);
+            content.appendChild(details);
         }
         if (solution) {
             const details = document.createElement('details');
@@ -266,7 +279,7 @@
             const body = document.createElement('div');
             body.innerHTML = solution;
             details.appendChild(body);
-            box.appendChild(details);
+            content.appendChild(details);
         }
     }
 
