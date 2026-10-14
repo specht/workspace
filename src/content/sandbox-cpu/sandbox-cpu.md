@@ -46,7 +46,166 @@ sleep: 8
 -->
 <img class='full' src='cpu-sandbox.webp' alt='CPU Sandbox mit laufendem 3D-Raycaster, dem C-Quelltext mit Maschinenbytes, Registern, Geräten und RAM.'>
 
-Im Bild läuft `25-raycaster.c`, ein Labyrinth im Stil von Wolfenstein 3D, ganz ohne Gleitkommazahlen. Andere Beispiele zeigen ein Feuer, die Mandelbrot-Menge, Breakout, Snake, Plasma, Conways Game of Life, einen Sternenflug, einen rotierenden Würfel, eine Orgel mit Arpeggios und eine Landschaft mit Wasserspiegelung. Das Feuer `09-fire` passt übrigens samt Bildschirm in 256 Byte Speicher; das Programm selbst ist 80 Byte lang.
+Im Bild läuft `25-raycaster.c`, ein Labyrinth im Stil von Wolfenstein 3D, ganz ohne Gleitkommazahlen. In den Beispielen steckt noch viel mehr; jedes Bild hier ist der Bildschirm eines Beispielprogramms:
+
+<div class='screen-gallery'>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1600x900
+hook: pause
+click: selector:#program-picker .picker-button
+click: selector:#program-picker .picker-filter
+type: 09-fire.asm
+sleep: 1
+click: selector:#program-picker .picker-option
+sleep: 2
+click: selector:#clock
+press: End
+click: selector:#run
+sleep: 10
+crop-element: #screen-box
+-->
+<figure><img src='gallery-fire.webp' alt='Ein Feuer in Rot, Orange und Gelb, grob gepixelt.'><figcaption><code>09-fire.asm</code> Feuer: passt samt Bildschirm in 256 Byte, das Programm ist 80 Byte lang</figcaption></figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1600x900
+hook: pause
+click: selector:#program-picker .picker-button
+click: selector:#program-picker .picker-filter
+type: 14-mandelbrot.asm
+sleep: 1
+click: selector:#program-picker .picker-option
+sleep: 2
+click: selector:#clock
+press: End
+click: selector:#run
+sleep: 10
+crop-element: #screen-box
+-->
+<figure><img src='gallery-mandelbrot.webp' alt='Die Mandelbrot-Menge in Schwarz vor blauen Farbstufen mit hellem Rand.'><figcaption><code>14-mandelbrot.asm</code> Die Mandelbrot-Menge, in Assembler</figcaption></figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1600x900
+hook: pause
+click: selector:#program-picker .picker-button
+click: selector:#program-picker .picker-filter
+type: 15-inferno.asm
+sleep: 1
+click: selector:#program-picker .picker-option
+sleep: 2
+click: selector:#clock
+press: End
+click: selector:#run
+sleep: 10
+crop-element: #screen-box
+-->
+<figure><img src='gallery-inferno.webp' alt='Ein feines, flackerndes Flammenmeer von Weiß über Gelb bis Rot.'><figcaption><code>15-inferno.asm</code> Inferno: dasselbe Feuer, viel feiner</figcaption></figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1600x900
+hook: pause
+click: selector:#program-picker .picker-button
+click: selector:#program-picker .picker-filter
+type: 16-breakout.asm
+sleep: 1
+click: selector:#program-picker .picker-option
+sleep: 2
+click: selector:#clock
+press: End
+click: selector:#run
+sleep: 2
+hook: play-breakout 33
+crop-element: #screen-box
+-->
+<figure><img src='gallery-breakout.webp' alt='Breakout: Eine bunte Mauer mit Lücken, darunter Schläger und Ball.'><figcaption><code>16-breakout.asm</code> Breakout, mit Joystick und Ton</figcaption></figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1600x900
+hook: pause
+click: selector:#program-picker .picker-button
+click: selector:#program-picker .picker-filter
+type: 20-plasma.c
+sleep: 1
+click: selector:#program-picker .picker-option
+sleep: 2
+click: selector:#clock
+press: End
+click: selector:#run
+sleep: 7
+crop-element: #screen-box
+-->
+<figure><img src='gallery-plasma.webp' alt='Ein Plasma aus weichen, bunten Farbwolken.'><figcaption><code>20-plasma.c</code> Plasma aus Sinuswellen</figcaption></figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1600x900
+hook: pause
+click: selector:#program-picker .picker-button
+click: selector:#program-picker .picker-filter
+type: 21-life.c
+sleep: 1
+click: selector:#program-picker .picker-option
+sleep: 2
+click: selector:#clock
+press: End
+click: selector:#run
+sleep: 7
+crop-element: #screen-box
+-->
+<figure><img src='gallery-life.webp' alt='Conways Game of Life: Zellhaufen in Gelb, Orange und Weiß auf Schwarz.'><figcaption><code>21-life.c</code> Conways Game of Life</figcaption></figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1600x900
+hook: pause
+click: selector:#program-picker .picker-button
+click: selector:#program-picker .picker-filter
+type: 23-color-cycling.c
+sleep: 1
+click: selector:#program-picker .picker-option
+sleep: 2
+click: selector:#clock
+press: End
+click: selector:#run
+sleep: 10
+crop-element: #screen-box
+-->
+<figure><img src='gallery-color-cycling.webp' alt='Regenbogenfarbene Ringe um eine Ellipse.'><figcaption><code>23-color-cycling.c</code> Color Cycling: Bewegung nur durch die Palette</figcaption></figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1600x900
+hook: pause
+click: selector:#program-picker .picker-button
+click: selector:#program-picker .picker-filter
+type: 24-arpeggio-organ.c
+sleep: 1
+click: selector:#program-picker .picker-option
+sleep: 2
+click: selector:#clock
+press: End
+click: selector:#run
+sleep: 2
+hook: hold-key Shift+KeyT
+sleep: 2
+crop-element: #screen-box
+-->
+<figure><img src='gallery-organ.webp' alt='Eine Orgel: Klaviertasten, darunter drei Reihen Akkordtasten; E-Moll leuchtet.'><figcaption><code>24-arpeggio-organ.c</code> Arpeggio-Orgel: Akkorde auf der Tastatur</figcaption></figure>
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1600x900
+hook: pause
+click: selector:#program-picker .picker-button
+click: selector:#program-picker .picker-filter
+type: 26-landscape.c
+sleep: 1
+click: selector:#program-picker .picker-option
+sleep: 2
+click: selector:#clock
+press: End
+click: selector:#run
+sleep: 150
+crop-element: #screen-box
+-->
+<figure><img src='gallery-landscape.webp' alt='Eine Landschaft mit grünen Hügeln, die sich in einem See spiegeln.'><figcaption><code>26-landscape.c</code> Landschaft mit Wasserspiegelung</figcaption></figure>
+</div>
 
 Du arbeitest mit **zwei Git-Repositories**. Im Workspace ist `~` dein Ordner `/workspace`.
 
@@ -131,7 +290,7 @@ loop:   ADD B, A
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1600x900
-click: selector:#run
+hook: pause
 click: selector:#program-picker .picker-button
 click: selector:#program-picker .picker-filter
 type: 02-loop.asm

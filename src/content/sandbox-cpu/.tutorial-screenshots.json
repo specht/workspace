@@ -3,21 +3,75 @@
   "screenshots": {
     "cpu-sandbox.webp": {
       "state_hash": "5e2c4ce9a8ac459021d52d4d6744ab32a1d38caff85acf48ede9eddd0a061f7e",
-      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "environment_fingerprint": "eebb1116bcdb47171f27184ed0615204ea5e68768ca422290ae7be9f99c0f76f",
       "workspace_look": "4.138.0-ls366",
-      "output_sha256": "0beec15502fb3cee94e294bb5e06e00c7a0e0e3adaf1f6eda49e18e6e7061f50"
+      "output_sha256": "bd876ca26f738411fa82f3f241c9b96e15331f6582b33431c71f82d4ca40cf54"
+    },
+    "gallery-fire.webp": {
+      "state_hash": "748bd9e875a3a5511ca652f0620b67cb9dd34c04d04d786bc22b5d99472fd335",
+      "environment_fingerprint": "eebb1116bcdb47171f27184ed0615204ea5e68768ca422290ae7be9f99c0f76f",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "81a7be84aa6135dc1b9871bb705a7a85e2072f8a32d19cad87bf0415dd606c06"
+    },
+    "gallery-mandelbrot.webp": {
+      "state_hash": "20ad465f17203e3ea852d38a820fb0b7dbb4f1e260bd5f7be9747dfd874997e3",
+      "environment_fingerprint": "eebb1116bcdb47171f27184ed0615204ea5e68768ca422290ae7be9f99c0f76f",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "4895b0c45993f9d6a72aac99623ff5e470429d09e7c4c6200c1fc66b77d38e7f"
+    },
+    "gallery-inferno.webp": {
+      "state_hash": "ba65c1884005f1a9e0f2abbf97d34d60cbb8b80d078027212786ed91ecd2b0cf",
+      "environment_fingerprint": "eebb1116bcdb47171f27184ed0615204ea5e68768ca422290ae7be9f99c0f76f",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "f7ee36f8b33b58246135932af5db8dd832206ca303d9ac645b6b325ce8189238"
+    },
+    "gallery-breakout.webp": {
+      "state_hash": "0bbd591ec3534e0eb2f2425a1e353aa94069b0101cd4579ad46050765e93864d",
+      "environment_fingerprint": "eebb1116bcdb47171f27184ed0615204ea5e68768ca422290ae7be9f99c0f76f",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "7f43fa454d768a06a8f9c195da8d34b57ffd2772a309ae2f5745880071dd4014"
+    },
+    "gallery-plasma.webp": {
+      "state_hash": "8fd7f138c0f90bd03c556ac440f8d6609c8ccc018f2465e9b68bb70c2da6c8fa",
+      "environment_fingerprint": "eebb1116bcdb47171f27184ed0615204ea5e68768ca422290ae7be9f99c0f76f",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "fcb2f942a1da122fa55fc78ef62acf5a7a40f77719ed23fa116db340d09bd23b"
+    },
+    "gallery-life.webp": {
+      "state_hash": "a0aa57276fcd9bcc49190712114b0fec84081c323fcdf0b4f51978477bef02c9",
+      "environment_fingerprint": "eebb1116bcdb47171f27184ed0615204ea5e68768ca422290ae7be9f99c0f76f",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "e785d5f5476aceb51668aca0e1e9ec406c609f781d477852b042e9bb54de41eb"
+    },
+    "gallery-color-cycling.webp": {
+      "state_hash": "89411f0d04db1fc700dbd98c0be5f07cc0cce40ae0d9d8afcd45a6aaeeaad165",
+      "environment_fingerprint": "eebb1116bcdb47171f27184ed0615204ea5e68768ca422290ae7be9f99c0f76f",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "5c33f0de8abb4a881632e2655ef9583feb3d1f8156d25b2b6347da593a23385f"
+    },
+    "gallery-organ.webp": {
+      "state_hash": "032f42a37f857993dc94509d90f01e58548b13065e0efdab88dcc32a5d4ee4ed",
+      "environment_fingerprint": "eebb1116bcdb47171f27184ed0615204ea5e68768ca422290ae7be9f99c0f76f",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "981352ff01d58649049d237e36c1aa1ca3064bfc5b9248f9d33ad97763fe6961"
+    },
+    "gallery-landscape.webp": {
+      "state_hash": "4da4a254e32db5ddb2fa5b9ed249f4087abec3ab7a4bd6ec5f1d0f4e4bdf31d1",
+      "environment_fingerprint": "eebb1116bcdb47171f27184ed0615204ea5e68768ca422290ae7be9f99c0f76f",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "c9ff1ec185a93e0fde82d9e0dcbf5cf8933b1620e8285bf63169e4eed9feabfe"
     },
     "cpu-cycles.webp": {
-      "state_hash": "18faa237a79d77dcd87ebd1df881b35050e847cba36f35eb280b927b87ba753d",
-      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "state_hash": "973b6b74fbfb61488d985e15cb5bbea881ddb1a4b337b5c680a85daa0351d042",
+      "environment_fingerprint": "eebb1116bcdb47171f27184ed0615204ea5e68768ca422290ae7be9f99c0f76f",
       "workspace_look": "4.138.0-ls366",
       "output_sha256": "a2d70b5daa6092cfa9f16d3ff82ba3f2f6cd0230a11babee2c86acf0bb73710d"
     },
     "cpu-cube.webp": {
-      "state_hash": "d03b313747a8432be10dd3e077bdeed6fe12e7e83889ce1dc2dccb049841c720",
-      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "state_hash": "5aeb0a659784e4772c835f65a6102e5fd019020a7ac097a679e67a227a9f433c",
+      "environment_fingerprint": "eebb1116bcdb47171f27184ed0615204ea5e68768ca422290ae7be9f99c0f76f",
       "workspace_look": "4.138.0-ls366",
-      "output_sha256": "23dd166da12c1350207701cdfa4b96ce923d1bbaa92111f23b7b2c253b6c1d0a"
+      "output_sha256": "0b8caadadcc3e709b6eb81cc591f9a4a23d8359e847a1a5539cf03f440eef323"
     }
   }
 }
