@@ -445,4 +445,7 @@ html[data-bs-theme="dark"] {
     .server-stats { border-color: rgba(255, 255, 255, 0.12); }
     .class-board-intro,
     .class-live-wait { color: #adb5bd; }
+    .class-codes-projector { background-color: #151514; color: #e7e6e1; }
+    .class-codes-row { border-color: #2b3036; }
+    .class-codes-code { color: #8db8f5; }
 }

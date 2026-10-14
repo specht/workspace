@@ -202,6 +202,67 @@
         return row ? row.textContent : email;
     }
 
+    // The codes on a projector: names and codes only, big, live; the
+    // students cannot read their mail at school, so they read it here.
+    let codesNow = [];
+    let projector = null;
+
+    function renderProjector() {
+        if (!projector) return;
+        const list = projector.querySelector('.class-codes-list');
+        list.innerHTML = '';
+        if (codesNow.length === 0) {
+            const p = document.createElement('p');
+            p.className = 'class-codes-empty';
+            p.textContent = 'Noch wartet niemand auf einen Code. Meldet euch an, die Codes erscheinen dann hier.';
+            list.appendChild(p);
+            return;
+        }
+        codesNow.slice().sort((a, b) => nameFor(a.email).localeCompare(nameFor(b.email))).forEach((l) => {
+            const row = document.createElement('div');
+            row.className = 'class-codes-row';
+            const name = document.createElement('span');
+            name.className = 'class-codes-name';
+            name.textContent = nameFor(l.email);
+            const code = document.createElement('span');
+            code.className = 'class-codes-code';
+            code.textContent = l.code;
+            row.appendChild(name);
+            row.appendChild(code);
+            list.appendChild(row);
+        });
+    }
+
+    function closeProjector() {
+        if (!projector) return;
+        projector.remove();
+        projector = null;
+        document.body.classList.remove('subview-open');
+        document.removeEventListener('keydown', projectorKey);
+    }
+
+    function projectorKey(e) {
+        if (e.key === 'Escape') closeProjector();
+    }
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.class-codes-show')) return;
+        projector = document.createElement('div');
+        projector.className = 'class-codes-projector';
+        projector.setAttribute('role', 'dialog');
+        projector.setAttribute('aria-modal', 'true');
+        projector.setAttribute('aria-label', 'Anmelde-Codes für ' + group);
+        projector.innerHTML = "<button type='button' class='class-codes-close' aria-label='Schließen'><i class='bi bi-x-lg' aria-hidden='true'></i></button>" +
+            "<h2></h2><div class='class-codes-list' aria-live='polite'></div>";
+        projector.querySelector('h2').textContent = 'Anmelde-Codes · ' + group;
+        projector.querySelector('.class-codes-close').addEventListener('click', closeProjector);
+        document.body.appendChild(projector);
+        document.body.classList.add('subview-open');
+        document.addEventListener('keydown', projectorKey);
+        renderProjector();
+        projector.querySelector('.class-codes-close').focus();
+    });
+
     function showCodes(lines) {
         const box = document.querySelector('.class-login-codes');
         const tbody = box.querySelector('tbody');
@@ -219,6 +280,8 @@
             tbody.appendChild(tr);
         });
         box.hidden = mine.length === 0;
+        codesNow = mine;
+        renderProjector();
     }
 
     function showRunning(stats) {
@@ -310,8 +373,16 @@
                     if (data.success !== false) location.href = '/';
                 });
             } else {
+                // The code icon turns until the Workspace answers, as on the
+                // start page; check_server_online stops it and opens the tab.
+                const icon = button.querySelector('.bi');
+                if (icon) icon.classList.add('bi-spin');
                 api_call('/api/start_server_as_admin', { email: email, reason: reason }, function (data) {
-                    button.disabled = false;
+                    if (data.success === false || !data.watch_tag) {
+                        button.disabled = false;
+                        if (icon) icon.classList.remove('bi-spin');
+                        return;
+                    }
                     check_server_tag_update(data.watch_tag);
                     check_server_online(data.watch_tag, true);
                 });

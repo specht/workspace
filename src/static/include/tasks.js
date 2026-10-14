@@ -5,8 +5,8 @@
     const STATUS_LABELS = {
         correct: ['task-badge-correct', 'bi-check-circle-fill', 'gelöst'],
         wrong: ['task-badge-wrong', 'bi-arrow-repeat', 'noch nicht gelöst'],
-        sent: ['task-badge-sent', 'bi-send-fill', 'gespeichert'],
-        submitted: ['task-badge-sent', 'bi-send-fill', 'abgegeben'],
+        sent: ['task-badge-sent', 'bi-paper-plane', 'gespeichert'],
+        submitted: ['task-badge-sent', 'bi-paper-plane', 'abgegeben'],
         stale: ['task-badge-stale', 'bi-exclamation-circle', 'Aufgabe geändert, bitte neu prüfen'],
     };
 
@@ -207,7 +207,7 @@
     // escaped there before it becomes part of them.
     // Stars when it is right; a light bulb, not a cross, when it is not yet.
     const FEEDBACK_ICONS = {
-        correct: 'bi-stars', wrong: 'bi-lightbulb', sent: 'bi-send-fill',
+        correct: 'bi-stars', wrong: 'bi-lightbulb', sent: 'bi-paper-plane',
         invalid: 'bi-info-circle', unavailable: 'bi-info-circle',
     };
 

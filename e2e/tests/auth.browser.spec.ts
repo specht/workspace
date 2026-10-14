@@ -112,6 +112,14 @@ test('login codes are bounded, one-time and visible to the teacher', async ({
     await expect(codeSection).toBeVisible();
     await expect(studentCodeRow()).toContainText(E2E_LOGIN_CODE);
 
+    // For the projector: names and codes, big, without e-mail addresses.
+    await teacherPage.getByRole('button', {name: 'Anmelde-Codes zeigen'}).click();
+    const projector = teacherPage.getByRole('dialog', {name: /Anmelde-Codes/});
+    await expect(projector.locator('.class-codes-row')).toContainText(E2E_LOGIN_CODE);
+    await expect(projector).not.toContainText('@');
+    await teacherPage.keyboard.press('Escape');
+    await expect(projector).toHaveCount(0);
+
     const codeInput = page.locator('#ti_code');
     await codeInput.fill(E2E_LOGIN_CODE);
     await codeInput.press('Tab');

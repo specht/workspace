@@ -886,12 +886,15 @@ Die Tabelle unter »Fortschritt« zeigt, wer welche Aufgabe gelöst hat:
 | Icon | Bedeutung |
 | --- | --- |
 | `check` | gelöst |
-| Papierflieger (Bootstrap `send-fill`) | abgegeben oder Reflexion gespeichert |
+| Papierflieger | abgegeben oder Reflexion gespeichert |
 | `x` mit Zahl | noch nicht gelöst, nach so vielen Versuchen; rot hinterlegt ab 3 Versuchen (»hängt«) |
 | `refresh` | die Aufgabe hat sich geändert, die Antwort ist von vorher |
 | `minus` | noch nicht bearbeitet |
 
-Die Icons stammen aus [Tabler Icons](https://tabler.io/icons) (MIT) und liegen
+Der Papierflieger ist »paper-plane« aus [Font Awesome Free](https://fontawesome.com)
+(Icons: CC BY 4.0) in `src/static/include/fontawesome/`, als
+`<i class='bi bi-paper-plane'>` überall, wo eine Abgabe steht. Die übrigen
+Icons stammen aus [Tabler Icons](https://tabler.io/icons) (MIT) und liegen
 als Sprite in `src/static/include/tabler/tabler.svg`; welche Icons darin sind,
 steht in `icons.txt` daneben. `src/ruby/tools/build_tabler_sprite.rb` baut das
 Sprite neu, `Icons.tabler('check')` (`src/ruby/include/icons.rb`) setzt eins

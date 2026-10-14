@@ -58,11 +58,11 @@ module ClassBoard
         { :rows => rows, :own => own, :summary => summary, :tasks => tasks }
     end
 
-    # Icon and meaning per status: Tabler, or Bootstrap (bi-…) for the
+    # Icon and meaning per status: Tabler, or an <i class='bi …'> for the
     # folded paper plane that hand-ins have everywhere on the site.
     SYMBOLS = {
         'correct' => ['check', 'gelöst'],
-        'sent' => ['bi-send-fill', 'abgegeben'],
+        'sent' => ['bi-paper-plane', 'abgegeben'],
         'wrong' => ['x', 'noch nicht gelöst'],
         'stale' => ['refresh', 'Aufgabe geändert, noch nicht neu geprüft'],
         'none' => ['minus', 'noch nicht bearbeitet'],

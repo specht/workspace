@@ -4471,7 +4471,9 @@ class Main < Sinatra::Base
         io << "<label>Gruppe <select class='form-select' name='group' onchange='this.form.submit()'>"
         groups.each { |g| io << "<option value='#{h.(g)}'#{g == group ? ' selected' : ''}>#{h.(g)} (#{(@@group_members[g] || []).size})</option>" }
         io << "</select></label><input type='hidden' name='tab' value='#{h.(tab)}'>"
-        io << "<noscript><button class='btn btn-primary'>Anzeigen</button></noscript></form>"
+        io << "<noscript><button class='btn btn-primary'>Anzeigen</button></noscript>"
+        # For the projector: the group's codes, big, names only (class_board.js).
+        io << "<button type='button' class='btn btn-outline-primary class-codes-show'><i class='bi bi-projector' aria-hidden='true'></i>Anmelde-Codes zeigen</button></form>"
         io << "<div class='class-login-codes' data-group='#{h.(group)}' hidden><h2><i class='bi bi-key' aria-hidden='true'></i>Anmelde-Codes</h2>" \
             "<p>Diese Personen aus #{h.(group)} warten gerade auf ihren Code:</p>" \
             "<table class='table table-sm'><tbody></tbody></table></div>"

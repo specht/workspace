@@ -2275,6 +2275,18 @@ h3[id] {
     margin-left: auto;
 }
 
+/* The paper plane of a hand-in, at an angle and folded: Font Awesome Free
+   »paper-plane« (regular, CC BY 4.0, include/fontawesome/), drawn in the
+   text colour like the Bootstrap icons it sits among: <i class='bi bi-paper-plane'>. */
+.bi-paper-plane::before {
+    content: "";
+    width: 1em;
+    height: 1em;
+    background-color: currentColor;
+    -webkit-mask: url("/include/fontawesome/paper-plane.svg?v=e9ec3b0e42") center / contain no-repeat;
+    mask: url("/include/fontawesome/paper-plane.svg?v=e9ec3b0e42") center / contain no-repeat;
+}
+
 .task-badge {
     display: inline-flex;
     align-items: center;
@@ -2776,6 +2788,71 @@ h3[id] {
 }
 
 /* Class page: group, tabs, toolbar (class_board_page). */
+.class-board-select .class-codes-show {
+    margin-left: auto;
+}
+
+.class-codes-show .bi {
+    margin-right: 0.45em;
+}
+
+/* Login codes on a projector (class_board.js): names and codes, big. */
+.class-codes-projector {
+    position: fixed;
+    inset: 0;
+    z-index: 1070;
+    overflow-y: auto;
+    padding: 3vh 5vw;
+    background-color: #fff;
+    color: #212529;
+}
+
+.class-codes-projector h2 {
+    margin: 0 0 3vh;
+    font-size: clamp(1.5rem, 3.5vw, 3rem);
+    font-weight: 700;
+}
+
+.class-codes-close {
+    position: absolute;
+    top: 2vh;
+    right: 2vw;
+    border: 0;
+    background: none;
+    font-size: 2rem;
+    color: #5c636a;
+}
+
+.class-codes-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 1fr));
+    gap: 1.2vh 4vw;
+}
+
+.class-codes-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1em;
+    padding: 0.4em 0;
+    border-bottom: 2px solid #e9ecef;
+    font-size: clamp(1.4rem, 3vw, 2.6rem);
+}
+
+.class-codes-code {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #0b4fb3;
+}
+
+.class-codes-empty {
+    grid-column: 1 / -1;
+    text-align: left;
+    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    color: #5c636a;
+}
+
 .class-board-intro {
     color: #5c636a;
 }

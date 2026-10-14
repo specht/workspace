@@ -258,6 +258,8 @@ function check_server_online(server_tag, watch) {
             $('.bu-launch-test').prop('disabled', false);
             $('.bu-open-workspace-as-admin .bi').removeClass('bi-spin');
             $('.bu-open-workspace-as-admin').prop('disabled', false);
+            $('.bu-class-open-workspace .bi').removeClass('bi-spin');
+            $('.bu-class-open-workspace').prop('disabled', false);
             let workspace_url = `#{WEB_ROOT}`.replace('//', `//${server_tag}.`);
             console.log(`Now opening ${workspace_url}`);
             window.open(workspace_url, '_blank');

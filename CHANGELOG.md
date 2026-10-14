@@ -263,6 +263,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Klassenseite: Wer eine Gruppe betreut, ohne in ihr zu stehen, sieht die
   eigenen Versuche und Abgaben in einer Zeile »Du (Lehrkraft)«.
 
+- Klassenseite: »Anmelde-Codes zeigen« für den Beamer, groß und nur mit
+  Namen, ohne E-Mail-Adressen; neue Codes erscheinen von selbst.
+- Klassenseite: Reiter »Fortschritt«, »Lernende« und »Startseite«. Unter
+  »Lernende« die Karten des Servers wie auf der Verwaltungsseite und jeder
+  Workspace mit CPU und RAM; eine Zeile leuchtet gelb, solange ihr Workspace
+  arbeitet.
+
 ### Geändert
 
 - Sicherheit: Befehle, die Lernende in eine Aufgabe vom Typ `command` tippen,
@@ -409,6 +416,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Farben: Der Farbmischer springt nicht mehr, und der Hinweis auf Farben,
   die ein Bildschirm nicht zeigen kann, ist weg.
 - Handbuch: Die Seite heißt »Tastatur-Shortcuts«.
+
+- Klassenseite: Die Titel der Aufgaben stehen aufrecht und ganz über ihren
+  Spalten, »Jetzt nachsehen« ist ein Menü, und beim Öffnen eines Workspaces
+  dreht sich das Code-Symbol wie auf der Startseite.
+- Abgaben zeigen überall denselben gefalteten Papierflieger (Font Awesome
+  Free, CC BY 4.0).
 
 ### Für Betreibende
 
