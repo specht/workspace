@@ -3,6 +3,12 @@ image: git-clone.webp
 kind: reference
 </div>
 
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3">
+</div>
+
 # Workspace: Grundgriffe
 
 <p class='abstract'>

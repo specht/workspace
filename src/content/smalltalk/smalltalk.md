@@ -3,6 +3,12 @@ image: smalltalk-logo.png
 needs_contrast: light
 </div>
 
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3">
+</div>
+
 # Smalltalk <span style='font-size: 80%;'>(1980)</span>
 
 <div class='floatright fr-wide' style='width: 40em;'>

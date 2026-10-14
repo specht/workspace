@@ -2,6 +2,12 @@
 image: pascal-logo.png
 </div>
 
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3">
+</div>
+
 # Pascal <span style='font-size: 80%;'>(1970)</span>
 
 <div class='floatright' style='width: 16em;'>

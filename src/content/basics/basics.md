@@ -25,6 +25,12 @@ image: vs-code-welcome.webp:0:50
     }
 </style>
 
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3">
+</div>
+
 # Die Basics
 
 <p class='abstract'>

@@ -2,6 +2,12 @@
 image: hades.webp
 </div>
 
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3">
+</div>
+
 # Hades in der Altgriechisch-App
 
 <p class='abstract'>

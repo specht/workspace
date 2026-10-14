@@ -2,6 +2,12 @@
 image: nasm-logo.png
 </div>
 
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3">
+</div>
+
 # Netwide Assembler <span style='font-size: 80%;'>(1996)</span>
 
 <div class='floatright' style='width: 24em;'>

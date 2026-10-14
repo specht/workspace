@@ -2,6 +2,12 @@
 image: cpp-logo.png
 </div>
 
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3">
+</div>
+
 # C++ <span style='font-size: 80%;'>(1983)</span>
 
 <div class='floatright' style='width: 16em;'>

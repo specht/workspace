@@ -5,7 +5,7 @@ image: rainbow.webp
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2,h3,h4">
+    data-levels="h2,h3">
 </div>
 
 # Pixelgrafik programmieren
@@ -122,7 +122,11 @@ Heute ist das eigentlich nicht mehr nötig, aber es kann trotzdem von Vorteil se
 einheitliche Farbgebung hast und nicht jedes Mal die passenden RGB-Werte heraussuchen musst.
 </div>
 
-## Palette wählen
+## Eine Wiese mit Regenbogen
+
+Jetzt entsteht Schritt für Schritt ein ganzes Bild: eine hügelige Wiese, darüber ein Regenbogen und der Himmel.
+
+### Palette wählen
 
 Die Standard-VGA-Palette ist nicht die einzige Palette, die du verwenden kannst. Du kannst auch eine andere Palette
 wählen oder sogar deine eigene Palette definieren. Eine Übersicht über alle verfügbaren Paletten findest du [hier](https://specht.github.io/pixelflow_canvas_ruby/palettes.html). Da wir eine Wiese mit Regenbogen zeichnen möchten, wählen wir die »zughy_32«-Palette:
@@ -180,7 +184,7 @@ Führe das Programm aus, indem du im Terminal `ruby rainbow.rb` eingibst (du kan
 Du solltest jetzt sehen, dass sich die Farben geändert haben – der Hintergrund ist nicht mehr schwarz, weil
 die Farbe 0 nun ein dunkles Lila ist und die Farbe 10 ist nun ein dunkles Türkis.
 
-## Hintergrund zeichnen
+### Hintergrund zeichnen
 
 Lösche den `set_pixel`-Befehl und füge stattdessen den folgenden Code ein:
 
@@ -199,7 +203,7 @@ Dein Bild sollte jetzt so aussehen:
 
 <img src='out3.webp' class='full' alt='Die Zeichenfläche ist vollständig hellblau gefüllt.'>
 
-## Hügelige Wiese zeichnen
+### Hügelige Wiese zeichnen
 
 Um eine hügelige Wiese zu zeichnen, werden wir keine geraden Linien, sondern [Bézierkurven](https://de.wikipedia.org/wiki/B%C3%A9zierkurve) verwenden. Eine Bézierkurve wird durch eine Reihe von Punkten definiert, die die Kurve beeinflussen. Wir können hier zwei Arten von Bézierkurven verwenden: eine quadratische Bézierkurve (mit drei Punkten) und eine kubische Bézierkurve (mit vier Punkten).
 
@@ -360,7 +364,7 @@ Dein Bild sollte jetzt so aussehen:
 
 <img src='out4.webp' class='full' alt='Drei geschwungene grüne Linien verlaufen über den hellblauen Hintergrund.'>
 
-## Flächen füllen
+### Flächen füllen
 
 Um den Hügel mit Farbe zu füllen, können wir den Befehl `flood_fill` verwenden. Dieser Befehl füllt eine Fläche mit einer bestimmten Farbe, beginnend von einem bestimmten Punkt. Füge den folgenden Code hinzu:
 
@@ -386,7 +390,7 @@ Dein Bild sollte jetzt so aussehen:
 
 <img src='out6.webp' class='full' alt='Mehrere gefüllte grüne Hügel überlagern sich vor hellblauem Hintergrund.'>
 
-## Regenbogen zeichnen
+### Regenbogen zeichnen
 
 Wir wollen nun einen Regenbogen zeichnen, der aus ineinander gelegten Kreisen besteht. Würden wir die Kreise einfach so zeichnen, würden sie den Rasen überdecken. Um das zu verhindern, können wir eine Maske verwenden. Eine Maske ist ein Bereich, in dem wir zeichnen können, ohne den Rest des Bildes zu beeinflussen. Wir definieren uns eine Maske, die nur die Hintergrundfarbe 16 (hellblau) umfasst, und zeichnen dann die Kreise.
 
@@ -413,7 +417,7 @@ Dein Bild sollte anschließend so aussehen:
 
 <img src='out7.webp' class='full' alt='Ein gestreifter Regenbogen steigt hinter grünen Hügeln auf.'>
 
-## Himmel zeichnen
+### Himmel zeichnen
 
 Für den Himmel müssen wir die Maske erneuern, da sie nach wie vor gilt und somit folgende Zeichenbefehle auch den Regenbogen überdecken würden. Füge den folgenden Code ein:
 

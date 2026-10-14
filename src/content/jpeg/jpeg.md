@@ -289,7 +289,11 @@ Marker sind spezielle 16-Bit-Sequenzen, die bestimmte Abschnitte eines JPEG-Bild
 Du solltest sicherstellen, dass die Datei mit den Bytes 0xFFD8 (SOI) beginnt. Anschließend kannst du in einer Schleife immer einen Marker lesen, dann je nach Marker eine Länge und die entsprechende Anzahl von Bytes überspringen, bis du auf den SOS-Marker (0xFFDA) stößt. Ab diesem Punkt kannst du später die komprimierten Bilddaten lesen.
 </div>
 
-## Start of Image (SOI)
+## Die Segmente der Datei
+
+Vor den eigentlichen Bilddaten steht eine Folge von Segmenten. Jedes beginnt mit einem Marker und beschreibt einen Teil dessen, was der Decoder später braucht: Tabellen, Bildgröße, Komponenten.
+
+### Start of Image (SOI)
 
 Der SOI-Marker (0xFFD8) markiert den Beginn eines JPEG-Bildes. Er besteht aus zwei Bytes und enthält keine weiteren Daten. Ein gültiges JPEG-Bild muss mit diesem Marker beginnen.
 
@@ -316,7 +320,7 @@ Falls du vorher noch nie einen Hex-Dump gesehen hast, hier eine kurze Erklärung
 
 Die Beispiele beziehen sich alle auf die Datei <a href='/jpeg/44-baseline.jpg' target='_blank'>44-baseline.jpg</a>, die du zum Testen deiner Implementation verwenden kannst.
 
-## Define Quantization Table (DQT)
+### Define Quantization Table (DQT)
 
 Im DQT-Segment werden Quantisierungstabellen definiert. Es gibt 4 mögliche Slots für diese Tabellen (0 bis 3), die jeweils 64 Werte enthalten. Die 64 Werte sind in der Zig-Zag-Reihenfolge abgespeichert.
 
@@ -385,7 +389,7 @@ Speichere die Werte in dem entsprechenden Slot (Tq) ab, damit du sie später fü
 </table>
 </div>
 
-## Start of Frame (SOF<sub>0</sub>)
+### Start of Frame (SOF<sub>0</sub>)
 
 Im SOF<sub>0</sub>-Segment (Start of Frame, Baseline DCT) werden die Bildgröße, die Anzahl der Komponenten und die Präzision der Bilddaten definiert. Es enthält auch Informationen über die Subsampling-Methode, die für die Chroma-Kanäle verwendet wird.
 
@@ -496,11 +500,11 @@ Du kannst für deinen Decoder davon ausgehen, dass dieser Wert immer 3 ist und f
 </table>
 </div>
 
-### Chroma Subsampling
+#### Chroma Subsampling
 
 In diesem Beispiel siehst du, dass die Y-Komponente (Helligkeit) mit einem 2:2-Subsampling codiert ist, während die Cb- und Cr-Komponenten (Farbinformationen) mit einem 1:1-Subsampling codiert sind. Im JPEG-Jargon spricht man von einer Minimal Coding Unit (MCU), die in diesem Fall aus 4 Y-Blöcken, 1 Cb-Block und 1 Cr-Block besteht. Das bedeutet, dass für jede MCU 4 Blöcke der Y-Komponente und jeweils 1 Block der Cb- und Cr-Komponenten codiert werden: die Auflösung der Chroma-Komponenten ist also halb so hoch wie die der Luma-Komponente in beiden Dimensionen. 
 
-## Define Huffman Table (DHT)
+### Define Huffman Table (DHT)
 
 Im DHT-Segment werden Huffman-Tabellen definiert, die wir für die Decodierung der komprimierten Bilddaten benötigen. Dabei wird in DC- und AC-Tabellen unterschieden: DC-Tabellen codieren die Differenzen der DC-Koeffizienten, während AC-Tabellen die AC-Koeffizienten codieren. Es gibt 4 mögliche Slots für DC-Tabellen (0 bis 3) und 4 mögliche Slots für AC-Tabellen (0 bis 3). Jede Tabelle besteht aus 16 Bytes, die die Anzahl der Codes für jede Code-Länge von 1 bis 16 angeben, gefolgt von den Symbolen, die diesen Codes zugeordnet sind.
 
@@ -768,7 +772,7 @@ In diesem Beispiel wird eine AC-Tabelle im Slot 0 definiert, die deutlich mehr C
 00000180  <span class='m4'>f2 f3 f4 f5 f6 f7 f8 f9  fa</span> ff c4 00 1f 01 00 03  |................|
 </pre>
 
-## Start of Scan (SOS)
+### Start of Scan (SOS)
 
 Der SOS-Marker (Start of Scan) markiert den Beginn der komprimierten Bilddaten. Er enthält Informationen über die Anzahl der Komponenten im Scan sowie die zu verwendenden Huffman-Tabellen.
 
@@ -878,7 +882,11 @@ In komplexeren JPEG-Varianten können Teile der Bilddaten nach und nach codiert 
 </table>
 </div>
 
-## Decodierung der Bilddaten
+## Vom Datenstrom zum Bild
+
+Mit den Tabellen aus den Segmenten lassen sich jetzt die komprimierten Bilddaten lesen, Block für Block, bis am Ende die RGB-Werte jedes Pixels feststehen.
+
+### Decodierung der Bilddaten
 
 Direkt hinter dem SOS-Segment beginnen die komprimierten Bilddaten:
 
@@ -890,7 +898,7 @@ Direkt hinter dem SOS-Segment beginnen die komprimierten Bilddaten:
 
 Dabei wird das Bild MCU-weise codiert. In unserem Beispiel haben wir eine MCU-Größe von 16x16 Pixeln, bestehend aus 4 Blöcken der Y-Komponente (jeweils 8x8 Pixel), 1 Block der Cb-Komponente (8x8 Pixel) und 1 Block der Cr-Komponente (8x8 Pixel), also folgende Reihenfolge: Y<sub>0</sub>, Y<sub>1</sub>, Y<sub>2</sub>, Y<sub>3</sub>, Cb<sub>0</sub>, Cr<sub>0</sub>. Wir müssen demnach insgesamt sechs 8x8-Pixel-Blöcke decodieren, um eine MCU von 16x16 Pixeln zu erhalten.
 
-### Decodierung eines Blocks: DC-Koeffizient
+#### Decodierung eines Blocks: DC-Koeffizient
 
 In jedem Block wird zuerst der DC-Koeffizient decodiert, indem die entsprechenden Bits aus der Datei gelesen werden. Wir verwenden in diesem Beispiel die folgende DC-Tabelle in Slot 0, die wir vorher aus dem ersten DHT-Segment erstellt haben:
 
@@ -987,7 +995,7 @@ Unser DCT-Block sieht bisher wie folgt aus:
 </tr>
 </table>
 
-### Decodierung eines Blocks: AC-Koeffizienten
+#### Decodierung eines Blocks: AC-Koeffizienten
 
 Direkt auf die DC-Differenz folgen die AC-Koeffizienten. Schauen wir uns wieder den Hexdump an:
 
@@ -1240,7 +1248,7 @@ Es gibt zwei spezielle Symbole bei der Decodierung der AC-Koeffizienten:
 - `0x00`: EOB (End of Block) → Alle restlichen Koeffizienten in diesem Block haben den Wert 0.
 - `0xF0`: ZRL (Zero Run Length) → Es werden 16 Nullen in der DCT-Matrix eingetragen, bevor der nächste Koeffizient decodiert wird.
 
-## Dequantisierung
+### Dequantisierung
 
 Jeder Block wird anschließend dequantisiert, indem die Koeffizienten komponentenweise mit den entsprechenden Werten aus der Quantisierungstabelle multipliziert werden. In unserem Beispiel verwenden wir die folgende Quantisierungstabelle für die Y-Komponente, die wir vorher aus dem ersten DQT-Segment erstellt haben:
 
@@ -1254,7 +1262,7 @@ Jeder Block wird anschließend dequantisiert, indem die Koeffizienten komponente
 </div>
 </div>
 
-## iDCT
+### iDCT
 
 Nachdem alle Koeffizienten eines Blocks decodiert wurden, müssen wir die inverse DCT (iDCT) anwenden, um die Pixelwerte zu erhalten. Die iDCT wird auf die 8x8-DCT-Matrix angewendet und liefert eine 8x8-Matrix mit den Pixelwerten zurück.
 
@@ -1266,11 +1274,11 @@ Du kannst folgende Formel für die iDCT verwenden:
 
 Da die resultierenden Werte nach der iDCT noch im Bereich von -128 bis 127 liegen, müssen wir sie um 128 verschieben, um den Bereich von 0 bis 255 zu erhalten.
 
-## Rekonstruktion der MCU
+### Rekonstruktion der MCU
 
 Wenn wir 6 Blöcke decodiert haben (4&times;Y, 1&times;Cb, 1&times;Cr), können wir die MCU von 16x16 Pixeln rekonstruieren. Dazu müssen wir die Blöcke der Y-Komponente entsprechend ihrer Position in der MCU anordnen und die Blöcke der Cb- und Cr-Komponenten auf die Größe von 16x16 Pixeln hochskalieren (da sie nur 8x8 Pixel groß sind). Anschließend können wir die iDCT auf jeden Block anwenden, um die Pixelwerte zu erhalten.
 
-## Farbraumkonvertierung
+### Farbraumkonvertierung
 
 Nachdem wir die Pixelwerte für die Y-, Cb- und Cr-Komponenten erhalten haben, müssen wir diese in den RGB-Farbraum konvertieren, um das Bild korrekt darstellen zu können. Die Konvertierung erfolgt mit den folgenden Formeln:
 

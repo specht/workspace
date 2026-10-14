@@ -16,7 +16,9 @@ template_name: der BIF-Vorlage
 Mit BIF kannst du interaktive Geschichten schreiben, bei denen die Leserinnen und Leser selbst entscheiden, wie es weitergeht. Die einzelnen Abschnitte deiner Geschichte schreibst du als einfache Markdown-Dateien und verbindest sie miteinander. In diesem Tutorial entwickelst du Schritt für Schritt eine kleine Geschichte und lernst dabei die wichtigsten Bausteine von BIF kennen: Seiten, Entscheidungen, Verzweigungen, lokale Aktionen, Variablen und Bedingungen.
 </p>
 
-## Repository klonen
+## Loslegen
+
+### Repository klonen
 
 Für diese Anleitung brauchst du das BIF-Repository:
 
@@ -41,7 +43,7 @@ wait-for-file: bif/.story-tools/analysis.json
 
 <img class='full' src='bif-project.webp' alt=''>
 
-## Geschichte starten
+### Geschichte starten
 
 Öffne im Explorer den Ordner `pages-starter` und darin die Datei `1.md`.
 
@@ -76,7 +78,7 @@ Falls du innerhalb einer Seite doch einmal eine Zwischenüberschrift brauchst, v
 Die Datei <code>1.md</code> hat bei BIF eine besondere Bedeutung: Jede Geschichte beginnt bei Seite 1.
 </div>
 
-## Vorschau starten
+### Vorschau starten
 
 <img src='../common/go-live.webp' class='r' style='width: 21em;' alt=''>
 
@@ -97,7 +99,11 @@ sleep: 0.5
 
 BIF startet standardmäßig in der Entwicklungsansicht. Rechts siehst du die Geschichte, die momentan noch sehr kurz ist und noch keine Entscheidungsmöglichkeiten bietet. Mit dem Button rechts oben kannst du zwischen der Entwicklungsansicht und der Leseansicht hin- und herwechseln. Wenn du deine Geschichte später veröffentlichst, bekommen deine Leser:innen nur die Leseansicht zu sehen.
 
-## Zweite Seite
+## Seiten und Entscheidungen
+
+Eine Geschichte in BIF besteht aus Seiten. Entscheidungen verbinden sie: Wer liest, wählt, auf welcher Seite es weitergeht.
+
+### Zweite Seite
 
 <img src='new-file.webp' class='r' style='width: 18em;' alt=''>
 
@@ -126,7 +132,7 @@ sleep: 0.5
 
 Damit besteht die Geschichte bereits aus zwei Seiten, allerdings gibt es noch keine Verbindung von der ersten zur zweiten Seite – dafür brauchen wir eine Entscheidung.
 
-## Entscheidungen
+### Entscheidungen
 
 Öffne wieder `1.md` und ergänze am Ende:
 
@@ -167,7 +173,7 @@ Die Zeile
 
 besteht aus zwei wichtigen Teilen: in eckigen Klammern steht der Text, der angezeigt wird und in runden Klammern steht die Seitenzahl, mit der es bei dieser Entscheidung weitergehen soll.
 
-## Verzweigungen
+### Verzweigungen
 
 Eine interaktive Geschichte wird interessanter, wenn nicht immer nur ein einziger Weg möglich ist.
 Erstelle die Datei `3.md`:
@@ -233,7 +239,7 @@ So wird auch sichtbar, dass `1.md` nur der Einstieg ist. Später kehren wir nich
 Je größer deine Geschichte wird, desto nützlicher wird der Graph. Du kannst damit schnell erkennen, welche Wege möglich sind und ob Teile deiner Geschichte gar nicht erreicht werden können.
 </div>
 
-## Lokale Entscheidungen
+### Lokale Entscheidungen
 
 Nicht jede Entscheidung soll zu einer anderen Seite führen.
 
@@ -289,7 +295,11 @@ Lokale Entscheidungen eignen sich zum Beispiel für:
 - das Betätigen eines Schalters
 - kleine Aktionen, die keinen neuen Ort benötigen
 
-## Variablen
+## Variablen und Bedingungen
+
+Damit sich die Geschichte merkt, was schon passiert ist, braucht sie Variablen. Bedingungen fragen sie ab und zeigen je nach Spielstand anderen Text und andere Entscheidungen.
+
+### Variablen
 
 Bisher hängt der Verlauf nur davon ab, welche Seite gerade geöffnet wird. Eine Geschichte kann sich aber auch etwas **merken**. In unserem Beispiel soll gespeichert werden, ob du den Schlüssel aus dem Büro genommen hast.
 
@@ -379,7 +389,7 @@ Der Grund liegt bei den lokalen Entscheidungen: BIF merkt sich innerhalb eines B
 
 Ob etwas **dauerhaft für den weiteren Verlauf der Geschichte** passiert ist, speichern wir deshalb in Variablen. Jetzt müssen wir dafür sorgen, dass die Seite diesen gespeicherten Zustand auch berücksichtigt.
 
-## Bedingungen
+### Bedingungen
 
 Dafür gibt es **Bedingungen**. Mit einer Bedingung können wir festlegen, dass Text oder eine Entscheidung nur in einem bestimmten Zustand der Geschichte erscheint.
 
@@ -556,7 +566,7 @@ Damit haben Variablen und Bedingungen unterschiedliche Aufgaben:
 Gerade beim Testen einer interaktiven Geschichte lohnt es sich, Orte mehrmals zu besuchen und Entscheidungen in unterschiedlicher Reihenfolge auszuprobieren. So fallen Widersprüche auf, die beim ersten Durchspielen leicht unbemerkt bleiben.
 </div>
 
-## Ende
+### Ende
 
 Öffne jetzt den Materialschrank:
 

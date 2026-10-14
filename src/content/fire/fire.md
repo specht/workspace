@@ -2,6 +2,12 @@
 image: fire.webp:73:0
 </div>
 
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3">
+</div>
+
 # Feueranimation
 
 <p class='abstract'>

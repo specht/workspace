@@ -5,7 +5,7 @@ image: svelte5.webp
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2,h3,h4">
+    data-levels="h2,h3">
 </div>
 
 # Frontend-Entwicklung mit Svelte
@@ -24,7 +24,7 @@ In diesem Tutorial werden wir die Grundlagen von Svelte kennenlernen und eine ei
 Bevor du dieses Tutorial beginnst, solltest du dich ein wenig mit HTML und CSS auskennen. Wenn du noch nie mit diesen Technologien gearbeitet hast, empfehlen wir dir, zuerst das <a href='/static-website'>Tutorial zu Statischen Webseiten</a> durchzuarbeiten.
 </p>
 
-### Was ist Svelte?
+## Was ist Svelte?
 
 Svelte ist ein modernes Frontend-Framework. Es gab vorher schon viele andere Frontend-Frameworks, wie z. B. [React](https://react.dev/) (2013), [Vue](https://vuejs.org/) (2014) und [Angular](https://angular.dev/) (2016). Diese Frameworks haben alle ihre Vor- und Nachteile. [Svelte](https://svelte.dev/) ist ein relativ neues Framework, das 2016 von Rich Harris – einem Journalisten und Softwareentwickler – entwickelt wurde.
 

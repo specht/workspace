@@ -9,7 +9,7 @@ reference: [farben]
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2">
+    data-levels="h2,h3">
 </div>
 
 # 3D-Grafik mit Anaglyphen
@@ -18,7 +18,9 @@ reference: [farben]
 Anaglyphen sind Bilder, bei denen zwei Bilder in verschiedenen Farben übereinandergelegt werden, um einen 3D-Effekt zu erzeugen. Farbfilter in der 3D-Brille trennen die beiden Bilder, sodass jedes Auge nur eines der Bilder sieht. Dadurch entsteht der Eindruck von Tiefe und räumlicher Wahrnehmung. In diesem Tutorial lernst du, wie du verschiedene Körper in 3D mit Anaglyphen darstellen kannst.
 </p>
 
-## Repository klonen
+## Vorbereitung
+
+### Repository klonen
 
 Für diese Anleitung brauchst du die Vorlage des Anaglyph-Viewers:
 
@@ -41,7 +43,7 @@ wait-for-text: scene.ini
 
 <img class='full' src='lets-start.webp' alt=''>
 
-## Vorschau starten
+### Vorschau starten
 
 <img src='../common/go-live.webp' class='r' style='width: 21em;' alt=''>
 
@@ -55,7 +57,11 @@ Tipp: Ziehe deinen Workspace und die Vorschau nebeneinander, damit du deine Änd
 
 Unten links in der Vorschau findest du die Buttons »Anaglyph 3D« (für die Rot-Cyan-Brille), »Achsen« (zum Einblenden der Koordinatenachsen) und »Reset Camera« (um die Ansicht zurückzusetzen).
 
-## Geometrische Objekte
+## Körper platzieren
+
+Eine Szene besteht aus Körpern. Du wählst ihre Form und verschiebst, drehst und skalierst sie, bis sie dort stehen, wo du sie haben möchtest.
+
+### Geometrische Objekte
 
 Du solltest einen Würfel sehen, der in der Mitte des Bildschirms schwebt. Benutze die Maus, um die Szene zu drehen und zu zoomen.
 
@@ -176,7 +182,7 @@ crop-bottom: 27%
 <img src='sphere-with-torus.webp' style='max-width: 100%; min-height: 16em; object-fit: cover; object-position: center;' alt='Ein Ring umschließt eine Kugel.'>
 </div>
 
-## Objekte verschieben
+### Objekte verschieben
 
 Um Objekte zu verschieben, kannst du den Befehl `move` verwenden:
 
@@ -267,7 +273,7 @@ crop-bottom: 16%
 
 _task(vier-wuerfel)
 
-## Objekte rotieren
+### Objekte rotieren
 
 Um Objekte zu drehen, kannst du den Befehl `rotate` verwenden:
 
@@ -345,7 +351,7 @@ crop-bottom: 27%
 
 _task(wuerfelstern)
 
-## Objekte skalieren
+### Objekte skalieren
 
 Um die Größe von Objekten mit einem Faktor zu multiplizieren, kannst du den Befehl `scale` verwenden:
 
@@ -452,7 +458,7 @@ crop-bottom: 27%
 
 _task(balken)
 
-## Transformationen kombinieren
+### Transformationen kombinieren
 
 Verschiebungen, Drehungen und Skalierungen nennt man auch Transformationen. Du kannst mehrere Transformationen kombinieren, indem du sie hintereinander schreibst. Zum Beispiel:
 
@@ -603,7 +609,11 @@ Versuche, eine oder mehrere der folgenden Szenen zu erstellen:
 
 Erstelle dafür jeweils eine neue Datei (mit »File« / »New Text File«) und speichere sie unter einem passenden Namen, z. B. `ampel.ini`, `eis.ini` oder `schneemann.ini`. Du musst dann auf der Vorschauseite nur noch den passenden Dateinamen im Textfeld unten ändern, um die Szene zu sehen.
 
-## Code auskommentieren
+## Weitere Möglichkeiten
+
+Mit Körpern und Farben kannst du schon ganze Szenen bauen. Hier kommen Bewegung, Schrift und fertige 3D-Modelle dazu.
+
+### Code auskommentieren
 
 Manchmal möchte man Teile eines Programms vorübergehend deaktivieren, ohne sie zu löschen. Dafür kannst du Zeilen auskommentieren, indem du ein Semikolon `;` am Anfang der Zeile setzt. Zum Beispiel:
 
@@ -618,7 +628,7 @@ Tipp: Statt eines Semikolons (<code>;</code>) kannst du auch ein Hashtag (<code>
 
 Um schnell ganze Blöcke auszukommentieren, kannst du mehrere Zeilen markieren und dann <kbd>Strg</kbd><kbd>K</kbd> und <kbd>Strg</kbd><kbd>C</kbd> (für »comment«) drücken. Um die Kommentare wieder zu entfernen, markiere die Zeilen und drücke <kbd>Strg</kbd><kbd>K</kbd> und <kbd>Strg</kbd><kbd>U</kbd> (für »uncomment«). Es gibt auch weitere Shortcuts dafür, die du im Menü finden kannst.
 
-## Animationen
+### Animationen
 
 Während deine Szene angezeigt wird, läuft im Hintergrund eine Uhr mit. Die Anzahl der Sekunden seit dem Start der Szene wird in der Variablen `t` gespeichert. Du kannst diese Variable verwenden, um Animationen zu erstellen:
 
@@ -692,7 +702,7 @@ record: 12s
 
 _task(sonnensystem)
 
-## Text
+### Text
 
 Du kannst Text in deine Szene einfügen, indem du den Befehl `text` verwendest:
 
@@ -755,7 +765,7 @@ align = left
 shade = on
 ```
 
-## 3D-Modelle
+### 3D-Modelle
 
 Du kannst auch 3D-Modelle in deine Szene einfügen. Auf der Website [kenney.nl](https://kenney.nl/assets) gibt es eine große Sammlung von kostenlosen 3D-Modellen, die du verwenden kannst. Du kannst sie direkt in dein Projekt herunterladen und in der `scene.ini` einfügen. Klicke dazu auf ein Kit, um die verfügbaren 3D-Modelle zu sehen:
 
@@ -850,7 +860,11 @@ Du kannst auch 3D-Modelle in deine Szene einfügen. Auf der Website [kenney.nl](
     </div>
 </div>
 
-## Schleifen
+## Größere Szenen bauen
+
+Je mehr Körper eine Szene hat, desto länger wird die Datei. Schleifen, Gruppen und eigene Formen halten sie kurz.
+
+### Schleifen
 
 Wenn du viele Objekte platzieren möchtest, wirst du merken, dass du dafür viele Zeilen schreiben musst. Hier werden z. B. drei Würfel nebeneinander platziert:
 
@@ -913,7 +927,7 @@ end
 Warum funktioniert das? Wenn du die Werte 1 bis 3 in den Ausdruck (x - 2) * 100 einsetzt, siehst du, dass genau dieselben Werte (-100, 0 und 100) herauskommen. Du kannst aber genauso auch die erste Schleife verwenden, falls du das leichter findest. Für den Computer macht es keinen Unterschied.
 </div>
 
-### Verschachtelte Schleifen
+#### Verschachtelte Schleifen
 
 Schleifen können auch verschachtelt werden. Das heisst: du schreibst erst eine äußere Schleife mit einer Variablen, und darin eine innere Schleife mit einer anderen Variablen, z. B.:
 
@@ -945,7 +959,7 @@ Achtung: Achte darauf, bei verschachtelten Schleifen verschiedene Variablen für
 
 _task(wuerfelgitter)
 
-## Gruppen
+### Gruppen
 
 Bisher hast du jeden Körper einzeln verschoben, gedreht und skaliert. Mit einer **Gruppe** kannst du mehrere Körper gemeinsam bewegen. Schreibe dazu `group`, dann die Transformationen der Gruppe und anschließend die dazugehörigen Objekte. `end` beendet die Gruppe:
 
@@ -970,7 +984,7 @@ Hier stehen Würfel und Kugel auf entgegengesetzten Seiten des Gruppenmittelpunk
 Tipp: Du kannst auch Gruppen in Gruppen anlegen oder eine ganze Gruppe in einer Schleife wiederholen. Achte darauf, jede Gruppe mit einem eigenen <code>end</code> zu schließen.
 </div>
 
-## Eigene Formen definieren
+### Eigene Formen definieren
 
 Wenn du dieselbe zusammengesetzte Figur mehrmals verwenden möchtest, musst du sie nicht jedes Mal neu schreiben. Mit `define` kannst du ihr einen Namen geben und sie danach wie eine Form mit `shape` verwenden. Zum Beispiel bauen wir einen Baum aus einem Stamm und einer Baumkrone:
 

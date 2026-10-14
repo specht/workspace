@@ -4,6 +4,12 @@ template: https://github.com/specht/digits-experiment.git
 template_name: des Digits-Experiments
 </div>
 
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3">
+</div>
+
 # Trainiere ein neuronales Netzwerk
 
 <p class='abstract'>
