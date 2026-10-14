@@ -21,8 +21,9 @@ Programme in <code>.c</code>-Dateien schreibst du in MiniC, einem kleinen C, das
 Nichts bleibt verborgen: Der Rand des Editors zeigt Adresse und Bytes jeder C-Zeile, und der Reiter **Assembly** über dem Editor zeigt das erzeugte Programm, jedes Stück unter seiner C-Zeile als Kommentar. Ausführen und Einzelschritte funktionieren wie bei Assembler; ein Schritt ist ein Befehl, und die C-Zeile, zu der er gehört, ist markiert.
 
 ```c
-#pragma cpu 8x                          // die Stufe (ohne Angabe 8X)
-#pragma display 0x0800, 64, 48, mono    // der Bildschirm, wie .display
+// die Stufe (ohne Angabe 8X) und der Bildschirm, wie .display
+#pragma cpu 8x
+#pragma display 0x0800, 64, 48, mono
 
 int squares[10];
 
@@ -36,6 +37,31 @@ void main() {
     out(NUMBER, squares[9]);            // 81 auf der Zahlenanzeige
 }
 ```
+
+<!-- tutorial-screenshot
+terminal-open
+terminal-run: cd /workspace && git clone -q https://github.com/specht/cpu-sandbox.git && cd cpu-sandbox && git checkout -q 976c731d03cf0331898befab7bffd7afb94c81d4 && mkdir -p programs/handbuch
+terminal-wait-for-prompt
+write-file: cpu-sandbox/programs/handbuch/hb-squares.c <- previous-code
+terminal-run: cd /workspace/cpu-sandbox && (nohup ./run --port 18765 > /tmp/cpu-sandbox.log 2>&1 < /dev/null &)
+terminal-wait-for-prompt
+preview-port: 18765
+tab: preview
+viewport: 1600x900
+wait-for-text: Class progress
+click: selector:#program-picker .picker-button
+click: selector:#program-picker .picker-filter
+type: hb-squares
+sleep: 1
+click: selector:#program-picker .picker-option
+sleep: 2
+click: selector:#view-tabs button:nth-child(2)
+sleep: 1
+crop-top: 7.5%
+crop-bottom: 40%
+crop-right: 56.75%
+-->
+<img class='minicpu-shot medium' src='assembly.webp' alt='Der Reiter Assembly: das von MiniC erzeugte Programm, jede C-Zeile als Kommentar über ihren Befehlen, links Adressen und Bytes.'>
 
 Das Menü »CPU« ändert die Zeile `#pragma cpu`.
 <!-- /part -->

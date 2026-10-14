@@ -1,0 +1,11 @@
+{
+  "screenshots": {
+    "assembly.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "63c26f98d2aabafdee6d7cbb0016dcc2f15687ff678b01da159c35b4bfafaeab",
+      "state_hash": "7d2228ce51be7e2ce8baaace0e805161a35ffbf5f3fb406d8540421aee3e9ae7",
+      "workspace_look": "4.138.0-ls366"
+    }
+  },
+  "version": 1
+}

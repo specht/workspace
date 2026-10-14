@@ -78,6 +78,44 @@ Zwei Flags halten fest, wie der letzte Rechenbefehl ausgegangen ist. Die Sprungb
 </table>
 </div>
 
+Ein Beispiel: 3 − 5 passt nicht in ein Byte.
+
+```minicpu
+        LDI A, 3
+        LDI B, 5
+        SUB A, B            ; 3 − 5
+        HLT
+```
+
+<!-- tutorial-screenshot
+terminal-open
+terminal-run: cd /workspace && git clone -q https://github.com/specht/cpu-sandbox.git && cd cpu-sandbox && git checkout -q 976c731d03cf0331898befab7bffd7afb94c81d4 && mkdir -p programs/handbuch
+terminal-wait-for-prompt
+write-file: cpu-sandbox/programs/handbuch/hb-flags.asm <- previous-code
+terminal-run: cd /workspace/cpu-sandbox && (nohup ./run --port 18765 > /tmp/cpu-sandbox.log 2>&1 < /dev/null &)
+terminal-wait-for-prompt
+preview-port: 18765
+tab: preview
+viewport: 1600x900
+wait-for-text: Class progress
+click: selector:#program-picker .picker-button
+click: selector:#program-picker .picker-filter
+type: hb-flags
+sleep: 1
+click: selector:#program-picker .picker-option
+sleep: 2
+click: selector:#step-next
+sleep: 0.3
+click: selector:#step-next
+sleep: 0.3
+click: selector:#step-next
+sleep: 0.3
+crop-element: #registers
+-->
+<img class='minicpu-shot' src='flags.webp' alt='Die Register nach SUB A, B: A ist FE, also 254, und CF ist 1; beide sind hervorgehoben.'>
+
+Nach `SUB A, B` steht in A 254, also 3 − 5 + 256, und CF = 1 sagt: Es musste geborgt werden. Die Sandbox hebt hervor, was der letzte Befehl geändert hat.
+
 `AND`, `OR` und `XOR` setzen ZF nach ihrem Ergebnis und löschen CF immer; `CLF` löscht beide. Laden, Speichern, `MOV`, Sprünge, der Stack und die Geräte lassen die Flags, wie sie sind. In der Befehlstabelle steht <i class='bi bi-check-lg minicpu-set' role='img' aria-label='ein Haken'></i>, wo ein Befehl das Flag nach seinem Ergebnis setzt, 0, wo er es löscht, und –, wo er es nicht verändert.
 
 **Vergleichen.** `CMP A, B` rechnet A − B, behält aber nur die Flags. Danach gilt (für Zahlen von 0 bis 255):
@@ -223,6 +261,29 @@ double: LDA A, [SP+1]       ; [SP+0] ist die Rücksprungadresse
         RET
 ```
 
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1600x900
+write-file: cpu-sandbox/programs/handbuch/hb-double.asm <- previous-code
+sleep: 2
+click: selector:#program-picker .picker-button
+click: selector:#program-picker .picker-filter
+type: hb-double
+sleep: 1
+click: selector:#program-picker .picker-option
+sleep: 2
+click: selector:#step-next
+sleep: 0.3
+click: selector:#step-next
+sleep: 0.3
+click: selector:#step-next
+sleep: 0.3
+crop-element: .memory-frame
+-->
+<img class='minicpu-shot narrow' src='stack.webp' alt='Die RAM-Ansicht nach CALL double: oben bei 0xFE und 0xFF liegen 07 und 15, als Stack markiert.'>
+
+Nach `CALL double` liegt ganz oben im RAM, an `0xFF`, das Argument 21 (`15`) und darunter, an `0xFE`, die Rücksprungadresse `07`: Dort steht `ADD SP, 1`. Die RAM-Ansicht markiert den Stack.
+
 Jeder Aufruf hat seine eigenen Argumente und lokalen Variablen, deshalb darf eine Funktion sich selbst aufrufen. Einen eigenen Rahmenzeiger gibt es nicht, alle Abstände zählen ab SP. Jedes `PUSH` mitten in einer Funktion verschiebt sie deshalb um eins. Am einfachsten reserviert eine Funktion alle lokalen Variablen gleich am Anfang. Auf der 8X ist die Rücksprungadresse zwei Bytes lang, die Argumente beginnen dort ein Byte höher.
 <!-- /part -->
 
@@ -317,6 +378,8 @@ Der Regler »Clock« stellt den Takt von 1 Hz bis 64 MHz ein, und die CPU läuft
 - 1 Takt, wenn PC einen neuen Wert bekommt (`JMP`, ein bedingter Sprung, der springt, `CALL`, `RET`),
 - 1 Takt für eine 16-Bit-Rechnung (mit X, Y oder SP), weil die Recheneinheit nur 8 Bit breit ist.
 
+<img class='full' src='../../sandbox-cpu/cpu-cycles.webp' alt='MiniCPU im Taktmodus: Holphase von LDI B, 0 mit Adress- und Datenbus, daneben Quelltext, Register und RAM.'>
+
 So braucht `ADD A, B` 2 Takte, `LDI A, 5` 3, `LDA A, [0x70]` 4 (auf der 8X 5) und `JNZ loop` 2, wenn es nicht springt, und 3, wenn es springt. Die Statuszeile der Sandbox zeigt die verbrauchten Takte und wie lange sie beim gewählten Takt dauern; »Cycles« zeigt einen Befehl Takt für Takt.
 <!-- /part -->
 
@@ -324,7 +387,34 @@ So braucht `ADD A, B` 2 Takte, `LDI A, 5` 3, `LDA A, [0x70]` 4 (auf der 8X 5) un
 <!-- short: Erste Hex-Ziffer = Befehlsfamilie; Registerbytes A=0 … Y=9; Zahlen und Adressen unteres Byte zuerst. -->
 ## Maschinencode
 
-Neben dem Code zeigt die Sandbox die Bytes jeder Zeile. So entstehen sie:
+Neben dem Code zeigt die Sandbox die Adresse und die Bytes jeder Zeile:
+
+```minicpu
+loop:   LDI A, 5
+        ADD A, B
+        MOV B, A
+        JMP loop
+```
+
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1600x900
+write-file: cpu-sandbox/programs/handbuch/hb-bytes.asm <- previous-code
+sleep: 2
+click: selector:#program-picker .picker-button
+click: selector:#program-picker .picker-filter
+type: hb-bytes
+sleep: 1
+click: selector:#program-picker .picker-option
+sleep: 2
+click: selector:#source-status
+crop-top: 7.5%
+crop-bottom: 73.5%
+crop-right: 56.75%
+-->
+<img class='minicpu-shot medium' src='bytes.webp' alt='Das Programm im Editor der Sandbox; links neben den vier Zeilen 00 10 00 05, 03 20 01, 05 15 10 und 07 60 00.'>
+
+So entstehen sie:
 
 - **Der Opcode** ist das erste Byte. Seine erste Hex-Ziffer nennt die Familie: `0x` Steuerung, `1x` Daten bewegen, `2x` Rechnen, `3x` Logik, `4x` Vergleichen, `5x` Stack, `6x` Springen, `7x` Ein- und Ausgabe. Höhere Stufen fügen Opcodes hinzu, nummerieren aber keine um.
 - **Ein Register** ist ein Byte: A = 0, B = 1, C = 2, D = 3; auf der 8X auch XL = 4, XH = 5, YL = 6, YH = 7, X = 8, Y = 9.

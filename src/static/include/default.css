@@ -4473,6 +4473,26 @@ body.subview-open {
     }
 }
 
+/* Screenshots of the CPU Sandbox in the MiniCPU Handbuch: crops of one
+   panel, about as large as in the sandbox (they are rendered at a higher
+   pixel density), never wider than the text. */
+img.minicpu-shot {
+    display: block;
+    max-width: min(100%, 56rem);
+    margin: 0.5em 0 1em;
+    border-radius: 0.5em;
+}
+
+/* A tall panel (RAM, screen) at about the size it has in the sandbox. */
+img.minicpu-shot.narrow {
+    max-width: min(100%, 26rem);
+}
+
+/* Half the sandbox's width: the editor. */
+img.minicpu-shot.medium {
+    max-width: min(100%, 44rem);
+}
+
 /* MiniCPU Handbuch (src/scripts/minicpu-reference.mjs): instruction tables
    with a row per family, and the predefined palettes as swatches. */
 .minicpu-table .minicpu-family th {

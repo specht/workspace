@@ -53,6 +53,30 @@ Geräte hängen an nummerierten **Ports**, getrennt vom RAM: Sie kosten keinen S
 Von einem Port zu lesen, an dem nichts hängt, oder auf ein Eingabegerät zu schreiben, meldet der Assembler als Fehler. In C heißen die Ports `JOYSTICK`, `KEYBOARD`, `TIMER`, `RANDOM`, `VSYNC`, `KEYS`, `SPEAKER`, `NUMBER`, `SCREEN_PAGE`, `PALETTE`, `COLOR` und `NOTE_LENGTH`: `out(NUMBER, x)`, `in(TIMER)`.
 
 Sobald ein Programm einen Port benutzt, erscheint sein Gerät in der Leiste über dem Bildschirm, mit dem aktuellen Wert. Die Zahlenanzeige hat zusätzlich eine große Anzeige oben rechts am Bildschirm.
+
+<!-- tutorial-screenshot
+terminal-open
+terminal-run: cd /workspace && git clone -q https://github.com/specht/cpu-sandbox.git && cd cpu-sandbox && git checkout -q 976c731d03cf0331898befab7bffd7afb94c81d4 && mkdir -p programs/handbuch
+terminal-wait-for-prompt
+terminal-run: cd /workspace/cpu-sandbox && (nohup ./run --port 18765 > /tmp/cpu-sandbox.log 2>&1 < /dev/null &)
+terminal-wait-for-prompt
+preview-port: 18765
+tab: preview
+viewport: 1600x900
+wait-for-text: Class progress
+click: selector:#program-picker .picker-button
+click: selector:#program-picker .picker-filter
+type: 24-arpeggio-organ.c
+sleep: 1
+click: selector:#program-picker .picker-option
+sleep: 2
+click: selector:#clock
+press: End
+click: selector:#run
+sleep: 3
+crop-element: #devices
+-->
+<img class='minicpu-shot' src='devices.webp' alt='Die Geräteleiste, während 24-arpeggio-organ.c läuft: Joystick, Vsync, gehaltene Taste mit Shift, Lautsprecher, Palettennummer, Palettenfarbe und Tonlänge.'>
 <!-- /part -->
 
 <!-- part: eingabe -->
@@ -126,6 +150,24 @@ Ein Programm schlägt seinen Bildschirm mit einer Zeile vor, die keine Bytes erz
 ```
 
 Die Reihenfolge ist `.display start, breite, höhe, format [, palette]`, in C `#pragma display 0x0800, 64, 48, mono`. Ohne diese Zeile zeigt der Bildschirm 16 × 8 graue Pixel ab `0x80`. Ein Bildschirm darf über dem eigenen Programm liegen; der Assembler warnt dann nur.
+
+<!-- tutorial-screenshot
+tab: preview
+viewport: 1600x900
+hook: pause
+click: selector:#program-picker .picker-button
+click: selector:#program-picker .picker-filter
+type: 14-mandelbrot.asm
+sleep: 1
+click: selector:#program-picker .picker-option
+sleep: 2
+click: selector:#clock
+press: End
+click: selector:#run
+sleep: 10
+crop-element: .screen-frame
+-->
+<img class='minicpu-shot narrow' src='screen.webp' alt='Der Bildschirm von 14-mandelbrot.asm mit seiner Leiste: 4 Bits und 16 Farben, Palette color graphics adapter, ab 0x0400, 80 × 60 Pixel.'>
 
 In der Sandbox stehen Format, Palette, Startadresse, Breite und Höhe in der Leiste über dem Bildschirm. Das Bild nach oben oder unten ziehen (oder das Mausrad) verschiebt das Fenster zeilenweise durchs RAM, der Griff in der Ecke ändert die Größe. Ein Klick auf ein Pixel wählt sein Byte in der RAM-Ansicht, die Maus über einem Pixel zeigt Koordinaten, Adresse und Wert. Der Knopf zum Zurücksetzen kehrt zur `.display`-Zeile zurück.
 <!-- /part -->

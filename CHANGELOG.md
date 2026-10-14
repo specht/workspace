@@ -534,6 +534,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   kannte die Seite nicht), die Aktivität nutzte das x86-Schema von NASM.
   Ein Test prüft, dass jede Sprache an einem Code-Block bekannt ist; dabei
   fiel ```` ```javascript ```` auf (p5.js), das jetzt wie `js` gefärbt wird.
+- Handbuch »MiniCPU« mit Screenshots aus der CPU Sandbox: Register und
+  Flags nach `SUB A, B`, der Stack nach `CALL`, Adressen und Bytes im
+  Editor, die Takte, die Geräteleiste, der Bildschirm mit seiner Leiste und
+  der Reiter »Assembly« für ein C-Programm. Die Programme sind die
+  Beispiele auf der Seite. Das C-Beispiel hatte Kommentare hinter
+  `#pragma`, die MiniC nicht versteht; sie stehen jetzt darüber.
 - Handbuch-Tabellen auf dem Handy: Jede Zeile steht als Block untereinander,
   kurze Werte nebeneinander und mit ihrer Spaltenüberschrift beschriftet
   (»Bytes: 2«). Nichts ist mehr breiter als der Bildschirm.
