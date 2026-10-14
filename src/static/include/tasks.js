@@ -18,28 +18,44 @@
         return card.dataset.task.split('/')[1];
     }
 
-    // celebrate: the task was just solved; the tick draws itself.
+    const TICK = "<svg class='task-tick' viewBox='0 0 24 24' aria-hidden='true'>" +
+        "<circle class='task-tick-disc' cx='12' cy='12' r='11'/>" +
+        "<path class='task-tick-mark' d='M6.8 12.6l3.4 3.4 7-7.4'/></svg>";
+
+    // A solved task has its tick next to the button. Just solved, it pops
+    // in and draws itself, and the card glows once.
+    function setTick(card, solved, celebrate) {
+        const old = card.querySelector('.task-done-tick');
+        if (old) old.remove();
+        const button = card.querySelector('.task-submit');
+        if (solved && button) {
+            const tick = document.createElement('span');
+            tick.className = 'task-done-tick' + (celebrate ? ' task-done-tick-new' : '');
+            tick.innerHTML = TICK;
+            button.insertAdjacentElement('afterend', tick);
+        }
+        if (celebrate) {
+            card.classList.remove('task-solved-now');
+            void card.offsetWidth;
+            card.classList.add('task-solved-now');
+        }
+    }
+
+    // celebrate: the task was just solved.
     function setBadge(card, status, celebrate) {
         const el = card.querySelector('.task-status');
         el.innerHTML = '';
+        setTick(card, status === 'correct', celebrate);
         const label = STATUS_LABELS[status === 'sent' && card.dataset.type === 'submit' ? 'submitted' : status];
         if (!label) return;
         const span = document.createElement('span');
         span.className = 'task-badge ' + label[0];
         if (status === 'correct') {
-            span.insertAdjacentHTML('beforeend', "<svg class='task-tick' viewBox='0 0 24 24' aria-hidden='true'>" +
-                "<circle class='task-tick-disc' cx='12' cy='12' r='11'/>" +
-                "<path class='task-tick-mark' d='M6.8 12.6l3.4 3.4 7-7.4'/></svg>");
+            span.insertAdjacentHTML('beforeend', TICK);
         } else {
             const icon = document.createElement('i');
             icon.className = 'bi ' + label[1];
             span.appendChild(icon);
-        }
-        if (celebrate) {
-            span.classList.add('task-badge-celebrate');
-            card.classList.remove('task-solved-now');
-            void card.offsetWidth;
-            card.classList.add('task-solved-now');
         }
         span.appendChild(document.createTextNode(label[2]));
         el.appendChild(span);

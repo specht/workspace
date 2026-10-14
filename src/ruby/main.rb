@@ -3745,7 +3745,7 @@ class Main < Sinatra::Base
         "<style>.tasks-off-only { display: none; }</style>" \
             "<script>window.TASK_PAGE = #{config.to_json};</script>" \
             "#{previews ? "<script src='/include/anaglyph_preview.js?#{CACHE_BUSTER}'></script>" : ''}" \
-            "<script src='/include/tasks.js?#{CACHE_BUSTER}'></script>"
+            "<script src='/include/tasks.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
     end
 
     # Handbuch boxes (_include) this person has already been through on
