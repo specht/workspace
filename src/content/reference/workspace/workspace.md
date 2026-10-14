@@ -123,11 +123,15 @@ Meldet Git **divergent branches**, hast du selbst etwas committet. Dann hilft `g
 # Aktivitäten, die die Vorschau starten (../reference/workspace/go-live.webp)
 click: Open
 wait-for-text: scene.ini
+# a file in front of the welcome page, whose headings would show behind
+# the status bar
+open-file: scene.ini
 move-mouse: Go Live
 sleep: 2
 show-mouse
 crop-top: 88%
-crop-left: 68%
+# from »UTF-8« on, so that no word of the status bar is cut in half
+crop-left: 72%
 -->
 
 <img src='go-live.webp' class='r' style='width: 21em;' alt='Der Eintrag »Go Live« unten rechts in der Statusleiste; der Tooltip sagt »Click to run live server«.'>
@@ -149,7 +153,8 @@ move-mouse: selector:.statusbar-item:has-text("Port :")
 sleep: 2
 show-mouse
 crop-top: 88%
-crop-left: 68%
+# from »UTF-8« on (»Port : 5500« is wider than »Go Live«)
+crop-left: 70%
 -->
 
 <img src='stop-live.webp' class='r' style='width: 21em;' alt='Statt »Go Live« steht unten rechts »Port : 5500«; der Tooltip sagt »Click to close server«.'>
