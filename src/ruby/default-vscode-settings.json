@@ -22,7 +22,10 @@
         ".bash_history": true,
         ".bash_logout": true,
         ".bashrc": true,
-        ".profile": true
+        ".profile": true,
+
+        "**/.build": true,
+        "**/*.synctex.gz": true
     },
 
     "html.autoClosingTags": false,
@@ -42,19 +45,10 @@
 
     "latex-workshop.latex.autoBuild.run": "onSave",
     "latex-workshop.latex.outDir": "%DIR%",
+    "latex-workshop.latex.auxDir": "%DIR%/.build",
     "latex-workshop.latex.recipe.default": "latexmk (LuaLaTeX)",
 
     "latex-workshop.latex.tools": [
-        {
-            "name": "lualatex",
-            "command": "lualatex",
-            "args": [
-                "-synctex=1",
-                "-interaction=nonstopmode",
-                "-file-line-error",
-                "%DOC%"
-            ]
-        },
         {
             "name": "latexmk-lualatex",
             "command": "latexmk",
@@ -63,18 +57,14 @@
                 "-synctex=1",
                 "-interaction=nonstopmode",
                 "-file-line-error",
+                "-outdir=%OUTDIR%",
+                "-auxdir=%AUXDIR%",
                 "%DOC%"
             ]
         }
     ],
 
     "latex-workshop.latex.recipes": [
-        {
-            "name": "LuaLaTeX",
-            "tools": [
-                "lualatex"
-            ]
-        },
         {
             "name": "latexmk (LuaLaTeX)",
             "tools": [

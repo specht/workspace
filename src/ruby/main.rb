@@ -1,6 +1,7 @@
 require './include/helper.rb'
 require './include/automatron.rb'
 require './include/content_parts.rb'
+require './include/vscode_settings.rb'
 require './include/page_kinds.rb'
 require './include/task_spec.rb'
 require './include/task_check.rb'
@@ -3248,14 +3249,8 @@ class Main < Sinatra::Base
             user_config = JSON.parse(File.read(vscode_settings_path))
             original_config = user_config.to_json
             default_config = JSON.parse(File.read('default-vscode-settings.json'))
-
-            default_config.each_pair do |k, v|
-                if v == true || v == false
-                    user_config[k] = v unless user_config.include?(k)
-                else
-                    user_config[k] ||= v
-                end
-            end
+            superseded_config = JSON.parse(File.read('superseded-vscode-settings.json')).reject { |k, _| k == '//' }
+            user_config = VscodeSettings.merge(user_config, default_config, superseded_config)
 
             if DEVELOPMENT && (
                     email == 'student@example.com' ||
