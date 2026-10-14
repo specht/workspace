@@ -14,25 +14,9 @@ In diesem Artikel bekommst du eine Schritt-für-Schritt-Anleitung. Lies sie gena
 
 ## Vorbereitung
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>E</kbd>, um die Seitenleiste mit dem Explorer-Tab zu öffnen. Dein Workspace sollte jetzt ungefähr so aussehen:
+Für diese Anleitung brauchst du die Vorlage des Experiments:
 
-<img class='full' src='fresh-start.webp' alt=''>
-
-Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du auf den blauen Button »Clone Repository« klickst. Gib die folgende URL ein und bestätige mit <kbd>Enter</kbd>:
-
-```bash
-${template}
-```
-
-<img class='full' src='git-clone.webp' alt=''>
-
-Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <kbd>Enter</kbd>.
-
-<img class='full' src='confirm-clone-path.webp' alt=''>
-
-Beantworte die Frage »Would you like to open the repository?« mit »Open«.
-
-<img class='full' src='open-yes-no.webp' alt=''>
+_include(workspace#repository-klonen)
 
 Du siehst nun auf der linken Seite ein paar Verzeichnisse und Dateien, die wir für dieses Experiment verwenden werden.
 

@@ -22,27 +22,11 @@ LaTeX wird häufig an Universitäten, in der Wissenschaft und bei technischen Be
 
 In diesem Tutorial lernst du die Grundlagen von LaTeX anhand einer **Bewerbung**, eines **Lebenslaufs** und einer **schriftlichen Ausarbeitung** kennen.
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
-
-<img class='full' src='fresh-start.webp' alt=''>
-
 ## Repository klonen
 
-Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du auf den blauen Button »Clone Repository« klickst. Gib die folgende URL ein und bestätige mit <kbd>Enter</kbd>:
+Für diese Anleitung brauchst du die LaTeX-Vorlage:
 
-```bash
-${template}
-```
-
-<img class='full' src='git-clone.webp' alt=''>
-
-Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <kbd>Enter</kbd>.
-
-<img class='full' src='confirm-clone-path.webp' alt=''>
-
-Beantworte die Frage »Would you like to open the repository?« mit »Open«.
-
-<img class='full' src='open-yes-no.webp' alt=''>
+_include(workspace#repository-klonen)
 
 ## LaTeX Workshop installieren
 

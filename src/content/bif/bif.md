@@ -18,63 +18,21 @@ Mit BIF kannst du interaktive Geschichten schreiben, bei denen die Leserinnen un
 
 ## Repository klonen
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>.
+Für diese Anleitung brauchst du das BIF-Repository:
 
-<!-- tutorial-screenshot
-# Workspace ohne geöffneten Ordner
-show-left-sidebar
--->
-
-<img class='full' src='fresh-start.webp' alt=''>
-
-Für diese Anleitung brauchst du das BIF-Repository. Klicke auf den blauen Button »Clone Repository« und gib die folgende URL ein:
-
-```text
-${template}
-```
-
-Bestätige anschließend mit <kbd>Enter</kbd>.
-
-
-<!-- tutorial-screenshot
-# Clone Repository mit eingetragener BIF-URL
-clone-start: https://github.com/specht/bif.git @ b5215fa72545f05f00d2ba23865c4e2eeff691a2
-crop-bottom: 67%
--->
-
-<img class='full' src='git-clone.webp' alt=''>
-
-Als nächstes musst du angeben, in welches Verzeichnis das Repository geklont werden soll. Bestätige den Standardpfad
-
-```text
-/workspace/
-```
-
-mit <kbd>Enter</kbd>.
-
-<!-- tutorial-screenshot
-# Auswahl von /workspace/
-press: Enter
-wait-for-input-value: /workspace/
-crop-bottom: 54%
--->
-
-<img class='full' src='confirm-clone-path.webp' alt=''>
-
-Beantworte anschließend die Frage »Would you like to open the repository?« mit »Open«.
-
-<!-- tutorial-screenshot
-# Dialog zum Öffnen des geklonten Repositorys
-press: Enter
-wait-for-text: Would you like to open the repository?
--->
-
-<img class='full' src='open-yes-no.webp' alt=''>
+_include(workspace#repository-klonen)
 
 Wenn alles geklappt hat, siehst du links im Explorer unter anderem den Ordner `pages-starter` sowie die Dateien `config.js` und `index.html`.
 
 <!-- tutorial-screenshot
-# geöffnetes BIF-Projekt im Explorer
+# Klonen wie im Handbuch »Workspace« (oben eingebunden), dann das
+# geöffnete BIF-Projekt im Explorer
+show-left-sidebar
+clone-start: https://github.com/specht/bif.git @ b5215fa72545f05f00d2ba23865c4e2eeff691a2
+press: Enter
+wait-for-input-value: /workspace/
+press: Enter
+wait-for-text: Would you like to open the repository?
 click: Open
 wait-for-text: pages-starter
 wait-for-file: bif/node_modules/markdown-it/LICENSE

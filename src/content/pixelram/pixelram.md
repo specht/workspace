@@ -22,27 +22,9 @@ Dafür verwenden wir die Programmiersprache C. Diese Sprache ist näher an der A
 
 ## Repository klonen
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und danach <kbd>F</kbd>. Dein Work­space sollte jetzt ungefähr so aussehen:
+Für diese Anleitung brauchst du die Pixelram-Vorlage:
 
-<img class='full' src='fresh-start.webp' alt=''>
-
-<!-- Screenshot: Workspace ohne geöffneten Ordner -->
-
-Klicke auf den blauen Button »Clone Repository« und gib folgende Adresse ein:
-
-```text
-${template}
-```
-
-<img class='full' src='git-clone.webp' alt=''>
-
-Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <kbd>Enter</kbd>.
-
-<img class='full' src='confirm-clone-path.webp' alt=''>
-
-Beantworte die Frage »Would you like to open the repository?« mit »Open«.
-
-<img class='full' src='open-yes-no.webp' alt=''>
+_include(workspace#repository-klonen)
 
 Öffne nun die Datei `main.c` und führe im Terminal `make` aus:
 

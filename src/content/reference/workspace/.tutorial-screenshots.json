@@ -12,6 +12,24 @@
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "workspace_look": "4.138.0-ls366",
       "output_sha256": "b4f5d19ba0e45b9ff7b810fd3d4b176ea414c8eed8c3a19014f39bb9fefe1883"
+    },
+    "git-clone.webp": {
+      "state_hash": "73409a7cd7b8a4220d48272021b570098baeb838a86c60f0af815eca91790294",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "96f0143326f9cac146e503ae30b9bc6e96dfa4d4a2825539909891086ef7572f"
+    },
+    "choose-folder.webp": {
+      "state_hash": "20b84e2a13b51eac7595a589cc85af62231c8e854ff94a8e88974adf70549d91",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "932374f3481b7cd2d946a9bc49b5b988bf82add1b90b8ad98b59601779533fa0"
+    },
+    "open-yes-or-no.webp": {
+      "state_hash": "4d1fbde49409435ef29bce53aae82ac5c7647b4df04b86ce6057e44fcb38970d",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "090f8e2097f04b944351da1e0ed246373f789fde13cf578561bd29003299d88b"
     }
   }
 }

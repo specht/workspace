@@ -18,56 +18,23 @@ reference: [farben]
 Anaglyphen sind Bilder, bei denen zwei Bilder in verschiedenen Farben übereinandergelegt werden, um einen 3D-Effekt zu erzeugen. Farbfilter in der 3D-Brille trennen die beiden Bilder, sodass jedes Auge nur eines der Bilder sieht. Dadurch entsteht der Eindruck von Tiefe und räumlicher Wahrnehmung. In diesem Tutorial lernst du, wie du verschiedene Körper in 3D mit Anaglyphen darstellen kannst.
 </p>
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
-
-<!-- tutorial-screenshot
-# Workspace ohne geöffneten Ordner
-show-left-sidebar
--->
-
-<img class='full' src='fresh-start.webp' alt=''>
-
 ## Repository klonen
 
-Für diese Anleitung brauchst du ein Repository, das du klonen kannst, indem du auf den blauen Button »Clone Repository« klickst. Gib die folgende URL ein und bestätige mit <kbd>Enter</kbd>:
+Für diese Anleitung brauchst du die Vorlage des Anaglyph-Viewers:
 
-```bash
-${template}
-```
-
-<!-- tutorial-screenshot
-# Clone Repository mit eingetragener Anaglyph-URL
-clone-start: https://github.com/specht/anaglyph.git @ ec080795f88b538b382398fb91a8e234df3e0c0c
-crop-bottom: 67%
--->
-
-<img class='full' src='git-clone.webp' alt=''>
-
-Als nächstes musst du angeben, in welches Verzeichnis du das Repository klonen möchtest. Bestätige den Standardpfad `/workspace/` mit <kbd>Enter</kbd>.
-
-<!-- tutorial-screenshot
-# Auswahl von /workspace/
-press: Enter
-wait-for-input-value: /workspace/
-crop-bottom: 54%
--->
-
-<img class='full' src='confirm-clone-path.webp' alt=''>
-
-Beantworte die Frage »Would you like to open the repository?« mit »Open«.
-
-<!-- tutorial-screenshot
-# Dialog zum Öffnen des geklonten Repositorys
-press: Enter
-wait-for-text: Would you like to open the repository?
--->
-
-<img class='full' src='open-yes-no.webp' alt=''>
+_include(workspace#repository-klonen)
 
 Wenn du auf der linken Seite im Explorer nun die Datei `scene.ini` siehst, hast du alles richtig gemacht. Diese Datei enthält die Anweisungen für die 3D-Szene, die du erstellen wirst.
 
 <!-- tutorial-screenshot
-# geöffnetes Anaglyph-Projekt im Explorer
+# Klonen wie im Handbuch »Workspace« (oben eingebunden), dann das
+# geöffnete Anaglyph-Projekt im Explorer
+show-left-sidebar
+clone-start: https://github.com/specht/anaglyph.git @ ec080795f88b538b382398fb91a8e234df3e0c0c
+press: Enter
+wait-for-input-value: /workspace/
+press: Enter
+wait-for-text: Would you like to open the repository?
 click: Open
 wait-for-text: scene.ini
 -->

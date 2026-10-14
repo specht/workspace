@@ -56,13 +56,33 @@ Klicke auf »Clone Repository« und füge die Adresse der Vorlage ein:
 ${template}
 ```
 
+<!-- tutorial-screenshot
+# Beispiel: die Anaglyph-Vorlage
+press: Control+Shift+E
+wait-for-text: Clone Repository
+hide-bottom-panel
+clone-start: https://github.com/specht/anaglyph.git @ ec080795f88b538b382398fb91a8e234df3e0c0c
+crop-bottom: 67%
+-->
+
 <img class='full' src='git-clone.webp' alt='Das Eingabefeld für die Adresse des Repositorys.'>
 
 Bestätige mit <kbd>Enter</kbd>. Danach wählst du das Verzeichnis, in dem das Repository gespeichert werden soll: den Ordner `/workspace`.
 
+<!-- tutorial-screenshot
+press: Enter
+wait-for-input-value: /workspace/
+crop-bottom: 54%
+-->
+
 <img class='full' src='choose-folder.webp' alt='Die Auswahl des Zielordners /workspace.'>
 
 Das Repository wird jetzt in einen Unterordner von `/workspace` geklont, der so heißt wie das Repository. Beantworte die Frage, ob es jetzt geöffnet werden soll, mit »Open«:
+
+<!-- tutorial-screenshot
+press: Enter
+wait-for-text: Would you like to open the repository?
+-->
 
 <img class='full' src='open-yes-or-no.webp' alt='Die Frage, ob das geklonte Repository geöffnet werden soll.'>
 <!-- /part -->
