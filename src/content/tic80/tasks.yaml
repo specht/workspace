@@ -1,0 +1,144 @@
+# Aufgaben zu »Ein Spiel in 64 KB« (TIC-80).
+# Format: docs/aufgaben.md. TIC-80 speichert nach /workspace/TIC-80
+# (src/ruby/include/tic80_storage.rb); als .lua ist das Spiel Text, den
+# die Prüfungen lesen.
+format: 1
+activity: tic80
+tasks:
+  - id: gespeichert
+    title: Im Workspace gespeichert
+    prompt: |
+      Speichere dein Spiel in der Konsole von TIC-80 mit `save stars.lua`.
+    file: TIC-80/stars.lua
+    check:
+      type: files
+      path: TIC-80/stars.lua
+      expect:
+        format: text
+        contains:
+          - { pattern: 'function TIC', say: 'In `TIC-80/stars.lua` steht noch keine Funktion `TIC`. Hast du mit `new lua` angefangen und danach gespeichert?' }
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/TIC-80/stars.lua`. Tipp in der Konsole von TIC-80 `save stars.lua` (mit `.lua` am Ende) und drücke Enter.
+
+  - id: pixel
+    title: Wie viele Pixel?
+    prompt: |
+      Wie viele Pixel hat der Bildschirm von TIC-80?
+    check:
+      type: number
+      expect: 32640
+      tolerance: 0
+      unit: Pixel
+    feedback:
+      - when: { equals: 376 }
+        say: Das ist 240 + 136. Die Pixel stehen in Reihen und Spalten.
+    solution: 240 × 136 = 32 640 Pixel. Ein heutiger Monitor mit 1920 × 1080 hat mehr als 60-mal so viele.
+
+  - id: ohne-cls
+    title: Ohne cls
+    prediction: true
+    prompt: |
+      Was passiert, wenn du im Beispielprogramm die Zeile mit `cls(13)`
+      löschst und die Figur bewegst? Überleg erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - Die Figur zieht eine Spur hinter sich her
+        - Die Figur bewegt sich wie vorher
+        - Der Bildschirm bleibt schwarz
+        - TIC-80 meldet einen Fehler
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Was zeichnet `TIC()` in jedem Bild über die alte Figur? Ohne `cls` bleibt das Bild vom letzten Mal stehen.
+      - when: { picked: 2 }
+        say: Die Figur wird trotzdem gezeichnet, mit `spr`. Was fehlt, ist nur das Löschen davor.
+      - when: { picked: 3 }
+        say: '`cls` ist kein Pflichtbefehl. Ohne ihn läuft das Programm weiter.'
+    solution: Ohne `cls` wird das alte Bild nicht gelöscht. Jede Figur bleibt stehen, die neue kommt dazu, und es entsteht eine Spur. Deshalb beginnt fast jedes `TIC()` mit `cls`.
+
+  - id: fallzeit
+    title: Wie lange fällt ein Stern?
+    prompt: |
+      Ein Stern startet bei `sy = 0` und fällt in jedem Bild ein Pixel. Wie
+      viele Sekunden braucht er, bis er unten aus dem Bild ist (`sy > 136`)?
+      Runde auf zwei Stellen.
+    check:
+      type: number
+      expect: 2.28
+      tolerance: 0.05
+      unit: Sekunden
+    hint: Wie oft in der Sekunde ruft TIC-80 die Funktion `TIC()` auf?
+    feedback:
+      - when: { between: [136, 137] }
+        say: Das ist die Zahl der Bilder. Gefragt ist die Zeit in Sekunden.
+    solution: Bei 137 Bildern und 60 Bildern pro Sekunde sind das 137 ÷ 60 ≈ 2,28 Sekunden.
+
+  - id: ein-stern
+    title: Ein Stern fällt
+    prompt: |
+      Bau den fallenden Stern und das Fangen in dein Spiel ein und speichere
+      es (<kbd>Strg</kbd><kbd>S</kbd>).
+    file: TIC-80/stars.lua
+    check:
+      type: files
+      path: TIC-80/stars.lua
+      expect:
+        format: text
+        contains:
+          - { pattern: 'math\.random', say: 'In `TIC-80/stars.lua` finde ich noch kein `math.random`: Wo fängt der Stern neu an?' }
+          - { pattern: 'print\(', say: 'Noch zeigt dein Spiel keine Punkte an: `print("Score: " .. score, 4, 4, 12)`.' }
+
+  - id: eigene-figur
+    title: Deine Figur
+    prompt: |
+      Male im Sprite-Editor (<kbd>F2</kbd>) eine eigene Figur in Sprite 1
+      und speichere.
+    file: TIC-80/stars.lua
+    check:
+      type: files
+      path: TIC-80/stars.lua
+      expect:
+        format: text
+        contains:
+          - { pattern: '^-- <TILES>', say: 'In `TIC-80/stars.lua` stehen keine Sprites. Hast du nach dem Zeichnen gespeichert?' }
+          - { pattern: '^-- 001:(?!eccccccccc888888caaaaaaaca888888cacccccccacc0ccccacc0ccccacc0ccc)[0-9a-f]{64}\s*$', say: 'Sprite 1 sieht noch aus wie die Figur, die TIC-80 mitbringt. Male in Sprite 1 und speichere mit Strg+S.' }
+
+  - id: viele-sterne
+    title: Viele Sterne
+    prompt: |
+      Lass mehrere Sterne fallen, mit einer Tabelle und einer Schleife, und
+      beende das Spiel, wenn die Leben aufgebraucht sind.
+    file: TIC-80/stars.lua
+    check:
+      type: files
+      path: TIC-80/stars.lua
+      expect:
+        format: text
+        contains:
+          - { pattern: '\bfor\b', say: 'In `TIC-80/stars.lua` finde ich noch keine Schleife (`for`), die die Sterne durchgeht.' }
+          - { pattern: '\{\s*\}|\{\s*x\s*=', say: 'Noch keine Tabelle für die Sterne: `stars = {}`.' }
+
+  - id: ton
+    title: Ein Ton beim Fangen
+    prompt: |
+      Spiel einen Ton, wenn ein Stern gefangen wird, und speichere.
+    file: TIC-80/stars.lua
+    check:
+      type: files
+      path: TIC-80/stars.lua
+      expect:
+        format: text
+        contains:
+          - { pattern: 'sfx\(', say: 'Noch kein Ton: `sfx(0, "C-6", 8)` gehört dorthin, wo ein Stern gefangen wird.' }
+
+  - id: abgabe
+    title: Dein Spiel
+    prompt: |
+      Gib dein Spiel ab, die Datei aus `TIC-80`. Deine Lehrkraft kann den
+      Code ansehen; du kannst jederzeit neu abgeben.
+    check:
+      type: submit
+      pick: TIC-80/*.lua
+      max_size: 1MB

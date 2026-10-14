@@ -445,6 +445,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   wenn der Workspace aus ist: in einem Lese-Container mit demselben Image,
   ohne Netz, der Ordner nur lesbar. Bisher hieß es dann »Starte zuerst
   deinen Workspace«, auch auf der Klassenseite.
+- Neue Aktivität »Ein Spiel in 64 KB« (TIC-80, unter Computergrafik): Lua,
+  Konsole und Editoren, Speichern als Textdatei in `/workspace/TIC-80`, der
+  Bildschirm, dann Schritt für Schritt das Spiel »Star Catcher« (Figur,
+  fallende Sterne, eigene Figur im Sprite-Editor, Leben, Ton), Ideen für ein
+  eigenes Spiel und eine Abgabe. Neun Aufgaben, Notiz für Lehrkräfte,
+  erzeugte Screenshots aus dem echten TIC-80.
 - Die Verweise ins Handbuch unter Abschnitten (»Mehr zum Text auf Folien:
   Überschriften und Absätze …«) sind kleine Knöpfe im Türkis des Handbuchs
   mit dessen Buch-Symbol statt beiger Pillen.
