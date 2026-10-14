@@ -150,8 +150,6 @@ wait-for-file: PATH
 wait-for-file-newer: TARGET <- SOURCE
 go-live
 preview-port: PORT
-preview-url: https://2d.hackschule.de/
-preview-load-game: RELATIVE_WORKSPACE_JSON_PATH
 neo4j-browser
 hook: NAME ARGS
 select-option: CSS_SELECTOR = VALUE
@@ -207,14 +205,6 @@ captured with `tab: preview`, even if it binds only to 127.0.0.1.
 `select-option` selects the given value in a real HTML `<select>` on the active
 tab and triggers the normal change event. For example,
 `select-option: #structure = avl` picks a completed AVL implementation.
-
-`preview-url` is deliberately restricted to the public 2D Game Studio at
-`https://2d.hackschule.de/`. `preview-load-game` loads the generated JSON of
-the five-level *Pip und das letzte Licht* demo from the screenshot Workspace,
-relative to `/workspace`, into that site's in-browser editor. It does not
-save or publish anything remotely. Generate the JSON reproducibly from a
-pinned `specht/2d` Git checkout with `npm ci && npm run demo` in `rezepte/tools`.
-The site itself is live; the game content is pinned to the checked-out commit.
 
 `neo4j-browser` opens the screenshot account's Neo4j Browser as the `preview`
 tab, the way the »Neo4j« button in the menu does (`/api/start_neo4j`), and logs
@@ -662,7 +652,7 @@ Chromium renders the screenshot capture at the requested scale.
 The Workspace renders at device pixel ratio 1 and the capture enlarges it by
 1.8; its screenshots are DOM text and SVG, which Chromium draws sharp at any
 capture scale. A preview tab renders at device pixel ratio 1.8 and is captured
-unscaled, so a `<canvas>` (the Game Studio, an anaglyph scene, the Neo4j graph)
+unscaled, so a `<canvas>` (an anaglyph scene, a sandbox, the Neo4j graph)
 draws at full resolution instead of being enlarged. Both give the same image
 size for the same layout.
 

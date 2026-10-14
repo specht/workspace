@@ -16,7 +16,7 @@ USAGE = <<~TEXT
                                                              and how many images of each page are generated or manual
       src/scripts/recreate-screenshots.rb --help             this text
 
-    TUTORIAL is a folder below src/content (bif, lehrmaterial/lehrmaterial-2d)
+    TUTORIAL is a folder below src/content (bif, reference/workspace)
     or a Markdown path. Drafts in src/content/_drafts are skipped. Every run ends
     with the state of the tutorials it rendered:
 

@@ -21,11 +21,10 @@ das Nachschlagewerk dazu.
 | Aktivität | Text zum Lesen und Mitmachen: Projekt, Labor, Grundlagen oder Galerie | `src/content/<slug>/<slug>.md` |
 | Aufgabe | Ein Schritt in einer Aktivität, den der Workspace prüft | `src/content/<slug>/tasks.yaml` |
 | Handbuch | Kurz und vollständig, ohne Geschichte; von vielen Aktivitäten verlinkt | `src/content/reference/<slug>/<slug>.md`, Adresse `/reference/<slug>` |
-| Werkzeug | Etwas, womit man arbeitet: Workspace, Datenbanken, ER-Werkstatt, die Sandboxes, das 2D Game Studio | eigene Seiten oder eigene Projekte |
+| Werkzeug | Etwas, womit man arbeitet: Workspace, Datenbanken, ER-Werkstatt, die Sandboxes | eigene Seiten oder eigene Projekte |
 | Klasse | Gruppen aus den Einladungslisten; eine Person kann in mehreren sein | `data/invitations/*.txt` |
 
-Die Sandboxes und das 2D Game Studio bleiben eigenständige Projekte. Der
-Workspace verlinkt sie und kann lesen, was in einem Workspace liegt, ändert
+Die Sandboxes bleiben eigenständige Projekte. Der Workspace verlinkt sie und kann lesen, was in einem Workspace liegt, ändert
 aber nichts an ihnen.
 
 ## Fünf Regeln

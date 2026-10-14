@@ -176,6 +176,11 @@ class Main < Sinatra::Base
         'lehrmaterial-sortieren' => 'sandbox-sortieren',
         'lehrmaterial-datenstrukturen' => 'sandbox-datenstrukturen',
         'lehrmaterial-cpu' => 'sandbox-cpu',
+        # The 2D Game Studio is a playground of its own; Lehrmaterial had only
+        # its page and the list of teacher notes, which is in the profile now.
+        'lehrmaterial-2d' => 'https://2d.hackschule.de/',
+        'lehrmaterial' => 'profil#profile-teaching-materials',
+        'lehrmaterial.html' => 'profil#profile-teaching-materials',
     }.freeze
 
     # Handbuch: reference pages, served under /reference/<slug>.
@@ -1458,7 +1463,10 @@ class Main < Sinatra::Base
         # Keep the student and teacher catalogs independent while sharing the
         # Markdown renderer, image cache, and screenshot generator.
         student_sections = YAML.load(File.read('/src/content/sections.yaml'))
-        teaching_sections = YAML.load(File.read('/src/content/lehrmaterial/sections.yaml'))
+        # Teacher-only pages (src/content/lehrmaterial) are optional; there
+        # are none at the moment.
+        teaching_sections = File.exist?('/src/content/lehrmaterial/sections.yaml') ?
+            (YAML.load(File.read('/src/content/lehrmaterial/sections.yaml')) || []) : []
         # Reference pages (Handbuch) live in their own catalog and are
         # served under /reference/<slug>. The catalog is optional.
         reference_sections = File.exist?(REFERENCE_SECTIONS_PATH) ?
@@ -4015,7 +4023,7 @@ class Main < Sinatra::Base
             "<div class='teacher-note-body'>#{note}</div></details>"
     end
 
-    # Activities with a teacher note (lehrkraft.md), listed in Lehrmaterial.
+    # Activities with a teacher note (lehrkraft.md), listed in the profile.
     def print_teacher_notes_overview
         return '' unless teacher_account_logged_in?
 
@@ -4025,8 +4033,7 @@ class Main < Sinatra::Base
         return '' if entries.empty?
 
         items = entries.map { |slug, title| "<li><a href='/#{CGI.escapeHTML(slug)}'>#{CGI.escapeHTML(title)}</a></li>" }
-        "<h2 class='mt-4'>Notizen zu Aktivitäten</h2>" \
-            "<p>Diese Aktivitäten haben eine Notiz für Lehrkräfte: Ablauf, Stolpersteine, was die Aufgaben prüfen. Du findest sie oben auf der jeweiligen Seite.</p>" \
+        "<p>Diese Aktivitäten haben eine Notiz für Lehrkräfte: Ablauf, Unterrichtsideen, Stolpersteine, was die Aufgaben prüfen. Du findest sie oben auf der jeweiligen Seite.</p>" \
             "<ul class='teacher-notes-list'>#{items.join}</ul>" \
             "<p>Was deine Gruppen in diesen Aktivitäten geschafft haben, steht in der <a href='/klasse'>Klassenübersicht</a>.</p>"
     end
@@ -6670,7 +6677,7 @@ class Main < Sinatra::Base
         # STDERR.puts "Requested path: #{path}"
         # STDERR.puts "Available content slugs: #{@@content.keys.join(', ')}"
         if (moved = MOVED_PAGES[path[1, path.size - 1]])
-            redirect "#{WEB_ROOT}/#{moved}", 301
+            redirect moved.start_with?('https://') ? moved : "#{WEB_ROOT}/#{moved}", 301
             return
         end
         if @@content.include?(path[1, path.size - 1])

@@ -303,6 +303,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Das Handbuch setzt beim Öffnen den Cursor ins Suchfeld (nicht auf
   Touch-Bildschirmen, wo sonst die Tastatur die Seite verdeckt).
 - Der Profil-Knopf zeigt ein Ausweis-Symbol.
+- Das 2D Game Studio ist ein eigener Spielplatz (2d.hackschule.de) und hat
+  keine Seite mehr im Workspace; damit entfällt auch »Lehrmaterial«. Die
+  Liste der Aktivitäten mit einer Notiz für Lehrkräfte steht jetzt im Profil
+  unter »Notizen für Lehrkräfte«. `/lehrmaterial` führt dorthin,
+  `/lehrmaterial-2d` zum Game Studio.
 - Jede Karte im Katalog nennt ihre Art (Projekt, Labor, Grundlagen, Übung,
   bei den Programmiersprachen »Steckbrief«), klein rechts neben dem Titel,
   wenn er Platz lässt; bisher hatten nur elf Karten ein Etikett, auf dem Bild.
