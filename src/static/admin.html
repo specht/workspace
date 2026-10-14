@@ -81,11 +81,16 @@
 
             <div id="login_codes_here" style="display: none;">
                 <h2 id="login-codes">Anmelde-Codes</h2>
+                <div class="login-code-group" hidden>
+                    <label for="login_code_group">Gruppe</label>
+                    <select class="form-select form-select-sm" id="login_code_group"></select>
+                </div>
                 <div style="max-width: 100%; overflow-x: auto;">
-                    <table class="table table-sm" id="table_admin_workspaces">
+                    <table class="table table-sm" id="table_login_codes">
                         <thead>
                             <tr>
                                 <th>E-Mail</th>
+                                <th class="login-code-groups">Gruppe</th>
                                 <th>Code</th>
                             </tr>
                         </thead>
@@ -152,36 +157,76 @@
 <script>
 
     var login_code_expiry_timer = null;
+    var login_code_lines = [];
+    var login_code_groups = [];
 
-    function render_login_codes(lines) {
+    // A teacher of several groups chooses whose codes to see; the choice is
+    // kept in this browser. A student in two of them (Klasse 12 and the LK)
+    // shows up under both.
+    function chosen_login_code_group() {
+        let chosen = '';
+        try { chosen = localStorage.getItem('hackschule-login-code-group') || ''; } catch (e) {}
+        return login_code_groups.indexOf(chosen) >= 0 ? chosen : '';
+    }
+
+    function render_login_codes(lines, groups) {
         if (login_code_expiry_timer !== null) {
             clearTimeout(login_code_expiry_timer);
             login_code_expiry_timer = null;
         }
+        if (lines) login_code_lines = lines;
+        if (groups) login_code_groups = groups;
+
+        let select = $('#login_code_group');
+        let several = login_code_groups.length > 1;
+        $('.login-code-group').prop('hidden', !several);
+        if (several) {
+            let wanted = ['', ...login_code_groups].join('\n');
+            if (select.data('groups') !== wanted) {
+                select.empty().append($('<option>').val('').text('Alle Gruppen'));
+                for (let group of login_code_groups) select.append($('<option>').val(group).text(group));
+                select.data('groups', wanted);
+            }
+            select.val(chosen_login_code_group());
+        }
+        let chosen = several ? chosen_login_code_group() : '';
 
         let now = Math.floor(Date.now() / 1000);
-        let active_lines = lines.filter((line) => line.expires_at > now);
+        let active_lines = login_code_lines.filter((line) => line.expires_at > now);
+        login_code_lines = active_lines;
+        let shown = active_lines.filter((line) => chosen === '' || (line.groups || []).indexOf(chosen) >= 0);
         let container = $('#login_codes_here');
         let tbody = container.find('tbody');
         tbody.empty();
+        // The group column only says something when several are shown.
+        container.find('.login-code-groups').toggle(several && chosen === '');
 
         if (active_lines.length === 0) {
             container.hide();
             return;
         }
 
-        for (let line of active_lines) {
+        for (let line of shown) {
             let row = $('<tr>').appendTo(tbody);
             row.append($('<td>').text(line.email));
+            if (several && chosen === '') row.append($('<td>').text((line.groups || []).join(', ')));
             row.append($('<td>').text(line.code));
+        }
+        if (shown.length === 0) {
+            $('<tr>').appendTo(tbody).append($('<td colspan="3" class="text-muted">').text('In dieser Gruppe wartet gerade niemand auf einen Code.'));
         }
         container.show();
 
         let next_expiry = Math.min(...active_lines.map((line) => line.expires_at));
         login_code_expiry_timer = setTimeout(function() {
-            render_login_codes(active_lines);
+            render_login_codes();
         }, Math.max(50, next_expiry * 1000 - Date.now() + 50));
     }
+
+    $(document).on('change', '#login_code_group', function () {
+        try { localStorage.setItem('hackschule-login-code-group', $(this).val()); } catch (e) {}
+        render_login_codes();
+    });
 
     function wrapLettersInSpan(input) {
         return input.replace(/([A-Za-z%]+)/g, "<span class='unit'>$1</span>");
@@ -330,7 +375,7 @@
                 }
             }
             if (data.action === 'login_codes') {
-                render_login_codes(data.lines);
+                render_login_codes(data.lines, data.groups || []);
             }
         }
     }

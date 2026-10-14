@@ -3205,3 +3205,16 @@ h3[id] {
         overflow-x: auto;
     }
 }
+
+/* Admin page: which group's login codes a teacher of several groups sees. */
+.login-code-group {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    max-width: 24em;
+    margin-bottom: 0.8em;
+}
+
+.login-code-group[hidden] {
+    display: none;
+}

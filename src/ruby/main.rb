@@ -9,6 +9,7 @@ require './include/task_card.rb'
 require './include/task_store.rb'
 require './include/class_board.rb'
 require './include/student_home.rb'
+require './include/group_visibility.rb'
 require './include/reference_index.rb'
 require './include/template_freshness.rb'
 require './include/anaglyph_viewer.rb'
@@ -4375,12 +4376,14 @@ class Main < Sinatra::Base
 
     # Use the same server-side visibility rule for the initial table and the
     # live WebSocket updates. A teacher may view only their assigned groups.
+    # A teacher sees the workspace of a student in any group it administers,
+    # not only in the student's first one (GroupVisibility).
     def workspace_user_visible_to?(email, viewer_email)
         return false unless email
-        return true if ADMIN_USERS.include?(viewer_email)
 
-        group = @@invitations.dig(email, :group)
-        group && (@@teachers[viewer_email] || Set.new()).include?(group)
+        GroupVisibility.visible?(email, :group_members => @@group_members,
+            :viewer_groups => @@teachers[viewer_email] || Set.new(),
+            :admin => ADMIN_USERS.include?(viewer_email))
     end
 
     def print_workspaces()
@@ -4418,10 +4421,17 @@ class Main < Sinatra::Base
                 user_tag =~ /^[0-9a-z]{16}$/
             end
             active_users = Set.new(active_users)
+            # Each student once, under the first of its groups this teacher
+            # administers (all groups for an administrator): a student in
+            # Klasse 12 and in the LK appears for both teachers.
+            viewer_groups = @@teachers[@session_user[:email]] || Set.new()
+            listed = Set.new()
             @@user_group_order.each do |group|
+                next unless admin_logged_in? || viewer_groups.include?(group)
                 sub = StringIO.open do |io2|
-                    (@@user_groups[group] || []).each do |email|
-                        next unless workspace_user_visible_to?(email, @session_user[:email])
+                    ((@@user_groups[group] || []) | (@@group_members[group] || [])).each do |email|
+                        next if listed.include?(email)
+                        listed << email
                         user_tag = fs_tag_for_email(email)
                         next unless active_users.include?(user_tag)
                         io2.puts "<tr id='tr_hs_code_#{user_tag}'>"
@@ -4509,13 +4519,15 @@ class Main < Sinatra::Base
                 :expires_at => row['l.expires_at'].to_i,
             }
         end
+        # Every teacher of one of the student's groups sees the code, with
+        # the groups it is for; the page lets a teacher of several groups
+        # choose which to show.
         clients.each do |ws, ws_email|
-            filtered_lines = lines.select do |line|
-                email = line[:email]
-                group = @@invitations[email][:group]
-                ADMIN_USERS.include?(ws_email) ||(@@teachers[ws_email] || Set.new()).include?(group)
-            end
-            ws.send({:action => 'login_codes', :lines => filtered_lines}.to_json)
+            shown = GroupVisibility.login_codes_for(lines,
+                :group_members => @@group_members, :group_order => @@user_group_order,
+                :viewer_groups => @@teachers[ws_email] || Set.new(),
+                :admin => ADMIN_USERS.include?(ws_email))
+            ws.send({:action => 'login_codes', :lines => shown[:lines], :groups => shown[:groups]}.to_json)
         end
     end
 
