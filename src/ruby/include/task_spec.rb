@@ -54,7 +54,7 @@ module TaskSpec
     EXTRACTORS = %w[ping_rtt_avg ping_hops ping_reply_country traceroute_hops].freeze
     EXTRACTOR_WITH_ARGUMENT = /\Ahttp_header:[A-Za-z0-9-]+\z/
 
-    FILES_EXPECT_KEYS = %w[exists executable format new_files name format_matches_extension max_size].freeze
+    FILES_EXPECT_KEYS = %w[exists executable format new_files name format_matches_extension max_size contains].freeze
     HTML_EXPECT_KEYS = %w[parses slides first_slide_changed img elements].freeze
     SCENE_MATCHER_KEYS = %w[
         shape name at count min rows size bottom_y rotate_z lattice min_spacing moves orbits
@@ -247,6 +247,20 @@ module TaskSpec
                 extra = expect.keys - FILES_EXPECT_KEYS
                 errors << "expect: unknown keys: #{extra.join(', ')}" unless extra.empty?
                 errors.concat(regex_errors(expect['name'], 'expect.name')) if expect.key?('name')
+                if expect.key?('contains')
+                    list = expect['contains']
+                    if list.is_a?(Array) && !list.empty?
+                        list.each_with_index do |want, i|
+                            pattern = want.is_a?(Hash) ? want['pattern'] : want
+                            if want.is_a?(Hash) && (want.keys - %w[pattern say]).any?
+                                errors << "expect.contains[#{i}] knows pattern and say"
+                            end
+                            errors.concat(regex_errors(pattern, "expect.contains[#{i}]"))
+                        end
+                    else
+                        errors << 'expect.contains must be a list of regular expressions'
+                    end
+                end
                 errors << 'expect.max_size must look like 500kB or 2MB' if expect.key?('max_size') && parse_size(expect['max_size']).nil?
                 if expect.key?('new_files') && !(expect['new_files'].is_a?(Hash) && expect['new_files']['min'].is_a?(Integer))
                     errors << 'expect.new_files must be { min: <number> }'

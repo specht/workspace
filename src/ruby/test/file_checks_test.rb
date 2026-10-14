@@ -288,6 +288,24 @@ class FileChecksTest < Minitest::Test
         assert_equal :no_style, FileChecks.css(check, @ws).problem
     end
 
+    # contains: patterns in a text file, with the line where each is.
+    def test_files_contains
+        dir = File.join(@root, 'TIC-80')
+        FileUtils.mkdir_p(dir)
+        File.write(File.join(dir, 'sterne.lua'), "-- script: lua\nfunction TIC()\n  cls(0)\n  spr(1, x, 112, 14)\nend\n")
+        check = { 'type' => 'files', 'path' => 'TIC-80/sterne.lua',
+                  'expect' => { 'format' => 'text', 'contains' => ['function TIC', { 'pattern' => 'sfx\\(', 'say' => 'Noch kein Ton: Schreib `sfx(0)` dorthin, wo ein Stern gefangen wird.' }] } }
+        outcome = FileChecks.files(check, @ws)
+        assert_equal :missing_text, outcome.problem
+        assert_equal 'Noch kein Ton: Schreib `sfx(0)` dorthin, wo ein Stern gefangen wird.', outcome.message
+        assert_includes outcome.read, 'Zeile 2'
+
+        File.write(File.join(dir, 'sterne.lua'), "function TIC()\n  sfx(0, 'C-6', 8)\nend\n")
+        outcome = FileChecks.files(check, @ws)
+        assert outcome.ok
+        assert_includes outcome.read, "`sfx\\(`: Zeile 2"
+    end
+
     # html elements: so many elements of a kind, with an attribute.
     def test_html_elements
         site = File.join(@root, 'website-test')

@@ -300,7 +300,22 @@ check:
     max_size: 500kB
 ```
 
-Für eine einzelne Datei: `exists`, `executable` und `format` (z. B. `elf`).
+Für eine einzelne Datei: `exists`, `executable`, `format` (z. B. `elf`) und
+`contains`: reguläre Ausdrücke, die irgendwo in einer Zeile der Datei passen
+müssen, jeder auf Wunsch mit einem eigenen Satz für den Fall, dass er fehlt.
+Unter »Was der Workspace gelesen hat« steht die Zeile, in der jeder gefunden
+wurde.
+
+```yaml
+check:
+  type: files
+  path: TIC-80/sterne.lua
+  expect:
+    format: text
+    contains:
+      - 'function TIC'
+      - { pattern: 'sfx\(', say: 'Noch kein Ton: `sfx(0)` gehört dorthin, wo ein Stern gefangen wird.' }
+```
 
 ### html, css, references
 
@@ -788,7 +803,7 @@ die eingebaute Rückmeldung für einen Fall.
 
 | Art | Codes |
 | --- | --- |
-| `files` | `missing`, `symlink`, `wrong_type`, `wrong_format`, `not_executable`, `no_new_files`, `bad_name`, `format_mismatch`, `too_big` |
+| `files` | `missing`, `symlink`, `wrong_type`, `wrong_format`, `not_executable`, `missing_text`, `no_new_files`, `bad_name`, `format_mismatch`, `too_big` |
 | `html` | `missing`, `parse_error`, `no_slides`, `first_slide_unchanged`, `too_few_slides`, `slide_without_heading`, `too_few_images`, `alt_missing`, `image_case`, `image_missing` |
 | `css` | `missing`, `no_style`, `marker_missing`, `parse_error`, `too_few_rules`, `missing_declaration`, `not_linked` |
 | `references` | `missing`, `external`, `outside_root`, `local_missing` |

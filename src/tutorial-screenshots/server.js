@@ -561,6 +561,8 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
                 throw withSourceError(new Error(`Invalid preview port: ${port}`), source);
             }
             recipe.actions.push({ type: 'preview-port', port });
+        } else if ((match = line.match(/^open-site:\s*(\/[A-Za-z0-9_\-./]*)$/))) {
+            recipe.actions.push({ type: 'open-site', path: match[1] });
         } else if ((match = line.match(/^select-option:\s*(#[^\s=]+)\s*=\s*(\S+)$/))) {
             recipe.actions.push({ type: 'select-option', selector: match[1], value: match[2] });
         } else if ((match = line.match(/^click:\s*(.+)$/))) {
@@ -1909,6 +1911,18 @@ async function openNeo4jBrowser() {
     await preview.locator('[data-testid=main-editor] .cm-content').waitFor({ state: 'visible', timeout: 30_000 });
 }
 
+// A page of the Workspace site itself (TIC-80 at /tic80/, say) as the
+// preview tab, logged in as the screenshot account like the dashboard.
+async function openSitePage(pathname, hooks) {
+    if (preview && !preview.isClosed()) await preview.close();
+    preview = await context.newPage();
+    const response = await preview.goto(new URL(pathname, BASE_URL).href, {
+        waitUntil: 'domcontentloaded', timeout: 60_000,
+    });
+    if (!response?.ok()) throw new Error(`${pathname} returned HTTP ${response?.status()}`);
+    await waitForPreviewReady(preview, hooks);
+}
+
 async function selectOption(action, targetTab) {
     const page = requirePageForTab(targetTab, 'select-option');
     const select = page.locator(action.selector);
@@ -2539,6 +2553,7 @@ async function executeAction(action, targetTab, hooks) {
         case 'terminal-run': return terminalRun(action.text);
         case 'go-live': return goLive(hooks);
         case 'preview-port': return openPreviewPort(action.port, hooks);
+        case 'open-site': return openSitePage(action.path, hooks);
         case 'neo4j-browser': return openNeo4jBrowser();
         case 'select-option': return selectOption(action, targetTab);
         case 'write-file': return writeWorkspaceFile(action.path, action.contents, hooks);
