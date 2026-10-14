@@ -237,7 +237,7 @@ In diesem Abschnitt lernst du den Befehl <code>wget</code> kennen.
 Um Dateien aus dem Internet herunterzuladen, kannst du den Befehl `wget` verwenden.
 Gib einfach `wget` gefolgt von der URL der Datei ein, die du herunterladen möchtest:
 
-```bash
+```bash_copy
 wget https://github.com/begilbert-sys/2048-in-C/raw/main/main.c
 ```
 

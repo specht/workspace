@@ -160,6 +160,74 @@ pre.wrap-code {
     overflow-wrap: anywhere;
 }
 
+/* ```bash_copy: a copy button in the corner, only on blocks that are no
+   use to type (code_highlight.rb). The block keeps room for it. */
+.code-copy-box {
+    position: relative;
+}
+
+pre.copy-code {
+    padding-right: 3em;
+}
+
+/* Centred on the first line: the block's padding (0.5em at 93%) plus half
+   a line (1.5 at 93%) minus half the button. */
+.code-copy {
+    position: absolute;
+    top: calc(0.465rem + 0.6975rem - 1rem);
+    right: 0.3rem;
+    width: 2em;
+    height: 2em;
+    padding: 0;
+    border: none;
+    background: none;
+    color: #e7e6e1;
+    opacity: 0.45;
+    line-height: 1;
+    transition: opacity 0.15s;
+}
+
+.code-copy:hover,
+.code-copy:focus-visible,
+.code-copy.copied {
+    opacity: 0.9;
+}
+
+/* Copied: a green checkmark winds up, spins once the other way, faster
+   and faster, overshoots a little and settles. */
+.code-copy.copied {
+    color: #3ccf7a;
+}
+
+.code-copy.copied .bi {
+    display: inline-block;
+    animation: code-copy-done 0.6s both;
+}
+
+@keyframes code-copy-done {
+    0% {
+        transform: rotate(360deg) scale(0.6);
+        animation-timing-function: cubic-bezier(0.2, 0, 0.4, 1);
+    }
+    22% {
+        transform: rotate(400deg) scale(0.5);
+        animation-timing-function: cubic-bezier(0.6, 0, 1, 0.6);
+    }
+    78% {
+        transform: rotate(-14deg) scale(1.2);
+        animation-timing-function: cubic-bezier(0.3, 0, 0.3, 1);
+    }
+    100% {
+        transform: rotate(0) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .code-copy.copied .bi {
+        animation: none;
+    }
+}
+
 .rouge-table {
     padding: 0;
     font-size: 90%;

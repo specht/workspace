@@ -64,7 +64,7 @@ Bevor wir das Programm ausführen können, müssen wir es kompilieren. Dadurch w
 
 Vorher müssen wir noch Rust installieren. Gib folgenden Befehl im Terminal ein:
 
-```bash
+```bash_copy
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 

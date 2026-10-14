@@ -58,7 +58,7 @@ Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, dr
 
 Klicke auf »Clone Repository« und füge die Adresse der Vorlage ein:
 
-```bash
+```bash_copy
 ${template}
 ```
 

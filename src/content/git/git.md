@@ -722,14 +722,14 @@ Um die Arbeit im Terminal etwas zu vereinfachen, können wir zwei Dinge tun:
 
 Um den Git-Prompt zu installieren, klone das Repository `bash-git-prompt` in dein Home-Verzeichnis:
 
-```bash
+```bash_copy
 git clone https://github.com/magicmonty/bash-git-prompt.git ~/.bash-git-prompt --depth=1
 ```
 
 Öffne anschließend die Datei `/workspace/.bashrc` in VS Code und füge am Ende der Datei folgende Zeilen hinzu:
 
 <!-- screenshot-code: bashrc -->
-```bash
+```bash_copy
 # enable Bash completion for Git
 source /usr/share/bash-completion/completions/git
 

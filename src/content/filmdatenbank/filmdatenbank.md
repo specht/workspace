@@ -255,10 +255,15 @@ _task(tabellen-filme)
 
 ### Filmdaten laden
 
-Die Tabellen sind angelegt, aber leer. Beende `mycli` mit `exit` oder <kbd>Strg</kbd><kbd>D</kbd>. Lade dann die Filme, Genres und ihre Zuordnungen herunter und gib sie an MySQL:
+Die Tabellen sind angelegt, aber leer. Beende `mycli` mit `exit` oder <kbd>Strg</kbd><kbd>D</kbd>. Lade dann die Filme, Genres und ihre Zuordnungen herunter:
+
+```bash_copy
+wget https://github.com/specht/workspace-files/raw/main/movie-archive/mysql-data-movies.sql
+```
+
+…und gib sie an MySQL:
 
 ```bash
-wget https://github.com/specht/workspace-files/raw/main/movie-archive/mysql-data-movies.sql
 mysql < mysql-data-movies.sql
 ```
 
@@ -373,10 +378,13 @@ In der Tabellenansicht siehst du `movie_crew` mit drei Fremdschlüsseln, die zus
 
 _task(modell-crew)
 
-Erzeuge das SQL neu, beende `mycli` und lege die Tabellen an. Weil `film.sql` mit `DROP TABLE` beginnt, sind danach auch `movie` und `genre` wieder leer. Lade deshalb beide Datendateien:
+Erzeuge das SQL neu, beende `mycli` und lege die Tabellen an. Weil `film.sql` mit `DROP TABLE` beginnt, sind danach auch `movie` und `genre` wieder leer. Lade deshalb danach beide Datendateien. Die neue musst du erst herunterladen:
+
+```bash_copy
+wget https://github.com/specht/workspace-files/raw/main/movie-archive/mysql-data-crew.sql
+```
 
 ```bash
-wget https://github.com/specht/workspace-files/raw/main/movie-archive/mysql-data-crew.sql
 mysql < film.sql
 mysql < mysql-data-movies.sql
 mysql < mysql-data-crew.sql

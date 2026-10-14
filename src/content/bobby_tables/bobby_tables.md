@@ -20,7 +20,7 @@ also immer durch den Namen deiner Datenbank.
 Öffne ein Terminal im Workspace und gib den folgenden Befehl ein, um die Testdaten
 herunterzuladen:
 
-```bash
+```bash_copy
 wget https://github.com/specht/workspace-files/raw/main/users.sql
 ```
 

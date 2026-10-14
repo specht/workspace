@@ -144,6 +144,41 @@ function install_clipboard_handler(selector) {
     });
 }
 
+// ```bash_copy blocks (code_highlight.rb): a button that copies the code,
+// without line numbers. Only on blocks that are no use to type.
+function install_code_copy() {
+    document.querySelectorAll('pre.copy-code').forEach(function(pre) {
+        let box = document.createElement('div');
+        box.className = 'code-copy-box';
+        pre.parentNode.insertBefore(box, pre);
+        box.appendChild(pre);
+        let button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'code-copy';
+        button.title = 'In die Zwischenablage kopieren';
+        button.setAttribute('aria-label', 'Code in die Zwischenablage kopieren');
+        button.innerHTML = "<i class='bi bi-copy'></i>";
+        box.appendChild(button);
+    });
+    let clipboard = new ClipboardJS('.code-copy', {
+        text: function(trigger) {
+            let pre = trigger.parentNode.querySelector('pre');
+            let code = pre.querySelector('.rouge-code') || pre;
+            return code.innerText.replace(/\n$/, '');
+        },
+    });
+    clipboard.on('success', function(e) {
+        let button = e.trigger;
+        e.clearSelection();
+        button.classList.add('copied');
+        button.innerHTML = "<i class='bi bi-check-lg'></i>";
+        setTimeout(function() {
+            button.classList.remove('copied');
+            button.innerHTML = "<i class='bi bi-copy'></i>";
+        }, 1200);
+    });
+}
+
 function showTemplateModal(title, text, confirm_label, confirm_class,
     cancel_label, cancel_class, confirm_callback) {
     $('#__template_modal .modal-title').html(title);
@@ -723,6 +758,7 @@ function install_alt_review_toggle() {
 
 window.addEventListener('load', function() {
     install_clipboard_handler('.btn-clipboard');
+    install_code_copy();
     // check if the server tag has changed
     if ('#{user_logged_in?}' === 'true') {
         let server_tag = '#{(@session_user || {})[:server_tag]}';

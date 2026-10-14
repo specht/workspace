@@ -12,19 +12,20 @@ module CodeHighlight
         root.css('pre').each do |pre|
             code = pre.css('code').first
             next if code.nil?
+            # Suffixes after the language, in any order: _lineno, _wrap and
+            # _copy (a copy button, only for what is no use to type: clone
+            # addresses, downloads, setup commands).
             language = code.attr('class')
-            lineno = false
-            if language =~ /_lineno$/
-                lineno = true
-                language = language.sub(/_lineno$/, '')
+            flags = []
+            while language =~ /_(lineno|wrap|copy)$/
+                flags << $1
+                language = language.sub(/_(lineno|wrap|copy)$/, '')
             end
-            wrap = false
-            if language =~ /_wrap$/
-                wrap = true
-                language = language.sub(/_wrap$/, '')
-            end
+            lineno = flags.include?('lineno')
+            wrap = flags.include?('wrap')
 
             pre['class'] = [pre['class'], 'wrap-code'].compact.join(' ') if wrap
+            pre['class'] = [pre['class'], 'copy-code'].compact.join(' ') if flags.include?('copy')
 
             formatter = if lineno
                 Rouge::Formatters::HTMLTable.new(Rouge::Formatters::HTML.new)

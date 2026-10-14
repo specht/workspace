@@ -69,7 +69,7 @@ Du kannst das Terminal auch maximieren, indem du auf das Symbol in der rechten o
 
 Um MySQL kennenzulernen, benötigen wir eine Datenbank. Wir verwenden die Beispieldatenbank `terra1`, die du dir herunterladen kannst, indem du folgenden Befehl eingibst:
 
-```bash
+```bash_copy
 wget https://github.com/specht/workspace-files/raw/main/terra1.sql
 ```
 

@@ -409,7 +409,7 @@ Jetzt, wo die Stoppuhr funktioniert, können wir uns um das Styling kümmern. Wi
 
 Wir können die Schriftart der Webseite ändern, um sie ansprechender zu gestalten. Dazu verwenden wir Google Fonts. Füge den folgenden Code in den `<head>`-Tag der Datei `src/app.html` ein (vor `%sveltekit.head%`):
 
-```html
+```html_copy
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
@@ -434,7 +434,7 @@ Du solltest jetzt sehen, dass die Schriftart der Webseite geändert wurde. Wenn 
 
 [Bootstrap](https://getbootstrap.com/) ist ein beliebtes CSS-Framework, das dir hilft, deine Webseite schnell und einfach zu gestalten. Du kannst es einbinden, indem du den folgenden Code in den `<head>`-Tag der Datei `src/app.html` einfügst:
 
-```html
+```html_copy
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
 ```
 

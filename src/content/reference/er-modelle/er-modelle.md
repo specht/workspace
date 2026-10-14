@@ -240,8 +240,15 @@ Eine Datei mit der Endung `.er` öffnet VS Code mit der ER-Werkstatt.
 
 Die ER-Werkstatt ist eine JavaScript-Datei, die auch ohne VS Code läuft, zum Beispiel für Skripte. Im Workspace liegt sie im Ordner der Erweiterung; die Quelle ist `src/vscode-extensions/er/core/er-core.js` im Repository des Workspaces.
 
-```bash
+Merke dir den Pfad zuerst in einer Variablen:
+
+```bash_copy
 ER=$(ls /workspace/.extensions/hackschule.hackschule-er-*/core/er-core.js | tail -1)
+```
+
+Dann erzeugt `node $ER` dasselbe wie die Befehle in VS Code:
+
+```bash
 node $ER --sql film.er > film.sql
 node $ER --svg tables film.er > film-tables.svg
 node $ER --json film.er

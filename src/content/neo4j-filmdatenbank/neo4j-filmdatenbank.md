@@ -94,12 +94,22 @@ Runde Klammern stehen für Knoten, eckige für Beziehungen. Der Name hinter dem 
 
 Schalte zuerst in deinem [Profil](/profil) unter »Datenbanken« **Neo4j** ein. Du hast dann eine eigene, leere Neo4j-Datenbank, und oben im Menü erscheint der Knopf »Neo4j«. Im Workspace stehen deine Zugangsdaten in den Umgebungsvariablen `NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD` und `NEO4J_DATABASE`; die Werkzeuge unten lesen sie von selbst.
 
-Öffne ein Terminal und lade die Filmdaten herunter, am besten in den Ordner aus der Filmdatenbank:
+Öffne ein Terminal und wechsle in den Ordner aus der Filmdatenbank (`mkdir -p` legt ihn an, falls es ihn noch nicht gibt):
 
 ```bash
 mkdir -p ~/filmdatenbank
 cd ~/filmdatenbank
+```
+
+Lade dort die Filmdaten herunter…
+
+```bash_copy
 wget https://github.com/specht/workspace-files/raw/main/movie-archive/neo4j.dump
+```
+
+…und lade sie in deine Datenbank:
+
+```bash
 neo4j_bolt load neo4j.dump
 ```
 

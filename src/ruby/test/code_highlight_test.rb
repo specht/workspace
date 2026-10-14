@@ -35,4 +35,16 @@ class CodeHighlightTest < Minitest::Test
         # An unknown language stays as it is.
         assert_includes html("<pre><code class='mermaid'>graph TD</code></pre>"), "<code class=\"mermaid\">"
     end
+
+    # ```bash_copy: the page puts a copy button on the block; suffixes come
+    # in any order.
+    def test_copy_marks_the_block_and_keeps_the_language
+        out = html("<pre><code class='bash_copy'>wget https://example.com/a.sql | grep a</code></pre>")
+        assert_includes out, 'copy-code'
+        assert_includes out, '<span class="nb">grep </span>'
+        out = html("<pre><code class='bash_copy_wrap'>wget https://example.com/a.sql</code></pre>")
+        assert_includes out, 'copy-code'
+        assert_includes out, 'wrap-code'
+        refute_includes html("<pre><code class='bash'>ls</code></pre>"), 'copy-code'
+    end
 end

@@ -53,7 +53,7 @@ Jetzt können wir anfangen, mit Dateien und Verzeichnissen zu arbeiten.
 
 Gib folgenden Befehl ein, um eine Datei aus dem Internet herunterzuladen, die ein paar Beispieldateien enthält:
 
-```bash
+```bash_copy
 wget https://github.com/specht/workspace-files/raw/main/working-with-files.tar.gz
 ```
 Die Ausgabe sollte in etwa so aussehen:

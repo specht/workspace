@@ -216,10 +216,23 @@ _task(git-name)
 
 ### Einmalig: Klonen
 
+Klone die App in dein Home-Verzeichnis:
+
 ```bash
 cd ~
+```
+
+```bash_copy
 git clone ${template}
+```
+
+Wechsle in ihren Ordner und klone dort das Klassen-Repository:
+
+```bash
 cd cpu-sandbox
+```
+
+```bash_copy
 git clone ${class_repo} programs
 ```
 
