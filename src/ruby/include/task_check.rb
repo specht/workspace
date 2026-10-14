@@ -246,7 +246,13 @@ module TaskCheck
                 return Result.new(:status => :invalid, :message => e.message, :problem => e.problem)
             end
             requires = check['requires'] || {}
-            if (requires['scene_loads'] || requires['min_objects']) && runner
+            # With preview: anaglyph the card checks the scene in the browser,
+            # with the picture it draws anyway (tasks.js): no Workspace has
+            # to run for a hand-in, and student expressions are evaluated in
+            # the student's browser only.
+            if check['preview'] == 'anaglyph'
+                plan.notes.reject! { |n| n.include?('prüft der Workspace noch nicht') }
+            elsif (requires['scene_loads'] || requires['min_objects']) && runner
                 plan.files.select { |f| f[:path].end_with?('.ini') }.each do |f|
                     dump, failure = scene_dump(f[:path], [0], runner)
                     return Result.new(:status => :unavailable, :message => NOT_RUNNING_SCENE) if failure == :not_running

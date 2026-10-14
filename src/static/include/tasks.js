@@ -48,11 +48,12 @@
     // preview: anaglyph (anaglyph_preview.js): a picture of the scene as the
     // class gallery will show it, from its own camera line, with a button to
     // look at it full size. scene is a path below /anaglyph-viewer/.
+    // Returns the promise of the picture (anaglyph_preview.js), or null.
     function showScenePreview(card, scene, caption) {
         let box = card.querySelector('.task-scene-preview');
         if (!scene || !window.AnaglyphPreview) {
             if (box) box.remove();
-            return;
+            return null;
         }
         if (!box) {
             box = document.createElement('div');
@@ -70,7 +71,8 @@
         status.className = 'task-scene-preview-status';
         status.textContent = 'Die Szene wird gezeichnet …';
         box.append(text, img, status);
-        window.AnaglyphPreview.picture(scene).then((result) => {
+        const promise = window.AnaglyphPreview.picture(scene);
+        promise.then((result) => {
             if (box.dataset.token !== token) return;
             img.src = result.picture;
             status.textContent = result.errors ? 'Der Viewer meldet Fehler in dieser Szene: ' + result.errors : '';
@@ -78,6 +80,43 @@
             if (box.dataset.token !== token) return;
             status.textContent = error.message;
         });
+        return promise;
+    }
+
+    // The preview of the picked scene, for the check before a hand-in.
+    // fresh: draw it again, the file may have changed since it was picked.
+    function previewPicked(card, pick, fresh) {
+        const name = pick.value.split('/').pop();
+        if (fresh || !card.pickedPreview || card.pickedPreview.file !== pick.value) {
+            card.pickedPreview = {
+                file: pick.value,
+                promise: showScenePreview(card, 'vorschau/' + card.dataset.task + '/' + name,
+                    'Vorschau: So würde ' + name + ' in der Galerie erscheinen.'),
+            };
+        }
+        return card.pickedPreview.promise;
+    }
+
+    // preview: anaglyph: the scene must load and have enough objects. The
+    // card checks it with the picture it draws anyway, so no Workspace has
+    // to run (task_check.rb). Calls go() when the scene may be handed in.
+    function checkPickedScene(card, go) {
+        const pick = card.querySelector('.task-pick');
+        if (card.dataset.preview !== 'anaglyph' || !pick || !pick.value) return go();
+        const promise = previewPicked(card, pick, true);
+        if (!promise) return go();
+        const file = '<code>' + pick.value.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])) + '</code>';
+        promise.then((result) => {
+            const min = Number(card.dataset.minObjects || 0);
+            if (result.errors) {
+                showFeedback(card, 'invalid', '<p>Der Viewer meldet Fehler in ' + file + '. Repariere das vor der Abgabe; die Meldung steht unter dem Bild.</p>');
+            } else if (min && result.objects !== null && result.objects < min) {
+                showFeedback(card, 'invalid', '<p>In ' + file + ' stehen ' + result.objects + ' Objekte; für die Galerie sind mindestens ' + min + ' verlangt.</p>');
+            } else {
+                return go();
+            }
+            setBusy(card, false);
+        }, () => go());
     }
 
     // What a submission holds, with a link to download it.
@@ -189,15 +228,31 @@
         }
     }
 
+    // While a check or hand-in runs, the card cannot be used, and its
+    // button says that something is happening.
     function setBusy(card, busy) {
         card.querySelectorAll('button, input, textarea, select').forEach((el) => {
             el.disabled = busy;
         });
+        const button = card.querySelector('.task-submit');
+        if (!button) return;
+        if (busy && !button.dataset.idle) {
+            button.dataset.idle = button.innerHTML;
+            button.innerHTML = "<span class='spinner-border spinner-border-sm' aria-hidden='true'></span>" +
+                (card.dataset.type === 'submit' ? 'Wird abgegeben …' : 'Wird geprüft …');
+        } else if (!busy && button.dataset.idle) {
+            button.innerHTML = button.dataset.idle;
+            delete button.dataset.idle;
+        }
     }
 
     function submit(card) {
         const answer = readAnswer(card);
         setBusy(card, true);
+        checkPickedScene(card, function () { send(card, answer); });
+    }
+
+    function send(card, answer) {
         api_call('/api/task/check', { task: card.dataset.task, answer: answer }, function (data) {
             setBusy(card, false);
             if (!data.success) {
@@ -371,9 +426,7 @@
             const pick = card.querySelector('.task-pick');
             if (pick && card.dataset.preview === 'anaglyph') {
                 pick.addEventListener('change', function () {
-                    if (!pick.value) return;
-                    showScenePreview(card, 'vorschau/' + card.dataset.task + '/' + pick.value.split('/').pop(),
-                        'Vorschau: So würde ' + pick.value.split('/').pop() + ' in der Galerie erscheinen.');
+                    if (pick.value) previewPicked(card, pick);
                 });
             }
         });

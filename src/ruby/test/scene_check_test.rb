@@ -188,13 +188,27 @@ class SceneCheckTest < Minitest::Test
         assert_equal :no_viewer, check('allee').problem
     end
 
+    # Without preview, the server reads the scene in the Workspace.
     def test_gallery_submission_checks_the_scene
+        task = Marshal.load(Marshal.dump(@tasks['galerie']))
+        task['check'].delete('preview')
         scene('bunt.ini', "shape = box\n")
-        r = TaskCheck.check(@tasks['galerie'], 'anaglyph/bunt.ini', variables: {}, workspace: @ws, runner: @runner)
+        r = TaskCheck.check(task, 'anaglyph/bunt.ini', variables: {}, workspace: @ws, runner: @runner)
         assert_equal :invalid, r.status
         assert_includes r.message, 'mindestens 5 verlangt'
         scene('bunt.ini', (["shape = box"] * 5).join("\n\n") + "\n")
-        r = TaskCheck.check(@tasks['galerie'], 'anaglyph/bunt.ini', variables: {}, workspace: @ws, runner: @runner)
+        r = TaskCheck.check(task, 'anaglyph/bunt.ini', variables: {}, workspace: @ws, runner: @runner)
+        assert_equal :sent, r.status
+        refute_match(/prüft der Workspace noch nicht/, r.warnings.join)
+    end
+
+    # With preview: anaglyph the card checks the scene in the browser; the
+    # hand-in needs no running Workspace.
+    def test_previewed_gallery_submission_needs_no_workspace
+        assert_equal 'anaglyph', @tasks['galerie']['check']['preview']
+        scene('bunt.ini', "shape = box\n")
+        never = ->(*) { flunk 'the Workspace was asked' }
+        r = TaskCheck.check(@tasks['galerie'], 'anaglyph/bunt.ini', variables: {}, workspace: @ws, runner: never)
         assert_equal :sent, r.status
         refute_match(/prüft der Workspace noch nicht/, r.warnings.join)
     end

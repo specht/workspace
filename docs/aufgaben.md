@@ -393,6 +393,12 @@ die Galerie sie zeigt: aus der Zeile `camera = …` der Szene, immer bei
 unter der Tabelle eine Galerie aller Abgaben; ein Klick zeigt eine Szene groß
 im Viewer, drehbar, mit den Pfeiltasten zur nächsten.
 
+Mit `preview: anaglyph` prüft die Karte `requires` selbst, im Browser, mit dem
+Bild, das sie ohnehin zeichnet: Meldet der Viewer Fehler oder stehen weniger
+als `min_objects` Objekte in der Szene, gibt sie nicht ab. Der Workspace muss
+dafür nicht laufen, und der Ausdruck einer Szene wird nur im Browser der
+Person ausgerechnet. Der Server liest die Szene dann nicht noch einmal.
+
 ### measure, command, scene
 
 Beispiele stehen in `src/content/tcpip/tasks.yaml` und

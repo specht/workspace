@@ -3076,3 +3076,9 @@ h3[id] {
 .table.reference-table td:first-child {
     white-space: nowrap;
 }
+
+/* A task card at work (tasks.js setBusy): the spinner where the icon was. */
+.task-submit .spinner-border {
+    margin-right: 0.4em;
+    vertical-align: -0.1em;
+}

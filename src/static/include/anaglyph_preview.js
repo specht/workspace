@@ -36,7 +36,22 @@ window.AnaglyphPreview = (function () {
         const onMessage = (event) => {
             if (event.origin !== window.location.origin || event.source !== frame.contentWindow) return;
             if (!event.data || event.data.type !== 'anaglyph-picture') return;
-            done(null, { picture: event.data.picture, errors: event.data.errors || '' });
+            // The frame is on this site, so its scene can be read: what counts
+            // as an object is what scene_dump.js counts, without the grid.
+            // The viewer declares it with let, so it is no property of the
+            // frame's window; a function made in the frame can see it.
+            let objects = null;
+            try {
+                const scene = frame.contentWindow.Function(
+                    "return typeof sceneDescription === 'undefined' ? null : sceneDescription")();
+                if (Array.isArray(scene)) {
+                    objects = scene.filter((entry) =>
+                        (entry.shape || entry.model || entry.text !== undefined) && entry.shape !== 'grid').length;
+                }
+            } catch (e) {
+                // Without the number, the hand-in is not held back for it.
+            }
+            done(null, { picture: event.data.picture, errors: event.data.errors || '', objects });
         };
         window.addEventListener('message', onMessage);
         timer = setTimeout(() => done(new Error('Die Szene ließ sich nicht zeichnen.')), TIMEOUT_MS);
@@ -44,7 +59,8 @@ window.AnaglyphPreview = (function () {
         document.body.appendChild(frame);
     }
 
-    // A picture of a scene: resolves with { picture (data URL), errors }.
+    // A picture of a scene: resolves with { picture (data URL), errors,
+    // objects (how many, or null) }.
     function picture(scene) {
         return new Promise((resolve, reject) => {
             queue.push({ scene, resolve, reject });
