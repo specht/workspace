@@ -153,7 +153,8 @@ Die Reihenfolge ist `.display start, breite, höhe, format [, palette]`, in C `#
 
 <!-- tutorial-screenshot
 tab: preview
-viewport: 1600x900
+# lower window: the screen panel fits around the picture
+viewport: 1600x700
 hook: pause
 click: selector:#program-picker .picker-button
 click: selector:#program-picker .picker-filter
