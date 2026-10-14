@@ -160,7 +160,16 @@ overview = lambda do |relative_paths|
             next
         end
         generated = plan.map { |item| item['target'] }
-        manual = local_media.call(markdown) - generated
+        # A picture borrowed from another page (../reference/workspace/go-live.webp)
+        # is generated if that page's manifest lists it.
+        page_dir = File.dirname(File.join(content_root, page))
+        borrowed = lambda do |src|
+            next false unless src.include?('/')
+            file = File.expand_path(src, page_dir)
+            manifest = File.join(File.dirname(file), '.tutorial-screenshots.json')
+            File.exist?(manifest) && (JSON.parse(File.read(manifest))['screenshots'] || {}).key?(File.basename(file))
+        end
+        manual = local_media.call(markdown).reject { |src| generated.include?(src) || borrowed.call(src) }
         next if generated.empty? && manual.empty?
 
         counts = plan.map { |item| item['state'] }.tally

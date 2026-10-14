@@ -25,13 +25,22 @@ In diesem Tutorial bauen wir als Beispiel eine kleine Seite über **Axolotl**. D
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp' alt=''>
+<img class='full' src='../reference/workspace/fresh-start.webp' alt='Ein leerer Workspace ohne geöffneten Ordner; rechts die Willkommensseite mit »New File…«.'>
 
 ### HTML-Datei anlegen
 
 Klicke auf »New File« und wähle als Dateityp »Text File« oder bestätige einfach mit <kbd>Enter</kbd>.
 
-<img class='full' src='choose-filename.webp' alt=''>
+<!-- tutorial-screenshot
+# Die Schritte der Seite in einem frischen Workspace: neue Datei, speichern
+# in einen neuen Ordner, den Ordner öffnen
+click: New File...
+wait-for-text: Text File
+sleep: 0.5
+crop-bottom: 77%
+-->
+
+<img class='full' src='choose-filename.webp' alt='Oben öffnet sich die Auswahl »Select File Type or Enter File Name« mit »Text File« als erstem Eintrag.'>
 
 Schreibe nun diesen Code in die neue Datei:
 
@@ -58,19 +67,64 @@ Schreibe nun diesen Code in die neue Datei:
 
 Drücke <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib als Dateinamen `website-test/index.html` ein. Der vollständige Pfad lautet dann `/workspace/website-test/index.html`.
 
-<img class='full' src='enter-filename.webp' alt=''>
+<!-- tutorial-screenshot
+# Zwei Zeilen genügen für den Hintergrund; den ganzen Code schreibt das
+# Rezept nach dem Öffnen des Ordners in die Datei.
+press: Enter
+sleep: 1
+type: <!DOCTYPE html>
+press: Enter
+type: <html lang="de">
+press: Control+s
+wait-for-text: Save As
+press: Control+a
+type: /workspace/website-test/index.html
+sleep: 1
+crop-bottom: 77%
+-->
+
+<img class='full' src='enter-filename.webp' alt='Der Dialog »Save As« mit dem Pfad /workspace/website-test/index.html.'>
 
 Da das Unterverzeichnis `website-test` noch nicht existiert, wirst du gefragt, ob es erstellt werden soll. Bestätige mit <kbd>Enter</kbd>.
 
-<img class='full' src='create-folder.webp' alt=''>
+<!-- tutorial-screenshot
+press: Enter
+wait-for-text: Would you like to create it?
+sleep: 0.5
+crop-bottom: 77%
+-->
+
+<img class='full' src='create-folder.webp' alt='Die Frage, ob der Ordner website-test angelegt werden soll, mit »OK« und »Cancel«.'>
 
 Öffne jetzt dieses Verzeichnis. Wähle dazu im Menü »File« / »Open Folder…« oder drücke <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>Strg</kbd><kbd>O</kbd>. Wähle den Ordner `website-test` aus:
 
-<img class='full' src='open-folder.webp' alt=''>
+<!-- tutorial-screenshot
+press: Enter
+wait-for-file: website-test/index.html
+sleep: 1
+press: Control+k
+press: Control+o
+wait-for-text: Open Folder
+press: Control+a
+type: /workspace/website-test/
+sleep: 0.5
+crop-bottom: 77%
+-->
+
+<img class='full' src='open-folder.webp' alt='Der Dialog »Open Folder« mit dem Pfad /workspace/website-test/.'>
 
 Nachdem das Verzeichnis geöffnet wurde, siehst du links im Explorer deine Datei `index.html`. Klicke darauf, um sie wieder zu öffnen.
 
-<img class='full' src='fresh-project.webp' alt=''>
+<!-- tutorial-screenshot
+press: Enter
+wait-for-text: WEBSITE-TEST
+write-file: website-test/index.html <- previous-code
+open-file: index.html
+close-tab: Welcome
+sleep: 1
+-->
+
+<img class='full' src='fresh-project.webp' alt='Links im Explorer der Ordner website-test mit index.html, rechts der Code der Datei.'>
 
 _task(index)
 
@@ -83,6 +137,14 @@ Unten rechts im Fenster findest du »Go Live«. Klicke darauf. In einem neuen Br
 Du solltest jetzt schon die Überschrift »Axolotl« und einen kurzen Text sehen. Mehr ist noch nicht passiert – aber du hast gerade deine erste eigene HTML-Seite im Browser geöffnet.
 
 <div style='clear: both;'></div>
+
+<!-- tutorial-screenshot
+# Die Vorschau der Seite; die folgenden Bilder zeigen die Stände aus
+# lehrkraft/, Schritt für Schritt
+go-live
+tab: preview
+viewport: 720x405
+-->
 
 <button class='tutorial-preview' type='button'>
     <img src='website-plain.webp' alt='Die ungestaltete Webseite zeigt die Überschrift „Axolotl“ und einen kurzen Absatz auf weißem Hintergrund.'>
@@ -122,6 +184,13 @@ Such dir spätestens jetzt ein eigenes Thema für deine Seite aus. Du kannst die
 
 ### Eine Liste hinzufügen
 
+<!-- tutorial-screenshot
+write-file: website-test/index.html <- file:lehrkraft/2-liste.html
+preview-reload
+tab: preview
+viewport: 720x405
+-->
+
 <button class='tutorial-preview' type='button'>
     <img src='website-list.webp' alt='Die ungestaltete Axolotl-Webseite zeigt jetzt zusätzlich die Überschrift „Was ich spannend finde“ und eine Liste mit drei Stichpunkten.'>
 </button>
@@ -154,6 +223,13 @@ Füge unter der Liste einen Link ein:
 
 <div class='tutorial-preview-clear'></div>
 
+<!-- tutorial-screenshot
+write-file: website-test/index.html <- file:lehrkraft/3-link.html
+preview-reload
+tab: preview
+viewport: 720x405
+-->
+
 <button class='tutorial-preview' type='button'>
     <img src='website-link.webp' alt='Die ungestaltete Axolotl-Webseite zeigt unter der Liste zusätzlich den Link „Mehr über Axolotl erfahren“.'>
 </button>
@@ -178,6 +254,13 @@ Füge das Bild **vor** der Überschrift ein:
 
 <div class='tutorial-preview-clear'></div>
 
+<!-- tutorial-screenshot
+write-file: website-test/index.html <- file:lehrkraft/4-bild.html
+preview-reload
+tab: preview
+viewport: 720x405
+-->
+
 <button class='tutorial-preview' type='button'>
     <img src='website-image.webp' alt='Die Axolotl-Webseite zeigt nun oberhalb der Überschrift ein großes Foto eines Axolotls.'>
 </button>
@@ -194,6 +277,13 @@ Hier steht in `src` statt eines Dateinamens die Adresse eines Bildes im Internet
 _include(html#img)
 
 Das Foto stammt von **Lorenzo Tarocchi** und steht auf Wikimedia Commons unter der Lizenz **CC BY-SA 4.0**. Füge außerdem am Ende deines `<main>`-Bereichs einen Bildnachweis ein:
+
+<!-- tutorial-screenshot
+write-file: website-test/index.html <- file:lehrkraft/5-bildnachweis.html
+preview-reload
+tab: preview
+viewport: 720x405
+-->
 
 <button class='tutorial-preview' type='button'>
     <img src='website-image-with-credit.webp' alt='Die Axolotl-Webseite zeigt nun am Ende der Seite einen Bildnachweis.'>
@@ -314,6 +404,14 @@ Speichere die Datei. Die Änderung sollte sofort deutlich zu sehen sein: dunkler
 
 _task(css)
 
+<!-- tutorial-screenshot
+write-file: website-test/styles.css <- file:lehrkraft/6-styles.css
+write-file: website-test/index.html <- file:lehrkraft/6-css.html
+preview-reload
+tab: preview
+viewport: 720x405
+-->
+
 <button class='tutorial-preview' type='button'>
     <img src='website-styled.webp' alt='Die Axolotl-Webseite hat jetzt einen dunklen grünlichen Hintergrund, helle Schrift, türkisfarbene Links und ein Bild mit abgerundeten Ecken.'>
 </button>
@@ -404,6 +502,14 @@ section {
 
 Speichere die Datei. Auf einem breiten Fenster sollten Bild und Text jetzt nebeneinander stehen.
 
+<!-- tutorial-screenshot
+write-file: website-test/styles.css <- file:lehrkraft/7-styles.css
+write-file: website-test/index.html <- file:lehrkraft/7-flexbox.html
+preview-reload
+tab: preview
+viewport: 720x405
+-->
+
 <button class='tutorial-preview' type='button'>
     <img src='website-flexbox.webp' alt='Die gestaltete Axolotl-Webseite zeigt das Bild links und den Text mit Überschrift, Liste und Link rechts daneben.'>
 </button>
@@ -457,6 +563,11 @@ Hier siehst du einen Vergleich vorher / nachher:
 
 <div class='row'>
     <figure class='col-md-6 mb-4 text-center'>
+<!-- tutorial-screenshot
+# dieselbe Seite in einem Fenster, so schmal wie ein Handy
+tab: preview
+viewport: 390x760
+-->
         <img
             src='narrow-bad.webp'
             class='img-fluid d-block mx-auto rounded-3'
@@ -469,6 +580,12 @@ Hier siehst du einen Vergleich vorher / nachher:
     </figure>
 
     <figure class='col-md-6 mb-4 text-center'>
+<!-- tutorial-screenshot
+write-file: website-test/styles.css <- file:lehrkraft/8-styles.css
+preview-reload
+tab: preview
+viewport: 390x760
+-->
         <img
             src='narrow-good.webp'
             class='img-fluid d-block mx-auto rounded-3'
@@ -484,13 +601,6 @@ Hier siehst du einen Vergleich vorher / nachher:
 Die Regeln innerhalb der Media Query gelten nur, wenn das Browserfenster höchstens 700 Pixel breit ist.
 
 `flex-direction: column` sorgt dann dafür, dass Bild und Text wieder untereinander stehen. Das Bild bekommt mit `width: 100%` die gesamte verfügbare Breite.
-
-<!-- TODO WEBSITE-PREVIEW: Screenshot nach der Media Query in einem schmalen Browserfenster. Hier ist ein hochformatiges Preview sinnvoll; ergänze beim Einsetzen des Bildes die passende aspect-ratio-Angabe.
-<button class='tutorial-preview' type='button'>
-    <img src='website-mobile.webp' alt='Die Axolotl-Webseite in einem schmalen Browserfenster: Bild und Text stehen wieder untereinander und nutzen die verfügbare Breite.'>
-</button>
-<div class='tutorial-preview-clear'></div>
--->
 
 Mach dein Browserfenster langsam breiter und schmaler. Du solltest genau sehen können, wann das Layout zwischen den beiden Varianten wechselt.
 
