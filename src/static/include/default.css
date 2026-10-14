@@ -1264,14 +1264,24 @@ div.floatright > p {
     flex: 1 1 auto;
     min-width: 0;
     overflow-x: auto;
-    /* fade at the edges: there is more to scroll */
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 1.5em, #000 calc(100% - 1.5em), transparent);
-    mask-image: linear-gradient(to right, transparent, #000 1.5em, #000 calc(100% - 1.5em), transparent);
+    /* a fade only on a side where there is more to scroll */
+    --fade-left: 0em;
+    --fade-right: 0em;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
+    mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
     white-space: nowrap;
     text-align: center;
     scroll-snap-type: x mandatory;
     -ms-overflow-style: none;
     scrollbar-width: none;
+}
+
+.autotoc > .items.more-left {
+    --fade-left: 1.5em;
+}
+
+.autotoc > .items.more-right {
+    --fade-right: 1.5em;
 }
 
 .autotoc > .items::-webkit-scrollbar {

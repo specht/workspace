@@ -323,6 +323,15 @@ function install_autotoc() {
         autotoc.find('.autotoc-up').on('click', function() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
+        // Fade a side of the chapters only if there is more there.
+        const items = autotoc.find('.items')[0];
+        const fadeEdges = function() {
+            items.classList.toggle('more-left', items.scrollLeft > 1);
+            items.classList.toggle('more-right', items.scrollLeft + items.clientWidth < items.scrollWidth - 1);
+        };
+        items.addEventListener('scroll', fadeEdges, { passive: true });
+        window.addEventListener('resize', fadeEdges);
+        setTimeout(fadeEdges, 0);
     }
     let observer = new IntersectionObserver((entries, observer) => {
         let found_entry = false;
