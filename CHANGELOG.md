@@ -354,6 +354,18 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   den Grundlagen, Anaglyphen und PixelRAM. »Go Live« ist ein gemeinsames Bild
   für alle Tutorials, mit Mauszeiger und dem Anhalten des Live Servers.
 
+- Behoben: Vier kleine VS-Code-Symbole fehlten seit August auf 17 Seiten
+  (Programmiersprachen, LaTeX, Svelte, Pixelgrafik). KaTeX lud auf
+  Handbuch-Seiten nicht. Die drei Übungen (»Programmieren üben«) waren seit
+  dem Ausblenden nicht mehr erreichbar, obwohl das Profil auf sie verweist;
+  ein Abschnitt kann jetzt mit `hidden: true` aus dem Katalog verschwinden,
+  ohne dass seine Seiten wegfallen. `/profil` führt Abgemeldete zur
+  Anmeldung statt zu einem Serverfehler. Auf dem Handy scrollen breite
+  Formeln und Tabellen für sich, statt die Seite zu verbreitern.
+- Erzeugte Screenshots auch für »Statische Webseiten mit HTML & CSS« (alle
+  Bilder, mit den Ständen der Beispielseite in `lehrkraft/`) und für die
+  geklonte Shower-Vorlage.
+
 ### Für Betreibende
 
 - Keine Änderung nötig. Die Prüfarten `scene` und `er` brauchen `node` im

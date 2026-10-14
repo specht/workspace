@@ -45,6 +45,11 @@ dem passenden Abschnitt:
     - meine-aktivitaet
 ```
 
+Nur eingetragene Seiten gibt es überhaupt. Soll ein ganzer Abschnitt
+vorübergehend nicht im Katalog stehen, aber erreichbar bleiben (etwa über
+einen Link im Profil), bekommt er `hidden: true`, statt auskommentiert zu
+werden.
+
 ## 2. Die Seite schreiben
 
 `meine-aktivitaet.md` ist Markdown. Oben steht der Meta-Block:
