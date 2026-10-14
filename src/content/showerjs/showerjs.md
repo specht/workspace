@@ -37,7 +37,23 @@ _include(workspace#repository-klonen)
 
 Das Repository liegt jetzt in `/workspace/shower.js`. Dein Workspace sollte ungefähr so aussehen:
 
-<img class='full' src='freshly-cloned.webp' alt='Der Explorer zeigt die geklonte Vorlage mit index.html, styles.css und den Ordnern pictures, shower und include.'>
+<!-- tutorial-screenshot
+# Klonen wie im Handbuch »Workspace« (oben eingebunden), dann die geöffnete
+# Vorlage mit index.html
+show-left-sidebar
+clone-start: https://git.nhcham.org/specht/shower.js.git @ 50a071df026545793cfa29853e5e4ed6b1ece36e
+press: Enter
+wait-for-input-value: /workspace/
+press: Enter
+wait-for-text: Would you like to open the repository?
+click: Open
+wait-for-text: index.html
+open-file: index.html
+close-tab: Welcome
+sleep: 1
+-->
+
+<img class='full' src='freshly-cloned.webp' alt='Der Explorer zeigt die geklonte Vorlage mit den Ordnern include, pictures und shower sowie index.html und styles.css; rechts ist index.html geöffnet.'>
 
 Öffne die Datei `index.html`, indem du links darauf klickst.
 
@@ -48,6 +64,12 @@ _task(vorlage)
 _include(workspace#live-server)
 
 Wenn du alles richtig gemacht hast, sollte dein Fenster so aussehen:
+
+<!-- tutorial-screenshot
+# Die Vorlage in der Vorschau: die Übersicht aller Folien
+go-live
+tab: preview
+-->
 
 <img class='full' src='live-preview.webp' alt='Die Vorlage in der Vorschau: eine Übersicht aller Folien, die erste mit einem Titelbild.'>
 
