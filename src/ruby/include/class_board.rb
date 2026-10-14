@@ -137,7 +137,9 @@ module ClassBoard
             entries.each do |r, c|
                 io << "<li class='cb-answer cb-#{c.status}'><span class='cb-answer-name'>#{h(r[:name])}</span> "
                 if submit && submission_url && %w[sent stale].include?(c.status)
-                    io << "<a href='#{h(submission_url.call(r[:email], t[:id]))}'>#{h(c.answer)}</a>"
+                    # A click opens the viewer (submission_viewer.js); without
+                    # scripts the link downloads the hand-in.
+                    io << "<a class='cb-submission' href='#{h(submission_url.call(r[:email], t[:id]))}' data-view-title='#{h("#{r[:name]}: #{t[:title]}")}'>#{h(c.answer)}</a>"
                 else
                     io << "<span class='cb-answer-text'>#{h(c.answer)}</span>"
                 end

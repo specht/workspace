@@ -127,6 +127,22 @@ test('a student can author and play the BIF starter story', async ({
       expect(handIn.read).not.toContain('.git/');
       expect(handIn.state.answer).toMatch(/^\d+ Dateien, [\d,]+ (kB|MB)$/);
 
+      // The hand-in plays in the browser from abgaben.<host>, sandboxed:
+      // modules, fetch and localStorage must still work there.
+      const view = await (await workspace.request.get('/api/task/submission_view/bif/abgabe')).json();
+      expect(view.root).toMatch(/^https?:\/\/abgaben\./);
+      expect(view.files.map((f: { path: string }) => f.path)).toContain('bif/pages-starter/2.md');
+      const played = await workspace.context().newPage();
+      const playErrors: string[] = [];
+      played.on('pageerror', error => playErrors.push(error.message));
+      const answer = await played.goto(`${view.root}bif/index.html`);
+      expect(answer?.headers()['content-security-policy']).toMatch(/^sandbox allow-scripts/);
+      await expect(played.getByRole('heading', { name: 'Nach Schulschluss' })).toBeVisible({ timeout: 20_000 });
+      await played.getByRole('link', { name: 'Gehe in den Flur.' }).click();
+      await expect(played.locator('.story-passage[data-page-id="2"]')).toContainText('Du stehst in einem leeren Flur.');
+      expect(playErrors, 'BIF in the hand-in viewer').toEqual([]);
+      await played.close();
+
       for (const task of ['vorlage', 'zweite-seite', 'entscheidung', 'ende', 'abgabe']) {
         await workspace.request.post('/api/task/delete', { data: { task: `bif/${task}` } });
       }

@@ -61,7 +61,7 @@ class ClassBoardTest < Minitest::Test
         assert_includes html, '1 richtig vermutet'
         assert_includes html, "title='gelöst, 1 Versuch, Vermutung zuerst falsch'"
         assert_includes html, 'Es schickt Pakete mit wachsender TTL.'
-        assert_includes html, "<a href='/dl/abgabe?email=ada@x'>14 Dateien, 2,3 MB</a>"
+        assert_includes html, "<a class='cb-submission' href='/dl/abgabe?email=ada@x' data-view-title='Ada: Abgabe'>14 Dateien, 2,3 MB</a>"
         assert_includes html, '3. In eigenen Worten: 2 Antworten'
         assert_includes html, "cb-task cb-often-wrong"
     end
@@ -74,7 +74,7 @@ class ClassBoardTest < Minitest::Test
         assert_equal 0, b[:summary][3][:done]
         html = ClassBoard.html(b, activity: 'tcpip', submission_url: ->(email, id) { "/dl/#{id}?email=#{email}" })
         assert_match(%r{</tbody><tbody class='cb-own'><tr data-email='me@x'><th class='cb-name'>Du \(Lehrkraft\)</th>}, html)
-        assert_includes html, "<a href='/dl/abgabe?email=me@x'>3 Dateien, 1 kB</a>"
+        assert_includes html, "href='/dl/abgabe?email=me@x' data-view-title='Du (Lehrkraft): Abgabe'>3 Dateien, 1 kB</a>"
         assert_includes html, '4. Abgabe: 1 Abgabe<'
 
         # Nothing tried yet, or a member of the group anyway: no extra row.

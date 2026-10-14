@@ -3514,3 +3514,228 @@ h3[id] {
         overflow-x: auto;
     }
 }
+
+/* Hand-ins in the browser (submission_viewer.js): over the class page,
+   files on the left, the file or the running page on the right. */
+body.subview-open {
+    overflow: hidden;
+}
+
+.subview {
+    position: fixed;
+    inset: 0;
+    z-index: 1060;
+    display: flex;
+    padding: 2vh 2vw;
+    background-color: rgba(15, 23, 42, 0.55);
+}
+
+.subview-dialog {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    border-radius: 0.6em;
+    background-color: #fff;
+    box-shadow: 0 1em 3em rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.subview-head {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    padding: 0.6em 0.8em 0.6em 1.1em;
+    border-bottom: 1px solid #e3e7ee;
+}
+
+.subview-title {
+    flex: 1;
+    min-width: 0;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.subview-close {
+    border: 0;
+    background: none;
+    padding: 0.2em 0.4em;
+    font-size: 1.2em;
+    line-height: 1;
+    color: #5c636a;
+    border-radius: 0.3em;
+}
+
+.subview-close:hover {
+    background-color: #f1f3f5;
+}
+
+.subview-body {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+}
+
+.subview-nav {
+    flex: 0 0 16em;
+    overflow: auto;
+    padding: 0.5em 0.4em;
+    border-right: 1px solid #e3e7ee;
+    background-color: #f8f9fb;
+    font-size: 90%;
+}
+
+.subview-tree {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 0.8em;
+}
+
+.subview-nav > .subview-tree {
+    padding-left: 0;
+}
+
+.subview-tree summary {
+    cursor: pointer;
+    padding: 0.15em 0.3em;
+    color: #495057;
+    font-weight: 600;
+}
+
+.subview-file {
+    display: flex;
+    width: 100%;
+    gap: 0.5em;
+    padding: 0.2em 0.4em;
+    border: 0;
+    border-radius: 0.3em;
+    background: none;
+    text-align: left;
+    color: inherit;
+}
+
+.subview-file:hover {
+    background-color: #e9eef6;
+}
+
+.subview-file.active {
+    background-color: #dbe7fb;
+    color: #0b4fb3;
+    font-weight: 600;
+}
+
+.subview-file-name {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.subview-file-size {
+    color: #868e96;
+    font-size: 85%;
+    white-space: nowrap;
+}
+
+.subview-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: auto;
+}
+
+.subview-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.5em 0.8em;
+    border-bottom: 1px solid #e3e7ee;
+}
+
+.subview-path {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    padding: 0;
+    background: none;
+    color: #495057;
+    font-size: 85%;
+}
+
+.subview-frame {
+    flex: 1;
+    width: 100%;
+    min-height: 60vh;
+    border: 0;
+    background-color: #fff;
+}
+
+.subview-code {
+    margin: 0;
+    padding: 0.8em 0;
+    font-size: 85%;
+    line-height: 1.5;
+    counter-reset: line;
+    white-space: pre;
+    overflow: auto;
+    background: none;
+    color: #212529;
+}
+
+.subview-code code {
+    background: none;
+    color: inherit;
+    padding: 0;
+}
+
+.subview-line::before {
+    counter-increment: line;
+    content: counter(line);
+    display: inline-block;
+    width: 3.5em;
+    padding-right: 1em;
+    text-align: right;
+    color: #adb5bd;
+    user-select: none;
+}
+
+.subview-image {
+    max-width: 100%;
+    margin: 1em auto;
+    object-fit: contain;
+    background-image: repeating-conic-gradient(#eee 0% 25%, #fff 0% 50%);
+    background-size: 16px 16px;
+}
+
+.subview-pane > audio,
+.subview-pane > video {
+    margin: 1em;
+    max-width: calc(100% - 2em);
+}
+
+.subview-note {
+    margin: 1em;
+    color: #5c636a;
+}
+
+@media (max-width: 700px) {
+    .subview {
+        padding: 0;
+    }
+    .subview-dialog {
+        border-radius: 0;
+    }
+    .subview-body {
+        flex-direction: column;
+    }
+    .subview-nav {
+        flex: 0 0 auto;
+        max-height: 30vh;
+        border-right: 0;
+        border-bottom: 1px solid #e3e7ee;
+    }
+}

@@ -181,5 +181,5 @@ tasks:
     check:
       type: submit
       paths: [bif]
-      exclude: [bif/.git, bif/node_modules, bif/.story-tools, bif/engine/tests, bif/engine/test-fixtures, bif/engine/dev, bif/playwright-report, bif/test-results]
+      exclude: [bif/.git, bif/node_modules, bif/.story-tools, bif/engine/tests, bif/engine/test-fixtures, bif/playwright-report, bif/test-results]
       max_size: 30MB

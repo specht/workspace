@@ -8,6 +8,7 @@ require './include/task_check.rb'
 require './include/task_card.rb'
 require './include/task_store.rb'
 require './include/class_board.rb'
+require './include/submission_view.rb'
 require './include/student_home.rb'
 require './include/reference_index.rb'
 require './include/template_freshness.rb'
@@ -48,6 +49,11 @@ Neo4jBolt.bolt_host = 'neo4japp'
 Neo4jBolt.bolt_port = 7687
 
 CACHE_BUSTER = SecureRandom.alphanumeric(12)
+# Hand-ins run in the browser from a host of their own (SubmissionView);
+# addresses to them are signed with a key that lives as long as the server.
+SUBMISSION_VIEW_HOST = "abgaben.#{WEBSITE_HOST.split(':').first}"
+SUBMISSION_VIEW_ROOT = WEB_ROOT.sub('//', '//abgaben.')
+SUBMISSION_VIEW_SECRET = SecureRandom.hex(32)
 RUBOCOP_LAYOUT_CONFIG_PATH = "/tmp/rubocop_layout.yml"
 
 MODULE_ORDER = [:workspace, :codebites, :phpmyadmin, :neo4j, :tic80]
@@ -1047,6 +1053,26 @@ class Main < Sinatra::Base
                     proxy_redirect ~^//[^/]+(/.*)$ //$http_host$1;
 
                     proxy_pass $hs_live_upstream;
+                }
+            }
+
+            # ===========================================
+            # Hand-ins in the browser (SubmissionView)
+            # ===========================================
+            server {
+                listen 80;
+                server_name #{SUBMISSION_VIEW_HOST};
+                client_max_body_size 1M;
+                access_log off;
+                charset utf-8;
+
+                location /v/ {
+                    include /etc/nginx/snippets/proxy_ws.conf;
+                    proxy_pass http://ruby:9292;
+                }
+
+                location / {
+                    return 404;
                 }
             }
 
@@ -2105,6 +2131,11 @@ class Main < Sinatra::Base
     end
 
     before '*' do
+        # abgaben.<host> serves hand-ins and nothing else: no session, no
+        # pages, no API (SubmissionView).
+        if request.host == SUBMISSION_VIEW_HOST && !(request.path.start_with?('/v/') && %w[GET HEAD].include?(request.request_method))
+            halt 404
+        end
         origin_sensitive = %w(POST PUT PATCH DELETE).include?(request.request_method) ||
             ['/ws', '/ws_codebites', '/logout'].include?(request.path)
         if origin_sensitive && !Authentication.same_origin?(
@@ -5124,10 +5155,9 @@ class Main < Sinatra::Base
 
     # A submission as .tar.gz: the logged-in person's own, or, with ?email=,
     # that of a student in a group the logged-in teacher looks after.
-    get '/api/task/submission/:activity/:id' do
-        assert(user_logged_in?)
-        found = find_task("#{params[:activity]}/#{params[:id]}")
-        halt 404 if found.nil?
+    # Whose hand-in a request may see: one's own, or (email=…) one of a
+    # group the logged-in teacher looks after.
+    def submission_owner_for(params)
         email = @session_user[:email]
         if params['email'] && params['email'] != email
             Main.load_invitations()
@@ -5135,12 +5165,76 @@ class Main < Sinatra::Base
             halt 403 unless allowed
             email = params['email']
         end
+        email
+    end
+
+    get '/api/task/submission/:activity/:id' do
+        assert(user_logged_in?)
+        found = find_task("#{params[:activity]}/#{params[:id]}")
+        halt 404 if found.nil?
+        email = submission_owner_for(params)
         path = submission_path(found[:key], email)
         halt 404 unless File.file?(path)
 
         suffix = email == @session_user[:email] ? '' : "-#{email.split('@').first.gsub(/[^a-zA-Z0-9._-]/, '')}"
         respond_raw_with_mimetype_and_filename(File.binread(path), 'application/gzip',
             "#{params[:activity]}-#{params[:id]}#{suffix}.tar.gz")
+    end
+
+    # The viewer on the class page: the files of a hand-in and the signed
+    # address under which they run on abgaben.<host>.
+    get '/api/task/submission_view/:activity/:id' do
+        assert(user_logged_in?)
+        found = find_task("#{params[:activity]}/#{params[:id]}")
+        halt 404 if found.nil?
+        email = submission_owner_for(params)
+        path = submission_path(found[:key], email)
+        halt 404 unless File.file?(path)
+
+        token = SubmissionView.token(TaskStore.state_key(email, found[:key]), :secret => SUBMISSION_VIEW_SECRET)
+        files = SubmissionView.files(path).map do |f|
+            f.merge(:text => SubmissionView.text?(f[:path]) && f[:size] <= SubmissionView::MAX_TEXT,
+                    :html => SubmissionView.html?(f[:path]))
+        end
+        response.headers['Cache-Control'] = 'no-store'
+        respond(:files => files, :root => "#{SUBMISSION_VIEW_ROOT}/v/#{token}/",
+            :download => "/api/task/submission/#{params[:activity]}/#{params[:id]}#{email == @session_user[:email] ? '' : "?email=#{CGI.escape(email)}"}")
+    end
+
+    # The text of one file of a hand-in, for the source view.
+    get '/api/task/submission_text/:activity/:id' do
+        assert(user_logged_in?)
+        found = find_task("#{params[:activity]}/#{params[:id]}")
+        halt 404 if found.nil?
+        email = submission_owner_for(params)
+        archive = submission_path(found[:key], email)
+        file = SubmissionView.clean_path(params['path'])
+        halt 404 unless File.file?(archive) && file && SubmissionView.text?(file)
+        bytes = SubmissionView.read(archive, file, :max => SubmissionView::MAX_TEXT)
+        halt 404 if bytes.nil?
+        response.headers['Cache-Control'] = 'no-store'
+        respond(:text => bytes.force_encoding('UTF-8').scrub('�'))
+    end
+
+    # abgaben.<host>/v/<token>/<path>: a file of a hand-in, sandboxed
+    # (SubmissionView). The token is the only permission; no cookies.
+    get '/v/:token/*' do
+        halt 404 unless request.host == SUBMISSION_VIEW_HOST
+        state_key = SubmissionView.verify(params[:token], :secret => SUBMISSION_VIEW_SECRET)
+        halt 404 if state_key.nil?
+        archive = File.join(SUBMISSIONS_ROOT, "#{state_key}.tar.gz")
+        halt 404 unless File.file?(archive)
+        rel = params['splat'].first.to_s
+        wanted = rel.empty? ? '' : SubmissionView.clean_path(rel)
+        halt 404 if wanted.nil?
+        file = SubmissionView.resolve(SubmissionView.files(archive), wanted)
+        halt 404 if file.nil?
+        # A folder without its slash: relative addresses inside need it.
+        redirect "/v/#{params[:token]}/#{file}" if file != wanted && !rel.end_with?('/')
+        bytes = SubmissionView.read(archive, file)
+        halt 404 if bytes.nil?
+        SubmissionView.headers(file, WEB_ROOT).each { |k, v| response.headers[k] = v }
+        respond_raw_with_mimetype(SubmissionView.for_viewer(file, bytes), SubmissionView.content_type(file))
     end
 
     # The Anaglyph viewer on the site (AnaglyphViewer, check option preview:

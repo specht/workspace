@@ -888,7 +888,19 @@ Die Zeile »Klasse« zählt, wie viele fertig sind und wie viele hängen; bei
 Vermutungen auch, wie viele richtig vermutet haben. Eine Spalte ist gelb, wenn
 mindestens ein Drittel derer, die es versucht haben, gerade falsch liegt
 (»häufig falsch«), ab drei Personen. Darunter stehen die Antworten und
-Reflexionen zum Nachlesen und die Abgaben zum Herunterladen.
+Reflexionen zum Nachlesen und die Abgaben.
+
+Ein Klick auf eine Abgabe öffnet sie über der Klassenübersicht: links die
+Dateien, rechts der Quelltext mit Zeilennummern, Bilder und Medien, und bei
+Webseiten »Starten«. Die Seite läuft dann so, wie die Person sie abgegeben hat,
+mit ihrem CSS und JavaScript, auch BIF-Geschichten. Sie kommt von einem eigenen
+Host, `abgaben.<host>`, unter einer signierten Adresse, die 12 Stunden gilt
+(`SubmissionView`), und jede Antwort trägt `Content-Security-Policy: sandbox`:
+Die Seite hat einen eigenen, leeren Ursprung, bekommt keine Cookies der Seite
+oder eines Workspaces und kann nichts im Namen der Lehrkraft tun. Damit Seiten,
+die `localStorage` oder Cookies benutzen, trotzdem laufen, bekommen sie beim
+Starten einen Speicher im Arbeitsspeicher vorangestellt; der Quelltext zeigt
+die Datei unverändert. »Herunterladen« liefert die Abgabe als `.tar.gz`.
 
 Wer als Lehrkraft eine Gruppe betreut, ohne selbst in ihr zu stehen, sieht
 die eigenen Versuche und Abgaben in einer eigenen Zeile »Du (Lehrkraft)« unter
