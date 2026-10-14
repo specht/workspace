@@ -582,6 +582,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Für Betreibende
 
+- Das Workspace-Image bekommt `php-mysql` (PDO-Treiber `pdo_mysql` und
+  `mysqli`), damit PHP-Programme die MySQL-Datenbanken erreichen. Eine
+  eigene, kleine Schicht kurz vor den Erweiterungen; Image neu bauen
+  (`./build-image-optimized.sh`).
+
 - TIC-80 einmal neu bauen: `./build-tic80.sh` (TIC-80 1.3.1, sokol-Schicht;
   `tic80.js` und `tic80.wasm` stehen nicht in Git). Das Build-Image braucht
   jetzt `gcc-multilib` für Forth; `docker/tic80/Dockerfile` installiert es.

@@ -827,6 +827,23 @@ RUN GEM_HOME=/opt/ruby/lib/ruby/gems/${RUBY_API_VERSION} \
 
 
 # --------------------------------------------------------------------
+# PHP: MySQL drivers
+#
+# php-cli above has PDO but no driver for MySQL. php-mysql adds pdo_mysql
+# and mysqli, so PHP programs (the guestbook activity) reach the student's
+# databases. A layer of its own, so the large layers stay cached.
+# --------------------------------------------------------------------
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update \
+    && apt-get install -y --no-install-recommends \
+        php-mysql \
+    && php -m | grep -qx pdo_mysql \
+    && php -m | grep -qx mysqli
+
+
+# --------------------------------------------------------------------
 # Hackschule extensions
 #
 # Keep everything below here as late as possible because these files
