@@ -2,7 +2,8 @@
 # check type css). Browsers skip broken CSS silently; this reader names the
 # line where braces, colons or semicolons do not fit.
 module CssLite
-    Rule = Struct.new(:selector, :line, :offset, :declarations)
+    # media: the condition of the @media block the rule stands in, or nil.
+    Rule = Struct.new(:selector, :line, :offset, :declarations, :media)
     Problem = Struct.new(:line, :message)
     Result = Struct.new(:rules, :problems, :urls, :imports)
     # At-rules whose block holds declarations, like a rule.
@@ -42,8 +43,9 @@ module CssLite
             imports << [$1.to_s, line_at.($~.begin(0))]
         end
 
-        # stack entries: [:block | :rule, line of {, Rule or nil]. Rules may
-        # be nested (CSS nesting); @font-face and friends hold declarations.
+        # stack entries: [:block | :rule, line of {, Rule or nil, prelude].
+        # Rules may be nested (CSS nesting); @font-face and friends hold
+        # declarations.
         stack = []
         buffer_start = 0
         i = 0
@@ -74,9 +76,10 @@ module CssLite
                     problems << Problem.new(line_at.(i), 'Vor diesem `{` fehlt der Selektor.')
                     stack << [:rule, line_at.(i), nil]
                 elsif prelude.start_with?('@') && !DECLARATION_AT_RULES.include?(prelude[/\A@[a-z-]+/])
-                    stack << [:block, line_at.(i), nil]
+                    stack << [:block, line_at.(i), nil, prelude.gsub(/\s+/, ' ')]
                 else
-                    rule = Rule.new(prelude.gsub(/\s+/, ' '), line_at.(sel_offset), sel_offset, [])
+                    media = stack.reverse.find { |entry| entry[0] == :block && entry[3].to_s.start_with?('@media') }
+                    rule = Rule.new(prelude.gsub(/\s+/, ' '), line_at.(sel_offset), sel_offset, [], media && media[3])
                     rules << rule
                     stack << [:rule, line_at.(i), rule]
                 end

@@ -237,4 +237,47 @@ class FileChecksTest < Minitest::Test
         assert_includes outcome.read, 'id_ed25519'
         assert_empty opened
     end
+
+    # css declares: a declaration, on a selector, inside a media query; and
+    # linked_from: the page loads the stylesheet.
+    def test_css_declares_and_linked_from
+        site = File.join(@root, 'website-test')
+        FileUtils.mkdir_p(site)
+        File.write(File.join(site, 'index.html'), "<html><head><link rel=\"stylesheet\" href=\"styles.css\"></head><body></body></html>")
+        File.write(File.join(site, 'styles.css'), "main, footer {\n  display: Flex;\n  gap: 2rem;\n}\n@media (max-width: 700px) {\n  main { flex-direction: column; }\n}\n")
+        check = { 'type' => 'css', 'file' => 'website-test/styles.css', 'linked_from' => 'website-test/index.html',
+                  'expect' => { 'parses' => true, 'declares' => [
+                      { 'selector' => 'main', 'property' => 'display', 'value' => 'flex' },
+                      { 'property' => 'gap' },
+                      { 'media' => 'max-width', 'selector' => 'main', 'property' => 'flex-direction', 'value' => 'column' },
+                  ] } }
+        assert FileChecks.css(check, @ws).ok
+
+        # flex-direction outside the media query does not count
+        File.write(File.join(site, 'styles.css'), "main { display: flex; gap: 1rem; flex-direction: column; }\n")
+        outcome = FileChecks.css(check, @ws)
+        assert_equal :missing_declaration, outcome.problem
+        assert_includes outcome.message, 'Media Query'
+
+        # the page does not load it
+        File.write(File.join(site, 'styles.css'), "main { display: flex; gap: 1rem; }\n@media (max-width: 600px) { main { flex-direction: column; } }\n")
+        File.write(File.join(site, 'index.html'), "<html><head><link rel=\"stylesheet\" href=\"style.css\"></head></html>")
+        outcome = FileChecks.css(check, @ws)
+        assert_equal :not_linked, outcome.problem
+        assert_includes outcome.message, 'href="styles.css"'
+    end
+
+    # html elements: so many elements of a kind, with an attribute.
+    def test_html_elements
+        site = File.join(@root, 'website-test')
+        FileUtils.mkdir_p(site)
+        File.write(File.join(site, 'index.html'), "<main><ul><li>a</li><li>b</li></ul><p><a href=\"\">leer</a></p></main>")
+        check = { 'type' => 'html', 'file' => 'website-test/index.html',
+                  'expect' => { 'elements' => [{ 'selector' => 'ul li', 'min' => 2 }, { 'selector' => 'a', 'attr' => 'href' }] } }
+        outcome = FileChecks.html(check, @ws)
+        assert_equal :missing_element, outcome.problem
+        assert_includes outcome.message, '`a` mit `href`'
+        File.write(File.join(site, 'index.html'), "<main><ul><li>a</li><li>b</li></ul><p><a href=\"x.html\">x</a></p></main>")
+        assert FileChecks.html(check, @ws).ok
+    end
 end

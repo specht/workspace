@@ -335,6 +335,20 @@ module FileChecks
             end
         end
 
+        # elements: [{ selector: 'ul li', min: 3, attr: href, say: … }]: so
+        # many elements of this kind (with this attribute, not empty).
+        Array(expect['elements']).each do |want|
+            found = doc.select(want['selector'])
+            found = found.reject { |e| e.attrs[want['attr']].to_s.strip.empty? } if want['attr']
+            min = (want['min'] || 1).to_i
+            what = "`#{want['selector']}`#{want['attr'] ? " mit `#{want['attr']}`" : ''}"
+            read_lines << "#{found.size} × #{what} in #{code(file)}."
+            next if found.size >= min
+
+            message = want['say'] || "In #{code(file)} finde ich #{found.size} × #{what}, verlangt #{min == 1 ? 'ist eins' : "sind #{min}"}."
+            return failed(:missing_element, message, :read => read_lines.join("\n\n"))
+        end
+
         ok(:read => read_lines.empty? ? "#{code(file)}: #{lines_text(source.lines.size)}, Tags passen zusammen." : read_lines.join("\n\n"), :warnings => warnings)
     rescue WorkspaceFiles::Refused => e
         refused(e)
@@ -386,9 +400,57 @@ module FileChecks
             where = marker_line ? " unter »#{check['after_marker']}«" : ''
             return failed(:too_few_rules, "In #{code(file)} stehen#{where} #{rules.size} Regeln, verlangt #{min == 1 ? 'ist eine' : "sind #{min}"}.", :read => read)
         end
+        # declares: [{ selector:, property:, value:, media:, say: }]: some
+        # rule sets this property (to this value), for this selector, inside
+        # an @media whose condition mentions media.
+        Array(expect['declares']).each do |want|
+            next if rules.any? { |rule| css_declares?(rule, want) }
+
+            return failed(:missing_declaration, want['say'] || "In #{code(file)} fehlt #{declaration_text(want)}.", :read => read)
+        end
+        if (page = check['linked_from'])
+            unless stylesheet_linked?(ws, page, file)
+                return failed(:not_linked, "#{code(File.basename(file))} ist in #{code(page)} nicht eingebunden. Schreib in den `<head>`: `<link rel=\"stylesheet\" href=\"#{relative_to(File.dirname(page), file)}\">`", :read => read)
+            end
+        end
         ok(:read => read)
     rescue WorkspaceFiles::Refused => e
         refused(e)
+    end
+
+    def self.css_value(text)
+        text.to_s.downcase.sub(/\s*!important\z/, '').gsub(/\s+/, ' ').strip
+    end
+
+    def self.css_declares?(rule, want)
+        if want['selector']
+            selectors = rule.selector.split(',').map { |s| s.strip.gsub(/\s+/, ' ') }
+            return false unless selectors.include?(want['selector'].strip.gsub(/\s+/, ' '))
+        end
+        return false if want['media'] && !rule.media.to_s.downcase.include?(want['media'].downcase)
+
+        rule.declarations.any? do |name, value|
+            name.downcase == want['property'].downcase &&
+                (want['value'].nil? || css_value(value) == css_value(want['value']))
+        end
+    end
+
+    # »eine Regel für `main` mit `display: flex`«
+    def self.declaration_text(want)
+        decl = want['value'] ? "`#{want['property']}: #{want['value']}`" : "`#{want['property']}`"
+        where = want['selector'] ? "eine Regel für `#{want['selector']}` mit #{decl}" : "eine Regel mit #{decl}"
+        want['media'] ? "#{where} in einer Media Query mit `#{want['media']}`" : where
+    end
+
+    # Does page (an HTML file) load css with <link rel="stylesheet">?
+    def self.stylesheet_linked?(ws, page, css)
+        doc = HtmlLite.parse(ws.read_text(page))
+        doc.select('link').any? do |link|
+            link.attrs['rel'].to_s.downcase.split.include?('stylesheet') &&
+                resolve(File.dirname(page), link.attrs['href'].to_s.strip) == css
+        end
+    rescue WorkspaceFiles::Refused
+        false
     end
 
     # --- references -----------------------------------------------------------

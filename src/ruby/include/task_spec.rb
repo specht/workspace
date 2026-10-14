@@ -7,6 +7,7 @@ require_relative 'er_check'
 require_relative 'schema_check'
 require_relative 'keyboard_check'
 require_relative 'scene_color'
+require_relative 'html_lite'
 
 # Format and validation of an activity's tasks.yaml (see docs/aufgaben.md).
 #
@@ -52,7 +53,7 @@ module TaskSpec
     EXTRACTOR_WITH_ARGUMENT = /\Ahttp_header:[A-Za-z0-9-]+\z/
 
     FILES_EXPECT_KEYS = %w[exists executable format new_files name format_matches_extension max_size].freeze
-    HTML_EXPECT_KEYS = %w[parses slides first_slide_changed img].freeze
+    HTML_EXPECT_KEYS = %w[parses slides first_slide_changed img elements].freeze
     SCENE_MATCHER_KEYS = %w[
         shape name at count min rows size bottom_y rotate_z lattice min_spacing moves orbits
         color label
@@ -270,6 +271,23 @@ module TaskSpec
                 if expect.key?('first_slide_changed') && !(expect['first_slide_changed'].is_a?(Hash) && string_list?(expect['first_slide_changed']['placeholders']))
                     errors << 'expect.first_slide_changed must list placeholders'
                 end
+                if expect.key?('elements')
+                    if expect['elements'].is_a?(Array) && !expect['elements'].empty?
+                        expect['elements'].each do |want|
+                            unless want.is_a?(Hash) && want['selector'].is_a?(String) && (want.keys - %w[selector min attr say]).empty?
+                                errors << 'expect.elements: each needs a selector (and may have min, attr, say)'
+                                next
+                            end
+                            begin
+                                want['selector'].split(/\s+/).each { |step| HtmlLite.parse_step(step) }
+                            rescue ArgumentError => e
+                                errors << "expect.elements: #{e.message}"
+                            end
+                        end
+                    else
+                        errors << 'expect.elements must be a list'
+                    end
+                end
                 if expect.key?('img')
                     img = expect['img']
                     if img.is_a?(Hash)
@@ -291,11 +309,18 @@ module TaskSpec
                 end
             end
         when 'css'
-            allowed += %w[file after_marker expect]
+            allowed += %w[file after_marker linked_from expect]
             errors.concat(path_errors(check['file'], 'file'))
+            errors.concat(path_errors(check['linked_from'], 'linked_from')) if check.key?('linked_from')
             expect = check['expect']
-            unless expect.is_a?(Hash) && !expect.empty? && (expect.keys - %w[parses min_rules]).empty?
-                errors << 'expect knows parses and min_rules'
+            unless expect.is_a?(Hash) && !expect.empty? && (expect.keys - %w[parses min_rules declares]).empty?
+                errors << 'expect knows parses, min_rules and declares'
+            end
+            if expect.is_a?(Hash) && expect.key?('declares')
+                ok = expect['declares'].is_a?(Array) && !expect['declares'].empty? && expect['declares'].all? do |want|
+                    want.is_a?(Hash) && want['property'].is_a?(String) && (want.keys - %w[selector property value media say]).empty?
+                end
+                errors << 'expect.declares: a list, each with property (and may have selector, value, media, say)' unless ok
             end
         when 'references'
             allowed += %w[root scan expect]

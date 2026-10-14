@@ -314,8 +314,37 @@ check:
   warn: { words_per_slide: 60 }
 ```
 
-`css` kennt `after_marker`, `parses` und `min_rules`. `references` kennt
-`root`, `scan`, `external: none` und `local_exist: true`.
+`html` kennt außerdem `elements`: so viele Elemente einer Art (ein einfacher
+Selektor wie `li`, `ul li` oder `a.extern`), wahlweise mit einem nicht leeren
+Attribut. `say` ersetzt die Rückmeldung, wenn sie fehlen:
+
+```yaml
+expect:
+  elements:
+    - { selector: li, min: 3 }
+    - { selector: a, attr: href, say: "So sieht ein Link aus: …" }
+```
+
+`css` kennt `after_marker`, `linked_from`, `parses`, `min_rules` und
+`declares`. `linked_from: website-test/index.html` verlangt, dass diese Seite
+das Stylesheet mit `<link rel="stylesheet">` lädt. `declares` verlangt
+Angaben, die wirklich in einer Regel stehen, statt nur ihre Zahl:
+die Eigenschaft, wahlweise ihr Wert, der Selektor (einer aus der Liste vor
+`{`) und eine Media Query, deren Bedingung das Wort enthält:
+
+```yaml
+check:
+  type: css
+  file: website-test/styles.css
+  expect:
+    declares:
+      - { selector: main, property: display, value: flex }
+      - { selector: main, property: flex-direction, value: column, media: max-width }
+```
+
+Werte vergleicht die Prüfung ohne Groß- und Kleinschreibung und ohne
+`!important`. `references` kennt `root`, `scan`, `external: none` und
+`local_exist: true`.
 
 ### git
 
