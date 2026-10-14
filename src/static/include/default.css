@@ -1726,6 +1726,21 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     max-width: 100%;
 }
 
+/* Around a preview that enlarges on a click (tutorial-preview.css): the box
+   floats where the preview did, the preview fills it. */
+.media-variant-box-preview {
+    float: right;
+    display: block;
+    width: min(28rem, 45%);
+    margin: 0.2rem 0 1.2rem 1.5rem;
+}
+
+.media-variant-box-preview > .tutorial-preview {
+    float: none;
+    width: 100%;
+    margin: 0;
+}
+
 .media-variant-toggles {
     position: absolute;
     top: 0.5em;
@@ -1772,8 +1787,10 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     display: block;
 }
 
-/* PixelRAM's CRT button: a screen with scanlines */
-.icon-crt {
+/* PixelRAM's CRT button: a screen with scanlines; the slide button of the
+   HTML and CSS examples: a projection screen */
+.icon-crt,
+.icon-slide {
     width: 1.2em;
     height: 1.2em;
     fill: none;

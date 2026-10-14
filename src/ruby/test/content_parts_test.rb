@@ -153,7 +153,8 @@ class ContentPartsTest < Minitest::Test
         warnings = []
         out = ContentParts.expand_uses('_uses(terminal, gibtsnicht)', references: ['workspace'],
             reference_root: @reference, warn: ->(m) { warnings << m })
-        assert_includes out, "<a href='/reference/workspace#terminal'>terminal</a>"
+        # The chip shows the part's heading, not its name.
+        assert_includes out, "<a href='/reference/workspace#terminal'>Terminal öffnen</a>"
         assert_includes out, '<span>gibtsnicht</span>'
         assert_equal 1, warnings.size
     end

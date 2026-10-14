@@ -181,6 +181,9 @@ class Main < Sinatra::Base
         'lehrmaterial-2d' => 'https://2d.hackschule.de/',
         'lehrmaterial' => 'profil#profile-teaching-materials',
         'lehrmaterial.html' => 'profil#profile-teaching-materials',
+        # »HTML-Folien gestalten« became four Handbuch pages for web pages and
+        # slides alike (2026-10); most of it is on the HTML page.
+        'reference/html-folien' => 'reference/html',
     }.freeze
 
     # Handbuch: reference pages, served under /reference/<slug>.
@@ -1382,7 +1385,7 @@ class Main < Sinatra::Base
     # x-anaglyph.webp, x-dark-anaglyph.webp, x-crt.webp; variants: in the
     # screenshot README). media_variants.js shows the one that fits the theme
     # and the toggles in the corner (glasses, CRT).
-    MEDIA_VARIANTS = %w[dark anaglyph dark-anaglyph crt]
+    MEDIA_VARIANTS = %w[dark anaglyph dark-anaglyph crt folie]
 
     def self.add_media_variants(element, media_path)
         extension = File.extname(media_path)

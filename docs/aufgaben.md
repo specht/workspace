@@ -60,8 +60,8 @@ src/content/showerjs/
 
 src/content/reference/
 ├── sections.yaml      Katalog der Handbuch-Seiten
-└── html-folien/
-    └── html-folien.md
+└── html/
+    └── html.md
 ```
 
 Dateien im Inhaltsordner werden nur ausgeliefert, wenn eine Seite sie als Bild

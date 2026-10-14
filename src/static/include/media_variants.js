@@ -1,8 +1,17 @@
 // Images and videos with variants (main.rb add_media_variants): the dark one
 // in the dark theme, and for every toggle the reader switched on in an
 // image's corner the matching one: the anaglyph pictures for the red-cyan
-// glasses, the CRT pictures with the scanlines of a tube screen (PixelRAM).
-// A toggle holds for every image on every page, until switched off again.
+// glasses, the CRT pictures with the scanlines of a tube screen (PixelRAM),
+// the HTML and CSS examples of the Handbuch on a Shower slide instead of a
+// page. A toggle holds for every image on every page, until switched off
+// again.
+//
+// The slide toggle follows the activity instead: an activity page says which
+// view fits it (data-media-context='folie' for Shower, 'seite' for the web
+// page), and the Handbuch pages opened from there in the same tab show that
+// view. A click changes it until the next activity page; it is kept for the
+// tab only (sessionStorage), so a choice made in one activity does not stick
+// to the other.
 (function () {
     const TOGGLES = [
         {
@@ -21,18 +30,35 @@
             // The CRT button of PixelRAM's own display: a screen with scanlines.
             icon: "<svg class='icon-crt' viewBox='0 0 24 24' aria-hidden='true'><rect x='3' y='4' width='18' height='15' rx='2'/><path d='M7 8h10M7 11.5h10M7 15h10'/></svg>",
         },
+        {
+            name: 'folie',
+            storageKey: 'hackschule-folie',
+            perTab: true,
+            title: 'Als Folie zeigen (Shower)',
+            label: 'Beispiele als Folie statt als Webseite zeigen',
+            // A projection screen on its stand.
+            icon: "<svg class='icon-slide' viewBox='0 0 24 24' aria-hidden='true'><rect x='3' y='4' width='18' height='12' rx='1.5'/><path d='M12 16v3.5M8.5 21l3.5-1.5 3.5 1.5M7 8.5h6M7 11.5h9'/></svg>",
+        },
     ];
     const selector = ['dark', ...TOGGLES.map((t) => t.name)].map((name) => `[data-variant-${name}]`).join(', ');
     const media = [...document.querySelectorAll(selector)];
     if (media.length === 0) return;
 
+    const store = (toggle) => (toggle.perTab ? sessionStorage : localStorage);
+    const context = document.querySelector('[data-media-context]')?.dataset.mediaContext;
     TOGGLES.forEach((toggle) => {
         toggle.on = false;
         toggle.buttons = [];
         try {
-            toggle.on = localStorage.getItem(toggle.storageKey) === '1';
+            if (toggle.perTab && context) {
+                toggle.on = context === toggle.name;
+                store(toggle).setItem(toggle.storageKey, toggle.on ? '1' : '0');
+            } else {
+                toggle.on = store(toggle).getItem(toggle.storageKey) === '1';
+            }
         } catch (e) {
             // Without storage a toggle only lasts for this page.
+            if (toggle.perTab && context) toggle.on = context === toggle.name;
         }
     });
 
@@ -91,10 +117,14 @@
         element.dataset.variantBase = element.getAttribute('src');
         const toggles = TOGGLES.filter((t) => variant(element, t.name));
         if (toggles.length === 0) return;
+        // A preview that enlarges on a click is a button itself; the
+        // switches go beside it, not into it.
+        const preview = element.closest('.tutorial-preview');
+        const framed = preview || element;
         const box = document.createElement('span');
-        box.className = 'media-variant-box';
-        element.parentNode.insertBefore(box, element);
-        box.appendChild(element);
+        box.className = preview ? 'media-variant-box media-variant-box-preview' : 'media-variant-box';
+        framed.parentNode.insertBefore(box, framed);
+        box.appendChild(framed);
         const bar = document.createElement('span');
         bar.className = 'media-variant-toggles';
         toggles.forEach((toggle) => {
@@ -107,7 +137,7 @@
             button.addEventListener('click', () => {
                 toggle.on = !toggle.on;
                 try {
-                    localStorage.setItem(toggle.storageKey, toggle.on ? '1' : '0');
+                    store(toggle).setItem(toggle.storageKey, toggle.on ? '1' : '0');
                 } catch (e) {
                     // See above.
                 }

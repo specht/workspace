@@ -198,14 +198,18 @@ module ContentParts
                 warn&.call("reference page #{slug} does not exist")
                 next
             end
-            parts(File.read(file, encoding: 'UTF-8')).each_key { |name| index[name] ||= slug }
+            parts(File.read(file, encoding: 'UTF-8')).each do |name, text|
+                # The chip shows the part's heading (»Wenn eine Regel nicht
+                # wirkt«), not its name (wirkt-nicht).
+                index[name] ||= [slug, heading_text(text.sub(SHORT, '')) || name]
+            end
         end
         markdown.gsub(USES) do
             names = $1.split(',').map(&:strip).reject(&:empty?)
             links = names.map do |name|
-                slug = index[name]
+                slug, title = index[name]
                 if slug
-                    "<a href='/reference/#{slug}##{name}'>#{name}</a>"
+                    "<a href='/reference/#{slug}##{name}'>#{CGI.escapeHTML(title)}</a>"
                 else
                     warn&.call("_uses(#{name}): not found in #{Array(references).join(', ')}")
                     "<span>#{name}</span>"

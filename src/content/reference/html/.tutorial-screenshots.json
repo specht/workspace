@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "screenshots": {
+    "tags.webp": {
+      "state_hash": "4493c1ce77ed81df78127f83fa828f3d267b6f59c4484d2a6ca490e25dcdaaa2",
+      "environment_fingerprint": "f504a32956aa4da091a09ef02ee39730771901141dee5b50fce14532a29df0a0",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "10987dbccc197297aacba7ee8f0e34418df295ff4c439d8b13b6440de169d15c",
+      "variants": {
+        "tags-folie.webp": "1759a5e431b31f42575eae6ae789d8b54322435a169b4e0b3fae31481a8b132f"
+      }
+    },
+    "grundgeruest.webp": {
+      "state_hash": "a2e5ebe3ce8b1a295ba31d4b0a6ab16944612732b9a84fb0e6da586ba735ccca",
+      "environment_fingerprint": "f504a32956aa4da091a09ef02ee39730771901141dee5b50fce14532a29df0a0",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "00d64ba3ebdf8de7a6106c78515e56cd9e49dda52ae1ae6ba4fa3be4a0d29ab3"
+    },
+    "absaetze.webp": {
+      "state_hash": "70860d2ff57414c82247d3e70582b7808a5907070b03fa4e4f9ec9ebdbe72fe8",
+      "environment_fingerprint": "f504a32956aa4da091a09ef02ee39730771901141dee5b50fce14532a29df0a0",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "7f31ea4f192b23364b3c71e232aa1dad31b60cab320c6ad8aa11f11cb169a6f4",
+      "variants": {
+        "absaetze-folie.webp": "1cd159689309f066ea11486fbb8678c55d326ca90b8f9f171f6523a3a1fbc603"
+      }
+    },
+    "zeilenumbruch.webp": {
+      "state_hash": "20a954f9af442fef77761e19e79e8561ec7fcc74187a537384b805e075456d02",
+      "environment_fingerprint": "f504a32956aa4da091a09ef02ee39730771901141dee5b50fce14532a29df0a0",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "5c5e9fd0538caaaa786044a4dc2a296bdf31e584cb08ee6d8a76bd47c7a74877",
+      "variants": {
+        "zeilenumbruch-folie.webp": "e43f6598825c6e76fda5041fa0f76ce5a58d1021ccb34b576a75417eb89a8c15"
+      }
+    },
+    "liste.webp": {
+      "state_hash": "8be7a09bed7bea9206c6ffe7c1400ec40b1265e3221a4488bfc91d71d2bf51b4",
+      "environment_fingerprint": "f504a32956aa4da091a09ef02ee39730771901141dee5b50fce14532a29df0a0",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "bcad5c314a27f250ca97a468bd0a232c181b69b3b96d21769d016c285c6f40ae",
+      "variants": {
+        "liste-folie.webp": "73c2b500dcd5b9d1f891f6ff833704db0b27027ec1de662dd5ded535c8dafaf2"
+      }
+    },
+    "nummeriert.webp": {
+      "state_hash": "a58ad2b1501da4e5d382c39c848a8ab7acd55cec159200adc1f737159147423b",
+      "environment_fingerprint": "f504a32956aa4da091a09ef02ee39730771901141dee5b50fce14532a29df0a0",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "718c5d6741bb77f92bb09cf1d51154a77d3ac29322fa239cf565dc8c8e4f98b8",
+      "variants": {
+        "nummeriert-folie.webp": "c7fef3a74e674bbe73fe339e28fc7faf06e2bf983b9affc4abd480bc7470092f"
+      }
+    },
+    "hervorheben.webp": {
+      "state_hash": "787413648be1b67edab589148b7a410b95d1ef47a3d6657d4289ca02412e556c",
+      "environment_fingerprint": "f504a32956aa4da091a09ef02ee39730771901141dee5b50fce14532a29df0a0",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "11cacb809adabd75e845e3f2598cfb4b32404e2ec782517b0ad034135731edc4",
+      "variants": {
+        "hervorheben-folie.webp": "9411b4979f5a00e2a8b944952d043b49385ef9cd5aeddd60aba94fed54f6b478"
+      }
+    },
+    "links.webp": {
+      "state_hash": "6896d0ed27ddd3b9b85839df1235cc3cf7ed92f9f686e9e5ea16ec343a9fd4f4",
+      "environment_fingerprint": "f504a32956aa4da091a09ef02ee39730771901141dee5b50fce14532a29df0a0",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "7623d599ac88bba9c7a91ca912db6ea993e6a4b977480c7e49b734898b36d68c",
+      "variants": {
+        "links-folie.webp": "08afa3df3f5c435e43b6084c5d37978cf72d719c2773f51e86b9eb5c10e85e75"
+      }
+    },
+    "bild.webp": {
+      "state_hash": "979e046280ef36db2ce4b90240b1233a03aad04703b0b4f2f378cb21b3093556",
+      "environment_fingerprint": "f504a32956aa4da091a09ef02ee39730771901141dee5b50fce14532a29df0a0",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "29dc1941a038d88d9d17b112d3b5eda5c257e052a8b8f75c6aded16358777340",
+      "variants": {
+        "bild-folie.webp": "6c9a552a7c64b5f317751852fa374b32ab0e3954044a763ce635195d50add089"
+      }
+    }
+  }
+}

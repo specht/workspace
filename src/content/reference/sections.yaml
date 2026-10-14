@@ -28,14 +28,25 @@
   entries:
     - terminal
 
+- key: reference-web
+  label: HTML und CSS
+  icon: /images/pen.png
+  description: |
+    Webseiten und Folien bauen: Inhalt mit HTML, Aussehen mit CSS, Anordnung
+    mit Flexbox und Spalten. Jedes Beispiel als Webseite und als Folie.
+  entries:
+    - html
+    - css
+    - layout
+
 - key: reference-presentations
   label: Präsentationen
   icon: /images/book.png
   description: |
-    Folien mit HTML und CSS gestalten: Text, Listen, Formeln, Bilder, Farben,
-    Schriften, Seitenzahlen, Platzierung und Spalten.
+    Was nur für Folien mit Shower gilt: Aufbau einer Folie, gute Folien, die
+    Klassen der Vorlage, Seitenzahl, Formeln und Präsentieren.
   entries:
-    - html-folien
+    - shower
 
 - key: reference-colors
   label: Farben
