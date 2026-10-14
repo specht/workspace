@@ -229,12 +229,16 @@
         }
     }
 
+    function setDisabled(card, disabled) {
+        card.querySelectorAll('button, input, textarea, select').forEach((el) => {
+            el.disabled = disabled;
+        });
+    }
+
     // While a check or hand-in runs, the card cannot be used, and its
     // button says that something is happening.
     function setBusy(card, busy) {
-        card.querySelectorAll('button, input, textarea, select').forEach((el) => {
-            el.disabled = busy;
-        });
+        setDisabled(card, busy);
         const button = card.querySelector('.task-submit');
         if (!button) return;
         if (busy && !button.dataset.idle) {
@@ -402,7 +406,7 @@
             if (!form) return;
             if (!page.loggedIn) {
                 card.classList.add('task-logged-out');
-                setBusy(card, true);
+                setDisabled(card, true);
                 return;
             }
             form.addEventListener('submit', function (e) {
