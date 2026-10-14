@@ -1381,10 +1381,10 @@ class Main < Sinatra::Base
                 node = following
             end
             next unless node
-            # _include(…, done: id): tasks.js folds the box once task id is solved.
-            if node['data-done']
-                box['data-done'] = node['data-done']
-                box['data-title'] = node['data-title'].to_s
+            # _include(…, done: id): tasks.js folds the box once task id is
+            # solved; include_fold.js once the part was done on another page.
+            %w[data-done data-part data-title data-short].each do |name|
+                box[name] = node[name] if node[name]
             end
             link = root.document.create_element('p', 'class' => 'reference-include-link')
             # The tooltip names where the text comes from, like the breadcrumb
@@ -1586,6 +1586,7 @@ class Main < Sinatra::Base
                 page_meta = ContentParts.meta(markdown)
                 page_references = PageKinds.references_of(page_meta, markdown, ContentParts::INCLUDE)
                 content_warning = lambda { |message| STDERR.puts "#{path}: #{message}" }
+                page_included_parts = ContentParts.included_parts(markdown)
                 markdown = ContentParts.expand_includes(markdown,
                     :page_dir => File.dirname(path), :reference_root => REFERENCE_ROOT,
                     :variables => ContentParts.page_variables(page_meta), :warn => content_warning)
@@ -1686,6 +1687,9 @@ class Main < Sinatra::Base
                 :kind => page_meta['kind'],
                 :duration => page_meta['duration'],
                 :references => page_references,
+                # Reference parts the page includes ('slug#part'), so a box
+                # can shrink once someone has been through it elsewhere.
+                :included_parts => page_included_parts,
                 # Template to clone (template:, template_name:), for the
                 # »new version« hint; nil if the page has none.
                 :template => TemplateFreshness.from_meta(page_meta),
@@ -3719,6 +3723,32 @@ class Main < Sinatra::Base
         "<style>.tasks-off-only { display: none; }</style>" \
             "<script>window.TASK_PAGE = #{config.to_json};</script>" \
             "<script src='/include/tasks.js?#{CACHE_BUSTER}'></script>"
+    end
+
+    # Handbuch boxes (_include) this person has already been through on
+    # another page: detailed the first time, one line after. A part counts
+    # as done once a task is solved on another page that includes it; the
+    # line names that page. Loads include_fold.js only if something folds.
+    def include_fold_setup(slug)
+        parts = (@@content[slug] || {})[:included_parts] || []
+        return '' if parts.empty? || !user_logged_in? || !tasks_visible?
+
+        solved = my_task_states.values.select { |s| StudentHome::DONE.include?(s[:status].to_s) }
+            .map { |s| s[:task].to_s.split('/', 2).first }.uniq
+        return '' if solved.empty?
+
+        seen = {}
+        parts.each do |part|
+            other = @@content.find do |other_slug, c|
+                other_slug != slug && c[:tasks] && (c[:included_parts] || []).include?(part) &&
+                    solved.include?(c[:tasks][:activity])
+            end
+            seen[part] = other[1][:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '') if other
+        end
+        return '' if seen.empty?
+
+        "<script>window.SEEN_PARTS = #{seen.to_json.gsub('</', '<\/')};</script>" \
+            "<script src='/include/include_fold.js?#{CACHE_BUSTER}'></script>"
     end
 
     # On a page with a template: loads template_notice.js, which asks

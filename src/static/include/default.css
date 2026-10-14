@@ -1493,6 +1493,11 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     color: #0f766e;
 }
 
+.reference-include-where {
+    color: #5b6b69;
+    font-size: 90%;
+}
+
 .reference-include-done .btn-link {
     padding: 0 0 0 0.5em;
     vertical-align: baseline;

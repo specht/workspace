@@ -15,6 +15,9 @@ module ContentParts
     # the box shrinks to one line once that task on the page is solved.
     INCLUDE = /_include\(\s*(#{NAME})#(#{NAME})\s*(?:,\s*done:\s*(#{NAME})\s*)?\)/
     USES = /_uses\(([^)\n]*)\)/
+    # <!-- short: … --> right after a part marker: the one line that stands
+    # for the whole part once a person has been through it on another page.
+    SHORT = /^<!--\s*short:\s*(.*?)\s*-->[ \t]*\n?/
     # Page variables that parts may use. Only these names are replaced, so
     # ${...} in JavaScript or shell examples stays untouched.
     VARIABLES = {
@@ -76,6 +79,7 @@ module ContentParts
     # On the reference page itself, a part marker becomes an anchor.
     def self.mark_parts(markdown)
         markdown
+            .gsub(SHORT, '')
             .gsub(PART_MARKER) { "<div id='#{$1}' class='reference-part'></div>" }
             .gsub(PART_END, '')
     end
@@ -141,6 +145,8 @@ module ContentParts
                 next "<div class='hint'>Baustein fehlt: #{slug}##{part}</div>"
             end
 
+            short = text[SHORT, 1]
+            text = text.sub(SHORT, '')
             source = File.read(file, encoding: 'UTF-8')
             title = heading_text(text)
             label = [page_title(source), title].compact.uniq.join(' › ')
@@ -150,11 +156,24 @@ module ContentParts
                 warn&.call("_include(#{slug}##{part}): ${#{name}} has no value on this page") if variables[name].nil?
             end
             text = fill_variables(text, variables)
-            done_attrs = done ? " data-done='#{done}' data-title='#{CGI.escapeHTML(title || label)}'" : ''
+            done_attrs = done ? " data-done='#{done}'" : ''
+            short_attr = short ? " data-short='#{CGI.escapeHTML(inline_html(fill_variables(short, variables)))}'" : ''
             "\n<div class='reference-include-begin'></div>\n\n#{text}\n\n" \
                 "<div class='reference-include-end' data-href='/reference/#{slug}##{part}' " \
-                "data-label='#{CGI.escapeHTML(label.empty? ? slug : label)}'#{done_attrs}></div>\n"
+                "data-label='#{CGI.escapeHTML(label.empty? ? slug : label)}' data-part='#{slug}##{part}' " \
+                "data-title='#{CGI.escapeHTML(title || label)}'#{done_attrs}#{short_attr}></div>\n"
         end
+    end
+
+    # The parts a page includes, as 'slug#part'.
+    def self.included_parts(markdown)
+        markdown.scan(INCLUDE).map { |slug, part, _| "#{slug}##{part}" }.uniq
+    end
+
+    # A short line of Markdown as HTML: only `code` is understood, everything
+    # else is escaped.
+    def self.inline_html(text)
+        CGI.escapeHTML(text.to_s).gsub(/`([^`]+)`/) { "<code>#{$1}</code>" }
     end
 
     # Task ids named by _include(…, done: id) in a page's Markdown.

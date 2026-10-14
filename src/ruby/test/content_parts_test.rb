@@ -14,6 +14,7 @@ class ContentPartsTest < Minitest::Test
             # Workspace
 
             <!-- part: klonen -->
+            <!-- short: Klone `${template}` & öffne es. -->
             ## Repository klonen
 
             Klone `${template}`.
@@ -93,9 +94,27 @@ class ContentPartsTest < Minitest::Test
 
     def test_include_with_done_names_the_task_that_folds_it
         out = ContentParts.expand_includes('_include(workspace#klonen, done: geklont)', page_dir: @page, reference_root: @reference)
-        assert_includes out, "data-done='geklont' data-title='Repository klonen'"
+        assert_includes out, "data-title='Repository klonen' data-done='geklont'"
         refute_includes ContentParts.expand_includes('_include(workspace#klonen)', page_dir: @page, reference_root: @reference), 'data-done'
         assert_equal ['geklont'], ContentParts.done_tasks("_include(workspace#klonen, done: geklont)\n_include(workspace#terminal)")
+    end
+
+    # The short line stands for the part once a person has been through it
+    # elsewhere; it is not part of the text, neither here nor on the
+    # reference page.
+    def test_short_line_becomes_an_attribute_with_the_page_variables
+        out = ContentParts.expand_includes('_include(workspace#klonen)', page_dir: @page, reference_root: @reference,
+            variables: { 'template' => 'https://example.org/a.git' })
+        assert_includes out, "data-part='workspace#klonen'"
+        assert_includes out, "data-short='Klone &lt;code&gt;https://example.org/a.git&lt;/code&gt; &amp;amp; öffne es.'"
+        refute_includes out, 'short:'
+        refute_includes ContentParts.mark_parts(File.read(File.join(@reference, 'workspace', 'workspace.md'))), 'short:'
+        refute_includes ContentParts.expand_includes('_include(workspace#terminal)', page_dir: @page, reference_root: @reference), 'data-short'
+    end
+
+    def test_included_parts_lists_each_part_once
+        assert_equal ['workspace#klonen', 'workspace#terminal'],
+            ContentParts.included_parts("_include(workspace#klonen, done: x)\n_include(workspace#terminal)\n_include(workspace#klonen)")
     end
 
     # done: must name a task that the same page shows, or nothing ever folds.

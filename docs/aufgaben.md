@@ -152,6 +152,15 @@ Klicke auf »Clone Repository« und füge die Adresse der Vorlage ein:
   passiert nur beim Laden der Seite, nie während jemand liest. Die Aufgabe
   muss auf derselben Seite stehen (ein Test prüft das). So gilt auch für
   eingebundene Anleitungen: beim ersten Mal ausführlich, danach eine Zeile.
+- Ohne `done:` faltet sich ein Kasten, wenn die Person ihn schon kennt: wenn
+  sie auf einer anderen Seite, die denselben Teil einbindet, mindestens eine
+  Aufgabe gelöst hat. Statt des Kastens steht dann eine Zeile, zum Beispiel
+  »Kein Ordner offen (Strg+K, dann F), Seitenleiste zu (Strg+B), Terminal auf
+  (Strg+J). Kennst du schon aus »Versionsverwaltung mit Git«. Anleitung
+  anzeigen«. Die Zeile schreibt der Teil selbst, direkt unter seiner
+  Markierung: `<!-- short: … -->` (nur `Code` wird ausgezeichnet, `${template}`
+  wird ersetzt). Ohne `short:` steht dort die Überschrift des Teils. Wer nicht
+  angemeldet ist oder keine Aufgaben sieht, bekommt immer den ganzen Kasten.
 - `${template}` wird durch das Feld `template` der einbindenden Seite ersetzt,
   auf der Handbuch-Seite selbst durch »[Adresse der Vorlage]«. Andere
   `${…}`, etwa in JavaScript-Beispielen, bleiben unverändert.

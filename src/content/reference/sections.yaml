@@ -5,10 +5,19 @@
   label: Workspace
   icon: /images/rocket.png
   description: |
-    Handgriffe, die viele Aktivitäten brauchen: Repositories klonen und die
-    Live-Vorschau starten.
+    Handgriffe, die viele Aktivitäten brauchen: das Terminal öffnen,
+    Repositories klonen und die Live-Vorschau starten.
   entries:
     - workspace
+
+- key: reference-terminal
+  label: Terminal
+  icon: /images/penguin.png
+  description: |
+    Dateien und Verzeichnisse im Terminal: ansehen, durchsuchen, packen,
+    kopieren und löschen.
+  entries:
+    - terminal
 
 - key: reference-presentations
   label: Präsentationen
@@ -30,7 +39,7 @@
 
 - key: reference-git
   label: Git und GitLab
-  icon: /images/penguin.png
+  icon: /images/git.png
   description: |
     Einmal einrichten und dann immer wieder brauchen: SSH-Schlüssel, Name und
     E-Mail für Git, und was zu tun ist, wenn ein Push abgelehnt wird.

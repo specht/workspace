@@ -226,6 +226,9 @@ html[data-bs-theme="dark"] {
     .reference-include-done .bi {
         color: #7fd8cc;
     }
+    .reference-include-where {
+        color: #9fb3b0;
+    }
     .page-reference h1 {
         border-bottom-color: #2fb3a5;
     }

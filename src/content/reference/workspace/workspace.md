@@ -6,12 +6,44 @@ kind: reference
 # Workspace: Grundgriffe
 
 <p class='abstract'>
-Handgriffe, die viele Aktivitäten brauchen: eine Vorlage aus einem Git-Repository klonen, eine neue Version davon holen und die Live-Vorschau starten. Aktivitäten binden diese Abschnitte ein, damit sie überall gleich aussehen.
+Handgriffe, die viele Aktivitäten brauchen: das Terminal öffnen, eine Vorlage aus einem Git-Repository klonen, eine neue Version davon holen und die Live-Vorschau starten. Aktivitäten binden diese Abschnitte ein, damit sie überall gleich aussehen.
 </p>
+
+## Erste Schritte
+
+<!-- part: terminal-oeffnen -->
+<!-- short: Kein Ordner offen (Strg+K, dann F), Seitenleiste zu (Strg+B), Terminal auf (Strg+J). -->
+### Terminal öffnen
+
+Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
+
+<!-- tutorial-screenshot
+# Workspace ohne geöffneten Ordner
+show-left-sidebar
+-->
+
+<img class='full' src='fresh-start.webp' alt='Ein leerer Workspace ohne geöffneten Ordner.'>
+
+Schließe die linke Seitenleiste mit <kbd>Strg</kbd><kbd>B</kbd>, um mehr Platz zu haben, und öffne das Terminal mit <kbd>Strg</kbd><kbd>J</kbd>:
+
+<!-- tutorial-screenshot
+hide-left-sidebar
+terminal-open
+-->
+
+<img class='full' src='got-terminal.webp' alt='Der Workspace mit geöffnetem Terminal im unteren Bereich.'>
+
+<img src='../../common/maximize-terminal.webp' class='r' style='width: 25em;' alt='Das Symbol zum Maximieren rechts oben im Terminal.'>
+
+Mit dem Symbol rechts oben im Terminal kannst du es maximieren. Die linke Seitenleiste blendest du jederzeit mit <kbd>Strg</kbd><kbd>B</kbd> ein und aus.
+
+<div style='clear: both;'></div>
+<!-- /part -->
 
 ## Vorlagen
 
 <!-- part: repository-klonen -->
+<!-- short: Ordner schließen (Strg+K, dann F), »Clone Repository« mit `${template}`, Zielordner `/workspace`, dann »Open«. -->
 ### Repository klonen
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
@@ -57,6 +89,7 @@ Meldet Git **divergent branches**, hast du selbst etwas committet. Dann hilft `g
 <!-- /part -->
 
 <!-- part: live-server -->
+<!-- short: Vorschau: unten rechts auf »Go Live« klicken. -->
 ## Live-Vorschau starten
 
 <img src='../../common/go-live.webp' class='r' style='width: 21em;' alt='Der Eintrag »Go Live« unten rechts in der Statusleiste.'>
