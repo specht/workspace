@@ -30,7 +30,7 @@ module GitCheck
 
     # The command line for docker exec (arguments, not a shell string).
     def self.exec_args(fs_tag, repo, uid: '1000:1000')
-        ['docker', 'exec', '-u', uid, "hs_code_#{fs_tag}", 'sh', '-c', STATUS_SCRIPT, 'sh', "/workspace/#{repo}"]
+        ['docker', 'exec', '-u', uid, '-e', 'HOME=/workspace', "hs_code_#{fs_tag}", 'sh', '-c', STATUS_SCRIPT, 'sh', "/workspace/#{repo}"]
     end
 
     # Reads the output of STATUS_SCRIPT.

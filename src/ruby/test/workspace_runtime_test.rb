@@ -153,7 +153,8 @@ class WorkspaceRuntimeTest < Minitest::Test
         output = @runtime.git_status('abc', :repo => 'my repo', :uid => '1000:1000', :script => 'echo "$1"', :timeout => 5)
         assert_equal "STATUS ## main\n", output
         command, options = @captures.last
-        assert_equal "docker exec -u 1000:1000 hs_code_abc sh -c echo\\ \\\"\\$1\\\" sh /workspace/my\\ repo", command
+        # HOME as in the student's terminal: Git reads /workspace/.gitconfig.
+        assert_equal "docker exec -u 1000:1000 -e HOME\\=/workspace hs_code_abc sh -c echo\\ \\\"\\$1\\\" sh /workspace/my\\ repo", command
         assert_equal true, options[:allow_failure]
     end
 
@@ -163,7 +164,7 @@ class WorkspaceRuntimeTest < Minitest::Test
         output = @runtime.run_script('abc', :script => 'echo "$1 $2"', :args => ['/workspace/anaglyph', 'a' * 40], :uid => '1000:1000', :timeout => 10)
         assert_equal "STATE current\n", output
         command, = @captures.last
-        assert_equal "docker exec -u 1000:1000 hs_code_abc sh -c echo\\ \\\"\\$1\\ \\$2\\\" sh /workspace/anaglyph #{'a' * 40}", command
+        assert_equal "docker exec -u 1000:1000 -e HOME\\=/workspace hs_code_abc sh -c echo\\ \\\"\\$1\\ \\$2\\\" sh /workspace/anaglyph #{'a' * 40}", command
     end
 
     def test_run_command

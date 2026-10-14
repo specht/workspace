@@ -368,6 +368,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Bilder, mit den Ständen der Beispielseite in `lehrkraft/`) und für die
   geklonte Shower-Vorlage.
 
+- Behoben: »Git kennt dich« schlug fehl, obwohl `git config --global` Name
+  und E-Mail kannte. Die Prüfung lief mit dem `HOME` des Images (`/config`)
+  statt mit dem der Lernenden (`/workspace`) und fand `.gitconfig` nicht.
+- Behoben: Lehrkräfte konnten mit einer E-Mail-Adresse jeden Workspace
+  öffnen, nicht nur die ihrer Gruppen.
+- Lernende in mehreren Gruppen (etwa Klasse 12 und LK) sehen alle
+  Lehrkräfte dieser Gruppen auf der Verwaltungsseite: Anmelde-Code und
+  Workspace. Wer mehrere Gruppen betreut, wählt dort, wessen Codes er sieht.
+
 ### Für Betreibende
 
 - Keine Änderung nötig. Die Prüfarten `scene` und `er` brauchen `node` im

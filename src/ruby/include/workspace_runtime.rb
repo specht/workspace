@@ -147,11 +147,13 @@ module WorkspaceRuntime
         # Runs a fixed script from the server's code (never text from a
         # student) in the student's container as the student, with checked
         # arguments ($1, $2, …). Returns its output, or nil if the container is
-        # not running.
+        # not running. HOME is the student's, as in its terminal: without it,
+        # docker exec uses the image's /config, and Git would not see the
+        # name and e-mail address in /workspace/.gitconfig.
         def run_script(fs_tag, script:, args:, uid:, timeout: nil)
             return nil unless workspace_state(fs_tag, :timeout => timeout)[:running]
 
-            command = Shellwords.join(['docker', 'exec', '-u', uid, "hs_code_#{fs_tag}",
+            command = Shellwords.join(['docker', 'exec', '-u', uid, '-e', 'HOME=/workspace', "hs_code_#{fs_tag}",
                 'sh', '-c', script, 'sh', *args])
             @capture.call(command, :timeout => timeout, :allow_failure => true, :log_command => false)
         end
