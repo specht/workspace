@@ -66,6 +66,22 @@ class ClassBoardTest < Minitest::Test
         assert_includes html, "cb-task cb-often-wrong"
     end
 
+    def test_own_row_below_the_class
+        states = { 'ada@x' => { 'adresse' => state('correct') }, 'me@x' => { 'abgabe' => state('sent', answer: '3 Dateien, 1 kB') } }
+        b = ClassBoard.build(MEMBERS, TASKS, states, viewer: { :email => 'me@x', :name => 'Du (Lehrkraft)' })
+        assert_equal 4, b[:rows].size
+        assert_equal 'sent', b[:own][:cells][3].status
+        assert_equal 0, b[:summary][3][:done]
+        html = ClassBoard.html(b, activity: 'tcpip', submission_url: ->(email, id) { "/dl/#{id}?email=#{email}" })
+        assert_match(%r{</tbody><tbody class='cb-own'><tr data-email='me@x'><th class='cb-name'>Du \(Lehrkraft\)</th>}, html)
+        assert_includes html, "<a href='/dl/abgabe?email=me@x'>3 Dateien, 1 kB</a>"
+        assert_includes html, '4. Abgabe: 1 Abgabe<'
+
+        # Nothing tried yet, or a member of the group anyway: no extra row.
+        assert_nil ClassBoard.build(MEMBERS, TASKS, {}, viewer: { :email => 'me@x', :name => 'Du' })[:own]
+        assert_nil ClassBoard.build(MEMBERS, TASKS, states, viewer: { :email => 'ada@x', :name => 'Du' })[:own]
+    end
+
     def test_every_icon_is_in_the_bundled_sprite
         sprite = File.read(File.expand_path('../../static/include/tabler/tabler.svg', __dir__), encoding: 'UTF-8')
         used = ClassBoard::SYMBOLS.values.map(&:first) + %w[help]

@@ -4250,8 +4250,12 @@ class Main < Sinatra::Base
 
         activity_key, title, tasks = activity
         members = class_members(group)
-        states = class_board_states(members.map { |m| m[:email] }, activity_key)
-        board = ClassBoard.build(members, tasks, states)
+        # One's own tries and hand-ins, below the class (teachers who are not
+        # members of the group, e.g. to try a task before the class does).
+        me = @session_user[:email]
+        viewer = { :email => me, :name => 'Du (Lehrkraft)' }
+        states = class_board_states((members.map { |m| m[:email] } + [me]).uniq, activity_key)
+        board = ClassBoard.build(members, tasks, states, :viewer => viewer)
         live = tasks.select { |t| TaskCheck::LIVE_TYPES.include?(t[:type]) }
         unless live.empty?
             io << "<div class='class-live' data-group='#{h.(group)}'>"
@@ -4266,7 +4270,7 @@ class Main < Sinatra::Base
         io << "<p class='class-board-link'><a href='/#{h.(@@content.find { |_, c| (c[:tasks] || {})[:activity] == activity_key }&.first)}'>#{h.(title)}</a> · #{members.size} Personen in #{h.(group)}</p>"
         io << ClassBoard.html(board, :activity => activity_key,
             :submission_url => lambda { |email, id| "/api/task/submission/#{activity_key}/#{id}?email=#{CGI.escape(email)}" })
-        io << class_scene_galleries_html(activity_key, tasks, members)
+        io << class_scene_galleries_html(activity_key, tasks, board[:own] ? members + [viewer] : members)
         io
     end
 

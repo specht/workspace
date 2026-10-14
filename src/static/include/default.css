@@ -2518,6 +2518,14 @@ h3[id] {
     background-color: #fdf0dc;
 }
 
+.class-board tbody.cb-own {
+    border-top: 2px dashed #ced4da;
+}
+
+.class-board tbody.cb-own .cb-name {
+    font-style: italic;
+}
+
 .class-board tfoot td {
     font-size: 80%;
     color: #5c636a;
