@@ -203,6 +203,16 @@ const BLOCKS = {
     'paletten': paletteList,
 };
 
+// The ```minicpu syntax colours know the mnemonics by name.
+const { MNEMONICS } = await load('assembler.js');
+const lexer = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../ruby/include/minicpu_lexer.rb'), 'utf8');
+const known = (lexer.match(/MNEMONICS = %w\[([^\]]*)\]/) || [])[1]?.split(/\s+/).filter(Boolean) || [];
+const differ = [...MNEMONICS.filter((m) => !known.includes(m)), ...known.filter((m) => !MNEMONICS.includes(m))];
+if (differ.length) {
+    console.error(`MiniCPU::MNEMONICS in src/ruby/include/minicpu_lexer.rb differs from the sandbox: ${differ.join(', ')}`);
+    process.exit(1);
+}
+
 const reference = join(dirname(fileURLToPath(import.meta.url)), '../content/reference');
 const pages = readdirSync(reference).filter((d) => d.startsWith('minicpu')).map((d) => join(reference, d, `${d}.md`));
 const seen = new Set();

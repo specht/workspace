@@ -268,7 +268,7 @@ Die MiniCPU gibt es in drei Stufen. Jede behält alles von der vorherigen und f�
 
 Die Schreibweise ist einheitlich: Das Ziel steht immer vorne, und **eckige Klammern bedeuten immer »der Speicher an«**. `LDI A, 0x70` lädt die Zahl 0x70, `LDA A, [0x70]` das Byte, das an Adresse 0x70 steht. Wer sich vertut, bekommt eine Fehlermeldung, die genau diesen Unterschied erklärt. So sieht eine erste Schleife aus:
 
-```nasm
+```minicpu
         LDI A, 5
         LDI B, 0
 loop:   ADD B, A

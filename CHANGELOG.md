@@ -528,6 +528,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Haken sind Symbole aus Bootstrap Icons statt Unicode-Zeichen: in den
   Flag-Spalten des MiniCPU-Handbuchs und bei »Deine Kopie … ist aktuell« auf
   der Startseite. `no_check_marks_test.rb` hält das so (Code ausgenommen).
+- MiniCPU-Assembler in Code-Blöcken (```` ```minicpu ````) ist farbig wie im
+  Editor der CPU Sandbox: Befehle, Register, Marken, Direktiven, Zahlen,
+  Kommentare. Vorher blieben die Blöcke im Handbuch ungefärbt (```` ```asm ````
+  kannte die Seite nicht), die Aktivität nutzte das x86-Schema von NASM.
+  Ein Test prüft, dass jede Sprache an einem Code-Block bekannt ist; dabei
+  fiel ```` ```javascript ```` auf (p5.js), das jetzt wie `js` gefärbt wird.
 
 - Behoben: »Git kennt dich« schlug fehl, obwohl `git config --global` Name
   und E-Mail kannte. Die Prüfung lief mit dem `HOME` des Images (`/config`)

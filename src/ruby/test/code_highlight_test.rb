@@ -25,7 +25,24 @@ class CodeHighlightTest < Minitest::Test
         assert_includes out, '&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD'
     end
 
+    # A language CodeHighlight does not know stays a raw <pre><code>, without
+    # colours and without a warning (```asm did, on the MiniCPU pages).
+    def test_every_fence_language_in_the_content_is_highlighted
+        content = File.expand_path('../../content', __dir__)
+        used = Hash.new { |h, k| h[k] = [] }
+        Dir[File.join(content, '**', '*.md')].each do |file|
+            File.read(file, encoding: 'UTF-8').scan(/^ *```([\w-]+)\s*$/).flatten.uniq.each do |language|
+                used[language] << file.sub(content + '/', '')
+            end
+        end
+        unknown = used.keys.reject do |language|
+            !html("<pre><code class='#{language}'>x</code></pre>").include?('<code')
+        end
+        assert_empty unknown.map { |l| "#{l}: #{used[l].first(3).join(', ')}" }
+    end
+
     def test_languages_and_task_card_fragments
+        assert_includes html("<pre><code class='minicpu'>loop: DEC A</code></pre>"), "class=\"code-minicpu\""
         out = html("<div class='task-prompt'><pre><code class='cypher'>MATCH (m:Movie) RETURN m</code></pre></div>")
         assert_includes out, "class=\"code-cypher\""
         assert_includes out, '<span class="nc">Movie</span>'

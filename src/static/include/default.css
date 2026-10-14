@@ -163,6 +163,17 @@ pre.code-cypher .m {
     color: #ff9e64 !important;
 }
 
+/* ```minicpu blocks (Rouge::Lexers::MiniCPU): registers and the labels a
+   line defines stand out, as in the CPU Sandbox's editor. */
+pre.code-minicpu .nb {
+    color: #56d4dd !important;
+}
+
+pre.code-minicpu .nl {
+    color: #e2a8ff !important;
+    font-weight: bold;
+}
+
 /* A formula wider than the screen scrolls by itself instead of widening
    the page (KaTeX, display mode). */
 .katex-display {

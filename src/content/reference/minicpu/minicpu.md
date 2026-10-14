@@ -209,7 +209,7 @@ So rufen sich Funktionen gegenseitig auf; der C-Compiler macht es bei jeder Funk
 4. Sie gibt ihre lokalen Variablen mit `ADD SP, n` frei und kehrt mit `RET` zurück, das Ergebnis in A.
 5. Der Aufrufer gibt die Argumente mit `ADD SP, n` frei.
 
-```asm
+```minicpu
 .cpu 8s
         LDI A, 21
         PUSH A              ; das Argument

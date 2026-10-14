@@ -22,7 +22,7 @@ Joystick, Tastatur, Timer, Zufall, Lautsprecher und Zahlenanzeige an ihren Ports
 
 Geräte hängen an nummerierten **Ports**, getrennt vom RAM: Sie kosten keinen Speicher, auf jeder Stufe. `IN` liest ein Byte von einem Port in ein Register, `OUT` schreibt eins hin. Beide Befehle sind 3 Bytes lang und brauchen 4 Takte.
 
-```asm
+```minicpu
         IN A, 0x02          ; A = Timer
         OUT 0x11, A         ; A auf der Zahlenanzeige
 ```
@@ -100,7 +100,7 @@ Ein Schritt zurück macht ein `OUT` rückgängig (Zahlenanzeige, Bildschirmseite
 
 `OUT 0x10, A` spielt die Note A als MIDI-Notennummer: 60 ist das eingestrichene c, 69 das a mit 440 Hz, jede Zahl mehr einen Halbton höher. Wie lange sie klingt, bestimmt der letzte Wert an `0x15`, in 1/60 Sekunden; ohne Angabe 6, also eine Zehntelsekunde.
 
-```asm
+```minicpu
         LDI A, 12
         OUT 0x15, A         ; Töne von 0,2 s
         LDI A, 60
@@ -120,7 +120,7 @@ Der Bildschirm ist eine Art, das RAM *anzusehen*: Wie ein Videochip liest er ein
 
 Ein Programm schlägt seinen Bildschirm mit einer Zeile vor, die keine Bytes erzeugt:
 
-```asm
+```minicpu
 .display 0x80, 16, 8, gray8
 .display screen, 80, 60, indexed4, pico_8
 ```
@@ -184,7 +184,7 @@ Pixel (x, y) eines 16 Pixel breiten 8-Bit-Bildschirms ab `0x80` liegt also an `0
 
 In den Palettenformaten ist ein Pixel eine Farbnummer. Der Videochip schlägt die Farbe in seiner Palette nach: 256 Einträge mit Rot, Grün und Blau, je 0 bis 255. Die Palette liegt im Chip, nicht im RAM. Sie beginnt mit der Palette aus `.display`, sonst mit der ersten vordefinierten der passenden Größe. Ein Programm kann jede Farbe selbst setzen:
 
-```asm
+```minicpu
         LDI A, 1
         OUT 0x13, A         ; Farbe 1 wird …
         LDI A, 255
@@ -216,7 +216,7 @@ for (;;) {
 
 Was ein Programm gleich nach Vsync ändert, erscheint zusammen im nächsten Bild, nie halb fertig. Wer nicht wartet, kann mitten beim Zeichnen erwischt werden: Das alte Bild ist halb gelöscht, das neue halb gezeichnet. Dagegen hilft der **Seitenwechsel**: Das Programm zeichnet in eine zweite Seite, die gerade nicht zu sehen ist, und zeigt sie dann mit einem einzigen `OUT 0x12`, das den Bildschirm an Adresse Wert × 256 legt:
 
-```asm
+```minicpu
         LDI A, 0x0C
         OUT 0x12, A         ; der Bildschirm beginnt jetzt bei 0x0C00
 ```
