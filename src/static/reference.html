@@ -111,5 +111,11 @@
         input.value = initial;
         show();
     }
+    // Opening the Handbuch puts the cursor in the search field, except on
+    // touch screens, where the keyboard would cover the page.
+    if (!window.matchMedia('(hover: none)').matches) {
+        input.focus({ preventScroll: true });
+        input.setSelectionRange(input.value.length, input.value.length);
+    }
 })();
 </script>
