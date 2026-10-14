@@ -18,7 +18,8 @@
             storageKey: 'hackschule-crt',
             title: 'Wie auf einem Röhrenbildschirm (CRT-Filter)',
             label: 'Bilder wie auf einem Röhrenbildschirm zeigen',
-            icon: "<i class='bi bi-tv' aria-hidden='true'></i>",
+            // The CRT button of PixelRAM's own display: a screen with scanlines.
+            icon: "<svg class='icon-crt' viewBox='0 0 24 24' aria-hidden='true'><rect x='3' y='4' width='18' height='15' rx='2'/><path d='M7 8h10M7 11.5h10M7 15h10'/></svg>",
         },
     ];
     const selector = ['dark', ...TOGGLES.map((t) => t.name)].map((name) => `[data-variant-${name}]`).join(', ');
@@ -57,9 +58,29 @@
     function apply() {
         media.forEach((element) => {
             const src = pick(element);
-            if (element.getAttribute('src') === src) return;
-            element.setAttribute('src', src);
-            if (element.tagName === 'VIDEO') element.play?.().catch(() => {});
+            if (element.getAttribute('src') === src) {
+                delete element.dataset.variantWanted;
+                return;
+            }
+            // The new file is loaded before it replaces the old one: an
+            // image without a picture has no height, and the page would
+            // jump up and down while it loads.
+            element.dataset.variantWanted = src;
+            const swap = () => {
+                if (element.dataset.variantWanted !== src) return;
+                delete element.dataset.variantWanted;
+                element.setAttribute('src', src);
+            };
+            if (element.tagName === 'VIDEO') {
+                element.style.minHeight = `${element.offsetHeight}px`;
+                element.addEventListener('loadeddata', () => { element.style.minHeight = ''; }, { once: true });
+                swap();
+                element.play?.().catch(() => {});
+            } else {
+                const next = new Image();
+                next.src = src;
+                next.decode().then(swap, swap);
+            }
         });
         TOGGLES.forEach((toggle) => {
             toggle.buttons.forEach((button) => button.setAttribute('aria-pressed', toggle.on ? 'true' : 'false'));
