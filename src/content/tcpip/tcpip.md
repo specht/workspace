@@ -189,8 +189,19 @@ Wir haben hier noch den Parameter <code>-q 1</code> hinzugefügt, um nur ein Pak
 
 Anschließend solltest du eine Ausgabe wie diese sehen:
 
-<!-- Von Hand aufgenommen, im Workspace-Server: Ein generiertes Bild zeigte
-     den Weg aus dem Netz des Rechners, auf dem die Bilder entstehen. -->
+<!-- traceroute zeigt den Weg aus dem Netz des Rechners, auf dem die Bilder
+     entstehen. Deshalb gibt das Bild eine Aufnahme aus einem Workspace auf
+     code.hackschule.de wieder (14.10.2026, traceroute-8-8-8-8.txt): Das
+     Rezept lässt traceroute diese Aufnahme ausgeben. -->
+<!-- tutorial-screenshot
+write-file: .tcpip/traceroute.txt <- file:traceroute-8-8-8-8.txt
+terminal-run: traceroute() { cat ~/.tcpip/traceroute.txt; }
+terminal-wait-for-prompt
+terminal-run: clear
+terminal-run: traceroute -q 1 8.8.8.8
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='traceroute-q-1-8-8-8-8.webp' alt=''>
 
