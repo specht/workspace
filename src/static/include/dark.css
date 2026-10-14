@@ -449,4 +449,5 @@ html[data-bs-theme="dark"] {
     .class-codes-row { border-color: #2b3036; }
     .class-codes-code { color: #8db8f5; }
     .class-welcome { background-color: #172a45; border-color: #2b4a7a; }
+    .class-codes-group { color: #adb5bd; }
 }

@@ -78,6 +78,22 @@ export default defineConfig({
             name: 'workspace-cleanup',
             testMatch: /workspace-cleanup\.spec\.ts/,
         },
+        // Pictures for pages (e.g. the teacher guide), taken from the running
+        // development site; only with HS_PICTURES=1, never in a normal run:
+        //   HS_PICTURES=1 npx playwright test --project=pictures
+        ...(process.env.HS_PICTURES ? [{
+            name: 'pictures',
+            testMatch: /.*\.pictures\.ts/,
+            workers: 1,
+            use: {
+                channel: 'chromium',
+                launchOptions: {
+                    args: [
+                        '--unsafely-treat-insecure-origin-as-secure=http://workspace.test:8025,*.workspace.test',
+                    ],
+                },
+            },
+        }] : []),
     ],
 
     use: {

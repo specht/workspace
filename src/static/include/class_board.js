@@ -207,6 +207,26 @@
     let codesNow = [];
     let projector = null;
 
+    // Everything on one screen: start big, and while the list does not fit
+    // shrink the type (the grid then makes more columns), down to a size
+    // that can still be read from the back of the room.
+    function fitProjector() {
+        if (!projector) return;
+        const list = projector.querySelector('.class-codes-list');
+        const max = Math.min(42, Math.max(22, window.innerWidth / 30));
+        const min = 16;
+        let size = max;
+        list.style.fontSize = size + 'px';
+        const bottom = parseFloat(getComputedStyle(projector).paddingBottom) || 0;
+        const room = () => projector.clientHeight - list.offsetTop - bottom;
+        while (size > min && list.scrollHeight > room()) {
+            size = Math.max(min, size * 0.92);
+            list.style.fontSize = size + 'px';
+        }
+    }
+
+    window.addEventListener('resize', fitProjector);
+
     function renderProjector() {
         if (!projector) return;
         const list = projector.querySelector('.class-codes-list');
@@ -231,6 +251,7 @@
             row.appendChild(code);
             list.appendChild(row);
         });
+        fitProjector();
     }
 
     function closeProjector() {
@@ -254,7 +275,13 @@
         projector.setAttribute('aria-label', 'Anmelde-Codes für ' + group);
         projector.innerHTML = "<button type='button' class='class-codes-close' aria-label='Schließen'><i class='bi bi-x-lg' aria-hidden='true'></i></button>" +
             "<h2></h2><div class='class-codes-list' aria-live='polite'></div>";
-        projector.querySelector('h2').textContent = 'Anmelde-Codes · ' + group;
+        const title = projector.querySelector('h2');
+        title.textContent = 'Anmelde-Codes';
+        const groupName = document.createElement('span');
+        groupName.className = 'class-codes-group';
+        groupName.textContent = group;
+        groupName.title = group;
+        title.appendChild(groupName);
         projector.querySelector('.class-codes-close').addEventListener('click', closeProjector);
         document.body.appendChild(projector);
         document.body.classList.add('subview-open');

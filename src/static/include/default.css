@@ -2767,10 +2767,17 @@ h3[id] {
     display: flex;
     align-items: center;
     gap: 0.5em;
+    min-width: 0;
+    max-width: 100%;
 }
 
+/* A group name can carry the school's name: the menu never gets wider
+   than the page, and the browser shortens its text. */
 .class-board-select .form-select {
     width: auto;
+    min-width: 0;
+    max-width: 100%;
+    text-overflow: ellipsis;
 }
 
 .class-live-menu {
@@ -2845,8 +2852,20 @@ h3[id] {
 
 .class-codes-projector h2 {
     margin: 0 0 3vh;
+    padding-right: 2.5em;
     font-size: clamp(1.5rem, 3.5vw, 3rem);
     font-weight: 700;
+}
+
+/* The group under the title, smaller and on one line, however long. */
+.class-codes-group {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.5em;
+    font-weight: 600;
+    color: #5c636a;
 }
 
 .class-codes-close {
@@ -2861,8 +2880,10 @@ h3[id] {
 
 .class-codes-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 1fr));
-    gap: 1.2vh 4vw;
+    /* Columns in em: smaller type (fitProjector) makes room for more. */
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 11.5em), 1fr));
+    gap: 0.25em 1.6em;
+    font-size: 42px;
 }
 
 .class-codes-row {
@@ -2870,9 +2891,14 @@ h3[id] {
     justify-content: space-between;
     align-items: baseline;
     gap: 1em;
-    padding: 0.4em 0;
+    padding: 0.3em 0;
     border-bottom: 2px solid #e9ecef;
-    font-size: clamp(1.4rem, 3vw, 2.6rem);
+}
+
+.class-codes-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .class-codes-code {
@@ -2885,7 +2911,7 @@ h3[id] {
 .class-codes-empty {
     grid-column: 1 / -1;
     text-align: left;
-    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    font-size: 0.75em;
     color: #5c636a;
 }
 
@@ -3907,6 +3933,10 @@ h3[id] {
     background: #e7f1f8;
 }
 
+.class-login-codes h2 .bi {
+    margin-right: 0.4em;
+}
+
 .class-login-codes h2 {
     font-size: 1.2rem;
     margin: 0 0 0.3em;
@@ -4175,6 +4205,15 @@ body.subview-open {
     }
     .class-tab .bi {
         display: none;
+    }
+    .class-welcome {
+        flex-wrap: wrap;
+    }
+    .class-welcome > div {
+        flex-basis: calc(100% - 2.5em);
+    }
+    .class-welcome-close {
+        margin-left: auto;
     }
     .class-server-cards .server-stats p {
         white-space: normal;

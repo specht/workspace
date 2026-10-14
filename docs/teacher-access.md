@@ -81,6 +81,10 @@ die Reiter der Klassenseite, Abgaben ansehen, das Testkonto und »Nachahmen«,
 die Notiz für Lehrkräfte und was der Server speichert. Die Klassenseite weist
 mit »Neu hier?« darauf hin, bis die Lehrkraft den Hinweis ausblendet (in
 diesem Browser); der Link neben der Überschrift bleibt. Im Profil steht er
-über den Notizen für Lehrkräfte. Die Bilder sind von Hand gemacht, mit den
-E2E-Konten unter erfundenen Namen; nach Änderungen an der Klassenseite neu
-aufnehmen.
+über den Notizen für Lehrkräfte. Die Bilder (16:9, doppelte Pixeldichte)
+nimmt ein Skript mit den E2E-Konten unter erfundenen Namen auf und räumt
+danach wieder auf; nach Änderungen an der Klassenseite neu aufnehmen:
+
+```bash
+cd e2e && HS_PICTURES=1 npx playwright test --project=pictures
+```
