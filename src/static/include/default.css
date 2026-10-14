@@ -4405,3 +4405,39 @@ body.subview-open {
         margin-right: 0;
     }
 }
+
+/* MiniCPU Handbuch (src/scripts/minicpu-reference.mjs): instruction tables
+   with a row per family, and the predefined palettes as swatches. */
+.minicpu-table .minicpu-family th {
+    background-color: var(--bs-tertiary-bg);
+    font-weight: 600;
+}
+
+.minicpu-table td.minicpu-flag,
+.minicpu-table td.minicpu-num {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.minicpu-palettes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8em;
+    margin-bottom: 1em;
+}
+
+.minicpu-swatches {
+    display: grid;
+    grid-template-columns: repeat(16, 1fr);
+    max-width: 18em;
+    margin-top: 0.2em;
+}
+
+.minicpu-swatches.many {
+    grid-template-columns: repeat(32, 1fr);
+    max-width: 36em;
+}
+
+.minicpu-swatches span {
+    aspect-ratio: 1;
+}

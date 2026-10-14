@@ -37,6 +37,25 @@ class ContentPartsTest < Minitest::Test
         FileUtils.rm_rf(@root)
     end
 
+    # An HTML block that Redcarpet cannot close (a </div> that does not start
+    # a line, as in </table></div>) swallows the Markdown after it up to the
+    # next such </div>: its headings then appear as raw text.
+    def test_every_handbuch_heading_is_rendered
+        require 'redcarpet'
+        redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, { :fenced_code_blocks => true })
+        Dir[File.join(CONTENT, 'reference', '*', '*.md')].each do |file|
+            next if File.basename(file) == ContentParts::NOTE_FILE
+            markdown = ContentParts.fill_variables(ContentParts.mark_parts(File.read(file, encoding: 'UTF-8')))
+            fence = false
+            # Screenshot recipes are comments with # lines of their own.
+            headings = markdown.gsub(/<!--.*?-->/m, '').lines.count do |line|
+                fence = !fence if line.start_with?('```')
+                !fence && line =~ /\A#+ \S/
+            end
+            assert_equal headings, redcarpet.render(markdown).scan(/<h[1-6][ >]/).size, file
+        end
+    end
+
     def test_page_file_prefers_own_name_and_never_the_teacher_note
         File.write(File.join(@page, 'lehrkraft.md'), 'Notiz')
         File.write(File.join(@page, 'showerjs.md'), 'Seite')

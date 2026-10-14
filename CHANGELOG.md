@@ -513,6 +513,18 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   wie Rouge; bei Cypher Labels, Beziehungstypen und Eigenschaften wie in
   den Beispielen). Ein fehlendes Anführungszeichen fällt sofort auf. Das
   Feld wächst mit der Abfrage.
+- Handbuch »MiniCPU« für die CPU Sandbox, mit drei Seiten. »MiniCPU«: die
+  Stufen 8, 8S und 8X, Register, Flags, jeder Befehl mit Opcode,
+  betroffenen Flags, Bytes und Takten, Stack und Aufrufregeln, X und Y,
+  Takte, Maschinencode, Assembler. »Geräte und Bildschirm«: alle Ports,
+  Joystick, Tastatur, Ton, Timer und Vsync, Pixelformate, Palettenchip,
+  Seitenwechsel, die Paletten als Farbfelder. »MiniC«: C für die MiniCPU.
+  Die Tabellen erzeugt `src/scripts/minicpu-reference.mjs` aus den Tabellen
+  der Sandbox selbst. Die Aktivität »Vom Byte zum 3D-Labyrinth« verweist an
+  passender Stelle darauf.
+- Ein Test prüft, dass jede Überschrift einer Handbuch-Seite auch als
+  Überschrift erscheint: Ein `</table></div>` am Zeilenende ließ Redcarpet
+  sonst den Rest der Seite als rohen Text ausgeben.
 
 - Behoben: »Git kennt dich« schlug fehl, obwohl `git config --global` Name
   und E-Mail kannte. Die Prüfung lief mit dem `HOME` des Images (`/config`)
