@@ -30,6 +30,19 @@ class AnaglyphSceneLexerTest < Minitest::Test
         assert_includes t, ['Keyword', 'end']
     end
 
+    def test_loops_and_expressions
+        t = tokens("loop x from -100 to 100 step 100\n    shape = box\n    move = (x - 2) * 100, 0, 0\nend\n")
+        assert_includes t, ['Keyword', 'loop']
+        assert_includes t, ['Name.Variable', 'x']
+        assert_includes t, ['Keyword', 'from']
+        assert_includes t, ['Keyword', 'step']
+        assert_includes t, ['Literal.Number', '-100']
+        assert_includes t, ['Operator', '*']
+        assert_includes t, ['Operator', '-']
+        assert_includes t, ['Literal.String', 'x']
+        assert_includes t, ['Keyword', 'end']
+    end
+
     def test_a_hash_line_is_a_comment
         assert_equal [['Comment.Single', '# alt']], tokens("# alt\n")
     end
