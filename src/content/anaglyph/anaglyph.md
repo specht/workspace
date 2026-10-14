@@ -26,7 +26,7 @@ Für diese Anleitung brauchst du die Vorlage des Anaglyph-Viewers:
 
 _include(workspace#repository-klonen)
 
-Wenn du auf der linken Seite im Explorer nun die Datei `scene.ini` siehst, hast du alles richtig gemacht. Diese Datei enthält die Anweisungen für die 3D-Szene, die du erstellen wirst.
+Wenn du auf der linken Seite im Explorer nun die Datei `scene.ini` siehst, hast du alles richtig gemacht. Öffne sie mit einem Klick: Sie enthält die Anweisungen für die 3D-Szene, die du erstellen wirst.
 
 <!-- tutorial-screenshot
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann das
@@ -39,9 +39,11 @@ press: Enter
 wait-for-text: Would you like to open the repository?
 click: Open
 wait-for-text: scene.ini
+open-file: scene.ini
+sleep: 1
 -->
 
-<img class='full' src='lets-start.webp' alt=''>
+<img class='full' src='lets-start.webp' alt='Das geklonte Anaglyph-Projekt im Explorer, daneben ist scene.ini mit der Zeile »shape = box« geöffnet.'>
 
 ### Vorschau starten
 
@@ -84,7 +86,7 @@ crop-bottom: 27%
 </div>
 
 
-Öffne die Datei `scene.ini`, indem du drauf klickst. Du solltest nun den Inhalt der Datei sehen, der ungefähr so aussieht:
+Schau dir noch einmal `scene.ini` an. Bisher steht dort nur eine Zeile:
 
 ```ini
 shape = box
