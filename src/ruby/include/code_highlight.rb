@@ -1,6 +1,7 @@
 require 'rouge'
 require_relative 'er_lexer'
 require_relative 'cypher_lexer'
+require_relative 'anaglyph_scene_lexer'
 
 module CodeHighlight
     # Fenced code blocks: Rouge by the fence's language. A fence without a
@@ -66,7 +67,9 @@ module CodeHighlight
             when 'html'
                 lexer = Rouge::Lexers::HTML.new
             when 'ini'
-                lexer = Rouge::Lexers::INI.new
+                # Every ```ini on the site is an Anaglyph scene (anaglyph,
+                # reference/farben).
+                lexer = Rouge::Lexers::AnaglyphScene.new
             when 'java'
                 lexer = Rouge::Lexers::Java.new
             when 'js'
