@@ -50,9 +50,8 @@
         if (!label) return;
         const span = document.createElement('span');
         span.className = 'task-badge ' + label[0];
-        if (status === 'correct') {
-            span.insertAdjacentHTML('beforeend', TICK);
-        } else {
+        // Solved: the tick stands next to the button, the pill just says so.
+        if (status !== 'correct') {
             const icon = document.createElement('i');
             icon.className = 'bi ' + label[1];
             span.appendChild(icon);
@@ -212,10 +211,10 @@
         invalid: 'bi-info-circle', unavailable: 'bi-info-circle',
     };
 
-    // In view: the first paragraph of the message, the result of an SQL
-    // query and the way to the solution. Everything else (the rest of the
-    // message, hints, what the Workspace read) waits behind »Details«, so
-    // nobody has to read more than they ask for.
+    // In view: the first paragraph of the message (and the result of an SQL
+    // query). The rest of the message, hints and what the Workspace read wait
+    // behind a small »Details« at the end of that line, the solution behind
+    // »Lösung«; each opens below when asked for.
     function showFeedback(card, status, message, solution, read, warnings) {
         const box = card.querySelector('.task-feedback');
         box.className = 'task-feedback task-feedback-' + status;
@@ -227,14 +226,20 @@
         const content = document.createElement('div');
         content.className = 'task-feedback-body';
         box.appendChild(content);
+
+        const line = document.createElement('div');
+        line.className = 'task-message';
+        content.appendChild(line);
         const more = document.createElement('div');
         if (message) {
-            const div = document.createElement('div');
-            div.className = 'task-message';
-            div.innerHTML = message;
-            content.appendChild(div);
-            const blocks = Array.from(div.children);
-            if (blocks.length > 1) blocks.slice(1).forEach((el) => more.appendChild(el));
+            const holder = document.createElement('div');
+            holder.innerHTML = message;
+            const blocks = Array.from(holder.children);
+            if (blocks.length === 0) line.innerHTML = message;
+            else {
+                line.appendChild(blocks[0]);
+                blocks.slice(1).forEach((el) => more.appendChild(el));
+            }
         }
         if (warnings && warnings.length > 0) {
             const ul = document.createElement('ul');
@@ -261,25 +266,31 @@
             body.innerHTML = read;
             more.appendChild(body);
         }
-        if (more.childNodes.length > 0) {
-            const details = document.createElement('details');
-            details.className = 'task-read';
-            const summary = document.createElement('summary');
-            summary.textContent = 'Details';
-            details.appendChild(summary);
-            details.appendChild(more);
-            content.appendChild(details);
-        }
+
+        // The small links go at the end of the first line.
+        const last = line.lastElementChild;
+        const end = last && last.tagName === 'P' ? last : line;
+        const addToggle = (label, panelClass, panelContent) => {
+            const panel = document.createElement('div');
+            panel.className = 'task-more ' + panelClass;
+            panel.id = card.id + '-' + panelClass;
+            panel.hidden = true;
+            panel.appendChild(panelContent);
+            content.appendChild(panel);
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'task-more-toggle';
+            button.textContent = label;
+            button.setAttribute('aria-expanded', 'false');
+            button.setAttribute('aria-controls', panel.id);
+            end.appendChild(document.createTextNode(' '));
+            end.appendChild(button);
+        };
+        if (more.childNodes.length > 0) addToggle('Details', 'task-read', more);
         if (solution) {
-            const details = document.createElement('details');
-            details.className = 'task-solution';
-            const summary = document.createElement('summary');
-            summary.textContent = 'Lösung und Erklärung';
-            details.appendChild(summary);
             const body = document.createElement('div');
             body.innerHTML = solution;
-            details.appendChild(body);
-            content.appendChild(details);
+            addToggle('Lösung', 'task-solution', body);
         }
     }
 
@@ -494,6 +505,17 @@
             watchPicks();
         }
     }
+
+    // »Details« and »Lösung« under a result: open below on request.
+    document.addEventListener('click', function (e) {
+        const toggle = e.target.closest('.task-more-toggle');
+        if (!toggle) return;
+        const panel = document.getElementById(toggle.getAttribute('aria-controls'));
+        if (!panel) return;
+        const open = toggle.getAttribute('aria-expanded') !== 'true';
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        panel.hidden = !open;
+    });
 
     // (i) on a card: what the check reads, shown on request. Delegated, so
     // it works on every card, also those whose form is set up later.

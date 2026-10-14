@@ -360,6 +360,7 @@ html[data-bs-theme="dark"] {
     .task-submission,
     .task-pick-label,
     .task-read > summary,
+    .task-more-toggle,
     .task-later,
     .task-login-note {
         color: #adb5bd;

@@ -2535,6 +2535,10 @@ h3[id] {
     font-weight: 600;
 }
 
+.task-feedback-correct .task-more-toggle {
+    font-weight: 400;
+}
+
 @keyframes task-feedback-in {
     from { opacity: 0; transform: translateY(-0.4em); }
     to { opacity: 1; transform: none; }
@@ -2591,6 +2595,37 @@ h3[id] {
 .task-read {
     margin-top: 0.5em;
     font-size: 90%;
+}
+
+/* »Details« and »Lösung«: small and quiet, at the end of the result line. */
+.task-more-toggle {
+    margin-left: 0.3em;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #5c636a;
+    font-size: 85%;
+    text-decoration: underline;
+    text-decoration-color: rgba(92, 99, 106, 0.4);
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+}
+
+.task-more-toggle:hover,
+.task-more-toggle[aria-expanded='true'] {
+    color: #0b4fb3;
+    text-decoration-color: currentColor;
+}
+
+.task-more {
+    margin-top: 0.5em;
+    padding-top: 0.5em;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.task-more > div > :last-child,
+.task-more > :last-child {
+    margin-bottom: 0;
 }
 
 .task-read-title {

@@ -124,7 +124,7 @@ module TaskCard
                 io << "<a class='btn btn-success task-open' href='/codebites/#{h.(check['codebite'])}'><i class='bi bi-code-slash'></i>Im Code-Editor lösen</a>"
                 io << "<button type='submit' class='btn btn-outline-secondary btn-sm task-submit'>#{label}</button>"
             else
-                io << "<button type='submit' class='btn btn-success task-submit'><i class='bi bi-check2'></i>#{label}</button>"
+                io << "<button type='submit' class='btn btn-success task-submit'>#{label}</button>"
             end
             io << "<button type='button' class='btn btn-link btn-sm task-delete' hidden>Meine Antwort löschen</button>"
             # What the check reads, for whoever wants to know (rule 5), behind
