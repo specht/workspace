@@ -4125,7 +4125,8 @@ class Main < Sinatra::Base
 
     # Activities a student may see in the catalog (and a teacher may pin).
     def pinnable_slugs
-        @@section_order.flat_map { |key| (@@sections[key] || {})[:entries] || [] }
+        @@section_order.reject { |key| (@@sections[key] || {})[:hidden] }
+            .flat_map { |key| (@@sections[key] || {})[:entries] || [] }
             .select { |slug| @@content[slug] && (DEVELOPMENT || !@@content[slug][:dev_only]) }
     end
 
@@ -4296,6 +4297,9 @@ class Main < Sinatra::Base
                 end
                 section_order.each do |section_key|
                     section = @@sections[section_key]
+                    # hidden: true in sections.yaml: the pages exist, the
+                    # catalog does not show them.
+                    next if section[:hidden]
                     next if section[:entries].reject do |entry|
                         (!DEVELOPMENT) && @@content[entry][:dev_only]
                     end.empty?
