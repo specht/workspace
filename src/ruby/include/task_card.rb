@@ -98,6 +98,9 @@ module TaskCard
             when 'sql'
                 io << "<textarea class='form-control task-input task-sql' name='answer' rows='4' spellcheck='false' autocapitalize='off' placeholder='SELECT …' aria-labelledby='#{h.(field)}-title'></textarea>"
                 reads = "Läuft in deiner eigenen MySQL-Datenbank, angemeldet als du, und liest nur: eine Abfrage mit <code>SELECT</code>, höchstens #{SqlCheck::MAX_MS / 1000} Sekunden. <kbd>Strg</kbd>+<kbd>Enter</kbd> prüft."
+            when 'cypher'
+                io << "<textarea class='form-control task-input task-sql task-cypher' name='answer' rows='4' spellcheck='false' autocapitalize='off' placeholder='MATCH …' aria-labelledby='#{h.(field)}-title'></textarea>"
+                reads = "Läuft in deiner eigenen Neo4j-Datenbank, angemeldet als du, und liest nur: eine Abfrage mit <code>MATCH</code> und <code>RETURN</code>, höchstens #{CypherCheck::MAX_SECONDS} Sekunden. <kbd>Strg</kbd>+<kbd>Enter</kbd> prüft."
             when 'command'
                 io << "<input type='text' class='form-control task-input task-command' name='answer' spellcheck='false' autocomplete='off' placeholder='Befehl' aria-labelledby='#{h.(field)}-title'>"
                 reads = "Läuft in deinem Workspace in <code>/workspace</code>, höchstens #{(check['timeout'] || 10).to_i} Sekunden, als Gast: Der Befehl kann lesen, aber nichts verändern oder löschen."
@@ -113,7 +116,7 @@ module TaskCard
             end
             label = case
                 when type == 'code' then 'Stand holen'
-                when type == 'command' || type == 'sql' then 'Ausführen und prüfen'
+                when %w[command sql cypher].include?(type) then 'Ausführen und prüfen'
                 when type == 'reflection' then 'Speichern'
                 when type == 'submit' then 'Abgeben'
                 when task['prediction'] then 'Vermutung abgeben'

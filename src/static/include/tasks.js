@@ -251,7 +251,7 @@
             });
             more.appendChild(ul);
         }
-        if (read && card.dataset.type === 'sql' && status !== 'unavailable') {
+        if (read && (card.dataset.type === 'sql' || card.dataset.type === 'cypher') && status !== 'unavailable') {
             // SQL: the student's own result is the point, always in view.
             const div = document.createElement('div');
             div.className = 'task-result';
@@ -489,7 +489,7 @@
             const del = card.querySelector('.task-delete');
             if (del) {
                 if (card.dataset.type === 'submit') del.textContent = 'Abgabe löschen';
-                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
+                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql', 'cypher'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
                 del.addEventListener('click', function () { remove(card); });
             }
             loadOptions(card);

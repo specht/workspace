@@ -25,7 +25,7 @@ module TaskCheck
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit code measure command scene sql er schema keyboard]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit code measure command scene sql cypher er schema keyboard]).freeze
     LANGUAGE_NAMES = { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript' }.freeze
 
     # status:
@@ -76,7 +76,7 @@ module TaskCheck
     #              database as them, read-only (SqlCheck); nil if unreachable
     # sql_env:     what to name when the database cannot be used (login,
     #              database, host, workspace running, .my.cnf); see SqlCheck
-    def self.check(task, answer, variables: {}, workspace: nil, git: nil, code_solved: nil, runner: nil, guest_runner: nil, sql: nil, sql_env: {})
+    def self.check(task, answer, variables: {}, workspace: nil, git: nil, code_solved: nil, runner: nil, guest_runner: nil, sql: nil, sql_env: {}, cypher: nil)
         check = task['check']
         type = check['type']
         unless RUNS.include?(type)
@@ -87,6 +87,7 @@ module TaskCheck
         return check_run(task, check, answer, type == 'command' ? guest_runner : runner) if %w[measure command].include?(type)
         return check_scene(task, check, workspace, runner) if type == 'scene'
         return check_sql(task, check, answer, sql, sql_env) if type == 'sql'
+        return check_cypher(task, check, answer, cypher) if type == 'cypher'
         return check_er(task, check, workspace, runner) if type == 'er'
         return check_schema(task, check, sql, sql_env) if type == 'schema'
         return check_keyboard(task, check, workspace) if type == 'keyboard'
@@ -132,6 +133,18 @@ module TaskCheck
     # sql: the query runs in the person's own database (SqlCheck).
     def self.check_sql(task, check, answer, sql, env = {})
         status, message, read, note, problem = SqlCheck.check(task, check, answer, sql, env || {})
+        Result.new(:status => status, :message => message, :read => read, :problem => problem,
+            :warnings => note ? [note] : nil, :solution => status == :correct ? task['solution'] : nil)
+    end
+
+    # cypher: a query in the person's own Neo4j database, read-only
+    # (CypherCheck). nil runner: Neo4j cannot be reached for this person.
+    def self.check_cypher(task, check, answer, runner)
+        if runner.nil?
+            return Result.new(:status => :unavailable,
+                :message => 'Deine Neo4j-Datenbank ist noch nicht eingerichtet. Öffne einmal den Neo4j Browser über das Menü, dann klappt es.')
+        end
+        status, message, read, note, problem = CypherCheck.check(task, check, answer, runner)
         Result.new(:status => status, :message => message, :read => read, :problem => problem,
             :warnings => note ? [note] : nil, :solution => status == :correct ? task['solution'] : nil)
     end

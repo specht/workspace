@@ -445,6 +445,18 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   wenn der Workspace aus ist: in einem Lese-Container mit demselben Image,
   ohne Netz, der Ordner nur lesbar. Bisher hieß es dann »Starte zuerst
   deinen Workspace«, auch auf der Klassenseite.
+- Neue Prüfart `cypher`: Abfragen in der eigenen Neo4j-Datenbank, verglichen
+  mit einer Musterabfrage, wie `sql` für MySQL. Nur lesend, doppelt
+  abgesichert: Der Server lässt nur lesende Abfragen durch, und Neo4j führt
+  sie in einer Lese-Transaktion aus (5 Sekunden, höchstens 5000 Zeilen).
+- »Filmdatenbank als Graph mit Neo4j«: Die Abfrage-Übungen aus den Kästen
+  sind jetzt sieben geprüfte Aufgaben. »Toy Story« von 1995, nach dem eine
+  Übung fragte, gibt es in den Daten nicht; jetzt ist es »The Lion King« von
+  1994 (es gibt auch eine Fassung von 2019). Statt der »zehn Personen mit den
+  meisten Filmen«, bei denen Platz 9 bis 11 gleichauf liegen, fragt die
+  Aufgabe nach allen mit mindestens 15 Filmen.
+- Behoben: Rückmeldungen für typische Fehler (`same_result_as`) griffen bei
+  SQL-Aufgaben mit verlangter Reihenfolge nie.
 - Auf dem Tablet bleiben die Schalter auf breiten Bildern (CRT-Filter,
   Anaglyph, dunkel) rechts oben stehen, während man das Bild zur Seite
   schiebt; bisher lagen sie am rechten Rand des Bildes, außer Sicht.

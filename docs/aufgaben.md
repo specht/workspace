@@ -245,6 +245,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace | M6 |
 | `code` | Code-Bites-Aufgabe | Code | Code-Bites-Judge | M5 |
 | `sql` | Ergebnis einer `SELECT`-Abfrage gegen das einer Musterabfrage | Abfrage | eigene MySQL-Datenbank, nur lesend | M6 |
+| `cypher` | Ergebnis einer Cypher-Abfrage gegen das einer Musterabfrage | Abfrage | eigene Neo4j-Datenbank, nur lesend | M7 |
 | `er` | ER-Modell: Entitäten, Schlüssel, Attribute, Beziehungen, Kardinalitäten und die Tabellen, die daraus werden | eine `.er`-Datei | Workspace (ER-Werkstatt) | M7 |
 | `schema` | Tabellen der eigenen Datenbank: Spalten, Primär- und Fremdschlüssel, Zeilenzahl | `information_schema` | eigene MySQL-Datenbank, nur lesend | M7 |
 | `keyboard` | ein Kapitel des Keyboard-Tutorials: alle Schritte abgehakt | `/workspace/.hs-kbd-tutorial/.state.json` | Server | M7 |
@@ -601,6 +602,48 @@ erreichbar), welche Tabellen es gibt und wie viele Zeilen die geforderten
 haben, ob die Tabelle in einer anderen eigenen Datenbank liegt, ob der
 Workspace läuft und welche Datenbank `/workspace/.my.cnf` nennt (ohne
 Passwort). Die Prüfung selbst braucht keinen laufenden Workspace.
+
+### cypher
+
+Seit M7. Beispiele stehen in `src/content/neo4j-filmdatenbank/tasks.yaml`
+(»Filmdatenbank als Graph mit Neo4j«, Daten aus `neo4j.dump`).
+
+```yaml
+check:
+  type: cypher
+  expect_query: "MATCH (:Person {name: 'Christopher Nolan'})-[:DIRECTOR]->(m:Movie) RETURN m.title, m.year ORDER BY m.year"
+  sorted_by: 2
+  nodes: { Movie: 2735, Person: 14445, Genre: 20 }
+  setup: Lade zuerst die Filmdaten, wie unter »Die Filmdaten laden« beschrieben.
+feedback:
+  - when: { same_result_as: "MATCH (:Person {name: 'Christopher Nolan'})-[]->(m:Movie) RETURN DISTINCT m.title, m.year" }
+    say: Das sind alle Filme, an denen er beteiligt war. Gefragt ist nur `DIRECTOR`.
+```
+
+Wie `sql`, nur für Neo4j: Lernende schreiben eine Abfrage in ein Textfeld,
+der Server führt sie in **ihrer eigenen** Neo4j-Datenbank aus, angemeldet als
+sie selbst, nie als Administrator, und dort auch die Musterabfrage. Verglichen
+werden die Ergebnisse; die Felder `expect_query`, `compare`, `rows`,
+`sorted_by`, `extra_columns` und die Rückmeldungen `same_result_as` und
+`query_matches` bedeuten dasselbe wie bei `sql`. Statt `tables` gibt es
+`nodes`: Labels und die Zahl ihrer Knoten in den Beispieldaten. Ein
+`same_result_as` vergleicht nur die Zeilen, auch wenn die Aufgabe eine
+Reihenfolge verlangt.
+
+Nur lesen (Regel 1), doppelt:
+
+- Bevor etwas gesendet wird, lehnt der Server Abfragen mit einer Klausel ab,
+  die schreibt oder über die Datenbank hinaus greift: `CREATE`, `MERGE`,
+  `SET`, `DELETE`, `REMOVE`, `DROP`, `FOREACH`, `LOAD CSV`, `CALL`, `USE` und
+  die Verwaltungsbefehle, außerhalb von Zeichenketten und Kommentaren. Eine
+  Abfrage braucht ein `RETURN`; `;` zwischen zwei Abfragen gibt es nicht.
+- Die Abfrage läuft in einer Transaktion im Lesemodus (`READ`), den Neo4j
+  selbst durchsetzt, mit 5 Sekunden Zeitlimit; höchstens 5000 Zeilen werden
+  gelesen.
+
+Knoten, Beziehungen und Wege erscheinen im Ergebnis so, wie `cypher-shell`
+sie zeigt, Listen als `[…]`. Wer Eigenschaften vergleicht, fragt sie in der
+Aufgabe ausdrücklich ab (»Zeig Titel und Jahr«).
 
 ### er
 

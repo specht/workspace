@@ -554,7 +554,10 @@ module SqlCheck
                 next if given.nil?
 
                 other = runner.call(w['same_result_as'])
-                ok &&= other && !other[:error] && compare(check.merge('extra_columns' => 'ok'), normalize(other), given)[0] == :correct
+                # Rows only: the typical wrong query need not be sorted the
+                # way the task asks (sorted_by), its rows are the point.
+                loose = check.merge('extra_columns' => 'ok').reject { |k, _| k == 'sorted_by' }
+                ok &&= other && !other[:error] && compare(loose, normalize(other), given)[0] == :correct
             end
             return entry['say'] if ok
         end

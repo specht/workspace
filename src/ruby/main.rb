@@ -3998,6 +3998,18 @@ class Main < Sinatra::Base
             :password => Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT))
     end
 
+    # cypher tasks: the person's own Neo4j database on the students' server,
+    # logged in as them (never as an administrator), read-only per query
+    # (CypherCheck.runner). nil until their Neo4j login exists.
+    def task_cypher_runner
+        email = @session_user[:email]
+        login = @session_user[:db_login] || db_login_for_email(email)
+        return nil if login.nil? || !DatabaseIdentity.valid?(login)
+
+        CypherCheck.runner(:uri => 'bolt://neo4j:7687', :login => login,
+            :password => Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT))
+    end
+
     # What an sql check names when it cannot run: which database, which login,
     # whether the Workspace runs, what /workspace/.my.cnf says (never the
     # password). The last two are only looked up when needed.
@@ -5112,7 +5124,8 @@ class Main < Sinatra::Base
                     :uid => GUEST_UID, :home => '/tmp', :seconds => [[seconds.to_i, 1].max, 30].min)
             },
             :sql => %w[sql schema].include?(found[:task]['check']['type']) ? task_sql_runner : nil,
-            :sql_env => %w[sql schema].include?(found[:task]['check']['type']) ? task_sql_env : {})
+            :sql_env => %w[sql schema].include?(found[:task]['check']['type']) ? task_sql_env : {},
+            :cypher => found[:task]['check']['type'] == 'cypher' ? task_cypher_runner : nil)
         if result.problem == :reference_failed
             STDERR.puts "SQL task #{found[:key]}: the reference query failed for #{@session_user[:email]}"
         end
