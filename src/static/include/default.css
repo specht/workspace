@@ -1756,8 +1756,14 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     padding-bottom: 0.8em;
 }
 
-.reference-include-folded > :not(.reference-include-done) {
+/* Folded to one line, a box keeps what there is to copy (```bash_copy,
+   such as the address to clone), right under that line. */
+.reference-include-folded > :not(.reference-include-done, .code-copy-box) {
     display: none;
+}
+
+.reference-include-folded > .code-copy-box pre {
+    margin: 0.5em 0 0;
 }
 
 .reference-include-done {

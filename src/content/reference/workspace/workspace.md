@@ -49,7 +49,7 @@ Mit dem Symbol rechts oben im Terminal kannst du es maximieren. Die linke Seiten
 ## Vorlagen
 
 <!-- part: repository-klonen -->
-<!-- short: Ordner schließen (Strg+K, dann F), »Clone Repository« mit `${template}`, Zielordner `/workspace`, dann »Open«. -->
+<!-- short: Ordner schließen (Strg+K, dann F), »Clone Repository« mit der Adresse unten, Zielordner `/workspace`, dann »Open«. -->
 ### Repository klonen
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
