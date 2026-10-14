@@ -549,6 +549,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   nach Namen sortiert. Ein Rendern in anderer Reihenfolge ändert die Datei
   nicht mehr.
 
+- Jede weitere MySQL-Datenbank aus dem Profil hat einen eigenen Zugang
+  (Benutzername wie die Datenbank), der nur diese Datenbank erreicht. Das
+  Profil zeigt ihn unter der Datenbank, mit Knöpfen zum Kopieren. Gedacht
+  für Programme, die andere benutzen, etwa ein geteiltes Gästebuch.
+  Bestehende weitere Datenbanken bekommen ihren Zugang, wenn das Profil sie
+  das nächste Mal anzeigt; mit der Datenbank verschwindet auch er.
 - Behoben: Jede angemeldete Person konnte über das Profil eine beliebige
   MySQL-Datenbank löschen, wenn sie deren Namen kannte. Gelöscht werden
   jetzt nur die eigene Datenbank (zurückgesetzt) und die selbst

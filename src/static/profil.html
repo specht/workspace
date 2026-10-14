@@ -272,6 +272,9 @@
                     <div class="hint">
                         Deine Zugangsdaten sind im Workspace in den Umgebungsvariablen <code>MYSQL_HOST</code>, <code>MYSQL_USER</code>, <code>MYSQL_PASSWORD</code> und <code>MYSQL_DB</code> hinterlegt, damit du keine Zugangsdaten im Quellcode deiner Programme speichern musst.
                     </div>
+                    <p class="mt-3 mb-0">
+                        Weitere Datenbanken haben neben deinem Zugang einen eigenen, der nur sie erreicht. Nimm ihn für Programme, die andere benutzen, etwa ein geteiltes Gästebuch: Was dort schiefgeht, bleibt in dieser Datenbank.
+                    </p>
                     <div class="profile-table-actions">
                         <button id='bu_add_mysql_database' class="btn btn-success mt-3"><i class='bi bi-plus'></i>MySQL-Datenbank erstellen</button>
                     </div>
@@ -621,7 +624,6 @@ vscode_config: {}</pre>
             if (data.success) {
                 let tbody = $('#table_my_databases tbody');
                 tbody.empty();
-                console.log(data);
                 for (let database of data.result.databases) {
                     let row = $(`<tr>`).appendTo(tbody);
                     $(`<td>`).append(`<code>${database}</code>`).appendTo(row);
@@ -641,6 +643,20 @@ vscode_config: {}</pre>
                             });
                     });
                     bu_delete.appendTo($(`<td style='text-align: right;'>`).appendTo(row));
+                    // An extra database's own login (only this database), for
+                    // programs others use, such as a shared guestbook.
+                    let access = (data.result.logins || {})[database];
+                    if (access) {
+                        let line = $(`<td colspan='5' class='mysql-database-login'>`).appendTo($(`<tr>`).appendTo(tbody));
+                        $(`<span class='text-body-secondary me-2'>`).text('Eigener Zugang, nur für diese Datenbank:').appendTo(line);
+                        let copy = (label, value, title) => $(`<button type='button' class='btn btn-sm btn-secondary btn-clipboard me-3'>`)
+                            .attr('data-clipboard-text', value).attr('title', title).attr('aria-label', title)
+                            .html(`<i class='bi bi-copy'></i>`).append(document.createTextNode(label));
+                        $(`<span class='me-1'>`).text('Benutzername').appendTo(line);
+                        $(`<code class='me-2'>`).text(access.login).appendTo(line);
+                        copy('Kopieren', access.login, `Benutzername ${access.login} kopieren`).appendTo(line);
+                        copy('Passwort kopieren', access.password, `Passwort für ${access.login} kopieren`).appendTo(line);
+                    }
                 }
             }
         });

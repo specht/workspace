@@ -16,6 +16,34 @@ module DatabaseProvisioning
         ]
     end
 
+    # An extra database (created in the profile, db_ and RandomTag's base 31)
+    # has a login of its own with the same name that reaches only that
+    # database: for a program others use, such as a shared guestbook, so
+    # whatever goes wrong there stays in that database. Student logins never
+    # contain _ (DatabaseIdentity::LOGIN_PATTERN), so the names cannot clash.
+    EXTRA_DATABASE_PATTERN = /\Adb_[0-9a-z]{1,29}\z/
+
+    def self.extra_database?(name)
+        name.is_a?(String) && name.match?(EXTRA_DATABASE_PATTERN)
+    end
+
+    def self.extra_database_login_statements(name, password)
+        raise ArgumentError, "not an extra database: #{name.inspect}" unless extra_database?(name)
+
+        quoted_password = mysql_string(password)
+        [
+            "CREATE USER IF NOT EXISTS '#{name}'@'%' IDENTIFIED WITH caching_sha2_password BY #{quoted_password};",
+            "ALTER USER '#{name}'@'%' IDENTIFIED WITH caching_sha2_password BY #{quoted_password};",
+            "GRANT ALL ON `#{name}`.* TO '#{name}'@'%';",
+        ]
+    end
+
+    def self.extra_database_drop_login_statement(name)
+        raise ArgumentError, "not an extra database: #{name.inspect}" unless extra_database?(name)
+
+        "DROP USER IF EXISTS '#{name}'@'%';"
+    end
+
     def self.neo4j_statements(login, password)
         DatabaseIdentity.validate!(login)
         quoted_password = cypher_string(password)
