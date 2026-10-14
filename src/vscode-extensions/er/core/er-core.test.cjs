@@ -262,3 +262,10 @@ test('command line: --json, --sql, --svg', () => {
     fs.writeFileSync(file, 'entity a\n');
     assert.throws(() => execFileSync('node', [script, '--sql', file], { stdio: 'pipe' }));
 });
+
+// The core names its version in every generated SQL file; it is the
+// extension's version, so the two must not drift apart again.
+test('the core version is the extension version', () => {
+    const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));
+    assert.equal(core.VERSION, pkg.version);
+});

@@ -2,6 +2,9 @@
 
 ## 0.2.0
 
+- Generated SQL names the right version (the core still said 0.1.0).
+- The diagram's styles apply only to the diagram (`.er-diagram`), so an SVG
+  embedded in a page no longer restyles the page.
 - `primary key` marks the key, as in SQL; `key` alone still works and gets a
   warning suggesting `primary key`.
 

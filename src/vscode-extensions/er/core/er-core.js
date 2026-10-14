@@ -29,7 +29,7 @@
 })(typeof self !== 'undefined' ? self : this, function () {
     'use strict';
 
-    const VERSION = '0.1.0';
+    const VERSION = '0.2.0';
     const NAME = '[\\p{L}_][\\p{L}\\p{N}_]*';
     const RE_ENTITY = new RegExp(`^entity\\s+(${NAME})\\s*$`, 'u');
     const RE_BINARY = new RegExp(`^relationship\\s+(${NAME})\\s*:\\s*(${NAME})\\s+([1nm])\\s*:\\s*([1nm])\\s+(${NAME})(?:\\s+as\\s+(${NAME}))?\\s*$`, 'u');
