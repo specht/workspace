@@ -3783,7 +3783,9 @@ class Main < Sinatra::Base
     # Loads media_variants.js on a page with image or video variants.
     def media_variants_setup(slug)
         return '' unless (@@content[slug] || {})[:html].to_s.include?('data-variant-')
-        "<script src='/include/media_variants.js?#{CACHE_BUSTER}'></script>"
+        # In development with the time, like default.css: the script changes
+        # without Ruby restarting, and browsers keep it for years.
+        "<script src='/include/media_variants.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
     end
 
     # On a page with a template: loads template_notice.js, which asks
