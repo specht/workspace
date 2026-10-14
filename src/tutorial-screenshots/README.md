@@ -3,7 +3,9 @@
 In development, tutorial screenshots can be generated from small recipes embedded
 next to the normal `<img>` tag. The image filename stays exactly the same as for a
 hand-made screenshot and the generated file is written into the tutorial directory
-as a lossless WebP. After that, Workspace's existing `/webcache` image pipeline
+as a lossless WebP (one that would be over 800 KB that way, such as a picture
+full of CRT scanlines, at quality 90 instead). After that, Workspace's existing
+`/webcache` image pipeline
 handles it like any other tutorial image. There is no separate screenshot command in
 the normal authoring loop: reloading a tutorial is the trigger.
 

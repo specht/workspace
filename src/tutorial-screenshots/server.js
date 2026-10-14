@@ -1992,10 +1992,36 @@ async function previewReload(reset = false, hooks = null) {
     }
 
     try {
-        await preview.reload({
-            waitUntil: 'domcontentloaded',
-            timeout: 60_000,
-        });
+        // Live Server reloads the page by itself when a file changes, now
+        // and then exactly while this reload runs; the two navigations get
+        // in each other's way. Then wait for the page and reload once more.
+        for (let attempt = 1; ; attempt += 1) {
+            try {
+                await preview.reload({
+                    waitUntil: 'domcontentloaded',
+                    timeout: 60_000,
+                });
+                break;
+            } catch (error) {
+                const raced = /Not attached to an active page|Execution context was destroyed|interrupted by another navigation|frame was detached/i
+                    .test(error.message);
+                if (!raced) throw error;
+                if (attempt === 3) {
+                    // Still no page: the tab itself is gone (after many 3D
+                    // scenes in a row, for example). A new one at the same
+                    // address is what a reload would have shown.
+                    const url = preview.url();
+                    console.log(`  the preview tab is gone; opening ${url} in a new one`);
+                    await preview.close().catch(() => {});
+                    preview = await context.newPage();
+                    await preview.goto(url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+                    break;
+                }
+                console.log(`  preview-reload crossed a reload of the page itself; again (${attempt})`);
+                await preview.waitForLoadState('domcontentloaded', { timeout: 60_000 }).catch(() => {});
+                await preview.waitForTimeout(1000);
+            }
+        }
         await waitForPreviewReady(preview, hooks);
     } finally {
         if (previewSession && injectedResetScript) {
@@ -2337,6 +2363,28 @@ async function mousePointerShape(page) {
 // Where it reaches past an edge, the picture grows with transparent
 // pixels, so the pointer is never cut off. clip: the captured area in CSS
 // pixels; width, height: the picture in pixels.
+// Screenshots stay lossless. A picture that is still over 800 KB that way is
+// full of fine noise (PixelRAM's CRT scanlines, smooth gradients); readers
+// would load megabytes for it, so it is encoded again at quality 90 and
+// the smaller file is kept.
+const LOSSLESS_LIMIT_BYTES = 800 * 1024;
+
+async function shrinkNoisyWebp(pngPath, webpPath) {
+    const lossless = (await fs.stat(webpPath)).size;
+    if (lossless <= LOSSLESS_LIMIT_BYTES) return;
+    const lossyPath = `${webpPath}.lossy`;
+    try {
+        await execFileAsync('cwebp', ['-quiet', '-q', '90', pngPath, '-o', lossyPath]);
+        const lossy = (await fs.stat(lossyPath)).size;
+        if (lossy < lossless) {
+            await fs.rename(lossyPath, webpPath);
+            console.log(`  ${Math.round(lossless / 1024)} KB lossless, ${Math.round(lossy / 1024)} KB at quality 90`);
+        }
+    } finally {
+        await fs.rm(lossyPath, { force: true });
+    }
+}
+
 async function addMousePointer(pngPath, { clip, width, height, shape }) {
     const pointer = MOUSE_POINTERS[shape];
     const scale = width / clip.width;
@@ -2906,6 +2954,7 @@ async function captureShot(shot, tutorialDirectory) {
                 'cwebp',
                 cwebpArgs,
             );
+            await shrinkNoisyWebp(pngPath, temporaryWebp);
 
             await fs.chmod(
                 temporaryWebp,
