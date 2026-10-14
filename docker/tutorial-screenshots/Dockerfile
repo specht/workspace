@@ -6,6 +6,8 @@ RUN apt-get update \
         ffmpeg \
         git \
         graphviz \
+        poppler-utils \
+        imagemagick \
         fonts-ibm-plex \
         fonts-noto-core \
     && rm -rf /var/lib/apt/lists/*

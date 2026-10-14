@@ -135,6 +135,7 @@ close-tab: LABEL
 # Terminal
 terminal-open
 terminal-wait-for-prompt
+terminal-wait-for-prompt: SECONDS
 terminal-maximize
 terminal-run: TEXT
 
@@ -171,6 +172,7 @@ wait-for-input-value: TEXT
 # Screenshot target and capture
 tab: workspace|preview
 git-graph: PATH           (only before an _include_svg(NAME.svg))
+pdf-page: PATH PAGE [TEXT] (a page of a PDF in the Workspace as the image)
 record: SECONDSs          (only before a <video>)
 fps: NUMBER               (with record; default 30)
 viewport: WIDTHxHEIGHT
@@ -384,7 +386,17 @@ terminal-wait-for-prompt
 ```
 
 Do not use it after starting an interactive program such as `mycli`, because Bash
-will not show another prompt until that program exits.
+will not show another prompt until that program exits. It waits up to 60
+seconds; `terminal-wait-for-prompt: 180` waits longer, for a command that
+takes its time (LuaLaTeX building its font index in a fresh Workspace).
+
+`pdf-page: PATH PAGE` makes the recipe's image from page PAGE of a PDF below
+`/workspace`, usually one the recipe has just compiled there: rendered at 300
+dpi, cut to its content, 1 mm shaved off the top and bottom. With TEXT, the
+page must contain it (`pdf-page: latex-fonts/fonts.pdf 17 Inter`), so a page
+number that no longer fits stops the render. The LaTeX
+tutorial shows its font samples this way, set with the fonts the Workspace
+really has.
 
 `terminal-maximize` makes the panel containing the terminal fill the available
 workbench area and returns focus to the terminal. It is safe to repeat when the

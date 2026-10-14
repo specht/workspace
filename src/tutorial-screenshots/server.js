@@ -3,6 +3,7 @@ import dns from 'node:dns/promises';
 import fs from 'node:fs/promises';
 import fsSync from 'node:fs';
 import http from 'node:http';
+import os from 'node:os';
 import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
@@ -482,6 +483,20 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             continue;
         }
 
+        // terminal-wait-for-prompt: SECONDS for commands that take longer than
+        // a minute (compiling a document with many fonts, for example).
+        let waitMatch;
+        if ((waitMatch = line.match(/^terminal-wait-for-prompt:\s*(\d+)$/))) {
+            const seconds = Number(waitMatch[1]);
+            if (seconds < 1 || seconds > 600) {
+                throw withSourceError(new Error('terminal-wait-for-prompt waits 1 to 600 seconds'), source);
+            }
+            const action = { type: 'terminal-wait-for-prompt', seconds };
+            action[SOURCE_LOCATION] = source;
+            recipe.actions.push(action);
+            continue;
+        }
+
         const actionCount = recipe.actions.length;
         let match;
         if ((match = line.match(/^clone-start:\s*(\S+)\s+@\s*(\S+)$/))) {
@@ -638,6 +653,15 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             );
         } else if (line === 'show-mouse') {
             recipe.showMouse = true;
+        } else if ((match = line.match(/^pdf-page:\s*(\S+)\s+(\d+)(?:\s+(.+))?$/))) {
+            recipe.pdfPage = {
+                path: valueAtSource(source, () => safeRelativePath(match[1])),
+                page: Number(match[2]),
+            };
+            if (match[3]) recipe.pdfPage.expect = match[3].trim();
+            if (recipe.pdfPage.page < 1) {
+                throw withSourceError(new Error('pdf-page counts pages from 1'), source);
+            }
         } else if ((match = line.match(/^git-graph:\s*(.+)$/))) {
             recipe.gitGraph = valueAtSource(source, () => safeRelativePath(match[1].trim()));
         } else if ((match = line.match(/^record:\s*(.+)$/))) {
@@ -665,6 +689,13 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
         }
     }
 
+    if (recipe.pdfPage && (recipe.gitGraph || recipe.record != null || recipe.showMouse ||
+        recipe.cropTerminalLines != null || recipe.cropTop > 0 || recipe.cropBottom > 0)) {
+        throw withSourceError(
+            new Error('pdf-page renders a PDF page: no git-graph, record, show-mouse or crops'),
+            lastSource || recipe[SOURCE_LOCATION],
+        );
+    }
     if (recipe.gitGraph && (recipe.record != null || recipe.showMouse || recipe.cropTerminalLines != null)) {
         throw withSourceError(
             new Error('git-graph draws an SVG: no record, show-mouse or crops'),
@@ -827,6 +858,13 @@ async function parseTutorial(markdown, markdownPath) {
             resolved.showMouse = true;
         }
         // Only graphs carry this, so images hash exactly as before.
+        // Only PDF pages carry this, so images hash exactly as before.
+        if (recipe.pdfPage) {
+            if (!/\.(webp|png)$/i.test(target)) {
+                throw withSourceError(new Error(`pdf-page needs a .webp or .png target, not ${target}`), targetSource);
+            }
+            resolved.pdfPage = recipe.pdfPage;
+        }
         if (recipe.gitGraph) {
             resolved.gitGraph = recipe.gitGraph;
         }
@@ -1274,7 +1312,7 @@ async function focusTerminal() {
     await workspace.waitForTimeout(150);
 }
 
-async function waitForTerminalPrompt() {
+async function waitForTerminalPrompt(seconds = 60) {
     await workspace.waitForFunction(
         user => {
             const terminals = [...document.querySelectorAll('.terminal.xterm')]
@@ -1295,7 +1333,7 @@ async function waitForTerminalPrompt() {
                 /^\d{1,2}:\d{2} [#$]$/.test(lastLine);
         },
         SCREENSHOT_WORKSPACE_USER,
-        { timeout: 60_000 },
+        { timeout: seconds * 1000 },
     );
     await workspace.waitForTimeout(150);
 }
@@ -2356,7 +2394,7 @@ async function executeAction(action, targetTab, hooks) {
         case 'clone-start': return cloneStart(action);
         case 'open-file': return openFile(action.path);
         case 'terminal-open': return terminalOpen();
-        case 'terminal-wait-for-prompt': return waitForTerminalPrompt();
+        case 'terminal-wait-for-prompt': return waitForTerminalPrompt(action.seconds);
         case 'terminal-maximize': return terminalMaximize();
         case 'terminal-run': return terminalRun(action.text);
         case 'go-live': return goLive(hooks);
@@ -2874,6 +2912,48 @@ async function captureGitGraph(shot, tutorialDirectory) {
     return sha256(svg);
 }
 
+// pdf-page: PATH PAGE renders one page of a PDF in the screenshot Workspace
+// (compiled there by the recipe, with the Workspace's own TeX and fonts) at
+// 300 dpi, cuts it to its content and shaves 1 mm off the top and bottom, as
+// src/content/latex/fonts/pdf_page_to_svg.rb did by hand.
+async function capturePdfPage(shot, tutorialDirectory) {
+    const root = path.resolve(USER_ROOT, fsTagForEmail(SCREENSHOT_EMAIL), 'workspace');
+    const pdf = path.resolve(root, shot.pdfPage.path);
+    if (!pdf.startsWith(`${root}${path.sep}`)) {
+        throw new Error(`pdf-page path escaped the Workspace: ${shot.pdfPage.path}`);
+    }
+    await fs.access(pdf).catch(() => { throw new Error(`pdf-page: ${shot.pdfPage.path} does not exist`); });
+    const target = path.join(tutorialDirectory, shot.target);
+    const work = await fs.mkdtemp(path.join(os.tmpdir(), 'pdf-page-'));
+    try {
+        const page = String(shot.pdfPage.page);
+        // pdf-page: PATH PAGE TEXT: the page must contain TEXT, so a page
+        // number that no longer fits fails instead of showing the wrong page.
+        if (shot.pdfPage.expect) {
+            const { stdout } = await execFileAsync('pdftotext', ['-f', page, '-l', page, pdf, '-']);
+            const text = stdout.replace(/\s+/g, ' ');
+            if (!text.includes(shot.pdfPage.expect)) {
+                throw new Error(`pdf-page: page ${page} of ${shot.pdfPage.path} does not contain »${shot.pdfPage.expect}«`);
+            }
+        }
+        await execFileAsync('pdftocairo', ['-png', '-r', '300', '-f', page, '-l', page, '-singlefile', pdf, path.join(work, 'page')]);
+        const trimmed = path.join(work, 'trimmed.png');
+        await execFileAsync('convert', [path.join(work, 'page.png'), '-trim', '+repage', '-shave', '0x12', '+repage', trimmed]);
+        const temporary = `${target}.tmp-${process.pid}`;
+        if (/\.webp$/i.test(target)) {
+            await execFileAsync('cwebp', ['-quiet', '-q', '90', trimmed, '-o', temporary]);
+        } else {
+            await fs.copyFile(trimmed, temporary);
+        }
+        await fs.chmod(temporary, 0o644);
+        await fs.rename(temporary, target);
+        await inheritDirectoryOwnership(target, tutorialDirectory);
+    } finally {
+        await fs.rm(work, { recursive: true, force: true }).catch(() => {});
+    }
+    return sha256(await fs.readFile(target));
+}
+
 function screenshotOutputDimensions(shot) {
     const topPixels = Math.round(shot.viewport.height * shot.cropTop);
     const bottomPixels = Math.round(shot.viewport.height * shot.cropBottom);
@@ -3221,7 +3301,9 @@ async function generateTutorial(payload, progressJob = null) {
             console.log(`  line ${targetSource?.line ?? '?'}: capture ${shot.target}`);
             let outputSha256;
             try {
-                outputSha256 = shot.gitGraph
+                outputSha256 = shot.pdfPage
+                    ? await capturePdfPage(shot, tutorialDirectory)
+                    : shot.gitGraph
                     ? await captureGitGraph(shot, tutorialDirectory)
                     : shot.record != null
                         ? await captureVideo(shot, tutorialDirectory, tutorialHooks)
