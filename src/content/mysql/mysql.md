@@ -333,6 +333,8 @@ sleep: 0.5
 
 <img class='full' src='select-land-order-by-desc.webp' alt='Die Länder sind nach Einwohnerzahl absteigend sortiert.'>
 
+_task(kleinste-laender)
+
 ### Begrenzen: LIMIT
 
 Mit `LIMIT` begrenzt du die Anzahl der ausgegebenen Zeilen:
@@ -356,6 +358,8 @@ crop-terminal-skip-bottom: 1
 <img class='full' src='select-land-limit.webp' alt='Das begrenzte Abfrageergebnis enthält die ersten fünf Länder.'>
 
 `ORDER BY` und `LIMIT` lassen sich gut kombinieren. Damit kannst du zum Beispiel nach einer Spalte sortieren und anschließend nur die ersten zehn Treffer ausgeben.
+
+_task(top5-laender)
 
 ## Zählen und suchen
 
@@ -393,6 +397,8 @@ crop-terminal-skip-bottom: 1
 
 <img class='full' src='select-count-where.webp' alt='COUNT zählt die Zeilen der Tabelle land.'>
 
+_task(hundert-millionen)
+
 ### Text durchsuchen: LIKE
 
 Mit `LIKE` kannst du Text nach einem Muster durchsuchen. Das Prozentzeichen `%` steht dabei für beliebig viele Zeichen. Die folgende Abfrage findet Ländernamen, in denen `land` vorkommt:
@@ -412,6 +418,8 @@ sleep: 0.5
 <img class='full' src='select-like.webp' alt='LIKE findet Ländernamen, in denen die Zeichenfolge land vorkommt.'>
 
 `'land%'` würde dagegen nur Namen finden, die mit `land` beginnen, und `'%land'` nur Namen, die damit enden.
+
+_task(ka-laender)
 
 ### Jeden Wert einmal: DISTINCT
 
@@ -435,6 +443,8 @@ crop-terminal-skip-bottom: 1
 <img class='full' src='select-distinct.webp' alt='DISTINCT zeigt jeden unterschiedlichen Wert der Spalte Kontinent nur einmal.'>
 
 Dabei fällt etwas auf: In den Beispieldaten kommen sowohl `Europa` als auch `Europe` vor. Eine Datenbank speichert die Werte so, wie sie eingetragen wurden; uneinheitliche Daten verschwinden also nicht von selbst. Solche Auffälligkeiten lassen sich mit Abfragen entdecken.
+
+_task(laender-der-orte)
 
 ## Zusammenfassung
 

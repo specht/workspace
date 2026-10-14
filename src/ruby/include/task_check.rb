@@ -20,7 +20,7 @@ require_relative 'keyboard_check'
 # module never touches Neo4j, Docker or HTTP itself.
 module TaskCheck
     ANSWER_TYPES = %w[answer choice number reflection].freeze
-    FILE_TYPES = %w[files html css references].freeze
+    FILE_TYPES = %w[files html css references story].freeze
     # Types the class board can check for a whole group at once: they only
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze

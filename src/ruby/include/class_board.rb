@@ -18,8 +18,11 @@ module ClassBoard
     # members: [{ email:, name: }]
     # tasks:   [{ id:, title:, type:, version:, prediction: }] in page order
     # states:  { email => { task_id => stored TaskState (symbol keys) } }
-    def self.build(members, tasks, states)
-        rows = members.sort_by { |m| m[:name].to_s.downcase }.map do |m|
+    # viewer:  { email:, name: } of the teacher looking, if not a member: their
+    #          own row once they worked on a task (board[:own]), shown below
+    #          the class and not counted with it
+    def self.build(members, tasks, states, viewer: nil)
+        row = lambda do |m|
             cells = tasks.map do |t|
                 s = (states[m[:email]] || {})[t[:id]]
                 next Cell.new(:status => 'none') if s.nil?
@@ -32,6 +35,12 @@ module ClassBoard
             end
             { :email => m[:email], :name => m[:name], :cells => cells,
               :solved => cells.count { |c| %w[correct sent].include?(c.status) } }
+        end
+        rows = members.sort_by { |m| m[:name].to_s.downcase }.map(&row)
+        own = nil
+        if viewer && members.none? { |m| m[:email] == viewer[:email] }
+            own = row.call(viewer)
+            own = nil if own[:cells].all? { |c| c.status == 'none' }
         end
         summary = tasks.each_with_index.map do |t, i|
             cells = rows.map { |r| r[:cells][i] }
@@ -46,7 +55,7 @@ module ClassBoard
                 :predicted_right => t[:prediction] ? cells.count { |c| c.first_status == 'correct' } : nil,
             }
         end
-        { :rows => rows, :summary => summary, :tasks => tasks }
+        { :rows => rows, :own => own, :summary => summary, :tasks => tasks }
     end
 
     # Tabler icon and meaning per status.
@@ -70,6 +79,19 @@ module ClassBoard
         parts.join(', ')
     end
 
+    # The cells of one row and its »gelöst« count.
+    def self.row_cells(r, tasks, activity)
+        io = +''
+        r[:cells].each_with_index do |c, i|
+            icon, label = SYMBOLS.fetch(c.status, SYMBOLS['none'])
+            symbol = Icons.tabler(icon, :label => label)
+            klass = "cb-cell cb-#{c.status}#{c.stuck ? ' cb-stuck' : ''}"
+            count = c.attempts.to_i > 1 && c.status == 'wrong' ? "<small>#{c.attempts}</small>" : ''
+            io << "<td class='#{klass}' data-task='#{h(activity)}/#{h(tasks[i][:id])}' title='#{h(cell_title(c))}'>#{symbol}#{count}</td>"
+        end
+        io << "<td class='cb-total'>#{r[:solved]}/#{tasks.size}</td></tr>"
+    end
+
     # HTML of the board. submission_url: lambda(email, task_id) -> URL.
     def self.html(board, activity:, submission_url: nil)
         tasks = board[:tasks]
@@ -85,16 +107,14 @@ module ClassBoard
         io << '<th class="cb-total">gelöst</th></tr></thead><tbody>'
         board[:rows].each do |r|
             io << "<tr data-email='#{h(r[:email])}'><th class='cb-name'>#{h(r[:name])}</th>"
-            r[:cells].each_with_index do |c, i|
-                icon, label = SYMBOLS.fetch(c.status, SYMBOLS['none'])
-                symbol = Icons.tabler(icon, :label => label)
-                klass = "cb-cell cb-#{c.status}#{c.stuck ? ' cb-stuck' : ''}"
-                count = c.attempts.to_i > 1 && c.status == 'wrong' ? "<small>#{c.attempts}</small>" : ''
-                io << "<td class='#{klass}' data-task='#{h(activity)}/#{h(tasks[i][:id])}' title='#{h(cell_title(c))}'>#{symbol}#{count}</td>"
-            end
-            io << "<td class='cb-total'>#{r[:solved]}/#{tasks.size}</td></tr>"
+            io << row_cells(r, tasks, activity)
         end
-        io << '</tbody><tfoot><tr><th class="cb-name">Klasse</th>'
+        io << '</tbody>'
+        if (own = board[:own])
+            io << "<tbody class='cb-own'><tr data-email='#{h(own[:email])}'><th class='cb-name'>#{h(own[:name])}</th>"
+            io << row_cells(own, tasks, activity) << '</tbody>'
+        end
+        io << '<tfoot><tr><th class="cb-name">Klasse</th>'
         board[:summary].each_with_index do |s, i|
             notes = ["#{s[:done]}/#{board[:rows].size}"]
             notes << "#{s[:stuck]} hängen" if s[:stuck] > 0
@@ -102,6 +122,7 @@ module ClassBoard
             io << "<td class='cb-summary#{s[:often_wrong] ? ' cb-often-wrong' : ''}'>#{notes.map { |n| h(n) }.join('<br>')}</td>"
         end
         io << '<td></td></tr></tfoot></table></div>'
+        rows = board[:own] ? board[:rows] + [board[:own]] : board[:rows]
 
         # What students wrote and handed in, per task.
         tasks.each_with_index do |t, i|
@@ -109,14 +130,16 @@ module ClassBoard
             submit = t[:type] == 'submit'
             next unless text || submit
 
-            entries = board[:rows].map { |r| [r, r[:cells][i]] }.reject { |_, c| c.status == 'none' }
+            entries = rows.map { |r| [r, r[:cells][i]] }.reject { |_, c| c.status == 'none' }
             next if entries.empty?
 
-            io << "<details class='class-answers'><summary>#{i + 1}. #{h(t[:title])}: #{entries.size} #{submit ? 'Abgaben' : 'Antworten'}</summary><ul>"
+            io << "<details class='class-answers'><summary>#{i + 1}. #{h(t[:title])}: #{entries.size} #{submit ? (entries.size == 1 ? 'Abgabe' : 'Abgaben') : (entries.size == 1 ? 'Antwort' : 'Antworten')}</summary><ul>"
             entries.each do |r, c|
                 io << "<li class='cb-answer cb-#{c.status}'><span class='cb-answer-name'>#{h(r[:name])}</span> "
                 if submit && submission_url && %w[sent stale].include?(c.status)
-                    io << "<a href='#{h(submission_url.call(r[:email], t[:id]))}'>#{h(c.answer)}</a>"
+                    # A click opens the viewer (submission_viewer.js); without
+                    # scripts the link downloads the hand-in.
+                    io << "<a class='cb-submission' href='#{h(submission_url.call(r[:email], t[:id]))}' data-view-title='#{h("#{r[:name]}: #{t[:title]}")}'>#{h(c.answer)}</a>"
                 else
                     io << "<span class='cb-answer-text'>#{h(c.answer)}</span>"
                 end

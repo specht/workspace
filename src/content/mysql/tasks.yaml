@@ -53,6 +53,78 @@ tasks:
         say: Der Punkt ist in SQL das Dezimalkomma, kein Tausenderpunkt. Vergleiche mit einem Land, dessen Einwohnerzahl du kennst, zum Beispiel Deutschland.
     solution: Die Einwohnerzahlen in `land` sind in Millionen angegeben. Das sieht man an großen Ländern wie China (`1367.48`).
 
+  - id: kleinste-laender
+    title: Die kleinsten zuerst
+    prompt: Gib Name und Einwohnerzahl aller Länder aus, die Länder mit den wenigsten Einwohnern zuerst.
+    check:
+      type: sql
+      expect_query: SELECT Name, Einwohner FROM land ORDER BY Einwohner
+      sorted_by: 2 ASC
+      tables: { land: 197 }
+      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+    feedback:
+      - when: { query_matches: 'desc' }
+        say: "`DESC` sortiert absteigend, dann stehen die größten Länder oben. Ohne Angabe sortiert `ORDER BY` aufsteigend."
+    solution: "`SELECT Name, Einwohner FROM land ORDER BY Einwohner;` Ganz oben steht die Vatikanstadt."
+
+  - id: top5-laender
+    title: Die fünf größten Länder
+    prompt: Gib die Namen der fünf Länder mit den meisten Einwohnern aus (wenn du willst, mit ihrer Einwohnerzahl).
+    check:
+      type: sql
+      expect_query:
+        - SELECT Name FROM land ORDER BY Einwohner DESC LIMIT 5
+        - SELECT Name, Einwohner FROM land ORDER BY Einwohner DESC LIMIT 5
+      tables: { land: 197 }
+      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT Name FROM land ORDER BY Einwohner LIMIT 5" }
+        say: Das sind die fünf kleinsten. Für die größten sortierst du absteigend, mit `DESC`.
+      - when: { same_result_as: "SELECT Name, Einwohner FROM land ORDER BY Einwohner LIMIT 5" }
+        say: Das sind die fünf kleinsten. Für die größten sortierst du absteigend, mit `DESC`.
+    solution: "`SELECT Name, Einwohner FROM land ORDER BY Einwohner DESC LIMIT 5;` Erst sortieren, dann die ersten fünf: China, Indien, die Vereinigten Staaten, Indonesien und Brasilien."
+
+  - id: hundert-millionen
+    title: Mehr als 100 Millionen
+    prompt: Wie viele Länder haben mehr als 100 Millionen Einwohner?
+    check:
+      type: sql
+      expect_query: SELECT COUNT(*) FROM land WHERE Einwohner > 100
+      tables: { land: 197 }
+      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+    feedback:
+      - when: { query_matches: '100\s*000\s*000|100000000' }
+        say: In der Spalte `Einwohner` stehen Millionen, also ist 100 Millionen hier einfach `100`.
+    solution: "`SELECT COUNT(*) FROM land WHERE Einwohner > 100;` ergibt 11."
+
+  - id: ka-laender
+    title: Länder mit »Ka« am Anfang
+    prompt: Welche Länder haben einen Namen, der mit `Ka` beginnt?
+    check:
+      type: sql
+      expect_query: SELECT Name FROM land WHERE Name LIKE 'Ka%'
+      tables: { land: 197 }
+      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT Name FROM land WHERE Name LIKE '%Ka%'" }
+        say: "`'%Ka%'` findet `Ka` überall im Namen, auch in »Jamaika«. Am Anfang heißt: kein `%` davor."
+      - when: { same_result_as: "SELECT Name FROM land WHERE Name LIKE '%Ka'" }
+        say: "`'%Ka'` findet Namen, die mit `Ka` enden. Das `%` gehört ans Ende."
+    solution: "`SELECT Name FROM land WHERE Name LIKE 'Ka%';` findet Kambodscha, Kamerun, Kanada, Kap Verde, Kasachstan und Katar."
+
+  - id: laender-der-orte
+    title: Aus welchen Ländern?
+    prompt: Aus welchen Ländern stammen die Orte in der Tabelle `ort`? Gib jedes Land genau einmal aus.
+    check:
+      type: sql
+      expect_query: SELECT DISTINCT Land FROM ort
+      tables: { ort: 26314 }
+      setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "SELECT Land FROM ort" }
+        say: So steht jedes Land so oft da, wie es Orte hat. Mit `DISTINCT` kommt jedes nur einmal.
+    solution: "`SELECT DISTINCT Land FROM ort;` ergibt 196 Länder."
+
   - id: laender-sortiert
     title: Länder nach Einwohnern
     prompt: Gib alle Länder mit Name, Einwohnerzahl und Hauptstadt aus, nach der Einwohnerzahl absteigend sortiert.

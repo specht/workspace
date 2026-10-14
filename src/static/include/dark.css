@@ -244,10 +244,42 @@ html[data-bs-theme="dark"] {
         background-color: #172a45;
         color: #8db8f5;
     }
-    .task-badge-correct { color: #6fd39b; }
+    .task-badge-correct,
+    .task-badge-sent { color: #6fd39b; background-color: #15301f; }
     .task-badge-wrong,
-    .task-badge-stale { color: #f0c27a; }
-    .task-badge-sent { color: #8db8f5; }
+    .task-badge-stale { color: #f0c27a; background-color: #3a2c12; }
+    .task-card[data-prediction] .task-number {
+        background-color: #2a2140;
+        color: #cdb0f2;
+    }
+    .task-card[data-status='correct'],
+    .task-card[data-status='sent'] {
+        border-color: #1f3a2a;
+        border-left-color: #3fbf77;
+        background-color: #131f18;
+    }
+    .task-card[data-status='correct'] .task-number,
+    .task-card[data-status='sent'] .task-number {
+        background-color: #15301f;
+        color: #6fd39b;
+    }
+    .task-options .form-check {
+        border-color: #2b3a52;
+        background-color: #1b222d;
+    }
+    .task-options .form-check:hover { border-color: #4d8ff0; }
+    .task-options .form-check:has(.form-check-input:checked) {
+        border-color: #4d8ff0;
+        background-color: #172a45;
+    }
+    .task-card[data-status='correct'] .task-options .form-check:has(.form-check-input:checked) {
+        border-color: #3fbf77;
+        background-color: #15301f;
+    }
+    .task-card[data-status='wrong'] .task-options .form-check:has(.form-check-input:checked) {
+        border-color: #e0a030;
+        background-color: #3a2c12;
+    }
     .task-preview {
         background-color: #221b2d;
         color: #cdb0f2;
@@ -328,6 +360,7 @@ html[data-bs-theme="dark"] {
     .task-submission,
     .task-pick-label,
     .task-read > summary,
+    .task-more-toggle,
     .task-later,
     .task-login-note {
         color: #adb5bd;
@@ -341,8 +374,15 @@ html[data-bs-theme="dark"] {
         border-color: #4a3a63;
         background-color: #221b2d;
     }
-    .teacher-note > summary {
+    .teacher-note-toggle {
+        border-color: #4a3a63;
+        background-color: #221b2d;
         color: #cdb0f2;
+    }
+    .teacher-note-toggle:hover,
+    .teacher-note-toggle[aria-expanded='true'] {
+        background-color: #2e2440;
+        border-color: #6b5590;
     }
     .template-notice {
         background-color: #172a45;
@@ -382,4 +422,15 @@ html[data-bs-theme="dark"] {
     .reference-result mark { background-color: #5c4a12; }
     .er-playground-output { border-color: #33332f; }
     .er-playground-problems { color: #f19aa1; }
+    .subview-dialog { background-color: #1b1f26; }
+    .subview-head,
+    .subview-bar,
+    .subview-nav { border-color: #2b3340; }
+    .subview-nav { background-color: #161a20; }
+    .subview-tree summary { color: #ced4da; }
+    .subview-file:hover { background-color: #232a35; }
+    .subview-file.active { background-color: #172a45; color: #8db8f5; }
+    .subview-code { color: #e7e6e1; }
+    .subview-close { color: #adb5bd; }
+    .subview-close:hover { background-color: #232a35; }
 }

@@ -50,6 +50,7 @@ module TaskCard
         io << "<div class='task-prompt'>#{render.(task['prompt'])}</div>"
 
         if runs
+            reads = nil
             io << "<form class='task-form' autocomplete='off'>"
             case type
             when 'answer'
@@ -93,22 +94,22 @@ module TaskCard
                     io << '</div>'
                 end
                 io << '</div>'
-                io << "<div class='task-reads'>Der Workspace misst danach selbst nach, in deinem Workspace, und vergleicht.</div>"
+                reads = 'Der Workspace misst danach selbst nach, in deinem Workspace, und vergleicht.'
             when 'sql'
                 io << "<textarea class='form-control task-input task-sql' name='answer' rows='4' spellcheck='false' autocapitalize='off' placeholder='SELECT …' aria-labelledby='#{h.(field)}-title'></textarea>"
-                io << "<div class='task-reads'>Läuft in deiner eigenen MySQL-Datenbank, angemeldet als du, und liest nur: eine Abfrage mit <code>SELECT</code>, höchstens #{SqlCheck::MAX_MS / 1000} Sekunden. <kbd>Strg</kbd>+<kbd>Enter</kbd> prüft.</div>"
+                reads = "Läuft in deiner eigenen MySQL-Datenbank, angemeldet als du, und liest nur: eine Abfrage mit <code>SELECT</code>, höchstens #{SqlCheck::MAX_MS / 1000} Sekunden. <kbd>Strg</kbd>+<kbd>Enter</kbd> prüft."
             when 'command'
                 io << "<input type='text' class='form-control task-input task-command' name='answer' spellcheck='false' autocomplete='off' placeholder='Befehl' aria-labelledby='#{h.(field)}-title'>"
-                io << "<div class='task-reads'>Läuft in deinem Workspace in <code>/workspace</code>, höchstens #{(check['timeout'] || 10).to_i} Sekunden, als Gast: Der Befehl kann lesen, aber nichts verändern oder löschen.</div>"
+                reads = "Läuft in deinem Workspace in <code>/workspace</code>, höchstens #{(check['timeout'] || 10).to_i} Sekunden, als Gast: Der Befehl kann lesen, aber nichts verändern oder löschen."
             when 'submit'
                 if check['pick']
                     io << "<label class='task-pick-label' for='#{h.(field)}-pick'>Welche Datei gibst du ab?</label>"
                     io << "<select class='form-select task-input task-pick' id='#{h.(field)}-pick' name='answer' data-pick='#{h.(check['pick'])}'>"
                     io << "<option value=''>Datei aus #{h.(File.dirname(check['pick']))}/ wählen …</option></select>"
                 end
-                io << "<div class='task-reads'>#{reads_line(check, h)}</div>"
+                reads = reads_line(check, h)
             else
-                io << "<div class='task-reads'>#{reads_line(check, h)}</div>"
+                reads = reads_line(check, h)
             end
             label = case
                 when type == 'code' then 'Stand holen'
@@ -123,10 +124,17 @@ module TaskCard
                 io << "<a class='btn btn-success task-open' href='/codebites/#{h.(check['codebite'])}'><i class='bi bi-code-slash'></i>Im Code-Editor lösen</a>"
                 io << "<button type='submit' class='btn btn-outline-secondary btn-sm task-submit'>#{label}</button>"
             else
-                io << "<button type='submit' class='btn btn-success task-submit'><i class='bi bi-check2'></i>#{label}</button>"
+                io << "<button type='submit' class='btn btn-success task-submit'>#{label}</button>"
             end
             io << "<button type='button' class='btn btn-link btn-sm task-delete' hidden>Meine Antwort löschen</button>"
+            # What the check reads, for whoever wants to know (rule 5), behind
+            # a small (i) so the card itself stays short.
+            if reads
+                io << "<button type='button' class='task-reads-toggle' aria-expanded='false' aria-controls='#{h.(field)}-reads' title='Was passiert beim Prüfen?'>"
+                io << "<i class='bi bi-info-circle' aria-hidden='true'></i><span class='visually-hidden'>Was passiert beim Prüfen?</span></button>"
+            end
             io << '</div>'
+            io << "<div class='task-reads' id='#{h.(field)}-reads' hidden>#{reads}</div>" if reads
             io << '</form>'
         else
             io << "<p class='task-later'><i class='bi bi-hourglass-split'></i>Diese Aufgabe kann der Workspace noch nicht selbst prüfen. Zeig dein Ergebnis deiner Lehrkraft.</p>"
@@ -150,6 +158,7 @@ module TaskCard
         when 'files' then "Sieht nach in #{path.(check['path'])}"
         when 'keyboard' then "Liest #{path.('.hs-kbd-tutorial/.state.json')}, den Fortschritt des Keyboard-Tutorials"
         when 'html', 'css' then "Liest #{path.(check['file'])}"
+        when 'story' then "Liest #{path.("#{check['project']}/.story-tools/analysis.json")}, was BIF über deine Geschichte herausgefunden hat"
         when 'references'
             files = (check['scan'] || []).map { |f| path.("#{check['root']}/#{f}") }
             "Liest #{files.join(' und ')}"

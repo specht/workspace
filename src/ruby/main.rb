@@ -8,6 +8,7 @@ require './include/task_check.rb'
 require './include/task_card.rb'
 require './include/task_store.rb'
 require './include/class_board.rb'
+require './include/submission_view.rb'
 require './include/student_home.rb'
 require './include/group_visibility.rb'
 require './include/look_in.rb'
@@ -50,6 +51,11 @@ Neo4jBolt.bolt_host = 'neo4japp'
 Neo4jBolt.bolt_port = 7687
 
 CACHE_BUSTER = SecureRandom.alphanumeric(12)
+# Hand-ins run in the browser from a host of their own (SubmissionView);
+# addresses to them are signed with a key that lives as long as the server.
+SUBMISSION_VIEW_HOST = "abgaben.#{WEBSITE_HOST.split(':').first}"
+SUBMISSION_VIEW_ROOT = WEB_ROOT.sub('//', '//abgaben.')
+SUBMISSION_VIEW_SECRET = SecureRandom.hex(32)
 RUBOCOP_LAYOUT_CONFIG_PATH = "/tmp/rubocop_layout.yml"
 
 MODULE_ORDER = [:workspace, :codebites, :phpmyadmin, :neo4j, :tic80]
@@ -1052,6 +1058,26 @@ class Main < Sinatra::Base
                 }
             }
 
+            # ===========================================
+            # Hand-ins in the browser (SubmissionView)
+            # ===========================================
+            server {
+                listen 80;
+                server_name #{SUBMISSION_VIEW_HOST};
+                client_max_body_size 1M;
+                access_log off;
+                charset utf-8;
+
+                location /v/ {
+                    include /etc/nginx/snippets/proxy_ws.conf;
+                    proxy_pass http://ruby:9292;
+                }
+
+                location / {
+                    return 404;
+                }
+            }
+
             # ===========
             # phpMyAdmin
             # ===========
@@ -1697,7 +1723,12 @@ class Main < Sinatra::Base
             search_sections = outline ? ReferenceIndex.search_sections(root) : nil
             inject_autotoc(root)
 
-            html = root.to_html
+            # Scripts a page loads itself (the colour mixer) get a fresh
+            # address with each version, like default.css: nginx lets
+            # browsers keep /include/*.js forever.
+            html = root.to_html.gsub(%r{(<script src=['"]/include/[a-z_]+\.js)(['"])}) do
+                "#{$1}?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}#{$2}"
+            end
             # root.css('h2, h3, h4, h5, h6').each do |e|
             #     if slug == 'c'
             #         level = e.name.sub('h', '').to_i
@@ -2127,6 +2158,11 @@ class Main < Sinatra::Base
     end
 
     before '*' do
+        # abgaben.<host> serves hand-ins and nothing else: no session, no
+        # pages, no API (SubmissionView).
+        if request.host == SUBMISSION_VIEW_HOST && !(request.path.start_with?('/v/') && %w[GET HEAD].include?(request.request_method))
+            halt 404
+        end
         origin_sensitive = %w(POST PUT PATCH DELETE).include?(request.request_method) ||
             ['/ws', '/ws_codebites', '/logout'].include?(request.path)
         if origin_sensitive && !Authentication.same_origin?(
@@ -3840,7 +3876,9 @@ class Main < Sinatra::Base
     # The strip above a content page: activity (kind, duration, reference
     # pages it uses) or reference page (where it sits, who uses it).
     def page_kind_header(slug)
-        PageKinds.header(slug, @@content, @@sections, :development => DEVELOPMENT)
+        toggle = teacher_note_toggle(slug)
+        header = PageKinds.header(slug, @@content, @@sections, :development => DEVELOPMENT, :extra => toggle)
+        header.empty? && !toggle.empty? ? "<div class='page-kind'>#{toggle}</div>" : header
     end
 
     def page_kind_class(slug)
@@ -3882,7 +3920,7 @@ class Main < Sinatra::Base
         "<style>.tasks-off-only { display: none; }</style>" \
             "<script>window.TASK_PAGE = #{config.to_json};</script>" \
             "#{previews ? "<script src='/include/anaglyph_preview.js?#{CACHE_BUSTER}'></script>" : ''}" \
-            "<script src='/include/tasks.js?#{CACHE_BUSTER}'></script>"
+            "<script src='/include/tasks.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
     end
 
     # Handbuch boxes (_include) this person has already been through on
@@ -4161,13 +4199,27 @@ class Main < Sinatra::Base
         TaskStore.public_state(props, found[:version])
     end
 
-    # The teacher note of a page (lehrkraft.md), for teachers only.
-    def teacher_note_panel(slug)
-        note = (@@content[slug] || {})[:teacher_note]
-        return '' if note.nil? || !teacher_account_logged_in?
+    # The teacher note of a page (lehrkraft.md), for teachers only: a small
+    # button at the right end of the page strip, so the page can be shown on
+    # a projector as it is, and the note itself below it, closed.
+    def teacher_note?(slug)
+        !(@@content[slug] || {})[:teacher_note].nil? && teacher_account_logged_in?
+    end
 
-        "<details class='teacher-note'><summary>Notiz für Lehrkräfte</summary>" \
-            "<div class='teacher-note-body'>#{note}</div></details>"
+    def teacher_note_toggle(slug)
+        return '' unless teacher_note?(slug)
+
+        "<button type='button' class='teacher-note-toggle' aria-expanded='false' aria-controls='teacher-note'>" \
+            "<i class='bi bi-person-video3' aria-hidden='true'></i>Notiz für Lehrkräfte</button>"
+    end
+
+    def teacher_note_panel(slug)
+        return '' unless teacher_note?(slug)
+
+        "<div class='teacher-note' id='teacher-note' hidden><div class='teacher-note-body'>#{@@content[slug][:teacher_note]}</div></div>" \
+            "<script>document.querySelector('.teacher-note-toggle').addEventListener('click', function () {" \
+            "var open = this.getAttribute('aria-expanded') !== 'true'; this.setAttribute('aria-expanded', open);" \
+            "document.getElementById('teacher-note').hidden = !open; });</script>"
     end
 
     # Activities with a teacher note (lehrkraft.md), listed in the profile.
@@ -4420,8 +4472,12 @@ class Main < Sinatra::Base
 
         activity_key, title, tasks = activity
         members = class_members(group)
-        states = class_board_states(members.map { |m| m[:email] }, activity_key)
-        board = ClassBoard.build(members, tasks, states)
+        # One's own tries and hand-ins, below the class (teachers who are not
+        # members of the group, e.g. to try a task before the class does).
+        me = @session_user[:email]
+        viewer = { :email => me, :name => 'Du (Lehrkraft)' }
+        states = class_board_states((members.map { |m| m[:email] } + [me]).uniq, activity_key)
+        board = ClassBoard.build(members, tasks, states, :viewer => viewer)
         live = tasks.select { |t| TaskCheck::LIVE_TYPES.include?(t[:type]) }
         unless live.empty?
             io << "<div class='class-live' data-group='#{h.(group)}'>"
@@ -4436,7 +4492,7 @@ class Main < Sinatra::Base
         io << "<p class='class-board-link'><a href='/#{h.(@@content.find { |_, c| (c[:tasks] || {})[:activity] == activity_key }&.first)}'>#{h.(title)}</a> · #{members.size} Personen in #{h.(group)}</p>"
         io << ClassBoard.html(board, :activity => activity_key,
             :submission_url => lambda { |email, id| "/api/task/submission/#{activity_key}/#{id}?email=#{CGI.escape(email)}" })
-        io << class_scene_galleries_html(activity_key, tasks, members)
+        io << class_scene_galleries_html(activity_key, tasks, board[:own] ? members + [viewer] : members)
         io
     end
 
@@ -5303,10 +5359,9 @@ class Main < Sinatra::Base
 
     # A submission as .tar.gz: the logged-in person's own, or, with ?email=,
     # that of a student in a group the logged-in teacher looks after.
-    get '/api/task/submission/:activity/:id' do
-        assert(user_logged_in?)
-        found = find_task("#{params[:activity]}/#{params[:id]}")
-        halt 404 if found.nil?
+    # Whose hand-in a request may see: one's own, or (email=…) one of a
+    # group the logged-in teacher looks after.
+    def submission_owner_for(params)
         email = @session_user[:email]
         if params['email'] && params['email'] != email
             Main.load_invitations()
@@ -5314,12 +5369,76 @@ class Main < Sinatra::Base
             halt 403 unless allowed
             email = params['email']
         end
+        email
+    end
+
+    get '/api/task/submission/:activity/:id' do
+        assert(user_logged_in?)
+        found = find_task("#{params[:activity]}/#{params[:id]}")
+        halt 404 if found.nil?
+        email = submission_owner_for(params)
         path = submission_path(found[:key], email)
         halt 404 unless File.file?(path)
 
         suffix = email == @session_user[:email] ? '' : "-#{email.split('@').first.gsub(/[^a-zA-Z0-9._-]/, '')}"
         respond_raw_with_mimetype_and_filename(File.binread(path), 'application/gzip',
             "#{params[:activity]}-#{params[:id]}#{suffix}.tar.gz")
+    end
+
+    # The viewer on the class page: the files of a hand-in and the signed
+    # address under which they run on abgaben.<host>.
+    get '/api/task/submission_view/:activity/:id' do
+        assert(user_logged_in?)
+        found = find_task("#{params[:activity]}/#{params[:id]}")
+        halt 404 if found.nil?
+        email = submission_owner_for(params)
+        path = submission_path(found[:key], email)
+        halt 404 unless File.file?(path)
+
+        token = SubmissionView.token(TaskStore.state_key(email, found[:key]), :secret => SUBMISSION_VIEW_SECRET)
+        files = SubmissionView.files(path).map do |f|
+            f.merge(:text => SubmissionView.text?(f[:path]) && f[:size] <= SubmissionView::MAX_TEXT,
+                    :html => SubmissionView.html?(f[:path]))
+        end
+        response.headers['Cache-Control'] = 'no-store'
+        respond(:files => files, :root => "#{SUBMISSION_VIEW_ROOT}/v/#{token}/",
+            :download => "/api/task/submission/#{params[:activity]}/#{params[:id]}#{email == @session_user[:email] ? '' : "?email=#{CGI.escape(email)}"}")
+    end
+
+    # The text of one file of a hand-in, for the source view.
+    get '/api/task/submission_text/:activity/:id' do
+        assert(user_logged_in?)
+        found = find_task("#{params[:activity]}/#{params[:id]}")
+        halt 404 if found.nil?
+        email = submission_owner_for(params)
+        archive = submission_path(found[:key], email)
+        file = SubmissionView.clean_path(params['path'])
+        halt 404 unless File.file?(archive) && file && SubmissionView.text?(file)
+        bytes = SubmissionView.read(archive, file, :max => SubmissionView::MAX_TEXT)
+        halt 404 if bytes.nil?
+        response.headers['Cache-Control'] = 'no-store'
+        respond(:text => bytes.force_encoding('UTF-8').scrub('�'))
+    end
+
+    # abgaben.<host>/v/<token>/<path>: a file of a hand-in, sandboxed
+    # (SubmissionView). The token is the only permission; no cookies.
+    get '/v/:token/*' do
+        halt 404 unless request.host == SUBMISSION_VIEW_HOST
+        state_key = SubmissionView.verify(params[:token], :secret => SUBMISSION_VIEW_SECRET)
+        halt 404 if state_key.nil?
+        archive = File.join(SUBMISSIONS_ROOT, "#{state_key}.tar.gz")
+        halt 404 unless File.file?(archive)
+        rel = params['splat'].first.to_s
+        wanted = rel.empty? ? '' : SubmissionView.clean_path(rel)
+        halt 404 if wanted.nil?
+        file = SubmissionView.resolve(SubmissionView.files(archive), wanted)
+        halt 404 if file.nil?
+        # A folder without its slash: relative addresses inside need it.
+        redirect "/v/#{params[:token]}/#{file}" if file != wanted && !rel.end_with?('/')
+        bytes = SubmissionView.read(archive, file)
+        halt 404 if bytes.nil?
+        SubmissionView.headers(file, WEB_ROOT).each { |k, v| response.headers[k] = v }
+        respond_raw_with_mimetype(SubmissionView.for_viewer(file, bytes), SubmissionView.content_type(file))
     end
 
     # The Anaglyph viewer on the site (AnaglyphViewer, check option preview:

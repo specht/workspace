@@ -77,7 +77,6 @@
     mixer.querySelectorAll('input[type=range]').forEach((input) => { sliders[input.dataset.channel] = input; });
     const hexInput = mixer.querySelector('.color-mixer-hex input');
     const sample = mixer.querySelector('.color-mixer-sample');
-    const gamut = mixer.querySelector('.color-mixer-gamut');
     const code = (name) => mixer.querySelector(`[data-code="${name}"]`);
     const palette = [...document.querySelectorAll('.color-palette-swatch')].map((b) => ({
         index: Number(b.dataset.index), color: b.dataset.color, lch: rgbToOklch(parseHex(b.dataset.color)),
@@ -124,7 +123,7 @@
         sliders.h.style.background = gradient(along('h', 360));
     }
 
-    function show({ clipped = false, from = null } = {}) {
+    function show({ from = null } = {}) {
         const color = hex(rgb);
         sample.style.background = color;
         if (from !== 'hex' && document.activeElement !== hexInput) hexInput.value = color;
@@ -138,7 +137,6 @@
         sliders.l.nextElementSibling.textContent = `${round(lch.l * 100, 1)} %`;
         sliders.c.nextElementSibling.textContent = round(lch.c, 3).toFixed(3);
         sliders.h.nextElementSibling.textContent = `${Math.round(lch.h)}°`;
-        gamut.hidden = !clipped;
 
         const shown = rgbToOklch(rgb);
         code('hex').textContent = color;
@@ -161,7 +159,7 @@
         lch = { l: Number(sliders.l.value) / 100, c: Number(sliders.c.value), h: Number(sliders.h.value) };
         const result = oklchToRgb(lch);
         rgb = result.rgb;
-        show({ from: 'lch', clipped: result.clipped });
+        show({ from: 'lch' });
     }));
     hexInput.addEventListener('input', () => {
         const parsed = parseHex(hexInput.value);

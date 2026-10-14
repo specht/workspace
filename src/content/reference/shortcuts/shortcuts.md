@@ -8,7 +8,7 @@ kind: reference
     data-levels="h2,h3">
 </div>
 
-# Shortcuts
+# Tastatur-Shortcuts
 
 <p class='abstract'>
 Die Shortcuts aus dem <a href='/keyboard'>Keyboard-Tutorial</a> zum Nachschlagen, für Windows und Linux mit deutscher Tastatur. Was in der Spalte »wo« <em>überall</em> heißt, funktioniert auch in Word, im Browser, in E-Mail-Programmen und den meisten anderen Programmen; der Rest ist Visual Studio Code.

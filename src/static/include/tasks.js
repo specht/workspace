@@ -18,16 +18,44 @@
         return card.dataset.task.split('/')[1];
     }
 
-    function setBadge(card, status) {
+    const TICK = "<svg class='task-tick' viewBox='0 0 24 24' aria-hidden='true'>" +
+        "<circle class='task-tick-disc' cx='12' cy='12' r='11'/>" +
+        "<path class='task-tick-mark' d='M6.8 12.6l3.4 3.4 7-7.4'/></svg>";
+
+    // A solved task has its tick next to the button. Just solved, it pops
+    // in and draws itself, and the card glows once.
+    function setTick(card, solved, celebrate) {
+        const old = card.querySelector('.task-done-tick');
+        if (old) old.remove();
+        const button = card.querySelector('.task-submit');
+        if (solved && button) {
+            const tick = document.createElement('span');
+            tick.className = 'task-done-tick' + (celebrate ? ' task-done-tick-new' : '');
+            tick.innerHTML = TICK;
+            button.insertAdjacentElement('afterend', tick);
+        }
+        if (celebrate) {
+            card.classList.remove('task-solved-now');
+            void card.offsetWidth;
+            card.classList.add('task-solved-now');
+        }
+    }
+
+    // celebrate: the task was just solved.
+    function setBadge(card, status, celebrate) {
         const el = card.querySelector('.task-status');
         el.innerHTML = '';
+        setTick(card, status === 'correct', celebrate);
         const label = STATUS_LABELS[status === 'sent' && card.dataset.type === 'submit' ? 'submitted' : status];
         if (!label) return;
         const span = document.createElement('span');
         span.className = 'task-badge ' + label[0];
-        const icon = document.createElement('i');
-        icon.className = 'bi ' + label[1];
-        span.appendChild(icon);
+        // Solved: the tick stands next to the button, the pill just says so.
+        if (status !== 'correct') {
+            const icon = document.createElement('i');
+            icon.className = 'bi ' + label[1];
+            span.appendChild(icon);
+        }
         span.appendChild(document.createTextNode(label[2]));
         el.appendChild(span);
         card.dataset.status = status;
@@ -177,15 +205,41 @@
     // message and solution are HTML rendered on the server from the task
     // file; anything from the student (command output, SQL results) is
     // escaped there before it becomes part of them.
+    // Stars when it is right; a light bulb, not a cross, when it is not yet.
+    const FEEDBACK_ICONS = {
+        correct: 'bi-stars', wrong: 'bi-lightbulb', sent: 'bi-send-check',
+        invalid: 'bi-info-circle', unavailable: 'bi-info-circle',
+    };
+
+    // In view: the first paragraph of the message (and the result of an SQL
+    // query). The rest of the message, hints and what the Workspace read wait
+    // behind a small »Details« at the end of that line, the solution behind
+    // »Lösung«; each opens below when asked for.
     function showFeedback(card, status, message, solution, read, warnings) {
         const box = card.querySelector('.task-feedback');
         box.className = 'task-feedback task-feedback-' + status;
         box.innerHTML = '';
+        const icon = document.createElement('i');
+        icon.className = 'bi task-feedback-icon ' + (FEEDBACK_ICONS[status] || 'bi-info-circle');
+        icon.setAttribute('aria-hidden', 'true');
+        box.appendChild(icon);
+        const content = document.createElement('div');
+        content.className = 'task-feedback-body';
+        box.appendChild(content);
+
+        const line = document.createElement('div');
+        line.className = 'task-message';
+        content.appendChild(line);
+        const more = document.createElement('div');
         if (message) {
-            const div = document.createElement('div');
-            div.className = 'task-message';
-            div.innerHTML = message;
-            box.appendChild(div);
+            const holder = document.createElement('div');
+            holder.innerHTML = message;
+            const blocks = Array.from(holder.children);
+            if (blocks.length === 0) line.innerHTML = message;
+            else {
+                line.appendChild(blocks[0]);
+                blocks.slice(1).forEach((el) => more.appendChild(el));
+            }
         }
         if (warnings && warnings.length > 0) {
             const ul = document.createElement('ul');
@@ -195,42 +249,53 @@
                 li.innerHTML = w;
                 ul.appendChild(li);
             });
-            box.appendChild(ul);
+            more.appendChild(ul);
         }
         if (read && card.dataset.type === 'sql' && status !== 'unavailable') {
             // SQL: the student's own result is the point, always in view.
             const div = document.createElement('div');
             div.className = 'task-result';
             div.innerHTML = read;
-            box.appendChild(div);
+            content.appendChild(div);
         } else if (read) {
-            const details = document.createElement('details');
-            details.className = 'task-read';
-            const summary = document.createElement('summary');
-            summary.textContent = 'Was der Workspace gelesen hat';
-            details.appendChild(summary);
+            const title = document.createElement('p');
+            title.className = 'task-read-title';
+            title.textContent = 'Was der Workspace gelesen hat:';
+            more.appendChild(title);
             const body = document.createElement('div');
             body.innerHTML = read;
-            details.appendChild(body);
-            // Could not check: what was looked at is the diagnosis, show it.
-            if (status === 'unavailable') details.open = true;
-            box.appendChild(details);
+            more.appendChild(body);
         }
+
+        // The small links go at the end of the first line.
+        const last = line.lastElementChild;
+        const end = last && last.tagName === 'P' ? last : line;
+        const addToggle = (label, panelClass, panelContent) => {
+            const panel = document.createElement('div');
+            panel.className = 'task-more ' + panelClass;
+            panel.id = card.id + '-' + panelClass;
+            panel.hidden = true;
+            panel.appendChild(panelContent);
+            content.appendChild(panel);
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'task-more-toggle';
+            button.textContent = label;
+            button.setAttribute('aria-expanded', 'false');
+            button.setAttribute('aria-controls', panel.id);
+            end.appendChild(document.createTextNode(' '));
+            end.appendChild(button);
+        };
+        if (more.childNodes.length > 0) addToggle('Details', 'task-read', more);
         if (solution) {
-            const details = document.createElement('details');
-            details.className = 'task-solution';
-            const summary = document.createElement('summary');
-            summary.textContent = 'Lösung und Erklärung';
-            details.appendChild(summary);
             const body = document.createElement('div');
             body.innerHTML = solution;
-            details.appendChild(body);
-            box.appendChild(details);
+            addToggle('Lösung', 'task-solution', body);
         }
     }
 
     function setDisabled(card, disabled) {
-        card.querySelectorAll('button, input, textarea, select').forEach((el) => {
+        card.querySelectorAll('button:not(.task-reads-toggle), input, textarea, select').forEach((el) => {
             el.disabled = disabled;
         });
     }
@@ -266,7 +331,7 @@
             }
             showFeedback(card, data.status, data.message, data.solution, data.read, data.warnings);
             if (data.state) {
-                setBadge(card, data.state.status);
+                setBadge(card, data.state.status, data.status === 'correct' && card.dataset.status !== 'correct');
                 card.querySelector('.task-delete').hidden = false;
                 if (card.dataset.type === 'submit') showSubmission(card, data.state.answer);
             }
@@ -440,6 +505,29 @@
             watchPicks();
         }
     }
+
+    // »Details« and »Lösung« under a result: open below on request.
+    document.addEventListener('click', function (e) {
+        const toggle = e.target.closest('.task-more-toggle');
+        if (!toggle) return;
+        const panel = document.getElementById(toggle.getAttribute('aria-controls'));
+        if (!panel) return;
+        const open = toggle.getAttribute('aria-expanded') !== 'true';
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        panel.hidden = !open;
+    });
+
+    // (i) on a card: what the check reads, shown on request. Delegated, so
+    // it works on every card, also those whose form is set up later.
+    document.addEventListener('click', function (e) {
+        const info = e.target.closest('.task-reads-toggle');
+        if (!info) return;
+        const reads = document.getElementById(info.getAttribute('aria-controls'));
+        if (!reads) return;
+        const open = info.getAttribute('aria-expanded') !== 'true';
+        info.setAttribute('aria-expanded', open ? 'true' : 'false');
+        reads.hidden = !open;
+    });
 
     if (document.readyState === 'loading')
         document.addEventListener('DOMContentLoaded', setup);

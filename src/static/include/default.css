@@ -2006,7 +2006,6 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     font-size: 90%;
 }
 
-.color-mixer-gamut,
 .color-mixer-codes {
     grid-column: 1 / -1;
     margin: 0;
@@ -2014,6 +2013,22 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 
 .color-mixer-codes code {
     cursor: copy;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Fixed columns: the values change with every slider step and must not
+   push the table around. */
+.color-mixer-codes {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.color-mixer-codes th {
+    width: 11em;
+}
+
+.color-mixer-codes td {
+    overflow-wrap: anywhere;
 }
 
 @media (max-width: 640px) {
@@ -2044,21 +2059,38 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 }
 
 .teacher-note {
-    margin: 1em 0 1.5em;
+    margin: 1.2em 0 1.5em;
     border: 1px solid #d9c9ee;
     border-radius: 0.5em;
     background-color: #f7f2fc;
 }
 
-.teacher-note > summary {
-    padding: 0.5em 1em;
-    cursor: pointer;
-    font-weight: 600;
-    color: #5b2f8f;
+.teacher-note-body {
+    padding: 0.8em 1em 0.5em;
 }
 
-.teacher-note-body {
-    padding: 0 1em 0.5em;
+/* The button for the teacher note: at the right end of the page strip,
+   small, so the heading stays free on a projector. */
+.teacher-note-toggle {
+    margin-left: auto;
+    padding: 0.15em 0.75em;
+    border: 1px solid #d9c9ee;
+    border-radius: 1em;
+    background-color: #f7f2fc;
+    color: #5b2f8f;
+    font-size: 90%;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.teacher-note-toggle .bi {
+    margin-right: 0.4em;
+}
+
+.teacher-note-toggle:hover,
+.teacher-note-toggle[aria-expanded='true'] {
+    background-color: #ece1f8;
+    border-color: #b99ae0;
 }
 
 /* Long paths and names in tables wrap instead of making the page wider than
@@ -2175,34 +2207,68 @@ h3[id] {
 }
 
 .task-card {
-    margin: 1.5em 0;
-    padding: 1em 1.2em 0.8em;
+    margin: 1.75em 0;
+    padding: 1.1em 1.25em 0.9em;
     border: 1px solid #d6e2f5;
-    border-left: 4px solid #0b5ed7;
-    border-radius: 0.5em;
+    border-left: 5px solid #0b5ed7;
+    border-radius: 0.6em;
     background-color: #f8fbff;
+    box-shadow: 0 1px 3px rgba(11, 79, 179, 0.06);
+    transition: border-color 0.4s, background-color 0.4s;
+}
+
+/* The card says how far it is: green once solved or handed in, amber while
+   not yet; a guess (Vermutung) is violet until it is answered. */
+.task-card[data-prediction] {
+    border-left-color: #7b4fc9;
+}
+
+.task-card[data-status='correct'],
+.task-card[data-status='sent'] {
+    border-left-color: #1f9d55;
+    background-color: #f5fbf7;
+    border-color: #cfe9d9;
+}
+
+.task-card[data-status='wrong'],
+.task-card[data-status='stale'] {
+    border-left-color: #e0a030;
 }
 
 .task-head {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.3em 0.8em;
-    margin-bottom: 0.5em;
+    gap: 0.35em 0.7em;
+    margin-bottom: 0.6em;
 }
 
 .task-number {
-    padding: 0.1em 0.7em;
+    padding: 0.15em 0.75em;
     border-radius: 1em;
     background-color: #e7f0fe;
     color: #0b4fb3;
-    font-size: 85%;
-    font-weight: 600;
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    transition: background-color 0.4s, color 0.4s;
+}
+
+.task-card[data-prediction] .task-number {
+    background-color: #f1eafb;
+    color: #5b2f8f;
+}
+
+.task-card[data-status='correct'] .task-number,
+.task-card[data-status='sent'] .task-number {
+    background-color: #d9f2e3;
+    color: #146c43;
 }
 
 .task-title {
-    font-weight: 600;
-    font-size: 110%;
+    font-weight: 700;
+    font-size: 115%;
+    line-height: 1.3;
 }
 
 .task-status {
@@ -2210,8 +2276,20 @@ h3[id] {
 }
 
 .task-badge {
-    font-size: 85%;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15em 0.65em;
+    border-radius: 1em;
+    font-size: 80%;
+    font-weight: 600;
     white-space: nowrap;
+}
+
+.task-badge .task-tick {
+    width: 1em;
+    height: 1em;
+    margin-right: 0.3em;
+    vertical-align: 0;
 }
 
 .task-badge .bi,
@@ -2220,10 +2298,109 @@ h3[id] {
     margin-right: 0.35em;
 }
 
-.task-badge-correct { color: #146c43; }
-.task-badge-wrong { color: #8a5300; }
-.task-badge-sent { color: #0b4fb3; }
-.task-badge-stale { color: #8a5300; }
+.task-badge-correct { color: #146c43; background-color: #d9f2e3; }
+
+/* The tick of a solved task: a green disc with a white tick. Just solved,
+   the one next to the button pops in with a little wind-up, draws itself
+   and sends out a ring; the card glows once. */
+.task-tick {
+    width: 1.15em;
+    height: 1.15em;
+    margin-right: 0.35em;
+    vertical-align: -0.2em;
+    overflow: visible;
+}
+
+.task-tick-disc { fill: #1f9d55; }
+
+.task-tick-mark {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 18;
+}
+
+.task-done-tick {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    width: 1.9em;
+    height: 1.9em;
+}
+
+.task-done-tick .task-tick {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+.task-done-tick-new .task-tick {
+    transform-origin: 50% 50%;
+    animation: task-tick-pop 0.6s both;
+}
+
+.task-done-tick-new .task-tick-mark {
+    animation: task-tick-draw 0.35s cubic-bezier(0.65, 0, 0.35, 1) 0.32s both;
+}
+
+.task-done-tick-new::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid #1f9d55;
+    opacity: 0;
+    pointer-events: none;
+    animation: task-tick-ring 0.7s cubic-bezier(0.2, 0.6, 0.3, 1) 0.3s;
+}
+
+.task-card.task-solved-now {
+    animation: task-card-glow 1.2s ease-out;
+}
+
+@keyframes task-tick-pop {
+    0% {
+        transform: scale(0) rotate(-90deg);
+        animation-timing-function: cubic-bezier(0.2, 0, 0.4, 1);
+    }
+    55% {
+        transform: scale(1.25) rotate(8deg);
+        animation-timing-function: cubic-bezier(0.3, 0, 0.3, 1);
+    }
+    100% {
+        transform: scale(1) rotate(0);
+    }
+}
+
+@keyframes task-tick-draw {
+    from { stroke-dashoffset: 18; }
+    to { stroke-dashoffset: 0; }
+}
+
+@keyframes task-tick-ring {
+    0% { transform: scale(0.8); opacity: 0.7; }
+    100% { transform: scale(2.1); opacity: 0; }
+}
+
+@keyframes task-card-glow {
+    0% { box-shadow: 0 0 0 0 rgba(31, 157, 85, 0.45); }
+    100% { box-shadow: 0 0 0 0.9em rgba(31, 157, 85, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .task-done-tick-new .task-tick,
+    .task-done-tick-new .task-tick-mark,
+    .task-done-tick-new::before,
+    .task-card.task-solved-now,
+    .task-feedback {
+        animation: none;
+    }
+}
+.task-badge-wrong { color: #7a4a00; background-color: #fcebcc; }
+.task-badge-sent { color: #146c43; background-color: #d9f2e3; }
+.task-badge-stale { color: #7a4a00; background-color: #fcebcc; }
 
 .task-preview {
     padding: 0.1em 0.6em;
@@ -2233,8 +2410,12 @@ h3[id] {
     font-size: 80%;
 }
 
+.task-prompt {
+    line-height: 1.55;
+}
+
 .task-prompt > p:last-child {
-    margin-bottom: 0.6em;
+    margin-bottom: 0.75em;
 }
 
 .task-card .task-form {
@@ -2258,11 +2439,64 @@ h3[id] {
 }
 
 .task-options {
-    margin: 0.2em 0 0.4em;
+    margin: 0.2em 0 0.5em;
+    max-width: 42em;
 }
 
+/* Answers as tiles: the whole tile can be clicked, the choice stands out,
+   and after checking it turns green or amber. */
 .task-options .form-check {
-    margin-bottom: 0.25em;
+    position: relative;
+    margin-bottom: 0.45em;
+    padding: 0.55em 0.85em 0.55em 2.5em;
+    border: 1.5px solid #d6e2f5;
+    border-radius: 0.55em;
+    background-color: #fff;
+    transition: border-color 0.15s, background-color 0.15s, transform 0.1s;
+}
+
+.task-options .form-check-input {
+    position: relative;
+    z-index: 1;
+    margin-left: -1.65em;
+    cursor: pointer;
+}
+
+.task-options .form-check-label {
+    cursor: pointer;
+}
+
+.task-options .form-check-label::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+}
+
+.task-options .form-check:hover {
+    border-color: #8db8f5;
+}
+
+.task-options .form-check:active {
+    transform: scale(0.99);
+}
+
+.task-options .form-check:has(.form-check-input:checked) {
+    border-color: #0b5ed7;
+    background-color: #eef4ff;
+}
+
+.task-card[data-status='correct'] .task-options .form-check:has(.form-check-input:checked) {
+    border-color: #1f9d55;
+    background-color: #e8f6ee;
+}
+
+.task-card[data-status='wrong'] .task-options .form-check:has(.form-check-input:checked) {
+    border-color: #e0a030;
+    background-color: #fdf4e3;
+}
+
+.task-options .form-check:has(.form-check-input:disabled) {
+    opacity: 0.75;
 }
 
 .task-options-note,
@@ -2295,14 +2529,57 @@ h3[id] {
 }
 
 .task-feedback {
-    margin: 0.6em 0 0.2em;
-    padding: 0.6em 0.9em;
-    border-radius: 0.4em;
+    display: flex;
+    gap: 0.65em;
+    align-items: flex-start;
+    margin: 0.75em 0 0.2em;
+    padding: 0.7em 1em;
+    border-radius: 0.55em;
+    border-left: 4px solid transparent;
+    line-height: 1.5;
+    animation: task-feedback-in 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
 }
 
-.task-feedback > .task-message > p:last-child {
+.task-feedback-icon {
+    flex-shrink: 0;
+    font-size: 1.25em;
+    line-height: 1.2;
+}
+
+.task-feedback-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.task-feedback-correct .task-feedback-icon { color: #1f9d55; }
+.task-feedback-wrong .task-feedback-icon { color: #c98a10; }
+.task-feedback-sent .task-feedback-icon { color: #0b5ed7; }
+.task-feedback-invalid .task-feedback-icon,
+.task-feedback-unavailable .task-feedback-icon { color: #6c757d; }
+
+.task-feedback-correct { border-left-color: #1f9d55; }
+.task-feedback-wrong { border-left-color: #e0a030; }
+.task-feedback-sent { border-left-color: #0b5ed7; }
+.task-feedback-invalid,
+.task-feedback-unavailable { border-left-color: #adb5bd; }
+
+.task-feedback-correct .task-message > p:first-child {
+    font-weight: 600;
+}
+
+.task-feedback-correct .task-more-toggle {
+    font-weight: 400;
+}
+
+@keyframes task-feedback-in {
+    from { opacity: 0; transform: translateY(-0.4em); }
+    to { opacity: 1; transform: none; }
+}
+
+.task-feedback-body > .task-message > p:last-child {
     margin-bottom: 0;
 }
+
 
 .task-feedback-correct { background-color: #e3f4ea; }
 .task-feedback-wrong { background-color: #fdf0dc; }
@@ -2312,6 +2589,22 @@ h3[id] {
 
 .task-solution {
     margin-top: 0.5em;
+}
+
+.task-reads-toggle {
+    margin-left: auto;
+    border: 0;
+    background: none;
+    padding: 0.2em 0.3em;
+    line-height: 1;
+    color: #868e96;
+    font-size: 110%;
+    border-radius: 50%;
+}
+
+.task-reads-toggle:hover,
+.task-reads-toggle[aria-expanded='true'] {
+    color: #0b5ed7;
 }
 
 .task-reads,
@@ -2334,6 +2627,46 @@ h3[id] {
 .task-read {
     margin-top: 0.5em;
     font-size: 90%;
+}
+
+/* »Details« and »Lösung«: small and quiet, at the end of the result line. */
+.task-more-toggle {
+    margin-left: 0.3em;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #5c636a;
+    font-size: 85%;
+    text-decoration: underline;
+    text-decoration-color: rgba(92, 99, 106, 0.4);
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+}
+
+.task-more-toggle:hover,
+.task-more-toggle[aria-expanded='true'] {
+    color: #0b4fb3;
+    text-decoration-color: currentColor;
+}
+
+.task-more {
+    margin-top: 0.5em;
+    padding-top: 0.5em;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.task-more > div > :last-child,
+.task-more > :last-child {
+    margin-bottom: 0;
+}
+
+.task-read-title {
+    margin: 0.6em 0 0.2em;
+    font-weight: 600;
+}
+
+.task-read .task-warnings {
+    margin-top: 0.4em;
 }
 
 .task-read > summary {
@@ -2516,6 +2849,14 @@ h3[id] {
 
 .cb-often-wrong {
     background-color: #fdf0dc;
+}
+
+.class-board tbody.cb-own {
+    border-top: 2px dashed #ced4da;
+}
+
+.class-board tbody.cb-own .cb-name {
+    font-style: italic;
 }
 
 .class-board tfoot td {
@@ -3302,4 +3643,228 @@ h3[id] {
 
 [data-bs-theme=dark] .class-login-codes {
     background: #1b2b38;
+
+/* Hand-ins in the browser (submission_viewer.js): over the class page,
+   files on the left, the file or the running page on the right. */
+body.subview-open {
+    overflow: hidden;
+}
+
+.subview {
+    position: fixed;
+    inset: 0;
+    z-index: 1060;
+    display: flex;
+    padding: 2vh 2vw;
+    background-color: rgba(15, 23, 42, 0.55);
+}
+
+.subview-dialog {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    border-radius: 0.6em;
+    background-color: #fff;
+    box-shadow: 0 1em 3em rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.subview-head {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    padding: 0.6em 0.8em 0.6em 1.1em;
+    border-bottom: 1px solid #e3e7ee;
+}
+
+.subview-title {
+    flex: 1;
+    min-width: 0;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.subview-close {
+    border: 0;
+    background: none;
+    padding: 0.2em 0.4em;
+    font-size: 1.2em;
+    line-height: 1;
+    color: #5c636a;
+    border-radius: 0.3em;
+}
+
+.subview-close:hover {
+    background-color: #f1f3f5;
+}
+
+.subview-body {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+}
+
+.subview-nav {
+    flex: 0 0 16em;
+    overflow: auto;
+    padding: 0.5em 0.4em;
+    border-right: 1px solid #e3e7ee;
+    background-color: #f8f9fb;
+    font-size: 90%;
+}
+
+.subview-tree {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 0.8em;
+}
+
+.subview-nav > .subview-tree {
+    padding-left: 0;
+}
+
+.subview-tree summary {
+    cursor: pointer;
+    padding: 0.15em 0.3em;
+    color: #495057;
+    font-weight: 600;
+}
+
+.subview-file {
+    display: flex;
+    width: 100%;
+    gap: 0.5em;
+    padding: 0.2em 0.4em;
+    border: 0;
+    border-radius: 0.3em;
+    background: none;
+    text-align: left;
+    color: inherit;
+}
+
+.subview-file:hover {
+    background-color: #e9eef6;
+}
+
+.subview-file.active {
+    background-color: #dbe7fb;
+    color: #0b4fb3;
+    font-weight: 600;
+}
+
+.subview-file-name {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.subview-file-size {
+    color: #868e96;
+    font-size: 85%;
+    white-space: nowrap;
+}
+
+.subview-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: auto;
+}
+
+.subview-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.5em 0.8em;
+    border-bottom: 1px solid #e3e7ee;
+}
+
+.subview-path {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    padding: 0;
+    background: none;
+    color: #495057;
+    font-size: 85%;
+}
+
+.subview-frame {
+    flex: 1;
+    width: 100%;
+    min-height: 60vh;
+    border: 0;
+    background-color: #fff;
+}
+
+.subview-code {
+    margin: 0;
+    padding: 0.8em 0;
+    font-size: 85%;
+    line-height: 1.5;
+    counter-reset: line;
+    white-space: pre;
+    overflow: auto;
+    background: none;
+    color: #212529;
+}
+
+.subview-code code {
+    background: none;
+    color: inherit;
+    padding: 0;
+}
+
+.subview-line::before {
+    counter-increment: line;
+    content: counter(line);
+    display: inline-block;
+    width: 3.5em;
+    padding-right: 1em;
+    text-align: right;
+    color: #adb5bd;
+    user-select: none;
+}
+
+.subview-image {
+    max-width: 100%;
+    margin: 1em auto;
+    object-fit: contain;
+    background-image: repeating-conic-gradient(#eee 0% 25%, #fff 0% 50%);
+    background-size: 16px 16px;
+}
+
+.subview-pane > audio,
+.subview-pane > video {
+    margin: 1em;
+    max-width: calc(100% - 2em);
+}
+
+.subview-note {
+    margin: 1em;
+    color: #5c636a;
+}
+
+@media (max-width: 700px) {
+    .subview {
+        padding: 0;
+    }
+    .subview-dialog {
+        border-radius: 0;
+    }
+    .subview-body {
+        flex-direction: column;
+    }
+    .subview-nav {
+        flex: 0 0 auto;
+        max-height: 30vh;
+        border-right: 0;
+        border-bottom: 1px solid #e3e7ee;
+    }
 }

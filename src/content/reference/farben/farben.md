@@ -196,7 +196,6 @@ Drehst du nur am Farbton, bleibt die Farbe gleich hell und gleich kräftig. So f
 <label><span>H</span><input type='range' min='0' max='360' step='1' data-channel='h' aria-label='Farbton'><output></output></label>
 </fieldset>
 </div>
-<p class='color-mixer-gamut' hidden>Diese Farbe kann ein Bildschirm nicht zeigen. Angezeigt und unten ausgegeben ist die nächste, die er zeigen kann.</p>
 <table class='table table-sm reference-table color-mixer-codes'>
 <tr><th>CSS: Farbcode</th><td><code data-code='hex'></code></td></tr>
 <tr><th>CSS: Rot, Grün, Blau</th><td><code data-code='rgb'></code></td></tr>
