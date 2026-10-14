@@ -187,6 +187,9 @@ pre.copy-code {
     width: 2em;
     height: 2em;
     padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border: none;
     background: none;
     color: #e7e6e1;
@@ -1683,6 +1686,20 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 .scene-present-button:focus-visible {
     outline: 2px solid rgba(255, 255, 255, 0.6);
     outline-offset: 1px;
+}
+
+/* Icon-only buttons: without the margin that icons next to a word get,
+   and without the icon font's lowered baseline, the icon sits in the
+   middle. */
+.scene-present-button .bi,
+.code-copy .bi {
+    margin: 0;
+    line-height: 1;
+}
+
+.scene-present-button .bi::before,
+.code-copy .bi::before {
+    vertical-align: 0;
 }
 
 .scene-present-name {
