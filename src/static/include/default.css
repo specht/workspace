@@ -1217,7 +1217,62 @@ div.floatright > p {
     transform: translateY(calc(-100% - 1em));
 }
 
+/* The way back to the start page: a quiet house on the left edge of the
+   bar, like the icons in the menu. */
+.autotoc-home {
+    /* the same top padding and line as the chapter labels, so the house
+       sits on their line */
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    display: block;
+    padding: 1em 1.1em 0;
+    color: #6c757d;
+    text-decoration: none;
+}
+
+.autotoc-home:hover,
+.autotoc-home:focus-visible {
+    color: #212529;
+    text-decoration: none;
+}
+
+.autotoc-home .bi {
+    margin: 0;
+}
+
+/* Pages without chapters: the page's title instead. */
+.autotoc-title {
+    display: none;
+    padding: 1em 3.2em 1.5em;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: center;
+    font-weight: bold;
+}
+
+.autotoc.autotoc-no-items .autotoc-title {
+    display: block;
+}
+
+.autotoc.autotoc-no-items > .items,
+.autotoc.autotoc-no-items > .progress_spots_lg,
+.autotoc.autotoc-no-items > .progress_spots_sm,
+.autotoc.autotoc-no-items > .progress_sm {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .autotoc-home {
+        pointer-events: auto;
+    }
+}
+
 .autotoc > .items {
+    /* the same on both sides, so the chapters stay centred */
+    padding: 0 3.2em;
     overflow-x: auto;
     white-space: nowrap;
     text-align: center;
@@ -1335,7 +1390,7 @@ div.floatright > p {
     }
 
     .autotoc > .items {
-        padding: 1em 1em 0.6em;
+        padding: 1em 3em 0.6em;
     }
 
     .autotoc > .items > button {

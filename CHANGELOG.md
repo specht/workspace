@@ -443,6 +443,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   wenn der Workspace aus ist: in einem Lese-Container mit demselben Image,
   ohne Netz, der Ordner nur lesbar. Bisher hieß es dann »Starte zuerst
   deinen Workspace«, auch auf der Klassenseite.
+- Zurück zur Startseite, ohne zu scrollen: In der Leiste, die oben
+  erscheint, sobald die Kopfzeile aus dem Bild ist, steht links ein Haus.
+  Die Leiste gibt es jetzt auf jeder Seite; Seiten ohne Kapitel zeigen dort
+  ihren Titel. Solange sie verborgen ist, springt Tab nicht hinein.
 - Klassenseite: »Zurück« im Browser schließt die Anmelde-Codes und den
   Abgabe-Viewer, statt die Seite zu verlassen. »Vorlage aktuell?« steht auf
   einer Linie mit »Jetzt nachsehen«.

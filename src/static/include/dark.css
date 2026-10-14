@@ -40,6 +40,13 @@ html[data-bs-theme="dark"] {
         background-color: #121212;
         box-shadow: 0 0 1em rgba(0, 0, 0, 1.0);
     }
+    .autotoc-home {
+        color: #a3a29d;
+    }
+    .autotoc-home:hover,
+    .autotoc-home:focus-visible {
+        color: #ececec;
+    }
     .autotoc > .progress_spots_sm > div {
         background-color: rgba(255, 255, 255, 0.3);
     }

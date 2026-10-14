@@ -303,6 +303,8 @@ function install_autotoc() {
             if (window.scrollY > window.innerHeight * 0.3 || window.scrollY > 170) autotoc_showing = true;
         }
         autotoc.toggleClass('hidden', !autotoc_showing);
+        // Out of sight, out of the Tab order.
+        autotoc[0].inert = !autotoc_showing;
 
         document.body.classList.toggle(
             'autotoc-primary-visible',
@@ -310,7 +312,19 @@ function install_autotoc() {
         );
     }
 
-    if (got_autotoc) {
+    // Every page gets the bar once its header has scrolled away: the way
+    // back to the start page, and the chapters or else the page's title.
+    // Not on the start page itself: there is nowhere to go back to.
+    if (window.location.pathname === '/') {
+        autotoc.find('.autotoc-home').remove();
+        if (!got_autotoc) return;
+    }
+    if (!got_autotoc) {
+        const h1 = document.querySelector('.container h1, h1');
+        autotoc.addClass('autotoc-no-items');
+        autotoc.find('.autotoc-title').text(h1 ? h1.textContent.trim() : document.title);
+    }
+    if (autotoc.length) {
         window.addEventListener('scroll', function(e) {
             fix_autotoc();
         });
@@ -964,7 +978,9 @@ window.addEventListener('load', function() {
     #{look_in_bar_html}
     #{CONTENT}
 
-    <nav class="autotoc hidden" aria-label="Tutorialabschnitte">
+    <nav class="autotoc hidden" aria-label="Seitennavigation" inert>
+        <a class="autotoc-home" href="/" aria-label="Startseite" title="Startseite"><i class='bi bi-house' aria-hidden='true'></i></a>
+        <div class="autotoc-title"></div>
         <div class="items"></div>
         <div class="progress_spots_sm"></div>
         <div class="progress_spots_lg"></div>
