@@ -32,7 +32,7 @@ Wenn alles geklappt hat, siehst du links im Explorer unter anderem den Ordner `p
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann das
 # geöffnete BIF-Projekt im Explorer
 show-left-sidebar
-clone-start: https://github.com/specht/bif.git @ b5215fa72545f05f00d2ba23865c4e2eeff691a2
+clone-start: https://github.com/specht/bif.git @ 9b8abe88b071b5f7acdc86252519a9e6eb92a3b6
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter

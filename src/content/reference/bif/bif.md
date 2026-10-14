@@ -146,6 +146,26 @@ export const path = "pages-meine-geschichte";
 
 Der Name muss genau so geschrieben sein wie im Explorer, in Anführungszeichen. Bilder, Töne und Videos der Geschichte gehören ebenfalls in diesen Ordner.
 
+<!-- tutorial-screenshot
+# Die BIF-Vorlage klonen und öffnen, damit die BIF Authoring Tools
+# laufen, dann »Go Live«; die Seiten schreiben die Rezepte selbst
+show-left-sidebar
+clone-start: https://github.com/specht/bif.git @ 9b8abe88b071b5f7acdc86252519a9e6eb92a3b6
+press: Enter
+wait-for-input-value: /workspace/
+press: Enter
+wait-for-text: Would you like to open the repository?
+click: Open
+wait-for-text: pages-starter
+wait-for-file: bif/node_modules/markdown-it/LICENSE
+wait-for-file: bif/.story-tools/analysis.json
+go-live
+open-file: config.js
+close-tab: Welcome
+-->
+
+<img class='full' src='bif-ordner.webp' alt='Im Explorer liegen der Ordner pages-starter und die Datei config.js; in config.js steht export const path = "pages-starter";'>
+
 <!-- part: probleme -->
 <!-- short: Unten unter »Problems« nennt BIF Datei und Zeile; was die Meldungen bedeuten, steht in der Tabelle. -->
 ## Wenn BIF ein Problem meldet
@@ -192,19 +212,6 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
 
 <div class='row'>
     <!-- tutorial-screenshot
-    # Die BIF-Vorlage klonen und öffnen, damit die BIF Authoring Tools
-    # laufen, dann »Go Live«; die Seiten schreiben die Rezepte selbst
-    show-left-sidebar
-    clone-start: https://github.com/specht/bif.git @ b5215fa72545f05f00d2ba23865c4e2eeff691a2
-    press: Enter
-    wait-for-input-value: /workspace/
-    press: Enter
-    wait-for-text: Would you like to open the repository?
-    click: Open
-    wait-for-text: pages-starter
-    wait-for-file: bif/node_modules/markdown-it/LICENSE
-    wait-for-file: bif/.story-tools/analysis.json
-    go-live
     write-file: pages-starter/1.md <- file:theme-default.md.txt
     wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
     tab: preview
@@ -376,8 +383,13 @@ In Markdown kannst du das Bild so einfügen:
 Der Text in den eckigen Klammern beschreibt das Bild und hilft zum Beispiel Menschen, die einen Screenreader verwenden.
 
 <!-- tutorial-screenshot
+# Die ganze Geschichte, damit der Weg ins Büro führt (die Gruppen-
+# Kommentare sieht nur der Graph, nicht die Leseansicht)
 write-file: pages-starter/1.md <- file:theme-default.md.txt
+write-file: pages-starter/2.md <- file:2-with-groups.md.txt
 write-file: pages-starter/3.md <- file:3-with-image.md.txt
+write-file: pages-starter/4.md <- file:4-with-groups.md.txt
+write-file: pages-starter/5.md <- file:5-with-groups.md.txt
 write-file: pages-starter/images/key.jpg <- file:key.jpg
 wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
 tab: preview
@@ -390,6 +402,7 @@ sleep: 0.5
 click: Sieh im Büro nach.
 wait-for-text: Gehe zurück in den Flur.
 move-mouse: No problems
+click: Fit graph
 sleep: 1.5
 -->
 
