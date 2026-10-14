@@ -55,23 +55,6 @@ viewport: 1600x900
 hook: pause
 click: selector:#program-picker .picker-button
 click: selector:#program-picker .picker-filter
-type: 09-fire.asm
-sleep: 1
-click: selector:#program-picker .picker-option
-sleep: 2
-click: selector:#clock
-press: End
-click: selector:#run
-sleep: 10
-crop-element: #screen-box
--->
-<figure><img src='gallery-fire.webp' alt='Ein Feuer in Rot, Orange und Gelb, grob gepixelt.'><figcaption><code>09-fire.asm</code> Feuer: passt samt Bildschirm in 256 Byte, das Programm ist 80 Byte lang</figcaption></figure>
-<!-- tutorial-screenshot
-tab: preview
-viewport: 1600x900
-hook: pause
-click: selector:#program-picker .picker-button
-click: selector:#program-picker .picker-filter
 type: 14-mandelbrot.asm
 sleep: 1
 click: selector:#program-picker .picker-option
@@ -99,7 +82,7 @@ click: selector:#run
 sleep: 10
 crop-element: #screen-box
 -->
-<figure><img src='gallery-inferno.webp' alt='Ein feines, flackerndes Flammenmeer von Weiß über Gelb bis Rot.'><figcaption><code>15-inferno.asm</code> Inferno: dasselbe Feuer, viel feiner</figcaption></figure>
+<figure><img src='gallery-inferno.webp' alt='Ein feines, flackerndes Flammenmeer von Weiß über Gelb bis Rot.'><figcaption><code>15-inferno.asm</code> Inferno: ein Feuer, in dem jedes Pixel die Hitze seiner Nachbarn aufnimmt</figcaption></figure>
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1600x900
