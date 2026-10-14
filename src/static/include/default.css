@@ -1610,6 +1610,12 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     margin-bottom: 0.2em;
 }
 
+.color-mixer-kind {
+    margin-left: 0.4em;
+    font-weight: normal;
+    color: var(--bs-secondary-color);
+}
+
 .color-mixer-sliders label {
     display: grid;
     grid-template-columns: 1.4em 1fr 4.5em;

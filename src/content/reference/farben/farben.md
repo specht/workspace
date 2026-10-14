@@ -165,7 +165,19 @@ Eine Palette ist eine Auswahl von Farben, die gut zusammenpassen. Die Cling-Pale
 <!-- part: mischen -->
 ### Farben mischen
 
-Mit den Reglern mischst du eine Farbe auf zwei Arten. **Rot, Grün und Blau** ist die Art, wie der Bildschirm sie leuchten lässt. **OKLCH** beschreibt dieselbe Farbe so, wie wir sie sehen: als Helligkeit (L), Buntheit (C, englisch chroma) und Farbton (H, englisch hue, ein Winkel auf dem Farbkreis von 0 bis 360). Drehst du nur am Farbton, bleibt die Farbe gleich hell. So findest du zum Beispiel mehrere Farben, die nebeneinander gleich kräftig wirken.
+Mit den Reglern mischst du eine Farbe auf zwei Arten:
+
+- **Rot, Grün und Blau** ist technisch: So viel Licht gibt der Bildschirm in jeder der drei Farben ab. Was dabei herauskommt, sieht man den Zahlen schlecht an. `rgb(0, 255, 0)` ist ein sehr helles Grün, `rgb(0, 0, 255)` ein dunkles Blau, obwohl in beiden genau ein Anteil ganz aufgedreht ist.
+- **OKLCH** ist an unserer Wahrnehmung ausgerichtet: Jeder Regler ändert genau eine Eigenschaft, die wir an einer Farbe sehen, und gleiche Schritte sehen ungefähr gleich groß aus.
+
+<table class='table table-sm reference-table'>
+<tr><th>Achse</th><th>bedeutet</th><th>von … bis</th></tr>
+<tr><td><strong>L</strong> (lightness)</td><td>Helligkeit</td><td><code>0%</code> schwarz bis <code>100%</code> weiß</td></tr>
+<tr><td><strong>C</strong> (chroma)</td><td>Buntheit: wie kräftig die Farbe ist</td><td><code>0</code> grau bis etwa <code>0.32</code> beim kräftigsten Magenta; wie viel ein Bildschirm zeigen kann, hängt von Helligkeit und Farbton ab</td></tr>
+<tr><td><strong>H</strong> (hue)</td><td>Farbton, ein Winkel auf dem Farbkreis</td><td>etwa <code>30</code> Rot, <code>70</code> Orange, <code>110</code> Gelb, <code>140</code> Grün, <code>195</code> Türkis, <code>265</code> Blau, <code>330</code> Magenta, <code>360</code> wieder Rot</td></tr>
+</table>
+
+Drehst du nur am Farbton, bleibt die Farbe gleich hell und gleich kräftig. So findest du zum Beispiel mehrere Farben, die nebeneinander gleich stark wirken. Bei RGB geht das nicht: Wer dort nur eine Zahl ändert, ändert meist Helligkeit, Buntheit und Farbton zugleich.
 
 <div class='color-mixer' data-start='#31a8e0'>
 <div class='color-mixer-preview'>
@@ -173,12 +185,12 @@ Mit den Reglern mischst du eine Farbe auf zwei Arten. **Rot, Grün und Blau** is
 <label class='color-mixer-hex'>Farbcode <input type='text' spellcheck='false' autocomplete='off' maxlength='7' aria-label='Farbcode'></label>
 </div>
 <div class='color-mixer-sliders'>
-<fieldset><legend>Rot, Grün, Blau</legend>
+<fieldset><legend>Rot, Grün, Blau <span class='color-mixer-kind'>technisch: Licht des Bildschirms</span></legend>
 <label><span>R</span><input type='range' min='0' max='255' step='1' data-channel='r' aria-label='Rot'><output></output></label>
 <label><span>G</span><input type='range' min='0' max='255' step='1' data-channel='g' aria-label='Grün'><output></output></label>
 <label><span>B</span><input type='range' min='0' max='255' step='1' data-channel='b' aria-label='Blau'><output></output></label>
 </fieldset>
-<fieldset><legend>OKLCH</legend>
+<fieldset><legend>OKLCH <span class='color-mixer-kind'>wahrnehmungsgerecht: Helligkeit, Buntheit, Farbton</span></legend>
 <label><span>L</span><input type='range' min='0' max='100' step='0.5' data-channel='l' aria-label='Helligkeit'><output></output></label>
 <label><span>C</span><input type='range' min='0' max='0.37' step='0.005' data-channel='c' aria-label='Buntheit'><output></output></label>
 <label><span>H</span><input type='range' min='0' max='360' step='1' data-channel='h' aria-label='Farbton'><output></output></label>
