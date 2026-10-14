@@ -13,6 +13,18 @@
       "workspace_look": "4.138.0-ls366",
       "output_sha256": "9326688e9d35cbf7954fd4e1ef61be3fbe85309a2d868224a94e9ede54e0e285"
     },
+    "side-by-side.webp": {
+      "state_hash": "add2acf9319e50808a368bc2bffdc60a407b1797e00dbbfbaaa6d05ba3416579",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "332b2454941dfbd137a3031b088439a8773b4c41491edc1c54ef0276376812ef"
+    },
+    "side-by-side-bewerbung.webp": {
+      "state_hash": "83ab4b1e2b3e95904d31275594b655dabcb75c7bdaf2bc6f850f5883184d29b8",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "2156ec1ea90e0af78cfb680c98fb223e7770fd45d7c7072b4094fe2aec28bb0a"
+    },
     "fonts/latin-modern-roman.webp": {
       "state_hash": "bce97ba0bdfc1e0b86d2d8f84df26d2d402e6f6a7e3c85e31fe359eaba3679ca",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
@@ -144,18 +156,6 @@
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "workspace_look": "4.138.0-ls366",
       "output_sha256": "6ae4ef10ff56788865511b6adb4d000fa4e25e16a89cfe12c016ebf781e966c8"
-    },
-    "side-by-side.webp": {
-      "state_hash": "add2acf9319e50808a368bc2bffdc60a407b1797e00dbbfbaaa6d05ba3416579",
-      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "332b2454941dfbd137a3031b088439a8773b4c41491edc1c54ef0276376812ef"
-    },
-    "side-by-side-bewerbung.webp": {
-      "state_hash": "83ab4b1e2b3e95904d31275594b655dabcb75c7bdaf2bc6f850f5883184d29b8",
-      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "2156ec1ea90e0af78cfb680c98fb223e7770fd45d7c7072b4094fe2aec28bb0a"
     },
     "cv.webp": {
       "state_hash": "bb325a10b136e6bad1681f9b217f8a61d09b48aed59e1c63da7f1001190fadda",
