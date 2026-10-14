@@ -29,3 +29,17 @@ test('pages with chapters have a bar with »Nach oben«', async ({ page, e2eEmai
   await scrollDown(page);
   await expect(page.locator('nav.autotoc')).toHaveClass(/hidden/);
 });
+
+// A Handbuch part shown in an activity is one box: its sub-headings are h4
+// and stay out of the page's own table of contents.
+test('included Handbuch parts stay out of the page TOC', async ({ page, e2eEmail }, testInfo) => {
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/static-website');
+  const inBox = page.locator('.reference-include').getByRole('heading', { name: 'Bildformate' });
+  await expect(inBox).toHaveCount(1);
+  expect(await inBox.evaluate(h => h.tagName)).toBe('H4');
+  const toc = await page.evaluate(() =>
+    ((window as any).autotoc_secondary_headings as HTMLElement[]).map(h => h.textContent!.trim()));
+  expect(toc).toContain('Von der URL zum Dateinamen');
+  expect(toc).not.toContain('Bildformate');
+});

@@ -6,7 +6,7 @@ kind: reference
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2,h3">
+    data-levels="h2,h3,h4">
 </div>
 
 # CSS: Aussehen
@@ -17,9 +17,13 @@ Mit CSS legst du fest, wie der Inhalt aussieht: Farben, Schrift, Abstände, Rahm
 
 Alles auf dieser Seite gilt für Webseiten und für Folien mit Shower. Jedes Beispiel zeigt rechts, wie es aussieht; mit dem Knopf <svg class='icon-slide' viewBox='0 0 24 24' aria-hidden='true'><rect x='3' y='4' width='18' height='12' rx='1.5'/><path d='M12 16v3.5M8.5 21l3.5-1.5 3.5 1.5M7 8.5h6M7 11.5h9'/></svg> in der Ecke des Bildes siehst du es als Folie.
 
+## Grundlagen
+
+Wie eine CSS-Regel aufgebaut ist und wie sie die richtigen Elemente findet.
+
 <!-- part: regeln -->
 <!-- short: CSS steht in `styles.css`: Selektor, dann in geschweiften Klammern Eigenschaft und Wert, `h2 { color: #75507b; }`. -->
-## CSS-Regeln
+### CSS-Regeln
 
 CSS schreibst du in eine eigene Datei, `styles.css`. So bleibt der Inhalt in `index.html` und die Gestaltung in `styles.css`.
 
@@ -72,7 +76,7 @@ variants: folie
 
 <div class='tutorial-preview-clear'></div>
 
-### Zum Ausprobieren: style
+#### Zum Ausprobieren: style
 
 Für einen schnellen Versuch kannst du CSS auch direkt an ein Element schreiben, im Attribut `style`:
 
@@ -86,7 +90,7 @@ Das ist praktisch zum Ausprobieren. Soll dieselbe Gestaltung an mehreren Stellen
 
 <!-- part: selektoren -->
 <!-- short: `p` meint alle Absätze, `.name` alle Elemente mit `class="name"`, `main p` Absätze in `main`, `h1, h2` beide, `a:hover` einen Link unter der Maus. -->
-## Selektoren
+### Selektoren
 
 Der Selektor bestimmt, wofür eine Regel gilt:
 
@@ -108,9 +112,13 @@ Ein Element kann mehrere Klassen haben, durch Leerzeichen getrennt: `class="hinw
 
 <!-- /part -->
 
+## Gestalten
+
+Farben, Schrift, Abstände und Bilder.
+
 <!-- part: farben -->
 <!-- short: `color` färbt den Text, `background` den Hintergrund; achte auf Kontrast. Farbcodes und den Farbmischer findest du unter »Farben angeben«. -->
-## Farben
+### Farben
 
 Zwei Eigenschaften brauchst du ständig:
 
@@ -159,7 +167,7 @@ Färbst du einen Hintergrund, leg auch die Textfarbe fest, und achte auf Kontras
 
 <!-- part: schrift -->
 <!-- short: `font-size` für die Größe (`32px`, `120%`), `line-height` für den Zeilenabstand, `font-weight: bold` für fett, `text-align: center` zum Zentrieren, `font-family` für die Schriftart. -->
-## Schrift
+### Schrift
 
 <!-- screenshot-code: schrift-html -->
 ```html
@@ -206,7 +214,7 @@ Musst du die Schrift auf einer Folie immer kleiner machen, steht zu viel darauf.
 
 <div class='tutorial-preview-clear'></div>
 
-### Die Schriftart
+#### Die Schriftart
 
 `font-family` wählt die Schriftart. Weil nicht jeder Rechner jede Schrift hat, nennst du zum Schluss eine allgemeine Familie, die immer geht:
 
@@ -218,7 +226,7 @@ body {
 
 `serif` ist eine Schrift mit kleinen Endstrichen wie in Büchern, `sans-serif` eine ohne, `monospace` eine, in der alle Zeichen gleich breit sind, wie im Code. Nimm höchstens zwei Schriftarten: eine für Überschriften, eine für den Text.
 
-### Eine eigene Schriftart
+#### Eine eigene Schriftart
 
 Eine besondere Schrift muss als Datei in deinem Projekt liegen; sonst fehlt sie auf jedem anderen Rechner und ganz ohne Internet. So holst du sie dir:
 
@@ -246,7 +254,7 @@ Auch Schriften haben Lizenzen. Die Schriften von Google Fonts darfst du verwende
 
 <!-- part: abstaende -->
 <!-- short: `padding` ist der Abstand innen, `margin` der Abstand außen; `border` zieht einen Rahmen, `border-radius` rundet die Ecken, `box-shadow` wirft einen Schatten. -->
-## Abstände, Rahmen und Schatten
+### Abstände, Rahmen und Schatten
 
 Jedes Element ist ein Kasten. Um seinen Inhalt herum liegen, von innen nach außen:
 
@@ -299,7 +307,7 @@ variants: folie
 
 <!-- part: bildgroesse -->
 <!-- short: Gib Bildern nur eine Höhe oder eine Breite; mit beiden zusammen kommt `object-fit: cover` dazu, sonst wird das Bild verzerrt. -->
-## Bildgröße und Zuschnitt
+### Bildgröße und Zuschnitt
 
 Ohne Angabe ist ein Bild so groß wie die Datei, oft viel zu groß. Gib ihm eine Höhe **oder** eine Breite; die andere Seite passt sich an, damit nichts verzerrt:
 
@@ -323,7 +331,7 @@ variants: folie
 
 <div class='tutorial-preview-clear'></div>
 
-### Breite und Höhe zugleich
+#### Breite und Höhe zugleich
 
 Gibst du beides an und es passt nicht zum Bild, wird es verzerrt:
 
@@ -364,7 +372,7 @@ variants: folie
 
 <div class='tutorial-preview-clear'></div>
 
-### Ein festes Seitenverhältnis
+#### Ein festes Seitenverhältnis
 
 Sollen mehrere Bilder gleich geformt sein, gib ihnen eine Höhe und ein Seitenverhältnis mit `aspect-ratio`; `object-fit: cover` schneidet sie passend zu:
 

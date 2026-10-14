@@ -18,10 +18,8 @@ Die Shortcuts aus dem <a href='/keyboard'>Keyboard-Tutorial</a> zum Nachschlagen
 Auf einem Mac nimmst du <kbd>Cmd</kbd> statt <kbd>Strg</kbd> und <kbd>Option</kbd> statt <kbd>Alt</kbd>. Wo sich ein Shortcut nach System oder Tastatur unterscheidet, steht es dabei.
 </div>
 
-## Im Text bewegen
-
 <!-- part: bewegen -->
-### Den Cursor bewegen
+## Den Cursor bewegen
 
 <table class='table table-sm reference-table'>
 <tr><th>Tasten</th><th>Was passiert</th><th>wo</th></tr>
@@ -36,10 +34,8 @@ Auf einem Mac nimmst du <kbd>Cmd</kbd> statt <kbd>Strg</kbd> und <kbd>Option</kb
 </table>
 <!-- /part -->
 
-## Markieren
-
 <!-- part: markieren -->
-### Text auswählen
+## Text auswählen
 
 <table class='table table-sm reference-table'>
 <tr><th>Tasten</th><th>Was passiert</th><th>wo</th></tr>
@@ -78,10 +74,8 @@ Auf einem Mac nimmst du <kbd>Cmd</kbd> statt <kbd>Strg</kbd> und <kbd>Option</kb
 </table>
 <!-- /part -->
 
-## Suchen und Ersetzen
-
 <!-- part: suchen -->
-### In einer Datei suchen
+## In einer Datei suchen
 
 <table class='table table-sm reference-table'>
 <tr><th>Tasten</th><th>Was passiert</th><th>wo</th></tr>
@@ -96,10 +90,8 @@ Auf einem Mac nimmst du <kbd>Cmd</kbd> statt <kbd>Strg</kbd> und <kbd>Option</kb
 </table>
 <!-- /part -->
 
-## Mehrere Stellen auf einmal
-
 <!-- part: mehrere-cursor -->
-### Mehrere Cursor
+## Mehrere Cursor
 
 Mit mehreren Cursorn tippst du an vielen Stellen gleichzeitig. Das gibt es in Visual Studio Code, nicht in den meisten anderen Programmen.
 
@@ -113,10 +105,8 @@ Mit mehreren Cursorn tippst du an vielen Stellen gleichzeitig. Das gibt es in Vi
 </table>
 <!-- /part -->
 
-## Code
-
 <!-- part: code -->
-### Kommentieren und einrücken
+## Kommentieren und einrücken
 
 <table class='table table-sm reference-table'>
 <tr><th>Tasten</th><th>Was passiert</th></tr>
@@ -126,10 +116,8 @@ Mit mehreren Cursorn tippst du an vielen Stellen gleichzeitig. Das gibt es in Vi
 </table>
 <!-- /part -->
 
-## Visual Studio Code bedienen
-
 <!-- part: fenster -->
-### Dateien, Fenster und Befehle
+## Dateien, Fenster und Befehle
 
 <table class='table table-sm reference-table'>
 <tr><th>Tasten</th><th>Was passiert</th></tr>

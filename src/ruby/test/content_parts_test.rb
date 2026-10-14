@@ -92,6 +92,39 @@ class ContentPartsTest < Minitest::Test
         assert_match(/data-label='[^']+ › Repository klonen'/, out)
     end
 
+    # A part's sub-headings come out as h4 whether the part is an h2 or an
+    # h3 on its reference page; code blocks are left alone.
+    def test_included_sub_headings_are_h4_however_deep_the_part_sits
+        File.write(File.join(@reference, 'workspace', 'workspace.md'), <<~MD)
+            # Workspace
+
+            <!-- part: flach -->
+            ## Flach
+
+            ### Unterpunkt
+
+            ```bash
+            # kein Titel
+            ```
+            <!-- /part -->
+
+            ## Gruppe
+
+            <!-- part: tief -->
+            ### Tief
+
+            #### Unterpunkt
+            <!-- /part -->
+        MD
+        %w[flach tief].each do |part|
+            out = ContentParts.expand_includes("_include(workspace##{part})", page_dir: @page, reference_root: @reference)
+            assert_match(/^#### Unterpunkt$/, out, part)
+            refute_match(/^#{'#' * 3} Unterpunkt$|^#{'#' * 5} Unterpunkt$/, out, part)
+        end
+        out = ContentParts.expand_includes('_include(workspace#flach)', page_dir: @page, reference_root: @reference)
+        assert_includes out, "```bash\n# kein Titel\n```"
+    end
+
     def test_include_with_done_names_the_task_that_folds_it
         out = ContentParts.expand_includes('_include(workspace#klonen, done: geklont)', page_dir: @page, reference_root: @reference)
         assert_includes out, "data-title='Repository klonen' data-done='geklont'"

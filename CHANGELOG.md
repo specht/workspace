@@ -498,6 +498,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Handbuch »Workspace«: neuer Teil »Erweiterung installieren«, mit der Frage
   »Trust Publisher & Install«. »Farben« nennt die RGB-Schreibweise von
   Pixelflow Canvas.
+- Inhaltsverzeichnisse aufgeräumt. Handbuch »HTML« (Aufbau einer Seite,
+  Text, Bilder) und »CSS« (Grundlagen, Gestalten) gliedern sich in Gruppen;
+  »Tastatur-Shortcuts« und »Terminal« haben keine Abschnitte mehr mit nur
+  einem Unterpunkt. Bei den Aktivitäten fassen »Vorbereitung« (LaTeX) und
+  »TIC-80 kennenlernen« den Anfang zusammen; »Statische Website« ordnet
+  »Ein eigenes Bild verwenden« unter HTML ein, Flexbox und kleine
+  Bildschirme unter CSS. Anker und Teile bleiben gleich.
+- Ein Handbuch-Kasten in einer Aktivität erscheint nicht mehr im
+  Inhaltsverzeichnis der Seite; seine Zwischenüberschriften stehen immer
+  eine Stufe unter dem Abschnitt, egal wie tief der Teil im Handbuch sitzt.
 
 - Behoben: »Git kennt dich« schlug fehl, obwohl `git config --global` Name
   und E-Mail kannte. Die Prüfung lief mit dem `HOME` des Images (`/config`)

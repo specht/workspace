@@ -23,13 +23,15 @@ LaTeX wird häufig an Universitäten, in der Wissenschaft und bei technischen Be
 
 In diesem Tutorial lernst du die Grundlagen von LaTeX anhand einer **Bewerbung**, eines **Lebenslaufs** und einer **schriftlichen Ausarbeitung** kennen.
 
-## Repository klonen
+## Vorbereitung
+
+### Repository klonen
 
 Für diese Anleitung brauchst du die LaTeX-Vorlage:
 
 _include(workspace#repository-klonen)
 
-## LaTeX Workshop installieren
+### LaTeX Workshop installieren
 
 Um uns die Arbeit mit LaTeX zu erleichtern, verwenden wir die Erweiterung »LaTeX Workshop«. Diese Erweiterung bietet viele nützliche Funktionen, wie z. B. das automatische Compilieren von LaTeX-Dokumenten, Syntaxhervorhebung und Vorschauen. Klicke dazu auf das Extensions-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste und suche nach »LaTeX Workshop«. Klicke auf »Install«, um die Erweiterung zu installieren. Visual Studio Code fragt dich dann, ob du dem Herausgeber »James-Yu« vertraust; bestätige mit »Trust Publisher & Install«.
 

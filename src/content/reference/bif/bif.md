@@ -6,7 +6,7 @@ kind: reference
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2,h3">
+    data-levels="h2,h3,h4">
 </div>
 
 # Interaktive Geschichten mit BIF

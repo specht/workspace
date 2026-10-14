@@ -401,6 +401,7 @@ function install_secondary_autotoc() {
                 && !heading.closest('.autotoc-secondary')
                 && !heading.closest('.header')
                 && !heading.closest('.menu')
+                && !heading.closest('.reference-include')
                 && heading.textContent.trim().length > 0;
         });
 

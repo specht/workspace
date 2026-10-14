@@ -8,7 +8,7 @@ reference: [workspace]
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2,h3">
+    data-levels="h2,h3,h4">
 </div>
 
 # Ein Spiel in 64 KB
@@ -19,13 +19,15 @@ TIC-80 ist ein kleiner Computer, den es nur als Programm gibt: ein Bildschirm mi
 
 <img class='full' src='stars-run.webp' alt='Das Spiel »Star Catcher«: Gelbe Sterne fallen über einen dunklen Himmel, unten steht eine kleine blaue Figur, oben stehen Punkte und Leben.'>
 
-## Was ist TIC-80?
+## TIC-80 kennenlernen
+
+### Was ist TIC-80?
 
 TIC-80 ist eine »Fantasy-Konsole«: ein ausgedachter Computer im Stil der Heimcomputer aus den 1980er-Jahren. Seine Grenzen sind gewollt. Mit nur 16 Farben und einem kleinen Bildschirm musst du dich entscheiden, was wirklich wichtig ist, und ein fertiges Spiel passt in eine einzige Datei, die »Cartridge« (Steckmodul).
 
 Programmiert wird in Lua, einer kleinen Sprache, die auch in vielen großen Spielen steckt. Was du über Variablen, `if` und Schleifen aus anderen Sprachen kennst, findest du hier wieder.
 
-## TIC-80 starten
+### TIC-80 starten
 
 <a class='btn btn-primary' href='/tic80/' target='_blank'><svg class='bi' width='16' height='16' viewBox='0 0 16 16' fill='currentColor' aria-hidden='true' style='width: 1em; height: 1em; vertical-align: -0.125em; margin-right: 0.55em;'><path fill-rule='evenodd' d='M2 .5h11A1.5 1.5 0 0 1 14.5 2v9a1.5 1.5 0 0 1-1.5 1.5H2A1.5 1.5 0 0 1 .5 11V2A1.5 1.5 0 0 1 2 .5Zm0 1a.5.5 0 0 0-.5.5v1h12V2a.5.5 0 0 0-.5-.5H2Zm11.5 2.5h-12v7a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5V4Z'/><path d='M5 5.5h1V8H5zM9 5.5h1V8H9zM4.5 9h1v.5h4V9h1v1.5h-6z'/><path d='M3 12.5h2V15H3zM10 12.5h2V15h-2z'/><path d='M14.5 5H16v3h-1.5V7h.5V6h-.5z'/></svg>TIC-80 öffnen</a>
 
@@ -42,7 +44,7 @@ sleep: 1
 
 Das ist die **Konsole**. Hier gibst du Befehle ein, zum Beispiel `help`, und drückst <kbd>Enter</kbd>.
 
-## Das erste Programm
+### Das erste Programm
 
 Gib in der Konsole ein:
 
@@ -105,7 +107,7 @@ Die wichtigsten Tasten:
 TIC-80 kennt keine Umlaute: <code>ä</code>, <code>ö</code>, <code>ü</code> und <code>ß</code> erscheinen als Kästchen. Schreib in Texten für den Bildschirm <code>ae</code>, <code>oe</code>, <code>ue</code> und <code>ss</code>, oder gleich Englisch, wie das Spiel auf dieser Seite.
 </div>
 
-## Speichern im Workspace
+### Speichern im Workspace
 
 Gib in der Konsole ein:
 
@@ -151,7 +153,7 @@ Arbeite an einem Spiel entweder in TIC-80 oder in Visual Studio Code, nicht in b
 
 _task(gespeichert)
 
-## Der Bildschirm
+### Der Bildschirm
 
 Der Bildschirm ist 240 Pixel breit und 136 Pixel hoch. Der Punkt (0, 0) ist oben links; `x` wird nach rechts größer, `y` nach **unten**. Farben sind Nummern von 0 bis 15:
 

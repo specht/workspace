@@ -103,6 +103,29 @@ module ContentParts
         text.to_s.strip.gsub(/[`*_]/, '').gsub(/<[^>]*>/, '').strip
     end
 
+    # Sub-headings of an included part sit one level below an activity's
+    # section (h3), so h4, however deep the part sits on its reference page.
+    INCLUDED_SUB_LEVEL = 4
+
+    def self.heading_level(text)
+        line = text.lines.find { |l| !l.strip.empty? }
+        line && line[/\A(#+)\s/, 1]&.size
+    end
+
+    # Moves every heading (outside ``` blocks) by delta levels, within h2..h6.
+    def self.shift_headings(text, delta)
+        return text if delta.zero?
+
+        fence = false
+        text.lines.map do |line|
+            fence = !fence if line.start_with?('```')
+            next line if fence || line !~ /\A(#+)(\s)/
+
+            level = [[$1.size + delta, 2].max, 6].min
+            '#' * level + line.sub(/\A#+/, '')
+        end.join
+    end
+
     def self.strip_leading_heading(text)
         lines = text.lines
         index = lines.index { |line| !line.strip.empty? }
@@ -150,7 +173,9 @@ module ContentParts
             source = File.read(file, encoding: 'UTF-8')
             title = heading_text(text)
             label = [page_title(source), title].compact.uniq.join(' › ')
+            level = heading_level(text)
             text = strip_leading_heading(text)
+            text = shift_headings(text, INCLUDED_SUB_LEVEL - (level + 1)) if level
             text = rewrite_relative_sources(text, from_dir: File.dirname(file), to_dir: page_dir)
             text.scan(VARIABLE).flatten.uniq.each do |name|
                 warn&.call("_include(#{slug}##{part}): ${#{name}} has no value on this page") if variables[name].nil?

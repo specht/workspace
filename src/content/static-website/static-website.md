@@ -7,7 +7,7 @@ reference: [workspace, html, css, layout]
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2,h3">
+    data-levels="h2,h3,h4">
 </div>
 
 <!-- Die Beispiele aus dem Handbuch erscheinen hier als Webseite (media_variants.js). -->
@@ -305,7 +305,7 @@ Wikimedia Commons erlaubt, seine Bilder so direkt einzubinden, aber die Lizenz g
 
 _task(alt-text)
 
-## Ein eigenes Bild verwenden
+### Ein eigenes Bild verwenden
 
 Bis jetzt kommt das Axolotl-Foto direkt von Wikimedia Commons. Spannender wird deine Webseite natürlich mit einem eigenen Bild. Das ist im browserbasierten Workspace etwas ungewohnt: Die Datei liegt zunächst auf **deinem Computer oder im Browser**, dein Projekt liegt aber im **Workspace**. Die Bilddatei muss also erst in den Explorer von VS Code gelangen.
 
@@ -313,7 +313,7 @@ Lege die Bilddatei **neben `index.html`**:
 
 _include(html#bilddateien)
 
-### Von der URL zum Dateinamen
+#### Von der URL zum Dateinamen
 
 Sobald die Bilddatei neben `index.html` liegt, brauchst du nicht mehr die lange Internetadresse. Angenommen, deine Datei heißt `mein-bild.jpg`. Dann änderst du:
 
@@ -428,7 +428,7 @@ Mehr zum Gestalten: _uses(selektoren, farben, schrift, abstaende, wirkt-nicht)
 
 <div class='tutorial-preview-clear'></div>
 
-## Layout mit Flexbox
+### Layout mit Flexbox
 
 Unsere Seite sieht jetzt schon absichtlicher gestaltet aus, aber Bild und Text stehen immer noch untereinander. Auf einem breiten Bildschirm wäre es schön, wenn das Bild links und der Text rechts stehen würden. Dafür verwenden wir **Flexbox**.
 
@@ -528,7 +528,7 @@ Probiere bei <code>gap</code> und <code>width</code> andere Werte aus. Was passi
 
 <div class='tutorial-preview-clear'></div>
 
-## Auf kleinen Bildschirmen
+### Auf kleinen Bildschirmen
 
 Ziehe dein Browserfenster jetzt schmaler. Irgendwann wird die Seite unangenehm, weil Bild und Text sich zu wenig Platz teilen. Webseiten werden auf sehr unterschiedlichen Geräten geöffnet, deshalb sollte sich das Layout an die verfügbare Breite anpassen.
 
