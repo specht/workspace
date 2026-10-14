@@ -32,16 +32,16 @@
       "output_sha256": "090f8e2097f04b944351da1e0ed246373f789fde13cf578561bd29003299d88b"
     },
     "go-live.webp": {
-      "state_hash": "d10a647f499178af9f50e8180c4bb2e8d34c999a6b348130d5e85d29466bc7bf",
+      "state_hash": "2762233f729750721a557c21879302dcfcfd297ee4ae1c5876feffacae0c8540",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "workspace_look": "4.138.0-ls366",
-      "output_sha256": "e6b94af0b84589365d3c4cad025be77f84546a682e5731749320107de7eaebbf"
+      "output_sha256": "5b231be3afde0e5961e4417169590a97aa110e7c1d33cb6c93d9a0dd76db077c"
     },
     "stop-live.webp": {
-      "state_hash": "6a09c41c93a47dde70ab6f9ad75eb43660ca2768f3ae20d2b560b371dc8c82a5",
+      "state_hash": "68de5d95f9aedb2c3ce107605fa569e9b1b6f99034c577e9ebfcc7911ca2a4d9",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "workspace_look": "4.138.0-ls366",
-      "output_sha256": "bb09615b5b49ed78f117c42b675d1d21a4b90534663febb15c8be303ae87e6ef"
+      "output_sha256": "34aab96767a4e903021b091c8c47a6f79e00458b7e1bb6d129d236ea5c28589a"
     }
   }
 }

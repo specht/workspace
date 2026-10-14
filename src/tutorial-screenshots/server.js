@@ -130,13 +130,14 @@ const MOUSE_POINTERS = Object.freeze({
             'fill="#fff" stroke="#000" stroke-width="1.2" stroke-linejoin="round"/>',
     },
     pointer: {
-        hotspot: [8.5, 2],
-        svg: '<path d="M8.5 2 C9.4 2 10 2.7 10 3.5 V10.2 C10 9.4 10.6 8.8 11.5 8.8 ' +
+        // A short index finger, like the hand cursors of desktop systems.
+        hotspot: [8.5, 4.6],
+        svg: '<path d="M8.5 4.6 C9.4 4.6 10 5.3 10 6.1 V10.2 C10 9.4 10.6 8.8 11.5 8.8 ' +
             'C12.4 8.8 13 9.4 13 10.2 V10.8 C13 10 13.6 9.5 14.5 9.5 C15.4 9.5 16 10.1 16 10.9 ' +
             'V11.5 C16 10.8 16.6 10.3 17.4 10.3 C18.3 10.3 18.9 10.9 18.9 11.7 V16.5 ' +
             'C18.9 19.6 16.9 22 13.9 22 H11.6 C9.8 22 8.6 21.2 7.6 19.8 L4.1 14.6 ' +
-            'C3.6 13.9 3.8 12.9 4.5 12.5 C5.2 12.1 6.1 12.3 6.6 13 L7 13.6 V3.5 ' +
-            'C7 2.7 7.6 2 8.5 2 Z" fill="#fff" stroke="#000" stroke-width="1.1" ' +
+            'C3.6 13.9 3.8 12.9 4.5 12.5 C5.2 12.1 6.1 12.3 6.6 13 L7 13.6 V6.1 ' +
+            'C7 5.3 7.6 4.6 8.5 4.6 Z" fill="#fff" stroke="#000" stroke-width="1.1" ' +
             'stroke-linejoin="round"/>' +
             '<path d="M10 10.2 V14.5 M13 10.8 V14.5 M16 11.5 V14.5" stroke="#000" ' +
             'stroke-width="1" stroke-linecap="round"/>',
@@ -919,7 +920,9 @@ async function parseTutorial(markdown, markdownPath) {
             resolved.terminalScrollBack = recipe.terminalScrollBack;
         }
         if (recipe.showMouse) {
-            resolved.showMouse = true;
+            // The version of the pointer drawing: a new one re-renders only
+            // the shots that show the pointer.
+            resolved.showMouse = 2;
         }
         if (recipe.sharpCanvas) {
             resolved.sharpCanvas = true;
@@ -2309,38 +2312,68 @@ function rememberMousePosition(page, box) {
 
 // The pointer's shape follows the CSS cursor under it, as on a real screen:
 // a hand over links and buttons, an I-beam over text input, else the arrow.
-async function installMousePointer(page) {
+// show-mouse: which pointer the screen would show where the mouse is, from
+// the CSS cursor under it (a hand over buttons and links, an I-beam over
+// text, otherwise the arrow).
+async function mousePointerShape(page) {
     if (!mousePosition || mousePosition.page !== page) {
         throw new Error(
             'show-mouse needs move-mouse, click or hold on this tab after the last ' +
             'action that moves the mouse itself',
         );
     }
-    await page.evaluate(({ x, y, pointers }) => {
-        let cursor = 'auto';
+    const cursor = await page.evaluate(({ x, y }) => {
         for (let element = document.elementFromPoint(x, y); element; element = element.parentElement) {
-            cursor = getComputedStyle(element).cursor;
-            if (cursor !== 'auto') break;
+            const value = getComputedStyle(element).cursor;
+            if (value !== 'auto') return value;
         }
-        const pointer = pointers[cursor] || pointers.arrow;
-        const overlay = document.createElement('div');
-        overlay.id = 'hackschule-tutorial-screenshot-mouse';
-        overlay.style.cssText = `position: fixed; z-index: 2147483647; pointer-events: none;
-            left: ${x - pointer.hotspot[0]}px; top: ${y - pointer.hotspot[1]}px;
-            width: 24px; height: 24px;
-            filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.35));`;
-        overlay.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">${pointer.svg}</svg>`;
-        document.documentElement.appendChild(overlay);
-        return new Promise(resolve => {
-            requestAnimationFrame(() => requestAnimationFrame(resolve));
-        });
-    }, { x: mousePosition.x, y: mousePosition.y, pointers: MOUSE_POINTERS });
+        return 'auto';
+    }, { x: mousePosition.x, y: mousePosition.y });
+    return MOUSE_POINTERS[cursor] ? cursor : 'arrow';
 }
 
-async function removeMousePointer(page) {
-    await page.evaluate(() => {
-        document.getElementById('hackschule-tutorial-screenshot-mouse')?.remove();
+// The pointer is drawn into the picture afterwards: rendered on its own,
+// with its shadow, on a transparent background at the picture's scale.
+// Where it reaches past an edge, the picture grows with transparent
+// pixels, so the pointer is never cut off. clip: the captured area in CSS
+// pixels; width, height: the picture in pixels.
+async function addMousePointer(pngPath, { clip, width, height, shape }) {
+    const pointer = MOUSE_POINTERS[shape];
+    const scale = width / clip.width;
+    const pad = 4;
+    const box = 24 + 2 * pad;
+    const pointerPath = `${pngPath}.pointer.png`;
+    const page = await context.browser().newPage({
+        viewport: { width: box, height: box },
+        deviceScaleFactor: scale,
     });
+    try {
+        await page.setContent(`<html><body style="margin: 0; background: transparent;">
+            <div style="position: absolute; left: ${pad}px; top: ${pad}px; width: 24px; height: 24px;
+                filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.35));">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">${pointer.svg}</svg>
+            </div></body></html>`);
+        await page.screenshot({ path: pointerPath, omitBackground: true });
+    } finally {
+        await page.close();
+    }
+    const size = Math.round(box * scale);
+    const left = Math.round((mousePosition.x - pointer.hotspot[0] - pad - clip.x) * scale);
+    const top = Math.round((mousePosition.y - pointer.hotspot[1] - pad - clip.y) * scale);
+    const growLeft = Math.max(0, -left);
+    const growTop = Math.max(0, -top);
+    const newWidth = Math.max(width, left + size) + growLeft;
+    const newHeight = Math.max(height, top + size) + growTop;
+    try {
+        await execFileAsync('convert', [
+            pngPath, '-background', 'none', '-gravity', 'NorthWest',
+            '-extent', `${newWidth}x${newHeight}-${growLeft}-${growTop}`,
+            pointerPath, '-geometry', `+${left + growLeft}+${top + growTop}`, '-composite',
+            `PNG32:${pngPath}`,
+        ]);
+    } finally {
+        await fs.rm(pointerPath, { force: true }).catch(() => {});
+    }
 }
 
 // Frames count too: VS Code shows webviews (the ER-Werkstatt, the Markdown
@@ -2794,9 +2827,7 @@ async function captureShot(shot, tutorialDirectory) {
             if (shot.tab === 'workspace') {
                 await installWorkspaceScreenshotStyle(page);
             }
-            if (shot.showMouse) {
-                await installMousePointer(page);
-            }
+            const pointerShape = shot.showMouse ? await mousePointerShape(page) : null;
 
             // Capture through CDP directly. The page keeps its viewport/zoom
             // layout, while clip.scale asks Chromium to render a larger native
@@ -2833,6 +2864,15 @@ async function captureShot(shot, tutorialDirectory) {
                 DEFAULT_PROFILE.captureScale,
             );
             await fs.writeFile(pngPath, png);
+            if (pointerShape) {
+                await addMousePointer(pngPath, {
+                    clip: { x: leftPixels / metrics.deviceScaleFactor, y: topPixels / metrics.deviceScaleFactor,
+                        width: widthPixels / metrics.deviceScaleFactor },
+                    width: actual.width,
+                    height: actual.height,
+                    shape: pointerShape,
+                });
+            }
 
             const cwebpArgs = [
                 '-quiet',
@@ -2878,9 +2918,6 @@ async function captureShot(shot, tutorialDirectory) {
                 tutorialDirectory,
             );
         } finally {
-            if (shot.showMouse) {
-                await removeMousePointer(page).catch(() => {});
-            }
             await fs.rm(
                 pngPath,
                 { force: true },
