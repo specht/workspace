@@ -429,6 +429,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   später immer wieder in <kbd>Strg</kbd><kbd>P</kbd> auf. Sie sind jetzt
   ausgeschlossen (`**/.hs-kbd-tutorial/**` in `files.exclude`); VS Code
   nimmt sie beim nächsten Start auch aus dem gespeicherten Verlauf.
+- C#: Die Seite übersetzt und startet Programme mit `dotnet run Datei.cs`
+  (.NET 10) statt mit Mono (`mcs`, `mono`). Workspaces starten mit
+  `DOTNET_CLI_TELEMETRY_OPTOUT=1`: .NET schickt keine Nutzungsdaten an
+  Microsoft, zeigt kein Begrüßungsbanner und legt kein HTTPS-Zertifikat an.
 - Das Profil hat keinen Abschnitt »Notizen für Lehrkräfte« mehr; die
   Notizen stehen oben auf den Aktivitäten. `/lehrmaterial` führt zum
   »Einstieg für Lehrkräfte«.

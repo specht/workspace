@@ -35,9 +35,9 @@ C# wird häufig für die Entwicklung von Windows-Anwendungen, Webanwendungen und
 
 ## Hello, world!
 
-Um ein C#-Programm zu starten, benötigst du eine .NET-Laufzeitumgebung. Diese ist in der Regel auf Windows-Systemen vorinstalliert. Für den Workspace werden wir die freie .NET-Implementierung Mono verwenden, die plattformübergreifend auf Windows, macOS und Linux läuft.
+C#-Programme laufen auf .NET, einer freien Plattform von Microsoft für Windows, macOS und Linux. Im Workspace ist .NET 10 installiert, mit dem Befehl `dotnet`.
 
-C#-Programme werden in Textdateien mit der Endung `.cs` geschrieben Diese Dateien werden dann mit dem C#-Compiler `mcs` kompiliert, um ausführbare Dateien zu erzeugen. Diese haben die Endung `.exe` und sie können unter Linux und macOS mit dem Mono-Laufzeitumgebung ausgeführt werden.
+C#-Programme werden in Textdateien mit der Endung `.cs` geschrieben. Der Befehl `dotnet run` übersetzt eine solche Datei mit dem C#-Compiler und führt das Ergebnis gleich aus.
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
@@ -106,8 +106,7 @@ crop-bottom: 40%
 
 ### Kompilieren und ausführen
 
-Bevor wir das Programm ausführen können, müssen wir es kompilieren.
-Dadurch wird der Quelltext des Programms in eine ausführbare Datei übersetzt, die von der .NET-Laufzeitumgebung ausgeführt werden kann.
+Bevor das Programm laufen kann, muss es kompiliert werden: Der Compiler übersetzt den Quelltext in eine Form, die die .NET-Laufzeitumgebung ausführen kann.
 
 Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
@@ -119,44 +118,31 @@ sleep: 0.5
 
 <img class='full' src='code-with-terminal.webp' alt=''>
 
-Wir rufen jetzt den C#-Compiler `mcs` auf, um das Programm zu übersetzen:
+Übersetze und starte das Programm mit:
 
 ```bash
-mcs HelloWorld.cs
+dotnet run HelloWorld.cs
 ```
 
 <div class='hint'>
-Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>mcs He</code> und drücke <kbd>Tab</kbd>, um den Dateinamen automatisch zu <code>HelloWorld.csd</code> vervollständigen zu lassen.
+Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>dotnet run He</code> und drücke <kbd>Tab</kbd>, um den Dateinamen automatisch zu <code>HelloWorld.cs</code> vervollständigen zu lassen.
 </div>
 
-Wenn du keinen Fehler gemacht hast, wird das Programm erfolgreich kompiliert und die Datei `HelloWorld.exe` wird im selben Verzeichnis erstellt. Du kannst dies überprüfen, indem du dir die Dateien im aktuellen Verzeichnis mit `ls` oder `ls -l` anzeigen lässt:
+Beim ersten Mal dauert es ein paar Sekunden, weil `dotnet` das Programm erst kompiliert. Dann erscheint `Hello, World!`:
 
 <!-- tutorial-screenshot
+# Einmal vorweg, damit das Bild zeigt, wie es sich danach anfühlt
+terminal-run: dotnet run HelloWorld.cs
+terminal-wait-for-prompt: 120
 press: Control+l
-terminal-run: mcs HelloWorld.cs
-terminal-wait-for-prompt
-terminal-run: ls -l
-terminal-wait-for-prompt
+terminal-run: dotnet run HelloWorld.cs
+terminal-wait-for-prompt: 60
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ls.webp' alt=''>
+<img class='full' src='hello.webp' alt='Im Terminal: dotnet run HelloWorld.cs gibt »Hello, World!« aus.'>
 
-Die Datei `HelloWorld.class` ist die ausführbare Datei. Sie kann allerdings unter Linux nicht direkt gestartet werden, sondern muss mit der Mono-Laufzeitumgebung ausgeführt werden. Um das Programm auszuführen, gib folgenden Befehl ein:
-
-```bash
-mono HelloWorld.exe
-```
-
-Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben. Du kannst beide Schritte auch in einem Befehl kombinieren:
-
-```bash
-mcs HelloWorld.cs && mono HelloWorld.exe
-```
-
-<div class='hint'>
-Die Zeichenkombination <code>&amp;&amp;</code> sorgt dafür, dass der zweite Befehl nur ausgeführt wird, wenn der erste erfolgreich war.
-</div>
+Wo ist das übersetzte Programm? `dotnet` legt es nicht neben deine Datei, sondern in einen eigenen Ordner, und benutzt es beim nächsten Mal wieder, solange du `HelloWorld.cs` nicht änderst. Deshalb startet es beim zweiten Mal sofort. Änderst du die Datei, übersetzt `dotnet run` sie von selbst neu.
 
 ### Fehler finden und beheben
 
@@ -166,31 +152,31 @@ Wenn du einen Fehler im Code machst, wird der Compiler eine Fehlermeldung ausgeb
         Console.WriteLin("Hello, World!");
 ```
 
-Speichere die Datei und führe den Compiler erneut aus:
+Speichere die Datei und starte das Programm erneut:
 
 ```bash
-mcs HelloWorld.cs
+dotnet run HelloWorld.cs
 ```
 
 <div class='hint'>
 Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugeben. So kannst du schnell dein Programm testen, nachdem du es verändert hast.
 </div>
 
-Der Compiler sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
+Statt das Programm zu starten, gibt der Compiler eine Fehlermeldung aus, die dir hilft, den Fehler zu finden:
 
 <!-- tutorial-screenshot
 # Der Fehler aus dem Text; die lange Meldung braucht das ganze Terminal
 write-file: HelloWorld.cs <- file:error-HelloWorld.cs
 terminal-maximize
 press: Control+l
-terminal-run: mcs HelloWorld.cs
-terminal-wait-for-prompt
+terminal-run: dotnet run HelloWorld.cs
+terminal-wait-for-prompt: 60
 crop-terminal-lines: auto
 -->
 
 <img class='full' src='hello-error.webp' alt=''>
 
-Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 7) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
+Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Die Stelle steht am Anfang der Meldung: `HelloWorld.cs(7,17)` heißt Zeile 7, Zeichen 17. Danach folgt der Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
 ## Primfaktorzerlegung
 
@@ -200,21 +186,17 @@ Erstelle eine neue Datei mit <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd> und schre
 
 _include_file(Factor.cs, cs)
 
-Speichere die Datei unter dem Namen `Factor.cs`. Kompiliere das Programm:
+Speichere die Datei unter dem Namen `Factor.cs` und starte sie:
 
 ```bash
-mcs Factor.cs
+dotnet run Factor.cs
 ```
-
-Falls du keine Fehlermeldung erhältst, kannst du das Programm ausführen und testen:
 
 <!-- tutorial-screenshot
 write-file: Factor.cs <- file:Factor.cs
 terminal-maximize
 press: Control+l
-terminal-run: mcs Factor.cs
-terminal-wait-for-prompt
-terminal-run: mono Factor.exe
+terminal-run: dotnet run Factor.cs
 wait-for-text: number:
 terminal-run: 123
 terminal-wait-for-prompt
@@ -235,20 +217,17 @@ Erstelle eine neue Datei und schreibe den folgenden Code hinein:
 
 _include_file(BubbleSort.cs, cs)
 
-Speichere die Datei unter dem Namen `BubbleSort.cs`. Kompiliere das Programm:
+Speichere die Datei unter dem Namen `BubbleSort.cs` und starte sie:
 
 ```bash
-mcs BubbleSort.cs
+dotnet run BubbleSort.cs
 ```
-Falls du keine Fehlermeldung erhältst, kannst du das Programm ausführen und testen:
 
 <!-- tutorial-screenshot
 write-file: BubbleSort.cs <- file:BubbleSort.cs
 press: Control+l
-terminal-run: mcs BubbleSort.cs
-terminal-wait-for-prompt
-terminal-run: mono BubbleSort.exe
-terminal-wait-for-prompt
+terminal-run: dotnet run BubbleSort.cs
+terminal-wait-for-prompt: 60
 crop-terminal-lines: auto
 -->
 
