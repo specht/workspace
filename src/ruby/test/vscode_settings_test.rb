@@ -24,6 +24,14 @@ class VscodeSettingsTest < Minitest::Test
         assert merged['files.exclude']['mine'], 'own exclude entries stay'
     end
 
+    # Files the keyboard tutorial opened stay out of Quick Open: VS Code
+    # drops history entries that match the excludes, also stored ones, and
+    # ».hs-kbd-tutorial« alone matches only the folder, not files in it.
+    def test_keyboard_tutorial_files_leave_the_history
+        merged = VscodeSettings.merge({ 'files.exclude' => { '.hs-kbd-tutorial' => true } }, DEFAULTS, SUPERSEDED)
+        assert merged['files.exclude']['**/.hs-kbd-tutorial/**']
+    end
+
     def test_own_choices_stay
         own_tools = [{ 'name' => 'mine', 'command' => 'xelatex', 'args' => ['%DOC%'] }]
         merged = VscodeSettings.merge({ 'latex-workshop.latex.tools' => own_tools,

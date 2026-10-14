@@ -252,6 +252,12 @@ pre.copy-code {
     border-radius: 0;
 }
 
+/* Code blocks of 20 lines or more (CodeHighlight): the same size as the
+   listings from _include_file, 90 % of the usual code. */
+pre.long-code {
+    font-size: calc(93% * 0.9);
+}
+
 .rouge-gutter {
     padding-right: 1em;
     user-select: none;

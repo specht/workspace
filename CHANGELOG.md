@@ -425,6 +425,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Prüfart `css` kennt `style_tags: true` und liest dann nur den
   `<style>`-Block, etwa einer Svelte-Komponente. `html` versteht
   Svelte-Ausdrücke wie `disabled={state < 3}` in Attributen.
+- Behoben: Dateien, die das Keyboard-Tutorial geöffnet hatte, tauchten
+  später immer wieder in <kbd>Strg</kbd><kbd>P</kbd> auf. Sie sind jetzt
+  ausgeschlossen (`**/.hs-kbd-tutorial/**` in `files.exclude`); VS Code
+  nimmt sie beim nächsten Start auch aus dem gespeicherten Verlauf.
+- Lange Code-Blöcke (ab 20 Zeilen) stehen in derselben etwas kleineren
+  Schrift wie die Listings aus `_include_file`.
 - Die Kurzzeile eines eingeklappten Handbuch-Kastens zeigt Tasten als
   `<kbd>`, wie im übrigen Text; vorher standen die Tags als Text da.
 - Handbuch »Workspace«: neuer Teil »Erweiterung installieren«, mit der Frage

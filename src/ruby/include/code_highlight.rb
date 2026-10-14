@@ -4,6 +4,9 @@ require_relative 'cypher_lexer'
 require_relative 'anaglyph_scene_lexer'
 
 module CodeHighlight
+    # From this many lines on, a code block is set a little smaller.
+    LONG_CODE_LINES = 20
+
     # Fenced code blocks: Rouge by the fence's language. A fence without a
     # language is plain text, like ```text. Used for page content and for the
     # task cards, which are inserted after the page is rendered.
@@ -25,6 +28,9 @@ module CodeHighlight
             wrap = flags.include?('wrap')
 
             pre['class'] = [pre['class'], 'wrap-code'].compact.join(' ') if wrap
+            # Long listings in a slightly smaller font, like the ones from
+            # _include_file (a table with line numbers, .rouge-table).
+            pre['class'] = [pre['class'], 'long-code'].compact.join(' ') if !lineno && code.text.lines.size >= LONG_CODE_LINES
             pre['class'] = [pre['class'], 'copy-code'].compact.join(' ') if flags.include?('copy')
 
             formatter = if lineno

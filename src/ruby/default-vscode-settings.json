@@ -10,6 +10,7 @@
     "files.dialog.defaultPath": "/workspace",
     "files.exclude": {
         ".hs-kbd-tutorial": true,
+        "**/.hs-kbd-tutorial/**": true,
         ".extensions": true,
         ".exam-extensions": true,
         ".ssh": true,

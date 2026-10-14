@@ -47,4 +47,12 @@ class CodeHighlightTest < Minitest::Test
         assert_includes out, 'wrap-code'
         refute_includes html("<pre><code class='bash'>ls</code></pre>"), 'copy-code'
     end
+    # Long listings get the smaller font of the _include_file listings.
+    def test_long_code
+        long = (1..20).map { |i| "x = #{i}" }.join("\n")
+        short = (1..19).map { |i| "x = #{i}" }.join("\n")
+        assert_includes html("<pre><code class=\"ruby\">#{long}\n</code></pre>"), 'long-code'
+        refute_includes html("<pre><code class=\"ruby\">#{short}\n</code></pre>"), 'long-code'
+        refute_includes html("<pre><code class=\"ruby_lineno\">#{long}\n</code></pre>"), 'long-code'
+    end
 end
