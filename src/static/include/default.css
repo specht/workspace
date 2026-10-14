@@ -4,6 +4,14 @@ body {
     font-family: 'IBM Plex Sans', sans-serif;
     font-size: 13pt;
     margin-bottom: var(--footer-reserved-space);
+    /* The browser hyphenates German text (<html lang='de'>), so long
+       compounds do not leave holes on narrow screens. */
+    hyphens: auto;
+}
+
+/* Code, keys and input never get a hyphen that is not really there. */
+code, pre, kbd, samp, input, textarea, .monaco-editor, .CodeMirror {
+    hyphens: manual;
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {
@@ -1017,9 +1025,7 @@ div.floatright > p {
                 -webkit-box-orient: vertical;
             }
 
-            /* Justified like a column, the label at the right edge above
-               it; the browser hyphenates German (lang='de'), so long words
-               do not leave holes. */
+            /* Justified like a column under the title's row. */
             .abstract {
                 display: -webkit-box;
                 overflow: hidden;
@@ -1027,7 +1033,6 @@ div.floatright > p {
                 font-size: 0.95rem;
                 line-height: 1.4;
                 text-align: justify;
-                hyphens: auto;
                 text-overflow: ellipsis;
                 -webkit-line-clamp: 3;
                 -webkit-box-orient: vertical;

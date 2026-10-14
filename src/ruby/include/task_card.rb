@@ -10,8 +10,7 @@ module TaskCard
     PLACEHOLDER = /^[ \t]*_task\(\s*([a-z0-9][a-z0-9-]*)\s*\)[ \t]*$/
 
     # Replaces each _task(id) line by a numbered slot marker. Returns the new
-    # Markdown and the list of ids in page order. Slot markers use numbers
-    # only, so the hyphenation pass cannot change them.
+    # Markdown and the list of ids in page order.
     # Fenced code blocks are left alone, so pages can show the placeholder.
     def self.mark_slots(markdown)
         ids = []

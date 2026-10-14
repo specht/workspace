@@ -1257,7 +1257,7 @@ class Main < Sinatra::Base
     def self.content_catalog_signature
         digest = Digest::SHA256.new
         ['/src/content/sections.yaml', '/src/content/lehrmaterial/sections.yaml',
-         REFERENCE_SECTIONS_PATH, '/src/content/hyphenation.txt'].each do |path|
+         REFERENCE_SECTIONS_PATH].each do |path|
             next unless File.exist?(path)
             digest.update(File.binread(path))
             digest.update("\0")
@@ -1292,22 +1292,11 @@ class Main < Sinatra::Base
     end
 
     # Renders the Markdown of a content file to a Nokogiri document:
-    # hyphenation, Redcarpet, reference include boxes, cached images and
-    # videos, external links and syntax highlighting. The block may change the
-    # Markdown after hyphenation (the Kenney gallery uses this).
-    def self.render_content_markdown(markdown, path, redcarpet, hyphenation_map)
-        parts = markdown.split(/(```.*?```)/m)
-        markdown = parts.map.with_index do |part, i|
-            if i.odd?
-                part
-            else
-                hyphenation_map.each_pair do |a, b|
-                    part.gsub!(a, b)
-                end
-                part
-            end
-        end.join
-
+    # Redcarpet, reference include boxes, cached images and videos, external
+    # links and syntax highlighting. The block may change the Markdown first
+    # (the Kenney gallery uses this). Hyphenation is the browser's
+    # (hyphens: auto in default.css).
+    def self.render_content_markdown(markdown, path, redcarpet)
         markdown = yield(markdown) if block_given?
         html = redcarpet.render(markdown)
         root = Nokogiri::HTML(html)
@@ -1436,12 +1425,8 @@ class Main < Sinatra::Base
 
     # Replaces the task slots left by TaskCard.mark_slots with task cards,
     # numbered in page order.
-    def self.insert_task_cards(root, task_slots, page_tasks, redcarpet, hyphenation_map, path)
-        render = lambda do |md|
-            text = md.to_s.dup
-            hyphenation_map.each_pair { |a, b| text.gsub!(a, b) }
-            redcarpet.render(text)
-        end
+    def self.insert_task_cards(root, task_slots, page_tasks, redcarpet, path)
+        render = lambda { |md| redcarpet.render(md.to_s) }
         number = 0
         root.css('div.task-slot').each do |slot|
             id = task_slots[slot['data-slot'].to_i]
@@ -1470,11 +1455,6 @@ class Main < Sinatra::Base
         partial = !only_slug.nil?
         parse_started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         STDERR.puts(partial ? "Parsing content: #{only_slug}..." : "Parsing content...")
-        hyphenation_map = {}
-        File.read('/src/content/hyphenation.txt').split("\n").each do |line|
-            line.strip!
-            hyphenation_map[line.gsub('-', '')] = line.gsub('-', '&shy;')
-        end
         # Keep the student and teacher catalogs independent while sharing the
         # Markdown renderer, image cache, and screenshot generator.
         student_sections = YAML.load(File.read('/src/content/sections.yaml'))
@@ -1500,11 +1480,6 @@ class Main < Sinatra::Base
             parsed_sections[section['key']] = {}
             section.each_pair do |k, v|
                 parsed_sections[section['key']][k.to_sym] = v
-            end
-            if parsed_sections[section['key']][:description]
-                hyphenation_map.each_pair do |a, b|
-                    parsed_sections[section['key']][:description].gsub!(a, b)
-                end
             end
             parsed_sections[section['key']][:entries] = []
             (section['entries'] || []).each do |path|
@@ -1682,9 +1657,7 @@ class Main < Sinatra::Base
             end
             slug = entry[:slug] || File.basename(path, '.md').sub(/^[0-9]+\-/, '').sub('+', '')
             parsed_content_paths[slug] = path unless entry[:kenney]
-            root = render_content_markdown(markdown, path, redcarpet, hyphenation_map) do |md|
-                # Keep the potentially huge gallery out of the hyphenation pass above.
-                # Otherwise every hyphenation-map entry rescans all preview <img> tags.
+            root = render_content_markdown(markdown, path, redcarpet) do |md|
                 if entry[:kenney]
                     gallery = StringIO.open do |io|
                         io.puts "<div class='kenney-gallery'>"
@@ -1698,7 +1671,7 @@ class Main < Sinatra::Base
                 end
                 md
             end
-            insert_task_cards(root, task_slots, page_tasks, redcarpet, hyphenation_map, path) unless task_slots.empty?
+            insert_task_cards(root, task_slots, page_tasks, redcarpet, path) unless task_slots.empty?
             # Reference pages: every h2 and h3 gets an anchor for the Handbuch index.
             outline = parsed_sections.dig(section, :catalog) == 'reference' ? ReferenceIndex.anchor_headings(root) : nil
             search_sections = outline ? ReferenceIndex.search_sections(root) : nil
@@ -1739,7 +1712,7 @@ class Main < Sinatra::Base
             # page, shown only to teachers by teacher_note_panel.
             note_path = File.join(File.dirname(path), ContentParts::NOTE_FILE)
             if !entry[:kenney] && File.file?(note_path)
-                note_root = render_content_markdown(File.read(note_path), note_path, redcarpet, hyphenation_map)
+                note_root = render_content_markdown(File.read(note_path), note_path, redcarpet)
                 parsed_content[slug][:teacher_note] = (note_root.at_css('body') || note_root).inner_html
             end
             unless entry[:extra]
