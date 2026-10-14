@@ -167,3 +167,51 @@ Solange der Live Server läuft, steht an derselben Stelle die Nummer seines Port
 Falls sich die Vorschau einmal nicht mehr aktualisiert, lade die Seite neu: <kbd>Strg</kbd><kbd>R</kbd> oder <kbd>F5</kbd>.
 </div>
 <!-- /part -->
+
+## Erweiterungen
+
+<!-- part: erweiterung-installieren -->
+<!-- short: Erweiterung: <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>, Namen suchen, »Install«; ein Herausgeber, den Visual Studio Code nicht kennt, will »Trust Publisher & Install«. -->
+### Erweiterung installieren
+
+Visual Studio Code lässt sich mit Erweiterungen ergänzen, etwa um eine Programmiersprache oder eine Zeichenfläche. Welche Erweiterung du brauchst, steht in der Aktivität.
+
+Klicke auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Gib den Namen der Erweiterung in das Suchfeld ein und klicke bei der richtigen auf »Install«. Achte auf den Herausgeber unter dem Namen: Oft gibt es mehrere Erweiterungen mit ähnlichen Namen.
+
+<!-- tutorial-screenshot
+# Beispiel: die Zeichenfläche aus »Pixelgrafik mit Ruby«
+close-folder
+hide-bottom-panel
+# Nach close-folder lädt das Fenster neu; ein Klick statt Strg+Shift+X
+click: selector:.activitybar a[aria-label^="Extensions"]
+wait-for-text: Marketplace
+type: Pixelflow Canvas
+wait-for-text: gymnasiumsteglitz
+# Weg vom Symbol, sonst steht sein Tooltip im Bild
+move-mouse: selector:.part.editor
+sleep: 2
+crop-bottom: 50%
+-->
+
+<img class='full' src='extension-search.webp' alt='Die Seitenleiste »Extensions« mit dem Suchbegriff »Pixelflow Canvas«; darunter die Erweiterung mit ihrem Herausgeber und dem Knopf »Install«.'>
+
+<!-- tutorial-screenshot
+press: Control+p
+type: ext install gymnasiumsteglitz.pixelflow-canvas
+wait-for-text: Press Enter to install extension
+press: Enter
+wait-for-text: Trust Publisher & Install
+sleep: 1
+crop-element: .monaco-dialog-box
+-->
+
+<img class='r' src='trust-publisher.webp' style='width: 24em;' alt='Die Frage »Do you trust the publisher?« mit den Knöpfen »Learn More«, »Cancel« und »Trust Publisher & Install«.'>
+
+Kennt Visual Studio Code den Herausgeber noch nicht, fragt es, ob du ihm vertraust. Bestätige mit »Trust Publisher & Install«. Bringt eine Erweiterung eine zweite von einem anderen Herausgeber mit, heißt der Knopf »Trust Publishers & Install«.
+
+Schneller geht es mit <kbd>Strg</kbd><kbd>P</kbd>: Gib `ext install` und die Kennung der Erweiterung ein, wenn die Aktivität sie nennt, und drücke <kbd>Enter</kbd>. Die Kennung besteht aus Herausgeber und Name, zum Beispiel `gymnasiumsteglitz.pixelflow-canvas`.
+
+Erweiterungen liegen in deinem Workspace unter `/workspace/.extensions`. Sie bleiben installiert, auch wenn der Workspace neu startet.
+
+<div style='clear: both;'></div>
+<!-- /part -->

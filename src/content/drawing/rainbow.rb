@@ -1,9 +1,9 @@
-require 'pixelflow_canvas.rb'
+require 'pixelflow_canvas'
 
 # Wir erstellen ein neues Pixelflow-Canvas mit einer
 # Größe von 320x180 Pixeln und wir möchten eine
 # Palette verwenden.
-canvas = Pixelflow::Canvas.new(320, 180, :palette) do
+Pixelflow::Canvas.new(320, 180, :palette) do
     # Wir wählen die Zughy-32-Palette
     set_predefined_palette(:zughy_32)
 
@@ -58,5 +58,5 @@ canvas = Pixelflow::Canvas.new(320, 180, :palette) do
     remove_mask()
 
     # Bild speichern
-    save_as_png("rainbow.png")
+    save_as_png('rainbow.png')
 end

@@ -42,6 +42,18 @@
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "workspace_look": "4.138.0-ls366",
       "output_sha256": "669a4fa1e58cd83baa9a9ca1b338b32894e9fe42238217e2ff60ccb69345e4f5"
+    },
+    "extension-search.webp": {
+      "state_hash": "25d52289e9b2a5ad4467202d393ce20e7c7629ede9412cc8f72aef26fe163b04",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "08d1b4beea97c3d4b0d4b290802c006ed7af93f80b74bc4c1400ba44fdfa148a"
+    },
+    "trust-publisher.webp": {
+      "state_hash": "383f7ecc2d4b34ab283a52dec8958ca9652377b3d1f8e232dfafec20b1ceaab7",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "87548b12ff14cf6b5ebad51478bb4bb081f4aabc7382cc0653b2c5d736ddac26"
     }
   }
 }

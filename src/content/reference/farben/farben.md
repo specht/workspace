@@ -82,6 +82,12 @@ In CSS schreibst du die drei Anteile als Zahlen von 0 bis 255:
 color: rgb(249, 200, 14);
 ```
 
+Auf der Zeichenfläche von Pixelflow Canvas (mit `:rgb`) stehen dieselben drei Zahlen ohne `rgb(…)`:
+
+```ruby
+set_color(249, 200, 14)
+```
+
 Im Anaglyph-Viewer stehen sie ohne `rgb(…)` und gehen von `0` bis `1`. Eine einzelne Zahl ist ein Grauton von `0` (schwarz) bis `1` (weiß):
 
 ```ini

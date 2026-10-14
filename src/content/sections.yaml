@@ -153,7 +153,6 @@
     - smalltalk
     - cpp
     - clisp
-    # - erlang
     # - perl
     - python
     - lua

@@ -410,6 +410,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   (`hello-error.*`). Wo eine Erweiterung nach »Trust Publisher & Install«
   fragt, sagt der Text das jetzt. Das Assembler-Tutorial hat das fehlende
   Bubblesort-Programm (`nasm/bubblesort.asm`) bekommen.
+- »Pixelgrafik mit Ruby« überarbeitet: acht Aufgaben (das erste Programm,
+  Koordinaten, Speicher mit Palette, Bézierkurven, zwei Vorhersagen zu
+  `flood_fill` und zur Maske, das gespeicherte PNG), ein neuer Abschnitt
+  »Dein eigenes Bild« mit Ideen und einer Abgabe von `bild.rb` und
+  `bild.png`, eine Notiz für Lehrkräfte und erzeugte Screenshots. Die Seite
+  nennt die Meldung, wenn die Zeichenfläche nicht offen ist.
+- Handbuch »Workspace«: neuer Teil »Erweiterung installieren«, mit der Frage
+  »Trust Publisher & Install«. »Farben« nennt die RGB-Schreibweise von
+  Pixelflow Canvas.
 
 - Behoben: »Git kennt dich« schlug fehl, obwohl `git config --global` Name
   und E-Mail kannte. Die Prüfung lief mit dem `HOME` des Images (`/config`)

@@ -1,0 +1,150 @@
+# Aufgaben zu »Pixelgrafik mit Ruby«.
+# Format: docs/aufgaben.md.
+format: 1
+activity: drawing
+tasks:
+  - id: erster-pixel
+    title: Das erste Programm
+    prompt: |
+      Speichere das Programm mit dem grünen Pixel unter `/workspace/rainbow.rb`.
+    file: rainbow.rb
+    check:
+      type: files
+      path: rainbow.rb
+      expect:
+        format: text
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/rainbow.rb`. Hast du die Datei unter einem anderen Namen gespeichert? Im Explorer siehst du alle Dateien in `/workspace`.
+
+  - id: ecke
+    title: Die Ecke rechts unten
+    prompt: |
+      Schieb den Pixel in die Ecke rechts unten. Welche Koordinaten hat er
+      dort? Schreib sie wie im Text, zum Beispiel `160, 90`.
+    check:
+      type: answer
+      compare: regex
+      expect: '^\(?\s*319\s*[,;]\s*179\s*\)?$'
+    hint: Probier es aus. Ist der Pixel zu sehen, oder liegt er schon außerhalb?
+    feedback:
+      - when: { matches: '320\s*[,;]\s*180' }
+        say: Die Zeichenfläche ist 320 Pixel breit, aber gezählt wird ab 0. Probier `set_pixel(320, 180, 1)` aus; der Pixel erscheint nicht.
+      - when: { matches: '^\(?\s*0\s*[,;]\s*0' }
+        say: (0, 0) ist die Ecke oben links. Gesucht ist die gegenüberliegende.
+      - when: { matches: '179\s*[,;]\s*319' }
+        say: Erst kommt x, also die Breite, dann y.
+    solution: (319, 179). Breite und Höhe werden ab 0 gezählt, deshalb ist der letzte Pixel einer 320 Pixel breiten Zeile bei x = 319.
+
+  - id: speicher
+    title: Speicher mit Palette
+    prompt: |
+      Wie viele Bytes braucht ein Bild mit 320 × 180 Pixeln, wenn jeder Pixel
+      eine Farbe aus einer Palette hat?
+    check:
+      type: number
+      expect: 57600
+      tolerance: 0
+      unit: Bytes
+    hint: Wie viele Pixel sind es, und wie viele Bytes braucht jeder?
+    feedback:
+      - when: { equals: 172800 }
+        say: So viel braucht das Bild mit RGB-Farben, 3 Bytes pro Pixel. Mit Palette ist es 1 Byte pro Pixel.
+      - when: { between: [57, 58] }
+        say: Das sind Kilobytes. Gefragt ist die Zahl der Bytes.
+    solution: 320 × 180 = 57 600 Pixel, je 1 Byte. Mit RGB wären es dreimal so viele, 172 800 Bytes.
+
+  - id: bezier
+    title: Durch welche Punkte?
+    prompt: |
+      Eine kubische Bézierkurve hat vier Punkte. Durch welche davon geht die
+      Kurve? Probier es oben mit den Punkten aus.
+    check:
+      type: choice
+      options:
+        - Durch alle vier
+        - Nur durch den ersten und den letzten
+        - Nur durch die beiden mittleren
+        - Durch keinen
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Zieh einen der mittleren Punkte weit weg. Folgt ihm die Kurve bis dorthin?
+      - when: { picked: 2 }
+        say: Schau dir die beiden Enden der Kurve an. Wo liegen sie?
+      - when: { picked: 3 }
+        say: Schau dir die beiden Enden der Kurve an. Wo liegen sie?
+    solution: Die Kurve beginnt im ersten Punkt und endet im letzten. Die beiden mittleren Punkte ziehen sie in ihre Richtung, ohne dass sie hindurchgeht.
+
+  - id: fluten
+    title: Ein Eimer Farbe im Himmel
+    prediction: true
+    prompt: |
+      Deine drei Kurven sind gezeichnet, noch nichts ist gefüllt. Was wird
+      hellgrün, wenn du jetzt `set_color(7)` und `flood_fill(160, 10)`
+      aufrufst, also oben in der Mitte? Überleg erst, dann probier es aus und
+      nimm die beiden Zeilen danach wieder heraus.
+    check:
+      type: choice
+      options:
+        - Der ganze Himmel bis zur obersten Kurve
+        - Nur der Pixel an der Stelle (160, 10)
+        - Die ganze Zeichenfläche
+        - Ein Kreis um die Stelle (160, 10)
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Dafür gibt es `set_pixel`. `flood_fill` färbt auch die Nachbarn, die dieselbe Farbe haben.
+      - when: { picked: 2 }
+        say: Die Füllung breitet sich nur über Pixel derselben Farbe aus. Woran stößt sie unterhalb des Himmels?
+      - when: { picked: 3 }
+        say: Die Füllung kennt keinen Radius. Sie hört dort auf, wo eine andere Farbe beginnt.
+    solution: Der Himmel ist überall hellblau und hängt zusammen. Die Füllung breitet sich über alle hellblauen Pixel aus, bis sie an die oberste grüne Kurve stößt. Darunter liegt ein anderer Bereich, den sie nicht erreicht.
+
+  - id: maske
+    title: Ohne Maske
+    prediction: true
+    prompt: |
+      Bevor du die Kreise zeichnest: Was würde passieren, wenn du die drei
+      Zeilen mit `set_mask` weglässt? Überleg erst, dann probier es aus:
+      Schreib vor jede der drei Zeilen ein `#`, dann gelten sie als Kommentar.
+    check:
+      type: choice
+      options:
+        - Die Kreise übermalen auch die Wiese; der Regenbogen reicht bis zum unteren Rand
+        - Der Regenbogen steht trotzdem hinter der Wiese
+        - Ruby meldet einen Fehler, weil keine Maske festgelegt ist
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Ohne Maske darf jeder Befehl jeden Pixel verändern. Woher sollte `fill_circle` wissen, dass die Wiese stehen bleiben soll?
+      - when: { picked: 2 }
+        say: Eine Maske ist freiwillig. Ohne sie zeichnet jeder Befehl einfach überall.
+    solution: Die Kreise reichen bis zum unteren Rand und übermalen alles, was dort liegt. Mit der Maske dürfen sie nur die Pixel verändern, die vorher hellblau waren, also den Himmel.
+
+  - id: bild-gespeichert
+    title: Das Bild als Datei
+    prompt: |
+      Ergänze `save_as_png('rainbow.png')` und führe das Programm aus, sodass
+      das Bild in `/workspace/rainbow.png` liegt.
+    file: rainbow.rb
+    check:
+      type: files
+      path: rainbow.png
+      expect:
+        format: png
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `/workspace/rainbow.png`. Steht `save_as_png` vor dem `end`, und hast du das Programm danach im Ordner `/workspace` ausgeführt? Das Bild landet im Ordner, in dem du `ruby rainbow.rb` aufrufst.
+
+  - id: eigenes-bild
+    title: Dein eigenes Bild
+    prompt: |
+      Zeichne in `/workspace/bild.rb` ein eigenes Bild, das sich als
+      `/workspace/bild.png` speichert, und gib beides ab. Deine Lehrkraft
+      sieht genau diesen Stand; du kannst jederzeit neu abgeben.
+    file: bild.rb
+    check:
+      type: submit
+      paths: [bild.rb, bild.png]
+      max_size: 2MB

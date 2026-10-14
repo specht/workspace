@@ -1,6 +1,8 @@
 <div class='meta'>
 image: rainbow.webp
 kind: projekt
+duration: 2 Doppelstunden
+reference: [workspace, farben]
 </div>
 
 <div
@@ -12,42 +14,56 @@ kind: projekt
 # Pixelgrafik mit Ruby
 
 <p class='abstract'>
-In diesem Kapitel lernst du, wie du Pixelgrafiken programmieren kannst. Dazu installieren wir das Paket »Pixelflow Canvas« und erstellen ein erstes Bild mit einer hügeligen Wiese aus Bézierkurven und einem Regenbogen aus konzentrischen Kreisen.
+In diesem Projekt programmierst du Pixelgrafiken. Mit der Zeichenfläche »Pixelflow Canvas« und ein paar Zeilen Ruby entsteht Schritt für Schritt ein Bild: eine hügelige Wiese aus Bézierkurven und ein Regenbogen aus Kreisen. Zum Schluss zeichnest du ein eigenes Bild und gibst es ab.
 </p>
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
+<img class='full' src='rainbow.webp' alt='Fertige Pixelgrafik mit blau gestreiftem Himmel, Regenbogen und grünen Hügeln.'>
 
-<img class='full' src='fresh-start.webp' alt=''>
+Du brauchst keine Vorkenntnisse in Ruby: Jeder Befehl wird erklärt, wenn er zum ersten Mal vorkommt.
 
-## Pixelflow Canvas installieren
+## Vorbereitung
 
-Falls du es noch nicht getan hast, musst du zuerst eine Erweiterung für Visual Studio Code installieren. Anschließend installieren wir ein Rubygem, das uns das Programmieren von Pixelgrafiken ermöglicht.
+_include(workspace#terminal-oeffnen)
 
-### VS Code-Erweiterung installieren
+### Die Zeichenfläche installieren
 
-Um Pixelgrafiken im Workspace programmieren zu können, benötigen wir die Erweiterung »Pixelflow Canvas«. Klicke dazu auf das Extensions-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste und suche nach »Pixelflow Canvas«. Klicke auf »Install«, um die Erweiterung zu installieren.
+Die Zeichenfläche ist eine Erweiterung für Visual Studio Code: »Pixelflow Canvas« vom Herausgeber `gymnasiumsteglitz`, mit der Kennung `gymnasiumsteglitz.pixelflow-canvas`.
 
-<img class='full' src='pixelflow-canvas-ext.webp' alt=''>
+_include(workspace#erweiterung-installieren)
 
-### Rubygem installieren
+### Das Rubygem installieren
 
-Um bequem von Ruby Befehle an das Canvas schicken zu können, benötigen wir das Rubygem »pixelflow_canvas«. Öffne das Terminal, indem du den Shortcut <kbd>Strg</kbd><kbd>J</kbd> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
+Dein Ruby-Programm schickt seine Zeichenbefehle an die Zeichenfläche. Das erledigt das Rubygem »pixelflow_canvas«, eine Bibliothek für Ruby. Installiere es im Terminal:
 
-<img class='full' src='got-terminal.webp' alt=''>
-
-Installiere es, indem du folgenden Befehl in das Terminal eingibst:
-
-```bash
+```bash_copy
 gem install pixelflow_canvas
 ```
 
-## Zeichenfläche ausprobieren
+<!-- tutorial-screenshot
+# Die Erweiterung schon jetzt, für die Zeichenfläche weiter unten
+press: Control+p
+type: ext install gymnasiumsteglitz.pixelflow-canvas
+wait-for-text: Press Enter to install extension
+press: Enter
+wait-for-text: Trust Publisher & Install
+click: Trust Publisher & Install
+sleep: 10
+hide-left-sidebar
+terminal-open
+terminal-maximize
+press: Control+l
+terminal-run: gem install pixelflow_canvas
+terminal-wait-for-prompt: 120
+crop-terminal-lines: auto
+-->
 
-Wähle im Menü links oben »File« / »New Text File« (oder drücke <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd>), um eine neue Datei anzulegen:
+<img class='full' src='gem-install.webp' alt='Im Terminal meldet gem install, dass pixelflow_canvas und chunky_png installiert sind.'>
 
-<img class='full' src='new-file.webp' alt=''>
+Mit dem Gem kommt `chunky_png`, das Ruby zum Speichern von PNG-Bildern braucht. Beide liegen danach in deinem Workspace unter `/workspace/.gem` und bleiben dort. Den Hinweis auf eine neue Version von RubyGems kannst du übergehen; die installierte reicht.
 
-Schreibe den folgenden Code in die Datei:
+## Der erste Pixel
+
+Lege mit <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd> eine neue Datei an, wähle »Text File« und schreibe den folgenden Code hinein:
 
 ```ruby
 require 'pixelflow_canvas'
@@ -57,71 +73,109 @@ Pixelflow::Canvas.new(320, 180, :palette) do
 end
 ```
 
-Da Visual Studio Code noch nicht weiß, dass es sich um Ruby-Code handelt, sieht dein Code noch etwas farblos aus:
+<!-- tutorial-screenshot
+# Terminal zu; »New File...« öffnet dieselbe Auswahl wie Strg+Alt+N
+click: selector:.part.panel [aria-label*="Restore Panel"]
+press: Control+j
+click: New File...
+wait-for-text: Text File
+press: Enter
+sleep: 1
+type: <- previous-code
+sleep: 0.5
+crop-bottom: 60%
+-->
 
 <img class='full' src='no-syntax-highlighting.webp' alt=''>
 
-Speichere die Datei unter dem Dateinamen `rainbow.rb`, indem du <kbd>Strg</kbd><kbd>S</kbd> drückst und den Dateinamen eingibst.
+Noch weiß Visual Studio Code nicht, dass es Ruby ist, deshalb ist der Code einfarbig. Speichere die Datei mit <kbd>Strg</kbd><kbd>S</kbd> unter dem Namen `/workspace/rainbow.rb`:
+
+<!-- tutorial-screenshot
+press: Control+s
+wait-for-text: Save As
+press: Control+a
+type: /workspace/rainbow.rb
+sleep: 0.5
+crop-bottom: 82%
+-->
 
 <img class='full' src='enter-filename.webp' alt=''>
 
-Dein Programm sollte jetzt ungefähr so aussehen:
+Jetzt erkennt Visual Studio Code die Endung `.rb`, und der Code wird farbig:
+
+<!-- tutorial-screenshot
+press: Enter
+wait-for-file: rainbow.rb
+sleep: 1.5
+crop-bottom: 60%
+-->
 
 <img class='full' src='syntax-highlighting.webp' alt=''>
 
-Bevor wir das Programm ausführen können, müssen wir das Pixelflow Canvas öffnen. Drücke dazu
-<kbd>Strg</kbd><kbd>Shift</kbd><kbd>P</kbd> oder <kbd>F1</kbd>
-und gib dann »Show Pixelflow Canvas« ein.
+_task(erster-pixel)
 
-<div class='hint'>
-    <strong>Tipp:</strong> Du kannst auch einfach »pixel« eingeben, es werden dir dann automatisch alle Befehle angezeigt, die mit »Pixelflow Canvas« zu tun haben.
-</div>
+### Die Zeichenfläche öffnen
 
-<img src='show-canvas.webp' class='full' alt=''>
+Bevor das Programm zeichnen kann, muss die Zeichenfläche offen sein. Drücke <kbd>F1</kbd> (oder <kbd>Strg</kbd><kbd>Shift</kbd><kbd>P</kbd>), gib »pixel« ein und wähle »Show Pixelflow Canvas«:
 
-Du solltest jetzt ein neues Panel sehen, in dem das Pixelflow Canvas angezeigt wird:
+<!-- tutorial-screenshot
+press: F1
+type: pixel
+wait-for-text: Show Pixelflow Canvas
+sleep: 0.5
+crop-bottom: 80%
+-->
 
-<img src='empty-canvas.webp' class='full' alt=''>
+<img class='full' src='show-canvas.webp' alt='Die Befehlspalette mit der Eingabe »pixel« und dem Befehl »Show Pixelflow Canvas«.'>
 
-Führe das Programm aus, indem du im Terminal `ruby rainbow.rb` eingibst. Du solltest nun einen einzelnen, grünen Pixel in der Mitte der Zeichenfläche sehen:
+Die Zeichenfläche öffnet sich rechts neben deinem Code. Führe das Programm im Terminal aus:
+
+```bash
+ruby rainbow.rb
+```
+
+<!-- tutorial-screenshot
+press: Enter
+wait-for-text: Pixelflow Canvas
+sleep: 2
+terminal-open
+press: Control+l
+terminal-run: ruby rainbow.rb
+terminal-wait-for-prompt
+sleep: 1
+move-mouse: selector:.part.statusbar
+-->
+
+<img class='full' src='first-pixel.webp' alt='Links der Code in rainbow.rb, rechts die Zeichenfläche mit einem grünen Pixel in der Mitte, unten das Terminal.'>
+
+In der Mitte der Zeichenfläche leuchtet ein grüner Pixel. Vergrößert sieht die Zeichenfläche so aus:
 
 <img src='out1.webp' class='full' alt='Ein einzelner grüner Pixel liegt in der Mitte einer schwarzen Fläche.'>
 
-Schauen wir uns den Code genauer an:
-
-```ruby
-require 'pixelflow_canvas'
-
-Pixelflow::Canvas.new(320, 180, :palette) do
-    set_pixel(160, 90, 10)
-end
-```
-
-- `require 'pixelflow_canvas'` lädt das Rubygem »pixelflow_canvas«.
-- `Pixelflow::Canvas.new(320, 180, :palette)` erstellt ein neues Canvas mit einer Breite von 320 Pixeln und einer Höhe von 180 Pixeln. Der dritte Parameter `:palette` gibt an, dass wir eine Palette verwenden wollen.
-- der `do` / `end`-Block enthält die Befehle, die auf das Canvas angewendet werden sollen.
-- `set_pixel(160, 90, 10)` setzt den Pixel an der Position (160, 90) auf die Farbe 10.
-
-Der Ursprung der Zeichenfläche ist oben links, der x-Wert nimmt nach rechts zu und der y-Wert nach unten.
-Da wir eine Palette verwenden, geben wir Farben einfach als Zahl von 0 bis 255 an. Welche Farbe sich
-hinter welcher Zahl verbirgt, ist in der Palette definiert.
-
-Da standardmäßig die VGA-Palette verwendet wird, entspricht die Farbe 10 einem hellen Grün.
-
-Hier findest du eine Übersicht über alle [Farben der Standard-VGA-Palette](https://specht.github.io/pixelflow_canvas_ruby/palettes.html#vga).
-
 <div class='hint'>
-    Kannst du die Farbe des Pixels auf Blau ändern? Versuche auch, den Pixel in alle vier Ecken der Zeichenfläche zu schieben.
+Meldet Ruby <code>Connection refused - connect(2) for "127.0.0.1" port 19223</code>, ist die Zeichenfläche nicht offen: Dein Programm findet niemanden, der seine Befehle annimmt. Öffne sie wie oben beschrieben und starte das Programm noch einmal. Meldet Ruby <code>cannot load such file -- pixelflow_canvas</code>, fehlt das Rubygem.
 </div>
+
+### Was der Code macht
+
+- `require 'pixelflow_canvas'` lädt das Rubygem.
+- `Pixelflow::Canvas.new(320, 180, :palette)` verbindet sich mit der Zeichenfläche und stellt sie auf 320 Pixel Breite und 180 Pixel Höhe ein. `:palette` heißt: Farben sind Nummern aus einer Palette.
+- Zwischen `do` und `end` stehen die Befehle, die auf der Zeichenfläche zeichnen.
+- `set_pixel(160, 90, 10)` färbt den Pixel an der Stelle (160, 90) mit der Farbe 10.
+
+Der Ursprung der Zeichenfläche ist oben links: Der x-Wert wird nach rechts größer, der y-Wert nach **unten**. Weil wir eine Palette verwenden, ist jede Farbe eine Zahl von 0 bis 255. Ohne weitere Angabe gilt die VGA-Palette, und dort ist 10 ein helles Grün. Hier findest du alle [Farben der VGA-Palette](https://specht.github.io/pixelflow_canvas_ruby/palettes.html#vga).
+
+Ändere die Farbe des Pixels auf Blau und schieb ihn in die vier Ecken der Zeichenfläche. Nach jeder Änderung: speichern und `ruby rainbow.rb` noch einmal ausführen. Mit <kbd>↑</kbd> holst du den letzten Befehl zurück.
+
+_task(ecke)
 
 <div class='hint books'>
-Anstelle einer Palette kannst du auch RGB-Farben verwenden. Dazu ersetzt du einfach <code>:palette</code> durch <code>:rgb</code>.
-Anschließend musst du alle Farben als Tripel von rot, grün und blau im Bereich von 0 bis 255 angeben. Der historische
-Hintergrund für die Verwendung von Paletten rührt daher, dass man so mit weniger Speicherplatz auskam (während ein RGB-Pixel
-3 Bytes benötigt, benötigt ein Pixel mit Palette nur 1 Byte, da die Farbe nur als Index in der Palette gespeichert wird).
-Heute ist das eigentlich nicht mehr nötig, aber es kann trotzdem von Vorteil sein, eine Palette zu verwenden, da du so eine
-einheitliche Farbgebung hast und nicht jedes Mal die passenden RGB-Werte heraussuchen musst.
+Statt einer Palette kannst du auch RGB-Farben verwenden: Ersetze <code>:palette</code> durch <code>:rgb</code> und gib jede Farbe als drei Zahlen für Rot, Grün und Blau an, jeweils von 0 bis 255, zum Beispiel <code>set_pixel(160, 90, 249, 200, 14)</code>. Paletten stammen aus einer Zeit, in der Speicher knapp war: Ein Pixel mit Palette braucht 1 Byte, denn er speichert nur die Nummer seiner Farbe. Ein RGB-Pixel braucht 3 Bytes. Heute ist eine Palette vor allem praktisch: Die Farben passen zueinander, und du musst nicht für jede Farbe drei Zahlen heraussuchen.
 </div>
+
+_uses(rgb)
+
+_task(speicher)
 
 ## Eine Wiese mit Regenbogen
 
@@ -129,8 +183,7 @@ Jetzt entsteht Schritt für Schritt ein ganzes Bild: eine hügelige Wiese, darü
 
 ### Palette wählen
 
-Die Standard-VGA-Palette ist nicht die einzige Palette, die du verwenden kannst. Du kannst auch eine andere Palette
-wählen oder sogar deine eigene Palette definieren. Eine Übersicht über alle verfügbaren Paletten findest du [hier](https://specht.github.io/pixelflow_canvas_ruby/palettes.html). Da wir eine Wiese mit Regenbogen zeichnen möchten, wählen wir die »zughy_32«-Palette:
+Die VGA-Palette ist nicht die einzige. Eine [Übersicht über alle Paletten](https://specht.github.io/pixelflow_canvas_ruby/palettes.html) findest du in der Dokumentation, und du kannst auch eigene festlegen. Für die Wiese mit Regenbogen nehmen wir die Palette »zughy_32«:
 
 <div class='swatches'>
 <span style='background-color: #472d3c;'><span>0</span></span>
@@ -180,35 +233,26 @@ end
 
 <img src='out2.webp' class='r' alt='Ein dunkeltürkiser Pixel liegt auf einer dunkelvioletten Fläche.'>
 
-Führe das Programm aus, indem du im Terminal `ruby rainbow.rb` eingibst (du kannst auch einfach den letzten Befehl wiederholen, indem du <kbd>↑</kbd> und <kbd>Enter</kbd> drückst).
+Die Farben haben sich geändert: Der Hintergrund ist nicht mehr schwarz, weil die Farbe 0 jetzt ein dunkles Lila ist, und die Farbe 10 ist jetzt ein dunkles Türkis.
 
-Du solltest jetzt sehen, dass sich die Farben geändert haben – der Hintergrund ist nicht mehr schwarz, weil
-die Farbe 0 nun ein dunkles Lila ist und die Farbe 10 ist nun ein dunkles Türkis.
+<div style='clear: both;'></div>
 
 ### Hintergrund zeichnen
 
-Lösche den `set_pixel`-Befehl und füge stattdessen den folgenden Code ein:
+Lösche den `set_pixel`-Befehl und schreib stattdessen:
 
 ```ruby
 set_color(16)
 fill_rect(0, 0, 319, 179)
 ```
 
-Wir füllen die gesamte Zeichenfläche mit der Farbe 16 (hellblau), indem wir den Befehl `fill_rect` verwenden. Dieser Befehlt benötigt vier Parameter: die x- und y-Koordinaten der oberen linken Ecke des Rechtecks und die x- und y-Koordinaten der unteren rechten Ecke des Rechtecks.
-
-<div class='hint'>
-    Obwohl die Zeichenfläche eine Größe von 320x180 Pixeln hat, hat der Pixel rechts unten die Koordinaten (319, 179), da wir bei 0 anfangen zu zählen.
-</div>
-
-Dein Bild sollte jetzt so aussehen:
+`set_color` wählt die Farbe für alle folgenden Befehle, hier 16, ein helles Blau. `fill_rect` füllt ein Rechteck. Es braucht vier Zahlen: x und y der Ecke oben links und x und y der Ecke unten rechts. Weil die Ecke unten rechts (319, 179) ist, füllt dieses Rechteck die ganze Zeichenfläche:
 
 <img src='out3.webp' class='full' alt='Die Zeichenfläche ist vollständig hellblau gefüllt.'>
 
 ### Hügelige Wiese zeichnen
 
-Um eine hügelige Wiese zu zeichnen, werden wir keine geraden Linien, sondern [Bézierkurven](https://de.wikipedia.org/wiki/B%C3%A9zierkurve) verwenden. Eine Bézierkurve wird durch eine Reihe von Punkten definiert, die die Kurve beeinflussen. Wir können hier zwei Arten von Bézierkurven verwenden: eine quadratische Bézierkurve (mit drei Punkten) und eine kubische Bézierkurve (mit vier Punkten).
-
-Du kannst hier interaktiv die Punkte der Bézierkurven verschieben, um zu verstehen, wie Bézierkurven funktionieren:
+Für eine hügelige Wiese brauchen wir geschwungene Linien statt gerader: [Bézierkurven](https://de.wikipedia.org/wiki/B%C3%A9zierkurve). Eine Bézierkurve wird durch Punkte festgelegt. Es gibt quadratische Bézierkurven mit drei Punkten und kubische mit vier. Verschiebe hier die Punkte und sieh, wie sich die Kurve verändert:
 
 <style>
 .bezier_div circle {
@@ -350,7 +394,9 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-Wir können also z. B. eine kubische Bézierkurve verwenden, um eine hügelige Wiese zu zeichnen. Dabei sind der erste und der letzte Punkt die Endpunkte der Kurve, während die beiden mittleren Punkte die Kontrollpunkte sind, die die Form der Kurve beeinflussen. Wir zeichnen drei Kurven mit verschiedenen Grüntönen, um eine hügelige Wiese darzustellen. Füge den folgenden Code hinzu:
+_task(bezier)
+
+Wir zeichnen drei kubische Bézierkurven in verschiedenen Grüntönen. Bei jeder sind der erste und der letzte Punkt die Enden der Kurve, die beiden mittleren ziehen sie in ihre Richtung. Schreib den Code unter `fill_rect`:
 
 ```ruby
 set_color(7)
@@ -367,18 +413,22 @@ Dein Bild sollte jetzt so aussehen:
 
 ### Flächen füllen
 
-Um den Hügel mit Farbe zu füllen, können wir den Befehl `flood_fill` verwenden. Dieser Befehl füllt eine Fläche mit einer bestimmten Farbe, beginnend von einem bestimmten Punkt. Füge den folgenden Code hinzu:
+Um die Hügel mit Farbe zu füllen, gibt es `flood_fill(x, y)`. Der Befehl beginnt am Pixel (x, y) und färbt ihn mit der aktuellen Farbe, dann alle Nachbarn, die dieselbe Farbe hatten wie er, dann deren Nachbarn und so weiter, bis er überall an eine andere Farbe stößt. Wie ein Farbeimer in einem Malprogramm.
+
+_task(fluten)
+
+Schreib den folgenden Code dazu:
 
 ```ruby
 set_color(7)
 flood_fill(0, 130)
 ```
 
-Der Punkt an der Stelle (0, 130) liegt zwischen den oberen beiden Kurven, und nun wird der Bereich zwischen diesen beiden Kurven mit der Farbe 7 (hellgrün) gefüllt. Dein Bild sollte danach so aussehen:
+Der Punkt (0, 130) liegt zwischen den oberen beiden Kurven, und genau diese Fläche wird hellgrün:
 
 <img src='out5.webp' class='full' alt='Die Fläche zwischen den oberen Kurven ist hellgrün gefüllt.'>
 
-Füge anschließend die folgenden Zeilen hinzu, um die restlichen Flächen zu füllen:
+Füll mit diesen Zeilen auch die beiden anderen Flächen:
 
 ```ruby
 set_color(8)
@@ -387,15 +437,13 @@ set_color(9)
 flood_fill(0, 179)
 ```
 
-Dein Bild sollte jetzt so aussehen:
-
 <img src='out6.webp' class='full' alt='Mehrere gefüllte grüne Hügel überlagern sich vor hellblauem Hintergrund.'>
 
 ### Regenbogen zeichnen
 
-Wir wollen nun einen Regenbogen zeichnen, der aus ineinander gelegten Kreisen besteht. Würden wir die Kreise einfach so zeichnen, würden sie den Rasen überdecken. Um das zu verhindern, können wir eine Maske verwenden. Eine Maske ist ein Bereich, in dem wir zeichnen können, ohne den Rest des Bildes zu beeinflussen. Wir definieren uns eine Maske, die nur die Hintergrundfarbe 16 (hellblau) umfasst, und zeichnen dann die Kreise.
+Der Regenbogen besteht aus gefüllten Kreisen, einer in den anderen gelegt. Gezeichnet wie bisher, würden die Kreise auch die Wiese übermalen. Dagegen hilft eine Maske: Sie legt fest, welche Pixel die folgenden Befehle überhaupt verändern dürfen.
 
-Mit dem Befehl `set_mask` können wir eine Maske definieren. Innerhalb des `do` / `end`-Blocks können wir dann definieren, was alles zur Maske gehört. Mit dem Befehl `add_color(16)` geben wir an, dass alle Pixel, die momentan die Farbe 16 haben, zur Maske gehören. Alle anderen Pixel werden durch die nachfolgenden Zeichenbefehle nicht beeinflusst. Füge den folgenden Code hinzu:
+`set_mask` legt eine Maske fest. Zwischen `do` und `end` steht, was dazugehört: `add_color(16)` nimmt alle Pixel auf, die gerade die Farbe 16 haben, also den hellblauen Himmel. Alle anderen Pixel bleiben ab jetzt, wie sie sind.
 
 ```ruby
 set_mask do
@@ -403,7 +451,7 @@ set_mask do
 end
 ```
 
-Nun können wir die Kreise zeichnen. Wir verwenden gefüllte Kreise und zeichnen sie von außen nach innen. Wir beginnen mit einem Radius von 125 Pixeln und verringern ihn dann um 5 Pixel für jeden Kreis, während wir die Farben rot (28), orange (27), gelb (26), grün (8), indigo (19), violett (23) und himmelblau (16) durchlaufen. Füge den folgenden Code hinzu:
+Jetzt die Kreise, von außen nach innen. Wir beginnen mit einem Radius von 125 Pixeln und machen jeden Kreis um 5 Pixel kleiner. Die Farben sind Rot (28), Orange (27), Gelb (26), Grün (8), Indigo (19), Violett (23) und zuletzt Himmelblau (16), das die Mitte wieder frei macht:
 
 ```ruby
 r = 125
@@ -414,20 +462,23 @@ r = 125
 end
 ```
 
-Dein Bild sollte anschließend so aussehen:
+`[28, 27, …].each do |color|` geht die Liste der Reihe nach durch; bei jedem Durchgang steht in `color` die nächste Zahl.
+
+_task(maske)
 
 <img src='out7.webp' class='full' alt='Ein gestreifter Regenbogen steigt hinter grünen Hügeln auf.'>
 
 ### Himmel zeichnen
 
-Für den Himmel müssen wir die Maske erneuern, da sie nach wie vor gilt und somit folgende Zeichenbefehle auch den Regenbogen überdecken würden. Füge den folgenden Code ein:
+Für den Himmel brauchen wir die Maske neu: Sie umfasst noch die Pixel, die vorhin hellblau waren, also auch die, auf denen jetzt der Regenbogen liegt. Neu festgelegt umfasst sie nur noch, was jetzt hellblau ist:
 
 ```ruby
 set_mask do
     add_color(16)
 end
 ```
-Im Bereich von 16 bis 20 gibt es ein paar schöne Blautöne, die wir für den Himmel verwenden können. Wir gehen zeilenweise von oben nach unten durch das Bild und wählen eine Farbe aus diesem Spektrum (mit etwas zufälliger Variation) und zeichnen damit eine horizontale Linie von links nach rechts. Füge den folgenden Code hinzu:
+
+Zwischen 16 und 20 liegen in der Palette schöne Blautöne. Wir gehen Zeile für Zeile von oben nach unten durch das Bild, wählen für jede Zeile eine Farbe aus diesem Bereich, mit etwas Zufall, und ziehen eine waagerechte Linie:
 
 ```ruby
 (0...180).each do |y|
@@ -436,28 +487,70 @@ Im Bereich von 16 bis 20 gibt es ein paar schöne Blautöne, die wir für den Hi
 end
 ```
 
-Anschließend entfernen wir die Maske wieder:
+`(0...180)` sind die Zahlen von 0 bis 179, und `rand()` ist eine Zufallszahl zwischen 0 und 1. Danach entfernen wir die Maske wieder:
 
 ```ruby
 remove_mask()
 ```
 
-Das fertige Bild sollte nun so aussehen:
+Das fertige Bild:
 
 <img src='rainbow.webp' class='full' alt='Fertige Pixelgrafik mit blau gestreiftem Himmel, Regenbogen und grünen Hügeln.'>
 
 ## Bild speichern
 
-Um das Bild zu speichern, füge den folgenden Code hinzu:
+Schreib als letzte Zeile vor `end`:
 
 ```ruby
 save_as_png('rainbow.png')
 ```
 
-Hier siehst du noch einmal den gesamten Code:
+Führe das Programm noch einmal aus. Die Datei `rainbow.png` liegt danach im Ordner, in dem du `ruby rainbow.rb` aufgerufen hast, also in `/workspace`. Öffne sie in Visual Studio Code mit <kbd>Strg</kbd><kbd>P</kbd> und »rainbow.png«, um sie anzusehen.
+
+_task(bild-gespeichert)
+
+Hier ist noch einmal das ganze Programm:
 
 _include_file(rainbow.rb, ruby)
 
+## Dein eigenes Bild
+
+Jetzt bist du dran: Zeichne ein eigenes Bild. Lege dafür eine neue Datei `/workspace/bild.rb` an, die am Ende `save_as_png('bild.png')` aufruft. Ein paar Ideen:
+
+<img class='full' src='ideas.webp' alt='Ein Nachthimmel mit Sternen, einer gelben Sonne, einem rosa Stern aus Linien, einem Haus mit rotem Dach und dem Wort »Hallo«.'>
+
+- **Sterne:** 100 Pixel an zufälligen Stellen. `rand(320)` ist eine zufällige ganze Zahl von 0 bis 319.
+  ```ruby
+  100.times do
+      set_color(15)
+      set_pixel(rand(320), rand(120))
+  end
+  ```
+- **Sonne:** `fill_circle(260, 40, 20)` ist ein gefüllter Kreis um (260, 40) mit dem Radius 20.
+- **Haus:** ein Rechteck und darüber ein Dreieck aus drei Eckpunkten:
+  ```ruby
+  set_color(4)
+  fill_rect(40, 110, 100, 170)
+  set_color(29)
+  fill_triangle(30, 110, 110, 110, 70, 75)
+  ```
+- **Text:** `draw_text(130, 150, 'Hallo', '8x13B', 2)` schreibt »Hallo« in der Schrift `8x13B`, doppelt so groß. Weitere Schriften: `4x6`, `6x10`, `7x13`, `9x15` und mit `B` dahinter fett.
+- **Mit einer Schildkröte zeichnen:** Eine Schildkröte läuft über die Zeichenfläche und zieht eine Linie hinter sich her. Dieser Stern entsteht aus fünf Strecken mit je einer Drehung um 144°:
+  ```ruby
+  t = Pixelflow::Turtle.new(self)
+  t.x = 180
+  t.y = 60
+  t.set_color(25)
+  5.times do
+      t.forward(50)
+      t.turn_right(144)
+  end
+  ```
+
+Alle Befehle stehen in der [Dokumentation des Pixelflow Canvas](https://specht.github.io/pixelflow_canvas_ruby/drawing_things.html), mit Bildern zu jedem Befehl.
+
+_task(eigenes-bild)
+
 ## Zusammenfassung
 
-In diesem Kapitel hast du gesehen, wie du Pixelgrafiken mit dem Pixelflow Canvas programmieren kannst. Du hast gesehen, wie man komplexe Szenen aus einfachen Formen zusammensetzen kann und anschließend das Bild speichern kann. Eine Übersicht über alle Befehle findest du in der [Dokumentation des Pixelflow Canvas](https://specht.github.io/pixelflow_canvas_ruby/drawing_things.html).
+Du hast gesehen, wie ein Programm ein Bild Pixel für Pixel zusammensetzt: aus Rechtecken, Kurven und Kreisen, mit gefüllten Flächen und einer Maske, die festlegt, was übermalt werden darf. Mit `save_as_png` wird aus dem Bild eine Datei, die du weitergeben kannst.
