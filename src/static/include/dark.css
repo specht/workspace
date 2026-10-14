@@ -29,7 +29,8 @@ html[data-bs-theme="dark"] {
         --bs-btn-active-bg: #172a45;
         --bs-btn-active-border-color: #2b4a73;
     }
-    .btn-menu i.bi {
+    .btn-menu i.bi,
+    .btn-menu svg.bi {
         color: #a3a29d;
     }
     p {

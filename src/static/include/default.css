@@ -425,14 +425,17 @@ input.error {
     color: inherit;
 }
 
-/* TIC-80's own little computer (logo from TIC-80, MIT): pixel art, kept
-   crisp, as tall as the icons of the other buttons. */
-.btn-menu-pixel-icon {
-    height: 1.15em;
-    width: auto;
-    margin: -0.15em 0.55em 0 0;
-    vertical-align: middle;
-    image-rendering: pixelated;
+/* TIC-80's little computer, drawn as a line icon like the Bootstrap icons
+   around it (after TIC-80's logo). */
+.btn-menu svg.bi {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+    color: #6c757d;
+}
+
+.btn-menu.active svg.bi {
+    color: inherit;
 }
 
 .btn-menu-profile {
