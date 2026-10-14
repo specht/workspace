@@ -445,6 +445,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   wenn der Workspace aus ist: in einem Lese-Container mit demselben Image,
   ohne Netz, der Ordner nur lesbar. Bisher hieß es dann »Starte zuerst
   deinen Workspace«, auch auf der Klassenseite.
+- Handbuch »Interaktive Geschichten«: die 17 Abschnitte in sechs Gruppen
+  (Eine Geschichte schreiben, Was sich die Geschichte merkt, Ordnung im
+  Projekt, Gestalten, Für Fortgeschrittene, Wenn etwas nicht klappt), mit
+  Unterabschnitten für »Aussehen anpassen«. Adressen und eingebundene Teile
+  bleiben gleich.
 - Neue Aktivität »Ein Spiel in 64 KB« (TIC-80, unter Computergrafik): Lua,
   Konsole und Editoren, Speichern als Textdatei in `/workspace/TIC-80`, der
   Bildschirm, dann Schritt für Schritt das Spiel »Star Catcher« (Figur,
