@@ -22,6 +22,14 @@ module MeasureCheck
         'se' => %w[Schweden Sweden], 'dk' => %w[Dänemark Denmark], 'ie' => %w[Irland Ireland],
         'lu' => %w[Luxemburg Luxembourg], 'cz' => %w[Tschechien Czechia], 'jp' => %w[Japan],
     }.freeze
+    # Hosting companies whose servers answer with a name under a generic
+    # domain (.net, .com): the country they are in. rubiomonocoat.pe (TCP/IP
+    # tutorial) moved from linweb443.webhosting.be to Combell in 2026.
+    HOSTERS = {
+        'combell-ops.net' => 'be', 'combell.net' => 'be',
+        'your-server.de' => 'de', 'your-cloud.host' => 'de', 'hetzner.com' => 'de',
+        'ovh.net' => 'fr', 'ip-ovh.net' => 'fr',
+    }.freeze
     INITIAL_TTLS = [32, 64, 128, 255].freeze
 
     # --- extractors (pure) ------------------------------------------------------
@@ -46,7 +54,9 @@ module MeasureCheck
             host = m[1]
             return nil if host =~ /\A[\d.]+\z/ || host.include?(':')
 
-            tld = host.split('.').last.downcase
+            host = host.downcase
+            hoster = HOSTERS.keys.find { |domain| host == domain || host.end_with?(".#{domain}") }
+            tld = hoster ? HOSTERS[hoster] : host.split('.').last
             tld = 'uk' if tld == 'gb'
             (COUNTRIES[tld] || [tld.upcase]).first
         when 'traceroute_hops'

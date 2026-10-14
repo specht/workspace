@@ -2,26 +2,23 @@
 image: tcpip.webp
 </div>
 
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3">
+</div>
+
 # TCP/IP-Verbindungen
 
 <p class='abstract'>
 In diesem Kapitel lernst du, wie du mit Linux Netzwerkverbindungen aufbaust und mit anderen Rechnern kommunizierst. Du wirst lernen, wie du die IP-Adresse deines Computers herausfindest, wie du andere Rechner im Netzwerk anpingst, Dateien mit <code>wget</code> herunterlädst und mit <code>curl</code> APIs abfragst. Außerdem wirst du lernen, wie du mit <code>netcat</code> chatten kannst.
 </p>
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
+## Vorbereitung
 
-<img class='full' src='fresh-start.webp' alt=''>
+_include(workspace#terminal-oeffnen)
 
-Schließe die linken Seitenleiste, indem du <kbd>Strg</kbd><kbd>B</kbd> drückst, um mehr Platz zu haben.
-Öffne als nächstes das Terminal, indem du den Shortcut <kbd>Strg</kbd><kbd>J</kbd> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
-
-<img class='full' src='got-terminal.webp' alt=''>
-
-<img src='../common/maximize-terminal.webp' class='r' style='width: 25em;' alt=''>
-
-Du kannst das Terminal auch maximieren, indem du auf das Symbol in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du jederzeit mit <kbd>Strg</kbd><kbd>B</kbd> ein- und ausblenden.
-
-## Eigene IP-Adresse herausfinden
+## Die eigene Adresse
 
 <div class='hint books'>
 In diesem Abschnitt lernst du den Befehl <code>ifconfig</code> kennen.
@@ -35,11 +32,22 @@ ifconfig
 
 Du solltest nun folgende Ausgabe sehen:
 
+<!-- tutorial-screenshot
+# Terminal öffnen: Handbuch »Workspace«, eingebunden oben
+hide-left-sidebar
+terminal-open
+terminal-maximize
+terminal-run: clear
+terminal-run: ifconfig
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='ifconfig.webp' alt=''>
 
 Zu sehen sind zwei Netzwerkadapter:
 
-- `eth0` (»Ethernet«) mit der IP-Adresse `172.17.0.12`, der mit dem Internet verbunden ist
+- `eth0` (»Ethernet«), über den dein Workspace mit dem Internet verbunden ist, mit einer IP-Adresse, die mit `172.` beginnt
 - `lo` (»Loopback«) mit der IP-Adresse `127.0.0.1`, der nur für lokale Verbindungen genutzt wird
 
 <div class='hint'>
@@ -55,21 +63,32 @@ _task(adresse)
 
 _task(loopback)
 
-## Andere Rechner anpingen
+## Wie weit ist es?
+
+### Andere Rechner anpingen
 
 <div class='hint books'>
 In diesem Abschnitt lernst du den Befehl <code>ping</code> kennen.
 </div>
 
-Um zu überprüfen, ob du andere Rechner  erreichen kannst, kannst du den
+Um zu überprüfen, ob du andere Rechner erreichen kannst, kannst du den
 Befehl `ping` verwenden. Gib einfach `ping` gefolgt von der IP-Adresse eines anderen Rechners ein.
-Wir verwenden in diesem Beispiele die IP-Adresse von Googles DNS-Server:
+Wir verwenden in diesem Beispiel die IP-Adresse von Googles DNS-Server:
 
 ```bash
 ping 8.8.8.8
 ```
 
 Anschließend solltest du eine Ausgabe wie diese sehen:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: ping 8.8.8.8
+sleep: 4.5
+press: Control+C
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='ping-8-8-8-8.webp' alt=''>
 
@@ -79,7 +98,7 @@ Die Pakete werden im Abstand von einer Sekunde gesendet, bis du den Befehl mit
 <kbd>Strg</kbd><kbd>C</kbd> abbrichst.
 
 Die Angabe, die du unter »time« siehst, ist die Zeit in Millisekunden, die das Paket benötigt hat, um zum Ziel zu gelangen und zurück.
-Umso kleiner die Zeit, desto besser ist die Verbindung: im Bild oben beträgt die Zeit ca. 5,3 ms.
+Je kleiner die Zeit, desto besser ist die Verbindung: Im Bild oben sind es nur wenige Millisekunden. Nach <kbd>Strg</kbd><kbd>C</kbd> fasst `ping` zusammen, wie viele Pakete angekommen sind und wie lange sie im Schnitt gebraucht haben.
 
 Wenn du deinen eigenen Rechner anpingst, sollte die »Roundtrip Time« sehr gering sein, da die Pakete nicht das lokale Netzwerk verlassen müssen:
 
@@ -87,7 +106,16 @@ Wenn du deinen eigenen Rechner anpingst, sollte die »Roundtrip Time« sehr geri
 ping 127.0.0.1
 ```
 
-Wie du siehst, ist die »Roundtrip Time« mit ca. 0,05 ms sehr viel kleiner:
+Wie du siehst, ist die »Roundtrip Time« sehr viel kleiner, deutlich unter einer Millisekunde:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: ping 127.0.0.1
+sleep: 4.5
+press: Control+C
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='ping-127-0-0-1.webp' alt=''>
 
@@ -97,7 +125,16 @@ Wenn wir hingegen einen Server anpingen, der etwas weiter entfernt ist, z.B. ein
 ping rubiomonocoat.pe
 ```
 
-Die Roundtrip Time beträgt jetzt ca. 14,5 ms:
+Die Roundtrip Time ist jetzt etwas höher:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: ping rubiomonocoat.pe
+sleep: 4.5
+press: Control+C
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='ping-rubiomonocoat.webp' alt=''>
 
@@ -112,7 +149,28 @@ _task(lichtgeschwindigkeit)
 
 _task(standort)
 
-## Den Pfad von IP-Paketen verfolgen
+### Ein Server am anderen Ende der Welt
+
+Ganz anders sieht es aus, wenn ein Server wirklich weit weg steht. Die Australian National University in Canberra betreibt ihre Webseite selbst, in Australien:
+
+```bash
+ping www.anu.edu.au
+```
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: ping www.anu.edu.au
+sleep: 4.5
+press: Control+C
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
+<img class='full' src='ping-anu.webp' alt=''>
+
+Jetzt braucht jedes Paket für Hin und Zurück mehr als eine Drittelsekunde. Berlin und Canberra liegen gut 16 000 km auseinander; selbst das Licht in einer Glasfaser bräuchte für Hin und Zurück mindestens 160 ms. Den Rest kosten Umwege der Kabel und die Router unterwegs. Dass sich der Rechner als `policyforum.net` meldet, ist übrigens nur ein zweiter Name desselben Servers: Die Adresse `130.56.67.33` gehört der Universität.
+
+### Den Weg der Pakete verfolgen
 
 <div class='hint books'>
 In diesem Abschnitt lernst du den Befehl <code>traceroute</code> kennen.
@@ -130,6 +188,9 @@ Wir haben hier noch den Parameter <code>-q 1</code> hinzugefügt, um nur ein Pak
 </div>
 
 Anschließend solltest du eine Ausgabe wie diese sehen:
+
+<!-- Von Hand aufgenommen, im Workspace-Server: Ein generiertes Bild zeigte
+     den Weg aus dem Netz des Rechners, auf dem die Bilder entstehen. -->
 
 <img class='full' src='traceroute-q-1-8-8-8-8.webp' alt=''>
 
@@ -153,7 +214,9 @@ _task(traceroute-erklaeren)
 
 _task(router-zaehlen)
 
-## Dateien herunterladen
+## Daten aus dem Netz holen
+
+### Dateien herunterladen: `wget`
 
 <div class='hint books'>
 In diesem Abschnitt lernst du den Befehl <code>wget</code> kennen.
@@ -168,9 +231,24 @@ wget https://github.com/begilbert-sys/2048-in-C/raw/main/main.c
 
 Du solltest sehen, wie die Datei `main.c` heruntergeladen wird:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: wget https://github.com/begilbert-sys/2048-in-C/raw/main/main.c
+terminal-wait-for-prompt
+wait-for-file: main.c
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='wget-2048.webp' alt=''>
 
-Du solltest jetzt eine Datei `main.c` in deinem aktuellen Verzeichnis haben:
+Du solltest jetzt eine Datei `main.c` in deinem aktuellen Verzeichnis haben (`ls -l`):
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: ls -l
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='ls-2048.webp' alt=''>
 
@@ -181,8 +259,20 @@ gcc main.c -o 2048 -lncurses -lm
 ```
 
 <div class='hint'>
-Das Spiel benötigt die Bibliotheken <code>ncurses</code> und <code>math</code>, weshalb wir dem Compiler mit den Option <code>-lncurses</code> und <code>-lm</code> mitteilen, dass er diese Bibliotheken einbinden soll.
+Das Spiel benötigt die Bibliotheken <code>ncurses</code> und <code>math</code>, weshalb wir dem Compiler mit den Optionen <code>-lncurses</code> und <code>-lm</code> mitteilen, dass er diese Bibliotheken einbinden soll.
 </div>
+
+Danach liegt neben `main.c` das Programm `2048`:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: gcc main.c -o 2048 -lncurses -lm
+terminal-wait-for-prompt
+wait-for-file: 2048
+terminal-run: ls -l
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='ls-2048-bin.webp' alt=''>
 
@@ -192,25 +282,48 @@ Das Spiel ist jetzt kompiliert und kann mit dem Befehl `./2048` ausgeführt werd
 ./2048
 ```
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: ./2048
+sleep: 1.5
+press: ArrowLeft
+sleep: 0.3
+press: ArrowUp
+sleep: 0.3
+press: ArrowRight
+sleep: 1
+crop-terminal-lines: 99
+-->
+
 <img class='full' src='2048.webp' alt='Das Spiel 2048 läuft als vier mal vier großes Zahlenraster im Terminal.'>
 
 Du kannst das Spiel mit den Pfeiltasten steuern und mit <kbd>Strg</kbd><kbd>C</kbd> beenden.
 
 _task(spiel-2048)
 
-## Mit APIs interagieren
+### Webseiten und APIs: `curl`
 
 <div class='hint books'>
 In diesem Abschnitt lernst du den Befehl <code>curl</code> kennen.
 </div>
 
-Du kannst auch Dateien herunterladen, indem du den Befehl `curl` verwendest. Der Unterschied zwischen `wget` und `curl` ist, dass `curl` standardmäßig den Inhalt der Datei im Terminal ausgibt, während `wget` die Datei speichert. `curl` eignet sich auch gut, um mit Webseiten und APIs zu kommunizieren. Gib den folgenden Befehl ein, um eine Webseite Datei mit `curl` herunterzuladen, wie es auch ein Webbrowser tun würde:
+Du kannst auch Dateien herunterladen, indem du den Befehl `curl` verwendest. Der Unterschied zwischen `wget` und `curl` ist, dass `curl` standardmäßig den Inhalt der Datei im Terminal ausgibt, während `wget` die Datei speichert. `curl` eignet sich auch gut, um mit Webseiten und APIs zu kommunizieren. Gib den folgenden Befehl ein, um eine Webseite mit `curl` herunterzuladen, wie es auch ein Webbrowser tun würde:
 
 ```bash
 curl https://gymnasiumsteglitz.de | less
 ```
 
 Verwende die Pfeiltasten, um durch die Webseite zu scrollen, und drücke <kbd>Q</kbd>, um `less` zu beenden.
+
+<!-- tutorial-screenshot
+press: Control+C
+terminal-wait-for-prompt
+terminal-run: clear
+terminal-run: curl https://gymnasiumsteglitz.de | less
+wait-for-text: html
+sleep: 1
+crop-terminal-lines: 99
+-->
 
 <img class='full' src='curl-gyst.webp' alt=''>
 
@@ -219,6 +332,15 @@ Du kannst `curl` auch verwenden, um dir die HTTP-Header anzuschauen, die ein Web
 ```bash
 curl -I https://gymnasiumsteglitz.de
 ```
+
+<!-- tutorial-screenshot
+press: q
+terminal-wait-for-prompt
+terminal-run: clear
+terminal-run: curl -I https://gymnasiumsteglitz.de
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='curl-i-gyst.webp' alt=''>
 
@@ -232,19 +354,33 @@ curl https://catfact.ninja/fact
 
 Die Ausgabe ist etwas schwer zu lesen:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: curl https://catfact.ninja/fact
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='curl-catfact.webp' alt=''>
 
-Die Antwort ist im JSON-Format formatiert. Dieses Format einigt sich hervorragend, um es in einem Programm oder Skript zu verarbeiten. Du kannst die Ausgabe auch mit `jq` formatieren, einem Werkzeug, das JSON-Daten in einer schönen und übersichtlichen Form ausgibt:
+Die Antwort ist im JSON-Format formatiert. Dieses Format eignet sich hervorragend, um es in einem Programm oder Skript zu verarbeiten. Du kannst die Ausgabe auch mit `jq` formatieren, einem Werkzeug, das JSON-Daten in einer schönen und übersichtlichen Form ausgibt:
 
 ```bash
 curl -s https://catfact.ninja/fact | jq
 ```
 
 <div class='hint'>
-Wir haben hier noch die Option <code>-s</code an <code>curl</code> übergeben, um die Fortschrittsanzeige zu deaktivieren.
+Wir haben hier noch die Option <code>-s</code> an <code>curl</code> übergeben, um die Fortschrittsanzeige zu deaktivieren.
 </div>
 
 Die Ausgabe ist jetzt viel übersichtlicher:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: curl -s https://catfact.ninja/fact | jq
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='curl-catfact-jq.webp' alt=''>
 
@@ -254,10 +390,12 @@ _task(katzenfakt)
 
 Es gibt eine Vielzahl von APIs, die du mit `curl` abfragen kannst. Manche davon sind frei zugänglich, aber einige benötigen einen API-Schlüssel. Die Dokumentation der API sollte dir sagen, wie du den Schlüssel erhältst und wie du ihn in deinen Abfragen verwendest. Jemand hat sich die Mühe gemacht und eine Liste von [Public APIs](https://github.com/public-apis/public-apis) zusammengestellt, die du durchsuchen kannst.
 
-## ASCII-Kino
+## Zum Ausprobieren
+
+### ASCII-Kino
 
 <div class='hint books'>
-In diesem Abschnitt lernst du den Befehl <code>telnet</code> kennen, den du aber gar keinen Fall verwenden solltest, um Verbindungen zu anderen Servern aufzubauen. Wir verwenden ihn hier nur, um die ASCII-Version von Star Wars zu schauen.
+In diesem Abschnitt lernst du den Befehl <code>telnet</code> kennen, den du aber auf keinen Fall verwenden solltest, um Verbindungen zu anderen Servern aufzubauen. Wir verwenden ihn hier nur, um die ASCII-Version von Star Wars zu schauen.
 </div>
 
 
@@ -269,7 +407,14 @@ telnet towel.blinkenlights.nl
 
 Du kannst jetzt die ASCII-Version von Star Wars sehen:
 
-<img class='full' src='starwars.webp' alt='Eine Star-Wars-Szene mit Raumschiff und Planeten wird aus Textzeichen im Terminal dargestellt.'>
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: telnet towel.blinkenlights.nl
+sleep: 25
+crop-terminal-lines: 99
+-->
+
+<img class='full' src='starwars.webp' alt='Eine Star-Wars-Szene aus Textzeichen im Terminal.'>
 
 <img src='terminal-kill.webp' class='r' style='width: 25em;' alt=''>
 
@@ -311,7 +456,7 @@ Du solltest zwei Dateien sehen: `id_rsa` und `id_rsa.pub`. `id_rsa` ist dein pri
 - ssh mit public key
 - Chat mit `nc` -->
 
-## Chatten mit `netcat`
+### Chatten mit `netcat`
 
 <div class='hint handshake'>
 In diesem Abschnitt lernst du den Befehl <code>netcat</code> kennen. Achtung: Partnerarbeit! Hierfür brauchst du eine zweite Person, die ebenfalls Zugriff auf einen eigenen Workspace hat.
@@ -337,7 +482,7 @@ Die Parameter `-l` und `-p 1234` bedeuten, dass `netcat` auf dem Port 1234 (`-p 
 
 <img class='full' src='nc-listen.webp' alt=''>
 
-Anschließen verbindet sich der Client (rechts) mit dem Server:
+Anschließend verbindet sich der Client (rechts) mit dem Server:
 
 ```bash
 netcat 172.17.0.12 1234
@@ -359,4 +504,9 @@ Der Zweck von <code>netcat</code> ist es eigentlich nicht, zu chatten. Man kann 
 
 ## Zusammenfassung
 
-In diesem Kapitel hast du gelernt, wie du mit Linux Netzwerkverbindungen aufbaust und mit anderen Rechnern kommunizierst. Du hast gelernt, wie du die IP-Adresse deines Computers herausfindest, wie du andere Rechner im Netzwerk anpingst, Dateien mit `wget` herunterlädst und mit `curl` APIs abfragst. Außerdem hast du gelernt, wie du mit `netcat` chatten kannst.
+<table class='table table-sm'>
+<tr><th>Adresse</th><td><code>ifconfig</code></td></tr>
+<tr><th>Entfernung</th><td><code>ping</code>, <code>traceroute -q 1</code></td></tr>
+<tr><th>Herunterladen</th><td><code>wget</code>, <code>curl</code>, <code>curl -I</code> (nur die Header), <code>jq</code> (JSON lesbar machen)</td></tr>
+<tr><th>Verbinden</th><td><code>telnet</code> (unverschlüsselt, nur noch fürs Kino), <code>netcat -l -p 1234</code> und <code>netcat ADRESSE 1234</code></td></tr>
+</table>

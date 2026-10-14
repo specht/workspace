@@ -33,6 +33,9 @@ class MeasureCheckTest < Minitest::Test
         assert_in_delta 14.452, MeasureCheck.extract('ping_rtt_avg', PING_PE), 1e-9
         assert_equal 12, MeasureCheck.extract('ping_hops', PING_PE)
         assert_equal 'Belgien', MeasureCheck.extract('ping_reply_country', PING_PE)
+        # A hoster's generic name counts as the hoster's country.
+        combell = "64 bytes from 188.208.37.117.static.hosted.by.combell-ops.net (188.208.37.117): icmp_seq=1 ttl=51 time=25.3 ms\n"
+        assert_equal 'Belgien', MeasureCheck.extract('ping_reply_country', combell)
         assert_equal 'nginx/1.24.0', MeasureCheck.extract('http_header:Server', CURL)
         assert_equal 3, MeasureCheck.extract('traceroute_hops', "traceroute to x\n 1  a  1 ms\n 2  b  2 ms\n 3  c  3 ms\n")
         assert_nil MeasureCheck.extract('ping_rtt_avg', 'ping: unknown host')

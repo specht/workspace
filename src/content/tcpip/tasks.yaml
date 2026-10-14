@@ -74,10 +74,11 @@ tasks:
       compare: text
       fields:
         - { label: Land, run: ping -c 1 -W 2 rubiomonocoat.pe, extract: ping_reply_country }
-    hint: Schau in die Zeilen, die mit »64 bytes from« beginnen.
+    hint: Schau in die Zeilen, die mit »64 bytes from« beginnen. Endet der Name nicht auf ein Länderkürzel, such nach der Firma, der er gehört.
     solution: |
-      Es antwortet `linweb443.webhosting.be`, ein belgischer Hoster. Die Endung
-      `.pe` sagt nichts über den Standort.
+      Es antwortet ein Rechner von `combell-ops.net`: Combell ist ein
+      belgischer Hoster. Die Endung `.pe` sagt nur, wo die Adresse registriert
+      ist, nicht, wo der Server steht.
 
   - id: ttl-drei
     title: Ein Paket mit TTL 3
