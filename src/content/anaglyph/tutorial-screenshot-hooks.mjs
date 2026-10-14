@@ -16,6 +16,16 @@ async function framesDrawn(page, count, timeout) {
     );
 }
 
+// Clicks a viewer button if camera[flag] is not already on (or off).
+async function toggleButton(page, id, flag, on, timeout) {
+    const changed = await page.evaluate(([id, flag, on]) => {
+        if (camera[flag] === on) return false;
+        document.getElementById(id).click();
+        return true;
+    }, [id, flag, on]);
+    if (changed) await framesDrawn(page, 2, timeout ?? readyTimeout);
+}
+
 export default {
     // The template is cloned to /workspace/anaglyph; scene files live there.
     writeFileSubdirectory: 'anaglyph',
@@ -53,18 +63,25 @@ export default {
         // hook: anaglyph on|off: the »Anaglyph 3D« button, to a known state.
         async anaglyph({ page, args, timeout }) {
             if (!['on', 'off'].includes(args)) throw new Error(`hook: anaglyph on|off, got: ${args}`);
-            const changed = await page.evaluate((on) => {
-                if (camera.enableAnaglyph === on) return false;
-                document.getElementById('bu-anaglyph').click();
-                return true;
-            }, args === 'on');
-            if (changed) await framesDrawn(page, 2, timeout ?? readyTimeout);
+            await toggleButton(page, 'bu-anaglyph', 'enableAnaglyph', args === 'on', timeout);
         },
 
         // hook: hide-controls: the buttons and the scene field leave the
         // picture, for a video of the scene alone.
         async 'hide-controls'({ page }) {
             await page.addStyleTag({ content: '#controls { display: none !important; }' });
+        },
+    },
+
+    // variants: dark anaglyph (src/tutorial-screenshots/README.md): the
+    // »Dunkel« and »Anaglyph 3D« buttons, each to a known state. The page
+    // shows the variant that fits its theme and the reader's glasses button.
+    variants: {
+        async dark({ page, on, timeout }) {
+            await toggleButton(page, 'bu-dark', 'enableDark', on, timeout);
+        },
+        async anaglyph({ page, on, timeout }) {
+            await toggleButton(page, 'bu-anaglyph', 'enableAnaglyph', on, timeout);
         },
     },
 

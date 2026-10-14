@@ -32,7 +32,7 @@ Wenn du auf der linken Seite im Explorer nun die Datei `scene.ini` siehst, hast 
 # Klonen wie im Handbuch »Workspace« (oben eingebunden), dann das
 # geöffnete Anaglyph-Projekt im Explorer
 show-left-sidebar
-clone-start: https://github.com/specht/anaglyph.git @ ec080795f88b538b382398fb91a8e234df3e0c0c
+clone-start: https://github.com/specht/anaglyph.git @ c2ac11e67cd0f53cde3447a28b830f08f2dc086a
 press: Enter
 wait-for-input-value: /workspace/
 press: Enter
@@ -47,7 +47,7 @@ sleep: 1
 
 ### Vorschau starten
 
-<img src='../common/go-live.webp' class='r' style='width: 21em;' alt=''>
+<img src='../reference/workspace/go-live.webp' class='r' style='width: 21em;' alt=''>
 
 Im Workspace ist bereits die Erweiterung »Live Server« installiert. Unten rechts findest du den Eintrag »Go Live«. Klicke darauf, um die Vorschau zu starten. Es öffnet sich ein neuer Tab in deinem Browser mit deiner 3D-Szene, die anfangs nur aus einem einzigen Würfel besteht.
 
@@ -57,7 +57,11 @@ Im Workspace ist bereits die Erweiterung »Live Server« installiert. Unten rech
 Tipp: Ziehe deinen Workspace und die Vorschau nebeneinander, damit du deine Änderungen live sehen kannst.
 </div>
 
-Unten links in der Vorschau findest du die Buttons »Anaglyph 3D« (für die Rot-Cyan-Brille), »Achsen« (zum Einblenden der Koordinatenachsen) und »Reset Camera« (um die Ansicht zurückzusetzen).
+Unten links in der Vorschau findest du die Buttons »Reset Camera« (um die Ansicht zurückzusetzen), »Kamera kopieren« (die Ansicht als Zeile für deine Szene, mehr dazu bei der Abgabe), »Anaglyph 3D« (für die Rot-Cyan-Brille), »Dunkel« (für einen dunklen Hintergrund) und »Achsen« (zum Einblenden der Koordinatenachsen).
+
+<div class='hint'>
+Ist dir der weiße Hintergrund zu hell? Klicke auf »Dunkel«. Die Bilder auf dieser Seite passen sich von selbst an, je nachdem ob du die Webseite hell oder dunkel eingestellt hast. Wenn du eine 3D-Brille hast, klicke auf das Brillen-Symbol <svg class='icon-3d-glasses' viewBox='0 0 24 24' aria-hidden='true'><path d='M1.5 8.5H22.5V15a1.5 1.5 0 0 1-1.5 1.5H15.2l-1.6-2.4a1.9 1.9 0 0 0-3.2 0L8.8 16.5H3A1.5 1.5 0 0 1 1.5 15Z' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linejoin='round'/><rect x='3.6' y='10.1' width='6.2' height='4.4' rx='0.8' fill='#e0342c'/><rect x='14.2' y='10.1' width='6.2' height='4.4' rx='0.8' fill='#19b6c8'/></svg> in der Ecke eines Bildes: Dann siehst du alle Bilder so, wie sie mit »Anaglyph 3D« aussehen.
+</div>
 
 ## Körper platzieren
 
@@ -71,9 +75,9 @@ Du solltest einen Würfel sehen, der in der Mitte des Bildschirms schwebt. Benut
 # erste Vorschau: der Würfel aus scene.ini, mit Anaglyph-Farben
 go-live
 tab: preview
+variants: dark anaglyph
 # Your browser window for the hand-made shots: 1906 CSS pixels wide
 zoom: 0.54
-click: Anaglyph 3D
 move-mouse: selector:canvas#defaultCanvas0
 sleep: 0.5
 hook: camera 20 20 -420
@@ -106,6 +110,7 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+variants: dark anaglyph
 # Your browser window for the hand-made shots: 1906 CSS pixels wide
 zoom: 0.54
 hook: camera 20 20 -450
@@ -148,6 +153,7 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+variants: dark anaglyph
 # Your browser window for the hand-made shots: 1906 CSS pixels wide
 zoom: 0.54
 hook: camera 20 20 -450
@@ -173,6 +179,7 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+variants: dark anaglyph
 # Your browser window for the hand-made shots: 1906 CSS pixels wide
 zoom: 0.54
 hook: camera 20 20 -450
@@ -201,6 +208,7 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+variants: dark anaglyph
 # Your browser window for the hand-made shots: 1906 CSS pixels wide
 zoom: 0.54
 hook: camera 20 20 -420
@@ -260,6 +268,7 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+variants: dark anaglyph
 # Your browser window for the hand-made shots: 1906 CSS pixels wide
 zoom: 0.54
 hook: camera 30 -45 -550 50 40 50
@@ -299,6 +308,7 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+variants: dark anaglyph
 # Your browser window for the hand-made shots: 1906 CSS pixels wide
 zoom: 0.54
 hook: camera 20 20 -430
@@ -338,6 +348,7 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+variants: dark anaglyph
 # Your browser window for the hand-made shots: 1906 CSS pixels wide
 zoom: 0.54
 hook: camera 20 20 -420
@@ -388,6 +399,7 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+variants: dark anaglyph
 # Your browser window for the hand-made shots: 1906 CSS pixels wide
 zoom: 0.54
 hook: camera 20 20 -400
@@ -416,6 +428,7 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+variants: dark anaglyph
 # Your browser window for the hand-made shots: 1906 CSS pixels wide
 zoom: 0.54
 hook: camera 20 20 -560
@@ -447,6 +460,7 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+variants: dark anaglyph
 # Your browser window for the hand-made shots: 1906 CSS pixels wide
 zoom: 0.54
 hook: camera 20 20 -450
@@ -480,6 +494,7 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+variants: dark anaglyph
 # Your browser window for the hand-made shots: 1906 CSS pixels wide
 zoom: 0.54
 hook: camera 20 20 -450 50 35 0
@@ -508,6 +523,7 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+variants: dark anaglyph
 # Your browser window for the hand-made shots: 1906 CSS pixels wide
 zoom: 0.54
 hook: camera 20 20 -450 50 35 0
@@ -563,6 +579,7 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+variants: dark anaglyph
 # Your browser window for the hand-made shots: 1906 CSS pixels wide
 zoom: 0.54
 hook: camera 20 20 -450
@@ -636,7 +653,6 @@ Während deine Szene angezeigt wird, läuft im Hintergrund eine Uhr mit. Die Anz
 
 ```ini
 shade = on
-stroke = off
 fill = gold
 shape = torus
 rotate = 0, t * 30, 0
@@ -644,20 +660,21 @@ rotate = 0, t * 30, 0
 
 In diesem Beispiel wird der Torus um 30 Grad pro Sekunde um die Y-Achse gedreht. Das bedeutet, dass er nach 3 Sekunden 90 Grad geschafft hat und nach 12 Sekunden eine volle Umdrehung gemacht hat.
 
-<!-- paused tutorial-screenshot
+<!-- tutorial-screenshot
 # Ring, der sich dreht (eine halbe Umdrehung, dann sieht er wieder gleich aus)
 write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
-viewport: 420x400
+variants: dark anaglyph
+viewport: 380x260
 hook: hide-controls
-hook: camera 20 20 -150
+hook: camera 20 20 -648
 record: 6s
 -->
 
 <div style='text-align: center; margin: 1em 0;'>
-<video src='animation1.mp4' autoplay loop muted aria-label='Ein goldener Torus dreht sich gleichmäßig um die Y-Achse.'></video>
+<video src='animation1.mp4' autoplay loop muted style='width: 380px; max-width: 100%;' aria-label='Ein goldener Torus dreht sich gleichmäßig um die Y-Achse.'></video>
 </div>  
 
 _task(umdrehung)
@@ -666,44 +683,45 @@ _task(umdrehung)
 
 ```ini
 shade = on
-stroke = off
 fill = orange
 shape = box
 rotate = cos(t * 2) * 10, 0, sin(t * 3) * 10
 ```
 
-<!-- paused tutorial-screenshot
+<!-- tutorial-screenshot
 # wackelnder Würfel (cos(2t) und sin(3t) wiederholen sich nach 2π Sekunden)
 write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
-viewport: 380x360
+variants: dark anaglyph
+viewport: 300x240
 hook: hide-controls
-hook: camera 20 20 -150
+hook: camera 20 20 -695
 record: 6.28s
 -->
 
 <div style='text-align: center; margin: 1em 0;'>
-<video src='animation2.mp4' autoplay loop muted aria-label='Ein orangefarbener Würfel wackelt im Raum hin und her.'></video>
+<video src='animation2.mp4' autoplay loop muted style='width: 300px; max-width: 100%;' aria-label='Ein orangefarbener Würfel wackelt im Raum hin und her.'></video>
 </div>
 
 **Aufgabe:** Erstelle eine Animation, bei der eine gelbe Sonne in der Mitte steht und eine blaue Erde um die Sonne kreist. Ein weißer Mond soll dabei um die Erde kreisen, und der Hintergrund ist schwarz wie das Weltall:
 
-<!-- paused tutorial-screenshot
+<!-- tutorial-screenshot
 # Sonne, Erde, Mond: eine Erdumrundung dauert 12 Sekunden
 write-file: scene.ini <- file:sonnensystem.ini
 sleep: 1
 preview-reload
 tab: preview
+variants: anaglyph
 viewport: 1029x382
 hook: hide-controls
-hook: camera 10 0 250
+hook: camera 10 0 -242
 record: 12s
 -->
 
 <div style='text-align: center; margin: 1em 0;'>
-<video src='animation3.mp4' autoplay loop muted style='max-width: 100%;' aria-label='Vor schwarzem Hintergrund kreist eine blaue Erde um eine gelbe Sonne, ein weißer Mond kreist um die Erde.'></video>
+<video src='animation3.mp4' autoplay loop muted style='width: 1029px; max-width: 100%;' aria-label='Vor schwarzem Hintergrund kreist eine blaue Erde um eine gelbe Sonne, ein weißer Mond kreist um die Erde.'></video>
 </div>
 
 _task(sonnensystem)
@@ -722,9 +740,9 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+variants: dark anaglyph
 # Your browser window for the hand-made shots: 1906 CSS pixels wide
 zoom: 0.54
-hook: anaglyph off
 hook: camera 20 20 -420
 crop-top: 27%
 crop-bottom: 27%
@@ -749,9 +767,9 @@ write-file: scene.ini <- previous-code
 sleep: 1
 preview-reload
 tab: preview
+variants: dark anaglyph
 # Your browser window for the hand-made shots: 1906 CSS pixels wide
 zoom: 0.54
-hook: anaglyph off
 hook: camera 20 20 -420
 crop-top: 27%
 crop-bottom: 27%
@@ -1029,6 +1047,16 @@ _task(allee)
 
 ## Deine Szene abgeben
 
-Zum Schluss suchst du dir deine schönste Szene aus. Sie kann aus einer der Aufgaben stammen oder ganz neu sein, Hauptsache, sie liegt als `.ini`-Datei im Ordner `/workspace/anaglyph`. Deine Abgabe ist eine Kopie: Du kannst danach weiter an der Datei arbeiten, eine neue Version abgeben oder deine Abgabe wieder löschen.
+Zum Schluss suchst du dir deine schönste Szene aus. Sie kann aus einer der Aufgaben stammen oder ganz neu sein, Hauptsache, sie liegt als `.ini`-Datei im Ordner `/workspace/anaglyph`.
+
+In der Galerie deiner Klasse erscheint die Szene aus einer festen Ansicht: aus der, die in deiner Datei steht. Dreh und verschieb die Szene in der Vorschau, bis sie am besten aussieht, klicke auf »Kamera kopieren« und füge die Zeile in deine Datei ein, zum Beispiel ganz oben:
+
+```ini
+camera = 20, -35, -320, 0, 40, 0
+```
+
+Die sechs Zahlen sind die beiden Drehwinkel in Grad, der Abstand und der Punkt, um den sich die Kamera dreht. Ohne diese Zeile zeigt die Galerie die Standardansicht, und die passt selten zu einer ganzen Szene. Mit »Reset Camera« kommst du jederzeit zu deiner Ansicht zurück.
+
+Sobald du unten eine Datei auswählst, zeigt die Karte, wie deine Szene in der Galerie aussehen wird. Deine Abgabe ist eine Kopie: Du kannst danach weiter an der Datei arbeiten, eine neue Version abgeben oder deine Abgabe wieder löschen.
 
 _task(galerie)
