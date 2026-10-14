@@ -922,7 +922,7 @@ async function parseTutorial(markdown, markdownPath) {
         if (recipe.showMouse) {
             // The version of the pointer drawing: a new one re-renders only
             // the shots that show the pointer.
-            resolved.showMouse = 2;
+            resolved.showMouse = 3;
         }
         if (recipe.sharpCanvas) {
             resolved.sharpCanvas = true;
@@ -2369,6 +2369,10 @@ async function addMousePointer(pngPath, { clip, width, height, shape }) {
             pngPath, '-background', 'none', '-gravity', 'NorthWest',
             '-extent', `${newWidth}x${newHeight}-${growLeft}-${growTop}`,
             pointerPath, '-geometry', `+${left + growLeft}+${top + growTop}`, '-composite',
+            // Only as much transparent space as the pointer and its shadow
+            // need: the border makes the corners transparent, so -trim cuts
+            // every fully transparent row and column at the edges.
+            '-bordercolor', 'none', '-border', '1', '-trim', '+repage',
             `PNG32:${pngPath}`,
         ]);
     } finally {
