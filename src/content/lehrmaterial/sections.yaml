@@ -2,12 +2,9 @@
   label: Interaktive Werkzeuge
   icon: /images/keyboard.png
   description: |
-    Spiele gestalten, Algorithmen erforschen, Datenstrukturen und Prozessoren
-    von innen sehen: vier Werkzeuge für einen Informatikunterricht, der Spaß
-    macht und in die Tiefe geht – mit Unterrichtsideen und echten Ansichten der
-    laufenden Anwendungen.
+    Spiele gestalten, ohne zu programmieren: ein Werkzeug für einen
+    Informatikunterricht, der Spaß macht und in die Tiefe geht. Die Sandboxes
+    (Sortieren, Datenstrukturen, CPU) sind Aktivitäten auf der Startseite; ihre
+    Unterrichtsideen stehen dort in der Notiz für Lehrkräfte.
   entries:
     - lehrmaterial-2d
-    - lehrmaterial-sortieren
-    - lehrmaterial-datenstrukturen
-    - lehrmaterial-cpu

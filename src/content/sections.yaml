@@ -121,13 +121,13 @@
   label: Sandboxes
   icon: /images/hammer-and-wrench.png
   description: |
-    Größere Programmieraufgaben in eigenständigen Apps: Datenstrukturen selbst
-    bauen, Sortierverfahren vergleichen, eine kleine CPU programmieren. Jede
+    Größere Programmieraufgaben in eigenständigen Apps: Sortierverfahren
+    vergleichen, Datenstrukturen selbst bauen, eine kleine CPU programmieren. Jede
     Sandbox prüft deinen Code mit eigenen Tests; mit Git gibst du ihn an die
     Klasse weiter.
   entries:
-    - sandbox-datenstrukturen
     - sandbox-sortieren
+    - sandbox-datenstrukturen
     - sandbox-cpu
 
 - key: programming_languages

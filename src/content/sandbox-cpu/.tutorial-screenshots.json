@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "screenshots": {
+    "cpu-sandbox.webp": {
+      "state_hash": "5e2c4ce9a8ac459021d52d4d6744ab32a1d38caff85acf48ede9eddd0a061f7e",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "0beec15502fb3cee94e294bb5e06e00c7a0e0e3adaf1f6eda49e18e6e7061f50"
+    },
+    "cpu-cycles.webp": {
+      "state_hash": "18faa237a79d77dcd87ebd1df881b35050e847cba36f35eb280b927b87ba753d",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "a2d70b5daa6092cfa9f16d3ff82ba3f2f6cd0230a11babee2c86acf0bb73710d"
+    },
+    "cpu-cube.webp": {
+      "state_hash": "d03b313747a8432be10dd3e077bdeed6fe12e7e83889ce1dc2dccb049841c720",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "23dd166da12c1350207701cdfa4b96ce923d1bbaa92111f23b7b2c253b6c1d0a"
+    }
+  }
+}

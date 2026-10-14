@@ -167,7 +167,14 @@ class Main < Sinatra::Base
     helpers Sinatra::Cookies
 
     # Pages that were renamed; old links and bookmarks lead to the new page.
-    MOVED_PAGES = { 'videothek' => 'filmdatenbank' }.freeze
+    MOVED_PAGES = {
+        'videothek' => 'filmdatenbank',
+        # Teacher pages that became part of their sandbox (2026-10): the app
+        # tour is on the activity page, the teaching notes in its teacher note.
+        'lehrmaterial-sortieren' => 'sandbox-sortieren',
+        'lehrmaterial-datenstrukturen' => 'sandbox-datenstrukturen',
+        'lehrmaterial-cpu' => 'sandbox-cpu',
+    }.freeze
 
     # Handbuch: reference pages, served under /reference/<slug>.
     REFERENCE_ROOT = '/src/content/reference'
@@ -6523,9 +6530,9 @@ class Main < Sinatra::Base
         # Guard the complete teacher namespace before a development reload can
         # discover a newly added article that was not yet in @@content.
         requested_slug = path.delete_prefix('/')
-        if ['lehrmaterial', 'lehrmaterial.html'].include?(requested_slug) ||
+        if !MOVED_PAGES.key?(requested_slug) && (['lehrmaterial', 'lehrmaterial.html'].include?(requested_slug) ||
             requested_slug.start_with?('lehrmaterial-') ||
-            (@@content[requested_slug] || {})[:teacher_only]
+            (@@content[requested_slug] || {})[:teacher_only])
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
             halt 403 unless teacher_account_logged_in?
