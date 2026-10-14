@@ -1,32 +1,32 @@
 {
-  "version": 1,
   "screenshots": {
-    "nebeneinander.webp": {
-      "state_hash": "13666124a26e1cc2c55d697c6747360d888f230d56d692895b57cf14c7af0fea",
-      "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "d4b5d09d16f84ffd7d97b61f94abbbf3dbcc635af73e5bd197cb6d6ade8babc8",
-      "variants": {
-        "nebeneinander-folie.webp": "0ab36a37d833787e6bb18eea1b608915c17ac6d0773c19f76c9be8b75ffbdb7a"
-      }
-    },
-    "spalten.webp": {
-      "state_hash": "60eeeb066e0e3be007543c9e7d5a9942200c7cf7d4a7900742e94ed0868d49bc",
-      "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "830725c106349e215e9263ddf0c8aa3bb1cde917a58a09168769142e42408b21",
-      "variants": {
-        "spalten-folie.webp": "7ce50440ddfb4f2469ac7419a8fc1b30cbd4ba7dd8b69f7d9c6dbc8c5c28e0ec"
-      }
-    },
     "beschriftung.webp": {
-      "state_hash": "0bbd7f9fb03da63994bff3b62d4bb3ff047757d34a9893a1798c68930ba658f4",
       "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
-      "workspace_look": "4.138.0-ls366",
       "output_sha256": "bd2fe35742133a3f4c9bee646ba6a1792ac9ac8d340c0f0ae21d93b769cb7a07",
+      "state_hash": "0bbd7f9fb03da63994bff3b62d4bb3ff047757d34a9893a1798c68930ba658f4",
       "variants": {
         "beschriftung-folie.webp": "3f4c2864e0d167581221af2c3176a913888854d54af8647fa455b38cbf1164ee"
-      }
+      },
+      "workspace_look": "4.138.0-ls366"
+    },
+    "nebeneinander.webp": {
+      "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
+      "output_sha256": "d4b5d09d16f84ffd7d97b61f94abbbf3dbcc635af73e5bd197cb6d6ade8babc8",
+      "state_hash": "13666124a26e1cc2c55d697c6747360d888f230d56d692895b57cf14c7af0fea",
+      "variants": {
+        "nebeneinander-folie.webp": "0ab36a37d833787e6bb18eea1b608915c17ac6d0773c19f76c9be8b75ffbdb7a"
+      },
+      "workspace_look": "4.138.0-ls366"
+    },
+    "spalten.webp": {
+      "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
+      "output_sha256": "830725c106349e215e9263ddf0c8aa3bb1cde917a58a09168769142e42408b21",
+      "state_hash": "60eeeb066e0e3be007543c9e7d5a9942200c7cf7d4a7900742e94ed0868d49bc",
+      "variants": {
+        "spalten-folie.webp": "7ce50440ddfb4f2469ac7419a8fc1b30cbd4ba7dd8b69f7d9c6dbc8c5c28e0ec"
+      },
+      "workspace_look": "4.138.0-ls366"
     }
-  }
+  },
+  "version": 1
 }

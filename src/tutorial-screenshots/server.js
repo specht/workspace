@@ -979,10 +979,22 @@ async function inheritDirectoryOwnership(target, directory) {
     }
 }
 
+// The manifest is looked up by name only, so its text has keys sorted at
+// every level: rendering in another order leaves the file unchanged.
+function sortedKeys(value) {
+    if (Array.isArray(value)) return value.map(sortedKeys);
+    if (!value || typeof value !== 'object') return value;
+    return Object.fromEntries(Object.keys(value).sort().map(key => [key, sortedKeys(value[key])]));
+}
+
+function manifestText(manifest) {
+    return `${JSON.stringify(sortedKeys(manifest), null, 2)}\n`;
+}
+
 async function writeManifest(directory, manifest) {
     const target = path.join(directory, MANIFEST_NAME);
     const temporary = `${target}.tmp-${process.pid}-${Date.now()}`;
-    await fs.writeFile(temporary, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
+    await fs.writeFile(temporary, manifestText(manifest), 'utf8');
     await fs.rename(temporary, target);
     await inheritDirectoryOwnership(target, directory);
 }
@@ -3263,7 +3275,7 @@ async function buildGenerationPlan(payload) {
 
 async function finalizeCurrentPlan(plan) {
     if (plan.shots.length > 0 &&
-        JSON.stringify(plan.oldManifest) !== JSON.stringify(plan.nextManifest)) {
+        manifestText(plan.oldManifest) !== manifestText(plan.nextManifest)) {
         await writeManifest(plan.tutorialDirectory, plan.nextManifest);
     }
 }

@@ -534,6 +534,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   kannte die Seite nicht), die Aktivität nutzte das x86-Schema von NASM.
   Ein Test prüft, dass jede Sprache an einem Code-Block bekannt ist; dabei
   fiel ```` ```javascript ```` auf (p5.js), das jetzt wie `js` gefärbt wird.
+- Die Listen der erzeugten Screenshots (`.tutorial-screenshots.json`) sind
+  nach Namen sortiert. Ein Rendern in anderer Reihenfolge ändert die Datei
+  nicht mehr.
 
 - Behoben: »Git kennt dich« schlug fehl, obwohl `git config --global` Name
   und E-Mail kannte. Die Prüfung lief mit dem `HOME` des Images (`/config`)

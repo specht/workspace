@@ -1,41 +1,41 @@
 {
-  "version": 1,
   "screenshots": {
-    "gem-install.webp": {
-      "state_hash": "0121f4f2585752504a9cae1d0117ce5fd18ad426195c73a31faa2873709a9c80",
-      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "e944850a8693163a2c2a94d75bbb6028504d56c806107b41b5e495357c838930"
-    },
-    "no-syntax-highlighting.webp": {
-      "state_hash": "8f6276c80fd82a6b28d21ac9ac1da8333ad6c024a2226c84e0393461f746e9a7",
-      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "e85079c7c7942ea68cc66bef5217f4ce1d873bb71bceba2328caa06632e6052c"
-    },
     "enter-filename.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "1fce67999c29275d01f319c3197d72e241c3a799a8b36ecb5815b4a57fc4e3aa",
       "state_hash": "f3678a86a392a72ad0fadfa5e1dba73948ce4ddbbd3072fb03a16046cedd1221",
-      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "1fce67999c29275d01f319c3197d72e241c3a799a8b36ecb5815b4a57fc4e3aa"
-    },
-    "syntax-highlighting.webp": {
-      "state_hash": "50b3e6ccac233e1caf1a0ae4c9fefad7c1ae0539267562ff67f56bfa1f4d087c",
-      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "862d9872fe593dd6dba42e0db664721a8e3dae86447d7c99cf5762af962521e9"
-    },
-    "show-canvas.webp": {
-      "state_hash": "f5c217665d1b8c7c3957da251662b86aa1846ae306b939d36af2508ca12f1073",
-      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "2005872a72581dd7c5baf965df490e5593f53f4c59064aa81db5188eac40744d"
+      "workspace_look": "4.138.0-ls366"
     },
     "first-pixel.webp": {
-      "state_hash": "822c612d116a99cb1b7c08bdee8d3ac4f1ec24f35197800ed9380d9ff0a51b53",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "9ef3e726ce5d8b96d995034593abb12daa29ff8c5ca5d1da54005359cd494d8b"
+      "output_sha256": "9ef3e726ce5d8b96d995034593abb12daa29ff8c5ca5d1da54005359cd494d8b",
+      "state_hash": "822c612d116a99cb1b7c08bdee8d3ac4f1ec24f35197800ed9380d9ff0a51b53",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "gem-install.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "e944850a8693163a2c2a94d75bbb6028504d56c806107b41b5e495357c838930",
+      "state_hash": "0121f4f2585752504a9cae1d0117ce5fd18ad426195c73a31faa2873709a9c80",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "no-syntax-highlighting.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "e85079c7c7942ea68cc66bef5217f4ce1d873bb71bceba2328caa06632e6052c",
+      "state_hash": "8f6276c80fd82a6b28d21ac9ac1da8333ad6c024a2226c84e0393461f746e9a7",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "show-canvas.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "2005872a72581dd7c5baf965df490e5593f53f4c59064aa81db5188eac40744d",
+      "state_hash": "f5c217665d1b8c7c3957da251662b86aa1846ae306b939d36af2508ca12f1073",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "syntax-highlighting.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "862d9872fe593dd6dba42e0db664721a8e3dae86447d7c99cf5762af962521e9",
+      "state_hash": "50b3e6ccac233e1caf1a0ae4c9fefad7c1ae0539267562ff67f56bfa1f4d087c",
+      "workspace_look": "4.138.0-ls366"
     }
-  }
+  },
+  "version": 1
 }

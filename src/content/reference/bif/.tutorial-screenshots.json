@@ -1,59 +1,59 @@
 {
-  "version": 1,
   "screenshots": {
     "bif-ordner.webp": {
-      "state_hash": "60f68aab0bf3d1c3fc08025456d28d7168e3ef8bbf6373cbe4e38899c4a2ec50",
       "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "d0296c344700f39efd67d0b6dbd9d180b7ced4af99700c8b453f201d1a707ffc"
+      "output_sha256": "d0296c344700f39efd67d0b6dbd9d180b7ced4af99700c8b453f201d1a707ffc",
+      "state_hash": "60f68aab0bf3d1c3fc08025456d28d7168e3ef8bbf6373cbe4e38899c4a2ec50",
+      "workspace_look": "4.138.0-ls366"
     },
     "grouped-graph.webp": {
+      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
+      "output_sha256": "4617a3f70db9a90000fffb84c8d7ae39e7020185d204607984ae81257773a847",
       "state_hash": "a80169c88c58bb01d5e1be17e2d7214e35de6a649e34ba22b922b105bd0ce1bf",
-      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "4617a3f70db9a90000fffb84c8d7ae39e7020185d204607984ae81257773a847"
-    },
-    "theme-default.webp": {
-      "state_hash": "82443f119b5fb00a11d5639800606cfc55431678b3e88641e8a719664fc89133",
-      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "4bdb9a8332e03711ac3d9be70540c2188cd36b0177a7e8ac234bac813c90b2a9"
-    },
-    "theme-paper.webp": {
-      "state_hash": "a6a7ce669d31f355585862169dac5cf7ceee82d16e71c316b8ea650143b3aca7",
-      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "3fc7d7de575a84c99baee7de900684f6ae12163571fd5d880249be3554585904"
-    },
-    "theme-playful.webp": {
-      "state_hash": "808283ee099d74607bc9e43ab8d1387ac893429015b9df3cda02c07ad1f57b2c",
-      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "6f4a8b69cb7b740f6da6e25c7ab79327d3cae87d0de9f42d480243e81ebde137"
-    },
-    "theme-mystery.webp": {
-      "state_hash": "cd86f45e801e3374db1a5686531b370aab53e202c71c0eb4bb6b989fe4f38639",
-      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "72ad82ae3b5fdbc0174a1c62b3ac913abea797af44051f619a7b56caa44a4aa2"
-    },
-    "theme-midnight.webp": {
-      "state_hash": "c18672ca2ed44d1af2d5d675de1aa496018f1582458a4f570579e30557fd08dd",
-      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "39f8605fb79e1bbf334456d40bacdff88b42f2034dcc656edc58f52d8863bbed"
-    },
-    "theme-terminal.webp": {
-      "state_hash": "ee06093ea86aa3d7325c3b3dd7bf377122a2bcd890305ec88243aa0ea9cfbaa7",
-      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "5d7ae955d42aca09eed7080a312474aa1dd58518bed0fed5963bf9784a23d7b5"
+      "workspace_look": "4.138.0-ls366"
     },
     "story-image.webp": {
-      "state_hash": "3706b6e831b70e60365573dd4dfa92ab56b0e89e6ac3ca3df8c10c5ee9bd820d",
       "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "4cb531c2fa6e9aea6abb4574d3d5321597fd2b37b45f6213c212921861d48378"
+      "output_sha256": "4cb531c2fa6e9aea6abb4574d3d5321597fd2b37b45f6213c212921861d48378",
+      "state_hash": "3706b6e831b70e60365573dd4dfa92ab56b0e89e6ac3ca3df8c10c5ee9bd820d",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "theme-default.webp": {
+      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
+      "output_sha256": "4bdb9a8332e03711ac3d9be70540c2188cd36b0177a7e8ac234bac813c90b2a9",
+      "state_hash": "82443f119b5fb00a11d5639800606cfc55431678b3e88641e8a719664fc89133",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "theme-midnight.webp": {
+      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
+      "output_sha256": "39f8605fb79e1bbf334456d40bacdff88b42f2034dcc656edc58f52d8863bbed",
+      "state_hash": "c18672ca2ed44d1af2d5d675de1aa496018f1582458a4f570579e30557fd08dd",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "theme-mystery.webp": {
+      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
+      "output_sha256": "72ad82ae3b5fdbc0174a1c62b3ac913abea797af44051f619a7b56caa44a4aa2",
+      "state_hash": "cd86f45e801e3374db1a5686531b370aab53e202c71c0eb4bb6b989fe4f38639",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "theme-paper.webp": {
+      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
+      "output_sha256": "3fc7d7de575a84c99baee7de900684f6ae12163571fd5d880249be3554585904",
+      "state_hash": "a6a7ce669d31f355585862169dac5cf7ceee82d16e71c316b8ea650143b3aca7",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "theme-playful.webp": {
+      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
+      "output_sha256": "6f4a8b69cb7b740f6da6e25c7ab79327d3cae87d0de9f42d480243e81ebde137",
+      "state_hash": "808283ee099d74607bc9e43ab8d1387ac893429015b9df3cda02c07ad1f57b2c",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "theme-terminal.webp": {
+      "environment_fingerprint": "64ffcf1fe2f29137b37ff98585b709f7c18e232acfd7ec1572f0c59f3c28233b",
+      "output_sha256": "5d7ae955d42aca09eed7080a312474aa1dd58518bed0fed5963bf9784a23d7b5",
+      "state_hash": "ee06093ea86aa3d7325c3b3dd7bf377122a2bcd890305ec88243aa0ea9cfbaa7",
+      "workspace_look": "4.138.0-ls366"
     }
-  }
+  },
+  "version": 1
 }

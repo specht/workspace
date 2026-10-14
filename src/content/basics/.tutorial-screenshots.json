@@ -1,35 +1,35 @@
 {
-  "version": 1,
   "screenshots": {
-    "vs-code-welcome.webp": {
-      "state_hash": "7b8c8bb8b511c8616af247bde929e7644ba79506d0006a11c8067e749d9de5d5",
+    "checkpoint-created.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "71470941b8975f035f619d751e2fa012068f29b456e5223cb6cf3c513ed6d4e6"
+      "output_sha256": "7d04f82ce68371019f9b0da9b641ba3bdfbe811da26fe5e58addeba641290701",
+      "state_hash": "b7ed8f3c315c21ead7e9a754a12ed9cd4f9564f315d8818d4925e509d95435e3",
+      "workspace_look": "4.138.0-ls366"
     },
     "create-checkpoint.webp": {
-      "state_hash": "d6ca6459df9a08208eb84afac3939f86a05aeb728acee185678a955807601a1e",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "0fd167f296f80db025438f0b6c8f1331eae3a813570e2058c554f1d1ced4604d"
+      "output_sha256": "0fd167f296f80db025438f0b6c8f1331eae3a813570e2058c554f1d1ced4604d",
+      "state_hash": "d6ca6459df9a08208eb84afac3939f86a05aeb728acee185678a955807601a1e",
+      "workspace_look": "4.138.0-ls366"
     },
     "enter-checkpoint-name.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "1be42b3db1fad1894ba2ca2bb963608976b42229d3107757143f7728d913d06f",
       "state_hash": "5b76fe738596b7b6c86b94e8f77b9cafae8022b3aff06f435c80d5cff7358004",
-      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "1be42b3db1fad1894ba2ca2bb963608976b42229d3107757143f7728d913d06f"
-    },
-    "checkpoint-created.webp": {
-      "state_hash": "b7ed8f3c315c21ead7e9a754a12ed9cd4f9564f315d8818d4925e509d95435e3",
-      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "7d04f82ce68371019f9b0da9b641ba3bdfbe811da26fe5e58addeba641290701"
+      "workspace_look": "4.138.0-ls366"
     },
     "restore-checkpoint.webp": {
-      "state_hash": "16d6111800bdffafb6953fb2af6140c40645c6049c3c9cd72dc09ac87bffe475",
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "44dd5e225b668c7bbfabf4214ff5dad5610f7d3e19c868c2916fdcc966347399"
+      "output_sha256": "44dd5e225b668c7bbfabf4214ff5dad5610f7d3e19c868c2916fdcc966347399",
+      "state_hash": "16d6111800bdffafb6953fb2af6140c40645c6049c3c9cd72dc09ac87bffe475",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "vs-code-welcome.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "71470941b8975f035f619d751e2fa012068f29b456e5223cb6cf3c513ed6d4e6",
+      "state_hash": "7b8c8bb8b511c8616af247bde929e7644ba79506d0006a11c8067e749d9de5d5",
+      "workspace_look": "4.138.0-ls366"
     }
-  }
+  },
+  "version": 1
 }
