@@ -163,6 +163,13 @@ pre.code-cypher .m {
     color: #ff9e64 !important;
 }
 
+/* A formula wider than the screen scrolls by itself instead of widening
+   the page (KaTeX, display mode). */
+.katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
 pre.wrap-code {
     white-space: pre-wrap;
     overflow-wrap: anywhere;
@@ -3188,5 +3195,13 @@ h3[id] {
 
     pre.copy-code {
         padding-right: 2.6em;
+    }
+
+    /* A table wider than the phone scrolls sideways by itself instead of
+       widening the page. */
+    table.table {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
     }
 }
