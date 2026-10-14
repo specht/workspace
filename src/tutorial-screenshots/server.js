@@ -561,6 +561,8 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
                 throw withSourceError(new Error(`Invalid preview port: ${port}`), source);
             }
             recipe.actions.push({ type: 'preview-port', port });
+        } else if ((match = line.match(/^open-site:\s*(\/[A-Za-z0-9_\-./]*)$/))) {
+            recipe.actions.push({ type: 'open-site', path: match[1] });
         } else if ((match = line.match(/^select-option:\s*(#[^\s=]+)\s*=\s*(\S+)$/))) {
             recipe.actions.push({ type: 'select-option', selector: match[1], value: match[2] });
         } else if ((match = line.match(/^click:\s*(.+)$/))) {
@@ -977,10 +979,22 @@ async function inheritDirectoryOwnership(target, directory) {
     }
 }
 
+// The manifest is looked up by name only, so its text has keys sorted at
+// every level: rendering in another order leaves the file unchanged.
+function sortedKeys(value) {
+    if (Array.isArray(value)) return value.map(sortedKeys);
+    if (!value || typeof value !== 'object') return value;
+    return Object.fromEntries(Object.keys(value).sort().map(key => [key, sortedKeys(value[key])]));
+}
+
+function manifestText(manifest) {
+    return `${JSON.stringify(sortedKeys(manifest), null, 2)}\n`;
+}
+
 async function writeManifest(directory, manifest) {
     const target = path.join(directory, MANIFEST_NAME);
     const temporary = `${target}.tmp-${process.pid}-${Date.now()}`;
-    await fs.writeFile(temporary, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
+    await fs.writeFile(temporary, manifestText(manifest), 'utf8');
     await fs.rename(temporary, target);
     await inheritDirectoryOwnership(target, directory);
 }
@@ -1909,6 +1923,18 @@ async function openNeo4jBrowser() {
     await preview.locator('[data-testid=main-editor] .cm-content').waitFor({ state: 'visible', timeout: 30_000 });
 }
 
+// A page of the Workspace site itself (TIC-80 at /tic80/, say) as the
+// preview tab, logged in as the screenshot account like the dashboard.
+async function openSitePage(pathname, hooks) {
+    if (preview && !preview.isClosed()) await preview.close();
+    preview = await context.newPage();
+    const response = await preview.goto(new URL(pathname, BASE_URL).href, {
+        waitUntil: 'domcontentloaded', timeout: 60_000,
+    });
+    if (!response?.ok()) throw new Error(`${pathname} returned HTTP ${response?.status()}`);
+    await waitForPreviewReady(preview, hooks);
+}
+
 async function selectOption(action, targetTab) {
     const page = requirePageForTab(targetTab, 'select-option');
     const select = page.locator(action.selector);
@@ -2539,6 +2565,7 @@ async function executeAction(action, targetTab, hooks) {
         case 'terminal-run': return terminalRun(action.text);
         case 'go-live': return goLive(hooks);
         case 'preview-port': return openPreviewPort(action.port, hooks);
+        case 'open-site': return openSitePage(action.path, hooks);
         case 'neo4j-browser': return openNeo4jBrowser();
         case 'select-option': return selectOption(action, targetTab);
         case 'write-file': return writeWorkspaceFile(action.path, action.contents, hooks);
@@ -3248,7 +3275,7 @@ async function buildGenerationPlan(payload) {
 
 async function finalizeCurrentPlan(plan) {
     if (plan.shots.length > 0 &&
-        JSON.stringify(plan.oldManifest) !== JSON.stringify(plan.nextManifest)) {
+        manifestText(plan.oldManifest) !== manifestText(plan.nextManifest)) {
         await writeManifest(plan.tutorialDirectory, plan.nextManifest);
     }
 }

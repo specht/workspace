@@ -36,6 +36,14 @@ test('teacher views a hand-in on the class page', async ({ freshWorkspace: works
   await expect(dialog).toHaveCount(0);
   await expect(teacher).toHaveURL(/\/klasse/);
 
+  // Back closes the viewer, even after switching files, and stays here.
+  await answers.locator('a.cb-submission').first().click();
+  await expect(dialog).toBeVisible();
+  await dialog.locator('.subview-file', { hasText: 'script.js' }).click();
+  await teacher.goBack();
+  await expect(dialog).toHaveCount(0);
+  await expect(teacher).toHaveURL(/\/klasse/);
+
   // A new round: the teacher deletes the group's hand-ins, after a warning.
   await answers.getByRole('button', { name: 'Alle Abgaben löschen' }).click();
   const warning = teacher.getByRole('dialog').filter({ hasText: 'Alle Abgaben löschen?' });

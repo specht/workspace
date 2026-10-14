@@ -137,4 +137,13 @@ class GitCheckTest < Minitest::Test
             assert_equal before, File.mtime(index)
         end
     end
+    # Empty output means the reader failed, not an empty repository.
+    def test_complete_output
+        assert GitCheck.complete?("NAME x\nTOP /workspace/a\n")
+        assert GitCheck.complete?("NOREPO\n")
+        assert GitCheck.complete?("NAME x\nNOGIT\n")
+        refute GitCheck.complete?('')
+        refute GitCheck.complete?(nil)
+        refute GitCheck.complete?("Unable to find image 'hs_code_server:latest'\n")
+    end
 end

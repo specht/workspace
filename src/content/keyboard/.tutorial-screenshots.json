@@ -1,17 +1,17 @@
 {
-  "version": 1,
   "screenshots": {
-    "keyboard-tutorial.webp": {
-      "state_hash": "ed1be3c36ee7452be8962b3a607a8d5701beb14366edde42ff6f4361a588a392",
-      "environment_fingerprint": "bab52b2c950d1a2bcb330f12502f9482d6e7ce760376b84a667a303236c70a2e",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "b7905b569e7d1d2340a1aba53d4aacf59781f8556262d0c844a30f4c7f4613bb"
-    },
     "keyboard-chapters.webp": {
-      "state_hash": "448e4b5be4787d9772c9657514ecdc0932ae2e9bcfba43c4931faefc4a1d148b",
       "environment_fingerprint": "bab52b2c950d1a2bcb330f12502f9482d6e7ce760376b84a667a303236c70a2e",
-      "workspace_look": "4.138.0-ls366",
-      "output_sha256": "5d1f014315d8ca94231887a9daa4de8cf26d309a9092d4cd5cf237dbb4b4e72d"
+      "output_sha256": "5d1f014315d8ca94231887a9daa4de8cf26d309a9092d4cd5cf237dbb4b4e72d",
+      "state_hash": "448e4b5be4787d9772c9657514ecdc0932ae2e9bcfba43c4931faefc4a1d148b",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "keyboard-tutorial.webp": {
+      "environment_fingerprint": "bab52b2c950d1a2bcb330f12502f9482d6e7ce760376b84a667a303236c70a2e",
+      "output_sha256": "b7905b569e7d1d2340a1aba53d4aacf59781f8556262d0c844a30f4c7f4613bb",
+      "state_hash": "ed1be3c36ee7452be8962b3a607a8d5701beb14366edde42ff6f4361a588a392",
+      "workspace_look": "4.138.0-ls366"
     }
-  }
+  },
+  "version": 1
 }

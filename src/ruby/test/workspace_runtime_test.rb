@@ -90,6 +90,7 @@ class WorkspaceRuntimeTest < Minitest::Test
         assert_includes command, '-v /srv/workspace/user/abcdefghijklmnop/workspace:/workspace'
         assert_includes command, '--network workspace_user'
         assert_includes command, '-v /dev/null:/etc/resolv.conf:ro'
+        assert_includes command, '-e DOTNET_CLI_TELEMETRY_OPTOUT=1'
         assert command.end_with?('--name hs_code_abcdefghijklmnop hs_code_server')
         assert_equal({:timeout => 60}, options)
     end
@@ -156,6 +157,23 @@ class WorkspaceRuntimeTest < Minitest::Test
         # HOME as in the student's terminal: Git reads /workspace/.gitconfig.
         assert_equal "docker exec -u 1000:1000 -e HOME\\=/workspace hs_code_abc sh -c echo\\ \\\"\\$1\\\" sh /workspace/my\\ repo", command
         assert_equal true, options[:allow_failure]
+    end
+
+    # Not running: the same script in a reader container, the folder
+    # read-only, as the student, without network. Git never runs on the
+    # server itself.
+    def test_git_status_reads_a_stopped_workspace_in_a_reader_container
+        @capture_outputs << '[]'
+        @capture_outputs << "TOP /workspace/sandbox\n"
+        output = @runtime.git_status('abc', :repo => 'sandbox', :uid => '1000:1000', :script => 'echo "$1"',
+            :timeout => 5, :host_data_path => '/srv/data')
+        assert_equal "TOP /workspace/sandbox\n", output
+        command = @captures.last.first
+        assert_includes command, 'docker run --rm --network none --read-only'
+        assert_includes command, '-u 1000:1000'
+        assert_includes command, '-v /srv/data/user/abc/workspace:/workspace:ro'
+        assert_includes command, '--entrypoint sh hs_code_server'
+        assert_includes command, 'sh /workspace/sandbox'
     end
 
     def test_run_script_passes_arguments

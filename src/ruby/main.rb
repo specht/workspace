@@ -25,6 +25,7 @@ require './include/test_workspace_package.rb'
 require './include/test_workspace_extensions.rb'
 require './include/workspace_credentials.rb'
 require './include/workspace_runtime.rb'
+require './include/tic80_storage.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
@@ -187,8 +188,8 @@ class Main < Sinatra::Base
         # The 2D Game Studio is a playground of its own; Lehrmaterial had only
         # its page and the list of teacher notes, which is in the profile now.
         'lehrmaterial-2d' => 'https://2d.hackschule.de/',
-        'lehrmaterial' => 'profil#profile-teaching-materials',
-        'lehrmaterial.html' => 'profil#profile-teaching-materials',
+        'lehrmaterial' => 'lehrmaterial-einstieg',
+        'lehrmaterial.html' => 'lehrmaterial-einstieg',
         # »HTML-Folien gestalten« became four Handbuch pages for web pages and
         # slides alike (2026-10); most of it is on the HTML page.
         'reference/html-folien' => 'reference/html',
@@ -3917,9 +3918,22 @@ class Main < Sinatra::Base
         # Text that only stands in for the cards (an exercise list) is hidden
         # while the cards are shown.
         previews = tasks[:on_page].any? { |id| (tasks[:by_id][id] || {}).dig('check', 'preview') == 'anaglyph' }
+        # SQL and Cypher answers in the colours of the code blocks, with the
+        # keyword lists of the same lexers (code_input.js).
+        code = tasks[:on_page].any? { |id| %w[sql cypher].include?((tasks[:by_id][id] || {}).dig('check', 'type')) }
+        code_input = if code
+            keywords = {
+                :sql => Rouge::Lexers::SQL.keywords.to_a,
+                :sqlTypes => Rouge::Lexers::SQL.keywords_type.to_a,
+                :cypher => Rouge::Lexers::WorkspaceCypher::KEYWORDS,
+            }
+            "<script>window.CODE_INPUT_KEYWORDS = #{keywords.to_json};</script>" \
+                "<script src='/include/code_input.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
+        end
         "<style>.tasks-off-only { display: none; }</style>" \
             "<script>window.TASK_PAGE = #{config.to_json};</script>" \
             "#{previews ? "<script src='/include/anaglyph_preview.js?#{CACHE_BUSTER}'></script>" : ''}" \
+            "#{code_input}" \
             "<script src='/include/tasks.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
     end
 
@@ -3995,6 +4009,18 @@ class Main < Sinatra::Base
 
         SqlCheck.mysql_runner(:host => 'mysql', :username => login, :database => login,
             :password => Main.gen_password_for_email(email, MYSQL_PASSWORD_SALT))
+    end
+
+    # cypher tasks: the person's own Neo4j database on the students' server,
+    # logged in as them (never as an administrator), read-only per query
+    # (CypherCheck.runner). nil until their Neo4j login exists.
+    def task_cypher_runner
+        email = @session_user[:email]
+        login = @session_user[:db_login] || db_login_for_email(email)
+        return nil if login.nil? || !DatabaseIdentity.valid?(login)
+
+        CypherCheck.runner(:uri => 'bolt://neo4j:7687', :login => login,
+            :password => Main.gen_password_for_email(email, NEO4J_PASSWORD_SALT))
     end
 
     # What an sql check names when it cannot run: which database, which login,
@@ -4082,13 +4108,14 @@ class Main < Sinatra::Base
         File.directory?(path) ? WorkspaceFiles.new(path) : nil
     end
 
-    # git status of a repository, read inside the student's running container.
+    # git status of a repository, read as the student in their container, or
+    # in a reader container if it is not running (WorkspaceRuntime).
     def task_git_state(repo)
         WorkspaceFiles.clean(repo)
         output = workspace_runtime.git_status(fs_tag_for_email(@session_user[:email]),
             :repo => repo, :uid => "#{WORKSPACE_UID}:#{WORKSPACE_GID}",
-            :script => GitCheck::STATUS_SCRIPT, :timeout => 15)
-        output.nil? ? nil : GitCheck.parse(output)
+            :script => GitCheck::STATUS_SCRIPT, :timeout => 30, :host_data_path => PATH_TO_HOST_DATA)
+        GitCheck.complete?(output) ? GitCheck.parse(output) : nil
     end
 
     # Languages in which a person has solved a Code Bites task.
@@ -4220,21 +4247,6 @@ class Main < Sinatra::Base
             "<script>document.querySelector('.teacher-note-toggle').addEventListener('click', function () {" \
             "var open = this.getAttribute('aria-expanded') !== 'true'; this.setAttribute('aria-expanded', open);" \
             "document.getElementById('teacher-note').hidden = !open; });</script>"
-    end
-
-    # Activities with a teacher note (lehrkraft.md), listed in the profile.
-    def print_teacher_notes_overview
-        return '' unless teacher_account_logged_in?
-
-        entries = @@content.select { |slug, c| c[:teacher_note] && !c[:dev_only] && !c[:teacher_only] }
-            .map { |slug, c| [slug, c[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '')] }
-            .sort_by { |_, title| title.downcase }
-        return '' if entries.empty?
-
-        items = entries.map { |slug, title| "<li><a href='/#{CGI.escapeHTML(slug)}'>#{CGI.escapeHTML(title)}</a></li>" }
-        "<p>Diese Aktivitäten haben eine Notiz für Lehrkräfte: Ablauf, Unterrichtsideen, Stolpersteine, was die Aufgaben prüfen. Du findest sie oben auf der jeweiligen Seite.</p>" \
-            "<ul class='teacher-notes-list'>#{items.join}</ul>" \
-            "<p>Was deine Gruppen in diesen Aktivitäten geschafft haben, steht in der <a href='/klasse'>Klassenübersicht</a>.</p>"
     end
 
     # --- Class board (docs/aufgaben.md, »Klassenübersicht«) ---------------------
@@ -4980,332 +4992,73 @@ class Main < Sinatra::Base
         redirect "#{WEB_ROOT}/tic80/export/1.1/#{tag}"
     end
 
-    # TIC-80's authoritative filesystem lives in the user's real Workspace.
-    # In the code-server container this same directory is visible as /workspace/TIC-80.
+    # TIC-80's files live in the person's Workspace under /workspace/TIC-80;
+    # the browser bridge (docker/tic80/hackschule-persistence.js) loads them
+    # and sends each changed file back (Tic80Storage).
     TIC80_WORKSPACE_DIR = 'TIC-80'
-    TIC80_MAX_SYNC_BYTES = 64 * 1024 * 1024
+    TIC80_MAX_REQUEST_BYTES = 2 * Tic80Storage::MAX_TOTAL_BYTES
 
-    def tic80_storage_paths(email)
+    def tic80_with_storage(email)
         container_name = fs_tag_for_email(email)
         workspace_path = File.join('/user', container_name, 'workspace')
         metadata_path = File.join('/internal', 'tic80', container_name)
-
         ensure_user_directory(workspace_path)
         FileUtils.mkdir_p(metadata_path)
+        root = File.join(workspace_path, TIC80_WORKSPACE_DIR)
 
-        {
-            :root => File.join(workspace_path, TIC80_WORKSPACE_DIR),
-            :lock => File.join(metadata_path, 'sync.lock'),
-        }
-    end
-
-    def tic80_fsync_dir(path)
-        File.open(path, File::RDONLY) do |dir|
-            dir.fsync
-        end
-    rescue Errno::EINVAL, Errno::EACCES, Errno::EISDIR
-        # Some filesystems/platforms do not support fsync on directories.
-    end
-
-    def tic80_recover_storage_unlocked!(paths)
-        root = paths[:root]
-        parent = File.dirname(root)
-        base = File.basename(root)
-
-        raise "TIC-80 storage root must not be a symlink: #{root}" if File.symlink?(root)
-        if File.exist?(root) && !File.directory?(root)
-            raise "TIC-80 storage root is not a directory: #{root}"
-        end
-
-        unless File.directory?(root)
-            backups = Dir.glob(File.join(parent, "#{base}.backup-*")).select do |path|
-                File.directory?(path) && !File.symlink?(path)
-            end
-            stages = Dir.glob(File.join(parent, "#{base}.sync-*")).select do |path|
-                File.directory?(path) && !File.symlink?(path)
-            end
-
-            candidate = (backups + stages).max_by do |path|
-                File.mtime(path) rescue Time.at(0)
-            end
-
-            if candidate
-                STDERR.puts ">>> TIC-80: recovering #{candidate} -> #{root}"
-                File.rename(candidate, root)
-            else
-                FileUtils.mkdir_p(root)
-            end
-        end
-
-        # Leftovers can only come from an interrupted/already-completed swap.
-        # We hold the per-user lock here, so no live TIC-80 sync owns them.
-        Dir.glob(File.join(parent, "#{base}.backup-*")).each { |path| FileUtils.rm_rf(path) }
-        Dir.glob(File.join(parent, "#{base}.sync-*")).each { |path| FileUtils.rm_rf(path) }
-
-        File.chown(WORKSPACE_UID, WORKSPACE_GID, root)
-    end
-
-    def tic80_relative_path(path)
-        raise ArgumentError, 'path must be a string' unless path.is_a?(String)
-        raise ArgumentError, 'path contains a NUL byte' if path.include?("\0")
-        raise ArgumentError, 'path is too long' if path.bytesize > 4096
-
-        value = path.tr('\\', '/')
-        raise ArgumentError, 'absolute paths are not allowed' if value.start_with?('/')
-
-        parts = value.split('/').reject(&:empty?)
-        raise ArgumentError, 'empty path is not allowed' if parts.empty?
-
-        parts.each do |part|
-            raise ArgumentError, 'path traversal is not allowed' if part == '.' || part == '..'
-            raise ArgumentError, 'path component is too long' if part.bytesize > 255
-        end
-
-        parts.join('/')
-    end
-
-    def tic80_tree(root, include_contents: false)
-        raise "TIC-80 storage root must not be a symlink: #{root}" if File.symlink?(root)
-        raise "TIC-80 storage root is not a directory: #{root}" unless File.directory?(root)
-
-        dirs = []
-        files = []
-        digest = Digest::SHA256.new
-
-        entries = Dir.glob(File.join(root, '**', '*'), File::FNM_DOTMATCH).reject do |path|
-            ['.', '..'].include?(File.basename(path))
-        end.sort
-
-        entries.each do |path|
-            stat = File.lstat(path)
-            relative = path.delete_prefix(root + File::SEPARATOR)
-
-            if stat.symlink?
-                raise "TIC-80 storage contains unsupported symlink: #{relative}"
-            elsif stat.directory?
-                dirs << relative
-                digest.update("D\0#{relative}\0")
-            elsif stat.file?
-                contents = File.binread(path)
-                content_sha256 = Digest::SHA256.hexdigest(contents)
-                digest.update("F\0#{relative}\0#{content_sha256}\0")
-
-                entry = {
-                    :path => relative,
-                    :size => contents.bytesize,
-                    :mtime_ms => (stat.mtime.to_f * 1000).round,
-                    :sha256 => content_sha256,
-                }
-                entry[:contents] = Base64.strict_encode64(contents) if include_contents
-                files << entry
-            else
-                raise "TIC-80 storage contains unsupported entry: #{relative}"
-            end
-        end
-
-        {
-            :revision => digest.hexdigest,
-            :dirs => dirs,
-            :files => files,
-        }
-    end
-
-    def tic80_with_storage(email)
-        paths = tic80_storage_paths(email)
-
-        File.open(paths[:lock], File::RDWR | File::CREAT, 0o600) do |lock|
+        File.open(File.join(metadata_path, 'sync.lock'), File::RDWR | File::CREAT, 0o600) do |lock|
             lock.flock(File::LOCK_EX)
-            tic80_recover_storage_unlocked!(paths)
-            yield paths
+            Tic80Storage.prepare_root(root, :uid => WORKSPACE_UID, :gid => WORKSPACE_GID)
+            yield root
         ensure
             lock.flock(File::LOCK_UN) rescue nil
         end
     end
 
-    def tic80_parse_sync_request
-        max_body = TIC80_MAX_SYNC_BYTES * 2
+    def tic80_json_body
         length = request.content_length.to_i
-        halt 413, { :error => 'tic80_sync_too_large' }.to_json if length > max_body
-
-        body = request.body.read(max_body + 1)
-        halt 413, { :error => 'tic80_sync_too_large' }.to_json if body.bytesize > max_body
-
+        halt 413, { :error => 'tic80_request_too_large' }.to_json if length > TIC80_MAX_REQUEST_BYTES
+        body = request.body.read(TIC80_MAX_REQUEST_BYTES + 1).to_s
+        halt 413, { :error => 'tic80_request_too_large' }.to_json if body.bytesize > TIC80_MAX_REQUEST_BYTES
         data = JSON.parse(body, :symbolize_names => true)
-        unless data.is_a?(Hash) &&
-               data[:base_revision].is_a?(String) &&
-               data[:dirs].is_a?(Array) &&
-               data[:files].is_a?(Array)
-            halt 400, { :error => 'invalid_tic80_sync_request' }.to_json
-        end
-
-        unless data[:base_revision].match?(/\A[0-9a-f]{64}\z/)
-            halt 400, { :error => 'invalid_tic80_revision' }.to_json
-        end
-
+        halt 400, { :error => 'invalid_tic80_request' }.to_json unless data.is_a?(Hash)
         data
     rescue JSON::ParserError
         halt 400, { :error => 'invalid_json' }.to_json
     end
 
-    def tic80_build_stage!(root, data)
-        parent = File.dirname(root)
-        stage = File.join(parent, "#{File.basename(root)}.sync-#{SecureRandom.hex(8)}")
-
-        dirs = []
-        files = []
-        seen = {}
-        total_bytes = 0
-
-        data[:dirs].each do |entry|
-            relative = tic80_relative_path(entry)
-            raise ArgumentError, "duplicate path: #{relative}" if seen[relative]
-            seen[relative] = :dir
-            dirs << relative
-        end
-
-        data[:files].each do |entry|
-            unless entry.is_a?(Hash) && entry[:path].is_a?(String) && entry[:contents].is_a?(String)
-                raise ArgumentError, 'each file requires path and base64 contents'
-            end
-
-            relative = tic80_relative_path(entry[:path])
-            raise ArgumentError, "duplicate path: #{relative}" if seen[relative]
-            seen[relative] = :file
-
-            begin
-                contents = Base64.strict_decode64(entry[:contents])
-            rescue ArgumentError
-                raise ArgumentError, "invalid base64 for #{relative}"
-            end
-
-            total_bytes += contents.bytesize
-            raise ArgumentError, 'TIC-80 filesystem is too large' if total_bytes > TIC80_MAX_SYNC_BYTES
-
-            files << {
-                :path => relative,
-                :contents => contents,
-                :mtime_ms => entry[:mtime_ms],
-            }
-        end
-
-        file_paths = files.map { |entry| entry[:path] }.to_set
-        (dirs + file_paths.to_a).each do |path|
-            parts = path.split('/')
-            1.upto(parts.length - 1) do |length|
-                ancestor = parts.first(length).join('/')
-                if file_paths.include?(ancestor)
-                    raise ArgumentError, "file used as parent directory: #{ancestor}"
-                end
-            end
-        end
-
-        FileUtils.mkdir_p(stage)
-
-        begin
-            dirs.sort_by { |path| [path.count('/'), path] }.each do |relative|
-                FileUtils.mkdir_p(File.join(stage, relative))
-            end
-
-            files.each do |entry|
-                path = File.join(stage, entry[:path])
-                FileUtils.mkdir_p(File.dirname(path))
-                File.open(path, 'wb', 0o600) do |file|
-                    file.write(entry[:contents])
-                    file.flush
-                    file.fsync
-                end
-
-                if entry[:mtime_ms].is_a?(Numeric)
-                    mtime = Time.at(entry[:mtime_ms].to_f / 1000.0)
-                    File.utime(mtime, mtime, path)
-                end
-            end
-
-            FileUtils.chown_R(WORKSPACE_UID, WORKSPACE_GID, stage)
-            [stage, tic80_tree(stage, :include_contents => false)[:revision]]
-        rescue
-            FileUtils.rm_rf(stage)
-            raise
-        end
-    end
-
-    def tic80_swap_tree!(root, stage)
-        parent = File.dirname(root)
-        backup = File.join(parent, "#{File.basename(root)}.backup-#{SecureRandom.hex(8)}")
-
-        begin
-            File.rename(root, backup)
-            File.rename(stage, root)
-            tic80_fsync_dir(parent)
-            FileUtils.rm_rf(backup)
-        rescue
-            if !Dir.exist?(root) && Dir.exist?(backup)
-                File.rename(backup, root) rescue nil
-            end
-            raise
-        ensure
-            FileUtils.rm_rf(stage) if Dir.exist?(stage)
-        end
-    end
-
-    # Load the authoritative filesystem from /workspace/TIC-80.
+    # All files of /workspace/TIC-80, with contents; ?meta=1 without.
     get '/api/tic80/fs' do
         assert(user_logged_in?)
-
-        tic80_with_storage(@session_user[:email]) do |paths|
-            respond(tic80_tree(paths[:root], :include_contents => true))
+        tic80_with_storage(@session_user[:email]) do |root|
+            respond(Tic80Storage.tree(root, :contents => params['meta'] != '1'))
         end
     end
 
-    # Replace the authoritative filesystem atomically. The revision prevents a
-    # second browser tab or a direct code-server edit from being silently lost.
-    post '/api/tic80/fs_sync' do
+    # The contents of some files: { paths: [...] }.
+    post '/api/tic80/fs_read' do
         assert(user_logged_in?)
-        data = tic80_parse_sync_request
+        data = tic80_json_body
+        halt 400, { :error => 'invalid_tic80_request' }.to_json unless data[:paths].is_a?(Array)
+        wanted = data[:paths].first(1000).map { |p| Tic80Storage.relative_path(p) rescue nil }.compact.to_set
+        tic80_with_storage(@session_user[:email]) do |root|
+            respond(Tic80Storage.tree(root, :contents => true, :only => wanted))
+        end
+    end
 
-        tic80_with_storage(@session_user[:email]) do |paths|
-            root = paths[:root]
-
+    # The files TIC-80 changed, each with the version it started from
+    # (Tic80Storage.apply): nothing is overwritten that the browser has not
+    # seen.
+    post '/api/tic80/fs_changes' do
+        assert(user_logged_in?)
+        data = tic80_json_body
+        tic80_with_storage(@session_user[:email]) do |root|
             begin
-                stage, new_revision = tic80_build_stage!(root, data)
-            rescue ArgumentError => e
+                respond(Tic80Storage.apply(root, data[:changes], :uid => WORKSPACE_UID, :gid => WORKSPACE_GID))
+            rescue Tic80Storage::Invalid => e
                 content_type :json
-                halt 400, { :error => 'invalid_tic80_tree', :detail => e.message }.to_json
+                halt 400, { :error => 'invalid_tic80_change', :detail => e.message }.to_json
             end
-
-            current_revision = tic80_tree(root, :include_contents => false)[:revision]
-
-            if data[:base_revision] != current_revision
-                # A retry after a lost HTTP response is safe: acknowledge it if
-                # the requested tree is already exactly what is on disk.
-                if new_revision == current_revision
-                    FileUtils.rm_rf(stage)
-                    next respond(:ok => true, :revision => current_revision, :already_applied => true)
-                end
-
-                FileUtils.rm_rf(stage)
-                content_type :json
-                halt 409, {
-                    :error => 'tic80_sync_conflict',
-                    :revision => current_revision,
-                }.to_json
-            end
-
-            # code-server does not honor our lock. Recheck just before the swap
-            # so an edit made while the new tree was being staged is not knowingly
-            # overwritten.
-            rechecked_revision = tic80_tree(root, :include_contents => false)[:revision]
-            if rechecked_revision != current_revision
-                FileUtils.rm_rf(stage)
-                content_type :json
-                halt 409, {
-                    :error => 'tic80_sync_conflict',
-                    :revision => rechecked_revision,
-                }.to_json
-            end
-
-            tic80_swap_tree!(root, stage)
-            respond(:ok => true, :revision => new_revision)
         end
     end
 
@@ -5384,7 +5137,8 @@ class Main < Sinatra::Base
                     :uid => GUEST_UID, :home => '/tmp', :seconds => [[seconds.to_i, 1].max, 30].min)
             },
             :sql => %w[sql schema].include?(found[:task]['check']['type']) ? task_sql_runner : nil,
-            :sql_env => %w[sql schema].include?(found[:task]['check']['type']) ? task_sql_env : {})
+            :sql_env => %w[sql schema].include?(found[:task]['check']['type']) ? task_sql_env : {},
+            :cypher => found[:task]['check']['type'] == 'cypher' ? task_cypher_runner : nil)
         if result.problem == :reference_failed
             STDERR.puts "SQL task #{found[:key]}: the reference query failed for #{@session_user[:email]}"
         end
@@ -5590,8 +5344,9 @@ class Main < Sinatra::Base
                     ws = File.directory?(path) ? WorkspaceFiles.new(path) : nil
                     git = lambda do |repo|
                         output = workspace_runtime.git_status(fs_tag, :repo => repo,
-                            :uid => "#{WORKSPACE_UID}:#{WORKSPACE_GID}", :script => GitCheck::STATUS_SCRIPT, :timeout => 15)
-                        output.nil? ? nil : GitCheck.parse(output)
+                            :uid => "#{WORKSPACE_UID}:#{WORKSPACE_GID}", :script => GitCheck::STATUS_SCRIPT, :timeout => 30,
+                            :host_data_path => PATH_TO_HOST_DATA)
+                        GitCheck.complete?(output) ? GitCheck.parse(output) : nil
                     end
                     result = begin
                         TaskCheck.check(found[:task], '', :variables => {}, :workspace => ws, :git => git)

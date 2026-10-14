@@ -3,6 +3,7 @@ require 'json'
 require 'set'
 require 'yaml'
 require_relative 'sql_check'
+require_relative 'cypher_check'
 require_relative 'er_check'
 require_relative 'schema_check'
 require_relative 'keyboard_check'
@@ -41,6 +42,7 @@ module TaskSpec
         'scene' => 'M6',
         'code' => 'M5',
         'sql' => 'M6',
+        'cypher' => 'M7',
         'er' => 'M7',
         'schema' => 'M7',
         'keyboard' => 'M7',
@@ -54,7 +56,7 @@ module TaskSpec
     EXTRACTORS = %w[ping_rtt_avg ping_hops ping_reply_country traceroute_hops].freeze
     EXTRACTOR_WITH_ARGUMENT = /\Ahttp_header:[A-Za-z0-9-]+\z/
 
-    FILES_EXPECT_KEYS = %w[exists executable format new_files name format_matches_extension max_size].freeze
+    FILES_EXPECT_KEYS = %w[exists executable format new_files name format_matches_extension max_size contains].freeze
     HTML_EXPECT_KEYS = %w[parses slides first_slide_changed img elements].freeze
     SCENE_MATCHER_KEYS = %w[
         shape name at count min rows size bottom_y rotate_z lattice min_spacing moves orbits
@@ -82,6 +84,7 @@ module TaskSpec
         'submit' => [],
         'code' => [],
         'sql' => %w[same_result_as query_matches],
+        'cypher' => %w[same_result_as query_matches],
         'er' => %w[problem],
         'schema' => %w[problem],
         'keyboard' => %w[problem],
@@ -247,6 +250,20 @@ module TaskSpec
                 extra = expect.keys - FILES_EXPECT_KEYS
                 errors << "expect: unknown keys: #{extra.join(', ')}" unless extra.empty?
                 errors.concat(regex_errors(expect['name'], 'expect.name')) if expect.key?('name')
+                if expect.key?('contains')
+                    list = expect['contains']
+                    if list.is_a?(Array) && !list.empty?
+                        list.each_with_index do |want, i|
+                            pattern = want.is_a?(Hash) ? want['pattern'] : want
+                            if want.is_a?(Hash) && (want.keys - %w[pattern say]).any?
+                                errors << "expect.contains[#{i}] knows pattern and say"
+                            end
+                            errors.concat(regex_errors(pattern, "expect.contains[#{i}]"))
+                        end
+                    else
+                        errors << 'expect.contains must be a list of regular expressions'
+                    end
+                end
                 errors << 'expect.max_size must look like 500kB or 2MB' if expect.key?('max_size') && parse_size(expect['max_size']).nil?
                 if expect.key?('new_files') && !(expect['new_files'].is_a?(Hash) && expect['new_files']['min'].is_a?(Integer))
                     errors << 'expect.new_files must be { min: <number> }'
@@ -446,6 +463,31 @@ module TaskSpec
                 end
             end
             errors << 'setup must be text' if check.key?('setup') && !nonempty_string?(check['setup'])
+        when 'cypher'
+            allowed += %w[expect_query compare rows sorted_by extra_columns nodes setup]
+            queries = check['expect_query'].is_a?(Array) ? check['expect_query'] : [check['expect_query']]
+            if queries.empty? || !queries.all? { |q| nonempty_string?(q) }
+                errors << 'expect_query must be a query or a list of queries'
+            else
+                queries.each_with_index do |q, i|
+                    _, refusal = CypherCheck.single_read(q)
+                    errors << "expect_query[#{i}] must be a single reading query: #{refusal}" if refusal
+                end
+            end
+            errors << 'compare must be same or subset' if check.key?('compare') && !%w[same subset].include?(check['compare'])
+            errors << 'rows must be a positive number' if check.key?('rows') && !(check['rows'].is_a?(Integer) && check['rows'] > 0)
+            errors << 'rows needs compare: subset' if check.key?('rows') && check['compare'] != 'subset'
+            if check.key?('sorted_by') && check['sorted_by'].to_s !~ /\A\s*\d+(\s+(ASC|DESC))?(\s*,\s*\d+(\s+(ASC|DESC))?)*\s*\z/i
+                errors << 'sorted_by must name result columns, like "2 DESC" or "1, 3"'
+            end
+            errors << 'extra_columns must be note, ok or wrong' if check.key?('extra_columns') && !%w[note ok wrong].include?(check['extra_columns'])
+            if check.key?('nodes')
+                nodes = check['nodes']
+                unless nodes.is_a?(Hash) && !nodes.empty? && nodes.all? { |k, v| k.to_s =~ /\A[A-Za-z_][A-Za-z0-9_]*\z/ && (v.nil? || (v.is_a?(Integer) && v >= 0)) }
+                    errors << 'nodes must map labels to their node count (or ~)'
+                end
+            end
+            errors << 'setup must be text' if check.key?('setup') && !nonempty_string?(check['setup'])
         when 'er'
             # Runs the ER-Werkstatt core on a .er file in the Workspace.
             allowed += %w[file entities relationships tables]
@@ -478,8 +520,13 @@ module TaskSpec
             end
             extra = entry['when'].keys - WHEN_KEYS.fetch(type, [])
             if entry['when'].key?('same_result_as')
-                _, refusal = SqlCheck.single_select(entry['when']['same_result_as'].to_s)
-                errors << "feedback[#{i}].when.same_result_as must be a single SELECT" if refusal
+                if type == 'cypher'
+                    _, refusal = CypherCheck.single_read(entry['when']['same_result_as'].to_s)
+                    errors << "feedback[#{i}].when.same_result_as must be a single reading query: #{refusal}" if refusal
+                else
+                    _, refusal = SqlCheck.single_select(entry['when']['same_result_as'].to_s)
+                    errors << "feedback[#{i}].when.same_result_as must be a single SELECT" if refusal
+                end
             end
             errors << "feedback[#{i}].when: #{type} knows #{WHEN_KEYS.fetch(type, []).join(', ').then { |s| s.empty? ? 'no conditions' : s }}" unless extra.empty?
             %w[matches output_matches source_matches query_matches].each do |k|

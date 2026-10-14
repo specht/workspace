@@ -46,10 +46,8 @@ Die Befehle aus <a href='/working-with-files'>Dateien und Verzeichnisse</a> zum 
 Pfade mit Leerzeichen brauchen Anführungszeichen oder einen Backslash vor jedem Leerzeichen: `cd "United States"` oder `cd United\ States`. Die <kbd>Tab</kbd>-Taste setzt die Backslashes von selbst.
 <!-- /part -->
 
-## Dateien ansehen
-
 <!-- part: anzeigen -->
-### Inhalt anzeigen
+## Inhalt anzeigen
 
 <table class='table table-sm reference-table'>
 <tr><th>Befehl</th><th>Was er tut</th></tr>
@@ -63,10 +61,8 @@ Pfade mit Leerzeichen brauchen Anführungszeichen oder einen Backslash vor jedem
 `less` zeigt bei Bildern und Archiven, was darin steckt (Bildgröße, Dateiliste). Bei anderen Dateien fragt es, ob es sie trotzdem zeigen soll: Mit <kbd>Y</kbd> siehst du die Bytes als Zeichen, lesbar ist das nicht.
 <!-- /part -->
 
-## Dateien bearbeiten
-
 <!-- part: editoren -->
-### Editoren im Terminal
+## Editoren im Terminal
 
 <table class='table table-sm reference-table'>
 <tr><th>Editor</th><th>Öffnen</th><th>Speichern</th><th>Beenden</th></tr>
@@ -120,10 +116,8 @@ grep -o -E "[A-Za-z]+" alice.txt | sort | uniq -i | wc -l
 `du -h` zeigt, wie viel Platz jedes Verzeichnis belegt, die letzte Zeile ist die Summe. `du -h -d 1` geht nur eine Ebene tief, `du -sh` nennt nur die Summe.
 <!-- /part -->
 
-## Archive
-
 <!-- part: archive -->
-### Herunterladen, packen und entpacken
+## Herunterladen, packen und entpacken
 
 <table class='table table-sm reference-table'>
 <tr><th>Befehl</th><th>Was er tut</th></tr>
@@ -172,10 +166,8 @@ Im Terminal gibt es keinen Papierkorb: Was <code>rm</code> löscht, ist weg. Has
 </div>
 <!-- /part -->
 
-## Tasten im Terminal
-
 <!-- part: tasten -->
-### Weniger tippen
+## Weniger tippen
 
 <table class='table table-sm reference-table'>
 <tr><th>Taste</th><th>Was sie tut</th></tr>

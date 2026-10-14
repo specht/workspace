@@ -1,6 +1,7 @@
 # Aufgaben zu »Filmdatenbank als Graph mit Neo4j«. Format: docs/aufgaben.md.
-# Noch keine Prüfart liest Neo4j; die Aufgaben fragen, was man am Modell und
-# an Cypher verstanden hat. Die Abfrage-Übungen stehen als Kästen im Text.
+# Die Abfrage-Aufgaben (type: cypher) laufen in der eigenen Neo4j-Datenbank
+# der Person, angemeldet als sie, nur lesend (src/ruby/include/
+# cypher_check.rb); die anderen fragen, was man am Modell verstanden hat.
 format: 1
 activity: neo4j-filmdatenbank
 tasks:
@@ -42,6 +43,21 @@ tasks:
       - when: { picked: 3 }
         say: Ein Label beschreibt, was ein Knoten ist. Robert Zemeckis ist eine Person, Regie hat er nur bei bestimmten Filmen geführt.
 
+  - id: koenig-der-loewen
+    title: Der König der Löwen
+    prompt: |
+      Wie lang ist »The Lion King« aus dem Jahr 1994, und wie heißt der Film
+      auf Deutsch? Gib die Laufzeit und den deutschen Titel aus.
+    check:
+      type: cypher
+      expect_query: "MATCH (m:Movie {title: 'The Lion King', year: 1994}) RETURN m.runtime, m.german_title"
+      nodes: { Movie: 2735, Person: 14445, Genre: 20 }
+      setup: Lade zuerst die Filmdaten, wie unter »Die Filmdaten laden« beschrieben.
+    hint: Der deutsche Titel steht in der Eigenschaft `german_title`.
+    feedback:
+      - when: { same_result_as: "MATCH (m:Movie {title: 'The Lion King'}) RETURN m.runtime, m.german_title" }
+        say: Das sind zwei Filme. »The Lion King« gibt es von 1994 und als Neuverfilmung von 2019; gefragt ist der von 1994.
+
   - id: richtung
     title: Die Pfeilrichtung
     prompt: |
@@ -60,6 +76,95 @@ tasks:
       verläuft vom Genre zum Film, also gibt es kein Ergebnis, aber auch keinen
       Fehler. Ohne Spitze, `(g:Genre)-[:IN_GENRE]-(m:Movie)`, passt jede
       Richtung.
+
+  - id: scifi
+    title: Science-Fiction ab 2010
+    prompt: |
+      Welche Science-Fiction-Filme (Genre `Sci-Fi`) ab dem Jahr 2010 enthält
+      die Datenbank? Zeig Titel und Jahr, die neuesten zuerst.
+    check:
+      type: cypher
+      expect_query: "MATCH (m:Movie)-[:IN_GENRE]->(:Genre {name: 'Sci-Fi'}) WHERE m.year >= 2010 RETURN m.title, m.year ORDER BY m.year DESC"
+      sorted_by: 2 DESC
+      nodes: { Movie: 2735, Person: 14445, Genre: 20 }
+      setup: Lade zuerst die Filmdaten, wie unter »Die Filmdaten laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "MATCH (m:Movie)-[:IN_GENRE]->(:Genre {name: 'Sci-Fi'}) WHERE m.year > 2010 RETURN m.title, m.year" }
+        say: Ab 2010 heißt, 2010 gehört dazu. Mit `>` fehlen die Filme aus 2010.
+
+  - id: drei-stunden
+    title: Länger als drei Stunden
+    prompt: |
+      Welche Filme sind länger als drei Stunden? Zeig Titel und Laufzeit.
+    check:
+      type: cypher
+      expect_query: "MATCH (m:Movie) WHERE m.runtime > 180 RETURN m.title, m.runtime"
+      nodes: { Movie: 2735, Person: 14445, Genre: 20 }
+      setup: Lade zuerst die Filmdaten, wie unter »Die Filmdaten laden« beschrieben.
+    feedback:
+      - when: { query_matches: 'runtime\s*>=?\s*3\b' }
+        say: Die Laufzeit steht in Minuten, nicht in Stunden.
+
+  - id: comedy-scifi
+    title: Comedy und Science-Fiction
+    prompt: |
+      Welche Filme gehören zugleich zu `Comedy` und zu `Sci-Fi`? Zeig die
+      Titel.
+    check:
+      type: cypher
+      expect_query: "MATCH (:Genre {name: 'Comedy'})<-[:IN_GENRE]-(m:Movie)-[:IN_GENRE]->(:Genre {name: 'Sci-Fi'}) RETURN m.title"
+      nodes: { Movie: 2735, Person: 14445, Genre: 20 }
+      setup: Lade zuerst die Filmdaten, wie unter »Die Filmdaten laden« beschrieben.
+    hint: Ein Muster darf zwei Beziehungen vom selben Film aus haben, `(g1:Genre)<-[:IN_GENRE]-(m:Movie)-[:IN_GENRE]->(g2:Genre)`.
+    feedback:
+      - when: { same_result_as: "MATCH (m:Movie)-[:IN_GENRE]->(g:Genre) WHERE g.name IN ['Comedy', 'Sci-Fi'] RETURN DISTINCT m.title" }
+        say: Das sind die Filme, die zu einem der beiden Genres gehören. Gefragt sind die, die zu beiden gehören.
+
+  - id: nolan
+    title: Christopher Nolan
+    prompt: |
+      Bei welchen Filmen führte Christopher Nolan Regie? Zeig Titel und Jahr,
+      nach dem Jahr sortiert.
+    check:
+      type: cypher
+      expect_query: "MATCH (:Person {name: 'Christopher Nolan'})-[:DIRECTOR]->(m:Movie) RETURN m.title, m.year ORDER BY m.year"
+      sorted_by: 2
+      nodes: { Movie: 2735, Person: 14445, Genre: 20 }
+      setup: Lade zuerst die Filmdaten, wie unter »Die Filmdaten laden« beschrieben.
+    feedback:
+      - when: { same_result_as: "MATCH (:Person {name: 'Christopher Nolan'})-[]->(m:Movie) RETURN DISTINCT m.title, m.year" }
+        say: Das sind alle Filme, an denen er beteiligt war, auch als Autor oder Produzent. Gefragt ist nur `DIRECTOR`.
+
+  - id: zimmer
+    title: Hans Zimmer
+    prompt: |
+      An welchen Filmen war Hans Zimmer beteiligt, und als was? Zeig den
+      Titel und die Art der Beteiligung.
+    check:
+      type: cypher
+      expect_query: "MATCH (:Person {name: 'Hans Zimmer'})-[r]->(m:Movie) RETURN m.title, type(r)"
+      nodes: { Movie: 2735, Person: 14445, Genre: 20 }
+      setup: Lade zuerst die Filmdaten, wie unter »Die Filmdaten laden« beschrieben.
+    hint: Die Art der Beteiligung ist der Typ der Beziehung. `type(r)` gibt ihn als Text zurück.
+    feedback:
+      - when: { query_matches: 'return\s+(.*,\s*)?r\s*(,|$)' }
+        say: '`r` ist die ganze Beziehung. Ihr Typ, zum Beispiel `COMPOSER`, steht in `type(r)`.'
+
+  - id: viel-regie
+    title: Wer führte am häufigsten Regie?
+    prompt: |
+      Welche Personen haben bei mindestens 15 Filmen Regie geführt? Zeig den
+      Namen und die Zahl der Filme, die meisten zuerst.
+    check:
+      type: cypher
+      expect_query: "MATCH (p:Person)-[:DIRECTOR]->(m:Movie) WITH p, count(m) AS n WHERE n >= 15 RETURN p.name, n ORDER BY n DESC"
+      sorted_by: 2 DESC
+      nodes: { Movie: 2735, Person: 14445, Genre: 20 }
+      setup: Lade zuerst die Filmdaten, wie unter »Die Filmdaten laden« beschrieben.
+    hint: Zählen und danach filtern geht mit `WITH p, count(m) AS n WHERE n >= 15`.
+    feedback:
+      - when: { same_result_as: "MATCH (p:Person)-[:DIRECTOR]->(m:Movie) WITH p, count(m) AS n WHERE n > 15 RETURN p.name, n" }
+        say: Mindestens 15 heißt, 15 gehört dazu. Mit `>` fehlen die mit genau 15 Filmen.
 
   - id: muster
     title: Das richtige Muster

@@ -215,7 +215,23 @@ module FileChecks
         if expect['executable'] && (entry[:mode] & 0o111).zero?
             return failed(:not_executable, "#{code(path)} gibt es, aber die Datei ist nicht ausführbar.", :read => read)
         end
-        ok(:read => read)
+        # contains: [pattern | { pattern:, say: }]: each regular expression
+        # matches somewhere in the text (line by line); the read part names
+        # the line where each was found.
+        found = []
+        text = nil
+        Array(expect['contains']).each do |want|
+            pattern, say = want.is_a?(Hash) ? [want['pattern'], want['say']] : [want, nil]
+            text ||= ws.read_text(path)
+            re = Regexp.new(pattern, timeout: 0.5)
+            hit = text.each_line.with_index(1).find { |line, _| re.match?(line) }
+            if hit.nil?
+                read_all = ([read] + found).join("\n\n")
+                return failed(:missing_text, say || "In #{code(path)} finde ich noch nichts, das zu #{code(pattern)} passt.", :read => read_all)
+            end
+            found << "- #{code(pattern)}: Zeile #{hit[1]}, #{code(hit[0].strip[0, 80])}"
+        end
+        ok(:read => ([read] + found).join("\n\n"))
     end
 
     # --- html -----------------------------------------------------------------

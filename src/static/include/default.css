@@ -163,6 +163,17 @@ pre.code-cypher .m {
     color: #ff9e64 !important;
 }
 
+/* ```minicpu blocks (Rouge::Lexers::MiniCPU): registers and the labels a
+   line defines stand out, as in the CPU Sandbox's editor. */
+pre.code-minicpu .nb {
+    color: #56d4dd !important;
+}
+
+pre.code-minicpu .nl {
+    color: #e2a8ff !important;
+    font-weight: bold;
+}
+
 /* A formula wider than the screen scrolls by itself instead of widening
    the page (KaTeX, display mode). */
 .katex-display {
@@ -422,6 +433,19 @@ input.error {
 }
 
 .btn-menu.active i.bi {
+    color: inherit;
+}
+
+/* TIC-80's little computer, drawn as a line icon like the Bootstrap icons
+   around it (after TIC-80's logo). */
+.btn-menu svg.bi {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+    color: #6c757d;
+}
+
+.btn-menu.active svg.bi {
     color: inherit;
 }
 
@@ -1204,8 +1228,58 @@ div.floatright > p {
     transform: translateY(calc(-100% - 1em));
 }
 
+/* The bar is three columns: »Nach oben«, the chapters (they scroll only
+   within theirs, never under the chevron), and an empty column as wide as
+   the first, so the chapters stay centred. */
+.autotoc {
+    display: flex;
+    align-items: flex-start;
+}
+
+.autotoc::after {
+    content: '';
+    flex: 0 0 3.2em;
+}
+
+/* »Nach oben«: a quiet chevron, on the line of the chapter labels (same
+   padding and line), like the icons in the menu. */
+.autotoc-up {
+    flex: 0 0 3.2em;
+    display: block;
+    padding: 1em 0 0;
+    border: 0;
+    color: #6c757d;
+    background: none;
+    font: inherit;
+    line-height: inherit;
+    text-align: center;
+    cursor: pointer;
+}
+
+.autotoc-up:hover,
+.autotoc-up:focus-visible {
+    color: #212529;
+}
+
+.autotoc-up .bi {
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .autotoc-up {
+        pointer-events: auto;
+    }
+}
+
 .autotoc > .items {
+    flex: 1 1 auto;
+    min-width: 0;
     overflow-x: auto;
+    /* a fade only on a side where there is more to scroll */
+    --fade-left: 0em;
+    --fade-right: 0em;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
+    mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
     white-space: nowrap;
     text-align: center;
     scroll-snap-type: x mandatory;
@@ -1213,8 +1287,15 @@ div.floatright > p {
     scrollbar-width: none;
 }
 
-.autotoc > .items::-webkit-scrollbar,
-.autotoc > .progress_spots_lg::-webkit-scrollbar {
+.autotoc > .items.more-left {
+    --fade-left: 1.5em;
+}
+
+.autotoc > .items.more-right {
+    --fade-right: 1.5em;
+}
+
+.autotoc > .items::-webkit-scrollbar {
     display: none;
 }
 
@@ -1242,6 +1323,24 @@ div.floatright > p {
 .autotoc > .items > button.active {
     position: relative;
     font-weight: bold;
+}
+
+/* The line under each chapter belongs to its label, so they scroll
+   together and can never come apart. */
+.autotoc > .items > button::after {
+    content: '';
+    position: absolute;
+    left: 0.15em;
+    right: 0.15em;
+    bottom: 0;
+    height: 0.2em;
+    border-radius: 1em;
+    background-color: rgba(0, 0, 0, 0.15);
+    transition: background-color 0.1s ease-out;
+}
+
+.autotoc > .items > button.active::after {
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .autotoc > .progress_sm {
@@ -1272,8 +1371,7 @@ div.floatright > p {
     pointer-events: none;
 }
 
-.autotoc > .progress_spots_sm > div,
-.autotoc > .progress_spots_lg > div {
+.autotoc > .progress_spots_sm > div {
     display: inline-block;
     height: 0.2em;
     margin: 0 0.15em;
@@ -1284,31 +1382,6 @@ div.floatright > p {
 
 .autotoc > .progress_spots_sm > div {
     width: 20em;
-}
-
-.autotoc > .progress_spots_lg {
-    display: block;
-    position: relative;
-    top: -2em;
-
-    overflow-x: auto;
-    margin-bottom: -2.2em;
-
-    white-space: nowrap;
-    text-align: center;
-    scroll-snap-type: x mandatory;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    pointer-events: none;
-}
-
-.autotoc > .progress_spots_lg > div {
-    width: calc(20em - 0.3em);
-    transition: background-color 0.1s ease-out;
-}
-
-.autotoc > .progress_spots_lg > div.active {
-    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .autotoc-container {
@@ -1322,7 +1395,7 @@ div.floatright > p {
     }
 
     .autotoc > .items {
-        padding: 1em 1em 0.6em;
+        padding: 1em 0 0.6em;
     }
 
     .autotoc > .items > button {
@@ -1343,7 +1416,7 @@ div.floatright > p {
         display: block;
     }
 
-    .autotoc > .progress_spots_lg {
+    .autotoc > .items > button::after {
         display: none;
     }
 
@@ -1739,6 +1812,12 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     max-width: 100%;
 }
 
+/* Around an image's sideways scroller: as wide as the text, not as the
+   image, so the switches stay where they are while it scrolls. */
+.media-variant-box-scroll {
+    display: block;
+}
+
 /* Around a preview that enlarges on a click (tutorial-preview.css): the box
    floats where the preview did, the preview fills it. */
 .media-variant-box-preview {
@@ -2051,17 +2130,36 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 
 .uses a,
 .uses span {
-    padding: 0.05em 0.6em;
-    border-radius: 1em;
-    font-family: '0xProto Nerd Font Mono', monospace;
-    font-size: 85%;
-    background-color: #fbefd9;
-    color: #7a4a00;
+    /* Small buttons in the teal of the Handbuch, with its book: clearly a
+       way into the Handbuch, and clearly clickable. */
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.2em 0.7em;
+    border: 1px solid #a7d8d0;
+    border-radius: 0.4em;
+    font-size: 90%;
+    line-height: 1.4;
+    color: #0f5f58;
+    background-color: #f4fbfa;
 }
 
-.uses a:hover {
+.uses a .bi {
+    margin: 0;
+    color: #0f766e;
+}
+
+.uses a:hover,
+.uses a:focus-visible {
     text-decoration: none;
-    background-color: #f6e0b5;
+    color: #fff;
+    border-color: #0f766e;
+    background-color: #0f766e;
+}
+
+.uses a:hover .bi,
+.uses a:focus-visible .bi {
+    color: #fff;
 }
 
 .teacher-note {
@@ -3467,6 +3565,69 @@ h3[id] {
     min-height: 6em;
 }
 
+/* SQL and Cypher answers in the colours of the code blocks (code_input.js):
+   the <pre> underneath draws the text, the textarea on top only holds the
+   caret and the selection. Both must set text exactly alike. */
+.code-input {
+    position: relative;
+}
+
+.code-input-view,
+.code-input .code-input-text {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 90%;
+    font-weight: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid transparent;
+    border-radius: 0.5em;
+    tab-size: 4;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: normal;
+}
+
+.code-input-view {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.code-input .code-input-text {
+    position: relative;
+    display: block;
+    background: transparent;
+    color: transparent;
+    caret-color: #fbf1c7;
+    border-color: rgba(251, 241, 199, 0.25);
+    resize: none;
+    overflow: hidden;
+}
+
+.code-input .code-input-text:focus {
+    border-color: #86b7fe;
+}
+
+.code-input .code-input-text::placeholder {
+    color: rgba(251, 241, 199, 0.45);
+}
+
+.code-input .code-input-text::selection {
+    color: transparent;
+    background: rgba(131, 165, 152, 0.5);
+}
+
+.code-input .code-input-text:disabled {
+    background: transparent;
+}
+
+.code-input:has(.code-input-text:disabled) {
+    opacity: 0.65;
+}
+
 /* SQL check: the student's result as a small table, in view. */
 .task-result {
     margin-top: 0.6em;
@@ -3559,6 +3720,11 @@ h3[id] {
     align-items: center;
     gap: 0.5em;
     margin: 0.5em 0 1em;
+}
+
+/* In the toolbar the margin would push the button above its neighbours. */
+.class-toolbar .class-template {
+    margin: 0;
 }
 
 .class-template .form-select {
@@ -4249,4 +4415,48 @@ body.subview-open {
     .class-person-actions .bi {
         margin-right: 0;
     }
+}
+
+/* MiniCPU Handbuch (src/scripts/minicpu-reference.mjs): instruction tables
+   with a row per family, and the predefined palettes as swatches. */
+.minicpu-table .minicpu-family th {
+    background-color: var(--bs-tertiary-bg);
+    font-weight: 600;
+}
+
+/* A flag set by the result: a check mark from Bootstrap Icons. */
+.minicpu-table td.minicpu-flag .bi,
+.minicpu-set {
+    color: var(--bs-success);
+    font-size: 1.15em;
+    line-height: 1;
+}
+
+.minicpu-table td.minicpu-flag,
+.minicpu-table td.minicpu-num {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.minicpu-palettes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8em;
+    margin-bottom: 1em;
+}
+
+.minicpu-swatches {
+    display: grid;
+    grid-template-columns: repeat(16, 1fr);
+    max-width: 18em;
+    margin-top: 0.2em;
+}
+
+.minicpu-swatches.many {
+    grid-template-columns: repeat(32, 1fr);
+    max-width: 36em;
+}
+
+.minicpu-swatches span {
+    aspect-ratio: 1;
 }

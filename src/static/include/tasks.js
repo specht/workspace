@@ -200,6 +200,7 @@
         }
         const input = card.querySelector('.task-input');
         if (input) input.value = answer || '';
+        if (input && input.codeInputUpdate) input.codeInputUpdate();
     }
 
     // message and solution are HTML rendered on the server from the task
@@ -251,7 +252,7 @@
             });
             more.appendChild(ul);
         }
-        if (read && card.dataset.type === 'sql' && status !== 'unavailable') {
+        if (read && (card.dataset.type === 'sql' || card.dataset.type === 'cypher') && status !== 'unavailable') {
             // SQL: the student's own result is the point, always in view.
             const div = document.createElement('div');
             div.className = 'task-result';
@@ -480,6 +481,7 @@
             });
             // SQL: Enter makes a new line, Ctrl+Enter (Cmd+Enter) checks.
             const sql = card.querySelector('.task-sql');
+            if (sql && window.CodeInput) CodeInput.attach(sql);
             if (sql) sql.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
                     e.preventDefault();
@@ -489,7 +491,7 @@
             const del = card.querySelector('.task-delete');
             if (del) {
                 if (card.dataset.type === 'submit') del.textContent = 'Abgabe löschen';
-                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
+                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql', 'cypher'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
                 del.addEventListener('click', function () { remove(card); });
             }
             loadOptions(card);

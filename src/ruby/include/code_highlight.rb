@@ -2,6 +2,7 @@ require 'rouge'
 require_relative 'er_lexer'
 require_relative 'cypher_lexer'
 require_relative 'anaglyph_scene_lexer'
+require_relative 'minicpu_lexer'
 
 module CodeHighlight
     # From this many lines on, a code block is set a little smaller.
@@ -79,7 +80,7 @@ module CodeHighlight
                 lexer = Rouge::Lexers::AnaglyphScene.new
             when 'java'
                 lexer = Rouge::Lexers::Java.new
-            when 'js'
+            when 'js', 'javascript'
                 lexer = Rouge::Lexers::Javascript.new
             when 'json'
                 lexer = Rouge::Lexers::JSON.new
@@ -87,6 +88,9 @@ module CodeHighlight
                 lexer = Rouge::Lexers::Lua.new
             when 'markdown'
                 lexer = Rouge::Lexers::Markdown.new
+            when 'minicpu'
+                lexer = Rouge::Lexers::MiniCPU.new
+                pre['class'] = [pre['class'], 'code-minicpu'].compact.join(' ')
             when 'nasm'
                 lexer = Rouge::Lexers::Nasm.new
             when 'pascal'

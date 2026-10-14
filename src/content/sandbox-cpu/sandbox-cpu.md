@@ -2,7 +2,7 @@
 image: cpu-sandbox.webp
 kind: projekt
 topic: sandboxes
-reference: [gitlab]
+reference: [gitlab, minicpu, minicpu-io, minicpu-c]
 template: https://github.com/specht/cpu-sandbox.git
 class_repo: git@git.nhcham.org:specht/cpu-sandbox-programs-2026.git
 template_name: der CPU Sandbox
@@ -268,7 +268,7 @@ Die MiniCPU gibt es in drei Stufen. Jede behält alles von der vorherigen und f�
 
 Die Schreibweise ist einheitlich: Das Ziel steht immer vorne, und **eckige Klammern bedeuten immer »der Speicher an«**. `LDI A, 0x70` lädt die Zahl 0x70, `LDA A, [0x70]` das Byte, das an Adresse 0x70 steht. Wer sich vertut, bekommt eine Fehlermeldung, die genau diesen Unterschied erklärt. So sieht eine erste Schleife aus:
 
-```nasm
+```minicpu
         LDI A, 5
         LDI B, 0
 loop:   ADD B, A
@@ -280,6 +280,8 @@ loop:   ADD B, A
 <div class='hint think'>
 <strong>Zum Weiterdenken:</strong> Das Programm addiert 5 + 4 + 3 + 2 + 1. Was passiert, wenn A mit 0 statt mit 5 startet, und warum steht danach ausgerechnet 128 in B? Wer das beantworten kann, hat Überlauf, Flags und 8-Bit-Arithmetik verstanden.
 </div>
+
+Im Handbuch: _uses(stufen, regeln, flags, befehle-8)
 
 ### In einen Befehl hineinsehen
 
@@ -314,6 +316,8 @@ Ein paar Dinge, die du in der Sandbox fast von selbst entdeckst:
 - 8-Bit-Arithmetik läuft über: 255 + 1 ergibt 0, und das Carry-Flag ist gesetzt.
 - Zeit kosten **Takte, nicht Zeilen**.
 
+Im Handbuch: _uses(takte, maschinencode, stack, funktionen)
+
 ### Von Assembler zu C
 
 Ab MiniCPU 8S kannst du Programme auch in MiniC schreiben, einer kleinen Variante von C, die schon beim Tippen übersetzt wird. Versteckt wird dabei nichts: Neben jeder C-Zeile stehen ihre Maschinenbytes, und der Reiter **Assembly** zeigt das erzeugte Programm. Du siehst, dass lokale Variablen auf dem Stack liegen, wie ein Funktionsaufruf sein Argument übergibt und wie das Ergebnis zurückkommt.
@@ -334,6 +338,8 @@ sleep: 8
 <img class='full' src='cpu-cube.webp' alt='MiniCPU 8X berechnet einen rotierenden, schattierten Würfel aus einem C-Programm.'>
 
 Der Würfel aus `18-cube.c` nutzt eine Sinustabelle in Festkommaarithmetik, Perspektive, das Ausblenden verdeckter Flächen, Schattierung und Seitenwechsel (page flipping) gegen Flackern, und die Füllroutine ist von Hand in Assembler geschrieben.
+
+Im Handbuch: _uses(c-sprache, c-anders, ports, display)
 
 ### Aufgaben, die sich selbst prüfen
 

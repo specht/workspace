@@ -37,6 +37,25 @@ class ContentPartsTest < Minitest::Test
         FileUtils.rm_rf(@root)
     end
 
+    # An HTML block that Redcarpet cannot close (a </div> that does not start
+    # a line, as in </table></div>) swallows the Markdown after it up to the
+    # next such </div>: its headings then appear as raw text.
+    def test_every_handbuch_heading_is_rendered
+        require 'redcarpet'
+        redcarpet = Redcarpet::Markdown.new(Redcarpet::Render::HTML, { :fenced_code_blocks => true })
+        Dir[File.join(CONTENT, 'reference', '*', '*.md')].each do |file|
+            next if File.basename(file) == ContentParts::NOTE_FILE
+            markdown = ContentParts.fill_variables(ContentParts.mark_parts(File.read(file, encoding: 'UTF-8')))
+            fence = false
+            # Screenshot recipes are comments with # lines of their own.
+            headings = markdown.gsub(/<!--.*?-->/m, '').lines.count do |line|
+                fence = !fence if line.start_with?('```')
+                !fence && line =~ /\A#+ \S/
+            end
+            assert_equal headings, redcarpet.render(markdown).scan(/<h[1-6][ >]/).size, file
+        end
+    end
+
     def test_page_file_prefers_own_name_and_never_the_teacher_note
         File.write(File.join(@page, 'lehrkraft.md'), 'Notiz')
         File.write(File.join(@page, 'showerjs.md'), 'Seite')
@@ -90,6 +109,39 @@ class ContentPartsTest < Minitest::Test
         assert_includes out, "<div class='reference-include-begin'></div>"
         assert_includes out, "data-href='/reference/workspace#klonen'"
         assert_match(/data-label='[^']+ › Repository klonen'/, out)
+    end
+
+    # A part's sub-headings come out as h4 whether the part is an h2 or an
+    # h3 on its reference page; code blocks are left alone.
+    def test_included_sub_headings_are_h4_however_deep_the_part_sits
+        File.write(File.join(@reference, 'workspace', 'workspace.md'), <<~MD)
+            # Workspace
+
+            <!-- part: flach -->
+            ## Flach
+
+            ### Unterpunkt
+
+            ```bash
+            # kein Titel
+            ```
+            <!-- /part -->
+
+            ## Gruppe
+
+            <!-- part: tief -->
+            ### Tief
+
+            #### Unterpunkt
+            <!-- /part -->
+        MD
+        %w[flach tief].each do |part|
+            out = ContentParts.expand_includes("_include(workspace##{part})", page_dir: @page, reference_root: @reference)
+            assert_match(/^#### Unterpunkt$/, out, part)
+            refute_match(/^#{'#' * 3} Unterpunkt$|^#{'#' * 5} Unterpunkt$/, out, part)
+        end
+        out = ContentParts.expand_includes('_include(workspace#flach)', page_dir: @page, reference_root: @reference)
+        assert_includes out, "```bash\n# kein Titel\n```"
     end
 
     def test_include_with_done_names_the_task_that_folds_it
@@ -154,7 +206,7 @@ class ContentPartsTest < Minitest::Test
         out = ContentParts.expand_uses('_uses(terminal, gibtsnicht)', references: ['workspace'],
             reference_root: @reference, warn: ->(m) { warnings << m })
         # The chip shows the part's heading, not its name.
-        assert_includes out, "<a href='/reference/workspace#terminal'>Terminal öffnen</a>"
+        assert_includes out, "<a href='/reference/workspace#terminal' title='Im Handbuch nachlesen'><i class='bi bi-book' aria-hidden='true'></i>Terminal öffnen</a>"
         assert_includes out, '<span>gibtsnicht</span>'
         assert_equal 1, warnings.size
     end

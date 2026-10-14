@@ -52,9 +52,14 @@ module WorkspaceRuntime
             result
         end
 
+        # Tools that phone home or greet on first use: .NET sends usage data
+        # unless told not to, prints a welcome banner on its first run and
+        # makes an HTTPS developer certificate nobody here needs.
+        TOOL_ENVIRONMENT = '-e DOTNET_CLI_TELEMETRY_OPTOUT=1 -e DOTNET_NOLOGO=1 -e DOTNET_GENERATE_ASPNET_CERTIFICATE=false'
+
         def start_workspace(fs_tag:, workspace_login:, database_environment:,
             host_data_path:, test_mode:, timeout: nil)
-            command = "docker run --cpus=4 --memory=4g --memory-swap=4g --pids-limit=256 -d --rm --hostname workspace -e PUID=1000 -e PGID=1000 -e TZ=Europe/Berlin -e WORKSPACE_USER=#{Shellwords.escape(workspace_login)} -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace -e MYSQL_HOST=\"#{database_environment['MYSQL_HOST']}\" -e MYSQL_USER=\"#{database_environment['MYSQL_USER']}\" -e MYSQL_PASSWORD=\"#{database_environment['MYSQL_PASSWORD']}\" -e MYSQL_DATABASE=\"#{database_environment['MYSQL_DATABASE']}\" -e NEO4J_URI=\"#{database_environment['NEO4J_URI']}\" -e NEO4J_USERNAME=\"#{database_environment['NEO4J_USERNAME']}\" -e NEO4J_PASSWORD=\"#{database_environment['NEO4J_PASSWORD']}\" -e NEO4J_DATABASE=\"#{database_environment['NEO4J_DATABASE']}\" -v #{host_data_path}/user/#{fs_tag}/config:/config -v #{host_data_path}/user/#{fs_tag}/workspace:/workspace --network #{WORKSPACE_NETWORK} #{test_mode ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{fs_tag} #{WORKSPACE_IMAGE}"
+            command = "docker run --cpus=4 --memory=4g --memory-swap=4g --pids-limit=256 -d --rm --hostname workspace -e PUID=1000 -e PGID=1000 -e TZ=Europe/Berlin -e WORKSPACE_USER=#{Shellwords.escape(workspace_login)} -e PWA_APPNAME=\"Workspace\" -e DEFAULT_WORKSPACE=/workspace #{TOOL_ENVIRONMENT} -e MYSQL_HOST=\"#{database_environment['MYSQL_HOST']}\" -e MYSQL_USER=\"#{database_environment['MYSQL_USER']}\" -e MYSQL_PASSWORD=\"#{database_environment['MYSQL_PASSWORD']}\" -e MYSQL_DATABASE=\"#{database_environment['MYSQL_DATABASE']}\" -e NEO4J_URI=\"#{database_environment['NEO4J_URI']}\" -e NEO4J_USERNAME=\"#{database_environment['NEO4J_USERNAME']}\" -e NEO4J_PASSWORD=\"#{database_environment['NEO4J_PASSWORD']}\" -e NEO4J_DATABASE=\"#{database_environment['NEO4J_DATABASE']}\" -v #{host_data_path}/user/#{fs_tag}/config:/config -v #{host_data_path}/user/#{fs_tag}/workspace:/workspace --network #{WORKSPACE_NETWORK} #{test_mode ? '-v /dev/null:/etc/resolv.conf:ro' : ''} --name hs_code_#{fs_tag} #{WORKSPACE_IMAGE}"
             @ok.call(command, :timeout => timeout)
         end
 
@@ -137,11 +142,38 @@ module WorkspaceRuntime
             sockets
         end
 
-        # Runs a fixed, read-only script in the student's container as the
-        # student (GitCheck::STATUS_SCRIPT) and returns its output, or nil if
-        # the container is not running. repo is a checked relative path.
-        def git_status(fs_tag, repo:, uid:, script:, timeout: nil)
-            run_script(fs_tag, :script => script, :args => ["/workspace/#{repo}"], :uid => uid, :timeout => timeout)
+        # Runs a fixed, read-only script as the student (GitCheck::
+        # STATUS_SCRIPT) and returns its output. repo is a checked relative
+        # path. In the running container if there is one; otherwise, with
+        # host_data_path, in a reader container (git_status_offline). nil if
+        # neither could read.
+        def git_status(fs_tag, repo:, uid:, script:, timeout: nil, host_data_path: nil)
+            output = run_script(fs_tag, :script => script, :args => ["/workspace/#{repo}"], :uid => uid, :timeout => timeout)
+            return output unless output.nil?
+            return nil if host_data_path.nil?
+
+            git_status_offline(fs_tag, :repo => repo, :uid => uid, :script => script,
+                :host_data_path => host_data_path, :timeout => timeout)
+        end
+
+        # The same script for a Workspace that is not running: a container of
+        # the same image that lives only for this, without code-server, as the
+        # student, without network, with the student's folder mounted
+        # read-only. Git still never runs on the server itself, and nothing in
+        # the folder can change. nil if the folder does not exist.
+        def git_status_offline(fs_tag, repo:, uid:, script:, host_data_path:, timeout: nil)
+            command = Shellwords.join(offline_args(fs_tag, :repo => repo, :uid => uid, :script => script,
+                :host_data_path => host_data_path))
+            @capture.call(command, :timeout => timeout, :allow_failure => true, :log_command => false)
+        end
+
+        def offline_args(fs_tag, repo:, uid:, script:, host_data_path:)
+            ['docker', 'run', '--rm', '--network', 'none', '--read-only', '--tmpfs', '/tmp',
+             '--cpus', '1', '--memory', '256m', '--pids-limit', '64',
+             '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
+             '-u', uid, '-e', 'HOME=/workspace',
+             '-v', "#{host_data_path}/user/#{fs_tag}/workspace:/workspace:ro",
+             '--entrypoint', 'sh', WORKSPACE_IMAGE, '-c', script, 'sh', "/workspace/#{repo}"]
         end
 
         # Runs a fixed script from the server's code (never text from a

@@ -6,7 +6,7 @@ kind: reference
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2,h3">
+    data-levels="h2,h3,h4">
 </div>
 
 # Interaktive Geschichten mit BIF
@@ -15,9 +15,13 @@ kind: reference
 Eine BIF-Geschichte besteht aus Markdown-Dateien mit ein paar eigenen Schreibweisen für Entscheidungen, Variablen und Bedingungen. Hier stehen sie zum Nachschlagen, wenn du deine eigene Geschichte schreibst. Wie alles zusammenspielt, zeigt die Aktivität <a href='/bif'>»Interaktive Geschichten schreiben«</a>.
 </p>
 
+## Eine Geschichte schreiben
+
+Seiten, Entscheidungen zwischen ihnen und ein Ende: mehr braucht eine Geschichte nicht.
+
 <!-- part: seiten -->
 <!-- short: Jede `.md`-Datei im Geschichtenordner ist eine Seite, `2.md` ist Seite 2. Jede Geschichte beginnt bei `1.md`. -->
-## Seiten
+### Seiten
 
 Eine Geschichte besteht aus Seiten. Jede `.md`-Datei im Geschichtenordner ist eine Seite, und ihr Name ohne `.md` ist ihre Seitennummer: `2.md` ist Seite 2. Statt Zahlen gehen auch Wörter, `keller.md` ist dann die Seite `keller`; Groß- und Kleinschreibung zählt.
 
@@ -30,10 +34,11 @@ Du willst gerade gehen, da fällt dir ein: Deine Projektmappe liegt noch im Mate
 ```
 
 Für Zwischenüberschriften auf einer Seite nimmst du `##`.
+<!-- /part -->
 
 <!-- part: entscheidungen -->
 <!-- short: `- [Text](2)` ist eine Entscheidung, die zu Seite 2 führt. In die Klammer kommt die Seite ohne `.md`. -->
-## Entscheidungen
+### Entscheidungen
 
 Eine Entscheidung ist ein Listenpunkt mit einem Link: In eckigen Klammern steht, was die Leserin oder der Leser sieht, in runden Klammern die Seite, auf der es weitergeht.
 
@@ -47,10 +52,11 @@ Stehen mehrere Entscheidungen untereinander, verzweigt sich die Geschichte. Wege
 <div class='hint'>
 Schreibe <code>(3)</code>, nicht <code>(3.md)</code>. Mit <code>.md</code> ist es für BIF ein gewöhnlicher Link und keine Entscheidung.
 </div>
+<!-- /part -->
 
 <!-- part: lokal -->
 <!-- short: `- [Text](.)` bleibt auf derselben Seite. Was danach erscheint, steht darunter, mit vier Leerzeichen eingerückt. -->
-## Lokale Entscheidungen
+### Lokale Entscheidungen
 
 Mit einem Punkt statt einer Seitennummer bleibt die Geschichte auf derselben Seite. Was nach der Auswahl erscheint, steht direkt darunter, **mit vier Leerzeichen eingerückt**:
 
@@ -67,10 +73,24 @@ Eine lokale Entscheidung lässt sich bei einem Besuch der Seite einmal auswähle
 <div class='hint'>
 Im eingerückten Teil darf keine weitere Entscheidung stehen. Schreib sie auf die oberste Ebene und zeige sie mit einer Bedingung erst, wenn sie passt.
 </div>
+<!-- /part -->
+
+<!-- part: ende -->
+<!-- short: Eine Seite ohne Entscheidung zu einer anderen Seite ist ein Ende; dort kann man die Geschichte neu beginnen. -->
+### Ende
+
+Eine Seite, auf der keine Entscheidung zu einer anderen Seite führt, ist ein Ende. BIF zeigt dort den Knopf »Gedrückt halten, um erneut zu spielen«; nach einem Neustart beginnt die Geschichte wieder bei `1.md`, und die Anfangswerte dort gelten von Neuem.
+
+Eine Geschichte kann mehrere Enden haben: ein gutes, ein schlechtes, ein überraschendes.
+<!-- /part -->
+
+## Was sich die Geschichte merkt
+
+Mit Variablen erinnert sich die Geschichte an das, was passiert ist, und kann darauf reagieren.
 
 <!-- part: variablen -->
 <!-- short: `<script>has_key = false;</script>` merkt sich etwas für den Rest der Geschichte; den Anfangswert setzt du in `1.md`. -->
-## Variablen
+### Variablen
 
 In einem `<script>`-Block gibst du einer Variable einen Wert. Sie behält ihn für den Rest der Geschichte, auch wenn die Leserin oder der Leser die Seite wechselt.
 
@@ -95,10 +115,11 @@ Ein Skript läuft bei jedem Besuch seiner Seite. Anfangswerte gehören deshalb n
 ```
 
 In der Entwicklungsansicht zeigt der Bereich **State**, welchen Wert jede Variable gerade hat.
+<!-- /part -->
 
 <!-- part: bedingungen -->
 <!-- short: `{condition="has_key"}` hinter einer Entscheidung oder `<p condition="!has_key">` um Text: Sichtbar ist es nur, wenn die Bedingung stimmt. -->
-## Bedingungen
+### Bedingungen
 
 Eine Bedingung entscheidet, ob eine Entscheidung oder ein Text gerade erscheint. Hinter einer Entscheidung steht sie in geschweiften Klammern, um einen Text herum in einem `<p>`:
 
@@ -125,18 +146,79 @@ Bedingungen sind JavaScript-Ausdrücke:
 </tbody>
 </table>
 </div>
+<!-- /part -->
 
-<!-- part: ende -->
-<!-- short: Eine Seite ohne Entscheidung zu einer anderen Seite ist ein Ende; dort kann man die Geschichte neu beginnen. -->
-## Ende
+<!-- part: werte -->
+<!-- short: `[[ points ]]` setzt den Wert einer Variable in den Text; `points ??= 0;` gibt nur einen Anfangswert, wenn es die Variable noch nicht gibt. -->
+### Werte im Text
 
-Eine Seite, auf der keine Entscheidung zu einer anderen Seite führt, ist ein Ende. BIF zeigt dort den Knopf »Gedrückt halten, um erneut zu spielen«; nach einem Neustart beginnt die Geschichte wieder bei `1.md`, und die Anfangswerte dort gelten von Neuem.
+Variablen können nicht nur `true` und `false`, sondern auch Zahlen oder Texte enthalten.
 
-Eine Geschichte kann mehrere Enden haben: ein gutes, ein schlechtes, ein überraschendes.
+Zum Beispiel:
+
+```html
+<script>
+points = 3;
+</script>
+```
+
+Mit doppelten eckigen Klammern kannst du einen Wert in den Text einsetzen:
+
+```markdown
+Du hast [[ points ]] Punkte.
+```
+
+Wenn eine Variable auf einer Seite einen Anfangswert bekommen soll, die mehrfach besucht werden kann, ist `??=` praktisch:
+
+```js
+points ??= 0;
+```
+
+Der Wert wird damit nur gesetzt, wenn `points` noch nicht existiert. Werte wie `0`, `false` oder ein bereits vorhandener Text bleiben unverändert.
+<!-- /part -->
+
+<!-- part: zufall -->
+<!-- short: `Math.w6()` würfelt, `Math.chance(50)` ist in der Hälfte der Fälle `true`. -->
+### Zufall
+
+Für manche Geschichten kann Zufall interessant sein.
+
+```js
+Math.w6()
+```
+
+würfelt mit einem sechsseitigen Würfel.
+
+```js
+Math.chance(50)
+```
+
+liefert mit einer Wahrscheinlichkeit von 50 Prozent `true`.
+
+Zum Ausprobieren kannst du zum Beispiel diesen Block auf eine Seite schreiben:
+
+```html_wrap
+<script>
+if (Math.chance(50)) {
+    print("Aus dem Treppenhaus hörst du Schritte.");
+} else {
+    print("Im Treppenhaus bleibt alles still.");
+}
+</script>
+```
+
+Lade die Seite mehrmals über einen Neustart der Geschichte. Mal hörst du die Schritte, mal bleibt es still.
+
+Zufall eignet sich gut für kleine Überraschungen. Wichtige Folgen sind oft interessanter, wenn sie von vorherigen Entscheidungen abhängen.
+<!-- /part -->
+
+## Ordnung im Projekt
+
+Wenn die Geschichte wächst: ein eigener Ordner und Gruppen im Graphen.
 
 <!-- part: eigener-ordner -->
 <!-- short: Neuer Ordner mit einer `1.md`, dann in `config.js`: `export const path = "pages-meine-geschichte";` -->
-## Eigener Geschichtenordner
+### Eigener Geschichtenordner
 
 Welche Geschichte BIF zeigt, steht in `config.js`. Für eine eigene Geschichte legst du neben `pages-starter` einen neuen Ordner an, zum Beispiel `pages-meine-geschichte`, darin eine `1.md`, und trägst ihn ein:
 
@@ -165,38 +247,60 @@ close-tab: Welcome
 -->
 
 <img class='full' src='bif-ordner.webp' alt='Im Explorer liegen der Ordner pages-starter und die Datei config.js; in config.js steht export const path = "pages-starter";'>
+<!-- /part -->
 
-<!-- part: probleme -->
-<!-- short: Unten unter »Problems« nennt BIF Datei und Zeile; was die Meldungen bedeuten, steht in der Tabelle. -->
-## Wenn BIF ein Problem meldet
+<!-- part: gruppen -->
+<!-- short: Eine Kommentarzeile ganz oben auf einer Seite, etwa mit `Schule -- Büro`, fasst Seiten im Graphen zu Bereichen zusammen. -->
+### Graph-Gruppen
 
-BIF liest deine Geschichte bei jedem Speichern und meldet unten im Bereich **Problems**, in welcher Datei und Zeile etwas nicht stimmt; im Graphen ist die Seite rot markiert. Die Meldungen sind auf Englisch:
+Bei größeren Geschichten kannst du Seiten im Graphen zu Bereichen zusammenfassen.
 
-<div style='max-width: 100%; overflow-x: auto;'>
-<table class='table'>
-<thead><tr><th>Meldung beginnt mit</th><th>Bedeutung</th><th>Was hilft</th></tr></thead>
-<tbody>
-<tr><td><code>Choice … links to missing page</code></td><td>Eine Entscheidung führt zu einer Seite, die es nicht gibt.</td><td>Die Datei anlegen oder die Nummer in <code>( )</code> korrigieren.</td></tr>
-<tr><td><code>Page … is unreachable</code></td><td>Keine Entscheidung führt zu dieser Seite.</td><td>Eine Entscheidung zu ihr schreiben, oder die Seite löschen.</td></tr>
-<tr><td><code>Unexpected token</code></td><td>Tippfehler in einem <code>&lt;script&gt;</code>.</td><td>Die Zeile ansehen: fehlt etwas nach <code>=</code>, eine Klammer, ein Anführungszeichen?</td></tr>
-<tr><td><code>Invalid condition</code></td><td>Eine Bedingung ist kein gültiger Ausdruck.</td><td>Mit der Tabelle unter »Bedingungen« vergleichen, etwa <code>==</code> statt <code>=</code>.</td></tr>
-<tr><td><code>Story choices cannot be nested</code></td><td>Unter einer lokalen Entscheidung steht eingerückt eine weitere Entscheidung.</td><td>Die zweite Entscheidung auf die oberste Ebene schreiben, mit einer Bedingung.</td></tr>
-<tr><td><code>A local choice has no result</code></td><td>Unter einer lokalen Entscheidung steht nichts Eingerücktes.</td><td>Den Text darunter mit vier Leerzeichen einrücken.</td></tr>
-<tr><td><code>Story asset not found</code></td><td>Ein Bild, Ton oder Video fehlt.</td><td>Liegt die Datei im Geschichtenordner, mit genau diesem Namen, auch in Groß- und Kleinschreibung?</td></tr>
-<tr><td><code>Image has no alternative text</code></td><td>Einem Bild fehlt die Beschreibung (nur eine Warnung).</td><td>In die eckigen Klammern schreiben, was auf dem Bild zu sehen ist.</td></tr>
-<tr><td><code>Configured story directory does not exist</code></td><td>Den Ordner aus <code>config.js</code> gibt es nicht.</td><td>Den Namen in <code>config.js</code> mit dem im Explorer vergleichen.</td></tr>
-<tr><td><code>Configured story has no 1.md</code></td><td>Im Geschichtenordner fehlt die erste Seite.</td><td>Eine <code>1.md</code> anlegen.</td></tr>
-</tbody>
-</table>
-</div>
+Ganz oben in einer Seite kann zum Beispiel stehen:
 
-Läuft dein Workspace nicht, liest BIF auch nichts. Öffne ihn und speichere eine Seite, dann ist die Liste wieder aktuell.
+```markdown_wrap
+<!-- Schule -- Büro -->
+```
+
+Eine andere Seite könnte beginnen mit:
+
+```markdown_wrap
+<!-- Schule -- Flur -->
+```
+
+Diese Kommentare sind für die Leserinnen und Leser unsichtbar. Sie helfen nur dabei, den Graphen übersichtlich zu halten.
+
+<!-- tutorial-screenshot
+write-file: pages-starter/1.md <- file:1-with-groups.md.txt
+write-file: pages-starter/2.md <- file:2-with-groups.md.txt
+write-file: pages-starter/3.md <- file:3-with-groups.md.txt
+write-file: pages-starter/4.md <- file:4-with-groups.md.txt
+write-file: pages-starter/5.md <- file:5-with-groups.md.txt
+wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
+tab: preview
+preview-reload
+hold: 1.5s selector:.story-restart-control
+# Das Bild zeigt die Gruppen: die Leiste unter dem Graphen zuklappen, so
+# bekommt er die ganze Höhe, egal wie hoch sie vorher war
+click: Problems (0)
+click: Collapse
+move-mouse: No problems
+click: Fit graph
+sleep: 0.5
+-->
+<img class='full full-shadow' src='grouped-graph.webp' alt='Farbig hinterlegte Gruppen gliedern den Story-Graphen in mehrere Bereiche.'>
+<!-- /part -->
+
+## Gestalten
+
+Farben, Schriften, Bilder und Töne geben der Geschichte ihre Stimmung.
 
 <!-- part: aussehen -->
 <!-- short: Ganz oben in `1.md`, zwischen zwei Zeilen `---`: `theme: mystery` wählt ein fertiges Aussehen; Farben und Schriften lassen sich einzeln ändern. -->
-## Aussehen anpassen
+### Aussehen anpassen
 
 Das Aussehen deiner Geschichte stellst du ganz oben in `1.md` ein. Dafür kannst du einen sogenannten **Front-Matter-Block** verwenden. Er steht noch vor dem Titel der Geschichte.
+#### Ein fertiges Theme
+
 Am einfachsten wählst du ein fertiges Theme:
 
 ```markdown_wrap
@@ -282,6 +386,8 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     </div>
 </div>
 
+#### Ein Theme verändern
+
 Du kannst ein Theme aber auch verändern. Zum Beispiel:
 
 ```markdown_wrap
@@ -293,6 +399,8 @@ font_heading: Bungee
 ```
 
 `accent` ist die Akzentfarbe für Links und interaktive Elemente. Mit `font_heading` änderst du nur die Schrift der Überschriften.
+
+#### Eigene Farben
 
 Du musst überhaupt kein Theme auswählen. Wenn du `theme:` weglässt, kannst du die Standarddarstellung selbst mit Farben und Schriften anpassen:
 
@@ -314,6 +422,8 @@ Die drei Grundfarben haben unterschiedliche Aufgaben:
 
 Die übrigen Farbtöne für Flächen, Rahmen und Schatten leitet BIF automatisch daraus ab. Du musst also nicht für jedes kleine Element eine eigene Farbe festlegen.
 
+#### Hell oder dunkel
+
 Mit
 
 ```markdown_wrap
@@ -328,15 +438,18 @@ brightness: dark
 
 kannst du eine helle oder dunkle Darstellung erzwingen. `brightness: system` folgt stattdessen der Einstellung des Geräts.
 
+#### Schriften
+
 Für `font_body` und `font_heading` kannst du den Namen einer Schrift von [Google Fonts](https://fonts.google.com/) eintragen. Schreibe den Namen genau so, wie er dort steht. BIF lädt die benötigten Schriftdateien beim Entwickeln automatisch herunter und speichert sie lokal im Ordner `bif-assets`. Diesen Ordner solltest du deshalb nicht selbst für Bilder oder andere Dateien verwenden.
 
 <div class='hint'>
 Gestaltung kann viel zur Stimmung beitragen. Eine Mystery-Geschichte darf anders aussehen als eine Komödie oder ein Terminal-Abenteuer. Achte aber darauf, dass der Text gut lesbar bleibt.
 </div>
+<!-- /part -->
 
 <!-- part: markdown -->
 <!-- short: `**fett**`, `*kursiv*` und `##` für Zwischenüberschriften; `#` nur für den Titel in `1.md`. -->
-## Markdown
+### Markdown
 
 Für die normalen Texte kannst du die üblichen Markdown-Schreibweisen verwenden.
 
@@ -359,10 +472,11 @@ Eine Zwischenüberschrift innerhalb einer Seite:
 ```
 
 Denke daran: `#` verwenden wir für den Titel der gesamten Geschichte. Für Unterüberschriften innerhalb einer Seite beginnt die Hierarchie bei `##`.
+<!-- /part -->
 
 <!-- part: bilder -->
 <!-- short: Bilder in den Geschichtenordner legen, am besten in `images/`, und mit `![Beschreibung](images/bild.jpg)` einbinden. -->
-## Bilder
+### Bilder
 
 Bilder speicherst du am besten innerhalb deines Geschichtenordners, zum Beispiel:
 
@@ -401,16 +515,20 @@ wait-for-text: Sieh im Büro nach.
 sleep: 0.5
 click: Sieh im Büro nach.
 wait-for-text: Gehe zurück in den Flur.
+# BIF merkt sich den Reiter unter dem Graphen; »Problems« zeigen, egal
+# welches Rezept vorher lief
+click: Problems (0)
 move-mouse: No problems
 click: Fit graph
 sleep: 1.5
 -->
 
 <img class='full full-shadow scroll-right' src='story-image.webp' alt='Ein Schlüsselbild ergänzt die Büroseite der Geschichte.'>
+<!-- /part -->
 
 <!-- part: medien -->
 <!-- short: `<audio controls src="…">` und `<video controls>` wie in HTML, die Dateien im Geschichtenordner. -->
-## Audio und Video
+### Audio und Video
 
 Auch Audio- und Videodateien können Teil einer Geschichte sein:
 
@@ -425,108 +543,15 @@ oder:
     <source src="video/train.webm" type="video/webm">
 </video>
 ```
+<!-- /part -->
 
-<!-- part: werte -->
-<!-- short: `[[ points ]]` setzt den Wert einer Variable in den Text; `points ??= 0;` gibt nur einen Anfangswert, wenn es die Variable noch nicht gibt. -->
-## Werte im Text
+## Für Fortgeschrittene
 
-Variablen können nicht nur `true` und `false`, sondern auch Zahlen oder Texte enthalten.
-
-Zum Beispiel:
-
-```html
-<script>
-points = 3;
-</script>
-```
-
-Mit doppelten eckigen Klammern kannst du einen Wert in den Text einsetzen:
-
-```markdown
-Du hast [[ points ]] Punkte.
-```
-
-Wenn eine Variable auf einer Seite einen Anfangswert bekommen soll, die mehrfach besucht werden kann, ist `??=` praktisch:
-
-```js
-points ??= 0;
-```
-
-Der Wert wird damit nur gesetzt, wenn `points` noch nicht existiert. Werte wie `0`, `false` oder ein bereits vorhandener Text bleiben unverändert.
-
-<!-- part: zufall -->
-<!-- short: `Math.w6()` würfelt, `Math.chance(50)` ist in der Hälfte der Fälle `true`. -->
-## Zufall
-
-Für manche Geschichten kann Zufall interessant sein.
-
-```js
-Math.w6()
-```
-
-würfelt mit einem sechsseitigen Würfel.
-
-```js
-Math.chance(50)
-```
-
-liefert mit einer Wahrscheinlichkeit von 50 Prozent `true`.
-
-Zum Ausprobieren kannst du zum Beispiel diesen Block auf eine Seite schreiben:
-
-```html_wrap
-<script>
-if (Math.chance(50)) {
-    print("Aus dem Treppenhaus hörst du Schritte.");
-} else {
-    print("Im Treppenhaus bleibt alles still.");
-}
-</script>
-```
-
-Lade die Seite mehrmals über einen Neustart der Geschichte. Mal hörst du die Schritte, mal bleibt es still.
-
-Zufall eignet sich gut für kleine Überraschungen. Wichtige Folgen sind oft interessanter, wenn sie von vorherigen Entscheidungen abhängen.
-
-<!-- part: gruppen -->
-<!-- short: Eine Kommentarzeile ganz oben auf einer Seite, etwa mit `Schule -- Büro`, fasst Seiten im Graphen zu Bereichen zusammen. -->
-## Graph-Gruppen
-
-Bei größeren Geschichten kannst du Seiten im Graphen zu Bereichen zusammenfassen.
-
-Ganz oben in einer Seite kann zum Beispiel stehen:
-
-```markdown_wrap
-<!-- Schule -- Büro -->
-```
-
-Eine andere Seite könnte beginnen mit:
-
-```markdown_wrap
-<!-- Schule -- Flur -->
-```
-
-Diese Kommentare sind für die Leserinnen und Leser unsichtbar. Sie helfen nur dabei, den Graphen übersichtlich zu halten.
-
-<!-- tutorial-screenshot
-write-file: pages-starter/1.md <- file:1-with-groups.md.txt
-write-file: pages-starter/2.md <- file:2-with-groups.md.txt
-write-file: pages-starter/3.md <- file:3-with-groups.md.txt
-write-file: pages-starter/4.md <- file:4-with-groups.md.txt
-write-file: pages-starter/5.md <- file:5-with-groups.md.txt
-wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
-tab: preview
-preview-reload
-hold: 1.5s selector:.story-restart-control
-move-mouse: No problems
-click: Fit graph
-sleep: 0.5
--->
-<img class='full full-shadow' src='grouped-graph.webp' alt='Farbig hinterlegte Gruppen gliedern den Story-Graphen in mehrere Bereiche.'>
+Wenn die Schreibweisen von BIF nicht mehr reichen.
 
 <!-- part: javascript -->
 <!-- short: `presentChoice` und `goToPage` bauen Entscheidungen, die erst beim Lesen aus Daten entstehen. -->
-## JavaScript
+### JavaScript
 
 Für normale Entscheidungen reichen die Markdown-Links fast immer aus:
 
@@ -563,3 +588,35 @@ Mit JavaScript könntest du auf diese Weise zum Beispiel Entscheidungen aus eine
 <div class='hint'>
 Benutze zusätzliche Technik nur dann, wenn sie deiner Geschichte etwas bringt. Mehr Variablen, Skripte oder Verzweigungen machen eine Geschichte nicht automatisch besser.
 </div>
+<!-- /part -->
+
+## Wenn etwas nicht klappt
+
+Was die Meldungen unter »Problems« bedeuten und was du dann tust.
+
+<!-- part: probleme -->
+<!-- short: Unten unter »Problems« nennt BIF Datei und Zeile; was die Meldungen bedeuten, steht in der Tabelle. -->
+### Wenn BIF ein Problem meldet
+
+BIF liest deine Geschichte bei jedem Speichern und meldet unten im Bereich **Problems**, in welcher Datei und Zeile etwas nicht stimmt; im Graphen ist die Seite rot markiert. Die Meldungen sind auf Englisch:
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table'>
+<thead><tr><th>Meldung beginnt mit</th><th>Bedeutung</th><th>Was hilft</th></tr></thead>
+<tbody>
+<tr><td><code>Choice … links to missing page</code></td><td>Eine Entscheidung führt zu einer Seite, die es nicht gibt.</td><td>Die Datei anlegen oder die Nummer in <code>( )</code> korrigieren.</td></tr>
+<tr><td><code>Page … is unreachable</code></td><td>Keine Entscheidung führt zu dieser Seite.</td><td>Eine Entscheidung zu ihr schreiben, oder die Seite löschen.</td></tr>
+<tr><td><code>Unexpected token</code></td><td>Tippfehler in einem <code>&lt;script&gt;</code>.</td><td>Die Zeile ansehen: fehlt etwas nach <code>=</code>, eine Klammer, ein Anführungszeichen?</td></tr>
+<tr><td><code>Invalid condition</code></td><td>Eine Bedingung ist kein gültiger Ausdruck.</td><td>Mit der Tabelle unter »Bedingungen« vergleichen, etwa <code>==</code> statt <code>=</code>.</td></tr>
+<tr><td><code>Story choices cannot be nested</code></td><td>Unter einer lokalen Entscheidung steht eingerückt eine weitere Entscheidung.</td><td>Die zweite Entscheidung auf die oberste Ebene schreiben, mit einer Bedingung.</td></tr>
+<tr><td><code>A local choice has no result</code></td><td>Unter einer lokalen Entscheidung steht nichts Eingerücktes.</td><td>Den Text darunter mit vier Leerzeichen einrücken.</td></tr>
+<tr><td><code>Story asset not found</code></td><td>Ein Bild, Ton oder Video fehlt.</td><td>Liegt die Datei im Geschichtenordner, mit genau diesem Namen, auch in Groß- und Kleinschreibung?</td></tr>
+<tr><td><code>Image has no alternative text</code></td><td>Einem Bild fehlt die Beschreibung (nur eine Warnung).</td><td>In die eckigen Klammern schreiben, was auf dem Bild zu sehen ist.</td></tr>
+<tr><td><code>Configured story directory does not exist</code></td><td>Den Ordner aus <code>config.js</code> gibt es nicht.</td><td>Den Namen in <code>config.js</code> mit dem im Explorer vergleichen.</td></tr>
+<tr><td><code>Configured story has no 1.md</code></td><td>Im Geschichtenordner fehlt die erste Seite.</td><td>Eine <code>1.md</code> anlegen.</td></tr>
+</tbody>
+</table>
+</div>
+
+Läuft dein Workspace nicht, liest BIF auch nichts. Öffne ihn und speichere eine Seite, dann ist die Liste wieder aktuell.
+<!-- /part -->

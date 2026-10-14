@@ -128,7 +128,8 @@ Zum schnellen Ausprobieren ohne neues Image: in einem laufenden Workspace
 
 ```bash
 ./build-image.sh      # Executor-Images, Erweiterungen, Toolchains, code-server-Image
-./build-tic80.sh      # einmalig, wenn TIC-80 gebraucht wird
+./build-tic80.sh      # TIC-80 für den Browser (Version in TIC80_REF), nach jedem Wechsel der Version
+BRIDGE_ONLY=1 ./build-tic80.sh   # nur docker/tic80/hackschule-persistence.js neu davorsetzen
 docker system prune   # wenn der Platz knapp wird
 ```
 

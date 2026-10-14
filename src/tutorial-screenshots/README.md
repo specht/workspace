@@ -150,6 +150,7 @@ wait-for-file: PATH
 wait-for-file-newer: TARGET <- SOURCE
 go-live
 preview-port: PORT
+open-site: PATH
 neo4j-browser
 hook: NAME ARGS
 select-option: CSS_SELECTOR = VALUE
@@ -205,6 +206,10 @@ captured with `tab: preview`, even if it binds only to 127.0.0.1.
 `select-option` selects the given value in a real HTML `<select>` on the active
 tab and triggers the normal change event. For example,
 `select-option: #structure = avl` picks a completed AVL implementation.
+
+`open-site: PATH` opens a page of the Workspace site itself, logged in as the
+screenshot account, as the `preview` tab (`open-site: /tic80/` for TIC-80).
+The tutorial's `waitForPreview` hook runs after it, as for `go-live`.
 
 `neo4j-browser` opens the screenshot account's Neo4j Browser as the `preview`
 tab, the way the »Neo4j« button in the menu does (`/api/start_neo4j`), and logs

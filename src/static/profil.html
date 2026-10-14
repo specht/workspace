@@ -354,12 +354,6 @@
                 <a class="btn btn-secondary" href="/logout"><i class='bi bi-box-arrow-in-right'></i>Abmelden</a>
             </section>
 
-            <section id="profile-teaching-materials" class="profile-section" aria-labelledby="teaching-materials" #{teacher_account_logged_in? ? '' : 'hidden'}>
-                <h2 id="teaching-materials">Notizen für Lehrkräfte</h2>
-                <p class='profile-teacher-start'><i class='bi bi-signpost-split' aria-hidden='true'></i> Neu im Workspace? Der <a href='/lehrmaterial-einstieg'>Einstieg für Lehrkräfte</a> erklärt Anmeldung, Klassenseite, Abgaben und dein Testkonto.</p>
-                #{print_teacher_notes_overview}
-            </section>
-
             <section id="profile-for-teachers" class="profile-section" aria-labelledby="for-teachers" #{teacher_logged_in? ? '' : 'hidden'}>
                 <h2 id="for-teachers">Für Lehrkräfte</h2>
                 <div class="profile-subsection-heading">

@@ -429,6 +429,68 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   später immer wieder in <kbd>Strg</kbd><kbd>P</kbd> auf. Sie sind jetzt
   ausgeschlossen (`**/.hs-kbd-tutorial/**` in `files.exclude`); VS Code
   nimmt sie beim nächsten Start auch aus dem gespeicherten Verlauf.
+- Der Knopf »TIC-80« im Menü zeigt TIC-80s kleinen Computer als Strich-Icon
+  wie die übrigen Icons; der Tab von TIC-80 zeigt das bunte Original.
+- TIC-80 1.3.1 statt einer Entwicklerversion von Juli, mit Forth als neuer
+  Sprache. Speichern im Workspace ist robuster: TIC-80 schickt nur die
+  Dateien, die es geändert hat. Hat sich eine Datei außerhalb von TIC-80
+  geändert (VS Code, `git pull`), bleibt sie, und der Stand aus TIC-80
+  landet daneben, etwa in `spiel (TIC-80).tic`. Bisher blockierte jede
+  Änderung im Ordner `TIC-80` alle weiteren Speicherungen, bis man neu lud,
+  und das verlor den Stand im Browser. Was außerhalb geändert wurde, sieht
+  TIC-80, sobald das Fenster wieder den Fokus hat. Meldungen auf Deutsch.
+  Der CRT-Filter (Röhrenfernseher-Look) ist anfangs aus, damit Code im
+  Editor scharf bleibt; in den Einstellungen lässt er sich einschalten.
+- Git-Aufgaben (»Git kennt dich«, »Committet und gepusht« …) prüfen auch,
+  wenn der Workspace aus ist: in einem Lese-Container mit demselben Image,
+  ohne Netz, der Ordner nur lesbar. Bisher hieß es dann »Starte zuerst
+  deinen Workspace«, auch auf der Klassenseite.
+- Neue Prüfart `cypher`: Abfragen in der eigenen Neo4j-Datenbank, verglichen
+  mit einer Musterabfrage, wie `sql` für MySQL. Nur lesend, doppelt
+  abgesichert: Der Server lässt nur lesende Abfragen durch, und Neo4j führt
+  sie in einer Lese-Transaktion aus (5 Sekunden, höchstens 5000 Zeilen).
+- »Filmdatenbank als Graph mit Neo4j«: Die Abfrage-Übungen aus den Kästen
+  sind jetzt sieben geprüfte Aufgaben. »Toy Story« von 1995, nach dem eine
+  Übung fragte, gibt es in den Daten nicht; jetzt ist es »The Lion King« von
+  1994 (es gibt auch eine Fassung von 2019). Statt der »zehn Personen mit den
+  meisten Filmen«, bei denen Platz 9 bis 11 gleichauf liegen, fragt die
+  Aufgabe nach allen mit mindestens 15 Filmen.
+- Behoben: Rückmeldungen für typische Fehler (`same_result_as`) griffen bei
+  SQL-Aufgaben mit verlangter Reihenfolge nie.
+- Auf dem Tablet bleiben die Schalter auf breiten Bildern (CRT-Filter,
+  Anaglyph, dunkel) rechts oben stehen, während man das Bild zur Seite
+  schiebt; bisher lagen sie am rechten Rand des Bildes, außer Sicht.
+- Handbuch »Interaktive Geschichten«: die 17 Abschnitte in sechs Gruppen
+  (Eine Geschichte schreiben, Was sich die Geschichte merkt, Ordnung im
+  Projekt, Gestalten, Für Fortgeschrittene, Wenn etwas nicht klappt), mit
+  Unterabschnitten für »Aussehen anpassen«. Adressen und eingebundene Teile
+  bleiben gleich.
+- Neue Aktivität »Ein Spiel in 64 KB« (TIC-80, unter Computergrafik): Lua,
+  Konsole und Editoren, Speichern als Textdatei in `/workspace/TIC-80`, der
+  Bildschirm, dann Schritt für Schritt das Spiel »Star Catcher« (Figur,
+  fallende Sterne, eigene Figur im Sprite-Editor, Leben, Ton), Ideen für ein
+  eigenes Spiel und eine Abgabe. Neun Aufgaben, Notiz für Lehrkräfte,
+  erzeugte Screenshots aus dem echten TIC-80.
+- Die Verweise ins Handbuch unter Abschnitten (»Mehr zum Text auf Folien:
+  Überschriften und Absätze …«) sind kleine Knöpfe im Türkis des Handbuchs
+  mit dessen Buch-Symbol statt beiger Pillen.
+- Die Leiste mit den Kapiteln, die oben erscheint, sobald die Kopfzeile aus
+  dem Bild ist, hat links »Nach oben« (Chevron): zurück zur Kopfzeile mit
+  dem Weg zur Startseite und dem ganzen Menü. Die Linien unter den Kapiteln
+  gehören jetzt zu ihren Einträgen und bleiben auch beim seitlichen Scrollen
+  darunter; an einem Rand, hinter dem noch Kapitel kommen, blendet die
+  Leiste weich aus. Solange sie verborgen ist,
+  springt Tab nicht hinein.
+- Klassenseite: »Zurück« im Browser schließt die Anmelde-Codes und den
+  Abgabe-Viewer, statt die Seite zu verlassen. »Vorlage aktuell?« steht auf
+  einer Linie mit »Jetzt nachsehen«.
+- C#: Die Seite übersetzt und startet Programme mit `dotnet run Datei.cs`
+  (.NET 10) statt mit Mono (`mcs`, `mono`). Workspaces starten mit
+  `DOTNET_CLI_TELEMETRY_OPTOUT=1`: .NET schickt keine Nutzungsdaten an
+  Microsoft, zeigt kein Begrüßungsbanner und legt kein HTTPS-Zertifikat an.
+- Das Profil hat keinen Abschnitt »Notizen für Lehrkräfte« mehr; die
+  Notizen stehen oben auf den Aktivitäten. `/lehrmaterial` führt zum
+  »Einstieg für Lehrkräfte«.
 - Lange Code-Blöcke (ab 20 Zeilen) stehen in derselben etwas kleineren
   Schrift wie die Listings aus `_include_file`.
 - Die Kurzzeile eines eingeklappten Handbuch-Kastens zeigt Tasten als
@@ -436,6 +498,45 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Handbuch »Workspace«: neuer Teil »Erweiterung installieren«, mit der Frage
   »Trust Publisher & Install«. »Farben« nennt die RGB-Schreibweise von
   Pixelflow Canvas.
+- Inhaltsverzeichnisse aufgeräumt. Handbuch »HTML« (Aufbau einer Seite,
+  Text, Bilder) und »CSS« (Grundlagen, Gestalten) gliedern sich in Gruppen;
+  »Tastatur-Shortcuts« und »Terminal« haben keine Abschnitte mehr mit nur
+  einem Unterpunkt. Bei den Aktivitäten fassen »Vorbereitung« (LaTeX) und
+  »TIC-80 kennenlernen« den Anfang zusammen; »Statische Website« ordnet
+  »Ein eigenes Bild verwenden« unter HTML ein, Flexbox und kleine
+  Bildschirme unter CSS. Anker und Teile bleiben gleich.
+- Ein Handbuch-Kasten in einer Aktivität erscheint nicht mehr im
+  Inhaltsverzeichnis der Seite; seine Zwischenüberschriften stehen immer
+  eine Stufe unter dem Abschnitt, egal wie tief der Teil im Handbuch sitzt.
+- SQL- und Cypher-Aufgaben: Das Antwortfeld färbt die Abfrage beim Tippen
+  wie die Code-Blöcke der Seite (dieselben Farben, dieselben Schlüsselwörter
+  wie Rouge; bei Cypher Labels, Beziehungstypen und Eigenschaften wie in
+  den Beispielen). Ein fehlendes Anführungszeichen fällt sofort auf. Das
+  Feld wächst mit der Abfrage.
+- Handbuch »MiniCPU« für die CPU Sandbox, mit drei Seiten. »MiniCPU«: die
+  Stufen 8, 8S und 8X, Register, Flags, jeder Befehl mit Opcode,
+  betroffenen Flags, Bytes und Takten, Stack und Aufrufregeln, X und Y,
+  Takte, Maschinencode, Assembler. »Geräte und Bildschirm«: alle Ports,
+  Joystick, Tastatur, Ton, Timer und Vsync, Pixelformate, Palettenchip,
+  Seitenwechsel, die Paletten als Farbfelder. »MiniC«: C für die MiniCPU.
+  Die Tabellen erzeugt `src/scripts/minicpu-reference.mjs` aus den Tabellen
+  der Sandbox selbst. Die Aktivität »Vom Byte zum 3D-Labyrinth« verweist an
+  passender Stelle darauf.
+- Ein Test prüft, dass jede Überschrift einer Handbuch-Seite auch als
+  Überschrift erscheint: Ein `</table></div>` am Zeilenende ließ Redcarpet
+  sonst den Rest der Seite als rohen Text ausgeben.
+- Haken sind Symbole aus Bootstrap Icons statt Unicode-Zeichen: in den
+  Flag-Spalten des MiniCPU-Handbuchs und bei »Deine Kopie … ist aktuell« auf
+  der Startseite. `no_check_marks_test.rb` hält das so (Code ausgenommen).
+- MiniCPU-Assembler in Code-Blöcken (```` ```minicpu ````) ist farbig wie im
+  Editor der CPU Sandbox: Befehle, Register, Marken, Direktiven, Zahlen,
+  Kommentare. Vorher blieben die Blöcke im Handbuch ungefärbt (```` ```asm ````
+  kannte die Seite nicht), die Aktivität nutzte das x86-Schema von NASM.
+  Ein Test prüft, dass jede Sprache an einem Code-Block bekannt ist; dabei
+  fiel ```` ```javascript ```` auf (p5.js), das jetzt wie `js` gefärbt wird.
+- Die Listen der erzeugten Screenshots (`.tutorial-screenshots.json`) sind
+  nach Namen sortiert. Ein Rendern in anderer Reihenfolge ändert die Datei
+  nicht mehr.
 
 - Behoben: »Git kennt dich« schlug fehl, obwohl `git config --global` Name
   und E-Mail kannte. Die Prüfung lief mit dem `HOME` des Images (`/config`)
@@ -470,6 +571,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Für Betreibende
 
+- TIC-80 einmal neu bauen: `./build-tic80.sh` (TIC-80 1.3.1, sokol-Schicht;
+  `tic80.js` und `tic80.wasm` stehen nicht in Git). Das Build-Image braucht
+  jetzt `gcc-multilib` für Forth; `docker/tic80/Dockerfile` installiert es.
 - Keine Änderung nötig. Die Prüfarten `scene` und `er` brauchen `node` im
   Workspace-Image (ist dort schon vorhanden). Für die ER-Werkstatt muss das
   Workspace-Image neu gebaut werden (`build-image.sh`).

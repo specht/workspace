@@ -6,7 +6,7 @@ kind: reference
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2,h3">
+    data-levels="h2,h3,h4">
 </div>
 
 # HTML: Inhalt und Struktur
@@ -17,9 +17,13 @@ Mit HTML beschreibst du, was auf einer Webseite oder einer Folie steht: Übersch
 
 Alles auf dieser Seite gilt für Webseiten und für Folien mit Shower gleichermaßen. Auf einer Webseite steht der Code im `<body>` deiner Datei `index.html`, auf einer Folie zwischen `<section class="slide">` und `</section>`. Jedes Beispiel zeigt rechts, wie es aussieht; mit dem Knopf <svg class='icon-slide' viewBox='0 0 24 24' aria-hidden='true'><rect x='3' y='4' width='18' height='12' rx='1.5'/><path d='M12 16v3.5M8.5 21l3.5-1.5 3.5 1.5M7 8.5h6M7 11.5h9'/></svg> in der Ecke des Bildes siehst du es als Folie statt als Webseite.
 
+## Aufbau einer Seite
+
+Wie HTML aufgebaut ist und was in jede Seite gehört.
+
 <!-- part: tags -->
 <!-- short: Ein Tag beginnt mit `<name>` und endet mit `</name>`; Tags stehen ineinander, eingerückt, damit man sieht, was wozu gehört. -->
-## Tags
+### Tags
 
 HTML-Code besteht aus **Tags**. Ein Tag steht in spitzen Klammern und sagt, was für ein Stück Inhalt folgt. Die meisten Tags gibt es paarweise: Das öffnende Tag beginnt etwas, das schließende Tag mit `/` beendet es.
 
@@ -71,7 +75,7 @@ Fehlt ein schließendes Tag, zeigt der Browser trotzdem etwas an, aber oft an ei
 
 <!-- part: grundgeruest -->
 <!-- short: Eine Seite beginnt mit `<!DOCTYPE html>`; im `<head>` stehen Zeichensatz, Viewport und Titel, im `<body>` der sichtbare Inhalt. -->
-## Das Grundgerüst einer Seite
+### Das Grundgerüst einer Seite
 
 Jede Webseite hat dasselbe Gerüst. Der sichtbare Inhalt steht im `<body>`, alles im `<head>` beschreibt die Seite selbst:
 
@@ -115,9 +119,13 @@ In der Shower-Vorlage ist dieses Gerüst schon fertig. Deine Folien stehen im <c
 
 <!-- /part -->
 
+## Text
+
+Was auf einer Seite steht: Überschriften und Absätze, Listen, Hervorhebungen und Links.
+
 <!-- part: text -->
 <!-- short: Überschriften mit `<h1>` bis `<h3>`, Text in Absätzen `<p>`, eine neue Zeile ohne neuen Absatz mit `<br>`. -->
-## Überschriften und Absätze
+### Überschriften und Absätze
 
 Es gibt sechs Stufen von Überschriften, `<h1>` bis `<h6>`; meistens brauchst du nur die ersten drei. Eine Webseite hat genau eine `<h1>` für ihr Thema und `<h2>` für ihre Abschnitte. Auf einer Folie ist die `<h2>` die Überschrift der Folie.
 
@@ -160,7 +168,7 @@ Eine Überschrift sollte sagen, worum es geht. Besser als ein einzelnes Wort ist
 
 <div class='tutorial-preview-clear'></div>
 
-### Eine neue Zeile ohne neuen Absatz
+#### Eine neue Zeile ohne neuen Absatz
 
 Manchmal soll innerhalb eines Absatzes eine neue Zeile beginnen, zum Beispiel bei einer Adresse. Dafür gibt es `<br>`, ohne schließendes Tag:
 
@@ -192,7 +200,7 @@ variants: folie
 
 <!-- part: listen -->
 <!-- short: Stichpunkte mit `<ul>`, nummeriert mit `<ol>`, jeder Punkt in einem eigenen `<li>`. -->
-## Listen
+### Listen
 
 Listen machen Inhalte übersichtlich. Es gibt zwei Arten:
 
@@ -254,7 +262,7 @@ Jedes <code>&lt;li&gt;</code> gehört zwischen <code>&lt;ul&gt;</code> und <code
 
 <!-- part: hervorheben -->
 <!-- short: Mitten im Text: `<strong>` für Wichtiges, `<em>` für Betonung, `<code>` für Code und Dateinamen, `<sup>` und `<sub>` für hoch- und tiefgestellte Zeichen. -->
-## Wörter hervorheben
+### Wörter hervorheben
 
 Manche Tags stehen mitten im Text und verändern nur ein paar Wörter:
 
@@ -286,7 +294,7 @@ Wenn alles hervorgehoben ist, fällt nichts mehr auf. Und auch diese Tags brauch
 
 <div class='tutorial-preview-clear'></div>
 
-### Spitze Klammern im Text
+#### Spitze Klammern im Text
 
 Willst du ein Tag im Text zeigen, statt es zu benutzen, schreibst du die spitzen Klammern anders: `&lt;` für `<` und `&gt;` für `>`.
 
@@ -300,7 +308,7 @@ Ohne diese Umschreibung würde der Browser wirklich eine neue Folie beginnen.
 
 <!-- part: links -->
 <!-- short: Ein Link ist `<a href="Adresse">Text</a>`; zu einer eigenen Seite im selben Ordner genügt ihr Dateiname. -->
-## Links
+### Links
 
 Das **H** in HTML steht für **Hypertext**: Seiten können auf andere Seiten verweisen. Ein Link ist ein `<a>`-Element; im Attribut `href` steht, wohin er führt:
 
@@ -334,9 +342,13 @@ Ein Attribut wie `href` steht immer im öffnenden Tag, in der Form `name="wert"`
 
 <!-- /part -->
 
+## Bilder
+
+Ein Bild kommt in zwei Schritten auf die Seite: als Datei ins Projekt, dann mit `<img>` in den Text.
+
 <!-- part: bilddateien -->
 <!-- short: Ein Bild gehört als Datei ins Projekt: per Drag & Drop in den Explorer oder mit <kbd>Strg</kbd><kbd>V</kbd> aus der Zwischenablage, mit einem einfachen Namen wie `fuji.jpg`. -->
-## Bilddateien ins Projekt holen
+### Bilddateien ins Projekt holen
 
 Bevor ein Bild auf der Seite erscheinen kann, muss die Bilddatei in deinem Projekt liegen. In der Shower-Vorlage gibt es dafür den Ordner `pictures`; bei einer eigenen Webseite legst du Bilder neben `index.html` oder in einen eigenen Ordner wie `bilder`.
 
@@ -365,7 +377,7 @@ Verwende einfache Dateinamen: kleine Buchstaben, keine Leerzeichen, keine Umlaut
     </div>
 </div>
 
-### Bildformate
+#### Bildformate
 
 <div style='max-width: 100%; overflow-x: auto;'>
 <table class='table'>
@@ -382,13 +394,13 @@ Verwende einfache Dateinamen: kleine Buchstaben, keine Leerzeichen, keine Umlaut
 Das Format steht in der Datei selbst, nicht im Namen. Benennst du <code>bild.png</code> in <code>bild.webp</code> um, bleibt es ein PNG, nur mit falschem Namen. Umwandeln kannst du es weiter unten.
 </div>
 
-### Möglichkeit 1: Drag & Drop
+#### Möglichkeit 1: Drag & Drop
 
 Liegt das Bild auf deinem Computer, ziehe es aus deinem Dateimanager in den Explorer von VS Code und lege es im richtigen Ordner ab:
 
 <img src='drag-and-drop.webp' class='full' alt='Eine Bilddatei wird aus dem Dateimanager in den Ordner pictures im Explorer gezogen.'>
 
-### Möglichkeit 2: Aus der Zwischenablage
+#### Möglichkeit 2: Aus der Zwischenablage
 
 Ein Bild im Browser kopierst du mit einem Rechtsklick und »Bild kopieren« (»Copy Image«):
 
@@ -417,7 +429,7 @@ Unten stehen zwei wichtige Angaben: die **Auflösung** (hier 1280 × 1013 Pixel;
 Prüfe bei fremden Bildern, ob du sie verwenden darfst. Auf Wikimedia Commons stehen bei jedem Bild Urheber und Lizenz; den Bildnachweis schreibst du dann unter das Bild. Durchs Kopieren ändert sich an der Lizenz nichts.
 </div>
 
-### Bilder verkleinern: WebP
+#### Bilder verkleinern: WebP
 
 Bilder aus der Zwischenablage werden als PNG gespeichert, und Fotos sind als PNG unnötig groß. Die Erweiterung »WebP Converter for VSCode« wandelt sie um: installieren, dann Rechtsklick auf die Datei und »Convert to WebP«:
 
@@ -442,7 +454,7 @@ Aus 1,92 MB sind 180 kB geworden.
 
 <!-- part: img -->
 <!-- short: Ein Bild ist `<img src="pfad/zur/datei.jpg" alt="Was es zeigt">`, ohne schließendes Tag; der Pfad muss genau stimmen, auch Groß- und Kleinschreibung. -->
-## Bilder einfügen
+### Bilder einfügen
 
 Liegt die Bilddatei im Projekt, fügst du sie mit `<img>` ein:
 
@@ -471,7 +483,7 @@ variants: folie
 
 <div class='tutorial-preview-clear'></div>
 
-### Der Pfad muss genau stimmen
+#### Der Pfad muss genau stimmen
 
 Erscheint ein Bild nicht, liegt es fast immer am Pfad:
 
@@ -498,7 +510,7 @@ Erscheint ein Bild nicht, liegt es fast immer am Pfad:
 Statt eines Dateinamens kann in <code>src</code> auch die Adresse eines Bildes im Internet stehen (»Hotlinking«). Das ist praktisch zum Ausprobieren, aber das Bild verschwindet, wenn die fremde Seite es löscht, und ohne Internet fehlt es ganz. Für deine fertige Seite oder Präsentation gehört das Bild in deinen eigenen Ordner.
 </div>
 
-### Was in den Alt-Text gehört
+#### Was in den Alt-Text gehört
 
 Den Alt-Text liest ein Screenreader Menschen vor, die das Bild nicht sehen, und der Browser zeigt ihn, wenn das Bild fehlt. Er sagt kurz, was das Bild **zusätzlich** zum Text vermittelt:
 

@@ -83,3 +83,15 @@
     Meldungen unter »Problems« bedeuten.
   entries:
     - bif
+
+- key: reference-minicpu
+  label: MiniCPU
+  icon: /images/computer.png
+  description: |
+    Der Prozessor der CPU Sandbox: alle Befehle der Stufen 8, 8S und 8X mit
+    Opcode, Flags und Takten, Register, Stack, Maschinencode und Assembler;
+    dazu die Geräte, der Bildschirm und C für die MiniCPU.
+  entries:
+    - minicpu
+    - minicpu-io
+    - minicpu-c

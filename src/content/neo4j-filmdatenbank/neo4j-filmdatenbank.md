@@ -228,9 +228,9 @@ crop-terminal-lines: auto
 
 <img class='full' src='cypher-shell-film.webp' alt='cypher-shell zeigt Titel, deutschen Titel und Laufzeit von Back to the Future als Tabelle.'>
 
-<div class='hint task'>
-Wie lang ist »Toy Story« aus dem Jahr 1995, und wie heißt der Film auf Deutsch?
-</div>
+Jetzt du. Die folgenden Aufgaben prüft der Workspace selbst: Schreib die Abfrage in das Feld und drück <kbd>Strg</kbd>+<kbd>Enter</kbd>. Sie läuft in deiner eigenen Neo4j-Datenbank, angemeldet als du, und darf nur lesen. Verglichen wird das Ergebnis, nicht der Text deiner Abfrage.
+
+_task(koenig-der-loewen)
 
 ### Beziehungen folgen
 
@@ -295,14 +295,11 @@ SQL:     movie JOIN movie_genre JOIN genre WHERE genre.name = 'Animation'
 Cypher:  (:Movie)-[:IN_GENRE]->(:Genre {name: 'Animation'})
 ```
 
-<div class='hint task'>
-Schreib Cypher-Abfragen für diese Fragen:
-<ol>
-<li>Welche Science-Fiction-Filme (<code>Sci-Fi</code>) ab dem Jahr 2010 enthält die Datenbank, die neuesten zuerst?</li>
-<li>Welche Filme sind länger als drei Stunden?</li>
-<li>Welche Filme gehören zugleich zu <code>Comedy</code> und zu <code>Sci-Fi</code>? Tipp: Ein Muster darf zwei Beziehungen vom selben Film aus haben, <code>(g1:Genre)&lt;-[:IN_GENRE]-(m:Movie)-[:IN_GENRE]-&gt;(g2:Genre)</code>.</li>
-</ol>
-</div>
+_task(scifi)
+
+_task(drei-stunden)
+
+_task(comedy-scifi)
 
 ### Zählen
 
@@ -331,14 +328,11 @@ MATCH (p:Person)-[:DIRECTOR]->(:Movie {title: 'Back to the Future', year: 1985})
 RETURN p.name;
 ```
 
-<div class='hint task'>
-Schreib Abfragen für diese Fragen:
-<ol>
-<li>Bei welchen Filmen führte Christopher Nolan Regie? Zeig Titel und Jahr, nach dem Jahr sortiert.</li>
-<li>An welchen Filmen war Hans Zimmer beteiligt, und als was?</li>
-<li>Welche zehn Personen haben bei den meisten Filmen Regie geführt?</li>
-</ol>
-</div>
+_task(nolan)
+
+_task(zimmer)
+
+_task(viel-regie)
 
 _task(muster)
 

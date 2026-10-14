@@ -303,6 +303,8 @@ function install_autotoc() {
             if (window.scrollY > window.innerHeight * 0.3 || window.scrollY > 170) autotoc_showing = true;
         }
         autotoc.toggleClass('hidden', !autotoc_showing);
+        // Out of sight, out of the Tab order.
+        autotoc[0].inert = !autotoc_showing;
 
         document.body.classList.toggle(
             'autotoc-primary-visible',
@@ -310,11 +312,26 @@ function install_autotoc() {
         );
     }
 
+    // Every page gets the bar once its header has scrolled away: the way
+    // back to the start page, and the chapters or else the page's title.
     if (got_autotoc) {
         window.addEventListener('scroll', function(e) {
             fix_autotoc();
         });
         fix_autotoc();
+        // Up to the header, with the way home and the whole menu.
+        autotoc.find('.autotoc-up').on('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        // Fade a side of the chapters only if there is more there.
+        const items = autotoc.find('.items')[0];
+        const fadeEdges = function() {
+            items.classList.toggle('more-left', items.scrollLeft > 1);
+            items.classList.toggle('more-right', items.scrollLeft + items.clientWidth < items.scrollWidth - 1);
+        };
+        items.addEventListener('scroll', fadeEdges, { passive: true });
+        window.addEventListener('resize', fadeEdges);
+        setTimeout(fadeEdges, 0);
     }
     let observer = new IntersectionObserver((entries, observer) => {
         let found_entry = false;
@@ -329,9 +346,6 @@ function install_autotoc() {
                 found_entry = true;
                 let container = $(item).parent()[0];
                 container.scrollTo({ left: item.offsetLeft - (container.offsetWidth / 2) + (item.offsetWidth / 2), behavior: 'smooth' });
-                $('.progress_spots_lg')[0].scrollTo({ left: item.offsetLeft - (container.offsetWidth / 2) + (item.offsetWidth / 2), behavior: 'smooth' });
-                $('.progress_spots_lg').find('div').removeClass('active');
-                $('.progress_spots_lg').find('div').eq(i).addClass('active');
                 $('.autotoc .progress_sm').css('left', `${100.0 * i / autotoc_containers.length}%`);
                 $(item).addClass('active');
             }
@@ -354,8 +368,6 @@ function install_autotoc() {
         let spot_sm = $('<div>');
         spot_sm.css('width', `${100.0 / containers.length}%`);
         spot_sm.appendTo($('.autotoc > .progress_spots_sm'));
-        let spot_lg = $('<div>');
-        spot_lg.appendTo($('.autotoc > .progress_spots_lg'));
     }
     $('.autotoc .progress_sm').css('width', `calc(${100.0 / autotoc_containers.length}% - 0.3em)`);
 }
@@ -389,6 +401,7 @@ function install_secondary_autotoc() {
                 && !heading.closest('.autotoc-secondary')
                 && !heading.closest('.header')
                 && !heading.closest('.menu')
+                && !heading.closest('.reference-include')
                 && heading.textContent.trim().length > 0;
         });
 
@@ -953,7 +966,7 @@ window.addEventListener('load', function() {
                 <button style='#{(@session_user.nil? || (!@session_user[:show_workspace])) ? 'display: none;' : ''}' id='bu_launch' class="btn btn-success bu-launch-workspace"><i class='bi bi-code-slash'></i>Workspace öffnen</button>
                 <button style='#{(@session_user.nil? || (!@session_user[:show_phpmyadmin])) ? 'display: none;' : ''}' id='bu_phpmyadmin' class="btn btn-menu" target="_blank"><i class='bi bi-database'></i>phpMyAdmin</button>
                 <button style='#{(@session_user.nil? || (!@session_user[:show_neo4j])) ? 'display: none;' : ''}' id='bu_neo4j' class="btn btn-menu" target="_blank"><i class='bi bi-diagram-3'></i>Neo4j</button>
-                <a style='#{(@session_user.nil? || (!@session_user[:show_tic80])) ? 'display: none;' : ''}' href="/tic80/" class="btn btn-menu" target="_blank"><i class='bi bi-controller'></i>TIC-80</a>
+                <a style='#{(@session_user.nil? || (!@session_user[:show_tic80])) ? 'display: none;' : ''}' href="/tic80/" class="btn btn-menu" target="_blank"><svg class='bi bi-tic80' width='16' height='16' viewBox='0 0 16 16' fill='currentColor' aria-hidden='true'><path fill-rule='evenodd' d='M2 .5h11A1.5 1.5 0 0 1 14.5 2v9a1.5 1.5 0 0 1-1.5 1.5H2A1.5 1.5 0 0 1 .5 11V2A1.5 1.5 0 0 1 2 .5Zm0 1a.5.5 0 0 0-.5.5v1h12V2a.5.5 0 0 0-.5-.5H2Zm11.5 2.5h-12v7a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5V4Z'/><path d='M5 5.5h1V8H5zM9 5.5h1V8H9zM4.5 9h1v.5h4V9h1v1.5h-6z'/><path d='M3 12.5h2V15H3zM10 12.5h2V15h-2z'/><path d='M14.5 5H16v3h-1.5V7h.5V6h-.5z'/></svg>TIC-80</a>
                 <a href='/reference' class="btn btn-menu #{request.path.start_with?('/reference') ? 'active' : ''}"#{request.path.start_with?('/reference') ? " aria-current='page'" : ''}><i class='bi bi-book'></i>Handbuch</a>
                 <a href='/klasse' style='#{teacher_logged_in? ? '' : 'display: none;'}' class="btn btn-menu #{request.path == '/klasse' ? 'active' : ''}"#{request.path == '/klasse' ? " aria-current='page'" : ''}><i class='bi bi-people'></i>Klassen</a>
                 <a href='/admin' style='#{admin_logged_in? ? '' : 'display: none;'}' class="btn btn-menu #{request.path == '/admin' ? 'active' : ''}"><i class='bi bi-wrench-adjustable'></i>Administration</a>
@@ -964,10 +977,10 @@ window.addEventListener('load', function() {
     #{look_in_bar_html}
     #{CONTENT}
 
-    <nav class="autotoc hidden" aria-label="Tutorialabschnitte">
+    <nav class="autotoc hidden" aria-label="Seitennavigation" inert>
+        <button type="button" class="autotoc-up" aria-label="Nach oben" title="Nach oben"><i class='bi bi-chevron-up' aria-hidden='true'></i></button>
         <div class="items"></div>
         <div class="progress_spots_sm"></div>
-        <div class="progress_spots_lg"></div>
         <div class="progress_sm"></div>
     </nav>
 

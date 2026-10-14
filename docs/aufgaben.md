@@ -245,6 +245,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace | M6 |
 | `code` | Code-Bites-Aufgabe | Code | Code-Bites-Judge | M5 |
 | `sql` | Ergebnis einer `SELECT`-Abfrage gegen das einer Musterabfrage | Abfrage | eigene MySQL-Datenbank, nur lesend | M6 |
+| `cypher` | Ergebnis einer Cypher-Abfrage gegen das einer Musterabfrage | Abfrage | eigene Neo4j-Datenbank, nur lesend | M7 |
 | `er` | ER-Modell: Entitäten, Schlüssel, Attribute, Beziehungen, Kardinalitäten und die Tabellen, die daraus werden | eine `.er`-Datei | Workspace (ER-Werkstatt) | M7 |
 | `schema` | Tabellen der eigenen Datenbank: Spalten, Primär- und Fremdschlüssel, Zeilenzahl | `information_schema` | eigene MySQL-Datenbank, nur lesend | M7 |
 | `keyboard` | ein Kapitel des Keyboard-Tutorials: alle Schritte abgehakt | `/workspace/.hs-kbd-tutorial/.state.json` | Server | M7 |
@@ -300,7 +301,22 @@ check:
     max_size: 500kB
 ```
 
-Für eine einzelne Datei: `exists`, `executable` und `format` (z. B. `elf`).
+Für eine einzelne Datei: `exists`, `executable`, `format` (z. B. `elf`) und
+`contains`: reguläre Ausdrücke, die irgendwo in einer Zeile der Datei passen
+müssen, jeder auf Wunsch mit einem eigenen Satz für den Fall, dass er fehlt.
+Unter »Was der Workspace gelesen hat« steht die Zeile, in der jeder gefunden
+wurde.
+
+```yaml
+check:
+  type: files
+  path: TIC-80/sterne.lua
+  expect:
+    format: text
+    contains:
+      - 'function TIC'
+      - { pattern: 'sfx\(', say: 'Noch kein Ton: `sfx(0)` gehört dorthin, wo ein Stern gefangen wird.' }
+```
 
 ### html, css, references
 
@@ -362,7 +378,10 @@ check:
     pushed: true
 ```
 
-Liest nur, und zwar im laufenden Workspace der Person, als diese Person:
+Liest nur, als die Person, in ihrem laufenden Workspace oder, wenn der aus
+ist, in einem Lese-Container: dasselbe Image ohne code-server, ohne Netz, der
+Ordner der Person nur lesbar eingebunden, nach der Prüfung wieder weg. Gelesen
+werden
 `git status --porcelain --branch`, `git remote` und die Zahl der Commits
 (`src/ruby/include/git_check.rb`). `GIT_OPTIONAL_LOCKS=0` verhindert, dass
 dabei auch nur der Index neu geschrieben wird. Der Server selbst führt nie Git
@@ -371,8 +390,8 @@ nächsten Schritt mit den echten Dateinamen, zum Beispiel: »3 Dateien sind
 geändert, aber nicht committet: `lena/stack.py`, … Im Terminal, im Ordner
 `structures`: `git add -A` und `git commit -m "…"`. Danach `git push`.«
 `pushed` vergleicht mit dem zuletzt bekannten Stand des Remotes; die Prüfung
-holt nichts aus dem Netz. Ist der Workspace aus, sagt die Karte das, statt zu
-raten. `min_commits` zählt nur die Commits der Person selbst, erkannt an der
+holt nichts aus dem Netz. Lässt sich der Stand gar nicht lesen, sagt die
+Karte das, statt zu raten. `min_commits` zählt nur die Commits der Person selbst, erkannt an der
 E-Mail-Adresse aus `git config user.email`; ist keine eingetragen, sagt die
 Karte, wie man das nachholt. Ist `repo` nur ein Ordner in einem anderen
 Repository, sagt die Karte auch das.
@@ -584,6 +603,48 @@ haben, ob die Tabelle in einer anderen eigenen Datenbank liegt, ob der
 Workspace läuft und welche Datenbank `/workspace/.my.cnf` nennt (ohne
 Passwort). Die Prüfung selbst braucht keinen laufenden Workspace.
 
+### cypher
+
+Seit M7. Beispiele stehen in `src/content/neo4j-filmdatenbank/tasks.yaml`
+(»Filmdatenbank als Graph mit Neo4j«, Daten aus `neo4j.dump`).
+
+```yaml
+check:
+  type: cypher
+  expect_query: "MATCH (:Person {name: 'Christopher Nolan'})-[:DIRECTOR]->(m:Movie) RETURN m.title, m.year ORDER BY m.year"
+  sorted_by: 2
+  nodes: { Movie: 2735, Person: 14445, Genre: 20 }
+  setup: Lade zuerst die Filmdaten, wie unter »Die Filmdaten laden« beschrieben.
+feedback:
+  - when: { same_result_as: "MATCH (:Person {name: 'Christopher Nolan'})-[]->(m:Movie) RETURN DISTINCT m.title, m.year" }
+    say: Das sind alle Filme, an denen er beteiligt war. Gefragt ist nur `DIRECTOR`.
+```
+
+Wie `sql`, nur für Neo4j: Lernende schreiben eine Abfrage in ein Textfeld,
+der Server führt sie in **ihrer eigenen** Neo4j-Datenbank aus, angemeldet als
+sie selbst, nie als Administrator, und dort auch die Musterabfrage. Verglichen
+werden die Ergebnisse; die Felder `expect_query`, `compare`, `rows`,
+`sorted_by`, `extra_columns` und die Rückmeldungen `same_result_as` und
+`query_matches` bedeuten dasselbe wie bei `sql`. Statt `tables` gibt es
+`nodes`: Labels und die Zahl ihrer Knoten in den Beispieldaten. Ein
+`same_result_as` vergleicht nur die Zeilen, auch wenn die Aufgabe eine
+Reihenfolge verlangt.
+
+Nur lesen (Regel 1), doppelt:
+
+- Bevor etwas gesendet wird, lehnt der Server Abfragen mit einer Klausel ab,
+  die schreibt oder über die Datenbank hinaus greift: `CREATE`, `MERGE`,
+  `SET`, `DELETE`, `REMOVE`, `DROP`, `FOREACH`, `LOAD CSV`, `CALL`, `USE` und
+  die Verwaltungsbefehle, außerhalb von Zeichenketten und Kommentaren. Eine
+  Abfrage braucht ein `RETURN`; `;` zwischen zwei Abfragen gibt es nicht.
+- Die Abfrage läuft in einer Transaktion im Lesemodus (`READ`), den Neo4j
+  selbst durchsetzt, mit 5 Sekunden Zeitlimit; höchstens 5000 Zeilen werden
+  gelesen.
+
+Knoten, Beziehungen und Wege erscheinen im Ergebnis so, wie `cypher-shell`
+sie zeigt, Listen als `[…]`. Wer Eigenschaften vergleicht, fragt sie in der
+Aufgabe ausdrücklich ab (»Zeig Titel und Jahr«).
+
 ### er
 
 Seit M7. Beispiel: `src/content/filmdatenbank/tasks.yaml` (»Filmdatenbank mit MySQL«).
@@ -785,7 +846,7 @@ die eingebaute Rückmeldung für einen Fall.
 
 | Art | Codes |
 | --- | --- |
-| `files` | `missing`, `symlink`, `wrong_type`, `wrong_format`, `not_executable`, `no_new_files`, `bad_name`, `format_mismatch`, `too_big` |
+| `files` | `missing`, `symlink`, `wrong_type`, `wrong_format`, `not_executable`, `missing_text`, `no_new_files`, `bad_name`, `format_mismatch`, `too_big` |
 | `html` | `missing`, `parse_error`, `no_slides`, `first_slide_unchanged`, `too_few_slides`, `slide_without_heading`, `too_few_images`, `alt_missing`, `image_case`, `image_missing` |
 | `css` | `missing`, `no_style`, `marker_missing`, `parse_error`, `too_few_rules`, `missing_declaration`, `not_linked` |
 | `references` | `missing`, `external`, `outside_root`, `local_missing` |
