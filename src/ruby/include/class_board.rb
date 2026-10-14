@@ -147,7 +147,18 @@ module ClassBoard
                 end
                 io << '</li>'
             end
-            io << '</ul></details>'
+            io << '</ul>'
+            # A new round: the group's hand-ins of this task go (class_board.js
+            # asks first). The teacher's own row is not counted.
+            if submit
+                count = entries.count { |r, c| r != board[:own] && %w[sent stale].include?(c.status) }
+                if count > 0
+                    io << "<button type='button' class='btn btn-sm btn-outline-danger class-delete-submissions' " \
+                        "data-task='#{h(activity)}/#{h(t[:id])}' data-title='#{h(t[:title])}' data-count='#{count}'>" \
+                        "<i class='bi bi-trash' aria-hidden='true'></i>Alle Abgaben löschen</button>"
+                end
+            end
+            io << '</details>'
         end
         io
     end

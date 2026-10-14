@@ -30,3 +30,19 @@ test('the class page: tabs, menu and the Workspaces of the group', async ({ page
   await expect(page.locator('.class-pins')).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+// The class page opens where the teacher left it: the last group, and in
+// each group the last activity.
+test('the class page remembers the group and each group\'s activity', async ({ page }, testInfo) => {
+  await loginAsE2eUser(page, 'e2e-teacher@example.com', testInfo);
+  const testGroup = 'Testgruppe (E2E Teacher)';
+  await page.goto('/klasse?group=E2E&activity=bif');
+  await page.goto('/klasse?group=' + encodeURIComponent(testGroup) + '&activity=tcpip');
+  await page.goto('/klasse');
+  await expect(page.locator('.class-board-select select')).toHaveValue(testGroup);
+  await expect(page.locator('.class-activity-select select')).toHaveValue('tcpip');
+  await page.locator('.class-board-select select').selectOption('E2E');
+  await expect(page.locator('.class-activity-select select')).toHaveValue('bif');
+  await page.goto('/klasse');
+  await expect(page.locator('.class-board-select select')).toHaveValue('E2E');
+});

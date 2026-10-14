@@ -4450,6 +4450,28 @@ class Main < Sinatra::Base
         io
     end
 
+    # What a teacher looked at last on the class page: the group, and per
+    # group the activity. Stored with the account (teachers change computers).
+    def class_prefs
+        JSON.parse(@session_user[:class_prefs].to_s)
+    rescue JSON::ParserError
+        {}
+    end
+
+    def remember_class_prefs(group, activity_key)
+        prefs = class_prefs
+        return if prefs['group'] == group && (prefs['activities'] || {})[group] == activity_key
+
+        prefs['group'] = group
+        (prefs['activities'] ||= {})[group] = activity_key
+        json = prefs.to_json
+        neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email], :prefs => json)
+            MATCH (u:User {email: $email})
+            SET u.class_prefs = $prefs;
+        END_OF_QUERY
+        @session_user[:class_prefs] = json
+    end
+
     CLASS_TABS = [
         ['fortschritt', 'Fortschritt', 'bi-check2-square'],
         ['lernende', 'Lernende', 'bi-people'],
@@ -4465,7 +4487,8 @@ class Main < Sinatra::Base
         h = ->(t) { CGI.escapeHTML(t.to_s) }
         return "<p>Du betreust noch keine Gruppe.</p>" if groups.empty?
 
-        group = groups.include?(params['group']) ? params['group'] : groups.first
+        prefs = class_prefs
+        group = [params['group'], prefs['group']].find { |g| groups.include?(g) } || groups.first
         tab = CLASS_TABS.any? { |key, _, _| key == params['tab'] } ? params['tab'] : 'fortschritt'
         io = +"<form class='class-board-select' method='get' action='/klasse'>"
         io << "<label>Gruppe <select class='form-select' name='group' onchange='this.form.submit()'>"
@@ -4496,10 +4519,13 @@ class Main < Sinatra::Base
     def class_progress_html(group)
         h = ->(t) { CGI.escapeHTML(t.to_s) }
         activities = class_activities
-        activity = activities.find { |a, _, _| a == params['activity'] } || activities.first
+        prefs = class_prefs
+        wanted = [params['activity'], (prefs['activities'] || {})[group]]
+        activity = wanted.compact.map { |key| activities.find { |a, _, _| a == key } }.compact.first || activities.first
         return "<p>Noch keine Aktivität hat Aufgaben auf ihrer Seite.</p>" if activity.nil?
 
         activity_key, title, tasks = activity
+        remember_class_prefs(group, activity_key)
         slug = @@content.find { |_, c| (c[:tasks] || {})[:activity] == activity_key }&.first
         io = +"<div class='class-toolbar'>"
         io << "<form method='get' action='/klasse' class='class-activity-select'>"
@@ -5689,6 +5715,36 @@ class Main < Sinatra::Base
         END_OF_QUERY
         FileUtils.rm_f(submission_path(task, email))
         respond(:deleted => true)
+    end
+
+    # A new round: all hand-ins of one task in one group go, as if each person
+    # had pressed »Abgabe löschen« (state, attempts, file). Only for the
+    # group's teachers; only members of that group, not the teacher's own.
+    post '/api/class/delete_submissions' do
+        assert(user_logged_in?)
+        Main.load_invitations()
+        data = parse_request_data(:required_keys => [:group, :task], :max_value_lengths => {:group => 200, :task => 120})
+        halt 403 unless class_groups.include?(data[:group])
+        found = find_task(data[:task])
+        halt 404 if found.nil?
+        halt 400 unless found[:task]['check']['type'] == 'submit'
+
+        task = found[:key]
+        emails = class_members(data[:group]).map { |m| m[:email] }
+        deleted = emails.count { |email| File.file?(submission_path(task, email)) }
+        neo4j_query(<<~END_OF_QUERY, :keys => emails.map { |email| TaskStore.state_key(email, task) })
+            MATCH (:User)-[:HAS_TASK_STATE]->(s:TaskState)
+            WHERE s.key IN $keys
+            DETACH DELETE s;
+        END_OF_QUERY
+        neo4j_query(<<~END_OF_QUERY, :emails => emails, :task => task)
+            MATCH (a:TaskAttempt {task: $task})-[:BY]->(u:User)
+            WHERE u.email IN $emails
+            DETACH DELETE a;
+        END_OF_QUERY
+        emails.each { |email| FileUtils.rm_f(submission_path(task, email)) }
+        STDERR.puts "#{@session_user[:email]} deleted #{deleted} hand-ins of #{task} in #{data[:group]}"
+        respond(:deleted => deleted)
     end
 
     def print_module_button(key)

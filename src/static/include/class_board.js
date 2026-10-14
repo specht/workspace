@@ -465,3 +465,27 @@
         try { localStorage.setItem(KEY, '1'); } catch (e) {}
     });
 })();
+
+// »Alle Abgaben löschen« under a hand-in list: a new round for the group.
+// Asks first; what goes cannot be brought back.
+document.addEventListener('click', function (e) {
+    const button = e.target.closest('.class-delete-submissions');
+    if (!button) return;
+    const codes = document.querySelector('.class-login-codes');
+    const group = codes ? codes.dataset.group : '';
+    const count = Number(button.dataset.count);
+    confirm_dialog({
+        title: 'Alle Abgaben löschen?',
+        text: (count === 1 ? 'Die Abgabe' : 'Alle ' + count + ' Abgaben') + ' zu »' + button.dataset.title + '« aus ' + group +
+            ' werden gelöscht. Die Lernenden sehen danach keine Abgabe mehr und können neu abgeben. ' +
+            'Wer auch in einer anderen Gruppe ist, verliert die Abgabe dort ebenso. ' +
+            'Das lässt sich nicht rückgängig machen; lade vorher herunter, was du behalten willst.',
+        confirm: count === 1 ? 'Abgabe löschen' : count + ' Abgaben löschen', icon: 'bi-trash', danger: true,
+    }, function () {
+        button.disabled = true;
+        api_call('/api/class/delete_submissions', { group: group, task: button.dataset.task }, function (data) {
+            if (data.success) window.location.reload();
+            else button.disabled = false;
+        });
+    });
+});

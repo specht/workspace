@@ -274,6 +274,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Beamer, die Klassenseite, Abgaben, das Testkonto und was der Server
   speichert, mit Bildern. Die Klassenseite und das Profil weisen darauf hin.
 
+- Klassenseite: »Alle Abgaben löschen« unter den Abgaben einer Aufgabe, für
+  eine neue Runde in einer Gruppe, nach einer Warnung.
+- Klassenseite: merkt sich am Konto die zuletzt gewählte Gruppe und je Gruppe
+  die zuletzt gewählte Aktivität.
+
 ### Geändert
 
 - Sicherheit: Befehle, die Lernende in eine Aufgabe vom Typ `command` tippen,

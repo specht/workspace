@@ -918,6 +918,17 @@ die `localStorage` oder Cookies benutzen, trotzdem laufen, bekommen sie beim
 Starten einen Speicher im Arbeitsspeicher vorangestellt; der Quelltext zeigt
 die Datei unverändert. »Herunterladen« liefert die Abgabe als `.tar.gz`.
 
+Unter jeder Liste von Abgaben steht **Alle Abgaben löschen**: eine neue Runde
+für diese Aufgabe in dieser Gruppe. Nach einer Warnung geht für jedes Mitglied
+der Gruppe, was »Abgabe löschen« bei der Person selbst löschen würde (Stand,
+Versuche, Datei); andere Aufgaben, andere Gruppen und die eigene Abgabe der
+Lehrkraft bleiben. Wer auch in einer anderen Gruppe ist, verliert die Abgabe
+dort ebenso.
+
+Die Klassenseite merkt sich am Konto der Lehrkraft die zuletzt gewählte Gruppe
+und je Gruppe die zuletzt gewählte Aktivität (`class_prefs` am Knoten `User`);
+`/klasse` ohne Angaben öffnet dort, wo sie zuletzt war.
+
 Wer als Lehrkraft eine Gruppe betreut, ohne selbst in ihr zu stehen, sieht
 die eigenen Versuche und Abgaben in einer eigenen Zeile »Du (Lehrkraft)« unter
 der Klasse, sobald sie eine Aufgabe der Aktivität bearbeitet hat. Die Zeile

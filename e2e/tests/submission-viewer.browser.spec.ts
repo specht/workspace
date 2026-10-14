@@ -35,7 +35,15 @@ test('teacher views a hand-in on the class page', async ({ freshWorkspace: works
   await teacher.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
   await expect(teacher).toHaveURL(/\/klasse/);
-  await workspace.request.post('/api/task/delete', { data: { task: 'static-website/abgabe' } });
+
+  // A new round: the teacher deletes the group's hand-ins, after a warning.
+  await answers.getByRole('button', { name: 'Alle Abgaben löschen' }).click();
+  const warning = teacher.getByRole('dialog').filter({ hasText: 'Alle Abgaben löschen?' });
+  await expect(warning).toContainText('nicht rückgängig');
+  await warning.getByRole('button', { name: /Abgabe(n)? löschen/ }).click();
+  await expect(teacher.locator('a.cb-submission')).toHaveCount(0);
+  const states = await (await workspace.request.post('/api/task/states', { data: { activity: 'static-website' } })).json();
+  expect(states.states.abgabe).toBeUndefined();
   await container.exec('rm -rf /workspace/website-test', { workdir: '/workspace' });
   await teacherContext.close();
 });
