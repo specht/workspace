@@ -15,6 +15,10 @@ kind: grundlagen
 In diesem Kapitel lernst du, wie du MySQL-Da­ten­ban­ken abfragen kannst. Dazu verwenden wir SQL, die Structured Query Language. Wir beginnen mit einfachen Abfragen und kombinieren die einzelnen Bausteine anschließend zu eigenen Fragen an die Daten.
 </p>
 
+## Vorbereitung
+
+### Einen Ordner anlegen
+
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
 <!-- tutorial-screenshot
@@ -61,7 +65,7 @@ terminal-open
 
 Du kannst das Terminal auch maximieren, indem du auf das Symbol in der rechten oberen Ecke des Terminals klickst.
 
-## Beispieldaten laden
+### Beispieldaten laden
 
 Um MySQL kennenzulernen, benötigen wir eine Datenbank. Wir verwenden die Beispieldatenbank `terra1`, die du dir herunterladen kannst, indem du folgenden Befehl eingibst:
 
@@ -121,6 +125,8 @@ crop-terminal-lines: auto
 
 ## Die Datenbank erkunden
 
+### mycli starten
+
 Um mit MySQL zu arbeiten, verwenden wir `mycli`, einen MySQL-Client, der speziell für die Kommandozeile entwickelt wurde. Starte `mycli`, indem du den folgenden Befehl eingibst:
 
 ```bash
@@ -138,6 +144,8 @@ crop-terminal-skip-bottom: 1
 -->
 
 <img class='full' src='mycli-prompt.webp' alt=''>
+
+### Tabellen und Spalten
 
 Um dir die Tabellen in der Datenbank anzeigen zu lassen, gib den Befehl `SHOW TABLES;` ein und drücke <kbd>Enter</kbd>:
 
@@ -184,7 +192,9 @@ Untersuche auch die Tabelle <code>ort</code> &ndash; welche Spalten gibt es und 
 
 _task(ort-land)
 
-## Daten mit SELECT anzeigen
+## Abfragen mit SELECT
+
+### Spalten auswählen
 
 Mit `SELECT` fragst du Daten aus einer Tabelle ab. Ein Stern `*` steht dabei für alle Spalten:
 
@@ -223,7 +233,7 @@ sleep: 0.5
 
 <img class='full' src='select-land-columns.webp' alt='Das Abfrageergebnis enthält nur die Namen der Länder und ihrer Hauptstädte.'>
 
-## Zeilen mit WHERE filtern
+### Zeilen filtern: WHERE
 
 Mit `WHERE` wählst du nur die Zeilen aus, die eine Bedingung erfüllen:
 
@@ -289,7 +299,7 @@ sleep: 0.5
 <img class='full' src='select-land-where-or.webp' alt='Die kombinierte Bedingung liefert zwei sehr große Länder mit weniger als fünf Millionen Einwohnern.'>
 
 
-## Zeilen mit ORDER BY sortieren
+### Sortieren: ORDER BY
 
 Mit `ORDER BY` sortierst du ein Abfrageergebnis. Ohne weitere Angabe wird aufsteigend sortiert:
 
@@ -323,7 +333,7 @@ sleep: 0.5
 
 <img class='full' src='select-land-order-by-desc.webp' alt='Die Länder sind nach Einwohnerzahl absteigend sortiert.'>
 
-## Ausgabe mit LIMIT begrenzen
+### Begrenzen: LIMIT
 
 Mit `LIMIT` begrenzt du die Anzahl der ausgegebenen Zeilen:
 
@@ -347,7 +357,9 @@ crop-terminal-skip-bottom: 1
 
 `ORDER BY` und `LIMIT` lassen sich gut kombinieren. Damit kannst du zum Beispiel nach einer Spalte sortieren und anschließend nur die ersten zehn Treffer ausgeben.
 
-## Zeilen mit COUNT zählen
+## Zählen und suchen
+
+### Zeilen zählen: COUNT
 
 `COUNT(*)` zählt, wie viele Zeilen ein Abfrageergebnis enthält:
 
@@ -381,7 +393,7 @@ crop-terminal-skip-bottom: 1
 
 <img class='full' src='select-count-where.webp' alt='COUNT zählt die Zeilen der Tabelle land.'>
 
-## Text mit LIKE durchsuchen
+### Text durchsuchen: LIKE
 
 Mit `LIKE` kannst du Text nach einem Muster durchsuchen. Das Prozentzeichen `%` steht dabei für beliebig viele Zeichen. Die folgende Abfrage findet Ländernamen, in denen `land` vorkommt:
 
@@ -401,7 +413,7 @@ sleep: 0.5
 
 `'land%'` würde dagegen nur Namen finden, die mit `land` beginnen, und `'%land'` nur Namen, die damit enden.
 
-## Unterschiedliche Werte mit DISTINCT anzeigen
+### Jeden Wert einmal: DISTINCT
 
 Wenn du nur sehen möchtest, welche **verschiedenen** Werte in einer Spalte vorkommen, verwendest du `DISTINCT`:
 
