@@ -1,36 +1,58 @@
 // Images and videos with variants (main.rb add_media_variants): the dark one
-// in the dark theme, the anaglyph one once the reader switched on the
-// glasses button in an image's corner. The glasses hold for every image on
-// every page, until switched off again.
+// in the dark theme, and for every toggle the reader switched on in an
+// image's corner the matching one: the anaglyph pictures for the red-cyan
+// glasses, the CRT pictures with the scanlines of a tube screen (PixelRAM).
+// A toggle holds for every image on every page, until switched off again.
 (function () {
-    const STORAGE_KEY = 'hackschule-anaglyph';
-    const media = [...document.querySelectorAll('[data-variant-dark], [data-variant-anaglyph], [data-variant-dark-anaglyph]')];
+    const TOGGLES = [
+        {
+            name: 'anaglyph',
+            storageKey: 'hackschule-anaglyph',
+            title: 'Für die Rot-Cyan-Brille (Anaglyph 3D)',
+            label: 'Bilder für die Rot-Cyan-Brille zeigen',
+            // Cardboard 3D glasses: a red and a cyan lens.
+            icon: "<svg class='icon-3d-glasses' viewBox='0 0 24 24' aria-hidden='true'><path d='M1.5 8.5H22.5V15a1.5 1.5 0 0 1-1.5 1.5H15.2l-1.6-2.4a1.9 1.9 0 0 0-3.2 0L8.8 16.5H3A1.5 1.5 0 0 1 1.5 15Z' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linejoin='round'/><rect x='3.6' y='10.1' width='6.2' height='4.4' rx='0.8' fill='#e0342c'/><rect x='14.2' y='10.1' width='6.2' height='4.4' rx='0.8' fill='#19b6c8'/></svg>",
+        },
+        {
+            name: 'crt',
+            storageKey: 'hackschule-crt',
+            title: 'Wie auf einem Röhrenbildschirm (CRT-Filter)',
+            label: 'Bilder wie auf einem Röhrenbildschirm zeigen',
+            icon: "<i class='bi bi-tv' aria-hidden='true'></i>",
+        },
+    ];
+    const selector = ['dark', ...TOGGLES.map((t) => t.name)].map((name) => `[data-variant-${name}]`).join(', ');
+    const media = [...document.querySelectorAll(selector)];
     if (media.length === 0) return;
 
-    let anaglyph = false;
-    try {
-        anaglyph = localStorage.getItem(STORAGE_KEY) === '1';
-    } catch (e) {
-        // Without storage the glasses only last for this page.
-    }
+    TOGGLES.forEach((toggle) => {
+        toggle.on = false;
+        toggle.buttons = [];
+        try {
+            toggle.on = localStorage.getItem(toggle.storageKey) === '1';
+        } catch (e) {
+            // Without storage a toggle only lasts for this page.
+        }
+    });
 
     const dark = () => document.documentElement.getAttribute('data-bs-theme') === 'dark';
     const variant = (element, name) => element.getAttribute(`data-variant-${name}`);
 
-    // The closest variant there is: with glasses, a light one with glasses
+    // The closest variant there is: with a toggle on, a light one with it
     // beats a dark one without; a missing dark one falls back to light.
     function pick(element) {
+        const on = TOGGLES.filter((t) => t.on && variant(element, t.name)).map((t) => t.name);
         const wanted = [];
-        if (dark() && anaglyph) wanted.push('dark-anaglyph');
-        if (anaglyph) wanted.push('anaglyph');
+        if (on.length > 0) {
+            if (dark()) wanted.push(['dark', ...on].join('-'));
+            wanted.push(on.join('-'));
+        }
         if (dark()) wanted.push('dark');
         for (const name of wanted) {
             if (variant(element, name)) return variant(element, name);
         }
         return element.dataset.variantBase;
     }
-
-    const buttons = [];
 
     function apply() {
         media.forEach((element) => {
@@ -39,34 +61,41 @@
             element.setAttribute('src', src);
             if (element.tagName === 'VIDEO') element.play?.().catch(() => {});
         });
-        buttons.forEach((button) => button.setAttribute('aria-pressed', anaglyph ? 'true' : 'false'));
+        TOGGLES.forEach((toggle) => {
+            toggle.buttons.forEach((button) => button.setAttribute('aria-pressed', toggle.on ? 'true' : 'false'));
+        });
     }
 
     media.forEach((element) => {
         element.dataset.variantBase = element.getAttribute('src');
-        if (!variant(element, 'anaglyph')) return;
+        const toggles = TOGGLES.filter((t) => variant(element, t.name));
+        if (toggles.length === 0) return;
         const box = document.createElement('span');
         box.className = 'media-variant-box';
         element.parentNode.insertBefore(box, element);
         box.appendChild(element);
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'media-variant-glasses';
-        button.title = 'Für die Rot-Cyan-Brille (Anaglyph 3D)';
-        button.setAttribute('aria-label', 'Bilder für die Rot-Cyan-Brille zeigen');
-        // Cardboard 3D glasses: a red and a cyan lens.
-        button.innerHTML = "<svg class='icon-3d-glasses' viewBox='0 0 24 24' aria-hidden='true'><path d='M1.5 8.5H22.5V15a1.5 1.5 0 0 1-1.5 1.5H15.2l-1.6-2.4a1.9 1.9 0 0 0-3.2 0L8.8 16.5H3A1.5 1.5 0 0 1 1.5 15Z' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linejoin='round'/><rect x='3.6' y='10.1' width='6.2' height='4.4' rx='0.8' fill='#e0342c'/><rect x='14.2' y='10.1' width='6.2' height='4.4' rx='0.8' fill='#19b6c8'/></svg>";
-        button.addEventListener('click', () => {
-            anaglyph = !anaglyph;
-            try {
-                localStorage.setItem(STORAGE_KEY, anaglyph ? '1' : '0');
-            } catch (e) {
-                // See above.
-            }
-            apply();
+        const bar = document.createElement('span');
+        bar.className = 'media-variant-toggles';
+        toggles.forEach((toggle) => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'media-variant-toggle';
+            button.title = toggle.title;
+            button.setAttribute('aria-label', toggle.label);
+            button.innerHTML = toggle.icon;
+            button.addEventListener('click', () => {
+                toggle.on = !toggle.on;
+                try {
+                    localStorage.setItem(toggle.storageKey, toggle.on ? '1' : '0');
+                } catch (e) {
+                    // See above.
+                }
+                apply();
+            });
+            bar.appendChild(button);
+            toggle.buttons.push(button);
         });
-        box.appendChild(button);
-        buttons.push(button);
+        box.appendChild(bar);
     });
 
     new MutationObserver(apply).observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });

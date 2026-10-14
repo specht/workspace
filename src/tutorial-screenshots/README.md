@@ -281,10 +281,12 @@ be on. The shot itself is captured with all of them off, and they are off
 again afterwards, also when the shot is only replayed. The extra files are
 named after the variants in recipe order: `variants: dark anaglyph` on
 `box.webp` writes `box-dark.webp`, `box-anaglyph.webp` and
-`box-dark-anaglyph.webp`. The site knows the names `dark` and `anaglyph`
-(main.rb `add_media_variants`, `media_variants.js`): the dark file in the
-dark theme, the anaglyph file once the reader switches on the glasses button
-in the image's corner. A missing combination falls back to the closest one.
+`box-dark-anaglyph.webp`. The site knows the names `dark`, `anaglyph` and
+`crt` (main.rb `add_media_variants`, `media_variants.js`): the dark file in
+the dark theme, the anaglyph file once the reader switches on the glasses
+button in the image's corner, the CRT file (PixelRAM's tube-screen filter)
+with the screen button beside it. A missing combination falls back to the
+closest one.
 
 `sharp-canvas` renders the Workspace at capture resolution for this shot.
 Normally the Workspace renders at its layout scale and the capture enlarges it:

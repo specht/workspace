@@ -1384,10 +1384,10 @@ class Main < Sinatra::Base
     end
 
     # A generated image or video can have variants beside it (x-dark.webp,
-    # x-anaglyph.webp, x-dark-anaglyph.webp; variants: in the screenshot
-    # README). media_variants.js shows the one that fits the theme and the
-    # glasses button.
-    MEDIA_VARIANTS = %w[dark anaglyph dark-anaglyph]
+    # x-anaglyph.webp, x-dark-anaglyph.webp, x-crt.webp; variants: in the
+    # screenshot README). media_variants.js shows the one that fits the theme
+    # and the toggles in the corner (glasses, CRT).
+    MEDIA_VARIANTS = %w[dark anaglyph dark-anaglyph crt]
 
     def self.add_media_variants(element, media_path)
         extension = File.extname(media_path)
