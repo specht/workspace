@@ -3643,6 +3643,7 @@ h3[id] {
 
 [data-bs-theme=dark] .class-login-codes {
     background: #1b2b38;
+}
 
 /* Hand-ins in the browser (submission_viewer.js): over the class page,
    files on the left, the file or the running page on the right. */
