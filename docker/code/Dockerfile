@@ -150,13 +150,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 RUN tlmgr install ly1 \
     && kpsewhich texnansi.enc
 
-# STIX Two (text and math): the LaTeX tutorial shows it among the fonts with
-# matching math, so it has to be there for the students too.
-RUN tlmgr install stix2-otf \
-    && luaotfload-tool -u \
-    && luaotfload-tool --find="STIX Two Text" | grep -q "Resolved file name" \
-    && luaotfload-tool --find="STIX Two Math" | grep -q "Resolved file name"
-
 RUN set -eu; \
     git clone --depth 1 https://github.com/specht/latex-tutorial.git /tmp/latex-tutorial; \
     cd /tmp/latex-tutorial; \
