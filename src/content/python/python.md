@@ -97,6 +97,7 @@ Da Visual Studio Code noch nicht weiß, dass es sich um Python-Quelltext handelt
 <!-- tutorial-screenshot
 press: Enter
 sleep: 1
+hide-left-sidebar
 type: print("Hello, World!")
 sleep: 0.5
 crop-bottom: 82%

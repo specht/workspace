@@ -117,7 +117,7 @@ const SIMPLE_ACTIONS = new Set([
 // an action that may click on its own (open-file, close-tab, …) forgets it, so
 // a pointer is never drawn where the mouse no longer is.
 const MOUSE_NEUTRAL_ACTIONS = new Set([
-    'press', 'type', 'sleep', 'write-file', 'select-option',
+    'press', 'type', 'type-source', 'sleep', 'write-file', 'select-option',
     'wait-for-text', 'wait-for-input-value', 'wait-for-file', 'wait-for-file-newer',
     'terminal-wait-for-prompt',
 ]);
@@ -586,6 +586,9 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
                 type: 'move-mouse',
                 ...valueAtSource(source, () => parseTarget(match[1])),
             });
+        } else if ((match = line.match(/^type:\s*<-\s*(previous-code(?:\s+\([^)]+\))?|code:.+|file:.+)$/))) {
+            // A whole source text, typed in one piece (sources as for write-file).
+            recipe.actions.push({ type: 'type-source', source: match[1].trim() });
         } else if ((match = line.match(/^type:\s*(.+)$/))) {
             recipe.actions.push({ type: 'type', text: match[1] });
         } else if ((match = line.match(/^press:\s*(.+)$/))) {
@@ -867,7 +870,7 @@ async function parseTutorial(markdown, markdownPath) {
         }
 
         const resolvedActions = await Promise.all(recipe.actions.map(async action => {
-            if (action.type !== 'write-file') return action;
+            if (action.type !== 'write-file' && action.type !== 'type-source') return action;
             try {
                 return {
                     ...action,
@@ -2221,6 +2224,41 @@ async function holdControl(action, targetTab) {
     await page.waitForTimeout(150);
 }
 
+// The text of a write-file style source, without its final line break: typed
+// in one piece, the editor takes it as it is (no auto-indent, no closing
+// brackets added), and the cursor ends after the last line.
+async function sourceText(contents) {
+    let text = contents;
+    if (contents && typeof contents === 'object' && contents.sourcePath) {
+        const bytes = await fs.readFile(contents.sourcePath);
+        if (sha256(bytes) !== contents.sourceSha256) {
+            throw new Error(`type source changed while generating screenshots: ${contents.sourcePath}`);
+        }
+        text = bytes.toString('utf8');
+    }
+    return text.replace(/\n$/, '');
+}
+
+// A whole text as a paste into the focused control: the editor takes a paste
+// as it is, while typed text gets closing brackets and indentation added.
+async function pasteText(text, targetTab) {
+    const page = requirePageForTab(targetTab, 'type');
+    await page.waitForFunction(
+        () => document.activeElement?.closest?.('.monaco-editor') != null ||
+            document.activeElement instanceof HTMLTextAreaElement,
+        null,
+        { timeout: 10_000 },
+    );
+    await page.evaluate((value) => {
+        const data = new DataTransfer();
+        data.setData('text/plain', value);
+        document.activeElement.dispatchEvent(new ClipboardEvent('paste', {
+            clipboardData: data, bubbles: true, cancelable: true,
+        }));
+    }, text);
+    await page.waitForTimeout(150);
+}
+
 async function typeText(text, targetTab) {
     const page = requirePageForTab(targetTab, 'type');
     await page.waitForFunction(
@@ -2513,6 +2551,7 @@ async function executeAction(action, targetTab, hooks) {
         case 'hold': return holdControl(action, targetTab);
         case 'move-mouse': return moveMouse(action, targetTab);
         case 'type': return typeText(action.text, targetTab);
+        case 'type-source': return pasteText(await sourceText(action.contents), targetTab);
         case 'press': return pressKey(action.key, targetTab);
         case 'sleep': return sleep(action.seconds);
         case 'hook': return runHookAction(action, targetTab, hooks);

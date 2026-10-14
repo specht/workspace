@@ -244,6 +244,12 @@ terminal-open
 press: q
 ```
 
+`type: <- SOURCE` puts a whole text into the focused editor, from the same
+sources as `write-file` (`previous-code`, `code:…`, `file:…`), without its
+final line break. It arrives as a paste, which the editor takes as it is;
+typed, it would get closing brackets and indentation added. The language pages type their programs this way into
+an unsaved file; the source's checksum is part of the screenshot state.
+
 `type` inserts text literally into the currently focused text control without
 pressing Enter. It is useful for Quick Input and file dialogs. It does not clear
 existing text first; use `press: Control+A` when you want to replace the current
