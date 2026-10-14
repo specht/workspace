@@ -3590,6 +3590,10 @@ class Main < Sinatra::Base
         assert(teacher_logged_in?)
         data = parse_request_data(:required_keys => [:email])
         email = data[:email]
+        # Only the workspace of a student in one of the teacher's groups, as
+        # the admin page shows it; the address alone used to be enough.
+        Main.load_invitations()
+        halt 403 unless workspace_user_visible_to?(email, @session_user[:email])
 
         # purge all WATCHING relationships (should be zero or one)
         neo4j_query(<<~END_OF_QUERY, {:email_self => @session_user[:email]})
