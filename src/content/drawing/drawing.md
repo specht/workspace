@@ -8,7 +8,7 @@ image: rainbow.webp
     data-levels="h2,h3">
 </div>
 
-# Pixelgrafik programmieren
+# Pixelgrafik mit Ruby
 
 <p class='abstract'>
 In diesem Kapitel lernst du, wie du Pixelgrafiken programmieren kannst. Dazu installieren wir das Paket »Pixelflow Canvas« und erstellen ein erstes Bild mit einer hügeligen Wiese aus Bézierkurven und einem Regenbogen aus konzentrischen Kreisen.
