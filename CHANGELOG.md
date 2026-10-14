@@ -439,6 +439,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Änderung im Ordner `TIC-80` alle weiteren Speicherungen, bis man neu lud,
   und das verlor den Stand im Browser. Was außerhalb geändert wurde, sieht
   TIC-80, sobald das Fenster wieder den Fokus hat. Meldungen auf Deutsch.
+  Der CRT-Filter (Röhrenfernseher-Look) ist anfangs aus, damit Code im
+  Editor scharf bleibt; in den Einstellungen lässt er sich einschalten.
 - Git-Aufgaben (»Git kennt dich«, »Committet und gepusht« …) prüfen auch,
   wenn der Workspace aus ist: in einem Lese-Container mit demselben Image,
   ohne Netz, der Ordner nur lesbar. Bisher hieß es dann »Starte zuerst

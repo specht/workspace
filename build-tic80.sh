@@ -70,6 +70,21 @@ for name, old, new in [
 path.write_text(source)
 PY
 
+# The CRT effect blurs the code editor's text, which matters when learning
+# to program: off by default here, a student can switch it on in the
+# settings (TIC-80 then remembers it in TIC-80/.local/<version>/options.json).
+python3 - "$SOURCE_DIR/src/studio/config.c" <<'PY'
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+source = path.read_text()
+old = '            .crt            = true,'
+if source.count(old) != 1:
+    raise SystemExit(f'Could not patch the CRT default: expected 1 match, found {source.count(old)}')
+path.write_text(source.replace(old, '            .crt            = false,'))
+PY
+
 # Older runs may have created root-owned files in the bind-mounted build tree.
 # Repair those once inside Docker; no host sudo is required.
 HOST_UID="$(id -u)"
