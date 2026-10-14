@@ -515,37 +515,80 @@ _include_file(rainbow.rb, ruby)
 
 ## Dein eigenes Bild
 
-Jetzt bist du dran: Zeichne ein eigenes Bild. Lege dafür eine neue Datei `/workspace/bild.rb` an, die am Ende `save_as_png('bild.png')` aufruft. Ein paar Ideen:
+Jetzt bist du dran: Zeichne ein eigenes Bild. Lege dafür eine neue Datei `/workspace/bild.rb` an und beginne mit diesem Gerüst:
+
+```ruby
+require 'pixelflow_canvas'
+
+Pixelflow::Canvas.new(320, 180, :palette) do
+    set_predefined_palette(:zughy_32)
+
+    # Hier zeichnest du dein Bild.
+
+    save_as_png('bild.png')
+end
+```
+
+Was du zeichnest, schreibst du an die Stelle mit dem Kommentar, zwischen `set_predefined_palette` und `save_as_png`. Ausführen wie vorhin, nur mit dem neuen Dateinamen: `ruby bild.rb`. Danach liegt dein Bild in `/workspace/bild.png`.
+
+Die Ideen unten sind Bausteine für diese Stelle. Aus allen zusammen ist dieses Bild entstanden, auf einem Hintergrund mit `set_color(21)` und `fill_rect(0, 0, 319, 179)`:
 
 <img class='full' src='ideas.webp' alt='Ein Nachthimmel mit Sternen, einer gelben Sonne, einem rosa Stern aus Linien, einem Haus mit rotem Dach und dem Wort »Hallo«.'>
 
-- **Sterne:** 100 Pixel an zufälligen Stellen. `rand(320)` ist eine zufällige ganze Zahl von 0 bis 319.
-  ```ruby
-  100.times do
-      set_color(15)
-      set_pixel(rand(320), rand(120))
-  end
-  ```
-- **Sonne:** `fill_circle(260, 40, 20)` ist ein gefüllter Kreis um (260, 40) mit dem Radius 20.
-- **Haus:** ein Rechteck und darüber ein Dreieck aus drei Eckpunkten:
-  ```ruby
-  set_color(4)
-  fill_rect(40, 110, 100, 170)
-  set_color(29)
-  fill_triangle(30, 110, 110, 110, 70, 75)
-  ```
-- **Text:** `draw_text(130, 150, 'Hallo', '8x13B', 2)` schreibt »Hallo« in der Schrift `8x13B`, doppelt so groß. Weitere Schriften: `4x6`, `6x10`, `7x13`, `9x15` und mit `B` dahinter fett.
-- **Mit einer Schildkröte zeichnen:** Eine Schildkröte läuft über die Zeichenfläche und zieht eine Linie hinter sich her. Dieser Stern entsteht aus fünf Strecken mit je einer Drehung um 144°:
-  ```ruby
-  t = Pixelflow::Turtle.new(self)
-  t.x = 180
-  t.y = 60
-  t.set_color(25)
-  5.times do
-      t.forward(50)
-      t.turn_right(144)
-  end
-  ```
+### Sterne
+
+100 Pixel an zufälligen Stellen. `rand(320)` ist eine zufällige ganze Zahl von 0 bis 319, `rand(120)` eine von 0 bis 119, also nur in der oberen Hälfte:
+
+```ruby
+set_color(15)
+100.times do
+    set_pixel(rand(320), rand(120))
+end
+```
+
+### Sonne
+
+Ein gefüllter Kreis um den Punkt (260, 40) mit dem Radius 20:
+
+```ruby
+set_color(26)
+fill_circle(260, 40, 20)
+```
+
+### Haus
+
+Ein Rechteck und darüber ein Dreieck. `fill_triangle` braucht die drei Eckpunkte, jeweils x und y:
+
+```ruby
+set_color(4)
+fill_rect(40, 110, 100, 170)
+set_color(29)
+fill_triangle(30, 110, 110, 110, 70, 75)
+```
+
+### Text
+
+Schreibt »Hallo« an die Stelle (130, 150) in der Schrift `8x13B`, doppelt so groß. Weitere Schriften sind `4x6`, `6x10`, `7x13`, `9x15`, und mit `B` dahinter fett:
+
+```ruby
+set_color(16)
+draw_text(130, 150, 'Hallo', '8x13B', 2)
+```
+
+### Mit einer Schildkröte zeichnen
+
+Eine Schildkröte läuft über die Zeichenfläche und zieht eine Linie hinter sich her. Dieser Stern entsteht aus fünf Strecken von 50 Pixeln, nach jeder dreht sie sich um 144° nach rechts:
+
+```ruby
+t = Pixelflow::Turtle.new(self)
+t.x = 180
+t.y = 60
+t.set_color(25)
+5.times do
+    t.forward(50)
+    t.turn_right(144)
+end
+```
 
 Alle Befehle stehen in der [Dokumentation des Pixelflow Canvas](https://specht.github.io/pixelflow_canvas_ruby/drawing_things.html), mit Bildern zu jedem Befehl.
 
