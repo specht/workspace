@@ -375,8 +375,18 @@ html[data-bs-theme="dark"] {
     }
     .uses a,
     .uses span {
-        background-color: #3a2c12;
-        color: #f0c27a;
+        border-color: #23423e;
+        background-color: #15201f;
+        color: #7fd8cc;
+    }
+    .uses a .bi {
+        color: #5fcfc1;
+    }
+    .uses a:hover,
+    .uses a:focus-visible {
+        border-color: #2fb3a5;
+        background-color: #1f4a45;
+        color: #fff;
     }
     .teacher-note {
         border-color: #4a3a63;

@@ -445,6 +445,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   wenn der Workspace aus ist: in einem Lese-Container mit demselben Image,
   ohne Netz, der Ordner nur lesbar. Bisher hieß es dann »Starte zuerst
   deinen Workspace«, auch auf der Klassenseite.
+- Die Verweise ins Handbuch unter Abschnitten (»Mehr zum Text auf Folien:
+  Überschriften und Absätze …«) sind kleine Knöpfe im Türkis des Handbuchs
+  mit dessen Buch-Symbol statt beiger Pillen.
 - Die Leiste mit den Kapiteln, die oben erscheint, sobald die Kopfzeile aus
   dem Bild ist, hat links »Nach oben« (Chevron): zurück zur Kopfzeile mit
   dem Weg zur Startseite und dem ganzen Menü. Die Linien unter den Kapiteln

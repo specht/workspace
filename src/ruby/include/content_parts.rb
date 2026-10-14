@@ -215,7 +215,7 @@ module ContentParts
             links = names.map do |name|
                 slug, title = index[name]
                 if slug
-                    "<a href='/reference/#{slug}##{name}'>#{CGI.escapeHTML(title)}</a>"
+                    "<a href='/reference/#{slug}##{name}' title='Im Handbuch nachlesen'><i class='bi bi-book' aria-hidden='true'></i>#{CGI.escapeHTML(title)}</a>"
                 else
                     warn&.call("_uses(#{name}): not found in #{Array(references).join(', ')}")
                     "<span>#{name}</span>"

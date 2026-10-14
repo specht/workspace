@@ -2113,17 +2113,36 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 
 .uses a,
 .uses span {
-    padding: 0.05em 0.6em;
-    border-radius: 1em;
-    font-family: '0xProto Nerd Font Mono', monospace;
-    font-size: 85%;
-    background-color: #fbefd9;
-    color: #7a4a00;
+    /* Small buttons in the teal of the Handbuch, with its book: clearly a
+       way into the Handbuch, and clearly clickable. */
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.2em 0.7em;
+    border: 1px solid #a7d8d0;
+    border-radius: 0.4em;
+    font-size: 90%;
+    line-height: 1.4;
+    color: #0f5f58;
+    background-color: #f4fbfa;
 }
 
-.uses a:hover {
+.uses a .bi {
+    margin: 0;
+    color: #0f766e;
+}
+
+.uses a:hover,
+.uses a:focus-visible {
     text-decoration: none;
-    background-color: #f6e0b5;
+    color: #fff;
+    border-color: #0f766e;
+    background-color: #0f766e;
+}
+
+.uses a:hover .bi,
+.uses a:focus-visible .bi {
+    color: #fff;
 }
 
 .teacher-note {
