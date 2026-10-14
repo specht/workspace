@@ -867,8 +867,21 @@ bisher; nur die Etiketten der Art kommen dazu.
 
 ## Klassenübersicht
 
-Unter `/klasse` (Menüpunkt »Klassen«) sehen Lehrkräfte für eine Gruppe und
-eine Aktivität, wer welche Aufgabe gelöst hat:
+Unter `/klasse` (Menüpunkt »Klassen«) wählen Lehrkräfte oben die Gruppe.
+Wartet jemand aus der Gruppe auf einen Anmelde-Code, steht er gleich darunter,
+über allem anderen. Darunter liegen drei Reiter mit je einer Aufgabe; welcher
+offen ist, steht in der Adresse (`?tab=`):
+
+- **Fortschritt:** die Aktivität, »Jetzt nachsehen« (ein Menü mit den
+  Aufgaben, die im Workspace nachsehen), »Vorlage aktuell?« und die Tabelle.
+  Die Titel der Aufgaben stehen aufrecht über ihren Spalten.
+- **Lernende:** die Karten des Servers wie auf der Verwaltungsseite (CPU und
+  RAM, Speicher) und jede Person mit ihrem Workspace: läuft oder aus, CPU, RAM,
+  »Workspace öffnen« und »Nachahmen«. Eine Zeile leuchtet gelb, solange ihr
+  Workspace arbeitet, so stark wie seine CPU-Last.
+- **Startseite:** was für die Gruppe angeheftet ist.
+
+Die Tabelle unter »Fortschritt« zeigt, wer welche Aufgabe gelöst hat:
 
 | Icon (Tabler) | Bedeutung |
 | --- | --- |
@@ -907,7 +920,7 @@ die eigenen Versuche und Abgaben in einer eigenen Zeile »Du (Lehrkraft)« unter
 der Klasse, sobald sie eine Aufgabe der Aktivität bearbeitet hat. Die Zeile
 zählt nicht zur Klasse.
 
-**Jetzt in den Workspaces nachsehen** führt eine Aufgabe, die im Workspace
+**Jetzt nachsehen** führt eine Aufgabe, die im Workspace
 nachsieht (`files`, `html`, `css`, `references`, `story`, `git`), sofort für alle in
 der Gruppe aus, ohne dass jemand »Prüfen« drücken muss. Das Ergebnis erscheint
 blau umrandet in der Tabelle und darunter als Liste mit der Rückmeldung, die

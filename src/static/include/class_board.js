@@ -100,56 +100,66 @@
     };
     const ORDER = ['outdated', 'absent', 'other', 'unavailable', 'current'];
     const template = document.querySelector('.class-template');
-    if (template) {
-        const select = template.querySelector('.class-template-select');
-        const box = template.querySelector('.class-template-results');
-        // data-force='yes': ask the template's host now, not the answer
-        // remembered for up to an hour.
-        template.querySelectorAll('.class-template-check').forEach((button) => button.addEventListener('click', function () {
-            const old = button.textContent;
-            button.disabled = true;
-            button.textContent = old + ' …';
-            const request = { group: template.dataset.group, slug: select.value };
-            if (button.dataset.force) request.force = button.dataset.force;
-            api_call('/api/class/template_status', request, function (data) {
-                button.disabled = false;
-                button.textContent = old;
-                if (!data.success) return;
-                box.innerHTML = '';
-                const folder = '/workspace/' + data.folder;
-                const p = document.createElement('p');
-                if (!data.reachable) {
-                    p.textContent = 'Die Adresse der Vorlage hat gerade nicht geantwortet. Versuch es gleich noch einmal.';
-                    box.appendChild(p);
-                    return;
-                }
-                const emails = Object.keys(data.results).sort((a, b) => nameFor(a).localeCompare(nameFor(b)));
-                const count = (status) => emails.filter((e) => data.results[e] === status).length;
-                const time = new Date((data.checked_at || 0) * 1000).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-                p.textContent = 'Stand ' + time + ': ' + count('current') + ' von ' + emails.length +
-                    ' haben die neueste Version in ' + folder + ', ' + count('outdated') + ' eine alte.';
+    const templateBox = document.querySelector('.class-template-results');
+    // data-force='yes' (the link under a result): ask the template's host
+    // now, not the answer remembered for up to an hour.
+    document.addEventListener('click', function (e) {
+        const button = e.target.closest('.class-template-check');
+        if (!button || !template) return;
+        const old = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML = old + ' …';
+        const request = { group: template.dataset.group, slug: template.dataset.slug };
+        if (button.dataset.force) request.force = button.dataset.force;
+        api_call('/api/class/template_status', request, function (data) {
+            button.disabled = false;
+            button.innerHTML = old;
+            if (!data.success) return;
+            const box = templateBox;
+            box.innerHTML = '';
+            const folder = '/workspace/' + data.folder;
+            const p = document.createElement('p');
+            if (!data.reachable) {
+                p.textContent = 'Die Adresse der Vorlage hat gerade nicht geantwortet. Versuch es gleich noch einmal.';
                 box.appendChild(p);
-                const ul = document.createElement('ul');
-                ul.className = 'class-template-list';
-                ORDER.filter((s) => s !== 'current' && count(s) > 0).forEach((status) => {
-                    const li = document.createElement('li');
-                    li.className = 'class-template-' + status;
-                    const label = document.createElement('strong');
-                    label.textContent = LABELS[status] + ': ';
-                    li.appendChild(label);
-                    li.appendChild(document.createTextNode(emails.filter((e) => data.results[e] === status).map(nameFor).join(', ')));
-                    ul.appendChild(li);
-                });
-                box.appendChild(ul);
-                if (count('outdated') > 0 && data.students_see_notice) {
-                    const hint = document.createElement('p');
-                    hint.className = 'class-live-note';
-                    hint.innerHTML = 'Die Betroffenen sehen auf der Seite der Aktivität selbst den Hinweis, <code>git pull</code> auszuführen.';
-                    box.appendChild(hint);
-                }
+                return;
+            }
+            const emails = Object.keys(data.results).sort((a, b) => nameFor(a).localeCompare(nameFor(b)));
+            const count = (status) => emails.filter((e) => data.results[e] === status).length;
+            const time = new Date((data.checked_at || 0) * 1000).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+            const h = document.createElement('h2');
+            h.textContent = 'Vorlage: Stand ' + time;
+            box.appendChild(h);
+            p.textContent = count('current') + ' von ' + emails.length +
+                ' haben die neueste Version in ' + folder + ', ' + count('outdated') + ' eine alte. ';
+            const again = document.createElement('button');
+            again.type = 'button';
+            again.className = 'btn btn-link btn-sm p-0 align-baseline class-template-check';
+            again.dataset.force = 'yes';
+            again.title = 'Sonst fragt der Workspace die Vorlage höchstens einmal pro Stunde';
+            again.textContent = 'Neueste Version neu abfragen';
+            p.appendChild(again);
+            box.appendChild(p);
+            const ul = document.createElement('ul');
+            ul.className = 'class-template-list';
+            ORDER.filter((s) => s !== 'current' && count(s) > 0).forEach((status) => {
+                const li = document.createElement('li');
+                li.className = 'class-template-' + status;
+                const label = document.createElement('strong');
+                label.textContent = LABELS[status] + ': ';
+                li.appendChild(label);
+                li.appendChild(document.createTextNode(emails.filter((e) => data.results[e] === status).map(nameFor).join(', ')));
+                ul.appendChild(li);
             });
-        }));
-    }
+            box.appendChild(ul);
+            if (count('outdated') > 0 && data.students_see_notice) {
+                const hint = document.createElement('p');
+                hint.className = 'class-live-note';
+                hint.innerHTML = 'Die Betroffenen sehen auf der Seite der Aktivität selbst den Hinweis, <code>git pull</code> auszuführen.';
+                box.appendChild(hint);
+            }
+        });
+    });
 
     document.querySelectorAll('.class-live-check').forEach((button) => {
         button.addEventListener('click', function () {
@@ -158,7 +168,14 @@
             button.disabled = true;
             const old = button.textContent;
             button.textContent = old + ' …';
+            const box = document.querySelector('.class-live-results');
+            box.innerHTML = '';
+            const wait = document.createElement('p');
+            wait.className = 'class-live-wait';
+            wait.textContent = label + ': sehe in den Workspaces nach …';
+            box.appendChild(wait);
             api_call('/api/class/check_now', { group: live.dataset.group, task: button.dataset.task }, function (data) {
+                if (!data.success) wait.textContent = label + ': Das hat gerade nicht geklappt.';
                 button.disabled = false;
                 button.textContent = old;
                 if (data.success) show(button.dataset.task, label, data);
@@ -178,12 +195,12 @@
     const REASON_KEY = 'hackschule-look-in-reason';
 
     function nameFor(email) {
-        const row = people.querySelector('tr[data-email="' + CSS.escape(email) + '"] td');
+        const row = people.querySelector('tr[data-email="' + CSS.escape(email) + '"] .class-person');
         return row ? row.textContent : email;
     }
 
     function showCodes(lines) {
-        const box = people.querySelector('.class-login-codes');
+        const box = document.querySelector('.class-login-codes');
         const tbody = box.querySelector('tbody');
         const now = Math.floor(Date.now() / 1000);
         const mine = (lines || []).filter((l) => l.expires_at > now && (l.groups || []).indexOf(group) >= 0);
@@ -203,10 +220,39 @@
 
     function showRunning(stats) {
         people.querySelectorAll('.class-ws-status').forEach((td) => {
-            const running = Object.prototype.hasOwnProperty.call(stats || {}, td.dataset.fsTag);
-            td.textContent = running ? 'Workspace läuft' : 'Workspace aus';
+            const entry = (stats || {})[td.dataset.fsTag];
+            const running = !!entry;
+            td.querySelector('.class-ws-text').textContent = running ? 'läuft' : 'aus';
             td.classList.toggle('class-ws-running', running);
+            const row = td.closest('tr');
+            const s = (entry && entry.stats) || {};
+            // The row lights up yellow while the Workspace works, as on the
+            // admin page: as strong as its CPU load; quiet or off, it fades back.
+            const cpu = running ? parseFloat(String(s.CPUPerc || '0').replace(',', '.')) || 0 : 0;
+            row.classList.toggle('class-ws-active', cpu >= 1);
+            row.style.setProperty('--ws-activity', Math.min(1, cpu / 100).toFixed(2));
+            row.querySelector('.class-ws-cpu').textContent = running && s.CPUPerc ? s.CPUPerc.replace('.', ',') : '–';
+            row.querySelector('.class-ws-ram').textContent = running && s.MemUsage ? s.MemUsage.split('/')[0].trim().replace('iB', 'B').replace('.', ',') : '–';
         });
+    }
+
+    // The server as a whole, so a slow Workspace can be told from a busy
+    // server: the same cards as on the admin page.
+    function showServer(data) {
+        const cards = people.querySelector('.class-server-cards');
+        if (!cards || !data) return;
+        // As on the admin page, in English.
+        const fill = (card, i, percent, html) => {
+            card.querySelectorAll('.progress-bar')[i].style.width = percent + '%';
+            card.querySelectorAll('p')[i].innerHTML = html;
+        };
+        const cpu = cards.querySelector('.class-server-cpu');
+        const storage = cards.querySelector('.class-server-storage');
+        fill(cpu, 0, data.cpu_usage, Number(data.cpu_usage).toFixed(2) + '% of ' + data.num_cores + ' cores');
+        fill(cpu, 1, data.ram_percent, data.ram_used + ' of ' + data.ram_total);
+        fill(storage, 0, data.disk_root_percent, data.disk_root_used + ' of ' + data.disk_root_total);
+        fill(storage, 1, data.disk_user_percent, data.disk_user_used + ' of ' + data.disk_user_total);
+        cards.hidden = false;
     }
 
     function connect() {
@@ -216,6 +262,7 @@
             try { data = JSON.parse(event.data); } catch (e) { return; }
             if (data.action === 'login_codes') showCodes(data.lines);
             if (data.stats) showRunning(data.stats);
+            if (data.server_stats) showServer(data.server_stats);
         };
         ws.onclose = () => setTimeout(connect, 5000);
     }
@@ -270,5 +317,36 @@
         // The test account is the teacher's own: no sentence, no notice.
         if (button.dataset.test) go('');
         else askReason(button.dataset.name, impersonate ? button.dataset.name + ' nachahmen' : 'Workspace von ' + button.dataset.name + ' öffnen', go);
+    });
+})();
+
+// The tabs of the class page: one job each. The choice stays in the
+// address, so a reload or the group selector keeps it.
+(function () {
+    const tabs = Array.from(document.querySelectorAll('.class-tab'));
+    if (tabs.length === 0) return;
+
+    function select(tab, focus) {
+        tabs.forEach((t) => {
+            const on = t === tab;
+            t.setAttribute('aria-selected', on ? 'true' : 'false');
+            t.tabIndex = on ? 0 : -1;
+            document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+        });
+        if (focus) tab.focus();
+        const url = new URL(location.href);
+        url.searchParams.set('tab', tab.dataset.tab);
+        history.replaceState(null, '', url);
+        document.querySelectorAll('.class-board-select input[name=tab]').forEach((input) => { input.value = tab.dataset.tab; });
+    }
+
+    tabs.forEach((tab, i) => {
+        tab.addEventListener('click', () => select(tab, false));
+        tab.addEventListener('keydown', (e) => {
+            const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+            if (step === 0) return;
+            e.preventDefault();
+            select(tabs[(i + step + tabs.length) % tabs.length], true);
+        });
     });
 })();

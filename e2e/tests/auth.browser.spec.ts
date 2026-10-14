@@ -87,7 +87,7 @@ async function teacherClassContext(
   const page = await context.newPage();
   await loginAsE2eUser(page, teacherEmail, testInfo);
   await page.goto('/klasse?group=E2E');
-  await expect(page.getByRole('heading', {name: 'Klassenübersicht', exact: true})).toBeVisible();
+  await expect(page.getByRole('heading', {name: 'Klassen', exact: true})).toBeVisible();
   return {context, page};
 }
 

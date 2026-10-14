@@ -4399,26 +4399,17 @@ class Main < Sinatra::Base
         io
     end
 
-    # »Haben alle die neueste Version?« for the pages with a template; the
-    # current activity's template is preselected.
+    # »Vorlage aktuell?« for the activity shown, if it has a template:
+    # a button in the toolbar, results below it (class_board.js).
     def class_template_html(group, activity_key)
-        pages = template_pages
-        return '' if pages.empty?
-
         h = ->(t) { CGI.escapeHTML(t.to_s) }
-        current = @@content.find { |_, c| (c[:tasks] || {})[:activity] == activity_key && c[:template] }&.first
-        io = +"<div class='class-template' data-group='#{h.(group)}'>"
-        io << "<label for='class-template-select'>Vorlage aktuell?</label>"
-        io << "<select class='form-select form-select-sm class-template-select' id='class-template-select'>"
-        pages.each do |slug, title, t|
-            io << "<option value='#{h.(slug)}' data-folder='#{h.(t[:folder])}'#{slug == current ? ' selected' : ''}>#{h.(title)} (#{h.(t[:folder])})</option>"
-        end
-        io << "</select><button type='button' class='btn btn-sm btn-outline-primary class-template-check'>In den Workspaces nachsehen</button>"
-        io << "<button type='button' class='btn btn-sm btn-link class-template-check' data-force='yes' " \
-              "title='Sonst fragt der Workspace die Vorlage höchstens einmal pro Stunde'>Neueste Version neu abfragen</button>"
-        io << "<div class='class-live-note'>Sieht nach, ob <code>/workspace/…</code> die neueste Version der Vorlage enthält. Holt nichts und ändert nichts; <code>git pull</code> machen die Lernenden selbst.</div>"
-        io << "<div class='class-template-results' aria-live='polite'></div></div>"
-        io
+        slug = @@content.find { |_, c| (c[:tasks] || {})[:activity] == activity_key && c[:template] }&.first
+        return '' if slug.nil?
+
+        "<div class='class-template' data-group='#{h.(group)}' data-slug='#{h.(slug)}'>" \
+            "<button type='button' class='btn btn-sm btn-outline-secondary class-template-check' " \
+            "title='Sieht nach, ob alle die neueste Version der Vorlage haben. Holt nichts und ändert nichts.'>" \
+            "<i class='bi bi-arrow-repeat' aria-hidden='true'></i>Vorlage aktuell?</button></div>"
     end
 
     # The people of a group on the class page: login codes while someone is
@@ -4427,50 +4418,111 @@ class Main < Sinatra::Base
     # the codes and the status from the teachers' websocket.
     def class_people_html(group)
         h = ->(t) { CGI.escapeHTML(t.to_s) }
-        test_group = class_members(group).all? { |m| @@test_accounts.key?(m[:email]) }
+        members = class_members(group)
+        test_group = members.all? { |m| @@test_accounts.key?(m[:email]) }
         io = +"<section class='class-people' data-group='#{h.(group)}'>"
-        io << "<div class='class-login-codes' hidden><h2>Anmelde-Codes</h2>" \
-            "<p>Diese Personen aus #{h.(group)} warten gerade auf ihren Code:</p>" \
-            "<table class='table table-sm'><tbody></tbody></table></div>"
-        io << "<details class='class-people-list'#{test_group ? ' open' : ''}><summary>#{test_group ? 'Dein Testkonto' : "Lernende und ihre Workspaces (#{class_members(group).size})"}</summary>"
         if test_group
             io << "<p>Mit deinem Testkonto probierst du aus, was Lernende sehen: Aufgaben, Abgaben, die Galerie und Leistungsüberprüfungen. Es gehört nur zu dieser Gruppe, die nur du siehst.</p>"
         end
-        io << "<table class='table table-sm align-middle'><tbody>"
-        class_members(group).each do |m|
+        # The admin page's server cards, filled from the teachers' websocket
+        # (server_stats), see class_board.js.
+        bar = ->(label) { "<div class='col-6'>#{label}<div class='progress' role='progressbar' aria-label='#{label}'><div class='progress-bar progress-bar-striped' style='width: 0%'></div></div><p>&nbsp;</p></div>" }
+        io << "<div class='row class-server-cards' hidden>"
+        io << "<div class='col-md-6 mb-3'><div class='server-stats class-server-cpu'><h4>CPU / RAM</h4><i class='bi bi-cpu' aria-hidden='true'></i><hr><div class='row'>#{bar.('CPU')}#{bar.('RAM')}</div></div></div>"
+        io << "<div class='col-md-6 mb-3'><div class='server-stats class-server-storage'><h4>Storage</h4><i class='bi bi-nvme' aria-hidden='true'></i><hr><div class='row'>#{bar.('System')}#{bar.('User data')}</div></div></div>"
+        io << "</div>"
+        io << "<div class='class-people-scroll'><table class='table align-middle class-people-table'>"
+        io << "<thead><tr><th>Name</th><th>Workspace</th><th class='text-end'>CPU</th><th class='text-end'>RAM</th><th></th></tr></thead><tbody>"
+        members.each do |m|
             email = m[:email]
             test = @@test_accounts.key?(email)
-            io << "<tr data-email='#{h.(email)}'><td>#{h.(m[:name])}</td>"
-            io << "<td class='class-ws-status' data-fs-tag='#{h.(fs_tag_for_email(email))}'>Workspace aus</td><td class='text-end'>"
+            io << "<tr data-email='#{h.(email)}'><td class='class-person'>#{h.(m[:name])}</td>"
+            io << "<td class='class-ws-status' data-fs-tag='#{h.(fs_tag_for_email(email))}'><span class='class-ws-dot' aria-hidden='true'></span><span class='class-ws-text'>aus</span></td>"
+            io << "<td class='class-ws-cpu text-end'>–</td><td class='class-ws-ram text-end'>–</td><td class='class-person-actions'>"
             if may_look_in?(email)
                 attrs = "data-email='#{h.(email)}' data-name='#{h.(m[:name])}'#{test ? " data-test='1'" : ''}"
-                io << "<button type='button' class='btn btn-sm btn-outline-secondary bu-class-open-workspace' #{attrs}><i class='bi bi-code-slash'></i>Workspace öffnen</button> "
-                io << "<button type='button' class='btn btn-sm btn-outline-secondary bu-class-impersonate' #{attrs}><i class='bi bi-person-vcard'></i>Nachahmen</button>"
+                io << "<button type='button' class='btn btn-sm btn-outline-secondary bu-class-open-workspace' #{attrs} title='Workspace öffnen'><i class='bi bi-code-slash' aria-hidden='true'></i><span class='class-btn-label'>Workspace öffnen</span></button> "
+                io << "<button type='button' class='btn btn-sm btn-outline-secondary bu-class-impersonate' #{attrs} title='Nachahmen'><i class='bi bi-person-vcard' aria-hidden='true'></i><span class='class-btn-label'>Nachahmen</span></button>"
             end
             io << "</td></tr>"
         end
-        io << "</tbody></table></details></section>"
+        io << "</tbody></table></div></section>"
         io
     end
 
+    CLASS_TABS = [
+        ['fortschritt', 'Fortschritt', 'bi-check2-square'],
+        ['lernende', 'Lernende', 'bi-people'],
+        ['startseite', 'Startseite', 'bi-pin-angle'],
+    ].freeze
+
+    # The class page (/klasse): the group up top, waiting login codes right
+    # under it (never missed), and three tabs, each with one job: what the
+    # group did in an activity, the people and their Workspaces, and what
+    # is pinned on their start page.
     def class_board_page
         groups = class_groups
-        activities = class_activities
-        group = groups.include?(params['group']) ? params['group'] : groups.first
-        activity = activities.find { |a, _, _| a == params['activity'] } || activities.first
         h = ->(t) { CGI.escapeHTML(t.to_s) }
+        return "<p>Du betreust noch keine Gruppe.</p>" if groups.empty?
+
+        group = groups.include?(params['group']) ? params['group'] : groups.first
+        tab = CLASS_TABS.any? { |key, _, _| key == params['tab'] } ? params['tab'] : 'fortschritt'
         io = +"<form class='class-board-select' method='get' action='/klasse'>"
         io << "<label>Gruppe <select class='form-select' name='group' onchange='this.form.submit()'>"
         groups.each { |g| io << "<option value='#{h.(g)}'#{g == group ? ' selected' : ''}>#{h.(g)} (#{(@@group_members[g] || []).size})</option>" }
-        io << "</select></label><label>Aktivität <select class='form-select' name='activity' onchange='this.form.submit()'>"
-        activities.each { |a, title, _| io << "<option value='#{h.(a)}'#{activity && a == activity[0] ? ' selected' : ''}>#{h.(title)}</option>" }
-        io << "</select></label><noscript><button class='btn btn-primary'>Anzeigen</button></noscript></form>"
-        io << class_pins_html(group) if group
-        io << class_people_html(group) if group
-        return io + "<p>Noch keine Aktivität hat Aufgaben auf ihrer Seite.</p>" if activity.nil?
-        return io + "<p>Du betreust noch keine Gruppe.</p>" if group.nil?
+        io << "</select></label><input type='hidden' name='tab' value='#{h.(tab)}'>"
+        io << "<noscript><button class='btn btn-primary'>Anzeigen</button></noscript></form>"
+        io << "<div class='class-login-codes' data-group='#{h.(group)}' hidden><h2><i class='bi bi-key' aria-hidden='true'></i>Anmelde-Codes</h2>" \
+            "<p>Diese Personen aus #{h.(group)} warten gerade auf ihren Code:</p>" \
+            "<table class='table table-sm'><tbody></tbody></table></div>"
+        io << "<div class='class-tabs' role='tablist' aria-label='Ansicht'>"
+        CLASS_TABS.each do |key, label, icon|
+            count = key == 'lernende' ? " <span class='class-tab-count'>#{class_members(group).size}</span>" : ''
+            io << "<button type='button' role='tab' class='class-tab' id='class-tab-#{key}' data-tab='#{key}' aria-controls='class-panel-#{key}' " \
+                "aria-selected='#{key == tab}'#{key == tab ? '' : " tabindex='-1'"}><i class='bi #{icon}' aria-hidden='true'></i>#{label}#{count}</button>"
+        end
+        io << "</div>"
+        panel = ->(key, html) { "<section class='class-panel' role='tabpanel' id='class-panel-#{key}' aria-labelledby='class-tab-#{key}'#{key == tab ? '' : ' hidden'}>#{html}</section>" }
+        io << panel.('fortschritt', class_progress_html(group))
+        io << panel.('lernende', class_people_html(group))
+        io << panel.('startseite', class_pins_html(group))
+        io
+    end
+
+    # The tab »Fortschritt«: the activity, a toolbar (look into the
+    # Workspaces now, is the template current) and the board.
+    def class_progress_html(group)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        activities = class_activities
+        activity = activities.find { |a, _, _| a == params['activity'] } || activities.first
+        return "<p>Noch keine Aktivität hat Aufgaben auf ihrer Seite.</p>" if activity.nil?
 
         activity_key, title, tasks = activity
+        slug = @@content.find { |_, c| (c[:tasks] || {})[:activity] == activity_key }&.first
+        io = +"<div class='class-toolbar'>"
+        io << "<form method='get' action='/klasse' class='class-activity-select'>"
+        io << "<input type='hidden' name='group' value='#{h.(group)}'><input type='hidden' name='tab' value='fortschritt'>"
+        io << "<label>Aktivität <select class='form-select' name='activity' onchange='this.form.submit()'>"
+        activities.each { |a, t, _| io << "<option value='#{h.(a)}'#{a == activity_key ? ' selected' : ''}>#{h.(t)}</option>" }
+        io << "</select></label><noscript><button class='btn btn-primary'>Anzeigen</button></noscript></form>"
+        io << "<a class='class-activity-link' href='/#{h.(slug)}' title='#{h.(title)} öffnen'><i class='bi bi-box-arrow-up-right' aria-hidden='true'></i>Zur Seite</a>" if slug
+        live = tasks.select { |t| TaskCheck::LIVE_TYPES.include?(t[:type]) }
+        unless live.empty?
+            io << "<div class='dropdown class-live' data-group='#{h.(group)}'>"
+            io << "<button type='button' class='btn btn-sm btn-outline-primary dropdown-toggle' data-bs-toggle='dropdown' aria-expanded='false'>"
+            io << "<i class='bi bi-search' aria-hidden='true'></i>Jetzt nachsehen</button><ul class='dropdown-menu class-live-menu'>"
+            io << "<li><span class='dropdown-item-text class-live-note'>Liest die Workspaces der Gruppe so, wie die Karte es tut, und ändert nichts.</span></li>"
+            live.each do |t|
+                n = tasks.index(t) + 1
+                io << "<li><button type='button' class='dropdown-item class-live-check' data-task='#{h.(activity_key)}/#{h.(t[:id])}'>#{n}. #{h.(t[:title])}</button></li>"
+            end
+            io << "</ul></div>"
+        end
+        io << class_template_html(group, activity_key)
+        io << "</div>"
+        io << "<div class='class-template-results' aria-live='polite'></div>"
+        io << "<div class='class-live-results' aria-live='polite'></div>"
+
         members = class_members(group)
         # One's own tries and hand-ins, below the class (teachers who are not
         # members of the group, e.g. to try a task before the class does).
@@ -4478,18 +4530,6 @@ class Main < Sinatra::Base
         viewer = { :email => me, :name => 'Du (Lehrkraft)' }
         states = class_board_states((members.map { |m| m[:email] } + [me]).uniq, activity_key)
         board = ClassBoard.build(members, tasks, states, :viewer => viewer)
-        live = tasks.select { |t| TaskCheck::LIVE_TYPES.include?(t[:type]) }
-        unless live.empty?
-            io << "<div class='class-live' data-group='#{h.(group)}'>"
-            io << "<span>Jetzt in den Workspaces nachsehen:</span>"
-            live.each do |t|
-                n = tasks.index(t) + 1
-                io << "<button type='button' class='btn btn-sm btn-outline-primary class-live-check' data-task='#{h.(activity_key)}/#{h.(t[:id])}'>#{n}. #{h.(t[:title])}</button>"
-            end
-            io << "<div class='class-live-note'>Liest die Dateien der Gruppe so, wie die Karte sie liest, und ändert nichts. Der Stand der Lernenden bleibt, wie er ist.</div></div>"
-        end
-        io << class_template_html(group, activity_key)
-        io << "<p class='class-board-link'><a href='/#{h.(@@content.find { |_, c| (c[:tasks] || {})[:activity] == activity_key }&.first)}'>#{h.(title)}</a> · #{members.size} Personen in #{h.(group)}</p>"
         io << ClassBoard.html(board, :activity => activity_key,
             :submission_url => lambda { |email, id| "/api/task/submission/#{activity_key}/#{id}?email=#{CGI.escape(email)}" })
         io << class_scene_galleries_html(activity_key, tasks, board[:own] ? members + [viewer] : members)
@@ -4794,9 +4834,9 @@ class Main < Sinatra::Base
                         sleep 1
                     end
                 end
-                # The server's own figures are for administrators; teachers
-                # get their students' login codes and workspaces (class page).
-                host_stats_thread = admin_logged_in? && Thread.new do
+                # The server's figures (CPU, RAM, storage): on the admin page,
+                # and for teachers above their students' Workspaces (class page).
+                host_stats_thread = Thread.new do
                     loop do
                         data = {}
 

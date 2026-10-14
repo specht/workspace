@@ -85,7 +85,8 @@ class ClassBoardTest < Minitest::Test
     def test_every_icon_is_in_the_bundled_sprite
         sprite = File.read(File.expand_path('../../static/include/tabler/tabler.svg', __dir__), encoding: 'UTF-8')
         used = ClassBoard::SYMBOLS.values.map(&:first) + %w[help]
-        used += File.read(File.expand_path('../../static/include/class_board.js', __dir__), encoding: 'UTF-8').scan(/: '([a-z-]+)'/).flatten
+        script = File.read(File.expand_path('../../static/include/class_board.js', __dir__), encoding: 'UTF-8')
+        used += script[/const ICONS = \{[^}]*\}/].scan(/: '([a-z-]+)'/).flatten
         used.uniq.each { |id| assert_includes sprite, "<symbol id=\"#{id}\"", id }
     end
 end

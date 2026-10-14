@@ -2761,12 +2761,179 @@ h3[id] {
     width: auto;
 }
 
-.class-live {
+.class-live-menu {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.class-live-menu .class-live-note {
+    max-width: 22em;
+    white-space: normal;
+}
+
+.class-live-wait {
+    color: #5c636a;
+}
+
+/* Class page: group, tabs, toolbar (class_board_page). */
+.class-board-intro {
+    color: #5c636a;
+}
+
+.class-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25em;
+    margin: 1.2em 0 1.2em;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.class-tab {
+    margin-bottom: -1px;
+    padding: 0.55em 1em;
+    border: 1px solid transparent;
+    border-radius: 0.5em 0.5em 0 0;
+    background: none;
+    color: #495057;
+    font-weight: 600;
+}
+
+.class-tab .bi {
+    margin-right: 0.45em;
+}
+
+.class-tab:hover {
+    color: #0b4fb3;
+}
+
+.class-tab[aria-selected='true'] {
+    border-color: #dee2e6 #dee2e6 #fff;
+    background-color: #fff;
+    color: #0b4fb3;
+}
+
+.class-tab-count {
+    margin-left: 0.35em;
+    padding: 0.05em 0.5em;
+    border-radius: 1em;
+    background-color: #e9ecef;
+    color: #495057;
+    font-size: 80%;
+}
+
+.class-toolbar {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    gap: 0.6em 1em;
+    margin-bottom: 1em;
+}
+
+.class-toolbar .btn .bi,
+.class-activity-link .bi {
+    margin-right: 0.4em;
+}
+
+.class-activity-select {
+    margin: 0;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+}
+
+.class-activity-select label {
+    display: flex;
+    align-items: center;
     gap: 0.5em;
-    margin: 0.5em 0 1em;
+}
+
+.class-activity-select .form-select {
+    width: auto;
+    max-width: 100%;
+}
+
+.class-live-results h2,
+.class-template-results h2 {
+    font-size: 1.15rem;
+    margin: 0.5em 0 0.3em;
+}
+
+.class-people-scroll {
+    overflow-x: auto;
+}
+
+.class-people-table th {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.class-ws-status,
+.class-ws-cpu,
+.class-ws-ram {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.class-ws-dot {
+    display: inline-block;
+    width: 0.6em;
+    height: 0.6em;
+    margin-right: 0.45em;
+    border-radius: 50%;
+    background-color: #adb5bd;
+}
+
+.class-ws-running .class-ws-dot {
+    background-color: #1f9d55;
+    box-shadow: 0 0 0 3px rgba(31, 157, 85, 0.18);
+}
+
+/* The server's cards (CPU and RAM, storage): on the admin page and above
+   the students' Workspaces on the class page. */
+.server-stats {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    position: relative;
+    padding: 1em;
+    border-radius: 1em;
+    box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.075);
+}
+
+.server-stats h4 {
+    opacity: 0.7;
+}
+
+.server-stats > .bi {
+    position: absolute;
+    top: 0.1em;
+    right: 0.3em;
+    font-size: 220%;
+    opacity: 0.33;
+}
+
+.server-stats p {
+    overflow-x: hidden;
+    white-space: pre;
+    margin: 0.5rem 0 0 0;
+}
+
+.class-server-cards {
+    margin-bottom: 1.2em;
+}
+
+/* A Workspace that works lights its row up yellow, as on the admin page
+   (class_board.js sets --ws-activity to its CPU load, 0 to 1). */
+.class-people-table tr > td {
+    --bs-table-bg-state: rgba(255, 200, 0, var(--ws-activity, 0));
+    transition: box-shadow 0.8s ease;
+}
+
+.class-person-actions {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.class-person-actions .bi {
+    margin-right: 0.35em;
 }
 
 .class-live-note {
@@ -2802,21 +2969,29 @@ h3[id] {
 
 .class-board thead th.cb-task {
     vertical-align: bottom;
-    max-width: 7em;
-    white-space: normal;
+    min-width: 2.4em;
     font-weight: 400;
     line-height: 1.2;
 }
 
-.cb-task-number {
-    display: block;
-    font-weight: 600;
-}
-
+/* Task titles stand upright, whole: the columns stay narrow and every
+   title can be read (instead of »Die Vor-« in a narrow column). */
 .cb-task-title {
     display: block;
+    max-height: 14em;
+    margin: 0 auto 0.35em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
     font-size: 85%;
-    color: #5c636a;
+    color: #495057;
+    text-align: left;
+}
+
+.cb-task-number {
+    display: block;
+    font-weight: 700;
 }
 
 .cb-cell {
@@ -2860,6 +3035,8 @@ h3[id] {
 }
 
 .class-board tfoot td {
+    white-space: normal;
+    max-width: 5em;
     font-size: 80%;
     color: #5c636a;
     vertical-align: top;
@@ -3867,5 +4044,51 @@ body.subview-open {
         max-height: 30vh;
         border-right: 0;
         border-bottom: 1px solid #e3e7ee;
+    }
+}
+
+/* Class page on a phone: tabs in one row that scrolls, the activity
+   label above its menu, and in »Lernende« the buttons as icons, without
+   the CPU and RAM columns. */
+@media (max-width: 575.98px) {
+    .class-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+    .class-tab {
+        flex-shrink: 0;
+        padding: 0.5em 0.65em;
+    }
+    .class-tab .bi {
+        display: none;
+    }
+    .class-server-cards .server-stats p {
+        white-space: normal;
+    }
+    .class-activity-select,
+    .class-activity-select label {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+    .class-activity-select .form-select {
+        width: 100%;
+    }
+    .class-people-table .class-ws-cpu,
+    .class-people-table .class-ws-ram,
+    .class-people-table th:nth-child(3),
+    .class-people-table th:nth-child(4) {
+        display: none;
+    }
+    .class-person-actions .class-btn-label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+    .class-person-actions .bi {
+        margin-right: 0;
     }
 }

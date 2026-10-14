@@ -102,7 +102,8 @@ module ClassBoard
             flags = []
             flags << 'cb-often-wrong' if s[:often_wrong]
             io << "<th class='cb-task #{flags.join(' ')}' data-task='#{h(activity)}/#{h(t[:id])}' title='#{h(t[:title])}'>"
-            io << "<span class='cb-task-number'>#{i + 1}</span><span class='cb-task-title'>#{h(t[:title])}</span></th>"
+            # Title first, upright; the numbers then line up right above the cells.
+            io << "<span class='cb-task-title'>#{h(t[:title])}</span><span class='cb-task-number'>#{i + 1}</span></th>"
         end
         io << '<th class="cb-total">gelöst</th></tr></thead><tbody>'
         board[:rows].each do |r|

@@ -433,4 +433,16 @@ html[data-bs-theme="dark"] {
     .subview-code { color: #e7e6e1; }
     .subview-close { color: #adb5bd; }
     .subview-close:hover { background-color: #232a35; }
+    .class-tabs { border-color: #343a40; }
+    .class-tab { color: #ced4da; }
+    .class-tab[aria-selected='true'] {
+        border-color: #343a40 #343a40 #151514;
+        background-color: #151514;
+        color: #8db8f5;
+    }
+    .class-tab-count { background-color: #2b3036; color: #ced4da; }
+    .cb-task-title { color: #adb5bd; }
+    .server-stats { border-color: rgba(255, 255, 255, 0.12); }
+    .class-board-intro,
+    .class-live-wait { color: #adb5bd; }
 }
