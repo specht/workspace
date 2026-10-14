@@ -63,14 +63,14 @@
       }
     },
     "three-cubes.webp": {
-      "state_hash": "7b5c276b1ee7232544338e2fa2269224d7eaa715d337b617f5ec278233cf51ca",
+      "state_hash": "faa3c27e1d8895292c6c4e61cf511b2c65ccd3a29965c884b9a1bba044776540",
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
       "workspace_look": "4.138.0-ls366",
-      "output_sha256": "4590a69ee2187a18ae85f0f7b8df3a65c342ee6c7af3888842dc8078ee28c159",
+      "output_sha256": "9c7a011f1aeb241a3eb96b8d15e6408663b4f132a32676dffb44bcad1cde291a",
       "variants": {
-        "three-cubes-dark.webp": "e6b99eaa26ad2b9704f486fe0f5ab00799c6749df667fd6c44c5592cc385041a",
-        "three-cubes-anaglyph.webp": "61f36520938299e11f3ec454ff5e69670fc3ee8d4fc17062085852b1afcac5b5",
-        "three-cubes-dark-anaglyph.webp": "dbf1c0f28d7858b02ed3cee1157b90877574485c939a91c1b69df81eb25e6fca"
+        "three-cubes-dark.webp": "dfbe9cb7cf8d51643c52061d89a9a48b1d9a308df23143a5e09d0d9b1ca26639",
+        "three-cubes-anaglyph.webp": "9cbb95476f10c259ea1adafac4a317db14889a59d7498927bed2996eaf0cf32c",
+        "three-cubes-dark-anaglyph.webp": "db93d58717862dafa1af1a43e3df4c7515583b49f6a29c561843f37cc4b9b121"
       }
     },
     "rotate-boxes.webp": {

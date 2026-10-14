@@ -272,8 +272,9 @@ variants: dark anaglyph
 # Your browser window for the hand-made shots: 1906 CSS pixels wide
 zoom: 0.54
 hook: camera 30 -45 -550 50 40 50
-crop-top: 16%
-crop-bottom: 16%
+# the cube on top needs room above it
+crop-top: 10%
+crop-bottom: 22%
 -->
 
 <div style='text-align: center; margin: 1em 0;'>
@@ -642,7 +643,7 @@ shape = box
 ```
 
 <div class='hint'>
-Tipp: Statt eines Semikolons (<code>;</code>) kannst du auch ein Hashtag (<code>#</code>) verwenden, um eine Zeile auszukommentieren.
+Tipp: Statt eines Semikolons (<code>;</code>) kannst du auch ein Hashtag (<code>#</code>) verwenden, um eine Zeile auszukommentieren. Das gilt nur am Anfang einer Zeile: In <code>fill = #4aa03f</code> ist <code>#</code> der Anfang eines Farbcodes.
 </div>
 
 Um schnell ganze Blöcke auszukommentieren, kannst du mehrere Zeilen markieren und dann <kbd>Strg</kbd><kbd>K</kbd> und <kbd>Strg</kbd><kbd>C</kbd> (für »comment«) drücken. Um die Kommentare wieder zu entfernen, markiere die Zeilen und drücke <kbd>Strg</kbd><kbd>K</kbd> und <kbd>Strg</kbd><kbd>U</kbd> (für »uncomment«). Es gibt auch weitere Shortcuts dafür, die du im Menü finden kannst.
