@@ -4413,6 +4413,14 @@ body.subview-open {
     font-weight: 600;
 }
 
+/* A flag set by the result: a check mark from Bootstrap Icons. */
+.minicpu-table td.minicpu-flag .bi,
+.minicpu-set {
+    color: var(--bs-success);
+    font-size: 1.15em;
+    line-height: 1;
+}
+
 .minicpu-table td.minicpu-flag,
 .minicpu-table td.minicpu-num {
     text-align: center;

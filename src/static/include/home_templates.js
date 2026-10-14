@@ -3,7 +3,7 @@
 // looks; git pull is up to the student.
 (function () {
     const TEXTS = {
-        current: (folder) => `✓ Deine Kopie in ${folder} ist aktuell.`,
+        current: (folder) => `Deine Kopie in ${folder} ist aktuell.`,
         outdated: (folder) => `Es gibt eine neue Version: führe in ${folder} git pull aus.`,
         absent: (folder) => `Noch nicht geklont: ${folder} gibt es nicht.`,
         other: (folder) => `${folder} ist keine Kopie dieser Vorlage.`,
@@ -14,6 +14,12 @@
         api_call('/api/template/status', { slug: line.dataset.slug }, function (data) {
             if (!data.success || !TEXTS[data.status]) return;
             line.textContent = TEXTS[data.status](folder);
+            if (data.status === 'current') {
+                const check = document.createElement('i');
+                check.className = 'bi bi-check-lg';
+                check.setAttribute('aria-hidden', 'true');
+                line.prepend(check, ' ');
+            }
             line.classList.add('shc-template-' + data.status);
         }, { no_please_wait: true });
     });

@@ -123,11 +123,13 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 const code = (s) => `<code>${esc(s)}</code>`;
 const hex = (n, digits = 2) => '0x' + n.toString(16).toUpperCase().padStart(digits, '0');
 
-// ✓ the result sets the flag, 0 always cleared, – unchanged.
+// A check mark (Bootstrap Icons): the result sets the flag; 0 always
+// cleared; – unchanged.
+const SET = "<i class='bi bi-check-lg' role='img' aria-label='nach dem Ergebnis'></i>";
 function flagCells(info) {
     if (info.name === 'CLF') return ['0', '0'];
     if (!info.flags) return ['–', '–'];
-    return ['✓', info.family === 'Logic' ? '0' : '✓'];
+    return [SET, info.family === 'Logic' ? '0' : SET];
 }
 
 function table(head, rows) {

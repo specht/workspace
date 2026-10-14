@@ -525,6 +525,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Ein Test prüft, dass jede Überschrift einer Handbuch-Seite auch als
   Überschrift erscheint: Ein `</table></div>` am Zeilenende ließ Redcarpet
   sonst den Rest der Seite als rohen Text ausgeben.
+- Haken sind Symbole aus Bootstrap Icons statt Unicode-Zeichen: in den
+  Flag-Spalten des MiniCPU-Handbuchs und bei »Deine Kopie … ist aktuell« auf
+  der Startseite. `no_check_marks_test.rb` hält das so (Code ausgenommen).
 
 - Behoben: »Git kennt dich« schlug fehl, obwohl `git config --global` Name
   und E-Mail kannte. Die Prüfung lief mit dem `HOME` des Images (`/config`)
