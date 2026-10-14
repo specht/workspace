@@ -3135,3 +3135,41 @@ h3[id] {
     margin-right: 0.4em;
     vertical-align: -0.1em;
 }
+
+/* Phones: the page margin is room enough. Boxes inside it keep only a little
+   padding of their own, or their text would start far from the edge
+   (a hint's icon used to push it 70 px in). */
+@media (max-width: 575.98px) {
+    .hint:not(.good):not(.bad) {
+        padding-left: 0.6em;
+        padding-right: 0.6em;
+    }
+
+    /* The icon floats; the first lines go round it, the rest is full width. */
+    .hint:not(.good):not(.bad)::before {
+        position: static;
+        float: left;
+        width: 1.6em;
+        height: 1.6em;
+        margin: 0.25em 0.5em 0 0;
+    }
+
+    .task-card {
+        padding-left: 0.7em;
+        padding-right: 0.7em;
+    }
+
+    .reference-include {
+        padding-left: 0.7em;
+        padding-right: 0.7em;
+    }
+
+    pre {
+        padding-left: 0.6em;
+        padding-right: 0.6em;
+    }
+
+    pre.copy-code {
+        padding-right: 2.6em;
+    }
+}
