@@ -1331,6 +1331,7 @@ class Main < Sinatra::Base
                 else
                     sha1 = convert_image(image_path)
                     img['src'] = "/cache/#{sha1}.webp"
+                    add_media_variants(img, image_path) { |variant_path| "/cache/#{convert_image(variant_path)}.webp" }
                 end
                 if img.classes.include?('full')
                     img.wrap("<div class='scroll-x'>")
@@ -1362,10 +1363,8 @@ class Main < Sinatra::Base
             src = video.attr('src')
             image_path = File.join(File.dirname(path), src)
             next unless File.exist?(image_path)
-            sha1 = Digest::SHA1.hexdigest(File.read(image_path))[0, 16]
-            target_path = "/webcache/#{sha1}.mp4"
-            FileUtils.cp(image_path, target_path) unless FileUtils.uptodate?(target_path, [image_path])
-            video['src'] = "/cache/#{sha1}.mp4"
+            video['src'] = cache_video(image_path)
+            add_media_variants(video, image_path) { |variant_path| cache_video(variant_path) }
         end
         root.css('a').each do |a|
             href = a.attr('href')
@@ -1375,6 +1374,27 @@ class Main < Sinatra::Base
         end
         highlight_code(root)
         root
+    end
+
+    def self.cache_video(video_path)
+        sha1 = Digest::SHA1.hexdigest(File.read(video_path))[0, 16]
+        target_path = "/webcache/#{sha1}.mp4"
+        FileUtils.cp(video_path, target_path) unless FileUtils.uptodate?(target_path, [video_path])
+        "/cache/#{sha1}.mp4"
+    end
+
+    # A generated image or video can have variants beside it (x-dark.webp,
+    # x-anaglyph.webp, x-dark-anaglyph.webp; variants: in the screenshot
+    # README). media_variants.js shows the one that fits the theme and the
+    # glasses button.
+    MEDIA_VARIANTS = %w[dark anaglyph dark-anaglyph]
+
+    def self.add_media_variants(element, media_path)
+        extension = File.extname(media_path)
+        MEDIA_VARIANTS.each do |variant|
+            variant_path = media_path.delete_suffix(extension) + "-#{variant}#{extension}"
+            element["data-variant-#{variant}"] = yield(variant_path) if File.exist?(variant_path)
+        end
     end
 
     def self.highlight_code(root)
@@ -3758,6 +3778,12 @@ class Main < Sinatra::Base
 
         "<script>window.SEEN_PARTS = #{seen.to_json.gsub('</', '<\/')};</script>" \
             "<script src='/include/include_fold.js?#{CACHE_BUSTER}'></script>"
+    end
+
+    # Loads media_variants.js on a page with image or video variants.
+    def media_variants_setup(slug)
+        return '' unless (@@content[slug] || {})[:html].to_s.include?('data-variant-')
+        "<script src='/include/media_variants.js?#{CACHE_BUSTER}'></script>"
     end
 
     # On a page with a template: loads template_notice.js, which asks

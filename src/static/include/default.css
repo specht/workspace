@@ -1463,6 +1463,84 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     }
 }
 
+/* A grid of small screenshots with captions (CPU Sandbox examples) */
+
+.screen-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
+    gap: 1.2em 1em;
+    margin: 1em 0 1.5em;
+}
+
+.screen-gallery figure {
+    margin: 0;
+}
+
+.screen-gallery img {
+    display: block;
+    width: 100%;
+    border-radius: 0.3em;
+}
+
+.screen-gallery figcaption {
+    margin-top: 0.35em;
+    font-size: 0.85em;
+    line-height: 1.35;
+}
+
+.screen-gallery figcaption code {
+    display: block;
+}
+
+/* Image and video variants (media_variants.js): the glasses button */
+
+.media-variant-box {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+}
+
+.media-variant-glasses {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2em;
+    height: 2.2em;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    font-size: 1.1em;
+    opacity: 0.75;
+    cursor: pointer;
+}
+
+.media-variant-glasses:hover,
+.media-variant-glasses:focus-visible {
+    opacity: 1;
+}
+
+.media-variant-glasses[aria-pressed='true'] {
+    border-color: rgba(0, 0, 0, 0.2);
+    background: #fff;
+    color: #222;
+    opacity: 1;
+}
+
+.icon-3d-glasses {
+    width: 1.4em;
+    height: 1.4em;
+    vertical-align: -0.35em;
+}
+
+.media-variant-glasses .icon-3d-glasses {
+    vertical-align: 0;
+}
+
 /* Content model: reference includes, uses chips, teacher notes (docs/aufgaben.md) */
 
 .reference-include {
