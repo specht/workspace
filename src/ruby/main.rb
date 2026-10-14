@@ -3739,7 +3739,9 @@ class Main < Sinatra::Base
     # The strip above a content page: activity (kind, duration, reference
     # pages it uses) or reference page (where it sits, who uses it).
     def page_kind_header(slug)
-        PageKinds.header(slug, @@content, @@sections, :development => DEVELOPMENT)
+        toggle = teacher_note_toggle(slug)
+        header = PageKinds.header(slug, @@content, @@sections, :development => DEVELOPMENT, :extra => toggle)
+        header.empty? && !toggle.empty? ? "<div class='page-kind'>#{toggle}</div>" : header
     end
 
     def page_kind_class(slug)
@@ -4060,13 +4062,27 @@ class Main < Sinatra::Base
         TaskStore.public_state(props, found[:version])
     end
 
-    # The teacher note of a page (lehrkraft.md), for teachers only.
-    def teacher_note_panel(slug)
-        note = (@@content[slug] || {})[:teacher_note]
-        return '' if note.nil? || !teacher_account_logged_in?
+    # The teacher note of a page (lehrkraft.md), for teachers only: a small
+    # button at the right end of the page strip, so the page can be shown on
+    # a projector as it is, and the note itself below it, closed.
+    def teacher_note?(slug)
+        !(@@content[slug] || {})[:teacher_note].nil? && teacher_account_logged_in?
+    end
 
-        "<details class='teacher-note'><summary>Notiz für Lehrkräfte</summary>" \
-            "<div class='teacher-note-body'>#{note}</div></details>"
+    def teacher_note_toggle(slug)
+        return '' unless teacher_note?(slug)
+
+        "<button type='button' class='teacher-note-toggle' aria-expanded='false' aria-controls='teacher-note'>" \
+            "<i class='bi bi-person-video3' aria-hidden='true'></i>Notiz für Lehrkräfte</button>"
+    end
+
+    def teacher_note_panel(slug)
+        return '' unless teacher_note?(slug)
+
+        "<div class='teacher-note' id='teacher-note' hidden><div class='teacher-note-body'>#{@@content[slug][:teacher_note]}</div></div>" \
+            "<script>document.querySelector('.teacher-note-toggle').addEventListener('click', function () {" \
+            "var open = this.getAttribute('aria-expanded') !== 'true'; this.setAttribute('aria-expanded', open);" \
+            "document.getElementById('teacher-note').hidden = !open; });</script>"
     end
 
     # Activities with a teacher note (lehrkraft.md), listed in the profile.

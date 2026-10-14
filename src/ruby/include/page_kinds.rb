@@ -47,7 +47,8 @@ module PageKinds
     end
 
     # HTML of the strip for one page ('' for pages that get none).
-    def self.header(slug, content, sections, development: false)
+    # extra: HTML at the right end of the strip (the teacher note's button).
+    def self.header(slug, content, sections, development: false, extra: '')
         entry = content[slug]
         return '' if entry.nil? || entry[:teacher_only]
 
@@ -64,6 +65,7 @@ module PageKinds
                 links = used.map { |s, title| "<a href='/#{h.(s)}'>#{h.(title)}</a>" }.join(' ')
                 html << "<span class='page-kind-links'>Wird verwendet in: #{links}</span>"
             end
+            html << extra.to_s
             html << '</nav>'
         else
             kind = KIND_LABELS.fetch(entry[:kind].to_s, 'Aktivität')
@@ -80,6 +82,7 @@ module PageKinds
                 "<a href='/#{h.(ref_slug)}'><i class='bi bi-book'></i>#{h.(title.empty? ? name : title)}</a>"
             end.compact
             html << "<span class='page-kind-links'>Im Handbuch: #{refs.join(' ')}</span>" unless refs.empty?
+            html << extra.to_s
             html << '</div>'
         end
         html

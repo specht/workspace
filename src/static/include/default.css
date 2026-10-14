@@ -2059,21 +2059,38 @@ body.has-autotoc-secondary.autotoc-primary-visible {
 }
 
 .teacher-note {
-    margin: 1em 0 1.5em;
+    margin: 1.2em 0 1.5em;
     border: 1px solid #d9c9ee;
     border-radius: 0.5em;
     background-color: #f7f2fc;
 }
 
-.teacher-note > summary {
-    padding: 0.5em 1em;
-    cursor: pointer;
-    font-weight: 600;
-    color: #5b2f8f;
+.teacher-note-body {
+    padding: 0.8em 1em 0.5em;
 }
 
-.teacher-note-body {
-    padding: 0 1em 0.5em;
+/* The button for the teacher note: at the right end of the page strip,
+   small, so the heading stays free on a projector. */
+.teacher-note-toggle {
+    margin-left: auto;
+    padding: 0.15em 0.75em;
+    border: 1px solid #d9c9ee;
+    border-radius: 1em;
+    background-color: #f7f2fc;
+    color: #5b2f8f;
+    font-size: 90%;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.teacher-note-toggle .bi {
+    margin-right: 0.4em;
+}
+
+.teacher-note-toggle:hover,
+.teacher-note-toggle[aria-expanded='true'] {
+    background-color: #ece1f8;
+    border-color: #b99ae0;
 }
 
 /* Long paths and names in tables wrap instead of making the page wider than
