@@ -118,11 +118,43 @@ Meldet Git **divergent branches**, hast du selbst etwas committet. Dann hilft `g
 <!-- short: Vorschau: unten rechts auf »Go Live« klicken. -->
 ## Live-Vorschau starten
 
-<img src='../../common/go-live.webp' class='r' style='width: 21em;' alt='Der Eintrag »Go Live« unten rechts in der Statusleiste.'>
+<!-- tutorial-screenshot
+# »Go Live« unten rechts, mit Mauszeiger und Tooltip; auch für die
+# Aktivitäten, die die Vorschau starten (../reference/workspace/go-live.webp)
+click: Open
+wait-for-text: scene.ini
+move-mouse: Go Live
+sleep: 2
+show-mouse
+crop-top: 88%
+crop-left: 68%
+-->
+
+<img src='go-live.webp' class='r' style='width: 21em;' alt='Der Eintrag »Go Live« unten rechts in der Statusleiste; der Tooltip sagt »Click to run live server«.'>
 
 Im Workspace ist die Erweiterung »Live Server« installiert. Unten rechts findest du den Eintrag »Go Live«. Klicke darauf, um die Vorschau zu starten. Sie öffnet sich in einem neuen Browsertab.
 
 Der Live Server ist ein kleiner Webserver in deinem Workspace. Er liefert die Dateien aus deinem geöffneten Ordner aus, und die Adresse in der Vorschau zeigt, welche Datei du gerade siehst.
+
+<div style='clear: both;'></div>
+
+<!-- tutorial-screenshot
+# Der laufende Live Server: ein Klick auf »Port : 5500« hält ihn an
+go-live
+tab: workspace
+# Erst weg und dann darauf: Sonst sieht VS Code die Maus nie ankommen.
+move-mouse: selector:.part.editor
+sleep: 1
+move-mouse: selector:.statusbar-item:has-text("Port :")
+sleep: 2
+show-mouse
+crop-top: 88%
+crop-left: 68%
+-->
+
+<img src='stop-live.webp' class='r' style='width: 21em;' alt='Statt »Go Live« steht unten rechts »Port : 5500«; der Tooltip sagt »Click to close server«.'>
+
+Solange der Live Server läuft, steht an derselben Stelle die Nummer seines Ports, zum Beispiel »Port : 5500«. Ein Klick darauf hält ihn wieder an. Das brauchst du, wenn du einen anderen Ordner öffnest: Der Live Server liefert immer den Ordner aus, in dem er gestartet wurde.
 
 <div style='clear: both;'></div>
 

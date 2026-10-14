@@ -71,7 +71,7 @@ _task(index)
 
 ### Vorschau starten
 
-<img src='../common/go-live.webp' class='r' style='width: 19em;' alt=''>
+<img src='../reference/workspace/go-live.webp' class='r' style='width: 19em;' alt=''>
 
 Unten rechts im Fenster findest du »Go Live«. Klicke darauf. In einem neuen Browsertab öffnet sich deine Webseite.
 

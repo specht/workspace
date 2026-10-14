@@ -80,7 +80,7 @@ Die Datei <code>1.md</code> hat bei BIF eine besondere Bedeutung: Jede Geschicht
 
 ### Vorschau starten
 
-<img src='../common/go-live.webp' class='r' style='width: 21em;' alt=''>
+<img src='../reference/workspace/go-live.webp' class='r' style='width: 21em;' alt=''>
 
 Damit du deine Geschichte im Browser ausprobieren kannst, ist im Workspace bereits die Erweiterung **Live Server** installiert.
 Klicke rechts unten auf »Go Live«. Es öffnet sich ein neuer Tab mit deiner Geschichte:
