@@ -186,6 +186,52 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Eigenschaften in denselben Farben wie Entitäten, Beziehungen und Attribute
   in ```` ```er ````. Die Muster in »Filmdatenbank als Graph« sind jetzt echtes
   Cypher (`(:Movie)` statt `(Movie)`).
+- Neue Aktivität »Feuerwerk aus Partikeln« (`feuerwerk`) unter
+  Computergrafik, in C mit PixelRAM: vom ersten Funken (Position,
+  Geschwindigkeit, Schwerkraft) über Explosionen, Farbverläufe und Leuchtspuren
+  bis zu Raketen über einer nächtlichen Stadt, die man mit der Maus startet;
+  fünf Aufgaben, darunter zwei Rechnungen zur Physik und eine Abgabe.
+- »Echtzeitgrafik mit C« (PixelRAM) ist neu geschrieben: Bilder aus Formeln
+  (bis zum Sierpinski-Dreieck aus `x & y`), Wellen und Interferenz, das Spiel
+  »Lichtspur« für zwei an einer Tastatur, die Beispiele der Vorlage
+  (`make PROGRAM=beispiele/tunnel`) und Crystal Caves (`make crystal`). Eine
+  Notiz für Lehrkräfte nennt größere Projekte: Raycaster, Raytracer, GIF- und
+  JPEG-Decoder.
+- Bilder und Videos in Varianten: Im dunklen Modus erscheint die dunkle
+  Fassung von selbst. Ein Knopf in der Ecke zeigt die Bilder für die
+  Rot-Cyan-Brille (Anaglyphen) oder wie auf einem Röhrenbildschirm (PixelRAM);
+  die Wahl gilt für alle Bilder, bis man sie wieder ausschaltet.
+- Anaglyphen: Eine Szene bringt ihre Kamera mit (`camera = …`, im Viewer
+  »Kamera kopieren«). Die Prüfart `submit` kennt `preview: anaglyph`: Die
+  Karte zeigt die gewählte Szene so, wie die Galerie sie zeigt, und die
+  Klassenübersicht zeigt eine Galerie aller Abgaben, groß, drehbar und mit
+  den Pfeiltasten zum Weiterblättern. Kenney-Modelle funktionieren auch in
+  abgegebenen Szenen.
+- »Mit der CPU Sandbox arbeiten« zeigt eine Galerie aus acht
+  Beispielprogrammen. Die drei Sandbox-Seiten sagen gleich am Anfang, dass sie
+  mit Dart, Python, JavaScript oder Java arbeiten.
+- Das Keyboard-Tutorial ist eine eigene Aktivität; die Prüfart `keyboard`
+  zeigt Lehrkräften in der Klassenübersicht, wer welches Kapitel geschafft hat.
+- Handbuch-Seite »Shortcuts« zum Nachschlagen; »Farben angeben« hat einen
+  Farbmischer und erklärt RGB und OKLCH.
+- Code-Blöcke mit ```` ```ini ```` (Anaglyph-Szenen) sind eingefärbt, wie der
+  Viewer sie liest (`src/ruby/include/anaglyph_scene_lexer.rb`): `#` am
+  Zeilenanfang ist ein Kommentar, in `fill = #4aa03f` ein Farbcode.
+- Der Workspace lässt sich über das Browsermenü als App installieren; eine
+  Installationsleiste erscheint nicht.
+- Tutorial-Screenshots: Der Generator zeichnet den Mauszeiger (`show-mouse`),
+  rendert Varianten (`variants: dark anaglyph crt`), schneidet seitlich und auf
+  ein Element zu (`crop-left`, `crop-right`, `crop-element`), rendert Leinwände
+  scharf (`sharp-canvas`), macht Bilder aus PDF-Seiten (`pdf-page`) und
+  Git-Objektgraphen (`git-graph`), öffnet den Neo4j Browser (`neo4j-browser`)
+  und kennt Aktionen einzelner Tutorials (`hook: NAME ARGS`).
+  `recreate-screenshots.rb --status` zeigt den Stand aller Seiten, ohne zu
+  rendern; wer im Browser Tutorials aufruft, pausiert das Rendern im
+  Hintergrund nur, statt es zu stören.
+- Kopierknopf für Code-Blöcke, die abzutippen nichts lehrt: Adressen zum
+  Klonen, Downloads, Einrichtungsbefehle (```` ```bash_copy ````). Was man
+  lernen soll, wird weiter abgetippt; gemischte Blöcke sind geteilt, sodass
+  nur die schwer zu tippende Zeile den Knopf hat.
 
 ### Geändert
 
@@ -250,6 +296,35 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Code in Aufgabenkarten ist eingefärbt wie im Text der Seite; bisher sah ein
   Code-Block in einer Aufgabe aus wie lauter einzelne Inline-Code-Stücke. Ein
   Code-Block ohne Sprache wird wie ```` ```text ```` dargestellt.
+- Das Inhaltsverzeichnis in der Seitenleiste zeigt Kapitel mit ihren
+  Abschnitten und steht auf jeder längeren Seite.
+- Keine Seite ist breiter als ein Handybildschirm.
+- Links haben auf der ganzen Website dasselbe Petrolblau.
+- Das Handbuch setzt beim Öffnen den Cursor ins Suchfeld (nicht auf
+  Touch-Bildschirmen, wo sonst die Tastatur die Seite verdeckt).
+- Der Profil-Knopf zeigt ein Ausweis-Symbol.
+- Jede Karte im Katalog nennt ihre Art (Projekt, Labor, Grundlagen, Übung,
+  bei den Programmiersprachen »Steckbrief«), klein rechts neben dem Titel,
+  wenn er Platz lässt; bisher hatten nur elf Karten ein Etikett, auf dem Bild.
+  Die Kurztexte sind im Blocksatz, die Karten einer Reihe gleich hoch.
+- Silbentrennung macht der Browser für jedes Wort; die Liste
+  `hyphenation.txt` mit 177 Wörtern ist weg. Code wird nie getrennt.
+- Ein Handbuch-Kasten, der auf eine Zeile zusammengeklappt ist, zeigt die
+  Adresse zum Klonen trotzdem, mit Kopierknopf.
+- Eine Anaglyph-Szene abzugeben braucht keinen laufenden Workspace mehr: Ob
+  sie lädt und genug Objekte hat, prüft die Karte mit dem Bild, das sie
+  ohnehin zeichnet. Während der Abgabe zeigt der Knopf, dass er arbeitet.
+- »Repository klonen« steht einmal im Handbuch und wird in den Tutorials
+  eingebunden statt kopiert.
+- LaTeX: Die Hilfsdateien beim Übersetzen landen in `.build`; im Ordner
+  bleiben nur `.tex` und `.pdf`.
+- Startseite: ruhigerer Katalog, beide Filmdatenbanken in einer Reihe,
+  »Bobby Tables« vorerst ausgeblendet. »Pixelgrafik programmieren« heißt
+  jetzt »Pixelgrafik mit Ruby«, neben »Echtzeitgrafik mit C«.
+- Erzeugte statt von Hand gemachte Screenshots in Git, Dateien und
+  Verzeichnisse, TCP/IP, LaTeX, MySQL, beiden Filmdatenbanken, den Sandboxes,
+  den Grundlagen, Anaglyphen und PixelRAM. »Go Live« ist ein gemeinsames Bild
+  für alle Tutorials, mit Mauszeiger und dem Anhalten des Live Servers.
 
 ### Für Betreibende
 
@@ -271,4 +346,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - `build-image.sh` bricht ab, bevor es `hs_code_server:latest` taggt, wenn eine
   `.vsix` aus `docker/code/svc-code-server-run` im Image fehlt. Bisher startete
   ein Workspace dann still ohne die Erweiterung.
+- Workspace-Image neu bauen (`build-image.sh`): `emcc` warnt nicht mehr bei
+  jedem Übersetzen über zwei GCC-Versionen, was Lernende für einen Fehler im
+  eigenen Programm hielten.
+- Ruby-Image neu bauen (`./config.rb build ruby`): Es braucht jetzt `wget`
+  für die Kenney-Modelle der Anaglyph-Galerie.
+- Für Vorschau und Galerie der Anaglyph-Abgaben braucht der Server
+  ausgehende HTTPS-Verbindungen zu `codeload.github.com` (der Viewer in der
+  Version `AnaglyphViewer::COMMIT`, beim ersten Gebrauch nach
+  `/internal/anaglyph-viewer/`) und zu `kenney.nl` (Modelle, erst wenn eine
+  Szene sie braucht). Ohne Netz gibt es keine Bilder; Abgaben funktionieren
+  trotzdem.
 
