@@ -33,9 +33,23 @@ Python ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpre
 
 Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+# Ein frischer Workspace ohne Ordner, das Terminal offen
+hide-left-sidebar
+terminal-open
+sleep: 0.5
+-->
+
 <img class='full' src='code-with-terminal.webp' alt=''>
 
 Starte nun die Python-Shell, indem du `python3` eingibst und dann <kbd>Enter</kbd> drückst. Du solltest eine Ausgabe wie diese sehen:
+
+<!-- tutorial-screenshot
+press: Control+l
+terminal-run: python3
+wait-for-text: >>>
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='python-repl.webp' alt=''>
 
@@ -49,11 +63,28 @@ Python-Programme werden in Textdateien mit der Endung `.py` geschrieben. Ein Pyt
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
+<!-- tutorial-screenshot
+# Die Python-Shell wieder verlassen, das Terminal schließen
+terminal-run: exit()
+terminal-wait-for-prompt
+terminal-run: clear
+press: Control+j
+show-left-sidebar
+sleep: 0.5
+-->
+
 <img class='full' src='fresh-start.webp' alt=''>
 
 ### Quelltext schreiben
 
 Klicke auf »New File« und wähle als Dateityp »Text File« (oder bestätige einfach mit <kbd>Enter</kbd>).
+
+<!-- tutorial-screenshot
+click: New File...
+wait-for-text: Text File
+sleep: 0.5
+crop-bottom: 77%
+-->
 
 <img class='full' src='choose-filename.webp' alt=''>
 
@@ -63,13 +94,37 @@ _include_file(hello.py, python)
 
 Da Visual Studio Code noch nicht weiß, dass es sich um Python-Quelltext handelt, ist dein Programm momentan noch einfarbig, aber das wird sich gleich ändern. An dem weißen Punkt erkennst du, dass deine Änderungen noch nicht gespeichert sind.
 
+<!-- tutorial-screenshot
+press: Enter
+sleep: 1
+type: print("Hello, World!")
+sleep: 0.5
+crop-bottom: 82%
+-->
+
 <img class='full' src='no-syntax-highlighting.webp' alt=''>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.py` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.py`.
 
+<!-- tutorial-screenshot
+press: Control+s
+wait-for-text: Save As
+press: Control+a
+type: /workspace/hello.py
+sleep: 0.5
+crop-bottom: 82%
+-->
+
 <img class='full' src='enter-filename.webp' alt=''>
 
 Sobald du die Datei gespeichert hast, wird sie automatisch als Python-Datei erkannt und die Syntax wird hervorgehoben.
+
+<!-- tutorial-screenshot
+press: Enter
+wait-for-file: hello.py
+sleep: 1.5
+crop-bottom: 78%
+-->
 
 <img class='full' src='syntax-highlighting.webp' alt=''>
 
@@ -88,6 +143,15 @@ Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>py
 </div>
 
 Das Programm sollte die Nachricht `Hello, World!` im Terminal ausgeben:
+
+<!-- tutorial-screenshot
+hide-left-sidebar
+terminal-open
+press: Control+l
+terminal-run: python3 hello.py
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='hello.webp' alt=''>
 
@@ -110,6 +174,15 @@ Nutze die Pfeiltaste hoch <kbd>↑</kbd>, um den letzten Befehl erneut einzugebe
 </div>
 
 Python sollte eine Fehlermeldung ausgeben, die dir hilft, den Fehler zu finden:
+
+<!-- tutorial-screenshot
+write-file: hello.py <- code:prin(
+terminal-maximize
+press: Control+l
+terminal-run: python3 hello.py
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='hello-error.webp' alt=''>
 
@@ -134,11 +207,36 @@ Jetzt können wir das Skript direkt ausführen:
 ./hello.py
 ```
 
+<!-- tutorial-screenshot
+# Das Shebang über dem print; Editor und Terminal zusammen
+write-file: hello.py <- file:hello-shebang.py
+click: selector:.part.panel [aria-label*="Restore Panel"]
+open-file: hello.py
+terminal-open
+press: Control+l
+terminal-run: chmod +x hello.py
+terminal-wait-for-prompt
+terminal-run: ./hello.py
+terminal-wait-for-prompt
+move-mouse: selector:.part.statusbar
+sleep: 0.5
+-->
+
 <img class='full' src='shebang.webp' alt=''>
 
 ## Python-Skripte direkt in Visual Studio Code ausführen
 
 Visual Studio Code bietet auch eine integrierte Möglichkeit, Python-Skripte direkt auszuführen, ohne dass du das Skript jedesmal im Terminal ausführen musst. Dazu musst du die Python-Erweiterung installieren. Klicke dazu auf das Extensions-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste und suche nach »Python«. Klicke auf »Install«, um die Erweiterung zu installieren.
+
+<!-- tutorial-screenshot
+# Die Erweiterung im Marketplace, nicht installiert
+press: Control+Shift+x
+wait-for-text: Marketplace
+type: python
+wait-for-text: ms-python
+sleep: 1.5
+crop-bottom: 50%
+-->
 
 <img class='full' src='python-ext.webp' alt=''>
 
@@ -153,6 +251,18 @@ Erstelle eine neue Datei mit <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd> und schre
 _include_file(factor.py, python)
 
 Speichere die Datei unter dem Namen `factor.py` und führe sie aus:
+
+<!-- tutorial-screenshot
+write-file: factor.py <- file:factor.py
+hide-left-sidebar
+terminal-open
+press: Control+l
+terminal-run: python3 factor.py
+wait-for-text: Enter a number
+terminal-run: 123
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='try-factor.webp' alt=''>
 
@@ -169,6 +279,14 @@ Erstelle eine neue Datei und schreibe den folgenden Code hinein:
 _include_file(bubblesort.py, python)
 
 Speichere das Skript unter dem Namen `bubblesort.py` und führe es aus:
+
+<!-- tutorial-screenshot
+write-file: bubblesort.py <- file:bubblesort.py
+press: Control+l
+terminal-run: python3 bubblesort.py
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='bubblesort.webp' alt=''>
 
