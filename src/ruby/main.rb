@@ -1570,7 +1570,14 @@ class Main < Sinatra::Base
             entry_started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
             section = entry[:section]
             path = entry[:original_path]
-            next if parse_content_count > 1 && entry[:kenney]
+            # Kenney kit pages are built once; a later full parse (in
+            # development, after a content change) keeps them instead of
+            # dropping them, which made every kit page a 404 until a restart.
+            if parse_content_count > 1 && entry[:kenney]
+                previous = defined?(@@content) && @@content && @@content[entry[:path]]
+                parsed_content[entry[:path]] = previous if previous
+                next
+            end
             markdown = nil
             page_meta = {}
             page_references = []
