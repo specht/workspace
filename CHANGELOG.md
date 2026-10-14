@@ -233,6 +233,19 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   lernen soll, wird weiter abgetippt; gemischte Blöcke sind geteilt, sodass
   nur die schwer zu tippende Zeile den Knopf hat.
 
+- Handbuch »HTML und CSS«: drei Seiten für Webseiten und Folien zugleich,
+  [HTML](/reference/html), [CSS](/reference/css) und
+  [Layout](/reference/layout), dazu [Folien mit Shower](/reference/shower)
+  für das, was nur Präsentationen brauchen. Jedes Beispiel ist ein erzeugtes
+  Bild als Webseite und als Folie; ein Knopf in der Ecke schaltet um. Auf
+  der Shower-Aktivität und den Handbuch-Seiten, die man von dort öffnet,
+  erscheinen die Folien, sonst die Webseite.
+- Aufgaben, die der Workspace selbst entscheidet, statt dass Lernende nur
+  hinschauen: eine Liste mit drei Punkten, ein Link, `styles.css` wirklich
+  eingebunden, `main` mit Flexbox, eine Media Query, die alles untereinander
+  stellt. Dafür kennt die Prüfart `html` jetzt `elements`, `css` kennt
+  `declares` und `linked_from`.
+
 ### Geändert
 
 - Sicherheit: Befehle, die Lernende in eine Aufgabe vom Typ `command` tippen,
@@ -308,6 +321,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Liste der Aktivitäten mit einer Notiz für Lehrkräfte steht jetzt im Profil
   unter »Notizen für Lehrkräfte«. `/lehrmaterial` führt dorthin,
   `/lehrmaterial-2d` zum Game Studio.
+- »Statische Webseiten mit HTML & CSS« und »Eine Präsentation in HTML
+  erstellen« holen ihre Erklärungen aus denselben Handbuch-Abschnitten. Wer
+  eine der beiden schon gemacht hat, sieht sie in der anderen nur noch als
+  eine Zeile. »HTML-Folien gestalten« ist in den neuen Seiten aufgegangen;
+  alte Links führen weiter. KaTeX war in der Vorlage nur scheinbar
+  eingerichtet: Das Handbuch zeigt jetzt die drei Zeilen für den `<head>`.
+- Die kleinen Verweise auf Handbuch-Abschnitte (`_uses`) nennen deren
+  Überschrift statt des internen Namens.
+- Auf dem Handy rücken Hinweise, Aufgabenkarten und Code-Blöcke weniger weit
+  ein; das Symbol eines Hinweises steht im Text statt daneben.
 - Jede Karte im Katalog nennt ihre Art (Projekt, Labor, Grundlagen, Übung,
   bei den Programmiersprachen »Steckbrief«), klein rechts neben dem Titel,
   wenn er Platz lässt; bisher hatten nur elf Karten ein Etikett, auf dem Bild.

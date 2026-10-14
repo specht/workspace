@@ -30,6 +30,32 @@ tasks:
       - when: { matches: '127\.0\.0\.1|localhost' }
         say: Diese Adresse gilt nur im Workspace selbst. Nimm die aus der Adresszeile des Tabs, den »Go Live« geöffnet hat.
 
+  - id: liste
+    title: Deine Liste
+    prompt: In `index.html` steht eine Liste mit mindestens drei Punkten zu deinem Thema.
+    check:
+      type: html
+      file: website-test/index.html
+      expect:
+        parses: true
+        elements:
+          - selector: li
+            min: 3
+            say: In `index.html` finde ich noch keine drei Listenpunkte. Jeder Punkt steht in einem eigenen `<li>`, alle zusammen zwischen `<ul>` und `</ul>`.
+
+  - id: link
+    title: Ein Link
+    prompt: Auf deiner Seite steht ein Link mit einer Adresse in `href`.
+    check:
+      type: html
+      file: website-test/index.html
+      expect:
+        parses: true
+        elements:
+          - selector: a
+            attr: href
+            say: In `index.html` finde ich kein `<a>` mit einer Adresse in `href`. So sieht ein Link aus `<a href="https://…">Text</a>`.
+
   - id: alt-text
     title: Ein guter Alt-Text
     prompt: Welcher `alt`-Text passt am besten zu einem Foto eines Axolotls im Aquarium?
@@ -85,9 +111,13 @@ tasks:
     check:
       type: css
       file: website-test/styles.css
+      linked_from: website-test/index.html
       expect:
         parses: true
         min_rules: 5
+    feedback:
+      - when: { problem: missing }
+        say: "`website-test/styles.css` gibt es noch nicht. Lege die Datei im Explorer neben `index.html` an."
 
   - id: selektor
     title: Was ist .credit?
@@ -104,6 +134,23 @@ tasks:
       - when: { picked: 2 }
         say: Eine `id` wählst du mit `#credit` aus. Der Punkt steht für eine Klasse.
 
+  - id: flexbox
+    title: Bild und Text nebeneinander
+    prompt: "In `styles.css` stellt `main` seine Kinder mit Flexbox nebeneinander, mit Abstand dazwischen."
+    check:
+      type: css
+      file: website-test/styles.css
+      expect:
+        parses: true
+        declares:
+          - selector: main
+            property: display
+            value: flex
+            say: "In der Regel für `main` fehlt noch `display: flex;`."
+          - selector: main
+            property: gap
+            say: "`main` ordnet jetzt mit Flexbox an. Gib ihm noch einen Abstand mit `gap`, zum Beispiel `gap: 2rem;`."
+
   - id: breite
     title: Mehr Platz fürs Bild
     prompt: Was passiert, wenn du bei `main > img` die Breite von `45%` auf `60%` änderst?
@@ -117,6 +164,21 @@ tasks:
         - Das Bild wird höher, aber nicht breiter.
       correct: 0
     solution: "Der Textbereich hat `flex: 1` und nimmt, was übrig bleibt. Bekommt das Bild mehr, bleibt für den Text weniger."
+
+  - id: kleine-bildschirme
+    title: Untereinander auf dem Handy
+    prompt: In schmalen Fenstern stehen Bild und Text untereinander, mit einer Media Query in `styles.css`.
+    check:
+      type: css
+      file: website-test/styles.css
+      expect:
+        parses: true
+        declares:
+          - selector: main
+            property: flex-direction
+            value: column
+            media: max-width
+            say: "Ich finde keine Media Query mit `max-width`, in der `main` die Angabe `flex-direction: column;` bekommt. Sie gehört ans Ende von `styles.css`, wie im Beispiel oben."
 
   - id: media-query
     title: Wann gilt die Media Query?

@@ -1,6 +1,7 @@
 <div class='meta'>
 image: html-css-logo.png
 kind: projekt
+reference: [workspace, html, css, layout]
 </div>
 
 <div
@@ -8,6 +9,9 @@ kind: projekt
     data-title="Auf dieser Seite"
     data-levels="h2,h3">
 </div>
+
+<!-- Die Beispiele aus dem Handbuch erscheinen hier als Webseite (media_variants.js). -->
+<div data-media-context='seite' hidden></div>
 
 # Statische Webseiten mit HTML & CSS
 
@@ -96,25 +100,11 @@ _task(live)
 
 ## Inhalt mit HTML
 
-HTML steht für **Hypertext Markup Language**. HTML beschreibt nicht in erster Linie, wie eine Webseite aussieht, sondern **was auf der Seite steht und welche Bedeutung die einzelnen Teile haben**. Schau noch einmal auf den Quelltext: Fast alles darin steht zwischen sogenannten Tags:
+Schau dir den Code noch einmal an. Was die einzelnen Teile bedeuten, steht im Handbuch:
 
-```html
-<h1>Axolotl</h1>
-```
+_include(html#tags)
 
-`<h1>` beginnt eine große Überschrift und `</h1>` beendet sie. Beim schließenden Tag steht zusätzlich ein `/` vor dem Namen. Ein Absatz funktioniert nach demselben Prinzip:
-
-```html
-<p>Ein kurzer Text.</p>
-```
-
-<div class='tutorial-preview-clear'></div>
-
-Die Tags sind ineinander verschachtelt. Alles, was im Browser sichtbar auf der Seite steht, befindet sich in unserem Beispiel im `<body>`-Tag. Der `<head>` enthält dagegen Informationen **über** die Seite, zum Beispiel den Titel und die Zeichenkodierung.
-
-<div class='hint think'>
-Browser sind erstaunlich tolerant und versuchen auch fehlerhaftes HTML noch darzustellen. Dadurch kann ein fehlendes oder falsch gesetztes Tag aber an einer ganz anderen Stelle zu einem überraschenden Ergebnis führen. Wenn etwas merkwürdig aussieht, prüfe zuerst, ob deine Tags richtig geöffnet und geschlossen sind.
-</div>
+_include(html#grundgeruest)
 
 ### Dein eigenes Thema
 
@@ -148,27 +138,13 @@ Auf unserer Beispielseite wollen wir drei Dinge sammeln, die an Axolotl interess
 </ul>
 ```
 
-<div class='hint'>
-<p>
-Wenn du den Code kopierst und einfügst, kann es passieren, dass die Einrückung danach etwas durcheinander aussieht. Für den Browser sind die Leerzeichen am Zeilenanfang zwar nicht wichtig, für uns Menschen aber schon: Durch die Einrückung kannst du viel leichter erkennen, welche Tags ineinander verschachtelt sind.
-</p>
-
-<p>
-Du kannst mehrere Zeilen markieren und mit <kbd>Tab</kbd> gemeinsam einrücken bzw. mit <kbd>Shift</kbd>+<kbd>Tab</kbd> wieder nach links verschieben. Wenn du mit solchen Tastenkombinationen noch nicht sicher bist, öffne links über das Tastatur-Symbol das eingebaute Tastatur-Tutorial. Gerade beim Programmieren lohnt sich das sehr.
-</p>
-
-<p>
-VS Code kann die Einrückung auch automatisch aufräumen: Klicke mit der rechten Maustaste in die Datei und wähle »Format Document« oder drücke <kbd>Strg</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd>. Das ist besonders praktisch, nachdem du einen größeren Codeblock eingefügt hast.
-</p>
-</div>
-
-`<h2>` ist eine Überschrift der zweiten Ebene. Mit `<ul>` beginnt eine Liste mit Stichpunkten. Jeder einzelne Listenpunkt steht in einem `<li>`-Tag – `li` steht für »list item«.
-
-Wenn du eine nummerierte Liste brauchst, kannst du statt `<ul>` einfach `<ol>` verwenden. Dann setzt der Browser die Nummern automatisch davor.
+_include(html#listen)
 
 <div class='hint task'>
 Schreibe drei eigene Punkte über dein Thema. Es ist deine Seite – die Beispieltexte sind nur Platzhalter.
 </div>
+
+_task(liste)
 
 ### Einen Link einfügen
 
@@ -188,11 +164,15 @@ Füge unter der Liste einen Link ein:
 </p>
 ```
 
-Der Tag `<a>` macht einen Text anklickbar. Im Attribut `href` steht die Adresse, zu der der Link führt. Bei deinem eigenen Thema kannst du natürlich auf eine andere Seite verlinken.
+Bei deinem eigenen Thema verlinkst du natürlich auf eine andere Seite.
+
+_include(html#links)
+
+_task(link)
 
 ### Ein Bild einfügen
 
-Ein Bild wird mit dem Tag `<img>` eingefügt. Für den ersten Versuch verwenden wir ein frei lizenziertes Axolotl-Foto von Wikimedia Commons, damit du noch keine Bilddatei in den Workspace übertragen musst.
+Für den ersten Versuch verwenden wir ein frei lizenziertes Axolotl-Foto von Wikimedia Commons, damit du noch keine Bilddatei in den Workspace übertragen musst.
 
 Füge das Bild **vor** der Überschrift ein:
 
@@ -209,12 +189,9 @@ Füge das Bild **vor** der Überschrift ein:
 >
 ```
 
-Beim `<img>`-Tag gibt es zwei besonders wichtige Attribute:
+Hier steht in `src` statt eines Dateinamens die Adresse eines Bildes im Internet. Wie `<img>` funktioniert und was in den Alt-Text gehört:
 
-- `src` gibt an, wo die Bilddatei liegt.
-- `alt` beschreibt kurz, was das Bild zusätzlich zum übrigen Text vermittelt.
-
-Anders als `<p>` oder `<h1>` enthält `<img>` keinen Text und braucht deshalb auch kein schließendes `</img>`.
+_include(html#img)
 
 Das Foto stammt von **Lorenzo Tarocchi** und steht auf Wikimedia Commons unter der Lizenz **CC BY-SA 4.0**. Füge außerdem am Ende deines `<main>`-Bereichs einen Bildnachweis ein:
 
@@ -232,69 +209,19 @@ Das Foto stammt von **Lorenzo Tarocchi** und steht auf Wikimedia Commons unter d
 </p>
 ```
 
-Wikimedia Commons erlaubt das direkte Einbinden seiner Bilder, also sogenanntes **Hotlinking**. Die Lizenzbedingungen gelten trotzdem. Für eine fertige eigene Webseite ist es meist robuster, die Bilddatei selbst im Projekt zu haben: Dann verschwindet sie nicht, wenn sich die Adresse auf einem fremden Server ändert.
+Wikimedia Commons erlaubt, seine Bilder so direkt einzubinden, aber die Lizenz gilt trotzdem: Wer das Bild gemacht hat und unter welcher Lizenz es steht, gehört auf die Seite.
 
 <div class='tutorial-preview-clear'></div>
 
-<div class='hint think'>
-Nicht jedes Bild, das du im Internet findest, darfst du einfach für deine Webseite verwenden. Bei Wikimedia Commons findest du viele Bilder mit freien Lizenzen. Schau auf der Dateiseite nach, wer das Bild gemacht hat und unter welcher Lizenz es steht.
-</div>
-
 _task(alt-text)
-
-### Was gehört in den Alt-Text?
-
-Der Alt-Text ist für Menschen wichtig, die das Bild nicht sehen können und zum Beispiel einen Screenreader verwenden. Er sollte kurz beschreiben, welche **zusätzliche Information** das Bild vermittelt. Für unser Foto passt zum Beispiel:
-
-```html
-alt="Ein Axolotl in einem Aquarium"
-```
-
-Ein schlechter Alt-Text wäre:
-
-```html
-alt="Bild"
-```
-
-Wenn ein Bild nur Dekoration ist und keinerlei zusätzliche Information enthält, kann ein leerer Alt-Text richtig sein:
-
-```html
-alt=""
-```
-
-<div class='hint'>
-Schreibe nicht automatisch »Bild von …« oder »Foto von …« in den Alt-Text. Ein Screenreader weiß bereits, dass es sich um ein Bild handelt. Beschreibe lieber knapp den Inhalt, der für die Seite wichtig ist.
-</div>
 
 ## Ein eigenes Bild verwenden
 
 Bis jetzt kommt das Axolotl-Foto direkt von Wikimedia Commons. Spannender wird deine Webseite natürlich mit einem eigenen Bild. Das ist im browserbasierten Workspace etwas ungewohnt: Die Datei liegt zunächst auf **deinem Computer oder im Browser**, dein Projekt liegt aber im **Workspace**. Die Bilddatei muss also erst in den Explorer von VS Code gelangen.
 
-Verwende für Bilder am besten einfache Dateinamen mit kleinen Buchstaben, ohne Leerzeichen und möglichst ohne Umlaute oder Sonderzeichen. Gute Namen sind zum Beispiel `axolotl.jpg`, `mein-spiel.webp` oder `berlin.png`.
+Lege die Bilddatei **neben `index.html`**:
 
-### Möglichkeit 1: Eine Datei vom Computer hochladen
-
-Wenn du das Bild bereits auf deinem Computer gespeichert hast, kannst du es einfach aus deinem Dateimanager in den Explorer von VS Code ziehen. Lege es dort **neben `index.html`** ab.
-
-<img src='drag-and-drop.webp' class='full' alt=''>
-
-Anschließend sollte die Datei links im Explorer auftauchen. Wenn du auf sie klickst, zeigt VS Code eine Vorschau an.
-
-### Möglichkeit 2: Ein Bild aus dem Browser kopieren
-
-Bei vielen Bildern im Browser kannst du mit der rechten Maustaste »Bild kopieren« oder »Copy Image« auswählen:
-
-<img src='../showerjs/copy-image.webp' class='full' alt=''>
-
-Wechsle danach zum Workspace. Klicke im Explorer auf `index.html`, damit VS Code weiß, in welchem Ordner die neue Datei landen soll, und drücke <kbd>Strg</kbd><kbd>V</kbd>.
-
-Je nach Browser musst du das Einfügen noch bestätigen. Danach erscheint eine neue Bilddatei im selben Ordner wie `index.html`. Sie hat häufig einen Namen wie `image.png`.
-
-Benenne die Datei in einen sinnvollen Namen um. Achte darauf, dass die Dateiendung wie `.png`, `.jpg` oder `.webp` erhalten bleibt.
-
-<div class='hint think'>
-Wenn du ein fremdes Bild aus dem Internet kopierst, prüfe trotzdem vorher, ob du es verwenden darfst. Durch das Kopieren in deinen Workspace ändert sich die Lizenz des Bildes nicht.
-</div>
+_include(html#bilddateien)
 
 ### Von der URL zum Dateinamen
 
@@ -316,14 +243,7 @@ zu:
 >
 ```
 
-`mein-bild.jpg` ist ein **relativer Pfad**. Der Browser sucht die Datei relativ zu `index.html`. Da beide Dateien im selben Ordner liegen, reicht der Dateiname.
-
-Wenn dein Bild nicht erscheint, prüfe zuerst ganz genau:
-
-- Stimmt der Dateiname einschließlich Groß- und Kleinschreibung?
-- Stimmt die Dateiendung?
-- Liegt die Bilddatei wirklich neben `index.html`?
-- Steht im `src`-Attribut exakt derselbe Dateiname?
+`mein-bild.jpg` ist ein **relativer Pfad**: Der Browser sucht die Datei neben `index.html`, deshalb reicht der Dateiname. Erscheint das Bild nicht, prüfe den Pfad so, wie es oben unter »Der Pfad muss genau stimmen« steht.
 
 <div class='hint task'>
 Wenn du ein eigenes Bild hast, ersetze jetzt das Axolotl-Foto. Passe auch den Alt-Text an. Wenn du das Bild selbst fotografiert oder gezeichnet hast, brauchst du den Bildnachweis aus unserem Beispiel natürlich nicht mehr.
@@ -400,37 +320,13 @@ _task(css)
 
 ### Wie eine CSS-Regel funktioniert
 
-Schau dir diese Regel an:
+_include(css#regeln)
 
-```css
-img {
-    border-radius: 1rem;
-}
-```
-
-Vor den geschweiften Klammern steht der **Selektor** `img`. Er sagt, welche Elemente gemeint sind. Zwischen `{` und `}` stehen die Eigenschaften, die für diese Elemente gelten sollen. In diesem Fall bekommen also alle `<img>`-Elemente abgerundete Ecken.
-
-Bei dieser Regel:
-
-```css
-.credit {
-    font-size: 0.8rem;
-}
-```
-
-beginnt der Selektor mit einem Punkt. Damit wird keine HTML-Tag-Art ausgewählt, sondern eine **Klasse**. Unser Bildnachweis hat diese Klasse hier bekommen:
-
-```html
-<p class="credit">
-```
-
-Klassen sind praktisch, wenn du einzelne Elemente gezielt gestalten möchtest, ohne gleich alle Elemente derselben Art zu verändern.
+Unser Bildnachweis hat die Klasse `credit` bekommen (`<p class="credit">`); die Regel `.credit` gilt deshalb nur für ihn.
 
 _task(selektor)
 
-<div class='hint'>
-Neben Farbangaben wie <code>#351c2b</code> zeigt VS Code ein kleines Farbfeld an. Klicke darauf, wenn du eine andere Farbe ausprobieren möchtest. Du musst die Hexadezimalzahlen nicht auswendig lernen.
-</div>
+Mehr zum Gestalten: _uses(selektoren, farben, schrift, abstaende, wirkt-nicht)
 
 <div class='tutorial-preview-clear'></div>
 
@@ -512,13 +408,11 @@ Speichere die Datei. Auf einem breiten Fenster sollten Bild und Text jetzt neben
     <img src='website-flexbox.webp' alt='Die gestaltete Axolotl-Webseite zeigt das Bild links und den Text mit Überschrift, Liste und Link rechts daneben.'>
 </button>
 
-Die wichtigsten neuen Eigenschaften sind:
+Was `display: flex`, `gap`, `align-items` und `flex: 1` bewirken:
 
-- `display: flex` ordnet die direkten Kinder von `<main>` als flexible Elemente an.
-- `gap: 2rem` lässt Platz zwischen Bild und Text.
-- `align-items: center` richtet beide Bereiche vertikal zueinander aus.
-- `width: 45%` gibt dem Bild knapp die Hälfte der Breite.
-- `flex: 1` erlaubt dem Textbereich, den übrigen Platz einzunehmen.
+_include(layout#flexbox)
+
+_task(flexbox)
 
 _task(breite)
 
@@ -554,6 +448,8 @@ Jetzt ergänzen wir am Ende von `styles.css` eine **Media Query**:
     }
 }
 ```
+
+_task(kleine-bildschirme)
 
 _task(media-query)
 
@@ -597,6 +493,8 @@ Die Regeln innerhalb der Media Query gelten nur, wenn das Browserfenster höchst
 -->
 
 Mach dein Browserfenster langsam breiter und schmaler. Du solltest genau sehen können, wann das Layout zwischen den beiden Varianten wechselt.
+
+Im Handbuch: _uses(kleine-bildschirme, spalten, platzieren)
 
 <div class='hint task'>
 Ändere testweise die Grenze von <code>700px</code> auf <code>500px</code> oder <code>900px</code>. Welche Einstellung passt zu deiner Seite am besten?

@@ -3,7 +3,7 @@ image: showerjs.webp:0:80
 kind: projekt
 topic: writing
 duration: 2 bis 3 Doppelstunden
-reference: [workspace, html-folien]
+reference: [workspace, html, css, layout, shower]
 template: https://git.nhcham.org/specht/shower.js.git
 template_name: der shower.js-Vorlage
 </div>
@@ -14,15 +14,20 @@ template_name: der shower.js-Vorlage
     data-levels="h2">
 </div>
 
+<!-- Die Beispiele aus dem Handbuch erscheinen hier als Folie (media_variants.js). -->
+<div data-media-context='folie' hidden></div>
+
 # Eine Präsentation in HTML erstellen
 
 <p class='abstract'>
-Erstelle eine Präsentation mit shower.js in HTML und CSS. Mach dich unabhängig von PowerPoint und Keynote und erstelle eine Präsentation, die in jedem modernen Browser vom Stick oder von der Cloud aus funktioniert.
+Erstelle eine Präsentation mit shower.js in HTML und CSS. Mach dich unabhängig von PowerPoint und Keynote und erstelle eine Präsentation, die in jedem modernen Browser vom Stick oder aus der Cloud funktioniert.
 </p>
 
 <img class='full fit-width' src='showerjs.webp' alt=''>
 
-In diesem Tutorial erstellen wir eine Präsentation mit Hilfe von [shower.js](https://github.com/shower/shower) auf der Grundlage von HTML und CSS. Das heißt, dass jeder Webbrowser deine Präsentation abspielen kann und du keine besondere Software brauchst. Du kannst shower.js hier [in Aktion sehen](https://shwr.me/).
+In diesem Tutorial erstellst du eine Präsentation mit [shower.js](https://github.com/shower/shower). Sie besteht aus HTML und CSS, wie eine Webseite: Jeder Browser kann sie abspielen, du brauchst keine besondere Software. Hier kannst du shower.js [in Aktion sehen](https://shwr.me/).
+
+Hast du schon eine [Webseite mit HTML und CSS](/static-website) gebaut, kennst du das meiste. Die Abschnitte aus dem Handbuch, die du dort schon gelesen hast, stehen hier nur noch als eine Zeile.
 
 ## Repository klonen
 
@@ -32,9 +37,9 @@ _include(workspace#repository-klonen)
 
 Das Repository liegt jetzt in `/workspace/shower.js`. Dein Workspace sollte ungefähr so aussehen:
 
-<img class='full' src='freshly-cloned.webp' alt=''>
+<img class='full' src='freshly-cloned.webp' alt='Der Explorer zeigt die geklonte Vorlage mit index.html, styles.css und den Ordnern pictures, shower und include.'>
 
-Links siehst du die Verzeichnisse und Dateien, die gerade heruntergeladen wurden. Öffne die Datei `index.html`, indem du darauf klickst.
+Öffne die Datei `index.html`, indem du links darauf klickst.
 
 _task(vorlage)
 
@@ -44,81 +49,63 @@ _include(workspace#live-server)
 
 Wenn du alles richtig gemacht hast, sollte dein Fenster so aussehen:
 
-<img class='full' src='live-preview.webp' alt=''>
+<img class='full' src='live-preview.webp' alt='Die Vorlage in der Vorschau: eine Übersicht aller Folien, die erste mit einem Titelbild.'>
 
-Zieh das Tab aus dem Browser und ordne beide Fenster nebeneinander an, um deine Änderungen live in der Vorschau zu sehen:
+Zieh das Tab aus dem Browser und ordne beide Fenster nebeneinander an, dann siehst du jede Änderung sofort:
 
-<img class='full' src='side-by-side.webp' alt=''>
+<img class='full' src='side-by-side.webp' alt='Links VS Code mit index.html, rechts daneben die Vorschau der Präsentation.'>
 
 _task(adresse)
 
-## Präsentation schreiben
+## Folien schreiben
 
-Schau dir die Vorlage an und versuche, sie zu verstehen. Die Präsentation steht in der Datei `index.html`. Sie besteht aus einzelnen Folien, die du verändern, löschen oder ergänzen kannst.
+Für eine Präsentation brauchst du zwei Sprachen: **HTML** beschreibt den Inhalt (Überschriften, Texte, Listen, Bilder), **CSS** das Aussehen (Farben, Größen, Abstände). In der Vorlage stehen deine Folien in `index.html`, ihr Aussehen in `styles.css`.
 
-Für diese Präsentation verwendest du zwei Sprachen:
+_include(shower#folie)
 
-- **HTML** beschreibt den Inhalt: Überschriften, Texte, Listen, Bilder und Folien.
-- **CSS** beschreibt das Aussehen: Farben, Größen, Abstände und Positionen.
-
-In der Vorlage sind Inhalt und Aussehen getrennt:
-
-- Deine Folien stehen in der Datei `index.html`.
-- Deine eigenen Gestaltungsregeln schreibst du in die Datei `styles.css`.
-
-Öffne deshalb am besten zusätzlich die Datei `styles.css`.
-Am Ende der Datei findest du diesen Kommentar:
-
-```css
-/*
- * Eigene CSS-Regeln
- *
- * Hier kannst du das Aussehen deiner Folien verändern:
- * Farben, Größen, Abstände, Schatten und Positionen.
- *
- * Schreibe deine eigenen CSS-Regeln unter diese Zeile.
- */
-```
-
-Wenn im Handbuch CSS-Beispiele gezeigt werden, gehören sie normalerweise **unter diesen Kommentar in `styles.css`**.
-So bleibt `index.html` übersichtlich: Dort stehen die Folien, während `styles.css` für das Aussehen zuständig ist.
-
-Du kannst jetzt damit beginnen, die Vorlage an deine Bedürfnisse anzupassen und deine Präsentation zu schreiben.
-
-Speichere deine Änderungen mit <kbd>Strg</kbd><kbd>S</kbd>, um den Effekt im Vorschaufenster zu sehen, falls dein Workspace Änderungen nicht schon automatisch speichert. Das kannst du im Menü unter »File« / »Auto Save« einstellen.
+Schau dir die Folien der Vorlage an: Sie zeigen, was möglich ist. Ändere die erste Folie zu deiner Titelfolie, und lösche die Beispielfolien, sobald du sie nicht mehr brauchst.
 
 <div class='hint'>
-Wenn du die Datei <code>index.html</code> bearbeitest, musst du vorsichtig sein, weil die Syntax relativ wichtig ist. Schon eine fehlende spitze Klammer kann dazu führen, dass mehrere Folien auf einmal nicht mehr sichtbar sind. Gehe also behutsam vor und verwende zur Not <kbd>Strg</kbd><kbd>Z</kbd>, um Änderungen rückgängig zu machen. Wenn du dir unsicher bist, ob deine Änderungen funktionieren, speichere sie und schau dir das Ergebnis in der Vorschau an. Du kannst sie immer noch rückgängig machen.
+Speichere mit <kbd>Strg</kbd><kbd>S</kbd>, dann zeigt die Vorschau die Änderung. Unter »File« / »Auto Save« speichert VS Code von selbst.
 </div>
-
-Prüfe zwischendurch, wie weit du bist. Der Workspace liest dafür deine Dateien und sagt dir, was er findet.
 
 _task(titelfolie)
 
+_include(html#listen)
+
+_include(shower#gute-folien)
+
 _task(fuenf-folien)
 
-_task(eigene-regel)
+Mehr zum Text auf Folien: _uses(text, hervorheben, links)
 
-## Folien gestalten
+## Bilder
 
-Wie du Text, Listen, Formeln, Bilder, Farben, Schriften und Spalten auf deine Folien bekommst, steht im Handbuch unter [HTML-Folien gestalten](/reference/html-folien). Du musst nichts der Reihe nach lesen. Such dir die Stelle heraus, die zu deinem Problem passt:
-
-- [Grundlagen](/reference/html-folien#grundlagen): Aufbau einer Folie, Text, Listen, Hervorhebungen, Formeln
-- [Bilddateien](/reference/html-folien#bilddateien): Bilder in den Ordner `pictures` bekommen, Formate, Dateinamen, WebP
-- [Bilder auf Folien](/reference/html-folien#img): Pfade, Größe, Zuschnitt, Hintergrund, Text neben Bild
-- [Gestaltung](/reference/html-folien#gestaltung): Farben, Schriftgrößen, Seitenzahl, Platzierung, Spalten
+_include(html#bilddateien)
 
 _task(umbenennen)
 
 _task(eigenes-bild)
 
+_include(html#img)
+
 _task(bild-auf-folie)
+
+Bild neben Text, als Hintergrund, im Zuschnitt: _uses(vorlage, bildgroesse)
+
+## Gestalten
+
+_include(css#regeln)
+
+_task(eigene-regel)
+
+_include(css#wirkt-nicht)
+
+Was du sonst gestalten kannst: _uses(farben, schrift, abstaende, spalten, platzieren, seitenzahl, formeln)
 
 ## Präsentation halten
 
-Wenn du deine Präsentation halten möchtest, kannst du sie einfach im Browser öffnen und mit den Pfeiltasten navigieren. Du kannst auch die Maus benutzen, um durch die Präsentation zu scrollen.
-
-Der besondere Vorteil bei dieser Art von Präsentation ist, dass sie in jedem modernen Browser funktioniert und du keine spezielle Software brauchst. Du kannst einfach das ganze Verzeichnis auf einen Stick kopieren und deine Präsentation überall abspielen, wo es einen modernen Webbrowser gibt.
+_include(shower#praesentieren)
 
 _task(alles-im-ordner)
 
@@ -131,14 +118,14 @@ Du kannst deine Präsentation auch online stellen, zum Beispiel direkt in der Ha
 _task(abgabe)
 
 <script>
-// Die Abschnitte zum Gestalten stehen jetzt im Handbuch. Alte Links wie
+// Die Abschnitte zum Gestalten stehen im Handbuch. Alte Links wie
 // /showerjs#bilder-einfügen führen dorthin weiter, wenn es den Abschnitt
 // hier nicht mehr gibt.
 window.addEventListener('load', function () {
     setTimeout(function () {
         var id = decodeURIComponent(window.location.hash.slice(1));
         if (id && !document.getElementById(id)) {
-            window.location.replace('/reference/html-folien' + window.location.hash);
+            window.location.replace('/reference/html' + window.location.hash);
         }
     }, 300);
 });
