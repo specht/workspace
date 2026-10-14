@@ -1,5 +1,6 @@
 <div class='meta'>
 image: smalltalk-logo.png
+kind: steckbrief
 needs_contrast: light
 </div>
 

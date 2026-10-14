@@ -1,5 +1,6 @@
 <div class='meta'>
 image: lua-logo.png
+kind: steckbrief
 </div>
 
 <div

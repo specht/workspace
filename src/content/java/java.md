@@ -1,5 +1,6 @@
 <div class='meta'>
 image: Java-Logo.png
+kind: steckbrief
 </div>
 
 <div

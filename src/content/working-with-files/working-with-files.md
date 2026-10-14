@@ -1,5 +1,6 @@
 <div class='meta'>
 image: working-with-files.webp
+kind: grundlagen
 reference: [workspace, terminal]
 </div>
 

@@ -1,5 +1,6 @@
 <div class='meta'>
 image: rust-logo.png
+kind: steckbrief
 </div>
 
 <div

@@ -1,5 +1,6 @@
 <div class='meta'>
 image: hades.webp
+kind: labor
 </div>
 
 <div

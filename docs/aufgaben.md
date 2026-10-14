@@ -93,7 +93,7 @@ image: tcpip.webp
 
 | Feld | Bedeutung |
 | --- | --- |
-| `kind` | `projekt`, `labor`, `grundlagen`, `galerie`, `uebung` oder `reference`; steht als Etikett auf der Karte im Katalog |
+| `kind` | `projekt`, `labor`, `grundlagen`, `galerie`, `uebung`, `steckbrief` oder `reference`; steht als Etikett auf der Karte im Katalog |
 | `topic` | Schlüssel eines Abschnitts aus `sections.yaml`, für die Sortierung nach Thema |
 | `duration` | Freier Text, so wie er auf der Karte stehen soll |
 | `requires` | Aktivitäten, die vorher sinnvoll sind |

@@ -1,5 +1,6 @@
 <div class='meta'>
 image: title.webp
+kind: labor
 </div>
 
 <div

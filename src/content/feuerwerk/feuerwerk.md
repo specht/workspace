@@ -1,10 +1,11 @@
-# Feuerwerk aus Partikeln
-
 <div class='meta'>
 image: feuerwerk.webp
+kind: projekt
 template: https://github.com/specht/pixelram-starter.git
 template_name: des PixelRAM-Starters
 </div>
+
+# Feuerwerk aus Partikeln
 
 <div
     class="autotoc-secondary-trigger"

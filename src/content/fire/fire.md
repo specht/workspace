@@ -1,5 +1,6 @@
 <div class='meta'>
 image: fire.webp:73:0
+kind: projekt
 </div>
 
 <div

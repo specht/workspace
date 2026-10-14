@@ -1,5 +1,6 @@
 <div class='meta'>
 image: vs-code-welcome.webp:0:50
+kind: grundlagen
 </div>
 
 <style>

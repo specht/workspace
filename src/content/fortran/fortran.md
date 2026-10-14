@@ -1,5 +1,6 @@
 <div class='meta'>
 image: fortran-logo.png
+kind: steckbrief
 </div>
 
 <div

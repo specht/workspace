@@ -1,5 +1,6 @@
 <div class='meta'>
 image: ruby-logo.png
+kind: steckbrief
 </div>
 
 <div

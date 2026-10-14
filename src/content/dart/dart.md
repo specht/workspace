@@ -1,5 +1,6 @@
 <div class='meta'>
 image: dart-logo.png
+kind: steckbrief
 </div>
 
 <div

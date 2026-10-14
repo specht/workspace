@@ -1,5 +1,6 @@
 <div class='meta'>
 image: cobol-logo.png
+kind: steckbrief
 </div>
 
 <div

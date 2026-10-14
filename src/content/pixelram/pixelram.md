@@ -1,10 +1,11 @@
-# Echtzeitgrafik mit C
-
 <div class='meta'>
 image: interference.webp
+kind: projekt
 template: https://github.com/specht/pixelram-starter.git
 template_name: des PixelRAM-Starters
 </div>
+
+# Echtzeitgrafik mit C
 
 <div
     class="autotoc-secondary-trigger"

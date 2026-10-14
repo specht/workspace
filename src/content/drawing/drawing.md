@@ -1,5 +1,6 @@
 <div class='meta'>
 image: rainbow.webp
+kind: projekt
 </div>
 
 <div

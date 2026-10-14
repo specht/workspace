@@ -52,7 +52,7 @@ dem passenden Abschnitt:
 | Feld | Wofür |
 | --- | --- |
 | `image` | Bild für die Karte im Katalog, 16:9 |
-| `kind` | `projekt`, `labor`, `grundlagen`, `uebung` oder `galerie`; steht auf der Karte |
+| `kind` | `projekt`, `labor`, `grundlagen`, `uebung`, `galerie` oder `steckbrief` (Programmiersprachen); steht auf der Karte, jede Aktivität im Katalog braucht eines |
 | `duration` | Freier Text, zum Beispiel »2 Doppelstunden« |
 | `reference` | Handbuch-Seiten, die die Aktivität braucht; erscheinen oben auf der Seite |
 | `template` | Adresse einer Vorlage zum Klonen (`https://…`); im Text `${template}`. Der Workspace sagt Lernenden, wenn ihr Klon veraltet ist |

@@ -1,5 +1,6 @@
 <div class='meta'>
 image: basic-logo.png
+kind: steckbrief
 </div>
 
 <div

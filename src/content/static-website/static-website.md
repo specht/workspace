@@ -1,5 +1,6 @@
 <div class='meta'>
 image: html-css-logo.png
+kind: projekt
 </div>
 
 <div

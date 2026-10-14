@@ -1,5 +1,6 @@
 <div class='meta'>
 image: workspace.webp
+kind: grundlagen
 </div>
 
 # Was ist der Hackschule Workspace?

@@ -1,5 +1,6 @@
 <div class='meta'>
 image: tcpip.webp
+kind: labor
 </div>
 
 <div

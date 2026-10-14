@@ -1,5 +1,6 @@
 <div class='meta'>
 image: pascal-logo.png
+kind: steckbrief
 </div>
 
 <div

@@ -1,5 +1,6 @@
 <div class='meta'>
 image: svelte5.webp
+kind: projekt
 </div>
 
 <div

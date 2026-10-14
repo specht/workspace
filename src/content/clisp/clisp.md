@@ -1,5 +1,6 @@
 <div class='meta'>
 image: clisp-logo.png
+kind: steckbrief
 </div>
 
 <div

@@ -1,5 +1,6 @@
 <div class='meta'>
 image: go-logo.png
+kind: steckbrief
 </div>
 
 <div

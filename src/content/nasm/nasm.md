@@ -1,5 +1,6 @@
 <div class='meta'>
 image: nasm-logo.png
+kind: steckbrief
 </div>
 
 <div

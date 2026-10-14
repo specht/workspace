@@ -1,5 +1,6 @@
 <div class='meta'>
 image: latex-logo.png
+kind: grundlagen
 template: https://github.com/specht/latex-tutorial.git
 template_name: der LaTeX-Vorlage
 </div>

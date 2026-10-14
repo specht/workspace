@@ -13,6 +13,7 @@ module PageKinds
         'grundlagen' => 'Grundlagen',
         'galerie' => 'Galerie',
         'uebung' => 'Übung',
+        'steckbrief' => 'Steckbrief',
     }.freeze
     REFERENCE_PREFIX = 'reference/'
 

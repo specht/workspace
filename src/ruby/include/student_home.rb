@@ -1,5 +1,6 @@
 require 'cgi'
 require_relative 'icons'
+require_relative 'page_kinds'
 
 # The student's part of the start page (M5): activities a teacher pinned,
 # with progress built from the stored TaskStates. The catalog cards show no
@@ -80,14 +81,9 @@ module StudentHome
         io
     end
 
-    # Small label for a catalog card: its kind.
-    KIND_LABELS = {
-        'projekt' => 'Projekt', 'labor' => 'Labor', 'grundlagen' => 'Grundlagen',
-        'galerie' => 'Galerie', 'uebung' => 'Übung',
-    }.freeze
-
+    # Small label for a catalog card: its kind, as in the strip above the page.
     def self.card_badges(kind)
-        label = KIND_LABELS[kind.to_s]
+        label = PageKinds::KIND_LABELS[kind.to_s]
         label ? "<div class='card-badges'><span class='card-kind'>#{h(label)}</span></div>" : ''
     end
 end
