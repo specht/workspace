@@ -2,7 +2,10 @@
 // Workspace task for every student of the group and marks the live result
 // in the table, without changing the students' own results.
 (function () {
-    // Tabler icons from the bundled sprite (include/tabler/tabler.svg).
+    // Tabler icons from the bundled sprite (include/tabler/tabler.svg), at the
+    // versioned address the server put into the page's own icons.
+    const used = document.querySelector('use[href*="/include/tabler/tabler.svg"]');
+    const SPRITE = used ? used.getAttribute('href').split('#')[0] : '/include/tabler/tabler.svg';
     const ICONS = { correct: 'check', wrong: 'x', unavailable: 'help', invalid: 'help' };
 
     function icon(name) {
@@ -11,7 +14,7 @@
         svg.setAttribute('class', 'ti ti-' + name);
         svg.setAttribute('aria-hidden', 'true');
         const use = document.createElementNS(ns, 'use');
-        use.setAttribute('href', '/include/tabler/tabler.svg#' + name);
+        use.setAttribute('href', SPRITE + '#' + name);
         svg.appendChild(use);
         return svg;
     }

@@ -54,7 +54,7 @@ class ClassBoardTest < Minitest::Test
         assert_includes html, 'Eve &lt;script&gt;'
         refute_includes html, '<script>'
         assert_includes html, "class='cb-cell cb-wrong cb-stuck'"
-        assert_includes html, "<use href='/include/tabler/tabler.svg#x'/></svg><small>4</small>"
+        assert_includes html, "<use href='#{Icons::SPRITE}#x'/></svg><small>4</small>"
         assert_includes html, "aria-label='gelöst'"
         refute_match(/[✓✗●↻]/, html)
         assert_includes html, '1 hängen'
@@ -84,7 +84,7 @@ class ClassBoardTest < Minitest::Test
 
     def test_every_icon_is_in_the_bundled_sprite
         sprite = File.read(File.expand_path('../../static/include/tabler/tabler.svg', __dir__), encoding: 'UTF-8')
-        used = ClassBoard::SYMBOLS.values.map(&:first) + %w[help]
+        used = ClassBoard::SYMBOLS.values.map(&:first).reject { |id| id.start_with?('bi-') } + %w[help]
         script = File.read(File.expand_path('../../static/include/class_board.js', __dir__), encoding: 'UTF-8')
         used += script[/const ICONS = \{[^}]*\}/].scan(/: '([a-z-]+)'/).flatten
         used.uniq.each { |id| assert_includes sprite, "<symbol id=\"#{id}\"", id }

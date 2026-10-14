@@ -883,10 +883,10 @@ offen ist, steht in der Adresse (`?tab=`):
 
 Die Tabelle unter »Fortschritt« zeigt, wer welche Aufgabe gelöst hat:
 
-| Icon (Tabler) | Bedeutung |
+| Icon | Bedeutung |
 | --- | --- |
 | `check` | gelöst |
-| `send` | abgegeben oder Reflexion gespeichert |
+| Papierflieger (Bootstrap `send-fill`) | abgegeben oder Reflexion gespeichert |
 | `x` mit Zahl | noch nicht gelöst, nach so vielen Versuchen; rot hinterlegt ab 3 Versuchen (»hängt«) |
 | `refresh` | die Aufgabe hat sich geändert, die Antwort ist von vorher |
 | `minus` | noch nicht bearbeitet |

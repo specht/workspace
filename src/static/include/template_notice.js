@@ -30,7 +30,7 @@
         const box = document.createElement('div');
         box.className = 'template-notice';
         box.setAttribute('role', 'status');
-        const icon = '<svg class="ti ti-refresh" aria-hidden="true"><use href="/include/tabler/tabler.svg#refresh"></use></svg>';
+        const icon = '<svg class="ti ti-refresh" aria-hidden="true"><use href="' + tablerSprite() + '#refresh"></use></svg>';
         box.innerHTML = '<div class="template-notice-icon">' + icon + '</div><div class="template-notice-body"></div>';
         const body = box.querySelector('.template-notice-body');
         body.innerHTML = data.notice;
@@ -58,3 +58,10 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => ask(show));
     else ask(show);
 })();
+
+// The sprite's address with its version, from an icon the server rendered
+// (Icons::SPRITE); without one, the plain address.
+function tablerSprite() {
+    const used = document.querySelector('use[href*="/include/tabler/tabler.svg"]');
+    return used ? used.getAttribute('href').split('#')[0] : '/include/tabler/tabler.svg';
+}

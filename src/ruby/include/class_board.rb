@@ -58,10 +58,11 @@ module ClassBoard
         { :rows => rows, :own => own, :summary => summary, :tasks => tasks }
     end
 
-    # Tabler icon and meaning per status.
+    # Icon and meaning per status: Tabler, or Bootstrap (bi-…) for the
+    # folded paper plane that hand-ins have everywhere on the site.
     SYMBOLS = {
         'correct' => ['check', 'gelöst'],
-        'sent' => ['send', 'abgegeben'],
+        'sent' => ['bi-send-fill', 'abgegeben'],
         'wrong' => ['x', 'noch nicht gelöst'],
         'stale' => ['refresh', 'Aufgabe geändert, noch nicht neu geprüft'],
         'none' => ['minus', 'noch nicht bearbeitet'],
@@ -84,7 +85,7 @@ module ClassBoard
         io = +''
         r[:cells].each_with_index do |c, i|
             icon, label = SYMBOLS.fetch(c.status, SYMBOLS['none'])
-            symbol = Icons.tabler(icon, :label => label)
+            symbol = icon.start_with?('bi-') ? "<i class='bi #{icon}' role='img' aria-label='#{h(label)}'></i>" : Icons.tabler(icon, :label => label)
             klass = "cb-cell cb-#{c.status}#{c.stuck ? ' cb-stuck' : ''}"
             count = c.attempts.to_i > 1 && c.status == 'wrong' ? "<small>#{c.attempts}</small>" : ''
             io << "<td class='#{klass}' data-task='#{h(activity)}/#{h(tasks[i][:id])}' title='#{h(cell_title(c))}'>#{symbol}#{count}</td>"
