@@ -307,8 +307,7 @@ html[data-bs-theme="dark"] {
         color: #adb5bd;
     }
     .card-kind {
-        background-color: rgba(21, 21, 20, 0.88);
-        color: #e7e6e1;
+        color: #9aa3ab;
     }
     .task-feedback pre,
     .template-notice-body pre {
