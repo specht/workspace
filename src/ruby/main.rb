@@ -3918,9 +3918,22 @@ class Main < Sinatra::Base
         # Text that only stands in for the cards (an exercise list) is hidden
         # while the cards are shown.
         previews = tasks[:on_page].any? { |id| (tasks[:by_id][id] || {}).dig('check', 'preview') == 'anaglyph' }
+        # SQL and Cypher answers in the colours of the code blocks, with the
+        # keyword lists of the same lexers (code_input.js).
+        code = tasks[:on_page].any? { |id| %w[sql cypher].include?((tasks[:by_id][id] || {}).dig('check', 'type')) }
+        code_input = if code
+            keywords = {
+                :sql => Rouge::Lexers::SQL.keywords.to_a,
+                :sqlTypes => Rouge::Lexers::SQL.keywords_type.to_a,
+                :cypher => Rouge::Lexers::WorkspaceCypher::KEYWORDS,
+            }
+            "<script>window.CODE_INPUT_KEYWORDS = #{keywords.to_json};</script>" \
+                "<script src='/include/code_input.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
+        end
         "<style>.tasks-off-only { display: none; }</style>" \
             "<script>window.TASK_PAGE = #{config.to_json};</script>" \
             "#{previews ? "<script src='/include/anaglyph_preview.js?#{CACHE_BUSTER}'></script>" : ''}" \
+            "#{code_input}" \
             "<script src='/include/tasks.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
     end
 

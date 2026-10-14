@@ -200,6 +200,7 @@
         }
         const input = card.querySelector('.task-input');
         if (input) input.value = answer || '';
+        if (input && input.codeInputUpdate) input.codeInputUpdate();
     }
 
     // message and solution are HTML rendered on the server from the task
@@ -480,6 +481,7 @@
             });
             // SQL: Enter makes a new line, Ctrl+Enter (Cmd+Enter) checks.
             const sql = card.querySelector('.task-sql');
+            if (sql && window.CodeInput) CodeInput.attach(sql);
             if (sql) sql.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
                     e.preventDefault();

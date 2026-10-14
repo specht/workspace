@@ -3554,6 +3554,69 @@ h3[id] {
     min-height: 6em;
 }
 
+/* SQL and Cypher answers in the colours of the code blocks (code_input.js):
+   the <pre> underneath draws the text, the textarea on top only holds the
+   caret and the selection. Both must set text exactly alike. */
+.code-input {
+    position: relative;
+}
+
+.code-input-view,
+.code-input .code-input-text {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 90%;
+    font-weight: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid transparent;
+    border-radius: 0.5em;
+    tab-size: 4;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: normal;
+}
+
+.code-input-view {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.code-input .code-input-text {
+    position: relative;
+    display: block;
+    background: transparent;
+    color: transparent;
+    caret-color: #fbf1c7;
+    border-color: rgba(251, 241, 199, 0.25);
+    resize: none;
+    overflow: hidden;
+}
+
+.code-input .code-input-text:focus {
+    border-color: #86b7fe;
+}
+
+.code-input .code-input-text::placeholder {
+    color: rgba(251, 241, 199, 0.45);
+}
+
+.code-input .code-input-text::selection {
+    color: transparent;
+    background: rgba(131, 165, 152, 0.5);
+}
+
+.code-input .code-input-text:disabled {
+    background: transparent;
+}
+
+.code-input:has(.code-input-text:disabled) {
+    opacity: 0.65;
+}
+
 /* SQL check: the student's result as a small table, in view. */
 .task-result {
     margin-top: 0.6em;

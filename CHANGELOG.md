@@ -508,6 +508,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Ein Handbuch-Kasten in einer Aktivität erscheint nicht mehr im
   Inhaltsverzeichnis der Seite; seine Zwischenüberschriften stehen immer
   eine Stufe unter dem Abschnitt, egal wie tief der Teil im Handbuch sitzt.
+- SQL- und Cypher-Aufgaben: Das Antwortfeld färbt die Abfrage beim Tippen
+  wie die Code-Blöcke der Seite (dieselben Farben, dieselben Schlüsselwörter
+  wie Rouge; bei Cypher Labels, Beziehungstypen und Eigenschaften wie in
+  den Beispielen). Ein fehlendes Anführungszeichen fällt sofort auf. Das
+  Feld wächst mit der Abfrage.
 
 - Behoben: »Git kennt dich« schlug fehl, obwohl `git config --global` Name
   und E-Mail kannte. Die Prüfung lief mit dem `HOME` des Images (`/config`)
