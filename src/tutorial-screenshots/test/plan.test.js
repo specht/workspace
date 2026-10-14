@@ -7,6 +7,7 @@ import test from 'node:test';
 
 import {
     chainStateHashes,
+    checkGitGraphForTarget,
     checkRecordForTarget,
     entryIsCurrent,
     findRecipeTarget,
@@ -34,6 +35,20 @@ test('the target is the next img, video or source before the next recipe', () =>
     assert.equal(findRecipeTarget('\n<video controls>\n<source src="video/train.webm" type="video/webm">').src, 'video/train.webm');
     assert.equal(findRecipeTarget("\n<!-- tutorial-screenshot\nx\n-->\n<img src='b.webp'>"), null);
     assert.equal(findRecipeTarget('\nnothing here'), null);
+});
+
+test('an _include_svg is a target too, whichever comes first', () => {
+    assert.equal(findRecipeTarget('\n_include_svg(graph3.svg)\n').src, 'graph3.svg');
+    assert.equal(findRecipeTarget("\n_include_svg(graph3.svg)\n<img src='a.webp'>").src, 'graph3.svg');
+    assert.equal(findRecipeTarget("\n<img src='a.webp'>\n_include_svg(graph3.svg)").src, 'a.webp');
+    assert.equal(findRecipeTarget('\n<!-- tutorial-screenshot\nx\n-->\n_include_svg(g.svg)'), null);
+});
+
+test('git-graph: and SVG targets belong together', () => {
+    assert.doesNotThrow(() => checkGitGraphForTarget('graph3.svg', 'git-tutorial/alice'));
+    assert.doesNotThrow(() => checkGitGraphForTarget('a.webp', undefined));
+    assert.throws(() => checkGitGraphForTarget('graph3.svg', undefined), /needs git-graph/);
+    assert.throws(() => checkGitGraphForTarget('a.webp', 'git-tutorial/alice'), /_include_svg/);
 });
 
 test('record and fps are checked, and only videos record', () => {

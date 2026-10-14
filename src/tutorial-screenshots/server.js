@@ -17,6 +17,7 @@ import {
 import { resetScreenshotDatabases } from './workspace-reset.js';
 import {
     chainStateHashes,
+    checkGitGraphForTarget,
     checkRecordForTarget,
     entryIsCurrent,
     findRecipeTarget,
@@ -27,6 +28,7 @@ import {
     videoEncodeArgs,
 } from './plan.js';
 import { chromium } from 'playwright';
+import { gitGraphSvg } from './git-graph.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -636,6 +638,8 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             );
         } else if (line === 'show-mouse') {
             recipe.showMouse = true;
+        } else if ((match = line.match(/^git-graph:\s*(.+)$/))) {
+            recipe.gitGraph = valueAtSource(source, () => safeRelativePath(match[1].trim()));
         } else if ((match = line.match(/^record:\s*(.+)$/))) {
             recipe.record = valueAtSource(source, () => parseRecordSeconds(match[1]));
         } else if ((match = line.match(/^fps:\s*(.+)$/))) {
@@ -661,6 +665,12 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
         }
     }
 
+    if (recipe.gitGraph && (recipe.record != null || recipe.showMouse || recipe.cropTerminalLines != null)) {
+        throw withSourceError(
+            new Error('git-graph draws an SVG: no record, show-mouse or crops'),
+            lastSource || recipe[SOURCE_LOCATION],
+        );
+    }
     if (recipe.showMouse && recipe.record != null) {
         throw withSourceError(new Error('show-mouse works for images, not with record'), lastSource || recipe[SOURCE_LOCATION]);
     }
@@ -767,6 +777,7 @@ async function parseTutorial(markdown, markdownPath) {
                 throw new Error(`Generated screenshot must use a relative tutorial image path: ${target}`);
             }
             checkRecordForTarget(target, recipe.record);
+            checkGitGraphForTarget(target, recipe.gitGraph);
         } catch (error) {
             throw withSourceError(error, targetSource);
         }
@@ -814,6 +825,10 @@ async function parseTutorial(markdown, markdownPath) {
         }
         if (recipe.showMouse) {
             resolved.showMouse = true;
+        }
+        // Only graphs carry this, so images hash exactly as before.
+        if (recipe.gitGraph) {
+            resolved.gitGraph = recipe.gitGraph;
         }
         // Only videos carry these, so images hash exactly as before.
         if (recipe.record != null) {
@@ -1274,7 +1289,10 @@ async function waitForTerminalPrompt() {
                 .map(row => (row.textContent || '').replace(/\s+/g, ' ').trim())
                 .filter(Boolean);
             const lastLine = lines.at(-1) || '';
-            return lastLine.includes(`${user}@workspace`) && /[#$]$/.test(lastLine);
+            // Bash, or the second line of bash-git-prompt (Git tutorial,
+            // »Etwas Luxus im Terminal«): »19:09 $«.
+            return (lastLine.includes(`${user}@workspace`) && /[#$]$/.test(lastLine)) ||
+                /^\d{1,2}:\d{2} [#$]$/.test(lastLine);
         },
         SCREENSHOT_WORKSPACE_USER,
         { timeout: 60_000 },
@@ -2827,6 +2845,24 @@ async function captureVideo(shot, tutorialDirectory, hooks) {
     return sha256(await fs.readFile(target));
 }
 
+// git-graph: PATH draws the object graph of the screenshot Workspace's
+// repository at PATH (below /workspace) as it is at this point of the
+// recipe chain. Reads only (git-graph.js).
+async function captureGitGraph(shot, tutorialDirectory) {
+    const root = path.resolve(USER_ROOT, fsTagForEmail(SCREENSHOT_EMAIL), 'workspace');
+    const repo = path.resolve(root, shot.gitGraph);
+    if (!repo.startsWith(`${root}${path.sep}`)) {
+        throw new Error(`git-graph path escaped the Workspace: ${shot.gitGraph}`);
+    }
+    const svg = gitGraphSvg(repo);
+    const target = path.join(tutorialDirectory, shot.target);
+    const temporary = `${target}.tmp-${process.pid}`;
+    await fs.writeFile(temporary, svg, { mode: 0o644 });
+    await fs.rename(temporary, target);
+    await inheritDirectoryOwnership(target, tutorialDirectory);
+    return sha256(svg);
+}
+
 function screenshotOutputDimensions(shot) {
     const topPixels = Math.round(shot.viewport.height * shot.cropTop);
     const bottomPixels = Math.round(shot.viewport.height * shot.cropBottom);
@@ -3174,9 +3210,11 @@ async function generateTutorial(payload, progressJob = null) {
             console.log(`  line ${targetSource?.line ?? '?'}: capture ${shot.target}`);
             let outputSha256;
             try {
-                outputSha256 = shot.record != null
-                    ? await captureVideo(shot, tutorialDirectory, tutorialHooks)
-                    : await captureShot(shot, tutorialDirectory);
+                outputSha256 = shot.gitGraph
+                    ? await captureGitGraph(shot, tutorialDirectory)
+                    : shot.record != null
+                        ? await captureVideo(shot, tutorialDirectory, tutorialHooks)
+                        : await captureShot(shot, tutorialDirectory);
             } catch (error) {
                 throw withSourceError(error, targetSource);
             }

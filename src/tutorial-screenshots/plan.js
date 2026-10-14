@@ -16,13 +16,29 @@ export function isVideoTarget(target) {
 }
 
 // The file a recipe produces: the src of the first <img>, <video> or
-// <source> after the recipe comment, before the next recipe.
+// <source> after the recipe comment, or the SVG of an _include_svg(NAME.svg)
+// (a git-graph: target), before the next recipe.
 // Returns { src, index } or null.
 export function findRecipeTarget(afterComment) {
     const nextRecipe = afterComment.search(/<!--\s*tutorial-screenshot\b/);
-    const match = /<(?:img|video|source)\b[^>]*\bsrc=['"]([^'"]+)['"][^>]*>/i.exec(afterComment);
+    const candidates = [
+        /<(?:img|video|source)\b[^>]*\bsrc=['"]([^'"]+)['"][^>]*>/i.exec(afterComment),
+        /_include_svg\(\s*([^),\s]+)/.exec(afterComment),
+    ].filter(Boolean);
+    const match = candidates.sort((a, b) => a.index - b.index)[0];
     if (!match || (nextRecipe >= 0 && match.index > nextRecipe)) return null;
     return { src: match[1], index: match.index };
+}
+
+// git-graph: draws an SVG, and an SVG target can only come from git-graph:.
+export function checkGitGraphForTarget(target, gitGraph) {
+    const svg = `${target}`.toLowerCase().endsWith('.svg');
+    if (svg && !gitGraph) {
+        throw new Error(`${target} is an SVG: the recipe needs git-graph: PATH`);
+    }
+    if (!svg && gitGraph) {
+        throw new Error(`git-graph: needs an _include_svg(NAME.svg) target, not ${target}`);
+    }
 }
 
 // record: 8s / record: 2.5s

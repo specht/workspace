@@ -170,6 +170,7 @@ wait-for-input-value: TEXT
 
 # Screenshot target and capture
 tab: workspace|preview
+git-graph: PATH           (only before an _include_svg(NAME.svg))
 record: SECONDSs          (only before a <video>)
 fps: NUMBER               (with record; default 30)
 viewport: WIDTHxHEIGHT
@@ -483,6 +484,35 @@ than a global screenshot setting.
 `sleep` pauses recipe execution for the given number of seconds (fractions are
 allowed, up to 300 seconds). Prefer an observable readiness instruction such as
 `wait-for-text`, `wait-for-input-value`, or `wait-for-file` whenever one exists.
+
+## Git object graphs
+
+A recipe before `_include_svg(NAME.svg)` produces that SVG instead of a
+screenshot. Its only capture instruction is `git-graph: PATH`, a repository
+below the screenshot Workspace's `/workspace`; the actions before it bring the
+repository into the state the graph shows:
+
+```text
+<!-- tutorial-screenshot
+terminal-run: git commit -m "initial commit"
+terminal-wait-for-prompt
+git-graph: git-tutorial/alice
+-->
+
+_include_svg(graph0.svg)
+```
+
+`git-graph.js` reads the repository with `git cat-file`, `rev-parse`,
+`show-ref` and `symbolic-ref` only, and Graphviz draws it: every commit, tree
+and blob reachable from HEAD, the branches and the tags, one column per type.
+What HEAD stands for (its commit, tree and blobs) is in full colour, older
+history faded, author details hidden. Commits get new ids on every render
+(their dates change); blobs and trees keep theirs, so the text may name them
+(»Hello, world!« is always `af5626b`). The graphs and the screenshots around
+them come from the same repository, so their ids agree with each other.
+
+`terminal-wait-for-prompt` also accepts the second line of bash-git-prompt
+(`19:09 $`), which the Git tutorial installs halfway through.
 
 ## Videos
 

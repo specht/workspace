@@ -5,6 +5,7 @@ RUN apt-get update \
         webp \
         ffmpeg \
         git \
+        graphviz \
         fonts-ibm-plex \
         fonts-noto-core \
     && rm -rf /var/lib/apt/lists/*
@@ -15,6 +16,7 @@ RUN npm ci --omit=dev
 COPY server.js ./server.js
 COPY crop.js ./crop.js
 COPY plan.js ./plan.js
+COPY git-graph.js ./git-graph.js
 COPY workspace-reset.js ./workspace-reset.js
 COPY fontconfig-rendering.conf /etc/fonts/conf.d/99-tutorial-screenshot-rendering.conf
 
