@@ -867,6 +867,13 @@ class Main < Sinatra::Base
                     try_files $uri @ruby;
                 }
 
+                # nginx knows no type for .webmanifest.
+                location = /site.webmanifest {
+                    root /usr/share/nginx/html;
+                    types { }
+                    default_type application/manifest+json;
+                }
+
                 location @ruby {
                     include /etc/nginx/snippets/proxy_ws.conf;
                     proxy_pass http://ruby:9292;
