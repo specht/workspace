@@ -443,11 +443,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   wenn der Workspace aus ist: in einem Lese-Container mit demselben Image,
   ohne Netz, der Ordner nur lesbar. Bisher hieß es dann »Starte zuerst
   deinen Workspace«, auch auf der Klassenseite.
-- Zurück zur Startseite, ohne zu scrollen: In der Leiste, die oben
-  erscheint, sobald die Kopfzeile aus dem Bild ist, steht links ein Haus.
-  Die Leiste gibt es jetzt auf jeder langen Seite (nicht auf der
-  Handbuch-Übersicht); Seiten ohne Kapitel zeigen dort
-  ihren Titel. Solange sie verborgen ist, springt Tab nicht hinein.
+- Die Leiste mit den Kapiteln, die oben erscheint, sobald die Kopfzeile aus
+  dem Bild ist, hat links »Nach oben« (Chevron): zurück zur Kopfzeile mit
+  dem Weg zur Startseite und dem ganzen Menü. Die Linien unter den Kapiteln
+  gehören jetzt zu ihren Einträgen und bleiben auch beim seitlichen Scrollen
+  darunter; am Rand blendet die Leiste weich aus. Solange sie verborgen ist,
+  springt Tab nicht hinein.
 - Klassenseite: »Zurück« im Browser schließt die Anmelde-Codes und den
   Abgabe-Viewer, statt die Seite zu verlassen. »Vorlage aktuell?« steht auf
   einer Linie mit »Jetzt nachsehen«.

@@ -314,24 +314,15 @@ function install_autotoc() {
 
     // Every page gets the bar once its header has scrolled away: the way
     // back to the start page, and the chapters or else the page's title.
-    // Not on the start page itself: there is nowhere to go back to. The
-    // Handbuch overview has its own search and cards; a bar would only
-    // repeat its title.
-    if (window.location.pathname === '/') {
-        autotoc.find('.autotoc-home').remove();
-        if (!got_autotoc) return;
-    }
-    if (window.location.pathname === '/reference' && !got_autotoc) return;
-    if (!got_autotoc) {
-        const h1 = document.querySelector('.container h1, h1');
-        autotoc.addClass('autotoc-no-items');
-        autotoc.find('.autotoc-title').text(h1 ? h1.textContent.trim() : document.title);
-    }
-    if (autotoc.length) {
+    if (got_autotoc) {
         window.addEventListener('scroll', function(e) {
             fix_autotoc();
         });
         fix_autotoc();
+        // Up to the header, with the way home and the whole menu.
+        autotoc.find('.autotoc-up').on('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     }
     let observer = new IntersectionObserver((entries, observer) => {
         let found_entry = false;
@@ -346,9 +337,6 @@ function install_autotoc() {
                 found_entry = true;
                 let container = $(item).parent()[0];
                 container.scrollTo({ left: item.offsetLeft - (container.offsetWidth / 2) + (item.offsetWidth / 2), behavior: 'smooth' });
-                $('.progress_spots_lg')[0].scrollTo({ left: item.offsetLeft - (container.offsetWidth / 2) + (item.offsetWidth / 2), behavior: 'smooth' });
-                $('.progress_spots_lg').find('div').removeClass('active');
-                $('.progress_spots_lg').find('div').eq(i).addClass('active');
                 $('.autotoc .progress_sm').css('left', `${100.0 * i / autotoc_containers.length}%`);
                 $(item).addClass('active');
             }
@@ -371,8 +359,6 @@ function install_autotoc() {
         let spot_sm = $('<div>');
         spot_sm.css('width', `${100.0 / containers.length}%`);
         spot_sm.appendTo($('.autotoc > .progress_spots_sm'));
-        let spot_lg = $('<div>');
-        spot_lg.appendTo($('.autotoc > .progress_spots_lg'));
     }
     $('.autotoc .progress_sm').css('width', `calc(${100.0 / autotoc_containers.length}% - 0.3em)`);
 }
@@ -982,11 +968,9 @@ window.addEventListener('load', function() {
     #{CONTENT}
 
     <nav class="autotoc hidden" aria-label="Seitennavigation" inert>
-        <a class="autotoc-home" href="/" aria-label="Startseite" title="Startseite"><i class='bi bi-house' aria-hidden='true'></i></a>
-        <div class="autotoc-title"></div>
+        <button type="button" class="autotoc-up" aria-label="Nach oben" title="Nach oben"><i class='bi bi-chevron-up' aria-hidden='true'></i></button>
         <div class="items"></div>
         <div class="progress_spots_sm"></div>
-        <div class="progress_spots_lg"></div>
         <div class="progress_sm"></div>
     </nav>
 

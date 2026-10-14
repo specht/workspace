@@ -1,26 +1,31 @@
 import { expect, test } from './fixtures';
+import type { Page } from '@playwright/test';
 import { loginAsE2eUser } from './workspace';
 
-// On a long page the way back to the start page is in the bar that appears
-// once the header has scrolled away; while hidden, the bar is out of the Tab
-// order.
-test('the bar at the top leads back to the start page', async ({ page, e2eEmail }, testInfo) => {
+// Pages with chapters show a bar once the header has scrolled away: the
+// chapters, and on its left edge »Nach oben«, back to the header with the
+// way home and the whole menu. While hidden, the bar is out of the Tab
+// order. Pages without chapters (the Handbuch overview) have no bar.
+
+async function scrollDown(page: Page) {
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight * 0.6));
+  await page.waitForTimeout(500);
+}
+
+test('pages with chapters have a bar with »Nach oben«', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
-  for (const path of ['/feuerwerk', '/reference/farben']) {
+  for (const path of ['/', '/feuerwerk', '/reference/farben']) {
     await page.goto(path);
     const bar = page.locator('nav.autotoc');
     await expect(bar).toHaveJSProperty('inert', true);
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight * 0.6));
+    await scrollDown(page);
     await expect(bar).not.toHaveClass(/hidden/);
     await expect(bar).toHaveJSProperty('inert', false);
-    await bar.getByRole('link', { name: 'Startseite' }).click();
-    await page.waitForURL((url) => url.pathname === '/');
+    await bar.getByRole('button', { name: 'Nach oben' }).click();
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   }
-  // Not on the start page itself.
-  await expect(page.locator('nav.autotoc .autotoc-home')).toHaveCount(0);
-  // No bar on the Handbuch overview.
+
   await page.goto('/reference');
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-  await page.waitForTimeout(500);
+  await scrollDown(page);
   await expect(page.locator('nav.autotoc')).toHaveClass(/hidden/);
 });

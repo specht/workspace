@@ -1217,63 +1217,56 @@ div.floatright > p {
     transform: translateY(calc(-100% - 1em));
 }
 
-/* The way back to the start page: a quiet house on the left edge of the
-   bar, like the icons in the menu. */
-.autotoc-home {
-    /* the same top padding and line as the chapter labels, so the house
-       sits on their line */
-    position: absolute;
-    z-index: 1;
-    top: 0;
-    left: 0;
+/* The bar is three columns: »Nach oben«, the chapters (they scroll only
+   within theirs, never under the chevron), and an empty column as wide as
+   the first, so the chapters stay centred. */
+.autotoc {
+    display: flex;
+    align-items: flex-start;
+}
+
+.autotoc::after {
+    content: '';
+    flex: 0 0 3.2em;
+}
+
+/* »Nach oben«: a quiet chevron, on the line of the chapter labels (same
+   padding and line), like the icons in the menu. */
+.autotoc-up {
+    flex: 0 0 3.2em;
     display: block;
-    padding: 1em 1.1em 0;
+    padding: 1em 0 0;
+    border: 0;
     color: #6c757d;
-    text-decoration: none;
+    background: none;
+    font: inherit;
+    line-height: inherit;
+    text-align: center;
+    cursor: pointer;
 }
 
-.autotoc-home:hover,
-.autotoc-home:focus-visible {
+.autotoc-up:hover,
+.autotoc-up:focus-visible {
     color: #212529;
-    text-decoration: none;
 }
 
-.autotoc-home .bi {
+.autotoc-up .bi {
     margin: 0;
 }
 
-/* Pages without chapters: the page's title instead. */
-.autotoc-title {
-    display: none;
-    padding: 1em 3.2em 1.5em;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    text-align: center;
-    font-weight: bold;
-}
-
-.autotoc.autotoc-no-items .autotoc-title {
-    display: block;
-}
-
-.autotoc.autotoc-no-items > .items,
-.autotoc.autotoc-no-items > .progress_spots_lg,
-.autotoc.autotoc-no-items > .progress_spots_sm,
-.autotoc.autotoc-no-items > .progress_sm {
-    display: none !important;
-}
-
 @media (max-width: 768px) {
-    .autotoc-home {
+    .autotoc-up {
         pointer-events: auto;
     }
 }
 
 .autotoc > .items {
-    /* the same on both sides, so the chapters stay centred */
-    padding: 0 3.2em;
+    flex: 1 1 auto;
+    min-width: 0;
     overflow-x: auto;
+    /* fade at the edges: there is more to scroll */
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 1.5em, #000 calc(100% - 1.5em), transparent);
+    mask-image: linear-gradient(to right, transparent, #000 1.5em, #000 calc(100% - 1.5em), transparent);
     white-space: nowrap;
     text-align: center;
     scroll-snap-type: x mandatory;
@@ -1281,8 +1274,7 @@ div.floatright > p {
     scrollbar-width: none;
 }
 
-.autotoc > .items::-webkit-scrollbar,
-.autotoc > .progress_spots_lg::-webkit-scrollbar {
+.autotoc > .items::-webkit-scrollbar {
     display: none;
 }
 
@@ -1310,6 +1302,24 @@ div.floatright > p {
 .autotoc > .items > button.active {
     position: relative;
     font-weight: bold;
+}
+
+/* The line under each chapter belongs to its label, so they scroll
+   together and can never come apart. */
+.autotoc > .items > button::after {
+    content: '';
+    position: absolute;
+    left: 0.15em;
+    right: 0.15em;
+    bottom: 0;
+    height: 0.2em;
+    border-radius: 1em;
+    background-color: rgba(0, 0, 0, 0.15);
+    transition: background-color 0.1s ease-out;
+}
+
+.autotoc > .items > button.active::after {
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .autotoc > .progress_sm {
@@ -1340,8 +1350,7 @@ div.floatright > p {
     pointer-events: none;
 }
 
-.autotoc > .progress_spots_sm > div,
-.autotoc > .progress_spots_lg > div {
+.autotoc > .progress_spots_sm > div {
     display: inline-block;
     height: 0.2em;
     margin: 0 0.15em;
@@ -1352,31 +1361,6 @@ div.floatright > p {
 
 .autotoc > .progress_spots_sm > div {
     width: 20em;
-}
-
-.autotoc > .progress_spots_lg {
-    display: block;
-    position: relative;
-    top: -2em;
-
-    overflow-x: auto;
-    margin-bottom: -2.2em;
-
-    white-space: nowrap;
-    text-align: center;
-    scroll-snap-type: x mandatory;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    pointer-events: none;
-}
-
-.autotoc > .progress_spots_lg > div {
-    width: calc(20em - 0.3em);
-    transition: background-color 0.1s ease-out;
-}
-
-.autotoc > .progress_spots_lg > div.active {
-    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .autotoc-container {
@@ -1390,7 +1374,7 @@ div.floatright > p {
     }
 
     .autotoc > .items {
-        padding: 1em 3em 0.6em;
+        padding: 1em 0 0.6em;
     }
 
     .autotoc > .items > button {
@@ -1411,7 +1395,7 @@ div.floatright > p {
         display: block;
     }
 
-    .autotoc > .progress_spots_lg {
+    .autotoc > .items > button::after {
         display: none;
     }
 
