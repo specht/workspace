@@ -757,6 +757,17 @@ RUN command -v emcc \
     && test -f /opt/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libraylib.a \
     && test -f /opt/emsdk/upstream/emscripten/cache/sysroot/include/raylib.h
 
+# emcc runs »clang --version« on every link. That clang looks for a GCC
+# installation, finds the GCC 14 runtime libraries next to the system GCC 13
+# and warns about it each time, which beginners read as an error in their
+# program. A config file next to the drivers names the system GCC.
+RUN dir="/usr/lib/gcc/x86_64-linux-gnu/$(gcc -dumpversion | cut -d. -f1)" \
+    && test -d "$dir" \
+    && for driver in clang clang++; do \
+        echo "--gcc-install-dir=$dir" > "/opt/emsdk/upstream/bin/$driver.cfg"; \
+    done \
+    && ! /opt/emsdk/upstream/bin/clang --version 2>&1 | grep -q warning
+
 # --------------------------------------------------------------------
 # Ruby
 # --------------------------------------------------------------------
