@@ -549,6 +549,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   nach Namen sortiert. Ein Rendern in anderer Reihenfolge ändert die Datei
   nicht mehr.
 
+- Profil, MySQL: Jede Datenbank ist eine Karte mit Name, Art, Tabellen,
+  Einträgen und Größe, ihrem Knopf zum Zurücksetzen oder Löschen und ihren
+  Zugangsdaten. Unter den Karten steht, wie viele weitere Datenbanken noch
+  möglich sind. Auf dem Handy bleiben Feld und Knöpfe in einer Zeile (die
+  Knöpfe als Symbole). Der Hinweis nennt die richtige Variable
+  `MYSQL_DATABASE` statt `MYSQL_DB`.
 - Jede weitere MySQL-Datenbank aus dem Profil hat einen eigenen Zugang
   (Benutzername wie die Datenbank), der nur diese Datenbank erreicht. Das
   Profil zeigt ihn unter der Datenbank, mit Knöpfen zum Kopieren. Gedacht

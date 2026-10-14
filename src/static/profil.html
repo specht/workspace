@@ -100,6 +100,76 @@
         text-align: right;
     }
 
+    /* MySQL: one card per database */
+    .profile-db-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin: 1rem 0;
+    }
+
+    .profile-db {
+        padding: 1rem 1.1rem 1.1rem;
+        border: 1px solid var(--bs-border-color);
+        border-radius: var(--bs-border-radius-lg);
+        background: var(--bs-body-bg);
+    }
+
+    .profile-db-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.4rem 1rem;
+    }
+
+    .profile-db-head h4 {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0;
+        font-size: 1.05rem;
+    }
+
+    .profile-db-head .badge {
+        font-weight: 500;
+    }
+
+    .profile-db-stats {
+        color: var(--bs-secondary-color);
+        font-size: 0.9rem;
+    }
+
+    .profile-db-delete {
+        margin-left: auto;
+    }
+
+    .profile-db .profile-credential-grid {
+        margin-top: 0.9rem;
+    }
+
+    .profile-db .profile-credentials {
+        margin: 0;
+    }
+
+    .profile-db-note {
+        margin: 0.9rem 0 0;
+        color: var(--bs-secondary-color);
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .profile-db .profile-credentials .profile-credential-grid {
+        margin-top: 0.5rem;
+    }
+
+    .profile-db-add {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem 1rem;
+    }
+
     @media (max-width: 767.98px) {
         .profile-credential-grid {
             grid-template-columns: minmax(0, 1fr);
@@ -117,22 +187,29 @@
             width: 100%;
         }
 
-        .profile-share-link .input-group,
-        .profile-credential .input-group {
+        .profile-share-link .input-group {
             flex-wrap: wrap;
         }
 
-        .profile-share-link .form-control,
-        .profile-credential .form-control {
+        .profile-share-link .form-control {
             flex-basis: 100%;
             width: 100%;
             border-radius: var(--bs-border-radius) !important;
         }
 
-        .profile-share-link .btn,
-        .profile-credential .btn {
+        .profile-share-link .btn {
             margin-top: 0.35rem;
             border-radius: var(--bs-border-radius) !important;
+        }
+
+        /* Access data: field and buttons stay on one line, buttons as icons
+           (their aria-label says what they do). */
+        .profile-credential .btn .btn-text {
+            display: none;
+        }
+
+        .profile-db-delete {
+            margin-left: 0;
         }
 
         .profile-share-link .btn {
@@ -233,65 +310,58 @@
                         <div class="btn-module-control">#{print_module_button(:phpmyadmin)}</div>
                     </div>
                     <p>
-                        Du hast eine MySQL-Datenbank, die du im Workspace verwenden kannst. Du kannst Tabellen erstellen, Daten einfügen, abfragen und löschen.
+                        Im Workspace öffnet <code>mycli</code> deine Datenbank. Programme finden deinen Zugang in den Umgebungsvariablen <code>MYSQL_HOST</code>, <code>MYSQL_USER</code>, <code>MYSQL_PASSWORD</code> und <code>MYSQL_DATABASE</code>, so steht kein Passwort im Quellcode.
                     </p>
-                    <div class="profile-credentials">
-                        <h4>MySQL-Zugangsdaten</h4>
-                        <div class="profile-credential-grid">
-                            <div class="profile-credential">
-                                <label for="mysql_host">Host</label>
-                                <div class="input-group">
-                                    <input id="mysql_host" type="text" class="form-control" readonly value="mysql">
-                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Host in die Zwischenablage kopieren' aria-label='MySQL-Host kopieren' data-clipboard-text='mysql'><i class='bi bi-copy'></i>Kopieren</button>
+                    <div class="profile-db-list" id="mysql_database_list">
+                        <article class="profile-db" data-database="#{@session_user[:db_login]}">
+                            <div class="profile-db-head">
+                                <h4><code>#{@session_user[:db_login]}</code><span class="badge text-bg-primary">Deine Datenbank</span></h4>
+                                <span class="profile-db-stats" aria-live="polite"></span>
+                                <button type="button" class="btn btn-sm btn-outline-danger profile-db-delete"><i class='bi bi-arrow-counterclockwise'></i>Zurücksetzen</button>
+                            </div>
+                            <div class="profile-credentials">
+                            <h5 class="profile-db-note">MySQL-Zugangsdaten</h5>
+                            <div class="profile-credential-grid">
+                                <div class="profile-credential">
+                                    <label for="mysql_host">Host</label>
+                                    <div class="input-group">
+                                        <input id="mysql_host" type="text" class="form-control" readonly value="mysql">
+                                        <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Host kopieren' aria-label='MySQL-Host kopieren' data-clipboard-text='mysql'><i class='bi bi-copy'></i><span class='btn-text'>Kopieren</span></button>
+                                    </div>
+                                </div>
+                                <div class="profile-credential">
+                                    <label for="mysql_username">Benutzername</label>
+                                    <div class="input-group">
+                                        <input id="mysql_username" type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
+                                        <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Benutzername kopieren' aria-label='MySQL-Benutzername kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i><span class='btn-text'>Kopieren</span></button>
+                                    </div>
+                                </div>
+                                <div class="profile-credential">
+                                    <label for="mysql_database">Datenbank</label>
+                                    <div class="input-group">
+                                        <input id="mysql_database" type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
+                                        <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Datenbank kopieren' aria-label='MySQL-Datenbank kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i><span class='btn-text'>Kopieren</span></button>
+                                    </div>
+                                </div>
+                                <div class="profile-credential">
+                                    <label for="mysql_password">Passwort</label>
+                                    <div class="input-group">
+                                        <input id="mysql_password" type="password" class="form-control profile-secret" readonly autocomplete="off" spellcheck="false" value="#{Main.gen_password_for_email(@session_user[:email], MYSQL_PASSWORD_SALT)}">
+                                        <button type="button" class="btn btn-outline-secondary bu-toggle-secret" data-secret-target="mysql_password" aria-controls="mysql_password" aria-pressed="false" aria-label="MySQL-Passwort anzeigen"><i class="bi bi-eye"></i><span class="secret-toggle-label btn-text">Anzeigen</span></button>
+                                        <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Passwort kopieren' aria-label='MySQL-Passwort kopieren' data-clipboard-text="#{Main.gen_password_for_email(@session_user[:email], MYSQL_PASSWORD_SALT)}"><i class='bi bi-copy'></i><span class='btn-text'>Kopieren</span></button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="profile-credential">
-                                <label for="mysql_username">Benutzername</label>
-                                <div class="input-group">
-                                    <input id="mysql_username" type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
-                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Benutzername in die Zwischenablage kopieren' aria-label='MySQL-Benutzername kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i>Kopieren</button>
-                                </div>
                             </div>
-                            <div class="profile-credential">
-                                <label for="mysql_database">Datenbank</label>
-                                <div class="input-group">
-                                    <input id="mysql_database" type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
-                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Datenbank in die Zwischenablage kopieren' aria-label='MySQL-Datenbank kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i>Kopieren</button>
-                                </div>
-                            </div>
-                            <div class="profile-credential">
-                                <label for="mysql_password">Passwort</label>
-                                <div class="input-group">
-                                    <input id="mysql_password" type="password" class="form-control profile-secret" readonly autocomplete="off" spellcheck="false" value="#{Main.gen_password_for_email(@session_user[:email], MYSQL_PASSWORD_SALT)}">
-                                    <button type="button" class="btn btn-outline-secondary bu-toggle-secret" data-secret-target="mysql_password" aria-controls="mysql_password" aria-pressed="false" aria-label="MySQL-Passwort anzeigen"><i class="bi bi-eye"></i><span class="secret-toggle-label">Anzeigen</span></button>
-                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Passwort in die Zwischenablage kopieren' aria-label='MySQL-Passwort kopieren' data-clipboard-text='#{Main.gen_password_for_email(@session_user[:email], MYSQL_PASSWORD_SALT)}'><i class='bi bi-copy'></i>Kopieren</button>
-                                </div>
-                            </div>
-                        </div>
+                        </article>
                     </div>
-                    <div class="hint">
-                        Deine Zugangsdaten sind im Workspace in den Umgebungsvariablen <code>MYSQL_HOST</code>, <code>MYSQL_USER</code>, <code>MYSQL_PASSWORD</code> und <code>MYSQL_DB</code> hinterlegt, damit du keine Zugangsdaten im Quellcode deiner Programme speichern musst.
+                    <div class="profile-db-add">
+                        <button id='bu_add_mysql_database' type="button" class="btn btn-success"><i class='bi bi-plus-lg'></i>Weitere Datenbank erstellen</button>
+                        <span class="profile-db-room text-body-secondary small"></span>
                     </div>
-                    <p class="mt-3 mb-0">
-                        Weitere Datenbanken haben neben deinem Zugang einen eigenen, der nur sie erreicht. Nimm ihn für Programme, die andere benutzen, etwa ein geteiltes Gästebuch: Was dort schiefgeht, bleibt in dieser Datenbank.
+                    <p class="small text-body-secondary mt-2 mb-0">
+                        Eine weitere Datenbank hat einen eigenen Zugang, der nur sie erreicht. Nimm ihn für Programme, die andere benutzen, etwa ein geteiltes Gästebuch: Was dort schiefgeht, bleibt in dieser Datenbank.
                     </p>
-                    <div class="profile-table-actions">
-                        <button id='bu_add_mysql_database' class="btn btn-success mt-3"><i class='bi bi-plus'></i>MySQL-Datenbank erstellen</button>
-                    </div>
-                    <div class="table-responsive mt-3">
-                        <table class="table table-sm" id="table_my_databases">
-                            <thead>
-                                <tr>
-                                    <th>Datenbank</th>
-                                    <th>Tabellen</th>
-                                    <th>Einträge</th>
-                                    <th>Speicherplatz</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
                 </div>
 
                 <div class="profile-subsection" id="neo4j-database">
@@ -307,29 +377,29 @@
                                 <label for="neo4j_host">Host</label>
                                 <div class="input-group">
                                     <input id="neo4j_host" type="text" class="form-control" readonly value="neo4j">
-                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Host in die Zwischenablage kopieren' aria-label='Neo4j-Host kopieren' data-clipboard-text='neo4j'><i class='bi bi-copy'></i>Kopieren</button>
+                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Host in die Zwischenablage kopieren' aria-label='Neo4j-Host kopieren' data-clipboard-text='neo4j'><i class='bi bi-copy'></i><span class='btn-text'>Kopieren</span></button>
                                 </div>
                             </div>
                             <div class="profile-credential">
                                 <label for="neo4j_username">Benutzername</label>
                                 <div class="input-group">
                                     <input id="neo4j_username" type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
-                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Benutzername in die Zwischenablage kopieren' aria-label='Neo4j-Benutzername kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i>Kopieren</button>
+                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Benutzername in die Zwischenablage kopieren' aria-label='Neo4j-Benutzername kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i><span class='btn-text'>Kopieren</span></button>
                                 </div>
                             </div>
                             <div class="profile-credential">
                                 <label for="neo4j_database">Datenbank</label>
                                 <div class="input-group">
                                     <input id="neo4j_database" type="text" class="form-control" readonly value="#{@session_user[:db_login]}">
-                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Datenbank in die Zwischenablage kopieren' aria-label='Neo4j-Datenbank kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i>Kopieren</button>
+                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Datenbank in die Zwischenablage kopieren' aria-label='Neo4j-Datenbank kopieren' data-clipboard-text='#{@session_user[:db_login]}'><i class='bi bi-copy'></i><span class='btn-text'>Kopieren</span></button>
                                 </div>
                             </div>
                             <div class="profile-credential">
                                 <label for="neo4j_password">Passwort</label>
                                 <div class="input-group">
                                     <input id="neo4j_password" type="password" class="form-control profile-secret" readonly autocomplete="off" spellcheck="false" value="#{Main.gen_password_for_email(@session_user[:email], NEO4J_PASSWORD_SALT)}">
-                                    <button type="button" class="btn btn-outline-secondary bu-toggle-secret" data-secret-target="neo4j_password" aria-controls="neo4j_password" aria-pressed="false" aria-label="Neo4j-Passwort anzeigen"><i class="bi bi-eye"></i><span class="secret-toggle-label">Anzeigen</span></button>
-                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Passwort in die Zwischenablage kopieren' aria-label='Neo4j-Passwort kopieren' data-clipboard-text='#{Main.gen_password_for_email(@session_user[:email], NEO4J_PASSWORD_SALT)}'><i class='bi bi-copy'></i>Kopieren</button>
+                                    <button type="button" class="btn btn-outline-secondary bu-toggle-secret" data-secret-target="neo4j_password" aria-controls="neo4j_password" aria-pressed="false" aria-label="Neo4j-Passwort anzeigen"><i class="bi bi-eye"></i><span class="secret-toggle-label btn-text">Anzeigen</span></button>
+                                    <button type="button" class='btn btn-secondary btn-clipboard' data-clipboard-action='copy' title='Passwort in die Zwischenablage kopieren' aria-label='Neo4j-Passwort kopieren' data-clipboard-text='#{Main.gen_password_for_email(@session_user[:email], NEO4J_PASSWORD_SALT)}'><i class='bi bi-copy'></i><span class='btn-text'>Kopieren</span></button>
                                 </div>
                             </div>
                         </div>
@@ -619,46 +689,75 @@ vscode_config: {}</pre>
         });
     }
 
+    // One card per database: the main one is in the page, the extra ones
+    // (each with a login of its own, only for it) come from the server.
+    function profile_db_credential(id, label, value, secret) {
+        let field = $(`<div class='profile-credential'>`);
+        $(`<label>`).attr('for', id).text(label).appendTo(field);
+        let group = $(`<div class='input-group'>`).appendTo(field);
+        $(`<input class='form-control' readonly>`).attr({id: id, type: secret ? 'password' : 'text', autocomplete: 'off', spellcheck: 'false'}).val(value).appendTo(group);
+        if (secret) {
+            $(`<button type='button' class='btn btn-outline-secondary bu-toggle-secret' aria-pressed='false'><i class='bi bi-eye'></i><span class='secret-toggle-label btn-text'>Anzeigen</span></button>`)
+                .attr({'data-secret-target': id, 'aria-controls': id, 'aria-label': `${label} anzeigen`}).appendTo(group);
+        }
+        $(`<button type='button' class='btn btn-secondary btn-clipboard' data-clipboard-action='copy'><i class='bi bi-copy'></i><span class='btn-text'>Kopieren</span></button>`)
+            .attr({'data-clipboard-text': value, title: `${label} kopieren`, 'aria-label': `${label} kopieren`}).appendTo(group);
+        return field;
+    }
+
+    function profile_db_stats(tables, rows, size) {
+        let n = (count, one, many) => `${count} ${count === 1 ? one : many}`;
+        return `${n(tables, 'Tabelle', 'Tabellen')} · ${n(rows, 'Eintrag', 'Einträge')} · ${bytes_to_str(size)}`;
+    }
+
+    function profile_db_delete_button(button, database, is_user_db) {
+        button.off('click').on('click', function() {
+            showTemplateModal(is_user_db ? 'Datenbank zurücksetzen' : 'Datenbank löschen',
+                `Bist du sicher, dass du die Datenbank <code>${database}</code> ${is_user_db ? 'zurücksetzen' : 'löschen'} möchtest? Alle Tabellen und Daten werden gelöscht.`,
+                `<i class='bi bi-trash-fill'></i>${is_user_db ? 'Zurücksetzen' : 'Löschen'}`, 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
+                    api_call('/api/delete_mysql_database', {database: database}, function(data) {
+                        if (data.success) refresh_mysql_databases();
+                    });
+                });
+        });
+    }
+
     function refresh_mysql_databases() {
         api_call('/api/get_my_mysql_databases', {}, function(data) {
-            if (data.success) {
-                let tbody = $('#table_my_databases tbody');
-                tbody.empty();
-                for (let database of data.result.databases) {
-                    let row = $(`<tr>`).appendTo(tbody);
-                    $(`<td>`).append(`<code>${database}</code>`).appendTo(row);
-                    $(`<td>`).text(`${Object.keys(data.result.tables[database]).length}`).appendTo(row);
-                    $(`<td>`).text(`${data.result.total[database].rows}`).appendTo(row);
-                    $(`<td>`).text(`${bytes_to_str(data.result.total[database].size)}`).appendTo(row);
-                    let is_user_db = database === "#{@session_user[:db_login]}";
-                    let bu_delete = $(`<button>`).html(`<i class='bi bi-trash-fill'></i>${is_user_db ? 'Zurücksetzen' : 'Löschen'}`).addClass('btn btn-sm btn-danger');
-                    bu_delete.on('click', function(e) {
-                        showTemplateModal('Datenbank löschen', `Bist du sicher, dass du die Datenbank <code>${database}</code> ${is_user_db ? 'zurücksetzen' : 'löschen'} möchtest? Alle Tabellen und Daten werden gelöscht.`,
-                            `<i class='bi bi-trash-fill'></i>${is_user_db ? 'Zurücksetzen' : 'Löschen'}`, 'btn-danger', "<i class='bi bi-x-lg'></i>Abbruch", 'btn-secondary', function() {
-                                api_call('/api/delete_mysql_database', {database: database}, function(data2) {
-                                    if (data2.success) {
-                                        refresh_mysql_databases();
-                                    }
-                                });
-                            });
-                    });
-                    bu_delete.appendTo($(`<td style='text-align: right;'>`).appendTo(row));
-                    // An extra database's own login (only this database), for
-                    // programs others use, such as a shared guestbook.
-                    let access = (data.result.logins || {})[database];
-                    if (access) {
-                        let line = $(`<td colspan='5' class='mysql-database-login'>`).appendTo($(`<tr>`).appendTo(tbody));
-                        $(`<span class='text-body-secondary me-2'>`).text('Eigener Zugang, nur für diese Datenbank:').appendTo(line);
-                        let copy = (label, value, title) => $(`<button type='button' class='btn btn-sm btn-secondary btn-clipboard me-3'>`)
-                            .attr('data-clipboard-text', value).attr('title', title).attr('aria-label', title)
-                            .html(`<i class='bi bi-copy'></i>`).append(document.createTextNode(label));
-                        $(`<span class='me-1'>`).text('Benutzername').appendTo(line);
-                        $(`<code class='me-2'>`).text(access.login).appendTo(line);
-                        copy('Kopieren', access.login, `Benutzername ${access.login} kopieren`).appendTo(line);
-                        copy('Passwort kopieren', access.password, `Passwort für ${access.login} kopieren`).appendTo(line);
-                    }
+            if (!data.success) return;
+            let result = data.result;
+            let main = "#{@session_user[:db_login]}";
+            let list = $('#mysql_database_list');
+            list.find('.profile-db-extra').remove();
+            for (let database of result.databases) {
+                let total = result.total[database];
+                let stats = profile_db_stats(Object.keys(result.tables[database]).length, total.rows || 0, total.size || 0);
+                if (database === main) {
+                    let card = list.find(`.profile-db[data-database="${main}"]`);
+                    card.find('.profile-db-stats').text(stats);
+                    profile_db_delete_button(card.find('.profile-db-delete'), database, true);
+                    continue;
+                }
+                let access = (result.logins || {})[database];
+                let card = $(`<article class='profile-db profile-db-extra'>`).attr('data-database', database).appendTo(list);
+                let head = $(`<div class='profile-db-head'>`).appendTo(card);
+                $(`<h4>`).append($('<code>').text(database)).append(`<span class='badge text-bg-secondary'>Weitere Datenbank</span>`).appendTo(head);
+                $(`<span class='profile-db-stats'>`).text(stats).appendTo(head);
+                let del = $(`<button type='button' class='btn btn-sm btn-outline-danger profile-db-delete'><i class='bi bi-trash'></i>Löschen</button>`).appendTo(head);
+                profile_db_delete_button(del, database, false);
+                if (access) {
+                    let block = $(`<div class='profile-credentials'>`).appendTo(card);
+                    $(`<h5 class='profile-db-note'>`).text('Zugangsdaten nur für diese Datenbank').appendTo(block);
+                    let grid = $(`<div class='profile-credential-grid'>`).appendTo(block);
+                    grid.append(profile_db_credential(`${database}_host`, 'Host', 'mysql'));
+                    grid.append(profile_db_credential(`${database}_login`, 'Benutzername und Datenbank', access.login));
+                    grid.append(profile_db_credential(`${database}_password`, 'Passwort', access.password, true));
                 }
             }
+            let extra = result.databases.length - 1;
+            let room = (result.max_extra || 0) - extra;
+            $('#bu_add_mysql_database').prop('disabled', room <= 0);
+            $('.profile-db-room').text(room > 0 ? `noch ${room} von ${result.max_extra} möglich` : `${result.max_extra} von ${result.max_extra}: lösche eine, um eine neue zu erstellen`);
         });
     }
 
@@ -742,7 +841,8 @@ vscode_config: {}</pre>
 
     window.addEventListener('load', function() {
         connect_live_apps_socket();
-        $('.bu-toggle-secret').on('click', function(e) {
+        // Delegated: the cards of extra databases come later.
+        $(document).on('click', '.bu-toggle-secret', function(e) {
             let button = $(e.target).closest('button');
             let input = document.getElementById(button.data('secret-target'));
             if (!input) return;
@@ -750,7 +850,7 @@ vscode_config: {}</pre>
             let reveal = input.type === 'password';
             input.type = reveal ? 'text' : 'password';
             button.attr('aria-pressed', reveal ? 'true' : 'false');
-            button.attr('aria-label', `${input.id.startsWith('mysql') ? 'MySQL' : 'Neo4j'}-Passwort ${reveal ? 'verbergen' : 'anzeigen'}`);
+            button.attr('aria-label', button.attr('aria-label').replace(/(anzeigen|verbergen)$/, reveal ? 'verbergen' : 'anzeigen'));
             button.find('.secret-toggle-label').text(reveal ? 'Verbergen' : 'Anzeigen');
             button.find('.bi')
                 .toggleClass('bi-eye', !reveal)

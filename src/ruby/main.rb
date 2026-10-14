@@ -5972,6 +5972,7 @@ class Main < Sinatra::Base
         # Extra databases made before they had a login of their own get it
         # here, the first time the profile lists them.
         result[:logins] = {}
+        result[:max_extra] = MYSQL_EXTRA_DATABASES_MAX
         databases.each do |database|
             next unless DatabaseProvisioning.extra_database?(database)
 
@@ -6003,6 +6004,8 @@ class Main < Sinatra::Base
         respond(:result => result)
     end
 
+    MYSQL_EXTRA_DATABASES_MAX = 4
+
     post '/api/create_mysql_database' do
         assert(user_logged_in?)
         mysql_database_lock(@session_user[:email]).synchronize do
@@ -6010,7 +6013,7 @@ class Main < Sinatra::Base
                 MATCH (u:User {email: $email})-[:HAS]->(d:Database {type: 'mysql'})
                 RETURN COUNT(d) AS count;
             END_OF_STRING
-            assert(count < 4)
+            assert(count < MYSQL_EXTRA_DATABASES_MAX)
             database_name = "db_#{RandomTag.generate(12)}"
             client = Mysql2::Client.new(
                 host: 'mysql',
