@@ -1,0 +1,371 @@
+{
+  "version": 1,
+  "screenshots": {
+    "mkdir-and-ls.webp": {
+      "state_hash": "5152d6e6a75e0103fa5604974d7a833a1b888a8d3fb6b10706b189df99efe761",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "f12db2b9085d1abe6b3a9d6509ce95072e9d599121ca04add382b21e7e14422b"
+    },
+    "git-init.webp": {
+      "state_hash": "1aa847f95d295119f98508de967983428cb6bbab967e3fad62b0dbac38eacbac",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "d75c439c1ba0a986b5a34080a971cdaebdd138a701356d45ff1f06c794dcfd85"
+    },
+    "dot-git-dir.webp": {
+      "state_hash": "5346ada22be54a48a066d02e4c07a233a9f974a02722d8b7c5682242d9671e4a",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "48c1520951f96ada8e8793aadc0f227172239ba0150e4573a824a9da1a20fc27"
+    },
+    "echo-hello-world.webp": {
+      "state_hash": "fce1913433982c4514037312ea42dd2aa8c0b4956b8fdac91b4e4bae9e7e3f2f",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "6a192dda0635a80869e4b8c73a5690eb82024ac39f9ab915c0b7ff056a87d851"
+    },
+    "git-status.webp": {
+      "state_hash": "1af23c15396e615136f3e163b7e360443b841343570e59833264ee9dbab93a36",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "8128d6d90a31d46244d2ac19a867bd7a1efa501aa7f8476db04c61f49ba23ef8"
+    },
+    "after-git-add.webp": {
+      "state_hash": "cb0b3f8b89ae9d19f1685f779c36d84ea61263937fd77a1151710444c53f7b72",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "c7a5226153e40de026e66d59073421a63fa64dcc05240808aae37329b6a85721"
+    },
+    "first-commit.webp": {
+      "state_hash": "b548f76e9d86613aa8b7a55b0f661731738821f08329dda1882275b0cfa49120",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "0c68a250112041274b7000938e8d4dc17f5456a692d4e80c86fddb73b88b6bc8"
+    },
+    "graph0.svg": {
+      "state_hash": "c07d277ce80b88850d7772fb3378cb19145f9825e3e7f55de34b53aa6303b848",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "2e33965b8e070271b3ba00b6fa86ee35ea17c89357223b11cef912430771d82d"
+    },
+    "git-status-after-first-commit.webp": {
+      "state_hash": "ca3de0f5387bc55042cecc9c79a5bedb711372f248b309be3c9777198d78ca74",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "a5224b33f33f0b548c46e26fd810d7bd8536df172e5351aab0f2999d52ea3062"
+    },
+    "git-mv.webp": {
+      "state_hash": "ff37554d861e67e792e16924178dd9b5e3f2aeef988e38299c3ddfb3176c4c13",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "dfbe97af69b1e5ce5834d8e98a75b35eccd215a94f0a4965df7aef09c8e0b678"
+    },
+    "graph1.svg": {
+      "state_hash": "df8ec8e833aba90bd7c11b28d7bb15b4c690cdf182a17bffc20ce6b2cfe66886",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "71bb3a5f0d087821091b559f4a63888d321bc80fa91d39072f92e69c8d575e0d"
+    },
+    "open-dir.webp": {
+      "state_hash": "624d08b85fe2b15b84c70031c4ca15e6f4999e4e2993664cadfbcb9b5793152d",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "b2f2e97a29c9d2ea1b21dd35c4341ec678e171e4f7ba2d12f9aaa2a003cb4e74"
+    },
+    "edit-readme.webp": {
+      "state_hash": "265571bbc6da91a7bb3fe8db0416435366a8c6a24c4276d2cf95363c29c237e8",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "ddbf7669662376b9f9b8c5341811c3902dd9c6c7fbb1ad1799b5901214392f4c"
+    },
+    "git-status-2.webp": {
+      "state_hash": "e29e129ea12f606d305e772ecc3172f55807cc29c35bffe5effdb89826e05165",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "f2c870a619a21bc1cca3be29d511154e96515606645738161db63edc663d574f"
+    },
+    "git-diff-2.webp": {
+      "state_hash": "c90c705e979bb8010aaf5f8f011eb06b05624cbe3cf82da57ec992e52ddb44b5",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "e75f881b64b88e45ad9bc948a0af6374a8c9632b9ea97db12d071fb5c9e21809"
+    },
+    "graph2.svg": {
+      "state_hash": "f2b13f05f146c32bb40e401afe0b26ea329f52af369c895c9e05038996509c07",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "0eb03ca388b267382beea6107f09031ea334db088f4dc4aa83dfaccbdc85bea1"
+    },
+    "git-log.webp": {
+      "state_hash": "a30a58df9106a0c322b3a8f7fb981a005fa8bfc7ad7493e5a7e495d34519bc48",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "074d2a2ae138db297843bed48365c1393a2f84171405b8a2c63a00fb393e300f"
+    },
+    "detached-head.webp": {
+      "state_hash": "cf3e85b174865272900d20612b958c32a739981901f81995206787626fcdd308",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "3d072b408ff9be1a0b268ec775ffb3759bab5c1849f23b5d4c5fd78a8b55bca3"
+    },
+    "old-hello-world.webp": {
+      "state_hash": "822408afb400f6e03ef8eeb08c75684081d719102b84cd0a3a5ae2dea9c44f7a",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "e3e95c0cc9b9c874c9b3b27b1bd5ad864a7a5a5e86691e085d69c1f5c0c38730"
+    },
+    "graph3.svg": {
+      "state_hash": "5f1b8ae81367c16453c1ec2169e535444e88da1b002f641bb8c17f38fef28638",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "717605b29c14f30e8c1629916300850f3addde38f0a39c9487fa589e4ceff811"
+    },
+    "git-checkout-main.webp": {
+      "state_hash": "4b9e40abe8d371974889ac3fcbc3bfaa3b6350b0520856f8317496294b2dc6d1",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "9b19feefadba61516be64318ab208f6049a5067a41341daed2a16605cfe58d1d"
+    },
+    "graph4.svg": {
+      "state_hash": "0f20e140a723ffe8390d4a2cc43e9f0b1b80ab0e3b10c85fae25a15610afec06",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "0eb03ca388b267382beea6107f09031ea334db088f4dc4aa83dfaccbdc85bea1"
+    },
+    "feature-branch.webp": {
+      "state_hash": "106e7040767ae99a9d13902cf92f44f30784ece2552e125fb48d79ecd4f26f9d",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "4fce56fee97b3edfa2ff1525b5255ff9509af55e6ed708a7bc571b012715d75c"
+    },
+    "graph5.svg": {
+      "state_hash": "852afe49c9e5f071ffd251f461139deadb38092710976fe6c03edf33648ef093",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "cd6638e7795eb4aefb6f9e319e6d1dde7de0bf7fe3db375db9c27e50a29e02db"
+    },
+    "compile-and-run.webp": {
+      "state_hash": "b7ffa2a8417bbc8b91a390cd9531e7babd1e8fd6d593bc7cf03163bd9490a32a",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "3dd6849cc1de17581346f6b76ef3363a09aa130aa0ead069dde34c64b18ca0b5"
+    },
+    "git-status-3.webp": {
+      "state_hash": "4f51fbfe5054f280cd348614bf477963ca284c04b50bc70b66d90d6267bb9eb1",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "ad458cc29d22edee33c0ca5f399d9f22f3342a353cd1b255b3ce6243ab913157"
+    },
+    "git-status-4.webp": {
+      "state_hash": "a0a43cb4d2177dfef8d7d4ab74de3e395bb3a6739363e10d66e1db776dcc4d68",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "c193f3198c1e3d1d49a745acd765d4379926aaddd1f52c2387d332cdb9cd8205"
+    },
+    "git-commit-feature.webp": {
+      "state_hash": "3c82c4b08c7edf8c0a2600d8aa21db6b3f531a87c9b79ad74cbb778170926adb",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "b2a8b9013c01532bf5badaf37a50f2da7701af0f1711ab8acb9e24d66ff758d5"
+    },
+    "graph6.svg": {
+      "state_hash": "68ca1d50dc510a66400f56c745d0122045243a6ae6f665dc32feb2d7faf66419",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "cd2f2e56a0e4da5093ccbd77e1625ab18ae38c315fc4105512c44f86868d53f8"
+    },
+    "git-branch.webp": {
+      "state_hash": "aab2141b21d7892da3e7b1a78423d360b86af7fdb4ab6ac9885ed0d8514fd3be",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "65f992fd565cc7a497c2a18ac45e617b69fc057e5ee9b6eb44ed3f5da765647a"
+    },
+    "smilez.webp": {
+      "state_hash": "0b154c9e65d2095525f45886efbfe7164e33b35e3f425a2f20a63e88e8e71a02",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "e8434fd3bc3a45fc45299869ec4e129fb4c4f71bc0acd16298890af6dd2448e5"
+    },
+    "git-diff-5.webp": {
+      "state_hash": "0c1b0abb57dbd8e58f4f5bff90d8b5178a8fba067959a233822b6f0b4a5ece8a",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "8f868ee4fdb11f55776db3083903f7250c79f27d51ccadfb6eb5f8ce780a3778"
+    },
+    "git-commit-5.webp": {
+      "state_hash": "a91e26432785d5ba88b4a88233ac53b0d938e47672c184b25f80657093fadb0e",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "e06380551b2ab76b73fa1636c647eb3758cd79f0479e17ca813206bd90ff92b2"
+    },
+    "graph7.svg": {
+      "state_hash": "588aa49a164c20db88b5f5b821cce9ded2a3486eb270482a455a5e2505cf0b1e",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "8ef6b802e6bba0b12f1aadfaf72f2ecf342629c37f89400c2dd52e823247b98b"
+    },
+    "git-merge.webp": {
+      "state_hash": "a06c974d064e25d1b9eed4d2df98748532d1aebabee71858f8d950c975b0b2fb",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "7eced6788b8cf188250adf2de14ec097ee9192f8ad01c49db1586ab9edee9b6a"
+    },
+    "graph8.svg": {
+      "state_hash": "f6a6eaf7d23d58879f165b7f247ec1ee6bc4a31b2f84d0795bfcdbce72e1e227",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "e47fcc7db15fd5e84d95a385118b6bbe213e74eb0f3664fbcf8f82ca4ad5319c"
+    },
+    "delete-feature-branch.webp": {
+      "state_hash": "958d56e7e9a7ce5fcb7e271bc12c9d31e5d3668dfd7052d37197b52364e93fb9",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "88395b20cd67bab97fb80d4e5cdfe93906f0c2bbb75be7debc7d751404c47db9"
+    },
+    "graph9.svg": {
+      "state_hash": "31740356cdfd7f16f56f8175e4ddde07d5077c9b167b7379057cf95e21e7386b",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "d6032829aa522dba54f827ffea61d77c6407c0f0ef26581cfa3f6abe3f7a7ff9"
+    },
+    "git-prompt.webp": {
+      "state_hash": "2e9ed599e8805edaec3a058510ced5df22902c473de04d053f21264f678dc155",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "044435338d83d7b5a129b163de86a750f9e23d329ad18e9f553888e5f705dd93"
+    },
+    "git-init-bare.webp": {
+      "state_hash": "9fe40266f347f8dd63d6df4a2c3b76a2f322b8b36cb61194a8ab6b4fe8950424",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "1bc527c3738efa5403defb492602b92af19384b72847d43cd273f7270b42a6f5"
+    },
+    "ls-bare.webp": {
+      "state_hash": "8cdf38bebc5af844738b04b9523deb7c127e319f9ab761d6de3d9b02b93b8d94",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "27cbd7d074f6af9a6d234c354a9d091f633c3edc81953052008d63d9e8051475"
+    },
+    "remote-config.webp": {
+      "state_hash": "097345432d656d669c83a043e0a2ab945371483f2fd6febafc07aa5a747a5e23",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "60f4b6641e6efc371783a7e775505207fa9e11db75addf51af527e3b0ff55f6c"
+    },
+    "git-push-origin-main.webp": {
+      "state_hash": "7fa5a017fee46587dcb53d2377e1cf50e22d12149ff94b40c63c85d6a5b6c47d",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "e95d185f09b8321bf094e20cd6edf9eb72f3ea885a82e4d0579202f988d3bf8a"
+    },
+    "git-clone.webp": {
+      "state_hash": "2abf8f434efaa0338625ecd834b1a127a1f7c4bb6441a0f775b2c19f17716339",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "9b32b95ef0e84983eb31a4327ccb04d2a64388031e1489aff6ad00e840e5a885"
+    },
+    "bob-was-here.webp": {
+      "state_hash": "0ad4a05eb71e9233ffba1a75def3fccddf093f57bd2b9b0a41e7c18349d16254",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "7e2357fd5719972207c94d0f51930dfb551fabc2a86188f40c5ccb03ab2386db"
+    },
+    "git-diff-bob.webp": {
+      "state_hash": "44ef169c2d4ac7380e5c47f13a27df9ec86646a6745afda2e840f37737fb1947",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "b01ce877004a5edc6d36bd89b48a88e7eb93d6ee82b902dacaa4ca04e63089dd"
+    },
+    "bob-commit.webp": {
+      "state_hash": "3a1e0b644180fad312efbd9f9723f98cfe48d984074d1606a80afbfe0589227e",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "521e0312ca23a4a2105e1e59dd2b633dfd47ebb152243137984587152fa2e1ae"
+    },
+    "bob-push.webp": {
+      "state_hash": "4cf899d2d3060d6002d73c4492544668b6cc432e836db42350b9fc9c9169dce7",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "d363fb13df29c1248e56df9044dd9a3af746f09df493007b889efce7dbbf2fa3"
+    },
+    "alice-pull.webp": {
+      "state_hash": "91e726b5a998e64f6887ec89f747ca3b472b11d9e421109d615cb68f566fa3b3",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "401ac2c410184b2c4bbd03f6fcf4611f1f794a0f85c6dac4a144773957624cdf"
+    },
+    "alice-cat-readme.webp": {
+      "state_hash": "8206bcbba1f3245354f152258fa0d2d98723f7c5529169dc52c3be8f6d161abc",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "6568293f6887c74eeebfd7bee8d2a472946a54974dcc94b9b2b5f256dee84da4"
+    },
+    "alice-conflict-edit-diff.webp": {
+      "state_hash": "52f3a5c09c2d638b954e0f15770ab44ab59a2efd935869a89cc413a63926082d",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "622e976f33da6c425a67351658731d639231112a41c5ce85b3f287495aa9cdcf"
+    },
+    "alice-conflict-commit-push.webp": {
+      "state_hash": "932c06a2c4903fb7fce0cf671b35beaebaedde1ad5d7d01926fa8560c0f93368",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "9f34866c803bc9a8f15706905b94d0b8e73fc609d9a97e4e73f4075498a1afac"
+    },
+    "bob-conflict-edit-diff-commit.webp": {
+      "state_hash": "32ce81025eaeef06e12047e70a4ad567fe7fe4ca4f2af6220dc3682f2b0922ec",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "c9eccd7ca3a7af0c246ece7a701a2bea83f9dc81d4d7aab691a01e999e225ab3"
+    },
+    "bob-conflict-push-error.webp": {
+      "state_hash": "86b6fef15cd7ab443355daa5bf0700c66d83294f8d4787085d4fa229256190ec",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "b46317bd2b5201a1b4cd03faa9449f40fd932038612f7a4a0ffa7a3e9ae8b6f0"
+    },
+    "bob-conflict-pull-error.webp": {
+      "state_hash": "38d2095b49c8a8c7494e57b3a5154609b3ed83ecbbefb2e503a79af66098e24c",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "d123f7284a512c1b26dbc0882eb2675c7be711ab72f14b2576b7e5f968a2f037"
+    },
+    "bob-pull-conflict.webp": {
+      "state_hash": "c6bed31b5e25bab8c6b711bbae86ff642028885a5ad26577fadb4d0f3af3f263",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "116983939b13c3e14168ed9495dcf825577534c655386e07fa6be64ae0ab5a5a"
+    },
+    "bob-resolve-conflict.webp": {
+      "state_hash": "da9e904c07d11a200767868ef9fd030ea00fc9b558964f0171980601f5f0cca2",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "529972112918921252f65aa9637b242cdd47026b8248dc48813941fc47d9249a"
+    },
+    "bob-bonjour.webp": {
+      "state_hash": "7c579da44fdb083c3247e115424d4cfc8f0ef0485789e3ca798f6d4eea3fb5ac",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "1a60030f71f11cee411b1c852dfc9a9c570f7e2482a7afaab7e0fb3114ec6908"
+    },
+    "bob-complete-merge-push.webp": {
+      "state_hash": "4d6c2e830602f678b6cc758fe22f2bcda917f9d7b6d9f924195b8b1e77e44029",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "4ca6e075ab0195273886281cd8af26f7b4a17bf5b8e57822d9824a50f12cf2e9"
+    },
+    "alice-pull-after-conflict.webp": {
+      "state_hash": "a14896e95c32931c2fc486193d74a010a4043c4edec938ea05283f9f1fadcecd",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "63f5d5d4babbec63f62019a6a9ac380f463a88bd713ad5d852ddaf8c0964b137"
+    },
+    "git-log-graph.webp": {
+      "state_hash": "53037b644ba252248bfd02ebee1a881543369686fe393cd092fd65d52a4d1428",
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "workspace_look": "4.138.0-ls366",
+      "output_sha256": "98ff4ef1711edbbc091b5fb664c91f977dc523a77b851cb4bace8189667bc355"
+    }
+  }
+}

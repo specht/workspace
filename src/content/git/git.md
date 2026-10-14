@@ -1,11 +1,12 @@
 <div class='meta'>
 image: git-logo.png
+reference: [workspace, terminal]
 </div>
 
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
-    data-levels="h2,h3,h4">
+    data-levels="h2,h3">
 </div>
 
 # Versionsverwaltung mit Git
@@ -19,18 +20,9 @@ Git löst dieses Problem, indem es die Entwicklung eines Projekts als eine Abfol
 
 In diesem Tutorial lernst du Git Schritt für Schritt kennen. Wir beginnen ganz lokal auf deinem eigenen Rechner und schauen uns zunächst an, wie Git Änderungen speichert und organisiert. Erst später werden wir darauf eingehen, wie Git auch die Zusammenarbeit mehrerer Personen an einem gemeinsamen Projekt unterstützt.
 
-Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
+## Vorbereitung
 
-<img class='full' src='fresh-start.webp' alt=''>
-
-Schließe die linken Seitenleiste, indem du <kbd>Strg</kbd><kbd>B</kbd> drückst, um mehr Platz zu haben.
-Öffne als nächstes das Terminal, indem du den Shortcut <kbd>Strg</kbd><kbd>J</kbd> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
-
-<img class='full' src='got-terminal.webp' alt=''>
-
-<img src='../common/maximize-terminal.webp' class='r' style='width: 25em;' alt=''>
-
-Du kannst das Terminal auch maximieren, indem du auf das Symbol in der rechten oberen Ecke des Terminals klickst. Die linke Seitenleiste kannst du jederzeit mit <kbd>Strg</kbd><kbd>B</kbd> ein- und ausblenden.
+_include(workspace#terminal-oeffnen)
 
 Erstelle als erstes ein Verzeichnis für dieses Tutorial, indem du im Terminal folgenden Befehl eingibst:
 
@@ -39,6 +31,18 @@ mkdir git-tutorial
 ```
 
 Mit `ls -l` kannst du anschließend überprüfen, ob das Verzeichnis erstellt wurde (das `d` am Anfang der Zeile zeigt an, dass es sich um ein Verzeichnis handelt):
+
+<!-- tutorial-screenshot
+# Terminal öffnen: Handbuch »Workspace«, eingebunden oben
+hide-left-sidebar
+terminal-open
+terminal-maximize
+terminal-run: clear
+terminal-run: mkdir git-tutorial
+terminal-run: ls -l
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='mkdir-and-ls.webp' alt=''>
 
@@ -54,13 +58,32 @@ mkdir alice
 cd alice
 ```
 
-## Repository initialisieren
+## Alleine arbeiten
+
+### Ein Repository anlegen
 
 Initialisiere jetzt ein neues Git-Repository mit dem Befehl `git init`:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: cd git-tutorial
+terminal-run: mkdir alice
+terminal-run: cd alice
+terminal-run: git init
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='git-init.webp' alt=''>
 
 Mit dem Befehl `ls -la` kannst du sehen, dass ein verstecktes Verzeichnis namens `.git` erstellt wurde:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: ls -la
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='dot-git-dir.webp' alt=''>
 
@@ -70,7 +93,7 @@ Das `.git`-Verzeichnis enthält alle Informationen, die Git benötigt, um die Ve
 Das Vorhandensein eines <code>.git</code>-Verzeichnisses zeigt an, dass sich das aktuelle Verzeichnis in einem Git-Repository befindet. Wenn du ein Verzeichnis löschst, das ein <code>.git</code>-Verzeichnis enthält, verlierst du die gesamte Versionsgeschichte dieses Repositories und hast »nur noch« ein normales Verzeichnis ohne Versionskontrolle.
 </div>
 
-## Erste Datei erstellen
+### Die erste Datei
 
 Erstelle jetzt eine Datei namens `hello.txt` mit dem Befehl `echo`:
 
@@ -80,6 +103,14 @@ echo "Hello, world!" > hello.txt
 
 Überzeuge dich mit dem Befehl `cat hello.txt`, dass die Datei den erwarteten Inhalt hat:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: echo "Hello, world!" > hello.txt
+terminal-run: cat hello.txt
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='echo-hello-world.webp' alt=''>
 
 <div class='hint books'>
@@ -88,11 +119,18 @@ Der Befehl <code>echo</code> gibt den angegebenen Text im Terminal aus. Mit dem 
 
 Verwende nun den Befehl `git status`, um den aktuellen Status des Repositories zu überprüfen:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git status
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='git-status.webp' alt=''>
 
-## Die Staging Area
+### Die Staging Area
 
-Die Ausgabe von `git status` zeigt, dass die Datei `hello.txt` als »untracked« (nicht verfolgt) markiert ist. Das bedeutet, dass Git diese Datei noch nicht in die Versionskontrolle aufgenommen hat. Bei Git werden Änderungen nicht direkt zum Repository hinzugefügt, sondern zunächst in eine sogenannten »Staging Area« (auch »Index« genannt) kopiert. Verwende den Befehl `git add`, um die Datei zur Staging Area hinzuzufügen:
+Die Ausgabe von `git status` zeigt, dass die Datei `hello.txt` als »untracked« (nicht verfolgt) markiert ist. Das bedeutet, dass Git diese Datei noch nicht in die Versionskontrolle aufgenommen hat. Bei Git werden Änderungen nicht direkt zum Repository hinzugefügt, sondern zunächst in eine sogenannte »Staging Area« (auch »Index« genannt) kopiert. Verwende den Befehl `git add`, um die Datei zur Staging Area hinzuzufügen:
 
 ```bash
 git add hello.txt
@@ -104,13 +142,21 @@ Durch <code>git add</code> sagen wir Git explizit, dass wir die Datei <code>hell
 
 Überprüfe den Status erneut mit `git status`:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git add hello.txt
+terminal-run: git status
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='after-git-add.webp' alt=''>
 
 Die Ausgabe zeigt jetzt, dass die Datei `hello.txt` in der Staging Area bereitsteht, um committet zu werden.
 
 _task(staging)
 
-## Einen Commit erstellen
+### Einen Commit erstellen
 
 Um die Änderungen dauerhaft im Repository zu speichern, verwende den Befehl `git commit`. Füge die Option `-m` hinzu, um eine Commit-Nachricht anzugeben, die beschreibt, was du geändert hast (falls du die Nachricht weglässt, öffnet Git einen Texteditor, in dem du die Nachricht eingeben kannst):
 
@@ -120,15 +166,30 @@ git commit -m "initial commit"
 
 Die Ausgabe zeigt, dass ein neuer Commit erstellt wurde:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git commit -m "initial commit"
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='first-commit.webp' alt=''>
 
 Im `.git`-Verzeichnis ist jetzt ein [gerichteter, azyklischer Graph (DAG)](https://en.wikipedia.org/wiki/Directed_acyclic_graph) entstanden, der mehrere Knoten enthält, wobei jeder Knoten durch eine eindeutige SHA-1-Hash-ID identifiziert wird. Diese Knoten repräsentieren die verschiedenen Objekte in Git: Blobs, Trees und Commits.
+
+<!-- tutorial-screenshot
+git-graph: git-tutorial/alice
+-->
 
 _include_svg(graph0.svg)
 
 - **Blob**: Der Blob-Knoten mit der SHA1-ID `af5626b` repräsentiert den Inhalt »Hello, world!« (der Dateiname spielt dabei noch keine Rolle).
 - **Tree**: Der Tree-Knoten mit der SHA1-ID `ec947e3` repräsentiert ein Verzeichnis, das die Datei `hello.txt` enthält, deren Inhalt durch den Blob `af5626b` repräsentiert wird.
 - **Commit**: Der Commit-Knoten repräsentiert einen Snapshot des Repositories zu einem bestimmten Zeitpunkt. Er verweist auf den Tree `ec947e3`, der den Zustand des Verzeichnisses zum Zeitpunkt des Commits beschreibt. Der Commit enthält auch Metadaten wie den Autor, das Datum und die Commit-Nachricht.
+
+<div class='hint info'>
+Blobs und Trees haben bei dir dieselben IDs wie hier, denn ihre ID hängt nur vom Inhalt ab. Die IDs deiner Commits sind andere: In einen Commit fließen auch dein Name und die Uhrzeit ein.
+</div>
 
 Zusätzlich gibt es noch zwei Zeiger:
 
@@ -137,11 +198,18 @@ Zusätzlich gibt es noch zwei Zeiger:
 
 Die Ausgabe von `git status` zeigt außerdem an, dass wir keine lokalen Änderungen haben, die noch nicht committet wurden und unser Arbeitsverzeichnis »sauber« ist:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git status
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='git-status-after-first-commit.webp' alt=''>
 
 _task(erster-commit)
 
-## Dateien umbenennen
+### Dateien umbenennen
 
 Benenne die Datei `hello.txt` in `README.md` um, indem du den Befehl `git mv` verwendest:
 
@@ -161,33 +229,84 @@ git commit -m "rename hello.txt to README.md"
 
 Die Ausgabe zeigt, dass ein neuer Commit erstellt wurde:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git mv hello.txt README.md
+terminal-run: git commit -m "rename hello.txt to README.md"
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='git-mv.webp' alt=''>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
+
+<!-- tutorial-screenshot
+git-graph: git-tutorial/alice
+-->
 
 _include_svg(graph1.svg)
 
 Wie du siehst, sind die alten Objekte (Blob `af5626b` und Tree `ec947e3`) weiterhin vorhanden, da Git die gesamte Versionsgeschichte beibehält. Da die Datei jetzt einen neuen Namen hat, wurde ein neuer Tree-Knoten `ebfd749` erstellt, der die Datei `README.md` enthält, die auf den gleichen Blob `af5626b` verweist. Da sich der Inhalt der Datei nicht geändert hat, bleibt der Blob unverändert. Zusätzlich wurde ein neuer Commit-Knoten erstellt, der auf den neuen Tree `ebfd749` verweist und den vorherigen Commit als Vorgänger hat.
 
-## Dateien ändern
+### Dateien ändern
 
-Öffne jetzt das Verzeichnis `/workspace/git-tutorial/alice` in VS Code, indem du <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>Strg</kbd><kbd>O</kbd> drückst:
+Öffne jetzt das Verzeichnis `/workspace/git-tutorial/alice` in VS Code: Drücke <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>Strg</kbd><kbd>O</kbd>, wähle das Verzeichnis aus und klicke auf »OK«:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+press: Control+K
+press: Control+O
+wait-for-input-value: /workspace/
+type: git-tutorial/alice/
+wait-for-input-value: /workspace/git-tutorial/alice/
+sleep: 0.5
+crop-bottom: 75%
+-->
 
 <img class='full' src='open-dir.webp' alt=''>
 
-Wähle das Verzeichnis `/workspace/git-tutorial/alice` aus und klicke auf »OK«:
+Öffne die Datei `README.md`, ändere `world` zu `planet` und füge eine neue Zeile hinzu, sodass in der Datei Folgendes steht:
 
-<img class='full' src='open-dir-2.webp' alt=''>
+```markdown
+Hello, planet!
 
-Öffne die Datei `README.md` und ändere `world` zu `planet` und füge eine neue Zeile hinzu:
+Git is awesome!
+```
+
+<!-- tutorial-screenshot
+press: Enter
+wait-for-text: README.md
+write-file: git-tutorial/alice/README.md <- previous-code
+open-file: README.md
+sleep: 1
+crop-bottom: 55%
+-->
 
 <img class='full' src='edit-readme.webp' alt=''>
 
 Speichere die Datei mit <kbd>Strg</kbd><kbd>S</kbd> und überprüfe den Status mit `git status` im Terminal:
 
+<!-- tutorial-screenshot
+hide-left-sidebar
+terminal-open
+terminal-maximize
+terminal-run: clear
+terminal-run: git status
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='git-status-2.webp' alt=''>
 
 Überprüfe vor jedem Commit, welche Änderungen du vorgenommen hast, indem du den Befehl `git diff` ausführst:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git diff
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='git-diff-2.webp' alt=''>
 
@@ -205,15 +324,29 @@ Die Option <code>-a</code> bei <code>git commit</code> ist praktisch, wenn du al
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git commit -a -m "updated README.md"
+terminal-wait-for-prompt
+git-graph: git-tutorial/alice
+-->
+
 _include_svg(graph2.svg)
 
 Wie du sehen kannst, zeigen der `main`-Branch und `HEAD` jetzt auf den neuesten Commit, der die Datei `README.md` mit dem aktualisierten Inhalt enthält. Da der Inhalt verändert wurde, musste ein neuer Blob angelegt werden. Die alten Knoten bleiben weiterhin im Graphen erhalten.
 
 _task(drei-commits)
 
-## Zeitreise
+### Zeitreise
 
 Lass uns jetzt zu einem früheren Commit zurückkehren. Verwende den Befehl `git log`, um die Commit-Historie anzuzeigen:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git log
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='git-log.webp' alt=''>
 
@@ -231,6 +364,13 @@ Wir checken nun eine frühere Version des Repositories aus, nämlich die Version
 git checkout HEAD~2
 ```
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git checkout HEAD~2
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='detached-head.webp' alt=''>
 
 <div class='hint danger'>
@@ -239,9 +379,21 @@ Nachdem du einen älteren Commit ausgecheckt hast, befindest du dich in einem so
 
 Du siehst auch, dass die Datei `README.md` jetzt wieder `hello.txt` heißt und den ursprünglichen Inhalt »Hello, world!« hat:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: ls
+terminal-run: cat hello.txt
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='old-hello-world.webp' alt=''>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
+
+<!-- tutorial-screenshot
+git-graph: git-tutorial/alice
+-->
 
 _include_svg(graph3.svg)
 
@@ -249,15 +401,28 @@ Du kannst sehen, dass der `main`-Branch unverändert bleibt und weiterhin auf de
 
 Um wieder zum `main`-Branch zurückzukehren, kannst du den Befehl `git checkout main` verwenden:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git checkout main
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='git-checkout-main.webp' alt=''>
 
 Damit sind wir wieder im neuesten Zustand des Repositories. Der Git-Objektgraph sieht jetzt wieder folgendermaßen aus:
 
+<!-- tutorial-screenshot
+git-graph: git-tutorial/alice
+-->
+
 _include_svg(graph4.svg)
 
-## Branch & Merge
+## Branches
 
 Kennst du die Situation, in der du eine neue Funktion zu deinem Projekt hinzufügen möchtest, aber nicht sicher bist, ob sie funktioniert? Mit Git kannst du einen neuen Branch erstellen, um an dieser Funktion zu arbeiten, ohne den Haupt-Branch zu beeinflussen. Wenn die Funktion fertig ist und gut funktioniert, kannst du sie wieder in den Haupt-Branch zusammenführen (mergen). Anderenfalls kannst du den Branch einfach löschen, ohne dass dein Haupt-Branch davon betroffen ist.
+
+### Einen Branch anlegen
 
 Wir erstellen jetzt einen neuen Branch namens `feature` und wechseln zu diesem Branch:
 
@@ -266,9 +431,21 @@ git branch feature
 git checkout feature
 ```
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git branch feature
+terminal-run: git checkout feature
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='feature-branch.webp' alt=''>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
+
+<!-- tutorial-screenshot
+git-graph: git-tutorial/alice
+-->
 
 _include_svg(graph5.svg)
 
@@ -290,9 +467,28 @@ gcc -o hello hello.c
 
 Du solltest die Meldung `Hello, World!` im Terminal sehen:
 
+<!-- tutorial-screenshot
+write-file: git-tutorial/alice/hello.c <- file:hello.c
+open-file: hello.c
+terminal-open
+terminal-maximize
+terminal-run: clear
+terminal-run: gcc -o hello hello.c
+terminal-run: ./hello
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='compile-and-run.webp' alt=''>
 
 Überprüfe den Status mit `git status`:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git status
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='git-status-3.webp' alt=''>
 
@@ -300,13 +496,15 @@ Es sind zwei neue Dateien vorhanden: `hello.c` und `hello` (die ausführbare Dat
 
 _task(gitignore)
 
+### Dateien ignorieren
+
 <div class='hint warning'>
 Es gibt bestimmte Arten von Dateien, die nicht in ein Git-Repository aufgenommen werden sollten, wie z.B. ausführbare Dateien, temporäre Dateien oder sensible Informationen wie Zugangsdaten oder API-Schlüssel. Um zu verhindern, dass solche Dateien versehentlich hinzugefügt werden, kannst du eine Datei namens <code>.gitignore</code> erstellen. In dieser Datei kannst du Muster definieren, die Git anweisen, bestimmte Dateien oder Verzeichnisse zu ignorieren. Und genau das machen wir jetzt.
 </div>
 
 Erstelle eine Datei namens `.gitignore` mit folgendem Inhalt:
 
-```c
+```text
 hello
 ```
 
@@ -315,6 +513,17 @@ Du kannst auch Platzhalter verwenden, um mehrere Dateien oder Verzeichnisse zu i
 </div>
 
 Speichere die Datei und überprüfe den Status erneut mit `git status`:
+
+<!-- tutorial-screenshot
+write-file: git-tutorial/alice/.gitignore <- previous-code
+open-file: .gitignore
+terminal-open
+terminal-maximize
+terminal-run: clear
+terminal-run: git status
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='git-status-4.webp' alt=''>
 
@@ -330,9 +539,21 @@ Erstelle anschließend einen neuen Commit:
 git commit -m "added hello.c"
 ```
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git add .gitignore hello.c
+terminal-run: git commit -m "added hello.c"
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='git-commit-feature.webp' alt=''>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
+
+<!-- tutorial-screenshot
+git-graph: git-tutorial/alice
+-->
 
 _include_svg(graph6.svg)
 
@@ -340,9 +561,18 @@ Wie du sehen kannst, zeigt der `feature`-Branch jetzt auf den neuesten Commit, d
 
 Wir können uns anzeigen lassen, welche Branches es gibt und auf welchen Commit sie zeigen, indem wir den Befehl `git branch` ausführen:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git branch
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='git-branch.webp' alt=''>
 
 Wie du siehst, gibt es momentan zwei Branches: `main` und `feature`. Der Stern (*) zeigt an, dass wir uns gerade im `feature`-Branch befinden.
+
+### In beiden Branches arbeiten
 
 Wir wechseln jetzt zurück zum `main`-Branch:
 
@@ -350,7 +580,27 @@ Wir wechseln jetzt zurück zum `main`-Branch:
 git checkout main
 ```
 
-Dort passen wir – unabhängig vom `feature`-Branch – die Datei `README.md` an und fügen einen Smiley hinzu:
+Dort passen wir – unabhängig vom `feature`-Branch – die Datei `README.md` an und fügen am Ende einen Smiley hinzu:
+
+```markdown
+Hello, planet!
+
+Git is awesome!
+
+:)
+```
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git checkout main
+terminal-wait-for-prompt
+write-file: git-tutorial/alice/README.md <- previous-code
+open-file: README.md
+hide-bottom-panel
+move-mouse: selector:.monaco-editor .view-lines
+sleep: 1
+crop-bottom: 50%
+-->
 
 <img class='full' src='smilez.webp' alt=''>
 
@@ -360,13 +610,37 @@ Wie du in der oberen Leiste sehen kannst, sind die Dateien <code>hello.c</code> 
 
 Es ist eine gute Angewohnheit, vor dem Committen die Änderungen mit `git diff` zu überprüfen:
 
+<!-- tutorial-screenshot
+terminal-open
+terminal-maximize
+terminal-run: clear
+terminal-run: git diff
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='git-diff-5.webp' alt=''>
 
 Wir erstellen jetzt einen neuen Commit:
 
+```bash
+git commit -a -m "added smiley"
+```
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git commit -a -m "added smiley"
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='git-commit-5.webp' alt=''>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
+
+<!-- tutorial-screenshot
+git-graph: git-tutorial/alice
+-->
 
 _include_svg(graph7.svg)
 
@@ -374,13 +648,22 @@ _include_svg(graph7.svg)
 Wir haben jetzt an beiden Branches unabhängig voneinander Änderungen vorgenommen. Der <code>main</code>-Branch enthält den neuesten Commit mit der aktualisierten <code>README.md</code>-Datei, während der <code>feature</code>-Branch den neuesten Commit mit der <code>hello.c</code>-Datei enthält.
 </div>
 
+### Branches zusammenführen
+
 Wir könnten uns jetzt dazu entscheiden, die Änderungen aus dem `feature`-Branch zu verwerfen, indem wir den Branch einfach löschen. In diesem Fall würden die Änderungen an der Datei `hello.c` verloren gehen, da sie nur im `feature`-Branch existieren.
 
-Wir möchten die Änderungen aus dem `feature`-Branch jedoch in den `main`-Branch übernehmen. Dazu verwenden wir den Befehl `git merge`, während wir uns im `main`-Branch befinden:
+Wir möchten die Änderungen aus dem `feature`-Branch jedoch in den `main`-Branch übernehmen. Dazu verwenden wir den Befehl `git merge`, während wir uns im `main`-Branch befinden. Wie bei `git commit` gibst du mit `-m` die Nachricht für den Merge-Commit an; ohne `-m` öffnet Git dafür einen Editor:
 
 ```bash
-git merge feature
+git merge feature -m "merged feature into main"
 ```
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git merge feature -m "merged feature into main"
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='git-merge.webp' alt=''>
 
@@ -389,6 +672,10 @@ Beim Mergen ist es wichtig, dass du dich im Ziel-Branch befindest, also in dem B
 </div>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
+
+<!-- tutorial-screenshot
+git-graph: git-tutorial/alice
+-->
 
 _include_svg(graph8.svg)
 
@@ -400,9 +687,20 @@ Der `main`-Branch zeigt jetzt auf das aktuelle, vollständige Projekt und wir k�
 git branch -d feature
 ```
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git branch -d feature
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='delete-feature-branch.webp' alt=''>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
+
+<!-- tutorial-screenshot
+git-graph: git-tutorial/alice
+-->
 
 _include_svg(graph9.svg)
 
@@ -429,6 +727,7 @@ git clone https://github.com/magicmonty/bash-git-prompt.git ~/.bash-git-prompt -
 
 Öffne anschließend die Datei `/workspace/.bashrc` in VS Code und füge am Ende der Datei folgende Zeilen hinzu:
 
+<!-- screenshot-code: bashrc -->
 ```bash
 # enable Bash completion for Git
 source /usr/share/bash-completion/completions/git
@@ -449,9 +748,26 @@ source ~/.bashrc
 
 Jetzt hast du einen speziellen Git-Prompt, wenn du in einem Git-Repository arbeitest. Dieser Prompt zeigt dir immer den aktuellen Branch und den Status des Repositories an:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git clone https://github.com/magicmonty/bash-git-prompt.git ~/.bash-git-prompt --depth=1
+terminal-wait-for-prompt
+write-file: .bashrc-git-prompt <- previous-code (bashrc)
+terminal-run: cat ~/.bashrc-git-prompt >> ~/.bashrc && rm ~/.bashrc-git-prompt
+terminal-wait-for-prompt
+terminal-run: clear
+terminal-run: source ~/.bashrc
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='git-prompt.webp' alt=''>
 
-## Git Remotes
+Links steht, ob der letzte Befehl geklappt hat (`✔`), dann das Verzeichnis und in eckigen Klammern der Branch und der Zustand: `✔` heißt, es gibt nichts zu committen. Darunter folgen die Uhrzeit und das `$`, hinter dem du tippst.
+
+## Gemeinsam arbeiten
+
+### Ein Remote anlegen
 
 In einem echten Projekt arbeitest du wahrscheinlich nicht alleine, sondern im Team. Damit mehrere Personen an demselben Repository arbeiten können, verwenden wir sogenannte »Remotes«. Ein Remote ist eine Kopie deines Repositories, die an einer anderen Stelle – also normalerweise auf einem anderen Computer oder Server – gespeichert ist.
 
@@ -473,6 +789,16 @@ git init --bare
 
 Im Terminal sollte jetzt Folgendes zu sehen sein:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: cd ~/git-tutorial
+terminal-run: mkdir remote-repo
+terminal-run: cd remote-repo
+terminal-run: git init --bare
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='git-init-bare.webp' alt=''>
 
 <div class='hint info'>
@@ -480,6 +806,13 @@ Ein »bare«-Repository ist ein spezieller Typ von Git-Repository, das kein Arbe
 </div>
 
 Mit dem Befehl `ls -l` kannst du sehen, dass in diesem Verzeichnis die üblichen Git-Ordner und -Dateien vorhanden sind, die sonst im <code>.git</code>-Verzeichnis eines normalen Repositories zu finden sind:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: ls -l
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='ls-bare.webp' alt=''>
 
@@ -490,13 +823,21 @@ cd ~/git-tutorial/alice
 git remote add origin ../remote-repo
 ```
 
-Der Befehl bewirkt nur, dass das Remote-Repository verknüpft wird, es gibt keine Ausgabe im Terminal. Ein Blick in die Datei `.git/config` zeigt jedoch, dass das Remote-Repository jetzt konfiguriert ist:
+Der Befehl bewirkt nur, dass das Remote-Repository verknüpft wird, es gibt keine Ausgabe im Terminal. Ein Blick in die Datei `.git/config` (`cat .git/config`) zeigt jedoch, dass das Remote-Repository jetzt konfiguriert ist:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: cd ~/git-tutorial/alice
+terminal-run: git remote add origin ../remote-repo
+terminal-run: cat .git/config
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='remote-config.webp' alt=''>
 
-
 <div class='hint info'>
-Der Befehl <code>git remote add</code> fügt ein neues Remote-Repository hinzu. In diesem Fall nennen wir das Remote <code>origin</code>, was der Standardname für das Haupt-Remote ist (wir könnten aber auch jeden anderen Namen wählen). Der Pfad <code>../remote-repo</code> gibt den Speicherort des Remote-Repositories an. In einem echten Szenario würde hier normalerweise eine URL zu einem entfernten Server stehen, die z. B. mit <code>https://</code> oder <code>git://</code> beginnt.
+Der Befehl <code>git remote add</code> fügt ein neues Remote-Repository hinzu. In diesem Fall nennen wir das Remote <code>origin</code>, was der Standardname für das Haupt-Remote ist (wir könnten aber auch jeden anderen Namen wählen). Der Pfad <code>../remote-repo</code> gibt den Speicherort des Remote-Repositories an. In einem echten Szenario würde hier normalerweise eine URL zu einem entfernten Server stehen, die z. B. mit <code>https://</code> oder <code>git@</code> beginnt.
 </div>
 
 Jetzt können wir unsere Änderungen an das Remote-Repository pushen. Verwende den folgenden Befehl, um den `main`-Branch zum ersten Mal zu pushen:
@@ -505,13 +846,20 @@ Jetzt können wir unsere Änderungen an das Remote-Repository pushen. Verwende d
 git push -u origin main
 ```
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git push -u origin main
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='git-push-origin-main.webp' alt=''>
 
 Die Option `-u` (oder `--set-upstream`) richtet eine Tracking-Verbindung zwischen dem lokalen `main`-Branch und dem Remote-Branch `origin/main` ein. Dadurch kannst du in Zukunft einfach `git push` oder `git pull` ausführen, ohne den Remote-Namen und den Branch-Namen angeben zu müssen (ansonsten müsstest du immer `git push origin main` schreiben).
 
 _task(gepusht)
 
-## Git Clone
+### Bob klont das Repository
 
 Um zu demonstrieren, wie mehrere Personen an demselben Repository arbeiten können, erstellen wir jetzt ein neues Verzeichnis für eine fiktive Person namens Bob:
 
@@ -533,17 +881,56 @@ Das Repository wird in ein neues Verzeichnis namens `remote-repo` geklont. Wechs
 cd remote-repo
 ```
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: cd ~/git-tutorial
+terminal-run: mkdir bob
+terminal-run: cd bob
+terminal-run: git clone ../remote-repo
+terminal-run: cd remote-repo
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='git-clone.webp' alt=''>
 
-Bob hat jetzt eine vollständige Kopie des Repositories, einschließlich der gesamten Versionsgeschichte. Öffne die Datei `README.md` mit dem Editor `nano`, um sie zu bearbeiten:
+Bob hat jetzt eine vollständige Kopie des Repositories, einschließlich der gesamten Versionsgeschichte. Öffne die Datei `README.md` mit dem Editor `nano` und ergänze die letzte Zeile, sodass dort `:) (Bob was here)` steht:
 
 ```bash
 nano README.md
 ```
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: nano README.md
+wait-for-text: GNU nano
+press: ArrowDown
+press: ArrowDown
+press: ArrowDown
+press: ArrowDown
+press: End
+press: Space
+type: (Bob was here)
+sleep: 0.5
+crop-terminal-lines: 99
+-->
+
 <img class='full' src='bob-was-here.webp' alt=''>
 
 Speichere die Datei mit <kbd>Strg</kbd><kbd>O</kbd> und <kbd>Enter</kbd> und schließe den Editor mit <kbd>Strg</kbd><kbd>X</kbd>. Mit `git diff` kann Bob seine Änderungen überprüfen:
+
+<!-- tutorial-screenshot
+press: Control+O
+wait-for-text: File Name to Write
+press: Enter
+wait-for-text: Wrote
+press: Control+X
+terminal-wait-for-prompt
+terminal-run: clear
+terminal-run: git diff
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='git-diff-bob.webp' alt=''>
 
@@ -553,6 +940,13 @@ Wir haben nun drei Möglichkeiten, wie Bob seine Änderungen committen kann:
 2. `git commit -a -m "Bob was here"`
 3. `git commit -a` – bei dieser Variante öffnet sich ein Texteditor, in dem Bob seine Commit-Nachricht eingeben kann.
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git commit -a -m "Bob was here"
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='bob-commit.webp' alt=''>
 
 <div class='hint info'>
@@ -561,7 +955,16 @@ Achtung: Die Änderungen liegen immer noch komplett bei Bob lokal vor. Der Objek
 
 Um die Änderungen an das Remote-Repository zu senden, verwendet Bob den Befehl `git push`:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git push
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='bob-push.webp' alt=''>
+
+### Alice holt Bobs Änderung
 
 Wechsle nun wieder in das Verzeichnis von Alice:
 
@@ -571,13 +974,28 @@ cd ~/git-tutorial/alice
 
 Mit dem Befehl `git pull` kann Alice die Änderungen von Bob in ihr lokales Repository holen und mit ihrem aktuellen Stand zusammenführen:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: cd ~/git-tutorial/alice
+terminal-run: git pull
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='alice-pull.webp' alt=''>
 
-Alice sieht, dass die Datei `README.md` aktualisiert wurde und jetzt auch Bobs Änderung enthält:
+Alice sieht mit `cat README.md`, dass die Datei aktualisiert wurde und jetzt auch Bobs Änderung enthält:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: cat README.md
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='alice-cat-readme.webp' alt=''>
 
-## Merge-Konflikte
+### Merge-Konflikte
 
 Wenn Alice und Bob gleichzeitig an derselben Datei arbeiten und ihre Änderungen nicht kompatibel sind, entsteht ein Merge-Konflikt. Um dies zu demonstrieren, ändern wir die Datei `README.md` sowohl bei Alice als auch bei Bob.
 
@@ -593,9 +1011,31 @@ Vorhin haben wir <code>&gt;</code> verwendet, um eine Ausgabe in eine Datei umzu
 
 Überprüfe die Änderungen mit `cat` und `git diff`:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: echo "HEYYYY" >> README.md
+terminal-run: cat README.md
+terminal-run: git diff
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='alice-conflict-edit-diff.webp' alt=''>
 
 Alice committet ihre Änderungen und pusht sie zum Remote-Repository:
+
+```bash
+git commit -a -m "HEYYYY"
+git push
+```
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git commit -a -m "HEYYYY"
+terminal-run: git push
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='alice-conflict-commit-push.webp' alt=''>
 
@@ -613,17 +1053,46 @@ echo "HOLAAA" >> README.md
 
 Er überprüft seine Änderungen mit `git diff` und committet sie:
 
+```bash
+git diff
+git commit -a -m "HOLAAA"
+```
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: cd ~/git-tutorial/bob/remote-repo
+terminal-run: echo "HOLAAA" >> README.md
+terminal-run: git diff
+terminal-run: git commit -a -m "HOLAAA"
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='bob-conflict-edit-diff-commit.webp' alt=''>
 
 Wenn Bob jetzt versucht, seine Änderungen zu pushen, erhält er eine Fehlermeldung, da Alice bereits Änderungen gepusht hat, die Bob noch nicht in seinem lokalen Repository hat:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git push
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='bob-conflict-push-error.webp' alt=''>
 
 Um die Änderungen von Alice zu holen und mit seinen eigenen zusammenzuführen, führt Bob den Befehl `git pull` aus:
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git pull
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='bob-conflict-pull-error.webp' alt=''>
 
-Auch hier erhält Bob eine Fehlermeldung, die besagt, dass es einen Merge-Konflikt gibt, da divergente Branches existieren, also Alice und Bob gleichzeitig an derselben Datei gearbeitet haben. Für die Konfliktbehebung gibt es verschiedene Möglichkeiten, von denen wir jetzt eine Default-Strategie für unser lokales Repository wählen sollen. Die Möglichkeiten sind:
+Auch hier erhält Bob eine Fehlermeldung: Sein Branch und der von Alice haben sich auseinanderentwickelt (»divergent branches«), weil beide gleichzeitig an derselben Datei gearbeitet haben. Git möchte wissen, wie es die beiden Stände in Zukunft zusammenführen soll, und bietet drei Strategien an, von denen wir eine als Voreinstellung für unser lokales Repository wählen sollen:
 
 1. `git config pull.rebase false` – Standard-Merge-Strategie
 2. `git config pull.rebase true` – Rebase-Strategie
@@ -640,9 +1109,25 @@ git config pull.rebase false
 git pull
 ```
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git config pull.rebase false
+terminal-run: git pull
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='bob-pull-conflict.webp' alt=''>
 
 Wir sehen, dass Git den Merge-Konflikt in der Datei `README.md` markiert hat. Bob muss die Datei jetzt manuell bearbeiten, um den Konflikt zu lösen. Öffne die Datei `README.md` in einem Texteditor (`nano README.md`):
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: nano README.md
+wait-for-text: GNU nano
+sleep: 0.5
+crop-terminal-lines: 99
+-->
 
 <img class='full' src='bob-resolve-conflict.webp' alt=''>
 
@@ -650,21 +1135,62 @@ _task(konflikt)
 
 Hier siehst du die Konfliktmarkierungen:
 
-```c
+```text
 <<<<<<< HEAD
 HOLAAA
 =======
 HEYYYY
->>>>>>> ef91739f955f1e0c761caaaea48c7261d5ce24ab
+>>>>>>> ef91739…
 ```
 
-Die Markierungen `<<<<<<<`, `=======` und `>>>>>>>` zeigen die Bereiche an, in denen der Konflikt aufgetreten ist. Der obere Abschnitt enthält Bobs lokale Änderungen, während der untere Abschnitt die Änderungen des Remote-Repository (also Alices Änderungen) enthält.
+Die Markierungen `<<<<<<<`, `=======` und `>>>>>>>` zeigen die Bereiche an, in denen der Konflikt aufgetreten ist. Der obere Abschnitt enthält Bobs lokale Änderungen, während der untere Abschnitt die Änderungen des Remote-Repository (also Alices Änderungen) enthält. Hinter `>>>>>>>` steht die ID von Alices Commit.
 
-Bob muss sich jetzt entscheiden, wie er den Konflikt lösen möchte. Er könnte zum Beispiel beide Änderungen manuell zusammenführen:
+Bob muss sich jetzt entscheiden, wie er den Konflikt lösen möchte. Er könnte zum Beispiel beide Änderungen durch eine dritte ersetzen und die drei Markierungszeilen löschen, sodass in der Datei Folgendes steht:
+
+```markdown
+Hello, planet!
+
+Git is awesome!
+
+:) (Bob was here)
+BONJOUR!
+```
+
+<div class='hint'>
+Ganze Zeilen löschst du in <code>nano</code> am einfachsten mit <kbd>Entf</kbd> oder der Rücktaste. Die Tastenkombination <kbd>Strg</kbd><kbd>K</kbd>, mit der <code>nano</code> sonst eine Zeile ausschneidet, fängt im Workspace Visual Studio Code ab. Du kannst die Datei auch im Editor von Visual Studio Code öffnen und dort bearbeiten.
+</div>
+
+<!-- tutorial-screenshot
+press: Control+X
+terminal-wait-for-prompt
+write-file: git-tutorial/bob/remote-repo/README.md <- previous-code
+terminal-run: clear
+terminal-run: nano README.md
+wait-for-text: GNU nano
+sleep: 0.5
+crop-terminal-lines: 99
+-->
 
 <img class='full' src='bob-bonjour.webp' alt=''>
 
 Speichere die Datei und beende den Editor. Bob muss den Konflikt nun als gelöst markieren, indem er die Datei mit `git add` zur Staging Area hinzufügt. Anschließend kann er den Merge-Commit, der durch den Pull-Vorgang erstellt wurde und zunächst aufgrund des Konflikts unvollständig war, abschließen und danach seine Änderungen pushen:
+
+```bash
+git add README.md
+git commit -m "fixed merge conflict"
+git push
+```
+
+<!-- tutorial-screenshot
+press: Control+X
+terminal-wait-for-prompt
+terminal-run: clear
+terminal-run: git add README.md
+terminal-run: git commit -m "fixed merge conflict"
+terminal-run: git push
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
 
 <img class='full' src='bob-complete-merge-push.webp' alt=''>
 
@@ -672,9 +1198,19 @@ Alice hat von dem Merge-Konflikt nichts mitbekommen, da Bob den Konflikt lokal g
 
 _task(bob)
 
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: cd ~/git-tutorial/alice
+terminal-run: git pull
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
 <img class='full' src='alice-pull-after-conflict.webp' alt=''>
 
-## Tags
+## Nützlich für später
+
+### Tags
 
 Tags sind eine Möglichkeit, bestimmte Punkte in der Versionsgeschichte zu markieren, z.B. für Releases oder wichtige Meilensteine. Wir erstellen jetzt einen Tag namens `v1.0` für den aktuellen Commit im `main`-Branch:
 
@@ -685,6 +1221,19 @@ git tag -a v1.0 -m "v1.0 release"
 <div class='hint info'>
 Der Befehl <code>git tag -a</code> erstellt einen annotierten Tag. Annotierte Tags enthalten zusätzliche Informationen wie den Tag-Namen, die Commit-ID, den Autor und eine Nachricht. Dies ist nützlich, um wichtige Punkte in der Versionsgeschichte zu markieren.
 </div>
+
+Mit `git log --oneline --graph` siehst du die ganze Geschichte auf einen Blick, mit dem Tag und den Verzweigungen, die Alice und Bob hinterlassen haben:
+
+<!-- tutorial-screenshot
+terminal-run: clear
+terminal-run: git tag -a v1.0 -m "v1.0 release"
+terminal-run: clear
+terminal-run: git log --oneline --graph
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+
+<img class='full' src='git-log-graph.webp' alt=''>
 
 _task(tags)
 
@@ -704,7 +1253,7 @@ git push origin --tags
 Branches werden beim Push normal mit übertragen, Tags aber nicht automatisch — deshalb muss man sie extra pushen.
 </div>
 
-## Git checkout
+### Zu einem Stand springen
 
 Um zu einem bestimmten Branch oder Tag zurückzukehren, verwenden wir den Befehl `git checkout`. Du kannst also z. B. folgende Befehle verwenden:
 
@@ -717,35 +1266,16 @@ Beachte, dass das Auschecken eines Tags oder eines älteren Commits dazu führt,
 dass du dich in einem »detached HEAD«-Zustand befindest. In diesem Zustand kannst du keine neuen Commits zu einem Branch hinzufügen, da <code>HEAD</code> nicht auf einen Branch zeigt. Wenn du Änderungen vornehmen möchtest, solltest du stattdessen von dieser Stelle aus einen neuen Branch erstellen.
 </div>
 
-## Fehler rückgängig machen
+### Fehler rückgängig machen
 
-Manchmal möchtest du vielleicht Änderungen an Dateien rückgängig machen. Hierzu gibt es verschiedene Möglichkeiten:
+Manchmal möchtest du vielleicht Änderungen an Dateien rückgängig machen. Welcher Befehl passt, hängt davon ab, wie weit die Änderung schon gekommen ist:
 
-### Wenn die Änderungen noch nicht gestaged sind
-
-Wenn du Änderungen an einer Datei verwerfen möchtest, die noch nicht in der Staging Area sind, kannst du sie mit `git restore` auf den Stand des letzten Commits zurücksetzen:
-
-```bash
-git restore README.md
-```
-
-### Wenn die Änderungen bereits gestaged sind
-
-Wenn du eine Datei aus der Staging Area entfernen möchtest (ohne die Änderung im Arbeitsverzeichnis zu verlieren), verwende:
-
-```bash
-git restore --staged README.md
-```
-
-Du kannst danach immer noch `git restore README.md` verwenden, um die Änderungen im Arbeitsverzeichnis zu verwerfen, falls gewünscht.
-
-### Wenn du einen Commit rückgängig machen möchtest
-
-Um den letzten Commit rückgängig zu machen, kannst du den Befehl `git revert HEAD` verwenden. Dies erstellt einen neuen Commit, der die Änderungen des letzten Commits rückgängig macht:
-
-```bash
-git revert HEAD
-```
+<table class='table table-sm'>
+<tr><th>Die Änderung ist …</th><th>Befehl</th><th>Was passiert</th></tr>
+<tr><td>nur im Arbeitsverzeichnis</td><td><code>git restore README.md</code></td><td>Die Datei ist wieder auf dem Stand des letzten Commits. Die Änderung ist weg.</td></tr>
+<tr><td>mit <code>git add</code> bereitgelegt</td><td><code>git restore --staged README.md</code></td><td>Die Änderung kommt aus der Staging Area zurück ins Arbeitsverzeichnis; verloren geht nichts. Danach geht es weiter wie in der Zeile darüber.</td></tr>
+<tr><td>schon committet</td><td><code>git revert HEAD</code></td><td>Ein neuer Commit hebt den letzten auf.</td></tr>
+</table>
 
 <div class='hint warning'>
 Denke daran, dass Knoten im Git-Objektgraphen niemals gelöscht werden. Selbst wenn du einen Commit rückgängig machst, bleibt der ursprüngliche Commit weiterhin in der Versionsgeschichte erhalten – es wird nur ein neuer Commit erstellt, der die Änderungen des ursprünglichen Commits aufhebt.
@@ -755,5 +1285,12 @@ _task(rueckgaengig)
 
 ## Zusammenfassung
 
-In diesem Tutorial haben wir die Grundlagen von Git kennengelernt, einschließlich der Erstellung eines Repositories, dem Hinzufügen und Committen von Dateien, dem Arbeiten mit Branches und Merges sowie dem Umgang mit Remotes. Wir haben auch gesehen, wie
-man Merge-Konflikte löst und Tags verwendet. Mit diesem Wissen bist du nun in der Lage, Git effektiv für die Versionskontrolle deiner Projekte zu nutzen. Viel Erfolg bei deinen zukünftigen Projekten!
+<table class='table table-sm'>
+<tr><th>Alleine</th><td><code>git init</code>, <code>git status</code>, <code>git add</code>, <code>git commit -m</code>, <code>git commit -a</code>, <code>git mv</code>, <code>git diff</code>, <code>git log</code></td></tr>
+<tr><th>Zeitreise</th><td><code>git checkout HEAD~2</code>, <code>git checkout main</code>, <code>git restore</code>, <code>git revert</code></td></tr>
+<tr><th>Branches</th><td><code>git branch</code>, <code>git checkout</code>, <code>git merge</code>, <code>git branch -d</code>, <code>.gitignore</code></td></tr>
+<tr><th>Gemeinsam</th><td><code>git init --bare</code>, <code>git remote add</code>, <code>git push -u</code>, <code>git clone</code>, <code>git pull</code>, <code>git config pull.rebase false</code></td></tr>
+<tr><th>Markieren</th><td><code>git tag -a</code>, <code>git push origin --tags</code></td></tr>
+</table>
+
+Mit diesem Wissen kannst du Git für deine eigenen Projekte nutzen. Wie du mit GitLab arbeitest, steht im Handbuch unter [Git und GitLab](/reference/gitlab).
