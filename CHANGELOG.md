@@ -445,6 +445,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   wenn der Workspace aus ist: in einem Lese-Container mit demselben Image,
   ohne Netz, der Ordner nur lesbar. Bisher hieß es dann »Starte zuerst
   deinen Workspace«, auch auf der Klassenseite.
+- Auf dem Tablet bleiben die Schalter auf breiten Bildern (CRT-Filter,
+  Anaglyph, dunkel) rechts oben stehen, während man das Bild zur Seite
+  schiebt; bisher lagen sie am rechten Rand des Bildes, außer Sicht.
 - Handbuch »Interaktive Geschichten«: die 17 Abschnitte in sechs Gruppen
   (Eine Geschichte schreiben, Was sich die Geschichte merkt, Ordnung im
   Projekt, Gestalten, Für Fortgeschrittene, Wenn etwas nicht klappt), mit

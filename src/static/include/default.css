@@ -1801,6 +1801,12 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     max-width: 100%;
 }
 
+/* Around an image's sideways scroller: as wide as the text, not as the
+   image, so the switches stay where they are while it scrolls. */
+.media-variant-box-scroll {
+    display: block;
+}
+
 /* Around a preview that enlarges on a click (tutorial-preview.css): the box
    floats where the preview did, the preview fills it. */
 .media-variant-box-preview {

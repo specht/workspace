@@ -120,9 +120,15 @@
         // A preview that enlarges on a click is a button itself; the
         // switches go beside it, not into it.
         const preview = element.closest('.tutorial-preview');
-        const framed = preview || element;
+        // A wide image scrolls sideways in its .scroll-x (on a tablet): the
+        // box goes around the scrolling part, so the switches stay in the
+        // visible top right corner while the image moves beneath them.
+        const scroller = !preview && element.parentElement && element.parentElement.classList.contains('scroll-x')
+            ? element.parentElement : null;
+        const framed = preview || scroller || element;
         const box = document.createElement('span');
-        box.className = preview ? 'media-variant-box media-variant-box-preview' : 'media-variant-box';
+        box.className = preview ? 'media-variant-box media-variant-box-preview'
+            : scroller ? 'media-variant-box media-variant-box-scroll' : 'media-variant-box';
         framed.parentNode.insertBefore(box, framed);
         box.appendChild(framed);
         const bar = document.createElement('span');
