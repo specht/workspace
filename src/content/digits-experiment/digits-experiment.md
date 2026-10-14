@@ -20,6 +20,8 @@ In diesem Artikel bekommst du eine Schritt-für-Schritt-Anleitung. Lies sie gena
 
 ## Vorbereitung
 
+### Repository klonen
+
 Für diese Anleitung brauchst du die Vorlage des Experiments:
 
 _include(workspace#repository-klonen)
@@ -27,6 +29,8 @@ _include(workspace#repository-klonen)
 Du siehst nun auf der linken Seite ein paar Verzeichnisse und Dateien, die wir für dieses Experiment verwenden werden.
 
 <img class='full' src='lets-start.webp' alt=''>
+
+### Python-Umgebung einrichten
 
 Öffne nun ein Terminal, indem du z. B. <kbd>Strg</kbd><kbd>J</kbd> drückst:
 
@@ -54,7 +58,7 @@ Wenn du zwischendurch diesen Hinweis siehst (s. oben rechts), kannst du mit »Ye
 
 Du hast nun zwei Möglichkeiten: entweder verwendest du fertige Scans mit handgeschriebenen Ziffern, oder du schreibst selbst Ziffern &ndash; das ist natürlich viel spannender, weil du in diesem Fall dein neuronales Netzwerk mit deinen eigenen Daten trainieren wirst. In jedem Fall brauchst du mindestens zwei Seiten mit handgeschriebenen Ziffern als Trainingsmaterial.
 
-<b>Variante 1: Fertige Scans verwenden</b>
+### Variante 1: Fertige Scans verwenden
 
 Du kannst diese Seiten im PNG-Format hier herunterladen und per Drag & Drop in deinem Workspace in das Verzeichnis `01-pages` ziehen:
 
@@ -62,7 +66,7 @@ Du kannst diese Seiten im PNG-Format hier herunterladen und per Drag & Drop in d
 <a href='/cache/blatt2.png' target='_blank'><img src='blatt2.png' data-noconvert='1' style='height: 16em; box-shadow: 0 0 2px rgba(0,0,0,0.5);' alt='Trainingsblatt 2 mit Feldern für handgeschriebene Ziffern.'></a>
 <a href='/cache/blatt3.png' target='_blank'><img src='blatt3.png' data-noconvert='1' style='height: 16em; box-shadow: 0 0 2px rgba(0,0,0,0.5);' alt='Trainingsblatt 3 mit Feldern für handgeschriebene Ziffern.'></a>
 
-<b>Variante 2: Ziffern selbst schreiben</b>
+### Variante 2: Ziffern selbst schreiben
 
 Drucke <a href='/docs/grid-digits.pdf' target='_blank'>diese PDF-Vorlage</a> ohne zusätzliche Seitenränder zweimal aus und trage in jedes Feld die entsprechenden Ziffern ein. Scanne die Blätter anschließend mit einer Auflösung von 300 dpi, speichere sie im PNG-Format und ziehe sie per Drag & Drop in deinen Workspace in das Verzeichnis `01-pages`.
 
@@ -76,6 +80,8 @@ Stelle sicher, dass du mindestens zwei Bilddateien im Verzeichnis `01-pages` has
 
 <img class='full' src='pages-ready.webp' alt=''>
 
+### Das Notebook starten
+
 Öffne nun das erste Jupyter-Notebook `01-prepare-training-data.ipynb`, und führe den ersten Codeblock aus, indem du auf das Play-Symbol klickst.
 
 Bevor der Code ausgeführt werden kann, musst du noch einen Python-Interpreter auswählen. Bestätige die Auswahl »Python Environments« und »★ .venv (Python 3.12.3)«:
@@ -83,6 +89,8 @@ Bevor der Code ausgeführt werden kann, musst du noch einen Python-Interpreter a
 <img class='full' src='choose-kernel.webp' alt=''>
 
 <img class='full' src='python-venv.webp' alt=''>
+
+### Helligkeit und Kontrast
 
 Im ersten Schritt werden die Helligkeit und der Kontrast der eingescannten Seiten automatisch angepasst:
 
@@ -92,6 +100,8 @@ Im nächsten Schritt siehst du den Effekt der Farbanpassung:
 
 <img class='full' src='step-2.webp' alt='Vorher-nachher-Vergleich: Graue handgeschriebene Ziffern werden kontrastreich schwarz auf weiß dargestellt.'>
 
+### Rahmen erkennen
+
 Wenn die Bilder korrekt angezeigt werden, führe den nächsten Codeblock aus. In diesem Schritt werden die gedruckten Rahmen in jeder Bilddatei gesucht:
 
 <img class='full' src='detect-frame.webp' alt=''>
@@ -99,6 +109,8 @@ Wenn die Bilder korrekt angezeigt werden, führe den nächsten Codeblock aus. In
 Der nächste Schritt zeigt dir, wo die Rahmen gefunden wurden:
 
 <img class='full' src='frames.webp' alt='Rote Rahmen markieren die automatisch erkannten Bereiche der drei ausgefüllten Trainingsblätter.'>
+
+### Ziffern ausschneiden
 
 Wenn das Ergebnis zufriedenstellend aussieht, führe den nächsten Codeblock aus. In diesem Schritt werden die einzelnen Ziffern aus den Bildern ausgeschnitten:
 
@@ -124,6 +136,8 @@ Bevor du den ersten Codeblock starten kannst, musst du wieder den Kenrel in ».v
 
 <img class='full' src='train-groups.webp' alt=''>
 
+### Die Architektur des Modells
+
 Im nächsten Schritt wird die Architektur des Modells festgelegt. Es handelt sich um ein einfaches neuronales Netzwerk mit vier Schichten:
 
 - die erste Schicht ist ein »Flatten Layer«, das die 28x28 Pixel großen Bilder in einen Vektor mit 784 Elementen umwandelt.
@@ -133,6 +147,8 @@ Im nächsten Schritt wird die Architektur des Modells festgelegt. Es handelt sic
 <img class='full' src='architecture.webp' alt=''>
 
 Dieses Modell verfügt über eine Gesamtzahl von 89.610 Parametern, die während des Trainings optimiert werden.
+
+### Training
 
 Wir sind jetzt bereit, das Modell zu trainieren. Klicke auf das Play-Symbol, um den Codeblock auszuführen. Nach 30 Trainingsepochen ist das Training beendet.
 
@@ -145,6 +161,8 @@ Du kannst hier gut beboachten, wie der »Loss« immer geringer wird – am Anfan
 Im nächsten Schritt wird das Modell im Verzeichnis `05-model` gespeichert:
 
 <img class='full' src='saved-model.webp' alt=''>
+
+### Das Modell testen
 
 Jetzt ermitteln wir, wie gut das Modell ist. Dazu verwenden wir die Testdaten, die wir zuvor beiseite gelegt haben. Die wichtigen Kennwerte sind der Verlust (loss) und die Genauigkeit (accuracy):
 
@@ -180,6 +198,8 @@ Versuche, die Grenze zwischen zwei Ziffern zu finden, um zu sehen, wie das Model
 
 Um unser Modell zu verbessern, können wir ein [Convolutional Neural Network](https://de.wikipedia.org/wiki/Convolutional_Neural_Network) (CNN) verwenden. Dabei werden die Pixel nicht mehr unabhängig voneinander betrachtet, sondern unter Berücksichtigung ihrer Lage zueinander.
 
+### Die neue Architektur
+
 Um ein CNN zu verwenden, scrolle nach oben zum Abschnitt »Architektur des Modells« und setze die Variable `use_model` auf den Wert 2. Führe dann diesen und alle folgenden Codeblöcke erneut aus.
 
 <img src='model-2.webp' class='full' alt=''>
@@ -198,6 +218,8 @@ Das verbesserte Modell verfügt über eine Gesamtzahl von 225.034 Parametern, al
 
 <img class='full' src='new-model-parameters.webp' alt=''>
 
+### Training und Test
+
 Da das neue Modell mehr Parameter hat, dauert das Training auch länger. Nach 30 Epochen ist das Training beendet:
 
 <img class='full' src='second-training-finished.webp' alt=''>
@@ -214,6 +236,8 @@ Die Testbilder sehen jetzt so aus:
 
 <img class='full' src='test-bitmaps-2.webp' alt='Das zweite Modell erkennt fast alle handgeschriebenen Ziffern im Testraster korrekt.'>
 
+### Im Browser ausprobieren
+
 Um das Modell im Browser zu testen, musst du es erst wieder konvertieren:
 
 <img class='full' src='convert-again.webp' alt=''>
@@ -221,6 +245,8 @@ Um das Modell im Browser zu testen, musst du es erst wieder konvertieren:
 Wenn du das Modell im Webbrowser testest, siehst du, wie die Pixel nicht mehr im ersten Schritt voneinander getrennt werden, sondern über mehrere Schichten hinweg im Quadrat angeordnet gemeinsam behandelt werden:
 
 <img class='full' src='interactive-2.webp' alt='Das faltende neuronale Netz erkennt eine gezeichnete 4 und zeigt die Aktivierungen seiner Filter und Schichten.'>
+
+### Weiter experimentieren
 
 Falls du ein noch besseres Modell haben möchtest, kannst du die Anzahl der Epochen erhöhen oder die Architektur des Modells weiter anpassen. Du kannst auch die Anzahl der Trainingsdaten erhöhen, indem du mehr Blätter mit handgeschriebenen Ziffern verwendest. Hier findest du weitere Blätter, die du verwenden kannst:
 

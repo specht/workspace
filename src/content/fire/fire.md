@@ -31,6 +31,8 @@ Der Feuereffekt basiert auf einem Farbverlauf von Schwarz über Rot, Orange und 
 - Orange bis Gelb (Farben 32 bis 47)
 - Gelb bis Weiß (Farben 48 bis 63)
 
+### Die Palette anzeigen
+
 Um den Farbverlauf zu programmieren, beginnen wir mit einem kleinen Programm, das uns die ersten 64 Farben ausgibt. So können wir kontrollieren, ob die Farben korrekt sind. Erstelle eine neue Datei namens `fire.rb` und füge folgenden Code ein:
 
 ```ruby
@@ -92,6 +94,8 @@ Diese 64 Farben sollen nun durch unseren Farbverlauf ersetzt werden. Dazu schaue
     </g>
 </svg>
 
+### Schwarz bis Dunkelrot
+
 Im ersten Abschnitt sehen wir, dass Grün und Blau auf 0 gesetzt sind, während Rot von 0 auf 50% ansteigt. Da jeder Farbkanal einen Wert von 0 bis 255 annehmen kann, entspricht 50% einem Wert von ca. 128. Der Farbverlauf beginnt also bei Schwarz (0, 0, 0) und endet bei Dunkelrot (128, 0, 0). Der erste Abschnitt umfasst 16 Farben, wir müssen also den Rotwert in jedem Schritt um 8 erhöhen, um nach 16 Schritten bei 128 zu landen. Ändere den Code wie folgt:
 
 ```ruby
@@ -115,6 +119,8 @@ Dein Bild sollte jetzt so aussehen:
 
 <img src='ramp1.webp' class='full' alt='Der Anfang der Palette bildet einen Verlauf von Schwarz zu Dunkelrot.'>
 
+### Dunkelrot bis Orange
+
 Im zweiten Abschnitt steigt der Grünwert von 0 auf 50% an, während Rot weiter von 50% auf 100% wächst. Blau bleibt weiterhin auf 0.
 Der Farbverlauf geht also von Dunkelrot (128, 0, 0) zu Orange (255, 128, 0). Füge folgenden Code direkt hinter dem `set_palette`-Aufruf ein:
 
@@ -126,6 +132,8 @@ Dein Farbverlauf sollte nun so aussehen:
 
 <img src='ramp2.webp' class='full' alt='Der Farbverlauf reicht von Schwarz über Rot bis Orange.'>
 
+### Orange bis Gelb
+
 Im dritten Abschnitt steigt der Grünwert von 50% auf 100% an, während Blau von 0 auf 50% ansteigt. Rot bleibt bei 100%. Der Farbverlauf geht also von Orange (255, 128, 0) zu Gelb (255, 255, 128). Füge folgenden Code ein:
 
 ```ruby
@@ -135,6 +143,8 @@ set_palette(i + 32, 255, i * 8 + 128, i * 8);
 Dein Farbverlauf sollte nun so aussehen:
 
 <img src='ramp3.webp' class='full' alt='Der Farbverlauf reicht von Schwarz über Rot und Orange bis Gelb.'>
+
+### Gelb bis Weiß
 
 Im vierten Abschnitt steigt der Blauwert von 50% auf 100% an, während Rot und Grün bei 100% bleiben. Der Farbverlauf geht also von Gelb (255, 255, 128) zu Weiß (255, 255, 255). Füge folgenden Code ein:
 
@@ -239,6 +249,8 @@ Hier siehst du ein paar Beispiele:
 
 Im ersten Beispiel (»Identity«) wird der Pixelwert unverändert übernommen und alle umliegenden Pixel ignoriert. Im zweiten Beispiel (»Box blur«) wird der Pixelwert mit den Werten der umliegenden Pixel gemittelt, um einen Weichzeichnungseffekt zu erzielen. Im dritten Beispiel (»Edge detection«) wird der Pixelwert so berechnet, dass Kanten im Bild hervorgehoben werden.
 
+### Der Filterkernel für Feuer
+
 Wird ein Filterkernel wiederholt auf ein Bild angewendet, entsteht ein Effekt, der sich über die gesamte Bildfläche ausbreitet. Der Feuereffekt verwendet einen speziellen Filterkernel, der die Farben von Pixeln nach oben bewegt und dabei abkühlt. Der Filterkernel sieht folgendermaßen aus:
 
 <div style='max-width: 20em; margin-left: auto; margin-right: auto; position: relative;'>
@@ -255,6 +267,8 @@ Wird ein Filterkernel wiederholt auf ein Bild angewendet, entsteht ein Effekt, d
 Der Filterkernel ist also sehr ähnlich zu einem »Box blur«-Filter, jedoch wird hier der untere Pixel doppelt gewichtet und der obere Pixel weggelassen, so dass sich die Farbe minimal nach oben bewegt.
 
 ## Feueranimation
+
+### Den Filterkernel anwenden
 
 Wir können den Filterkernel in unserem Programm verwenden, um den Feuereffekt zu erzeugen. Dazu müssen wir den Filterkernel auf jeden Pixel anwenden und die Farben entsprechend anpassen. Füge folgenden Code über der `flip()`-Zeile ein:
 
@@ -280,6 +294,8 @@ Deine Animation sollte nach einer kleinen Weile nun so aussehen:
 
 <img src='fire2.png' class='full' style='image-rendering: pixelated;' alt='Die Farbwerte steigen als weicher Verlauf vom hellen unteren Rand nach oben.'>
 
+### Zufällige Variation
+
 Wir sehen, dass die hellen Pixel langsam nach oben wandern und dabei abkühlen, wobei sie eine andere Farbe annehmen. Das Problem ist jedoch, dass das Ergebnis zu glatt und nicht wirklich wie ein Feuer aussieht. Um das zu beheben, fügen wir noch ein paar zufällige Farbvariationen hinzu. Füge folgenden Code vor der `set_pixel`-Zeile ein:
 
 ```ruby
@@ -290,6 +306,8 @@ c += rand(7) - 3
 Da uns `rand(7)` eine zufällige Zahl im Bereich von 0…6 zurückgibt, subtrahieren wir 3, um Werte von -3 bis +3 zu erhalten. Das Ergebnis wird dann auf den Mittelwert addiert, um eine zufällige Variation zu erzeugen. Das Ergebnis sieht schon vielversprechender aus:
 
 <img src='fire3.png' class='full' style='image-rendering: pixelated;' alt='Das erste verrauschte Feuer enthält noch unpassende bunte Farbflecken.'>
+
+### Den Wertebereich begrenzen
 
 <div class='hint think'>
 Hast du eine Idee, woran es liegen könnte, dass wir in den hellen und dunklen Bereichen falsche Farben bekommen?
@@ -306,6 +324,8 @@ Dein Ergebnis sollte nun so aussehen:
 
 <img src='fire4.png' class='full' style='image-rendering: pixelated;' alt='Das korrigierte Feuer besteht aus gelben, orangefarbenen und roten Flammen.'>
 
+### Kalte Luft bleibt dunkel
+
 Wir sind nun fast fertig – wir müssen nur noch dafür sorgen, dass nicht die gesamte Luft »glüht« – wir können dies erreichen, in dem wir die zufällige Variation nur anwenden, wenn unser Pixel nicht schon ganz schwarz ist. Ändere die Zeile mit dem `rand`-Aufruf wie folgt:
 
 ```ruby
@@ -319,6 +339,8 @@ In Ruby können wir statt der normalen <code>if</code>-Syntax auch die Kurzform 
 Dein Feuereffekt sollte nun so aussehen:
 
 <img src='fire5.png' class='full' style='image-rendering: pixelated;' alt='Das fertige Pixelfeuer steigt vor schwarzem Hintergrund in gelben, orangefarbenen und roten Flammen auf.'>
+
+### Das ganze Programm
 
 Das gesamte Programm sieht nun so aus:
 
