@@ -1,37 +1,49 @@
 <div class='meta'>
 image: xkcd-327.webp:0:50
+kind: labor
+language: Ruby / SQL
+duration: 1 Doppelstunde
+requires: [mysql]
+reference: [sql]
+</div>
+
+<div
+    class="autotoc-secondary-trigger"
+    data-title="Auf dieser Seite"
+    data-levels="h2,h3">
 </div>
 
 # SQL Injection
 
 <p class='abstract'>
-In diesem Kapitel lernst du, wie Angreifer durch geschickte Manipulation
-von Nutzereingaben in Webformularen Zugriff auf Datenbanken erlangen können.
-Dies funktioniert, wenn die Software, die die Eingaben verarbeitet, nicht
-sorgfältig genug programmiert wurde.
-Dazu werden wir uns zuerst eine neue Datenbank für unser Experiment anlegen,
-die wir dann mit einigen Testdaten füllen.</p>
+Viele Programme bauen aus dem, was jemand in ein Formular tippt, eine SQL-Abfrage. Geschieht das unvorsichtig, kann eine geschickte Eingabe die Abfrage selbst verändern. In diesem Labor schreibst du ein kleines Anmeldeprogramm, findest seine Lücke in deiner eigenen Testdatenbank und schließt sie mit einem Prepared Statement.
+</p>
 
-## Test-Datenbank anlegen
+<div class='hint'>
+Das Eindringen in fremde Computersysteme und das Ausspähen von Daten ist strafbar. Probiere alles auf dieser Seite nur an deinem eigenen Programm und deiner eigenen Testdatenbank aus. Mehr dazu steht am <a href='#5-wichtiger-hinweis'>Ende der Seite</a>.
+</div>
 
-Erstelle eine neue Datenbank in deinem [Workspace-Profil](/profil) und kopiere den Namen der Datenbank in die Zwischenablage, da wir ihn später benötigen werden. In diesem Tutorial werden wir die Datenbank `db_1234` nennen – ersetze diese Bezeichnung
-also immer durch den Namen deiner Datenbank.
+## Eine Testdatenbank
 
-Öffne ein Terminal im Workspace und gib den folgenden Befehl ein, um die Testdaten
-herunterzuladen:
+Für dieses Labor bekommst du eine eigene, leere Datenbank, die du danach wieder löschen kannst. Öffne dein [Profil](/profil) und klicke unter MySQL auf »Weitere Datenbank erstellen«. Sie heißt zum Beispiel `db_1234`; ersetze diesen Namen auf dieser Seite immer durch den Namen deiner Datenbank.
+
+Unter der neuen Datenbank stehen »Zugangsdaten nur für diese Datenbank«: ein Benutzername, der genauso heißt wie die Datenbank, und ein Passwort. Mit diesem Zugang erreicht ein Programm nur diese eine Datenbank. Was dort schiefgeht, bleibt dort, und genau das wollen wir für ein Programm, das gleich eine Lücke haben wird.
+
+Öffne ein Terminal (<kbd>Strg</kbd><kbd>J</kbd>), lege einen Ordner an und lade die Testdaten herunter:
 
 ```bash_copy
+mkdir ~/bobby_tables
+cd ~/bobby_tables
 wget https://github.com/specht/workspace-files/raw/main/users.sql
 ```
 
-Importiere die Testdaten in deine Datenbank (achte darauf, dass du den Namen deiner
-neuen Datenbank angibst):
+Importiere sie in deine neue Datenbank:
 
 ```bash
 mycli db_1234 < users.sql
 ```
 
-Starte anschließend `mycli` und überprüfe mit Hilfe von `SHOW TABLES` und einem  `SELECT`-Statement, ob die Daten korrekt importiert wurden:
+Starte dann `mycli db_1234` und prüfe mit `SHOW TABLES;` und `SELECT * FROM users;`, ob die Daten angekommen sind:
 
 <div style="max-width: 100%; overflow-x: auto;">
 <table class='table table-sm'>
@@ -67,90 +79,88 @@ Starte anschließend `mycli` und überprüfe mit Hilfe von `SHOW TABLES` und ein
 </table>
 </div>
 
-## Test-Programm schreiben
+<div class='hint'>
+Die Passwörter stehen hier im Klartext, damit du siehst, was passiert. Ein echter Server speichert nie das Passwort selbst, sondern einen Hash mit Salz; wie das geht, steht in <a href='/crypto'>Kryptographie im Terminal</a>.
+</div>
 
-Erstelle eine neue Datei `login.rb` und füge den folgenden Ruby-Code ein:
+## Ein Anmeldeprogramm
+
+Das Programm braucht die Ruby-Bibliothek `mysql2`. Installiere sie einmal:
+
+```bash
+gem install mysql2
+```
+
+Lege im Ordner `bobby_tables` die Datei `login.rb` an und füge diesen Code ein. Trage oben den Namen deiner Datenbank und ihr Passwort aus dem Profil ein:
 
 _include_file(login.rb, ruby)
 
 Hinweise:
 
-- Mit Hilfe von <code>#&#8288;{ ... }</code> können Variablen in Strings eingebettet werden (Z. 16 und 17) &ndash; genauso wie z. B. in Python mit f-Strings. Man nennt diese Technik auch [String Interpolation](https://en.wikipedia.org/wiki/String_interpolation).
-- Das Backslash am Ende einer Zeile (Z. 15 und 16) wird verwendet, um einen String über mehrere Zeilen zu schreiben. Es handelt sich also um einen String ohne Zeilenumbruch,
-der auf mehrere Zeilen verteilt ist, um die Lesbarkeit zu verbessern.
+- `$stdin.noecho(&:gets)` liest das Passwort, ohne es auf dem Bildschirm zu zeigen.
+- Mit <code>#&#8288;{ … }</code> wird der Wert einer Variable in einen String eingebettet (Z. 22 und 23), wie in Python mit f-Strings. Man nennt das [String Interpolation](https://en.wikipedia.org/wiki/String_interpolation).
+- Der Backslash am Ende von Z. 21 und 22 setzt den String in der nächsten Zeile fort: Es ist ein einziger String ohne Zeilenumbruch, nur zur besseren Lesbarkeit auf drei Zeilen verteilt.
+
+<div class='hint'>
+Für dieses Labor steht das Passwort im Quelltext. In einem echten Programm gehört es nicht dorthin, sondern zum Beispiel in eine Umgebungsvariable: So machen es <code>MYSQL_HOST</code>, <code>MYSQL_USER</code> und <code>MYSQL_PASSWORD</code> für deine Hauptdatenbank.
+</div>
+
+Starte das Programm mit `ruby login.rb` und melde dich als `alice` mit dem Passwort `asdf` an, dann mit einem falschen Passwort.
 
 ## Experimentieren
 
-Notiere dir die SQL-Statements, die aus den folgenden Aufgaben hervorgehen, weil du sie später benötigen wirst.
+Notiere dir die SQL-Abfragen, die in den folgenden Aufgaben entstehen; du brauchst sie später noch.
 
-<div class='hint books'>
-<strong>Aufgabe 1:</strong> Teste das Programm und beschreibe kurz die Funktionsweise. Welchen Zweck erfüllt es?
-</div>
+_task(zweck)
 
-<div class='hint books'>
-<strong>Aufgabe 2:</strong> Erläutere die SQL-Abfrage, die dabei zum Einsatz kommt.
-</div>
+_task(abfrage)
 
-<div class='hint books'>
-<div class='mb-1'>
-<strong>Aufgabe 3:</strong> Wie in vielen anderen Sprachen auch, können in SQL Kommentare
-mit <code>#</code> oder <code>--</code> eingefügt werden, die bis zum Ende der Zeile gelten und nicht ausgeführt werden.
-</div>
-<div class='mb-1'>
-Im vorliegenden Programm wird die Eingabe des Nutzers unverändert in die SQL-Abfrage eingebettet, womit einem möglichen Angreifer die Möglichkeit gegeben wird, die Abfrage zu manipulieren. Finde eine Eingabe, die es dir ermöglicht, dich als Administrator anzumelden, ohne das Passwort zu kennen.
-</div>
-</div>
+_uses(select, where)
 
-<div class='hint books'>
-<div class='mb-1'>
-<strong>Aufgabe 4:</strong> Versuche, dich mit dem folgenden Login und einem leeren Passwort anzumelden:
-</div>
-<div class='mb-1'>
-<code>mallory' UNION SELECT address FROM users WHERE LOGIN='mallory' ORDER BY login ASC #</code>
-</div>
-<div class='mb-1'>
-Was kannst du beobachten?
-</div>
-</div>
+Wie in vielen anderen Sprachen können in SQL Kommentare stehen: Mit `#` oder `--` beginnt ein Kommentar, der bis zum Ende der Zeile gilt und nicht ausgeführt wird.
 
-<div class='hint books'>
-<strong>Aufgabe 5:</strong> Formuliere die Abfrage so um, dass du das Passwort des Administrators auslesen kannst.
-</div>
+Das Programm setzt die Eingabe unverändert in die SQL-Abfrage ein. Damit kann, wer etwas eintippt, die Abfrage selbst verändern.
 
-## Behebung der Sicherheitslücke
+_task(admin)
 
-Wie du siehst, kann es gefährlich werden, wenn man Nutzereingaben blind vertraut. Es ist daher bei sicherheitskritischen Systemen notwendig, alle Eingaben mit einer gesunden Portion Misstrauen zu betrachten. Das Problem liegt hier auf der Seite der Software, die solche Angriffe zulässt.
+_task(union)
 
-Der Angriffsmechanismus, den wir hier verwendet haben, heisst »SQL Injection«, weil ein Angreifer eigenen SQL-Code in eine SQL-Abfrage einschleust und somit das Programm dazu zwingen kann, andere Dinge zu tun, als ursprünglich vorhergesehen waren. Wir können die Sicherheitslücke leicht schließen, indem wir verhindern, dass Nutzereingaben direkt in die SQL-Abfrage eingefügt werden. Anstatt die Eingabe über String Interpolation direkt einzubinden, können wir ein »Prepared Statement« verwenden. Hierbei wird eine SQL-Abfrage mit Platzhaltern vorbereitet, die dann mit den Nutzereingaben ausgeführt wird. Der SQL-Code wird also nicht direkt mit den Nutzereingaben vermischt, sondern getrennt behandelt.
+_task(passwort-auslesen)
 
-Kommentiere die Zeilen 15 bis 17 aus und füge dahinter die folgenden Zeilen ein:
+## Die Lücke schließen
+
+Der Angriff, den du ausprobiert hast, heißt **SQL Injection**: Eigener SQL-Code wird in eine Abfrage eingeschleust und bringt das Programm dazu, etwas anderes zu tun als vorgesehen. Das Problem liegt im Programm, das Eingaben ungeprüft in den SQL-Code mischt, und dort lässt es sich auch beheben.
+
+Statt die Eingabe per String Interpolation einzubauen, benutzt man ein **Prepared Statement**: Die Abfrage wird mit Platzhaltern `?` vorbereitet und erst danach mit den Eingaben ausgeführt. Die Datenbank bekommt den SQL-Code und die Werte getrennt; was in einem Wert steht, wird nie zu SQL, egal welche Zeichen darin vorkommen.
+
+Kommentiere die Zeilen 21 bis 23 aus und füge dahinter ein:
 
 ```ruby
 query = CLIENT.prepare("SELECT login FROM users WHERE login = ? AND password = ? LIMIT 1;")
 rows = query.execute(login, password).to_a
 ```
 
+_uses(platzhalter)
+
 <div class='hint'>
-Du kannst Zeilen in Ruby auskommentieren, indem du sie mit einem <code>#</code> beginnen lässt. Schneller geht es, wenn du die Zeilen markierst und dann <kbd>Strg</kbd><kbd>#</kbd> drückst (bzw. <kbd>Ctrl</kbd><kbd>/</kbd>, falls du ein US-Tastaturlayout verwendest).
+Zeilen kommentierst du in Ruby mit <code>#</code> am Anfang aus. Schneller geht es, wenn du sie markierst und <kbd>Strg</kbd><kbd>#</kbd> drückst (mit US-Tastaturlayout <kbd>Ctrl</kbd><kbd>/</kbd>).
 </div>
 
-<div class='hint books'>
-<strong>Aufgabe 6:</strong> Überprüfe, ob das Problem behoben wurde, indem du die vorherigen Angriffe erneut ausführst:
-<ol>
-<li>Versuche, dich als Administrator anzumelden, ohne das Passwort zu kennen.</li>
-<li>Versuche, die Adresse von Mallory auszulesen.</li>
-<li>Versuche, das Passwort des Administrators auszulesen.</li>
-</ol>
-</div>
+_task(prepared)
+
+_task(behoben)
+
+_task(warum-prepared)
+
+_task(eigener-zugang)
+
+Wenn du fertig bist, kannst du die Testdatenbank im [Profil](/profil) wieder löschen.
 
 ## Wichtiger Hinweis
 
-Das Eindringen in fremde Computersysteme bzw. das Auspähen von Daten ist illegal und wird bestraft. Die hier gezeigten Beispiele dienen ausschließlich der Demonstration von Sicherheitslücken und sollen dazu beitragen, dein Bewusstsein für die Gefahren bei der Programmierung von Software und der Verarbeitung von Nutzereingaben zu schärfen.
-Es ist wichtig, dass du dein Wissen verantwortungsbewusst einsetzt und nur auf Systemen experimentierst, für die du die ausdrückliche Erlaubnis hast oder die du selbst betreibst.
+Das Eindringen in fremde Computersysteme und das Ausspähen von Daten ist illegal und wird bestraft. Die Beispiele hier zeigen eine Sicherheitslücke, damit du sie in deinen eigenen Programmen erkennst und vermeidest. Probiere sie nur an Systemen aus, die du selbst betreibst oder für die du eine ausdrückliche Erlaubnis hast.
 
-Der Zweck dieses Tutorials ist es also nicht, dich dazu zu ermutigen, in fremde Systeme einzudringen oder Daten zu stehlen, sondern dir zu zeigen, worauf du achten musst, um solche Angriffe zu verhindern, wenn du Software implementierst.
-
-Ein kleiner Vergleich zum Schluß: Es ist in Ordnung, wenn du deine Fähigkeiten und ein Lockpicking-Set verwendest, um deine eigenen Schlösser zu öffnen, weil du z. B. den Schlüssel verloren hast. Sobald du allerdings fremde Schlösser ohne Erlaubnis öffnest, begehst du eine Straftat.
+Ein Vergleich zum Schluss: Es ist in Ordnung, mit einem Lockpicking-Set dein eigenes Schloss zu öffnen, weil du den Schlüssel verloren hast. Öffnest du fremde Schlösser ohne Erlaubnis, begehst du eine Straftat.
 
 <img class='full' src='xkcd-327-full.webp' alt='Die Schule fragt eine Mutter, ob ihr Sohn „Robert’); DROP TABLE Students;--“ heißt; sie bestätigt „Little Bobby Tables“ und mahnt, Datenbankeingaben zu bereinigen.'>
 

@@ -362,6 +362,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Unterschriften mit Ed25519 und `ssh-keygen -Y`, Fingerabdrücke und was
   davon in SSH, Git und HTTPS steckt. Ein Partnerteil tauscht öffentliche
   Schlüssel über Port 1234. Zehn Aufgaben, Notiz für Lehrkräfte.
+- »SQL Injection« steht wieder im Katalog unter »Datenbanken«. Das Labor
+  läuft in einer weiteren Datenbank aus dem Profil mit ihrem eigenen Zugang,
+  sodass die Lücke nur diese Testdatenbank erreicht. `login.rb` braucht nur
+  noch `mysql2` (`gem install mysql2`) und hat englische Namen; die
+  Aufgaben sind Karten, dazu eine Prüfung des Prepared Statements und zwei
+  Fragen, warum es schützt und warum ein eigener Zugang den Schaden
+  begrenzt. Hinweis auf die Klartext-Passwörter und auf »Kryptographie im
+  Terminal«, Notiz für Lehrkräfte.
 
 ### Geändert
 

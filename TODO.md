@@ -36,7 +36,7 @@ page, the start page and practice sets from Code Bites (`docs/aufgaben.md`).
 Still open:
 
 * [ ] A generated »Wie geht es weiter?« box at the end of a page, from a new `next` field
-* [ ] Teacher notes with solutions for every activity; 23 have a `lehrkraft.md`, the SQL introduction and the language pages have none
+* [ ] Teacher notes with solutions for every activity; 24 have a `lehrkraft.md`, the SQL introduction and the language pages have none
 * [ ] Workspace-state check for a running server (a port answers), for the setup steps of web activities
 * [ ] Link the matching Code Bites exercises from each programming-language page
 
@@ -66,7 +66,6 @@ Workspace, »Filmdatenbank mit MySQL« built from the student's ER model, and
 #### SQL introduction (`/mysql`)
 
 * [ ] Shorten the opening (close folder, new folder, terminal) and link the Workspace Handbuch instead
-* [ ] Delete the leftover `mysql/mysql.new.md.txt`
 
 #### ER-Werkstatt
 
@@ -97,19 +96,9 @@ Then delete `_drafts/filmdatenbank.md`, which still holds these ideas.
 * [ ] Graph modelling choices instead of converting every table to a node
 * [ ] The Discogs music graph (`MEMBER_OF`, `RELEASED`, `HAS_TRACK`) as the second dataset
 
-#### SQL Injection (`/bobby_tables`, hidden from the catalog)
-
-* [ ] Own throwaway database (one of the student's extra MySQL databases), no hard-coded `db_1234` in `login.rb`
-* [ ] Add the missing `gem install mysql2 tty-prompt` (not in the student image)
-* [ ] Keep attack → observe → prepared statement → retry; tasks as `_task()` cards
-* [ ] Say that the plain-text passwords exist only for the lab; keep the legal boundary short
-* [ ] Spelling: "heisst", "Schluß"
-* [ ] Back into the catalog
-
-
 ### Written, not yet tried in class
 
-Five activities written in October 2026, with tasks, teacher notes and
+Activities written in October 2026, with tasks, teacher notes and
 generated screenshots:
 
 * »Eine Facharbeit mit LaTeX« (`src/content/latex`) and Handbuch »Dokumente mit LaTeX«
