@@ -725,6 +725,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Dateien zu überschreiben und der Person zu übergeben. Ein abgelehnter
   Pfad steht im Log; der Workspace startet trotzdem. TIC-80 schreibt
   Dateien nicht mehr per Umbenennen, sondern direkt.
+- Sicherheit: Der Anaglyphen-Viewer für die Vorschau auf der Aufgabenkarte
+  und die Galerie der Klassenseite läuft nicht mehr auf der Website, sondern
+  auf `abgaben.<host>` in einem Frame mit `sandbox`, wie die
+  Abgaben-Ansicht. Die Ausdrücke einer Szene sind JavaScript; bisher liefen
+  sie mit der Sitzung dessen, der die Galerie ansah, also auch einer
+  Lehrkraft. Die Seite holt für jede Szene eine signierte Adresse
+  (`/api/anaglyph/address`), der Viewer schickt Bild, Fehler und die Zahl
+  der Objekte als Nachricht zurück. Unter `/anaglyph-viewer/` antwortet die
+  Website selbst nicht mehr. Zwei kleine Änderungen am Viewer macht der
+  Server beim Ausliefern, bis `specht/anaglyph` sie selbst hat.
 
 ### Entfernt
 

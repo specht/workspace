@@ -1075,6 +1075,11 @@ class Main < Sinatra::Base
                     proxy_pass http://ruby:9292;
                 }
 
+                location /anaglyph-viewer/ {
+                    include /etc/nginx/snippets/proxy_ws.conf;
+                    proxy_pass http://ruby:9292;
+                }
+
                 location / {
                     return 404;
                 }
@@ -2164,9 +2169,10 @@ class Main < Sinatra::Base
     end
 
     before '*' do
-        # abgaben.<host> serves hand-ins and nothing else: no session, no
-        # pages, no API (SubmissionView).
-        if request.host == SUBMISSION_VIEW_HOST && !(request.path.start_with?('/v/') && %w[GET HEAD].include?(request.request_method))
+        # abgaben.<host> serves hand-ins and the Anaglyph viewer and nothing
+        # else: no session, no pages, no API (SubmissionView, AnaglyphViewer).
+        if request.host == SUBMISSION_VIEW_HOST &&
+            !(request.path.start_with?('/v/', '/anaglyph-viewer/') && %w[GET HEAD].include?(request.request_method))
             halt 404
         end
         origin_sensitive = %w(POST PUT PATCH DELETE).include?(request.request_method) ||
@@ -5238,16 +5244,18 @@ class Main < Sinatra::Base
         respond_raw_with_mimetype(SubmissionView.for_viewer(file, bytes), SubmissionView.content_type(file))
     end
 
-    # The Anaglyph viewer on the site (AnaglyphViewer, check option preview:
-    # anaglyph): pictures of handed-in scenes on the task card and in the class
-    # gallery. vorschau/ is the file someone is about to hand in, read from
-    # their Workspace; abgaben/ a handed-in scene (ich: one's own), for that
-    # person and the teachers of their groups. Everything else is the viewer
-    # itself and the Kenney kits it loads.
-    get '/anaglyph-viewer/*' do
+    # The Anaglyph viewer (AnaglyphViewer, check option preview: anaglyph):
+    # pictures of handed-in scenes on the task card and in the class gallery.
+    # A scene's expressions are JavaScript, so the viewer runs only on
+    # abgaben.<host>, sandboxed, never on the site: there a scene cannot use
+    # the session of whoever looks at it. The page asks here for a scene's
+    # address and gets a signed one there. vorschau/ is the file someone is
+    # about to hand in, read from their Workspace; abgaben/ a handed-in scene
+    # (ich: one's own), for that person and the teachers of their groups.
+    get '/api/anaglyph/address' do
         assert(user_logged_in?)
-        rel = params['splat'].first.to_s
-        if (m = rel.match(%r{\Avorschau/([a-z0-9_-]+)/([^/]+)/([^/]+\.ini)\z}))
+        rel = params['scene'].to_s
+        data = if (m = rel.match(%r{\Avorschau/([a-z0-9_-]+)/([^/]+)/([^/]+\.ini)\z}))
             found = anaglyph_preview_task("#{m[1]}/#{m[2]}")
             ws = task_workspace_files
             halt 404 if ws.nil?
@@ -5255,24 +5263,41 @@ class Main < Sinatra::Base
             dir = File.dirname(pick)
             path = dir == '.' ? m[3] : "#{dir}/#{m[3]}"
             halt 404 unless SubmissionStore.candidates(ws, pick).include?(path)
-            text = begin
-                ws.read_text(path, max: 1_000_000)
-            rescue StandardError
-                nil
-            end
-            halt 404 if text.nil?
-            response.headers['Cache-Control'] = 'no-store'
-            respond_raw_with_mimetype(text, 'text/plain; charset=utf-8')
+            { 'e' => @session_user[:email], 'f' => path }
         elsif (m = rel.match(%r{\Aabgaben/([a-z0-9_-]+)/([^/]+)/(ich|[0-9a-f]{32})\.ini\z}))
             found = anaglyph_preview_task("#{m[1]}/#{m[2]}")
             email = anaglyph_submission_owner(found[:key], m[3])
             halt 404 if email.nil?
+            { 's' => TaskStore.state_key(email, found[:key]) }
+        else
+            halt 404
+        end
+        token = AnaglyphViewer.scene_token(data, :secret => SUBMISSION_VIEW_SECRET)
+        response.headers['Cache-Control'] = 'no-store'
+        respond(:url => "#{SUBMISSION_VIEW_ROOT}/anaglyph-viewer/index.html?scene=#{CGI.escape("szene/#{token}.ini")}")
+    end
+
+    # abgaben.<host>/anaglyph-viewer/: the viewer, the Kenney kits it loads
+    # and, under szene/<token>.ini, the scene the token names. No session;
+    # the token is the only permission.
+    get '/anaglyph-viewer/*' do
+        halt 404 unless request.host == SUBMISSION_VIEW_HOST
+        rel = params['splat'].first.to_s
+        if (m = rel.match(%r{\Aszene/([A-Za-z0-9_.-]+)\.ini\z}))
+            data = AnaglyphViewer.verify_scene_token(m[1], :secret => SUBMISSION_VIEW_SECRET)
+            halt 404 if data.nil?
             text = begin
-                AnaglyphViewer.scene_from_submission(submission_path(found[:key], email))
+                if data['s'].is_a?(String) && data['s'].match?(/\A[0-9a-f]{32}\z/)
+                    AnaglyphViewer.scene_from_submission(File.join(SUBMISSIONS_ROOT, "#{data['s']}.tar.gz"))
+                elsif data['e'].is_a?(String) && data['f'].is_a?(String)
+                    path = "/user/#{fs_tag_for_email(data['e'])}/workspace"
+                    File.directory?(path) ? WorkspaceFiles.new(path).read_text(data['f'], max: 1_000_000) : nil
+                end
             rescue StandardError
                 nil
             end
             halt 404 if text.nil?
+            SubmissionView.headers('szene.ini', WEB_ROOT).each { |k, v| response.headers[k] = v }
             response.headers['Cache-Control'] = 'no-store'
             respond_raw_with_mimetype(text, 'text/plain; charset=utf-8')
         else
@@ -5283,8 +5308,15 @@ class Main < Sinatra::Base
                 halt 503
             end
             halt 404 if path.nil?
+            bytes = begin
+                AnaglyphViewer.for_sandbox(path, File.binread(path))
+            rescue AnaglyphViewer::Unpatchable => e
+                STDERR.puts "Anaglyph viewer: #{e.message}"
+                halt 503
+            end
+            SubmissionView.headers(path, WEB_ROOT).each { |k, v| response.headers[k] = v }
             response.headers['Cache-Control'] = 'public, max-age=3600'
-            respond_raw_with_mimetype(File.binread(path), AnaglyphViewer.mime(path))
+            respond_raw_with_mimetype(bytes, AnaglyphViewer.mime(path))
         end
     end
 
