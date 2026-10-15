@@ -512,7 +512,8 @@ They work for screenshots, not for videos, PDF pages or graphs.
 
 `crop-element: SELECTOR` crops a screenshot to exactly the box of the first
 element the CSS selector matches, such as the screen of an emulator. It
-replaces the other crops.
+replaces the other crops. An element below the fold is scrolled into view
+first; it has to fit into the viewport.
 
 ### PDF pages
 

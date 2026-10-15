@@ -1,0 +1,35 @@
+{
+  "screenshots": {
+    "automatron-schloss.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "b47221416bb52b7056f4f24baec6b8380ebc76382f083829a4b24048991c164d",
+      "state_hash": "6074989c113a0c19444e004c639b771112f78ab691dc1e936786be5232ba9e34",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "drehkreuz.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "a42159f590b00cd31dfe5b3f60f77117bbba55ac8f8c2c9ccae41390faf98073",
+      "state_hash": "9bceed000cffa01bf4707f2f6b11d787b81933693c5db9d7e4f2b925ca706a9a",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "schloss.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "b1286f39942ebeb0174ebddfebc99e8ffcf57b409f2d61a91d340811c18a9659",
+      "state_hash": "cbba485cba8a4005b18d55f9946660f8853842797b9bc544807e231a1bc8b114",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "teaser.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "1e33dd39e5df5b0221369c27f06da8c1549c4de8aff95c25136b7111a620ff63",
+      "state_hash": "f8f373a35194ed3cb62a0923c4993bb83f36042d9c6c546a0c82ec0ae59ab389",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "umwandeln.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "88478e05ae7d299abbf0a691f91c5351e4097f1017a9b6bdc3a3d31711f70744",
+      "state_hash": "00db5b9acb8cd5069842f888e5b7b55852d7e091c65a010c10144f0cc98ecfd0",
+      "workspace_look": "4.138.0-ls366"
+    }
+  },
+  "version": 1
+}

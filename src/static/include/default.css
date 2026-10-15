@@ -4612,3 +4612,19 @@ img.minicpu-shot.medium {
 .minicpu-swatches span {
     aspect-ratio: 1;
 }
+
+/* State diagrams from Graphviz (DotRender.tidy_svg), in Automatron and on
+   activity pages: font and colours from here, for the light and the dark theme. */
+.automaton { --automaton-line: #2b3440; --automaton-state: #eef1f5; --automaton-accept: #dcefe2;
+             --automaton-label: #5b6675;
+             font-family: 'IBM Plex Sans', sans-serif; max-width: 100%; height: auto; display: block;
+             margin: 0.5em 0 1em; }
+[data-bs-theme=dark] .automaton { --automaton-line: #d5dbe3; --automaton-state: #262c36; --automaton-accept: #1f3a2b;
+                                  --automaton-label: #a9b3c1; }
+.automaton text { fill: var(--automaton-line); }
+.automaton .node ellipse { stroke: var(--automaton-line); stroke-width: 1.3; }
+.automaton .node ellipse:not([fill="none"]) { fill: var(--automaton-state); }
+.automaton .node.accept ellipse:not([fill="none"]) { fill: var(--automaton-accept); }
+.automaton .edge path { stroke: var(--automaton-line); stroke-width: 1.1; }
+.automaton .edge polygon { fill: var(--automaton-line); stroke: var(--automaton-line); }
+.automaton .edge text { fill: var(--automaton-label); }

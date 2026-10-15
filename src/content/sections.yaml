@@ -103,9 +103,10 @@
   icon: /images/mirror-ball.png
   description: |
     Gehe einen Schritt tiefer und untersuche, wie Computer Bilder und Daten
-    verarbeiten. Trainiere ein kleines Modell zur Ziffernerkennung und wirf
-    einen Blick in den Aufbau von JPEG-Dateien.
+    verarbeiten. Baue endliche Automaten, trainiere ein kleines Modell zur
+    Ziffernerkennung und wirf einen Blick in den Aufbau von JPEG-Dateien.
   entries:
+    - automata
     - digits-experiment
     - jpeg
 

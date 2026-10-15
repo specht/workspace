@@ -10,6 +10,7 @@ require_relative 'keyboard_check'
 require_relative 'story_check'
 require_relative 'scene_color'
 require_relative 'html_lite'
+require_relative 'python_check'
 
 # Format and validation of an activity's tasks.yaml (see docs/aufgaben.md).
 #
@@ -46,6 +47,7 @@ module TaskSpec
         'er' => 'M7',
         'schema' => 'M7',
         'keyboard' => 'M7',
+        'python' => 'M7',
     }.freeze
 
     # Check types that need the network; they are never used in exams.
@@ -88,6 +90,7 @@ module TaskSpec
         'er' => %w[problem],
         'schema' => %w[problem],
         'keyboard' => %w[problem],
+        'python' => [],
     }.freeze
 
     class Error < StandardError
@@ -488,6 +491,11 @@ module TaskSpec
                 end
             end
             errors << 'setup must be text' if check.key?('setup') && !nonempty_string?(check['setup'])
+        when 'python'
+            # Calls into the person's Python file, run as the guest (PythonCheck).
+            allowed += %w[file cases timeout]
+            errors.concat(path_errors(check['file'], 'file'))
+            errors.concat(PythonCheck.spec_errors(check))
         when 'er'
             # Runs the ER-Werkstatt core on a .er file in the Workspace.
             allowed += %w[file entities relationships tables]
