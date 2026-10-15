@@ -52,7 +52,7 @@ export default {
                 const rect = (x0, y0, x1, y1, color) => {
                     for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) dot(x, y, color);
                 };
-                rect(0, 0, 63, 27, 10);                                          // sky
+                rect(0, 0, 63, 27, 9);                                           // sky
                 [2, 3, 4, 5, 11, 1].forEach((color, i) => {                      // rainbow
                     const r = 22 - i;
                     for (let y = 0; y <= 27; y++) for (let x = 20; x <= 63; x++) {
@@ -74,7 +74,7 @@ export default {
                 rect(22, 23, 24, 25, 11);
                 rect(39, 24, 40, 32, 15);                                        // tree
                 for (let y = -5; y <= 5; y++) for (let x = -5; x <= 5; x++)
-                    if (x * x + y * y <= 26) dot(40 + x, 19 + y, 5);
+                    if (x * x + y * y <= 26) dot(40 + x, 19 + y, 6);
                 [[4, 34, 2], [8, 37, 4], [30, 35, 12], [34, 38, 1], [47, 34, 2],  // flowers
                  [52, 37, 4], [58, 35, 12], [61, 38, 1], [2, 38, 4], [44, 37, 12]].forEach(([x, y, color]) => {
                     dot(x, y, color); dot(x, y + 1, 7);
