@@ -29,7 +29,7 @@ make PROGRAM=test     # test.c → test.html
 
 - Findet `make` einen Fehler, nennt es Datei und Zeile, und die alte Webseite bleibt, wie sie war. Lies die erste Fehlermeldung zuerst.
 - Was dein Programm mit `printf` ausgibt, steht in der Konsole der Seite: Fahre mit der Maus über das Bild und klicke unten rechts auf das Terminal-Symbol.
-- Dateien, die das Programm lesen soll, wie die Shader `licht.vs` und `licht.fs`, bettet das `Makefile` mit `--embed-file` in die Seite ein. Eine weitere Datei schreibst du in die Zeile mit den anderen.
+- Dateien, die das Programm lesen soll, wie die Shader `light.vs` und `light.fs`, bettet das `Makefile` mit `--embed-file` in die Seite ein. Eine weitere Datei schreibst du in die Zeile mit den anderen.
 
 Ohne Vorlage geht es auch mit einem einzigen Befehl:
 
@@ -69,12 +69,12 @@ int main(void)
 <div class='scroll-x'><table class='table table-sm reference-table'>
 <thead><tr><th>Befehl</th><th>Bedeutung</th></tr></thead>
 <tbody>
-<tr><td><code>InitWindow(b, h, titel)</code></td><td>Öffnet das Fenster, im Browser die Zeichenfläche</td></tr>
+<tr><td><code>InitWindow(width, height, title)</code></td><td>Öffnet das Fenster, im Browser die Zeichenfläche</td></tr>
 <tr><td><code>SetTargetFPS(n)</code></td><td>Bremst die Schleife auf höchstens <code>n</code> Bilder pro Sekunde</td></tr>
 <tr><td><code>WindowShouldClose()</code></td><td>Wahr, wenn das Programm enden soll (Fenster zu oder <kbd>Esc</kbd>)</td></tr>
 <tr><td><code>SetExitKey(KEY_NULL)</code></td><td><kbd>Esc</kbd> beendet das Programm nicht mehr</td></tr>
 <tr><td><code>BeginDrawing()</code>, <code>EndDrawing()</code></td><td>Rahmen um alles, was in einem Bild gezeichnet wird</td></tr>
-<tr><td><code>ClearBackground(farbe)</code></td><td>Füllt das ganze Bild mit einer Farbe</td></tr>
+<tr><td><code>ClearBackground(color)</code></td><td>Füllt das ganze Bild mit einer Farbe</td></tr>
 <tr><td><code>GetScreenWidth()</code>, <code>GetScreenHeight()</code></td><td>Größe des Bildes in Pixeln</td></tr>
 <tr><td><code>CloseWindow()</code></td><td>Schließt das Fenster am Ende</td></tr>
 </tbody>
@@ -83,7 +83,7 @@ int main(void)
 <!-- /part -->
 
 <!-- part: zeichnen-2d -->
-<!-- short: `DrawText(text, x, y, groesse, farbe)`, `DrawRectangle(x, y, b, h, farbe)`; (0, 0) ist oben links. -->
+<!-- short: `DrawText(text, x, y, fontSize, color)`, `DrawRectangle(x, y, width, height, color)`; (0, 0) ist oben links. -->
 ### Zeichnen in 2D
 
 In 2D ist (0, 0) die Ecke oben links, x wächst nach rechts und y nach **unten**, gemessen in Pixeln. Was nach `EndMode3D()` gezeichnet wird, liegt über dem 3D-Bild, etwa ein Fadenkreuz oder eine Anzeige.
@@ -91,13 +91,13 @@ In 2D ist (0, 0) die Ecke oben links, x wächst nach rechts und y nach **unten**
 <div class='scroll-x'><table class='table table-sm reference-table'>
 <thead><tr><th>Befehl</th><th>Bedeutung</th></tr></thead>
 <tbody>
-<tr><td><code>DrawText(text, x, y, groesse, farbe)</code></td><td>Text, <code>groesse</code> ist die Höhe in Pixeln</td></tr>
-<tr><td><code>TextFormat("%d Punkte", punkte)</code></td><td>Text mit Werten darin, wie <code>printf</code></td></tr>
-<tr><td><code>MeasureText(text, groesse)</code></td><td>Breite eines Textes in Pixeln, zum Zentrieren</td></tr>
-<tr><td><code>DrawRectangle(x, y, b, h, farbe)</code></td><td>Gefülltes Rechteck</td></tr>
-<tr><td><code>DrawRectangleLinesEx((Rectangle){ x, y, b, h }, dicke, farbe)</code></td><td>Rahmen eines Rechtecks</td></tr>
-<tr><td><code>DrawCircle(x, y, radius, farbe)</code></td><td>Gefüllter Kreis</td></tr>
-<tr><td><code>DrawLine(x1, y1, x2, y2, farbe)</code></td><td>Linie</td></tr>
+<tr><td><code>DrawText(text, x, y, fontSize, color)</code></td><td>Text, <code>fontSize</code> ist die Höhe in Pixeln</td></tr>
+<tr><td><code>TextFormat("%d Punkte", score)</code></td><td>Text mit Werten darin, wie <code>printf</code></td></tr>
+<tr><td><code>MeasureText(text, fontSize)</code></td><td>Breite eines Textes in Pixeln, zum Zentrieren</td></tr>
+<tr><td><code>DrawRectangle(x, y, width, height, color)</code></td><td>Gefülltes Rechteck</td></tr>
+<tr><td><code>DrawRectangleLinesEx((Rectangle){ x, y, width, height }, thickness, color)</code></td><td>Rahmen eines Rechtecks</td></tr>
+<tr><td><code>DrawCircle(x, y, radius, color)</code></td><td>Gefüllter Kreis</td></tr>
+<tr><td><code>DrawLine(x1, y1, x2, y2, color)</code></td><td>Linie</td></tr>
 <tr><td><code>DrawFPS(x, y)</code></td><td>Zeigt die Bilder pro Sekunde</td></tr>
 </tbody>
 </table>
@@ -127,18 +127,18 @@ DrawCube((Vector3){ 0, 0.5f, 0 }, 1, 1, 1, RED);
 <!-- /part -->
 
 <!-- part: kamera -->
-<!-- short: `Camera3D` mit `position`, `target`, `up`, `fovy`; gezeichnet wird zwischen `BeginMode3D(kamera)` und `EndMode3D()`. -->
+<!-- short: `Camera3D` mit `position`, `target`, `up`, `fovy`; gezeichnet wird zwischen `BeginMode3D(camera)` und `EndMode3D()`. -->
 ### Kamera
 
 ```c
-Camera3D kamera = { 0 };
-kamera.position = (Vector3){ 6, 5, 8 };    // wo die Kamera steht
-kamera.target = (Vector3){ 0, 0, 0 };      // welchen Punkt sie anschaut
-kamera.up = (Vector3){ 0, 1, 0 };          // welche Richtung oben ist
-kamera.fovy = 45;                          // Blickwinkel nach oben und unten, in Grad
-kamera.projection = CAMERA_PERSPECTIVE;
+Camera3D camera = { 0 };
+camera.position = (Vector3){ 6, 5, 8 };    // wo die Kamera steht
+camera.target = (Vector3){ 0, 0, 0 };      // welchen Punkt sie anschaut
+camera.up = (Vector3){ 0, 1, 0 };          // welche Richtung oben ist
+camera.fovy = 45;                          // Blickwinkel nach oben und unten, in Grad
+camera.projection = CAMERA_PERSPECTIVE;
 
-BeginMode3D(kamera);
+BeginMode3D(camera);
 DrawGrid(10, 1);
 EndMode3D();
 ```
@@ -146,7 +146,7 @@ EndMode3D();
 - Mit `CAMERA_ORTHOGRAPHIC` statt `CAMERA_PERSPECTIVE` werden entfernte Dinge nicht kleiner; `fovy` ist dann die Höhe des sichtbaren Bereichs in Einheiten.
 - Schaut die Kamera genau in Richtung `up` (senkrecht nach unten oder oben), weiß raylib nicht, wie das Bild gedreht sein soll. Ein kleiner Versatz hilft: `position` = `(0, 12, 0.1f)`.
 
-`UpdateCamera(&kamera, modus)` bewegt die Kamera selbst, einmal pro Bild aufgerufen:
+`UpdateCamera(&camera, mode)` bewegt die Kamera selbst, einmal pro Bild aufgerufen:
 
 <div class='scroll-x'><table class='table table-sm reference-table'>
 <thead><tr><th>Modus</th><th>Bedeutung</th></tr></thead>
@@ -163,7 +163,7 @@ Für ein eigenes Spiel setzt du `position` und `target` meist selbst, zum Beispi
 <!-- /part -->
 
 <!-- part: formen-3d -->
-<!-- short: `DrawCube(mitte, b, h, t, farbe)`, `DrawSphere(mitte, r, farbe)`, `DrawPlane`, `DrawGrid`; `…Wires` für Kanten. -->
+<!-- short: `DrawCube(position, width, height, length, color)`, `DrawSphere(center, radius, color)`, `DrawPlane`, `DrawGrid`; `…Wires` für Kanten. -->
 ### Formen
 
 Alle Formen werden zwischen `BeginMode3D` und `EndMode3D` gezeichnet. Positionen sind die **Mitte** der Form.
@@ -171,16 +171,16 @@ Alle Formen werden zwischen `BeginMode3D` und `EndMode3D` gezeichnet. Positionen
 <div class='scroll-x'><table class='table table-sm reference-table'>
 <thead><tr><th>Befehl</th><th>Bedeutung</th></tr></thead>
 <tbody>
-<tr><td><code>DrawCube(mitte, breite, hoehe, tiefe, farbe)</code></td><td>Quader</td></tr>
-<tr><td><code>DrawCubeV(mitte, groesse, farbe)</code></td><td>Quader, Größe als <code>Vector3</code></td></tr>
-<tr><td><code>DrawCubeWires(mitte, breite, hoehe, tiefe, farbe)</code></td><td>Nur die Kanten</td></tr>
-<tr><td><code>DrawSphere(mitte, radius, farbe)</code></td><td>Kugel</td></tr>
-<tr><td><code>DrawSphereWires(mitte, radius, ringe, teile, farbe)</code></td><td>Kugel als Gitter</td></tr>
-<tr><td><code>DrawCylinder(fuss, radius_oben, radius_unten, hoehe, teile, farbe)</code></td><td>Zylinder, mit Radius 0 oben ein Kegel</td></tr>
-<tr><td><code>DrawCapsule(start, ende, radius, teile, ringe, farbe)</code></td><td>Kapsel zwischen zwei Punkten</td></tr>
-<tr><td><code>DrawPlane(mitte, (Vector2){ breite, tiefe }, farbe)</code></td><td>Flache Platte auf dem Boden</td></tr>
-<tr><td><code>DrawLine3D(von, bis, farbe)</code></td><td>Linie</td></tr>
-<tr><td><code>DrawGrid(anzahl, abstand)</code></td><td>Gitter auf dem Boden um (0, 0, 0)</td></tr>
+<tr><td><code>DrawCube(position, width, height, length, color)</code></td><td>Quader</td></tr>
+<tr><td><code>DrawCubeV(position, size, color)</code></td><td>Quader, Größe als <code>Vector3</code></td></tr>
+<tr><td><code>DrawCubeWires(position, width, height, length, color)</code></td><td>Nur die Kanten</td></tr>
+<tr><td><code>DrawSphere(center, radius, color)</code></td><td>Kugel</td></tr>
+<tr><td><code>DrawSphereWires(center, radius, rings, slices, color)</code></td><td>Kugel als Gitter</td></tr>
+<tr><td><code>DrawCylinder(position, radiusTop, radiusBottom, height, slices, color)</code></td><td>Zylinder, mit Radius 0 oben ein Kegel</td></tr>
+<tr><td><code>DrawCapsule(startPos, endPos, radius, slices, rings, color)</code></td><td>Kapsel zwischen zwei Punkten</td></tr>
+<tr><td><code>DrawPlane(center, (Vector2){ width, length }, color)</code></td><td>Flache Platte auf dem Boden</td></tr>
+<tr><td><code>DrawLine3D(startPos, endPos, color)</code></td><td>Linie</td></tr>
+<tr><td><code>DrawGrid(slices, spacing)</code></td><td>Gitter auf dem Boden um (0, 0, 0)</td></tr>
 </tbody>
 </table>
 </div>
@@ -195,7 +195,7 @@ Die Formen haben kein Licht: Alle Seiten eines Würfels haben dieselbe Farbe. F�
 Eine Farbe ist ein `Color` mit Rot, Grün, Blau und Deckkraft, jeweils von 0 bis 255:
 
 ```c
-Color gras = { 96, 168, 64, 255 };
+Color grass = { 96, 168, 64, 255 };
 DrawCube(p, 1, 1, 1, (Color){ 255, 200, 80, 255 });
 ```
 
@@ -204,10 +204,10 @@ raylib kennt viele Farben mit Namen, unter anderem `WHITE`, `BLACK`, `GRAY`, `DA
 <div class='scroll-x'><table class='table table-sm reference-table'>
 <thead><tr><th>Befehl</th><th>Bedeutung</th></tr></thead>
 <tbody>
-<tr><td><code>Fade(farbe, 0.5f)</code></td><td>Dieselbe Farbe, halb durchsichtig</td></tr>
-<tr><td><code>ColorBrightness(farbe, -0.2f)</code></td><td>Dunkler (negativ) oder heller (positiv), von −1 bis 1</td></tr>
+<tr><td><code>Fade(color, 0.5f)</code></td><td>Dieselbe Farbe, halb durchsichtig</td></tr>
+<tr><td><code>ColorBrightness(color, -0.2f)</code></td><td>Dunkler (negativ) oder heller (positiv), von −1 bis 1</td></tr>
 <tr><td><code>ColorLerp(a, b, t)</code></td><td>Mischung: bei <code>t</code> = 0 ist es <code>a</code>, bei 1 ist es <code>b</code></td></tr>
-<tr><td><code>ColorFromHSV(farbton, saettigung, helligkeit)</code></td><td>Farbe aus Farbton (0 bis 360) und zwei Werten von 0 bis 1</td></tr>
+<tr><td><code>ColorFromHSV(hue, saturation, value)</code></td><td>Farbe aus Farbton (0 bis 360) und zwei Werten von 0 bis 1</td></tr>
 </tbody>
 </table>
 </div>
@@ -319,16 +319,16 @@ Die Rechenbefehle stehen in `raymath.h`:
 </table>
 </div>
 
-Eine Blickrichtung aus zwei Winkeln im Bogenmaß, `drehung` nach links und rechts und `neigung` nach oben und unten:
+Eine Blickrichtung aus zwei Winkeln im Bogenmaß, `yaw` nach links und rechts und `pitch` nach oben und unten:
 
 ```c
-Vector3 blick = {
-    sinf(drehung) * cosf(neigung),
-    sinf(neigung),
-    cosf(drehung) * cosf(neigung),
+Vector3 look = {
+    sinf(yaw) * cosf(pitch),
+    sinf(pitch),
+    cosf(yaw) * cosf(pitch),
 };
-kamera.position = augen;
-kamera.target = Vector3Add(augen, blick);
+camera.position = eyes;
+camera.target = Vector3Add(eyes, look);
 ```
 
 `sinf` und `cosf` kommen aus `math.h`. Eine halbe Umdrehung ist `PI`.
@@ -341,27 +341,27 @@ kamera.target = Vector3Add(augen, blick);
 Eine `BoundingBox` ist ein Quader mit den Achsen, beschrieben durch die Ecke mit den kleinsten (`min`) und die mit den größten Koordinaten (`max`):
 
 ```c
-BoundingBox spieler = { { x - 0.3f, y, z - 0.3f }, { x + 0.3f, y + 1.7f, z + 0.3f } };
-BoundingBox kiste = { { 2, 0, 2 }, { 3, 1, 3 } };
-if (CheckCollisionBoxes(spieler, kiste)) { /* … */ }
+BoundingBox player = { { x - 0.3f, y, z - 0.3f }, { x + 0.3f, y + 1.7f, z + 0.3f } };
+BoundingBox crate = { { 2, 0, 2 }, { 3, 1, 3 } };
+if (CheckCollisionBoxes(player, crate)) { /* … */ }
 ```
 
 <div class='scroll-x'><table class='table table-sm reference-table'>
 <thead><tr><th>Befehl</th><th>Wahr, wenn …</th></tr></thead>
 <tbody>
 <tr><td><code>CheckCollisionBoxes(a, b)</code></td><td>sich zwei Quader überschneiden</td></tr>
-<tr><td><code>CheckCollisionSpheres(mitte1, r1, mitte2, r2)</code></td><td>sich zwei Kugeln berühren</td></tr>
-<tr><td><code>CheckCollisionBoxSphere(box, mitte, r)</code></td><td>eine Kugel den Quader berührt</td></tr>
+<tr><td><code>CheckCollisionSpheres(center1, radius1, center2, radius2)</code></td><td>sich zwei Kugeln berühren</td></tr>
+<tr><td><code>CheckCollisionBoxSphere(box, center, radius)</code></td><td>eine Kugel den Quader berührt</td></tr>
 </tbody>
 </table>
 </div>
 
-Ein **Strahl** (`Ray`) hat einen Anfang und eine Richtung der Länge 1. `GetRayCollisionBox(strahl, box)` sagt, ob und wo er einen Quader trifft:
+Ein **Strahl** (`Ray`) hat einen Anfang und eine Richtung der Länge 1. `GetRayCollisionBox(ray, box)` sagt, ob und wo er einen Quader trifft:
 
 ```c
-Ray strahl = { augen, blick };
-RayCollision treffer = GetRayCollisionBox(strahl, kiste);
-if (treffer.hit && treffer.distance < 6) { /* treffer.point, treffer.normal */ }
+Ray ray = { eyes, look };
+RayCollision collision = GetRayCollisionBox(ray, crate);
+if (collision.hit && collision.distance < 6) { /* collision.point, collision.normal */ }
 ```
 
 In einer Welt aus einem Gitter von Blöcken ist es oft einfacher, die Felder selbst zu prüfen: `floorf(x)` ist das Feld, in dem die Koordinate `x` liegt.
@@ -398,19 +398,19 @@ rlEnd();
 <!-- short: `LoadTexture("bild.png")`, `SetTextureFilter(t, TEXTURE_FILTER_POINT)`; auf eigenen Flächen `rlSetTexture(t.id)` und `rlTexCoord2f(u, v)`. -->
 ### Texturen
 
-Eine Textur ist ein Bild, das die Grafikkarte auf Flächen klebt. Im Browser muss das Bild in die Webseite eingebettet sein; die raylib-Vorlage bettet `texturen.png` ein.
+Eine Textur ist ein Bild, das die Grafikkarte auf Flächen klebt. Im Browser muss das Bild in die Webseite eingebettet sein; die raylib-Vorlage bettet `textures.png` ein.
 
 ```c
-Texture2D textur = LoadTexture("texturen.png");
-SetTextureFilter(textur, TEXTURE_FILTER_POINT);   // scharfe Pixel statt weich
+Texture2D texture = LoadTexture("textures.png");
+SetTextureFilter(texture, TEXTURE_FILTER_POINT);   // scharfe Pixel statt weich
 // …
-UnloadTexture(textur);                            // am Ende
+UnloadTexture(texture);                            // am Ende
 ```
 
-In 2D zeichnet `DrawTexture(textur, x, y, WHITE)` das ganze Bild, `DrawTextureRec(textur, (Rectangle){ sx, sy, b, h }, (Vector2){ x, y }, WHITE)` einen Ausschnitt. Auf [eigenen Flächen](#eigene-flaechen) bekommt jede Ecke **Texturkoordinaten** u und v von 0 bis 1: u = 0 ist der linke Rand des Bildes, u = 1 der rechte, v = 0 oben, v = 1 unten.
+In 2D zeichnet `DrawTexture(texture, x, y, WHITE)` das ganze Bild, `DrawTextureRec(texture, (Rectangle){ sx, sy, width, height }, (Vector2){ x, y }, WHITE)` einen Ausschnitt. Auf [eigenen Flächen](#eigene-flaechen) bekommt jede Ecke **Texturkoordinaten** u und v von 0 bis 1: u = 0 ist der linke Rand des Bildes, u = 1 der rechte, v = 0 oben, v = 1 unten.
 
 ```c
-rlSetTexture(textur.id);
+rlSetTexture(texture.id);
 rlBegin(RL_QUADS);
 rlColor4ub(255, 255, 255, 255);   // Weiß lässt die Farben der Textur, wie sie sind
 rlNormal3f(0, 0, 1);
@@ -426,26 +426,26 @@ Liegen mehrere Bilder nebeneinander in einem Streifen (ein **Atlas**), reicht Bi
 <!-- /part -->
 
 <!-- part: shader -->
-<!-- short: `LoadShader("licht.vs", "licht.fs")`, `GetShaderLocation`, `SetShaderValue`, zeichnen zwischen `BeginShaderMode` und `EndShaderMode`. -->
+<!-- short: `LoadShader("light.vs", "light.fs")`, `GetShaderLocation`, `SetShaderValue`, zeichnen zwischen `BeginShaderMode` und `EndShaderMode`. -->
 ### Shader
 
 Ein Shader ist ein kleines Programm für die Grafikkarte, geschrieben in GLSL. Der **Vertex-Shader** läuft für jede Ecke, der **Fragment-Shader** für jeden Pixel einer Fläche. Im C-Programm:
 
 ```c
-Shader licht = LoadShader("licht.vs", "licht.fs");
-int ort_sonne = GetShaderLocation(licht, "sonne");   // vor der Schleife
+Shader light = LoadShader("light.vs", "light.fs");
+int loc_sun = GetShaderLocation(light, "sun");   // vor der Schleife
 
 // in der Schleife
-Vector3 sonne = Vector3Normalize((Vector3){ 0.5f, 0.8f, 0.3f });
-SetShaderValue(licht, ort_sonne, &sonne, SHADER_UNIFORM_VEC3);
+Vector3 sun = Vector3Normalize((Vector3){ 0.5f, 0.8f, 0.3f });
+SetShaderValue(light, loc_sun, &sun, SHADER_UNIFORM_VEC3);
 
-BeginMode3D(kamera);
-BeginShaderMode(licht);
+BeginMode3D(camera);
+BeginShaderMode(light);
 // … Flächen zeichnen …
 EndShaderMode();
 EndMode3D();
 
-UnloadShader(licht);   // am Ende
+UnloadShader(light);   // am Ende
 ```
 
 <div class='scroll-x'><table class='table table-sm reference-table'>
@@ -459,7 +459,7 @@ UnloadShader(licht);   // am Ende
 </table>
 </div>
 
-Eine Liste übergibt `SetShaderValueV(shader, ort, liste, typ, anzahl)`. Ist ein Name falsch geschrieben, liefert `GetShaderLocation` −1, und der Wert kommt nie an, ohne Fehlermeldung. Fehler im Shader selbst meldet raylib in der Konsole der Seite.
+Eine Liste übergibt `SetShaderValueV(shader, locIndex, values, uniformType, count)`. Ist ein Name falsch geschrieben, liefert `GetShaderLocation` −1, und der Wert kommt nie an, ohne Fehlermeldung. Fehler im Shader selbst meldet raylib in der Konsole der Seite.
 
 Im Browser verstehen Shader die Version `#version 100` von GLSL:
 
@@ -467,14 +467,14 @@ Im Browser verstehen Shader die Version `#version 100` von GLSL:
 #version 100
 precision mediump float;
 
-varying vec3 normale;        // vom Vertex-Shader, für jeden Pixel gemischt
-varying vec4 farbe;
-uniform vec3 sonne;          // vom C-Programm, für alle Pixel gleich
+varying vec3 normal;        // vom Vertex-Shader, für jeden Pixel gemischt
+varying vec4 color;
+uniform vec3 sun;          // vom C-Programm, für alle Pixel gleich
 
 void main()
 {
-    float sonnig = max(dot(normalize(normale), sonne), 0.0);
-    gl_FragColor = vec4(farbe.rgb * (0.4 + 0.6 * sonnig), 1.0);
+    float sunAmount = max(dot(normalize(normal), sun), 0.0);
+    gl_FragColor = vec4(color.rgb * (0.4 + 0.6 * sunAmount), 1.0);
 }
 ```
 
@@ -491,5 +491,5 @@ void main()
 </table>
 </div>
 
-Eine Schleife braucht in `#version 100` eine feste Obergrenze: `for (int i = 0; i < 16; i++)` und darin `if (i >= anzahl) break;`. Zahlen mit Komma schreibst du immer mit Punkt und Nachkommastelle, `1.0` statt `1`.
+Eine Schleife braucht in `#version 100` eine feste Obergrenze: `for (int i = 0; i < 16; i++)` und darin `if (i >= count) break;`. Zahlen mit Komma schreibst du immer mit Punkt und Nachkommastelle, `1.0` statt `1`.
 <!-- /part -->

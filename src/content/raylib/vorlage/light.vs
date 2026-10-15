@@ -12,13 +12,13 @@ uniform mat4 mvp;
 
 // Weitergereicht an den Fragment-Shader, für jeden Pixel der Fläche
 varying vec3 position;
-varying vec3 normale;
-varying vec4 farbe;
+varying vec3 normal;
+varying vec4 color;
 
 void main()
 {
     position = vertexPosition;
-    normale = vertexNormal;
-    farbe = vertexColor;
+    normal = vertexNormal;
+    color = vertexColor;
     gl_Position = mvp * vec4(vertexPosition, 1.0);
 }

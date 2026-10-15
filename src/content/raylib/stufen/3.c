@@ -5,13 +5,13 @@
 
 // ---------------------------------------------------------------- Die Welt
 
-#define BREITE 48   // x
-#define HOEHE 24    // y, nach oben
-#define TIEFE 48    // z
+#define WIDTH 48    // x
+#define HEIGHT 24   // y, nach oben
+#define DEPTH 48    // z
 
-enum { LUFT, GRAS, ERDE, STEIN, HOLZ, LAUB, SAND, ANZAHL_ARTEN };
+enum { AIR, GRASS, DIRT, STONE, WOOD, LEAVES, SAND, BLOCK_TYPES };
 
-Color farben[ANZAHL_ARTEN] = {
+Color colors[BLOCK_TYPES] = {
     { 0, 0, 0, 0 },
     { 96, 168, 64, 255 },     // Gras
     { 130, 92, 62, 255 },     // Erde
@@ -21,106 +21,106 @@ Color farben[ANZAHL_ARTEN] = {
     { 222, 204, 150, 255 },   // Sand
 };
 
-unsigned char welt[BREITE][HOEHE][TIEFE];
+unsigned char world[WIDTH][HEIGHT][DEPTH];
 
 // Der Block an einer Stelle; außerhalb der Welt ist Luft
 int block(int x, int y, int z)
 {
-    if (x < 0 || y < 0 || z < 0 || x >= BREITE || y >= HOEHE || z >= TIEFE)
-        return LUFT;
-    return welt[x][y][z];
+    if (x < 0 || y < 0 || z < 0 || x >= WIDTH || y >= HEIGHT || z >= DEPTH)
+        return AIR;
+    return world[x][y][z];
 }
 
-void baum(int x, int y, int z)
+void tree(int x, int y, int z)
 {
     for (int i = 0; i < 4; i++)
-        welt[x][y + i][z] = HOLZ;
+        world[x][y + i][z] = WOOD;
     for (int dx = -2; dx <= 2; dx++)
         for (int dz = -2; dz <= 2; dz++)
             for (int dy = 3; dy <= 5; dy++)
-                if (abs(dx) + abs(dz) + (dy - 3) <= 3 && block(x + dx, y + dy, z + dz) == LUFT)
-                    welt[x + dx][y + dy][z + dz] = LAUB;
+                if (abs(dx) + abs(dz) + (dy - 3) <= 3 && block(x + dx, y + dy, z + dz) == AIR)
+                    world[x + dx][y + dy][z + dz] = LEAVES;
 }
 
-void erzeuge_welt(void)
+void generate_world(void)
 {
-    for (int x = 0; x < BREITE; x++) {
-        for (int z = 0; z < TIEFE; z++) {
+    for (int x = 0; x < WIDTH; x++) {
+        for (int z = 0; z < DEPTH; z++) {
             // Hügel aus drei Wellen, die sich überlagern
             float h = 7.0f + 2.0f * sinf(x * 0.13f) + 1.5f * cosf(z * 0.11f)
                     + 1.5f * sinf((x + z) * 0.07f);
-            int hoehe = (int)h;
-            for (int y = 0; y < hoehe; y++) {
-                if (y == hoehe - 1)
-                    welt[x][y][z] = hoehe <= 5 ? SAND : GRAS;
-                else if (y >= hoehe - 3)
-                    welt[x][y][z] = ERDE;
+            int height = (int)h;
+            for (int y = 0; y < height; y++) {
+                if (y == height - 1)
+                    world[x][y][z] = height <= 5 ? SAND : GRASS;
+                else if (y >= height - 3)
+                    world[x][y][z] = DIRT;
                 else
-                    welt[x][y][z] = STEIN;
+                    world[x][y][z] = STONE;
             }
         }
     }
     SetRandomSeed(7);
     for (int i = 0; i < 14; i++) {
-        int x = GetRandomValue(3, BREITE - 4);
-        int z = GetRandomValue(3, TIEFE - 4);
-        int y = HOEHE - 7;
-        while (y > 0 && block(x, y - 1, z) == LUFT)
+        int x = GetRandomValue(3, WIDTH - 4);
+        int z = GetRandomValue(3, DEPTH - 4);
+        int y = HEIGHT - 7;
+        while (y > 0 && block(x, y - 1, z) == AIR)
             y--;
-        if (block(x, y - 1, z) == GRAS)
-            baum(x, y, z);
+        if (block(x, y - 1, z) == GRASS)
+            tree(x, y, z);
     }
 }
 
 // Grenzt der Block an Luft? Nur dann kann man ihn sehen.
-bool sichtbar(int x, int y, int z)
+bool visible(int x, int y, int z)
 {
-    return block(x + 1, y, z) == LUFT || block(x - 1, y, z) == LUFT
-        || block(x, y + 1, z) == LUFT || block(x, y - 1, z) == LUFT
-        || block(x, y, z + 1) == LUFT || block(x, y, z - 1) == LUFT;
+    return block(x + 1, y, z) == AIR || block(x - 1, y, z) == AIR
+        || block(x, y + 1, z) == AIR || block(x, y - 1, z) == AIR
+        || block(x, y, z + 1) == AIR || block(x, y, z - 1) == AIR;
 }
 
 // --------------------------------------------------------------- Die Figur
 
-Vector3 fuesse;          // Mitte der Fußsohlen
-float drehung = 0;       // nach links und rechts, im Bogenmaß
-float neigung = 0;       // nach oben und unten
+Vector3 feet;          // Mitte der Fußsohlen
+float yaw = 0;         // nach links und rechts, im Bogenmaß
+float pitch = 0;       // nach oben und unten
 
-#define AUGENHOEHE 1.6f
+#define EYE_HEIGHT 1.6f
 
-Vector3 blickrichtung(void)
+Vector3 view_direction(void)
 {
     return (Vector3){
-        sinf(drehung) * cosf(neigung),
-        sinf(neigung),
-        cosf(drehung) * cosf(neigung),
+        sinf(yaw) * cosf(pitch),
+        sinf(pitch),
+        cosf(yaw) * cosf(pitch),
     };
 }
 
-void bewege_figur(float dt)
+void move_player(float dt)
 {
     // Umsehen: Maus (wenn gefangen) oder Pfeiltasten
     if (IsCursorHidden()) {
-        Vector2 maus = GetMouseDelta();
-        drehung -= maus.x * 0.003f;
-        neigung -= maus.y * 0.003f;
+        Vector2 mouse = GetMouseDelta();
+        yaw -= mouse.x * 0.003f;
+        pitch -= mouse.y * 0.003f;
     }
-    if (IsKeyDown(KEY_LEFT)) drehung += 2.0f * dt;
-    if (IsKeyDown(KEY_RIGHT)) drehung -= 2.0f * dt;
-    if (IsKeyDown(KEY_UP)) neigung += 1.5f * dt;
-    if (IsKeyDown(KEY_DOWN)) neigung -= 1.5f * dt;
-    neigung = Clamp(neigung, -1.5f, 1.5f);
+    if (IsKeyDown(KEY_LEFT)) yaw += 2.0f * dt;
+    if (IsKeyDown(KEY_RIGHT)) yaw -= 2.0f * dt;
+    if (IsKeyDown(KEY_UP)) pitch += 1.5f * dt;
+    if (IsKeyDown(KEY_DOWN)) pitch -= 1.5f * dt;
+    pitch = Clamp(pitch, -1.5f, 1.5f);
 
     // Laufen: vorwärts in Blickrichtung, aber ohne nach oben zu fliegen
-    Vector3 vorne = { sinf(drehung), 0, cosf(drehung) };
-    Vector3 rechts = { -cosf(drehung), 0, sinf(drehung) };
-    Vector3 wunsch = { 0 };
-    if (IsKeyDown(KEY_W)) wunsch = Vector3Add(wunsch, vorne);
-    if (IsKeyDown(KEY_S)) wunsch = Vector3Subtract(wunsch, vorne);
-    if (IsKeyDown(KEY_D)) wunsch = Vector3Add(wunsch, rechts);
-    if (IsKeyDown(KEY_A)) wunsch = Vector3Subtract(wunsch, rechts);
-    wunsch = Vector3Scale(Vector3Normalize(wunsch), 4.5f * dt);
-    fuesse = Vector3Add(fuesse, wunsch);
+    Vector3 forward = { sinf(yaw), 0, cosf(yaw) };
+    Vector3 right = { -cosf(yaw), 0, sinf(yaw) };
+    Vector3 move = { 0 };
+    if (IsKeyDown(KEY_W)) move = Vector3Add(move, forward);
+    if (IsKeyDown(KEY_S)) move = Vector3Subtract(move, forward);
+    if (IsKeyDown(KEY_D)) move = Vector3Add(move, right);
+    if (IsKeyDown(KEY_A)) move = Vector3Subtract(move, right);
+    move = Vector3Scale(Vector3Normalize(move), 4.5f * dt);
+    feet = Vector3Add(feet, move);
 }
 
 int main(void)
@@ -129,15 +129,15 @@ int main(void)
     SetTargetFPS(60);
     SetExitKey(KEY_NULL);   // Esc gibt nur die Maus frei
 
-    erzeuge_welt();
-    fuesse = (Vector3){ 8.5f, 9, 10.5f };
-    drehung = 0.8f;      // schräg über die Welt schauen
-    neigung = -0.2f;
+    generate_world();
+    feet = (Vector3){ 8.5f, 9, 10.5f };
+    yaw = 0.8f;      // schräg über die Welt schauen
+    pitch = -0.2f;
 
-    Camera3D kamera = { 0 };
-    kamera.up = (Vector3){ 0, 1, 0 };
-    kamera.fovy = 70;
-    kamera.projection = CAMERA_PERSPECTIVE;
+    Camera3D camera = { 0 };
+    camera.up = (Vector3){ 0, 1, 0 };
+    camera.fovy = 70;
+    camera.projection = CAMERA_PERSPECTIVE;
 
     while (!WindowShouldClose())
     {
@@ -149,29 +149,29 @@ int main(void)
             DisableCursor();
         if (IsKeyPressed(KEY_ESCAPE)) EnableCursor();
 
-        bewege_figur(dt);
+        move_player(dt);
 
-        Vector3 augen = { fuesse.x, fuesse.y + AUGENHOEHE, fuesse.z };
-        kamera.position = augen;
-        kamera.target = Vector3Add(augen, blickrichtung());
+        Vector3 eyes = { feet.x, feet.y + EYE_HEIGHT, feet.z };
+        camera.position = eyes;
+        camera.target = Vector3Add(eyes, view_direction());
 
         BeginDrawing();
         ClearBackground(SKYBLUE);
 
-        BeginMode3D(kamera);
-        int bloecke = 0;
-        for (int x = 0; x < BREITE; x++)
-            for (int y = 0; y < HOEHE; y++)
-                for (int z = 0; z < TIEFE; z++)
-                    if (welt[x][y][z] != LUFT && sichtbar(x, y, z)) {
-                        Vector3 mitte = { x + 0.5f, y + 0.5f, z + 0.5f };
-                        DrawCube(mitte, 1, 1, 1, farben[welt[x][y][z]]);
-                        DrawCubeWires(mitte, 1, 1, 1, Fade(BLACK, 0.25f));
-                        bloecke++;
+        BeginMode3D(camera);
+        int blocks = 0;
+        for (int x = 0; x < WIDTH; x++)
+            for (int y = 0; y < HEIGHT; y++)
+                for (int z = 0; z < DEPTH; z++)
+                    if (world[x][y][z] != AIR && visible(x, y, z)) {
+                        Vector3 center = { x + 0.5f, y + 0.5f, z + 0.5f };
+                        DrawCube(center, 1, 1, 1, colors[world[x][y][z]]);
+                        DrawCubeWires(center, 1, 1, 1, Fade(BLACK, 0.25f));
+                        blocks++;
                     }
         EndMode3D();
 
-        DrawText(TextFormat("%d Blöcke  %d FPS", bloecke, GetFPS()), 10, 10, 20, DARKBLUE);
+        DrawText(TextFormat("%d Blöcke  %d FPS", blocks, GetFPS()), 10, 10, 20, DARKBLUE);
         if (!IsCursorHidden() && GetTime() < 8)
             DrawText("Klick ins Bild: Maus fangen. WASD laufen, Pfeiltasten umsehen.", 10, 36, 20, WHITE);
         EndDrawing();

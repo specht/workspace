@@ -1,6 +1,6 @@
 # Aufgaben zu »Eine Klötzchenwelt in 3D« (raylib).
 # Format: docs/aufgaben.md. Die Vorlage wird nach /workspace/raylib-starter
-# geklont; die Prüfungen lesen main.c und licht.fs dort.
+# geklont; die Prüfungen lesen main.c und light.fs dort.
 format: 1
 activity: raylib
 tasks:
@@ -53,7 +53,7 @@ tasks:
   - id: zellen
     title: Wie viele Felder?
     prompt: |
-      Wie viele Felder hat das Array `welt`?
+      Wie viele Felder hat das Array `world`?
     check:
       type: number
       expect: 55296
@@ -67,8 +67,8 @@ tasks:
   - id: blick
     title: Andersherum
     prompt: |
-      Die Figur hat `drehung = PI` (also 3,14…) und `neigung = 0`. In welche
-      Richtung zeigt `blickrichtung()`?
+      Die Figur hat `yaw = PI` (also 3,14…) und `pitch = 0`. In welche
+      Richtung zeigt `view_direction()`?
     check:
       type: choice
       options:
@@ -79,7 +79,7 @@ tasks:
       correct: 0
     feedback:
       - when: { picked: 1 }
-        say: Das ist die Richtung bei `drehung = 0`. Was sind sin(π) und cos(π)?
+        say: Das ist die Richtung bei `yaw = 0`. Was sind sin(π) und cos(π)?
       - when: { picked: 3 }
         say: Ohne Neigung bleibt die y-Koordinate 0, sin(0) = 0.
     solution: sin(π) = 0 und cos(π) = −1, also (0, 0, −1). Eine halbe Umdrehung zeigt genau in die Gegenrichtung.
@@ -151,7 +151,7 @@ tasks:
   - id: figur
     title: Ein Körper
     prompt: |
-      Bau `kollidiert`, die Schritte in x und z und die Schwerkraft in dein
+      Bau `collides`, die Schritte in x und z und die Schwerkraft in dein
       Programm ein und speichere.
     file: raylib-starter/main.c
     check:
@@ -160,14 +160,14 @@ tasks:
       expect:
         format: text
         contains:
-          - { pattern: 'bool\s+kollidiert\s*\(', say: 'In `main.c` finde ich noch keine Funktion `kollidiert`.' }
+          - { pattern: 'bool\s+collides\s*\(', say: 'In `main.c` finde ich noch keine Funktion `collides`.' }
           - { pattern: 'vy\s*-=', say: 'Noch keine Schwerkraft: Wo wird `vy` in jedem Bild kleiner?' }
           - { pattern: 'KEY_SPACE', say: 'Noch kann die Figur nicht springen: Mit der Leertaste (`KEY_SPACE`) bekommt `vy` einen Wert nach oben.' }
 
   - id: schritte
     title: Kleine Schritte
     prompt: |
-      Warum geht `ziele` den Blick in Schritten von 0,02 Blöcken entlang und
+      Warum geht `aim` den Blick in Schritten von 0,02 Blöcken entlang und
       nicht in Schritten von 0,5?
     check:
       type: choice
@@ -190,7 +190,7 @@ tasks:
   - id: bauen
     title: Bauen und abbauen
     prompt: |
-      Bau `ziele`, das Abbauen mit der linken und das Bauen mit der rechten
+      Bau `aim`, das Abbauen mit der linken und das Bauen mit der rechten
       Maustaste in dein Programm ein und speichere.
     file: raylib-starter/main.c
     check:
@@ -199,16 +199,16 @@ tasks:
       expect:
         format: text
         contains:
-          - { pattern: 'void\s+ziele\s*\(', say: 'In `main.c` finde ich noch keine Funktion `ziele`.' }
+          - { pattern: 'void\s+aim\s*\(', say: 'In `main.c` finde ich noch keine Funktion `aim`.' }
           - { pattern: 'MOUSE_BUTTON_RIGHT', say: 'Noch baut die rechte Maustaste nichts: `IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)`.' }
-          - { pattern: 'DrawCubeWires\s*\(\s*\(Vector3\)\s*\{\s*zx', say: 'Noch hat der Block, auf den du schaust, keinen Rahmen.' }
+          - { pattern: 'DrawCubeWires\s*\(\s*\(Vector3\)\s*\{\s*hx', say: 'Noch hat der Block, auf den du schaust, keinen Rahmen.' }
 
   - id: wiese
     title: Mitten in der Wiese
     prompt: |
       Ein Grasblock liegt mitten in einer flachen Wiese: links, rechts, vorne
       und hinten Gras, darunter Erde, darüber Luft. Wie viele Seiten zeichnet
-      `zeichne_block` für ihn?
+      `draw_block` für ihn?
     check:
       type: number
       expect: 1
@@ -216,7 +216,7 @@ tasks:
       unit: Seiten
     feedback:
       - when: { equals: 6 }
-        say: So viele zeichnet `DrawCube`. `zeichne_block` lässt jede Seite weg, an die ein fester Block grenzt.
+        say: So viele zeichnet `DrawCube`. `draw_block` lässt jede Seite weg, an die ein fester Block grenzt.
       - when: { equals: 5 }
         say: Unten liegt Erde, die ist auch fest.
     solution: Nur die Oberseite. Auf einer großen Wiese zeichnet das Programm so ein Sechstel der Seiten, die sechs Würfelseiten pro Block wären.
@@ -225,7 +225,7 @@ tasks:
     title: Wie sonnig ist die Oberseite?
     prompt: |
       Die Sonne steht in Richtung `Vector3Normalize((Vector3){ 0.5f, 0.8f, 0.3f })`.
-      Welchen Wert hat `sonnig` im Fragment-Shader für die Oberseite eines
+      Welchen Wert hat `sunAmount` im Fragment-Shader für die Oberseite eines
       Blocks? Runde auf zwei Stellen.
     check:
       type: number
@@ -238,12 +238,12 @@ tasks:
     solution: |
       Mit der Normale (0, 1, 0) bleibt vom Skalarprodukt nur die y-Koordinate
       der Sonnenrichtung. (0,5; 0,8; 0,3) hat die Länge √0,98 ≈ 0,99, also ist
-      `sonnig` = 0,8 ÷ 0,99 ≈ 0,81.
+      `sunAmount` = 0,8 ÷ 0,99 ≈ 0,81.
 
   - id: licht
     title: Licht
     prompt: |
-      Zeichne die Welt mit `zeichne_block` und dem Licht-Shader und speichere.
+      Zeichne die Welt mit `draw_block` und dem Licht-Shader und speichere.
     file: raylib-starter/main.c
     check:
       type: files
@@ -252,8 +252,8 @@ tasks:
         format: text
         contains:
           - { pattern: 'rlNormal3f\s*\(', say: 'In `main.c` bekommt noch keine Ecke eine Normale (`rlNormal3f`).' }
-          - { pattern: 'LoadShader\s*\(\s*"licht\.vs"\s*,\s*"licht\.fs"\s*\)', say: 'Noch lädt `main.c` den Shader nicht: `LoadShader("licht.vs", "licht.fs")`.' }
-          - { pattern: 'BeginShaderMode\s*\(', say: 'Der Shader ist geladen, aber noch zeichnet nichts mit ihm: `BeginShaderMode(licht)` vor der Schleife über die Welt.' }
+          - { pattern: 'LoadShader\s*\(\s*"light\.vs"\s*,\s*"light\.fs"\s*\)', say: 'Noch lädt `main.c` den Shader nicht: `LoadShader("light.vs", "light.fs")`.' }
+          - { pattern: 'BeginShaderMode\s*\(', say: 'Der Shader ist geladen, aber noch zeichnet nichts mit ihm: `BeginShaderMode(light)` vor der Schleife über die Welt.' }
 
   - id: fackel-abstand
     title: Licht in der Ferne
@@ -266,30 +266,30 @@ tasks:
       type: number
       expect: 0.45
       tolerance: 0.01
-    hint: Das Licht wird durch `1.0 + 0.3 * abstand * abstand` geteilt. Direkt an der Fackel ist der Abstand 0.
+    hint: Das Licht wird durch `1.0 + 0.3 * dist * dist` geteilt. Direkt an der Fackel ist der Abstand 0.
     feedback:
       - when: { between: [0.62, 0.63] }
-        say: Hast du den Abstand quadriert? Im Shader steht `abstand * abstand`.
+        say: Hast du den Abstand quadriert? Im Shader steht `dist * dist`.
     solution: Bei Abstand 2 wird durch 1 + 0,3 × 4 = 2,2 geteilt, bei Abstand 0 durch 1. Es kommen also 1 ÷ 2,2 ≈ 0,45 an, weniger als die Hälfte.
 
   - id: fackeln
     title: Fackeln und Nebel
     prompt: |
-      Ersetze `licht.fs` durch den Shader mit Fackeln und Nebel und speichere.
-    file: raylib-starter/licht.fs
+      Ersetze `light.fs` durch den Shader mit Fackeln und Nebel und speichere.
+    file: raylib-starter/light.fs
     check:
       type: files
-      path: raylib-starter/licht.fs
+      path: raylib-starter/light.fs
       expect:
         format: text
         contains:
-          - { pattern: 'uniform\s+vec3\s+fackeln\s*\[', say: 'In `licht.fs` gibt es noch keine Liste `fackeln`.' }
-          - { pattern: 'nebel', say: 'In `licht.fs` fehlt noch der Nebel: Er mischt die Farbe mit `himmel`, je weiter entfernt ein Pixel ist.' }
+          - { pattern: 'uniform\s+vec3\s+torches\s*\[', say: 'In `light.fs` gibt es noch keine Liste `torches`.' }
+          - { pattern: '\bfog\b', say: 'In `light.fs` fehlt noch der Nebel (`fog`): Er mischt die Farbe mit `sky`, je weiter entfernt ein Pixel ist.' }
 
   - id: texturen
     title: Texturen
     prompt: |
-      Lade `texturen.png` und gib jeder Seite ihre Kachel, dann speichere.
+      Lade `textures.png` und gib jeder Seite ihre Kachel, dann speichere.
     file: raylib-starter/main.c
     check:
       type: files
@@ -297,9 +297,9 @@ tasks:
       expect:
         format: text
         contains:
-          - { pattern: 'LoadTexture\s*\(\s*"texturen\.png"\s*\)', say: 'Noch lädt `main.c` keine Textur: `LoadTexture("texturen.png")`.' }
+          - { pattern: 'LoadTexture\s*\(\s*"textures\.png"\s*\)', say: 'Noch lädt `main.c` keine Textur: `LoadTexture("textures.png")`.' }
           - { pattern: 'rlTexCoord2f\s*\(', say: 'Noch bekommt keine Ecke Texturkoordinaten (`rlTexCoord2f`).' }
-          - { pattern: 'rlSetTexture\s*\(\s*textur\.id\s*\)', say: 'Die Textur ist geladen, aber die Flächen bekommen sie noch nicht: `rlSetTexture(textur.id)` vor der Schleife über die Welt.' }
+          - { pattern: 'rlSetTexture\s*\(\s*texture\.id\s*\)', say: 'Die Textur ist geladen, aber die Flächen bekommen sie noch nicht: `rlSetTexture(texture.id)` vor der Schleife über die Welt.' }
 
   - id: abgabe
     title: Deine Welt

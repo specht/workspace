@@ -2,43 +2,43 @@
 precision mediump float;
 
 varying vec3 position;
-varying vec3 normale;
-varying vec4 farbe;
+varying vec3 normal;
+varying vec4 color;
 varying vec2 uv;
 
 uniform sampler2D texture0;  // die Textur mit allen Kacheln
 
-uniform vec3 sonne;         // Richtung, aus der die Sonne scheint
-uniform vec3 sonnenlicht;   // Farbe und Stärke des Sonnenlichts
-uniform vec3 umgebung;      // Licht, das von überall kommt
-uniform vec3 himmel;        // Farbe des Himmels, für den Nebel
-uniform vec3 augen;         // wo die Kamera ist
+uniform vec3 sun;        // Richtung, aus der die Sonne scheint
+uniform vec3 sunlight;   // Farbe und Stärke des Sonnenlichts
+uniform vec3 ambient;    // Licht, das von überall kommt
+uniform vec3 sky;        // Farbe des Himmels, für den Nebel
+uniform vec3 eyes;       // wo die Kamera ist
 
-#define MAX_FACKELN 16
-uniform vec3 fackeln[MAX_FACKELN];
-uniform int anzahlFackeln;
+#define MAX_TORCHES 16
+uniform vec3 torches[MAX_TORCHES];
+uniform int torchCount;
 
 void main()
 {
-    vec3 n = normalize(normale);
+    vec3 n = normalize(normal);
 
     // Wie direkt trifft die Sonne diese Fläche? 1 = senkrecht, 0 = gar nicht
-    float sonnig = max(dot(n, sonne), 0.0);
-    vec3 licht = umgebung + sonnenlicht * sonnig;
+    float sunAmount = max(dot(n, sun), 0.0);
+    vec3 light = ambient + sunlight * sunAmount;
 
     // Jede Fackel leuchtet warm, je näher, desto heller
-    for (int i = 0; i < MAX_FACKELN; i++) {
-        if (i >= anzahlFackeln) break;
-        vec3 zurFackel = fackeln[i] - position;
-        float abstand = length(zurFackel);
-        float zugewandt = max(dot(n, zurFackel / abstand), 0.0);
-        licht += vec3(1.0, 0.6, 0.3) * (0.3 + 0.7 * zugewandt) / (1.0 + 0.3 * abstand * abstand);
+    for (int i = 0; i < MAX_TORCHES; i++) {
+        if (i >= torchCount) break;
+        vec3 toTorch = torches[i] - position;
+        float dist = length(toTorch);
+        float facing = max(dot(n, toTorch / dist), 0.0);
+        light += vec3(1.0, 0.6, 0.3) * (0.3 + 0.7 * facing) / (1.0 + 0.3 * dist * dist);
     }
 
     vec3 pixel = texture2D(texture0, uv).rgb;
-    vec3 ergebnis = pixel * farbe.rgb * min(licht, vec3(1.4));
+    vec3 result = pixel * color.rgb * min(light, vec3(1.4));
 
     // Nebel: weit Entferntes verschwimmt mit dem Himmel
-    float nebel = clamp((length(position - augen) - 16.0) / 20.0, 0.0, 1.0);
-    gl_FragColor = vec4(mix(ergebnis, himmel, nebel), 1.0);
+    float fog = clamp((length(position - eyes) - 16.0) / 20.0, 0.0, 1.0);
+    gl_FragColor = vec4(mix(result, sky, fog), 1.0);
 }
