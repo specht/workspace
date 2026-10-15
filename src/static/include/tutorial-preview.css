@@ -123,6 +123,91 @@
     object-fit: contain;
 }
 
+.tutorial-preview-lightbox-content {
+    margin: 0;
+}
+
+/* A gallery picture: as large as the window, sizes set by fit() in
+   tutorial-preview.js, with its caption below */
+
+.screen-gallery-zoom {
+    cursor: zoom-in;
+}
+
+.screen-gallery-zoom:focus-visible {
+    outline: 0.18rem solid currentColor;
+    outline-offset: 0.2rem;
+}
+
+.tutorial-preview-lightbox.is-gallery .tutorial-preview-lightbox-content {
+    max-width: none;
+    max-height: none;
+    box-shadow: none;
+}
+
+.tutorial-preview-lightbox.is-gallery .tutorial-preview-lightbox-content img {
+    max-width: none;
+    max-height: none;
+    border-radius: 6px;
+    box-shadow: 0 0.8rem 3rem rgba(0, 0, 0, 0.45);
+}
+
+.tutorial-preview-lightbox-content figcaption {
+    max-width: 48rem;
+    margin: 0.75rem auto 0;
+    color: white;
+    font-size: 1rem;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.tutorial-preview-lightbox-content figcaption code {
+    color: #ffd27a;
+    background: transparent;
+}
+
+.tutorial-preview-lightbox-step {
+    display: none;
+    position: fixed;
+    top: 50%;
+    z-index: 1;
+    transform: translateY(-50%);
+
+    width: 3rem;
+    height: 4.5rem;
+    border: 0;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.35);
+    color: white;
+
+    font-family: 'PT Sans', sans-serif;
+    font-size: 3rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.tutorial-preview-lightbox-step:hover,
+.tutorial-preview-lightbox-step:focus-visible {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.tutorial-preview-lightbox-prev {
+    left: 0.6rem;
+}
+
+.tutorial-preview-lightbox-next {
+    right: 0.6rem;
+}
+
+.tutorial-preview-lightbox.is-gallery.has-steps .tutorial-preview-lightbox-step {
+    display: block;
+}
+
+/* A gallery picture with its caption needs a quieter page behind it */
+.tutorial-preview-lightbox.is-gallery::backdrop {
+    background: rgba(0, 0, 0, 0.94);
+}
+
 .tutorial-preview-lightbox.is-visible .tutorial-preview-lightbox-content {
     opacity: 1;
     transform: scale(1);
