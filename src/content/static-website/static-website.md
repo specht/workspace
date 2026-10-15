@@ -738,7 +738,7 @@ Hugo legt dann die Grundstruktur einer neuen Webseite an. Inhalte können zum Be
 Hugo ersetzt HTML und CSS nicht. Am Ende erzeugt Hugo genau daraus wieder statische Webseiten. Es hilft dir vor allem dabei, viele Seiten und wiederkehrende Bestandteile zu organisieren.
 </div>
 
-Wenn dich das interessiert, kannst du nach diesem Tutorial ein neues Verzeichnis anlegen und mit `hugo new site` experimentieren, ohne deine Axolotl-Seite anzutasten.
+Wie das geht, zeigt die Aktivität [Eine Website mit Hugo](/hugo): Aus deinem Axolotl wird dort ein kleines Aquarium-Lexikon mit mehreren Seiten, einer Navigation und Schlagwörtern.
 
 ### Und JavaScript?
 
