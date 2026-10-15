@@ -137,7 +137,8 @@ tasks:
   - id: himmel
     title: Ein Himmel
     prompt: |
-      Gib deinem Spiel einen funkelnden Himmel und eine Wiese, dann speichere.
+      Gib deinem Spiel einen funkelnden Himmel aus einer Tabelle `sky` und eine
+      Wiese, dann speichere.
     file: TIC-80/stars.lua
     check:
       type: files

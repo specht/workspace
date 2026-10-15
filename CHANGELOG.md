@@ -793,6 +793,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   längste und damit leicht zu erraten; die falschen Antworten sind jetzt
   ebenso ausführlich und plausibel. Zwölf Aufgaben ohne jede Rückmeldung
   bekommen eine zu den naheliegenden Fehlern, als Frage statt als Lösung.
+- Datei-Prüfungen, die richtige Lösungen ablehnten: Hugo nimmt auch
+  `.Site.RegularPages`, `site.Pages` und `{{- … -}}`; raylib nimmt einen
+  Rahmen um den Zielblock auch über eine eigene Variable und eine Textur
+  unter anderem Namen. Wo eine Prüfung einen bestimmten Namen verlangt
+  (`sky` in TIC-80, `vy` in raylib, `Thread.new` im Webserver), steht er
+  jetzt in der Aufgabe.
 
 ### Entfernt
 

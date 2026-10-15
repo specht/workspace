@@ -86,8 +86,8 @@ tasks:
       expect:
         format: text
         contains:
-          - { pattern: '\{\{\s*block\s+"main"', say: 'In `baseof.html` fehlt die Lücke für den Inhalt: `{{ block "main" . }}{{ end }}`.' }
-          - { pattern: '\{\{\s*range\s+site\.RegularPages', say: 'Noch gibt es keine Navigation: `{{ range site.RegularPages }}` geht alle Seiten durch.' }
+          - { pattern: '\{\{-?\s*block\s+"main"', say: 'In `baseof.html` fehlt die Lücke für den Inhalt: `{{ block "main" . }}{{ end }}`.' }
+          - { pattern: '\{\{-?\s*range\s+(?:\$\w+\s*:=\s*)?(?:site|\.Site)\.(?:RegularPages|Pages)\b', say: 'Noch gibt es keine Navigation: `{{ range site.RegularPages }}` geht alle Seiten durch.' }
           - { pattern: '\.RelPermalink', say: 'Die Navigation braucht für jede Seite ihre Adresse: `href="{{ .RelPermalink }}"`.' }
 
   - id: tags
@@ -102,7 +102,7 @@ tasks:
       expect:
         format: text
         contains:
-          - { pattern: '\{\{\s*\.Content\s*\}\}', say: 'In `page.html` fehlt `{{ .Content }}`, der Text der Seite.' }
+          - { pattern: '\{\{-?\s*\.Content\s*-?\}\}', say: 'In `page.html` fehlt `{{ .Content }}`, der Text der Seite.' }
           - { pattern: 'GetTerms\s+"tags"', say: 'Noch zeigt `page.html` keine Schlagwörter: `{{ range .GetTerms "tags" }}`.' }
 
   - id: public

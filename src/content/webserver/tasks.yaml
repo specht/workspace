@@ -28,8 +28,8 @@ tasks:
   - id: antwort
     title: Die erste Antwort
     prompt: |
-      Lass deinen Server mit einer vollständigen HTTP-Antwort antworten und
-      speichere.
+      Lass deinen Server mit einer vollständigen HTTP-Antwort antworten, jede
+      Verbindung in einem eigenen Thread (`Thread.new`), und speichere.
     file: webserver/server.rb
     check:
       type: files
