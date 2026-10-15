@@ -70,8 +70,10 @@
   label: Datenbanken
   icon: /images/card-file-box.png
   description: |
-    ER-Modelle als Text schreiben und in Tabellen übersetzen.
+    SQL für MySQL nachschlagen, ER-Modelle als Text schreiben und in
+    Tabellen übersetzen.
   entries:
+    - sql
     - er-modelle
 
 - key: reference-stories

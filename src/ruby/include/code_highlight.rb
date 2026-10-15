@@ -95,6 +95,10 @@ module CodeHighlight
                 lexer = Rouge::Lexers::Nasm.new
             when 'pascal'
                 lexer = Rouge::Lexers::Pascal.new
+            when 'php'
+                # A whole file starts with <?php and may hold HTML around the
+                # PHP; a snippet is PHP from the first character.
+                lexer = Rouge::Lexers::PHP.new(:start_inline => !code.text.include?('<?'))
             when 'python'
                 lexer = Rouge::Lexers::Python.new
             when 'ruby'

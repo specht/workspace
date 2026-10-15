@@ -549,6 +549,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   nach Namen sortiert. Ein Rendern in anderer Reihenfolge ändert die Datei
   nicht mehr.
 
+- Handbuch »SQL«: mycli, Tabellen ansehen, `SELECT`, `WHERE`, Sortieren,
+  Zählen und Gruppieren, `JOIN`, `CREATE TABLE`, `INSERT`, `UPDATE` und
+  `DELETE`, Werte über Platzhalter in Programmen (PHP, Ruby, Python) und
+  die häufigen Meldungen von MySQL. »MySQL kennenlernen« und
+  »Filmdatenbank« verweisen darauf. Code-Blöcke in PHP sind farbig; ein
+  Test hatte die fehlende Sprache bemerkt.
 - Profil, MySQL: Jede Datenbank ist eine Karte mit Name, Art, Tabellen,
   Einträgen und Größe, ihrem Knopf zum Zurücksetzen oder Löschen und ihren
   Zugangsdaten. Unter den Karten steht, wie viele weitere Datenbanken noch

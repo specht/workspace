@@ -4,7 +4,7 @@ kind: projekt
 topic: databases
 duration: 3 Doppelstunden
 requires: [mysql]
-reference: [er-modelle]
+reference: [er-modelle, sql]
 </div>
 
 <div
@@ -456,5 +456,7 @@ _task(neue-frage)
 - Eine **n:m-Beziehung** und jede Beziehung zwischen drei Entitäten wird eine eigene Tabelle mit einem **zusammengesetzten Primärschlüssel**.
 - Aus dem Modell entsteht SQL (`CREATE TABLE`, `PRIMARY KEY`, `FOREIGN KEY`), das du mit `mysql < film.sql` ausführst.
 - Mit `JOIN … ON …` setzt du verteilte Daten wieder zusammen, einen Schritt pro Linie im Tabellendiagramm. `GROUP BY` bildet Gruppen, `HAVING` filtert sie.
+
+Im Handbuch: _uses(create-table, join, aggregieren)
 
 Dein Modell `film.er`, das erzeugte `film.sql` und die Diagramme, die du mit »Als SVG speichern« sicherst, liegen in `/workspace/filmdatenbank`. Sie gehören dir; du kannst sie herunterladen oder in ein eigenes Repository legen.
