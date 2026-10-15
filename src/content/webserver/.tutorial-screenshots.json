@@ -2,20 +2,20 @@
   "screenshots": {
     "browser-seite.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "ad34b5568210e22517bdf1d45e25f13a05b09b9a1e48823e4a118422b036564e",
-      "state_hash": "0ca2e3aecda6acd2ae0b77b67c6711d4589fe826ac57e7998e7e5981cf61e03e",
+      "output_sha256": "0436db2be7a09faf5884eb936f65df7726cc5ca1d8e090cde88b9c500d684404",
+      "state_hash": "b7e1fcd5b49c2d67cf90798e49de36c0d643871dc2e44055eeeb454fa08792d7",
       "workspace_look": "4.138.0-ls366"
     },
     "css-antwort.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "398c3d2510802219e09ffd63c79580b6a0507e6129c0f6b429210ae68a010de6",
-      "state_hash": "ca8a9c02a54112e466eb3a8bbb928c3128c8e0c8a974f2a2835550751443005b",
+      "output_sha256": "f833eb49cf4da4bfc169a72077fa74a51b6be54299c73c95305d049b92ffce38",
+      "state_hash": "bfc5aea4432d3f4f8486b2ff00e3256adb59de96b29006d61bde4b79e2c4078d",
       "workspace_look": "4.138.0-ls366"
     },
     "ergebnis.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "511276fce2aa8a29c6d8c842a73a911815749820435c8ce659ff4ec020e9d13c",
-      "state_hash": "c35718ed0bafc928a96f147b08c216be584a111c114161bf3ce12d234490f0e3",
+      "output_sha256": "ef2b75c9b448a8b85c9e4f9ce54ecae69ae11f8e41366e1043856a52ec074736",
+      "state_hash": "491ac81a02f21eee4a0b37c8422bbe3a4f2d556160e5ff0ae638db217dac78f4",
       "workspace_look": "4.138.0-ls366"
     },
     "erste-anfrage.webp": {
@@ -33,31 +33,31 @@
     "parameter.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "4aff1e59776cfb4c632fcf03d69503841c8a0f51c9cb6319ded8940dd48e381f",
-      "state_hash": "7fef9843ef04b9259fc4cb15d576ec1fd443b6237f3771ec87e973b2d086130a",
+      "state_hash": "30436fdbae564806f225b0de3cb27a0d52f991b4c42c74e067b731e9e4595b44",
       "workspace_look": "4.138.0-ls366"
     },
     "pfade.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "deb94d4d2f2d66909d7c5a566876e81e9e26d2bf47796ba690eb5d6035776536",
+      "output_sha256": "3b8d0c7f665501ec604f09f9e42b9b0d753dbaf47673b2a6d486faf4a6f764ce",
       "state_hash": "160a031f8eadb537d52093c120e9cc40401aadca2ffff6445d54007ebbcd1330",
       "workspace_look": "4.138.0-ls366"
     },
     "post-curl.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "d5c964eaa60af83f2f52ad3bb5b93dfeb1d833d200b76dc2e6d72ab459b8cdfa",
-      "state_hash": "6a4df603c37239cf008683039d80f2aa5759eeff78eeb8d6e46c9f49070faa0a",
+      "state_hash": "4fb1aa26e50d694f3b008f170ee6d801bc003b10c1de87f63e45fd4277e14bff",
       "workspace_look": "4.138.0-ls366"
     },
     "teaser.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "ed784a607a26bbd990b40fddde8641a606012f39257ecb5e885d803770980a5a",
-      "state_hash": "abd59dc9ac01030a6d90a7940f358ecb83c322ddc5d6455b228b3711007b5521",
+      "output_sha256": "b25859d340c39e6105809ba257044a86a374f83a8bc40e7415662d3eaf259b84",
+      "state_hash": "2c9c53882999c2a643b073e6b866f41b11d0fe5b5deda0c355d99381b0a02298",
       "workspace_look": "4.138.0-ls366"
     },
     "umfrage.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "5f8ae2886e41e4dac5ece6a3390488207a2ab375342ad9d468abd623bc7b5871",
-      "state_hash": "ee979bec47b88c1e66e7f34893d9a683a85e005fc2dae22286c54870d43d0ae2",
+      "output_sha256": "8cb4d887ec2538b941b8fcd71b9a0b5e9bb08d4a28439d92dd966686d1bc0c44",
+      "state_hash": "d76256e5c77355509c5f092f95686df8220a4f6f33cc99a63afa634b7468936d",
       "workspace_look": "4.138.0-ls366"
     }
   },

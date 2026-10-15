@@ -345,12 +345,15 @@ Die neue `index.html` zeichnet das Bild in ein `<canvas>`, ein Element, in das J
   <meta charset="utf-8">
   <title>Pixelwand</title>
   <style>
-    body { font-family: system-ui, sans-serif; margin: 1.5em; background: #0e0f17; color: #f4f4f4; }
-    #wall { width: 640px; height: 400px; image-rendering: pixelated; cursor: crosshair;
-            outline: 2px solid #333c57; border-radius: 2px; touch-action: none; }
-    #colors { display: flex; gap: 4px; margin-top: 0.8em; }
-    #colors button { width: 32px; height: 32px; border: 2px solid transparent; border-radius: 4px; cursor: pointer; }
-    #colors button.active { border-color: #f4f4f4; }
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 1.5em;
+           display: flex; flex-direction: column; align-items: center; background: #14151f; color: #f4f4f4; }
+    h1 { margin: 0.2em 0 0.3em; }
+    #people { margin: 0 0 1em; color: #94b0c2; }
+    #wall { width: 640px; height: 400px; image-rendering: pixelated; cursor: crosshair; touch-action: none;
+            border-radius: 8px; box-shadow: 0 0 0 2px #333c57; }
+    #colors { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1em; }
+    #colors button { width: 28px; height: 28px; border: 0; border-radius: 50%; cursor: pointer; }
+    #colors button.active { box-shadow: 0 0 0 2px #14151f, 0 0 0 4px #f4f4f4; }
   </style>
 </head>
 <body>
@@ -717,7 +720,7 @@ Im Ernstfall läuft eine WebSocket-Verbindung verschlüsselt über `wss://`, und
 # Bild für die Karte der Aktivität: die Wand, nachdem die Klasse eine Weile gemalt hat
 preview-reload
 tab: preview
-viewport: 1029x640
+viewport: 1029x700
 wait-for-text: Pixelwand
 hook: paint-teaser
 crop-element: #wall

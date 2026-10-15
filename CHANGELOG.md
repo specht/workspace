@@ -772,6 +772,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   ganzen Seite, die auf der Karte unlesbar klein wird. Die Ergebnisseite der
   Umfrage im Webserver zeichnet jetzt für jede Antwort einen Balken mit
   `<progress>`.
+- Schönere Seiten zum Abschreiben: Der Webserver bekommt ein `style.css`
+  mit einer weißen Karte, Antworten als Kacheln und Balken in der Farbe der
+  Seite; die Wetterseite zeigt die Temperatur groß und die Tage als Karten
+  und baut ihr HTML nur noch mit `textContent`; die Pixelwand steht in der
+  Mitte, mit runden Farbknöpfen.
 
 ### Entfernt
 

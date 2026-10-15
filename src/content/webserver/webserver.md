@@ -277,21 +277,108 @@ Ein Webserver liefert meistens Dateien aus: HTML, CSS, Bilder. Lege neben `serve
 und `style.css`:
 
 ```css_copy
+/* Die Seiten des Servers: eine weiße Karte auf hellem Grund */
+html {
+  background: #f4f1ea;
+}
+
 body {
   font-family: system-ui, sans-serif;
-  max-width: 36em;
+  line-height: 1.5;
+  max-width: 34em;
   margin: 3em auto;
-  padding: 0 1em;
-  background: #f4f1ea;
+  padding: 2em 2.5em;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   color: #2b2b2b;
 }
 
 h1 {
+  margin-top: 0;
   color: #b5482b;
 }
 
 a {
   color: #1f6f8b;
+}
+
+code {
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: #f4f1ea;
+}
+
+/* Für die Umfrage später: jede Antwort eine Kachel, die ganz klickbar ist */
+label {
+  display: block;
+  padding: 0.6em 1em;
+  border: 2px solid #ece6dc;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+label:has(input:checked) {
+  border-color: #b5482b;
+}
+
+input[type="radio"] {
+  margin-right: 0.5em;
+  accent-color: #b5482b;
+}
+
+button {
+  padding: 0.6em 1.6em;
+  border: 0;
+  border-radius: 8px;
+  background: #b5482b;
+  color: white;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Das Ergebnis: ein Balken in der Farbe der Seite für jede Antwort */
+table {
+  width: 100%;
+}
+
+td {
+  padding: 0.3em 0;
+}
+
+td:first-child {
+  width: 5em;
+}
+
+td:last-child {
+  width: 2em;
+  text-align: right;
+  font-weight: 600;
+}
+
+progress {
+  appearance: none;
+  width: 100%;
+  height: 0.9em;
+  border: 0;
+  border-radius: 999px;
+  background: #ece6dc;
+  overflow: hidden;
+}
+
+progress::-webkit-progress-bar {
+  background: #ece6dc;
+}
+
+progress::-webkit-progress-value {
+  border-radius: 999px;
+  background: #d9774f;
+}
+
+progress::-moz-progress-bar {
+  border-radius: 999px;
+  background: #d9774f;
 }
 ```
 
@@ -791,7 +878,7 @@ terminal-run: for c in pizza pizza curry pasta pizza salad curry pizza curry pas
 sleep: 1
 preview-port: 8000 /results
 tab: preview
-viewport: 400x225
+viewport: 720x405
 wait-for-text: Ergebnis
 sleep: 1
 -->
