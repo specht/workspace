@@ -14,7 +14,7 @@ require_relative 'submission_view'
 # fetches the pinned commit from GitHub into /internal on first use. Kenney
 # kits come on demand, with the template's own download.rb and kits.txt.
 module AnaglyphViewer
-    COMMIT = 'c2ac11e67cd0f53cde3447a28b830f08f2dc086a'
+    COMMIT = '114bc3bd96bc58d0d54c4a18e891dff37c42bf0e'
     ROOT = '/internal/anaglyph-viewer'
     TARBALL = "https://codeload.github.com/specht/anaglyph/tar.gz/#{COMMIT}"
     FETCH_TIMEOUT = 120
@@ -132,38 +132,14 @@ module AnaglyphViewer
     # The viewer runs on abgaben.<host>, sandboxed like a hand-in
     # (SubmissionView): an opaque origin without the site's cookies, so what
     # a scene's expressions do stays there instead of running in the session
-    # of whoever looks at it, a teacher on the class page for one. Two
-    # changes to the pinned script make it work there: an opaque origin
-    # cannot name itself, so its messages go to the parent with '*' (only
-    # the site may frame it: frame-ancestors), and the picture message
-    # carries the number of objects, which the page cannot read out of a
-    # frame from another origin. Each change has to match exactly once; a
-    # new viewer commit without these lines fails closed. Once specht/
-    # anaglyph has them itself (PARENT_ORIGIN, objects), bump COMMIT and
-    # empty this list in the same change.
-    SANDBOX_PATCHES = [
-        ["    window.parent.postMessage({\n        type: 'anaglyph-picture',\n",
-         "    window.parent.postMessage({\n        type: 'anaglyph-picture',\n" \
-         "        objects: Array.isArray(sceneDescription) ? sceneDescription.filter((entry) => " \
-         "(entry.shape || entry.model || entry.text !== undefined) && entry.shape !== 'grid').length : null,\n"],
-        ["    }, window.location.origin);\n", "    }, '*');\n"],
-        ["{ type: 'anaglyph-key', key: e.key }, window.location.origin);", "{ type: 'anaglyph-key', key: e.key }, '*');"],
-    ].freeze
-
-    class Unpatchable < StandardError; end
+    # of whoever looks at it, a teacher on the class page for one. The viewer
+    # itself sends its messages to '*' in an opaque origin and the number of
+    # objects with the picture (since 114bc3b); here it only gets the
+    # in-memory stand-in for sessionStorage, which throws in an opaque origin.
 
     # The bytes of a viewer file as the sandboxed viewer gets them.
     def self.for_sandbox(path, bytes)
-        if path == File.join(dir, 'include', 'script.js')
-            text = bytes.dup.force_encoding(Encoding::UTF_8)
-            SANDBOX_PATCHES.each do |from, to|
-                count = text.scan(from).size
-                raise Unpatchable, "script.js: expected one #{from.strip[0, 40].inspect}, found #{count}" unless count == 1
-
-                text = text.sub(from) { to }
-            end
-            text
-        elsif path == File.join(dir, 'index.html')
+        if path == File.join(dir, 'index.html')
             # sessionStorage (the camera of a scene) throws in an opaque
             # origin; the same in-memory stand-in as for hand-ins.
             text = bytes.dup.force_encoding(Encoding::UTF_8)

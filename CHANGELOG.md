@@ -733,8 +733,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Lehrkraft. Die Seite holt für jede Szene eine signierte Adresse
   (`/api/anaglyph/address`), der Viewer schickt Bild, Fehler und die Zahl
   der Objekte als Nachricht zurück. Unter `/anaglyph-viewer/` antwortet die
-  Website selbst nicht mehr. Zwei kleine Änderungen am Viewer macht der
-  Server beim Ausliefern, bis `specht/anaglyph` sie selbst hat.
+  Website selbst nicht mehr. Der Viewer (`specht/anaglyph` 114bc3b) schickt
+  seine Nachrichten dafür selbst richtig; der Server ergänzt nur einen Ersatz
+  für `sessionStorage`.
 - Sicherheit: Rückmeldungen der Aufgaben enthalten Text aus den Dateien der
   Lernenden (eine CSS-Zeile, ein Branch-Name, der Name einer Szene). Das
   HTML, das Aufgabenkarte und Klassenseite davon anzeigen, wird jetzt nach

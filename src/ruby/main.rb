@@ -5369,12 +5369,7 @@ class Main < Sinatra::Base
                 halt 503
             end
             halt 404 if path.nil?
-            bytes = begin
-                AnaglyphViewer.for_sandbox(path, File.binread(path))
-            rescue AnaglyphViewer::Unpatchable => e
-                STDERR.puts "Anaglyph viewer: #{e.message}"
-                halt 503
-            end
+            bytes = AnaglyphViewer.for_sandbox(path, File.binread(path))
             SubmissionView.headers(path, WEB_ROOT).each { |k, v| response.headers[k] = v }
             response.headers['Cache-Control'] = 'public, max-age=3600'
             respond_raw_with_mimetype(bytes, AnaglyphViewer.mime(path))
