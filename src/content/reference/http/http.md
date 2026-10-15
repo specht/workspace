@@ -134,26 +134,15 @@ Header sind unabhängig von Groß- und Kleinschreibung: `content-type` ist dasse
 <!-- short: `http://host:port/pfad?name=wert#stelle`; Sonderzeichen werden als `%20` usw. kodiert. -->
 ### Teile einer Adresse
 
-```text
-http://localhost:8000/hello?name=Ada%20Lovelace#gruss
-```
+<div class='url-diagram'><div class='url-parts' role='img' aria-label='Die Adresse http://localhost:8000/hello?name=Ada%20Lovelace#gruss in Teilen: Schema http, Host localhost, Port 8000, Pfad /hello, Query name=Ada%20Lovelace, Fragment gruss.'><span class='url-part'>http<span class='url-label'>Schema</span></span><span class='url-sep'>://</span><span class='url-part url-low'>localhost<span class='url-label'>Host</span></span><span class='url-sep'>:</span><span class='url-part'>8000<span class='url-label'>Port</span></span><span class='url-part url-low'>/hello<span class='url-label'>Pfad</span></span><span class='url-sep'>?</span><span class='url-part'>name=Ada%20Lovelace<span class='url-label'>Query</span></span><span class='url-sep'>#</span><span class='url-part url-low'>gruss<span class='url-label'>Fragment</span></span></div></div>
 
-<div class='scroll-x'><table class='table table-sm reference-table'>
-<thead><tr><th>Teil</th><th>Hier</th><th>Bedeutung</th></tr></thead>
-<tbody>
-<tr><td>Schema</td><td><code>http</code></td><td>das Protokoll, <code>http</code> oder <code>https</code></td></tr>
-<tr><td>Host</td><td><code>localhost</code></td><td>welcher Rechner gefragt wird, ein Name oder eine IP-Adresse</td></tr>
-<tr><td>Port</td><td><code>8000</code></td><td>ohne Angabe 80 bei <code>http</code>, 443 bei <code>https</code></td></tr>
-<tr><td>Pfad</td><td><code>/hello</code></td><td>was auf dem Server gemeint ist</td></tr>
-<tr><td>Query</td><td><code>name=Ada%20Lovelace</code></td><td>Parameter nach dem <code>?</code>, <code>name=wert</code>, mehrere getrennt durch <code>&amp;</code></td></tr>
-<tr><td>Fragment</td><td><code>gruss</code></td><td>eine Stelle in der Seite, nach dem <code>#</code></td></tr>
-</tbody>
-</table>
-</div>
+- **Schema:** das Protokoll, `http` oder `https`.
+- **Host:** welcher Rechner gefragt wird, ein Name oder eine IP-Adresse.
+- **Port:** ohne Angabe 80 bei `http`, 443 bei `https`.
+- **Pfad** und **Query** gehen in die Request-Line: `GET /hello?name=Ada%20Lovelace HTTP/1.1`. Die Query bringt Parameter mit, `name=wert`, mehrere getrennt durch `&`.
+- **Fragment:** eine Stelle in der Seite. Es bleibt im Browser; der Server sieht es nie.
 
-- Der Host bestimmt, welcher Rechner gefragt wird; Pfad und Query gehen in die Request-Line: `GET /hello?name=Ada%20Lovelace HTTP/1.1`.
-- Das Fragment (`#gruss`) bleibt im Browser; der Server sieht es nie.
-- Leerzeichen, Umlaute und Zeichen wie `&` oder `?` haben in einer Adresse eine Bedeutung oder sind nicht erlaubt. Sie werden **kodiert**: `%` und der Wert des Bytes als Hexzahl, ein Leerzeichen ist `%20`, ein `ü` sind die zwei Bytes `%C3%BC`. In Ruby macht `URI.decode_www_form` daraus wieder Text, in JavaScript `new URLSearchParams(…)`.
+Leerzeichen, Umlaute und Zeichen wie `&` oder `?` haben in einer Adresse eine Bedeutung oder sind nicht erlaubt. Sie werden **kodiert**: `%` und der Wert des Bytes als Hexzahl, ein Leerzeichen ist `%20`, ein `ü` sind die zwei Bytes `%C3%BC`. In Ruby macht `URI.decode_www_form` daraus wieder Text, in JavaScript `new URLSearchParams(…)`.
 <!-- /part -->
 
 ## Ansehen und ausprobieren
