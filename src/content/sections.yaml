@@ -1,15 +1,19 @@
+# The catalog on the start page, in this order. Basics come first, so that
+# what a section needs is above it: the terminal and Git before the projects,
+# TCP/IP before the web server.
 - key: introduction
-  label: Einführung
+  label: Erste Schritte
   icon: /images/rocket.png
   description: |
     Lerne den Hackschule Workspace kennen und finde dich in der
-    Entwicklungsumgebung zurecht. Hier erfährst du, wie du Projekte und Dateien
-    organisierst, deine Arbeit speicherst und mit Tutorials und Checkpoints
-    sicher experimentieren kannst.
+    Entwicklungsumgebung zurecht: Dateien und Ordner, das Terminal, die Tastatur
+    und Git, mit dem du Stände deiner Arbeit speicherst und teilst.
   entries:
     - about
     - basics
     - keyboard
+    - working-with-files
+    - git
 
 # Code Bites (Programmieren üben) is off the start page for now (hidden:
 # not in the catalog, not pinnable); the exercises stay reachable from the
@@ -30,13 +34,12 @@
 
 - key: graphics
   compact: true
-  label: Computergrafik
+  label: Grafik & Spiele
   icon: /images/palette.png
   description: |
-    Erzeuge Bilder, Animationen und räumliche Szenen mit selbst geschriebenem
-    Code. Dabei beschäftigst du dich mit Pixeln, Farben, Formen, Koordinaten und
-    3D-Geometrie – und kannst sogar einen Blick in das Innere einer Bilddatei
-    werfen.
+    Erzeuge Bilder, Animationen, Spiele und räumliche Szenen mit selbst
+    geschriebenem Code. Dabei beschäftigst du dich mit Pixeln, Farben, Formen,
+    Koordinaten und 3D-Geometrie.
   entries:
     - anaglyph
     - drawing
@@ -53,6 +56,64 @@
   # - .glsl
   # - .gif
 
+- key: web
+  compact: true
+  label: Web
+  icon: /images/telephone.png
+  description: |
+    Baue Webseiten und Anwendungen, die im Browser laufen, und hol dir Daten
+    von Diensten im Netz.
+  entries:
+    - static-website
+    - hugo
+    - svelte
+    - wetter
+
+- key: networks
+  compact: true
+  label: Netze & Sicherheit
+  icon: /images/handshake.png
+  description: |
+    Wie Rechner über das Netz miteinander reden, vom Paket bis zur Webseite:
+    TCP/IP, ein eigener Webserver, eine Pixelwand für die ganze Klasse. Und wie
+    man Daten schützt, mit Verschlüsselung, Signaturen und sicheren
+    Datenbankabfragen.
+  entries:
+    - tcpip
+    - webserver
+    - pixelwand
+    - crypto
+    - bobby_tables
+
+- key: databases
+  compact: true
+  label: Datenbanken
+  icon: /images/card-file-box.png
+  description: |
+    Speichere, verknüpfe und durchsuche größere Datenmengen. Lerne SQL kennen,
+    entwirf eine eigene Datenbank für Filme und speichere dieselben Daten
+    anschließend als Graph.
+  entries:
+    - mysql
+    - filmdatenbank
+    - neo4j-filmdatenbank
+
+- key: computing
+  compact: true
+  label: Wie Computer rechnen
+  icon: /images/computer.png
+  description: |
+    Ein Blick unter die Haube: eine kleine CPU programmieren, Sortierverfahren
+    und Datenstrukturen selbst bauen, endliche Automaten, ein neuronales Netz,
+    das Ziffern erkennt, und der Aufbau einer JPEG-Datei.
+  entries:
+    - sandbox-cpu
+    - sandbox-sortieren
+    - sandbox-datenstrukturen
+    - automata
+    - digits-experiment
+    - jpeg
+
 - key: writing
   compact: true
   label: Texte & Präsentationen
@@ -67,80 +128,9 @@
     - showerjs
     - latex
 
-- key: networks
-  compact: true
-  label: Web & Schnittstellen
-  icon: /images/telephone.png
-  description: |
-    Entwickle Webseiten und interaktive Anwendungen, die direkt im Browser
-    ausgeführt werden. Lerne außerdem, wie Programme über Schnittstellen mit
-    bestehenden Webdiensten kommunizieren und dort Aktionen auslösen können.
-  entries:
-    - static-website
-    - hugo
-    - svelte
-    - wetter
-    - webserver
-    - pixelwand
-
-- key: databases
-  compact: true
-  label: Datenbanken
-  icon: /images/card-file-box.png
-  description: |
-    Speichere, verknüpfe und durchsuche größere Datenmengen. Lerne SQL kennen,
-    entwirf eine eigene Datenbank für Filme und speichere dieselben Daten
-    anschließend als Graph.
-  entries:
-    - mysql
-    - filmdatenbank
-    - neo4j-filmdatenbank
-    - bobby_tables
-
-- key: advanced
-  compact: true
-  label: Experimente
-  icon: /images/mirror-ball.png
-  description: |
-    Gehe einen Schritt tiefer und untersuche, wie Computer Bilder und Daten
-    verarbeiten. Baue endliche Automaten, trainiere ein kleines Modell zur
-    Ziffernerkennung und wirf einen Blick in den Aufbau von JPEG-Dateien.
-  entries:
-    - automata
-    - digits-experiment
-    - jpeg
-
-- key: linux
-  label: Terminal & Git
-  icon: /images/penguin.png
-  description: |
-    Arbeite mit Dateien und Programmen über das Terminal und entdecke, wie
-    Computer über Netzwerke miteinander kommunizieren. Mit Git kannst du
-    Änderungen an deinen Projekten nachvollziehen, frühere Stände wiederherstellen
-    und gemeinsam mit anderen daran arbeiten.
-  entries:
-    - working-with-files
-    - tcpip
-    - git
-    - crypto
-  # - .working-with-processes
-
-- key: sandboxes
-  compact: true
-  label: Sandboxes
-  icon: /images/hammer-and-wrench.png
-  description: |
-    Größere Programmieraufgaben in eigenständigen Apps: Sortierverfahren
-    vergleichen, Datenstrukturen selbst bauen, eine kleine CPU programmieren. Jede
-    Sandbox prüft deinen Code mit eigenen Tests; mit Git gibst du ihn an die
-    Klasse weiter.
-  entries:
-    - sandbox-sortieren
-    - sandbox-datenstrukturen
-    - sandbox-cpu
-
 - key: programming_languages
   compact: true
+  tiles: true
   description: |
     Hier findest du kurze, praktische Einführungen in verschiedene
     Programmiersprachen. Du bekommst jeweils drei Beispiele für Programme

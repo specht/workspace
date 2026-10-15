@@ -1,7 +1,7 @@
 <div class='meta'>
 image: cpu-sandbox.webp
 kind: projekt
-topic: sandboxes
+topic: computing
 reference: [gitlab, minicpu, minicpu-io, minicpu-c]
 template: https://github.com/specht/cpu-sandbox.git
 class_repo: git@git.nhcham.org:specht/cpu-sandbox-programs-2026.git
