@@ -165,6 +165,7 @@ terminal-wait-for-prompt: 180
 terminal-run: clear
 terminal-run: ruby server.rb
 wait-for-text: Der Server wartet
+move-mouse: selector:.terminal
 sleep: 1
 -->
 <img class='full' src='ordner.webp' alt='Der Ordner pixelwand mit index.html und server.rb; server.rb ist offen, im Terminal wartet der Server auf Port 8000.'>
