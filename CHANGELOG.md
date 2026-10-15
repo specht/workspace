@@ -681,6 +681,18 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   mit Klammern und Namen unter jedem Teil.
 - Screenshot-Generator: `preview-port: 1313 /axolotl/` öffnet eine Seite
   unterhalb der Wurzel einer App.
+- »Ein eigener Webserver« bekommt eine sechste Stufe, »Ein Formular
+  annehmen«: eine Umfrage mit `method="post"`. Der Server hebt die Header in
+  einem Hash auf, liest den Body so lang, wie `Content-Length` sagt, zählt
+  die Stimmen unter einem Lock und leitet mit `303 See Other` auf das
+  Ergebnis weiter (Post/Redirect/Get). Drei neue Aufgaben; die Klasse kann
+  über Shared Live Apps abstimmen. Das Handbuch »HTTP« nennt `303 See Other`.
+
+### Entfernt
+
+- »Hades in der Altgriechisch-App« steht nicht mehr im Katalog. Die Seite
+  brauchte eine echte Anmeldung bei der App einer Schule; was sie über
+  `POST` zeigte, steht jetzt im Webserver.
 
 ### Für Betreibende
 
