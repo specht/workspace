@@ -23,11 +23,11 @@ class TaskSpecTest < Minitest::Test
         end
     end
 
-    def test_the_three_pilots_hold_35_tasks
+    def test_the_three_pilots_hold_40_tasks
         counts = %w[tcpip anaglyph showerjs].to_h do |slug|
             [slug, TaskSpec.load_file(File.join(CONTENT, slug, 'tasks.yaml'))['tasks'].size]
         end
-        assert_equal({ 'tcpip' => 12, 'anaglyph' => 12, 'showerjs' => 11 }, counts)
+        assert_equal({ 'tcpip' => 17, 'anaglyph' => 12, 'showerjs' => 11 }, counts)
     end
 
     def test_minimal_answer_task_is_valid

@@ -36,7 +36,7 @@ page, the start page and practice sets from Code Bites (`docs/aufgaben.md`).
 Still open:
 
 * [ ] A generated »Wie geht es weiter?« box at the end of a page, from a new `next` field
-* [ ] Teacher notes with solutions for every activity; 19 have a `lehrkraft.md`, the SQL introduction and the language pages have none
+* [ ] Teacher notes with solutions for every activity; 22 have a `lehrkraft.md`, the SQL introduction and the language pages have none
 * [ ] Workspace-state check for a running server (a port answers), for the setup steps of web activities
 * [ ] Link the matching Code Bites exercises from each programming-language page
 
@@ -119,7 +119,7 @@ generated screenshots:
 * »Daten aus dem Netz« (`src/content/wetter`), the Open-Meteo weather API with `curl`/`jq`, Ruby with a cache, and a page with `fetch`
 * »Eine Klötzchenwelt in 3D« (`src/content/raylib`), raylib in 3D with Handbuch »raylib«; the starter is `specht/raylib-starter`, the same files as `vorlage/`
 
-* [ ] Try each in class and adjust pace and tasks (LaTeX 3, web server 2, pixel wall 2, Hugo 2, weather 2, raylib 5 double lessons)
+* [ ] Try each in class and adjust pace and tasks (LaTeX 3, web server 2, pixel wall 2, Hugo 2, weather 2, raylib 5 double lessons; TCP/IP 2 after its rework)
 * [ ] Pixel wall: check how it behaves with a whole class painting on one Workspace
 * [ ] raylib: an icon of its own for the Handbuch section (now the star)
 
@@ -193,7 +193,6 @@ Open findings from the October 2026 review:
 | --- | --- |
 | Fire | add tasks (blue flame, wind direction) |
 | Ziffernerkennung | collect handwriting in the browser instead of print + 300 dpi scan; predict-then-run tasks; discuss overfitting (training loss 10⁻⁴); a shared preinstalled environment instead of 500 MB download and 2 GB per student; typos "boostrap", "Kenrel", "beboachten", "des die" |
-| TCP/IP | rework as the first half of TCP → HTTP → web server: layers, ports, handshake; the Peru server is presented as far away next to Google |
 | Git/GitHub | mark low-level internals as optional/advanced; correct the claim that `git mv` is needed so Git notices a rename |
 | Programming languages | fact-check history, creator/date and lineage claims; one convention for the year in headings |
 

@@ -687,6 +687,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   die Stimmen unter einem Lock und leitet mit `303 See Other` auf das
   Ergebnis weiter (Post/Redirect/Get). Drei neue Aufgaben; die Klasse kann
   über Shared Live Apps abstimmen. Das Handbuch »HTTP« nennt `303 See Other`.
+- »TCP/IP-Verbindungen« ist die erste Hälfte von TCP → HTTP → Webserver:
+  Neu sind die Schichten (Netzzugang, IP, TCP, Anwendung), Ports und der
+  Handshake, den Lernende mit `curl -w '%{time_connect}'` messen und mit
+  `ping` vergleichen. `netcat` geht jetzt auch allein mit zwei Terminals,
+  und »HTTP von Hand« holt mit `nc -C info.cern.ch 80` die erste Webseite
+  der Welt von 1992. Der Server mit der Endung `.pe` ist jetzt ein Rätsel
+  (die Antwort kommt aus Belgien) statt ein Beispiel für einen fernen
+  Server. Fünf neue Aufgaben, eine Notiz für Lehrkräfte, alle Bilder mit
+  Alt-Text und aus Rezepten; nicht mehr benutzte Dateien sind entfernt.
 
 ### Entfernt
 

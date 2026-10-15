@@ -20,7 +20,7 @@ reference: [http]
 Jedes Mal, wenn du eine Webseite öffnest, schickt dein Browser eine Anfrage an einen Webserver, und der schickt die Seite zurück. In dieser Aktivität schreibst du so einen Server selbst, in Ruby und ohne fertige Bibliothek: Er wartet auf Verbindungen, liest die Anfrage, antwortet, liefert HTML-Seiten aus, zählt seine Besuche und nimmt Stimmen aus einem Formular an. Am Ende teilst du ihn mit deiner Klasse.
 </p>
 
-Auf der Seite [TCP/IP](/tcpip) hast du mit `netcat` über Port 1234 Text zwischen zwei Workspaces geschickt. Ein Webserver macht im Grunde dasselbe: Er wartet an einem Port auf eine TCP-Verbindung, liest Text und schickt Text zurück. Damit Browser und Server sich verstehen, folgt der Text einer festen Form, dem **HTTP**-Protokoll. Der Live Server, mit dem du sonst Webseiten ansiehst, ist genau so ein Programm. Hier baust du ihn selbst und siehst, was er tut.
+Auf der Seite [TCP/IP](/tcpip) hast du mit `nc -l` an einem Port auf eine Verbindung gewartet und mit `nc -C info.cern.ch 80` eine HTTP-Anfrage von Hand getippt. Ein Webserver ist die andere Seite davon: Er wartet an einem Port auf eine TCP-Verbindung, liest Text und schickt Text zurück. Damit Browser und Server sich verstehen, folgt der Text einer festen Form, dem **HTTP**-Protokoll. Der Live Server, mit dem du sonst Webseiten ansiehst, ist genau so ein Programm. Hier baust du ihn selbst und siehst, was er tut.
 
 ## Einrichten
 
