@@ -96,6 +96,12 @@
       "state_hash": "f8260ecd16aef865ad0bdf58d0c387b0647abda62cea5489ef3aa6110c349db5",
       "workspace_look": "4.138.0-ls366"
     },
+    "teaser.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "625fbab9a68db83a37a7263061156c4a88162974eeb5860b85fb93d689dd58cc",
+      "state_hash": "68aa93c4ad233207e8d9a83cfec5e39c10941d18dac280e4b291f418bfa2b0f3",
+      "workspace_look": "4.138.0-ls366"
+    },
     "traceroute-q-1-8-8-8-8.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "f0192d76b6ef40b29bf8410a86c0978fb043a3bc85cb9bb28e434f0bdfba677c",

@@ -18,6 +18,12 @@
       "state_hash": "dd23d73f54c894d302e26499045392563076390ff64ffe9a1fd9216ecef59e16",
       "workspace_look": "4.138.0-ls366"
     },
+    "teaser.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "323860ceb2bdd34aad9652a0e39e9f5c7b2797e6e22ba66e84470fc73ac65eb6",
+      "state_hash": "a647944573287cd3126795d1912364353677607671bba8cc0eea595d3d69e6f9",
+      "workspace_look": "4.138.0-ls366"
+    },
     "vorhersage.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "cc3daf2749fe4750ef2b4bf96acd5f6fb736edb49a495d1e66be9f41f9a9a9e9",

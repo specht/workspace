@@ -1,5 +1,5 @@
 <div class='meta'>
-image: tcpip.webp
+image: teaser.webp
 kind: labor
 duration: 2 Doppelstunden
 reference: [http, json]
@@ -644,3 +644,29 @@ Da `telnet` etwas umständlich zu beenden ist, drücke einfach auf die Mülltonn
 ## Wie geht es weiter?
 
 In [Ein eigener Webserver](/webserver) schreibst du die andere Seite selbst: ein Programm, das wie `nc -l` an einem Port wartet, die Zeilen liest, die du hier getippt hast, und mit HTTP antwortet. In der [Pixelwand](/pixelwand) bleibt die Verbindung offen, und die ganze Klasse malt gleichzeitig an einem Bild. Wie du eine API aus Ruby und aus einer Webseite benutzt, zeigt [Daten aus dem Netz](/wetter).
+
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität: HTTP von Hand, groß
+zoom: 1.5
+viewport: 1029x640
+press: Control+Shift+P
+type: Terminal: Kill All Terminals
+press: Enter
+sleep: 2
+press: Control+Shift+Backquote
+sleep: 3
+terminal-maximize
+terminal-wait-for-prompt
+terminal-run: clear
+terminal-run: nc -C info.cern.ch 80
+sleep: 1
+type: HEAD /hypertext/WWW/TheProject.html HTTP/1.0
+press: Enter
+type: Host: info.cern.ch
+press: Enter
+press: Enter
+wait-for-text: Content-Type
+sleep: 1
+crop-terminal-lines: auto
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Ein Terminal in großer Schrift: nc -C info.cern.ch 80, die getippte Anfrage HEAD /hypertext/WWW/TheProject.html und die Antwort des Servers mit HTTP/1.1 200 OK und Last-Modified: Thu, 03 Dec 1992.'>

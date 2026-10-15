@@ -1,5 +1,5 @@
 <div class='meta'>
-image: pixelwand.webp
+image: teaser.webp
 kind: projekt
 language: Ruby
 topic: networks
@@ -711,3 +711,14 @@ _task(abgabe)
 Eure Pixelwand funktioniert genauso wie große Anwendungen, nur kleiner: Ein Server hält den gemeinsamen Zustand, jeder Browser hat eine offene Verbindung, und jede Änderung geht an alle. So arbeiten Online-Spiele, Chats und Programme, in denen mehrere Leute gleichzeitig an einem Dokument schreiben.
 
 Im Ernstfall läuft eine WebSocket-Verbindung verschlüsselt über `wss://`, und der Server muss mit Tausenden Verbindungen und mit Leuten umgehen können, die ihm absichtlich falsche Daten schicken. Die Prüfung in `ws.on(:message)` war ein erster Schritt dahin.
+
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität: die Wand, nachdem die Klasse eine Weile gemalt hat
+preview-reload
+tab: preview
+viewport: 1029x640
+wait-for-text: Pixelwand
+hook: paint-teaser
+crop-element: #wall
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Eine Pixelwand voller Bild: ein Regenbogen über hellblauem Himmel, Wolken, eine Sonne, ein Haus mit rotem Dach, ein Baum und bunte Blumen auf der Wiese.'>

@@ -765,6 +765,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   noch Lehrkräfte dieser Person, und ein Startfehler erscheint im Browser
   nur noch als »Der Workspace ließ sich nicht starten.«; die Einzelheiten,
   in denen Passwörter stehen konnten, stehen nur im Log.
+- Neue Bilder auf den Karten von »Daten aus dem Netz«, »Ein eigener
+  Webserver«, »Eine Pixelwand für alle«, »TCP/IP-Verbindungen« und
+  »Kryptographie im Terminal«: eigene Rezepte am Ende der Seite
+  (`<img class='teaser' hidden>`), mit wenigen großen Dingen statt einer
+  ganzen Seite, die auf der Karte unlesbar klein wird. Die Ergebnisseite der
+  Umfrage im Webserver zeichnet jetzt für jede Antwort einen Balken mit
+  `<progress>`.
 
 ### Entfernt
 

@@ -1,5 +1,5 @@
 <div class='meta'>
-image: browser-seite.webp
+image: teaser.webp
 kind: projekt
 language: Ruby
 topic: networks
@@ -682,12 +682,17 @@ loop do
                 "Diese Antwort gibt es nicht.\n")
       end
     when '/results'
+      # Ein Balken für jede Antwort; <progress> zeichnet ihn ohne CSS
       rows = $votes_lock.synchronize do
-        OPTIONS.map { |key, label| "<li>#{label}: #{$votes[key]}</li>" }.join("\n")
+        most = [$votes.values.max || 0, 1].max
+        OPTIONS.map do |key, label|
+          "<tr><td>#{label}</td><td><progress value='#{$votes[key]}' max='#{most}'></progress></td>" \
+            "<td>#{$votes[key]}</td></tr>"
+        end.join("\n")
       end
       respond(client, '200 OK', 'text/html; charset=utf-8',
               "<!DOCTYPE html><meta charset='utf-8'><link rel='stylesheet' href='style.css'>" \
-              "<h1>Ergebnis</h1><ul>#{rows}</ul><p><a href='poll.html'>Noch einmal abstimmen</a></p>\n")
+              "<h1>Ergebnis</h1><table>#{rows}</table><p><a href='poll.html'>Noch einmal abstimmen</a></p>\n")
     else
       serve_file(client, path)
     end
@@ -701,6 +706,7 @@ Was neu ist:
 - `/vote` nimmt nur `POST` an und liest mit `client.read` genau so viele Bytes, wie `Content-Length` sagt. Der Body hat dieselbe Form wie die Parameter in einer Adresse, darum hilft wieder `URI.decode_www_form`.
 - Der Server zählt nur Antworten, die in `OPTIONS` stehen. Was ankommt, muss nicht aus deinem Formular stammen: Jeder kann mit `curl` an `/vote` schicken, was er will.
 - Die Stimmen zählt er unter einem eigenen Lock, aus demselben Grund wie die Besuche.
+- Die Ergebnisseite zeichnet für jede Antwort einen Balken mit `<progress>`: `value` ist die Zahl ihrer Stimmen, `max` die größte Zahl. Den Balken malt der Browser selbst, ganz ohne CSS.
 
 Nach einer Stimme zeigt der Server nicht gleich das Ergebnis, sondern antwortet mit **`303 See Other`** und dem Header `Location: /results`: »Sieh dort nach.« Der Browser holt dann `/results` mit `GET`. Der Umweg hat einen Grund: Wäre das Ergebnis die Antwort auf das `POST`, würde der Browser beim Neuladen das Formular noch einmal schicken, und die Stimme zählte doppelt. So lädt er nur die Ergebnisseite neu. Das Muster heißt **Post/Redirect/Get**.
 
@@ -713,6 +719,7 @@ curl localhost:8000/results
 
 <!-- tutorial-screenshot
 # Stufe 6: eine Stimme mit curl, 303 und das Ergebnis
+viewport: 1029x700
 write-file: webserver/public/poll.html <- file:stufen/public/poll.html
 write-file: webserver/server.rb <- file:stufen/6.rb
 terminal-open
@@ -732,7 +739,7 @@ sleep: 1
 terminal-run: curl localhost:8000/results
 sleep: 2
 -->
-<img class='full' src='post-curl.webp' alt='Rechts antwortet der Server auf die Stimme mit 303 See Other und Location: /results, danach zeigt curl die Ergebnisseite mit Curry: 1; links stehen POST /vote und GET /results.'>
+<img class='full' src='post-curl.webp' alt='Rechts antwortet der Server auf die Stimme mit 303 See Other und Location: /results, danach zeigt curl das HTML der Ergebnisseite: eine Tabelle mit einem progress-Element für jede Antwort, bei Curry value 1. Links stehen POST /vote und GET /results.'>
 
 Öffne jetzt im Browser die Adresse aus »Forwarded Address« mit `/poll.html` dahinter, wähle etwas und stimme ab:
 
@@ -754,7 +761,7 @@ click: Abstimmen
 wait-for-text: Ergebnis
 sleep: 1
 -->
-<img class='full border' src='ergebnis.webp' alt='Im Browser die Seite »Ergebnis«: Pizza 1, Nudeln 0, Curry 1, Salat 0, darunter der Link »Noch einmal abstimmen«.'>
+<img class='full border' src='ergebnis.webp' alt='Im Browser die Seite »Ergebnis« mit einem Balken für jede Antwort: Pizza 1 und Curry 1 mit vollem Balken, Nudeln 0 und Salat 0 mit leerem, darunter der Link »Noch einmal abstimmen«.'>
 
 Lade die Ergebnisseite neu: Die Zahlen bleiben gleich. Im linken Terminal siehst du, dass der Browser nur `GET /results` geschickt hat.
 
@@ -777,3 +784,15 @@ _task(abgabe)
 Dein Server antwortet nur, wenn der Browser fragt. Soll er von sich aus etwas schicken, zum Beispiel, wenn jemand anderes etwas getan hat, braucht es eine Verbindung, die offen bleibt. Darum geht es in der [Pixelwand](/pixelwand): Die ganze Klasse malt gleichzeitig an einem Bild, und jeder sieht sofort, was die anderen malen.
 
 Große Webserver wie nginx oder Ruby-Bibliotheken wie Sinatra machen dasselbe wie deiner, nur mit vielen Fällen mehr: viele Verbindungen gleichzeitig, verschlüsselt mit HTTPS, mit Caching und Schutz gegen Angriffe.
+
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität: das Ergebnis der Umfrage nach ein paar Stimmen
+terminal-run: for c in pizza pizza curry pasta pizza salad curry pizza curry pasta; do curl -s -o /dev/null -d choice=$c localhost:8000/vote; done
+sleep: 1
+preview-port: 8000 /results
+tab: preview
+viewport: 400x225
+wait-for-text: Ergebnis
+sleep: 1
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Die Ergebnisseite der Umfrage: für Pizza, Nudeln, Curry und Salat je ein blauer Balken mit der Zahl der Stimmen; Pizza hat die meisten.'>

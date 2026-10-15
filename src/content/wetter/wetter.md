@@ -1,5 +1,5 @@
 <div class='meta'>
-image: wetterseite.webp
+image: teaser.webp
 kind: projekt
 language: Ruby / JavaScript
 topic: networks
@@ -431,3 +431,14 @@ _task(api-key)
 Viele APIs verlangen einen **API-Schlüssel**: eine lange Zeichenkette, die du bei der Anmeldung bekommst und bei jeder Anfrage mitschickst. Daran erkennt der Dienst, wer fragt, und zählt die Anfragen. Ein solcher Schlüssel ist wie ein Passwort: Er gehört nicht in eine Webseite, die jeder lesen kann, und nicht in ein öffentliches Git-Repository. Programme, die ihn brauchen, fragen die API vom Server aus, wie dein Ruby-Programm, nicht aus dem Browser.
 
 Wie die andere Seite aussieht, ein Server, der selbst Anfragen beantwortet, zeigt [Ein eigener Webserver](/webserver).
+
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität: die Wetterseite, groß
+preview-reload
+tab: preview
+viewport: 760x428
+wait-for-text: Wetterdaten
+wait-for-text: °C
+sleep: 2
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Die Wetterseite für Berlin: das Wetter jetzt mit Symbol und Temperatur und darunter sieben Tageskarten mit Wettersymbol, Höchst- und Tiefsttemperatur.'>
