@@ -777,6 +777,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Seite; die Wetterseite zeigt die Temperatur groß und die Tage als Karten
   und baut ihr HTML nur noch mit `textContent`; die Pixelwand steht in der
   Mitte, mit runden Farbknöpfen.
+- Kleinigkeiten aus der Durchsicht: Das Symbol für Erweiterungen im Handbuch
+  »Workspace« (und in den Seiten, die es einbinden) erscheint wieder;
+  Anmeldung, Profil, Admin und Lehrmaterial heißen im Browser-Tab nicht
+  mehr »Mit dem Handy anmelden«, sondern »Anmelden«; jede Seite lädt
+  `moment.js` nicht mehr, das nirgends benutzt wurde; der Link von raylib
+  zu den Wellen in PixelRAM springt an die richtige Stelle.
 
 ### Entfernt
 

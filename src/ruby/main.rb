@@ -1281,9 +1281,12 @@ class Main < Sinatra::Base
         body = doc.at_css('body') || doc
         homepage = ['/', '/index.html'].include?(request_path)
 
+        # The page's own heading: the first h1, else the first h2, but none
+        # inside something hidden (the QR panel of the login form, say).
+        hidden = ->(node) { node.ancestors.any? { |a| a.respond_to?(:[]) && (a['hidden'] || a['style'].to_s.match?(/display:\s*none/)) } }
         heading = nil
         unless homepage
-            heading = body.at_css('h1') || body.at_css('h2')
+            heading = body.css('h1').find { |h| !hidden.(h) } || body.css('h2').find { |h| !hidden.(h) }
         end
 
         heading_text = normalize_page_metadata_text(heading&.text)
