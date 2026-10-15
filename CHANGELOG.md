@@ -800,14 +800,30 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   unter anderem Namen. Wo eine Prüfung einen bestimmten Namen verlangt
   (`sky` in TIC-80, `vy` in raylib, `Thread.new` im Webserver), steht er
   jetzt in der Aufgabe.
+- Sicherheit, ohne Anmeldung erreichbare Dienste: Automatron bleibt offen,
+  rechnet aber nur noch Ausdrücke bis 200 Zeichen und Automaten bis 60
+  Zustände (»Der Automat wird zu groß zum Zeichnen«), zeichnet höchstens
+  zehn Sekunden pro Bild, höchstens zwei Anfragen gleichzeitig und pro
+  Absender 60 in zehn Minuten. Bisher konnte ein einziger Ausdruck den
+  Server minutenlang beschäftigen. QR-Anmeldungen und Workspaces hinter
+  einem Freigabe-Link lassen sich pro Absender 30-mal in zehn Minuten
+  starten.
 
 ### Entfernt
+
+- Der Endpunkt, der Keras-Modelle für die Ziffernerkennung in TensorFlow.js
+  umwandelte. Die Aktivität wandelt ihr Modell inzwischen selbst in ONNX um;
+  der Endpunkt nahm ohne Anmeldung bis zu 100 MB an und legte sie dauerhaft
+  ab.
 
 - »Hades in der Altgriechisch-App« steht nicht mehr im Katalog. Die Seite
   brauchte eine echte Anmeldung bei der App einer Schule; was sie über
   `POST` zeigte, steht jetzt im Webserver.
 
 ### Für Betreibende
+
+- Der Ordner `/internal/tfjs` (alte Uploads für den entfernten
+  Keras-Endpunkt) kann gelöscht werden.
 
 - Das Workspace-Image bekommt `php-mysql` (PDO-Treiber `pdo_mysql` und
   `mysqli`), damit PHP-Programme die MySQL-Datenbanken erreichen. Eine

@@ -211,9 +211,12 @@ class Main < Sinatra::Base
 
     helpers do
         def svg_from_dot(dot_str)
-            # Use Graphviz 'dot' from PATH to turn DOT into SVG (no temp files needed).
-            svg, err, status = Open3.capture3('dot', '-Tsvg', stdin_data: dot_str)
-            halt 500, { error: "Graphviz failed", detail: err }.to_json unless status.success?
+            # Graphviz 'dot' turns DOT into SVG, at most 10 seconds per drawing.
+            svg, err, status = Open3.capture3('timeout', '10', 'dot', '-Tsvg', stdin_data: dot_str)
+            unless status.success?
+                STDERR.puts "Automatron: dot failed: #{err.to_s[0, 300]}"
+                halt 500, { error: "Graphviz failed" }.to_json
+            end
             svg
         end
 
@@ -222,7 +225,7 @@ class Main < Sinatra::Base
             # - non-empty
             # - length cap (avoid pathological inputs)
             halt 400, { error: "regex must be a non-empty string" }.to_json if str.nil? || str.strip.empty?
-            halt 413, { error: "regex too long" }.to_json if str.length > 2000
+            halt 413, { error: "regex too long" }.to_json if str.length > AUTOMATRON_MAX_REGEX
             str
         end
 
@@ -2444,6 +2447,10 @@ class Main < Sinatra::Base
 
     post '/api/qr_login/start' do
         headers 'Cache-Control' => 'no-store'
+        unless DEVELOPMENT || QR_LOGIN_STARTS_PER_CLIENT.allow?(client_ip)
+            content_type :json
+            halt 429, { :error => 'rate_limited' }.to_json
+        end
         tag = RandomTag::generate(16)
         browser_secret = RandomTag::generate(32)
         approval_secret = RandomTag::generate(32)
@@ -2698,6 +2705,10 @@ class Main < Sinatra::Base
     LOGIN_REQUESTS_PER_CLIENT = RateLimit.new(:limit => 120, :period => 600)
     LOGIN_TRIES_PER_CLIENT = RateLimit.new(:limit => 300, :period => 600)
     LOGIN_CODES_PER_ADDRESS = RateLimit.new(:limit => 20, :period => 24 * 3600)
+    # Two more things anyone may start without a login: a QR login (qrencode
+    # and an entry in the database) and a Workspace behind a share link.
+    QR_LOGIN_STARTS_PER_CLIENT = RateLimit.new(:limit => 30, :period => 600)
+    SHARE_STARTS_PER_CLIENT = RateLimit.new(:limit => 30, :period => 600)
 
     # The browser's address: Traefik appends it to X-Forwarded-For (the last
     # entry; earlier ones come from the client and prove nothing), nginx
@@ -3770,6 +3781,10 @@ class Main < Sinatra::Base
     end
 
     post '/api/start_server_with_share_tag' do
+        unless DEVELOPMENT || SHARE_STARTS_PER_CLIENT.allow?(client_ip)
+            content_type :json
+            halt 429, { :error => 'rate_limited' }.to_json
+        end
         data = parse_request_data(:required_keys => [:share_tag])
         share_tag = data[:share_tag]
 
@@ -5106,31 +5121,6 @@ class Main < Sinatra::Base
 
     get '/api/ping' do
         respond(:pong => 'yeah')
-    end
-
-    post '/api/convert_keras_modal_to_tensorflowjs' do
-        file = params['file']
-        filename = file['filename']
-        assert(!filename.include?('/'))
-        assert(filename.size > 0)
-        blob = file['tempfile'].read
-        sha1 = Digest::SHA1.hexdigest(blob)[0, 16]
-        STDERR.puts "Read #{blob.size} bytes with SHA1 #{sha1}"
-        path = "/internal/tfjs/#{sha1}"
-        FileUtils.mkpath(File.dirname(path))
-        File.open(path, 'w') do |f|
-            f.write(blob)
-        end
-        out_path = File.join(File.dirname(path), "#{sha1}-out")
-        FileUtils.mkpath(out_path)
-        system("docker exec workspace_tensorflowjs_1 tensorflowjs_converter --input_format=keras \"#{path}\" \"#{out_path}\"")
-        files = []
-        Dir[File.join(out_path, '*')].each do |path|
-            files << { :name => File.basename(path), :contents => Base64::encode64(File.read(path)) }
-        end
-        # FileUtils.rm(path)
-        # FileUtils.rm_rf(out_path)
-        respond(:uploaded => 'yeah', :files => files)
     end
 
     post '/api/toggle_show_module' do
@@ -6687,88 +6677,124 @@ class Main < Sinatra::Base
         respond(yay: "stopped", running_was: running)
     end
 
+    # Automatron is open without a login, for showing it in class. A regex
+    # can make the subset construction grow exponentially and Graphviz draw
+    # for minutes, so: short regexes, at most SubsetTrace::MAX_STATES states,
+    # a time limit for drawing, two at a time and a limit per client.
+    AUTOMATRON_MAX_REGEX = 200
+    AUTOMATRON_PER_CLIENT = RateLimit.new(:limit => 60, :period => 600)
+    AUTOMATRON_SLOTS = Mutex.new
+    @@automatron_running = 0
+
+    def automatron_slot
+        taken = AUTOMATRON_SLOTS.synchronize do
+            next false if @@automatron_running >= 2
+
+            @@automatron_running += 1
+            true
+        end
+        unless taken
+            content_type :json
+            halt 429, { :error => 'busy' }.to_json
+        end
+        begin
+            yield
+        ensure
+            AUTOMATRON_SLOTS.synchronize { @@automatron_running -= 1 }
+        end
+    end
+
     post '/api/automatron' do
+        unless DEVELOPMENT || AUTOMATRON_PER_CLIENT.allow?(client_ip)
+            content_type :json
+            halt 429, { :error => 'rate_limited' }.to_json
+        end
         data  = parse_request_data(:required_keys => [:regex])
         regex = safe_regex(data[:regex])
+        automatron_slot do
 
-        # ε-NFA
-        nfa = NFA.from_regex(regex)
-        nfa.compact_ids!
-        nfa.topo_relabel!
+            # ε-NFA
+            nfa = NFA.from_regex(regex)
+            nfa.compact_ids!
+            nfa.topo_relabel!
 
-        # DFA (with subset trace)
-        dfa, subset_trace = SubsetTrace.build_with_trace(nfa)
+            # DFA (with subset trace)
+            dfa, subset_trace = SubsetTrace.build_with_trace(nfa)
 
-        # Minimized DFA (with table method trace)
-        min, min_trace = DFAMinimizer.minimize_with_trace(dfa)
+            # Minimized DFA (with table method trace)
+            min, min_trace = DFAMinimizer.minimize_with_trace(dfa)
 
-        # DOT
-        nfa_dot           = DotRender.nfa(nfa)
-        dfa_dot_explicit  = DotRender.dfa(dfa, title: 'DFA',                 sink_explicit: true,  q: 'r')
-        dfa_dot_implicit  = DotRender.dfa(dfa, title: 'DFA_ImplicitSink',    sink_explicit: false, q: 'r')
-        min_dot_explicit  = DotRender.dfa(min, title: 'MinDFA',              sink_explicit: true,  q: 's')
-        min_dot_implicit  = DotRender.dfa(min, title: 'MinDFA_ImplicitSink', sink_explicit: false, q: 's')
+            # DOT
+            nfa_dot           = DotRender.nfa(nfa)
+            dfa_dot_explicit  = DotRender.dfa(dfa, title: 'DFA',                 sink_explicit: true,  q: 'r')
+            dfa_dot_implicit  = DotRender.dfa(dfa, title: 'DFA_ImplicitSink',    sink_explicit: false, q: 'r')
+            min_dot_explicit  = DotRender.dfa(min, title: 'MinDFA',              sink_explicit: true,  q: 's')
+            min_dot_implicit  = DotRender.dfa(min, title: 'MinDFA_ImplicitSink', sink_explicit: false, q: 's')
 
-        # SVG
-        nfa_svg           = svg_from_dot(nfa_dot)
-        dfa_svg           = svg_from_dot(dfa_dot_explicit)
-        dfa_implicit_svg  = svg_from_dot(dfa_dot_implicit)
-        min_svg           = svg_from_dot(min_dot_explicit)
-        min_implicit_svg  = svg_from_dot(min_dot_implicit)
+            # SVG
+            nfa_svg           = svg_from_dot(nfa_dot)
+            dfa_svg           = svg_from_dot(dfa_dot_explicit)
+            dfa_implicit_svg  = svg_from_dot(dfa_dot_implicit)
+            min_svg           = svg_from_dot(min_dot_explicit)
+            min_implicit_svg  = svg_from_dot(min_dot_implicit)
 
-        # Grammar (build structure + pretty text)
-        gram_struct = RegularGrammar.build(min)
-        # Classic (step-by-step) grammar text (hides nonproductive targets)
-        grammar     = RegularGrammar.to_html(gram_struct, hide_nonproductive: true)
-        # Simplified / compact grammar (merging linear chains, e.g., S → ab)
-        gram_simpl   = RegularGrammar.simplify(gram_struct)
-        grammar_compact = RegularGrammar.to_html_compact(gram_simpl)
+            # Grammar (build structure + pretty text)
+            gram_struct = RegularGrammar.build(min)
+            # Classic (step-by-step) grammar text (hides nonproductive targets)
+            grammar     = RegularGrammar.to_html(gram_struct, hide_nonproductive: true)
+            # Simplified / compact grammar (merging linear chains, e.g., S → ab)
+            gram_simpl   = RegularGrammar.simplify(gram_struct)
+            grammar_compact = RegularGrammar.to_html_compact(gram_simpl)
 
-        # Random samples (positives from grammar, negatives from DFA)
-        samples_mixed = GrammarSampler.sample_mixed(
-            min, gram_struct,
-            pos: 30,      # how many positives
-            neg: 30,      # how many negatives
-            max_steps: 30,
-            eps_bias: 1.0,
-            max_len: 20,
-            stop_prob: 0.25,
-            seed: Time.now.to_i      # remove/alter for fresh sets each call
-        )
+            # Random samples (positives from grammar, negatives from DFA)
+            samples_mixed = GrammarSampler.sample_mixed(
+                min, gram_struct,
+                pos: 30,      # how many positives
+                neg: 30,      # how many negatives
+                max_steps: 30,
+                eps_bias: 1.0,
+                max_len: 20,
+                stop_prob: 0.25,
+                seed: Time.now.to_i      # remove/alter for fresh sets each call
+            )
 
-        # Unwrapped HTML snippets (each is a <section>…</section>)
-        subset_html        = HtmlNotes.subset(subset_trace)
-        minimization_html  = HtmlNotes.table_minimization(min_trace)
+            # Unwrapped HTML snippets (each is a <section>…</section>)
+            subset_html        = HtmlNotes.subset(subset_trace)
+            minimization_html  = HtmlNotes.table_minimization(min_trace)
 
-        payload = {
-            input: { regex: regex },
+            payload = {
+                input: { regex: regex },
 
-            nfa: { dot: nfa_dot, svg: nfa_svg },
+                nfa: { dot: nfa_dot, svg: nfa_svg },
 
-            dfa: {
-                explicit_sink: { dot: dfa_dot_explicit, svg: dfa_svg },
-                implicit_sink: { dot: dfa_dot_implicit, svg: dfa_implicit_svg, has_sink: !!DotRender.detect_sink(dfa) }
-            },
+                dfa: {
+                    explicit_sink: { dot: dfa_dot_explicit, svg: dfa_svg },
+                    implicit_sink: { dot: dfa_dot_implicit, svg: dfa_implicit_svg, has_sink: !!DotRender.detect_sink(dfa) }
+                },
 
-            min_dfa: {
-                explicit_sink: { dot: min_dot_explicit, svg: min_svg },
-                implicit_sink: { dot: min_dot_implicit, svg: min_implicit_svg, has_sink: !!DotRender.detect_sink(min) }
-            },
+                min_dfa: {
+                    explicit_sink: { dot: min_dot_explicit, svg: min_svg },
+                    implicit_sink: { dot: min_dot_implicit, svg: min_implicit_svg, has_sink: !!DotRender.detect_sink(min) }
+                },
 
-            grammar: grammar,
-            grammar_compact: grammar_compact,
-            samples_positive: samples_mixed[:positives],
-            samples_negative: samples_mixed[:negatives],
+                grammar: grammar,
+                grammar_compact: grammar_compact,
+                samples_positive: samples_mixed[:positives],
+                samples_negative: samples_mixed[:negatives],
 
-            # Two separate, unwrapped sections for easy inclusion
-            notes_subset_html:       subset_html,
-            notes_minimization_html: minimization_html,
+                # Two separate, unwrapped sections for easy inclusion
+                notes_subset_html:       subset_html,
+                notes_minimization_html: minimization_html,
 
-            # If you still want raw trace data for custom UIs, you can add:
-            traces: { subset: subset_trace, minimization: min_trace }
-        }
+                # If you still want raw trace data for custom UIs, you can add:
+                traces: { subset: subset_trace, minimization: min_trace }
+            }
 
-        respond(payload)
+            respond(payload)
+        rescue SubsetTrace::TooLarge
+            content_type :json
+            halt 422, { :error => 'too_large', :max_states => SubsetTrace::MAX_STATES }.to_json
+        end
     end
 
     def print_codebites_admin_table

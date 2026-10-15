@@ -16,6 +16,12 @@ INCLUDE_SINK = false  # set true to include the sink state in the table
 module SubsetTrace
   module_function
 
+  # More states than anyone can read in a drawing; the subset construction
+  # can grow exponentially, so it stops here instead of running on.
+  MAX_STATES = 60
+
+  class TooLarge < StandardError; end
+
   # Returns [dfa, trace]
   # trace has:
   #   :alphabet        -> Array of symbols
@@ -23,7 +29,7 @@ module SubsetTrace
   #   :state_map       -> { dfa_state_id => [nfa_state_ids sorted] }
   #   :steps           -> Array of rows:
   #                        { from:[...], symbol:'a', move:[...], closure:[...], to: dfa_state_id or nil }
-  def build_with_trace(nfa)
+  def build_with_trace(nfa, max_states: MAX_STATES)
     alphabet = nfa.alphabet.dup
 
     # ε-closure
@@ -98,6 +104,8 @@ module SubsetTrace
         end
 
         unless dfa_state_id.key?(u)
+          raise TooLarge, "more than #{max_states} states" if dfa_states.size >= max_states
+
           nid = idgen.next
           dfa_state_id[u] = nid
           dfa_states[nid]  = u
