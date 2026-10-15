@@ -457,6 +457,11 @@ class NFA
         stack << [s, e, states]
         alphabet << t.value
       elsif t.type == :op
+        # An operator without its operands (»a|«, »*a«): the regex is
+        # incomplete, not a reason to crash.
+        needed = [RegexParser::OP_CONCAT, '|'].include?(t.value) ? 2 : 1
+        raise 'Invalid regex expression' if stack.size < needed
+
         case t.value
         when RegexParser::OP_CONCAT
           s2, e2, st2 = stack.pop
