@@ -1,25 +1,29 @@
-require 'tty-prompt'
+require 'io/console'
 require 'mysql2'
 
-PROMPT = TTY::Prompt.new
+# Name und Passwort der weiteren Datenbank aus deinem Profil
+DATABASE = 'db_1234'
+DATABASE_PASSWORD = 'hier das Passwort'
+
 CLIENT = Mysql2::Client.new(
     host: ENV['MYSQL_HOST'],
-    username: ENV['MYSQL_USER'],
-    password: ENV['MYSQL_PASSWORD'],
-    database: 'db_1234'
+    username: DATABASE,
+    password: DATABASE_PASSWORD,
+    database: DATABASE
 )
 
-login = PROMPT.ask('Login:')
-password = PROMPT.ask('Password:')
+print 'Login: '
+login = $stdin.gets.chomp
+print 'Passwort: '
+password = $stdin.noecho(&:gets).chomp
+puts
 
 rows = CLIENT.query("SELECT login FROM users \
     WHERE login = '#{login}' \
     AND password = '#{password}' LIMIT 1;").to_a
 
 if rows.empty?
-    puts "❌ Fehler: Ungültige Zugangsdaten!"
+    puts 'Fehler: Login oder Passwort falsch.'
 else
-    user = rows.first['login']
-    puts "✅ Anmeldung erfolgreich."
-    puts "Herzlich willkommen, #{user}."
+    puts "Anmeldung erfolgreich. Herzlich willkommen, #{rows.first['login']}."
 end

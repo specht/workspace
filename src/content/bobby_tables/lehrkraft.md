@@ -1,0 +1,15 @@
+Ein Labor zu SQL Injection: Lernende schreiben ein kleines Anmeldeprogramm in Ruby, das die Eingabe in eine SQL-Abfrage klebt, finden die Lücke in ihrer eigenen Testdatenbank und schließen sie mit einem Prepared Statement. Vorausgesetzt werden die SQL-Einführung (`SELECT`, `WHERE`) und etwas Ruby zum Lesen des Programms.
+
+<table class='table'>
+<tr><th>Ablauf</th><td>Eine Doppelstunde: Testdatenbank im Profil anlegen, <code>users.sql</code> importieren, <code>gem install mysql2</code>, das Programm ausprobieren und die Abfrage verstehen, die drei Experimente, dann das Prepared Statement und dieselben Versuche noch einmal. Zum Schluss der rechtliche Hinweis und die Frage, warum ein eigener Zugang den Schaden begrenzt.</td></tr>
+<tr><th>Datenbank</th><td>Jede Person legt im Profil eine weitere Datenbank an (<code>db_…</code>, höchstens vier). Sie hat einen eigenen Zugang mit demselben Namen und einem eigenen Passwort, der nur sie erreicht; diesen Zugang trägt das Programm oben ein. So bleibt alles, was die Lücke öffnet, in der Testdatenbank, und die Hauptdatenbank (mit den Daten aus der SQL-Einführung) ist sicher. Danach kann die Testdatenbank im Profil gelöscht werden.</td></tr>
+<tr><th>Dateien</th><td>In <code>/workspace/bobby_tables</code>: <code>users.sql</code> und <code>login.rb</code>. Die Ruby-Bibliothek <code>mysql2</code> installieren Lernende selbst; sie landet in ihrem eigenen Gem-Verzeichnis.</td></tr>
+</table>
+
+**Was schiefgeht.** `Access denied` heißt meist: Name oder Passwort der Testdatenbank stehen nicht richtig in `login.rb`, oder es steht noch `db_1234` da. `Table … doesn't exist`: `users.sql` wurde in eine andere Datenbank importiert. Das Passwort erscheint beim Tippen nicht (`noecho`); das ist Absicht. Wer die Zeilen 21 bis 23 nicht auskommentiert, hat zwei Abfragen im Programm, und die zweite überschreibt `rows`; das stört nicht, ist aber verwirrend.
+
+**Die Aufgaben.** Die Experimente sind Reflexionen: Die Lernenden schreiben die entstandene SQL-Abfrage auf und erklären sie. Musterlösungen stehen bewusst nicht in den Aufgaben, sondern hier. Für den Login als `admin` genügt ein Login, der das Anführungszeichen schließt und den Rest der Abfrage, also die Prüfung des Passworts, mit `#` auskommentiert. Die `UNION`-Abfrage liefert statt eines Logins die Adresse, weil das Programm die erste Spalte der ersten Zeile als Namen ausgibt; fragt die zweite Abfrage stattdessen nach der Spalte `password` des Administrators, gibt das Programm dessen Passwort aus. »Ein Prepared Statement« prüft, ob in `login.rb` außerhalb von Kommentaren `prepare(` und `execute(` stehen.
+
+**Rechtliches.** Die Seite sagt am Anfang und am Ende, dass Versuche nur an eigenen oder ausdrücklich freigegebenen Systemen erlaubt sind. Es lohnt sich, das im Unterricht kurz anzusprechen, zum Beispiel mit dem Vergleich zum Lockpicking am Ende der Seite.
+
+**Weiter.** Die Passwörter liegen im Labor im Klartext; »Kryptographie im Terminal« zeigt, wie ein Server sie mit Salz und einer langsamen Hashfunktion speichert. Im Handbuch »SQL« steht unter »Werte über Platzhalter« dasselbe für PHP und Python.

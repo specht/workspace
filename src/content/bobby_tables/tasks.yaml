@@ -1,0 +1,111 @@
+# Aufgaben zu »SQL Injection«.
+# Format: docs/aufgaben.md. Das Programm liegt in /workspace/bobby_tables.
+format: 1
+activity: bobby_tables
+tasks:
+  - id: zweck
+    title: Was das Programm tut
+    prompt: |
+      Teste das Programm mit richtigen und falschen Zugangsdaten. Beschreibe
+      kurz, was es tut und wozu es dient.
+    check:
+      type: reflection
+      min_words: 15
+
+  - id: abfrage
+    title: Die Abfrage
+    prompt: |
+      Erläutere die SQL-Abfrage, die das Programm schickt: Was steht nach
+      `WHERE`, und wann liefert sie eine Zeile zurück?
+    check:
+      type: reflection
+      min_words: 20
+
+  - id: admin
+    title: Als admin, ohne Passwort
+    prompt: |
+      Finde eine Eingabe, mit der du dich als `admin` anmeldest, ohne das
+      Passwort zu kennen. Schreib auf, welche SQL-Abfrage dabei entsteht und
+      warum sie eine Zeile liefert.
+    check:
+      type: reflection
+      min_words: 20
+
+  - id: union
+    title: Eine zweite Abfrage
+    prompt: |
+      Melde dich mit diesem Login und einem leeren Passwort an:
+      `mallory' UNION SELECT address FROM users WHERE LOGIN='mallory' ORDER BY login ASC #`.
+      Was beobachtest du, und wie kommt es dazu?
+    check:
+      type: reflection
+      min_words: 20
+
+  - id: passwort-auslesen
+    title: Das Passwort des Administrators
+    prompt: |
+      Formuliere die Eingabe aus der letzten Aufgabe so um, dass das Programm
+      das Passwort des Administrators ausgibt.
+    check:
+      type: reflection
+      min_words: 10
+
+  - id: prepared
+    title: Ein Prepared Statement
+    prompt: |
+      Ändere `login.rb` so, dass es die Abfrage mit Platzhaltern vorbereitet
+      und mit den Eingaben ausführt, und speichere.
+    file: bobby_tables/login.rb
+    check:
+      type: files
+      path: bobby_tables/login.rb
+      expect:
+        format: text
+        contains:
+          - { pattern: '^\s*[^#\s].*\.prepare\(', say: 'In `login.rb` bereitet noch nichts eine Abfrage vor: `CLIENT.prepare(…)` mit `?` als Platzhaltern.' }
+          - { pattern: '^\s*[^#\s].*\.execute\(', say: 'Noch führt `login.rb` die vorbereitete Abfrage nicht aus: `query.execute(login, password)`.' }
+
+  - id: behoben
+    title: Noch einmal versuchen
+    prompt: |
+      Wiederhole die drei Versuche mit dem geänderten Programm: als `admin`
+      ohne Passwort, die Adresse von Mallory, das Passwort des
+      Administrators. Was passiert jetzt, und warum?
+    check:
+      type: reflection
+      min_words: 20
+
+  - id: warum-prepared
+    title: Warum es hilft
+    prompt: Warum schützt ein Prepared Statement vor SQL Injection?
+    check:
+      type: choice
+      options:
+        - SQL-Code und Werte gehen getrennt an die Datenbank, ein Wert wird nie als SQL gelesen
+        - Es verschlüsselt die Eingabe, bevor sie zur Datenbank geht
+        - Es löscht alle Anführungszeichen aus der Eingabe
+        - Es lässt nur Buchstaben und Ziffern als Eingabe zu
+      correct: 0
+    feedback:
+      - when: { picked: 2 }
+        say: Dann könnte sich niemand namens O'Brien anmelden. Ein Prepared Statement lässt die Eingabe, wie sie ist.
+    solution: Die Datenbank bekommt zuerst die Abfrage mit Platzhaltern und danach die Werte. Was in einem Wert steht, auch ein Anführungszeichen oder `#`, bleibt ein Wert und wird nie Teil des SQL-Codes.
+
+  - id: eigener-zugang
+    title: Ein Zugang nur für diese Datenbank
+    prompt: |
+      Das Programm meldet sich mit dem Zugang an, der nur deine
+      Testdatenbank erreicht. Was gewinnst du dadurch, solange die Lücke noch
+      offen ist?
+    check:
+      type: choice
+      options:
+        - Wer die Lücke ausnutzt, erreicht nur diese Datenbank, nicht deine anderen
+        - Die Lücke lässt sich damit nicht mehr ausnutzen
+        - Das Programm wird schneller
+        - Nichts, ein Zugang ist wie der andere
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Die Lücke steckt im Programm. Der Zugang entscheidet nur, wie weit der Schaden reicht.
+    solution: Der Zugang begrenzt den Schaden. Eine Lücke in einem Programm, das mit deinem Hauptzugang arbeitet, würde auch deine anderen Datenbanken offenlegen. Gib jedem Programm nur die Rechte, die es braucht.

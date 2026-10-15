@@ -95,8 +95,7 @@
     - mysql
     - filmdatenbank
     - neo4j-filmdatenbank
-    # off for now, so that both film databases share a row
-    # - .bobby_tables
+    - bobby_tables
 
 - key: advanced
   compact: true
