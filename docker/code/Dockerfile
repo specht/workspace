@@ -830,7 +830,7 @@ RUN GEM_HOME=/opt/ruby/lib/ruby/gems/${RUBY_API_VERSION} \
 # PHP: MySQL drivers
 #
 # php-cli above has PDO but no driver for MySQL. php-mysql adds pdo_mysql
-# and mysqli, so PHP programs (the guestbook activity) reach the student's
+# and mysqli, so PHP programs reach the student's
 # databases. A layer of its own, so the large layers stay cached.
 # --------------------------------------------------------------------
 

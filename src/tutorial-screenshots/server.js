@@ -372,7 +372,10 @@ async function runHookAction(action, targetTab, hooks) {
         throw new Error(`hook: ${action.name} needs actions.${action.name} in tutorial-screenshot-hooks.mjs`);
     }
     const page = requirePageForTab(targetTab, `hook: ${action.name}`);
-    await run({ page, args: action.args, timeout: 60_000 });
+    // writeFile(path, text) writes into the Workspace like write-file: for a
+    // value only the page knows (a database login shown in the profile).
+    const writeFile = (relativePath, text) => writeWorkspaceFile(relativePath, String(text), hooks);
+    await run({ page, args: action.args, timeout: 60_000, writeFile });
 }
 
 async function waitForPreviewReady(page, hooks) {

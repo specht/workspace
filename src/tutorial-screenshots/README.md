@@ -640,6 +640,11 @@ export default {
 };
 ```
 
+An action also gets `writeFile(path, text)`, which writes into the screenshot
+user's Workspace exactly like `write-file`: for a value only the page knows, such
+as the login of a database the action just created in the profile, written into
+a configuration file as a student would copy it.
+
 `writeFileSubdirectory` makes `write-file` paths relative to that directory below
 the screenshot user's Workspace instead of the Workspace root. This only affects
 `write-file`; `wait-for-file` and `wait-for-file-newer` remain explicitly relative
