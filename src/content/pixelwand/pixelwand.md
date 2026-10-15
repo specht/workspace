@@ -17,7 +17,7 @@ reference: [http, json]
 # Eine Pixelwand für alle
 
 <p class='abstract'>
-Die ganze Klasse malt gleichzeitig an einem Bild: Jeder Pixel, den jemand setzt, erscheint sofort bei allen anderen. Dafür erweiterst du deinen Ruby-Webserver um WebSockets, Verbindungen, die offen bleiben und in beide Richtungen funktionieren. Du schreibst den Handshake selbst, schickst Nachrichten an alle und baust die Pixelwand mit einer kleinen Webseite.
+Die ganze Klasse malt gleichzeitig an einem Bild: Jeder Pixel, den jemand setzt, erscheint sofort bei allen anderen. Dafür brauchst du WebSockets, Verbindungen, die offen bleiben und in beide Richtungen funktionieren. Die Bibliothek faye-websocket kümmert sich um die Technik dahinter; du kümmerst dich um das, worauf es ankommt: wer verbunden ist, wer welche Nachricht bekommt, und dass der Server keiner Nachricht blind glaubt.
 </p>
 
 ## Warum WebSockets?
@@ -26,7 +26,7 @@ Bei HTTP fragt immer der Browser, und der Server antwortet. Ein Server kann nich
 
 Eine **WebSocket**-Verbindung beginnt wie eine HTTP-Anfrage, bleibt dann aber offen. Danach können beide Seiten jederzeit Nachrichten schicken, in beide Richtungen. So funktionieren Chats, Online-Spiele und gemeinsame Dokumente.
 
-Du brauchst deinen Webserver aus [Ein eigener Webserver](/webserver) nicht, aber dieselben Ideen: `TCPServer`, Threads, die Funktion `respond`.
+In [Ein eigener Webserver](/webserver) hast du HTTP von Hand gesprochen. WebSockets von Hand wären noch einmal so viel Arbeit: ein Handshake mit einem Hashwert und danach ein eigenes Format aus Bytes für jede Nachricht. Das übernimmt hier die Bibliothek **faye-websocket**, so wie in echten Projekten.
 
 ## Einrichten
 
@@ -36,137 +36,55 @@ Lege einen neuen Ordner an und öffne ihn mit <kbd>Strg</kbd><kbd>K</kbd> <kbd>S
 mkdir /workspace/pixelwand
 ```
 
-Nach dem Handshake reden Browser und Server in einem eigenen Format, in **Frames**: Jede Nachricht hat einen kleinen Header aus Bytes, der sagt, wie lang sie ist. Nachrichten vom Browser sind außerdem mit vier zufälligen Bytes »maskiert« (XOR). Verschlüsselt ist das nicht, denn die vier Bytes stehen im Frame mit dabei. Das Lesen und Schreiben dieser Frames übernimmt eine kleine Datei. Lege sie als `websocket.rb` an; du musst sie nicht im Einzelnen verstehen, aber es lohnt sich, die Kommentare zu lesen:
+Installiere dann die drei Gems, die der Server braucht:
 
-```ruby_copy
-# Nachrichten über eine WebSocket-Verbindung lesen und schicken.
-#
-# Nach dem Handshake reden Browser und Server nicht mehr in Textzeilen,
-# sondern in »Frames«: Jede Nachricht hat einen kleinen Header aus Bytes, der
-# sagt, was für eine Nachricht es ist und wie lang sie ist. Nachrichten vom
-# Browser sind außerdem mit vier zufälligen Bytes »maskiert« (XOR), damit
-# alte Proxys im Netz sie nicht für HTTP halten.
-
-module WebSocket
-  # Liest eine Textnachricht. Gibt nil zurück, wenn die Verbindung zu ist.
-  def self.read_text(client)
-    loop do
-      head = client.read(2)
-      return nil if head.nil? || head.bytesize < 2
-      byte1, byte2 = head.bytes
-      opcode = byte1 & 0x0f          # 1: Text, 8: Schluss, 9: Ping
-      masked = (byte2 & 0x80) != 0
-      length = byte2 & 0x7f
-      if length == 126               # Länge steht in den nächsten 2 Bytes
-        length = client.read(2).unpack1('n')
-      elsif length == 127            # … oder in den nächsten 8 Bytes
-        length = client.read(8).unpack1('Q>')
-      end
-      mask = masked ? client.read(4).bytes : [0, 0, 0, 0]
-      data = client.read(length).to_s.bytes
-      data = data.each_with_index.map { |b, i| b ^ mask[i % 4] }.pack('C*')
-
-      case opcode
-      when 1 then return data.force_encoding('UTF-8')
-      when 8 then return nil                      # der Browser verabschiedet sich
-      when 9 then write_frame(client, 10, data)   # auf Ping mit Pong antworten
-      end
-    end
-  rescue IOError, SystemCallError
-    nil
-  end
-
-  # Schickt eine Textnachricht
-  def self.write_text(client, text)
-    write_frame(client, 1, text.b)
-  end
-
-  def self.write_frame(client, opcode, data)
-    head = [0x80 | opcode].pack('C')  # 0x80: das ist die ganze Nachricht
-    if data.bytesize < 126
-      head << [data.bytesize].pack('C')
-    elsif data.bytesize < 65536
-      head << [126, data.bytesize].pack('Cn')
-    else
-      head << [127, data.bytesize].pack('CQ>')
-    end
-    client.write(head + data)
-  end
-end
+```bash_copy
+gem install faye-websocket puma rackup
 ```
 
-`WebSocket.read_text(client)` wartet auf die nächste Nachricht und gibt sie als Text zurück, oder `nil`, wenn die Verbindung zu ist. `WebSocket.write_text(client, text)` schickt eine Nachricht.
+- **faye-websocket** spricht WebSocket: Handshake, Nachrichten lesen und schicken.
+- **puma** ist ein Webserver für Ruby-Programme, wie dein eigener aus der letzten Aktivität, nur schneller und gründlicher.
+- **rackup** startet Puma aus deinem Programm heraus.
 
-## Der Handshake
-
-Der Browser öffnet eine WebSocket-Verbindung mit einer ganz normalen HTTP-Anfrage, mit zwei besonderen Headern: `Upgrade: websocket` sagt, dass er die Verbindung umwandeln möchte, und `Sec-WebSocket-Key` bringt einen zufälligen String mit. Der Server antwortet mit dem Statuscode **101 Switching Protocols** und beweist mit `Sec-WebSocket-Accept`, dass er WebSockets versteht: Er hängt an den Key einen festen String aus dem Standard an, berechnet davon den SHA-1-Hashwert und schickt ihn in Base64.
+## Ein Echo
 
 Lege `server.rb` an:
 
 ```ruby_copy
-require 'socket'
-require 'digest'
-require_relative 'websocket'
+require 'faye/websocket'
+require 'rackup'
 
-# Dieser String steht im Standard für WebSockets (RFC 6455), für alle gleich
-MAGIC = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
+# Das Programm hinter dem Server: Für jede Anfrage bekommt es env (Methode,
+# Pfad, Header …) und gibt Status, Header und Inhalt zurück.
+App = lambda do |env|
+  if Faye::WebSocket.websocket?(env)
+    # Der Browser möchte eine WebSocket-Verbindung. Faye erledigt den
+    # Handshake und liest und schreibt die Nachrichten.
+    ws = Faye::WebSocket.new(env)
 
-# Schickt eine vollständige HTTP-Antwort und schließt die Verbindung
-def respond(client, status, type, body)
-  client.print "HTTP/1.1 #{status}\r\n"
-  client.print "Content-Type: #{type}\r\n"
-  client.print "Content-Length: #{body.bytesize}\r\n"
-  client.print "Connection: close\r\n"
-  client.print "\r\n"
-  client.print body
-  client.close
-end
+    # Jede Nachricht geht mit »Echo:« davor zurück
+    ws.on(:message) do |event|
+      puts "Empfangen: #{event.data}"
+      ws.send("Echo: #{event.data}")
+    end
 
-# Eine offene WebSocket-Verbindung: Was kommt, geht zurück
-def connected(client)
-  while (text = WebSocket.read_text(client))
-    puts "Empfangen: #{text}"
-    WebSocket.write_text(client, "Echo: #{text}")
+    ws.rack_response
+  else
+    # Jede andere Anfrage bekommt die Webseite
+    [200, { 'content-type' => 'text/html; charset=utf-8' },
+     [File.read(File.join(__dir__, 'index.html'))]]
   end
-  client.close
 end
 
-server = TCPServer.new(8000)
 puts "Der Server wartet auf Port 8000 ..."
-
-loop do
-  Thread.new(server.accept) do |client|
-    method, path, version = client.gets.to_s.split(' ')
-    # Diesmal brauchen wir die Header: »Name: Wert« in einen Hash
-    headers = {}
-    while (line = client.gets) && line != "\r\n"
-      name, value = line.split(':', 2)
-      headers[name.strip.downcase] = value.to_s.strip
-    end
-
-    if path == '/ws' && headers['upgrade'].to_s.downcase == 'websocket'
-      # Der Handshake: aus dem Schlüssel des Browsers die Antwort berechnen
-      accept = Digest::SHA1.base64digest(headers['sec-websocket-key'] + MAGIC)
-      client.print "HTTP/1.1 101 Switching Protocols\r\n"
-      client.print "Upgrade: websocket\r\n"
-      client.print "Connection: Upgrade\r\n"
-      client.print "Sec-WebSocket-Accept: #{accept}\r\n"
-      client.print "\r\n"
-      connected(client)
-    elsif path == '/'
-      respond(client, '200 OK', 'text/html; charset=utf-8',
-              File.read(File.join(__dir__, 'index.html')))
-    else
-      respond(client, '404 Not Found', 'text/plain; charset=utf-8', "Gibt es nicht.\n")
-    end
-  end
-end
+Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Silent: true)
 ```
 
-- Diesmal liest der Server die Header in einen Hash, `headers['upgrade']` zum Beispiel. HTTP-Header sind unabhängig von Groß- und Kleinschreibung, darum `downcase`.
-- `Digest::SHA1.base64digest` berechnet den Hashwert und schreibt ihn gleich in Base64.
-- Nach dem Handshake ruft der Server `connected` auf. Solange die Verbindung offen ist, wartet `WebSocket.read_text` auf die nächste Nachricht, und der Server schickt sie mit »Echo:« davor zurück.
-- Alles andere bleibt HTTP: Auf `/` schickt er die Webseite `index.html`.
+- `App` ist ein **Rack-Programm**: Für jede Anfrage bekommt es `env`, einen Hash mit Methode, Pfad und Headern, und gibt drei Dinge zurück, Status, Header und Inhalt, wie die Antwort deines eigenen Webservers.
+- `Faye::WebSocket.websocket?(env)` erkennt eine Anfrage, die eine WebSocket-Verbindung öffnen will. Dann übernimmt `Faye::WebSocket.new(env)` den Handshake; `ws` steht für diese eine Verbindung.
+- `ws.on(:message) do |event| … end` legt fest, was bei jeder neuen Nachricht passiert. `event.data` ist der Text, `ws.send` schickt einen zurück.
+- Alle anderen Anfragen bekommen die Webseite `index.html`.
+- `Rackup::Server.start` startet Puma auf Port 8000 mit `App` als Programm.
 
 Die Webseite `index.html` hat ein Eingabefeld und zeigt alles, was vom Server kommt:
 
@@ -222,15 +140,14 @@ Die Webseite `index.html` hat ein Eingabefeld und zeigt alles, was vom Server ko
 
 `new WebSocket(url)` öffnet die Verbindung, mit `ws://` statt `http://`. `addEventListener('message', …)` ruft eine Funktion auf, sobald eine Nachricht kommt, ohne dass die Seite fragt. `socket.send(…)` schickt eine Nachricht.
 
-Starte den Server und öffne daneben mit <kbd>Strg</kbd><kbd>Shift</kbd><kbd>5</kbd> ein zweites Terminal, wie beim Webserver:
+Starte den Server:
 
 ```bash
 ruby server.rb
 ```
 
 <!-- tutorial-screenshot
-# Ordner pixelwand mit websocket.rb, server.rb (Echo) und index.html
-write-file: pixelwand/websocket.rb <- file:stufen/websocket.rb
+# Ordner pixelwand mit server.rb (Echo) und index.html, Gems installiert
 write-file: pixelwand/server.rb <- file:stufen/server1.rb
 write-file: pixelwand/index.html <- file:stufen/index1.html
 press: Control+K
@@ -243,13 +160,18 @@ press: Enter
 wait-for-text: server.rb
 open-file: server.rb
 terminal-open
+terminal-run: gem install faye-websocket puma rackup
+terminal-wait-for-prompt: 180
+terminal-run: clear
 terminal-run: ruby server.rb
 wait-for-text: Der Server wartet
 sleep: 1
 -->
-<img class='full' src='ordner.webp' alt='Der Ordner pixelwand mit index.html, server.rb und websocket.rb; server.rb ist offen, im Terminal wartet der Server auf Port 8000.'>
+<img class='full' src='ordner.webp' alt='Der Ordner pixelwand mit index.html und server.rb; server.rb ist offen, im Terminal wartet der Server auf Port 8000.'>
 
-Den Handshake kannst du im zweiten Terminal selbst ansehen. `curl` schickt hier die Header, die sonst der Browser schickt, mit dem Beispiel-Key aus dem Standard:
+### Der Handshake
+
+Eine WebSocket-Verbindung beginnt mit einer ganz normalen HTTP-Anfrage mit zwei besonderen Headern: `Upgrade: websocket` sagt, dass der Browser die Verbindung umwandeln möchte, und `Sec-WebSocket-Key` bringt einen zufälligen String mit. Der Server antwortet mit dem Statuscode **101 Switching Protocols** und beweist mit `Sec-WebSocket-Accept`, dass er WebSockets versteht. Das erledigt Faye; ansehen kannst du es trotzdem. Öffne mit <kbd>Strg</kbd><kbd>Shift</kbd><kbd>5</kbd> ein zweites Terminal. `curl` schickt dort die Header, die sonst der Browser schickt, mit dem Beispiel-Key aus dem Standard:
 
 ```bash
 curl -i --http1.1 -m 2 -H "Connection: Upgrade" -H "Upgrade: websocket" -H "Sec-WebSocket-Version: 13" -H "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==" localhost:8000/ws
@@ -268,7 +190,9 @@ sleep: 3
 -->
 <img class='full' src='handschlag.webp' alt='Rechts antwortet der Server auf die Anfrage von curl mit HTTP/1.1 101 Switching Protocols und Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=; nach zwei Sekunden gibt curl auf.'>
 
-Der Server antwortet mit `101 Switching Protocols` und `Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=`, genau dem Wert, den der Standard für diesen Schlüssel als Beispiel nennt. Danach bleibt die Verbindung offen; `curl` versteht keine Frames und gibt nach zwei Sekunden auf (`-m 2`).
+Der Server antwortet mit `101 Switching Protocols` und `Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=`, genau dem Wert, den der Standard für diesen Key als Beispiel nennt. Danach bleibt die Verbindung offen, und beide Seiten schicken sich Nachrichten in einem eigenen Format aus Bytes, sogenannten Frames. `curl` versteht keine Frames und gibt nach zwei Sekunden auf (`-m 2`).
+
+### Im Browser
 
 Öffne jetzt die Adresse von Port 8000 aus dem Reiter »Ports« (»Forwarded Address«) im Browser und schreib eine Nachricht:
 
@@ -288,44 +212,56 @@ _uses(websocket-upgrade, statuscodes)
 
 _task(handshake)
 
-_task(frame-header)
-
 ## An alle
 
-Ein Echo ist noch langweilig. Spannend wird es, wenn eine Nachricht bei **allen** ankommt, die gerade verbunden sind. Dafür merkt sich der Server alle offenen Verbindungen in einer Liste `$clients`. Ersetze `connected` durch:
+Ein Echo ist noch langweilig. Spannend wird es, wenn eine Nachricht bei **allen** ankommt, die gerade verbunden sind. Dafür merkt sich der Server alle offenen Verbindungen in einer Liste `$clients`. Ersetze `server.rb` durch:
 
 ```ruby_copy
-# Alle offenen Verbindungen. Mehrere Threads benutzen die Liste, darum
-# ändert und benutzt sie immer nur einer auf einmal (Mutex). Unter demselben
-# Lock wird auch geschickt: So mischen sich zwei Nachrichten nie.
+require 'faye/websocket'
+require 'rackup'
+
+# Alle offenen Verbindungen. Faye ruft die on-Blöcke aller Verbindungen
+# nacheinander auf, nie zwei gleichzeitig: Die Liste braucht keinen Lock.
 $clients = []
-$lock = Mutex.new
 
 def broadcast(text)
-  $lock.synchronize do
-    $clients.each do |c|
-      WebSocket.write_text(c, text) rescue nil   # wer weg ist, bekommt nichts
+  $clients.each { |client| client.send(text) }
+end
+
+App = lambda do |env|
+  if Faye::WebSocket.websocket?(env)
+    ws = Faye::WebSocket.new(env)
+
+    ws.on(:open) do
+      $clients << ws
+      broadcast("Jemand ist dazugekommen. Jetzt sind wir #{$clients.size}.")
     end
+
+    # Was kommt, geht an alle
+    ws.on(:message) do |event|
+      puts "Empfangen: #{event.data}"
+      broadcast(event.data)
+    end
+
+    ws.on(:close) do
+      $clients.delete(ws)
+      broadcast("Jemand ist gegangen. Jetzt sind wir #{$clients.size}.")
+    end
+
+    ws.rack_response
+  else
+    [200, { 'content-type' => 'text/html; charset=utf-8' },
+     [File.read(File.join(__dir__, 'index.html'))]]
   end
 end
 
-# Eine offene WebSocket-Verbindung: Was kommt, geht an alle
-def connected(client)
-  $lock.synchronize { $clients << client }
-  broadcast("Jemand ist dazugekommen. Jetzt sind wir #{$clients.size}.")
-  while (text = WebSocket.read_text(client))
-    puts "Empfangen: #{text}"
-    broadcast(text)
-  end
-  $lock.synchronize { $clients.delete(client) }
-  client.close
-  broadcast("Jemand ist gegangen. Jetzt sind wir #{$clients.size}.")
-end
+puts "Der Server wartet auf Port 8000 ..."
+Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Silent: true)
 ```
 
-- Wer sich verbindet, kommt in die Liste; wer geht, fliegt wieder raus.
-- `broadcast` schickt eine Nachricht an jede Verbindung in der Liste. `rescue nil` sorgt dafür, dass eine Verbindung, die gerade abgerissen ist, die anderen nicht stört.
-- Mehrere Threads benutzen die Liste gleichzeitig, darum gehört sie zu einem Lock, `$lock`, wie der Zähler beim Webserver. Auch gesendet wird unter diesem Lock: Schickten zwei Threads gleichzeitig an denselben Browser, könnten sich die Bytes ihrer beiden Nachrichten mischen.
+- `ws.on(:open)` läuft, sobald die Verbindung steht: Sie kommt in die Liste. `ws.on(:close)` läuft, wenn sie zu ist, weil jemand den Tab geschlossen hat: Sie fliegt wieder raus.
+- `broadcast` schickt eine Nachricht an jede Verbindung in der Liste, auch an die, von der sie kam.
+- Viele Verbindungen benutzen dieselbe Liste. Das geht gut, weil Faye die `on`-Blöcke aller Verbindungen nacheinander aufruft, nie zwei gleichzeitig. Was passiert, wenn das nicht so ist, siehst du am Ende in [Viele Threads](#7-viele-threads).
 
 Starte den Server neu und öffne die Seite in zwei Tabs nebeneinander. Was du in einem Tab schreibst, erscheint in beiden.
 
@@ -335,57 +271,64 @@ _task(wer-bekommt-was)
 
 Jetzt wird aus dem Chat ein Bild. Der Server bewahrt das Bild auf: 64 × 40 Pixel, jedes eine Farbnummer von 0 bis 15. Wer neu dazukommt, bekommt das ganze Bild, danach nur noch die Pixel, die sich ändern. Die Nachrichten sind jetzt keine einfachen Texte mehr, sondern **JSON**, eine Schreibweise für Daten, die Ruby und JavaScript beide verstehen: `{"x":10,"y":5,"color":4}`.
 
-Ergänze oben `require 'json'` und ersetze `connected` und `broadcast` durch:
+Ersetze `server.rb` durch:
 
 ```ruby_copy
+require 'faye/websocket'
+require 'rackup'
+require 'json'
+
 # Das Bild: 64 × 40 Pixel, jedes eine Farbnummer von 0 bis 15
 WIDTH = 64
 HEIGHT = 40
 $pixels = Array.new(WIDTH * HEIGHT, 0)
 
-# Alle offenen Verbindungen. Mehrere Threads benutzen die Liste und das Bild,
-# darum ändert und benutzt sie immer nur einer auf einmal (Mutex). Unter
-# demselben Lock wird auch geschickt: So mischen sich zwei Nachrichten nie.
+# Alle offenen Verbindungen
 $clients = []
-$lock = Mutex.new
 
 def broadcast(message)
   text = JSON.generate(message)
-  $clients.each do |c|
-    WebSocket.write_text(c, text) rescue nil   # wer weg ist, bekommt nichts
-  end
+  $clients.each { |client| client.send(text) }
 end
 
-# Eine offene WebSocket-Verbindung: Wer neu ist, bekommt das ganze Bild,
-# danach nur noch einzelne Pixel
-def connected(client)
-  $lock.synchronize do
-    $clients << client
-    WebSocket.write_text(client, JSON.generate({ 'type' => 'picture', 'width' => WIDTH,
-                                                 'height' => HEIGHT, 'pixels' => $pixels }))
-    broadcast({ 'type' => 'people', 'count' => $clients.size })
-  end
+App = lambda do |env|
+  if Faye::WebSocket.websocket?(env)
+    ws = Faye::WebSocket.new(env)
 
-  while (text = WebSocket.read_text(client))
-    # Jeder kann alles schicken: nur glauben, was passt
-    message = JSON.parse(text) rescue next
-    next unless message.is_a?(Hash)
-    x, y, color = message.values_at('x', 'y', 'color')
-    next unless [x, y, color].all?(Integer)
-    next unless x.between?(0, WIDTH - 1) && y.between?(0, HEIGHT - 1) && color.between?(0, 15)
+    # Wer neu ist, bekommt das ganze Bild, danach nur noch einzelne Pixel
+    ws.on(:open) do
+      $clients << ws
+      ws.send(JSON.generate({ 'type' => 'picture', 'width' => WIDTH,
+                              'height' => HEIGHT, 'pixels' => $pixels }))
+      broadcast({ 'type' => 'people', 'count' => $clients.size })
+    end
 
-    $lock.synchronize do
+    ws.on(:message) do |event|
+      # Jeder kann alles schicken: nur glauben, was passt
+      message = JSON.parse(event.data) rescue next
+      next unless message.is_a?(Hash)
+      x, y, color = message.values_at('x', 'y', 'color')
+      next unless [x, y, color].all?(Integer)
+      next unless x.between?(0, WIDTH - 1) && y.between?(0, HEIGHT - 1) && color.between?(0, 15)
+
       $pixels[y * WIDTH + x] = color
       broadcast({ 'type' => 'pixel', 'x' => x, 'y' => y, 'color' => color })
     end
-  end
 
-  $lock.synchronize do
-    $clients.delete(client)
-    broadcast({ 'type' => 'people', 'count' => $clients.size })
+    ws.on(:close) do
+      $clients.delete(ws)
+      broadcast({ 'type' => 'people', 'count' => $clients.size })
+    end
+
+    ws.rack_response
+  else
+    [200, { 'content-type' => 'text/html; charset=utf-8' },
+     [File.read(File.join(__dir__, 'index.html'))]]
   end
-  client.close
 end
+
+puts "Der Server wartet auf Port 8000 ..."
+Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Silent: true)
 ```
 
 - `JSON.generate` macht aus einem Hash Text, `JSON.parse` aus Text wieder einen Hash.
@@ -554,10 +497,212 @@ Jetzt kommt der beste Teil. Gib in deinem [Profil](/profil) unter »Shared Live 
 Vielleicht merkt ihr schnell, dass einige wenige das ganze Bild übermalen. Ein paar Ideen, die Pixelwand weiterzubauen, von leicht bis schwer:
 
 - **Eine größere Wand:** Ändere `WIDTH` und `HEIGHT` im Server und die Größe des `<canvas>` in der Seite.
-- **Wartezeit:** Jede Verbindung darf nur einen Pixel pro Sekunde setzen, wie bei »r/place«. Merke dir in `connected`, wann die Verbindung zuletzt gemalt hat (`Time.now`), und überspringe Pixel, die zu früh kommen.
-- **Das Bild speichern:** Schreib `$pixels` alle paar Sekunden als JSON in eine Datei und lies es beim Start wieder ein. Dann übersteht das Bild einen Neustart des Servers.
+- **Wartezeit:** Jede Verbindung darf nur einen Pixel pro Sekunde setzen, wie bei »r/place«. Merke dir in einer Variable neben `ws`, wann die Verbindung zuletzt gemalt hat (`Time.now`), und überspringe in `ws.on(:message)` Pixel, die zu früh kommen.
+- **Das Bild laden:** Im nächsten Abschnitt speichert der Server das Bild in `picture.json`. Lies die Datei beim Start wieder ein (`File.exist?`, `JSON.parse`), dann übersteht das Bild einen Neustart.
 - **Ein Chat daneben:** Ein neuer `type` für Textnachrichten und ein Eingabefeld unter der Wand.
 - **Ein Spiel:** Zwei Teams mit zwei Farben, wer nach fünf Minuten mehr Pixel hat, gewinnt.
+
+## Viele Threads
+
+Ein Neustart des Servers löscht das Bild. Darum soll der Server es nach jedem Pixel in eine Datei schreiben, `picture.json`. Das dauert einen Moment, und solange Faye mit einer Nachricht beschäftigt ist, warten alle anderen. Die übliche Lösung: Mehrere **Threads** arbeiten die Nachrichten ab, während Faye schon neue annimmt. Dazu zählt der Server mit, wie viele Pixel schon gemalt wurden, und schreibt die Zahl ins Terminal.
+
+Ersetze `server.rb` durch:
+
+```ruby_copy
+require 'faye/websocket'
+require 'rackup'
+require 'json'
+
+# Das Bild: 64 × 40 Pixel, jedes eine Farbnummer von 0 bis 15
+WIDTH = 64
+HEIGHT = 40
+$pixels = Array.new(WIDTH * HEIGHT, 0)
+
+# Alle offenen Verbindungen
+$clients = []
+
+# Wie viele Pixel schon gemalt wurden
+$painted = 0
+
+# Das Bild in eine Datei schreiben, damit es einen Neustart übersteht
+def save_picture
+  File.write('picture.json', JSON.generate($pixels))
+end
+
+def broadcast(message)
+  text = JSON.generate(message)
+  $clients.each { |client| client.send(text) }
+end
+
+# Vier Threads arbeiten die Nachrichten ab, während Faye neue annimmt. Mehr
+# als ein paar sollten es nicht sein: Jeder Thread kostet Speicher, und ein
+# Workspace darf nicht beliebig viele starten.
+$queue = Queue.new
+4.times do
+  Thread.new do
+    loop do
+      text = $queue.pop        # wartet, bis eine Nachricht da ist
+
+      # Jeder kann alles schicken: nur glauben, was passt
+      message = JSON.parse(text) rescue next
+      next unless message.is_a?(Hash)
+      x, y, color = message.values_at('x', 'y', 'color')
+      next unless [x, y, color].all?(Integer)
+      next unless x.between?(0, WIDTH - 1) && y.between?(0, HEIGHT - 1) && color.between?(0, 15)
+
+      $pixels[y * WIDTH + x] = color
+      count = $painted
+      save_picture             # dauert einen Moment
+      $painted = count + 1
+      puts "Pixel Nr. #{$painted}"
+      broadcast({ 'type' => 'pixel', 'x' => x, 'y' => y, 'color' => color })
+    end
+  end
+end
+
+App = lambda do |env|
+  if Faye::WebSocket.websocket?(env)
+    ws = Faye::WebSocket.new(env)
+
+    # Wer neu ist, bekommt das ganze Bild, danach nur noch einzelne Pixel
+    ws.on(:open) do
+      $clients << ws
+      ws.send(JSON.generate({ 'type' => 'picture', 'width' => WIDTH,
+                              'height' => HEIGHT, 'pixels' => $pixels }))
+      broadcast({ 'type' => 'people', 'count' => $clients.size })
+    end
+
+    # Jede Nachricht kommt in die Warteschlange; Faye ist sofort frei
+    ws.on(:message) { |event| $queue << event.data }
+
+    ws.on(:close) do
+      $clients.delete(ws)
+      broadcast({ 'type' => 'people', 'count' => $clients.size })
+    end
+
+    ws.rack_response
+  else
+    [200, { 'content-type' => 'text/html; charset=utf-8' },
+     [File.read(File.join(__dir__, 'index.html'))]]
+  end
+end
+
+puts "Der Server wartet auf Port 8000 ..."
+Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Silent: true)
+```
+
+- `ws.on(:message)` legt jede Nachricht nur in eine **Warteschlange**, `$queue`, und ist sofort frei für die nächste.
+- Vier Threads holen sich mit `$queue.pop` die nächste Nachricht und verarbeiten sie, jeder in einer Schleife ohne Ende. `pop` wartet, solange die Schlange leer ist. Ein Thread pro Nachricht wäre einfacher, aber jeder Thread kostet Speicher, und dein Workspace darf nicht beliebig viele starten. Echte Server arbeiten genauso mit einer festen Zahl von Threads.
+- `save_picture` schreibt das ganze Bild als JSON in die Datei.
+- `$painted` zählt die Pixel: lesen, speichern, um eins erhöhen.
+
+Damit es spannend wird, malen jetzt sehr viele Leute gleichzeitig. Lege `flood.js` an; es schickt 200 Pixel auf einmal an deinen eigenen Server auf `localhost` und wartet, bis der Server alle an alle verteilt hat:
+
+```js
+// Schickt 200 Pixel auf einmal, als würden 200 Leute gleichzeitig malen.
+// Nur für den eigenen Server auf localhost: Fremde Server so zu überschütten,
+// ist ein Angriff.
+const socket = new WebSocket('ws://localhost:8000/ws');
+let back = 0;
+
+socket.addEventListener('open', () => {
+  for (let i = 0; i < 200; i++) {
+    socket.send(JSON.stringify({ x: i % 64, y: Math.floor(i / 64) % 40, color: i % 16 }));
+  }
+  console.log('200 Pixel geschickt.');
+});
+
+// Fertig, sobald der Server alle 200 Pixel an alle verteilt hat
+socket.addEventListener('message', (event) => {
+  if (JSON.parse(event.data).type === 'pixel' && ++back === 200) {
+    console.log('200 Pixel zurückbekommen.');
+    socket.close();
+  }
+});
+```
+
+Starte den Server neu und führe das Skript im zweiten Terminal aus:
+
+```bash
+node flood.js
+```
+
+<div class='hint'>
+<code>flood.js</code> ist für deinen eigenen Server da, und nur für den. Einen fremden Server mit Anfragen zu überschütten, bis er für alle anderen nicht mehr erreichbar ist, ist ein Angriff (<em>Denial of Service</em>) und kann als Computersabotage strafbar sein (§ 303b Strafgesetzbuch). Die geteilten Pixelwände deiner Klasse sind für sie genauso ein fremder Server.
+</div>
+
+_task(counter)
+
+<!-- tutorial-screenshot
+# Stufe 4: viele Threads, flood.js schickt 200 Pixel
+write-file: pixelwand/server.rb <- file:stufen/server4.rb
+write-file: pixelwand/flood.js <- file:stufen/flood.js
+terminal-open
+terminal-maximize
+press: Alt+ArrowLeft
+sleep: 1
+press: Control+C
+sleep: 1
+press: Control+L
+type: ruby server.rb
+press: Enter
+sleep: 2
+terminal-run: clear
+sleep: 1
+terminal-run: node flood.js
+wait-for-text: 200 Pixel zurückbekommen
+sleep: 1
+-->
+<img class='full' src='threads.webp' alt='Links zählt der Server, aber am Ende steht weit weniger als »Pixel Nr. 200«, rechts meldet flood.js »200 Pixel geschickt.« und »200 Pixel zurückbekommen.«'>
+
+200 Pixel, und der Zähler kommt nicht annähernd bis 200. Jeder der vier Threads liest `$painted`, speichert das Bild und schreibt dann seinen Wert plus eins zurück. Während einer speichert, lesen die anderen denselben alten Wert; vier Threads schreiben dieselbe Zahl, und drei Pixel sind beim Zählen verloren. Dasselbe Problem hatte der Besuchszähler deines Webservers; dort war die Lücke zwischen Lesen und Schreiben nur so kurz, dass man den Fehler selten sieht. Hier dauert das Speichern, und der Fehler passiert jedes Mal.
+
+Die Lösung ist ein **Lock**, in Ruby ein `Mutex`: Nur ein Thread auf einmal darf durch, die anderen warten davor. Ergänze unter `$painted = 0`:
+
+```ruby
+$lock = Mutex.new
+```
+
+und schließe das Ändern von Bild und Zähler in `$lock.synchronize` ein:
+
+```ruby
+$lock.synchronize do
+  $pixels[y * WIDTH + x] = color
+  count = $painted
+  save_picture             # dauert einen Moment
+  $painted = count + 1
+  puts "Pixel Nr. #{$painted}"
+end
+```
+
+Starte den Server neu und schick noch einmal 200 Pixel:
+
+<!-- tutorial-screenshot
+# Stufe 5: mit Lock zählt der Server richtig
+write-file: pixelwand/server.rb <- file:stufen/server5.rb
+terminal-open
+terminal-maximize
+press: Alt+ArrowLeft
+sleep: 1
+press: Control+C
+sleep: 1
+press: Control+L
+type: ruby server.rb
+press: Enter
+sleep: 2
+terminal-run: clear
+sleep: 1
+terminal-run: node flood.js
+wait-for-text: 200 Pixel zurückbekommen
+sleep: 1
+-->
+<img class='full' src='lock.webp' alt='Links zählt der Server bis »Pixel Nr. 200«, rechts meldet flood.js »200 Pixel geschickt.« und »200 Pixel zurückbekommen.«'>
+
+Jetzt kommt der Zähler bei 200 an. Die Threads stehen nur an der einen Stelle hintereinander, an der sie das Bild und den Zähler ändern; alles andere, das Prüfen der Nachricht und das Verteilen an alle, läuft weiter gleichzeitig. Ein Lock gehört genau um die Teile, die gemeinsame Daten lesen und ändern, und um nicht mehr.
+
+Gegen jemanden, der eine geteilte Pixelwand mit Pixeln überschüttet, hilft der Lock nicht: Er sorgt nur dafür, dass richtig gezählt wird. Dagegen hilft die **Wartezeit** aus den Ideen oben. Erlaubt der Server jeder Verbindung nur einen Pixel pro Sekunde, kommen von `flood.js` nur noch die ersten an.
+
+_task(lock)
 
 _task(abgabe)
 
@@ -565,4 +710,4 @@ _task(abgabe)
 
 Eure Pixelwand funktioniert genauso wie große Anwendungen, nur kleiner: Ein Server hält den gemeinsamen Zustand, jeder Browser hat eine offene Verbindung, und jede Änderung geht an alle. So arbeiten Online-Spiele, Chats und Programme, in denen mehrere Leute gleichzeitig an einem Dokument schreiben.
 
-Im Ernstfall läuft eine WebSocket-Verbindung verschlüsselt über `wss://`, und der Server muss mit Tausenden Verbindungen und mit Leuten umgehen können, die ihm absichtlich falsche Daten schicken. Die Prüfung in `connected` war ein erster Schritt dahin.
+Im Ernstfall läuft eine WebSocket-Verbindung verschlüsselt über `wss://`, und der Server muss mit Tausenden Verbindungen und mit Leuten umgehen können, die ihm absichtlich falsche Daten schicken. Die Prüfung in `ws.on(:message)` war ein erster Schritt dahin.
