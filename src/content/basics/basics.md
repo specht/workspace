@@ -35,7 +35,7 @@ kind: grundlagen
 # Die Basics
 
 <p class='abstract'>
-Eine kleine Tour durch die Benutzeroberfläche von Visual Studio Code, gefolgt von grundlegenden Hinweisen zur Arbeit mit Dateien, Ordnern und Projekten. Lerne wichtige Shortcuts und Funktionen zum Bearbeiten von Text kennen und erfahre, wie du mit Checkpoints sichere Zwischenstände deiner Arbeit anlegst.
+Eine kleine Tour durch die Benutzeroberfläche von Visual Studio Code, gefolgt von grundlegenden Hinweisen zur Arbeit mit Dateien, Ordnern und Projekten. Lerne wichtige Shortcuts und Funktionen zum Bearbeiten von Text kennen, erfahre, wie du mit Checkpoints sichere Zwischenstände deiner Arbeit anlegst, und gib VS Code ein Farbschema, das dir gefällt.
 </p>
 
 Wenn du den Workspace öffnest, siehst du die Entwicklungsumgebung Visual Studio Code:
@@ -181,7 +181,7 @@ Der Checkpoint wird dann gespeichert:
 <!-- tutorial-screenshot
 press: Enter
 wait-for-text: Checkpoint 1
-move-mouse: selector:.monaco-editor .view-lines
+move-mouse: selector:.editor-group-container .monaco-editor .view-lines
 sleep: 1
 -->
 
@@ -212,3 +212,175 @@ Wenn du sicher im Umgang mit Git bist, kannst du auch direkt Git verwenden, um d
 Gerade am Anfang kann es sein, dass du beim Tippen, Markieren und Navigieren in einer Datei noch relativ langsam bist. Das ist völlig normal: Mit der Zeit kommt die Übung. 🤠 Wenn du etwas Erfahrung gesammelt hast, bist du mit der Tastatur oft schneller, als wenn du für jeden Arbeitsschritt erst zur Maus greifen musst.
 
 Im Hackschule Workspace ist dafür das **Keyboard-Tutorial** installiert: Klicke links in der Aktivitätsleiste auf das Tastatur-Symbol. In sieben Kapiteln übst du dort Navigieren, Markieren, Bearbeiten, Suchen und Ersetzen, mehrere Cursor und das Bearbeiten von Code. Was in den Kapiteln vorkommt, steht in der Aktivität [Keyboard-Tutorial](/keyboard); dort kannst du auch nachsehen lassen, welche Kapitel du schon geschafft hast.
+
+## VS Code nach deinem Geschmack
+
+Wie VS Code aussieht, bestimmst du selbst. Ein **Farbschema** (englisch *Color Theme*) legt fest, welche Farben der Editor, die Seitenleisten und dein Code bekommen. Viele Programmiererinnen und Programmierer probieren eine ganze Weile herum, bis sie ihr Lieblingsschema gefunden haben – und das lohnt sich: Wenn dir gefällt, was du siehst, arbeitest du lieber.
+
+### Ein Farbschema auswählen
+
+Drücke <kbd>Strg</kbd><kbd>K</kbd> und danach <kbd>Strg</kbd><kbd>T</kbd>. Es erscheint eine Liste aller Farbschemata, die installiert sind. Mit den Pfeiltasten wanderst du durch die Liste, und VS Code zeigt dir sofort, wie das jeweilige Schema aussieht. Du kannst auch einen Namen tippen, um die Liste zu filtern. Mit <kbd>Enter</kbd> übernimmst du ein Schema, mit <kbd>Esc</kbd> bleibt alles, wie es war.
+
+<!-- tutorial-screenshot
+# farben.py öffnen, die Liste der Farbschemata zeigt Monokai als Vorschau
+write-file: checkpoint-test/farben.py <- file:farben.py.txt
+open-file: farben.py
+click: Checkpoints
+press: Control+K
+press: Control+T
+type: Monokai
+sleep: 1.5
+-->
+
+<img src='theme-picker.webp' class='full' alt='Die Liste der Farbschemata ist geöffnet, Monokai ist ausgewählt und schon als Vorschau zu sehen.'>
+
+Die Liste findest du auch über das Zahnrad links unten unter »Themes« › »Color Theme«. Der Workspace startet mit **Dark 2026**. Diese Farbschemata sind unter anderem schon dabei:
+
+<div class='screen-gallery'>
+<!-- tutorial-screenshot
+# Farbschema Light 2026 (die Vorschau von eben verwerfen)
+press: Escape
+press: Control+K
+press: Control+T
+type: Light 2026
+sleep: 1
+press: Enter
+sleep: 1.5
+-->
+<figure><img src='theme-light-2026.webp' alt='VS Code im hellen Farbschema Light 2026.'><figcaption><b>Light 2026</b>, das helle Gegenstück</figcaption></figure>
+<!-- tutorial-screenshot
+# Farbschema Monokai
+press: Control+K
+press: Control+T
+type: Monokai
+sleep: 1
+press: Enter
+sleep: 1.5
+-->
+<figure><img src='theme-monokai.webp' alt='VS Code im Farbschema Monokai: kräftige Farben auf dunklem Grau.'><figcaption><b>Monokai</b>, ein Klassiker</figcaption></figure>
+<!-- tutorial-screenshot
+# Farbschema Solarized Light
+press: Control+K
+press: Control+T
+type: Solarized Light
+sleep: 1
+press: Enter
+sleep: 1.5
+-->
+<figure><img src='theme-solarized-light.webp' alt='VS Code im Farbschema Solarized Light auf cremefarbenem Hintergrund.'><figcaption><b>Solarized Light</b>, warm und ruhig</figcaption></figure>
+<!-- tutorial-screenshot
+# Farbschema Red
+press: Control+K
+press: Control+T
+type: Red
+sleep: 1
+press: Enter
+sleep: 1.5
+-->
+<figure><img src='theme-red.webp' alt='VS Code im Farbschema Red: alles in dunklen Rottönen.'><figcaption><b>Red</b>, für Mutige</figcaption></figure>
+</div>
+
+### Neue Farbschemata aus dem Marketplace
+
+Noch viel mehr Farbschemata gibt es als Erweiterungen. Öffne die Erweiterungen mit <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd> und tippe den Namen eines Farbschemas ins Suchfeld, zum Beispiel `Dracula`. Wenn du einfach stöbern möchtest, suche nach `theme`. Mit »Install« installierst du ein Farbschema; danach findest du es mit <kbd>Strg</kbd><kbd>K</kbd> <kbd>Strg</kbd><kbd>T</kbd> in der Liste.
+
+<!-- tutorial-screenshot
+# Erweiterungen: Suche nach Dracula, wieder in Dark 2026
+press: Control+K
+press: Control+T
+type: Dark 2026
+sleep: 1
+press: Enter
+sleep: 1
+press: Control+Shift+X
+click: selector:.extensions-viewlet .suggest-input-container
+type: Dracula
+wait-for-text: Dracula Theme Official
+move-mouse: selector:.editor-group-container .monaco-editor .view-lines
+sleep: 1.5
+-->
+
+<img src='theme-marketplace.webp' class='full' alt='In den Erweiterungen ergibt die Suche nach Dracula mehrere Farbschemata, darunter Dracula Theme Official, jedes mit dem Button Install.'>
+
+Ein paar beliebte Farbschemata zur Inspiration. Unter jedem Bild steht, wonach du in den Erweiterungen suchen kannst:
+
+<div class='screen-gallery'>
+<!-- tutorial-screenshot
+# Farbschema Dracula Theme
+hook: install dracula-theme.theme-dracula
+open-file: farben.py
+press: Control+K
+press: Control+T
+type: Dracula Theme
+sleep: 1
+press: Enter
+sleep: 1.5
+-->
+<figure><img src='theme-dracula.webp' alt='VS Code im Farbschema Dracula: Pink, Lila und Grün auf dunklem Grund.'><figcaption><b>Dracula</b><code>Dracula Theme Official</code></figcaption></figure>
+<!-- tutorial-screenshot
+# Farbschema One Dark Pro
+hook: install zhuangtongfa.material-theme
+open-file: farben.py
+press: Control+K
+press: Control+T
+type: One Dark Pro
+sleep: 1
+press: Enter
+sleep: 1.5
+-->
+<figure><img src='theme-one-dark-pro.webp' alt='VS Code im Farbschema One Dark Pro.'><figcaption><b>One Dark Pro</b><code>One Dark Pro</code></figcaption></figure>
+<!-- tutorial-screenshot
+# Farbschema Tokyo Night
+hook: install enkia.tokyo-night
+open-file: farben.py
+press: Control+K
+press: Control+T
+type: Tokyo Night
+sleep: 1
+press: Enter
+sleep: 1.5
+-->
+<figure><img src='theme-tokyo-night.webp' alt='VS Code im Farbschema Tokyo Night in Blau- und Violetttönen.'><figcaption><b>Tokyo Night</b><code>Tokyo Night</code></figcaption></figure>
+<!-- tutorial-screenshot
+# Farbschema Catppuccin Mocha
+hook: install Catppuccin.catppuccin-vsc
+open-file: farben.py
+press: Control+K
+press: Control+T
+type: Catppuccin Mocha
+sleep: 1
+press: Enter
+sleep: 1.5
+-->
+<figure><img src='theme-catppuccin.webp' alt='VS Code im Farbschema Catppuccin Mocha in sanften Pastellfarben auf dunklem Grund.'><figcaption><b>Catppuccin</b><code>Catppuccin for VSCode</code></figcaption></figure>
+<!-- tutorial-screenshot
+# Farbschema Shades of Purple
+hook: install ahmadawais.shades-of-purple
+open-file: farben.py
+press: Control+K
+press: Control+T
+type: Shades of Purple
+sleep: 1
+press: Enter
+sleep: 1.5
+-->
+<figure><img src='theme-shades-of-purple.webp' alt='VS Code im Farbschema Shades of Purple.'><figcaption><b>Shades of Purple</b><code>Shades of Purple</code></figcaption></figure>
+<!-- tutorial-screenshot
+# Farbschema GitHub Light Default
+hook: install GitHub.github-vscode-theme
+open-file: farben.py
+press: Control+K
+press: Control+T
+type: GitHub Light Default
+sleep: 1
+press: Enter
+sleep: 1.5
+-->
+<figure><img src='theme-github-light.webp' alt='VS Code im hellen Farbschema GitHub Light.'><figcaption><b>GitHub Light</b><code>GitHub Theme</code></figcaption></figure>
+</div>
+
+<div class='hint'>
+<p>
+Erweiterungen schreiben andere Entwicklerinnen und Entwickler. Farbschemata sind harmlos, aber installiere trotzdem lieber Erweiterungen, die schon viele andere benutzen, und lies kurz die Beschreibung. Was dir nicht gefällt, kannst du in den Erweiterungen mit »Uninstall« wieder entfernen.
+</p>
+</div>
