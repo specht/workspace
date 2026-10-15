@@ -29,6 +29,7 @@ require './include/tic80_storage.rb'
 require './include/user_files.rb'
 require './include/task_html.rb'
 require './include/rate_limit.rb'
+require './include/tcp_console.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
@@ -2212,7 +2213,7 @@ class Main < Sinatra::Base
             halt 404
         end
         origin_sensitive = %w(POST PUT PATCH DELETE).include?(request.request_method) ||
-            ['/ws', '/ws_codebites', '/logout'].include?(request.path)
+            ['/ws', '/ws_codebites', '/ws_tcp_console', '/logout'].include?(request.path)
         if origin_sensitive && !Authentication.same_origin?(
             :origin => request.env['HTTP_ORIGIN'],
             :referer => request.env['HTTP_REFERER'],
@@ -6795,6 +6796,81 @@ class Main < Sinatra::Base
             content_type :json
             halt 422, { :error => 'too_large', :max_states => SubsetTrace::MAX_STATES }.to_json
         end
+    end
+    # TCP-Konsole (/tcp-console, TcpConsole): one connection per person at a
+    # time, started from their own Workspace, at most TCP_CONSOLE_CONNECTS
+    # per person and ten minutes.
+    TCP_CONSOLE_CONNECTS = RateLimit.new(:limit => 30, :period => 600)
+    @@tcp_console_sessions = {}
+    @@tcp_console_mutex = Mutex.new
+
+    get '/ws_tcp_console' do
+        halt 403 unless user_logged_in?
+        halt 400 unless Faye::WebSocket.websocket?(request.env)
+
+        ws = Faye::WebSocket.new(request.env)
+        email = @session_user[:email]
+        fs_tag = fs_tag_for_email(email)
+        session = nil
+        say = ->(event) { ws.send(event.to_json) rescue nil }
+
+        close_session = lambda do
+            @@tcp_console_mutex.synchronize do
+                @@tcp_console_sessions.delete(email) if @@tcp_console_sessions[email].equal?(session)
+            end
+            session&.close
+            session = nil
+        end
+
+        ws.on(:open) { |_| say.({ :hello => true, :idle => TcpConsole::IDLE_SECONDS, :max_seconds => TcpConsole::MAX_SECONDS }) }
+
+        ws.on(:message) do |message|
+            data = JSON.parse(message.data.to_s) rescue {}
+            data = {} unless data.is_a?(Hash)
+            case data['action']
+            when 'open'
+                host = data['host'].to_s.strip
+                port = TcpConsole.port(data['port'])
+                tls = data['tls'] == true
+                if !TcpConsole.valid_host?(host) || port.nil?
+                    say.({ :error => 'invalid' })
+                    next
+                end
+                unless DEVELOPMENT || TCP_CONSOLE_CONNECTS.allow?(email)
+                    say.({ :error => 'rate_limited' })
+                    next
+                end
+                close_session.call
+                Thread.new do
+                    unless workspace_runtime.workspace_state(fs_tag, :timeout => 10)[:running]
+                        say.({ :error => 'not_running' })
+                        next
+                    end
+                    started = TcpConsole::Session.new(TcpConsole.command(fs_tag, host, port, tls, :uid => GUEST_UID)) { |event| say.(event) }
+                    session = started
+                    # One connection per person: one in another tab ends.
+                    previous = @@tcp_console_mutex.synchronize do
+                        old = @@tcp_console_sessions[email]
+                        @@tcp_console_sessions[email] = started
+                        old
+                    end
+                    previous&.close
+                rescue StandardError => e
+                    STDERR.puts "TCP-Konsole: #{e.class}: #{e.message}"
+                    say.({ :error => 'other' })
+                end
+            when 'send'
+                session&.send_line(data['line'])
+            when 'close'
+                close_session.call
+            when 'ping'
+                # nginx ends a websocket that stays silent for a minute.
+                say.({ :pong => true })
+            end
+        end
+
+        ws.on(:close) { |_| close_session.call }
+        ws.rack_response
     end
 
     def print_codebites_admin_table
