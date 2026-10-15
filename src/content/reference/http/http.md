@@ -91,6 +91,7 @@ Die erste Ziffer sagt, wie es ausgegangen ist: **2** geklappt, **3** steht woand
 <tr><td><code>200 OK</code></td><td>Alles in Ordnung, hier ist der Inhalt.</td></tr>
 <tr><td><code>201 Created</code> · <code>204 No Content</code></td><td>etwas angelegt · erledigt, ohne Inhalt in der Antwort</td></tr>
 <tr><td><code>301 Moved Permanently</code> · <code>302 Found</code></td><td>Die Seite steht unter einer anderen Adresse, für immer · vorübergehend. Die neue Adresse steht im Header <code>Location</code>; der Browser folgt ihr von selbst.</td></tr>
+<tr><td><code>303 See Other</code></td><td>Die Antwort auf ein <code>POST</code>: »Sieh unter <code>Location</code> nach.« Der Browser holt diese Adresse mit <code>GET</code>, und Neuladen schickt das Formular nicht noch einmal.</td></tr>
 <tr><td><code>304 Not Modified</code></td><td>Die Kopie im Browser ist noch aktuell, nichts Neues zu schicken.</td></tr>
 <tr><td><code>400 Bad Request</code></td><td>Die Anfrage ergibt keinen Sinn, etwa kaputtes JSON.</td></tr>
 <tr><td><code>401 Unauthorized</code> · <code>403 Forbidden</code></td><td>erst anmelden · angemeldet, aber nicht erlaubt</td></tr>
@@ -119,7 +120,7 @@ Header sind unabhängig von Groß- und Kleinschreibung: `content-type` ist dasse
 <tr><td><code>Accept: text/html</code></td><td>Anfrage: was das Programm gern zurückbekäme</td></tr>
 <tr><td><code>Content-Type: text/html; charset=utf-8</code></td><td>Was im Inhalt steht: <code>text/html</code>, <code>text/css</code>, <code>text/javascript</code>, <code>application/json</code>, <code>image/png</code> …; bei Text dazu die Kodierung</td></tr>
 <tr><td><code>Content-Length: 196</code></td><td>Länge des Inhalts in Bytes</td></tr>
-<tr><td><code>Location: /neu</code></td><td>Antwort: wohin der Browser bei 301, 302 oder 201 gehen soll</td></tr>
+<tr><td><code>Location: /neu</code></td><td>Antwort: wohin der Browser bei 301, 302, 303 oder 201 gehen soll</td></tr>
 <tr><td><code>Set-Cookie: sid=…</code> · <code>Cookie: sid=…</code></td><td>Die Antwort legt einen Cookie im Browser ab · der Browser schickt ihn bei jeder weiteren Anfrage an denselben Server mit. So erkennt ein Server, wer angemeldet ist.</td></tr>
 <tr><td><code>Cache-Control: no-cache</code></td><td>wie lange der Browser eine Kopie aufheben darf</td></tr>
 <tr><td><code>Connection: close</code></td><td>Nach dieser Antwort schließt der Server die Verbindung. Ohne den Header bleibt sie für weitere Anfragen offen.</td></tr>

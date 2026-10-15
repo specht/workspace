@@ -17,7 +17,7 @@ reference: [http]
 # Ein eigener Webserver
 
 <p class='abstract'>
-Jedes Mal, wenn du eine Webseite öffnest, schickt dein Browser eine Anfrage an einen Webserver, und der schickt die Seite zurück. In dieser Aktivität schreibst du so einen Server selbst, in Ruby und ohne fertige Bibliothek: Er wartet auf Verbindungen, liest die Anfrage, antwortet, liefert HTML-Seiten aus und zählt seine Besuche. Am Ende teilst du ihn mit deiner Klasse.
+Jedes Mal, wenn du eine Webseite öffnest, schickt dein Browser eine Anfrage an einen Webserver, und der schickt die Seite zurück. In dieser Aktivität schreibst du so einen Server selbst, in Ruby und ohne fertige Bibliothek: Er wartet auf Verbindungen, liest die Anfrage, antwortet, liefert HTML-Seiten aus, zählt seine Besuche und nimmt Stimmen aus einem Formular an. Am Ende teilst du ihn mit deiner Klasse.
 </p>
 
 Auf der Seite [TCP/IP](/tcpip) hast du mit `netcat` über Port 1234 Text zwischen zwei Workspaces geschickt. Ein Webserver macht im Grunde dasselbe: Er wartet an einem Port auf eine TCP-Verbindung, liest Text und schickt Text zurück. Damit Browser und Server sich verstehen, folgt der Text einer festen Form, dem **HTTP**-Protokoll. Der Live Server, mit dem du sonst Webseiten ansiehst, ist genau so ein Programm. Hier baust du ihn selbst und siehst, was er tut.
@@ -529,15 +529,246 @@ sleep: 2
 
 Im Browser funktioniert es genauso: Hänge `/hello?name=…` an die Adresse aus »Forwarded Address«.
 
-_uses(url, http-formulare)
+_uses(url)
 
 _task(parameter)
 
 _task(mutex)
 
+## Ein Formular annehmen
+
+Bisher hat der Browser nur gefragt. Ein Formular kann auch etwas schicken, zum Beispiel eine Stimme in einer Umfrage. Lege in `public` die Datei `poll.html` an:
+
+```html_copy
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Umfrage</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Umfrage</h1>
+  <form method="post" action="vote">
+    <p>Was isst du in der Mensa am liebsten?</p>
+    <p><label><input type="radio" name="choice" value="pizza" required> Pizza</label></p>
+    <p><label><input type="radio" name="choice" value="pasta"> Nudeln</label></p>
+    <p><label><input type="radio" name="choice" value="curry"> Curry</label></p>
+    <p><label><input type="radio" name="choice" value="salad"> Salat</label></p>
+    <button>Abstimmen</button>
+  </form>
+</body>
+</html>
+```
+
+Wegen `method="post"` stehen die Felder nicht in der Adresse wie bei `/hello?name=Ada`. Sie kommen nach den Headern und der leeren Zeile, im **Body** der Anfrage. Wählt jemand »Curry« und klickt auf »Abstimmen«, schickt der Browser:
+
+```text
+POST /vote HTTP/1.1
+Host: localhost:8000
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 12
+
+choice=curry
+```
+
+Hinter `choice=curry` steht kein Zeilenumbruch. Mit `client.gets` würde der Server auf ein Zeilenende warten, das nie kommt. Er muss wissen, wie viele Bytes er lesen soll, und das steht im Header `Content-Length`. Darum hebt er die Header jetzt in einem Hash auf, statt sie zu überspringen:
+
+```ruby_copy
+require 'socket'
+require 'uri'
+
+# Welcher Content-Type zu welcher Endung gehört
+TYPES = {
+  '.html' => 'text/html; charset=utf-8',
+  '.css'  => 'text/css; charset=utf-8',
+  '.js'   => 'text/javascript; charset=utf-8',
+  '.png'  => 'image/png',
+  '.jpg'  => 'image/jpeg',
+  '.txt'  => 'text/plain; charset=utf-8',
+}
+
+PUBLIC_DIR = File.expand_path('public', __dir__)
+
+# Der Zähler gehört dem Server, nicht einer Verbindung: Alle Threads
+# benutzen ihn, darum zählt immer nur einer auf einmal (Mutex).
+$visits = 0
+$visits_lock = Mutex.new
+
+# Die Umfrage: was im Formular steht, wie es auf der Seite heißt, und die
+# Stimmen dazu, ebenfalls geschützt durch einen Lock
+OPTIONS = { 'pizza' => 'Pizza', 'pasta' => 'Nudeln', 'curry' => 'Curry', 'salad' => 'Salat' }
+$votes = Hash.new(0)
+$votes_lock = Mutex.new
+
+# Schickt eine vollständige HTTP-Antwort und schließt die Verbindung
+def respond(client, status, type, body)
+  client.print "HTTP/1.1 #{status}\r\n"
+  client.print "Content-Type: #{type}\r\n"
+  client.print "Content-Length: #{body.bytesize}\r\n"
+  client.print "Connection: close\r\n"
+  client.print "\r\n"
+  client.print body
+  client.close
+end
+
+# Schickt den Browser weiter zu einer anderen Adresse: »Sieh dort nach«
+def redirect(client, location)
+  client.print "HTTP/1.1 303 See Other\r\n"
+  client.print "Location: #{location}\r\n"
+  client.print "Content-Length: 0\r\n"
+  client.print "Connection: close\r\n"
+  client.print "\r\n"
+  client.close
+end
+
+# Eine Datei aus dem Ordner public, aber nie etwas außerhalb davon
+def serve_file(client, path)
+  path = '/index.html' if path == '/'
+  file = File.expand_path('.' + path, PUBLIC_DIR)
+  if file.start_with?(PUBLIC_DIR + '/') && File.file?(file)
+    type = TYPES[File.extname(file)] || 'application/octet-stream'
+    respond(client, '200 OK', type, File.binread(file))
+  else
+    respond(client, '404 Not Found', 'text/plain; charset=utf-8',
+            "Die Seite #{path} gibt es nicht.\n")
+  end
+end
+
+server = TCPServer.new(8000)
+puts "Der Server wartet auf Port 8000 ..."
+
+loop do
+  Thread.new(server.accept) do |client|
+    request_line = client.gets.to_s
+    method, target, version = request_line.split(' ')
+    puts "#{method} #{target}"
+    # Die Header in einen Hash: »Name: Wert«
+    headers = {}
+    while (line = client.gets) && line != "\r\n"
+      name, value = line.split(':', 2)
+      headers[name.strip.downcase] = value.to_s.strip
+    end
+
+    # /hello?name=Ada: der Pfad und die Parameter nach dem Fragezeichen
+    path, query = target.to_s.split('?', 2)
+    params = URI.decode_www_form(query.to_s).to_h
+
+    case path
+    when '/time'
+      respond(client, '200 OK', 'text/plain; charset=utf-8',
+              "Es ist #{Time.now.strftime('%H:%M:%S')} Uhr.\n")
+    when '/hello'
+      name = params['name'] || 'Unbekannt'
+      respond(client, '200 OK', 'text/plain; charset=utf-8', "Hallo, #{name}!\n")
+    when '/visits'
+      count = $visits_lock.synchronize { $visits += 1 }
+      respond(client, '200 OK', 'text/plain; charset=utf-8',
+              "Du bist Besuch Nummer #{count}.\n")
+    when '/vote'
+      if method != 'POST'
+        respond(client, '405 Method Not Allowed', 'text/plain; charset=utf-8',
+                "Abstimmen geht nur mit POST.\n")
+        next
+      end
+      # Nach der leeren Zeile kommt der Inhalt, genau Content-Length Bytes
+      body = client.read(headers['content-length'].to_i).to_s
+      choice = URI.decode_www_form(body).to_h['choice']
+      if OPTIONS.key?(choice)
+        $votes_lock.synchronize { $votes[choice] += 1 }
+        redirect(client, 'results')
+      else
+        respond(client, '400 Bad Request', 'text/plain; charset=utf-8',
+                "Diese Antwort gibt es nicht.\n")
+      end
+    when '/results'
+      rows = $votes_lock.synchronize do
+        OPTIONS.map { |key, label| "<li>#{label}: #{$votes[key]}</li>" }.join("\n")
+      end
+      respond(client, '200 OK', 'text/html; charset=utf-8',
+              "<!DOCTYPE html><meta charset='utf-8'><link rel='stylesheet' href='style.css'>" \
+              "<h1>Ergebnis</h1><ul>#{rows}</ul><p><a href='poll.html'>Noch einmal abstimmen</a></p>\n")
+    else
+      serve_file(client, path)
+    end
+  end
+end
+```
+
+Was neu ist:
+
+- Jede Header-Zeile wird an ihrem ersten `:` geteilt. Der Name kommt klein geschrieben in den Hash, weil HTTP Groß- und Kleinschreibung bei Header-Namen nicht unterscheidet: `headers['content-length']` findet `Content-Length` und `content-length`.
+- `/vote` nimmt nur `POST` an und liest mit `client.read` genau so viele Bytes, wie `Content-Length` sagt. Der Body hat dieselbe Form wie die Parameter in einer Adresse, darum hilft wieder `URI.decode_www_form`.
+- Der Server zählt nur Antworten, die in `OPTIONS` stehen. Was ankommt, muss nicht aus deinem Formular stammen: Jeder kann mit `curl` an `/vote` schicken, was er will.
+- Die Stimmen zählt er unter einem eigenen Lock, aus demselben Grund wie die Besuche.
+
+Nach einer Stimme zeigt der Server nicht gleich das Ergebnis, sondern antwortet mit **`303 See Other`** und dem Header `Location: results`: »Sieh dort nach.« Der Browser holt dann `/results` mit `GET`. Der Umweg hat einen Grund: Wäre das Ergebnis die Antwort auf das `POST`, würde der Browser beim Neuladen das Formular noch einmal schicken, und die Stimme zählte doppelt. So lädt er nur die Ergebnisseite neu. Das Muster heißt **Post/Redirect/Get**. `results` ohne `/` davor ist eine relative Adresse wie in einem Link; sie funktioniert auch über die Weiterleitung des Workspace.
+
+Starte den Server neu und stimme im zweiten Terminal mit `curl` ab. `-d` schickt Daten mit `POST`, wie das Formular:
+
+```bash
+curl -i -d choice=curry localhost:8000/vote
+curl localhost:8000/results
+```
+
+<!-- tutorial-screenshot
+# Stufe 6: eine Stimme mit curl, 303 und das Ergebnis
+write-file: webserver/public/poll.html <- file:stufen/public/poll.html
+write-file: webserver/server.rb <- file:stufen/6.rb
+terminal-open
+terminal-maximize
+press: Alt+ArrowLeft
+sleep: 1
+press: Control+C
+sleep: 1
+press: Control+L
+type: ruby server.rb
+press: Enter
+sleep: 2
+terminal-run: clear
+sleep: 1
+terminal-run: curl -i -d choice=curry localhost:8000/vote
+sleep: 1
+terminal-run: curl localhost:8000/results
+sleep: 2
+-->
+<img class='full' src='post-curl.webp' alt='Rechts antwortet der Server auf die Stimme mit 303 See Other und Location: results, danach zeigt curl die Ergebnisseite mit Curry: 1; links stehen POST /vote und GET /results.'>
+
+Öffne jetzt im Browser die Adresse aus »Forwarded Address« mit `/poll.html` dahinter, wähle etwas und stimme ab:
+
+<!-- tutorial-screenshot
+preview-port: 8000 /poll.html
+tab: preview
+wait-for-text: Abstimmen
+click: Pizza
+sleep: 1
+-->
+<img class='full border' src='umfrage.webp' alt='Im Browser die Seite »Umfrage« mit der Frage nach dem liebsten Mensa-Essen, vier Antworten, Pizza ist ausgewählt, und dem Knopf »Abstimmen«.'>
+
+<!-- tutorial-screenshot
+preview-port: 8000 /poll.html
+tab: preview
+wait-for-text: Abstimmen
+click: Pizza
+click: Abstimmen
+wait-for-text: Ergebnis
+sleep: 1
+-->
+<img class='full border' src='ergebnis.webp' alt='Im Browser die Seite »Ergebnis«: Pizza 1, Nudeln 0, Curry 1, Salat 0, darunter der Link »Noch einmal abstimmen«.'>
+
+Lade die Ergebnisseite neu: Die Zahlen bleiben gleich. Im linken Terminal siehst du, dass der Browser nur `GET /results` geschickt hat.
+
+_uses(http-methoden, http-formulare)
+
+_task(umfrage)
+
+_task(body)
+
+_task(neu-laden)
+
 ## Mit der Klasse teilen
 
-Bisher erreichst nur du deinen Server. Um ihn deiner Klasse zu zeigen, öffne dein [Profil](/profil) und gib unter »Shared Live Apps« Port 8000 frei. Du bekommst eine Adresse, die alle in deiner Gruppe öffnen können, solange dein Server läuft. Lass ein paar Leute `/visits` aufrufen: Der Zähler zählt alle, egal von wo sie kommen.
+Bisher erreichst nur du deinen Server. Um ihn deiner Klasse zu zeigen, öffne dein [Profil](/profil) und gib unter »Shared Live Apps« Port 8000 frei. Du bekommst eine Adresse, die alle in deiner Gruppe öffnen können, solange dein Server läuft. Lass ein paar Leute `/visits` aufrufen und unter `/poll.html` abstimmen: Der Server zählt alle, egal von wo sie kommen.
 
 _task(abgabe)
 

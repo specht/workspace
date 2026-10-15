@@ -12,6 +12,12 @@
       "state_hash": "ca8a9c02a54112e466eb3a8bbb928c3128c8e0c8a974f2a2835550751443005b",
       "workspace_look": "4.138.0-ls366"
     },
+    "ergebnis.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "fcbab3125d07b836780546b8b5e56f617909356aa8020bc7e6b2ad3681ff4dcb",
+      "state_hash": "80e61ef82fa0e0f277b590cc4f0c742b2132b1768721cce911019d2b7a780976",
+      "workspace_look": "4.138.0-ls366"
+    },
     "erste-anfrage.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "4852966f73bb28ed5c4d63c11e45a40463a5e60de0ca16478e27066040ece45f",
@@ -34,6 +40,18 @@
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "964402f918a10321a90cd8732082ac0b7e45e885e47f2e32ef285297eac3b3e9",
       "state_hash": "160a031f8eadb537d52093c120e9cc40401aadca2ffff6445d54007ebbcd1330",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "post-curl.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "0bf658ca4bb07ecf716042366461cb770792799f76094402bdfae2ef00a204fe",
+      "state_hash": "71706475ffe30d36e5cbd5feefba0111bf8bb97b45160f9b69af52dbd4e5948c",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "umfrage.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "5f8ae2886e41e4dac5ece6a3390488207a2ab375342ad9d468abd623bc7b5871",
+      "state_hash": "2f581731b128018d01dfd3a47a467653ed472801d4c228d80c2f0bbb57f44fe3",
       "workspace_look": "4.138.0-ls366"
     }
   },
