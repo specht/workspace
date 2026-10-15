@@ -1,0 +1,13 @@
+Lernende fragen eine echte API, den freien Wetterdienst Open-Meteo: erst mit `curl` und `jq`, dann aus Ruby mit Fehlerbehandlung und Cache, zum Schluss mit `fetch` aus einer eigenen Webseite. Die Aktivität schließt an TCP/IP an und ist die Gegenseite zu »Ein eigener Webserver«: hier der Client, dort der Server. HTML aus »Statische Webseiten« hilft bei der Wetterseite.
+
+<table class='table'>
+<tr><th>Ablauf</th><td>Erste Doppelstunde: was eine API ist, Geocoding und Wetter mit <code>curl</code> und <code>jq</code>, die Query, Fehler (kein Treffer, 400), <code>wetter.rb</code>. Zweite: Grenzen und Cache, die Wetterseite mit <code>fetch</code> und »Go Live«, CORS, eigene Erweiterungen.</td></tr>
+<tr><th>Dateien</th><td>In <code>/workspace/wetter</code>: <code>wetter.rb</code> (mit dem Ordner <code>cache</code>) und <code>index.html</code>. Die Stufen liegen unter <code>src/content/wetter/stufen/</code> (<code>wetter1.rb</code> bis <code>wetter3.rb</code>, <code>index.html</code>).</td></tr>
+<tr><th>Grenzen der API</th><td>Open-Meteo erlaubt kostenlos höchstens 600 Anfragen pro Minute, 5.000 pro Stunde und 10.000 pro Tag, nur für nicht kommerzielle Zwecke und mit Nennung der Quelle (CC BY 4.0). Alle Workspaces einer Schule erreichen das Netz über dieselbe Adresse und teilen sich diese Grenzen. Eine Schleife, die jede Sekunde fragt, kann das Tageskontingent der Schule in Minuten aufbrauchen; die Seite erklärt das und führt den Cache ein.</td></tr>
+</table>
+
+**Was schiefgeht.** `ruby wetter.rb` ohne Ort zeigt Berlin. Ein Ort mit Leerzeichen gehört in Anführungszeichen: `ruby wetter.rb "Frankfurt am Main"`. Fragt man nach einem kleinen Ort, findet die Geocoding-API manchmal einen gleichnamigen anderswo; der erste Treffer ist meist der größte. Die Wetterseite lädt nur über »Go Live« oder einen anderen Webserver; als Datei geöffnet funktioniert `fetch` zwar, aber Fehler sind dann schwerer zu finden. Die Werte ändern sich mit dem Wetter: Aufgaben fragen darum nur nach dem Breitengrad von Berlin, der sich nicht ändert.
+
+**Die Aufgaben.** »Wo liegt Berlin?« ist eine Rechenaufgabe mit 52,52. »Das Wetter aus Ruby«, »Ein Cache« und »Die Wetterseite« lesen `wetter.rb` und `index.html` und suchen die beiden APIs, `JSON.parse` und `ARGV`, `File.write` und `File.mtime`, `fetch`, `.json()` und die Nennung von Open-Meteo. »Ein Ort, den es nicht gibt« ist eine Vorhersage (die API antwortet mit 200 und ohne `results`), die übrigen fragen nach den Parametern für sieben Tage und wohin ein API-Schlüssel gehört.
+
+**Weiter.** Wer mehr will: stündliche Werte als Kurve auf einem `<canvas>`, ein Vergleich mehrerer Städte oder eine andere freie API. Über API-Schlüssel und warum sie nicht in eine Webseite gehören, lohnt sich ein kurzes Gespräch.

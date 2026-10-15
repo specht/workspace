@@ -1,0 +1,35 @@
+{
+  "screenshots": {
+    "cache.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "eb49b8edd05ccd1c2e7b1b5580411217404a60fa31a74c6d3fc6012d7a551653",
+      "state_hash": "39d9adf20c3689bfff8b4c0bbc682bbd79d360d3bff18fc5890a1a8bee5ca914",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "geocoding.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "7b9e4145d299a43b1324dbc18e3629c95984a8fb03a4139bef9c74e660155ad2",
+      "state_hash": "2f9e4fac8d0143d742af8682946e98ed4cd9c607470dcff949f88de00fa67005",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "ruby.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "c2fc4f531133b11fbba454bf2648e9f63533661f251308cac1c5d5cbc38696c8",
+      "state_hash": "dd23d73f54c894d302e26499045392563076390ff64ffe9a1fd9216ecef59e16",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "vorhersage.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "cc3daf2749fe4750ef2b4bf96acd5f6fb736edb49a495d1e66be9f41f9a9a9e9",
+      "state_hash": "b79fbb05d10dcdb3e2a6ad95fb68fa41436dc60b9f8a8bcf476dfb695dbf514b",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "wetterseite.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "9af9ae079a4770e328ce508b6c9a4b4d862443272d4124acb44c574e0e350bbb",
+      "state_hash": "cd6204ca84ede0b258793400978e9b249495470bc5ed6e24748560291e162882",
+      "workspace_look": "4.138.0-ls366"
+    }
+  },
+  "version": 1
+}

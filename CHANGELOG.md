@@ -347,6 +347,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Startseite, CSS und Schlagwörtern, dann `hugo` und `public` zum
   Veröffentlichen auf der eigenen Subdomain. Neun Aufgaben, Notiz für
   Lehrkräfte, ohne fertiges Theme.
+- Neue Aktivität »Daten aus dem Netz« unter »Web & Schnittstellen«: der freie
+  Wetterdienst Open-Meteo als Beispiel für eine API, erst mit `curl` und
+  `jq`, dann aus Ruby mit Fehlerbehandlung und Cache, zum Schluss eine eigene
+  Wetterseite mit `fetch`. Erklärt Query-Parameter, Fehler, die Grenzen einer
+  API (alle Workspaces einer Schule teilen sich eine Adresse), CORS und
+  warum API-Schlüssel nicht in eine Webseite gehören. Acht Aufgaben, Notiz
+  für Lehrkräfte. Die Reihen im Abschnitt: Webseiten (HTML & CSS, Hugo,
+  Svelte), dann Netzwerk (Daten aus dem Netz, Webserver, Pixelwand).
 
 ### Geändert
 
