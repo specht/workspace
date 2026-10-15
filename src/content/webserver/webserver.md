@@ -676,7 +676,7 @@ loop do
       choice = URI.decode_www_form(body).to_h['choice']
       if OPTIONS.key?(choice)
         $votes_lock.synchronize { $votes[choice] += 1 }
-        redirect(client, 'results')
+        redirect(client, '/results')
       else
         respond(client, '400 Bad Request', 'text/plain; charset=utf-8',
                 "Diese Antwort gibt es nicht.\n")
@@ -702,7 +702,7 @@ Was neu ist:
 - Der Server zählt nur Antworten, die in `OPTIONS` stehen. Was ankommt, muss nicht aus deinem Formular stammen: Jeder kann mit `curl` an `/vote` schicken, was er will.
 - Die Stimmen zählt er unter einem eigenen Lock, aus demselben Grund wie die Besuche.
 
-Nach einer Stimme zeigt der Server nicht gleich das Ergebnis, sondern antwortet mit **`303 See Other`** und dem Header `Location: results`: »Sieh dort nach.« Der Browser holt dann `/results` mit `GET`. Der Umweg hat einen Grund: Wäre das Ergebnis die Antwort auf das `POST`, würde der Browser beim Neuladen das Formular noch einmal schicken, und die Stimme zählte doppelt. So lädt er nur die Ergebnisseite neu. Das Muster heißt **Post/Redirect/Get**. `results` ohne `/` davor ist eine relative Adresse wie in einem Link; sie funktioniert auch über die Weiterleitung des Workspace.
+Nach einer Stimme zeigt der Server nicht gleich das Ergebnis, sondern antwortet mit **`303 See Other`** und dem Header `Location: /results`: »Sieh dort nach.« Der Browser holt dann `/results` mit `GET`. Der Umweg hat einen Grund: Wäre das Ergebnis die Antwort auf das `POST`, würde der Browser beim Neuladen das Formular noch einmal schicken, und die Stimme zählte doppelt. So lädt er nur die Ergebnisseite neu. Das Muster heißt **Post/Redirect/Get**.
 
 Starte den Server neu und stimme im zweiten Terminal mit `curl` ab. `-d` schickt Daten mit `POST`, wie das Formular:
 
@@ -732,7 +732,7 @@ sleep: 1
 terminal-run: curl localhost:8000/results
 sleep: 2
 -->
-<img class='full' src='post-curl.webp' alt='Rechts antwortet der Server auf die Stimme mit 303 See Other und Location: results, danach zeigt curl die Ergebnisseite mit Curry: 1; links stehen POST /vote und GET /results.'>
+<img class='full' src='post-curl.webp' alt='Rechts antwortet der Server auf die Stimme mit 303 See Other und Location: /results, danach zeigt curl die Ergebnisseite mit Curry: 1; links stehen POST /vote und GET /results.'>
 
 Öffne jetzt im Browser die Adresse aus »Forwarded Address« mit `/poll.html` dahinter, wähle etwas und stimme ab:
 

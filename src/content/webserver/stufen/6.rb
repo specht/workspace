@@ -99,7 +99,7 @@ loop do
       choice = URI.decode_www_form(body).to_h['choice']
       if OPTIONS.key?(choice)
         $votes_lock.synchronize { $votes[choice] += 1 }
-        redirect(client, 'results')
+        redirect(client, '/results')
       else
         respond(client, '400 Bad Request', 'text/plain; charset=utf-8',
                 "Diese Antwort gibt es nicht.\n")
