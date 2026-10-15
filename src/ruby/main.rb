@@ -28,6 +28,7 @@ require './include/workspace_runtime.rb'
 require './include/tic80_storage.rb'
 require './include/user_files.rb'
 require './include/task_html.rb'
+require './include/rate_limit.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
@@ -2685,7 +2686,28 @@ class Main < Sinatra::Base
         user
     end
 
+    # Limits for the login: per client generously, because all Workspaces
+    # and classrooms of a school share one address; per address so tight
+    # that guessing a code stays hopeless (20 codes a day, 5 tries each,
+    # out of a million). Not in development, where the screenshot tool and
+    # the browser tests log in all day from one machine.
+    LOGIN_REQUESTS_PER_CLIENT = RateLimit.new(:limit => 120, :period => 600)
+    LOGIN_TRIES_PER_CLIENT = RateLimit.new(:limit => 300, :period => 600)
+    LOGIN_CODES_PER_ADDRESS = RateLimit.new(:limit => 20, :period => 24 * 3600)
+
+    # The browser's address: Traefik appends it to X-Forwarded-For (the last
+    # entry; earlier ones come from the client and prove nothing), nginx
+    # passes the header on. Without Traefik (development) the peer itself.
+    def client_ip
+        forwarded = request.env['HTTP_X_FORWARDED_FOR'].to_s.split(',').map(&:strip).reject(&:empty?)
+        forwarded.last || request.ip
+    end
+
     post '/api/request_login' do
+        unless DEVELOPMENT || LOGIN_REQUESTS_PER_CLIENT.allow?(client_ip)
+            content_type :json
+            halt 429, { :error => 'login_request_rate_limited' }.to_json
+        end
         Main.load_invitations()
         data = parse_request_data(:required_keys => [:email])
         email = data[:email].downcase.strip
@@ -2699,8 +2721,11 @@ class Main < Sinatra::Base
         end
 
         unless @@invitations.include?(email)
-            content_type :json
-            halt 404, { :error => 'no_invitation_found' }.to_json
+            # The same answer as for an invited address, so the login does
+            # not tell anyone who is invited. No mail goes out, and
+            # complete_login answers this tag like a wrong code.
+            respond(:ok => 'yay', :tag => RandomTag::generate(12))
+            return
         end
 
         user = ensure_user_account(email)
@@ -2747,6 +2772,7 @@ class Main < Sinatra::Base
                 if now - last_created_at < Authentication::LOGIN_REQUEST_RESEND_SECONDS
                     next { :rate_limited => true }
                 end
+                next { :rate_limited => true } unless DEVELOPMENT || LOGIN_CODES_PER_ADDRESS.allow?(email)
 
                 # Replace a nearly-expired request rather than handing the browser
                 # a code that may stop working a few seconds later.
@@ -2792,7 +2818,7 @@ class Main < Sinatra::Base
             if DEVELOPMENT
                 STDERR.puts 'Not sending login code email in development mode.'
             else
-                STDERR.puts "Sending login code email to invited user #{email}: #{login_request[:code]}"
+                STDERR.puts "Sending login code email to invited user #{email}"
                 deliver_mail do
                     to email
                     # bcc SMTP_FROM
@@ -2816,6 +2842,10 @@ class Main < Sinatra::Base
     end
 
     post '/api/complete_login' do
+        unless DEVELOPMENT || LOGIN_TRIES_PER_CLIENT.allow?(client_ip)
+            content_type :json
+            halt 429, { :error => 'login_rate_limited' }.to_json
+        end
         data = parse_request_data(:required_keys => [:tag, :code])
         tag = data[:tag].downcase.strip
         code = data[:code].strip
