@@ -1,17 +1,17 @@
 # Aufgaben zu »Eine Website mit Hugo«.
-# Format: docs/aufgaben.md. Die Website liegt in /workspace/aquarium.
+# Format: docs/aufgaben.md. Die Website liegt in /workspace/solar-system.
 format: 1
 activity: hugo
 tasks:
   - id: einstellungen
     title: Die Einstellungen
     prompt: |
-      Lege die Website `aquarium` an und gib ihr in `hugo.yaml` einen eigenen
+      Lege die Website `solar-system` an und gib ihr in `hugo.yaml` einen eigenen
       Titel, die Sprache Deutsch und `baseURL: /`, dann speichere.
-    file: aquarium/hugo.yaml
+    file: solar-system/hugo.yaml
     check:
       type: files
-      path: aquarium/hugo.yaml
+      path: solar-system/hugo.yaml
       expect:
         format: text
         contains:
@@ -22,20 +22,20 @@ tasks:
   - id: yaml-titel
     title: Ein Doppelpunkt zu viel
     prompt: |
-      In einer Front Matter steht `title: Haie: gefährlich oder nicht?`.
+      In einer Front Matter steht `title: Pluto: Planet oder nicht?`.
       Was passiert, wenn Hugo die Seite liest?
     check:
       type: choice
       options:
-        - Hugo meldet einen Fehler, weil nach `Haie` ein zweiter Doppelpunkt mit Leerzeichen kommt
-        - Der Titel ist »Haie«, der Rest geht verloren
-        - 'Der Titel ist »Haie: gefährlich oder nicht?«'
+        - Hugo meldet einen Fehler, weil nach `Pluto` ein zweiter Doppelpunkt mit Leerzeichen kommt
+        - Der Titel ist »Pluto«, der Rest geht verloren
+        - 'Der Titel ist »Pluto: Planet oder nicht?«'
         - Hugo nimmt den Dateinamen als Titel
       correct: 0
     feedback:
       - when: { picked: 2 }
         say: 'In YAML trennt `: ` einen Namen von seinem Wert. Was macht YAML mit einem zweiten `: ` in derselben Zeile?'
-    solution: 'YAML liest `title: Haie` und stößt dann auf ein zweites `: `, das an dieser Stelle nicht erlaubt ist. Hugo baut dann gar keine Seite mehr und meldet »mapping value is not allowed in this context« mit Datei und Zeile. Richtig ist `title: "Haie: gefährlich oder nicht?"`, in Anführungszeichen.'
+    solution: 'YAML liest `title: Pluto` und stößt dann auf ein zweites `: `, das an dieser Stelle nicht erlaubt ist. Hugo baut dann gar keine Seite mehr und meldet »mapping value is not allowed in this context« mit Datei und Zeile. Richtig ist `title: "Pluto: Planet oder nicht?"`, in Anführungszeichen.'
 
   - id: content
     title: Was in die Lücke kommt
@@ -55,34 +55,34 @@ tasks:
     solution: '`.Content` ist der Markdown-Teil der Seite, von Hugo in HTML übersetzt. Die Werte aus der Front Matter stehen in `.Title`, `.Description`, `.Params` und so weiter.'
 
   - id: neue-seite
-    title: Ein viertes Tier
+    title: Ein vierter Planet
     prediction: true
     prompt: |
-      Du legst `content/clownfisch.md` an, mit Front Matter und Text, und
-      änderst sonst nichts. Wo erscheint der Clownfisch danach? Überleg erst,
+      Du legst `content/venus.md` an, mit Front Matter und Text, und
+      änderst sonst nichts. Wo erscheint die Venus danach? Überleg erst,
       dann probier es aus.
     check:
       type: choice
       options:
         - In der Navigation jeder Seite und als Karte auf der Startseite
-        - Nur unter seiner eigenen Adresse `/clownfisch/`
-        - Nirgends, bis ich ihn in `baseof.html` eintrage
+        - Nur unter ihrer eigenen Adresse `/venus/`
+        - Nirgends, bis ich sie in `baseof.html` eintrage
         - Nur auf der Startseite
       correct: 0
     feedback:
       - when: { picked: 2 }
-        say: Steht in `baseof.html` eine Liste von Tieren, oder eine Schleife über alle Seiten?
+        say: Steht in `baseof.html` eine Liste von Planeten, oder eine Schleife über alle Seiten?
     solution: '`range site.RegularPages` geht bei jedem Bauen alle Seiten durch, die es gibt. Eine neue Datei in `content` kommt dadurch überall hin, wo die Schleife steht: in die Navigation jeder Seite und auf die Startseite.'
 
   - id: navigation
     title: Die Navigation
     prompt: |
-      Lege die Seiten für Seepferdchen und Oktopus an und ergänze in
+      Lege die Seiten für Jupiter und Saturn an und ergänze in
       `layouts/baseof.html` die Navigation zu allen Seiten, dann speichere.
-    file: aquarium/layouts/baseof.html
+    file: solar-system/layouts/baseof.html
     check:
       type: files
-      path: aquarium/layouts/baseof.html
+      path: solar-system/layouts/baseof.html
       expect:
         format: text
         contains:
@@ -93,12 +93,12 @@ tasks:
   - id: tags
     title: Schlagwörter
     prompt: |
-      Zeige auf jeder Tierseite ihre Schlagwörter als Links und lege
+      Zeige auf jeder Planetenseite ihre Schlagwörter als Links und lege
       `layouts/list.html` für die Seiten der Schlagwörter an, dann speichere.
-    file: aquarium/layouts/page.html
+    file: solar-system/layouts/page.html
     check:
       type: files
-      path: aquarium/layouts/page.html
+      path: solar-system/layouts/page.html
       expect:
         format: text
         contains:
@@ -109,10 +109,10 @@ tasks:
     title: Die fertige Website
     prompt: |
       Baue die fertige Website mit `hugo`.
-    file: aquarium/public/index.html
+    file: solar-system/public/index.html
     check:
       type: files
-      path: aquarium/public/index.html
+      path: solar-system/public/index.html
       expect:
         format: text
         contains:
@@ -120,16 +120,16 @@ tasks:
           - { pattern: 'class="cards"', say: 'Die Startseite in `public` hat noch keine Karten. Gibt es `layouts/home.html`, und hast du danach `hugo` laufen lassen?' }
     feedback:
       - when: { problem: missing }
-        say: Es gibt noch kein `public/index.html`. Führe im Ordner `aquarium` den Befehl `hugo` aus.
+        say: Es gibt noch kein `public/index.html`. Führe im Ordner `solar-system` den Befehl `hugo` aus.
 
   - id: abgabe
     title: Deine Website
     prompt: |
-      Gib den Ordner `aquarium` ab, mit `content`, `layouts`, `static` und
+      Gib den Ordner `solar-system` ab, mit `content`, `layouts`, `static` und
       `hugo.yaml`.
     check:
       type: submit
-      paths: [aquarium]
+      paths: [solar-system]
       max_size: 20MB
 
   - id: generator

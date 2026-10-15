@@ -104,7 +104,7 @@ generated screenshots:
 * »Eine Facharbeit mit LaTeX« (`src/content/latex`) and Handbuch »Dokumente mit LaTeX«
 * »Ein eigener Webserver« (`src/content/webserver`), a Ruby `TCPServer` in six stages (the last a poll with `POST` and `303`), linked from TCP/IP
 * »Eine Pixelwand für alle« (`src/content/pixelwand`), WebSockets with faye-websocket, a shared 64 × 40 canvas through Shared Live Apps, a chapter on threads and a lock
-* »Eine Website mit Hugo« (`src/content/hugo`), an aquarium encyclopedia with own layouts, published from `public/`
+* »Eine Website mit Hugo« (`src/content/hugo`), a small encyclopedia of the planets with own layouts, published from `public/`
 * »Kryptographie im Terminal« (`src/content/crypto`), hashes, salted password hashes, AES, RSA, Ed25519 signatures with `ssh-keygen -Y`, a partner part over port 1234
 * »Daten aus dem Netz« (`src/content/wetter`), the Open-Meteo weather API with `curl`/`jq`, Ruby with a cache, and a page with `fetch`
 * »Eine Klötzchenwelt in 3D« (`src/content/raylib`), raylib in 3D with Handbuch »raylib«; the starter is `specht/raylib-starter`, the same files as `vorlage/`

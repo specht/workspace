@@ -342,7 +342,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   (`no`, `1.10`, `12:30`, `01234` in Ruby und `yq`), Front Matter, `yq` und
   Ruby. Webserver, Pixelwand, TCP/IP und Filmdatenbank verweisen darauf.
 - Neue Aktivität »Eine Website mit Hugo« unter »Web & Schnittstellen«: ein
-  Aquarium-Lexikon aus Markdown-Seiten mit Front Matter, ein eigenes Layout
+  Lexikon über die Planeten aus Markdown-Seiten mit Front Matter, ein eigenes Layout
   (`baseof.html`, `page.html`, `home.html`, `list.html`) mit Navigation,
   Startseite, CSS und Schlagwörtern, dann `hugo` und `public` zum
   Veröffentlichen auf der eigenen Subdomain. Neun Aufgaben, Notiz für
