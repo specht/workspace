@@ -105,9 +105,18 @@ const exampleGroups = {
     // $btn.prop('disabled', true).text('Working…');
 
     api_call('/api/automatron', { regex: input }, function(data) {
-      console.log(data);
       const $out = $('#output_area');
       $out.empty();
+      if (data.error) {
+        const messages = {
+          too_large: 'Der Automat wird zu groß zum Zeichnen: mehr als ' + data.max_states + ' Zustände. Versuch einen kürzeren Ausdruck.',
+          busy: 'Automatron rechnet gerade schon zwei Automaten. Versuch es gleich noch einmal.',
+          rate_limited: 'Zu viele Anfragen in kurzer Zeit. Bitte warte ein paar Minuten.',
+          'regex too long': 'Der Ausdruck ist zu lang, höchstens 200 Zeichen.',
+        };
+        $out.append($('<p>').text(messages[data.error] || 'Das hat nicht geklappt: ' + data.error));
+        return;
+      }
 
       $out.append($('<h3>').html('Regulärer Ausdruck &rightarrow; &epsilon;-NEA (Thompson-Konstruktion)'));
       $out.append($(data.nfa.svg).css('max-width', '100%'));
