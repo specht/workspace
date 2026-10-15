@@ -423,7 +423,48 @@ _task(erste-webseite)
 
 _task(leere-zeile)
 
-Bei `https://` liegt zwischen TCP und HTTP noch eine Schicht, TLS, die alles verschlüsselt. Von Hand tippen geht dann nicht mehr; das übernehmen Programme wie der Browser oder `curl`.
+### Die TCP-Konsole
+
+Bei `https://` liegt zwischen TCP und HTTP noch eine Schicht, **TLS**, die alles verschlüsselt. Mit `nc` kommst du da nicht mehr hinein. Die [TCP-Konsole](/tcp-console) kann es: Sie macht dasselbe wie `nc -C`, nur im Browser, mit einem Schalter für TLS, und sie zeigt, was du geschickt hast, was zurückkam und wann. Die Verbindung beginnt dabei in deinem Workspace, so wie bei `nc`.
+
+Öffne die Konsole, klicke auf »example.com, Port 443 mit TLS« und dann auf »Verbinden«. Tippe danach wieder eine Anfrage:
+
+```text
+HEAD / HTTP/1.1
+Host: example.com
+```
+
+und eine leere Zeile. Die Konsole verschlüsselt jede Zeile, bevor sie zum Server geht, und entschlüsselt die Antwort.
+
+<!-- tutorial-screenshot
+# TCP-Konsole: HEAD an example.com über TLS
+open-site: /tcp-console
+tab: preview
+viewport: 1029x1300
+click: example.com, Port 443 mit TLS
+click: selector:#tcp-connect-button
+wait-for-text: verschlüsselt mit
+click: selector:#tcp-line
+type: HEAD / HTTP/1.1
+press: Enter
+type: Host: example.com
+press: Enter
+press: Enter
+wait-for-text: HTTP/1.1 200
+sleep: 2
+crop-element: #tcp-log
+-->
+<img class='full' src='tcp-konsole.webp' alt='Die TCP-Konsole wie ein Chat: oben die Uhrzeit und »Verbunden mit example.com, Port 443, verschlüsselt mit TLSv1.3«. Rechts in einer blauen Sprechblase die Anfrage, HEAD / HTTP/1.1, Host: example.com und eine leere Zeile, jede Zeile mit einem Pfeil für CR LF. Links in einer grauen Sprechblase die Antwort: HTTP/1.1 200 OK und eine Reihe Header. Unten in jeder Sprechblase die Uhrzeit.'>
+
+Deine Anfrage steht in einer Sprechblase, jede Zeile mit einem Pfeil für das CR LF an ihrem Ende, die leere Zeile als Pfeil allein. Die Antwort des Servers hat dieselbe Form: Status-Line, Header, leere Zeile. Diesmal schließt der Server die Verbindung nicht gleich: Bei `HTTP/1.1` bleibt sie offen, für die nächste Anfrage. Schick noch eine, oder warte und lies an den Uhrzeiten ab, wie lange der Server wartet, bevor er auflegt.
+
+### Wer zu langsam tippt
+
+Verbinde dich jetzt mit `www.wikipedia.org`, Port 80, ohne TLS, und lass dir Zeit mit der ersten Zeile.
+
+_task(zu-langsam)
+
+Ein Server hält nicht jede Verbindung ewig offen. Jede offene Verbindung kostet ihn Speicher, und wer tausend Verbindungen öffnet und nie etwas schickt, könnte ihn sonst lahmlegen. Darum schließt er Verbindungen, über die eine Weile nichts kommt. Wie lange er wartet, legt jeder Server selbst fest: `www.wikipedia.org` nur wenige Sekunden, `example.com` etwa 15 Sekunden, `info.cern.ch` fast eine Minute. Wer trotzdem in Ruhe tippen möchte, schreibt die Anfrage vorher hin und fügt sie auf einmal ein; die Konsole schickt mehrere Zeilen nacheinander ab.
 
 ## Daten aus dem Netz holen
 
@@ -594,7 +635,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='curl-catfact-jq.webp' alt='Dieselbe Antwort, von jq eingerückt und farbig: ein Objekt mit den Feldern fact und length.'>
+<img class='full' src='curl-catfact-jq.webp' alt='Eine Antwort derselben API, diesmal mit einem anderen Fakt, von jq eingerückt und farbig: ein Objekt mit den Feldern fact und length.'>
 
 _uses(json-aufbau, jq)
 

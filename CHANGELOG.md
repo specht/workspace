@@ -18,6 +18,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- TCP-Konsole (`/tcp-console`): Lernende tippen eine TCP-Verbindung Zeile für
+  Zeile wie mit `nc -C`, auf Wunsch mit TLS, und sehen Anfrage und Antwort als
+  Sprechblasen mit Uhrzeit, wie in einem Chat. Die Verbindung beginnt im
+  eigenen Workspace (als Gast), erreicht also nur, was `nc` dort auch
+  erreicht; `localhost` ist der eigene Workspace. Nur angemeldet, eine
+  Verbindung pro Person, höchstens 30 in zehn Minuten, zwei Minuten ohne Daten,
+  zehn Minuten und 512 kB je Verbindung. TCP/IP hat dazu die Abschnitte »Die
+  TCP-Konsole« (HTTP über TLS von Hand) und »Wer zu langsam tippt« (Server
+  legen auf) mit einer neuen Aufgabe; der Webserver verweist darauf.
 - Neue Aktivität »Endliche Automaten in Python« unter »Experimente«:
   Lernende bauen ein Drehkreuz, einen Automaten für »durch 3 teilbar« und ein
   Zahlenschloss als DEA, finden heraus, warum das Schloss bei 121213 nicht
