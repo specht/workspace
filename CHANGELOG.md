@@ -373,6 +373,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Pixelwand: Die Wand passt sich der Fenstergröße an, in der Breite und in
+  der Höhe, von kleinen Vorschaufenstern bis zum Beamer (höchstens 960 Pixel
+  breit). Das Gitter wächst mit; die Farbknöpfe stehen in der Mitte.
 - Sicherheit: Befehle, die Lernende in eine Aufgabe vom Typ `command` tippen,
   laufen nicht mehr als die Person, sondern als Gast (`nobody`): Sie können
   `/workspace` lesen, aber nichts darin ändern oder löschen.
