@@ -1,12 +1,19 @@
 <style>
   .tcp-console { max-width: 60em; }
-  .tcp-connect { display: flex; flex-wrap: wrap; gap: 0.6em 1em; align-items: end; margin: 1em 0 0.5em; }
-  .tcp-connect label { display: flex; flex-direction: column; font-size: 0.85em; color: var(--bs-secondary-color); }
-  .tcp-connect input[type=text] { font-family: '0xProto Nerd Font Mono', monospace; font-size: 1.05rem; }
-  #tcp-host { width: 16em; }
-  #tcp-port { width: 5.5em; }
-  .tcp-connect .form-switch { flex-direction: row; align-items: center; gap: 0.4em; font-size: 1rem; color: inherit; padding-bottom: 0.4em; }
-  .tcp-connect .form-switch .form-check-input { margin: 0; }
+  /* Like an address bar: where to (host and port) and how (TLS), then the button at its end.
+     On a phone the button and TLS move into a second row of their own. */
+  .tcp-connect { display: flex; flex-wrap: wrap; gap: 0.5em; margin: 1em 0 0.5em; }
+  .tcp-target { flex: 1 1 24em; }
+  .tcp-target input { font-family: '0xProto Nerd Font Mono', monospace; font-size: 1.05rem; }
+  .tcp-target #tcp-port { flex: 0 0 5.5em; }
+  .tcp-go { flex: 0 0 auto; width: auto; }
+  .tcp-go .tcp-tls { gap: 0.45em; cursor: pointer; background: var(--bs-body-bg); }
+  .tcp-go .tcp-tls .form-check-input { margin: 0; cursor: pointer; }
+  .tcp-go button { min-width: 8.5em; }
+  @media (max-width: 575px) {
+    .tcp-go { flex: 1 1 100%; }
+    .tcp-go button { flex: 1; }
+  }
   .tcp-examples { font-size: 0.9em; color: var(--bs-secondary-color); margin-bottom: 1em; }
   .tcp-examples button { font-size: 0.95em; padding: 0.1em 0.6em; margin: 0.15em 0.2em 0.15em 0; }
   .tcp-log { border: 1px solid var(--bs-border-color); border-radius: 10px; padding: 0.8em; height: min(40em, 62vh);
@@ -28,8 +35,19 @@
                 margin-left: 8px; }
   .tcp-server::after { left: -8px; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
   .tcp-client .tcp-line .bi { font-size: 0.8em; color: var(--bs-secondary-color); margin-left: 0.35em; }
-  .tcp-note { align-self: center; font-size: 0.85em; color: var(--bs-secondary-color); text-align: center; max-width: 90%; }
-  .tcp-note.tcp-bad { color: var(--bs-danger-text-emphasis); }
+  .tcp-entry .tcp-foot { display: flex; align-items: center; justify-content: flex-end; gap: 0.6em; margin-top: 0.15em; }
+  .tcp-entry .tcp-foot .tcp-time { margin-top: 0; }
+  .tcp-stop { font-size: 0.75rem; padding: 0.05em 0.6em; }
+  /* Start and end of a connection: a line across the log with the event in the middle. */
+  .tcp-status { align-self: stretch; display: flex; align-items: center; gap: 0.7em; font-size: 0.85em;
+                color: var(--bs-secondary-color); margin: 0.3em 0; }
+  .tcp-status::before, .tcp-status::after { content: ''; flex: 1; border-top: 1px solid var(--bs-border-color); }
+  .tcp-status > span { max-width: 80%; text-align: center; }
+  .tcp-status .bi { margin-right: 0.35em; }
+  .tcp-status.tcp-open { color: var(--bs-success-text-emphasis); }
+  .tcp-status.tcp-open::before, .tcp-status.tcp-open::after { border-color: var(--bs-success-border-subtle); }
+  .tcp-status.tcp-failed { color: var(--bs-danger-text-emphasis); }
+  .tcp-status.tcp-failed::before, .tcp-status.tcp-failed::after { border-color: var(--bs-danger-border-subtle); }
   .tcp-send { display: flex; gap: 0.5em; margin-top: 0.6em; }
   #tcp-line { font-family: '0xProto Nerd Font Mono', monospace; font-size: 1.05rem; }
   .tcp-hint { font-size: 0.85em; color: var(--bs-secondary-color); margin-top: 0.5em; }
@@ -44,11 +62,19 @@
     Workspace, und alle anderen Rechner erreichst du so, wie dein Workspace sie erreicht.
   </p>
 
-  <form id="tcp-connect" class="tcp-connect" autocomplete="off">
-    <label for="tcp-host">Host<input type="text" class="form-control" id="tcp-host" value="info.cern.ch" spellcheck="false"></label>
-    <label for="tcp-port">Port<input type="text" class="form-control" id="tcp-port" value="80" inputmode="numeric"></label>
-    <label class="form-check form-switch" for="tcp-tls"><input class="form-check-input" type="checkbox" role="switch" id="tcp-tls">TLS</label>
-    <button type="submit" class="btn btn-primary" id="tcp-connect-button" disabled>Verbinden</button>
+  <form id="tcp-connect" class="plain tcp-connect" autocomplete="off">
+    <div class="input-group tcp-target">
+      <label class="input-group-text" for="tcp-host">Host</label>
+      <input type="text" class="form-control" id="tcp-host" value="info.cern.ch" spellcheck="false" autocapitalize="off">
+      <label class="input-group-text" for="tcp-port">Port</label>
+      <input type="text" class="form-control" id="tcp-port" value="80" inputmode="numeric">
+    </div>
+    <div class="input-group tcp-go">
+      <label class="input-group-text tcp-tls" for="tcp-tls" title="Verschlüsselt, wie bei https://">
+        <input class="form-check-input" type="checkbox" id="tcp-tls"><i class="bi bi-lock" aria-hidden="true"></i>TLS
+      </label>
+      <button type="submit" class="btn btn-primary" id="tcp-connect-button" disabled>Verbinden</button>
+    </div>
   </form>
   <div class="tcp-examples">
     Zum Ausprobieren:
@@ -60,14 +86,17 @@
 
   <div id="tcp-log" class="tcp-log" aria-live="polite"></div>
 
-  <form id="tcp-send" class="tcp-send" autocomplete="off">
+  <form id="tcp-send" class="plain tcp-send" autocomplete="off">
     <input type="text" class="form-control" id="tcp-line" spellcheck="false" autocapitalize="off" disabled
-           placeholder="Erst verbinden, dann hier eine Zeile tippen" aria-label="Zeile, die an den Server geht">
+           placeholder="Erst verbinden" aria-label="Zeile, die an den Server geht">
     <button type="submit" class="btn btn-outline-primary" id="tcp-send-button" disabled>Senden</button>
+    <button type="button" class="btn btn-outline-danger" id="tcp-disconnect" hidden>Trennen</button>
   </form>
   <p class="tcp-hint">
     <kbd>Enter</kbd> schickt die Zeile ab; in einem leeren Feld schickt es eine leere Zeile, die bei HTTP die Header beendet.
-    Mehrere Zeilen auf einmal kannst du auch einfügen. Nach zwei Minuten ohne Daten trennt die Konsole die Verbindung.
+    Mehrere Zeilen auf einmal kannst du auch einfügen. <kbd>Strg</kbd><kbd>C</kbd> im Eingabefeld trennt die Verbindung, wie bei <code>nc</code>.
+    Die Konsole liest höchstens 1 KB pro Sekunde, wie über eine langsame Leitung; was der Server schneller schicken will,
+    wartet so lange. Nach zwei Minuten ohne Daten trennt sie die Verbindung.
   </p>
 </div>
 
@@ -76,11 +105,14 @@ document.addEventListener('DOMContentLoaded', function() {
   const $ = (id) => document.getElementById(id);
   const log = $('tcp-log'), host = $('tcp-host'), port = $('tcp-port'), tls = $('tcp-tls');
   const connectButton = $('tcp-connect-button'), line = $('tcp-line'), sendButton = $('tcp-send-button');
-  const CHARS_PER_SECOND = 2400;
-  let ws = null, ready = false, connected = false, busy = false, target = null, closedNoted = false;
+  const disconnectButton = $('tcp-disconnect');
+  let ws = null, ready = false, connected = false, busy = false, target = null;
+  // How the connection ended: the relay says »closed« (server, idle, limit,
+  // error) just before »ended«; when you end it, the page knows it itself.
+  let closedBy = null, openedAt = null;
   // The open bubbles: lines you send go into one until the server answers,
   // and what the server sends goes into one until you send again.
-  let clientBubble = null, serverBubble = null, queue = '', ticking = false;
+  let clientBubble = null, serverBubble = null, stopTimer = null;
   // »Verbinde mit …« until the result is known; then the result replaces it.
   let pending = null;
 
@@ -90,69 +122,86 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function scrollDown() { log.scrollTop = log.scrollHeight; }
 
+  function closeBubbles() {
+    if (serverBubble) serverBubble.stop.remove();
+    clientBubble = serverBubble = null;
+  }
+
   function bubble(kind) {
     const div = document.createElement('div');
     div.className = 'tcp-entry tcp-' + kind;
     const text = document.createElement('div');
     text.className = 'tcp-text';
+    const foot = document.createElement('div');
+    foot.className = 'tcp-foot';
     const time = document.createElement('span');
     time.className = 'tcp-time';
     time.textContent = clock();
-    div.append(text, time);
+    foot.append(time);
+    div.append(text, foot);
     log.append(div);
-    return { div, text, time };
+    return { div, text, foot, time };
   }
 
-  function note(text, bad) {
-    flush();
+  // A line across the log: connecting, connected, disconnected, failed.
+  function status(kind, icon, text) {
     if (pending) { pending.remove(); pending = null; }
-    clientBubble = serverBubble = null;
-    const div = document.createElement('div');
-    div.className = 'tcp-note' + (bad ? ' tcp-bad' : '');
-    div.textContent = clock() + ' · ' + text;
-    log.append(div);
+    closeBubbles();
+    const row = document.createElement('div');
+    row.className = 'tcp-status tcp-' + kind;
+    const span = document.createElement('span');
+    const i = document.createElement('i');
+    i.className = 'bi ' + icon;
+    span.append(i, document.createTextNode(clock() + ' · ' + text));
+    row.append(span);
+    log.append(row);
     scrollDown();
-    return div;
+    return row;
   }
 
-  // What the server sends appears a bit at a time, like on a teleprinter.
-  function tick() {
-    if (!queue || !serverBubble) { ticking = false; return; }
-    const n = Math.max(1, Math.round(CHARS_PER_SECOND / 60));
-    serverBubble.text.append(document.createTextNode(queue.slice(0, n)));
-    queue = queue.slice(n);
-    scrollDown();
-    requestAnimationFrame(tick);
+  function duration() {
+    if (openedAt === null) return '';
+    const s = (performance.now() - openedAt) / 1000;
+    return ' nach ' + (s < 10 ? s.toFixed(1).replace('.', ',') : Math.round(s)) + ' s';
   }
 
-  function flush() {
-    if (queue && serverBubble) serverBubble.text.append(document.createTextNode(queue));
-    queue = '';
-  }
-
+  // What the server sends shows up as it arrives, at most 1 KB per second.
+  // While it is still coming, a button on the bubble stops it.
   function received(text) {
     clientBubble = null;
-    if (!serverBubble) serverBubble = bubble('server');
-    queue += text;
-    if (!ticking) { ticking = true; requestAnimationFrame(tick); }
+    if (!serverBubble) {
+      serverBubble = bubble('server');
+      const stop = document.createElement('button');
+      stop.type = 'button';
+      stop.className = 'btn btn-sm btn-outline-danger tcp-stop';
+      stop.innerHTML = "<i class='bi bi-stop-fill'></i> Stopp";
+      stop.title = 'Die Antwort abbrechen: Das geht bei TCP nur, indem du die Verbindung trennst.';
+      stop.addEventListener('click', () => disconnect('stopped'));
+      serverBubble.stop = stop;
+    }
+    serverBubble.text.append(document.createTextNode(text));
+    if (!serverBubble.stop.isConnected) serverBubble.foot.prepend(serverBubble.stop);
+    clearTimeout(stopTimer);
+    const current = serverBubble;
+    stopTimer = setTimeout(() => current.stop.remove(), 1500);
+    scrollDown();
   }
 
   function setState() {
     connectButton.disabled = !ready || busy;
     connectButton.textContent = connected ? 'Trennen' : 'Verbinden';
-    connectButton.classList.toggle('btn-primary', !connected);
-    connectButton.classList.toggle('btn-outline-danger', connected);
+    connectButton.className = 'btn ' + (connected ? 'btn-danger' : 'btn-primary');
     [host, port, tls].forEach((el) => { el.disabled = connected || busy; });
     document.querySelectorAll('.tcp-examples button').forEach((b) => { b.disabled = connected || busy; });
     line.disabled = sendButton.disabled = !connected;
-    line.placeholder = connected ? 'Zeile tippen, Enter schickt sie ab' : 'Erst verbinden, dann hier eine Zeile tippen';
+    disconnectButton.hidden = !connected;
+    line.placeholder = connected ? 'Zeile tippen, dann Enter' : 'Erst verbinden';
   }
 
   // Each line ends with ↵, the CR LF that goes with it; an empty line is just ↵.
   function sendLine(text) {
     if (!connected) return;
-    flush();
-    serverBubble = null;
+    if (serverBubble) closeBubbles();
     if (!clientBubble) clientBubble = bubble('client');
     const row = document.createElement('div');
     row.className = 'tcp-line';
@@ -167,6 +216,12 @@ document.addEventListener('DOMContentLoaded', function() {
     ws.send(JSON.stringify({ action: 'send', line: text }));
   }
 
+  function disconnect(reason) {
+    if (!connected) return;
+    closedBy = closedBy || reason;
+    ws.send(JSON.stringify({ action: 'close' }));
+  }
+
   const failures = {
     invalid: 'Host oder Port stimmen nicht. Der Host ist ein Name wie info.cern.ch oder eine IP-Adresse, der Port eine Zahl von 1 bis 65535.',
     rate_limited: 'Zu viele Verbindungen in kurzer Zeit. Warte ein paar Minuten.',
@@ -179,44 +234,47 @@ document.addEventListener('DOMContentLoaded', function() {
     const texts = {
       dns: 'Den Namen »' + (target && target.host) + '« kennt kein DNS-Server.',
       refused: 'Bei ' + where + ' wartet niemand auf Verbindungen (Connection refused).',
-      timeout: 'Keine Antwort von ' + where + ': Der Rechner antwortet nicht, oder eine Firewall verwirft die Pakete.',
+      timeout: where + ' antwortet nicht: Der Rechner ist aus, oder eine Firewall verwirft die Pakete.',
       certificate: 'Das Zertifikat des Servers passt nicht: ' + detail,
       tls: 'Kein TLS möglich. Spricht der Server an diesem Port überhaupt TLS? (' + detail + ')',
     };
-    note(texts[kind] || ('Keine Verbindung: ' + detail), true);
+    status('failed', 'bi-x-circle', 'Keine Verbindung. ' + (texts[kind] || detail));
   }
+
+  const endings = {
+    server: 'Der Server hat die Verbindung geschlossen.',
+    user: 'Du hast die Verbindung getrennt.',
+    stopped: 'Du hast die Antwort abgebrochen und dafür die Verbindung getrennt.',
+    idle: 'Zwei Minuten lang kam nichts, die Konsole hat die Verbindung getrennt.',
+    limit: 'Mehr als 512 kB, die Konsole hat die Verbindung getrennt.',
+    error: 'Die Verbindung ist abgerissen.',
+  };
 
   function handle(data) {
     if (data.hello) { ready = true; setState(); return; }
     if (data.pong) return;
     if (data.data !== undefined) { received(data.data); return; }
     if (data.connected !== undefined) {
-      connected = true; busy = false; closedNoted = false;
-      note('Verbunden mit ' + target.host + ' (' + data.connected + '), Port ' + target.port +
-           (data.tls ? ', verschlüsselt mit ' + data.tls : ''));
+      connected = true; busy = false; closedBy = null; openedAt = performance.now();
+      status('open', 'bi-plug-fill', 'Verbunden mit ' + target.host + ' (' + data.connected + '), Port ' + target.port +
+             (data.tls ? ', verschlüsselt mit ' + data.tls : ', unverschlüsselt'));
       setState(); line.focus();
       return;
     }
     if (data.closed !== undefined) {
-      const texts = {
-        server: 'Der Server hat die Verbindung geschlossen.',
-        idle: 'Zwei Minuten lang kam nichts: Die Konsole hat die Verbindung getrennt.',
-        limit: 'Über 512 kB: Die Konsole hat die Verbindung getrennt.',
-        error: 'Die Verbindung ist abgerissen: ' + (data.detail || ''),
-      };
-      note(texts[data.closed] || 'Die Verbindung ist zu.', data.closed === 'error');
-      closedNoted = true;
+      // Server, idle, limit or error: shown once the relay has ended.
+      closedBy = data.closed === 'error' ? 'error' : data.closed;
       return;
     }
     if (data.error !== undefined) {
-      if (failures[data.error]) note(failures[data.error], true);
+      if (failures[data.error]) status('failed', 'bi-x-circle', failures[data.error]);
       else connectError(data.error, data.detail || '');
       busy = false; setState();
       return;
     }
     if (data.ended) {
-      if (connected && !closedNoted) note('Getrennt.');
-      connected = false; busy = false; setState();
+      if (connected) status('closed', 'bi-plug', 'Getrennt' + duration() + '. ' + (endings[closedBy] || 'Die Verbindung ist zu.'));
+      connected = false; busy = false; openedAt = null; setState();
     }
   }
 
@@ -226,11 +284,12 @@ document.addEventListener('DOMContentLoaded', function() {
     ws.onclose = () => {
       if (!ready) {
         const div = document.createElement('div');
-        div.className = 'tcp-note';
-        div.innerHTML = "<a href='/login'>Melde dich an</a>, um die TCP-Konsole zu benutzen.";
+        div.className = 'tcp-status';
+        div.innerHTML = "<span><a href='/login'>Melde dich an</a>, um die TCP-Konsole zu benutzen.</span>";
         log.append(div);
       } else {
-        note('Die Verbindung zum Workspace-Server ist weg. Lade die Seite neu.', true);
+        status('failed', 'bi-plug', (connected ? 'Getrennt' + duration() + '. ' : '') +
+               'Die Verbindung zum Workspace-Server ist weg. Lade die Seite neu.');
       }
       ready = connected = busy = false; setState();
     };
@@ -239,10 +298,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   $('tcp-connect').addEventListener('submit', (event) => {
     event.preventDefault();
-    if (connected) { ws.send(JSON.stringify({ action: 'close' })); return; }
+    if (connected) { disconnect('user'); return; }
     target = { host: host.value.trim(), port: port.value.trim() };
     busy = true; setState();
-    pending = note('Verbinde mit ' + target.host + ', Port ' + target.port + (tls.checked ? ', mit TLS' : '') + ' …');
+    pending = status('connecting', 'bi-hourglass-split',
+      'Verbinde mit ' + target.host + ', Port ' + target.port + (tls.checked ? ', mit TLS' : '') + ' …');
     ws.send(JSON.stringify({ action: 'open', host: target.host, port: target.port, tls: tls.checked }));
   });
 
@@ -250,6 +310,16 @@ document.addEventListener('DOMContentLoaded', function() {
     event.preventDefault();
     sendLine(line.value);
     line.value = '';
+  });
+
+  disconnectButton.addEventListener('click', () => disconnect('user'));
+
+  // Ctrl+C ends the connection, as in nc; with text selected it copies.
+  line.addEventListener('keydown', (event) => {
+    if (event.ctrlKey && (event.key === 'c' || event.key === 'C') && line.selectionStart === line.selectionEnd) {
+      event.preventDefault();
+      disconnect('user');
+    }
   });
 
   // Several lines pasted at once go out one after the other.

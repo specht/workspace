@@ -23,4 +23,20 @@ class AutomatronTest < Minitest::Test
         assert_raises(SubsetTrace::TooLarge) { dfa_for(regex) }
         assert Process.clock_gettime(Process::CLOCK_MONOTONIC) - started < 2
     end
+
+    # Typos are the student's, not a server error: a RuntimeError the route
+    # turns into a message (400), never a NoMethodError.
+    def test_broken_regexes_raise_a_readable_error
+        { 'a$b' => /Unsupported character in regex: '\$'/, '(ab' => /parentheses/, 'ab)' => /parentheses/,
+          'a|' => /Invalid/, '|a' => /Invalid/, '*a' => /Invalid/, '()' => /Invalid/, 'a(|b)' => /Invalid/ }.each do |regex, message|
+            error = assert_raises(RuntimeError, regex) { NFA.from_regex(regex) }
+            assert_match message, error.message, regex
+        end
+    end
+
+    def test_symbols_on_one_edge_become_ranges
+        assert_equal '0, 2–9', DotRender.symbols_label(%w[9 0 2 3 4 5 6 7 8])
+        assert_equal 'ε, a, b', DotRender.symbols_label(%w[b a ε])
+        assert_equal 'a, c–e, x', DotRender.symbols_label(%w[a c d e x])
+    end
 end

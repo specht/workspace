@@ -30,6 +30,7 @@ require './include/user_files.rb'
 require './include/task_html.rb'
 require './include/rate_limit.rb'
 require './include/tcp_console.rb'
+require './include/tools.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
@@ -1442,6 +1443,7 @@ class Main < Sinatra::Base
                 a['target'] = '_blank'
             end
         end
+        Tools.link_targets(root)
         highlight_code(root)
         root
     end
@@ -1696,6 +1698,8 @@ class Main < Sinatra::Base
                     :warn => content_warning)
                 markdown = ContentParts.fill_variables(markdown, ContentParts.page_variables(page_meta))
                 markdown = ContentParts.mark_parts(markdown)
+                # _tool(name): a box that opens a tool of the site in a new tab (Tools).
+                markdown = Tools.expand(markdown, :warn => content_warning)
                 # Tasks (docs/aufgaben.md): tasks.yaml next to the page holds
                 # them, _task(id) on a line of its own places a card.
                 tasks_path = File.join(File.dirname(path), 'tasks.yaml')
@@ -6678,12 +6682,12 @@ class Main < Sinatra::Base
         respond(yay: "stopped", running_was: running)
     end
 
-    # Automatron is open without a login, for showing it in class. A regex
-    # can make the subset construction grow exponentially and Graphviz draw
-    # for minutes, so: short regexes, at most SubsetTrace::MAX_STATES states,
-    # a time limit for drawing, two at a time and a limit per client.
+    # Automatron needs a login, like every tool (Tools). A regex can make the
+    # subset construction grow exponentially and Graphviz draw for minutes,
+    # so: short regexes, at most SubsetTrace::MAX_STATES states, a time limit
+    # for drawing, two at a time and a limit per person.
     AUTOMATRON_MAX_REGEX = 200
-    AUTOMATRON_PER_CLIENT = RateLimit.new(:limit => 60, :period => 600)
+    AUTOMATRON_PER_PERSON = RateLimit.new(:limit => 60, :period => 600)
     AUTOMATRON_SLOTS = Mutex.new
     @@automatron_running = 0
 
@@ -6706,7 +6710,8 @@ class Main < Sinatra::Base
     end
 
     post '/api/automatron' do
-        unless DEVELOPMENT || AUTOMATRON_PER_CLIENT.allow?(client_ip)
+        halt 403 unless user_logged_in?
+        unless DEVELOPMENT || AUTOMATRON_PER_PERSON.allow?(@session_user[:email])
             content_type :json
             halt 429, { :error => 'rate_limited' }.to_json
         end
@@ -6714,8 +6719,19 @@ class Main < Sinatra::Base
         regex = safe_regex(data[:regex])
         automatron_slot do
 
-            # ε-NFA
-            nfa = NFA.from_regex(regex)
+            # ε-NFA; a regex the parser cannot read is the student's typo, not a
+            # server error: say what is wrong (400).
+            begin
+                nfa = NFA.from_regex(regex)
+            rescue RuntimeError => e
+                content_type :json
+                problem = case e.message
+                    when /\AUnsupported character in regex: '(.)'/ then { :error => 'character', :character => $1 }
+                    when /parentheses/ then { :error => 'parentheses' }
+                    else { :error => 'incomplete' }
+                end
+                halt 400, problem.to_json
+            end
             nfa.compact_ids!
             nfa.topo_relabel!
 
@@ -7009,7 +7025,11 @@ class Main < Sinatra::Base
             markdown_path = if defined?(@@content_paths) && @@content_paths
                 @@content_paths[slug]
             end
-            halt 404 unless markdown_path && File.file?(markdown_path)
+            unless markdown_path && File.file?(markdown_path)
+                # A page without recipes, such as /automatron: nothing to watch.
+                content_type :json
+                return respond(:monitor => false)
+            end
 
             begin
                 headers 'Cache-Control' => 'no-store'
@@ -7110,6 +7130,8 @@ class Main < Sinatra::Base
         if path == '/profil'
             this_is_a_page_for_logged_in_users!
         end
+        # The tools (Tools: TCP-Konsole, Automatron) are for logged-in users only.
+        this_is_a_page_for_logged_in_users! if Tools::PATHS.include?(path)
         if path == '/klasse'
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()

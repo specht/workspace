@@ -296,7 +296,9 @@ _task(schloss)
 
 ### Automatron zeichnet nach
 
-Für jede Ziffer in jedem Zustand die richtige Antwort zu finden, ist Denkarbeit. Ein Werkzeug kann sie dir abnehmen: [Automatron](/automatron) baut aus einem **regulären Ausdruck** einen Automaten. `(0|1|2|3|4|5|6|7|8|9)*1213` heißt: beliebig viele Ziffern (`|` ist »oder«, `*` »beliebig oft, auch keinmal«), danach `1213`. Gib den Ausdruck in Automatron ein. Ganz unten auf der Seite zeigt es den kleinsten Automaten, der dasselbe tut:
+Für jede Ziffer in jedem Zustand die richtige Antwort zu finden, ist Denkarbeit. Ein Werkzeug kann sie dir abnehmen: [Automatron](/automatron) baut aus einem **regulären Ausdruck** einen Automaten. `(0|1|2|3|4|5|6|7|8|9)*1213` heißt: beliebig viele Ziffern (`|` ist »oder«, `*` »beliebig oft, auch keinmal«), danach `1213`. Gib den Ausdruck in Automatron ein. Unter »Minimierung« zeigt es den kleinsten Automaten, der dasselbe tut:
+
+_tool(automatron)
 
 <!-- tutorial-screenshot
 # Automatron: der minimierte DEA für das Schloss
@@ -306,7 +308,7 @@ viewport: 1029x700
 click: selector:#ti_input
 type: (0|1|2|3|4|5|6|7|8|9)*1213
 press: Enter
-wait-for-text: Tabellenverfahren
+wait-for-text: kleinster DEA
 sleep: 1
 crop-element: #output_area svg:nth-of-type(3)
 -->
@@ -540,7 +542,7 @@ viewport: 1029x700
 click: selector:#ti_input
 type: (0|1)*1(0|1)(0|1)(0|1)
 press: Enter
-wait-for-text: Tabellenverfahren
+wait-for-text: kleinster DEA
 sleep: 1
 crop-element: #output_area svg:nth-of-type(3)
 -->

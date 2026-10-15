@@ -98,7 +98,7 @@
     },
     "tcp-konsole.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "9553ec8a26580b42d3f7d5444ce724ad5346ab51b17bab2b5d3817a98a36593d",
+      "output_sha256": "be1477434a3dcfcc97a8eeef1a8bdd3427b3cc97c7a62b01fe1be0aa7904ef78",
       "state_hash": "a8f601465127b138709dfb846d66114c40b11400df4f0a96d47416fc02e34b3e",
       "workspace_look": "4.138.0-ls366"
     },

@@ -427,6 +427,8 @@ _task(leere-zeile)
 
 Bei `https://` liegt zwischen TCP und HTTP noch eine Schicht, **TLS**, die alles verschlüsselt. Mit `nc` kommst du da nicht mehr hinein. Die [TCP-Konsole](/tcp-console) kann es: Sie macht dasselbe wie `nc -C`, nur im Browser, mit einem Schalter für TLS, und sie zeigt, was du geschickt hast, was zurückkam und wann. Die Verbindung beginnt dabei in deinem Workspace, so wie bei `nc`.
 
+_tool(tcp-console)
+
 Öffne die Konsole, klicke auf »example.com, Port 443 mit TLS« und dann auf »Verbinden«. Tippe danach wieder eine Anfrage:
 
 ```text
