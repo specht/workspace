@@ -396,6 +396,21 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Automatron und die TCP-Konsole brauchen eine Anmeldung; ohne geht es zur
+  Anmeldeseite. Seiten zeigen ein Werkzeug als Kasten mit »Öffnen« dort, wo
+  es gebraucht wird (`_tool(name)`, `docs/aufgaben.md`), und öffnen es in
+  einem neuen Tab, ebenso jeden anderen Link darauf. TCP/IP, Webserver,
+  Endliche Automaten und das Handbuch »HTTP« haben solche Kästen.
+- Automatron: Erklärung und Eingabe oben, die Beispiele darunter, nach
+  Themen geordnet und einklappbar; nach dem Klick rollt die Seite zum
+  Ergebnis, während der Rechnung zeigt der Knopf »Rechnet …«. Jeder Schritt
+  sagt, wie seine Zustände heißen. Tippfehler im Ausdruck (ein unbekanntes
+  Zeichen, offene Klammern, ein `|` ohne etwas dahinter) bekommen eine
+  verständliche Meldung statt eines Serverfehlers. Breite Tabellen rollen auf
+  dem Handy für sich; die vereinfachte Grammatik erscheint nur, wenn sie
+  anders ist. Alles auf Deutsch.
+- TCP-Konsole: Host, Port, TLS und »Verbinden« stehen in einer Leiste wie
+  eine Adresszeile; verbunden wird daraus ein roter »Trennen«-Knopf.
 - Pixelwand: Die Wand passt sich der Fenstergröße an, in der Breite und in
   der Höhe, von kleinen Vorschaufenstern bis zum Beamer (höchstens 960 Pixel
   breit). Das Gitter wächst mit; die Farbknöpfe stehen in der Mitte.

@@ -1,12 +1,19 @@
 <style>
   .tcp-console { max-width: 60em; }
-  .tcp-connect { display: flex; flex-wrap: wrap; gap: 0.6em 1em; align-items: end; margin: 1em 0 0.5em; }
-  .tcp-connect label { display: flex; flex-direction: column; font-size: 0.85em; color: var(--bs-secondary-color); }
-  .tcp-connect input[type=text] { font-family: '0xProto Nerd Font Mono', monospace; font-size: 1.05rem; }
-  #tcp-host { width: 16em; }
-  #tcp-port { width: 5.5em; }
-  .tcp-connect .form-switch { flex-direction: row; align-items: center; gap: 0.4em; font-size: 1rem; color: inherit; padding-bottom: 0.4em; }
-  .tcp-connect .form-switch .form-check-input { margin: 0; }
+  /* Like an address bar: where to (host and port) and how (TLS), then the button at its end.
+     On a phone the button and TLS move into a second row of their own. */
+  .tcp-connect { display: flex; flex-wrap: wrap; gap: 0.5em; margin: 1em 0 0.5em; }
+  .tcp-target { flex: 1 1 24em; }
+  .tcp-target input { font-family: '0xProto Nerd Font Mono', monospace; font-size: 1.05rem; }
+  .tcp-target #tcp-port { flex: 0 0 5.5em; }
+  .tcp-go { flex: 0 0 auto; width: auto; }
+  .tcp-go .tcp-tls { gap: 0.45em; cursor: pointer; background: var(--bs-body-bg); }
+  .tcp-go .tcp-tls .form-check-input { margin: 0; cursor: pointer; }
+  .tcp-go button { min-width: 8.5em; }
+  @media (max-width: 575px) {
+    .tcp-go { flex: 1 1 100%; }
+    .tcp-go button { flex: 1; }
+  }
   .tcp-examples { font-size: 0.9em; color: var(--bs-secondary-color); margin-bottom: 1em; }
   .tcp-examples button { font-size: 0.95em; padding: 0.1em 0.6em; margin: 0.15em 0.2em 0.15em 0; }
   .tcp-log { border: 1px solid var(--bs-border-color); border-radius: 10px; padding: 0.8em; height: min(40em, 62vh);
@@ -55,11 +62,19 @@
     Workspace, und alle anderen Rechner erreichst du so, wie dein Workspace sie erreicht.
   </p>
 
-  <form id="tcp-connect" class="tcp-connect" autocomplete="off">
-    <label for="tcp-host">Host<input type="text" class="form-control" id="tcp-host" value="info.cern.ch" spellcheck="false"></label>
-    <label for="tcp-port">Port<input type="text" class="form-control" id="tcp-port" value="80" inputmode="numeric"></label>
-    <label class="form-check form-switch" for="tcp-tls"><input class="form-check-input" type="checkbox" role="switch" id="tcp-tls">TLS</label>
-    <button type="submit" class="btn btn-primary" id="tcp-connect-button" disabled>Verbinden</button>
+  <form id="tcp-connect" class="plain tcp-connect" autocomplete="off">
+    <div class="input-group tcp-target">
+      <label class="input-group-text" for="tcp-host">Host</label>
+      <input type="text" class="form-control" id="tcp-host" value="info.cern.ch" spellcheck="false" autocapitalize="off">
+      <label class="input-group-text" for="tcp-port">Port</label>
+      <input type="text" class="form-control" id="tcp-port" value="80" inputmode="numeric">
+    </div>
+    <div class="input-group tcp-go">
+      <label class="input-group-text tcp-tls" for="tcp-tls" title="Verschlüsselt, wie bei https://">
+        <input class="form-check-input" type="checkbox" id="tcp-tls"><i class="bi bi-lock" aria-hidden="true"></i>TLS
+      </label>
+      <button type="submit" class="btn btn-primary" id="tcp-connect-button" disabled>Verbinden</button>
+    </div>
   </form>
   <div class="tcp-examples">
     Zum Ausprobieren:
@@ -71,9 +86,9 @@
 
   <div id="tcp-log" class="tcp-log" aria-live="polite"></div>
 
-  <form id="tcp-send" class="tcp-send" autocomplete="off">
+  <form id="tcp-send" class="plain tcp-send" autocomplete="off">
     <input type="text" class="form-control" id="tcp-line" spellcheck="false" autocapitalize="off" disabled
-           placeholder="Erst verbinden, dann hier eine Zeile tippen" aria-label="Zeile, die an den Server geht">
+           placeholder="Erst verbinden" aria-label="Zeile, die an den Server geht">
     <button type="submit" class="btn btn-outline-primary" id="tcp-send-button" disabled>Senden</button>
     <button type="button" class="btn btn-outline-danger" id="tcp-disconnect" hidden>Trennen</button>
   </form>
@@ -175,13 +190,12 @@ document.addEventListener('DOMContentLoaded', function() {
   function setState() {
     connectButton.disabled = !ready || busy;
     connectButton.textContent = connected ? 'Trennen' : 'Verbinden';
-    connectButton.classList.toggle('btn-primary', !connected);
-    connectButton.classList.toggle('btn-outline-danger', connected);
+    connectButton.className = 'btn ' + (connected ? 'btn-danger' : 'btn-primary');
     [host, port, tls].forEach((el) => { el.disabled = connected || busy; });
     document.querySelectorAll('.tcp-examples button').forEach((b) => { b.disabled = connected || busy; });
     line.disabled = sendButton.disabled = !connected;
     disconnectButton.hidden = !connected;
-    line.placeholder = connected ? 'Zeile tippen, Enter schickt sie ab' : 'Erst verbinden, dann hier eine Zeile tippen';
+    line.placeholder = connected ? 'Zeile tippen, dann Enter' : 'Erst verbinden';
   }
 
   // Each line ends with ↵, the CR LF that goes with it; an empty line is just ↵.

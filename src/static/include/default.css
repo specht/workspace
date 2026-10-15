@@ -332,6 +332,14 @@ form {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }
 
+/* A form that is only an input row (Automatron, TCP-Konsole): no frame. */
+form.plain {
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
 .table-container {
     overflow-x: auto;
 }
@@ -4628,3 +4636,26 @@ img.minicpu-shot.medium {
 .automaton .edge path { stroke: var(--automaton-line); stroke-width: 1.1; }
 .automaton .edge polygon { fill: var(--automaton-line); stroke: var(--automaton-line); }
 .automaton .edge text { fill: var(--automaton-label); }
+
+/* The box that _tool(name) puts into a page (Tools in tools.rb); it opens
+   the tool in a new tab. */
+
+.tool-card {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    margin: 1.2em 0;
+    padding: 0.9em 1.2em;
+    border: 1px solid var(--bs-primary-border-subtle);
+    border-radius: 12px;
+    background: var(--bs-primary-bg-subtle);
+    color: var(--bs-body-color);
+    text-decoration: none;
+}
+.tool-card:hover { border-color: var(--bs-primary); color: var(--bs-body-color); }
+.tool-card-icon { font-size: 1.8rem; color: var(--bs-primary); }
+.tool-card-text { display: flex; flex-direction: column; flex: 1; line-height: 1.35; }
+.tool-card-text strong { font-size: 1.1rem; }
+.tool-card-text span { color: var(--bs-secondary-color); font-size: 0.92em; }
+.tool-card-open { white-space: nowrap; color: var(--bs-primary); font-weight: 600; }
+.tool-card-open .bi { margin-left: 0.4em; }

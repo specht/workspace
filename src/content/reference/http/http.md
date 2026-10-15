@@ -173,6 +173,15 @@ curl -H "Accept: application/json" localhost:8000/api/time       # ein eigener H
 Liefert ein Server JSON, macht `jq` es lesbar: `curl -s https://api.github.com/users/octocat | jq`. Mehr dazu im Handbuch [JSON](/reference/json).
 <!-- /part -->
 
+<!-- part: tcp-konsole -->
+<!-- short: Eine Anfrage Zeile für Zeile selbst tippen, auch über HTTPS: die TCP-Konsole. -->
+### Von Hand: die TCP-Konsole
+
+Wer eine Anfrage selbst tippen möchte, Zeile für Zeile, nimmt im Terminal `nc -C host 80` oder die TCP-Konsole. Sie kann auch HTTPS (TLS), zeigt Anfrage und Antwort nebeneinander und wann was ankam. Die Verbindung beginnt im eigenen Workspace; `localhost` ist also der eigene Server.
+
+_tool(tcp-console)
+<!-- /part -->
+
 <!-- part: netzwerk-tab -->
 <!-- short: <kbd>F12</kbd> › »Network«: jede Anfrage einer Seite mit Methode, Status, Typ, Größe und Headern. -->
 ### Im Browser: der Reiter »Network«
