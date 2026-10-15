@@ -145,7 +145,8 @@ function install_clipboard_handler(selector) {
 }
 
 // ```bash_copy blocks (code_highlight.rb): a button that copies the code,
-// without line numbers. Only on blocks that are no use to type.
+// without line numbers. On blocks that are no use to type and on big blocks
+// that go into a file.
 function install_code_copy() {
     document.querySelectorAll('pre.copy-code').forEach(function(pre) {
         let box = document.createElement('div');

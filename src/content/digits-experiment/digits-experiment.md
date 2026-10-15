@@ -1,6 +1,7 @@
 <div class='meta'>
 image: interactive-3.webp:0:50
 kind: labor
+language: Python
 template: https://github.com/specht/digits-experiment.git
 template_name: des Digits-Experiments
 </div>

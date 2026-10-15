@@ -1,6 +1,7 @@
 <div class='meta'>
 image: er-preview.webp:50:50
 kind: projekt
+language: SQL
 topic: databases
 duration: 3 Doppelstunden
 requires: [mysql]

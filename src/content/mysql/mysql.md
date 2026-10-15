@@ -1,6 +1,7 @@
 <div class='meta'>
 image: select-land.webp:25:0
 kind: grundlagen
+language: SQL
 reference: [sql]
 </div>
 

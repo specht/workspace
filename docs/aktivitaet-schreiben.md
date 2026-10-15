@@ -72,11 +72,14 @@ Bilder liegen im selben Ordner und werden mit `<img class='full' src='bild.webp'
 alt='…'>` eingebunden. Der `alt`-Text beschreibt, was zu sehen ist; leer
 (`alt=''`) nur, wenn das Bild nur schmückt.
 
-Code-Blöcke bekommen ihre Sprache (```` ```bash ````, ```` ```html ````). Code,
-an dem Lernende etwas lernen, tippen sie ab; dabei lesen sie jede Zeile. Nur
-was abzutippen nichts lehrt, bekommt einen Kopierknopf: ```` ```bash_copy ````
+Code-Blöcke bekommen ihre Sprache (```` ```bash ````, ```` ```html ````). Kurzen
+Code, an dem Lernende etwas lernen, tippen sie ab; dabei lesen sie jede Zeile.
+Einen Kopierknopf bekommt, was abzutippen nichts lehrt: ```` ```bash_copy ````
 für Adressen zum Klonen, Downloads, Einrichtungsbefehle und Zeilen mit
-Prüfsummen. Weitere Endungen: `_wrap` (lange Zeilen umbrechen) und `_lineno`
+Prüfsummen. Dazu kommen große Blöcke ab etwa 15 Zeilen, die in eine Datei
+eingefügt werden: ganze Dateien, lange Funktionen, Shader (```` ```c_copy ````,
+bei `_include_file` als Sprache `lua_copy`). Erklärt wird so ein Block
+trotzdem im Text, Zeile für Zeile. Weitere Endungen: `_wrap` (lange Zeilen umbrechen) und `_lineno`
 (Zeilennummern), in beliebiger Reihenfolge.
 
 ## 3. Aufgaben schreiben

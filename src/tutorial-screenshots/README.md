@@ -174,6 +174,7 @@ wait-for-input-value: TEXT
 tab: workspace|preview
 git-graph: PATH           (only before an _include_svg(NAME.svg))
 pdf-page: PATH PAGE [TEXT] (a page of a PDF in the Workspace as the image)
+pdf-page-full: PATH PAGE [TEXT] (the same, the whole sheet with its margins)
 record: SECONDSs          (only before a <video>)
 fps: NUMBER               (with record; default 30)
 viewport: WIDTHxHEIGHT
@@ -426,6 +427,10 @@ page must contain it (`pdf-page: latex-fonts/fonts.pdf 17 Inter`), so a page
 number that no longer fits stops the render. The LaTeX
 tutorial shows its font samples this way, set with the fonts the Workspace
 really has.
+
+`pdf-page-full: PATH PAGE [TEXT]` is the same without the cutting: the whole
+sheet with its margins, at 200 dpi, for a page that should look like a page
+(the pages of the Facharbeit in the LaTeX activity).
 
 `terminal-maximize` makes the panel containing the terminal fill the available
 workbench area and returns focus to the terminal. It is safe to repeat when the

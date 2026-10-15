@@ -17,8 +17,9 @@ module CodeHighlight
             code = pre.css('code').first
             next if code.nil?
             # Suffixes after the language, in any order: _lineno, _wrap and
-            # _copy (a copy button, only for what is no use to type: clone
-            # addresses, downloads, setup commands).
+            # _copy (a copy button, for what is no use to type: clone
+            # addresses, downloads, setup commands, and big blocks from about
+            # 15 lines that go into a file, docs/aktivitaet-schreiben.md).
             language = code.attr('class')
             flags = []
             while language =~ /_(lineno|wrap|copy)$/
@@ -42,7 +43,7 @@ module CodeHighlight
             end
             lexer = nil
             case language
-            when 'bash'
+            when 'bash', 'sh'
                 lexer = Rouge::Lexers::Shell.new
             when 'basic'
                 lexer = Rouge::Lexers::VisualBasic.new
@@ -70,6 +71,8 @@ module CodeHighlight
                 lexer = Rouge::Lexers::Erlang.new
             when 'fortran'
                 lexer = Rouge::Lexers::Fortran.new
+            when 'glsl'
+                lexer = Rouge::Lexers::GLSL.new
             when 'go'
                 lexer = Rouge::Lexers::Go.new
             when 'html'

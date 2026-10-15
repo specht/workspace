@@ -687,12 +687,15 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             recipe.sharpCanvas = true;
         } else if ((match = line.match(/^variants:\s*(.+)$/))) {
             recipe.variants = valueAtSource(source, () => parseVariants(match[1]));
-        } else if ((match = line.match(/^pdf-page:\s*(\S+)\s+(\d+)(?:\s+(.+))?$/))) {
+        } else if ((match = line.match(/^pdf-page(-full)?:\s*(\S+)\s+(\d+)(?:\s+(.+))?$/))) {
             recipe.pdfPage = {
-                path: valueAtSource(source, () => safeRelativePath(match[1])),
-                page: Number(match[2]),
+                path: valueAtSource(source, () => safeRelativePath(match[2])),
+                page: Number(match[3]),
             };
-            if (match[3]) recipe.pdfPage.expect = match[3].trim();
+            // pdf-page-full: the whole sheet with its margins, not cut to
+            // the text
+            if (match[1]) recipe.pdfPage.full = true;
+            if (match[4]) recipe.pdfPage.expect = match[4].trim();
             if (recipe.pdfPage.page < 1) {
                 throw withSourceError(new Error('pdf-page counts pages from 1'), source);
             }
@@ -3107,7 +3110,9 @@ async function captureGitGraph(shot, tutorialDirectory) {
 // pdf-page: PATH PAGE renders one page of a PDF in the screenshot Workspace
 // (compiled there by the recipe, with the Workspace's own TeX and fonts) at
 // 300 dpi, cuts it to its content and shaves 1 mm off the top and bottom, as
-// src/content/latex/fonts/pdf_page_to_svg.rb did by hand.
+// src/content/latex/fonts/pdf_page_to_svg.rb did by hand: right for a line of
+// type. pdf-page-full keeps the whole sheet with its margins, at 200 dpi, for
+// a page that should look like a page.
 async function capturePdfPage(shot, tutorialDirectory) {
     const root = path.resolve(USER_ROOT, fsTagForEmail(SCREENSHOT_EMAIL), 'workspace');
     const pdf = path.resolve(root, shot.pdfPage.path);
@@ -3128,9 +3133,13 @@ async function capturePdfPage(shot, tutorialDirectory) {
                 throw new Error(`pdf-page: page ${page} of ${shot.pdfPage.path} does not contain »${shot.pdfPage.expect}«`);
             }
         }
-        await execFileAsync('pdftocairo', ['-png', '-r', '300', '-f', page, '-l', page, '-singlefile', pdf, path.join(work, 'page')]);
-        const trimmed = path.join(work, 'trimmed.png');
-        await execFileAsync('convert', [path.join(work, 'page.png'), '-trim', '+repage', '-shave', '0x12', '+repage', trimmed]);
+        const dpi = shot.pdfPage.full ? '200' : '300';
+        await execFileAsync('pdftocairo', ['-png', '-r', dpi, '-f', page, '-l', page, '-singlefile', pdf, path.join(work, 'page')]);
+        let trimmed = path.join(work, 'page.png');
+        if (!shot.pdfPage.full) {
+            trimmed = path.join(work, 'trimmed.png');
+            await execFileAsync('convert', [path.join(work, 'page.png'), '-trim', '+repage', '-shave', '0x12', '+repage', trimmed]);
+        }
         const temporary = `${target}.tmp-${process.pid}`;
         if (/\.webp$/i.test(target)) {
             await execFileAsync('cwebp', ['-quiet', '-q', '90', trimmed, '-o', temporary]);

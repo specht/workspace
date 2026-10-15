@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Nachrichten</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 32em; margin: 2em auto; padding: 0 1em; }
+    #log { border: 1px solid #ccc; border-radius: 6px; padding: 0.5em 1em; min-height: 10em; }
+    #log p { margin: 0.3em 0; }
+    form { display: flex; gap: 0.5em; margin-top: 0.8em; }
+    input { flex: 1; font: inherit; padding: 0.3em; }
+  </style>
+</head>
+<body>
+  <h1>Nachrichten</h1>
+  <div id="log"></div>
+  <form id="form">
+    <input id="message" placeholder="Eine Nachricht …" autocomplete="off">
+    <button>Senden</button>
+  </form>
+
+  <script>
+    // Dieselbe Adresse wie die Seite, nur mit ws:// (oder wss:// bei https)
+    const url = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws';
+    const socket = new WebSocket(url);
+    const log = document.getElementById('log');
+
+    function show(text) {
+      const paragraph = document.createElement('p');
+      paragraph.textContent = text;
+      log.append(paragraph);
+    }
+
+    socket.addEventListener('open', () => show('Verbunden.'));
+    socket.addEventListener('close', () => show('Die Verbindung ist zu.'));
+    // Jede Nachricht vom Server landet hier, ohne dass die Seite fragt
+    socket.addEventListener('message', (event) => show(event.data));
+
+    document.getElementById('form').addEventListener('submit', (event) => {
+      event.preventDefault();          // die Seite nicht neu laden
+      const input = document.getElementById('message');
+      if (input.value !== '') socket.send(input.value);
+      input.value = '';
+    });
+  </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 <div class='meta'>
 image: rainbow.webp
 kind: projekt
+language: Ruby
 duration: 2 Doppelstunden
 reference: [workspace, farben]
 </div>

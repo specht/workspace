@@ -77,6 +77,8 @@
     bestehenden Webdiensten kommunizieren und dort Aktionen auslösen können.
   entries:
     - static-website
+    - webserver
+    - pixelwand
     - svelte
     - hades
 

@@ -116,8 +116,8 @@ below is a writing priority, not a prerequisite chain.
 1. raylib + WebAssembly (drafted as a 3D activity, see below)
 2. Hugo / static site generators
 3. Flutter
-4. Web server
-5. WebSockets
+4. Web server (drafted)
+5. WebSockets (drafted)
 6. Cryptography
 
 Plus, from the review:
@@ -126,34 +126,12 @@ Plus, from the review:
 * [ ] **JPEG decoder project**: the interactive Huffman section is excellent, but iDCT, MCU and colour conversion get one paragraph each and there is nothing to implement; a staged decoder with a check per stage
 
 
-#### 1. Web server
+#### 1. and 2. Web server and WebSockets
 
-Continue directly from the TCP/IP page and write the server in **Ruby** using raw TCP sockets.
+Drafted as »Ein eigener Webserver« (`src/content/webserver`, a Ruby `TCPServer` in five stages up to files, 404, parameters and a counter with a mutex) and »Eine Pixelwand für alle« (`src/content/pixelwand`, handshake written by the students, frames in a commented `websocket.rb`, messages to everyone, a shared 64 × 40 canvas, shared through Shared Live Apps). Both without a template, linked from TCP/IP.
 
-> TCP → HTTP → browser → web server
-
-* [ ] Connect explicitly to the TCP/IP page and port 1234
-* [ ] Begin with the smallest `TCPServer` that accepts a connection
-* [ ] Inspect a browser/`curl` HTTP request as plain text
-* [ ] Send a minimal valid HTTP response manually
-* [ ] Handle `GET /`, parse the request line into method/path/version, add routes, return `404 Not Found`
-* [ ] Serve HTML and a small set of static files
-* [ ] Read query parameters; optionally handle one small `POST` request
-* [ ] Finish by sharing the running server through Shared Live Apps
-* [ ] Take over the useful part of the Hades page (HTTP POST, JSON, a session header) against a practice API inside the Workspace
-
-Do not introduce Sinatra/Rack/Node/Flask here. The point is to discover that a web server is initially just a TCP server that speaks HTTP.
-
-#### 2. WebSockets
-
-Ruby server + browser JavaScript client, so the networking progression stays continuous.
-
-* [ ] Show why repeated HTTP request/response is awkward for a real-time application
-* [ ] Inspect the upgrade request and `101 Switching Protocols` at a useful level, without a full protocol implementation
-* [ ] Messages browser → server and server → browser; several clients; broadcast state changes
-* [ ] Build a genuinely collaborative project rather than stopping at chat; share via Shared Live Apps
-
-Preferred project: **shared pixel canvas**. Alternatives: multiplayer Pong, collaborative cursors, classroom voting, a tiny multiplayer world. If manual frame parsing becomes distracting, provide a tiny framing helper after the handshake is understood.
+* [ ] Try both in class; check how the shared pixel wall behaves with a whole class on one Workspace
+* [ ] Take over the useful part of the Hades page (HTTP POST, JSON) into the web server page, then retire Hades
 
 #### 3. Cryptography in the terminal
 
@@ -230,7 +208,6 @@ Open findings from the October 2026 review:
 | Page | Action |
 | --- | --- |
 | Fire | add tasks (blue flame, wind direction) |
-| LaTeX | rewrite around writing one short paper from scratch (sections, environments, references, tables, a formula, BibTeX) with tasks; today it compiles templates; typos "Compilierung", "Bereicht", `litatur.bib` |
 | Hades | only useful for one school's Greek app and needs a real e-mail login; script uses `agr.nhcham.org`, the text links `agr.gymnasiumsteglitz.de`; move its ideas into the web-server page and retire it |
 | Ziffernerkennung | collect handwriting in the browser instead of print + 300 dpi scan; predict-then-run tasks; discuss overfitting (training loss 10⁻⁴); a shared preinstalled environment instead of 500 MB download and 2 GB per student; typos "boostrap", "Kenrel", "beboachten", "des die" |
 | TCP/IP | rework as the first half of TCP → HTTP → web server: layers, ports, handshake; the Peru server is presented as far away next to Google |
@@ -248,7 +225,7 @@ Platform-wide:
 * [ ] Review `_template_codebites.html` language metadata and remaining manually authored homepage image alt attributes
 * [ ] Revisit BIF after the teacher workshop and incorporate classroom feedback
 * [ ] Link Automatron from formal-language material and teacher notes; add a short introduction if students use it alone
-* [ ] Find a section for new pages as they land (web server and WebSockets next to TCP/IP, Hugo and Flutter under Web & Schnittstellen); keep related progressions adjacent
+* [ ] Find a section for new pages as they land (Hugo and Flutter under Web & Schnittstellen); keep related progressions adjacent
 
 
 ## Infrastructure and operations
@@ -257,6 +234,10 @@ Platform-wide:
 
 * [ ] Audit command/error logging so secrets and credentials cannot appear in logs
 * [ ] Prefer safe human-readable operation descriptions over dumping complete commands when commands fail
+
+### TeX Live
+
+* [ ] Add `pgfplots` and `csquotes` to the TeX Live toolchain (`docker/code/Dockerfile`, the `tlmgr install` step); the LaTeX activity draws its diagram with TikZ meanwhile, and biblatex works without csquotes
 
 ### Dependency and image verification
 

@@ -55,5 +55,7 @@ class StudentHomeTest < Minitest::Test
     def test_card_badges
         assert_equal '', StudentHome.card_badges(nil)
         assert_includes StudentHome.card_badges('uebung'), 'Übung'
+        assert_includes StudentHome.card_badges('projekt', 'C / raylib'), '>Projekt (C / raylib)<'
+        assert_equal '', StudentHome.card_badges(nil, 'Ruby')
     end
 end

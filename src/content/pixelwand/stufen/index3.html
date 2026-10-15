@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Pixelwand</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 1.5em; background: #0e0f17; color: #f4f4f4; }
+    #wall { width: 640px; height: 400px; image-rendering: pixelated; cursor: crosshair;
+            outline: 2px solid #333c57; border-radius: 2px; touch-action: none; }
+    #colors { display: flex; gap: 4px; margin-top: 0.8em; }
+    #colors button { width: 32px; height: 32px; border: 2px solid transparent; border-radius: 4px; cursor: pointer; }
+    #colors button.active { border-color: #f4f4f4; }
+  </style>
+</head>
+<body>
+  <h1>Pixelwand</h1>
+  <p id="people">Verbinde …</p>
+  <canvas id="wall" width="64" height="40"></canvas>
+  <div id="colors"></div>
+
+  <script>
+    // Die Palette »Sweetie 16«, wie bei PixelRAM
+    const PALETTE = ['#1a1c2c', '#5d275d', '#b13e53', '#ef7d57', '#ffcd75', '#a7f070', '#38b764', '#257179',
+                     '#29366f', '#3b5dc9', '#41a6f6', '#73eff7', '#f4f4f4', '#94b0c2', '#566c86', '#333c57'];
+
+    const wall = document.getElementById('wall');
+    const pen = wall.getContext('2d');
+    let color = 4;
+
+    function setPixel(x, y, c) {
+      pen.fillStyle = PALETTE[c];
+      pen.fillRect(x, y, 1, 1);
+    }
+
+    // Die Knöpfe für die Farben
+    PALETTE.forEach((value, c) => {
+      const button = document.createElement('button');
+      button.style.background = value;
+      button.title = 'Farbe ' + c;
+      if (c === color) button.classList.add('active');
+      button.addEventListener('click', () => {
+        document.querySelector('#colors .active').classList.remove('active');
+        button.classList.add('active');
+        color = c;
+      });
+      document.getElementById('colors').append(button);
+    });
+
+    const url = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws';
+    const socket = new WebSocket(url);
+
+    socket.addEventListener('message', (event) => {
+      const message = JSON.parse(event.data);
+      if (message.type === 'picture') {
+        // Das ganze Bild, gleich nach dem Verbinden
+        message.pixels.forEach((c, i) => setPixel(i % message.width, Math.floor(i / message.width), c));
+      } else if (message.type === 'pixel') {
+        setPixel(message.x, message.y, message.color);
+      } else if (message.type === 'people') {
+        document.getElementById('people').textContent =
+          message.count === 1 ? 'Du malst allein.' : message.count + ' Leute malen gerade mit.';
+      }
+    });
+    socket.addEventListener('close', () => {
+      document.getElementById('people').textContent = 'Die Verbindung ist zu. Lade die Seite neu.';
+    });
+
+    // Malen: Mausposition in Pixel umrechnen und dem Server schicken.
+    // Gezeichnet wird erst, wenn der Server den Pixel an alle schickt.
+    function sendPixel(x, y) {
+      if (x >= 0 && x < wall.width && y >= 0 && y < wall.height) {
+        socket.send(JSON.stringify({ x: x, y: y, color: color }));
+      }
+    }
+
+    function pixelAt(event) {
+      const rect = wall.getBoundingClientRect();
+      return [Math.floor((event.clientX - rect.left) / rect.width * wall.width),
+              Math.floor((event.clientY - rect.top) / rect.height * wall.height)];
+    }
+
+    // Die Maus meldet sich nicht bei jedem Pixel: Von der letzten Stelle bis
+    // zur neuen jeden Pixel dazwischen schicken, sonst hat die Linie Lücken
+    let last = null;
+    function paint(event) {
+      const [x, y] = pixelAt(event);
+      const [x0, y0] = last || [x, y];
+      const steps = Math.max(Math.abs(x - x0), Math.abs(y - y0), 1);
+      for (let i = 1; i <= steps; i++) {
+        sendPixel(Math.round(x0 + (x - x0) * i / steps), Math.round(y0 + (y - y0) * i / steps));
+      }
+      last = [x, y];
+    }
+    wall.addEventListener('pointerdown', (e) => { last = pixelAt(e); sendPixel(...last); });
+    wall.addEventListener('pointermove', (e) => { if (last) paint(e); });
+    window.addEventListener('pointerup', () => { last = null; });
+  </script>
+</body>
+</html>

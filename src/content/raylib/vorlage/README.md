@@ -19,7 +19,8 @@ andere Programm im Ordner geht genauso: `make PROGRAM=test` macht aus
 ## Dateien
 
 - `main.c`: das Programm
-- `licht.vs`, `licht.fs`: die Shader für das Licht (Vertex- und Fragment-Shader),
+- `light.vs`, `light.fs`: die Shader für das Licht (Vertex- und Fragment-Shader),
   die in die Seite eingebettet werden
+- `textures.png`: die Texturen für die Blöcke, ein Streifen aus Kacheln
 - `Makefile`: übersetzt das Programm; die Webseite drumherum (mit Konsole,
   Vollbild und CRT-Filter) lädt es beim ersten Mal von PixelRAM

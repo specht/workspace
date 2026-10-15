@@ -48,6 +48,16 @@
   entries:
     - shower
 
+- key: reference-latex
+  label: Dokumente mit LaTeX
+  icon: /images/memo.png
+  description: |
+    Facharbeiten, Protokolle und Bewerbungen mit LaTeX: Gliederung,
+    Tabellen, Bilder, Formeln, Quellen, Seitenlayout und Schriften, dazu
+    fertige Vorlagen.
+  entries:
+    - latex
+
 - key: reference-colors
   label: Farben
   icon: /images/palette.png

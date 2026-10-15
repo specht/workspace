@@ -6,19 +6,19 @@ int main(void)
     SetTargetFPS(60);
 
     // Die Kamera: wo sie steht, wohin sie schaut und wo oben ist
-    Camera3D kamera = { 0 };
-    kamera.position = (Vector3){ 6, 5, 8 };
-    kamera.target = (Vector3){ 0, 0, 0 };
-    kamera.up = (Vector3){ 0, 1, 0 };
-    kamera.fovy = 45;
-    kamera.projection = CAMERA_PERSPECTIVE;
+    Camera3D camera = { 0 };
+    camera.position = (Vector3){ 6, 5, 8 };
+    camera.target = (Vector3){ 0, 0, 0 };
+    camera.up = (Vector3){ 0, 1, 0 };
+    camera.fovy = 45;
+    camera.projection = CAMERA_PERSPECTIVE;
 
     while (!WindowShouldClose())
     {
         BeginDrawing();
         ClearBackground(SKYBLUE);
 
-        BeginMode3D(kamera);
+        BeginMode3D(camera);
         DrawGrid(10, 1);
         DrawCube((Vector3){ 0, 0.5f, 0 }, 1, 1, 1, ORANGE);
         DrawCubeWires((Vector3){ 0, 0.5f, 0 }, 1, 1, 1, MAROON);

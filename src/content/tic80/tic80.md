@@ -1,6 +1,7 @@
 <div class='meta'>
-image: stars-run.webp
+image: sky.webp
 kind: projekt
+language: Lua
 duration: 3 Doppelstunden
 reference: [workspace]
 </div>
@@ -221,7 +222,7 @@ Ein Stern hat eine Position `sx`, `sy`. In jedem Bild fällt er ein Pixel tiefer
 
 Und gefangen ist er, wenn er die Figur berührt: wenn er tief genug ist (`sy` zwischen 104 und 128) und nicht links oder rechts an ihr vorbei (`sx + 8 > x` und `sx < x + 16`; der Stern ist 8 Pixel breit, die Figur 16). Dann gibt es einen Punkt, und der Stern fängt oben neu an.
 
-_include_file(step2.lua, lua)
+_include_file(step2.lua, lua_copy)
 
 <!-- tutorial-screenshot
 write-file: TIC-80/stars.lua <- file:step2.lua
@@ -267,10 +268,10 @@ Ein einzelner Stern ist schnell langweilig. Jetzt fallen drei gleichzeitig, und 
 
 Wer einen Stern fängt, macht das Spiel ein wenig schneller (`speed`). Sind alle Leben weg, steht »GAME OVER« da, und mit <kbd>Z</kbd> beginnt eine neue Runde; `btnp(4)` ist im ersten Bild wahr, in dem die Taste gedrückt ist.
 
-_include_file(stars.lua, lua)
+_include_file(step3.lua, lua_copy)
 
 <!-- tutorial-screenshot
-write-file: TIC-80/stars.lua <- file:stars.lua
+write-file: TIC-80/stars.lua <- file:step3.lua
 open-site: /tic80/
 tab: preview
 viewport: 1024x576
@@ -285,7 +286,7 @@ sleep: 0.4
 <img class='full' src='stars-run.webp' alt='Drei gelbe Sterne fallen, unten die Figur, oben »Score« und »Lives«.'>
 
 <!-- tutorial-screenshot
-write-file: TIC-80/stars.lua <- file:stars.lua
+write-file: TIC-80/stars.lua <- file:step3.lua
 open-site: /tic80/
 tab: preview
 viewport: 1024x576
@@ -303,7 +304,7 @@ _task(viele-sterne)
 Drücke <kbd>F4</kbd>: Im **SFX-Editor** baust du Töne. Ton 0 ist schon da. Klicke unten auf die Tasten des Klaviers, um ihn zu hören, und verändere oben die Lautstärke (VOL) und die Tonhöhe (PITCH) über die Zeit.
 
 <!-- tutorial-screenshot
-write-file: TIC-80/stars.lua <- file:stars.lua
+write-file: TIC-80/stars.lua <- file:step3.lua
 open-site: /tic80/
 tab: preview
 viewport: 1024x576
@@ -319,13 +320,71 @@ Im Spiel steht der Ton schon an der Stelle, an der ein Stern gefangen wird: `sfx
 
 _task(ton)
 
+### Ein Himmel
+
+Noch fallen die Sterne vor einem leeren Bildschirm. Ein Himmel mit funkelnden Punkten und eine Wiese machen daraus eine Nacht. Die Punkte werden nur einmal ausgewürfelt, beim Start, und stehen in einer Tabelle `sky`. Würfelte das Spiel sie in jedem Bild neu, würden sie wild flackern. Schreibe das vor `newGame()`:
+
+```lua
+-- Der Himmel: 60 Punkte an festen Stellen, einmal ausgewürfelt
+sky = {}
+for i = 1, 60 do
+	sky[i] = { x = math.random(0, 239), y = math.random(0, 127) }
+end
+t = 0
+```
+
+`t` zählt die Bilder. Erhöhe es in der ersten Zeile von `TIC()` mit `t = t + 1`. Ersetze dann in `TIC()` alles zwischen `cls(0)` und `spr(…)` durch:
+
+```lua_copy
+	-- Jeder Punkt wechselt alle halbe Sekunde den Blauton: Der Himmel funkelt
+	for i, p in ipairs(sky) do
+		pix(p.x, p.y, 13 + (i + t // 30) % 3)
+	end
+	for i, s in ipairs(stars) do
+		-- der Schweif: nach oben immer dunkler
+		line(s.x + 4, s.y - 2, s.x + 4, s.y - 4, 3)
+		line(s.x + 4, s.y - 6, s.x + 4, s.y - 8, 2)
+		line(s.x + 4, s.y - 10, s.x + 4, s.y - 11, 1)
+		-- der Stern: ein Kreuz, ein Kreis und ein heller Kern
+		line(s.x + 4, s.y, s.x + 4, s.y + 8, 4)
+		line(s.x, s.y + 4, s.x + 8, s.y + 4, 4)
+		circ(s.x + 4, s.y + 4, 2, 4)
+		pix(s.x + 4, s.y + 4, 12)
+	end
+	-- Die Wiese, auf der die Figur steht
+	rect(0, 128, 240, 8, 6)
+	line(0, 128, 239, 128, 5)
+```
+
+- `pix(x, y, farbe)` setzt einen einzelnen Pixel. Die Farben 13, 14 und 15 sind drei Blautöne.
+- `t // 30` teilt ohne Rest: Es wird alle 30 Bilder, also jede halbe Sekunde, um eins größer. `% 3` macht daraus reihum 0, 1, 2. Weil jeder Punkt seine Nummer `i` dazuzählt, wechseln nicht alle gleichzeitig.
+- `line(x1, y1, x2, y2, farbe)` zeichnet eine Linie. Ein senkrechter und ein waagrechter Strich ergeben das Kreuz, das den Stern funkeln lässt; der Schweif sind drei kurze Striche in Orange, Rot und Lila.
+- Was später gezeichnet wird, liegt oben. Darum kommt die Wiese nach den Sternen: Ein Stern, der unten ankommt, verschwindet im Gras.
+
+<!-- tutorial-screenshot
+write-file: TIC-80/stars.lua <- file:stars.lua
+open-site: /tic80/
+tab: preview
+viewport: 1024x576
+hook: tic load stars.lua
+# Nach knapp zwei Sekunden sind die Sterne über den ganzen Himmel verteilt
+# und noch keiner ist unten angekommen.
+hook: tic run
+hook: hold ArrowLeft 0.6
+sleep: 0.6
+-->
+
+<img class='full' src='sky.webp' alt='Das fertige Spiel: funkelnde Sterne mit einem Schweif in Orange, Rot und Lila fallen über einen Nachthimmel mit kleinen blauen Punkten, unten steht die Figur auf einer grünen Wiese.'>
+
+_task(himmel)
+
 ## Dein Spiel
 
 Jetzt ist es dein Spiel. Ein paar Ideen:
 
 - **Gefahren:** Neben den Sternen fallen rote Steine; wer einen fängt, verliert ein Leben.
 - **Ein Rekord:** `pmem(0)` merkt sich eine Zahl über das Ende des Spiels hinaus. Speichere dort den höchsten Punktestand und zeige ihn an.
-- **Ein Himmel:** Im Map-Editor (<kbd>F3</kbd>) baust du ein Bild aus Kacheln, `map()` zeichnet es statt `cls(0)`.
+- **Eine Landschaft:** Im Map-Editor (<kbd>F3</kbd>) baust du ein Bild aus Kacheln, Berge oder eine Stadt; `map()` zeichnet es statt der Wiese.
 - **Musik:** Im Musik-Editor (<kbd>F5</kbd>) schreibst du eine Melodie, `music(0)` spielt sie ab.
 - **Mehr Bewegung:** Die Figur springt mit <kbd>↑</kbd>, oder die Sterne fallen schräg.
 

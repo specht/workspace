@@ -127,7 +127,7 @@ export default {
 
         // hook: studio FILE: the 2D Game Studio (2d.hackschule.de) in the
         // preview tab, with FILE (below src/content, e.g. the starter's
-        // texturen.png) imported as the frames of a sprite »Kacheln«, the way
+        // textures.png) imported as the frames of a sprite »Kacheln«, the way
         // a student would have drawn them. Nothing is saved.
         async studio({ page, args, timeout }) {
             const file = args.trim();

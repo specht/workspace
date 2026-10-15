@@ -3,20 +3,20 @@ precision mediump float;
 
 // Vom Vertex-Shader, für jeden Pixel einer Fläche
 varying vec3 position;
-varying vec3 normale;
-varying vec4 farbe;
+varying vec3 normal;
+varying vec4 color;
 
-uniform vec3 sonne;         // Richtung, aus der die Sonne scheint
-uniform vec3 sonnenlicht;   // Farbe und Stärke des Sonnenlichts
-uniform vec3 umgebung;      // Licht, das von überall kommt
+uniform vec3 sun;        // Richtung, aus der die Sonne scheint
+uniform vec3 sunlight;   // Farbe und Stärke des Sonnenlichts
+uniform vec3 ambient;    // Licht, das von überall kommt
 
 void main()
 {
-    vec3 n = normalize(normale);
+    vec3 n = normalize(normal);
 
     // Wie direkt trifft die Sonne diese Fläche? 1 = senkrecht, 0 = gar nicht
-    float sonnig = max(dot(n, sonne), 0.0);
-    vec3 licht = umgebung + sonnenlicht * sonnig;
+    float sunAmount = max(dot(n, sun), 0.0);
+    vec3 light = ambient + sunlight * sunAmount;
 
-    gl_FragColor = vec4(farbe.rgb * licht, 1.0);
+    gl_FragColor = vec4(color.rgb * light, 1.0);
 }

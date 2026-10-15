@@ -93,6 +93,7 @@ image: tcpip.webp
 | Feld | Bedeutung |
 | --- | --- |
 | `kind` | `projekt`, `labor`, `grundlagen`, `galerie`, `uebung`, `steckbrief` oder `reference`; steht als Etikett auf der Karte im Katalog |
+| `language` | Die Sprache, in der man auf der Seite programmiert oder schreibt, zum Beispiel `Ruby` oder `C / raylib`; steht in Klammern hinter der Art: »Projekt (Ruby)«. Nur bei Seiten mit einer festen Sprache |
 | `topic` | Schlüssel eines Abschnitts aus `sections.yaml`, für die Sortierung nach Thema |
 | `duration` | Freier Text, so wie er auf der Karte stehen soll |
 | `requires` | Aktivitäten, die vorher sinnvoll sind |
@@ -103,7 +104,8 @@ image: tcpip.webp
 
 Über jeder Seite steht ein schmaler Streifen, der sagt, was sie ist:
 
-- **Aktivität:** die Art aus `kind` (ohne `kind`: »Aktivität«), die Dauer aus
+- **Aktivität:** die Art aus `kind` (ohne `kind`: »Aktivität«), mit der Sprache
+  aus `language` in Klammern, die Dauer aus
   `duration` und Links zu den Handbuch-Seiten aus `reference` und aus
   jedem `_include()` der Seite.
 - **Handbuch-Seite:** »Handbuch › Abschnitt« und »Wird verwendet in«

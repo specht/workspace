@@ -4,13 +4,13 @@
 
 // ---------------------------------------------------------------- Die Welt
 
-#define BREITE 48   // x
-#define HOEHE 24    // y, nach oben
-#define TIEFE 48    // z
+#define WIDTH 48    // x
+#define HEIGHT 24   // y, nach oben
+#define DEPTH 48    // z
 
-enum { LUFT, GRAS, ERDE, STEIN, HOLZ, LAUB, SAND, ANZAHL_ARTEN };
+enum { AIR, GRASS, DIRT, STONE, WOOD, LEAVES, SAND, BLOCK_TYPES };
 
-Color farben[ANZAHL_ARTEN] = {
+Color colors[BLOCK_TYPES] = {
     { 0, 0, 0, 0 },
     { 96, 168, 64, 255 },     // Gras
     { 130, 92, 62, 255 },     // Erde
@@ -20,63 +20,63 @@ Color farben[ANZAHL_ARTEN] = {
     { 222, 204, 150, 255 },   // Sand
 };
 
-unsigned char welt[BREITE][HOEHE][TIEFE];
+unsigned char world[WIDTH][HEIGHT][DEPTH];
 
 // Der Block an einer Stelle; außerhalb der Welt ist Luft
 int block(int x, int y, int z)
 {
-    if (x < 0 || y < 0 || z < 0 || x >= BREITE || y >= HOEHE || z >= TIEFE)
-        return LUFT;
-    return welt[x][y][z];
+    if (x < 0 || y < 0 || z < 0 || x >= WIDTH || y >= HEIGHT || z >= DEPTH)
+        return AIR;
+    return world[x][y][z];
 }
 
-void baum(int x, int y, int z)
+void tree(int x, int y, int z)
 {
     for (int i = 0; i < 4; i++)
-        welt[x][y + i][z] = HOLZ;
+        world[x][y + i][z] = WOOD;
     for (int dx = -2; dx <= 2; dx++)
         for (int dz = -2; dz <= 2; dz++)
             for (int dy = 3; dy <= 5; dy++)
-                if (abs(dx) + abs(dz) + (dy - 3) <= 3 && block(x + dx, y + dy, z + dz) == LUFT)
-                    welt[x + dx][y + dy][z + dz] = LAUB;
+                if (abs(dx) + abs(dz) + (dy - 3) <= 3 && block(x + dx, y + dy, z + dz) == AIR)
+                    world[x + dx][y + dy][z + dz] = LEAVES;
 }
 
-void erzeuge_welt(void)
+void generate_world(void)
 {
-    for (int x = 0; x < BREITE; x++) {
-        for (int z = 0; z < TIEFE; z++) {
+    for (int x = 0; x < WIDTH; x++) {
+        for (int z = 0; z < DEPTH; z++) {
             // Hügel aus drei Wellen, die sich überlagern
             float h = 7.0f + 2.0f * sinf(x * 0.13f) + 1.5f * cosf(z * 0.11f)
                     + 1.5f * sinf((x + z) * 0.07f);
-            int hoehe = (int)h;
-            for (int y = 0; y < hoehe; y++) {
-                if (y == hoehe - 1)
-                    welt[x][y][z] = hoehe <= 5 ? SAND : GRAS;
-                else if (y >= hoehe - 3)
-                    welt[x][y][z] = ERDE;
+            int height = (int)h;
+            for (int y = 0; y < height; y++) {
+                if (y == height - 1)
+                    world[x][y][z] = height <= 5 ? SAND : GRASS;
+                else if (y >= height - 3)
+                    world[x][y][z] = DIRT;
                 else
-                    welt[x][y][z] = STEIN;
+                    world[x][y][z] = STONE;
             }
         }
     }
     SetRandomSeed(7);
     for (int i = 0; i < 14; i++) {
-        int x = GetRandomValue(3, BREITE - 4);
-        int z = GetRandomValue(3, TIEFE - 4);
-        int y = HOEHE - 7;
-        while (y > 0 && block(x, y - 1, z) == LUFT)
+        int x = GetRandomValue(3, WIDTH - 4);
+        int z = GetRandomValue(3, DEPTH - 4);
+        int y = HEIGHT - 7;
+        while (y > 0 && block(x, y - 1, z) == AIR)
             y--;
-        if (block(x, y - 1, z) == GRAS)
-            baum(x, y, z);
+        if (block(x, y - 1, z) == GRASS)
+            tree(x, y, z);
     }
 }
 
 // Grenzt der Block an Luft? Nur dann kann man ihn sehen.
-bool sichtbar(int x, int y, int z)
+bool visible(int x, int y, int z)
 {
-    return block(x + 1, y, z) == LUFT || block(x - 1, y, z) == LUFT
-        || block(x, y + 1, z) == LUFT || block(x, y - 1, z) == LUFT
-        || block(x, y, z + 1) == LUFT || block(x, y, z - 1) == LUFT;
+    return block(x + 1, y, z) == AIR || block(x - 1, y, z) == AIR
+        || block(x, y + 1, z) == AIR || block(x, y - 1, z) == AIR
+        || block(x, y, z + 1) == AIR || block(x, y, z - 1) == AIR;
 }
 
 int main(void)
@@ -84,37 +84,37 @@ int main(void)
     InitWindow(960, 540, "Klötzchenwelt");
     SetTargetFPS(60);
 
-    erzeuge_welt();
+    generate_world();
 
-    Camera3D kamera = { 0 };
-    kamera.position = (Vector3){ -20, 30, -20 };
-    kamera.target = (Vector3){ BREITE / 2, 4, TIEFE / 2 };
-    kamera.up = (Vector3){ 0, 1, 0 };
-    kamera.fovy = 45;
-    kamera.projection = CAMERA_PERSPECTIVE;
+    Camera3D camera = { 0 };
+    camera.position = (Vector3){ -20, 30, -20 };
+    camera.target = (Vector3){ WIDTH / 2, 4, DEPTH / 2 };
+    camera.up = (Vector3){ 0, 1, 0 };
+    camera.fovy = 45;
+    camera.projection = CAMERA_PERSPECTIVE;
 
     while (!WindowShouldClose())
     {
         // raylib dreht die Kamera langsam um ihr Ziel
-        UpdateCamera(&kamera, CAMERA_ORBITAL);
+        UpdateCamera(&camera, CAMERA_ORBITAL);
 
         BeginDrawing();
         ClearBackground(SKYBLUE);
 
-        BeginMode3D(kamera);
-        int bloecke = 0;
-        for (int x = 0; x < BREITE; x++)
-            for (int y = 0; y < HOEHE; y++)
-                for (int z = 0; z < TIEFE; z++)
-                    if (welt[x][y][z] != LUFT && sichtbar(x, y, z)) {
-                        Vector3 mitte = { x + 0.5f, y + 0.5f, z + 0.5f };
-                        DrawCube(mitte, 1, 1, 1, farben[welt[x][y][z]]);
-                        DrawCubeWires(mitte, 1, 1, 1, Fade(BLACK, 0.25f));
-                        bloecke++;
+        BeginMode3D(camera);
+        int blocks = 0;
+        for (int x = 0; x < WIDTH; x++)
+            for (int y = 0; y < HEIGHT; y++)
+                for (int z = 0; z < DEPTH; z++)
+                    if (world[x][y][z] != AIR && visible(x, y, z)) {
+                        Vector3 center = { x + 0.5f, y + 0.5f, z + 0.5f };
+                        DrawCube(center, 1, 1, 1, colors[world[x][y][z]]);
+                        DrawCubeWires(center, 1, 1, 1, Fade(BLACK, 0.25f));
+                        blocks++;
                     }
         EndMode3D();
 
-        DrawText(TextFormat("%d Blöcke  %d FPS", bloecke, GetFPS()), 10, 10, 20, DARKBLUE);
+        DrawText(TextFormat("%d Blöcke  %d FPS", blocks, GetFPS()), 10, 10, 20, DARKBLUE);
         EndDrawing();
     }
 
