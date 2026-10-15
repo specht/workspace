@@ -4679,17 +4679,10 @@ class Main < Sinatra::Base
                     entries = section[:entries].reject do |entry|
                         (!DEVELOPMENT) && @@content[entry][:dev_only]
                     end
-                    entries.each.with_index do |slug, index|
-                        hor2 = ((entries.length % 2) == 1) && (index == entries.length - 1)
-                        hor3 = false
-                        if entries.length % 3 == 1
-                            hor3 = index >= entries.length - 4
-                        elsif entries.length % 3 == 2
-                            hor3 = index >= entries.length - 2
-                        end
-
+                    # Every card the same size; a section ends where it ends.
+                    entries.each do |slug|
                         content = @@content[slug]
-                        io.puts "<div class='hscol #{hor2 ? 'hor2' : ''} #{hor3 ? 'hor3' : ''}'>"
+                        io.puts "<div class='hscol'>"
                         io.puts "<a href='/#{slug}' class='tutorial_card3'>"
                         io.puts "<h4>#{content[:title]}</h4>"
                         io.puts "<div>"
@@ -4709,11 +4702,10 @@ class Main < Sinatra::Base
                         end
                         io.puts "<div class='shade'></div>"
                         io.puts "<div class='card-content'>"
-                        # Title and kind share one line; a kind that does not
-                        # fit next to the title is left out (default.css).
+                        # The kind on its own line above the title (default.css).
+                        io.puts StudentHome.card_badges(content[:kind], content[:language]) if catalog == :student
                         io.puts "<div class='card-title-row'>"
                         io.puts "#{content[:dev_only] ? '<span class="badge badge-sm bg-danger">dev</span> ' : ''}<h4>#{content[:title]}</h4>"
-                        io.puts StudentHome.card_badges(content[:kind], content[:language]) if catalog == :student
                         io.puts "</div>"
                         io.puts "<div class='abstract'>#{content[:abstract]}</div>"
                         io.puts "</div>"
