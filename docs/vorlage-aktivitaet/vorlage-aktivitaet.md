@@ -20,7 +20,7 @@ Ein bis drei Sätze: Was machen die Lernenden, und was haben sie am Ende? Dieser
 
 ## Erster Schritt
 
-Kurzer Text, dann gleich etwas zum Tun. Befehle stehen in Codeblöcken, damit man sie kopieren kann:
+Kurzer Text, dann gleich etwas zum Tun. Befehle stehen in Codeblöcken, genau so, wie man sie eintippt:
 
 ```bash
 ls -la

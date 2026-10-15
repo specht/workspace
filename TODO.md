@@ -36,7 +36,7 @@ page, the start page and practice sets from Code Bites (`docs/aufgaben.md`).
 Still open:
 
 * [ ] A generated »Wie geht es weiter?« box at the end of a page, from a new `next` field
-* [ ] Teacher notes with solutions for every activity; 15 have a `lehrkraft.md`, the SQL introduction and the language pages have none
+* [ ] Teacher notes with solutions for every activity; 19 have a `lehrkraft.md`, the SQL introduction and the language pages have none
 * [ ] Workspace-state check for a running server (a port answers), for the setup steps of web activities
 * [ ] Link the matching Code Bites exercises from each programming-language page
 
@@ -107,54 +107,52 @@ Then delete `_drafts/filmdatenbank.md`, which still holds these ideas.
 * [ ] Back into the catalog
 
 
+### Written, not yet tried in class
+
+Four activities written in October 2026, with tasks, teacher notes and
+generated screenshots:
+
+* »Eine Facharbeit mit LaTeX« (`src/content/latex`) and Handbuch »Dokumente mit LaTeX«
+* »Ein eigener Webserver« (`src/content/webserver`), a Ruby `TCPServer` in five stages, linked from TCP/IP
+* »Eine Pixelwand für alle« (`src/content/pixelwand`), WebSockets and a shared 64 × 40 canvas through Shared Live Apps
+* »Eine Klötzchenwelt in 3D« (`src/content/raylib`), raylib in 3D with Handbuch »raylib«; the starter is `specht/raylib-starter`, the same files as `vorlage/`
+
+* [ ] Try each in class and adjust pace and tasks (LaTeX 3, web server 2, pixel wall 2, raylib 5 double lessons)
+* [ ] Pixel wall: check how it behaves with a whole class painting on one Workspace
+* [ ] Take over the useful part of the Hades page (HTTP POST, JSON) into the web server page, then retire Hades
+* [ ] raylib: an icon of its own for the Handbuch section (now the star)
+
+Do not turn PixelRAM into a second raylib by adding drawing primitives for convenience.
+
+
 ### New instruments and pages
 
 Prefer pages that introduce genuinely new ideas rather than more installed technology.
 Prioritise creative, visible material that also works with younger students; the order
 below is a writing priority, not a prerequisite chain.
 
-1. raylib + WebAssembly (drafted as a 3D activity, see below)
-2. Hugo / static site generators
-3. Flutter
-4. Web server (drafted)
-5. WebSockets (drafted)
-6. Cryptography
+1. Hugo / static site generators
+2. Flutter
+3. Cryptography
 
 Plus, from the review:
 
 * [ ] **Query stepper / database sandbox**: FROM → JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT with the intermediate table after each step; class repository and Class progress like the other sandboxes
 * [ ] **JPEG decoder project**: the interactive Huffman section is excellent, but iDCT, MCU and colour conversion get one paragraph each and there is nothing to implement; a staged decoder with a check per stage
 
+#### 1. Hugo / static site generators
 
-#### 1. and 2. Web server and WebSockets
+> One HTML page is easy to maintain by hand. What happens when 20 or 50 pages all need the same navigation, header and footer?
 
-Drafted as »Ein eigener Webserver« (`src/content/webserver`, a Ruby `TCPServer` in five stages up to files, 404, parameters and a counter with a mutex) and »Eine Pixelwand für alle« (`src/content/pixelwand`, handshake written by the students, frames in a commented `websocket.rb`, messages to everyone, a shared 64 × 40 canvas, shared through Shared Live Apps). Both without a template, linked from TCP/IP.
+* [ ] Begin with the duplication problem; a minimal site without a downloaded theme
+* [ ] First page in Markdown, `hugo server`, minimal front matter (`title`, `date`, `draft`)
+* [ ] A shared base layout with `.Title` and `.Content`; several pages; a list/home template that discovers new content
+* [ ] Only the Go-template subset students need; their own CSS; tags as one example of generated navigation
+* [ ] Source vs output: run `hugo`, inspect `public/`, publish it to the student's webspace
 
-* [ ] Try both in class; check how the shared pixel wall behaves with a whole class on one Workspace
-* [ ] Take over the useful part of the Hades page (HTTP POST, JSON) into the web server page, then retire Hades
+No third-party themes, Hugo Modules, multilingual sites, custom output formats, complex shortcodes or deployment pipelines in the introduction.
 
-#### 3. Cryptography in the terminal
-
-A laboratory around four questions:
-
-> Has this data changed? → hashes
->
-> Can somebody else read this data? → encryption
->
-> Who signed/created this data? → digital signatures
->
-> How can a server recognize me without receiving my password? → public-key authentication
-
-* [ ] `sha256sum`, change one byte, compare copies; what a hash can and cannot prove
-* [ ] Why plain SHA-256 is not password storage; salts and dedicated password hashing conceptually
-* [ ] Encrypt/decrypt a file symmetrically with OpenSSL; try the wrong password
-* [ ] Generate and inspect an Ed25519 key pair; sign, verify, modify, fail
-* [ ] Distinguish secrecy (encryption) from authenticity/integrity (signature)
-* [ ] Connect public keys to SSH and the Git material; end with a key fingerprint (back to hashes)
-
-Before finalizing signing, test which tool gives the cleanest classroom workflow (`ssh-keygen -Y`, OpenSSL or GPG). Keep mathematics and cipher internals optional.
-
-#### 4. Flutter
+#### 2. Flutter
 
 > Develop in the browser, then turn the same project into a real installable app.
 
@@ -177,28 +175,26 @@ Android build support, before broad rollout:
 
 APK rather than App Bundle for the introduction; no release signing or Play Store accounts (mention `flutter build appbundle` as a follow-up). iOS: the same source can target iOS, but builds need macOS, Xcode and Apple signing; mention a Mac or a cloud build service such as Codemagic; keep App Store details optional.
 
-#### 5. raylib: »Eine Klötzchenwelt in 3D«
+#### 3. Cryptography in the terminal
 
-Drafted in `src/content/raylib` (activity, tasks, teacher note, stages `stufen/1.c`–`8.c`) with the Handbuch page `reference/raylib`. A block world in first person: camera from two angles, walking with `dt`, gravity and collision, a ray to aim, building and removing, own faces with normals, a GLSL light shader, day and night, torches as point lights, fog, textures from `texturen.png`, drawn in the 2D Game Studio. The starter is `specht/raylib-starter` (same files as `vorlage/`). It sets raylib apart from Anaglyph (scenes) and TIC-80 (2D) by real-time 3D interaction and lighting. The page around the program is PixelRAM's shell, fetched by the starter's Makefile.
+A laboratory around four questions:
 
-* [ ] Apply and deploy `2d-sprite-export.patch` (Game Studio: Funktionen › Sprite › Als Bild speichern), which the texture chapter relies on
-* [ ] Render the screenshots (the recipes write the starter files themselves, no clone needed) and check them
-* [ ] Try it in class; adjust the pace (4 double lessons) and the tasks
-* [ ] An icon of its own for the Handbuch section (now the star)
+> Has this data changed? → hashes
+>
+> Can somebody else read this data? → encryption
+>
+> Who signed/created this data? → digital signatures
+>
+> How can a server recognize me without receiving my password? → public-key authentication
 
-Do not turn PixelRAM into a second raylib by adding drawing primitives for convenience.
+* [ ] `sha256sum`, change one byte, compare copies; what a hash can and cannot prove
+* [ ] Why plain SHA-256 is not password storage; salts and dedicated password hashing conceptually
+* [ ] Encrypt/decrypt a file symmetrically with OpenSSL; try the wrong password
+* [ ] Generate and inspect an Ed25519 key pair; sign, verify, modify, fail
+* [ ] Distinguish secrecy (encryption) from authenticity/integrity (signature)
+* [ ] Connect public keys to SSH and the Git material; end with a key fingerprint (back to hashes)
 
-#### 6. Hugo / static site generators
-
-> One HTML page is easy to maintain by hand. What happens when 20 or 50 pages all need the same navigation, header and footer?
-
-* [ ] Begin with the duplication problem; a minimal site without a downloaded theme
-* [ ] First page in Markdown, `hugo server`, minimal front matter (`title`, `date`, `draft`)
-* [ ] A shared base layout with `.Title` and `.Content`; several pages; a list/home template that discovers new content
-* [ ] Only the Go-template subset students need; their own CSS; tags as one example of generated navigation
-* [ ] Source vs output: run `hugo`, inspect `public/`, publish it to the student's webspace
-
-No third-party themes, Hugo Modules, multilingual sites, custom output formats, complex shortcodes or deployment pipelines in the introduction.
+Before finalizing signing, test which tool gives the cleanest classroom workflow (`ssh-keygen -Y`, OpenSSL or GPG). Keep mathematics and cipher internals optional.
 
 
 ## Existing pages
@@ -217,8 +213,9 @@ Open findings from the October 2026 review:
 Platform-wide:
 
 * [ ] Use the Handbuch part for the opening (close folder, clone, open) on the 24 pages that still repeat it by hand
-* [ ] Convert manual screenshots to recipes when a page is touched: 214 manual, 593 generated; most left on Ziffernerkennung (44), Anaglyph (33), Fire (15), Handbuch HTML (12), Hades (11)
+* [ ] Convert manual screenshots to recipes when a page is touched: 213 manual, 637 generated; most left on Ziffernerkennung (44), Anaglyph (33), Fire (15), Handbuch HTML (12), Hades (11)
 * [ ] E2E coverage for Git and TCP/IP
+* [ ] When a page is touched: English names in its code (variables, functions, files), as in the raylib, web server and pixel wall activities; comments stay German
 * [ ] On narrow screens, consider left-aligning long paragraphs instead of global justified text
 * [ ] A small `prefers-reduced-motion` pass for Workspace-owned transitions and animations
 * [ ] Mention Shared Live Apps in BIF for peer-testing unfinished stories, and wherever sharing a running app helps
@@ -274,3 +271,5 @@ Continue extracting coherent pieces from `main.rb` (about 7000 lines) incrementa
 * **Git collaboration** – branches, merge, conflicts, pull requests, working with another student, basic CI
 * **Data formats** – text vs binary, CSV, JSON, encodings, hex dumps; connects JPEG and network protocols
 * **PixelRAM projects** – plasma, Game of Life, Mandelbrot, raycaster, raytracer, a software rasterizer; do not turn PixelRAM into a second raylib
+* **PostgreSQL** – next to MySQL, with the exercises of [practical-sql](https://github.com/anthonydb/practical-sql)
+* **LDAP for schools** – a simple directory for logins, for example [glauth](https://github.com/glauth/glauth) with a config file

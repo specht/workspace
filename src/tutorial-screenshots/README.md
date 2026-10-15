@@ -420,18 +420,6 @@ will not show another prompt until that program exits. It waits up to 60
 seconds; `terminal-wait-for-prompt: 180` waits longer, for a command that
 takes its time (LuaLaTeX building its font index in a fresh Workspace).
 
-`pdf-page: PATH PAGE` makes the recipe's image from page PAGE of a PDF below
-`/workspace`, usually one the recipe has just compiled there: rendered at 300
-dpi, cut to its content, 1 mm shaved off the top and bottom. With TEXT, the
-page must contain it (`pdf-page: latex-fonts/fonts.pdf 17 Inter`), so a page
-number that no longer fits stops the render. The LaTeX
-tutorial shows its font samples this way, set with the fonts the Workspace
-really has.
-
-`pdf-page-full: PATH PAGE [TEXT]` is the same without the cutting: the whole
-sheet with its margins, at 200 dpi, for a page that should look like a page
-(the pages of the Facharbeit in the LaTeX activity).
-
 `terminal-maximize` makes the panel containing the terminal fill the available
 workbench area and returns focus to the terminal. It is safe to repeat when the
 panel is already maximized.
@@ -446,6 +434,37 @@ terminal-run: wget -q -O terra1.sql https://github.com/specht/workspace-files/ra
 terminal-run: mysql < terra1.sql
 terminal-run: mycli
 terminal-run: SHOW TABLES;
+```
+
+Two terminals side by side, a server on the left and `curl` on the right:
+hide the sidebar while the editor still has focus (with the terminal focused,
+<kbd>Ctrl</kbd>+<kbd>B</kbd> goes to the shell), then maximize the panel and
+split it. `terminal-run` always types into the last, right-hand terminal.
+
+```text
+hide-left-sidebar
+terminal-open
+terminal-maximize
+terminal-run: ruby server.rb
+press: Control+Shift+5
+terminal-run: curl -i localhost:8000
+```
+
+To restart the server in a later recipe, do what a student does: go to the
+left pane, stop the server, start it again. Do not use »Terminal: Kill All
+Terminals« followed by `terminal-run`: the new shell is not ready yet and
+loses the typed command, while the Enter still arrives.
+
+```text
+terminal-open
+terminal-maximize
+press: Alt+ArrowLeft
+press: Control+C
+press: Control+L
+type: ruby server.rb
+press: Enter
+sleep: 2
+terminal-run: clear
 ```
 
 `crop-terminal-lines` is a capture directive for Workspace terminal
@@ -492,6 +511,20 @@ They work for screenshots, not for videos, PDF pages or graphs.
 `crop-element: SELECTOR` crops a screenshot to exactly the box of the first
 element the CSS selector matches, such as the screen of an emulator. It
 replaces the other crops.
+
+### PDF pages
+
+`pdf-page: PATH PAGE` makes the recipe's image from page PAGE of a PDF below
+`/workspace`, usually one the recipe has just compiled there: rendered at 300
+dpi, cut to its content, 1 mm shaved off the top and bottom. With TEXT, the
+page must contain it (`pdf-page: latex-fonts/fonts.pdf 17 Inter`), so a page
+number that no longer fits stops the render. The LaTeX
+tutorial shows its font samples this way, set with the fonts the Workspace
+really has.
+
+`pdf-page-full: PATH PAGE [TEXT]` is the same without the cutting: the whole
+sheet with its margins, at 200 dpi, for a page that should look like a page
+(the pages of the Facharbeit in the LaTeX activity).
 
 ### Files and editor state
 

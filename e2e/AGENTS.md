@@ -2,15 +2,17 @@
 
 The E2E suite deliberately has two layers.
 
-## 1. Browser smoke test
+## 1. Browser tests
 
-Use Playwright/browser automation only for the boundary that actually requires
-a browser:
+Use Playwright/browser automation only for what actually requires a browser:
 
-- log in as a disposable E2E student;
-- reset the student's Workspace;
-- launch Workspace through the real application;
-- verify that code-server reaches a visible `.monaco-workbench`.
+- log in as a disposable E2E student, reset the student's Workspace, launch it
+  through the real application and wait for a visible `.monaco-workbench`
+  (`workspace-smoke.spec.ts`, and the `freshWorkspace` fixture for others);
+- the website itself: catalog, class page, task cards, Handbuch tables, media
+  variants, teacher pages (`*.browser.spec.ts` that use `page` directly);
+- what runs in the browser by nature: Shared Live Apps, the peer network,
+  webviews such as Pixelflow Canvas, TIC-80.
 
 Do not replay complete programming tutorials through Monaco. Earlier attempts
 became tests of Monaco selection, auto-indent, clipboard behavior, Quick Pick
@@ -169,8 +171,8 @@ workspace-smoke
 toolchains
 ```
 
-The smoke project creates the container first. The toolchain project uses one
-worker and reuses `e2e-0@example.com`'s container. Browser workers use distinct
+The smoke project (all browser tests) creates the container first. The
+toolchain project uses one worker and reuses `e2e-0@example.com`'s container. Browser workers use distinct
 `e2e-N@example.com` accounts and containers; the cleanup project stops every
 container in the configured E2E user pool after dependent projects finish.
 
@@ -181,6 +183,10 @@ npm test
 ```
 
 runs both in the correct order and produces one Playwright report.
+
+A fourth project, `pictures` (`*.pictures.ts`), takes pictures of the running
+development site for pages such as the teacher guide. It exists only with
+`HS_PICTURES=1` and never runs in a normal test run.
 
 Running:
 
