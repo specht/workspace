@@ -1,0 +1,77 @@
+{
+  "screenshots": {
+    "bauen.webp": {
+      "environment_fingerprint": "b94162cacbbfbca9d75dbc8ab97429dfa404aa93a31945926699952e97dd1f54",
+      "output_sha256": "cc0117fe9e9bc91413090899c9631105296c0201c8cbb54c745234b1860fe583",
+      "state_hash": "70e5358b657438446521c957a935ef2b429b4ed6cd9998721c90cb5bc184defe",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "fackeln.webp": {
+      "environment_fingerprint": "b94162cacbbfbca9d75dbc8ab97429dfa404aa93a31945926699952e97dd1f54",
+      "output_sha256": "430d5a49415d1681ce93b03ebaad41ad247a031c73091b6ad0bf0715b46b980a",
+      "state_hash": "465bd732866b8ea1ed8b0063923b8f8b896ef621769228fa1be20abe2fed5b58",
+      "variants": {
+        "fackeln-dark.webp": "a4c9f36299cf571c653449ad0ab1aa9b6258e77440261bec0cf2f59d7383b3ac"
+      },
+      "workspace_look": "4.138.0-ls366"
+    },
+    "geist.webp": {
+      "environment_fingerprint": "b94162cacbbfbca9d75dbc8ab97429dfa404aa93a31945926699952e97dd1f54",
+      "output_sha256": "76a5191f96d40e482bee32ff93a863c1a9d78ec1302a8748479d8f8248206dd2",
+      "state_hash": "d8c18d5ad44154d757a686223d17032d46fe10f2c31cfc252c4fafeaf6fccb78",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "insel.webp": {
+      "environment_fingerprint": "b94162cacbbfbca9d75dbc8ab97429dfa404aa93a31945926699952e97dd1f54",
+      "output_sha256": "d332ce0890741c830d3729b89592da5e2c017804468b5301dfea781e64e87a06",
+      "state_hash": "a4006efd6a48b7ab8aefe7314642e5cd5ec55df0d2d2e4ce7bb82c9df51945a2",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "laufen.webp": {
+      "environment_fingerprint": "b94162cacbbfbca9d75dbc8ab97429dfa404aa93a31945926699952e97dd1f54",
+      "output_sha256": "3a5045f4552dbdbef75afa26ccf427b005398baffc28eea167ba220bfaf798a1",
+      "state_hash": "09768a6263290f2d8457aa8a3a23a6b864c9d81d3cc92f645387ba430164457a",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "licht.webp": {
+      "environment_fingerprint": "b94162cacbbfbca9d75dbc8ab97429dfa404aa93a31945926699952e97dd1f54",
+      "output_sha256": "2f815956275a7a1e7554df245534d98e02157f8d16f918a0e18ee97411f6bfcf",
+      "state_hash": "3e03a61016c70c4c662d55c0454a7ac618582aed60a5b425a5612c860b4f40cf",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "make.webp": {
+      "environment_fingerprint": "b94162cacbbfbca9d75dbc8ab97429dfa404aa93a31945926699952e97dd1f54",
+      "output_sha256": "64bfe4639917d968a73a7dce190499ad054e7f2a01f9fed15456a644cfe89928",
+      "state_hash": "a340aa10e7012d0661990ffd504983caf651ecb7902921919a0c0e0f18d594fa",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "start.webp": {
+      "environment_fingerprint": "b94162cacbbfbca9d75dbc8ab97429dfa404aa93a31945926699952e97dd1f54",
+      "output_sha256": "2008dffec4e9d6731c2d2a0bf06ac3f778b7c4503c860144e408bd94a4383310",
+      "state_hash": "556b2e0ffc9a1bab6c0861602fc4e83578a2ada31033ed3dbc8cbb95b3b42749",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "studio-kacheln.webp": {
+      "environment_fingerprint": "b94162cacbbfbca9d75dbc8ab97429dfa404aa93a31945926699952e97dd1f54",
+      "output_sha256": "002df5af553cf3ba14df78c4e571a4c04bb725ea01668acba9798eefbc57311c",
+      "state_hash": "81887ccb79aecc840fa1584a687886252135005025ec55be345fdc5e14636c12",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "studio-speichern.webp": {
+      "environment_fingerprint": "b94162cacbbfbca9d75dbc8ab97429dfa404aa93a31945926699952e97dd1f54",
+      "output_sha256": "7a94dc44c0df18cee1b2fcffc09ca3a022584730944f8cab77b71e86f4c60013",
+      "state_hash": "a4c23b93ca787b4b0e26e55597afdff3af310726bf059b3e95bac9238766824e",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "tag.webp": {
+      "environment_fingerprint": "b94162cacbbfbca9d75dbc8ab97429dfa404aa93a31945926699952e97dd1f54",
+      "output_sha256": "ce743ebea8433bcb6954571c8ef898ad8e6cc1427ea9495a482476505fff44be",
+      "state_hash": "20e8003ab11e6a5fd4d66965b077d95cef58fae225021a562c7779c29a22921e",
+      "variants": {
+        "tag-dark.webp": "480eed3874916462291a9f8176fc8d0db47ec994116c6113d2ca5887172dbc6a"
+      },
+      "workspace_look": "4.138.0-ls366"
+    }
+  },
+  "version": 1
+}
