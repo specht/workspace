@@ -42,7 +42,7 @@ module CodeHighlight
             end
             lexer = nil
             case language
-            when 'bash'
+            when 'bash', 'sh'
                 lexer = Rouge::Lexers::Shell.new
             when 'basic'
                 lexer = Rouge::Lexers::VisualBasic.new
@@ -70,6 +70,8 @@ module CodeHighlight
                 lexer = Rouge::Lexers::Erlang.new
             when 'fortran'
                 lexer = Rouge::Lexers::Fortran.new
+            when 'glsl'
+                lexer = Rouge::Lexers::GLSL.new
             when 'go'
                 lexer = Rouge::Lexers::Go.new
             when 'html'
