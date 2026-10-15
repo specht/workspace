@@ -169,6 +169,8 @@ _task(bytes)
 
 Jetzt der Browser. Visual Studio Code leitet Port 8000 an eine Adresse weiter, die dein Browser erreicht. Du findest sie im Reiter »Ports« neben »Terminal«, in der Spalte »Forwarded Address«. Klicke mit gedrückter <kbd>Strg</kbd>-Taste darauf, und dein Server antwortet in einem neuen Tab.
 
+Oder du schreibst die Anfrage selbst, Zeile für Zeile: Öffne die [TCP-Konsole](/tcp-console) und verbinde dich mit `localhost`, Port 8000. Die Konsole beginnt in deinem Workspace, also landet sie bei deinem Server. Tippe `GET / HTTP/1.1`, `Host: localhost` und eine leere Zeile. Im Terminal siehst du, wie dein Server die Zeilen liest, in der Konsole, was er antwortet. Probier auch, was passiert, wenn du die leere Zeile weglässt oder statt einer Anfrage einfach `Hallo` schickst.
+
 ## Pfade und 404
 
 Bisher bekommt jeder Pfad dieselbe Antwort. Ein richtiger Server schaut in die Request-Line und antwortet je nach Pfad etwas anderes, und auf einen unbekannten Pfad mit dem Statuscode **404 Not Found**. Weil sich jede Antwort gleich aufbaut, steht das jetzt in einer Funktion `respond`:

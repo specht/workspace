@@ -252,6 +252,25 @@ tasks:
         say: Die Ausgabe ist noch JSON. Wähle mit jq nur das Feld fact aus.
     solution: '`curl -s https://catfact.ninja/fact | jq -r .fact`'
 
+  - id: zu-langsam
+    title: Wer zu langsam tippt
+    prediction: true
+    prompt: |
+      Du bist mit `www.wikipedia.org` verbunden und überlegst noch, was du
+      schreiben sollst. Was passiert?
+    check:
+      type: choice
+      options:
+        - Nach ein paar Sekunden schließt der Server die Verbindung.
+        - Der Server wartet, bis du die erste Zeile geschickt hast, egal wie lange.
+        - Der Server schickt von sich aus die Startseite von Wikipedia.
+        - Die Verbindung bleibt offen, bis du den Browser schließt.
+      correct: 0
+    feedback:
+      - when: { picked: 2 }
+        say: Bei HTTP fängt immer der Browser an. Ohne Anfrage weiß der Server nicht, welche Seite du willst.
+    solution: Nach etwa drei Sekunden ohne Anfrage meldet die Konsole, dass der Server die Verbindung geschlossen hat.
+
   - id: codewort
     title: Codewort vom Bot
     prompt: |
