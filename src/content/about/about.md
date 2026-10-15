@@ -38,6 +38,8 @@ Die Tutorials auf dieser Website können direkt verwendet, als Ausgangspunkt fü
 
 Melde dich an und klicke oben auf »Workspace öffnen«. Der Workspace wird bei Bedarf gestartet und öffnet sich anschließend in einem neuen Browser-Tab.
 
+Danach kannst du entweder einem Tutorial folgen oder direkt ein eigenes Projekt beginnen.
+
 <!-- tutorial-screenshot
 # Die Startseite, nicht angemeldet
 open-site: /
@@ -47,7 +49,4 @@ hook: guest
 sleep: 1
 variants: dark
 -->
-
-<img class='full full-shadow' src='start-page.webp' alt='Die Startseite des Workspaces: oben »Anmelden«, darunter, was man im Workspace machen kann.'>
-
-Danach kannst du entweder einem Tutorial folgen oder direkt ein eigenes Projekt beginnen.
+<img class='teaser' hidden src='start-page.webp' alt='Die Startseite des Workspaces: oben »Anmelden«, darunter, was man im Workspace machen kann.'>
