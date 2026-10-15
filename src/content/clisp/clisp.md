@@ -17,7 +17,7 @@ kind: steckbrief
 </div>
 
 <p class='abstract'>
-Lisp, entwickelt 1958 von John McCarthy am Massachusetts Institute of Technology (MIT), ist eine der ältesten Programmiersprachen und basiert auf der rekursiven Funktionstheorie. Lisp wurde vor allem in der Künstlichen Intelligenz (KI) eingesetzt, mit bekannten Anwendungen wie dem Expertensystem DENDRAL und dem KI-Framework Cyc. Heutzutage ist Lisp immer noch relevant, insbesondere in der Forschung und in spezialisierten Bereichen der Softwareentwicklung. Dialekte wie Common Lisp und Scheme werden weiterhin für ihre Flexibilität und mächtigen Makrosysteme geschätzt, die es ermöglichen, komplexe Programme effizient zu entwickeln und zu erweitern.
+Lisp, entwickelt 1958 von John McCarthy am Massachusetts Institute of Technology (MIT), ist eine der ältesten Programmiersprachen und basiert auf der rekursiven Funktionstheorie. Lisp wurde vor allem in der Künstlichen Intelligenz (KI) eingesetzt, mit bekannten Anwendungen wie dem Expertensystem DENDRAL und dem KI-Framework Cyc. Heutzutage ist Lisp immer noch relevant, insbesondere in der Forschung und in spezialisierten Bereichen der Softwareentwicklung. Common Lisp, um das es hier geht, fasste ab 1984 die vielen Lisp-Varianten zu einer gemeinsamen Sprache zusammen. Dialekte wie Common Lisp und Scheme werden weiterhin für ihre Flexibilität und mächtigen Makrosysteme geschätzt, die es ermöglichen, komplexe Programme effizient zu entwickeln und zu erweitern.
 </p>
 
 <!-- ## Eigenschaften

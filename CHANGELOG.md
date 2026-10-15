@@ -783,6 +783,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   mehr »Mit dem Handy anmelden«, sondern »Anmelden«; jede Seite lädt
   `moment.js` nicht mehr, das nirgends benutzt wurde; der Link von raylib
   zu den Wellen in PixelRAM springt an die richtige Stelle.
+- Sachfehler und Tippfehler: Rust steht mit 2015 (Version 1.0) im Titel und
+  im Text, Common Lisp und Smalltalk nennen beide Jahre, C# schreibt
+  Hejlsberg richtig, COBOL nennt den CODASYL-Ausschuss und Grace Hoppers
+  FLOW-MATIC, die NASM-Seite sagt, dass es um NASM geht; die
+  Ziffernerkennung ist von »boostrap«, »Kenrel«, »beboachten« und »des die«
+  befreit.
 
 ### Entfernt
 
