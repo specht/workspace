@@ -36,7 +36,7 @@ page, the start page and practice sets from Code Bites (`docs/aufgaben.md`).
 Still open:
 
 * [ ] A generated »Wie geht es weiter?« box at the end of a page, from a new `next` field
-* [ ] Teacher notes with solutions for every activity; 22 have a `lehrkraft.md`, the SQL introduction and the language pages have none
+* [ ] Teacher notes with solutions for every activity; 23 have a `lehrkraft.md`, the SQL introduction and the language pages have none
 * [ ] Workspace-state check for a running server (a port answers), for the setup steps of web activities
 * [ ] Link the matching Code Bites exercises from each programming-language page
 
@@ -116,10 +116,11 @@ generated screenshots:
 * »Ein eigener Webserver« (`src/content/webserver`), a Ruby `TCPServer` in six stages (the last a poll with `POST` and `303`), linked from TCP/IP
 * »Eine Pixelwand für alle« (`src/content/pixelwand`), WebSockets with faye-websocket, a shared 64 × 40 canvas through Shared Live Apps, a chapter on threads and a lock
 * »Eine Website mit Hugo« (`src/content/hugo`), an aquarium encyclopedia with own layouts, published from `public/`
+* »Kryptographie im Terminal« (`src/content/crypto`), hashes, salted password hashes, AES, RSA, Ed25519 signatures with `ssh-keygen -Y`, a partner part over port 1234
 * »Daten aus dem Netz« (`src/content/wetter`), the Open-Meteo weather API with `curl`/`jq`, Ruby with a cache, and a page with `fetch`
 * »Eine Klötzchenwelt in 3D« (`src/content/raylib`), raylib in 3D with Handbuch »raylib«; the starter is `specht/raylib-starter`, the same files as `vorlage/`
 
-* [ ] Try each in class and adjust pace and tasks (LaTeX 3, web server 2, pixel wall 2, Hugo 2, weather 2, raylib 5 double lessons; TCP/IP 2 after its rework)
+* [ ] Try each in class and adjust pace and tasks (LaTeX 3, web server 2, pixel wall 2, Hugo 2, weather 2, crypto 2, raylib 5 double lessons; TCP/IP 2 after its rework)
 * [ ] Pixel wall: check how it behaves with a whole class painting on one Workspace
 * [ ] raylib: an icon of its own for the Handbuch section (now the star)
 
@@ -140,7 +141,7 @@ Plus, from the review:
 * [ ] **Query stepper / database sandbox**: FROM → JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT with the intermediate table after each step; class repository and Class progress like the other sandboxes
 * [ ] **JPEG decoder project**: the interactive Huffman section is excellent, but iDCT, MCU and colour conversion get one paragraph each and there is nothing to implement; a staged decoder with a check per stage
 
-#### 1. Flutter
+#### Flutter
 
 > Develop in the browser, then turn the same project into a real installable app.
 
@@ -162,28 +163,6 @@ Android build support, before broad rollout:
 * [ ] Check whether the pinned CMake/NDK components are needed and remove them if not
 
 APK rather than App Bundle for the introduction; no release signing or Play Store accounts (mention `flutter build appbundle` as a follow-up). iOS: the same source can target iOS, but builds need macOS, Xcode and Apple signing; mention a Mac or a cloud build service such as Codemagic; keep App Store details optional.
-
-#### 2. Cryptography in the terminal
-
-A laboratory around four questions:
-
-> Has this data changed? → hashes
->
-> Can somebody else read this data? → encryption
->
-> Who signed/created this data? → digital signatures
->
-> How can a server recognize me without receiving my password? → public-key authentication
-
-* [ ] `sha256sum`, change one byte, compare copies; what a hash can and cannot prove
-* [ ] Why plain SHA-256 is not password storage; salts and dedicated password hashing conceptually
-* [ ] Encrypt/decrypt a file symmetrically with OpenSSL; try the wrong password
-* [ ] Generate and inspect an Ed25519 key pair; sign, verify, modify, fail
-* [ ] Distinguish secrecy (encryption) from authenticity/integrity (signature)
-* [ ] Connect public keys to SSH and the Git material; end with a key fingerprint (back to hashes)
-
-Before finalizing signing, test which tool gives the cleanest classroom workflow (`ssh-keygen -Y`, OpenSSL or GPG). Keep mathematics and cipher internals optional.
-
 
 ## Existing pages
 

@@ -1,0 +1,171 @@
+# Aufgaben zu »Kryptographie im Terminal«.
+# Format: docs/aufgaben.md. Alles liegt in /workspace/crypto.
+format: 1
+activity: crypto
+tasks:
+  - id: lawine
+    title: Eine Ziffer anders
+    prediction: true
+    prompt: |
+      Im Brief ändert sich nur `15` zu `16`. Wie viele der 64 Zeichen des
+      Hashes ändern sich? Überleg erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - Fast alle
+        - Nur eines oder zwei
+        - Etwa ein Viertel
+        - Keines, die Länge des Briefs bleibt ja gleich
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Dann könnte man aus dem Hash ablesen, wo sich der Brief geändert hat. Eine gute Hashfunktion verrät das nicht.
+    solution: Fast alle. Jedes Zeichen bleibt nur zufällig gleich, mit einer Chance von 1 zu 16, also im Schnitt etwa 4 von 64.
+
+  - id: hash-berechnen
+    title: Ein Hash von Hand
+    prompt: |
+      Berechne den SHA-256-Hash des Worts `Hackschule`, ohne Zeilenumbruch.
+      Gib die ersten acht Zeichen ein.
+    check:
+      type: answer
+      expect: 5576e0e8
+    hint: '`echo -n Hackschule | sha256sum`'
+    feedback:
+      - when: { matches: '^65900624' }
+        say: Da ist der Zeilenumbruch von `echo` mitgehasht. Mit `echo -n` fehlt er.
+    solution: '`echo -n Hackschule | sha256sum` ergibt einen Hash, der mit `5576e0e8` beginnt.'
+
+  - id: salz-vorhersage
+    title: Zweimal dasselbe Passwort
+    prediction: true
+    prompt: |
+      Du rufst `mkpasswd -m yescrypt geheim` zweimal auf. Was kommt heraus?
+    check:
+      type: choice
+      options:
+        - Zwei verschiedene Ergebnisse
+        - Zweimal dasselbe Ergebnis
+        - Beim zweiten Mal eine Fehlermeldung, das Passwort gibt es schon
+        - Das Passwort selbst, nur anders geschrieben
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Bei `sha256sum` wäre das so. Was macht yescrypt anders?
+    solution: Jedes Mal wird ein neues, zufälliges Salz ausgewürfelt und mitgehasht. Darum unterscheiden sich die Ergebnisse, obwohl das Passwort gleich ist.
+
+  - id: salz
+    title: Wozu das Salz?
+    prompt: Wozu dient das Salz in einem gespeicherten Passwort-Hash?
+    check:
+      type: choice
+      options:
+        - Gleiche Passwörter bekommen verschiedene Hashes, fertige Listen von Hashes nützen nichts
+        - Es ist ein zweites, geheimes Passwort
+        - Es verschlüsselt den Hash, damit niemand ihn lesen kann
+        - Es macht den Hash kürzer
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Das Salz steht offen im Ergebnis, gleich hinter `$y$j9T$`. Geheim ist es nicht.
+    solution: Das Salz ist zufällig und nicht geheim. Weil es mitgehasht wird, hat dasselbe Passwort bei jedem Konto einen anderen Hash, und niemand sieht, wer dasselbe Passwort benutzt.
+
+  - id: verschluesselt
+    title: Ein verschlüsselter Brief
+    prompt: |
+      Verschlüssle `letter.txt` mit `openssl enc` in die Datei `letter.enc`.
+    file: crypto/letter.enc
+    check:
+      type: files
+      path: crypto/letter.enc
+      expect:
+        exists: true
+    hint: '`openssl enc -aes-256-cbc -pbkdf2 -in letter.txt -out letter.enc`, im Ordner `crypto`.'
+
+  - id: schluesselproblem
+    title: Das Passwort verabreden
+    prompt: |
+      Du willst einer Freundin in einer anderen Stadt einen mit AES
+      verschlüsselten Brief schicken. Was ist das Problem?
+    check:
+      type: choice
+      options:
+        - Sie braucht dasselbe Passwort, und das muss erst sicher zu ihr kommen
+        - AES lässt sich mit einem schnellen Rechner leicht knacken
+        - Verschlüsselte Dateien kann man nicht per E-Mail schicken
+        - Sie braucht ein anderes Betriebssystem
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: AES mit einem 256-Bit-Schlüssel gilt als sicher. Schwach ist eher der Weg, auf dem das Passwort zu ihr kommt.
+    solution: Bei symmetrischer Verschlüsselung brauchen beide Seiten denselben Schlüssel. Schickst du ihn mit, kann ihn mitlesen, wer auch den Brief mitliest. Das löst ein Verfahren mit zwei Schlüsseln.
+
+  - id: welcher-schluessel
+    title: Nur für Bob
+    prompt: |
+      Du willst Bob eine Nachricht schicken, die nur Bob lesen kann. Womit
+      verschlüsselst du sie?
+    check:
+      type: choice
+      options:
+        - Mit Bobs öffentlichem Schlüssel
+        - Mit Bobs privatem Schlüssel
+        - Mit deinem öffentlichen Schlüssel
+        - Mit deinem privaten Schlüssel
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Bobs privaten Schlüssel hat nur Bob, und so soll es bleiben.
+      - when: { picked: 3 }
+        say: Das wäre eher eine Unterschrift. Was du mit deinem privaten Schlüssel machst, kann jeder mit deinem öffentlichen prüfen, also auch lesen.
+    solution: Mit Bobs öffentlichem Schlüssel. Entschlüsseln kann dann nur der passende private Schlüssel, und den hat nur Bob.
+
+  - id: geaendert
+    title: Nach der Unterschrift geändert
+    prediction: true
+    prompt: |
+      Du änderst im unterschriebenen Brief `16 Uhr` zu `17 Uhr` und prüfst die
+      Unterschrift noch einmal. Was meldet `ssh-keygen`?
+    check:
+      type: choice
+      options:
+        - Die Unterschrift ist ungültig
+        - Die Unterschrift ist gültig, sie gehört ja zu Alice
+        - Die Unterschrift ist gültig, aber eine Warnung erscheint
+        - '`ssh-keygen` zeigt den alten Brief wieder an'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Unterschrieben ist der Hash des Briefs. Passt der noch, wenn sich eine Ziffer ändert?
+    solution: Die Unterschrift gilt für den Hash des Briefs, wie er beim Unterschreiben war. Nach der Änderung passt der Hash nicht mehr, und die Prüfung schlägt fehl.
+
+  - id: unterschrift
+    title: Dein unterschriebener Brief
+    prompt: |
+      Unterschreibe `letter.txt` mit deinem Ed25519-Schlüssel.
+    file: crypto/letter.txt.sig
+    check:
+      type: files
+      path: crypto/letter.txt.sig
+      expect:
+        format: text
+        contains:
+          - { pattern: 'BEGIN SSH SIGNATURE', say: 'In `letter.txt.sig` steht noch keine Unterschrift von `ssh-keygen -Y sign`.' }
+
+  - id: fingerabdruck
+    title: Der Fingerabdruck
+    prompt: Was ist der Fingerabdruck eines Schlüssels, zum Beispiel `SHA256:UXI/IC…`?
+    check:
+      type: choice
+      options:
+        - Ein Hash des öffentlichen Schlüssels
+        - Ein Hash des privaten Schlüssels
+        - Der private Schlüssel in kurzer Schreibweise
+        - Eine Unterschrift des Schlüssels
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Den Fingerabdruck zeigt man anderen zum Vergleich. Was davon dürfen andere sehen?
+      - when: { picked: 2 }
+        say: Aus dem Fingerabdruck lässt sich nichts zurückrechnen, er ist ein Hash.
+    solution: Der Fingerabdruck ist ein SHA-256-Hash des öffentlichen Schlüssels. Er ist kurz genug, um ihn auf einem zweiten Weg zu vergleichen, und verrät nichts Geheimes.

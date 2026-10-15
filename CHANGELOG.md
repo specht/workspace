@@ -355,6 +355,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   warum API-Schlüssel nicht in eine Webseite gehören. Acht Aufgaben, Notiz
   für Lehrkräfte. Die Reihen im Abschnitt: Webseiten (HTML & CSS, Hugo,
   Svelte), dann Netzwerk (Daten aus dem Netz, Webserver, Pixelwand).
+- Neue Aktivität »Kryptographie im Terminal« unter »Terminal & Git«:
+  Hashes mit `sha256sum`, wie Server Passwörter mit Salz und absichtlich
+  langsamen Hashfunktionen speichern, Verschlüsselung mit einem Schlüssel
+  (AES mit `openssl enc`) und mit zweien (RSA mit `openssl pkeyutl`),
+  Unterschriften mit Ed25519 und `ssh-keygen -Y`, Fingerabdrücke und was
+  davon in SSH, Git und HTTPS steckt. Ein Partnerteil tauscht öffentliche
+  Schlüssel über Port 1234. Zehn Aufgaben, Notiz für Lehrkräfte.
 
 ### Geändert
 
