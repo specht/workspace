@@ -787,45 +787,103 @@ end
 module DotRender
   module_function
 
+  # Graphviz measures with this font (installed in the container); the page
+  # shows the drawing in its own font, IBM Plex Sans, which is about as wide.
+  # Colours come from the page's CSS (.automaton in automatron.html).
+  FONT = 'DejaVu Sans'
+
   # Plain DOT node id (not displayed)
   def node_id(id)
     "q_#{id}"
   end
 
-  # HTML-like label: q with subscript 0..9,A..Z then fallback to numeric
+  # The label of a state, s3 for state 3; tidy_svg turns the number into a
+  # subscript. Circles have a fixed size, so the label never stretches them.
   def node_label(id, q = 'q')
-    # base = ('0'..'9').to_a + ('A'..'Z').to_a
-    # sym = id < base.size ? base[id] : id.to_s
-    # Subscript with smaller font size
-    "<#{q}<SUB><FONT POINT-SIZE=\"10\">#{id}</FONT></SUB>>"
+    "\"#{q}#{id}\""
   end
 
   def sink_id
     'q_F'
   end
-  def sink_label
-    '<q<SUB><FONT POINT-SIZE="10">F</FONT></SUB>>'
+
+  def sink_label(q = 'q')
+    "\"#{q}F\""
+  end
+
+  def header(title)
+    [
+      "digraph #{title} {",
+      '  rankdir=LR;',
+      "  graph [fontname=\"#{FONT}\", fontsize=13, nodesep=0.3, ranksep=0.45, bgcolor=transparent];",
+      "  node [fontname=\"#{FONT}\", fontsize=15, shape=circle, width=0.5, fixedsize=true, margin=0, style=filled, fillcolor=white];",
+      "  edge [fontname=\"#{FONT}\", fontsize=13, arrowsize=0.7];",
+      '  __start [shape=point, style=invis, width=0.01];',
+    ]
+  end
+
+  # Symbols on one edge, sorted, with runs of three and more shortened:
+  # 0, 2, 3, 4, 5, 6, 7, 8, 9 -> 0, 2–9
+  def symbols_label(syms)
+    sorted = syms.map(&:to_s).uniq.sort_by { |c| [c == 'ε' ? 0 : 1, c] }
+    runs = []
+    sorted.each do |c|
+      last = runs.last&.last
+      if last && c.size == 1 && last.size == 1 && c != 'ε' && last != 'ε' && c.ord == last.ord + 1 && c =~ /[0-9a-z]/i
+        runs.last << c
+      else
+        runs << [c]
+      end
+    end
+    runs.map { |r| r.size >= 3 ? "#{r.first}–#{r.last}" : r.join(', ') }.join(', ')
+  end
+
+  # Edge lines for [from, to, label] triples. Textbooks draw an automaton
+  # with its main path in a straight row and the edges back as arcs; dot
+  # does that when only the edges forward (one step further from the start)
+  # shape the layout and the others have constraint=false. That reads well
+  # while the automaton is a path with branches; when a level has more than
+  # MAX_ROW_WIDTH states (a wide tree) or there are many edges back (more
+  # than MAX_BACK_PER_STATE per state, they would cross everywhere), dot's
+  # own layout is better.
+  MAX_ROW_WIDTH = 3
+  MAX_BACK_PER_STATE = 2
+
+  def edge_lines(edges, start)
+    depth = { start => 0 }
+    queue = [start]
+    until queue.empty?
+      from = queue.shift
+      edges.each do |a, b, _|
+        next unless a == from && !depth.key?(b)
+        depth[b] = depth[from] + 1
+        queue << b
+      end
+    end
+    back = edges.count { |a, b, _| a != b && depth.fetch(b, 0) < depth.fetch(a, 0) }
+    row = depth.values.tally.values.max.to_i <= MAX_ROW_WIDTH && back <= MAX_BACK_PER_STATE * depth.size
+    edges.map do |a, b, label|
+      extra = if !row || a == b then ''
+        elsif depth.fetch(b, 0) > depth.fetch(a, 0) then ', weight=10'
+        elsif depth.fetch(b, 0) < depth.fetch(a, 0) then ', constraint=false'
+        else ''
+      end
+      "  #{a} -> #{b} [label=\"#{label}\"#{extra}];"
+    end
   end
 
   def nfa(nfa, q: 'q')
-    lines = []
-    lines << 'digraph NFA {'
-    lines << '  rankdir=LR;'
-    lines << "graph [fontsize = 14, nodesep = 0.2, ranksep = 0.3];"
-    lines << "node [fontsize = 14, shape = circle, margin = 0, style = filled, fillcolor=\"#f0f0f0\"];"
-    lines << "edge [fontsize = 14, arrowsize = 0.6, color = \"#000000\"];"
-    lines << 'splines=true;'
-
-    lines << '  __start [shape=point, color="#ffffff", label=""];'
+    lines = header('NFA')
     lines << "  __start -> #{node_id(nfa.start)};"
 
     # Nodes
     nfa.states.each do |id, st|
-      shape = (id == nfa.accept) ? 'doublecircle' : 'circle'
-      lines << "  #{node_id(id)} [shape=#{shape},label=#{node_label(id, q)}];"
+      accept = (id == nfa.accept)
+      lines << "  #{node_id(id)} [shape=#{accept ? 'doublecircle' : 'circle'}, class=#{accept ? 'accept' : 'state'}, label=#{node_label(id, q)}];"
     end
 
     # Grouped edges per (from,to)
+    edges = []
     nfa.states.each do |id, st|
       grouped = Hash.new { |h, k| h[k] = [] }
       st.trans.each do |sym, toset|
@@ -834,14 +892,13 @@ module DotRender
         end
       end
       grouped.each do |to, syms|
-        syms = syms.sort
-        lines << "  #{node_id(id)} -> #{node_id(to)} [label=\"#{syms.join(',')}\"];"
+        edges << [node_id(id), node_id(to), symbols_label(syms)]
       end
     end
+    lines.concat(edge_lines(edges, node_id(nfa.start)))
 
     lines << '}'
-    lines.join("
-")
+    lines.join("\n")
   end
 
   # detect canonical sink (dead) state: non-accepting and δ(s,a)=s for all a
@@ -857,25 +914,20 @@ module DotRender
   # Render DFA; when sink_explicit=false, hide sink node and edges to it.
   def dfa(dfa, title: 'DFA', sink_explicit: true, sink_label_text: 'q_F', q: 'q')
     sink = detect_sink(dfa)
-    lines = []
-    lines << "digraph #{title} {"
-    lines << '  rankdir=LR;'
-    lines << "graph [fontsize = 14, nodesep = 0.2, ranksep = 0.3];"
-    lines << "node [fontsize = 14, shape = circle, margin = 0, style = filled, fillcolor=\"#f0f0f0\"];"
-    lines << "edge [fontsize = 14, arrowsize = 0.6, color = \"#000000\"];"
-    lines << '  __start [shape=point, color="#ffffff", label=""];'
+    lines = header(title)
     lines << "  __start -> #{node_id(dfa.start)};"
 
     # Nodes
     dfa.states.each do |s|
       next if !sink_explicit && s == sink
-      shape = dfa.accepts.include?(s) ? 'doublecircle' : 'circle'
+      accept = dfa.accepts.include?(s)
       nid = (sink_explicit && s == sink) ? sink_id : node_id(s)
-      lab = (sink_explicit && s == sink) ? sink_label : node_label(s, q)
-      lines << "  #{nid} [shape=#{shape},label=#{lab}];"
+      lab = (sink_explicit && s == sink) ? sink_label(q) : node_label(s, q)
+      lines << "  #{nid} [shape=#{accept ? 'doublecircle' : 'circle'}, class=#{accept ? 'accept' : 'state'}, label=#{lab}];"
     end
 
     # Grouped edges per (from,to)
+    edges = []
     dfa.states.each do |s|
       next if !sink_explicit && s == sink
       grouped = Hash.new { |h, k| h[k] = [] }
@@ -887,20 +939,29 @@ module DotRender
         grouped[[from, to]] << c
       end
       grouped.each do |(from, to), syms|
-        syms = syms.sort
-        lines << "  #{from} -> #{to} [label=\"#{syms.join(',')}\"];"
+        edges << [from, to, symbols_label(syms)]
       end
     end
-
-    # if !sink_explicit && sink
-    #   lines << '  subgraph cluster_legend {'
-    #   lines << '    label=""; style=invisible;'
-    #   lines << '    l1 [shape=note,label="Fehlende Übergänge\nführen in einen\nimpliziten Fehlerzustand."];'
-    #   lines << '  }'
-    # end
+    lines.concat(edge_lines(edges, node_id(dfa.start)))
 
     lines << '}'
     lines.join("\n")
+  end
+
+  # The SVG from dot, ready to be put into the page: no XML header, comments
+  # or background, no fonts or colours of its own (the page's CSS sets them,
+  # for light and dark), class automaton, and state numbers as subscripts.
+  def tidy_svg(svg)
+    s = svg.to_s.sub(/\A.*?(?=<svg)/m, '')
+    s = s.gsub(/<!--.*?-->\n?/m, '').gsub(%r{<title>.*?</title>\n?}m, '')
+    s = s.sub('<svg ', '<svg class="automaton" ')
+    s = s.sub(/(<g id="graph0" class="graph"[^>]*>\n)<polygon [^>]*>\n/, '\1')
+    s = s.gsub(/ font-family="[^"]*"/, '')
+    s.gsub(%r{(<g id="node\d+" class="node[^"]*">.*?</g>)}m) do
+      $1.sub(%r{(<text [^>]*>)([A-Za-z])(\d+|F)</text>}) do
+        "#{$1}#{$2}<tspan dy=\"0.28em\" font-size=\"0.7em\">#{$3}</tspan></text>"
+      end
+    end
   end
 end
 

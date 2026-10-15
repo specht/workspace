@@ -217,7 +217,7 @@ class Main < Sinatra::Base
                 STDERR.puts "Automatron: dot failed: #{err.to_s[0, 300]}"
                 halt 500, { error: "Graphviz failed" }.to_json
             end
-            svg
+            DotRender.tidy_svg(svg)
         end
 
         def safe_regex(str)
