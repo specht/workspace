@@ -1,0 +1,160 @@
+# Aufgaben zu »Ein eigener Webserver«.
+# Format: docs/aufgaben.md. Der Server liegt in /workspace/webserver.
+format: 1
+activity: webserver
+tasks:
+  - id: request-line
+    title: Die erste Zeile
+    prompt: |
+      Was ist die erste Zeile, die `curl localhost:8000/time` an deinen Server
+      schickt?
+    check:
+      type: choice
+      options:
+        - '`GET /time HTTP/1.1`'
+        - '`GET localhost:8000/time`'
+        - '`HTTP/1.1 200 OK`'
+        - '`Host: localhost:8000`'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Wohin die Anfrage geht, steht in einem Header weiter unten. In der ersten Zeile steht nur der Pfad.
+      - when: { picked: 2 }
+        say: So beginnt die Antwort des Servers, nicht die Anfrage.
+      - when: { picked: 3 }
+        say: Das ist ein Header. Davor kommt die Request-Line mit Methode, Pfad und Version.
+    solution: Die Request-Line ist Methode, Pfad und Version, durch Leerzeichen getrennt. Der Rechner, an den die Anfrage geht, steht im Header `Host`.
+
+  - id: antwort
+    title: Die erste Antwort
+    prompt: |
+      Lass deinen Server mit einer vollständigen HTTP-Antwort antworten und
+      speichere.
+    file: webserver/server.rb
+    check:
+      type: files
+      path: webserver/server.rb
+      expect:
+        format: text
+        contains:
+          - { pattern: 'HTTP/1\.1 (200|#\{)', say: 'In `server.rb` finde ich noch keine Statuszeile wie `HTTP/1.1 200 OK`.' }
+          - { pattern: 'Content-Length', say: 'Noch fehlt der Header `Content-Length`: Er sagt dem Browser, wie viele Bytes kommen.' }
+          - { pattern: 'Thread\.new', say: 'Noch bedient der Server eine Verbindung nach der anderen. Mit `Thread.new` bekommt jede einen eigenen Thread.' }
+
+  - id: bytes
+    title: Zeichen oder Bytes?
+    prompt: |
+      Der Inhalt einer Antwort ist `"Grüße\n"`. Welchen Wert muss
+      `Content-Length` haben?
+    check:
+      type: number
+      expect: 8
+      tolerance: 0
+      unit: Bytes
+    hint: In UTF-8 sind ü und ß je zwei Bytes lang, `\n` ist ein Byte.
+    feedback:
+      - when: { equals: 6 }
+        say: Das sind die Zeichen. `Content-Length` zählt Bytes, und ein Umlaut ist in UTF-8 länger als ein Byte.
+    solution: G, r, e und `\n` sind je ein Byte, ü und ß je zwei. Zusammen 8 Bytes, `"Grüße\n".bytesize`.
+
+  - id: statuscodes
+    title: Eine Seite, die es nicht gibt
+    prediction: true
+    prompt: |
+      Dein Server antwortet auf `/missing` mit `404 Not Found` und dem
+      Text »Die Seite /missing gibt es nicht.« Was zeigt der Browser?
+      Überleg erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - Den Text deines Servers
+        - Eine eigene Fehlerseite des Browsers ohne deinen Text
+        - Eine leere weiße Seite
+        - Die Startseite deines Servers
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Der Browser zeigt, was der Server schickt, auch bei einem Fehler. Der Statuscode sagt nur, dass es ein Fehler ist.
+    solution: Der Browser zeigt den Inhalt, den der Server schickt. Der Statuscode 404 ist für Programme gedacht, für Suchmaschinen etwa, die wissen wollen, ob es die Seite wirklich gibt.
+
+  - id: webseite
+    title: Eine Seite aus public
+    prompt: |
+      Lege `public/index.html` an und lass deinen Server die Dateien aus
+      `public` ausliefern.
+    file: webserver/server.rb
+    check:
+      type: files
+      path: webserver/public/index.html
+      expect:
+        exists: true
+        format: text
+        contains:
+          - { pattern: '<html', say: '`public/index.html` sieht noch nicht nach HTML aus: Es fehlt `<html`.' }
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `webserver/public/index.html`. Der Ordner `public` gehört neben `server.rb`.
+
+  - id: sicherheit
+    title: Nur aus public
+    prompt: |
+      Warum prüft der Server mit `start_with?(PUBLIC_DIR + '/')`, wo die Datei
+      liegt, bevor er sie schickt?
+    check:
+      type: choice
+      options:
+        - Sonst könnte jemand mit `/../server.rb` Dateien außerhalb von public lesen
+        - Sonst findet Ruby die Datei nicht
+        - Sonst schickt der Server den falschen Content-Type
+        - Sonst ist der Server langsamer
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Gefunden wird die Datei auch ohne die Prüfung. Die Frage ist, welche Dateien jemand bekommen darf.
+    solution: '`..` heißt »eine Ebene höher«. Ohne Prüfung bekäme jeder, der danach fragt, jede Datei, die der Server lesen kann: den Quelltext, Passwörter in Konfigurationsdateien. Die Prüfung erlaubt nur Dateien in public.'
+
+  - id: parameter
+    title: Ein Name in der Adresse
+    prompt: |
+      Was antwortet dein Server auf `/hello?name=Ada%20Lovelace`?
+    check:
+      type: choice
+      options:
+        - Hallo, Ada Lovelace!
+        - Hallo, Ada%20Lovelace!
+        - Hallo, Ada!
+        - Hallo, Unbekannt!
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: '`URI.decode_www_form` macht aus den kodierten Zeichen wieder normale.'
+      - when: { picked: 3 }
+        say: Der Parameter `name` ist da, also gibt es einen Namen.
+    solution: '`%20` ist ein kodiertes Leerzeichen. `URI.decode_www_form` wandelt es zurück, und der Server begrüßt »Ada Lovelace«.'
+
+  - id: mutex
+    title: Zwei auf einmal
+    prompt: |
+      Ohne Mutex: `$visits` ist 10, und zwei Besucher kommen genau
+      gleichzeitig. Was kann passieren?
+    check:
+      type: choice
+      options:
+        - Beide bekommen »Nummer 11«, und `$visits` ist danach 11 statt 12
+        - Der Server stürzt ab
+        - Einer der beiden bekommt keine Antwort
+        - Nichts, Ruby zählt immer richtig
+      correct: 0
+    feedback:
+      - when: { picked: 3 }
+        say: '`$visits += 1` ist lesen, eins dazuzählen, schreiben. Was passiert, wenn beide Threads lesen, bevor einer schreibt?'
+    solution: Beide Threads lesen 10, beide schreiben 11. Ein Besuch geht verloren. Der Mutex sorgt dafür, dass immer nur ein Thread zählt.
+
+  - id: abgabe
+    title: Dein Server
+    prompt: |
+      Gib deinen Server ab: den Ordner `webserver` mit `server.rb` und `public`.
+    check:
+      type: submit
+      paths: [webserver]
+      max_size: 5MB

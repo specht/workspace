@@ -1,0 +1,35 @@
+{
+  "screenshots": {
+    "echo.webp": {
+      "environment_fingerprint": "8f005c5d42cc87f929ba93e50785f80bbc83d644dcb4ca7bd41821aa5fb161fb",
+      "output_sha256": "982efdf5d50c4d01806c68c395ec8358268a8f657e002c72171e65a2ae907043",
+      "state_hash": "ca2f48cfbc4c6c61d8559e688fd5eb77b0d6cec1791a076c95cc7f744ecb6862",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "handschlag.webp": {
+      "environment_fingerprint": "8f005c5d42cc87f929ba93e50785f80bbc83d644dcb4ca7bd41821aa5fb161fb",
+      "output_sha256": "ea643dfeaf57d5ecb97bca574cee00b8687ca7b72aadb3d4a67ae1aacd060742",
+      "state_hash": "c649a34771e8e04a5c79499a8900d9b1ff18e038339b0688d5ec825f887bd22c",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "neustart.webp": {
+      "environment_fingerprint": "8f005c5d42cc87f929ba93e50785f80bbc83d644dcb4ca7bd41821aa5fb161fb",
+      "output_sha256": "5cdcb4da38f67e15d9d46f0eb3359e88390b8bb5bbea0001fa025507b1be7754",
+      "state_hash": "3b7c6dc98e7329ef691b2768e172e60396d7151cc4834d65b7470a0d9d2d481b",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "ordner.webp": {
+      "environment_fingerprint": "8f005c5d42cc87f929ba93e50785f80bbc83d644dcb4ca7bd41821aa5fb161fb",
+      "output_sha256": "ef724f367f2594fc4bcccfffa3a9cad368f321f91c8c5b091f66edd82812e9b3",
+      "state_hash": "408e49c898698961282337896858bf80dbd59870bd7e12f214b1690a44a0cee5",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "pixelwand.webp": {
+      "environment_fingerprint": "8f005c5d42cc87f929ba93e50785f80bbc83d644dcb4ca7bd41821aa5fb161fb",
+      "output_sha256": "1c7957aa5d824ad66e44dc2cb2a092919905dcbc6fb7c4cefdbd298d54a99c79",
+      "state_hash": "f4470ff2f7d1d91616dc13280b07e81032769318e89420298e01d2e5b0e9ab54",
+      "workspace_look": "4.138.0-ls366"
+    }
+  },
+  "version": 1
+}

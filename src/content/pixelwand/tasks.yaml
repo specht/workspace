@@ -1,0 +1,121 @@
+# Aufgaben zu »Eine Pixelwand für alle«.
+# Format: docs/aufgaben.md. Der Server liegt in /workspace/pixelwand.
+format: 1
+activity: pixelwand
+tasks:
+  - id: handshake
+    title: Der Handshake
+    prompt: |
+      Mit welchem Statuscode antwortet der Server auf die Anfrage, mit der der
+      Browser eine WebSocket-Verbindung öffnet?
+    check:
+      type: choice
+      options:
+        - 101 Switching Protocols
+        - 200 OK
+        - 301 Moved Permanently
+        - 404 Not Found
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: '200 heißt: Hier ist die Antwort, und danach ist Schluss. Der Server will aber, dass die Verbindung offen bleibt und das Protokoll wechselt.'
+    solution: 101 Switching Protocols sagt dem Browser, dass der Server einverstanden ist und ab jetzt WebSocket statt HTTP gesprochen wird, auf derselben Verbindung.
+
+  - id: frame-header
+    title: Ein kleiner Header
+    prompt: |
+      Der Server schickt die Nachricht `Hallo` (5 Bytes). Wie viele Bytes ist
+      der ganze Frame lang, mit Header? Sieh in `websocket.rb` nach.
+    check:
+      type: number
+      expect: 7
+      tolerance: 0
+      unit: Bytes
+    hint: '`write_frame` schreibt ein Byte für den Opcode und eins für die Länge, solange die Nachricht kürzer als 126 Bytes ist. Nachrichten vom Server sind nicht maskiert.'
+    feedback:
+      - when: { equals: 11 }
+        say: Die vier Bytes der Maske gibt es nur bei Nachrichten vom Browser zum Server.
+      - when: { equals: 5 }
+        say: Das ist nur der Inhalt. Dazu kommt der Header.
+    solution: Zwei Bytes Header (Opcode und Länge) und fünf Bytes Inhalt, zusammen 7. Eine HTTP-Anfrage hat allein an Headern oft mehrere Hundert Bytes; darum lohnen sich WebSockets für viele kleine Nachrichten.
+
+  - id: wer-bekommt-was
+    title: Wer bekommt die Nachricht?
+    prediction: true
+    prompt: |
+      Ada und Bo haben die Seite offen, der Server ist auf dem Stand »An
+      alle«. Ada schickt »Hallo«. Wer sieht die Nachricht? Überleg erst, dann
+      probier es mit zwei Tabs aus.
+    check:
+      type: choice
+      options:
+        - Ada und Bo
+        - Nur Bo
+        - Nur Ada
+        - Niemand, bis jemand die Seite neu lädt
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Steht Ada selbst auch in `$clients`?
+      - when: { picked: 3 }
+        say: Neu laden muss niemand. Die Verbindung ist offen, und der Server schickt von sich aus.
+    solution: '`broadcast` schickt an jede Verbindung in `$clients`, auch an Adas eigene. So sieht Ada ihre Nachricht erst, wenn der Server sie verteilt hat, genau wie alle anderen.'
+
+  - id: pixel-zahl
+    title: Das ganze Bild
+    prompt: |
+      Wie viele Farbnummern stehen in der Liste `pixels` der Nachricht, die ein
+      neuer Besuch zuerst bekommt?
+    check:
+      type: number
+      expect: 2560
+      tolerance: 0
+      unit: Farbnummern
+    feedback:
+      - when: { equals: 104 }
+        say: Das ist 64 + 40. Das Bild ist ein Rechteck aus Zeilen und Spalten.
+    solution: 64 × 40 = 2560, eine Farbnummer pro Pixel, Zeile für Zeile.
+
+  - id: vertrauen
+    title: Jeder kann alles schicken
+    prompt: |
+      Deine Webseite schickt nur gültige Pixel. Warum prüft der Server trotzdem
+      jede Nachricht?
+    check:
+      type: choice
+      options:
+        - Jeder kann sich mit dem Server verbinden und beliebige Nachrichten schicken, nicht nur deine Seite
+        - JSON verliert unterwegs manchmal Zahlen
+        - Ruby kann sonst keine Hashes lesen
+        - Der Browser rundet die Koordinaten falsch
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Was ankommt, ist genau das, was abgeschickt wurde. Die Frage ist, wer etwas abschickt.
+    solution: Eine WebSocket-Verbindung kann jedes Programm öffnen, auch die Konsole im Browser. Ein Server darf keiner Nachricht trauen, nur weil seine eigene Seite sie anders schicken würde.
+
+  - id: pixelwand
+    title: Die Pixelwand
+    prompt: |
+      Bau die Pixelwand: Der Server bewahrt das Bild auf, prüft jede
+      Nachricht und schickt jeden Pixel an alle. Speichere.
+    file: pixelwand/server.rb
+    check:
+      type: files
+      path: pixelwand/server.rb
+      expect:
+        format: text
+        contains:
+          - { pattern: 'JSON\.parse', say: 'In `server.rb` liest der Server noch kein JSON (`JSON.parse`).' }
+          - { pattern: 'Sec-WebSocket-Accept', say: 'In `server.rb` fehlt der Handshake: die Antwort mit `Sec-WebSocket-Accept`.' }
+          - { pattern: 'between\?|<\s*WIDTH|>=\s*0', say: 'Noch prüft der Server nicht, ob ein Pixel im Bild liegt, zum Beispiel mit `x.between?(0, WIDTH - 1)`.' }
+
+  - id: abgabe
+    title: Deine Pixelwand
+    prompt: |
+      Gib deine Pixelwand ab: den Ordner `pixelwand` mit `server.rb`,
+      `websocket.rb` und `index.html`.
+    check:
+      type: submit
+      paths: [pixelwand]
+      max_size: 5MB

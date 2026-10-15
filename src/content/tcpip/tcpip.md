@@ -522,3 +522,7 @@ Der Zweck von <code>netcat</code> ist es eigentlich nicht, zu chatten. Man kann 
 <tr><th>Herunterladen</th><td><code>wget</code>, <code>curl</code>, <code>curl -I</code> (nur die Header), <code>jq</code> (JSON lesbar machen)</td></tr>
 <tr><th>Verbinden</th><td><code>telnet</code> (unverschlüsselt, nur noch fürs Kino), <code>netcat -l -p 1234</code> und <code>netcat ADRESSE 1234</code></td></tr>
 </table>
+
+## Wie geht es weiter?
+
+In [Ein eigener Webserver](/webserver) schreibst du selbst einen Server, der auf einem Port auf Verbindungen wartet und mit Browsern HTTP spricht. In der [Pixelwand](/pixelwand) hält er die Verbindung offen, und die ganze Klasse malt gleichzeitig an einem Bild.
