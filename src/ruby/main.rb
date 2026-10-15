@@ -484,7 +484,8 @@ class Main < Sinatra::Base
             :queued_at => job[:queued_at]&.to_i,
             :started_at => job[:started_at]&.to_i,
             :finished_at => job[:finished_at]&.to_i,
-            :error => job[:error],
+            # The details (a command line may hold passwords) are in the log.
+            :error => job[:error] ? 'Der Workspace ließ sich nicht starten.' : nil,
         }
     end
 
@@ -3687,7 +3688,9 @@ class Main < Sinatra::Base
         data = parse_request_data(:optional_keys => [:test_tag, :email])
 
         email = @session_user[:email]
-        if data[:email] && teacher_logged_in?
+        if data[:email] && data[:email] != email
+            # Only for a teacher of this person.
+            halt 403 unless teacher_logged_in? && may_look_in?(data[:email])
             email = data[:email]
         end
 
@@ -5679,13 +5682,18 @@ class Main < Sinatra::Base
     post '/api/delete_test' do
         assert(teacher_logged_in?)
         data = parse_request_data(:required_keys => [:tag])
-        neo4j_query(<<~END_OF_STRING, {:tag => data[:tag], :email => @session_user[:email]})
-            MATCH (u:User {email: $email})<-[:BELONGS_TO]->(t:Test {tag: $tag})
-            DETACH DELETE t;
+        deleted = neo4j_query(<<~END_OF_STRING, {:tag => data[:tag], :email => @session_user[:email]}).size
+            MATCH (u:User {email: $email})<-[:BELONGS_TO]-(t:Test {tag: $tag})
+            WITH t, t.tag AS tag
+            DETACH DELETE t
+            RETURN tag;
         END_OF_STRING
         # The shared content-addressed VSIX cache is retained: other exams
-        # may still reference these files.
-        FileUtils.rm_f(File.join(TestWorkspaceExtensions::MANIFESTS, "#{data[:tag]}.json"))
+        # may still reference these files. The manifest only for an exam that
+        # was this teacher's, and only under a plain tag.
+        if deleted > 0 && data[:tag].match?(/\A[a-z0-9]+\z/)
+            FileUtils.rm_f(File.join(TestWorkspaceExtensions::MANIFESTS, "#{data[:tag]}.json"))
+        end
         Main.refresh_nginx_config()
         respond(:ok => 'sure')
     end
@@ -5707,6 +5715,7 @@ class Main < Sinatra::Base
         # (and test accounts), the address alone used to be enough.
         Main.load_invitations()
         halt 403 unless admin_logged_in? || workspace_user_visible_to?(data[:email], @session_user[:email])
+        require_test_owner!(data[:tag])
         count = neo4j_query(<<~END_OF_STRING, {:tag => data[:tag], :email => data[:email]}).size
             MATCH (u:User {email: $email})-[:TAKES]->(t:Test {tag: $tag})
             RETURN u.email;
@@ -5735,24 +5744,40 @@ class Main < Sinatra::Base
     # Starting or stopping a real test only changes whether assigned students
     # are routed into their existing exam workspace. Their files and databases
     # must survive any number of stop/start cycles.
+    # An exam may be started, stopped and given students only by the teacher
+    # it belongs to (or an admin).
+    def require_test_owner!(tag)
+        return if admin_logged_in?
+
+        owned = neo4j_query(<<~END_OF_STRING, {:tag => tag, :email => @session_user[:email]}).size
+            MATCH (:User {email: $email})<-[:BELONGS_TO]-(t:Test {tag: $tag})
+            RETURN t.tag;
+        END_OF_STRING
+        halt 404 if owned == 0
+    end
+
     post '/api/start_test' do
         assert(teacher_logged_in?)
         data = parse_request_data(:required_keys => [:tag])
+        require_test_owner!(data[:tag])
         neo4j_query(<<~END_OF_STRING, {:tag => data[:tag]})
             MATCH (t:Test {tag: $tag})
             SET t.running = TRUE;
         END_OF_STRING
         Main.refresh_nginx_config()
+        respond(:ok => 'sure')
     end
 
     post '/api/stop_test' do
         assert(teacher_logged_in?)
         data = parse_request_data(:required_keys => [:tag])
+        require_test_owner!(data[:tag])
         neo4j_query(<<~END_OF_STRING, {:tag => data[:tag]})
             MATCH (t:Test {tag: $tag})
             REMOVE t.running;
         END_OF_STRING
         Main.refresh_nginx_config()
+        respond(:ok => 'sure')
     end
 
     post '/api/start_test_demo' do

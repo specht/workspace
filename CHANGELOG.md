@@ -760,6 +760,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   und 300 Anmeldeversuche in zehn Minuten (großzügig, weil eine ganze
   Schule über eine Adresse ins Netz geht). Die Zähler liegen nur im
   Speicher.
+- Sicherheit, Prüfungen: Starten, Beenden und Schüler zuordnen geht nur
+  noch für die eigene Prüfung (oder als Admin). Beim Löschen einer Prüfung
+  wird ihre Erweiterungsliste nur entfernt, wenn die Prüfung wirklich der
+  Lehrkraft gehörte. Den Startzustand eines fremden Workspace sehen nur
+  noch Lehrkräfte dieser Person, und ein Startfehler erscheint im Browser
+  nur noch als »Der Workspace ließ sich nicht starten.«; die Einzelheiten,
+  in denen Passwörter stehen konnten, stehen nur im Log.
 
 ### Entfernt
 
