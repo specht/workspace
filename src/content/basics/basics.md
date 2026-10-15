@@ -302,7 +302,7 @@ sleep: 1.5
 
 <img src='theme-marketplace.webp' class='full' alt='In den Erweiterungen ergibt die Suche nach Dracula mehrere Farbschemata, darunter Dracula Theme Official, jedes mit dem Button Install.'>
 
-Ein paar beliebte Farbschemata zur Inspiration. Unter jedem Bild steht, wonach du in den Erweiterungen suchen kannst:
+Ein paar beliebte Farbschemata zur Inspiration. Nach dem Namen unter jedem Bild kannst du in den Erweiterungen suchen:
 
 <div class='screen-gallery'>
 <!-- tutorial-screenshot
@@ -316,7 +316,7 @@ sleep: 1
 press: Enter
 sleep: 1.5
 -->
-<figure><img src='theme-dracula.webp' alt='VS Code im Farbschema Dracula: Pink, Lila und Grün auf dunklem Grund.'><figcaption><b>Dracula</b><code>Dracula Theme Official</code></figcaption></figure>
+<figure><img src='theme-dracula.webp' alt='VS Code im Farbschema Dracula: Pink, Lila und Grün auf dunklem Grund.'><figcaption><b>Dracula</b></figcaption></figure>
 <!-- tutorial-screenshot
 # Farbschema One Dark Pro
 hook: install zhuangtongfa.material-theme
@@ -328,7 +328,7 @@ sleep: 1
 press: Enter
 sleep: 1.5
 -->
-<figure><img src='theme-one-dark-pro.webp' alt='VS Code im Farbschema One Dark Pro.'><figcaption><b>One Dark Pro</b><code>One Dark Pro</code></figcaption></figure>
+<figure><img src='theme-one-dark-pro.webp' alt='VS Code im Farbschema One Dark Pro.'><figcaption><b>One Dark Pro</b></figcaption></figure>
 <!-- tutorial-screenshot
 # Farbschema Tokyo Night
 hook: install enkia.tokyo-night
@@ -340,7 +340,7 @@ sleep: 1
 press: Enter
 sleep: 1.5
 -->
-<figure><img src='theme-tokyo-night.webp' alt='VS Code im Farbschema Tokyo Night in Blau- und Violetttönen.'><figcaption><b>Tokyo Night</b><code>Tokyo Night</code></figcaption></figure>
+<figure><img src='theme-tokyo-night.webp' alt='VS Code im Farbschema Tokyo Night in Blau- und Violetttönen.'><figcaption><b>Tokyo Night</b></figcaption></figure>
 <!-- tutorial-screenshot
 # Farbschema Catppuccin Mocha
 hook: install Catppuccin.catppuccin-vsc
@@ -352,31 +352,7 @@ sleep: 1
 press: Enter
 sleep: 1.5
 -->
-<figure><img src='theme-catppuccin.webp' alt='VS Code im Farbschema Catppuccin Mocha in sanften Pastellfarben auf dunklem Grund.'><figcaption><b>Catppuccin</b><code>Catppuccin for VSCode</code></figcaption></figure>
-<!-- tutorial-screenshot
-# Farbschema Shades of Purple
-hook: install ahmadawais.shades-of-purple
-open-file: farben.py
-press: Control+K
-press: Control+T
-type: Shades of Purple
-sleep: 1
-press: Enter
-sleep: 1.5
--->
-<figure><img src='theme-shades-of-purple.webp' alt='VS Code im Farbschema Shades of Purple.'><figcaption><b>Shades of Purple</b><code>Shades of Purple</code></figcaption></figure>
-<!-- tutorial-screenshot
-# Farbschema GitHub Light Default
-hook: install GitHub.github-vscode-theme
-open-file: farben.py
-press: Control+K
-press: Control+T
-type: GitHub Light Default
-sleep: 1
-press: Enter
-sleep: 1.5
--->
-<figure><img src='theme-github-light.webp' alt='VS Code im hellen Farbschema GitHub Light.'><figcaption><b>GitHub Light</b><code>GitHub Theme</code></figcaption></figure>
+<figure><img src='theme-catppuccin.webp' alt='VS Code im Farbschema Catppuccin Mocha in sanften Pastellfarben auf dunklem Grund.'><figcaption><b>Catppuccin</b></figcaption></figure>
 </div>
 
 <div class='hint'>

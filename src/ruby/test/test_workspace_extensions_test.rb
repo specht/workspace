@@ -1,3 +1,10 @@
+# Minitest 6 moved Mock and stub into the gem minitest-mock; without it
+# active first, RubyGems looks for minitest/mock in minitest 5 and gives up.
+# Minitest 5 (the Gemfile) still has them built in.
+begin
+    gem 'minitest-mock'
+rescue Gem::LoadError
+end
 require 'minitest/autorun'
 require 'minitest/mock'
 require 'tmpdir'

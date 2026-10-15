@@ -36,12 +36,6 @@
       "state_hash": "3163939bb0cc67f2b312fffa6487500321eb93d18c96a48ede7490b227df71e4",
       "workspace_look": "4.138.0-ls366"
     },
-    "theme-github-light.webp": {
-      "environment_fingerprint": "3b7615ac653fac8f8a8664e884833f87b19d4af2df23a48d5bfb39265506e013",
-      "output_sha256": "ff911e16aece17cb08df79f5dffe68e60c1b4ae7aa199ee05d8f3f87124dc9de",
-      "state_hash": "f49b639af00d93a46ba15dd97ab77db48327260c409dfcf6ad0b8e75ee71e8c7",
-      "workspace_look": "4.138.0-ls366"
-    },
     "theme-light-2026.webp": {
       "environment_fingerprint": "3b7615ac653fac8f8a8664e884833f87b19d4af2df23a48d5bfb39265506e013",
       "output_sha256": "74bb221b7efd0df3ddadc8781248143a83637ca3e7e1dc4fd2eb19c31f50b4d4",
@@ -76,12 +70,6 @@
       "environment_fingerprint": "3b7615ac653fac8f8a8664e884833f87b19d4af2df23a48d5bfb39265506e013",
       "output_sha256": "f833353a2f91cc0d6c05c0bfa22b7961709d32d9fb4c691b60aebc99ec86d3dd",
       "state_hash": "ff6fa7436b79555a2e2aa9023314941300f7e2d34936cfca3c43aca6ae4d66ff",
-      "workspace_look": "4.138.0-ls366"
-    },
-    "theme-shades-of-purple.webp": {
-      "environment_fingerprint": "3b7615ac653fac8f8a8664e884833f87b19d4af2df23a48d5bfb39265506e013",
-      "output_sha256": "19f51323474c0308038b8205d065a5461f649c3e2cced392bd380ebc91cdadcc",
-      "state_hash": "6e03f1cf549a6c94cdfa7ebcbfcabf87eee942c657f0fadc791cc23f898a743c",
       "workspace_look": "4.138.0-ls366"
     },
     "theme-solarized-light.webp": {
