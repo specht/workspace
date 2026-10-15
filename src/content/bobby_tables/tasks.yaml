@@ -82,9 +82,9 @@ tasks:
       type: choice
       options:
         - SQL-Code und Werte gehen getrennt an die Datenbank, ein Wert wird nie als SQL gelesen
-        - Es verschlüsselt die Eingabe, bevor sie zur Datenbank geht
-        - Es löscht alle Anführungszeichen aus der Eingabe
-        - Es lässt nur Buchstaben und Ziffern als Eingabe zu
+        - 'Es verschlüsselt die Eingabe, bevor sie über das Netz zur Datenbank geht'
+        - 'Es löscht alle Anführungszeichen und Kommentarzeichen aus der Eingabe'
+        - 'Es lässt nur Buchstaben und Ziffern zu und lehnt jede andere Eingabe ab'
       correct: 0
     feedback:
       - when: { picked: 2 }
@@ -101,9 +101,9 @@ tasks:
       type: choice
       options:
         - Wer die Lücke ausnutzt, erreicht nur diese Datenbank, nicht deine anderen
-        - Die Lücke lässt sich damit nicht mehr ausnutzen
-        - Das Programm wird schneller
-        - Nichts, ein Zugang ist wie der andere
+        - 'Die Lücke lässt sich mit diesem Zugang gar nicht mehr ausnutzen'
+        - 'Das Programm läuft schneller, weil der Zugang weniger prüfen muss'
+        - 'Nichts, denn jeder Zugang darf in MySQL auf alle Datenbanken'
       correct: 0
     feedback:
       - when: { picked: 1 }

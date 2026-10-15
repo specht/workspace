@@ -29,6 +29,11 @@ tasks:
         - Es verlässt den Rechner nicht
         - Zum Workspace der Person neben dir
       correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: 'Ein Paket an `127.0.0.1` sieht kein Router. Es bleibt im eigenen Rechner.'
+      - when: { picked: 3 }
+        say: 'Dafür bräuchtest du die Adresse ihres Workspace. `127.0.0.1` ist immer der eigene Rechner.'
 
   - id: entfernungen
     title: Drei Entfernungen
@@ -164,9 +169,9 @@ tasks:
       type: choice
       options:
         - Etwa 0,34 Sekunden, so lange wie ein Ping
-        - Etwa 0,17 Sekunden, ein Weg
-        - Etwa 1 Sekunde, drei Pakete
-        - Weniger als 1 Millisekunde
+        - 'Etwa 0,17 Sekunden, ein Weg zum Server'
+        - 'Etwa 1 Sekunde, ein Weg für jedes der drei Pakete'
+        - 'Weniger als 1 Millisekunde, wie bei 127.0.0.1'
       correct: 0
     feedback:
       - when: { picked: 2 }

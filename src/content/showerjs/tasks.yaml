@@ -99,6 +99,11 @@ tasks:
         - Sie geht kaputt und lässt sich nicht mehr öffnen.
         - Der Browser wandelt sie beim Anzeigen um.
       correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: 'Der Name ändert nichts am Inhalt. Damit sie ein WebP wird, muss ein Programm sie umwandeln.'
+      - when: { picked: 3 }
+        say: 'Der Browser schaut auf den Inhalt und zeigt das PNG meist trotzdem an. Kleiner wird die Datei dadurch aber nicht.'
     solution: |
       Ob eine Datei ein PNG ist, steht in ihren ersten Bytes, nicht im Namen:
       `xxd classroom.webp | head -1` zeigt am Anfang `89 50 4E 47`.

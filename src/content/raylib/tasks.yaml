@@ -110,9 +110,9 @@ tasks:
       type: choice
       options:
         - Die Figur bleibt an der Wand stehen, statt an ihr entlangzugleiten
-        - Die Figur geht durch die Wand hindurch
+        - 'Die Figur geht durch die Wand hindurch, als wäre sie nicht da'
         - Die Figur gleitet an der Wand entlang wie vorher
-        - Die Figur springt zurück an den Start
+        - 'Die Figur springt zurück an die Stelle, an der sie gestartet ist'
       correct: 0
     feedback:
       - when: { picked: 1 }
@@ -151,7 +151,7 @@ tasks:
   - id: figur
     title: Ein Körper
     prompt: |
-      Bau `collides`, die Schritte in x und z und die Schwerkraft in dein
+      Bau `collides`, die Schritte in x und z und die Schwerkraft für `vy` in dein
       Programm ein und speichere.
     file: raylib-starter/main.c
     check:
@@ -173,8 +173,8 @@ tasks:
       type: choice
       options:
         - Mit großen Schritten kann der Strahl über die Ecke eines Blocks hinwegspringen
-        - Mit großen Schritten wird das Programm langsamer
-        - raylib erlaubt nur Schritte kleiner als 0,1
+        - 'Mit großen Schritten wird das Programm langsamer, weil mehr gerechnet wird'
+        - 'raylib erlaubt in seinen Funktionen nur Schritte kleiner als 0,1'
         - Ein Block ist 0,02 Einheiten groß
       correct: 0
     feedback:
@@ -201,7 +201,7 @@ tasks:
         contains:
           - { pattern: 'void\s+aim\s*\(', say: 'In `main.c` finde ich noch keine Funktion `aim`.' }
           - { pattern: 'MOUSE_BUTTON_RIGHT', say: 'Noch baut die rechte Maustaste nichts: `IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)`.' }
-          - { pattern: 'DrawCubeWires\s*\(\s*\(Vector3\)\s*\{\s*hx', say: 'Noch hat der Block, auf den du schaust, keinen Rahmen.' }
+          - { pattern: 'DrawCubeWires\s*\([^;]*\bhx\b|\{\s*hx\s*[+,]', say: 'Noch hat der Block, auf den du schaust, keinen Rahmen.' }
 
   - id: wiese
     title: Mitten in der Wiese
@@ -299,7 +299,7 @@ tasks:
         contains:
           - { pattern: 'LoadTexture\s*\(\s*"textures\.png"\s*\)', say: 'Noch lädt `main.c` keine Textur: `LoadTexture("textures.png")`.' }
           - { pattern: 'rlTexCoord2f\s*\(', say: 'Noch bekommt keine Ecke Texturkoordinaten (`rlTexCoord2f`).' }
-          - { pattern: 'rlSetTexture\s*\(\s*texture\.id\s*\)', say: 'Die Textur ist geladen, aber die Flächen bekommen sie noch nicht: `rlSetTexture(texture.id)` vor der Schleife über die Welt.' }
+          - { pattern: 'rlSetTexture\s*\(\s*[A-Za-z_]\w*\.id\s*\)', say: 'Die Textur ist geladen, aber die Flächen bekommen sie noch nicht: `rlSetTexture(texture.id)` vor der Schleife über die Welt.' }
 
   - id: abgabe
     title: Deine Welt

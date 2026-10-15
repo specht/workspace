@@ -28,8 +28,8 @@ tasks:
   - id: antwort
     title: Die erste Antwort
     prompt: |
-      Lass deinen Server mit einer vollständigen HTTP-Antwort antworten und
-      speichere.
+      Lass deinen Server mit einer vollständigen HTTP-Antwort antworten, jede
+      Verbindung in einem eigenen Thread (`Thread.new`), und speichere.
     file: webserver/server.rb
     check:
       type: files
@@ -104,9 +104,9 @@ tasks:
       type: choice
       options:
         - Sonst könnte jemand mit `/../server.rb` Dateien außerhalb von public lesen
-        - Sonst findet Ruby die Datei nicht
-        - Sonst schickt der Server den falschen Content-Type
-        - Sonst ist der Server langsamer
+        - 'Sonst findet Ruby Dateien in Unterordnern von public nicht'
+        - 'Sonst schickt der Server zu einer Datei den falschen Content-Type'
+        - 'Sonst muss der Server bei jeder Anfrage alle Dateien durchsuchen'
       correct: 0
     feedback:
       - when: { picked: 1 }
@@ -141,9 +141,9 @@ tasks:
       type: choice
       options:
         - Beide bekommen »Nummer 11«, und `$visits` ist danach 11 statt 12
-        - Der Server stürzt ab
-        - Einer der beiden bekommt keine Antwort
-        - Nichts, Ruby zählt immer richtig
+        - 'Der Server stürzt ab, weil zwei Threads dieselbe Variable ändern'
+        - 'Einer der beiden wartet und bekommt gar keine Antwort'
+        - 'Nichts, Ruby zählt immer richtig, auch mit mehreren Threads'
       correct: 0
     feedback:
       - when: { picked: 3 }
@@ -177,9 +177,9 @@ tasks:
       type: choice
       options:
         - Hinter dem Body steht kein Zeilenumbruch, `client.gets` würde warten
-        - '`client.gets` kann keine Umlaute lesen'
-        - '`client.read` ist schneller'
-        - Der Body ist verschlüsselt
+        - '`client.gets` kann keine Umlaute und Sonderzeichen lesen'
+        - '`client.read` ist schneller, weil es alles auf einmal liest'
+        - 'Der Body ist verschlüsselt und muss als Ganzes gelesen werden'
       correct: 0
     feedback:
       - when: { picked: 1 }

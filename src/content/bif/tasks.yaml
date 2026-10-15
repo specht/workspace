@@ -56,9 +56,9 @@ tasks:
     check:
       type: choice
       options:
-        - Die Geschichte springt zurück zu Seite 1.
+        - 'Die Geschichte springt zurück zu Seite 1, wie bei einem neuen Spiel.'
         - Die Geschichte bleibt auf derselben Seite, und der eingerückte Text darunter erscheint.
-        - Die Geschichte endet.
+        - 'Die Geschichte endet, weil der Punkt das Ende einer Geschichte markiert.'
         - Nichts, ein Punkt ist keine Seite. BIF meldet einen Fehler.
       correct: 1
     feedback:
@@ -89,10 +89,10 @@ tasks:
     check:
       type: choice
       options:
-        - Weil Skripte nur in `1.md` erlaubt sind.
-        - Weil `1.md` nur einmal am Anfang besucht wird. Im Büro würde der Schlüssel bei jedem Besuch wieder verschwinden.
-        - Weil `3.md` sonst zu lang wird.
-        - Das ist egal, es funktioniert an beiden Stellen gleich.
+        - 'Weil Skripte nur auf der ersten Seite einer Geschichte stehen dürfen, nirgends sonst.'
+        - 'Weil `1.md` nur am Anfang besucht wird; im Büro wäre der Schlüssel bei jedem Besuch wieder weg.'
+        - 'Weil `3.md` sonst zu lang wird und BIF lange Seiten nicht mehr vollständig anzeigt.'
+        - 'Das ist egal: Eine Variable bekommt ihren Anfangswert nur einmal, wo auch immer er steht.'
       correct: 1
     feedback:
       - when: { picked: 0 }

@@ -220,7 +220,7 @@ _task(zellen)
 
 ### Hügel aus Wellen
 
-Noch ist die Welt leer: Ein globales Array ist in C am Anfang mit Nullen gefüllt, also mit `AIR`. Für die Landschaft berechnen wir für jede Stelle (x, z) eine Höhe und füllen die Säule darunter mit Blöcken: oben Gras, darunter drei Lagen Erde, ganz unten Stein. Die Höhe entsteht aus drei Sinuswellen mit verschiedenen Längen, die sich überlagern, so wie die Wellen bei [PixelRAM](/pixelram#wellen). Wo die Welt niedrig ist, liegt Sand.
+Noch ist die Welt leer: Ein globales Array ist in C am Anfang mit Nullen gefüllt, also mit `AIR`. Für die Landschaft berechnen wir für jede Stelle (x, z) eine Höhe und füllen die Säule darunter mit Blöcken: oben Gras, darunter drei Lagen Erde, ganz unten Stein. Die Höhe entsteht aus drei Sinuswellen mit verschiedenen Längen, die sich überlagern, so wie die Wellen bei [PixelRAM](/pixelram#3-wellen). Wo die Welt niedrig ist, liegt Sand.
 
 ```c_copy
 void tree(int x, int y, int z)

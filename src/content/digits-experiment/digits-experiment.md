@@ -45,7 +45,7 @@ Starte nun das Skript `bootstrap.sh`, indem du den folgenden Befehl eingibst:
 ```
 
 <div class='hint'>
-Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>./bo</code> und drücke <kbd>Tab</kbd>, um den Dateinamen automatisch zu <code>./boostrap.sh</code> vervollständigen zu lassen. Drücke <kbd>Enter</kbd>, um das Skript auszuführen.
+Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>./bo</code> und drücke <kbd>Tab</kbd>, um den Dateinamen automatisch zu <code>./bootstrap.sh</code> vervollständigen zu lassen. Drücke <kbd>Enter</kbd>, um das Skript auszuführen.
 </div>
 
 <img class='r' src='noticed-new-environment.webp' style='width: 25em;' alt=''>
@@ -132,7 +132,7 @@ Wenn alle Schritte erfolgreich durchgelaufen sind, können wir mit dem Training 
 
 Öffne nun das zweite Jupyter-Notebook `02-train-model.ipynb`, indem du darauf klickst. Es enthält den Code, um unser neuronales Netzwerk zu trainieren, das die handgeschriebenen Ziffern erkennen soll. Im ersten Schritt wird die Menge aller Trainingsdaten in drei Teile aufgeteilt: 80% für das Training, 10% für die Validierung und 10% für den Test.
 
-Bevor du den ersten Codeblock starten kannst, musst du wieder den Kenrel in ».venv« auswählen:
+Bevor du den ersten Codeblock starten kannst, musst du wieder den Kernel in ».venv« auswählen:
 
 <img class='full' src='choose-kernel-again.webp' alt=''>
 
@@ -157,7 +157,7 @@ Wir sind jetzt bereit, das Modell zu trainieren. Klicke auf das Play-Symbol, um 
 <img class='full' src='training-finished.webp' alt=''>
 
 <div class='hint'>
-Du kannst hier gut beboachten, wie der »Loss« immer geringer wird – am Anfang ist er noch relativ groß und nach 30 Trainingsrunden schon bei 10<sup>-4</sup>.
+Du kannst hier gut beobachten, wie der »Loss« immer geringer wird – am Anfang ist er noch relativ groß und nach 30 Trainingsrunden schon bei 10<sup>-4</sup>.
 </div>
 
 Im nächsten Schritt wird das Modell im Verzeichnis `05-model` gespeichert:
@@ -210,8 +210,8 @@ Das neue Modell hat eine etwas andere Architektur:
 
 - die erste Schicht ist ein »Conv2D Layer«, das das 28x28 Pixel großen Eingabebild mit 32 3x3-Filtern in 32 26x26 Pixel große Bilder umwandelt.
 - die zweite Schicht ist ein »MaxPooling2D Layer«, das die Größe der Bilder halbiert (13x13).
-- die dritte Schicht ist ein weiteres »Conv2D Layer«, des die 13x13 großen Bilder mit 64 3x3-Filtern in 64 11x11 Pixel große Bilder umwandelt.
-- die vierte Schicht ist ein weiteres »MaxPooling2D Layer«, des die Größe der Bilder halbiert (5x5).
+- die dritte Schicht ist ein weiteres »Conv2D Layer«, das die 13x13 großen Bilder mit 64 3x3-Filtern in 64 11x11 Pixel große Bilder umwandelt.
+- die vierte Schicht ist ein weiteres »MaxPooling2D Layer«, das die Größe der Bilder halbiert (5x5).
 - die fünfte Schicht ist ein »Flatten Layer«, das die 5x5 Pixel großen Bilder in einen Vektor mit 1600 Elementen umwandelt.
 - die sechste Schicht ist ein »Dense Layer« mit 128 Neuronen und der Aktivierungsfunktion »ReLU«.
 - die siebte Schicht ist ein weiteres »Dense Layer« mit 10 Neuronen, die die jeweiligen Ziffern repräsentieren, jedoch mit der Aktivierungsfunktion »Softmax«.

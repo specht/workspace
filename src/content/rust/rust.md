@@ -9,7 +9,7 @@ kind: steckbrief
     data-levels="h2,h3">
 </div>
 
-# Rust <span style='font-size: 80%;'>(2012)</span>
+# Rust <span style='font-size: 80%;'>(2015)</span>
 
 <div class='floatright' style='width: 16em;'>
     <img src='hoare.webp' alt=''>
@@ -19,7 +19,7 @@ kind: steckbrief
 </div>
 
 <p class='abstract'>
-Rust, entwickelt von Graydon Hoare und erstmals 2015 veröffentlicht, ist eine kompilierte Programmiersprache, die für die Entwicklung von Systemsoftware und Webanwendungen konzipiert wurde. Rust legt besonderen Wert auf Sicherheit, Geschwindigkeit und Parallelität, was sie ideal für die Entwicklung von Betriebssystemen, Browser-Engines und anderen leistungsintensiven Anwendungen macht.
+Rust, ab 2006 von Graydon Hoare entwickelt und 2015 als Version 1.0 veröffentlicht, ist eine kompilierte Programmiersprache, die für die Entwicklung von Systemsoftware und Webanwendungen konzipiert wurde. Rust legt besonderen Wert auf Sicherheit, Geschwindigkeit und Parallelität, was sie ideal für die Entwicklung von Betriebssystemen, Browser-Engines und anderen leistungsintensiven Anwendungen macht.
 </p>
 
 Bekannte Beispiele für die Verwendung von Rust sind der Browser-Engine-Teil von Mozilla Firefox, genannt Servo, und das Betriebssystem Redox. Heutzutage ist Rust äußerst relevant, da sie von einer aktiven Community unterstützt wird und eine wachsende Anzahl von Bibliotheken und Frameworks bietet, die die Entwicklung sicherer und effizienter Software ermöglichen.

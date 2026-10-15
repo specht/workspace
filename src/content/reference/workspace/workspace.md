@@ -176,7 +176,7 @@ Falls sich die Vorschau einmal nicht mehr aktualisiert, lade die Seite neu: <kbd
 
 Visual Studio Code lässt sich mit Erweiterungen ergänzen, etwa um eine Programmiersprache oder eine Zeichenfläche. Welche Erweiterung du brauchst, steht in der Aktivität.
 
-Klicke auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Gib den Namen der Erweiterung in das Suchfeld ein und klicke bei der richtigen auf »Install«. Achte auf den Herausgeber unter dem Namen: Oft gibt es mehrere Erweiterungen mit ähnlichen Namen.
+Klicke auf das Erweiterungs-Symbol <img src='../../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt='das Erweiterungs-Symbol'> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Gib den Namen der Erweiterung in das Suchfeld ein und klicke bei der richtigen auf »Install«. Achte auf den Herausgeber unter dem Namen: Oft gibt es mehrere Erweiterungen mit ähnlichen Namen.
 
 <!-- tutorial-screenshot
 # Beispiel: die Zeichenfläche aus »Pixelgrafik mit Ruby«

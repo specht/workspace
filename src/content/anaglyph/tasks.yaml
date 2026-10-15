@@ -92,6 +92,11 @@ tasks:
         - bei (0, 100, 0), genau über dem Ursprung
         - bei (145, 0, 0), etwas weiter rechts
       correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: 'Gedreht wird um den Ursprung, nicht um den Mittelpunkt des Würfels. Wo landet der Punkt (100, 0, 0), wenn du ihn um 45 Grad um die z-Achse drehst?'
+      - when: { picked: 3 }
+        say: 'Die 45 sind Grad, kein Weg. Wo landet (100, 0, 0) nach einer Drehung um 45 Grad um den Ursprung?'
 
   - id: reihenfolge-erklaeren
     title: In eigenen Worten

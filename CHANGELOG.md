@@ -777,6 +777,28 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Seite; die Wetterseite zeigt die Temperatur groß und die Tage als Karten
   und baut ihr HTML nur noch mit `textContent`; die Pixelwand steht in der
   Mitte, mit runden Farbknöpfen.
+- Kleinigkeiten aus der Durchsicht: Das Symbol für Erweiterungen im Handbuch
+  »Workspace« (und in den Seiten, die es einbinden) erscheint wieder;
+  Anmeldung, Profil, Admin und Lehrmaterial heißen im Browser-Tab nicht
+  mehr »Mit dem Handy anmelden«, sondern »Anmelden«; jede Seite lädt
+  `moment.js` nicht mehr, das nirgends benutzt wurde; der Link von raylib
+  zu den Wellen in PixelRAM springt an die richtige Stelle.
+- Sachfehler und Tippfehler: Rust steht mit 2015 (Version 1.0) im Titel und
+  im Text, Common Lisp und Smalltalk nennen beide Jahre, C# schreibt
+  Hejlsberg richtig, COBOL nennt den CODASYL-Ausschuss und Grace Hoppers
+  FLOW-MATIC, die NASM-Seite sagt, dass es um NASM geht; die
+  Ziffernerkennung ist von »boostrap«, »Kenrel«, »beboachten« und »des die«
+  befreit.
+- Auswahlaufgaben: In 28 Aufgaben war die richtige Antwort deutlich die
+  längste und damit leicht zu erraten; die falschen Antworten sind jetzt
+  ebenso ausführlich und plausibel. Zwölf Aufgaben ohne jede Rückmeldung
+  bekommen eine zu den naheliegenden Fehlern, als Frage statt als Lösung.
+- Datei-Prüfungen, die richtige Lösungen ablehnten: Hugo nimmt auch
+  `.Site.RegularPages`, `site.Pages` und `{{- … -}}`; raylib nimmt einen
+  Rahmen um den Zielblock auch über eine eigene Variable und eine Textur
+  unter anderem Namen. Wo eine Prüfung einen bestimmten Namen verlangt
+  (`sky` in TIC-80, `vy` in raylib, `Thread.new` im Webserver), steht er
+  jetzt in der Aufgabe.
 
 ### Entfernt
 

@@ -67,9 +67,9 @@ tasks:
       type: choice
       options:
         - Jeder kann sich mit dem Server verbinden und beliebige Nachrichten schicken, nicht nur deine Seite
-        - JSON verliert unterwegs manchmal Zahlen
-        - Ruby kann sonst keine Hashes lesen
-        - Der Browser rundet die Koordinaten falsch
+        - 'JSON verliert unterwegs manchmal Zahlen, wenn das Netz langsam ist'
+        - 'Ruby kann sonst die Hashes aus dem JSON nicht lesen'
+        - 'Der Browser rundet die Koordinaten manchmal falsch und schickt Pixel außerhalb der Wand'
       correct: 0
     feedback:
       - when: { picked: 1 }

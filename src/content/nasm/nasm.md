@@ -17,7 +17,7 @@ kind: steckbrief
 </div>
 
 <p class='abstract'>
-Assembler ist eine maschinennahe Programmiersprache, die direkt auf der Maschinenebene arbeitet und es ermöglicht, Programme zu schreiben, die von der CPU direkt ausgeführt werden.
+Assembler ist eine maschinennahe Programmiersprache, die direkt auf der Maschinenebene arbeitet und es ermöglicht, Programme zu schreiben, die von der CPU direkt ausgeführt werden. Hier schreibst du ein Programm für x86-64 unter Linux und übersetzt es mit NASM, dem Netwide Assembler.
 </p>
 
 Assembler wird häufig für die Entwicklung von Betriebssystemen, Gerätetreibern und eingebetteten Systemen verwendet, da es eine hohe Effizienz und direkte Kontrolle über die Hardware bietet. Bekannte Beispiele für die Verwendung von Assembler sind der Linux-Kernel, der Teile seines Codes in Assembler enthält, und die Firmware von Mikrocontrollern in eingebetteten Systemen. Auch viele frühe Computerspiele wie »Prince of Persia« und »RollerCoaster Tycoon« wurden in Assembler geschrieben. Heutzutage ist Assembler immer noch relevant, insbesondere in Bereichen, die eine hohe Leistung und präzise Hardwaresteuerung erfordern, wie in der Systemprogrammierung und bei der Entwicklung von Echtzeitsystemen.
