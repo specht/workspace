@@ -166,6 +166,7 @@ click: selector:button[aria-label="Zoom in"]
 click: selector:button[aria-label="Zoom in"]
 move-mouse: Results overview
 sleep: 2
+variants: dark
 -->
 
 <img class='full' src='neo4j-browser-graph.webp' alt='Neo4j Browser: Das Ergebnis von MATCH (n) RETURN n LIMIT 25 als Graph aus Filmknoten.'>
@@ -406,6 +407,7 @@ click: Table
 wait-for-text: together
 move-mouse: selector:[data-testid=main-editor]
 sleep: 1
+variants: dark
 -->
 
 <img class='full' src='neo4j-browser-pairs.webp' alt='Neo4j Browser: Tabelle der zehn Schauspielpaare mit den meisten gemeinsamen Filmen.'>
@@ -450,6 +452,7 @@ press: Control+Enter
 wait-for-text: Started streaming 1 record
 move-mouse: selector:[data-testid=main-editor]
 sleep: 3
+variants: dark
 -->
 
 <img class='full' src='neo4j-browser-path.webp' alt='Neo4j Browser: der Weg von Dwayne Johnson über The Other Guys, Samuel L. Jackson und Coming to America zu Eddie Murphy.'>

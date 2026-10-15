@@ -1,5 +1,5 @@
 <div class='meta'>
-image: bif.webp
+image: ../reference/bif/story-image.webp
 kind: projekt
 template: https://github.com/specht/bif.git
 template_name: der BIF-Vorlage
@@ -99,6 +99,7 @@ go-live
 tab: preview
 click: Fit graph
 sleep: 0.5
+variants: dark
 -->
 
 <img class='full full-shadow scroll-right' src='first-page.webp' alt='Der Story-Graph enthält eine Startseite; daneben erscheint der Beginn der Geschichte, allerdings noch ohne Entscheidungen.'>
@@ -132,6 +133,7 @@ preview-reload
 tab: preview
 click: Fit graph
 sleep: 0.5
+variants: dark
 -->
 
 <img class='full full-shadow scroll-right' src='unreachable-page.webp' alt='Eine zweite Seite ist im Story-Graph nicht mit der Startseite verbunden und als unerreichbar markiert.'>
@@ -167,6 +169,7 @@ preview-reload
 tab: preview
 click: Fit graph
 sleep: 0.5
+variants: dark
 -->
 
 <img class='full full-shadow scroll-right' src='two-pages.webp' alt='Zwei Seiten sind im Story-Graph durch eine Entscheidung miteinander verbunden.'>
@@ -233,6 +236,7 @@ sleep: 0.5
 click: Sieh im Büro nach.
 wait-for-text: Gehe zurück in den Flur.
 sleep: 0.5
+variants: dark
 -->
 
 <img class='full full-shadow scroll-right' src='branching-story.webp' alt='Der Story-Graph verzweigt sich vom Flur zu Büro und Treppenhaus.'>
@@ -294,6 +298,7 @@ click: Frage nach dem Materialschrank.
 wait-for-text: Gehe zurück in den Flur.
 move-mouse: No problems
 sleep: 0.5
+variants: dark
 -->
 
 <img class='full full-shadow scroll-right' src='local-choice.webp' alt='Die Frage nach dem Materialschrank führt nicht zu einem Seitenwechsel, da es sich um eine lokale Entscheidung handelt.'>
@@ -576,6 +581,7 @@ sleep: 0.5
 click: Gehe zurück in den Flur.
 move-mouse: No problems
 sleep: 0.5
+variants: dark
 -->
 
 <img class='full full-shadow scroll-right' src='locked-door.webp' alt='Im Flur erscheint mit gespeichertem Schlüssel die neue Entscheidung „Öffne den Materialschrank“.'>
@@ -603,6 +609,7 @@ tab: preview
 click: Öffne den Materialschrank.
 move-mouse: No problems
 sleep: 0.5
+variants: dark
 -->
 
 <img class='full full-shadow scroll-right' src='unlocked-door.webp' alt='Der geöffnete Materialschrank bildet das Ende der Geschichte; darunter erscheint der Neustart-Button.'>
@@ -663,6 +670,7 @@ hold: 1.5s selector:.story-restart-control
 tab: preview
 click: Fit graph
 sleep: 0.5
+variants: dark
 -->
 <img class='full full-shadow' src='script-error.webp' alt='Der Problems-Bereich meldet den JavaScript-Syntaxfehler; die betroffene Seite ist im Graphen rot markiert.'>
 

@@ -286,6 +286,7 @@ click: Collapse
 move-mouse: No problems
 click: Fit graph
 sleep: 0.5
+variants: dark
 -->
 <img class='full full-shadow' src='grouped-graph.webp' alt='Farbig hinterlegte Gruppen gliedern den Story-Graphen in mehrere Bereiche.'>
 <!-- /part -->
@@ -521,6 +522,7 @@ click: Problems (0)
 move-mouse: No problems
 click: Fit graph
 sleep: 1.5
+variants: dark
 -->
 
 <img class='full full-shadow scroll-right' src='story-image.webp' alt='Ein Schlüsselbild ergänzt die Büroseite der Geschichte.'>

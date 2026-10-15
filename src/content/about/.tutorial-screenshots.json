@@ -1,0 +1,14 @@
+{
+  "screenshots": {
+    "start-page.webp": {
+      "environment_fingerprint": "f6458e32df5aac1160a38b0c53378b4b8f4bde221245bc8788030012d1342e5c",
+      "output_sha256": "5b900de283e563ac50b878b4fa7096d8baacfb16d4130553eb5b007c14f7c3ec",
+      "state_hash": "4ee273cca21ebc04c4a0c5d88c6503258b188a6e528856c6d6f09b423014bb91",
+      "variants": {
+        "start-page-dark.webp": "d0f1194d689c2462089725f3035b4abeddd5677d753108516166da0911de479a"
+      },
+      "workspace_look": "4.138.0-ls366"
+    }
+  },
+  "version": 1
+}
