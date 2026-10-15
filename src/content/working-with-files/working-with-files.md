@@ -356,7 +356,7 @@ Im Hexdump siehst du immer 16 Bytes in einer Zeile. Die erste Spalte zeigt den O
 
 In der folgenden Tabelle siehst du, welche Werte welchem ASCII-Zeichen entsprechen:
 
-<img class='full' src='ascii.webp' alt='Eine ASCII-Tabelle ordnet den Dezimalwerten von 0 bis 127 Steuerzeichen, Ziffern, Buchstaben und Sonderzeichen zu.'>
+<img class='full invert-dark' src='ascii.webp' alt='Eine ASCII-Tabelle ordnet den Dezimalwerten von 0 bis 127 Steuerzeichen, Ziffern, Buchstaben und Sonderzeichen zu.'>
 
 <div class='hint'>
 Ignoriere die rechte Hälfte der Tabelle &ndash; die Werte von 128 bis 255 sind nicht standardisiert und können je nach Zeichensatz unterschiedlich sein (abgebildet ist eine ASCII-Tabelle für MS-DOS von 1990). Die linke Hälfte (0 bis 127) ist jedoch standardisiert und wird von allen modernen Systemen unterstützt, wobei die Zeichen von 0 bis 31 sowie 127 nicht druckbar sind.

@@ -12,6 +12,23 @@ class DatabaseProvisioningTest < Minitest::Test
             )
     end
 
+    # An extra database's login reaches that database and nothing else.
+    def test_extra_database_login_reaches_only_its_database
+        statements = DatabaseProvisioning.extra_database_login_statements('db_k7q4bcd9fghj', "pa'ss")
+        assert_includes statements, "GRANT ALL ON `db_k7q4bcd9fghj`.* TO 'db_k7q4bcd9fghj'@'%';"
+        assert_equal 1, statements.count { |s| s.start_with?('GRANT') }
+        assert statements.all? { |s| !s.include?('*.*') }
+        assert_includes statements.first, "BY 'pa\\'ss'"
+        assert_equal "DROP USER IF EXISTS 'db_k7q4bcd9fghj'@'%';",
+            DatabaseProvisioning.extra_database_drop_login_statement('db_k7q4bcd9fghj')
+
+        # the main database and anything that could break the quoting are refused
+        ['student-k7q4', 'db_x`; DROP DATABASE y; --', "db_a'b", 'db_', 'DB_ABC', nil].each do |name|
+            assert_raises(ArgumentError, name.inspect) { DatabaseProvisioning.extra_database_login_statements(name, 'x') }
+            refute DatabaseProvisioning.extra_database?(name), name.inspect
+        end
+    end
+
     def test_mysql_and_neo4j_use_exactly_the_same_login
         login = 'student-k7q4'
         mysql = DatabaseProvisioning.mysql_statements(login, 'password')

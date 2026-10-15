@@ -6,57 +6,57 @@
 <!-- Title: git_objects Pages: 1 -->
 <svg width="1129pt" height="660pt"
  viewBox="0.00 0.00 1129.00 659.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 655.5)">
+<g id="graph0" class="graph git&#45;graph" transform="scale(1 1) rotate(0) translate(4 655.5)">
 <title>git_objects</title>
 <polygon fill="white" stroke="transparent" points="-4,4 -4,-655.5 1125,-655.5 1125,4 -4,4"/>
-<!-- b171eeee218ec7b5bcb640c7d4bd5c4f32141a57 -->
-<g id="node1" class="node">
-<title>b171eeee218ec7b5bcb640c7d4bd5c4f32141a57</title>
+<!-- c3271fb5fb73fd6c08ab1b5ea16b88b34e126525 -->
+<g id="node1" class="node commit current">
+<title>c3271fb5fb73fd6c08ab1b5ea16b88b34e126525</title>
 <polygon fill="#5bc0b5" stroke="transparent" points="297,-510.5 297,-610.5 419,-610.5 419,-510.5 297,-510.5"/>
-<text text-anchor="start" x="300" y="-597.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#000000">commit b171eee</text>
+<text text-anchor="start" x="300" y="-597.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#000000">commit c3271fb</text>
 <text text-anchor="start" x="300" y="-577.3" font-family="monospace" font-size="14.00" fill="#000000">tree 0701bc9 &#160;</text>
-<text text-anchor="start" x="300" y="-562.3" font-family="monospace" font-size="14.00" fill="#000000">parent 8f3c2d4</text>
+<text text-anchor="start" x="300" y="-562.3" font-family="monospace" font-size="14.00" fill="#000000">parent 8037dc7</text>
 <text text-anchor="start" x="300" y="-547.3" font-family="monospace" font-size="14.00" fill="#000000">author [...] &#160;</text>
 <text text-anchor="start" x="300" y="-532.3" font-family="monospace" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
 <text text-anchor="start" x="300" y="-517.3" font-family="monospace" font-size="14.00" fill="#000000">added smiley &#160;</text>
 <polygon fill="none" stroke="#000000" points="297,-510.5 297,-610.5 419,-610.5 419,-510.5 297,-510.5"/>
 </g>
 <!-- 0701bc912c4c687059107daf3e9a6b078d1cad18 -->
-<g id="node2" class="node">
+<g id="node2" class="node tree current">
 <title>0701bc912c4c687059107daf3e9a6b078d1cad18</title>
 <polygon fill="#d8c59f" stroke="transparent" points="542,-571.5 542,-611.5 747,-611.5 747,-571.5 542,-571.5"/>
 <text text-anchor="start" x="545.5" y="-598.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#000000">tree 0701bc9</text>
 <text text-anchor="start" x="545.5" y="-578.3" font-family="monospace" font-size="14.00" fill="#000000">blob README.md (bcd9a8a)</text>
 <polygon fill="none" stroke="#000000" points="542,-571.5 542,-611.5 747,-611.5 747,-571.5 542,-571.5"/>
 </g>
-<!-- b171eeee218ec7b5bcb640c7d4bd5c4f32141a57&#45;&gt;0701bc912c4c687059107daf3e9a6b078d1cad18 -->
-<g id="edge1" class="edge">
-<title>b171eeee218ec7b5bcb640c7d4bd5c4f32141a57&#45;&gt;0701bc912c4c687059107daf3e9a6b078d1cad18</title>
+<!-- c3271fb5fb73fd6c08ab1b5ea16b88b34e126525&#45;&gt;0701bc912c4c687059107daf3e9a6b078d1cad18 -->
+<g id="edge1" class="edge current">
+<title>c3271fb5fb73fd6c08ab1b5ea16b88b34e126525&#45;&gt;0701bc912c4c687059107daf3e9a6b078d1cad18</title>
 <path fill="none" stroke="#000000" d="M419.34,-567.07C451.98,-570.63 493.35,-575.14 531.64,-579.31"/>
 <polygon fill="#000000" stroke="#000000" points="531.5,-582.82 541.82,-580.42 532.26,-575.86 531.5,-582.82"/>
 <text text-anchor="middle" x="509.5" y="-581.3" font-family="Times,serif" font-size="14.00">tree</text>
 </g>
-<!-- 8f3c2d455532f90f5f3ba7c7c1ec548dcc37966b -->
-<g id="node3" class="node">
-<title>8f3c2d455532f90f5f3ba7c7c1ec548dcc37966b</title>
+<!-- 8037dc79df3d67553a20ccd1fb4a2df0799e62a3 -->
+<g id="node3" class="node commit faded">
+<title>8037dc79df3d67553a20ccd1fb4a2df0799e62a3</title>
 <polygon fill="#ceece9" stroke="transparent" points="284.5,-256.5 284.5,-356.5 431.5,-356.5 431.5,-256.5 284.5,-256.5"/>
-<text text-anchor="start" x="288" y="-343.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#808080">commit 8f3c2d4</text>
+<text text-anchor="start" x="288" y="-343.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#808080">commit 8037dc7</text>
 <text text-anchor="start" x="288" y="-323.3" font-family="monospace" font-size="14.00" fill="#808080">tree 130f7a9 &#160;&#160;&#160;&#160;</text>
-<text text-anchor="start" x="288" y="-308.3" font-family="monospace" font-size="14.00" fill="#808080">parent 75886fc &#160;&#160;</text>
+<text text-anchor="start" x="288" y="-308.3" font-family="monospace" font-size="14.00" fill="#808080">parent 04cae0b &#160;&#160;</text>
 <text text-anchor="start" x="288" y="-293.3" font-family="monospace" font-size="14.00" fill="#808080">author [...] &#160;&#160;&#160;&#160;</text>
 <text text-anchor="start" x="288" y="-278.3" font-family="monospace" font-size="14.00" fill="#808080"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
 <text text-anchor="start" x="288" y="-263.3" font-family="monospace" font-size="14.00" fill="#808080">updated README.md</text>
 <polygon fill="none" stroke="#b3b3b3" points="284.5,-256.5 284.5,-356.5 431.5,-356.5 431.5,-256.5 284.5,-256.5"/>
 </g>
-<!-- b171eeee218ec7b5bcb640c7d4bd5c4f32141a57&#45;&gt;8f3c2d455532f90f5f3ba7c7c1ec548dcc37966b -->
-<g id="edge2" class="edge">
-<title>b171eeee218ec7b5bcb640c7d4bd5c4f32141a57&#45;&gt;8f3c2d455532f90f5f3ba7c7c1ec548dcc37966b</title>
+<!-- c3271fb5fb73fd6c08ab1b5ea16b88b34e126525&#45;&gt;8037dc79df3d67553a20ccd1fb4a2df0799e62a3 -->
+<g id="edge2" class="edge faded">
+<title>c3271fb5fb73fd6c08ab1b5ea16b88b34e126525&#45;&gt;8037dc79df3d67553a20ccd1fb4a2df0799e62a3</title>
 <path fill="none" stroke="#b3b3b3" d="M296.77,-543.03C274.53,-533.91 250.97,-520.56 235,-501.5 161.95,-414.31 192.08,-422.39 209,-393 223.75,-367.38 249.33,-348.65 275.17,-335.3"/>
 <polygon fill="#b3b3b3" stroke="#b3b3b3" points="276.87,-338.36 284.3,-330.81 273.78,-332.08 276.87,-338.36"/>
 <text text-anchor="middle" x="200" y="-396.8" font-family="Times,serif" font-size="14.00">parent</text>
 </g>
 <!-- bcd9a8a4d1fc1d4deb7ab91877a0874fe869acf3 -->
-<g id="node4" class="node">
+<g id="node4" class="node blob current">
 <title>bcd9a8a4d1fc1d4deb7ab91877a0874fe869acf3</title>
 <polygon fill="#e7e6e1" stroke="transparent" points="929,-551.5 929,-651.5 1059,-651.5 1059,-551.5 929,-551.5"/>
 <text text-anchor="start" x="932" y="-638.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#000000">blob bcd9a8a</text>
@@ -68,48 +68,48 @@
 <polygon fill="none" stroke="#000000" points="929,-551.5 929,-651.5 1059,-651.5 1059,-551.5 929,-551.5"/>
 </g>
 <!-- 0701bc912c4c687059107daf3e9a6b078d1cad18&#45;&gt;bcd9a8a4d1fc1d4deb7ab91877a0874fe869acf3 -->
-<g id="edge3" class="edge">
+<g id="edge3" class="edge current">
 <title>0701bc912c4c687059107daf3e9a6b078d1cad18&#45;&gt;bcd9a8a4d1fc1d4deb7ab91877a0874fe869acf3</title>
 <path fill="none" stroke="#000000" d="M747.41,-594.43C802.31,-596.01 868.82,-597.93 918.77,-599.36"/>
 <polygon fill="#000000" stroke="#000000" points="918.75,-602.86 928.85,-599.65 918.95,-595.87 918.75,-602.86"/>
 <text text-anchor="middle" x="809" y="-600.3" font-family="Times,serif" font-size="14.00">README.md</text>
 </g>
 <!-- 130f7a90b97d88faa2f1ddf794ef7dace1c0c450 -->
-<g id="node5" class="node">
+<g id="node5" class="node tree faded">
 <title>130f7a90b97d88faa2f1ddf794ef7dace1c0c450</title>
 <polygon fill="#f3eee2" stroke="transparent" points="542,-286.5 542,-326.5 747,-326.5 747,-286.5 542,-286.5"/>
 <text text-anchor="start" x="545.5" y="-313.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#808080">tree 130f7a9</text>
 <text text-anchor="start" x="545.5" y="-293.3" font-family="monospace" font-size="14.00" fill="#808080">blob README.md (1bce388)</text>
 <polygon fill="none" stroke="#b3b3b3" points="542,-286.5 542,-326.5 747,-326.5 747,-286.5 542,-286.5"/>
 </g>
-<!-- 8f3c2d455532f90f5f3ba7c7c1ec548dcc37966b&#45;&gt;130f7a90b97d88faa2f1ddf794ef7dace1c0c450 -->
-<g id="edge4" class="edge">
-<title>8f3c2d455532f90f5f3ba7c7c1ec548dcc37966b&#45;&gt;130f7a90b97d88faa2f1ddf794ef7dace1c0c450</title>
+<!-- 8037dc79df3d67553a20ccd1fb4a2df0799e62a3&#45;&gt;130f7a90b97d88faa2f1ddf794ef7dace1c0c450 -->
+<g id="edge4" class="edge faded">
+<title>8037dc79df3d67553a20ccd1fb4a2df0799e62a3&#45;&gt;130f7a90b97d88faa2f1ddf794ef7dace1c0c450</title>
 <path fill="none" stroke="#b3b3b3" d="M431.53,-306.5C461.89,-306.5 497.88,-306.5 531.51,-306.5"/>
 <polygon fill="#b3b3b3" stroke="#b3b3b3" points="531.86,-310 541.86,-306.5 531.86,-303 531.86,-310"/>
 <text text-anchor="middle" x="509.5" y="-310.3" font-family="Times,serif" font-size="14.00">tree</text>
 </g>
-<!-- 75886fc626ffe6f6f1a05ce9c649e8ade032954e -->
-<g id="node6" class="node">
-<title>75886fc626ffe6f6f1a05ce9c649e8ade032954e</title>
+<!-- 04cae0b1df05e9feaed525ba0bec8248cd6b8afc -->
+<g id="node6" class="node commit faded">
+<title>04cae0b1df05e9feaed525ba0bec8248cd6b8afc</title>
 <polygon fill="#ceece9" stroke="transparent" points="235,-120.5 235,-220.5 481,-220.5 481,-120.5 235,-120.5"/>
-<text text-anchor="start" x="238" y="-207.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#808080">commit 75886fc</text>
+<text text-anchor="start" x="238" y="-207.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#808080">commit 04cae0b</text>
 <text text-anchor="start" x="238" y="-187.3" font-family="monospace" font-size="14.00" fill="#808080">tree ebfd749 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
-<text text-anchor="start" x="238" y="-172.3" font-family="monospace" font-size="14.00" fill="#808080">parent 32e7c11 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
+<text text-anchor="start" x="238" y="-172.3" font-family="monospace" font-size="14.00" fill="#808080">parent 43eca40 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
 <text text-anchor="start" x="238" y="-157.3" font-family="monospace" font-size="14.00" fill="#808080">author [...] &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
 <text text-anchor="start" x="238" y="-142.3" font-family="monospace" font-size="14.00" fill="#808080"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
 <text text-anchor="start" x="238" y="-127.3" font-family="monospace" font-size="14.00" fill="#808080">rename hello.txt to README.md</text>
 <polygon fill="none" stroke="#b3b3b3" points="235,-120.5 235,-220.5 481,-220.5 481,-120.5 235,-120.5"/>
 </g>
-<!-- 8f3c2d455532f90f5f3ba7c7c1ec548dcc37966b&#45;&gt;75886fc626ffe6f6f1a05ce9c649e8ade032954e -->
-<g id="edge5" class="edge">
-<title>8f3c2d455532f90f5f3ba7c7c1ec548dcc37966b&#45;&gt;75886fc626ffe6f6f1a05ce9c649e8ade032954e</title>
+<!-- 8037dc79df3d67553a20ccd1fb4a2df0799e62a3&#45;&gt;04cae0b1df05e9feaed525ba0bec8248cd6b8afc -->
+<g id="edge5" class="edge faded">
+<title>8037dc79df3d67553a20ccd1fb4a2df0799e62a3&#45;&gt;04cae0b1df05e9feaed525ba0bec8248cd6b8afc</title>
 <path fill="none" stroke="#b3b3b3" d="M358,-256.45C358,-248.17 358,-239.51 358,-231.01"/>
 <polygon fill="#b3b3b3" stroke="#b3b3b3" points="361.5,-230.75 358,-220.75 354.5,-230.76 361.5,-230.75"/>
 <text text-anchor="middle" x="347.5" y="-234.8" font-family="Times,serif" font-size="14.00">parent</text>
 </g>
 <!-- 1bce3880336548b24d6aadcc51e3d41359c5908d -->
-<g id="node7" class="node">
+<g id="node7" class="node blob faded">
 <title>1bce3880336548b24d6aadcc51e3d41359c5908d</title>
 <polygon fill="#f8f8f6" stroke="transparent" points="929,-271.5 929,-341.5 1059,-341.5 1059,-271.5 929,-271.5"/>
 <text text-anchor="start" x="932" y="-328.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#808080">blob 1bce388</text>
@@ -119,47 +119,47 @@
 <polygon fill="none" stroke="#b3b3b3" points="929,-271.5 929,-341.5 1059,-341.5 1059,-271.5 929,-271.5"/>
 </g>
 <!-- 130f7a90b97d88faa2f1ddf794ef7dace1c0c450&#45;&gt;1bce3880336548b24d6aadcc51e3d41359c5908d -->
-<g id="edge6" class="edge">
+<g id="edge6" class="edge faded">
 <title>130f7a90b97d88faa2f1ddf794ef7dace1c0c450&#45;&gt;1bce3880336548b24d6aadcc51e3d41359c5908d</title>
 <path fill="none" stroke="#b3b3b3" d="M747.41,-306.5C802.31,-306.5 868.82,-306.5 918.77,-306.5"/>
 <polygon fill="#b3b3b3" stroke="#b3b3b3" points="918.85,-310 928.85,-306.5 918.85,-303 918.85,-310"/>
 <text text-anchor="middle" x="809" y="-310.3" font-family="Times,serif" font-size="14.00">README.md</text>
 </g>
 <!-- ebfd7499dae526dcbaf30e1250b1f875946729f8 -->
-<g id="node8" class="node">
+<g id="node8" class="node tree faded">
 <title>ebfd7499dae526dcbaf30e1250b1f875946729f8</title>
 <polygon fill="#f3eee2" stroke="transparent" points="542,-111.5 542,-151.5 747,-151.5 747,-111.5 542,-111.5"/>
 <text text-anchor="start" x="545.5" y="-138.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#808080">tree ebfd749</text>
 <text text-anchor="start" x="545.5" y="-118.3" font-family="monospace" font-size="14.00" fill="#808080">blob README.md (af5626b)</text>
 <polygon fill="none" stroke="#b3b3b3" points="542,-111.5 542,-151.5 747,-151.5 747,-111.5 542,-111.5"/>
 </g>
-<!-- 75886fc626ffe6f6f1a05ce9c649e8ade032954e&#45;&gt;ebfd7499dae526dcbaf30e1250b1f875946729f8 -->
-<g id="edge7" class="edge">
-<title>75886fc626ffe6f6f1a05ce9c649e8ade032954e&#45;&gt;ebfd7499dae526dcbaf30e1250b1f875946729f8</title>
+<!-- 04cae0b1df05e9feaed525ba0bec8248cd6b8afc&#45;&gt;ebfd7499dae526dcbaf30e1250b1f875946729f8 -->
+<g id="edge7" class="edge faded">
+<title>04cae0b1df05e9feaed525ba0bec8248cd6b8afc&#45;&gt;ebfd7499dae526dcbaf30e1250b1f875946729f8</title>
 <path fill="none" stroke="#b3b3b3" d="M481.3,-153.73C498.02,-151.44 515.1,-149.1 531.62,-146.84"/>
 <polygon fill="#b3b3b3" stroke="#b3b3b3" points="532.39,-150.26 541.82,-145.44 531.44,-143.33 532.39,-150.26"/>
 <text text-anchor="middle" x="509.5" y="-154.3" font-family="Times,serif" font-size="14.00">tree</text>
 </g>
-<!-- 32e7c11f1129b9cdf98952fd2e8a5f499cee8023 -->
-<g id="node9" class="node">
-<title>32e7c11f1129b9cdf98952fd2e8a5f499cee8023</title>
+<!-- 43eca40e2fbb09f44d383e55c9e6fd170e272cfc -->
+<g id="node9" class="node commit faded">
+<title>43eca40e2fbb09f44d383e55c9e6fd170e272cfc</title>
 <polygon fill="#ceece9" stroke="transparent" points="297,0 297,-85 419,-85 419,0 297,0"/>
-<text text-anchor="start" x="300" y="-71.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#808080">commit 32e7c11</text>
+<text text-anchor="start" x="300" y="-71.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#808080">commit 43eca40</text>
 <text text-anchor="start" x="300" y="-51.3" font-family="monospace" font-size="14.00" fill="#808080">tree ec947e3 &#160;</text>
 <text text-anchor="start" x="300" y="-36.3" font-family="monospace" font-size="14.00" fill="#808080">author [...] &#160;</text>
 <text text-anchor="start" x="300" y="-21.3" font-family="monospace" font-size="14.00" fill="#808080"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
 <text text-anchor="start" x="300" y="-6.3" font-family="monospace" font-size="14.00" fill="#808080">initial commit</text>
 <polygon fill="none" stroke="#b3b3b3" points="297,0 297,-85 419,-85 419,0 297,0"/>
 </g>
-<!-- 75886fc626ffe6f6f1a05ce9c649e8ade032954e&#45;&gt;32e7c11f1129b9cdf98952fd2e8a5f499cee8023 -->
-<g id="edge8" class="edge">
-<title>75886fc626ffe6f6f1a05ce9c649e8ade032954e&#45;&gt;32e7c11f1129b9cdf98952fd2e8a5f499cee8023</title>
+<!-- 04cae0b1df05e9feaed525ba0bec8248cd6b8afc&#45;&gt;43eca40e2fbb09f44d383e55c9e6fd170e272cfc -->
+<g id="edge8" class="edge faded">
+<title>04cae0b1df05e9feaed525ba0bec8248cd6b8afc&#45;&gt;43eca40e2fbb09f44d383e55c9e6fd170e272cfc</title>
 <path fill="none" stroke="#b3b3b3" d="M358,-120.07C358,-111.94 358,-103.5 358,-95.32"/>
 <polygon fill="#b3b3b3" stroke="#b3b3b3" points="361.5,-95.12 358,-85.12 354.5,-95.12 361.5,-95.12"/>
 <text text-anchor="middle" x="347.5" y="-99.05" font-family="Times,serif" font-size="14.00">parent</text>
 </g>
 <!-- af5626b4a114abcb82d63db7c8082c3c4756e51b -->
-<g id="node10" class="node">
+<g id="node10" class="node blob faded">
 <title>af5626b4a114abcb82d63db7c8082c3c4756e51b</title>
 <polygon fill="#f8f8f6" stroke="transparent" points="937,-78.5 937,-118.5 1051,-118.5 1051,-78.5 937,-78.5"/>
 <text text-anchor="start" x="940" y="-105.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#808080">blob af5626b</text>
@@ -167,55 +167,55 @@
 <polygon fill="none" stroke="#b3b3b3" points="937,-78.5 937,-118.5 1051,-118.5 1051,-78.5 937,-78.5"/>
 </g>
 <!-- ebfd7499dae526dcbaf30e1250b1f875946729f8&#45;&gt;af5626b4a114abcb82d63db7c8082c3c4756e51b -->
-<g id="edge9" class="edge">
+<g id="edge9" class="edge faded">
 <title>ebfd7499dae526dcbaf30e1250b1f875946729f8&#45;&gt;af5626b4a114abcb82d63db7c8082c3c4756e51b</title>
 <path fill="none" stroke="#b3b3b3" d="M747.41,-121.82C805.31,-116.32 876.12,-109.6 926.8,-104.79"/>
 <polygon fill="#b3b3b3" stroke="#b3b3b3" points="927.35,-108.25 936.98,-103.82 926.69,-101.28 927.35,-108.25"/>
 <text text-anchor="middle" x="809" y="-122.3" font-family="Times,serif" font-size="14.00">README.md</text>
 </g>
 <!-- ec947e3dd7a7752d078f1ed0cfde7457b21fef58 -->
-<g id="node11" class="node">
+<g id="node11" class="node tree faded">
 <title>ec947e3dd7a7752d078f1ed0cfde7457b21fef58</title>
 <polygon fill="#f3eee2" stroke="transparent" points="542,-44.5 542,-84.5 747,-84.5 747,-44.5 542,-44.5"/>
 <text text-anchor="start" x="545.5" y="-71.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#808080">tree ec947e3</text>
 <text text-anchor="start" x="545.5" y="-51.3" font-family="monospace" font-size="14.00" fill="#808080">blob hello.txt (af5626b)</text>
 <polygon fill="none" stroke="#b3b3b3" points="542,-44.5 542,-84.5 747,-84.5 747,-44.5 542,-44.5"/>
 </g>
-<!-- 32e7c11f1129b9cdf98952fd2e8a5f499cee8023&#45;&gt;ec947e3dd7a7752d078f1ed0cfde7457b21fef58 -->
-<g id="edge10" class="edge">
-<title>32e7c11f1129b9cdf98952fd2e8a5f499cee8023&#45;&gt;ec947e3dd7a7752d078f1ed0cfde7457b21fef58</title>
+<!-- 43eca40e2fbb09f44d383e55c9e6fd170e272cfc&#45;&gt;ec947e3dd7a7752d078f1ed0cfde7457b21fef58 -->
+<g id="edge10" class="edge faded">
+<title>43eca40e2fbb09f44d383e55c9e6fd170e272cfc&#45;&gt;ec947e3dd7a7752d078f1ed0cfde7457b21fef58</title>
 <path fill="none" stroke="#b3b3b3" d="M419.34,-47.17C451.98,-49.69 493.35,-52.89 531.64,-55.85"/>
 <polygon fill="#b3b3b3" stroke="#b3b3b3" points="531.58,-59.36 541.82,-56.64 532.12,-52.38 531.58,-59.36"/>
 <text text-anchor="middle" x="509.5" y="-59.3" font-family="Times,serif" font-size="14.00">tree</text>
 </g>
 <!-- ec947e3dd7a7752d078f1ed0cfde7457b21fef58&#45;&gt;af5626b4a114abcb82d63db7c8082c3c4756e51b -->
-<g id="edge11" class="edge">
+<g id="edge11" class="edge faded">
 <title>ec947e3dd7a7752d078f1ed0cfde7457b21fef58&#45;&gt;af5626b4a114abcb82d63db7c8082c3c4756e51b</title>
 <path fill="none" stroke="#b3b3b3" d="M747.41,-74.47C805.31,-80.14 876.12,-87.06 926.8,-92.02"/>
 <polygon fill="#b3b3b3" stroke="#b3b3b3" points="926.69,-95.53 936.98,-93.02 927.37,-88.56 926.69,-95.53"/>
 <text text-anchor="middle" x="809" y="-87.3" font-family="Times,serif" font-size="14.00">hello.txt</text>
 </g>
-<!-- 7fa8070022e8474b583ba6fdd8916bd48bd209da -->
-<g id="node12" class="node">
-<title>7fa8070022e8474b583ba6fdd8916bd48bd209da</title>
+<!-- c122b01a1d2c3f5ac1c61db035d38a60139c4d9f -->
+<g id="node12" class="node commit faded">
+<title>c122b01a1d2c3f5ac1c61db035d38a60139c4d9f</title>
 <polygon fill="#ceece9" stroke="transparent" points="297,-392.5 297,-492.5 419,-492.5 419,-392.5 297,-392.5"/>
-<text text-anchor="start" x="300" y="-479.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#808080">commit 7fa8070</text>
+<text text-anchor="start" x="300" y="-479.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#808080">commit c122b01</text>
 <text text-anchor="start" x="300" y="-459.3" font-family="monospace" font-size="14.00" fill="#808080">tree 88edcc2 &#160;</text>
-<text text-anchor="start" x="300" y="-444.3" font-family="monospace" font-size="14.00" fill="#808080">parent 8f3c2d4</text>
+<text text-anchor="start" x="300" y="-444.3" font-family="monospace" font-size="14.00" fill="#808080">parent 8037dc7</text>
 <text text-anchor="start" x="300" y="-429.3" font-family="monospace" font-size="14.00" fill="#808080">author [...] &#160;</text>
 <text text-anchor="start" x="300" y="-414.3" font-family="monospace" font-size="14.00" fill="#808080"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</text>
 <text text-anchor="start" x="300" y="-399.3" font-family="monospace" font-size="14.00" fill="#808080">added hello.c </text>
 <polygon fill="none" stroke="#b3b3b3" points="297,-392.5 297,-492.5 419,-492.5 419,-392.5 297,-392.5"/>
 </g>
-<!-- 7fa8070022e8474b583ba6fdd8916bd48bd209da&#45;&gt;8f3c2d455532f90f5f3ba7c7c1ec548dcc37966b -->
-<g id="edge13" class="edge">
-<title>7fa8070022e8474b583ba6fdd8916bd48bd209da&#45;&gt;8f3c2d455532f90f5f3ba7c7c1ec548dcc37966b</title>
+<!-- c122b01a1d2c3f5ac1c61db035d38a60139c4d9f&#45;&gt;8037dc79df3d67553a20ccd1fb4a2df0799e62a3 -->
+<g id="edge13" class="edge faded">
+<title>c122b01a1d2c3f5ac1c61db035d38a60139c4d9f&#45;&gt;8037dc79df3d67553a20ccd1fb4a2df0799e62a3</title>
 <path fill="none" stroke="#b3b3b3" d="M358,-392.45C358,-384.17 358,-375.51 358,-367.01"/>
 <polygon fill="#b3b3b3" stroke="#b3b3b3" points="361.5,-366.75 358,-356.75 354.5,-366.76 361.5,-366.75"/>
 <text text-anchor="middle" x="347.5" y="-370.8" font-family="Times,serif" font-size="14.00">parent</text>
 </g>
 <!-- 88edcc251361e1101bb396061eb6b2d840b37b3e -->
-<g id="node13" class="node">
+<g id="node13" class="node tree faded">
 <title>88edcc251361e1101bb396061eb6b2d840b37b3e</title>
 <polygon fill="#f3eee2" stroke="transparent" points="538,-389.5 538,-459.5 751,-459.5 751,-389.5 538,-389.5"/>
 <text text-anchor="start" x="541.5" y="-446.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#808080">tree 88edcc2</text>
@@ -224,22 +224,22 @@
 <text text-anchor="start" x="541.5" y="-396.3" font-family="monospace" font-size="14.00" fill="#808080">blob hello.c (8321e25) &#160;&#160;</text>
 <polygon fill="none" stroke="#b3b3b3" points="538,-389.5 538,-459.5 751,-459.5 751,-389.5 538,-389.5"/>
 </g>
-<!-- 7fa8070022e8474b583ba6fdd8916bd48bd209da&#45;&gt;88edcc251361e1101bb396061eb6b2d840b37b3e -->
-<g id="edge12" class="edge">
-<title>7fa8070022e8474b583ba6fdd8916bd48bd209da&#45;&gt;88edcc251361e1101bb396061eb6b2d840b37b3e</title>
+<!-- c122b01a1d2c3f5ac1c61db035d38a60139c4d9f&#45;&gt;88edcc251361e1101bb396061eb6b2d840b37b3e -->
+<g id="edge12" class="edge faded">
+<title>c122b01a1d2c3f5ac1c61db035d38a60139c4d9f&#45;&gt;88edcc251361e1101bb396061eb6b2d840b37b3e</title>
 <path fill="none" stroke="#b3b3b3" d="M419.34,-438.68C450.79,-436.69 490.36,-434.19 527.46,-431.84"/>
 <polygon fill="#b3b3b3" stroke="#b3b3b3" points="528.09,-435.31 537.85,-431.18 527.65,-428.32 528.09,-435.31"/>
 <text text-anchor="middle" x="509.5" y="-437.3" font-family="Times,serif" font-size="14.00">tree</text>
 </g>
 <!-- 88edcc251361e1101bb396061eb6b2d840b37b3e&#45;&gt;1bce3880336548b24d6aadcc51e3d41359c5908d -->
-<g id="edge15" class="edge">
+<g id="edge15" class="edge faded">
 <title>88edcc251361e1101bb396061eb6b2d840b37b3e&#45;&gt;1bce3880336548b24d6aadcc51e3d41359c5908d</title>
 <path fill="none" stroke="#b3b3b3" d="M748.82,-389.42C803.59,-370.82 869.59,-348.4 919.17,-331.57"/>
 <polygon fill="#b3b3b3" stroke="#b3b3b3" points="920.51,-334.81 928.85,-328.28 918.26,-328.18 920.51,-334.81"/>
 <text text-anchor="middle" x="809" y="-383.3" font-family="Times,serif" font-size="14.00">README.md</text>
 </g>
 <!-- ce013625030ba8dba906f756967f9e9ca394464a -->
-<g id="node14" class="node">
+<g id="node14" class="node blob faded">
 <title>ce013625030ba8dba906f756967f9e9ca394464a</title>
 <polygon fill="#f8f8f6" stroke="transparent" points="941,-493.5 941,-533.5 1047,-533.5 1047,-493.5 941,-493.5"/>
 <text text-anchor="start" x="944" y="-520.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#808080">blob ce01362</text>
@@ -247,14 +247,14 @@
 <polygon fill="none" stroke="#b3b3b3" points="941,-493.5 941,-533.5 1047,-533.5 1047,-493.5 941,-493.5"/>
 </g>
 <!-- 88edcc251361e1101bb396061eb6b2d840b37b3e&#45;&gt;ce013625030ba8dba906f756967f9e9ca394464a -->
-<g id="edge14" class="edge">
+<g id="edge14" class="edge faded">
 <title>88edcc251361e1101bb396061eb6b2d840b37b3e&#45;&gt;ce013625030ba8dba906f756967f9e9ca394464a</title>
 <path fill="none" stroke="#b3b3b3" d="M751.19,-454.02C787.79,-464 829.13,-475.02 867,-484.5 887.77,-489.7 910.56,-495.05 930.97,-499.72"/>
 <polygon fill="#b3b3b3" stroke="#b3b3b3" points="930.26,-503.15 940.79,-501.95 931.81,-496.32 930.26,-503.15"/>
 <text text-anchor="middle" x="809" y="-483.3" font-family="Times,serif" font-size="14.00">.gitignore</text>
 </g>
 <!-- 8321e25d3174e06bfbcc553517e13c5250e25772 -->
-<g id="node15" class="node">
+<g id="node15" class="node blob faded">
 <title>8321e25d3174e06bfbcc553517e13c5250e25772</title>
 <polygon fill="#f8f8f6" stroke="transparent" points="867,-360 867,-475 1121,-475 1121,-360 867,-360"/>
 <text text-anchor="start" x="870" y="-461.3" font-family="monospace" font-weight="bold" font-size="14.00" fill="#808080">blob 8321e25</text>
@@ -267,42 +267,42 @@
 <polygon fill="none" stroke="#b3b3b3" points="867,-360 867,-475 1121,-475 1121,-360 867,-360"/>
 </g>
 <!-- 88edcc251361e1101bb396061eb6b2d840b37b3e&#45;&gt;8321e25d3174e06bfbcc553517e13c5250e25772 -->
-<g id="edge16" class="edge">
+<g id="edge16" class="edge faded">
 <title>88edcc251361e1101bb396061eb6b2d840b37b3e&#45;&gt;8321e25d3174e06bfbcc553517e13c5250e25772</title>
 <path fill="none" stroke="#b3b3b3" d="M751.18,-422.37C784.34,-421.7 821.44,-420.96 856.43,-420.25"/>
 <polygon fill="#b3b3b3" stroke="#b3b3b3" points="856.8,-423.74 866.73,-420.04 856.66,-416.75 856.8,-423.74"/>
 <text text-anchor="middle" x="809" y="-425.3" font-family="Times,serif" font-size="14.00">hello.c</text>
 </g>
 <!-- ref:feature -->
-<g id="node16" class="node">
+<g id="node16" class="node ref">
 <title>ref:feature</title>
 <polygon fill="white" stroke="black" points="159,-460.5 91,-460.5 91,-424.5 165,-424.5 165,-454.5 159,-460.5"/>
 <polyline fill="none" stroke="black" points="159,-460.5 159,-454.5 "/>
 <polyline fill="none" stroke="black" points="165,-454.5 159,-454.5 "/>
 <text text-anchor="middle" x="128" y="-438.8" font-family="monospace" font-size="14.00">feature</text>
 </g>
-<!-- ref:feature&#45;&gt;7fa8070022e8474b583ba6fdd8916bd48bd209da -->
-<g id="edge17" class="edge">
-<title>ref:feature&#45;&gt;7fa8070022e8474b583ba6fdd8916bd48bd209da</title>
+<!-- ref:feature&#45;&gt;c122b01a1d2c3f5ac1c61db035d38a60139c4d9f -->
+<g id="edge17" class="edge ref">
+<title>ref:feature&#45;&gt;c122b01a1d2c3f5ac1c61db035d38a60139c4d9f</title>
 <path fill="none" stroke="black" d="M165.13,-442.5C197.65,-442.5 246.38,-442.5 286.59,-442.5"/>
 <polygon fill="black" stroke="black" points="286.62,-446 296.62,-442.5 286.62,-439 286.62,-446"/>
 </g>
 <!-- ref:main -->
-<g id="node17" class="node">
+<g id="node17" class="node ref">
 <title>ref:main</title>
 <polygon fill="white" stroke="black" points="149,-578.5 101,-578.5 101,-542.5 155,-542.5 155,-572.5 149,-578.5"/>
 <polyline fill="none" stroke="black" points="149,-578.5 149,-572.5 "/>
 <polyline fill="none" stroke="black" points="155,-572.5 149,-572.5 "/>
 <text text-anchor="middle" x="128" y="-556.8" font-family="monospace" font-size="14.00">main</text>
 </g>
-<!-- ref:main&#45;&gt;b171eeee218ec7b5bcb640c7d4bd5c4f32141a57 -->
-<g id="edge18" class="edge">
-<title>ref:main&#45;&gt;b171eeee218ec7b5bcb640c7d4bd5c4f32141a57</title>
+<!-- ref:main&#45;&gt;c3271fb5fb73fd6c08ab1b5ea16b88b34e126525 -->
+<g id="edge18" class="edge ref">
+<title>ref:main&#45;&gt;c3271fb5fb73fd6c08ab1b5ea16b88b34e126525</title>
 <path fill="none" stroke="black" d="M155.15,-560.5C186.95,-560.5 241.88,-560.5 286.41,-560.5"/>
 <polygon fill="black" stroke="black" points="286.62,-564 296.62,-560.5 286.62,-557 286.62,-564"/>
 </g>
 <!-- ref:HEAD -->
-<g id="node18" class="node">
+<g id="node18" class="node ref head">
 <title>ref:HEAD</title>
 <polygon fill="#fce94f" stroke="black" points="48,-578.5 0,-578.5 0,-542.5 54,-542.5 54,-572.5 48,-578.5"/>
 <polyline fill="none" stroke="black" points="48,-578.5 48,-572.5 "/>
@@ -310,7 +310,7 @@
 <text text-anchor="middle" x="27" y="-556.8" font-family="monospace" font-size="14.00">HEAD</text>
 </g>
 <!-- ref:HEAD&#45;&gt;ref:main -->
-<g id="edge19" class="edge">
+<g id="edge19" class="edge ref">
 <title>ref:HEAD&#45;&gt;ref:main</title>
 <path fill="none" stroke="black" d="M54.01,-560.5C65.18,-560.5 78.42,-560.5 90.54,-560.5"/>
 <polygon fill="black" stroke="black" points="90.82,-564 100.82,-560.5 90.82,-557 90.82,-564"/>

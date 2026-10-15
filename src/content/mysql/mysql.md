@@ -1,6 +1,7 @@
 <div class='meta'>
 image: select-land.webp:25:0
 kind: grundlagen
+reference: [sql]
 </div>
 
 <div
@@ -470,6 +471,8 @@ Du kennst jetzt die wichtigsten Bausteine, die wir für die folgenden Aufgaben b
 </div>
 
 Die Bausteine lassen sich kombinieren. Eine typische Abfrage kann beispielsweise filtern, sortieren und die Ausgabe anschließend begrenzen.
+
+Im Handbuch: _uses(mycli, select, where, sortieren, aggregieren)
 
 <div class='hint'>
 Um <code>mycli</code> zu beenden, gib <code>exit</code> ein oder verwende <kbd>Strg</kbd><kbd>D</kbd>.

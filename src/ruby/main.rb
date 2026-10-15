@@ -5969,6 +5969,19 @@ class Main < Sinatra::Base
         END_OF_STRING
             databases << row['name']
         end
+        # Extra databases made before they had a login of their own get it
+        # here, the first time the profile lists them.
+        result[:logins] = {}
+        result[:max_extra] = MYSQL_EXTRA_DATABASES_MAX
+        databases.each do |database|
+            next unless DatabaseProvisioning.extra_database?(database)
+
+            Main.ensure_extra_database_login(client, @session_user[:email], database)
+            result[:logins][database] = {
+                :login => database,
+                :password => Main.extra_database_password(@session_user[:email], database),
+            }
+        end
         databases.each do |database|
             result[:databases] ||= []
             result[:databases] << database
@@ -5991,6 +6004,8 @@ class Main < Sinatra::Base
         respond(:result => result)
     end
 
+    MYSQL_EXTRA_DATABASES_MAX = 4
+
     post '/api/create_mysql_database' do
         assert(user_logged_in?)
         mysql_database_lock(@session_user[:email]).synchronize do
@@ -5998,7 +6013,7 @@ class Main < Sinatra::Base
                 MATCH (u:User {email: $email})-[:HAS]->(d:Database {type: 'mysql'})
                 RETURN COUNT(d) AS count;
             END_OF_STRING
-            assert(count < 4)
+            assert(count < MYSQL_EXTRA_DATABASES_MAX)
             database_name = "db_#{RandomTag.generate(12)}"
             client = Mysql2::Client.new(
                 host: 'mysql',
@@ -6008,6 +6023,7 @@ class Main < Sinatra::Base
             login = @session_user[:db_login]
             client.query("CREATE DATABASE #{database_name};")
             client.query("GRANT ALL ON `#{database_name}`.* TO '#{login}'@'%';")
+            Main.ensure_extra_database_login(client, @session_user[:email], database_name)
             client.query("FLUSH PRIVILEGES;")
             neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :database_name => database_name})
                 MATCH (u:User {email: $email})
@@ -6018,10 +6034,38 @@ class Main < Sinatra::Base
         respond(:yay => 'sure')
     end
 
+    # The password of an extra database's own login
+    # (DatabaseProvisioning.extra_database_login_statements): derived, like
+    # the others, so nothing has to be stored.
+    def self.extra_database_password(email, database)
+        gen_password_for_email("#{email}/#{database}", MYSQL_PASSWORD_SALT)
+    end
+
+    def self.ensure_extra_database_login(client, email, database)
+        return unless DatabaseProvisioning.extra_database?(database)
+
+        DatabaseProvisioning.extra_database_login_statements(database, extra_database_password(email, database))
+            .each { |statement| client.query(statement) }
+    end
+
+    # Only one's own databases: the main one (db_login, reset instead) and
+    # the ones created in the profile. Anything else was dropped before,
+    # for any logged-in user who knew a name.
+    def self.own_mysql_database?(email, db_login, name)
+        return false unless name.is_a?(String) && name.match?(/\A[A-Za-z0-9_]{1,64}\z/)
+        return true if name == db_login
+
+        !$neo4j.neo4j_query(<<~END_OF_STRING, {:email => email, :name => name}).first.nil?
+            MATCH (u:User {email: $email})-[:HAS]->(d:Database {type: 'mysql', name: $name})
+            RETURN d.name;
+        END_OF_STRING
+    end
+
     post '/api/delete_mysql_database' do
         assert(user_logged_in?)
         data = parse_request_data(:required_keys => [:database])
         mysql_database_lock(@session_user[:email]).synchronize do
+            assert(Main.own_mysql_database?(@session_user[:email], @session_user[:db_login], data[:database]), 'not_your_database')
             client = Mysql2::Client.new(
                 host: 'mysql',
                 username: 'root',
@@ -6029,6 +6073,9 @@ class Main < Sinatra::Base
             )
             is_user_db = (data[:database] == @session_user[:db_login])
             client.query("DROP DATABASE IF EXISTS `#{data[:database]}`;")
+            if DatabaseProvisioning.extra_database?(data[:database])
+                client.query(DatabaseProvisioning.extra_database_drop_login_statement(data[:database]))
+            end
             neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email], :database => data[:database]})
                 MATCH (u:User {email: $email})-[:HAS]->(d:Database {type: 'mysql', name: $database})
                 DETACH DELETE d;

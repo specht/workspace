@@ -549,6 +549,29 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   nach Namen sortiert. Ein Rendern in anderer Reihenfolge ändert die Datei
   nicht mehr.
 
+- Handbuch »SQL«: mycli, Tabellen ansehen, `SELECT`, `WHERE`, Sortieren,
+  Zählen und Gruppieren, `JOIN`, `CREATE TABLE`, `INSERT`, `UPDATE` und
+  `DELETE`, Werte über Platzhalter in Programmen (PHP, Ruby, Python) und
+  die häufigen Meldungen von MySQL. »MySQL kennenlernen« und
+  »Filmdatenbank« verweisen darauf. Code-Blöcke in PHP sind farbig; ein
+  Test hatte die fehlende Sprache bemerkt.
+- Profil, MySQL: Jede Datenbank ist eine Karte mit Name, Art, Tabellen,
+  Einträgen und Größe, ihrem Knopf zum Zurücksetzen oder Löschen und ihren
+  Zugangsdaten. Unter den Karten steht, wie viele weitere Datenbanken noch
+  möglich sind. Auf dem Handy bleiben Feld und Knöpfe in einer Zeile (die
+  Knöpfe als Symbole). Der Hinweis nennt die richtige Variable
+  `MYSQL_DATABASE` statt `MYSQL_DB`.
+- Jede weitere MySQL-Datenbank aus dem Profil hat einen eigenen Zugang
+  (Benutzername wie die Datenbank), der nur diese Datenbank erreicht. Das
+  Profil zeigt ihn unter der Datenbank, mit Knöpfen zum Kopieren. Gedacht
+  für Programme, die andere benutzen, etwa ein geteiltes Gästebuch.
+  Bestehende weitere Datenbanken bekommen ihren Zugang, wenn das Profil sie
+  das nächste Mal anzeigt; mit der Datenbank verschwindet auch er.
+- Behoben: Jede angemeldete Person konnte über das Profil eine beliebige
+  MySQL-Datenbank löschen, wenn sie deren Namen kannte. Gelöscht werden
+  jetzt nur die eigene Datenbank (zurückgesetzt) und die selbst
+  angelegten; Namen aus anderen Zeichen als Buchstaben, Ziffern und `_`
+  werden abgelehnt.
 - Behoben: »Git kennt dich« schlug fehl, obwohl `git config --global` Name
   und E-Mail kannte. Die Prüfung lief mit dem `HOME` des Images (`/config`)
   statt mit dem der Lernenden (`/workspace`) und fand `.gitconfig` nicht.
@@ -581,6 +604,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Free, CC BY 4.0).
 
 ### Für Betreibende
+
+- Das Workspace-Image bekommt `php-mysql` (PDO-Treiber `pdo_mysql` und
+  `mysqli`), damit PHP-Programme die MySQL-Datenbanken erreichen. Eine
+  eigene, kleine Schicht kurz vor den Erweiterungen; Image neu bauen
+  (`./build-image.sh`).
 
 - TIC-80 einmal neu bauen: `./build-tic80.sh` (TIC-80 1.3.1, sokol-Schicht;
   `tic80.js` und `tic80.wasm` stehen nicht in Git). Das Build-Image braucht

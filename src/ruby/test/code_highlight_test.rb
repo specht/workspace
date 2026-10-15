@@ -43,6 +43,11 @@ class CodeHighlightTest < Minitest::Test
 
     def test_languages_and_task_card_fragments
         assert_includes html("<pre><code class='minicpu'>loop: DEC A</code></pre>"), "class=\"code-minicpu\""
+        # PHP: a snippet is PHP from the start, a file only inside <?php … ?>
+        assert_includes html("<pre><code class='php'>$stmt = $db-&gt;prepare('SELECT 1');</code></pre>"), '<span class="nv">$stmt</span>'
+        file = html("<pre><code class='php'>&lt;h1&gt;Hallo&lt;/h1&gt;\n&lt;?php echo $name; ?&gt;</code></pre>")
+        assert_includes file, '<span class="nt">&lt;h1&gt;</span>'
+        assert_includes file, '<span class="nv">$name</span>'
         out = html("<div class='task-prompt'><pre><code class='cypher'>MATCH (m:Movie) RETURN m</code></pre></div>")
         assert_includes out, "class=\"code-cypher\""
         assert_includes out, '<span class="nc">Movie</span>'
