@@ -78,10 +78,10 @@
   entries:
     - static-website
     - hugo
+    - svelte
+    - wetter
     - webserver
     - pixelwand
-    - svelte
-    - hades
 
 - key: databases
   compact: true

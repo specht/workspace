@@ -113,14 +113,14 @@ Five activities written in October 2026, with tasks, teacher notes and
 generated screenshots:
 
 * »Eine Facharbeit mit LaTeX« (`src/content/latex`) and Handbuch »Dokumente mit LaTeX«
-* »Ein eigener Webserver« (`src/content/webserver`), a Ruby `TCPServer` in five stages, linked from TCP/IP
+* »Ein eigener Webserver« (`src/content/webserver`), a Ruby `TCPServer` in six stages (the last a poll with `POST` and `303`), linked from TCP/IP
 * »Eine Pixelwand für alle« (`src/content/pixelwand`), WebSockets with faye-websocket, a shared 64 × 40 canvas through Shared Live Apps, a chapter on threads and a lock
 * »Eine Website mit Hugo« (`src/content/hugo`), an aquarium encyclopedia with own layouts, published from `public/`
+* »Daten aus dem Netz« (`src/content/wetter`), the Open-Meteo weather API with `curl`/`jq`, Ruby with a cache, and a page with `fetch`
 * »Eine Klötzchenwelt in 3D« (`src/content/raylib`), raylib in 3D with Handbuch »raylib«; the starter is `specht/raylib-starter`, the same files as `vorlage/`
 
-* [ ] Try each in class and adjust pace and tasks (LaTeX 3, web server 2, pixel wall 2, Hugo 2, raylib 5 double lessons)
+* [ ] Try each in class and adjust pace and tasks (LaTeX 3, web server 2, pixel wall 2, Hugo 2, weather 2, raylib 5 double lessons)
 * [ ] Pixel wall: check how it behaves with a whole class painting on one Workspace
-* [ ] Take over the useful part of the Hades page (HTTP POST, JSON) into the web server page, then retire Hades
 * [ ] raylib: an icon of its own for the Handbuch section (now the star)
 
 Do not turn PixelRAM into a second raylib by adding drawing primitives for convenience.
@@ -192,7 +192,6 @@ Open findings from the October 2026 review:
 | Page | Action |
 | --- | --- |
 | Fire | add tasks (blue flame, wind direction) |
-| Hades | only useful for one school's Greek app and needs a real e-mail login; script uses `agr.nhcham.org`, the text links `agr.gymnasiumsteglitz.de`; move its ideas into the web-server page and retire it |
 | Ziffernerkennung | collect handwriting in the browser instead of print + 300 dpi scan; predict-then-run tasks; discuss overfitting (training loss 10⁻⁴); a shared preinstalled environment instead of 500 MB download and 2 GB per student; typos "boostrap", "Kenrel", "beboachten", "des die" |
 | TCP/IP | rework as the first half of TCP → HTTP → web server: layers, ports, handshake; the Peru server is presented as far away next to Google |
 | Git/GitHub | mark low-level internals as optional/advanced; correct the claim that `git mv` is needed so Git notices a rename |
@@ -201,7 +200,7 @@ Open findings from the October 2026 review:
 Platform-wide:
 
 * [ ] Use the Handbuch part for the opening (close folder, clone, open) on the 24 pages that still repeat it by hand
-* [ ] Convert manual screenshots to recipes when a page is touched: 213 manual, 637 generated; most left on Ziffernerkennung (44), Anaglyph (33), Fire (15), Handbuch HTML (12), Hades (11)
+* [ ] Convert manual screenshots to recipes when a page is touched: 213 manual, 637 generated; most left on Ziffernerkennung (44), Anaglyph (33), Fire (15), Handbuch HTML (12)
 * [ ] E2E coverage for Git and TCP/IP
 * [ ] When a page is touched: English names in its code (variables, functions, files), as in the raylib, web server and pixel wall activities; comments stay German
 * [ ] On narrow screens, consider left-aligning long paragraphs instead of global justified text

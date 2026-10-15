@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wetter</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 44em; margin: 2em auto; padding: 0 1em;
+           background: #eef4fb; color: #1f2d3d; }
+    form { display: flex; gap: 0.5em; }
+    input { flex: 1; font: inherit; padding: 0.4em 0.6em; border: 1px solid #9fb3c8; border-radius: 6px; }
+    button { font: inherit; padding: 0.4em 1em; border: 0; border-radius: 6px; background: #2f6fb2; color: white; }
+    #now { font-size: 1.4em; margin: 1em 0; }
+    #days { display: grid; grid-template-columns: repeat(auto-fit, minmax(5.5em, 1fr)); gap: 0.6em; }
+    .day { background: white; border-radius: 8px; padding: 0.6em; text-align: center;
+           box-shadow: 0 0.1em 0.4em rgba(31, 45, 61, 0.12); }
+    .icon { font-size: 2em; }
+    .max { font-weight: bold; }
+    footer { margin-top: 2em; font-size: 0.8em; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <h1>Wetter</h1>
+  <form id="search">
+    <input id="place" value="Berlin" autocomplete="off">
+    <button>Suchen</button>
+  </form>
+  <p id="now">Lade …</p>
+  <div id="days"></div>
+  <footer>Wetterdaten: <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0)</footer>
+
+  <script>
+    // Was die Wettercodes der WMO bedeuten, mit einem Symbol
+    function describe(code) {
+      if (code === 0) return ['☀️', 'klar'];
+      if (code <= 2) return ['🌤️', 'teils bewölkt'];
+      if (code === 3) return ['☁️', 'bedeckt'];
+      if (code <= 48) return ['🌫️', 'Nebel'];
+      if (code <= 57) return ['🌦️', 'Nieselregen'];
+      if (code <= 67 || (code >= 80 && code <= 82)) return ['🌧️', 'Regen'];
+      if (code <= 86) return ['🌨️', 'Schnee'];
+      return ['⛈️', 'Gewitter'];
+    }
+
+    // Holt JSON von einer API; aus params wird die Query: ?name=wert&…
+    async function fetchJson(base, params) {
+      const response = await fetch(base + '?' + new URLSearchParams(params));
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.reason);
+      return data;
+    }
+
+    async function show(name) {
+      const now = document.getElementById('now');
+      const days = document.getElementById('days');
+      now.textContent = 'Lade …';
+      days.replaceChildren();
+      try {
+        // 1. Wo liegt der Ort?
+        const places = await fetchJson('https://geocoding-api.open-meteo.com/v1/search',
+          { name: name, count: 1, language: 'de' });
+        if (!places.results) throw new Error(`Keinen Ort namens ${name} gefunden.`);
+        const place = places.results[0];
+
+        // 2. Das Wetter an diesem Ort, für sieben Tage
+        const weather = await fetchJson('https://api.open-meteo.com/v1/forecast', {
+          latitude: place.latitude, longitude: place.longitude,
+          current: 'temperature_2m,weather_code',
+          daily: 'temperature_2m_min,temperature_2m_max,weather_code',
+          timezone: 'auto', forecast_days: 7,
+        });
+
+        const [icon, text] = describe(weather.current.weather_code);
+        now.textContent = `${icon} ${place.name}: ${weather.current.temperature_2m} °C, ${text}`;
+
+        weather.daily.time.forEach((day, i) => {
+          const card = document.createElement('div');
+          card.className = 'day';
+          const weekday = new Date(day).toLocaleDateString('de-DE', { weekday: 'short' });
+          card.innerHTML = `<div>${weekday}</div>
+            <div class="icon">${describe(weather.daily.weather_code[i])[0]}</div>
+            <div class="max">${Math.round(weather.daily.temperature_2m_max[i])}°</div>
+            <div>${Math.round(weather.daily.temperature_2m_min[i])}°</div>`;
+          days.append(card);
+        });
+      } catch (error) {
+        now.textContent = error.message;
+      }
+    }
+
+    document.getElementById('search').addEventListener('submit', (event) => {
+      event.preventDefault();   // die Seite nicht neu laden
+      show(document.getElementById('place').value);
+    });
+
+    show('Berlin');
+  </script>
+</body>
+</html>

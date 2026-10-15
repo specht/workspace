@@ -150,10 +150,68 @@ tasks:
         say: '`$visits += 1` ist lesen, eins dazuzählen, schreiben. Was passiert, wenn beide Threads lesen, bevor einer schreibt?'
     solution: Beide Threads lesen 10, beide schreiben 11. Ein Besuch geht verloren. Der Mutex sorgt dafür, dass immer nur ein Thread zählt.
 
+  - id: umfrage
+    title: Eine Umfrage
+    prompt: |
+      Lass deinen Server Stimmen mit `POST` annehmen, sie unter einem Lock
+      zählen und mit `303 See Other` auf das Ergebnis weiterleiten, und
+      speichere.
+    file: webserver/server.rb
+    check:
+      type: files
+      path: webserver/server.rb
+      expect:
+        format: text
+        contains:
+          - { pattern: "'POST'|\"POST\"", say: 'Noch fragt `server.rb` nicht, ob die Anfrage ein `POST` ist.' }
+          - { pattern: '(?i)content-length', say: 'Noch liest `server.rb` den Header `Content-Length` nicht, und ohne ihn weiß der Server nicht, wie lang der Body ist.' }
+          - { pattern: 'client\.read', say: 'Noch liest `server.rb` den Body nicht: `client.read(…)` mit der Länge aus `Content-Length`.' }
+          - { pattern: '303', say: 'Noch leitet `server.rb` nach einer Stimme nicht mit `303 See Other` weiter.' }
+
+  - id: body
+    title: Wie lang ist der Body?
+    prompt: |
+      Warum liest der Server den Body mit `client.read` und der Zahl aus
+      `Content-Length` und nicht mit `client.gets`?
+    check:
+      type: choice
+      options:
+        - Hinter dem Body steht kein Zeilenumbruch, `client.gets` würde warten
+        - '`client.gets` kann keine Umlaute lesen'
+        - '`client.read` ist schneller'
+        - Der Body ist verschlüsselt
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Umlaute sind für `gets` kein Problem. Was sucht `gets`, um zu wissen, wo eine Zeile aufhört?
+    solution: '`client.gets` liest bis zum nächsten Zeilenumbruch. Nach `choice=curry` kommt keiner, und der Browser wartet auf die Antwort, also warten beide. Nur `Content-Length` sagt, wann der Body zu Ende ist.'
+
+  - id: neu-laden
+    title: Neu laden
+    prediction: true
+    prompt: |
+      Du hast abgestimmt und siehst die Ergebnisseite. Was passiert, wenn du
+      sie neu lädst? Überleg erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - Der Browser holt `/results` noch einmal, die Zahlen bleiben gleich
+        - Der Browser schickt die Stimme noch einmal, sie zählt doppelt
+        - Der Browser fragt, ob er das Formular noch einmal senden soll
+        - Der Server antwortet mit 405
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Was hat der Browser zuletzt geholt, `POST /vote` oder `GET /results`? Sieh links im Terminal nach.
+      - when: { picked: 2 }
+        say: Das fragt der Browser, wenn die Seite die Antwort auf ein `POST` ist. Hier ist sie die Antwort auf ein `GET`.
+    solution: Nach `303 See Other` holt der Browser `/results` mit `GET`. Neuladen wiederholt nur dieses `GET`, die Stimme zählt einmal. Ohne die Weiterleitung wäre die Ergebnisseite die Antwort auf das `POST`, und Neuladen würde es noch einmal schicken.
+
   - id: abgabe
     title: Dein Server
     prompt: |
-      Gib deinen Server ab: den Ordner `webserver` mit `server.rb` und `public`.
+      Gib deinen Server ab: den Ordner `webserver` mit `server.rb` und `public`,
+      mit der Umfrage.
     check:
       type: submit
       paths: [webserver]
