@@ -696,6 +696,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   (die Antwort kommt aus Belgien) statt ein Beispiel für einen fernen
   Server. Fünf neue Aufgaben, eine Notiz für Lehrkräfte, alle Bilder mit
   Alt-Text und aus Rezepten; nicht mehr benutzte Dateien sind entfernt.
+- »Git und GitHub«: Die Seite behauptete, ohne `git mv` bemerke Git eine
+  Umbenennung nicht. Jetzt erklärt sie, dass Git Umbenennungen gar nicht
+  speichert, sondern am gleichen Inhalt erkennt; `mv` und `git add -A`
+  ergeben denselben Commit.
 
 ### Entfernt
 
