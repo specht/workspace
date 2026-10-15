@@ -2,7 +2,7 @@
   "screenshots": {
     "bif-ordner.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
-      "output_sha256": "d0296c344700f39efd67d0b6dbd9d180b7ced4af99700c8b453f201d1a707ffc",
+      "output_sha256": "89652697211166ed5f63d87faac6eff99bc2bd503261cb90c4b7d3433b0f8436",
       "state_hash": "60f68aab0bf3d1c3fc08025456d28d7168e3ef8bbf6373cbe4e38899c4a2ec50",
       "workspace_look": "4.138.0-ls366"
     },
@@ -11,7 +11,7 @@
       "output_sha256": "4617a3f70db9a90000fffb84c8d7ae39e7020185d204607984ae81257773a847",
       "state_hash": "2908b828cd2e720bcd4b32cb55d753de7f40c2d81822abc93f1fc0b7d2299c0d",
       "variants": {
-        "grouped-graph-dark.webp": "5c53f378afe1f372a8acfcb1eecadd5186ccbc13a4299a662bfd5cbfdb1960a9"
+        "grouped-graph-dark.webp": "f8d053d86833a7f42b33744ac4c7c3e0c52cddcd23ecda198e78084ce3a14137"
       },
       "workspace_look": "4.138.0-ls366"
     },
@@ -20,7 +20,7 @@
       "output_sha256": "4cb531c2fa6e9aea6abb4574d3d5321597fd2b37b45f6213c212921861d48378",
       "state_hash": "8f98c3228f214a800776215d0a06a5a88d5fa1040ae421cf5ff99790736e861e",
       "variants": {
-        "story-image-dark.webp": "21d3ee04ccd144f35f425ed5edf3a51b8b71215013f4e2838762ecf420abbd4d"
+        "story-image-dark.webp": "c4e63fab6f81f8b38c4e89b3678ee59696ba1ba1ec6bbf1b4229929bd93f23ef"
       },
       "workspace_look": "4.138.0-ls366"
     },

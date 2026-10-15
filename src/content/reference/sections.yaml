@@ -97,3 +97,13 @@
     - minicpu
     - minicpu-io
     - minicpu-c
+
+- key: reference-c-grafik
+  label: Grafik und Spiele in C
+  icon: /images/star.png
+  description: |
+    PixelRAM für Bilder aus einzelnen Pixeln, raylib für Spiele in 3D mit
+    Kamera, Licht, Texturen und Shadern; dazu Tastatur, Maus und Zeit.
+  entries:
+    - pixelram
+    - raylib

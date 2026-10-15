@@ -1,0 +1,314 @@
+# Aufgaben zu »Eine Klötzchenwelt in 3D« (raylib).
+# Format: docs/aufgaben.md. Die Vorlage wird nach /workspace/raylib-starter
+# geklont; die Prüfungen lesen main.c und licht.fs dort.
+format: 1
+activity: raylib
+tasks:
+  - id: uebersetzt
+    title: Übersetzt
+    prompt: |
+      Übersetze die Vorlage im Terminal mit `make`, so dass `main.html`
+      entsteht.
+    file: raylib-starter/main.html
+    check:
+      type: files
+      path: raylib-starter/main.html
+      expect:
+        exists: true
+        format: text
+    hint: |
+      `make` muss im Ordner `raylib-starter` laufen. Steht im Terminal etwas
+      anderes vor dem `$`, wechsle mit `cd /workspace/raylib-starter` dorthin.
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `raylib-starter/main.html`. Hast du die Vorlage geklont und im Terminal `make` eingegeben?
+
+  - id: von-oben
+    title: Von oben
+    prediction: true
+    prompt: |
+      Was siehst du, wenn du die Kamera nach `(Vector3){ 0, 12, 0.1f }`
+      stellst? Überleg erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - Den Würfel genau von oben, als Quadrat mitten im Gitter
+        - Den Würfel schräg von der Seite, wie vorher
+        - Den Würfel von unten, durch das Gitter hindurch
+        - Nichts, die Kamera steckt im Würfel
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: '`position` ist der Ort der Kamera. Bei x = 0 und z = 0,1 steht sie fast genau über dem Würfel, 12 Blöcke hoch.'
+      - when: { picked: 2 }
+        say: Die Kamera steht bei y = 12, also oben. Von unten schaut sie bei einem negativen y.
+      - when: { picked: 3 }
+        say: Der Würfel reicht von y = 0 bis y = 1. Die Kamera steht viel höher.
+    solution: |
+      Die Kamera steht 12 Blöcke über dem Würfel und schaut auf (0, 0, 0)
+      hinunter: ein Quadrat mitten im Gitter. Das kleine `0.1f` ist nötig,
+      weil die Kamera sonst genau in Richtung `up` schauen würde; dann wüsste
+      raylib nicht, wie das Bild gedreht sein soll.
+
+  - id: zellen
+    title: Wie viele Felder?
+    prompt: |
+      Wie viele Felder hat das Array `welt`?
+    check:
+      type: number
+      expect: 55296
+      tolerance: 0
+      unit: Felder
+    feedback:
+      - when: { equals: 120 }
+        say: Das ist 48 + 24 + 48. Die Felder stehen in Reihen, Spalten und Schichten.
+    solution: 48 × 24 × 48 = 55 296 Felder. Jedes ist ein `unsigned char`, ein Byte, also braucht die ganze Welt etwa 54 KB.
+
+  - id: blick
+    title: Andersherum
+    prompt: |
+      Die Figur hat `drehung = PI` (also 3,14…) und `neigung = 0`. In welche
+      Richtung zeigt `blickrichtung()`?
+    check:
+      type: choice
+      options:
+        - (0, 0, −1), nach hinten
+        - (0, 0, 1), nach vorne
+        - (−1, 0, 0), nach links
+        - (0, −1, 0), nach unten
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Das ist die Richtung bei `drehung = 0`. Was sind sin(π) und cos(π)?
+      - when: { picked: 3 }
+        say: Ohne Neigung bleibt die y-Koordinate 0, sin(0) = 0.
+    solution: sin(π) = 0 und cos(π) = −1, also (0, 0, −1). Eine halbe Umdrehung zeigt genau in die Gegenrichtung.
+
+  - id: pro-bild
+    title: Ein Schritt pro Bild
+    prompt: |
+      Die Figur läuft 4,5 Blöcke pro Sekunde, und das Programm schafft 60
+      Bilder pro Sekunde. Wie weit bewegt sie sich in einem Bild?
+    check:
+      type: number
+      expect: 0.075
+      tolerance: 0.001
+      unit: Blöcke
+    feedback:
+      - when: { equals: 270 }
+        say: Das wäre die Strecke in 60 Sekunden. Gesucht ist ein einzelnes Bild, also ein Sechzigstel einer Sekunde.
+    solution: 4,5 ÷ 60 = 0,075 Blöcke. Bei 30 Bildern pro Sekunde wäre `dt` doppelt so groß und jeder Schritt 0,15 Blöcke; in einer Sekunde kommt die Figur gleich weit.
+
+  - id: einzeln
+    title: Kleben oder gleiten?
+    prediction: true
+    prompt: |
+      Was passiert, wenn das Programm den Schritt in x und z **zusammen**
+      ausprobiert und ganz verwirft, sobald die Figur dabei in einem Block
+      stecken würde? Du läufst schräg gegen eine Wand.
+    check:
+      type: choice
+      options:
+        - Die Figur bleibt an der Wand stehen, statt an ihr entlangzugleiten
+        - Die Figur geht durch die Wand hindurch
+        - Die Figur gleitet an der Wand entlang wie vorher
+        - Die Figur springt zurück an den Start
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Verworfen wird ein Schritt nur, wenn die Figur danach in einem Block steckt. Hindurch kommt sie also nie.
+      - when: { picked: 2 }
+        say: Entlanggleiten heißt, dass ein Teil des Schritts klappt. Wird der Schritt nur ganz oder gar nicht ausgeführt, geht das nicht.
+    solution: |
+      Schräg gegen eine Wand steckt die Figur nach dem ganzen Schritt in der
+      Wand, also wird er verworfen, und sie steht still. Einzeln geprüft
+      klappt der Teil entlang der Wand, nur der Teil in die Wand hinein wird
+      verworfen: Die Figur gleitet.
+
+  - id: sprunghoehe
+    title: Wie hoch springst du?
+    prompt: |
+      Ein Sprung beginnt mit `vy = 7.5`, und die Schwerkraft verkleinert `vy`
+      um 22 pro Sekunde. Wie viele Blöcke hoch kommen die Füße? Runde auf zwei
+      Stellen.
+    check:
+      type: number
+      expect: 1.28
+      tolerance: 0.03
+      unit: Blöcke
+    hint: Oben ist `vy` = 0. Wie lange dauert das, und wie schnell war die Figur im Durchschnitt in dieser Zeit?
+    feedback:
+      - when: { between: [0.33, 0.35] }
+        say: Das ist die Zeit bis nach oben, 7,5 ÷ 22 Sekunden. Gefragt ist die Höhe.
+      - when: { between: [2.5, 2.6] }
+        say: So weit käme die Figur, wenn sie die ganze Zeit mit 7,5 flöge. Sie wird aber langsamer, im Durchschnitt ist sie halb so schnell.
+    solution: |
+      Nach 7,5 ÷ 22 ≈ 0,34 Sekunden ist `vy` = 0. Im Durchschnitt war die
+      Figur dabei 3,75 Blöcke pro Sekunde schnell, also kommt sie
+      0,34 × 3,75 ≈ 1,28 Blöcke hoch: genug für eine Stufe aus einem Block,
+      nicht für zwei.
+
+  - id: figur
+    title: Ein Körper
+    prompt: |
+      Bau `kollidiert`, die Schritte in x und z und die Schwerkraft in dein
+      Programm ein und speichere.
+    file: raylib-starter/main.c
+    check:
+      type: files
+      path: raylib-starter/main.c
+      expect:
+        format: text
+        contains:
+          - { pattern: 'bool\s+kollidiert\s*\(', say: 'In `main.c` finde ich noch keine Funktion `kollidiert`.' }
+          - { pattern: 'vy\s*-=', say: 'Noch keine Schwerkraft: Wo wird `vy` in jedem Bild kleiner?' }
+          - { pattern: 'KEY_SPACE', say: 'Noch kann die Figur nicht springen: Mit der Leertaste (`KEY_SPACE`) bekommt `vy` einen Wert nach oben.' }
+
+  - id: schritte
+    title: Kleine Schritte
+    prompt: |
+      Warum geht `ziele` den Blick in Schritten von 0,02 Blöcken entlang und
+      nicht in Schritten von 0,5?
+    check:
+      type: choice
+      options:
+        - Mit großen Schritten kann der Strahl über die Ecke eines Blocks hinwegspringen
+        - Mit großen Schritten wird das Programm langsamer
+        - raylib erlaubt nur Schritte kleiner als 0,1
+        - Ein Block ist 0,02 Einheiten groß
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Größere Schritte sind weniger Schritte, also schneller. Was könnte dabei verloren gehen?
+      - when: { picked: 3 }
+        say: Ein Block ist eine Einheit groß, von x bis x + 1.
+    solution: |
+      Ein Strahl, der eine Blockecke nur streift, ist vielleicht nur 0,1 Blöcke
+      lang in diesem Block. Mit Schritten von 0,5 landet kein Schritt darin,
+      und das Programm zielt durch den Block hindurch.
+
+  - id: bauen
+    title: Bauen und abbauen
+    prompt: |
+      Bau `ziele`, das Abbauen mit der linken und das Bauen mit der rechten
+      Maustaste in dein Programm ein und speichere.
+    file: raylib-starter/main.c
+    check:
+      type: files
+      path: raylib-starter/main.c
+      expect:
+        format: text
+        contains:
+          - { pattern: 'void\s+ziele\s*\(', say: 'In `main.c` finde ich noch keine Funktion `ziele`.' }
+          - { pattern: 'MOUSE_BUTTON_RIGHT', say: 'Noch baut die rechte Maustaste nichts: `IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)`.' }
+          - { pattern: 'DrawCubeWires\s*\(\s*\(Vector3\)\s*\{\s*zx', say: 'Noch hat der Block, auf den du schaust, keinen Rahmen.' }
+
+  - id: wiese
+    title: Mitten in der Wiese
+    prompt: |
+      Ein Grasblock liegt mitten in einer flachen Wiese: links, rechts, vorne
+      und hinten Gras, darunter Erde, darüber Luft. Wie viele Seiten zeichnet
+      `zeichne_block` für ihn?
+    check:
+      type: number
+      expect: 1
+      tolerance: 0
+      unit: Seiten
+    feedback:
+      - when: { equals: 6 }
+        say: So viele zeichnet `DrawCube`. `zeichne_block` lässt jede Seite weg, an die ein fester Block grenzt.
+      - when: { equals: 5 }
+        say: Unten liegt Erde, die ist auch fest.
+    solution: Nur die Oberseite. Auf einer großen Wiese zeichnet das Programm so ein Sechstel der Seiten, die sechs Würfelseiten pro Block wären.
+
+  - id: sonnig
+    title: Wie sonnig ist die Oberseite?
+    prompt: |
+      Die Sonne steht in Richtung `Vector3Normalize((Vector3){ 0.5f, 0.8f, 0.3f })`.
+      Welchen Wert hat `sonnig` im Fragment-Shader für die Oberseite eines
+      Blocks? Runde auf zwei Stellen.
+    check:
+      type: number
+      expect: 0.81
+      tolerance: 0.01
+    hint: Die Normale der Oberseite ist (0, 1, 0). Was bleibt vom Skalarprodukt übrig? Und was macht `Vector3Normalize` mit (0,5; 0,8; 0,3)?
+    feedback:
+      - when: { between: [0.79, 0.801] }
+        say: Das ist der y-Wert vor dem Normalisieren. Der Vektor (0,5; 0,8; 0,3) ist nicht genau 1 lang.
+    solution: |
+      Mit der Normale (0, 1, 0) bleibt vom Skalarprodukt nur die y-Koordinate
+      der Sonnenrichtung. (0,5; 0,8; 0,3) hat die Länge √0,98 ≈ 0,99, also ist
+      `sonnig` = 0,8 ÷ 0,99 ≈ 0,81.
+
+  - id: licht
+    title: Licht
+    prompt: |
+      Zeichne die Welt mit `zeichne_block` und dem Licht-Shader und speichere.
+    file: raylib-starter/main.c
+    check:
+      type: files
+      path: raylib-starter/main.c
+      expect:
+        format: text
+        contains:
+          - { pattern: 'rlNormal3f\s*\(', say: 'In `main.c` bekommt noch keine Ecke eine Normale (`rlNormal3f`).' }
+          - { pattern: 'LoadShader\s*\(\s*"licht\.vs"\s*,\s*"licht\.fs"\s*\)', say: 'Noch lädt `main.c` den Shader nicht: `LoadShader("licht.vs", "licht.fs")`.' }
+          - { pattern: 'BeginShaderMode\s*\(', say: 'Der Shader ist geladen, aber noch zeichnet nichts mit ihm: `BeginShaderMode(licht)` vor der Schleife über die Welt.' }
+
+  - id: fackel-abstand
+    title: Licht in der Ferne
+    prompt: |
+      Eine Fläche zeigt direkt zu einer Fackel. Wie viel Licht von der Fackel
+      kommt bei ihr an, wenn sie zwei Blöcke entfernt ist, verglichen mit
+      einer Fläche direkt an der Fackel? Gib einen Anteil an, etwa 0,5 für die
+      Hälfte, und runde auf zwei Stellen.
+    check:
+      type: number
+      expect: 0.45
+      tolerance: 0.01
+    hint: Das Licht wird durch `1.0 + 0.3 * abstand * abstand` geteilt. Direkt an der Fackel ist der Abstand 0.
+    feedback:
+      - when: { between: [0.62, 0.63] }
+        say: Hast du den Abstand quadriert? Im Shader steht `abstand * abstand`.
+    solution: Bei Abstand 2 wird durch 1 + 0,3 × 4 = 2,2 geteilt, bei Abstand 0 durch 1. Es kommen also 1 ÷ 2,2 ≈ 0,45 an, weniger als die Hälfte.
+
+  - id: fackeln
+    title: Fackeln und Nebel
+    prompt: |
+      Ersetze `licht.fs` durch den Shader mit Fackeln und Nebel und speichere.
+    file: raylib-starter/licht.fs
+    check:
+      type: files
+      path: raylib-starter/licht.fs
+      expect:
+        format: text
+        contains:
+          - { pattern: 'uniform\s+vec3\s+fackeln\s*\[', say: 'In `licht.fs` gibt es noch keine Liste `fackeln`.' }
+          - { pattern: 'nebel', say: 'In `licht.fs` fehlt noch der Nebel: Er mischt die Farbe mit `himmel`, je weiter entfernt ein Pixel ist.' }
+
+  - id: texturen
+    title: Texturen
+    prompt: |
+      Lade `texturen.png` und gib jeder Seite ihre Kachel, dann speichere.
+    file: raylib-starter/main.c
+    check:
+      type: files
+      path: raylib-starter/main.c
+      expect:
+        format: text
+        contains:
+          - { pattern: 'LoadTexture\s*\(\s*"texturen\.png"\s*\)', say: 'Noch lädt `main.c` keine Textur: `LoadTexture("texturen.png")`.' }
+          - { pattern: 'rlTexCoord2f\s*\(', say: 'Noch bekommt keine Ecke Texturkoordinaten (`rlTexCoord2f`).' }
+          - { pattern: 'rlSetTexture\s*\(\s*textur\.id\s*\)', say: 'Die Textur ist geladen, aber die Flächen bekommen sie noch nicht: `rlSetTexture(textur.id)` vor der Schleife über die Welt.' }
+
+  - id: abgabe
+    title: Deine Welt
+    prompt: |
+      Gib deine Welt ab: den ganzen Ordner `raylib-starter` mit `main.html`.
+      Deine Lehrkraft kann den Code ansehen und deine Welt im Browser
+      starten; du kannst jederzeit neu abgeben.
+    check:
+      type: submit
+      paths: [raylib-starter]
+      exclude: [raylib-starter/.git, raylib-starter/.build]
+      max_size: 5MB

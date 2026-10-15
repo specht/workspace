@@ -113,7 +113,7 @@ Prefer pages that introduce genuinely new ideas rather than more installed techn
 Prioritise creative, visible material that also works with younger students; the order
 below is a writing priority, not a prerequisite chain.
 
-1. raylib + WebAssembly
+1. raylib + WebAssembly (drafted as a 3D activity, see below)
 2. Hugo / static site generators
 3. Flutter
 4. Web server
@@ -199,22 +199,14 @@ Android build support, before broad rollout:
 
 APK rather than App Bundle for the introduction; no release signing or Play Store accounts (mention `flutter build appbundle` as a follow-up). iOS: the same source can target iOS, but builds need macOS, Xcode and Apple signing; mention a Mac or a cloud build service such as Codemagic; keep App Store details optional.
 
-#### 5. raylib + WebAssembly
+#### 5. raylib: »Eine Klötzchenwelt in 3D«
 
-The higher-level C graphics/game route; PixelRAM stays the low-level framebuffer route.
+Drafted in `src/content/raylib` (activity, tasks, teacher note, stages `stufen/1.c`–`8.c`) with the Handbuch page `reference/raylib`. A block world in first person: camera from two angles, walking with `dt`, gravity and collision, a ray to aim, building and removing, own faces with normals, a GLSL light shader, day and night, torches as point lights, fog, textures from `texturen.png`, drawn in the 2D Game Studio. The starter is `specht/raylib-starter` (same files as `vorlage/`). It sets raylib apart from Anaglyph (scenes) and TIC-80 (2D) by real-time 3D interaction and lighting. The page around the program is PixelRAM's shell, fetched by the starter's Makefile.
 
-```text
-PixelRAM: you get pixels and implement drawing/rendering ideas yourself.
-raylib:   you get shapes, input, textures/sound primitives and build the game.
-```
-
-Preferred project: **Breakout**, asset-free if possible.
-
-* [ ] Window + one primitive; the game loop `input → update → draw → repeat`; movement per second with `GetFrameTime()`
-* [ ] Keyboard and mouse input, paddle, ball with a `Vector2` velocity, wall/paddle collision
-* [ ] A grid of bricks, score, win/lose/restart
-* [ ] Only then: the Emscripten build behind `make`, `C → .wasm + browser glue`, why the browser owns the event loop
-* [ ] Hide backend-specific Emscripten details in the Makefile; publish the web build on a Hackschule subdomain
+* [ ] Apply and deploy `2d-sprite-export.patch` (Game Studio: Funktionen › Sprite › Als Bild speichern), which the texture chapter relies on
+* [ ] Render the screenshots (the recipes write the starter files themselves, no clone needed) and check them
+* [ ] Try it in class; adjust the pace (4 double lessons) and the tasks
+* [ ] An icon of its own for the Handbuch section (now the star)
 
 Do not turn PixelRAM into a second raylib by adding drawing primitives for convenience.
 
@@ -256,7 +248,7 @@ Platform-wide:
 * [ ] Review `_template_codebites.html` language metadata and remaining manually authored homepage image alt attributes
 * [ ] Revisit BIF after the teacher workshop and incorporate classroom feedback
 * [ ] Link Automatron from formal-language material and teacher notes; add a short introduction if students use it alone
-* [ ] Find a section for new pages as they land (web server and WebSockets next to TCP/IP, raylib under Computergrafik, Hugo and Flutter under Web & Schnittstellen); keep related progressions adjacent
+* [ ] Find a section for new pages as they land (web server and WebSockets next to TCP/IP, Hugo and Flutter under Web & Schnittstellen); keep related progressions adjacent
 
 
 ## Infrastructure and operations

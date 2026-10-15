@@ -1,5 +1,9 @@
 {
     "//": "Earlier defaults from default-vscode-settings.json. A person whose setting still has one of these values gets the current default; a setting they changed stays.",
+    "workbench.colorTheme": [
+        "Default Dark Modern",
+        "Dark Modern"
+    ],
     "latex-workshop.latex.tools": [
         [
             {

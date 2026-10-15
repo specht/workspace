@@ -2,7 +2,7 @@
   "screenshots": {
     "freshly-cloned.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "446fe2bafea9ffe4cfbf377c759ce1ebfc767f0882c23b9ca99191aecdf47397",
+      "output_sha256": "aca8e40bcd1adf0bdcc2a028144dfc1256e2f248b348972b64397957fd43678a",
       "state_hash": "e2b1015a6f6d3c15c3b3b19d6d99588c8965846dc97f104aaacc1e3de6c50f37",
       "workspace_look": "4.138.0-ls366"
     },

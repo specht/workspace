@@ -46,6 +46,7 @@
     - pixelram
     - feuerwerk
     - tic80
+    - raylib
   #  - .sirds
   # - .raytracing
   # - .p5js

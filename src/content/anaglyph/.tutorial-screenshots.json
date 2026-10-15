@@ -132,7 +132,7 @@
     },
     "lets-start.webp": {
       "environment_fingerprint": "f26e091a1089f1beb318c749eabfa419facf953f08bd58737242bf623e95401f",
-      "output_sha256": "9a6b825d222489f2d114195e58f4a72766533cf2424a2d1ed8b8a25e2310b0a8",
+      "output_sha256": "3b3c2bba9ab86b67f9924da751734e4ca3921544f4901bbd9443bec615a068b6",
       "state_hash": "8806a8d5376a373eb7ca239b76b6b27ce65da4f1524e23ad9f326abb122011e6",
       "workspace_look": "4.138.0-ls366"
     },
