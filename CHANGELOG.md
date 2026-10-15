@@ -760,3 +760,6 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   tutorial_screenshots`.
 - Das Workspace-Image bekommt `yq` (mikefarah/yq, Version und SHA-256 im
   Dockerfile): Workspace-Image neu bauen (`./build-image.sh`).
+- Das Workspace-Image bekommt `xxd`, das Dateien Byte für Byte in
+  Hexadezimal zeigt (und zurück). Workspace-Image neu bauen
+  (`./build-image.sh`).
