@@ -601,6 +601,22 @@ class Main < Sinatra::Base
 
     @@nginx_config_mutex = Mutex.new
 
+    # nginx maps that remove hs_server_sid and hs_watch_tag from a Cookie
+    # header, one per step: $http_cookie -> $hs_cookie_for_student.
+    HS_COOKIE_STEPS = 4
+
+    def self.nginx_cookie_maps
+        (1..HS_COOKIE_STEPS).map do |i|
+            from = i == 1 ? '$http_cookie' : "$hs_cookie_#{i - 1}"
+            to = i == HS_COOKIE_STEPS ? '$hs_cookie_for_student' : "$hs_cookie_#{i}"
+            "map #{from} #{to} {\n" \
+                "                default #{from};\n" \
+                "                \"~^(?<hs_ck_a#{i}>(?:.*?;\\s*)?)(?:hs_server_sid|hs_watch_tag)=[^;]*(?:;\\s*)?(?<hs_ck_b#{i}>.*)$\" " \
+                "\"$hs_ck_a#{i}$hs_ck_b#{i}\";\n" \
+                "            }"
+        end.join("\n\n            ")
+    end
+
     def self.refresh_nginx_config
         @@nginx_config_mutex.synchronize do
             refresh_nginx_config_locked
@@ -820,6 +836,14 @@ class Main < Sinatra::Base
                 default 0;
             }
 
+            # The Cookie header for a student's container, without the
+            # domain-wide hs_server_sid and hs_watch_tag: nginx checks them
+            # above, and they must never reach code a student controls
+            # (code-server, apps on <tag>-<port>). The student's own cookies
+            # stay. Each step removes one; a browser sends each of them at
+            # most once per domain and path, so four steps leave none.
+            #{Main.nginx_cookie_maps}
+
             # deny if upstream missing
             map $hs_upstream $hs_no_upstream {
                 ""      1;
@@ -913,6 +937,7 @@ class Main < Sinatra::Base
                     rewrite ^/w/[a-z0-9]+(.*)$ $1 break;
 
                     include /etc/nginx/snippets/proxy_ws_code.conf;
+                    proxy_set_header Cookie $hs_cookie_for_student;
                     sub_filter_once on;
                     sub_filter '</head>' $hs_code_font_head;
                     proxy_pass $hs_upstream;
@@ -968,6 +993,7 @@ class Main < Sinatra::Base
                     if ($hs_allowed = 0) { return 403; }
 
                     include /etc/nginx/snippets/proxy_ws_code.conf;
+                    proxy_set_header Cookie $hs_cookie_for_student;
                     sub_filter_once on;
                     sub_filter '</head>' $hs_code_font_head;
                     proxy_pass $hs_upstream;
@@ -995,6 +1021,7 @@ class Main < Sinatra::Base
                     rewrite ^/(.*)$ /proxy/$p/$1 break;
 
                     include /etc/nginx/snippets/proxy_ws.conf;
+                    proxy_set_header Cookie $hs_cookie_for_student;
 
                     # First remove leaked /proxy/<port>/ redirects.
                     proxy_redirect ~^/proxy/[0-9]+(/.*)$ $1;
@@ -6955,6 +6982,16 @@ class Main < Sinatra::Base
         if path[0, 7] == '/logout'
             path = '/index.html'
             sid = current_session_sid
+            # A new Workspace credential, so one that leaked stops working;
+            # other devices of this person get the new one on their next
+            # request (before filter).
+            if @session_user && @impersonated_by.nil?
+                neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email], :server_sid => gen_server_sid())
+                    MATCH (u:User {email: $email})
+                    SET u.server_sid = $server_sid;
+                END_OF_QUERY
+                Main.refresh_nginx_config()
+            end
             if sid
                 neo4j_query(<<~END_OF_QUERY, :sid => sid)
                     MATCH (s:Session {sid: $sid})

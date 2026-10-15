@@ -744,6 +744,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Bootstrap-Icons der Autorinnen und Autoren bleiben. Bisher konnte eine
   präparierte Datei Skript in die Sitzung einer Lehrkraft bringen, die
   »Jetzt nachsehen« drückte.
+- Sicherheit: Das Cookie `hs_server_sid`, mit dem nginx den Zugang zu einem
+  Workspace prüft, geht nicht mehr an code-server und an Apps auf
+  `<tag>-<port>` weiter, ebenso `hs_watch_tag`; eigene Cookies einer App
+  bleiben. Bisher konnte ein Programm im Workspace das Cookie einer
+  Lehrkraft lesen, die ihn ansah. Beim Abmelden bekommt die Person einen
+  neuen Wert, ein abgegriffener gilt dann nicht mehr; andere Geräte
+  bekommen den neuen bei ihrer nächsten Anfrage.
 
 ### Entfernt
 
