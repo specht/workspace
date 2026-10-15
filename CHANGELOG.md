@@ -396,6 +396,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Startseite: Alle Karten sind gleich groß, drei nebeneinander (zwei auf dem
+  Tablet); ein Abschnitt endet, wo er endet, statt die letzten Karten zu
+  strecken. Die Art (»Projekt (Ruby)«, »Labor« …) steht über dem Titel und ist
+  damit immer zu sehen, auch bei langen Titeln. Auf dem Handy ist jede Karte
+  eine kompakte Zeile mit kleinem Bild; die Seite ist weniger als halb so
+  lang, und nichts ist versteckt. Die Fußzeile liegt am Ende der Seite statt
+  über dem Inhalt (in der Entwicklung bleibt sie fest, wegen der Alt-Text-
+  Prüfung).
 - Automatron und die TCP-Konsole brauchen eine Anmeldung; ohne geht es zur
   Anmeldeseite. Seiten zeigen ein Werkzeug als Kasten mit »Öffnen« dort, wo
   es gebraucht wird (`_tool(name)`, `docs/aufgaben.md`), und öffnen es in

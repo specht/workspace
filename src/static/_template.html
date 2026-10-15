@@ -1018,7 +1018,7 @@ window.addEventListener('load', function() {
         <div class="progress_sm"></div>
     </nav>
 
-    <footer>
+    <footer class='#{DEVELOPMENT ? 'footer-fixed' : ''}'>
         <div class="alt-review-footer">
             <div class="alt-review-footer-left">
                 #{DEVELOPMENT ? '<label class="alt-review-toggle"><input type="checkbox" id="alt-review-toggle">Alt-Texte prüfen</label><span class="alt-review-counts" id="alt-review-counts"><span class="alt-review-count alt-review-count-ok" title="Alt-/ARIA-Text vorhanden"><span id="alt-review-count-ok">0</span></span><span class="alt-review-count alt-review-count-empty" title="Bewusst leer"><span id="alt-review-count-empty">0</span></span><span class="alt-review-count alt-review-count-missing" title="Alt-/ARIA-Text fehlt"><span id="alt-review-count-missing">0</span></span></span>' : ''}
