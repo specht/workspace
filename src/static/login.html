@@ -170,6 +170,8 @@
                 $('#bu_qr_login').prop('disabled', false);
                 if (data.error === 'login_request_rate_limited') {
                     show_error_message('Bitte warte einen Moment, bevor du einen neuen Anmeldecode anforderst.');
+                } else if (data.error === 'no_invitation_found') {
+                    show_error_message('Für diese E-Mail-Adresse gibt es keine Einladung. Prüf die Schreibweise oder frag deine Lehrkraft, mit welcher Adresse du eingeladen bist.');
                 }
             });
         });
@@ -258,8 +260,7 @@
                             <button id='bu_submit_code' class="btn btn-primary"><i class="bi bi-box-arrow-in-right"></i>Anmelden</button>
                         </div>
                         <p id='part1_hint' class='text-secondary small' style='display: none;'>
-                            Falls diese Adresse eingeladen ist, kommt gleich eine E-Mail mit dem Code.
-                            Kommt keine, sieh im Spam-Ordner nach oder frag deine Lehrkraft, mit welcher Adresse du eingeladen bist.
+                            Die E-Mail mit dem Code ist unterwegs. Kommt keine, sieh im Spam-Ordner nach.
                         </p>
                         <div class='api_messages' style='display: none;'></div>
                     </form>

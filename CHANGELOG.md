@@ -751,11 +751,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Lehrkraft lesen, die ihn ansah. Beim Abmelden bekommt die Person einen
   neuen Wert, ein abgegriffener gilt dann nicht mehr; andere Geräte
   bekommen den neuen bei ihrer nächsten Anfrage.
-- Sicherheit, Anmeldung: Der Anmeldecode steht nicht mehr im Log. Eine
-  Adresse, die nicht eingeladen ist, bekommt dieselbe Antwort wie eine
-  eingeladene (nur ohne E-Mail); die Anmeldeseite sagt darum jetzt »Falls
-  diese Adresse eingeladen ist, kommt gleich eine E-Mail«. So verrät die
-  Anmeldung nicht mehr, wer eingeladen ist. Neue Grenzen: höchstens 20
+- Sicherheit, Anmeldung: Der Anmeldecode steht nicht mehr im Log. Gibt es
+  für eine Adresse keine Einladung, sagt die Anmeldeseite das jetzt
+  ausdrücklich. Neue Grenzen: höchstens 20
   Codes pro Adresse und Tag, und pro Absender-Adresse 120 Code-Anfragen
   und 300 Anmeldeversuche in zehn Minuten (großzügig, weil eine ganze
   Schule über eine Adresse ins Netz geht). Die Zähler liegen nur im

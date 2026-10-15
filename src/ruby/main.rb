@@ -2721,12 +2721,11 @@ class Main < Sinatra::Base
             email = candidates.first if candidates.size == 1
         end
 
+        # Said plainly, so a typo is noticed at once; the limits per client
+        # keep this from being a fast way to find out who is invited.
         unless @@invitations.include?(email)
-            # The same answer as for an invited address, so the login does
-            # not tell anyone who is invited. No mail goes out, and
-            # complete_login answers this tag like a wrong code.
-            respond(:ok => 'yay', :tag => RandomTag::generate(12))
-            return
+            content_type :json
+            halt 404, { :error => 'no_invitation_found' }.to_json
         end
 
         user = ensure_user_account(email)
