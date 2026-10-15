@@ -2,40 +2,40 @@
   "screenshots": {
     "cypher-shell-film.webp": {
       "environment_fingerprint": "5a0d9b466cd00b36be08798867e36f3a3047796a6c7cf66fb3e264b2f504eb50",
-      "output_sha256": "65118f85a156d5ddedd30b9e6eb227650e7a2ac4360ce33c1cb6c5b4c3013e81",
+      "output_sha256": "e30924c4ef0021ed1de91946326e6930adb6a3d5b4e6b40cf177272c2ba48653",
       "state_hash": "313e71561e5f486c852e906d4602b086ddce2daa621eb7183f750bb31871c0c2",
       "workspace_look": "4.138.0-ls366"
     },
     "neo4j-browser-graph.webp": {
       "environment_fingerprint": "5a0d9b466cd00b36be08798867e36f3a3047796a6c7cf66fb3e264b2f504eb50",
-      "output_sha256": "0fa5d9deffe6e11eeb7c0d166ef4f9fc769853fa810d04959972ad350f830410",
+      "output_sha256": "9c8c8ef02b2d3bf5e014d6b740b88c097e076c449fbbf1839d03ea738db5e1d2",
       "state_hash": "aa90ad9c9e8c82f9f356c125a6d5433df9f04ae5a902393134ec9deb83a64201",
       "variants": {
-        "neo4j-browser-graph-dark.webp": "b2749574b9c8cbb84fec0bb7ba7b81263d6e29bab050168cc90ae72d7fb12cfd"
+        "neo4j-browser-graph-dark.webp": "f22bc6ff4df4aa231f447a22225e602645714c1c8e51f3e411c74c27923b7950"
       },
       "workspace_look": "4.138.0-ls366"
     },
     "neo4j-browser-pairs.webp": {
       "environment_fingerprint": "5a0d9b466cd00b36be08798867e36f3a3047796a6c7cf66fb3e264b2f504eb50",
-      "output_sha256": "47d56f977cb3b458712de67889a7d90c9890318e71c8c27ef12efb503a7e497d",
+      "output_sha256": "d933775d1c677f97d55824e9c43638bd17a3521ef8e5cec1af0b0450ffddf34d",
       "state_hash": "1cb07395078ebc0c9c48ff64aae4c4307943e1f036d309039711d7a7473983b3",
       "variants": {
-        "neo4j-browser-pairs-dark.webp": "4163b6d9730aea41422622965b535087c2db2f454956cdd87b857f7897c037ff"
+        "neo4j-browser-pairs-dark.webp": "fe81873855714133aba9f9d158aef5d0fb289bded7417eb6757eae70d010d161"
       },
       "workspace_look": "4.138.0-ls366"
     },
     "neo4j-browser-path.webp": {
       "environment_fingerprint": "5a0d9b466cd00b36be08798867e36f3a3047796a6c7cf66fb3e264b2f504eb50",
-      "output_sha256": "2e58bbb94d6b1c09a45648e3ced81aaae2c7426dbb6436fc117e6d1a52c5d178",
+      "output_sha256": "3bb1194f30f26e22b5a2fa085891f4c96456d88bf0fab9332f2bb16bca6a43a1",
       "state_hash": "a457246f3daba54b5853ffa832b8d8958114e52773f0041762f2c3714f630cfc",
       "variants": {
-        "neo4j-browser-path-dark.webp": "2ceed5556e72b6215518d4c38da75a86f1b5f316fbffb41bf40f50abd3331b54"
+        "neo4j-browser-path-dark.webp": "5d48548dc98b8a1bf0d12e19d900877b25c60388d1e2d4bb8b9c22d063229629"
       },
       "workspace_look": "4.138.0-ls366"
     },
     "neo4j-load.webp": {
       "environment_fingerprint": "5a0d9b466cd00b36be08798867e36f3a3047796a6c7cf66fb3e264b2f504eb50",
-      "output_sha256": "a7a2c3ba114e5d1a9146d0425cdf7946ae33ebf0b777b4f1f387177e7e2a8450",
+      "output_sha256": "1a347876c80ccd658c01507a1cb43a8629de57de327c364456dfdfed36ae7ccd",
       "state_hash": "1232ea79fb9844bea2ad13c2c91a067f279037dc810681e763d67440b41ce716",
       "workspace_look": "4.138.0-ls366"
     }

@@ -2,55 +2,55 @@
   "screenshots": {
     "choose-folder.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "932374f3481b7cd2d946a9bc49b5b988bf82add1b90b8ad98b59601779533fa0",
+      "output_sha256": "99ae1bb89bacbac5d428ee9fe86a5889e6032f171bfb5ee57a7518d2114c67ca",
       "state_hash": "20b84e2a13b51eac7595a589cc85af62231c8e854ff94a8e88974adf70549d91",
       "workspace_look": "4.138.0-ls366"
     },
     "extension-search.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "08d1b4beea97c3d4b0d4b290802c006ed7af93f80b74bc4c1400ba44fdfa148a",
+      "output_sha256": "e7eaae68f87da04c3578433f77bb37fbcfbaf1d6115c7fda5ec1d416546164a2",
       "state_hash": "25d52289e9b2a5ad4467202d393ce20e7c7629ede9412cc8f72aef26fe163b04",
       "workspace_look": "4.138.0-ls366"
     },
     "fresh-start.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "17fa11c3c7167374e44328606a77ec9b27a18950e36257f76b16ace54db14c39",
+      "output_sha256": "ed4a08307fba82c90dc6dd8b7fe024e296718b1f8fde88b05068ad48d932c578",
       "state_hash": "10754ebdd3f88d4e1a33e86e3a84396aa489abdf0381cc4a93aacf5543ca48f2",
       "workspace_look": "4.138.0-ls366"
     },
     "git-clone.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "96f0143326f9cac146e503ae30b9bc6e96dfa4d4a2825539909891086ef7572f",
+      "output_sha256": "9733c511ad5b5598a552a14ef25323fec5aab6a9bd30da801cbc2c8c94d71d21",
       "state_hash": "73409a7cd7b8a4220d48272021b570098baeb838a86c60f0af815eca91790294",
       "workspace_look": "4.138.0-ls366"
     },
     "go-live.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "d62650e7e28a624f32e686c70ef1ec93e09acfc7959dfd63cf86ddcf347301dc",
+      "output_sha256": "04a8154d6f659bc76c54e8f35ecd91863876606ec9228ce69753191743840d5b",
       "state_hash": "ade3354cf6c6c8be2761c75ba2b2310f221479746dda8516eb0360970dd2fec9",
       "workspace_look": "4.138.0-ls366"
     },
     "got-terminal.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "b4f5d19ba0e45b9ff7b810fd3d4b176ea414c8eed8c3a19014f39bb9fefe1883",
+      "output_sha256": "42bcf93ea60b333fa0656bfb48316f48ab4a9056395dd8153438ff0ba5365731",
       "state_hash": "8f5b9a38963185d9ab7cafc402172d321533d94ae8177f2139d22bc6fb10cfcb",
       "workspace_look": "4.138.0-ls366"
     },
     "open-yes-or-no.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "090f8e2097f04b944351da1e0ed246373f789fde13cf578561bd29003299d88b",
+      "output_sha256": "803e460408eb1ce731da4758eb065f34d26e328420e65d201979cb6190aa06f1",
       "state_hash": "4d1fbde49409435ef29bce53aae82ac5c7647b4df04b86ce6057e44fcb38970d",
       "workspace_look": "4.138.0-ls366"
     },
     "stop-live.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "669a4fa1e58cd83baa9a9ca1b338b32894e9fe42238217e2ff60ccb69345e4f5",
+      "output_sha256": "f485642e119d563ba5d274f4b833e6412bd34ac4b24d784c6fd38f3668d2f4cf",
       "state_hash": "9a08c8c7506ee912dd2e7019b544242edd2c8782451d7d93a102ee591c561c25",
       "workspace_look": "4.138.0-ls366"
     },
     "trust-publisher.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "87548b12ff14cf6b5ebad51478bb4bb081f4aabc7382cc0653b2c5d736ddac26",
+      "output_sha256": "785b63fac152afcc5dd6e89a125ac2eb5ae8798b0cda9dfd39520eb165bc8e85",
       "state_hash": "383f7ecc2d4b34ab283a52dec8958ca9652377b3d1f8e232dfafec20b1ceaab7",
       "workspace_look": "4.138.0-ls366"
     }
