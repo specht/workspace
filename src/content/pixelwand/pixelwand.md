@@ -336,7 +336,7 @@ Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Sile
 - Jede Nachricht hat einen `type`: `picture` für das ganze Bild, `pixel` für einen einzelnen Pixel, `people` für die Zahl der Verbundenen.
 - **Jeder kann alles schicken**, nicht nur deine Webseite. Darum glaubt der Server keiner Nachricht: Kein JSON, keine ganzen Zahlen, ein Pixel außerhalb des Bildes, eine Farbe über 15? `next` überspringt die Nachricht. Ein Server, der fremden Eingaben traut, ist eine Einladung, ihn kaputt zu machen.
 
-Die neue `index.html` zeichnet das Bild in ein `<canvas>`, ein Element, in das JavaScript zeichnen kann. Es ist nur 64 × 40 Pixel groß, CSS zieht es auf das Zehnfache und legt ein feines Gitter darüber, damit man jeden Pixel der Wand sieht:
+Die neue `index.html` zeichnet das Bild in ein `<canvas>`, ein Element, in das JavaScript zeichnen kann. Es ist nur 64 × 40 Pixel groß. CSS zieht es so groß, wie das Fenster erlaubt, und legt ein feines Gitter darüber, damit man jeden Pixel der Wand sieht:
 
 ```html_copy
 <!DOCTYPE html>
@@ -349,16 +349,19 @@ Die neue `index.html` zeichnet das Bild in ein `<canvas>`, ein Element, in das J
            display: flex; flex-direction: column; align-items: center; background: #14151f; color: #f4f4f4; }
     h1 { margin: 0.2em 0 0.3em; }
     #people { margin: 0 0 1em; color: #94b0c2; }
-    #grid { position: relative; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 2px #333c57; }
-    #wall { display: block; width: 640px; height: 400px; image-rendering: pixelated; cursor: crosshair;
+    /* So breit, wie das Fenster erlaubt, höchstens 960 Pixel, und so schmal, dass die Wand
+       samt Überschrift und Farben in die Höhe passt (das Bild ist 1,6-mal so breit wie hoch). */
+    #grid { position: relative; width: min(100%, 960px, (100vh - 12em) * 1.6);
+            border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 2px #333c57; }
+    #wall { display: block; width: 100%; height: auto; image-rendering: pixelated; cursor: crosshair;
             touch-action: none; }
-    /* Feine Linien über dem Bild, alle 10 Bildschirmpixel: so sieht man jeden Pixel der Wand.
+    /* Feine Linien über dem Bild, 64 Spalten und 40 Zeilen: so sieht man jeden Pixel der Wand.
        pointer-events: none lässt die Maus zum canvas durch. */
     #grid::after { content: ''; position: absolute; inset: 0; pointer-events: none;
                    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.18) 1px, transparent 1px),
                                      linear-gradient(to bottom, rgba(255, 255, 255, 0.18) 1px, transparent 1px);
-                   background-size: 10px 10px; }
-    #colors { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1em; }
+                   background-size: calc(100% / 64) calc(100% / 40); }
+    #colors { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 1em; }
     #colors button { width: 28px; height: 28px; border: 0; border-radius: 50%; cursor: pointer; }
     #colors button.active { box-shadow: 0 0 0 2px #14151f, 0 0 0 4px #f4f4f4; }
   </style>
@@ -491,7 +494,7 @@ tab: preview
 wait-for-text: Du malst allein
 hook: paint
 -->
-<img class='full border' src='pixelwand.webp' alt='Die Pixelwand: blauer Himmel mit gelber Sonne, eine grüne Wiese, ein Haus mit rotem Dach und ein Baum. Darüber steht »Du malst allein.«'>
+<img class='full border' src='pixelwand.webp' alt='Die Pixelwand: blauer Himmel mit gelber Sonne, eine grüne Wiese, ein Haus mit rotem Dach und ein Baum. Darüber steht »Du malst allein.«, darunter eine Reihe runder Farbknöpfe, von denen Gelb ausgewählt ist.'>
 
 _uses(json-aufbau, json-ruby, json-javascript)
 

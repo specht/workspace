@@ -8,16 +8,19 @@
            display: flex; flex-direction: column; align-items: center; background: #14151f; color: #f4f4f4; }
     h1 { margin: 0.2em 0 0.3em; }
     #people { margin: 0 0 1em; color: #94b0c2; }
-    #grid { position: relative; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 2px #333c57; }
-    #wall { display: block; width: 640px; height: 400px; image-rendering: pixelated; cursor: crosshair;
+    /* So breit, wie das Fenster erlaubt, höchstens 960 Pixel, und so schmal, dass die Wand
+       samt Überschrift und Farben in die Höhe passt (das Bild ist 1,6-mal so breit wie hoch). */
+    #grid { position: relative; width: min(100%, 960px, (100vh - 12em) * 1.6);
+            border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 2px #333c57; }
+    #wall { display: block; width: 100%; height: auto; image-rendering: pixelated; cursor: crosshair;
             touch-action: none; }
-    /* Feine Linien über dem Bild, alle 10 Bildschirmpixel: so sieht man jeden Pixel der Wand.
+    /* Feine Linien über dem Bild, 64 Spalten und 40 Zeilen: so sieht man jeden Pixel der Wand.
        pointer-events: none lässt die Maus zum canvas durch. */
     #grid::after { content: ''; position: absolute; inset: 0; pointer-events: none;
                    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.18) 1px, transparent 1px),
                                      linear-gradient(to bottom, rgba(255, 255, 255, 0.18) 1px, transparent 1px);
-                   background-size: 10px 10px; }
-    #colors { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1em; }
+                   background-size: calc(100% / 64) calc(100% / 40); }
+    #colors { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 1em; }
     #colors button { width: 28px; height: 28px; border: 0; border-radius: 50%; cursor: pointer; }
     #colors button.active { box-shadow: 0 0 0 2px #14151f, 0 0 0 4px #f4f4f4; }
   </style>
