@@ -105,12 +105,17 @@ loop do
                 "Diese Antwort gibt es nicht.\n")
       end
     when '/results'
+      # Ein Balken für jede Antwort; <progress> zeichnet ihn ohne CSS
       rows = $votes_lock.synchronize do
-        OPTIONS.map { |key, label| "<li>#{label}: #{$votes[key]}</li>" }.join("\n")
+        most = [$votes.values.max || 0, 1].max
+        OPTIONS.map do |key, label|
+          "<tr><td>#{label}</td><td><progress value='#{$votes[key]}' max='#{most}'></progress></td>" \
+            "<td>#{$votes[key]}</td></tr>"
+        end.join("\n")
       end
       respond(client, '200 OK', 'text/html; charset=utf-8',
               "<!DOCTYPE html><meta charset='utf-8'><link rel='stylesheet' href='style.css'>" \
-              "<h1>Ergebnis</h1><ul>#{rows}</ul><p><a href='poll.html'>Noch einmal abstimmen</a></p>\n")
+              "<h1>Ergebnis</h1><table>#{rows}</table><p><a href='poll.html'>Noch einmal abstimmen</a></p>\n")
     else
       serve_file(client, path)
     end

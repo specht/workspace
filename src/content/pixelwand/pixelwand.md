@@ -1,5 +1,5 @@
 <div class='meta'>
-image: pixelwand.webp
+image: teaser.webp
 kind: projekt
 language: Ruby
 topic: networks
@@ -165,6 +165,7 @@ terminal-wait-for-prompt: 180
 terminal-run: clear
 terminal-run: ruby server.rb
 wait-for-text: Der Server wartet
+move-mouse: selector:.terminal
 sleep: 1
 -->
 <img class='full' src='ordner.webp' alt='Der Ordner pixelwand mit index.html und server.rb; server.rb ist offen, im Terminal wartet der Server auf Port 8000.'>
@@ -335,7 +336,7 @@ Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Sile
 - Jede Nachricht hat einen `type`: `picture` für das ganze Bild, `pixel` für einen einzelnen Pixel, `people` für die Zahl der Verbundenen.
 - **Jeder kann alles schicken**, nicht nur deine Webseite. Darum glaubt der Server keiner Nachricht: Kein JSON, keine ganzen Zahlen, ein Pixel außerhalb des Bildes, eine Farbe über 15? `next` überspringt die Nachricht. Ein Server, der fremden Eingaben traut, ist eine Einladung, ihn kaputt zu machen.
 
-Die neue `index.html` zeichnet das Bild in ein `<canvas>`, ein Element, in das JavaScript zeichnen kann. Es ist nur 64 × 40 Pixel groß, CSS zieht es auf das Zehnfache:
+Die neue `index.html` zeichnet das Bild in ein `<canvas>`, ein Element, in das JavaScript zeichnen kann. Es ist nur 64 × 40 Pixel groß, CSS zieht es auf das Zehnfache und legt ein feines Gitter darüber, damit man jeden Pixel der Wand sieht:
 
 ```html_copy
 <!DOCTYPE html>
@@ -344,18 +345,28 @@ Die neue `index.html` zeichnet das Bild in ein `<canvas>`, ein Element, in das J
   <meta charset="utf-8">
   <title>Pixelwand</title>
   <style>
-    body { font-family: system-ui, sans-serif; margin: 1.5em; background: #0e0f17; color: #f4f4f4; }
-    #wall { width: 640px; height: 400px; image-rendering: pixelated; cursor: crosshair;
-            outline: 2px solid #333c57; border-radius: 2px; touch-action: none; }
-    #colors { display: flex; gap: 4px; margin-top: 0.8em; }
-    #colors button { width: 32px; height: 32px; border: 2px solid transparent; border-radius: 4px; cursor: pointer; }
-    #colors button.active { border-color: #f4f4f4; }
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 1.5em;
+           display: flex; flex-direction: column; align-items: center; background: #14151f; color: #f4f4f4; }
+    h1 { margin: 0.2em 0 0.3em; }
+    #people { margin: 0 0 1em; color: #94b0c2; }
+    #grid { position: relative; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 2px #333c57; }
+    #wall { display: block; width: 640px; height: 400px; image-rendering: pixelated; cursor: crosshair;
+            touch-action: none; }
+    /* Feine Linien über dem Bild, alle 10 Bildschirmpixel: so sieht man jeden Pixel der Wand.
+       pointer-events: none lässt die Maus zum canvas durch. */
+    #grid::after { content: ''; position: absolute; inset: 0; pointer-events: none;
+                   background-image: linear-gradient(to right, rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+                                     linear-gradient(to bottom, rgba(255, 255, 255, 0.18) 1px, transparent 1px);
+                   background-size: 10px 10px; }
+    #colors { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1em; }
+    #colors button { width: 28px; height: 28px; border: 0; border-radius: 50%; cursor: pointer; }
+    #colors button.active { box-shadow: 0 0 0 2px #14151f, 0 0 0 4px #f4f4f4; }
   </style>
 </head>
 <body>
   <h1>Pixelwand</h1>
   <p id="people">Verbinde …</p>
-  <canvas id="wall" width="64" height="40"></canvas>
+  <div id="grid"><canvas id="wall" width="64" height="40"></canvas></div>
   <div id="colors"></div>
 
   <script>
@@ -711,3 +722,14 @@ _task(abgabe)
 Eure Pixelwand funktioniert genauso wie große Anwendungen, nur kleiner: Ein Server hält den gemeinsamen Zustand, jeder Browser hat eine offene Verbindung, und jede Änderung geht an alle. So arbeiten Online-Spiele, Chats und Programme, in denen mehrere Leute gleichzeitig an einem Dokument schreiben.
 
 Im Ernstfall läuft eine WebSocket-Verbindung verschlüsselt über `wss://`, und der Server muss mit Tausenden Verbindungen und mit Leuten umgehen können, die ihm absichtlich falsche Daten schicken. Die Prüfung in `ws.on(:message)` war ein erster Schritt dahin.
+
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität: die Wand, nachdem die Klasse eine Weile gemalt hat
+preview-reload
+tab: preview
+viewport: 1029x700
+wait-for-text: Pixelwand
+hook: paint-teaser
+crop-element: #wall
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Eine Pixelwand voller Bild: ein Regenbogen über hellblauem Himmel, Wolken, eine Sonne, ein Haus mit rotem Dach, ein Baum und bunte Blumen auf der Wiese.'>

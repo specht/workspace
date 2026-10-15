@@ -48,6 +48,12 @@
       "state_hash": "413730dd42b54e0b882d814e6fb3d92cc798fe8e5a494029f868834818443ccc",
       "workspace_look": "4.138.0-ls366"
     },
+    "teaser.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "b9ab4e3d58a3c3d3d0556424f69597c4d4be29ad4e2dd195787efba5bca6de88",
+      "state_hash": "8e2708a0bb3af1d75e9818c15d5e8361043cda76270ae55d9836311bc71550bb",
+      "workspace_look": "4.138.0-ls366"
+    },
     "unterschrift.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "543599d69906e36ddbc17d310c5d91747ebe6f1b3ecdcf9a86892541ca28247f",

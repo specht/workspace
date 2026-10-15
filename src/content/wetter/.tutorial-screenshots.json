@@ -18,6 +18,12 @@
       "state_hash": "dd23d73f54c894d302e26499045392563076390ff64ffe9a1fd9216ecef59e16",
       "workspace_look": "4.138.0-ls366"
     },
+    "teaser.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "cd1693720d8a2043985b859aa4109c709fb924be16d3c293bd018d4decf51a90",
+      "state_hash": "2f5ee174ddb851e19846fa7ece571bc7a0ca07ccadb441784da199dd1bca719b",
+      "workspace_look": "4.138.0-ls366"
+    },
     "vorhersage.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "cc3daf2749fe4750ef2b4bf96acd5f6fb736edb49a495d1e66be9f41f9a9a9e9",
@@ -26,8 +32,8 @@
     },
     "wetterseite.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "9af9ae079a4770e328ce508b6c9a4b4d862443272d4124acb44c574e0e350bbb",
-      "state_hash": "cd6204ca84ede0b258793400978e9b249495470bc5ed6e24748560291e162882",
+      "output_sha256": "6da6dcf0dd0a0620d60a0ce879c8af1d535ac778ac786db6f6bf9b1a155c9234",
+      "state_hash": "db3be4b694ab2f588e566e619c19d6f67d4d2b12591f11cf68a24a8a831addbf",
       "workspace_look": "4.138.0-ls366"
     }
   },

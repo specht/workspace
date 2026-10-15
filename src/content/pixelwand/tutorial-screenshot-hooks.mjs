@@ -39,5 +39,56 @@ export default {
             }));
             await page.waitForTimeout(500);
         },
+
+        // hook: paint-teaser: the scene of »paint« with more going on, as if
+        // the class had been at it for a while: a rainbow, clouds, flowers.
+        // For the picture on the activity's card.
+        async 'paint-teaser'({ page }) {
+            await page.evaluate(() => new Promise((resolve, reject) => {
+                const url = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws';
+                const ws = new WebSocket(url);
+                const pixels = [];
+                const dot = (x, y, color) => { if (x >= 0 && x < 64 && y >= 0 && y < 40) pixels.push({ x, y, color }); };
+                const rect = (x0, y0, x1, y1, color) => {
+                    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) dot(x, y, color);
+                };
+                rect(0, 0, 63, 27, 9);                                           // sky
+                [2, 3, 4, 5, 11, 1].forEach((color, i) => {                      // rainbow
+                    const r = 22 - i;
+                    for (let y = 0; y <= 27; y++) for (let x = 20; x <= 63; x++) {
+                        const d = Math.hypot(x - 44, y - 30);
+                        if (d >= r - 0.5 && d < r + 0.5) dot(x, y, color);
+                    }
+                });
+                [[9, 5, 4], [26, 9, 3], [56, 4, 3]].forEach(([cx, cy, w]) => {   // clouds
+                    rect(cx - w, cy, cx + w, cy + 1, 12);
+                    rect(cx - w + 2, cy - 1, cx + w - 2, cy - 1, 12);
+                });
+                rect(0, 28, 63, 39, 6);                                          // meadow
+                for (let y = -2; y <= 2; y++) for (let x = -2; x <= 2; x++)       // sun
+                    if (x * x + y * y <= 5) dot(5 + x, 13 + y, 4);
+                rect(12, 20, 25, 32, 3);                                         // house
+                for (let i = 0; i <= 8; i++) rect(10 + i, 19 - i, 27 - i, 19 - i, 2);
+                rect(17, 27, 20, 32, 0);
+                rect(14, 23, 16, 25, 11);
+                rect(22, 23, 24, 25, 11);
+                rect(39, 24, 40, 32, 15);                                        // tree
+                for (let y = -5; y <= 5; y++) for (let x = -5; x <= 5; x++)
+                    if (x * x + y * y <= 26) dot(40 + x, 19 + y, 6);
+                [[4, 34, 2], [8, 37, 4], [30, 35, 12], [34, 38, 1], [47, 34, 2],  // flowers
+                 [52, 37, 4], [58, 35, 12], [61, 38, 1], [2, 38, 4], [44, 37, 12]].forEach(([x, y, color]) => {
+                    dot(x, y, color); dot(x, y + 1, 7);
+                });
+                ws.onopen = () => {
+                    for (const p of pixels) ws.send(JSON.stringify(p));
+                    let seen = 0;
+                    ws.onmessage = (e) => {
+                        if (JSON.parse(e.data).type === 'pixel' && ++seen === pixels.length) { ws.close(); resolve(); }
+                    };
+                };
+                ws.onerror = () => reject(new Error('hook: paint-teaser: no WebSocket connection'));
+            }));
+            await page.waitForTimeout(500);
+        },
     },
 };

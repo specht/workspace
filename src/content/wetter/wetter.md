@@ -1,5 +1,5 @@
 <div class='meta'>
-image: wetterseite.webp
+image: teaser.webp
 kind: projekt
 language: Ruby / JavaScript
 topic: networks
@@ -294,18 +294,24 @@ Zum Schluss eine Webseite, die das Wetter für jeden Ort zeigt. Sie fragt die AP
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Wetter</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 44em; margin: 2em auto; padding: 0 1em;
+    body { font-family: system-ui, sans-serif; max-width: 46em; margin: 2em auto; padding: 0 1.2em;
            background: #eef4fb; color: #1f2d3d; }
+    h1 { margin: 0 0 0.6em; }
     form { display: flex; gap: 0.5em; }
-    input { flex: 1; font: inherit; padding: 0.4em 0.6em; border: 1px solid #9fb3c8; border-radius: 6px; }
-    button { font: inherit; padding: 0.4em 1em; border: 0; border-radius: 6px; background: #2f6fb2; color: white; }
-    #now { font-size: 1.4em; margin: 1em 0; }
+    input { flex: 1; font: inherit; padding: 0.5em 0.9em; border: 1px solid #c3d0de; border-radius: 8px; }
+    button { font: inherit; padding: 0.5em 1.2em; border: 0; border-radius: 8px; background: #2f6fb2; color: white; }
+    #now { display: flex; align-items: center; gap: 0.6em; margin: 1.2em 0; }
+    #now .icon { font-size: 3.5em; }
+    #now .temp { font-size: 3em; font-weight: 700; line-height: 1; }
+    #now .place { font-size: 1.2em; font-weight: 600; }
     #days { display: grid; grid-template-columns: repeat(auto-fit, minmax(5.5em, 1fr)); gap: 0.6em; }
-    .day { background: white; border-radius: 8px; padding: 0.6em; text-align: center;
-           box-shadow: 0 0.1em 0.4em rgba(31, 45, 61, 0.12); }
-    .icon { font-size: 2em; }
-    .max { font-weight: bold; }
-    footer { margin-top: 2em; font-size: 0.8em; opacity: 0.7; }
+    .day { padding: 0.7em 0.4em; border-radius: 10px; text-align: center; background: white;
+           box-shadow: 0 1px 4px rgba(31, 45, 61, 0.1); }
+    .day .icon { font-size: 2em; margin: 0.1em 0; }
+    .max { font-weight: 700; }
+    .min { color: #6b7c8f; }
+    footer { margin-top: 2em; font-size: 0.8em; color: #6b7c8f; }
+    footer a { color: #2f6fb2; }
   </style>
 </head>
 <body>
@@ -314,7 +320,7 @@ Zum Schluss eine Webseite, die das Wetter für jeden Ort zeigt. Sie fragt die AP
     <input id="place" value="Berlin" autocomplete="off">
     <button>Suchen</button>
   </form>
-  <p id="now">Lade …</p>
+  <div id="now">Lade …</div>
   <div id="days"></div>
   <footer>Wetterdaten: <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0)</footer>
 
@@ -339,6 +345,14 @@ Zum Schluss eine Webseite, die das Wetter für jeden Ort zeigt. Sie fragt die AP
       return data;
     }
 
+    // Ein neues Element mit einer Klasse und einem Text
+    function element(tag, className, text) {
+      const el = document.createElement(tag);
+      el.className = className;
+      el.textContent = text;
+      return el;
+    }
+
     async function show(name) {
       const now = document.getElementById('now');
       const days = document.getElementById('days');
@@ -359,17 +373,21 @@ Zum Schluss eine Webseite, die das Wetter für jeden Ort zeigt. Sie fragt die AP
           timezone: 'auto', forecast_days: 7,
         });
 
+        // Jetzt: groß das Symbol und die Temperatur, daneben Ort und Wetter
         const [icon, text] = describe(weather.current.weather_code);
-        now.textContent = `${icon} ${place.name}: ${weather.current.temperature_2m} °C, ${text}`;
+        const where = document.createElement('div');
+        where.append(element('div', 'place', place.name), element('div', '', text));
+        now.replaceChildren(element('div', 'icon', icon),
+          element('div', 'temp', `${Math.round(weather.current.temperature_2m)}°`), where);
 
+        // Die nächsten sieben Tage, je eine Karte
         weather.daily.time.forEach((day, i) => {
-          const card = document.createElement('div');
-          card.className = 'day';
+          const card = element('div', 'day', '');
           const weekday = new Date(day).toLocaleDateString('de-DE', { weekday: 'short' });
-          card.innerHTML = `<div>${weekday}</div>
-            <div class="icon">${describe(weather.daily.weather_code[i])[0]}</div>
-            <div class="max">${Math.round(weather.daily.temperature_2m_max[i])}°</div>
-            <div>${Math.round(weather.daily.temperature_2m_min[i])}°</div>`;
+          card.append(element('div', '', weekday),
+            element('div', 'icon', describe(weather.daily.weather_code[i])[0]),
+            element('div', 'max', `${Math.round(weather.daily.temperature_2m_max[i])}°`),
+            element('div', 'min', `${Math.round(weather.daily.temperature_2m_min[i])}°`));
           days.append(card);
         });
       } catch (error) {
@@ -401,7 +419,7 @@ write-file: wetter/index.html <- file:stufen/index.html
 go-live
 tab: preview
 wait-for-text: Wetterdaten
-wait-for-text: °C
+wait-for-text: °
 sleep: 2
 -->
 <img class='full border' src='wetterseite.webp' alt='Die Wetterseite: ein Eingabefeld mit Berlin und der Knopf Suchen, darunter das Wetter jetzt mit Symbol und Temperatur, sieben Karten mit Wochentag, Wettersymbol, Höchst- und Tiefsttemperatur und unten die Quelle Open-Meteo.com.'>
@@ -431,3 +449,14 @@ _task(api-key)
 Viele APIs verlangen einen **API-Schlüssel**: eine lange Zeichenkette, die du bei der Anmeldung bekommst und bei jeder Anfrage mitschickst. Daran erkennt der Dienst, wer fragt, und zählt die Anfragen. Ein solcher Schlüssel ist wie ein Passwort: Er gehört nicht in eine Webseite, die jeder lesen kann, und nicht in ein öffentliches Git-Repository. Programme, die ihn brauchen, fragen die API vom Server aus, wie dein Ruby-Programm, nicht aus dem Browser.
 
 Wie die andere Seite aussieht, ein Server, der selbst Anfragen beantwortet, zeigt [Ein eigener Webserver](/webserver).
+
+<!-- tutorial-screenshot
+# Bild für die Karte der Aktivität: die Wetterseite, groß
+preview-reload
+tab: preview
+viewport: 760x428
+wait-for-text: Wetterdaten
+wait-for-text: °
+sleep: 2
+-->
+<img class='teaser' hidden src='teaser.webp' alt='Die Wetterseite für Berlin: das Wetter jetzt mit Symbol und Temperatur und darunter sieben Tageskarten mit Wettersymbol, Höchst- und Tiefsttemperatur.'>

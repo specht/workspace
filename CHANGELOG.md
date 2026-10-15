@@ -342,7 +342,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   (`no`, `1.10`, `12:30`, `01234` in Ruby und `yq`), Front Matter, `yq` und
   Ruby. Webserver, Pixelwand, TCP/IP und Filmdatenbank verweisen darauf.
 - Neue Aktivität »Eine Website mit Hugo« unter »Web & Schnittstellen«: ein
-  Aquarium-Lexikon aus Markdown-Seiten mit Front Matter, ein eigenes Layout
+  Lexikon über die Planeten aus Markdown-Seiten mit Front Matter, ein eigenes Layout
   (`baseof.html`, `page.html`, `home.html`, `list.html`) mit Navigation,
   Startseite, CSS und Schlagwörtern, dann `hugo` und `public` zum
   Veröffentlichen auf der eigenen Subdomain. Neun Aufgaben, Notiz für
@@ -765,6 +765,18 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   noch Lehrkräfte dieser Person, und ein Startfehler erscheint im Browser
   nur noch als »Der Workspace ließ sich nicht starten.«; die Einzelheiten,
   in denen Passwörter stehen konnten, stehen nur im Log.
+- Neue Bilder auf den Karten von »Daten aus dem Netz«, »Ein eigener
+  Webserver«, »Eine Pixelwand für alle«, »TCP/IP-Verbindungen« und
+  »Kryptographie im Terminal«: eigene Rezepte am Ende der Seite
+  (`<img class='teaser' hidden>`), mit wenigen großen Dingen statt einer
+  ganzen Seite, die auf der Karte unlesbar klein wird. Die Ergebnisseite der
+  Umfrage im Webserver zeichnet jetzt für jede Antwort einen Balken mit
+  `<progress>`.
+- Schönere Seiten zum Abschreiben: Der Webserver bekommt ein `style.css`
+  mit einer weißen Karte, Antworten als Kacheln und Balken in der Farbe der
+  Seite; die Wetterseite zeigt die Temperatur groß und die Tage als Karten
+  und baut ihr HTML nur noch mit `textContent`; die Pixelwand steht in der
+  Mitte, mit runden Farbknöpfen.
 
 ### Entfernt
 
