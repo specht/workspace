@@ -17,6 +17,15 @@ module PageKinds
     }.freeze
     REFERENCE_PREFIX = 'reference/'
 
+    # Label of an activity's kind, with the language from language: if the
+    # page has one: »Projekt (C / raylib)«. nil for an unknown kind.
+    def self.kind_label(kind, language = nil)
+        label = KIND_LABELS[kind.to_s]
+        return nil if label.nil?
+        language = language.to_s.strip
+        language.empty? ? label : "#{label} (#{language})"
+    end
+
     def self.reference?(slug)
         slug.to_s.start_with?(REFERENCE_PREFIX)
     end
@@ -68,7 +77,7 @@ module PageKinds
             html << extra.to_s
             html << '</nav>'
         else
-            kind = KIND_LABELS.fetch(entry[:kind].to_s, 'Aktivität')
+            kind = kind_label(entry[:kind], entry[:language]) || 'Aktivität'
             html = +"<div class='page-kind page-kind-activity'>"
             html << "<span class='page-kind-label'><i class='bi bi-signpost-2'></i>#{h.(kind)}</span>"
             if entry[:duration].is_a?(String) && !entry[:duration].strip.empty?

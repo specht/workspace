@@ -1,6 +1,7 @@
 <div class='meta'>
 image: feuerwerk.webp
 kind: projekt
+language: C
 reference: [pixelram]
 template: https://github.com/specht/pixelram-starter.git
 template_name: des PixelRAM-Starters

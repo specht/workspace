@@ -28,6 +28,13 @@ class PageKindsTest < Minitest::Test
         assert_includes html, '>Folien mit HTML</a>'
     end
 
+    def test_activity_shows_its_language
+        c = content.merge('drawing' => { :title => 'Pixelgrafik', :kind => 'projekt', :language => 'Ruby' })
+        assert_includes PageKinds.header('drawing', c, sections), '</i>Projekt (Ruby)</span>'
+        assert_equal 'Labor', PageKinds.kind_label('labor', '  ')
+        assert_nil PageKinds.kind_label('nope', 'Ruby')
+    end
+
     def test_activity_without_meta_is_still_an_activity
         html = PageKinds.header('tcpip', content.merge('tcpip' => { :title => 'X' }), sections)
         assert_includes html, 'Aktivität'

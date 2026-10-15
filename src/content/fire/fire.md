@@ -1,6 +1,7 @@
 <div class='meta'>
 image: fire.webp:73:0
 kind: projekt
+language: Ruby
 </div>
 
 <div

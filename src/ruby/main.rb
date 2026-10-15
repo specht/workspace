@@ -1746,6 +1746,7 @@ class Main < Sinatra::Base
                 # What kind of page this is (PageKinds.header shows it).
                 :section => section,
                 :kind => page_meta['kind'],
+                :language => page_meta['language'],
                 :duration => page_meta['duration'],
                 :references => page_references,
                 # Reference parts the page includes ('slug#part'), so a box
@@ -4654,7 +4655,7 @@ class Main < Sinatra::Base
                         # fit next to the title is left out (default.css).
                         io.puts "<div class='card-title-row'>"
                         io.puts "#{content[:dev_only] ? '<span class="badge badge-sm bg-danger">dev</span> ' : ''}<h4>#{content[:title]}</h4>"
-                        io.puts StudentHome.card_badges(content[:kind]) if catalog == :student
+                        io.puts StudentHome.card_badges(content[:kind], content[:language]) if catalog == :student
                         io.puts "</div>"
                         io.puts "<div class='abstract'>#{content[:abstract]}</div>"
                         io.puts "</div>"

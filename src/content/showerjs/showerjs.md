@@ -1,6 +1,7 @@
 <div class='meta'>
 image: showerjs.webp:0:80
 kind: projekt
+language: HTML
 topic: writing
 duration: 2 bis 3 Doppelstunden
 reference: [workspace, html, css, layout, shower]

@@ -1,6 +1,7 @@
 <div class='meta'>
 image: html-css-logo.png
 kind: projekt
+language: HTML / CSS
 reference: [workspace, html, css, layout]
 </div>
 

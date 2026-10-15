@@ -82,8 +82,8 @@ module StudentHome
     end
 
     # Small label for a catalog card: its kind, as in the strip above the page.
-    def self.card_badges(kind)
-        label = PageKinds::KIND_LABELS[kind.to_s]
+    def self.card_badges(kind, language = nil)
+        label = PageKinds.kind_label(kind, language)
         label ? "<div class='card-badges'><span class='card-kind'>#{h(label)}</span></div>" : ''
     end
 end

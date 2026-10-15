@@ -1,6 +1,7 @@
 <div class='meta'>
 image: hades.webp
 kind: labor
+language: Ruby
 </div>
 
 <div

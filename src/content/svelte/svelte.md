@@ -1,6 +1,7 @@
 <div class='meta'>
 image: svelte5.webp
 kind: projekt
+language: Svelte
 duration: 3 Doppelstunden
 requires: [static-website]
 reference: [workspace, html, css, layout]
