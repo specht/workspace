@@ -14,10 +14,16 @@ require 'open3'
 # event to stderr: connected, error (could not connect), closed (by the
 # server, after IDLE_SECONDS without traffic, after MAX_BYTES). The whole
 # connection lasts at most MAX_SECONDS.
+#
+# The relay reads at most BYTES_PER_SECOND from the server, in small pieces,
+# so an answer arrives bit by bit, as over a slow line, and the times in the
+# console are true. The server cannot send faster than that: its data waits
+# in the buffers (TCP flow control). It also caps what one connection costs.
 module TcpConsole
     MAX_SECONDS = 600
     IDLE_SECONDS = 120
     MAX_BYTES = 512 * 1024
+    BYTES_PER_SECOND = 1024
     MAX_LINE = 4096
 
     HOST = /\A(?=.{1,253}\z)[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*\.?\z/
@@ -26,7 +32,8 @@ module TcpConsole
     RELAY = <<~PY
         import json, os, select, socket, ssl, sys, time
         host, port, use_tls = sys.argv[1], int(sys.argv[2]), sys.argv[3] == '1'
-        idle, max_bytes = float(sys.argv[4]), int(sys.argv[5])
+        idle, max_bytes, rate = float(sys.argv[4]), int(sys.argv[5]), float(sys.argv[6])
+        piece = max(16, int(rate / 16))
 
         def status(**fields):
             sys.stderr.write(json.dumps(fields) + '\\n')
@@ -52,17 +59,22 @@ module TcpConsole
 
         received = 0
         last = time.monotonic()
+        next_read = last
         while True:
-            left = idle - (time.monotonic() - last)
+            now = time.monotonic()
+            left = idle - (now - last)
             if left <= 0:
                 status(closed='idle')
                 break
-            ready, _, _ = select.select([sock, 0], [], [], left)
-            if sock in ready:
+            # Read from the server only when the rate allows it; TLS may hold
+            # decrypted bytes that select does not see.
+            may_read = now >= next_read
+            buffered = may_read and use_tls and sock.pending() > 0
+            wait = 0 if buffered else (left if may_read else min(left, next_read - now))
+            ready, _, _ = select.select([sock, 0] if may_read else [0], [], [], wait)
+            if may_read and (buffered or sock in ready):
                 try:
-                    data = sock.recv(65536)
-                    while use_tls and data and sock.pending():
-                        data += sock.recv(sock.pending())
+                    data = sock.recv(piece)
                 except ssl.SSLWantReadError:
                     continue
                 except OSError as error:
@@ -74,6 +86,7 @@ module TcpConsole
                 os.write(1, data)
                 received += len(data)
                 last = time.monotonic()
+                next_read = max(next_read, now) + len(data) / rate
                 if received >= max_bytes:
                     status(closed='limit')
                     break
@@ -100,7 +113,8 @@ module TcpConsole
     def self.command(fs_tag, host, port, tls, uid:)
         ['docker', 'exec', '-i', '-u', uid, '-e', 'HOME=/tmp', '-w', '/tmp', "hs_code_#{fs_tag}",
          'timeout', '-k', '2', MAX_SECONDS.to_s,
-         'python3', '-I', '-c', RELAY, host, port.to_s, tls ? '1' : '0', IDLE_SECONDS.to_s, MAX_BYTES.to_s]
+         'python3', '-I', '-c', RELAY, host, port.to_s, tls ? '1' : '0',
+         IDLE_SECONDS.to_s, MAX_BYTES.to_s, BYTES_PER_SECOND.to_s]
     end
 
     # Bytes from the server as UTF-8 text. A character split between two

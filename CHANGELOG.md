@@ -22,9 +22,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Zeile wie mit `nc -C`, auf Wunsch mit TLS, und sehen Anfrage und Antwort als
   Sprechblasen mit Uhrzeit, wie in einem Chat. Die Verbindung beginnt im
   eigenen Workspace (als Gast), erreicht also nur, was `nc` dort auch
-  erreicht; `localhost` ist der eigene Workspace. Nur angemeldet, eine
-  Verbindung pro Person, höchstens 30 in zehn Minuten, zwei Minuten ohne Daten,
-  zehn Minuten und 512 kB je Verbindung. TCP/IP hat dazu die Abschnitte »Die
+  erreicht; `localhost` ist der eigene Workspace. Die Konsole liest höchstens
+  1 KB pro Sekunde, so dass Antworten nach und nach ankommen; »Stopp« bricht
+  eine Antwort ab, »Trennen« oder Strg+C trennen die Verbindung. Beginn und
+  Ende jeder Verbindung stehen als eigene Zeile im Verlauf, mit Uhrzeit, Dauer
+  und Grund (Server, du, Zeitgrenze). Nur angemeldet, eine Verbindung pro
+  Person, höchstens 30 in zehn Minuten, zwei Minuten ohne Daten, zehn Minuten
+  und 512 kB je Verbindung. TCP/IP hat dazu die Abschnitte »Die
   TCP-Konsole« (HTTP über TLS von Hand) und »Wer zu langsam tippt« (Server
   legen auf) mit einer neuen Aufgabe; der Webserver verweist darauf.
 - Neue Aktivität »Endliche Automaten in Python« unter »Experimente«:
