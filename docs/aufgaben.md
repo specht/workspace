@@ -244,6 +244,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `submit` | Abgabe: Kopie von Dateien, optional für die Galerie | Dateien in `/workspace` | Server | M3 |
 | `measure` | Messwert der Lernenden gegen eine eigene Messung | Ausgabe eines Befehls | Workspace | M6 |
 | `command` | Ausgabe eines Befehls der Lernenden | Ausgabe | Workspace | M6 |
+| `python` | Funktionen aus einer Python-Datei der Lernenden: Aufrufe und ihre Ergebnisse | eine `.py`-Datei | Workspace, als Gast | M7 |
 | `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace | M6 |
 | `code` | Code-Bites-Aufgabe | Code | Code-Bites-Judge | M5 |
 | `sql` | Ergebnis einer `SELECT`-Abfrage gegen das einer Musterabfrage | Abfrage | eigene MySQL-Datenbank, nur lesend | M6 |
@@ -550,6 +551,40 @@ Positionen haben eine Toleranz von 2 Einheiten. Unter »Was der Workspace gelese
 hat« steht jedes Objekt mit Zeile, Position und Größe. Die Karte nennt Datei
 und Viewer: »Liest `/workspace/anaglyph/balken.ini` mit deinem Viewer
 `/workspace/anaglyph/include/script.js`«.
+
+### python
+
+Ruft Funktionen aus einer Python-Datei der Lernenden auf und vergleicht, was
+herauskommt. Ein festes Skript (`PythonCheck::HARNESS`) lädt die Datei mit
+`python3` im Workspace der Person, als Gast wie bei `command` (der Code ist
+ihrer, Regel 1), höchstens `timeout` Sekunden (Standard 10, höchstens 30).
+Was das Programm selbst ausgibt, verschwindet; Aufrufe in der Datei selbst
+stören also nicht.
+
+```yaml
+check:
+  type: python
+  file: automata/lock.py
+  cases:
+    - opens('1213'): true                 # Aufruf: erwartetes Ergebnis
+    - opens('121213'): true
+    - call: run(['münze']) == 'offen'      # die lange Form, mit eigenem Satz
+      expect: false
+      say: Nach einer Münze darf das Drehkreuz noch nicht offen sein.
+```
+
+Aufrufe und Ergebnisse sind Python-Ausdrücke; `true`, `false`, `~` und Zahlen
+aus YAML werden zu `True`, `False`, `None` und der Zahl. Ein Text als Ergebnis
+braucht darum zwei Paar Anführungszeichen: `"'offen'"`. Prüft eine Aufgabe
+Verhalten statt Namen (»wie der neue Zustand heißt, ist egal«), vergleicht der
+Aufruf selbst: `run(['münze']) == 'offen'` mit `false`.
+
+Die Rückmeldung nennt den ersten Aufruf, der nicht passt: »`opens('121213')`
+ergibt `False`, richtig wäre `True`.«, dazu `say`, wenn es eines gibt. Bricht
+ein Aufruf ab, steht der Fehler mit der Zeile in der Datei da, ebenso ein
+Syntaxfehler oder ein Fehler beim Laden. Unter »Was der Workspace gelesen
+hat« stehen alle Aufrufe mit Haken oder Kreuz und ihrem Ergebnis. Die Datei
+wird aus ihrem Ordner geladen, `import` anderer Dateien daneben klappt.
 
 ### sql
 
