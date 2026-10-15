@@ -109,15 +109,16 @@ Then delete `_drafts/filmdatenbank.md`, which still holds these ideas.
 
 ### Written, not yet tried in class
 
-Four activities written in October 2026, with tasks, teacher notes and
+Five activities written in October 2026, with tasks, teacher notes and
 generated screenshots:
 
 * »Eine Facharbeit mit LaTeX« (`src/content/latex`) and Handbuch »Dokumente mit LaTeX«
 * »Ein eigener Webserver« (`src/content/webserver`), a Ruby `TCPServer` in five stages, linked from TCP/IP
-* »Eine Pixelwand für alle« (`src/content/pixelwand`), WebSockets and a shared 64 × 40 canvas through Shared Live Apps
+* »Eine Pixelwand für alle« (`src/content/pixelwand`), WebSockets with faye-websocket, a shared 64 × 40 canvas through Shared Live Apps, a chapter on threads and a lock
+* »Eine Website mit Hugo« (`src/content/hugo`), an aquarium encyclopedia with own layouts, published from `public/`
 * »Eine Klötzchenwelt in 3D« (`src/content/raylib`), raylib in 3D with Handbuch »raylib«; the starter is `specht/raylib-starter`, the same files as `vorlage/`
 
-* [ ] Try each in class and adjust pace and tasks (LaTeX 3, web server 2, pixel wall 2, raylib 5 double lessons)
+* [ ] Try each in class and adjust pace and tasks (LaTeX 3, web server 2, pixel wall 2, Hugo 2, raylib 5 double lessons)
 * [ ] Pixel wall: check how it behaves with a whole class painting on one Workspace
 * [ ] Take over the useful part of the Hades page (HTTP POST, JSON) into the web server page, then retire Hades
 * [ ] raylib: an icon of its own for the Handbuch section (now the star)
@@ -131,28 +132,15 @@ Prefer pages that introduce genuinely new ideas rather than more installed techn
 Prioritise creative, visible material that also works with younger students; the order
 below is a writing priority, not a prerequisite chain.
 
-1. Hugo / static site generators
-2. Flutter
-3. Cryptography
+1. Flutter
+2. Cryptography
 
 Plus, from the review:
 
 * [ ] **Query stepper / database sandbox**: FROM → JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT with the intermediate table after each step; class repository and Class progress like the other sandboxes
 * [ ] **JPEG decoder project**: the interactive Huffman section is excellent, but iDCT, MCU and colour conversion get one paragraph each and there is nothing to implement; a staged decoder with a check per stage
 
-#### 1. Hugo / static site generators
-
-> One HTML page is easy to maintain by hand. What happens when 20 or 50 pages all need the same navigation, header and footer?
-
-* [ ] Begin with the duplication problem; a minimal site without a downloaded theme
-* [ ] First page in Markdown, `hugo server`, minimal front matter (`title`, `date`, `draft`)
-* [ ] A shared base layout with `.Title` and `.Content`; several pages; a list/home template that discovers new content
-* [ ] Only the Go-template subset students need; their own CSS; tags as one example of generated navigation
-* [ ] Source vs output: run `hugo`, inspect `public/`, publish it to the student's webspace
-
-No third-party themes, Hugo Modules, multilingual sites, custom output formats, complex shortcodes or deployment pipelines in the introduction.
-
-#### 2. Flutter
+#### 1. Flutter
 
 > Develop in the browser, then turn the same project into a real installable app.
 
@@ -175,7 +163,7 @@ Android build support, before broad rollout:
 
 APK rather than App Bundle for the introduction; no release signing or Play Store accounts (mention `flutter build appbundle` as a follow-up). iOS: the same source can target iOS, but builds need macOS, Xcode and Apple signing; mention a Mac or a cloud build service such as Codemagic; keep App Store details optional.
 
-#### 3. Cryptography in the terminal
+#### 2. Cryptography in the terminal
 
 A laboratory around four questions:
 
@@ -222,7 +210,7 @@ Platform-wide:
 * [ ] Review `_template_codebites.html` language metadata and remaining manually authored homepage image alt attributes
 * [ ] Revisit BIF after the teacher workshop and incorporate classroom feedback
 * [ ] Link Automatron from formal-language material and teacher notes; add a short introduction if students use it alone
-* [ ] Find a section for new pages as they land (Hugo and Flutter under Web & Schnittstellen); keep related progressions adjacent
+* [ ] Find a section for new pages as they land (Flutter under Web & Schnittstellen); keep related progressions adjacent
 
 
 ## Infrastructure and operations

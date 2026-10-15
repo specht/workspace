@@ -341,6 +341,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   JavaScript, Python, `jq`. »YAML«: Aufbau, Listen, lange Texte, die Fallen
   (`no`, `1.10`, `12:30`, `01234` in Ruby und `yq`), Front Matter, `yq` und
   Ruby. Webserver, Pixelwand, TCP/IP und Filmdatenbank verweisen darauf.
+- Neue Aktivität »Eine Website mit Hugo« unter »Web & Schnittstellen«: ein
+  Aquarium-Lexikon aus Markdown-Seiten mit Front Matter, ein eigenes Layout
+  (`baseof.html`, `page.html`, `home.html`, `list.html`) mit Navigation,
+  Startseite, CSS und Schlagwörtern, dann `hugo` und `public` zum
+  Veröffentlichen auf der eigenen Subdomain. Neun Aufgaben, Notiz für
+  Lehrkräfte, ohne fertiges Theme.
 
 ### Geändert
 
@@ -656,6 +662,17 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   mit `curl --path-as-is` selbst aus, mit und ohne die Prüfung. »Statuszeile«
   heißt dort jetzt »Status-Line«, wie »Request-Line«.
 - Code in YAML (```` ```yaml ````) ist farbig.
+- »Eine Pixelwand für alle« nutzt faye-websocket statt eines selbst
+  geschriebenen Handshakes und Frame-Parsers: Die Seite beginnt mit einem
+  Echo in zehn Zeilen, der Handshake bleibt mit `curl` sichtbar. Neuer
+  Abschnitt »Viele Threads«: Vier Threads arbeiten eine Warteschlange ab,
+  ein Zähler verzählt sich bei 200 Pixeln auf einmal (`flood.js`), ein Lock
+  behebt es. Die Seite sagt deutlich, dass das Überschütten fremder Server
+  ein Angriff ist.
+- Handbuch »HTTP«: Die Teile einer Adresse als Grafik aus HTML und CSS,
+  mit Klammern und Namen unter jedem Teil.
+- Screenshot-Generator: `preview-port: 1313 /axolotl/` öffnet eine Seite
+  unterhalb der Wurzel einer App.
 
 ### Für Betreibende
 
