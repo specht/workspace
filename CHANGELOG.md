@@ -735,6 +735,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   der Objekte als Nachricht zurück. Unter `/anaglyph-viewer/` antwortet die
   Website selbst nicht mehr. Zwei kleine Änderungen am Viewer macht der
   Server beim Ausliefern, bis `specht/anaglyph` sie selbst hat.
+- Sicherheit: Rückmeldungen der Aufgaben enthalten Text aus den Dateien der
+  Lernenden (eine CSS-Zeile, ein Branch-Name, der Name einer Szene). Das
+  HTML, das Aufgabenkarte und Klassenseite davon anzeigen, wird jetzt nach
+  dem Markdown auf eine kurze Liste harmloser Elemente und Attribute
+  gefiltert (`TaskHtml`): kein Skript, keine Event-Attribute, keine
+  `javascript:`-Links, keine Frames. `<kbd>`, Code, Listen, Links und
+  Bootstrap-Icons der Autorinnen und Autoren bleiben. Bisher konnte eine
+  präparierte Datei Skript in die Sitzung einer Lehrkraft bringen, die
+  »Jetzt nachsehen« drückte.
 
 ### Entfernt
 

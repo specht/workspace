@@ -27,6 +27,7 @@ require './include/workspace_credentials.rb'
 require './include/workspace_runtime.rb'
 require './include/tic80_storage.rb'
 require './include/user_files.rb'
+require './include/task_html.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
@@ -4071,13 +4072,11 @@ class Main < Sinatra::Base
         vars
     end
 
+    # Messages carry text from students' files: rendered and then filtered
+    # to harmless HTML (TaskHtml). Feedback boxes are light and style plain
+    # code themselves (.task-feedback pre code), so no highlighting here.
     def render_task_markdown(markdown)
-        return nil if markdown.nil? || markdown.to_s.strip.empty?
-
-        @@task_redcarpet ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true, :tables => true})
-        # Feedback boxes are light and style plain code themselves
-        # (.task-feedback pre code), so no highlighting here.
-        @@task_redcarpet.render(markdown.to_s)
+        TaskHtml.render(markdown)
     end
 
     SUBMISSIONS_ROOT = '/internal/submissions'
