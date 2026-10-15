@@ -156,10 +156,10 @@ Ein Hash lässt sich nicht umkehren. Soll jemand den Brief wieder lesen können,
 openssl enc -aes-256-cbc -pbkdf2 -in letter.txt -out letter.enc
 ```
 
-`openssl` fragt zweimal nach einem Passwort. `-pbkdf2` macht daraus den eigentlichen 256-Bit-Schlüssel, wie bei Passwörtern mit Salz und mit Absicht langsam. Sieh dir an, was in `letter.enc` steht. `cat` würde nur Zeichensalat ausgeben; `hexdump -C` zeigt jedes Byte als Zahl und daneben als Zeichen, soweit es eines ist:
+`openssl` fragt zweimal nach einem Passwort. `-pbkdf2` macht daraus den eigentlichen 256-Bit-Schlüssel, wie bei Passwörtern mit Salz und mit Absicht langsam. Sieh dir an, was in `letter.enc` steht. `cat` würde nur Zeichensalat ausgeben; `xxd` zeigt jedes Byte als zweistellige Hexadezimalzahl und rechts daneben als Zeichen, soweit es eines ist:
 
 ```bash
-hexdump -C letter.enc
+xxd letter.enc
 ```
 
 <!-- tutorial-screenshot
@@ -172,12 +172,12 @@ sleep: 1
 type: Pinguin
 press: Enter
 terminal-wait-for-prompt
-terminal-run: hexdump -C letter.enc
+terminal-run: xxd letter.enc
 terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='aes.webp' alt='openssl enc fragt nach dem Passwort und seiner Bestätigung. hexdump -C letter.enc zeigt danach vier Zeilen Bytes: vorn das Wort Salted__, danach nur noch zufällig wirkende Zahlen.'>
+<img class='full' src='aes.webp' alt='openssl enc fragt nach dem Passwort und seiner Bestätigung. xxd letter.enc zeigt danach vier Zeilen mit je 16 Bytes, links als Hexadezimalzahlen, rechts als Zeichen: vorn das Wort Salted__, danach nur noch zufällig wirkende Bytes.'>
 
 Vorn steht `Salted__`, dahinter das Salz und dann der verschlüsselte Brief, von Zufall nicht zu unterscheiden. Zum Entschlüsseln gibt es `-d`. Probier es mit dem richtigen Passwort und einmal mit einem falschen:
 
