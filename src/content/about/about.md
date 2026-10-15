@@ -1,5 +1,5 @@
 <div class='meta'>
-image: workspace.webp
+image: start-page.webp
 kind: grundlagen
 </div>
 
@@ -37,5 +37,17 @@ Die Tutorials auf dieser Website können direkt verwendet, als Ausgangspunkt fü
 ## Los geht's
 
 Melde dich an und klicke oben auf »Workspace öffnen«. Der Workspace wird bei Bedarf gestartet und öffnet sich anschließend in einem neuen Browser-Tab.
+
+<!-- tutorial-screenshot
+# Die Startseite, nicht angemeldet
+open-site: /
+tab: preview
+viewport: 1029x640
+hook: guest
+sleep: 1
+variants: dark
+-->
+
+<img class='full full-shadow' src='start-page.webp' alt='Die Startseite des Workspaces: oben »Anmelden«, darunter, was man im Workspace machen kann.'>
 
 Danach kannst du entweder einem Tutorial folgen oder direkt ein eigenes Projekt beginnen.

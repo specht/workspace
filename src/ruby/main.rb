@@ -1778,8 +1778,11 @@ class Main < Sinatra::Base
                             sha1 = convert_image(image_path)
                             parsed_content[slug][:image] = "/cache/#{sha1}.webp"
 
+                            # The dark file as the screenshot tool names it:
+                            # box-anaglyph.webp → box-dark-anaglyph.webp.
                             extension = File.extname(image_path)
-                            dark_image_path = image_path.delete_suffix(extension) + "-dark#{extension}"
+                            base = image_path.delete_suffix(extension)
+                            dark_image_path = base.sub(/(-anaglyph)?\z/) { "-dark#{$1}" } + extension
                             if File.exist?(dark_image_path)
                                 dark_sha1 = convert_image(dark_image_path)
                                 parsed_content[slug][:image_dark] = "/cache/#{dark_sha1}.webp"

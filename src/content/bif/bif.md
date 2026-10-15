@@ -1,5 +1,5 @@
 <div class='meta'>
-image: bif.webp
+image: ../reference/bif/story-image.webp
 kind: projekt
 template: https://github.com/specht/bif.git
 template_name: der BIF-Vorlage

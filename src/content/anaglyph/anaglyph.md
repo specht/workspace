@@ -1,5 +1,5 @@
 <div class='meta'>
-image: title.webp
+image: 3d-torus-anaglyph.webp
 kind: projekt
 template: https://github.com/specht/anaglyph.git
 template_name: der Anaglyph-Vorlage
