@@ -5,7 +5,7 @@ language: SQL
 topic: databases
 duration: 3 Doppelstunden
 requires: [mysql]
-reference: [er-modelle, sql]
+reference: [er-modelle, sql, json]
 </div>
 
 <div
@@ -45,6 +45,8 @@ So könnte ein Film aussehen, wenn ein Programm ihn als JSON verschickt:
 ```
 
 Für den Austausch ist das bequem: Alles über einen Film steht an einer Stelle. Für eine Datenbank, die viele Fragen beantworten soll, ist es ungünstig. »Welche Filme sind Sci-Fi?« hieße, in jedem Film die Liste `genres` zu durchsuchen. Und wer bei fünf Filmen Regie geführt hat, stünde fünfmal mit seinem Namen da, vielleicht einmal anders geschrieben.
+
+_uses(json-aufbau)
 
 In dem Datensatz stecken verschiedene Arten von Dingen: **Filme**, **Genres**, **Personen** und das, was eine Person bei einem Film gemacht hat, die **Tätigkeit**. In einer relationalen Datenbank bekommt jede Art ihre eigene Tabelle, und die Beziehungen zwischen ihnen werden eigens gespeichert.
 

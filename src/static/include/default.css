@@ -1632,6 +1632,82 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     }
 }
 
+/* An address taken apart (Handbuch HTTP): the address in one line, under
+   each part a bracket with a stem to its name. Names alternate between two
+   levels (.url-low) so neighbouring ones do not collide. */
+
+.url-diagram {
+    overflow-x: auto;
+}
+
+.url-parts {
+    display: inline-flex;
+    margin: 0.6em 0 1.2em;
+    /* room for the names: below, and on the left for »Schema«, which is
+       wider than »http« */
+    padding: 0 1em 3.9em 1.4em;
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 1.05em;
+    white-space: pre;
+}
+
+.url-parts > span {
+    position: relative;
+}
+
+.url-part::before {
+    /* the bracket under the part */
+    content: '';
+    position: absolute;
+    left: 0.1em;
+    right: 0.1em;
+    top: 1.45em;
+    height: 0.35em;
+    border: 2px solid currentColor;
+    border-top: 0;
+    opacity: 0.55;
+}
+
+.url-part::after {
+    /* the stem from the bracket down to the name */
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 1.8em;
+    height: 0.5em;
+    border-left: 2px solid currentColor;
+    opacity: 0.55;
+}
+
+.url-part.url-low::after {
+    height: 1.9em;
+}
+
+.url-label {
+    position: absolute;
+    left: 50%;
+    top: 2.3em;
+    transform: translateX(-50%);
+    font-family: var(--bs-body-font-family);
+    font-size: 0.8em;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* top in the label's own (smaller) em: the stems end at 2.3em and 3.7em of
+   the address */
+.url-label {
+    top: 2.95em;
+}
+
+.url-low .url-label {
+    top: 4.7em;
+}
+
+.url-sep {
+    opacity: 0.6;
+}
+
 /* A grid of small screenshots with captions (CPU Sandbox examples) */
 
 .screen-gallery {

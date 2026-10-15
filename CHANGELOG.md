@@ -232,7 +232,6 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Klonen, Downloads, Einrichtungsbefehle (```` ```bash_copy ````). Was man
   lernen soll, wird weiter abgetippt; gemischte Blöcke sind geteilt, sodass
   nur die schwer zu tippende Zeile den Knopf hat.
-
 - Handbuch »HTML und CSS«: drei Seiten für Webseiten und Folien zugleich,
   [HTML](/reference/html), [CSS](/reference/css) und
   [Layout](/reference/layout), dazu [Folien mit Shower](/reference/shower)
@@ -245,7 +244,6 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   eingebunden, `main` mit Flexbox, eine Media Query, die alles untereinander
   stellt. Dafür kennt die Prüfart `html` jetzt `elements`, `css` kennt
   `declares` und `linked_from`.
-
 - BIF »Interaktive Geschichten schreiben«: 13 Aufgaben entlang der
   Geschichte bis zur eigenen Geschichte und ihrer Abgabe, eine Notiz für
   Lehrkräfte und die neue Prüfart `story`, die liest, was BIF selbst über die
@@ -262,22 +260,93 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Lehrkraft.
 - Klassenseite: Wer eine Gruppe betreut, ohne in ihr zu stehen, sieht die
   eigenen Versuche und Abgaben in einer Zeile »Du (Lehrkraft)«.
-
 - Klassenseite: »Anmelde-Codes zeigen« für den Beamer, groß und nur mit
   Namen, ohne E-Mail-Adressen; neue Codes erscheinen von selbst.
 - Klassenseite: Reiter »Fortschritt«, »Lernende« und »Startseite«. Unter
   »Lernende« die Karten des Servers wie auf der Verwaltungsseite und jeder
   Workspace mit CPU und RAM; eine Zeile leuchtet gelb, solange ihr Workspace
   arbeitet.
-
 - »Einstieg für Lehrkräfte« (nur für Lehrkräfte): Anmeldung mit den Codes am
   Beamer, die Klassenseite, Abgaben, das Testkonto und was der Server
   speichert, mit Bildern. Die Klassenseite und das Profil weisen darauf hin.
-
 - Klassenseite: »Alle Abgaben löschen« unter den Abgaben einer Aufgabe, für
   eine neue Runde in einer Gruppe, nach einer Warnung.
 - Klassenseite: merkt sich am Konto die zuletzt gewählte Gruppe und je Gruppe
   die zuletzt gewählte Aktivität.
+- Neue Prüfart `cypher`: Abfragen in der eigenen Neo4j-Datenbank, verglichen
+  mit einer Musterabfrage, wie `sql` für MySQL. Nur lesend, doppelt
+  abgesichert: Der Server lässt nur lesende Abfragen durch, und Neo4j führt
+  sie in einer Lese-Transaktion aus (5 Sekunden, höchstens 5000 Zeilen).
+- Neue Aktivität »Ein Spiel in 64 KB« (TIC-80, unter Computergrafik): Lua,
+  Konsole und Editoren, Speichern als Textdatei in `/workspace/TIC-80`, der
+  Bildschirm, dann Schritt für Schritt das Spiel »Star Catcher« (Figur,
+  fallende Sterne, eigene Figur im Sprite-Editor, Leben, Ton), Ideen für ein
+  eigenes Spiel und eine Abgabe. Neun Aufgaben, Notiz für Lehrkräfte,
+  erzeugte Screenshots aus dem echten TIC-80.
+- Handbuch »MiniCPU« für die CPU Sandbox, mit drei Seiten. »MiniCPU«: die
+  Stufen 8, 8S und 8X, Register, Flags, jeder Befehl mit Opcode,
+  betroffenen Flags, Bytes und Takten, Stack und Aufrufregeln, X und Y,
+  Takte, Maschinencode, Assembler. »Geräte und Bildschirm«: alle Ports,
+  Joystick, Tastatur, Ton, Timer und Vsync, Pixelformate, Palettenchip,
+  Seitenwechsel, die Paletten als Farbfelder. »MiniC«: C für die MiniCPU.
+  Die Tabellen erzeugt `src/scripts/minicpu-reference.mjs` aus den Tabellen
+  der Sandbox selbst. Die Aktivität »Vom Byte zum 3D-Labyrinth« verweist an
+  passender Stelle darauf.
+- Handbuch »SQL«: mycli, Tabellen ansehen, `SELECT`, `WHERE`, Sortieren,
+  Zählen und Gruppieren, `JOIN`, `CREATE TABLE`, `INSERT`, `UPDATE` und
+  `DELETE`, Werte über Platzhalter in Programmen (PHP, Ruby, Python) und
+  die häufigen Meldungen von MySQL. »MySQL kennenlernen« und
+  »Filmdatenbank« verweisen darauf. Code-Blöcke in PHP sind farbig; ein
+  Test hatte die fehlende Sprache bemerkt.
+- Neue Aktivität »Eine Klötzchenwelt in 3D« (C mit raylib, unter
+  Computergrafik): eine Welt aus Blöcken in der Ich-Perspektive, Kamera aus
+  zwei Winkeln, Laufen, Schwerkraft und Kollision, Zielen mit einem Strahl,
+  Bauen und Abbauen, ein eigener Licht-Shader in GLSL mit Tag und Nacht,
+  Fackeln und Nebel, Texturen aus dem 2D Game Studio. Acht Stufen, Aufgaben,
+  Notiz für Lehrkräfte; die Vorlage ist `specht/raylib-starter`, die
+  Webseite um das Programm kommt von PixelRAM.
+- Handbuch »raylib« (Fenster, 2D, Kamera, 3D, Farben, Eingaben, Zeit,
+  Vektoren, Kollision, eigene Flächen, Texturen, Shader, GLSL) und Handbuch
+  »PixelRAM«.
+- »Eine Facharbeit mit LaTeX« ersetzt die bisherige LaTeX-Seite unter
+  derselben Adresse: eine kurze Facharbeit über ein Fadenpendel, von der
+  leeren Datei bis zum PDF, mit Titelseite, Gliederung, Formel, Bild,
+  Tabelle, Diagramm (TikZ), Quellen mit biblatex und Seitenlayout. 13
+  Aufgaben, Notiz für Lehrkräfte. Alles zum Nachschlagen, die Schriften und
+  die Vorlagen (Bewerbung, Lebenslauf, Ausarbeitung …) stehen im neuen
+  Handbuch »Dokumente mit LaTeX«.
+- Neue Aktivitäten unter »Netzwerke«: »Ein eigener Webserver« (Ruby, ohne
+  Bibliothek: zuhören, antworten, Pfade und 404, Dateien aus `public`,
+  Parameter und ein Zähler mit Mutex) und »Eine Pixelwand für alle«
+  (WebSockets mit selbst geschriebenem Handshake, Nachrichten an alle, eine
+  gemeinsame Pixelwand für die Klasse über Shared Live Apps). TCP/IP
+  verweist auf beide.
+- Basics: »VS Code nach deinem Geschmack« mit einer kleinen Galerie
+  eingebauter Farbschemata und solcher aus dem Marketplace.
+- Feld `language` im Meta-Block: Die Art einer Aktivität nennt ihre
+  Sprache, »Projekt (Ruby)« oder »Projekt (C / raylib)«, über der Seite und
+  auf der Karte im Katalog. Gesetzt bei 17 Aktivitäten mit einer festen
+  Sprache.
+- Bilder in einer Galerie (`.screen-gallery`) öffnen sich auf einen Klick
+  so groß wie das Fenster, mit ihrer Unterschrift; ← → blättern durch die
+  Galerie. Kleine Pixelbilder bleiben scharf, dunkle und CRT-Varianten
+  bleiben erhalten. Auf dem Handy öffnet sich nichts.
+- TIC-80: ein Abschnitt »Ein Himmel« mit Aufgabe: funkelnde Sterne mit
+  `pix`, Sternschnuppen mit Schweif und eine Wiese. Das fertige Spiel ist
+  das neue Bild auf der Karte.
+- Handbuch-Abschnitt »Netzwerk und Daten« mit drei Seiten. »HTTP«: Anfrage
+  und Antwort, Methoden, Statuscodes, Header, Adressen, `curl`, der Reiter
+  »Network« im Browser, Formulare und JSON, HTTPS, WebSockets. »JSON«:
+  Aufbau, was JSON nicht erlaubt (mit den echten Fehlermeldungen), Ruby,
+  JavaScript, Python, `jq`. »YAML«: Aufbau, Listen, lange Texte, die Fallen
+  (`no`, `1.10`, `12:30`, `01234` in Ruby und `yq`), Front Matter, `yq` und
+  Ruby. Webserver, Pixelwand, TCP/IP und Filmdatenbank verweisen darauf.
+- Neue Aktivität »Eine Website mit Hugo« unter »Web & Schnittstellen«: ein
+  Aquarium-Lexikon aus Markdown-Seiten mit Front Matter, ein eigenes Layout
+  (`baseof.html`, `page.html`, `home.html`, `list.html`) mit Navigation,
+  Startseite, CSS und Schlagwörtern, dann `hugo` und `public` zum
+  Veröffentlichen auf der eigenen Subdomain. Neun Aufgaben, Notiz für
+  Lehrkräfte, ohne fertiges Theme.
 
 ### Geändert
 
@@ -304,7 +373,6 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Die drei Sandboxes haben einen eigenen Abschnitt im Katalog statt
   »Terminal & Git«.
 - Sprünge zu einer Aufgabe (»Weitermachen«) landen unter der Abschnittsleiste.
-
 - »Eine Präsentation in HTML erstellen« ist kürzer: Der Referenzteil steht
   jetzt unter `/reference/html-folien`. Alte Links auf Abschnitte der Seite
   führen dorthin weiter. Die Mini-Folien liegen in
@@ -386,7 +454,6 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Verzeichnisse, TCP/IP, LaTeX, MySQL, beiden Filmdatenbanken, den Sandboxes,
   den Grundlagen, Anaglyphen und PixelRAM. »Go Live« ist ein gemeinsames Bild
   für alle Tutorials, mit Mauszeiger und dem Anhalten des Live Servers.
-
 - Behoben: Vier kleine VS-Code-Symbole fehlten seit August auf 17 Seiten
   (Programmiersprachen, LaTeX, Svelte, Pixelgrafik). KaTeX lud auf
   Handbuch-Seiten nicht. Die drei Übungen (»Programmieren üben«) waren seit
@@ -445,10 +512,6 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   wenn der Workspace aus ist: in einem Lese-Container mit demselben Image,
   ohne Netz, der Ordner nur lesbar. Bisher hieß es dann »Starte zuerst
   deinen Workspace«, auch auf der Klassenseite.
-- Neue Prüfart `cypher`: Abfragen in der eigenen Neo4j-Datenbank, verglichen
-  mit einer Musterabfrage, wie `sql` für MySQL. Nur lesend, doppelt
-  abgesichert: Der Server lässt nur lesende Abfragen durch, und Neo4j führt
-  sie in einer Lese-Transaktion aus (5 Sekunden, höchstens 5000 Zeilen).
 - »Filmdatenbank als Graph mit Neo4j«: Die Abfrage-Übungen aus den Kästen
   sind jetzt sieben geprüfte Aufgaben. »Toy Story« von 1995, nach dem eine
   Übung fragte, gibt es in den Daten nicht; jetzt ist es »The Lion King« von
@@ -465,12 +528,6 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Projekt, Gestalten, Für Fortgeschrittene, Wenn etwas nicht klappt), mit
   Unterabschnitten für »Aussehen anpassen«. Adressen und eingebundene Teile
   bleiben gleich.
-- Neue Aktivität »Ein Spiel in 64 KB« (TIC-80, unter Computergrafik): Lua,
-  Konsole und Editoren, Speichern als Textdatei in `/workspace/TIC-80`, der
-  Bildschirm, dann Schritt für Schritt das Spiel »Star Catcher« (Figur,
-  fallende Sterne, eigene Figur im Sprite-Editor, Leben, Ton), Ideen für ein
-  eigenes Spiel und eine Abgabe. Neun Aufgaben, Notiz für Lehrkräfte,
-  erzeugte Screenshots aus dem echten TIC-80.
 - Die Verweise ins Handbuch unter Abschnitten (»Mehr zum Text auf Folien:
   Überschriften und Absätze …«) sind kleine Knöpfe im Türkis des Handbuchs
   mit dessen Buch-Symbol statt beiger Pillen.
@@ -513,15 +570,6 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   wie Rouge; bei Cypher Labels, Beziehungstypen und Eigenschaften wie in
   den Beispielen). Ein fehlendes Anführungszeichen fällt sofort auf. Das
   Feld wächst mit der Abfrage.
-- Handbuch »MiniCPU« für die CPU Sandbox, mit drei Seiten. »MiniCPU«: die
-  Stufen 8, 8S und 8X, Register, Flags, jeder Befehl mit Opcode,
-  betroffenen Flags, Bytes und Takten, Stack und Aufrufregeln, X und Y,
-  Takte, Maschinencode, Assembler. »Geräte und Bildschirm«: alle Ports,
-  Joystick, Tastatur, Ton, Timer und Vsync, Pixelformate, Palettenchip,
-  Seitenwechsel, die Paletten als Farbfelder. »MiniC«: C für die MiniCPU.
-  Die Tabellen erzeugt `src/scripts/minicpu-reference.mjs` aus den Tabellen
-  der Sandbox selbst. Die Aktivität »Vom Byte zum 3D-Labyrinth« verweist an
-  passender Stelle darauf.
 - Ein Test prüft, dass jede Überschrift einer Handbuch-Seite auch als
   Überschrift erscheint: Ein `</table></div>` am Zeilenende ließ Redcarpet
   sonst den Rest der Seite als rohen Text ausgeben.
@@ -548,13 +596,6 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Die Listen der erzeugten Screenshots (`.tutorial-screenshots.json`) sind
   nach Namen sortiert. Ein Rendern in anderer Reihenfolge ändert die Datei
   nicht mehr.
-
-- Handbuch »SQL«: mycli, Tabellen ansehen, `SELECT`, `WHERE`, Sortieren,
-  Zählen und Gruppieren, `JOIN`, `CREATE TABLE`, `INSERT`, `UPDATE` und
-  `DELETE`, Werte über Platzhalter in Programmen (PHP, Ruby, Python) und
-  die häufigen Meldungen von MySQL. »MySQL kennenlernen« und
-  »Filmdatenbank« verweisen darauf. Code-Blöcke in PHP sind farbig; ein
-  Test hatte die fehlende Sprache bemerkt.
 - Profil, MySQL: Jede Datenbank ist eine Karte mit Name, Art, Tabellen,
   Einträgen und Größe, ihrem Knopf zum Zurücksetzen oder Löschen und ihren
   Zugangsdaten. Unter den Karten steht, wie viele weitere Datenbanken noch
@@ -596,12 +637,42 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Farben: Der Farbmischer springt nicht mehr, und der Hinweis auf Farben,
   die ein Bildschirm nicht zeigen kann, ist weg.
 - Handbuch: Die Seite heißt »Tastatur-Shortcuts«.
-
 - Klassenseite: Die Titel der Aufgaben stehen aufrecht und ganz über ihren
   Spalten, »Jetzt nachsehen« ist ein Menü, und beim Öffnen eines Workspaces
   dreht sich das Code-Symbol wie auf der Startseite.
 - Abgaben zeigen überall denselben gefalteten Papierflieger (Font Awesome
   Free, CC BY 4.0).
+- VS Code startet mit dem Farbschema »Dark 2026«. Wer noch das bisherige
+  Standardschema hatte, bekommt das neue; ein selbst gewähltes Schema
+  bleibt. Alle Screenshots sind neu gerendert.
+- Dunkler Modus: Git-Graphen, ER-Diagramme und Bilder mit schwarzer
+  Schrift auf Weiß passen sich an (`class='invert-dark'`); Neo4j-Browser,
+  BIF-Entwickleransicht und die Karten von Anaglyph, BIF und »Über den
+  Workspace« haben dunkle Varianten.
+- Code in GLSL (```` ```glsl ````) ist farbig, ```` ```sh ```` wie
+  `bash`.
+- Kopierknopf auch für große Blöcke ab etwa 15 Zeilen, die in eine Datei
+  eingefügt werden (ganze Dateien, lange Funktionen, Shader); kurzer Code
+  wird weiter abgetippt. Regel in `docs/aktivitaet-schreiben.md`.
+- Code in den neuen Aktivitäten (raylib, Webserver, Pixelwand) und in der
+  raylib-Vorlage hat englische Namen; die Kommentare bleiben deutsch.
+- Screenshot-Generator: Hooks bekommen `writeFile`; `pdf-page-full:` zeigt
+  eine ganze PDF-Seite mit ihren Rändern (die Seiten der Facharbeit).
+- »Ein eigener Webserver«: Lernende probieren den Path-Traversal-Angriff
+  mit `curl --path-as-is` selbst aus, mit und ohne die Prüfung. »Statuszeile«
+  heißt dort jetzt »Status-Line«, wie »Request-Line«.
+- Code in YAML (```` ```yaml ````) ist farbig.
+- »Eine Pixelwand für alle« nutzt faye-websocket statt eines selbst
+  geschriebenen Handshakes und Frame-Parsers: Die Seite beginnt mit einem
+  Echo in zehn Zeilen, der Handshake bleibt mit `curl` sichtbar. Neuer
+  Abschnitt »Viele Threads«: Vier Threads arbeiten eine Warteschlange ab,
+  ein Zähler verzählt sich bei 200 Pixeln auf einmal (`flood.js`), ein Lock
+  behebt es. Die Seite sagt deutlich, dass das Überschütten fremder Server
+  ein Angriff ist.
+- Handbuch »HTTP«: Die Teile einer Adresse als Grafik aus HTML und CSS,
+  mit Klammern und Namen unter jedem Teil.
+- Screenshot-Generator: `preview-port: 1313 /axolotl/` öffnet eine Seite
+  unterhalb der Wurzel einer App.
 
 ### Für Betreibende
 
@@ -609,7 +680,6 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   `mysqli`), damit PHP-Programme die MySQL-Datenbanken erreichen. Eine
   eigene, kleine Schicht kurz vor den Erweiterungen; Image neu bauen
   (`./build-image.sh`).
-
 - TIC-80 einmal neu bauen: `./build-tic80.sh` (TIC-80 1.3.1, sokol-Schicht;
   `tic80.js` und `tic80.wasm` stehen nicht in Git). Das Build-Image braucht
   jetzt `gcc-multilib` für Forth; `docker/tic80/Dockerfile` installiert es.
@@ -645,3 +715,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Abgaben im Browser kommen von `abgaben.<host>`. Der Platzhalter-Eintrag
   im DNS und das Zertifikat für `*.<host>` decken das schon ab; die
   nginx-Konfiguration schreibt der Server selbst.
+- Screenshot-Generator neu bauen (nur Entwicklung):
+  `./config.rb build tutorial_screenshots && ./config.rb up -d
+  tutorial_screenshots`.
+- Das Workspace-Image bekommt `yq` (mikefarah/yq, Version und SHA-256 im
+  Dockerfile): Workspace-Image neu bauen (`./build-image.sh`).

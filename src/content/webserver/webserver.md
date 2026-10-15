@@ -5,6 +5,7 @@ language: Ruby
 topic: networks
 duration: 2 Doppelstunden
 requires: [tcpip]
+reference: [http]
 </div>
 
 <div
@@ -93,11 +94,13 @@ sleep: 2
 
 Im linken Terminal steht, was `curl` geschickt hat. Die erste Zeile ist die **Request-Line**: die Methode `GET` (»gib mir«), der Pfad `/` und die Version des Protokolls. Danach kommen **Header**, je ein Name und ein Wert: an wen die Anfrage geht (`Host`), welches Programm fragt (`User-Agent`), was es annimmt (`Accept`). Rechts beschwert sich `curl`: Der Server hat die Verbindung geschlossen, ohne zu antworten.
 
+_uses(http-anfrage)
+
 _task(request-line)
 
 ## Eine Antwort
 
-Eine Antwort hat dieselbe Form wie eine Anfrage: eine **Statuszeile**, Header, eine leere Zeile, und danach kommt der Inhalt. Beende den Server im linken Terminal mit <kbd>Strg</kbd><kbd>C</kbd> und ersetze `server.rb` durch:
+Eine Antwort hat dieselbe Form wie eine Anfrage: eine **Status-Line**, Header, eine leere Zeile, und danach kommt der Inhalt. Beende den Server im linken Terminal mit <kbd>Strg</kbd><kbd>C</kbd> und ersetze `server.rb` durch:
 
 ```ruby_copy
 require 'socket'
@@ -126,13 +129,13 @@ loop do
 end
 ```
 
-- `HTTP/1.1 200 OK` ist die Statuszeile: Version, Statuscode 200 und »OK«, alles in Ordnung.
+- `HTTP/1.1 200 OK` ist die Status-Line: Version, Statuscode 200 und »OK«, alles in Ordnung.
 - `Content-Type` sagt, was für Inhalt kommt: einfacher Text in UTF-8. `Content-Length` sagt, wie viele **Bytes** er hat. `text.bytesize` zählt Bytes, nicht Zeichen; das ist ein Unterschied, sobald ein Umlaut im Text steht.
 - `Connection: close` kündigt an, dass der Server die Verbindung nach der Antwort schließt.
 - `"\r\n"` ist das Zeilenende in HTTP, Wagenrücklauf und Zeilenvorschub. Die leere Zeile trennt die Header vom Inhalt.
 - `Thread.new` lässt jede Verbindung in einem eigenen **Thread** laufen, gleichzeitig mit den anderen. Browser öffnen manchmal mehrere Verbindungen auf einmal; ohne Threads würde der Server bei der ersten warten und die anderen liegen lassen.
 
-Starte den Server neu (<kbd>↑</kbd> holt den letzten Befehl zurück) und frag im rechten Terminal mit `-i`, dann zeigt `curl` auch Statuszeile und Header:
+Starte den Server neu (<kbd>↑</kbd> holt den letzten Befehl zurück) und frag im rechten Terminal mit `-i`, dann zeigt `curl` auch Status-Line und Header:
 
 ```bash
 curl -i localhost:8000
@@ -157,6 +160,8 @@ terminal-run: curl -i localhost:8000
 sleep: 2
 -->
 <img class='full' src='erste-antwort.webp' alt='Rechts zeigt curl -i die Antwort des Servers: HTTP/1.1 200 OK, die Header und den Text »Hallo aus meinem eigenen Server!«.'>
+
+_uses(http-antwort, http-header)
 
 _task(antwort)
 
@@ -238,6 +243,8 @@ terminal-run: curl -i localhost:8000/missing
 sleep: 2
 -->
 <img class='full' src='pfade.webp' alt='Rechts antwortet der Server auf /time mit der Uhrzeit und auf /missing mit HTTP/1.1 404 Not Found; links stehen die beiden Anfragen.'>
+
+_uses(statuscodes, curl)
 
 _task(statuscodes)
 
@@ -392,6 +399,14 @@ sleep: 1
 
 _task(webseite)
 
+Probier den Angriff aus, gegen den die Prüfung mit `start_with?` schützt. Browser und `curl` räumen ein `..` in der Adresse normalerweise auf, bevor sie fragen; `curl -v localhost:8000/../server.rb` zeigt, dass in Wirklichkeit `GET /server.rb` geschickt wird. Mit `--path-as-is` geht der Pfad so hinaus, wie er dasteht:
+
+```bash
+curl --path-as-is localhost:8000/../server.rb
+```
+
+Dein Server antwortet »Die Seite /../server.rb gibt es nicht.« Nimm zum Vergleich `file.start_with?(PUBLIC_DIR + '/') &&` kurz aus der Bedingung heraus, starte den Server neu und frag noch einmal: Jetzt schickt er seinen eigenen Quelltext, an jeden, der fragt. Setz die Prüfung danach wieder ein. Solche Lücken heißen **Path Traversal**; echte Webserver hatten sie immer wieder.
+
 _task(sicherheit)
 
 ## Parameter und ein Zähler
@@ -513,6 +528,8 @@ sleep: 2
 <img class='full' src='parameter.webp' alt='Rechts antwortet der Server »Hallo, Ada Lovelace!«, dann »Du bist Besuch Nummer 1.« und »Du bist Besuch Nummer 2.«; links stehen die drei Anfragen.'>
 
 Im Browser funktioniert es genauso: Hänge `/hello?name=…` an die Adresse aus »Forwarded Address«.
+
+_uses(url, http-formulare)
 
 _task(parameter)
 

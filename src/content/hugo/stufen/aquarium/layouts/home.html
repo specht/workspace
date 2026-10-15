@@ -1,0 +1,14 @@
+{{ define "main" }}
+  <h1>{{ .Title }}</h1>
+  {{ .Content }}
+  <ul class="cards">
+    {{ range site.RegularPages }}
+      <li>
+        <a href="{{ .RelPermalink }}">
+          <strong>{{ .Title }}</strong>
+          <span>{{ .Description }}</span>
+        </a>
+      </li>
+    {{ end }}
+  </ul>
+{{ end }}

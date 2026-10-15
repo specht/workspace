@@ -2,7 +2,7 @@
 
 Der Hackschule Workspace ist eine browserbasierte Entwicklungsumgebung für den Informatikunterricht. Schülerinnen und Schüler arbeiten mit einem echten Linux-System, Visual Studio Code, Terminal, Git, Compilern, Datenbanken und weiteren Werkzeugen – ohne auf dem eigenen Rechner etwas installieren zu müssen. Dateien und Einstellungen bleiben erhalten, sodass in der Schule und zu Hause dieselbe Arbeitsumgebung zur Verfügung steht.
 
-Zum Workspace gehören außerdem zahlreiche Tutorials und Projekte, die direkt mit den vorhandenen Werkzeugen arbeiten: von den ersten Schritten mit Dateien und Git über Webentwicklung und Datenbanken bis zu Computergrafik, interaktiven Geschichten und systemnaher Programmierung.
+Zum Workspace gehören außerdem zahlreiche Aktivitäten, die direkt mit den vorhandenen Werkzeugen arbeiten: von den ersten Schritten mit Dateien und Git über Webentwicklung und Datenbanken bis zu Computergrafik, interaktiven Geschichten und systemnaher Programmierung. Ein Handbuch zum Nachschlagen begleitet sie. Viele Aktivitäten enthalten Aufgaben, die der Workspace selbst prüft; auf der Klassenseite sehen Lehrkräfte, wer wo steht.
 
 Der Workspace am Gymnasium Steglitz ist hier zu finden: <a href='https://workspace.hackschule.de'>https://workspace.hackschule.de</a>.
 
@@ -14,12 +14,14 @@ Der Workspace bündelt bewusst unterschiedliche Bereiche der Informatik in einer
 
 - Programmierung in zahlreichen Sprachen – von BASIC, Pascal und C bis Python, JavaScript, Rust und weiteren
 - Webentwicklung mit HTML, CSS, JavaScript, modernen Frameworks und Shared Live Apps zum Teilen laufender Projekte
-- Computergrafik mit Pixelflow Canvas, PixelRAM und weiteren Werkzeugen
+- Netzwerke von TCP/IP über einen eigenen Webserver bis zu WebSockets
+- Computergrafik mit Pixelflow Canvas, PixelRAM, Anaglyphen in 3D und raylib, Spiele mit TIC-80
+- Rechnerarchitektur, Datenstrukturen und Sortieren in eigenen Sandboxes, bis zur CPU Sandbox mit Assembler und C
 - interaktive Geschichten mit BIF
 - relationale und Graphdatenbanken mit MySQL, Neo4j, SQL und Cypher
 - App-Entwicklung mit Flutter für Web und Android, einschließlich APK-Builds
 - Kommandozeile, Dateien, TCP/IP und Git
-- wissenschaftliche Dokumente mit LaTeX
+- Facharbeiten und andere Dokumente mit LaTeX
 - HTML-Präsentationen mit shower.js
 
 Direkte Netzwerkverbindungen zwischen studentischen Workspaces sind bewusst eingeschränkt. Für Netzwerkübungen steht TCP-Port 1234 zur Verfügung; laufende Webanwendungen lassen sich kontrolliert über Shared Live Apps teilen.
@@ -69,9 +71,9 @@ echo "address=/workspace.test/127.0.0.1" > \
 systemctl restart NetworkManager
 ```
 
-Wenn der Workspace gestartet ist, kannst du ihn im Browser unter <a href='http://workspace.test:8025'>http://workspace.test:8025</a> erreichen. Du solltest dich mit deiner E-Mail-Adresse (oder einem eindeutigen Präfix) und dem Code 123456 (fester Code in der Development-Umgebung) anmelden können. Um den eigentlichen Workspace (Visual Studio Code) zu starten, ist ein weiterer Schritt notwendig:
+Wenn der Workspace gestartet ist, kannst du ihn im Browser unter <a href='http://workspace.test:8025'>http://workspace.test:8025</a> erreichen. Du solltest dich mit deiner E-Mail-Adresse (oder einem eindeutigen Präfix) und dem Code 123456 (fester Code in der Development-Umgebung) anmelden können. Um den eigentlichen Workspace (Visual Studio Code) zu starten, musst du noch das Workspace-Image bauen (siehe unten).
 
-Um Chrome dazu zu überreden, die lokale HTTP-Adresse als sicher anzusehen, kann man zusätzlich noch folgende Einstellung vornehmen:
+Damit Chrome die lokale HTTP-Adresse als sicher ansieht (manche Funktionen von Visual Studio Code gibt es sonst nicht), kann man zusätzlich folgende Einstellung vornehmen:
 
 ```
 sudo mkdir -p /etc/opt/chrome/policies/managed
@@ -146,5 +148,7 @@ Ich betreibe dafür einen Cloud-Server bei Hetzner mit den folgenden Eckdaten:
 - 100 GB externes Volume
 
 Je nach Bedarf kann man flexibel zwischen verschiedenen Servern wechseln. Wenn viel los ist und viel gearbeitet wird, verwende ich einen Server mit 16 Kernen und 32 GB RAM für ca. 65 € / Monat. Wenn weniger los ist, z. B. in den Ferien, reicht auch ein Server mit 4 Kernen und 8 GB RAM für ca. 8 € / Monat. Dafür wird der Server einfach über die Cloud Console heruntergefahren, skaliert und neu gestartet. Der ganze Vorgang dauert eine bis zwei Minuten und die Abrechnung erfolgt stundengenau, so dass man die Kosten gut im Griff hat.
+
+Wer Zugang bekommt, in welchen Gruppen Lernende und Lehrkräfte stehen und was Lehrkräfte sehen dürfen, steht in [docs/teacher-access.md](docs/teacher-access.md).
 
 Falls du mit dem Gedanken spielst, einen eigenen Workspace für deine Schule aufzusetzen und es einfach mal ausprobieren möchtest, findest du [hier eine Schnellstart-Anleitung](bootstrap/README.hetzner.centos.md).

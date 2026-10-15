@@ -118,6 +118,8 @@ module CodeHighlight
                 lexer = Rouge::Lexers::TeX.new
             when 'text'
                 lexer = Rouge::Lexers::PlainText.new
+            when 'yaml', 'yml'
+                lexer = Rouge::Lexers::YAML.new
             end
             lexer ||= Rouge::Lexers::PlainText.new if language.nil? || language.empty?
             next if lexer.nil?

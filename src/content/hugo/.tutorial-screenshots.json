@@ -1,0 +1,41 @@
+{
+  "screenshots": {
+    "erste-seite-code.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "22495aeefc1bc2637b2cfed978bc9d5d69efd23cb7ba89098653a1cecad29207",
+      "state_hash": "281dc2beebd0476fa6ceeb75269dbee4551c177a26892edfd22b0b5e253b0831",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "erste-seite.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "843e35ae5ad9f4992ab781632666359161a39f4ac149fcbdc503c8c1b5f3f9c1",
+      "state_hash": "88ea355532dc036b0b7a76786380a3d44e20f97cb6a1bd34988059665208935b",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "neue-website.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "182e9f133b74bec8635f20e6a34f26adbe103b56d4ab56ab1859c21cf9597219",
+      "state_hash": "855109e354014cf441ae2b78aa8b76c9ff6e05503b66faf1e83862eda68ff57e",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "public.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "919fb8caf7070bd4026da55c2a05203537b032fd14f82324b577cc72576b9f63",
+      "state_hash": "78bd14e17cba16b1f707331fdf52af59ca713eb689f034579ac7fcd205d90314",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "startseite.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "1a5d753ffc2aae61dcb576f90a3f7471e413ecec1783b95b1744f5d52d0057d6",
+      "state_hash": "4b055e5f6f2b2bed37f82629a529157343613cd6ce1210d9cd6f59d76057bff4",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "tags.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "c7ce14b6ea60003e08d214d8dd884a5a0084bbfd06b11c912514d74685c4b7fa",
+      "state_hash": "d7a92dba741dad80be5487809fd9d34244197e8fac006fffd4d22203eaca3d5b",
+      "workspace_look": "4.138.0-ls366"
+    }
+  },
+  "version": 1
+}

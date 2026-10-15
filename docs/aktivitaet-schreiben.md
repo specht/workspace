@@ -58,7 +58,10 @@ werden.
 | --- | --- |
 | `image` | Bild für die Karte im Katalog, 16:9 |
 | `kind` | `projekt`, `labor`, `grundlagen`, `uebung`, `galerie` oder `steckbrief` (Programmiersprachen); steht auf der Karte, jede Aktivität im Katalog braucht eines |
+| `language` | Die Sprache, in der man programmiert, wenn es eine feste gibt: `Ruby`, `C / raylib`; steht als »Projekt (Ruby)« auf der Karte |
+| `topic` | Abschnitt im Katalog (Schlüssel aus `src/content/sections.yaml`) |
 | `duration` | Freier Text, zum Beispiel »2 Doppelstunden« |
+| `requires` | Aktivitäten, die vorher sinnvoll sind |
 | `reference` | Handbuch-Seiten, die die Aktivität braucht; erscheinen oben auf der Seite |
 | `template` | Adresse einer Vorlage zum Klonen (`https://…`); im Text `${template}`. Der Workspace sagt Lernenden, wenn ihr Klon veraltet ist |
 | `template_name` | Name der Vorlage im Genitiv, z. B. `der CPU Sandbox` |
@@ -72,6 +75,23 @@ Bilder liegen im selben Ordner und werden mit `<img class='full' src='bild.webp'
 alt='…'>` eingebunden. Der `alt`-Text beschreibt, was zu sehen ist; leer
 (`alt=''`) nur, wenn das Bild nur schmückt.
 
+Screenshots aus dem Workspace macht man nicht von Hand: Ein Rezept
+`<!-- tutorial-screenshot … -->` direkt vor dem `<img>` beschreibt, was zu tun
+ist, und der Generator erzeugt das Bild, auch neu, wenn sich die Seite oder
+das Workspace-Image ändert. Die Rezeptsprache steht in
+[src/tutorial-screenshots/README.md](../src/tutorial-screenshots/README.md),
+die Handgriffe in [entwicklung.md](entwicklung.md#screenshots-und-videos-der-tutorials).
+
+Mehrere kleine Bilder nebeneinander stehen in einer Galerie; ein Klick
+öffnet ein Bild groß, mit seiner Unterschrift:
+
+```html
+<div class='screen-gallery'>
+<figure><img src='a.webp' alt='…'><figcaption>Unterschrift</figcaption></figure>
+<figure><img src='b.webp' alt='…'><figcaption>Unterschrift</figcaption></figure>
+</div>
+```
+
 Code-Blöcke bekommen ihre Sprache (```` ```bash ````, ```` ```html ````). Kurzen
 Code, an dem Lernende etwas lernen, tippen sie ab; dabei lesen sie jede Zeile.
 Einen Kopierknopf bekommt, was abzutippen nichts lehrt: ```` ```bash_copy ````
@@ -79,8 +99,14 @@ für Adressen zum Klonen, Downloads, Einrichtungsbefehle und Zeilen mit
 Prüfsummen. Dazu kommen große Blöcke ab etwa 15 Zeilen, die in eine Datei
 eingefügt werden: ganze Dateien, lange Funktionen, Shader (```` ```c_copy ````,
 bei `_include_file` als Sprache `lua_copy`). Erklärt wird so ein Block
-trotzdem im Text, Zeile für Zeile. Weitere Endungen: `_wrap` (lange Zeilen umbrechen) und `_lineno`
-(Zeilennummern), in beliebiger Reihenfolge.
+trotzdem im Text, Zeile für Zeile. Weitere Endungen: `_wrap` (lange Zeilen
+umbrechen) und `_lineno` (Zeilennummern), in beliebiger Reihenfolge.
+
+Im Code sind Namen englisch: Variablen, Funktionen, Konstanten, Dateien,
+Adressen (`respond`, `style.css`, `/time`), wie in jedem echten Projekt.
+Kommentare und was ein Programm ausgibt, dürfen deutsch sein. Im Text
+bleiben Fachwörter, die auch deutsche Entwicklerinnen englisch sagen,
+englisch: Handshake, Lock, String, Header.
 
 ## 3. Aufgaben schreiben
 

@@ -1,11 +1,23 @@
 # End-to-end tests
 
-These tests exercise the local Hackschule Workspace through a real browser:
-login, reset a disposable workspace, launch code-server, and interact with it.
+Playwright tests against the local Hackschule Workspace
+(`http://workspace.test:8025`). There are two kinds:
 
-The test suite creates its disposable invitation pool automatically in
-`data/invitations/_e2e.txt`. That directory is used only by local development
-and is already ignored by Git.
+- **Browser tests** (`*.browser.spec.ts`, project `workspace-smoke`) for what
+  only a browser can show: login and sessions, starting a Workspace, the
+  website itself (catalog, class page, Handbuch tables, task cards, media
+  variants), Shared Live Apps and webviews such as Pixelflow Canvas or
+  TIC-80.
+- **Toolchain tests** (`*.toolchain.spec.ts`, project `toolchains`) for
+  compilers and tools. They run commands with `docker exec` inside the real
+  Workspace container that the browser tests started, on the real example
+  files from `src/content`.
+
+The rules for writing either kind, and why the suite is split this way, are
+in [AGENTS.md](AGENTS.md).
+
+The suite creates its disposable invitation pool itself in
+`data/invitations/_e2e.txt` (ignored by Git).
 
 ## First-time setup
 
@@ -15,80 +27,69 @@ Start Workspace from the repository root as usual:
 ./config.rb up -d
 ```
 
-Then install Playwright:
+Then install the test dependencies and the browser:
 
 ```bash
 cd e2e
-npm install --save-dev @playwright/test
+npm install
 npx playwright install chromium
 ```
-
-Commit the resulting `package-lock.json` as well.
 
 ## Run
 
 ```bash
-npm test
+npm test                       # browser tests, then toolchain tests, one report
+npm run test:browser           # only the browser tests
+npm run test:toolchains        # toolchain tests (starts the browser prerequisite first)
+npm run test:toolchains:reuse  # toolchain tests in the already running E2E container
+npm run report                 # open the HTML report
 ```
 
-To run only the Shared Live Apps lifecycle coverage (including access control,
-HTTP, WebSocket, revocation, and listener replacement), use:
+One file at a time:
 
 ```bash
 npx playwright test tests/shared-live-apps.browser.spec.ts --project=workspace-smoke
-```
-
-To run the browser/toolchain coverage for the BIF and PixelRAM tutorials, use:
-
-```bash
-npx playwright test tests/bif.browser.spec.ts --project=workspace-smoke
-npx playwright test tests/pixelram.browser.spec.ts --project=workspace-smoke
-npx playwright test tests/bif.browser.spec.ts tests/pixelram.browser.spec.ts --project=workspace-smoke
-```
-
-Open the HTML report:
-
-```bash
-npm run report
+npx playwright test tests/latex.toolchain.spec.ts --project=toolchains
 ```
 
 Every test is broken into named `test.step(...)` phases. Important phases have
-screenshots attached, and every run records a complete Playwright trace. The
-HTML report therefore shows both the high-level tutorial steps and the detailed
-browser actions inside them.
+screenshots attached, and every run records a complete Playwright trace, so
+the HTML report shows both the steps and the browser actions inside them.
 
-## Writing tutorial tests
+## Writing tests
 
-Tutorial tests should normally use the `freshWorkspace` fixture:
+Browser tests use the `freshWorkspace` fixture when they need a running
+Workspace:
 
 ```ts
 import { test } from './fixtures';
 
-test('my tutorial', async ({ freshWorkspace: workspace }, testInfo) => {
-  // workspace is a freshly reset, logged-in and fully loaded VS Code page.
+test('my page', async ({ freshWorkspace: workspace }, testInfo) => {
+  // a freshly reset, logged-in and fully loaded VS Code page
 });
 ```
 
-The fixture performs the common lifecycle for every test:
+The fixture logs in with the worker's disposable E2E account, resets that
+user's server, files and VS Code profile, launches the Workspace and waits
+until the workbench is ready. Tests of the website alone use Playwright's
+`page` directly.
 
-1. log in with the worker's disposable E2E account;
-2. reset that user's server, files and VS Code profile;
-3. launch the workspace;
-4. wait until the VS Code workbench is ready.
+Toolchain tests request only `workspaceContainer`, never `page`. It gives them
+a freshly reset `/workspace/.e2e` inside the running Workspace container.
+`readTutorialFile(...)` (`tests/tutorial.ts`) reads the example files from
+`src/content`, so a test checks exactly the code a tutorial shows; the FORTRAN
+test compiles and runs `hello.f90`, `factor.f90` and `bubblesort.f90` from
+`src/content/fortran`.
 
-Reusable browser-level VS Code helpers live in `tests/vscode.ts`. They cover
-creating/saving text files, replacing editor contents, installing extensions,
-opening the integrated terminal, normal commands and interactive commands. Terminal
-commands are completed using their real shell exit status rather than rendered prompt
-text, and `expectExecutableUpToDate(...)` verifies compiled artifacts against their
-source files.
-`tests/tutorial.ts` provides `readTutorialFile(...)` so tests can reuse the
-actual example files from `src/content`. Keep tutorial-specific assertions in
-the corresponding `*.spec.ts` file.
+## Pictures for pages
 
-The FORTRAN test reads `hello.f90`, `factor.f90` and `bubblesort.f90` directly
-from `src/content/fortran`, so the E2E test always types the exact source code
-shown by the tutorial rather than maintaining duplicate copies.
+Some pages show pictures of the Workspace itself (the teacher guide). They
+are taken from the running development site by a separate project that never
+runs in a normal test run:
+
+```bash
+HS_PICTURES=1 npx playwright test --project=pictures
+```
 
 ## Parallel runs
 

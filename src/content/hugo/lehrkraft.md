@@ -1,0 +1,13 @@
+Eine kleine Website mit Hugo, ohne fertiges Theme: Inhalte in Markdown mit Front Matter, ein eigenes Layout mit Navigation, eine Startseite, CSS, Schlagwörter und am Ende die fertigen HTML-Dateien in `public` zum Veröffentlichen. Die Aktivität schließt an »Statische Webseiten mit HTML & CSS« an (das Beispiel ist ein Aquarium-Lexikon mit dem Axolotl von dort) und braucht sonst nur Markdown, das sie nebenbei zeigt.
+
+<table class='table'>
+<tr><th>Ablauf</th><td>Erste Doppelstunde: das Problem vieler gleicher Seiten, <code>hugo new site</code>, <code>hugo.yaml</code>, die erste Seite, das Layout aus <code>baseof.html</code> und <code>page.html</code>, mehr Seiten und die Navigation. Zweite: Startseite, CSS, Schlagwörter, <code>hugo</code> und <code>public</code>, Veröffentlichen, eigenes Thema.</td></tr>
+<tr><th>Dateien</th><td>Alles liegt in <code>/workspace/aquarium</code>. Die fertige Website steht in diesem Repository unter <code>src/content/hugo/stufen/aquarium/</code>, die Zwischenstände der Layouts als <code>baseof-1.html</code> und <code>page-1.html</code> daneben. Hugo ist im Workspace installiert.</td></tr>
+<tr><th>Vorschau</th><td><code>hugo server</code> läuft auf Port 1313; die Adresse steht im Reiter »Ports«. Das automatische Neuladen von Hugo erreicht den Browser durch die Weiterleitung nicht; nach dem Speichern lädt man die Vorschau selbst neu. <code>baseURL: /</code> in <code>hugo.yaml</code> sorgt dafür, dass alle Links in der Vorschau und auf der Subdomain stimmen.</td></tr>
+</table>
+
+**Was schiefgeht.** Ein Doppelpunkt in einem Titel ohne Anführungszeichen (`title: Haie: gefährlich`) lässt Hugo die ganze Website nicht mehr bauen; die Meldung nennt Datei und Zeile. Ein Tippfehler in `{{ … }}` (etwa `{{ .title }}` statt `{{ .Title }}`) bricht ebenfalls ab, mit Datei und Zeile im Terminal. Ohne `layouts/page.html` meldet Hugo `found no layout file`, und die Seite bleibt leer. Wer in `hugo.yaml` die `baseURL` von `https://example.org/` stehen lässt, bekommt in der Vorschau keine CSS-Datei. Neue Seiten erscheinen erst nach dem Speichern und Neuladen.
+
+**Die Aufgaben.** »Die Einstellungen«, »Die Navigation« und »Schlagwörter« lesen `hugo.yaml`, `layouts/baseof.html` und `layouts/page.html`; »Die fertige Website« sieht nach, ob `public/index.html` mit den Karten der Startseite entstanden ist. »Ein viertes Tier« ist eine Vorhersage, »Ein Doppelpunkt zu viel« eine Falle aus YAML. Die Abgabe ist der Ordner `aquarium`, die Reflexion fragt, wann sich ein Generator lohnt.
+
+**Veröffentlichen.** Die Seite verweist auf die Anleitung zum eigenen Webspace (`/custom-subdomain`) und lädt `public/` mit `rsync` hoch. Minderjährige brauchen dafür die unterschriebene Einverständniserklärung.

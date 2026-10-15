@@ -558,12 +558,17 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             });
         } else if ((match = line.match(/^terminal-run:\s*(.+)$/))) {
             recipe.actions.push({ type: 'terminal-run', text: match[1].trim() });
-        } else if ((match = line.match(/^preview-port:\s*(\d+)$/))) {
+        } else if ((match = line.match(/^preview-port:\s*(\d+)(?:\s+(\/[A-Za-z0-9_\-./%]*))?$/))) {
             const port = Number(match[1]);
             if (port < 1024 || port > 65535) {
                 throw withSourceError(new Error(`Invalid preview port: ${port}`), source);
             }
-            recipe.actions.push({ type: 'preview-port', port });
+            // An optional path opens a page below the app's root: /axolotl/.
+            // Only stored when given, so recipes without one keep their
+            // fingerprint (a new key would make every preview stale).
+            const action = { type: 'preview-port', port };
+            if (match[2]) action.path = match[2];
+            recipe.actions.push(action);
         } else if ((match = line.match(/^open-site:\s*(\/[A-Za-z0-9_\-./]*)$/))) {
             recipe.actions.push({ type: 'open-site', path: match[1] });
         } else if ((match = line.match(/^select-option:\s*(#[^\s=]+)\s*=\s*(\S+)$/))) {
@@ -1865,10 +1870,11 @@ async function goLive(hooks) {
     await waitForPreviewReady(preview, hooks);
 }
 
-async function openPreviewPort(port, hooks) {
+async function openPreviewPort(port, hooks, path = '/') {
     // Workspace's /proxy/<port>/ endpoint redirects to its authenticated
-    // <server-tag>-<port> subdomain. This also reaches loopback-only servers.
-    const url = new URL(`/proxy/${port}/`, workspace.url()).href;
+    // <server-tag>-<port> subdomain, keeping the path. This also reaches
+    // loopback-only servers.
+    const url = new URL(`/proxy/${port}${path}`, workspace.url()).href;
     if (preview && !preview.isClosed()) await preview.close();
     preview = await context.newPage();
     const deadline = Date.now() + 180_000;
@@ -2570,7 +2576,7 @@ async function executeAction(action, targetTab, hooks) {
         case 'terminal-maximize': return terminalMaximize();
         case 'terminal-run': return terminalRun(action.text);
         case 'go-live': return goLive(hooks);
-        case 'preview-port': return openPreviewPort(action.port, hooks);
+        case 'preview-port': return openPreviewPort(action.port, hooks, action.path);
         case 'open-site': return openSitePage(action.path, hooks);
         case 'neo4j-browser': return openNeo4jBrowser();
         case 'select-option': return selectOption(action, targetTab);

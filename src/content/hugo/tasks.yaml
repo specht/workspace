@@ -1,0 +1,142 @@
+# Aufgaben zu »Eine Website mit Hugo«.
+# Format: docs/aufgaben.md. Die Website liegt in /workspace/aquarium.
+format: 1
+activity: hugo
+tasks:
+  - id: einstellungen
+    title: Die Einstellungen
+    prompt: |
+      Lege die Website `aquarium` an und gib ihr in `hugo.yaml` einen eigenen
+      Titel, die Sprache Deutsch und `baseURL: /`, dann speichere.
+    file: aquarium/hugo.yaml
+    check:
+      type: files
+      path: aquarium/hugo.yaml
+      expect:
+        format: text
+        contains:
+          - { pattern: '^baseURL:\s*/\s*$', say: 'In `hugo.yaml` steht noch nicht `baseURL: /`. Ohne das zeigen die Links in der Vorschau auf `example.org`.' }
+          - { pattern: '^locale:\s*de\b', say: 'Noch ist die Sprache nicht Deutsch: `locale: de`.' }
+          - { pattern: '^title:\s*(?!My New Hugo Project)\S', say: 'Die Website heißt noch »My New Hugo Project«. Gib ihr in `title` einen eigenen Namen.' }
+
+  - id: yaml-titel
+    title: Ein Doppelpunkt zu viel
+    prompt: |
+      In einer Front Matter steht `title: Haie: gefährlich oder nicht?`.
+      Was passiert, wenn Hugo die Seite liest?
+    check:
+      type: choice
+      options:
+        - Hugo meldet einen Fehler, weil nach `Haie` ein zweiter Doppelpunkt mit Leerzeichen kommt
+        - Der Titel ist »Haie«, der Rest geht verloren
+        - 'Der Titel ist »Haie: gefährlich oder nicht?«'
+        - Hugo nimmt den Dateinamen als Titel
+      correct: 0
+    feedback:
+      - when: { picked: 2 }
+        say: 'In YAML trennt `: ` einen Namen von seinem Wert. Was macht YAML mit einem zweiten `: ` in derselben Zeile?'
+    solution: 'YAML liest `title: Haie` und stößt dann auf ein zweites `: `, das an dieser Stelle nicht erlaubt ist. Hugo baut dann gar keine Seite mehr und meldet »mapping value is not allowed in this context« mit Datei und Zeile. Richtig ist `title: "Haie: gefährlich oder nicht?"`, in Anführungszeichen.'
+
+  - id: content
+    title: Was in die Lücke kommt
+    prompt: |
+      Was setzt `{{ .Content }}` in `layouts/page.html` ein?
+    check:
+      type: choice
+      options:
+        - Den Text der Markdown-Datei unter der Front Matter, als HTML
+        - Die ganze Markdown-Datei, mit Front Matter
+        - Den Titel der Seite
+        - Den Inhalt von `hugo.yaml`
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Die Front Matter beschreibt die Seite; ihre Werte holst du einzeln, etwa mit `{{ .Title }}`.
+    solution: '`.Content` ist der Markdown-Teil der Seite, von Hugo in HTML übersetzt. Die Werte aus der Front Matter stehen in `.Title`, `.Description`, `.Params` und so weiter.'
+
+  - id: neue-seite
+    title: Ein viertes Tier
+    prediction: true
+    prompt: |
+      Du legst `content/clownfisch.md` an, mit Front Matter und Text, und
+      änderst sonst nichts. Wo erscheint der Clownfisch danach? Überleg erst,
+      dann probier es aus.
+    check:
+      type: choice
+      options:
+        - In der Navigation jeder Seite und als Karte auf der Startseite
+        - Nur unter seiner eigenen Adresse `/clownfisch/`
+        - Nirgends, bis ich ihn in `baseof.html` eintrage
+        - Nur auf der Startseite
+      correct: 0
+    feedback:
+      - when: { picked: 2 }
+        say: Steht in `baseof.html` eine Liste von Tieren, oder eine Schleife über alle Seiten?
+    solution: '`range site.RegularPages` geht bei jedem Bauen alle Seiten durch, die es gibt. Eine neue Datei in `content` kommt dadurch überall hin, wo die Schleife steht: in die Navigation jeder Seite und auf die Startseite.'
+
+  - id: navigation
+    title: Die Navigation
+    prompt: |
+      Lege die Seiten für Seepferdchen und Oktopus an und ergänze in
+      `layouts/baseof.html` die Navigation zu allen Seiten, dann speichere.
+    file: aquarium/layouts/baseof.html
+    check:
+      type: files
+      path: aquarium/layouts/baseof.html
+      expect:
+        format: text
+        contains:
+          - { pattern: '\{\{\s*block\s+"main"', say: 'In `baseof.html` fehlt die Lücke für den Inhalt: `{{ block "main" . }}{{ end }}`.' }
+          - { pattern: '\{\{\s*range\s+site\.RegularPages', say: 'Noch gibt es keine Navigation: `{{ range site.RegularPages }}` geht alle Seiten durch.' }
+          - { pattern: '\.RelPermalink', say: 'Die Navigation braucht für jede Seite ihre Adresse: `href="{{ .RelPermalink }}"`.' }
+
+  - id: tags
+    title: Schlagwörter
+    prompt: |
+      Zeige auf jeder Tierseite ihre Schlagwörter als Links und lege
+      `layouts/list.html` für die Seiten der Schlagwörter an, dann speichere.
+    file: aquarium/layouts/page.html
+    check:
+      type: files
+      path: aquarium/layouts/page.html
+      expect:
+        format: text
+        contains:
+          - { pattern: '\{\{\s*\.Content\s*\}\}', say: 'In `page.html` fehlt `{{ .Content }}`, der Text der Seite.' }
+          - { pattern: 'GetTerms\s+"tags"', say: 'Noch zeigt `page.html` keine Schlagwörter: `{{ range .GetTerms "tags" }}`.' }
+
+  - id: public
+    title: Die fertige Website
+    prompt: |
+      Baue die fertige Website mit `hugo`.
+    file: aquarium/public/index.html
+    check:
+      type: files
+      path: aquarium/public/index.html
+      expect:
+        format: text
+        contains:
+          - { pattern: '<html', say: '`public/index.html` sieht noch nicht nach einer Seite aus.' }
+          - { pattern: 'class="cards"', say: 'Die Startseite in `public` hat noch keine Karten. Gibt es `layouts/home.html`, und hast du danach `hugo` laufen lassen?' }
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch kein `public/index.html`. Führe im Ordner `aquarium` den Befehl `hugo` aus.
+
+  - id: abgabe
+    title: Deine Website
+    prompt: |
+      Gib den Ordner `aquarium` ab, mit `content`, `layouts`, `static` und
+      `hugo.yaml`.
+    check:
+      type: submit
+      paths: [aquarium]
+      max_size: 20MB
+
+  - id: generator
+    title: Von Hand oder mit Hugo?
+    prompt: |
+      Für welche Website würdest du Hugo nehmen, und wann schreibst du die
+      Seiten lieber direkt in HTML? Begründe mit dem, was du hier gebaut hast.
+    check:
+      type: reflection
+      min_words: 25

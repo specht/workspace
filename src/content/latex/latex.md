@@ -196,7 +196,7 @@ von \ang{20} ist der Unterschied kleiner als ein Prozent \parencite{pendel}.}
 - `equation` setzt eine Formel in eine eigene Zeile, mit einer Nummer am Rand. `\frac{l}{g}` ist ein Bruch, `\sqrt{…}` eine Wurzel, `\pi` das π.
 - `\label{eq:schwingungsdauer}` gibt der Formel einen Namen. `\eqref{eq:schwingungsdauer}` schreibt dann ihre Nummer, »(1)«. Kommt später eine Formel davor dazu, ändern sich Nummer und Verweis von selbst.
 - `\footnote{…}` macht eine Fußnote.
-- `\parencite{…}` gibt eine Quelle an. Das kennt LaTeX erst, wenn das Kapitel [Quellen](#quellen) eingerichtet ist: Lass die beiden `\parencite{…}` bis dahin weg, sonst meldet LaTeX »Undefined control sequence«.
+- `\parencite{…}` gibt eine Quelle an. Das kennt LaTeX erst, wenn das Kapitel [Quellen](#9-quellen) eingerichtet ist: Lass die beiden `\parencite{…}` bis dahin weg, sonst meldet LaTeX »Undefined control sequence«.
 
 Damit Formeln zur Schrift passen und `\ang{20}` funktioniert (der Winkel 20°), brauchen sie Pakete. Ergänze die Präambel:
 
