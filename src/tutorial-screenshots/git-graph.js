@@ -9,6 +9,10 @@
 // - HEAD, branches and tags as notes pointing at their commits (an attached
 //   HEAD points at its branch).
 //
+// Nodes and edges carry classes (commit/tree/blob, current/faded, ref, head;
+// the graph itself git-graph), so the site can recolour the inline SVG for the
+// dark theme (dark.css) without a second file.
+//
 // It only reads: git cat-file, rev-parse, show-ref and symbolic-ref. The
 // repository belongs to the screenshot Workspace, so safe.directory is
 // needed, and fsmonitor stays off so its config cannot run a command.
@@ -165,7 +169,7 @@ export function gitGraphDot(repo) {
         }
     }
 
-    const out = ['digraph git_objects {', '  rankdir=LR;', '  node [shape=plain, fontname="monospace"];'];
+    const out = ['digraph git_objects {', '  class="git-graph";', '  rankdir=LR;', '  node [shape=plain, fontname="monospace"];'];
     const columns = { commit: [], tree: [], blob: [], other: [] };
     for (const [oid, data] of nodes) {
         const base = COLORS[data.type] ?? '#ffffff';
@@ -179,23 +183,25 @@ export function gitGraphDot(repo) {
             .replaceAll('<B>', `<B><FONT COLOR="${font}">`)
             .replaceAll('</B>', '</FONT></B>')
             .replaceAll('<FONT FACE="monospace">', `<FONT FACE="monospace" COLOR="${font}">`);
-        out.push(`  "${oid}" [label=<${label}>];`);
+        out.push(`  "${oid}" [class="${data.type} ${current ? 'current' : 'faded'}", label=<${label}>];`);
     }
     for (const ids of Object.values(columns)) {
         if (ids.length) out.push(`  { rank=same; ${ids.map((id) => `"${id}"`).join(' ')} };`);
     }
     for (const name of refNodes) {
         const fill = name === 'HEAD' ? '#fce94f' : 'white';
-        out.push(`  "ref:${name}" [shape=note, style=filled, fillcolor="${fill}", label="${escapeHtml(name)}"];`);
+        const kind = name === 'HEAD' ? 'ref head' : 'ref';
+        out.push(`  "ref:${name}" [class="${kind}", shape=note, style=filled, fillcolor="${fill}", label="${escapeHtml(name)}"];`);
     }
     for (const [from, to, label] of edgeList) {
-        const color = snapshotEdges.has(JSON.stringify([from, to, label])) ? '#000000' : lighten('#000000', 0.7);
-        out.push(`  "${from}" -> "${to}" [label="${escapeHtml(label)}", color="${color}"];`);
+        const current = snapshotEdges.has(JSON.stringify([from, to, label]));
+        const color = current ? '#000000' : lighten('#000000', 0.7);
+        out.push(`  "${from}" -> "${to}" [class="${current ? 'current' : 'faded'}", label="${escapeHtml(label)}", color="${color}"];`);
     }
-    for (const [name, oid] of refCommitEdges.values()) out.push(`  "ref:${name}" -> "${oid}";`);
+    for (const [name, oid] of refCommitEdges.values()) out.push(`  "ref:${name}" -> "${oid}" [class="ref"];`);
     for (const edge of refRefEdges) {
         const [from, to] = JSON.parse(edge);
-        out.push(`  "ref:${from}" -> "ref:${to}";`);
+        out.push(`  "ref:${from}" -> "ref:${to}" [class="ref"];`);
     }
     out.push('}');
     return `${out.join('\n')}\n`;

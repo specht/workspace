@@ -31,12 +31,17 @@ test('the graph shows objects, HEAD on its branch, and fades older snapshots', (
     const dot = gitGraphDot(repo);
     // »Hello, world!« is blob af5626b in every repository.
     assert.match(dot, /<B><FONT COLOR="#000000">blob af5626b<\/FONT><\/B>/);
-    assert.match(dot, /"ref:HEAD" -> "ref:main";/);
+    assert.match(dot, /"ref:HEAD" -> "ref:main" \[class="ref"\];/);
+    // Classes for the dark theme (dark.css).
+    assert.match(dot, /class="git-graph";/);
+    assert.match(dot, /"ref:HEAD" \[class="ref head",/);
     assert.match(dot, /author \[\.\.\.\]/);
     assert.doesNotMatch(dot, /Alice|committer/);
     // The first commit's tree (only hello.txt) is no longer in the snapshot.
     const firstTree = git('rev-parse', 'HEAD~1^{tree}').trim();
-    assert.match(dot, new RegExp(`"${firstTree}" \\[label=<<TABLE BGCOLOR="#f3eee2"`));
+    assert.match(dot, new RegExp(`"${firstTree}" \\[class="tree faded", label=<<TABLE BGCOLOR="#f3eee2"`));
+    const head = git('rev-parse', 'HEAD').trim();
+    assert.match(dot, new RegExp(`"${head}" \\[class="commit current",`));
     fs.rmSync(repo, { recursive: true, force: true });
 });
 
@@ -44,6 +49,6 @@ test('a detached HEAD points at its commit', () => {
     const { repo, git } = repoWithTwoCommits();
     git('checkout', '-q', 'HEAD~1');
     const first = git('rev-parse', 'HEAD').trim();
-    assert.match(gitGraphDot(repo), new RegExp(`"ref:HEAD" -> "${first}";`));
+    assert.match(gitGraphDot(repo), new RegExp(`"ref:HEAD" -> "${first}" \\[class="ref"\\];`));
     fs.rmSync(repo, { recursive: true, force: true });
 });

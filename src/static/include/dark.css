@@ -99,6 +99,11 @@ html[data-bs-theme="dark"] {
     pre, pre .w {
         background-color: #0a0a0a!important;
     }
+    /* Black on white (a printed table, a typeset font sample): white turns
+       into the page background, black into the text colour. */
+    img.invert-dark {
+        filter: invert(0.915) hue-rotate(180deg);
+    }
     .scroll-x {
         box-shadow: 0 0 1em rgba(0,0,0,0.5);
     }
@@ -438,7 +443,18 @@ html[data-bs-theme="dark"] {
         color: #adb5bd;
     }
     .reference-result mark { background-color: #5c4a12; }
-    .er-playground-output { border-color: #33332f; }
+    .er-playground-output {
+        border-color: #33332f;
+        background-color: #1c1c1b;
+        /* Colours of the ER diagram (er-core.js) */
+        --er-ink: #e7e6e1;
+        --er-paper: #1c1c1b;
+        --er-shape: #1c1c1b;
+        --er-muted: #a3a29d;
+        --er-pen: #7fbfe3;
+        --er-pen-soft: #1d3346;
+        --er-red: #f19aa1;
+    }
     .er-playground-problems { color: #f19aa1; }
     .subview-dialog { background-color: #1b1f26; }
     .subview-head,
@@ -468,4 +484,23 @@ html[data-bs-theme="dark"] {
     .class-codes-code { color: #8db8f5; }
     .class-welcome { background-color: #172a45; border-color: #2b4a7a; }
     .class-codes-group { color: #adb5bd; }
+
+    /* Git object graphs (git-graph.js): inline SVG with classes on its
+       nodes and edges. Current snapshot in colour, older history dim. */
+    g.git-graph {
+        > polygon { fill: #1c1c1b; }
+        text { fill: #e7e6e1; }
+        g.node.current polygon[fill="none"] { stroke-width: 1.5; }
+        g.commit.current { polygon:not([fill="none"]) { fill: #1d3d3a; } polygon[fill="none"] { stroke: #5bc0b5; } text { fill: #d9f2ef; } }
+        g.tree.current { polygon:not([fill="none"]) { fill: #3d3424; } polygon[fill="none"] { stroke: #d8c59f; } text { fill: #f1e8d6; } }
+        g.blob.current { polygon:not([fill="none"]) { fill: #33332f; } polygon[fill="none"] { stroke: #c9c8c2; } text { fill: #ecebe6; } }
+        g.node.faded { polygon:not([fill="none"]) { fill: #1f1f1e; } text { fill: #7d7c77; } }
+        g.commit.faded polygon[fill="none"] { stroke: #2f5551; }
+        g.tree.faded polygon[fill="none"] { stroke: #574d3a; }
+        g.blob.faded polygon[fill="none"] { stroke: #4a4a45; }
+        g.node.ref { polygon { fill: #262625; stroke: #bdbcb6; } polyline { stroke: #bdbcb6; } }
+        g.node.head { polygon { fill: #4a4210; stroke: #fce94f; } polyline { stroke: #fce94f; } text { fill: #fce94f; } }
+        g.edge.current, g.edge.ref { path, polygon { stroke: #c9c8c2; } polygon { fill: #c9c8c2; } text { fill: #a3a29d; } }
+        g.edge.faded { path, polygon { stroke: #4a4a46; } polygon { fill: #4a4a46; } text { fill: #6a6964; } }
+    }
 }
