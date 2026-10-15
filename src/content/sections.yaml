@@ -122,6 +122,7 @@
     - working-with-files
     - tcpip
     - git
+    - crypto
   # - .working-with-processes
 
 - key: sandboxes

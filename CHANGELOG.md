@@ -355,6 +355,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   warum API-Schlüssel nicht in eine Webseite gehören. Acht Aufgaben, Notiz
   für Lehrkräfte. Die Reihen im Abschnitt: Webseiten (HTML & CSS, Hugo,
   Svelte), dann Netzwerk (Daten aus dem Netz, Webserver, Pixelwand).
+- Neue Aktivität »Kryptographie im Terminal« unter »Terminal & Git«:
+  Hashes mit `sha256sum`, wie Server Passwörter mit Salz und absichtlich
+  langsamen Hashfunktionen speichern, Verschlüsselung mit einem Schlüssel
+  (AES mit `openssl enc`) und mit zweien (RSA mit `openssl pkeyutl`),
+  Unterschriften mit Ed25519 und `ssh-keygen -Y`, Fingerabdrücke und was
+  davon in SSH, Git und HTTPS steckt. Ein Partnerteil tauscht öffentliche
+  Schlüssel über Port 1234. Zehn Aufgaben, Notiz für Lehrkräfte.
 
 ### Geändert
 
@@ -696,6 +703,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   (die Antwort kommt aus Belgien) statt ein Beispiel für einen fernen
   Server. Fünf neue Aufgaben, eine Notiz für Lehrkräfte, alle Bilder mit
   Alt-Text und aus Rezepten; nicht mehr benutzte Dateien sind entfernt.
+- »Git und GitHub«: Die Seite behauptete, ohne `git mv` bemerke Git eine
+  Umbenennung nicht. Jetzt erklärt sie, dass Git Umbenennungen gar nicht
+  speichert, sondern am gleichen Inhalt erkennt; `mv` und `git add -A`
+  ergeben denselben Commit.
 
 ### Entfernt
 
@@ -749,3 +760,6 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   tutorial_screenshots`.
 - Das Workspace-Image bekommt `yq` (mikefarah/yq, Version und SHA-256 im
   Dockerfile): Workspace-Image neu bauen (`./build-image.sh`).
+- Das Workspace-Image bekommt `xxd`, das Dateien Byte für Byte in
+  Hexadezimal zeigt (und zurück). Workspace-Image neu bauen
+  (`./build-image.sh`).

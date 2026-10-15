@@ -607,6 +607,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         vim \
         wget \
         whois \
+        xxd \
         xz-utils \
         zip \
         zlib1g-dev

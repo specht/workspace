@@ -219,7 +219,7 @@ git mv hello.txt README.md
 ```
 
 <div class='hint info'>
-Normalerweise kannst du Dateien mit dem Befehl <code>mv</code> umbenennen. Da die Datei <code>hello.txt</code> jedoch unter der Versionskontrolle von Git steht, solltest du den Befehl <code>git mv</code> verwenden. Dadurch wird Git darüber informiert, dass die Datei umbenannt wurde, und die Änderung wird automatisch zur Staging Area hinzugefügt.
+<code>git mv</code> ist eine Abkürzung: Es benennt die Datei um wie <code>mv</code> und legt die Änderung gleich in die Staging Area. Mit <code>mv hello.txt README.md</code> und danach <code>git add -A</code> kommt genau derselbe Commit heraus. Git speichert nämlich gar keine Umbenennungen, sondern nur, welche Dateien mit welchem Inhalt es in einem Commit gibt. Dass <code>README.md</code> die alte <code>hello.txt</code> ist, erkennt Git erst beim Anzeigen am gleichen Inhalt.
 </div>
 
 Erzeuge anschließend einen neuen Commit:
@@ -228,7 +228,7 @@ Erzeuge anschließend einen neuen Commit:
 git commit -m "rename hello.txt to README.md"
 ```
 
-Die Ausgabe zeigt, dass ein neuer Commit erstellt wurde:
+Die Ausgabe zeigt, dass ein neuer Commit erstellt wurde. Die `100%` hinter der Umbenennung sind die Ähnlichkeit, an der Git sie erkannt hat: Der Inhalt ist derselbe geblieben.
 
 <!-- tutorial-screenshot
 terminal-run: clear
@@ -238,7 +238,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-mv.webp' alt=''>
+<img class='full' src='git-mv.webp' alt='Nach git mv hello.txt README.md und git commit meldet Git den neuen Commit mit »1 file changed« und »rename hello.txt => README.md (100%)«.'>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
 
