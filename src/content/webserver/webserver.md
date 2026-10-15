@@ -99,7 +99,7 @@ _task(request-line)
 
 Eine Antwort hat dieselbe Form wie eine Anfrage: eine **Statuszeile**, Header, eine leere Zeile, und danach kommt der Inhalt. Beende den Server im linken Terminal mit <kbd>Strg</kbd><kbd>C</kbd> und ersetze `server.rb` durch:
 
-```ruby
+```ruby_copy
 require 'socket'
 
 server = TCPServer.new(8000)
@@ -168,7 +168,7 @@ Jetzt der Browser. Visual Studio Code leitet Port 8000 an eine Adresse weiter, d
 
 Bisher bekommt jeder Pfad dieselbe Antwort. Ein richtiger Server schaut in die Request-Line und antwortet je nach Pfad etwas anderes, und auf einen unbekannten Pfad mit dem Statuscode **404 Not Found**. Weil sich jede Antwort gleich aufbaut, steht das jetzt in einer Funktion `respond`:
 
-```ruby
+```ruby_copy
 require 'socket'
 
 # Schickt eine vollständige HTTP-Antwort und schließt die Verbindung
@@ -245,7 +245,7 @@ _task(statuscodes)
 
 Ein Webserver liefert meistens Dateien aus: HTML, CSS, Bilder. Lege neben `server.rb` einen Ordner `public` an und darin `index.html`:
 
-```html
+```html_copy
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -269,7 +269,7 @@ Ein Webserver liefert meistens Dateien aus: HTML, CSS, Bilder. Lege neben `serve
 
 und `style.css`:
 
-```css
+```css_copy
 body {
   font-family: system-ui, sans-serif;
   max-width: 36em;
@@ -290,7 +290,7 @@ a {
 
 Der Server sucht jetzt zu jedem Pfad eine Datei in `public`. `/` steht für `/index.html`. Am Dateinamen erkennt er, welcher `Content-Type` dazugehört, damit der Browser weiß, ob er HTML, CSS oder ein Bild bekommt:
 
-```ruby
+```ruby_copy
 require 'socket'
 
 # Welcher Content-Type zu welcher Endung gehört
@@ -400,7 +400,7 @@ Adressen können Werte mitbringen: `/hello?name=Ada`. Nach dem `?` stehen **Para
 
 Dazu kommt ein Zähler, der mitzählt, wie oft `/visits` aufgerufen wurde. Er gehört dem ganzen Server, nicht einer einzelnen Verbindung, darum steht er in einer globalen Variable `$visits`:
 
-```ruby
+```ruby_copy
 require 'socket'
 require 'uri'
 

@@ -37,7 +37,7 @@ mkdir /workspace/pixelwand
 
 Nach dem Handshake reden Browser und Server in einem eigenen Format, in **Frames**: Jede Nachricht hat einen kleinen Header aus Bytes, der sagt, wie lang sie ist. Nachrichten vom Browser sind außerdem mit vier zufälligen Bytes »maskiert« (XOR). Verschlüsselt ist das nicht, denn die vier Bytes stehen im Frame mit dabei. Das Lesen und Schreiben dieser Frames übernimmt eine kleine Datei. Lege sie als `websocket.rb` an; du musst sie nicht im Einzelnen verstehen, aber es lohnt sich, die Kommentare zu lesen:
 
-```ruby
+```ruby_copy
 # Nachrichten über eine WebSocket-Verbindung lesen und schicken.
 #
 # Nach dem Handshake reden Browser und Server nicht mehr in Textzeilen,
@@ -102,7 +102,7 @@ Der Browser öffnet eine WebSocket-Verbindung mit einer ganz normalen HTTP-Anfra
 
 Lege `server.rb` an:
 
-```ruby
+```ruby_copy
 require 'socket'
 require 'digest'
 require_relative 'websocket'
@@ -169,7 +169,7 @@ end
 
 Die Webseite `index.html` hat ein Eingabefeld und zeigt alles, was vom Server kommt:
 
-```html
+```html_copy
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -291,7 +291,7 @@ _task(frame-header)
 
 Ein Echo ist noch langweilig. Spannend wird es, wenn eine Nachricht bei **allen** ankommt, die gerade verbunden sind. Dafür merkt sich der Server alle offenen Verbindungen in einer Liste `$clients`. Ersetze `connected` durch:
 
-```ruby
+```ruby_copy
 # Alle offenen Verbindungen. Mehrere Threads benutzen die Liste, darum
 # ändert und benutzt sie immer nur einer auf einmal (Mutex). Unter demselben
 # Lock wird auch geschickt: So mischen sich zwei Nachrichten nie.
@@ -334,7 +334,7 @@ Jetzt wird aus dem Chat ein Bild. Der Server bewahrt das Bild auf: 64 × 40 Pixe
 
 Ergänze oben `require 'json'` und ersetze `connected` und `broadcast` durch:
 
-```ruby
+```ruby_copy
 # Das Bild: 64 × 40 Pixel, jedes eine Farbnummer von 0 bis 15
 WIDTH = 64
 HEIGHT = 40
@@ -391,7 +391,7 @@ end
 
 Die neue `index.html` zeichnet das Bild in ein `<canvas>`, ein Element, in das JavaScript zeichnen kann. Es ist nur 64 × 40 Pixel groß, CSS zieht es auf das Zehnfache:
 
-```html
+```html_copy
 <!DOCTYPE html>
 <html lang="de">
 <head>

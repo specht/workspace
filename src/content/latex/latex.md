@@ -20,9 +20,9 @@ Du schreibst eine kurze Facharbeit über ein Fadenpendel, von der leeren Datei b
 </p>
 
 <div class='screen-gallery'>
-<figure><img class='invert-dark' src='titelseite.webp' alt='Titelseite: Facharbeit im Fach Physik, »Wie lange schwingt ein Pendel?«, unten Name, Kurs und Abgabedatum.'><figcaption>Die Titelseite</figcaption></figure>
-<figure><img class='invert-dark' src='seite-versuch.webp' alt='Eine Seite mit nummerierter Abbildung des Versuchsaufbaus, einer Liste der Arbeitsschritte und einer Tabelle mit Messwerten.'><figcaption>Abbildung, Liste und Tabelle</figcaption></figure>
-<figure><img class='invert-dark' src='seite-auswertung.webp' alt='Eine Seite mit einem Diagramm aus roten Messpunkten und einer blauen Kurve, darunter Fazit und Literaturverzeichnis.'><figcaption>Diagramm und Quellen</figcaption></figure>
+<figure><img class='invert-dark border' src='titelseite.webp' alt='Titelseite: Facharbeit im Fach Physik, »Wie lange schwingt ein Pendel?«, unten Name, Kurs und Abgabedatum.'><figcaption>Die Titelseite</figcaption></figure>
+<figure><img class='invert-dark border' src='seite-versuch.webp' alt='Eine Seite mit nummerierter Abbildung des Versuchsaufbaus, einer Liste der Arbeitsschritte und einer Tabelle mit Messwerten.'><figcaption>Abbildung, Liste und Tabelle</figcaption></figure>
+<figure><img class='invert-dark border' src='seite-auswertung.webp' alt='Eine Seite mit einem Diagramm aus roten Messpunkten und einer blauen Kurve, darunter Fazit und Literaturverzeichnis.'><figcaption>Diagramm und Quellen</figcaption></figure>
 </div>
 
 ## Warum LaTeX?
@@ -53,7 +53,7 @@ mkdir /workspace/facharbeit
 
 Schreibe in `facharbeit.tex`:
 
-```tex
+```tex_copy
 % !TEX program = lualatex
 \documentclass[12pt,a4paper]{article}
 
@@ -128,7 +128,7 @@ _task(sonderzeichen)
 
 Eine Facharbeit beginnt mit einer Titelseite und einem Inhaltsverzeichnis. Ersetze `\section{Einleitung}` durch:
 
-```tex
+```tex_copy
 \begin{titlepage}
   \centering
   \vspace*{30mm}
@@ -247,7 +247,7 @@ _task(bild)
 
 Die Durchführung ist eine Liste von Schritten, und die Messwerte gehören in eine Tabelle:
 
-```tex
+```tex_copy
 \subsection{Durchführung}
 
 \begin{enumerate}
@@ -294,7 +294,7 @@ _task(tabelle)
 
 Messwerte versteht man am besten in einem Diagramm. Mit dem Paket TikZ zeichnest du es in LaTeX selbst, mit Koordinaten statt mit der Maus. Das Kapitel Auswertung:
 
-```tex
+```tex_copy
 \section{Auswertung}
 
 Abbildung~\ref{fig:diagramm} zeigt die Messwerte aus Tabelle~\ref{tab:messwerte}
@@ -356,7 +356,7 @@ sich die Schwingungsdauer. Die Messungen bestätigen die Theorie.
 
 Jede Facharbeit gibt an, woher ihr Wissen kommt. In LaTeX stehen die Quellen in einer eigenen Datei. Lege neben `facharbeit.tex` die Datei `literatur.bib` an:
 
-```bibtex
+```bibtex_copy
 @book{tipler2019,
   author    = {Tipler, Paul A. and Mosca, Gene},
   title     = {Physik für Studierende der Naturwissenschaften und Technik},
@@ -417,7 +417,7 @@ Schulen geben für Facharbeiten oft vor, wie die Seiten aussehen: Schriftgröße
 
 Am Ende einer Facharbeit steht fast immer eine **Selbstständigkeitserklärung**. Sie kommt nach dem Literaturverzeichnis, auf eine eigene Seite und ohne Nummer, darum `\section*` mit Stern:
 
-```tex
+```tex_copy
 \newpage
 
 % ------------------------------------------------------------ Text
@@ -536,7 +536,7 @@ Ort, Datum, Unterschrift
 
 Hier ist die ganze Facharbeit, wie sie jetzt aussehen sollte:
 
-```tex
+```tex_copy
 % !TEX program = lualatex
 \documentclass[12pt,a4paper]{article}
 
@@ -730,29 +730,29 @@ So sehen die Seiten aus:
 
 <div class='screen-gallery'>
 <!-- tutorial-screenshot
-pdf-page: facharbeit/facharbeit.pdf 1 Wie lange schwingt ein Pendel?
+pdf-page-full: facharbeit/facharbeit.pdf 1 Wie lange schwingt ein Pendel?
 -->
-<figure><img class='invert-dark' src='titelseite.webp' alt='Titelseite: Facharbeit im Fach Physik, »Wie lange schwingt ein Pendel?«, unten Name, Kurs und Abgabedatum.'><figcaption>Titelseite</figcaption></figure>
+<figure><img class='invert-dark border' src='titelseite.webp' alt='Titelseite: Facharbeit im Fach Physik, »Wie lange schwingt ein Pendel?«, unten Name, Kurs und Abgabedatum.'><figcaption>Titelseite</figcaption></figure>
 <!-- tutorial-screenshot
-pdf-page: facharbeit/facharbeit.pdf 2 Inhaltsverzeichnis
+pdf-page-full: facharbeit/facharbeit.pdf 2 Inhaltsverzeichnis
 -->
-<figure><img class='invert-dark' src='inhaltsverzeichnis.webp' alt='Das Inhaltsverzeichnis mit fünf nummerierten Kapiteln, drei Unterkapiteln und Seitenzahlen.'><figcaption>Inhaltsverzeichnis</figcaption></figure>
+<figure><img class='invert-dark border' src='inhaltsverzeichnis.webp' alt='Das Inhaltsverzeichnis mit fünf nummerierten Kapiteln, drei Unterkapiteln und Seitenzahlen.'><figcaption>Inhaltsverzeichnis</figcaption></figure>
 <!-- tutorial-screenshot
-pdf-page: facharbeit/facharbeit.pdf 3 Theorie
+pdf-page-full: facharbeit/facharbeit.pdf 3 Theorie
 -->
-<figure><img class='invert-dark' src='seite-theorie.webp' alt='Einleitung, Theorie mit der nummerierten Formel für die Schwingungsdauer und der Beginn des Kapitels Versuch, unten eine Fußnote.'><figcaption>Einleitung, Theorie, Formel, Fußnote</figcaption></figure>
+<figure><img class='invert-dark border' src='seite-theorie.webp' alt='Einleitung, Theorie mit der nummerierten Formel für die Schwingungsdauer und der Beginn des Kapitels Versuch, unten eine Fußnote.'><figcaption>Einleitung, Theorie, Formel, Fußnote</figcaption></figure>
 <!-- tutorial-screenshot
-pdf-page: facharbeit/facharbeit.pdf 4 Messwerte
+pdf-page-full: facharbeit/facharbeit.pdf 4 Messwerte
 -->
-<figure><img class='invert-dark' src='seite-versuch.webp' alt='Eine Seite mit nummerierter Abbildung des Versuchsaufbaus, einer Liste der Arbeitsschritte und einer Tabelle mit Messwerten.'><figcaption>Abbildung, Liste, Tabelle</figcaption></figure>
+<figure><img class='invert-dark border' src='seite-versuch.webp' alt='Eine Seite mit nummerierter Abbildung des Versuchsaufbaus, einer Liste der Arbeitsschritte und einer Tabelle mit Messwerten.'><figcaption>Abbildung, Liste, Tabelle</figcaption></figure>
 <!-- tutorial-screenshot
-pdf-page: facharbeit/facharbeit.pdf 5 Auswertung
+pdf-page-full: facharbeit/facharbeit.pdf 5 Auswertung
 -->
-<figure><img class='invert-dark' src='seite-auswertung.webp' alt='Eine Seite mit einem Diagramm aus roten Messpunkten und einer blauen Kurve, darunter Fazit und Literaturverzeichnis.'><figcaption>Diagramm, Fazit, Literatur</figcaption></figure>
+<figure><img class='invert-dark border' src='seite-auswertung.webp' alt='Eine Seite mit einem Diagramm aus roten Messpunkten und einer blauen Kurve, darunter Fazit und Literaturverzeichnis.'><figcaption>Diagramm, Fazit, Literatur</figcaption></figure>
 <!-- tutorial-screenshot
-pdf-page: facharbeit/facharbeit.pdf 6 Selbstständigkeitserklärung
+pdf-page-full: facharbeit/facharbeit.pdf 6 Selbstständigkeitserklärung
 -->
-<figure><img class='invert-dark' src='erklaerung.webp' alt='Die Selbstständigkeitserklärung mit einer Linie für Ort, Datum und Unterschrift.'><figcaption>Selbstständigkeitserklärung</figcaption></figure>
+<figure><img class='invert-dark border' src='erklaerung.webp' alt='Die Selbstständigkeitserklärung mit einer Linie für Ort, Datum und Unterschrift.'><figcaption>Selbstständigkeitserklärung</figcaption></figure>
 </div>
 
 ## Deine eigene Arbeit

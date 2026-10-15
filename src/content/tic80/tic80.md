@@ -222,7 +222,7 @@ Ein Stern hat eine Position `sx`, `sy`. In jedem Bild fällt er ein Pixel tiefer
 
 Und gefangen ist er, wenn er die Figur berührt: wenn er tief genug ist (`sy` zwischen 104 und 128) und nicht links oder rechts an ihr vorbei (`sx + 8 > x` und `sx < x + 16`; der Stern ist 8 Pixel breit, die Figur 16). Dann gibt es einen Punkt, und der Stern fängt oben neu an.
 
-_include_file(step2.lua, lua)
+_include_file(step2.lua, lua_copy)
 
 <!-- tutorial-screenshot
 write-file: TIC-80/stars.lua <- file:step2.lua
@@ -268,7 +268,7 @@ Ein einzelner Stern ist schnell langweilig. Jetzt fallen drei gleichzeitig, und 
 
 Wer einen Stern fängt, macht das Spiel ein wenig schneller (`speed`). Sind alle Leben weg, steht »GAME OVER« da, und mit <kbd>Z</kbd> beginnt eine neue Runde; `btnp(4)` ist im ersten Bild wahr, in dem die Taste gedrückt ist.
 
-_include_file(step3.lua, lua)
+_include_file(step3.lua, lua_copy)
 
 <!-- tutorial-screenshot
 write-file: TIC-80/stars.lua <- file:step3.lua
@@ -335,7 +335,7 @@ t = 0
 
 `t` zählt die Bilder. Erhöhe es in der ersten Zeile von `TIC()` mit `t = t + 1`. Ersetze dann in `TIC()` alles zwischen `cls(0)` und `spr(…)` durch:
 
-```lua
+```lua_copy
 	-- Jeder Punkt wechselt alle halbe Sekunde den Blauton: Der Himmel funkelt
 	for i, p in ipairs(sky) do
 		pix(p.x, p.y, 13 + (i + t // 30) % 3)

@@ -17,8 +17,9 @@ module CodeHighlight
             code = pre.css('code').first
             next if code.nil?
             # Suffixes after the language, in any order: _lineno, _wrap and
-            # _copy (a copy button, only for what is no use to type: clone
-            # addresses, downloads, setup commands).
+            # _copy (a copy button, for what is no use to type: clone
+            # addresses, downloads, setup commands, and big blocks from about
+            # 15 lines that go into a file, docs/aktivitaet-schreiben.md).
             language = code.attr('class')
             flags = []
             while language =~ /_(lineno|wrap|copy)$/
