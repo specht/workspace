@@ -2,7 +2,7 @@ require 'base64'
 require 'digest'
 require 'fileutils'
 require 'set'
-require_relative 'atomic_file'
+require_relative 'user_files'
 
 # TIC-80 in the browser works on an in-memory filesystem; the real files are
 # in the person's Workspace under /workspace/TIC-80, where code-server, Git
@@ -59,27 +59,32 @@ module Tic80Storage
 
     # The root directory, created if missing. Leftovers of the earlier
     # whole-folder swap (TIC-80.sync-*, TIC-80.backup-*) are recovered or
-    # removed.
+    # removed. Everything here runs while the person's Workspace may be
+    # working on the same folder, so files and folders are only touched
+    # through UserFiles, which never follows a link.
     def self.prepare_root(root, uid:, gid:)
         parent = File.dirname(root)
         base = File.basename(root)
-        raise Invalid, "#{root} is a symbolic link" if File.symlink?(root)
-        raise Invalid, "#{root} is not a directory" if File.exist?(root) && !File.directory?(root)
+        kind = UserFiles.kind(parent, base)
+        raise Invalid, "#{root} is a symbolic link or special file" if kind == :other
+        raise Invalid, "#{root} is not a directory" if kind == :file
 
-        leftovers = Dir.glob(File.join(parent, "#{base}.{backup,sync}-*")).select do |path|
-            File.directory?(path) && !File.symlink?(path)
+        leftovers = Dir.children(parent).select do |name|
+            name.start_with?("#{base}.backup-", "#{base}.sync-") && UserFiles.kind(parent, name) == :directory
         end
-        unless File.directory?(root)
-            newest = leftovers.max_by { |path| File.mtime(path) rescue Time.at(0) }
+        unless kind == :directory
+            newest = leftovers.max_by { |name| File.lstat(File.join(parent, name)).mtime rescue Time.at(0) }
             if newest
-                File.rename(newest, root)
+                File.rename(File.join(parent, newest), root)
                 leftovers.delete(newest)
+                UserFiles.chown(parent, base)
             else
-                FileUtils.mkdir_p(root)
+                UserFiles.mkdir_p(parent, base)
             end
-            File.chown(uid, gid, root)
         end
-        leftovers.each { |path| FileUtils.rm_rf(path) }
+        leftovers.each { |name| UserFiles.rm_r(parent, name) }
+    rescue UserFiles::Refused => e
+        raise Invalid, e.message
     end
 
     # All directories and files below root. Symbolic links and other special
@@ -89,31 +94,27 @@ module Tic80Storage
     def self.tree(root, contents: false, only: nil)
         dirs = []
         files = []
-        walk = lambda do |dir, prefix|
-            Dir.children(dir).sort.each do |name|
-                path = File.join(dir, name)
-                relative = prefix.empty? ? name : "#{prefix}/#{name}"
-                stat = File.lstat(path)
-                if stat.directory?
-                    dirs << relative
-                    walk.call(path, relative)
-                elsif stat.file?
-                    next if name.start_with?('.') && name.end_with?('.tmp')
-
-                    bytes = File.binread(path)
-                    entry = {
-                        :path => relative,
-                        :size => bytes.bytesize,
-                        :mtime_ms => (stat.mtime.to_f * 1000).round,
-                        :sha256 => sha256(bytes),
-                    }
-                    entry[:contents] = Base64.strict_encode64(bytes) if contents && (only.nil? || only.include?(relative))
-                    files << entry
-                end
+        UserFiles.walk(root) do |relative, stat, file|
+            if file.nil?
+                dirs << relative
+                next
             end
+            name = File.basename(relative)
+            next if name.start_with?('.') && name.end_with?('.tmp')
+
+            bytes = file.read.to_s.b
+            entry = {
+                :path => relative,
+                :size => bytes.bytesize,
+                :mtime_ms => (stat.mtime.to_f * 1000).round,
+                :sha256 => sha256(bytes),
+            }
+            entry[:contents] = Base64.strict_encode64(bytes) if contents && (only.nil? || only.include?(relative))
+            files << entry
         end
-        walk.call(root, '')
         { :dirs => dirs, :files => files }
+    rescue UserFiles::Refused => e
+        raise Invalid, e.message
     end
 
     # »spiel.lua« -> »spiel (TIC-80).lua«, then »spiel (TIC-80 2).lua«, …
@@ -124,35 +125,23 @@ module Tic80Storage
         (1..).each do |i|
             name = "#{stem} (#{CONFLICT_SUFFIX}#{i > 1 ? " #{i}" : ''})#{ext}"
             candidate = dir == '.' ? name : "#{dir}/#{name}"
-            return candidate unless File.exist?(File.join(root, candidate)) || File.symlink?(File.join(root, candidate))
+            return candidate if UserFiles.kind(root, candidate).nil?
         end
     end
 
-    def self.mkdir_owned(root, relative, uid, gid)
-        current = root
-        relative.split('/').each do |part|
-            current = File.join(current, part)
-            stat = File.lstat(current) rescue nil
-            if stat.nil?
-                Dir.mkdir(current)
-                File.chown(uid, gid, current)
-            elsif !stat.directory?
-                raise Invalid, "#{relative}: #{part} is a file, not a folder"
-            end
-        end
+    def self.mkdir_owned(root, relative, _uid, _gid)
+        UserFiles.mkdir_p(root, relative)
     end
 
-    def self.write_file(root, relative, bytes, mtime_ms, uid, gid)
-        parent = File.dirname(relative)
-        mkdir_owned(root, parent, uid, gid) unless parent == '.'
-        path = File.join(root, relative)
-        new_file = !File.exist?(path)
-        AtomicFile.write(path, bytes)
-        File.chown(uid, gid, path) if new_file
-        if mtime_ms.is_a?(Numeric)
-            time = Time.at(mtime_ms.to_f / 1000.0)
-            File.utime(time, time, path)
-        end
+    def self.write_file(root, relative, bytes, mtime_ms, _uid, _gid)
+        mtime = mtime_ms.is_a?(Numeric) ? Time.at(mtime_ms.to_f / 1000.0) : nil
+        UserFiles.write(root, relative, bytes, :mtime => mtime)
+    end
+
+    # The SHA-256 of the regular file root/relative, or nil.
+    def self.current_sha(root, relative)
+        bytes = UserFiles.read(root, relative, :max => MAX_TOTAL_BYTES)
+        bytes && sha256(bytes.b)
     end
 
     # changes: [{ path:, base: sha|nil, contents: base64 } |
@@ -197,16 +186,15 @@ module Tic80Storage
 
         decoded.reject { |e| e[:dir] }.each do |entry|
             relative = entry[:path]
-            path = File.join(root, relative)
-            stat = File.lstat(path) rescue nil
-            current = stat&.file? ? sha256(File.binread(path)) : nil
-            occupied = stat && !stat.file?
+            kind = UserFiles.kind(root, relative)
+            current = kind == :file ? current_sha(root, relative) : nil
+            occupied = !kind.nil? && kind != :file
 
             if entry[:deleted]
-                if stat.nil?
+                if kind.nil?
                     result[:deleted] << relative
                 elsif !occupied && current == entry[:base]
-                    File.delete(path)
+                    UserFiles.delete(root, relative)
                     result[:deleted] << relative
                 else
                     result[:conflicts] << { :path => relative, :kept => true }
@@ -231,14 +219,11 @@ module Tic80Storage
         # Deepest first, and only empty ones: a folder with files from
         # elsewhere stays.
         decoded.select { |e| e[:dir] && e[:deleted] }.sort_by { |e| -e[:path].count('/') }.each do |entry|
-            path = File.join(root, entry[:path])
-            begin
-                Dir.rmdir(path) if File.directory?(path) && !File.symlink?(path)
-            rescue Errno::ENOTEMPTY, Errno::EEXIST
-                nil
-            end
+            UserFiles.rmdir(root, entry[:path])
         end
 
         result
+    rescue UserFiles::Refused => e
+        raise Invalid, e.message
     end
 end

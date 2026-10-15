@@ -715,6 +715,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Umbenennung nicht. Jetzt erklärt sie, dass Git Umbenennungen gar nicht
   speichert, sondern am gleichen Inhalt erkennt; `mv` und `git add -A`
   ergeben denselben Commit.
+- Sicherheit: Was der Server als root in den Ordner einer Person schreibt
+  oder dort liest (`.hackschule`, `.bashrc`, `.gitconfig`, `.my.cnf`,
+  `.myclirc`, die VS-Code-Einstellungen, die Marker und `.git/info/exclude`
+  in Prüfungen, die TIC-80-Dateien), geht jetzt durch `UserFiles`: Jeder
+  Pfad wird Ordner für Ordner geöffnet, ohne einem symbolischen Link zu
+  folgen, und nur reguläre Dateien werden gelesen oder geschrieben. Bisher
+  konnte ein Link im eigenen Workspace den Server dazu bringen, fremde
+  Dateien zu überschreiben und der Person zu übergeben. Ein abgelehnter
+  Pfad steht im Log; der Workspace startet trotzdem. TIC-80 schreibt
+  Dateien nicht mehr per Umbenennen, sondern direkt.
 
 ### Entfernt
 
