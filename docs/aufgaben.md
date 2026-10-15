@@ -458,9 +458,9 @@ Website. Die Seite holt sich für jede Szene eine signierte Adresse
 (`/api/anaglyph/address`, mit denselben Rechten wie vorher), und der Viewer
 schickt Bild, Fehler und die Zahl der Objekte nur als Nachricht zurück. So
 erreicht eine Szene auch dann nichts, wenn eine Lehrkraft sie in der Galerie
-ansieht. Zwei kleine Änderungen am Viewer macht der Server beim Ausliefern
-(`AnaglyphViewer::SANDBOX_PATCHES`); passt eine davon nicht mehr zum Viewer,
-liefert er ihn gar nicht aus.
+ansieht. Dafür schickt der Viewer seine Nachrichten in einem leeren Ursprung an
+`'*'` (seit `specht/anaglyph` 114bc3b); der Server ergänzt beim Ausliefern nur
+einen Ersatz für `sessionStorage`, der in einem leeren Ursprung sonst fehlt.
 
 ### measure, command, scene
 

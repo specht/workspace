@@ -42,27 +42,9 @@ class AnaglyphViewerTest < Minitest::Test
         assert_equal 'application/octet-stream', AnaglyphViewer.mime('x.bin')
     end
 
-    VIEWER_SCRIPT = <<~JS
-        function sendPictureWhenReady() {
-            window.parent.postMessage({
-                type: 'anaglyph-picture',
-                scene: pictureScene,
-            }, window.location.origin);
-        }
-        window.parent.postMessage({ type: 'anaglyph-key', key: e.key }, window.location.origin);
-    JS
-
-    def test_sandbox_patches_the_messages
+    def test_sandbox_leaves_the_script_alone
         path = File.join(AnaglyphViewer.dir, 'include', 'script.js')
-        out = AnaglyphViewer.for_sandbox(path, VIEWER_SCRIPT.b)
-        refute_includes out, 'window.location.origin'
-        assert_equal 2, out.scan("'*');").size
-        assert_includes out, 'objects: Array.isArray(sceneDescription)'
-    end
-
-    def test_sandbox_fails_closed_on_another_viewer
-        path = File.join(AnaglyphViewer.dir, 'include', 'script.js')
-        assert_raises(AnaglyphViewer::Unpatchable) { AnaglyphViewer.for_sandbox(path, 'console.log(1)') }
+        assert_equal 'console.log(1)', AnaglyphViewer.for_sandbox(path, 'console.log(1)')
     end
 
     def test_sandbox_index_gets_the_storage_stand_in
