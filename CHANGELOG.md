@@ -334,6 +334,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - TIC-80: ein Abschnitt »Ein Himmel« mit Aufgabe: funkelnde Sterne mit
   `pix`, Sternschnuppen mit Schweif und eine Wiese. Das fertige Spiel ist
   das neue Bild auf der Karte.
+- Handbuch-Abschnitt »Netzwerk und Daten« mit drei Seiten. »HTTP«: Anfrage
+  und Antwort, Methoden, Statuscodes, Header, Adressen, `curl`, der Reiter
+  »Network« im Browser, Formulare und JSON, HTTPS, WebSockets. »JSON«:
+  Aufbau, was JSON nicht erlaubt (mit den echten Fehlermeldungen), Ruby,
+  JavaScript, Python, `jq`. »YAML«: Aufbau, Listen, lange Texte, die Fallen
+  (`no`, `1.10`, `12:30`, `01234` in Ruby und `yq`), Front Matter, `yq` und
+  Ruby. Webserver, Pixelwand, TCP/IP und Filmdatenbank verweisen darauf.
 
 ### Geändert
 
@@ -645,6 +652,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   raylib-Vorlage hat englische Namen; die Kommentare bleiben deutsch.
 - Screenshot-Generator: Hooks bekommen `writeFile`; `pdf-page-full:` zeigt
   eine ganze PDF-Seite mit ihren Rändern (die Seiten der Facharbeit).
+- »Ein eigener Webserver«: Lernende probieren den Path-Traversal-Angriff
+  mit `curl --path-as-is` selbst aus, mit und ohne die Prüfung. »Statuszeile«
+  heißt dort jetzt »Status-Line«, wie »Request-Line«.
+- Code in YAML (```` ```yaml ````) ist farbig.
 
 ### Für Betreibende
 
@@ -690,3 +701,5 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Screenshot-Generator neu bauen (nur Entwicklung):
   `./config.rb build tutorial_screenshots && ./config.rb up -d
   tutorial_screenshots`.
+- Das Workspace-Image bekommt `yq` (mikefarah/yq, Version und SHA-256 im
+  Dockerfile): Workspace-Image neu bauen (`./build-image.sh`).

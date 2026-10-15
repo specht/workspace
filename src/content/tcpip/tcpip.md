@@ -1,6 +1,7 @@
 <div class='meta'>
 image: tcpip.webp
 kind: labor
+reference: [http, json]
 </div>
 
 <div
@@ -356,6 +357,8 @@ crop-terminal-lines: auto
 
 <img class='full' src='curl-i-gyst.webp' alt=''>
 
+_uses(http-antwort, http-header, curl)
+
 _task(webserver)
 
 `curl` ist ein sehr mächtiges Werkzeug, um mit Webseiten und APIs zu kommunizieren. Ein Beispiel für eine API ist die »Cat Facts« API, die dir zufällige Fakten über Katzen zurückgibt:
@@ -395,6 +398,8 @@ crop-terminal-lines: auto
 -->
 
 <img class='full' src='curl-catfact-jq.webp' alt=''>
+
+_uses(json-aufbau, jq)
 
 Du kannst die Abfrage beliebig oft wiederholen und solltest jedesmal einen zufälligen, neuen Fakt über Katzen erhalten.
 

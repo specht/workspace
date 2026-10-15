@@ -34,6 +34,8 @@ ARG LUA_VERSION=5.4
 ARG JAVA_VERSION=25
 ARG SMALLTALK_VERSION=3.2.5
 ARG HUGO_VERSION=0.164.0
+ARG YQ_VERSION=4.54.1
+ARG YQ_SHA256=8e34fc298390875de416e6a4afcb8cabeceb25d9aa8506c1a2f9353cf702ea5f
 ARG DOTNET_VERSION=10.0
 ARG POWERSHELL_VERSION=7.6.4
 ARG RUBY_VERSION=3.4.10
@@ -655,6 +657,30 @@ RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-down
         mv "${deb}.tmp" "$deb"; \
     fi; \
     dpkg -i "$deb"
+
+
+# --------------------------------------------------------------------
+# yq: YAML (and JSON) in the terminal, like jq (Handbuch »YAML«)
+# --------------------------------------------------------------------
+#
+# mikefarah/yq, a single Go binary. The checksum is the SHA-256 from the
+# release's own list (»checksums«, column per »checksums_hashes_order«).
+
+ARG YQ_VERSION
+ARG YQ_SHA256
+
+RUN --mount=type=cache,id=hackschule-downloads,target=/var/cache/hackschule-downloads \
+    set -eux; \
+    bin=/var/cache/hackschule-downloads/yq_${YQ_VERSION}_linux_amd64; \
+    if [ ! -s "$bin" ]; then \
+        wget -q \
+            "https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64" \
+            -O "${bin}.tmp"; \
+        mv "${bin}.tmp" "$bin"; \
+    fi; \
+    echo "${YQ_SHA256}  ${bin}" | sha256sum -c -; \
+    install -m 0755 "$bin" /usr/local/bin/yq; \
+    yq --version
 
 
 # --------------------------------------------------------------------

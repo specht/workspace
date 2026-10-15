@@ -37,7 +37,7 @@ tasks:
       expect:
         format: text
         contains:
-          - { pattern: 'HTTP/1\.1 (200|#\{)', say: 'In `server.rb` finde ich noch keine Statuszeile wie `HTTP/1.1 200 OK`.' }
+          - { pattern: 'HTTP/1\.1 (200|#\{)', say: 'In `server.rb` finde ich noch keine Status-Line wie `HTTP/1.1 200 OK`.' }
           - { pattern: 'Content-Length', say: 'Noch fehlt der Header `Content-Length`: Er sagt dem Browser, wie viele Bytes kommen.' }
           - { pattern: 'Thread\.new', say: 'Noch bedient der Server eine Verbindung nach der anderen. Mit `Thread.new` bekommt jede einen eigenen Thread.' }
 

@@ -5,6 +5,7 @@ language: Ruby
 topic: networks
 duration: 2 Doppelstunden
 requires: [webserver]
+reference: [http, json]
 </div>
 
 <div
@@ -283,6 +284,8 @@ sleep: 1
 -->
 <img class='full border' src='echo.webp' alt='Die Seite »Nachrichten«: Verbunden, dann »Echo: Hallo, Server!« als Antwort auf die eigene Nachricht.'>
 
+_uses(websocket-upgrade, statuscodes)
+
 _task(handshake)
 
 _task(frame-header)
@@ -535,6 +538,8 @@ wait-for-text: Du malst allein
 hook: paint
 -->
 <img class='full border' src='pixelwand.webp' alt='Die Pixelwand: blauer Himmel mit gelber Sonne, eine grüne Wiese, ein Haus mit rotem Dach und ein Baum. Darüber steht »Du malst allein.«'>
+
+_uses(json-aufbau, json-ruby, json-javascript)
 
 _task(pixel-zahl)
 
