@@ -18,6 +18,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Neue Aktivität »Endliche Automaten in Python« unter »Experimente«:
+  Lernende bauen ein Drehkreuz, einen Automaten für »durch 3 teilbar« und ein
+  Zahlenschloss als DEA, finden heraus, warum das Schloss bei 121213 nicht
+  aufgeht, schreiben das Schloss als NEA, bauen mit der
+  Potenzmengenkonstruktion einen DEA daraus und sehen ihn explodieren.
+  Automatron dient zum Vergleichen. Zehn Aufgaben, Hinweise für Lehrkräfte.
+- Neue Prüfart `python` (`docs/aufgaben.md`): lädt eine Python-Datei der
+  Lernenden in ihrem Workspace, als Gast, ruft Funktionen daraus auf und
+  vergleicht die Ergebnisse. Die Rückmeldung nennt den ersten Aufruf, der
+  nicht passt, mit seinem Ergebnis oder seinem Fehler samt Zeile.
 - Format für Aufgaben, die der Workspace selbst prüft: `docs/aufgaben.md`.
   Noch nicht aktiv; Seiten binden noch keine Aufgaben ein.
 - `src/ruby/include/task_spec.rb` prüft `tasks.yaml`-Dateien;
@@ -373,6 +383,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Automatron zeichnet schöner: in der Schrift der Seite, mit tiefgestellten
+  Nummern (s₀ statt eines losen »s 0«), Bereichen wie `0, 2–9` statt langer
+  Listen, Farben für das helle und das dunkle Design und akzeptierenden
+  Zuständen in Grün. Kleine Automaten stehen wie im Schulbuch in einer Reihe,
+  nur die Übergänge zurück laufen als Bögen.
+- Screenshot-Generator: `crop-element` scrollt ein Element unterhalb des
+  sichtbaren Bereichs erst ins Bild, statt eine leere Fläche aufzunehmen.
 - Sicherheit: Befehle, die Lernende in eine Aufgabe vom Typ `command` tippen,
   laufen nicht mehr als die Person, sondern als Gast (`nobody`): Sie können
   `/workspace` lesen, aber nichts darin ändern oder löschen.

@@ -1,0 +1,223 @@
+# Aufgaben zu »Automaten in Python«.
+# Format: docs/aufgaben.md. Alles liegt in /workspace/automata.
+format: 1
+activity: automata
+tasks:
+  - id: drehkreuz
+    title: Eintritt zwei Euro
+    prompt: |
+      Das Schwimmbad verlangt jetzt zwei Euro, also zwei Münzen. Ändere
+      `TRANSITIONS` in `turnstile.py`: Erst nach der zweiten Münze ist das
+      Drehkreuz offen. Wer nach einer Münze schon drückt, kommt nicht durch,
+      aber die Münze bleibt drin. Wie du den neuen Zustand nennst, ist dir
+      überlassen.
+    check:
+      type: python
+      file: automata/turnstile.py
+      cases:
+        - run(['drücken']): "'zu'"
+        - call: run(['münze']) == 'offen'
+          expect: false
+          say: Nach einer Münze darf das Drehkreuz noch nicht offen sein.
+        - run(['münze', 'münze']): "'offen'"
+        - call: run(['münze', 'drücken', 'münze'])
+          expect: "'offen'"
+          say: Wer mit einer Münze drückt, behält sie. Nach der zweiten ist es offen.
+        - run(['münze', 'münze', 'drücken']): "'zu'"
+        - call: run(['münze', 'münze', 'drücken', 'münze']) == 'offen'
+          expect: false
+          say: Nach dem Durchgehen kostet es wieder zwei Münzen.
+        - run(['münze', 'münze', 'münze']): "'offen'"
+    hint: Du brauchst einen dritten Zustand, zum Beispiel `halb`, für »eine Münze ist drin«. Er braucht wie die anderen einen Übergang für `münze` und einen für `drücken`.
+    solution: |
+      Ein Zustand `halb` kommt dazu:
+      `('zu', 'münze'): 'halb'`, `('halb', 'münze'): 'offen'`,
+      `('halb', 'drücken'): 'halb'`; die übrigen Übergänge bleiben.
+
+  - id: rest
+    title: Wo endet 1011?
+    prompt: |
+      Lies `1011` von Hand durch den Automaten im Bild, Ziffer für Ziffer.
+      In welchem Zustand endet er?
+    check:
+      type: number
+      expect: 2
+    feedback:
+      - when: { equals: 11 }
+        say: 11 ist der Wert der Binärzahl. Gefragt ist der Zustand, also der Rest beim Teilen durch 3.
+    solution: 'Die Zustände sind 0, 1, 2, 2, 2: `1011` ist 11, und 11 geteilt durch 3 ist 3 Rest 2.'
+
+  - id: teilbar-5
+    title: Teilbar durch 5
+    prompt: |
+      Kopiere `divisible.py` nach `divisible5.py` und ändere den Automaten
+      dort so, dass `accepts` genau die Binärzahlen annimmt, die durch 5
+      teilbar sind.
+    check:
+      type: python
+      file: automata/divisible5.py
+      cases:
+        - accepts('0'): true
+        - accepts('1'): false
+        - accepts('11'): false
+        - accepts('101'): true
+        - accepts('110'): false
+        - accepts('1010'): true
+        - accepts('1111'): true
+        - accepts('1001011'): true
+        - accepts('1100100'): true
+        - accepts('1100101'): false
+        - call: accepts(bin(5 ** 40)[2:])
+          expect: true
+          say: 5 hoch 40 ist durch 5 teilbar, und dein Automat liest die Zahl nur einmal von links nach rechts.
+        - accepts(bin(5 ** 40 + 1)[2:]): false
+    hint: Du brauchst fünf Zustände, einen für jeden Rest von 0 bis 4. Aus Rest `r` wird mit der Ziffer `d` der Rest `(2 * r + d) % 5`. Statt zehn Zeilen von Hand geht das auch mit zwei `for`-Schleifen.
+    solution: |
+      ```python
+      TRANSITIONS = {}
+      for r in range(5):
+          for d in '01':
+              TRANSITIONS[(r, d)] = (2 * r + int(d)) % 5
+      ```
+
+  - id: grenzen
+    title: Was kein Automat kann
+    prompt: |
+      Ein endlicher Automat merkt sich nur seinen Zustand, und davon hat er
+      endlich viele. Welche Frage kann darum kein endlicher Automat
+      beantworten, egal wie viele Zustände er hat?
+    check:
+      type: choice
+      options:
+        - Stehen in einem Wort aus a und b gleich viele a wie b?
+        - Endet ein Wort aus a und b auf ab?
+        - Ist eine Binärzahl durch 7 teilbar?
+        - Kommt in einem Wort irgendwo aba vor?
+      correct: 0
+    feedback:
+      - when: { picked: 2 }
+        say: Das geht wie bei 3 und 5, mit sieben Zuständen für die sieben möglichen Reste.
+      - when: { picked: 3 }
+        say: Dafür reichen vier Zustände, ähnlich wie beim Zahlenschloss.
+    solution: Um gleich viele a und b zu erkennen, müsste der Automat mitzählen, wie viele a mehr als b er schon gesehen hat. Das können beliebig viele sein, aber er hat nur endlich viele Zustände.
+
+  - id: schloss
+    title: Das Schloss reparieren
+    prompt: |
+      Ergänze `TRANSITIONS` in `lock.py`, bis das Schloss immer öffnet, wenn
+      die letzten vier Ziffern 1213 sind, und sonst nie. `START` und
+      `opens` bleiben, wie sie sind.
+    check:
+      type: python
+      file: automata/lock.py
+      cases:
+        - opens('1213'): true
+        - opens('991213'): true
+        - opens(''): false
+        - opens('1212'): false
+        - call: opens('11213')
+          expect: true
+          say: Nach 1 und noch einer 1 stimmt vom Code immer noch 1.
+        - call: opens('121213')
+          expect: true
+          say: Nach 121 und einer 2 stimmt vom Code noch 12.
+        - opens('1211213'): true
+        - opens('12131213'): true
+        - opens('12133'): false
+        - opens('1213121'): false
+        - opens('312121213'): true
+    hint: Frag dich in jedem Zustand für jede Ziffer, die nicht weiter zum Code führt, was vom bisher Getippten noch passt. Was ist das längste Ende davon, mit dem der Code beginnt?
+    solution: |
+      Vier Übergänge kommen dazu: `('1', '1'): '1'`, `('121', '1'): '1'`,
+      `('121', '2'): '12'` und `('1213', '1'): '1'`. Alle anderen fehlenden
+      führen zu Recht zurück nach `start`.
+
+  - id: nea-zustaende
+    title: Drei Ziffern später
+    prediction: true
+    prompt: |
+      Der NEA liest `1`, `2`, `1`. In welchen Zuständen kann er danach sein?
+      Überleg erst, dann sieh in der Ausgabe von `lock_nfa.py` nach.
+    check:
+      type: choice
+      options:
+        - "start, 1 und 121"
+        - "nur 121"
+        - "start und 121"
+        - "1 und 121"
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: In 121 ist er, wenn er bei der ersten 1 geraten hat. Er hätte bei jeder Ziffer auch in start bleiben können, und bei der zweiten 1 neu raten.
+      - when: { picked: 2 }
+        say: Fast. Bei der letzten 1 kann er aus start auch wieder raten, dass der Code hier beginnt.
+    solution: In `start` bleibt er immer, `121` hat er erreicht, wenn er bei der ersten 1 geraten hat, und `1`, wenn er bei der letzten 1 rät.
+
+  - id: generalschluessel
+    title: Ein Generalschlüssel
+    prompt: |
+      Die Hausmeisterin hat einen Generalschlüssel: Das Schloss soll auch
+      öffnen, wenn die letzten vier Ziffern 4711 sind. Baue das in den NEA in
+      `lock_nfa.py` ein. 1213 muss weiter funktionieren.
+    check:
+      type: python
+      file: automata/lock_nfa.py
+      cases:
+        - opens('1213'): true
+        - opens('4711'): true
+        - opens('94711'): true
+        - call: opens('44711')
+          expect: true
+          say: Auch bei der zweiten 4 darf der NEA raten, dass hier der Code beginnt. Er bleibt dafür in start.
+        - opens('471'): false
+        - opens('4712'): false
+        - opens('47121213'): true
+        - opens('121213'): true
+        - opens('4741711'): false
+    hint: Ein zweiter Weg aus `start`, so wie der für 1213. `ACCEPTING` bekommt einen zweiten Zustand.
+    solution: |
+      ```python
+      ACCEPTING = {'1213', '4711'}
+      TRANSITIONS[('start', '4')] = {'start', '4'}
+      TRANSITIONS[('4', '7')] = {'47'}
+      TRANSITIONS[('47', '1')] = {'471'}
+      TRANSITIONS[('471', '1')] = {'4711'}
+      ```
+
+  - id: dea-generalschluessel
+    title: Der DEA zum Generalschlüssel
+    prompt: |
+      Wie viele Zustände hat der DEA, den `convert.py` aus deinem NEA mit
+      Generalschlüssel baut?
+    check:
+      type: number
+      expect: 9
+    feedback:
+      - when: { equals: 5 }
+        say: Das ist der DEA für 1213 allein. Ist der Generalschlüssel in `lock_nfa.py` eingebaut und gespeichert?
+    solution: 'Neun: `start`, je vier für »so viel stimmt von 1213« und »so viel stimmt von 4711«. Automatron kommt mit `(0|1|2|3|4|5|6|7|8|9)*(1213|4711)` auf dieselbe Zahl.'
+
+  - id: explosion
+    title: Wenn der DEA explodiert
+    prediction: true
+    prompt: |
+      Für N = 3 hat der DEA 8 Zustände, für N = 5 sind es 32. Wie viele sind
+      es für N = 10? Schätze erst, dann probier es aus.
+    check:
+      type: number
+      expect: 1024
+    feedback:
+      - when: { equals: 62 }
+        say: Es kommen nicht in jedem Schritt gleich viele dazu. Was passiert von 3 nach 5?
+      - when: { equals: 64 }
+        say: Das wäre N = 6.
+    solution: '2 hoch 10 = 1024. Der DEA muss sich die letzten N Ziffern merken, und dafür gibt es 2 hoch N Möglichkeiten. Der NEA kommt mit N + 1 Zuständen aus.'
+
+  - id: nea-oder-dea
+    title: NEA oder DEA?
+    prompt: |
+      Du hast jetzt beides gebaut. Was spricht für einen NEA, was für einen
+      DEA? Denk an das Schreiben und an das Ausführen.
+    check:
+      type: reflection
+      min_words: 20
