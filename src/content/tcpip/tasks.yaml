@@ -1,4 +1,4 @@
-# Aufgaben zu »Wie Rechner sich finden« (TCP/IP-Verbindungen).
+# Aufgaben zu »TCP/IP-Verbindungen«.
 # Format: docs/aufgaben.md. Alle Aufgaben stehen in tcpip.md, außer codewort:
 # dafür fehlt noch der Bot, der das Codewort nennt.
 format: 1
@@ -115,6 +115,95 @@ tasks:
     check:
       type: reflection
       min_words: 20
+
+  - id: schichten
+    title: Wer schickt noch einmal?
+    prompt: |
+      Ein Paket mit einem Stück einer Webseite geht unterwegs verloren. Welche
+      Schicht merkt das und schickt es noch einmal?
+    check:
+      type: choice
+      options:
+        - TCP, die Transportschicht
+        - IP, die Internetschicht
+        - HTTP, die Anwendungsschicht
+        - Ethernet, der Netzzugang
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: IP bringt Pakete zum Ziel, aber ohne Garantie. Wer nummeriert die Bytes und wartet auf eine Bestätigung?
+      - when: { picked: 2 }
+        say: HTTP bekommt davon nichts mit. Es sieht nur die Daten, vollständig und in der richtigen Reihenfolge.
+    solution: TCP nummeriert jedes Byte und wartet auf Bestätigungen. Was nicht bestätigt wird, schickt es noch einmal; HTTP darüber merkt davon nichts.
+
+  - id: port
+    title: Adresse und Port
+    prompt: |
+      Auf einem Server laufen ein Webserver und ein SSH-Server. Woran erkennt
+      der Rechner, für welches der beiden Programme ein ankommendes Paket ist?
+    check:
+      type: choice
+      options:
+        - Am Port, an den das Paket geht
+        - An der IP-Adresse des Servers
+        - An der MAC-Adresse
+        - Am Inhalt des Pakets
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Beide Programme laufen auf demselben Rechner, mit derselben IP-Adresse.
+    solution: Die IP-Adresse bringt das Paket zum Rechner, der Port zum Programm. Der Webserver wartet an Port 80 oder 443, der SSH-Server an Port 22.
+
+  - id: handshake
+    title: Wie lange dauert der Handshake?
+    prediction: true
+    prompt: |
+      Ein `ping` nach `www.anu.edu.au` braucht etwa 0,34 Sekunden. Wie lange
+      dauert es, bis `curl` eine TCP-Verbindung dorthin aufgebaut hat?
+    check:
+      type: choice
+      options:
+        - Etwa 0,34 Sekunden, so lange wie ein Ping
+        - Etwa 0,17 Sekunden, ein Weg
+        - Etwa 1 Sekunde, drei Pakete
+        - Weniger als 1 Millisekunde
+      correct: 0
+    feedback:
+      - when: { picked: 2 }
+        say: Für den Client steht die Verbindung, sobald SYN-ACK zurück ist. Das ACK schickt er los und gleich danach die Daten, ohne zu warten.
+      - when: { picked: 1 }
+        say: Der Client weiß erst, dass der Server da ist, wenn dessen Antwort zurück ist.
+    solution: SYN hin, SYN-ACK zurück, das ist ein Hin und Zurück wie bei `ping`. Das ACK schickt der Client los und gleich dahinter die ersten Daten, ohne auf eine Antwort zu warten.
+
+  - id: erste-webseite
+    title: Die erste Webseite
+    prompt: |
+      Hol `/hypertext/WWW/TheProject.html` von `info.cern.ch` mit `GET`. Was
+      steht zwischen `<TITLE>` und `</TITLE>`?
+    check:
+      type: answer
+      expect: The World Wide Web project
+    hint: Dieselben Zeilen wie mit `HEAD`, nur mit `GET`, und am Ende eine leere Zeile.
+    solution: '»The World Wide Web project«. Die Seite ist vom Dezember 1992; Tim Berners-Lee hat das Web 1989 am CERN erfunden.'
+
+  - id: leere-zeile
+    title: Ohne leere Zeile
+    prediction: true
+    prompt: |
+      Du tippst die Request-Line und `Host:`, aber keine leere Zeile danach.
+      Was passiert?
+    check:
+      type: choice
+      options:
+        - Nichts, der Server wartet auf weitere Header
+        - Der Server antwortet mit 400 Bad Request
+        - Der Server antwortet ganz normal
+        - Die Verbindung bricht sofort ab
+      correct: 0
+    feedback:
+      - when: { picked: 2 }
+        say: Woher soll der Server wissen, dass nach `Host:` kein weiterer Header mehr kommt?
+    solution: Die leere Zeile sagt »Ende der Header«. Ohne sie wartet der Server, bis du weitertippst oder er nach einer Weile aufgibt.
 
   - id: spiel-2048
     title: Ein Spiel aus dem Netz
