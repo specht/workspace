@@ -133,6 +133,21 @@ tasks:
         contains:
           - { pattern: 'sfx\(', say: 'Noch kein Ton: `sfx(0, "C-6", 8)` gehört dorthin, wo ein Stern gefangen wird.' }
 
+
+  - id: himmel
+    title: Ein Himmel
+    prompt: |
+      Gib deinem Spiel einen funkelnden Himmel und eine Wiese, dann speichere.
+    file: TIC-80/stars.lua
+    check:
+      type: files
+      path: TIC-80/stars.lua
+      expect:
+        format: text
+        contains:
+          - { pattern: 'sky\[i\]|sky\s*=\s*\{', say: 'In `TIC-80/stars.lua` gibt es noch keine Tabelle `sky` für den Himmel.' }
+          - { pattern: '\bpix\(', say: 'Noch setzt dein Spiel keine einzelnen Pixel für den Himmel: `pix(p.x, p.y, …)`.' }
+          - { pattern: '\brect\(', say: 'Noch fehlt die Wiese: `rect(0, 128, 240, 8, 6)`.' }
   - id: abgabe
     title: Dein Spiel
     prompt: |
