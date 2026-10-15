@@ -1,0 +1,216 @@
+# Aufgaben zu »Eine Facharbeit mit LaTeX«.
+# Format: docs/aufgaben.md. Die Facharbeit liegt in /workspace/facharbeit;
+# die Prüfungen lesen facharbeit.tex, literatur.bib und das PDF dort.
+format: 1
+activity: latex
+tasks:
+  - id: erstes-pdf
+    title: Das erste PDF
+    prompt: |
+      Schreibe das erste Dokument in `facharbeit/facharbeit.tex` und übersetze
+      es, so dass `facharbeit.pdf` entsteht.
+    file: facharbeit/facharbeit.pdf
+    check:
+      type: files
+      path: facharbeit/facharbeit.pdf
+      expect:
+        exists: true
+        format: pdf
+    hint: |
+      Speichere mit Strg+S oder drücke Strg+Alt+B. Steht unten in der
+      Statusleiste ein Kreuz, zeigt »Problems« (Strg+Shift+M) den Fehler.
+    feedback:
+      - when: { problem: missing }
+        say: Es gibt noch keine `facharbeit/facharbeit.pdf`. Heißt deine Datei genau `facharbeit.tex` und liegt sie im Ordner `/workspace/facharbeit`? Ist LaTeX Workshop installiert?
+
+  - id: sonderzeichen
+    title: Prozent und Und
+    prompt: |
+      Wie schreibst du »Rabatt: 20 % & mehr« in einer `.tex`-Datei?
+    check:
+      type: choice
+      options:
+        - '`Rabatt: 20 \% \& mehr`'
+        - '`Rabatt: 20 % & mehr`'
+        - '`Rabatt: 20 %% && mehr`'
+        - '`Rabatt: 20 \percent \and mehr`'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: '`%` beginnt in LaTeX einen Kommentar: Alles danach in der Zeile verschwindet.'
+      - when: { picked: 2 }
+        say: Doppelte Zeichen helfen hier nicht. Was steht in LaTeX vor einem Zeichen, das selbst eine Bedeutung hat?
+    solution: '`\%` und `\&` schreiben die Zeichen selbst. Ohne `\` wäre `%` ein Kommentar und `&` ein Spaltentrenner.'
+
+  - id: gliederung
+    title: Titelseite und Gliederung
+    prompt: |
+      Gib deiner Facharbeit eine Titelseite, ein Inhaltsverzeichnis und die
+      Kapitel mit ihren Unterkapiteln, dann speichere.
+    file: facharbeit/facharbeit.tex
+    check:
+      type: files
+      path: facharbeit/facharbeit.tex
+      expect:
+        format: text
+        contains:
+          - { pattern: '\\begin\{titlepage\}', say: 'In `facharbeit.tex` gibt es noch keine Titelseite (`\begin{titlepage}`).' }
+          - { pattern: '\\tableofcontents', say: 'Noch fehlt das Inhaltsverzeichnis: `\tableofcontents`.' }
+          - { pattern: '\\subsection\{', say: 'Noch gibt es keine Unterkapitel (`\subsection{…}`) im Kapitel Versuch.' }
+
+  - id: nummern
+    title: Ein Kapitel mehr
+    prediction: true
+    prompt: |
+      Du fügst vor »Theorie« ein neues Kapitel `\section{Geschichte}` ein. Was
+      passiert mit dem Kapitel »Versuch«, das bisher die Nummer 3 hatte?
+      Überleg erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - Es wird zu Kapitel 4, im Text und im Inhaltsverzeichnis
+        - Es bleibt Kapitel 3, bis ich die Nummer ändere
+        - Es wird zu Kapitel 4, aber im Inhaltsverzeichnis steht weiter 3
+        - LaTeX meldet einen Fehler, weil es zwei Kapitel 3 gibt
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Du hast die Nummern nirgends hingeschrieben. Wer zählt in LaTeX die Kapitel?
+      - when: { picked: 2 }
+        say: Das Inhaltsverzeichnis entsteht aus denselben Überschriften. LaTeX Workshop übersetzt so oft, bis beides stimmt.
+    solution: LaTeX zählt die Kapitel selbst, bei jedem Übersetzen neu. Alle Nummern danach rücken auf, auch im Inhaltsverzeichnis und in Verweisen.
+
+  - id: formel
+    title: Die Formel
+    prompt: |
+      Schreibe das Kapitel Theorie mit der nummerierten Formel für die
+      Schwingungsdauer und einem Verweis auf sie, dann speichere.
+    file: facharbeit/facharbeit.tex
+    check:
+      type: files
+      path: facharbeit/facharbeit.tex
+      expect:
+        format: text
+        contains:
+          - { pattern: '\\begin\{equation\}', say: 'In `facharbeit.tex` gibt es noch keine Formel in eigener Zeile (`\begin{equation}`).' }
+          - { pattern: '\\sqrt\{', say: 'In der Formel fehlt noch die Wurzel: `\sqrt{\frac{l}{g}}`.' }
+          - { pattern: '\\eqref\{', say: 'Noch verweist der Text nicht auf die Formel: `\eqref{eq:schwingungsdauer}`.' }
+
+  - id: schwingungsdauer
+    title: Ein längerer Faden
+    prompt: |
+      Wie lange dauert eine Schwingung, wenn der Faden 1,50 m lang ist? Rechne
+      mit der Formel aus der Theorie und g = 9,81 m/s². Runde auf zwei
+      Stellen.
+    check:
+      type: number
+      expect: 2.46
+      tolerance: 0.02
+      unit: s
+    hint: Erst l durch g teilen, dann die Wurzel ziehen, dann mal 2π.
+    feedback:
+      - when: { between: [0.38, 0.40] }
+        say: Das ist die Wurzel aus l / g. Es fehlt noch der Faktor 2π.
+      - when: { between: [0.95, 0.97] }
+        say: Hast du vor dem Malnehmen mit 2π die Wurzel gezogen?
+    solution: T = 2π · √(1,50 / 9,81) ≈ 2π · 0,391 ≈ 2,46 s.
+
+  - id: bild
+    title: Das Bild vom Aufbau
+    prompt: |
+      Setze ein Bild vom Aufbau als nummerierte Abbildung mit Unterschrift in
+      deine Facharbeit, dann speichere.
+    file: facharbeit/facharbeit.tex
+    check:
+      type: files
+      path: facharbeit/facharbeit.tex
+      expect:
+        format: text
+        contains:
+          - { pattern: '\\includegraphics', say: 'In `facharbeit.tex` gibt es noch kein Bild (`\includegraphics`).' }
+          - { pattern: '\\begin\{figure\}', say: 'Das Bild steht noch nicht in einer Abbildung (`\begin{figure}`), darum hat es keine Nummer.' }
+          - { pattern: '\\caption\{', say: 'Die Abbildung hat noch keine Unterschrift: `\caption{…}`.' }
+
+  - id: tabelle
+    title: Die Messwerte
+    prompt: |
+      Setze die Messwerte als Tabelle mit Überschrift und Linien in deine
+      Facharbeit, dann speichere.
+    file: facharbeit/facharbeit.tex
+    check:
+      type: files
+      path: facharbeit/facharbeit.tex
+      expect:
+        format: text
+        contains:
+          - { pattern: '\\begin\{tabular\}', say: 'In `facharbeit.tex` gibt es noch keine Tabelle (`\begin{tabular}`).' }
+          - { pattern: '\\toprule', say: 'Die Tabelle hat noch keine Linien: `\toprule`, `\midrule` und `\bottomrule` aus dem Paket booktabs.' }
+          - { pattern: '\\label\{tab:', say: 'Die Tabelle hat noch keinen Namen zum Verweisen, zum Beispiel `\label{tab:messwerte}`.' }
+
+  - id: diagramm
+    title: Das Diagramm
+    prompt: |
+      Zeichne die Messwerte und die Kurve aus der Theorie als Diagramm, dann
+      speichere.
+    file: facharbeit/facharbeit.tex
+    check:
+      type: files
+      path: facharbeit/facharbeit.tex
+      expect:
+        format: text
+        contains:
+          - { pattern: '\\begin\{tikzpicture\}', say: 'In `facharbeit.tex` gibt es noch kein Diagramm (`\begin{tikzpicture}`).' }
+          - { pattern: '\bplot\b', say: 'Im Diagramm fehlt noch die Kurve aus der Theorie: `plot (\x, {2*pi*sqrt(\x/9.81)})`.' }
+          - { pattern: '\\foreach', say: 'Noch zeichnet das Diagramm keine Messpunkte: Eine `\foreach`-Zeile setzt für jedes Paar einen Punkt.' }
+
+  - id: quellen
+    title: Die Quellen
+    prompt: |
+      Lege `literatur.bib` mit deinen Quellen an, zitiere sie im Text und setze
+      das Literaturverzeichnis, dann speichere.
+    file: facharbeit/facharbeit.tex
+    check:
+      type: files
+      path: facharbeit/facharbeit.tex
+      expect:
+        format: text
+        contains:
+          - { pattern: '\\addbibresource\{', say: 'Noch weiß LaTeX nicht, wo die Quellen stehen: `\addbibresource{literatur.bib}` in die Präambel.' }
+          - { pattern: '\\(paren|text)?cite\{', say: 'Noch zitiert der Text keine Quelle, zum Beispiel mit `\parencite{tipler2019}`.' }
+          - { pattern: '\\printbibliography', say: 'Noch fehlt das Literaturverzeichnis: `\printbibliography` nach dem Fazit.' }
+
+  - id: querverweis
+    title: Zwei Fragezeichen
+    prompt: |
+      Im PDF steht »siehe Tabelle ??«. Woran liegt das am wahrscheinlichsten?
+    check:
+      type: choice
+      options:
+        - Der Name im `\ref{…}` passt nicht zum `\label{…}` der Tabelle
+        - Die Tabelle hat keine Linien
+        - Das Paket booktabs fehlt
+        - Die Tabelle steht auf einer anderen Seite
+      correct: 0
+    feedback:
+      - when: { picked: 3 }
+        say: Verweise funktionieren über Seiten hinweg; dafür sind sie da.
+    solution: '`??` heißt: LaTeX kennt keinen `\label` mit diesem Namen. Meist ist es ein Tippfehler, etwa `\ref{tab:messwert}` statt `\ref{tab:messwerte}`.'
+
+  - id: abgabe
+    title: Deine Facharbeit
+    prompt: |
+      Gib deine fertige Facharbeit als PDF ab. Du kannst jederzeit neu abgeben.
+    check:
+      type: submit
+      pick: facharbeit/*.pdf
+      max_size: 20MB
+
+  - id: word-oder-latex
+    title: Word oder LaTeX?
+    prompt: |
+      Würdest du deine nächste Facharbeit oder dein nächstes Protokoll lieber
+      in einem Textprogramm wie Word schreiben oder in LaTeX? Begründe mit
+      zwei Dingen, die dir beim Schreiben aufgefallen sind.
+    check:
+      type: reflection
+      min_words: 20
