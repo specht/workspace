@@ -27,10 +27,10 @@ tasks:
     check:
       type: choice
       options:
-        - Hugo meldet einen Fehler, weil nach `Pluto` ein zweiter Doppelpunkt mit Leerzeichen kommt
-        - Der Titel ist »Pluto«, der Rest geht verloren
+        - 'Hugo bricht mit einem Fehler ab: zwei Doppelpunkte mit Leerzeichen in einer Zeile'
+        - 'Der Titel ist »Pluto«, der Rest der Zeile nach dem Doppelpunkt geht verloren'
         - 'Der Titel ist »Pluto: Planet oder nicht?«'
-        - Hugo nimmt den Dateinamen als Titel
+        - 'Hugo nimmt stattdessen den Dateinamen als Titel und meldet nichts'
       correct: 0
     feedback:
       - when: { picked: 2 }
@@ -45,9 +45,9 @@ tasks:
       type: choice
       options:
         - Den Text der Markdown-Datei unter der Front Matter, als HTML
-        - Die ganze Markdown-Datei, mit Front Matter
-        - Den Titel der Seite
-        - Den Inhalt von `hugo.yaml`
+        - 'Die ganze Markdown-Datei, mit der Front Matter oben'
+        - 'Den Titel der Seite aus der Front Matter'
+        - 'Den Inhalt von `hugo.yaml`, als HTML'
       correct: 0
     feedback:
       - when: { picked: 1 }
@@ -65,9 +65,9 @@ tasks:
       type: choice
       options:
         - In der Navigation jeder Seite und als Karte auf der Startseite
-        - Nur unter ihrer eigenen Adresse `/venus/`
+        - 'Nur unter ihrer eigenen Adresse `/venus/`, sonst nirgends'
         - Nirgends, bis ich sie in `baseof.html` eintrage
-        - Nur auf der Startseite
+        - 'Nur als Karte auf der Startseite, nicht in der Navigation'
       correct: 0
     feedback:
       - when: { picked: 2 }

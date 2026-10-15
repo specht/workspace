@@ -789,6 +789,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   FLOW-MATIC, die NASM-Seite sagt, dass es um NASM geht; die
   Ziffernerkennung ist von »boostrap«, »Kenrel«, »beboachten« und »des die«
   befreit.
+- Auswahlaufgaben: In 28 Aufgaben war die richtige Antwort deutlich die
+  längste und damit leicht zu erraten; die falschen Antworten sind jetzt
+  ebenso ausführlich und plausibel. Zwölf Aufgaben ohne jede Rückmeldung
+  bekommen eine zu den naheliegenden Fehlern, als Frage statt als Lösung.
 
 ### Entfernt
 

@@ -71,6 +71,11 @@ tasks:
         - Eine Fehlermeldung, weil die Richtung falsch ist.
       correct: 1
     hint: Die Daten legen jede `IN_GENRE`-Beziehung vom Film zum Genre an. Probier es aus.
+    feedback:
+      - when: { picked: 0 }
+        say: 'In Cypher zählt die Richtung des Pfeils. Wie wurden die `IN_GENRE`-Beziehungen angelegt, vom Film zum Genre oder umgekehrt?'
+      - when: { picked: 3 }
+        say: 'Cypher meldet dabei keinen Fehler. Es findet nur nichts, was zu diesem Muster passt.'
     solution: |
       Ein Muster mit Pfeil passt nur auf Beziehungen in dieser Richtung. Keine
       verläuft vom Genre zum Film, also gibt es kein Ergebnis, aber auch keinen
@@ -202,6 +207,11 @@ tasks:
         - '9'
         - '1'
       correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: 'Jedes Paar kommt zweimal vor: einmal als (a, b) und einmal als (b, a).'
+      - when: { picked: 2 }
+        say: 'Dieselbe Beziehung kommt in einem Muster nie zweimal vor, also sind a und b immer zwei verschiedene Personen.'
     solution: |
       Sechs: Jedes der drei Paare kommt zweimal vor, als (A, B) und als (B, A).
       Mit sich selbst wird niemand gepaart, weil eine Beziehung in einem Muster

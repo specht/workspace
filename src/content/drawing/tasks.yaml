@@ -112,8 +112,8 @@ tasks:
       type: choice
       options:
         - Die Kreise übermalen auch die Wiese; der Regenbogen reicht bis zum unteren Rand
-        - Der Regenbogen steht trotzdem hinter der Wiese
-        - Ruby meldet einen Fehler, weil keine Maske festgelegt ist
+        - 'Der Regenbogen steht trotzdem hinter der Wiese, weil sie zuerst gemalt wurde'
+        - 'Ruby meldet einen Fehler, weil vor dem Zeichnen keine Maske festgelegt ist'
       correct: 0
     feedback:
       - when: { picked: 1 }

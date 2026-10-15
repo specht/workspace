@@ -123,9 +123,9 @@ tasks:
       type: choice
       options:
         - In ein Programm auf dem Server, nicht in eine Webseite und nicht in ein öffentliches Repository
-        - In die Webseite, damit `fetch` ihn mitschicken kann
-        - In die Adresse der Seite, als Parameter
-        - Ins Wiki der Klasse, damit alle ihn nutzen können
+        - 'In die Webseite, damit `fetch` ihn bei jeder Anfrage gleich mitschicken kann'
+        - 'In die Adresse der Seite, als Parameter, damit er nicht im Quelltext steht'
+        - 'Ins Wiki der Klasse, damit alle ihn nutzen können und niemand einen eigenen braucht'
       correct: 0
     feedback:
       - when: { picked: 1 }

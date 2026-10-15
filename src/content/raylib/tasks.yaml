@@ -110,9 +110,9 @@ tasks:
       type: choice
       options:
         - Die Figur bleibt an der Wand stehen, statt an ihr entlangzugleiten
-        - Die Figur geht durch die Wand hindurch
+        - 'Die Figur geht durch die Wand hindurch, als wäre sie nicht da'
         - Die Figur gleitet an der Wand entlang wie vorher
-        - Die Figur springt zurück an den Start
+        - 'Die Figur springt zurück an die Stelle, an der sie gestartet ist'
       correct: 0
     feedback:
       - when: { picked: 1 }
@@ -173,8 +173,8 @@ tasks:
       type: choice
       options:
         - Mit großen Schritten kann der Strahl über die Ecke eines Blocks hinwegspringen
-        - Mit großen Schritten wird das Programm langsamer
-        - raylib erlaubt nur Schritte kleiner als 0,1
+        - 'Mit großen Schritten wird das Programm langsamer, weil mehr gerechnet wird'
+        - 'raylib erlaubt in seinen Funktionen nur Schritte kleiner als 0,1'
         - Ein Block ist 0,02 Einheiten groß
       correct: 0
     feedback:

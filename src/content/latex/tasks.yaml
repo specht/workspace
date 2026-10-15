@@ -187,8 +187,8 @@ tasks:
       type: choice
       options:
         - Der Name im `\ref{…}` passt nicht zum `\label{…}` der Tabelle
-        - Die Tabelle hat keine Linien
-        - Das Paket booktabs fehlt
+        - 'Die Tabelle hat keine Linien, deshalb findet LaTeX sie nicht'
+        - 'Das Paket booktabs fehlt in der Präambel'
         - Die Tabelle steht auf einer anderen Seite
       correct: 0
     feedback:

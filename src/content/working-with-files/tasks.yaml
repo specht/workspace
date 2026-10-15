@@ -152,8 +152,15 @@ tasks:
     check:
       type: choice
       options:
-        - Sie liegt im Papierkorb, von dort holst du sie zurück.
-        - Mit `rm -u` machst du das Löschen rückgängig.
+        - 'Sie liegt im Papierkorb des Workspace, von dort holst du sie zurück.'
+        - 'Mit `rm -u` machst du das letzte Löschen wieder rückgängig.'
         - Sie ist weg. Hilft nur eine Kopie, die du vorher woanders hattest, etwa in Git.
-        - "`rmdir` holt sie zurück."
+        - '`rmdir` holt die zuletzt gelöschte Datei wieder zurück.'
       correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: 'Das Terminal hat keinen Papierkorb. `rm` löscht sofort und endgültig.'
+      - when: { picked: 1 }
+        say: 'Eine solche Option gibt es nicht. Was `rm` gelöscht hat, ist weg.'
+      - when: { picked: 3 }
+        say: '`rmdir` löscht leere Ordner. Zurückholen kann es nichts.'

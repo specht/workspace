@@ -45,9 +45,9 @@ tasks:
       type: choice
       options:
         - Die Figur zieht eine Spur hinter sich her
-        - Die Figur bewegt sich wie vorher
-        - Der Bildschirm bleibt schwarz
-        - TIC-80 meldet einen Fehler
+        - 'Die Figur bewegt sich genau wie vorher'
+        - 'Der Bildschirm bleibt schwarz und leer'
+        - 'TIC-80 meldet einen Fehler im Programm'
       correct: 0
     feedback:
       - when: { picked: 1 }

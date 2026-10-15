@@ -61,9 +61,9 @@ tasks:
       type: choice
       options:
         - Gleiche Passwörter bekommen verschiedene Hashes, fertige Listen von Hashes nützen nichts
-        - Es ist ein zweites, geheimes Passwort
-        - Es verschlüsselt den Hash, damit niemand ihn lesen kann
-        - Es macht den Hash kürzer
+        - 'Es ist ein zweites, geheimes Passwort, das nur der Server selbst kennt'
+        - 'Es verschlüsselt den Hash, damit niemand ihn aus der Datei lesen kann'
+        - 'Es macht den Hash kürzer, damit er weniger Platz in der Datenbank braucht'
       correct: 0
     feedback:
       - when: { picked: 1 }

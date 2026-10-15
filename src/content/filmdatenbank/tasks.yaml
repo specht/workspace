@@ -14,11 +14,16 @@ tasks:
     check:
       type: choice
       options:
-        - Weil MySQL keine Kommas in Texten speichern kann.
+        - 'Weil MySQL keine Kommas in Texten speichern kann und den Text dort abschneidet.'
         - Weil man dann für jede Frage nach einem Genre in jedem Text suchen muss, und niemand verhindert `Sci-Fi` neben `SciFi`.
-        - Weil ein Text höchstens 255 Zeichen lang sein darf.
-        - Weil Genres immer Zahlen sein müssen.
+        - 'Weil ein Text höchstens 255 Zeichen lang sein darf und lange Listen von Genres nicht hineinpassen.'
+        - 'Weil Genres als Zahlen gespeichert werden müssen, sonst lassen sie sich nicht sortieren.'
       correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: 'Kommas in Texten sind für MySQL kein Problem. Wie findest du alle Filme mit dem Genre `Sci-Fi`, und was passiert bei einem Tippfehler?'
+      - when: { picked: 2 }
+        say: 'Platz wäre genug. Was kostet es, in jedem Text nach einem Genre zu suchen, und wer verhindert verschiedene Schreibweisen?'
     solution: |
       Ein Wert pro Zelle: Dann kann die Datenbank Genres zählen, vergleichen
       und sicherstellen, dass es jedes Genre nur einmal gibt.
@@ -67,6 +72,11 @@ tasks:
         - "`movie_genre` verschwindet, und `genre` bekommt eine Spalte `movie_id`."
         - Es entstehen zwei Tabellen zwischen `movie` und `genre`.
       correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: 'Für eine Beziehung n:1 braucht es keine eigene Tabelle mehr. Wohin kommt die Spalte, die auf das Genre zeigt?'
+      - when: { picked: 2 }
+        say: 'Andersherum: Zu jedem Film gehört genau ein Genre. Die Spalte kommt in die Tabelle auf der Seite mit dem n, also zu `movie`.'
     solution: |
       Bei n:1 gehört zu jedem Film genau ein Genre. Das passt in eine Spalte
       der Tabelle `movie`: den Fremdschlüssel `genre_id`. Eine eigene Tabelle

@@ -62,8 +62,8 @@ tasks:
     check:
       type: choice
       options:
-        - '`alt="Bild"`'
-        - '`alt="IMG_2034.jpg"`'
+        - '`alt="Ein schönes Bild für meine Seite über Tiere"`'
+        - '`alt="IMG_2034.jpg vom Ausflug ins Aquarium"`'
         - '`alt="Ein rosa Axolotl mit Kiemenbüscheln in einem Aquarium"`'
         - '`alt=""`'
       correct: 2
@@ -163,6 +163,11 @@ tasks:
         - Nichts, Flexbox legt die Breite selbst fest.
         - Das Bild wird höher, aber nicht breiter.
       correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: 'Bild und Text teilen sich die Zeile; das Bild nimmt sich 60 % und der Text den Rest.'
+      - when: { picked: 2 }
+        say: 'Flexbox richtet sich nach der Breite, die du angibst. Der Text bekommt, was übrig bleibt.'
     solution: "Der Textbereich hat `flex: 1` und nimmt, was übrig bleibt. Bekommt das Bild mehr, bleibt für den Text weniger."
 
   - id: kleine-bildschirme
@@ -191,6 +196,11 @@ tasks:
         - Nur auf Handys.
         - Immer, aber erst nach 700 Millisekunden.
       correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: '`max-width` heißt höchstens. Für mindestens gibt es `min-width`.'
+      - when: { picked: 2 }
+        say: 'Die Regel fragt nach der Breite des Fensters, nicht nach dem Gerät. Ein schmales Fenster am Computer zählt genauso.'
 
   - id: abgabe
     title: Abgabe

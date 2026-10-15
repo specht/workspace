@@ -24,10 +24,10 @@ tasks:
     check:
       type: choice
       options:
-        - Schon in einem Commit, also für immer in der Geschichte.
+        - 'Schon in einem Commit, also dauerhaft in der Geschichte des Repositorys.'
         - In der Staging Area. Erst der nächste `git commit` nimmt sie in die Geschichte auf.
-        - Nur in der Datei, Git weiß noch nichts davon.
-        - Auf dem Server, von dem das Repository kommt.
+        - 'Nur in der Datei auf der Festplatte, Git weiß noch nichts davon.'
+        - 'Auf dem Server, von dem das Repository geklont wurde.'
       correct: 1
     feedback:
       - when: { picked: 0 }
@@ -65,11 +65,16 @@ tasks:
     check:
       type: choice
       options:
-        - Weil Git keine Dateien ohne Endung speichern kann.
+        - 'Weil Git keine Dateien ohne Endung speichern kann, sie gingen beim Klonen verloren.'
         - Weil sie aus `hello.c` jederzeit neu entsteht; ins Repository gehört die Quelle, nicht das Ergebnis.
-        - Weil ausführbare Dateien Viren sein könnten.
-        - Weil Git nur Textdateien speichern kann.
+        - 'Weil ausführbare Dateien Viren sein könnten und GitHub sie deshalb ablehnt.'
+        - 'Weil Git nur Textdateien speichern kann und Binärdateien beschädigt.'
       correct: 1
+    feedback:
+      - when: { picked: 3 }
+        say: 'Git speichert jede Datei, auch Bilder und Programme. Aber woraus entsteht `hello`, und was passiert, wenn zwei Leute sie verschieden übersetzen?'
+      - when: { picked: 2 }
+        say: 'Darum geht es nicht. Woraus entsteht `hello`, und braucht man sie im Repository, wenn man sie jederzeit neu übersetzen kann?'
 
   - id: gemergt
     title: Feature gemergt
@@ -111,9 +116,9 @@ tasks:
       type: choice
       options:
         - Bobs eigene Änderung, so wie sie in seinem letzten Commit steht.
-        - Die Änderung von Alice, die vom Remote kommt.
-        - Der Stand von vor beiden Änderungen.
-        - Was Git als Lösung vorschlägt.
+        - 'Die Änderung von Alice, die gerade vom Remote gekommen ist.'
+        - 'Der Stand der Datei von vor beiden Änderungen.'
+        - 'Was Git als Zusammenführung beider Änderungen vorschlägt.'
       correct: 0
     feedback:
       - when: { picked: 1 }
@@ -144,10 +149,15 @@ tasks:
     check:
       type: choice
       options:
-        - Ja, `git push` überträgt alles.
-        - Nein, Tags pushst du extra, mit `git push origin v1.0` oder `git push origin --tags`.
-        - Nur wenn der Tag annotiert ist.
+        - 'Ja, `git push` überträgt alle Commits, Branches und Tags.'
+        - 'Nein, Tags pushst du extra: `git push origin v1.0` oder `--tags`.'
+        - 'Nur wenn der Tag mit `-a` annotiert ist, einfache Tags bleiben lokal.'
       correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: '`git push` überträgt den Branch und seine Commits. Ein Tag ist ein eigener Name, den du ausdrücklich mitschicken musst.'
+      - when: { picked: 2 }
+        say: 'Ob annotiert oder nicht: Ein Tag wandert erst mit, wenn du ihn ausdrücklich pushst.'
 
   - id: rueckgaengig
     title: Aus der Staging Area holen
@@ -158,7 +168,7 @@ tasks:
         - "`git restore README.md`"
         - "`git restore --staged README.md`"
         - "`git revert HEAD`"
-        - "`rm README.md`"
+        - '`rm README.md && git add .`'
       correct: 1
     feedback:
       - when: { picked: 0 }

@@ -87,10 +87,10 @@ tasks:
     check:
       type: choice
       options:
-        - Weil die Klasse erst später durch JavaScript dazukommt und Svelte die Regel sonst als unbenutzt weglassen würde
-        - Weil die Regel sonst nur auf dem Handy gilt
-        - Weil grüne Hintergründe in Svelte immer global sein müssen
-        - Weil die Regel sonst auch für andere Seiten gälte
+        - 'Weil die Klasse erst später durch JavaScript dazukommt; Svelte ließe die Regel sonst als unbenutzt weg'
+        - 'Weil die Regel sonst nur auf dem Handy gilt und auf großen Bildschirmen fehlt'
+        - 'Weil grüne Hintergründe in Svelte immer global sein müssen, sonst bleiben sie weiß'
+        - 'Weil die Regel sonst auch für alle anderen Seiten und Komponenten der Anwendung gälte'
       correct: 0
     feedback:
       - when: { picked: 1 }
