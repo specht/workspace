@@ -449,8 +449,18 @@ im Viewer, drehbar, mit den Pfeiltasten zur nächsten.
 Mit `preview: anaglyph` prüft die Karte `requires` selbst, im Browser, mit dem
 Bild, das sie ohnehin zeichnet: Meldet der Viewer Fehler oder stehen weniger
 als `min_objects` Objekte in der Szene, gibt sie nicht ab. Der Workspace muss
-dafür nicht laufen, und der Ausdruck einer Szene wird nur im Browser der
-Person ausgerechnet. Der Server liest die Szene dann nicht noch einmal.
+dafür nicht laufen. Der Server liest die Szene dann nicht noch einmal.
+
+Die Ausdrücke einer Szene sind JavaScript. Darum läuft der Viewer nie auf der
+Website selbst, sondern auf `abgaben.<host>` wie die Abgaben-Ansicht: in einem
+Frame mit `sandbox`, mit einem eigenen, leeren Ursprung, ohne die Cookies der
+Website. Die Seite holt sich für jede Szene eine signierte Adresse
+(`/api/anaglyph/address`, mit denselben Rechten wie vorher), und der Viewer
+schickt Bild, Fehler und die Zahl der Objekte nur als Nachricht zurück. So
+erreicht eine Szene auch dann nichts, wenn eine Lehrkraft sie in der Galerie
+ansieht. Zwei kleine Änderungen am Viewer macht der Server beim Ausliefern
+(`AnaglyphViewer::SANDBOX_PATCHES`); passt eine davon nicht mehr zum Viewer,
+liefert er ihn gar nicht aus.
 
 ### measure, command, scene
 

@@ -19,10 +19,11 @@
         return svg;
     }
 
+    // The text of a message, read in a document of its own: nothing in it
+    // loads or runs there (an element made here would load its images).
     function plain(html) {
-        const div = document.createElement('div');
-        div.innerHTML = html || '';
-        return div.textContent.trim();
+        const doc = new DOMParser().parseFromString(html || '', 'text/html');
+        return doc.body.textContent.trim();
     }
 
     function nameFor(email) {

@@ -159,6 +159,7 @@
                 if (data.success) {
                     tag = data.tag;
                     $('#part1').slideDown();
+                    $('#part1_hint').slideDown();
                     $('#ti_code').focus();
                     return;
                 }
@@ -169,6 +170,8 @@
                 $('#bu_qr_login').prop('disabled', false);
                 if (data.error === 'login_request_rate_limited') {
                     show_error_message('Bitte warte einen Moment, bevor du einen neuen Anmeldecode anforderst.');
+                } else if (data.error === 'no_invitation_found') {
+                    show_error_message('Für diese E-Mail-Adresse gibt es keine Einladung. Prüf die Schreibweise oder frag deine Lehrkraft, mit welcher Adresse du eingeladen bist.');
                 }
             });
         });
@@ -189,6 +192,10 @@
 
                 input.prop('disabled', false).val('').focus();
                 button.prop('disabled', false);
+                if (data.error === 'login_rate_limited') {
+                    show_error_message('Zu viele Versuche in kurzer Zeit. Bitte warte ein paar Minuten.');
+                    return;
+                }
                 show_error_message('Der Anmeldecode ist falsch oder nicht mehr gültig. Bitte versuche es erneut oder fordere einen neuen Code an.');
             }, {no_please_wait: true});
         });
@@ -252,6 +259,9 @@
                             <input type="text" id='ti_code' class="form-control" placeholder="Bitte gib deinen 6-stelligen Code ein." inputmode='numeric' maxlength='6' pattern='[0-9]{6}' autocomplete='one-time-code'>
                             <button id='bu_submit_code' class="btn btn-primary"><i class="bi bi-box-arrow-in-right"></i>Anmelden</button>
                         </div>
+                        <p id='part1_hint' class='text-secondary small' style='display: none;'>
+                            Die E-Mail mit dem Code ist unterwegs. Kommt keine, sieh im Spam-Ordner nach.
+                        </p>
                         <div class='api_messages' style='display: none;'></div>
                     </form>
                 </div>

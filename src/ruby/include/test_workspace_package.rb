@@ -1,6 +1,7 @@
 require 'fileutils'
 require 'find'
 require 'yaml'
+require_relative 'user_files'
 
 module TestWorkspacePackage
     class ConfigError < StandardError; end
@@ -216,18 +217,21 @@ module TestWorkspacePackage
         files.sort_by(&:first)
     end
 
+    # Written as root into the exam workspace, so only through UserFiles: a
+    # link in .git (the package or the student may have put one there) is
+    # refused instead of followed.
     def self.write_git_exclude(workspace_path)
-        path = File.join(workspace_path, '.git', 'info', 'exclude')
-        FileUtils.mkdir_p(File.dirname(path))
-        existing = File.exist?(path) ? File.read(path) : ''
+        rel = '.git/info/exclude'
+        existing = UserFiles.read(workspace_path, rel) || ''
         marker = '# Hackschule exam workspace'
+        path = File.join(workspace_path, rel)
         return path if existing.include?(marker)
 
-        File.open(path, 'a') do |f|
-            f.puts unless existing.empty? || existing.end_with?("\n")
-            f.puts marker
-            INTERNAL_GIT_EXCLUDES.each { |entry| f.puts entry }
-        end
+        text = +''
+        text << "\n" unless existing.empty? || existing.end_with?("\n")
+        text << "#{marker}\n"
+        INTERNAL_GIT_EXCLUDES.each { |entry| text << "#{entry}\n" }
+        UserFiles.write(workspace_path, rel, text, mode: :append)
         path
     end
 

@@ -1,7 +1,10 @@
 // Pictures of Anaglyph scenes for the task card and the class gallery
-// (check option preview: anaglyph, docs/aufgaben.md). The site's copy of the
-// viewer (/anaglyph-viewer/, AnaglyphViewer in main.rb) draws each scene in
-// a hidden frame and hands the picture over. Always at 1280 × 800, so a
+// (check option preview: anaglyph, docs/aufgaben.md). The viewer
+// (AnaglyphViewer in main.rb) draws each scene in a hidden frame and hands
+// the picture over. It runs on abgaben.<host>, sandboxed, because a scene's
+// expressions are JavaScript: the site gives each scene a signed address
+// there (/api/anaglyph/address), and the frame talks to this page only
+// through messages. Always at 1280 × 800, so a
 // picture looks the same everywhere, and one scene at a time, because a
 // browser allows only a few 3D canvases at once.
 window.AnaglyphPreview = (function () {
@@ -11,19 +14,32 @@ window.AnaglyphPreview = (function () {
     const queue = [];
     let busy = false;
 
-    function viewerUrl(scene, picture) {
-        return '/anaglyph-viewer/index.html?scene=' + encodeURIComponent(scene) + '&abgabe' + (picture ? '&bild' : '');
+    async function viewerUrl(scene, picture) {
+        const response = await fetch('/api/anaglyph/address?scene=' + encodeURIComponent(scene),
+            { credentials: 'same-origin' });
+        if (!response.ok) throw new Error('Die Szene ließ sich nicht laden.');
+        const data = await response.json();
+        return data.url + '&abgabe' + (picture ? '&bild' : '');
+    }
+
+    // A frame for the viewer: scripts yes, the site's origin no.
+    function viewerFrame(frame) {
+        frame.setAttribute('sandbox', 'allow-scripts');
+        return frame;
     }
 
     function next() {
         if (busy || queue.length === 0) return;
         busy = true;
         const job = queue.shift();
-        const frame = document.createElement('iframe');
+        const frame = viewerFrame(document.createElement('iframe'));
         frame.className = 'scene-picture-frame';
         frame.setAttribute('aria-hidden', 'true');
         frame.tabIndex = -1;
-        frame.style.cssText = `position: fixed; left: -${WIDTH + 100}px; top: 0; width: ${WIDTH}px; height: ${HEIGHT}px; border: 0;`;
+        // In the viewport, but invisible: the browser stops drawing frames
+        // from another origin that are off screen.
+        frame.style.cssText = `position: fixed; left: 0; top: 0; width: ${WIDTH}px; height: ${HEIGHT}px; border: 0; ` +
+            'opacity: 0; pointer-events: none; z-index: -1;';
         let timer = null;
         const done = (error, result) => {
             window.removeEventListener('message', onMessage);
@@ -34,29 +50,23 @@ window.AnaglyphPreview = (function () {
             next();
         };
         const onMessage = (event) => {
-            if (event.origin !== window.location.origin || event.source !== frame.contentWindow) return;
-            if (!event.data || event.data.type !== 'anaglyph-picture') return;
-            // The frame is on this site, so its scene can be read: what counts
-            // as an object is what scene_dump.js counts, without the grid.
-            // The viewer declares it with let, so it is no property of the
-            // frame's window; a function made in the frame can see it.
-            let objects = null;
-            try {
-                const scene = frame.contentWindow.Function(
-                    "return typeof sceneDescription === 'undefined' ? null : sceneDescription")();
-                if (Array.isArray(scene)) {
-                    objects = scene.filter((entry) =>
-                        (entry.shape || entry.model || entry.text !== undefined) && entry.shape !== 'grid').length;
-                }
-            } catch (e) {
-                // Without the number, the hand-in is not held back for it.
-            }
-            done(null, { picture: event.data.picture, errors: event.data.errors || '', objects });
+            // The sandboxed frame has an opaque origin; it is known by its window.
+            if (event.source !== frame.contentWindow) return;
+            const data = event.data;
+            if (!data || data.type !== 'anaglyph-picture') return;
+            const picture = typeof data.picture === 'string' && data.picture.startsWith('data:image/') ? data.picture : '';
+            // What counts as an object is what scene_dump.js counts, without
+            // the grid; the viewer counts it. Without the number, the
+            // hand-in is not held back for it.
+            const objects = Number.isInteger(data.objects) ? data.objects : null;
+            done(null, { picture, errors: typeof data.errors === 'string' ? data.errors : '', objects });
         };
         window.addEventListener('message', onMessage);
         timer = setTimeout(() => done(new Error('Die Szene ließ sich nicht zeichnen.')), TIMEOUT_MS);
-        frame.src = viewerUrl(job.scene, true);
-        document.body.appendChild(frame);
+        viewerUrl(job.scene, true).then((url) => {
+            frame.src = url;
+            document.body.appendChild(frame);
+        }).catch((error) => done(error));
     }
 
     // A picture of a scene: resolves with { picture (data URL), errors,
@@ -84,15 +94,19 @@ window.AnaglyphPreview = (function () {
             "<button type='button' class='scene-present-button scene-present-full' title='Vollbild' aria-label='Vollbild'><i class='bi bi-fullscreen'></i></button>" +
             "<button type='button' class='scene-present-button scene-present-close' title='Schließen (Esc)' aria-label='Schließen'><i class='bi bi-x-lg'></i></button>" +
             "</div><iframe class='scene-present-frame'></iframe>";
-        const frame = overlay.querySelector('iframe');
+        const frame = viewerFrame(overlay.querySelector('iframe'));
         const name = overlay.querySelector('.scene-present-name');
         let current = index;
 
         function show(i) {
             current = (i + items.length) % items.length;
             name.textContent = items[current].name + (items.length > 1 ? ` (${current + 1} von ${items.length})` : '');
-            frame.src = viewerUrl(items[current].scene, false);
-            frame.focus();
+            const wanted = current;
+            viewerUrl(items[current].scene, false).then((url) => {
+                if (wanted !== current) return;
+                frame.src = url;
+                frame.focus();
+            }).catch(() => {});
         }
         function close() {
             window.removeEventListener('message', onMessage);
@@ -108,7 +122,7 @@ window.AnaglyphPreview = (function () {
         }
         // Keys pressed while the viewer has the focus arrive as messages.
         function onMessage(event) {
-            if (event.origin !== window.location.origin || event.source !== frame.contentWindow) return;
+            if (event.source !== frame.contentWindow) return;
             if (event.data && event.data.type === 'anaglyph-key') key(event.data.key);
         }
         function onKey(event) {

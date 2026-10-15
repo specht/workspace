@@ -715,6 +715,56 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Umbenennung nicht. Jetzt erklärt sie, dass Git Umbenennungen gar nicht
   speichert, sondern am gleichen Inhalt erkennt; `mv` und `git add -A`
   ergeben denselben Commit.
+- Sicherheit: Was der Server als root in den Ordner einer Person schreibt
+  oder dort liest (`.hackschule`, `.bashrc`, `.gitconfig`, `.my.cnf`,
+  `.myclirc`, die VS-Code-Einstellungen, die Marker und `.git/info/exclude`
+  in Prüfungen, die TIC-80-Dateien), geht jetzt durch `UserFiles`: Jeder
+  Pfad wird Ordner für Ordner geöffnet, ohne einem symbolischen Link zu
+  folgen, und nur reguläre Dateien werden gelesen oder geschrieben. Bisher
+  konnte ein Link im eigenen Workspace den Server dazu bringen, fremde
+  Dateien zu überschreiben und der Person zu übergeben. Ein abgelehnter
+  Pfad steht im Log; der Workspace startet trotzdem. TIC-80 schreibt
+  Dateien nicht mehr per Umbenennen, sondern direkt.
+- Sicherheit: Der Anaglyphen-Viewer für die Vorschau auf der Aufgabenkarte
+  und die Galerie der Klassenseite läuft nicht mehr auf der Website, sondern
+  auf `abgaben.<host>` in einem Frame mit `sandbox`, wie die
+  Abgaben-Ansicht. Die Ausdrücke einer Szene sind JavaScript; bisher liefen
+  sie mit der Sitzung dessen, der die Galerie ansah, also auch einer
+  Lehrkraft. Die Seite holt für jede Szene eine signierte Adresse
+  (`/api/anaglyph/address`), der Viewer schickt Bild, Fehler und die Zahl
+  der Objekte als Nachricht zurück. Unter `/anaglyph-viewer/` antwortet die
+  Website selbst nicht mehr. Zwei kleine Änderungen am Viewer macht der
+  Server beim Ausliefern, bis `specht/anaglyph` sie selbst hat.
+- Sicherheit: Rückmeldungen der Aufgaben enthalten Text aus den Dateien der
+  Lernenden (eine CSS-Zeile, ein Branch-Name, der Name einer Szene). Das
+  HTML, das Aufgabenkarte und Klassenseite davon anzeigen, wird jetzt nach
+  dem Markdown auf eine kurze Liste harmloser Elemente und Attribute
+  gefiltert (`TaskHtml`): kein Skript, keine Event-Attribute, keine
+  `javascript:`-Links, keine Frames. `<kbd>`, Code, Listen, Links und
+  Bootstrap-Icons der Autorinnen und Autoren bleiben. Bisher konnte eine
+  präparierte Datei Skript in die Sitzung einer Lehrkraft bringen, die
+  »Jetzt nachsehen« drückte.
+- Sicherheit: Das Cookie `hs_server_sid`, mit dem nginx den Zugang zu einem
+  Workspace prüft, geht nicht mehr an code-server und an Apps auf
+  `<tag>-<port>` weiter, ebenso `hs_watch_tag`; eigene Cookies einer App
+  bleiben. Bisher konnte ein Programm im Workspace das Cookie einer
+  Lehrkraft lesen, die ihn ansah. Beim Abmelden bekommt die Person einen
+  neuen Wert, ein abgegriffener gilt dann nicht mehr; andere Geräte
+  bekommen den neuen bei ihrer nächsten Anfrage.
+- Sicherheit, Anmeldung: Der Anmeldecode steht nicht mehr im Log. Gibt es
+  für eine Adresse keine Einladung, sagt die Anmeldeseite das jetzt
+  ausdrücklich. Neue Grenzen: höchstens 20
+  Codes pro Adresse und Tag, und pro Absender-Adresse 120 Code-Anfragen
+  und 300 Anmeldeversuche in zehn Minuten (großzügig, weil eine ganze
+  Schule über eine Adresse ins Netz geht). Die Zähler liegen nur im
+  Speicher.
+- Sicherheit, Prüfungen: Starten, Beenden und Schüler zuordnen geht nur
+  noch für die eigene Prüfung (oder als Admin). Beim Löschen einer Prüfung
+  wird ihre Erweiterungsliste nur entfernt, wenn die Prüfung wirklich der
+  Lehrkraft gehörte. Den Startzustand eines fremden Workspace sehen nur
+  noch Lehrkräfte dieser Person, und ein Startfehler erscheint im Browser
+  nur noch als »Der Workspace ließ sich nicht starten.«; die Einzelheiten,
+  in denen Passwörter stehen konnten, stehen nur im Log.
 
 ### Entfernt
 

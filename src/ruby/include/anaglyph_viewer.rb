@@ -3,6 +3,10 @@ require 'open3'
 require 'rubygems/package'
 require 'stringio'
 require 'zlib'
+require 'base64'
+require 'json'
+require 'openssl'
+require_relative 'submission_view'
 
 # The Anaglyph viewer (specht/anaglyph) on the Workspace site, for previews
 # of handed-in scenes and the class gallery (check option preview: anaglyph,
@@ -123,5 +127,79 @@ module AnaglyphViewer
             raise "#{command.first} took longer than #{seconds} s"
         end
         raise "#{command.first} failed (#{waiter.value.exitstatus})" unless waiter.value.success?
+    end
+
+    # The viewer runs on abgaben.<host>, sandboxed like a hand-in
+    # (SubmissionView): an opaque origin without the site's cookies, so what
+    # a scene's expressions do stays there instead of running in the session
+    # of whoever looks at it, a teacher on the class page for one. Two
+    # changes to the pinned script make it work there: an opaque origin
+    # cannot name itself, so its messages go to the parent with '*' (only
+    # the site may frame it: frame-ancestors), and the picture message
+    # carries the number of objects, which the page cannot read out of a
+    # frame from another origin. Each change has to match exactly once; a
+    # new viewer commit without these lines fails closed. Once specht/
+    # anaglyph has them itself (PARENT_ORIGIN, objects), bump COMMIT and
+    # empty this list in the same change.
+    SANDBOX_PATCHES = [
+        ["    window.parent.postMessage({\n        type: 'anaglyph-picture',\n",
+         "    window.parent.postMessage({\n        type: 'anaglyph-picture',\n" \
+         "        objects: Array.isArray(sceneDescription) ? sceneDescription.filter((entry) => " \
+         "(entry.shape || entry.model || entry.text !== undefined) && entry.shape !== 'grid').length : null,\n"],
+        ["    }, window.location.origin);\n", "    }, '*');\n"],
+        ["{ type: 'anaglyph-key', key: e.key }, window.location.origin);", "{ type: 'anaglyph-key', key: e.key }, '*');"],
+    ].freeze
+
+    class Unpatchable < StandardError; end
+
+    # The bytes of a viewer file as the sandboxed viewer gets them.
+    def self.for_sandbox(path, bytes)
+        if path == File.join(dir, 'include', 'script.js')
+            text = bytes.dup.force_encoding(Encoding::UTF_8)
+            SANDBOX_PATCHES.each do |from, to|
+                count = text.scan(from).size
+                raise Unpatchable, "script.js: expected one #{from.strip[0, 40].inspect}, found #{count}" unless count == 1
+
+                text = text.sub(from) { to }
+            end
+            text
+        elsif path == File.join(dir, 'index.html')
+            # sessionStorage (the camera of a scene) throws in an opaque
+            # origin; the same in-memory stand-in as for hand-ins.
+            text = bytes.dup.force_encoding(Encoding::UTF_8)
+            if text.match?(/<head[^>]*>/i)
+                text.sub(/<head[^>]*>/i) { |tag| tag + SubmissionView::STORAGE_SHIM }
+            else
+                SubmissionView::STORAGE_SHIM + text
+            end
+        else
+            bytes
+        end
+    end
+
+    # A scene's address on abgaben.<host>: what to read, signed and valid as
+    # long as a hand-in address. data: { 's' => state key } for a handed-in
+    # scene, { 'e' => email, 'f' => path } for a file in someone's Workspace
+    # (the preview before handing in).
+    SCENE_TOKEN = /\A([A-Za-z0-9_-]{1,600})\.(\d{1,12})\.([0-9a-f]{32})\z/
+
+    def self.scene_token(data, secret:, now: Time.now.to_i)
+        payload = Base64.urlsafe_encode64(JSON.generate(data), padding: false)
+        expires = now + SubmissionView::LIFETIME
+        "#{payload}.#{expires}.#{SubmissionView.sign("anaglyph-scene.#{payload}.#{expires}", secret)}"
+    end
+
+    # The data of a genuine, unexpired scene token, or nil.
+    def self.verify_scene_token(token, secret:, now: Time.now.to_i)
+        m = SCENE_TOKEN.match(token.to_s)
+        return nil if m.nil? || m[2].to_i < now
+
+        expected = SubmissionView.sign("anaglyph-scene.#{m[1]}.#{m[2]}", secret)
+        return nil unless OpenSSL.fixed_length_secure_compare(expected, m[3])
+
+        data = JSON.parse(Base64.urlsafe_decode64(m[1]))
+        data.is_a?(Hash) ? data : nil
+    rescue ArgumentError, JSON::ParserError
+        nil
     end
 end

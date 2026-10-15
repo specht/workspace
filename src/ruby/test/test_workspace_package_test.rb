@@ -186,4 +186,15 @@ class TestWorkspacePackageTest < Minitest::Test
             assert_includes contents, '.test_git_pending'
         end
     end
+
+    def test_git_exclude_does_not_follow_a_link
+        Dir.mktmpdir do |dir|
+            outside = File.join(dir, 'outside')
+            workspace = File.join(dir, 'workspace')
+            FileUtils.mkdir_p([outside, File.join(workspace, '.git')])
+            File.symlink(outside, File.join(workspace, '.git', 'info'))
+            assert_raises(UserFiles::Refused) { TestWorkspacePackage.write_git_exclude(workspace) }
+            assert_empty Dir.children(outside)
+        end
+    end
 end

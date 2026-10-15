@@ -26,6 +26,9 @@ require './include/test_workspace_extensions.rb'
 require './include/workspace_credentials.rb'
 require './include/workspace_runtime.rb'
 require './include/tic80_storage.rb'
+require './include/user_files.rb'
+require './include/task_html.rb'
+require './include/rate_limit.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
@@ -481,7 +484,8 @@ class Main < Sinatra::Base
             :queued_at => job[:queued_at]&.to_i,
             :started_at => job[:started_at]&.to_i,
             :finished_at => job[:finished_at]&.to_i,
-            :error => job[:error],
+            # The details (a command line may hold passwords) are in the log.
+            :error => job[:error] ? 'Der Workspace ließ sich nicht starten.' : nil,
         }
     end
 
@@ -598,6 +602,22 @@ class Main < Sinatra::Base
     end
 
     @@nginx_config_mutex = Mutex.new
+
+    # nginx maps that remove hs_server_sid and hs_watch_tag from a Cookie
+    # header, one per step: $http_cookie -> $hs_cookie_for_student.
+    HS_COOKIE_STEPS = 4
+
+    def self.nginx_cookie_maps
+        (1..HS_COOKIE_STEPS).map do |i|
+            from = i == 1 ? '$http_cookie' : "$hs_cookie_#{i - 1}"
+            to = i == HS_COOKIE_STEPS ? '$hs_cookie_for_student' : "$hs_cookie_#{i}"
+            "map #{from} #{to} {\n" \
+                "                default #{from};\n" \
+                "                \"~^(?<hs_ck_a#{i}>(?:.*?;\\s*)?)(?:hs_server_sid|hs_watch_tag)=[^;]*(?:;\\s*)?(?<hs_ck_b#{i}>.*)$\" " \
+                "\"$hs_ck_a#{i}$hs_ck_b#{i}\";\n" \
+                "            }"
+        end.join("\n\n            ")
+    end
 
     def self.refresh_nginx_config
         @@nginx_config_mutex.synchronize do
@@ -818,6 +838,14 @@ class Main < Sinatra::Base
                 default 0;
             }
 
+            # The Cookie header for a student's container, without the
+            # domain-wide hs_server_sid and hs_watch_tag: nginx checks them
+            # above, and they must never reach code a student controls
+            # (code-server, apps on <tag>-<port>). The student's own cookies
+            # stay. Each step removes one; a browser sends each of them at
+            # most once per domain and path, so four steps leave none.
+            #{Main.nginx_cookie_maps}
+
             # deny if upstream missing
             map $hs_upstream $hs_no_upstream {
                 ""      1;
@@ -911,6 +939,7 @@ class Main < Sinatra::Base
                     rewrite ^/w/[a-z0-9]+(.*)$ $1 break;
 
                     include /etc/nginx/snippets/proxy_ws_code.conf;
+                    proxy_set_header Cookie $hs_cookie_for_student;
                     sub_filter_once on;
                     sub_filter '</head>' $hs_code_font_head;
                     proxy_pass $hs_upstream;
@@ -966,6 +995,7 @@ class Main < Sinatra::Base
                     if ($hs_allowed = 0) { return 403; }
 
                     include /etc/nginx/snippets/proxy_ws_code.conf;
+                    proxy_set_header Cookie $hs_cookie_for_student;
                     sub_filter_once on;
                     sub_filter '</head>' $hs_code_font_head;
                     proxy_pass $hs_upstream;
@@ -993,6 +1023,7 @@ class Main < Sinatra::Base
                     rewrite ^/(.*)$ /proxy/$p/$1 break;
 
                     include /etc/nginx/snippets/proxy_ws.conf;
+                    proxy_set_header Cookie $hs_cookie_for_student;
 
                     # First remove leaked /proxy/<port>/ redirects.
                     proxy_redirect ~^/proxy/[0-9]+(/.*)$ $1;
@@ -1070,6 +1101,11 @@ class Main < Sinatra::Base
                 charset utf-8;
 
                 location /v/ {
+                    include /etc/nginx/snippets/proxy_ws.conf;
+                    proxy_pass http://ruby:9292;
+                }
+
+                location /anaglyph-viewer/ {
                     include /etc/nginx/snippets/proxy_ws.conf;
                     proxy_pass http://ruby:9292;
                 }
@@ -2163,9 +2199,10 @@ class Main < Sinatra::Base
     end
 
     before '*' do
-        # abgaben.<host> serves hand-ins and nothing else: no session, no
-        # pages, no API (SubmissionView).
-        if request.host == SUBMISSION_VIEW_HOST && !(request.path.start_with?('/v/') && %w[GET HEAD].include?(request.request_method))
+        # abgaben.<host> serves hand-ins and the Anaglyph viewer and nothing
+        # else: no session, no pages, no API (SubmissionView, AnaglyphViewer).
+        if request.host == SUBMISSION_VIEW_HOST &&
+            !(request.path.start_with?('/v/', '/anaglyph-viewer/') && %w[GET HEAD].include?(request.request_method))
             halt 404
         end
         origin_sensitive = %w(POST PUT PATCH DELETE).include?(request.request_method) ||
@@ -2650,7 +2687,28 @@ class Main < Sinatra::Base
         user
     end
 
+    # Limits for the login: per client generously, because all Workspaces
+    # and classrooms of a school share one address; per address so tight
+    # that guessing a code stays hopeless (20 codes a day, 5 tries each,
+    # out of a million). Not in development, where the screenshot tool and
+    # the browser tests log in all day from one machine.
+    LOGIN_REQUESTS_PER_CLIENT = RateLimit.new(:limit => 120, :period => 600)
+    LOGIN_TRIES_PER_CLIENT = RateLimit.new(:limit => 300, :period => 600)
+    LOGIN_CODES_PER_ADDRESS = RateLimit.new(:limit => 20, :period => 24 * 3600)
+
+    # The browser's address: Traefik appends it to X-Forwarded-For (the last
+    # entry; earlier ones come from the client and prove nothing), nginx
+    # passes the header on. Without Traefik (development) the peer itself.
+    def client_ip
+        forwarded = request.env['HTTP_X_FORWARDED_FOR'].to_s.split(',').map(&:strip).reject(&:empty?)
+        forwarded.last || request.ip
+    end
+
     post '/api/request_login' do
+        unless DEVELOPMENT || LOGIN_REQUESTS_PER_CLIENT.allow?(client_ip)
+            content_type :json
+            halt 429, { :error => 'login_request_rate_limited' }.to_json
+        end
         Main.load_invitations()
         data = parse_request_data(:required_keys => [:email])
         email = data[:email].downcase.strip
@@ -2663,6 +2721,8 @@ class Main < Sinatra::Base
             email = candidates.first if candidates.size == 1
         end
 
+        # Said plainly, so a typo is noticed at once; the limits per client
+        # keep this from being a fast way to find out who is invited.
         unless @@invitations.include?(email)
             content_type :json
             halt 404, { :error => 'no_invitation_found' }.to_json
@@ -2712,6 +2772,7 @@ class Main < Sinatra::Base
                 if now - last_created_at < Authentication::LOGIN_REQUEST_RESEND_SECONDS
                     next { :rate_limited => true }
                 end
+                next { :rate_limited => true } unless DEVELOPMENT || LOGIN_CODES_PER_ADDRESS.allow?(email)
 
                 # Replace a nearly-expired request rather than handing the browser
                 # a code that may stop working a few seconds later.
@@ -2757,7 +2818,7 @@ class Main < Sinatra::Base
             if DEVELOPMENT
                 STDERR.puts 'Not sending login code email in development mode.'
             else
-                STDERR.puts "Sending login code email to invited user #{email}: #{login_request[:code]}"
+                STDERR.puts "Sending login code email to invited user #{email}"
                 deliver_mail do
                     to email
                     # bcc SMTP_FROM
@@ -2781,6 +2842,10 @@ class Main < Sinatra::Base
     end
 
     post '/api/complete_login' do
+        unless DEVELOPMENT || LOGIN_TRIES_PER_CLIENT.allow?(client_ip)
+            content_type :json
+            halt 429, { :error => 'login_rate_limited' }.to_json
+        end
         data = parse_request_data(:required_keys => [:tag, :code])
         tag = data[:tag].downcase.strip
         code = data[:code].strip
@@ -3136,8 +3201,14 @@ class Main < Sinatra::Base
         end
     end
 
-    def chown_user_file(path)
-        File.chown(WORKSPACE_UID, WORKSPACE_GID, path) if File.exist?(path)
+    # A step that writes into a student's folder through UserFiles. A path
+    # it refuses (a link, a FIFO the student put there) is logged and the
+    # step is skipped; the Workspace still starts.
+    def with_user_files(container_name, what)
+        yield
+    rescue UserFiles::Refused => e
+        STDERR.puts ">>> #{container_name}: #{what} skipped: #{e.message}"
+        nil
     end
 
     def initialize_test_git(container_name, workspace_path, email)
@@ -3162,8 +3233,9 @@ class Main < Sinatra::Base
         git.call('config', '--local', 'user.email', email)
         git.call('config', '--local', 'commit.gpgSign', 'false')
 
-        exclude_path = TestWorkspacePackage.write_git_exclude(workspace_path)
-        chown_user_file(exclude_path)
+        with_user_files(container_name, '.git/info/exclude') do
+            TestWorkspacePackage.write_git_exclude(workspace_path)
+        end
 
         if git_mode == 'fresh'
             git.call('add', '-A')
@@ -3171,10 +3243,9 @@ class Main < Sinatra::Base
         end
 
         FileUtils.rm_f(pending_path)
-        initialized_path = File.join(workspace_path, '.test_git_init')
-        File.open(initialized_path, 'w') do |_f|
+        with_user_files(container_name, '.test_git_init') do
+            UserFiles.write(workspace_path, '.test_git_init', '')
         end
-        chown_user_file(initialized_path)
         true
     end
 
@@ -3206,220 +3277,209 @@ class Main < Sinatra::Base
             File.chown(1000, 1000, path)
         end
 
-        # Files written by this Ruby process are created as root, so explicitly
-        # hand them to the code-server user after creating/updating them.
-        chown_user_file = lambda do |path|
-            File.chown(1000, 1000, path) if File.exist?(path)
-        end
-
-        bashrc_path = "#{workspace_path}/.bashrc"
-        if File.exist?(bashrc_path)
-            contents = File.read(bashrc_path)
-            unless contents.include?('GEM_HOME')
-                File.open(bashrc_path, 'a') do |f|
-                    f.puts 'export GEM_HOME="$HOME/.gem"'
-                end
+        # Root writes these into the student's folder, which the student
+        # controls: UserFiles never follows a link they may have put there,
+        # and hands new files to UID 1000 through the open descriptor.
+        with_user_files(container_name, '.bashrc') do
+            contents = UserFiles.read(workspace_path, '.bashrc')
+            if contents && !contents.include?('GEM_HOME')
+                prefix = contents.empty? || contents.end_with?("\n") ? '' : "\n"
+                UserFiles.write(workspace_path, '.bashrc', "#{prefix}export GEM_HOME=\"$HOME/.gem\"\n", mode: :append)
             end
-            chown_user_file.call(bashrc_path)
         end
 
         # Touch/update this file so housekeeping won't shut down the server immediately.
-        hackschule_path = "#{workspace_path}/.hackschule"
-        File.open(hackschule_path, 'w') do |f|
-            f.puts "https://youtu.be/Akaa9xHaw7E"
+        with_user_files(container_name, '.hackschule') do
+            UserFiles.write(workspace_path, '.hackschule', "https://youtu.be/Akaa9xHaw7E\n")
         end
-        chown_user_file.call(hackschule_path)
 
-        gitconfig_path = "#{workspace_path}/.gitconfig"
-        unless File.exist?(gitconfig_path)
-            File.open(gitconfig_path, 'w') do |f|
-                f.puts <<~END_OF_STRING
-                    [init]
-                        defaultBranch = main
-                    [user]
-                        name = #{@@invitations[email][:name] || email.split('@').first}
-                        email = #{email}
-                    [core]
-                        editor = nano
-                END_OF_STRING
+        with_user_files(container_name, '.gitconfig') do
+            UserFiles.write(workspace_path, '.gitconfig', <<~END_OF_STRING, create_only: true)
+                [init]
+                    defaultBranch = main
+                [user]
+                    name = #{@@invitations[email][:name] || email.split('@').first}
+                    email = #{email}
+                [core]
+                    editor = nano
+            END_OF_STRING
+        end
+
+        # .my.cnf is replaced by a rename (AtomicFile), which replaces a link
+        # instead of following it; it is only read through UserFiles.
+        with_user_files(container_name, '.my.cnf') do
+            desired = DatabaseProvisioning.my_cnf(
+                database_login,
+                Main.gen_password_for_email(database_email, MYSQL_PASSWORD_SALT),
+            )
+            if UserFiles.read(workspace_path, '.my.cnf') != desired
+                AtomicFile.write("#{workspace_path}/.my.cnf", desired)
             end
+            UserFiles.chown(workspace_path, '.my.cnf')
         end
-        chown_user_file.call(gitconfig_path)
 
-        my_cnf_path = "#{workspace_path}/.my.cnf"
-        DatabaseProvisioning.sync_my_cnf(
-            my_cnf_path,
-            database_login,
-            Main.gen_password_for_email(database_email, MYSQL_PASSWORD_SALT),
-        )
-        chown_user_file.call(my_cnf_path)
+        with_user_files(container_name, '.myclirc') do
+            UserFiles.write(workspace_path, '.myclirc', <<~END_OF_STRING, create_only: true)
+                [main]
 
-        myclirc_path = "#{workspace_path}/.myclirc"
-        unless File.exist?(myclirc_path)
-            File.open(myclirc_path, 'w') do |f|
-                f.puts <<~END_OF_STRING
-                    [main]
+                # Enables context sensitive auto-completion. If this is disabled the all
+                # possible completions will be listed.
+                smart_completion = True
 
-                    # Enables context sensitive auto-completion. If this is disabled the all
-                    # possible completions will be listed.
-                    smart_completion = True
+                # Multi-line mode allows breaking up the sql statements into multiple lines. If
+                # this is set to True, then the end of the statements must have a semi-colon.
+                # If this is set to False then sql statements can't be split over multiple
+                # lines. End of line (return) is considered as the end of the statement.
+                multi_line = True
 
-                    # Multi-line mode allows breaking up the sql statements into multiple lines. If
-                    # this is set to True, then the end of the statements must have a semi-colon.
-                    # If this is set to False then sql statements can't be split over multiple
-                    # lines. End of line (return) is considered as the end of the statement.
-                    multi_line = True
+                # Destructive warning mode will alert you before executing a sql statement
+                # that may cause harm to the database such as "drop table", "drop database"
+                # or "shutdown".
+                destructive_warning = True
 
-                    # Destructive warning mode will alert you before executing a sql statement
-                    # that may cause harm to the database such as "drop table", "drop database"
-                    # or "shutdown".
-                    destructive_warning = True
+                # log_file location.
+                log_file = ~/.mycli.log
 
-                    # log_file location.
-                    log_file = ~/.mycli.log
+                # Default log level. Possible values are "CRITICAL", "ERROR", "WARNING", "INFO"
+                # and "DEBUG". "NONE" disables logging.
+                log_level = INFO
 
-                    # Default log level. Possible values are "CRITICAL", "ERROR", "WARNING", "INFO"
-                    # and "DEBUG". "NONE" disables logging.
-                    log_level = INFO
+                # Log every query and its results to a file. Enable this by uncommenting the
+                # line below.
+                # audit_log = ~/.mycli-audit.log
 
-                    # Log every query and its results to a file. Enable this by uncommenting the
-                    # line below.
-                    # audit_log = ~/.mycli-audit.log
+                # Timing of sql statements and table rendering.
+                timing = True
 
-                    # Timing of sql statements and table rendering.
-                    timing = True
+                # Beep after long-running queries are completed; 0 to disable.
+                beep_after_seconds = 0
 
-                    # Beep after long-running queries are completed; 0 to disable.
-                    beep_after_seconds = 0
+                # Table format. Possible values: ascii, double, github,
+                # psql, plain, simple, grid, fancy_grid, pipe, orgtbl, rst, mediawiki, html,
+                # latex, latex_booktabs, textile, moinmoin, jira, vertical, tsv, csv.
+                # Recommended: ascii
+                table_format = double
 
-                    # Table format. Possible values: ascii, double, github,
-                    # psql, plain, simple, grid, fancy_grid, pipe, orgtbl, rst, mediawiki, html,
-                    # latex, latex_booktabs, textile, moinmoin, jira, vertical, tsv, csv.
-                    # Recommended: ascii
-                    table_format = double
+                # Syntax coloring style. Possible values (many support the "-dark" suffix):
+                # manni, igor, xcode, vim, autumn, vs, rrt, native, perldoc, borland, tango, emacs,
+                # friendly, monokai, paraiso, colorful, murphy, bw, pastie, paraiso, trac, default,
+                # fruity.
+                # Screenshots at http://mycli.net/syntax
+                # Can be further modified in [colors]
+                syntax_style = default
 
-                    # Syntax coloring style. Possible values (many support the "-dark" suffix):
-                    # manni, igor, xcode, vim, autumn, vs, rrt, native, perldoc, borland, tango, emacs,
-                    # friendly, monokai, paraiso, colorful, murphy, bw, pastie, paraiso, trac, default,
-                    # fruity.
-                    # Screenshots at http://mycli.net/syntax
-                    # Can be further modified in [colors]
-                    syntax_style = default
+                # Keybindings: Possible values are emacs, vi.
+                # Emacs mode: Ctrl-A is home, Ctrl-E is end. All emacs keybindings are available in the REPL.
+                # When Vi mode is enabled you can use modal editing features offered by Vi in the REPL.
+                key_bindings = emacs
 
-                    # Keybindings: Possible values are emacs, vi.
-                    # Emacs mode: Ctrl-A is home, Ctrl-E is end. All emacs keybindings are available in the REPL.
-                    # When Vi mode is enabled you can use modal editing features offered by Vi in the REPL.
-                    key_bindings = emacs
+                # Enabling this option will show the suggestions in a wider menu. Thus more items are suggested.
+                wider_completion_menu = False
 
-                    # Enabling this option will show the suggestions in a wider menu. Thus more items are suggested.
-                    wider_completion_menu = False
+                # MySQL prompt
+                # \\D - The full current date
+                # \\d - Database name
+                # \\h - Hostname of the server
+                # \\m - Minutes of the current time
+                # \\n - Newline
+                # \\P - AM/PM
+                # \\p - Port
+                # \\R - The current time, in 24-hour military time (0-23)
+                # \\r - The current time, standard 12-hour time (1-12)
+                # \\s - Seconds of the current time
+                # \\t - Product type (Percona, MySQL, MariaDB, TiDB)
+                # \\A - DSN alias name (from the [alias_dsn] section)
+                # \\u - Username
+                # \\x1b[...m - insert ANSI escape sequence
+                prompt = '\\d> '
+                prompt_continuation = '->'
 
-                    # MySQL prompt
-                    # \\D - The full current date
-                    # \\d - Database name
-                    # \\h - Hostname of the server
-                    # \\m - Minutes of the current time
-                    # \\n - Newline
-                    # \\P - AM/PM
-                    # \\p - Port
-                    # \\R - The current time, in 24-hour military time (0-23)
-                    # \\r - The current time, standard 12-hour time (1-12)
-                    # \\s - Seconds of the current time
-                    # \\t - Product type (Percona, MySQL, MariaDB, TiDB)
-                    # \\A - DSN alias name (from the [alias_dsn] section)
-                    # \\u - Username
-                    # \\x1b[...m - insert ANSI escape sequence
-                    prompt = '\\d> '
-                    prompt_continuation = '->'
+                # Skip intro info on startup and outro info on exit
+                less_chatty = False
 
-                    # Skip intro info on startup and outro info on exit
-                    less_chatty = False
+                # Use alias from --login-path instead of host name in prompt
+                login_path_as_host = False
 
-                    # Use alias from --login-path instead of host name in prompt
-                    login_path_as_host = False
+                # Cause result sets to be displayed vertically if they are too wide for the current window,
+                # and using normal tabular format otherwise. (This applies to statements terminated by ; or \G.)
+                auto_vertical_output = False
 
-                    # Cause result sets to be displayed vertically if they are too wide for the current window,
-                    # and using normal tabular format otherwise. (This applies to statements terminated by ; or \G.)
-                    auto_vertical_output = False
+                # keyword casing preference. Possible values "lower", "upper", "auto"
+                keyword_casing = upper
 
-                    # keyword casing preference. Possible values "lower", "upper", "auto"
-                    keyword_casing = upper
+                # disabled pager on startup
+                enable_pager = True
 
-                    # disabled pager on startup
-                    enable_pager = True
+                # Choose a specific pager
+                pager = 'less -S -F'
 
-                    # Choose a specific pager
-                    pager = 'less -S -F'
+                # Custom colors for the completion menu, toolbar, etc.
+                [colors]
+                completion-menu.completion.current = 'bg:#ffffff #000000'
+                completion-menu.completion = 'bg:#008888 #ffffff'
+                completion-menu.meta.completion.current = 'bg:#44aaaa #000000'
+                completion-menu.meta.completion = 'bg:#448888 #ffffff'
+                completion-menu.multi-column-meta = 'bg:#aaffff #000000'
+                scrollbar.arrow = 'bg:#003333'
+                scrollbar = 'bg:#00aaaa'
+                selected = '#ffffff bg:#6666aa'
+                search = '#ffffff bg:#4444aa'
+                search.current = '#ffffff bg:#44aa44'
+                bottom-toolbar = 'bg:#222222 #aaaaaa'
+                bottom-toolbar.off = 'bg:#222222 #888888'
+                bottom-toolbar.on = 'bg:#222222 #ffffff'
+                search-toolbar = 'noinherit bold'
+                search-toolbar.text = 'nobold'
+                system-toolbar = 'noinherit bold'
+                arg-toolbar = 'noinherit bold'
+                arg-toolbar.text = 'nobold'
+                bottom-toolbar.transaction.valid = 'bg:#222222 #00ff5f bold'
+                bottom-toolbar.transaction.failed = 'bg:#222222 #ff005f bold'
 
-                    # Custom colors for the completion menu, toolbar, etc.
-                    [colors]
-                    completion-menu.completion.current = 'bg:#ffffff #000000'
-                    completion-menu.completion = 'bg:#008888 #ffffff'
-                    completion-menu.meta.completion.current = 'bg:#44aaaa #000000'
-                    completion-menu.meta.completion = 'bg:#448888 #ffffff'
-                    completion-menu.multi-column-meta = 'bg:#aaffff #000000'
-                    scrollbar.arrow = 'bg:#003333'
-                    scrollbar = 'bg:#00aaaa'
-                    selected = '#ffffff bg:#6666aa'
-                    search = '#ffffff bg:#4444aa'
-                    search.current = '#ffffff bg:#44aa44'
-                    bottom-toolbar = 'bg:#222222 #aaaaaa'
-                    bottom-toolbar.off = 'bg:#222222 #888888'
-                    bottom-toolbar.on = 'bg:#222222 #ffffff'
-                    search-toolbar = 'noinherit bold'
-                    search-toolbar.text = 'nobold'
-                    system-toolbar = 'noinherit bold'
-                    arg-toolbar = 'noinherit bold'
-                    arg-toolbar.text = 'nobold'
-                    bottom-toolbar.transaction.valid = 'bg:#222222 #00ff5f bold'
-                    bottom-toolbar.transaction.failed = 'bg:#222222 #ff005f bold'
+                # style classes for colored table output
+                output.header = "#00ff5f bold"
+                output.odd-row = ""
+                output.even-row = ""
+                output.null = "#808080"
 
-                    # style classes for colored table output
-                    output.header = "#00ff5f bold"
-                    output.odd-row = ""
-                    output.even-row = ""
-                    output.null = "#808080"
+                # SQL syntax highlighting overrides
+                # sql.comment = 'italic #408080'
+                # sql.comment.multi-line = ''
+                # sql.comment.single-line = ''
+                # sql.comment.optimizer-hint = ''
+                # sql.escape = 'border:#FF0000'
+                # sql.keyword = 'bold #008000'
+                # sql.datatype = 'nobold #B00040'
+                # sql.literal = ''
+                # sql.literal.date = ''
+                # sql.symbol = ''
+                # sql.quoted-schema-object = ''
+                # sql.quoted-schema-object.escape = ''
+                # sql.constant = '#880000'
+                # sql.function = '#0000FF'
+                # sql.variable = '#19177C'
+                # sql.number = '#666666'
+                # sql.number.binary = ''
+                # sql.number.float = ''
+                # sql.number.hex = ''
+                # sql.number.integer = ''
+                # sql.operator = '#666666'
+                # sql.punctuation = ''
+                # sql.string = '#BA2121'
+                # sql.string.double-quouted = ''
+                # sql.string.escape = 'bold #BB6622'
+                # sql.string.single-quoted = ''
+                # sql.whitespace = ''
 
-                    # SQL syntax highlighting overrides
-                    # sql.comment = 'italic #408080'
-                    # sql.comment.multi-line = ''
-                    # sql.comment.single-line = ''
-                    # sql.comment.optimizer-hint = ''
-                    # sql.escape = 'border:#FF0000'
-                    # sql.keyword = 'bold #008000'
-                    # sql.datatype = 'nobold #B00040'
-                    # sql.literal = ''
-                    # sql.literal.date = ''
-                    # sql.symbol = ''
-                    # sql.quoted-schema-object = ''
-                    # sql.quoted-schema-object.escape = ''
-                    # sql.constant = '#880000'
-                    # sql.function = '#0000FF'
-                    # sql.variable = '#19177C'
-                    # sql.number = '#666666'
-                    # sql.number.binary = ''
-                    # sql.number.float = ''
-                    # sql.number.hex = ''
-                    # sql.number.integer = ''
-                    # sql.operator = '#666666'
-                    # sql.punctuation = ''
-                    # sql.string = '#BA2121'
-                    # sql.string.double-quouted = ''
-                    # sql.string.escape = 'bold #BB6622'
-                    # sql.string.single-quoted = ''
-                    # sql.whitespace = ''
+                # Favorite queries.
+                [favorite_queries]
 
-                    # Favorite queries.
-                    [favorite_queries]
-
-                    # Use the -d option to reference a DSN.
-                    # Special characters in passwords and other strings can be escaped with URL encoding.
-                    [alias_dsn]
-                    # example_dsn = mysql://[user[:password]@][host][:port][/dbname]
-                END_OF_STRING
-            end
+                # Use the -d option to reference a DSN.
+                # Special characters in passwords and other strings can be escaped with URL encoding.
+                [alias_dsn]
+                # example_dsn = mysql://[user[:password]@][host][:port][/dbname]
+            END_OF_STRING
         end
-        chown_user_file.call(myclirc_path)
 
         # STDERR.puts ">>> Getting server state"
         state = with_timing("start_server #{container_name}: docker inspect") do
@@ -3428,17 +3488,13 @@ class Main < Sinatra::Base
         # STDERR.puts ">>> Server state is #{state.to_yaml}"
 
         unless state[:running]
-            vscode_settings_path = "#{workspace_path}/.local/share/code-server/User/settings.json"
-            ensure_user_directory(File.dirname(vscode_settings_path))
-
-            unless File.exist?(vscode_settings_path)
-                File.open(vscode_settings_path, 'w') do |f|
-                    f.puts JSON.pretty_generate({})
-                end
+            vscode_settings_rel = '.local/share/code-server/User/settings.json'
+            existing_settings = with_user_files(container_name, 'settings.json') do
+                UserFiles.read(workspace_path, vscode_settings_rel) || ''
             end
 
-            user_config = JSON.parse(File.read(vscode_settings_path))
-            original_config = user_config.to_json
+            user_config = existing_settings.to_s.strip.empty? ? {} : JSON.parse(existing_settings)
+            original_config = existing_settings.nil? || existing_settings.strip.empty? ? nil : user_config.to_json
             default_config = JSON.parse(File.read('default-vscode-settings.json'))
             superseded_config = JSON.parse(File.read('superseded-vscode-settings.json')).reject { |k, _| k == '//' }
             user_config = VscodeSettings.merge(user_config, default_config, superseded_config)
@@ -3457,28 +3513,17 @@ class Main < Sinatra::Base
             end
 
             new_config = user_config.to_json
-            if original_config != new_config
-                File.open(vscode_settings_path, 'w') do |f|
-                    f.write JSON.pretty_generate(user_config)
+            if !existing_settings.nil? && original_config != new_config
+                with_user_files(container_name, 'settings.json') do
+                    UserFiles.write(workspace_path, vscode_settings_rel, JSON.pretty_generate(user_config))
                 end
             end
-            chown_user_file.call(vscode_settings_path)
 
             if test_tag
-                coder_config_path = "#{workspace_path}/.local/share/code-server/coder.json"
-                ensure_user_directory(File.dirname(coder_config_path))
-
-                unless File.exist?(coder_config_path)
-                    File.open(coder_config_path, 'w') do |f|
-                        config = {
-                            'query' => {
-                                'folder' => '/workspace'
-                            }
-                        }
-                        f.write config.to_json
-                    end
+                with_user_files(container_name, 'coder.json') do
+                    config = { 'query' => { 'folder' => '/workspace' } }
+                    UserFiles.write(workspace_path, '.local/share/code-server/coder.json', config.to_json, create_only: true)
                 end
-                chown_user_file.call(coder_config_path)
             end
 
             STDERR.puts ">>> Enqueuing database initialization for #{database_login}"
@@ -3488,9 +3533,7 @@ class Main < Sinatra::Base
             )
 
             if test_tag
-                test_init_mark_path = "#{workspace_path}/.test_init"
-
-                unless File.exist?(test_init_mark_path)
+                unless UserFiles.exist?(workspace_path, '.test_init')
                     sha1 = neo4j_query_expect_one(<<~END_OF_QUERY, {:test_tag => test_tag})['f.sha1']
                         MATCH (t:Test {tag: $test_tag})-[:USES]->(f:File)
                         RETURN f.sha1;
@@ -3519,31 +3562,23 @@ class Main < Sinatra::Base
                     git_mode = TestWorkspacePackage.validate_git_layout!(workspace_path)
                     package_vscode_config = TestWorkspacePackage.vscode_config(workspace_path)
                     unless package_vscode_config.empty?
-                        vscode_config = JSON.parse(File.read(vscode_settings_path))
+                        settings = UserFiles.read(workspace_path, vscode_settings_rel)
+                        vscode_config = settings.to_s.strip.empty? ? {} : JSON.parse(settings)
                         vscode_config.merge!(package_vscode_config)
-
-                        File.open(vscode_settings_path, 'w') do |f|
-                            f.write JSON.pretty_generate(vscode_config)
-                        end
-                        chown_user_file.call(vscode_settings_path)
+                        UserFiles.write(workspace_path, vscode_settings_rel, JSON.pretty_generate(vscode_config))
                     end
 
                     # Git is initialized/configured after the code-server container is
                     # running so repository files are created directly as UID/GID 1000.
                     # git.mode: none deliberately skips all Workspace Git handling.
                     unless git_mode == 'none'
-                        git_pending_path = File.join(workspace_path, '.test_git_pending')
-                        File.open(git_pending_path, 'w') do |_f|
-                        end
-                        chown_user_file.call(git_pending_path)
+                        UserFiles.write(workspace_path, '.test_git_pending', '')
                     end
 
                     # Only mark package extraction complete after its configuration was
                     # parsed successfully. A malformed config can therefore be fixed and
                     # retried without leaving a half-initialized test workspace.
-                    File.open(test_init_mark_path, 'w') do |_f|
-                    end
-                    chown_user_file.call(test_init_mark_path)
+                    UserFiles.write(workspace_path, '.test_init', '')
                 end
 
                 # Prepare the same offline extension bundle for demos and students.
@@ -3652,7 +3687,9 @@ class Main < Sinatra::Base
         data = parse_request_data(:optional_keys => [:test_tag, :email])
 
         email = @session_user[:email]
-        if data[:email] && teacher_logged_in?
+        if data[:email] && data[:email] != email
+            # Only for a teacher of this person.
+            halt 403 unless teacher_logged_in? && may_look_in?(data[:email])
             email = data[:email]
         end
 
@@ -4094,13 +4131,11 @@ class Main < Sinatra::Base
         vars
     end
 
+    # Messages carry text from students' files: rendered and then filtered
+    # to harmless HTML (TaskHtml). Feedback boxes are light and style plain
+    # code themselves (.task-feedback pre code), so no highlighting here.
     def render_task_markdown(markdown)
-        return nil if markdown.nil? || markdown.to_s.strip.empty?
-
-        @@task_redcarpet ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML, {:fenced_code_blocks => true, :tables => true})
-        # Feedback boxes are light and style plain code themselves
-        # (.task-feedback pre code), so no highlighting here.
-        @@task_redcarpet.render(markdown.to_s)
+        TaskHtml.render(markdown)
     end
 
     SUBMISSIONS_ROOT = '/internal/submissions'
@@ -5267,16 +5302,18 @@ class Main < Sinatra::Base
         respond_raw_with_mimetype(SubmissionView.for_viewer(file, bytes), SubmissionView.content_type(file))
     end
 
-    # The Anaglyph viewer on the site (AnaglyphViewer, check option preview:
-    # anaglyph): pictures of handed-in scenes on the task card and in the class
-    # gallery. vorschau/ is the file someone is about to hand in, read from
-    # their Workspace; abgaben/ a handed-in scene (ich: one's own), for that
-    # person and the teachers of their groups. Everything else is the viewer
-    # itself and the Kenney kits it loads.
-    get '/anaglyph-viewer/*' do
+    # The Anaglyph viewer (AnaglyphViewer, check option preview: anaglyph):
+    # pictures of handed-in scenes on the task card and in the class gallery.
+    # A scene's expressions are JavaScript, so the viewer runs only on
+    # abgaben.<host>, sandboxed, never on the site: there a scene cannot use
+    # the session of whoever looks at it. The page asks here for a scene's
+    # address and gets a signed one there. vorschau/ is the file someone is
+    # about to hand in, read from their Workspace; abgaben/ a handed-in scene
+    # (ich: one's own), for that person and the teachers of their groups.
+    get '/api/anaglyph/address' do
         assert(user_logged_in?)
-        rel = params['splat'].first.to_s
-        if (m = rel.match(%r{\Avorschau/([a-z0-9_-]+)/([^/]+)/([^/]+\.ini)\z}))
+        rel = params['scene'].to_s
+        data = if (m = rel.match(%r{\Avorschau/([a-z0-9_-]+)/([^/]+)/([^/]+\.ini)\z}))
             found = anaglyph_preview_task("#{m[1]}/#{m[2]}")
             ws = task_workspace_files
             halt 404 if ws.nil?
@@ -5284,24 +5321,41 @@ class Main < Sinatra::Base
             dir = File.dirname(pick)
             path = dir == '.' ? m[3] : "#{dir}/#{m[3]}"
             halt 404 unless SubmissionStore.candidates(ws, pick).include?(path)
-            text = begin
-                ws.read_text(path, max: 1_000_000)
-            rescue StandardError
-                nil
-            end
-            halt 404 if text.nil?
-            response.headers['Cache-Control'] = 'no-store'
-            respond_raw_with_mimetype(text, 'text/plain; charset=utf-8')
+            { 'e' => @session_user[:email], 'f' => path }
         elsif (m = rel.match(%r{\Aabgaben/([a-z0-9_-]+)/([^/]+)/(ich|[0-9a-f]{32})\.ini\z}))
             found = anaglyph_preview_task("#{m[1]}/#{m[2]}")
             email = anaglyph_submission_owner(found[:key], m[3])
             halt 404 if email.nil?
+            { 's' => TaskStore.state_key(email, found[:key]) }
+        else
+            halt 404
+        end
+        token = AnaglyphViewer.scene_token(data, :secret => SUBMISSION_VIEW_SECRET)
+        response.headers['Cache-Control'] = 'no-store'
+        respond(:url => "#{SUBMISSION_VIEW_ROOT}/anaglyph-viewer/index.html?scene=#{CGI.escape("szene/#{token}.ini")}")
+    end
+
+    # abgaben.<host>/anaglyph-viewer/: the viewer, the Kenney kits it loads
+    # and, under szene/<token>.ini, the scene the token names. No session;
+    # the token is the only permission.
+    get '/anaglyph-viewer/*' do
+        halt 404 unless request.host == SUBMISSION_VIEW_HOST
+        rel = params['splat'].first.to_s
+        if (m = rel.match(%r{\Aszene/([A-Za-z0-9_.-]+)\.ini\z}))
+            data = AnaglyphViewer.verify_scene_token(m[1], :secret => SUBMISSION_VIEW_SECRET)
+            halt 404 if data.nil?
             text = begin
-                AnaglyphViewer.scene_from_submission(submission_path(found[:key], email))
+                if data['s'].is_a?(String) && data['s'].match?(/\A[0-9a-f]{32}\z/)
+                    AnaglyphViewer.scene_from_submission(File.join(SUBMISSIONS_ROOT, "#{data['s']}.tar.gz"))
+                elsif data['e'].is_a?(String) && data['f'].is_a?(String)
+                    path = "/user/#{fs_tag_for_email(data['e'])}/workspace"
+                    File.directory?(path) ? WorkspaceFiles.new(path).read_text(data['f'], max: 1_000_000) : nil
+                end
             rescue StandardError
                 nil
             end
             halt 404 if text.nil?
+            SubmissionView.headers('szene.ini', WEB_ROOT).each { |k, v| response.headers[k] = v }
             response.headers['Cache-Control'] = 'no-store'
             respond_raw_with_mimetype(text, 'text/plain; charset=utf-8')
         else
@@ -5312,8 +5366,15 @@ class Main < Sinatra::Base
                 halt 503
             end
             halt 404 if path.nil?
+            bytes = begin
+                AnaglyphViewer.for_sandbox(path, File.binread(path))
+            rescue AnaglyphViewer::Unpatchable => e
+                STDERR.puts "Anaglyph viewer: #{e.message}"
+                halt 503
+            end
+            SubmissionView.headers(path, WEB_ROOT).each { |k, v| response.headers[k] = v }
             response.headers['Cache-Control'] = 'public, max-age=3600'
-            respond_raw_with_mimetype(File.binread(path), AnaglyphViewer.mime(path))
+            respond_raw_with_mimetype(bytes, AnaglyphViewer.mime(path))
         end
     end
 
@@ -5620,13 +5681,18 @@ class Main < Sinatra::Base
     post '/api/delete_test' do
         assert(teacher_logged_in?)
         data = parse_request_data(:required_keys => [:tag])
-        neo4j_query(<<~END_OF_STRING, {:tag => data[:tag], :email => @session_user[:email]})
-            MATCH (u:User {email: $email})<-[:BELONGS_TO]->(t:Test {tag: $tag})
-            DETACH DELETE t;
+        deleted = neo4j_query(<<~END_OF_STRING, {:tag => data[:tag], :email => @session_user[:email]}).size
+            MATCH (u:User {email: $email})<-[:BELONGS_TO]-(t:Test {tag: $tag})
+            WITH t, t.tag AS tag
+            DETACH DELETE t
+            RETURN tag;
         END_OF_STRING
         # The shared content-addressed VSIX cache is retained: other exams
-        # may still reference these files.
-        FileUtils.rm_f(File.join(TestWorkspaceExtensions::MANIFESTS, "#{data[:tag]}.json"))
+        # may still reference these files. The manifest only for an exam that
+        # was this teacher's, and only under a plain tag.
+        if deleted > 0 && data[:tag].match?(/\A[a-z0-9]+\z/)
+            FileUtils.rm_f(File.join(TestWorkspaceExtensions::MANIFESTS, "#{data[:tag]}.json"))
+        end
         Main.refresh_nginx_config()
         respond(:ok => 'sure')
     end
@@ -5648,6 +5714,7 @@ class Main < Sinatra::Base
         # (and test accounts), the address alone used to be enough.
         Main.load_invitations()
         halt 403 unless admin_logged_in? || workspace_user_visible_to?(data[:email], @session_user[:email])
+        require_test_owner!(data[:tag])
         count = neo4j_query(<<~END_OF_STRING, {:tag => data[:tag], :email => data[:email]}).size
             MATCH (u:User {email: $email})-[:TAKES]->(t:Test {tag: $tag})
             RETURN u.email;
@@ -5676,24 +5743,40 @@ class Main < Sinatra::Base
     # Starting or stopping a real test only changes whether assigned students
     # are routed into their existing exam workspace. Their files and databases
     # must survive any number of stop/start cycles.
+    # An exam may be started, stopped and given students only by the teacher
+    # it belongs to (or an admin).
+    def require_test_owner!(tag)
+        return if admin_logged_in?
+
+        owned = neo4j_query(<<~END_OF_STRING, {:tag => tag, :email => @session_user[:email]}).size
+            MATCH (:User {email: $email})<-[:BELONGS_TO]-(t:Test {tag: $tag})
+            RETURN t.tag;
+        END_OF_STRING
+        halt 404 if owned == 0
+    end
+
     post '/api/start_test' do
         assert(teacher_logged_in?)
         data = parse_request_data(:required_keys => [:tag])
+        require_test_owner!(data[:tag])
         neo4j_query(<<~END_OF_STRING, {:tag => data[:tag]})
             MATCH (t:Test {tag: $tag})
             SET t.running = TRUE;
         END_OF_STRING
         Main.refresh_nginx_config()
+        respond(:ok => 'sure')
     end
 
     post '/api/stop_test' do
         assert(teacher_logged_in?)
         data = parse_request_data(:required_keys => [:tag])
+        require_test_owner!(data[:tag])
         neo4j_query(<<~END_OF_STRING, {:tag => data[:tag]})
             MATCH (t:Test {tag: $tag})
             REMOVE t.running;
         END_OF_STRING
         Main.refresh_nginx_config()
+        respond(:ok => 'sure')
     end
 
     post '/api/start_test_demo' do
@@ -6953,6 +7036,16 @@ class Main < Sinatra::Base
         if path[0, 7] == '/logout'
             path = '/index.html'
             sid = current_session_sid
+            # A new Workspace credential, so one that leaked stops working;
+            # other devices of this person get the new one on their next
+            # request (before filter).
+            if @session_user && @impersonated_by.nil?
+                neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email], :server_sid => gen_server_sid())
+                    MATCH (u:User {email: $email})
+                    SET u.server_sid = $server_sid;
+                END_OF_QUERY
+                Main.refresh_nginx_config()
+            end
             if sid
                 neo4j_query(<<~END_OF_QUERY, :sid => sid)
                     MATCH (s:Session {sid: $sid})
