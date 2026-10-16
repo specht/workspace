@@ -63,9 +63,11 @@
   icon: /images/palette.png
   description: |
     Farben mit Namen, Farbcodes oder Rot-, Grün- und Blauanteilen angeben, in
-    CSS und im Anaglyph-Viewer.
+    CSS und im Anaglyph-Viewer. Dazu die Farbräume RGB, HSV, YCbCr und
+    CIELab und wie man zwischen ihnen umrechnet.
   entries:
     - farben
+    - farbraeume
 
 - key: reference-network
   label: Netzwerk und Daten

@@ -4,7 +4,7 @@ kind: labor
 language: C
 duration: 4 Doppelstunden
 requires: [pixelram]
-reference: [pixelram, workspace]
+reference: [pixelram, workspace, farbraeume]
 template: https://github.com/specht/pixelram-starter.git
 template_name: des PixelRAM-Starters
 </div>
@@ -1513,6 +1513,8 @@ _task(mcu-lage)
 _task(mcus)
 
 ### Farbraumkonvertierung
+
+_uses(ycbcr)
 
 Nachdem wir die Pixelwerte für die Y-, Cb- und Cr-Komponenten erhalten haben, müssen wir diese in den RGB-Farbraum konvertieren, um das Bild korrekt darstellen zu können. Die Konvertierung erfolgt mit den folgenden Formeln:
 

@@ -18,6 +18,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Neue Handbuch-Seite »Farbräume« unter »Farben«: RGB, gespeicherte Werte
+  und Licht (sRGB, Gamma), Graustufen, HSV, YCbCr und CIELab, jeweils mit
+  den Formeln zum Umrechnen und demselben Foto in seine drei Kanäle
+  zerlegt. Dazu eine Tabelle, welcher Farbraum wofür gut ist.
+  »Geheime Botschaften in Bildern« zeigt im Abschnitt zu CIELab die Kanäle
+  von RGB und Lab nebeneinander und verweist auf die Teile zu Gamma und
+  CIELab, »Eine JPEG-Datei decodieren« auf den zu YCbCr.
+
 - »Eine JPEG-Datei decodieren« hat einen Schrittmacher zur iDCT: Er setzt
   den Beispielblock Koeffizient für Koeffizient aus seinen Basisbildern
   zusammen, zeigt dabei das Basisbild, den Block bisher und seine
@@ -580,6 +588,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Terminal«, Notiz für Lehrkräfte.
 
 ### Behoben
+
+- Formeln mit großen Klammern, Summenzeichen und einigen Symbolen sahen auf
+  allen Seiten falsch aus, weil die meisten Schriften von KaTeX fehlten;
+  nur `KaTeX_Main` und `KaTeX_Math` lagen in `src/static/include/katex/fonts`.
+  Jetzt sind alle 20 Schriften von KaTeX 0.16.9 da.
 
 - Automatron: In den Beispielen steht die Beschreibung unter einem langen
   Ausdruck statt in einer schmalen Spalte daneben, in der sie Wort für Wort
