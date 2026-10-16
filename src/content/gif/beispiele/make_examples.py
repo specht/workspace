@@ -9,8 +9,8 @@ photo 30 of /rgb (by Ian Kobylanski, with permission), 640 pixels wide,
 256 colours with Floyd-Steinberg dithering, once plain and once interlaced.
 
 flug.gif is the animation for the last part of the page. Everything goes
-into src/static/gif/ (for the download on the page); diskette.gif and
-markt.gif also into this folder, for the screenshot recipes. The checksums in tasks.yaml
+into this folder, for the screenshot recipes and the walk through the page,
+and into src/static/gif/, for the download on the page. The checksums in tasks.yaml
 belong to these files: change them and the tasks change.
 """
 import math
@@ -198,10 +198,10 @@ def main():
         f.write(diskette())
     common = ['convert', PHOTO, '-resize', '640x', '-dither', 'FloydSteinberg', '-colors', '256', '+repage', '-strip']
     subprocess.run(common + [os.path.join(HERE, 'markt.gif')], check=True)
-    subprocess.run(common + ['-interlace', 'GIF', os.path.join(STATIC, 'markt-interlaced.gif')], check=True)
-    with open(os.path.join(STATIC, 'flug.gif'), 'wb') as f:
+    subprocess.run(common + ['-interlace', 'GIF', os.path.join(HERE, 'markt-interlaced.gif')], check=True)
+    with open(os.path.join(HERE, 'flug.gif'), 'wb') as f:
         f.write(flight())
-    for name in ['diskette.gif', 'markt.gif']:
+    for name in ['diskette.gif', 'markt.gif', 'markt-interlaced.gif', 'flug.gif']:
         shutil.copy(os.path.join(HERE, name), os.path.join(STATIC, name))
 
 

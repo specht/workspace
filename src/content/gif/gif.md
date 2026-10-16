@@ -1321,3 +1321,30 @@ document.addEventListener('DOMContentLoaded', function() {
     render();
 });
 </script>
+
+<!-- tutorial-step
+# Die Aufgaben mit Prüfsummen: Der fertige Decoder muss für jede Datei genau die
+# Prüfsumme ausgeben, die die Aufgabe erwartet (tasks.yaml).
+write-file: markt-interlaced.gif <- file:beispiele/markt-interlaced.gif
+write-file: flug.gif <- file:beispiele/flug.gif
+write-file: animation.c <- file:loesung/animation.c
+terminal-open
+terminal-run: clear
+terminal-run: make PROGRAM=gif ARGS=diskette.gif
+terminal-wait-for-prompt: 180
+terminal-run: make PROGRAM=animation ARGS=flug.gif
+terminal-wait-for-prompt: 180
+-->
+
+<!-- tutorial-step
+# pruefsumme-diskette, pruefsumme-markt, interlacing, animation
+tab: preview
+hook: open gif.html
+hook: expect-output diskette.gif: 16 x 16, Prüfsumme 8e1af5c5
+hook: run markt.gif
+hook: expect-output markt.gif: 640 x 427, Prüfsumme 4e5b2bc9
+hook: run markt-interlaced.gif
+hook: expect-output markt-interlaced.gif: 640 x 427, Prüfsumme 4e5b2bc9
+hook: open animation.html
+hook: expect-output Prüfsumme nach dem letzten Bild 54236d34
+-->

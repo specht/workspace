@@ -1863,3 +1863,24 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 </script>
+
+<!-- tutorial-step
+# Die Aufgaben mit Werten aus dem Decoder: Er muss ausgeben, was die Aufgabe
+# erwartet, in ihrer Toleranz (tasks.yaml). Für »pixel« kommt die Zeile dazu,
+# die die Aufgabe verlangt.
+write-file: 91-baseline.jpg <- file:beispiele/91-baseline.jpg
+hook: pixel-print 800 350
+terminal-open
+terminal-run: clear
+terminal-run: make PROGRAM=jpeg ARGS=44-baseline.jpg
+terminal-wait-for-prompt: 180
+-->
+
+<!-- tutorial-step
+# blau (44-baseline.jpg) und pixel (91-baseline.jpg)
+tab: preview
+hook: open jpeg.html
+hook: expect-value Blau 108.9 1
+hook: run 91-baseline.jpg
+hook: expect-value 350: 80 2
+-->
