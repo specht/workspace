@@ -396,12 +396,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
-- Startseite neu geordnet, damit Grundlagen vor dem stehen, was sie braucht:
-  Erste Schritte (mit Dateien und Verzeichnissen und Git), Grafik & Spiele,
-  Web, Netze & Sicherheit (TCP/IP, Webserver, Pixelwand, Kryptographie, SQL
-  Injection), Datenbanken, Wie Computer rechnen (die Sandboxes, Automaten,
-  neuronales Netz, JPEG), Texte & Präsentationen, Programmiersprachen. Die
-  Abschnitte »Terminal & Git«, »Experimente« und »Sandboxes« gehen darin auf.
+- Startseite neu geordnet: erst, was der Workspace bietet, dann das Werkzeug:
+  Erste Schritte, Grafik & Spiele, Web, Netze & Sicherheit (TCP/IP vor dem
+  Webserver, Pixelwand, Kryptographie, SQL Injection), Datenbanken, Wie
+  Computer rechnen (die Sandboxes, Automaten, neuronales Netz, JPEG), Texte &
+  Präsentationen, Terminal & Git, Programmiersprachen. Die Abschnitte
+  »Experimente« und »Sandboxes« gehen darin auf.
 - Die Programmiersprachen stehen als kleine Kacheln mit Logo, Name und Jahr
   da statt als große Karten (`tiles: true` in `sections.yaml`); alle 18 sind
   auf einen Blick zu sehen.

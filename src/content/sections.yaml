@@ -1,19 +1,16 @@
-# The catalog on the start page, in this order. Basics come first, so that
-# what a section needs is above it: the terminal and Git before the projects,
-# TCP/IP before the web server.
+# The catalog on the start page, in this order: first what the Workspace
+# offers, the tools of the trade (terminal, Git) further down; within a topic
+# the basics come first, TCP/IP before the web server.
 - key: introduction
   label: Erste Schritte
   icon: /images/rocket.png
   description: |
     Lerne den Hackschule Workspace kennen und finde dich in der
-    Entwicklungsumgebung zurecht: Dateien und Ordner, das Terminal, die Tastatur
-    und Git, mit dem du Stände deiner Arbeit speicherst und teilst.
+    Entwicklungsumgebung zurecht.
   entries:
     - about
     - basics
     - keyboard
-    - working-with-files
-    - git
 
 # Code Bites (Programmieren üben) is off the start page for now (hidden:
 # not in the catalog, not pinnable); the exercises stay reachable from the
@@ -127,6 +124,17 @@
     - bif
     - showerjs
     - latex
+
+- key: terminal
+  label: Terminal & Git
+  icon: /images/penguin.png
+  description: |
+    Arbeite mit Dateien und Programmen im Terminal. Mit Git kannst du Änderungen
+    an deinen Projekten nachvollziehen, frühere Stände wiederherstellen und
+    gemeinsam mit anderen daran arbeiten.
+  entries:
+    - working-with-files
+    - git
 
 - key: programming_languages
   compact: true
