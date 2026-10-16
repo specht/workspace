@@ -1487,7 +1487,7 @@ Schon nach wenigen Schritten sieht der Block fast fertig aus: Die großen Koeffi
 <strong>Für deinen Decoder:</strong> Die Formel hat vier Summen über je 8 Werte, für jedes der 64 Pixel. Die Kosinuswerte hängen nur von x und u (und y und v) ab: Rechne sie einmal am Anfang in ein Array <code>double idct_cos[8][8]</code>, dann geht es schnell genug. Noch schneller wird es, wenn du erst jede Zeile und dann jede Spalte transformierst, aber das ist nicht nötig. Runde das Ergebnis, verschiebe es um 128 und begrenze es auf 0 bis 255. <code>M_PI</code> gibt es mit <code>-std=c11</code> nicht; schreib dir π als Konstante hin.
 </div>
 
-Ob deine iDCT stimmt, prüfst du am Beispiel: Für den ersten Y-Block von `44-baseline.jpg` muss die erste Zeile `40 41 43 46 46 43 41 42` herauskommen, wie oben im Schrittmacher am Ende.
+Ob deine iDCT stimmt, prüfst du am Beispiel: Für den ersten Y-Block von `44-baseline.jpg` muss die erste Zeile `40 41 43 46 46 43 41 42` herauskommen, wie oben in der Zeitlupe am Ende.
 
 _task(idct)
 

@@ -279,9 +279,9 @@ tasks:
       correct: 0
     feedback:
       - when: { picked: 1 }
-        say: So schreibt man die Abfrage. Ausgeführt wird sie anders; der Schrittmacher zeigt, womit die Datenbank anfängt.
+        say: So schreibt man die Abfrage. Ausgeführt wird sie anders; die Zeitlupe zeigt, womit die Datenbank anfängt.
       - when: { picked: 2 }
-        say: Fast. Wählt SELECT die Spalten aus, bevor WHERE die Zeilen prüft? Schau im Schrittmacher, wann die Spalten verschwinden.
+        say: Fast. Wählt SELECT die Spalten aus, bevor WHERE die Zeilen prüft? Schau in der Zeitlupe, wann die Spalten verschwinden.
       - when: { picked: 3 }
         say: ORDER BY darf schon die Namen aus SELECT benutzen, etwa dichte. Also muss SELECT vorher drankommen.
 
@@ -289,8 +289,8 @@ tasks:
     title: Ein Name, den es noch nicht gibt
     prediction: true
     prompt: |
-      Was passiert bei dieser Abfrage? Überleg zuerst, dann probier sie im
-      Schrittmacher oder in mycli aus.
+      Was passiert bei dieser Abfrage? Überleg zuerst, dann probier sie in der
+      Zeitlupe oder in mycli aus.
 
       ```sql
       SELECT name, einwohner / flaeche * 1000000 AS dichte

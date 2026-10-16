@@ -10,9 +10,9 @@ tasks:
     prediction: true
     prompt: |
       Komprimiere `ABABABA` von Hand, nach den drei Regeln, bevor du es oben
-      in den Schrittmacher tippst. »A« ist das Byte 65, »B« das Byte 66.
+      in die Zeitlupe tippst. »A« ist das Byte 65, »B« das Byte 66.
       Welche Codes kommen heraus? Schreib sie mit Leerzeichen dazwischen,
-      dann sieh im Schrittmacher nach.
+      dann sieh in der Zeitlupe nach.
     check:
       type: answer
       compare: regex
@@ -22,7 +22,7 @@ tasks:
         say: Nach `AB` (256) geht es mit `A` weiter, und `ABA` ist inzwischen ein eigener Eintrag. Welche Nummer hat er bekommen?
       - when: { matches: '^\s*65[\s,]+66[\s,]+65[\s,]+66' }
         say: Das sind die einzelnen Bytes. Ab dem zweiten `A` kennt das Wörterbuch schon `AB` als 256.
-    hint: Schreib eine Tabelle mit den Spalten Präfix, Byte, Ausgabe und neuer Eintrag. Der erste neue Eintrag ist 256 = `AB`. Mit dem Schrittmacher kannst du danach nachsehen.
+    hint: Schreib eine Tabelle mit den Spalten Präfix, Byte, Ausgabe und neuer Eintrag. Der erste neue Eintrag ist 256 = `AB`. Mit der Zeitlupe kannst du danach nachsehen.
     solution: '`65 66 256 258`: Die Einträge sind 256 = `AB`, 257 = `BA` und 258 = `ABA`. Das letzte Präfix ist `ABA` und kommt als 258 heraus.'
 
   - id: kompressor

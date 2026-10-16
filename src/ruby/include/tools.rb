@@ -24,7 +24,7 @@ module Tools
             :text => 'Aus einem regulären Ausdruck Schritt für Schritt Automaten zeichnen',
         },
         'query-stepper' => {
-            :title => 'Abfrage-Schrittmacher',
+            :title => 'SQL-Zeitlupe',
             :path => '/query-stepper',
             :icon => 'bi-table',
             :text => 'Eine SQL-Abfrage Schritt für Schritt ausführen, mit der Tabelle nach jedem Schritt',

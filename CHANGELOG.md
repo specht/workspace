@@ -52,7 +52,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   zerlegt. Dazu eine Tabelle, welcher Farbraum wofür gut ist.
   »Eine JPEG-Datei decodieren« verweist auf den Teil zu YCbCr.
 
-- »Eine JPEG-Datei decodieren« hat einen Schrittmacher zur iDCT: Er setzt
+- »Eine JPEG-Datei decodieren« hat eine Zeitlupe zur iDCT: Sie setzt
   den Beispielblock Koeffizient für Koeffizient aus seinen Basisbildern
   zusammen, zeigt dabei das Basisbild, den Block bisher und seine
   Pixelwerte und landet genau bei dem, was der Decoder ausrechnet. Dazu
@@ -60,9 +60,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Wert nach der Dequantisierung, ein Pixel nach der iDCT und die Lage der
   Blöcke in der MCU, jede mit Rückmeldungen für die typischen Fehler.
 
-- Der Abfrage-Schrittmacher kennt auch die Filme der »Filmdatenbank«:
+- Die SQL-Zeitlupe kennt auch die Filme der »Filmdatenbank«:
   `movie`, `genre` und `movie_genre` ganz, von `crew`, `job` und
-  `movie_crew` Regie und Schauspiel. Die »Filmdatenbank« zeigt mit ihm, wie
+  `movie_crew` Regie und Schauspiel. Die »Filmdatenbank« zeigt mit ihr, wie
   die Tabelle mit jedem `JOIN` wächst und wie `HAVING` ganze Gruppen
   streicht; auf der Werkzeugseite wählt man die Tabellen aus. Vor `SELECT`
   zeigt er nur die Spalten, die die Abfrage benutzt. Ein `JOIN … ON a = b`
@@ -70,16 +70,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   vergleichen. Zwölf Abfragen der Seite geben dieselben Zeilen wie MySQL,
   auch »Wer spielt mit wem?« über sechs Tabellen.
 
-- Neues Werkzeug: der Abfrage-Schrittmacher (`/query-stepper`). Er führt
+- Neues Werkzeug: die SQL-Zeitlupe (`/query-stepper`). Sie führt
   eine SQL-Abfrage so aus, wie die Datenbank es tut, Teil für Teil: FROM,
   JOIN, WHERE, GROUP BY, HAVING, SELECT, DISTINCT, ORDER BY, LIMIT. Nach
-  jedem Schritt zeigt er die Tabelle, die gerade entstanden ist, mit
+  jedem Schritt zeigt sie die Tabelle, die gerade entstanden ist, mit
   durchgestrichenen Zeilen, die wegfallen, Gruppen in eigenen Farben und den
-  Spalten, mit denen der Schritt arbeitet. ← → schalten weiter. Er rechnet im
+  Spalten, mit denen der Schritt arbeitet. ← → schalten weiter. Sie rechnet im
   Browser mit den Tabellen aus terra1 und hält sich an MySQL, wo man es
   merken würde. Groß- und Kleinschreibung zählen bei Texten nicht, NULL fällt
   aus WHERE, einen Namen aus AS gibt es bei WHERE noch nicht, und mit GROUP BY
-  braucht jede andere Spalte eine Funktion wie COUNT. Fehler erklärt er
+  braucht jede andere Spalte eine Funktion wie COUNT. Fehler erklärt sie,
   statt sie nur zu melden. Die »Einführung in SQL« hat dazu einen Abschnitt
   »In welcher Reihenfolge arbeitet die Datenbank?« mit zwei Aufgaben, eine
   davon eine Vermutung.
@@ -184,7 +184,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   wächst. Sieben Aufgaben.
 - Neue Aktivität »Komprimieren mit Huffman« (`/huffman`), in Ruby, im
   neuen Abschnitt »Bilder und Kompression«: vom Morsecode über präfixfreie
-  Codes zum Huffman-Baum, den ein Schrittmacher für einen eingetippten Text
+  Codes zum Huffman-Baum, den eine Zeitlupe für einen eingetippten Text
   Schritt für Schritt aufbaut und zeichnet. Lernende schreiben aus einem
   Gerüst mit leeren Methoden Zählen, Baum, Codetabelle, Codieren und
   Decodieren, vergleichen mit LZW und `gzip` und berechnen zum Schluss
@@ -192,7 +192,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   richtige Bäume gibt, prüfen die Aufgaben, was für jeden gilt: präfixfrei
   und so wenige Bits wie möglich. Acht Aufgaben.
 - Neue Aktivität »Komprimieren mit LZW« (`/lzw`), in Ruby, im neuen
-  Abschnitt »Bilder und Kompression«: Zwei Schrittmacher komprimieren einen Text, den
+  Abschnitt »Bilder und Kompression«: Zwei Zeitlupen komprimieren einen Text, den
   man selbst eintippt, und entpacken die Codes wieder, mit dem Sonderfall
   rot markiert. Lernende schreiben `compress` und `decompress` aus einem
   Gerüst mit leeren Methoden und messen an der Spezifikation von GIF und an
@@ -215,7 +215,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   »Bilder und Kompression« neben JPEG: Lernende schreiben in C einen GIF-Decoder, der
   mit PixelRAM zeichnet. Die Seite geht jeden Block an einer Diskette mit
   16 × 16 Pixeln durch, mit den Diagrammen der Spezifikation und farbigen
-  Hexdumps; ein Schrittmacher zeigt die LZW-Decodierung Code für Code, mit
+  Hexdumps; eine Zeitlupe zeigt die LZW-Decodierung Code für Code, mit
   Bits, Tabelle und dem Bild, das dabei entsteht. Dann folgen ein Foto mit
   256 Farben (von Ian Kobylanski), Interlacing und Animationen mit
   Transparenz, Disposal Method und Local Color Table; zum Schluss spielt der
@@ -649,6 +649,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Die Widgets zum Durchschalten heißen nicht mehr »Schrittmacher«, das an
+  einen Herzschrittmacher denken ließ, sondern »Zeitlupe«; das Werkzeug für
+  SQL heißt »SQL-Zeitlupe« (die Adresse `/query-stepper` bleibt).
 - Die TCP-Konsole scrollt nicht mehr in einem Kasten innerhalb der Seite:
   Das Protokoll wächst mit dem Gespräch, nur die Seite scrollt, und die
   Zeile zum Senden bleibt unten im Fenster. Neue Antworten ziehen die Seite
@@ -738,7 +741,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   `pip install`). Bisher lief Ruby ohne Gems, Python ohne die Pakete im
   Benutzerverzeichnis.
 
-- GIF: Der Schrittmacher der Bilddaten zeigt statt der Bytes in Hex einen
+- GIF: Die Zeitlupe der Bilddaten zeigt statt der Bytes in Hex einen
   Strom aus Bits, wie die Seite ihn erklärt (das erste Byte rechts, gelesen
   von rechts nach links), mit Bytegrenzen und dem Hexwert über jedem Byte.
   Gelesene Bits sind blass, jeder zweite Code getönt, der aktuelle Code gelb
@@ -749,18 +752,18 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   darüber; zurück geht es genauso. Wer im System »Bewegung reduzieren«
   eingestellt hat, sieht beide Widgets ohne Animation.
 - Alle Widgets zum Durchschalten lassen sich mit den Pfeiltasten bedienen
-  wie bisher nur der JPEG-Decoder: der Huffman-Baum, die beiden Schrittmacher
-  von LZW und der von GIF. Bei zwei Widgets auf einer Seite schaltet die
+  wie bisher nur der JPEG-Decoder: der Huffman-Baum, die beiden Zeitlupen
+  von LZW und die von GIF. Bei zwei Widgets auf einer Seite schaltet die
   Taste das, das gerade im Fenster steht; im Textfeld eines Widgets bewegt sie
   weiter den Cursor.
 - Widgets zum Durchschalten heben sich vom Text ab: ein heller Streifen mit
   einer Linie links und darüber »Zum Ausprobieren · ← → schalten weiter«. So
   sieht man, wo ein Widget anfängt und wo es aufhört.
 - LZW nennt das, was der Kompressor gerade aufbaut, jetzt **Präfix** statt
-  »Stück«, auf der Seite, in den Aufgaben und in der Tabelle des
-  Schrittmachers.
+  »Stück«, auf der Seite, in den Aufgaben und in der Tabelle der
+  Zeitlupe.
 - »Von Hand« bei LZW und bei Huffman ist jetzt eine Vermutung: erst auf
-  Papier, dann im Schrittmacher oben nachsehen, der die Antwort ja zeigt. Die
+  Papier, dann in der Zeitlupe oben nachsehen, die die Antwort ja zeigt. Die
   Prüfung bleibt dieselbe.
 - Die drei Sandboxes nennen ihre Sprachen neben der Art: »Projekt (Dart /
   Python / JavaScript / Java)« für Datenstrukturen und Sortieren, »Projekt

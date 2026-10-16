@@ -242,7 +242,7 @@ _task(sonderfall)
 
 Der Kompressor kann einen Eintrag benutzen, den er gerade erst angelegt hat. Das passiert, wenn sich ein Präfix sofort wiederholt und dabei mit seinem eigenen ersten Byte weitergeht, wie bei `ABABABA`. Der Entpacker kennt diesen Eintrag noch nicht, aber er kann ihn ausrechnen: Es ist der vorige Eintrag mit dessen eigenem ersten Byte dahinter. Das ist die einzige Ausnahme von Regel 2.
 
-Hier entpackt der Schrittmacher die Codes des Texts, der oben im Feld steht; die Ausnahme ist rot markiert. Tipp oben `ABABABA` oder `AAAAAAAA` ein und sieh hier zu.
+Hier entpackt die Zeitlupe die Codes des Texts, der oben im Feld steht; die Ausnahme ist rot markiert. Tipp oben `ABABABA` oder `AAAAAAAA` ein und sieh hier zu.
 
 <div class='lzw-stepper' id='lzw-decode' data-stepper>
 <div class='lzw-controls'>

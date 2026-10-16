@@ -55,11 +55,11 @@ JavaScript-Tests laufen mit Node, ohne npm-Pakete:
 
 ```bash
 node --test src/tutorial-screenshots/test/*.test.js
-node --test test/static/*.test.cjs        # JavaScript der Website, etwa der Abfrage-Schrittmacher
+node --test test/static/*.test.cjs        # JavaScript der Website, etwa die SQL-Zeitlupe
 cd src/vscode-extensions/er && node --test test/*.test.cjs core/*.test.cjs
 ```
 
-Der Abfrage-Schrittmacher (`src/static/include/query_stepper.js`, Seite
+Die SQL-Zeitlupe (`src/static/include/query_stepper.js`, Seite
 `/query-stepper`, eingebettet in »Einführung in SQL« und »Filmdatenbank«)
 rechnet im Browser mit den Tabellen in `src/static/query-stepper/`.
 `src/scripts/query-stepper-data.rb` baut sie aus den Dateien, die Lernende

@@ -4,10 +4,10 @@
 </style>
 
 <div class="container query-stepper-page">
-  <h2>Abfrage-Schrittmacher</h2>
+  <h2>SQL-Zeitlupe</h2>
   <p>
     Eine SQL-Abfrage schreibt man mit <code>SELECT</code> zuerst, aber die Datenbank fängt woanders an: bei
-    <code>FROM</code>. Der Schrittmacher führt eine Abfrage so aus, wie die Datenbank es tut, Teil für Teil, und
+    <code>FROM</code>. Die Zeitlupe führt eine Abfrage so aus, wie die Datenbank es tut, Teil für Teil, und
     zeigt nach jedem Schritt die Tabelle, die gerade entstanden ist. Mit <kbd>←</kbd> und <kbd>→</kbd> gehst du
     durch die Schritte. Wie man solche Abfragen schreibt, zeigt die <a href="/mysql">Einführung in SQL</a>.
   </p>
@@ -17,10 +17,10 @@
     <code>land.Einwohner</code> ist in Millionen. Die Filme aus der <a href="/filmdatenbank">Filmdatenbank</a>:
     <code>movie</code>, <code>genre</code> und <code>movie_genre</code> ganz, von <code>crew</code>,
     <code>job</code> und <code>movie_crew</code> nur Regie und die Schauspielerinnen und Schauspieler ab fünf
-    Filmen. Der Schrittmacher kennt <code>SELECT</code> mit <code>DISTINCT</code>, <code>JOIN</code> und
+    Filmen. Die Zeitlupe kennt <code>SELECT</code> mit <code>DISTINCT</code>, <code>JOIN</code> und
     <code>LEFT JOIN</code>, <code>WHERE</code>, <code>GROUP BY</code>, <code>HAVING</code>, <code>ORDER BY</code>
     und <code>LIMIT</code>, dazu <code>COUNT</code>, <code>SUM</code>, <code>AVG</code>, <code>MIN</code>,
-    <code>MAX</code> und <code>ROUND</code>. Er rechnet alles im Browser; an deine Datenbank schickt er nichts.
+    <code>MAX</code> und <code>ROUND</code>. Sie rechnet alles im Browser; an deine Datenbank schickt er nichts.
   </p>
 
   <div class="query-stepper" data-stepper data-choose data-query="SELECT kontinent, COUNT(*) AS laender

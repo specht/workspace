@@ -32,8 +32,8 @@ tasks:
     title: Von Hand
     prediction: true
     prompt: |
-      Bau den Huffman-Baum für `ABRACADABRA` auf Papier, bevor du ihn oben im
-      Schrittmacher nachbaust: A kommt 5-mal vor, B und R je 2-mal, C und D
+      Bau den Huffman-Baum für `ABRACADABRA` auf Papier, bevor du ihn oben in der
+      Zeitlupe nachbaust: A kommt 5-mal vor, B und R je 2-mal, C und D
       je einmal. Wie viele Bits braucht der ganze Text mit diesen Codes?
     check:
       type: number
