@@ -110,6 +110,43 @@ Kommentare und was ein Programm ausgibt, dürfen deutsch sein. Im Text
 bleiben Fachwörter, die auch deutsche Entwicklerinnen englisch sagen,
 englisch: Handshake, Lock, String, Header.
 
+### In Ruby und in Python
+
+Eine Aktivität, deren Sprache frei ist, kann es in Ruby und in Python geben.
+Lehrkräfte stellen auf der Klassenseite (`/klasse`) unter »Sprache« ein,
+welche ihre Gruppe sieht; ohne Einstellung ist es Ruby. Lernende können auf
+der Seite mit einem Schalter neben der Art der Aktivität selbst umschalten,
+und diese Wahl gilt dann für sie auf allen solchen Seiten.
+
+Im Meta-Block stehen dann beide Sprachen, und `language` ist nur noch, was
+die Karte im Katalog zeigt:
+
+```yaml
+language: Ruby / Python
+languages: [ruby, python]
+```
+
+Was sich unterscheidet, steht zweimal im Text, eingefasst in Kommentare auf
+eigenen Zeilen:
+
+```markdown
+<!-- language: ruby -->
+Lege darin die Datei `lzw.rb` an:
+…
+<!-- /language -->
+<!-- language: python -->
+Lege darin die Datei `lzw.py` an:
+…
+<!-- /language -->
+```
+
+Ein solcher Teil umfasst ganze Absätze, Listen oder Code-Blöcke, nie einen
+Teil davon, und keine Überschriften, sonst stünden sie zweimal im
+Inhaltsverzeichnis. Alles außerhalb gilt für beide Sprachen. Beide Fassungen
+stehen in der Seite, und der Schalter zeigt die eine oder die andere, ohne
+die Seite neu zu laden. Vorbild sind `src/content/rle/`, `huffman/` und
+`lzw/`.
+
 ## 3. Aufgaben schreiben
 
 Aufgaben stehen in `tasks.yaml` neben der Seite und werden mit

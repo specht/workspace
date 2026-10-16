@@ -204,6 +204,40 @@ tasks:
 | `prediction` | nein | `true`: Vorhersage; nur der erste Versuch zählt fürs Klassenboard, danach darf ausprobiert werden |
 | `solution` | nein | Lösung; nur Lehrkräfte sehen sie |
 | `exam` | nein | `false`: nie in einer Leistungsüberprüfung; Prüfarten mit Netz sind dort ohnehin gesperrt |
+| `ruby`, `python` | nein | Was in dieser Sprache anders ist, auf Seiten in mehreren Sprachen (siehe unten) |
+
+### In mehreren Sprachen
+
+Auf einer Seite mit `languages: [ruby, python]` (siehe
+[aktivitaet-schreiben.md](aktivitaet-schreiben.md#in-ruby-und-in-python))
+kann eine Aufgabe für eine Sprache anders sein. Unter dem Namen der Sprache
+steht nur, was sich ändert: `prompt`, `check`, `hint`, `solution`,
+`feedback` oder `file`. Alles andere gilt für beide.
+
+```yaml
+  - id: kompressor
+    title: Der Kompressor
+    prompt: Schreib `compress` in `lzw.rb`.
+    check:
+      type: ruby
+      file: lzw/lzw.rb
+      cases:
+        - compress('ABABABA'): '[65, 66, 256, 258]'
+    python:
+      prompt: Schreib `compress` in `lzw.py`.
+      check:
+        type: python
+        file: lzw/lzw.py
+        cases:
+          - compress(b'ABABABA'): '[65, 66, 256, 258]'
+```
+
+Die Seite zeigt dann für jede Sprache eine eigene Karte mit derselben
+Nummer, und die Prüfung nimmt die Fassung der Karte. Die Aufgabe behält ihre
+`id` und hat eine einzige Version, die aus allen `check` zusammen berechnet
+wird: Wer sie in Ruby gelöst hat, hat sie auch in Python gelöst, und die
+Klassenübersicht zählt sie einmal. Ändert sich der `check` einer Sprache,
+ändert sich die Version für beide.
 
 ### Variablen
 

@@ -324,7 +324,7 @@
     }
 
     function send(card, answer) {
-        api_call('/api/task/check', { task: card.dataset.task, answer: answer }, function (data) {
+        api_call('/api/task/check', { task: card.dataset.task, answer: answer, language: card.dataset.language }, function (data) {
             setBusy(card, false);
             if (!data.success) {
                 showFeedback(card, 'unavailable', '<p>Das hat gerade nicht geklappt. Versuch es gleich noch einmal.</p>');

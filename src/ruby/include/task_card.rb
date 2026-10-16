@@ -26,16 +26,20 @@ module TaskCard
     end
 
     # render: lambda Markdown -> HTML, used for prompt, hint and options.
-    def self.html(task, activity:, number:, render:)
+    # language: the programming language of this card when the task has one
+    # for each (CodeLanguages); tasks.js sends it along. id_suffix keeps the
+    # element ids of the second card apart from the first.
+    def self.html(task, activity:, number:, render:, language: nil, id_suffix: '')
         h = ->(s) { CGI.escapeHTML(s.to_s) }
         check = task['check']
         type = check['type']
         key = "#{activity}/#{task['id']}"
-        field = "task-#{activity}-#{task['id']}"
+        field = "task-#{activity}-#{task['id']}#{id_suffix}"
         runs = TaskCheck::RUNS.include?(type)
 
         io = +''
-        io << "<section class='task-card' id='aufgabe-#{h.(task['id'])}' data-task='#{h.(key)}' data-type='#{h.(type)}'"
+        io << "<section class='task-card' id='aufgabe-#{h.(task['id'])}#{h.(id_suffix)}' data-task='#{h.(key)}' data-type='#{h.(type)}'"
+        io << " data-language='#{h.(language)}'" if language
         io << " data-preview='#{h.(task['check']['preview'])}'" if task['check'].is_a?(Hash) && task['check']['preview']
         if task['check'].is_a?(Hash) && task['check']['preview'] && task['check'].dig('requires', 'min_objects')
             io << " data-min-objects='#{task['check']['requires']['min_objects'].to_i}'"

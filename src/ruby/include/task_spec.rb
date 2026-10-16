@@ -12,6 +12,7 @@ require_relative 'scene_color'
 require_relative 'html_lite'
 require_relative 'python_check'
 require_relative 'ruby_check'
+require_relative 'code_languages'
 
 # Format and validation of an activity's tasks.yaml (see docs/aufgaben.md).
 #
@@ -55,7 +56,7 @@ module TaskSpec
     # Check types that need the network; they are never used in exams.
     NEEDS_NETWORK = %w[measure].to_set.freeze
 
-    TASK_KEYS = %w[id title prompt check hint solution feedback prediction file exam].freeze
+    TASK_KEYS = (%w[id title prompt check hint solution feedback prediction file exam] + CodeLanguages::LANGUAGES).freeze
 
     EXTRACTORS = %w[ping_rtt_avg ping_hops ping_reply_country traceroute_hops].freeze
     EXTRACTOR_WITH_ARGUMENT = /\Ahttp_header:[A-Za-z0-9-]+\z/
@@ -146,7 +147,34 @@ module TaskSpec
         errors
     end
 
+    # A task with variants for other programming languages (CodeLanguages):
+    # each variant may only replace some fields, and the task must be valid
+    # in every language.
     def self.validate_task(task)
+        variants = CodeLanguages.variant_languages(task)
+        return validate_single_task(task) if variants.empty? && CodeLanguages::LANGUAGES.none? { |l| task.key?(l) }
+
+        errors = []
+        CodeLanguages::LANGUAGES.each do |language|
+            next unless task.key?(language)
+
+            unless task[language].is_a?(Hash)
+                errors << "#{language} must be a mapping with what differs in #{CodeLanguages::NAMES[language]}"
+                next
+            end
+            extra = task[language].keys - CodeLanguages::VARIANT_KEYS
+            errors << "#{language}: only #{CodeLanguages::VARIANT_KEYS.join(', ')} can differ, not #{extra.join(', ')}" unless extra.empty?
+        end
+        return errors unless errors.empty?
+
+        errors.concat(validate_single_task(CodeLanguages.variant(task, nil)))
+        variants.each do |language|
+            errors.concat(validate_single_task(CodeLanguages.variant(task, language)).map { |e| "#{language}: #{e}" })
+        end
+        errors
+    end
+
+    def self.validate_single_task(task)
         errors = []
         unknown = task.keys - TASK_KEYS
         errors << "unknown keys: #{unknown.join(', ')}" unless unknown.empty?
@@ -554,8 +582,13 @@ module TaskSpec
 
     # Version of a task's grading: changes when anything in check changes,
     # not when the wording of title, prompt or hints changes.
+    # A task with variants for other languages has one version for all of
+    # them, so that one solved in Ruby counts in Python too; a change to any
+    # of their checks changes it. Without variants it is the same as always.
     def self.check_version(task)
-        Digest::SHA256.hexdigest(JSON.generate(canonical(task['check'])))[0, 16]
+        variants = CodeLanguages.variant_languages(task).select { |l| task[l].key?('check') }
+        source = variants.empty? ? canonical(task['check']) : canonical([task['check']] + variants.map { |l| [l, task[l]['check']] })
+        Digest::SHA256.hexdigest(JSON.generate(source))[0, 16]
     end
 
     def self.canonical(value)
