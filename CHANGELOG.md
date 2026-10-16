@@ -18,6 +18,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Der Abfrage-Schrittmacher kennt auch die Filme der »Filmdatenbank«:
+  `movie`, `genre` und `movie_genre` ganz, von `crew`, `job` und
+  `movie_crew` Regie und Schauspiel. Die »Filmdatenbank« zeigt mit ihm, wie
+  die Tabelle mit jedem `JOIN` wächst und wie `HAVING` ganze Gruppen
+  streicht; auf der Werkzeugseite wählt man die Tabellen aus. Vor `SELECT`
+  zeigt er nur die Spalten, die die Abfrage benutzt. Ein `JOIN … ON a = b`
+  sucht die Partner über einen Schlüssel statt jede Zeile mit jeder zu
+  vergleichen. Zwölf Abfragen der Seite geben dieselben Zeilen wie MySQL,
+  auch »Wer spielt mit wem?« über sechs Tabellen.
+
 - Neues Werkzeug: der Abfrage-Schrittmacher (`/query-stepper`). Er führt
   eine SQL-Abfrage so aus, wie die Datenbank es tut, Teil für Teil: FROM,
   JOIN, WHERE, GROUP BY, HAVING, SELECT, DISTINCT, ORDER BY, LIMIT. Nach

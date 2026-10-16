@@ -46,5 +46,12 @@ test('the query stepper works through a query clause by clause', async ({ page, 
   await stepper.locator("[data-go='last']").click();
   await expect(stepper.locator('.qs-table tbody tr:not(.qs-drop) td')).toHaveText(['Dänemark', 'Deutschland']);
 
+  // An example on the movie tables switches the tables
+  await page.locator('.query-stepper-examples button', { hasText: 'Filme: zwei JOINs' }).click();
+  await expect(stepper.locator('.qs-dataset select')).toHaveValue('movies');
+  await expect(stepper.locator('.qs-clause')).toHaveText(['FROM', 'JOIN', 'WHERE', 'SELECT']);
+  await stepper.locator("[data-go='last']").click();
+  await expect(stepper.locator('.qs-table tbody tr td:nth-child(2)')).toHaveText(['Adventure', 'Comedy', 'Sci-Fi']);
+
   expect(errors).toEqual([]);
 });

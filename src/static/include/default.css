@@ -4871,3 +4871,18 @@ div[data-stepper]::before {
 .query-stepper td.qs-col {
     font-weight: 700;
 }
+.query-stepper .qs-dataset {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-bottom: 0.6em;
+    font-size: 0.9em;
+}
+.query-stepper .qs-dataset select {
+    width: auto;
+}
+.query-stepper .qs-hidden {
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
+    margin-top: 0.3em;
+}
