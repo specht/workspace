@@ -23,11 +23,14 @@ module ContentParts
     VARIABLES = {
         'template' => '[Adresse der Vorlage]',
         'class_repo' => '[Adresse des Klassen-Repositorys]',
+        # Not from the page, from the site's configuration (CONTACT_EMAIL).
+        'contact_email' => '[Kontaktadresse]',
     }.freeze
+    SITE_VARIABLES = %w[contact_email].freeze
 
-    # The page's values for VARIABLES, from its meta block.
+    # The page's values for VARIABLES, from its meta block (not the site's).
     def self.page_variables(meta)
-        VARIABLES.keys.to_h { |name| [name, meta[name].is_a?(String) && !meta[name].strip.empty? ? meta[name].strip : nil] }
+        (VARIABLES.keys - SITE_VARIABLES).to_h { |name| [name, meta[name].is_a?(String) && !meta[name].strip.empty? ? meta[name].strip : nil] }
     end
     VARIABLE = /\$\{(#{VARIABLES.keys.join('|')})\}/
     NOTE_FILE = 'lehrkraft.md'

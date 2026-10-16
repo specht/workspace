@@ -1209,6 +1209,20 @@ class Main < Sinatra::Base
 
     private_class_method :refresh_nginx_config_locked
 
+    # The address people write to: invitations, the imprint, help with a
+    # page. CONTACT_EMAIL in credentials.rb; empty when it is not set, and
+    # pages then leave the address out.
+    def self.contact_email
+        defined?(CONTACT_EMAIL) ? CONTACT_EMAIL.to_s.strip : ''
+    end
+
+    # The values for ${...} in a content page: its meta block, and the
+    # site's contact address.
+    def self.content_variables(meta)
+        email = contact_email
+        ContentParts.page_variables(meta).merge('contact_email' => email.empty? ? nil : email)
+    end
+
     def self.convert_image(image_path)
         image_sha1 = Digest::SHA1.hexdigest(File.read(image_path))[0, 16]
         target_path = "/webcache/#{image_sha1}.webp"
@@ -1692,11 +1706,11 @@ class Main < Sinatra::Base
                 page_included_parts = ContentParts.included_parts(markdown)
                 markdown = ContentParts.expand_includes(markdown,
                     :page_dir => File.dirname(path), :reference_root => REFERENCE_ROOT,
-                    :variables => ContentParts.page_variables(page_meta), :warn => content_warning)
+                    :variables => Main.content_variables(page_meta), :warn => content_warning)
                 markdown = ContentParts.expand_uses(markdown,
                     :references => page_meta['reference'], :reference_root => REFERENCE_ROOT,
                     :warn => content_warning)
-                markdown = ContentParts.fill_variables(markdown, ContentParts.page_variables(page_meta))
+                markdown = ContentParts.fill_variables(markdown, Main.content_variables(page_meta))
                 markdown = ContentParts.mark_parts(markdown)
                 # _tool(name): a box that opens a tool of the site in a new tab (Tools).
                 markdown = Tools.expand(markdown, :warn => content_warning)
@@ -4027,6 +4041,18 @@ class Main < Sinatra::Base
             "<script src='/include/include_fold.js?#{CACHE_BUSTER}'></script>"
     end
 
+    # The picture in the front page's header (index.html): a tidy Workspace
+    # from a recipe on the about page, through the image cache.
+    FRONT_PICTURE = '/src/content/about/workspace.webp'
+
+    def front_picture_html
+        return '' unless File.file?(FRONT_PICTURE)
+
+        "<img class='front-hero-picture' src='/cache/#{Main.convert_image(FRONT_PICTURE)}.webp' " \
+            "alt='Der Workspace: oben im Editor ein kurzes Programm, das nach dem Namen fragt, " \
+            "unten im Terminal sein Lauf: Hallo, Ada!'>"
+    end
+
     # Loads media_variants.js on a page with image or video variants.
     def media_variants_setup(slug)
         return '' unless (@@content[slug] || {})[:html].to_s.include?('data-variant-')
@@ -4863,10 +4889,17 @@ class Main < Sinatra::Base
     end
 
     def stub
-        StringIO.open do |io|
-            io.puts "<em>Dieser Artikel ist noch nicht vollständig. Schreib eine E-Mail an <a href='mailto:specht@gymnasiumsteglitz.de'>specht@gymnasiumsteglitz.de</a>, wenn du dabei helfen möchtest, ihn fertigzustellen.</em>"
-            io.string
-        end
+        write = contact_email.empty? ? 'Melde dich' : "Schreib eine E-Mail an #{contact_email_link}"
+        "<em>Dieser Artikel ist noch nicht vollständig. #{write}, wenn du dabei helfen möchtest, ihn fertigzustellen.</em>\n"
+    end
+
+    def contact_email
+        Main.contact_email
+    end
+
+    def contact_email_link
+        email = CGI.escapeHTML(contact_email)
+        email.empty? ? '' : "<a href='mailto:#{email}'>#{email}</a>"
     end
 
     def broadcast_login_codes

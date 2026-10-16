@@ -20,6 +20,11 @@ SMTP_FROM = 'Absender <E-Mail-Adresse>'
 
 ADMIN_USERS = []
 
+# Die Adresse, an die man schreibt: Einladungen, Impressum, Hilfe bei einer
+# Seite. Erscheint auf der Startseite, im Impressum und als ${contact_email}
+# in den Inhalten. Ohne diese Zeile fehlt die Adresse dort einfach.
+CONTACT_EMAIL = 'kontakt@example.com'
+
 MYSQL_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'
 MYSQL_PASSWORD_SALT = 'bitte_ein_langes_salt_generieren'
 NEO4J_ROOT_PASSWORD = 'bitte_ein_passwort_eintragen'

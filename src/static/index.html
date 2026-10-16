@@ -2,43 +2,48 @@
     h2 {
         margin: 1em 0;
     }
+    /* The same columns as the cards below (.hscol): the text over two, the picture over the third. */
+    .front-hero { margin-top: 2em; margin-bottom: 1em; row-gap: 1.2em; }
+    .front-hero-lead { font-size: 1.25rem; line-height: 1.5; margin: 0 0 0.8em; text-align: left; hyphens: manual; }
+    .front-hero-points { list-style: none; padding: 0; margin: 0 0 1.3em; display: flex; flex-wrap: wrap; gap: 0.4em 1.2em;
+                         color: var(--bs-secondary-color); }
+    .front-hero-points .bi { margin-right: 0.4em; color: var(--bs-success); }
+    .front-hero-login { margin: 0; color: var(--bs-secondary-color); text-align: left; hyphens: manual; }
+    .front-hero-picture { width: 100%; border-radius: 10px; box-shadow: 0 0.4em 1.5em rgba(0, 0, 0, 0.2); }
+    @media (max-width: 767.999999px) {
+        .front-hero { margin-top: 1.2em; }
+        .front-hero-lead { font-size: 1.1rem; }
+    }
 </style>
 <div class='container'>
     <div class='row'>
         <div class='col-md-12'>
-            <p class="mt-4" style="#{running_tests.empty? ? '' : 'display: none;'}">
+            <!-- Not logged in: what the Workspace is and how to get in, in one
+                 compact header; the catalog below shows what it offers. -->
+            <div class='row align-items-center front-hero' style='#{user_logged_in? || !running_tests.empty? ? 'display: none;' : ''}'>
+                <div class='front-hero-text col-12 col-md-6 col-xl-8'>
+                    <p class='front-hero-lead'>
+                        Programmieren direkt im Browser: deine eigene Entwicklungsumgebung mit Editor, Terminal und Git,
+                        ohne etwas zu installieren. Deine Dateien sind in der Schule und zu Hause dieselben.
+                    </p>
+                    <ul class='front-hero-points'>
+                        <li><i class='bi bi-code-slash'></i>Visual Studio Code im Browser</li>
+                        <li><i class='bi bi-terminal'></i>Terminal und Git</li>
+                        <li><i class='bi bi-grid-3x3-gap'></i>Projekte, Labore und 18 Sprachen</li>
+                    </ul>
+                    <p class='front-hero-login'>
+                        <a href='/login'>Melde dich mit deiner E-Mail-Adresse an.</a>
+                        Noch keinen Zugang? Frag nach einer #{contact_email.empty? ? 'Einladung' : "<a href='mailto:#{CGI.escapeHTML(contact_email)}'>Einladung</a>"}.
+                    </p>
+                </div>
+                <div class='col-12 col-md-6 col-xl-4'>#{front_picture_html}</div>
+            </div>
+            <p class="mt-4" style="#{running_tests.empty? && user_logged_in? ? '' : 'display: none;'}">
                 Herzlich willkommen im <strong>Hackschule Workspace</strong>!
                 Hier kannst du direkt im Browser programmieren, ohne dass du irgendetwas installieren musst.
                 Probiere Pro&shy;gram&shy;mier&shy;spra&shy;chen und Technologien aus. Deine Dateien werden automatisch gespeichert
                 und sind von überall abrufbar – in der Schule genauso wie zu Hause.
             </p>
-            <div style='#{user_logged_in? ? 'display: none;' : ''}' class="row">
-                <div class="#{user_logged_in? ? 'col-lg-4 col-md-12 col-sm-12' : 'col-md-6'} mt-4">
-                    <h3><div class='squircle'><img src='/images/hacker.png' alt=''></div> Programmieren üben</h3>
-                    <p>
-                        Hier bekommst du deine eigene Programmier&shy;umgebung (Visual Studio Code), in der du direkt loslegen kannst, egal ob in Java, Python, Ruby, JavaScript, Go, Lua, C oder C++. Du kannst auch Dokumente mit L<span style='position: relative; font-size: 90%; top: -0.2em;'>A</span>T<span style='position: relative; top: 0.2em;'>E</span>X setzen.
-                    </p>
-                </div>
-                <div class="#{user_logged_in? ? 'col-lg-4 col-md-12 col-sm-12' : 'col-md-6'} mt-4">
-                    <h3><div class='squircle'><img src='/images/penguin.png' alt=''></div> Linux-Befehle lernen</h3>
-                    <p>
-                        Nutze das eingebaute Terminal, um Linux-Kommandos auszuführen und die Kommandozeile im Terminal kennen&shy;zu&shy;lernen. Du kannst auch eigene Shell-Skripte schreiben und ausführen.
-                    </p>
-                </div>
-                <div class="#{user_logged_in? ? 'col-lg-4 col-md-12 col-sm-12' : 'col-md-6'} mt-4">
-                    <h3><div class='squircle'><img src='/images/git.png' alt=''></div> Lerne den Umgang mit Git</h3>
-                    <p>
-                        Du kannst Git direkt im Workspace verwenden, um deine Projekte zu verwalten und mit anderen zu teilen. Du kannst auch GitHub-Repositories klonen und bearbeiten.
-                    </p>
-                </div>
-                <div class="col-md-6 mt-4" style="#{user_logged_in? ? 'display: none;' : ''}">
-                    <h3><div class='squircle'><img src='/images/key.png' alt=''></div> Wie komme ich rein?</h3>
-                    <p>
-                        Um den Hackschule Workspace zu nutzen, <a href='/login'>musst du dich anmelden</a>. Du brauchst dafür eine E-Mail-Adresse am Gymnasium Steglitz. Du kannst auch nach einer <a href='mailto:specht@hackschule.de'>Einladung</a> fragen.
-                    </p>
-                </div>
-                <hr class="mt-4">
-            </div>
 
             #{student_home}
             #{print_content_overview()}

@@ -50,3 +50,30 @@ sleep: 1
 variants: dark
 -->
 <img class='teaser' hidden src='start-page.webp' alt='Die Startseite des Workspaces: oben »Anmelden«, darunter, was man im Workspace machen kann.'>
+
+<!-- tutorial-screenshot
+# Für die Startseite (index.html, front_picture_html): ein aufgeräumter Workspace mit einem kleinen Programm und einem Lauf im Terminal.
+# zoom: Das Bild ist auf der Startseite nur etwa halb so breit wie die anderen Screenshots; etwas größer gezoomt bleibt es lesbar.
+viewport: 1029x700
+zoom: 1.6
+write-file: hallo/hallo.py <- file:hallo.py
+press: Control+K
+press: Control+O
+wait-for-input-value: /workspace/
+type: hallo
+press: Enter
+wait-for-input-value: /workspace/hallo/
+press: Enter
+wait-for-text: hallo.py
+open-file: hallo.py
+hide-left-sidebar
+terminal-open
+terminal-run: clear
+terminal-run: python3 hallo.py
+sleep: 1
+type: Ada
+press: Enter
+terminal-wait-for-prompt
+move-mouse: selector:.terminal
+-->
+<img hidden src='workspace.webp' alt='Der Workspace: oben im Editor hallo.py, ein Programm, das nach dem Namen fragt, unten im Terminal sein Lauf: Wie heißt du? Ada, Hallo, Ada!'>

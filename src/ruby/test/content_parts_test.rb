@@ -223,6 +223,14 @@ class ContentPartsTest < Minitest::Test
         assert_equal 'git clone [Adresse des Klassen-Repositorys] structures',
             ContentParts.fill_variables('git clone ${class_repo} structures', vars)
     end
+
+    def test_contact_email_comes_from_the_site
+        text = "Schreib an <a href='mailto:${contact_email}'>${contact_email}</a>."
+        assert_equal "Schreib an <a href='mailto:a@b.de'>a@b.de</a>.",
+                     ContentParts.fill_variables(text, { 'contact_email' => 'a@b.de' })
+        assert_includes ContentParts.fill_variables(text, {}), '[Kontaktadresse]'
+        refute ContentParts.page_variables({ 'contact_email' => 'x@y.de' }).key?('contact_email')
+    end
     # A short line shows `code` and <kbd>keys</kbd>; any other tag outside
     # backticks would appear as text.
     def test_short_lines_have_no_other_html_outside_code
