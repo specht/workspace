@@ -397,8 +397,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 ### Geändert
 
 - Startseite für alle, die nicht angemeldet sind: Statt Begrüßung und vier
-  Textkacheln ein kompakter Kopf mit einem Satz, was der Workspace ist, drei
-  Stichpunkten, einem Link zur Anmeldung und einem Bild des Workspaces
+  Textkacheln ein kompakter Kopf mit einem Satz, was der Workspace ist, einem
+  Link zur Anmeldung und einem Bild des Workspaces
   (ein Rezept auf der Seite »Was ist der Hackschule Workspace?«). Der Katalog
   beginnt gleich darunter. »Anmelden« bleibt oben im Menü.
 - Startseite neu geordnet: erst, was der Workspace bietet, dann das Werkzeug:
