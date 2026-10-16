@@ -18,6 +18,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Neue Aktivität »Komprimieren mit LZW« (`/lzw`), in Ruby, im Abschnitt »Wie
+  Computer rechnen« vor GIF: Zwei Schrittmacher komprimieren einen Text, den
+  man selbst eintippt, und entpacken die Codes wieder, mit dem Sonderfall
+  rot markiert. Lernende schreiben `compress` und `decompress` aus einem
+  Gerüst mit leeren Methoden und messen an der Spezifikation von GIF und an
+  einem JPEG, das größer statt kleiner wird. Sieben Aufgaben.
+- Neue Prüfart `ruby` für Aufgaben, wie `python`: Sie lädt eine Ruby-Datei
+  der Lernenden in ihrem Workspace, als Gast, ruft Methoden mit festen
+  Eingaben auf und nennt den ersten Aufruf, der nicht passt. Ein Block
+  `if __FILE__ == $0` läuft dabei nicht.
 - »Eine JPEG-Datei decodieren« ist jetzt ein Labor in C mit PixelRAM statt
   Pixelflow Canvas: Vorbereitung mit der PixelRAM-Vorlage, ein kleines Gerüst
   zum Kopieren und zu jedem Teil ein Kasten »Für deinen Decoder« mit

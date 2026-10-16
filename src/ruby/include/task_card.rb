@@ -175,7 +175,7 @@ module TaskCard
             viewer = File.join(File.dirname(check['file'].to_s), 'include', 'script.js')
             "Liest #{path.(check['file'])} mit deinem Viewer #{path.(viewer)}, in deinem Workspace"
         when 'er' then "Liest #{path.(check['file'])} mit der ER-Werkstatt, in deinem Workspace"
-        when 'python'
+        when 'python', 'ruby'
             n = (check['cases'] || []).size
             "Lädt #{path.(check['file'])} in deinem Workspace, als Gast, der nichts verändern kann, und probiert #{n == 1 ? 'einen Aufruf' : "#{n} Aufrufe"} aus"
         when 'schema' then 'Liest den Aufbau deiner MySQL-Datenbank, angemeldet als du, und ändert nichts'

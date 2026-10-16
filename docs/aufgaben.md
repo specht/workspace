@@ -248,6 +248,7 @@ als »geändert« statt als stilles Häkchen. Tippfehler in `title`, `prompt` od
 | `measure` | Messwert der Lernenden gegen eine eigene Messung | Ausgabe eines Befehls | Workspace | M6 |
 | `command` | Ausgabe eines Befehls der Lernenden | Ausgabe | Workspace | M6 |
 | `python` | Funktionen aus einer Python-Datei der Lernenden: Aufrufe und ihre Ergebnisse | eine `.py`-Datei | Workspace, als Gast | M7 |
+| `ruby` | dasselbe für eine Ruby-Datei | eine `.rb`-Datei | Workspace, als Gast | M7 |
 | `scene` | Szene des Anaglyph-Viewers, zu einem oder mehreren Zeitpunkten | eine `.ini`-Datei | Workspace | M6 |
 | `code` | Code-Bites-Aufgabe | Code | Code-Bites-Judge | M5 |
 | `sql` | Ergebnis einer `SELECT`-Abfrage gegen das einer Musterabfrage | Abfrage | eigene MySQL-Datenbank, nur lesend | M6 |
@@ -555,10 +556,10 @@ hat« steht jedes Objekt mit Zeile, Position und Größe. Die Karte nennt Datei
 und Viewer: »Liest `/workspace/anaglyph/balken.ini` mit deinem Viewer
 `/workspace/anaglyph/include/script.js`«.
 
-### python
+### python, ruby
 
-Ruft Funktionen aus einer Python-Datei der Lernenden auf und vergleicht, was
-herauskommt. Ein festes Skript (`PythonCheck::HARNESS`) lädt die Datei mit
+Ruft Funktionen aus einer Python- oder Ruby-Datei der Lernenden auf und
+vergleicht, was herauskommt. Ein festes Skript (`PythonCheck::HARNESS`) lädt die Datei mit
 `python3` im Workspace der Person, als Gast wie bei `command` (der Code ist
 ihrer, Regel 1), höchstens `timeout` Sekunden (Standard 10, höchstens 30).
 Was das Programm selbst ausgibt, verschwindet; Aufrufe in der Datei selbst
@@ -588,6 +589,26 @@ ein Aufruf ab, steht der Fehler mit der Zeile in der Datei da, ebenso ein
 Syntaxfehler oder ein Fehler beim Laden. Unter »Was der Workspace gelesen
 hat« stehen alle Aufrufe mit Haken oder Kreuz und ihrem Ergebnis. Die Datei
 wird aus ihrem Ordner geladen, `import` anderer Dateien daneben klappt.
+
+`ruby` funktioniert genauso, mit einer `.rb`-Datei und Ausdrücken in Ruby
+(`RubyCheck::HARNESS`, gestartet mit `ruby --disable=gems`). Die Datei wird
+auf oberster Ebene geladen; ein Block `if __FILE__ == $0` läuft dabei nicht,
+dort kann also ein Programm zum Ausprobieren stehen. Verglichen wird mit
+`==`; `true`, `false` und `~` aus YAML werden zu `true`, `false` und `nil`.
+Bytes, die mit `pack('C*')` entstehen, sind gleich einem Text in
+Anführungszeichen, solange er nur ASCII enthält; für Umlaute vergleicht man
+nach `.force_encoding('UTF-8')`.
+
+```yaml
+check:
+  type: ruby
+  file: lzw/lzw.rb
+  cases:
+    - compress('ABABABA'): '[65, 66, 256, 258]'
+    - call: compress('')
+      expect: '[]'
+      say: Ein leerer Text ergibt keinen einzigen Code.
+```
 
 ### sql
 

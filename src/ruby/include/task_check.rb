@@ -9,6 +9,7 @@ require_relative 'scene_check'
 require_relative 'sql_check'
 require_relative 'er_check'
 require_relative 'python_check'
+require_relative 'ruby_check'
 require_relative 'schema_check'
 require_relative 'keyboard_check'
 
@@ -26,7 +27,7 @@ module TaskCheck
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit code measure command scene sql cypher er schema keyboard python]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit code measure command scene sql cypher er schema keyboard python ruby]).freeze
     LANGUAGE_NAMES = { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript' }.freeze
 
     # status:
@@ -90,7 +91,8 @@ module TaskCheck
         return check_sql(task, check, answer, sql, sql_env) if type == 'sql'
         return check_cypher(task, check, answer, cypher) if type == 'cypher'
         return check_er(task, check, workspace, runner) if type == 'er'
-        return check_python(task, check, workspace, guest_runner) if type == 'python'
+        return check_calls(task, check, workspace, guest_runner, PythonCheck) if type == 'python'
+        return check_calls(task, check, workspace, guest_runner, RubyCheck) if type == 'ruby'
         return check_schema(task, check, sql, sql_env) if type == 'schema'
         return check_keyboard(task, check, workspace) if type == 'keyboard'
         return check_workspace(task, check, answer, workspace, git, runner) unless ANSWER_TYPES.include?(type)
@@ -191,11 +193,12 @@ module TaskCheck
             :solution => status == :correct ? task['solution'] : nil)
     end
 
-    NOT_RUNNING_PYTHON = 'Starte zuerst deinen Workspace. Dein Programm läuft zum Prüfen in deinem Workspace.'
+    NOT_RUNNING_CALLS = 'Starte zuerst deinen Workspace. Dein Programm läuft zum Prüfen in deinem Workspace.'
 
-    # python: calls into the person's own Python file (PythonCheck). The code
-    # is theirs, so it only ever runs as the guest (rule 1).
-    def self.check_python(task, check, workspace, runner)
+    # python, ruby: calls into the person's own file (PythonCheck,
+    # RubyCheck). The code is theirs, so it only ever runs as the guest
+    # (rule 1).
+    def self.check_calls(task, check, workspace, runner, language)
         return Result.new(:status => :unavailable, :message => NO_WORKSPACE) if workspace.nil?
 
         file = check['file']
@@ -205,10 +208,10 @@ module TaskCheck
             return Result.new(:status => :wrong, :problem => :missing, :message => "`#{file}` gibt es nicht.#{hint}")
         end
         seconds = check['timeout'] || 10
-        result = runner&.call(PythonCheck.command(file, PythonCheck.cases(check)), seconds)
-        return Result.new(:status => :unavailable, :message => NOT_RUNNING_PYTHON) if result.nil?
+        result = runner&.call(language.command(file, language.cases(check)), seconds)
+        return Result.new(:status => :unavailable, :message => NOT_RUNNING_CALLS) if result.nil?
 
-        status, message, read = PythonCheck.evaluate(task, check, result[:output], timed_out: result[:timed_out])
+        status, message, read = language.evaluate(task, check, result[:output], timed_out: result[:timed_out])
         Result.new(:status => status, :message => message, :read => read,
             :solution => status == :correct ? task['solution'] : nil)
     end

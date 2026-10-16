@@ -1,5 +1,6 @@
 require 'json'
 require 'shellwords'
+require_relative 'call_check'
 
 # Check type python (docs/aufgaben.md): calls into a Python file the person
 # wrote and compares what comes back.
@@ -22,11 +23,11 @@ require 'shellwords'
 #         say: Nach einer Münze darf das Drehkreuz noch nicht offen sein.
 #
 # Calls and expected values are Python expressions; true, false, ~ and
-# numbers in YAML become True, False, None and the number.
+# numbers in YAML become True, False, None and the number. Reading the
+# result and the feedback are shared with RubyCheck (CallCheck).
 module PythonCheck
-    MAX_CASES = 50
-    MAX_SHOWN = 12
-    RESULT_MARK = '__HS_RESULT__'
+    MAX_CASES = CallCheck::MAX_CASES
+    RESULT_MARK = CallCheck::RESULT_MARK
 
     HARNESS = <<~PY
         import contextlib, importlib.util, io, json, os, sys, traceback
@@ -82,14 +83,7 @@ module PythonCheck
 
     # The cases of a check as [{ 'call' =>, 'expect' => (Python), 'say' => }].
     def self.cases(check)
-        (check['cases'] || []).map do |item|
-            if item.is_a?(Hash) && item.key?('call')
-                { 'call' => item['call'].to_s, 'expect' => python_value(item['expect']), 'say' => item['say'] }
-            else
-                call, expect = item.first
-                { 'call' => call.to_s, 'expect' => python_value(expect), 'say' => nil }
-            end
-        end
+        CallCheck.cases(check, method(:python_value))
     end
 
     def self.python_value(value)
@@ -102,26 +96,7 @@ module PythonCheck
     end
 
     def self.spec_errors(check)
-        errors = []
-        file = check['file']
-        errors << 'file must end in .py' if file.is_a?(String) && !file.end_with?('.py')
-        list = check['cases']
-        unless list.is_a?(Array) && !list.empty? && list.size <= MAX_CASES
-            return errors << "cases must be a list of 1 to #{MAX_CASES} calls"
-        end
-
-        list.each_with_index do |item, i|
-            if item.is_a?(Hash) && item.key?('call')
-                extra = item.keys - %w[call expect say]
-                errors << "cases[#{i}]: unknown keys: #{extra.join(', ')}" unless extra.empty?
-                errors << "cases[#{i}] needs call and expect" unless item['call'].is_a?(String) && !item['call'].strip.empty? && item.key?('expect')
-                errors << "cases[#{i}]: say must be text" if item.key?('say') && !item['say'].is_a?(String)
-            elsif !(item.is_a?(Hash) && item.size == 1 && item.keys.first.is_a?(String))
-                errors << "cases[#{i}] must be »call: expected« or have call, expect and say"
-            end
-        end
-        errors << 'timeout must be 1 to 30 seconds' if check.key?('timeout') && !(check['timeout'].is_a?(Integer) && check['timeout'].between?(1, 30))
-        errors
+        CallCheck.spec_errors(check, '.py')
     end
 
     # The command that prints the result, run in /workspace as the guest.
@@ -131,66 +106,11 @@ module PythonCheck
     end
 
     def self.parse(output)
-        line = output.to_s.lines.reverse.find { |l| l.start_with?(RESULT_MARK) }
-        return nil unless line
-
-        data = JSON.parse(line.delete_prefix(RESULT_MARK))
-        data.is_a?(Hash) ? data : nil
-    rescue JSON::ParserError
-        nil
+        CallCheck.parse(output)
     end
 
     # [status, message, read] for the harness output.
     def self.evaluate(task, check, output, timed_out: false)
-        file = check['file']
-        seconds = check['timeout'] || 10
-        if timed_out
-            return [:wrong, "`#{file}` lief länger als #{seconds} Sekunden und wurde abgebrochen. Steckt irgendwo eine Endlosschleife?", nil]
-        end
-
-        data = parse(output)
-        if data.nil?
-            shown = output.to_s.strip.lines.last(8).join
-            read = shown.empty? ? nil : "```\n#{shown.gsub('```', "'''")}\n```"
-            return [:wrong, "`#{file}` ließ sich nicht prüfen.", read]
-        end
-
-        if (error = data['error'])
-            message = case error['kind']
-                when 'missing' then "`#{file}` gibt es nicht."
-                when 'syntax' then "In `#{file}`#{at_line(error['line'])} ist ein Syntaxfehler: #{error['message']}."
-                else "Schon beim Laden von `#{file}` bricht Python ab#{at_line(error['line'])}: `#{error['message']}`"
-            end
-            return [:wrong, message, nil]
-        end
-
-        results = data['cases'] || []
-        says = cases(check).map { |c| c['say'] }
-        read = results.first(MAX_SHOWN).map do |r|
-            icon = r['ok'] ? "<i class='bi bi-check-lg'></i>" : "<i class='bi bi-x-lg'></i>"
-            outcome = r['error'] ? "bricht ab: `#{r['error']}`" : "`#{r['got']}`"
-            "- #{icon} `#{r['call']}` → #{outcome}"
-        end
-        read << "- … und #{results.size - MAX_SHOWN} weitere" if results.size > MAX_SHOWN
-        read = read.join("\n")
-
-        failed_at = results.index { |r| !r['ok'] }
-        if failed_at.nil?
-            n = results.size
-            return [:correct, n == 1 ? 'Der Aufruf liefert, was er soll.' : "Alle #{n} Aufrufe liefern, was sie sollen.", read]
-        end
-
-        r = results[failed_at]
-        message = if r['error']
-            "`#{r['call']}` bricht ab#{at_line(r['line'])}: `#{r['error']}`"
-        else
-            "`#{r['call']}` ergibt `#{r['got']}`, richtig wäre `#{r['expect']}`."
-        end
-        message += " #{says[failed_at]}" if says[failed_at]
-        [:wrong, message, read]
-    end
-
-    def self.at_line(line)
-        line ? " (Zeile #{line})" : ''
+        CallCheck.evaluate(check, cases(check), output, language: 'Python', timed_out: timed_out)
     end
 end
