@@ -649,6 +649,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Das Bild der Startseite auf der Karte »Was ist der Hackschule
+  Workspace?« zeigt die Überschrift in der Mitte des Kopfes: Die Zeile mit
+  dem Sponsor fehlt jetzt samt ihrem Platz, und die Karte schneidet das Bild
+  von oben zu.
 - Die Prüfungen in Ruby und Python laden von der Datei der Lernenden nur
   die Definitionen: Methoden und Funktionen, Klassen, Konstanten, Importe
   und was eine Tabelle füllt. Das Programm unten in der Datei läuft beim
@@ -1285,6 +1289,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Für Betreibende
 
+- Der Screenshot-Generator sieht nur noch die Version von code-server als
+  Aussehen des Workspaces, nicht die Paketrevision von linuxserver
+  (`4.138.0-ls366` und `-ls367` gelten als gleich). Das Image baut auf dem
+  Tag `4.138.0`, der von Zeit zu Zeit auf eine neue Revision springt; zwei
+  Rechner, die es an verschiedenen Tagen gebaut haben, hielten bisher die
+  Screenshots des anderen für veraltet und rechneten sie neu. Ein Abgleich
+  schreibt auch keine neue Revision mehr in die Manifeste. Nach dem Update
+  den Dienst neu bauen: `./config.rb build tutorial_screenshots &&
+  ./config.rb up -d tutorial_screenshots`.
 - Neu und abgeschaltet: der Fallserver für »Ein Krimi im Terminal«, zwei
   kleine SSH-Server (`case_museum`, `case_alarm`). Einschalten mit
   `CASE_SERVER = true` in `credentials.rb`, dann

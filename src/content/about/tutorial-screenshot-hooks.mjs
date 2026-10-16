@@ -4,8 +4,9 @@
 import http from 'node:http';
 
 // Only the development site has the alt text review in its footer; the
-// sponsor line is left out of the picture.
-const hidden = '.alt-review-footer-left, .sponsor { visibility: hidden; }';
+// sponsor line is left out of the picture, with its space, so that the
+// heading sits in the middle of the header.
+const hidden = '.alt-review-footer-left { visibility: hidden; } .sponsor { display: none; }';
 
 // GET url without the browser's cookies. Like the screenshot browser, it goes
 // to the Compose nginx service and keeps the site's host name.

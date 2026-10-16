@@ -1,5 +1,5 @@
 <div class='meta'>
-image: start-page.webp
+image: start-page.webp:50:0
 kind: grundlagen
 </div>
 
