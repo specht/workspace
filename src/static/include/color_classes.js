@@ -141,125 +141,249 @@
         return pairs ? [sum / pairs, light / pairs] : [0, 0];
     }
 
-    // --- Voxels -------------------------------------------------------------
+    // --- Geometry ---------------------------------------------------------------
     //
-    // Each view is a grid of small boxes, voxels, each with the colour at its
-    // centre. The RGB view: the cube, x red, y blue (up), z green, from -0.5
-    // to 0.5. The Lab view: x is a, y is L (up), z is -b, in Lab units / 100.
+    // Every class is drawn as what it is, a solid with smooth faces. A point
+    // of its surface carries both its Lab and its RGB values, [L, a, b, r, g,
+    // b] with r, g, b from 0 to 1 as stored, so the same triangles go into
+    // either view. A cube of RGB is its six faces, a box of Lab is its six
+    // faces cut off where the colours of RGB end, plus the part of the outside
+    // of those colours (the faces of the RGB cube, bent) that lies in the box.
 
-    function rgbVoxels(k) {
-        const n = k * Math.ceil(36 / k);
-        const count = n ** 3;
-        const set = { dims: [n, n, n], half: [0.5 / n, 0.5 / n, 0.5 / n], count,
-            pos: new Float32Array(count * 3), color: new Int32Array(count), lab: new Float32Array(count * 3), grid: new Int32Array(count) };
-        let v = 0;
-        for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) for (let l = 0; l < n; l++) {
-            const value = (x) => Math.floor((x + 0.5) * 256 / n);
-            const c = (value(i) << 16) | (value(l) << 8) | value(j);
-            set.pos.set([(i + 0.5) / n - 0.5, (j + 0.5) / n - 0.5, (l + 0.5) / n - 0.5], v * 3);
-            set.color[v] = c;
-            set.lab.set(lab(c), v * 3);
-            set.grid[(i * n + j) * n + l] = v;
-            v++;
+    const toLinear = (v) => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+    const toStored = (c) => { c = Math.max(0, Math.min(1, c)); return c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055; };
+
+    function labOfUnit(r, g, b) {
+        const lr = toLinear(r), lg = toLinear(g), lb = toLinear(b);
+        const x = (0.4124 * lr + 0.3576 * lg + 0.1805 * lb) / 0.95047;
+        const y = 0.2126 * lr + 0.7152 * lg + 0.0722 * lb;
+        const z = (0.0193 * lr + 0.1192 * lg + 0.9505 * lb) / 1.08883;
+        const fx = f(x), fy = f(y), fz = f(z);
+        return [116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)];
+    }
+    // The light of a Lab colour in R, G and B, not cut off at 0 and 1
+    function linearOfLab(L, a, b) {
+        const fy = (L + 16) / 116;
+        const x = finv(fy + a / 500) * 0.95047, y = finv(fy), z = finv(fy - b / 200) * 1.08883;
+        return [3.2406 * x - 1.5372 * y - 0.4986 * z, -0.9689 * x + 1.8758 * y + 0.0415 * z, 0.0557 * x - 0.2040 * y + 1.0570 * z];
+    }
+    // How far inside the colours of RGB a Lab colour lies: below 0 it is outside
+    function inside(L, a, b) {
+        const c = linearOfLab(L, a, b);
+        return Math.min(c[0], 1 - c[0], c[1], 1 - c[1], c[2], 1 - c[2]);
+    }
+    const pointOfUnit = (r, g, b) => [...labOfUnit(r, g, b), r, g, b];
+    const pointOfLab = (L, a, b) => [L, a, b, ...linearOfLab(L, a, b).map(toStored)];
+
+    // The part of a polygon where `values` (one per corner) is at least 0; new
+    // corners lie where the values, taken as linear along an edge, are 0.
+    function clip(polygon, values) {
+        const out = [];
+        for (let i = 0; i < polygon.length; i++) {
+            const j = (i + 1) % polygon.length, p = polygon[i], q = polygon[j], vp = values[i], vq = values[j];
+            if (vp >= 0) out.push(p);
+            if ((vp >= 0) !== (vq >= 0)) {
+                const t = vp / (vp - vq);
+                out.push(p.map((x, m) => x + (q[m] - x) * t));
+            }
         }
-        return set;
+        return out;
     }
 
-    function labVoxels(n) {
-        const dims = [Math.ceil(50 / n[1]) * n[1], Math.ceil(40 / n[0]) * n[0], Math.ceil(50 / n[2]) * n[2]];
-        const step = [(A_MAX - A_MIN) / dims[0], 100 / dims[1], (B_MAX - B_MIN) / dims[2]];
-        const grid = new Int32Array(dims[0] * dims[1] * dims[2]).fill(-1);
-        const pos = [], color = [], labs = [];
-        for (let i = 0; i < dims[0]; i++) for (let j = 0; j < dims[1]; j++) for (let l = 0; l < dims[2]; l++) {
-            // l runs against b, as z does
-            const a = A_MIN + (i + 0.5) * step[0], L = (j + 0.5) * step[1], b = B_MAX - (l + 0.5) * step[2];
-            const c = fromLab(L, a, b);
-            if (c < 0) continue;
-            grid[(i * dims[1] + j) * dims[2] + l] = color.length;
-            pos.push(a / 100, (L - 50) / 100, -b / 100);
-            color.push(c);
-            labs.push(L, a, b);
+    // Cut polygons along the planes `axis` = value (sorted), into pieces
+    function splitAlong(polygons, axis, planes) {
+        const out = [];
+        for (const polygon of polygons) {
+            let rest = polygon;
+            const coords = polygon.map((p) => p[axis]);
+            const low = Math.min(...coords), high = Math.max(...coords);
+            for (const plane of planes) {
+                if (plane <= low || rest.length < 3) continue;
+                if (plane >= high) break;
+                const values = rest.map((p) => p[axis] - plane);
+                const below = clip(rest, values.map((v) => -v));
+                rest = clip(rest, values);
+                if (below.length >= 3) out.push(below);
+            }
+            if (rest.length >= 3) out.push(rest);
         }
-        return { dims, half: step.map((s) => s / 200), count: color.length,
-            pos: new Float32Array(pos), color: new Int32Array(color), lab: new Float32Array(labs), grid };
+        return out;
     }
+
+    // A grid of m × n squares over a face, each as two triangles; corner(u, v) for u, v from 0 to 1
+    function grid(corner, m, n) {
+        const out = [];
+        for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) {
+            const p = corner(i / m, j / n), q = corner((i + 1) / m, j / n), r = corner((i + 1) / m, (j + 1) / n), s = corner(i / m, (j + 1) / n);
+            out.push([p, q, r], [p, r, s]);
+        }
+        return out;
+    }
+
+    // The six faces of a box [low, high] in three coordinates, each a grid of
+    // m × m squares; point(x, y, z) gives the point of the surface
+    function boxFaces(low, high, m, point) {
+        const out = [];
+        for (let axis = 0; axis < 3; axis++) {
+            const u = (axis + 1) % 3, w = (axis + 2) % 3;
+            for (const side of [low[axis], high[axis]]) {
+                out.push(...grid((s, t) => {
+                    const c = [0, 0, 0];
+                    c[axis] = side;
+                    c[u] = low[u] + (high[u] - low[u]) * s;
+                    c[w] = low[w] + (high[w] - low[w]) * t;
+                    return point(c[0], c[1], c[2]);
+                }, m, m));
+            }
+        }
+        return out;
+    }
+
+    // Triangles as one array of floats, 18 per triangle
+    function pack(polygons) {
+        const out = [];
+        for (const polygon of polygons) {
+            for (let i = 1; i + 1 < polygon.length; i++) out.push(...polygon[0], ...polygon[i], ...polygon[i + 1]);
+        }
+        return out;
+    }
+
+    // The cubes of RGB: k × k × k of them
+    function cubeClasses(k) {
+        const m = Math.max(1, Math.round(24 / k));
+        const classes = new Map();
+        for (let i = 0; i < k; i++) for (let j = 0; j < k; j++) for (let l = 0; l < k; l++) {
+            const low = [i / k, j / k, l / k], high = [(i + 1) / k, (j + 1) / k, (l + 1) / k];
+            classes.set((i * k + j) * k + l, pack(boxFaces(low, high, m, pointOfUnit)));
+        }
+        return classes;
+    }
+
+    // The boxes of Lab, n[0] × n[1] × n[2] of them, cut to the colours of RGB
+    function boxClasses(n) {
+        const lows = [0, A_MIN, B_MIN], sizes = [100 / n[0], (A_MAX - A_MIN) / n[1], (B_MAX - B_MIN) / n[2]];
+        const planes = [0, 1, 2].map((axis) => Array.from({ length: n[axis] - 1 }, (_, i) => lows[axis] + (i + 1) * sizes[axis]));
+        const cellAt = (p) => labCell(p[0], p[1], p[2], n);
+        const pieces = new Map();
+        const add = (cell, polygons) => {
+            if (!pieces.has(cell)) pieces.set(cell, []);
+            pieces.get(cell).push(...polygons);
+        };
+        // the outside of the colours, cut along the planes between the boxes
+        const surface = shellPolygons(40);
+        for (const piece of splitAlong(splitAlong(splitAlong(surface, 0, planes[0]), 1, planes[1]), 2, planes[2])) {
+            const centre = [0, 1, 2].map((x) => piece.reduce((s, p) => s + p[x], 0) / piece.length);
+            add(cellAt(centre), [piece]);
+        }
+        // the faces of every box that holds colours, where they lie inside
+        const cells = new Set([...labCounts(n).keys(), ...pieces.keys()]);
+        const steps = sizes.map((size, axis) => Math.max(1, Math.ceil(size / [4, 6, 6][axis])));
+        for (const cell of cells) {
+            const [[l0, l1], [a0, a1], [b0, b1]] = labRange(cell, n);
+            const faces = boxFaces([l0, a0, b0], [l1, a1, b1], Math.max(...steps), (L, a, b) => [L, a, b, inside(L, a, b)]);
+            const kept = [];
+            for (const triangle of faces) {
+                const part = clip(triangle, triangle.map((p) => p[3]));
+                if (part.length >= 3) kept.push(part.map((p) => pointOfLab(p[0], p[1], p[2])));
+            }
+            add(cell, kept);
+        }
+        const classes = new Map();
+        for (const [cell, polygons] of pieces) classes.set(cell, pack(polygons));
+        return classes;
+    }
+
+    // The outside of the RGB cube: its six faces, s × s squares each
+    function shellPolygons(s) {
+        return boxFaces([0, 0, 0], [1, 1, 1], s, pointOfUnit);
+    }
+
+    const geometryCache = new Map();
+    function geometry(split, k) {
+        const key = `${split} ${k}`;
+        if (!geometryCache.has(key)) {
+            if (geometryCache.size > 3) geometryCache.delete(geometryCache.keys().next().value);
+            geometryCache.set(key, split === 'rgb' ? cubeClasses(k) : boxClasses(labLevels(k).n));
+        }
+        return geometryCache.get(key);
+    }
+    let shellCache = null;
+    const shell = () => shellCache || (shellCache = new Map([[-7, pack(shellPolygons(24))]]));
 
     // --- The mesh -------------------------------------------------------------
     //
-    // A face of a voxel is drawn where the next voxel is missing or belongs to
-    // another class, so every class is a closed solid. Pulled apart, each
-    // class moves away from the centre by its centroid times the uniform
-    // uExplode; every vertex carries the centroid of its class for that.
+    // The triangles of the classes in one view: the RGB view puts red to the
+    // right, blue up and green to the front, from -0.5 to 0.5; the Lab view a
+    // to the right, L up and -b to the front, in Lab units / 100. Every
+    // triangle gets its normal for the light; pulled apart, each class moves
+    // away from the centre by its centroid times the uniform uExplode.
 
-    const DIRS = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]];
-    // the four corners of the face towards each direction, in units of the half size
-    const CORNERS = DIRS.map((d) => {
-        const axis = d.findIndex((x) => x !== 0), u = (axis + 1) % 3, w = (axis + 2) % 3;
-        return [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([p, q]) => {
-            const c = [0, 0, 0];
-            c[axis] = d[axis]; c[u] = p; c[w] = q;
-            return c;
-        });
-    });
+    const VIEWS = {
+        rgb: (t, i) => [t[i + 3] - 0.5, t[i + 5] - 0.5, t[i + 4] - 0.5],
+        lab: (t, i) => [t[i + 1] / 100, (t[i] - 50) / 100, -t[i + 2] / 100],
+    };
 
-    function buildMesh(set, cells, options = {}) {
-        const { cut = false, keep = -1 } = options;
-        const [nx, ny, nz] = set.dims;
-        // the centroid of every class
-        const sums = new Map();
-        for (let v = 0; v < set.count; v++) {
-            let s = sums.get(cells[v]);
-            if (!s) sums.set(cells[v], s = [0, 0, 0, 0]);
-            s[0] += set.pos[v * 3]; s[1] += set.pos[v * 3 + 1]; s[2] += set.pos[v * 3 + 2]; s[3]++;
-        }
-        const centroid = new Map();
-        for (const [cell, s] of sums) centroid.set(cell, [s[0] / s[3], s[1] / s[3], s[2] / s[3]]);
-        // the quarter in front, towards +x and +z, comes out (all but the kept class)
-        const shown = (cell) => cell === keep || !cut || !(centroid.get(cell)[0] > 0 && centroid.get(cell)[2] > 0);
-
-        const voxelAt = (i, j, l) => i < 0 || j < 0 || l < 0 || i >= nx || j >= ny || l >= nz ? -1 : set.grid[(i * ny + j) * nz + l];
-        const faces = [];
-        for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) for (let l = 0; l < nz; l++) {
-            const v = voxelAt(i, j, l);
-            if (v < 0 || !shown(cells[v])) continue;
-            DIRS.forEach((d, dir) => {
-                const w = voxelAt(i + d[0], j + d[1], l + d[2]);
-                if (w < 0 || cells[w] !== cells[v] || !shown(cells[w])) faces.push(v, dir);
-            });
-        }
-
-        const total = faces.length / 2;
-        const pos = new Float32Array(total * 12), shift = new Float32Array(total * 12), rgba = new Uint8Array(total * 16), info = new Float32Array(total * 8);
-        const index = new Uint32Array(total * 6);
-        let radius = 0, reach = 0;
-        for (let q = 0; q < total; q++) {
-            const v = faces[q * 2], dir = faces[q * 2 + 1], cell = cells[v], c = centroid.get(cell), color = set.color[v];
-            CORNERS[dir].forEach((corner, m) => {
-                const at = q * 4 + m;
-                let r2 = 0;
-                for (let x = 0; x < 3; x++) {
-                    const p = set.pos[v * 3 + x] + corner[x] * set.half[x];
-                    pos[at * 3 + x] = p;
-                    shift[at * 3 + x] = c[x];
-                    r2 += p * p;
+    // Each class in one view, once: its corners, normals and colours, and its
+    // centroid, weighted by the area of its triangles
+    const prepared = new WeakMap();
+    function prepare(classes, space) {
+        if (!prepared.has(classes)) prepared.set(classes, {});
+        const cache = prepared.get(classes);
+        if (cache[space]) return cache[space];
+        const view = VIEWS[space];
+        const out = new Map();
+        for (const [cell, t] of classes) {
+            const count = t.length / 18;
+            const pos = new Float32Array(count * 9), normal = new Float32Array(count * 9), rgba = new Uint8Array(count * 12);
+            const sum = [0, 0, 0];
+            let area = 0;
+            for (let q = 0; q < count; q++) {
+                const i = q * 18;
+                const p = view(t, i), u = view(t, i + 6), w = view(t, i + 12);
+                const n = cross(sub(u, p), sub(w, p)), length = Math.hypot(n[0], n[1], n[2]);
+                pos.set(p, q * 9); pos.set(u, q * 9 + 3); pos.set(w, q * 9 + 6);
+                for (let m = 0; m < 3; m++) {
+                    for (let x = 0; x < 3; x++) normal[q * 9 + m * 3 + x] = length ? n[x] / length : 0;
+                    const o = i + m * 6;
+                    rgba[q * 12 + m * 4] = Math.round(t[o + 3] * 255);
+                    rgba[q * 12 + m * 4 + 1] = Math.round(t[o + 4] * 255);
+                    rgba[q * 12 + m * 4 + 2] = Math.round(t[o + 5] * 255);
+                    rgba[q * 12 + m * 4 + 3] = 255;
                 }
-                radius = Math.max(radius, r2);
-                reach = Math.max(reach, c[0] ** 2 + c[1] ** 2 + c[2] ** 2);
-                rgba.set([color >> 16, (color >> 8) & 255, color & 255, dir], at * 4);
-                info[at * 2] = cell;
-                info[at * 2 + 1] = v;
-            });
-            index.set([q * 4, q * 4 + 1, q * 4 + 2, q * 4, q * 4 + 2, q * 4 + 3], q * 6);
+                for (let x = 0; x < 3; x++) sum[x] += (p[x] + u[x] + w[x]) / 3 * length;
+                area += length;
+            }
+            out.set(cell, { count, pos, normal, rgba, centroid: area > 0 ? sum.map((v) => v / area) : view(t, 0) });
+        }
+        return (cache[space] = out);
+    }
+
+    function buildMesh(classes, space, options = {}) {
+        const { cut = false, keep = -1 } = options;
+        const parts = prepare(classes, space);
+        // the quarter in front, towards +x and +z, comes out (all but the kept class)
+        const shown = ([cell, part]) => cell === keep || !cut || !(part.centroid[0] > 0 && part.centroid[2] > 0);
+        const chosen = [...parts].filter(shown);
+        const total = chosen.reduce((sum, [, part]) => sum + part.count, 0);
+        const pos = new Float32Array(total * 9), shift = new Float32Array(total * 9), normal = new Float32Array(total * 9);
+        const rgba = new Uint8Array(total * 12), info = new Float32Array(total * 3);
+        let at = 0, radius = 0, reach = 0;
+        for (const [cell, part] of chosen) {
+            pos.set(part.pos, at * 9);
+            normal.set(part.normal, at * 9);
+            rgba.set(part.rgba, at * 12);
+            const c = part.centroid;
+            for (let v = at * 3; v < (at + part.count) * 3; v++) { shift[v * 3] = c[0]; shift[v * 3 + 1] = c[1]; shift[v * 3 + 2] = c[2]; }
+            info.fill(cell, at * 3, (at + part.count) * 3);
+            for (let v = 0; v < part.pos.length; v += 3) radius = Math.max(radius, part.pos[v] ** 2 + part.pos[v + 1] ** 2 + part.pos[v + 2] ** 2);
+            reach = Math.max(reach, Math.hypot(c[0], c[1], c[2]));
+            at += part.count;
         }
         // pulled apart by e, nothing is further out than radius + e * reach
-        return { faces: total, pos, shift, rgba, info, index, radius: Math.sqrt(radius), reach: Math.sqrt(reach) };
+        return { triangles: total, pos, shift, normal, rgba, info, radius: Math.sqrt(radius), reach };
     }
-
-    // The outside of the whole solid, for the glass around a chosen class
-    function buildShell(set) {
-        const all = new Int32Array(set.count).fill(-7);   // one class no real class number matches
-        return buildMesh(set, all);
-    }
+    const sub = (p, q) => [p[0] - q[0], p[1] - q[1], p[2] - q[2]];
+    const cross = (p, q) => [p[1] * q[2] - p[2] * q[1], p[2] * q[0] - p[0] * q[2], p[0] * q[1] - p[1] * q[0]];
 
     // --- The swatches -----------------------------------------------------------
     //
@@ -304,26 +428,25 @@
     const VERTEX = `
         attribute vec3 aPos;
         attribute vec3 aShift;
+        attribute vec3 aNormal;
         attribute vec4 aColor;
-        attribute vec2 aInfo;
+        attribute float aCell;
         uniform mat3 uRot;
         uniform vec3 uScale;
-        uniform vec3 uNormals[6];
         uniform float uKeep;
         uniform float uExplode;
         uniform int uMode;     // 0 all, 1 only the kept class, 2 all but it (glass), 3 picking
         varying vec4 vColor;
         void main() {
-            bool kept = abs(aInfo.x - uKeep) < 0.5;
+            bool kept = abs(aCell - uKeep) < 0.5;
             if ((uMode == 1 && !kept) || (uMode == 2 && kept)) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
             vec3 p = uRot * (aPos + aShift * uExplode);
             gl_Position = vec4(p.x * uScale.x, p.y * uScale.y, -p.z * uScale.z, 1.0);
-            if (uMode == 3) {
-                float id = aInfo.y + 1.0;
-                vColor = vec4(mod(id, 256.0), mod(floor(id / 256.0), 256.0), floor(id / 65536.0), 255.0) / 255.0;
-                return;
-            }
-            vec3 n = uRot * uNormals[int(aColor.a * 255.0 + 0.5)];
+            // picking: the colour itself, unlit
+            if (uMode == 3) { vColor = vec4(aColor.rgb, 1.0); return; }
+            // lit from both sides: a face seen from behind turns its normal around
+            vec3 n = uRot * aNormal;
+            if (n.z < 0.0) n = -n;
             vec3 light = normalize(vec3(-0.45, 0.75, 0.55));
             float shade = 0.42 + 0.48 * max(dot(n, light), 0.0) + 0.16 * max(n.z, 0.0);
             vColor = uMode == 2 ? vec4(aColor.rgb * shade, 0.22) : vec4(aColor.rgb * shade, 1.0);
@@ -335,7 +458,7 @@
 
     function makeRenderer(canvas) {
         const gl = canvas.getContext('webgl', { antialias: true, alpha: true, preserveDrawingBuffer: true });
-        if (!gl || !gl.getExtension('OES_element_index_uint')) return null;
+        if (!gl) return null;
         const shader = (type, source) => {
             const s = gl.createShader(type);
             gl.shaderSource(s, source);
@@ -350,22 +473,20 @@
         gl.useProgram(program);
         const attr = (name) => gl.getAttribLocation(program, name);
         const uni = (name) => gl.getUniformLocation(program, name);
-        gl.uniform3fv(uni('uNormals'), new Float32Array(DIRS.flat()));
         const meshes = {};
         let mesh = null;
         const pickTarget = { fb: null, w: 0, h: 0 };
 
         const LAYOUT = [['pos', 'aPos', 3, gl.FLOAT, false], ['shift', 'aShift', 3, gl.FLOAT, false],
-            ['rgba', 'aColor', 4, gl.UNSIGNED_BYTE, true], ['info', 'aInfo', 2, gl.FLOAT, false]];
+            ['normal', 'aNormal', 3, gl.FLOAT, false], ['rgba', 'aColor', 4, gl.UNSIGNED_BYTE, true], ['info', 'aCell', 1, gl.FLOAT, false]];
         // name: 'classes' or 'shell'
         function upload(name, m) {
             const entry = meshes[name] || (meshes[name] = { buffers: {} });
             entry.mesh = m;
-            for (const [key] of LAYOUT.concat([['index']])) {
+            for (const [key] of LAYOUT) {
                 const buffer = entry.buffers[key] || (entry.buffers[key] = gl.createBuffer());
-                const target = key === 'index' ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
-                gl.bindBuffer(target, buffer);
-                gl.bufferData(target, m[key], gl.STATIC_DRAW);
+                gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+                gl.bufferData(gl.ARRAY_BUFFER, m[key], gl.STATIC_DRAW);
             }
         }
         function use(name) {
@@ -377,7 +498,6 @@
                 gl.enableVertexAttribArray(location);
                 gl.vertexAttribPointer(location, size, type, normalized, 0, 0);
             }
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, entry.buffers.index);
         }
 
         function setView(view) {
@@ -397,7 +517,7 @@
 
         function pass(mode) {
             gl.uniform1i(uni('uMode'), mode);
-            gl.drawElements(gl.TRIANGLES, mesh.faces * 6, gl.UNSIGNED_INT, 0);
+            gl.drawArrays(gl.TRIANGLES, 0, mesh.triangles * 3);
         }
 
         // With a chosen class (view.keep), it stays solid in its place and the
@@ -426,7 +546,7 @@
             return projection;
         }
 
-        // The voxel under a point of the canvas (in canvas pixels), or -1
+        // The colour 0xRRGGBB under a point of the canvas (in canvas pixels), or -1
         function pick(view, x, y) {
             if (!meshes.classes) return -1;
             if (pickTarget.w !== canvas.width || pickTarget.h !== canvas.height) {
@@ -457,7 +577,7 @@
             const pixel = new Uint8Array(4);
             gl.readPixels(Math.round(x), Math.round(canvas.height - y), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-            return pixel[0] + pixel[1] * 256 + pixel[2] * 65536 - 1;
+            return pixel[3] ? (pixel[0] << 16) | (pixel[1] << 8) | pixel[2] : -1;
         }
 
         return { upload, draw, pick };
@@ -493,7 +613,7 @@
                     <button type='button' class='btn btn-outline-secondary' data-split='rgb'>Würfel in RGB</button>
                     <button type='button' class='btn btn-outline-secondary' data-split='lab'>Quader in Lab</button>
                 </div>
-                <label class='cc-slider'>Einteilung <input type='range' min='2' max='12' step='1' data-k aria-label='Wie fein geteilt wird'> <span class='cc-k'></span></label>
+                <label class='cc-slider'>Einteilung <input type='range' min='2' max='10' step='1' data-k aria-label='Wie fein geteilt wird'> <span class='cc-k'></span></label>
                 <label class='cc-slider'>Auseinander <input type='range' min='0.03' max='0.9' step='0.01' data-explode aria-label='Wie weit die Klassen auseinandergezogen sind'></label>
                 <label class='cc-check'><input type='checkbox' data-cut> Ein Viertel herausnehmen</label>
             </div>
@@ -523,25 +643,17 @@
             return;
         }
 
-        const cellOf = (color, labValue) => {
+        const cellOf = (color) => {
             if (state.split === 'rgb') return boxCell(color, state.k);
-            return labCell(labValue[0], labValue[1], labValue[2], labLevels(state.k).n);
+            const [L, a, b] = lab(color);
+            return labCell(L, a, b, labLevels(state.k).n);
         };
-        let voxels = {};
-        function rebuildVoxels() {
-            voxels = {};
-            for (const pane of panes) voxels[pane.space] = pane.space === 'rgb' ? rgbVoxels(state.k) : labVoxels(labLevels(state.k).n);
-        }
-        const currentKeep = () => state.keep ? cellOf(state.color, lab(state.color)) : -1;
+        const currentKeep = () => state.keep ? cellOf(state.color) : -1;
         function rebuildMeshes() {
-            const keep = currentKeep();
+            const classes = geometry(state.split, state.k), keep = currentKeep();
             for (const pane of panes) {
-                const set = voxels[pane.space];
-                const cells = new Int32Array(set.count);
-                for (let v = 0; v < set.count; v++) cells[v] = cellOf(set.color[v], set.lab.subarray(v * 3, v * 3 + 3));
-                pane.renderer.upload('classes', buildMesh(set, cells, { cut: state.cut, keep }));
-                if (pane.voxels !== set) pane.renderer.upload('shell', buildShell(set));
-                pane.voxels = set;
+                pane.renderer.upload('classes', buildMesh(classes, pane.space, { cut: state.cut, keep }));
+                if (!pane.shell) pane.renderer.upload('shell', pane.shell = buildMesh(shell(), pane.space));
             }
         }
 
@@ -632,8 +744,7 @@
                 if (!pending) return;
                 const todo = pending;
                 pending = null;
-                if (todo.has('voxels')) rebuildVoxels();
-                if (todo.has('voxels') || todo.has('mesh')) rebuildMeshes();
+                                if (todo.has('mesh')) rebuildMeshes();
                 if (todo.has('size')) resize();
                 describe();
                 draw();
@@ -644,7 +755,7 @@
             state.split = b.dataset.split;
             update(['mesh']);
         }));
-        kInput.addEventListener('input', () => { state.k = Number(kInput.value); update(['voxels']); });
+        kInput.addEventListener('input', () => { state.k = Number(kInput.value); update(['mesh']); });
         explodeInput.addEventListener('input', () => { state.explode = Number(explodeInput.value); update([]); });
         cutInput.addEventListener('change', () => { state.cut = cutInput.checked; update(['mesh']); });
 
@@ -670,10 +781,10 @@
                 } else if (drag && drag.moved < 5) {
                     const rect = pane.canvas.getBoundingClientRect();
                     const ratio = pane.canvas.width / rect.width;
-                    const v = pane.renderer.pick({ yaw: state.yaw, pitch: state.pitch, explode: state.explode, keep: currentKeep() },
+                    const color = pane.renderer.pick({ yaw: state.yaw, pitch: state.pitch, explode: state.explode, keep: currentKeep() },
                         (e.clientX - rect.left) * ratio, (e.clientY - rect.top) * ratio);
-                    if (v >= 0) {
-                        state.color = pane.voxels.color[v];
+                    if (color >= 0) {
+                        state.color = color;
                         state.keep = true;
                         update(['mesh']);
                     }
@@ -690,10 +801,10 @@
             });
         }
         if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => update(['size'])).observe(q('.cc-views'));
-        update(['voxels', 'size']);
+        update(['mesh', 'size']);
     }
 
-    const api = { lab, fromLab, feltSize, meanDistance, buildShell, boxCell, boxRange, labCell, labRange, labLevels, labCounts, rgbVoxels, labVoxels, buildMesh, boxSwatch, labSwatch, mount };
+    const api = { lab, fromLab, inside, feltSize, meanDistance, boxCell, boxRange, labCell, labRange, labLevels, labCounts, cubeClasses, boxClasses, geometry, shell, buildMesh, boxSwatch, labSwatch, mount };
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
     root.ColorClasses = api;
     if (typeof document !== 'undefined') {

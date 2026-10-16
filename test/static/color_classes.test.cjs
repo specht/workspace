@@ -56,22 +56,40 @@ test('every colour of a swatch belongs to the class', () => {
     assert.ok(CC.labSwatch(color, n, 300).colors.every((c) => CC.labCell(...CC.lab(c), n) === cell));
 });
 
-test('the mesh draws the outside of every class', () => {
-    // 2 × 2 × 2 cubes of 18 × 18 × 18 voxels: 8 × 6 × 18² faces
-    const set = CC.rgbVoxels(2);
-    const cells = Int32Array.from({ length: set.count }, (_, v) => CC.boxCell(set.color[v], 2));
-    assert.strictEqual(CC.buildMesh(set, cells).faces, 8 * 6 * 18 * 18);
-    // with a quarter out, two of the cubes are gone
-    assert.strictEqual(CC.buildMesh(set, cells, { cut: true }).faces, 6 * 6 * 18 * 18);
-    // unless one of them is the chosen class
-    const kept = CC.boxCell(0xffff00, 2);
-    assert.strictEqual(CC.buildMesh(set, cells, { cut: true, keep: kept }).faces, 7 * 6 * 18 * 18);
-    // the whole cube, for the glass
-    assert.strictEqual(CC.buildShell(set).faces, 6 * 36 * 36);
+// The area of all triangles of some classes in one view
+function area(classes, space) {
+    const mesh = CC.buildMesh(classes, space);
+    let sum = 0;
+    for (let i = 0; i < mesh.pos.length; i += 9) {
+        const p = mesh.pos.subarray(i, i + 3), q = mesh.pos.subarray(i + 3, i + 6), r = mesh.pos.subarray(i + 6, i + 9);
+        const u = [q[0] - p[0], q[1] - p[1], q[2] - p[2]], w = [r[0] - p[0], r[1] - p[1], r[2] - p[2]];
+        sum += Math.hypot(u[1] * w[2] - u[2] * w[1], u[2] * w[0] - u[0] * w[2], u[0] * w[1] - u[1] * w[0]) / 2;
+    }
+    return sum;
+}
+
+test('the cubes of RGB are closed cubes', () => {
+    const cubes = CC.cubeClasses(2);
+    assert.strictEqual(cubes.size, 8);
+    near(area(cubes, 'rgb'), 8 * 6 * 0.25, 1e-6);
+    near(area(CC.shell(), 'rgb'), 6, 1e-6);
+    // with a quarter out, two of the cubes are gone, unless one is the chosen class
+    const triangles = CC.buildMesh(cubes, 'rgb').triangles;
+    assert.strictEqual(CC.buildMesh(cubes, 'rgb', { cut: true }).triangles, triangles * 6 / 8);
+    assert.strictEqual(CC.buildMesh(cubes, 'rgb', { cut: true, keep: CC.boxCell(0xffff00, 2) }).triangles, triangles * 7 / 8);
 });
 
-test('the Lab view holds only colours a screen can show', () => {
-    const set = CC.labVoxels(CC.labLevels(4).n);
-    assert.ok(set.count > 1000);
-    for (let v = 0; v < set.count; v += 97) assert.ok(set.color[v] >= 0 && set.color[v] <= 0xffffff);
+test('a box of Lab is its box, cut to the colours of RGB', () => {
+    const { n } = CC.labLevels(4);
+    const boxes = CC.boxClasses(n);
+    for (const [cell, t] of boxes) {
+        const [[l0, l1], [a0, a1], [b0, b1]] = CC.labRange(cell, n);
+        for (let i = 0; i < t.length; i += 6) {
+            const [L, a, b] = [t[i], t[i + 1], t[i + 2]];
+            assert.ok(L > l0 - 1e-6 && L < l1 + 1e-6 && a > a0 - 1e-6 && a < a1 + 1e-6 && b > b0 - 1e-6 && b < b1 + 1e-6, `${cell}: ${L} ${a} ${b}`);
+            assert.ok(CC.inside(L, a, b) > -0.02, `${cell}: ${L} ${a} ${b} lies outside`);
+        }
+    }
+    // together the outside of all boxes covers at least the outside of the whole solid
+    assert.ok(area(boxes, 'lab') > area(CC.shell(), 'lab'));
 });

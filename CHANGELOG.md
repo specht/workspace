@@ -35,7 +35,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   sich herausnehmen, um hineinzusehen. Ein Klick auf eine Farbe zeigt ihre
   Klasse allein in beiden Räumen und darunter zwei Flächen dieser Farbe,
   in der jedes Pixel eine zufällige Farbe seiner Klasse hat: Bei gleich
-  vielen Farben pro Klasse rauscht die Fläche mit Lab weniger.
+  vielen Farben pro Klasse rauscht die Fläche mit Lab meist weniger. Jede
+  Klasse ist ein glatter Körper; ein Lab-Quader ist dort abgeschnitten, wo
+  die Farben von RGB enden.
 
 - Neue Aktivität »Zwei Faktoren: Einmalcodes selbst gebaut« in »Netze &
   Sicherheit«, in Ruby und Python: Lernende bauen das Verfahren hinter
