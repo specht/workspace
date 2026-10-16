@@ -1,0 +1,30 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: svelte
+examples:
+  projekt:
+    pass:
+      - files: { rubik-timer/package.json: { text: "{ \"name\": \"rubik-timer\" }\n" } }
+    fail:
+      - files: { rubik-timer/README.md: { text: "# sv\n" } }
+  grundgeruest:
+    pass:
+      - files: { rubik-timer/src/routes/+page.svelte: page-start.svelte }
+    fail:
+      # Das Gerüst von der Seite, noch ohne die Regel für .main
+      - files: { rubik-timer/src/routes/+page.svelte: { text: "<script>\n</script>\n\n<div class=\"main\">\n    <h1>Rubik's Cube Timer</h1>\n</div>\n\n<style>\n</style>\n" } }
+  timer:
+    pass:
+      - files: { rubik-timer/src/routes/+page.svelte: +page.svelte }
+    fail:
+      - files: { rubik-timer/src/routes/+page.svelte: page-state.svelte }
+        say: p class="timer"
+  reset:
+    pass:
+      - files: { rubik-timer/src/routes/+page.svelte: page-final.svelte }
+    fail:
+      - files: { rubik-timer/src/routes/+page.svelte: page-fonts.svelte }
+        say: bu_reset
+  build:
+    skip: build/index.html entsteht erst, wenn npm run build die Seite baut.

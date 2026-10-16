@@ -22,12 +22,10 @@ class TaskExamplesTest < Minitest::Test
         assert_empty failures, "\n" + failures.join("\n")
     end
 
-    # Activities whose file and program checks all have examples. A new
-    # task with such a check in one of them needs an example too.
-    COMPLETE = %w[automata bobby_tables huffman hugo latex lzw pixelwand raylib rle static-website webserver wetter].freeze
-
-    def test_complete_activities_stay_complete
-        missing = COMPLETE.flat_map { |slug| TaskExamples.missing(File.join(CONTENT, slug)) }
-        assert_empty missing, "These checks have no example that must pass:\n" + missing.join("\n")
+    # Every check that can only be tested with examples has some (or says
+    # why not, with skip). A new task with such a check needs them too.
+    def test_every_check_has_examples
+        missing = activity_dirs.flat_map { |dir| TaskExamples.missing(dir) }
+        assert_empty missing, "These checks have no example that must pass (task-examples.yaml):\n" + missing.join("\n")
     end
 end

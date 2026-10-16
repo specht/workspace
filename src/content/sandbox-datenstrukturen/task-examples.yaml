@@ -1,0 +1,16 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: sandbox-datenstrukturen
+examples:
+  ssh-schluessel:
+    pass:
+      - files: { .ssh/id_ed25519.pub: { text: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG5t student@workspace\n" } }
+    fail:
+      # Nur der geheime Schlüssel
+      - files: { .ssh/id_ed25519: { text: "-----BEGIN OPENSSH PRIVATE KEY-----\n" } }
+  geklont:
+    pass:
+      - files: { data-structures-sandbox/structures/README.md: { text: "# Programme\n" } }
+    fail:
+      - files: { data-structures-sandbox/README.md: { text: "# Sandbox\n" } }

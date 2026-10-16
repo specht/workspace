@@ -1,0 +1,24 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: drawing
+examples:
+  erster-pixel:
+    pass:
+      - files: { rainbow.rb: rainbow.rb }
+    fail:
+      - files: { rainbow.png: ../static-website/html-css-logo.png }
+  ecke:
+    pass:
+      - answer: 319, 179
+      - answer: (319; 179)
+    fail:
+      - answer: 320, 180
+      - answer: 179, 319
+  bild-gespeichert:
+    pass:
+      # Ein PNG aus einer anderen Aktivität: YAML kann keine Bytes über 0x7F
+      - files: { rainbow.png: ../static-website/html-css-logo.png }
+    fail:
+      # Ein WebP, das .png heißt
+      - files: { rainbow.png: first-pixel.webp }

@@ -1,0 +1,13 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: tcpip
+examples:
+  spiel-2048:
+    pass:
+      - files: { 2048: { text: "\x7FELF\x02\x01\x01\0\0\0\0\0\0\0\0\0\x02\0\x3E\0", executable: true } }
+    fail:
+      # Übersetzt, aber nicht ausführbar
+      - files: { 2048: { text: "\x7FELF\x02\x01\x01\0\0\0\0\0\0\0\0\0\x02\0\x3E\0" } }
+      # Der Quelltext, nicht das Programm
+      - files: { 2048: { text: "#include <stdio.h>\nint main(void) { return 0; }\n", executable: true } }

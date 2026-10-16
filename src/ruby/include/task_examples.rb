@@ -25,7 +25,9 @@ require_relative 'workspace_files'
 #         pass: …
 #         fail: …
 #
-# A file is copied from the activity's folder, or given as { text: … }.
+# A file is copied from the activity's folder, or given as { text: … };
+# { from: …, executable: true } or { text: …, executable: true } also sets
+# its executable bit.
 # answer: is the answer a student types; say: a piece of the message a
 # rejected example must get. skip: names why a check cannot be tested here,
 # for example because it reads what a build produces. Choice and number tasks need no examples: their
@@ -132,10 +134,18 @@ module TaskExamples
         end
         Dir.mktmpdir('task-example') do |root|
             (example['files'] || {}).each do |target, source|
-                text = source.is_a?(Hash) ? source['text'].to_s : File.binread(File.join(dir, source.to_s))
+                spec = source.is_a?(Hash) ? source : { 'from' => source.to_s }
+                unless spec.key?('text') || File.file?(File.join(dir, spec['from'].to_s))
+                    problems << "#{FILE}: #{id} #{kind} ##{index + 1}: no file #{spec['from']}"
+                    outcome.ok = false
+                    outcome.detail = "no file #{spec['from']}"
+                    return outcome
+                end
+                text = spec.key?('text') ? spec['text'].to_s : File.binread(File.join(dir, spec['from'].to_s))
                 file = File.join(root, WorkspaceFiles.clean(target))
                 FileUtils.mkdir_p(File.dirname(file))
                 File.binwrite(file, text)
+                File.chmod(0o755, file) if spec['executable']
             end
             result = TaskCheck.check(task, example['answer'], :workspace => WorkspaceFiles.new(root),
                 :runner => local_runner(root), :guest_runner => local_runner(root))

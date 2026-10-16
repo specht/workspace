@@ -1238,7 +1238,9 @@ examples:
 
 - `files` legt Dateien in einen leeren Workspace-Ordner: links der Pfad, den
   die Prüfung liest, rechts eine Datei aus dem Ordner der Aktivität (meist aus
-  `stufen/` oder `loesung/`) oder `{ text: … }` für ein paar Zeilen.
+  `stufen/` oder `loesung/`) oder `{ text: … }` für ein paar Zeilen;
+  `executable: true` dazu (`{ from: …, executable: true }`) macht sie
+  ausführbar.
 - `answer` ist eine Antwort, wie Lernende sie eintippen, für `answer` mit
   `compare: regex`.
 - `say` ist ein Stück der Meldung, die ein abgelehntes Beispiel bekommen muss.
@@ -1261,6 +1263,9 @@ cd src/ruby && ruby test/task_examples_test.rb
 Der Test führt jedes Beispiel durch dieselbe Prüfung wie der Knopf »Prüfen«;
 `ruby`- und `python`-Prüfungen laufen mit den Interpretern auf dem Rechner.
 Prüfungen, die einen Workspace oder eine Datenbank brauchen (`sql`, `cypher`,
-`git`, `measure`, `scene` …), testet er noch nicht. Aktivitäten, deren
-Prüfungen vollständig Beispiele haben, stehen in `COMPLETE` im Test; eine neue
-Aufgabe dort braucht dann auch Beispiele.
+`git`, `measure`, `scene` …), testet er noch nicht; ob die Schritte einer Seite
+zu einer gelösten Aufgabe führen, prüfen `check-task` und `tutorial-step` in
+den Screenshot-Rezepten ([aktivitaet-schreiben.md](aktivitaet-schreiben.md)).
+Jede Prüfung vom Typ `files`, `html`, `css`, `references`, `ruby`, `python`
+und jede `answer` mit `compare: regex` braucht Beispiele, sonst schlägt der
+Test fehl.

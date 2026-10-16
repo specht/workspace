@@ -1,0 +1,10 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: bif
+examples:
+  vorlage:
+    pass:
+      - files: { bif/pages-starter/1.md: { text: "# Seite 1\n" } }
+    fail:
+      - files: { bif/README.md: { text: "# BIF\n" } }

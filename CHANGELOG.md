@@ -538,8 +538,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   der `tasks.yaml`): eine Lösung, die sie annehmen, und einen unfertigen
   Stand, den sie ablehnen muss. `task_examples_test.rb` führt sie durch
   dieselbe Prüfung wie der Knopf »Prüfen«, dazu jede Auswahl- und Zahlaufgabe
-  mit ihrer eigenen Lösung. Elf Aktivitäten sind vollständig abgedeckt; für
-  die Endlichen Automaten liegen dafür jetzt Musterlösungen in `loesung/`.
+  mit ihrer eigenen Lösung: 675 Fälle in 31 Aktivitäten. Jede Prüfung von
+  Dateien oder Programmen hat jetzt Beispiele, und eine neue braucht welche;
+  für die Endlichen Automaten liegen dafür Musterlösungen in `loesung/`.
 - `page_code_test.rb` prüft, dass der Code auf einer Aktivität in den Dateien
   steht, die ihre Screenshot-Rezepte schreiben. So kann der Code auf der
   Seite nicht unbemerkt von dem abweichen, was Bilder und Beispiele testen.

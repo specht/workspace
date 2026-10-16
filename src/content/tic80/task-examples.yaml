@@ -1,0 +1,43 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: tic80
+examples:
+  gespeichert:
+    pass:
+      - files: { TIC-80/stars.lua: step1.lua }
+    fail:
+      - files: { TIC-80/stars.lua: { text: "-- title: game\n" } }
+        say: Funktion `TIC`
+  ein-stern:
+    pass:
+      - files: { TIC-80/stars.lua: step2.lua }
+    fail:
+      - files: { TIC-80/stars.lua: step1.lua }
+        say: math.random
+  eigene-figur:
+    pass:
+      # Stufe 2 mit einer selbst gemalten Figur in Sprite 1
+      - files: { TIC-80/stars.lua: loesung/eigene-figur.lua }
+    fail:
+      # Noch die Figur, die TIC-80 mitbringt
+      - files: { TIC-80/stars.lua: step2.lua }
+        say: Sprite 1
+  viele-sterne:
+    pass:
+      - files: { TIC-80/stars.lua: step3.lua }
+    fail:
+      - files: { TIC-80/stars.lua: step2.lua }
+        say: for
+  ton:
+    pass:
+      - files: { TIC-80/stars.lua: step3.lua }
+    fail:
+      - files: { TIC-80/stars.lua: step2.lua }
+        say: sfx
+  himmel:
+    pass:
+      - files: { TIC-80/stars.lua: stars.lua }
+    fail:
+      - files: { TIC-80/stars.lua: step3.lua }
+        say: sky
