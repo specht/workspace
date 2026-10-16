@@ -153,9 +153,9 @@
     - git
     - terminal-mystery
 
-# Parked for now, so that the sections above fill rows of three: not in the
-# catalog, but the pages stay reachable by direct links (static-website links
-# to Hugo).
+# Parked for now, so that the sections above fill rows of three (and the
+# programming languages rows of four): not in the catalog, but the pages stay
+# reachable by direct links (static-website links to Hugo).
 - key: parked
   hidden: true
   label: Zurückgestellt
@@ -163,6 +163,8 @@
   entries:
     - feuerwerk
     - hugo
+    - cobol
+    - smalltalk
 
 - key: programming_languages
   compact: true
@@ -178,11 +180,9 @@
   icon: /images/keyboard.png
   entries:
     - fortran
-    - cobol
     - basic
     - pascal
     - c
-    - smalltalk
     - cpp
     - clisp
     # - perl

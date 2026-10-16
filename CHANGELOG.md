@@ -623,6 +623,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Startseite: Die Programmiersprachen stehen zu viert in einer Reihe (auf
+  dem Handy zu zweit), mit dem Logo über die ganze Breite der Kachel im
+  Format 16:9 und Name und Jahr in einer Zeile darunter. Damit die Reihen
+  aufgehen, sind COBOL und Smalltalk zurückgestellt; ihre Seiten bleiben
+  über einen direkten Link erreichbar.
+- »Geheime Botschaften in Bildern« hat auf seiner Karte ein Foto, das
+  harmlos aussieht: die Möwen, mit der Botschaft darin, statt der
+  aufgedeckten Bitebene.
+
 - Der Baumzeichner beim Rechner für Ausdrücke behält seine Kanten, während
   sich der Baum umordnet: Jedes Bild der Bewegung wird ganz gezeichnet,
   Knoten und Kanten zusammen. Was ausgerechnet wird, gleitet samt seinen

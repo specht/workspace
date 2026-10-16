@@ -14,8 +14,9 @@ strandhaeuser.png and moewen.png are two street photos by Ian Kobylanski
   filled with data as uniform as a compressed message.
 - ../klassen.webp: the same sky full at about 9 bits per pixel, once with
   RGB boxes (8 values per channel) and once with Lab classes 78 x 48 x 46.
-- ../teaser.webp: the beach huts, the right half as bit plane 1 of the
-  found picture, for the activity's card.
+- ../teaser.webp: the gulls with the same message hidden in them, for the
+  activity's card: a photo that looks innocent. (The site scales card
+  pictures, so the message does not survive there.)
 
 The three PNGs also go into src/static/steganography/, where the page
 offers them for download.
@@ -114,13 +115,8 @@ def klassen():
 
 
 def teaser():
-    found = Image.open(os.path.join(HERE, 'fundstueck.png')).convert('RGB')
-    plane = bit_plane(found, 1)
-    half = found.width // 2
-    out = found.copy()
-    out.paste(plane.crop((half, 0, found.width, found.height)), (half, 0))
-    ImageDraw.Draw(out).line((half, 0, half, found.height), fill='white', width=2)
-    out.save(os.path.join(HERE, '..', 'teaser.webp'), lossless=True)
+    gulls = Image.open(os.path.join(HERE, 'moewen.png')).convert('RGB')
+    hide(gulls, MESSAGE).save(os.path.join(HERE, '..', 'teaser.webp'), lossless=True)
 
 
 def publish():

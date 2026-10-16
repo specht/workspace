@@ -4667,24 +4667,24 @@ img.minicpu-shot.medium {
 .tool-card-open .bi { margin-left: 0.4em; }
 
 /* Programming languages on the start page (tiles: true in sections.yaml):
-   small tiles with logo, name and year. In the light theme the logo sits on
+   tiles with logo, name and year, four in a row (two on a phone), so 16
+   languages fill the rows. In the light theme the logo sits on
    a white plate; in the dark one (dark.css) there is no plate, and a logo
    that would vanish on dark has a dark variant (theme-image-dark). */
 .lang-tiles {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(8.5em, 1fr));
-    gap: 0.9em;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.1em;
     margin-bottom: 2.5em;
 }
 
 .lang-tile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.15em;
-    padding: 0.6em 0.6em 0.7em;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
     border: 1px solid var(--bs-border-color);
     border-radius: 0.6em;
+    overflow: hidden;
     background: var(--bs-body-bg);
     color: var(--bs-body-color);
     text-decoration: none;
@@ -4697,21 +4697,18 @@ img.minicpu-shot.medium {
     box-shadow: 0 0.2em 0.7em rgba(0, 0, 0, 0.18);
 }
 
+/* The logos are 16:9 pictures: the whole width of the tile, at that ratio. */
 .lang-tile-logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 4.4em;
-    margin-bottom: 0.35em;
-    padding: 0.35em;
-    border-radius: 0.4em;
+    grid-column: 1 / -1;
+    display: block;
+    aspect-ratio: 16 / 9;
     background: #fff;
 }
 
 .lang-tile-logo img {
-    max-width: 100%;
-    max-height: 100%;
+    display: block;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
 }
 
@@ -4719,29 +4716,32 @@ img.minicpu-shot.medium {
     display: none;
 }
 
+/* Name and year in one line below the logo */
 .lang-tile-name {
+    padding: 0.45em 0 0.5em 0.8em;
     font-weight: 600;
     line-height: 1.2;
-    text-align: center;
 }
 
 .lang-tile-year {
+    padding: 0.45em 0.8em 0.5em 0.5em;
     font-size: 0.8em;
     color: var(--bs-secondary-color);
 }
 
 @media (max-width: 575.999999px) {
     .lang-tiles {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 0.6em;
-    }
-
-    .lang-tile-logo {
-        height: 3.4em;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.7em;
     }
 
     .lang-tile-name {
-        font-size: 0.9em;
+        font-size: 0.95em;
+        padding-left: 0.6em;
+    }
+
+    .lang-tile-year {
+        padding-right: 0.6em;
     }
 }
 
