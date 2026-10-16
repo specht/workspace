@@ -52,6 +52,20 @@
   # - .glsl
   # - .gif
 
+- key: writing
+  compact: true
+  label: Texte & Präsentationen
+  icon: /images/book.png
+  description: |
+    Computer können Texte nicht nur anzeigen, sondern auch strukturieren,
+    gestalten und in interaktive Erlebnisse verwandeln. Erstelle Dokumente,
+    Präsentationen und verzweigte Geschichten, in denen Leserinnen und Leser
+    eigene Entscheidungen treffen können.
+  entries:
+    - bif
+    - showerjs
+    - latex
+
 - key: web
   compact: true
   label: Web
@@ -108,20 +122,6 @@
     - automata
     - digits-experiment
     - jpeg
-
-- key: writing
-  compact: true
-  label: Texte & Präsentationen
-  icon: /images/book.png
-  description: |
-    Computer können Texte nicht nur anzeigen, sondern auch strukturieren,
-    gestalten und in interaktive Erlebnisse verwandeln. Erstelle Dokumente,
-    Präsentationen und verzweigte Geschichten, in denen Leserinnen und Leser
-    eigene Entscheidungen treffen können.
-  entries:
-    - bif
-    - showerjs
-    - latex
 
 - key: terminal
   label: Terminal & Git
