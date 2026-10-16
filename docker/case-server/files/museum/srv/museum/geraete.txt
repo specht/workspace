@@ -1,0 +1,5 @@
+# Zugänge zum VPN des Museums. Jedes Gerät hat eine feste Adresse.
+10.8.0.11   hollerbach   Ingrid Hollerbach, Laptop
+10.8.0.14   brueckner    Timo Brückner, Rechner an der Kasse
+10.8.0.23   wartung      Elektro Reuter, Laptop vom Einbau 2024 (Zugang nie gesperrt)
+10.8.0.31   wartung      Nordlicht Sicherheitstechnik, Wartung seit 2025

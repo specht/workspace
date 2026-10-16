@@ -230,6 +230,38 @@ docker_compose[:networks] = {
     service[:labels] << 'hackschule.workspace.peer_firewall.infrastructure=true'
 end
 
+# The case server of »Ein Krimi im Terminal« (docs/entwicklung.md, »Der
+# Fallserver«), only with CASE_SERVER = true in credentials.rb: museum.bitstein
+# on the students' network, reachable on port 22 and no further (its own
+# peer-firewall label, not infrastructure), and alarmanlage.bitstein only on
+# a network of their own, reachable only from the museum.
+require './src/ruby/include/case_server.rb'
+if CaseServer.enabled?
+    case_secret = CaseServer.secret(LOGIN_CODE_SALT)
+    case_service = lambda do |role|
+        {
+            :build => { :context => './docker/case-server', :args => { 'ROLE' => role } },
+            :hostname => role,
+            :environment => { 'CASE_SERVER_SECRET' => case_secret },
+            :volumes => ["#{DATA_PATH}/case-server/#{role}:/keys"],
+            :tmpfs => ['/tmp:size=64m,mode=1733'],
+            :mem_limit => '512m',
+            :pids_limit => 400,
+            :cpus => 1.0,
+            :restart => 'always',
+        }
+    end
+    docker_compose[:services][:case_museum] = case_service.call('museum').merge(
+        :networks => { 'user' => { :aliases => [CaseServer::MUSEUM] }, 'case' => { :aliases => [CaseServer::MUSEUM] } },
+        :labels => ['hackschule.workspace.peer_firewall.case_server=true'],
+    )
+    docker_compose[:services][:case_alarm] = case_service.call('alarmanlage').merge(
+        :networks => { 'case' => { :aliases => [CaseServer::ALARM] } },
+    )
+    docker_compose[:networks][:case] = { :driver => 'bridge', :internal => true }
+    %w[museum alarmanlage].each { |role| FileUtils.mkpath(File.join(DATA_PATH, 'case-server', role)) }
+end
+
 docker_compose[:services][:peer_firewall] = {
     :build => './docker/peer-firewall',
     :network_mode => 'host',

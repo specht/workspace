@@ -246,4 +246,14 @@ class ContentPartsTest < Minitest::Test
         assert_equal 'Ordner schließen: <kbd>Strg</kbd><kbd>K</kbd>, dann <kbd>F</kbd>; <code>&lt;kbd&gt;</code> &lt;b&gt;x&lt;/b&gt;',
             ContentParts.inline_html('Ordner schließen: <kbd>Strg</kbd><kbd>K</kbd>, dann <kbd>F</kbd>; `<kbd>` <b>x</b>')
     end
+
+    def test_feature_blocks_stay_only_where_the_feature_is_on
+        page = "A\n<!-- feature: case_server -->\nB\n_task(beweis)\n<!-- /feature -->\nC\n"
+        assert_equal "A\nB\n_task(beweis)\nC\n", ContentParts.filter_features(page, ['case_server'])
+        assert_equal "A\nC\n", ContentParts.filter_features(page, [])
+        warnings = []
+        ContentParts.filter_features("<!-- feature: teleport -->\nX\n", [], :warn => ->(w) { warnings << w })
+        assert_includes warnings, '<!-- feature: teleport -->: unknown feature'
+        assert_includes warnings, '<!-- feature: teleport --> without <!-- /feature -->'
+    end
 end

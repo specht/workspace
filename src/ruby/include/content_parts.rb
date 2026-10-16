@@ -35,6 +35,35 @@ module ContentParts
         (VARIABLES.keys - SITE_VARIABLES).to_h { |name| [name, meta[name].is_a?(String) && !meta[name].strip.empty? ? meta[name].strip : nil] }
     end
     VARIABLE = /\$\{(#{VARIABLES.keys.join('|')})\}/
+    # Parts of a page that only exist where the installation has a feature
+    # switched on (docs/aufgaben.md): <!-- feature: case_server --> … <!-- /feature -->.
+    FEATURE_START = /^<!--\s*feature:\s*([a-z_]+)\s*-->[ \t]*\n?/
+    FEATURE_END = /^<!--\s*\/feature\s*-->[ \t]*\n?/
+    FEATURES = %w[case_server].freeze
+
+    # Keeps what is inside a feature block if the feature is in enabled and
+    # drops it otherwise; the markers themselves go. Blocks do not nest.
+    # Runs before the task cards are found, so a task in a dropped block is
+    # not on the page and not in the class overview either.
+    def self.filter_features(markdown, enabled, warn: nil)
+        out = +''
+        rest = markdown
+        while (m = rest.match(FEATURE_START))
+            out << m.pre_match
+            name = m[1]
+            warn&.call("<!-- feature: #{name} -->: unknown feature") unless FEATURES.include?(name)
+            after = m.post_match
+            stop = after.match(FEATURE_END)
+            unless stop
+                warn&.call("<!-- feature: #{name} --> without <!-- /feature -->")
+                return out + (enabled.include?(name) ? after : '')
+            end
+            out << stop.pre_match if enabled.include?(name)
+            rest = stop.post_match
+        end
+        warn&.call('<!-- /feature --> without <!-- feature: … -->') if rest.match?(FEATURE_END)
+        out << rest.gsub(FEATURE_END, '')
+    end
     NOTE_FILE = 'lehrkraft.md'
 
     # The Markdown file that is the page of a content folder: <name>.md if it

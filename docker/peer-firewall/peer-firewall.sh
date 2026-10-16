@@ -4,6 +4,10 @@ set -eu
 DOCKER_SOCKET="${DOCKER_SOCKET:-/var/run/docker.sock}"
 WORKSPACE_NETWORK="${WORKSPACE_NETWORK:-workspace_user}"
 INFRASTRUCTURE_LABEL="${INFRASTRUCTURE_LABEL:-hackschule.workspace.peer_firewall.infrastructure}"
+# The case server of »Ein Krimi im Terminal« (museum.bitstein): students reach
+# its SSH port, and it only answers. It is no infrastructure: from there, a
+# student must not reach anyone else's Workspace.
+CASE_SERVER_LABEL="${CASE_SERVER_LABEL:-hackschule.workspace.peer_firewall.case_server}"
 PEER_TCP_PORTS="${PEER_TCP_PORTS:-1234}"
 SYNC_INTERVAL="${SYNC_INTERVAL:-2}"
 NFT_TABLE="hackschule_workspace"
@@ -65,6 +69,15 @@ EOF_RULES
     cat <<EOF_RULES
     }
 
+    set case_servers {
+        type ipv4_addr
+EOF_RULES
+    if [ -n "$case_server_elements" ]; then
+        printf '        elements = { %s }\n' "$case_server_elements"
+    fi
+    cat <<EOF_RULES
+    }
+
     chain peer_filter {
         type filter hook forward priority filter - 1; policy accept;
 
@@ -81,6 +94,10 @@ EOF_RULES
         # used by the existing netcat tutorial.
         ip saddr @user_subnets ip daddr @user_subnets tcp dport { ${PEER_TCP_PORTS} } accept
         ip saddr @user_subnets ip daddr @user_subnets tcp sport { ${PEER_TCP_PORTS} } ct state established accept
+
+        # SSH to the case server, and its answers on those connections.
+        ip saddr @user_subnets ip daddr @case_servers tcp dport 22 accept
+        ip saddr @case_servers ip daddr @user_subnets tcp sport 22 ct state established accept
 
         # Everything else directly between student-side endpoints is private.
         # bridge/forward cannot use an ICMP reject verdict on the nftables
@@ -125,10 +142,17 @@ discover_network_state() {
         return 1
     fi
 
-    infrastructure_elements=''
+    infrastructure_elements="$(ips_with_label "$INFRASTRUCTURE_LABEL")" || return 1
+    case_server_elements="$(ips_with_label "$CASE_SERVER_LABEL")" || return 1
+}
+
+# The addresses on the workspace network of all running containers with the
+# label set to true, separated by commas.
+ips_with_label() {
+    elements=''
     container_ids="$(
         docker_api '/containers/json' \
-            | jq -r --arg label_name "$INFRASTRUCTURE_LABEL" \
+            | jq -r --arg label_name "$1" \
                 '.[] | select(.Labels[$label_name] == "true") | .Id'
     )" || return 1
 
@@ -141,13 +165,13 @@ discover_network_state() {
         )"
         [ -n "$ip" ] || continue
 
-        if [ -n "$infrastructure_elements" ]; then
-            infrastructure_elements="${infrastructure_elements}, ${ip}"
+        if [ -n "$elements" ]; then
+            elements="${elements}, ${ip}"
         else
-            infrastructure_elements="$ip"
+            elements="$ip"
         fi
     done
-
+    printf '%s' "$elements"
 }
 
 apply_network_state() {
@@ -159,6 +183,10 @@ apply_network_state() {
         printf 'flush set bridge %s infrastructure\n' "$NFT_TABLE"
         if [ -n "$infrastructure_elements" ]; then
             printf 'add element bridge %s infrastructure { %s }\n' "$NFT_TABLE" "$infrastructure_elements"
+        fi
+        printf 'flush set bridge %s case_servers\n' "$NFT_TABLE"
+        if [ -n "$case_server_elements" ]; then
+            printf 'add element bridge %s case_servers { %s }\n' "$NFT_TABLE" "$case_server_elements"
         fi
     } | nft -f -
 }
@@ -177,13 +205,13 @@ done
 # The first installed table already contains the subnet and infrastructure
 # sets, so there is no fail-open initialization window.
 install_ruleset
-last_state="${subnet_elements}|${infrastructure_elements}"
+last_state="${subnet_elements}|${infrastructure_elements}|${case_server_elements}"
 log "protecting ${WORKSPACE_NETWORK}; peer TCP ports: ${PEER_TCP_PORTS}; peer UDP disabled"
-log "active subnets: ${subnet_elements}; infrastructure: ${infrastructure_elements:-none}"
+log "active subnets: ${subnet_elements}; infrastructure: ${infrastructure_elements:-none}; case servers: ${case_server_elements:-none}"
 
 while :; do
     if discover_network_state; then
-        current_state="${subnet_elements}|${infrastructure_elements}"
+        current_state="${subnet_elements}|${infrastructure_elements}|${case_server_elements}"
 
         if ! nft list table bridge "$NFT_TABLE" >/dev/null 2>&1; then
             log 'firewall table disappeared; restoring it'
@@ -191,7 +219,7 @@ while :; do
             last_state="$current_state"
         elif [ "$current_state" != "$last_state" ]; then
             apply_network_state
-            log "active subnets: ${subnet_elements}; infrastructure: ${infrastructure_elements:-none}"
+            log "active subnets: ${subnet_elements}; infrastructure: ${infrastructure_elements:-none}; case servers: ${case_server_elements:-none}"
             last_state="$current_state"
         fi
     else

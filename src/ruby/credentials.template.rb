@@ -47,3 +47,10 @@ end
 # Aufgabenkarten für Lernende einschalten (docs/aufgaben.md). Ohne diese
 # Zeile sehen nur Lehrkräfte die Aufgaben, als Vorschau.
 # TASKS_ENABLED = true
+
+# Den Fallserver für »Ein Krimi im Terminal« einschalten (docs/entwicklung.md,
+# »Der Fallserver«): zwei kleine SSH-Server, museum.bitstein und
+# alarmanlage.bitstein, mit einem Zugang für jede Person. Danach
+# ./config.rb build case_museum case_alarm peer_firewall && ./config.rb up -d;
+# Workspaces bekommen ihren Zugang beim nächsten Start.
+# CASE_SERVER = true

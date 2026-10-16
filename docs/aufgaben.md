@@ -131,6 +131,16 @@ Platzhalter ersetzt, bevor Redcarpet den Text liest.
 | `${contact_email}` | Die Kontaktadresse der Installation (`CONTACT_EMAIL` in `credentials.rb`), etwa für »schreib eine E-Mail an«; nie eine Adresse fest in den Text schreiben | M7 |
 | `_tool(tcp-console)` | Ein Kasten mit Symbol, Name und Zweck eines Werkzeugs der Website (`tcp-console`, `automatron`, Liste in `tools.rb`), der es in einem neuen Tab öffnet; auf einer Zeile für sich. Die Werkzeuge stehen nicht im Menü, sondern dort im Text, wo man sie braucht, und brauchen eine Anmeldung | M7 |
 
+### Teile für eine Funktion der Installation
+
+Was nur geht, wenn eine Installation eine Funktion eingeschaltet hat, steht
+zwischen `<!-- feature: case_server -->` und `<!-- /feature -->`, jede Marke
+auf einer Zeile für sich. Ist die Funktion aus, fällt alles dazwischen weg,
+bevor die Aufgabenkarten gesucht werden: Seine Aufgaben stehen dann weder auf
+der Seite noch in der Klassenübersicht. Bisher gibt es nur `case_server`, den
+Fallserver für »Ein Krimi im Terminal« ([entwicklung.md](entwicklung.md#der-fallserver)).
+Die Marken dürfen auch Zeilen einer HTML-Tabelle umschließen.
+
 ### Teile einer Handbuch-Seite
 
 Eine Handbuch-Seite gliedert sich in Teile. Ein Teil beginnt mit einer
