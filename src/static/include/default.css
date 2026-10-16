@@ -4734,3 +4734,25 @@ img.minicpu-shot.medium {
         font-size: 0.9em;
     }
 }
+
+/* An interactive widget on a page (data-stepper, stepper_keys.js): set
+   apart from the text around it by a light band with a line on the left,
+   not a box, and a label that says it can be tried and stepped with the
+   arrow keys. div[…] outweighs the widgets' own margins. */
+div[data-stepper] {
+    margin: 1.6em 0 1.8em;
+    padding: 0.7em 1em 0.9em;
+    background: color-mix(in srgb, var(--bs-primary) 5%, transparent);
+    border-left: 3px solid color-mix(in srgb, var(--bs-primary) 55%, transparent);
+    border-radius: 0 0.4em 0.4em 0;
+}
+div[data-stepper]::before {
+    content: 'Zum Ausprobieren · ← → schalten weiter';
+    display: block;
+    font-size: 0.75em;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--bs-primary) 80%, var(--bs-body-color));
+    margin-bottom: 0.6em;
+}

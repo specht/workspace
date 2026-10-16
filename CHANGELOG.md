@@ -548,6 +548,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   von LZW und der von GIF. Bei zwei Widgets auf einer Seite schaltet die
   Taste das, das gerade im Fenster steht; im Textfeld eines Widgets bewegt sie
   weiter den Cursor.
+- Widgets zum Durchschalten heben sich vom Text ab: ein heller Streifen mit
+  einer Linie links und darüber »Zum Ausprobieren · ← → schalten weiter«. So
+  sieht man, wo ein Widget anfängt und wo es aufhört.
 - LZW nennt das, was der Kompressor gerade aufbaut, jetzt **Präfix** statt
   »Stück«, auf der Seite, in den Aufgaben und in der Tabelle des
   Schrittmachers.

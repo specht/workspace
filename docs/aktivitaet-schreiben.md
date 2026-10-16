@@ -137,6 +137,12 @@ tun. Dann schalten <kbd>←</kbd> und <kbd>→</kbd> es durch, ohne eigenen Code
 das, das am meisten vom Fenster einnimmt; in einem Textfeld bewegen die
 Pfeiltasten weiter den Cursor.
 
+`data-stepper` setzt das Widget auch vom Text ab: ein heller Streifen mit
+einer Linie links und darüber »Zum Ausprobieren · ← → schalten weiter«
+(`default.css`). So sieht man beim Lesen, wo es anfängt und aufhört. Das
+Element mit `data-stepper` umfasst darum das ganze Widget, nicht nur seine
+Knöpfe.
+
 ### In Ruby und in Python
 
 Eine Aktivität, deren Sprache frei ist, kann es in Ruby und in Python geben.
