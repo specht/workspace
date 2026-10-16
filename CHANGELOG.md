@@ -623,6 +623,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Der Baumzeichner beim Rechner für Ausdrücke behält seine Kanten, während
+  sich der Baum umordnet: Jedes Bild der Bewegung wird ganz gezeichnet,
+  Knoten und Kanten zusammen. Was ausgerechnet wird, gleitet samt seinen
+  Kanten in den Knoten, der daraus wird; zurück kommt es wieder heraus.
+  Bisher verschwanden die Kanten, bis die Knoten an ihrem Platz waren.
+
 - Kleine Zeichnungen stehen in ihrer eigenen Größe auf der Seite, statt auf
   die ganze Breite gezogen und unscharf zu werden: der Baum und der
   Zahlen-Automat beim Rechner für Ausdrücke, der Automat des Zahlenschlosses
