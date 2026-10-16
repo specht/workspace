@@ -9,7 +9,7 @@ user-facing text are German; code and these notes are English.
 
 | Path | What |
 | --- | --- |
-| `src/content/<slug>/<slug>.md` | an activity: page, `tasks.yaml`, `lehrkraft.md` (teacher note), pictures, example files |
+| `src/content/<slug>/<slug>.md` | an activity: page, `tasks.yaml`, `task-examples.yaml` (what each check must accept and reject), `lehrkraft.md` (teacher note), pictures, example files |
 | `src/content/reference/<slug>/` | a Handbuch page; parts marked `<!-- part: name -->` … `<!-- /part -->`, included with `_include(slug#part)` |
 | `src/content/sections.yaml`, `reference/sections.yaml` | the catalogs |
 | `src/ruby/main.rb`, `src/ruby/include/` | the Sinatra app; content is read on every request in development |
@@ -51,6 +51,9 @@ address from `credentials.rb` and the code `123456`.
 
 ## Working on the code
 
+- A new or changed check gets examples in `task-examples.yaml` (docs/aufgaben.md,
+  »Beispiele für die Prüfungen«): a solution it must accept, a starting point it
+  must reject.
 - Run the Ruby tests (`cd src/ruby; for f in test/*_test.rb; do ruby "$f" | tail -1; done`)
   and, for the generator, `node --test src/tutorial-screenshots/test/*.test.js`.
 - After a change to `src/tutorial-screenshots/server.js`, rebuild the service:

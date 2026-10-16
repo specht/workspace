@@ -129,6 +129,14 @@ if __FILE__ == $0
     p rle('WWWWWWBBBWWWW')
 end
 ```
+
+<!-- tutorial-step
+# Das Gerüst von der Seite läuft, und noch löst es keine Aufgabe (ruby)
+write-file: rle/rle.rb <- previous-code
+check-task-fails: rle
+check-task-fails: unrle
+check-task-fails: bytes
+-->
 <!-- /language -->
 <!-- language: python -->
 Lege darin die Datei `rle.py` an:
@@ -158,6 +166,14 @@ def unrle_bytes(numbers):
 if __name__ == '__main__':
     print(rle('WWWWWWBBBWWWW'))
 ```
+
+<!-- tutorial-step
+# Das Gerüst von der Seite läuft, und noch löst es keine Aufgabe (python)
+write-file: rle/rle.py <- previous-code
+check-task-fails: rle python
+check-task-fails: unrle python
+check-task-fails: bytes python
+-->
 <!-- /language -->
 
 ## Als Text
@@ -354,3 +370,15 @@ document.addEventListener('DOMContentLoaded', function() {
     update();
 });
 </script>
+
+<!-- tutorial-step
+# Die Musterlösungen aus loesung/ lösen jede Programmieraufgabe, in beiden Sprachen
+write-file: rle/rle.rb <- file:loesung/rle.rb
+write-file: rle/rle.py <- file:loesung/rle.py
+check-task: rle
+check-task: rle python
+check-task: unrle
+check-task: unrle python
+check-task: bytes
+check-task: bytes python
+-->

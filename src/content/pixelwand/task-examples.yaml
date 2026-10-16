@@ -1,0 +1,35 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: pixelwand
+examples:
+  pixelwand:
+    pass:
+      - files: { pixelwand/server.rb: stufen/server3.rb }
+      - files: { pixelwand/server.rb: stufen/server5.rb }
+    fail:
+      - files: { pixelwand/server.rb: stufen/server2.rb }
+        say: JSON.parse
+    python:
+      pass:
+        - files: { pixelwand/server.py: stufen/server3.py }
+        - files: { pixelwand/server.py: stufen/server5.py }
+      fail:
+        - files: { pixelwand/server.py: stufen/server2.py }
+          say: json.loads
+  lock:
+    pass:
+      - files: { pixelwand/server.rb: stufen/server5.rb }
+    fail:
+      - files: { pixelwand/server.rb: stufen/server4.rb }
+        say: Mutex.new
+      - files: { pixelwand/server.rb: stufen/server3.rb }
+        say: Thread.new
+    python:
+      pass:
+        - files: { pixelwand/server.py: stufen/server5.py }
+      fail:
+        - files: { pixelwand/server.py: stufen/server4.py }
+          say: threading.Lock()
+        - files: { pixelwand/server.py: stufen/server3.py }
+          say: threading.Thread

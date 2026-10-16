@@ -323,6 +323,50 @@ performs the same kind of readiness check against visible `<input>` and
 `<textarea>` values. The latter is useful for VS Code Quick Input because input
 values are not part of `document.body.innerText`.
 
+### Assertions: does the page's step work?
+
+A recipe replays what the page tells students to do, so it can also check
+that it works. `wait-for-text` already fails the render when its text does not
+appear. Three more instructions only check:
+
+```text
+expect-no-text: Traceback
+check-task: lock
+check-task-fails: lock python
+```
+
+- `expect-no-text: TEXT` fails if the selected page shows the text now, in any
+  frame: an error message, a Traceback, a file that should be gone.
+- `check-task: ID [ruby|python]` runs the check of task `ID` from the
+  tutorial's own `tasks.yaml` exactly as the »Prüfen« button does, as the
+  screenshot user against their Workspace, in the given language variant
+  (without one: the task as written). The render fails unless the task
+  passes. Like »Prüfen«, it records the result for the screenshot user.
+- `check-task-fails: ID [ruby|python]` expects the check to reject: the step
+  before the task must not already solve it.
+
+Assertions change nothing on screen, so they are not part of any state hash:
+adding or removing one re-renders nothing. They run whenever the recipe is
+replayed, in a render of that shot or of a later one.
+
+Steps the page describes without a picture go into a recipe of their own,
+`<!-- tutorial-step … -->`: the same instructions, no capture and no `<img>`
+after it.
+
+```text
+<!-- tutorial-step
+write-file: bobby_tables/login.py <- file:login.py
+terminal-run: printf "admin' #\n\n" | python3 login.py
+wait-for-text: Herzlich willkommen, admin
+-->
+```
+
+A step's actions run in its own `tab` before the next screenshot's actions and
+count towards that screenshot's state, since they change what is on screen
+later. Steps after the last screenshot run at the end of every replay, so
+`src/scripts/recreate-screenshots.rb PAGE` walks through the whole page and
+fails at the first assertion that does not hold.
+
 ### Opening and creating folders
 
 Opening folders needs no special screenshot-only shortcut. The recipe can drive

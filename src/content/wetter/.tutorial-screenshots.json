@@ -1,39 +1,51 @@
 {
   "screenshots": {
+    "cache-python.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "5bfa3d19a4bb7bde1cc3b48cceb8820c01ae709e14190929d4c877b8e6f9f6c5",
+      "state_hash": "ad21b59e95b3b888588e8602505640d7207d13ce97e1696348103ef39085677e",
+      "workspace_look": "4.138.0-ls366"
+    },
     "cache.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "f96b4c5eba948587df1a3a1ea6457e8ffc0645fe1ac8784d737a5515da00defb",
-      "state_hash": "72a4c61d6732141f4d3457b12a6ef4d55e210eaa29137bb1320a7de5f8145b91",
+      "output_sha256": "41722d3ab6cb46f39f627acb87681455ebde112740fdfaad6c4c430893f7084f",
+      "state_hash": "93fb35b19cdd6e981f764161714f5531f19b8b0a1890f9794c15cc1b61c950e6",
       "workspace_look": "4.138.0-ls366"
     },
     "geocoding.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "7b9e4145d299a43b1324dbc18e3629c95984a8fb03a4139bef9c74e660155ad2",
+      "output_sha256": "1298cc5f4da1cac6b9a01ff6d77df452b0224ba9d7ed65d2022d7cd3fc2ce62d",
       "state_hash": "2f9e4fac8d0143d742af8682946e98ed4cd9c607470dcff949f88de00fa67005",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "python.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "20bd494bf2044f5677ec457dd83c9d29ea68e61d5a8fc99744e47cb96315ccb9",
+      "state_hash": "bfb2c92e00601b79761630b2f66631287b61fd80dccf80a63f4eecc94d199493",
       "workspace_look": "4.138.0-ls366"
     },
     "ruby.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "162ed400d0afecde2f8b1392a0c18552bd3e40b1c83af76029de03524edd1e63",
+      "output_sha256": "86eb311575bd412e71075877e820cd4e4e8c27c64d1893310606b212e3ef12e3",
       "state_hash": "df4f6c3b4dbfb7907e5b6538c11e7e1407e46e7f3d3a8eab8724ded280fd3e28",
       "workspace_look": "4.138.0-ls366"
     },
     "teaser.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "1c4bac16f4226398857e4e9872ee06daa7c4dd799ce2522dd39b07df6c052358",
-      "state_hash": "5040a80be1cd5ad66a108b86f9481e6b7793f6f4bb3e37567e902de133c951ea",
+      "output_sha256": "aee1a03a469d9d8fe4c76029d3e262da868ba99d6c7d73826e96a8d2d9792fac",
+      "state_hash": "928ad605a82b5c7ebfd6fe1fef0065cdccbfb6a1330afdbaee2df4cab680dbd5",
       "workspace_look": "4.138.0-ls366"
     },
     "vorhersage.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "cc3daf2749fe4750ef2b4bf96acd5f6fb736edb49a495d1e66be9f41f9a9a9e9",
+      "output_sha256": "ca85f773a51a73282ebea6efacc70e4c39557e84cdce182b6f4752b22459f2e2",
       "state_hash": "b79fbb05d10dcdb3e2a6ad95fb68fa41436dc60b9f8a8bcf476dfb695dbf514b",
       "workspace_look": "4.138.0-ls366"
     },
     "wetterseite.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "e44538db2a0636b83fadf09dd565dcfbf4b0f99b20099287a3a855afa1f1bf31",
-      "state_hash": "27c0dc355c086fd7ae053203ffe820fa2cf81146a5a3860646e842623299065f",
+      "output_sha256": "087078d49133dcaabb0466f117e500c2708df2d6ee7f3f039244ae312f019dfb",
+      "state_hash": "b215cd9eab3673d66ed276bda64e0038d618b4e4bab0c550a327ef72a39b5d18",
       "workspace_look": "4.138.0-ls366"
     }
   },

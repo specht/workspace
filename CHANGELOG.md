@@ -18,14 +18,24 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- »Daten aus dem Netz« gibt es jetzt auch in Python, nur mit der
+  Standardbibliothek (`urllib.request`, `json`): die drei Stufen von
+  `wetter.py` mit Fehlerbehandlung und Cache, die Erklärungen dazu, zwei
+  Screenshots und Varianten der drei Aufgaben, die `wetter.rb` lesen. Die
+  Wetterseite ist für beide Sprachen dieselbe. »Das Wetter aus Ruby« heißt
+  jetzt »Das Wetter aus deinem Programm«; wer sie oder »Ein Cache« schon
+  gelöst hat, sieht sie einmal als »geändert«.
+- »SQL Injection« gibt es jetzt auch in Python: `login.py` mit
+  `mysql.connector`, die Hinweise dazu und das Prepared Statement mit
+  `cursor(prepared=True)`. Python braucht dafür nichts zu installieren. Wer
+  »Ein Prepared Statement« schon gelöst hat, sieht die Aufgabe einmal als
+  »geändert«.
 - »Eine Pixelwand für alle« gibt es jetzt auch in Python: die fünf Stufen
-  des Servers mit dem Paket `websockets` (in einer virtuellen Umgebung
-  `.venv` im Projektordner, ohne Administratorrechte), die Erklärungen dazu,
-  sechs Screenshots aus dem Workspace und Varianten der Aufgaben, die Ruby
-  nennen. Webseite und `flood.js` sind für beide Sprachen dieselben. Die
-  Abgabe lässt `.venv` aus. Wer »Jeder kann alles schicken«, »Die
-  Pixelwand«, »Ein Lock« oder die Abgabe schon erledigt hat, sieht sie
-  einmal als »geändert«.
+  des Servers mit dem Paket `websockets` (`pip install websockets`), die
+  Erklärungen dazu, sechs Screenshots aus dem Workspace und Varianten der
+  Aufgaben, die Ruby nennen. Webseite und `flood.js` sind für beide
+  Sprachen dieselben. Wer »Jeder kann alles schicken«, »Die Pixelwand« oder
+  »Ein Lock« schon gelöst hat, sieht sie einmal als »geändert«.
 - »Ein eigener Webserver« gibt es jetzt auch in Python: alle sechs Stufen
   des Servers mit `socket`, `threading` und `urllib.parse`, die Erklärungen
   dazu, sechs Screenshots aus dem Terminal und Varianten der Aufgaben, die
@@ -494,6 +504,23 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- »Statische Webseiten«, Aufgabe »Ein eigenes Bild«: Ein Bild aus dem Netz
+  zählt nicht mehr als eigenes. Die Prüfung verlangt jetzt mindestens ein
+  Bild mit einem Pfad im Workspace (`img: { local: 1 }`, neu für alle
+  `html`-Prüfungen). Bisher genügte die Seite aus dem Schritt davor mit dem
+  Bild von Wikipedia. Wer die Aufgabe schon gelöst hat, sieht sie einmal als
+  »geändert«. Gefunden haben das die neuen Beispiele für die Prüfungen.
+- »SQL Injection«: Die Testdaten kommen jetzt mit `mysql db_1234 < users.sql`
+  in die Datenbank. Mit `mycli` hielt der Import mit der Frage »You're about
+  to run a destructive command« an, die die Seite nicht erwähnte. Gefunden hat
+  das der neue Durchgang durch die Seite, der jetzt alle Schritte in Ruby und
+  Python prüft: Testdatenbank, Import, die drei Angriffe, die Lücke schließen
+  wie beschrieben, dieselben Angriffe noch einmal.
+- Automatron bricht bei langen Ausdrücken nicht mehr ganz ab: Ein Automat mit
+  mehr als 300 Übergängen, etwa der DEA auf dem Weg zu »eine Dezimalzahl ist
+  durch 3 teilbar«, wird nicht gezeichnet, sondern durch einen Hinweis
+  ersetzt, und der kleinste DEA, die Grammatik und die Beispielwörter kommen
+  trotzdem. Bisher kam nach zehn Sekunden nur eine Fehlermeldung.
 - Unter der Fußzeile blieb auf allen Seiten ein leerer Streifen von 100
   Pixeln; er war für die feste Fußzeile der Entwicklungsumgebung gedacht.
 - Die Kacheln der Programmiersprachen auf der Startseite folgen wieder dem
@@ -503,6 +530,37 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Das Bild der Endlichen Automaten auf der Startseite zeigt statt eines
+  Automaten mit 16 Zuständen den kleinsten DEA, der prüft, ob eine
+  Dezimalzahl durch 3 teilbar ist: drei Zustände für die Quersumme modulo 3,
+  größer und ohne Binärzahlen zu lesen.
+- Jede Prüfung einer Aufgabe kann Beispiele haben (`task-examples.yaml` neben
+  der `tasks.yaml`): eine Lösung, die sie annehmen, und einen unfertigen
+  Stand, den sie ablehnen muss. `task_examples_test.rb` führt sie durch
+  dieselbe Prüfung wie der Knopf »Prüfen«, dazu jede Auswahl- und Zahlaufgabe
+  mit ihrer eigenen Lösung: 675 Fälle in 31 Aktivitäten. Jede Prüfung von
+  Dateien oder Programmen hat jetzt Beispiele, und eine neue braucht welche;
+  für die Endlichen Automaten liegen dafür Musterlösungen in `loesung/`.
+- `page_code_test.rb` prüft, dass der Code auf einer Aktivität in den Dateien
+  steht, die ihre Screenshot-Rezepte schreiben. So kann der Code auf der
+  Seite nicht unbemerkt von dem abweichen, was Bilder und Beispiele testen.
+- Screenshot-Rezepte prüfen auf Wunsch, ob die Schritte einer Seite aufgehen:
+  `check-task` führt die Prüfung einer Aufgabe im Workspace des
+  Screenshot-Kontos aus wie »Prüfen«, `check-task-fails` verlangt, dass sie
+  an dieser Stelle noch scheitert, `expect-no-text` schlägt bei einer
+  Fehlermeldung an, und `<!-- tutorial-step … -->` beschreibt Schritte ohne
+  Bild. Solche Prüfungen ändern keine Bilder. Die Pixelwand und Daten aus dem
+  Netz prüfen ihre Aufgaben jetzt so, in beiden Sprachen.
+- `pip install` funktioniert im Workspace wie `gem install`: Pakete landen
+  ohne Administratorrechte in `/workspace/.local` und bleiben über einen
+  Neustart erhalten; `python3` findet sie ohne virtuelle Umgebung. Bisher
+  lehnte pip jede Installation außerhalb einer virtuellen Umgebung ab
+  (»externally-managed-environment«). Virtuelle Umgebungen funktionieren
+  wie zuvor. `mysql.connector` für Python kommt jetzt in Version 26.7 aus
+  pip statt aus Ubuntu; die alte Fassung 8.0.15 konnte sich unter Python
+  3.12 nicht bei MySQL 8.4 anmelden. Betreibende bauen das Workspace-Image
+  neu (`./build-image.sh`); laufende Workspaces bekommen die Änderung beim
+  nächsten Start.
 - Startseite für alle, die nicht angemeldet sind: Statt Begrüßung und vier
   Textkacheln ein kompakter Kopf mit einem Satz, was der Workspace ist, einem
   Link zur Anmeldung und einem Bild des Workspaces

@@ -41,6 +41,7 @@ ARG POWERSHELL_VERSION=7.6.4
 ARG RUBY_VERSION=3.4.10
 ARG RUBY_API_VERSION=3.4.0
 ARG NEO4J_BOLT_VERSION=0.5.0
+ARG MYSQL_CONNECTOR_PYTHON_VERSION=26.7.0
 ARG RUBY_SHA256=6f32ad662baafc228d12030dbcd284f83b034dd4337b300dc84ac74d11a1eb68
 
 ARG HACKSCHULE_SIDEBAR_INIT_VERSION=0.1.0
@@ -868,6 +869,32 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         php-mysql \
     && php -m | grep -qx pdo_mysql \
     && php -m | grep -qx mysqli
+
+
+# --------------------------------------------------------------------
+# Python: pip like gem, and a MySQL driver that works
+#
+# Ubuntu marks its Python as externally managed (PEP 668), so pip refuses
+# every install outside a venv, even into the student's own folder. The
+# container is disposable and students own what they install: without the
+# marker, pip run by the student falls back to a user install into
+# PYTHONUSERBASE, which lies in /workspace like GEM_HOME, so
+# `pip install websockets` works like `gem install` and survives restarts.
+# venvs behave as before.
+#
+# mysql-connector-python comes from pip, not apt: Ubuntu's 8.0.15 cannot
+# log in to MySQL 8.4 under Python 3.12 (ssl.wrap_socket is gone, and
+# caching_sha2_password needs SSL).
+# --------------------------------------------------------------------
+
+ARG MYSQL_CONNECTOR_PYTHON_VERSION
+RUN apt-get purge -y python3-mysql.connector \
+    && rm -f /usr/lib/python3*/EXTERNALLY-MANAGED \
+    && pip install --no-cache-dir "mysql-connector-python==${MYSQL_CONNECTOR_PYTHON_VERSION}" \
+    && python3 -c "import mysql.connector as m; assert m.__version__ == '${MYSQL_CONNECTOR_PYTHON_VERSION}', m.__version__"
+
+ENV PYTHONUSERBASE=/workspace/.local
+ENV PATH="${PYTHONUSERBASE}/bin:${PATH}"
 
 
 # --------------------------------------------------------------------

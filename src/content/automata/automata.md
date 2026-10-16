@@ -135,6 +135,7 @@ terminal-run: clear
 terminal-run: ruby turnstile.rb
 terminal-wait-for-prompt
 move-mouse: selector:.terminal
+check-task-fails: drehkreuz ruby
 -->
 <img class='full' src='drehkreuz-ruby.webp' alt='Oben im Editor turnstile.rb mit der Tabelle TRANSITIONS und der Methode run, unten im Terminal vier Zeilen Ausgabe: zu, drücken, zu; zu, münze, offen; offen, drücken, zu; zu, drücken, zu.'>
 <!-- /language -->
@@ -180,6 +181,7 @@ terminal-run: clear
 terminal-run: python3 turnstile.py
 terminal-wait-for-prompt
 move-mouse: selector:.terminal
+check-task-fails: drehkreuz
 -->
 <img class='full' src='drehkreuz.webp' alt='Oben im Editor turnstile.py mit der Tabelle TRANSITIONS und der Funktion run, unten im Terminal vier Zeilen Ausgabe: zu, drücken, zu; zu, münze, offen; offen, drücken, zu; zu, drücken, zu.'>
 <!-- /language -->
@@ -391,6 +393,7 @@ terminal-run: clear
 terminal-run: ruby lock.rb
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task-fails: schloss ruby
 -->
 <img class='full' src='schloss-ruby.webp' alt='ruby lock.rb gibt aus: 1213 true, 991213 true, 12 false und 121213 false.'>
 <!-- /language -->
@@ -432,6 +435,7 @@ terminal-run: clear
 terminal-run: python3 lock.py
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task-fails: schloss
 -->
 <img class='full' src='schloss.webp' alt='python3 lock.py gibt aus: 1213 True, 991213 True, 12 False und 121213 False.'>
 <!-- /language -->
@@ -690,6 +694,7 @@ terminal-run: clear
 terminal-run: ruby convert.rb
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task-fails: generalschluessel ruby
 -->
 <img class='full' src='umwandeln-ruby.webp' alt='ruby convert.rb gibt aus: 5 Zustände, dann acht Übergänge, etwa von der Menge 1, 121, start mit 2 zur Menge 12, start und mit 3 zur Menge 1213, start.'>
 <!-- /language -->
@@ -744,6 +749,7 @@ terminal-run: clear
 terminal-run: python3 convert.py
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task-fails: generalschluessel
 -->
 <img class='full' src='umwandeln.webp' alt='python3 convert.py gibt aus: 5 Zustände, dann acht Übergänge, etwa von der Menge 1, 121, start mit 2 zur Menge 12, start und mit 3 zur Menge 1213, start.'>
 <!-- /language -->
@@ -837,16 +843,43 @@ _task(nea-oder-dea)
 - **Mehr als endlich.** Klammern prüfen, ob jede `(` ein `)` hat, kann ein endlicher Automat nicht. Ein **Kellerautomat** kann es, mit einem Stapel als Gedächtnis. So prüfen Compiler deinen Code.
 
 <!-- tutorial-screenshot
-# Teaser: Automatron, der DEA für »die viertletzte Ziffer ist eine 1«
+# Teaser: der kleinste DEA für »eine Dezimalzahl ist durch 3 teilbar«; der
+# Zustand ist die Quersumme modulo 3. Gezeichnet wie in Automatron, aber aus
+# dem Automaten selbst (hook divisible-by-3), nicht aus einem regulären Ausdruck.
 open-site: /automatron
 tab: preview
 viewport: 1029x700
-click: selector:#ti_input
-type: (0|1)*1(0|1)(0|1)(0|1)
-press: Enter
-wait-for-text: kleinster DEA
-sleep: 1
-crop-element: #output_area svg:nth-of-type(3)
+hook: divisible-by-3
+crop-element: #output_area svg
 variants: dark
 -->
-<img class='teaser' hidden src='teaser.webp' alt='Ein Gewirr aus 16 Zuständen s0 bis s15 und Pfeilen mit 0 und 1, gezeichnet von Automatron: der kleinste DEA, der prüft, ob die viertletzte Ziffer einer Binärzahl eine 1 ist. Acht Zustände haben einen doppelten Rand.'>
+<img class='teaser' hidden src='teaser.webp' alt='Ein endlicher Automat mit drei Zuständen s0, s1 und s2, gezeichnet wie in Automatron: Er prüft, ob eine Dezimalzahl durch 3 teilbar ist. Die Pfeile tragen Gruppen von Ziffern, 0, 3, 6, 9 lässt den Zustand, wie er ist, 1, 4, 7 und 2, 5, 8 führen weiter. s0 ist Start und hat einen doppelten Rand.'>
+
+<!-- tutorial-step
+# Für »Teilbar durch 5« kopiert man divisible.rb und divisible.py nach
+# divisible5: unverändert lösen sie die Aufgabe noch nicht.
+write-file: automata/divisible5.rb <- code:Ist eine Binärzahl durch 3 teilbar?||ACCEPTING = [0]
+write-file: automata/divisible5.py <- code:Ist eine Binärzahl durch 3 teilbar?||ACCEPTING = {0}
+check-task-fails: teilbar-5 ruby
+check-task-fails: teilbar-5
+-->
+
+<!-- tutorial-step
+# Die Musterlösungen aus loesung/ lösen jede Programmieraufgabe, in beiden Sprachen
+write-file: automata/turnstile.rb <- file:loesung/turnstile.rb
+write-file: automata/turnstile.py <- file:loesung/turnstile.py
+write-file: automata/divisible5.rb <- file:loesung/divisible5.rb
+write-file: automata/divisible5.py <- file:loesung/divisible5.py
+write-file: automata/lock.rb <- file:loesung/lock.rb
+write-file: automata/lock.py <- file:loesung/lock.py
+write-file: automata/lock_nfa.rb <- file:loesung/lock_nfa.rb
+write-file: automata/lock_nfa.py <- file:loesung/lock_nfa.py
+check-task: drehkreuz
+check-task: drehkreuz ruby
+check-task: teilbar-5
+check-task: teilbar-5 ruby
+check-task: schloss
+check-task: schloss ruby
+check-task: generalschluessel
+check-task: generalschluessel ruby
+-->

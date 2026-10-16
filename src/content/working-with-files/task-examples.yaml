@@ -1,0 +1,37 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: working-with-files
+examples:
+  entpackt:
+    pass:
+      - files: { working-with-files/alice.txt: { text: "Alice was beginning to get very tired\n" } }
+    fail:
+      - files: { working-with-files/alice.zip: { text: "PK\x03\x04" } }
+  nano:
+    pass:
+      - files: { working-with-files/hello-nano.txt: { text: "Hallo aus nano!\n" } }
+    fail:
+      - files: { working-with-files/hello-vim.txt: { text: "Hallo aus vim!\n" } }
+  vim:
+    pass:
+      - files: { working-with-files/hello-vim.txt: { text: "Hallo aus vim!\n" } }
+    fail:
+      - files: { working-with-files/hello-nano.txt: { text: "Hallo aus nano!\n" } }
+  woerter:
+    pass:
+      - files: { working-with-files/words.txt: { text: "the\nand\nto\n" } }
+    fail:
+      - files: { working-with-files/words.txt: { text: "PK\x03\x04\x14\0\0\0" } }
+  zork:
+    pass:
+      - files: { working-with-files/zork-master/zork: { text: "\x7FELF\x02\x01\x01\0\0\0\0\0\0\0\0\0\x02\0\x3E\0", executable: true } }
+    fail:
+      # Noch nicht übersetzt: nur der Quelltext
+      - files: { working-with-files/zork-master/actors.c: { text: "#include <stdio.h>\n" } }
+      - files: { working-with-files/zork-master/zork: { text: "\x7FELF\x02\x01\x01\0\0\0\0\0\0\0\0\0\x02\0\x3E\0" } }
+  sandbox:
+    pass:
+      - files: { working-with-files/sandbox/nested/jay.webm: { text: "\x1A\x45\xDF\xA3" } }
+    fail:
+      - files: { working-with-files/sandbox/jay.webm: { text: "\x1A\x45\xDF\xA3" } }

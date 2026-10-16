@@ -157,3 +157,13 @@ test('frames become a playable video', { skip: spawnSync('ffmpeg', ['-version'])
         fs.rmSync(dir, { recursive: true, force: true });
     }
 });
+
+test('assertions are not part of any hash, so adding one re-renders nothing', () => {
+    const shot = actions => ({ target: 'a.webp', tab: 'workspace', viewport: { width: 1, height: 1 }, zoom: 1, actions });
+    const plain = [shot([{ type: 'press', key: 'Enter' }]), shot([{ type: 'sleep', seconds: 1 }])];
+    const checked = [
+        shot([{ type: 'press', key: 'Enter' }, { type: 'check-task', task: 'demo/eins', language: null }]),
+        shot([{ type: 'expect-no-text', text: 'Traceback' }, { type: 'sleep', seconds: 1 }, { type: 'check-task-fails', task: 'demo/zwei', language: 'python' }]),
+    ];
+    assert.deepEqual(chainStateHashes(checked, 'seed'), chainStateHashes(plain, 'seed'));
+});

@@ -1,0 +1,37 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: wetter
+examples:
+  wetter-rb:
+    pass:
+      - files: { wetter/wetter.rb: stufen/wetter2.rb }
+      - files: { wetter/wetter.rb: stufen/wetter3.rb }
+    fail:
+      - files: { wetter/wetter.rb: stufen/wetter1.rb }
+        say: Geocoding
+    python:
+      pass:
+        - files: { wetter/wetter.py: stufen/wetter2.py }
+        - files: { wetter/wetter.py: stufen/wetter3.py }
+      fail:
+        - files: { wetter/wetter.py: stufen/wetter1.py }
+          say: Geocoding
+  cache:
+    pass:
+      - files: { wetter/wetter.rb: stufen/wetter3.rb }
+    fail:
+      - files: { wetter/wetter.rb: stufen/wetter2.rb }
+        say: File.write
+    python:
+      pass:
+        - files: { wetter/wetter.py: stufen/wetter3.py }
+      fail:
+        - files: { wetter/wetter.py: stufen/wetter2.py }
+          say: write_bytes
+  webseite:
+    pass:
+      - files: { wetter/index.html: stufen/index.html }
+    fail:
+      - files: { wetter/index.html: { text: "<!DOCTYPE html>\n<html><body><h1>Wetter</h1></body></html>\n" } }
+        say: fetch

@@ -1,7 +1,8 @@
 <div class='meta'>
 image: teaser.webp
 kind: projekt
-language: Ruby / JavaScript
+language: Ruby / Python / JavaScript
+languages: [ruby, python]
 topic: web
 duration: 2 Doppelstunden
 requires: [tcpip]
@@ -17,7 +18,7 @@ reference: [http, json]
 # Daten aus dem Netz
 
 <p class='abstract'>
-Viele Dienste im Netz haben eine Schnittstelle für Programme, eine API: Statt einer Webseite liefern sie Daten, die ein Programm weiterverarbeiten kann. Du fragst den Wetterdienst Open-Meteo nach dem Wetter in deiner Stadt, erst im Terminal, dann aus Ruby, und baust zum Schluss eine eigene Wetterseite. Dabei lernst du, wie man eine API liest, was bei Fehlern passiert und warum man eine API nicht ohne Not mit Anfragen überschüttet.
+Viele Dienste im Netz haben eine Schnittstelle für Programme, eine API: Statt einer Webseite liefern sie Daten, die ein Programm weiterverarbeiten kann. Du fragst den Wetterdienst Open-Meteo nach dem Wetter in deiner Stadt, erst im Terminal, dann aus einem Programm in Ruby oder Python, und baust zum Schluss eine eigene Wetterseite. Dabei lernst du, wie man eine API liest, was bei Fehlern passiert und warum man eine API nicht ohne Not mit Anfragen überschüttet.
 </p>
 
 ## Was ist eine API?
@@ -103,7 +104,7 @@ Für den Breitengrad 999 antwortet die API mit dem Statuscode `400 Bad Request` 
 
 _uses(statuscodes)
 
-## Mit Ruby
+## Aus einem Programm
 
 Was `curl` kann, kann auch dein Programm. Lege einen Ordner an und öffne ihn mit <kbd>Strg</kbd><kbd>K</kbd> <kbd>Strg</kbd><kbd>O</kbd>:
 
@@ -111,6 +112,7 @@ Was `curl` kann, kann auch dein Programm. Lege einen Ordner an und öffne ihn mi
 mkdir /workspace/wetter
 ```
 
+<!-- language: ruby -->
 Lege darin `wetter.rb` an:
 
 ```ruby
@@ -128,7 +130,28 @@ puts "Wind: #{current['wind_speed_10m']} km/h"
 ```
 
 `Net::HTTP.get_response` schickt die Anfrage und gibt die Antwort zurück, `response.body` ist ihr Inhalt, und `JSON.parse` macht daraus einen Hash. Starte es mit `ruby wetter.rb`.
+<!-- /language -->
+<!-- language: python -->
+Lege darin `wetter.py` an:
 
+```python
+import json
+import urllib.request
+
+# Das aktuelle Wetter in Berlin
+url = 'https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m,wind_speed_10m'
+with urllib.request.urlopen(url) as response:
+    data = json.load(response)
+
+current = data['current']
+print(f"Temperatur: {current['temperature_2m']} °C")
+print(f"Wind: {current['wind_speed_10m']} km/h")
+```
+
+`urllib.request.urlopen` schickt die Anfrage und gibt die Antwort zurück, und `json.load` liest sie und macht daraus ein Dictionary. Starte es mit `python3 wetter.py`.
+<!-- /language -->
+
+<!-- language: ruby -->
 Jetzt soll das Programm jeden Ort kennen, nicht nur Berlin: erst die Geocoding-API fragen, dann mit den Koordinaten die Wetter-API. Ersetze `wetter.rb` durch:
 
 ```ruby_copy
@@ -205,7 +228,100 @@ end
 ```bash
 ruby wetter.rb München
 ```
+<!-- /language -->
+<!-- language: python -->
+Jetzt soll das Programm jeden Ort kennen, nicht nur Berlin: erst die Geocoding-API fragen, dann mit den Koordinaten die Wetter-API. Ersetze `wetter.py` durch:
 
+```python_copy
+import json
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+
+# Die Adressen der beiden APIs. Antwortet Open-Meteo mit 429, nimm den
+# Spiegel der Schule (»Wenn die API nicht mehr will«).
+GEOCODING_API = 'https://geocoding-api.open-meteo.com/v1/search'
+WEATHER_API = 'https://api.open-meteo.com/v1/forecast'
+
+
+# Holt JSON von einer API. Aus params wird die Query: ?name=wert&…
+def fetch_json(base, params):
+    url = base + '?' + urllib.parse.urlencode(params)
+    try:
+        with urllib.request.urlopen(url) as response:
+            return json.load(response)
+    except urllib.error.HTTPError as error:
+        # Bei einem Fehler sagt Open-Meteo in »reason«, was nicht stimmt
+        data = json.load(error)
+        sys.exit(f"Fehler {error.code}: {data.get('reason')}")
+    except urllib.error.URLError as error:
+        sys.exit(f'Keine Verbindung: {error.reason}')
+
+
+# Was die Wettercodes der WMO bedeuten, grob zusammengefasst
+def describe(code):
+    if code == 0:
+        return 'klar'
+    if code in (1, 2):
+        return 'teils bewölkt'
+    if code == 3:
+        return 'bedeckt'
+    if code in (45, 48):
+        return 'Nebel'
+    if 51 <= code <= 57:
+        return 'Nieselregen'
+    if 61 <= code <= 67 or 80 <= code <= 82:
+        return 'Regen'
+    if 71 <= code <= 77 or code in (85, 86):
+        return 'Schnee'
+    if 95 <= code <= 99:
+        return 'Gewitter'
+    return f'Code {code}'
+
+
+name = sys.argv[1] if len(sys.argv) > 1 else 'Berlin'
+
+# 1. Wo liegt der Ort?
+places = fetch_json(GEOCODING_API,
+                    {'name': name, 'count': 1, 'language': 'de'})
+results = places.get('results', [])
+if not results:
+    sys.exit(f'Keinen Ort namens {name} gefunden.')
+place = results[0]
+
+# 2. Das Wetter an diesem Ort
+weather = fetch_json(WEATHER_API, {
+    'latitude': place['latitude'], 'longitude': place['longitude'],
+    'current': 'temperature_2m,weather_code',
+    'daily': 'temperature_2m_min,temperature_2m_max,weather_code',
+    'timezone': 'auto', 'forecast_days': 3,
+})
+
+now = weather['current']
+print(f"{place['name']} ({place.get('admin1', '')}, {place['country']})")
+print(f"Jetzt: {now['temperature_2m']} °C, {describe(now['weather_code'])}")
+
+days = weather['daily']
+for i, day in enumerate(days['time']):
+    print(f"{day}: {days['temperature_2m_min'][i]} bis {days['temperature_2m_max'][i]} °C, "
+          f"{describe(days['weather_code'][i])}")
+```
+
+- Die Adressen der beiden APIs stehen oben in Konstanten, `GEOCODING_API` und `WEATHER_API`. Warum, steht weiter unten unter »Wenn die API nicht mehr will«.
+- `fetch_json` ist für beide APIs da. `urllib.parse.urlencode` baut aus einem Dictionary die Query, mit allem richtig kodiert: Aus `München` wird `M%C3%BCnchen`.
+- Ist die Antwort kein Erfolg, wirft `urlopen` einen `HTTPError`; seine `code` ist der Statuscode, und im Body steht in `reason`, warum. `sys.exit` schreibt die Meldung und beendet das Programm.
+- `URLError` fängt den Fall ab, dass gar keine Verbindung zustande kommt. `HTTPError` steht davor, weil auch er ein `URLError` ist.
+- `places.get('results', [])` ist eine leere Liste, wenn die API keine `results` schickt.
+- `describe` übersetzt die Wettercodes in Wörter.
+- `sys.argv[1]` ist das, was du beim Start hinter den Dateinamen schreibst; `sys.argv[0]` ist der Dateiname selbst.
+
+```bash
+python3 wetter.py München
+```
+<!-- /language -->
+
+<!-- language: ruby -->
 <!-- tutorial-screenshot
 # Ordner wetter, wetter.rb (Stufe 2), München
 write-file: wetter/wetter.rb <- file:stufen/wetter2.rb
@@ -224,8 +340,30 @@ terminal-run: ruby wetter.rb München
 terminal-wait-for-prompt
 sleep: 1
 move-mouse: selector:.terminal
+check-task: wetter-rb
+check-task-fails: cache
 -->
 <img class='full' src='ruby.webp' alt='In VS Code ist wetter.rb offen; im Terminal antwortet ruby wetter.rb München mit dem Ort, dem Wetter jetzt und einer Zeile für jeden der nächsten drei Tage.'>
+<!-- /language -->
+<!-- language: python -->
+<!-- tutorial-screenshot
+# wetter.py (Stufe 2), München
+write-file: wetter/wetter.py <- file:stufen/wetter2.py
+close-tab: wetter.rb
+terminal-open
+terminal-run: rm wetter.rb
+terminal-run: clear
+open-file: wetter.py
+terminal-open
+terminal-run: python3 wetter.py München
+terminal-wait-for-prompt
+sleep: 1
+move-mouse: selector:.terminal
+check-task: wetter-rb python
+check-task-fails: cache python
+-->
+<img class='full' src='python.webp' alt='In VS Code ist wetter.py offen; im Terminal antwortet python3 wetter.py München mit dem Ort, dem Wetter jetzt und einer Zeile für jeden der nächsten drei Tage.'>
+<!-- /language -->
 
 _task(wetter-rb)
 
@@ -233,7 +371,10 @@ _task(wetter-rb)
 
 Open-Meteo erlaubt höchstens 600 Anfragen pro Minute, 5.000 pro Stunde und 10.000 pro Tag, und zwar je Adresse, von der die Anfragen kommen. Das klingt nach viel, aber an deiner Schule teilen sich viele eine Adresse: Alle Workspaces gehen über denselben Server ins Netz, und alle Browser im Schulnetz über dieselbe Leitung. Ein Programm, das jede Sekunde nachfragt, verbraucht das Tageskontingent für alle in gut einer Stunde, eines ganz ohne Pause in wenigen Minuten. Danach bekommt niemand mehr Daten, nur noch eine Fehlermeldung; viele APIs antworten dann mit dem Statuscode `429 Too Many Requests`.
 
-Das Wetter ändert sich nicht jede Sekunde. Darum merkt sich ein höfliches Programm Antworten eine Weile: in einem **Cache**. Ersetze `fetch_json` in `wetter.rb` durch diese Fassung und ergänze die beiden Konstanten darüber:
+Das Wetter ändert sich nicht jede Sekunde. Darum merkt sich ein höfliches Programm Antworten eine Weile: in einem **Cache**.
+
+<!-- language: ruby -->
+Ersetze `fetch_json` in `wetter.rb` durch diese Fassung und ergänze die beiden Konstanten darüber:
 
 ```ruby
 CACHE_DIR = File.join(__dir__, 'cache')
@@ -272,31 +413,103 @@ Starte das Programm zweimal hintereinander für denselben Ort:
 ruby wetter.rb Hamburg
 ruby wetter.rb Hamburg
 ```
+<!-- /language -->
+<!-- language: python -->
+Ersetze `fetch_json` in `wetter.py` durch diese Fassung, ergänze die beiden Konstanten darüber und oben `import re`, `import time` und `from pathlib import Path`:
 
+```python
+CACHE_DIR = Path(__file__).parent / 'cache'
+CACHE_SECONDS = 600   # zehn Minuten
+
+
+# Holt JSON von einer API. Aus params wird die Query: ?name=wert&…
+# Dieselbe Anfrage in den letzten zehn Minuten? Dann kommt die Antwort aus
+# einer Datei im Ordner cache, und die API wird nicht gefragt.
+def fetch_json(base, params):
+    url = base + '?' + urllib.parse.urlencode(params)
+    file = CACHE_DIR / (re.sub(r'[^A-Za-z0-9]+', '_', url) + '.json')
+    if file.exists() and time.time() - file.stat().st_mtime < CACHE_SECONDS:
+        print(f'(aus dem Cache: {urllib.parse.urlsplit(url).hostname})')
+        return json.loads(file.read_text())
+
+    try:
+        with urllib.request.urlopen(url) as response:
+            body = response.read()
+    except urllib.error.HTTPError as error:
+        # Bei einem Fehler sagt Open-Meteo in »reason«, was nicht stimmt
+        data = json.load(error)
+        sys.exit(f"Fehler {error.code}: {data.get('reason')}")
+    except urllib.error.URLError as error:
+        sys.exit(f'Keine Verbindung: {error.reason}')
+    CACHE_DIR.mkdir(exist_ok=True)
+    file.write_bytes(body)
+    return json.loads(body)
+```
+
+- Jede Antwort landet als Datei im Ordner `cache`. Der Dateiname ist die Adresse der Anfrage, mit `_` statt der Sonderzeichen.
+- Gibt es für dieselbe Adresse schon eine Datei, die jünger ist als zehn Minuten (`file.stat().st_mtime` ist der Zeitpunkt der letzten Änderung, `time.time()` die Zeit jetzt, beide in Sekunden), kommt die Antwort aus der Datei, und die API wird gar nicht gefragt.
+
+Starte das Programm zweimal hintereinander für denselben Ort:
+
+```bash
+python3 wetter.py Hamburg
+python3 wetter.py Hamburg
+```
+<!-- /language -->
+
+<!-- language: ruby -->
 <!-- tutorial-screenshot
 # Stufe 3: der zweite Aufruf kommt aus dem Cache
 write-file: wetter/wetter.rb <- file:stufen/wetter3.rb
 terminal-open
 terminal-maximize
+terminal-run: rm -f wetter.py
 terminal-run: clear
 terminal-run: ruby wetter.rb Hamburg
 terminal-wait-for-prompt
 terminal-run: ruby wetter.rb Hamburg
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task: cache
 -->
 <img class='full' src='cache.webp' alt='Im Terminal zweimal ruby wetter.rb Hamburg; beim zweiten Mal stehen davor zwei Zeilen »aus dem Cache«, für die Geocoding- und die Wetter-API.'>
+<!-- /language -->
+<!-- language: python -->
+<!-- tutorial-screenshot
+# Stufe 3 in Python: der zweite Aufruf kommt aus dem Cache
+write-file: wetter/wetter.py <- file:stufen/wetter3.py
+terminal-open
+terminal-maximize
+terminal-run: rm -rf cache wetter.rb
+terminal-run: clear
+terminal-run: python3 wetter.py Hamburg
+terminal-wait-for-prompt
+terminal-run: python3 wetter.py Hamburg
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+check-task: cache python
+-->
+<img class='full' src='cache-python.webp' alt='Im Terminal zweimal python3 wetter.py Hamburg; beim zweiten Mal stehen davor zwei Zeilen »aus dem Cache«, für die Geocoding- und die Wetter-API.'>
+<!-- /language -->
 
 _task(cache)
 
 ### Wenn die API nicht mehr will
 
-Hat doch jemand das Kontingent aufgebraucht, antwortet Open-Meteo mit `429` und nennt in `reason` den Grund, etwa `Hourly API request limit exceeded`. Für diesen Fall gibt es einen **Spiegel** von Open-Meteo im Workspace: dieselben Pfade und Parameter, nur unter der Adresse des Workspaces. Darum stehen die Adressen in `wetter.rb` oben in Konstanten; tausche sie aus:
+Hat doch jemand das Kontingent aufgebraucht, antwortet Open-Meteo mit `429` und nennt in `reason` den Grund, etwa `Hourly API request limit exceeded`. Für diesen Fall gibt es einen **Spiegel** von Open-Meteo im Workspace: dieselben Pfade und Parameter, nur unter der Adresse des Workspaces. Darum stehen die Adressen in deinem Programm oben in Konstanten; tausche sie aus:
 
+<!-- language: ruby -->
 ```ruby
 GEOCODING_API = '${web_root}/open-meteo/geocoding/v1/search'
 WEATHER_API = '${web_root}/open-meteo/api/v1/forecast'
 ```
+<!-- /language -->
+<!-- language: python -->
+```python
+GEOCODING_API = '${web_root}/open-meteo/geocoding/v1/search'
+WEATHER_API = '${web_root}/open-meteo/api/v1/forecast'
+```
+<!-- /language -->
 
 Der Spiegel holt die Daten bei Open-Meteo und merkt sich jede Antwort eine Viertelstunde lang, für alle zusammen. Fragen 30 Leute nach dem Wetter in Berlin, fragt er Open-Meteo nur einmal. Weigert sich Open-Meteo ganz, gibt er die letzte Antwort heraus, die er kennt, auch wenn sie älter ist. Ob eine Antwort neu geholt wurde, aus seinem Speicher kam oder schon älter ist, steht im Header `X-Hackschule-Cache`: `miss`, `hit` oder `stale`. Mit `curl -i` siehst du ihn.
 
@@ -454,10 +667,10 @@ Zum Schluss eine Webseite, die das Wetter für jeden Ort zeigt. Sie fragt die AP
 </html>
 ```
 
-- `fetchJson` macht dasselbe wie `fetch_json` in Ruby: `new URLSearchParams(params)` baut die Query, `await fetch(…)` schickt die Anfrage und wartet auf die Antwort, `response.json()` liest sie als JSON.
+- `fetchJson` macht dasselbe wie `fetch_json` in deinem Programm: `new URLSearchParams(params)` baut die Query, `await fetch(…)` schickt die Anfrage und wartet auf die Antwort, `response.json()` liest sie als JSON.
 - `async` und `await` gehören zusammen: Eine Funktion mit `async` darf mit `await` auf eine Antwort aus dem Netz warten, ohne dass die Seite so lange einfriert.
 - `try` und `catch` fangen jeden Fehler ab und zeigen seine Meldung auf der Seite an.
-- Die Seite merkt sich jede Antwort zehn Minuten lang im Browser, in `sessionStorage`, so wie `wetter.rb` im Ordner `cache`. Hier ist das besonders wichtig: »Go Live« lädt die Seite bei jedem Speichern neu, und ohne Cache kostete jedes Speichern zwei Anfragen, für eine ganze Klasse leicht einige tausend in einer Stunde. Unter den Karten steht, von wann die Daten sind; »Neu laden« fragt trotzdem neu.
+- Die Seite merkt sich jede Antwort zehn Minuten lang im Browser, in `sessionStorage`, so wie dein Programm im Ordner `cache`. Hier ist das besonders wichtig: »Go Live« lädt die Seite bei jedem Speichern neu, und ohne Cache kostete jedes Speichern zwei Anfragen, für eine ganze Klasse leicht einige tausend in einer Stunde. Unter den Karten steht, von wann die Daten sind; »Neu laden« fragt trotzdem neu.
 - Auch hier stehen die beiden Adressen oben in Konstanten, für den Spiegel.
 - Unten steht die Quelle der Daten. Das verlangt die Lizenz von Open-Meteo, und es gehört sich auch so.
 
@@ -471,6 +684,7 @@ tab: preview
 wait-for-text: Wetterdaten
 wait-for-text: °
 sleep: 2
+check-task: webseite
 -->
 <img class='full border' src='wetterseite.webp' alt='Die Wetterseite: ein Eingabefeld mit Berlin und der Knopf Suchen, darunter das Wetter jetzt mit Symbol und Temperatur, sieben Karten mit Wochentag, Wettersymbol, Höchst- und Tiefsttemperatur, darunter die Uhrzeit der Daten mit dem Knopf Neu laden und unten die Quelle Open-Meteo.com.'>
 
@@ -495,7 +709,7 @@ _task(api-key)
 
 ## Wie geht es weiter?
 
-Viele APIs verlangen einen **API-Schlüssel**: eine lange Zeichenkette, die du bei der Anmeldung bekommst und bei jeder Anfrage mitschickst. Daran erkennt der Dienst, wer fragt, und zählt die Anfragen. Ein solcher Schlüssel ist wie ein Passwort: Er gehört nicht in eine Webseite, die jeder lesen kann, und nicht in ein öffentliches Git-Repository. Programme, die ihn brauchen, fragen die API vom Server aus, wie dein Ruby-Programm, nicht aus dem Browser.
+Viele APIs verlangen einen **API-Schlüssel**: eine lange Zeichenkette, die du bei der Anmeldung bekommst und bei jeder Anfrage mitschickst. Daran erkennt der Dienst, wer fragt, und zählt die Anfragen. Ein solcher Schlüssel ist wie ein Passwort: Er gehört nicht in eine Webseite, die jeder lesen kann, und nicht in ein öffentliches Git-Repository. Programme, die ihn brauchen, fragen die API vom Server aus, wie dein Programm im Terminal, nicht aus dem Browser.
 
 Wie die andere Seite aussieht, ein Server, der selbst Anfragen beantwortet, zeigt [Ein eigener Webserver](/webserver).
 
@@ -509,3 +723,13 @@ wait-for-text: °
 sleep: 2
 -->
 <img class='teaser' hidden src='teaser.webp' alt='Die Wetterseite für Berlin: das Wetter jetzt mit Symbol und Temperatur und darunter sieben Tageskarten mit Wettersymbol, Höchst- und Tiefsttemperatur, ganz unten die Uhrzeit der Daten aus dem Speicher des Browsers und der Knopf Neu laden.'>
+
+<!-- tutorial-step
+# Ein Ort, den es nicht gibt: Das Programm meldet ihn, statt abzustürzen
+# (»Das Wetter aus deinem Programm«).
+terminal-open
+terminal-run: clear
+terminal-run: python3 wetter.py Xyzzy
+wait-for-text: Keinen Ort namens Xyzzy gefunden.
+expect-no-text: Traceback
+-->

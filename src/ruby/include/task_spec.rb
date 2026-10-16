@@ -345,10 +345,11 @@ module TaskSpec
                 if expect.key?('img')
                     img = expect['img']
                     if img.is_a?(Hash)
-                        extra = img.keys - %w[min src_exists alt]
+                        extra = img.keys - %w[min local src_exists alt]
                         errors << "expect.img: unknown keys: #{extra.join(', ')}" unless extra.empty?
                         errors << 'expect.img.src_exists must be case_sensitive or false' if img.key?('src_exists') && !['case_sensitive', false].include?(img['src_exists'])
                         errors << 'expect.img.alt must be required or optional' if img.key?('alt') && !%w[required optional].include?(img['alt'])
+                        errors << 'expect.img.local must be a number' if img.key?('local') && !img['local'].is_a?(Integer)
                     else
                         errors << 'expect.img must be a mapping'
                     end

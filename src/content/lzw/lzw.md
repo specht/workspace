@@ -169,6 +169,13 @@ if __FILE__ == $0
 end
 ```
 
+<!-- tutorial-step
+# Das Gerüst von der Seite läuft, und noch löst es keine Aufgabe (ruby)
+write-file: lzw/lzw.rb <- previous-code
+check-task-fails: kompressor
+check-task-fails: entpacker
+-->
+
 Ein String besteht aus **Bytes**, Zahlen von 0 bis 255: `'ABABABA'` sind die Bytes 65, 66, 65, … Der Teil unter `if __FILE__ == $0` läuft nur, wenn du die Datei selbst startest, mit `ruby lzw.rb`; die Prüfungen der Aufgaben rufen deine Methoden direkt auf. Im Moment gibt das Programm eine leere Liste aus; das änderst du jetzt.
 <!-- /language -->
 <!-- language: python -->
@@ -192,6 +199,13 @@ def decompress(codes):
 if __name__ == '__main__':
     print(compress(b'ABABABA'))
 ```
+
+<!-- tutorial-step
+# Das Gerüst von der Seite läuft, und noch löst es keine Aufgabe (python)
+write-file: lzw/lzw.py <- previous-code
+check-task-fails: kompressor python
+check-task-fails: entpacker python
+-->
 
 `b'ABABABA'` ist kein Text, sondern eine Folge von **Bytes**, Zahlen von 0 bis 255. Der Teil unter `if __name__ == '__main__':` läuft nur, wenn du die Datei selbst startest, mit `python3 lzw.py`; die Prüfungen der Aufgaben rufen deine Funktionen direkt auf. Im Moment gibt das Programm eine leere Liste aus; das änderst du jetzt.
 <!-- /language -->
@@ -481,3 +495,13 @@ document.addEventListener('DOMContentLoaded', function() {
     refresh();
 });
 </script>
+
+<!-- tutorial-step
+# Die Musterlösungen aus loesung/ lösen jede Programmieraufgabe, in beiden Sprachen
+write-file: lzw/lzw.rb <- file:loesung/lzw.rb
+write-file: lzw/lzw.py <- file:loesung/lzw.py
+check-task: kompressor
+check-task: kompressor python
+check-task: entpacker
+check-task: entpacker python
+-->

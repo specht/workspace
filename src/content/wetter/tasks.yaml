@@ -58,7 +58,7 @@ tasks:
     solution: 'Die API antwortet mit 200 und einem Objekt, in dem nur `generationtime_ms` steht. Ein Programm muss darum selbst prüfen, ob `results` da ist.'
 
   - id: wetter-rb
-    title: Das Wetter aus Ruby
+    title: Das Wetter aus deinem Programm
     prompt: |
       Schreibe `wetter.rb` so, dass `ruby wetter.rb München` das Wetter in
       München zeigt, mit einer Meldung für Orte, die es nicht gibt, und
@@ -74,12 +74,41 @@ tasks:
           - { pattern: 'api\.open-meteo\.com/v1/forecast|open-meteo/api/v1/forecast', say: 'In `wetter.rb` fehlt noch die Anfrage an die Wetter-API.' }
           - { pattern: 'JSON\.parse', say: 'Noch macht `wetter.rb` aus der Antwort kein JSON (`JSON.parse`).' }
           - { pattern: 'ARGV', say: 'Noch nimmt `wetter.rb` den Ort nicht von der Kommandozeile: `ARGV[0]`.' }
+    python:
+      prompt: |
+        Schreibe `wetter.py` so, dass `python3 wetter.py München` das Wetter
+        in München zeigt, mit einer Meldung für Orte, die es nicht gibt, und
+        speichere.
+      file: wetter/wetter.py
+      check:
+        type: files
+        path: wetter/wetter.py
+        expect:
+          format: text
+          contains:
+            - { pattern: 'geocoding-api\.open-meteo\.com|open-meteo/geocoding/v1/search', say: 'In `wetter.py` fragt noch nichts die Geocoding-API, die zu einem Namen die Koordinaten findet.' }
+            - { pattern: 'api\.open-meteo\.com/v1/forecast|open-meteo/api/v1/forecast', say: 'In `wetter.py` fehlt noch die Anfrage an die Wetter-API.' }
+            - { pattern: 'json\.loads?\(', say: 'Noch macht `wetter.py` aus der Antwort kein JSON (`json.load`).' }
+            - { pattern: 'sys\.argv', say: 'Noch nimmt `wetter.py` den Ort nicht von der Kommandozeile: `sys.argv[1]`.' }
 
   - id: cache
     title: Ein Cache
     prompt: |
       Lass `wetter.rb` Antworten zehn Minuten lang in Dateien aufheben und
       sie wiederverwenden, und speichere.
+    python:
+      prompt: |
+        Lass `wetter.py` Antworten zehn Minuten lang in Dateien aufheben und
+        sie wiederverwenden, und speichere.
+      file: wetter/wetter.py
+      check:
+        type: files
+        path: wetter/wetter.py
+        expect:
+          format: text
+          contains:
+            - { pattern: 'write_bytes|write_text|\.write\(|json\.dump\(', say: 'Noch schreibt `wetter.py` keine Antwort in eine Datei (`file.write_bytes(…)`).' }
+            - { pattern: 'st_mtime|getmtime', say: 'Noch prüft `wetter.py` nicht, wie alt eine gespeicherte Antwort ist (`file.stat().st_mtime`).' }
     file: wetter/wetter.rb
     check:
       type: files
@@ -128,6 +157,9 @@ tasks:
     title: Deine Wetterseite
     prompt: |
       Gib den Ordner `wetter` ab, mit `wetter.rb` und `index.html`.
+    python:
+      prompt: |
+        Gib den Ordner `wetter` ab, mit `wetter.py` und `index.html`.
     check:
       type: submit
       paths: [wetter]

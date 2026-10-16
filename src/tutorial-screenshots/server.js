@@ -119,7 +119,7 @@ const SIMPLE_ACTIONS = new Set([
 const MOUSE_NEUTRAL_ACTIONS = new Set([
     'press', 'type', 'type-source', 'sleep', 'write-file', 'select-option',
     'wait-for-text', 'wait-for-input-value', 'wait-for-file', 'wait-for-file-newer',
-    'terminal-wait-for-prompt',
+    'terminal-wait-for-prompt', 'expect-no-text', 'check-task', 'check-task-fails',
 ]);
 let mousePosition = null; // { page, x, y } in CSS pixels
 // 24x24 shapes, drawn at 24 CSS pixels; hotspot is the point the mouse is at.
@@ -229,6 +229,9 @@ const deviceMetricSessions = new WeakMap();
 const appliedViewportProfiles = new WeakMap();
 const SOURCE_LOCATION = Symbol('tutorial-screenshot-source-location');
 const TARGET_LOCATION = Symbol('tutorial-screenshot-target-location');
+// Steps after the last screenshot (<!-- tutorial-step --> blocks): parseTutorial
+// hands them along on the list of shots; they run at the end of a replay.
+const TRAILING_STEPS = Symbol('tutorial-screenshot-trailing-steps');
 
 function markdownSourceLocation(markdown, markdownPath, offset) {
     const boundedOffset = Math.max(0, Math.min(offset, markdown.length));
@@ -614,6 +617,12 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             recipe.actions.push({ type: 'sleep', seconds });
         } else if ((match = line.match(/^hook:\s*([a-z][a-z0-9-]*)(?:\s+(.*))?$/))) {
             recipe.actions.push({ type: 'hook', name: match[1], args: (match[2] || '').trim() });
+        } else if ((match = line.match(/^expect-no-text:\s*(.+)$/))) {
+            recipe.actions.push({ type: 'expect-no-text', text: match[1] });
+        } else if ((match = line.match(/^check-task(-fails)?:\s*([a-z0-9][a-z0-9-]*)(?:\s+(ruby|python))?$/))) {
+            // The task lives in the tutorial's own tasks.yaml: activity/id.
+            const activity = path.basename(path.dirname(markdownPath));
+            recipe.actions.push({ type: match[1] ? 'check-task-fails' : 'check-task', task: `${activity}/${match[2]}`, language: match[3] || null });
         } else if ((match = line.match(/^wait-for-text:\s*(.+)$/))) {
             const text = match[1].trim();
             recipe.actions.push({ type: 'wait-for-text', text });
@@ -840,20 +849,49 @@ async function resolveWriteFileSource(blocks, recipeStart, selector, markdownPat
     };
 }
 
+// A <!-- tutorial-step … --> block is a recipe without a picture: what the
+// page tells students to do between two screenshots, often with assertions
+// (check-task, expect-no-text). Its actions run, in its own tab, before the
+// next screenshot's and count towards that screenshot's state; steps after
+// the last screenshot run at the end of every replay.
 async function parseTutorial(markdown, markdownPath) {
     const blocks = codeBlocks(markdown, markdownPath);
-    const regex = /<!--\s*tutorial-screenshot\s*\n([\s\S]*?)-->/g;
+    const regex = /<!--\s*tutorial-(screenshot|step)\s*\n([\s\S]*?)-->/g;
     const shots = [];
+    let pendingSteps = [];
     let match;
 
+    const resolveActions = (recipe, matchIndex, recipeSource) => Promise.all(recipe.actions.map(async action => {
+        if (action.type !== 'write-file' && action.type !== 'type-source') return action;
+        try {
+            return {
+                ...action,
+                contents: await resolveWriteFileSource(blocks, matchIndex, action.source, markdownPath),
+            };
+        } catch (error) {
+            throw withSourceError(error, action[SOURCE_LOCATION] || recipeSource);
+        }
+    }));
+
     while ((match = regex.exec(markdown)) !== null) {
-        const recipeStart = match.index + match[0].indexOf(match[1]);
+        const kind = match[1];
+        const recipeStart = match.index + match[0].indexOf(match[2]);
         const recipeSource = markdownSourceLocation(markdown, markdownPath, recipeStart);
         let recipe;
         try {
-            recipe = parseRecipe(match[1], markdown, markdownPath, recipeStart);
+            recipe = parseRecipe(match[2], markdown, markdownPath, recipeStart);
         } catch (error) {
             throw withSourceError(error, recipeSource);
+        }
+
+        if (kind === 'step') {
+            const actions = await resolveActions(recipe, match.index, recipeSource);
+            pendingSteps.push(...actions.map(action => {
+                const tagged = { ...action, tab: recipe.tab };
+                tagged[SOURCE_LOCATION] = action[SOURCE_LOCATION];
+                return tagged;
+            }));
+            continue;
         }
 
         const afterComment = markdown.slice(regex.lastIndex);
@@ -882,25 +920,8 @@ async function parseTutorial(markdown, markdownPath) {
             throw withSourceError(error, targetSource);
         }
 
-        const resolvedActions = await Promise.all(recipe.actions.map(async action => {
-            if (action.type !== 'write-file' && action.type !== 'type-source') return action;
-            try {
-                return {
-                    ...action,
-                    contents: await resolveWriteFileSource(
-                        blocks,
-                        match.index,
-                        action.source,
-                        markdownPath,
-                    ),
-                };
-            } catch (error) {
-                throw withSourceError(
-                    error,
-                    action[SOURCE_LOCATION] || recipeSource,
-                );
-            }
-        }));
+        const resolvedActions = [...pendingSteps, ...await resolveActions(recipe, match.index, recipeSource)];
+        pendingSteps = [];
 
         const resolved = {
             target,
@@ -965,6 +986,7 @@ async function parseTutorial(markdown, markdownPath) {
         sha256(`tutorial-screenshot-v${GENERATOR_VERSION}\0${markdownPath}`),
     );
     shots.forEach((shot, index) => Object.assign(shot, hashes[index]));
+    shots[TRAILING_STEPS] = pendingSteps;
     return shots;
 }
 
@@ -2466,6 +2488,39 @@ async function waitForText(text, targetTab) {
     }
 }
 
+// The text must not be on the page now, in any frame: an error message, a
+// Traceback, a file that should not be there.
+async function expectNoText(text, targetTab) {
+    const page = requirePageForTab(targetTab, 'expect-no-text');
+    const containsText = expected => {
+        const normalize = value => `${value || ''}`.replace(/\s+/g, ' ').trim();
+        return normalize(document.body?.innerText).includes(normalize(expected));
+    };
+    for (const frame of page.frames()) {
+        if (await frame.evaluate(containsText, text).catch(() => false)) {
+            throw new Error(`expect-no-text: ${JSON.stringify(text)} is on the page`);
+        }
+    }
+}
+
+// check-task: ID [LANGUAGE] runs the task's check the way the »Prüfen«
+// button does, as the screenshot user against their Workspace, and fails
+// unless it passes; check-task-fails expects it to reject. Like »Prüfen«,
+// it records the result for that user.
+async function checkTask(action, shouldPass) {
+    const key = action.task;
+    // From the website's bootstrap page, with the screenshot user's session
+    // (browserRequest): Node in this container cannot reach the site's host.
+    const result = jsonResponse(await browserRequest('/api/task/check', {
+        body: { task: key, answer: '', ...(action.language ? { language: action.language } : {}) },
+    }), `check-task ${key}`);
+    const message = `${result.message || ''}`.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    const passed = result.status === 'correct';
+    const rejected = result.status === 'wrong' || result.status === 'invalid';
+    if (shouldPass && !passed) throw new Error(`check-task ${key}: ${result.status}: ${message}`);
+    if (!shouldPass && !rejected) throw new Error(`check-task-fails ${key}: expected a rejection, got ${result.status}: ${message}`);
+}
+
 async function waitForInputValue(text, targetTab) {
     const page = requirePageForTab(targetTab, 'wait-for-input-value');
 
@@ -2595,6 +2650,9 @@ async function executeAction(action, targetTab, hooks) {
         case 'sleep': return sleep(action.seconds);
         case 'hook': return runHookAction(action, targetTab, hooks);
         case 'wait-for-text': return waitForText(action.text, targetTab);
+        case 'expect-no-text': return expectNoText(action.text, targetTab);
+        case 'check-task': return checkTask(action, true);
+        case 'check-task-fails': return checkTask(action, false);
         case 'wait-for-input-value': return waitForInputValue(action.text, targetTab);
     default: throw new Error(`Unsupported action: ${action.type}`);
     }
@@ -3218,7 +3276,8 @@ async function buildGenerationPlan(payload) {
             screenshots: [],
             oldManifest: { version: 1, screenshots: {} },
             nextManifest: { version: 1, screenshots: {} },
-            tutorialHooks: null,
+            // A page with steps only still needs its hooks to walk through.
+            tutorialHooks: (shots[TRAILING_STEPS] || []).length > 0 ? await loadTutorialScreenshotHooks(tutorialDirectory) : null,
             environmentFingerprint: null,
             fingerprint: sha256(`${relativeMarkdown}\0empty`),
         };
@@ -3447,12 +3506,15 @@ async function generateTutorial(payload, progressJob = null) {
         progressJob.screenshots = plan.screenshots.map(item => ({ ...item }));
     }
 
-    if (shots.length === 0) return { generated: 0, current: 0, screenshots: 0 };
+    // A forced replay walks a page's steps even when its pictures are current,
+    // and even on a page that has steps only (tutorial-step).
+    const walkSteps = plan.force && (shots[TRAILING_STEPS] || []).length > 0;
+    if (shots.length === 0 && !walkSteps) return { generated: 0, current: 0, screenshots: 0 };
 
     // Removed recipe entries disappear from the manifest. The image itself stays
     // in the tutorial directory and therefore instantly becomes a normal manual
     // tutorial image again.
-    if (!stale.some(Boolean)) {
+    if (!stale.some(Boolean) && !walkSteps) {
         await finalizeCurrentPlan(plan);
         if (progressJob) progressJob.completed = shots.length;
         return { generated: 0, current: shots.length, screenshots: shots.length };
@@ -3489,7 +3551,7 @@ async function generateTutorial(payload, progressJob = null) {
             console.log(`  line ${source?.line ?? '?'}: ${source?.text?.trim() || action.type}`);
 
             try {
-                await executeAction(action, shot.tab, tutorialHooks);
+                await executeAction(action, action.tab || shot.tab, tutorialHooks);
                 await applyShotViewportProfile(shot);
             } catch (error) {
                 const errorPreview = await captureErrorTabs({
@@ -3576,9 +3638,28 @@ async function generateTutorial(payload, progressJob = null) {
         if (progressJob) progressJob.completed = index + 1;
     }
 
-    await writeManifest(tutorialDirectory, nextManifest);
-    if (generated > 0) {
-        scheduleFreshWorkspace();
+    // The pictures are done; a failing step after them must not lose them.
+    // A page with steps only gets no manifest.
+    if (shots.length > 0) await writeManifest(tutorialDirectory, nextManifest);
+    try {
+        // Steps after the last screenshot: nothing depends on them, but they
+        // check that the page's last steps work (tutorial-step).
+        for (const action of shots[TRAILING_STEPS] || []) {
+            const source = action[SOURCE_LOCATION];
+            console.log(`  line ${source?.line ?? '?'}: ${source?.text?.trim() || action.type}`);
+            try {
+                await executeAction(action, action.tab, tutorialHooks);
+            } catch (error) {
+                await captureErrorTabs({ tutorialDirectory, shot: { tab: action.tab } }).catch(captureError => {
+                    console.error(`Could not capture tutorial step failure state: ${captureError.message}`);
+                });
+                throw withSourceError(error, source);
+            }
+        }
+    } finally {
+        if (generated > 0) {
+            scheduleFreshWorkspace();
+        }
     }
     return { generated, current: shots.length - generated, screenshots: shots.length };
 }

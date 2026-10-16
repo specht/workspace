@@ -1,0 +1,78 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Die Stände stehen in lehrkraft/, wie die Screenshot-Rezepte sie schreiben.
+format: 1
+activity: static-website
+examples:
+  index:
+    pass:
+      - files: { website-test/index.html: lehrkraft/2-liste.html }
+    fail:
+      - files: { website-test/index.html: { text: "<!DOCTYPE html>\n<html><body><ul><li>Eins</ul></li></body></html>\n" } }
+        say: passen Tags nicht zusammen
+      # styles.css allein ist noch keine Seite
+      - files: { website-test/style.css: lehrkraft/6-styles.css }
+  liste:
+    pass:
+      - files: { website-test/index.html: lehrkraft/2-liste.html }
+    fail:
+      - files: { website-test/index.html: { text: "<!DOCTYPE html>\n<html lang=\"de\"><head><title>A</title></head><body><h1>Axolotl</h1><p>Ein Lurch.</p></body></html>\n" } }
+        say: "<li>"
+  link:
+    pass:
+      - files: { website-test/index.html: lehrkraft/3-link.html }
+    fail:
+      - files: { website-test/index.html: lehrkraft/2-liste.html }
+        say: href
+  eigenes-bild:
+    pass:
+      - files:
+          website-test/index.html: { text: "<!DOCTYPE html>\n<html lang=\"de\"><head><title>A</title></head><body><img src=\"mein-bild.png\" alt=\"Das Logo von HTML und CSS\"></body></html>\n" }
+          website-test/mein-bild.png: html-css-logo.png
+    fail:
+      # Ein Bild aus dem Netz ist noch kein eigenes
+      - files: { website-test/index.html: lehrkraft/4-bild.html }
+        say: aus dem Netz
+      # Groß- und Kleinschreibung zählen
+      - files:
+          website-test/index.html: { text: "<!DOCTYPE html>\n<html lang=\"de\"><head><title>A</title></head><body><img src=\"Mein-Bild.png\" alt=\"Logo\"></body></html>\n" }
+          website-test/mein-bild.png: html-css-logo.png
+      - files:
+          website-test/index.html: { text: "<!DOCTYPE html>\n<html lang=\"de\"><head><title>A</title></head><body><img src=\"mein-bild.png\"></body></html>\n" }
+          website-test/mein-bild.png: html-css-logo.png
+  bilddatei:
+    pass:
+      - files:
+          website-test/index.html: lehrkraft/6-css.html
+          website-test/styles.css: lehrkraft/6-styles.css
+          website-test/mein-bild.png: html-css-logo.png
+    fail:
+      - files:
+          website-test/index.html: lehrkraft/6-css.html
+          website-test/styles.css: lehrkraft/6-styles.css
+      # Eine Datei, deren Inhalt nicht zur Endung passt
+      - files:
+          website-test/index.html: lehrkraft/6-css.html
+          website-test/mein-bild.jpg: html-css-logo.png
+  css:
+    pass:
+      - files:
+          website-test/index.html: lehrkraft/6-css.html
+          website-test/styles.css: lehrkraft/6-styles.css
+    fail:
+      # styles.css, aber index.html bindet sie nicht ein
+      - files:
+          website-test/index.html: lehrkraft/5-bildnachweis.html
+          website-test/styles.css: lehrkraft/6-styles.css
+  flexbox:
+    pass:
+      - files: { website-test/styles.css: lehrkraft/7-styles.css }
+    fail:
+      - files: { website-test/styles.css: lehrkraft/6-styles.css }
+        say: "display: flex"
+  kleine-bildschirme:
+    pass:
+      - files: { website-test/styles.css: lehrkraft/8-styles.css }
+    fail:
+      - files: { website-test/styles.css: lehrkraft/7-styles.css }
+        say: max-width

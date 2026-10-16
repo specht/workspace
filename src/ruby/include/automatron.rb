@@ -790,6 +790,27 @@ end
 
 # ------------------- Graphviz Rendering -------------------
 module DotRender
+  # Drawings with more edges than this take Graphviz longer than the 10
+  # seconds it gets (the 41-state DFA on the way to »a decimal number is
+  # divisible by 3« has 411), and nobody could read them. Automatron leaves
+  # such a drawing out with a note and still shows the rest.
+  MAX_EDGES = 300
+
+  def self.edges(dot)
+    dot.scan('->').size
+  end
+
+  def self.drawable?(dot)
+    edges(dot) <= MAX_EDGES
+  end
+
+  # In place of a drawing that is left out.
+  def self.not_drawn_html(dot)
+    "<div class='alert alert-secondary automatron-not-drawn'>Diesen Automaten zeichnet Automatron nicht: " \
+      "Er hat #{edges(dot)} Übergänge, zu viele für ein Bild, das man lesen kann. Die Schritte stimmen trotzdem, " \
+      "und der kleinste DEA weiter unten ist oft viel kleiner.</div>"
+  end
+
   module_function
 
   # Graphviz measures with this font (installed in the container); the page

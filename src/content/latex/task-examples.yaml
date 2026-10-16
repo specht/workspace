@@ -1,0 +1,37 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: latex
+examples:
+  erstes-pdf:
+    skip: facharbeit.pdf entsteht erst, wenn LaTeX übersetzt.
+  gliederung:
+    pass:
+      - files: { facharbeit/facharbeit.tex: stufen/facharbeit.tex }
+    fail:
+      - files: { facharbeit/facharbeit.tex: stufen/entwurf.tex }
+  formel:
+    pass:
+      - files: { facharbeit/facharbeit.tex: stufen/facharbeit.tex }
+    fail:
+      - files: { facharbeit/facharbeit.tex: stufen/entwurf.tex }
+  bild:
+    pass:
+      - files: { facharbeit/facharbeit.tex: stufen/facharbeit.tex }
+    fail:
+      - files: { facharbeit/facharbeit.tex: stufen/entwurf.tex }
+  tabelle:
+    pass:
+      - files: { facharbeit/facharbeit.tex: stufen/facharbeit.tex }
+    fail:
+      - files: { facharbeit/facharbeit.tex: stufen/entwurf.tex }
+  diagramm:
+    pass:
+      - files: { facharbeit/facharbeit.tex: stufen/facharbeit.tex }
+    fail:
+      - files: { facharbeit/facharbeit.tex: stufen/entwurf.tex }
+  quellen:
+    pass:
+      - files: { facharbeit/facharbeit.tex: stufen/facharbeit.tex }
+    fail:
+      - files: { facharbeit/facharbeit.tex: stufen/entwurf.tex }

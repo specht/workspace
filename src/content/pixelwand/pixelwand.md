@@ -54,16 +54,13 @@ gem install faye-websocket puma rackup
 - **rackup** startet Puma aus deinem Programm heraus.
 <!-- /language -->
 <!-- language: python -->
-Pakete für Python installiert `pip`. Damit das ohne Administratorrechte geht, bekommt das Projekt eine eigene **virtuelle Umgebung**, den Ordner `.venv`, und das Paket kommt dort hinein. Im Terminal:
+Installiere dann das Paket, das der Server braucht:
 
 ```bash_copy
-python3 -m venv .venv
-.venv/bin/pip install websockets
+pip install websockets
 ```
 
-- `python3 -m venv .venv` legt den Ordner `.venv` an: ein eigenes Python für dieses Projekt, mit einem eigenen `pip`.
-- `.venv/bin/pip install websockets` installiert das Paket **websockets** dort hinein. Es spricht WebSocket (Handshake, Nachrichten lesen und schicken) und liefert nebenbei auch die Webseite aus.
-- Darum startest du den Server mit `.venv/bin/python`, dem Python aus der Umgebung. Das gewöhnliche `python3` kennt `websockets` nicht.
+- **websockets** spricht WebSocket: Handshake, Nachrichten lesen und schicken. Die Webseite liefert es nebenbei auch aus.
 <!-- /language -->
 
 ## Ein Echo
@@ -212,7 +209,7 @@ ruby server.rb
 <!-- /language -->
 <!-- language: python -->
 ```bash
-.venv/bin/python server.py
+python3 server.py
 ```
 <!-- /language -->
 
@@ -238,12 +235,13 @@ terminal-run: ruby server.rb
 wait-for-text: Der Server wartet
 move-mouse: selector:.terminal
 sleep: 1
+check-task-fails: pixelwand
 -->
 <img class='full' src='ordner.webp' alt='Der Ordner pixelwand mit index.html und server.rb; server.rb ist offen, im Terminal wartet der Server auf Port 8000.'>
 <!-- /language -->
 <!-- language: python -->
 <!-- tutorial-screenshot
-# Ordner pixelwand mit server.py (Echo), index.html und .venv
+# Ordner pixelwand mit server.py (Echo) und index.html
 write-file: pixelwand/server.py <- file:stufen/server1.py
 close-tab: server.rb
 terminal-open
@@ -251,18 +249,17 @@ press: Control+C
 sleep: 1
 terminal-run: rm server.rb
 terminal-run: clear
-terminal-run: python3 -m venv .venv
-terminal-wait-for-prompt: 120
-terminal-run: .venv/bin/pip install websockets
+terminal-run: pip install websockets
 terminal-wait-for-prompt: 180
 terminal-run: clear
-terminal-run: .venv/bin/python server.py
+terminal-run: python3 server.py
 sleep: 2
 open-file: server.py
 move-mouse: selector:.terminal
 sleep: 1
+check-task-fails: pixelwand python
 -->
-<img class='full' src='ordner-python.webp' alt='Der Ordner pixelwand mit .venv, index.html und server.py; server.py ist offen, im Terminal wartet der Server auf Port 8000.'>
+<img class='full' src='ordner-python.webp' alt='Der Ordner pixelwand mit index.html und server.py; server.py ist offen, im Terminal wartet der Server auf Port 8000.'>
 <!-- /language -->
 
 ### Der Handshake
@@ -305,7 +302,7 @@ sleep: 1
 press: Control+C
 sleep: 1
 press: Control+L
-type: .venv/bin/python server.py
+type: python3 server.py
 press: Enter
 sleep: 2
 terminal-run: clear
@@ -753,6 +750,7 @@ terminal-run: clear
 sleep: 1
 terminal-run: curl -s localhost:8000/ | head -n 5
 sleep: 2
+check-task: pixelwand
 -->
 <img class='full' src='neustart.webp' alt='Links wartet der neu gestartete Server, rechts zeigt curl die ersten Zeilen der neuen Seite mit dem Titel »Pixelwand«.'>
 <!-- /language -->
@@ -768,13 +766,15 @@ sleep: 1
 press: Control+C
 sleep: 1
 press: Control+L
-type: .venv/bin/python server.py
+type: python3 server.py
 press: Enter
 sleep: 2
 terminal-run: clear
 sleep: 1
 terminal-run: curl -s localhost:8000/ | head -n 5
 sleep: 2
+check-task: pixelwand python
+expect-no-text: Traceback
 -->
 <img class='full' src='neustart-python.webp' alt='Links wartet der neu gestartete Python-Server, rechts zeigt curl die ersten Zeilen der neuen Seite mit dem Titel »Pixelwand«.'>
 <!-- /language -->
@@ -1087,6 +1087,7 @@ sleep: 1
 terminal-run: node flood.js
 wait-for-text: 200 Pixel zurückbekommen
 sleep: 1
+check-task-fails: lock
 -->
 <img class='full' src='threads.webp' alt='Links zählt der Server, aber am Ende steht weit weniger als »Pixel Nr. 200«, rechts meldet flood.js »200 Pixel geschickt.« und »200 Pixel zurückbekommen.«'>
 <!-- /language -->
@@ -1102,7 +1103,7 @@ sleep: 1
 press: Control+C
 sleep: 1
 press: Control+L
-type: .venv/bin/python server.py
+type: python3 server.py
 press: Enter
 sleep: 2
 terminal-run: clear
@@ -1110,6 +1111,7 @@ sleep: 1
 terminal-run: node flood.js
 wait-for-text: 200 Pixel zurückbekommen
 sleep: 1
+check-task-fails: lock python
 -->
 <img class='full' src='threads-python.webp' alt='Links zählt der Python-Server, aber am Ende steht weit weniger als »Pixel Nr. 200«, rechts meldet flood.js »200 Pixel geschickt.« und »200 Pixel zurückbekommen.«'>
 <!-- /language -->
@@ -1177,6 +1179,7 @@ sleep: 1
 terminal-run: node flood.js
 wait-for-text: 200 Pixel zurückbekommen
 sleep: 1
+check-task: lock
 -->
 <img class='full' src='lock.webp' alt='Links zählt der Server bis »Pixel Nr. 200«, rechts meldet flood.js »200 Pixel geschickt.« und »200 Pixel zurückbekommen.«'>
 <!-- /language -->
@@ -1191,7 +1194,7 @@ sleep: 1
 press: Control+C
 sleep: 1
 press: Control+L
-type: .venv/bin/python server.py
+type: python3 server.py
 press: Enter
 sleep: 2
 terminal-run: clear
@@ -1199,6 +1202,7 @@ sleep: 1
 terminal-run: node flood.js
 wait-for-text: 200 Pixel zurückbekommen
 sleep: 1
+check-task: lock python
 -->
 <img class='full' src='lock-python.webp' alt='Links zählt der Python-Server bis »Pixel Nr. 200«, rechts meldet flood.js »200 Pixel geschickt.« und »200 Pixel zurückbekommen.«'>
 <!-- /language -->

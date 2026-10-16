@@ -1,0 +1,42 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: rle
+examples:
+  von-hand:
+    pass:
+      - answer: 4A3B2C1D
+      - answer: 4A 3B 2C 1D
+    fail:
+      - answer: AAAABBBCCD
+      - answer: 4A3B2C
+  rle:
+    pass:
+      - files: { rle/rle.rb: loesung/rle.rb }
+    fail:
+      - files: { rle/rle.rb: { text: "def rle(text)\n  text\nend\n" } }
+    python:
+      pass:
+        - files: { rle/rle.py: loesung/rle.py }
+      fail:
+        - files: { rle/rle.py: { text: "def rle(text):\n    return text\n" } }
+  unrle:
+    pass:
+      - files: { rle/rle.rb: loesung/rle.rb }
+    fail:
+      - files: { rle/rle.rb: { text: "def unrle(text)\n  text\nend\n" } }
+    python:
+      pass:
+        - files: { rle/rle.py: loesung/rle.py }
+      fail:
+        - files: { rle/rle.py: { text: "def unrle(text):\n    return text\n" } }
+  bytes:
+    pass:
+      - files: { rle/rle.rb: loesung/rle.rb }
+    fail:
+      - files: { rle/rle.rb: { text: "def rle_bytes(data)\n  []\nend\n" } }
+    python:
+      pass:
+        - files: { rle/rle.py: loesung/rle.py }
+      fail:
+        - files: { rle/rle.py: { text: "def rle_bytes(data):\n    return []\n" } }

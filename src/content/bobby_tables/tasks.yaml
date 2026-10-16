@@ -64,6 +64,19 @@ tasks:
         contains:
           - { pattern: '^\s*[^#\s].*\.prepare\(', say: 'In `login.rb` bereitet noch nichts eine Abfrage vor: `CLIENT.prepare(…)` mit `?` als Platzhaltern.' }
           - { pattern: '^\s*[^#\s].*\.execute\(', say: 'Noch führt `login.rb` die vorbereitete Abfrage nicht aus: `query.execute(login, password)`.' }
+    python:
+      prompt: |
+        Ändere `login.py` so, dass es die Abfrage mit Platzhaltern vorbereitet
+        und mit den Eingaben ausführt, und speichere.
+      file: bobby_tables/login.py
+      check:
+        type: files
+        path: bobby_tables/login.py
+        expect:
+          format: text
+          contains:
+            - { pattern: '^\s*[^#\s].*prepared\s*=\s*True', say: 'In `login.py` bereitet noch nichts eine Abfrage vor: `connection.cursor(prepared=True)`.' }
+            - { pattern: '^\s*[^#\s].*\.execute\([^#]*,\s*[(\[]', say: 'Noch führt `login.py` die Abfrage nicht mit getrennten Werten aus: `cursor.execute("… ? … ?", (login, password))`.' }
 
   - id: behoben
     title: Noch einmal versuchen

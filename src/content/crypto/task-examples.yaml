@@ -1,0 +1,16 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: crypto
+examples:
+  verschluesselt:
+    pass:
+      - files: { crypto/letter.enc: { text: "Salted__\x8a\x13\x9c" } }
+    fail:
+      - files: { crypto/letter.txt: { text: "Liebe Ada,\n" } }
+  unterschrift:
+    pass:
+      - files: { crypto/letter.txt.sig: { text: "-----BEGIN SSH SIGNATURE-----\nU1NIU0lH\n-----END SSH SIGNATURE-----\n" } }
+    fail:
+      - files: { crypto/letter.txt.sig: { text: "Liebe Ada,\n" } }
+        say: ssh-keygen -Y sign

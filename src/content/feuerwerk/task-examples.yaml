@@ -1,0 +1,10 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: feuerwerk
+examples:
+  erster-funke:
+    pass:
+      - files: { pixelram-starter/feuerwerk.html: { text: "<!DOCTYPE html>\n<html><body><canvas></canvas></body></html>\n" } }
+    fail:
+      - files: { pixelram-starter/index.html: { text: "<!DOCTYPE html>\n" } }

@@ -1,0 +1,32 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: lzw
+examples:
+  von-hand:
+    pass:
+      - answer: 65 66 256 258
+      - answer: 65, 66, 256, 258
+    fail:
+      - answer: 65 66 65 66 65 66 65
+      - answer: 65 66 256 256 65
+  kompressor:
+    pass:
+      - files: { lzw/lzw.rb: loesung/lzw.rb }
+    fail:
+      - files: { lzw/lzw.rb: { text: "def compress(text)\n  text.bytes\nend\n" } }
+    python:
+      pass:
+        - files: { lzw/lzw.py: loesung/lzw.py }
+      fail:
+        - files: { lzw/lzw.py: { text: "def compress(data):\n    return list(data)\n" } }
+  entpacker:
+    pass:
+      - files: { lzw/lzw.rb: loesung/lzw.rb }
+    fail:
+      - files: { lzw/lzw.rb: { text: "def decompress(codes)\n  codes.pack('C*')\nend\n" } }
+    python:
+      pass:
+        - files: { lzw/lzw.py: loesung/lzw.py }
+      fail:
+        - files: { lzw/lzw.py: { text: "def decompress(codes):\n    return bytes(c % 256 for c in codes)\n" } }

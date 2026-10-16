@@ -180,6 +180,15 @@ if __FILE__ == $0
     p frequencies('ABRACADABRA')
 end
 ```
+
+<!-- tutorial-step
+# Das Gerüst von der Seite läuft, und noch löst es keine Aufgabe (ruby)
+write-file: huffman/huffman.rb <- previous-code
+check-task-fails: zaehlen
+check-task-fails: baum
+check-task-fails: decodieren
+check-task-fails: kanonisch
+-->
 <!-- /language -->
 <!-- language: python -->
 Lege darin die Datei `huffman.py` an:
@@ -214,6 +223,15 @@ def decode(bits, tree):
 if __name__ == '__main__':
     print(frequencies(b'ABRACADABRA'))
 ```
+
+<!-- tutorial-step
+# Das Gerüst von der Seite läuft, und noch löst es keine Aufgabe (python)
+write-file: huffman/huffman.py <- previous-code
+check-task-fails: zaehlen python
+check-task-fails: baum python
+check-task-fails: decodieren python
+check-task-fails: kanonisch python
+-->
 
 `b'ABRACADABRA'` sind Bytes, keine Zeichen; alle Methoden bekommen und liefern Bytes.
 <!-- /language -->
@@ -489,3 +507,17 @@ document.addEventListener('DOMContentLoaded', function() {
     refresh();
 });
 </script>
+
+<!-- tutorial-step
+# Die Musterlösungen aus loesung/ lösen jede Programmieraufgabe, in beiden Sprachen
+write-file: huffman/huffman.rb <- file:loesung/huffman.rb
+write-file: huffman/huffman.py <- file:loesung/huffman.py
+check-task: zaehlen
+check-task: zaehlen python
+check-task: baum
+check-task: baum python
+check-task: decodieren
+check-task: decodieren python
+check-task: kanonisch
+check-task: kanonisch python
+-->

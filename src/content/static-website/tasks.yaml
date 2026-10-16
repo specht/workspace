@@ -83,6 +83,7 @@ tasks:
         parses: true
         img:
           min: 1
+          local: 1
           src_exists: case_sensitive
           alt: required
     feedback:

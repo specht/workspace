@@ -288,6 +288,7 @@ Das sind alle 106 Bytes. Die Farben zeigen die Blöcke, aus denen eine GIF-Datei
 
 Lege im Ordner der Vorlage die Datei `gif.c` an. Der Anfang liest die ganze Datei in den Speicher, und drei kleine Funktionen lesen daraus, immer an der Stelle `pos`, die dabei weiterwandert:
 
+<!-- page-code: own -->
 ```c_copy
 #include <stdio.h>
 #include <stdlib.h>

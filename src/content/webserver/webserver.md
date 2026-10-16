@@ -128,6 +128,7 @@ press: Control+Shift+5
 sleep: 1
 terminal-run: curl localhost:8000
 sleep: 2
+check-task-fails: antwort
 -->
 <img class='full' src='erste-anfrage.webp' alt='Zwei Terminals nebeneinander: links gibt der Server die Anfrage von curl aus, GET / HTTP/1.1, Host, User-Agent und Accept; rechts meldet curl, dass keine Antwort kam.'>
 <!-- /language -->
@@ -149,6 +150,7 @@ terminal-run: clear
 sleep: 1
 terminal-run: curl localhost:8000
 sleep: 2
+check-task-fails: antwort python
 -->
 <img class='full' src='erste-anfrage-python.webp' alt='Zwei Terminals nebeneinander: links gibt der Python-Server die Anfrage von curl aus, GET / HTTP/1.1, Host, User-Agent und Accept; rechts meldet curl, dass keine Antwort kam.'>
 <!-- /language -->
@@ -262,6 +264,7 @@ terminal-run: clear
 sleep: 1
 terminal-run: curl -i localhost:8000
 sleep: 2
+check-task: antwort
 -->
 <img class='full' src='erste-antwort.webp' alt='Rechts zeigt curl -i die Antwort des Servers: HTTP/1.1 200 OK, die Header und den Text »Hallo aus meinem eigenen Server!«.'>
 <!-- /language -->
@@ -283,6 +286,8 @@ terminal-run: clear
 sleep: 1
 terminal-run: curl -i localhost:8000
 sleep: 2
+check-task: antwort python
+expect-no-text: Traceback
 -->
 <img class='full' src='erste-antwort-python.webp' alt='Rechts zeigt curl -i die Antwort des Python-Servers: HTTP/1.1 200 OK, die Header und den Text »Hallo aus meinem eigenen Server!«.'>
 <!-- /language -->
@@ -425,6 +430,7 @@ terminal-run: curl localhost:8000/time
 sleep: 1
 terminal-run: curl -i localhost:8000/missing
 sleep: 2
+check-task-fails: webseite
 -->
 <img class='full' src='pfade.webp' alt='Rechts antwortet der Server auf /time mit der Uhrzeit und auf /missing mit HTTP/1.1 404 Not Found; links stehen die beiden Anfragen.'>
 <!-- /language -->
@@ -448,6 +454,7 @@ terminal-run: curl localhost:8000/time
 sleep: 1
 terminal-run: curl -i localhost:8000/missing
 sleep: 2
+expect-no-text: Traceback
 -->
 <img class='full' src='pfade-python.webp' alt='Rechts antwortet der Python-Server auf /time mit der Uhrzeit und auf /missing mit HTTP/1.1 404 Not Found; links stehen die beiden Anfragen.'>
 <!-- /language -->
@@ -754,6 +761,7 @@ terminal-run: clear
 sleep: 1
 terminal-run: curl -I localhost:8000/style.css
 sleep: 2
+check-task: webseite
 -->
 <img class='full' src='css-antwort.webp' alt='Rechts zeigt curl -I die Header der Antwort auf /style.css: 200 OK, Content-Type text/css und Content-Length; links steht die Anfrage HEAD /style.css.'>
 <!-- /language -->
@@ -775,6 +783,7 @@ terminal-run: clear
 sleep: 1
 terminal-run: curl -I localhost:8000/style.css
 sleep: 2
+expect-no-text: Traceback
 -->
 <img class='full' src='css-antwort-python.webp' alt='Rechts zeigt curl -I die Header der Antwort auf /style.css: 200 OK, Content-Type text/css und Content-Length; links steht die Anfrage HEAD /style.css.'>
 <!-- /language -->
@@ -1026,6 +1035,7 @@ terminal-run: curl localhost:8000/visits
 sleep: 1
 terminal-run: curl localhost:8000/visits
 sleep: 2
+check-task-fails: umfrage
 -->
 <img class='full' src='parameter.webp' alt='Rechts antwortet der Server »Hallo, Ada Lovelace!«, dann »Du bist Besuch Nummer 1.« und »Du bist Besuch Nummer 2.«; links stehen die drei Anfragen.'>
 <!-- /language -->
@@ -1051,6 +1061,8 @@ terminal-run: curl localhost:8000/visits
 sleep: 1
 terminal-run: curl localhost:8000/visits
 sleep: 2
+check-task-fails: umfrage python
+expect-no-text: Traceback
 -->
 <img class='full' src='parameter-python.webp' alt='Rechts antwortet der Python-Server »Hallo, Ada Lovelace!«, dann »Du bist Besuch Nummer 1.« und »Du bist Besuch Nummer 2.«; links stehen die drei Anfragen.'>
 <!-- /language -->
@@ -1414,6 +1426,7 @@ terminal-run: curl -i -d choice=curry localhost:8000/vote
 sleep: 1
 terminal-run: curl localhost:8000/results
 sleep: 2
+check-task: umfrage
 -->
 <img class='full' src='post-curl.webp' alt='Rechts antwortet der Server auf die Stimme mit 303 See Other und Location: /results, danach zeigt curl das HTML der Ergebnisseite: eine Tabelle mit einem progress-Element für jede Antwort, bei Curry value 1. Links stehen POST /vote und GET /results.'>
 <!-- /language -->
@@ -1439,6 +1452,8 @@ terminal-run: curl -i -d choice=curry localhost:8000/vote
 sleep: 1
 terminal-run: curl localhost:8000/results
 sleep: 2
+check-task: umfrage python
+expect-no-text: Traceback
 -->
 <img class='full' src='post-curl-python.webp' alt='Rechts antwortet der Python-Server auf die Stimme mit 303 See Other und Location: /results, danach zeigt curl das HTML der Ergebnisseite: eine Tabelle mit einem progress-Element für jede Antwort, bei Curry value 1. Links stehen POST /vote und GET /results.'>
 <!-- /language -->
