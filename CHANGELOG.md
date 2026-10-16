@@ -533,6 +533,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- GIF: Der Schrittmacher der Bilddaten zeigt statt der Bytes in Hex einen
+  Strom aus Bits, wie die Seite ihn erklärt (das erste Byte rechts, gelesen
+  von rechts nach links), mit Bytegrenzen und dem Hexwert über jedem Byte.
+  Gelesene Bits sind blass, jeder zweite Code getönt, der aktuelle Code gelb
+  mit seinem Wert darunter, und das Fenster gleitet beim Weiterschalten mit.
+  Neue Pixel tauchen im Bild auf, der neue Eintrag der Tabelle leuchtet kurz.
+- Huffman: Beim Weiterschalten gleiten die beiden leichtesten Bäume
+  zusammen, rutschen eine Ebene tiefer, und ihr neuer Knoten erscheint
+  darüber; zurück geht es genauso. Wer im System »Bewegung reduzieren«
+  eingestellt hat, sieht beide Widgets ohne Animation.
 - Alle Widgets zum Durchschalten lassen sich mit den Pfeiltasten bedienen
   wie bisher nur der JPEG-Decoder: der Huffman-Baum, die beiden Schrittmacher
   von LZW und der von GIF. Bei zwei Widgets auf einer Seite schaltet die

@@ -145,18 +145,70 @@ template_name: des PixelRAM-Starters
         margin-left: 0.6em;
         color: var(--bs-secondary-color);
     }
-    .lzw-bytes {
+    /* The bit stream as a window that slides along it: the first byte on the
+       right, as on the page above, read from right to left. */
+    .lzw-bits {
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 0.2em;
+        padding-bottom: 1.6em;
+        mask-image: linear-gradient(to right, transparent, black 2.5em, black calc(100% - 2.5em), transparent);
+    }
+    .lzw-strip {
+        display: flex;
+        flex-direction: row-reverse;
+        width: max-content;
+        transition: transform 0.35s ease;
+        position: relative;
+    }
+    .lzw-byte {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0 0.35em;
+        border-left: 1px solid var(--bs-border-color);
+    }
+    .lzw-byte:last-child { border-left: none; }
+    .lzw-hex {
         font-family: '0xProto Nerd Font Mono', monospace;
-        font-size: 0.9em;
-        line-height: 1.8;
+        font-size: 0.75em;
+        color: var(--bs-secondary-color);
+    }
+    .lzw-cells { display: flex; }
+    .lzw-cells span {
+        font-family: '0xProto Nerd Font Mono', monospace;
+        width: 0.95em;
+        text-align: center;
+        line-height: 1.6;
+        transition: background-color 0.25s, opacity 0.25s;
+    }
+    /* Bits already read: pale, every second code on a tint, so the codes
+       stay apart. */
+    .lzw-cells .past { color: var(--bs-secondary-color); opacity: 0.6; }
+    .lzw-cells .past.odd { background-color: color-mix(in srgb, var(--bs-secondary-color) 22%, transparent); }
+    .lzw-cells .now { background-color: color-mix(in srgb, var(--color-m0) 80%, transparent); font-weight: 700; }
+    .lzw-label {
+        position: absolute;
+        bottom: -1.5em;
+        font-size: 0.8em;
+        white-space: nowrap;
+        transform: translateX(-50%);
+        transition: left 0.35s ease;
+        color: var(--bs-body-color);
+    }
+    .lzw-direction {
+        font-size: 0.8em;
+        color: var(--bs-secondary-color);
         margin-bottom: 0.8em;
     }
-    .lzw-bytes span {
-        padding: 0.1em 0.2em;
-        border-radius: 0.2em;
+    .lzw-grid div.pop { animation: lzw-pop 0.35s ease-out; }
+    .lzw-table div.new { animation: lzw-flash 0.9s ease-out; }
+    @keyframes lzw-pop { from { transform: scale(0.2); opacity: 0; } }
+    @keyframes lzw-flash { from { background-color: var(--color-m0); } }
+    @media (prefers-reduced-motion: reduce) {
+        .lzw-strip, .lzw-label, .lzw-cells span { transition: none; }
+        .lzw-grid div.pop, .lzw-table div.new { animation: none; }
     }
-    .lzw-bytes .done { opacity: 0.45; }
-    .lzw-bytes .now { background-color: color-mix(in srgb, var(--color-m0) 75%, transparent); }
     .lzw-main {
         display: flex;
         gap: 1.5em;
@@ -892,7 +944,8 @@ Probier es mit den Bytes der Diskette aus: Jeder Klick liest einen Code. Das Bil
 <button id='lzw-last' data-go='last' class='btn btn-sm btn-success' aria-label='Zum Ende'><i class='bi bi-chevron-bar-right' style='margin-right: 0;'></i></button>
 <span class='lzw-count' id='lzw-count'></span>
 </div>
-<div class='lzw-bytes' id='lzw-bytes'></div>
+<div class='lzw-bits' id='lzw-bits' aria-hidden='true'><div class='lzw-strip' id='lzw-strip'></div></div>
+<div class='lzw-direction'>Gelesen wird von rechts nach links: das erste Byte steht rechts, und jeder Code steht in einem Stück da. Gelb ist der Code, den der Decoder gerade liest, blass sind die gelesenen Bits.</div>
 <div class='lzw-main'>
 <div class='lzw-grid' id='lzw-grid' role='img' aria-label='Die Pixel der Diskette, soweit sie entpackt sind'></div>
 <div class='lzw-explain'>
@@ -1259,18 +1312,66 @@ document.addEventListener('DOMContentLoaded', function() {
     const pix = (list) => `<span class='pixes'>` + list.map((p) => `<span class='pix' style='background: ${PALETTE[p]}; color: ${INK[p]};'>${p}</span>`).join('') + `</span>`;
     const grid = document.getElementById('lzw-grid');
     for (let i = 0; i < WIDTH * HEIGHT; i++) grid.append(document.createElement('div'));
-    let current = 0;
+
+    // The bit stream: one box per byte, its bits from bit 7 on the left to
+    // bit 0 on the right, the first byte on the right. Which code each bit
+    // belongs to, for the shading of the codes already read.
+    const strip = document.getElementById('lzw-strip');
+    const windowBox = document.getElementById('lzw-bits');
+    const owner = new Array(bytes.length * 8).fill(-1);
+    steps.forEach((s, k) => { for (let b = s.start; b < s.start + s.size; b++) owner[b] = k; });
+    const cells = [];
+    bytes.forEach((byte, i) => {
+        const box = document.createElement('div');
+        box.className = 'lzw-byte';
+        const hex = document.createElement('div');
+        hex.className = 'lzw-hex';
+        hex.textContent = byte.toString(16).padStart(2, '0');
+        const row = document.createElement('div');
+        row.className = 'lzw-cells';
+        for (let b = 7; b >= 0; b--) {
+            const cell = document.createElement('span');
+            cell.textContent = (byte >> b) & 1;
+            cells[i * 8 + b] = cell;
+            row.append(cell);
+        }
+        box.append(hex, row);
+        strip.append(box);
+    });
+    const codeLabel = document.createElement('div');
+    codeLabel.className = 'lzw-label';
+    strip.append(codeLabel);
+    let firstPaint = true;
+    function slide(step) {
+        cells.forEach((cell, bit) => {
+            const now = bit >= step.start && bit < step.start + step.size;
+            const past = bit < step.start;
+            cell.className = now ? 'now' : past ? `past${owner[bit] % 2 ? ' odd' : ''}` : '';
+        });
+        // Bit start is the rightmost of the code, start + size - 1 the leftmost.
+        const right = cells[step.start], left = cells[step.start + step.size - 1];
+        // offsetLeft counts from the strip, the nearest positioned element
+        const from = left.offsetLeft, to = right.offsetLeft + right.offsetWidth;
+        const middle = (from + to) / 2;
+        codeLabel.textContent = `Code ${step.code} · ${step.size} Bits`;
+        // The window fades out at both sides (the mask, 2.5em): the ends of
+        // the stream and the label stay clear of that.
+        const fade = 3 * parseFloat(getComputedStyle(windowBox).fontSize);
+        const w = windowBox.clientWidth;
+        const shift = Math.min(fade, Math.max(w - strip.scrollWidth - fade, w / 2 - middle));
+        const half = codeLabel.offsetWidth / 2;
+        codeLabel.style.left = `${Math.max(-shift + fade + half, Math.min(-shift + w - fade - half, middle))}px`;
+        if (firstPaint) strip.style.transition = 'none';
+        strip.style.transform = `translateX(${shift}px)`;
+        if (firstPaint) { strip.offsetWidth; strip.style.transition = ''; firstPaint = false; }
+    }
+    let current = 0, shownStep = -1;
     function render() {
         const step = steps[current];
         document.getElementById('lzw-count').textContent = `Code ${current + 1} von ${steps.length}`;
-        const byteHtml = bytes.map((b, i) => {
-            const hex = b.toString(16).padStart(2, '0');
-            const first = i * 8, last = i * 8 + 7;
-            if (last < step.start) return `<span class='done'>${hex}</span>`;
-            if (first < step.start + step.size) return `<span class='now'>${hex}</span>`;
-            return `<span>${hex}</span>`;
-        });
-        document.getElementById('lzw-bytes').innerHTML = byteHtml.join(' ');
+        slide(step);
+        const forward = current === shownStep + 1;
+        shownStep = current;
         grid.childNodes.forEach((cell, i) => {
             if (i < step.to) {
                 cell.style.background = PALETTE[pixels[i]];
@@ -1282,6 +1383,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 cell.textContent = '';
             }
             cell.classList.toggle('new', i >= step.from && i < step.to);
+            // One step forward: the new pixels pop up, as the code is read.
+            cell.classList.remove('pop');
+            if (forward && i >= step.from && i < step.to) { cell.offsetWidth; cell.classList.add('pop'); }
         });
         const bits = step.code.toString(2).padStart(step.size, '0');
         let text = `<p>Bits ${step.start} bis ${step.start + step.size - 1}: <code>${bits}</code> = <strong>${step.code}</strong>, mit ${step.size} Bits gelesen.</p>`;
