@@ -227,7 +227,7 @@ Eine Datei liest Ruby mit `File.binread('spec-gif89a.txt')` Byte für Byte, so w
 
 _task(spec)
 
-Echte Programme komprimieren noch besser. `gzip` benutzt LZ77, die erste Idee von Lempel und Ziv von 1977, und codiert das Ergebnis danach noch mit Huffman:
+Echte Programme komprimieren noch besser. `gzip` benutzt LZ77, die erste Idee von Lempel und Ziv von 1977, und codiert das Ergebnis danach noch mit [Huffman](/huffman):
 
 ```bash
 gzip -9 -k spec-gif89a.txt
