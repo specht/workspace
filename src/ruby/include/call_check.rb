@@ -7,7 +7,12 @@ require 'json'
 # prints one JSON line after RESULT_MARK:
 #
 #   {"cases": [{"call", "expect", "got", "ok", "error", "line"}, ...]}
+#
 #   {"error": {"kind": "missing" | "syntax" | "load", "line", "message"}}
+#
+# A case with raises: true expects the call to fail with an error (a
+# StandardError in Ruby, an Exception in Python): then error holds it and ok is
+# true.
 #
 # Everything here works on that line and can be tested without a Workspace.
 module CallCheck
@@ -15,15 +20,18 @@ module CallCheck
     MAX_SHOWN = 12
     RESULT_MARK = '__HS_RESULT__'
 
-    # The cases of a check as [{ 'call' =>, 'expect' =>, 'say' => }], with
-    # true, false, ~ and numbers from YAML written by literal in the language.
+    # The cases of a check as [{ 'call' =>, 'expect' =>, 'say' =>, 'raises' => }],
+    # with true, false, ~ and numbers from YAML written by literal in the
+    # language.
     def self.cases(check, literal)
         (check['cases'] || []).map do |item|
             if item.is_a?(Hash) && item.key?('call')
-                { 'call' => item['call'].to_s, 'expect' => literal.call(item['expect']), 'say' => item['say'] }
+                raises = item['raises'] == true
+                { 'call' => item['call'].to_s, 'expect' => raises ? literal.call(nil) : literal.call(item['expect']),
+                  'say' => item['say'], 'raises' => raises }
             else
                 call, expect = item.first
-                { 'call' => call.to_s, 'expect' => literal.call(expect), 'say' => nil }
+                { 'call' => call.to_s, 'expect' => literal.call(expect), 'say' => nil, 'raises' => false }
             end
         end
     end
@@ -39,9 +47,13 @@ module CallCheck
 
         list.each_with_index do |item, i|
             if item.is_a?(Hash) && item.key?('call')
-                extra = item.keys - %w[call expect say]
+                extra = item.keys - %w[call expect say raises]
                 errors << "cases[#{i}]: unknown keys: #{extra.join(', ')}" unless extra.empty?
-                errors << "cases[#{i}] needs call and expect" unless item['call'].is_a?(String) && !item['call'].strip.empty? && item.key?('expect')
+                errors << "cases[#{i}]: raises must be true" if item.key?('raises') && item['raises'] != true
+                errors << "cases[#{i}]: raises or expect, not both" if item.key?('raises') && item.key?('expect')
+                unless item['call'].is_a?(String) && !item['call'].strip.empty? && (item.key?('expect') || item['raises'] == true)
+                    errors << "cases[#{i}] needs call and expect (or raises: true)"
+                end
                 errors << "cases[#{i}]: say must be text" if item.key?('say') && !item['say'].is_a?(String)
             elsif !(item.is_a?(Hash) && item.size == 1 && item.keys.first.is_a?(String))
                 errors << "cases[#{i}] must be »call: expected« or have call, expect and say"
@@ -103,7 +115,9 @@ module CallCheck
         end
 
         r = results[failed_at]
-        message = if r['error']
+        message = if cases[failed_at] && cases[failed_at]['raises']
+            "`#{r['call']}` ergibt `#{r['got']}`, richtig wäre ein Fehler."
+        elsif r['error']
             "`#{r['call']}` bricht ab#{at_line(r['line'])}: `#{r['error']}`"
         else
             "`#{r['call']}` ergibt `#{r['got']}`, richtig wäre `#{r['expect']}`."

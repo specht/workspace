@@ -21,6 +21,8 @@ require_relative 'call_check'
 #       - call: run(['münze']) == 'offen'
 #         expect: false
 #         say: Nach einer Münze darf das Drehkreuz noch nicht offen sein.
+#       - call: run(['tritt'])
+#         raises: true                       # must fail with an exception
 #
 # Calls and expected values are Python expressions; true, false, ~ and
 # numbers in YAML become True, False, None and the number. Reading the
@@ -69,6 +71,17 @@ module PythonCheck
                 return
             for case in cases:
                 entry = {'call': case['call'], 'expect': case['expect']}
+                if case.get('raises'):
+                    try:
+                        with contextlib.redirect_stdout(sink):
+                            got = eval(case['call'], vars(module))
+                        entry['got'] = short(got)
+                        entry['ok'] = False
+                    except Exception as error:
+                        entry['ok'] = True
+                        entry['error'] = text(error)
+                    result['cases'].append(entry)
+                    continue
                 try:
                     expected = eval(case['expect'], {})
                     with contextlib.redirect_stdout(sink):
@@ -105,7 +118,7 @@ module PythonCheck
 
     # The command that prints the result, run in /workspace as the guest.
     def self.command(file, cases)
-        payload = cases.map { |c| { 'call' => c['call'], 'expect' => c['expect'] } }
+        payload = cases.map { |c| { 'call' => c['call'], 'expect' => c['expect'], 'raises' => c['raises'] } }
         Shellwords.join(['python3', '-I', '-B', '-c', HARNESS, file, JSON.generate(payload)])
     end
 

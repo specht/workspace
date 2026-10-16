@@ -615,6 +615,8 @@ check:
     - call: run(['münze']) == 'offen'      # die lange Form, mit eigenem Satz
       expect: false
       say: Nach einer Münze darf das Drehkreuz noch nicht offen sein.
+    - call: run(['tritt'])                 # muss mit einem Fehler abbrechen
+      raises: true
 ```
 
 Aufrufe und Ergebnisse sind Python-Ausdrücke; `true`, `false`, `~` und Zahlen
@@ -622,6 +624,11 @@ aus YAML werden zu `True`, `False`, `None` und der Zahl. Ein Text als Ergebnis
 braucht darum zwei Paar Anführungszeichen: `"'offen'"`. Prüft eine Aufgabe
 Verhalten statt Namen (»wie der neue Zustand heißt, ist egal«), vergleicht der
 Aufruf selbst: `run(['münze']) == 'offen'` mit `false`.
+
+Mit `raises: true` statt `expect` muss der Aufruf mit einem Fehler abbrechen
+(in Python eine `Exception`, in Ruby ein `StandardError`), etwa ein Rechner bei
+einer Klammer, die nie zugeht; welcher Fehler, ist egal. Bricht er nicht ab,
+heißt es »… ergibt `5`, richtig wäre ein Fehler.«
 
 Die Rückmeldung nennt den ersten Aufruf, der nicht passt: »`opens('121213')`
 ergibt `False`, richtig wäre `True`.«, dazu `say`, wenn es eines gibt. Bricht
