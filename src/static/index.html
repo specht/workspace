@@ -5,9 +5,6 @@
     /* The same columns as the cards below (.hscol): the text over two, the picture over the third. */
     .front-hero { margin-top: 2em; margin-bottom: 1em; row-gap: 1.2em; }
     .front-hero-lead { font-size: 1.25rem; line-height: 1.5; margin: 0 0 0.8em; text-align: left; hyphens: manual; }
-    .front-hero-points { list-style: none; padding: 0; margin: 0 0 1.3em; display: flex; flex-wrap: wrap; gap: 0.4em 1.2em;
-                         color: var(--bs-secondary-color); }
-    .front-hero-points .bi { margin-right: 0.4em; color: var(--bs-success); }
     .front-hero-login { margin: 0; color: var(--bs-secondary-color); text-align: left; hyphens: manual; }
     .front-hero-picture { width: 100%; border-radius: 10px; box-shadow: 0 0.4em 1.5em rgba(0, 0, 0, 0.2); }
     @media (max-width: 767.999999px) {
@@ -23,14 +20,13 @@
             <div class='row align-items-center front-hero' style='#{user_logged_in? || !running_tests.empty? ? 'display: none;' : ''}'>
                 <div class='front-hero-text col-12 col-md-6 col-xl-8'>
                     <p class='front-hero-lead'>
-                        Programmieren direkt im Browser: deine eigene Entwicklungsumgebung mit Editor, Terminal und Git,
-                        ohne etwas zu installieren. Deine Dateien sind in der Schule und zu Hause dieselben.
+                        Der Hackschule Workspace ist eine Entwicklungsumgebung im Browser: Visual Studio Code mit
+                        Linux-Terminal, Git, vielen Programmiersprachen und eigenen Datenbanken. Das sind die Werkzeuge,
+                        mit denen auch Software entwickelt wird, und du musst nichts installieren. Deine Dateien bleiben
+                        gespeichert, in der Schule wie zu Hause. Die Projekte und Labore unten führen dich in Themen von
+                        Grafik und Spielen bis zu Netzen und Datenbanken ein. Probier dabei ruhig aus, was passiert, wenn
+                        du etwas änderst: Mit Checkpoints kommst du jederzeit zu einem früheren Stand zurück.
                     </p>
-                    <ul class='front-hero-points'>
-                        <li><i class='bi bi-code-slash'></i>Visual Studio Code im Browser</li>
-                        <li><i class='bi bi-terminal'></i>Terminal und Git</li>
-                        <li><i class='bi bi-grid-3x3-gap'></i>Projekte, Labore und 18 Sprachen</li>
-                    </ul>
                     <p class='front-hero-login'>
                         <a href='/login'>Melde dich mit deiner E-Mail-Adresse an.</a>
                         Noch keinen Zugang? Frag nach einer #{contact_email.empty? ? 'Einladung' : "<a href='mailto:#{CGI.escapeHTML(contact_email)}'>Einladung</a>"}.
