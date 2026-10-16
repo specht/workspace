@@ -2,10 +2,10 @@
   "screenshots": {
     "automatron-schloss.webp": {
       "environment_fingerprint": "b5a33f158afcbecea78fc67ef496e67543e6cac0672cb9797c1e56ef63f122a2",
-      "output_sha256": "695a51f0ab6ee145e2259f65935f3de4133803eae6368465632733192861f430",
-      "state_hash": "c7a76fd0b5f0ef9be26be1733671b43e480fade77e261e85cda44910aedb061c",
+      "output_sha256": "39dee3d02448ab1f23423d2d960592cd0f56293e6c314f0be39c822952b97568",
+      "state_hash": "70306d79e94ae5502a7070b3f176f1dc3f730625757becb824016868b37b11d4",
       "variants": {
-        "automatron-schloss-dark.webp": "6cfd9b1ddf2d373862edfadd1e641055700a588f3d1ceac62949dd22058a3b04"
+        "automatron-schloss-dark.webp": "536f36857fc50ebb54a58b1d1c9ba4b11dee9191b383f826d8f4890d2f61714a"
       },
       "workspace_look": "4.138.0-ls366"
     },
@@ -35,23 +35,23 @@
     },
     "teaser.webp": {
       "environment_fingerprint": "b5a33f158afcbecea78fc67ef496e67543e6cac0672cb9797c1e56ef63f122a2",
-      "output_sha256": "5fac4e96472024be1e0c27d2609fe07680db457cda04775d71c8e574db09d17f",
-      "state_hash": "0fe19287dfa450783285d08b5c8cabfd06af9616cdec810b17bd387839faefbe",
+      "output_sha256": "fe1f1224ab6b535daa40237ef9a2d542545db550111a4f2a144a3ba8a954bad7",
+      "state_hash": "3878d09dfacee89802ce56552991fc95eb8b3947635752b98d7f56473b4c46d4",
       "variants": {
-        "teaser-dark.webp": "7efe54f76714cc1a707a59af9af8e1a180501d4937d911942bfa2d0196f48a56"
+        "teaser-dark.webp": "54fa2429bf2b4b2aacc82739d4fce2a12ea4f0d0352bfc78e848e0ef27da3b39"
       },
       "workspace_look": "4.138.0-ls366"
     },
     "umwandeln-ruby.webp": {
       "environment_fingerprint": "b5a33f158afcbecea78fc67ef496e67543e6cac0672cb9797c1e56ef63f122a2",
       "output_sha256": "cfc114a9c7ada4fdc0bf6b426450448d94d7b8fcda2b91444a0fd1f0614990e8",
-      "state_hash": "0299a5c55146d5b7b2b463a316dac37958fb1fee6dfaba4a535eab343af92ab0",
+      "state_hash": "13337f2b008078ed5739a0ce96b3c28cef2614c36379edbe600ee5512b5c090c",
       "workspace_look": "4.138.0-ls366"
     },
     "umwandeln.webp": {
       "environment_fingerprint": "b5a33f158afcbecea78fc67ef496e67543e6cac0672cb9797c1e56ef63f122a2",
       "output_sha256": "88478e05ae7d299abbf0a691f91c5351e4097f1017a9b6bdc3a3d31711f70744",
-      "state_hash": "e07de3d3ec0f97b5caf71ae2f10b5166e5df3379737042fccdd63c58d7eaabf8",
+      "state_hash": "f7fa7d37416914b7b5eed340a50d73014ec81bf848c042ef83b059876a1133b6",
       "workspace_look": "4.138.0-ls366"
     }
   },

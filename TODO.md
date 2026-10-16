@@ -2,7 +2,7 @@
 
 Where the Hackschule Workspace is going, how it gets there, and the open
 maintenance work. Rewritten in October 2026 after a review of all teaching
-material and cleaned up on 15 October 2026: what is done is gone from this
+material and cleaned up on 16 October 2026: what is done is gone from this
 list; `docs/aufgaben.md` describes what exists.
 
 
@@ -36,7 +36,7 @@ page, the start page and practice sets from Code Bites (`docs/aufgaben.md`).
 Still open:
 
 * [ ] A generated »Wie geht es weiter?« box at the end of a page, from a new `next` field
-* [ ] Teacher notes with solutions for every activity; 24 have a `lehrkraft.md`, the SQL introduction and the language pages have none
+* [ ] Teacher notes with solutions for every activity; 32 have a `lehrkraft.md`, the SQL introduction and the language pages have none
 * [ ] Workspace-state check for a running server (a port answers), for the setup steps of web activities
 * [ ] Link the matching Code Bites exercises from each programming-language page
 
@@ -108,8 +108,12 @@ generated screenshots:
 * »Kryptographie im Terminal« (`src/content/crypto`), hashes, salted password hashes, AES, RSA, Ed25519 signatures with `ssh-keygen -Y`, a partner part over port 1234
 * »Daten aus dem Netz« (`src/content/wetter`), the Open-Meteo weather API with `curl`/`jq`, Ruby with a cache, and a page with `fetch`
 * »Eine Klötzchenwelt in 3D« (`src/content/raylib`), raylib in 3D with Handbuch »raylib«; the starter is `specht/raylib-starter`, the same files as `vorlage/`
+* »Geheime Botschaften in Bildern« (`src/content/steganography`), Ruby/Python with ChunkyPNG/Pillow: bit planes, LSB with a length header, the chi-square test, compressed versus plain messages, colour classes with a mixed-radix number in RGB and CIELab
+* »Ein Krimi im Terminal« (`src/content/terminal-mystery`), a theft solved with `grep`, `head | tail`, `sort | uniq -d` and `git log`/`git show`; with the case server (`CASE_SERVER`) a last chapter with `ssh`, `ssh -J` and `scp`
+* »Ein Rechner für Ausdrücke« (`src/content/calculator`), Ruby/Python: tokens, recursive descent, evaluation, errors, `^` and variables, with a tree drawer that steps through the evaluation
 
-* [ ] Try each in class and adjust pace and tasks (LaTeX 3, web server 2, pixel wall 2, Hugo 2, weather 2, crypto 2, raylib 5 double lessons; TCP/IP 2 after its rework)
+* [ ] Try each in class and adjust pace and tasks (LaTeX 3, web server 2, pixel wall 2, Hugo 2, weather 2, crypto 2, raylib 5, steganography 3, crime story 2, calculator 2 double lessons; TCP/IP 2 after its rework)
+* [ ] Case server: try the SSH chapter with a whole class (1000 accounts, per-account limits, everyone on `museum.bitstein` at once) before switching it on elsewhere
 * [ ] Pixel wall: check how it behaves with a whole class painting on one Workspace
 * [ ] raylib: an icon of its own for the Handbuch section (now the star)
 
@@ -123,11 +127,11 @@ Prioritise creative, visible material that also works with younger students; the
 below is a writing priority, not a prerequisite chain.
 
 1. Flutter
-2. Cryptography
 
 Plus, from the review:
 
 * [ ] **Query stepper / database sandbox**: FROM → JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT with the intermediate table after each step; class repository and Class progress like the other sandboxes
+* [ ] **»Wie sicher ist ein Passwort?«** (Netze & Sicherheit): the defender's side only (counting combinations, a list of common passwords, salt, PBKDF2, measuring hashes per second); solutions, starters, list and tasks are on the branch `passwords`, the page is not written
 * [ ] **JPEG decoder project**: the interactive Huffman section is excellent, but iDCT, MCU and colour conversion get one paragraph each and there is nothing to implement; a staged decoder with a check per stage
 
 #### Flutter
@@ -167,7 +171,8 @@ Open findings from the October 2026 review:
 Platform-wide:
 
 * [ ] Use the Handbuch part for the opening (close folder, clone, open) on the 24 pages that still repeat it by hand
-* [ ] Convert manual screenshots to recipes when a page is touched: 213 manual, 637 generated; most left on Ziffernerkennung (44), Anaglyph (33), Fire (15), Handbuch HTML (12)
+* [ ] Convert manual screenshots to recipes when a page is touched: 212 manual, 712 generated; most left on Ziffernerkennung (44), Anaglyph (33), Fire (15), Handbuch HTML (12)
+* [ ] Small pictures stretched by `class='full'` (100 % wide, at least 1000 px): `gif/dithering.webp` (920 px wide) and the 1350-px PixelRAM and Feuerwerk shots; render them larger, or show a drawing at its own size with `img.drawing` and a recipe with `zoom: 2`, as the calculator and the automata pages do
 * [ ] E2E coverage for Git and TCP/IP
 * [ ] When a page is touched: English names in its code (variables, functions, files), as in the raylib, web server and pixel wall activities; comments stay German
 * [ ] On narrow screens, consider left-aligning long paragraphs instead of global justified text

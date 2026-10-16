@@ -114,14 +114,16 @@ So sieht der Baum für `2 + 3 * 4` aus. Das `*` hängt unter dem `+`, also wird 
 open-site: /calculator
 tab: preview
 viewport: 1029x700
+zoom: 2
 click: selector:#calc-input
 press: Control+A
 type: 2 + 3 * 4
+hook: plain-tree
 sleep: 1
 crop-element: #calc-stepper .calc-tree svg
 variants: dark
 -->
-<img class='full' src='baum.webp' alt='Ein Baum: oben ein Kreis mit +, darunter links das Blatt 2 und rechts ein Kreis mit *, unter dem die Blätter 3 und 4 hängen. Der Kreis mit * ist rot umrandet.'>
+<img class='drawing' style='width: 18em' src='baum.webp' alt='Ein Baum: oben ein Kreis mit +, darunter links das Blatt 2 und rechts ein Kreis mit *, unter dem die Blätter 3 und 4 hängen. Der Kreis mit * ist rot umrandet.'>
 
 ## Einrichten
 
@@ -262,6 +264,7 @@ Was eine Zahl ist, beschreibt ein endlicher Automat, wie du sie aus [Endliche Au
 open-site: /automatron
 tab: preview
 viewport: 1029x700
+zoom: 2
 click: selector:#ti_input
 type: z+(pz+)?
 press: Enter
@@ -270,7 +273,7 @@ sleep: 1
 crop-element: #output_area svg:nth-of-type(3)
 variants: dark
 -->
-<img class='full' src='automatron-zahl.webp' alt='Automatron zeichnet vier Zustände s0 bis s3. Mit z geht es von s0 nach s1, s1 ist grün mit doppeltem Rand und hat eine Schleife mit z. Mit p geht es von s1 nach s2, mit z von s2 nach s3, s3 ist grün und hat eine Schleife mit z.'>
+<img class='drawing' style='width: 30em' src='automatron-zahl.webp' alt='Automatron zeichnet vier Zustände s0 bis s3. Mit z geht es von s0 nach s1, s1 ist grün mit doppeltem Rand und hat eine Schleife mit z. Mit p geht es von s1 nach s2, mit z von s2 nach s3, s3 ist grün und hat eine Schleife mit z.'>
 
 Die Schleifen in `tokenize` sind dieser Automat: Die erste läuft in s1 im Kreis, solange Ziffern kommen. Ein Punkt führt nach s2, und nur wenn danach wieder eine Ziffer kommt, geht es nach s3 weiter. Hört die Zahl in s2 auf, wie in `3.`, hat der Automat keine Zahl gelesen. Dein Tokenizer nimmt dann nur die `3` und meldet den Punkt als Zeichen, das nicht passt.
 
