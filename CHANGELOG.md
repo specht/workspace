@@ -18,8 +18,18 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Neuer Abschnitt »Bilder und Kompression« im Katalog, mit einer Schraubzwinge
+  als Zeichen: Lauflängen, Huffman, LZW, GIF und JPEG, in dieser Reihenfolge.
+  JPEG zieht aus »Wie Computer rechnen« dorthin um.
+- Neue Aktivität »Komprimieren mit Lauflängen« (`/rle`), in Ruby, die
+  einfachste der Reihe: ein Pixeleditor mit der Diskette aus dem GIF-Labor
+  zeigt neben jeder Zeile ihre Läufe und die Größe, während man malt.
+  Lernende schreiben RLE erst als Text, merken an `2021`, warum das mit
+  Ziffern nicht geht, und dann als Paare von Bytes; gemessen wird an einer
+  Pixeldatei, die auf 4 % schrumpft, und an einem Text, der um die Hälfte
+  wächst. Sieben Aufgaben.
 - Neue Aktivität »Komprimieren mit Huffman« (`/huffman`), in Ruby, im
-  Abschnitt »Wie Computer rechnen« vor LZW: vom Morsecode über präfixfreie
+  neuen Abschnitt »Bilder und Kompression«: vom Morsecode über präfixfreie
   Codes zum Huffman-Baum, den ein Schrittmacher für einen eingetippten Text
   Schritt für Schritt aufbaut und zeichnet. Lernende schreiben aus einem
   Gerüst mit leeren Methoden Zählen, Baum, Codetabelle, Codieren und
@@ -27,8 +37,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   kanonische Codes, wie JPEG sie speichert. Weil es bei Gleichstand mehrere
   richtige Bäume gibt, prüfen die Aufgaben, was für jeden gilt: präfixfrei
   und so wenige Bits wie möglich. Acht Aufgaben.
-- Neue Aktivität »Komprimieren mit LZW« (`/lzw`), in Ruby, im Abschnitt »Wie
-  Computer rechnen« vor GIF: Zwei Schrittmacher komprimieren einen Text, den
+- Neue Aktivität »Komprimieren mit LZW« (`/lzw`), in Ruby, im neuen
+  Abschnitt »Bilder und Kompression«: Zwei Schrittmacher komprimieren einen Text, den
   man selbst eintippt, und entpacken die Codes wieder, mit dem Sonderfall
   rot markiert. Lernende schreiben `compress` und `decompress` aus einem
   Gerüst mit leeren Methoden und messen an der Spezifikation von GIF und an
@@ -47,8 +57,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Beispiel können. Sechs Aufgaben, die letzten mit Toleranz, weil zwei
   JPEG-Decoder nie Pixel für Pixel dasselbe liefern; eine Notiz für
   Lehrkräfte und ein vollständiger Decoder in `src/content/jpeg/loesung/`.
-- Neue Aktivität »Eine GIF-Datei decodieren« (`/gif`), im Abschnitt »Wie
-  Computer rechnen« neben JPEG: Lernende schreiben in C einen GIF-Decoder, der
+- Neue Aktivität »Eine GIF-Datei decodieren« (`/gif`), im neuen Abschnitt
+  »Bilder und Kompression« neben JPEG: Lernende schreiben in C einen GIF-Decoder, der
   mit PixelRAM zeichnet. Die Seite geht jeden Block an einer Diskette mit
   16 × 16 Pixeln durch, mit den Diagrammen der Spezifikation und farbigen
   Hexdumps; ein Schrittmacher zeigt die LZW-Decodierung Code für Code, mit

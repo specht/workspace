@@ -1,0 +1,184 @@
+# Aufgaben zu »Komprimieren mit Lauflängen«.
+# Format: docs/aufgaben.md. Alles liegt in /workspace/rle.
+# The values come from loesung/rle.rb; diskette.raw is the floppy of the
+# GIF activity, 8 times enlarged, one byte per pixel (src/static/rle/).
+format: 1
+activity: rle
+tasks:
+  - id: von-hand
+    title: Von Hand
+    prompt: |
+      Wie sieht `AAAABBBCCD` als Lauflängen aus, mit der Zahl vor jedem
+      Zeichen?
+    check:
+      type: answer
+      compare: regex
+      expect: '^\s*4A\s*3B\s*2C\s*1D\s*$'
+    feedback:
+      - when: { matches: '^\s*4A\s*3B\s*2C\s*D\s*$' }
+        say: Auch ein Lauf der Länge 1 bekommt seine Zahl, sonst weiß man beim Lesen nicht, ob vor dem D eine Zahl fehlt.
+      - when: { matches: 'A4' }
+        say: Die Zahl kommt vor das Zeichen, so wie »4 × A«.
+    solution: '`4A3B2C1D`: vier A, drei B, zwei C, ein D. Aus 10 Zeichen werden 8; bei so kurzen Läufen lohnt es sich kaum.'
+
+  - id: rle
+    title: Lauflängen als Text
+    prompt: |
+      Schreib `rle` in `rle.rb`.
+    check:
+      type: ruby
+      file: rle/rle.rb
+      cases:
+        - rle('WWWWWWBBBWWWW'): "'6W3B4W'"
+        - call: rle('')
+          expect: "''"
+          say: Ein leerer Text ergibt einen leeren Code.
+        - call: rle('A')
+          expect: "'1A'"
+          say: Auch ein einzelnes Zeichen ist ein Lauf, der Länge 1.
+        - rle('ABC'): "'1A1B1C'"
+        - call: rle('A' * 12)
+          expect: "'12A'"
+          say: Zwölf A sind ein Lauf mit der Zahl 12, nicht zwei Läufe.
+        - call: rle('AAB')
+          expect: "'2A1B'"
+          say: Denk an den letzten Lauf, wenn der Text zu Ende ist.
+        - rle('Hallo  Welt'): "'1H1a2l1o2 1W1e1l1t'"
+    hint: Merk dir das Zeichen des aktuellen Laufs und zähle. Kommt ein anderes Zeichen, hängst du `"#{count}#{char}"` an und beginnst neu. Nach der Schleife fehlt noch der letzte Lauf.
+    solution: |
+      ```ruby
+      def rle(text)
+          out = ''
+          text.each_char.chunk_while { |a, b| a == b }.each do |run|
+              out << "#{run.size}#{run[0]}"
+          end
+          out
+      end
+      ```
+      Mit einer Schleife und zwei Variablen für Zeichen und Länge geht es genauso; `chunk_while` fasst gleiche Nachbarn zu Läufen zusammen.
+
+  - id: unrle
+    title: Zurück zum Text
+    prompt: |
+      Schreib `unrle`.
+    check:
+      type: ruby
+      file: rle/rle.rb
+      cases:
+        - unrle('6W3B4W'): "'WWWWWWBBBWWWW'"
+        - call: unrle('12A')
+          expect: "'A' * 12"
+          say: '`12A` sind zwölf A: Die Zahl kann mehrere Ziffern haben.'
+        - unrle(''): "''"
+        - unrle('1A1B1C'): "'ABC'"
+        - unrle(rle('Hallo  Welt')): "'Hallo  Welt'"
+        - unrle('100x') == 'x' * 100: true
+    hint: '`code.scan(/(\d+)(\D)/)` liefert Paare wie `[''6'', ''W'']`. `''W'' * 6` ist `''WWWWWW''`, `''6''.to_i` ist 6, und `join` hängt alles aneinander.'
+    solution: |
+      ```ruby
+      def unrle(code)
+          code.scan(/(\d+)(\D)/).map { |count, char| char * count.to_i }.join
+      end
+      ```
+
+  - id: ziffern
+    title: Ziffern im Text
+    prediction: true
+    prompt: |
+      `rle('2021')` ergibt `'12101211'`. Was macht `unrle` daraus?
+    check:
+      type: choice
+      options:
+        - Nichts Brauchbares. Niemand weiß, welche Ziffern Längen sind und welche zum Text gehören.
+        - Wieder `'2021'`.
+        - '`''2021''` oder `''20021''`, je nachdem, wie man es liest.'
+        - Eine Fehlermeldung, weil Ziffern nicht erlaubt sind.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: '`12101211` könnte ein Lauf aus 12101211-mal nichts sein, oder 1-mal 2, 1-mal 0, … oder 121-mal 0, dann 12-mal 1, … Probier es aus.'
+      - when: { picked: 2 }
+        say: Es gibt noch viel mehr Möglichkeiten, und `unrle` kann keine davon wählen. Probier es aus.
+      - when: { picked: 3 }
+        say: '`rle` hat nichts geprüft und einfach Ziffern geschrieben. Probier aus, was `unrle` daraus macht.'
+    solution: 'Mit `scan(/(\d+)(\D)/)` findet `unrle` gar nichts, weil kein Zeichen kommt, das keine Ziffer ist: Das Ergebnis ist leer. Als Text funktioniert RLE nur ohne Ziffern im Text.'
+
+  - id: bytes
+    title: Lauflängen als Bytes
+    prompt: |
+      Schreib `rle_bytes` und `unrle_bytes`. Ein Lauf ist immer zwei Zahlen,
+      die Länge von 1 bis 255 und das Byte; längere Läufe werden geteilt.
+    check:
+      type: ruby
+      file: rle/rle.rb
+      cases:
+        - rle_bytes('AAAB'): '[3, 65, 1, 66]'
+        - call: rle_bytes('')
+          expect: '[]'
+          say: Ein leerer Text hat keine Läufe.
+        - call: rle_bytes('A' * 300)
+          expect: '[255, 65, 45, 65]'
+          say: Ein Lauf ist höchstens 255 lang, denn die Länge muss in ein Byte passen. 300-mal A sind 255 und 45.
+        - rle_bytes('A' * 510): '[255, 65, 255, 65]'
+        - rle_bytes('2021'): '[1, 50, 1, 48, 1, 50, 1, 49]'
+        - unrle_bytes([3, 65, 1, 66]): "'AAAB'"
+        - unrle_bytes([]): "''"
+        - call: unrle_bytes(rle_bytes('2021')) == '2021'
+          expect: true
+          say: Als Bytes kommen auch Ziffern wieder heraus.
+        - call: (data = ((0..255).to_a * 2 + [0] * 1000).pack('C*'); unrle_bytes(rle_bytes(data)) == data)
+          expect: true
+          say: Mit allen Bytes von 0 bis 255 und einem langen Lauf von Nullen kommt etwas anderes heraus.
+    hint: '`data.each_byte` liefert Zahlen, `bytes.each_slice(2) { |count, byte| … }` geht ein Array paarweise durch, `[byte] * count` wiederholt, und `pack(''C*'')` macht aus Zahlen wieder einen String.'
+    solution: |
+      ```ruby
+      def rle_bytes(data)
+          out = []
+          data.each_byte.chunk_while { |a, b| a == b }.each do |run|
+              run.each_slice(255) { |part| out << part.size << part[0] }
+          end
+          out
+      end
+
+      def unrle_bytes(bytes)
+          out = []
+          bytes.each_slice(2) { |count, byte| out.concat([byte] * count) }
+          out.pack('C*')
+      end
+      ```
+
+  - id: diskette
+    title: Die Diskette
+    prompt: |
+      Wie viele Zahlen macht `rle_bytes` aus `diskette.raw` mit seinen 16.384
+      Bytes?
+    check:
+      type: number
+      expect: 690
+    feedback:
+      - when: { equals: 345 }
+        say: Das sind die Läufe. Jeder Lauf sind zwei Zahlen, die Länge und das Byte.
+      - when: { equals: 16384 }
+        say: Das ist die Datei selbst.
+    hint: '`rle_bytes(File.binread(''diskette.raw'')).size`'
+    solution: '690 Zahlen, also 690 Bytes für 345 Läufe: gut 4 % der Datei. Jede Zeile hat nur ein paar lange Läufe, und keiner ist länger als 128 Pixel, die Breite des Bildes.'
+
+  - id: text
+    title: Ein Text
+    prediction: true
+    prompt: |
+      Was passiert mit `spec-gif89a.txt` (83.003 Bytes), wenn du `rle_bytes`
+      darauf anwendest? Rate erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - Es wird viel kleiner, wie die Diskette.
+        - Es wird ein wenig kleiner.
+        - Es wird größer.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Probier es aus. Wie oft kommt in einem Text dasselbe Zeichen zweimal hintereinander?
+      - when: { picked: 1 }
+        say: Probier es aus. Wie oft kommt in einem Text dasselbe Zeichen zweimal hintereinander?
+    solution: 'Es wird größer, 125.796 Bytes statt 83.003: Fast jedes Zeichen ist ein eigener Lauf und kostet zwei Bytes. Nur Leerzeichen und Linien aus `-` und `=` bilden längere Läufe.'
