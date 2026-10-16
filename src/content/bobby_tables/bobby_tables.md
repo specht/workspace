@@ -1,7 +1,8 @@
 <div class='meta'>
 image: xkcd-327.webp:0:50
 kind: labor
-language: Ruby / SQL
+language: Ruby / Python / SQL
+languages: [ruby, python]
 duration: 1 Doppelstunde
 requires: [mysql]
 reference: [sql]
@@ -85,6 +86,7 @@ Die Passwörter stehen hier im Klartext, damit du siehst, was passiert. Ein echt
 
 ## Ein Anmeldeprogramm
 
+<!-- language: ruby -->
 Das Programm braucht die Ruby-Bibliothek `mysql2`. Installiere sie einmal:
 
 ```bash
@@ -100,12 +102,32 @@ Hinweise:
 - `$stdin.noecho(&:gets)` liest das Passwort, ohne es auf dem Bildschirm zu zeigen.
 - Mit <code>#&#8288;{ … }</code> wird der Wert einer Variable in einen String eingebettet (Z. 22 und 23), wie in Python mit f-Strings. Man nennt das [String Interpolation](https://en.wikipedia.org/wiki/String_interpolation).
 - Der Backslash am Ende von Z. 21 und 22 setzt den String in der nächsten Zeile fort: Es ist ein einziger String ohne Zeilenumbruch, nur zur besseren Lesbarkeit auf drei Zeilen verteilt.
+<!-- /language -->
+<!-- language: python -->
+Das Programm braucht die Python-Bibliothek `mysql.connector`; sie ist im Workspace schon installiert.
+
+Lege im Ordner `bobby_tables` die Datei `login.py` an und füge diesen Code ein. Trage oben den Namen deiner Datenbank und ihr Passwort aus dem Profil ein:
+
+_include_file(login.py, python)
+
+Hinweise:
+
+- `getpass.getpass` liest das Passwort, ohne es auf dem Bildschirm zu zeigen.
+- In einem f-String (`f"…"`) wird mit `{ … }` der Wert einer Variable in den String eingebettet (Z. 21 und 22). Man nennt das [String Interpolation](https://en.wikipedia.org/wiki/String_interpolation).
+- Die drei Strings in Z. 20 bis 22 stehen in einer Klammer direkt hintereinander. Python klebt sie zu einem einzigen String ohne Zeilenumbruch zusammen; sie sind nur zur besseren Lesbarkeit auf drei Zeilen verteilt.
+- `cursor.fetchall()` holt alle Zeilen der Antwort, jede als Tupel; `rows[0][0]` ist die erste Spalte der ersten Zeile.
+<!-- /language -->
 
 <div class='hint'>
 Für dieses Labor steht das Passwort im Quelltext. In einem echten Programm gehört es nicht dorthin, sondern zum Beispiel in eine Umgebungsvariable: So machen es <code>MYSQL_HOST</code>, <code>MYSQL_USER</code> und <code>MYSQL_PASSWORD</code> für deine Hauptdatenbank.
 </div>
 
+<!-- language: ruby -->
 Starte das Programm mit `ruby login.rb` und melde dich als `alice` mit dem Passwort `asdf` an, dann mit einem falschen Passwort.
+<!-- /language -->
+<!-- language: python -->
+Starte das Programm mit `python3 login.py` und melde dich als `alice` mit dem Passwort `asdf` an, dann mit einem falschen Passwort.
+<!-- /language -->
 
 ## Experimentieren
 
@@ -133,17 +155,30 @@ Der Angriff, den du ausprobiert hast, heißt **SQL Injection**: Eigener SQL-Code
 
 Statt die Eingabe per String Interpolation einzubauen, benutzt man ein **Prepared Statement**: Die Abfrage wird mit Platzhaltern `?` vorbereitet und erst danach mit den Eingaben ausgeführt. Die Datenbank bekommt den SQL-Code und die Werte getrennt; was in einem Wert steht, wird nie zu SQL, egal welche Zeichen darin vorkommen.
 
+<!-- language: ruby -->
 Kommentiere die Zeilen 21 bis 23 aus und füge dahinter ein:
 
 ```ruby
 query = CLIENT.prepare("SELECT login FROM users WHERE login = ? AND password = ? LIMIT 1;")
 rows = query.execute(login, password).to_a
 ```
+<!-- /language -->
+<!-- language: python -->
+Kommentiere die Zeilen 19 bis 23 aus und füge dahinter ein:
+
+```python
+cursor = connection.cursor(prepared=True)
+cursor.execute("SELECT login FROM users WHERE login = ? AND password = ? LIMIT 1;", (login, password))
+rows = cursor.fetchall()
+```
+
+`connection.cursor(prepared=True)` gibt einen Cursor für Prepared Statements. Die Werte gehen als Tupel `(login, password)` getrennt von der Abfrage mit.
+<!-- /language -->
 
 _uses(platzhalter)
 
 <div class='hint'>
-Zeilen kommentierst du in Ruby mit <code>#</code> am Anfang aus. Schneller geht es, wenn du sie markierst und <kbd>Strg</kbd><kbd>#</kbd> drückst (mit US-Tastaturlayout <kbd>Ctrl</kbd><kbd>/</kbd>).
+Zeilen kommentierst du in Ruby und Python mit <code>#</code> am Anfang aus. Schneller geht es, wenn du sie markierst und <kbd>Strg</kbd><kbd>#</kbd> drückst (mit US-Tastaturlayout <kbd>Ctrl</kbd><kbd>/</kbd>).
 </div>
 
 _task(prepared)

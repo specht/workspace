@@ -18,14 +18,24 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- »Daten aus dem Netz« gibt es jetzt auch in Python, nur mit der
+  Standardbibliothek (`urllib.request`, `json`): die drei Stufen von
+  `wetter.py` mit Fehlerbehandlung und Cache, die Erklärungen dazu, zwei
+  Screenshots und Varianten der drei Aufgaben, die `wetter.rb` lesen. Die
+  Wetterseite ist für beide Sprachen dieselbe. »Das Wetter aus Ruby« heißt
+  jetzt »Das Wetter aus deinem Programm«; wer sie oder »Ein Cache« schon
+  gelöst hat, sieht sie einmal als »geändert«.
+- »SQL Injection« gibt es jetzt auch in Python: `login.py` mit
+  `mysql.connector`, die Hinweise dazu und das Prepared Statement mit
+  `cursor(prepared=True)`. Python braucht dafür nichts zu installieren. Wer
+  »Ein Prepared Statement« schon gelöst hat, sieht die Aufgabe einmal als
+  »geändert«.
 - »Eine Pixelwand für alle« gibt es jetzt auch in Python: die fünf Stufen
-  des Servers mit dem Paket `websockets` (in einer virtuellen Umgebung
-  `.venv` im Projektordner, ohne Administratorrechte), die Erklärungen dazu,
-  sechs Screenshots aus dem Workspace und Varianten der Aufgaben, die Ruby
-  nennen. Webseite und `flood.js` sind für beide Sprachen dieselben. Die
-  Abgabe lässt `.venv` aus. Wer »Jeder kann alles schicken«, »Die
-  Pixelwand«, »Ein Lock« oder die Abgabe schon erledigt hat, sieht sie
-  einmal als »geändert«.
+  des Servers mit dem Paket `websockets` (`pip install websockets`), die
+  Erklärungen dazu, sechs Screenshots aus dem Workspace und Varianten der
+  Aufgaben, die Ruby nennen. Webseite und `flood.js` sind für beide
+  Sprachen dieselben. Wer »Jeder kann alles schicken«, »Die Pixelwand« oder
+  »Ein Lock« schon gelöst hat, sieht sie einmal als »geändert«.
 - »Ein eigener Webserver« gibt es jetzt auch in Python: alle sechs Stufen
   des Servers mit `socket`, `threading` und `urllib.parse`, die Erklärungen
   dazu, sechs Screenshots aus dem Terminal und Varianten der Aufgaben, die
@@ -503,6 +513,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- `pip install` funktioniert im Workspace wie `gem install`: Pakete landen
+  ohne Administratorrechte in `/workspace/.local` und bleiben über einen
+  Neustart erhalten; `python3` findet sie ohne virtuelle Umgebung. Bisher
+  lehnte pip jede Installation außerhalb einer virtuellen Umgebung ab
+  (»externally-managed-environment«). Virtuelle Umgebungen funktionieren
+  wie zuvor. `mysql.connector` für Python kommt jetzt in Version 26.7 aus
+  pip statt aus Ubuntu; die alte Fassung 8.0.15 konnte sich unter Python
+  3.12 nicht bei MySQL 8.4 anmelden. Betreibende bauen das Workspace-Image
+  neu (`./build-image.sh`); laufende Workspaces bekommen die Änderung beim
+  nächsten Start.
 - Startseite für alle, die nicht angemeldet sind: Statt Begrüßung und vier
   Textkacheln ein kompakter Kopf mit einem Satz, was der Workspace ist, einem
   Link zur Anmeldung und einem Bild des Workspaces
