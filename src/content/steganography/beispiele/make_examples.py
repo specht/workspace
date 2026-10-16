@@ -15,8 +15,9 @@ strandhaeuser.png and moewen.png are two street photos by Ian Kobylanski
 - ../klassen.webp: the same sky full at about 9 bits per pixel, once with
   RGB boxes (8 values per channel) and once with Lab classes 78 x 48 x 46.
 - ../teaser.webp: the gulls with the same message hidden in them, for the
-  activity's card: a photo that looks innocent. (The site scales card
-  pictures, so the message does not survive there.)
+  activity's card: a photo that looks innocent, cropped to 16:9 like the
+  card so that the man stays in it. (The site scales card pictures, so the
+  message does not survive there.)
 
 The three PNGs also go into src/static/steganography/, where the page
 offers them for download.
@@ -115,7 +116,7 @@ def klassen():
 
 
 def teaser():
-    gulls = Image.open(os.path.join(HERE, 'moewen.png')).convert('RGB')
+    gulls = Image.open(os.path.join(HERE, 'moewen.png')).convert('RGB').crop((0, 50, 480, 320))
     hide(gulls, MESSAGE).save(os.path.join(HERE, '..', 'teaser.webp'), lossless=True)
 
 
