@@ -45,12 +45,15 @@ duration: 2 Doppelstunden
         stroke: var(--bs-secondary-color);
         stroke-width: 1.5;
     }
-    .hf-forest .node circle, .hf-forest .leaf rect {
+    .hf-forest .node circle, .hf-forest .leaf circle {
         fill: var(--bs-body-bg);
         stroke: var(--bs-body-color);
         stroke-width: 1.5;
     }
-    .hf-forest .pick circle, .hf-forest .pick rect {
+    .hf-forest .leaf circle {
+        fill: color-mix(in srgb, var(--bs-primary) 12%, var(--bs-body-bg));
+    }
+    .hf-forest .pick circle {
         stroke: #bc2326;
         stroke-width: 3;
     }
@@ -447,7 +450,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const n = p.node;
             const pick = picks.some((t) => key(t) === key(n)) ? ' pick' : '';
             if (!n.left) {
-                out.push(`<g class='leaf${pick}' opacity='${p.alpha}'><rect x='${p.x - 15}' y='${p.y - 14}' width='30' height='28' rx='5'/><text x='${p.x}' y='${p.y}'>${esc(label(n.byte))}</text><text class='weight' x='${p.x}' y='${p.y + 23}'>${n.weight}</text></g>`);
+                // Round like the inner nodes, so every edge ends in the middle
+                // of a curve, aimed at the centre; tinted to tell them apart.
+                out.push(`<g class='leaf${pick}' opacity='${p.alpha}'><circle cx='${p.x}' cy='${p.y}' r='15'/><text x='${p.x}' y='${p.y}'>${esc(label(n.byte))}</text><text class='weight' x='${p.x}' y='${p.y + 25}'>${n.weight}</text></g>`);
             } else {
                 out.push(`<g class='node${pick}' opacity='${p.alpha}'><circle cx='${p.x}' cy='${p.y}' r='14'/><text x='${p.x}' y='${p.y}'>${n.weight}</text></g>`);
             }

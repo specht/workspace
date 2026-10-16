@@ -568,6 +568,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Huffman: Die Blätter im Baum sind jetzt rund wie die inneren Knoten, leicht
+  getönt, damit man sie unterscheidet. So endet jede Kante sichtbar in der
+  Mitte eines Kreises statt an der Ecke eines Kästchens; das Bild auf der
+  Karte ist mit dem neuen Baum erzeugt.
+
 - `check-task: ID <- ANTWORT` in Screenshot-Rezepten trägt eine Antwort in
   die Karte ein, bevor geprüft wird: einen Befehl, eine Zahl, eine Auswahl.
   So prüfen Rezepte auch Befehls- und Antwortaufgaben. Beispiele in
