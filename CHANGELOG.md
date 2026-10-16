@@ -18,6 +18,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- »Endliche Automaten« gibt es jetzt auch in Ruby, und Ruby ist dort wie
+  überall die Voreinstellung: alle sechs Programme, die Erklärungen dazu,
+  drei Screenshots aus dem Workspace und die vier Programmieraufgaben mit
+  Prüfungen in beiden Sprachen. Der Titel heißt nur noch »Endliche
+  Automaten«. Wer die vier Programmieraufgaben schon in Python gelöst hat,
+  sieht sie einmal als »geändert«, weil ihre Prüfung jetzt beide Sprachen
+  umfasst.
 - Aktivitäten in Ruby und in Python: Lehrkräfte stellen auf der
   Klassenseite unter »Sprache« ein, welche Programmiersprache ihre Gruppe
   sieht, ohne Einstellung Ruby. Auf Seiten, die es in beiden Sprachen gibt,
@@ -469,6 +476,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Fragen, warum es schützt und warum ein eigener Zugang den Schaden
   begrenzt. Hinweis auf die Klartext-Passwörter und auf »Kryptographie im
   Terminal«, Notiz für Lehrkräfte.
+
+### Behoben
+
+- Unter der Fußzeile blieb auf allen Seiten ein leerer Streifen von 100
+  Pixeln; er war für die feste Fußzeile der Entwicklungsumgebung gedacht.
+- Die Kacheln der Programmiersprachen auf der Startseite folgen wieder dem
+  dunklen Modus, mit den dunklen Fassungen der Logos und ohne weiße Fläche.
+- Das Bild des Workspaces neben der Einleitung auf der Startseite ist 16:9
+  statt fast quadratisch und so nicht mehr höher als der Text.
 
 ### Geändert
 

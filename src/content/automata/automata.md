@@ -1,7 +1,8 @@
 <div class='meta'>
 image: teaser.webp
 kind: projekt
-language: Python
+language: Ruby / Python
+languages: [ruby, python]
 duration: 2 Doppelstunden
 </div>
 
@@ -11,15 +12,20 @@ duration: 2 Doppelstunden
     data-levels="h2,h3">
 </div>
 
-# Endliche Automaten in Python
+# Endliche Automaten
 
 <p class='abstract'>
-Ein Drehkreuz, ein Zahlenschloss und ein Automat, der durch 3 teilt, ohne zu rechnen: Du baust endliche Automaten in Python und findest heraus, warum ein Schloss bei 1 2 1 2 1 3 nicht aufgeht, obwohl der Code 1213 ist. Dann schreibst du einen Automaten, der raten darf, verwandelst ihn mit einem kleinen Programm in einen, der nicht raten muss, und siehst zu, wie der explodiert.
+Ein Drehkreuz, ein Zahlenschloss und ein Automat, der durch 3 teilt, ohne zu rechnen: Du baust endliche Automaten in Ruby oder Python und findest heraus, warum ein Schloss bei 1 2 1 2 1 3 nicht aufgeht, obwohl der Code 1213 ist. Dann schreibst du einen Automaten, der raten darf, verwandelst ihn mit einem kleinen Programm in einen, der nicht raten muss, und siehst zu, wie der explodiert.
 </p>
 
 Ein Drehkreuz am Schwimmbad, ein Getränkeautomat, eine Ampel: Sie alle sind in jedem Moment in einem von wenigen **Zuständen** (zu, offen; grün, gelb, rot). Jede Eingabe, eine Münze, ein Knopfdruck, ein Takt, lässt sie nach einer festen Regel in einen anderen Zustand wechseln. Mehr gibt es nicht: keine Variablen, kein Gedächtnis außer dem Zustand. So ein Gerät heißt in der Informatik **endlicher Automat**, und mit genau dieser Idee sucht dein Editor nach Wörtern, prüfen Programme, ob eine E-Mail-Adresse richtig aussieht, und zerlegt ein Compiler deinen Code in Wörter.
 
+<!-- language: ruby -->
+In dieser Aktivität programmierst du Automaten in Ruby, und zwar so einfach wie möglich: Ein Automat ist eine Tabelle, ein Hash, und eine Schleife, die die Eingabe Zeichen für Zeichen liest.
+<!-- /language -->
+<!-- language: python -->
 In dieser Aktivität programmierst du Automaten in Python, und zwar so einfach wie möglich: Ein Automat ist eine Tabelle, ein Python-`dict`, und eine Schleife, die die Eingabe Zeichen für Zeichen liest.
+<!-- /language -->
 
 ## Einrichten
 
@@ -29,7 +35,12 @@ Lege im Terminal (<kbd>Strg</kbd><kbd>J</kbd>) einen Ordner an und öffne ihn mi
 mkdir /workspace/automata
 ```
 
+<!-- language: ruby -->
+Alle Dateien dieser Aktivität kommen in diesen Ordner. Ein Programm startest du im Terminal mit `ruby` und dem Namen der Datei.
+<!-- /language -->
+<!-- language: python -->
 Alle Dateien dieser Aktivität kommen in diesen Ordner. Ein Programm startest du im Terminal mit `python3` und dem Namen der Datei.
+<!-- /language -->
 
 ## Ein Drehkreuz
 
@@ -73,6 +84,61 @@ Das Drehkreuz am Eingang zum Schwimmbad ist erst zu. Wirfst du eine Münze ein, 
 </g>
 </svg>
 
+<!-- language: ruby -->
+Lege `turnstile.rb` an:
+
+```ruby
+# Ein Drehkreuz wie am Eingang zum Schwimmbad. Für jeden Zustand und jede
+# Eingabe steht hier, in welchen Zustand das Drehkreuz wechselt.
+TRANSITIONS = {
+    ['zu', 'münze'] => 'offen',
+    ['zu', 'drücken'] => 'zu',
+    ['offen', 'münze'] => 'offen',
+    ['offen', 'drücken'] => 'zu',
+}
+
+def run(inputs)
+    state = 'zu'
+    inputs.each do |symbol|
+        new_state = TRANSITIONS.fetch([state, symbol])
+        puts "#{state.rjust(5)}  #{symbol.ljust(8)} → #{new_state}"
+        state = new_state
+    end
+    state
+end
+
+run(['drücken', 'münze', 'drücken', 'drücken'])
+```
+
+`TRANSITIONS` ist die Tabelle des Automaten: Zu jedem Paar aus Zustand und Eingabe steht dort der neue Zustand, so wie zu jedem Pfeil im Bild. `TRANSITIONS[['zu', 'münze']]` ist `'offen'`. `fetch` schlägt genauso nach, meldet aber einen Fehler, wenn es ein Paar nicht gibt. Die Methode `run` beginnt in `zu`, liest die Eingaben der Reihe nach, schlägt für jede den neuen Zustand nach und gibt ihn aus. Starte das Programm:
+
+```bash
+ruby turnstile.rb
+```
+
+<!-- tutorial-screenshot
+# Ordner automata, turnstile.rb offen, darunter die Ausgabe
+viewport: 1029x720
+write-file: automata/turnstile.rb <- file:stufen/turnstile.rb
+press: Control+K
+press: Control+O
+wait-for-input-value: /workspace/
+type: automata
+press: Enter
+wait-for-input-value: /workspace/automata/
+press: Enter
+wait-for-text: turnstile.rb
+open-file: turnstile.rb
+hide-left-sidebar
+terminal-open
+terminal-run: clear
+terminal-run: ruby turnstile.rb
+terminal-wait-for-prompt
+move-mouse: selector:.terminal
+-->
+<img class='full' src='drehkreuz-ruby.webp' alt='Oben im Editor turnstile.rb mit der Tabelle TRANSITIONS und der Methode run, unten im Terminal vier Zeilen Ausgabe: zu, drücken, zu; zu, münze, offen; offen, drücken, zu; zu, drücken, zu.'>
+<!-- /language -->
+<!-- language: python -->
 Lege `turnstile.py` an:
 
 ```python
@@ -105,19 +171,10 @@ python3 turnstile.py
 ```
 
 <!-- tutorial-screenshot
-# Ordner automata, turnstile.py offen, darunter die Ausgabe
+# turnstile.py offen, darunter die Ausgabe
 viewport: 1029x720
 write-file: automata/turnstile.py <- file:stufen/turnstile.py
-press: Control+K
-press: Control+O
-wait-for-input-value: /workspace/
-type: automata
-press: Enter
-wait-for-input-value: /workspace/automata/
-press: Enter
-wait-for-text: turnstile.py
 open-file: turnstile.py
-hide-left-sidebar
 terminal-open
 terminal-run: clear
 terminal-run: python3 turnstile.py
@@ -125,6 +182,7 @@ terminal-wait-for-prompt
 move-mouse: selector:.terminal
 -->
 <img class='full' src='drehkreuz.webp' alt='Oben im Editor turnstile.py mit der Tabelle TRANSITIONS und der Funktion run, unten im Terminal vier Zeilen Ausgabe: zu, drücken, zu; zu, münze, offen; offen, drücken, zu; zu, drücken, zu.'>
+<!-- /language -->
 
 Jede Zeile ist ein Pfeil im Bild: der alte Zustand, die Eingabe und der neue Zustand. Probier eigene Folgen aus, indem du die letzte Zeile änderst. Was passiert, wenn du `run(['tritt'])` schreibst?
 
@@ -197,6 +255,40 @@ Wie kann er das, ohne zu rechnen? Sein Zustand ist der **Rest**, der bisher beim
 <tr><th>Zustand (Rest)</th><td>1</td><td>0</td><td>0</td></tr>
 </table>
 
+<!-- language: ruby -->
+Er endet in 0, also ist 6 durch 3 teilbar. Lege `divisible.rb` an:
+
+```ruby
+# Ist eine Binärzahl durch 3 teilbar? Der Automat liest sie Ziffer für Ziffer
+# von links. Sein Zustand ist der Rest, der bis dahin beim Teilen durch 3 bleibt.
+START = 0
+ACCEPTING = [0]
+TRANSITIONS = {
+    [0, '0'] => 0, [0, '1'] => 1,
+    [1, '0'] => 2, [1, '1'] => 0,
+    [2, '0'] => 1, [2, '1'] => 2,
+}
+
+def accepts(word)
+    state = START
+    word.each_char do |symbol|
+        state = TRANSITIONS.fetch([state, symbol])
+    end
+    ACCEPTING.include?(state)
+end
+
+['11', '110', '111', '1001', '10000'].each do |word|
+    puts "#{word} #{word.to_i(2)} #{accepts(word)}"
+end
+```
+
+`START` und `ACCEPTING` sind neu: Die Methode `accepts` beginnt in `START` und sagt am Ende, ob der letzte Zustand in der Liste `ACCEPTING` steht. Zum Vergleich gibt das Programm neben jedem Wort seinen Wert aus; `word.to_i(2)` liest eine Binärzahl.
+
+```bash
+ruby divisible.rb
+```
+<!-- /language -->
+<!-- language: python -->
 Er endet in 0, also ist 6 durch 3 teilbar. Lege `divisible.py` an:
 
 ```python
@@ -227,14 +319,24 @@ for word in ['11', '110', '111', '1001', '10000']:
 ```bash
 python3 divisible.py
 ```
+<!-- /language -->
 
 _task(rest)
 
+<!-- language: ruby -->
+Der Automat hat nur drei Zustände und liest jede Ziffer genau einmal. Darum ist ihm egal, wie lang die Zahl ist. `(3 ** 1000).to_s(2)` schreibt 3 hoch 1000 als Binärzahl. Hänge diese Zeile an und probier es aus:
+
+```ruby
+puts accepts((3 ** 1000).to_s(2))
+```
+<!-- /language -->
+<!-- language: python -->
 Der Automat hat nur drei Zustände und liest jede Ziffer genau einmal. Darum ist ihm egal, wie lang die Zahl ist. `bin(3 ** 1000)` schreibt 3 hoch 1000 als Binärzahl, mit `0b` davor, das `[2:]` abschneidet. Hänge diese Zeile an und probier es aus:
 
 ```python
 print(accepts(bin(3 ** 1000)[2:]))
 ```
+<!-- /language -->
 
 Das sind 1585 Ziffern, und `accepts` merkt sich nie mehr als eine Zahl von 0 bis 2.
 
@@ -250,6 +352,49 @@ _task(grenzen)
 
 Am Fahrradkeller hängt ein Zahlenschloss mit Tastenfeld. Es hat keine Enter-Taste: Es geht auf, sobald die letzten vier getippten Ziffern der Code sind, 1213. Als Automat merkt es sich, wie viel vom Code schon stimmt; darum heißen seine Zustände so, wie das, was vom Code schon getippt ist:
 
+<!-- language: ruby -->
+```ruby
+# Ein Zahlenschloss mit dem Code 1213. Es öffnet, sobald die letzten vier
+# getippten Ziffern der Code sind. Der Zustand merkt sich, wie viel vom Code
+# schon stimmt.
+START = 'start'
+ACCEPTING = ['1213']
+TRANSITIONS = {
+    ['start', '1'] => '1',
+    ['1', '2'] => '12',
+    ['12', '1'] => '121',
+    ['121', '3'] => '1213',
+}
+
+def opens(digits)
+    state = START
+    digits.each_char do |digit|
+        # Fehlt ein Übergang, geht es zurück zum Start.
+        state = TRANSITIONS.fetch([state, digit], START)
+    end
+    ACCEPTING.include?(state)
+end
+
+['1213', '991213', '12', '121213'].each do |digits|
+    puts "#{digits} #{opens(digits)}"
+end
+```
+
+Neu ist `TRANSITIONS.fetch([state, digit], START)`: `fetch` sucht den Übergang in der Tabelle, und gibt es ihn nicht, nimmt es `START`. So muss nicht jede der zehn Ziffern in jedem Zustand einzeln in der Tabelle stehen; alles, was nicht zum Code passt, führt zurück zum Anfang. Starte das Programm:
+
+<!-- tutorial-screenshot
+# lock.rb: 121213 öffnet nicht
+write-file: automata/lock.rb <- file:stufen/lock.rb
+terminal-open
+terminal-maximize
+terminal-run: clear
+terminal-run: ruby lock.rb
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+<img class='full' src='schloss-ruby.webp' alt='ruby lock.rb gibt aus: 1213 true, 991213 true, 12 false und 121213 false.'>
+<!-- /language -->
+<!-- language: python -->
 ```python
 # Ein Zahlenschloss mit dem Code 1213. Es öffnet, sobald die letzten vier
 # getippten Ziffern der Code sind. Der Zustand merkt sich, wie viel vom Code
@@ -289,6 +434,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 <img class='full' src='schloss.webp' alt='python3 lock.py gibt aus: 1213 True, 991213 True, 12 False und 121213 False.'>
+<!-- /language -->
 
 Die ersten drei Zeilen stimmen. Aber die letzte: Lena hat sich vertippt, 1 2 1 2, und dann richtig weitergetippt, 1 3. Die letzten vier Ziffern sind 1213, und trotzdem bleibt das Schloss zu. Geh die Ziffern mit dem Automaten durch: Nach `121` kommt eine `2`. Das ist nicht die erwartete `3`, also geht es zurück nach `start`. Dabei hat Lena mit `12` gerade wieder den Anfang des Codes getippt. Der Automat hat es vergessen.
 
@@ -315,7 +461,12 @@ variants: dark
 -->
 <img class='full' src='automatron-schloss.webp' alt='Automatron zeichnet fünf Zustände s0 bis s4 in einer Reihe, s4 grün mit doppeltem Rand. Mit 1 geht es von s0 nach s1, mit 2 nach s2, mit 1 nach s3, mit 3 nach s4. Zurück führen: 1 von s1 nach s1, 2 von s3 nach s2, 1 von s3 nach s1, 1 von s4 nach s1, alle übrigen Ziffern nach s0.'>
 
+<!-- language: ruby -->
+`s0` ist `start`, `s1` ist `1`, `s2` ist `12`, `s3` ist `121` und `s4` ist `1213`. Vergleiche die Pfeile mit deiner Tabelle: Automatron zeichnet auch die Pfeile zurück nach `s0`, die in `lock.rb` das `fetch` erledigt. Darüber steht, wie Automatron zu diesem Automaten gekommen ist. Einen Teil davon baust du gleich selbst.
+<!-- /language -->
+<!-- language: python -->
 `s0` ist `start`, `s1` ist `1`, `s2` ist `12`, `s3` ist `121` und `s4` ist `1213`. Vergleiche die Pfeile mit deiner Tabelle: Automatron zeichnet auch die Pfeile zurück nach `s0`, die in `lock.py` das `get` erledigt. Darüber steht, wie Automatron zu diesem Automaten gekommen ist. Einen Teil davon baust du gleich selbst.
+<!-- /language -->
 
 ## Ein Automat, der rät
 
@@ -379,6 +530,48 @@ Beim Schloss steckte die Arbeit in den Pfeilen zurück. Es geht auch anders, wen
 
 So ein Automat heißt **nichtdeterministischer endlicher Automat**, kurz **NEA**. Die Automaten von vorhin, bei denen jeder Schritt feststeht, heißen **deterministisch**, kurz **DEA**. Ein NEA nimmt ein Wort an, wenn wenigstens einer seiner Wege in einem akzeptierenden Zustand endet.
 
+<!-- language: ruby -->
+Ruby kann nicht raten, aber es kann alle Wege zugleich verfolgen: Statt eines Zustands merkt sich `opens` eine **Menge** von Zuständen, nämlich alle, in denen der NEA gerade sein könnte. Die Tabelle führt darum zu Mengen. Lege `lock_nfa.rb` an:
+
+```ruby_copy
+# Das Zahlenschloss als nichtdeterministischer endlicher Automat (NEA).
+# Ein Übergang führt hier zu einer Menge von Zuständen: Der NEA darf raten.
+DIGITS = '0123456789'
+START = 'start'
+ACCEPTING = Set['1213']
+TRANSITIONS = {}
+
+# In start wartet der NEA: Jede Ziffer führt wieder nach start …
+DIGITS.each_char do |digit|
+    TRANSITIONS[['start', digit]] = Set['start']
+end
+# … aber bei einer 1 darf er auch raten, dass hier der Code beginnt.
+TRANSITIONS[['start', '1']] = Set['start', '1']
+TRANSITIONS[['1', '2']] = Set['12']
+TRANSITIONS[['12', '1']] = Set['121']
+TRANSITIONS[['121', '3']] = Set['1213']
+
+def opens(digits)
+    states = Set[START]
+    digits.each_char do |digit|
+        new_states = Set.new
+        states.each do |state|
+            new_states |= TRANSITIONS.fetch([state, digit], Set.new)
+        end
+        states = new_states
+        puts "#{digit} #{states.sort.inspect}"
+    end
+    !(states & ACCEPTING).empty?
+end
+
+if __FILE__ == $0
+    puts opens('121213')
+end
+```
+
+Ein paar Zeichen sind neu. `Set['start', '1']` ist eine Menge; `a |= b` fügt alle Elemente von `b` zur Menge `a` hinzu, und `states & ACCEPTING` sind die Zustände, die in beiden Mengen liegen. Der Teil unter `if __FILE__ == $0` läuft nur, wenn du die Datei selbst startest, nicht, wenn ein anderes Programm sie lädt; das brauchst du gleich.
+<!-- /language -->
+<!-- language: python -->
 Python kann nicht raten, aber es kann alle Wege zugleich verfolgen: Statt eines Zustands merkt sich `opens` eine **Menge** von Zuständen, nämlich alle, in denen der NEA gerade sein könnte. Die Tabelle führt darum zu Mengen. Lege `lock_nfa.py` an:
 
 ```python_copy
@@ -415,19 +608,92 @@ if __name__ == '__main__':
 ```
 
 Ein paar Zeichen sind neu. `{'start', '1'}` ist eine Menge; `a |= b` fügt alle Elemente von `b` zur Menge `a` hinzu, und `states & ACCEPTING` sind die Zustände, die in beiden Mengen liegen. Der Teil unter `if __name__ == '__main__':` läuft nur, wenn du die Datei selbst startest, nicht, wenn ein anderes Programm sie lädt; das brauchst du gleich.
+<!-- /language -->
 
 _task(nea-zustaende)
 
+<!-- language: ruby -->
+```bash
+ruby lock_nfa.rb
+```
+<!-- /language -->
+<!-- language: python -->
 ```bash
 python3 lock_nfa.py
 ```
+<!-- /language -->
 
 Nach jeder Ziffer steht die Menge der Zustände, in denen der NEA sein könnte. `121213` öffnet, ohne dass du über einen einzigen Pfeil zurück nachdenken musstest.
 
 ## Vom NEA zum DEA
 
+<!-- language: ruby -->
+Ein NEA ist leicht zu schreiben. Ein DEA ist leichter auszuführen: ein Nachschlagen pro Zeichen, kein Hantieren mit Mengen, und genau so bauen ihn Programme in Hardware oder in schnelle Suchfunktionen ein. Zum Glück muss man sich nicht entscheiden. Die Mengen, die `opens` ausgibt, sind selbst die Zustände eines DEA. Ein Programm kann sie alle aufzählen, ausgehend von `{start}`: Für jede Menge und jede Ziffer rechnet es aus, welche Menge danach kommt, und macht weiter, bis keine neue mehr auftaucht. Das heißt **Potenzmengenkonstruktion**. Lege `convert.rb` an:
+<!-- /language -->
+<!-- language: python -->
 Ein NEA ist leicht zu schreiben. Ein DEA ist leichter auszuführen: ein Nachschlagen pro Zeichen, kein Hantieren mit Mengen, und genau so bauen ihn Programme in Hardware oder in schnelle Suchfunktionen ein. Zum Glück muss man sich nicht entscheiden. Die Mengen, die `opens` ausgibt, sind selbst die Zustände eines DEA. Ein Programm kann sie alle aufzählen, ausgehend von `{start}`: Für jede Menge und jede Ziffer rechnet es aus, welche Menge danach kommt, und macht weiter, bis keine neue mehr auftaucht. Das heißt **Potenzmengenkonstruktion**. Lege `convert.py` an:
+<!-- /language -->
 
+<!-- language: ruby -->
+```ruby_copy
+# Die Potenzmengenkonstruktion: Sie baut aus einem NEA einen DEA. Jeder
+# Zustand des DEA ist eine Menge von Zuständen des NEA, nämlich die, in denen
+# der NEA gerade sein könnte.
+require_relative 'lock_nfa'
+
+# Alle Zustände, in die der NEA aus states mit symbol kommt.
+def step(states, symbol)
+    new_states = Set.new
+    states.each do |state|
+        new_states |= TRANSITIONS.fetch([state, symbol], Set.new)
+    end
+    new_states
+end
+
+def to_dfa
+    start = Set[START]
+    found = Set[start]
+    todo = [start]
+    transitions = {}
+    until todo.empty?
+        states = todo.pop
+        DIGITS.each_char do |symbol|
+            target = step(states, symbol)
+            transitions[[states, symbol]] = target
+            unless found.include?(target)
+                found << target
+                todo << target
+            end
+        end
+    end
+    [found, transitions]
+end
+
+found, transitions = to_dfa
+puts "#{found.size} Zustände"
+transitions.each do |(states, symbol), target|
+    next if target == Set[START]
+
+    puts "#{states.sort.inspect} #{symbol} → #{target.sort.inspect}"
+end
+```
+
+Eine Menge kann in Ruby Schlüssel eines Hash sein oder in einer anderen Menge liegen; sie darf sich danach nur nicht mehr ändern. `todo` ist die Liste der Mengen, deren Übergänge noch nicht ausgerechnet sind. Am Ende gibt das Programm aus, wie viele Zustände der DEA hat, und alle Übergänge, die nicht zurück nach `{start}` führen:
+
+<!-- tutorial-screenshot
+# convert.rb: der DEA für das Schloss
+write-file: automata/lock_nfa.rb <- file:stufen/lock_nfa.rb
+write-file: automata/convert.rb <- file:stufen/convert.rb
+terminal-open
+terminal-maximize
+terminal-run: clear
+terminal-run: ruby convert.rb
+terminal-wait-for-prompt
+crop-terminal-lines: auto
+-->
+<img class='full' src='umwandeln-ruby.webp' alt='ruby convert.rb gibt aus: 5 Zustände, dann acht Übergänge, etwa von der Menge 1, 121, start mit 2 zur Menge 12, start und mit 3 zur Menge 1213, start.'>
+<!-- /language -->
+<!-- language: python -->
 ```python_copy
 # Die Potenzmengenkonstruktion: Sie baut aus einem NEA einen DEA. Jeder
 # Zustand des DEA ist eine Menge von Zuständen des NEA, nämlich die, in denen
@@ -480,8 +746,14 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 <img class='full' src='umwandeln.webp' alt='python3 convert.py gibt aus: 5 Zustände, dann acht Übergänge, etwa von der Menge 1, 121, start mit 2 zur Menge 12, start und mit 3 zur Menge 1213, start.'>
+<!-- /language -->
 
+<!-- language: ruby -->
+Fünf Zustände, wie bei Automatron. Und sieh dir die Übergänge an: `["1", "121", "start"] 2 → ["12", "start"]` ist genau der Pfeil, den du in `lock.rb` von Hand gesucht hast, von `121` mit einer 2 nach `12`. Das Programm hat ihn gefunden, ohne nachzudenken.
+<!-- /language -->
+<!-- language: python -->
 Fünf Zustände, wie bei Automatron. Und sieh dir die Übergänge an: `['1', '121', 'start'] 2 → ['12', 'start']` ist genau der Pfeil, den du in `lock.py` von Hand gesucht hast, von `121` mit einer 2 nach `12`. Das Programm hat ihn gefunden, ohne nachzudenken.
+<!-- /language -->
 
 ### Ein Generalschlüssel
 
@@ -489,12 +761,40 @@ Jetzt zeigt sich, wie viel leichter ein NEA zu ändern ist.
 
 _task(generalschluessel)
 
+<!-- language: ruby -->
+Starte danach `convert.rb` noch einmal. Es baut den DEA aus deinem neuen NEA, ohne dass du daran etwas ändern musst. Den DEA mit Generalschlüssel von Hand zu bauen, mit allen Pfeilen zurück, wäre eine knifflige Aufgabe; Automatron kommt mit `(0|1|2|3|4|5|6|7|8|9)*(1213|4711)` auf dasselbe Ergebnis.
+<!-- /language -->
+<!-- language: python -->
 Starte danach `convert.py` noch einmal. Es baut den DEA aus deinem neuen NEA, ohne dass du daran etwas ändern musst. Den DEA mit Generalschlüssel von Hand zu bauen, mit allen Pfeilen zurück, wäre eine knifflige Aufgabe; Automatron kommt mit `(0|1|2|3|4|5|6|7|8|9)*(1213|4711)` auf dasselbe Ergebnis.
+<!-- /language -->
 
 _task(dea-generalschluessel)
 
 ### Wenn der DEA explodiert
 
+<!-- language: ruby -->
+Beim Schloss hat der DEA so viele Zustände wie der NEA. Das ist nicht immer so. Ein NEA, der prüft, ob die N-te Ziffer von hinten eine 1 ist, rät, wo diese 1 steht, und zählt dann bis zum Ende ab. Er braucht N + 1 Zustände. Lege `last.rb` an:
+
+```ruby
+# Ist die N-te Ziffer von hinten eine 1? Der NEA rät, wo diese 1 steht, und
+# zählt danach die Ziffern bis zum Ende ab.
+N = 3
+DIGITS = '01'
+START = 0
+ACCEPTING = Set[N]
+TRANSITIONS = {
+    [0, '0'] => Set[0],
+    [0, '1'] => Set[0, 1],
+}
+(1...N).each do |i|
+    TRANSITIONS[[i, '0']] = Set[i + 1]
+    TRANSITIONS[[i, '1']] = Set[i + 1]
+end
+```
+
+Ändere in `convert.rb` die Zeile `require_relative 'lock_nfa'` zu `require_relative 'last'` und starte es. Ändere dann `N` in `last.rb` auf 5 und starte `convert.rb` noch einmal.
+<!-- /language -->
+<!-- language: python -->
 Beim Schloss hat der DEA so viele Zustände wie der NEA. Das ist nicht immer so. Ein NEA, der prüft, ob die N-te Ziffer von hinten eine 1 ist, rät, wo diese 1 steht, und zählt dann bis zum Ende ab. Er braucht N + 1 Zustände. Lege `last.py` an:
 
 ```python
@@ -514,6 +814,7 @@ for i in range(1, N):
 ```
 
 Ändere in `convert.py` die Zeile `from lock_nfa import …` zu `from last import …` und starte es. Ändere dann `N` in `last.py` auf 5 und starte `convert.py` noch einmal.
+<!-- /language -->
 
 _task(explosion)
 
@@ -521,7 +822,7 @@ Der DEA kann nicht raten, wo die 1 steht. Er muss sich darum alle letzten N Ziff
 
 ## Zusammenfassung
 
-- Ein **endlicher Automat** hat endlich viele Zustände und eine Tabelle, die für jeden Zustand und jedes Zeichen den nächsten nennt. In Python ist das ein `dict` mit Paaren als Schlüsseln.
+- Ein **endlicher Automat** hat endlich viele Zustände und eine Tabelle, die für jeden Zustand und jedes Zeichen den nächsten nennt. In Ruby ist das ein Hash mit Paaren als Schlüsseln, in Python ein `dict`.
 - Ein Automat, der Wörter prüft, hat einen **Startzustand** und **akzeptierende Zustände**. Er nimmt ein Wort an, wenn er am Ende in einem akzeptierenden Zustand ist.
 - Ein **DEA** weiß bei jedem Zeichen genau, wohin. Ein **NEA** darf mehrere Wege zugleich gehen; er nimmt ein Wort an, wenn einer davon akzeptiert. Verfolgt wird er mit einer Menge von Zuständen.
 - Die **Potenzmengenkonstruktion** macht aus jedem NEA einen DEA, der dasselbe tut. Er kann aber exponentiell mehr Zustände haben.
@@ -531,7 +832,7 @@ _task(nea-oder-dea)
 
 ## Wie geht es weiter?
 
-- **Reguläre Ausdrücke in Python.** `import re` und `re.fullmatch('[0-9]*1213', '121213')` prüfen dasselbe wie dein Schloss. Hinter `re` steckt die Idee dieser Seite: Ausdruck, Automat, Zeichen für Zeichen lesen.
+- **Reguläre Ausdrücke.** In Ruby prüft `'121213'.match?(/\A[0-9]*1213\z/)` dasselbe wie dein Schloss, in Python `re.fullmatch('[0-9]*1213', '121213')`. Dahinter steckt die Idee dieser Seite: Ausdruck, Automat, Zeichen für Zeichen lesen.
 - **Automatron ganz.** Automatron macht mehr als die Potenzmengenkonstruktion: Erst baut es aus dem Ausdruck einen NEA mit ε-Übergängen (Thompson-Konstruktion), am Ende verkleinert es den DEA (Minimierung). Probier die Beispiele aus und lies die Erklärungen zwischen den Bildern.
 - **Mehr als endlich.** Klammern prüfen, ob jede `(` ein `)` hat, kann ein endlicher Automat nicht. Ein **Kellerautomat** kann es, mit einem Stapel als Gedächtnis. So prüfen Compiler deinen Code.
 
