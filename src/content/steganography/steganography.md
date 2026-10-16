@@ -8,6 +8,8 @@ requires: [crypto]
 reference: [farbraeume]
 </div>
 
+<script src="/include/color_classes.js"></script>
+
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
@@ -380,7 +382,11 @@ Der Test findet die Botschaft und sogar, wo sie aufhört: Dort, wo sie steckt, l
 
 Das LSB-Verfahren lässt sich auch anders beschreiben. Alle Farben, die sich nur im untersten Bit jedes Kanals unterscheiden, bilden eine **Farbklasse**: zum Beispiel die 8 Farben mit Rot 208 oder 209, Grün 148 oder 149 und Blau 36 oder 37. Innerhalb einer Klasse sieht keine Farbe anders aus als die anderen. Ein Pixel darf also jede Farbe seiner Klasse annehmen, und *welche* es annimmt, trägt die Botschaft: 8 Möglichkeiten sind 3 Bits.
 
-Im RGB-Würfel mit 256 × 256 × 256 Farben sind diese Klassen kleine Würfel mit der Kantenlänge 2. Warum nicht 3? Dann hat eine Klasse 3 · 3 · 3 = 27 Farben, und jedes Pixel kann eine von 27 Möglichkeiten tragen. Das sind \\( \log\_2 27 \approx 4{,}75 \\) Bits, keine ganze Zahl. Ersetzen kann man da nichts mehr. Man braucht eine andere Idee.
+Im RGB-Würfel mit 256 × 256 × 256 Farben sind diese Klassen kleine Würfel mit der Kantenlänge 2. Das sind über zwei Millionen; damit man sie sieht, ist der Würfel hier viel gröber geteilt. Zieh mit der Maus, um ihn zu drehen, und mit dem Schieber **Einteilung** wird er feiner:
+
+<div class='color-classes' data-split='rgb' data-views='rgb' data-lock data-plain></div>
+
+Warum nicht Würfel mit der Kantenlänge 3? Dann hat eine Klasse 3 · 3 · 3 = 27 Farben, und jedes Pixel kann eine von 27 Möglichkeiten tragen. Das sind \\( \log\_2 27 \approx 4{,}75 \\) Bits, keine ganze Zahl. Ersetzen kann man da nichts mehr. Man braucht eine andere Idee.
 
 ### Eine Zahl mit wechselnder Basis
 
@@ -434,6 +440,12 @@ In Lab steckt fast das ganze Bild in L. a und b sind gleichmäßig grau, wo kaum
 <img class='full fit-width' src='kanaele-lab.webp' alt='Das Foto der Strandhäuser und seine Kanäle L, a und b als Graubilder. L sieht aus wie ein Graubild des Fotos; a und b sind an den blassen Giebeln gleichmäßig grau, in a ist die rote Tür hell, in b sind die blauen Türen und der Himmel dunkel.'>
 
 Teilt man Lab in Quader statt RGB in Würfel, bekommen die Klassen dort viele Farben, wo das Auge wenig unterscheidet, und wenige, wo es genau hinsieht. Und man kann der Helligkeit mehr Stufen geben als a und b, weil das Auge dort empfindlicher ist.
+
+Hier siehst du beides. Links ist der RGB-Würfel, rechts sind dieselben Farben in Lab, mit L als Höhe. In Lab sind sie kein Würfel, sondern ein schiefer Körper mit einer Spitze bei Schwarz und einer bei Weiß. Schalte um zwischen **Würfeln in RGB** und **Quadern in Lab**: Die Würfel aus RGB sind in Lab krumme Stücke, verschieden groß und verschieden geformt. Die Quader aus Lab sind im RGB-Würfel gebogene Scheiben, dünn in der Helligkeit, denn L hat die meisten Stufen. Ein Klick auf eine Farbe zeigt ihre Klasse allein, im Glas des ganzen Körpers, in beiden Ansichten.
+
+<div class='color-classes' data-split='lab'></div>
+
+Unter den Ansichten steht, was beim Verstecken aus einer Fläche der gewählten Farbe wird: Jedes Pixel bekommt eine zufällige Farbe seiner Klasse, einmal aus ihrem Würfel in RGB, einmal aus ihrem Quader in Lab. Links in jedem Streifen steht die Farbe selbst. Beide Einteilungen sind gleich fein, im Schnitt liegt eine Farbe in einer Klasse mit gleich vielen Farben, also passt in beide gleich viel. Trotzdem liegen die Farben eines Quaders in Lab im Schnitt näher beieinander, in der Helligkeit nur etwa halb so weit auseinander wie im Würfel. Darum rauscht die Fläche mit Lab weniger. Je feiner die Einteilung, desto weniger sieht man von beidem; im Workspace teilst du noch viel feiner, als es hier zu sehen ist.
 
 _uses(gamma, cielab)
 

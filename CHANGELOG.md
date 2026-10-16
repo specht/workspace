@@ -18,6 +18,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- »Geheime Botschaften in Bildern« zeigt die Farbklassen in 3D, zum
+  Drehen mit der Maus: den RGB-Würfel in Würfel geteilt und, im Abschnitt
+  zu CIELab, RGB-Würfel und Lab-Körper nebeneinander, wahlweise mit Würfeln
+  in RGB oder Quadern in Lab. Ein Schieber stellt die Einteilung feiner
+  oder gröber, ein zweiter zieht die Klassen auseinander, ein Viertel lässt
+  sich herausnehmen, um hineinzusehen. Ein Klick auf eine Farbe zeigt ihre
+  Klasse allein in beiden Räumen und darunter zwei Flächen dieser Farbe,
+  in der jedes Pixel eine zufällige Farbe seiner Klasse hat: Bei gleich
+  vielen Farben pro Klasse rauscht die Fläche mit Lab weniger.
+
 - Neue Aktivität »Zwei Faktoren: Einmalcodes selbst gebaut« in »Netze &
   Sicherheit«, in Ruby und Python: Lernende bauen das Verfahren hinter
   Authenticator-Apps selbst, Base32, HOTP nach RFC 4226 und TOTP nach
