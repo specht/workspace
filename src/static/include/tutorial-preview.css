@@ -130,11 +130,11 @@
 /* A gallery picture: as large as the window, sizes set by fit() in
    tutorial-preview.js, with its caption below */
 
-.screen-gallery-zoom {
+.gallery-zoom {
     cursor: zoom-in;
 }
 
-.screen-gallery-zoom:focus-visible {
+.gallery-zoom:focus-visible {
     outline: 0.18rem solid currentColor;
     outline-offset: 0.2rem;
 }

@@ -103,15 +103,26 @@ darf. Schritte ohne Bild stehen in `<!-- tutorial-step … -->`.
 und bricht beim ersten Schritt ab, der nicht aufgeht. Die Anweisungen stehen in
 [src/tutorial-screenshots/README.md](../src/tutorial-screenshots/README.md#assertions-does-the-pages-step-work).
 
-Mehrere kleine Bilder nebeneinander stehen in einer Galerie; ein Klick
-öffnet ein Bild groß, mit seiner Unterschrift:
+Mehrere Bilder nebeneinander stehen immer in einer Galerie, jedes in einer
+`<figure>` mit Alt-Text und Unterschrift; ein Klick öffnet ein Bild groß,
+mit seiner Unterschrift (außer es ist ein Link):
 
 ```html
-<div class='screen-gallery'>
+<div class='gallery'>
 <figure><img src='a.webp' alt='…'><figcaption>Unterschrift</figcaption></figure>
 <figure><img src='b.webp' alt='…'><figcaption>Unterschrift</figcaption></figure>
 </div>
 ```
+
+Ohne weitere Klasse verteilen sich die Bilder nach Platz. `columns-2`,
+`columns-3` und `columns-4` halten so viele in einer Reihe, für Bilder, die
+man vergleicht (auf dem Handy zwei, bei `columns-2` eins); `portrait` ist
+für hohe Bilder wie einen Handybildschirm, `tiles` für viele kleine wie die
+Modelle eines Kenney-Kits. Bilder zum Vergleichen sind einzelne Dateien, die
+Unterschrift steht in der `<figcaption>`, nicht ins Bild gezeichnet: So lesen
+sie auch Screenreader, und sie bricht auf dem Handy um.
+`gallery_markup_test.rb` prüft, dass jede Galerie so aussieht und keine
+Bootstrap-Reihe Bilder nebeneinanderstellt.
 
 Code-Blöcke bekommen ihre Sprache (```` ```bash ````, ```` ```html ````). Kurzen
 Code, an dem Lernende etwas lernen, tippen sie ab; dabei lesen sie jede Zeile.

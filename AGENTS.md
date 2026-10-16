@@ -37,6 +37,10 @@ address from `credentials.rb` and the code `123456`.
   comments and program output may be German. In German prose, technical terms
   developers say in English stay English (Handshake, Lock, String, Header).
 - Every picture has an `alt` text that says what is to be seen.
+- Pictures side by side are a gallery: `<div class='gallery'>` (optionally
+  `columns-2`/`-3`/`-4`, `portrait`, `tiles`) with one `<figure>` and
+  `<figcaption>` each, as single files; labels go in the caption, never into
+  the picture (docs/aktivitaet-schreiben.md). `gallery_markup_test.rb` checks it.
 - Screenshots of the Workspace come from recipes (`<!-- tutorial-screenshot -->`
   before the `<img>`), never by hand. Render with
   `src/scripts/recreate-screenshots.rb PAGE`, check `--status`, and look at

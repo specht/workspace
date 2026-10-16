@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""The channel pictures of the Handbuch page »Farbräume«: one photo taken
-apart into the three channels of RGB, YCbCr, HSV and CIELab, each channel
-as a grey picture, with a label below. And the chromaticity diagram of
-CIE 1931 with the triangle of sRGB (normfarbtafel.webp).
+"""The pictures of the Handbuch page »Farbräume«: the photo (photo.webp) and
+its three channels in RGB, YCbCr, HSV and CIELab, each channel a grey
+picture of its own (rgb-r.webp … lab-b.webp; the page puts each space in a
+gallery and says there what dark and light mean). And the chromaticity
+diagram of CIE 1931 with the triangle of sRGB (normfarbtafel.webp).
 
 The photo is strandhaeuser.png from »Geheime Botschaften in Bildern« (Ian
 Kobylanski, with permission, https://koby.photography/). Run from this folder; Pillow and numpy needed.
-`make_pictures.py normfarbtafel` makes only the diagram.
+`make_pictures.py normfarbtafel` makes only the diagram, `channels` only the channels.
 """
 import colorsys
 import math
@@ -19,7 +20,6 @@ from PIL import Image, ImageDraw, ImageFont
 HERE = os.path.dirname(os.path.abspath(__file__))
 PHOTO = os.path.join(HERE, '..', '..', 'steganography', 'beispiele', 'strandhaeuser.png')
 FONT = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
-SCALE = 0.75   # panels of 360 × 240 pixels
 
 
 def linear(v):
@@ -69,16 +69,17 @@ def lab_channels(p):
     return l * 2.55, 128 + a * 1.4, 128 + b * 1.4
 
 
-# Labels from dark to light: »Cb: gelb … blau« is dark where it is yellow.
+# The channels of each space, as the files name them
 SPACES = {
-    'rgb': (rgb_channels, ['R: wenig … viel Rot', 'G: wenig … viel Grün', 'B: wenig … viel Blau']),
-    'ycbcr': (ycbcr_channels, ['Y: dunkel … hell', 'Cb: gelb … blau', 'Cr: grün … rot']),
-    'hsv': (hsv_channels, ['H: Farbton, 0° … 360°', 'S: grau … kräftig', 'V: dunkel … hell']),
-    'lab': (lab_channels, ['L: dunkel … hell', 'a: grün … rot', 'b: blau … gelb']),
+    'rgb': (rgb_channels, ['r', 'g', 'b']),
+    'ycbcr': (ycbcr_channels, ['y', 'cb', 'cr']),
+    'hsv': (hsv_channels, ['h', 's', 'v']),
+    'lab': (lab_channels, ['l', 'a', 'b']),
 }
 
 
-def picture(photo, convert, labels, with_photo=True):
+def channel_pictures(photo, convert):
+    """The three channels of the photo in one colour space, as grey pictures."""
     w, h = photo.size
     planes = [Image.new('L', (w, h)) for _ in range(3)]
     data = [p.load() for p in planes]
@@ -87,19 +88,7 @@ def picture(photo, convert, labels, with_photo=True):
         for x in range(w):
             for i, v in enumerate(convert(src[x, y])):
                 data[i][x, y] = clamp(v)
-    panels = ([photo] if with_photo else []) + [p.convert('RGB') for p in planes]
-    names = (['Foto'] if with_photo else []) + labels
-    pw, ph = int(w * SCALE), int(h * SCALE)
-    gap, caption = 10, 30
-    out = Image.new('RGB', (len(panels) * pw + (len(panels) - 1) * gap, ph + caption), 'white')
-    draw = ImageDraw.Draw(out)
-    font = ImageFont.truetype(FONT, 16)
-    for i, (panel, name) in enumerate(zip(panels, names)):
-        x = i * (pw + gap)
-        out.paste(panel.resize((pw, ph), Image.LANCZOS), (x, 0))
-        tw = draw.textlength(name, font=font)
-        draw.text((x + (pw - tw) / 2, ph + 6), name, fill=(40, 40, 40), font=font)
-    return out
+    return planes
 
 
 # --- The chromaticity diagram -----------------------------------------------
@@ -206,14 +195,15 @@ def diagram(size=960, factor=2):
 
 
 if __name__ == '__main__':
-    pictures = sys.argv[1:] or ['kanaele', 'normfarbtafel']
+    pictures = sys.argv[1:] or ['channels', 'normfarbtafel']
     if 'normfarbtafel' in pictures:
         diagram().save(os.path.join(HERE, 'normfarbtafel.webp'), quality=90)
         print('normfarbtafel')
-    if 'kanaele' not in pictures:
+    if 'channels' not in pictures:
         sys.exit()
     photo = Image.open(PHOTO).convert('RGB')
-    for name, (convert, labels) in SPACES.items():
-        out = picture(photo, convert, labels)
-        out.save(os.path.join(HERE, f'kanaele-{name}.webp'), quality=90)
-        print(name, out.size)
+    photo.save(os.path.join(HERE, 'photo.webp'), quality=90)
+    for space, (convert, names) in SPACES.items():
+        for name, plane in zip(names, channel_pictures(photo, convert)):
+            plane.save(os.path.join(HERE, f'{space}-{name}.webp'), quality=90)
+        print(space)

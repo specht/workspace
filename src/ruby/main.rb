@@ -1794,9 +1794,9 @@ class Main < Sinatra::Base
             root = render_content_markdown(markdown, path, redcarpet) do |md|
                 if entry[:kenney]
                     gallery = StringIO.open do |io|
-                        io.puts "<div class='kenney-gallery'>"
+                        io.puts "<div class='gallery tiles'>"
                         parsed_kenney[entry[:path]].each do |model|
-                            io.puts "<div><img alt='' src='/cache/kenney/#{entry[:path]}/#{model}.webp'><div>#{model}</div></div>"
+                            io.puts "<figure><img alt='Das Modell #{model}' src='/cache/kenney/#{entry[:path]}/#{model}.webp'><figcaption>#{model}</figcaption></figure>"
                         end
                         io.puts "</div>"
                         io.string

@@ -19,7 +19,7 @@ template_name: des PixelRAM-Starters
 Mit PixelRAM programmierst du schnelle Computergrafik direkt in C. Es gibt keine Befehle für Linien, Kreise oder Figuren: Dein Programm bestimmt die Farbe jedes einzelnen Bildpunkts selbst. Daraus entstehen in diesem Tutorial bewegte Wellenmuster und ein Spiel für zwei an einer Tastatur.
 </p>
 
-<div class='screen-gallery'>
+<div class='gallery'>
 <figure>
 <img src='interference.webp' alt='Bunte Wellenringe von zwei Quellen überlagern sich.'>
 <figcaption>Zwei Wellen, die sich überlagern: 57.600 Pixel, 60-mal pro Sekunde neu berechnet</figcaption>
@@ -174,7 +174,7 @@ crop-element: #canvas
 
 Ändere nur die Zeile mit `return` in `color`. Jede dieser Formeln ergibt ein ganz anderes Bild:
 
-<div class='screen-gallery'>
+<div class='gallery'>
 <figure>
 <!-- tutorial-screenshot
 write-file: main.c <- code:int color(int x, int y)||return (x / 20 + y / 20) % 16;
@@ -724,7 +724,7 @@ Im Ordner `beispiele` der Vorlage liegen fertige Programme. Jedes übersetzt du 
 make PROGRAM=beispiele/tunnel
 ```
 
-<div class='screen-gallery'>
+<div class='gallery'>
 <figure>
 <!-- tutorial-screenshot
 terminal-open

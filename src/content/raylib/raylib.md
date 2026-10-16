@@ -22,7 +22,7 @@ template_name: der raylib-Vorlage
 Du programmierst in C eine Welt aus Blöcken, durch die du selbst läufst: Mit der Maus siehst du dich um, du springst über Hügel, reißt Blöcke ab und baust neue. Eine Sonne wandert über den Himmel, nachts leuchten deine Fackeln, berechnet von einem Licht-Shader, den du selbst schreibst, und die Blöcke bekommen Texturen, die du selbst zeichnest.
 </p>
 
-<div class='screen-gallery'>
+<div class='gallery'>
 <figure>
 <img src='tag.webp' alt='Blick über eine hügelige Welt aus Blöcken mit Gras-, Erd- und Holztexturen, ein paar Fackeln stehen im Gras.'>
 <figcaption>Unterwegs in der eigenen Welt, mit eigenen Texturen; im dunklen Modus bei Nacht</figcaption>

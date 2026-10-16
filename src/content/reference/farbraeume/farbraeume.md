@@ -18,7 +18,9 @@ Eine Farbe ist für den Computer drei Zahlen, aber welche drei, hängt davon ab,
 
 Zu jedem Farbraum gibt es einen Körper zum Drehen: alle Farben des RGB-Würfels, an die Stelle gesetzt, die ihnen der Farbraum gibt, das Helle immer oben. Zieh mit der Maus, um ihn zu drehen. Mit **Schnitt** schneidest du ihn waagerecht ab und siehst auf der Schnittfläche alle Farben derselben Helligkeit; ohne das herausgenommene Viertel siehst du nur die Oberfläche. **In 8 × 8 × 8 Würfel teilen** zerlegt den RGB-Würfel in 512 gleich große Würfel von je 32 Stufen pro Kanal, und **Auseinander** zieht sie voneinander weg. So siehst du, wie jeder Farbraum gleiche Schritte in RGB verbiegt.
 
-Die Bilder auf dieser Seite zerlegen dasselbe Foto in die drei Kanäle eines Farbraums. Jeder Kanal ist ein Graubild: dunkel, wo der Wert klein ist, hell, wo er groß ist. Unter jedem steht, was dunkel und was hell bedeutet.
+Die Bilder auf dieser Seite zerlegen dasselbe Foto in die drei Kanäle eines Farbraums. Jeder Kanal ist ein Graubild: dunkel, wo der Wert klein ist, hell, wo er groß ist. Unter jedem steht, was dunkel und was hell bedeutet. Das ist das Foto:
+
+<img class='drawing' style='width: 24em' src='photo.webp' alt='Ein Foto von Strandhäusern: links eine rote Tür mit einem weißen Farbfleck, daneben zwei hellblaue Türen unter blassgrünen Giebeln, darüber blauer Himmel.'>
 
 <p class='expl'>Foto mit freundlicher Genehmigung von Ian Kobylanski · <a href='https://koby.photography/' target='_blank'>https://koby.photography/</a></p>
 
@@ -29,7 +31,11 @@ Bildschirme mischen jede Farbe aus rotem, grünem und blauem Licht. Jeder Anteil
 
 <div class='color-solid' data-space='rgb'></div>
 
-<img class='full fit-width' src='kanaele-rgb.webp' alt='Ein Foto von Strandhäusern: links eine rote Tür mit einem weißen Farbfleck, daneben zwei hellblaue Türen unter blassgrünen Giebeln, darüber blauer Himmel. Daneben seine drei RGB-Kanäle als Graubilder. Alle drei sehen dem Foto ähnlich: Die blauen Türen sind im Rot-Kanal dunkel und im Blau-Kanal hell, die rote Tür umgekehrt.'>
+<div class='gallery columns-3'>
+<figure><img src='rgb-r.webp' alt='Der Rot-Kanal: die rote Tür hell, die blauen Türen und der Himmel dunkel.'><figcaption>R: wenig … viel Rot</figcaption></figure>
+<figure><img src='rgb-g.webp' alt='Der Grün-Kanal: die blauen Türen mittelhell, die rote Tür fast schwarz.'><figcaption>G: wenig … viel Grün</figcaption></figure>
+<figure><img src='rgb-b.webp' alt='Der Blau-Kanal: die blauen Türen und der Himmel fast weiß, die rote Tür dunkel.'><figcaption>B: wenig … viel Blau</figcaption></figure>
+</div>
 
 Alle drei Kanäle sehen aus wie das Foto selbst, denn in jedem steckt die Helligkeit. Das ist gut zum Anzeigen, aber schlecht, wenn man wissen will, wie hell ein Pixel ist oder wie ähnlich zwei Farben sind: Dafür muss man alle drei Zahlen zusammen ansehen. Wie man Farben in CSS und im Anaglyph-Viewer mit RGB angibt, steht in [Farben angeben](/reference/farben).
 <!-- /part -->
@@ -65,7 +71,11 @@ HSV beschreibt eine Farbe so, wie man sie mit Worten beschreiben würde:
 
 Aus RGB, mit \\(r, g, b\\) von 0 bis 1, \\(M\\) dem größten und \\(m\\) dem kleinsten der drei Werte: \\(V = M\\), \\(S = (M - m) / M\\) (0, wenn \\(M = 0\\)). Der Farbton hängt davon ab, welcher Anteil der größte ist; ist es Rot, gilt \\(H = 60° \cdot \frac{g - b}{M - m}\\), bei Grün \\(H = 60° \cdot \left(2 + \frac{b - r}{M - m}\right)\\), bei Blau \\(H = 60° \cdot \left(4 + \frac{r - g}{M - m}\right)\\), und ein negatives Ergebnis plus 360°. In Python rechnet das `colorsys.rgb_to_hsv(r, g, b)`, mit H von 0 bis 1 statt bis 360°.
 
-<img class='full fit-width' src='kanaele-hsv.webp' alt='Das Foto der Strandhäuser und seine Kanäle in HSV. Im Farbton sind die blauen Türen und der Himmel ein gleichmäßiges Grau, die rote Tür zerfällt in Schwarz und Weiß. In der Sättigung leuchten die Türen, die blassen Giebel sind dunkel. Der Hellwert sieht aus wie ein helles Graubild.'>
+<div class='gallery columns-3'>
+<figure><img src='hsv-h.webp' alt='Der Farbton: die blauen Türen und der Himmel ein gleichmäßiges Grau, die rote Tür zerfällt in Schwarz und Weiß.'><figcaption>H: Farbton, 0° … 360°</figcaption></figure>
+<figure><img src='hsv-s.webp' alt='Die Sättigung: die Türen leuchten hell, die blassen Giebel sind dunkel.'><figcaption>S: grau … kräftig</figcaption></figure>
+<figure><img src='hsv-v.webp' alt='Der Hellwert: ein helles Graubild des Fotos.'><figcaption>V: dunkel … hell</figcaption></figure>
+</div>
 
 Im Farbton zerfällt die rote Tür in Schwarz und Weiß: Rot liegt am Anfang und am Ende des Kreises, bei 0° und bei fast 360°, und als Graubild sind das die beiden Enden. Ein Farbton ist eben ein Winkel und keine Zahl auf einer Linie. Wo die Sättigung fast 0 ist, im weißen Farbfleck auf der roten Tür, ist der Farbton sogar ganz zufällig: Weiß und Grau haben keinen. HSV ist gut, wenn Menschen Farben auswählen oder verschieben wollen, etwa »dieselbe Farbe, nur blasser«. In CSS gibt es mit `hsl(…)` einen nahen Verwandten.
 
@@ -87,7 +97,11 @@ $$C\_r = 128 + 0{,}5 R - 0{,}418688 G - 0{,}081312 B$$
 
 Y ist genau das Graubild von oben. Zurück geht es mit \\(R = Y + 1{,}402 (C\_r - 128)\\), \\(G = Y - 0{,}344136 (C\_b - 128) - 0{,}714136 (C\_r - 128)\\) und \\(B = Y + 1{,}772 (C\_b - 128)\\), jeweils auf 0 bis 255 begrenzt.
 
-<img class='full fit-width' src='kanaele-ycbcr.webp' alt='Das Foto der Strandhäuser und seine Kanäle in YCbCr. Y ist ein normales Graubild. Cb und Cr sind an den blassen Giebeln und Wänden ein gleichmäßiges Grau; die blauen Türen und der Himmel sind in Cb hell und in Cr dunkel, die rote Tür umgekehrt.'>
+<div class='gallery columns-3'>
+<figure><img src='ycbcr-y.webp' alt='Y: ein gewöhnliches Graubild des Fotos.'><figcaption>Y: dunkel … hell</figcaption></figure>
+<figure><img src='ycbcr-cb.webp' alt='Cb: fast überall ein gleichmäßiges Grau; die blauen Türen und der Himmel etwas heller, die rote Tür dunkler.'><figcaption>Cb: gelb … blau</figcaption></figure>
+<figure><img src='ycbcr-cr.webp' alt='Cr: fast überall ein gleichmäßiges Grau; die rote Tür heller, die blauen Türen und der Himmel dunkler.'><figcaption>Cr: grün … rot</figcaption></figure>
+</div>
 
 In Cb und Cr steckt kaum noch etwas vom Bild: Wo eine Fläche fast grau ist, an den blassen Giebeln, sind beide nahe 128, mittleres Grau, und nur die Türen und der Himmel heben sich ab. Die Kanten und Details stecken fast alle in Y. Das nutzt JPEG aus: Das Auge sieht Helligkeit viel feiner als Farbe, also speichert JPEG Cb und Cr oft nur für jedes zweite Pixel in jeder Richtung, ein Viertel der Daten, ohne dass man es sieht. Ausprobieren kannst du das unter [Trennung von Helligkeit und Farbe](/colorspace); wie ein Decoder zurückrechnet, zeigt [Eine JPEG-Datei decodieren](/jpeg).
 
@@ -113,7 +127,11 @@ Zuletzt nimmt \\(f(t) = \sqrt[3]{t}\\) (für \\(t \le 216 / 24389\\) die Gerade 
 
 $$L = 116 f(Y) - 16, \quad a = 500 \left(f(X) - f(Y)\right), \quad b = 200 \left(f(Y) - f(Z)\right)$$
 
-<img class='full fit-width' src='kanaele-lab.webp' alt='Das Foto der Strandhäuser und seine Kanäle in CIELab. L ist ein Graubild. a und b sind an den blassen Giebeln gleichmäßig grau; in a ist die rote Tür hell, in b sind die blauen Türen und der Himmel dunkel.'>
+<div class='gallery columns-3'>
+<figure><img src='lab-l.webp' alt='L: ein Graubild des Fotos.'><figcaption>L: dunkel … hell</figcaption></figure>
+<figure><img src='lab-a.webp' alt='a: an den blassen Giebeln gleichmäßig grau, die rote Tür hell.'><figcaption>a: grün … rot</figcaption></figure>
+<figure><img src='lab-b.webp' alt='b: an den blassen Giebeln gleichmäßig grau, die blauen Türen und der Himmel dunkel.'><figcaption>b: blau … gelb</figcaption></figure>
+</div>
 
 Wie bei YCbCr steckt das Bild fast ganz in L, und a und b sind grau, wo keine Farbe ist. Der Unterschied liegt im Abstand: Der Unterschied zweier Farben ist in Lab einfach \\(\Delta E = \sqrt{(L\_1 - L\_2)^2 + (a\_1 - a\_2)^2 + (b\_1 - b\_2)^2}\\), und ein \\(\Delta E\\) um 2 sieht man gerade eben. Druckereien prüfen damit, ob eine Farbe stimmt. Genauer ist die verbesserte Formel CIEDE2000, die im Blau und bei kräftigen Farben nachbessert; sie rechnet aber ebenfalls mit L, a und b.
 

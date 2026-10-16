@@ -315,7 +315,7 @@ theme: mystery
 BIF bringt mehrere Themes mit: `default`, `paper`, `playful`, `mystery`, `midnight` und `terminal`.
 Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details wie Abstände und abgerundete Ecken. Du kannst es deshalb einfach so verwenden, wie es ist.
 
-<div class='row'>
+<div class='gallery columns-3'>
     <!-- tutorial-screenshot
     write-file: pages-starter/1.md <- file:theme-default.md.txt
     wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
@@ -327,9 +327,7 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     zoom: 2
     sleep: 0.5
     -->
-    <div class='col-md-4 mb-3'>
-        <img src='theme-default.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im hellen Standard-Theme.'>
-    </div>
+    <figure><img src='theme-default.webp' class='full-shadow' alt='Die Geschichte im hellen Standard-Theme.'><figcaption><code>default</code></figcaption></figure>
     <!-- tutorial-screenshot
     write-file: pages-starter/1.md <- file:theme-paper.md.txt
     wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
@@ -338,9 +336,7 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     zoom: 2
     sleep: 0.5
     -->
-    <div class='col-md-4 mb-3'>
-        <img src='theme-paper.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im cremefarbenen Paper-Theme mit Serifenschrift.'>
-    </div>
+    <figure><img src='theme-paper.webp' class='full-shadow' alt='Die Geschichte im cremefarbenen Paper-Theme mit Serifenschrift.'><figcaption><code>paper</code></figcaption></figure>
     <!-- tutorial-screenshot
     write-file: pages-starter/1.md <- file:theme-playful.md.txt
     wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
@@ -349,9 +345,7 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     zoom: 2
     sleep: 0.5
     -->
-    <div class='col-md-4 mb-3'>
-        <img src='theme-playful.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im Playful-Theme mit abgerundeten Flächen.'>
-    </div>
+    <figure><img src='theme-playful.webp' class='full-shadow' alt='Die Geschichte im Playful-Theme mit abgerundeten Flächen.'><figcaption><code>playful</code></figcaption></figure>
     <!-- tutorial-screenshot
     write-file: pages-starter/1.md <- file:theme-mystery.md.txt
     wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
@@ -360,9 +354,7 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     zoom: 2
     sleep: 0.5
     -->
-    <div class='col-md-4 mb-3'>
-        <img src='theme-mystery.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im dunklen Mystery-Theme.'>
-    </div>
+    <figure><img src='theme-mystery.webp' class='full-shadow' alt='Die Geschichte im dunklen Mystery-Theme.'><figcaption><code>mystery</code></figcaption></figure>
     <!-- tutorial-screenshot
     write-file: pages-starter/1.md <- file:theme-midnight.md.txt
     wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
@@ -371,9 +363,7 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     zoom: 2
     sleep: 0.5
     -->
-    <div class='col-md-4 mb-3'>
-        <img src='theme-midnight.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im dunkelblauen Midnight-Theme.'>
-    </div>
+    <figure><img src='theme-midnight.webp' class='full-shadow' alt='Die Geschichte im dunkelblauen Midnight-Theme.'><figcaption><code>midnight</code></figcaption></figure>
     <!-- tutorial-screenshot
     write-file: pages-starter/1.md <- file:theme-terminal.md.txt
     wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
@@ -382,9 +372,7 @@ Ein Theme legt Farben und Schriften fest und verändert außerdem einige Details
     zoom: 2
     sleep: 0.5
     -->
-    <div class='col-md-4 mb-3'>
-        <img src='theme-terminal.webp' style='width: 100%; border-radius: 0.5em;' class='full-shadow' alt='Die Geschichte im schwarzen Terminal-Theme mit grüner Monospace-Schrift.'>
-    </div>
+    <figure><img src='theme-terminal.webp' class='full-shadow' alt='Die Geschichte im schwarzen Terminal-Theme mit grüner Monospace-Schrift.'><figcaption><code>terminal</code></figcaption></figure>
 </div>
 
 #### Ein Theme verändern

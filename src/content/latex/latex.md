@@ -19,7 +19,7 @@ reference: [latex]
 Du schreibst eine kurze Facharbeit über ein Fadenpendel, von der leeren Datei bis zum fertigen PDF: mit Titelseite, Inhaltsverzeichnis, Kapiteln, einer Formel, einem Bild, einer Messwerttabelle, einem Diagramm, Quellenangaben und der Selbstständigkeitserklärung. Alles, was du dabei lernst, brauchst du später wieder: für Facharbeit oder Seminararbeit, für Protokolle und im Studium.
 </p>
 
-<div class='screen-gallery'>
+<div class='gallery'>
 <figure><img class='invert-dark border' src='titelseite.webp' alt='Titelseite: Facharbeit im Fach Physik, »Wie lange schwingt ein Pendel?«, unten Name, Kurs und Abgabedatum.'><figcaption>Die Titelseite</figcaption></figure>
 <figure><img class='invert-dark border' src='seite-versuch.webp' alt='Eine Seite mit nummerierter Abbildung des Versuchsaufbaus, einer Liste der Arbeitsschritte und einer Tabelle mit Messwerten.'><figcaption>Abbildung, Liste und Tabelle</figcaption></figure>
 <figure><img class='invert-dark border' src='seite-auswertung.webp' alt='Eine Seite mit einem Diagramm aus roten Messpunkten und einer blauen Kurve, darunter Fazit und Literaturverzeichnis.'><figcaption>Diagramm und Quellen</figcaption></figure>
@@ -737,7 +737,7 @@ check-task: quellen
 
 So sehen die Seiten aus:
 
-<div class='screen-gallery'>
+<div class='gallery'>
 <!-- tutorial-screenshot
 pdf-page-full: facharbeit/facharbeit.pdf 1 Wie lange schwingt ein Pendel?
 -->

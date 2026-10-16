@@ -207,19 +207,10 @@ Das JPEG-Format (Joint Photographic Experts Group) ist ein weit verbreitetes Bil
 
 Dieser Artikel soll dir helfen, einen JPEG-Decoder zu implementieren. Dafür ist es wichtig, zunächst einige Grundlagen zu verstehen:
 
-<div class='row'>
-<div class='col-md-4'>
-<a href='/rgb'><img src='title.webp' style='width: 100%;' alt=''></a>
-Farbräume
-</div>
-<div class='col-md-4'>
-<a href='/colorspace'><img src='colorspace.webp' style='width: 100%;' alt=''></a>
-Trennung von Helligkeit und Farbe
-</div>
-<div class='col-md-4'>
-<a href='/dct'><img src='dct.webp' style='width: 100%;' alt=''></a>
-Diskrete Kosinustransformation (DCT)
-</div>
+<div class='gallery columns-3'>
+<figure><a href='/rgb'><img src='title.webp' alt='Der RGB-Würfel als Drahtgitter, darin ein Farbpunkt, zerlegt in Pfeile für Y, Cb und Cr.'></a><figcaption>Farbräume</figcaption></figure>
+<figure><a href='/colorspace'><img src='colorspace.webp' alt='Ein Foto, zerlegt in drei Graubilder für Rot, Grün und Blau, mit Reglern dazwischen und dem wieder zusammengesetzten Foto rechts.'></a><figcaption>Trennung von Helligkeit und Farbe</figcaption></figure>
+<figure><a href='/dct'><img src='dct.webp' alt='Ein Ausschnitt aus acht Pixeln als Kurve, darunter seine acht DCT-Koeffizienten und die acht Kosinuswellen, aus denen die Kurve wieder entsteht.'></a><figcaption>Diskrete Kosinustransformation (DCT)</figcaption></figure>
 </div>
 
 <!-- Basiswechsel, Quantisierung, Huffman-Codierung -->

@@ -794,95 +794,29 @@ shade = on
 
 Du kannst auch 3D-Modelle in deine Szene einfügen. Auf der Website [kenney.nl](https://kenney.nl/assets) gibt es eine große Sammlung von kostenlosen 3D-Modellen, die du verwenden kannst. Du kannst sie direkt in dein Projekt herunterladen und in der `scene.ini` einfügen. Klicke dazu auf ein Kit, um die verfügbaren 3D-Modelle zu sehen:
 
-<div class='kenney-overview row'>
-    <div class='col-sm-6'>
-        <a href='/blaster-kit'><img src='kenney/blaster-kit.png' alt='Auswahl futuristischer Waffenmodelle aus dem Blaster Kit.'></a>
-        <div>Blaster Kit</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/car-kit'><img src='kenney/car-kit.png' alt='Auswahl farbiger Auto- und Lastwagenmodelle aus dem Car Kit.'></a>
-        <div>Car Kit</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/castle-kit'><img src='kenney/castle-kit-sample.png' alt='Burganlage aus Türmen, Mauern und Toren des Castle Kits.'></a>
-        <div>Castle Kit</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/city-kit-commercial'><img src='kenney/city-kit-commercial-sample.png' alt='Geschäftsgebäude und Stadtmöbel des kommerziellen City Kits.'></a>
-        <div>City Kit (Commercial)</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/city-kit-industrial'><img src='kenney/city-kit-industrial-sample.png' alt='Industriegebäude, Tanks und Rohre des industriellen City Kits.'></a>
-        <div>City Kit (Industrial)</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/city-kit-roads'><img src='kenney/city-kit-roads-sample.png' alt='Straßenstücke, Kreuzungen und Verkehrsschilder des City Kits.'></a>
-        <div>City Kit (Roads)</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/city-kit-suburban'><img src='kenney/city-kit-suburban-sample.png' alt='Wohnhäuser und Vorstadtobjekte des suburbanen City Kits.'></a>
-        <div>City Kit (Suburban)</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/cube-pets'><img src='kenney/cube-pets.png' alt='Mehrere würfelförmige Tierfiguren des Cube Pets Kits.'></a>
-        <div>Cube Pets</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/factory-kit'><img src='kenney/factory-kit.png' alt='Fabrikgebäude, Förderbänder und Maschinen des Factory Kits.'></a>
-        <div>Factory Kit</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/fantasy-town-kit'><img src='kenney/fantasy-town-kit.png' alt='Fantasiehäuser, Türme und Marktstände des Fantasy Town Kits.'></a>
-        <div>Fantasy Town Kit</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/food-kit'><img src='kenney/food-kit.png' alt='Auswahl dreidimensionaler Lebensmittel und Gerichte des Food Kits.'></a>
-        <div>Food Kit</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/graveyard-kit'><img src='kenney/graveyard-kit-sample.png' alt='Grabsteine, Gruften und kahle Bäume des Graveyard Kits.'></a>
-        <div>Graveyard Kit</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/holiday-kit'><img src='kenney/holiday-kit-sample.png' alt='Winterliche Figuren, Geschenke und Dekorationen des Holiday Kits.'></a>
-        <div>Holiday Kit</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/mini-arcade'><img src='kenney/mini-arcade-sample.png' alt='Bunte Spielautomaten und Zubehör des Mini Arcade Kits.'></a>
-        <div>Mini Arcade</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/mini-characters'><img src='kenney/mini-characters.png' alt='Auswahl kleiner menschlicher Figuren des Mini Characters Kits.'></a>
-        <div>Mini Characters</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/mini-dungeon'><img src='kenney/mini-dungeon-sample.png' alt='Dungeonräume, Mauern und Requisiten des Mini Dungeon Kits.'></a>
-        <div>Mini Dungeon</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/mini-market'><img src='kenney/mini-market-sample.png' alt='Marktstände, Regale und Waren des Mini Market Kits.'></a>
-        <div>Mini Market</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/pirate-kit'><img src='kenney/pirate-kit-sample.png' alt='Piratenfiguren, Schiffe und Inselobjekte des Pirate Kits.'></a>
-        <div>Pirate Kit</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/platformer-kit'><img src='kenney/platformer-kit.png' alt='Plattformen, Hindernisse und Figuren des Platformer Kits.'></a>
-        <div>Platformer Kit</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/survival-kit'><img src='kenney/survival-kit-sample.png' alt='Werkzeuge, Vorräte und Hütten des Survival Kits.'></a>
-        <div>Survival Kit</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/train-kit'><img src='kenney/train-kit.png' alt='Lokomotiven, Waggons und Schienenstücke des Train Kits.'></a>
-        <div>Train Kit</div>
-    </div>
-    <div class='col-sm-6'>
-        <a href='/watercraft-kit'><img src='kenney/watercraft-kit.png' alt='Boote, Schiffe und Hafenobjekte des Watercraft Kits.'></a>
-        <div>Watercraft Kit</div>
-    </div>
+<div class='gallery columns-2'>
+<figure><a href='/blaster-kit'><img src='kenney/blaster-kit.png' alt='Auswahl futuristischer Waffenmodelle aus dem Blaster Kit.'></a><figcaption>Blaster Kit</figcaption></figure>
+<figure><a href='/car-kit'><img src='kenney/car-kit.png' alt='Auswahl farbiger Auto- und Lastwagenmodelle aus dem Car Kit.'></a><figcaption>Car Kit</figcaption></figure>
+<figure><a href='/castle-kit'><img src='kenney/castle-kit-sample.png' alt='Burganlage aus Türmen, Mauern und Toren des Castle Kits.'></a><figcaption>Castle Kit</figcaption></figure>
+<figure><a href='/city-kit-commercial'><img src='kenney/city-kit-commercial-sample.png' alt='Geschäftsgebäude und Stadtmöbel des kommerziellen City Kits.'></a><figcaption>City Kit (Commercial)</figcaption></figure>
+<figure><a href='/city-kit-industrial'><img src='kenney/city-kit-industrial-sample.png' alt='Industriegebäude, Tanks und Rohre des industriellen City Kits.'></a><figcaption>City Kit (Industrial)</figcaption></figure>
+<figure><a href='/city-kit-roads'><img src='kenney/city-kit-roads-sample.png' alt='Straßenstücke, Kreuzungen und Verkehrsschilder des City Kits.'></a><figcaption>City Kit (Roads)</figcaption></figure>
+<figure><a href='/city-kit-suburban'><img src='kenney/city-kit-suburban-sample.png' alt='Wohnhäuser und Vorstadtobjekte des suburbanen City Kits.'></a><figcaption>City Kit (Suburban)</figcaption></figure>
+<figure><a href='/cube-pets'><img src='kenney/cube-pets.png' alt='Mehrere würfelförmige Tierfiguren des Cube Pets Kits.'></a><figcaption>Cube Pets</figcaption></figure>
+<figure><a href='/factory-kit'><img src='kenney/factory-kit.png' alt='Fabrikgebäude, Förderbänder und Maschinen des Factory Kits.'></a><figcaption>Factory Kit</figcaption></figure>
+<figure><a href='/fantasy-town-kit'><img src='kenney/fantasy-town-kit.png' alt='Fantasiehäuser, Türme und Marktstände des Fantasy Town Kits.'></a><figcaption>Fantasy Town Kit</figcaption></figure>
+<figure><a href='/food-kit'><img src='kenney/food-kit.png' alt='Auswahl dreidimensionaler Lebensmittel und Gerichte des Food Kits.'></a><figcaption>Food Kit</figcaption></figure>
+<figure><a href='/graveyard-kit'><img src='kenney/graveyard-kit-sample.png' alt='Grabsteine, Gruften und kahle Bäume des Graveyard Kits.'></a><figcaption>Graveyard Kit</figcaption></figure>
+<figure><a href='/holiday-kit'><img src='kenney/holiday-kit-sample.png' alt='Winterliche Figuren, Geschenke und Dekorationen des Holiday Kits.'></a><figcaption>Holiday Kit</figcaption></figure>
+<figure><a href='/mini-arcade'><img src='kenney/mini-arcade-sample.png' alt='Bunte Spielautomaten und Zubehör des Mini Arcade Kits.'></a><figcaption>Mini Arcade</figcaption></figure>
+<figure><a href='/mini-characters'><img src='kenney/mini-characters.png' alt='Auswahl kleiner menschlicher Figuren des Mini Characters Kits.'></a><figcaption>Mini Characters</figcaption></figure>
+<figure><a href='/mini-dungeon'><img src='kenney/mini-dungeon-sample.png' alt='Dungeonräume, Mauern und Requisiten des Mini Dungeon Kits.'></a><figcaption>Mini Dungeon</figcaption></figure>
+<figure><a href='/mini-market'><img src='kenney/mini-market-sample.png' alt='Marktstände, Regale und Waren des Mini Market Kits.'></a><figcaption>Mini Market</figcaption></figure>
+<figure><a href='/pirate-kit'><img src='kenney/pirate-kit-sample.png' alt='Piratenfiguren, Schiffe und Inselobjekte des Pirate Kits.'></a><figcaption>Pirate Kit</figcaption></figure>
+<figure><a href='/platformer-kit'><img src='kenney/platformer-kit.png' alt='Plattformen, Hindernisse und Figuren des Platformer Kits.'></a><figcaption>Platformer Kit</figcaption></figure>
+<figure><a href='/survival-kit'><img src='kenney/survival-kit-sample.png' alt='Werkzeuge, Vorräte und Hütten des Survival Kits.'></a><figcaption>Survival Kit</figcaption></figure>
+<figure><a href='/train-kit'><img src='kenney/train-kit.png' alt='Lokomotiven, Waggons und Schienenstücke des Train Kits.'></a><figcaption>Train Kit</figcaption></figure>
+<figure><a href='/watercraft-kit'><img src='kenney/watercraft-kit.png' alt='Boote, Schiffe und Hafenobjekte des Watercraft Kits.'></a><figcaption>Watercraft Kit</figcaption></figure>
 </div>
 
 ## Größere Szenen bauen

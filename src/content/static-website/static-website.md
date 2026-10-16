@@ -562,8 +562,8 @@ _task(media-query)
 
 Hier siehst du einen Vergleich vorher / nachher:
 
-<div class='row'>
-    <figure class='col-md-6 mb-4 text-center'>
+<div class='gallery columns-2 portrait'>
+    <figure>
 <!-- tutorial-screenshot
 # dieselbe Seite in einem Fenster, so schmal wie ein Handy
 tab: preview
@@ -571,16 +571,14 @@ viewport: 390x760
 -->
         <img
             src='narrow-bad.webp'
-            class='img-fluid d-block mx-auto rounded-3'
-            style='max-height: 65vh;'
             alt='Die Webseite auf einem schmalen Bildschirm vor der Anpassung: Bild und Text werden nebeneinander zusammengedrängt.'
         >
-        <figcaption class='mt-2'>
+        <figcaption>
             <strong>Vorher:</strong> Das Flexbox-Layout wird zu schmal.
         </figcaption>
     </figure>
 
-    <figure class='col-md-6 mb-4 text-center'>
+    <figure>
 <!-- tutorial-screenshot
 write-file: website-test/styles.css <- file:lehrkraft/8-styles.css
 preview-reload
@@ -589,11 +587,9 @@ viewport: 390x760
 -->
         <img
             src='narrow-good.webp'
-            class='img-fluid d-block mx-auto rounded-3'
-            style='max-height: 65vh;'
             alt='Die Webseite auf einem schmalen Bildschirm nach der Anpassung: Bild und Text stehen untereinander.'
         >
-        <figcaption class='mt-2'>
+        <figcaption>
             <strong>Nachher:</strong> Die Media Query ordnet alles untereinander an.
         </figcaption>
     </figure>

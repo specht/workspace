@@ -1,12 +1,12 @@
 // Pictures that open large on a click: the previews at the start of a
 // tutorial (.tutorial-preview, a button around the picture) and every picture
-// in a .screen-gallery, the grids of small screenshots with captions. A
+// in a .gallery that is not a link, the grids of pictures with captions. A
 // gallery picture fills the window, shows its caption, and ← → (or the
 // buttons at the sides) go through the pictures of its gallery. On a phone
 // the pictures already fill the width, so nothing opens there.
 document.addEventListener('DOMContentLoaded', () => {
     const previews = document.querySelectorAll('.tutorial-preview');
-    const galleryImages = document.querySelectorAll('.screen-gallery figure img');
+    const galleryImages = [...document.querySelectorAll('.gallery figure img')].filter((image) => !image.closest('a'));
     if (previews.length === 0 && galleryImages.length === 0) return;
 
     const ANIMATION_TIME = 180;
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function setupGallery() {
         galleryImages.forEach((image) => {
-            image.classList.toggle('screen-gallery-zoom', !narrow.matches);
+            image.classList.toggle('gallery-zoom', !narrow.matches);
             if (narrow.matches) {
                 image.removeAttribute('tabindex');
                 image.removeAttribute('role');
@@ -129,8 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function gallerySiblings(image) {
-        const gallery = image.closest('.screen-gallery');
-        return gallery ? [...gallery.querySelectorAll('figure img')] : [image];
+        const gallery = image.closest('.gallery');
+        return gallery ? [...gallery.querySelectorAll('figure img')].filter((other) => !other.closest('a')) : [image];
     }
 
     function step(delta) {
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
             openPreview(preview);
             return;
         }
-        const image = event.target.closest('.screen-gallery-zoom');
+        const image = event.target.closest('.gallery-zoom');
         if (image) {
             event.preventDefault();
             openGallery(image);
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (event.key === 'ArrowRight') step(1);
             return;
         }
-        const image = event.target.closest && event.target.closest('.screen-gallery-zoom');
+        const image = event.target.closest && event.target.closest('.gallery-zoom');
         if (image && (event.key === 'Enter' || event.key === ' ')) {
             event.preventDefault();
             openGallery(image);

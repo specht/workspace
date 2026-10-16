@@ -49,7 +49,7 @@ sleep: 8
 
 Im Bild läuft `25-raycaster.c`, ein Labyrinth im Stil von Wolfenstein 3D, ganz ohne Gleitkommazahlen. In den Beispielen steckt noch viel mehr; jedes Bild hier ist der Bildschirm eines Beispielprogramms:
 
-<div class='screen-gallery'>
+<div class='gallery'>
 <!-- tutorial-screenshot
 tab: preview
 viewport: 1600x900

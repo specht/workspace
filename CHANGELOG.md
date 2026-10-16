@@ -649,6 +649,24 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Bilder nebeneinander sind überall auf der Website Galerien derselben
+  Art: jedes Bild mit Alt-Text und Unterschrift darunter, groß zu öffnen mit
+  einem Klick (außer es ist ein Link). Die Bitebenen und die Tiefen in
+  »Geheime Botschaften in Bildern« und die Kanäle auf der Handbuch-Seite
+  »Farbräume« sind einzelne Bilder mit Unterschrift statt eines langen
+  Bildes; die Grundlagen der JPEG-Seite, die Themes von BIF, die Kits in
+  »Anaglyph 3D«, die Filterkernel im Feuer und das Vorher-Nachher in der
+  statischen Website haben Unterschriften und Alt-Texte bekommen. Für
+  Autorinnen und Autoren: `<div class='gallery'>` mit `columns-2` bis
+  `columns-4`, `portrait` und `tiles`, beschrieben in
+  docs/aktivitaet-schreiben.md und geprüft von `gallery_markup_test.rb`.
+- »Geheime Botschaften in Bildern« gibt den Farbklassen eine Aufgabe, die
+  nur sie können: Würfel der Breite 3 oder 5 schlüpfen am Chi-Quadrat-Test
+  vorbei, weil er Paare von Werten vergleicht und sie Gruppen von drei oder
+  fünf gleich machen. Die Lernenden sagen das voraus (»Am Test vorbei?«),
+  verallgemeinern ihren Test auf Gruppen (»Gruppen statt Paare«) und finden
+  damit die Breite in einem zweiten Fundstück, den Möwen mit dem Codewort
+  LEUCHTTURM. Dazu das Prinzip von Kerckhoffs.
 - »Geheime Botschaften in Bildern« endet mit den Farbklassen im
   RGB-Würfel; der Teil zu CIELab mit den Aufgaben »Nach Lab« und »Mehr,
   als das Auge merkt« ist entfallen. Wer Klassen in einem anderen

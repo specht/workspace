@@ -183,6 +183,14 @@ Filterkernel werden für verschiedene Effekte verwendet, z. B. Weichzeichnen, Sc
 Hier siehst du ein paar Beispiele:
 
 <style>
+.kernel-picture {
+    position: relative;
+}
+.kernel-picture img {
+    display: block;
+    width: 100%;
+    image-rendering: pixelated;
+}
 .kernel {
     color: #000;
     position: absolute;
@@ -213,11 +221,11 @@ Hier siehst du ein paar Beispiele:
 }
 </style>
 
-<div class='row'>
-    <div class='col-md-4' style='position: relative;'>
-        <img class='kernel_img' src='kernel_identity.png' style='width: 100%; image-rendering: pixelated;' alt=''>
+<div class='gallery columns-3'>
+<figure>
+    <div class='kernel-picture'>
+        <img class='kernel_img' src='kernel_identity.png' alt='Ein dunkler Ring auf hellem Grund, scharf wie vorher.'>
         <div class='kernel'>
-            <strong>Identity</strong>
             <table>
                 <tr><td>0</td><td>0</td><td>0</td></tr>
                 <tr><td>0</td><td>1</td><td>0</td></tr>
@@ -225,10 +233,12 @@ Hier siehst du ein paar Beispiele:
             </table>
         </div>
     </div>
-    <div class='col-md-4' style='position: relative;'>
-        <img class='kernel_img' src='kernel_boxblur.png' style='width: 100%; image-rendering: pixelated;' alt=''>
+    <figcaption>Identity</figcaption>
+</figure>
+<figure>
+    <div class='kernel-picture'>
+        <img class='kernel_img' src='kernel_boxblur.png' alt='Derselbe Ring, an den Rändern weichgezeichnet.'>
         <div class='kernel'>
-            <strong>Box blur</strong>
             <table>
                 <tr><td>1</td><td>1</td><td>1</td></tr>
                 <tr><td>1</td><td>1</td><td>1</td></tr>
@@ -236,10 +246,12 @@ Hier siehst du ein paar Beispiele:
             </table>
         </div>
     </div>
-    <div class='col-md-4' style='position: relative;'>
-        <img class='kernel_img' src='kernel_edge.png' style='width: 100%; image-rendering: pixelated;' alt=''>
+    <figcaption>Box blur</figcaption>
+</figure>
+<figure>
+    <div class='kernel-picture'>
+        <img class='kernel_img' src='kernel_edge.png' alt='Vom Ring bleiben nur seine Kanten als dünne Linien.'>
         <div class='kernel'>
-            <strong>Edge detection</strong>
             <table>
                 <tr><td>0</td><td>-1</td><td>0</td></tr>
                 <tr><td>-1</td><td>4</td><td>-1</td></tr>
@@ -247,6 +259,8 @@ Hier siehst du ein paar Beispiele:
             </table>
         </div>
     </div>
+    <figcaption>Edge detection</figcaption>
+</figure>
 </div>
 
 Im ersten Beispiel (»Identity«) wird der Pixelwert unverändert übernommen und alle umliegenden Pixel ignoriert. Im zweiten Beispiel (»Box blur«) wird der Pixelwert mit den Werten der umliegenden Pixel gemittelt, um einen Weichzeichnungseffekt zu erzielen. Im dritten Beispiel (»Edge detection«) wird der Pixelwert so berechnet, dass Kanten im Bild hervorgehoben werden.
@@ -255,8 +269,8 @@ Im ersten Beispiel (»Identity«) wird der Pixelwert unverändert übernommen un
 
 Wird ein Filterkernel wiederholt auf ein Bild angewendet, entsteht ein Effekt, der sich über die gesamte Bildfläche ausbreitet. Der Feuereffekt verwendet einen speziellen Filterkernel, der die Farben von Pixeln nach oben bewegt und dabei abkühlt. Der Filterkernel sieht folgendermaßen aus:
 
-<div style='max-width: 20em; margin-left: auto; margin-right: auto; position: relative;'>
-    <img class='kernel_img' src='kernel_fire.png' style='width: 100%; image-rendering: pixelated;' alt=''>
+<div class='kernel-picture' style='max-width: 20em; margin-left: auto; margin-right: auto;'>
+    <img class='kernel_img' src='kernel_fire.png' alt='Der Ring nach dem Feuer-Kernel: weichgezeichnet und ein wenig nach oben verschoben.'>
     <div class='kernel'>
         <table>
             <tr><td>0</td><td>0</td><td>0</td></tr>
