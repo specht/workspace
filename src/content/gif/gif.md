@@ -909,7 +909,7 @@ Schreib einen Bitleser:
 int read_code(int size)
 ```
 
-Er liest die nächsten `size` Bits aus den Bilddaten und gibt sie als Zahl zurück. Dafür merkt er sich in einer Variablen `bit_pos`, beim wievielten Bit er ist. Bit Nummer `bit_pos` steht im Byte `bit_pos / 8` an der Stelle `bit_pos % 8`, und das erste gelesene Bit wird das niedrigste Bit des Codes. Prüf ihn an der Diskette: Mit 3 Bits muss er zuerst 4, dann 1, dann 6 liefern.
+Er liest die nächsten `size` Bits aus den Bilddaten und gibt sie als Zahl zurück. Dafür merkt er sich in einer Variablen `bit_pos`, beim wievielten Bit er ist. Bit Nummer `bit_pos` steht im Byte `bit_pos / 8` als Bit Nummer `bit_pos % 8`, und das erste gelesene Bit wird das niedrigste Bit des Codes. Prüf ihn an der Diskette: Mit 3 Bits muss er zuerst 4, dann 1, dann 6 liefern.
 
 ### LZW-Decodierung
 

@@ -161,7 +161,7 @@ Alle Funken sind etwa gleich schnell. Deshalb liegen sie nach einem Moment auf e
 
 ### Funken verglimmen
 
-Jeder Funke bekommt eine Lebenszeit `life` in Sekunden, die in jedem Bild um `dt` kleiner wird. Ist sie abgelaufen, muss der Funke aus dem Array verschwinden. Statt alle folgenden Funken eine Stelle nach vorne zu schieben, rückt einfach der letzte Funke in die Lücke. Die Reihenfolge ist egal, und es geht schnell, egal wie viele Funken es gibt:
+Jeder Funke bekommt eine Lebenszeit `life` in Sekunden, die in jedem Bild um `dt` kleiner wird. Ist sie abgelaufen, muss der Funke aus dem Array verschwinden. Statt alle folgenden Funken um einen Index nach vorne zu schieben, rückt einfach der letzte Funke in die Lücke. Die Reihenfolge ist egal, und es geht schnell, egal wie viele Funken es gibt:
 
 ```c
 particles[i] = particles[count - 1];

@@ -649,6 +649,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Die Prüfungen in Ruby und Python laden von der Datei der Lernenden nur
+  die Definitionen: Methoden und Funktionen, Klassen, Konstanten, Importe
+  und was eine Tabelle füllt. Das Programm unten in der Datei läuft beim
+  Prüfen nicht, auch ohne `if __FILE__ == $0` oder `if __name__ ==
+  '__main__':`. Der Rechner für Ausdrücke, Huffman, LZW, RLE, Steganographie
+  und TOTP kommen darum ohne diese Zeile aus; die Programme stehen einfach
+  unten in der Datei. Nur »Endliche Automaten« behält sie, weil dort ein
+  Programm die Datei eines anderen lädt.
+- Im Text heißt die Zählvariable einer Schleife oder die Position in einem
+  Array »Index«, nicht »Stelle« (Rechner, TOTP, GIF, JPEG, Feuerwerk).
 - Bilder nebeneinander sind überall auf der Website Galerien derselben
   Art: jedes Bild mit Alt-Text und Unterschrift darunter, groß zu öffnen mit
   einem Klick (außer es ist ein Link). Die Bitebenen und die Tiefen in

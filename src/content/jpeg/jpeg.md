@@ -1032,7 +1032,7 @@ In komplexeren JPEG-Varianten können Teile der Bilddaten nach und nach codiert 
 </div>
 
 <div class='hint'>
-<strong>Für deinen Decoder:</strong> Merk dir für jede Komponente, welche DC- und welche AC-Tabelle sie benutzt. Direkt nach dem SOS-Segment beginnen die Bilddaten, an der Stelle, an der <code>pos</code> jetzt steht. Die Schleife über die Segmente ist damit fertig.
+<strong>Für deinen Decoder:</strong> Merk dir für jede Komponente, welche DC- und welche AC-Tabelle sie benutzt. Direkt nach dem SOS-Segment beginnen die Bilddaten, beim Index, auf dem <code>pos</code> jetzt steht. Die Schleife über die Segmente ist damit fertig.
 </div>
 
 ## Vom Datenstrom zum Bild
