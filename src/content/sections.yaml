@@ -44,7 +44,6 @@
     # - .drawing (koch curve)
     - fire
     - pixelram
-    - feuerwerk
     - tic80
     - raylib
   #  - .sirds
@@ -62,7 +61,6 @@
     von Diensten im Netz.
   entries:
     - static-website
-    - hugo
     - svelte
     - wetter
 
@@ -135,6 +133,17 @@
   entries:
     - working-with-files
     - git
+
+# Parked for now, so that the sections above fill rows of three: not in the
+# catalog, but the pages stay reachable by direct links (static-website links
+# to Hugo).
+- key: parked
+  hidden: true
+  label: Zurückgestellt
+  icon: /images/bookmark.png
+  entries:
+    - feuerwerk
+    - hugo
 
 - key: programming_languages
   compact: true
