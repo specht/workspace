@@ -120,3 +120,24 @@ tasks:
         say: Das ist die Prüfsumme der Zeilen in der Reihenfolge, in der sie in der Datei stehen. Sieht das Bild aus wie vier übereinandergelegte Streifen? Dann fehlt noch die Umrechnung mit `image_row`.
     hint: Es ist dasselbe Bild wie `markt.gif`, nur in anderer Reihenfolge gespeichert.
     solution: 'Dieselbe wie bei `markt.gif`: `4e5b2bc9`. Interlacing ändert nur, in welcher Reihenfolge die Zeilen in der Datei stehen, nicht das Bild.'
+
+  - id: animation
+    title: Die Diskette im Flug
+    prompt: |
+      Gib in `animation.c` die Prüfsumme aus, sobald das letzte Bild von
+      `flug.gif` gezeichnet ist: nach dem Zeichnen, vor dem Wegräumen, und
+      nur beim ersten Durchlauf. Welche Prüfsumme ist es?
+    check:
+      type: answer
+      expect: ['54236d34', '0x54236d34']
+    feedback:
+      - when: { matches: '^(0x)?8f94af25$' }
+        say: Die Disposal Method fehlt noch. Zieht die Diskette eine Spur hinter sich her? Bei Disposal Method 3 kommt zurück, was vor dem Bild unter ihm war.
+      - when: { matches: '^(0x)?646c69be$' }
+        say: Die durchsichtigen Pixel werden noch gezeichnet. Hat die Diskette eine dunkle Ecke, wo die Landschaft durchscheinen sollte?
+      - when: { matches: '^(0x)?51ccbc40$' }
+        say: Alle Bilder landen links oben. Die Position aus dem Image Descriptor fehlt noch beim Setzen der Pixel.
+      - when: { matches: '^(0x)?79cfe7be$' }
+        say: Ist der Himmel am Ende rot? Die Local Color Table steht noch in der Palette, die für den ganzen Bildschirm gilt. Mit `pixel_rgb24` trägt jedes Pixel seine eigene Farbe.
+    hint: Das letzte Bild erkennst du daran, dass nach seinen Bilddaten gleich der Trailer `0x3B` kommt.
+    solution: 'Die Prüfsumme ist `54236d34`.'
