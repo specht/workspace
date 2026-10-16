@@ -59,13 +59,3 @@ examples:
         - files: { stego/stego.py: loesung/stego.py }
       fail:
         - files: { stego/stego.py: stufen/start.py }
-  lab:
-    pass:
-      - files: { stego/stego.rb: loesung/stego.rb }
-    fail:
-      - files: { stego/stego.rb: stufen/start.rb }
-    python:
-      pass:
-        - files: { stego/stego.py: loesung/stego.py }
-      fail:
-        - files: { stego/stego.py: stufen/start.py }

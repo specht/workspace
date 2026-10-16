@@ -8,8 +8,6 @@ requires: [crypto]
 reference: [farbraeume]
 </div>
 
-<script src="/include/color_classes.js"></script>
-
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
@@ -19,7 +17,7 @@ reference: [farbraeume]
 # Geheime Botschaften in Bildern
 
 <p class='abstract'>
-Verschlüsselung macht eine Nachricht unlesbar, aber jeder sieht, dass es sie gibt. Steganographie versteckt die Nachricht selbst: in einem Foto, das aussieht wie jedes andere. Du liest ein Bild als Liste von Zahlen, versteckst Text in den untersten Bits, findest heraus, wie man so etwas entdeckt, und baust zum Schluss ein Verfahren, das mit Farbklassen und einer Zahl mit wechselnder Basis mehr versteckt, als das Auge je merkt.
+Verschlüsselung macht eine Nachricht unlesbar, aber jeder sieht, dass es sie gibt. Steganographie versteckt die Nachricht selbst: in einem Foto, das aussieht wie jedes andere. Du liest ein Bild als Liste von Zahlen, versteckst Text in den untersten Bits, findest heraus, wie man so etwas entdeckt, und baust zum Schluss ein Verfahren, das mit Farbklassen und einer Zahl mit wechselnder Basis genau so viel versteckt, wie du willst, nicht nur ganze Bits.
 </p>
 
 ## Verstecken statt verschlüsseln
@@ -382,11 +380,7 @@ Der Test findet die Botschaft und sogar, wo sie aufhört: Dort, wo sie steckt, l
 
 Das LSB-Verfahren lässt sich auch anders beschreiben. Alle Farben, die sich nur im untersten Bit jedes Kanals unterscheiden, bilden eine **Farbklasse**: zum Beispiel die 8 Farben mit Rot 208 oder 209, Grün 148 oder 149 und Blau 36 oder 37. Innerhalb einer Klasse sieht keine Farbe anders aus als die anderen. Ein Pixel darf also jede Farbe seiner Klasse annehmen, und *welche* es annimmt, trägt die Botschaft: 8 Möglichkeiten sind 3 Bits.
 
-Im RGB-Würfel mit 256 × 256 × 256 Farben sind diese Klassen kleine Würfel mit der Kantenlänge 2. Das sind über zwei Millionen; damit man sie sieht, ist der Würfel hier viel gröber geteilt. Zieh mit der Maus, um ihn zu drehen, und mit dem Schieber **Einteilung** wird er feiner:
-
-<div class='color-classes' data-split='rgb' data-views='rgb' data-lock data-plain></div>
-
-Warum nicht Würfel mit der Kantenlänge 3? Dann hat eine Klasse 3 · 3 · 3 = 27 Farben, und jedes Pixel kann eine von 27 Möglichkeiten tragen. Das sind \\( \log\_2 27 \approx 4{,}75 \\) Bits, keine ganze Zahl. Ersetzen kann man da nichts mehr. Man braucht eine andere Idee.
+Im RGB-Würfel mit 256 × 256 × 256 Farben sind diese Klassen kleine Würfel mit der Kantenlänge 2. Warum nicht 3? Dann hat eine Klasse 3 · 3 · 3 = 27 Farben, und jedes Pixel kann eine von 27 Möglichkeiten tragen. Das sind \\( \log\_2 27 \approx 4{,}75 \\) Bits, keine ganze Zahl. Ersetzen kann man da nichts mehr. Man braucht eine andere Idee.
 
 ### Eine Zahl mit wechselnder Basis
 
@@ -425,125 +419,12 @@ Mit `BoxClasses(2)` ist das wieder das LSB-Verfahren, 3 Bits pro Pixel. Mit 3 si
 
 _task(klassen)
 
-## Farben, wie wir sie sehen
-
-Ein Würfel im RGB-Raum ist eine schlechte Farbklasse, denn das Auge sieht RGB nicht gleichmäßig. Ein Unterschied von 4 im Blau eines hellen Himmels sieht man kaum, derselbe Unterschied im Grün eines dunklen Schattens schon. Und Unterschiede in der **Helligkeit** sieht das Auge viel genauer als Unterschiede im **Farbton**. Im RGB-Raum lassen sich beide nicht trennen: Jeder Kanal ändert immer beides.
-
-Der Farbraum **CIELab** ist dafür gemacht: Gleiche Abstände in Lab sehen ungefähr gleich verschieden aus. **L** ist die Helligkeit von 0 (schwarz) bis 100 (weiß), **a** geht von Grün nach Rot, **b** von Blau nach Gelb.
-
-Wie verschieden die beiden Farbräume ein Bild zerlegen, siehst du an den Strandhäusern. Jeder Kanal ist hier ein Graubild, dunkel bei kleinen und hell bei großen Werten. In RGB sieht jeder Kanal aus wie das Foto selbst, denn in jedem steckt die Helligkeit:
-
-<img class='full fit-width' src='kanaele-rgb.webp' alt='Das Foto der Strandhäuser und seine Kanäle Rot, Grün und Blau als Graubilder. Alle drei sehen dem Foto ähnlich; die blauen Türen sind im Rot-Kanal dunkel und im Blau-Kanal hell, die rote Tür umgekehrt.'>
-
-In Lab steckt fast das ganze Bild in L. a und b sind gleichmäßig grau, wo kaum Farbe ist, an den blassen Giebeln, und heben die Türen und den Himmel hervor:
-
-<img class='full fit-width' src='kanaele-lab.webp' alt='Das Foto der Strandhäuser und seine Kanäle L, a und b als Graubilder. L sieht aus wie ein Graubild des Fotos; a und b sind an den blassen Giebeln gleichmäßig grau, in a ist die rote Tür hell, in b sind die blauen Türen und der Himmel dunkel.'>
-
-Teilt man Lab in Quader statt RGB in Würfel, bekommen die Klassen dort viele Farben, wo das Auge wenig unterscheidet, und wenige, wo es genau hinsieht. Und man kann der Helligkeit mehr Stufen geben als a und b, weil das Auge dort empfindlicher ist.
-
-Hier siehst du beides. Links ist der RGB-Würfel, rechts sind dieselben Farben in Lab, mit L als Höhe. In Lab sind sie kein Würfel, sondern ein schiefer Körper mit einer Spitze bei Schwarz und einer bei Weiß. Schalte um zwischen **Würfeln in RGB** und **Quadern in Lab**: Die Würfel aus RGB sind in Lab krumme Stücke, verschieden groß und verschieden geformt. Die Quader aus Lab sind dort, wo der Körper endet, abgeschnitten, und im RGB-Würfel sind sie gebogene Scheiben, dünn in der Helligkeit, denn L hat die meisten Stufen. Ein Klick auf eine Farbe zeigt ihre Klasse allein, im Glas des ganzen Körpers, in beiden Ansichten.
-
-<div class='color-classes' data-split='lab'></div>
-
-Unter den Ansichten steht, was beim Verstecken aus einer Fläche der gewählten Farbe wird: Jedes Pixel bekommt eine zufällige Farbe seiner Klasse, einmal aus ihrem Würfel in RGB, einmal aus ihrem Quader in Lab. Links in jedem Streifen steht die Farbe selbst. Beide Einteilungen sind gleich fein, im Schnitt liegt eine Farbe in einer Klasse mit gleich vielen Farben, also passt in beide gleich viel. Trotzdem liegen bei etwa drei von vier Farben die Farben ihres Quaders in Lab näher beieinander als die ihres Würfels, vor allem in der Helligkeit: dort nur etwa halb so weit auseinander. Darum rauscht die Fläche mit Lab meist weniger, und je feiner die Einteilung, desto öfter. Probier ein paar Farben aus; bei manchen ist es umgekehrt, je nachdem, wo sie in ihrer Klasse liegen. Im Workspace teilst du noch viel feiner, als es hier zu sehen ist.
-
-_uses(gamma, cielab)
-
-Die Umrechnung von RGB nach Lab ist eine Formel. Du kannst sie so übernehmen:
-
-<!-- language: ruby -->
-```ruby_copy
-# Ein Kanal von 0 bis 255 als Lichtmenge von 0 bis 1 (sRGB ohne Gamma).
-LINEAR = (0..255).map do |v|
-    c = v / 255.0
-    c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055)**2.4
-end
-
-def f(t)
-    t > 216.0 / 24389 ? Math.cbrt(t) : (24389.0 / 27 * t + 16) / 116
-end
-
-# Die Farbe 0xRRGGBB in CIELab: L ist die Helligkeit (0 bis 100), a und b die Farbe.
-def lab(color)
-    r, g, b = LINEAR[color >> 16], LINEAR[(color >> 8) & 255], LINEAR[color & 255]
-    x = (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047
-    y = 0.2126 * r + 0.7152 * g + 0.0722 * b
-    z = (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883
-    fx, fy, fz = f(x), f(y), f(z)
-    [116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)]
-end
-
-# So weit reichen a und b für die Farben des RGB-Würfels.
-A_MIN, A_MAX = -86.2, 98.3
-B_MIN, B_MAX = -107.9, 94.5
-```
-<!-- /language -->
-<!-- language: python -->
-```python_copy
-def linear(v):
-    """Ein Kanal von 0 bis 255 als Lichtmenge von 0 bis 1 (sRGB ohne Gamma)."""
-    c = v / 255
-    return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
-
-
-LINEAR = [linear(v) for v in range(256)]
-
-
-def f(t):
-    return t ** (1 / 3) if t > 216 / 24389 else (24389 / 27 * t + 16) / 116
-
-
-def lab(color):
-    """Die Farbe 0xRRGGBB in CIELab: L ist die Helligkeit (0 bis 100), a und b die Farbe."""
-    r, g, b = LINEAR[color >> 16], LINEAR[(color >> 8) & 255], LINEAR[color & 255]
-    x = (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047
-    y = 0.2126 * r + 0.7152 * g + 0.0722 * b
-    z = (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883
-    fx, fy, fz = f(x), f(y), f(z)
-    return 116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)
-
-
-# So weit reichen a und b für die Farben des RGB-Würfels.
-A_MIN, A_MAX = -86.2, 98.3
-B_MIN, B_MAX = -107.9, 94.5
-```
-<!-- /language -->
-
-- Zuerst wird jeder Kanal zur Lichtmenge, die ein Bildschirm tatsächlich ausgibt: Die Zahlen von 0 bis 255 sind nicht gleichmäßig hell, 128 ist viel weniger als die halbe Helligkeit von 255.
-- Dann wird aus Rot, Grün und Blau die Lichtmenge in drei anderen Richtungen, X, Y und Z; Y ist die Helligkeit, so wie das Auge sie empfindet.
-- Die Kubikwurzel in `f` macht daraus Werte, in denen gleiche Abstände gleich aussehen.
-
-_task(lab)
-
-### Klassen in Lab
-
-<!-- language: ruby -->
-Schreib eine Klasse `LabClasses` mit `LabClasses.new(n_l, n_a, n_b)`: `n_l` Stufen für die Helligkeit, `n_a` und `n_b` für die Farbe.
-<!-- /language -->
-<!-- language: python -->
-Schreib eine Klasse `LabClasses` mit `LabClasses(n_l, n_a, n_b)`: `n_l` Stufen für die Helligkeit, `n_a` und `n_b` für die Farbe.
-<!-- /language -->
-
-- `cell(color)` rechnet die Farbe nach Lab um und gibt die Nummer ihres Quaders: Die Stufe von L ist \\( \lfloor L / 100 \cdot n\_L \rfloor \\), die von a ist \\( \lfloor (a - a\_{min}) / (a\_{max} - a\_{min}) \cdot n\_a \rfloor \\), ebenso b, jeweils höchstens \\( n - 1 \\). Die drei Stufen ergeben zusammen eine Zahl, zum Beispiel \\( (i \cdot n\_a + j) \cdot n\_b + k \\).
-- `members(cell)` gibt alle Farben des Quaders, aufsteigend sortiert. Hier lässt sich nichts ausrechnen wie bei den Würfeln: Ein Quader in Lab ist im RGB-Würfel ein krummes Gebilde. Also geht `prepare(image)` einmal durch alle 16.777.216 Farben, rechnet jede nach Lab um und merkt sich die Farben jedes Quaders, der im Bild vorkommt. Das dauert eine halbe Minute; danach geht alles schnell.
-
-`embed`, `extract` und `capacity` aus dem letzten Abschnitt funktionieren mit `LabClasses` genauso wie mit `BoxClasses`, denn sie brauchen von einer Klasseneinteilung nur `cell` und `members`. Vor `embed` rufst du `prepare` mit dem Bild auf, in das du versteckst, vor `extract` mit dem Bild, in dem die Botschaft steckt: Jedes Pixel bleibt in seiner Klasse, also braucht der Leser dieselben Klassen.
-
-_task(lab-kapazitaet)
-
-Das ist der Vergleich, auf den es ankommt: der Himmel aus `moewen.png`, links das Original, in der Mitte voll mit Würfeln von 8 Werten pro Kanal (9 Bits pro Pixel), rechts voll mit Lab-Klassen 78 × 48 × 46, die hier ebenfalls auf 9 Bits pro Pixel kommen. Beide tragen gleich viel, das sind gut 40 KB in diesem Ausschnitt:
-
-<img class='full' src='klassen.webp' alt='Drei Ausschnitte desselben Himmels mit einer Möwe und einer Wolke. Links das Original. In der Mitte, mit RGB-Würfeln, ist der Himmel fleckig und von Streifen durchzogen. Rechts, mit Lab-Klassen bei gleicher Menge, sieht er fast aus wie das Original, nur ganz leicht körnig.'>
-
-Mit RGB-Würfeln zerfällt der glatte Verlauf in Flecken und Bänder, wie vorhin mit 4 Bits pro Kanal. Mit Lab-Klassen bleibt er ruhig, weil die Helligkeit fein abgestuft ist und sich nur der Farbton ein wenig ändert, den das Auge weniger genau sieht.
-
-Probier selbst andere Einteilungen: mehr Stufen für L und weniger für a und b, oder umgekehrt. Bei gleicher Kapazität sieht das Ergebnis jedes Mal anders aus.
-
 _task(abgabe)
 
 ## Wie geht es weiter?
 
 - **Mit Schlüssel:** Wähle die Pixel nicht der Reihe nach, sondern in einer Reihenfolge, die ein Zufallsgenerator mit einem geheimen Startwert festlegt. Wer den Schlüssel nicht kennt, weiß nicht einmal, welche Pixel er untersuchen soll.
-- **Entdecken, Teil 2:** Gleichen sich bei den Lab-Klassen die Farben innerhalb einer Klasse an, so wie beim LSB-Verfahren die Paare? Schreib einen Test dafür.
+- **Entdecken, Teil 2:** Gleichen sich bei den Farbklassen die Farben innerhalb einer Klasse an, so wie beim LSB-Verfahren die Paare? Schreib einen Test dafür.
+- **Andere Farbräume:** Ein Würfel in RGB ist nicht die beste Farbklasse, denn das Auge sieht RGB nicht gleichmäßig: Unterschiede in der Helligkeit sieht es viel genauer als im Farbton. Im Handbuch unter [Farbräume](/reference/farbraeume) stehen Farbräume wie CIELab und OKLab, in denen gleiche Abstände ungefähr gleich verschieden aussehen. Schreib eine Klasseneinteilung mit Quadern in einem davon, mit mehr Stufen für die Helligkeit als für die Farbe; `embed` und `extract` brauchen von ihr nur `cell` und `members`.
 - **Töne:** Eine WAV-Datei ist eine Liste von Zahlen wie ein Bild, nur in der Zeit. Das unterste Bit eines Tons hört man genauso wenig.
 - **JPEG:** In einem JPEG gibt es keine Pixel, die man ändern könnte, nur die Koeffizienten der DCT aus [Ein JPEG-Decoder](/jpeg). Verfahren wie F5 verstecken ihre Bits dort.

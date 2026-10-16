@@ -27,17 +27,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   sRGB-Bildschirm zeigen kann. Berichtigt: XYZ beschreibt nicht, wie stark
   die Zapfen angeregt werden.
 
-- »Geheime Botschaften in Bildern« zeigt die Farbklassen in 3D, zum
-  Drehen mit der Maus: den RGB-Würfel in Würfel geteilt und, im Abschnitt
-  zu CIELab, RGB-Würfel und Lab-Körper nebeneinander, wahlweise mit Würfeln
-  in RGB oder Quadern in Lab. Ein Schieber stellt die Einteilung feiner
-  oder gröber, ein zweiter zieht die Klassen auseinander, ein Viertel lässt
-  sich herausnehmen, um hineinzusehen. Ein Klick auf eine Farbe zeigt ihre
-  Klasse allein in beiden Räumen und darunter zwei Flächen dieser Farbe,
-  in der jedes Pixel eine zufällige Farbe seiner Klasse hat: Bei gleich
-  vielen Farben pro Klasse rauscht die Fläche mit Lab meist weniger. Jede
-  Klasse ist ein glatter Körper; ein Lab-Quader ist dort abgeschnitten, wo
-  die Farben von RGB enden.
+- Die Handbuch-Seite »Farbräume« zeigt jeden Farbraum als Körper zum
+  Drehen: alle Farben des RGB-Würfels an ihrer Stelle in RGB (der Würfel
+  auf seiner schwarzen Ecke), im HSV-Kegel, in YCbCr, CIELab und OKLab,
+  das Helle immer oben. Ein Schieber schneidet den Körper waagerecht ab und
+  zeigt auf der Schnittfläche alle Farben derselben Helligkeit, ein Viertel
+  lässt sich herausnehmen. Geteilt in die 8 × 8 × 8 Würfel von RGB und
+  auseinandergezogen, zeigt jeder Körper, wie sein Farbraum gleiche Schritte
+  in RGB verbiegt. Neu ist der Teil »OKLab und OKLCh« mit den Formeln und
+  `oklch()` in CSS.
 
 - Neue Aktivität »Zwei Faktoren: Einmalcodes selbst gebaut« in »Netze &
   Sicherheit«, in Ruby und Python: Lernende bauen das Verfahren hinter
@@ -52,9 +50,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   und Licht (sRGB, Gamma), Graustufen, HSV, YCbCr und CIELab, jeweils mit
   den Formeln zum Umrechnen und demselben Foto in seine drei Kanäle
   zerlegt. Dazu eine Tabelle, welcher Farbraum wofür gut ist.
-  »Geheime Botschaften in Bildern« zeigt im Abschnitt zu CIELab die Kanäle
-  von RGB und Lab nebeneinander und verweist auf die Teile zu Gamma und
-  CIELab, »Eine JPEG-Datei decodieren« auf den zu YCbCr.
+  »Eine JPEG-Datei decodieren« verweist auf den Teil zu YCbCr.
 
 - »Eine JPEG-Datei decodieren« hat einen Schrittmacher zur iDCT: Er setzt
   den Beispielblock Koeffizient für Koeffizient aus seinen Basisbildern
@@ -653,6 +649,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- »Geheime Botschaften in Bildern« endet mit den Farbklassen im
+  RGB-Würfel; der Teil zu CIELab mit den Aufgaben »Nach Lab« und »Mehr,
+  als das Auge merkt« ist entfallen. Wer Klassen in einem anderen
+  Farbraum bauen will, findet unter »Wie geht es weiter?« den Weg ins
+  Handbuch »Farbräume«.
 - Startseite: Die Programmiersprachen stehen zu viert in einer Reihe (auf
   dem Handy zu zweit), mit dem Logo über die ganze Breite der Kachel im
   Format 16:9 und Name und Jahr in einer Zeile darunter. Damit die Reihen
@@ -665,9 +666,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   der Handbuch-Seite »Farbräume« ist ein neuer Ausschnitt ohne Menschen:
   Himmel, Giebel, eine rote und zwei hellblaue Türen. Die Bilder, die
   daraus entstehen (Fundstück, Bitebenen, Kanäle, Screenshots), sind neu
-  gerechnet, ebenso die Werte in Text und Aufgaben: das erste Pixel, die
-  Kapazität in Lab (rund 167.000 Bytes) und der Chi-Quadrat-Test, jetzt
-  in Streifen von 40 Zeilen. Wer das Fundstück schon gelöst hat, findet
+  gerechnet, ebenso die Werte in Text und Aufgaben: das erste Pixel und der
+  Chi-Quadrat-Test, jetzt in Streifen von 40 Zeilen. Wer das Fundstück schon gelöst hat, findet
   darin weiter dasselbe Codewort.
 
 - Der Baumzeichner beim Rechner für Ausdrücke behält seine Kanten, während

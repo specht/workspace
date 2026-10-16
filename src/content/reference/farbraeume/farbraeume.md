@@ -2,6 +2,8 @@
 kind: reference
 </div>
 
+<script src="/include/color_solid.js"></script>
+
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"
@@ -14,14 +16,18 @@ kind: reference
 Eine Farbe ist für den Computer drei Zahlen, aber welche drei, hängt davon ab, wofür man sie braucht. Zum Anzeigen nimmt man Rot, Grün und Blau, zum Komprimieren Helligkeit und zwei Farbanteile, zum Vergleichen einen Farbraum, in dem gleiche Abstände gleich verschieden aussehen. Hier stehen die wichtigsten, wie man zwischen ihnen umrechnet, wie dasselbe Foto in jedem von ihnen aussieht und wie sie entstanden sind.
 </p>
 
-Alle Bilder auf dieser Seite zerlegen dasselbe Foto in die drei Kanäle eines Farbraums. Jeder Kanal ist ein Graubild: dunkel, wo der Wert klein ist, hell, wo er groß ist. Unter jedem steht, was dunkel und was hell bedeutet.
+Zu jedem Farbraum gibt es einen Körper zum Drehen: alle Farben des RGB-Würfels, an die Stelle gesetzt, die ihnen der Farbraum gibt, das Helle immer oben. Zieh mit der Maus, um ihn zu drehen. Mit **Schnitt** schneidest du ihn waagerecht ab und siehst auf der Schnittfläche alle Farben derselben Helligkeit; ohne das herausgenommene Viertel siehst du nur die Oberfläche. **In 8 × 8 × 8 Würfel teilen** zerlegt den RGB-Würfel in 512 gleich große Würfel von je 32 Stufen pro Kanal, und **Auseinander** zieht sie voneinander weg. So siehst du, wie jeder Farbraum gleiche Schritte in RGB verbiegt.
+
+Die Bilder auf dieser Seite zerlegen dasselbe Foto in die drei Kanäle eines Farbraums. Jeder Kanal ist ein Graubild: dunkel, wo der Wert klein ist, hell, wo er groß ist. Unter jedem steht, was dunkel und was hell bedeutet.
 
 <p class='expl'>Foto mit freundlicher Genehmigung von Ian Kobylanski · <a href='https://koby.photography/' target='_blank'>https://koby.photography/</a></p>
 
 <!-- part: rgb-wuerfel -->
 ## RGB
 
-Bildschirme mischen jede Farbe aus rotem, grünem und blauem Licht. Jeder Anteil ist eine Zahl von 0 bis 255, ein Byte; zusammen sind das \\(256^3\\), also gut 16,7 Millionen Farben. Man kann sie sich als Würfel vorstellen: Schwarz (0, 0, 0) in einer Ecke, Weiß (255, 255, 255) in der gegenüberliegenden, und auf der Diagonale dazwischen alle Grautöne, bei denen die drei Anteile gleich sind.
+Bildschirme mischen jede Farbe aus rotem, grünem und blauem Licht. Jeder Anteil ist eine Zahl von 0 bis 255, ein Byte; zusammen sind das \\(256^3\\), also gut 16,7 Millionen Farben. Man kann sie sich als Würfel vorstellen: Schwarz (0, 0, 0) in einer Ecke, Weiß (255, 255, 255) in der gegenüberliegenden, und auf der Diagonale dazwischen alle Grautöne, bei denen die drei Anteile gleich sind. Hier steht der Würfel auf seiner schwarzen Ecke, die graue Diagonale ist die senkrechte Achse. Ein waagerechter Schnitt zeigt alle Farben mit derselben Summe R + G + B, mal ein Dreieck, mal ein Sechseck:
+
+<div class='color-solid' data-space='rgb'></div>
 
 <img class='full fit-width' src='kanaele-rgb.webp' alt='Ein Foto von Strandhäusern: links eine rote Tür mit einem weißen Farbfleck, daneben zwei hellblaue Türen unter blassgrünen Giebeln, darüber blauer Himmel. Daneben seine drei RGB-Kanäle als Graubilder. Alle drei sehen dem Foto ähnlich: Die blauen Türen sind im Rot-Kanal dunkel und im Blau-Kanal hell, die rote Tür umgekehrt.'>
 
@@ -62,6 +68,10 @@ Aus RGB, mit \\(r, g, b\\) von 0 bis 1, \\(M\\) dem größten und \\(m\\) dem kl
 <img class='full fit-width' src='kanaele-hsv.webp' alt='Das Foto der Strandhäuser und seine Kanäle in HSV. Im Farbton sind die blauen Türen und der Himmel ein gleichmäßiges Grau, die rote Tür zerfällt in Schwarz und Weiß. In der Sättigung leuchten die Türen, die blassen Giebel sind dunkel. Der Hellwert sieht aus wie ein helles Graubild.'>
 
 Im Farbton zerfällt die rote Tür in Schwarz und Weiß: Rot liegt am Anfang und am Ende des Kreises, bei 0° und bei fast 360°, und als Graubild sind das die beiden Enden. Ein Farbton ist eben ein Winkel und keine Zahl auf einer Linie. Wo die Sättigung fast 0 ist, im weißen Farbfleck auf der roten Tür, ist der Farbton sogar ganz zufällig: Weiß und Grau haben keinen. HSV ist gut, wenn Menschen Farben auswählen oder verschieben wollen, etwa »dieselbe Farbe, nur blasser«. In CSS gibt es mit `hsl(…)` einen nahen Verwandten.
+
+Als Körper ist HSV ein Kegel: Schwarz an der Spitze unten, oben eine Scheibe mit Weiß in der Mitte und den reinen Farben am Rand, rundherum nach ihrem Farbton. Der Abstand von der Achse ist hier S · V. Nähme man S selbst, würde aus dem Kegel ein Zylinder, dessen ganzer Boden schwarz ist, denn bei V = 0 ist jeder Farbton und jede Sättigung schwarz.
+
+<div class='color-solid' data-space='hsv'></div>
 <!-- /part -->
 
 <!-- part: ycbcr -->
@@ -80,6 +90,10 @@ Y ist genau das Graubild von oben. Zurück geht es mit \\(R = Y + 1{,}402 (C\_r 
 <img class='full fit-width' src='kanaele-ycbcr.webp' alt='Das Foto der Strandhäuser und seine Kanäle in YCbCr. Y ist ein normales Graubild. Cb und Cr sind an den blassen Giebeln und Wänden ein gleichmäßiges Grau; die blauen Türen und der Himmel sind in Cb hell und in Cr dunkel, die rote Tür umgekehrt.'>
 
 In Cb und Cr steckt kaum noch etwas vom Bild: Wo eine Fläche fast grau ist, an den blassen Giebeln, sind beide nahe 128, mittleres Grau, und nur die Türen und der Himmel heben sich ab. Die Kanten und Details stecken fast alle in Y. Das nutzt JPEG aus: Das Auge sieht Helligkeit viel feiner als Farbe, also speichert JPEG Cb und Cr oft nur für jedes zweite Pixel in jeder Richtung, ein Viertel der Daten, ohne dass man es sieht. Ausprobieren kannst du das unter [Trennung von Helligkeit und Farbe](/colorspace); wie ein Decoder zurückrechnet, zeigt [Eine JPEG-Datei decodieren](/jpeg).
+
+YCbCr rechnet nur mit festen Gewichten, darum bleibt der Würfel ein Körper mit geraden Kanten, nur schief und gekippt. Seine Ecken liegen auf verschiedenen Höhen: Gelb fast oben bei Weiß, Blau fast unten bei Schwarz, denn Y gewichtet Grün und Rot viel stärker als Blau.
+
+<div class='color-solid' data-space='ycbcr'></div>
 <!-- /part -->
 
 <!-- part: cielab -->
@@ -101,7 +115,38 @@ $$L = 116 f(Y) - 16, \quad a = 500 \left(f(X) - f(Y)\right), \quad b = 200 \left
 
 <img class='full fit-width' src='kanaele-lab.webp' alt='Das Foto der Strandhäuser und seine Kanäle in CIELab. L ist ein Graubild. a und b sind an den blassen Giebeln gleichmäßig grau; in a ist die rote Tür hell, in b sind die blauen Türen und der Himmel dunkel.'>
 
-Wie bei YCbCr steckt das Bild fast ganz in L, und a und b sind grau, wo keine Farbe ist. Der Unterschied liegt im Abstand: Der Unterschied zweier Farben ist in Lab einfach \\(\Delta E = \sqrt{(L\_1 - L\_2)^2 + (a\_1 - a\_2)^2 + (b\_1 - b\_2)^2}\\), und ein \\(\Delta E\\) um 2 sieht man gerade eben. Druckereien prüfen damit, ob eine Farbe stimmt, und [Geheime Botschaften in Bildern](/steganography) versteckt Daten in Farben, die in Lab so nah beieinander liegen, dass niemand den Unterschied sieht.
+Wie bei YCbCr steckt das Bild fast ganz in L, und a und b sind grau, wo keine Farbe ist. Der Unterschied liegt im Abstand: Der Unterschied zweier Farben ist in Lab einfach \\(\Delta E = \sqrt{(L\_1 - L\_2)^2 + (a\_1 - a\_2)^2 + (b\_1 - b\_2)^2}\\), und ein \\(\Delta E\\) um 2 sieht man gerade eben. Druckereien prüfen damit, ob eine Farbe stimmt. Genauer ist die verbesserte Formel CIEDE2000, die im Blau und bei kräftigen Farben nachbessert; sie rechnet aber ebenfalls mit L, a und b.
+
+In Lab sind die Farben des RGB-Würfels kein Würfel mehr, sondern ein schiefer Körper mit gebogenen Flächen. Er reicht weit nach Blau (−b) und nach Rot und Magenta (+a), und die kräftigen Farben liegen auf ganz verschiedenen Höhen: ein reines Gelb bei L = 97, ein reines Blau bei L = 32. Ein Schnitt zeigt, welche Farben gleich hell aussehen.
+
+Geteilt in die 8 × 8 × 8 Würfel von RGB zeigt Lab, wie verschieden gleiche Schritte in RGB aussehen. Die Würfel der dunklen Farben sind groß, bis zu siebzigmal so groß wie die kleinsten: Dort sieht man 32 Stufen eines Kanals deutlich. Am kleinsten sind die Würfel der kräftigen Grüntöne, dort unterscheidet das Auge dieselben 32 Stufen kaum. In HSV dagegen sind alle Würfel fast gleich groß, nur anders geformt, denn HSV ordnet den Würfel nur um.
+
+<div class='color-solid' data-space='lab'></div>
+<!-- /part -->
+
+<!-- part: oklab -->
+## OKLab und OKLCh
+
+CIELab ist von 1976 und hat Schwächen. Die bekannteste: Macht man ein Blau blasser, ohne seinen Farbton in Lab zu ändern, wird es lila. 2020 hat Björn Ottosson **OKLab** veröffentlicht, gebaut wie CIELab, mit der Helligkeit **L** und den Gegenfarben **a** (Grün–Rot) und **b** (Blau–Gelb), aber an neuere Messungen angepasst, gleichmäßiger im Farbton und einfacher zu rechnen. Aus dem Licht \\(r, g, b\\) (»Gespeicherte Werte und Licht«) geht es in zwei Schritten mit einer Kubikwurzel dazwischen:
+
+$$l = 0{,}4122 r + 0{,}5363 g + 0{,}0514 b, \quad m = 0{,}2119 r + 0{,}6807 g + 0{,}1074 b, \quad s = 0{,}0883 r + 0{,}2817 g + 0{,}6300 b$$
+
+$$L = 0{,}2105 \sqrt[3]{l} + 0{,}7936 \sqrt[3]{m} - 0{,}0041 \sqrt[3]{s}$$
+
+$$a = 1{,}9780 \sqrt[3]{l} - 2{,}4286 \sqrt[3]{m} + 0{,}4506 \sqrt[3]{s}, \quad b = 0{,}0259 \sqrt[3]{l} + 0{,}7828 \sqrt[3]{m} - 0{,}8087 \sqrt[3]{s}$$
+
+L geht von 0 bis 1, a und b bleiben für die Farben eines Bildschirms zwischen etwa −0,3 und 0,3. Die Zahlen mit allen Stellen stehen in [Ottossons Beschreibung](https://bottosson.github.io/posts/oklab/); für die meisten Zwecke reichen diese.
+
+**OKLCh** sind dieselben Farben in Polarkoordinaten, wie HSV für RGB: \\(C = \sqrt{a^2 + b^2}\\) ist die Buntheit (»chroma«) und \\(h\\), der Winkel von \\((a, b)\\), der Farbton. Anders als bei HSV sehen zwei Farben mit demselben L auch gleich hell aus. Das macht OKLCh gut für Farbpaletten und Verläufe, und alle großen Browser können es seit 2023 in CSS:
+
+```css
+color: oklch(70% 0.15 250);                          /* L, C, h in Grad */
+background: linear-gradient(in oklch, blue, yellow);  /* Verlauf durch OKLCh */
+```
+
+Der Körper sieht aus wie in CIELab, nur schlanker, denn OKLab misst Buntheit in anderen Einheiten als Helligkeit:
+
+<div class='color-solid' data-space='oklab'></div>
 <!-- /part -->
 
 ## Welcher Farbraum wofür?
@@ -114,6 +159,7 @@ Wie bei YCbCr steckt das Bild fast ganz in L, und a und b sind grau, wo keine Fa
 <tr><td>HSV</td><td>Farbton, Sättigung, Hellwert</td><td>Farben aussuchen und verändern: blasser, dunkler, einen anderen Farbton</td></tr>
 <tr><td>YCbCr</td><td>Helligkeit, zwei Farbanteile</td><td>Komprimieren: Farbe gröber speichern als Helligkeit (JPEG, Video)</td></tr>
 <tr><td>CIELab</td><td>Helligkeit, Grün–Rot, Blau–Gelb</td><td>Vergleichen: Abstände so groß, wie das Auge sie sieht</td></tr>
+<tr><td>OKLab, OKLCh</td><td>Helligkeit, Grün–Rot, Blau–Gelb, oder Helligkeit, Buntheit, Farbton</td><td>Farben verändern, ohne dass Helligkeit oder Farbton verrutschen: Paletten, Verläufe, CSS</td></tr>
 </tbody>
 </table>
 </div>
@@ -155,3 +201,7 @@ HSV ist der einzige Farbraum hier, der für Computer erfunden wurde. 1978 suchte
 ### sRGB: die Werte in jeder Bilddatei
 
 sRGB ist eine Vereinbarung von HP und Microsoft aus dem Jahr 1996, drei Jahre später eine internationale Norm. Die Idee war, aufzuschreiben, was ein üblicher Röhrenmonitor ohnehin tat. Eine Bildröhre gibt bei doppelter Spannung nicht doppelt so viel Licht, sondern ungefähr mit der Potenz 2,2 bis 2,5 mehr. Das passt zufällig gut zum Auge, das bei dunklen Tönen feinere Unterschiede sieht. Die Kurve aus »Gespeicherte Werte und Licht« steckte also schon in der Hardware, bevor man sie aufschrieb. Die drei Grundfarben von sRGB, die Ecken des Dreiecks in der Normfarbtafel, sind die des HDTV-Standards von 1990.
+
+### Heute: OKLab
+
+OKLab erschien nicht als Norm, sondern 2020 in einem Blogeintrag. Björn Ottosson, ein Programmierer aus Schweden, wollte für Bildbearbeitung einen Farbraum, der Helligkeit, Buntheit und Farbton so gut vorhersagt wie die genauen, aber aufwendigen Modelle der Forschung, und dabei so einfach zu rechnen ist wie CIELab. Er passte zwei Matrizen und eine Kubikwurzel an Messdaten an. Schon drei Jahre später konnten ihn alle großen Browser.

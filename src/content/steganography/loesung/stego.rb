@@ -158,62 +158,6 @@ def capacity(image, classes)
     colors(image)[HEADER..].sum { |c| Math.log2(classes.members(classes.cell(c)).length) }
 end
 
-# --- Farben, wie wir sie sehen: CIELab --------------------------------------
-
-# Ein Kanal von 0 bis 255 als Lichtmenge von 0 bis 1 (sRGB ohne Gamma).
-LINEAR = (0..255).map do |v|
-    c = v / 255.0
-    c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055)**2.4
-end
-
-def f(t)
-    t > 216.0 / 24389 ? Math.cbrt(t) : (24389.0 / 27 * t + 16) / 116
-end
-
-# Die Farbe 0xRRGGBB in CIELab: L ist die Helligkeit (0 bis 100), a und b die Farbe.
-def lab(color)
-    r, g, b = LINEAR[color >> 16], LINEAR[(color >> 8) & 255], LINEAR[color & 255]
-    x = (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047
-    y = 0.2126 * r + 0.7152 * g + 0.0722 * b
-    z = (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883
-    fx, fy, fz = f(x), f(y), f(z)
-    [116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)]
-end
-
-# So weit reichen a und b für die Farben des RGB-Würfels.
-A_MIN, A_MAX = -86.2, 98.3
-B_MIN, B_MAX = -107.9, 94.5
-
-# Farbklassen als Quader im Lab-Raum: n_l Stufen für die Helligkeit, n_a und
-# n_b für die Farbe. prepare sucht die Farben aller Klassen, die in einem Bild
-# vorkommen, einmal durch alle 16,7 Millionen Farben.
-class LabClasses
-    def initialize(n_l, n_a, n_b)
-        @n_l, @n_a, @n_b = n_l, n_a, n_b
-        @lists = {}
-    end
-
-    def cell(color)
-        l, a, b = lab(color)
-        i = (l / 100 * @n_l).floor.clamp(0, @n_l - 1)
-        j = ((a - A_MIN) / (A_MAX - A_MIN) * @n_a).floor.clamp(0, @n_a - 1)
-        k = ((b - B_MIN) / (B_MAX - B_MIN) * @n_b).floor.clamp(0, @n_b - 1)
-        (i * @n_a + j) * @n_b + k
-    end
-
-    def prepare(image)
-        @lists = colors(image).uniq.map { |c| [cell(c), []] }.to_h
-        (1 << 24).times do |color|
-            members = @lists[cell(color)]
-            members << color if members
-        end
-    end
-
-    def members(cell)
-        @lists[cell]
-    end
-end
-
 if __FILE__ == $0
     image = ChunkyPNG::Image.from_file('fundstueck.png')
     bit_plane(image, 1).save('ebene-1.png')

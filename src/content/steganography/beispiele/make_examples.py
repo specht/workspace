@@ -13,8 +13,6 @@ moewen-ganz.jpg is the whole photo of the gulls, 1000 pixels wide. From them:
   specification as plain text and compressed with zlib.
 - ../tiefe.webp: the sky of moewen.png with 1, 2, 4 and 6 bits per channel
   filled with data as uniform as a compressed message.
-- ../klassen.webp: the same sky full at about 9 bits per pixel, once with
-  RGB boxes (8 values per channel) and once with Lab classes 78 x 48 x 46.
 - ../teaser.webp: for the activity's card, a photo that looks innocent: the
   man with the gulls on the pier, cut to 16:9 like the card from
   moewen-ganz.jpg, the whole photo (moewen.png is a crop of its sky).
@@ -22,8 +20,8 @@ moewen-ganz.jpg is the whole photo of the gulls, 1000 pixels wide. From them:
 The three PNGs also go into src/static/steganography/, where the page
 offers them for download.
 
-Run it from this folder (Pillow needed; it takes a few minutes, mostly
-for the Lab classes). Change the message and the task changes with it.
+Run it from this folder (Pillow needed). Change the message and the task
+changes with it.
 """
 import os
 import random
@@ -35,15 +33,13 @@ from PIL import Image, ImageDraw, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'loesung'))
-from stego import (BoxClasses, HEADER, LabClasses, bit_plane, capacity, channels,  # noqa: E402
-                   embed, from_channels, hide)
+from stego import bit_plane, channels, from_channels, hide  # noqa: E402
 
 MESSAGE = ('Gut gefunden! Wer das liest, hat in die untersten Bits geschaut. '
            'Das Codewort ist STRANDKORB.')
 SPEC = os.path.join(HERE, '..', '..', '..', 'static', 'lzw', 'spec-gif89a.txt')
 STATIC = os.path.join(HERE, '..', '..', '..', 'static', 'steganography')
 FONT = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
-LAB = (78, 48, 46)
 
 
 def fundstueck():
@@ -98,23 +94,6 @@ def tiefe():
     out.save(os.path.join(HERE, '..', 'tiefe.webp'), lossless=True)
 
 
-def klassen():
-    sky = Image.open(os.path.join(HERE, 'moewen.png')).convert('RGB').crop((0, 0, 240, 160))
-    rng = random.Random(2)
-    box = BoxClasses(8)
-    lab = LabClasses(*LAB)
-    lab.prepare(sky)
-    filled = []
-    for classes in (box, lab):
-        room = int(capacity(sky, classes) / 8) - 8
-        filled.append(embed(sky, rng.randbytes(room), classes))
-        n = sky.width * sky.height - HEADER
-        print(f'{type(classes).__name__}: {capacity(sky, classes) / n:.2f} bits per pixel')
-    crop = (100, 60, 240, 160)
-    out = panels([sky.crop(crop), filled[0].crop(crop), filled[1].crop(crop)], scale=4, gap=24)
-    out.save(os.path.join(HERE, '..', 'klassen.webp'), lossless=True)
-
-
 def teaser():
     pier = Image.open(os.path.join(HERE, 'moewen-ganz.jpg')).convert('RGB')
     top = 370   # the small gull above, the man down to his hips
@@ -134,4 +113,3 @@ if __name__ == '__main__':
     publish()
     ebenen()
     tiefe()
-    klassen()

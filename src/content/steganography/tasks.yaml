@@ -277,59 +277,6 @@ tasks:
             expect: '1374.2'
             say: 'Jedes Pixel ab dem zwölften trägt log2(27) ≈ 4,75 Bits: 289 · 4,755 ≈ 1374,2.'
 
-  - id: lab
-    title: Nach Lab
-    prompt: |
-      Übernimm `lab` mit `LINEAR` und `f` in deine Datei. Speichere.
-    file: stego/stego.rb
-    check:
-      type: ruby
-      file: stego/stego.rb
-      cases:
-        - call: lab(0xffffff).map { |v| v.round(1) }
-          expect: '[100.0, 0.0, 0.0]'
-          say: Weiß hat die Helligkeit 100 und keine Farbe.
-        - call: lab(0xff0000).map { |v| v.round(1) }
-          expect: '[53.2, 80.1, 67.2]'
-        - call: lab(0x808080).map { |v| v.round(1) }
-          expect: '[53.6, 0.0, 0.0]'
-          say: 'Grau 128 hat nur gut die halbe Helligkeit von Weiß: Erst `LINEAR` macht aus 128 die Lichtmenge 0,22.'
-    python:
-      prompt: |
-        Übernimm `lab` mit `linear`, `LINEAR` und `f` in deine Datei.
-        Speichere.
-      file: stego/stego.py
-      check:
-        type: python
-        file: stego/stego.py
-        cases:
-          - call: '[round(v, 1) for v in lab(0xffffff)]'
-            expect: '[100.0, 0.0, 0.0]'
-            say: Weiß hat die Helligkeit 100 und keine Farbe.
-          - call: '[round(v, 1) for v in lab(0xff0000)]'
-            expect: '[53.2, 80.1, 67.2]'
-          - call: '[round(v, 1) for v in lab(0x808080)]'
-            expect: '[53.6, 0.0, 0.0]'
-            say: 'Grau 128 hat nur gut die halbe Helligkeit von Weiß: Erst `LINEAR` macht aus 128 die Lichtmenge 0,22.'
-
-  - id: lab-kapazitaet
-    title: Mehr, als das Auge merkt
-    prompt: |
-      Wie viele Bytes passen mit `LabClasses` 78 × 48 × 46 in
-      `strandhaeuser.png`? Rechne mit `capacity`, nachdem `prepare` gelaufen
-      ist, und teile durch 8.
-    check:
-      type: number
-      expect: 167221
-      tolerance: 400
-      unit: Bytes
-    feedback:
-      - when: { between: [1330000, 1345000] }
-        say: Das sind Bits. Wie viele Bytes?
-      - when: { between: [57000, 58000] }
-        say: Das ist das LSB-Verfahren mit einem Bit pro Kanal. Mit Lab-Klassen passt viel mehr hinein.
-    solution: Rund 167.000 Bytes, etwa 8,7 Bits pro Pixel. Das ist fast dreimal so viel wie mit einem Bit pro Kanal, ohne dass man im Bild etwas sieht, und doppelt so viel wie die ganze GIF-Spezifikation.
-
   - id: abgabe
     title: Deine Steganographie
     prompt: |

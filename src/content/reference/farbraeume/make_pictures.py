@@ -5,9 +5,7 @@ as a grey picture, with a label below. And the chromaticity diagram of
 CIE 1931 with the triangle of sRGB (normfarbtafel.webp).
 
 The photo is strandhaeuser.png from »Geheime Botschaften in Bildern« (Ian
-Kobylanski, with permission, https://koby.photography/). The RGB and Lab
-pictures also go into src/content/steganography/, where the section on
-CIELab shows them. Run from this folder; Pillow and numpy needed.
+Kobylanski, with permission, https://koby.photography/). Run from this folder; Pillow and numpy needed.
 `make_pictures.py normfarbtafel` makes only the diagram.
 """
 import colorsys
@@ -20,7 +18,6 @@ from PIL import Image, ImageDraw, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PHOTO = os.path.join(HERE, '..', '..', 'steganography', 'beispiele', 'strandhaeuser.png')
-STEGO = os.path.join(HERE, '..', '..', 'steganography')
 FONT = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
 SCALE = 0.75   # panels of 360 × 240 pixels
 
@@ -219,6 +216,4 @@ if __name__ == '__main__':
     for name, (convert, labels) in SPACES.items():
         out = picture(photo, convert, labels)
         out.save(os.path.join(HERE, f'kanaele-{name}.webp'), quality=90)
-        if name in ('rgb', 'lab'):
-            out.save(os.path.join(STEGO, f'kanaele-{name}.webp'), quality=90)
         print(name, out.size)

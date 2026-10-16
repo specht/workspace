@@ -166,64 +166,6 @@ def capacity(image, classes):
     return sum(math.log2(len(classes.members(classes.cell(c)))) for c in colors(image)[HEADER:])
 
 
-# --- Farben, wie wir sie sehen: CIELab --------------------------------------
-
-def linear(v):
-    """Ein Kanal von 0 bis 255 als Lichtmenge von 0 bis 1 (sRGB ohne Gamma)."""
-    c = v / 255
-    return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
-
-
-LINEAR = [linear(v) for v in range(256)]
-
-
-def f(t):
-    return t ** (1 / 3) if t > 216 / 24389 else (24389 / 27 * t + 16) / 116
-
-
-def lab(color):
-    """Die Farbe 0xRRGGBB in CIELab: L ist die Helligkeit (0 bis 100), a und b die Farbe."""
-    r, g, b = LINEAR[color >> 16], LINEAR[(color >> 8) & 255], LINEAR[color & 255]
-    x = (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047
-    y = 0.2126 * r + 0.7152 * g + 0.0722 * b
-    z = (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883
-    fx, fy, fz = f(x), f(y), f(z)
-    return 116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)
-
-
-# So weit reichen a und b für die Farben des RGB-Würfels.
-A_MIN, A_MAX = -86.2, 98.3
-B_MIN, B_MAX = -107.9, 94.5
-
-
-class LabClasses:
-    """Farbklassen als Quader im Lab-Raum: n_l Stufen für die Helligkeit,
-    n_a und n_b für die Farbe. prepare sucht die Farben aller Klassen, die in
-    einem Bild vorkommen, einmal durch alle 16,7 Millionen Farben."""
-
-    def __init__(self, n_l, n_a, n_b):
-        self.n_l, self.n_a, self.n_b = n_l, n_a, n_b
-        self.lists = {}
-
-    def cell(self, color):
-        l, a, b = lab(color)
-        i = min(max(int(l / 100 * self.n_l), 0), self.n_l - 1)
-        j = min(max(int((a - A_MIN) / (A_MAX - A_MIN) * self.n_a), 0), self.n_a - 1)
-        k = min(max(int((b - B_MIN) / (B_MAX - B_MIN) * self.n_b), 0), self.n_b - 1)
-        return (i * self.n_a + j) * self.n_b + k
-
-    def prepare(self, image):
-        needed = {self.cell(c) for c in set(colors(image))}
-        self.lists = {cell: [] for cell in needed}
-        for color in range(1 << 24):
-            members = self.lists.get(self.cell(color))
-            if members is not None:
-                members.append(color)
-
-    def members(self, cell):
-        return self.lists[cell]
-
-
 if __name__ == '__main__':
     image = Image.open('fundstueck.png')
     bit_plane(image, 1).save('ebene-1.png')

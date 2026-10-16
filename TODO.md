@@ -108,7 +108,7 @@ generated screenshots:
 * »Kryptographie im Terminal« (`src/content/crypto`), hashes, salted password hashes, AES, RSA, Ed25519 signatures with `ssh-keygen -Y`, a partner part over port 1234
 * »Daten aus dem Netz« (`src/content/wetter`), the Open-Meteo weather API with `curl`/`jq`, Ruby with a cache, and a page with `fetch`
 * »Eine Klötzchenwelt in 3D« (`src/content/raylib`), raylib in 3D with Handbuch »raylib«; the starter is `specht/raylib-starter`, the same files as `vorlage/`
-* »Geheime Botschaften in Bildern« (`src/content/steganography`), Ruby/Python with ChunkyPNG/Pillow: bit planes, LSB with a length header, the chi-square test, compressed versus plain messages, colour classes with a mixed-radix number in RGB and CIELab
+* »Geheime Botschaften in Bildern« (`src/content/steganography`), Ruby/Python with ChunkyPNG/Pillow: bit planes, LSB with a length header, the chi-square test, compressed versus plain messages, colour classes with a mixed-radix number in RGB
 * »Ein Krimi im Terminal« (`src/content/terminal-mystery`), a theft solved with `grep`, `head | tail`, `sort | uniq -d` and `git log`/`git show`; with the case server (`CASE_SERVER`) a last chapter with `ssh`, `ssh -J` and `scp`
 * »Ein Rechner für Ausdrücke« (`src/content/calculator`), Ruby/Python: tokens, recursive descent, evaluation, errors, `^` and variables, with a tree drawer that steps through the evaluation
 
