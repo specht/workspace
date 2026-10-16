@@ -15,8 +15,6 @@ end
 def bit_plane(image, bit = 0)
 end
 
-if __FILE__ == $0
-    image = ChunkyPNG::Image.from_file('fundstueck.png')
-    p [image.width, image.height]
-    p channels(image)[0, 6]
-end
+image = ChunkyPNG::Image.from_file('fundstueck.png')
+p [image.width, image.height]
+p channels(image)[0, 6]

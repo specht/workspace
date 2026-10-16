@@ -19,22 +19,20 @@ def calculate(text, variables = {})
     evaluate(parse(tokenize(text)), variables)
 end
 
-if __FILE__ == $0
-    loop do
-        print '> '
-        line = gets
-        if line.nil?
-            puts
-            break
-        end
+loop do
+    print '> '
+    line = gets
+    if line.nil?
+        puts
+        break
+    end
 
-        line = line.strip
-        next if line.empty?
+    line = line.strip
+    next if line.empty?
 
-        begin
-            p calculate(line)
-        rescue ArgumentError => e
-            puts "Fehler: #{e.message}"
-        end
+    begin
+        p calculate(line)
+    rescue ArgumentError => e
+        puts "Fehler: #{e.message}"
     end
 end

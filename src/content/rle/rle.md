@@ -125,9 +125,7 @@ end
 def unrle_bytes(bytes)
 end
 
-if __FILE__ == $0
-    p rle('WWWWWWBBBWWWW')
-end
+p rle('WWWWWWBBBWWWW')
 ```
 
 <!-- tutorial-step
@@ -163,8 +161,7 @@ def unrle_bytes(numbers):
     return b''
 
 
-if __name__ == '__main__':
-    print(rle('WWWWWWBBBWWWW'))
+print(rle('WWWWWWBBBWWWW'))
 ```
 
 <!-- tutorial-step

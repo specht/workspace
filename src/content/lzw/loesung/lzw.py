@@ -51,10 +51,9 @@ def size_in_bytes(codes):
     return (bits + 7) // 8
 
 
-if __name__ == '__main__':
-    print(compress(b'ABABABA'))
-    if len(sys.argv) > 1:
-        data = open(sys.argv[1], 'rb').read()
-        codes = compress(data)
-        assert decompress(codes) == data
-        print(f'{len(data)} Bytes, {len(codes)} Codes, {size_in_bytes(codes)} Bytes mit wachsender Codebreite')
+print(compress(b'ABABABA'))
+if len(sys.argv) > 1:
+    data = open(sys.argv[1], 'rb').read()
+    codes = compress(data)
+    assert decompress(codes) == data
+    print(f'{len(data)} Bytes, {len(codes)} Codes, {size_in_bytes(codes)} Bytes mit wachsender Codebreite')

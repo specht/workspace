@@ -26,10 +26,12 @@ class RubyCheckTest < Minitest::Test
         end
 
         puts 'Das sieht die Prüfung nicht.'
-
-        if __FILE__ == $0
-            raise 'Das läuft beim Prüfen nicht.'
-        end
+        raise 'Das Programm läuft beim Prüfen nicht.'
+        File.write('lock.txt', 'auch das nicht')
+        text = <<~TEXT
+            Ein Heredoc des Programms, auch nicht
+        TEXT
+        loop { gets }
     RB
 
     CHECK = YAML.safe_load(<<~YAML)
@@ -90,13 +92,13 @@ class RubyCheckTest < Minitest::Test
     end
 
     def test_error_while_loading_with_line
-        status, message, = run_check("x = 1\nputs undefined_name\n")
+        status, message, = run_check("x = 1\nLIMIT = undefined_name\n")
         assert_equal :wrong, status
         assert_match(/Schon beim Laden.*bricht Ruby ab.*Zeile 2.*NameError/, message)
     end
 
     def test_exit_while_loading
-        status, message, = run_check("exit 1\n")
+        status, message, = run_check("START = exit(1)\n")
         assert_equal :wrong, status
         assert_match(/Schon beim Laden.*SystemExit/, message)
     end

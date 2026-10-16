@@ -23,5 +23,4 @@ def hotp(key, counter, digits=6):
     return '000000'
 
 
-if __name__ == '__main__':
-    print(base32_decode('JBSWY3DPEHPK3PXP'))
+print(base32_decode('JBSWY3DPEHPK3PXP'))

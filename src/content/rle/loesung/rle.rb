@@ -29,12 +29,10 @@ def unrle_bytes(bytes)
     out.pack('C*')
 end
 
-if __FILE__ == $0
-    p rle('WWWWWWBBBWWWW')
-    if ARGV[0]
-        data = File.binread(ARGV[0])
-        packed = rle_bytes(data)
-        raise 'unrle_bytes liefert etwas anderes' unless unrle_bytes(packed) == data.b
-        puts "#{data.bytesize} Bytes werden zu #{packed.size}"
-    end
+p rle('WWWWWWBBBWWWW')
+if ARGV[0]
+    data = File.binread(ARGV[0])
+    packed = rle_bytes(data)
+    raise 'unrle_bytes liefert etwas anderes' unless unrle_bytes(packed) == data.b
+    puts "#{data.bytesize} Bytes werden zu #{packed.size}"
 end

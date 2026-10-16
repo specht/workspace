@@ -53,12 +53,10 @@ def size_in_bytes(codes)
     (bits + 7) / 8
 end
 
-if __FILE__ == $0
-    p compress('ABABABA')
-    if ARGV[0]
-        data = File.binread(ARGV[0])
-        codes = compress(data)
-        raise 'decompress liefert etwas anderes' unless decompress(codes) == data
-        puts "#{data.bytesize} Bytes, #{codes.size} Codes, #{size_in_bytes(codes)} Bytes mit wachsender Codebreite"
-    end
+p compress('ABABABA')
+if ARGV[0]
+    data = File.binread(ARGV[0])
+    codes = compress(data)
+    raise 'decompress liefert etwas anderes' unless decompress(codes) == data
+    puts "#{data.bytesize} Bytes, #{codes.size} Codes, #{size_in_bytes(codes)} Bytes mit wachsender Codebreite"
 end

@@ -42,7 +42,7 @@ tasks:
         - call: 'tokenize(''7'').first.is_a?(Integer)'
           expect: true
           say: 'Eine Zahl ohne Punkt bleibt ein Integer: 7, nicht 7.0.'
-    hint: 'Eine while-Schleife mit einer Stelle i. Bei einer Ziffer läuft eine zweite Schleife weiter, solange Ziffern kommen; `text[start...i].to_i` macht daraus die Zahl.'
+    hint: 'Eine while-Schleife mit einem Index i. Bei einer Ziffer läuft eine zweite Schleife weiter, solange Ziffern kommen; `text[start...i].to_i` macht daraus die Zahl.'
     python:
       prompt: 'Schreib `tokenize` in `calculator.py`.'
       check:
@@ -67,7 +67,7 @@ tasks:
           - call: 'isinstance(tokenize(''7'')[0], int)'
             expect: true
             say: 'Eine Zahl ohne Punkt bleibt ein int: 7, nicht 7.0.'
-      hint: 'Eine while-Schleife mit einer Stelle i. Bei einer Ziffer läuft eine zweite Schleife weiter, solange Ziffern kommen; `int(text[start:i])` macht daraus die Zahl.'
+      hint: 'Eine while-Schleife mit einem Index i. Bei einer Ziffer läuft eine zweite Schleife weiter, solange Ziffern kommen; `int(text[start:i])` macht daraus die Zahl.'
 
   - id: klammern
     title: Was ein Automat nicht kann

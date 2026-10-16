@@ -160,9 +160,3 @@ end
 def capacity(image, classes)
     colors(image)[HEADER..].sum { |c| Math.log2(classes.members(classes.cell(c)).length) }
 end
-
-if __FILE__ == $0
-    image = ChunkyPNG::Image.from_file('fundstueck.png')
-    bit_plane(image, 1).save('ebene-1.png')
-    puts reveal(image)
-end

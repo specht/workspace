@@ -26,6 +26,10 @@ class PythonCheckTest < Minitest::Test
 
 
         print('Das sieht die Prüfung nicht.')
+        raise RuntimeError('Das Programm läuft beim Prüfen nicht.')
+        image = open('lock.txt', 'w')
+        while True:
+            input()
     PY
 
     CHECK = YAML.safe_load(<<~YAML)
@@ -78,6 +82,31 @@ class PythonCheckTest < Minitest::Test
         assert_equal 'Alle 3 Aufrufe liefern, was sie sollen.', message
     end
 
+    def test_only_the_definitions_and_what_they_need_run
+        source = <<~PY
+            words = ['münze', 'tritt']
+            unused = open('nicht.txt', 'w')
+
+
+            def first():
+                return words[0]
+
+
+            for word in words:
+                print(word)
+            input()
+        PY
+        check = YAML.safe_load(<<~YAML)
+            type: python
+            file: automata/lock.py
+            cases:
+              - first(): "'münze'"
+        YAML
+        status, = run_check(source, check)
+        assert_equal :correct, status
+        refute File.exist?(File.join(@dir, 'nicht.txt'))
+    end
+
     def test_syntax_error_with_line
         status, message, = run_check("def opens(digits)\n    return True\n")
         assert_equal :wrong, status
@@ -86,7 +115,7 @@ class PythonCheckTest < Minitest::Test
     end
 
     def test_error_while_loading_with_line
-        status, message, = run_check("x = 1\nprint(undefined_name)\n")
+        status, message, = run_check("x = 1\nLIMIT = undefined_name\n")
         assert_equal :wrong, status
         assert_match(/Schon beim Laden.*Zeile 2.*NameError/, message)
     end

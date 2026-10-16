@@ -19,6 +19,4 @@ def hotp(key, counter, digits = 6)
     '000000'
 end
 
-if __FILE__ == $0
-    p base32_decode('JBSWY3DPEHPK3PXP')
-end
+p base32_decode('JBSWY3DPEHPK3PXP')

@@ -62,9 +62,7 @@ def hotp(key, counter, digits = 6)
     '000000'
 end
 
-if __FILE__ == $0
-    p base32_decode('JBSWY3DPEHPK3PXP')
-end
+p base32_decode('JBSWY3DPEHPK3PXP')
 ```
 
 <!-- tutorial-step
@@ -74,7 +72,7 @@ check-task-fails: base32
 check-task-fails: hotp
 -->
 
-Mit `ruby totp.rb` läuft der Teil unter `if __FILE__ == $0`; die Prüfungen der Aufgaben rufen deine Methoden direkt auf.
+Mit `ruby totp.rb` läuft das Programm unten in der Datei; die Prüfungen der Aufgaben laden nur deine Methoden und rufen sie direkt auf.
 <!-- /language -->
 <!-- language: python -->
 Lege darin `totp.py` an:
@@ -105,8 +103,7 @@ def hotp(key, counter, digits=6):
     return '000000'
 
 
-if __name__ == '__main__':
-    print(base32_decode('JBSWY3DPEHPK3PXP'))
+print(base32_decode('JBSWY3DPEHPK3PXP'))
 ```
 
 <!-- tutorial-step
@@ -116,7 +113,7 @@ check-task-fails: base32 python
 check-task-fails: hotp python
 -->
 
-Mit `python3 totp.py` läuft der Teil unter `if __name__ == '__main__':`; die Prüfungen der Aufgaben rufen deine Funktionen direkt auf.
+Mit `python3 totp.py` läuft das Programm unten in der Datei; die Prüfungen der Aufgaben laden nur deine Funktionen und rufen sie direkt auf.
 <!-- /language -->
 
 ## Der Schlüssel in Base32
@@ -148,10 +145,10 @@ Der Code kommt aus einer **HMAC**. Das ist eine Prüfsumme wie SHA-1 aus [Krypto
 Mit dem Schlüssel `12345678901234567890` aus dem Standard und dem Zähler 1 ist die HMAC `75a48a19d4cbe100644e8ac1397eea747a2d33ab`. Das letzte Byte ist `ab`, seine untersten 4 Bits sind `b`, also 11. Die 4 Bytes ab Byte 11 sind `c1 39 7e ea`; ohne das oberste Bit wird aus `c1` eine `41`, und `41397eea` ist 1094287082. Der Code ist **287082**.
 
 <!-- language: ruby -->
-`OpenSSL::HMAC.digest('SHA1', key, data)` rechnet die HMAC aus. Den Zähler als 8 Bytes macht `[counter].pack('Q>')`, und `bytes[o, 4].unpack1('N')` liest 4 Bytes ab Stelle `o` als Zahl, das höchste zuerst. Das oberste Bit löschst du mit `& 0x7fffffff`.
+`OpenSSL::HMAC.digest('SHA1', key, data)` rechnet die HMAC aus. Den Zähler als 8 Bytes macht `[counter].pack('Q>')`, und `bytes[o, 4].unpack1('N')` liest 4 Bytes ab Index `o` als Zahl, das höchste zuerst. Das oberste Bit löschst du mit `& 0x7fffffff`.
 <!-- /language -->
 <!-- language: python -->
-`hmac.new(key, data, hashlib.sha1).digest()` rechnet die HMAC aus. Den Zähler als 8 Bytes macht `counter.to_bytes(8, 'big')`, und `int.from_bytes(hash[o:o + 4], 'big')` liest 4 Bytes ab Stelle `o` als Zahl, das höchste zuerst. Das oberste Bit löschst du mit `& 0x7fffffff`.
+`hmac.new(key, data, hashlib.sha1).digest()` rechnet die HMAC aus. Den Zähler als 8 Bytes macht `counter.to_bytes(8, 'big')`, und `int.from_bytes(hash[o:o + 4], 'big')` liest 4 Bytes ab Index `o` als Zahl, das höchste zuerst. Das oberste Bit löschst du mit `& 0x7fffffff`.
 <!-- /language -->
 
 _task(hotp)
@@ -179,27 +176,25 @@ Den QR-Code macht eine Bibliothek:
 gem install rqrcode
 ```
 
-Ersetze den Teil unter `if __FILE__ == $0` durch diesen:
+Ersetze das Programm unten in der Datei, alles nach der letzten Methode, durch dieses:
 
 ```ruby_copy
-if __FILE__ == $0
-    require 'rqrcode'
-    path = File.join(__dir__, 'secret.txt')
-    File.write(path, base32_encode(SecureRandom.random_bytes(20)) + "\n") unless File.exist?(path)
-    secret = File.read(path).strip
-    uri = "otpauth://totp/Hackschule:Workspace?secret=#{secret}&issuer=Hackschule"
-    RQRCode::QRCode.new(uri).as_png(size: 300).save(File.join(__dir__, 'qr.png'))
-    puts "Geheimnis: #{secret}"
-    puts 'Scanne qr.png mit deiner Authenticator-App. Beenden mit Strg+C.'
-    begin
-        loop do
-            now = Time.now.to_i
-            print "\rCode: #{totp(base32_decode(secret), now)}, noch #{30 - now % 30} Sekunden "
-            sleep 1
-        end
-    rescue Interrupt
-        puts
+require 'rqrcode'
+path = File.join(__dir__, 'secret.txt')
+File.write(path, base32_encode(SecureRandom.random_bytes(20)) + "\n") unless File.exist?(path)
+secret = File.read(path).strip
+uri = "otpauth://totp/Hackschule:Workspace?secret=#{secret}&issuer=Hackschule"
+RQRCode::QRCode.new(uri).as_png(size: 300).save(File.join(__dir__, 'qr.png'))
+puts "Geheimnis: #{secret}"
+puts 'Scanne qr.png mit deiner Authenticator-App. Beenden mit Strg+C.'
+begin
+    loop do
+        now = Time.now.to_i
+        print "\rCode: #{totp(base32_decode(secret), now)}, noch #{30 - now % 30} Sekunden "
+        sleep 1
     end
+rescue Interrupt
+    puts
 end
 ```
 
@@ -244,28 +239,27 @@ Den QR-Code macht eine Bibliothek:
 pip install "qrcode[pil]"
 ```
 
-Ersetze den Teil unter `if __name__ == '__main__':` durch diesen:
+Ersetze das Programm unten in der Datei, alles nach der letzten Funktion, durch dieses:
 
 ```python_copy
-if __name__ == '__main__':
-    import qrcode
-    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'secret.txt')
-    if not os.path.exists(path):
-        with open(path, 'w') as f:
-            f.write(base32_encode(secrets.token_bytes(20)) + '\n')
-    with open(path) as f:
-        secret = f.read().strip()
-    uri = f'otpauth://totp/Hackschule:Workspace?secret={secret}&issuer=Hackschule'
-    qrcode.make(uri).save(os.path.join(os.path.dirname(path), 'qr.png'))
-    print(f'Geheimnis: {secret}')
-    print('Scanne qr.png mit deiner Authenticator-App. Beenden mit Strg+C.')
-    try:
-        while True:
-            now = int(time.time())
-            print(f'\rCode: {totp(base32_decode(secret), now)}, noch {30 - now % 30} Sekunden ', end='', flush=True)
-            time.sleep(1)
-    except KeyboardInterrupt:
-        print()
+import qrcode
+path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'secret.txt')
+if not os.path.exists(path):
+    with open(path, 'w') as f:
+        f.write(base32_encode(secrets.token_bytes(20)) + '\n')
+with open(path) as f:
+    secret = f.read().strip()
+uri = f'otpauth://totp/Hackschule:Workspace?secret={secret}&issuer=Hackschule'
+qrcode.make(uri).save(os.path.join(os.path.dirname(path), 'qr.png'))
+print(f'Geheimnis: {secret}')
+print('Scanne qr.png mit deiner Authenticator-App. Beenden mit Strg+C.')
+try:
+    while True:
+        now = int(time.time())
+        print(f'\rCode: {totp(base32_decode(secret), now)}, noch {30 - now % 30} Sekunden ', end='', flush=True)
+        time.sleep(1)
+except KeyboardInterrupt:
+    print()
 ```
 
 Beim ersten Start würfelt das Programm einen Schlüssel aus 20 Bytes und speichert ihn in `secret.txt`; danach nimmt es immer denselben. Starte es mit `python3 totp.py` und öffne `qr.png` in VS Code.

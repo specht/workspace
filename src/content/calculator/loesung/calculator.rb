@@ -130,28 +130,26 @@ def calculate(text, variables = {})
     evaluate(parse(tokenize(text)), variables)
 end
 
-if __FILE__ == $0
-    variables = {}
-    loop do
-        print '> '
-        line = gets
-        if line.nil?
-            puts
-            break
-        end
+variables = {}
+loop do
+    print '> '
+    line = gets
+    if line.nil?
+        puts
+        break
+    end
 
-        line = line.strip
-        next if line.empty?
+    line = line.strip
+    next if line.empty?
 
-        begin
-            if (m = line.match(/\A([a-z_][a-z_0-9]*)\s*=(.*)\z/i))
-                variables[m[1]] = calculate(m[2], variables)
-                puts "#{m[1]} = #{variables[m[1]]}"
-            else
-                puts calculate(line, variables)
-            end
-        rescue ArgumentError, ZeroDivisionError => e
-            puts "Fehler: #{e.message}"
+    begin
+        if (m = line.match(/\A([a-z_][a-z_0-9]*)\s*=(.*)\z/i))
+            variables[m[1]] = calculate(m[2], variables)
+            puts "#{m[1]} = #{variables[m[1]]}"
+        else
+            puts calculate(line, variables)
         end
+    rescue ArgumentError, ZeroDivisionError => e
+        puts "Fehler: #{e.message}"
     end
 end

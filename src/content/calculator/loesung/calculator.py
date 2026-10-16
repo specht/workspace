@@ -137,23 +137,22 @@ def calculate(text, variables=None):
     return evaluate(parse(tokenize(text)), variables)
 
 
-if __name__ == '__main__':
-    import re
-    variables = {}
-    while True:
-        try:
-            line = input('> ').strip()
-        except EOFError:
-            print()
-            break
-        if not line:
-            continue
-        try:
-            m = re.fullmatch(r'([A-Za-z_]\w*)\s*=(.*)', line)
-            if m:
-                variables[m[1]] = calculate(m[2], variables)
-                print(f'{m[1]} = {variables[m[1]]}')
-            else:
-                print(calculate(line, variables))
-        except (ValueError, ZeroDivisionError) as error:
-            print(f'Fehler: {error}')
+import re
+variables = {}
+while True:
+    try:
+        line = input('> ').strip()
+    except EOFError:
+        print()
+        break
+    if not line:
+        continue
+    try:
+        m = re.fullmatch(r'([A-Za-z_]\w*)\s*=(.*)', line)
+        if m:
+            variables[m[1]] = calculate(m[2], variables)
+            print(f'{m[1]} = {variables[m[1]]}')
+        else:
+            print(calculate(line, variables))
+    except (ValueError, ZeroDivisionError) as error:
+        print(f'Fehler: {error}')

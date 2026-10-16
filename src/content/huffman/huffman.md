@@ -179,9 +179,7 @@ end
 def decode(bits, tree)
 end
 
-if __FILE__ == $0
-    p frequencies('ABRACADABRA')
-end
+p frequencies('ABRACADABRA')
 ```
 
 <!-- tutorial-step
@@ -223,8 +221,7 @@ def decode(bits, tree):
     """Aus den Bits und dem Baum wieder die Bytes"""
 
 
-if __name__ == '__main__':
-    print(frequencies(b'ABRACADABRA'))
+print(frequencies(b'ABRACADABRA'))
 ```
 
 <!-- tutorial-step

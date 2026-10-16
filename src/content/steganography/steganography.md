@@ -88,11 +88,9 @@ end
 def bit_plane(image, bit = 0)
 end
 
-if __FILE__ == $0
-    image = ChunkyPNG::Image.from_file('fundstueck.png')
-    p [image.width, image.height]
-    p channels(image)[0, 6]
-end
+image = ChunkyPNG::Image.from_file('fundstueck.png')
+p [image.width, image.height]
+p channels(image)[0, 6]
 ```
 
 Starte es mit `ruby stego.rb`.
@@ -147,10 +145,9 @@ def bit_plane(image, bit=0):
     pass
 
 
-if __name__ == '__main__':
-    image = Image.open('fundstueck.png')
-    print(image.size)
-    print(channels(image)[:6])
+image = Image.open('fundstueck.png')
+print(image.size)
+print(channels(image)[:6])
 ```
 
 Starte es mit `python3 stego.py`.

@@ -167,9 +167,3 @@ def extract(image, classes):
 def capacity(image, classes):
     """Wie viele Bits passen hinein? Jedes Pixel trägt log2(Größe seiner Klasse)."""
     return sum(math.log2(len(classes.members(classes.cell(c)))) for c in colors(image)[HEADER:])
-
-
-if __name__ == '__main__':
-    image = Image.open('fundstueck.png')
-    bit_plane(image, 1).save('ebene-1.png')
-    print(reveal(image))

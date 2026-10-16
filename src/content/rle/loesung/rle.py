@@ -42,10 +42,9 @@ def unrle_bytes(numbers):
     return bytes(out)
 
 
-if __name__ == '__main__':
-    print(rle('WWWWWWBBBWWWW'))
-    if len(sys.argv) > 1:
-        data = open(sys.argv[1], 'rb').read()
-        packed = rle_bytes(data)
-        assert unrle_bytes(packed) == data
-        print(f'{len(data)} Bytes werden zu {len(packed)}')
+print(rle('WWWWWWBBBWWWW'))
+if len(sys.argv) > 1:
+    data = open(sys.argv[1], 'rb').read()
+    packed = rle_bytes(data)
+    assert unrle_bytes(packed) == data
+    print(f'{len(data)} Bytes werden zu {len(packed)}')

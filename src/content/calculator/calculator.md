@@ -144,23 +144,21 @@ def calculate(text, variables = {})
     evaluate(parse(tokenize(text)), variables)
 end
 
-if __FILE__ == $0
-    loop do
-        print '> '
-        line = gets
-        if line.nil?
-            puts
-            break
-        end
+loop do
+    print '> '
+    line = gets
+    if line.nil?
+        puts
+        break
+    end
 
-        line = line.strip
-        next if line.empty?
+    line = line.strip
+    next if line.empty?
 
-        begin
-            p calculate(line)
-        rescue ArgumentError => e
-            puts "Fehler: #{e.message}"
-        end
+    begin
+        p calculate(line)
+    rescue ArgumentError => e
+        puts "Fehler: #{e.message}"
     end
 end
 ```
@@ -173,7 +171,7 @@ check-task-fails: baum
 check-task-fails: ausrechnen
 -->
 
-Starte ihn mit `ruby calculator.rb` und tipp einen Ausdruck. Im Moment kommt `nil` heraus, egal was du tippst; <kbd>Strg</kbd><kbd>D</kbd> beendet ihn. `calculate` ist schon fertig: Es ruft die drei Schritte nacheinander auf. Die Prüfungen der Aufgaben rufen deine Methoden direkt auf, der Teil unter `if __FILE__ == $0` läuft dabei nicht.
+Starte ihn mit `ruby calculator.rb` und tipp einen Ausdruck. Im Moment kommt `nil` heraus, egal was du tippst; <kbd>Strg</kbd><kbd>D</kbd> beendet ihn. `calculate` ist schon fertig: Es ruft die drei Schritte nacheinander auf. Die Prüfungen der Aufgaben laden nur deine Methoden und rufen sie direkt auf; die Schleife unten läuft dabei nicht.
 <!-- /language -->
 <!-- language: python -->
 Lege darin `calculator.py` an. Die drei Funktionen tun noch nichts Richtiges, aber unten wartet schon der Rechner zum Tippen auf dich:
@@ -201,19 +199,18 @@ def calculate(text, variables=None):
     return evaluate(parse(tokenize(text)), variables)
 
 
-if __name__ == '__main__':
-    while True:
-        try:
-            line = input('> ').strip()
-        except EOFError:
-            print()
-            break
-        if not line:
-            continue
-        try:
-            print(calculate(line))
-        except ValueError as error:
-            print(f'Fehler: {error}')
+while True:
+    try:
+        line = input('> ').strip()
+    except EOFError:
+        print()
+        break
+    if not line:
+        continue
+    try:
+        print(calculate(line))
+    except ValueError as error:
+        print(f'Fehler: {error}')
 ```
 
 <!-- tutorial-step
@@ -224,12 +221,12 @@ check-task-fails: baum python
 check-task-fails: ausrechnen python
 -->
 
-Starte ihn mit `python3 calculator.py` und tipp einen Ausdruck. Im Moment kommt `None` heraus, egal was du tippst; <kbd>Strg</kbd><kbd>D</kbd> beendet ihn. `calculate` ist schon fertig: Es ruft die drei Schritte nacheinander auf. Die Prüfungen der Aufgaben rufen deine Funktionen direkt auf, der Teil unter `if __name__ == '__main__':` läuft dabei nicht.
+Starte ihn mit `python3 calculator.py` und tipp einen Ausdruck. Im Moment kommt `None` heraus, egal was du tippst; <kbd>Strg</kbd><kbd>D</kbd> beendet ihn. `calculate` ist schon fertig: Es ruft die drei Schritte nacheinander auf. Die Prüfungen der Aufgaben laden nur deine Funktionen und rufen sie direkt auf; die Schleife unten läuft dabei nicht.
 <!-- /language -->
 
 ## Zerlegen
 
-`tokenize` geht den Text Zeichen für Zeichen durch, mit einer Stelle `i`, und entscheidet bei jedem Zeichen, was es ist:
+`tokenize` geht den Text Zeichen für Zeichen durch, mit einem Index `i`, und entscheidet bei jedem Zeichen, was es ist:
 
 - Ein Leerzeichen trennt nur. Es wird übersprungen.
 - `+ - * / ^ ( )` sind je ein Token für sich.

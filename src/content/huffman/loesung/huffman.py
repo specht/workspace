@@ -65,10 +65,9 @@ def canonical(lengths):
     return table
 
 
-if __name__ == '__main__':
-    data = open(sys.argv[1], 'rb').read() if len(sys.argv) > 1 else b'ABRACADABRA'
-    tree = build_tree(frequencies(data))
-    table = code_table(tree)
-    bits = encode(data, table)
-    assert decode(bits, tree) == data
-    print(f'{len(data)} Bytes, {len(bits)} Bits, {(len(bits) + 7) // 8} Bytes, {len(table)} verschiedene Bytes')
+data = open(sys.argv[1], 'rb').read() if len(sys.argv) > 1 else b'ABRACADABRA'
+tree = build_tree(frequencies(data))
+table = code_table(tree)
+bits = encode(data, table)
+assert decode(bits, tree) == data
+print(f'{len(data)} Bytes, {len(bits)} Bits, {(len(bits) + 7) // 8} Bytes, {len(table)} verschiedene Bytes')

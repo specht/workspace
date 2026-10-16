@@ -46,22 +46,20 @@ def verify(key, code, time = Time.now.to_i, window = 1)
     (-window..window).any? { |d| totp(key, time + d * 30) == code.to_s.delete(' ') }
 end
 
-if __FILE__ == $0
-    require 'rqrcode'
-    path = File.join(__dir__, 'secret.txt')
-    File.write(path, base32_encode(SecureRandom.random_bytes(20)) + "\n") unless File.exist?(path)
-    secret = File.read(path).strip
-    uri = "otpauth://totp/Hackschule:Workspace?secret=#{secret}&issuer=Hackschule"
-    RQRCode::QRCode.new(uri).as_png(size: 300).save(File.join(__dir__, 'qr.png'))
-    puts "Geheimnis: #{secret}"
-    puts 'Scanne qr.png mit deiner Authenticator-App. Beenden mit Strg+C.'
-    begin
-        loop do
-            now = Time.now.to_i
-            print "\rCode: #{totp(base32_decode(secret), now)}, noch #{30 - now % 30} Sekunden "
-            sleep 1
-        end
-    rescue Interrupt
-        puts
+require 'rqrcode'
+path = File.join(__dir__, 'secret.txt')
+File.write(path, base32_encode(SecureRandom.random_bytes(20)) + "\n") unless File.exist?(path)
+secret = File.read(path).strip
+uri = "otpauth://totp/Hackschule:Workspace?secret=#{secret}&issuer=Hackschule"
+RQRCode::QRCode.new(uri).as_png(size: 300).save(File.join(__dir__, 'qr.png'))
+puts "Geheimnis: #{secret}"
+puts 'Scanne qr.png mit deiner Authenticator-App. Beenden mit Strg+C.'
+begin
+    loop do
+        now = Time.now.to_i
+        print "\rCode: #{totp(base32_decode(secret), now)}, noch #{30 - now % 30} Sekunden "
+        sleep 1
     end
+rescue Interrupt
+    puts
 end

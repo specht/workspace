@@ -649,9 +649,15 @@ wird aus ihrem Ordner geladen, `import` anderer Dateien daneben klappt, und
 was jemand mit `pip install` oder `gem install` installiert hat, ist da.
 
 `ruby` funktioniert genauso, mit einer `.rb`-Datei und Ausdrücken in Ruby
-(`RubyCheck::HARNESS`). Die Datei wird
-auf oberster Ebene geladen; ein Block `if __FILE__ == $0` läuft dabei nicht,
-dort kann also ein Programm zum Ausprobieren stehen. Verglichen wird mit
+(`RubyCheck::HARNESS`). Von der Datei
+werden nur die Definitionen geladen: `def`, `class`, `module`, Konstanten,
+globale und Instanzvariablen, `require` und `include`. Was sonst auf oberster
+Ebene steht, das Programm zum Ausprobieren, läuft dabei nicht; ein Block
+`if __FILE__ == $0` ist dafür nicht nötig. Bei `python` ebenso: Importe,
+Funktionen, Klassen, Konstanten in Großbuchstaben und die Variablen, die sie
+oder die Aufrufe der Prüfung brauchen; ohne `if __name__ == '__main__':`.
+Nötig bleibt so ein Block nur, wenn ein anderes Programm die Datei lädt (in
+»Endliche Automaten« lädt `convert` das Schloss). Verglichen wird mit
 `==`; `true`, `false` und `~` aus YAML werden zu `true`, `false` und `nil`.
 Bytes, die mit `pack('C*')` entstehen, sind gleich einem Text in
 Anführungszeichen, solange er nur ASCII enthält; für Umlaute vergleicht man

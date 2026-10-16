@@ -164,9 +164,7 @@ def decompress(codes)
     ''
 end
 
-if __FILE__ == $0
-    p compress('ABABABA')
-end
+p compress('ABABABA')
 ```
 
 <!-- tutorial-step
@@ -176,7 +174,7 @@ check-task-fails: kompressor
 check-task-fails: entpacker
 -->
 
-Ein String besteht aus **Bytes**, Zahlen von 0 bis 255: `'ABABABA'` sind die Bytes 65, 66, 65, … Der Teil unter `if __FILE__ == $0` läuft nur, wenn du die Datei selbst startest, mit `ruby lzw.rb`; die Prüfungen der Aufgaben rufen deine Methoden direkt auf. Im Moment gibt das Programm eine leere Liste aus; das änderst du jetzt.
+Ein String besteht aus **Bytes**, Zahlen von 0 bis 255: `'ABABABA'` sind die Bytes 65, 66, 65, … Was unten außerhalb der Methoden steht, ist dein Programm: Es läuft, wenn du die Datei startest, mit `ruby lzw.rb`. Die Prüfungen der Aufgaben laden nur deine Methoden und rufen sie direkt auf; dein Programm läuft dabei nicht. Im Moment gibt das Programm eine leere Liste aus; das änderst du jetzt.
 <!-- /language -->
 <!-- language: python -->
 Lege darin die Datei `lzw.py` an:
@@ -196,8 +194,7 @@ def decompress(codes):
     return b''
 
 
-if __name__ == '__main__':
-    print(compress(b'ABABABA'))
+print(compress(b'ABABABA'))
 ```
 
 <!-- tutorial-step
@@ -207,7 +204,7 @@ check-task-fails: kompressor python
 check-task-fails: entpacker python
 -->
 
-`b'ABABABA'` ist kein Text, sondern eine Folge von **Bytes**, Zahlen von 0 bis 255. Der Teil unter `if __name__ == '__main__':` läuft nur, wenn du die Datei selbst startest, mit `python3 lzw.py`; die Prüfungen der Aufgaben rufen deine Funktionen direkt auf. Im Moment gibt das Programm eine leere Liste aus; das änderst du jetzt.
+`b'ABABABA'` ist kein Text, sondern eine Folge von **Bytes**, Zahlen von 0 bis 255. Was unten außerhalb der Funktionen steht, ist dein Programm: Es läuft, wenn du die Datei startest, mit `python3 lzw.py`. Die Prüfungen der Aufgaben laden nur deine Funktionen und rufen sie direkt auf; dein Programm läuft dabei nicht. Im Moment gibt das Programm eine leere Liste aus; das änderst du jetzt.
 <!-- /language -->
 
 ## Der Kompressor

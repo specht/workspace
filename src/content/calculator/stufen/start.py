@@ -20,16 +20,15 @@ def calculate(text, variables=None):
     return evaluate(parse(tokenize(text)), variables)
 
 
-if __name__ == '__main__':
-    while True:
-        try:
-            line = input('> ').strip()
-        except EOFError:
-            print()
-            break
-        if not line:
-            continue
-        try:
-            print(calculate(line))
-        except ValueError as error:
-            print(f'Fehler: {error}')
+while True:
+    try:
+        line = input('> ').strip()
+    except EOFError:
+        print()
+        break
+    if not line:
+        continue
+    try:
+        print(calculate(line))
+    except ValueError as error:
+        print(f'Fehler: {error}')

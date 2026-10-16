@@ -8,9 +8,17 @@ require_relative 'call_check'
 # A fixed harness (HARNESS) loads the file with python3 in the person's
 # Workspace, as the guest user that can read /workspace but not change it
 # (the code is theirs, rule 1), evaluates each call from the task in the
-# file's namespace and prints one JSON line. What the program itself prints
-# is swallowed. Everything after that works on the JSON and can be tested
-# without a Workspace.
+# file's namespace and prints one JSON line. Everything after that works on
+# the JSON and can be tested without a Workspace.
+#
+# Only the definitions of the file are run: imports, functions, classes,
+# constants (names in capitals) and the module variables that these or the
+# calls of the check use, and statements that fill one of them (TABLE[key] =
+# …, TABLE.append(…), also in a loop). The program itself at the top level (a
+# loop that reads input, a picture that is saved) is left out, so a plain
+# script needs no »if __name__ == '__main__':«; the line numbers stay as they
+# are. An import after the first function or class may belong to the program:
+# it runs, but a missing module is no error.
 #
 #   check:
 #     type: python
@@ -32,7 +40,7 @@ module PythonCheck
     RESULT_MARK = CallCheck::RESULT_MARK
 
     HARNESS = <<~PY
-        import contextlib, importlib.util, io, json, os, sys, traceback
+        import ast, contextlib, importlib.util, io, json, os, sys, traceback
         path, cases = sys.argv[1], json.loads(sys.argv[2])
         full = os.path.abspath(path)
         sink = io.StringIO()
@@ -49,6 +57,71 @@ module PythonCheck
             shown = repr(value)
             return shown if len(shown) <= 200 else shown[:200] + '…'
 
+        def definitions(tree, wanted):
+            """The module with only the definitions and the variables they need."""
+            def loaded(node):
+                """The names a statement reads; of a function or class only those from outside."""
+                names = {n.id for n in ast.walk(node) if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load)}
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                    local = {n.id for n in ast.walk(node) if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Store)}
+                    local |= {a.arg for n in ast.walk(node) if isinstance(n, ast.arguments)
+                              for a in n.posonlyargs + n.args + n.kwonlyargs + [n.vararg, n.kwarg] if a}
+                    names -= local
+                return names
+
+            def stored(node):
+                targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+                return {n.id for t in targets for n in ast.walk(t) if isinstance(n, ast.Name)}
+
+            mutators = {'append', 'extend', 'insert', 'update', 'add', 'setdefault', 'remove', 'discard', 'clear', 'sort', 'reverse', 'pop'}
+
+            def base(node):
+                while isinstance(node, (ast.Subscript, ast.Attribute)):
+                    node = node.value
+                return node.id if isinstance(node, ast.Name) else None
+
+            def filled(node):
+                """The names a statement writes into, anywhere inside it."""
+                names = set()
+                for n in ast.walk(node):
+                    if isinstance(n, (ast.Assign, ast.AugAssign, ast.AnnAssign)):
+                        for target in (n.targets if isinstance(n, ast.Assign) else [n.target]):
+                            for t in ast.walk(target):
+                                if isinstance(t, (ast.Subscript, ast.Attribute, ast.Name)) and base(t):
+                                    names.add(base(t))
+                    elif isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr in mutators and base(n.func.value):
+                        names.add(base(n.func.value))
+                return names
+
+            defining = (ast.Import, ast.ImportFrom, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
+            body = tree.body
+            kept = {i for i, node in enumerate(body) if isinstance(node, defining) or
+                    (isinstance(node, ast.Try) and all(isinstance(n, (ast.Import, ast.ImportFrom)) for n in node.body))}
+            needed = set(wanted)
+            for i in kept:
+                needed |= loaded(body[i])
+            changed = True
+            while changed:
+                changed = False
+                for i, node in enumerate(body):
+                    if i in kept or isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                        continue
+                    if any(name in needed or name.isupper() for name in filled(node)):
+                        kept.add(i)
+                        needed |= loaded(node)
+                        changed = True
+            begun = min([i for i, node in enumerate(body) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))], default=len(body))
+            statements = []
+            for i in sorted(kept):
+                node = body[i]
+                if i > begun and isinstance(node, (ast.Import, ast.ImportFrom)):
+                    # an import of the program: a missing module is no error
+                    handler = ast.ExceptHandler(type=ast.Name(id='ImportError', ctx=ast.Load()), name=None, body=[ast.Pass()])
+                    node = ast.copy_location(ast.Try(body=[node], handlers=[handler], orelse=[], finalbody=[]), node)
+                    ast.fix_missing_locations(node)
+                statements.append(node)
+            return ast.Module(body=statements, type_ignores=[])
+
         def main():
             if not os.path.isfile(full):
                 result['error'] = {'kind': 'missing'}
@@ -61,8 +134,18 @@ module PythonCheck
             spec = importlib.util.spec_from_file_location('student', full)
             module = importlib.util.module_from_spec(spec)
             try:
+                with open(full, encoding='utf-8') as file:
+                    tree = ast.parse(file.read(), full)
+                wanted = set()
+                for case in cases:
+                    for expression in (case['call'], case.get('expect') or 'None'):
+                        try:
+                            wanted |= {n.id for n in ast.walk(ast.parse(expression, mode='eval')) if isinstance(n, ast.Name)}
+                        except SyntaxError:
+                            pass
+                code = compile(definitions(tree, wanted), full, 'exec')
                 with contextlib.redirect_stdout(sink):
-                    spec.loader.exec_module(module)
+                    exec(code, vars(module))
             except SyntaxError as error:
                 result['error'] = {'kind': 'syntax', 'line': error.lineno, 'message': error.msg}
                 return

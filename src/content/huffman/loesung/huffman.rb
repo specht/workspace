@@ -69,11 +69,9 @@ def canonical(lengths)
     table
 end
 
-if __FILE__ == $0
-    data = ARGV[0] ? File.binread(ARGV[0]) : 'ABRACADABRA'
-    tree = build_tree(frequencies(data))
-    table = code_table(tree)
-    bits = encode(data, table)
-    raise 'decode liefert etwas anderes' unless decode(bits, tree) == data.b
-    puts "#{data.bytesize} Bytes, #{bits.length} Bits, #{(bits.length + 7) / 8} Bytes, #{table.size} verschiedene Bytes, längster Code #{table.values.map(&:length).max}"
-end
+data = ARGV[0] ? File.binread(ARGV[0]) : 'ABRACADABRA'
+tree = build_tree(frequencies(data))
+table = code_table(tree)
+bits = encode(data, table)
+raise 'decode liefert etwas anderes' unless decode(bits, tree) == data.b
+puts "#{data.bytesize} Bytes, #{bits.length} Bits, #{(bits.length + 7) / 8} Bytes, #{table.size} verschiedene Bytes, längster Code #{table.values.map(&:length).max}"
