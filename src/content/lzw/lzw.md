@@ -1,7 +1,7 @@
 <div class='meta'>
 image: title.webp
 kind: labor
-language: Python
+language: Ruby
 duration: 2 Doppelstunden
 </div>
 
@@ -95,7 +95,7 @@ duration: 2 Doppelstunden
 # Komprimieren mit LZW
 
 <p class='abstract'>
-Rhabarberbarbara, Barbarabar, Barbarbarbier: Wo sich etwas wiederholt, lässt es sich kürzer sagen. LZW merkt sich beim Lesen jedes Stück, das schon einmal vorkam, und schreibt beim nächsten Mal nur noch eine Nummer. Das Wörterbuch dafür wird nie mitgeschickt: Wer entpackt, baut es beim Lesen selbst noch einmal. Du schreibst beides in Python, den Kompressor und den Entpacker, und probierst sie an Texten, Fotos und der Spezifikation von GIF aus.
+Rhabarberbarbara, Barbarabar, Barbarbarbier: Wo sich etwas wiederholt, lässt es sich kürzer sagen. LZW merkt sich beim Lesen jedes Stück, das schon einmal vorkam, und schreibt beim nächsten Mal nur noch eine Nummer. Das Wörterbuch dafür wird nie mitgeschickt: Wer entpackt, baut es beim Lesen selbst noch einmal. Du schreibst beides in Ruby, den Kompressor und den Entpacker, und probierst sie an Texten, Fotos und der Spezifikation von GIF aus.
 </p>
 
 ## Wiederholungen
@@ -146,37 +146,37 @@ Lege im Terminal (<kbd>Strg</kbd><kbd>J</kbd>) einen Ordner an und öffne ihn mi
 mkdir /workspace/lzw
 ```
 
-Lege darin die Datei `lzw.py` an:
+Lege darin die Datei `lzw.rb` an:
 
-```python
+```ruby
 # LZW: komprimieren und entpacken
 
-
-def compress(data):
-    """Macht aus Bytes eine Liste von Codes."""
+# Macht aus den Bytes eines Strings eine Liste von Codes.
+def compress(data)
     codes = []
-    return codes
+    codes
+end
 
+# Macht aus einer Liste von Codes wieder die Bytes, als String.
+def decompress(codes)
+    ''
+end
 
-def decompress(codes):
-    """Macht aus einer Liste von Codes wieder die Bytes."""
-    return b''
-
-
-if __name__ == '__main__':
-    print(compress(b'ABABABA'))
+if __FILE__ == $0
+    p compress('ABABABA')
+end
 ```
 
-`b'ABABABA'` ist kein Text, sondern eine Folge von **Bytes**, Zahlen von 0 bis 255. Starte das Programm mit `python3 lzw.py`. Es gibt eine leere Liste aus; das änderst du jetzt.
+Ein String besteht aus **Bytes**, Zahlen von 0 bis 255: `'ABABABA'` sind die Bytes 65, 66, 65, … Der Teil unter `if __FILE__ == $0` läuft nur, wenn du die Datei selbst startest, mit `ruby lzw.rb`; die Prüfungen der Aufgaben rufen deine Methoden direkt auf. Im Moment gibt das Programm eine leere Liste aus; das änderst du jetzt.
 
 ## Der Kompressor
 
-Schreib `compress` nach den drei Regeln oben. Was du aus Python dafür brauchst:
+Schreib `compress` nach den drei Regeln oben. Was du aus Ruby dafür brauchst:
 
-- Eine `for`-Schleife über Bytes liefert Zahlen: `for byte in b'AB'` gibt erst 65, dann 66.
-- Aus einer Zahl wird mit `bytes([byte])` wieder ein Byte, und `+` hängt Bytes aneinander: `b'AB' + bytes([67])` ist `b'ABC'`.
-- Das Wörterbuch ist ein `dict` mit Bytes als Schlüsseln und Codes als Werten. Am Anfang enthält es für jede Zahl `i` von 0 bis 255 den Eintrag `bytes([i])` mit dem Code `i`. Der nächste freie Code ist dann immer `len(table)`.
-- Das Stück am Anfang ist leer, `b''`. Achte am Ende darauf, dass ein leerer Text keinen Code ergibt.
+- `data.each_byte { |byte| … }` geht die Bytes eines Strings durch und liefert Zahlen: für `'AB'` erst 65, dann 66.
+- Ein Stück ist am einfachsten ein Array von Zahlen, etwa `[65, 66]` für »AB«. `current + [byte]` ist ein neues Array mit einer Zahl mehr.
+- Das Wörterbuch ist ein Hash mit solchen Arrays als Schlüsseln und Codes als Werten. Am Anfang enthält es für jede Zahl `i` von 0 bis 255 den Eintrag `[i]` mit dem Code `i`. Der nächste freie Code ist dann immer `table.size`, und `table.key?(piece)` sagt, ob es ein Stück `piece` schon gibt.
+- Das Stück am Anfang ist leer, `[]`. Achte am Ende darauf, dass ein leerer Text keinen Code ergibt.
 
 _task(kompressor)
 
@@ -208,13 +208,13 @@ Hier entpackt der Schrittmacher die Codes des Texts, der oben im Feld steht; die
 <div class='lzw-steps'></div>
 </div>
 
-Schreib jetzt `decompress`. Diesmal ist das Wörterbuch andersherum: ein `dict` mit den Codes als Schlüsseln und den Bytes als Werten. Am Schluss setzt `b''.join(teile)` eine Liste von Bytes zu einem einzigen Stück zusammen.
+Schreib jetzt `decompress`. Diesmal ist das Wörterbuch andersherum: ein Hash mit den Codes als Schlüsseln und den Stücken, Arrays von Zahlen, als Werten. Sammle alle Zahlen in einem Array; `entry[0]` ist das erste Byte eines Eintrags. Am Schluss macht `pack('C*')` aus dem Array von Zahlen wieder einen String: `[65, 66].pack('C*')` ist `'AB'`.
 
 _task(entpacker)
 
 ## Wie gut ist das?
 
-Bisher zählen wir Codes. Gespeichert werden muss aber jeder Code mit so vielen Bits, wie er braucht, und die Codes werden immer größer. Beim i-ten Code (ab 0 gezählt) hat das Wörterbuch 256 + i Einträge, der größte mögliche Code ist also 255 + i. So viele Bits braucht der Code: In Python sagt das `(255 + i).bit_length()`. Schreib eine Funktion `size_in_bytes(codes)`, die alle Bits zusammenzählt und in Bytes umrechnet, aufgerundet.
+Bisher zählen wir Codes. Gespeichert werden muss aber jeder Code mit so vielen Bits, wie er braucht, und die Codes werden immer größer. Beim i-ten Code (ab 0 gezählt) hat das Wörterbuch 256 + i Einträge, der größte mögliche Code ist also 255 + i. So viele Bits braucht der Code: In Ruby sagt das `(255 + i).bit_length`. Schreib eine Funktion `size_in_bytes(codes)`, die alle Bits zusammenzählt und in Bytes umrechnet, aufgerundet.
 
 Lade dann zwei Dateien zum Ausprobieren in den Ordner: die Spezifikation von GIF, ein Text von 1990 mit 83.003 Bytes, und ein Foto als JPEG.
 
@@ -223,7 +223,7 @@ wget ${web_root}/lzw/spec-gif89a.txt
 wget ${web_root}/jpeg/44-baseline.jpg
 ```
 
-Eine Datei liest Python mit `open('spec-gif89a.txt', 'rb').read()` als Bytes; das `b` in `'rb'` ist wichtig, sonst bekommst du Text statt Bytes. Lass dein Programm für eine Datei ausgeben, wie groß sie ist, wie viele Codes `compress` daraus macht und wie viele Bytes die brauchen. Probier dabei auch gleich, ob `decompress` wieder genau die Datei ergibt.
+Eine Datei liest Ruby mit `File.binread('spec-gif89a.txt')` Byte für Byte, so wie sie ist. `ARGV[0]` ist der Name, den du beim Start mitgibst: `ruby lzw.rb spec-gif89a.txt`. Lass dein Programm für eine Datei ausgeben, wie groß sie ist, wie viele Codes `compress` daraus macht und wie viele Bytes die brauchen. Probier dabei auch gleich, ob `decompress` wieder genau die Datei ergibt.
 
 _task(spec)
 

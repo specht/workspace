@@ -114,13 +114,15 @@
   description: |
     Ein Blick unter die Haube: eine kleine CPU programmieren, Sortierverfahren
     und Datenstrukturen selbst bauen, endliche Automaten, ein neuronales Netz,
-    das Ziffern erkennt, und der Aufbau von GIF- und JPEG-Dateien.
+    das Ziffern erkennt, Komprimieren mit LZW und der Aufbau von GIF- und
+    JPEG-Dateien.
   entries:
     - sandbox-cpu
     - sandbox-sortieren
     - sandbox-datenstrukturen
     - automata
     - digits-experiment
+    - lzw
     - gif
     - jpeg
 
@@ -145,7 +147,6 @@
   entries:
     - feuerwerk
     - hugo
-    - lzw
 
 - key: programming_languages
   compact: true
