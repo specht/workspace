@@ -1,7 +1,8 @@
 <div class='meta'>
 image: teaser.webp
 kind: projekt
-language: Ruby
+language: Ruby / Python
+languages: [ruby, python]
 topic: networks
 duration: 2 Doppelstunden
 requires: [tcpip]
@@ -17,7 +18,7 @@ reference: [http]
 # Ein eigener Webserver
 
 <p class='abstract'>
-Jedes Mal, wenn du eine Webseite öffnest, schickt dein Browser eine Anfrage an einen Webserver, und der schickt die Seite zurück. In dieser Aktivität schreibst du so einen Server selbst, in Ruby und ohne fertige Bibliothek: Er wartet auf Verbindungen, liest die Anfrage, antwortet, liefert HTML-Seiten aus, zählt seine Besuche und nimmt Stimmen aus einem Formular an. Am Ende teilst du ihn mit deiner Klasse.
+Jedes Mal, wenn du eine Webseite öffnest, schickt dein Browser eine Anfrage an einen Webserver, und der schickt die Seite zurück. In dieser Aktivität schreibst du so einen Server selbst, in Ruby oder Python und ohne fertige Bibliothek: Er wartet auf Verbindungen, liest die Anfrage, antwortet, liefert HTML-Seiten aus, zählt seine Besuche und nimmt Stimmen aus einem Formular an. Am Ende teilst du ihn mit deiner Klasse.
 </p>
 
 Auf der Seite [TCP/IP](/tcpip) hast du mit `nc -l` an einem Port auf eine Verbindung gewartet und mit `nc -C info.cern.ch 80` eine HTTP-Anfrage von Hand getippt. Ein Webserver ist die andere Seite davon: Er wartet an einem Port auf eine TCP-Verbindung, liest Text und schickt Text zurück. Damit Browser und Server sich verstehen, folgt der Text einer festen Form, dem **HTTP**-Protokoll. Der Live Server, mit dem du sonst Webseiten ansiehst, ist genau so ein Programm. Hier baust du ihn selbst und siehst, was er tut.
@@ -30,10 +31,16 @@ Lege im Terminal (<kbd>Strg</kbd><kbd>J</kbd>) einen Ordner an und öffne ihn mi
 mkdir /workspace/webserver
 ```
 
+<!-- language: ruby -->
 Lege darin die Datei `server.rb` an.
+<!-- /language -->
+<!-- language: python -->
+Lege darin die Datei `server.py` an.
+<!-- /language -->
 
 ## Ein Server, der zuhört
 
+<!-- language: ruby -->
 Schreibe in `server.rb`:
 
 ```ruby
@@ -62,6 +69,37 @@ Starte den Server im Terminal:
 ```bash
 ruby server.rb
 ```
+<!-- /language -->
+<!-- language: python -->
+Schreibe in `server.py`:
+
+```python
+import socket
+
+server = socket.create_server(('', 8000))
+print('Der Server wartet auf Port 8000 ...')
+
+while True:
+    client, address = server.accept()   # wartet, bis jemand eine Verbindung aufbaut
+    print('--- Eine neue Verbindung')
+    with client, client.makefile('rb') as reader:
+        # Die Anfrage zeilenweise lesen, bis zur ersten leeren Zeile
+        for line in reader:
+            if line == b'\r\n':
+                break
+            print(line.decode(), end='')
+```
+
+- `socket.create_server(('', 8000))` öffnet Port 8000. Ab jetzt nimmt das Betriebssystem Verbindungen an diesem Port für dein Programm entgegen; `''` heißt: an allen Adressen des Rechners.
+- `server.accept()` wartet, bis jemand eine Verbindung aufbaut, und gibt sie zurück, zusammen mit der Adresse der Gegenseite. Mit `client.makefile('rb')` liest du aus der Verbindung wie aus einer Datei, Byte für Byte; `with` schließt am Ende beides.
+- Jede `line` ist eine Zeile, als Bytes. Eine HTTP-Anfrage endet mit einer leeren Zeile, `b'\r\n'`. Bis dahin gibt der Server jede Zeile im Terminal aus; `decode()` macht aus den Bytes Text.
+
+Starte den Server im Terminal:
+
+```bash
+python3 server.py
+```
+<!-- /language -->
 
 Er wartet jetzt und hört auf Port 8000. Öffne daneben ein zweites Terminal mit <kbd>Strg</kbd><kbd>Shift</kbd><kbd>5</kbd> und schicke ihm mit `curl` eine Anfrage, so wie ein Browser es tut:
 
@@ -69,6 +107,7 @@ Er wartet jetzt und hört auf Port 8000. Öffne daneben ein zweites Terminal mit
 curl localhost:8000
 ```
 
+<!-- language: ruby -->
 <!-- tutorial-screenshot
 # Ordner webserver mit Stufe 1, Server links, curl rechts
 write-file: webserver/server.rb <- file:stufen/1.rb
@@ -91,6 +130,28 @@ terminal-run: curl localhost:8000
 sleep: 2
 -->
 <img class='full' src='erste-anfrage.webp' alt='Zwei Terminals nebeneinander: links gibt der Server die Anfrage von curl aus, GET / HTTP/1.1, Host, User-Agent und Accept; rechts meldet curl, dass keine Antwort kam.'>
+<!-- /language -->
+<!-- language: python -->
+<!-- tutorial-screenshot
+# Stufe 1 in Python: Server links, curl rechts
+write-file: webserver/server.py <- file:stufen/1.py
+terminal-open
+terminal-maximize
+press: Alt+ArrowLeft
+sleep: 1
+press: Control+C
+sleep: 1
+press: Control+L
+type: python3 server.py
+press: Enter
+sleep: 2
+terminal-run: clear
+sleep: 1
+terminal-run: curl localhost:8000
+sleep: 2
+-->
+<img class='full' src='erste-anfrage-python.webp' alt='Zwei Terminals nebeneinander: links gibt der Python-Server die Anfrage von curl aus, GET / HTTP/1.1, Host, User-Agent und Accept; rechts meldet curl, dass keine Antwort kam.'>
+<!-- /language -->
 
 Im linken Terminal steht, was `curl` geschickt hat. Die erste Zeile ist die **Request-Line**: die Methode `GET` (»gib mir«), der Pfad `/` und die Version des Protokolls. Danach kommen **Header**, je ein Name und ein Wert: an wen die Anfrage geht (`Host`), welches Programm fragt (`User-Agent`), was es annimmt (`Accept`). Rechts beschwert sich `curl`: Der Server hat die Verbindung geschlossen, ohne zu antworten.
 
@@ -100,6 +161,7 @@ _task(request-line)
 
 ## Eine Antwort
 
+<!-- language: ruby -->
 Eine Antwort hat dieselbe Form wie eine Anfrage: eine **Status-Line**, Header, eine leere Zeile, und danach kommt der Inhalt. Beende den Server im linken Terminal mit <kbd>Strg</kbd><kbd>C</kbd> und ersetze `server.rb` durch:
 
 ```ruby_copy
@@ -134,6 +196,47 @@ end
 - `Connection: close` kündigt an, dass der Server die Verbindung nach der Antwort schließt.
 - `"\r\n"` ist das Zeilenende in HTTP, Wagenrücklauf und Zeilenvorschub. Die leere Zeile trennt die Header vom Inhalt.
 - `Thread.new` lässt jede Verbindung in einem eigenen **Thread** laufen, gleichzeitig mit den anderen. Browser öffnen manchmal mehrere Verbindungen auf einmal; ohne Threads würde der Server bei der ersten warten und die anderen liegen lassen.
+<!-- /language -->
+<!-- language: python -->
+Eine Antwort hat dieselbe Form wie eine Anfrage: eine **Status-Line**, Header, eine leere Zeile, und danach kommt der Inhalt. Beende den Server im linken Terminal mit <kbd>Strg</kbd><kbd>C</kbd> und ersetze `server.py` durch:
+
+```python_copy
+import socket
+import threading
+
+
+def handle(client):
+    with client, client.makefile('rb') as reader:
+        for line in reader:
+            if line == b'\r\n':
+                break
+            print(line.decode(), end='')
+
+        body = 'Hallo aus meinem eigenen Server!\n'.encode()
+        client.sendall(b'HTTP/1.1 200 OK\r\n')
+        client.sendall(b'Content-Type: text/plain; charset=utf-8\r\n')
+        client.sendall(f'Content-Length: {len(body)}\r\n'.encode())
+        client.sendall(b'Connection: close\r\n')
+        client.sendall(b'\r\n')
+        client.sendall(body)
+
+
+server = socket.create_server(('', 8000))
+print('Der Server wartet auf Port 8000 ...')
+
+while True:
+    client, address = server.accept()
+    # Jede Verbindung bekommt einen eigenen Thread: So wartet der Server nicht
+    # auf einen Besucher, während ein anderer schon etwas will.
+    threading.Thread(target=handle, args=(client,), daemon=True).start()
+```
+
+- `HTTP/1.1 200 OK` ist die Status-Line: Version, Statuscode 200 und »OK«, alles in Ordnung.
+- `Content-Type` sagt, was für Inhalt kommt: einfacher Text in UTF-8. `Content-Length` sagt, wie viele **Bytes** er hat. Darum wird der Text erst mit `encode()` zu Bytes, und `len(body)` zählt sie; `len` eines Textes zählt Zeichen, und das ist ein Unterschied, sobald ein Umlaut darin steht.
+- `Connection: close` kündigt an, dass der Server die Verbindung nach der Antwort schließt.
+- `"\r\n"` ist das Zeilenende in HTTP, Wagenrücklauf und Zeilenvorschub. Die leere Zeile trennt die Header vom Inhalt. `sendall` schickt Bytes, darum steht vor den festen Zeilen ein `b`.
+- `threading.Thread(target=handle, args=(client,))` lässt jede Verbindung in einem eigenen **Thread** laufen, gleichzeitig mit den anderen; `handle` ist die Funktion, die eine Verbindung bedient. Browser öffnen manchmal mehrere Verbindungen auf einmal; ohne Threads würde der Server bei der ersten warten und die anderen liegen lassen. Mit `daemon=True` lässt sich der Server mit <kbd>Strg</kbd><kbd>C</kbd> beenden, auch wenn noch eine Verbindung offen ist.
+<!-- /language -->
 
 Starte den Server neu (<kbd>↑</kbd> holt den letzten Befehl zurück) und frag im rechten Terminal mit `-i`, dann zeigt `curl` auch Status-Line und Header:
 
@@ -141,6 +244,7 @@ Starte den Server neu (<kbd>↑</kbd> holt den letzten Befehl zurück) und frag 
 curl -i localhost:8000
 ```
 
+<!-- language: ruby -->
 <!-- tutorial-screenshot
 # Stufe 2: Server neu starten, curl -i zeigt die ganze Antwort
 write-file: webserver/server.rb <- file:stufen/2.rb
@@ -160,6 +264,28 @@ terminal-run: curl -i localhost:8000
 sleep: 2
 -->
 <img class='full' src='erste-antwort.webp' alt='Rechts zeigt curl -i die Antwort des Servers: HTTP/1.1 200 OK, die Header und den Text »Hallo aus meinem eigenen Server!«.'>
+<!-- /language -->
+<!-- language: python -->
+<!-- tutorial-screenshot
+# Stufe 2 in Python: Server neu starten, curl -i zeigt die ganze Antwort
+write-file: webserver/server.py <- file:stufen/2.py
+terminal-open
+terminal-maximize
+press: Alt+ArrowLeft
+sleep: 1
+press: Control+C
+sleep: 1
+press: Control+L
+type: python3 server.py
+press: Enter
+sleep: 2
+terminal-run: clear
+sleep: 1
+terminal-run: curl -i localhost:8000
+sleep: 2
+-->
+<img class='full' src='erste-antwort-python.webp' alt='Rechts zeigt curl -i die Antwort des Python-Servers: HTTP/1.1 200 OK, die Header und den Text »Hallo aus meinem eigenen Server!«.'>
+<!-- /language -->
 
 _uses(http-antwort, http-header)
 
@@ -177,6 +303,7 @@ _tool(tcp-console)
 
 Bisher bekommt jeder Pfad dieselbe Antwort. Ein richtiger Server schaut in die Request-Line und antwortet je nach Pfad etwas anderes, und auf einen unbekannten Pfad mit dem Statuscode **404 Not Found**. Weil sich jede Antwort gleich aufbaut, steht das jetzt in einer Funktion `respond`:
 
+<!-- language: ruby -->
 ```ruby_copy
 require 'socket'
 
@@ -220,12 +347,65 @@ end
 ```
 
 `split(' ')` zerlegt die Request-Line an den Leerzeichen in Methode, Pfad und Version. `case path` wählt die Antwort. Probiere die drei Fälle im zweiten Terminal aus:
+<!-- /language -->
+<!-- language: python -->
+```python_copy
+import socket
+import threading
+import time
+
+
+def respond(client, status, content_type, body):
+    """Schickt eine vollständige HTTP-Antwort."""
+    data = body.encode() if isinstance(body, str) else body
+    head = (f'HTTP/1.1 {status}\r\n'
+            f'Content-Type: {content_type}\r\n'
+            f'Content-Length: {len(data)}\r\n'
+            'Connection: close\r\n'
+            '\r\n')
+    client.sendall(head.encode() + data)
+
+
+def handle(client):
+    with client, client.makefile('rb') as reader:
+        # Die erste Zeile: Methode, Pfad, Version
+        request_line = reader.readline().decode()
+        method, _, rest = request_line.partition(' ')
+        path, _, version = rest.partition(' ')
+        print(method, path)
+        # Die übrigen Zeilen (Header) brauchen wir noch nicht
+        for line in reader:
+            if line == b'\r\n':
+                break
+
+        if path == '/':
+            respond(client, '200 OK', 'text/html; charset=utf-8',
+                    '<h1>Willkommen!</h1><p>Das ist mein eigener Webserver.</p>')
+        elif path == '/time':
+            respond(client, '200 OK', 'text/plain; charset=utf-8',
+                    f'Es ist {time.strftime("%H:%M:%S")} Uhr.\n')
+        else:
+            respond(client, '404 Not Found', 'text/plain; charset=utf-8',
+                    f'Die Seite {path} gibt es nicht.\n')
+
+
+server = socket.create_server(('', 8000))
+print('Der Server wartet auf Port 8000 ...')
+
+while True:
+    client, address = server.accept()
+    threading.Thread(target=handle, args=(client,), daemon=True).start()
+```
+
+`partition(' ')` teilt die Request-Line am ersten Leerzeichen und liefert immer drei Teile: was davor steht, das Leerzeichen und den Rest. Zweimal angewendet, ergibt das Methode, Pfad und Version, und das auch dann, wenn eine Anfrage einmal leer ist. `if` und `elif` wählen die Antwort. `respond` nimmt Text oder Bytes und schickt Kopf und Inhalt zusammen mit `sendall`. Probiere die drei Fälle im zweiten Terminal aus:
+<!-- /language -->
 
 ```bash
 curl localhost:8000/time
 curl -i localhost:8000/missing
 ```
 
+<!-- language: ruby -->
 <!-- tutorial-screenshot
 # Stufe 3: /time und ein unbekannter Pfad
 write-file: webserver/server.rb <- file:stufen/3.rb
@@ -247,6 +427,30 @@ terminal-run: curl -i localhost:8000/missing
 sleep: 2
 -->
 <img class='full' src='pfade.webp' alt='Rechts antwortet der Server auf /time mit der Uhrzeit und auf /missing mit HTTP/1.1 404 Not Found; links stehen die beiden Anfragen.'>
+<!-- /language -->
+<!-- language: python -->
+<!-- tutorial-screenshot
+# Stufe 3 in Python: /time und ein unbekannter Pfad
+write-file: webserver/server.py <- file:stufen/3.py
+terminal-open
+terminal-maximize
+press: Alt+ArrowLeft
+sleep: 1
+press: Control+C
+sleep: 1
+press: Control+L
+type: python3 server.py
+press: Enter
+sleep: 2
+terminal-run: clear
+sleep: 1
+terminal-run: curl localhost:8000/time
+sleep: 1
+terminal-run: curl -i localhost:8000/missing
+sleep: 2
+-->
+<img class='full' src='pfade-python.webp' alt='Rechts antwortet der Python-Server auf /time mit der Uhrzeit und auf /missing mit HTTP/1.1 404 Not Found; links stehen die beiden Anfragen.'>
+<!-- /language -->
 
 _uses(statuscodes, curl)
 
@@ -254,7 +458,7 @@ _task(statuscodes)
 
 ## Webseiten ausliefern
 
-Ein Webserver liefert meistens Dateien aus: HTML, CSS, Bilder. Lege neben `server.rb` einen Ordner `public` an und darin `index.html`:
+Ein Webserver liefert meistens Dateien aus: HTML, CSS, Bilder. Lege neben deinem Server einen Ordner `public` an und darin `index.html`:
 
 ```html_copy
 <!DOCTYPE html>
@@ -267,7 +471,7 @@ Ein Webserver liefert meistens Dateien aus: HTML, CSS, Bilder. Lege neben `serve
 <body>
   <h1>Mein eigener Webserver</h1>
   <p>Diese Seite kommt aus dem Ordner <code>public</code>, ausgeliefert von
-  einem Server, den ich selbst in Ruby geschrieben habe.</p>
+  einem Server, den ich selbst geschrieben habe.</p>
   <ul>
     <li><a href="time">Wie spät ist es?</a></li>
     <li><a href="hello?name=Ada">Begrüße Ada</a></li>
@@ -388,6 +592,7 @@ progress::-moz-progress-bar {
 
 Der Server sucht jetzt zu jedem Pfad eine Datei in `public`. `/` steht für `/index.html`. Am Dateinamen erkennt er, welcher `Content-Type` dazugehört, damit der Browser weiß, ob er HTML, CSS oder ein Bild bekommt:
 
+<!-- language: ruby -->
 ```ruby_copy
 require 'socket'
 
@@ -449,6 +654,79 @@ end
 ```
 
 Wichtig ist die Zeile mit `start_with?`. `File.expand_path` macht aus dem Pfad einen vollständigen Dateinamen, und der muss im Ordner `public` liegen. Ohne diese Prüfung könnte jemand nach `/../server.rb` fragen und bekäme deinen Quelltext, oder jede andere Datei, die dein Workspace lesen kann.
+<!-- /language -->
+<!-- language: python -->
+```python_copy
+import os
+import socket
+import threading
+import time
+
+# Welcher Content-Type zu welcher Endung gehört
+TYPES = {
+    '.html': 'text/html; charset=utf-8',
+    '.css': 'text/css; charset=utf-8',
+    '.js': 'text/javascript; charset=utf-8',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.txt': 'text/plain; charset=utf-8',
+}
+
+PUBLIC_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), 'public'))
+
+
+def respond(client, status, content_type, body):
+    """Schickt eine vollständige HTTP-Antwort."""
+    data = body.encode() if isinstance(body, str) else body
+    head = (f'HTTP/1.1 {status}\r\n'
+            f'Content-Type: {content_type}\r\n'
+            f'Content-Length: {len(data)}\r\n'
+            'Connection: close\r\n'
+            '\r\n')
+    client.sendall(head.encode() + data)
+
+
+def serve_file(client, path):
+    """Eine Datei aus dem Ordner public, aber nie etwas außerhalb davon"""
+    if path == '/':
+        path = '/index.html'
+    file = os.path.realpath(os.path.join(PUBLIC_DIR, '.' + path))
+    if file.startswith(PUBLIC_DIR + '/') and os.path.isfile(file):
+        content_type = TYPES.get(os.path.splitext(file)[1], 'application/octet-stream')
+        with open(file, 'rb') as f:
+            respond(client, '200 OK', content_type, f.read())
+    else:
+        respond(client, '404 Not Found', 'text/plain; charset=utf-8',
+                f'Die Seite {path} gibt es nicht.\n')
+
+
+def handle(client):
+    with client, client.makefile('rb') as reader:
+        request_line = reader.readline().decode()
+        method, _, rest = request_line.partition(' ')
+        path, _, version = rest.partition(' ')
+        print(method, path)
+        for line in reader:
+            if line == b'\r\n':
+                break
+
+        if path == '/time':
+            respond(client, '200 OK', 'text/plain; charset=utf-8',
+                    f'Es ist {time.strftime("%H:%M:%S")} Uhr.\n')
+        else:
+            serve_file(client, path)
+
+
+server = socket.create_server(('', 8000))
+print('Der Server wartet auf Port 8000 ...')
+
+while True:
+    client, address = server.accept()
+    threading.Thread(target=handle, args=(client,), daemon=True).start()
+```
+
+Wichtig ist die Zeile mit `startswith`. `os.path.realpath` macht aus dem Pfad einen vollständigen Dateinamen, ohne `..`, und der muss im Ordner `public` liegen. Ohne diese Prüfung könnte jemand nach `/../server.py` fragen und bekäme deinen Quelltext, oder jede andere Datei, die dein Workspace lesen kann.
+<!-- /language -->
 
 Starte den Server neu (<kbd>Strg</kbd><kbd>C</kbd>, dann <kbd>↑</kbd> und <kbd>Enter</kbd>) und prüfe im zweiten Terminal, ob die CSS-Datei mit dem richtigen Content-Type kommt. Mit `-I` fragt `curl` nur nach den Headern, mit der Methode `HEAD` statt `GET`:
 
@@ -456,6 +734,7 @@ Starte den Server neu (<kbd>Strg</kbd><kbd>C</kbd>, dann <kbd>↑</kbd> und <kbd
 curl -I localhost:8000/style.css
 ```
 
+<!-- language: ruby -->
 <!-- tutorial-screenshot
 # Stufe 4 mit public/: Neustart, curl holt style.css
 write-file: webserver/public/index.html <- file:stufen/public/index.html
@@ -477,6 +756,28 @@ terminal-run: curl -I localhost:8000/style.css
 sleep: 2
 -->
 <img class='full' src='css-antwort.webp' alt='Rechts zeigt curl -I die Header der Antwort auf /style.css: 200 OK, Content-Type text/css und Content-Length; links steht die Anfrage HEAD /style.css.'>
+<!-- /language -->
+<!-- language: python -->
+<!-- tutorial-screenshot
+# Stufe 4 in Python: Neustart, curl holt style.css
+write-file: webserver/server.py <- file:stufen/4.py
+terminal-open
+terminal-maximize
+press: Alt+ArrowLeft
+sleep: 1
+press: Control+C
+sleep: 1
+press: Control+L
+type: python3 server.py
+press: Enter
+sleep: 2
+terminal-run: clear
+sleep: 1
+terminal-run: curl -I localhost:8000/style.css
+sleep: 2
+-->
+<img class='full' src='css-antwort-python.webp' alt='Rechts zeigt curl -I die Header der Antwort auf /style.css: 200 OK, Content-Type text/css und Content-Length; links steht die Anfrage HEAD /style.css.'>
+<!-- /language -->
 
 Öffne dann die Adresse aus dem Reiter »Ports« (»Forwarded Address«) im Browser:
 
@@ -490,6 +791,7 @@ sleep: 1
 
 _task(webseite)
 
+<!-- language: ruby -->
 Probier den Angriff aus, gegen den die Prüfung mit `start_with?` schützt. Browser und `curl` räumen ein `..` in der Adresse normalerweise auf, bevor sie fragen; `curl -v localhost:8000/../server.rb` zeigt, dass in Wirklichkeit `GET /server.rb` geschickt wird. Mit `--path-as-is` geht der Pfad so hinaus, wie er dasteht:
 
 ```bash
@@ -497,11 +799,22 @@ curl --path-as-is localhost:8000/../server.rb
 ```
 
 Dein Server antwortet »Die Seite /../server.rb gibt es nicht.« Nimm zum Vergleich `file.start_with?(PUBLIC_DIR + '/') &&` kurz aus der Bedingung heraus, starte den Server neu und frag noch einmal: Jetzt schickt er seinen eigenen Quelltext, an jeden, der fragt. Setz die Prüfung danach wieder ein. Solche Lücken heißen **Path Traversal**; echte Webserver hatten sie immer wieder.
+<!-- /language -->
+<!-- language: python -->
+Probier den Angriff aus, gegen den die Prüfung mit `startswith` schützt. Browser und `curl` räumen ein `..` in der Adresse normalerweise auf, bevor sie fragen; `curl -v localhost:8000/../server.py` zeigt, dass in Wirklichkeit `GET /server.py` geschickt wird. Mit `--path-as-is` geht der Pfad so hinaus, wie er dasteht:
+
+```bash
+curl --path-as-is localhost:8000/../server.py
+```
+
+Dein Server antwortet »Die Seite /../server.py gibt es nicht.« Nimm zum Vergleich `file.startswith(PUBLIC_DIR + '/') and` kurz aus der Bedingung heraus, starte den Server neu und frag noch einmal: Jetzt schickt er seinen eigenen Quelltext, an jeden, der fragt. Setz die Prüfung danach wieder ein. Solche Lücken heißen **Path Traversal**; echte Webserver hatten sie immer wieder.
+<!-- /language -->
 
 _task(sicherheit)
 
 ## Parameter und ein Zähler
 
+<!-- language: ruby -->
 Adressen können Werte mitbringen: `/hello?name=Ada`. Nach dem `?` stehen **Parameter**, `name=wert`, mehrere getrennt durch `&`. Sonderzeichen wie Leerzeichen und Umlaute sind dort kodiert, `%20` ist ein Leerzeichen. `URI.decode_www_form` macht daraus wieder lesbare Werte.
 
 Dazu kommt ein Zähler, der mitzählt, wie oft `/visits` aufgerufen wurde. Er gehört dem ganzen Server, nicht einer einzelnen Verbindung, darum steht er in einer globalen Variable `$visits`:
@@ -585,6 +898,103 @@ end
 ```
 
 `$visits_lock` ist ein **Mutex**, ein Lock, den immer nur ein Thread auf einmal hält. `$visits += 1` sieht aus wie ein Schritt, sind aber drei: lesen, eins dazuzählen, zurückschreiben. Kommen zwei Threads gleichzeitig, könnten beide denselben alten Wert lesen, und ein Besuch ginge verloren.
+<!-- /language -->
+<!-- language: python -->
+Adressen können Werte mitbringen: `/hello?name=Ada`. Nach dem `?` stehen **Parameter**, `name=wert`, mehrere getrennt durch `&`. Sonderzeichen wie Leerzeichen und Umlaute sind dort kodiert, `%20` ist ein Leerzeichen. `parse_qsl` aus `urllib.parse` macht daraus wieder lesbare Werte, als Paare aus Name und Wert, und `dict(…)` ein `dict`.
+
+Dazu kommt ein Zähler, der mitzählt, wie oft `/visits` aufgerufen wurde. Er gehört dem ganzen Server, nicht einer einzelnen Verbindung, darum steht er außerhalb der Funktion in der Variable `visits`; mit `global visits` darf `handle` sie ändern:
+
+```python_copy
+import os
+import socket
+import threading
+import time
+from urllib.parse import parse_qsl
+
+# Welcher Content-Type zu welcher Endung gehört
+TYPES = {
+    '.html': 'text/html; charset=utf-8',
+    '.css': 'text/css; charset=utf-8',
+    '.js': 'text/javascript; charset=utf-8',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.txt': 'text/plain; charset=utf-8',
+}
+
+PUBLIC_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), 'public'))
+
+# Der Zähler gehört dem Server, nicht einer Verbindung: Alle Threads
+# benutzen ihn, darum zählt immer nur einer auf einmal (Lock).
+visits = 0
+visits_lock = threading.Lock()
+
+
+def respond(client, status, content_type, body):
+    """Schickt eine vollständige HTTP-Antwort."""
+    data = body.encode() if isinstance(body, str) else body
+    head = (f'HTTP/1.1 {status}\r\n'
+            f'Content-Type: {content_type}\r\n'
+            f'Content-Length: {len(data)}\r\n'
+            'Connection: close\r\n'
+            '\r\n')
+    client.sendall(head.encode() + data)
+
+
+def serve_file(client, path):
+    """Eine Datei aus dem Ordner public, aber nie etwas außerhalb davon"""
+    if path == '/':
+        path = '/index.html'
+    file = os.path.realpath(os.path.join(PUBLIC_DIR, '.' + path))
+    if file.startswith(PUBLIC_DIR + '/') and os.path.isfile(file):
+        content_type = TYPES.get(os.path.splitext(file)[1], 'application/octet-stream')
+        with open(file, 'rb') as f:
+            respond(client, '200 OK', content_type, f.read())
+    else:
+        respond(client, '404 Not Found', 'text/plain; charset=utf-8',
+                f'Die Seite {path} gibt es nicht.\n')
+
+
+def handle(client):
+    global visits
+    with client, client.makefile('rb') as reader:
+        request_line = reader.readline().decode()
+        method, _, rest = request_line.partition(' ')
+        target, _, version = rest.partition(' ')
+        print(method, target)
+        for line in reader:
+            if line == b'\r\n':
+                break
+
+        # /hello?name=Ada: der Pfad und die Parameter nach dem Fragezeichen
+        path, _, query = target.partition('?')
+        params = dict(parse_qsl(query))
+
+        if path == '/time':
+            respond(client, '200 OK', 'text/plain; charset=utf-8',
+                    f'Es ist {time.strftime("%H:%M:%S")} Uhr.\n')
+        elif path == '/hello':
+            name = params.get('name', 'Unbekannt')
+            respond(client, '200 OK', 'text/plain; charset=utf-8', f'Hallo, {name}!\n')
+        elif path == '/visits':
+            with visits_lock:
+                visits += 1
+                count = visits
+            respond(client, '200 OK', 'text/plain; charset=utf-8',
+                    f'Du bist Besuch Nummer {count}.\n')
+        else:
+            serve_file(client, path)
+
+
+server = socket.create_server(('', 8000))
+print('Der Server wartet auf Port 8000 ...')
+
+while True:
+    client, address = server.accept()
+    threading.Thread(target=handle, args=(client,), daemon=True).start()
+```
+
+`visits_lock` ist ein **Lock**, den immer nur ein Thread auf einmal hält: `with visits_lock:` wartet, bis er frei ist. `visits += 1` sieht aus wie ein Schritt, sind aber drei: lesen, eins dazuzählen, zurückschreiben. Kommen zwei Threads gleichzeitig, könnten beide denselben alten Wert lesen, und ein Besuch ginge verloren.
+<!-- /language -->
 
 Starte den Server neu und probiere es im zweiten Terminal aus:
 
@@ -594,6 +1004,7 @@ curl localhost:8000/visits
 curl localhost:8000/visits
 ```
 
+<!-- language: ruby -->
 <!-- tutorial-screenshot
 # Stufe 5: Parameter und Zähler im Terminal
 write-file: webserver/server.rb <- file:stufen/5.rb
@@ -617,6 +1028,32 @@ terminal-run: curl localhost:8000/visits
 sleep: 2
 -->
 <img class='full' src='parameter.webp' alt='Rechts antwortet der Server »Hallo, Ada Lovelace!«, dann »Du bist Besuch Nummer 1.« und »Du bist Besuch Nummer 2.«; links stehen die drei Anfragen.'>
+<!-- /language -->
+<!-- language: python -->
+<!-- tutorial-screenshot
+# Stufe 5 in Python: Parameter und Zähler im Terminal
+write-file: webserver/server.py <- file:stufen/5.py
+terminal-open
+terminal-maximize
+press: Alt+ArrowLeft
+sleep: 1
+press: Control+C
+sleep: 1
+press: Control+L
+type: python3 server.py
+press: Enter
+sleep: 2
+terminal-run: clear
+sleep: 1
+terminal-run: curl "localhost:8000/hello?name=Ada%20Lovelace"
+sleep: 1
+terminal-run: curl localhost:8000/visits
+sleep: 1
+terminal-run: curl localhost:8000/visits
+sleep: 2
+-->
+<img class='full' src='parameter-python.webp' alt='Rechts antwortet der Python-Server »Hallo, Ada Lovelace!«, dann »Du bist Besuch Nummer 1.« und »Du bist Besuch Nummer 2.«; links stehen die drei Anfragen.'>
+<!-- /language -->
 
 Im Browser funktioniert es genauso: Hänge `/hello?name=…` an die Adresse aus »Forwarded Address«.
 
@@ -663,6 +1100,7 @@ Content-Length: 12
 choice=curry
 ```
 
+<!-- language: ruby -->
 Hinter `choice=curry` steht kein Zeilenumbruch. Mit `client.gets` würde der Server auf ein Zeilenende warten, das nie kommt. Er muss wissen, wie viele Bytes er lesen soll, und das steht im Header `Content-Length`. Darum hebt er die Header jetzt in einem Hash auf, statt sie zu überspringen:
 
 ```ruby_copy
@@ -798,6 +1236,152 @@ Was neu ist:
 - Der Server zählt nur Antworten, die in `OPTIONS` stehen. Was ankommt, muss nicht aus deinem Formular stammen: Jeder kann mit `curl` an `/vote` schicken, was er will.
 - Die Stimmen zählt er unter einem eigenen Lock, aus demselben Grund wie die Besuche.
 - Die Ergebnisseite zeichnet für jede Antwort einen Balken mit `<progress>`: `value` ist die Zahl ihrer Stimmen, `max` die größte Zahl. Den Balken malt der Browser selbst, ganz ohne CSS.
+<!-- /language -->
+<!-- language: python -->
+Hinter `choice=curry` steht kein Zeilenumbruch. Mit `reader.readline()` würde der Server auf ein Zeilenende warten, das nie kommt. Er muss wissen, wie viele Bytes er lesen soll, und das steht im Header `Content-Length`. Darum hebt er die Header jetzt in einem `dict` auf, statt sie zu überspringen:
+
+```python_copy
+import os
+import socket
+import threading
+import time
+from urllib.parse import parse_qsl
+
+# Welcher Content-Type zu welcher Endung gehört
+TYPES = {
+    '.html': 'text/html; charset=utf-8',
+    '.css': 'text/css; charset=utf-8',
+    '.js': 'text/javascript; charset=utf-8',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.txt': 'text/plain; charset=utf-8',
+}
+
+PUBLIC_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), 'public'))
+
+# Der Zähler gehört dem Server, nicht einer Verbindung: Alle Threads
+# benutzen ihn, darum zählt immer nur einer auf einmal (Lock).
+visits = 0
+visits_lock = threading.Lock()
+
+# Die Umfrage: was im Formular steht, wie es auf der Seite heißt, und die
+# Stimmen dazu, ebenfalls geschützt durch einen Lock
+OPTIONS = {'pizza': 'Pizza', 'pasta': 'Nudeln', 'curry': 'Curry', 'salad': 'Salat'}
+votes = {key: 0 for key in OPTIONS}
+votes_lock = threading.Lock()
+
+
+def respond(client, status, content_type, body):
+    """Schickt eine vollständige HTTP-Antwort."""
+    data = body.encode() if isinstance(body, str) else body
+    head = (f'HTTP/1.1 {status}\r\n'
+            f'Content-Type: {content_type}\r\n'
+            f'Content-Length: {len(data)}\r\n'
+            'Connection: close\r\n'
+            '\r\n')
+    client.sendall(head.encode() + data)
+
+
+def redirect(client, location):
+    """Schickt den Browser weiter zu einer anderen Adresse: »Sieh dort nach«"""
+    client.sendall((f'HTTP/1.1 303 See Other\r\n'
+                    f'Location: {location}\r\n'
+                    'Content-Length: 0\r\n'
+                    'Connection: close\r\n'
+                    '\r\n').encode())
+
+
+def serve_file(client, path):
+    """Eine Datei aus dem Ordner public, aber nie etwas außerhalb davon"""
+    if path == '/':
+        path = '/index.html'
+    file = os.path.realpath(os.path.join(PUBLIC_DIR, '.' + path))
+    if file.startswith(PUBLIC_DIR + '/') and os.path.isfile(file):
+        content_type = TYPES.get(os.path.splitext(file)[1], 'application/octet-stream')
+        with open(file, 'rb') as f:
+            respond(client, '200 OK', content_type, f.read())
+    else:
+        respond(client, '404 Not Found', 'text/plain; charset=utf-8',
+                f'Die Seite {path} gibt es nicht.\n')
+
+
+def handle(client):
+    global visits
+    with client, client.makefile('rb') as reader:
+        request_line = reader.readline().decode()
+        method, _, rest = request_line.partition(' ')
+        target, _, version = rest.partition(' ')
+        print(method, target)
+        # Die Header in ein dict: »Name: Wert«
+        headers = {}
+        for line in reader:
+            if line == b'\r\n':
+                break
+            name, _, value = line.decode().partition(':')
+            headers[name.strip().lower()] = value.strip()
+
+        # /hello?name=Ada: der Pfad und die Parameter nach dem Fragezeichen
+        path, _, query = target.partition('?')
+        params = dict(parse_qsl(query))
+
+        if path == '/time':
+            respond(client, '200 OK', 'text/plain; charset=utf-8',
+                    f'Es ist {time.strftime("%H:%M:%S")} Uhr.\n')
+        elif path == '/hello':
+            name = params.get('name', 'Unbekannt')
+            respond(client, '200 OK', 'text/plain; charset=utf-8', f'Hallo, {name}!\n')
+        elif path == '/visits':
+            with visits_lock:
+                visits += 1
+                count = visits
+            respond(client, '200 OK', 'text/plain; charset=utf-8',
+                    f'Du bist Besuch Nummer {count}.\n')
+        elif path == '/vote':
+            if method != 'POST':
+                respond(client, '405 Method Not Allowed', 'text/plain; charset=utf-8',
+                        'Abstimmen geht nur mit POST.\n')
+                return
+            # Nach der leeren Zeile kommt der Inhalt, genau Content-Length Bytes
+            body = reader.read(int(headers.get('content-length', '0'))).decode()
+            choice = dict(parse_qsl(body)).get('choice')
+            if choice in OPTIONS:
+                with votes_lock:
+                    votes[choice] += 1
+                redirect(client, '/results')
+            else:
+                respond(client, '400 Bad Request', 'text/plain; charset=utf-8',
+                        'Diese Antwort gibt es nicht.\n')
+        elif path == '/results':
+            # Ein Balken für jede Antwort; <progress> zeichnet ihn ohne CSS
+            with votes_lock:
+                most = max(max(votes.values()), 1)
+                rows = '\n'.join(
+                    f"<tr><td>{label}</td><td><progress value='{votes[key]}' max='{most}'></progress></td>"
+                    f"<td>{votes[key]}</td></tr>"
+                    for key, label in OPTIONS.items())
+            respond(client, '200 OK', 'text/html; charset=utf-8',
+                    "<!DOCTYPE html><meta charset='utf-8'><link rel='stylesheet' href='style.css'>"
+                    f"<h1>Ergebnis</h1><table>{rows}</table><p><a href='poll.html'>Noch einmal abstimmen</a></p>\n")
+        else:
+            serve_file(client, path)
+
+
+server = socket.create_server(('', 8000))
+print('Der Server wartet auf Port 8000 ...')
+
+while True:
+    client, address = server.accept()
+    threading.Thread(target=handle, args=(client,), daemon=True).start()
+```
+
+Was neu ist:
+
+- Jede Header-Zeile wird an ihrem ersten `:` geteilt. Der Name kommt klein geschrieben ins `dict`, weil HTTP Groß- und Kleinschreibung bei Header-Namen nicht unterscheidet: `headers['content-length']` findet `Content-Length` und `content-length`.
+- `/vote` nimmt nur `POST` an und liest mit `reader.read(…)` genau so viele Bytes, wie `Content-Length` sagt. Der Body hat dieselbe Form wie die Parameter in einer Adresse, darum hilft wieder `parse_qsl`.
+- Der Server zählt nur Antworten, die in `OPTIONS` stehen. Was ankommt, muss nicht aus deinem Formular stammen: Jeder kann mit `curl` an `/vote` schicken, was er will.
+- Die Stimmen zählt er unter einem eigenen Lock, aus demselben Grund wie die Besuche.
+- Die Ergebnisseite zeichnet für jede Antwort einen Balken mit `<progress>`: `value` ist die Zahl ihrer Stimmen, `max` die größte Zahl. Den Balken malt der Browser selbst, ganz ohne CSS.
+<!-- /language -->
 
 Nach einer Stimme zeigt der Server nicht gleich das Ergebnis, sondern antwortet mit **`303 See Other`** und dem Header `Location: /results`: »Sieh dort nach.« Der Browser holt dann `/results` mit `GET`. Der Umweg hat einen Grund: Wäre das Ergebnis die Antwort auf das `POST`, würde der Browser beim Neuladen das Formular noch einmal schicken, und die Stimme zählte doppelt. So lädt er nur die Ergebnisseite neu. Das Muster heißt **Post/Redirect/Get**.
 
@@ -808,6 +1392,7 @@ curl -i -d choice=curry localhost:8000/vote
 curl localhost:8000/results
 ```
 
+<!-- language: ruby -->
 <!-- tutorial-screenshot
 # Stufe 6: eine Stimme mit curl, 303 und das Ergebnis
 viewport: 1029x700
@@ -831,6 +1416,32 @@ terminal-run: curl localhost:8000/results
 sleep: 2
 -->
 <img class='full' src='post-curl.webp' alt='Rechts antwortet der Server auf die Stimme mit 303 See Other und Location: /results, danach zeigt curl das HTML der Ergebnisseite: eine Tabelle mit einem progress-Element für jede Antwort, bei Curry value 1. Links stehen POST /vote und GET /results.'>
+<!-- /language -->
+<!-- language: python -->
+<!-- tutorial-screenshot
+# Stufe 6 in Python: eine Stimme mit curl, 303 und das Ergebnis
+viewport: 1029x700
+write-file: webserver/public/poll.html <- file:stufen/public/poll.html
+write-file: webserver/server.py <- file:stufen/6.py
+terminal-open
+terminal-maximize
+press: Alt+ArrowLeft
+sleep: 1
+press: Control+C
+sleep: 1
+press: Control+L
+type: python3 server.py
+press: Enter
+sleep: 2
+terminal-run: clear
+sleep: 1
+terminal-run: curl -i -d choice=curry localhost:8000/vote
+sleep: 1
+terminal-run: curl localhost:8000/results
+sleep: 2
+-->
+<img class='full' src='post-curl-python.webp' alt='Rechts antwortet der Python-Server auf die Stimme mit 303 See Other und Location: /results, danach zeigt curl das HTML der Ergebnisseite: eine Tabelle mit einem progress-Element für jede Antwort, bei Curry value 1. Links stehen POST /vote und GET /results.'>
+<!-- /language -->
 
 Öffne jetzt im Browser die Adresse aus »Forwarded Address« mit `/poll.html` dahinter, wähle etwas und stimme ab:
 
@@ -874,7 +1485,7 @@ _task(abgabe)
 
 Dein Server antwortet nur, wenn der Browser fragt. Soll er von sich aus etwas schicken, zum Beispiel, wenn jemand anderes etwas getan hat, braucht es eine Verbindung, die offen bleibt. Darum geht es in der [Pixelwand](/pixelwand): Die ganze Klasse malt gleichzeitig an einem Bild, und jeder sieht sofort, was die anderen malen.
 
-Große Webserver wie nginx oder Ruby-Bibliotheken wie Sinatra machen dasselbe wie deiner, nur mit vielen Fällen mehr: viele Verbindungen gleichzeitig, verschlüsselt mit HTTPS, mit Caching und Schutz gegen Angriffe.
+Große Webserver wie nginx und Bibliotheken wie Sinatra für Ruby oder Flask für Python machen dasselbe wie deiner, nur mit vielen Fällen mehr: viele Verbindungen gleichzeitig, verschlüsselt mit HTTPS, mit Caching und Schutz gegen Angriffe.
 
 <!-- tutorial-screenshot
 # Bild für die Karte der Aktivität: das Ergebnis der Umfrage nach ein paar Stimmen

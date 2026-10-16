@@ -18,6 +18,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- »Ein eigener Webserver« gibt es jetzt auch in Python: alle sechs Stufen
+  des Servers mit `socket`, `threading` und `urllib.parse`, die Erklärungen
+  dazu, sechs Screenshots aus dem Terminal und Varianten der Aufgaben, die
+  Ruby nennen. Die Seiten in `public` sind für beide Sprachen dieselben. Zwei
+  Antworten in »Nur aus public« und »Zwei auf einmal« nennen Ruby nicht mehr;
+  wer diese beiden Aufgaben schon gelöst hat, sieht sie einmal als
+  »geändert«.
 - »Endliche Automaten« gibt es jetzt auch in Ruby, und Ruby ist dort wie
   überall die Voreinstellung: alle sechs Programme, die Erklärungen dazu,
   drei Screenshots aus dem Workspace und die vier Programmieraufgaben mit
