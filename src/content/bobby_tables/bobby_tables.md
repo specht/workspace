@@ -41,8 +41,30 @@ wget https://github.com/specht/workspace-files/raw/main/users.sql
 Importiere sie in deine neue Datenbank:
 
 ```bash
-mycli db_1234 < users.sql
+mysql db_1234 < users.sql
 ```
+
+<!-- tutorial-step
+# Die Testdatenbank im Profil anlegen; die Hook trägt Name und Passwort in
+# login.rb und login.py ein, wie man sie aus dem Profil abschreibt.
+open-site: /profil
+tab: preview
+hook: test-database
+-->
+
+<!-- tutorial-step
+# Testdaten holen und importieren
+terminal-open
+terminal-run: mkdir -p ~/bobby_tables && cd ~/bobby_tables
+terminal-run: wget -q https://github.com/specht/workspace-files/raw/main/users.sql
+terminal-wait-for-prompt
+terminal-run: mysql $(cat .testdb) < users.sql
+terminal-wait-for-prompt
+terminal-run: clear
+terminal-run: mysql $(cat .testdb) -e 'SELECT login FROM users;'
+wait-for-text: mallory
+-->
+
 
 Starte dann `mycli db_1234` und prüfe mit `SHOW TABLES;` und `SELECT * FROM users;`, ob die Daten angekommen sind:
 
@@ -124,9 +146,96 @@ Für dieses Labor steht das Passwort im Quelltext. In einem echten Programm geh�
 
 <!-- language: ruby -->
 Starte das Programm mit `ruby login.rb` und melde dich als `alice` mit dem Passwort `asdf` an, dann mit einem falschen Passwort.
+
+<!-- tutorial-step
+# Ruby: die Bibliothek, dann das Programm mit richtigem und falschem Passwort
+# und die drei Angriffe aus »Experimentieren«
+terminal-open
+terminal-run: gem install mysql2
+terminal-wait-for-prompt: 300
+terminal-run: clear
+terminal-run: ruby login.rb
+wait-for-text: Login:
+terminal-run: alice
+wait-for-text: Passwort:
+terminal-run: asdf
+wait-for-text: Herzlich willkommen, alice.
+terminal-run: clear
+terminal-run: ruby login.rb
+wait-for-text: Login:
+terminal-run: alice
+wait-for-text: Passwort:
+terminal-run: falsch
+wait-for-text: Fehler: Login oder Passwort falsch.
+terminal-run: clear
+terminal-run: ruby login.rb
+wait-for-text: Login:
+terminal-run: admin' #
+wait-for-text: Passwort:
+press: Enter
+wait-for-text: Herzlich willkommen, admin.
+terminal-run: clear
+terminal-run: ruby login.rb
+wait-for-text: Login:
+terminal-run: mallory' UNION SELECT address FROM users WHERE LOGIN='mallory' ORDER BY login ASC #
+wait-for-text: Passwort:
+press: Enter
+wait-for-text: Herzlich willkommen, 3747 Haven Lane
+terminal-run: clear
+terminal-run: ruby login.rb
+wait-for-text: Login:
+terminal-run: x' UNION SELECT password FROM users WHERE login='admin' #
+wait-for-text: Passwort:
+press: Enter
+wait-for-text: Herzlich willkommen, YLrelnmPDPB-ZhQ1GzRxiEf
+check-task-fails: prepared
+-->
+
 <!-- /language -->
 <!-- language: python -->
 Starte das Programm mit `python3 login.py` und melde dich als `alice` mit dem Passwort `asdf` an, dann mit einem falschen Passwort.
+
+<!-- tutorial-step
+# Python: dasselbe, ohne etwas zu installieren
+terminal-open
+terminal-run: clear
+terminal-run: python3 login.py
+wait-for-text: Login:
+terminal-run: alice
+wait-for-text: Passwort:
+terminal-run: asdf
+wait-for-text: Herzlich willkommen, alice.
+terminal-run: clear
+terminal-run: python3 login.py
+wait-for-text: Login:
+terminal-run: alice
+wait-for-text: Passwort:
+terminal-run: falsch
+wait-for-text: Fehler: Login oder Passwort falsch.
+terminal-run: clear
+terminal-run: python3 login.py
+wait-for-text: Login:
+terminal-run: admin' #
+wait-for-text: Passwort:
+press: Enter
+wait-for-text: Herzlich willkommen, admin.
+terminal-run: clear
+terminal-run: python3 login.py
+wait-for-text: Login:
+terminal-run: mallory' UNION SELECT address FROM users WHERE LOGIN='mallory' ORDER BY login ASC #
+wait-for-text: Passwort:
+press: Enter
+wait-for-text: Herzlich willkommen, 3747 Haven Lane
+terminal-run: clear
+terminal-run: python3 login.py
+wait-for-text: Login:
+terminal-run: x' UNION SELECT password FROM users WHERE login='admin' #
+wait-for-text: Passwort:
+press: Enter
+wait-for-text: Herzlich willkommen, YLrelnmPDPB-ZhQ1GzRxiEf
+check-task-fails: prepared python
+-->
+
 <!-- /language -->
 
 ## Experimentieren
@@ -182,6 +291,92 @@ Zeilen kommentierst du in Ruby und Python mit <code>#</code> am Anfang aus. Schn
 </div>
 
 _task(prepared)
+
+<!-- tutorial-step
+# Die Lücke schließen, genau wie die Seite es sagt (Zeilen auskommentieren,
+# den Codeblock dahinter einfügen), in beiden Programmen
+open-site: /profil
+tab: preview
+hook: test-database fixed
+-->
+
+<!-- tutorial-step
+# Mit Prepared Statement: alice kommt herein, die drei Angriffe nicht mehr
+terminal-open
+terminal-run: clear
+terminal-run: ruby login.rb
+wait-for-text: Login:
+terminal-run: alice
+wait-for-text: Passwort:
+terminal-run: asdf
+wait-for-text: Herzlich willkommen, alice.
+terminal-run: clear
+terminal-run: ruby login.rb
+wait-for-text: Login:
+terminal-run: alice
+wait-for-text: Passwort:
+terminal-run: falsch
+wait-for-text: Fehler: Login oder Passwort falsch.
+terminal-run: clear
+terminal-run: ruby login.rb
+wait-for-text: Login:
+terminal-run: admin' #
+wait-for-text: Passwort:
+press: Enter
+wait-for-text: Fehler: Login oder Passwort falsch.
+terminal-run: clear
+terminal-run: ruby login.rb
+wait-for-text: Login:
+terminal-run: mallory' UNION SELECT address FROM users WHERE LOGIN='mallory' ORDER BY login ASC #
+wait-for-text: Passwort:
+press: Enter
+wait-for-text: Fehler: Login oder Passwort falsch.
+terminal-run: clear
+terminal-run: ruby login.rb
+wait-for-text: Login:
+terminal-run: x' UNION SELECT password FROM users WHERE login='admin' #
+wait-for-text: Passwort:
+press: Enter
+wait-for-text: Fehler: Login oder Passwort falsch.
+terminal-run: clear
+terminal-run: python3 login.py
+wait-for-text: Login:
+terminal-run: alice
+wait-for-text: Passwort:
+terminal-run: asdf
+wait-for-text: Herzlich willkommen, alice.
+terminal-run: clear
+terminal-run: python3 login.py
+wait-for-text: Login:
+terminal-run: alice
+wait-for-text: Passwort:
+terminal-run: falsch
+wait-for-text: Fehler: Login oder Passwort falsch.
+terminal-run: clear
+terminal-run: python3 login.py
+wait-for-text: Login:
+terminal-run: admin' #
+wait-for-text: Passwort:
+press: Enter
+wait-for-text: Fehler: Login oder Passwort falsch.
+terminal-run: clear
+terminal-run: python3 login.py
+wait-for-text: Login:
+terminal-run: mallory' UNION SELECT address FROM users WHERE LOGIN='mallory' ORDER BY login ASC #
+wait-for-text: Passwort:
+press: Enter
+wait-for-text: Fehler: Login oder Passwort falsch.
+terminal-run: clear
+terminal-run: python3 login.py
+wait-for-text: Login:
+terminal-run: x' UNION SELECT password FROM users WHERE login='admin' #
+wait-for-text: Passwort:
+press: Enter
+wait-for-text: Fehler: Login oder Passwort falsch.
+check-task: prepared
+check-task: prepared python
+-->
+
 
 _task(behoben)
 

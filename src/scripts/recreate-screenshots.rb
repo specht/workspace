@@ -47,6 +47,8 @@ abort USAGE if args.first.to_s.start_with?('-')
 
 content_path = Pathname.new(content_root).realpath
 RECIPE = '<!-- tutorial-screenshot'
+# A page with steps only (no pictures) can still be walked through.
+STEP = '<!-- tutorial-step'
 
 relative_of = lambda do |path|
     Pathname.new(path).realpath.relative_path_from(content_path).to_s
@@ -74,7 +76,8 @@ resolve = lambda do |argument|
     if relative_markdown.split(File::SEPARATOR).include?('..')
         abort "Tutorial Markdown must be below #{content_root}: #{markdown_path}"
     end
-    if mode != :status && !File.read(File.join(content_root, relative_markdown)).include?(RECIPE)
+    text = File.read(File.join(content_root, relative_markdown))
+    if mode != :status && !text.include?(RECIPE) && !(mode == :force && text.include?(STEP))
         abort "Tutorial contains no generated screenshots: #{relative_markdown}"
     end
     relative_markdown

@@ -3276,7 +3276,8 @@ async function buildGenerationPlan(payload) {
             screenshots: [],
             oldManifest: { version: 1, screenshots: {} },
             nextManifest: { version: 1, screenshots: {} },
-            tutorialHooks: null,
+            // A page with steps only still needs its hooks to walk through.
+            tutorialHooks: (shots[TRAILING_STEPS] || []).length > 0 ? await loadTutorialScreenshotHooks(tutorialDirectory) : null,
             environmentFingerprint: null,
             fingerprint: sha256(`${relativeMarkdown}\0empty`),
         };
@@ -3505,12 +3506,15 @@ async function generateTutorial(payload, progressJob = null) {
         progressJob.screenshots = plan.screenshots.map(item => ({ ...item }));
     }
 
-    if (shots.length === 0) return { generated: 0, current: 0, screenshots: 0 };
+    // A forced replay walks a page's steps even when its pictures are current,
+    // and even on a page that has steps only (tutorial-step).
+    const walkSteps = plan.force && (shots[TRAILING_STEPS] || []).length > 0;
+    if (shots.length === 0 && !walkSteps) return { generated: 0, current: 0, screenshots: 0 };
 
     // Removed recipe entries disappear from the manifest. The image itself stays
     // in the tutorial directory and therefore instantly becomes a normal manual
     // tutorial image again.
-    if (!stale.some(Boolean)) {
+    if (!stale.some(Boolean) && !walkSteps) {
         await finalizeCurrentPlan(plan);
         if (progressJob) progressJob.completed = shots.length;
         return { generated: 0, current: shots.length, screenshots: shots.length };
@@ -3635,7 +3639,8 @@ async function generateTutorial(payload, progressJob = null) {
     }
 
     // The pictures are done; a failing step after them must not lose them.
-    await writeManifest(tutorialDirectory, nextManifest);
+    // A page with steps only gets no manifest.
+    if (shots.length > 0) await writeManifest(tutorialDirectory, nextManifest);
     try {
         // Steps after the last screenshot: nothing depends on them, but they
         // check that the page's last steps work (tutorial-step).
@@ -3645,6 +3650,9 @@ async function generateTutorial(payload, progressJob = null) {
             try {
                 await executeAction(action, action.tab, tutorialHooks);
             } catch (error) {
+                await captureErrorTabs({ tutorialDirectory, shot: { tab: action.tab } }).catch(captureError => {
+                    console.error(`Could not capture tutorial step failure state: ${captureError.message}`);
+                });
                 throw withSourceError(error, source);
             }
         }

@@ -504,6 +504,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- »SQL Injection«: Die Testdaten kommen jetzt mit `mysql db_1234 < users.sql`
+  in die Datenbank. Mit `mycli` hielt der Import mit der Frage »You're about
+  to run a destructive command« an, die die Seite nicht erwähnte. Gefunden hat
+  das der neue Durchgang durch die Seite, der jetzt alle Schritte in Ruby und
+  Python prüft: Testdatenbank, Import, die drei Angriffe, die Lücke schließen
+  wie beschrieben, dieselben Angriffe noch einmal.
 - Automatron bricht bei langen Ausdrücken nicht mehr ganz ab: Ein Automat mit
   mehr als 300 Übergängen, etwa der DEA auf dem Weg zu »eine Dezimalzahl ist
   durch 3 teilbar«, wird nicht gezeichnet, sondern durch einen Hinweis
