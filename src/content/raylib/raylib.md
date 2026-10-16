@@ -82,6 +82,10 @@ open-file: main.c
 terminal-open
 terminal-run: make
 terminal-wait-for-prompt: 180
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
+check-task: uebersetzt
+check-task-fails: figur
 -->
 <img class='full' src='make.webp' alt='Der Workspace mit main.c im Editor; im Terminal darunter hat make die Datei main.html erzeugt.'>
 
@@ -333,6 +337,8 @@ int main(void)
 write-file: main.c <- file:stufen/2.c
 terminal-run: make
 terminal-wait-for-prompt: 120
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 tab: preview
 viewport: 960x540
 hook: open main.html
@@ -504,12 +510,15 @@ Neu ist auch die Maus: Ein Klick ins Bild ruft `DisableCursor()` auf. Der Mausze
 write-file: main.c <- file:stufen/3.c
 terminal-run: make
 terminal-wait-for-prompt: 120
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 tab: preview
 viewport: 960x540
 hook: open main.html
 hook: play 8 KeyW:1.2 ArrowLeft:0.4
 hook: settle
 crop-element: #canvas
+check-task-fails: figur
 -->
 <img class='full' src='geist.webp' alt='Blick aus Augenhöhe über die Wiese, rechts ein Baum, die Blöcke mit dunklen Kanten.'>
 
@@ -604,12 +613,16 @@ feet = (Vector3){ 8.5f, HEIGHT - 2, 10.5f };
 write-file: main.c <- file:stufen/4.c
 terminal-run: make
 terminal-wait-for-prompt: 120
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 tab: preview
 viewport: 960x540
 hook: open main.html
 hook: play 8 KeyW:2 ArrowRight:0.3
 hook: settle
 crop-element: #canvas
+check-task: figur
+check-task-fails: bauen
 -->
 <img class='full' src='laufen.webp' alt='Blick über die Wiese aus Augenhöhe; die Hügel steigen in Stufen an, hinten ein Baum.'>
 
@@ -737,12 +750,16 @@ DrawText(names[selected], mx - MeasureText(names[selected], 20) / 2, GetScreenHe
 write-file: main.c <- file:stufen/5.c
 terminal-run: make
 terminal-wait-for-prompt: 120
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 tab: preview
 viewport: 960x540
 hook: open main.html
 hook: play 8 ArrowDown:0.25 Digit3 Rechtsklick ArrowLeft:0.15 Rechtsklick ArrowLeft:0.15 Rechtsklick ArrowRight:0.6 Rechtsklick ArrowUp:0.12
 hook: settle
 crop-element: #canvas
+check-task: bauen
+check-task-fails: licht
 -->
 <img class='full' src='bauen.webp' alt='Ein paar gesetzte Steinblöcke auf der Wiese, einer ist schwarz umrandet, unten die Leiste mit sechs Blockarten.'>
 
@@ -911,12 +928,16 @@ Die Funktion `visible` brauchst du nicht mehr; `draw_block` prüft jetzt jede Se
 write-file: main.c <- file:stufen/6.c
 terminal-run: make
 terminal-wait-for-prompt: 120
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 tab: preview
 viewport: 960x540
 hook: open main.html
 hook: play 10
 hook: settle
 crop-element: #canvas
+check-task: licht
+check-task-fails: fackeln
 -->
 <img class='full' src='licht.webp' alt='Dieselbe Welt mit Licht: Oberseiten hell, Seiten dunkler, die Bäume haben deutliche Schattenseiten.'>
 
@@ -1088,6 +1109,8 @@ write-file: main.c <- file:stufen/7.c
 write-file: light.fs <- file:stufen/7.fs
 terminal-run: make
 terminal-wait-for-prompt: 120
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 tab: preview
 viewport: 960x540
 hook: open main.html
@@ -1095,6 +1118,8 @@ hook: play 8 ArrowDown:0.25 Digit7 Rechtsklick ArrowLeft:0.35 Rechtsklick ArrowR
 hook: settle
 variants: dark
 crop-element: #canvas
+check-task: fackeln
+check-task-fails: texturen
 -->
 <img class='full' src='fackeln.webp' alt='Blick über die Wiese, drei Fackeln stehen im Gras; im dunklen Modus bei Nacht, die Fackeln leuchten.'>
 
@@ -1260,6 +1285,8 @@ write-file: light.vs <- file:stufen/8.vs
 write-file: light.fs <- file:stufen/8.fs
 terminal-run: make
 terminal-wait-for-prompt: 120
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 tab: preview
 viewport: 960x540
 hook: open main.html
@@ -1267,6 +1294,7 @@ hook: play 8 ArrowDown:0.25 Digit7 Rechtsklick ArrowLeft:0.35 Rechtsklick ArrowR
 hook: settle
 variants: dark
 crop-element: #canvas
+check-task: texturen
 -->
 <img class='full' src='tag.webp' alt='Blick über eine hügelige Welt aus Blöcken mit Gras-, Erd- und Holztexturen, ein paar Fackeln stehen im Gras.'>
 

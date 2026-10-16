@@ -108,6 +108,8 @@ press: Control+Alt+V
 wait-for-text: Einleitung
 move-mouse: selector:.editor-group-container .monaco-editor .view-lines
 sleep: 2
+check-task-fails: gliederung
+check-task-fails: quellen
 -->
 <img class='full' src='erstes-dokument.webp' alt='Links der Quelltext von facharbeit.tex, rechts das PDF mit der Überschrift »1 Einleitung« und einem Absatz.'>
 
@@ -723,6 +725,13 @@ press: Control+Alt+V
 wait-for-text: Facharbeit im Fach Physik
 move-mouse: selector:.editor-group-container .monaco-editor .view-lines
 sleep: 2
+check-task: erstes-pdf
+check-task: gliederung
+check-task: formel
+check-task: bild
+check-task: tabelle
+check-task: diagramm
+check-task: quellen
 -->
 <img class='full' src='facharbeit-fertig.webp' alt='Links der Quelltext der Facharbeit, rechts die Titelseite im PDF.'>
 
