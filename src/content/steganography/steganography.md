@@ -175,7 +175,7 @@ sleep: 1
 <img class='full' src='start-python.webp' alt='Der Ordner stego mit den drei Bildern und stego.py; im Terminal gibt python3 stego.py die Größe (480, 320) aus und die ersten sechs Zahlen des Bildes.'>
 <!-- /language -->
 
-Die ersten sechs Zahlen sind die ersten beiden Pixel oben links, ein helles Himmelblau: `36, 148, 208` und noch einmal dasselbe.
+Die ersten sechs Zahlen sind die ersten beiden Pixel oben links, ein helles Himmelblau: `68, 168, 224` und noch einmal dasselbe.
 
 ### Das unterste Bit
 
@@ -366,11 +366,11 @@ Schreib `chi_square(image, top, bottom)`: Es rechnet den Test für die Zeilen `t
 
 _task(chi)
 
-Rechne den Test für die Strandhäuser ohne Botschaft und mit der komprimierten Spezifikation, jeweils für die Zeilen 0 bis 40, 40 bis 80 und 200 bis 240. Die Botschaft füllt nur die obersten Zeilen.
+Rechne den Test für die Strandhäuser ohne Botschaft und mit der komprimierten Spezifikation, jeweils für die Zeilen 0 bis 40, 40 bis 80, 80 bis 120 und 120 bis 160. Die Botschaft füllt nur die obersten gut 110 Zeilen.
 
 _task(komprimiert)
 
-Der Test findet die Botschaft und sogar, wo sie aufhört: Dort, wo sie steckt, liegt das Ergebnis bei 1, darunter ist es so groß wie ohne Botschaft. Was hilft dagegen?
+Der Test findet die Botschaft und sogar, wo sie aufhört: Dort, wo sie steckt, liegt das Ergebnis nahe bei 1, darunter ist es so groß wie ohne Botschaft. Am deutlichsten ist es im Himmel, wo das Foto ohne Botschaft weit über 100 ergibt. Rechne zum Vergleich auch die Zeilen 200 bis 240, die Türen mit ihrer feinen Maserung: Dort ist der Test schon ohne Botschaft klein, denn das Rauschen des Fotos ist dort selbst fast so gleichmäßig wie eine Botschaft. Eine Botschaft in solchen Flächen fällt viel weniger auf. Was hilft noch?
 
 - **Weniger verstecken** und die Bits über das ganze Bild verteilen, an Stellen, die ein Schlüssel auswählt. Dann ist jede Zeile nur ein wenig gleicher als sonst, und der Test wird unsicher.
 - **±1 statt Ersetzen**: Passt das unterste Bit nicht, wird der Wert zufällig um 1 erhöht oder erniedrigt, statt das Bit zu setzen. Aus 208 kann dann auch 207 werden, und die Paare gleichen sich nicht mehr an. Andere Tests finden auch das, aber schwerer.
@@ -427,11 +427,11 @@ Der Farbraum **CIELab** ist dafür gemacht: Gleiche Abstände in Lab sehen ungef
 
 Wie verschieden die beiden Farbräume ein Bild zerlegen, siehst du an den Strandhäusern. Jeder Kanal ist hier ein Graubild, dunkel bei kleinen und hell bei großen Werten. In RGB sieht jeder Kanal aus wie das Foto selbst, denn in jedem steckt die Helligkeit:
 
-<img class='full fit-width' src='kanaele-rgb.webp' alt='Das Foto der Strandhäuser und seine Kanäle Rot, Grün und Blau als Graubilder. Alle drei sehen dem Foto ähnlich; die blaue Tür ist im Rot-Kanal dunkel und im Blau-Kanal hell.'>
+<img class='full fit-width' src='kanaele-rgb.webp' alt='Das Foto der Strandhäuser und seine Kanäle Rot, Grün und Blau als Graubilder. Alle drei sehen dem Foto ähnlich; die blauen Türen sind im Rot-Kanal dunkel und im Blau-Kanal hell, die rote Tür umgekehrt.'>
 
-In Lab steckt fast das ganze Bild in L. a und b sind gleichmäßig grau, wo keine Farbe ist, auf dem Asphalt und an den hellen Wänden, und heben nur die bunten Türen hervor:
+In Lab steckt fast das ganze Bild in L. a und b sind gleichmäßig grau, wo kaum Farbe ist, an den blassen Giebeln, und heben die Türen und den Himmel hervor:
 
-<img class='full fit-width' src='kanaele-lab.webp' alt='Das Foto der Strandhäuser und seine Kanäle L, a und b als Graubilder. L sieht aus wie ein Graubild des Fotos; a und b sind fast überall gleichmäßig grau, in a ist die rote Hütte hell, in b sind die blauen Türen dunkel.'>
+<img class='full fit-width' src='kanaele-lab.webp' alt='Das Foto der Strandhäuser und seine Kanäle L, a und b als Graubilder. L sieht aus wie ein Graubild des Fotos; a und b sind an den blassen Giebeln gleichmäßig grau, in a ist die rote Tür hell, in b sind die blauen Türen und der Himmel dunkel.'>
 
 Teilt man Lab in Quader statt RGB in Würfel, bekommen die Klassen dort viele Farben, wo das Auge wenig unterscheidet, und wenige, wo es genau hinsieht. Und man kann der Helligkeit mehr Stufen geben als a und b, weil das Auge dort empfindlicher ist.
 

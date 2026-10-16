@@ -320,15 +320,15 @@ tasks:
       ist, und teile durch 8.
     check:
       type: number
-      expect: 164452
+      expect: 167221
       tolerance: 400
       unit: Bytes
     feedback:
-      - when: { between: [1300000, 1330000] }
+      - when: { between: [1330000, 1345000] }
         say: Das sind Bits. Wie viele Bytes?
       - when: { between: [57000, 58000] }
         say: Das ist das LSB-Verfahren mit einem Bit pro Kanal. Mit Lab-Klassen passt viel mehr hinein.
-    solution: Rund 164.000 Bytes, etwa 8,6 Bits pro Pixel. Das ist fast dreimal so viel wie mit einem Bit pro Kanal, ohne dass man im Bild etwas sieht, und doppelt so viel wie die ganze GIF-Spezifikation.
+    solution: Rund 167.000 Bytes, etwa 8,7 Bits pro Pixel. Das ist fast dreimal so viel wie mit einem Bit pro Kanal, ohne dass man im Bild etwas sieht, und doppelt so viel wie die ganze GIF-Spezifikation.
 
   - id: abgabe
     title: Deine Steganographie

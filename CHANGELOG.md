@@ -631,6 +631,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - »Geheime Botschaften in Bildern« hat auf seiner Karte ein Foto, das
   harmlos aussieht: die Möwen, mit der Botschaft darin, statt der
   aufgedeckten Bitebene.
+- Das Foto der Strandhäuser in »Geheime Botschaften in Bildern« und auf
+  der Handbuch-Seite »Farbräume« ist ein neuer Ausschnitt ohne Menschen:
+  Himmel, Giebel, eine rote und zwei hellblaue Türen. Die Bilder, die
+  daraus entstehen (Fundstück, Bitebenen, Kanäle, Screenshots), sind neu
+  gerechnet, ebenso die Werte in Text und Aufgaben: das erste Pixel, die
+  Kapazität in Lab (rund 167.000 Bytes) und der Chi-Quadrat-Test, jetzt
+  in Streifen von 40 Zeilen. Wer das Fundstück schon gelöst hat, findet
+  darin weiter dasselbe Codewort.
 
 - Der Baumzeichner beim Rechner für Ausdrücke behält seine Kanten, während
   sich der Baum umordnet: Jedes Bild der Bewegung wird ganz gezeichnet,

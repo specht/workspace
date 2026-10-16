@@ -23,7 +23,7 @@ Alle Bilder auf dieser Seite zerlegen dasselbe Foto in die drei Kanäle eines Fa
 
 Bildschirme mischen jede Farbe aus rotem, grünem und blauem Licht. Jeder Anteil ist eine Zahl von 0 bis 255, ein Byte; zusammen sind das \\(256^3\\), also gut 16,7 Millionen Farben. Man kann sie sich als Würfel vorstellen: Schwarz (0, 0, 0) in einer Ecke, Weiß (255, 255, 255) in der gegenüberliegenden, und auf der Diagonale dazwischen alle Grautöne, bei denen die drei Anteile gleich sind.
 
-<img class='full fit-width' src='kanaele-rgb.webp' alt='Ein Foto bunter Strandhäuser mit einem Mann auf einem Liegestuhl, daneben seine drei RGB-Kanäle als Graubilder. Alle drei sehen dem Foto ähnlich: Die blaue Tür ist im Rot-Kanal dunkel und im Blau-Kanal hell, die rote Tür umgekehrt.'>
+<img class='full fit-width' src='kanaele-rgb.webp' alt='Ein Foto von Strandhäusern: links eine rote Tür mit einem weißen Farbfleck, daneben zwei hellblaue Türen unter blassgrünen Giebeln, darüber blauer Himmel. Daneben seine drei RGB-Kanäle als Graubilder. Alle drei sehen dem Foto ähnlich: Die blauen Türen sind im Rot-Kanal dunkel und im Blau-Kanal hell, die rote Tür umgekehrt.'>
 
 Alle drei Kanäle sehen aus wie das Foto selbst, denn in jedem steckt die Helligkeit. Das ist gut zum Anzeigen, aber schlecht, wenn man wissen will, wie hell ein Pixel ist oder wie ähnlich zwei Farben sind: Dafür muss man alle drei Zahlen zusammen ansehen. Wie man Farben in CSS und im Anaglyph-Viewer mit RGB angibt, steht in [Farben angeben](/reference/farben).
 <!-- /part -->
@@ -59,9 +59,9 @@ HSV beschreibt eine Farbe so, wie man sie mit Worten beschreiben würde:
 
 Aus RGB, mit \\(r, g, b\\) von 0 bis 1, \\(M\\) dem größten und \\(m\\) dem kleinsten der drei Werte: \\(V = M\\), \\(S = (M - m) / M\\) (0, wenn \\(M = 0\\)). Der Farbton hängt davon ab, welcher Anteil der größte ist; ist es Rot, gilt \\(H = 60° \cdot \frac{g - b}{M - m}\\), bei Grün \\(H = 60° \cdot \left(2 + \frac{b - r}{M - m}\right)\\), bei Blau \\(H = 60° \cdot \left(4 + \frac{r - g}{M - m}\right)\\), und ein negatives Ergebnis plus 360°. In Python rechnet das `colorsys.rgb_to_hsv(r, g, b)`, mit H von 0 bis 1 statt bis 360°.
 
-<img class='full fit-width' src='kanaele-hsv.webp' alt='Das Foto der Strandhäuser und seine Kanäle in HSV. Im Farbton sind die blauen Türen ein gleichmäßiges Grau, die rote Hütte zerfällt in Schwarz und Weiß. In der Sättigung leuchten die bunten Türen, Asphalt und Hauswände sind dunkel. Der Hellwert sieht aus wie ein helles Graubild.'>
+<img class='full fit-width' src='kanaele-hsv.webp' alt='Das Foto der Strandhäuser und seine Kanäle in HSV. Im Farbton sind die blauen Türen und der Himmel ein gleichmäßiges Grau, die rote Tür zerfällt in Schwarz und Weiß. In der Sättigung leuchten die Türen, die blassen Giebel sind dunkel. Der Hellwert sieht aus wie ein helles Graubild.'>
 
-Im Farbton zerfällt die rote Hütte in Schwarz und Weiß: Rot liegt am Anfang und am Ende des Kreises, bei 0° und bei fast 360°, und als Graubild sind das die beiden Enden. Ein Farbton ist eben ein Winkel und keine Zahl auf einer Linie. Wo die Sättigung fast 0 ist, auf dem Asphalt, ist der Farbton sogar ganz zufällig: Grau hat keinen. HSV ist gut, wenn Menschen Farben auswählen oder verschieben wollen, etwa »dieselbe Farbe, nur blasser«. In CSS gibt es mit `hsl(…)` einen nahen Verwandten.
+Im Farbton zerfällt die rote Tür in Schwarz und Weiß: Rot liegt am Anfang und am Ende des Kreises, bei 0° und bei fast 360°, und als Graubild sind das die beiden Enden. Ein Farbton ist eben ein Winkel und keine Zahl auf einer Linie. Wo die Sättigung fast 0 ist, im weißen Farbfleck auf der roten Tür, ist der Farbton sogar ganz zufällig: Weiß und Grau haben keinen. HSV ist gut, wenn Menschen Farben auswählen oder verschieben wollen, etwa »dieselbe Farbe, nur blasser«. In CSS gibt es mit `hsl(…)` einen nahen Verwandten.
 <!-- /part -->
 
 <!-- part: ycbcr -->
@@ -77,9 +77,9 @@ $$C\_r = 128 + 0{,}5 R - 0{,}418688 G - 0{,}081312 B$$
 
 Y ist genau das Graubild von oben. Zurück geht es mit \\(R = Y + 1{,}402 (C\_r - 128)\\), \\(G = Y - 0{,}344136 (C\_b - 128) - 0{,}714136 (C\_r - 128)\\) und \\(B = Y + 1{,}772 (C\_b - 128)\\), jeweils auf 0 bis 255 begrenzt.
 
-<img class='full fit-width' src='kanaele-ycbcr.webp' alt='Das Foto der Strandhäuser und seine Kanäle in YCbCr. Y ist ein normales Graubild. Cb und Cr sind fast überall ein gleichmäßiges Grau; nur die blauen Türen sind in Cb hell und in Cr dunkel, die rote Hütte umgekehrt.'>
+<img class='full fit-width' src='kanaele-ycbcr.webp' alt='Das Foto der Strandhäuser und seine Kanäle in YCbCr. Y ist ein normales Graubild. Cb und Cr sind an den blassen Giebeln und Wänden ein gleichmäßiges Grau; die blauen Türen und der Himmel sind in Cb hell und in Cr dunkel, die rote Tür umgekehrt.'>
 
-In Cb und Cr steckt kaum noch etwas vom Bild: Wo eine Fläche grau ist, sind beide 128, mittleres Grau, und nur die bunten Türen heben sich ab. Die Kanten und Details stecken fast alle in Y. Das nutzt JPEG aus: Das Auge sieht Helligkeit viel feiner als Farbe, also speichert JPEG Cb und Cr oft nur für jedes zweite Pixel in jeder Richtung, ein Viertel der Daten, ohne dass man es sieht. Ausprobieren kannst du das unter [Trennung von Helligkeit und Farbe](/colorspace); wie ein Decoder zurückrechnet, zeigt [Eine JPEG-Datei decodieren](/jpeg).
+In Cb und Cr steckt kaum noch etwas vom Bild: Wo eine Fläche fast grau ist, an den blassen Giebeln, sind beide nahe 128, mittleres Grau, und nur die Türen und der Himmel heben sich ab. Die Kanten und Details stecken fast alle in Y. Das nutzt JPEG aus: Das Auge sieht Helligkeit viel feiner als Farbe, also speichert JPEG Cb und Cr oft nur für jedes zweite Pixel in jeder Richtung, ein Viertel der Daten, ohne dass man es sieht. Ausprobieren kannst du das unter [Trennung von Helligkeit und Farbe](/colorspace); wie ein Decoder zurückrechnet, zeigt [Eine JPEG-Datei decodieren](/jpeg).
 <!-- /part -->
 
 <!-- part: cielab -->
@@ -99,7 +99,7 @@ Zuletzt nimmt \\(f(t) = \sqrt[3]{t}\\) (für \\(t \le 216 / 24389\\) die Gerade 
 
 $$L = 116 f(Y) - 16, \quad a = 500 \left(f(X) - f(Y)\right), \quad b = 200 \left(f(Y) - f(Z)\right)$$
 
-<img class='full fit-width' src='kanaele-lab.webp' alt='Das Foto der Strandhäuser und seine Kanäle in CIELab. L ist ein Graubild. a und b sind fast überall gleichmäßig grau; in a ist die rote Hütte hell, in b sind die blauen Türen dunkel.'>
+<img class='full fit-width' src='kanaele-lab.webp' alt='Das Foto der Strandhäuser und seine Kanäle in CIELab. L ist ein Graubild. a und b sind an den blassen Giebeln gleichmäßig grau; in a ist die rote Tür hell, in b sind die blauen Türen und der Himmel dunkel.'>
 
 Wie bei YCbCr steckt das Bild fast ganz in L, und a und b sind grau, wo keine Farbe ist. Der Unterschied liegt im Abstand: Der Unterschied zweier Farben ist in Lab einfach \\(\Delta E = \sqrt{(L\_1 - L\_2)^2 + (a\_1 - a\_2)^2 + (b\_1 - b\_2)^2}\\), und ein \\(\Delta E\\) um 2 sieht man gerade eben. Druckereien prüfen damit, ob eine Farbe stimmt, und [Geheime Botschaften in Bildern](/steganography) versteckt Daten in Farben, die in Lab so nah beieinander liegen, dass niemand den Unterschied sieht.
 <!-- /part -->
