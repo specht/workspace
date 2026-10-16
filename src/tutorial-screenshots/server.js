@@ -119,7 +119,7 @@ const SIMPLE_ACTIONS = new Set([
 const MOUSE_NEUTRAL_ACTIONS = new Set([
     'press', 'type', 'type-source', 'sleep', 'write-file', 'select-option',
     'wait-for-text', 'wait-for-input-value', 'wait-for-file', 'wait-for-file-newer',
-    'terminal-wait-for-prompt', 'expect-no-text', 'check-task', 'check-task-fails',
+    'terminal-wait-for-prompt', 'expect-no-text', 'terminal-expect-no-text', 'check-task', 'check-task-fails',
 ]);
 let mousePosition = null; // { page, x, y } in CSS pixels
 // 24x24 shapes, drawn at 24 CSS pixels; hotspot is the point the mouse is at.
@@ -617,6 +617,8 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             recipe.actions.push({ type: 'sleep', seconds });
         } else if ((match = line.match(/^hook:\s*([a-z][a-z0-9-]*)(?:\s+(.*))?$/))) {
             recipe.actions.push({ type: 'hook', name: match[1], args: (match[2] || '').trim() });
+        } else if ((match = line.match(/^terminal-expect-no-text:\s*(.+)$/))) {
+            recipe.actions.push({ type: 'terminal-expect-no-text', text: match[1] });
         } else if ((match = line.match(/^expect-no-text:\s*(.+)$/))) {
             recipe.actions.push({ type: 'expect-no-text', text: match[1] });
         } else if ((match = line.match(/^check-task(-fails)?:\s*([a-z0-9][a-z0-9-]*)(?:\s+(ruby|python))?$/))) {
@@ -1425,6 +1427,18 @@ async function focusTerminal() {
     await textarea.waitFor({ state: 'attached', timeout: 10_000 });
     await textarea.focus();
     await workspace.waitForTimeout(150);
+}
+
+// The text must not be in the Workspace's terminals now, whatever tab the
+// recipe captures: a compiler's »error:«, make's »***«.
+async function terminalExpectNoText(text) {
+    if (!workspace) throw new Error('terminal-expect-no-text: no Workspace is open');
+    const shown = await workspace.evaluate(expected => {
+        const normalize = value => `${value || ''}`.replace(/\s+/g, ' ').trim();
+        const rows = [...document.querySelectorAll('.terminal.xterm .xterm-rows > div')].map(row => normalize(row.textContent));
+        return rows.find(row => row.includes(normalize(expected))) || null;
+    }, text);
+    if (shown) throw new Error(`terminal-expect-no-text: ${JSON.stringify(text)} is in the terminal: ${shown}`);
 }
 
 async function waitForTerminalPrompt(seconds = 60) {
@@ -2651,6 +2665,7 @@ async function executeAction(action, targetTab, hooks) {
         case 'hook': return runHookAction(action, targetTab, hooks);
         case 'wait-for-text': return waitForText(action.text, targetTab);
         case 'expect-no-text': return expectNoText(action.text, targetTab);
+        case 'terminal-expect-no-text': return terminalExpectNoText(action.text);
         case 'check-task': return checkTask(action, true);
         case 'check-task-fails': return checkTask(action, false);
         case 'wait-for-input-value': return waitForInputValue(action.text, targetTab);

@@ -76,6 +76,7 @@ sleep: 5
 wait-for-text: hugo.yaml
 open-file: hugo.yaml
 sleep: 1
+check-task: einstellungen
 -->
 <img class='full' src='neue-website.webp' alt='Der Ordner solar-system mit archetypes, assets, content, data, i18n, layouts, static, themes und hugo.yaml; hugo.yaml ist offen mit baseURL, locale und title.'>
 
@@ -180,6 +181,9 @@ open-file: content/mars.md
 terminal-open
 terminal-run: hugo server
 sleep: 4
+check-task-fails: navigation
+check-task-fails: tags
+terminal-expect-no-text: ERROR
 -->
 <img class='full' src='erste-seite-code.webp' alt='Die Datei content/mars.md mit Front Matter und Markdown; im Terminal meldet hugo server, dass die Website unter localhost:1313 erreichbar ist.'>
 
@@ -406,6 +410,8 @@ preview-port: 1313
 tab: preview
 wait-for-text: Leichter als Wasser
 sleep: 1
+check-task: navigation
+terminal-expect-no-text: ERROR
 -->
 <img class='full border' src='startseite.webp' alt='Die Startseite »Unser Sonnensystem« mit nachtblauem Kopf, dem Titel in Orange und der Navigation Jupiter, Mars, Saturn; darunter ein Absatz und drei weiße Karten mit orangem Rand oben, Titel und Beschreibung der Planeten.'>
 
@@ -447,6 +453,8 @@ preview-port: 1313 /tags/gasriese/
 tab: preview
 wait-for-text: Saturn
 sleep: 1
+check-task: tags
+terminal-expect-no-text: ERROR
 -->
 <img class='full border' src='tags.webp' alt='Die Seite »Gasriese« mit den Links Jupiter und Saturn, darüber der Kopf mit der Navigation.'>
 
@@ -474,6 +482,8 @@ terminal-wait-for-prompt
 open-file: public/mars/index.html
 move-mouse: selector:.terminal
 sleep: 2
+terminal-expect-no-text: ERROR
+check-task: public
 -->
 <img class='full' src='public.webp' alt='Im Explorer der Ordner public mit den Ordnern categories, jupiter und mars; public/mars/index.html ist offen und zeigt fertiges HTML mit dem Titel »Mars · Unser Sonnensystem« und der Navigation; im Terminal die Zusammenfassung von hugo.'>
 

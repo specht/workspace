@@ -337,6 +337,9 @@ check-task-fails: lock python
 
 - `expect-no-text: TEXT` fails if the selected page shows the text now, in any
   frame: an error message, a Traceback, a file that should be gone.
+- `terminal-expect-no-text: TEXT` does the same for the Workspace's terminals,
+  whatever tab the recipe captures: `error:` after a compiler, `***` after
+  `make`.
 - `check-task: ID [ruby|python]` runs the check of task `ID` from the
   tutorial's own `tasks.yaml` exactly as the »Prüfen« button does, as the
   screenshot user against their Workspace, in the given language variant

@@ -70,6 +70,8 @@ open-file: main.c
 terminal-open
 terminal-run: make
 terminal-wait-for-prompt: 180
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 -->
 <img class='full' src='make.webp' alt='Der Workspace mit main.c im Editor; im Terminal darunter hat make die Datei main.html erzeugt.'>
 
@@ -156,6 +158,8 @@ write-file: main.c <- previous-code
 terminal-open
 terminal-run: make
 terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 tab: preview
 variants: crt
 viewport: 800x450
@@ -275,6 +279,8 @@ terminal-run: sed -i -e 's|#include "pixelram.h"|#include "pixelram.h"\n#include
 terminal-wait-for-prompt
 terminal-run: make
 terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 tab: preview
 variants: crt
 viewport: 800x450
@@ -302,6 +308,8 @@ terminal-run: sed -i 's|    return (int)(distance / 6.0) % 16;|    double wave =
 terminal-wait-for-prompt
 terminal-run: make
 terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 tab: preview
 variants: crt
 viewport: 800x450
@@ -363,6 +371,8 @@ write-file: main.c <- previous-code
 terminal-open
 terminal-run: make
 terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 tab: preview
 variants: crt
 viewport: 640x360
@@ -426,6 +436,8 @@ write-file: main.c <- previous-code
 terminal-open
 terminal-run: make
 terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 tab: preview
 variants: crt
 viewport: 800x450
@@ -501,6 +513,8 @@ write-file: lichtspur.c <- previous-code
 terminal-open
 terminal-run: make PROGRAM=lichtspur
 terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 tab: preview
 variants: crt
 viewport: 800x450
@@ -674,6 +688,8 @@ write-file: lichtspur.c <- previous-code
 terminal-open
 terminal-run: make PROGRAM=lichtspur
 terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 tab: preview
 variants: crt
 viewport: 800x450
@@ -714,6 +730,8 @@ make PROGRAM=beispiele/tunnel
 terminal-open
 terminal-run: make PROGRAM=beispiele/tunnel
 terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 tab: preview
 variants: crt
 viewport: 800x450
@@ -729,6 +747,8 @@ crop-element: #canvas
 terminal-open
 terminal-run: make PROGRAM=beispiele/julia
 terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 tab: preview
 variants: crt
 viewport: 800x450
@@ -744,6 +764,8 @@ crop-element: #canvas
 terminal-open
 terminal-run: make PROGRAM=beispiele/magie
 terminal-wait-for-prompt
+terminal-expect-no-text: error:
+terminal-expect-no-text: ***
 tab: preview
 variants: crt
 viewport: 800x450
