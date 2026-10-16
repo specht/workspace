@@ -1,0 +1,189 @@
+# Aufgaben zu »Komprimieren mit LZW«.
+# Format: docs/aufgaben.md. Alles liegt in /workspace/lzw.
+# The values come from loesung/lzw.py; spec-gif89a.txt is the unchanged
+# GIF89a text from src/content/gif/zine/, served from src/static/lzw/.
+format: 1
+activity: lzw
+tasks:
+  - id: von-hand
+    title: Von Hand
+    prompt: |
+      Komprimiere `ABABABA` von Hand, nach den drei Regeln. »A« ist das Byte
+      65, »B« das Byte 66. Welche Codes kommen heraus? Schreib sie mit
+      Leerzeichen dazwischen.
+    check:
+      type: answer
+      compare: regex
+      expect: '^\s*65[\s,]+66[\s,]+256[\s,]+258\s*$'
+    feedback:
+      - when: { matches: '^\s*65[\s,]+66[\s,]+256[\s,]+256' }
+        say: Nach `AB` (256) geht es mit `A` weiter, und `ABA` ist inzwischen ein eigener Eintrag. Welche Nummer hat er bekommen?
+      - when: { matches: '^\s*65[\s,]+66[\s,]+65[\s,]+66' }
+        say: Das sind die einzelnen Bytes. Ab dem zweiten `A` kennt das Wörterbuch schon `AB` als 256.
+    hint: Schreib eine Tabelle mit den Spalten Stück, Byte, Ausgabe und neuer Eintrag. Der erste neue Eintrag ist 256 = `AB`. Mit dem Schrittmacher kannst du danach nachsehen.
+    solution: '`65 66 256 258`: Die Einträge sind 256 = `AB`, 257 = `BA` und 258 = `ABA`. Das letzte Stück ist `ABA` und kommt als 258 heraus.'
+
+  - id: kompressor
+    title: Der Kompressor
+    prompt: |
+      Schreib `compress` in `lzw.py`.
+    check:
+      type: python
+      file: lzw/lzw.py
+      cases:
+        - compress(b'ABABABA'): '[65, 66, 256, 258]'
+        - call: compress(b'')
+          expect: '[]'
+          say: Ein leerer Text ergibt keinen einzigen Code, auch nicht den eines leeren Stücks.
+        - compress(b'A'): '[65]'
+        - compress(b'AB'): '[65, 66]'
+        - compress(b'AAAAAAA'): '[65, 256, 257, 65]'
+        - compress(b'RHABARBERBARBARABARBARBARENBARTBARBIER'): '[82, 72, 65, 66, 65, 82, 66, 69, 261, 260, 259, 82, 258, 265, 269, 82, 69, 78, 266, 84, 266, 66, 73, 263]'
+        - call: compress(bytes(range(256)))
+          expect: list(range(256))
+          say: Alle 256 Bytes müssen als einzelne Codes von Anfang an im Wörterbuch stehen.
+        - call: compress(bytes([0, 0, 255, 255, 0, 0]))
+          expect: '[0, 0, 255, 255, 256]'
+          say: Auch die Bytes 0 und 255 gehören ins Wörterbuch.
+    hint: |
+      Das Wörterbuch ist am Anfang `{bytes([i]): i for i in range(256)}`. Ein
+      Eintrag kommt immer dann dazu, wenn ein Code ausgegeben wird, und zwar
+      das Stück mit dem neuen Byte dahinter.
+    solution: |
+      ```python
+      def compress(data):
+          table = {bytes([i]): i for i in range(256)}
+          codes = []
+          current = b''
+          for byte in data:
+              longer = current + bytes([byte])
+              if longer in table:
+                  current = longer
+              else:
+                  codes.append(table[current])
+                  table[longer] = len(table)
+                  current = bytes([byte])
+          if current:
+              codes.append(table[current])
+          return codes
+      ```
+
+  - id: sonderfall
+    title: Ein Code, den es noch nicht gibt
+    prediction: true
+    prompt: |
+      Der Entpacker bekommt `65 66 256 258`. Nach `65`, `66` und `256` kennt
+      er die Einträge bis 257. Wofür steht `258`?
+    check:
+      type: choice
+      options:
+        - Für den Eintrag, den der Kompressor gerade angelegt hat, den vorigen Eintrag `AB` mit dessen erstem Byte `A` dahinter, also `ABA`.
+        - Für einen Fehler; der Entpacker muss abbrechen.
+        - Für `BAB`, den Eintrag 257 mit dem nächsten Byte dahinter.
+        - Das lässt sich nicht sagen, ohne das Wörterbuch mitzuschicken.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Der Kompressor hat sich an seine Regeln gehalten. Ein Fehler wäre ein Code, der größer ist als der nächste freie.
+      - when: { picked: 2 }
+        say: Neue Einträge beginnen immer mit dem vorigen Eintrag, und der war `AB`, nicht `BA`.
+      - when: { picked: 3 }
+        say: Der Entpacker weiß genug. Der neue Eintrag beginnt mit dem vorigen Eintrag `AB`, und sein letztes Byte ist das erste Byte von ihm selbst.
+    solution: 'Der Eintrag 258 ist der vorige Eintrag `AB` und dahinter das erste Byte des jetzigen Eintrags. Weil der jetzige Eintrag der neue selbst ist, beginnt er wie der vorige mit `A`: 258 = `ABA`.'
+
+  - id: entpacker
+    title: Der Entpacker
+    prompt: |
+      Schreib `decompress` in `lzw.py`. Was `compress` macht, muss
+      `decompress` genau zurückgeben, für jede Folge von Bytes.
+    check:
+      type: python
+      file: lzw/lzw.py
+      cases:
+        - decompress([65, 66, 256, 258]): b'ABABABA'
+        - call: decompress([])
+          expect: b''
+          say: Keine Codes ergeben keine Bytes.
+        - decompress([65]): b'A'
+        - call: decompress([65, 256, 257, 65])
+          expect: b'AAAAAAA'
+          say: Hier kommt der Sonderfall zweimal hintereinander, bei 256 und bei 257.
+        - decompress(compress(b'RHABARBERBARBARABARBARBARENBARTBARBIER')): b'RHABARBERBARBARABARBARBARENBARTBARBIER'
+        - call: decompress([82, 72, 65, 66, 65, 82, 66, 69, 261, 260, 259, 82, 258, 265, 269, 82, 69, 78, 266, 84, 266, 66, 73, 263])
+          expect: b'RHABARBERBARBARABARBARBARENBARTBARBIER'
+          say: Diese Codes stammen von einem richtigen Kompressor; dein Entpacker muss sie auch dann verstehen, wenn dein `compress` etwas anderes liefert.
+        - decompress(compress(bytes(range(256)) * 3)) == bytes(range(256)) * 3: true
+        - call: decompress(compress(bytes((i * i * 7 + 3) % 251 for i in range(5000)))) == bytes((i * i * 7 + 3) % 251 for i in range(5000))
+          expect: true
+          say: Bei 5000 Bytes mit vielen Wiederholungen geht noch etwas schief.
+        - decompress(compress('Grüße aus Köln'.encode())).decode(): "'Grüße aus Köln'"
+    hint: Merk dir den vorigen Eintrag. Steht ein Code noch nicht im Wörterbuch, ist er genau `len(table)`, und sein Eintrag ist der vorige mit dessen erstem Byte dahinter. `entry[:1]` ist das erste Byte als Bytes, `entry[0]` wäre eine Zahl.
+    solution: |
+      ```python
+      def decompress(codes):
+          table = {i: bytes([i]) for i in range(256)}
+          if not codes:
+              return b''
+          previous = table[codes[0]]
+          out = [previous]
+          for code in codes[1:]:
+              if code in table:
+                  entry = table[code]
+              else:
+                  entry = previous + previous[:1]
+              table[len(table)] = previous + entry[:1]
+              out.append(entry)
+              previous = entry
+          return b''.join(out)
+      ```
+
+  - id: spec
+    title: Die Spezifikation von GIF
+    prompt: |
+      Wie viele Bytes braucht `spec-gif89a.txt` nach `size_in_bytes`, also
+      komprimiert, mit so vielen Bits pro Code wie nötig?
+    check:
+      type: number
+      expect: 28813
+      tolerance: 2
+    feedback:
+      - when: { equals: 17415 }
+        say: Das ist die Zahl der Codes. Jeder Code braucht aber mehr als ein Byte, im Schnitt gut 13 Bits.
+      - when: { between: [26120, 26125] }
+        say: Das wären 12 Bits pro Code. Ohne Grenze wird das Wörterbuch aber größer als 4096, und die Codes brauchen mehr Bits.
+      - when: { equals: 83003 }
+        say: Das ist die Datei selbst, unkomprimiert.
+    hint: '`(255 + i).bit_length()` Bits für den i-ten Code, alle zusammenzählen, durch 8 teilen und aufrunden. Öffne die Datei mit `''rb''`.'
+    solution: '17415 Codes mit zusammen 230.498 Bits, das sind 28.813 Bytes: gut ein Drittel der 83.003 Bytes. `gzip -9` schafft 20.271.'
+
+  - id: foto
+    title: Ein Foto
+    prediction: true
+    prompt: |
+      Was passiert, wenn du `44-baseline.jpg` (143.206 Bytes) mit deinem
+      LZW komprimierst? Rate erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - Es wird kleiner, ungefähr wie der Text auf ein Drittel.
+        - Es wird ein wenig kleiner.
+        - Es bleibt ungefähr gleich groß.
+        - Es wird größer.
+      correct: 3
+    feedback:
+      - when: { picked: 0 }
+        say: Probier es aus. Ein Foto als JPEG ist schon komprimiert.
+      - when: { picked: 1 }
+        say: Probier es aus. Ein Foto als JPEG ist schon komprimiert.
+      - when: { picked: 2 }
+        say: Fast, aber es kommt noch schlimmer. Probier es aus.
+    solution: 'Es wird größer, etwa 185.000 Bytes statt 143.206. Auch `gzip -9` spart nur knapp 100 Bytes.'
+
+  - id: warum
+    title: Warum größer?
+    prompt: |
+      Warum wird das JPEG mit LZW größer statt kleiner? Erkläre es in
+      eigenen Worten. Was müsste in einer Datei stehen, damit LZW viel spart?
+    check:
+      type: reflection
+      min_words: 25
