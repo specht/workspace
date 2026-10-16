@@ -3,7 +3,8 @@
 steganography activity, with the reference solution in ../loesung/stego.py.
 
 strandhaeuser.png and moewen.png are two street photos by Ian Kobylanski
-(with permission, https://koby.photography/), 480 x 320 pixels. From them:
+(with permission, https://koby.photography/), 480 x 320 pixels;
+moewen-ganz.jpg is the whole photo of the gulls, 1000 pixels wide. From them:
 
 - fundstueck.png: the beach huts with two secrets. Bit plane 1 of every
   channel shows a hint, and the lowest bits carry a message, hidden with
@@ -14,10 +15,9 @@ strandhaeuser.png and moewen.png are two street photos by Ian Kobylanski
   filled with data as uniform as a compressed message.
 - ../klassen.webp: the same sky full at about 9 bits per pixel, once with
   RGB boxes (8 values per channel) and once with Lab classes 78 x 48 x 46.
-- ../teaser.webp: the gulls with the same message hidden in them, for the
-  activity's card: a photo that looks innocent, cropped to 16:9 like the
-  card so that the man stays in it. (The site scales card pictures, so the
-  message does not survive there.)
+- ../teaser.webp: for the activity's card, a photo that looks innocent: the
+  man with the gulls on the pier, cut to 16:9 like the card from
+  moewen-ganz.jpg, the whole photo (moewen.png is a crop of its sky).
 
 The three PNGs also go into src/static/steganography/, where the page
 offers them for download.
@@ -116,8 +116,10 @@ def klassen():
 
 
 def teaser():
-    gulls = Image.open(os.path.join(HERE, 'moewen.png')).convert('RGB').crop((0, 50, 480, 320))
-    hide(gulls, MESSAGE).save(os.path.join(HERE, '..', 'teaser.webp'), lossless=True)
+    pier = Image.open(os.path.join(HERE, 'moewen-ganz.jpg')).convert('RGB')
+    top = 370   # the small gull above, the man down to his hips
+    card = pier.crop((0, top, pier.width, top + round(pier.width * 9 / 16)))
+    card.resize((960, 540), Image.LANCZOS).save(os.path.join(HERE, '..', 'teaser.webp'), quality=88)
 
 
 def publish():
