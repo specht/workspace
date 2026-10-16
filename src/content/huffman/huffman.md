@@ -1,7 +1,8 @@
 <div class='meta'>
 image: title.webp
 kind: labor
-language: Ruby
+language: Ruby / Python
+languages: [ruby, python]
 duration: 2 Doppelstunden
 </div>
 
@@ -82,7 +83,7 @@ duration: 2 Doppelstunden
 # Komprimieren mit Huffman
 
 <p class='abstract'>
-Im Morsecode ist E ein einziger kurzer Ton und Q ein langes Lang-lang-kurz-lang, weil E so viel häufiger vorkommt. Huffman-Codes machen dasselbe mit Bytes, aber so, dass man keine Pausen braucht, um zu wissen, wo ein Code aufhört. Du baust in Ruby den Baum, aus dem die Codes kommen, codierst und decodierst damit und findest heraus, wie JPEG seine Huffman-Tabellen mit ein paar Bytes speichert.
+Im Morsecode ist E ein einziger kurzer Ton und Q ein langes Lang-lang-kurz-lang, weil E so viel häufiger vorkommt. Huffman-Codes machen dasselbe mit Bytes, aber so, dass man keine Pausen braucht, um zu wissen, wo ein Code aufhört. Du baust den Baum, aus dem die Codes kommen, in Ruby oder Python, codierst und decodierst damit und findest heraus, wie JPEG seine Huffman-Tabellen mit ein paar Bytes speichert.
 </p>
 
 ## Kurze Codes für häufige Zeichen
@@ -146,6 +147,7 @@ Lege im Terminal (<kbd>Strg</kbd><kbd>J</kbd>) einen Ordner an und öffne ihn mi
 mkdir /workspace/huffman
 ```
 
+<!-- language: ruby -->
 Lege darin die Datei `huffman.rb` an:
 
 ```ruby
@@ -178,27 +180,92 @@ if __FILE__ == $0
     p frequencies('ABRACADABRA')
 end
 ```
+<!-- /language -->
+<!-- language: python -->
+Lege darin die Datei `huffman.py` an:
+
+```python
+# Huffman-Codes: häufige Bytes bekommen kurze Codes, seltene lange.
+#
+# Ein Baum ist entweder ein Blatt, das Byte selbst (eine Zahl), oder ein
+# Knoten, ein Tupel (links, rechts). Links steht für 0, rechts für 1.
+
+
+def frequencies(data):
+    """Wie oft jedes Byte vorkommt: {65: 5, 66: 2, ...}"""
+
+
+def build_tree(counts):
+    """Immer die beiden leichtesten Bäume zusammenfassen, bis einer übrig ist."""
+
+
+def code_table(tree):
+    """Der Code jedes Bytes als String aus 0 und 1: {65: '0', 66: '10', ...}"""
+
+
+def encode(data, table):
+    """Der ganze Text als String aus 0 und 1"""
+
+
+def decode(bits, tree):
+    """Aus den Bits und dem Baum wieder die Bytes"""
+
+
+if __name__ == '__main__':
+    print(frequencies(b'ABRACADABRA'))
+```
+
+`b'ABRACADABRA'` sind Bytes, keine Zeichen; alle Methoden bekommen und liefern Bytes.
+<!-- /language -->
 
 Die Bits schreiben wir der Einfachheit halber als String aus den Zeichen `0` und `1`. Echte Programme packen je 8 davon in ein Byte, wie GIF und JPEG es tun; gezählt wird hier trotzdem in Bits.
 
 ## Zählen
 
+<!-- language: ruby -->
 Schreib `frequencies`. Es gibt einen Hash zurück, der für jedes Byte des Texts sagt, wie oft es vorkommt.
+<!-- /language -->
+<!-- language: python -->
+Schreib `frequencies`. Es gibt ein `dict` zurück, das für jedes Byte des Texts sagt, wie oft es vorkommt.
+<!-- /language -->
 
+<!-- language: ruby -->
 - `data.each_byte { |byte| … }` geht die Bytes durch, als Zahlen.
 - `Hash.new(0)` ist ein Hash, der für jeden Schlüssel, den es noch nicht gibt, 0 liefert. Damit kannst du gleich `counts[byte] += 1` schreiben.
+<!-- /language -->
+<!-- language: python -->
+- `for byte in data:` geht die Bytes durch, als Zahlen.
+- `counts.get(byte, 0)` liefert 0, wenn es das Byte noch nicht gibt. Damit kannst du gleich `counts[byte] = counts.get(byte, 0) + 1` schreiben.
+<!-- /language -->
 
 _task(zaehlen)
 
 ## Den Baum bauen
 
+<!-- language: ruby -->
 Schreib `build_tree` nach den drei Schritten von oben. Ein Blatt ist das Byte selbst, eine Zahl; ein Knoten ist ein Array aus seinen beiden Kindern. Für »ABRACADABRA« könnte der Baum so aussehen: `[65, [[67, 68], [66, 82]]]`.
+<!-- /language -->
+<!-- language: python -->
+Schreib `build_tree` nach den drei Schritten von oben. Ein Blatt ist das Byte selbst, eine Zahl; ein Knoten ist ein Tupel aus seinen beiden Kindern. Für »ABRACADABRA« könnte der Baum so aussehen: `(65, ((67, 68), (66, 82)))`.
+<!-- /language -->
 
+<!-- language: ruby -->
 - Beim Bauen brauchst du zu jedem Baum sein Gewicht. Halte deshalb eine Liste von Paaren `[weight, tree]`, am Anfang eines für jedes Byte.
 - `sort_by! { |weight, _| weight }` sortiert die Liste nach dem Gewicht, `shift` nimmt das erste Element heraus. Zweimal `shift` nach dem Sortieren gibt dir die beiden leichtesten.
 - Am Ende ist ein einziges Paar übrig, und sein Baum ist das Ergebnis.
+<!-- /language -->
+<!-- language: python -->
+- Beim Bauen brauchst du zu jedem Baum sein Gewicht. Halte deshalb eine Liste von Paaren `(weight, tree)`, am Anfang eines für jedes Byte.
+- `trees.sort(key=lambda pair: pair[0])` sortiert die Liste nach dem Gewicht, `trees.pop(0)` nimmt das erste Element heraus. Zweimal `pop(0)` nach dem Sortieren gibt dir die beiden leichtesten.
+- Am Ende ist ein einziges Paar übrig, und sein Baum ist das Ergebnis.
+<!-- /language -->
 
+<!-- language: ruby -->
 Dann `code_table`: Es geht den Baum von oben durch und merkt sich den Weg. Am einfachsten ist das mit einer Methode, die sich selbst aufruft, für das linke Kind mit einer `0` mehr im Weg, für das rechte mit einer `1`. Kommt sie an ein Blatt, also an eine Zahl (`tree.is_a?(Integer)`), ist der Weg bis dorthin der Code dieses Bytes. Eine Methode darf dafür weitere Parameter mit Standardwerten haben, etwa `def code_table(tree, prefix = '', table = {})`.
+<!-- /language -->
+<!-- language: python -->
+Dann `code_table`: Es geht den Baum von oben durch und merkt sich den Weg. Am einfachsten ist das mit einer Funktion, die sich selbst aufruft, für das linke Kind mit einer `0` mehr im Weg, für das rechte mit einer `1`. Kommt sie an ein Blatt, also an eine Zahl (`isinstance(tree, int)`), ist der Weg bis dorthin der Code dieses Bytes. Eine Funktion darf dafür weitere Parameter mit Standardwerten haben, etwa `def code_table(tree, prefix='')`; `table.update(…)` nimmt die Einträge eines anderen `dict` dazu.
+<!-- /language -->
 
 Ein Sonderfall: Besteht der Text aus einem einzigen Byte, immer wieder, ist der Baum nur ein Blatt, und der Weg dorthin ist leer. Gib diesem Byte dann den Code `0`.
 
@@ -206,9 +273,19 @@ _task(baum)
 
 ## Codieren und decodieren
 
+<!-- language: ruby -->
 `encode` ist kurz: Für jedes Byte der Code aus der Tabelle, alle hintereinander. `join` hängt eine Liste von Strings aneinander.
+<!-- /language -->
+<!-- language: python -->
+`encode` ist kurz: Für jedes Byte der Code aus der Tabelle, alle hintereinander. `''.join(…)` hängt Strings aneinander.
+<!-- /language -->
 
+<!-- language: ruby -->
 `decode` liest die Bits einzeln und geht dabei im Baum nach unten, bei `0` nach links (`node[0]`), bei `1` nach rechts (`node[1]`). Kommt es an ein Blatt, hat es ein Byte gefunden, merkt es sich und beginnt wieder oben. Wie bei LZW macht `pack('C*')` am Schluss aus den Zahlen einen String. Denk auch hier an den Baum, der nur ein Blatt ist.
+<!-- /language -->
+<!-- language: python -->
+`decode` liest die Bits einzeln und geht dabei im Baum nach unten, bei `0` nach links (`node[0]`), bei `1` nach rechts (`node[1]`). Kommt es an ein Blatt, hat es ein Byte gefunden, merkt es sich und beginnt wieder oben. Wie bei LZW macht `bytes(…)` am Schluss aus den Zahlen Bytes. Denk auch hier an den Baum, der nur ein Blatt ist.
+<!-- /language -->
 
 _task(decodieren)
 
@@ -221,7 +298,12 @@ wget ${web_root}/lzw/spec-gif89a.txt
 wget ${web_root}/jpeg/44-baseline.jpg
 ```
 
+<!-- language: ruby -->
 `File.binread('spec-gif89a.txt')` liest sie Byte für Byte. Lass dein Programm ausgeben, wie viele Bits `encode` daraus macht, und probier gleich, ob `decode` die Datei wieder genau herausgibt.
+<!-- /language -->
+<!-- language: python -->
+`open('spec-gif89a.txt', 'rb').read()` liest sie als Bytes; das `b` in `'rb'` ist wichtig. Lass dein Programm ausgeben, wie viele Bits `encode` daraus macht, und probier gleich, ob `decode` die Datei wieder genau herausgibt.
+<!-- /language -->
 
 _task(spec)
 
@@ -255,14 +337,24 @@ Aus den Längen A: 2, B: 2, C: 2, D: 3, E: 3 werden so die Codes A = `00`, B = `
 
 Genau so speichert JPEG seine Huffman-Tabellen im [DHT-Segment](/jpeg): 16 Zahlen, wie viele Codes es mit 1, 2, … 16 Bits gibt, dann die Symbole in ihrer Reihenfolge. Daraus berechnet der Decoder die Codes. Ein Code darf bei JPEG höchstens 16 Bits haben; ein Encoder, dessen Baum tiefer wird, muss ihn so umbauen, dass kein Code länger ist.
 
+<!-- language: ruby -->
 Schreib `canonical(lengths)`: Es bekommt einen Hash mit der Länge jedes Bytes und gibt einen Hash mit den kanonischen Codes zurück, als Strings aus 0 und 1. `code.to_s(2)` schreibt eine Zahl als Binärzahl, `rjust(length, '0')` füllt vorn mit Nullen auf, und `<<` schiebt eine Zahl nach links, hängt also hinten Nullen an: `0b10 << 1` ist `0b100`.
+<!-- /language -->
+<!-- language: python -->
+Schreib `canonical(lengths)`: Es bekommt ein `dict` mit der Länge jedes Bytes und gibt ein `dict` mit den kanonischen Codes zurück, als Strings aus 0 und 1. `format(code, 'b')` schreibt eine Zahl als Binärzahl, `rjust(length, '0')` füllt vorn mit Nullen auf, und `<<` schiebt eine Zahl nach links, hängt also hinten Nullen an: `0b10 << 1` ist `0b100`. `sorted(lengths.items(), key=lambda item: (item[1], item[0]))` sortiert nach Länge und dann nach Byte.
+<!-- /language -->
 
 _task(kanonisch)
 
 ## Weiter geht's
 
 - **JPEG**: In [Eine JPEG-Datei decodieren](/jpeg) liest du die Huffman-Tabellen aus einem DHT-Segment und decodierst damit Bit für Bit die Koeffizienten eines Fotos.
+<!-- language: ruby -->
 - **Bits packen**: Schreib `encode` so um, dass es echte Bytes liefert, mit `[bits].pack('B*')`, und `decode` passend dazu. Wie erkennt `decode`, wo die Bits zu Ende sind, wenn das letzte Byte nicht voll ist?
+<!-- /language -->
+<!-- language: python -->
+- **Bits packen**: Schreib `encode` so um, dass es echte Bytes liefert, mit `int(bits[i:i + 8].ljust(8, '0'), 2)` für je 8 Bits, und `decode` passend dazu. Wie erkennt `decode`, wo die Bits zu Ende sind, wenn das letzte Byte nicht voll ist?
+<!-- /language -->
 - **Bruchteile von Bits**: Ein Byte, das 90 % eines Texts ausmacht, bekommt bei Huffman mindestens ein ganzes Bit, obwohl ihm nach der Rechnung von Claude Shannon gut ein Siebtel Bit genügen würde. Die arithmetische Codierung kommt dem näher; such heraus, wie sie funktioniert.
 
 <script>

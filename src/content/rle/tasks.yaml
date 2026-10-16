@@ -57,6 +57,43 @@ tasks:
       ```
       Mit einer Schleife und zwei Variablen für Zeichen und Länge geht es genauso; `chunk_while` fasst gleiche Nachbarn zu Läufen zusammen.
 
+    python:
+      prompt: |
+        Schreib `rle` in `rle.py`.
+      check:
+        type: python
+        file: rle/rle.py
+        cases:
+          - rle('WWWWWWBBBWWWW'): "'6W3B4W'"
+          - call: rle('')
+            expect: "''"
+            say: Ein leerer Text ergibt einen leeren Code.
+          - call: rle('A')
+            expect: "'1A'"
+            say: Auch ein einzelnes Zeichen ist ein Lauf, der Länge 1.
+          - rle('ABC'): "'1A1B1C'"
+          - call: rle('A' * 12)
+            expect: "'12A'"
+            say: Zwölf A sind ein Lauf mit der Zahl 12, nicht zwei Läufe.
+          - call: rle('AAB')
+            expect: "'2A1B'"
+            say: Denk an den letzten Lauf, wenn der Text zu Ende ist.
+          - rle('Hallo  Welt'): "'1H1a2l1o2 1W1e1l1t'"
+      hint: Merk dir das Zeichen des aktuellen Laufs und zähle. Kommt ein anderes Zeichen, hängst du `f'{count}{char}'` an und beginnst neu. Nach der Schleife fehlt noch der letzte Lauf.
+      solution: |
+        ```python
+        def rle(text):
+            out = ''
+            i = 0
+            while i < len(text):
+                count = 1
+                while i + count < len(text) and text[i + count] == text[i]:
+                    count += 1
+                out += f'{count}{text[i]}'
+                i += count
+            return out
+        ```
+
   - id: unrle
     title: Zurück zum Text
     prompt: |
@@ -80,6 +117,33 @@ tasks:
           code.scan(/(\d+)(\D)/).map { |count, char| char * count.to_i }.join
       end
       ```
+
+    python:
+      prompt: |
+        Schreib `unrle`.
+      check:
+        type: python
+        file: rle/rle.py
+        cases:
+          - unrle('6W3B4W'): "'WWWWWWBBBWWWW'"
+          - call: unrle('12A')
+            expect: "'A' * 12"
+            say: '`12A` sind zwölf A: Die Zahl kann mehrere Ziffern haben.'
+          - unrle(''): "''"
+          - unrle('1A1B1C'): "'ABC'"
+          - unrle(rle('Hallo  Welt')): "'Hallo  Welt'"
+          - unrle('100x') == 'x' * 100: true
+      hint: |
+        `re.findall(r'(\d+)(\D)', code)` liefert Paare wie `('6', 'W')`.
+        `'W' * 6` ist `'WWWWWW'`, `int('6')` ist 6, und `''.join(...)` hängt
+        alles aneinander. Für `re` brauchst du oben `import re`.
+      solution: |
+        ```python
+        import re
+
+        def unrle(code):
+            return ''.join(char * int(count) for count, char in re.findall(r'(\d+)(\D)', code))
+        ```
 
   - id: ziffern
     title: Ziffern im Text
@@ -147,6 +211,52 @@ tasks:
       end
       ```
 
+    python:
+      check:
+        type: python
+        file: rle/rle.py
+        cases:
+          - rle_bytes(b'AAAB'): '[3, 65, 1, 66]'
+          - call: rle_bytes(b'')
+            expect: '[]'
+            say: Leere Bytes haben keine Läufe.
+          - call: rle_bytes(b'A' * 300)
+            expect: '[255, 65, 45, 65]'
+            say: Ein Lauf ist höchstens 255 lang, denn die Länge muss in ein Byte passen. 300-mal A sind 255 und 45.
+          - rle_bytes(b'A' * 510): '[255, 65, 255, 65]'
+          - rle_bytes(b'2021'): '[1, 50, 1, 48, 1, 50, 1, 49]'
+          - unrle_bytes([3, 65, 1, 66]): "b'AAAB'"
+          - unrle_bytes([]): "b''"
+          - call: unrle_bytes(rle_bytes(b'2021')) == b'2021'
+            expect: true
+            say: Als Bytes kommen auch Ziffern wieder heraus.
+          - call: unrle_bytes(rle_bytes(bytes(list(range(256)) * 2 + [0] * 1000))) == bytes(list(range(256)) * 2 + [0] * 1000)
+            expect: true
+            say: Mit allen Bytes von 0 bis 255 und einem langen Lauf von Nullen kommt etwas anderes heraus.
+      hint: |
+        `for byte in data` liefert Zahlen, `zip(numbers[0::2], numbers[1::2])`
+        geht eine Liste paarweise durch, `[byte] * count` wiederholt, und
+        `bytes(numbers)` macht aus Zahlen wieder Bytes.
+      solution: |
+        ```python
+        def rle_bytes(data):
+            out = []
+            i = 0
+            while i < len(data):
+                count = 1
+                while i + count < len(data) and data[i + count] == data[i] and count < 255:
+                    count += 1
+                out += [count, data[i]]
+                i += count
+            return out
+
+        def unrle_bytes(numbers):
+            out = []
+            for count, byte in zip(numbers[0::2], numbers[1::2]):
+                out += [byte] * count
+            return bytes(out)
+        ```
+
   - id: diskette
     title: Die Diskette
     prompt: |
@@ -162,6 +272,9 @@ tasks:
         say: Das ist die Datei selbst.
     hint: '`rle_bytes(File.binread(''diskette.raw'')).size`'
     solution: '690 Zahlen, also 690 Bytes für 345 Läufe: gut 4 % der Datei. Jede Zeile hat nur ein paar lange Läufe, und keiner ist länger als 128 Pixel, die Breite des Bildes.'
+
+    python:
+      hint: '`len(rle_bytes(open(''diskette.raw'', ''rb'').read()))`'
 
   - id: text
     title: Ein Text

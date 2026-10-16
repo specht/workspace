@@ -18,6 +18,17 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Aktivitäten in Ruby und in Python: Lehrkräfte stellen auf der
+  Klassenseite unter »Sprache« ein, welche Programmiersprache ihre Gruppe
+  sieht, ohne Einstellung Ruby. Auf Seiten, die es in beiden Sprachen gibt,
+  schalten Lernende mit »Ruby | Python« neben der Art der Aktivität auch
+  selbst um, ohne Neuladen; ihre Wahl gilt dann für sie überall. Lauflängen,
+  Huffman und LZW gibt es jetzt in beiden Sprachen, mit Gerüst, Hinweisen,
+  Lösungen und Prüfungen für jede. Eine Aufgabe, die jemand in einer
+  Sprache gelöst hat, gilt auch in der anderen. Für Autorinnen und Autoren:
+  `languages: [ruby, python]` im Meta-Block, Teile für eine Sprache in
+  `<!-- language: python -->` … `<!-- /language -->`, und in `tasks.yaml`
+  unter `python:` (oder `ruby:`) nur, was sich ändert.
 - Neuer Abschnitt »Bilder und Kompression« im Katalog, mit einer Schraubzwinge
   als Zeichen: Lauflängen, Huffman, LZW, GIF und JPEG, in dieser Reihenfolge.
   JPEG zieht aus »Wie Computer rechnen« dorthin um.

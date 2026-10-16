@@ -1,7 +1,8 @@
 <div class='meta'>
 image: title.webp
 kind: labor
-language: Ruby
+language: Ruby / Python
+languages: [ruby, python]
 duration: 1 Doppelstunde
 </div>
 
@@ -76,7 +77,7 @@ duration: 1 Doppelstunde
 # Komprimieren mit Lauflängen
 
 <p class='abstract'>
-Sechsmal Weiß, dreimal Schwarz, viermal Weiß: Statt jedes Pixel einzeln aufzuschreiben, sagt man, wie lang jeder Lauf gleicher Pixel ist. So schickten Faxgeräte ihre Seiten durch die Telefonleitung, so speicherten frühe Bildformate ihre Bilder, und so packt JPEG die vielen Nullen eines Fotos zusammen. Du schreibst es in Ruby und findest heraus, welche Dateien damit kleiner werden, und welche doppelt so groß.
+Sechsmal Weiß, dreimal Schwarz, viermal Weiß: Statt jedes Pixel einzeln aufzuschreiben, sagt man, wie lang jeder Lauf gleicher Pixel ist. So schickten Faxgeräte ihre Seiten durch die Telefonleitung, so speicherten frühe Bildformate ihre Bilder, und so packt JPEG die vielen Nullen eines Fotos zusammen. Du schreibst es selbst, in Ruby oder Python, und findest heraus, welche Dateien damit kleiner werden, und welche doppelt so groß.
 </p>
 
 ## Läufe
@@ -104,6 +105,7 @@ Lege im Terminal (<kbd>Strg</kbd><kbd>J</kbd>) einen Ordner an und öffne ihn mi
 mkdir /workspace/rle
 ```
 
+<!-- language: ruby -->
 Lege darin die Datei `rle.rb` an:
 
 ```ruby
@@ -127,21 +129,64 @@ if __FILE__ == $0
     p rle('WWWWWWBBBWWWW')
 end
 ```
+<!-- /language -->
+<!-- language: python -->
+Lege darin die Datei `rle.py` an:
+
+```python
+# Lauflängen: statt »AAAA« steht »4A« da.
+
+
+def rle(text):
+    """Als Text: 'WWWWWWBBBWWWW' wird '6W3B4W'"""
+    return ''
+
+
+def unrle(code):
+    return ''
+
+
+def rle_bytes(data):
+    """Als Bytes: immer zwei Zahlen, die Länge (1 bis 255) und das Byte"""
+    return []
+
+
+def unrle_bytes(numbers):
+    return b''
+
+
+if __name__ == '__main__':
+    print(rle('WWWWWWBBBWWWW'))
+```
+<!-- /language -->
 
 ## Als Text
 
 Schreib `rle`. Es geht den Text Zeichen für Zeichen durch, zählt, wie oft dasselbe Zeichen hintereinander kommt, und schreibt für jeden Lauf die Zahl und das Zeichen hin.
 
+<!-- language: ruby -->
 - `text.each_char { |char| … }` geht die Zeichen durch.
 - Merk dir das Zeichen des Laufs und seine Länge. Kommt ein anderes Zeichen, ist der Lauf zu Ende: Häng `"#{count}#{char}"` an das Ergebnis und beginne einen neuen Lauf.
 - Vergiss den letzten Lauf nicht, und dass ein leerer Text einen leeren Code ergibt.
+<!-- /language -->
+<!-- language: python -->
+- `for char in text:` geht die Zeichen durch.
+- Merk dir das Zeichen des Laufs und seine Länge. Kommt ein anderes Zeichen, ist der Lauf zu Ende: Häng `f'{count}{char}'` an das Ergebnis und beginne einen neuen Lauf.
+- Vergiss den letzten Lauf nicht, und dass ein leerer Text einen leeren Code ergibt.
+<!-- /language -->
 
 _task(rle)
 
 Dann `unrle`, andersherum: aus `'6W3B4W'` wieder `'WWWWWWBBBWWWW'`. Eine Zahl kann mehrere Ziffern haben, `'12A'` sind zwölf A.
 
+<!-- language: ruby -->
 - Mit einem regulären Ausdruck geht es in einer Zeile: `code.scan(/(\d+)(\D)/)` findet jede Zahl mit dem Zeichen dahinter, als Paare von Strings, etwa `[['6', 'W'], ['3', 'B'], ['4', 'W']]`.
 - `'W' * 6` ist `'WWWWWW'`, und `to_i` macht aus `'6'` eine Zahl.
+<!-- /language -->
+<!-- language: python -->
+- Mit einem regulären Ausdruck geht es kurz: Nach `import re` findet `re.findall(r'(\d+)(\D)', code)` jede Zahl mit dem Zeichen dahinter, als Paare von Strings, etwa `[('6', 'W'), ('3', 'B'), ('4', 'W')]`.
+- `'W' * 6` ist `'WWWWWW'`, `int('6')` macht aus `'6'` eine Zahl, und `''.join(parts)` hängt eine Liste von Strings aneinander.
+<!-- /language -->
 
 _task(unrle)
 
@@ -151,11 +196,20 @@ _task(ziffern)
 
 Als Text geht es nur, solange der Text selbst keine Ziffern enthält: Sonst weiß niemand, welche Ziffern Längen sind und welche zum Text gehören. Echte Programme schreiben deshalb immer genau zwei Bytes für jeden Lauf, eins mit der Länge und eins mit dem Byte, das sich wiederholt. Dann ist klar, was was ist, egal was in der Datei steht. Weil ein Byte höchstens 255 sein kann, wird ein längerer Lauf geteilt: 300-mal A sind `[255, 65, 45, 65]`.
 
+<!-- language: ruby -->
 Schreib `rle_bytes`, das ein Array von Zahlen zurückgibt, und `unrle_bytes`, das daraus wieder den String macht.
 
 - `data.each_byte` liefert die Bytes als Zahlen.
 - `bytes.each_slice(2) { |count, byte| … }` geht das Array paarweise durch.
 - `[65] * 3` ist `[65, 65, 65]`, und `[65, 65, 65].pack('C*')` macht daraus den String `'AAA'`.
+<!-- /language -->
+<!-- language: python -->
+Schreib `rle_bytes`, das eine Liste von Zahlen zurückgibt, und `unrle_bytes`, das daraus wieder Bytes macht.
+
+- `b'AAAB'` sind Bytes, keine Zeichen, und `for byte in data:` liefert sie als Zahlen: 65, 65, 65, 66.
+- `zip(numbers[0::2], numbers[1::2])` geht eine Liste paarweise durch: die Zahlen an geraden und an ungeraden Stellen.
+- `[65] * 3` ist `[65, 65, 65]`, und `bytes([65, 65, 65])` macht daraus `b'AAA'`.
+<!-- /language -->
 
 _task(bytes)
 
@@ -169,7 +223,14 @@ wget ${web_root}/lzw/spec-gif89a.txt
 wget ${web_root}/jpeg/44-baseline.jpg
 ```
 
-`File.binread('diskette.raw')` liest eine Datei Byte für Byte. Lass dein Programm für jede ausgeben, wie groß sie ist und wie viele Zahlen `rle_bytes` daraus macht, und prüf dabei, ob `unrle_bytes` wieder genau die Datei ergibt.
+<!-- language: ruby -->
+`File.binread('diskette.raw')` liest eine Datei Byte für Byte.
+<!-- /language -->
+<!-- language: python -->
+`open('diskette.raw', 'rb').read()` liest eine Datei als Bytes; das `b` in `'rb'` ist wichtig, sonst bekommst du Text.
+<!-- /language -->
+
+Lass dein Programm für jede ausgeben, wie groß sie ist und wie viele Zahlen `rle_bytes` daraus macht, und prüf dabei, ob `unrle_bytes` wieder genau die Datei ergibt.
 
 _task(diskette)
 

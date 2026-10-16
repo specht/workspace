@@ -71,6 +71,31 @@ tasks:
       end
       ```
 
+    python:
+      prompt: |
+        Schreib `frequencies` in `huffman.py`.
+      check:
+        type: python
+        file: huffman/huffman.py
+        cases:
+          - frequencies(b'ABRACADABRA'): '{65: 5, 66: 2, 82: 2, 67: 1, 68: 1}'
+          - frequencies(b'AAAA'): '{65: 4}'
+          - call: frequencies(b'')
+            expect: '{}'
+            say: Leere Bytes haben keine Bytes zu zählen.
+          - call: frequencies('Grüße'.encode())
+            expect: '{71: 1, 114: 1, 195: 2, 188: 1, 159: 1, 101: 1}'
+            say: In UTF-8 sind ü und ß je zwei Bytes, und beide beginnen mit 195. Gezählt werden Bytes, nicht Zeichen.
+      hint: Mit `counts[byte] = counts.get(byte, 0) + 1` zählst du, auch wenn es das Byte noch nicht gibt.
+      solution: |
+        ```python
+        def frequencies(data):
+            counts = {}
+            for byte in data:
+                counts[byte] = counts.get(byte, 0) + 1
+            return counts
+        ```
+
   - id: baum
     title: Der Baum und die Codes
     prompt: |
@@ -129,6 +154,53 @@ tasks:
       end
       ```
 
+    python:
+      check:
+        type: python
+        file: huffman/huffman.py
+        cases:
+          - call: sorted(code_table(build_tree(frequencies(b'ABRACADABRA'))))
+            expect: '[65, 66, 67, 68, 82]'
+            say: Jedes Byte des Texts braucht einen Code.
+          - call: "(lambda codes: all(not a.startswith(b) for i, a in enumerate(codes) for j, b in enumerate(codes) if i != j))(list(code_table(build_tree(frequencies(b'ABRACADABRA'))).values()))"
+            expect: true
+            say: Ein Code ist der Anfang eines anderen. Stehen alle Bytes an Blättern?
+          - call: "(lambda f: sum(f[byte] * len(code) for byte, code in code_table(build_tree(f)).items()))(frequencies(b'ABRACADABRA'))"
+            expect: 23
+            say: Mit diesen Codes braucht `ABRACADABRA` nicht die kleinstmögliche Zahl von Bits, 23. Nimmst du immer die beiden leichtesten Bäume?
+          - call: "(lambda f: sum(f[byte] * len(code) for byte, code in code_table(build_tree(f)).items()))(frequencies(b'RHABARBERBARBARABARBARBARENBARTBARBIER'))"
+            expect: 91
+          - call: "(lambda f: sum(f[byte] * len(code) for byte, code in code_table(build_tree(f)).items()))(frequencies(bytes((i * i * 7 + 3) % 251 for i in range(5000))))"
+            expect: 34920
+            say: Bei 5000 Bytes mit vielen verschiedenen Werten stimmt die Zahl der Bits nicht. Sortierst du vor jedem Zusammenfassen neu?
+          - call: code_table(build_tree(frequencies(b'AAAA')))
+            expect: "{65: '0'}"
+            say: Ein Text aus einem einzigen Byte ist ein Baum aus einem Blatt; dieses Byte bekommt den Code `0`.
+          - "sorted(code_table(build_tree({65: 1, 66: 1})).values())": "['0', '1']"
+      hint: |
+        Eine Liste von Paaren: `trees = [(count, byte) for byte, count in counts.items()]`.
+        Solange mehr als eines darin ist: sortieren, die beiden ersten mit
+        `pop(0)` herausnehmen, ein neues Paar aus der Summe der Gewichte und
+        `(left, right)` hinten anhängen.
+      solution: |
+        ```python
+        def build_tree(counts):
+            trees = [(count, byte) for byte, count in counts.items()]
+            while len(trees) > 1:
+                trees.sort(key=lambda pair: pair[0])
+                left = trees.pop(0)
+                right = trees.pop(0)
+                trees.append((left[0] + right[0], (left[1], right[1])))
+            return trees[0][1]
+
+        def code_table(tree, prefix=''):
+            if isinstance(tree, int):
+                return {tree: prefix or '0'}
+            table = code_table(tree[0], prefix + '0')
+            table.update(code_table(tree[1], prefix + '1'))
+            return table
+        ```
+
   - id: decodieren
     title: Codieren und decodieren
     prompt: |
@@ -176,6 +248,46 @@ tasks:
       end
       ```
 
+    python:
+      check:
+        type: python
+        file: huffman/huffman.py
+        cases:
+          - "encode(b'ABRACADABRA', {65: '0', 66: '110', 67: '100', 68: '101', 82: '111'})": "'01101110100010101101110'"
+          - call: decode('0110111', (65, ((67, 68), (66, 82))))
+            expect: "b'ABR'"
+            say: 'Mit dem Baum `(65, ((67, 68), (66, 82)))` ist `0` A, `110` B und `111` R.'
+          - call: decode('', (65, 66))
+            expect: "b''"
+            say: Keine Bits ergeben leere Bytes.
+          - call: decode(encode(t := b'RHABARBERBARBARABARBARBARENBARTBARBIER', code_table(tree := build_tree(frequencies(t)))), tree) == t
+            expect: true
+          - call: decode(encode(b'AAAA', code_table(tree := build_tree(frequencies(b'AAAA')))), tree)
+            expect: "b'AAAA'"
+            say: Ist der Baum nur ein Blatt, steht jede `0` für dieses Byte.
+          - call: decode(encode(t := bytes((i * i * 7 + 3) % 251 for i in range(5000)), code_table(tree := build_tree(frequencies(t)))), tree) == t
+            expect: true
+          - call: decode(encode(t := 'Grüße aus Köln'.encode(), code_table(tree := build_tree(frequencies(t)))), tree).decode()
+            expect: "'Grüße aus Köln'"
+      hint: 'Beim Decodieren merkst du dir, wo du im Baum gerade bist: `node = tree` am Anfang, dann für jedes Bit `node = node[0]` oder `node = node[1]`. Ist `node` eine Zahl, ist ein Byte fertig.'
+      solution: |
+        ```python
+        def encode(data, table):
+            return ''.join(table[byte] for byte in data)
+
+        def decode(bits, tree):
+            if isinstance(tree, int):
+                return bytes([tree] * len(bits))
+            out = []
+            node = tree
+            for bit in bits:
+                node = node[0] if bit == '0' else node[1]
+                if isinstance(node, int):
+                    out.append(node)
+                    node = tree
+            return bytes(out)
+        ```
+
   - id: spec
     title: Die Spezifikation von GIF
     prompt: |
@@ -192,6 +304,9 @@ tasks:
         say: Das ist die Datei selbst, unkomprimiert.
     hint: '`encode(data, table).length` ist die Zahl der Bits.'
     solution: '361.917 Bits, also 45.240 Bytes, gut die Hälfte des Originals: im Schnitt 4,4 Bits pro Byte. Jeder richtige Huffman-Baum kommt auf genau diese Zahl.'
+
+    python:
+      hint: '`len(encode(data, table))` ist die Zahl der Bits.'
 
   - id: foto
     title: Ein Foto
@@ -251,3 +366,33 @@ tasks:
           table
       end
       ```
+    python:
+      check:
+        type: python
+        file: huffman/huffman.py
+        cases:
+          - "canonical({65: 1, 66: 2, 67: 2})": "{65: '0', 66: '10', 67: '11'}"
+          - "canonical({65: 2, 66: 2, 67: 2, 68: 3, 69: 3})": "{65: '00', 66: '01', 67: '10', 68: '110', 69: '111'}"
+          - call: "canonical({66: 2, 65: 2, 67: 1})"
+            expect: "{67: '0', 65: '10', 66: '11'}"
+            say: Sortiert wird nach der Länge, bei gleicher Länge nach dem Byte, nicht in der Reihenfolge des dict.
+          - call: "canonical({65: 1, 66: 3, 67: 3, 68: 3})"
+            expect: "{65: '0', 66: '100', 67: '101', 68: '110'}"
+            say: Springt die Länge um mehr als 1, kommen hinten so viele Nullen dazu, wie Stellen fehlen.
+          - call: "canonical({0: 2, 1: 3, 2: 3, 3: 3, 4: 3, 5: 3, 6: 4, 7: 5, 8: 6, 9: 7, 10: 8, 11: 9})"
+            expect: "{0: '00', 1: '010', 2: '011', 3: '100', 4: '101', 5: '110', 6: '1110', 7: '11110', 8: '111110', 9: '1111110', 10: '11111110', 11: '111111110'}"
+            say: Das ist die DC-Tabelle aus `44-baseline.jpg`, wie sie auf der Seite zu JPEG steht.
+      hint: 'Merk dir den Code als Zahl und die Länge des vorigen. Für jedes Byte, sortiert nach `(length, byte)`: erst `code <<= length - previous`, dann den Code mit `format(code, ''b'').rjust(length, ''0'')` eintragen, dann `code += 1`.'
+      solution: |
+        ```python
+        def canonical(lengths):
+            table = {}
+            code = 0
+            previous = 0
+            for byte, length in sorted(lengths.items(), key=lambda item: (item[1], item[0])):
+                code <<= length - previous
+                table[byte] = format(code, 'b').rjust(length, '0')
+                code += 1
+                previous = length
+            return table
+        ```
