@@ -797,6 +797,16 @@ img.fit-width {
     min-width: unset;
 }
 
+/* A small drawing (a tree, an automaton) at about the size it has on
+   screen, centred, instead of stretched to the width of the text like a
+   screenshot. Its recipe renders it with zoom: 2, so it stays sharp; the
+   width comes from the page: <img class='drawing' style='width: 18em'>. */
+img.drawing {
+    display: block;
+    max-width: 100%;
+    margin: 1em auto 1.5em;
+}
+
 img.r {
     float: right;
     margin-top: 0.5em;

@@ -455,6 +455,7 @@ _tool(automatron)
 open-site: /automatron
 tab: preview
 viewport: 1029x700
+zoom: 2
 click: selector:#ti_input
 type: (0|1|2|3|4|5|6|7|8|9)*1213
 press: Enter
@@ -463,7 +464,7 @@ sleep: 1
 crop-element: #output_area svg:nth-of-type(3)
 variants: dark
 -->
-<img class='full' src='automatron-schloss.webp' alt='Automatron zeichnet fünf Zustände s0 bis s4 in einer Reihe, s4 grün mit doppeltem Rand. Mit 1 geht es von s0 nach s1, mit 2 nach s2, mit 1 nach s3, mit 3 nach s4. Zurück führen: 1 von s1 nach s1, 2 von s3 nach s2, 1 von s3 nach s1, 1 von s4 nach s1, alle übrigen Ziffern nach s0.'>
+<img class='drawing' style='width: 40em' src='automatron-schloss.webp' alt='Automatron zeichnet fünf Zustände s0 bis s4 in einer Reihe, s4 grün mit doppeltem Rand. Mit 1 geht es von s0 nach s1, mit 2 nach s2, mit 1 nach s3, mit 3 nach s4. Zurück führen: 1 von s1 nach s1, 2 von s3 nach s2, 1 von s3 nach s1, 1 von s4 nach s1, alle übrigen Ziffern nach s0.'>
 
 <!-- language: ruby -->
 `s0` ist `start`, `s1` ist `1`, `s2` ist `12`, `s3` ist `121` und `s4` ist `1213`. Vergleiche die Pfeile mit deiner Tabelle: Automatron zeichnet auch die Pfeile zurück nach `s0`, die in `lock.rb` das `fetch` erledigt. Darüber steht, wie Automatron zu diesem Automaten gekommen ist. Einen Teil davon baust du gleich selbst.

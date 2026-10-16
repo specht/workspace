@@ -79,7 +79,7 @@ def ebenen():
     plain = hide(huts, spec[:room])
     packed = hide(huts, zlib.compress(spec, 9))
     crop = (0, 0, 240, 160)
-    out = panels([huts.crop(crop), bit_plane(huts).crop(crop), bit_plane(plain).crop(crop), bit_plane(packed).crop(crop)])
+    out = panels([huts.crop(crop), bit_plane(huts).crop(crop), bit_plane(plain).crop(crop), bit_plane(packed).crop(crop)], scale=2, gap=16)
     out.save(os.path.join(HERE, '..', 'ebenen.webp'), lossless=True)
 
 
@@ -92,7 +92,7 @@ def full(image, depth, rng):
 def tiefe():
     sky = Image.open(os.path.join(HERE, 'moewen.png')).convert('RGB').crop((240, 40, 400, 147))
     rng = random.Random(1)
-    out = panels([full(sky, depth, rng) for depth in (1, 2, 4, 6)], scale=2)
+    out = panels([full(sky, depth, rng) for depth in (1, 2, 4, 6)], scale=3, gap=16)
     out.save(os.path.join(HERE, '..', 'tiefe.webp'), lossless=True)
 
 
@@ -109,7 +109,7 @@ def klassen():
         n = sky.width * sky.height - HEADER
         print(f'{type(classes).__name__}: {capacity(sky, classes) / n:.2f} bits per pixel')
     crop = (100, 60, 240, 160)
-    out = panels([sky.crop(crop), filled[0].crop(crop), filled[1].crop(crop)], scale=2)
+    out = panels([sky.crop(crop), filled[0].crop(crop), filled[1].crop(crop)], scale=4, gap=24)
     out.save(os.path.join(HERE, '..', 'klassen.webp'), lossless=True)
 
 

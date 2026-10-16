@@ -578,6 +578,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Kleine Zeichnungen stehen in ihrer eigenen Größe auf der Seite, statt auf
+  die ganze Breite gezogen und unscharf zu werden: der Baum und der
+  Zahlen-Automat beim Rechner für Ausdrücke, der Automat des Zahlenschlosses
+  bei den Endlichen Automaten. Ihre Rezepte zeichnen sie mit `zoom: 2`; die
+  Seite zeigt sie mit `<img class='drawing' style='width: …'>`
+  (`default.css`). Die Vergleichsbilder der Steganographie sind doppelt bis
+  viermal so groß, mit scharfen Pixeln.
+
 - Huffman: Die Blätter im Baum sind jetzt rund wie die inneren Knoten, leicht
   getönt, damit man sie unterscheidet. So endet jede Kante sichtbar in der
   Mitte eines Kreises statt an der Ecke eines Kästchens; das Bild auf der
