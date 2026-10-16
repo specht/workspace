@@ -21,6 +21,9 @@
     .day .icon { font-size: 2em; margin: 0.1em 0; }
     .max { font-weight: 700; }
     .min { color: #6b7c8f; }
+    #stamp { margin-top: 1em; font-size: 0.85em; color: #6b7c8f; }
+    #stamp button { font: inherit; margin-left: 0.5em; padding: 0.15em 0.7em; border: 1px solid #c3d0de;
+                    border-radius: 6px; background: white; color: #2f6fb2; }
     footer { margin-top: 2em; font-size: 0.8em; color: #6b7c8f; }
     footer a { color: #2f6fb2; }
   </style>
@@ -33,6 +36,7 @@
   </form>
   <div id="now">Lade …</div>
   <div id="days"></div>
+  <div id="stamp"></div>
   <footer>Wetterdaten: <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0)</footer>
 
   <script>
@@ -48,12 +52,26 @@
       return ['⛈️', 'Gewitter'];
     }
 
+    // Die Adressen der beiden APIs. Antwortet Open-Meteo mit 429, nimm den
+    // Spiegel der Schule (»Wenn die API nicht mehr will«).
+    const GEOCODING_API = 'https://geocoding-api.open-meteo.com/v1/search';
+    const WEATHER_API = 'https://api.open-meteo.com/v1/forecast';
+    const CACHE_MINUTES = 10;
+
     // Holt JSON von einer API; aus params wird die Query: ?name=wert&…
-    async function fetchJson(base, params) {
-      const response = await fetch(base + '?' + new URLSearchParams(params));
+    // Der Browser merkt sich jede Antwort zehn Minuten lang (sessionStorage),
+    // außer fresh ist true. Zurück kommen die Daten und, wann sie geholt wurden.
+    async function fetchJson(base, params, fresh) {
+      const url = base + '?' + new URLSearchParams(params);
+      const kept = JSON.parse(sessionStorage.getItem(url));
+      if (kept && !fresh && Date.now() - kept.time < CACHE_MINUTES * 60 * 1000) {
+        return { data: kept.data, time: kept.time, cached: true };
+      }
+      const response = await fetch(url);
       const data = await response.json();
       if (!response.ok) throw new Error(data.reason);
-      return data;
+      sessionStorage.setItem(url, JSON.stringify({ data: data, time: Date.now() }));
+      return { data: data, time: Date.now(), cached: false };
     }
 
     // Ein neues Element mit einer Klasse und einem Text
@@ -64,25 +82,28 @@
       return el;
     }
 
-    async function show(name) {
+    async function show(name, fresh) {
       const now = document.getElementById('now');
       const days = document.getElementById('days');
+      const stamp = document.getElementById('stamp');
       now.textContent = 'Lade …';
       days.replaceChildren();
+      stamp.replaceChildren();
       try {
         // 1. Wo liegt der Ort?
-        const places = await fetchJson('https://geocoding-api.open-meteo.com/v1/search',
-          { name: name, count: 1, language: 'de' });
+        const places = (await fetchJson(GEOCODING_API,
+          { name: name, count: 1, language: 'de' }, fresh)).data;
         if (!places.results) throw new Error(`Keinen Ort namens ${name} gefunden.`);
         const place = places.results[0];
 
         // 2. Das Wetter an diesem Ort, für sieben Tage
-        const weather = await fetchJson('https://api.open-meteo.com/v1/forecast', {
+        const answer = await fetchJson(WEATHER_API, {
           latitude: place.latitude, longitude: place.longitude,
           current: 'temperature_2m,weather_code',
           daily: 'temperature_2m_min,temperature_2m_max,weather_code',
           timezone: 'auto', forecast_days: 7,
-        });
+        }, fresh);
+        const weather = answer.data;
 
         // Jetzt: groß das Symbol und die Temperatur, daneben Ort und Wetter
         const [icon, text] = describe(weather.current.weather_code);
@@ -101,6 +122,13 @@
             element('div', 'min', `${Math.round(weather.daily.temperature_2m_min[i])}°`));
           days.append(card);
         });
+
+        // Von wann die Daten sind, und ein Knopf, der trotzdem neu fragt
+        const time = new Date(answer.time).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+        const again = element('button', '', 'Neu laden');
+        again.type = 'button';
+        again.addEventListener('click', () => show(name, true));
+        stamp.append(`Daten von ${time} Uhr${answer.cached ? ', aus dem Speicher des Browsers' : ''}`, again);
       } catch (error) {
         now.textContent = error.message;
       }

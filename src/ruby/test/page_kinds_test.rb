@@ -20,7 +20,7 @@ class PageKindsTest < Minitest::Test
     end
 
     def test_activity_shows_kind_duration_and_references
-        html = PageKinds.header('showerjs', content, sections)
+        html = PageKinds.header('showerjs', content, sections, :show_duration => true)
         assert_includes html, "class='page-kind page-kind-activity'"
         assert_includes html, 'Projekt'
         assert_includes html, '2 bis 3 Doppelstunden'
@@ -61,7 +61,12 @@ class PageKindsTest < Minitest::Test
 
     def test_text_is_escaped
         c = content.merge('x' => { :title => 'X', :duration => '<b>1</b>' })
-        assert_includes PageKinds.header('x', c, sections), '&lt;b&gt;1&lt;/b&gt;'
+        assert_includes PageKinds.header('x', c, sections, :show_duration => true), '&lt;b&gt;1&lt;/b&gt;'
+    end
+
+    def test_the_duration_is_only_for_teachers
+        refute_includes PageKinds.header('showerjs', content, sections), 'Doppelstunden'
+        assert_includes PageKinds.header('showerjs', content, sections, :show_duration => true), 'Doppelstunden'
     end
 
     def test_references_of_combines_meta_and_includes

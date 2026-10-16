@@ -2,8 +2,8 @@
   "screenshots": {
     "cache.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "eb49b8edd05ccd1c2e7b1b5580411217404a60fa31a74c6d3fc6012d7a551653",
-      "state_hash": "39d9adf20c3689bfff8b4c0bbc682bbd79d360d3bff18fc5890a1a8bee5ca914",
+      "output_sha256": "f96b4c5eba948587df1a3a1ea6457e8ffc0645fe1ac8784d737a5515da00defb",
+      "state_hash": "72a4c61d6732141f4d3457b12a6ef4d55e210eaa29137bb1320a7de5f8145b91",
       "workspace_look": "4.138.0-ls366"
     },
     "geocoding.webp": {
@@ -14,14 +14,14 @@
     },
     "ruby.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "c2fc4f531133b11fbba454bf2648e9f63533661f251308cac1c5d5cbc38696c8",
-      "state_hash": "dd23d73f54c894d302e26499045392563076390ff64ffe9a1fd9216ecef59e16",
+      "output_sha256": "162ed400d0afecde2f8b1392a0c18552bd3e40b1c83af76029de03524edd1e63",
+      "state_hash": "df4f6c3b4dbfb7907e5b6538c11e7e1407e46e7f3d3a8eab8724ded280fd3e28",
       "workspace_look": "4.138.0-ls366"
     },
     "teaser.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "cd1693720d8a2043985b859aa4109c709fb924be16d3c293bd018d4decf51a90",
-      "state_hash": "2f5ee174ddb851e19846fa7ece571bc7a0ca07ccadb441784da199dd1bca719b",
+      "output_sha256": "1c4bac16f4226398857e4e9872ee06daa7c4dd799ce2522dd39b07df6c052358",
+      "state_hash": "5040a80be1cd5ad66a108b86f9481e6b7793f6f4bb3e37567e902de133c951ea",
       "workspace_look": "4.138.0-ls366"
     },
     "vorhersage.webp": {
@@ -32,8 +32,8 @@
     },
     "wetterseite.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "6da6dcf0dd0a0620d60a0ce879c8af1d535ac778ac786db6f6bf9b1a155c9234",
-      "state_hash": "db3be4b694ab2f588e566e619c19d6f67d4d2b12591f11cf68a24a8a831addbf",
+      "output_sha256": "e44538db2a0636b83fadf09dd565dcfbf4b0f99b20099287a3a855afa1f1bf31",
+      "state_hash": "27c0dc355c086fd7ae053203ffe820fa2cf81146a5a3860646e842623299065f",
       "workspace_look": "4.138.0-ls366"
     }
   },

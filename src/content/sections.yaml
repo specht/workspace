@@ -44,7 +44,6 @@
     # - .drawing (koch curve)
     - fire
     - pixelram
-    - feuerwerk
     - tic80
     - raylib
   #  - .sirds
@@ -52,6 +51,20 @@
   # - .p5js
   # - .glsl
   # - .gif
+
+- key: writing
+  compact: true
+  label: Texte & Präsentationen
+  icon: /images/book.png
+  description: |
+    Computer können Texte nicht nur anzeigen, sondern auch strukturieren,
+    gestalten und in interaktive Erlebnisse verwandeln. Erstelle Dokumente,
+    Präsentationen und verzweigte Geschichten, in denen Leserinnen und Leser
+    eigene Entscheidungen treffen können.
+  entries:
+    - bif
+    - showerjs
+    - latex
 
 - key: web
   compact: true
@@ -62,7 +75,6 @@
     von Diensten im Netz.
   entries:
     - static-website
-    - hugo
     - svelte
     - wetter
 
@@ -111,20 +123,6 @@
     - digits-experiment
     - jpeg
 
-- key: writing
-  compact: true
-  label: Texte & Präsentationen
-  icon: /images/book.png
-  description: |
-    Computer können Texte nicht nur anzeigen, sondern auch strukturieren,
-    gestalten und in interaktive Erlebnisse verwandeln. Erstelle Dokumente,
-    Präsentationen und verzweigte Geschichten, in denen Leserinnen und Leser
-    eigene Entscheidungen treffen können.
-  entries:
-    - bif
-    - showerjs
-    - latex
-
 - key: terminal
   label: Terminal & Git
   icon: /images/penguin.png
@@ -135,6 +133,17 @@
   entries:
     - working-with-files
     - git
+
+# Parked for now, so that the sections above fill rows of three: not in the
+# catalog, but the pages stay reachable by direct links (static-website links
+# to Hugo).
+- key: parked
+  hidden: true
+  label: Zurückgestellt
+  icon: /images/bookmark.png
+  entries:
+    - feuerwerk
+    - hugo
 
 - key: programming_languages
   compact: true

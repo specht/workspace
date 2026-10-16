@@ -23,10 +23,12 @@ module ContentParts
     VARIABLES = {
         'template' => '[Adresse der Vorlage]',
         'class_repo' => '[Adresse des Klassen-Repositorys]',
-        # Not from the page, from the site's configuration (CONTACT_EMAIL).
+        # Not from the page, from the site's configuration (CONTACT_EMAIL,
+        # WEB_ROOT).
         'contact_email' => '[Kontaktadresse]',
+        'web_root' => '[Adresse des Workspaces]',
     }.freeze
-    SITE_VARIABLES = %w[contact_email].freeze
+    SITE_VARIABLES = %w[contact_email web_root].freeze
 
     # The page's values for VARIABLES, from its meta block (not the site's).
     def self.page_variables(meta)
