@@ -1,39 +1,57 @@
 {
   "screenshots": {
     "automatron-schloss.webp": {
-      "environment_fingerprint": "454b42a629b6748a5608edc77c5afe08f6d764b8b45a0802a6475cc50e8ab55c",
-      "output_sha256": "57602071bc433dea9552cfeab51a9b3a07279d7d658c3a608c4b35932b68fe6e",
-      "state_hash": "d055f9d8104ffb06b51dd68675407eee39f120240bb377e1385e63f91f89002b",
+      "environment_fingerprint": "3e3f13b6c09e7ce92c06a0ade54adaf1e1183f8a0bac4f9ed9b8b117bd341597",
+      "output_sha256": "695a51f0ab6ee145e2259f65935f3de4133803eae6368465632733192861f430",
+      "state_hash": "c7a76fd0b5f0ef9be26be1733671b43e480fade77e261e85cda44910aedb061c",
       "variants": {
-        "automatron-schloss-dark.webp": "23e04c8bcd9e5d66f7cb45f001f0c2c064e1570c76d27af4255367191d49b5db"
+        "automatron-schloss-dark.webp": "6cfd9b1ddf2d373862edfadd1e641055700a588f3d1ceac62949dd22058a3b04"
       },
       "workspace_look": "4.138.0-ls366"
     },
+    "drehkreuz-ruby.webp": {
+      "environment_fingerprint": "3e3f13b6c09e7ce92c06a0ade54adaf1e1183f8a0bac4f9ed9b8b117bd341597",
+      "output_sha256": "097c6a46ec26ea8a59731834135870d460cac2fb26679af211fd997c0da45b8f",
+      "state_hash": "cdae9b9b97682c18d1c73c8cc3042963ae9384d297a0a4e55d6c663857caf1af",
+      "workspace_look": "4.138.0-ls366"
+    },
     "drehkreuz.webp": {
-      "environment_fingerprint": "454b42a629b6748a5608edc77c5afe08f6d764b8b45a0802a6475cc50e8ab55c",
-      "output_sha256": "a42159f590b00cd31dfe5b3f60f77117bbba55ac8f8c2c9ccae41390faf98073",
-      "state_hash": "9bceed000cffa01bf4707f2f6b11d787b81933693c5db9d7e4f2b925ca706a9a",
+      "environment_fingerprint": "3e3f13b6c09e7ce92c06a0ade54adaf1e1183f8a0bac4f9ed9b8b117bd341597",
+      "output_sha256": "afcb9b1dfc6fa4acb5ddad8bdc05650e6f57271f9036cb96df842b16c1e8a4ee",
+      "state_hash": "1d50ebff44dfe141ddc27f571b8058ba2d56ebe09b4b5a77d8d5b66302789fe2",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "schloss-ruby.webp": {
+      "environment_fingerprint": "3e3f13b6c09e7ce92c06a0ade54adaf1e1183f8a0bac4f9ed9b8b117bd341597",
+      "output_sha256": "a1ec070789ec24ef21688392687f0e4204483ba5e6ea03c9d0ee94ce709b8827",
+      "state_hash": "9770d8e7248cfed2f26dedcddb9dedf454cdae259cfe2360c5e9bdd2e123be49",
       "workspace_look": "4.138.0-ls366"
     },
     "schloss.webp": {
-      "environment_fingerprint": "454b42a629b6748a5608edc77c5afe08f6d764b8b45a0802a6475cc50e8ab55c",
+      "environment_fingerprint": "3e3f13b6c09e7ce92c06a0ade54adaf1e1183f8a0bac4f9ed9b8b117bd341597",
       "output_sha256": "b1286f39942ebeb0174ebddfebc99e8ffcf57b409f2d61a91d340811c18a9659",
-      "state_hash": "cbba485cba8a4005b18d55f9946660f8853842797b9bc544807e231a1bc8b114",
+      "state_hash": "c81e3a3def30afa0164c0bc20f7ce33b26c829d05ee0de19adbf6fb114ca408d",
       "workspace_look": "4.138.0-ls366"
     },
     "teaser.webp": {
-      "environment_fingerprint": "454b42a629b6748a5608edc77c5afe08f6d764b8b45a0802a6475cc50e8ab55c",
+      "environment_fingerprint": "3e3f13b6c09e7ce92c06a0ade54adaf1e1183f8a0bac4f9ed9b8b117bd341597",
       "output_sha256": "7be14c190cab2f161a8317080e2f2a083980da277003978e0043f63606dde650",
-      "state_hash": "e3c692386ddcc7b7e56c1e91597841a603fe017bc2df521065ef98104f5424fc",
+      "state_hash": "6f600aaad2b56bec7adbce6624cafcadd4bf8be5041b5128ed8b55988288661a",
       "variants": {
         "teaser-dark.webp": "808ab7e49becb8423c0fe8f5be94f6a557a51af8f6bbd6a9dc96d470c6c2a6d3"
       },
       "workspace_look": "4.138.0-ls366"
     },
+    "umwandeln-ruby.webp": {
+      "environment_fingerprint": "3e3f13b6c09e7ce92c06a0ade54adaf1e1183f8a0bac4f9ed9b8b117bd341597",
+      "output_sha256": "cfc114a9c7ada4fdc0bf6b426450448d94d7b8fcda2b91444a0fd1f0614990e8",
+      "state_hash": "0299a5c55146d5b7b2b463a316dac37958fb1fee6dfaba4a535eab343af92ab0",
+      "workspace_look": "4.138.0-ls366"
+    },
     "umwandeln.webp": {
-      "environment_fingerprint": "454b42a629b6748a5608edc77c5afe08f6d764b8b45a0802a6475cc50e8ab55c",
+      "environment_fingerprint": "3e3f13b6c09e7ce92c06a0ade54adaf1e1183f8a0bac4f9ed9b8b117bd341597",
       "output_sha256": "88478e05ae7d299abbf0a691f91c5351e4097f1017a9b6bdc3a3d31711f70744",
-      "state_hash": "f8b7d61a2547dadd75ca64b1ac4b79b0b0bf35ed31c6db93c12220ceaf5eeceb",
+      "state_hash": "e07de3d3ec0f97b5caf71ae2f10b5166e5df3379737042fccdd63c58d7eaabf8",
       "workspace_look": "4.138.0-ls366"
     }
   },

@@ -1,5 +1,7 @@
+/* Room under the page for the footer only where it is fixed to the window
+   (development); in production it simply comes at the end. */
 body {
-    --footer-reserved-space: 100px;
+    --footer-reserved-space: 0px;
 
     font-family: 'IBM Plex Sans', sans-serif;
     font-size: 13pt;
@@ -479,6 +481,10 @@ footer {
 footer.footer-fixed {
     position: fixed;
     margin-top: 0;
+}
+
+body:has(footer.footer-fixed) {
+    --footer-reserved-space: 100px;
 }
 
 footer {
@@ -4651,8 +4657,9 @@ img.minicpu-shot.medium {
 .tool-card-open .bi { margin-left: 0.4em; }
 
 /* Programming languages on the start page (tiles: true in sections.yaml):
-   small tiles with logo, name and year. The logo sits on a light plate in
-   both themes, many logos are dark. */
+   small tiles with logo, name and year. In the light theme the logo sits on
+   a white plate; in the dark one (dark.css) there is no plate, and a logo
+   that would vanish on dark has a dark variant (theme-image-dark). */
 .lang-tiles {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(8.5em, 1fr));
@@ -4696,6 +4703,10 @@ img.minicpu-shot.medium {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+}
+
+.lang-tile-logo .theme-image-dark {
+    display: none;
 }
 
 .lang-tile-name {

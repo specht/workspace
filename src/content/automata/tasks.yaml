@@ -1,4 +1,4 @@
-# Aufgaben zu »Automaten in Python«.
+# Aufgaben zu »Endliche Automaten«, in Python und in Ruby (unter ruby:).
 # Format: docs/aufgaben.md. Alles liegt in /workspace/automata.
 format: 1
 activity: automata
@@ -33,6 +33,35 @@ tasks:
       Ein Zustand `halb` kommt dazu:
       `('zu', 'münze'): 'halb'`, `('halb', 'münze'): 'offen'`,
       `('halb', 'drücken'): 'halb'`; die übrigen Übergänge bleiben.
+
+    ruby:
+      prompt: |
+        Das Schwimmbad verlangt jetzt zwei Euro, also zwei Münzen. Ändere
+        `TRANSITIONS` in `turnstile.rb`: Erst nach der zweiten Münze ist das
+        Drehkreuz offen. Wer nach einer Münze schon drückt, kommt nicht durch,
+        aber die Münze bleibt drin. Wie du den neuen Zustand nennst, ist dir
+        überlassen.
+      check:
+        type: ruby
+        file: automata/turnstile.rb
+        cases:
+          - run(['drücken']): "'zu'"
+          - call: run(['münze']) == 'offen'
+            expect: false
+            say: Nach einer Münze darf das Drehkreuz noch nicht offen sein.
+          - run(['münze', 'münze']): "'offen'"
+          - call: run(['münze', 'drücken', 'münze'])
+            expect: "'offen'"
+            say: Wer mit einer Münze drückt, behält sie. Nach der zweiten ist es offen.
+          - run(['münze', 'münze', 'drücken']): "'zu'"
+          - call: run(['münze', 'münze', 'drücken', 'münze']) == 'offen'
+            expect: false
+            say: Nach dem Durchgehen kostet es wieder zwei Münzen.
+          - run(['münze', 'münze', 'münze']): "'offen'"
+      solution: |
+        Ein Zustand `halb` kommt dazu:
+        `['zu', 'münze'] => 'halb'`, `['halb', 'münze'] => 'offen'`,
+        `['halb', 'drücken'] => 'halb'`; die übrigen Übergänge bleiben.
 
   - id: rest
     title: Wo endet 1011?
@@ -79,6 +108,40 @@ tasks:
           for d in '01':
               TRANSITIONS[(r, d)] = (2 * r + int(d)) % 5
       ```
+
+    ruby:
+      prompt: |
+        Kopiere `divisible.rb` nach `divisible5.rb` und ändere den Automaten
+        dort so, dass `accepts` genau die Binärzahlen annimmt, die durch 5
+        teilbar sind.
+      check:
+        type: ruby
+        file: automata/divisible5.rb
+        cases:
+          - accepts('0'): true
+          - accepts('1'): false
+          - accepts('11'): false
+          - accepts('101'): true
+          - accepts('110'): false
+          - accepts('1010'): true
+          - accepts('1111'): true
+          - accepts('1001011'): true
+          - accepts('1100100'): true
+          - accepts('1100101'): false
+          - call: accepts((5 ** 40).to_s(2))
+            expect: true
+            say: 5 hoch 40 ist durch 5 teilbar, und dein Automat liest die Zahl nur einmal von links nach rechts.
+          - accepts((5 ** 40 + 1).to_s(2)): false
+      hint: Du brauchst fünf Zustände, einen für jeden Rest von 0 bis 4. Aus Rest `r` wird mit der Ziffer `d` der Rest `(2 * r + d) % 5`. Statt zehn Zeilen von Hand geht das auch mit zwei Schleifen, etwa `5.times do |r|` und `'01'.each_char do |d|`.
+      solution: |
+        ```ruby
+        TRANSITIONS = {}
+        5.times do |r|
+            '01'.each_char do |d|
+                TRANSITIONS[[r, d]] = (2 * r + d.to_i) % 5
+            end
+        end
+        ```
 
   - id: grenzen
     title: Was kein Automat kann
@@ -132,6 +195,35 @@ tasks:
       `('121', '2'): '12'` und `('1213', '1'): '1'`. Alle anderen fehlenden
       führen zu Recht zurück nach `start`.
 
+    ruby:
+      prompt: |
+        Ergänze `TRANSITIONS` in `lock.rb`, bis das Schloss immer öffnet, wenn
+        die letzten vier Ziffern 1213 sind, und sonst nie. `START` und
+        `opens` bleiben, wie sie sind.
+      check:
+        type: ruby
+        file: automata/lock.rb
+        cases:
+          - opens('1213'): true
+          - opens('991213'): true
+          - opens(''): false
+          - opens('1212'): false
+          - call: opens('11213')
+            expect: true
+            say: Nach 1 und noch einer 1 stimmt vom Code immer noch 1.
+          - call: opens('121213')
+            expect: true
+            say: Nach 121 und einer 2 stimmt vom Code noch 12.
+          - opens('1211213'): true
+          - opens('12131213'): true
+          - opens('12133'): false
+          - opens('1213121'): false
+          - opens('312121213'): true
+      solution: |
+        Vier Übergänge kommen dazu: `['1', '1'] => '1'`, `['121', '1'] => '1'`,
+        `['121', '2'] => '12'` und `['1213', '1'] => '1'`. Alle anderen
+        fehlenden führen zu Recht zurück nach `start`.
+
   - id: nea-zustaende
     title: Drei Ziffern später
     prediction: true
@@ -152,6 +244,11 @@ tasks:
       - when: { picked: 2 }
         say: Fast. Bei der letzten 1 kann er aus start auch wieder raten, dass der Code hier beginnt.
     solution: In `start` bleibt er immer, `121` hat er erreicht, wenn er bei der ersten 1 geraten hat, und `1`, wenn er bei der letzten 1 rät.
+
+    ruby:
+      prompt: |
+        Der NEA liest `1`, `2`, `1`. In welchen Zuständen kann er danach sein?
+        Überleg erst, dann sieh in der Ausgabe von `lock_nfa.rb` nach.
 
   - id: generalschluessel
     title: Ein Generalschlüssel
@@ -184,6 +281,35 @@ tasks:
       TRANSITIONS[('471', '1')] = {'4711'}
       ```
 
+    ruby:
+      prompt: |
+        Die Hausmeisterin hat einen Generalschlüssel: Das Schloss soll auch
+        öffnen, wenn die letzten vier Ziffern 4711 sind. Baue das in den NEA in
+        `lock_nfa.rb` ein. 1213 muss weiter funktionieren.
+      check:
+        type: ruby
+        file: automata/lock_nfa.rb
+        cases:
+          - opens('1213'): true
+          - opens('4711'): true
+          - opens('94711'): true
+          - call: opens('44711')
+            expect: true
+            say: Auch bei der zweiten 4 darf der NEA raten, dass hier der Code beginnt. Er bleibt dafür in start.
+          - opens('471'): false
+          - opens('4712'): false
+          - opens('47121213'): true
+          - opens('121213'): true
+          - opens('4741711'): false
+      solution: |
+        ```ruby
+        ACCEPTING = Set['1213', '4711']
+        TRANSITIONS[['start', '4']] = Set['start', '4']
+        TRANSITIONS[['4', '7']] = Set['47']
+        TRANSITIONS[['47', '1']] = Set['471']
+        TRANSITIONS[['471', '1']] = Set['4711']
+        ```
+
   - id: dea-generalschluessel
     title: Der DEA zum Generalschlüssel
     prompt: |
@@ -196,6 +322,14 @@ tasks:
       - when: { equals: 5 }
         say: Das ist der DEA für 1213 allein. Ist der Generalschlüssel in `lock_nfa.py` eingebaut und gespeichert?
     solution: 'Neun: `start`, je vier für »so viel stimmt von 1213« und »so viel stimmt von 4711«. Automatron kommt mit `(0|1|2|3|4|5|6|7|8|9)*(1213|4711)` auf dieselbe Zahl.'
+
+    ruby:
+      prompt: |
+        Wie viele Zustände hat der DEA, den `convert.rb` aus deinem NEA mit
+        Generalschlüssel baut?
+      feedback:
+        - when: { equals: 5 }
+          say: Das ist der DEA für 1213 allein. Ist der Generalschlüssel in `lock_nfa.rb` eingebaut und gespeichert?
 
   - id: explosion
     title: Wenn der DEA explodiert

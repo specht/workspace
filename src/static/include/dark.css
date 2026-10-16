@@ -354,6 +354,22 @@ html[data-bs-theme="dark"] {
     .card-kind {
         color: #9aa3ab;
     }
+    .lang-tile {
+        border-color: #33332f;
+        background-color: transparent;
+    }
+    .lang-tile:hover {
+        background-color: #222;
+    }
+    .lang-tile-logo {
+        background: transparent;
+    }
+    .lang-tile-logo .theme-image-light {
+        display: none;
+    }
+    .lang-tile-logo .theme-image-dark {
+        display: block;
+    }
     .task-feedback pre,
     .template-notice-body pre {
         color: #e7e6e1;

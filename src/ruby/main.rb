@@ -4833,9 +4833,17 @@ class Main < Sinatra::Base
                             name = title.sub(%r{<span[^>]*>.*?</span>}, '').strip
                             year = title[/\((\d{4})\)/, 1]
                             image = content[:image] || '/images/white.webp'
-                            Main.ensure_image_width(image, 1024) if image.start_with?('/cache/')
+                            dark = content[:image_dark]
+                            [image, dark].compact.each { |url| Main.ensure_image_width(url, 1024) if url.start_with?('/cache/') }
+                            # A logo with a dark variant (pascal-logo-dark.png) shows it in dark mode.
+                            logo = if dark
+                                "<img alt='' class='theme-image-light' src='#{image.sub('.webp', '-1024.webp')}'>" \
+                                    "<img alt='' class='theme-image-dark' src='#{dark.sub('.webp', '-1024.webp')}'>"
+                            else
+                                "<img alt='' src='#{image.sub('.webp', '-1024.webp')}'>"
+                            end
                             io.puts "<a class='lang-tile' href='/#{slug}'>" \
-                                "<span class='lang-tile-logo'><img alt='' src='#{image.sub('.webp', '-1024.webp')}'></span>" \
+                                "<span class='lang-tile-logo'>#{logo}</span>" \
                                 "<span class='lang-tile-name'>#{name}</span>" \
                                 "#{year ? "<span class='lang-tile-year'>#{year}</span>" : ''}</a>"
                         end

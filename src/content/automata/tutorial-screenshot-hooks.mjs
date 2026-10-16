@@ -1,4 +1,4 @@
-// Screenshot hooks for »Endliche Automaten in Python«
+// Screenshot hooks for »Endliche Automaten«
 // (src/tutorial-screenshots/README.md, »Tutorial-specific hooks«).
 
 export default {
