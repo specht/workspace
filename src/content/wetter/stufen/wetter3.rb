@@ -1,6 +1,11 @@
 require 'net/http'
 require 'json'
 
+# Die Adressen der beiden APIs. Antwortet Open-Meteo mit 429, nimm den
+# Spiegel der Schule (»Wenn die API nicht mehr will«).
+GEOCODING_API = 'https://geocoding-api.open-meteo.com/v1/search'
+WEATHER_API = 'https://api.open-meteo.com/v1/forecast'
+
 CACHE_DIR = File.join(__dir__, 'cache')
 CACHE_SECONDS = 600   # zehn Minuten
 
@@ -45,13 +50,13 @@ end
 name = ARGV[0] || 'Berlin'
 
 # 1. Wo liegt der Ort?
-places = fetch_json('https://geocoding-api.open-meteo.com/v1/search',
+places = fetch_json(GEOCODING_API,
                     name: name, count: 1, language: 'de')
 place = (places['results'] || []).first
 abort "Keinen Ort namens #{name} gefunden." if place.nil?
 
 # 2. Das Wetter an diesem Ort
-weather = fetch_json('https://api.open-meteo.com/v1/forecast',
+weather = fetch_json(WEATHER_API,
                      latitude: place['latitude'], longitude: place['longitude'],
                      current: 'temperature_2m,weather_code',
                      daily: 'temperature_2m_min,temperature_2m_max,weather_code',

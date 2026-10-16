@@ -18,6 +18,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Spiegel von Open-Meteo für »Daten aus dem Netz«: unter `/open-meteo/api/v1/forecast`
+  und `/open-meteo/geocoding/v1/search` dieselben Endpunkte wie bei
+  Open-Meteo. Er merkt sich jede Antwort eine Viertelstunde für alle und gibt
+  die letzte bekannte heraus, wenn Open-Meteo `429` meldet oder schweigt. Die
+  Aktivität erklärt im neuen Abschnitt »Wenn die API nicht mehr will«, wann man
+  umstellt; die Adressen stehen dafür in Konstanten oben in `wetter.rb` und
+  `index.html`. Die Wetterseite merkt sich Antworten zehn Minuten im Browser,
+  zeigt, von wann die Daten sind, und hat »Neu laden«; das Neuladen durch
+  »Go Live« bei jedem Speichern kostet so keine Anfragen mehr. Eine neue
+  Aufgabe fragt, warum ein gemeinsamer Cache das Kontingent der Klasse schont.
 - TCP-Konsole (`/tcp-console`): Lernende tippen eine TCP-Verbindung Zeile für
   Zeile wie mit `nc -C`, auf Wunsch mit TLS, und sehen Anfrage und Antwort als
   Sprechblasen mit Uhrzeit, wie in einem Chat. Die Verbindung beginnt im
@@ -894,6 +904,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Für Betreibende
 
+- Der Spiegel von Open-Meteo (`/open-meteo/…`) ist ohne Anmeldung erreichbar,
+  weil Wetterseiten auf den Subdomains der Lernenden und Programme im
+  Workspace ihn nutzen. Er leitet nur die zwei Endpunkte mit einer festen
+  Liste von Parametern weiter, fragt Open-Meteo höchstens 600-mal pro Stunde
+  und speichert die Antworten unter `data/internal/weather-mirror`
+  (höchstens 20.000 Dateien, die ältesten gehen zuerst).
 - Neue Einstellung `CONTACT_EMAIL` in `credentials.rb` (siehe
   `credentials.template.rb`): die Adresse für Einladungen, das Impressum und
   »schreib eine E-Mail an« auf Seiten (`${contact_email}`). Keine Adresse steht

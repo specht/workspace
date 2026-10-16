@@ -70,8 +70,8 @@ tasks:
       expect:
         format: text
         contains:
-          - { pattern: 'geocoding-api\.open-meteo\.com', say: 'In `wetter.rb` fragt noch nichts die Geocoding-API, die zu einem Namen die Koordinaten findet.' }
-          - { pattern: 'api\.open-meteo\.com/v1/forecast', say: 'In `wetter.rb` fehlt noch die Anfrage an die Wetter-API.' }
+          - { pattern: 'geocoding-api\.open-meteo\.com|open-meteo/geocoding/v1/search', say: 'In `wetter.rb` fragt noch nichts die Geocoding-API, die zu einem Namen die Koordinaten findet.' }
+          - { pattern: 'api\.open-meteo\.com/v1/forecast|open-meteo/api/v1/forecast', say: 'In `wetter.rb` fehlt noch die Anfrage an die Wetter-API.' }
           - { pattern: 'JSON\.parse', say: 'Noch macht `wetter.rb` aus der Antwort kein JSON (`JSON.parse`).' }
           - { pattern: 'ARGV', say: 'Noch nimmt `wetter.rb` den Ort nicht von der Kommandozeile: `ARGV[0]`.' }
 
@@ -89,6 +89,24 @@ tasks:
         contains:
           - { pattern: 'File\.write', say: 'Noch schreibt `wetter.rb` keine Antwort in eine Datei (`File.write`).' }
           - { pattern: 'File\.mtime', say: 'Noch prüft `wetter.rb` nicht, wie alt eine gespeicherte Antwort ist (`File.mtime`).' }
+
+  - id: spiegel
+    title: Ein Spiegel für alle
+    prompt: |
+      Warum schont der Spiegel der Schule das Kontingent bei Open-Meteo,
+      auch wenn die ganze Klasse ihn benutzt?
+    check:
+      type: choice
+      options:
+        - Er merkt sich jede Antwort für alle; fragen viele nach demselben Ort, fragt er Open-Meteo nur einmal.
+        - Er hat bei Open-Meteo ein eigenes, viel größeres Kontingent.
+        - Er schickt die Anfragen verschlüsselt, die zählt Open-Meteo nicht.
+        - Er fragt nur bei Tag und schläft nachts.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Der Spiegel fragt mit der Adresse des Servers bei Open-Meteo, mit denselben Grenzen wie alle anderen. Was macht er anders als jeder Einzelne?
+    solution: Der Spiegel ist ein Cache für alle zusammen. Dreißig Anfragen nach Berlin in einer Viertelstunde kosten Open-Meteo eine, die übrigen kommen aus seinem Speicher.
 
   - id: webseite
     title: Die Wetterseite

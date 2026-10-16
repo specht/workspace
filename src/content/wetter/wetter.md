@@ -135,6 +135,11 @@ Jetzt soll das Programm jeden Ort kennen, nicht nur Berlin: erst die Geocoding-A
 require 'net/http'
 require 'json'
 
+# Die Adressen der beiden APIs. Antwortet Open-Meteo mit 429, nimm den
+# Spiegel der Schule (»Wenn die API nicht mehr will«).
+GEOCODING_API = 'https://geocoding-api.open-meteo.com/v1/search'
+WEATHER_API = 'https://api.open-meteo.com/v1/forecast'
+
 # Holt JSON von einer API. Aus params wird die Query: ?name=wert&…
 def fetch_json(base, params)
   url = URI(base)
@@ -166,13 +171,13 @@ end
 name = ARGV[0] || 'Berlin'
 
 # 1. Wo liegt der Ort?
-places = fetch_json('https://geocoding-api.open-meteo.com/v1/search',
+places = fetch_json(GEOCODING_API,
                     name: name, count: 1, language: 'de')
 place = (places['results'] || []).first
 abort "Keinen Ort namens #{name} gefunden." if place.nil?
 
 # 2. Das Wetter an diesem Ort
-weather = fetch_json('https://api.open-meteo.com/v1/forecast',
+weather = fetch_json(WEATHER_API,
                      latitude: place['latitude'], longitude: place['longitude'],
                      current: 'temperature_2m,weather_code',
                      daily: 'temperature_2m_min,temperature_2m_max,weather_code',
@@ -189,6 +194,7 @@ days['time'].each_with_index do |day, i|
 end
 ```
 
+- Die Adressen der beiden APIs stehen oben in Konstanten, `GEOCODING_API` und `WEATHER_API`. Warum, steht weiter unten unter »Wenn die API nicht mehr will«.
 - `fetch_json` ist für beide APIs da. `URI.encode_www_form` baut aus einem Hash die Query, mit allem richtig kodiert: Aus `München` wird `M%C3%BCnchen`.
 - Ist die Antwort kein Erfolg (`Net::HTTPSuccess`), steht in `reason`, warum. `abort` schreibt die Meldung und beendet das Programm.
 - `rescue SocketError, Net::OpenTimeout` fängt den Fall ab, dass gar keine Verbindung zustande kommt.
@@ -217,6 +223,7 @@ terminal-open
 terminal-run: ruby wetter.rb München
 terminal-wait-for-prompt
 sleep: 1
+move-mouse: selector:.terminal
 -->
 <img class='full' src='ruby.webp' alt='In VS Code ist wetter.rb offen; im Terminal antwortet ruby wetter.rb München mit dem Ort, dem Wetter jetzt und einer Zeile für jeden der nächsten drei Tage.'>
 
@@ -224,7 +231,7 @@ _task(wetter-rb)
 
 ## Höflich bleiben
 
-Open-Meteo erlaubt höchstens 600 Anfragen pro Minute und 10.000 pro Tag. Das klingt nach viel, aber alle Workspaces deiner Schule gehen über denselben Server ins Netz, und für Open-Meteo kommt jede Anfrage eurer Schule von derselben Adresse. Ein Programm, das jede Sekunde nachfragt, bei 30 Leuten in der Klasse, verbraucht das Tageskontingent der ganzen Schule in wenigen Minuten. Danach bekommt niemand an der Schule mehr Daten, nur noch eine Fehlermeldung; viele APIs antworten dann mit dem Statuscode `429 Too Many Requests`.
+Open-Meteo erlaubt höchstens 600 Anfragen pro Minute, 5.000 pro Stunde und 10.000 pro Tag, und zwar je Adresse, von der die Anfragen kommen. Das klingt nach viel, aber an deiner Schule teilen sich viele eine Adresse: Alle Workspaces gehen über denselben Server ins Netz, und alle Browser im Schulnetz über dieselbe Leitung. Ein Programm, das jede Sekunde nachfragt, verbraucht das Tageskontingent für alle in gut einer Stunde, eines ganz ohne Pause in wenigen Minuten. Danach bekommt niemand mehr Daten, nur noch eine Fehlermeldung; viele APIs antworten dann mit dem Statuscode `429 Too Many Requests`.
 
 Das Wetter ändert sich nicht jede Sekunde. Darum merkt sich ein höfliches Programm Antworten eine Weile: in einem **Cache**. Ersetze `fetch_json` in `wetter.rb` durch diese Fassung und ergänze die beiden Konstanten darüber:
 
@@ -282,6 +289,19 @@ crop-terminal-lines: auto
 
 _task(cache)
 
+### Wenn die API nicht mehr will
+
+Hat doch jemand das Kontingent aufgebraucht, antwortet Open-Meteo mit `429` und nennt in `reason` den Grund, etwa `Hourly API request limit exceeded`. Für diesen Fall gibt es einen **Spiegel** von Open-Meteo im Workspace: dieselben Pfade und Parameter, nur unter der Adresse des Workspaces. Darum stehen die Adressen in `wetter.rb` oben in Konstanten; tausche sie aus:
+
+```ruby
+GEOCODING_API = '${web_root}/open-meteo/geocoding/v1/search'
+WEATHER_API = '${web_root}/open-meteo/api/v1/forecast'
+```
+
+Der Spiegel holt die Daten bei Open-Meteo und merkt sich jede Antwort eine Viertelstunde lang, für alle zusammen. Fragen 30 Leute nach dem Wetter in Berlin, fragt er Open-Meteo nur einmal. Weigert sich Open-Meteo ganz, gibt er die letzte Antwort heraus, die er kennt, auch wenn sie älter ist. Ob eine Antwort neu geholt wurde, aus seinem Speicher kam oder schon älter ist, steht im Header `X-Hackschule-Cache`: `miss`, `hit` oder `stale`. Mit `curl -i` siehst du ihn.
+
+_task(spiegel)
+
 ## Eine Wetterseite
 
 Zum Schluss eine Webseite, die das Wetter für jeden Ort zeigt. Sie fragt die APIs selbst, direkt aus dem Browser, mit `fetch`. Lege im Ordner `wetter` die Datei `index.html` an:
@@ -310,6 +330,9 @@ Zum Schluss eine Webseite, die das Wetter für jeden Ort zeigt. Sie fragt die AP
     .day .icon { font-size: 2em; margin: 0.1em 0; }
     .max { font-weight: 700; }
     .min { color: #6b7c8f; }
+    #stamp { margin-top: 1em; font-size: 0.85em; color: #6b7c8f; }
+    #stamp button { font: inherit; margin-left: 0.5em; padding: 0.15em 0.7em; border: 1px solid #c3d0de;
+                    border-radius: 6px; background: white; color: #2f6fb2; }
     footer { margin-top: 2em; font-size: 0.8em; color: #6b7c8f; }
     footer a { color: #2f6fb2; }
   </style>
@@ -322,6 +345,7 @@ Zum Schluss eine Webseite, die das Wetter für jeden Ort zeigt. Sie fragt die AP
   </form>
   <div id="now">Lade …</div>
   <div id="days"></div>
+  <div id="stamp"></div>
   <footer>Wetterdaten: <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0)</footer>
 
   <script>
@@ -337,12 +361,26 @@ Zum Schluss eine Webseite, die das Wetter für jeden Ort zeigt. Sie fragt die AP
       return ['⛈️', 'Gewitter'];
     }
 
+    // Die Adressen der beiden APIs. Antwortet Open-Meteo mit 429, nimm den
+    // Spiegel der Schule (»Wenn die API nicht mehr will«).
+    const GEOCODING_API = 'https://geocoding-api.open-meteo.com/v1/search';
+    const WEATHER_API = 'https://api.open-meteo.com/v1/forecast';
+    const CACHE_MINUTES = 10;
+
     // Holt JSON von einer API; aus params wird die Query: ?name=wert&…
-    async function fetchJson(base, params) {
-      const response = await fetch(base + '?' + new URLSearchParams(params));
+    // Der Browser merkt sich jede Antwort zehn Minuten lang (sessionStorage),
+    // außer fresh ist true. Zurück kommen die Daten und, wann sie geholt wurden.
+    async function fetchJson(base, params, fresh) {
+      const url = base + '?' + new URLSearchParams(params);
+      const kept = JSON.parse(sessionStorage.getItem(url));
+      if (kept && !fresh && Date.now() - kept.time < CACHE_MINUTES * 60 * 1000) {
+        return { data: kept.data, time: kept.time, cached: true };
+      }
+      const response = await fetch(url);
       const data = await response.json();
       if (!response.ok) throw new Error(data.reason);
-      return data;
+      sessionStorage.setItem(url, JSON.stringify({ data: data, time: Date.now() }));
+      return { data: data, time: Date.now(), cached: false };
     }
 
     // Ein neues Element mit einer Klasse und einem Text
@@ -353,25 +391,28 @@ Zum Schluss eine Webseite, die das Wetter für jeden Ort zeigt. Sie fragt die AP
       return el;
     }
 
-    async function show(name) {
+    async function show(name, fresh) {
       const now = document.getElementById('now');
       const days = document.getElementById('days');
+      const stamp = document.getElementById('stamp');
       now.textContent = 'Lade …';
       days.replaceChildren();
+      stamp.replaceChildren();
       try {
         // 1. Wo liegt der Ort?
-        const places = await fetchJson('https://geocoding-api.open-meteo.com/v1/search',
-          { name: name, count: 1, language: 'de' });
+        const places = (await fetchJson(GEOCODING_API,
+          { name: name, count: 1, language: 'de' }, fresh)).data;
         if (!places.results) throw new Error(`Keinen Ort namens ${name} gefunden.`);
         const place = places.results[0];
 
         // 2. Das Wetter an diesem Ort, für sieben Tage
-        const weather = await fetchJson('https://api.open-meteo.com/v1/forecast', {
+        const answer = await fetchJson(WEATHER_API, {
           latitude: place.latitude, longitude: place.longitude,
           current: 'temperature_2m,weather_code',
           daily: 'temperature_2m_min,temperature_2m_max,weather_code',
           timezone: 'auto', forecast_days: 7,
-        });
+        }, fresh);
+        const weather = answer.data;
 
         // Jetzt: groß das Symbol und die Temperatur, daneben Ort und Wetter
         const [icon, text] = describe(weather.current.weather_code);
@@ -390,6 +431,13 @@ Zum Schluss eine Webseite, die das Wetter für jeden Ort zeigt. Sie fragt die AP
             element('div', 'min', `${Math.round(weather.daily.temperature_2m_min[i])}°`));
           days.append(card);
         });
+
+        // Von wann die Daten sind, und ein Knopf, der trotzdem neu fragt
+        const time = new Date(answer.time).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+        const again = element('button', '', 'Neu laden');
+        again.type = 'button';
+        again.addEventListener('click', () => show(name, true));
+        stamp.append(`Daten von ${time} Uhr${answer.cached ? ', aus dem Speicher des Browsers' : ''}`, again);
       } catch (error) {
         now.textContent = error.message;
       }
@@ -409,6 +457,8 @@ Zum Schluss eine Webseite, die das Wetter für jeden Ort zeigt. Sie fragt die AP
 - `fetchJson` macht dasselbe wie `fetch_json` in Ruby: `new URLSearchParams(params)` baut die Query, `await fetch(…)` schickt die Anfrage und wartet auf die Antwort, `response.json()` liest sie als JSON.
 - `async` und `await` gehören zusammen: Eine Funktion mit `async` darf mit `await` auf eine Antwort aus dem Netz warten, ohne dass die Seite so lange einfriert.
 - `try` und `catch` fangen jeden Fehler ab und zeigen seine Meldung auf der Seite an.
+- Die Seite merkt sich jede Antwort zehn Minuten lang im Browser, in `sessionStorage`, so wie `wetter.rb` im Ordner `cache`. Hier ist das besonders wichtig: »Go Live« lädt die Seite bei jedem Speichern neu, und ohne Cache kostete jedes Speichern zwei Anfragen, für eine ganze Klasse leicht einige tausend in einer Stunde. Unter den Karten steht, von wann die Daten sind; »Neu laden« fragt trotzdem neu.
+- Auch hier stehen die beiden Adressen oben in Konstanten, für den Spiegel.
 - Unten steht die Quelle der Daten. Das verlangt die Lizenz von Open-Meteo, und es gehört sich auch so.
 
 Öffne die Seite mit »Go Live« unten rechts in der Statusleiste:
@@ -422,7 +472,7 @@ wait-for-text: Wetterdaten
 wait-for-text: °
 sleep: 2
 -->
-<img class='full border' src='wetterseite.webp' alt='Die Wetterseite: ein Eingabefeld mit Berlin und der Knopf Suchen, darunter das Wetter jetzt mit Symbol und Temperatur, sieben Karten mit Wochentag, Wettersymbol, Höchst- und Tiefsttemperatur und unten die Quelle Open-Meteo.com.'>
+<img class='full border' src='wetterseite.webp' alt='Die Wetterseite: ein Eingabefeld mit Berlin und der Knopf Suchen, darunter das Wetter jetzt mit Symbol und Temperatur, sieben Karten mit Wochentag, Wettersymbol, Höchst- und Tiefsttemperatur, darunter die Uhrzeit der Daten mit dem Knopf Neu laden und unten die Quelle Open-Meteo.com.'>
 
 Eigentlich darf eine Webseite nicht einfach Daten von einer fremden Adresse lesen; der Browser verhindert das, damit eine Seite nicht heimlich an deine Daten bei anderen Diensten kommt. Open-Meteo erlaubt es ausdrücklich, mit dem Header `access-control-allow-origin: *` in jeder Antwort: »Jede Seite darf diese Daten lesen.« Das heißt **CORS**, Cross-Origin Resource Sharing. Mit `curl -i -H "Origin: https://example.org" …` siehst du den Header selbst.
 
@@ -439,7 +489,6 @@ Ein paar Ideen, von leicht bis schwer:
 - **Mehr Werte:** Die API kennt viel mehr: `precipitation_sum` (Regen in mm), `sunrise` und `sunset`, `uv_index_max`, `wind_speed_10m_max`. Zeig sie auf den Karten.
 - **Stündlich:** Mit `hourly=temperature_2m` bekommst du die Temperatur für jede Stunde. Zeichne sie als Kurve auf ein `<canvas>`.
 - **Mehrere Orte:** Vergleiche das Wetter in drei Städten nebeneinander.
-- **Ein Cache im Browser:** Merke dir Antworten in `localStorage` mit der Uhrzeit, wie im Ruby-Programm.
 - **Andere APIs:** Es gibt viele freie APIs ohne Schlüssel, etwa die von Wikipedia. Lies vorher ihre Bedingungen.
 
 _task(api-key)
@@ -459,4 +508,4 @@ wait-for-text: Wetterdaten
 wait-for-text: °
 sleep: 2
 -->
-<img class='teaser' hidden src='teaser.webp' alt='Die Wetterseite für Berlin: das Wetter jetzt mit Symbol und Temperatur und darunter sieben Tageskarten mit Wettersymbol, Höchst- und Tiefsttemperatur.'>
+<img class='teaser' hidden src='teaser.webp' alt='Die Wetterseite für Berlin: das Wetter jetzt mit Symbol und Temperatur und darunter sieben Tageskarten mit Wettersymbol, Höchst- und Tiefsttemperatur, ganz unten die Uhrzeit der Daten aus dem Speicher des Browsers und der Knopf Neu laden.'>

@@ -31,6 +31,7 @@ require './include/task_html.rb'
 require './include/rate_limit.rb'
 require './include/tcp_console.rb'
 require './include/tools.rb'
+require './include/weather_mirror.rb'
 require 'base64'
 require 'cgi'
 require 'digest'
@@ -1216,11 +1217,11 @@ class Main < Sinatra::Base
         defined?(CONTACT_EMAIL) ? CONTACT_EMAIL.to_s.strip : ''
     end
 
-    # The values for ${...} in a content page: its meta block, and the
-    # site's contact address.
+    # The values for ${...} in a content page: its meta block, the site's
+    # contact address and its own address.
     def self.content_variables(meta)
         email = contact_email
-        ContentParts.page_variables(meta).merge('contact_email' => email.empty? ? nil : email)
+        ContentParts.page_variables(meta).merge('contact_email' => email.empty? ? nil : email, 'web_root' => WEB_ROOT)
     end
 
     def self.convert_image(image_path)
@@ -1826,7 +1827,8 @@ class Main < Sinatra::Base
             # page, shown only to teachers by teacher_note_panel.
             note_path = File.join(File.dirname(path), ContentParts::NOTE_FILE)
             if !entry[:kenney] && File.file?(note_path)
-                note_root = render_content_markdown(File.read(note_path), note_path, redcarpet)
+                note_markdown = ContentParts.fill_variables(File.read(note_path), Main.content_variables({}))
+                note_root = render_content_markdown(note_markdown, note_path, redcarpet)
                 parsed_content[slug][:teacher_note] = (note_root.at_css('body') || note_root).inner_html
             end
             unless entry[:extra]
@@ -3956,7 +3958,8 @@ class Main < Sinatra::Base
     # pages it uses) or reference page (where it sits, who uses it).
     def page_kind_header(slug)
         toggle = teacher_note_toggle(slug)
-        header = PageKinds.header(slug, @@content, @@sections, :development => DEVELOPMENT, :extra => toggle)
+        header = PageKinds.header(slug, @@content, @@sections, :development => DEVELOPMENT, :extra => toggle,
+                                  :show_duration => teacher_logged_in?)
         header.empty? && !toggle.empty? ? "<div class='page-kind'>#{toggle}</div>" : header
     end
 
@@ -6857,6 +6860,34 @@ class Main < Sinatra::Base
             halt 422, { :error => 'too_large', :max_states => SubsetTrace::MAX_STATES }.to_json
         end
     end
+    # The school's mirror of Open-Meteo (WeatherMirror), for when Open-Meteo
+    # refuses the school's address. Open without a login: the weather page
+    # runs on the student's own subdomain, and Ruby in the Workspace has no
+    # login either. It forwards only two endpoints with a fixed list of
+    # parameters, keeps answers for everyone, and asks Open-Meteo at most
+    # WeatherMirror::UPSTREAM_PER_HOUR times an hour. Many people share the
+    # school network's address, so the limit per client is generous.
+    WEATHER_MIRROR = WeatherMirror::Mirror.new('/internal/weather-mirror')
+    WEATHER_MIRROR_PER_CLIENT = RateLimit.new(:limit => 3000, :period => 600)
+
+    get %r{/open-meteo/(api/v1/forecast|geocoding/v1/search)} do |endpoint|
+        content_type :json
+        headers 'Access-Control-Allow-Origin' => '*', 'Access-Control-Expose-Headers' => 'X-Hackschule-Cache',
+                'Cache-Control' => 'no-store'
+        unless DEVELOPMENT || WEATHER_MIRROR_PER_CLIENT.allow?(client_ip)
+            halt 429, { :error => true, :reason => 'Zu viele Anfragen an den Spiegel. Warte ein paar Minuten.' }.to_json
+        end
+        begin
+            code, data, cache = WEATHER_MIRROR.get(endpoint, request.GET)
+        rescue WeatherMirror::Refused => e
+            halt 400, { :error => true, :reason => e.message }.to_json
+        end
+        headers 'X-Hackschule-Cache' => cache if cache
+        halt code, data unless code == 200
+        # A 200 gets its body from the after filter (helper.rb).
+        respond_raw_with_mimetype(data, 'application/json')
+    end
+
     # TCP-Konsole (/tcp-console, TcpConsole): one connection per person at a
     # time, started from their own Workspace, at most TCP_CONSOLE_CONNECTS
     # per person and ten minutes.
