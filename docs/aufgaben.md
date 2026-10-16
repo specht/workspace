@@ -1242,8 +1242,12 @@ examples:
   `stufen/` oder `loesung/`) oder `{ text: … }` für ein paar Zeilen;
   `executable: true` dazu (`{ from: …, executable: true }`) macht sie
   ausführbar.
+- `archive` entpackt vorher ein `.tar.gz` aus dem Ordner der Aktivität in den
+  Workspace-Ordner, für Prüfungen, die viele Dateien lesen (die Akten in
+  `terminal-mystery`).
 - `answer` ist eine Antwort, wie Lernende sie eintippen, für `answer` mit
-  `compare: regex`.
+  `compare: regex` und für `command`: dort der Befehl, den der Test mit `sh`
+  im Workspace-Ordner ausführt, wie der Gast in `/workspace`.
 - `say` ist ein Stück der Meldung, die ein abgelehntes Beispiel bekommen muss.
   So zeigt der Test auch, dass die richtige Meldung kommt.
 - Unter `ruby:` oder `python:` stehen die Beispiele einer Sprachvariante mit
@@ -1262,11 +1266,12 @@ cd src/ruby && ruby test/task_examples_test.rb
 ```
 
 Der Test führt jedes Beispiel durch dieselbe Prüfung wie der Knopf »Prüfen«;
-`ruby`- und `python`-Prüfungen laufen mit den Interpretern auf dem Rechner.
+`ruby`- und `python`-Prüfungen laufen mit den Interpretern auf dem Rechner,
+`command` mit seinem `sh`.
 Prüfungen, die einen Workspace oder eine Datenbank brauchen (`sql`, `cypher`,
 `git`, `measure`, `scene` …), testet er noch nicht; ob die Schritte einer Seite
 zu einer gelösten Aufgabe führen, prüfen `check-task` und `tutorial-step` in
 den Screenshot-Rezepten ([aktivitaet-schreiben.md](aktivitaet-schreiben.md)).
-Jede Prüfung vom Typ `files`, `html`, `css`, `references`, `ruby`, `python`
-und jede `answer` mit `compare: regex` braucht Beispiele, sonst schlägt der
-Test fehl.
+Jede Prüfung vom Typ `files`, `html`, `css`, `references`, `ruby`, `python`,
+`command` und jede `answer` mit `compare: regex` braucht Beispiele, sonst
+schlägt der Test fehl.

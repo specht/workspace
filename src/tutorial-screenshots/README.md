@@ -347,6 +347,10 @@ check-task-fails: lock python
   passes. Like »Prüfen«, it records the result for the screenshot user.
 - `check-task-fails: ID [ruby|python]` expects the check to reject: the step
   before the task must not already solve it.
+- After `<-` comes what a student types into the card, for `command`,
+  `answer`, `number` and `choice` tasks (an option by its number, from 0):
+  `check-task: hinweise <- grep '^HINWEIS' bitstein/tatort.txt`,
+  `check-task-fails: taeter <- Marlene Voss`.
 
 Assertions change nothing on screen, so they are not part of any state hash:
 adding or removing one re-renders nothing. They run whenever the recipe is

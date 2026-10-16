@@ -621,10 +621,12 @@ function parseRecipe(text, markdown, markdownPath, recipeStart) {
             recipe.actions.push({ type: 'terminal-expect-no-text', text: match[1] });
         } else if ((match = line.match(/^expect-no-text:\s*(.+)$/))) {
             recipe.actions.push({ type: 'expect-no-text', text: match[1] });
-        } else if ((match = line.match(/^check-task(-fails)?:\s*([a-z0-9][a-z0-9-]*)(?:\s+(ruby|python))?$/))) {
+        } else if ((match = line.match(/^check-task(-fails)?:\s*([a-z0-9][a-z0-9-]*)(?:\s+(ruby|python))?(?:\s+<-\s*(.*))?$/))) {
             // The task lives in the tutorial's own tasks.yaml: activity/id.
+            // After <- comes what a student types into the card: a command,
+            // an answer, the number of an option.
             const activity = path.basename(path.dirname(markdownPath));
-            recipe.actions.push({ type: match[1] ? 'check-task-fails' : 'check-task', task: `${activity}/${match[2]}`, language: match[3] || null });
+            recipe.actions.push({ type: match[1] ? 'check-task-fails' : 'check-task', task: `${activity}/${match[2]}`, language: match[3] || null, answer: (match[4] || '').trim() });
         } else if ((match = line.match(/^wait-for-text:\s*(.+)$/))) {
             const text = match[1].trim();
             recipe.actions.push({ type: 'wait-for-text', text });
@@ -2517,16 +2519,17 @@ async function expectNoText(text, targetTab) {
     }
 }
 
-// check-task: ID [LANGUAGE] runs the task's check the way the »Prüfen«
-// button does, as the screenshot user against their Workspace, and fails
-// unless it passes; check-task-fails expects it to reject. Like »Prüfen«,
-// it records the result for that user.
+// check-task: ID [LANGUAGE] [<- ANSWER] runs the task's check the way the
+// »Prüfen« button does, with ANSWER in the card's field, as the screenshot
+// user against their Workspace, and fails unless it passes;
+// check-task-fails expects it to reject. Like »Prüfen«, it records the
+// result for that user.
 async function checkTask(action, shouldPass) {
     const key = action.task;
     // From the website's bootstrap page, with the screenshot user's session
     // (browserRequest): Node in this container cannot reach the site's host.
     const result = jsonResponse(await browserRequest('/api/task/check', {
-        body: { task: key, answer: '', ...(action.language ? { language: action.language } : {}) },
+        body: { task: key, answer: action.answer || '', ...(action.language ? { language: action.language } : {}) },
     }), `check-task ${key}`);
     const message = `${result.message || ''}`.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
     const passed = result.status === 'correct';

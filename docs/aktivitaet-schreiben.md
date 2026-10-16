@@ -95,6 +95,8 @@ etwa ein Gerüst, das die Lernenden ausbauen, steht mit
 Rezepte können auch prüfen, ob die Schritte der Seite aufgehen:
 `check-task: lock` führt die Prüfung einer Aufgabe aus wie der Knopf »Prüfen«,
 `check-task-fails: lock` verlangt, dass sie an dieser Stelle noch scheitert,
+`check-task: zeugin <- head -n 23 bitstein/strassen/moewenweg.txt | tail -n 1`
+trägt vorher eine Antwort oder einen Befehl in die Karte ein,
 `expect-no-text: Traceback` schlägt an, wenn etwas nicht auf dem Bild stehen
 darf. Schritte ohne Bild stehen in `<!-- tutorial-step … -->`.
 `src/scripts/recreate-screenshots.rb SEITE` geht dann die ganze Seite durch

@@ -27,22 +27,26 @@ require_relative 'workspace_files'
 #
 # A file is copied from the activity's folder, or given as { text: … };
 # { from: …, executable: true } or { text: …, executable: true } also sets
-# its executable bit.
-# answer: is the answer a student types; say: a piece of the message a
+# its executable bit. archive: a .tar.gz, relative to the activity's
+# folder, unpacked into the example's /workspace before the files, for a
+# case with many files (the folder of »Ein Krimi im Terminal«).
+# answer: is the answer a student types (for command: the command, run with
+# sh in the example's /workspace); say: a piece of the message a
 # rejected example must get. skip: names why a check cannot be tested here,
 # for example because it reads what a build produces. Choice and number tasks need no examples: their
 # correct answer must pass and every other option (or a number outside the
 # tolerance) must fail.
 #
 # Only checks that run without a Workspace container or a database are run
-# here (FAST_TYPES); ruby and python checks run with the local interpreters.
+# here (FAST_TYPES); ruby and python checks run with the local interpreters,
+# command checks with the local sh.
 module TaskExamples
     FILE = 'task-examples.yaml'
-    FAST_TYPES = %w[files html css references ruby python choice number answer].freeze
+    FAST_TYPES = %w[files html css references ruby python command choice number answer].freeze
     # Checks that need examples to be tested at all.
-    NEEDS_EXAMPLES = %w[files html css references ruby python].freeze
+    NEEDS_EXAMPLES = %w[files html css references ruby python command].freeze
     # answer with compare: regex needs examples as well (see missing).
-    CASE_KEYS = %w[files answer say].freeze
+    CASE_KEYS = %w[archive files answer say].freeze
 
     Outcome = Struct.new(:activity, :task, :language, :kind, :index, :ok, :detail, keyword_init: true) do
         def label
@@ -133,6 +137,15 @@ module TaskExamples
             return outcome
         end
         Dir.mktmpdir('task-example') do |root|
+            if (archive = example['archive'])
+                file = File.expand_path(archive.to_s, dir)
+                unless File.file?(file) && system('tar', '-xzf', file, '-C', root)
+                    problems << "#{FILE}: #{id} #{kind} ##{index + 1}: cannot unpack #{archive}"
+                    outcome.ok = false
+                    outcome.detail = "cannot unpack #{archive}"
+                    return outcome
+                end
+            end
             (example['files'] || {}).each do |target, source|
                 spec = source.is_a?(Hash) ? source : { 'from' => source.to_s }
                 unless spec.key?('text') || File.file?(File.join(dir, spec['from'].to_s))
