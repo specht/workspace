@@ -18,6 +18,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- »Eine JPEG-Datei decodieren« ist jetzt ein Labor in C mit PixelRAM statt
+  Pixelflow Canvas: Vorbereitung mit der PixelRAM-Vorlage, ein kleines Gerüst
+  zum Kopieren und zu jedem Teil ein Kasten »Für deinen Decoder« mit
+  Funktion, Signatur und einem Zwischenstand zum Vergleichen. Neu erklärt
+  sind Byte Stuffing und die Zick-Zack-Reihenfolge, die einem Decoder sonst
+  fehlen. Ein zweites Baseline-Foto ohne Subsampling und mit eigenen
+  Huffman-Tabellen (`/jpeg/91-baseline.jpg`) fängt Decoder, die nur das
+  Beispiel können. Sechs Aufgaben, die letzten mit Toleranz, weil zwei
+  JPEG-Decoder nie Pixel für Pixel dasselbe liefern; eine Notiz für
+  Lehrkräfte und ein vollständiger Decoder in `src/content/jpeg/loesung/`.
 - Neue Aktivität »Eine GIF-Datei decodieren« (`/gif`), im Abschnitt »Wie
   Computer rechnen« neben JPEG: Lernende schreiben in C einen GIF-Decoder, der
   mit PixelRAM zeichnet. Die Seite geht jeden Block an einer Diskette mit

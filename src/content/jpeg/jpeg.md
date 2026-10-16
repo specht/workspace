@@ -1,6 +1,12 @@
 <div class='meta'>
 image: title.webp
 kind: labor
+language: C
+duration: 4 Doppelstunden
+requires: [pixelram]
+reference: [pixelram, workspace]
+template: https://github.com/specht/pixelram-starter.git
+template_name: des PixelRAM-Starters
 </div>
 
 <div
@@ -217,6 +223,123 @@ Diskrete Kosinustransformation (DCT)
 
 <!-- Basiswechsel, Quantisierung, Huffman-Codierung -->
 
+Dein Decoder wird ein Programm in C, das das Bild mit PixelRAM zeigt. Hast du schon [eine GIF-Datei decodiert](/gif), kennst du den Weg: Datei lesen, Block für Block, Bits lesen, Bild zeichnen. JPEG ist schwerer, weil das Bild nicht nur gepackt, sondern umgerechnet ist.
+
+## Vorbereitung
+
+### Die PixelRAM-Vorlage
+
+Hast du [Echtzeitgrafik mit C](/pixelram) oder das GIF-Labor schon bearbeitet, öffne einfach den Ordner `/workspace/pixelram-starter` mit <kbd>Strg</kbd><kbd>K</kbd> <kbd>Strg</kbd><kbd>O</kbd>. Sonst klone die Vorlage:
+
+_include(workspace#repository-klonen)
+
+### Die Beispieldateien
+
+Lade im Terminal zwei Fotos in den Ordner der Vorlage:
+
+```bash_copy
+wget ${web_root}/jpeg/44-baseline.jpg
+wget ${web_root}/jpeg/91-baseline.jpg
+```
+
+Beide haben 1000 × 667 Pixel und sind Baseline-JPEGs, die einfachste Art von JPEG, um die es hier geht. Sie unterscheiden sich, wo es für deinen Decoder darauf ankommt: `44-baseline.jpg` speichert die Farbe nur für jedes zweite Pixel in jeder Richtung und benutzt die Huffman-Tabellen aus dem Standard, `91-baseline.jpg` speichert die Farbe für jedes Pixel und bringt eigene, kürzere Tabellen mit. Alle Beispiele auf dieser Seite stammen aus `44-baseline.jpg`; die Aufgaben fragen oft nach der anderen Datei.
+
+### Das Programm
+
+Lege im Ordner der Vorlage die Datei `jpeg.c` an, mit diesem Anfang:
+
+```c_copy
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include "pixelram.h"
+
+// Die ganze Datei im Speicher, und wo wir gerade lesen
+uint8_t *file;
+long file_size;
+long pos = 0;
+
+void fail(const char *message)
+{
+    printf("Fehler bei Byte %ld: %s\n", pos, message);
+    exit(1);
+}
+
+uint8_t read_byte(void)
+{
+    if (pos >= file_size)
+        fail("Die Datei ist zu Ende.");
+    return file[pos++];
+}
+
+// JPEG speichert Zahlen mit zwei Bytes im Big Endian: das hohe Byte zuerst
+int read_word(void)
+{
+    int high = read_byte();
+    int low = read_byte();
+    return (high << 8) | low;
+}
+
+void read_file(const char *path)
+{
+    FILE *f = fopen(path, "rb");
+    if (!f)
+    {
+        printf("Kann %s nicht öffnen.\n", path);
+        exit(1);
+    }
+    fseek(f, 0, SEEK_END);
+    file_size = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    file = malloc(file_size);
+    fread(file, 1, file_size, f);
+    fclose(f);
+}
+
+int main(int argc, char **argv)
+{
+    if (argc < 2)
+    {
+        printf("Welche Datei? make PROGRAM=jpeg ARGS=44-baseline.jpg\n");
+        return 1;
+    }
+    read_file(argv[1]);
+    printf("%s: %ld Bytes\n", argv[1], file_size);
+    return 0;
+}
+```
+
+`read_byte` gibt das Byte an der Stelle `pos` zurück und rückt `pos` weiter, `read_word` setzt zwei Bytes zu einer Zahl zusammen, das hohe zuerst. Übersetze mit dem Namen der Datei, die das Programm lesen soll:
+
+```bash
+make PROGRAM=jpeg ARGS=44-baseline.jpg
+```
+
+<!-- tutorial-screenshot
+# Klonen wie im Handbuch »Workspace« (oben eingebunden); jpeg.c ist hier
+# schon der fertige Decoder, oben steht dasselbe wie im Gerüst
+show-left-sidebar
+clone-start: https://github.com/specht/pixelram-starter.git @ 8f36e382554999421d77687c69f7541ca2c4afb7
+press: Enter
+wait-for-input-value: /workspace/
+press: Enter
+wait-for-text: Would you like to open the repository?
+click: Open
+wait-for-text: main.c
+write-file: jpeg.c <- file:loesung/jpeg.c
+write-file: 44-baseline.jpg <- file:beispiele/44-baseline.jpg
+open-file: jpeg.c
+terminal-open
+terminal-run: make PROGRAM=jpeg ARGS=44-baseline.jpg
+terminal-wait-for-prompt: 180
+-->
+<img class='full' src='make.webp' alt='Der Workspace mit jpeg.c im Editor und 44-baseline.jpg im Explorer; im Terminal darunter hat make PROGRAM=jpeg ARGS=44-baseline.jpg die Datei jpeg.html erzeugt.'>
+
+Öffne `jpeg.html` mit »Go Live« und dann die Konsole von PixelRAM: Fahre mit der Maus über das Bild und klicke unten rechts auf das Terminal-Symbol oder drücke <kbd>&#96;</kbd>. Dort steht `44-baseline.jpg: 143206 Bytes`. In der Konsole kannst du oben auch die Argumente ändern und mit »Run« eine andere Datei laden, ohne neu zu übersetzen.
+
+Von hier an schreibst du den Decoder selbst. Zu jedem Teil sagt dir ein Kasten <strong>Für deinen Decoder</strong>, welche Funktion du brauchst und was dein Programm ausgeben sollte, wenn sie stimmt.
+
 ## Grober Ablauf eines JPEG-Decoders
 
 Um eine JPEG-Datei zu decodieren, musst du die folgenden Schritte durchführen:
@@ -228,7 +351,7 @@ Um eine JPEG-Datei zu decodieren, musst du die folgenden Schritte durchführen:
 5. **Inverse DCT**: Wende die inverse diskrete Kosinustransformation an, um die Pixelwerte aus den DCT-Koeffizienten zu berechnen.
 6. **Bild rekonstruieren**: Setze die Pixelwerte zusammen, um das endgültige Bild zu erstellen. Dabei müssen die Chroma-Kanäle entsprechend der Subsampling-Methode interpoliert werden, falls diese verwendet wurde.
 7. **Farbraumkonvertierung**: Nutze eine Farbraumtransformation, um die Bilddaten von YCbCr zurück in RGB zu konvertieren.
-8. **Bild anzeigen**: Zeige das rekonstruierte Bild mit dem Pixelflow Canvas an.
+8. **Bild anzeigen**: Setze jedes Pixel mit `set_pixel_rgb` auf einen Bildschirm von PixelRAM im Modus `pixel_rgb24`.
 
 Der vollständige [JPEG-Standard](https://www.w3.org/Graphics/JPEG/itu-t81.pdf) ist sehr umfangreich und komplex. Wir fassen deshalb hier alle relevanten Informationen zusammen, die du für die Implementierung eines Baseline-JPEG-Decoders benötigst.
 
@@ -288,6 +411,22 @@ Marker sind spezielle 16-Bit-Sequenzen, die bestimmte Abschnitte eines JPEG-Bild
 
 <div class='hint hint-warning'>
 Du solltest sicherstellen, dass die Datei mit den Bytes 0xFFD8 (SOI) beginnt. Anschließend kannst du in einer Schleife immer einen Marker lesen, dann je nach Marker eine Länge und die entsprechende Anzahl von Bytes überspringen, bis du auf den SOS-Marker (0xFFDA) stößt. Ab diesem Punkt kannst du später die komprimierten Bilddaten lesen.
+</div>
+
+<div class='hint'>
+<strong>Für deinen Decoder:</strong> Schreib in <code>main</code> diese Schleife. Lass sie für jeden Marker ausgeben, welcher es ist und wie lang sein Segment ist, und am SOS-Marker aufhören. Merk dir vor dem Überspringen, wo das nächste Segment beginnt: <code>pos</code> plus Länge minus 2, denn die Länge zählt sich selbst mit. Für <code>44-baseline.jpg</code> sieht die Ausgabe so aus:
+<pre class='mt-2 mb-0'>
+FFE0   16
+FFDB   67
+FFDB   67
+FFC0   17
+FFC4   31
+FFC4  181
+FFC4   31
+FFC4  181
+FFDA   12
+</pre>
+Steht dort Unsinn, liest <code>read_word</code> die Bytes vielleicht in der falschen Reihenfolge: JPEG ist Big Endian.
 </div>
 
 ## Die Segmente der Datei
@@ -388,6 +527,10 @@ Speichere die Werte in dem entsprechenden Slot (Tq) ab, damit du sie später fü
 </td>
 </tr>
 </table>
+</div>
+
+<div class='hint'>
+<strong>Für deinen Decoder:</strong> <code>void read_dqt(int length)</code> liest die Tabellen eines DQT-Segments in ein Array <code>int quant[4][64]</code>, so lange, bis das Segment zu Ende ist. Die Werte stehen in Zig-Zag-Reihenfolge in der Datei; wie du sie an ihren Platz im Block bringst, steht weiter unten bei den AC-Koeffizienten. Gib zur Probe die ersten acht Werte aus, wie sie in der Datei stehen: Für Slot 0 von <code>44-baseline.jpg</code> sind es <code>5 3 4 4 4 3 5 4</code>.
 </div>
 
 ### Start of Frame (SOF<sub>0</sub>)
@@ -504,6 +647,12 @@ Du kannst für deinen Decoder davon ausgehen, dass dieser Wert immer 3 ist und f
 #### Chroma Subsampling
 
 In diesem Beispiel siehst du, dass die Y-Komponente (Helligkeit) mit einem 2:2-Subsampling codiert ist, während die Cb- und Cr-Komponenten (Farbinformationen) mit einem 1:1-Subsampling codiert sind. Im JPEG-Jargon spricht man von einer Minimal Coding Unit (MCU), die in diesem Fall aus 4 Y-Blöcken, 1 Cb-Block und 1 Cr-Block besteht. Das bedeutet, dass für jede MCU 4 Blöcke der Y-Komponente und jeweils 1 Block der Cb- und Cr-Komponenten codiert werden: die Auflösung der Chroma-Komponenten ist also halb so hoch wie die der Luma-Komponente in beiden Dimensionen. 
+
+<div class='hint'>
+<strong>Für deinen Decoder:</strong> Lies Breite, Höhe und die drei Komponenten mit Kennung, Sampling-Faktoren und Quantisierungstabelle. Merk dir außerdem die größten Sampling-Faktoren, hier 2 und 2: Sie bestimmen die Größe einer MCU. Dann öffnest du den Bildschirm mit <code>screen_open(width, height, pixel_rgb24, argv[1])</code>. Bei einem anderen SOF-Marker als 0xFFC0, etwa 0xFFC2 für ein progressives JPEG, beendet <code>fail</code> das Programm: Das kann dein Decoder nicht.
+</div>
+
+_task(bloecke)
 
 ### Define Huffman Table (DHT)
 
@@ -773,6 +922,12 @@ In diesem Beispiel wird eine AC-Tabelle im Slot 0 definiert, die deutlich mehr C
 00000180  <span class='m4'>f2 f3 f4 f5 f6 f7 f8 f9  fa</span> ff c4 00 1f 01 00 03  |................|
 </pre>
 
+<div class='hint'>
+<strong>Für deinen Decoder:</strong> <code>void read_dht(int length)</code> liest die Tabellen eines DHT-Segments und rechnet für jede <code>min_code</code>, <code>max_code</code> und <code>val_ptr</code> aus. Ein DHT-Segment kann mehrere Tabellen enthalten, so wie ein DQT-Segment. Am übersichtlichsten ist ein <code>struct</code> mit den vier Arrays, und davon zwei Arrays mit je vier Slots, eines für DC und eines für AC. Gib für jede Tabelle aus, wie viele Codes sie hat: Bei <code>44-baseline.jpg</code> sind es 12, 162, 12 und 162, die Tabellen aus dem Standard.
+</div>
+
+_task(codes)
+
 ### Start of Scan (SOS)
 
 Der SOS-Marker (Start of Scan) markiert den Beginn der komprimierten Bilddaten. Er enthält Informationen über die Anzahl der Komponenten im Scan sowie die zu verwendenden Huffman-Tabellen.
@@ -883,6 +1038,10 @@ In komplexeren JPEG-Varianten können Teile der Bilddaten nach und nach codiert 
 </table>
 </div>
 
+<div class='hint'>
+<strong>Für deinen Decoder:</strong> Merk dir für jede Komponente, welche DC- und welche AC-Tabelle sie benutzt. Direkt nach dem SOS-Segment beginnen die Bilddaten, an der Stelle, an der <code>pos</code> jetzt steht. Die Schleife über die Segmente ist damit fertig.
+</div>
+
 ## Vom Datenstrom zum Bild
 
 Mit den Tabellen aus den Segmenten lassen sich jetzt die komprimierten Bilddaten lesen, Block für Block, bis am Ende die RGB-Werte jedes Pixels feststehen.
@@ -898,6 +1057,20 @@ Direkt hinter dem SOS-Segment beginnen die komprimierten Bilddaten:
 </pre>
 
 Dabei wird das Bild MCU-weise codiert. In unserem Beispiel haben wir eine MCU-Größe von 16x16 Pixeln, bestehend aus 4 Blöcken der Y-Komponente (jeweils 8x8 Pixel), 1 Block der Cb-Komponente (8x8 Pixel) und 1 Block der Cr-Komponente (8x8 Pixel), also folgende Reihenfolge: Y<sub>0</sub>, Y<sub>1</sub>, Y<sub>2</sub>, Y<sub>3</sub>, Cb<sub>0</sub>, Cr<sub>0</sub>. Wir müssen demnach insgesamt sechs 8x8-Pixel-Blöcke decodieren, um eine MCU von 16x16 Pixeln zu erhalten.
+
+#### Bits lesen und Byte Stuffing
+
+Die Bilddaten sind ein Strom von Bits, und JPEG liest jedes Byte vom höchsten Bit an. In diesem Strom kann jeder Bytewert vorkommen, auch 0xFF, mit dem jeder Marker beginnt. Damit ein Programm die Marker trotzdem findet, schreibt der Encoder hinter jedes 0xFF in den Bilddaten ein 0x00, das nicht dazugehört. Das heißt **Byte Stuffing**. In `44-baseline.jpg` steht das erste schon bei Offset 0x387:
+
+<pre class='spec hexdump'>
+00000380  80 12 47 9c 7e 35 ec <span class='m0'>ff</span>  <span class='mg'>00</span> 0e be 21 d9 eb 10 47  |..G.~5.....!...G|
+</pre>
+
+Zu den Bilddaten gehört nur das <span class='m0'>0xFF</span>, das <span class='mg'>0x00</span> überspringt dein Decoder. Steht hinter einem 0xFF etwas anderes als 0x00, ist es ein Marker, und die Bilddaten sind zu Ende; bei unseren Dateien ist das 0xFFD9, End of Image. `44-baseline.jpg` hat 391 solcher Stellen. Ohne Byte Stuffing geht das Lesen deshalb nach kurzer Zeit schief.
+
+<div class='hint'>
+<strong>Für deinen Decoder:</strong> Ein Bitleser aus zwei Funktionen: <code>int read_bit(void)</code> gibt das nächste Bit zurück. Dafür hält er das aktuelle Byte fest und zählt, wie viele Bits davon noch übrig sind; ist keines mehr übrig, liest er das nächste Byte und überspringt das 0x00 nach einem 0xFF. <code>int read_bits(int n)</code> liest <code>n</code> Bits und setzt sie zu einer Zahl zusammen, das erste als höchstes. Darauf baut <code>int decode_huffman(huffman *table)</code>: Sie liest Bit für Bit, hängt jedes hinten an den Code an und prüft nach jedem Bit, ob der Code für seine Länge gültig ist, also höchstens <code>max_code</code>. Dann gibt sie das Symbol zurück. Nach 16 Bits ohne gültigen Code ist die Datei kaputt oder der Bitleser falsch.
+</div>
 
 #### Decodierung eines Blocks: DC-Koeffizient
 
@@ -966,6 +1139,12 @@ Also rechnen wir: 7 - 127 = -120. Da der DC-Koeffizient nicht direkt, sondern al
 <div class='hint'>
 Achtung: Für jede Komponente gibt es einen eigenen vorherigen DC-Koeffizienten.
 </div>
+
+<div class='hint'>
+<strong>Für deinen Decoder:</strong> <code>int extend(int value, int bits)</code> macht aus den gelesenen Bits die Zahl mit Vorzeichen, nach der Regel oben; bei 0 Bits ist sie 0. Den vorigen DC-Koeffizienten merkst du dir bei der Komponente, und vor dem ersten Block ist er 0. Gib zur Probe die DC-Koeffizienten der ersten Blöcke von Y aus: Der erste ist −120.
+</div>
+
+_task(dc)
 
 Unser DCT-Block sieht bisher wie folgt aus:
 
@@ -1249,6 +1428,32 @@ Es gibt zwei spezielle Symbole bei der Decodierung der AC-Koeffizienten:
 - `0x00`: EOB (End of Block) → Alle restlichen Koeffizienten in diesem Block haben den Wert 0.
 - `0xF0`: ZRL (Zero Run Length) → Es werden 16 Nullen in der DCT-Matrix eingetragen, bevor der nächste Koeffizient decodiert wird.
 
+#### Zig-Zag
+
+Die 64 Koeffizienten eines Blocks kommen nicht Zeile für Zeile, sondern im Zick-Zack: oben links beginnend, schräg hin und her, bis unten rechts. So stehen die tiefen Frequenzen vorn und die hohen, die nach der Quantisierung meist 0 sind, hinten, wo ein einziges EOB sie alle erledigt. Dieselbe Reihenfolge haben die Quantisierungstabellen im DQT-Segment.
+
+Diese Tabelle sagt für jede Position <code>k</code> im Zick-Zack, an welchen Platz im Block sie gehört, wenn man den Block Zeile für Zeile von 0 bis 63 durchnummeriert:
+
+```c_copy
+// Position k im Zick-Zack -> Platz im 8x8-Block, Zeile für Zeile
+const int ZIGZAG[64] = {
+     0,  1,  8, 16,  9,  2,  3, 10,
+    17, 24, 32, 25, 18, 11,  4,  5,
+    12, 19, 26, 33, 40, 48, 41, 34,
+    27, 20, 13,  6,  7, 14, 21, 28,
+    35, 42, 49, 56, 57, 50, 43, 36,
+    29, 22, 15, 23, 30, 37, 44, 51,
+    58, 59, 52, 45, 38, 31, 39, 46,
+    53, 60, 61, 54, 47, 55, 62, 63,
+};
+```
+
+Der dritte Koeffizient (k = 2) gehört also auf Platz 8: Zeile 1, Spalte 0.
+
+<div class='hint'>
+<strong>Für deinen Decoder:</strong> <code>void decode_block(…)</code> liest einen Block: erst den DC-Koeffizienten, dann in einer Schleife die AC-Koeffizienten von k = 1 bis 63, mit EOB und ZRL. Jeder Koeffizient kommt an den Platz <code>ZIGZAG[k]</code> eines Arrays <code>int coef[64]</code>, das mit Nullen beginnt. Am einfachsten wird die Dequantisierung, wenn du schon beim Lesen der Quantisierungstabellen jeden Wert mit <code>ZIGZAG</code> an seinen Platz bringst: Dann gehören <code>coef[i]</code> und <code>quant[slot][i]</code> zusammen. Vergisst du die Zick-Zack-Reihenfolge, stimmen die Farben trotzdem ungefähr, aber jeder Block ist ein Muster aus Streifen.
+</div>
+
 ### Dequantisierung
 
 Jeder Block wird anschließend dequantisiert, indem die Koeffizienten komponentenweise mit den entsprechenden Werten aus der Quantisierungstabelle multipliziert werden. In unserem Beispiel verwenden wir die folgende Quantisierungstabelle für die Y-Komponente, die wir vorher aus dem ersten DQT-Segment erstellt haben:
@@ -1275,9 +1480,19 @@ Du kannst folgende Formel für die iDCT verwenden:
 
 Da die resultierenden Werte nach der iDCT noch im Bereich von -128 bis 127 liegen, müssen wir sie um 128 verschieben, um den Bereich von 0 bis 255 zu erhalten.
 
+<div class='hint'>
+<strong>Für deinen Decoder:</strong> Die Formel hat vier Summen über je 8 Werte, für jedes der 64 Pixel. Die Kosinuswerte hängen nur von x und u (und y und v) ab: Rechne sie einmal am Anfang in ein Array <code>double idct_cos[8][8]</code>, dann geht es schnell genug. Noch schneller wird es, wenn du erst jede Zeile und dann jede Spalte transformierst, aber das ist nicht nötig. Runde das Ergebnis, verschiebe es um 128 und begrenze es auf 0 bis 255. <code>M_PI</code> gibt es mit <code>-std=c11</code> nicht; schreib dir π als Konstante hin.
+</div>
+
 ### Rekonstruktion der MCU
 
-Wenn wir 6 Blöcke decodiert haben (4&times;Y, 1&times;Cb, 1&times;Cr), können wir die MCU von 16x16 Pixeln rekonstruieren. Dazu müssen wir die Blöcke der Y-Komponente entsprechend ihrer Position in der MCU anordnen und die Blöcke der Cb- und Cr-Komponenten auf die Größe von 16x16 Pixeln hochskalieren (da sie nur 8x8 Pixel groß sind). Anschließend können wir die iDCT auf jeden Block anwenden, um die Pixelwerte zu erhalten.
+Wenn wir 6 Blöcke decodiert haben (4&times;Y, 1&times;Cb, 1&times;Cr), können wir die MCU von 16x16 Pixeln rekonstruieren. Dazu müssen wir die Blöcke der Y-Komponente entsprechend ihrer Position in der MCU anordnen und die Blöcke der Cb- und Cr-Komponenten auf die Größe von 16x16 Pixeln hochskalieren (da sie nur 8x8 Pixel groß sind). Die iDCT ist dann schon auf jeden Block angewendet: Hochskaliert werden Pixelwerte, nicht Koeffizienten.
+
+<div class='hint'>
+<strong>Für deinen Decoder:</strong> Eine MCU ist 8 · größter horizontaler Sampling-Faktor Pixel breit und 8 · größter vertikaler Faktor hoch, bei <code>44-baseline.jpg</code> also 16 × 16. Die Blöcke einer Komponente kommen Zeile für Zeile: erst die beiden oberen Y-Blöcke, dann die unteren. 667 ist kein Vielfaches von 16: Die letzte Reihe von MCUs ragt über das Bild hinaus, und was darüber hinausragt, zeichnest du nicht. Am einfachsten schreibst du jede Komponente erst in eine eigene Ebene, ein Array in der Größe aller MCUs, und rechnest danach Pixel für Pixel die Farben aus. Bei Subsampling liest du Cb und Cr dabei an einer kleineren Stelle, bei <code>44-baseline.jpg</code> an <code>x / 2</code>, <code>y / 2</code>, allgemein an <code>x · h / hmax</code>, <code>y · v / vmax</code>.
+</div>
+
+_task(mcus)
 
 ### Farbraumkonvertierung
 
@@ -1288,6 +1503,60 @@ Nachdem wir die Pixelwerte für die Y-, Cb- und Cr-Komponenten erhalten haben, m
 </div>
 
 Anschließend müssen die RGB-Werte noch einmal auf den Bereich von 0 bis 255 beschränkt werden, da sie durch die Berechnung auch Werte außerhalb dieses Bereichs annehmen können.
+
+<div class='hint'>
+<strong>Für deinen Decoder:</strong> Rechne mit <code>double</code>, runde und begrenze jeden Wert auf 0 bis 255, dann setzt <code>set_pixel_rgb(x, y, r, g, b)</code> das Pixel. Sind Hauttöne grün und Himmel rot, sind Cb und Cr vertauscht.
+</div>
+
+## Prüfen
+
+Ob dein Bild stimmt, siehst du zuerst mit dem Auge: Das Foto sollte aussehen wie im Browser.
+
+<!-- tutorial-screenshot
+go-live
+tab: preview
+viewport: 800x533
+hook: open jpeg.html
+crop-element: #canvas
+-->
+<img class='full' src='ergebnis.webp' alt='Eine Frau mit Maske trägt ein Kleinkind in einem Tragetuch an einer Bushaltestelle; daneben eine Tafel mit Busnummern.'>
+
+<p class='expl'>Fotos mit freundlicher Genehmigung von Ian Kobylanski · <a href='https://koby.photography/' target='_blank'>https://koby.photography/</a></p>
+
+Pixel für Pixel vergleichen lassen sich zwei JPEG-Decoder nicht: Die iDCT rechnet mit Kommazahlen, und ob ein Wert 127 oder 128 wird, hängt davon ab, wie genau und in welcher Reihenfolge gerechnet wird. Decoder wie der in deinem Browser rechnen Cb und Cr bei Subsampling außerdem weich hoch, statt einen Wert für vier Pixel zu nehmen. Die Mittelwerte von Rot, Grün und Blau über das ganze Bild ändert das aber kaum. Schreib diese Funktion über `main` und ruf sie am Ende auf:
+
+```c_copy
+// Mittelwerte von Rot, Grün und Blau über das ganze Bild
+void print_average(void)
+{
+    double sum[3] = {0, 0, 0};
+    for (int y = 0; y < screen_height(); y++)
+        for (int x = 0; x < screen_width(); x++)
+        {
+            uint8_t rgb[3];
+            get_pixel_rgb(x, y, &rgb[0], &rgb[1], &rgb[2]);
+            for (int i = 0; i < 3; i++)
+                sum[i] += rgb[i];
+        }
+    double n = (double) screen_width() * screen_height();
+    printf("Mittelwerte: Rot %.1f, Grün %.1f, Blau %.1f\n", sum[0] / n, sum[1] / n, sum[2] / n);
+}
+```
+
+_task(blau)
+
+Die Mittelwerte prüfen vor allem die DC-Koeffizienten und die Farben. Ob auch die AC-Koeffizienten stimmen, zeigt ein einzelnes Pixel an einer Stelle mit vielen Details:
+
+_task(pixel)
+
+## Weiter geht's
+
+Dein Decoder liest jetzt Baseline-JPEGs. Was ihm noch fehlt:
+
+- **Progressive JPEGs**: Die übrigen Fotos von [Trennung von Helligkeit und Farbe](/colorspace) und [DCT](/dct), zum Beispiel <a href='/jpeg/30.jpg' target='_blank'>30.jpg</a>, sind progressiv (SOF<sub>2</sub>): Erst kommen von allen Blöcken die DC-Koeffizienten, dann in mehreren Durchgängen die AC-Koeffizienten, erst grob, dann genau. Lädt das Bild langsam, wird es nach und nach schärfer, wie bei GIF mit Interlacing. Probier aus, ob dein Decoder sie sauber ablehnt.
+- **Restart Marker**: Manche Dateien haben ein DRI-Segment (0xFFDD) und in den Bilddaten alle paar MCUs einen Marker 0xFFD0 bis 0xFFD7. Danach beginnen die vorigen DC-Koeffizienten wieder bei 0, und der Bitleser beginnt an einem neuen Byte. So zerstört ein Fehler in der Datei nicht das ganze restliche Bild.
+- **Weiche Farben**: Rechne Cb und Cr bei Subsampling zwischen den Werten hoch, statt einen für vier Pixel zu nehmen. Vergleich die Ränder roter Flächen vorher und nachher.
+- **Schneller**: Die iDCT ist der langsamste Teil. Der Algorithmus von Arai, Agui und Nakajima braucht für 8 Werte nur 5 Multiplikationen; die übrigen schlägt er der Dequantisierung zu.
 
 <script>
 
