@@ -41,6 +41,21 @@ tasks:
           - { pattern: 'Content-Length', say: 'Noch fehlt der Header `Content-Length`: Er sagt dem Browser, wie viele Bytes kommen.' }
           - { pattern: 'Thread\.new', say: 'Noch bedient der Server eine Verbindung nach der anderen. Mit `Thread.new` bekommt jede einen eigenen Thread.' }
 
+    python:
+      prompt: |
+        Lass deinen Server mit einer vollständigen HTTP-Antwort antworten, jede
+        Verbindung in einem eigenen Thread (`threading.Thread`), und speichere.
+      file: webserver/server.py
+      check:
+        type: files
+        path: webserver/server.py
+        expect:
+          format: text
+          contains:
+            - { pattern: 'HTTP/1\.1 (200|\{)', say: 'In `server.py` finde ich noch keine Status-Line wie `HTTP/1.1 200 OK`.' }
+            - { pattern: 'Content-Length', say: 'Noch fehlt der Header `Content-Length`: Er sagt dem Browser, wie viele Bytes kommen.' }
+            - { pattern: 'threading\.Thread', say: 'Noch bedient der Server eine Verbindung nach der anderen. Mit `threading.Thread` bekommt jede einen eigenen Thread.' }
+
   - id: bytes
     title: Zeichen oder Bytes?
     prompt: |
@@ -56,6 +71,9 @@ tasks:
       - when: { equals: 6 }
         say: Das sind die Zeichen. `Content-Length` zählt Bytes, und ein Umlaut ist in UTF-8 länger als ein Byte.
     solution: G, r, e und `\n` sind je ein Byte, ü und ß je zwei. Zusammen 8 Bytes, `"Grüße\n".bytesize`.
+
+    python:
+      solution: G, r, e und `\n` sind je ein Byte, ü und ß je zwei. Zusammen 8 Bytes, `len('Grüße\n'.encode())`.
 
   - id: statuscodes
     title: Eine Seite, die es nicht gibt
@@ -95,6 +113,9 @@ tasks:
       - when: { problem: missing }
         say: Es gibt noch keine `webserver/public/index.html`. Der Ordner `public` gehört neben `server.rb`.
 
+    python:
+      file: webserver/server.py
+
   - id: sicherheit
     title: Nur aus public
     prompt: |
@@ -104,7 +125,7 @@ tasks:
       type: choice
       options:
         - Sonst könnte jemand mit `/../server.rb` Dateien außerhalb von public lesen
-        - 'Sonst findet Ruby Dateien in Unterordnern von public nicht'
+        - 'Sonst findet der Server Dateien in Unterordnern von public nicht'
         - 'Sonst schickt der Server zu einer Datei den falschen Content-Type'
         - 'Sonst muss der Server bei jeder Anfrage alle Dateien durchsuchen'
       correct: 0
@@ -112,6 +133,11 @@ tasks:
       - when: { picked: 1 }
         say: Gefunden wird die Datei auch ohne die Prüfung. Die Frage ist, welche Dateien jemand bekommen darf.
     solution: '`..` heißt »eine Ebene höher«. Ohne Prüfung bekäme jeder, der danach fragt, jede Datei, die der Server lesen kann: den Quelltext, Passwörter in Konfigurationsdateien. Die Prüfung erlaubt nur Dateien in public.'
+
+    python:
+      prompt: |
+        Warum prüft der Server mit `startswith(PUBLIC_DIR + '/')`, wo die Datei
+        liegt, bevor er sie schickt?
 
   - id: parameter
     title: Ein Name in der Adresse
@@ -132,6 +158,14 @@ tasks:
         say: Der Parameter `name` ist da, also gibt es einen Namen.
     solution: '`%20` ist ein kodiertes Leerzeichen. `URI.decode_www_form` wandelt es zurück, und der Server begrüßt »Ada Lovelace«.'
 
+    python:
+      feedback:
+        - when: { picked: 1 }
+          say: '`parse_qsl` macht aus den kodierten Zeichen wieder normale.'
+        - when: { picked: 3 }
+          say: Der Parameter `name` ist da, also gibt es einen Namen.
+      solution: '`%20` ist ein kodiertes Leerzeichen. `parse_qsl` wandelt es zurück, und der Server begrüßt »Ada Lovelace«.'
+
   - id: mutex
     title: Zwei auf einmal
     prompt: |
@@ -143,12 +177,21 @@ tasks:
         - Beide bekommen »Nummer 11«, und `$visits` ist danach 11 statt 12
         - 'Der Server stürzt ab, weil zwei Threads dieselbe Variable ändern'
         - 'Einer der beiden wartet und bekommt gar keine Antwort'
-        - 'Nichts, Ruby zählt immer richtig, auch mit mehreren Threads'
+        - 'Nichts, die Zahl stimmt immer, auch mit mehreren Threads'
       correct: 0
     feedback:
       - when: { picked: 3 }
         say: '`$visits += 1` ist lesen, eins dazuzählen, schreiben. Was passiert, wenn beide Threads lesen, bevor einer schreibt?'
     solution: Beide Threads lesen 10, beide schreiben 11. Ein Besuch geht verloren. Der Mutex sorgt dafür, dass immer nur ein Thread zählt.
+
+    python:
+      prompt: |
+        Ohne Lock: `visits` ist 10, und zwei Besucher kommen genau
+        gleichzeitig. Was kann passieren?
+      feedback:
+        - when: { picked: 3 }
+          say: '`visits += 1` ist lesen, eins dazuzählen, schreiben. Was passiert, wenn beide Threads lesen, bevor einer schreibt?'
+      solution: Beide Threads lesen 10, beide schreiben 11. Ein Besuch geht verloren. Der Lock sorgt dafür, dass immer nur ein Thread zählt.
 
   - id: umfrage
     title: Eine Umfrage
@@ -168,6 +211,19 @@ tasks:
           - { pattern: 'client\.read', say: 'Noch liest `server.rb` den Body nicht: `client.read(…)` mit der Länge aus `Content-Length`.' }
           - { pattern: '303', say: 'Noch leitet `server.rb` nach einer Stimme nicht mit `303 See Other` weiter.' }
 
+    python:
+      file: webserver/server.py
+      check:
+        type: files
+        path: webserver/server.py
+        expect:
+          format: text
+          contains:
+            - { pattern: "'POST'|\"POST\"", say: 'Noch fragt `server.py` nicht, ob die Anfrage ein `POST` ist.' }
+            - { pattern: '(?i)content-length', say: 'Noch liest `server.py` den Header `Content-Length` nicht, und ohne ihn weiß der Server nicht, wie lang der Body ist.' }
+            - { pattern: 'reader\.read\(', say: 'Noch liest `server.py` den Body nicht: `reader.read(…)` mit der Länge aus `Content-Length`.' }
+            - { pattern: '303', say: 'Noch leitet `server.py` nach einer Stimme nicht mit `303 See Other` weiter.' }
+
   - id: body
     title: Wie lang ist der Body?
     prompt: |
@@ -185,6 +241,23 @@ tasks:
       - when: { picked: 1 }
         say: Umlaute sind für `gets` kein Problem. Was sucht `gets`, um zu wissen, wo eine Zeile aufhört?
     solution: '`client.gets` liest bis zum nächsten Zeilenumbruch. Nach `choice=curry` kommt keiner, und der Browser wartet auf die Antwort, also warten beide. Nur `Content-Length` sagt, wann der Body zu Ende ist.'
+
+    python:
+      prompt: |
+        Warum liest der Server den Body mit `reader.read` und der Zahl aus
+        `Content-Length` und nicht mit `reader.readline`?
+      check:
+        type: choice
+        options:
+          - Hinter dem Body steht kein Zeilenumbruch, `reader.readline()` würde warten
+          - '`readline` kann keine Umlaute und Sonderzeichen lesen'
+          - '`read` ist schneller, weil es alles auf einmal liest'
+          - 'Der Body ist verschlüsselt und muss als Ganzes gelesen werden'
+        correct: 0
+      feedback:
+        - when: { picked: 1 }
+          say: Umlaute sind für `readline` kein Problem. Was sucht `readline`, um zu wissen, wo eine Zeile aufhört?
+      solution: '`reader.readline()` liest bis zum nächsten Zeilenumbruch. Nach `choice=curry` kommt keiner, und der Browser wartet auf die Antwort, also warten beide. Nur `Content-Length` sagt, wann der Body zu Ende ist.'
 
   - id: neu-laden
     title: Neu laden
@@ -216,3 +289,7 @@ tasks:
       type: submit
       paths: [webserver]
       max_size: 5MB
+    python:
+      prompt: |
+        Gib deinen Server ab: den Ordner `webserver` mit `server.py` und `public`,
+        mit der Umfrage.
