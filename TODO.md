@@ -132,7 +132,7 @@ Plus, from the review:
 
 * [ ] **Query stepper, further**: subqueries and `UNION`; the music data (Discogs) once it has a chapter
 * [ ] **»Wie sicher ist ein Passwort?«** (Netze & Sicherheit): the defender's side only (counting combinations, a list of common passwords, salt, PBKDF2, measuring hashes per second); solutions, starters, list and tasks are on the branch `passwords`, the page is not written
-* [ ] **JPEG decoder project**: the interactive Huffman section is excellent, but iDCT, MCU and colour conversion get one paragraph each and there is nothing to implement; a staged decoder with a check per stage
+* [ ] **JPEG, further**: a widget for the MCU (four Y blocks, Cb and Cr enlarged, the colours) and for the colour conversion; a check that runs the student's decoder instead of asking for numbers
 
 #### Flutter
 

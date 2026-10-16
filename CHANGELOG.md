@@ -18,6 +18,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- »Eine JPEG-Datei decodieren« hat einen Schrittmacher zur iDCT: Er setzt
+  den Beispielblock Koeffizient für Koeffizient aus seinen Basisbildern
+  zusammen, zeigt dabei das Basisbild, den Block bisher und seine
+  Pixelwerte und landet genau bei dem, was der Decoder ausrechnet. Dazu
+  kommen drei Aufgaben, eine für jede Stufe, die bisher keine hatte: der
+  Wert nach der Dequantisierung, ein Pixel nach der iDCT und die Lage der
+  Blöcke in der MCU, jede mit Rückmeldungen für die typischen Fehler.
+
 - Der Abfrage-Schrittmacher kennt auch die Filme der »Filmdatenbank«:
   `movie`, `genre` und `movie_genre` ganz, von `crew`, `job` und
   `movie_crew` Regie und Schauspiel. Die »Filmdatenbank« zeigt mit ihm, wie

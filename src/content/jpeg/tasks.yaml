@@ -72,6 +72,58 @@ tasks:
     hint: Lass dir in deinem Decoder die DC-Koeffizienten der ersten Blöcke ausgeben. Der zweite Block kommt direkt nach dem ersten, er ist der obere rechte Y-Block der ersten MCU.
     solution: 'In der Datei steht die Differenz −18, also −120 + (−18) = −138.'
 
+  - id: dequant
+    title: Dequantisiert
+    prompt: |
+      Welcher Wert steht nach der Dequantisierung in `coef[0]` des ersten
+      Y-Blocks von `91-baseline.jpg`? Lass ihn dir in `decode_block` für den
+      ersten Block ausgeben.
+    check:
+      type: number
+      expect: -48
+    feedback:
+      - when: { equals: -16 }
+        say: Das ist der DC-Koeffizient, wie er in der Datei steht. Nach der Dequantisierung ist er mit dem ersten Wert der Quantisierungstabelle malgenommen.
+      - when: { equals: 48 }
+        say: Fast, aber das Vorzeichen stimmt nicht. Ist das höchste der gelesenen Bits 0, ist die Zahl negativ.
+    hint: Der erste Wert der Quantisierungstabelle von `91-baseline.jpg` für Y ist nicht 5 wie in `44-baseline.jpg`. Er steht im DQT-Segment.
+    solution: 'In der Datei steht −16, der erste Wert der Quantisierungstabelle ist 3: −16 · 3 = −48.'
+
+  - id: idct
+    title: Nach der iDCT
+    prompt: |
+      Welchen Wert hat das Pixel oben links im ersten Y-Block von
+      `91-baseline.jpg` nach der iDCT, verschoben um 128?
+    check:
+      type: number
+      expect: 110
+      tolerance: 1
+    feedback:
+      - when: { between: [-19, -17] }
+        say: Fast. Das ist der Wert vor dem Verschieben um 128.
+      - when: { between: [122, 124] }
+        say: Das wäre nur der DC-Koeffizient, −48 / 8 + 128 = 122. Die AC-Koeffizienten tragen auch etwas bei.
+    hint: 'Prüf deine iDCT zuerst an `44-baseline.jpg`: Dort muss die erste Zeile des ersten Blocks `40 41 43 46 46 43 41 42` sein.'
+    solution: '110. Die erste Zeile dieses Blocks ist 110 117 113 113 121 125 134 144.'
+
+  - id: mcu-lage
+    title: Die Blöcke in der MCU
+    prompt: |
+      In `44-baseline.jpg` hat jede MCU vier Y-Blöcke. Welchen Y-Wert hat
+      das Pixel bei x = 0, y = 8? Lass ihn dir aus deiner Ebene für Y
+      ausgeben.
+    check:
+      type: number
+      expect: 70
+      tolerance: 1
+    feedback:
+      - when: { between: [36, 38] }
+        say: Das ist der Wert des zweiten Blocks. Der liegt in der MCU rechts neben dem ersten, nicht darunter; die Blöcke einer Komponente kommen Zeile für Zeile.
+      - when: { between: [39, 41] }
+        say: Das ist der erste Block, oben links. Bei y = 8 beginnt der dritte, links unten.
+    hint: Die vier Y-Blöcke einer MCU kommen in der Reihenfolge oben links, oben rechts, unten links, unten rechts.
+    solution: '70: x = 0, y = 8 ist das Pixel oben links im dritten Y-Block, links unten in der ersten MCU.'
+
   - id: mcus
     title: Wie viele MCUs?
     prompt: |
