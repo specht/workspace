@@ -45,7 +45,9 @@ address from `credentials.rb` and the code `123456`.
   Unicode characters; `no_check_marks_test.rb` enforces this.
 - Code blocks name their language. A copy button (`_copy`) only for what is no
   use to type and for big blocks (about 15 lines and more) that go into a file.
-- Formulas: KaTeX renders `\(…\)` and `$$…$$`, not single `$…$`.
+- Formulas: KaTeX renders `\(…\)` and `$$…$$`, not single `$…$`. In Markdown write
+  `\\(`…`\\)` and `\_` for an underscore inside them: Markdown eats a single
+  backslash before a bracket and turns two underscores into emphasis.
 - In HTML tables inside Markdown, `</table>` and `</div>` go on lines of their
   own, otherwise the rest of the page renders as raw text.
 

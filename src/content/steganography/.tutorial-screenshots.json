@@ -1,0 +1,23 @@
+{
+  "screenshots": {
+    "ebene-1.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "36d5f9b0d399f6c2530f0590c69f63de16b11f06dbfa6f1e45bf9bd56fbf8915",
+      "state_hash": "87eb56d8e75a85e3f40568dc8616b31be96421696f94641fc6694ba3e629b2a7",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "start-python.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "011914b23d89b221be7db2af9cd39f26227f81a239d821504ddb5ef6002813b0",
+      "state_hash": "6d192a6f89386c49a4dccdcd7923c91235066b1dc4c8b40e92e8669c901085d0",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "start.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "f69919495149e04bde2919144afd58a1d09a2c12785191154bab4e7348165e27",
+      "state_hash": "a9fa6837546134563711cbb9e8f36c82a94f2b16f1f41b8ceb5cfaa67ad369a8",
+      "workspace_look": "4.138.0-ls366"
+    }
+  },
+  "version": 1
+}

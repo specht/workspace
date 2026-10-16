@@ -1,0 +1,343 @@
+# Aufgaben zu »Geheime Botschaften in Bildern«.
+# Format: docs/aufgaben.md. Das Programm liegt in /workspace/stego.
+format: 1
+activity: steganography
+tasks:
+  - id: bitebene
+    title: Eine Bitebene
+    prompt: |
+      Schreib `bit_plane(image, bit)` in `stego.rb`: Jeder Kanal wird 255, wenn
+      sein Bit Nummer `bit` gesetzt ist, sonst 0. Speichere.
+    file: stego/stego.rb
+    check:
+      type: ruby
+      file: stego/stego.rb
+      cases:
+        - call: channels(bit_plane(from_channels(2, 1, [5, 2, 255, 4, 3, 6]), 0))
+          expect: '[255, 0, 255, 0, 255, 0]'
+          say: Bit 0 von 5 ist 1, von 2 ist es 0. `v[0]` ist das unterste Bit.
+        - call: channels(bit_plane(from_channels(2, 1, [5, 2, 255, 4, 3, 6]), 1))
+          expect: '[0, 255, 255, 0, 255, 255]'
+          say: Bit 1 von 5 (101) ist 0, von 2 (10) ist es 1. `v[1]` ist das zweite Bit von rechts.
+        - call: '[bit_plane(from_channels(3, 2, [0] * 18)).width, bit_plane(from_channels(3, 2, [0] * 18)).height]'
+          expect: '[3, 2]'
+          say: Die Bitebene ist so groß wie das Bild. Gibst du mit `from_channels(image.width, image.height, …)` ein neues Bild zurück?
+    python:
+      prompt: |
+        Schreib `bit_plane(image, bit)` in `stego.py`: Jeder Kanal wird 255,
+        wenn sein Bit Nummer `bit` gesetzt ist, sonst 0. Speichere.
+      file: stego/stego.py
+      check:
+        type: python
+        file: stego/stego.py
+        cases:
+          - call: channels(bit_plane(from_channels(2, 1, [5, 2, 255, 4, 3, 6]), 0))
+            expect: '[255, 0, 255, 0, 255, 0]'
+            say: Bit 0 von 5 ist 1, von 2 ist es 0. `(v >> 0) & 1` ist das unterste Bit.
+          - call: channels(bit_plane(from_channels(2, 1, [5, 2, 255, 4, 3, 6]), 1))
+            expect: '[0, 255, 255, 0, 255, 255]'
+            say: Bit 1 von 5 (101) ist 0, von 2 (10) ist es 1. `(v >> 1) & 1` ist das zweite Bit von rechts.
+          - call: bit_plane(from_channels(3, 2, [0] * 18)).size
+            expect: (3, 2)
+            say: Die Bitebene ist so groß wie das Bild. Gibst du mit `from_channels(image.width, image.height, …)` ein neues Bild zurück?
+
+  - id: verstecken
+    title: Verstecken und wiederfinden
+    prompt: |
+      Schreib `hide(image, message)` und `reveal(image)` nach den drei Regeln
+      oben: erst die Länge mit 32 Bit, dann jedes Byte, das höchste Bit zuerst,
+      Rot, Grün und Blau der Reihe nach. Speichere.
+    file: stego/stego.rb
+    check:
+      type: ruby
+      file: stego/stego.rb
+      cases:
+        - call: reveal(hide(ChunkyPNG::Image.new(20, 10, ChunkyPNG::Color.rgb(200, 100, 50)), 'Hallo'))
+          expect: "'Hallo'"
+        - call: reveal(hide(ChunkyPNG::Image.new(20, 10, ChunkyPNG::Color.rgb(200, 100, 50)), 'Grüße vom Strand'))
+          expect: "'Grüße vom Strand'"
+          say: Umlauts sind in UTF-8 zwei Bytes. Zählt die Länge Bytes (`message.b.bytes.length`), nicht Zeichen? Und macht `force_encoding('UTF-8')` aus den Bytes wieder Text?
+        - call: channels(hide(ChunkyPNG::Image.new(14, 1, ChunkyPNG::Color.rgb(0, 0, 0)), 'A'))[0, 40]
+          expect: '[0] * 31 + [1] + [0, 1, 0, 0, 0, 0, 0, 1]'
+          say: Erst kommt die Länge, 1 Byte, als 32 Bit, das höchste Bit zuerst, dann »A« (65) als `01000001`, Rot, Grün und Blau jedes Pixels der Reihe nach.
+        - call: channels(hide(ChunkyPNG::Image.new(20, 10, ChunkyPNG::Color.rgb(201, 100, 51)), 'Hallo')).zip(channels(ChunkyPNG::Image.new(20, 10, ChunkyPNG::Color.rgb(201, 100, 51)))).map { |a, b| (a - b).abs }.max
+          expect: '1'
+          say: Kein Kanal darf sich um mehr als 1 ändern. `(v & ~1) | bit` setzt nur das unterste Bit.
+    python:
+      prompt: |
+        Schreib `hide(image, message)` und `reveal(image)` nach den drei Regeln
+        oben: erst die Länge mit 32 Bit, dann jedes Byte, das höchste Bit
+        zuerst, Rot, Grün und Blau der Reihe nach. Speichere.
+      file: stego/stego.py
+      check:
+        type: python
+        file: stego/stego.py
+        cases:
+          - call: reveal(hide(Image.new('RGB', (20, 10), (200, 100, 50)), 'Hallo'))
+            expect: "'Hallo'"
+          - call: reveal(hide(Image.new('RGB', (20, 10), (200, 100, 50)), 'Grüße vom Strand'))
+            expect: "'Grüße vom Strand'"
+            say: Umlauts sind in UTF-8 zwei Bytes. Zählt die Länge Bytes (`len(message.encode())`), nicht Zeichen?
+          - call: channels(hide(Image.new('RGB', (14, 1), (0, 0, 0)), 'A'))[:40]
+            expect: '[0] * 31 + [1] + [0, 1, 0, 0, 0, 0, 0, 1]'
+            say: Erst kommt die Länge, 1 Byte, als 32 Bit, das höchste Bit zuerst, dann »A« (65) als `01000001`, Rot, Grün und Blau jedes Pixels der Reihe nach.
+          - call: max(abs(a - b) for a, b in zip(channels(hide(Image.new('RGB', (20, 10), (201, 100, 51)), 'Hallo')), channels(Image.new('RGB', (20, 10), (201, 100, 51)))))
+            expect: '1'
+            say: Kein Kanal darf sich um mehr als 1 ändern. `(v & ~1) | bit` setzt nur das unterste Bit.
+
+  - id: codewort
+    title: Das Fundstück
+    prompt: |
+      Lies mit `reveal` die Botschaft aus `fundstueck.png`. Wie heißt das
+      Codewort darin?
+    check:
+      type: answer
+      expect: STRANDKORB
+    feedback:
+      - when: { matches: 'reveal' }
+        say: Das steht in Bitebene 1, der Hinweis. Die Botschaft selbst steckt in Bit 0; lies sie mit deinem `reveal`.
+    solution: »Gut gefunden! Wer das liest, hat in die untersten Bits geschaut. Das Codewort ist STRANDKORB.«
+
+  - id: kapazitaet
+    title: Wie viel passt?
+    prompt: |
+      Wie viele Bytes darf eine Botschaft höchstens haben, die `hide` mit einem
+      Bit pro Kanal in `strandhaeuser.png` (480 × 320 Pixel) versteckt?
+    check:
+      type: number
+      expect: 57596
+      unit: Bytes
+    feedback:
+      - when: { equals: 57600 }
+        say: Fast. Die ersten 4 Bytes brauchst du für die Länge.
+      - when: { equals: 460800 }
+        say: So viele Bits sind es. Wie viele Bytes sind das, und was kostet die Länge?
+      - when: { equals: 19200 }
+        say: Jedes Pixel hat drei Kanäle, jeder trägt ein Bit.
+    solution: 480 · 320 · 3 = 460.800 Bits sind 57.600 Bytes; 4 davon sind die Länge, bleiben 57.596.
+
+  - id: sichtbar
+    title: Ab wann sieht man es?
+    prediction: true
+    prompt: |
+      Du füllst den Himmel aus `moewen.png` ganz mit Daten. Ab wie vielen Bits
+      pro Kanal siehst du es? Überleg erst, dann probier es mit `hide(image,
+      message, depth)` aus.
+    check:
+      type: choice
+      options:
+        - Ab 3 oder 4 Bits
+        - Schon ab 1 Bit
+        - Erst ab 7 Bits
+        - Gar nicht, solange das oberste Bit bleibt
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Mit 1 Bit ändert sich jeder Kanal um höchstens 1 von 256. Das sieht niemand.
+      - when: { picked: 3 }
+        say: Mit 6 Bits darf sich ein Kanal um 63 ändern, ein Viertel des ganzen Bereichs.
+    solution: Mit 1 und 2 Bits (höchstens 1 und 3 Stufen) sieht man nichts. Ab 3 bis 4 Bits wird der glatte Himmel körnig und zerfällt in Bänder, weil jeder Kanal nur noch 16 oder 32 Stufen behält.
+
+  - id: chi
+    title: Der Chi-Quadrat-Test
+    prompt: |
+      Schreib `chi_square(image, top, bottom)`: der Test für die Zeilen `top`
+      bis `bottom`, durch die Zahl der Paare geteilt, ohne Paare mit
+      \\( e < 5 \\). Speichere.
+    file: stego/stego.rb
+    check:
+      type: ruby
+      file: stego/stego.rb
+      cases:
+        - call: chi_square(from_channels(4, 1, [10, 10, 11, 11, 10, 10, 11, 11, 10, 10, 11, 11]), 0, 1).round(2)
+          expect: '0.0'
+          say: 10 und 11 kommen je sechsmal vor, genau gleich oft. Dann ist jeder Summand 0.
+        - call: chi_square(from_channels(4, 1, [10] * 12), 0, 1).round(2)
+          expect: '12.0'
+          say: 'Hier ist a = 12, b = 0, also e = 6: (12 − 6)²/6 + (0 − 6)²/6 = 12, bei einem einzigen Paar.'
+        - call: chi_square(from_channels(8, 1, [10] * 12 + [200] * 8 + [201] * 4), 0, 1).round(2)
+          expect: '6.67'
+          say: 'Zwei Paare: (10, 11) ergibt 12, (200, 201) mit a = 8 und b = 4 ergibt (2² + 2²)/6 ≈ 1,33. Durch die Zahl der Paare geteilt: 6,67.'
+        - call: chi_square(from_channels(4, 2, [10] * 12 + [12] * 12), 1, 2).round(2)
+          expect: '12.0'
+          say: Nur die Zeilen von `top` bis `bottom`, hier die zweite Zeile mit den Werten 12.
+    python:
+      prompt: |
+        Schreib `chi_square(image, top, bottom)`: der Test für die Zeilen
+        `top` bis `bottom`, durch die Zahl der Paare geteilt, ohne Paare mit
+        \\( e < 5 \\). Speichere.
+      file: stego/stego.py
+      check:
+        type: python
+        file: stego/stego.py
+        cases:
+          - call: round(chi_square(from_channels(4, 1, [10, 10, 11, 11, 10, 10, 11, 11, 10, 10, 11, 11]), 0, 1), 2)
+            expect: '0.0'
+            say: 10 und 11 kommen je sechsmal vor, genau gleich oft. Dann ist jeder Summand 0.
+          - call: round(chi_square(from_channels(4, 1, [10] * 12), 0, 1), 2)
+            expect: '12.0'
+            say: 'Hier ist a = 12, b = 0, also e = 6: (12 − 6)²/6 + (0 − 6)²/6 = 12, bei einem einzigen Paar.'
+          - call: round(chi_square(from_channels(8, 1, [10] * 12 + [200] * 8 + [201] * 4), 0, 1), 2)
+            expect: '6.67'
+            say: 'Zwei Paare: (10, 11) ergibt 12, (200, 201) mit a = 8 und b = 4 ergibt (2² + 2²)/6 ≈ 1,33. Durch die Zahl der Paare geteilt: 6,67.'
+          - call: round(chi_square(from_channels(4, 2, [10] * 12 + [12] * 12), 1, 2), 2)
+            expect: '12.0'
+            say: Nur die Zeilen von `top` bis `bottom`, hier die zweite Zeile mit den Werten 12.
+
+  - id: komprimiert
+    title: Gleichmäßig verrät
+    prompt: |
+      Die komprimierte Spezifikation sieht in der Bitebene aus wie Rauschen.
+      Warum findet der Chi-Quadrat-Test sie trotzdem?
+    check:
+      type: choice
+      options:
+        - Weil ihre Bits so gleichmäßig 0 und 1 sind, dass beide Werte jedes Paares gleich oft vorkommen, gleicher, als es in einem Foto je wäre
+        - Weil zlib am Anfang jeder Datei dieselben zwei Bytes schreibt, und die sucht der Test
+        - Weil komprimierte Daten mehr Einsen enthalten als Nullen
+        - Er findet sie nicht; er findet nur unkomprimierten Text
+      correct: 0
+    feedback:
+      - when: { picked: 3 }
+        say: Rechne den Test für die Zeilen 0 bis 40 der Strandhäuser mit der komprimierten Spezifikation. Was kommt heraus?
+      - when: { picked: 1 }
+        say: Der Test kennt keine Formate. Er zählt nur, wie oft jeder Wert vorkommt.
+    solution: Zufällige unterste Bits verteilen jeden Wert eines Paares gleichmäßig auf beide. Danach kommen 2k und 2k+1 fast genau gleich oft vor, und das ist in einem gewöhnlichen Foto nicht so. Komprimieren hilft gegen das Auge, nicht gegen diesen Test.
+
+  - id: stellen
+    title: Stellen mit wechselnder Basis
+    prompt: |
+      Drei Pixel haben Klassen der Größe 5, 3 und 4. Welche Ziffern bekommen
+      sie für die Zahl 37? Schreib sie in der Reihenfolge der Pixel, mit
+      Leerzeichen dazwischen.
+    check:
+      type: answer
+      compare: regex
+      expect: '^\s*2[\s,]+1[\s,]+2\s*$'
+    feedback:
+      - when: { matches: '^\s*2[\s,]+1[\s,]+0' }
+        say: 37 // 5 ist 7, und 7 // 3 ist 2. Was ist 2 mod 4?
+      - when: { matches: '^\s*1[\s,]+' }
+        say: Die erste Ziffer ist der Rest von 37 geteilt durch 5.
+    solution: '37 mod 5 = 2, weiter mit 7; 7 mod 3 = 1, weiter mit 2; 2 mod 4 = 2. Zurück: (2 · 3 + 1) · 5 + 2 = 37.'
+
+  - id: klassen
+    title: Farbklassen
+    prompt: |
+      Schreib `BoxClasses`, `embed`, `extract` und `capacity` in `stego.rb`.
+      Speichere.
+    file: stego/stego.rb
+    check:
+      type: ruby
+      file: stego/stego.rb
+      timeout: 20
+      cases:
+        - call: BoxClasses.new(3).members(BoxClasses.new(3).cell(0x5aa0c8)).length
+          expect: '27'
+          say: Eine Klasse mit 3 Werten pro Kanal hat 3 · 3 · 3 Farben.
+        - call: BoxClasses.new(3).members([85, 85, 85]).length
+          expect: '1'
+          say: Am Rand ist die Klasse kleiner. Die Klasse 85 hat nur den Wert 255 in jedem Kanal, denn 256 = 85 · 3 + 1.
+        - call: BoxClasses.new(3).members(BoxClasses.new(3).cell(0x5aa0c8)) == BoxClasses.new(3).members(BoxClasses.new(3).cell(0x5aa0c8)).sort
+          expect: 'true'
+          say: Die Farben einer Klasse müssen aufsteigend sortiert sein, sonst sind Ziffer und Farbe nicht eindeutig.
+        - call: extract(embed(ChunkyPNG::Image.new(30, 10, ChunkyPNG::Color.rgb(90, 160, 200)), 'Treffpunkt', BoxClasses.new(3)), BoxClasses.new(3))
+          expect: "'Treffpunkt'"
+          say: Liest `extract` vom letzten benutzten Pixel zurück bis zum zwölften, mit der Zahl der Pixel aus den ersten 11?
+        - call: extract(embed(ChunkyPNG::Image.new(30, 10, ChunkyPNG::Color.rgb(90, 160, 200)), 'Grüße', BoxClasses.new(5)), BoxClasses.new(5))
+          expect: "'Grüße'"
+        - call: capacity(ChunkyPNG::Image.new(30, 10, ChunkyPNG::Color.rgb(90, 160, 200)), BoxClasses.new(3)).round(1)
+          expect: '1374.2'
+          say: 'Jedes Pixel ab dem zwölften trägt log2(27) ≈ 4,75 Bits: 289 · 4,755 ≈ 1374,2.'
+    python:
+      prompt: |
+        Schreib `BoxClasses`, `embed`, `extract` und `capacity` in
+        `stego.py`. Speichere.
+      file: stego/stego.py
+      check:
+        type: python
+        file: stego/stego.py
+        timeout: 20
+        cases:
+          - call: len(BoxClasses(3).members(BoxClasses(3).cell(0x5aa0c8)))
+            expect: '27'
+            say: Eine Klasse mit 3 Werten pro Kanal hat 3 · 3 · 3 Farben.
+          - call: len(BoxClasses(3).members((85, 85, 85)))
+            expect: '1'
+            say: Am Rand ist die Klasse kleiner. Die Klasse 85 hat nur den Wert 255 in jedem Kanal, denn 256 = 85 · 3 + 1.
+          - call: BoxClasses(3).members(BoxClasses(3).cell(0x5aa0c8)) == sorted(BoxClasses(3).members(BoxClasses(3).cell(0x5aa0c8)))
+            expect: 'True'
+            say: Die Farben einer Klasse müssen aufsteigend sortiert sein, sonst sind Ziffer und Farbe nicht eindeutig.
+          - call: extract(embed(Image.new('RGB', (30, 10), (90, 160, 200)), 'Treffpunkt', BoxClasses(3)), BoxClasses(3))
+            expect: "'Treffpunkt'"
+            say: Liest `extract` vom letzten benutzten Pixel zurück bis zum zwölften, mit der Zahl der Pixel aus den ersten 11?
+          - call: extract(embed(Image.new('RGB', (30, 10), (90, 160, 200)), 'Grüße', BoxClasses(5)), BoxClasses(5))
+            expect: "'Grüße'"
+          - call: round(capacity(Image.new('RGB', (30, 10), (90, 160, 200)), BoxClasses(3)), 1)
+            expect: '1374.2'
+            say: 'Jedes Pixel ab dem zwölften trägt log2(27) ≈ 4,75 Bits: 289 · 4,755 ≈ 1374,2.'
+
+  - id: lab
+    title: Nach Lab
+    prompt: |
+      Übernimm `lab` mit `LINEAR` und `f` in deine Datei. Speichere.
+    file: stego/stego.rb
+    check:
+      type: ruby
+      file: stego/stego.rb
+      cases:
+        - call: lab(0xffffff).map { |v| v.round(1) }
+          expect: '[100.0, 0.0, 0.0]'
+          say: Weiß hat die Helligkeit 100 und keine Farbe.
+        - call: lab(0xff0000).map { |v| v.round(1) }
+          expect: '[53.2, 80.1, 67.2]'
+        - call: lab(0x808080).map { |v| v.round(1) }
+          expect: '[53.6, 0.0, 0.0]'
+          say: 'Grau 128 hat nur gut die halbe Helligkeit von Weiß: Erst `LINEAR` macht aus 128 die Lichtmenge 0,22.'
+    python:
+      prompt: |
+        Übernimm `lab` mit `linear`, `LINEAR` und `f` in deine Datei.
+        Speichere.
+      file: stego/stego.py
+      check:
+        type: python
+        file: stego/stego.py
+        cases:
+          - call: '[round(v, 1) for v in lab(0xffffff)]'
+            expect: '[100.0, 0.0, 0.0]'
+            say: Weiß hat die Helligkeit 100 und keine Farbe.
+          - call: '[round(v, 1) for v in lab(0xff0000)]'
+            expect: '[53.2, 80.1, 67.2]'
+          - call: '[round(v, 1) for v in lab(0x808080)]'
+            expect: '[53.6, 0.0, 0.0]'
+            say: 'Grau 128 hat nur gut die halbe Helligkeit von Weiß: Erst `LINEAR` macht aus 128 die Lichtmenge 0,22.'
+
+  - id: lab-kapazitaet
+    title: Mehr, als das Auge merkt
+    prompt: |
+      Wie viele Bytes passen mit `LabClasses` 78 × 48 × 46 in
+      `strandhaeuser.png`? Rechne mit `capacity`, nachdem `prepare` gelaufen
+      ist, und teile durch 8.
+    check:
+      type: number
+      expect: 164452
+      tolerance: 400
+      unit: Bytes
+    feedback:
+      - when: { between: [1300000, 1330000] }
+        say: Das sind Bits. Wie viele Bytes?
+      - when: { between: [57000, 58000] }
+        say: Das ist das LSB-Verfahren mit einem Bit pro Kanal. Mit Lab-Klassen passt viel mehr hinein.
+    solution: Rund 164.000 Bytes, etwa 8,6 Bits pro Pixel. Das ist fast dreimal so viel wie mit einem Bit pro Kanal, ohne dass man im Bild etwas sieht, und doppelt so viel wie die ganze GIF-Spezifikation.
+
+  - id: abgabe
+    title: Deine Steganographie
+    prompt: |
+      Gib den Ordner `stego` ab: dein Programm und ein Bild, in dem du eine
+      eigene Botschaft versteckt hast. Schreib in eine Datei `README.txt`,
+      mit welchem Verfahren und welchen Einstellungen.
+    check:
+      type: submit
+      paths: [stego]
+      exclude: [stego/spec-gif89a.txt]
+      max_size: 10MB

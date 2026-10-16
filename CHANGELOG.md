@@ -18,6 +18,19 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Neue Aktivität »Geheime Botschaften in Bildern« in »Bilder und
+  Kompression«, in Ruby (ChunkyPNG) und Python (Pillow): Lernende lesen ein
+  PNG als Liste von Zahlen, sehen sich Bitebenen an, verstecken Text mit
+  einem Längenkopf in den untersten Bits und finden die Botschaft in einem
+  vorbereiteten Bild. Danach rechnen sie aus, wie viel hineinpasst, sehen
+  die Artefakte bei mehr Bits pro Kanal, entdecken Botschaften mit dem
+  Chi-Quadrat-Test von Westfeld und Pfitzmann und erfahren, warum
+  komprimierte Botschaften schwerer zu entdecken sind als Klartext. Zum
+  Schluss bauen sie Farbklassen und eine Zahl mit wechselnder Basis, erst
+  mit Würfeln im RGB-Raum, dann mit Klassen in CIELab. Zwölf Aufgaben, eine
+  Lehrkraftnotiz, Screenshots aus dem Workspace; die Fotos sind von Ian
+  Kobylanski.
+
 - »Daten aus dem Netz« gibt es jetzt auch in Python, nur mit der
   Standardbibliothek (`urllib.request`, `json`): die drei Stufen von
   `wetter.py` mit Fehlerbehandlung und Cache, die Erklärungen dazu, zwei
@@ -532,6 +545,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   statt fast quadratisch und so nicht mehr höher als der Text.
 
 ### Geändert
+
+- Ruby- und Python-Prüfungen von Aufgaben laden Gems und pip-Pakete, die
+  Lernende in ihrem Workspace installiert haben (`gem install`,
+  `pip install`). Bisher lief Ruby ohne Gems, Python ohne die Pakete im
+  Benutzerverzeichnis.
 
 - GIF: Der Schrittmacher der Bilddaten zeigt statt der Bytes in Hex einen
   Strom aus Bits, wie die Seite ihn erklärt (das erste Byte rechts, gelesen
@@ -1088,6 +1106,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   `POST` zeigte, steht jetzt im Webserver.
 
 ### Für Betreibende
+
+- Die schnellen Tests der Aufgabenbeispiele (`task_examples_test.rb`)
+  brauchen für »Geheime Botschaften in Bildern« lokal `gem install
+  chunky_png` und `pip install pillow`.
 
 - Der Spiegel von Open-Meteo (`/open-meteo/…`) ist ohne Anmeldung erreichbar,
   weil Wetterseiten auf den Subdomains der Lernenden und Programme im

@@ -628,10 +628,11 @@ ergibt `False`, richtig wäre `True`.«, dazu `say`, wenn es eines gibt. Bricht
 ein Aufruf ab, steht der Fehler mit der Zeile in der Datei da, ebenso ein
 Syntaxfehler oder ein Fehler beim Laden. Unter »Was der Workspace gelesen
 hat« stehen alle Aufrufe mit Haken oder Kreuz und ihrem Ergebnis. Die Datei
-wird aus ihrem Ordner geladen, `import` anderer Dateien daneben klappt.
+wird aus ihrem Ordner geladen, `import` anderer Dateien daneben klappt, und
+was jemand mit `pip install` oder `gem install` installiert hat, ist da.
 
 `ruby` funktioniert genauso, mit einer `.rb`-Datei und Ausdrücken in Ruby
-(`RubyCheck::HARNESS`, gestartet mit `ruby --disable=gems`). Die Datei wird
+(`RubyCheck::HARNESS`). Die Datei wird
 auf oberster Ebene geladen; ein Block `if __FILE__ == $0` läuft dabei nicht,
 dort kann also ein Programm zum Ausprobieren stehen. Verglichen wird mit
 `==`; `true`, `false` und `~` aus YAML werden zu `true`, `false` und `nil`.

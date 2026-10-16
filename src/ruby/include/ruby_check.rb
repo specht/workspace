@@ -110,7 +110,9 @@ module RubyCheck
     # The command that prints the result, run in /workspace as the guest.
     def self.command(file, cases)
         payload = cases.map { |c| { 'call' => c['call'], 'expect' => c['expect'] } }
-        Shellwords.join(['ruby', '--disable=gems', '-W0', '-e', HARNESS, file, JSON.generate(payload)])
+        # With RubyGems: a program may use what the person installed with
+        # gem install (ChunkyPNG for Steganographie), from GEM_HOME.
+        Shellwords.join(['ruby', '-W0', '-e', HARNESS, file, JSON.generate(payload)])
     end
 
     def self.parse(output)

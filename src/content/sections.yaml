@@ -129,13 +129,15 @@
   description: |
     Daten kleiner machen, ohne etwas zu verlieren: Lauflängen, Huffman-Codes
     und LZW, jedes Verfahren selbst geschrieben. Danach Decoder in C für GIF
-    und JPEG, die echte Bilddateien Byte für Byte lesen und zeigen.
+    und JPEG, die echte Bilddateien Byte für Byte lesen und zeigen, und
+    Botschaften, die in den Pixeln eines Fotos verschwinden.
   entries:
     - rle
     - huffman
     - lzw
     - gif
     - jpeg
+    - steganography
 
 - key: terminal
   label: Terminal & Git

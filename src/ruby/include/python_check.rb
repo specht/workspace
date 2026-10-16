@@ -51,6 +51,10 @@ module PythonCheck
             if not os.path.isfile(full):
                 result['error'] = {'kind': 'missing'}
                 return
+            # -I keeps PYTHONPATH and the current folder out; what the person
+            # installed with pip (Pillow for Steganographie) comes back in.
+            import site
+            site.addsitedir(site.getusersitepackages())
             sys.path.insert(0, os.path.dirname(full))
             spec = importlib.util.spec_from_file_location('student', full)
             module = importlib.util.module_from_spec(spec)

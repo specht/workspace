@@ -45,6 +45,10 @@ for f in test/*_test.rb; do ruby "$f" | tail -1; done   # alle
 Ruby-Container (`./config.rb exec ruby ruby test/reference_index_test.rb`).
 `task_spec_test.rb` prüft alle `tasks.yaml` im Inhaltsordner, ein Test in
 `content_parts_test.rb` alle Kataloge und `_include(…, done: …)`.
+`task_examples_test.rb` führt die `ruby`- und `python`-Prüfungen mit den
+Interpretern auf dem Rechner aus; für »Geheime Botschaften in Bildern« braucht
+es dort die Bibliotheken, die auch die Lernenden installieren:
+`gem install chunky_png` und `pip install pillow`.
 
 JavaScript-Tests laufen mit Node, ohne npm-Pakete:
 
