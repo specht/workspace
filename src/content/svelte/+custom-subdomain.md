@@ -37,7 +37,7 @@ Das sollte z. B. so aussehen:
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHx1j3zKyFZybh2BRyiaiGj7KceAPyzHGy6gM0gHp43j abc@757c63b27d58
 ```
 
-Wenn die Einverständniserklärung (sofern erforderlich) abgegeben ist, schicke den kompletten öffentlichen Schlüssel an <a href='mailto:specht@gymnasiumsteglitz.de'>specht@gymnasiumsteglitz.de</a> und gib an, welche Subdomain du haben möchtest. Du bekommst als Antwort eine E-Mail, in der zwei Dinge stehen:
+Wenn die Einverständniserklärung (sofern erforderlich) abgegeben ist, schicke den kompletten öffentlichen Schlüssel an <a href='mailto:${contact_email}'>${contact_email}</a> und gib an, welche Subdomain du haben möchtest. Du bekommst als Antwort eine E-Mail, in der zwei Dinge stehen:
 
 - die Subdomain, die du bekommen hast (z. B. `cobolultras.hackschule.de`)
 - dein Nutzername für die Subdomain (z. B. `max`)

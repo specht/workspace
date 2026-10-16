@@ -894,6 +894,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Für Betreibende
 
+- Neue Einstellung `CONTACT_EMAIL` in `credentials.rb` (siehe
+  `credentials.template.rb`): die Adresse für Einladungen, das Impressum und
+  »schreib eine E-Mail an« auf Seiten (`${contact_email}`). Keine Adresse steht
+  mehr fest im Code. Ohne die Einstellung fehlt die Adresse dort einfach;
+  bitte nach dem Update eintragen.
 - Der Ordner `/internal/tfjs` (alte Uploads für den entfernten
   Keras-Endpunkt) kann gelöscht werden.
 
