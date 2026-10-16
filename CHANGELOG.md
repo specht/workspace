@@ -513,6 +513,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Das Bild der Endlichen Automaten auf der Startseite zeigt statt eines
+  Automaten mit 16 Zuständen den kleinsten DEA, der prüft, ob eine
+  Dezimalzahl durch 3 teilbar ist: drei Zustände für die Quersumme modulo 3,
+  größer und ohne Binärzahlen zu lesen.
 - Jede Prüfung einer Aufgabe kann Beispiele haben (`task-examples.yaml` neben
   der `tasks.yaml`): eine Lösung, die sie annehmen, und einen unfertigen
   Stand, den sie ablehnen muss. `task_examples_test.rb` führt sie durch

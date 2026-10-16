@@ -837,16 +837,14 @@ _task(nea-oder-dea)
 - **Mehr als endlich.** Klammern prüfen, ob jede `(` ein `)` hat, kann ein endlicher Automat nicht. Ein **Kellerautomat** kann es, mit einem Stapel als Gedächtnis. So prüfen Compiler deinen Code.
 
 <!-- tutorial-screenshot
-# Teaser: Automatron, der DEA für »die viertletzte Ziffer ist eine 1«
+# Teaser: der kleinste DEA für »eine Dezimalzahl ist durch 3 teilbar«; der
+# Zustand ist die Quersumme modulo 3. Gezeichnet wie in Automatron, aber aus
+# dem Automaten selbst (hook divisible-by-3), nicht aus einem regulären Ausdruck.
 open-site: /automatron
 tab: preview
 viewport: 1029x700
-click: selector:#ti_input
-type: (0|1)*1(0|1)(0|1)(0|1)
-press: Enter
-wait-for-text: kleinster DEA
-sleep: 1
-crop-element: #output_area svg:nth-of-type(3)
+hook: divisible-by-3
+crop-element: #output_area svg
 variants: dark
 -->
-<img class='teaser' hidden src='teaser.webp' alt='Ein Gewirr aus 16 Zuständen s0 bis s15 und Pfeilen mit 0 und 1, gezeichnet von Automatron: der kleinste DEA, der prüft, ob die viertletzte Ziffer einer Binärzahl eine 1 ist. Acht Zustände haben einen doppelten Rand.'>
+<img class='teaser' hidden src='teaser.webp' alt='Ein endlicher Automat mit drei Zuständen s0, s1 und s2, gezeichnet wie in Automatron: Er prüft, ob eine Dezimalzahl durch 3 teilbar ist. Die Pfeile tragen Gruppen von Ziffern, 0, 3, 6, 9 lässt den Zustand, wie er ist, 1, 4, 7 und 2, 5, 8 führen weiter. s0 ist Start und hat einen doppelten Rand.'>
