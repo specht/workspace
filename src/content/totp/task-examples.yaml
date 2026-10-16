@@ -1,0 +1,45 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): die Musterlösung löst jede Aufgabe, das Gerüst keine.
+format: 1
+activity: totp
+examples:
+  base32:
+    pass:
+      - files: { totp/totp.rb: loesung/totp.rb }
+    fail:
+      - files: { totp/totp.rb: stufen/start.rb }
+    python:
+      pass:
+        - files: { totp/totp.py: loesung/totp.py }
+      fail:
+        - files: { totp/totp.py: stufen/start.py }
+  hotp:
+    pass:
+      - files: { totp/totp.rb: loesung/totp.rb }
+    fail:
+      - files: { totp/totp.rb: stufen/start.rb }
+    python:
+      pass:
+        - files: { totp/totp.py: loesung/totp.py }
+      fail:
+        - files: { totp/totp.py: stufen/start.py }
+  totp:
+    pass:
+      - files: { totp/totp.rb: loesung/totp.rb }
+    fail:
+      - files: { totp/totp.rb: stufen/start.rb }
+    python:
+      pass:
+        - files: { totp/totp.py: loesung/totp.py }
+      fail:
+        - files: { totp/totp.py: stufen/start.py }
+  pruefen:
+    pass:
+      - files: { totp/totp.rb: loesung/totp.rb }
+    fail:
+      - files: { totp/totp.rb: stufen/start.rb }
+    python:
+      pass:
+        - files: { totp/totp.py: loesung/totp.py }
+      fail:
+        - files: { totp/totp.py: stufen/start.py }

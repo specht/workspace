@@ -85,14 +85,15 @@
   description: |
     Wie Rechner über das Netz miteinander reden, vom Paket bis zur Webseite:
     TCP/IP, ein eigener Webserver, eine Pixelwand für die ganze Klasse. Und wie
-    man Daten schützt, mit Verschlüsselung, Signaturen und sicheren
-    Datenbankabfragen.
+    man Daten schützt, mit Verschlüsselung, Signaturen, sicheren
+    Datenbankabfragen und einem zweiten Faktor bei der Anmeldung.
   entries:
     - tcpip
     - webserver
     - pixelwand
     - crypto
     - bobby_tables
+    - totp
 
 - key: databases
   compact: true

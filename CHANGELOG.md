@@ -18,6 +18,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Neue Aktivität »Zwei Faktoren: Einmalcodes selbst gebaut« in »Netze &
+  Sicherheit«, in Ruby und Python: Lernende bauen das Verfahren hinter
+  Authenticator-Apps selbst, Base32, HOTP nach RFC 4226 und TOTP nach
+  RFC 6238, und einen Prüfer mit Zeitfenster, wie ihn ein Server braucht.
+  Zum Schluss scannen sie ihren eigenen Schlüssel als QR-Code mit dem Handy,
+  und App und Programm zeigen dieselben Codes. Dazu, wovor ein zweiter
+  Faktor schützt und wovor nicht. Neun Aufgaben mit den Testwerten aus den
+  RFCs, zwei Screenshots, eine Lehrkraftnotiz.
+
 - Neue Handbuch-Seite »Farbräume« unter »Farben«: RGB, gespeicherte Werte
   und Licht (sRGB, Gamma), Graustufen, HSV, YCbCr und CIELab, jeweils mit
   den Formeln zum Umrechnen und demselben Foto in seine drei Kanäle
