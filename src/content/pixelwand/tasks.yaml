@@ -174,9 +174,8 @@ tasks:
     check:
       type: submit
       paths: [pixelwand]
-      exclude: [pixelwand/.venv]
       max_size: 5MB
     python:
       prompt: |
         Gib deine Pixelwand ab: den Ordner `pixelwand` mit `server.py` und
-        `index.html`. Die virtuelle Umgebung `.venv` bleibt draußen.
+        `index.html`.
