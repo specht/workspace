@@ -39,4 +39,21 @@ class AutomatronTest < Minitest::Test
         assert_equal 'ε, a, b', DotRender.symbols_label(%w[b a ε])
         assert_equal 'a, c–e, x', DotRender.symbols_label(%w[a c d e x])
     end
+
+    # The intermediate DFA of a long expression is left out with a note; the
+    # smallest DFA is still drawn (main.rb, svg_from_dot).
+    def test_a_drawing_too_large_to_read_is_left_out
+        a, b, c = '(0|3|6|9)', '(1|4|7)', '(2|5|8)'
+        divisible_by_3 = "(#{a}|#{c}#{a}*#{b}|(#{b}|#{c}#{a}*#{c})(#{a}|#{b}#{a}*#{c})*(#{c}|#{b}#{a}*#{b}))*"
+        nfa = NFA.from_regex(divisible_by_3)
+        nfa.compact_ids!
+        nfa.topo_relabel!
+        dfa, = SubsetTrace.build_with_trace(nfa)
+        min, = DFAMinimizer.minimize_with_trace(dfa)
+        assert_equal 3, min.states.size
+        big = DotRender.dfa(dfa, title: 'DFA', sink_explicit: true, q: 'r')
+        refute DotRender.drawable?(big)
+        assert_includes DotRender.not_drawn_html(big), "#{DotRender.edges(big)} Übergänge"
+        assert DotRender.drawable?(DotRender.dfa(min, title: 'MinDFA', sink_explicit: true, q: 's'))
+    end
 end

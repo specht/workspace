@@ -504,6 +504,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- Automatron bricht bei langen Ausdrücken nicht mehr ganz ab: Ein Automat mit
+  mehr als 300 Übergängen, etwa der DEA auf dem Weg zu »eine Dezimalzahl ist
+  durch 3 teilbar«, wird nicht gezeichnet, sondern durch einen Hinweis
+  ersetzt, und der kleinste DEA, die Grammatik und die Beispielwörter kommen
+  trotzdem. Bisher kam nach zehn Sekunden nur eine Fehlermeldung.
 - Unter der Fußzeile blieb auf allen Seiten ein leerer Streifen von 100
   Pixeln; er war für die feste Fußzeile der Entwicklungsumgebung gedacht.
 - Die Kacheln der Programmiersprachen auf der Startseite folgen wieder dem

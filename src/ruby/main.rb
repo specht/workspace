@@ -216,10 +216,14 @@ class Main < Sinatra::Base
     helpers do
         def svg_from_dot(dot_str)
             # Graphviz 'dot' turns DOT into SVG, at most 10 seconds per drawing.
+            # A drawing too large to draw or read becomes a note, so the rest of
+            # the result still arrives (DotRender::MAX_EDGES).
+            return DotRender.not_drawn_html(dot_str) unless DotRender.drawable?(dot_str)
+
             svg, err, status = Open3.capture3('timeout', '10', 'dot', '-Tsvg', stdin_data: dot_str)
             unless status.success?
                 STDERR.puts "Automatron: dot failed: #{err.to_s[0, 300]}"
-                halt 500, { error: "Graphviz failed" }.to_json
+                return DotRender.not_drawn_html(dot_str)
             end
             DotRender.tidy_svg(svg)
         end
