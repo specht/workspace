@@ -54,7 +54,8 @@ variants: dark
 <!-- tutorial-screenshot
 # Für die Startseite (index.html, front_picture_html): ein aufgeräumter Workspace mit einem kleinen Programm und einem Lauf im Terminal.
 # zoom: Das Bild ist auf der Startseite nur etwa halb so breit wie die anderen Screenshots; etwas größer gezoomt bleibt es lesbar.
-viewport: 1029x815
+# viewport: 16:9, damit es neben dem Text der Startseite nicht höher ist als der Text.
+viewport: 1029x579
 zoom: 1.6
 write-file: hallo/hallo.py <- file:hallo.py
 press: Control+K
