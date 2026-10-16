@@ -519,6 +519,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   dieselbe Prüfung wie der Knopf »Prüfen«, dazu jede Auswahl- und Zahlaufgabe
   mit ihrer eigenen Lösung. Elf Aktivitäten sind vollständig abgedeckt; für
   die Endlichen Automaten liegen dafür jetzt Musterlösungen in `loesung/`.
+- `page_code_test.rb` prüft, dass der Code auf einer Aktivität in den Dateien
+  steht, die ihre Screenshot-Rezepte schreiben. So kann der Code auf der
+  Seite nicht unbemerkt von dem abweichen, was Bilder und Beispiele testen.
 - `pip install` funktioniert im Workspace wie `gem install`: Pakete landen
   ohne Administratorrechte in `/workspace/.local` und bleiben über einen
   Neustart erhalten; `python3` findet sie ohne virtuelle Umgebung. Bisher

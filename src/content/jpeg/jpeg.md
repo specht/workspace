@@ -248,6 +248,7 @@ Beide haben 1000 × 667 Pixel und sind Baseline-JPEGs, die einfachste Art von JP
 
 Lege im Ordner der Vorlage die Datei `jpeg.c` an, mit diesem Anfang:
 
+<!-- page-code: own -->
 ```c_copy
 #include <math.h>
 #include <stdio.h>

@@ -84,6 +84,14 @@ das Workspace-Image ändert. Die Rezeptsprache steht in
 [src/tutorial-screenshots/README.md](../src/tutorial-screenshots/README.md),
 die Handgriffe in [entwicklung.md](entwicklung.md#screenshots-und-videos-der-tutorials).
 
+Schreibt ein Rezept Dateien aus dem Ordner der Aktivität
+(`write-file: … <- file:stufen/…`), muss der Code, den die Seite seit dem
+vorigen Rezept zeigt, in diesen Dateien stehen; Auslassungen mit `…` und
+andere Einrückung sind erlaubt (`page_code_test.rb`). So zeigt die Seite den
+Code, den Bilder und Beispiele testen. Ein Block, der mit Absicht anders ist,
+etwa ein Gerüst, das die Lernenden ausbauen, steht mit
+`<!-- page-code: own -->` in der Zeile vor dem Codeblock.
+
 Mehrere kleine Bilder nebeneinander stehen in einer Galerie; ein Klick
 öffnet ein Bild groß, mit seiner Unterschrift:
 
@@ -222,6 +230,8 @@ cd src/ruby
 ruby test/task_spec_test.rb      # Format aller tasks.yaml
 ruby test/task_card_test.rb      # jedes _task() hat eine Aufgabe
 ruby test/page_kinds_test.rb     # jede Handbuch-Seite in reference: gibt es
+ruby test/task_examples_test.rb  # jede Prüfung nimmt ihre Beispiele an und lehnt Gegenbeispiele ab
+ruby test/page_code_test.rb      # der Code auf der Seite steht in den Dateien der Rezepte
 ```
 
 Dann im Entwicklungsmodus die Seite öffnen. Als Lehrkraft siehst du die
