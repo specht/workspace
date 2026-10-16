@@ -1,0 +1,121 @@
+# Aufgaben zu »Eine JPEG-Datei decodieren«.
+# Format: docs/aufgaben.md. Gearbeitet wird in /workspace/pixelram-starter.
+# Die Werte stammen aus dem Referenzdecoder in loesung/jpeg.c und sind mit
+# Pillow nachgerechnet. Zwei Decoder liefern nicht Pixel für Pixel dasselbe
+# (Rundung der iDCT, Hochrechnen von Cb und Cr); deshalb fragen die letzten
+# Aufgaben nach Mittelwerten und einem Pixel, mit Toleranz.
+#
+# The values belong to exactly these files. src/static/jpeg/91-baseline.jpg
+# was made from 91.jpg (progressive, by Ian Kobylanski) with ImageMagick
+# 7.1.1-43:
+#   convert 91.jpg -strip -interlace none -sampling-factor 1x1 -quality 90 91-baseline.jpg
+# Another ImageMagick may write other bytes: then work the tasks out again
+# with loesung/jpeg.c. beispiele/44-baseline.jpg is a copy for the
+# screenshot recipes.
+format: 1
+activity: jpeg
+tasks:
+  - id: bloecke
+    title: Eine MCU ohne Subsampling
+    prompt: |
+      Sieh dir das SOF<sub>0</sub>-Segment von `91-baseline.jpg` an, zum
+      Beispiel mit `hexdump -C 91-baseline.jpg | head -30`. Wie ist dort eine
+      MCU aufgebaut?
+    check:
+      type: choice
+      options:
+        - Aus 3 Blöcken, je einer für Y, Cb und Cr; sie ist 8 × 8 Pixel groß.
+        - Aus 6 Blöcken, 4 für Y und je einer für Cb und Cr; sie ist 16 × 16 Pixel groß.
+        - Aus 4 Blöcken für Y; Cb und Cr stehen in eigenen MCUs.
+        - Aus 3 Blöcken; sie ist 16 × 16 Pixel groß.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: So ist es bei `44-baseline.jpg`, wo Y die Sampling-Faktoren 2 und 2 hat. Bei `91-baseline.jpg` steht für alle drei Komponenten `11`.
+      - when: { picked: 2 }
+        say: Bei Baseline-JPEGs mit mehreren Komponenten in einem Scan enthält jede MCU Blöcke aller Komponenten.
+      - when: { picked: 3 }
+        say: Ein Block ist immer 8 × 8 Pixel. Hat keine Komponente einen Sampling-Faktor über 1, ist die MCU nicht größer als ein Block.
+    hint: Der SOF<sub>0</sub>-Marker ist `ff c0`. Für jede Komponente stehen danach drei Bytes, das mittlere enthält die beiden Sampling-Faktoren.
+    solution: 'Alle drei Komponenten haben die Sampling-Faktoren 1 und 1 (`11`). Eine MCU besteht dann aus einem Block Y, einem Block Cb und einem Block Cr und ist 8 × 8 Pixel groß.'
+
+  - id: codes
+    title: Eigene Huffman-Tabellen
+    prompt: |
+      Wie viele Codes hat die AC-Tabelle in Slot 0 von `91-baseline.jpg`?
+    check:
+      type: number
+      expect: 58
+    feedback:
+      - when: { equals: 162 }
+        say: So viele hat die Standardtabelle in `44-baseline.jpg`. `91-baseline.jpg` bringt eigene, kürzere Tabellen mit.
+      - when: { equals: 77 }
+        say: 77 ist die Segmentlänge. Sie zählt auch die Länge selbst, das Byte mit Tc und Th und die 16 Anzahlen mit.
+      - when: { equals: 75 }
+        say: Fast. Von den 75 Bytes nach der Länge sind 1 Byte Tc und Th und 16 Bytes die Anzahlen je Codelänge.
+    hint: Die Anzahl der Codes ist die Summe der 16 Anzahlen je Codelänge. Die AC-Tabelle in Slot 0 erkennst du am Byte `10` direkt nach der Länge.
+    solution: 'Die 16 Anzahlen sind 0, 2, 1, 2, 5, 2, 4, 3, 6, 5, 2, 5, 2, 4, 0, 15, zusammen 58. Ein Encoder, der eigene Tabellen berechnet, gibt nur Codes für Symbole, die im Bild auch vorkommen.'
+
+  - id: dc
+    title: Der zweite Block
+    prompt: |
+      Der DC-Koeffizient des ersten Y-Blocks von `44-baseline.jpg` ist −120.
+      Welchen Wert hat der DC-Koeffizient des zweiten Y-Blocks?
+    check:
+      type: number
+      expect: -138
+    feedback:
+      - when: { equals: -18 }
+        say: Das ist die Differenz, die in der Datei steht. Der DC-Koeffizient ist der vorige plus diese Differenz.
+      - when: { equals: 138 }
+        say: Fast, aber das Vorzeichen stimmt nicht. Ist das höchste der gelesenen Bits 0, ist die Zahl negativ.
+    hint: Lass dir in deinem Decoder die DC-Koeffizienten der ersten Blöcke ausgeben. Der zweite Block kommt direkt nach dem ersten, er ist der obere rechte Y-Block der ersten MCU.
+    solution: 'In der Datei steht die Differenz −18, also −120 + (−18) = −138.'
+
+  - id: mcus
+    title: Wie viele MCUs?
+    prompt: |
+      Wie viele MCUs hat `91-baseline.jpg` mit seinen 1000 × 667 Pixeln?
+    check:
+      type: number
+      expect: 10500
+    feedback:
+      - when: { equals: 10375 }
+        say: Du hast 667 / 8 abgerundet. Die letzte Reihe ist nur teilweise im Bild, gehört aber trotzdem ganz in die Datei.
+      - when: { between: [10421, 10422] }
+        say: Das sind die Pixel geteilt durch 64. Rechne Spalten und Reihen von MCUs einzeln aus, jeweils aufgerundet.
+      - when: { equals: 2646 }
+        say: So viele hat `44-baseline.jpg` mit MCUs von 16 × 16 Pixeln. Bei `91-baseline.jpg` ist eine MCU 8 × 8 Pixel groß.
+    solution: '1000 / 8 = 125 Spalten und 667 / 8 = 83,4, aufgerundet 84 Reihen: 125 · 84 = 10500 MCUs.'
+
+  - id: blau
+    title: Die Farben im Mittel
+    prompt: |
+      Welchen Mittelwert von Blau gibt `print_average` für `44-baseline.jpg`
+      aus?
+    check:
+      type: number
+      expect: 108.9
+      tolerance: 1
+    feedback:
+      - when: { between: [125, 131] }
+        say: Dann sind Cb und Cr vertauscht, und Rot hat etwa 110. Cb ist die zweite Komponente, Cr die dritte.
+    hint: Stimmt der Wert nicht, sieh dir das Bild an. Ist es zu dunkel oder zu hell, fehlt vielleicht das Verschieben um 128 nach der iDCT.
+    solution: 'Rot 125,3, Grün 114,1, Blau 108,9. Andere Decoder liegen höchstens wenige Zehntel daneben.'
+
+  - id: pixel
+    title: Ein Pixel mit Details
+    prompt: |
+      Welchen Rotwert hat in `91-baseline.jpg` das Pixel bei x = 800,
+      y = 350? Gib ihn mit `get_pixel_rgb` aus.
+    check:
+      type: number
+      expect: 80
+      tolerance: 2
+    feedback:
+      - when: { between: [150, 170] }
+        say: Die AC-Koeffizienten stehen nicht an ihrem Platz. Hast du sie mit `ZIGZAG` in den Block gebracht? Die Mittelwerte stimmen dann trotzdem fast, weil sie nur von den DC-Koeffizienten abhängen.
+      - when: { between: [66, 74] }
+        say: Dann sind Cb und Cr vertauscht.
+    hint: x zählt von links, y von oben, beide ab 0.
+    solution: 'Das Pixel hat die Farbe 80, 75, 69 (Rot, Grün, Blau).'

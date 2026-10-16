@@ -443,13 +443,7 @@ Jede GIF-Datei beginnt mit sechs Zeichen: der Signatur `GIF` und der Version, `8
 </table>
 </div>
 
-Ersetze in `main` die Zeile mit `printf` durch eine Prüfung der Signatur. Die Version brauchst du nicht, also überspringst du sie:
-
-```c
-    if (read_byte() != 'G' || read_byte() != 'I' || read_byte() != 'F')
-        fail("Das ist keine GIF-Datei.");
-    pos += 3;   // Version: 87a oder 89a
-```
+Ersetze in `main` die Zeile mit `printf` durch eine Prüfung: Sind die ersten drei Bytes nicht `'G'`, `'I'` und `'F'`, beendet `fail` das Programm mit »Das ist keine GIF-Datei.«. Die Version brauchst du nicht, also überspringst du ihre drei Bytes. Probier es aus, indem du statt `diskette.gif` einmal `Makefile` als Argument angibst.
 
 ### Logical Screen Descriptor
 
@@ -528,21 +522,9 @@ Die Farbtabelle hat immer 2<sup>n+1</sup> Farben, wenn n in den letzten drei Bit
 
 _task(farben)
 
-Lies den Logical Screen Descriptor in `main`, direkt nach dem Header, und öffne einen Bildschirm in derselben Größe:
+Lies den Logical Screen Descriptor in `main`, direkt nach dem Header, Feld für Feld mit `read_word` und `read_byte`. Dann öffnest du einen Bildschirm in derselben Größe, mit `screen_open(width, height, pixel_indexed8, argv[1])`.
 
-```c
-    // Logical Screen Descriptor
-    int width = read_word();
-    int height = read_word();
-    uint8_t packed = read_byte();
-    int background = read_byte();
-    read_byte();   // Pixel Aspect Ratio
-
-    if (!screen_open(width, height, pixel_indexed8, argv[1]))
-        return 1;
-```
-
-`packed & 0x80` ist das höchste Bit, die Flagge für die Global Color Table, und `packed & 7` sind die letzten drei Bits, ihre Größe. Mit `&` behältst du von einer Zahl nur die Bits, die in der Maske gesetzt sind: 0x80 ist `1000 0000`, 7 ist `0000 0111`.
+Für die Packed Fields brauchst du einzelne Bits: `packed & 0x80` ist das höchste Bit, die Flagge für die Global Color Table, und `packed & 7` sind die letzten drei Bits, ihre Größe. Mit `&` behältst du von einer Zahl nur die Bits, die in der Maske gesetzt sind: 0x80 ist `1000 0000`, 7 ist `0000 0111`.
 
 ### Global Color Table
 
@@ -601,28 +583,13 @@ Direkt nach dem Logical Screen Descriptor folgt die Global Color Table, wenn die
 </table>
 </div>
 
-Die Farben kommen gleich in die Palette von PixelRAM. Ein Image Descriptor kann später eine eigene Tabelle mitbringen, deshalb bekommt das Lesen eine eigene Funktion. Schreib sie über `main`:
+Die Farben kommen gleich in die Palette von PixelRAM. Ein Image Descriptor kann später eine eigene Tabelle mitbringen, deshalb bekommt das Lesen eine eigene Funktion:
 
 ```c
 void read_color_table(int count)
-{
-    for (int i = 0; i < count; i++)
-    {
-        uint8_t r = read_byte();
-        uint8_t g = read_byte();
-        uint8_t b = read_byte();
-        set_palette(i, r, g, b);
-    }
-}
 ```
 
-und in `main` nach `screen_open`:
-
-```c
-    if (packed & 0x80)
-        read_color_table(2 << (packed & 7));
-    clear(background);
-```
+Sie liest `count` Farben, je drei Bytes, und gibt jeder ihre Nummer in der Palette, mit `set_palette(i, r, g, b)`. In `main` rufst du sie nach `screen_open` auf, wenn die Flagge gesetzt ist. Danach füllst du den Bildschirm mit `clear` in der Hintergrundfarbe.
 
 ### Extensions
 
@@ -707,27 +674,13 @@ Sie gilt für das nächste Bild und sagt, wie lange es stehen bleibt (Delay Time
 
 _task(kommentar)
 
-Für ein einzelnes Bild brauchst du keine Extension. Eine Funktion, die Sub-blocks liest, brauchst du trotzdem, denn auch die Bilddaten kommen gleich in Sub-blocks. Sie bekommt einen Speicher `data`, in den sie die Bytes hintereinander schreibt, und gibt zurück, wie viele es waren. Ist `data` gleich `NULL`, zählt sie nur:
+Für ein einzelnes Bild brauchst du keine Extension. Eine Funktion, die Sub-blocks liest, brauchst du trotzdem, denn auch die Bilddaten kommen gleich in Sub-blocks:
 
 ```c
 long read_sub_blocks(uint8_t *data)
-{
-    long size = 0;
-    while (1)
-    {
-        int length = read_byte();
-        if (length == 0)
-            return size;
-        for (int i = 0; i < length; i++)
-        {
-            uint8_t b = read_byte();
-            if (data)
-                data[size] = b;
-            size++;
-        }
-    }
-}
 ```
+
+Sie liest eine Länge, dann so viele Bytes, dann wieder eine Länge, bis die Länge 0 kommt. Die Bytes schreibt sie hintereinander in den Speicher `data`, ohne die Längen, und gibt zurück, wie viele es insgesamt waren. Ist `data` gleich `NULL`, zählt sie nur. So kann dieselbe Funktion eine Extension überspringen und Bilddaten lesen.
 
 ### Image Descriptor
 
@@ -859,52 +812,22 @@ Ein großes Bild hat viele Sub-blocks mit je 255 Bytes. Für das Entpacken setzt
 </table>
 </div>
 
-Jetzt kann `main` alle Blöcke lesen, bis der Trailer kommt. Ein Image Descriptor wird zu einer Funktion `read_image`, die du gleich schreibst:
+Jetzt kann `main` alle Blöcke lesen, bis der Trailer kommt. Schreib dafür eine Schleife, die immer das erste Byte eines Blocks liest:
 
-```c
-    while (1)
-    {
-        uint8_t introducer = read_byte();
-        if (introducer == 0x3B)   // Trailer
-            break;
-        else if (introducer == 0x21)   // Extension: Label, dann Sub-blocks
-        {
-            read_byte();
-            read_sub_blocks(NULL);
-        }
-        else if (introducer == 0x2C)   // Image Descriptor
-            read_image();
-        else
-            fail("Unbekannter Block.");
-    }
+- `0x3B` ist der Trailer: Die Schleife ist fertig.
+- `0x21` ist eine Extension: Lies das Label und überspringe die Sub-blocks.
+- `0x2C` ist ein Image Descriptor: Ruf `read_image()` auf.
+- Alles andere ist ein Fehler in der Datei; `fail` sagt, bei welchem Byte.
+
+Die Funktion `void read_image(void)` liest den Rest des Image Descriptors, eine Local Color Table, falls es eine gibt, die LZW Minimum Code Size und die Bilddaten. Wie viel Speicher die Bilddaten brauchen, weißt du erst, wenn du sie gelesen hast. Lies die Sub-blocks deshalb zweimal: einmal nur zum Zählen, dann mit einem Speicher aus `malloc`, der groß genug ist. Dazwischen setzt du `pos` dorthin zurück, wo die Sub-blocks anfangen.
+
+Lass `read_image` zum Schluss ausgeben, was es gelesen hat, und übersetze. In der Konsole sollte stehen:
+
+```text
+Bild 16 x 16 bei (0, 0), 45 Bytes Daten
 ```
 
-`read_image` liest den Rest des Image Descriptors, eine Local Color Table, falls es eine gibt, und die Bilddaten. Die Sub-blocks liest sie zweimal: einmal nur zum Zählen, dann, mit genug Speicher, wirklich. Dazwischen setzt sie `pos` wieder zurück. Schreib sie über `main`:
-
-```c
-void read_image(void)
-{
-    int left = read_word();
-    int top = read_word();
-    int width = read_word();
-    int height = read_word();
-    uint8_t packed = read_byte();
-    if (packed & 0x80)
-        read_color_table(2 << (packed & 7));
-
-    int min_code_size = read_byte();
-    long start = pos;
-    long data_size = read_sub_blocks(NULL);
-    pos = start;
-    uint8_t *data = malloc(data_size);
-    read_sub_blocks(data);
-
-    printf("Bild %d x %d bei (%d, %d), %ld Bytes Daten\n", width, height, left, top, data_size);
-    free(data);
-}
-```
-
-Übersetze und lade die Seite neu. In der Konsole steht `Bild 16 x 16 bei (0, 0), 45 Bytes Daten`. Mit `markt.gif` im Feld der Argumente sind es über 200.000 Bytes, in 814 Sub-blocks.
+Mit `markt.gif` im Feld der Argumente sind es über 200.000 Bytes, in 814 Sub-blocks.
 
 ## Vom Datenstrom zum Bild
 
@@ -927,24 +850,13 @@ Die ersten vier Codes haben 3 Bits, die nächsten 4 Bits. Warum sie länger werd
 JPEG liest die Bits andersherum, vom höchsten Bit eines Bytes an. Wenn du schon einen JPEG-Decoder geschrieben hast: Ein Bitleser von dort liefert hier nur Unsinn.
 </div>
 
-Ein Bitleser merkt sich, beim wievielten Bit er ist. Bit `bit_pos` steht im Byte `bit_pos / 8` an der Stelle `bit_pos % 8`; das erste gelesene Bit wird das niedrigste Bit des Codes:
+Schreib einen Bitleser:
 
 ```c
-uint8_t *bits;
-long bit_pos;
-
 int read_code(int size)
-{
-    int code = 0;
-    for (int i = 0; i < size; i++)
-    {
-        int bit = (bits[bit_pos / 8] >> (bit_pos % 8)) & 1;
-        code |= bit << i;
-        bit_pos++;
-    }
-    return code;
-}
 ```
+
+Er liest die nächsten `size` Bits aus den Bilddaten und gibt sie als Zahl zurück. Dafür merkt er sich in einer Variablen `bit_pos`, beim wievielten Bit er ist. Bit Nummer `bit_pos` steht im Byte `bit_pos / 8` an der Stelle `bit_pos % 8`, und das erste gelesene Bit wird das niedrigste Bit des Codes. Prüf ihn an der Diskette: Mit 3 Bits muss er zuerst 4, dann 1, dann 6 liefern.
 
 ### LZW-Decodierung
 
@@ -1021,17 +933,7 @@ Um den Eintrag `k` hinzuschreiben, gehst du die Kette rückwärts: `suffix[k]` i
 </ul>
 </div>
 
-In `read_image` rufst du die Funktion nach dem Lesen der Sub-blocks auf und setzt die Pixel, Zeile für Zeile:
-
-```c
-    uint8_t *pixels = calloc((long) width * height, 1);
-    decode_lzw(data, data_size, min_code_size, pixels, (long) width * height);
-
-    for (int y = 0; y < height; y++)
-        for (int x = 0; x < width; x++)
-            set_pixel(left + x, top + y, pixels[(long) y * width + x]);
-    free(pixels);
-```
+In `read_image` rufst du `decode_lzw` nach dem Lesen der Sub-blocks auf, mit einem Speicher für `width * height` Pixel. Dann setzt du die Pixel Zeile für Zeile mit `set_pixel`. Denk an die Position des Bildes: Das Pixel in Spalte x und Zeile y des Bildes gehört nach `left + x`, `top + y`.
 
 Wenn alles stimmt, siehst du nach `make` die Diskette:
 
@@ -1042,7 +944,7 @@ viewport: 800x450
 hook: open gif.html
 crop-element: #canvas
 -->
-<img class='full' src='diskette.webp' alt='Eine blaue Diskette mit grauem Metallschieber und hellem Etikett, aus 16 mal 16 großen Pixeln.'>
+<img src='diskette.webp' style='display: block; width: 12em; max-width: 100%; margin: 0 auto 1em; image-rendering: pixelated;' alt='Eine blaue Diskette mit grauem Metallschieber und hellem Etikett, aus 16 mal 16 großen Pixeln.'>
 
 ### Die Prüfsumme
 
@@ -1129,13 +1031,160 @@ Schreib eine Funktion `int image_row(int i, int height, int interlaced)`, die f�
 
 _task(interlacing)
 
+## Animationen
+
+<p class='expl'>GIF89a, Abschnitte 23 und 26, Seiten 15 und 21</p>
+
+Eine Animation ist eine GIF-Datei mit vielen Bildern. Vor jedem steht eine Graphic Control Extension, die sagt, wie lange es zu sehen ist und was danach mit ihm passiert. Lade eine:
+
+```bash_copy
+wget ${web_root}/gif/flug.gif
+```
+
+<img src='/gif/flug.gif' style='display: block; width: 24em; max-width: 100%; margin: 0 auto 1em; image-rendering: pixelated;' alt='Eine blaue Diskette hüpft in zwei Bögen von links nach rechts über Hügel unter einem Nachthimmel mit Mond und wird rot, als sie auf dem Boden landet.'>
+
+`flug.gif` hat 16 Bilder. Das erste ist die Landschaft, so groß wie der Logical Screen. Die übrigen sind nur 16 × 16 Pixel groß: jedes Mal die Diskette, an einer anderen Stelle. Das letzte bringt eine Local Color Table mit, in der die Diskette rot ist. Ganz vorn steht außerdem eine Application Extension mit dem Text `NETSCAPE2.0`: Sie sagt, dass die Animation sich endlos wiederholt. Erfunden hat sie 1995 der Browser Netscape, in der Spezifikation steht sie nicht. Dein Decoder überspringt sie wie jede Extension.
+
+### Graphic Control Extension
+
+<pre class='spec'>
+      7 6 5 4 3 2 1 0        Field Name                    Type
+     +---------------+
+  0  |               |       Extension Introducer          Byte
+     +---------------+
+  1  |               |       Graphic Control Label         Byte
+     +---------------+
+
+     +---------------+
+  0  |               |       Block Size                    Byte
+     +---------------+
+  1  |     |     | | |       &lt;Packed Fields&gt;               See below
+     +---------------+
+  2  |               |       Delay Time                    Unsigned
+     +-             -+
+  3  |               |
+     +---------------+
+  4  |               |       Transparent Color Index       Byte
+     +---------------+
+
+     +---------------+
+  0  |               |       Block Terminator              Byte
+     +---------------+
+
+      &lt;Packed Fields&gt;  =     Reserved                      3 Bits
+                             Disposal Method               3 Bits
+                             User Input Flag               1 Bit
+                             Transparent Color Flag        1 Bit
+</pre>
+
+**Beispiel:** das zweite Bild von `flug.gif`, die Diskette zum ersten Mal
+
+<pre class='spec hexdump'>
+00000220  00 00 <span class='m0'>21 f9</span> <span class='m1'>04</span> <span class='m2'>0d</span> <span class='m3'>08 00</span>  <span class='m4'>00</span> <span class='m5'>00</span> <span class='m6'>2c 02 00 08 00 10</span>  |..!.......,.....|
+00000230  <span class='m6'>00 10 00 00</span> 04 32 30 c8  41 6b 95 00 c8 60 fb d6  |.....20.Ak...`..|
+</pre>
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table bytes'>
+<tr>
+<td><span class='m0'><code>21 f9</code></span></td>
+<td>Extension Introducer, Label 0xF9: Graphic Control Extension</td>
+</tr>
+<tr>
+<td><span class='m1'><code>04</code></span></td>
+<td>ein Sub-block mit 4 Bytes</td>
+</tr>
+<tr>
+<td><span class='m2'><code>0d</code></span></td>
+<td>Packed Fields: 0x0D = <code>000 011 0 1</code>
+<p class='expl'>
+Disposal Method 3, kein User Input, und das Transparent Color Flag ist gesetzt: Eine Farbe des Bildes ist durchsichtig.
+</p>
+</td>
+</tr>
+<tr>
+<td><span class='m3'><code>08 00</code></span></td>
+<td>Delay Time: 8 Hundertstelsekunden</td>
+</tr>
+<tr>
+<td><span class='m4'><code>00</code></span></td>
+<td>Transparent Color Index: Farbe 0
+<p class='expl'>
+Das ist die abgeschnittene Ecke der Diskette. Pixel mit dieser Nummer zeichnet der Decoder nicht, dort bleibt die Landschaft zu sehen.
+</p>
+</td>
+</tr>
+<tr>
+<td><span class='m5'><code>00</code></span></td>
+<td>Block Terminator</td>
+</tr>
+<tr>
+<td><span class='m6' style='white-space: nowrap;'><code>2c 02 00</code> …</span></td>
+<td>Image Descriptor: 16 × 16 Pixel bei x = 2, y = 8</td>
+</tr>
+</table>
+</div>
+
+Die Disposal Method sagt, was mit einem Bild geschieht, wenn seine Zeit um ist und das nächste kommt:
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table'>
+<thead>
+<tr><th>Wert</th><th>Bedeutung</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>keine Angabe; wie 1</td></tr>
+<tr><td>1</td><td>Das Bild bleibt stehen, das nächste wird darüber gezeichnet.</td></tr>
+<tr><td>2</td><td>Die Fläche des Bildes wird mit der Hintergrundfarbe gefüllt.</td></tr>
+<tr><td>3</td><td>Die Fläche bekommt zurück, was vor dem Bild dort zu sehen war.</td></tr>
+</tbody>
+</table>
+</div>
+
+Die Diskette in `flug.gif` hat Disposal Method 3: Die Landschaft unter ihr kommt zurück, bevor sie an der nächsten Stelle erscheint. Ohne das zöge sie eine Spur hinter sich her.
+
+### Farben ohne Palette
+
+Im Modus `pixel_indexed8` gibt es eine einzige Palette für den ganzen Bildschirm. Schreibst du die Local Color Table des letzten Bildes mit `set_palette` hinein, ändern sich auch alle Pixel, die schon dastehen: Der Himmel hat dieselbe Nummer wie die Hülle der Diskette und würde mit ihr rot. Für Animationen öffnest du den Bildschirm deshalb im Modus `pixel_rgb24`, in dem jedes Pixel seine Farbe selbst trägt. Die Farbtabellen hebst du in Arrays auf, etwa `uint8_t global_colors[256][3]`, und jedes Pixel bekommt mit `set_pixel_rgb` die Farbe aus der Tabelle, die für sein Bild gilt.
+
+_uses(farben-direkt)
+
+### Abspielen
+
+Kopiere deinen Decoder und übersetze die Kopie mit der Animation:
+
+```bash
+cp gif.c animation.c
+make PROGRAM=animation ARGS=flug.gif
+```
+
+Was `animation.c` zusätzlich braucht:
+
+- **Die Graphic Control Extension lesen.** Ist das Label einer Extension 0xF9, liest `void read_graphic_control(void)` Disposal Method, Delay Time und, falls das Flag gesetzt ist, den Transparent Color Index. Die Werte gelten nur für das nächste Bild; danach setzt du sie zurück.
+- **Durchsichtige Pixel auslassen.** Pixel mit dem Transparent Color Index setzt `read_image` nicht.
+- **Zeigen und warten.** Nach jedem Bild zeigt `present()` den Bildschirm, `sleep_ms` wartet die Delay Time ab, in Millisekunden also das Zehnfache. Browser machen aus weniger als 2 Hundertstelsekunden 10; das ist eine gute Regel.
+- **Wegräumen.** Danach gilt die Disposal Method. Für 3 musst du dir vor dem Zeichnen merken, was unter dem Bild war: Lies die Pixel seiner Fläche mit `get_pixel_rgb` in einen Speicher und schreib sie nach der Wartezeit zurück.
+- **Von vorn.** Kommt der Trailer, springst du mit `pos` zurück zum ersten Block nach der Global Color Table. Die Schleife über die Blöcke läuft dann, solange `should_close()` falsch ist.
+
+_task(animation)
+
+### Ein Streit mit Bugs Bunny
+
+Wie spricht man GIF aus? Steve Wilhite, der das Format bei CompuServe entworfen hat, sagte 2013 bei den Webby Awards: mit weichem G, wie die Erdnussbutter Jif. Viele sehen das anders. Im Netz streiten Bugs Bunny und Daffy Duck darüber, in einer Fan-Montage aus einem alten Looney-Tunes-Cartoon, die bei [Know Your Meme](https://knowyourmeme.com/photos/996256-gif-vs-jif-pronunciation-debate) liegt. Lade sie und spiel sie mit deinem Decoder ab:
+
+```bash_copy
+wget -O bugs.gif https://i.kym-cdn.com/photos/images/original/000/996/256/0eb.gif
+```
+
+Sie hat 45 Bilder mit 301 × 221 Pixeln, jedes so groß wie der Logical Screen und nur 3 Hundertstelsekunden lang. Das sind drei Millionen Pixel, und die Datei hat trotzdem keine 500 KB: Die meisten Bilder zeichnen nur die Pixel neu, die sich ändern, im Schnitt sind drei Viertel ihrer Fläche durchsichtig. Lass dir für jedes Bild ausgeben, wie viele seiner Pixel durchsichtig sind, und such die Stellen, an denen der Film einen Schnitt hat.
+
 ## Weiter geht's
 
-Dein Decoder liest jetzt jedes GIF mit einem Bild. Die Spezifikation hat noch mehr zu bieten:
+Dein Decoder liest und spielt jetzt jedes GIF. Wer weitermachen will:
 
-- **Animationen**: Viele Bilder nacheinander, jedes mit seiner Graphic Control Extension. Delay Time sagt, wie lange es stehen bleibt, bevor das nächste kommt, Disposal Method, ob es danach stehen bleibt oder der Hintergrund zurückkommt. Mit einer Schleife aus `present()` und `sleep_ms()` spielt PixelRAM sie ab. Dass eine Animation endlos wiederholt wird, sagt übrigens eine Application Extension, die der Browser Netscape 1995 erfunden hat und die nicht in der Spezifikation steht.
-- **Transparenz**: Ist in der Graphic Control Extension das unterste Bit gesetzt, wird die Farbe mit dem Transparent Color Index nicht gezeichnet.
 - **Ein Encoder**: Schreib das Ganze andersherum, ein Programm, das aus Pixeln eine GIF-Datei macht. Es braucht dieselben Blöcke und dieselbe Tabelle, und dein Decoder sagt dir, ob es funktioniert.
+- **Plain Text Extension**: GIF89a kann Text enthalten, den der Decoder selbst in ein Raster aus Zeichenzellen zeichnen soll, in einer Schrift, die er sich aussucht (Abschnitt 25, Seite 18). Kaum ein Programm hat das je unterstützt. Bau eine Datei mit dieser Extension und zeig ihren Text an.
+- **GIFs aus dem Netz**: Lade GIFs von irgendwoher und finde heraus, was dein Decoder noch nicht kann.
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

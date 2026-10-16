@@ -1,0 +1,17 @@
+{
+  "screenshots": {
+    "ergebnis.webp": {
+      "environment_fingerprint": "6459953e40af067914364880e1c01662c94c63115aba8aebcfa5e3668efb990a",
+      "output_sha256": "6d0f33fb088c9652d0795734847ff2811cc94e7937a33bc7b4d5139902a72c8a",
+      "state_hash": "4aa02f9972f327ae3f273e98acfaca210666b20b504aa29f16a79bbda45df6e9",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "make.webp": {
+      "environment_fingerprint": "6459953e40af067914364880e1c01662c94c63115aba8aebcfa5e3668efb990a",
+      "output_sha256": "74e65f5ec05bcee65fdb8629ac63c51bbf6c9cef4da6616d67876ae2ca0c721d",
+      "state_hash": "6ece8391277f5f304a6117a0f1de81197f30366976d70a9f378935329b8a8770",
+      "workspace_look": "4.138.0-ls366"
+    }
+  },
+  "version": 1
+}

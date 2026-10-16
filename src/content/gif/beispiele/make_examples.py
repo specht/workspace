@@ -8,10 +8,12 @@ Descriptor and 45 bytes of image data. The two photos come from ImageMagick:
 photo 30 of /rgb (by Ian Kobylanski, with permission), 640 pixels wide,
 256 colours with Floyd-Steinberg dithering, once plain and once interlaced.
 
-Writes all three into src/static/gif/ (for the download on the page) and
-the first two also into this folder (for the screenshot recipes). The checksums in tasks.yaml
+flug.gif is the animation for the last part of the page. Everything goes
+into src/static/gif/ (for the download on the page); diskette.gif and
+markt.gif also into this folder, for the screenshot recipes. The checksums in tasks.yaml
 belong to these files: change them and the tasks change.
 """
+import math
 import os
 import shutil
 import struct
@@ -115,6 +117,81 @@ def diskette():
     return bytes(f)
 
 
+# flug.gif: the disk flies over a landscape in 14 frames of 16 x 16 pixels,
+# transparent corner, Disposal Method 3, and lands red with a Local Color
+# Table. A player that puts the LCT into one palette turns the sky red.
+W, H = 96, 64
+# GCT: 0-3 the disk, then sky, hills, ground, stars
+GCT = [(0x10, 0x10, 0x20), (0x2a, 0x6f, 0xb0), (0xf4, 0xf1, 0xe8), (0xc8, 0xce, 0xd6),
+       (0x1c, 0x3d, 0x6e), (0x3a, 0x6e, 0xa8), (0x6a, 0x9c, 0xd0), (0x9c, 0xc6, 0xe8),
+       (0x3f, 0x7d, 0x3a), (0x2e, 0x5e, 0x2b), (0x8a, 0x6a, 0x45), (0x6e, 0x52, 0x34),
+       (0xff, 0xff, 0xff), (0xf2, 0xc1, 0x4e), (0x1f, 0x3b, 0x1d), (0x00, 0x00, 0x00)]
+LCT = [(0x10, 0x10, 0x20), (0xc0, 0x39, 0x2b), (0xf4, 0xf1, 0xe8), (0xf2, 0xc1, 0x4e)]
+GROUND = 54
+
+def background():
+    px = []
+    for y in range(H):
+        for x in range(W):
+            if y < 10: c = 4
+            elif y < 20: c = 1
+            elif y < 28: c = 6
+            else: c = 7
+            hill = 40 + int(6 * math.sin(x / 9.0)) + int(3 * math.sin(x / 4.0 + 1))
+            if y >= hill: c = 8 if y < hill + 3 else 9
+            if y >= GROUND: c = 10 if y < GROUND + 2 else 11
+            px.append(c)
+    for (sx, sy) in [(7, 3), (21, 6), (33, 2), (52, 5), (61, 8), (44, 7), (90, 2), (14, 8), (27, 1), (70, 4)]:
+        px[sy * W + sx] = 12
+    for y in range(10, 20):           # a moon
+        for x in range(76, 86):
+            if (x - 81) ** 2 + (y - 14) ** 2 <= 12: px[y * W + x] = 13
+
+    return px
+
+SPRITE = [int(c) for r in ROWS for c in r]   # 16x16, index 0 = the cut corner, transparent
+
+def path(n):
+    pts = []
+    for i in range(n):
+        t = i / (n - 1)
+        x = int(round(2 + t * 70))
+        # two bounces, landing on the ground
+        b = abs(math.cos(t * math.pi * 1.5))
+        y = int(round(GROUND - 16 - b * 30 * (1 - 0.5 * t)))
+        pts.append((x, y))
+    return pts
+
+def gce(disposal, delay, transparent=None):
+    p = (disposal << 2) | (1 if transparent is not None else 0)
+    return b'\x21\xf9\x04' + bytes([p]) + struct.pack('<H', delay) + bytes([transparent or 0]) + b'\x00'
+
+def image(x, y, w, h, pixels, min_size, lct=None):
+    packed = 0
+    out = b'\x2c' + struct.pack('<HHHH', x, y, w, h)
+    if lct:
+        packed = 0x80 | ((len(lct) - 1).bit_length() - 1)
+        out += bytes([packed]) + b''.join(bytes(c) for c in lct)
+    else:
+        out += b'\x00'
+    return out + bytes([min_size]) + sub_blocks(lzw_encode(pixels, min_size))
+
+def flight():
+    f = bytearray(b'GIF89a')
+    f += struct.pack('<HHBBB', W, H, 0xf3, 15, 0)            # GCT 16 colours, background 15
+    for c in GCT: f += bytes(c)
+    f += b'\x21\xff\x0bNETSCAPE2.0\x03\x01\x00\x00\x00'      # loop forever
+    f += b'\x21\xfe' + sub_blocks(b'Diskette im Flug, Hackschule')
+    f += gce(1, 40) + image(0, 0, W, H, background(), 4)
+    pts = path(14)
+    for (x, y) in pts:
+        f += gce(3, 8, transparent=0) + image(x, y, 16, 16, SPRITE, 4)
+    x, y = pts[-1]
+    f += gce(1, 150, transparent=0) + image(x, y, 16, 16, SPRITE, 2, lct=LCT)
+    f += b'\x3b'
+    return bytes(f)
+
+
 def main():
     os.makedirs(STATIC, exist_ok=True)
     with open(os.path.join(HERE, 'diskette.gif'), 'wb') as f:
@@ -122,6 +199,8 @@ def main():
     common = ['convert', PHOTO, '-resize', '640x', '-dither', 'FloydSteinberg', '-colors', '256', '+repage', '-strip']
     subprocess.run(common + [os.path.join(HERE, 'markt.gif')], check=True)
     subprocess.run(common + ['-interlace', 'GIF', os.path.join(STATIC, 'markt-interlaced.gif')], check=True)
+    with open(os.path.join(STATIC, 'flug.gif'), 'wb') as f:
+        f.write(flight())
     for name in ['diskette.gif', 'markt.gif']:
         shutil.copy(os.path.join(HERE, name), os.path.join(STATIC, name))
 

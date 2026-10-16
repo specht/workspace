@@ -18,16 +18,32 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- »Eine JPEG-Datei decodieren« ist jetzt ein Labor in C mit PixelRAM statt
+  Pixelflow Canvas: Vorbereitung mit der PixelRAM-Vorlage, ein kleines Gerüst
+  zum Kopieren und zu jedem Teil ein Kasten »Für deinen Decoder« mit
+  Funktion, Signatur und einem Zwischenstand zum Vergleichen. Neu erklärt
+  sind Byte Stuffing und die Zick-Zack-Reihenfolge, die einem Decoder sonst
+  fehlen. Ein zweites Baseline-Foto ohne Subsampling und mit eigenen
+  Huffman-Tabellen (`/jpeg/91-baseline.jpg`) fängt Decoder, die nur das
+  Beispiel können. Sechs Aufgaben, die letzten mit Toleranz, weil zwei
+  JPEG-Decoder nie Pixel für Pixel dasselbe liefern; eine Notiz für
+  Lehrkräfte und ein vollständiger Decoder in `src/content/jpeg/loesung/`.
 - Neue Aktivität »Eine GIF-Datei decodieren« (`/gif`), im Abschnitt »Wie
   Computer rechnen« neben JPEG: Lernende schreiben in C einen GIF-Decoder, der
   mit PixelRAM zeichnet. Die Seite geht jeden Block an einer Diskette mit
   16 × 16 Pixeln durch, mit den Diagrammen der Spezifikation und farbigen
   Hexdumps; ein Schrittmacher zeigt die LZW-Decodierung Code für Code, mit
   Bits, Tabelle und dem Bild, das dabei entsteht. Dann folgen ein Foto mit
-  256 Farben (von Ian Kobylanski) und Interlacing. Sieben Aufgaben, drei davon
-  Prüfsummen, die der Decoder selbst ausgibt. Für Lehrkräfte gibt es die
+  256 Farben (von Ian Kobylanski), Interlacing und Animationen mit
+  Transparenz, Disposal Method und Local Color Table; zum Schluss spielt der
+  Decoder Bugs Bunny und Daffy Duck im Streit über die Aussprache von GIF ab.
+  Als Code gibt die Seite nur ein Gerüst und die Prüfsumme vor, alles andere
+  beschreibt sie mit Signaturen, Zwischenständen und Hinweisen. Acht
+  Aufgaben, vier davon Prüfsummen, die der Decoder selbst ausgibt; bei der
+  Animation erkennt die Rückmeldung die typischen Fehler an der Prüfsumme.
+  Für Lehrkräfte gibt es die
   Spezifikation GIF89a von 1990 als Heft zum Ausdrucken (A4, gefaltet A5) und
-  einen vollständigen Decoder in `src/content/gif/loesung/`.
+  einen vollständigen Decoder mit Player in `src/content/gif/loesung/`.
 - Spiegel von Open-Meteo für »Daten aus dem Netz«: unter `/open-meteo/api/v1/forecast`
   und `/open-meteo/geocoding/v1/search` dieselben Endpunkte wie bei
   Open-Meteo. Er merkt sich jede Antwort eine Viertelstunde für alle und gibt
