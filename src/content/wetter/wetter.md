@@ -340,6 +340,8 @@ terminal-run: ruby wetter.rb München
 terminal-wait-for-prompt
 sleep: 1
 move-mouse: selector:.terminal
+check-task: wetter-rb
+check-task-fails: cache
 -->
 <img class='full' src='ruby.webp' alt='In VS Code ist wetter.rb offen; im Terminal antwortet ruby wetter.rb München mit dem Ort, dem Wetter jetzt und einer Zeile für jeden der nächsten drei Tage.'>
 <!-- /language -->
@@ -357,6 +359,8 @@ terminal-run: python3 wetter.py München
 terminal-wait-for-prompt
 sleep: 1
 move-mouse: selector:.terminal
+check-task: wetter-rb python
+check-task-fails: cache python
 -->
 <img class='full' src='python.webp' alt='In VS Code ist wetter.py offen; im Terminal antwortet python3 wetter.py München mit dem Ort, dem Wetter jetzt und einer Zeile für jeden der nächsten drei Tage.'>
 <!-- /language -->
@@ -466,6 +470,7 @@ terminal-wait-for-prompt
 terminal-run: ruby wetter.rb Hamburg
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task: cache
 -->
 <img class='full' src='cache.webp' alt='Im Terminal zweimal ruby wetter.rb Hamburg; beim zweiten Mal stehen davor zwei Zeilen »aus dem Cache«, für die Geocoding- und die Wetter-API.'>
 <!-- /language -->
@@ -482,6 +487,7 @@ terminal-wait-for-prompt
 terminal-run: python3 wetter.py Hamburg
 terminal-wait-for-prompt
 crop-terminal-lines: auto
+check-task: cache python
 -->
 <img class='full' src='cache-python.webp' alt='Im Terminal zweimal python3 wetter.py Hamburg; beim zweiten Mal stehen davor zwei Zeilen »aus dem Cache«, für die Geocoding- und die Wetter-API.'>
 <!-- /language -->
@@ -678,6 +684,7 @@ tab: preview
 wait-for-text: Wetterdaten
 wait-for-text: °
 sleep: 2
+check-task: webseite
 -->
 <img class='full border' src='wetterseite.webp' alt='Die Wetterseite: ein Eingabefeld mit Berlin und der Knopf Suchen, darunter das Wetter jetzt mit Symbol und Temperatur, sieben Karten mit Wochentag, Wettersymbol, Höchst- und Tiefsttemperatur, darunter die Uhrzeit der Daten mit dem Knopf Neu laden und unten die Quelle Open-Meteo.com.'>
 
@@ -716,3 +723,13 @@ wait-for-text: °
 sleep: 2
 -->
 <img class='teaser' hidden src='teaser.webp' alt='Die Wetterseite für Berlin: das Wetter jetzt mit Symbol und Temperatur und darunter sieben Tageskarten mit Wettersymbol, Höchst- und Tiefsttemperatur, ganz unten die Uhrzeit der Daten aus dem Speicher des Browsers und der Knopf Neu laden.'>
+
+<!-- tutorial-step
+# Ein Ort, den es nicht gibt: Das Programm meldet ihn, statt abzustürzen
+# (»Das Wetter aus deinem Programm«).
+terminal-open
+terminal-run: clear
+terminal-run: python3 wetter.py Xyzzy
+wait-for-text: Keinen Ort namens Xyzzy gefunden.
+expect-no-text: Traceback
+-->

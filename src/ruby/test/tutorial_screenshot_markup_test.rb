@@ -20,7 +20,7 @@ class TutorialScreenshotMarkupTest < Minitest::Test
             next if path.include?('/_drafts/')
             lines = File.readlines(path, chomp: true)
             lines.each_with_index do |line, index|
-                next unless line.start_with?('<!-- tutorial-screenshot') && index > 0
+                next unless line.start_with?('<!-- tutorial-screenshot', '<!-- tutorial-step') && index > 0
                 next if starts_a_block?(lines[index - 1])
                 problems << "#{path.delete_prefix(CONTENT + '/')}:#{index + 1}: blank line missing after »#{lines[index - 1].strip[0, 60]}«"
             end

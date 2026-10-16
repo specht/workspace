@@ -92,6 +92,15 @@ Code, den Bilder und Beispiele testen. Ein Block, der mit Absicht anders ist,
 etwa ein Gerüst, das die Lernenden ausbauen, steht mit
 `<!-- page-code: own -->` in der Zeile vor dem Codeblock.
 
+Rezepte können auch prüfen, ob die Schritte der Seite aufgehen:
+`check-task: lock` führt die Prüfung einer Aufgabe aus wie der Knopf »Prüfen«,
+`check-task-fails: lock` verlangt, dass sie an dieser Stelle noch scheitert,
+`expect-no-text: Traceback` schlägt an, wenn etwas nicht auf dem Bild stehen
+darf. Schritte ohne Bild stehen in `<!-- tutorial-step … -->`.
+`src/scripts/recreate-screenshots.rb SEITE` geht dann die ganze Seite durch
+und bricht beim ersten Schritt ab, der nicht aufgeht. Die Anweisungen stehen in
+[src/tutorial-screenshots/README.md](../src/tutorial-screenshots/README.md#assertions-does-the-pages-step-work).
+
 Mehrere kleine Bilder nebeneinander stehen in einer Galerie; ein Klick
 öffnet ein Bild groß, mit seiner Unterschrift:
 

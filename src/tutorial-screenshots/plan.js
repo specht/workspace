@@ -103,8 +103,19 @@ export function parseVariants(value) {
     return names;
 }
 
+// Instructions that only check what is on screen or in the Workspace
+// (expect-no-text, check-task, check-task-fails). They change nothing, so
+// they are not part of any hash: adding one to a recipe re-renders nothing.
+export const ASSERTION_ACTIONS = new Set(['expect-no-text', 'check-task', 'check-task-fails']);
+
+function withoutAssertions(shot) {
+    if (!shot.actions?.some(action => ASSERTION_ACTIONS.has(action.type))) return shot;
+    return { ...shot, actions: shot.actions.filter(action => !ASSERTION_ACTIONS.has(action.type)) };
+}
+
 export function stateParts(shot) {
-    return { tab: shot.tab, viewport: shot.viewport, zoom: shot.zoom, actions: shot.actions };
+    const plain = withoutAssertions(shot);
+    return { tab: plain.tab, viewport: plain.viewport, zoom: plain.zoom, actions: plain.actions };
 }
 
 // Chained hashes for a tutorial's shots (resolved recipes, in order).
@@ -116,7 +127,8 @@ export function stateParts(shot) {
 export function chainStateHashes(shots, seed) {
     let chain = seed;
     let legacy = seed;
-    return shots.map(shot => {
+    return shots.map(original => {
+        const shot = withoutAssertions(original);
         const stateHash = sha256(`${chain}\0${JSON.stringify(shot)}`);
         const legacyStateHash = sha256(`${legacy}\0${JSON.stringify(shot)}`);
         chain = sha256(`${chain}\0${JSON.stringify(stateParts(shot))}`);

@@ -531,6 +531,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - `page_code_test.rb` prüft, dass der Code auf einer Aktivität in den Dateien
   steht, die ihre Screenshot-Rezepte schreiben. So kann der Code auf der
   Seite nicht unbemerkt von dem abweichen, was Bilder und Beispiele testen.
+- Screenshot-Rezepte prüfen auf Wunsch, ob die Schritte einer Seite aufgehen:
+  `check-task` führt die Prüfung einer Aufgabe im Workspace des
+  Screenshot-Kontos aus wie »Prüfen«, `check-task-fails` verlangt, dass sie
+  an dieser Stelle noch scheitert, `expect-no-text` schlägt bei einer
+  Fehlermeldung an, und `<!-- tutorial-step … -->` beschreibt Schritte ohne
+  Bild. Solche Prüfungen ändern keine Bilder. Die Pixelwand und Daten aus dem
+  Netz prüfen ihre Aufgaben jetzt so, in beiden Sprachen.
 - `pip install` funktioniert im Workspace wie `gem install`: Pakete landen
   ohne Administratorrechte in `/workspace/.local` und bleiben über einen
   Neustart erhalten; `python3` findet sie ohne virtuelle Umgebung. Bisher

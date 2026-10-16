@@ -235,6 +235,7 @@ terminal-run: ruby server.rb
 wait-for-text: Der Server wartet
 move-mouse: selector:.terminal
 sleep: 1
+check-task-fails: pixelwand
 -->
 <img class='full' src='ordner.webp' alt='Der Ordner pixelwand mit index.html und server.rb; server.rb ist offen, im Terminal wartet der Server auf Port 8000.'>
 <!-- /language -->
@@ -256,6 +257,7 @@ sleep: 2
 open-file: server.py
 move-mouse: selector:.terminal
 sleep: 1
+check-task-fails: pixelwand python
 -->
 <img class='full' src='ordner-python.webp' alt='Der Ordner pixelwand mit index.html und server.py; server.py ist offen, im Terminal wartet der Server auf Port 8000.'>
 <!-- /language -->
@@ -748,6 +750,7 @@ terminal-run: clear
 sleep: 1
 terminal-run: curl -s localhost:8000/ | head -n 5
 sleep: 2
+check-task: pixelwand
 -->
 <img class='full' src='neustart.webp' alt='Links wartet der neu gestartete Server, rechts zeigt curl die ersten Zeilen der neuen Seite mit dem Titel »Pixelwand«.'>
 <!-- /language -->
@@ -770,6 +773,8 @@ terminal-run: clear
 sleep: 1
 terminal-run: curl -s localhost:8000/ | head -n 5
 sleep: 2
+check-task: pixelwand python
+expect-no-text: Traceback
 -->
 <img class='full' src='neustart-python.webp' alt='Links wartet der neu gestartete Python-Server, rechts zeigt curl die ersten Zeilen der neuen Seite mit dem Titel »Pixelwand«.'>
 <!-- /language -->
@@ -1082,6 +1087,7 @@ sleep: 1
 terminal-run: node flood.js
 wait-for-text: 200 Pixel zurückbekommen
 sleep: 1
+check-task-fails: lock
 -->
 <img class='full' src='threads.webp' alt='Links zählt der Server, aber am Ende steht weit weniger als »Pixel Nr. 200«, rechts meldet flood.js »200 Pixel geschickt.« und »200 Pixel zurückbekommen.«'>
 <!-- /language -->
@@ -1105,6 +1111,7 @@ sleep: 1
 terminal-run: node flood.js
 wait-for-text: 200 Pixel zurückbekommen
 sleep: 1
+check-task-fails: lock python
 -->
 <img class='full' src='threads-python.webp' alt='Links zählt der Python-Server, aber am Ende steht weit weniger als »Pixel Nr. 200«, rechts meldet flood.js »200 Pixel geschickt.« und »200 Pixel zurückbekommen.«'>
 <!-- /language -->
@@ -1172,6 +1179,7 @@ sleep: 1
 terminal-run: node flood.js
 wait-for-text: 200 Pixel zurückbekommen
 sleep: 1
+check-task: lock
 -->
 <img class='full' src='lock.webp' alt='Links zählt der Server bis »Pixel Nr. 200«, rechts meldet flood.js »200 Pixel geschickt.« und »200 Pixel zurückbekommen.«'>
 <!-- /language -->
@@ -1194,6 +1202,7 @@ sleep: 1
 terminal-run: node flood.js
 wait-for-text: 200 Pixel zurückbekommen
 sleep: 1
+check-task: lock python
 -->
 <img class='full' src='lock-python.webp' alt='Links zählt der Python-Server bis »Pixel Nr. 200«, rechts meldet flood.js »200 Pixel geschickt.« und »200 Pixel zurückbekommen.«'>
 <!-- /language -->
