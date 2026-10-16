@@ -20,7 +20,7 @@
         <div class='col-md-12'>
             <!-- Not logged in: what the Workspace is and how to get in, in one
                  compact header; the catalog below shows what it offers. -->
-            <div class='row align-items-start front-hero' style='#{user_logged_in? || !running_tests.empty? ? 'display: none;' : ''}'>
+            <div class='row align-items-center front-hero' style='#{user_logged_in? || !running_tests.empty? ? 'display: none;' : ''}'>
                 <div class='front-hero-text col-12 col-md-6 col-xl-8'>
                     <p class='front-hero-lead'>
                         Programmieren direkt im Browser: deine eigene Entwicklungsumgebung mit Editor, Terminal und Git,
@@ -33,7 +33,7 @@
                     </ul>
                     <p class='front-hero-login'>
                         <a href='/login'>Melde dich mit deiner E-Mail-Adresse an.</a>
-                        Noch keinen Zugang? Frag nach einer <a href='mailto:specht@hackschule.de'>Einladung</a>.
+                        Noch keinen Zugang? Frag nach einer #{contact_email.empty? ? 'Einladung' : "<a href='mailto:#{CGI.escapeHTML(contact_email)}'>Einladung</a>"}.
                     </p>
                 </div>
                 <div class='col-12 col-md-6 col-xl-4'>#{front_picture_html}</div>
