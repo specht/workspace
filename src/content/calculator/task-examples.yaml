@@ -1,0 +1,65 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): die Musterlösung löst jede Aufgabe, das Gerüst keine.
+format: 1
+activity: calculator
+examples:
+  zerlegen:
+    pass:
+      - files: { calculator/calculator.rb: loesung/calculator.rb }
+    fail:
+      - files: { calculator/calculator.rb: stufen/start.rb }
+    python:
+      pass:
+        - files: { calculator/calculator.py: loesung/calculator.py }
+      fail:
+        - files: { calculator/calculator.py: stufen/start.py }
+  baum:
+    pass:
+      - files: { calculator/calculator.rb: loesung/calculator.rb }
+    fail:
+      - files: { calculator/calculator.rb: stufen/start.rb }
+    python:
+      pass:
+        - files: { calculator/calculator.py: loesung/calculator.py }
+      fail:
+        - files: { calculator/calculator.py: stufen/start.py }
+  ausrechnen:
+    pass:
+      - files: { calculator/calculator.rb: loesung/calculator.rb }
+    fail:
+      - files: { calculator/calculator.rb: stufen/start.rb }
+    python:
+      pass:
+        - files: { calculator/calculator.py: loesung/calculator.py }
+      fail:
+        - files: { calculator/calculator.py: stufen/start.py }
+  fehler:
+    pass:
+      - files: { calculator/calculator.rb: loesung/calculator.rb }
+    fail:
+      - files: { calculator/calculator.rb: stufen/start.rb }
+    python:
+      pass:
+        - files: { calculator/calculator.py: loesung/calculator.py }
+      fail:
+        - files: { calculator/calculator.py: stufen/start.py }
+  potenz:
+    pass:
+      - files: { calculator/calculator.rb: loesung/calculator.rb }
+    fail:
+      - files: { calculator/calculator.rb: stufen/start.rb }
+    python:
+      pass:
+        - files: { calculator/calculator.py: loesung/calculator.py }
+      fail:
+        - files: { calculator/calculator.py: stufen/start.py }
+  variablen:
+    pass:
+      - files: { calculator/calculator.rb: loesung/calculator.rb }
+    fail:
+      - files: { calculator/calculator.rb: stufen/start.rb }
+    python:
+      pass:
+        - files: { calculator/calculator.py: loesung/calculator.py }
+      fail:
+        - files: { calculator/calculator.py: stufen/start.py }

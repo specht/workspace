@@ -18,6 +18,18 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Neue Aktivität »Ein Rechner für Ausdrücke« in »Wie Computer rechnen«, in
+  Ruby und Python, nach den Endlichen Automaten: Lernende zerlegen Text in
+  Tokens (die Zahl als Automat in Automatron), bauen mit rekursivem Abstieg
+  einen Baum nach einer Grammatik, rechnen ihn aus, melden Fehler, bauen
+  `^` von rechts nach links und Variablen ein und haben am Ende einen Rechner
+  zum Tippen im Terminal. Ein Baumzeichner auf der Seite zeigt den Baum
+  jedes Ausdrucks und rechnet ihn mit ← → Knoten für Knoten aus. Zehn
+  Aufgaben, davon zwei Vermutungen.
+- Ruby- und Python-Prüfungen können verlangen, dass ein Aufruf mit einem
+  Fehler abbricht (`raises: true`), etwa ein Rechner bei einer Klammer, die
+  nie zugeht.
+
 - Neue Aktivität »Ein Krimi im Terminal« in »Terminal & Git«: Aus dem
   Stadtmuseum Bitstein ist die Goldene Diskette verschwunden, und die Akten
   sind zu groß zum Durchlesen. Lernende lösen den Fall mit `grep` (mit `^`,

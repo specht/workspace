@@ -1,0 +1,311 @@
+# Aufgaben zu »Ein Rechner für Ausdrücke«. Format: docs/aufgaben.md.
+# Alles liegt in /workspace/calculator; die Werte kommen aus loesung/.
+# Bäume sind Listen: eine Zahl (ein Blatt), ein Name, [Zeichen, links, rechts]
+# oder ["neg", Kind]; so sehen sie in Ruby und in Python gleich aus.
+format: 1
+activity: calculator
+tasks:
+  - id: links-nach-rechts
+    title: Links oder rechts?
+    prediction: true
+    prompt: Was ergibt `8 - 3 - 2`? Überleg zuerst, bevor du es ausprobierst.
+    check:
+      type: number
+      expect: 3
+    feedback:
+      - when: { equals: 7 }
+        say: Das wäre `8 - (3 - 2)`. Ohne Klammern wird von links nach rechts gerechnet, erst `8 - 3`.
+    solution: '3: erst 8 - 3 = 5, dann 5 - 2 = 3.'
+
+  - id: zerlegen
+    title: Zerlegen
+    prompt: 'Schreib `tokenize` in `calculator.rb`.'
+    check:
+      type: ruby
+      file: calculator/calculator.rb
+      cases:
+        - 'tokenize(''12+3*(4-1)'')': '[12, "+", 3, "*", "(", 4, "-", 1, ")"]'
+        - call: 'tokenize('' 7 '')'
+          expect: '[7]'
+          say: 'Leerzeichen trennen nur, sie werden keine Tokens.'
+        - 'tokenize('''')': '[]'
+        - call: 'tokenize(''100 / 25'')'
+          expect: '[100, "/", 25]'
+          say: 'Eine Zahl mit mehreren Ziffern ist ein einziges Token.'
+        - call: 'tokenize(''3.25*2'')'
+          expect: '[3.25, "*", 2]'
+          say: 'Mit einem Punkt und Ziffern danach ist die Zahl eine Kommazahl.'
+        - 'tokenize(''2^(1-4)'')': '[2, "^", "(", 1, "-", 4, ")"]'
+        - call: 'tokenize(''2 # 3'')'
+          raises: true
+          say: 'Ein Zeichen, das in keinem Ausdruck vorkommt, ist ein Fehler, kein Token.'
+        - call: 'tokenize(''7'').first.is_a?(Integer)'
+          expect: true
+          say: 'Eine Zahl ohne Punkt bleibt ein Integer: 7, nicht 7.0.'
+    hint: 'Eine while-Schleife mit einer Stelle i. Bei einer Ziffer läuft eine zweite Schleife weiter, solange Ziffern kommen; `text[start...i].to_i` macht daraus die Zahl.'
+    python:
+      prompt: 'Schreib `tokenize` in `calculator.py`.'
+      check:
+        type: python
+        file: calculator/calculator.py
+        cases:
+          - 'tokenize(''12+3*(4-1)'')': '[12, "+", 3, "*", "(", 4, "-", 1, ")"]'
+          - call: 'tokenize('' 7 '')'
+            expect: '[7]'
+            say: 'Leerzeichen trennen nur, sie werden keine Tokens.'
+          - 'tokenize('''')': '[]'
+          - call: 'tokenize(''100 / 25'')'
+            expect: '[100, "/", 25]'
+            say: 'Eine Zahl mit mehreren Ziffern ist ein einziges Token.'
+          - call: 'tokenize(''3.25*2'')'
+            expect: '[3.25, "*", 2]'
+            say: 'Mit einem Punkt und Ziffern danach ist die Zahl eine Kommazahl.'
+          - 'tokenize(''2^(1-4)'')': '[2, "^", "(", 1, "-", 4, ")"]'
+          - call: 'tokenize(''2 # 3'')'
+            raises: true
+            say: 'Ein Zeichen, das in keinem Ausdruck vorkommt, ist ein Fehler, kein Token.'
+          - call: 'isinstance(tokenize(''7'')[0], int)'
+            expect: true
+            say: 'Eine Zahl ohne Punkt bleibt ein int: 7, nicht 7.0.'
+      hint: 'Eine while-Schleife mit einer Stelle i. Bei einer Ziffer läuft eine zweite Schleife weiter, solange Ziffern kommen; `int(text[start:i])` macht daraus die Zahl.'
+
+  - id: klammern
+    title: Was ein Automat nicht kann
+    prompt: Warum kann kein endlicher Automat für jeden Ausdruck entscheiden, ob seine Klammern zusammenpassen?
+    check:
+      type: choice
+      options:
+        - Er müsste sich merken, wie viele Klammern gerade offen sind. Dafür gibt es keine Obergrenze, aber er hat nur endlich viele Zustände.
+        - Klammern sind keine Buchstaben, und ein Automat liest nur Buchstaben und Ziffern.
+        - Er liest von links nach rechts, aber ob eine Klammer zugeht, sieht man erst von rechts.
+        - Er könnte es, aber bei langen Ausdrücken wäre er zu langsam.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Ein Automat kann jedes Zeichen lesen, auch Klammern. Das Problem ist, was er sich merken muss.
+      - when: { picked: 2 }
+        say: Von links nach rechts reicht, wenn man mitzählt. Das Zählen ist das Problem.
+      - when: { picked: 3 }
+        say: Ein Automat braucht für jedes Zeichen genau einen Schritt, schneller geht es kaum.
+
+  - id: baum
+    title: Ein Baum aus Tokens
+    prompt: 'Schreib `parse` in `calculator.rb`: aus Tokens einen Baum, mit `+`, `-`, `*`, `/`, Klammern und einem Minus als Vorzeichen.'
+    check:
+      type: ruby
+      file: calculator/calculator.rb
+      cases:
+        - call: 'parse(tokenize(''7''))'
+          expect: '7'
+          say: 'Eine Zahl allein ist schon ein Baum, ein Blatt.'
+        - call: 'parse(tokenize(''2+3*4''))'
+          expect: '["+", 2, ["*", 3, 4]]'
+          say: 'Punkt vor Strich: Das Malnehmen hängt unter dem Plus.'
+        - 'parse(tokenize(''(2+3)*4''))': '["*", ["+", 2, 3], 4]'
+        - call: 'parse(tokenize(''8-3-2''))'
+          expect: '["-", ["-", 8, 3], 2]'
+          say: 'Von links nach rechts: Erst 8 - 3, davon dann 2 weg.'
+        - 'parse(tokenize(''2*(3+(4-1))''))': '["*", 2, ["+", 3, ["-", 4, 1]]]'
+        - call: 'parse(tokenize(''-(1+2)''))'
+          expect: '["neg", ["+", 1, 2]]'
+          say: 'Ein Minus vorn ist ein Vorzeichen: ["neg", …] mit einem einzigen Kind.'
+        - 'parse(tokenize(''2*-3''))': '["*", 2, ["neg", 3]]'
+    hint: 'Eine Methode für jede Regel: `expression` ruft `term` auf, `term` ruft `factor` auf, und `factor` ruft für eine Klammer wieder `expression` auf.'
+    python:
+      prompt: 'Schreib `parse` in `calculator.py`: aus Tokens einen Baum, mit `+`, `-`, `*`, `/`, Klammern und einem Minus als Vorzeichen.'
+      check:
+        type: python
+        file: calculator/calculator.py
+        cases:
+          - call: 'parse(tokenize(''7''))'
+            expect: '7'
+            say: 'Eine Zahl allein ist schon ein Baum, ein Blatt.'
+          - call: 'parse(tokenize(''2+3*4''))'
+            expect: '["+", 2, ["*", 3, 4]]'
+            say: 'Punkt vor Strich: Das Malnehmen hängt unter dem Plus.'
+          - 'parse(tokenize(''(2+3)*4''))': '["*", ["+", 2, 3], 4]'
+          - call: 'parse(tokenize(''8-3-2''))'
+            expect: '["-", ["-", 8, 3], 2]'
+            say: 'Von links nach rechts: Erst 8 - 3, davon dann 2 weg.'
+          - 'parse(tokenize(''2*(3+(4-1))''))': '["*", 2, ["+", 3, ["-", 4, 1]]]'
+          - call: 'parse(tokenize(''-(1+2)''))'
+            expect: '["neg", ["+", 1, 2]]'
+            say: 'Ein Minus vorn ist ein Vorzeichen: ["neg", …] mit einem einzigen Kind.'
+          - 'parse(tokenize(''2*-3''))': '["*", 2, ["neg", 3]]'
+      hint: 'Eine Funktion für jede Regel: `expression` ruft `term` auf, `term` ruft `factor` auf, und `factor` ruft für eine Klammer wieder `expression` auf.'
+
+  - id: ausrechnen
+    title: Ausrechnen
+    prompt: 'Schreib `evaluate` in `calculator.rb`.'
+    check:
+      type: ruby
+      file: calculator/calculator.rb
+      cases:
+        - 'evaluate(["+", 2, ["*", 3, 4]])': '14'
+        - 'evaluate(5)': '5'
+        - 'calculate(''8-3-2'')': '3'
+        - 'calculate(''-(1+2)*4'')': '-12'
+        - 'calculate(''2*(3+(4-1))'')': '12'
+        - 'calculate(''10/4*2'')': '5.0'
+        - call: 'calculate(''7/2'')'
+          expect: '3.5'
+          say: 'Teilen gibt immer eine Kommazahl. In Ruby ist 7 / 2 aber 3; mit to_f wird daraus 7.0 / 2.'
+    hint: 'Ein Blatt ist schon sein Wert. Sonst rechnest du erst die Kinder aus, mit `evaluate`, und verbindest dann ihre Werte.'
+    python:
+      prompt: 'Schreib `evaluate` in `calculator.py`.'
+      check:
+        type: python
+        file: calculator/calculator.py
+        cases:
+          - 'evaluate(["+", 2, ["*", 3, 4]])': '14'
+          - 'evaluate(5)': '5'
+          - 'calculate(''8-3-2'')': '3'
+          - 'calculate(''-(1+2)*4'')': '-12'
+          - 'calculate(''2*(3+(4-1))'')': '12'
+          - 'calculate(''10/4*2'')': '5.0'
+          - call: 'calculate(''7/2'')'
+            expect: '3.5'
+            say: 'Teilen gibt immer eine Kommazahl: 7 / 2 ist 3.5.'
+      hint: 'Ein Blatt ist schon sein Wert. Sonst rechnest du erst die Kinder aus, mit `evaluate`, und verbindest dann ihre Werte.'
+
+  - id: fehler
+    title: Fehler
+    prompt: 'Sorg dafür, dass `calculate` bei einem falschen Ausdruck mit einem Fehler abbricht (`raise`), statt irgendetwas auszurechnen.'
+    check:
+      type: ruby
+      file: calculator/calculator.rb
+      cases:
+        - call: 'calculate(''(1+2'')'
+          raises: true
+          say: 'Eine Klammer, die nie zugeht, ist ein Fehler.'
+        - call: 'calculate(''1+'')'
+          raises: true
+          say: 'Nach dem Plus fehlt etwas. Das ist ein Fehler, keine Null.'
+        - call: 'calculate(''1 2'')'
+          raises: true
+          say: 'Zwischen zwei Zahlen fehlt ein Rechenzeichen. Bleiben nach dem Ausdruck Tokens übrig, ist das ein Fehler.'
+        - call: 'calculate('')'')'
+          raises: true
+        - call: 'calculate('''')'
+          raises: true
+          say: 'Ein leerer Ausdruck hat keinen Wert.'
+        - call: 'calculate(''2*(3+4)'')'
+          expect: '14'
+          say: 'Richtige Ausdrücke gehen weiterhin.'
+    python:
+      prompt: 'Sorg dafür, dass `calculate` bei einem falschen Ausdruck mit einem Fehler abbricht (`raise`), statt irgendetwas auszurechnen.'
+      check:
+        type: python
+        file: calculator/calculator.py
+        cases:
+          - call: 'calculate(''(1+2'')'
+            raises: true
+            say: 'Eine Klammer, die nie zugeht, ist ein Fehler.'
+          - call: 'calculate(''1+'')'
+            raises: true
+            say: 'Nach dem Plus fehlt etwas. Das ist ein Fehler, keine Null.'
+          - call: 'calculate(''1 2'')'
+            raises: true
+            say: 'Zwischen zwei Zahlen fehlt ein Rechenzeichen. Bleiben nach dem Ausdruck Tokens übrig, ist das ein Fehler.'
+          - call: 'calculate('')'')'
+            raises: true
+          - call: 'calculate('''')'
+            raises: true
+            say: 'Ein leerer Ausdruck hat keinen Wert.'
+          - call: 'calculate(''2*(3+4)'')'
+            expect: '14'
+            say: 'Richtige Ausdrücke gehen weiterhin.'
+
+  - id: hoch-vorhersage
+    title: Hoch und noch mal hoch
+    prediction: true
+    prompt: Was ergibt `2 ^ 3 ^ 2`, wenn `^` »hoch« heißt, so wie in der Mathematik?
+    check:
+      type: number
+      expect: 512
+    feedback:
+      - when: { equals: 64 }
+        say: Das wäre `(2 ^ 3) ^ 2`. In der Mathematik wird hoch von oben nach unten gerechnet, also von rechts nach links.
+    solution: '512, weil 2 ^ (3 ^ 2) = 2 ^ 9 gerechnet wird.'
+
+  - id: potenz
+    title: Hoch
+    prompt: 'Bau `^` in `calculator.rb` ein.'
+    check:
+      type: ruby
+      file: calculator/calculator.rb
+      cases:
+        - call: 'parse(tokenize(''2^3^2''))'
+          expect: '["^", 2, ["^", 3, 2]]'
+          say: 'Hoch wird von rechts nach links gerechnet: 2 hoch (3 hoch 2).'
+        - 'calculate(''2^3^2'')': '512'
+        - call: 'calculate(''-2^2'')'
+          expect: '-4'
+          say: 'Wie in der Mathematik: erst hoch, dann das Vorzeichen.'
+        - call: 'calculate(''2^-1'')'
+          expect: '0.5'
+          say: 'Nach dem Hoch darf ein Vorzeichen stehen.'
+        - call: 'calculate(''(2+1)^2*2'')'
+          expect: '18'
+          say: 'Hoch bindet stärker als Mal.'
+    hint: 'Eine neue Regel `power` zwischen `factor` und den Zahlen. Nach dem `^` ruft sie `factor` auf, nicht sich selbst in einer Schleife: So wird von rechts gerechnet.'
+    python:
+      prompt: 'Bau `^` in `calculator.py` ein.'
+      check:
+        type: python
+        file: calculator/calculator.py
+        cases:
+          - call: 'parse(tokenize(''2^3^2''))'
+            expect: '["^", 2, ["^", 3, 2]]'
+            say: 'Hoch wird von rechts nach links gerechnet: 2 hoch (3 hoch 2).'
+          - 'calculate(''2^3^2'')': '512'
+          - call: 'calculate(''-2^2'')'
+            expect: '-4'
+            say: 'Wie in der Mathematik: erst hoch, dann das Vorzeichen.'
+          - call: 'calculate(''2^-1'')'
+            expect: '0.5'
+            say: 'Nach dem Hoch darf ein Vorzeichen stehen.'
+          - call: 'calculate(''(2+1)^2*2'')'
+            expect: '18'
+            say: 'Hoch bindet stärker als Mal.'
+      hint: 'Eine neue Regel `power` zwischen `factor` und den Zahlen. Nach dem `^` ruft sie `factor` auf, nicht sich selbst in einer Schleife: So wird von rechts gerechnet.'
+
+  - id: variablen
+    title: Variablen
+    prompt: 'Erweitere `calculator.rb` um Namen, deren Werte in einem Hash stehen.'
+    check:
+      type: ruby
+      file: calculator/calculator.rb
+      cases:
+        - call: 'tokenize(''breite*2'')'
+          expect: '["breite", "*", 2]'
+          say: 'Ein Name aus Buchstaben ist ein einziges Token.'
+        - 'calculate(''x*(x+1)'', { ''x'' => 3 })': '12'
+        - call: 'calculate(''a_1 + b2'', { ''a_1'' => 1, ''b2'' => 2 })'
+          expect: '3'
+          say: 'Nach dem ersten Buchstaben dürfen auch Ziffern und _ kommen.'
+        - call: 'calculate(''2+3'')'
+          expect: '5'
+          say: 'Ohne Variablen geht es weiter wie vorher.'
+        - call: 'calculate(''y+1'', { ''x'' => 3 })'
+          raises: true
+          say: 'Ein Name ohne Wert ist ein Fehler.'
+    python:
+      prompt: 'Erweitere `calculator.py` um Namen, deren Werte in einem dict stehen.'
+      check:
+        type: python
+        file: calculator/calculator.py
+        cases:
+          - call: 'tokenize(''breite*2'')'
+            expect: '["breite", "*", 2]'
+            say: 'Ein Name aus Buchstaben ist ein einziges Token.'
+          - 'calculate(''x*(x+1)'', {''x'': 3})': '12'
+          - call: 'calculate(''a_1 + b2'', {''a_1'': 1, ''b2'': 2})'
+            expect: '3'
+            say: 'Nach dem ersten Buchstaben dürfen auch Ziffern und _ kommen.'
+          - call: 'calculate(''2+3'')'
+            expect: '5'
+            say: 'Ohne Variablen geht es weiter wie vorher.'
+          - call: 'calculate(''y+1'', {''x'': 3})'
+            raises: true
+            say: 'Ein Name ohne Wert ist ein Fehler.'
