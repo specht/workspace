@@ -1,0 +1,253 @@
+# Aufgaben zu »Komprimieren mit Huffman«.
+# Format: docs/aufgaben.md. Alles liegt in /workspace/huffman.
+# The values come from loesung/huffman.rb. Huffman trees are not unique
+# (ties), so the checks of build_tree test what is: the total number of
+# bits, that the codes are prefix-free, and that decode gives the text back.
+format: 1
+activity: huffman
+tasks:
+  - id: praefix
+    title: Präfixfrei
+    prompt: |
+      Welche dieser Tabellen ist präfixfrei, lässt sich also ohne Pausen
+      eindeutig lesen?
+    check:
+      type: choice
+      options:
+        - A = `00`, B = `01`, C = `1`
+        - A = `0`, B = `01`, C = `11`
+        - A = `1`, B = `10`, C = `100`
+        - A = `0`, B = `1`, C = `10`
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: '`0` ist der Anfang von `01`. Ist `011` nun A und C oder B und dann der Anfang von etwas?'
+      - when: { picked: 2 }
+        say: '`1` ist der Anfang von `10` und von `100`. `100` könnte C sein oder B, A und noch etwas.'
+      - when: { picked: 3 }
+        say: '`1` ist der Anfang von `10`. `10` ist dann C oder B, A.'
+    solution: 'Bei `00`, `01` und `1` beginnt kein Code mit einem anderen: Eine `1` ist sofort C, nach einer `0` entscheidet das nächste Bit zwischen A und B.'
+
+  - id: von-hand
+    title: Von Hand
+    prompt: |
+      Bau den Huffman-Baum für `ABRACADABRA` auf Papier: A kommt 5-mal vor, B
+      und R je 2-mal, C und D je einmal. Wie viele Bits braucht der ganze
+      Text mit diesen Codes?
+    check:
+      type: number
+      expect: 23
+    feedback:
+      - when: { equals: 88 }
+        say: Das sind 11 Bytes mit je 8 Bits, ohne Huffman.
+      - when: { equals: 33 }
+        say: So viele wären es mit 3 Bits für jedes der fünf Zeichen. Huffman gibt dem häufigen A einen kürzeren Code.
+    hint: Fass zuerst C und D zusammen (Gewicht 2). Dann gibt es drei Bäume mit Gewicht 2. Am Ende zählst du für jedes Zeichen Anzahl mal Länge seines Codes zusammen.
+    solution: 'Zum Beispiel A = `0`, C = `100`, D = `101`, B = `110`, R = `111`: 5 · 1 + 1 · 3 + 1 · 3 + 2 · 3 + 2 · 3 = 23 Bits. Ein anderer Baum mit anderen Codes kommt auf dieselbe Zahl. Sie ist übrigens auch die Summe der Gewichte aller Knoten: 2 + 4 + 6 + 11.'
+
+  - id: zaehlen
+    title: Zählen
+    prompt: |
+      Schreib `frequencies` in `huffman.rb`.
+    check:
+      type: ruby
+      file: huffman/huffman.rb
+      cases:
+        - frequencies('ABRACADABRA'): '{65 => 5, 66 => 2, 82 => 2, 67 => 1, 68 => 1}'
+        - frequencies('AAAA'): '{65 => 4}'
+        - call: frequencies('')
+          expect: '{}'
+          say: Ein leerer Text hat keine Bytes.
+        - call: frequencies('Grüße')
+          expect: '{71 => 1, 114 => 1, 195 => 2, 188 => 1, 159 => 1, 101 => 1}'
+          say: In UTF-8 sind ü und ß je zwei Bytes, und beide beginnen mit 195. Gezählt werden Bytes, nicht Zeichen.
+    hint: Mit `counts = Hash.new(0)` liefert `counts[byte]` für jedes neue Byte 0, und `counts[byte] += 1` zählt.
+    solution: |
+      ```ruby
+      def frequencies(data)
+          counts = Hash.new(0)
+          data.each_byte { |byte| counts[byte] += 1 }
+          counts
+      end
+      ```
+
+  - id: baum
+    title: Der Baum und die Codes
+    prompt: |
+      Schreib `build_tree` und `code_table`. Weil es bei Gleichstand mehrere
+      richtige Bäume gibt, prüft die Aufgabe nicht die Codes selbst, sondern
+      ob sie präfixfrei sind und ob der Text mit ihnen so wenige Bits braucht
+      wie möglich.
+    check:
+      type: ruby
+      file: huffman/huffman.rb
+      cases:
+        - call: code_table(build_tree(frequencies('ABRACADABRA'))).keys.sort
+          expect: '[65, 66, 67, 68, 82]'
+          say: Jedes Byte des Texts braucht einen Code.
+        - call: code_table(build_tree(frequencies('ABRACADABRA'))).values.combination(2).none? { |a, b| a.start_with?(b) || b.start_with?(a) }
+          expect: true
+          say: Ein Code ist der Anfang eines anderen. Stehen alle Bytes an Blättern?
+        - call: (f = frequencies('ABRACADABRA'); code_table(build_tree(f)).sum { |byte, code| f[byte] * code.length })
+          expect: 23
+          say: Mit diesen Codes braucht `ABRACADABRA` nicht die kleinstmögliche Zahl von Bits, 23. Nimmst du immer die beiden leichtesten Bäume?
+        - call: (f = frequencies('RHABARBERBARBARABARBARBARENBARTBARBIER'); code_table(build_tree(f)).sum { |byte, code| f[byte] * code.length })
+          expect: 91
+        - call: (f = frequencies(Array.new(5000) { |i| (i * i * 7 + 3) % 251 }.pack('C*')); code_table(build_tree(f)).sum { |byte, code| f[byte] * code.length })
+          expect: 34920
+          say: Bei 5000 Bytes mit vielen verschiedenen Werten stimmt die Zahl der Bits nicht. Sortierst du vor jedem Zusammenfassen neu?
+        - call: code_table(build_tree(frequencies('AAAA')))
+          expect: "{65 => '0'}"
+          say: Ein Text aus einem einzigen Byte ist ein Baum aus einem Blatt; dieses Byte bekommt den Code `0`.
+        - code_table(build_tree({65 => 1, 66 => 1})).values.sort: "['0', '1']"
+    hint: |
+      Eine Liste von Paaren: `trees = counts.map { |byte, count| [count, byte] }`.
+      Solange mehr als eines darin ist: sortieren, die beiden ersten mit
+      `shift` herausnehmen, ein neues Paar aus der Summe der Gewichte und
+      `[left, right]` hinten anhängen.
+    solution: |
+      ```ruby
+      def build_tree(counts)
+          trees = counts.map { |byte, count| [count, byte] }
+          while trees.size > 1
+              trees.sort_by! { |weight, _| weight }
+              left = trees.shift
+              right = trees.shift
+              trees << [left[0] + right[0], [left[1], right[1]]]
+          end
+          trees[0][1]
+      end
+
+      def code_table(tree, prefix = '', table = {})
+          if tree.is_a?(Integer)
+              table[tree] = prefix.empty? ? '0' : prefix
+          else
+              code_table(tree[0], prefix + '0', table)
+              code_table(tree[1], prefix + '1', table)
+          end
+          table
+      end
+      ```
+
+  - id: decodieren
+    title: Codieren und decodieren
+    prompt: |
+      Schreib `encode` und `decode`.
+    check:
+      type: ruby
+      file: huffman/huffman.rb
+      cases:
+        - "encode('ABRACADABRA', {65 => '0', 66 => '110', 67 => '100', 68 => '101', 82 => '111'})": "'01101110100010101101110'"
+        - call: decode('0110111', [65, [[67, 68], [66, 82]]])
+          expect: "'ABR'"
+          say: 'Mit dem Baum `[65, [[67, 68], [66, 82]]]` ist `0` A, `110` B und `111` R.'
+        - call: decode('', [65, 66])
+          expect: "''"
+          say: Keine Bits ergeben einen leeren String.
+        - call: (t = 'RHABARBERBARBARABARBARBARENBARTBARBIER'; tree = build_tree(frequencies(t)); decode(encode(t, code_table(tree)), tree) == t)
+          expect: true
+        - call: (tree = build_tree(frequencies('AAAA')); decode(encode('AAAA', code_table(tree)), tree))
+          expect: "'AAAA'"
+          say: Ist der Baum nur ein Blatt, steht jede `0` für dieses Byte.
+        - call: (t = Array.new(5000) { |i| (i * i * 7 + 3) % 251 }.pack('C*'); tree = build_tree(frequencies(t)); decode(encode(t, code_table(tree)), tree) == t)
+          expect: true
+        - call: (t = 'Grüße aus Köln'; tree = build_tree(frequencies(t)); decode(encode(t, code_table(tree)), tree).force_encoding('UTF-8'))
+          expect: "'Grüße aus Köln'"
+    hint: 'Beim Decodieren merkst du dir, wo du im Baum gerade bist: `node = tree` am Anfang, dann für jedes Bit `node = node[0]` oder `node = node[1]`. Ist `node` eine Zahl, ist ein Byte fertig.'
+    solution: |
+      ```ruby
+      def encode(data, table)
+          data.each_byte.map { |byte| table[byte] }.join
+      end
+
+      def decode(bits, tree)
+          return ([tree] * bits.length).pack('C*') if tree.is_a?(Integer)
+
+          out = []
+          node = tree
+          bits.each_char do |bit|
+              node = node[bit == '0' ? 0 : 1]
+              if node.is_a?(Integer)
+                  out << node
+                  node = tree
+              end
+          end
+          out.pack('C*')
+      end
+      ```
+
+  - id: spec
+    title: Die Spezifikation von GIF
+    prompt: |
+      Wie viele Bytes braucht `spec-gif89a.txt` mit Huffman, also die Zahl
+      der Bits durch 8, aufgerundet?
+    check:
+      type: number
+      expect: 45240
+      tolerance: 1
+    feedback:
+      - when: { equals: 361917 }
+        say: Das sind die Bits. Gefragt sind Bytes.
+      - when: { equals: 83003 }
+        say: Das ist die Datei selbst, unkomprimiert.
+    hint: '`encode(data, table).length` ist die Zahl der Bits.'
+    solution: '361.917 Bits, also 45.240 Bytes, gut die Hälfte des Originals: im Schnitt 4,4 Bits pro Byte. Jeder richtige Huffman-Baum kommt auf genau diese Zahl.'
+
+  - id: foto
+    title: Ein Foto
+    prompt: |
+      Codiere auch `44-baseline.jpg` mit deinem Huffman. Er spart dort nur
+      gut 50 von 143.206 Bytes. Warum?
+    check:
+      type: choice
+      options:
+        - Alle 256 Bytewerte kommen in der Datei ungefähr gleich oft vor, also ist kein Code kürzer als 8 Bits.
+        - Ein JPEG hat keine Wiederholungen von Folgen.
+        - Huffman kann nur Bytes unter 128 codieren.
+        - Der Baum für 256 verschiedene Bytes ist zu groß, um ihn zu bauen.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Das erklärt, warum LZW nichts spart. Huffman sieht aber gar keine Folgen an, nur, wie oft jedes einzelne Byte vorkommt.
+      - when: { picked: 2 }
+        say: Dein `frequencies` zählt alle Bytes von 0 bis 255. Lass dir ausgeben, wie viele verschiedene im JPEG vorkommen.
+      - when: { picked: 3 }
+        say: Für 256 Blätter braucht der Baum 255 Knoten, das geht schnell.
+    solution: 'Die Daten eines JPEG sind schon mit Huffman komprimiert. Gut komprimierte Daten sehen aus wie Zufall: Jedes Byte kommt etwa gleich oft vor, und dann bekommt jedes einen Code mit etwa 8 Bits.'
+
+  - id: kanonisch
+    title: Kanonische Codes
+    prompt: |
+      Schreib `canonical(lengths)`. Es bekommt einen Hash mit der Länge des
+      Codes für jedes Byte und gibt die kanonischen Codes zurück.
+    check:
+      type: ruby
+      file: huffman/huffman.rb
+      cases:
+        - "canonical({65 => 1, 66 => 2, 67 => 2})": "{65 => '0', 66 => '10', 67 => '11'}"
+        - "canonical({65 => 2, 66 => 2, 67 => 2, 68 => 3, 69 => 3})": "{65 => '00', 66 => '01', 67 => '10', 68 => '110', 69 => '111'}"
+        - call: "canonical({66 => 2, 65 => 2, 67 => 1})"
+          expect: "{67 => '0', 65 => '10', 66 => '11'}"
+          say: Sortiert wird nach der Länge, bei gleicher Länge nach dem Byte, nicht in der Reihenfolge des Hash.
+        - call: "canonical({65 => 1, 66 => 3, 67 => 3, 68 => 3})"
+          expect: "{65 => '0', 66 => '100', 67 => '101', 68 => '110'}"
+          say: Springt die Länge um mehr als 1, kommen hinten so viele Nullen dazu, wie Stellen fehlen.
+        - call: "canonical({0 => 2, 1 => 3, 2 => 3, 3 => 3, 4 => 3, 5 => 3, 6 => 4, 7 => 5, 8 => 6, 9 => 7, 10 => 8, 11 => 9})"
+          expect: "{0 => '00', 1 => '010', 2 => '011', 3 => '100', 4 => '101', 5 => '110', 6 => '1110', 7 => '11110', 8 => '111110', 9 => '1111110', 10 => '11111110', 11 => '111111110'}"
+          say: Das ist die DC-Tabelle aus `44-baseline.jpg`, wie sie auf der Seite zu JPEG steht.
+    hint: 'Merk dir den Code als Zahl und die Länge des vorigen. Für jedes Byte, sortiert mit `sort_by { |byte, length| [length, byte] }`: erst `code <<= length - previous`, dann den Code mit `code.to_s(2).rjust(length, ''0'')` eintragen, dann `code += 1`.'
+    solution: |
+      ```ruby
+      def canonical(lengths)
+          table = {}
+          code = 0
+          previous = 0
+          lengths.sort_by { |byte, length| [length, byte] }.each do |byte, length|
+              code <<= (length - previous)
+              table[byte] = code.to_s(2).rjust(length, '0')
+              code += 1
+              previous = length
+          end
+          table
+      end
+      ```

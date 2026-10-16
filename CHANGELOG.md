@@ -18,6 +18,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Neue Aktivität »Komprimieren mit Huffman« (`/huffman`), in Ruby, im
+  Abschnitt »Wie Computer rechnen« vor LZW: vom Morsecode über präfixfreie
+  Codes zum Huffman-Baum, den ein Schrittmacher für einen eingetippten Text
+  Schritt für Schritt aufbaut und zeichnet. Lernende schreiben aus einem
+  Gerüst mit leeren Methoden Zählen, Baum, Codetabelle, Codieren und
+  Decodieren, vergleichen mit LZW und `gzip` und berechnen zum Schluss
+  kanonische Codes, wie JPEG sie speichert. Weil es bei Gleichstand mehrere
+  richtige Bäume gibt, prüfen die Aufgaben, was für jeden gilt: präfixfrei
+  und so wenige Bits wie möglich. Acht Aufgaben.
 - Neue Aktivität »Komprimieren mit LZW« (`/lzw`), in Ruby, im Abschnitt »Wie
   Computer rechnen« vor GIF: Zwei Schrittmacher komprimieren einen Text, den
   man selbst eintippt, und entpacken die Codes wieder, mit dem Sonderfall
