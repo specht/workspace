@@ -1,0 +1,273 @@
+# Aufgaben zu »Zwei Faktoren: Einmalcodes selbst gebaut«.
+# Format: docs/aufgaben.md. Alles liegt in /workspace/totp; die Werte sind die
+# Testwerte aus RFC 4226 (HOTP) und RFC 6238 (TOTP) mit dem Schlüssel
+# 12345678901234567890.
+format: 1
+activity: totp
+tasks:
+  - id: zweiter-faktor
+    title: Wenn das Passwort bekannt ist
+    prediction: true
+    prompt: |
+      Jemand hat dein Passwort erfahren. Bei deinem Konto ist ein zweiter
+      Faktor eingeschaltet, eine Authenticator-App auf deinem Handy. Was
+      bräuchte er außerdem, um sich anzumelden?
+    check:
+      type: choice
+      options:
+        - Den Code, den deine App gerade zeigt, und der gilt nur eine halbe Minute
+        - Nichts mehr, das Passwort reicht
+        - Dein Passwort noch einmal, ein zweites Mal eingetippt
+        - Nur deine E-Mail-Adresse
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Ohne zweiten Faktor wäre es so. Mit ihm fragt der Server nach dem Passwort auch nach einem Code, den nur dein Handy kennt.
+      - when: { picked: 2 }
+        say: Zweimal dasselbe ist kein zweiter Faktor. Der zweite muss etwas anderes sein, etwas, das du hast, nicht etwas, das du weißt.
+
+  - id: bytes
+    title: Wie viele Bytes?
+    prompt: Wie viele Bytes stecken in den 32 Zeichen des Base32-Schlüssels `GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ`?
+    check:
+      type: number
+      expect: 20
+    feedback:
+      - when: { equals: 32 }
+        say: Ein Base32-Zeichen ist kein ganzes Byte, sondern 5 Bits.
+      - when: { equals: 24 }
+        say: Das wäre bei Base64, mit 6 Bits pro Zeichen. Base32 hat 5.
+    solution: '32 Zeichen mal 5 Bits sind 160 Bits, durch 8 sind das 20 Bytes.'
+
+  - id: base32
+    title: Base32
+    prompt: 'Schreib `base32_decode` und `base32_encode` in `totp.rb`.'
+    check:
+      type: ruby
+      file: totp/totp.rb
+      cases:
+        - call: 'base32_decode(''JBSWY3DPEHPK3PXP'').bytes'
+          expect: '[72, 101, 108, 108, 111, 33, 222, 173, 190, 239]'
+          say: 'JBSWY3DPEHPK3PXP sind die Bytes von »Hello!« und dann DE AD BE EF.'
+        - call: 'base32_decode(''JBSWY3DP'')'
+          expect: '''Hello'''
+        - call: 'base32_decode(''jbsw y3dp ee======'')'
+          expect: '''Hello!'''
+          say: 'Kleinbuchstaben, Leerzeichen und = am Ende kommen in echten Schlüsseln vor.'
+        - call: 'base32_decode(''JBUQ'')'
+          expect: '''Hi'''
+          say: 'Bleiben am Ende weniger als 8 Bits übrig, gehören sie zu keinem Byte mehr.'
+        - call: 'base32_encode(''Hello!'')'
+          expect: '''JBSWY3DPEE'''
+          say: 'Fehlen am Ende Bits zu einer Gruppe von 5, kommen Nullen dazu.'
+        - call: 'base32_encode(''12345678901234567890'')'
+          expect: '''GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ'''
+    hint: 'Mach aus jedem Zeichen seine 5 Bits als Text aus Nullen und Einsen, häng alles aneinander und nimm dann je 8 davon.'
+    python:
+      prompt: 'Schreib `base32_decode` und `base32_encode` in `totp.py`.'
+      check:
+        type: python
+        file: totp/totp.py
+        cases:
+          - call: 'list(base32_decode(''JBSWY3DPEHPK3PXP''))'
+            expect: '[72, 101, 108, 108, 111, 33, 222, 173, 190, 239]'
+            say: 'JBSWY3DPEHPK3PXP sind die Bytes von »Hello!« und dann DE AD BE EF.'
+          - call: 'base32_decode(''JBSWY3DP'')'
+            expect: 'b''Hello'''
+          - call: 'base32_decode(''jbsw y3dp ee======'')'
+            expect: 'b''Hello!'''
+            say: 'Kleinbuchstaben, Leerzeichen und = am Ende kommen in echten Schlüsseln vor.'
+          - call: 'base32_decode(''JBUQ'')'
+            expect: 'b''Hi'''
+            say: 'Bleiben am Ende weniger als 8 Bits übrig, gehören sie zu keinem Byte mehr.'
+          - call: 'base32_encode(b''Hello!'')'
+            expect: '''JBSWY3DPEE'''
+            say: 'Fehlen am Ende Bits zu einer Gruppe von 5, kommen Nullen dazu.'
+          - call: 'base32_encode(b''12345678901234567890'')'
+            expect: '''GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ'''
+
+  - id: hotp
+    title: HOTP
+    prompt: 'Schreib `hotp` in `totp.rb`. Die Codes sind die Testwerte aus RFC 4226.'
+    check:
+      type: ruby
+      file: totp/totp.rb
+      cases:
+        - call: 'hotp(''12345678901234567890'', 0)'
+          expect: '''755224'''
+        - call: 'hotp(''12345678901234567890'', 1, 8)[-6..]'
+          expect: '''287082'''
+          say: 'Die Zahl hat mit 8 Stellen hinten dieselben 6 Ziffern.'
+        - call: 'hotp(''12345678901234567890'', 1)'
+          expect: '''287082'''
+        - call: 'hotp(''12345678901234567890'', 2)'
+          expect: '''359152'''
+        - call: 'hotp(''12345678901234567890'', 5)'
+          expect: '''254676'''
+        - call: 'hotp(''12345678901234567890'', 9)'
+          expect: '''520489'''
+    hint: 'Der Zähler kommt als 8 Bytes in die HMAC, das höchste zuerst. Vom Ergebnis sagen die untersten 4 Bits des letzten Bytes, wo die 4 Bytes anfangen, aus denen der Code wird.'
+    python:
+      prompt: 'Schreib `hotp` in `totp.py`. Die Codes sind die Testwerte aus RFC 4226.'
+      check:
+        type: python
+        file: totp/totp.py
+        cases:
+          - call: 'hotp(b''12345678901234567890'', 0)'
+            expect: '''755224'''
+          - call: 'hotp(b''12345678901234567890'', 1, 8)[-6:]'
+            expect: '''287082'''
+            say: 'Die Zahl hat mit 8 Stellen hinten dieselben 6 Ziffern.'
+          - call: 'hotp(b''12345678901234567890'', 1)'
+            expect: '''287082'''
+          - call: 'hotp(b''12345678901234567890'', 2)'
+            expect: '''359152'''
+          - call: 'hotp(b''12345678901234567890'', 5)'
+            expect: '''254676'''
+          - call: 'hotp(b''12345678901234567890'', 9)'
+            expect: '''520489'''
+
+  - id: totp
+    title: TOTP
+    prompt: 'Schreib `totp` in `totp.rb`. Die Codes sind die Testwerte aus RFC 6238.'
+    check:
+      type: ruby
+      file: totp/totp.rb
+      cases:
+        - call: 'totp(''12345678901234567890'', 59)'
+          expect: '''287082'''
+        - call: 'totp(''12345678901234567890'', 1111111109)'
+          expect: '''081804'''
+          say: 'Ein Code hat immer 6 Ziffern, auch wenn er mit 0 anfängt.'
+        - call: 'totp(''12345678901234567890'', 1111111111)'
+          expect: '''050471'''
+        - call: 'totp(''12345678901234567890'', 1234567890)'
+          expect: '''005924'''
+        - call: 'totp(''12345678901234567890'', 2000000000)'
+          expect: '''279037'''
+        - call: 'totp(''12345678901234567890'', 59, 8)'
+          expect: '''94287082'''
+          say: 'Mit 8 Stellen ist es der Testwert aus RFC 6238.'
+        - call: 'totp(''12345678901234567890'', 89) == totp(''12345678901234567890'', 60)'
+          expect: true
+          say: 'Innerhalb von 30 Sekunden bleibt der Code derselbe.'
+    hint: 'Der Zähler ist die Unix-Zeit geteilt durch 30, abgerundet. Alles andere macht schon hotp.'
+    python:
+      prompt: 'Schreib `totp` in `totp.py`. Die Codes sind die Testwerte aus RFC 6238.'
+      check:
+        type: python
+        file: totp/totp.py
+        cases:
+          - call: 'totp(b''12345678901234567890'', 59)'
+            expect: '''287082'''
+          - call: 'totp(b''12345678901234567890'', 1111111109)'
+            expect: '''081804'''
+            say: 'Ein Code hat immer 6 Ziffern, auch wenn er mit 0 anfängt.'
+          - call: 'totp(b''12345678901234567890'', 1111111111)'
+            expect: '''050471'''
+          - call: 'totp(b''12345678901234567890'', 1234567890)'
+            expect: '''005924'''
+          - call: 'totp(b''12345678901234567890'', 2000000000)'
+            expect: '''279037'''
+          - call: 'totp(b''12345678901234567890'', 59, 8)'
+            expect: '''94287082'''
+            say: 'Mit 8 Stellen ist es der Testwert aus RFC 6238.'
+          - call: 'totp(b''12345678901234567890'', 89) == totp(b''12345678901234567890'', 60)'
+            expect: true
+            say: 'Innerhalb von 30 Sekunden bleibt der Code derselbe.'
+
+  - id: uhr
+    title: Wenn die Uhr nachgeht
+    prediction: true
+    prompt: |
+      Die Uhr deines Handys geht 20 Sekunden nach. Was passiert, wenn der
+      Server nur den Code des aktuellen Zeitfensters annimmt?
+    check:
+      type: choice
+      options:
+        - In etwa zwei Dritteln der Fälle zeigt das Handy noch den Code des vorigen Fensters, und die Anmeldung scheitert.
+        - Nichts, die Codes hängen nicht von der Uhr ab.
+        - Das Handy zeigt dann einen ganz anderen, zufälligen Code.
+        - Die Anmeldung klappt immer, nur 20 Sekunden später.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Bei TOTP ist die Uhrzeit der Zähler. Zwei Uhren, die verschieden gehen, zählen verschieden.
+      - when: { picked: 2 }
+        say: Zufällig ist der Code nicht; das Handy rechnet nur mit seiner eigenen, falschen Uhrzeit.
+    solution: In 20 von 30 Sekunden liegt die Uhr des Handys noch im vorigen Fenster. Darum nehmen Server meist auch den Code davor und danach an.
+
+  - id: pruefen
+    title: Einen Code prüfen
+    prompt: 'Schreib `verify` in `totp.rb`.'
+    check:
+      type: ruby
+      file: totp/totp.rb
+      cases:
+        - call: 'verify(''12345678901234567890'', totp(''12345678901234567890'', 1000), 1000)'
+          expect: true
+        - call: 'verify(''12345678901234567890'', totp(''12345678901234567890'', 970), 1000)'
+          expect: true
+          say: 'Der Code aus dem Zeitfenster davor gilt auch, für Uhren, die nachgehen.'
+        - call: 'verify(''12345678901234567890'', totp(''12345678901234567890'', 1030), 1000)'
+          expect: true
+          say: 'Und der danach, für Uhren, die vorgehen.'
+        - call: 'verify(''12345678901234567890'', totp(''12345678901234567890'', 910), 1000)'
+          expect: false
+          say: 'Ein Code von vor über einer Minute gilt nicht mehr.'
+        - call: 'verify(''12345678901234567890'', ''000000'', 1000)'
+          expect: false
+        - call: 'verify(''12345678901234567890'', totp(''12345678901234567890'', 1000).insert(3, '' ''), 1000)'
+          expect: true
+          say: 'Viele Apps zeigen den Code mit einem Leerzeichen in der Mitte. Das darf keinen Unterschied machen.'
+    hint: 'Rechne die Codes für die Zeit davor, jetzt und danach aus, jeweils 30 Sekunden auseinander, und schau, ob einer passt.'
+    python:
+      prompt: 'Schreib `verify` in `totp.py`.'
+      check:
+        type: python
+        file: totp/totp.py
+        cases:
+          - call: 'verify(b''12345678901234567890'', totp(b''12345678901234567890'', 1000), 1000)'
+            expect: true
+          - call: 'verify(b''12345678901234567890'', totp(b''12345678901234567890'', 970), 1000)'
+            expect: true
+            say: 'Der Code aus dem Zeitfenster davor gilt auch, für Uhren, die nachgehen.'
+          - call: 'verify(b''12345678901234567890'', totp(b''12345678901234567890'', 1030), 1000)'
+            expect: true
+            say: 'Und der danach, für Uhren, die vorgehen.'
+          - call: 'verify(b''12345678901234567890'', totp(b''12345678901234567890'', 910), 1000)'
+            expect: false
+            say: 'Ein Code von vor über einer Minute gilt nicht mehr.'
+          - call: 'verify(b''12345678901234567890'', ''000000'', 1000)'
+            expect: false
+          - call: 'verify(b''12345678901234567890'', totp(b''12345678901234567890'', 1000)[:3] + '' '' + totp(b''12345678901234567890'', 1000)[3:], 1000)'
+            expect: true
+            say: 'Viele Apps zeigen den Code mit einem Leerzeichen in der Mitte. Das darf keinen Unterschied machen.'
+
+  - id: einmal
+    title: Nur einmal
+    prompt: Warum soll ein Server einen Code, mit dem sich jemand gerade angemeldet hat, kein zweites Mal annehmen, obwohl er noch gilt?
+    check:
+      type: choice
+      options:
+        - Wer ihn mitgelesen hat, etwa über die Schulter, könnte sich sonst mit demselben Code gleich noch einmal anmelden.
+        - Weil der Code dann schon falsch ist.
+        - Weil die App den Code beim Anmelden löscht.
+        - Das muss er nicht; ein Code darf so oft benutzt werden, wie er gilt.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Rechnerisch stimmt der Code noch, bis sein Zeitfenster vorbei ist. Deshalb muss sich der Server merken, welcher schon benutzt wurde.
+      - when: { picked: 3 }
+        say: Dann hätte jemand, der den Code mitliest, bis zu einer Minute Zeit, ihn selbst zu benutzen.
+
+  - id: wovor
+    title: Wovor schützt der zweite Faktor?
+    prompt: |
+      Wovor schützt dich ein zweiter Faktor, und wovor nicht? Denk an ein
+      Passwort, das in einem Datenleck auftaucht, an ein gestohlenes Handy
+      und an eine gefälschte Anmeldeseite, auf der du den Code selbst
+      eintippst.
+    check:
+      type: reflection
+      min_words: 25
