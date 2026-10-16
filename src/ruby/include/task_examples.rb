@@ -82,8 +82,10 @@ module TaskExamples
                     end
                     list.each { |c| cases << [kind, c] }
                 end
-                cases.each_with_index do |(kind, example), i|
-                    outcomes << run_case(dir, activity, id, language, variant, kind, example, i, problems)
+                numbers = Hash.new(0)
+                cases.each do |kind, example|
+                    outcomes << run_case(dir, activity, id, language, variant, kind, example, numbers[kind], problems)
+                    numbers[kind] += 1
                 end
             end
         end

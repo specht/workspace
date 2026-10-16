@@ -326,6 +326,12 @@ module FileChecks
             if images.size < spec['min'].to_i
                 return failed(:too_few_images, "In #{code(file)} finde ich #{images.size} `<img>`, verlangt #{spec['min'].to_i == 1 ? 'ist eins' : "sind #{spec['min']}"}.", :read => read)
             end
+            # local: so many pictures with a path in the Workspace, not an
+            # address on the web: »ein eigenes Bild«.
+            local = images.count { |img| (src = img.attrs['src'].to_s.strip) !~ %r{\A(https?:)?//}i && !src.start_with?('data:') && !src.empty? }
+            if local < spec['local'].to_i
+                return failed(:no_local_image, "In #{code(file)} #{images.size == 1 ? 'kommt das Bild' : 'kommen die Bilder'} aus dem Netz. Lege ein eigenes Bild neben #{code(File.basename(file))} und binde es mit einem relativen Pfad ein, zum Beispiel `src=\"mein-bild.jpg\"`.", :read => read)
+            end
             images.each do |img|
                 src = img.attrs['src'].to_s.strip
                 if spec['alt'] == 'required' && img.attrs['alt'].to_s.strip.empty?

@@ -24,7 +24,7 @@ class TaskExamplesTest < Minitest::Test
 
     # Activities whose file and program checks all have examples. A new
     # task with such a check in one of them needs an example too.
-    COMPLETE = %w[automata bobby_tables huffman hugo latex lzw pixelwand raylib rle webserver wetter].freeze
+    COMPLETE = %w[automata bobby_tables huffman hugo latex lzw pixelwand raylib rle static-website webserver wetter].freeze
 
     def test_complete_activities_stay_complete
         missing = COMPLETE.flat_map { |slug| TaskExamples.missing(File.join(CONTENT, slug)) }

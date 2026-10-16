@@ -373,6 +373,11 @@ check:
   warn: { words_per_slide: 60 }
 ```
 
+`img` zählt Bilder: `min` wie viele `<img>`, `local` wie viele davon einen
+Pfad im Workspace haben statt einer Adresse im Netz (für »ein eigenes Bild«),
+`src_exists: case_sensitive` verlangt, dass jeder solche Pfad zu einer Datei
+führt, genau so geschrieben, und `alt: required` einen Alt-Text an jedem Bild.
+
 `html` kennt außerdem `elements`: so viele Elemente einer Art (ein einfacher
 Selektor wie `li`, `ul li` oder `a.extern`), wahlweise mit einem nicht leeren
 Attribut. `say` ersetzt die Rückmeldung, wenn sie fehlen:

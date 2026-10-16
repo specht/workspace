@@ -504,6 +504,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- »Statische Webseiten«, Aufgabe »Ein eigenes Bild«: Ein Bild aus dem Netz
+  zählt nicht mehr als eigenes. Die Prüfung verlangt jetzt mindestens ein
+  Bild mit einem Pfad im Workspace (`img: { local: 1 }`, neu für alle
+  `html`-Prüfungen). Bisher genügte die Seite aus dem Schritt davor mit dem
+  Bild von Wikipedia. Wer die Aufgabe schon gelöst hat, sieht sie einmal als
+  »geändert«. Gefunden haben das die neuen Beispiele für die Prüfungen.
 - »SQL Injection«: Die Testdaten kommen jetzt mit `mysql db_1234 < users.sql`
   in die Datenbank. Mit `mycli` hielt der Import mit der Frage »You're about
   to run a destructive command« an, die die Seite nicht erwähnte. Gefunden hat
