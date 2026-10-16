@@ -1,0 +1,67 @@
+import json
+from pathlib import Path
+from websockets.datastructures import Headers
+from websockets.exceptions import ConnectionClosed
+from websockets.http11 import Response
+from websockets.sync.server import serve
+
+PAGE = Path(__file__).with_name('index.html')
+
+# Das Bild: 64 × 40 Pixel, jedes eine Farbnummer von 0 bis 15
+WIDTH = 64
+HEIGHT = 40
+pixels = [0] * (WIDTH * HEIGHT)
+
+# Alle offenen Verbindungen
+clients = set()
+
+
+def broadcast(message):
+    text = json.dumps(message)
+    for client in list(clients):
+        try:
+            client.send(text)
+        except ConnectionClosed:
+            pass
+
+
+def page(connection, request):
+    if request.path == '/ws':
+        return None
+    body = PAGE.read_bytes()
+    headers = Headers({'Content-Type': 'text/html; charset=utf-8',
+                       'Content-Length': str(len(body))})
+    return Response(200, 'OK', headers, body)
+
+
+def handle(ws):
+    # Wer neu ist, bekommt das ganze Bild, danach nur noch einzelne Pixel
+    clients.add(ws)
+    ws.send(json.dumps({'type': 'picture', 'width': WIDTH,
+                        'height': HEIGHT, 'pixels': pixels}))
+    broadcast({'type': 'people', 'count': len(clients)})
+    try:
+        for text in ws:
+            # Jeder kann alles schicken: nur glauben, was passt
+            try:
+                message = json.loads(text)
+            except ValueError:
+                continue
+            if not isinstance(message, dict):
+                continue
+            x, y, color = message.get('x'), message.get('y'), message.get('color')
+            if not all(type(value) is int for value in (x, y, color)):
+                continue
+            if not (0 <= x < WIDTH and 0 <= y < HEIGHT and 0 <= color <= 15):
+                continue
+
+            pixels[y * WIDTH + x] = color
+            broadcast({'type': 'pixel', 'x': x, 'y': y, 'color': color})
+    finally:
+        clients.discard(ws)
+        broadcast({'type': 'people', 'count': len(clients)})
+
+
+with serve(handle, '0.0.0.0', 8000, process_request=page) as server:
+    print('Der Server wartet auf Port 8000 ...')
+    server.serve_forever()

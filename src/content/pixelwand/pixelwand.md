@@ -1,7 +1,8 @@
 <div class='meta'>
 image: teaser.webp
 kind: projekt
-language: Ruby
+language: Ruby / Python
+languages: [ruby, python]
 topic: networks
 duration: 2 Doppelstunden
 requires: [webserver]
@@ -17,7 +18,7 @@ reference: [http, json]
 # Eine Pixelwand für alle
 
 <p class='abstract'>
-Die ganze Klasse malt gleichzeitig an einem Bild: Jeder Pixel, den jemand setzt, erscheint sofort bei allen anderen. Dafür brauchst du WebSockets, Verbindungen, die offen bleiben und in beide Richtungen funktionieren. Die Bibliothek faye-websocket kümmert sich um die Technik dahinter; du kümmerst dich um das, worauf es ankommt: wer verbunden ist, wer welche Nachricht bekommt, und dass der Server keiner Nachricht blind glaubt.
+Die ganze Klasse malt gleichzeitig an einem Bild: Jeder Pixel, den jemand setzt, erscheint sofort bei allen anderen. Dafür brauchst du WebSockets, Verbindungen, die offen bleiben und in beide Richtungen funktionieren. Eine Bibliothek kümmert sich um die Technik dahinter; du kümmerst dich um das, worauf es ankommt: wer verbunden ist, wer welche Nachricht bekommt, und dass der Server keiner Nachricht blind glaubt.
 </p>
 
 ## Warum WebSockets?
@@ -26,7 +27,12 @@ Bei HTTP fragt immer der Browser, und der Server antwortet. Ein Server kann nich
 
 Eine **WebSocket**-Verbindung beginnt wie eine HTTP-Anfrage, bleibt dann aber offen. Danach können beide Seiten jederzeit Nachrichten schicken, in beide Richtungen. So funktionieren Chats, Online-Spiele und gemeinsame Dokumente.
 
+<!-- language: ruby -->
 In [Ein eigener Webserver](/webserver) hast du HTTP von Hand gesprochen. WebSockets von Hand wären noch einmal so viel Arbeit: ein Handshake mit einem Hashwert und danach ein eigenes Format aus Bytes für jede Nachricht. Das übernimmt hier die Bibliothek **faye-websocket**, so wie in echten Projekten.
+<!-- /language -->
+<!-- language: python -->
+In [Ein eigener Webserver](/webserver) hast du HTTP von Hand gesprochen. WebSockets von Hand wären noch einmal so viel Arbeit: ein Handshake mit einem Hashwert und danach ein eigenes Format aus Bytes für jede Nachricht. Das übernimmt hier das Paket **websockets**, so wie in echten Projekten.
+<!-- /language -->
 
 ## Einrichten
 
@@ -36,6 +42,7 @@ Lege einen neuen Ordner an und öffne ihn mit <kbd>Strg</kbd><kbd>K</kbd> <kbd>S
 mkdir /workspace/pixelwand
 ```
 
+<!-- language: ruby -->
 Installiere dann die drei Gems, die der Server braucht:
 
 ```bash_copy
@@ -45,9 +52,23 @@ gem install faye-websocket puma rackup
 - **faye-websocket** spricht WebSocket: Handshake, Nachrichten lesen und schicken.
 - **puma** ist ein Webserver für Ruby-Programme, wie dein eigener aus der letzten Aktivität, nur schneller und gründlicher.
 - **rackup** startet Puma aus deinem Programm heraus.
+<!-- /language -->
+<!-- language: python -->
+Pakete für Python installiert `pip`. Damit das ohne Administratorrechte geht, bekommt das Projekt eine eigene **virtuelle Umgebung**, den Ordner `.venv`, und das Paket kommt dort hinein. Im Terminal:
+
+```bash_copy
+python3 -m venv .venv
+.venv/bin/pip install websockets
+```
+
+- `python3 -m venv .venv` legt den Ordner `.venv` an: ein eigenes Python für dieses Projekt, mit einem eigenen `pip`.
+- `.venv/bin/pip install websockets` installiert das Paket **websockets** dort hinein. Es spricht WebSocket (Handshake, Nachrichten lesen und schicken) und liefert nebenbei auch die Webseite aus.
+- Darum startest du den Server mit `.venv/bin/python`, dem Python aus der Umgebung. Das gewöhnliche `python3` kennt `websockets` nicht.
+<!-- /language -->
 
 ## Ein Echo
 
+<!-- language: ruby -->
 Lege `server.rb` an:
 
 ```ruby_copy
@@ -85,6 +106,48 @@ Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Sile
 - `ws.on(:message) do |event| … end` legt fest, was bei jeder neuen Nachricht passiert. `event.data` ist der Text, `ws.send` schickt einen zurück.
 - Alle anderen Anfragen bekommen die Webseite `index.html`.
 - `Rackup::Server.start` startet Puma auf Port 8000 mit `App` als Programm.
+<!-- /language -->
+<!-- language: python -->
+Lege `server.py` an:
+
+```python_copy
+from pathlib import Path
+from websockets.datastructures import Headers
+from websockets.http11 import Response
+from websockets.sync.server import serve
+
+PAGE = Path(__file__).with_name('index.html')
+
+
+# Jede Anfrage kommt zuerst hier an. Anfragen an /ws gehen weiter zum
+# Handshake; alle anderen bekommen die Webseite.
+def page(connection, request):
+    if request.path == '/ws':
+        return None
+    body = PAGE.read_bytes()
+    headers = Headers({'Content-Type': 'text/html; charset=utf-8',
+                       'Content-Length': str(len(body))})
+    return Response(200, 'OK', headers, body)
+
+
+# Läuft für jede WebSocket-Verbindung, solange sie offen ist
+def handle(ws):
+    # Jede Nachricht geht mit »Echo:« davor zurück
+    for message in ws:
+        print(f'Empfangen: {message}')
+        ws.send(f'Echo: {message}')
+
+
+with serve(handle, '0.0.0.0', 8000, process_request=page) as server:
+    print('Der Server wartet auf Port 8000 ...')
+    server.serve_forever()
+```
+
+- `page` sieht jede Anfrage, bevor etwas anderes passiert. Fragt der Browser nach `/ws`, gibt `page` `None` zurück, und websockets macht den Handshake. Alle anderen Anfragen bekommen die Webseite `index.html` als `Response`: Statuscode, Reason Phrase, Header und Body, wie die Antworten deines eigenen Webservers.
+- `handle` läuft für jede WebSocket-Verbindung, jedes Mal in einem eigenen Thread; `ws` steht für diese eine Verbindung.
+- `for message in ws` wartet auf die nächste Nachricht und endet, wenn die Verbindung zu ist. `ws.send` schickt einen Text zurück.
+- `serve` startet den Server auf Port 8000, mit `handle` für die Verbindungen und `page` für alle Anfragen.
+<!-- /language -->
 
 Die Webseite `index.html` hat ein Eingabefeld und zeigt alles, was vom Server kommt:
 
@@ -142,10 +205,18 @@ Die Webseite `index.html` hat ein Eingabefeld und zeigt alles, was vom Server ko
 
 Starte den Server:
 
+<!-- language: ruby -->
 ```bash
 ruby server.rb
 ```
+<!-- /language -->
+<!-- language: python -->
+```bash
+.venv/bin/python server.py
+```
+<!-- /language -->
 
+<!-- language: ruby -->
 <!-- tutorial-screenshot
 # Ordner pixelwand mit server.rb (Echo) und index.html, Gems installiert
 write-file: pixelwand/server.rb <- file:stufen/server1.rb
@@ -169,20 +240,52 @@ move-mouse: selector:.terminal
 sleep: 1
 -->
 <img class='full' src='ordner.webp' alt='Der Ordner pixelwand mit index.html und server.rb; server.rb ist offen, im Terminal wartet der Server auf Port 8000.'>
+<!-- /language -->
+<!-- language: python -->
+<!-- tutorial-screenshot
+# Ordner pixelwand mit server.py (Echo), index.html und .venv
+write-file: pixelwand/server.py <- file:stufen/server1.py
+close-tab: server.rb
+terminal-open
+press: Control+C
+sleep: 1
+terminal-run: rm server.rb
+terminal-run: clear
+terminal-run: python3 -m venv .venv
+terminal-wait-for-prompt: 120
+terminal-run: .venv/bin/pip install websockets
+terminal-wait-for-prompt: 180
+terminal-run: clear
+terminal-run: .venv/bin/python server.py
+sleep: 2
+open-file: server.py
+move-mouse: selector:.terminal
+sleep: 1
+-->
+<img class='full' src='ordner-python.webp' alt='Der Ordner pixelwand mit .venv, index.html und server.py; server.py ist offen, im Terminal wartet der Server auf Port 8000.'>
+<!-- /language -->
 
 ### Der Handshake
 
-Eine WebSocket-Verbindung beginnt mit einer ganz normalen HTTP-Anfrage mit zwei besonderen Headern: `Upgrade: websocket` sagt, dass der Browser die Verbindung umwandeln möchte, und `Sec-WebSocket-Key` bringt einen zufälligen String mit. Der Server antwortet mit dem Statuscode **101 Switching Protocols** und beweist mit `Sec-WebSocket-Accept`, dass er WebSockets versteht. Das erledigt Faye; ansehen kannst du es trotzdem. Öffne mit <kbd>Strg</kbd><kbd>Shift</kbd><kbd>5</kbd> ein zweites Terminal. `curl` schickt dort die Header, die sonst der Browser schickt, mit dem Beispiel-Key aus dem Standard:
+Eine WebSocket-Verbindung beginnt mit einer ganz normalen HTTP-Anfrage mit zwei besonderen Headern: `Upgrade: websocket` sagt, dass der Browser die Verbindung umwandeln möchte, und `Sec-WebSocket-Key` bringt einen zufälligen String mit. Der Server antwortet mit dem Statuscode **101 Switching Protocols** und beweist mit `Sec-WebSocket-Accept`, dass er WebSockets versteht. Das erledigt die Bibliothek; ansehen kannst du es trotzdem. Öffne mit <kbd>Strg</kbd><kbd>Shift</kbd><kbd>5</kbd> ein zweites Terminal. `curl` schickt dort die Header, die sonst der Browser schickt, mit dem Beispiel-Key aus dem Standard:
 
 ```bash
 curl -i --http1.1 -m 2 -H "Connection: Upgrade" -H "Upgrade: websocket" -H "Sec-WebSocket-Version: 13" -H "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==" localhost:8000/ws
 ```
 
+<!-- language: ruby -->
 <!-- tutorial-screenshot
 # Der Handshake mit curl, im zweiten Terminal
+write-file: pixelwand/server.rb <- file:stufen/server1.rb
 open-file: server.rb
 hide-left-sidebar
 terminal-open
+press: Control+C
+sleep: 1
+press: Control+L
+type: ruby server.rb
+press: Enter
+sleep: 2
 terminal-maximize
 press: Control+Shift+5
 sleep: 1
@@ -190,8 +293,34 @@ terminal-run: curl -i --http1.1 -m 2 -H "Connection: Upgrade" -H "Upgrade: webso
 sleep: 3
 -->
 <img class='full' src='handschlag.webp' alt='Rechts antwortet der Server auf die Anfrage von curl mit HTTP/1.1 101 Switching Protocols und Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=; nach zwei Sekunden gibt curl auf.'>
+<!-- /language -->
+<!-- language: python -->
+<!-- tutorial-screenshot
+# Der Handshake mit curl in Python, im zweiten Terminal
+open-file: server.py
+terminal-open
+terminal-maximize
+press: Alt+ArrowLeft
+sleep: 1
+press: Control+C
+sleep: 1
+press: Control+L
+type: .venv/bin/python server.py
+press: Enter
+sleep: 2
+terminal-run: clear
+sleep: 1
+terminal-run: curl -i --http1.1 -m 2 -H "Connection: Upgrade" -H "Upgrade: websocket" -H "Sec-WebSocket-Version: 13" -H "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==" localhost:8000/ws
+sleep: 3
+-->
+<img class='full' src='handschlag-python.webp' alt='Rechts antwortet der Python-Server auf die Anfrage von curl mit HTTP/1.1 101 Switching Protocols und Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=; nach zwei Sekunden gibt curl auf, und links meldet der Server ConnectionClosedError.'>
+<!-- /language -->
 
 Der Server antwortet mit `101 Switching Protocols` und `Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=`, genau dem Wert, den der Standard für diesen Key als Beispiel nennt. Danach bleibt die Verbindung offen, und beide Seiten schicken sich Nachrichten in einem eigenen Format aus Bytes, sogenannten Frames. `curl` versteht keine Frames und gibt nach zwei Sekunden auf (`-m 2`).
+
+<!-- language: python -->
+Links meldet der Server danach einen Fehler, `ConnectionClosedError: no close frame received or sent`. In deinem Programm ist nichts falsch: `curl` hat die Verbindung einfach zugemacht, ohne sich zu verabschieden. Ein Browser schickt beim Schließen des Tabs zum Abschied einen eigenen Frame, und die Schleife `for message in ws` endet ohne Fehler.
+<!-- /language -->
 
 ### Im Browser
 
@@ -215,6 +344,7 @@ _task(handshake)
 
 ## An alle
 
+<!-- language: ruby -->
 Ein Echo ist noch langweilig. Spannend wird es, wenn eine Nachricht bei **allen** ankommt, die gerade verbunden sind. Dafür merkt sich der Server alle offenen Verbindungen in einer Liste `$clients`. Ersetze `server.rb` durch:
 
 ```ruby_copy
@@ -263,6 +393,66 @@ Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Sile
 - `ws.on(:open)` läuft, sobald die Verbindung steht: Sie kommt in die Liste. `ws.on(:close)` läuft, wenn sie zu ist, weil jemand den Tab geschlossen hat: Sie fliegt wieder raus.
 - `broadcast` schickt eine Nachricht an jede Verbindung in der Liste, auch an die, von der sie kam.
 - Viele Verbindungen benutzen dieselbe Liste. Das geht gut, weil Faye die `on`-Blöcke aller Verbindungen nacheinander aufruft, nie zwei gleichzeitig. Was passiert, wenn das nicht so ist, siehst du am Ende in [Viele Threads](#7-viele-threads).
+<!-- /language -->
+<!-- language: python -->
+Ein Echo ist noch langweilig. Spannend wird es, wenn eine Nachricht bei **allen** ankommt, die gerade verbunden sind. Dafür merkt sich der Server alle offenen Verbindungen in einer Menge `clients`, einem `set`. Ersetze `server.py` durch:
+
+```python_copy
+from pathlib import Path
+from websockets.datastructures import Headers
+from websockets.exceptions import ConnectionClosed
+from websockets.http11 import Response
+from websockets.sync.server import serve
+
+PAGE = Path(__file__).with_name('index.html')
+
+# Alle offenen Verbindungen. Jede Verbindung hat ihren eigenen Thread, alle
+# benutzen dieselbe Menge.
+clients = set()
+
+
+def broadcast(text):
+    # Über eine Kopie: Kommt während der Schleife jemand dazu, ändert sich
+    # die Menge, und die Schleife bräche mit einem Fehler ab.
+    for client in list(clients):
+        try:
+            client.send(text)
+        except ConnectionClosed:
+            pass    # gerade gegangen; das Aufräumen erledigt ihr eigener Thread
+
+
+def page(connection, request):
+    if request.path == '/ws':
+        return None
+    body = PAGE.read_bytes()
+    headers = Headers({'Content-Type': 'text/html; charset=utf-8',
+                       'Content-Length': str(len(body))})
+    return Response(200, 'OK', headers, body)
+
+
+def handle(ws):
+    clients.add(ws)
+    broadcast(f'Jemand ist dazugekommen. Jetzt sind wir {len(clients)}.')
+    try:
+        # Was kommt, geht an alle
+        for message in ws:
+            print(f'Empfangen: {message}')
+            broadcast(message)
+    finally:
+        # Die Verbindung ist zu, weil jemand den Tab geschlossen hat
+        clients.discard(ws)
+        broadcast(f'Jemand ist gegangen. Jetzt sind wir {len(clients)}.')
+
+
+with serve(handle, '0.0.0.0', 8000, process_request=page) as server:
+    print('Der Server wartet auf Port 8000 ...')
+    server.serve_forever()
+```
+
+- Steht die Verbindung, nimmt `handle` sie in die Menge auf. Endet die Schleife, weil jemand den Tab geschlossen hat, fliegt sie im `finally` wieder raus. `finally` läuft auch dann, wenn die Verbindung mit einem Fehler endet.
+- `broadcast` schickt eine Nachricht an jede Verbindung in der Menge, auch an die, von der sie kam. Ist eine Verbindung gerade zugegangen, wirft `send` den Fehler `ConnectionClosed`, und `broadcast` macht mit den anderen weiter.
+- Jede Verbindung hat ihren eigenen Thread, und alle benutzen dieselbe Menge. `add` und `discard` sind in Python je ein einziger Schritt, dabei kommen sich Threads nicht in die Quere. Die Schleife in `broadcast` dagegen dauert; kommt währenddessen jemand dazu, bräche sie mit einem Fehler ab. Darum geht sie über eine Kopie, `list(clients)`. Was passiert, wenn mehrere Schritte zusammengehören, siehst du am Ende in [Viele Threads](#7-viele-threads).
+<!-- /language -->
 
 Starte den Server neu und öffne die Seite in zwei Tabs nebeneinander. Was du in einem Tab schreibst, erscheint in beiden.
 
@@ -270,8 +460,9 @@ _task(wer-bekommt-was)
 
 ## Die Pixelwand
 
-Jetzt wird aus dem Chat ein Bild. Der Server bewahrt das Bild auf: 64 × 40 Pixel, jedes eine Farbnummer von 0 bis 15. Wer neu dazukommt, bekommt das ganze Bild, danach nur noch die Pixel, die sich ändern. Die Nachrichten sind jetzt keine einfachen Texte mehr, sondern **JSON**, eine Schreibweise für Daten, die Ruby und JavaScript beide verstehen: `{"x":10,"y":5,"color":4}`.
+Jetzt wird aus dem Chat ein Bild. Der Server bewahrt das Bild auf: 64 × 40 Pixel, jedes eine Farbnummer von 0 bis 15. Wer neu dazukommt, bekommt das ganze Bild, danach nur noch die Pixel, die sich ändern. Die Nachrichten sind jetzt keine einfachen Texte mehr, sondern **JSON**, eine Schreibweise für Daten, die Ruby, Python und JavaScript verstehen: `{"x":10,"y":5,"color":4}`.
 
+<!-- language: ruby -->
 Ersetze `server.rb` durch:
 
 ```ruby_copy
@@ -335,6 +526,84 @@ Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Sile
 - `JSON.generate` macht aus einem Hash Text, `JSON.parse` aus Text wieder einen Hash.
 - Jede Nachricht hat einen `type`: `picture` für das ganze Bild, `pixel` für einen einzelnen Pixel, `people` für die Zahl der Verbundenen.
 - **Jeder kann alles schicken**, nicht nur deine Webseite. Darum glaubt der Server keiner Nachricht: Kein JSON, keine ganzen Zahlen, ein Pixel außerhalb des Bildes, eine Farbe über 15? `next` überspringt die Nachricht. Ein Server, der fremden Eingaben traut, ist eine Einladung, ihn kaputt zu machen.
+<!-- /language -->
+<!-- language: python -->
+Ersetze `server.py` durch:
+
+```python_copy
+import json
+from pathlib import Path
+from websockets.datastructures import Headers
+from websockets.exceptions import ConnectionClosed
+from websockets.http11 import Response
+from websockets.sync.server import serve
+
+PAGE = Path(__file__).with_name('index.html')
+
+# Das Bild: 64 × 40 Pixel, jedes eine Farbnummer von 0 bis 15
+WIDTH = 64
+HEIGHT = 40
+pixels = [0] * (WIDTH * HEIGHT)
+
+# Alle offenen Verbindungen
+clients = set()
+
+
+def broadcast(message):
+    text = json.dumps(message)
+    for client in list(clients):
+        try:
+            client.send(text)
+        except ConnectionClosed:
+            pass
+
+
+def page(connection, request):
+    if request.path == '/ws':
+        return None
+    body = PAGE.read_bytes()
+    headers = Headers({'Content-Type': 'text/html; charset=utf-8',
+                       'Content-Length': str(len(body))})
+    return Response(200, 'OK', headers, body)
+
+
+def handle(ws):
+    # Wer neu ist, bekommt das ganze Bild, danach nur noch einzelne Pixel
+    clients.add(ws)
+    ws.send(json.dumps({'type': 'picture', 'width': WIDTH,
+                        'height': HEIGHT, 'pixels': pixels}))
+    broadcast({'type': 'people', 'count': len(clients)})
+    try:
+        for text in ws:
+            # Jeder kann alles schicken: nur glauben, was passt
+            try:
+                message = json.loads(text)
+            except ValueError:
+                continue
+            if not isinstance(message, dict):
+                continue
+            x, y, color = message.get('x'), message.get('y'), message.get('color')
+            if not all(type(value) is int for value in (x, y, color)):
+                continue
+            if not (0 <= x < WIDTH and 0 <= y < HEIGHT and 0 <= color <= 15):
+                continue
+
+            pixels[y * WIDTH + x] = color
+            broadcast({'type': 'pixel', 'x': x, 'y': y, 'color': color})
+    finally:
+        clients.discard(ws)
+        broadcast({'type': 'people', 'count': len(clients)})
+
+
+with serve(handle, '0.0.0.0', 8000, process_request=page) as server:
+    print('Der Server wartet auf Port 8000 ...')
+    server.serve_forever()
+```
+
+- `json.dumps` macht aus einem Dictionary Text, `json.loads` aus Text wieder ein Dictionary.
+- Jede Nachricht hat einen `type`: `picture` für das ganze Bild, `pixel` für einen einzelnen Pixel, `people` für die Zahl der Verbundenen.
+- **Jeder kann alles schicken**, nicht nur deine Webseite. Darum glaubt der Server keiner Nachricht: Kein JSON, keine ganzen Zahlen, ein Pixel außerhalb des Bildes, eine Farbe über 15? `continue` überspringt die Nachricht. `type(value) is int` lässt nur ganze Zahlen durch, auch kein `true`, das in Python sonst als 1 zählen würde. Ein Server, der fremden Eingaben traut, ist eine Einladung, ihn kaputt zu machen.
+<!-- /language -->
 
 Die neue `index.html` zeichnet das Bild in ein `<canvas>`, ein Element, in das JavaScript zeichnen kann. Es ist nur 64 × 40 Pixel groß. CSS zieht es so groß, wie das Fenster erlaubt, und legt ein feines Gitter darüber, damit man jeden Pixel der Wand sieht:
 
@@ -465,6 +734,7 @@ Prüfe im zweiten Terminal, ob der Server die neue Seite schickt:
 curl -s localhost:8000/ | head -n 5
 ```
 
+<!-- language: ruby -->
 <!-- tutorial-screenshot
 # Stufe 3: Neustart mit der Pixelwand, curl holt die Seite
 write-file: pixelwand/server.rb <- file:stufen/server3.rb
@@ -485,6 +755,29 @@ terminal-run: curl -s localhost:8000/ | head -n 5
 sleep: 2
 -->
 <img class='full' src='neustart.webp' alt='Links wartet der neu gestartete Server, rechts zeigt curl die ersten Zeilen der neuen Seite mit dem Titel »Pixelwand«.'>
+<!-- /language -->
+<!-- language: python -->
+<!-- tutorial-screenshot
+# Stufe 3 in Python: Neustart mit der Pixelwand, curl holt die Seite
+write-file: pixelwand/server.py <- file:stufen/server3.py
+write-file: pixelwand/index.html <- file:stufen/index3.html
+terminal-open
+terminal-maximize
+press: Alt+ArrowLeft
+sleep: 1
+press: Control+C
+sleep: 1
+press: Control+L
+type: .venv/bin/python server.py
+press: Enter
+sleep: 2
+terminal-run: clear
+sleep: 1
+terminal-run: curl -s localhost:8000/ | head -n 5
+sleep: 2
+-->
+<img class='full' src='neustart-python.webp' alt='Links wartet der neu gestartete Python-Server, rechts zeigt curl die ersten Zeilen der neuen Seite mit dem Titel »Pixelwand«.'>
+<!-- /language -->
 
 Lade die Seite im Browser neu und male. Hier malt gerade jemand anderes:
 
@@ -496,7 +789,12 @@ hook: paint
 -->
 <img class='full border' src='pixelwand.webp' alt='Die Pixelwand: blauer Himmel mit gelber Sonne, eine grüne Wiese, ein Haus mit rotem Dach und ein Baum. Darüber steht »Du malst allein.«, darunter eine Reihe runder Farbknöpfe, von denen Gelb ausgewählt ist.'>
 
+<!-- language: ruby -->
 _uses(json-aufbau, json-ruby, json-javascript)
+<!-- /language -->
+<!-- language: python -->
+_uses(json-aufbau, json-python, json-javascript)
+<!-- /language -->
 
 _task(pixel-zahl)
 
@@ -510,14 +808,24 @@ Jetzt kommt der beste Teil. Gib in deinem [Profil](/profil) unter »Shared Live 
 
 Vielleicht merkt ihr schnell, dass einige wenige das ganze Bild übermalen. Ein paar Ideen, die Pixelwand weiterzubauen, von leicht bis schwer:
 
+<!-- language: ruby -->
 - **Eine größere Wand:** Ändere `WIDTH` und `HEIGHT` im Server und die Größe des `<canvas>` in der Seite.
 - **Wartezeit:** Jede Verbindung darf nur einen Pixel pro Sekunde setzen, wie bei »r/place«. Merke dir in einer Variable neben `ws`, wann die Verbindung zuletzt gemalt hat (`Time.now`), und überspringe in `ws.on(:message)` Pixel, die zu früh kommen.
 - **Das Bild laden:** Im nächsten Abschnitt speichert der Server das Bild in `picture.json`. Lies die Datei beim Start wieder ein (`File.exist?`, `JSON.parse`), dann übersteht das Bild einen Neustart.
 - **Ein Chat daneben:** Ein neuer `type` für Textnachrichten und ein Eingabefeld unter der Wand.
 - **Ein Spiel:** Zwei Teams mit zwei Farben, wer nach fünf Minuten mehr Pixel hat, gewinnt.
+<!-- /language -->
+<!-- language: python -->
+- **Eine größere Wand:** Ändere `WIDTH` und `HEIGHT` im Server und die Größe des `<canvas>` in der Seite.
+- **Wartezeit:** Jede Verbindung darf nur einen Pixel pro Sekunde setzen, wie bei »r/place«. Merke dir in `handle` in einer Variable, wann die Verbindung zuletzt gemalt hat (`time.monotonic()`), und überspringe Pixel, die zu früh kommen.
+- **Das Bild laden:** Im nächsten Abschnitt speichert der Server das Bild in `picture.json`. Lies die Datei beim Start wieder ein (`Path('picture.json').exists()`, `json.loads`), dann übersteht das Bild einen Neustart.
+- **Ein Chat daneben:** Ein neuer `type` für Textnachrichten und ein Eingabefeld unter der Wand.
+- **Ein Spiel:** Zwei Teams mit zwei Farben, wer nach fünf Minuten mehr Pixel hat, gewinnt.
+<!-- /language -->
 
 ## Viele Threads
 
+<!-- language: ruby -->
 Ein Neustart des Servers löscht das Bild. Darum soll der Server es nach jedem Pixel in eine Datei schreiben, `picture.json`. Das dauert einen Moment, und solange Faye mit einer Nachricht beschäftigt ist, warten alle anderen. Die übliche Lösung: Mehrere **Threads** arbeiten die Nachrichten ab, während Faye schon neue annimmt. Dazu zählt der Server mit, wie viele Pixel schon gemalt wurden, und schreibt die Zahl ins Terminal.
 
 Ersetze `server.rb` durch:
@@ -609,6 +917,118 @@ Rackup::Server.start(app: App, Host: '0.0.0.0', Port: 8000, server: 'puma', Sile
 - Vier Threads holen sich mit `$queue.pop` die nächste Nachricht und verarbeiten sie, jeder in einer Schleife ohne Ende. `pop` wartet, solange die Schlange leer ist. Ein Thread pro Nachricht wäre einfacher, aber jeder Thread kostet Speicher, und dein Workspace darf nicht beliebig viele starten. Echte Server arbeiten genauso mit einer festen Zahl von Threads.
 - `save_picture` schreibt das ganze Bild als JSON in die Datei.
 - `$painted` zählt die Pixel: lesen, speichern, um eins erhöhen.
+<!-- /language -->
+<!-- language: python -->
+Ein Neustart des Servers löscht das Bild. Darum soll der Server es nach jedem Pixel in eine Datei schreiben, `picture.json`. Das dauert einen Moment, und solange der Thread einer Verbindung damit beschäftigt ist, warten die nächsten Nachrichten dieser Verbindung. Die übliche Lösung: Mehrere **Threads** arbeiten die Nachrichten ab, während die Verbindung schon neue annimmt. Dazu zählt der Server mit, wie viele Pixel schon gemalt wurden, und schreibt die Zahl ins Terminal.
+
+Ersetze `server.py` durch:
+
+```python_copy
+import json
+import queue
+import threading
+from pathlib import Path
+from websockets.datastructures import Headers
+from websockets.exceptions import ConnectionClosed
+from websockets.http11 import Response
+from websockets.sync.server import serve
+
+PAGE = Path(__file__).with_name('index.html')
+
+# Das Bild: 64 × 40 Pixel, jedes eine Farbnummer von 0 bis 15
+WIDTH = 64
+HEIGHT = 40
+pixels = [0] * (WIDTH * HEIGHT)
+
+# Alle offenen Verbindungen
+clients = set()
+
+# Wie viele Pixel schon gemalt wurden
+painted = 0
+
+
+# Das Bild in eine Datei schreiben, damit es einen Neustart übersteht
+def save_picture():
+    Path('picture.json').write_text(json.dumps(pixels))
+
+
+def broadcast(message):
+    text = json.dumps(message)
+    for client in list(clients):
+        try:
+            client.send(text)
+        except ConnectionClosed:
+            pass
+
+
+def work():
+    global painted
+    while True:
+        text = messages.get()       # wartet, bis eine Nachricht da ist
+
+        # Jeder kann alles schicken: nur glauben, was passt
+        try:
+            message = json.loads(text)
+        except ValueError:
+            continue
+        if not isinstance(message, dict):
+            continue
+        x, y, color = message.get('x'), message.get('y'), message.get('color')
+        if not all(type(value) is int for value in (x, y, color)):
+            continue
+        if not (0 <= x < WIDTH and 0 <= y < HEIGHT and 0 <= color <= 15):
+            continue
+
+        pixels[y * WIDTH + x] = color
+        count = painted
+        save_picture()              # dauert einen Moment
+        painted = count + 1
+        print(f'Pixel Nr. {painted}')
+        broadcast({'type': 'pixel', 'x': x, 'y': y, 'color': color})
+
+
+# Vier Threads arbeiten die Nachrichten ab, während die Verbindung schon die
+# nächste annimmt. Mehr als ein paar sollten es nicht sein: Jeder Thread
+# kostet Speicher, und ein Workspace darf nicht beliebig viele starten.
+messages = queue.Queue()
+for _ in range(4):
+    threading.Thread(target=work, daemon=True).start()
+
+
+def page(connection, request):
+    if request.path == '/ws':
+        return None
+    body = PAGE.read_bytes()
+    headers = Headers({'Content-Type': 'text/html; charset=utf-8',
+                       'Content-Length': str(len(body))})
+    return Response(200, 'OK', headers, body)
+
+
+def handle(ws):
+    # Wer neu ist, bekommt das ganze Bild, danach nur noch einzelne Pixel
+    clients.add(ws)
+    ws.send(json.dumps({'type': 'picture', 'width': WIDTH,
+                        'height': HEIGHT, 'pixels': pixels}))
+    broadcast({'type': 'people', 'count': len(clients)})
+    try:
+        # Jede Nachricht kommt in die Warteschlange; die Verbindung ist sofort frei
+        for text in ws:
+            messages.put(text)
+    finally:
+        clients.discard(ws)
+        broadcast({'type': 'people', 'count': len(clients)})
+
+
+with serve(handle, '0.0.0.0', 8000, process_request=page) as server:
+    print('Der Server wartet auf Port 8000 ...')
+    server.serve_forever()
+```
+
+- `handle` legt jede Nachricht nur in eine **Warteschlange**, `messages`, und ist sofort frei für die nächste.
+- Vier Threads holen sich mit `messages.get()` die nächste Nachricht und verarbeiten sie in `work`, jeder in einer Schleife ohne Ende. `get` wartet, solange die Schlange leer ist. Ein Thread pro Nachricht wäre einfacher, aber jeder Thread kostet Speicher, und dein Workspace darf nicht beliebig viele starten. Echte Server arbeiten genauso mit einer festen Zahl von Threads. `daemon=True` heißt: Die Threads halten das Programm nicht am Leben, <kbd>Strg</kbd><kbd>C</kbd> beendet es trotzdem.
+- `save_picture` schreibt das ganze Bild als JSON in die Datei.
+- `painted` zählt die Pixel: lesen, speichern, um eins erhöhen. `global painted` erlaubt `work`, die Variable außerhalb der Funktion zu ändern.
+<!-- /language -->
 
 Damit es spannend wird, malen jetzt sehr viele Leute gleichzeitig. Lege `flood.js` an; es schickt 200 Pixel auf einmal an deinen eigenen Server auf `localhost` und wartet, bis der Server alle an alle verteilt hat:
 
@@ -647,6 +1067,7 @@ node flood.js
 
 _task(counter)
 
+<!-- language: ruby -->
 <!-- tutorial-screenshot
 # Stufe 4: viele Threads, flood.js schickt 200 Pixel
 write-file: pixelwand/server.rb <- file:stufen/server4.rb
@@ -668,7 +1089,32 @@ wait-for-text: 200 Pixel zurückbekommen
 sleep: 1
 -->
 <img class='full' src='threads.webp' alt='Links zählt der Server, aber am Ende steht weit weniger als »Pixel Nr. 200«, rechts meldet flood.js »200 Pixel geschickt.« und »200 Pixel zurückbekommen.«'>
+<!-- /language -->
+<!-- language: python -->
+<!-- tutorial-screenshot
+# Stufe 4 in Python: viele Threads, flood.js schickt 200 Pixel
+write-file: pixelwand/server.py <- file:stufen/server4.py
+write-file: pixelwand/flood.js <- file:stufen/flood.js
+terminal-open
+terminal-maximize
+press: Alt+ArrowLeft
+sleep: 1
+press: Control+C
+sleep: 1
+press: Control+L
+type: .venv/bin/python server.py
+press: Enter
+sleep: 2
+terminal-run: clear
+sleep: 1
+terminal-run: node flood.js
+wait-for-text: 200 Pixel zurückbekommen
+sleep: 1
+-->
+<img class='full' src='threads-python.webp' alt='Links zählt der Python-Server, aber am Ende steht weit weniger als »Pixel Nr. 200«, rechts meldet flood.js »200 Pixel geschickt.« und »200 Pixel zurückbekommen.«'>
+<!-- /language -->
 
+<!-- language: ruby -->
 200 Pixel, und der Zähler kommt nicht annähernd bis 200. Jeder der vier Threads liest `$painted`, speichert das Bild und schreibt dann seinen Wert plus eins zurück. Während einer speichert, lesen die anderen denselben alten Wert; vier Threads schreiben dieselbe Zahl, und drei Pixel sind beim Zählen verloren. Dasselbe Problem hatte der Besuchszähler deines Webservers; dort war die Lücke zwischen Lesen und Schreiben nur so kurz, dass man den Fehler selten sieht. Hier dauert das Speichern, und der Fehler passiert jedes Mal.
 
 Die Lösung ist ein **Lock**, in Ruby ein `Mutex`: Nur ein Thread auf einmal darf durch, die anderen warten davor. Ergänze unter `$painted = 0`:
@@ -688,9 +1134,31 @@ $lock.synchronize do
   puts "Pixel Nr. #{$painted}"
 end
 ```
+<!-- /language -->
+<!-- language: python -->
+200 Pixel, und der Zähler bleibt weit unter 200. Jeder der vier Threads liest `painted`, speichert das Bild und schreibt dann seinen Wert plus eins zurück. Während einer speichert, lesen die anderen denselben alten Wert; mehrere Threads schreiben dieselbe Zahl, und Pixel gehen beim Zählen verloren. Dasselbe Problem hatte der Besuchszähler deines Webservers; dort war die Lücke zwischen Lesen und Schreiben nur so kurz, dass man den Fehler selten sieht. Hier dauert das Speichern, und der Fehler passiert jedes Mal.
+
+Die Lösung ist ein **Lock**: Nur ein Thread auf einmal darf durch, die anderen warten davor. Ergänze unter `painted = 0`:
+
+```python
+lock = threading.Lock()
+```
+
+und schließe das Ändern von Bild und Zähler in `with lock:` ein:
+
+```python
+with lock:
+    pixels[y * WIDTH + x] = color
+    count = painted
+    save_picture()          # dauert einen Moment
+    painted = count + 1
+    print(f'Pixel Nr. {painted}')
+```
+<!-- /language -->
 
 Starte den Server neu und schick noch einmal 200 Pixel:
 
+<!-- language: ruby -->
 <!-- tutorial-screenshot
 # Stufe 5: mit Lock zählt der Server richtig
 write-file: pixelwand/server.rb <- file:stufen/server5.rb
@@ -711,6 +1179,29 @@ wait-for-text: 200 Pixel zurückbekommen
 sleep: 1
 -->
 <img class='full' src='lock.webp' alt='Links zählt der Server bis »Pixel Nr. 200«, rechts meldet flood.js »200 Pixel geschickt.« und »200 Pixel zurückbekommen.«'>
+<!-- /language -->
+<!-- language: python -->
+<!-- tutorial-screenshot
+# Stufe 5 in Python: mit Lock zählt der Server richtig
+write-file: pixelwand/server.py <- file:stufen/server5.py
+terminal-open
+terminal-maximize
+press: Alt+ArrowLeft
+sleep: 1
+press: Control+C
+sleep: 1
+press: Control+L
+type: .venv/bin/python server.py
+press: Enter
+sleep: 2
+terminal-run: clear
+sleep: 1
+terminal-run: node flood.js
+wait-for-text: 200 Pixel zurückbekommen
+sleep: 1
+-->
+<img class='full' src='lock-python.webp' alt='Links zählt der Python-Server bis »Pixel Nr. 200«, rechts meldet flood.js »200 Pixel geschickt.« und »200 Pixel zurückbekommen.«'>
+<!-- /language -->
 
 Jetzt kommt der Zähler bei 200 an. Die Threads stehen nur an der einen Stelle hintereinander, an der sie das Bild und den Zähler ändern; alles andere, das Prüfen der Nachricht und das Verteilen an alle, läuft weiter gleichzeitig. Ein Lock gehört genau um die Teile, die gemeinsame Daten lesen und ändern, und um nicht mehr.
 
@@ -724,7 +1215,7 @@ _task(abgabe)
 
 Eure Pixelwand funktioniert genauso wie große Anwendungen, nur kleiner: Ein Server hält den gemeinsamen Zustand, jeder Browser hat eine offene Verbindung, und jede Änderung geht an alle. So arbeiten Online-Spiele, Chats und Programme, in denen mehrere Leute gleichzeitig an einem Dokument schreiben.
 
-Im Ernstfall läuft eine WebSocket-Verbindung verschlüsselt über `wss://`, und der Server muss mit Tausenden Verbindungen und mit Leuten umgehen können, die ihm absichtlich falsche Daten schicken. Die Prüfung in `ws.on(:message)` war ein erster Schritt dahin.
+Im Ernstfall läuft eine WebSocket-Verbindung verschlüsselt über `wss://`, und der Server muss mit Tausenden Verbindungen und mit Leuten umgehen können, die ihm absichtlich falsche Daten schicken. Die Prüfung jeder Nachricht in deinem Server war ein erster Schritt dahin.
 
 <!-- tutorial-screenshot
 # Bild für die Karte der Aktivität: die Wand, nachdem die Klasse eine Weile gemalt hat
