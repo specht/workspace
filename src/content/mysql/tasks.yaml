@@ -262,3 +262,53 @@ tasks:
     solution: |
       `SELECT Name FROM ort WHERE Land = 'Deutschland' AND Laenge < 6.046;`
       Ohne die Zahl abzuschreiben: `… AND Laenge < (SELECT Laenge FROM ort WHERE Name = 'Aachen')`.
+
+  - id: reihenfolge
+    title: Die Reihenfolge
+    prompt: |
+      In welcher Reihenfolge arbeitet die Datenbank die Teile einer Abfrage
+      mit `SELECT`, `FROM`, `WHERE`, `ORDER BY` und `LIMIT` ab?
+    check:
+      type: choice
+      shuffle: false
+      options:
+        - FROM, WHERE, SELECT, ORDER BY, LIMIT
+        - SELECT, FROM, WHERE, ORDER BY, LIMIT
+        - FROM, SELECT, WHERE, ORDER BY, LIMIT
+        - FROM, WHERE, ORDER BY, LIMIT, SELECT
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: So schreibt man die Abfrage. Ausgeführt wird sie anders; der Schrittmacher zeigt, womit die Datenbank anfängt.
+      - when: { picked: 2 }
+        say: Fast. Wählt SELECT die Spalten aus, bevor WHERE die Zeilen prüft? Schau im Schrittmacher, wann die Spalten verschwinden.
+      - when: { picked: 3 }
+        say: ORDER BY darf schon die Namen aus SELECT benutzen, etwa dichte. Also muss SELECT vorher drankommen.
+
+  - id: dichte-where
+    title: Ein Name, den es noch nicht gibt
+    prediction: true
+    prompt: |
+      Was passiert bei dieser Abfrage? Überleg zuerst, dann probier sie im
+      Schrittmacher oder in mycli aus.
+
+      ```sql
+      SELECT name, einwohner / flaeche * 1000000 AS dichte
+      FROM land
+      WHERE dichte > 1000;
+      ```
+    check:
+      type: choice
+      options:
+        - 'Ein Fehler: Die Spalte dichte gibt es bei WHERE noch nicht.'
+        - Die Länder mit mehr als 1000 Menschen pro Quadratkilometer
+        - Alle Länder, denn dichte ist bei WHERE noch leer
+        - Keine einzige Zeile
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: So wäre es praktisch. Aber WHERE kommt vor SELECT, und den Namen dichte gibt es erst ab SELECT. MySQL meldet »Unknown column 'dichte' in 'where clause'«.
+      - when: { picked: 2 }
+        say: Eine leere Spalte gibt es nicht; bei WHERE gibt es dichte schlicht noch gar nicht.
+    solution: "Ein Fehler, in MySQL »Unknown column 'dichte' in 'where clause'«. Richtig ist `WHERE einwohner / flaeche * 1000000 > 1000`: der Ausdruck selbst statt des Namens."
+

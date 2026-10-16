@@ -448,6 +448,28 @@ Dabei fällt etwas auf: In den Beispieldaten kommen sowohl `Europa` als auch `Eu
 
 _task(laender-der-orte)
 
+## In welcher Reihenfolge arbeitet die Datenbank?
+
+Eine Abfrage schreibst du mit `SELECT` zuerst. Die Datenbank fängt aber woanders an: Sie holt zuerst die Zeilen der Tabelle aus `FROM`, wirft mit `WHERE` die weg, die nicht passen, und wählt erst danach mit `SELECT` die Spalten aus. Dann sortiert sie mit `ORDER BY` und schneidet mit `LIMIT` ab. Der Schrittmacher unten führt eine Abfrage so aus, Teil für Teil, und zeigt nach jedem Schritt die Tabelle, die gerade entstanden ist. Mit <kbd>←</kbd> und <kbd>→</kbd> gehst du durch die Schritte; die Abfrage kannst du ändern.
+
+<div class='query-stepper' data-stepper data-query="SELECT name, ROUND(einwohner / flaeche * 1000000) AS dichte
+FROM land
+WHERE kontinent = 'Europa'
+ORDER BY dichte DESC
+LIMIT 5;"></div>
+
+<script src='/include/query_stepper.js'></script>
+
+`dichte` ist hier die Zahl der Menschen pro Quadratkilometer, gerundet; `einwohner` steht in Millionen. Den Namen bekommt die Spalte mit `AS` bei `SELECT`, und weil `ORDER BY` danach kommt, darf es ihn schon benutzen.
+
+_task(reihenfolge)
+
+_task(dichte-where)
+
+Mehr Beispiele, auch mit `GROUP BY` und `JOIN`, die später drankommen, hat der Schrittmacher auf einer eigenen Seite:
+
+_tool(query-stepper)
+
 ## Zusammenfassung
 
 Du kennst jetzt die wichtigsten Bausteine, die wir für die folgenden Aufgaben benötigen:

@@ -55,8 +55,16 @@ JavaScript-Tests laufen mit Node, ohne npm-Pakete:
 
 ```bash
 node --test src/tutorial-screenshots/test/*.test.js
+node --test test/static/*.test.cjs        # JavaScript der Website, etwa der Abfrage-Schrittmacher
 cd src/vscode-extensions/er && node --test test/*.test.cjs core/*.test.cjs
 ```
+
+Der Abfrage-Schrittmacher (`src/static/include/query_stepper.js`, Seite
+`/query-stepper`, eingebettet in »Einführung in SQL«) rechnet im Browser mit
+den Tabellen aus `src/static/query-stepper/terra1.json`.
+`src/scripts/query-stepper-data.rb terra1.sql` baut sie aus der Datei, die
+Lernende herunterladen: `land` ganz, von `ort` die Orte ab einer Million
+Einwohnern.
 
 Die End-to-End-Tests mit Playwright (Anmeldung, Workspace-Start,
 Toolchains bis zum Android-APK) stehen in [e2e/README.md](../e2e/README.md).
