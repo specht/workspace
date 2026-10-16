@@ -4,7 +4,7 @@
     }
 </style>
 
-<div class='container #{page_kind_class(slug)}'>
+<div class='container #{page_kind_class(slug)}'#{code_language_attribute(slug)}>
     <div class='row'>
         <div class='col-md-12'>
             #{page_kind_header(slug)}
@@ -14,6 +14,7 @@
             #{template_notice_setup(slug)}
             #{include_fold_setup(slug)}
             #{media_variants_setup(slug)}
+            #{code_language_setup(slug)}
         </div>
     </div>
 </div>

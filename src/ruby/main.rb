@@ -4,6 +4,7 @@ require './include/content_parts.rb'
 require './include/vscode_settings.rb'
 require './include/page_kinds.rb'
 require './include/task_spec.rb'
+require './include/code_languages.rb'
 require './include/task_check.rb'
 require './include/task_card.rb'
 require './include/task_store.rb'
@@ -1522,13 +1523,23 @@ class Main < Sinatra::Base
 
     # Replaces the task slots left by TaskCard.mark_slots with task cards,
     # numbered in page order.
-    def self.insert_task_cards(root, task_slots, page_tasks, redcarpet, path)
+    def self.insert_task_cards(root, task_slots, page_tasks, redcarpet, path, languages = [])
         render = lambda { |md| redcarpet.render(md.to_s) }
         number = 0
         root.css('div.task-slot').each do |slot|
             id = task_slots[slot['data-slot'].to_i]
             task = page_tasks && page_tasks[:by_id][id]
-            html = if task
+            html = if task && !languages.empty? && !CodeLanguages.variant_languages(task).empty?
+                # A card for each language the page offers, with the same
+                # number; only the one for the language shown is visible.
+                number += 1
+                languages.map do |language|
+                    card = TaskCard.html(CodeLanguages.variant(task, language), :activity => page_tasks[:activity],
+                        :number => number, :render => render, :language => language,
+                        :id_suffix => language == languages.first ? '' : "-#{language}")
+                    "<div class='code-language' data-language='#{language}'>#{card}</div>"
+                end.join
+            elsif task
                 number += 1
                 TaskCard.html(task, :activity => page_tasks[:activity], :number => number, :render => render)
             else
@@ -1729,6 +1740,8 @@ class Main < Sinatra::Base
                         STDERR.puts "#{tasks_path}: tasks not loaded: #{e.message}"
                     end
                 end
+                # Parts for one programming language (CodeLanguages), wrapped after rendering.
+                markdown = CodeLanguages.mark(markdown, :warn => content_warning)
                 markdown, task_slots = TaskCard.mark_slots(markdown)
             else
                 kit = entry[:path]
@@ -1780,7 +1793,9 @@ class Main < Sinatra::Base
                 end
                 md
             end
-            insert_task_cards(root, task_slots, page_tasks, redcarpet, path) unless task_slots.empty?
+            page_languages = CodeLanguages.of_page(page_meta)
+            CodeLanguages.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
+            insert_task_cards(root, task_slots, page_tasks, redcarpet, path, page_languages) unless task_slots.empty?
             # Reference pages: every h2 and h3 gets an anchor for the Handbuch index.
             outline = parsed_sections.dig(section, :catalog) == 'reference' ? ReferenceIndex.anchor_headings(root) : nil
             search_sections = outline ? ReferenceIndex.search_sections(root) : nil
@@ -1809,6 +1824,8 @@ class Main < Sinatra::Base
                 :section => section,
                 :kind => page_meta['kind'],
                 :language => page_meta['language'],
+                # Programming languages the page offers (CodeLanguages), [] for one.
+                :languages => page_languages,
                 :duration => page_meta['duration'],
                 :references => page_references,
                 # Reference parts the page includes ('slug#part'), so a box
@@ -3959,12 +3976,94 @@ class Main < Sinatra::Base
     def page_kind_header(slug)
         toggle = teacher_note_toggle(slug)
         header = PageKinds.header(slug, @@content, @@sections, :development => DEVELOPMENT, :extra => toggle,
-                                  :show_duration => teacher_logged_in?)
+                                  :show_duration => teacher_logged_in?, :code_language => page_code_language(slug))
         header.empty? && !toggle.empty? ? "<div class='page-kind'>#{toggle}</div>" : header
     end
 
     def page_kind_class(slug)
         PageKinds.container_class(slug)
+    end
+
+    # --- Programming languages (CodeLanguages) ---------------------------------
+
+    # The language a teacher set for each group, { group => language } in
+    # the order given; nil where none is set.
+    def group_code_languages(groups)
+        return {} if groups.empty?
+
+        rows = neo4j_query(<<~END_OF_QUERY, :groups => groups).to_a
+            MATCH (g:GroupSetting) WHERE g.group IN $groups
+            RETURN g.group AS group, g.code_language AS language;
+        END_OF_QUERY
+        set = rows.to_h { |row| [row['group'], row['language']] }
+        groups.to_h { |group| [group, set[group]] }
+    end
+
+    # The language this person sees on a page that offers more than one,
+    # nil on other pages: their own choice, else their class's, else Ruby.
+    def page_code_language(slug)
+        languages = (@@content[slug] || {})[:languages] || []
+        return nil if languages.empty?
+
+        @page_code_language ||= {}
+        @page_code_language[slug] ||= begin
+            own = user_logged_in? ? @session_user[:code_language] : nil
+            groups = user_logged_in? ? group_code_languages(my_groups) : {}
+            language = CodeLanguages.resolve(own, groups)
+            languages.include?(language) ? language : languages.first
+        end
+    end
+
+    def code_language_attribute(slug)
+        language = page_code_language(slug)
+        language ? " data-code-language='#{language}'" : ''
+    end
+
+    # The switch in the page header: shows the other language at once and
+    # remembers the choice, for logged-in people on the server, for others
+    # in the browser.
+    def code_language_setup(slug)
+        return '' if page_code_language(slug).nil?
+
+        names = CodeLanguages::NAMES.to_json
+        chosen = user_logged_in? && CodeLanguages.known?(@session_user[:code_language])
+        <<~END_OF_STRING
+            <script>
+            (function () {
+                const container = document.querySelector('[data-code-language]');
+                if (!container) return;
+                const names = #{names};
+                const loggedIn = #{user_logged_in? ? 'true' : 'false'};
+                function show(language) {
+                    container.dataset.codeLanguage = language;
+                    container.querySelectorAll('[data-set-language]').forEach(function (button) {
+                        const on = button.dataset.setLanguage === language;
+                        button.classList.toggle('btn-secondary', on);
+                        button.classList.toggle('btn-outline-secondary', !on);
+                        button.setAttribute('aria-pressed', on ? 'true' : 'false');
+                    });
+                    container.querySelectorAll('.code-language-name').forEach(function (el) { el.textContent = names[language]; });
+                }
+                if (!loggedIn && !#{chosen}) {
+                    try {
+                        const stored = localStorage.getItem('code-language');
+                        if (stored && container.querySelector("[data-set-language='" + stored + "']")) show(stored);
+                    } catch (e) {}
+                }
+                container.querySelectorAll('[data-set-language]').forEach(function (button) {
+                    button.addEventListener('click', function () {
+                        const language = button.dataset.setLanguage;
+                        show(language);
+                        if (loggedIn) {
+                            api_call('/api/set_code_language', { language: language }, function () {}, { no_please_wait: true });
+                        } else {
+                            try { localStorage.setItem('code-language', language); } catch (e) {}
+                        }
+                    });
+                });
+            })();
+            </script>
+        END_OF_STRING
     end
 
     # --- Tasks (docs/aufgaben.md) --------------------------------------------
@@ -4148,7 +4247,9 @@ class Main < Sinatra::Base
     end
 
     # The task for 'activity/id', with its check version, or nil.
-    def find_task(key)
+    # language: the card's programming language (CodeLanguages); the task
+    # comes back as it is in that language, with the version of all of them.
+    def find_task(key, language = nil)
         activity, id = key.to_s.split('/', 2)
         return nil unless activity.to_s =~ /\A[a-z0-9_-]+\z/ && id.to_s =~ TaskSpec::ID_PATTERN
 
@@ -4156,7 +4257,9 @@ class Main < Sinatra::Base
         task = entry && entry[:tasks][:by_id][id]
         return nil unless task
 
-        { :key => "#{activity}/#{id}", :task => task, :version => TaskSpec.check_version(task) }
+        version = TaskSpec.check_version(task)
+        task = CodeLanguages.variant(task, language) if CodeLanguages.known?(language)
+        { :key => "#{activity}/#{id}", :task => task, :version => version }
     end
 
     # Values of the ${...} variables a task uses, for the logged-in person.
@@ -4597,6 +4700,19 @@ class Main < Sinatra::Base
         io << "<label>Gruppe <select class='form-select' name='group' onchange='this.form.submit()'>"
         groups.each { |g| io << "<option value='#{h.(g)}'#{g == group ? ' selected' : ''}>#{h.(g)} (#{(@@group_members[g] || []).size})</option>" }
         io << "</select></label><input type='hidden' name='tab' value='#{h.(tab)}'>"
+        # The programming language of the group's activities (CodeLanguages),
+        # where an activity offers more than one; saved at once, not sent with
+        # the form.
+        current = group_code_languages([group])[group]
+        io << "<label title='Für Aktivitäten, die es in mehreren Sprachen gibt. Lernende können auf der Seite selbst umschalten.'>Sprache <select class='form-select class-code-language' data-group='#{h.(group)}'>"
+        CodeLanguages::LANGUAGES.each do |language|
+            selected = (current || CodeLanguages::DEFAULT) == language ? ' selected' : ''
+            io << "<option value='#{language}'#{selected}>#{CodeLanguages::NAMES[language]}</option>"
+        end
+        io << "</select></label>"
+        io << "<script>document.querySelector('.class-code-language').addEventListener('change', function (e) {" \
+            "api_call('/api/set_group_code_language', { group: e.target.dataset.group, language: e.target.value }, function () {}, { no_please_wait: true });" \
+            "});</script>"
         io << "<noscript><button class='btn btn-primary'>Anzeigen</button></noscript>"
         # For the projector: the group's codes, big, names only (class_board.js).
         io << "<button type='button' class='btn btn-outline-primary class-codes-show'><i class='bi bi-projector' aria-hidden='true'></i>Anmelde-Codes zeigen</button></form>"
@@ -5199,10 +5315,10 @@ class Main < Sinatra::Base
     post '/api/task/check' do
         assert(user_logged_in?)
         assert(tasks_visible?)
-        data = parse_request_data(:required_keys => [:task, :answer],
+        data = parse_request_data(:required_keys => [:task, :answer], :optional_keys => [:language],
             :max_body_length => 16384,
             :max_value_lengths => {:task => 120, :answer => TaskStore::MAX_ANSWER})
-        found = find_task(data[:task])
+        found = find_task(data[:task], data[:language])
         halt 404 if found.nil?
 
         result = TaskCheck.check(found[:task], data[:answer],
@@ -6388,6 +6504,43 @@ class Main < Sinatra::Base
             result[:starter][lang] = val if val && !val.strip.empty?
         end
         respond(:result => result)
+    end
+
+    # The programming language someone wants to see on pages that offer
+    # more than one (CodeLanguages); overrides the class's.
+    post '/api/set_code_language' do
+        assert(user_logged_in?)
+        data = parse_request_data(:required_keys => [:language])
+        assert(CodeLanguages.known?(data[:language]))
+        neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :language => data[:language]})
+            MATCH (u:User {email: $email})
+            SET u.code_language = $language
+            RETURN u;
+        END_OF_STRING
+        respond(:yay => 'sure')
+    end
+
+    # The language a teacher sets for a group they administer; '' removes
+    # it, and the group sees Ruby again.
+    post '/api/set_group_code_language' do
+        assert(teacher_logged_in?)
+        data = parse_request_data(:required_keys => [:group, :language])
+        group = data[:group]
+        assert(class_groups.include?(group))
+        language = data[:language].to_s
+        assert(language.empty? || CodeLanguages.known?(language))
+        if language.empty?
+            neo4j_query(<<~END_OF_STRING, {:group => group})
+                MATCH (g:GroupSetting {group: $group})
+                REMOVE g.code_language;
+            END_OF_STRING
+        else
+            neo4j_query(<<~END_OF_STRING, {:group => group, :language => language})
+                MERGE (g:GroupSetting {group: $group})
+                SET g.code_language = $language;
+            END_OF_STRING
+        end
+        respond(:yay => 'sure')
     end
 
     post '/api/set_preferred_language' do
