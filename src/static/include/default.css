@@ -4871,3 +4871,85 @@ div[data-stepper]::before {
 .query-stepper td.qs-col {
     font-weight: 700;
 }
+.query-stepper .qs-dataset {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-bottom: 0.6em;
+    font-size: 0.9em;
+}
+.query-stepper .qs-dataset select {
+    width: auto;
+}
+.query-stepper .qs-hidden {
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
+    margin-top: 0.3em;
+}
+
+/* The iDCT stepper (idct_stepper.js): coefficients, the current basis
+   picture, the block so far and its pixel values. All four are squares of
+   the same size, 8 × 8 cells; the numbers are smaller, not the cells. */
+.idct-stepper .idct-controls {
+    display: flex;
+    gap: 0.3em;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 0.6em;
+}
+.idct-stepper .idct-count {
+    margin-left: 0.6em;
+    color: var(--bs-secondary-color);
+}
+.idct-stepper .idct-say {
+    min-height: 3em;
+    margin-bottom: 0.6em;
+}
+.idct-stepper .idct-panels {
+    --idct-cell: 1.9rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2em;
+    align-items: flex-start;
+}
+.idct-stepper figure {
+    margin: 0;
+    width: calc(8 * var(--idct-cell) + 2px);
+}
+.idct-stepper figcaption {
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
+    margin-top: 0.3em;
+}
+.idct-stepper .idct-grid {
+    display: grid;
+    grid-template-columns: repeat(8, var(--idct-cell));
+    grid-template-rows: repeat(8, var(--idct-cell));
+    border: 1px solid var(--bs-border-color);
+}
+.idct-stepper .idct-grid span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.idct-stepper .idct-coef span, .idct-stepper .idct-numbers span {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 0.68rem;
+}
+.idct-stepper .idct-coef span.zero {
+    color: var(--bs-secondary-color);
+    opacity: 0.45;
+}
+.idct-stepper .idct-coef span.done {
+    background: color-mix(in srgb, var(--bs-success) 18%, transparent);
+}
+.idct-stepper .idct-coef span.now {
+    background: var(--bs-primary);
+    color: #fff;
+    font-weight: 700;
+}
+.idct-stepper .idct-numbers span.changed {
+    font-weight: 700;
+    color: var(--bs-primary-text-emphasis);
+}

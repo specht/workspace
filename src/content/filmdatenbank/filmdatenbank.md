@@ -320,6 +320,16 @@ JOIN genre ON movie_genre.genre_id = genre.id
 WHERE movie.title = 'Back to the Future';
 ```
 
+Was bei jedem `JOIN` passiert, zeigt der Abfrage-Schrittmacher. Er führt die Abfrage Teil für Teil aus, so wie die Datenbank, auf denselben Filmdaten. Mit <kbd>←</kbd> und <kbd>→</kbd> siehst du, wie aus `movie` mit dem ersten `JOIN` eine breitere Tabelle wird, in der jeder Film so oft vorkommt, wie er Genres hat, und wie das zweite `JOIN` jede Zeile um den Namen des Genres ergänzt. Erst `WHERE` lässt dann die drei Zeilen übrig. Du kannst die Abfrage auch ändern.
+
+<div class='query-stepper' data-stepper data-dataset='movies' data-query="SELECT movie.title, genre.name
+FROM movie
+JOIN movie_genre ON movie.id = movie_genre.movie_id
+JOIN genre ON movie_genre.genre_id = genre.id
+WHERE movie.title = 'Back to the Future';"></div>
+
+<script src='/include/query_stepper.js'></script>
+
 <div class='hint'>
 Jedes <code>JOIN … ON …</code> folgt einer Linie im Tabellendiagramm. Wenn du dort den Weg von einer Tabelle zur anderen findest, hast du die Abfrage schon fast. Vergisst du <code>ON</code>, verbindet MySQL jede Zeile mit jeder: Aus einigen tausend Filmen und Zuordnungen werden Millionen Zeilen.
 </div>
@@ -425,6 +435,16 @@ JOIN movie_genre ON genre.id = movie_genre.genre_id
 GROUP BY genre.id, genre.name
 HAVING COUNT(*) >= 100;
 ```
+
+Im Schrittmacher siehst du die Gruppen: Bei `GROUP BY` bekommt jedes Genre seine Farbe, und `HAVING` streicht ganze Gruppen, nicht einzelne Zeilen. Probier auch, die Bedingung mit `WHERE` zu schreiben; der Schrittmacher sagt dir, warum das nicht geht.
+
+<div class='query-stepper' data-stepper data-dataset='movies' data-query="SELECT genre.name, COUNT(*)
+FROM genre
+JOIN movie_genre ON genre.id = movie_genre.genre_id
+GROUP BY genre.id, genre.name
+HAVING COUNT(*) >= 100;"></div>
+
+_tool(query-stepper)
 
 _task(viel-regie)
 

@@ -2,7 +2,8 @@
 // through it, FROM, JOIN, WHERE, GROUP BY, HAVING, SELECT, DISTINCT,
 // ORDER BY, LIMIT, with the table after each step. ← and → step through it
 // (stepper_keys.js). The data are the tables of terra1.sql from the SQL
-// introduction (src/scripts/query-stepper-data.rb).
+// introduction and the movies of »Filmdatenbank«
+// (src/scripts/query-stepper-data.rb).
 //
 // The engine below understands the SELECT the pages teach and follows MySQL
 // where a student would notice a difference: text compares without regard to
@@ -12,7 +13,9 @@
 // aggregate (ONLY_FULL_GROUP_BY). What it does not understand, it says.
 //
 // <div class='query-stepper' data-stepper data-query='SELECT …'></div>
-// on a page, with <script src='/include/query_stepper.js'></script>.
+// on a page, with <script src='/include/query_stepper.js'></script>;
+// data-dataset='movies' for the movie tables, data-choose for a box to pick
+// the tables (the tool page).
 
 (function (root) {
     'use strict';
@@ -23,6 +26,7 @@
         'GROUP', 'BY', 'HAVING', 'ORDER', 'ASC', 'DESC', 'LIMIT', 'OFFSET', 'AND', 'OR', 'NOT', 'LIKE', 'IN',
         'BETWEEN', 'IS', 'NULL', 'TRUE', 'FALSE']);
     const AGGREGATES = new Set(['COUNT', 'SUM', 'AVG', 'MIN', 'MAX']);
+    const MAX_JOINED = 200000;
     const FUNCTIONS = new Set(['ROUND', 'UPPER', 'LOWER', 'LENGTH', 'ABS', 'CONCAT']);
 
     class SqlError extends Error {}
@@ -327,6 +331,31 @@
     }
     const fold = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ß/g, 'ss');
 
+    // Values that compare as equal get the same key: for a hash join, for
+    // groups and for DISTINCT, instead of comparing every pair.
+    function keyOf(v) {
+        if (v === null || v === undefined) return '\u0000';
+        if (typeof v === 'number') return 'n' + v;
+        return 's' + fold(v).toLowerCase();
+    }
+    const keysOf = (values) => values.map(keyOf).join('\u0001');
+
+    // A table of one step. Its cells are made only for the rows that are
+    // shown; a JOIN can have many thousands. rows (for tests and callers)
+    // is built on first use.
+    function lazyView(columns, highlight, size, cellsAt, marks, groups) {
+        let rows = null;
+        return {
+            columns, highlight, size, cellsAt,
+            markAt: (i) => marks ? marks[i] : null,
+            groupAt: (i) => groups ? groups[i] : undefined,
+            get rows() {
+                if (!rows) rows = Array.from({ length: size }, (_, i) => ({ cells: cellsAt(i), mark: marks ? marks[i] : null, group: groups ? groups[i] : undefined }));
+                return rows;
+            },
+        };
+    }
+
     function show(v) {
         if (v === null || v === undefined) return 'NULL';
         if (typeof v === 'number') return Number.isInteger(v) ? String(v) : String(Number(v.toFixed(4)));
@@ -351,11 +380,31 @@
         let columns = tables[fromKey].columns.map((name) => ({ table: query.from.alias, name }));
         let rows = tables[fromKey].rows.map((r) => r.slice());
         const label = (c) => joined ? `${c.table}.${c.name}` : c.name;
-        const view = (cols, rws, marks, extra = {}) => ({
-            columns: cols.map(label),
-            highlight: extra.highlight || [],
-            rows: rws.map((r, i) => ({ cells: r.map(show), mark: marks ? marks[i] : null, group: extra.groups ? extra.groups[i] : undefined })),
-        });
+        // Before SELECT, only the columns the query uses: after a JOIN the
+        // table gets wide, and the columns that matter would be off to the
+        // right. With SELECT * every column counts.
+        const refs = [];
+        (function collect(e) {
+            if (!e || typeof e !== 'object') return;
+            if (Array.isArray(e)) { e.forEach(collect); return; }
+            if (e.type === 'col') refs.push(e);
+            Object.keys(e).forEach((k) => { if (!k.startsWith('cached') && k !== 'type') collect(e[k]); });
+        })([query.select.map((x) => x.expr), query.where, query.joins.map((j) => j.on), query.groupBy, query.having, query.orderBy.map((o) => o.expr)]);
+        const star = query.select.some((x) => x.star);
+        const visibleOf = (cols) => {
+            if (star) return cols.map((c, i) => i);
+            const keep = cols.map((c, i) => i).filter((i) => refs.some((r) => r.name.toLowerCase() === cols[i].name.toLowerCase() &&
+                (!r.table || r.table.toLowerCase() === cols[i].table.toLowerCase())));
+            return keep.length ? keep : cols.map((c, i) => i);
+        };
+        const view = (cols, rws, marks, extra = {}) => {
+            const shown = visibleOf(cols);
+            const highlight = (extra.highlight || []).map((i) => shown.indexOf(i)).filter((i) => i >= 0);
+            const v = lazyView(shown.map((i) => label(cols[i])), highlight, rws.length,
+                (r) => shown.map((i) => show(rws[r][i])), marks, extra.groups);
+            v.hidden = cols.length - shown.length;
+            return v;
+        };
         // The columns an expression reads, to show them in the table of its step
         const used = (expr) => {
             const out = new Set();
@@ -403,7 +452,16 @@
             switch (expr.type) {
                 case 'lit': return expr.value;
                 case 'col': {
-                    const i = resolve(ctx.cols, expr, ctx.where, ctx.aliases);
+                    // Where the column is, once per table layout, not once per row
+                    let i;
+                    const withAliases = !!ctx.aliases;
+                    if (expr.cachedCols === ctx.cols && expr.cachedWithAliases === withAliases) i = expr.cachedIndex;
+                    else {
+                        i = resolve(ctx.cols, expr, ctx.where, ctx.aliases);
+                        expr.cachedCols = ctx.cols;
+                        expr.cachedWithAliases = withAliases;
+                        expr.cachedIndex = i;
+                    }
                     if (i === -1) return ctx.aliases.get(expr.name.toLowerCase());
                     const row = ctx.row || (ctx.group && ctx.group[0]);
                     return row ? row[i] : null;
@@ -462,7 +520,7 @@
                         if (!ctx.group) throw new SqlError(`${expr.name}(…) fasst mehrere Zeilen zusammen und geht darum nicht ${ctx.where === 'WHERE' ? 'bei WHERE; dafür gibt es HAVING' : 'hier'}.`);
                         if (expr.star) return ctx.group.length;
                         let values = ctx.group.map((row) => evaluate(expr.args[0], { ...ctx, row, group: null, inAggregate: true })).filter((v) => v !== null);
-                        if (expr.distinct) values = values.filter((v, i) => values.findIndex((w) => compare(v, w) === 0) === i);
+                        if (expr.distinct) { const seen = new Set(); values = values.filter((v) => !seen.has(keyOf(v)) && seen.add(keyOf(v))); }
                         if (expr.name === 'COUNT') return values.length;
                         if (!values.length) return null;
                         if (expr.name === 'SUM') return values.reduce((s, v) => s + Number(v), 0);
@@ -497,14 +555,39 @@
             const both = columns.concat(right);
             const out = [];
             let unmatched = 0;
-            for (const left of rows) {
-                let found = false;
+            // ON a = b with one column on each side: look the partners up by
+            // key (a hash join) instead of trying every pair.
+            const side = (ref) => {
+                const inLeft = columns.some((c) => c.name.toLowerCase() === ref.name.toLowerCase() && (!ref.table || c.table.toLowerCase() === ref.table.toLowerCase()));
+                const inRight = right.some((c) => c.name.toLowerCase() === ref.name.toLowerCase() && (!ref.table || c.table.toLowerCase() === ref.table.toLowerCase()));
+                return inLeft && !inRight ? 'left' : inRight && !inLeft ? 'right' : null;
+            };
+            const on = join.on;
+            const equi = on.type === 'bin' && on.op === '=' && on.left.type === 'col' && on.right.type === 'col' &&
+                side(on.left) && side(on.right) && side(on.left) !== side(on.right);
+            let partners;
+            if (equi) {
+                const leftRef = side(on.left) === 'left' ? on.left : on.right;
+                const rightRef = leftRef === on.left ? on.right : on.left;
+                const li = resolve(columns, leftRef, 'ON');
+                const ri = resolve(right, rightRef, 'ON');
+                const buckets = new Map();
                 for (const r of tables[key].rows) {
-                    const row = left.concat(r);
-                    if (truth(evaluate(join.on, { cols: both, row, where: 'ON' })) === true) { out.push(row); found = true; }
+                    if (r[ri] === null) continue;
+                    const k = keyOf(r[ri]);
+                    if (!buckets.has(k)) buckets.set(k, []);
+                    buckets.get(k).push(r);
                 }
-                if (!found && join.type === 'LEFT') { out.push(left.concat(right.map(() => null))); unmatched++; }
-                if (!found && join.type === 'INNER') unmatched++;
+                partners = (left) => left[li] === null ? [] : (buckets.get(keyOf(left[li])) || []);
+            } else {
+                partners = (left) => tables[key].rows.filter((r) => truth(evaluate(on, { cols: both, row: left.concat(r), where: 'ON' })) === true);
+            }
+            for (const left of rows) {
+                const found = partners(left);
+                for (const r of found) out.push(left.concat(r));
+                if (!found.length && join.type === 'LEFT') { out.push(left.concat(right.map(() => null))); unmatched++; }
+                if (!found.length && join.type === 'INNER') unmatched++;
+                if (out.length > MAX_JOINED) throw new SqlError(`Der JOIN ergibt mehr als ${MAX_JOINED.toLocaleString('de')} Zeilen; so viele kann der Schrittmacher nicht zeigen. Grenz die Abfrage ein, etwa mit einer genaueren Bedingung bei ON.`);
             }
             columns = both;
             rows = out;
@@ -537,12 +620,14 @@
         if (grouping) {
             const groupCols = query.groupBy.map((e) => e.type === 'col' ? resolve(columns, e, 'GROUP BY') : null);
             if (query.groupBy.length) {
-                const keyOf = (row) => query.groupBy.map((e) => evaluate(e, { cols: columns, row, where: 'GROUP BY' }));
+                const groupKey = (row) => query.groupBy.map((e) => evaluate(e, { cols: columns, row, where: 'GROUP BY' }));
                 groups = [];
+                const byKey = new Map();
                 for (const row of rows) {
-                    const key = keyOf(row);
-                    let g = groups.find((x) => x.key.every((v, i) => (v === null && key[i] === null) || compare(v, key[i]) === 0));
-                    if (!g) { g = { key, rows: [] }; groups.push(g); }
+                    const key = groupKey(row);
+                    const k = keysOf(key);
+                    let g = byKey.get(k);
+                    if (!g) { g = { key, rows: [] }; groups.push(g); byKey.set(k, g); }
                     g.rows.push(row);
                 }
                 const flat = [], marks = [], ids = [];
@@ -587,7 +672,14 @@
                 outColumns.push({ label: s.alias || s.source, expr: s.expr, alias: s.alias });
             }
         });
-        const selectValues = (ctx) => outColumns.map((o) => o.col ? ctx.row[columns.indexOf(o.col)] : evaluate(o.expr, { ...ctx, where: 'SELECT' }));
+        outColumns.forEach((o) => { if (o.col) o.index = columns.indexOf(o.col); });
+        const selectValues = (ctx) => {
+            const was = ctx.where;
+            ctx.where = 'SELECT';
+            const values = outColumns.map((o) => o.col ? ctx.row[o.index] : evaluate(o.expr, ctx));
+            ctx.where = was;
+            return values;
+        };
         const aliasMap = (values) => new Map(outColumns.map((o, i) => [o.alias && o.alias.toLowerCase(), values[i]]).filter(([k]) => k));
 
         let results;   // [{ values, ctx }]
@@ -615,7 +707,7 @@
                 return { values: selectValues(ctx), ctx };
             });
         }
-        const resultView = (list, marks) => ({ columns: outColumns.map((o) => o.label), highlight: [], rows: list.map((r, i) => ({ cells: r.values.map(show), mark: marks ? marks[i] : null })) });
+        const resultView = (list, marks) => lazyView(outColumns.map((o) => o.label), [], list.length, (i) => list[i].values.map(show), marks, null);
         steps.push({ clause: 'SELECT', text: groups ?
             `${code(query.sources.select)}: Aus jeder Gruppe wird eine Zeile, mit den Spalten aus SELECT. ${results.length} ${results.length === 1 ? 'Zeile' : 'Zeilen'}.` :
             `${code(query.sources.select)}: Erst jetzt werden die Spalten ausgewählt und ausgerechnet${outColumns.some((o) => o.alias) ? ', und sie bekommen ihre Namen aus AS' : ''}. ${results.length} Zeilen, ${outColumns.length} ${outColumns.length === 1 ? 'Spalte' : 'Spalten'}.`,
@@ -623,7 +715,8 @@
 
         // DISTINCT
         if (query.distinct) {
-            const marks = results.map((r, i) => results.findIndex((s) => s.values.every((v, k) => (v === null && r.values[k] === null) || compare(v, r.values[k]) === 0)) === i ? 'keep' : 'drop');
+            const seen = new Set();
+            const marks = results.map((r) => { const k = keysOf(r.values); if (seen.has(k)) return 'drop'; seen.add(k); return 'keep'; });
             const kept = results.filter((_, i) => marks[i] === 'keep');
             steps.push({ clause: 'DISTINCT', text: `<code>DISTINCT</code>: Gleiche Zeilen bleiben nur einmal. ${kept.length} von ${results.length} Zeilen bleiben.`, table: resultView(results, marks) });
             results = kept;
@@ -636,7 +729,9 @@
                     if (o.expr.value < 1 || o.expr.value > outColumns.length) throw new SqlError(`ORDER BY ${o.expr.value}: So viele Spalten hat SELECT nicht.`);
                     return r.values[o.expr.value - 1];
                 }
-                return evaluate(o.expr, { ...r.ctx, aliases: aliasMap(r.values), where: 'ORDER BY' });
+                if (!r.ctx.aliases) r.ctx.aliases = aliasMap(r.values);
+                r.ctx.where = 'ORDER BY';
+                return evaluate(o.expr, r.ctx);
             }));
             const order = results.map((_, i) => i).sort((a, b) => {
                 for (let k = 0; k < query.orderBy.length; k++) {
@@ -670,56 +765,70 @@
 
     const ORDER = ['FROM', 'JOIN', 'WHERE', 'GROUP BY', 'HAVING', 'SELECT', 'DISTINCT', 'ORDER BY', 'LIMIT'];
     const MAX_ROWS = 12;
-    let dataPromise = null;
-    const loadData = () => dataPromise || (dataPromise = fetch('/query-stepper/terra1.json').then((r) => r.json()));
+    // The tables to work on: terra1 (»Einführung in SQL«) or movies (»Filmdatenbank«)
+    const DATASETS = { terra1: 'Länder und Orte (terra1)', movies: 'Filme (Filmdatenbank)' };
+    const loaded = new Map();
+    const loadData = (name) => {
+        if (!loaded.has(name)) loaded.set(name, fetch(`/query-stepper/${name}.json`).then((r) => r.json()));
+        return loaded.get(name);
+    };
 
     // What to show of a long table: the first rows; if some fall out, enough
     // of both kinds to see the difference; with groups, a few rows of each
     // group. Items are { index } or { more, mark } for a »… und N weitere«.
-    function shownRows(rows) {
-        const all = rows.map((r, i) => i);
-        if (rows.length <= MAX_ROWS) return all.map((index) => ({ index }));
-        const more = (n, mark, what = 'Zeilen') => ({ more: `… und ${n} weitere ${n === 1 ? what.replace(/en$/, 'e').replace(/n$/, '') : what}`, mark });
-        if (rows[0].group !== undefined) {
+    function shownRows(table) {
+        const n = table.size;
+        const all = Array.from({ length: n }, (_, i) => i);
+        if (n <= MAX_ROWS) return all.map((index) => ({ index }));
+        const more = (count, mark, what = 'Zeilen') => ({ more: `… und ${count.toLocaleString('de')} weitere ${count === 1 ? what.replace(/en$/, 'e').replace(/n$/, '') : what}`, mark });
+        if (table.groupAt(0) !== undefined) {
             const groups = [];
-            rows.forEach((r, i) => { (groups[r.group] = groups[r.group] || []).push(i); });
+            for (let i = 0; i < n; i++) { const g = table.groupAt(i); (groups[g] = groups[g] || []).push(i); }
             const shownGroups = groups.slice(0, 8);
             const per = Math.max(2, Math.floor(MAX_ROWS / shownGroups.length));
             const items = [];
             shownGroups.forEach((g) => {
                 g.slice(0, per).forEach((index) => items.push({ index }));
-                if (g.length > per) items.push(more(g.length - per, rows[g[0]].mark));
+                if (g.length > per) items.push(more(g.length - per, table.markAt(g[0])));
             });
             if (groups.length > shownGroups.length) items.push(more(groups.length - shownGroups.length, null, 'Gruppen'));
             return items;
         }
-        const out = (i) => rows[i].mark === 'drop' || rows[i].mark === 'null';
+        const out = (i) => table.markAt(i) === 'drop' || table.markAt(i) === 'null';
         let picked = all.slice(0, MAX_ROWS);
         if (all.some(out)) {
-            const keep = all.filter((i) => !out(i));
-            const drop = all.filter(out);
+            const keep = [], drop = [];
+            for (const i of all) {
+                (out(i) ? drop : keep).push(i);
+                if (keep.length >= MAX_ROWS && drop.length >= MAX_ROWS) break;
+            }
             const half = Math.min(drop.length, Math.max(MAX_ROWS - keep.length, MAX_ROWS / 2));
             picked = keep.slice(0, MAX_ROWS - half).concat(drop.slice(0, half)).sort((x, y) => x - y);
         }
-        return picked.map((index) => ({ index })).concat([more(rows.length - picked.length, null)]);
+        return picked.map((index) => ({ index })).concat([more(n - picked.length, null)]);
     }
 
     function tableHtml(table) {
         const hi = new Set(table.highlight || []);
         const cell = (k, value) => `<td class='${[hi.has(k) ? 'qs-col' : '', value === 'NULL' ? 'qs-null-value' : ''].join(' ').trim()}'>${esc(value)}</td>`;
         const head = table.columns.map((c, k) => `<th${hi.has(k) ? " class='qs-col'" : ''}>${esc(c)}</th>`).join('');
-        const body = shownRows(table.rows).map((item) => {
+        const body = shownRows(table).map((item) => {
             if (item.more) return `<tr class='qs-more${item.mark ? ' qs-' + item.mark : ''}'><td colspan='${table.columns.length}'>${esc(item.more)}</td></tr>`;
-            const r = table.rows[item.index];
-            return `<tr${r.mark ? ` class='qs-${r.mark}'` : ''}>${r.cells.map((c, k) => cell(k, c)).join('')}</tr>`;
+            const mark = table.markAt(item.index);
+            return `<tr${mark ? ` class='qs-${mark}'` : ''}>${table.cellsAt(item.index).map((c, k) => cell(k, c)).join('')}</tr>`;
         }).join('');
-        const empty = table.rows.length ? '' : `<tr class='qs-more'><td colspan='${table.columns.length}'>keine Zeilen</td></tr>`;
-        return `<div class='qs-table'><table class='table table-sm'><thead><tr>${head}</tr></thead><tbody>${body}${empty}</tbody></table></div>`;
+        const empty = table.size ? '' : `<tr class='qs-more'><td colspan='${table.columns.length}'>keine Zeilen</td></tr>`;
+        const hidden = table.hidden ? `<div class='qs-hidden'>${table.hidden} ${table.hidden === 1 ? 'Spalte, die' : 'Spalten, die'} die Abfrage nicht benutzt, ${table.hidden === 1 ? 'ist' : 'sind'} ausgeblendet.</div>` : '';
+        return `<div class='qs-table'><table class='table table-sm'><thead><tr>${head}</tr></thead><tbody>${body}${empty}</tbody></table></div>${hidden}`;
     }
 
     function mount(rootElement) {
+        let dataset = DATASETS[rootElement.dataset.dataset] ? rootElement.dataset.dataset : 'terra1';
         const start = rootElement.dataset.query || 'SELECT * FROM land;';
+        const choose = 'choose' in rootElement.dataset;
+        const options = Object.entries(DATASETS).map(([k, v]) => `<option value='${k}'>${esc(v)}</option>`).join('');
         rootElement.innerHTML = `
+            ${choose ? `<label class='qs-dataset'>Tabellen: <select class='form-select form-select-sm' aria-label='Tabellen'>${options}</select></label>` : ''}
             <textarea class='form-control qs-input' rows='3' spellcheck='false' aria-label='SQL-Abfrage'></textarea>
             <div class='qs-order' aria-hidden='true'></div>
             <div class='qs-controls'>
@@ -743,6 +852,8 @@
         let steps = [];
         let current = 0;
         let data = null;
+        const select = rootElement.querySelector('.qs-dataset select');
+        if (select) select.value = dataset;
 
         function draw() {
             const step = steps[current];
@@ -780,10 +891,25 @@
         buttons('last').addEventListener('click', () => go(steps.length - 1));
         let timer = null;
         input.addEventListener('input', () => { fit(); clearTimeout(timer); timer = setTimeout(() => { current = 0; refresh(); }, 250); });
-        say.textContent = 'Die Tabellen werden geladen …';
-        loadData().then((d) => { data = d; refresh(); });
+        const use = (name) => {
+            dataset = name;
+            if (select) select.value = name;
+            data = null;
+            say.textContent = 'Die Tabellen werden geladen …';
+            return loadData(name).then((d) => { if (dataset === name) { data = d; refresh(); } });
+        };
+        if (select) select.addEventListener('change', () => { current = 0; use(select.value); });
+        use(dataset);
 
-        return { setQuery(q) { input.value = q; fit(); current = 0; if (data) refresh(); } };
+        return {
+            setQuery(q, name) {
+                input.value = q;
+                fit();
+                current = 0;
+                if (name && name !== dataset) use(name);
+                else if (data) refresh();
+            },
+        };
     }
 
     const api = { tokenize, parse, run, show, SqlError, mount };
@@ -795,7 +921,7 @@
             // Buttons with data-query right after the widget load an example
             const examples = el.nextElementSibling;
             if (examples && examples.classList.contains('query-stepper-examples')) {
-                examples.querySelectorAll('[data-query]').forEach((b) => b.addEventListener('click', () => widget.setQuery(b.dataset.query)));
+                examples.querySelectorAll('[data-query]').forEach((b) => b.addEventListener('click', () => widget.setQuery(b.dataset.query, b.dataset.dataset)));
             }
         });
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();

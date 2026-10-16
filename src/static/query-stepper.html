@@ -12,15 +12,18 @@
     durch die Schritte. Wie man solche Abfragen schreibt, zeigt die <a href="/mysql">Einführung in SQL</a>.
   </p>
   <p class="qs-tables">
-    Die Tabellen sind die aus <code>terra1</code>: <code>land</code> mit allen 197 Ländern und <code>ort</code> mit
-    den 277 Orten ab einer Million Einwohnern (in der Datenbank sind es über 26.000). <code>land.Einwohner</code>
-    ist in Millionen. Der Schrittmacher kennt <code>SELECT</code> mit <code>DISTINCT</code>, <code>JOIN</code> und
+    Es gibt zwei Sätze von Tabellen. <code>terra1</code> aus der Einführung: <code>land</code> mit allen 197 Ländern
+    und <code>ort</code> mit den 277 Orten ab einer Million Einwohnern (in der Datenbank sind es über 26.000);
+    <code>land.Einwohner</code> ist in Millionen. Die Filme aus der <a href="/filmdatenbank">Filmdatenbank</a>:
+    <code>movie</code>, <code>genre</code> und <code>movie_genre</code> ganz, von <code>crew</code>,
+    <code>job</code> und <code>movie_crew</code> nur Regie und die Schauspielerinnen und Schauspieler ab fünf
+    Filmen. Der Schrittmacher kennt <code>SELECT</code> mit <code>DISTINCT</code>, <code>JOIN</code> und
     <code>LEFT JOIN</code>, <code>WHERE</code>, <code>GROUP BY</code>, <code>HAVING</code>, <code>ORDER BY</code>
     und <code>LIMIT</code>, dazu <code>COUNT</code>, <code>SUM</code>, <code>AVG</code>, <code>MIN</code>,
     <code>MAX</code> und <code>ROUND</code>. Er rechnet alles im Browser; an deine Datenbank schickt er nichts.
   </p>
 
-  <div class="query-stepper" data-stepper data-query="SELECT kontinent, COUNT(*) AS laender
+  <div class="query-stepper" data-stepper data-choose data-query="SELECT kontinent, COUNT(*) AS laender
 FROM land
 WHERE einwohner > 10
 GROUP BY kontinent
@@ -33,6 +36,10 @@ ORDER BY laender DESC;"></div>
     <button class="btn btn-sm btn-outline-secondary" data-query="SELECT o.name, o.einwohner, l.name FROM ort o JOIN land l ON o.land = l.name WHERE l.kontinent = 'Europa' ORDER BY o.einwohner DESC LIMIT 5;">JOIN</button>
     <button class="btn btn-sm btn-outline-secondary" data-query="SELECT l.name, COUNT(o.name) AS millionenstaedte FROM land l LEFT JOIN ort o ON o.land = l.name GROUP BY l.name ORDER BY millionenstaedte DESC, l.name LIMIT 10;">LEFT JOIN</button>
     <button class="btn btn-sm btn-outline-secondary" data-query="SELECT name, einwohner / flaeche * 1000000 AS dichte FROM land WHERE dichte > 1000;">Ein Fehler</button>
+    <button class="btn btn-sm btn-outline-secondary" data-dataset="movies" data-query="SELECT movie.title, genre.name FROM movie JOIN movie_genre ON movie.id = movie_genre.movie_id JOIN genre ON movie_genre.genre_id = genre.id WHERE movie.title = 'Back to the Future';">Filme: zwei JOINs</button>
+    <button class="btn btn-sm btn-outline-secondary" data-dataset="movies" data-query="SELECT genre.name, COUNT(*) FROM genre JOIN movie_genre ON genre.id = movie_genre.genre_id GROUP BY genre.id, genre.name HAVING COUNT(*) >= 100 ORDER BY COUNT(*) DESC;">Filme: GROUP BY und HAVING</button>
+    <button class="btn btn-sm btn-outline-secondary" data-dataset="movies" data-query="SELECT movie.title, movie.year FROM crew JOIN movie_crew ON movie_crew.crew_id = crew.id JOIN job ON movie_crew.job_id = job.id JOIN movie ON movie_crew.movie_id = movie.id WHERE crew.name = 'Christopher Nolan' AND job.title = 'director' ORDER BY movie.year;">Filme: Regie</button>
+    <button class="btn btn-sm btn-outline-secondary" data-dataset="movies" data-query="SELECT COUNT(*) FROM movie LEFT JOIN movie_genre ON movie_genre.movie_id = movie.id WHERE movie_genre.movie_id IS NULL;">Filme: ohne Genre</button>
   </div>
 </div>
 

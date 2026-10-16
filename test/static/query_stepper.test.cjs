@@ -65,3 +65,24 @@ test('mistakes MySQL also rejects, with an explanation', () => {
     fails('SELECT * FROM land ORDER BY name WHERE kontinent = \'Asien\'', /falschen Stelle/);
     fails("SELECT * FROM land WHERE name = 'Deutschland", /hört nicht auf/);
 });
+
+// The queries of »Filmdatenbank« on the movie tables; values as MySQL gives
+// them on the full data (directors are complete in the stepper's tables).
+const movies = JSON.parse(fs.readFileSync(path.join(__dirname, '../../src/static/query-stepper/movies.json')));
+const films = (sql) => QS.run(sql, movies).result.rows.map((r) => r.cells.join(' | '));
+
+test('the movie tables, as in Filmdatenbank', () => {
+    assert.deepStrictEqual(films("SELECT movie.title, genre.name FROM movie JOIN movie_genre ON movie.id = movie_genre.movie_id JOIN genre ON movie_genre.genre_id = genre.id WHERE movie.title = 'Back to the Future' ORDER BY genre.name"),
+        ['Back to the Future | Adventure', 'Back to the Future | Comedy', 'Back to the Future | Sci-Fi']);
+    assert.ok(films('SELECT genre.name, COUNT(*) FROM genre JOIN movie_genre ON genre.id = movie_genre.genre_id GROUP BY genre.id, genre.name').includes('Drama | 1361'));
+    assert.deepStrictEqual(films("SELECT crew.name FROM movie JOIN movie_crew ON movie.id = movie_crew.movie_id JOIN crew ON movie_crew.crew_id = crew.id JOIN job ON movie_crew.job_id = job.id WHERE movie.title = 'Back to the Future' AND job.title = 'director'"),
+        ['Robert Zemeckis']);
+    assert.deepStrictEqual(films('SELECT COUNT(*) FROM movie m LEFT JOIN movie_genre mg ON mg.movie_id = m.id WHERE mg.movie_id IS NULL'), ['7']);
+});
+
+test('a self-join with many rows stays fast enough', () => {
+    const start = Date.now();
+    const top = films("SELECT a.name, b.name, COUNT(*) AS together FROM movie_crew AS ma JOIN movie_crew AS mb ON ma.movie_id = mb.movie_id JOIN job AS ja ON ma.job_id = ja.id JOIN job AS jb ON mb.job_id = jb.id JOIN crew AS a ON ma.crew_id = a.id JOIN crew AS b ON mb.crew_id = b.id WHERE ja.title = 'actor' AND jb.title = 'actor' AND a.id < b.id GROUP BY a.id, a.name, b.id, b.name ORDER BY together DESC, a.name, b.name LIMIT 3");
+    assert.deepStrictEqual(top, ['Lois Maxwell | Desmond Llewelyn | 12', 'Rob Schneider | Adam Sandler | 12', 'Bernard Lee | Lois Maxwell | 11']);
+    assert.ok(Date.now() - start < 5000, `took ${Date.now() - start} ms`);
+});

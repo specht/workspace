@@ -4,7 +4,7 @@ kind: labor
 language: C
 duration: 4 Doppelstunden
 requires: [pixelram]
-reference: [pixelram, workspace]
+reference: [pixelram, workspace, farbraeume]
 template: https://github.com/specht/pixelram-starter.git
 template_name: des PixelRAM-Starters
 </div>
@@ -16,6 +16,7 @@ template_name: des PixelRAM-Starters
 </div>
 
 <script src="/include/huffman_decode.js"></script>
+<script src="/include/idct_stepper.js"></script>
 
 <style>
     :root {
@@ -1469,6 +1470,10 @@ Jeder Block wird anschließend dequantisiert, indem die Koeffizienten komponente
 </div>
 </div>
 
+Der DC-Koeffizient −120 wird so zu −120 · 5 = −600, der erste AC-Koeffizient 9 zu 9 · 3 = 27.
+
+_task(dequant)
+
 ### iDCT
 
 Nachdem alle Koeffizienten eines Blocks decodiert wurden, müssen wir die inverse DCT (iDCT) anwenden, um die Pixelwerte zu erhalten. Die iDCT wird auf die 8x8-DCT-Matrix angewendet und liefert eine 8x8-Matrix mit den Pixelwerten zurück.
@@ -1481,9 +1486,19 @@ Du kannst folgende Formel für die iDCT verwenden:
 
 Da die resultierenden Werte nach der iDCT noch im Bereich von -128 bis 127 liegen, müssen wir sie um 128 verschieben, um den Bereich von 0 bis 255 zu erhalten.
 
+Was die Formel tut, siehst du, wenn du sie Koeffizient für Koeffizient ausrechnest. Jeder Koeffizient gehört zu einem **Basisbild**, einem Muster aus Kosinuswellen: (0, 0) ist überall gleich hell, (1, 0) ein Verlauf von links nach rechts, (0, 1) einer von oben nach unten, und je größer u und v, desto feiner das Muster. Der Block ist die Summe aller Basisbilder, jedes mit seinem Koeffizienten malgenommen. Unten wird der Block aus dem Beispiel so zusammengesetzt, in der Zick-Zack-Reihenfolge, mit den Koeffizienten nach der Dequantisierung von oben. Die meisten sind 0 und tragen nichts bei:
+
+<div class='idct-stepper' data-stepper data-coef='-600 27 9 0 7 0 0 0 -88 -12 4 6 0 0 0 0 24 -20 -10 0 0 0 0 0 8 5 -14 -9 0 0 0 0 0 7 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'></div>
+
+Schon nach wenigen Schritten sieht der Block fast fertig aus: Die großen Koeffizienten stehen vorn, die feinen Muster am Ende tragen wenig bei. Genau das nutzt JPEG aus. Die Quantisierung macht die hinteren Koeffizienten klein oder 0, und das Auge vermisst sie kaum.
+
 <div class='hint'>
 <strong>Für deinen Decoder:</strong> Die Formel hat vier Summen über je 8 Werte, für jedes der 64 Pixel. Die Kosinuswerte hängen nur von x und u (und y und v) ab: Rechne sie einmal am Anfang in ein Array <code>double idct_cos[8][8]</code>, dann geht es schnell genug. Noch schneller wird es, wenn du erst jede Zeile und dann jede Spalte transformierst, aber das ist nicht nötig. Runde das Ergebnis, verschiebe es um 128 und begrenze es auf 0 bis 255. <code>M_PI</code> gibt es mit <code>-std=c11</code> nicht; schreib dir π als Konstante hin.
 </div>
+
+Ob deine iDCT stimmt, prüfst du am Beispiel: Für den ersten Y-Block von `44-baseline.jpg` muss die erste Zeile `40 41 43 46 46 43 41 42` herauskommen, wie oben im Schrittmacher am Ende.
+
+_task(idct)
 
 ### Rekonstruktion der MCU
 
@@ -1493,9 +1508,13 @@ Wenn wir 6 Blöcke decodiert haben (4&times;Y, 1&times;Cb, 1&times;Cr), können 
 <strong>Für deinen Decoder:</strong> Eine MCU ist 8 · größter horizontaler Sampling-Faktor Pixel breit und 8 · größter vertikaler Faktor hoch, bei <code>44-baseline.jpg</code> also 16 × 16. Die Blöcke einer Komponente kommen Zeile für Zeile: erst die beiden oberen Y-Blöcke, dann die unteren. 667 ist kein Vielfaches von 16: Die letzte Reihe von MCUs ragt über das Bild hinaus, und was darüber hinausragt, zeichnest du nicht. Am einfachsten schreibst du jede Komponente erst in eine eigene Ebene, ein Array in der Größe aller MCUs, und rechnest danach Pixel für Pixel die Farben aus. Bei Subsampling liest du Cb und Cr dabei an einer kleineren Stelle, bei <code>44-baseline.jpg</code> an <code>x / 2</code>, <code>y / 2</code>, allgemein an <code>x · h / hmax</code>, <code>y · v / vmax</code>.
 </div>
 
+_task(mcu-lage)
+
 _task(mcus)
 
 ### Farbraumkonvertierung
+
+_uses(ycbcr)
 
 Nachdem wir die Pixelwerte für die Y-, Cb- und Cr-Komponenten erhalten haben, müssen wir diese in den RGB-Farbraum konvertieren, um das Bild korrekt darstellen zu können. Die Konvertierung erfolgt mit den folgenden Formeln:
 

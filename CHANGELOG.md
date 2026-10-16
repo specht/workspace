@@ -18,6 +18,32 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Neue Handbuch-Seite »Farbräume« unter »Farben«: RGB, gespeicherte Werte
+  und Licht (sRGB, Gamma), Graustufen, HSV, YCbCr und CIELab, jeweils mit
+  den Formeln zum Umrechnen und demselben Foto in seine drei Kanäle
+  zerlegt. Dazu eine Tabelle, welcher Farbraum wofür gut ist.
+  »Geheime Botschaften in Bildern« zeigt im Abschnitt zu CIELab die Kanäle
+  von RGB und Lab nebeneinander und verweist auf die Teile zu Gamma und
+  CIELab, »Eine JPEG-Datei decodieren« auf den zu YCbCr.
+
+- »Eine JPEG-Datei decodieren« hat einen Schrittmacher zur iDCT: Er setzt
+  den Beispielblock Koeffizient für Koeffizient aus seinen Basisbildern
+  zusammen, zeigt dabei das Basisbild, den Block bisher und seine
+  Pixelwerte und landet genau bei dem, was der Decoder ausrechnet. Dazu
+  kommen drei Aufgaben, eine für jede Stufe, die bisher keine hatte: der
+  Wert nach der Dequantisierung, ein Pixel nach der iDCT und die Lage der
+  Blöcke in der MCU, jede mit Rückmeldungen für die typischen Fehler.
+
+- Der Abfrage-Schrittmacher kennt auch die Filme der »Filmdatenbank«:
+  `movie`, `genre` und `movie_genre` ganz, von `crew`, `job` und
+  `movie_crew` Regie und Schauspiel. Die »Filmdatenbank« zeigt mit ihm, wie
+  die Tabelle mit jedem `JOIN` wächst und wie `HAVING` ganze Gruppen
+  streicht; auf der Werkzeugseite wählt man die Tabellen aus. Vor `SELECT`
+  zeigt er nur die Spalten, die die Abfrage benutzt. Ein `JOIN … ON a = b`
+  sucht die Partner über einen Schlüssel statt jede Zeile mit jeder zu
+  vergleichen. Zwölf Abfragen der Seite geben dieselben Zeilen wie MySQL,
+  auch »Wer spielt mit wem?« über sechs Tabellen.
+
 - Neues Werkzeug: der Abfrage-Schrittmacher (`/query-stepper`). Er führt
   eine SQL-Abfrage so aus, wie die Datenbank es tut, Teil für Teil: FROM,
   JOIN, WHERE, GROUP BY, HAVING, SELECT, DISTINCT, ORDER BY, LIMIT. Nach
@@ -562,6 +588,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Terminal«, Notiz für Lehrkräfte.
 
 ### Behoben
+
+- Formeln mit großen Klammern, Summenzeichen und einigen Symbolen sahen auf
+  allen Seiten falsch aus, weil die meisten Schriften von KaTeX fehlten;
+  nur `KaTeX_Main` und `KaTeX_Math` lagen in `src/static/include/katex/fonts`.
+  Jetzt sind alle 20 Schriften von KaTeX 0.16.9 da.
 
 - Automatron: In den Beispielen steht die Beschreibung unter einem langen
   Ausdruck statt in einer schmalen Spalte daneben, in der sie Wort für Wort

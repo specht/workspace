@@ -5,6 +5,7 @@ language: Ruby / Python
 languages: [ruby, python]
 duration: 3 Doppelstunden
 requires: [crypto]
+reference: [farbraeume]
 </div>
 
 <div
@@ -422,7 +423,19 @@ _task(klassen)
 
 Ein Würfel im RGB-Raum ist eine schlechte Farbklasse, denn das Auge sieht RGB nicht gleichmäßig. Ein Unterschied von 4 im Blau eines hellen Himmels sieht man kaum, derselbe Unterschied im Grün eines dunklen Schattens schon. Und Unterschiede in der **Helligkeit** sieht das Auge viel genauer als Unterschiede im **Farbton**. Im RGB-Raum lassen sich beide nicht trennen: Jeder Kanal ändert immer beides.
 
-Der Farbraum **CIELab** ist dafür gemacht: Gleiche Abstände in Lab sehen ungefähr gleich verschieden aus. **L** ist die Helligkeit von 0 (schwarz) bis 100 (weiß), **a** geht von Grün nach Rot, **b** von Blau nach Gelb. Teilt man Lab in Quader statt RGB in Würfel, bekommen die Klassen dort viele Farben, wo das Auge wenig unterscheidet, und wenige, wo es genau hinsieht. Und man kann der Helligkeit mehr Stufen geben als a und b, weil das Auge dort empfindlicher ist.
+Der Farbraum **CIELab** ist dafür gemacht: Gleiche Abstände in Lab sehen ungefähr gleich verschieden aus. **L** ist die Helligkeit von 0 (schwarz) bis 100 (weiß), **a** geht von Grün nach Rot, **b** von Blau nach Gelb.
+
+Wie verschieden die beiden Farbräume ein Bild zerlegen, siehst du an den Strandhäusern. Jeder Kanal ist hier ein Graubild, dunkel bei kleinen und hell bei großen Werten. In RGB sieht jeder Kanal aus wie das Foto selbst, denn in jedem steckt die Helligkeit:
+
+<img class='full fit-width' src='kanaele-rgb.webp' alt='Das Foto der Strandhäuser und seine Kanäle Rot, Grün und Blau als Graubilder. Alle drei sehen dem Foto ähnlich; die blaue Tür ist im Rot-Kanal dunkel und im Blau-Kanal hell.'>
+
+In Lab steckt fast das ganze Bild in L. a und b sind gleichmäßig grau, wo keine Farbe ist, auf dem Asphalt und an den hellen Wänden, und heben nur die bunten Türen hervor:
+
+<img class='full fit-width' src='kanaele-lab.webp' alt='Das Foto der Strandhäuser und seine Kanäle L, a und b als Graubilder. L sieht aus wie ein Graubild des Fotos; a und b sind fast überall gleichmäßig grau, in a ist die rote Hütte hell, in b sind die blauen Türen dunkel.'>
+
+Teilt man Lab in Quader statt RGB in Würfel, bekommen die Klassen dort viele Farben, wo das Auge wenig unterscheidet, und wenige, wo es genau hinsieht. Und man kann der Helligkeit mehr Stufen geben als a und b, weil das Auge dort empfindlicher ist.
+
+_uses(gamma, cielab)
 
 Die Umrechnung von RGB nach Lab ist eine Formel. Du kannst sie so übernehmen:
 

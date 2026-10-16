@@ -1,16 +1,21 @@
 #!/usr/bin/env ruby
-# The tables of the query stepper (src/static/include/query_stepper.js) from
-# terra1.sql, the sample database of the SQL introduction: all of land and
-# the places in ort with at least MIN_PEOPLE inhabitants, so the file stays
-# small enough for the browser. Writes src/static/query-stepper/terra1.json.
+# The tables of the query stepper (src/static/include/query_stepper.js),
+# from the SQL files students download, as JSON for the browser:
 #
-#   src/scripts/query-stepper-data.rb PATH/TO/terra1.sql
+#   src/scripts/query-stepper-data.rb terra1 terra1.sql
+#   src/scripts/query-stepper-data.rb movies mysql-data-movies.sql mysql-data-crew.sql
 #
-# terra1.sql comes from https://github.com/specht/workspace-files.
+# terra1 (»Einführung in SQL«): all of land, the places in ort with at least
+# MIN_PEOPLE inhabitants. movies (»Filmdatenbank«): genre, movie and
+# movie_genre whole; of the people only directors and actors with at least
+# MIN_ROLES films, so the file stays small enough for the browser. Writes
+# src/static/query-stepper/<name>.json. The SQL files come from
+# https://github.com/specht/workspace-files.
 require 'json'
 
 MIN_PEOPLE = 1_000_000
-OUT = File.expand_path('../static/query-stepper/terra1.json', __dir__)
+MIN_ROLES = 5
+OUT_DIR = File.expand_path('../static/query-stepper', __dir__)
 
 # The value tuples of every INSERT INTO `table` (…) VALUES (…), (…);
 def inserts(sql)
@@ -63,22 +68,49 @@ end
 # Decimal columns come quoted ('8.51'): numbers again, as MySQL shows them.
 NUMERIC = { 'land' => %w[Einwohner Flaeche KontinentFlaeche KontinentEinwohner], 'ort' => %w[Einwohner Laenge Breite] }.freeze
 
-sql = File.read(ARGV.fetch(0) { abort "usage: #{$0} terra1.sql" })
-tables = inserts(sql)
-tables.each do |name, table|
-    (NUMERIC[name] || []).each do |column|
-        k = table['columns'].index(column)
-        table['rows'].each do |row|
-            value = row[k]
-            value = Float(value) if value.is_a?(String) && value.match?(/\A-?\d+(\.\d+)?\z/)
-            value = value.to_i if value.is_a?(Float) && value == value.floor
-            row[k] = value
+def numbers!(tables)
+    tables.each do |name, table|
+        (NUMERIC[name] || []).each do |column|
+            k = table['columns'].index(column)
+            table['rows'].each do |row|
+                value = row[k]
+                value = Float(value) if value.is_a?(String) && value.match?(/\A-?\d+(\.\d+)?\z/)
+                value = value.to_i if value.is_a?(Float) && value == value.floor
+                row[k] = value
+            end
         end
     end
 end
-people = tables['ort']['columns'].index('Einwohner')
-tables['ort']['rows'].select! { |row| row[people].to_i >= MIN_PEOPLE }
-tables['ort']['note'] = "nur Orte ab #{MIN_PEOPLE.to_s.reverse.scan(/\d{1,3}/).join('.').reverse} Einwohnern"
-File.write(OUT, JSON.generate({ 'source' => 'terra1.sql', 'tables' => tables }) + "\n")
-tables.each { |name, t| puts "#{name}: #{t['rows'].size} rows, #{t['columns'].join(', ')}" }
-puts "#{OUT}: #{File.size(OUT) / 1024} kB"
+
+def dotted(n) = n.to_s.reverse.scan(/\d{1,3}/).join('.').reverse
+
+def terra1(files)
+    tables = inserts(File.read(files.fetch(0)))
+    numbers!(tables)
+    people = tables['ort']['columns'].index('Einwohner')
+    tables['ort']['rows'].select! { |row| row[people].to_i >= MIN_PEOPLE }
+    tables['ort']['note'] = "nur Orte ab #{dotted(MIN_PEOPLE)} Einwohnern"
+    tables
+end
+
+def movies(files)
+    tables = files.map { |f| inserts(File.read(f)) }.reduce(:merge)
+    jobs = tables['job']['rows'].to_h { |id, title| [title, id] }
+    roles = tables['movie_crew']['rows'].select { |r| r[2] == jobs['actor'] }.group_by { |r| r[1] }.transform_values(&:size)
+    tables['movie_crew']['rows'].select! { |r| r[2] == jobs['director'] || (r[2] == jobs['actor'] && roles[r[1]] >= MIN_ROLES) }
+    people = tables['movie_crew']['rows'].map { |r| r[1] }.to_h { |id| [id, true] }
+    tables['crew']['rows'].select! { |r| people[r[0]] }
+    note = "nur Regie und Schauspiel, Schauspielerinnen und Schauspieler ab #{MIN_ROLES} Filmen"
+    tables['movie_crew']['note'] = note
+    tables['crew']['note'] = note
+    # The order of the chapter: movies and genres first
+    %w[movie genre movie_genre crew job movie_crew].to_h { |name| [name, tables.fetch(name)] }
+end
+
+name, *files = ARGV
+abort "usage: #{$0} terra1 terra1.sql | movies mysql-data-movies.sql mysql-data-crew.sql" unless %w[terra1 movies].include?(name) && !files.empty?
+tables = send(name, files)
+out = File.join(OUT_DIR, "#{name}.json")
+File.write(out, JSON.generate({ 'source' => files.map { |f| File.basename(f) }.join(', '), 'tables' => tables }) + "\n")
+tables.each { |table, t| puts "#{table}: #{t['rows'].size} rows, #{t['columns'].join(', ')}" }
+puts "#{out}: #{File.size(out) / 1024} kB"

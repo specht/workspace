@@ -60,11 +60,19 @@ cd src/vscode-extensions/er && node --test test/*.test.cjs core/*.test.cjs
 ```
 
 Der Abfrage-Schrittmacher (`src/static/include/query_stepper.js`, Seite
-`/query-stepper`, eingebettet in »Einführung in SQL«) rechnet im Browser mit
-den Tabellen aus `src/static/query-stepper/terra1.json`.
-`src/scripts/query-stepper-data.rb terra1.sql` baut sie aus der Datei, die
-Lernende herunterladen: `land` ganz, von `ort` die Orte ab einer Million
-Einwohnern.
+`/query-stepper`, eingebettet in »Einführung in SQL« und »Filmdatenbank«)
+rechnet im Browser mit den Tabellen in `src/static/query-stepper/`.
+`src/scripts/query-stepper-data.rb` baut sie aus den Dateien, die Lernende
+herunterladen:
+
+```bash
+src/scripts/query-stepper-data.rb terra1 terra1.sql
+src/scripts/query-stepper-data.rb movies mysql-data-movies.sql mysql-data-crew.sql
+```
+
+`terra1`: `land` ganz, von `ort` die Orte ab einer Million Einwohnern.
+`movies`: Filme, Genres und ihre Zuordnung ganz, von den Personen nur Regie
+und Schauspiel ab fünf Filmen (522 kB, komprimiert gut 170 kB).
 
 Die End-to-End-Tests mit Playwright (Anmeldung, Workspace-Start,
 Toolchains bis zum Android-APK) stehen in [e2e/README.md](../e2e/README.md).
