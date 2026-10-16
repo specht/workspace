@@ -4027,6 +4027,18 @@ class Main < Sinatra::Base
             "<script src='/include/include_fold.js?#{CACHE_BUSTER}'></script>"
     end
 
+    # The picture in the front page's header (index.html): a tidy Workspace
+    # from a recipe on the about page, through the image cache.
+    FRONT_PICTURE = '/src/content/about/workspace.webp'
+
+    def front_picture_html
+        return '' unless File.file?(FRONT_PICTURE)
+
+        "<img class='front-hero-picture' src='/cache/#{Main.convert_image(FRONT_PICTURE)}.webp' " \
+            "alt='Der Workspace: oben im Editor ein kurzes Programm, das nach dem Namen fragt, " \
+            "unten im Terminal sein Lauf: Hallo, Ada!'>"
+    end
+
     # Loads media_variants.js on a page with image or video variants.
     def media_variants_setup(slug)
         return '' unless (@@content[slug] || {})[:html].to_s.include?('data-variant-')
