@@ -1,0 +1,26 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: hugo
+examples:
+  einstellungen:
+    pass:
+      - files: { solar-system/hugo.yaml: stufen/solar-system/hugo.yaml }
+    fail:
+      # So legt hugo new project die Datei an
+      - files: { solar-system/hugo.yaml: { text: "baseURL: https://example.org/\nlocale: en-us\ntitle: My New Hugo Project\n" } }
+        say: "baseURL: /"
+  navigation:
+    pass:
+      - files: { solar-system/layouts/baseof.html: stufen/solar-system/layouts/baseof.html }
+    fail:
+      - files: { solar-system/layouts/baseof.html: stufen/baseof-1.html }
+        say: site.RegularPages
+  tags:
+    pass:
+      - files: { solar-system/layouts/page.html: stufen/solar-system/layouts/page.html }
+    fail:
+      - files: { solar-system/layouts/page.html: stufen/page-1.html }
+        say: GetTerms
+  public:
+    skip: public/index.html entsteht erst, wenn hugo die Seite baut.

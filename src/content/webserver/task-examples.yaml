@@ -1,0 +1,43 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: webserver
+examples:
+  antwort:
+    pass:
+      - files: { webserver/server.rb: stufen/2.rb }
+    fail:
+      - files: { webserver/server.rb: stufen/1.rb }
+    python:
+      pass:
+        - files: { webserver/server.py: stufen/2.py }
+      fail:
+        - files: { webserver/server.py: stufen/1.py }
+  webseite:
+    pass:
+      - files: { webserver/public/index.html: stufen/public/index.html }
+    fail:
+      - files: { webserver/public/style.css: stufen/public/style.css }
+      - files: { webserver/public/index.html: { text: "Hallo\n" } }
+        say: "<html"
+  umfrage:
+    pass:
+      - files: { webserver/server.rb: stufen/6.rb }
+    fail:
+      - files: { webserver/server.rb: stufen/5.rb }
+        say: POST
+    python:
+      pass:
+        - files: { webserver/server.py: stufen/6.py }
+      fail:
+        - files: { webserver/server.py: stufen/5.py }
+          say: POST
+        # f.read() beim Ausliefern einer Datei ist noch kein Lesen des Bodys
+        - files:
+            webserver/server.py:
+              text: |
+                if method == 'POST':
+                    length = int(headers.get('content-length', 0))
+                    body = open('public/poll.html').read()
+                    send(client, '303 See Other')
+          say: reader.read

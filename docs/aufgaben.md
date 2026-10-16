@@ -54,6 +54,7 @@ diese Regeln.
 src/content/showerjs/
 ├── showerjs.md        Aktivität: Text mit Platzhaltern für Aufgaben
 ├── tasks.yaml         Aufgaben mit ihren Prüfungen
+├── task-examples.yaml Beispiele, die jede Prüfung annehmen und ablehnen muss
 ├── lehrkraft.md       Notiz für Lehrkräfte (nur für Lehrkräfte sichtbar)
 ├── lehrkraft/         Lösungsdateien (werden nie ausgeliefert)
 └── *.webp             Bilder, auch aus Screenshot-Rezepten
@@ -1204,3 +1205,57 @@ cd src/ruby && ruby test/task_spec_test.rb && ruby test/task_card_test.rb
 Die Tests lesen alle `tasks.yaml` unter `src/content` und melden jede
 Abweichung mit Aufgabe und Feld. Außerdem prüfen sie, dass jedes `_task()` auf
 einer Seite eine Aufgabe in der `tasks.yaml` daneben hat.
+
+## Beispiele für die Prüfungen
+
+Ob eine Prüfung stimmt, zeigt erst eine Lösung, die sie annimmt, und ein
+unfertiger Stand, den sie ablehnt. Beides steht in `task-examples.yaml` neben
+der `tasks.yaml`:
+
+```yaml
+format: 1
+activity: pixelwand
+examples:
+  lock:
+    pass:
+      - files: { pixelwand/server.rb: stufen/server5.rb }
+    fail:
+      - files: { pixelwand/server.rb: stufen/server4.rb }
+        say: Mutex.new
+    python:
+      pass:
+        - files: { pixelwand/server.py: stufen/server5.py }
+      fail:
+        - files: { pixelwand/server.py: stufen/server4.py }
+  public:
+    skip: public/index.html entsteht erst, wenn hugo die Seite baut.
+```
+
+- `files` legt Dateien in einen leeren Workspace-Ordner: links der Pfad, den
+  die Prüfung liest, rechts eine Datei aus dem Ordner der Aktivität (meist aus
+  `stufen/` oder `loesung/`) oder `{ text: … }` für ein paar Zeilen.
+- `answer` ist eine Antwort, wie Lernende sie eintippen, für `answer` mit
+  `compare: regex`.
+- `say` ist ein Stück der Meldung, die ein abgelehntes Beispiel bekommen muss.
+  So zeigt der Test auch, dass die richtige Meldung kommt.
+- Unter `ruby:` oder `python:` stehen die Beispiele einer Sprachvariante mit
+  eigener Prüfung. Eine Variante, die nur anders formuliert, nutzt die
+  Beispiele der Aufgabe.
+- `skip` sagt, warum eine Prüfung hier nicht getestet werden kann, zum Beispiel
+  weil sie liest, was erst ein Build erzeugt.
+
+`choice` und `number` brauchen keine Beispiele: Die richtige Antwort muss
+passen, jede andere Option und eine Zahl weit außerhalb der Toleranz nicht.
+Die Startpunkte aus `stufen/` sind gute Gegenbeispiele: Die Aufgabe muss sie
+ablehnen, sonst ist sie gelöst, bevor jemand etwas getan hat.
+
+```bash
+cd src/ruby && ruby test/task_examples_test.rb
+```
+
+Der Test führt jedes Beispiel durch dieselbe Prüfung wie der Knopf »Prüfen«;
+`ruby`- und `python`-Prüfungen laufen mit den Interpretern auf dem Rechner.
+Prüfungen, die einen Workspace oder eine Datenbank brauchen (`sql`, `cypher`,
+`git`, `measure`, `scene` …), testet er noch nicht. Aktivitäten, deren
+Prüfungen vollständig Beispiele haben, stehen in `COMPLETE` im Test; eine neue
+Aufgabe dort braucht dann auch Beispiele.

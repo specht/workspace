@@ -1,0 +1,38 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: raylib
+examples:
+  uebersetzt:
+    skip: main.html entsteht erst, wenn emcc übersetzt.
+  figur:
+    pass:
+      - files: { raylib-starter/main.c: stufen/4.c }
+      - files: { raylib-starter/main.c: stufen/8.c }
+    fail:
+      - files: { raylib-starter/main.c: stufen/3.c }
+        say: collides
+  bauen:
+    pass:
+      - files: { raylib-starter/main.c: stufen/5.c }
+    fail:
+      - files: { raylib-starter/main.c: stufen/4.c }
+        say: aim
+  licht:
+    pass:
+      - files: { raylib-starter/main.c: stufen/6.c }
+    fail:
+      - files: { raylib-starter/main.c: stufen/5.c }
+        say: rlNormal3f
+  fackeln:
+    pass:
+      - files: { raylib-starter/light.fs: stufen/7.fs }
+    fail:
+      - files: { raylib-starter/light.fs: stufen/6.fs }
+        say: torches
+  texturen:
+    pass:
+      - files: { raylib-starter/main.c: stufen/8.c }
+    fail:
+      - files: { raylib-starter/main.c: stufen/7.c }
+        say: LoadTexture

@@ -1,0 +1,52 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: bobby_tables
+examples:
+  prepared:
+    pass:
+      - files:
+          bobby_tables/login.rb:
+            text: |
+              require 'mysql2'
+              CLIENT = Mysql2::Client.new(host: ENV['MYSQL_HOST'])
+              login = $stdin.gets.chomp
+              password = $stdin.gets.chomp
+              # rows = CLIENT.query("SELECT login FROM users \
+              #     WHERE login = '#{login}' \
+              #     AND password = '#{password}' LIMIT 1;").to_a
+              query = CLIENT.prepare("SELECT login FROM users WHERE login = ? AND password = ? LIMIT 1;")
+              rows = query.execute(login, password).to_a
+    fail:
+      - files: { bobby_tables/login.rb: login.rb }
+        say: CLIENT.prepare
+      # Nur auskommentiert zählt nicht.
+      - files:
+          bobby_tables/login.rb:
+            text: |
+              # query = CLIENT.prepare("SELECT login FROM users WHERE login = ? AND password = ? LIMIT 1;")
+              # rows = query.execute(login, password).to_a
+              rows = CLIENT.query("SELECT login FROM users WHERE login = '#{login}'").to_a
+    python:
+      pass:
+        - files:
+            bobby_tables/login.py:
+              text: |
+                import mysql.connector
+                connection = mysql.connector.connect(host='db')
+                login = input('Login: ')
+                password = input('Passwort: ')
+                # cursor = connection.cursor()
+                # cursor.execute(f"SELECT login FROM users WHERE login = '{login}' AND password = '{password}' LIMIT 1;")
+                cursor = connection.cursor(prepared=True)
+                cursor.execute("SELECT login FROM users WHERE login = ? AND password = ? LIMIT 1;", (login, password))
+                rows = cursor.fetchall()
+      fail:
+        - files: { bobby_tables/login.py: login.py }
+          say: prepared=True
+        - files:
+            bobby_tables/login.py:
+              text: |
+                # cursor = connection.cursor(prepared=True)
+                cursor = connection.cursor()
+                cursor.execute(f"SELECT login FROM users WHERE login = '{login}'")

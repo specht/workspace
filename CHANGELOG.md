@@ -513,6 +513,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Jede Prüfung einer Aufgabe kann Beispiele haben (`task-examples.yaml` neben
+  der `tasks.yaml`): eine Lösung, die sie annehmen, und einen unfertigen
+  Stand, den sie ablehnen muss. `task_examples_test.rb` führt sie durch
+  dieselbe Prüfung wie der Knopf »Prüfen«, dazu jede Auswahl- und Zahlaufgabe
+  mit ihrer eigenen Lösung. Elf Aktivitäten sind vollständig abgedeckt; für
+  die Endlichen Automaten liegen dafür jetzt Musterlösungen in `loesung/`.
 - `pip install` funktioniert im Workspace wie `gem install`: Pakete landen
   ohne Administratorrechte in `/workspace/.local` und bleiben über einen
   Neustart erhalten; `python3` findet sie ohne virtuelle Umgebung. Bisher

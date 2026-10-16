@@ -1,0 +1,46 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: huffman
+examples:
+  zaehlen:
+    pass:
+      - files: { huffman/huffman.rb: loesung/huffman.rb }
+    fail:
+      - files: { huffman/huffman.rb: { text: "def frequencies(text)\n  {}\nend\n" } }
+    python:
+      pass:
+        - files: { huffman/huffman.py: loesung/huffman.py }
+      fail:
+        - files: { huffman/huffman.py: { text: "def frequencies(data):\n    return {}\n" } }
+  baum:
+    pass:
+      - files: { huffman/huffman.rb: loesung/huffman.rb }
+    fail:
+      # Jedes Zeichen bekommt denselben Code: kein präfixfreier Code
+      - files: { huffman/huffman.rb: { text: "def frequencies(text)\n  text.bytes.tally\nend\n\ndef build_tree(counts)\n  counts.keys\nend\n\ndef code_table(tree)\n  tree.to_h { |b| [b, '0'] }\nend\n" } }
+    python:
+      pass:
+        - files: { huffman/huffman.py: loesung/huffman.py }
+      fail:
+        - files: { huffman/huffman.py: { text: "from collections import Counter\n\ndef frequencies(data):\n    return dict(Counter(data))\n\ndef build_tree(counts):\n    return list(counts)\n\ndef code_table(tree):\n    return {b: '0' for b in tree}\n" } }
+  decodieren:
+    pass:
+      - files: { huffman/huffman.rb: loesung/huffman.rb }
+    fail:
+      - files: { huffman/huffman.rb: { text: "def encode(text, table)\n  ''\nend\n\ndef decode(bits, tree)\n  ''\nend\n" } }
+    python:
+      pass:
+        - files: { huffman/huffman.py: loesung/huffman.py }
+      fail:
+        - files: { huffman/huffman.py: { text: "def encode(data, table):\n    return ''\n\ndef decode(bits, tree):\n    return b''\n" } }
+  kanonisch:
+    pass:
+      - files: { huffman/huffman.rb: loesung/huffman.rb }
+    fail:
+      - files: { huffman/huffman.rb: { text: "def canonical(lengths)\n  lengths.to_h { |b, n| [b, '1' * n] }\nend\n" } }
+    python:
+      pass:
+        - files: { huffman/huffman.py: loesung/huffman.py }
+      fail:
+        - files: { huffman/huffman.py: { text: "def canonical(lengths):\n    return {b: '1' * n for b, n in lengths.items()}\n" } }

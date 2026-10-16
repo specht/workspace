@@ -1,0 +1,53 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+format: 1
+activity: automata
+examples:
+  drehkreuz:
+    pass:
+      - files: { automata/turnstile.py: loesung/turnstile.py }
+    fail:
+      - files: { automata/turnstile.py: stufen/turnstile.py }
+      - files: { automata/turnstile.py: { text: "def run(inputs):\n    return 'zu'\n" } }
+    ruby:
+      pass:
+        - files: { automata/turnstile.rb: loesung/turnstile.rb }
+      fail:
+        - files: { automata/turnstile.rb: stufen/turnstile.rb }
+        - files: { automata/turnstile.rb: { text: "def run(inputs)\n  'zu'\nend\n" } }
+  teilbar-5:
+    pass:
+      - files: { automata/divisible5.py: loesung/divisible5.py }
+    fail:
+      - files: { automata/divisible5.py: stufen/divisible.py }
+      - files: { automata/divisible5.py: { text: "def accepts(word):\n    return word.endswith('0')\n" } }
+    ruby:
+      pass:
+        - files: { automata/divisible5.rb: loesung/divisible5.rb }
+      fail:
+        - files: { automata/divisible5.rb: stufen/divisible.rb }
+        - files: { automata/divisible5.rb: { text: "def accepts(word)\n  word.end_with?('0')\nend\n" } }
+  schloss:
+    pass:
+      - files: { automata/lock.py: loesung/lock.py }
+    fail:
+      - files: { automata/lock.py: stufen/lock.py }
+      - files: { automata/lock.py: { text: "def opens(word):\n    return word == '1213'\n" } }
+    ruby:
+      pass:
+        - files: { automata/lock.rb: loesung/lock.rb }
+      fail:
+        - files: { automata/lock.rb: stufen/lock.rb }
+        - files: { automata/lock.rb: { text: "def opens(word)\n  word == '1213'\nend\n" } }
+  generalschluessel:
+    pass:
+      - files: { automata/lock_nfa.py: loesung/lock_nfa.py }
+    fail:
+      - files: { automata/lock_nfa.py: stufen/lock_nfa.py }
+      - files: { automata/lock_nfa.py: { text: "def opens(word):\n    return word.endswith('1213')\n" } }
+    ruby:
+      pass:
+        - files: { automata/lock_nfa.rb: loesung/lock_nfa.rb }
+      fail:
+        - files: { automata/lock_nfa.rb: stufen/lock_nfa.rb }
+        - files: { automata/lock_nfa.rb: { text: "def opens(word)\n  word.end_with?('1213')\nend\n" } }
