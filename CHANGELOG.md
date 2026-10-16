@@ -18,6 +18,15 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Die Handbuch-Seite »Farbräume« erzählt, wie die Farbräume entstanden
+  sind: drei Farben bei Young, Helmholtz und Maxwell, die Messungen von
+  Wright und Guild und XYZ von 1931, YCbCr aus dem Farbfernsehen, CIELab
+  aus Herings Gegenfarben, Munsells Helligkeitsstufen und MacAdams
+  Messungen, HSV aus den ersten Malprogrammen und sRGB aus dem
+  Röhrenmonitor. Dazu die Normfarbtafel mit dem Dreieck, das ein
+  sRGB-Bildschirm zeigen kann. Berichtigt: XYZ beschreibt nicht, wie stark
+  die Zapfen angeregt werden.
+
 - »Geheime Botschaften in Bildern« zeigt die Farbklassen in 3D, zum
   Drehen mit der Maus: den RGB-Würfel in Würfel geteilt und, im Abschnitt
   zu CIELab, RGB-Würfel und Lab-Körper nebeneinander, wahlweise mit Würfeln

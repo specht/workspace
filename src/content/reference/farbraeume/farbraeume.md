@@ -11,7 +11,7 @@ kind: reference
 # Farbräume
 
 <p class='abstract'>
-Eine Farbe ist für den Computer drei Zahlen, aber welche drei, hängt davon ab, wofür man sie braucht. Zum Anzeigen nimmt man Rot, Grün und Blau, zum Komprimieren Helligkeit und zwei Farbanteile, zum Vergleichen einen Farbraum, in dem gleiche Abstände gleich verschieden aussehen. Hier stehen die wichtigsten, wie man zwischen ihnen umrechnet und wie dasselbe Foto in jedem von ihnen aussieht.
+Eine Farbe ist für den Computer drei Zahlen, aber welche drei, hängt davon ab, wofür man sie braucht. Zum Anzeigen nimmt man Rot, Grün und Blau, zum Komprimieren Helligkeit und zwei Farbanteile, zum Vergleichen einen Farbraum, in dem gleiche Abstände gleich verschieden aussehen. Hier stehen die wichtigsten, wie man zwischen ihnen umrechnet, wie dasselbe Foto in jedem von ihnen aussieht und wie sie entstanden sind.
 </p>
 
 Alle Bilder auf dieser Seite zerlegen dasselbe Foto in die drei Kanäle eines Farbraums. Jeder Kanal ist ein Graubild: dunkel, wo der Wert klein ist, hell, wo er groß ist. Unter jedem steht, was dunkel und was hell bedeutet.
@@ -87,7 +87,7 @@ In Cb und Cr steckt kaum noch etwas vom Bild: Wo eine Fläche fast grau ist, an 
 
 In RGB und auch in YCbCr sind gleiche Abstände nicht gleich verschieden: Zwei Grüntöne, die sich um 10 unterscheiden, sehen fast gleich aus, zwei dunkle Blautöne mit demselben Abstand deutlich verschieden. **CIELab** ist so gebaut, dass der Abstand zweier Farben ungefähr dem entspricht, was ein Mensch als Unterschied sieht. **L** ist die Helligkeit von 0 (schwarz) bis 100 (weiß), **a** geht von Grün (negativ) nach Rot (positiv), **b** von Blau (negativ) nach Gelb (positiv); Grau hat a = b = 0.
 
-Die Umrechnung geht in drei Schritten. Zuerst jeden Kanal in Licht \\(r, g, b\\) umrechnen (»Gespeicherte Werte und Licht«), dann in den Farbraum **XYZ**, der beschreibt, wie stark die drei Arten von Zapfen im Auge angeregt werden, geteilt durch die Werte für Weiß:
+Die Umrechnung geht in drei Schritten. Zuerst jeden Kanal in Licht \\(r, g, b\\) umrechnen (»Gespeicherte Werte und Licht«), dann in den Farbraum **XYZ**, die gemeinsame Sprache aller Farbräume (woher er kommt, steht unter »Wie die Farbräume entstanden sind«). X und Z werden dabei durch ihre Werte für Weiß geteilt, Y ist für Weiß schon 1:
 
 $$X = (0{,}4124 r + 0{,}3576 g + 0{,}1805 b) / 0{,}95047$$
 
@@ -117,3 +117,41 @@ Wie bei YCbCr steckt das Bild fast ganz in L, und a und b sind grau, wo keine Fa
 </tbody>
 </table>
 </div>
+
+## Wie die Farbräume entstanden sind
+
+Dass drei Zahlen für eine Farbe reichen, liegt nicht am Licht, sondern am Auge. Licht kann aus beliebig vielen Wellenlängen gemischt sein, aber das Auge misst davon nur drei Werte: Zwei Lichter, die für diese drei Werte gleich sind, sehen gleich aus, auch wenn sie ganz verschieden gemischt sind. Jeder Farbraum auf dieser Seite antwortet auf die Frage, welche drei Zahlen man aufschreibt, und jeder kommt aus einer anderen Zeit und für einen anderen Zweck.
+
+### Drei Farben reichen: Young, Helmholtz, Maxwell
+
+Um 1802 vermutete der englische Arzt Thomas Young, dass das Auge drei Arten von Empfängern hat, jede für einen anderen Teil des Spektrums empfindlich. Hermann von Helmholtz baute die Idee in den 1850er Jahren aus. James Clerk Maxwell, der später die Gleichungen für Elektrizität und Magnetismus aufschrieb, ließ Versuchspersonen Farben aus drei Lichtern nachmischen und zeigte 1861 das erste Farbfoto: drei Schwarzweißaufnahmen einer karierten Schleife, durch ein rotes, ein grünes und ein blaues Filter aufgenommen und mit denselben Filtern übereinander an die Wand geworfen. Das ist RGB, fast hundert Jahre vor dem ersten Farbfernseher. Dass es im Auge tatsächlich drei Arten von Zapfen gibt, empfindlich für kurze, mittlere und lange Wellenlängen, konnte man erst 1964 direkt messen.
+
+### Farben messen: XYZ von 1931
+
+Um eine Farbe aufschreiben zu können, statt eine Probe herumzuschicken, brauchte man Zahlen, auf die sich alle einigen. Ende der 1920er Jahre ließen William David Wright und John Guild in England zusammen 17 Versuchspersonen jede Farbe des Spektrums aus einem roten, einem grünen und einem blauen Licht nachmischen. Manche Farben ließen sich so nicht treffen: Ein reines Türkis aus dem Spektrum war jeder Mischung zu kräftig. Dann gab man Rot zur *Vorlage* hinzu, bis beide gleich aussahen, und schrieb das als negative Menge Rot auf. Aus diesen Messungen beschloss die Internationale Beleuchtungskommission CIE 1931 den Farbraum **XYZ**: drei Grundwerte, die man so umgerechnet hat, dass jede sichtbare Farbe positive Werte bekommt und Y die Helligkeit ist, gewichtet nach der Empfindlichkeit des Auges für jede Wellenlänge. Diese Grundwerte sind keine Lichter, die es gibt, sondern Rechengrößen. Bis heute rechnet man über XYZ von einem Farbraum in einen anderen; auch die Formel für CIELab oben geht diesen Weg.
+
+Teilt man X und Y durch die Summe X + Y + Z, bleibt nur noch die Farbart ohne die Helligkeit, zwei Zahlen x und y. Auf dieser **Normfarbtafel** liegen alle Farben, die ein Mensch sieht, in einer Art Hufeisen. Auf seinem gebogenen Rand liegen die reinen Farben des Spektrums, an der geraden Kante unten die Purpurtöne, die es im Spektrum nicht gibt. Ein Bildschirm mischt aus drei Leuchtstoffen und kann nur zeigen, was zwischen ihnen liegt:
+
+<img class='drawing' style='width: 30em' src='normfarbtafel.webp' alt='Die Normfarbtafel: eine hufeisenförmige Fläche in allen Farben, mit x nach rechts und y nach oben. Am gebogenen Rand stehen Wellenlängen von 460 nm unten links über 500 und 520 nm oben bis 620 nm rechts. Darin ein Dreieck mit den Ecken R bei 0,64 und 0,33, G bei 0,30 und 0,60 und B bei 0,15 und 0,06, dem Bereich, den ein sRGB-Bildschirm zeigt; in seiner Mitte ein Kreis für Weiß. Das Hufeisen ist viel größer, vor allem zum Grün und Türkis hin.'>
+
+Die Farben außerhalb des Dreiecks sind im Bild nur angedeutet: Dein Bildschirm kann sie nicht zeigen, sonst wären sie kräftiger. Darum hat CIELab Platz für Farben, die es in RGB nicht gibt, und die Farben des RGB-Würfels sind in Lab ein schiefer Körper, kein Quader.
+
+### Fernsehen in Farbe: YCbCr
+
+YCbCr kommt aus dem Fernsehen. Als das Farbfernsehen kam, in den USA 1953 und in Deutschland 1967, standen schon Millionen Schwarzweißgeräte in den Wohnzimmern, und die sollten weiter ein Bild zeigen. Darum sendete man die Helligkeit Y genau wie vorher und schickte zwei Farbdifferenzen mit, Blau minus Helligkeit und Rot minus Helligkeit; ein altes Gerät beachtete sie einfach nicht. Die Gewichte 0,299, 0,587 und 0,114 stammen aus der amerikanischen Norm von 1953 und passen zu den Leuchtstoffen der damaligen Bildröhren. Weil das Auge Farbe weniger fein sieht als Helligkeit, bekamen die Farbdifferenzen von Anfang an weniger Platz im Signal als Y. JPEG speichert sie aus demselben Grund oft mit halber Auflösung. Die digitale Form heißt YCbCr und wurde 1982 als Norm für digitales Video festgelegt (ITU-R BT.601); JPEG nimmt sie mit Werten von 0 bis 255.
+
+### Gegenfarben und gleiche Abstände: CIELab
+
+XYZ sagt, ob zwei Farben gleich aussehen, aber nicht, *wie* verschieden sie aussehen. 1942 maß David MacAdam für Farben überall auf der Normfarbtafel, wie weit man sich von ihnen entfernen kann, bevor man einen Unterschied sieht. Diese Bereiche waren im Grün viel größer als im Blau: Gleiche Abstände auf der Tafel sind sehr verschieden große Unterschiede.
+
+Die Achsen von Lab gehen auf Ewald Hering zurück. Er beobachtete in den 1870er Jahren, dass es kein rötliches Grün und kein gelbliches Blau gibt, wohl aber ein gelbliches Rot und ein bläuliches Grün. Rot und Grün schließen sich also aus, Gelb und Blau ebenso, als wären sie die beiden Enden einer Achse. Lange stritt man, wer recht hatte, Helmholtz mit seinen drei Zapfen oder Hering mit seinen Gegenfarben. In den 1950er und 60er Jahren zeigte sich: beide. Das Auge misst mit drei Zapfen, und schon in der Netzhaut werden ihre Signale zu drei Gegensätzen verrechnet, Hell gegen Dunkel, Rot gegen Grün, Gelb gegen Blau. Nach diesem Vorbild sind L, a und b gebaut.
+
+Die dritte Zutat war eine Helligkeitsskala, wie Menschen sie empfinden. Der Maler Albert Munsell hatte ab 1905 Farbmuster so geordnet, dass benachbarte Muster gleich verschieden aussehen, nach Farbton, Helligkeit und Buntheit, beurteilt von Menschen, nicht von Messgeräten. Die dritte Wurzel in der Formel von L ahmt seine Helligkeitsstufen nach. 1976 beschloss die CIE den Farbraum CIELab. »Gleiche Abstände sehen gleich aus« gilt dabei nur ungefähr: Im Blau und bei sehr kräftigen Farben stimmt es schlechter. Die CIE hat deshalb die Formel für den Abstand zweimal verbessert, 1994 und 2000 (CIEDE2000), Lab selbst aber behalten, weil es so einfach ist.
+
+### Malprogramme: HSV
+
+HSV ist der einzige Farbraum hier, der für Computer erfunden wurde. 1978 suchte Alvy Ray Smith, der an einem der ersten Malprogramme arbeitete und später Pixar mitgründete, einen Weg, Farben so auszuwählen, wie Malerinnen und Maler denken: welcher Farbton, wie kräftig, wie hell. Er sah den RGB-Würfel entlang seiner grauen Diagonale an, von Weiß nach Schwarz. Von dort ist sein Umriss ein Sechseck, um das herum die Farbtöne liegen, und daraus wurde der Farbkreis von H. HSV rechnet nichts über das Auge aus, es ordnet nur den Würfel um. Darum ist ein Gelb mit V = 1 so viel heller als ein Blau mit V = 1.
+
+### sRGB: die Werte in jeder Bilddatei
+
+sRGB ist eine Vereinbarung von HP und Microsoft aus dem Jahr 1996, drei Jahre später eine internationale Norm. Die Idee war, aufzuschreiben, was ein üblicher Röhrenmonitor ohnehin tat. Eine Bildröhre gibt bei doppelter Spannung nicht doppelt so viel Licht, sondern ungefähr mit der Potenz 2,2 bis 2,5 mehr. Das passt zufällig gut zum Auge, das bei dunklen Tönen feinere Unterschiede sieht. Die Kurve aus »Gespeicherte Werte und Licht« steckte also schon in der Hardware, bevor man sie aufschrieb. Die drei Grundfarben von sRGB, die Ecken des Dreiecks in der Normfarbtafel, sind die des HDTV-Standards von 1990.
