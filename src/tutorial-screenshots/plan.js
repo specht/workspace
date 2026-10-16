@@ -104,9 +104,10 @@ export function parseVariants(value) {
 }
 
 // Instructions that only check what is on screen or in the Workspace
-// (expect-no-text, check-task, check-task-fails). They change nothing, so
+// (expect-no-text, terminal-expect-no-text, check-task, check-task-fails).
+// They change nothing, so
 // they are not part of any hash: adding one to a recipe re-renders nothing.
-export const ASSERTION_ACTIONS = new Set(['expect-no-text', 'check-task', 'check-task-fails']);
+export const ASSERTION_ACTIONS = new Set(['expect-no-text', 'terminal-expect-no-text', 'check-task', 'check-task-fails']);
 
 function withoutAssertions(shot) {
     if (!shot.actions?.some(action => ASSERTION_ACTIONS.has(action.type))) return shot;

@@ -45,12 +45,15 @@ duration: 2 Doppelstunden
         stroke: var(--bs-secondary-color);
         stroke-width: 1.5;
     }
-    .hf-forest .node circle, .hf-forest .leaf rect {
+    .hf-forest .node circle, .hf-forest .leaf circle {
         fill: var(--bs-body-bg);
         stroke: var(--bs-body-color);
         stroke-width: 1.5;
     }
-    .hf-forest .pick circle, .hf-forest .pick rect {
+    .hf-forest .leaf circle {
+        fill: color-mix(in srgb, var(--bs-primary) 12%, var(--bs-body-bg));
+    }
+    .hf-forest .pick circle {
         stroke: #bc2326;
         stroke-width: 3;
     }
@@ -121,7 +124,7 @@ Den Code eines Bytes liest du auf dem Weg von oben zu seinem Blatt ab: links ein
 
 Probier es aus, mit dem Text unten oder einem eigenen. Rot umrandet sind die beiden Bäume, die als nächste zusammenkommen.
 
-<div class='hf-stepper' id='hf-stepper'>
+<div class='hf-stepper' id='hf-stepper' data-stepper>
 <input class='form-control' type='text' id='hf-input' value='RHABARBERBARBARA' aria-label='Text für den Huffman-Baum' spellcheck='false'>
 <div class='hf-controls'>
 <button class='btn btn-sm btn-success' data-go='first' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
@@ -406,38 +409,92 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function leaves(t) { return t.left ? leaves(t.left) + leaves(t.right) : 1; }
-    function depth(t) { return t.left ? 1 + Math.max(depth(t.left), depth(t.right)) : 0; }
 
-    const DX = 46, DY = 54, TOP = 22;
-    function draw(t, x0, picks, out) {
-        // In-order positions: leaves left to right, a node above the middle of its children.
-        let next = 0;
-        const place = (n, d) => {
-            if (!n.left) { n.x = x0 + (next++ + 0.5) * DX; n.y = TOP + d * DY; return; }
-            place(n.left, d + 1); place(n.right, d + 1);
-            n.x = (n.left.x + n.right.x) / 2; n.y = TOP + d * DY;
-        };
-        place(t, 0);
-        const walk = (n) => {
+    const DX = 46, DY = 54, TOP = 22, GAP = 12;
+    const key = (n) => n.made;
+    // Where every node of a forest stands: leaves left to right, a node
+    // above the middle of its children, the trees side by side.
+    function layout(forestList) {
+        const pos = new Map();
+        let x0 = 0, height = 0;
+        forestList.forEach((t) => {
+            let next = 0;
+            const place = (n, d) => {
+                let x;
+                if (!n.left) x = x0 + (next++ + 0.5) * DX;
+                else { place(n.left, d + 1); place(n.right, d + 1); x = (pos.get(key(n.left)).x + pos.get(key(n.right)).x) / 2; }
+                pos.set(key(n), { x: x, y: TOP + d * DY, node: n, alpha: 1 });
+                height = Math.max(height, TOP + d * DY + 34);
+            };
+            place(t, 0);
+            x0 += leaves(t) * DX + GAP;
+        });
+        return { pos: pos, width: Math.max(x0 - GAP, 0), height: height };
+    }
+
+    // One picture of the forest: every node at its position, faded by alpha
+    // while it appears or goes away.
+    function paint(frame, picks, width, height) {
+        const out = [];
+        frame.forEach((p) => {
+            const n = p.node;
             if (!n.left) return;
             [[n.left, '0'], [n.right, '1']].forEach(([c, bit]) => {
-                out.push(`<line x1='${n.x}' y1='${n.y}' x2='${c.x}' y2='${c.y}'/>`);
-                out.push(`<text class='bit' x='${(n.x + c.x) / 2 + (bit === '0' ? -8 : 8)}' y='${(n.y + c.y) / 2 - 4}'>${bit}</text>`);
-                walk(c);
+                const q = frame.get(key(c));
+                if (!q) return;
+                out.push(`<g opacity='${Math.min(p.alpha, q.alpha)}'><line x1='${p.x}' y1='${p.y}' x2='${q.x}' y2='${q.y}'/>` +
+                    `<text class='bit' x='${(p.x + q.x) / 2 + (bit === '0' ? -8 : 8)}' y='${(p.y + q.y) / 2 - 4}'>${bit}</text></g>`);
             });
-        };
-        walk(t);
-        const nodes = (n) => {
-            const pick = picks.includes(t) && n === t ? ' pick' : '';
+        });
+        frame.forEach((p) => {
+            const n = p.node;
+            const pick = picks.some((t) => key(t) === key(n)) ? ' pick' : '';
             if (!n.left) {
-                out.push(`<g class='leaf${pick}'><rect x='${n.x - 15}' y='${n.y - 14}' width='30' height='28' rx='5'/><text x='${n.x}' y='${n.y}'>${esc(label(n.byte))}</text><text class='weight' x='${n.x}' y='${n.y + 23}'>${n.weight}</text></g>`);
+                // Round like the inner nodes, so every edge ends in the middle
+                // of a curve, aimed at the centre; tinted to tell them apart.
+                out.push(`<g class='leaf${pick}' opacity='${p.alpha}'><circle cx='${p.x}' cy='${p.y}' r='15'/><text x='${p.x}' y='${p.y}'>${esc(label(n.byte))}</text><text class='weight' x='${p.x}' y='${p.y + 25}'>${n.weight}</text></g>`);
             } else {
-                out.push(`<g class='node${pick}'><circle cx='${n.x}' cy='${n.y}' r='14'/><text x='${n.x}' y='${n.y}'>${n.weight}</text></g>`);
-                nodes(n.left); nodes(n.right);
+                out.push(`<g class='node${pick}' opacity='${p.alpha}'><circle cx='${p.x}' cy='${p.y}' r='14'/><text x='${p.x}' y='${p.y}'>${n.weight}</text></g>`);
             }
+        });
+        return `<svg width='${width}' height='${height}' viewBox='0 0 ${width} ${height}'>${out.join('')}</svg>`;
+    }
+
+    // From one step to the next, the two picked trees glide together and
+    // sink one level, and their new node fades in above them; going back,
+    // it fades out and they rise apart. Without motion (prefers-reduced-
+    // motion), the next picture just replaces the last.
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const DURATION = 550;
+    let shown = null, animation = 0;
+    function show(box, target, picks) {
+        cancelAnimationFrame(animation);
+        const from = shown;
+        shown = target;
+        if (!from || reduceMotion.matches) { box.innerHTML = paint(target.pos, picks, target.width, target.height); return; }
+        const width = Math.max(from.width, target.width), height = Math.max(from.height, target.height);
+        const start = performance.now();
+        const frame = (now) => {
+            const t = Math.min(1, (now - start) / DURATION);
+            const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+            const mix = new Map();
+            target.pos.forEach((p, k) => {
+                const q = from.pos.get(k);
+                if (q) {
+                    mix.set(k, { x: q.x + (p.x - q.x) * e, y: q.y + (p.y - q.y) * e, node: p.node, alpha: 1 });
+                } else {
+                    // A new node, between where its children were
+                    const kids = [p.node.left, p.node.right].map((c) => c && from.pos.get(key(c))).filter(Boolean);
+                    const sx = kids.length ? (kids[0].x + kids[kids.length - 1].x) / 2 : p.x;
+                    const sy = kids.length ? Math.min(...kids.map((c) => c.y)) : p.y;
+                    mix.set(k, { x: sx + (p.x - sx) * e, y: sy + (p.y - sy) * e, node: p.node, alpha: e });
+                }
+            });
+            from.pos.forEach((q, k) => { if (!target.pos.has(k)) mix.set(k, { x: q.x, y: q.y, node: q.node, alpha: 1 - e }); });
+            box.innerHTML = t < 1 ? paint(mix, [], width, height) : paint(target.pos, picks, target.width, target.height);
+            if (t < 1) animation = requestAnimationFrame(frame);
         };
-        nodes(t);
-        return leaves(t) * DX;
+        animation = requestAnimationFrame(frame);
     }
 
     function codes(t, prefix, table) {
@@ -455,7 +512,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const say = root.querySelector('.hf-say');
         const forest = root.querySelector('.hf-forest');
         const table = root.querySelector('.hf-codes');
-        if (!step) { say.textContent = 'Tipp oben einen Text ein.'; forest.innerHTML = ''; table.innerHTML = ''; return; }
+        if (!step) { say.textContent = 'Tipp oben einen Text ein.'; forest.innerHTML = ''; table.innerHTML = ''; shown = null; return; }
         const name = (t) => t.left ? `den Baum mit Gewicht ${t.weight}` : `»${esc(label(t.byte))}« (${t.weight})`;
         if (step.pick.length) {
             say.innerHTML = current === 0
@@ -466,11 +523,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ? 'Nur ein einziges Byte: Der Baum ist ein Blatt, und sein Code ist 0.'
                 : `Fertig: ein einziger Baum. Die Codes stehen auf den Wegen von oben zu den Blättern.`;
         }
-        const out = [];
-        let x = 0;
-        step.forest.forEach((t) => { x += draw(t, x, step.pick, out) + 12; });
-        const height = TOP + Math.max(...step.forest.map(depth)) * DY + 34;
-        forest.innerHTML = `<svg width='${x}' height='${height}' viewBox='0 0 ${x} ${height}'>${out.join('')}</svg>`;
+        show(forest, layout(step.forest), step.pick);
         if (!step.pick.length) {
             const tree = step.forest[0];
             const table_ = codes(tree, '', new Map());
@@ -501,6 +554,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const data = Array.from(new TextEncoder().encode(input.value.slice(0, 200)));
         built = data.length ? build(data) : { steps: [], counts: new Map() };
         current = 0;
+        shown = null;   // a new text: no motion from the old forest
         render();
     }
     input.addEventListener('input', refresh);

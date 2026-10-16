@@ -1,0 +1,9 @@
+Server der Verwaltung des Stadtmuseums Bitstein
+
+Für die Polizei freigegeben, nur zum Lesen. Hier liegt:
+
+  netzplan.txt   welche Rechner es im Museum gibt
+  geraete.txt    wer einen Zugang zum VPN hat, mit welcher Adresse
+  logs/vpn.log   wer sich wann von außen verbunden hat
+
+Ingrid Hollerbach

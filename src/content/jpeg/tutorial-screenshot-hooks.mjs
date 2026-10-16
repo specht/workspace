@@ -18,6 +18,70 @@ export default {
     },
 
     actions: {
+        // hook: expect-value PREFIX EXPECTED TOLERANCE: the number the
+        // program prints after PREFIX must be EXPECTED, give or take
+        // TOLERANCE, as the task that asks for it accepts. PREFIX has no
+        // spaces; write »Blau« for »… Blau 108.9«.
+        async 'expect-value'({ page, args, timeout }) {
+            const [prefix, expected, tolerance = '0'] = args.trim().split(/\s+/);
+            const pattern = new RegExp(`${prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s+(-?\\d+(?:\\.\\d+)?)`);
+            const deadline = Date.now() + timeout;
+            for (;;) {
+                const output = await page.evaluate(() => document.getElementById('log-output')?.textContent || '');
+                const match = output.match(pattern);
+                if (match) {
+                    const value = Number(match[1]);
+                    if (Math.abs(value - Number(expected)) <= Number(tolerance)) return;
+                    throw new Error(`hook: expect-value: ${prefix} ${value}, the task expects ${expected} ± ${tolerance}`);
+                }
+                if (Date.now() > deadline) {
+                    throw new Error(`hook: expect-value: no »${prefix}« printed; the console shows: ${output.slice(-400) || '(nothing)'}`);
+                }
+                await sleep(500);
+            }
+        },
+
+        // hook: pixel-print X Y: writes the reference decoder with the line
+        // the task »pixel« asks for: the colour of one pixel, printed after
+        // decoding.
+        async 'pixel-print'({ args, writeFile }) {
+            const [x, y] = args.trim().split(/\s+/).map(Number);
+            const fs = await import('node:fs/promises');
+            const source = await fs.readFile(new URL('loesung/jpeg.c', import.meta.url), 'utf8');
+            const anchor = '    print_average();\n    return 0;\n}';
+            if (!source.includes(anchor)) throw new Error('hook: pixel-print: end of main not found in loesung/jpeg.c');
+            await writeFile('jpeg.c', source.replace(anchor,
+                `    uint8_t r, g, b;\n    get_pixel_rgb(${x}, ${y}, &r, &g, &b);\n    printf("Rot bei ${x}, ${y}: %d\\n", r);\n` + anchor));
+        },
+
+        // hook: run ARGS: clears the console and starts the program again
+        // with these arguments, as the console's »run« does (the console may
+        // be closed).
+        async run({ page, args }) {
+            await page.evaluate((value) => {
+                // A clean console: what the next checks read is this run's.
+                document.getElementById('clear-log')?.click();
+                document.getElementById('args-input').value = value;
+                document.getElementById('args-run').click();
+            }, args.trim());
+            await sleep(500);
+        },
+
+        // hook: expect-output TEXT: waits until the program has printed TEXT
+        // into its console (#log-output, also while the console is closed),
+        // and otherwise fails with what it did print.
+        async 'expect-output'({ page, args, timeout }) {
+            const text = args.trim();
+            const deadline = Date.now() + timeout;
+            for (;;) {
+                const output = await page.evaluate(() => document.getElementById('log-output')?.textContent || '');
+                if (output.includes(text)) return;
+                if (Date.now() > deadline) {
+                    throw new Error(`hook: expect-output: »${text}« not printed; the console shows: ${output.slice(-400) || '(nothing)'}`);
+                }
+                await sleep(500);
+            }
+        },
         // hook: open FILE: shows FILE (relative to the opened folder) in the
         // preview and waits until the program has drawn. Live Server reloads
         // the page by itself once make has written a file, sometimes only

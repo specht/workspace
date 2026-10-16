@@ -1,6 +1,7 @@
 <div class='meta'>
 image: data-structures-avl.webp
 kind: projekt
+language: Dart / Python / JavaScript / Java
 topic: computing
 reference: [gitlab]
 template: https://github.com/specht/data-structures-sandbox.git

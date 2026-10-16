@@ -119,6 +119,26 @@ class PythonCheckTest < Minitest::Test
         assert_includes read, 'python3: not found'
     end
 
+    def test_a_call_that_must_raise
+        check = YAML.safe_load(<<~YAML)
+            type: python
+            file: automata/lock.py
+            cases:
+              - parse('(1)'): "'(1)'"
+              - call: parse('(1')
+                raises: true
+                say: Eine Klammer, die nie zugeht, ist ein Fehler.
+        YAML
+        status, _message, read = run_check("def parse(text):\n    if text.count('(') != text.count(')'):\n        raise ValueError('Klammer fehlt')\n    return text\n", check)
+        assert_equal :correct, status
+        assert_match(/Klammer fehlt/, read)
+        status, message, = run_check("def parse(text):\n    return text\n", check)
+        assert_equal :wrong, status
+        assert_equal "`parse('(1')` ergibt `'(1'`, richtig wäre ein Fehler. Eine Klammer, die nie zugeht, ist ein Fehler.", message
+        assert_empty PythonCheck.spec_errors(check)
+        assert_includes PythonCheck.spec_errors(check.merge('cases' => [{ 'call' => 'f()', 'raises' => 'ja' }])), 'cases[0]: raises must be true'
+    end
+
     def test_spec
         task = { 'id' => 'schloss', 'title' => 'Schloss', 'prompt' => 'x', 'check' => CHECK }
         assert_empty TaskSpec.validate({ 'activity' => 'automata', 'tasks' => [task] }, activity: 'automata')

@@ -1351,12 +1351,12 @@ Direkt auf die DC-Differenz folgen die AC-Koeffizienten. Schauen wir uns wieder 
   1111111111111110 -> 250 (0xFA)
 -->
 
-<div style='position: relative;'>
+<div style='position: relative;' data-stepper>
 <div style='float: right; margin-left: 1em; margin-top: 0.25em;'>
-<button id='bu-first' class='btn btn-sm btn-success'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
-<button id='bu-prev' class='btn btn-sm btn-success'><i class='bi bi-chevron-left' style='margin-right: 0;'></i></button>
-<button id='bu-next' class='btn btn-sm btn-success'><i class='bi bi-chevron-right' style='margin-right: 0;'></i></button>
-<button id='bu-last' class='btn btn-sm btn-success'><i class='bi bi-chevron-bar-right' style='margin-right: 0;'></i></button>
+<button id='bu-first' data-go='first' class='btn btn-sm btn-success'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
+<button id='bu-prev' data-go='prev' class='btn btn-sm btn-success'><i class='bi bi-chevron-left' style='margin-right: 0;'></i></button>
+<button id='bu-next' data-go='next' class='btn btn-sm btn-success'><i class='bi bi-chevron-right' style='margin-right: 0;'></i></button>
+<button id='bu-last' data-go='last' class='btn btn-sm btn-success'><i class='bi bi-chevron-bar-right' style='margin-right: 0;'></i></button>
 </div>
 <p>
 Hier wird die AC-Tabelle im Slot 0 verwendet, die insgesamt 162 Codes definiert, von denen wir für dieses Beispiel nur einen Auszug benötigen.
@@ -1825,19 +1825,7 @@ document.addEventListener('DOMContentLoaded', function() {
         step = step_max;
         activateStep(step);
     });
-    document.addEventListener("keydown", function(event) {
-        if (event.key === "ArrowLeft") {
-            if (step > step_min) {
-                step--;
-                activateStep(step);
-            }
-        } else if (event.key === "ArrowRight") {
-            if (step < step_max) {
-                step++;
-                activateStep(step);
-            }
-        }
-    });
+    // ← and → press bu-prev and bu-next (stepper_keys.js, data-stepper).
 
     document.querySelector("#dequant_0").innerHTML = stepsToDctTable(steps, 65, false);
 
@@ -1863,3 +1851,24 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 </script>
+
+<!-- tutorial-step
+# Die Aufgaben mit Werten aus dem Decoder: Er muss ausgeben, was die Aufgabe
+# erwartet, in ihrer Toleranz (tasks.yaml). Für »pixel« kommt die Zeile dazu,
+# die die Aufgabe verlangt.
+write-file: 91-baseline.jpg <- file:beispiele/91-baseline.jpg
+hook: pixel-print 800 350
+terminal-open
+terminal-run: clear
+terminal-run: make PROGRAM=jpeg ARGS=44-baseline.jpg
+terminal-wait-for-prompt: 180
+-->
+
+<!-- tutorial-step
+# blau (44-baseline.jpg) und pixel (91-baseline.jpg)
+tab: preview
+hook: open jpeg.html
+hook: expect-value Blau 108.9 1
+hook: run 91-baseline.jpg
+hook: expect-value 350: 80 2
+-->

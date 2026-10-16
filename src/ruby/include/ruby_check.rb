@@ -20,6 +20,8 @@ require_relative 'call_check'
 #       - call: compress('')
 #         expect: '[]'
 #         say: Ein leerer Text ergibt keinen Code.
+#       - call: decompress([300])
+#         raises: true                                # must raise a StandardError
 #
 # Calls and expected values are Ruby expressions; true, false, ~ and
 # numbers in YAML become true, false, nil and the number. Results are
@@ -70,6 +72,21 @@ module RubyCheck
             end
             cases.each do |c|
                 entry = { 'call' => c['call'], 'expect' => c['expect'] }
+                if c['raises']
+                    begin
+                        $stdout = StringIO.new
+                        got = TOPLEVEL_BINDING.eval(c['call'])
+                        $stdout = real_stdout
+                        entry['got'] = short.call(got)
+                        entry['ok'] = false
+                    rescue StandardError => error
+                        $stdout = real_stdout
+                        entry['ok'] = true
+                        entry['error'] = text.call(error)
+                    end
+                    result['cases'] << entry
+                    next
+                end
                 begin
                     expected = TOPLEVEL_BINDING.eval(c['expect'])
                     $stdout = StringIO.new
@@ -109,8 +126,10 @@ module RubyCheck
 
     # The command that prints the result, run in /workspace as the guest.
     def self.command(file, cases)
-        payload = cases.map { |c| { 'call' => c['call'], 'expect' => c['expect'] } }
-        Shellwords.join(['ruby', '--disable=gems', '-W0', '-e', HARNESS, file, JSON.generate(payload)])
+        payload = cases.map { |c| { 'call' => c['call'], 'expect' => c['expect'], 'raises' => c['raises'] } }
+        # With RubyGems: a program may use what the person installed with
+        # gem install (ChunkyPNG for Steganographie), from GEM_HOME.
+        Shellwords.join(['ruby', '-W0', '-e', HARNESS, file, JSON.generate(payload)])
     end
 
     def self.parse(output)

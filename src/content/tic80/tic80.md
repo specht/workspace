@@ -212,6 +212,8 @@ hook: tic load stars.lua
 hook: tic run
 hook: hold ArrowRight 0.6
 sleep: 0.5
+check-task: gespeichert
+check-task-fails: ein-stern
 -->
 
 <img class='full' src='step1.webp' alt='Die Figur steht unten auf dem dunklen Bildschirm, sonst ist noch nichts zu sehen.'>
@@ -233,6 +235,9 @@ hook: tic load stars.lua
 hook: tic run
 hook: hold ArrowRight 0.4
 sleep: 1
+check-task: ein-stern
+check-task-fails: viele-sterne
+check-task-fails: ton
 -->
 
 <img class='full' src='step2.webp' alt='Ein gelber Stern fällt, unten steht die Figur, oben links »Score: 0«.'>
@@ -281,6 +286,9 @@ hook: tic load stars.lua
 hook: tic run
 hook: hold ArrowLeft 0.6
 sleep: 0.4
+check-task: viele-sterne
+check-task: ton
+check-task-fails: himmel
 -->
 
 <img class='full' src='stars-run.webp' alt='Drei gelbe Sterne fallen, unten die Figur, oben »Score« und »Lives«.'>
@@ -372,6 +380,7 @@ hook: tic load stars.lua
 hook: tic run
 hook: hold ArrowLeft 0.6
 sleep: 0.6
+check-task: himmel
 -->
 
 <img class='full' src='sky.webp' alt='Das fertige Spiel: funkelnde Sterne mit einem Schweif in Orange, Rot und Lila fallen über einen Nachthimmel mit kleinen blauen Punkten, unten steht die Figur auf einer grünen Wiese.'>

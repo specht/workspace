@@ -131,6 +131,16 @@ Platzhalter ersetzt, bevor Redcarpet den Text liest.
 | `${contact_email}` | Die Kontaktadresse der Installation (`CONTACT_EMAIL` in `credentials.rb`), etwa für »schreib eine E-Mail an«; nie eine Adresse fest in den Text schreiben | M7 |
 | `_tool(tcp-console)` | Ein Kasten mit Symbol, Name und Zweck eines Werkzeugs der Website (`tcp-console`, `automatron`, Liste in `tools.rb`), der es in einem neuen Tab öffnet; auf einer Zeile für sich. Die Werkzeuge stehen nicht im Menü, sondern dort im Text, wo man sie braucht, und brauchen eine Anmeldung | M7 |
 
+### Teile für eine Funktion der Installation
+
+Was nur geht, wenn eine Installation eine Funktion eingeschaltet hat, steht
+zwischen `<!-- feature: case_server -->` und `<!-- /feature -->`, jede Marke
+auf einer Zeile für sich. Ist die Funktion aus, fällt alles dazwischen weg,
+bevor die Aufgabenkarten gesucht werden: Seine Aufgaben stehen dann weder auf
+der Seite noch in der Klassenübersicht. Bisher gibt es nur `case_server`, den
+Fallserver für »Ein Krimi im Terminal« ([entwicklung.md](entwicklung.md#der-fallserver)).
+Die Marken dürfen auch Zeilen einer HTML-Tabelle umschließen.
+
 ### Teile einer Handbuch-Seite
 
 Eine Handbuch-Seite gliedert sich in Teile. Ein Teil beginnt mit einer
@@ -615,6 +625,8 @@ check:
     - call: run(['münze']) == 'offen'      # die lange Form, mit eigenem Satz
       expect: false
       say: Nach einer Münze darf das Drehkreuz noch nicht offen sein.
+    - call: run(['tritt'])                 # muss mit einem Fehler abbrechen
+      raises: true
 ```
 
 Aufrufe und Ergebnisse sind Python-Ausdrücke; `true`, `false`, `~` und Zahlen
@@ -623,15 +635,21 @@ braucht darum zwei Paar Anführungszeichen: `"'offen'"`. Prüft eine Aufgabe
 Verhalten statt Namen (»wie der neue Zustand heißt, ist egal«), vergleicht der
 Aufruf selbst: `run(['münze']) == 'offen'` mit `false`.
 
+Mit `raises: true` statt `expect` muss der Aufruf mit einem Fehler abbrechen
+(in Python eine `Exception`, in Ruby ein `StandardError`), etwa ein Rechner bei
+einer Klammer, die nie zugeht; welcher Fehler, ist egal. Bricht er nicht ab,
+heißt es »… ergibt `5`, richtig wäre ein Fehler.«
+
 Die Rückmeldung nennt den ersten Aufruf, der nicht passt: »`opens('121213')`
 ergibt `False`, richtig wäre `True`.«, dazu `say`, wenn es eines gibt. Bricht
 ein Aufruf ab, steht der Fehler mit der Zeile in der Datei da, ebenso ein
 Syntaxfehler oder ein Fehler beim Laden. Unter »Was der Workspace gelesen
 hat« stehen alle Aufrufe mit Haken oder Kreuz und ihrem Ergebnis. Die Datei
-wird aus ihrem Ordner geladen, `import` anderer Dateien daneben klappt.
+wird aus ihrem Ordner geladen, `import` anderer Dateien daneben klappt, und
+was jemand mit `pip install` oder `gem install` installiert hat, ist da.
 
 `ruby` funktioniert genauso, mit einer `.rb`-Datei und Ausdrücken in Ruby
-(`RubyCheck::HARNESS`, gestartet mit `ruby --disable=gems`). Die Datei wird
+(`RubyCheck::HARNESS`). Die Datei wird
 auf oberster Ebene geladen; ein Block `if __FILE__ == $0` läuft dabei nicht,
 dort kann also ein Programm zum Ausprobieren stehen. Verglichen wird mit
 `==`; `true`, `false` und `~` aus YAML werden zu `true`, `false` und `nil`.
@@ -1241,8 +1259,12 @@ examples:
   `stufen/` oder `loesung/`) oder `{ text: … }` für ein paar Zeilen;
   `executable: true` dazu (`{ from: …, executable: true }`) macht sie
   ausführbar.
+- `archive` entpackt vorher ein `.tar.gz` aus dem Ordner der Aktivität in den
+  Workspace-Ordner, für Prüfungen, die viele Dateien lesen (die Akten in
+  `terminal-mystery`).
 - `answer` ist eine Antwort, wie Lernende sie eintippen, für `answer` mit
-  `compare: regex`.
+  `compare: regex` und für `command`: dort der Befehl, den der Test mit `sh`
+  im Workspace-Ordner ausführt, wie der Gast in `/workspace`.
 - `say` ist ein Stück der Meldung, die ein abgelehntes Beispiel bekommen muss.
   So zeigt der Test auch, dass die richtige Meldung kommt.
 - Unter `ruby:` oder `python:` stehen die Beispiele einer Sprachvariante mit
@@ -1261,11 +1283,12 @@ cd src/ruby && ruby test/task_examples_test.rb
 ```
 
 Der Test führt jedes Beispiel durch dieselbe Prüfung wie der Knopf »Prüfen«;
-`ruby`- und `python`-Prüfungen laufen mit den Interpretern auf dem Rechner.
+`ruby`- und `python`-Prüfungen laufen mit den Interpretern auf dem Rechner,
+`command` mit seinem `sh`.
 Prüfungen, die einen Workspace oder eine Datenbank brauchen (`sql`, `cypher`,
 `git`, `measure`, `scene` …), testet er noch nicht; ob die Schritte einer Seite
 zu einer gelösten Aufgabe führen, prüfen `check-task` und `tutorial-step` in
 den Screenshot-Rezepten ([aktivitaet-schreiben.md](aktivitaet-schreiben.md)).
-Jede Prüfung vom Typ `files`, `html`, `css`, `references`, `ruby`, `python`
-und jede `answer` mit `compare: regex` braucht Beispiele, sonst schlägt der
-Test fehl.
+Jede Prüfung vom Typ `files`, `html`, `css`, `references`, `ruby`, `python`,
+`command` und jede `answer` mit `compare: regex` braucht Beispiele, sonst
+schlägt der Test fehl.

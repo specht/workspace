@@ -8,25 +8,25 @@
     },
     "game-over.webp": {
       "environment_fingerprint": "661544e2356aa48f29de523d0013663499ee7ff4889d5a4746b108c957391b39",
-      "output_sha256": "a6c149b9d0b890f2e583a699c054e4c9ddc06eb5240ba4df3c3d33624b43a7ea",
+      "output_sha256": "182d17bca7b82a56801f31944b55d782a8aca33bc0c32878f5c8c5cd644ffd9a",
       "state_hash": "294b53dff587de15d6c1dd5ee9b622d8c995f1684fd2eea6e0181da867cf768b",
       "workspace_look": "4.138.0-ls366"
     },
     "in-workspace.webp": {
       "environment_fingerprint": "661544e2356aa48f29de523d0013663499ee7ff4889d5a4746b108c957391b39",
-      "output_sha256": "d1e72aa963a9c82b4a7f9ceea69c76df7406a368c83022bc6b3cf90298a6a5d5",
+      "output_sha256": "2410f0cb35e426743469845903df554f225f950f4ca960d753f44b589e45b811",
       "state_hash": "d916ee82b786cb91a5d27965e9198b4d25d3363381ffd850394018e9b07f2dfa",
       "workspace_look": "4.138.0-ls366"
     },
     "new-lua-run.webp": {
       "environment_fingerprint": "661544e2356aa48f29de523d0013663499ee7ff4889d5a4746b108c957391b39",
-      "output_sha256": "ac28ef4e9235fb7389dda3d5aa25ddfc93a8125cd2e09bf56702144c1c97997c",
+      "output_sha256": "216a15bfa4b7c12788afbe24c0f862e7324890ad7f07764210f73caea78d3900",
       "state_hash": "08a645f656ab35b44b545b50a3d89463831167784183f006c766d32dbdd9069e",
       "workspace_look": "4.138.0-ls366"
     },
     "new-lua.webp": {
       "environment_fingerprint": "661544e2356aa48f29de523d0013663499ee7ff4889d5a4746b108c957391b39",
-      "output_sha256": "61560ec20910a9cca7f902a0e98f03f55a8b5b4685c4a45a44945443aa246aa5",
+      "output_sha256": "e721e54b0eed0dc344363ddeb7f786fda0a74acffb16176c1a522a266dc7d0bb",
       "state_hash": "549c4d865eecc4b5eb5405b57a4d872926219bdb4d8af6707e1277149413a314",
       "workspace_look": "4.138.0-ls366"
     },
@@ -38,25 +38,25 @@
     },
     "sfx-editor.webp": {
       "environment_fingerprint": "661544e2356aa48f29de523d0013663499ee7ff4889d5a4746b108c957391b39",
-      "output_sha256": "f7f3b3d6e6388a7a92c43616cb33fa974481dea26808a8dbefa216a0541a1222",
+      "output_sha256": "ae11c4e063888422b1a5f384b771d5cd08d458347adae05d017d741b3bab03a0",
       "state_hash": "5780959aab16a18ca2d1c1b3dae3f158552f149c0d3c4b3efaa219b6ede35d98",
       "workspace_look": "4.138.0-ls366"
     },
     "sky.webp": {
       "environment_fingerprint": "661544e2356aa48f29de523d0013663499ee7ff4889d5a4746b108c957391b39",
-      "output_sha256": "269c19497f77873f2af3a16d6080bf37e6d67a3f1278e9907c9ee6a7bd80dadb",
+      "output_sha256": "a7b6155ee9dddaa26fa7faa17b5a6ce687e1e5270e5ba13f42390dd39109356a",
       "state_hash": "642e22547b284ff9e518e33c886336b5142d3380ddaaadec25f120ff364e66ca",
       "workspace_look": "4.138.0-ls366"
     },
     "sprite-editor.webp": {
       "environment_fingerprint": "661544e2356aa48f29de523d0013663499ee7ff4889d5a4746b108c957391b39",
-      "output_sha256": "f79eaf63ffe3160ce177e5459e2a0c35008e268d16e194fbba587de9fa5a5f88",
+      "output_sha256": "44108bc8beb281c79fb6631d55bd3b68ec2051128d9b2eafa43acd4b0ba79ddf",
       "state_hash": "f461839f940ca89b7e340955640e51aa4b17cc14c4289129289104ef983a867d",
       "workspace_look": "4.138.0-ls366"
     },
     "stars-run.webp": {
       "environment_fingerprint": "661544e2356aa48f29de523d0013663499ee7ff4889d5a4746b108c957391b39",
-      "output_sha256": "c027445e8bd060de6a2cbf0d60b9ec6c365f0ee2d89538cf52c8ad7d807e329f",
+      "output_sha256": "c0adfa1c4695867229fbbda169f5b6c50025b3d5a98b5bd14836e5354d0f1bae",
       "state_hash": "545b5936889886734aee4bf4e38b42dd37ee2004f8bc3b9605fd330ce682c41f",
       "workspace_look": "4.138.0-ls366"
     },
@@ -68,7 +68,7 @@
     },
     "step2.webp": {
       "environment_fingerprint": "661544e2356aa48f29de523d0013663499ee7ff4889d5a4746b108c957391b39",
-      "output_sha256": "234ba24642f202093d7cd4c12640bb9d5b33a9b3284d81b6fe4ac9b69e9e6536",
+      "output_sha256": "cf5c107a0cfd9f288f4c947d26b8573f2dc2c98bb2e4a4dec1eb0fec86e0951e",
       "state_hash": "59ef9879710166f6cb2e0fbd00e7aaebb1cc4ae5de3e3c2f52a39fc0ff626f4d",
       "workspace_look": "4.138.0-ls366"
     }

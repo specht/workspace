@@ -11,7 +11,7 @@ LZW zum Selberbauen, in Ruby oder Python: Lernende komprimieren einen Text von H
 
 **Was schiefgeht.**
 
-- **`compress('')` ergibt `[nil]`.** Am Ende wird der Code des leeren Stücks ausgegeben. Die Rückmeldung sagt genau das.
+- **`compress('')` ergibt `[nil]`.** Am Ende wird der Code des leeren Präfixes ausgegeben. Die Rückmeldung sagt genau das.
 - **Der Sonderfall fehlt.** `table[258]` ist dann `nil`, und `decompress` bricht bei `ABABABA` mit `NoMethodError` ab (»undefined method '[]' for nil«). Die Rückmeldung nennt die Zeile.
 - **Ein Vergleich mit `p`.** `decompress` gibt einen String mit den Bytes zurück; Ruby zeigt ihn mit `p` als `"ABABABA"` an, Umlaute aber als `"Gr\xC3\xBC\xC3\x9Fe"`. Das ist richtig: Erst `force_encoding('UTF-8')` macht wieder Text daraus.
 

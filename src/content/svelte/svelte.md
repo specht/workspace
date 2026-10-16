@@ -179,6 +179,7 @@ open-file: vite.config.js
 hide-left-sidebar
 sleep: 2
 crop-bottom: 45%
+check-task: projekt
 -->
 
 <img class='full' src='vite-config.webp' alt='Die Datei vite.config.js mit dem neuen Eintrag server mit host und allowedHosts vor plugins.'>
@@ -280,6 +281,8 @@ write-file: src/routes/+page.svelte <- file:page-start.svelte
 tab: preview
 wait-for-text: Rubik's Cube Timer
 sleep: 1
+check-task: grundgeruest
+check-task-fails: timer
 -->
 
 <img class='full border' src='h1-centered.webp' alt='Die Überschrift »Rubik’s Cube Timer« steht in der Mitte der Seite.'>
@@ -531,6 +534,8 @@ write-file: src/routes/+page.svelte <- file:+page.svelte
 tab: preview
 wait-for-text: Halte die Leertaste
 sleep: 1
+check-task: timer
+check-task-fails: reset
 -->
 
 <img class='full border' src='finished.webp' alt='Der einfache Rubik’s Cube Timer steht bei 00:00.00 und wartet auf das Gedrückthalten der Leertaste.'>
@@ -675,6 +680,8 @@ sleep: 2
 click: selector:h1
 hook: solve 2.5
 sleep: 1
+check-task: reset
+check-task-fails: build
 -->
 
 <img class='full border' src='finished-pretty-with-icon.webp' alt='Der gestaltete Timer zeigt eine angehaltene Zeit und darunter einen gelben Button »Reset« mit Icon.'>
@@ -734,9 +741,12 @@ terminal-wait-for-prompt
 press: Control+l
 terminal-run: npm run build
 terminal-wait-for-prompt: 120
+# Die Eingabeaufforderung kann kommen, bevor der Server-Teil gebaut ist
+wait-for-text: Wrote site to
 crop-terminal-lines: auto
 # Die Zeile mit der Eingabeaufforderung steht nur halb im Bild
 crop-terminal-skip-bottom: 1
+check-task: build
 -->
 
 <img class='full' src='build.webp' alt='Das Ende der Ausgabe von npm run build: »Using @sveltejs/adapter-static«, »Wrote site to "build"« und »done«.'>

@@ -95,6 +95,8 @@ etwa ein Gerüst, das die Lernenden ausbauen, steht mit
 Rezepte können auch prüfen, ob die Schritte der Seite aufgehen:
 `check-task: lock` führt die Prüfung einer Aufgabe aus wie der Knopf »Prüfen«,
 `check-task-fails: lock` verlangt, dass sie an dieser Stelle noch scheitert,
+`check-task: zeugin <- head -n 23 bitstein/strassen/moewenweg.txt | tail -n 1`
+trägt vorher eine Antwort oder einen Befehl in die Karte ein,
 `expect-no-text: Traceback` schlägt an, wenn etwas nicht auf dem Bild stehen
 darf. Schritte ohne Bild stehen in `<!-- tutorial-step … -->`.
 `src/scripts/recreate-screenshots.rb SEITE` geht dann die ganze Seite durch
@@ -126,6 +128,22 @@ Adressen (`respond`, `style.css`, `/time`), wie in jedem echten Projekt.
 Kommentare und was ein Programm ausgibt, dürfen deutsch sein. Im Text
 bleiben Fachwörter, die auch deutsche Entwicklerinnen englisch sagen,
 englisch: Handshake, Lock, String, Header.
+
+### Widgets zum Durchschalten
+
+Ein Widget, das Schritt für Schritt durch etwas geht (der Huffman-Baum, die
+Tabellen von LZW, der GIF- und der JPEG-Decoder), trägt `data-stepper`, und
+seine Knöpfe sagen mit `data-go` (`first`, `prev`, `next`, `last`), was sie
+tun. Dann schalten <kbd>←</kbd> und <kbd>→</kbd> es durch, ohne eigenen Code
+(`src/static/include/stepper_keys.js`): Bei mehreren Widgets auf einer Seite
+das, das am meisten vom Fenster einnimmt; in einem Textfeld bewegen die
+Pfeiltasten weiter den Cursor.
+
+`data-stepper` setzt das Widget auch vom Text ab: ein heller Streifen mit
+einer Linie links und darüber »Zum Ausprobieren · ← → schalten weiter«
+(`default.css`). So sieht man beim Lesen, wo es anfängt und aufhört. Das
+Element mit `data-stepper` umfasst darum das ganze Widget, nicht nur seine
+Knöpfe.
 
 ### In Ruby und in Python
 

@@ -18,6 +18,51 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- »Ein Krimi im Terminal« hat ein letztes Kapitel, »Beweise vom Server«, wo
+  der Fallserver eingeschaltet ist: Lernende melden sich mit `ssh` auf dem
+  Server des Museums an, springen mit `ssh -J` weiter zur Alarmanlage, die
+  nur von dort erreichbar ist, finden im VPN-Protokoll und in der
+  `.bash_history` der Wartung die letzten Beweise und kopieren sie mit `scp`
+  in ihren Workspace. Vier Aufgaben, zwei Screenshots. Jede Person hat einen
+  eigenen Zugang; ohne Fallserver fehlt das Kapitel samt Aufgaben.
+- Seiten können Teile haben, die es nur gibt, wenn die Installation eine
+  Funktion eingeschaltet hat (`<!-- feature: case_server -->`).
+
+- Neue Aktivität »Ein Rechner für Ausdrücke« in »Wie Computer rechnen«, in
+  Ruby und Python, nach den Endlichen Automaten: Lernende zerlegen Text in
+  Tokens (die Zahl als Automat in Automatron), bauen mit rekursivem Abstieg
+  einen Baum nach einer Grammatik, rechnen ihn aus, melden Fehler, bauen
+  `^` von rechts nach links und Variablen ein und haben am Ende einen Rechner
+  zum Tippen im Terminal. Ein Baumzeichner auf der Seite zeigt den Baum
+  jedes Ausdrucks und rechnet ihn mit ← → Knoten für Knoten aus. Zehn
+  Aufgaben, davon zwei Vermutungen.
+- Ruby- und Python-Prüfungen können verlangen, dass ein Aufruf mit einem
+  Fehler abbricht (`raises: true`), etwa ein Rechner bei einer Klammer, die
+  nie zugeht.
+
+- Neue Aktivität »Ein Krimi im Terminal« in »Terminal & Git«: Aus dem
+  Stadtmuseum Bitstein ist die Goldene Diskette verschwunden, und die Akten
+  sind zu groß zum Durchlesen. Lernende lösen den Fall mit `grep` (mit `^`,
+  `-i`, `-c`, `-l`), `head | tail`, einer Kette aus `grep`, `sort | uniq -d`
+  und zum Schluss mit `git log` und `git show` in einem Repository, in dem
+  ein Commit mit harmloser Nachricht zwei Zeilen löscht. Sieben Screenshots,
+  elf Aufgaben, davon vier Befehle, deren Ausgabe der Workspace prüft, eine
+  Lehrkraftnotiz mit der Lösung und zum Schluss ein eigener Fall zum
+  Abgeben. Die Idee stammt aus »The Command Line Murders« von Noah Veltman.
+
+- Neue Aktivität »Geheime Botschaften in Bildern« in »Bilder und
+  Kompression«, in Ruby (ChunkyPNG) und Python (Pillow): Lernende lesen ein
+  PNG als Liste von Zahlen, sehen sich Bitebenen an, verstecken Text mit
+  einem Längenkopf in den untersten Bits und finden die Botschaft in einem
+  vorbereiteten Bild. Danach rechnen sie aus, wie viel hineinpasst, sehen
+  die Artefakte bei mehr Bits pro Kanal, entdecken Botschaften mit dem
+  Chi-Quadrat-Test von Westfeld und Pfitzmann und erfahren, warum
+  komprimierte Botschaften schwerer zu entdecken sind als Klartext. Zum
+  Schluss bauen sie Farbklassen und eine Zahl mit wechselnder Basis, erst
+  mit Würfeln im RGB-Raum, dann mit Klassen in CIELab. Zwölf Aufgaben, eine
+  Lehrkraftnotiz, Screenshots aus dem Workspace; die Fotos sind von Ian
+  Kobylanski.
+
 - »Daten aus dem Netz« gibt es jetzt auch in Python, nur mit der
   Standardbibliothek (`urllib.request`, `json`): die drei Stufen von
   `wetter.py` mit Fehlerbehandlung und Cache, die Erklärungen dazu, zwei
@@ -504,6 +549,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- Automatron: In den Beispielen steht die Beschreibung unter einem langen
+  Ausdruck statt in einer schmalen Spalte daneben, in der sie Wort für Wort
+  umbrach.
 - »Statische Webseiten«, Aufgabe »Ein eigenes Bild«: Ein Bild aus dem Netz
   zählt nicht mehr als eigenes. Die Prüfung verlangt jetzt mindestens ein
   Bild mit einem Pfad im Workspace (`img: { local: 1 }`, neu für alle
@@ -530,6 +578,50 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Huffman: Die Blätter im Baum sind jetzt rund wie die inneren Knoten, leicht
+  getönt, damit man sie unterscheidet. So endet jede Kante sichtbar in der
+  Mitte eines Kreises statt an der Ecke eines Kästchens; das Bild auf der
+  Karte ist mit dem neuen Baum erzeugt.
+
+- `check-task: ID <- ANTWORT` in Screenshot-Rezepten trägt eine Antwort in
+  die Karte ein, bevor geprüft wird: einen Befehl, eine Zahl, eine Auswahl.
+  So prüfen Rezepte auch Befehls- und Antwortaufgaben. Beispiele in
+  `task-examples.yaml` gibt es jetzt auch für Befehlsaufgaben (`command`,
+  ausgeführt mit dem `sh` des Rechners); `archive:` entpackt dafür ein
+  Archiv der Aktivität in den Ordner des Beispiels.
+
+- Ruby- und Python-Prüfungen von Aufgaben laden Gems und pip-Pakete, die
+  Lernende in ihrem Workspace installiert haben (`gem install`,
+  `pip install`). Bisher lief Ruby ohne Gems, Python ohne die Pakete im
+  Benutzerverzeichnis.
+
+- GIF: Der Schrittmacher der Bilddaten zeigt statt der Bytes in Hex einen
+  Strom aus Bits, wie die Seite ihn erklärt (das erste Byte rechts, gelesen
+  von rechts nach links), mit Bytegrenzen und dem Hexwert über jedem Byte.
+  Gelesene Bits sind blass, jeder zweite Code getönt, der aktuelle Code gelb
+  mit seinem Wert darunter, und das Fenster gleitet beim Weiterschalten mit.
+  Neue Pixel tauchen im Bild auf, der neue Eintrag der Tabelle leuchtet kurz.
+- Huffman: Beim Weiterschalten gleiten die beiden leichtesten Bäume
+  zusammen, rutschen eine Ebene tiefer, und ihr neuer Knoten erscheint
+  darüber; zurück geht es genauso. Wer im System »Bewegung reduzieren«
+  eingestellt hat, sieht beide Widgets ohne Animation.
+- Alle Widgets zum Durchschalten lassen sich mit den Pfeiltasten bedienen
+  wie bisher nur der JPEG-Decoder: der Huffman-Baum, die beiden Schrittmacher
+  von LZW und der von GIF. Bei zwei Widgets auf einer Seite schaltet die
+  Taste das, das gerade im Fenster steht; im Textfeld eines Widgets bewegt sie
+  weiter den Cursor.
+- Widgets zum Durchschalten heben sich vom Text ab: ein heller Streifen mit
+  einer Linie links und darüber »Zum Ausprobieren · ← → schalten weiter«. So
+  sieht man, wo ein Widget anfängt und wo es aufhört.
+- LZW nennt das, was der Kompressor gerade aufbaut, jetzt **Präfix** statt
+  »Stück«, auf der Seite, in den Aufgaben und in der Tabelle des
+  Schrittmachers.
+- »Von Hand« bei LZW und bei Huffman ist jetzt eine Vermutung: erst auf
+  Papier, dann im Schrittmacher oben nachsehen, der die Antwort ja zeigt. Die
+  Prüfung bleibt dieselbe.
+- Die drei Sandboxes nennen ihre Sprachen neben der Art: »Projekt (Dart /
+  Python / JavaScript / Java)« für Datenstrukturen und Sortieren, »Projekt
+  (Assembler / C)« für die CPU Sandbox.
 - Das Bild der Endlichen Automaten auf der Startseite zeigt statt eines
   Automaten mit 16 Zuständen den kleinsten DEA, der prüft, ob eine
   Dezimalzahl durch 3 teilbar ist: drei Zustände für die Quersumme modulo 3,
@@ -1058,6 +1150,21 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   `POST` zeigte, steht jetzt im Webserver.
 
 ### Für Betreibende
+
+- Neu und abgeschaltet: der Fallserver für »Ein Krimi im Terminal«, zwei
+  kleine SSH-Server (`case_museum`, `case_alarm`). Einschalten mit
+  `CASE_SERVER = true` in `credentials.rb`, dann
+  `./config.rb build case_museum case_alarm peer_firewall` und
+  `./config.rb up -d`; Workspaces bekommen ihren Zugang beim nächsten Start.
+  Die Server lassen nur lesen, begrenzen jedes Konto und erreichen keinen
+  Workspace; die `peer_firewall` lässt zu ihnen nur Port 22 durch (eigenes
+  Label, keine Infrastruktur). Neue Pflichtwerte gibt es nicht: Die
+  Passwörter kommen aus `LOGIN_CODE_SALT`. Einzelheiten in
+  docs/entwicklung.md, »Der Fallserver«.
+
+- Die schnellen Tests der Aufgabenbeispiele (`task_examples_test.rb`)
+  brauchen für »Geheime Botschaften in Bildern« lokal `gem install
+  chunky_png` und `pip install pillow`.
 
 - Der Spiegel von Open-Meteo (`/open-meteo/…`) ist ohne Anmeldung erreichbar,
   weil Wetterseiten auf den Subdomains der Lernenden und Programme im

@@ -1,6 +1,7 @@
 <div class='meta'>
 image: cpu-sandbox.webp
 kind: projekt
+language: Assembler / C
 topic: computing
 reference: [gitlab, minicpu, minicpu-io, minicpu-c]
 template: https://github.com/specht/cpu-sandbox.git

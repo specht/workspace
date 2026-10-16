@@ -19,6 +19,7 @@ require './include/anaglyph_viewer.rb'
 require './include/atomic_file.rb'
 require './include/authentication.rb'
 require './include/database_provisioning.rb'
+require './include/case_server.rb'
 require './include/trusted_template.rb'
 require './include/tutorial_screenshots.rb'
 require './include/teacher_roles.rb'
@@ -1229,6 +1230,12 @@ class Main < Sinatra::Base
         ContentParts.page_variables(meta).merge('contact_email' => email.empty? ? nil : email, 'web_root' => WEB_ROOT)
     end
 
+    # The features of this installation that pages may show parts for
+    # (ContentParts.filter_features).
+    def self.content_features
+        CaseServer.enabled? ? ['case_server'] : []
+    end
+
     def self.convert_image(image_path)
         image_sha1 = Digest::SHA1.hexdigest(File.read(image_path))[0, 16]
         target_path = "/webcache/#{image_sha1}.webp"
@@ -1727,6 +1734,7 @@ class Main < Sinatra::Base
                     :references => page_meta['reference'], :reference_root => REFERENCE_ROOT,
                     :warn => content_warning)
                 markdown = ContentParts.fill_variables(markdown, Main.content_variables(page_meta))
+                markdown = ContentParts.filter_features(markdown, Main.content_features, :warn => content_warning)
                 markdown = ContentParts.mark_parts(markdown)
                 # _tool(name): a box that opens a tool of the site in a new tab (Tools).
                 markdown = Tools.expand(markdown, :warn => content_warning)
@@ -3659,6 +3667,10 @@ class Main < Sinatra::Base
                     :fs_tag => container_name,
                     :workspace_login => workspace_login,
                     :database_environment => database_environment,
+                    # The account on the case server (»Ein Krimi im Terminal«);
+                    # not in an exam, which has no network anyway.
+                    :extra_environment => CaseServer.enabled? && test_tag.nil? ?
+                        CaseServer.workspace_environment(CaseServer.secret(LOGIN_CODE_SALT), email) : {},
                     :host_data_path => PATH_TO_HOST_DATA,
                     :test_mode => !test_tag.nil?,
                     :timeout => shell_timeout(:docker_run),

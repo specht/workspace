@@ -11,3 +11,5 @@ examples:
       - files: { 2048: { text: "\x7FELF\x02\x01\x01\0\0\0\0\0\0\0\0\0\x02\0\x3E\0" } }
       # Der Quelltext, nicht das Programm
       - files: { 2048: { text: "#include <stdio.h>\nint main(void) { return 0; }\n", executable: true } }
+  katzenfakt:
+    skip: Der Befehl holt einen Fakt aus dem Netz, bei jedem Aufruf einen anderen.

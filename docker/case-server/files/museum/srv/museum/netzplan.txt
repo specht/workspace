@@ -1,0 +1,9 @@
+Netz des Stadtmuseums Bitstein
+
+museum.bitstein        dieser Server: Verwaltung, VPN, Protokolle in logs/
+alarmanlage.bitstein   Steuerung der Alarmanlage
+
+Die Alarmanlage hängt nur im Netz des Museums. Von außen kommt niemand an
+sie heran, nur von hier aus:
+
+    ssh alarmanlage.bitstein

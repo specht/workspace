@@ -113,13 +113,14 @@
   icon: /images/computer.png
   description: |
     Ein Blick unter die Haube: eine kleine CPU programmieren, Sortierverfahren
-    und Datenstrukturen selbst bauen, endliche Automaten und ein neuronales
-    Netz, das Ziffern erkennt.
+    und Datenstrukturen selbst bauen, endliche Automaten, ein Rechner, der
+    Ausdrücke versteht, und ein neuronales Netz, das Ziffern erkennt.
   entries:
     - sandbox-cpu
     - sandbox-sortieren
     - sandbox-datenstrukturen
     - automata
+    - calculator
     - digits-experiment
 
 - key: compression
@@ -129,13 +130,15 @@
   description: |
     Daten kleiner machen, ohne etwas zu verlieren: Lauflängen, Huffman-Codes
     und LZW, jedes Verfahren selbst geschrieben. Danach Decoder in C für GIF
-    und JPEG, die echte Bilddateien Byte für Byte lesen und zeigen.
+    und JPEG, die echte Bilddateien Byte für Byte lesen und zeigen, und
+    Botschaften, die in den Pixeln eines Fotos verschwinden.
   entries:
     - rle
     - huffman
     - lzw
     - gif
     - jpeg
+    - steganography
 
 - key: terminal
   label: Terminal & Git
@@ -143,10 +146,12 @@
   description: |
     Arbeite mit Dateien und Programmen im Terminal. Mit Git kannst du Änderungen
     an deinen Projekten nachvollziehen, frühere Stände wiederherstellen und
-    gemeinsam mit anderen daran arbeiten.
+    gemeinsam mit anderen daran arbeiten. Und mit beidem einen Diebstahl
+    aufklären.
   entries:
     - working-with-files
     - git
+    - terminal-mystery
 
 # Parked for now, so that the sections above fill rows of three: not in the
 # catalog, but the pages stay reachable by direct links (static-website links

@@ -96,30 +96,30 @@ duration: 2 Doppelstunden
 # Komprimieren mit LZW
 
 <p class='abstract'>
-Rhabarberbarbara, Barbarabar, Barbarbarbier: Wo sich etwas wiederholt, lässt es sich kürzer sagen. LZW merkt sich beim Lesen jedes Stück, das schon einmal vorkam, und schreibt beim nächsten Mal nur noch eine Nummer. Das Wörterbuch dafür wird nie mitgeschickt: Wer entpackt, baut es beim Lesen selbst noch einmal. Du schreibst beides selbst, in Ruby oder Python, den Kompressor und den Entpacker, und probierst sie an Texten, Fotos und der Spezifikation von GIF aus.
+Rhabarberbarbara, Barbarabar, Barbarbarbier: Wo sich etwas wiederholt, lässt es sich kürzer sagen. LZW merkt sich beim Lesen jede Folge von Bytes, die schon einmal vorkam, und schreibt beim nächsten Mal nur noch eine Nummer. Das Wörterbuch dafür wird nie mitgeschickt: Wer entpackt, baut es beim Lesen selbst noch einmal. Du schreibst beides selbst, in Ruby oder Python, den Kompressor und den Entpacker, und probierst sie an Texten, Fotos und der Spezifikation von GIF aus.
 </p>
 
 ## Wiederholungen
 
 Ein Text wiederholt sich ständig: Buchstabenfolgen wie »ch«, »sch«, »ein« und »der« kommen auf jeder Seite dutzendfach vor, ganze Wörter auch. Ein Programm, das komprimiert, sucht solche Wiederholungen und ersetzt sie durch etwas Kürzeres. Beim Entpacken muss genau das Original zurückkommen, Byte für Byte; das heißt **verlustfrei**.
 
-Das Verfahren auf dieser Seite haben Abraham Lempel und Jacob Ziv 1978 erfunden und Terry Welch 1984 so vereinfacht, wie es seitdem benutzt wird, daher der Name **LZW**. Es steckt in GIF-Bildern, in TIFF, in alten PDF-Dateien und im Unix-Programm `compress`. Die Idee ist ein **Wörterbuch**, in dem jedes Stück Text eine Nummer hat, den **Code**:
+Das Verfahren auf dieser Seite haben Abraham Lempel und Jacob Ziv 1978 erfunden und Terry Welch 1984 so vereinfacht, wie es seitdem benutzt wird, daher der Name **LZW**. Es steckt in GIF-Bildern, in TIFF, in alten PDF-Dateien und im Unix-Programm `compress`. Die Idee ist ein **Wörterbuch**, in dem jede Folge von Bytes, die schon vorkam, eine Nummer hat, den **Code**:
 
 - Am Anfang stehen darin die 256 möglichen Bytes, jedes einzeln. Das Byte 65 (»A«) hat den Code 65.
 - Jedes Mal, wenn das Programm einen Code ausgibt, kommt ein neuer Eintrag dazu, mit dem nächsten freien Code: 256, 257, 258, …
-- Ein Code steht also für ein immer längeres Stück, und wo sich etwas wiederholt, ersetzt ein einziger Code mehrere Bytes.
+- Ein Code steht also für eine immer längere Folge, und wo sich etwas wiederholt, ersetzt ein einziger Code mehrere Bytes.
 
 ## Komprimieren
 
-Der Kompressor liest den Text Byte für Byte und merkt sich das **Stück**, das er gerade aufbaut. Für jedes Byte gilt:
+Der Kompressor liest den Text Byte für Byte und merkt sich das **Präfix**, das er gerade aufbaut: den Anfang des restlichen Texts, der schon im Wörterbuch steht. Für jedes Byte gilt:
 
-1. Steht das Stück mit dem neuen Byte dahinter schon im Wörterbuch, wird das Stück um dieses Byte länger.
-2. Sonst gibt er den Code des Stücks aus, trägt das Stück mit dem neuen Byte als neuen Eintrag ein und beginnt ein neues Stück, das nur aus dem neuen Byte besteht.
-3. Ist der Text zu Ende, gibt er den Code des letzten Stücks aus.
+1. Steht das Präfix mit dem neuen Byte dahinter schon im Wörterbuch, wird das Präfix um dieses Byte länger.
+2. Sonst gibt er den Code des Präfixes aus, trägt das Präfix mit dem neuen Byte als neuen Eintrag ein und beginnt ein neues Präfix, das nur aus dem neuen Byte besteht.
+3. Ist der Text zu Ende, gibt er den Code des letzten Präfixes aus.
 
-Probier es aus. Jeder Klick liest ein Byte; das gelbe ist das Stück, das rot umrandete das nächste Byte. Du kannst auch einen eigenen Text eintippen.
+Probier es aus. Jeder Klick liest ein Byte; das gelbe ist das Präfix, das rot umrandete das nächste Byte. Du kannst auch einen eigenen Text eintippen.
 
-<div class='lzw-stepper' id='lzw-encode'>
+<div class='lzw-stepper' id='lzw-encode' data-stepper>
 <div class='lzw-input'>
 <input class='form-control' type='text' id='lzw-encode-input' value='RHABARBERBARBARABARBARBARENBARTBARBIER' aria-label='Text zum Komprimieren' spellcheck='false'>
 </div>
@@ -216,9 +216,9 @@ check-task-fails: entpacker python
 Schreib `compress` nach den drei Regeln oben. Was du aus Ruby dafür brauchst:
 
 - `data.each_byte { |byte| … }` geht die Bytes eines Strings durch und liefert Zahlen: für `'AB'` erst 65, dann 66.
-- Ein Stück ist am einfachsten ein Array von Zahlen, etwa `[65, 66]` für »AB«. `current + [byte]` ist ein neues Array mit einer Zahl mehr.
-- Das Wörterbuch ist ein Hash mit solchen Arrays als Schlüsseln und Codes als Werten. Am Anfang enthält es für jede Zahl `i` von 0 bis 255 den Eintrag `[i]` mit dem Code `i`. Der nächste freie Code ist dann immer `table.size`, und `table.key?(piece)` sagt, ob es ein Stück `piece` schon gibt.
-- Das Stück am Anfang ist leer, `[]`. Achte am Ende darauf, dass ein leerer Text keinen Code ergibt.
+- Ein Präfix ist am einfachsten ein Array von Zahlen, etwa `[65, 66]` für »AB«. `current + [byte]` ist ein neues Array mit einer Zahl mehr.
+- Das Wörterbuch ist ein Hash mit solchen Arrays als Schlüsseln und Codes als Werten. Am Anfang enthält es für jede Zahl `i` von 0 bis 255 den Eintrag `[i]` mit dem Code `i`. Der nächste freie Code ist dann immer `table.size`, und `table.key?(prefix)` sagt, ob es ein Präfix `prefix` schon gibt.
+- Das Präfix am Anfang ist leer, `[]`. Achte am Ende darauf, dass ein leerer Text keinen Code ergibt.
 <!-- /language -->
 <!-- language: python -->
 Schreib `compress` nach den drei Regeln oben. Was du aus Python dafür brauchst:
@@ -226,7 +226,7 @@ Schreib `compress` nach den drei Regeln oben. Was du aus Python dafür brauchst:
 - Eine `for`-Schleife über Bytes liefert Zahlen: `for byte in b'AB'` gibt erst 65, dann 66.
 - Aus einer Zahl wird mit `bytes([byte])` wieder ein Byte, und `+` hängt Bytes aneinander: `b'AB' + bytes([67])` ist `b'ABC'`.
 - Das Wörterbuch ist ein `dict` mit Bytes als Schlüsseln und Codes als Werten. Am Anfang enthält es für jede Zahl `i` von 0 bis 255 den Eintrag `bytes([i])` mit dem Code `i`. Der nächste freie Code ist dann immer `len(table)`.
-- Das Stück am Anfang ist leer, `b''`. Achte am Ende darauf, dass ein leerer Text keinen Code ergibt.
+- Das Präfix am Anfang ist leer, `b''`. Achte am Ende darauf, dass ein leerer Text keinen Code ergibt.
 <!-- /language -->
 
 _task(kompressor)
@@ -237,17 +237,17 @@ Der Entpacker bekommt nur die Codes. Die Codes unter 256 versteht er sofort, sie
 
 1. Der erste Code ist immer ein einzelnes Byte. Schreib es hin; es ist der **vorige Eintrag** für den nächsten Schritt.
 2. Für jeden weiteren Code: Schlag den Eintrag nach und schreib ihn hin.
-3. Trag dann den vorigen Eintrag mit dem **ersten Byte** des jetzigen dahinter als neuen Eintrag ein. Genau diesen Eintrag hat der Kompressor angelegt, als er den vorigen Code ausgegeben hat, denn das nächste Byte war das erste Byte des jetzigen Stücks.
+3. Trag dann den vorigen Eintrag mit dem **ersten Byte** des jetzigen dahinter als neuen Eintrag ein. Genau diesen Eintrag hat der Kompressor angelegt, als er den vorigen Code ausgegeben hat, denn das nächste Byte war das erste Byte des jetzigen Eintrags.
 
 Das Wörterbuch des Entpackers ist also immer einen Eintrag hinter dem des Kompressors. Meistens macht das nichts, aber nicht immer:
 
 _task(sonderfall)
 
-Der Kompressor kann einen Eintrag benutzen, den er gerade erst angelegt hat. Das passiert, wenn sich ein Stück sofort wiederholt und dabei mit seinem eigenen ersten Byte weitergeht, wie bei `ABABABA`. Der Entpacker kennt diesen Eintrag noch nicht, aber er kann ihn ausrechnen: Es ist der vorige Eintrag mit dessen eigenem ersten Byte dahinter. Das ist die einzige Ausnahme von Regel 2.
+Der Kompressor kann einen Eintrag benutzen, den er gerade erst angelegt hat. Das passiert, wenn sich ein Präfix sofort wiederholt und dabei mit seinem eigenen ersten Byte weitergeht, wie bei `ABABABA`. Der Entpacker kennt diesen Eintrag noch nicht, aber er kann ihn ausrechnen: Es ist der vorige Eintrag mit dessen eigenem ersten Byte dahinter. Das ist die einzige Ausnahme von Regel 2.
 
 Hier entpackt der Schrittmacher die Codes des Texts, der oben im Feld steht; die Ausnahme ist rot markiert. Tipp oben `ABABABA` oder `AAAAAAAA` ein und sieh hier zu.
 
-<div class='lzw-stepper' id='lzw-decode'>
+<div class='lzw-stepper' id='lzw-decode' data-stepper>
 <div class='lzw-controls'>
 <button class='btn btn-sm btn-success' data-go='first' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
 <button class='btn btn-sm btn-success' data-go='prev' aria-label='Einen Schritt zurück'><i class='bi bi-chevron-left' style='margin-right: 0;'></i></button>
@@ -260,10 +260,10 @@ Hier entpackt der Schrittmacher die Codes des Texts, der oben im Feld steht; die
 </div>
 
 <!-- language: ruby -->
-Schreib jetzt `decompress`. Diesmal ist das Wörterbuch andersherum: ein Hash mit den Codes als Schlüsseln und den Stücken, Arrays von Zahlen, als Werten. Sammle alle Zahlen in einem Array; `entry[0]` ist das erste Byte eines Eintrags. Am Schluss macht `pack('C*')` aus dem Array von Zahlen wieder einen String: `[65, 66].pack('C*')` ist `'AB'`.
+Schreib jetzt `decompress`. Diesmal ist das Wörterbuch andersherum: ein Hash mit den Codes als Schlüsseln und den Einträgen, Arrays von Zahlen, als Werten. Sammle alle Zahlen in einem Array; `entry[0]` ist das erste Byte eines Eintrags. Am Schluss macht `pack('C*')` aus dem Array von Zahlen wieder einen String: `[65, 66].pack('C*')` ist `'AB'`.
 <!-- /language -->
 <!-- language: python -->
-Schreib jetzt `decompress`. Diesmal ist das Wörterbuch andersherum: ein `dict` mit den Codes als Schlüsseln und den Bytes als Werten. `entry[:1]` ist das erste Byte eines Eintrags, als Bytes (`entry[0]` wäre eine Zahl). Am Schluss setzt `b''.join(parts)` eine Liste von Bytes zu einem einzigen Stück zusammen.
+Schreib jetzt `decompress`. Diesmal ist das Wörterbuch andersherum: ein `dict` mit den Codes als Schlüsseln und den Bytes als Werten. `entry[:1]` ist das erste Byte eines Eintrags, als Bytes (`entry[0]` wäre eine Zahl). Am Schluss setzt `b''.join(parts)` eine Liste von Bytes wieder zu einer einzigen Folge zusammen.
 <!-- /language -->
 
 _task(entpacker)
@@ -453,7 +453,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return `<tr class='${cls}'><td>${show(s.piece)}</td><td>${show([s.byte])}</td><td>${s.known ? both + ' ist bekannt' : both + ' ist neu'}</td><td>${s.known ? '' : '<strong>' + s.code + '</strong>'}</td><td>${s.known ? '' : s.index + ' = ' + show(s.entry)}</td></tr>`;
         });
         encodeRoot.querySelector('.lzw-steps').innerHTML = rows.length ?
-            `<table class='table table-sm'><thead><tr><th>Stück</th><th>Byte</th><th>Im Wörterbuch?</th><th>Ausgabe</th><th>Neuer Eintrag</th></tr></thead><tbody>${rows.join('')}</tbody></table>` : '';
+            `<table class='table table-sm'><thead><tr><th>Präfix</th><th>Byte</th><th>Im Wörterbuch?</th><th>Ausgabe</th><th>Neuer Eintrag</th></tr></thead><tbody>${rows.join('')}</tbody></table>` : '';
         enc.scroll();
         return encoded.steps.length;
     });

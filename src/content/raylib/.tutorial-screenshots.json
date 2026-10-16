@@ -2,16 +2,16 @@
   "screenshots": {
     "bauen.webp": {
       "environment_fingerprint": "6c49882592da33d24e3106ea6c4340766d3e85f2bc3aff8941dee48221bd7f58",
-      "output_sha256": "f63687d2d24cfbd91d2f92c283782f5ed1ba2860d22c9b4dd65e3599b60ee074",
+      "output_sha256": "b8e7f3511a8d6d7aa70d3e5cc11684d63fafb0bcbf7618d131a27d00b20a2dcc",
       "state_hash": "cf015c6ed5dba4fef26fc39dac2b7768fa46e8cef8449bee260b46d11d6f8448",
       "workspace_look": "4.138.0-ls366"
     },
     "fackeln.webp": {
       "environment_fingerprint": "6c49882592da33d24e3106ea6c4340766d3e85f2bc3aff8941dee48221bd7f58",
-      "output_sha256": "ebb9988ee956bd421e1ff772f0d4258980c5847ff140965440334ae77be114b5",
+      "output_sha256": "8e9d25385f0797a86ef5717d64b66486d1a2256a0a094e53bad19e12b0300ebb",
       "state_hash": "1e850c334933400fe66d10aad50792da89772273d4e0182176a6a79316f94070",
       "variants": {
-        "fackeln-dark.webp": "d771c1923e8055804f68c94974453454062d6953695728840b5261d4d25d7152"
+        "fackeln-dark.webp": "1c35aead0efc3e1bb6079be402f57f6c542c7d5cfea30337686e08164080454b"
       },
       "workspace_look": "4.138.0-ls366"
     },
@@ -23,7 +23,7 @@
     },
     "insel.webp": {
       "environment_fingerprint": "6c49882592da33d24e3106ea6c4340766d3e85f2bc3aff8941dee48221bd7f58",
-      "output_sha256": "9bf34d7063e1ca4684619fc3bf4cb76bd433af4eda06b77e051cbd0278c40459",
+      "output_sha256": "08c7aedd6bf635d57f69a28703f76838c0627e52dcb1b7ecb70523b3d39e4f6b",
       "state_hash": "ed66f28aca59613b0fe09d26417d5d1a50cbd482c50f96c1c4aae9f9b80b49e0",
       "workspace_look": "4.138.0-ls366"
     },
@@ -65,10 +65,10 @@
     },
     "tag.webp": {
       "environment_fingerprint": "6c49882592da33d24e3106ea6c4340766d3e85f2bc3aff8941dee48221bd7f58",
-      "output_sha256": "7ed13315d834c2af6dcbec3172a52e1769f2640144e7c23cef5de67c38bfafa3",
+      "output_sha256": "28dc6f9f6db8a7e8b40c71d4ed7581782d811a6977da86017bcc806b65f4b03c",
       "state_hash": "20c339323b519e5ec05134571a1deee01dad37606bf8a19d20f63efbce991daf",
       "variants": {
-        "tag-dark.webp": "9020ed36eeed3678a76db234ac25b0b7cb0d9ea57e95451a6f6bd07261196a51"
+        "tag-dark.webp": "c147a44d5a0cbbd70bfd47a5d6c3eb153d0e9e7a6c3f0e34da5319881b9dae1a"
       },
       "workspace_look": "4.138.0-ls366"
     }

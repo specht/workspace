@@ -19,8 +19,9 @@ Repositorys, sofern nicht anders angegeben. Die Einrichtung selbst steht im
 ./config.rb restart ruby          # Ruby-Dienst neu starten
 ```
 
-Dienste: `nginx`, `ruby`, `mysql`, `phpmyadmin`, `peer_firewall`, `neo4japp`
-und in der Entwicklung `tutorial_screenshots`.
+Dienste: `nginx`, `ruby`, `mysql`, `phpmyadmin`, `peer_firewall`, `neo4japp`,
+in der Entwicklung `tutorial_screenshots` und mit `CASE_SERVER = true`
+`case_museum` und `case_alarm` (siehe »Der Fallserver«).
 
 ## Was muss ich nach einer Änderung neu bauen?
 
@@ -45,6 +46,10 @@ for f in test/*_test.rb; do ruby "$f" | tail -1; done   # alle
 Ruby-Container (`./config.rb exec ruby ruby test/reference_index_test.rb`).
 `task_spec_test.rb` prüft alle `tasks.yaml` im Inhaltsordner, ein Test in
 `content_parts_test.rb` alle Kataloge und `_include(…, done: …)`.
+`task_examples_test.rb` führt die `ruby`- und `python`-Prüfungen mit den
+Interpretern auf dem Rechner aus; für »Geheime Botschaften in Bildern« braucht
+es dort die Bibliotheken, die auch die Lernenden installieren:
+`gem install chunky_png` und `pip install pillow`.
 
 JavaScript-Tests laufen mit Node, ohne npm-Pakete:
 
@@ -153,6 +158,54 @@ neo4j_bolt …` auf; welche Optionen `neo4j_bolt` kennt, zeigt
 
 Die MySQL-Datenbanken der Lernenden verwaltet der Ruby-Dienst selbst; phpMyAdmin
 läuft als eigener Dienst.
+
+## Der Fallserver
+
+Für das letzte Kapitel von »Ein Krimi im Terminal« gibt es zwei kleine
+SSH-Server: `museum.bitstein` und `alarmanlage.bitstein`. Lernende melden sich
+mit `ssh` an, springen mit `ssh -J` über das Museum zur Alarmanlage und
+kopieren mit `scp` Beweise in ihren Workspace. Ohne den Server zeigt die Seite
+das Kapitel nicht, und seine Aufgaben stehen auch nicht in der
+Klassenübersicht (`<!-- feature: case_server -->`, docs/aufgaben.md).
+
+Einschalten in `credentials.rb`:
+
+```ruby
+CASE_SERVER = true
+```
+
+```bash
+./config.rb build case_museum case_alarm peer_firewall
+./config.rb up -d
+```
+
+Workspaces bekommen ihren Zugang beim nächsten Start.
+
+- **Zugänge:** Jeder Server hat 1000 Konten `e000` bis `e999`. Die Website
+  wählt für jede Person eins aus ihrer Adresse und gibt dem Workspace
+  `CASE_USER` und `CASE_PASSWORD` mit. Die Passwörter kommen aus
+  `LOGIN_CODE_SALT` (`src/ruby/include/case_server.rb`), der Server rechnet
+  sie beim Start mit `openssl` nach (`docker/case-server/entrypoint.sh`).
+  Teilen sich zwei Personen ein Konto, schadet das nicht: Schreiben kann dort
+  niemand etwas.
+- **Nur lesen:** Alles gehört `root`. Beschreibbar ist nur `/tmp`, 64 MB, und
+  dort sieht niemand, was andere ablegen. Jedes Konto hat höchstens 40
+  Prozesse, 4 Anmeldungen, Dateien bis 1 MB und 5 Minuten Rechenzeit pro
+  Prozess; der ganze Container 512 MB und eine CPU.
+- **Netz:** `museum.bitstein` hängt im Netz der Workspaces, mit eigenem Label
+  für die `peer_firewall`: Workspaces erreichen dort nur Port 22, und vom
+  Museum aus erreicht man keinen anderen Workspace, so wie von Workspace zu
+  Workspace. Es ist ausdrücklich keine Infrastruktur, denn die darf alle
+  Workspaces erreichen. `alarmanlage.bitstein` hängt nur in einem eigenen
+  Netz ohne Verbindung nach außen. Der einzige Weg dorthin führt über das
+  Museum, das nur diese eine Weiterleitung erlaubt (`PermitOpen`).
+- **Schlüssel:** Die Schlüssel der Server liegen in `data/case-server/`, damit
+  ihr Fingerabdruck nach einem neuen Build gleich bleibt.
+- **Inhalt:** `src/content/terminal-mystery/beispiele/make_case.rb` schreibt
+  die Dateien beider Server nach `docker/case-server/files/`; danach die
+  Images neu bauen.
+- **Prüfung:** Im Prüfungsmodus hat ein Workspace kein Netz und bekommt keinen
+  Zugang.
 
 ## Daten für Tutorials
 
