@@ -194,6 +194,12 @@ Untersuche auch die Tabelle <code>ort</code> &ndash; welche Spalten gibt es und 
 
 _task(ort-land)
 
+Kurz aufgeschrieben sieht die ganze Datenbank so aus, eine Zeile pro Tabelle mit ihren Spalten in Klammern:
+
+_schema(terra1)
+
+Unterstrichen ist der **Primärschlüssel**: die Spalte, deren Wert jede Zeile eindeutig macht, in `land` das Kürzel `LNR`. Der Pfeil ↑ markiert einen **Fremdschlüssel**, eine Spalte, die auf eine Zeile einer anderen Tabelle verweist: `Land` in `ort` nennt das Land, in dem der Ort liegt, mit seinem Namen. `ort` hat keinen Primärschlüssel, denn ein Name allein macht einen Ort nicht eindeutig: Allein Washington gibt es 14-mal.
+
 ## Abfragen mit SELECT
 
 ### Spalten auswählen

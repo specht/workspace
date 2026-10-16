@@ -411,6 +411,10 @@ _task(tabellen-crew)
 
 ### Durch mehrere Beziehungen zu einer Person
 
+Jetzt hat die Datenbank sechs Tabellen. Kurz aufgeschrieben, eine Zeile pro Tabelle, der Primärschlüssel unterstrichen und jeder Fremdschlüssel mit einem ↑:
+
+_schema(movies)
+
 Starte wieder `mycli`. Wer hat bei »Back to the Future« Regie geführt? Im Tabellendiagramm führt der Weg von `movie` über `movie_crew` zu `crew`, und die Tätigkeit steht in `job`. Jeder Schritt wird ein `JOIN`:
 
 ```sql

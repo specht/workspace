@@ -19,6 +19,13 @@ test('the query stepper works through a query clause by clause', async ({ page, 
   await expect(stepper.locator('.qs-clause.qs-current')).toHaveText('FROM');
   await expect(stepper.locator('.qs-count')).toHaveText('Schritt 1 von 6');
 
+  // Above it, the tables as schema lines: the key underlined, a foreign key with ↑
+  const schema = stepper.locator('.qs-schema > div');
+  await expect(schema).toHaveText(['land(LNR, Name, Einwohner, Flaeche, Hauptstadt, Kontinent, KontinentFlaeche, KontinentEinwohner)',
+    'ort(Name, ↑Land, Einwohner, Laenge, Breite)']);
+  await expect(schema.first().locator('u')).toHaveText('LNR');
+  await expect(schema.nth(1).locator('.schema-fk')).toHaveAttribute('title', 'verweist auf land.Name');
+
   // The arrow keys step it, as every stepper on the site
   await page.locator('h2').click();
   await page.keyboard.press('ArrowRight');
@@ -49,6 +56,8 @@ test('the query stepper works through a query clause by clause', async ({ page, 
   // An example on the movie tables switches the tables
   await page.locator('.query-stepper-examples button', { hasText: 'Filme: zwei JOINs' }).click();
   await expect(stepper.locator('.qs-dataset select')).toHaveValue('movies');
+  await expect(schema).toHaveCount(6);
+  await expect(schema.nth(2)).toHaveText('movie_genre(↑movie_id, ↑genre_id)');
   await expect(stepper.locator('.qs-clause')).toHaveText(['FROM', 'JOIN', 'WHERE', 'SELECT']);
   await stepper.locator("[data-go='last']").click();
   await expect(stepper.locator('.qs-table tbody tr td:nth-child(2)')).toHaveText(['Adventure', 'Comedy', 'Sci-Fi']);

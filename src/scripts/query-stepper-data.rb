@@ -3,7 +3,7 @@
 # from the SQL files students download, as JSON for the browser:
 #
 #   src/scripts/query-stepper-data.rb terra1 terra1.sql
-#   src/scripts/query-stepper-data.rb movies mysql-data-movies.sql mysql-data-crew.sql
+#   src/scripts/query-stepper-data.rb movies mysql-schema.sql mysql-data-movies.sql mysql-data-crew.sql
 #
 # terra1 (»Einführung in SQL«): all of land, the places in ort with at least
 # MIN_PEOPLE inhabitants. movies (»Filmdatenbank«): genre, movie and
@@ -11,6 +11,11 @@
 # MIN_ROLES films, so the file stays small enough for the browser. Writes
 # src/static/query-stepper/<name>.json. The SQL files come from
 # https://github.com/specht/workspace-files.
+#
+# With the rows go the keys of each table, from CREATE TABLE and ALTER TABLE
+# in the same files: 'key' (the columns of the primary key) and
+# 'references' (column => 'table.column'). The stepper shows them as a
+# schema line, as does _schema(name) on a page (src/ruby/include/schemas.rb).
 require 'json'
 
 MIN_PEOPLE = 1_000_000
@@ -65,6 +70,34 @@ def tuples(text)
     rows
 end
 
+# The primary key and the foreign keys of every table
+def keys(sql)
+    tables = Hash.new { |h, k| h[k] = { 'key' => [], 'references' => {} } }
+    names = ->(list) { list.scan(/`(\w+)`/).flatten }
+    sql.scan(/CREATE TABLE `(\w+)` \((.*?)\n\)/m) do |table, body|
+        body.scan(/PRIMARY KEY \(([^)]*)\)/) { |(list)| tables[table]['key'] = names.(list) }
+        body.scan(/FOREIGN KEY \(([^)]*)\)\s*REFERENCES `(\w+)` \(([^)]*)\)/) do |from, other, to|
+            names.(from).zip(names.(to)).each { |a, b| tables[table]['references'][a] = "#{other}.#{b}" }
+        end
+    end
+    sql.scan(/ALTER TABLE `(\w+)`\s+ADD PRIMARY KEY \(([^)]*)\)/) { |table, list| tables[table]['key'] = names.(list) }
+    tables
+end
+
+# What terra1.sql does not declare, but every query uses: a place lies in a
+# country, by the country's name.
+UNDECLARED = { 'terra1' => { 'ort' => { 'Land' => 'land.Name' } } }.freeze
+
+def add_keys!(name, tables, files)
+    found = files.map { |f| keys(File.read(f)) }.reduce({}) { |all, k| all.merge(k) }
+    tables.each do |table, t|
+        k = found[table] || { 'key' => [], 'references' => {} }
+        references = k['references'].merge(UNDECLARED.dig(name, table) || {})
+        t['key'] = k['key']
+        t['references'] = references unless references.empty?
+    end
+end
+
 # Decimal columns come quoted ('8.51'): numbers again, as MySQL shows them.
 NUMERIC = { 'land' => %w[Einwohner Flaeche KontinentFlaeche KontinentEinwohner], 'ort' => %w[Einwohner Laenge Breite] }.freeze
 
@@ -108,9 +141,10 @@ def movies(files)
 end
 
 name, *files = ARGV
-abort "usage: #{$0} terra1 terra1.sql | movies mysql-data-movies.sql mysql-data-crew.sql" unless %w[terra1 movies].include?(name) && !files.empty?
+abort "usage: #{$0} terra1 terra1.sql | movies mysql-schema.sql mysql-data-movies.sql mysql-data-crew.sql" unless %w[terra1 movies].include?(name) && !files.empty?
 tables = send(name, files)
+add_keys!(name, tables, files)
 out = File.join(OUT_DIR, "#{name}.json")
 File.write(out, JSON.generate({ 'source' => files.map { |f| File.basename(f) }.join(', '), 'tables' => tables }) + "\n")
-tables.each { |table, t| puts "#{table}: #{t['rows'].size} rows, #{t['columns'].join(', ')}" }
+tables.each { |table, t| puts "#{table}: #{t['rows'].size} rows, #{t['columns'].join(', ')}; key #{t['key'].join(', ')}#{t['references'] ? ", references #{t['references']}" : ''}" }
 puts "#{out}: #{File.size(out) / 1024} kB"

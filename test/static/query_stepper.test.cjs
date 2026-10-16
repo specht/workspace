@@ -86,3 +86,14 @@ test('a self-join with many rows stays fast enough', () => {
     assert.deepStrictEqual(top, ['Lois Maxwell | Desmond Llewelyn | 12', 'Rob Schneider | Adam Sandler | 12', 'Bernard Lee | Lois Maxwell | 11']);
     assert.ok(Date.now() - start < 5000, `took ${Date.now() - start} ms`);
 });
+
+test('the schema lines, as _schema(name) on a page draws them', () => {
+    const html = QS.schemaHtml(data.tables);
+    assert.ok(html.includes("<span class='schema-table'>land</span>(<u>LNR</u>, Name, Einwohner"));
+    assert.ok(html.includes("<span class='schema-table'>ort</span>(Name, <span class='schema-fk' title='verweist auf land.Name'><span class='schema-arrow'>↑</span>Land</span>, Einwohner"));
+    // the same markup as the Ruby side (src/ruby/include/schemas.rb, test/schemas_test.rb)
+    const movieGenre = { movie_genre: { columns: ['movie_id', 'genre_id'], key: ['movie_id', 'genre_id'], references: { movie_id: 'movie.id', genre_id: 'genre.id' } } };
+    assert.strictEqual(QS.schemaHtml(movieGenre), "<div><span class='schema-table'>movie_genre</span>(" +
+        "<u><span class='schema-fk' title='verweist auf movie.id'><span class='schema-arrow'>↑</span>movie_id</span></u>, " +
+        "<u><span class='schema-fk' title='verweist auf genre.id'><span class='schema-arrow'>↑</span>genre_id</span></u>)</div>");
+});

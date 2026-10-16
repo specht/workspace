@@ -18,6 +18,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Die Tabellen eines Datensatzes als Schema, eine Zeile pro Tabelle:
+  `movie_genre(↑movie_id, ↑genre_id)`, der Primärschlüssel unterstrichen,
+  ein Fremdschlüssel mit ↑ und im Tooltip, worauf er verweist. Die
+  SQL-Zeitlupe zeigt sie unter der Auswahl der Tabellen, die »Einführung in
+  SQL« nach `SHOW TABLES` und `DESCRIBE` (mit einer Erklärung von Primär- und
+  Fremdschlüssel), die »Filmdatenbank«, sobald alle sechs Tabellen geladen
+  sind. Für Autorinnen und Autoren: `_schema(terra1)` oder
+  `_schema(movies)` auf einer Zeile für sich; die Schlüssel liest
+  `src/scripts/query-stepper-data.rb` aus den SQL-Dateien.
+
 - Die Handbuch-Seite »Farbräume« erzählt, wie die Farbräume entstanden
   sind: drei Farben bei Young, Helmholtz und Maxwell, die Messungen von
   Wright und Guild und XYZ von 1931, YCbCr aus dem Farbfernsehen, CIELab

@@ -33,6 +33,7 @@ require './include/task_html.rb'
 require './include/rate_limit.rb'
 require './include/tcp_console.rb'
 require './include/tools.rb'
+require './include/schemas.rb'
 require './include/weather_mirror.rb'
 require 'base64'
 require 'cgi'
@@ -1738,6 +1739,8 @@ class Main < Sinatra::Base
                 markdown = ContentParts.mark_parts(markdown)
                 # _tool(name): a box that opens a tool of the site in a new tab (Tools).
                 markdown = Tools.expand(markdown, :warn => content_warning)
+                # _schema(dataset): the tables of a dataset as schema lines (Schemas).
+                markdown = Schemas.expand(markdown, :warn => content_warning)
                 # Tasks (docs/aufgaben.md): tasks.yaml next to the page holds
                 # them, _task(id) on a line of its own places a card.
                 tasks_path = File.join(File.dirname(path), 'tasks.yaml')

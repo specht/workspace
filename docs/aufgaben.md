@@ -130,6 +130,7 @@ Platzhalter ersetzt, bevor Redcarpet den Text liest.
 | `${web_root}` | Die Adresse dieser Installation (`WEB_ROOT`), etwa für den Spiegel von Open-Meteo: `${web_root}/open-meteo/api/v1/forecast` | M7 |
 | `${contact_email}` | Die Kontaktadresse der Installation (`CONTACT_EMAIL` in `credentials.rb`), etwa für »schreib eine E-Mail an«; nie eine Adresse fest in den Text schreiben | M7 |
 | `_tool(tcp-console)` | Ein Kasten mit Symbol, Name und Zweck eines Werkzeugs der Website (`tcp-console`, `automatron`, Liste in `tools.rb`), der es in einem neuen Tab öffnet; auf einer Zeile für sich. Die Werkzeuge stehen nicht im Menü, sondern dort im Text, wo man sie braucht, und brauchen eine Anmeldung | M7 |
+| `_schema(terra1)` | Die Tabellen eines Datensatzes als Schema, eine Zeile pro Tabelle: `movie_genre(↑movie_id, ↑genre_id)`, der Primärschlüssel unterstrichen, ein Fremdschlüssel mit ↑ und im Tooltip, worauf er verweist; auf einer Zeile für sich. Die Datensätze (`terra1`, `movies`) und ihre Schlüssel stehen in `src/static/query-stepper/`, wie für die SQL-Zeitlupe; `src/scripts/query-stepper-data.rb` liest sie aus den SQL-Dateien | M7 |
 
 ### Teile für eine Funktion der Installation
 

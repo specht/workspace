@@ -4840,6 +4840,35 @@ div[data-stepper]::before {
 .query-stepper .qs-table {
     overflow-x: auto;
 }
+
+/* The tables of a dataset as schema lines (_schema(name), and in the
+   SQL-Zeitlupe): table(column, …), the primary key underlined, a foreign key
+   with ↑ and where it points in its title. */
+.schema-lines {
+    margin: 0.6em 0 1em;
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 0.85em;
+    line-height: 1.6;
+}
+.schema-lines > div {
+    padding-left: 2em;
+    text-indent: -2em;
+}
+.schema-lines .schema-table {
+    font-weight: 700;
+}
+.schema-lines u {
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+}
+.schema-lines .schema-fk {
+    cursor: help;
+}
+.schema-lines .schema-arrow {
+    font-family: system-ui, sans-serif;
+    font-weight: 700;
+    margin-right: 0.05em;
+}
 .query-stepper .qs-table table {
     width: auto;
     margin-bottom: 0;

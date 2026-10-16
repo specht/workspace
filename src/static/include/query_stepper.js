@@ -822,13 +822,29 @@
         return `<div class='qs-table'><table class='table table-sm'><thead><tr>${head}</tr></thead><tbody>${body}${empty}</tbody></table></div>${hidden}`;
     }
 
+    // The tables as schema lines, one per table: the primary key underlined, a
+    // foreign key with ↑ (as _schema(name) on a page, src/ruby/include/schemas.rb).
+    function schemaHtml(tables) {
+        return Object.entries(tables).map(([name, table]) => {
+            const key = new Set(table.key || []);
+            const references = table.references || {};
+            const columns = table.columns.map((column) => {
+                let text = esc(column);
+                if (references[column]) text = `<span class='schema-fk' title='verweist auf ${esc(references[column])}'><span class='schema-arrow'>↑</span>${text}</span>`;
+                return key.has(column) ? `<u>${text}</u>` : text;
+            });
+            return `<div><span class='schema-table'>${esc(name)}</span>(${columns.join(', ')})</div>`;
+        }).join('');
+    }
+
     function mount(rootElement) {
         let dataset = DATASETS[rootElement.dataset.dataset] ? rootElement.dataset.dataset : 'terra1';
         const start = rootElement.dataset.query || 'SELECT * FROM land;';
         const choose = 'choose' in rootElement.dataset;
         const options = Object.entries(DATASETS).map(([k, v]) => `<option value='${k}'>${esc(v)}</option>`).join('');
         rootElement.innerHTML = `
-            ${choose ? `<label class='qs-dataset'>Tabellen: <select class='form-select form-select-sm' aria-label='Tabellen'>${options}</select></label>` : ''}
+            ${choose ? `<label class='qs-dataset'>Tabellen: <select class='form-select form-select-sm' aria-label='Tabellen'>${options}</select></label>
+            <div class='qs-schema schema-lines' aria-label='Die Tabellen mit ihren Spalten'></div>` : ''}
             <textarea class='form-control qs-input' rows='3' spellcheck='false' aria-label='SQL-Abfrage'></textarea>
             <div class='qs-order' aria-hidden='true'></div>
             <div class='qs-controls'>
@@ -896,7 +912,13 @@
             if (select) select.value = name;
             data = null;
             say.textContent = 'Die Tabellen werden geladen …';
-            return loadData(name).then((d) => { if (dataset === name) { data = d; refresh(); } });
+            return loadData(name).then((d) => {
+                if (dataset !== name) return;
+                data = d;
+                const schema = rootElement.querySelector('.qs-schema');
+                if (schema) schema.innerHTML = schemaHtml(d.tables);
+                refresh();
+            });
         };
         if (select) select.addEventListener('change', () => { current = 0; use(select.value); });
         use(dataset);
@@ -912,7 +934,7 @@
         };
     }
 
-    const api = { tokenize, parse, run, show, SqlError, mount };
+    const api = { tokenize, parse, run, show, schemaHtml, SqlError, mount };
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
     root.QueryStepper = api;
     if (typeof document !== 'undefined') {
