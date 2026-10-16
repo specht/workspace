@@ -48,7 +48,9 @@ dem passenden Abschnitt:
 Nur eingetragene Seiten gibt es überhaupt. Soll ein ganzer Abschnitt
 vorübergehend nicht im Katalog stehen, aber erreichbar bleiben (etwa über
 einen Link im Profil), bekommt er `hidden: true`, statt auskommentiert zu
-werden.
+werden. Mit `tiles: true` zeigt ein Abschnitt seine Seiten als kleine Kacheln
+mit Logo, Name und Jahr statt als Karten, wie die Programmiersprachen; das
+Jahr steht dafür im Titel der Seite in Klammern.
 
 ## 2. Die Seite schreiben
 

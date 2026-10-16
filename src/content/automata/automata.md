@@ -311,6 +311,7 @@ press: Enter
 wait-for-text: kleinster DEA
 sleep: 1
 crop-element: #output_area svg:nth-of-type(3)
+variants: dark
 -->
 <img class='full' src='automatron-schloss.webp' alt='Automatron zeichnet fünf Zustände s0 bis s4 in einer Reihe, s4 grün mit doppeltem Rand. Mit 1 geht es von s0 nach s1, mit 2 nach s2, mit 1 nach s3, mit 3 nach s4. Zurück führen: 1 von s1 nach s1, 2 von s3 nach s2, 1 von s3 nach s1, 1 von s4 nach s1, alle übrigen Ziffern nach s0.'>
 
@@ -545,5 +546,6 @@ press: Enter
 wait-for-text: kleinster DEA
 sleep: 1
 crop-element: #output_area svg:nth-of-type(3)
+variants: dark
 -->
 <img class='teaser' hidden src='teaser.webp' alt='Ein Gewirr aus 16 Zuständen s0 bis s15 und Pfeilen mit 0 und 1, gezeichnet von Automatron: der kleinste DEA, der prüft, ob die viertletzte Ziffer einer Binärzahl eine 1 ist. Acht Zustände haben einen doppelten Rand.'>

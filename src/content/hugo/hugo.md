@@ -2,7 +2,7 @@
 image: startseite.webp
 kind: projekt
 language: Hugo
-topic: networks
+topic: web
 duration: 2 Doppelstunden
 requires: [static-website]
 reference: [yaml, html, css]

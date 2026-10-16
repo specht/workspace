@@ -4675,10 +4675,29 @@ class Main < Sinatra::Base
                     if section[:description]
                         io.puts "<p style='margin-top: -1em; margin-bottom: 1em;'>#{section[:description]}</p>"
                     end
-                    io.puts "<div class='row'>"
                     entries = section[:entries].reject do |entry|
                         (!DEVELOPMENT) && @@content[entry][:dev_only]
                     end
+                    # tiles: true (programming languages): small tiles with
+                    # logo, name and year instead of cards, all visible.
+                    if section[:tiles]
+                        io.puts "<div class='lang-tiles'>"
+                        entries.each do |slug|
+                            content = @@content[slug]
+                            title = content[:title].to_s
+                            name = title.sub(%r{<span[^>]*>.*?</span>}, '').strip
+                            year = title[/\((\d{4})\)/, 1]
+                            image = content[:image] || '/images/white.webp'
+                            Main.ensure_image_width(image, 1024) if image.start_with?('/cache/')
+                            io.puts "<a class='lang-tile' href='/#{slug}'>" \
+                                "<span class='lang-tile-logo'><img alt='' src='#{image.sub('.webp', '-1024.webp')}'></span>" \
+                                "<span class='lang-tile-name'>#{name}</span>" \
+                                "#{year ? "<span class='lang-tile-year'>#{year}</span>" : ''}</a>"
+                        end
+                        io.puts "</div>"
+                        next
+                    end
+                    io.puts "<div class='row'>"
                     # Every card the same size; a section ends where it ends.
                     entries.each do |slug|
                         content = @@content[slug]

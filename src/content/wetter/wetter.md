@@ -2,7 +2,7 @@
 image: teaser.webp
 kind: projekt
 language: Ruby / JavaScript
-topic: networks
+topic: web
 duration: 2 Doppelstunden
 requires: [tcpip]
 reference: [http, json]
