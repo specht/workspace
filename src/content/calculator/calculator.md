@@ -45,10 +45,6 @@ requires: [automata]
     .calc-tree line {
         stroke: var(--bs-secondary-color);
         stroke-width: 1.5;
-        animation: calc-fade 0.3s 0.35s both;
-    }
-    .calc-tree .node {
-        transition: transform 0.45s ease, opacity 0.45s ease;
     }
     .calc-tree .node circle, .calc-tree .node rect {
         fill: var(--bs-body-bg);
@@ -70,16 +66,6 @@ requires: [automata]
         font-size: 14px;
         text-anchor: middle;
         dominant-baseline: central;
-    }
-    @keyframes calc-fade {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-        .calc-tree .node, .calc-tree line {
-            transition: none;
-            animation: none;
-        }
     }
 </style>
 
@@ -701,8 +687,6 @@ python3 -c 'import ast; print(ast.dump(ast.parse("2 + 3 * 4", mode="eval"), inde
     let steps = [];
     let current = 0;
     let svg = null;
-    let edges = null;
-    const shapes = new Map();
 
     // How far from its centre a node's outline is, in the direction ux, uy:
     // a circle for an operator, a box for a number.
@@ -712,72 +696,109 @@ python3 -c 'import ast; print(ast.dump(ast.parse("2 + 3 * 4", mode="eval"), inde
         return Math.min(ux ? hw / Math.abs(ux) : Infinity, uy ? hh / Math.abs(uy) : Infinity);
     }
 
-    function shape(t) {
-        let g = shapes.get(t.id);
-        if (!g) {
-            g = document.createElementNS(SVG, 'g');
-            g.classList.add('node');
-            g.style.opacity = '0';
-            svg.append(g);
-            shapes.set(t.id, g);
-        }
-        g.replaceChildren();
+    // A picture of the tree: every node with its place and how visible it
+    // is, and the edges as pairs of ids.
+    function frameOf(tree) {
+        const { pos } = layout(tree);
+        const nodes = new Map();
+        const edges = [];
+        (function walk(t) {
+            const p = pos.get(t.id);
+            nodes.set(t.id, { x: p.x, y: p.y, node: t, alpha: 1 });
+            if (isLeaf(t)) return;
+            t.kids.forEach((kid) => { edges.push([t.id, kid.id]); walk(kid); });
+        })(tree);
+        return { nodes, edges };
+    }
+
+    function outline(t) {
+        if (!isLeaf(t)) return `<circle r='17'/>`;
         const w = width(t);
-        const outline = document.createElementNS(SVG, isLeaf(t) ? 'rect' : 'circle');
-        if (isLeaf(t)) {
-            outline.setAttribute('x', -w / 2 + 4);
-            outline.setAttribute('y', -15);
-            outline.setAttribute('width', w - 8);
-            outline.setAttribute('height', 30);
-            outline.setAttribute('rx', 6);
-        } else {
-            outline.setAttribute('r', 17);
+        return `<rect x='${-w / 2 + 4}' y='-15' width='${w - 8}' height='30' rx='6'/>`;
+    }
+
+    // Draws one frame whole: the edges from centre to centre, cut off where
+    // each shape ends, then the nodes over them.
+    function paint(frame, marks) {
+        const parts = [];
+        for (const [a, b] of frame.edges) {
+            const p = frame.nodes.get(a), q = frame.nodes.get(b);
+            if (!p || !q) continue;
+            const dx = q.x - p.x, dy = q.y - p.y, len = Math.hypot(dx, dy);
+            if (len < 1) continue;
+            const ux = dx / len, uy = dy / len;
+            const from = reach(p.node, ux, uy), to = reach(q.node, ux, uy);
+            if (from + to >= len) continue;
+            const f = (v) => v.toFixed(1);
+            parts.push(`<line x1='${f(p.x + ux * from)}' y1='${f(p.y + uy * from)}' x2='${f(q.x - ux * to)}' y2='${f(q.y - uy * to)}' opacity='${Math.min(p.alpha, q.alpha).toFixed(2)}'/>`);
         }
-        const text = document.createElementNS(SVG, 'text');
-        text.textContent = label(t);
-        g.append(outline, text);
-        return g;
+        frame.nodes.forEach((p, id) => {
+            const cls = ['node', marks.pick === id ? 'pick' : '', marks.fresh === id ? 'fresh' : ''].filter(Boolean).join(' ');
+            parts.push(`<g class='${cls}' transform='translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})' opacity='${p.alpha.toFixed(2)}'>${outline(p.node)}<text>${label(p.node)}</text></g>`);
+        });
+        svg.innerHTML = parts.join('');
+    }
+
+    // From one picture to the next, the nodes glide to their new places and
+    // the edges go with them. What is computed away slides into the node it
+    // becomes and fades; going back, it comes out of that node again.
+    // Without motion (prefers-reduced-motion), the next picture just
+    // replaces the last.
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const DURATION = 450;
+    let shown = null;
+    let animation = 0;
+
+    function parents(frame) {
+        const up = new Map();
+        frame.edges.forEach(([a, b]) => up.set(b, a));
+        return up;
+    }
+
+    // Where a node that only one of the two pictures has comes from or goes
+    // to: the nearest node above it that the other picture has.
+    function anchor(id, up, other) {
+        let k = up.get(id);
+        while (k !== undefined && !other.nodes.has(k)) k = up.get(k);
+        return k !== undefined ? other.nodes.get(k) : null;
+    }
+
+    function showFrame(target, marks) {
+        cancelAnimationFrame(animation);
+        const from = shown;
+        shown = target;
+        if (!from || reduceMotion.matches) { paint(target, marks); return; }
+        const upFrom = parents(from), upTo = parents(target);
+        const seen = new Set();
+        const edges = from.edges.concat(target.edges).filter(([a, b]) => !seen.has(a + '>' + b) && seen.add(a + '>' + b));
+        const begin = performance.now();
+        const frame = () => {
+            const t = Math.min(1, (performance.now() - begin) / DURATION);
+            const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+            const nodes = new Map();
+            target.nodes.forEach((p, id) => {
+                const q = from.nodes.get(id) || anchor(id, upTo, from) || p;
+                const node = from.nodes.has(id) && e < 0.5 ? from.nodes.get(id).node : p.node;
+                nodes.set(id, { x: q.x + (p.x - q.x) * e, y: q.y + (p.y - q.y) * e, node, alpha: from.nodes.has(id) ? 1 : e });
+            });
+            from.nodes.forEach((q, id) => {
+                if (target.nodes.has(id)) return;
+                const p = anchor(id, upFrom, target) || q;
+                nodes.set(id, { x: q.x + (p.x - q.x) * e, y: q.y + (p.y - q.y) * e, node: q.node, alpha: 1 - e });
+            });
+            if (t < 1) {
+                paint({ nodes, edges }, {});
+                animation = requestAnimationFrame(frame);
+            } else {
+                paint(target, marks);
+            }
+        };
+        animation = requestAnimationFrame(frame);
     }
 
     function draw() {
         const step = steps[current];
-        const { pos } = layout(step.tree);
-        edges.replaceChildren();
-        const present = new Set();
-        (function walk(t) {
-            present.add(t.id);
-            const p = pos.get(t.id);
-            const g = shape(t);
-            g.style.transform = `translate(${p.x}px, ${p.y}px)`;
-            g.style.opacity = '1';
-            g.classList.toggle('pick', !!step.pick && step.pick.id === t.id);
-            g.classList.toggle('fresh', !!step.done && step.done.pick.id === t.id);
-            if (isLeaf(t)) return;
-            for (const kid of t.kids) {
-                // From centre to centre, cut off where each shape ends
-                const q = pos.get(kid.id);
-                const dx = q.x - p.x, dy = q.y - p.y, len = Math.hypot(dx, dy);
-                const ux = dx / len, uy = dy / len;
-                const start = reach(t, ux, uy), end = reach(kid, ux, uy);
-                const line = document.createElementNS(SVG, 'line');
-                line.setAttribute('x1', p.x + ux * start);
-                line.setAttribute('y1', p.y + uy * start);
-                line.setAttribute('x2', q.x - ux * end);
-                line.setAttribute('y2', q.y - uy * end);
-                edges.append(line);
-                walk(kid);
-            }
-        })(step.tree);
-        // Was wegfällt, rutscht in den Knoten, der daraus geworden ist.
-        const into = step.done ? pos.get(step.done.pick.id) : null;
-        for (const [id, g] of shapes) {
-            if (present.has(id)) continue;
-            if (into) g.style.transform = `translate(${into.x}px, ${into.y}px)`;
-            g.style.opacity = '0';
-            setTimeout(() => {
-                if (g.style.opacity === '0' && shapes.get(id) === g) { g.remove(); shapes.delete(id); }
-            }, 500);
-        }
+        showFrame(frameOf(step.tree), { pick: step.pick ? step.pick.id : null, fresh: step.done ? step.done.pick.id : null });
 
         const parts = [];
         if (step.done) parts.push(`<code>${phrase(step.done.pick.op, step.done.values, step.done.value)}</code>.`);
@@ -800,7 +821,8 @@ python3 -c 'import ast; print(ast.dump(ast.parse("2 + 3 * 4", mode="eval"), inde
     }
 
     function refresh() {
-        shapes.clear();
+        cancelAnimationFrame(animation);
+        shown = null;
         box.replaceChildren();
         try {
             steps = build(input.value);
@@ -816,8 +838,6 @@ python3 -c 'import ast; print(ast.dump(ast.parse("2 + 3 * 4", mode="eval"), inde
         svg.setAttribute('width', w);
         svg.setAttribute('height', h);
         svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-        edges = document.createElementNS(SVG, 'g');
-        svg.append(edges);
         box.append(svg);
         current = 0;
         draw();
