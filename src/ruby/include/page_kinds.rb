@@ -57,7 +57,9 @@ module PageKinds
 
     # HTML of the strip for one page ('' for pages that get none).
     # extra: HTML at the right end of the strip (the teacher note's button).
-    def self.header(slug, content, sections, development: false, extra: '')
+    # show_duration: only for teachers; how long an activity takes is for
+    # planning lessons, not something students need to read.
+    def self.header(slug, content, sections, development: false, extra: '', show_duration: false)
         entry = content[slug]
         return '' if entry.nil? || entry[:teacher_only]
 
@@ -80,7 +82,7 @@ module PageKinds
             kind = kind_label(entry[:kind], entry[:language]) || 'Aktivität'
             html = +"<div class='page-kind page-kind-activity'>"
             html << "<span class='page-kind-label'><i class='bi bi-signpost-2'></i>#{h.(kind)}</span>"
-            if entry[:duration].is_a?(String) && !entry[:duration].strip.empty?
+            if show_duration && entry[:duration].is_a?(String) && !entry[:duration].strip.empty?
                 html << "<span class='page-kind-duration'><i class='bi bi-clock'></i>#{h.(entry[:duration].strip)}</span>"
             end
             refs = (entry[:references] || []).map do |name|
