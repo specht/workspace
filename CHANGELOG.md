@@ -18,6 +18,14 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- »Eine Pixelwand für alle« gibt es jetzt auch in Python: die fünf Stufen
+  des Servers mit dem Paket `websockets` (in einer virtuellen Umgebung
+  `.venv` im Projektordner, ohne Administratorrechte), die Erklärungen dazu,
+  sechs Screenshots aus dem Workspace und Varianten der Aufgaben, die Ruby
+  nennen. Webseite und `flood.js` sind für beide Sprachen dieselben. Die
+  Abgabe lässt `.venv` aus. Wer »Jeder kann alles schicken«, »Die
+  Pixelwand«, »Ein Lock« oder die Abgabe schon erledigt hat, sieht sie
+  einmal als »geändert«.
 - »Ein eigener Webserver« gibt es jetzt auch in Python: alle sechs Stufen
   des Servers mit `socket`, `threading` und `urllib.parse`, die Erklärungen
   dazu, sechs Screenshots aus dem Terminal und Varianten der Aufgaben, die

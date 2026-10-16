@@ -42,6 +42,13 @@ tasks:
       - when: { picked: 3 }
         say: Neu laden muss niemand. Die Verbindung ist offen, und der Server schickt von sich aus.
     solution: '`broadcast` schickt an jede Verbindung in `$clients`, auch an Adas eigene. So sieht Ada ihre Nachricht erst, wenn der Server sie verteilt hat, genau wie alle anderen.'
+    python:
+      feedback:
+        - when: { picked: 1 }
+          say: Steht Ada selbst auch in `clients`?
+        - when: { picked: 3 }
+          say: Neu laden muss niemand. Die Verbindung ist offen, und der Server schickt von sich aus.
+      solution: '`broadcast` schickt an jede Verbindung in `clients`, auch an Adas eigene. So sieht Ada ihre Nachricht erst, wenn der Server sie verteilt hat, genau wie alle anderen.'
 
   - id: pixel-zahl
     title: Das ganze Bild
@@ -68,7 +75,7 @@ tasks:
       options:
         - Jeder kann sich mit dem Server verbinden und beliebige Nachrichten schicken, nicht nur deine Seite
         - 'JSON verliert unterwegs manchmal Zahlen, wenn das Netz langsam ist'
-        - 'Ruby kann sonst die Hashes aus dem JSON nicht lesen'
+        - 'Ohne die Prüfung kann der Server das JSON nicht lesen'
         - 'Der Browser rundet die Koordinaten manchmal falsch und schickt Pixel außerhalb der Wand'
       correct: 0
     feedback:
@@ -91,6 +98,17 @@ tasks:
           - { pattern: 'JSON\.parse', say: 'In `server.rb` liest der Server noch kein JSON (`JSON.parse`).' }
           - { pattern: 'Faye::WebSocket', say: 'In `server.rb` öffnet noch nichts eine WebSocket-Verbindung (`Faye::WebSocket.new(env)`).' }
           - { pattern: 'between\?|<\s*WIDTH|>=\s*0', say: 'Noch prüft der Server nicht, ob ein Pixel im Bild liegt, zum Beispiel mit `x.between?(0, WIDTH - 1)`.' }
+    python:
+      file: pixelwand/server.py
+      check:
+        type: files
+        path: pixelwand/server.py
+        expect:
+          format: text
+          contains:
+            - { pattern: 'json\.loads', say: 'In `server.py` liest der Server noch kein JSON (`json.loads`).' }
+            - { pattern: 'websockets', say: 'In `server.py` öffnet noch nichts eine WebSocket-Verbindung (`serve` aus `websockets.sync.server`).' }
+            - { pattern: '<\s*WIDTH|<=\s*15|>=\s*0|range\(', say: 'Noch prüft der Server nicht, ob ein Pixel im Bild liegt, zum Beispiel mit `0 <= x < WIDTH`.' }
 
   - id: counter
     title: 200 Pixel
@@ -113,6 +131,13 @@ tasks:
       - when: { picked: 2 }
         say: Bei deinem Webserver wäre das eine gute Schätzung. Hier liegt zwischen Lesen und Schreiben das Speichern, und das dauert.
     solution: Während ein Thread das Bild speichert, lesen die anderen denselben alten Wert von `$painted`. Mehrere Threads schreiben dann dieselbe Zahl zurück, und Pixel gehen beim Zählen verloren. Am Ende steht der Zähler weit unter 200, oft nur bei einem Drittel.
+    python:
+      feedback:
+        - when: { picked: 1 }
+          say: Jeder Thread liest `painted`, speichert das Bild und schreibt erst danach. Was haben die anderen Threads in der Zwischenzeit gelesen?
+        - when: { picked: 2 }
+          say: Bei deinem Webserver wäre das eine gute Schätzung. Hier liegt zwischen Lesen und Schreiben das Speichern, und das dauert.
+      solution: Während ein Thread das Bild speichert, lesen die anderen denselben alten Wert von `painted`. Mehrere Threads schreiben dann dieselbe Zahl zurück, und Pixel gehen beim Zählen verloren. Am Ende steht der Zähler weit unter 200, oft nur bei der Hälfte.
 
   - id: lock
     title: Ein Lock
@@ -129,13 +154,29 @@ tasks:
           - { pattern: 'Thread\.new', say: 'In `server.rb` gibt es noch keine Threads, die Nachrichten abarbeiten (`Thread.new`).' }
           - { pattern: 'Mutex\.new', say: 'In `server.rb` gibt es noch keinen Lock: `$lock = Mutex.new`.' }
           - { pattern: '\.synchronize\b', say: 'Der Lock ist da, aber noch schützt er nichts: `$lock.synchronize do … end` um das Ändern von Bild und Zähler.' }
+    python:
+      file: pixelwand/server.py
+      check:
+        type: files
+        path: pixelwand/server.py
+        expect:
+          format: text
+          contains:
+            - { pattern: 'threading\.Thread', say: 'In `server.py` gibt es noch keine Threads, die Nachrichten abarbeiten (`threading.Thread`).' }
+            - { pattern: 'Lock\(\)', say: 'In `server.py` gibt es noch keinen Lock: `lock = threading.Lock()`.' }
+            - { pattern: 'with\s+lock\b|\.acquire\(', say: 'Der Lock ist da, aber noch schützt er nichts: `with lock:` um das Ändern von Bild und Zähler.' }
 
   - id: abgabe
     title: Deine Pixelwand
     prompt: |
-      Gib deine Pixelwand ab: den Ordner `pixelwand` mit `server.rb`,
-      `websocket.rb` und `index.html`.
+      Gib deine Pixelwand ab: den Ordner `pixelwand` mit `server.rb` und
+      `index.html`.
     check:
       type: submit
       paths: [pixelwand]
+      exclude: [pixelwand/.venv]
       max_size: 5MB
+    python:
+      prompt: |
+        Gib deine Pixelwand ab: den Ordner `pixelwand` mit `server.py` und
+        `index.html`. Die virtuelle Umgebung `.venv` bleibt draußen.
