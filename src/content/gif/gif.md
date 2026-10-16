@@ -884,12 +884,12 @@ _task(neuer-code)
 
 Probier es mit den Bytes der Diskette aus: Jeder Klick liest einen Code. Das Bild wächst dabei mit, die neuen Pixel sind umrandet. Die Zahlen in den Pixeln sind ihre Nummern in der Farbtabelle.
 
-<div class='lzw-stepper' id='lzw-stepper' data-bytes='8c 87 99 06 60 a1 e2 73 47 c2 87 e3 38 f8 69 de 41 1a 12 96 66 20 a4 ea 9a 62 ec 2b b8 67 fb c0 ac 1c ae ae ad ee 7c 5c fb 01 4f a5 02'>
+<div class='lzw-stepper' id='lzw-stepper' data-stepper data-bytes='8c 87 99 06 60 a1 e2 73 47 c2 87 e3 38 f8 69 de 41 1a 12 96 66 20 a4 ea 9a 62 ec 2b b8 67 fb c0 ac 1c ae ae ad ee 7c 5c fb 01 4f a5 02'>
 <div class='lzw-controls'>
-<button id='lzw-first' class='btn btn-sm btn-success' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
-<button id='lzw-prev' class='btn btn-sm btn-success' aria-label='Einen Code zurück'><i class='bi bi-chevron-left' style='margin-right: 0;'></i></button>
-<button id='lzw-next' class='btn btn-sm btn-success' aria-label='Nächster Code'><i class='bi bi-chevron-right' style='margin-right: 0;'></i></button>
-<button id='lzw-last' class='btn btn-sm btn-success' aria-label='Zum Ende'><i class='bi bi-chevron-bar-right' style='margin-right: 0;'></i></button>
+<button id='lzw-first' data-go='first' class='btn btn-sm btn-success' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>
+<button id='lzw-prev' data-go='prev' class='btn btn-sm btn-success' aria-label='Einen Code zurück'><i class='bi bi-chevron-left' style='margin-right: 0;'></i></button>
+<button id='lzw-next' data-go='next' class='btn btn-sm btn-success' aria-label='Nächster Code'><i class='bi bi-chevron-right' style='margin-right: 0;'></i></button>
+<button id='lzw-last' data-go='last' class='btn btn-sm btn-success' aria-label='Zum Ende'><i class='bi bi-chevron-bar-right' style='margin-right: 0;'></i></button>
 <span class='lzw-count' id='lzw-count'></span>
 </div>
 <div class='lzw-bytes' id='lzw-bytes'></div>

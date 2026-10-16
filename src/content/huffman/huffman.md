@@ -121,7 +121,7 @@ Den Code eines Bytes liest du auf dem Weg von oben zu seinem Blatt ab: links ein
 
 Probier es aus, mit dem Text unten oder einem eigenen. Rot umrandet sind die beiden Bäume, die als nächste zusammenkommen.
 
-<div class='hf-stepper' id='hf-stepper'>
+<div class='hf-stepper' id='hf-stepper' data-stepper>
 <input class='form-control' type='text' id='hf-input' value='RHABARBERBARBARA' aria-label='Text für den Huffman-Baum' spellcheck='false'>
 <div class='hf-controls'>
 <button class='btn btn-sm btn-success' data-go='first' aria-label='Zum Anfang'><i class='bi bi-chevron-bar-left' style='margin-right: 0;'></i></button>

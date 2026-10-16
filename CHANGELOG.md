@@ -533,6 +533,17 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Alle Widgets zum Durchschalten lassen sich mit den Pfeiltasten bedienen
+  wie bisher nur der JPEG-Decoder: der Huffman-Baum, die beiden Schrittmacher
+  von LZW und der von GIF. Bei zwei Widgets auf einer Seite schaltet die
+  Taste das, das gerade im Fenster steht; im Textfeld eines Widgets bewegt sie
+  weiter den Cursor.
+- LZW nennt das, was der Kompressor gerade aufbaut, jetzt **Präfix** statt
+  »Stück«, auf der Seite, in den Aufgaben und in der Tabelle des
+  Schrittmachers.
+- »Von Hand« bei LZW und bei Huffman ist jetzt eine Vermutung: erst auf
+  Papier, dann im Schrittmacher oben nachsehen, der die Antwort ja zeigt. Die
+  Prüfung bleibt dieselbe.
 - Die drei Sandboxes nennen ihre Sprachen neben der Art: »Projekt (Dart /
   Python / JavaScript / Java)« für Datenstrukturen und Sortieren, »Projekt
   (Assembler / C)« für die CPU Sandbox.
