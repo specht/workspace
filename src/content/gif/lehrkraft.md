@@ -1,0 +1,30 @@
+Ein GIF-Decoder in C, der mit PixelRAM zeichnet: Lernende lesen eine Datei Byte für Byte, Block für Block, setzen die Sub-blocks zusammen, lesen Codes mit wachsender Länge und entpacken sie mit LZW. Vorausgesetzt werden Grundlagen in C (Schleifen, Arrays, Funktionen, `printf`) und die ersten Abschnitte von [Echtzeitgrafik mit C](/pixelram): Palette, `set_pixel`, `make`. Zeiger kommen nur als `uint8_t *` für einen Speicher vor, `malloc` und `fopen` stehen fertig im Gerüst.
+
+<table class='table'>
+<tr><th>Ablauf</th><td>Erste Doppelstunde: Vorbereitung, Hexdump der Diskette, die Blöcke bis zu den Bilddaten; am Ende meldet das Programm <code>Bild 16 x 16 bei (0, 0), 45 Bytes Daten</code>. Zweite Doppelstunde: Codes lesen, LZW mit dem Schrittmacher auf der Seite, dann <code>decode_lzw</code> selbst schreiben, bis die Diskette erscheint. Dritte Doppelstunde: das Foto, das fast immer erst nach einer Fehlersuche klappt, dann Interlacing. Wer schnell ist, macht mit Animationen oder Transparenz weiter.</td></tr>
+<tr><th>Dateien</th><td>Alles in <code>/workspace/pixelram-starter</code>: <code>gif.c</code> und die drei Beispiele, die die Lernenden mit <code>wget</code> von <code>${web_root}/gif/</code> laden. Das Gerüst (Datei lesen, <code>read_byte</code>, <code>read_word</code>) und die Prüfsumme haben einen Kopierknopf, alles andere tippen sie ab. <code>decode_lzw</code> steht nicht auf der Seite.</td></tr>
+<tr><th>Prüfung</th><td>Die Aufgaben prüfen Antworten, nichts im Workspace. Drei davon sind Prüfsummen (Adler-32 über Rot, Grün und Blau aller Pixel), die das Programm in der Konsole von PixelRAM ausgibt: Ein Pixel daneben ergibt eine andere Zahl. Sie lassen sich weitersagen; wer seine Prüfsumme nicht selbst gefunden hat, kann aber auch nicht erklären, warum die von <code>markt-interlaced.gif</code> dieselbe ist.</td></tr>
+<tr><th>Lösung</th><td>Ein vollständiger Decoder, 280 Zeilen, liegt im Repository unter <a href='https://github.com/specht/workspace/blob/main/src/content/gif/loesung/gif.c'><code>src/content/gif/loesung/gif.c</code></a>; die Bilder der Seite sind mit ihm gemacht. Die Lernenden sehen ihn auf der Seite nicht.</td></tr>
+</table>
+
+**Das Heft.** Die Spezifikation GIF89a von 1990 gibt es als Heft im Format A5, Seite für Seite wie das Original, in Courier 10 Pitch:
+
+- [gif89a-zine-booklet-a4.pdf](${web_root}/gif/gif89a-zine-booklet-a4.pdf) zum Drucken: 10 Blätter A4, beidseitig, an der kurzen Kante gewendet; in der Mitte falten und zweimal heften.
+- [gif89a-zine-a5.pdf](${web_root}/gif/gif89a-zine-a5.pdf) zum Lesen am Bildschirm, 40 Seiten.
+
+Der Text ist englisch und unverändert. Die Seitenzahlen stehen wie im Original oben rechts, und unter jeder Überschrift der Seite steht, auf welcher Seite des Hefts der Block beschrieben ist. Es lohnt sich, die Diagramme der Seite mit denen im Heft zu vergleichen und Fragen wie »Was ist ein Sort Flag?« ins Heft zu schicken. Das Deckblatt (Cover Sheet) handelt vom Deferred Clear Code, Regel 5 auf der Seite. Die Quellen des Hefts liegen unter `src/content/gif/zine/`, `build.sh` setzt es neu.
+
+**Die Aufgaben.** »Die Farbtabelle des Fotos« (768) hat Rückmeldungen für 256 (Farben statt Bytes), 7 (das Feld selbst) und 247 (das ganze Byte). »Ein Code, den es noch nicht gibt« ist eine Vorhersage vor dem Schrittmacher; nur der erste Versuch zählt für die Klassenübersicht. Die Prüfsummen: `8e1af5c5` für die Diskette, `4e5b2bc9` für das Foto, mit und ohne Interlacing. Wer bei `markt-interlaced.gif` `0cbf2bc9` angibt, hat die Zeilen in der Reihenfolge der Datei gesetzt und bekommt genau das gesagt.
+
+**Was schiefgeht.**
+
+- **Bits in der falschen Reihenfolge.** Wer vom höchsten Bit an liest (wie bei JPEG), bekommt zufällig auch als ersten Code eine 4, danach aber 3, 1, 0 statt 1, 6, 3 und ein falsches Bild. Die ersten Codes der Diskette stehen auf der Seite: 4, 1, 6, 3, 8, 9, 9, 6, 0. Ein `printf` in `decode_lzw` zeigt, was das eigene Programm liest.
+- **Die Codelänge eins zu früh oder zu spät.** Wächst sie, bevor der neue Eintrag in der Tabelle steht, oder erst einen Code später, stimmen die ersten vier Codes und danach nichts mehr. Bei der Diskette sieht man das ab der ersten Zeile.
+- **Regel 3 fehlt.** Ohne den Fall »Code gleich nächster freier Eintrag« bricht der Decoder schon beim dritten Code der Diskette ab. Das ist Absicht: Der Fall kommt so früh, dass niemand ihn übersieht.
+- **Die Diskette geht, das Foto nicht.** Fast immer die Grenzen: die Codelänge über 12 Bits hinaus, nach einem Clear Code nicht wieder bei 9 Bits, oder neue Einträge, obwohl die Tabelle schon 4096 hat. Bei `markt.gif` kommt nach jeweils 3.840 Codes ein Clear Code.
+- **Das Bild stimmt, die Prüfsumme nicht.** Steht das `printf` mit der Prüfsumme vor der Schleife über die Blöcke, ist es die Prüfsumme der leeren Fläche. Liest `read_color_table` die Bytes als Blau, Grün, Rot, sieht man es dagegen sofort: Die Diskette ist dann braun.
+- **Nur eine Datei geht.** Steht `ARGS=` nicht beim `make`, startet das Programm ohne Datei. In der Konsole von PixelRAM kann man die Argumente ändern und mit »Run« neu starten; die Datei muss im selben Ordner wie `gif.html` liegen.
+
+**Begriffe.** Die Seite sagt Code, Eintrag und Tabelle; die Spezifikation sagt string table und code stream. LZW ist hier nur als Decoder ausgearbeitet; warum der Encoder genau so einen Eintrag früher ist als der Decoder, lohnt eine gemeinsame Überlegung an der Tafel, am besten mit der Diskette: 1 1 1 3 … ergibt die Codes 1, 6, 3. Dithering kommt nur in der Aufgabe »Körnig« vor.
+
+**Weiter.** JPEG als Gegenstück (verlustbehaftet, Huffman statt LZW, Big Endian, Bits vom höchsten an): [Eine JPEG-Datei decodieren](/jpeg). Ein GIF-Encoder ist ein gutes Projekt für Schnelle; der Decoder prüft ihn.

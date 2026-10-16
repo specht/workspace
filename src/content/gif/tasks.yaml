@@ -1,0 +1,122 @@
+# Aufgaben zu »Eine GIF-Datei decodieren«.
+# Format: docs/aufgaben.md. Gearbeitet wird in /workspace/pixelram-starter.
+# Die Prüfsummen stammen aus dem Referenzdecoder in loesung/gif.c und sind
+# mit Pillow nachgerechnet (Adler-32 über RGB aller Pixel, Zeile für Zeile).
+format: 1
+activity: gif
+tasks:
+  - id: farben
+    title: Die Farbtabelle des Fotos
+    prompt: |
+      Sieh dir mit `hexdump -C markt.gif | head -1` den Anfang des Fotos an.
+      Wie viele Bytes ist seine Global Color Table lang?
+    check:
+      type: number
+      expect: 768
+    hint: Die Packed Fields stehen im elften Byte der Datei, bei Offset 0x0A. Die letzten drei Bits sind n, die Tabelle hat 2<sup>n+1</sup> Farben.
+    feedback:
+      - when: { equals: 256 }
+        say: So viele Farben hat die Tabelle. Jede Farbe sind aber drei Bytes.
+      - when: { equals: 7 }
+        say: 7 steht in den letzten drei Bits der Packed Fields. Die Tabelle hat 2<sup>7+1</sup> Farben, jede mit drei Bytes.
+      - when: { equals: 247 }
+        say: 0xF7 = 247 ist das ganze Byte mit den Packed Fields. Die Größe steht nur in seinen letzten drei Bits.
+    solution: 'Das Byte bei 0x0A ist `f7` = `1111 0111`. Die letzten drei Bits sind 7, also 2<sup>8</sup> = 256 Farben mit je drei Bytes: 768 Bytes.'
+
+  - id: kommentar
+    title: Ein Kommentar
+    prompt: |
+      `diskette.gif` hat eine Comment Extension. Was steht darin?
+    check:
+      type: answer
+      expect: Hackschule
+    hint: Rechts im Hexdump stehen die Bytes als Zeichen. Der Kommentar beginnt nach `21 fe` und der Länge des Sub-blocks.
+    solution: '`21 fe` ist die Comment Extension, `0a` die Länge, danach zehn Zeichen: `Hackschule`.'
+
+  - id: neuer-code
+    title: Ein Code, den es noch nicht gibt
+    prompt: |
+      Bei der Diskette sind die ersten Codes 4, 1 und 6. Nach dem Clear Code 4
+      und dem Pixel 1 hat die Tabelle die Einträge 0 bis 5, aber noch keinen
+      Eintrag 6. Wofür steht der Code 6?
+    prediction: true
+    check:
+      type: choice
+      options:
+        - Für den Eintrag, der gerade entsteht, den vorigen Eintrag mit dessen erstem Pixel dahinter, also 1 1
+        - Für die Farbe 6 der Farbtabelle
+        - Für einen Fehler in der Datei, der Decoder muss abbrechen
+        - Für ein Pixel, das übersprungen wird
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Die Diskette hat nur vier Farben, 0 bis 3. Codes ab 6 stehen für Folgen von Pixeln.
+      - when: { picked: 2 }
+        say: Ein Fehler wäre ein Code, der größer ist als der nächste freie Eintrag. Genau der nächste freie Eintrag ist erlaubt.
+      - when: { picked: 3 }
+        say: LZW überspringt nichts; jeder Code außer Clear und End steht für mindestens ein Pixel.
+    solution: 'Der Encoder hat nach dem ersten Pixel 1 den Eintrag 6 = 1 1 angelegt und ihn gleich benutzt, weil die nächsten beiden Pixel wieder 1 1 sind. Der Decoder kennt ihn noch nicht, kann ihn aber bauen: der vorige Eintrag (1) und dessen erstes Pixel (1).'
+
+  - id: pruefsumme-diskette
+    title: Die Diskette
+    prompt: |
+      Welche Prüfsumme gibt dein Decoder für `diskette.gif` aus?
+    check:
+      type: answer
+      expect: ['8e1af5c5', '0x8e1af5c5']
+    hint: |
+      Stimmt das Bild, aber nicht die Prüfsumme, sieh dir die Farbtabelle an.
+      Sieht das Bild falsch aus, vergleiche die ersten Codes mit dem Beispiel
+      oben: 4, 1, 6, 3, 8, 9, 9, 6, 0. Mit `printf` in `decode_lzw` siehst du,
+      welche Codes dein Programm liest.
+    solution: 'Die Prüfsumme ist `8e1af5c5`.'
+
+  - id: pruefsumme-markt
+    title: Das Foto
+    prompt: |
+      Welche Prüfsumme gibt dein Decoder für `markt.gif` aus?
+    check:
+      type: answer
+      expect: ['4e5b2bc9', '0x4e5b2bc9']
+    hint: |
+      Die Diskette braucht Codes bis 6 Bits und nie einen zweiten Clear Code.
+      Das Foto braucht Codes bis 12 Bits, eine volle Tabelle und 39 Clear
+      Codes. Prüfe, ob deine Codelänge nach einem Clear Code wieder bei 9 Bits
+      beginnt und nie über 12 wächst, und ob die Tabelle bei 4096 Einträgen
+      aufhört zu wachsen.
+    solution: 'Die Prüfsumme ist `4e5b2bc9`.'
+
+  - id: koernig
+    title: Körnig
+    prompt: |
+      Warum besteht das Gesicht im GIF aus einem Muster einzelner Pixel, im
+      JPEG nicht?
+    check:
+      type: choice
+      options:
+        - Das Bild hat nur 256 Farben. Wo eine Farbe fehlt, mischt der Encoder Pixel aus Farben, die es gibt, damit es von Weitem richtig aussieht.
+        - LZW ist verlustbehaftet und lässt Pixel weg.
+        - Der Decoder setzt bei 12 Bits einige Pixel falsch.
+        - Das GIF ist kleiner gerechnet als das JPEG.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: LZW ist verlustfrei, der Decoder bekommt jede Pixelnummer genau zurück. Die Muster stehen schon so in der Datei.
+      - when: { picked: 2 }
+        say: Dann käme eine andere Prüfsumme heraus. Die Muster stehen schon so in der Datei.
+      - when: { picked: 3 }
+        say: Beide Ausschnitte haben gleich viele Pixel, das JPEG ist für den Vergleich genauso klein gerechnet. Das Muster gibt es nur im GIF.
+    solution: 'Beim Umwandeln wurden die vielen Farben des Fotos auf 256 verringert. Damit Verläufe nicht in Stufen zerfallen, verteilt der Encoder den Fehler jedes Pixels auf seine Nachbarn (Dithering, hier nach Floyd und Steinberg). Das Muster ist also Absicht und kostet Platz: Es macht lange gleiche Folgen selten, und die braucht LZW.'
+
+  - id: interlacing
+    title: Zeilen in anderer Reihenfolge
+    prompt: |
+      Welche Prüfsumme gibt dein Decoder für `markt-interlaced.gif` aus?
+    check:
+      type: answer
+      expect: ['4e5b2bc9', '0x4e5b2bc9']
+    feedback:
+      - when: { matches: '^(0x)?0cbf2bc9$' }
+        say: Das ist die Prüfsumme der Zeilen in der Reihenfolge, in der sie in der Datei stehen. Sieht das Bild aus wie vier übereinandergelegte Streifen? Dann fehlt noch die Umrechnung mit `image_row`.
+    hint: Es ist dasselbe Bild wie `markt.gif`, nur in anderer Reihenfolge gespeichert.
+    solution: 'Dieselbe wie bei `markt.gif`: `4e5b2bc9`. Interlacing ändert nur, in welcher Reihenfolge die Zeilen in der Datei stehen, nicht das Bild.'

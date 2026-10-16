@@ -114,13 +114,14 @@
   description: |
     Ein Blick unter die Haube: eine kleine CPU programmieren, Sortierverfahren
     und Datenstrukturen selbst bauen, endliche Automaten, ein neuronales Netz,
-    das Ziffern erkennt, und der Aufbau einer JPEG-Datei.
+    das Ziffern erkennt, und der Aufbau von GIF- und JPEG-Dateien.
   entries:
     - sandbox-cpu
     - sandbox-sortieren
     - sandbox-datenstrukturen
     - automata
     - digits-experiment
+    - gif
     - jpeg
 
 - key: terminal
