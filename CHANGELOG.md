@@ -649,6 +649,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Die TCP-Konsole scrollt nicht mehr in einem Kasten innerhalb der Seite:
+  Das Protokoll wächst mit dem Gespräch, nur die Seite scrollt, und die
+  Zeile zum Senden bleibt unten im Fenster. Neue Antworten ziehen die Seite
+  mit, solange man unten ist; wer nach oben gescrollt hat, um zu lesen,
+  bleibt dort und bekommt einen Knopf »Neue Antwort«.
 - Das Bild der Startseite auf der Karte »Was ist der Hackschule
   Workspace?« zeigt die Überschrift in der Mitte des Kopfes: Die Zeile mit
   dem Sponsor fehlt jetzt samt ihrem Platz, und die Karte schneidet das Bild

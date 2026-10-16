@@ -16,8 +16,9 @@
   }
   .tcp-examples { font-size: 0.9em; color: var(--bs-secondary-color); margin-bottom: 1em; }
   .tcp-examples button { font-size: 0.95em; padding: 0.1em 0.6em; margin: 0.15em 0.2em 0.15em 0; }
-  .tcp-log { border: 1px solid var(--bs-border-color); border-radius: 10px; padding: 0.8em; height: min(40em, 62vh);
-             overflow-y: auto; background: var(--bs-body-bg); display: flex; flex-direction: column; gap: 0.5em; resize: vertical; }
+  /* The log grows with the conversation; only the page scrolls, as in a chat. */
+  .tcp-log { border: 1px solid var(--bs-border-color); border-radius: 10px; padding: 0.8em; min-height: 14em;
+             background: var(--bs-body-bg); display: flex; flex-direction: column; gap: 0.5em; }
   .tcp-log:empty::before { content: 'Hier erscheint, was du schickst und was der Server antwortet.';
                            color: var(--bs-secondary-color); margin: auto; }
   /* Speech bubbles as in a chat: what you send on the right, what the server sends on the left,
@@ -48,7 +49,15 @@
   .tcp-status.tcp-open::before, .tcp-status.tcp-open::after { border-color: var(--bs-success-border-subtle); }
   .tcp-status.tcp-failed { color: var(--bs-danger-text-emphasis); }
   .tcp-status.tcp-failed::before, .tcp-status.tcp-failed::after { border-color: var(--bs-danger-border-subtle); }
-  .tcp-send { display: flex; gap: 0.5em; margin-top: 0.6em; }
+  /* The line to send stays at the bottom of the window (above the fixed footer of the
+     development site), so it is at hand however long the conversation gets. */
+  .tcp-send { position: sticky; bottom: var(--tcp-footer, 0px); z-index: 3; display: flex; gap: 0.5em;
+              padding: 0.6em 0; background: var(--bs-body-bg); }
+  .tcp-send::before { content: ''; position: absolute; left: 0; right: 0; top: -1em; height: 1em; pointer-events: none;
+                      background: linear-gradient(transparent, var(--bs-body-bg)); }
+  /* When you have scrolled up to read, new output does not pull the page down; this says it came. */
+  .tcp-new { position: absolute; left: 50%; top: -2.4em; transform: translateX(-50%); z-index: 4;
+             border-radius: 2em; padding: 0.2em 0.9em; font-size: 0.85em; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); }
   #tcp-line { font-family: '0xProto Nerd Font Mono', monospace; font-size: 1.05rem; }
   .tcp-hint { font-size: 0.85em; color: var(--bs-secondary-color); margin-top: 0.5em; }
 </style>
@@ -91,6 +100,7 @@
            placeholder="Erst verbinden" aria-label="Zeile, die an den Server geht">
     <button type="submit" class="btn btn-outline-primary" id="tcp-send-button" disabled>Senden</button>
     <button type="button" class="btn btn-outline-danger" id="tcp-disconnect" hidden>Trennen</button>
+    <button type="button" class="btn btn-sm btn-primary tcp-new" id="tcp-new" hidden><i class="bi bi-arrow-down"></i> Neue Antwort</button>
   </form>
   <p class="tcp-hint">
     <kbd>Enter</kbd> schickt die Zeile ab; in einem leeren Feld schickt es eine leere Zeile, die bei HTTP die Header beendet.
@@ -105,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const $ = (id) => document.getElementById(id);
   const log = $('tcp-log'), host = $('tcp-host'), port = $('tcp-port'), tls = $('tcp-tls');
   const connectButton = $('tcp-connect-button'), line = $('tcp-line'), sendButton = $('tcp-send-button');
-  const disconnectButton = $('tcp-disconnect');
+  const disconnectButton = $('tcp-disconnect'), composer = $('tcp-send'), newButton = $('tcp-new');
   let ws = null, ready = false, connected = false, busy = false, target = null;
   // How the connection ended: the relay says »closed« (server, idle, limit,
   // error) just before »ended«; when you end it, the page knows it itself.
@@ -120,7 +130,26 @@ document.addEventListener('DOMContentLoaded', function() {
     return new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   }
 
-  function scrollDown() { log.scrollTop = log.scrollHeight; }
+  // The page follows the conversation while its end is in view (just above the line to
+  // send); scrolled up to read, it stays where it is and offers to jump down.
+  const fixedFooter = document.querySelector('footer.footer-fixed');
+  if (fixedFooter) document.documentElement.style.setProperty('--tcp-footer', fixedFooter.offsetHeight + 'px');
+  let following = true;
+  const gap = () => log.getBoundingClientRect().bottom - composer.getBoundingClientRect().top;
+  function toEnd() {
+    const by = gap() + 12;
+    if (by > 0) window.scrollBy(0, by);
+    following = true;
+    newButton.hidden = true;
+  }
+  function follow(force) {
+    if (force || following) toEnd(); else newButton.hidden = false;
+  }
+  window.addEventListener('scroll', () => {
+    following = gap() <= 40;
+    if (following) newButton.hidden = true;
+  }, { passive: true });
+  newButton.addEventListener('click', () => { toEnd(); line.focus({ preventScroll: true }); });
 
   function closeBubbles() {
     if (serverBubble) serverBubble.stop.remove();
@@ -155,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
     span.append(i, document.createTextNode(clock() + ' · ' + text));
     row.append(span);
     log.append(row);
-    scrollDown();
+    follow(kind === 'connecting');
     return row;
   }
 
@@ -184,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
     clearTimeout(stopTimer);
     const current = serverBubble;
     stopTimer = setTimeout(() => current.stop.remove(), 1500);
-    scrollDown();
+    follow();
   }
 
   function setState() {
@@ -212,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
     row.append(icon);
     clientBubble.text.append(row);
     clientBubble.time.textContent = clock();
-    scrollDown();
+    follow(true);
     ws.send(JSON.stringify({ action: 'send', line: text }));
   }
 
@@ -258,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
       connected = true; busy = false; closedBy = null; openedAt = performance.now();
       status('open', 'bi-plug-fill', 'Verbunden mit ' + target.host + ' (' + data.connected + '), Port ' + target.port +
              (data.tls ? ', verschlüsselt mit ' + data.tls : ', unverschlüsselt'));
-      setState(); line.focus();
+      setState(); line.focus({ preventScroll: true }); follow(true);
       return;
     }
     if (data.closed !== undefined) {
