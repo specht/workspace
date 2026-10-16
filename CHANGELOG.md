@@ -18,6 +18,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Neue Aktivität »Ein Krimi im Terminal« in »Terminal & Git«: Aus dem
+  Stadtmuseum Bitstein ist die Goldene Diskette verschwunden, und die Akten
+  sind zu groß zum Durchlesen. Lernende lösen den Fall mit `grep` (mit `^`,
+  `-i`, `-c`, `-l`), `head | tail`, einer Kette aus `grep`, `sort | uniq -d`
+  und zum Schluss mit `git log` und `git show` in einem Repository, in dem
+  ein Commit mit harmloser Nachricht zwei Zeilen löscht. Sieben Screenshots,
+  elf Aufgaben, davon vier Befehle, deren Ausgabe der Workspace prüft, eine
+  Lehrkraftnotiz mit der Lösung und zum Schluss ein eigener Fall zum
+  Abgeben. Die Idee stammt aus »The Command Line Murders« von Noah Veltman.
+
 - Neue Aktivität »Geheime Botschaften in Bildern« in »Bilder und
   Kompression«, in Ruby (ChunkyPNG) und Python (Pillow): Lernende lesen ein
   PNG als Liste von Zahlen, sehen sich Bitebenen an, verstecken Text mit
@@ -545,6 +555,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   statt fast quadratisch und so nicht mehr höher als der Text.
 
 ### Geändert
+
+- `check-task: ID <- ANTWORT` in Screenshot-Rezepten trägt eine Antwort in
+  die Karte ein, bevor geprüft wird: einen Befehl, eine Zahl, eine Auswahl.
+  So prüfen Rezepte auch Befehls- und Antwortaufgaben. Beispiele in
+  `task-examples.yaml` gibt es jetzt auch für Befehlsaufgaben (`command`,
+  ausgeführt mit dem `sh` des Rechners); `archive:` entpackt dafür ein
+  Archiv der Aktivität in den Ordner des Beispiels.
 
 - Ruby- und Python-Prüfungen von Aufgaben laden Gems und pip-Pakete, die
   Lernende in ihrem Workspace installiert haben (`gem install`,

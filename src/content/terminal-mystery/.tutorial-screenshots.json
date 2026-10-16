@@ -1,0 +1,47 @@
+{
+  "screenshots": {
+    "fahrzeuge.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "32a9e9beda116a0aaac6f3a756c646bf446710679cb427601acbbc4edb9915b5",
+      "state_hash": "76111388e47b9e63ca0a5ef7d92c4815f63d920e0f40d8875391a5445ecff853",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "git-show.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "175ae57b0ef637f484891292f2da7b086602cc6d305e335c95bb94fad1623729",
+      "state_hash": "ac6180d5708bc389a2085383ec19a8e0cc93baf1b4219e75d21145b917b0c97f",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "grep-l.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "98026a22024547c7f42a442866a2a453c0723c54522ab4a3bddcfdb117d9e73d",
+      "state_hash": "27c9935b7670247980f2a714774c515f338f65e8263b9eefd83f53efe463cb5c",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "head-tail.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "86d7a3b29080cedb77f86465b446db6a295efa7d7610844efce4c5eb88a4dbd6",
+      "state_hash": "cbd6213d4abd92f74c71181cd23a7254551843da4fecb2d2fc96c85a7c7a0e0c",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "kaffee.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "ef11187d0f688860dee7e13b275093b45bae787c05621a4397a39d2afb316a37",
+      "state_hash": "1567387b9c16544319b27d0c2924387012f65c8f8ccb5e8c732a6bcbd9af5375",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "liesmich.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "f745ba966fcd38596079e94f06c0a42c54e37d6861bef0fcbe877ecd8ffa9ba8",
+      "state_hash": "31a5393a88613d3c1ec34a876d71072168371117cfb17b42a4fce38e46dd3c1a",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "vereine.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "31c4d746fdf151d9a2e6d4f9446bec1ead6db5be012366c74f3cd2bcfa1ba3cf",
+      "state_hash": "57ec189c1b36001f39e3b974daf4a25ed58a9516035e6145b0f3bf2684ebc5e5",
+      "workspace_look": "4.138.0-ls366"
+    }
+  },
+  "version": 1
+}

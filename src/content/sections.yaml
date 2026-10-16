@@ -145,10 +145,12 @@
   description: |
     Arbeite mit Dateien und Programmen im Terminal. Mit Git kannst du Änderungen
     an deinen Projekten nachvollziehen, frühere Stände wiederherstellen und
-    gemeinsam mit anderen daran arbeiten.
+    gemeinsam mit anderen daran arbeiten. Und mit beidem einen Diebstahl
+    aufklären.
   entries:
     - working-with-files
     - git
+    - terminal-mystery
 
 # Parked for now, so that the sections above fill rows of three: not in the
 # catalog, but the pages stay reachable by direct links (static-website links

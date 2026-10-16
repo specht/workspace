@@ -1,0 +1,182 @@
+# Aufgaben zu »Ein Krimi im Terminal«. Format: docs/aufgaben.md.
+# Die Akten kommen aus src/static/terminal-mystery/bitstein.tar.gz, gebaut von
+# beispiele/make_case.rb, und liegen nach dem Entpacken in /workspace/bitstein.
+# Die Zahlen unten stammen aus diesem Archiv; das Skript gibt sie aus.
+# Befehle laufen in /workspace, also mit bitstein/ davor oder mit cd.
+format: 1
+activity: terminal-mystery
+tasks:
+  - id: entpackt
+    title: Die Akten
+    prompt: Lade das Archiv mit den Akten herunter und entpacke es in deinem Home-Verzeichnis.
+    check:
+      type: files
+      path: bitstein/tatort.txt
+      expect:
+        format: text
+    feedback:
+      - when: { problem: missing }
+        say: Es fehlt `bitstein/tatort.txt`. Entpacke das Archiv mit `tar xzf bitstein.tar.gz` in `~`, also in `/workspace`.
+
+  - id: hinweise
+    title: Die Hinweise
+    prompt: |
+      Schreib einen Befehl, der aus `tatort.txt` genau die Zeilen ausgibt, die
+      mit `HINWEIS` anfangen. Der Befehl läuft in deinem Home-Verzeichnis:
+      Schreib also `bitstein/tatort.txt` oder fang mit `cd bitstein &&` an.
+    check:
+      type: command
+      timeout: 10
+      output:
+        lines: 5
+        matching: '^HINWEIS:'
+    feedback:
+      - when: { output_matches: 'Bitte nicht berühren' }
+        say: Eine Zeile zu viel, das Schild an Vitrine 4. Dort steht `HINWEIS` mitten in der Zeile. Mit `^` passt das Muster nur am Anfang einer Zeile.
+      - when: { output_matches: 'No such file' }
+        say: Der Befehl läuft in deinem Home-Verzeichnis. Schreib `bitstein/tatort.txt`.
+    solution: "`grep '^HINWEIS' bitstein/tatort.txt`"
+
+  - id: gross-klein
+    title: Groß oder klein
+    prompt: In wie vielen Zeilen von `tatort.txt` steht `hinweis`, egal ob groß oder klein geschrieben?
+    check:
+      type: number
+      expect: 181
+    feedback:
+      - when: { equals: 6 }
+        say: Das sind die Zeilen mit `HINWEIS` in Großbuchstaben. Mit `-i` zählt `grep` auch `Hinweis` und `hinweis`.
+      - when: { equals: 5 }
+        say: Das sind nur die Zeilen, die mit `HINWEIS` anfangen. Gesucht ist das Wort überall und in jeder Schreibweise, mit `-i`.
+    hint: '`grep -c` zählt Zeilen, `grep -i` macht Groß und Klein gleich.'
+    solution: "`grep -ic hinweis bitstein/tatort.txt` ergibt 181."
+
+  - id: zeugin
+    title: Die Zeugin
+    prompt: |
+      Schreib einen Befehl, der aus `strassen/moewenweg.txt` genau die Zeile
+      der Zeugin ausgibt, und nur sie.
+    check:
+      type: command
+      timeout: 10
+      output:
+        lines: 1
+        matching: 'befragung-3817'
+    feedback:
+      - when: { output_matches: 'befragung-2290' }
+        say: Das ist Herr Kowalczyk aus Hausnummer 32, er hat sein eigenes Auto gesehen. Die Zeugin wohnt in Nummer 23.
+    hint: '`head -n 23` gibt die ersten 23 Zeilen aus. Was ist davon die letzte?'
+    solution: "`head -n 23 bitstein/strassen/moewenweg.txt | tail -n 1`"
+
+  - id: nachtwaechter
+    title: Der Nachtwächter
+    prompt: Welche Nummer hat die Befragung des Nachtwächters Ole Brandt?
+    check:
+      type: answer
+      compare: regex
+      expect: '^\s*(befragungen/)?(befragung-)?1290(\.txt)?\s*$'
+    feedback:
+      - when: { matches: '3315|4909|7510' }
+        say: In dieser Befragung kommt Ole Brandt vor, aber befragt wurde jemand anders. Schau, wer in der zweiten Zeile steht.
+    hint: '`grep -l` nennt nur die Dateien, in denen das Muster vorkommt.'
+    solution: "`grep -l \"Ole Brandt\" bitstein/befragungen/*` nennt vier Dateien; befragt wurde er in `befragung-1290.txt`."
+
+  - id: autos
+    title: Das gelbe Auto
+    prompt: |
+      Schreib einen Befehl, der aus `fahrzeuge.txt` genau die Autos ausgibt,
+      die zur Aussage der Zeugin passen.
+    check:
+      type: command
+      timeout: 10
+      output:
+        lines: 4
+        matching: '^BS-K\S* \d*7 +gelb '
+    feedback:
+      - when: { output_matches: '^BS-K\S* \d*[0-689] ' }
+        say: Da ist noch ein Auto dabei, dessen Kennzeichen nicht auf 7 endet.
+      - when: { output_matches: '^BS-[A-JL-Z]' }
+        say: Da ist noch ein Kennzeichen dabei, das nicht mit `BS-K` anfängt. Mit `^` passt das Muster nur am Anfang der Zeile.
+      - when: { output_matches: '^BS-K\S* \d+ +(?!gelb)' }
+        say: Da ist noch ein Auto dabei, das nicht gelb ist.
+    hint: "Mehrere `grep` hintereinander, mit `|` verbunden: Jedes siebt weiter aus, was das vorige übrig lässt."
+    solution: "`grep '^BS-K' bitstein/fahrzeuge.txt | grep gelb | grep '7 '`"
+
+  - id: beide-vereine
+    title: In beiden Vereinen
+    prompt: |
+      Schreib einen Befehl, der alle ausgibt, die im Schachclub und im
+      Fitnessstudio Muskelkater sind, jeden Namen einmal.
+    check:
+      type: command
+      timeout: 10
+      output:
+        lines: 6
+        matching: '^[A-ZÄÖÜ]\S* [A-ZÄÖÜ]\S*$'
+    feedback:
+      - when: { output_matches: '^\s+\d+ ' }
+        say: Vor den Namen stehen noch Zahlen. `uniq -c` zählt; `uniq -d` gibt nur die doppelten Zeilen aus.
+    hint: Schreib beide Listen sortiert untereinander. Wer in beiden Vereinen ist, steht dann zweimal direkt hintereinander.
+    solution: "`sort bitstein/vereine/schachclub.txt bitstein/vereine/muskelkater.txt | uniq -d`"
+
+  - id: verdaechtige
+    title: Zwei Verdächtige
+    prompt: Wer hat eins der vier Autos und ist im Schachclub und im Fitnessstudio?
+    check:
+      type: choice
+      options:
+        - Konstantin Reuter und Marlene Voss
+        - Emil Schütte und Ayşe Demir
+        - Konstantin Reuter und Emil Schütte
+        - Marlene Voss und Ayşe Demir
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Beide haben ein passendes Auto. Aber Emil Schütte ist nur im Schachclub und Ayşe Demir nur im Fitnessstudio.
+      - when: { picked: 2 }
+        say: Emil Schütte ist im Schachclub, aber nicht im Fitnessstudio.
+      - when: { picked: 3 }
+        say: Ayşe Demir trainiert im Muskelkater, ist aber nicht im Schachclub.
+
+  - id: karte
+    title: Die gelöschte Karte
+    prompt: Mit welcher Karte wurde in der Nacht der Hintereingang geöffnet?
+    check:
+      type: answer
+      compare: regex
+      expect: '^\s*(Karte\s*)?4471\s*$'
+    feedback:
+      - when: { matches: '100[1-5]' }
+        say: Diese Karte steht noch im Protokoll, sie war immer schon da. Gesucht ist eine, die jemand aus `zugaenge.log` gelöscht hat.
+    hint: '`git log --author=Wartung` zeigt, was die Wartung committet hat. `git show` und die ersten Zeichen des Hashs zeigen, was sich dabei geändert hat.'
+    solution: "`git show` des Commits »Wartung beendet«: Er löscht zwei Zeilen mit Karte 4471, 23:12 und 23:38 Uhr am Hintereingang."
+
+  - id: taeter
+    title: Wer war es?
+    prompt: Wer hat die Goldene Diskette gestohlen? Vor- und Nachname.
+    check:
+      type: answer
+      expect: Konstantin Reuter
+    feedback:
+      - when: { matches: '^\s*Marlene\s+Voss\s*$' }
+        say: Marlene Voss hat ein gelbes Auto und ist in beiden Vereinen. Aber was sagt die Alarmanlage, und wem gehört die Karte?
+      - when: { matches: '^\s*Dieter\s+Reuter\s*$' }
+        say: Dieter Reuter hat die Firma gegründet und ist im Schachclub. Aber sein Auto ist silbern, und ins Fitnessstudio geht er nicht.
+      - when: { matches: '^\s*Reuter\s*$' }
+        say: In Bitstein wohnen vier Reuters. Welcher?
+      - when: { matches: '^\s*(Paula|Jonas)\s+Reuter\s*$' }
+        say: Schau in `personen.txt` nach, was die vier Reuters arbeiten.
+      - when: { matches: 'Ole|Brandt' }
+        say: Der Nachtwächter hat den Dieb gesehen, nicht gemacht.
+    solution: Konstantin Reuter, Elektriker bei Elektro Reuter. Die Firma hat die Anlage 2024 eingebaut und die Karte 4471 nie zurückgegeben.
+
+  - id: eigener-fall
+    title: Ein eigener Fall
+    prompt: |
+      Bau einen kleinen Fall für jemanden aus deiner Klasse, in einem Ordner
+      `mein-fall` mit einer `LIESMICH.txt`, und gib ihn ab.
+    check:
+      type: submit
+      paths: [mein-fall]
+      max_size: 5MB
+      gallery: false

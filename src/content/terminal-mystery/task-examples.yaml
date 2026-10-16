@@ -1,0 +1,96 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«). Die Befehle laufen mit sh in einem Ordner, in den die
+# Akten entpackt sind, wie im Workspace in /workspace.
+format: 1
+activity: terminal-mystery
+examples:
+  entpackt:
+    pass:
+      - archive: beispiele/bitstein.tar.gz
+    fail:
+      - files: { bitstein.tar.gz: { text: "" } }
+        say: tar xzf
+
+  hinweise:
+    pass:
+      - archive: beispiele/bitstein.tar.gz
+        answer: grep '^HINWEIS' bitstein/tatort.txt
+      - archive: beispiele/bitstein.tar.gz
+        answer: cd bitstein && grep ^HINWEIS tatort.txt
+    fail:
+      # Das Schild an Vitrine 4 kommt mit
+      - archive: beispiele/bitstein.tar.gz
+        answer: grep HINWEIS bitstein/tatort.txt
+        say: Mit `^`
+      - archive: beispiele/bitstein.tar.gz
+        answer: grep '^HINWEIS' tatort.txt
+        say: bitstein/tatort.txt
+      - archive: beispiele/bitstein.tar.gz
+        answer: grep -i hinweis bitstein/tatort.txt
+
+  zeugin:
+    pass:
+      - archive: beispiele/bitstein.tar.gz
+        answer: head -n 23 bitstein/strassen/moewenweg.txt | tail -n 1
+      - archive: beispiele/bitstein.tar.gz
+        answer: sed -n 23p bitstein/strassen/moewenweg.txt
+    fail:
+      - archive: beispiele/bitstein.tar.gz
+        answer: head -n 23 bitstein/strassen/moewenweg.txt
+      - archive: beispiele/bitstein.tar.gz
+        answer: grep gesehen bitstein/strassen/moewenweg.txt
+
+  nachtwaechter:
+    pass:
+      - answer: '1290'
+      - answer: befragung-1290.txt
+      - answer: befragungen/befragung-1290.txt
+    fail:
+      - answer: '3315'
+        say: zweiten Zeile
+      - answer: '12900'
+
+  autos:
+    pass:
+      - archive: beispiele/bitstein.tar.gz
+        answer: grep '^BS-K' bitstein/fahrzeuge.txt | grep gelb | grep '7 '
+      - archive: beispiele/bitstein.tar.gz
+        answer: grep -E '^BS-K[A-Z]* [0-9]*7 +gelb' bitstein/fahrzeuge.txt
+    fail:
+      - archive: beispiele/bitstein.tar.gz
+        answer: grep '^BS-K' bitstein/fahrzeuge.txt | grep gelb
+        say: nicht auf 7 endet
+      - archive: beispiele/bitstein.tar.gz
+        answer: grep gelb bitstein/fahrzeuge.txt | grep '7 '
+        say: nicht mit `BS-K` anfängt
+
+  beide-vereine:
+    pass:
+      - archive: beispiele/bitstein.tar.gz
+        answer: sort bitstein/vereine/schachclub.txt bitstein/vereine/muskelkater.txt | uniq -d
+      - archive: beispiele/bitstein.tar.gz
+        answer: cd bitstein/vereine && cat schachclub.txt muskelkater.txt | sort | uniq -d
+    fail:
+      - archive: beispiele/bitstein.tar.gz
+        answer: sort bitstein/vereine/schachclub.txt bitstein/vereine/muskelkater.txt | uniq -c | sort -n | tail -n 6
+        say: uniq -d
+      # Ohne sort stehen die doppelten Namen nicht nebeneinander
+      - archive: beispiele/bitstein.tar.gz
+        answer: cat bitstein/vereine/schachclub.txt bitstein/vereine/muskelkater.txt | uniq -d
+
+  karte:
+    pass:
+      - answer: '4471'
+      - answer: Karte 4471
+    fail:
+      - answer: '1005'
+        say: gelöscht
+
+  taeter:
+    fail:
+      - answer: Marlene Voss
+        say: Alarmanlage
+      - answer: Dieter Reuter
+        say: silbern
+      - answer: Reuter
+        say: vier Reuters
