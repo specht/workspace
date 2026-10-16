@@ -1,6 +1,7 @@
 <div class='meta'>
 image: sorting-sandbox.webp
 kind: projekt
+language: Dart / Python / JavaScript / Java
 topic: computing
 reference: [gitlab]
 template: https://github.com/specht/sorting-sandbox.git

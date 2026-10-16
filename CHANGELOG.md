@@ -504,6 +504,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Behoben
 
+- Automatron: In den Beispielen steht die Beschreibung unter einem langen
+  Ausdruck statt in einer schmalen Spalte daneben, in der sie Wort für Wort
+  umbrach.
 - »Statische Webseiten«, Aufgabe »Ein eigenes Bild«: Ein Bild aus dem Netz
   zählt nicht mehr als eigenes. Die Prüfung verlangt jetzt mindestens ein
   Bild mit einem Pfad im Workspace (`img: { local: 1 }`, neu für alle
@@ -530,6 +533,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Die drei Sandboxes nennen ihre Sprachen neben der Art: »Projekt (Dart /
+  Python / JavaScript / Java)« für Datenstrukturen und Sortieren, »Projekt
+  (Assembler / C)« für die CPU Sandbox.
 - Das Bild der Endlichen Automaten auf der Startseite zeigt statt eines
   Automaten mit 16 Zuständen den kleinsten DEA, der prüft, ob eine
   Dezimalzahl durch 3 teilbar ist: drei Zustände für die Quersumme modulo 3,

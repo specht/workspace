@@ -7,8 +7,11 @@
   .automatron-examples { margin: 1em 0 1.5em; }
   .automatron-examples summary { font-weight: 600; cursor: pointer; margin-bottom: 0.4em; }
   .automatron-examples h6 { margin: 0.9em 0 0.4em; }
-  .automatron-examples .list-group-item { display: flex; gap: 0.6em; align-items: baseline; }
+  /* The description stands next to the expression while it has room for a
+     few words, and below it otherwise: never squeezed into a narrow column. */
+  .automatron-examples .list-group-item { display: flex; flex-wrap: wrap; column-gap: 0.6em; row-gap: 0.1em; align-items: baseline; }
   .automatron-examples .list-group-item code { white-space: nowrap; }
+  .automatron-examples .list-group-item span { flex: 1 1 11em; hyphens: manual; }
   .automatron-examples .list-group-item.selected { background: var(--bs-primary-bg-subtle); }
   #output_area h3 { margin-top: 1.4em; }
   #output_area h4 { margin-top: 1em; font-size: 1.15rem; }
