@@ -549,6 +549,123 @@ def make_repo(dir)
     repo
 end
 
+# --- The case server (docker/case-server) ---------------------------------------------
+#
+# What the two SSH servers hold, for the chapter »Beweise vom Server«: on
+# museum.bitstein the VPN log and who has which address, on
+# alarmanlage.bitstein the alarm system's repository and the shell history of
+# the maintenance account, which shows what was typed in the night. Its own
+# random numbers, so the case files above stay as they are.
+
+SERVERS = File.expand_path('../../../../docker/case-server/files', HERE)
+SERVER_RNG = Random.new(SEED + 1)
+VPN = { 'hollerbach' => '10.8.0.11', 'brueckner' => '10.8.0.14' }.freeze
+THIEF_VPN = '10.8.0.23'
+SERVICE_VPN = '10.8.0.31'
+
+def epoch(time)
+    Time.new(*time.split(/[- :]/).map(&:to_i), '+01:00').to_i
+end
+
+def vpn_log
+    entries = []
+    (1..15).each do |day|
+        date = format('2026-03-%02d', day)
+        if SERVER_RNG.rand < 0.8
+            from = format('%02d:%02d:%02d', SERVER_RNG.rand(18..21), SERVER_RNG.rand(60), SERVER_RNG.rand(60))
+            entries << ["#{date} #{from}", 'hollerbach']
+        end
+        if SERVER_RNG.rand < 0.3
+            from = format('%02d:%02d:%02d', SERVER_RNG.rand(9..16), SERVER_RNG.rand(60), SERVER_RNG.rand(60))
+            entries << ["#{date} #{from}", 'brueckner']
+        end
+    end
+    lines = entries.flat_map do |time, who|
+        stop = Time.at(epoch(time) + SERVER_RNG.rand(300..3000)).getlocal('+01:00').strftime('%Y-%m-%d %H:%M:%S')
+        [[time, 'verbunden', who, VPN[who]], [stop, 'getrennt', who, VPN[who]]]
+    end
+    lines += [['2026-03-03 10:04:12', 'verbunden', 'wartung', SERVICE_VPN], ['2026-03-03 10:31:40', 'getrennt', 'wartung', SERVICE_VPN],
+              ['2026-03-14 23:02:41', 'verbunden', 'wartung', THIEF_VPN], ['2026-03-14 23:47:05', 'getrennt', 'wartung', THIEF_VPN]]
+    "# VPN des Stadtmuseums: wer sich wann von außen verbunden hat\n" +
+        lines.sort.map { |t, what, who, ip| format('%s  %-9s  %-10s  %s', t, what, who, ip) }.join("\n") + "\n"
+end
+
+DEVICES = <<~TEXT
+    # Zugänge zum VPN des Museums. Jedes Gerät hat eine feste Adresse.
+    #{VPN['hollerbach']}   hollerbach   Ingrid Hollerbach, Laptop
+    #{VPN['brueckner']}   brueckner    Timo Brückner, Rechner an der Kasse
+    #{THIEF_VPN}   wartung      Elektro Reuter, Laptop vom Einbau 2024 (Zugang nie gesperrt)
+    #{SERVICE_VPN}   wartung      Nordlicht Sicherheitstechnik, Wartung seit 2025
+TEXT
+
+NETWORK = <<~TEXT
+    Netz des Stadtmuseums Bitstein
+
+    museum.bitstein        dieser Server: Verwaltung, VPN, Protokolle in logs/
+    alarmanlage.bitstein   Steuerung der Alarmanlage
+
+    Die Alarmanlage hängt nur im Netz des Museums. Von außen kommt niemand an
+    sie heran, nur von hier aus:
+
+        ssh alarmanlage.bitstein
+TEXT
+
+MUSEUM_README = <<~TEXT
+    Server der Verwaltung des Stadtmuseums Bitstein
+
+    Für die Polizei freigegeben, nur zum Lesen. Hier liegt:
+
+      netzplan.txt   welche Rechner es im Museum gibt
+      geraete.txt    wer einen Zugang zum VPN hat, mit welcher Adresse
+      logs/vpn.log   wer sich wann von außen verbunden hat
+
+    Ingrid Hollerbach
+TEXT
+
+# What the maintenance account typed on the alarm system: two sessions,
+# around the two commits of the night. Bash writes the time of each command
+# as a line #<seconds since 1970> above it (HISTTIMEFORMAT).
+def bash_history
+    [
+        ['2026-03-14 23:06:12', 'cd /srv/alarmanlage'],
+        ['2026-03-14 23:06:30', 'cat einstellungen.txt'],
+        ['2026-03-14 23:08:02', 'nano einstellungen.txt'],
+        ['2026-03-14 23:09:00', 'git commit -am "Wartung: Alarm vorübergehend aus"'],
+        ['2026-03-14 23:09:15', 'exit'],
+        ['2026-03-14 23:39:51', 'cd /srv/alarmanlage'],
+        ['2026-03-14 23:40:07', 'tail -n 3 zugaenge.log'],
+        ['2026-03-14 23:40:30', 'nano einstellungen.txt'],
+        ['2026-03-14 23:40:48', "sed -i '/4471/d' zugaenge.log"],
+        ['2026-03-14 23:40:55', 'tail -n 3 zugaenge.log'],
+        ['2026-03-14 23:41:00', 'git commit -am "Wartung beendet"'],
+        ['2026-03-14 23:41:09', 'exit']
+    ].map { |time, command| "##{epoch(time)}\n#{command}\n" }.join
+end
+
+def make_servers(root)
+    museum = File.join(SERVERS, 'museum')
+    alarm = File.join(SERVERS, 'alarmanlage')
+    FileUtils.rm_rf([museum, alarm])
+    FileUtils.mkdir_p(File.join(museum, 'srv/museum/logs'))
+    FileUtils.mkdir_p(File.join(museum, 'etc'))
+    File.write(File.join(museum, 'etc/motd'), "\nStadtmuseum Bitstein, Server der Verwaltung. Nur zum Lesen.\nWas hier liegt, steht in LIESMICH.txt.\n\n")
+    File.write(File.join(museum, 'srv/museum/LIESMICH.txt'), MUSEUM_README)
+    File.write(File.join(museum, 'srv/museum/netzplan.txt'), NETWORK)
+    File.write(File.join(museum, 'srv/museum/geraete.txt'), DEVICES)
+    File.write(File.join(museum, 'srv/museum/logs/vpn.log'), vpn_log)
+
+    FileUtils.mkdir_p(File.join(alarm, 'home/wartung'))
+    FileUtils.mkdir_p(File.join(alarm, 'etc'))
+    File.write(File.join(alarm, 'etc/motd'), "\nAlarmanlage Stadtmuseum Bitstein. Nur zum Lesen.\nDie Steuerung liegt hier in /srv/alarmanlage, die Wartung hat /home/wartung.\n\n")
+    File.write(File.join(alarm, 'home/wartung/.bash_history'), bash_history)
+    # The repository as an archive: Git does not keep a .git inside this one
+    tar = ['tar', '--sort=name', '--mtime=2026-03-15 12:00', '--owner=0', '--group=0', '--numeric-owner',
+           '-C', root, '-cf', '-', 'alarmanlage']
+    data, = Open3.capture2(*tar, :binmode => true)
+    gz, = Open3.capture2('gzip', '-n', '-9', :stdin_data => data, :binmode => true)
+    File.binwrite(File.join(alarm, 'alarmanlage.tar.gz'), gz)
+end
+
 # --- Everything together -------------------------------------------------------------
 
 def build(root)
@@ -564,6 +681,7 @@ def build(root)
     make_streets(people, by_house).each { |name, text| File.write(File.join(root, 'strassen', name), text) }
     interviews.each { |number, text| File.write(File.join(root, 'befragungen', "befragung-#{number}.txt"), text) }
     make_repo(File.join(root, 'alarmanlage'))
+    make_servers(root)
 end
 
 def pack(root)

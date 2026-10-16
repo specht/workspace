@@ -94,3 +94,21 @@ examples:
         say: silbern
       - answer: Reuter
         say: vier Reuters
+
+  loeschbefehl:
+    pass:
+      - answer: sed -i '/4471/d' zugaenge.log
+      - answer: sed -i "/4471/d" zugaenge.log
+    fail:
+      - answer: nano einstellungen.txt
+        say: nano
+      - answer: sed '/4471/d' zugaenge.log
+
+  beweis:
+    pass:
+      - files:
+          bitstein/beweis.txt: { text: "#1773528048\nsed -i '/4471/d' zugaenge.log\n#1773528060\ngit commit -am \"Wartung beendet\"\n" }
+    fail:
+      - files: { bitstein/beweis.txt: { text: "#1773526140\ngit commit -am \"Wartung: Alarm vorübergehend aus\"\n" } }
+        say: '4471'
+      - files: { bitstein/tatort.txt: { text: "HINWEIS: …\n" } }

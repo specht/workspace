@@ -164,7 +164,7 @@ module TaskExamples
                 :runner => local_runner(root), :guest_runner => local_runner(root))
             expected = kind == 'pass' ? %i[correct] : %i[wrong invalid]
             outcome.ok = expected.include?(result.status)
-            if outcome.ok && kind == 'fail' && example['say'] && !result.message.to_s.include?(example['say'])
+            if outcome.ok && kind == 'fail' && example['say'] && !result.message.to_s.include?(example['say'].to_s)
                 outcome.ok = false
                 outcome.detail = "rejected, but the message does not say »#{example['say']}«: #{result.message}"
             elsif !outcome.ok

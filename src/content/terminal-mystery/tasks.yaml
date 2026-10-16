@@ -180,3 +180,56 @@ tasks:
       paths: [mein-fall]
       max_size: 5MB
       gallery: false
+
+  # Nur mit dem Fallserver (CASE_SERVER = true, docs/entwicklung.md); die
+  # Seite zeigt sie sonst nicht. Die Werte kommen aus beispiele/make_case.rb.
+  - id: vpn
+    title: Wer kam in der Nacht?
+    prompt: Von welcher Adresse hat sich die Wartung in der Nacht der Tat mit dem VPN des Museums verbunden?
+    check:
+      type: answer
+      expect: 10.8.0.23
+    feedback:
+      - when: { matches: '10\.8\.0\.31' }
+        say: Das war die echte Wartung, am 3. März um 10 Uhr morgens. Gesucht ist die Nacht vom 14. auf den 15. März.
+    hint: '`grep wartung logs/vpn.log`'
+
+  - id: geraet
+    title: Wessen Gerät?
+    prompt: Wem gehört das Gerät mit dieser Adresse?
+    check:
+      type: answer
+      expect: [Elektro Reuter, Reuter, Konstantin Reuter]
+    feedback:
+      - when: { matches: 'Nordlicht' }
+        say: Nordlicht hat die Adresse 10.8.0.31. Welche hatte die Wartung in der Nacht?
+    hint: Die Adressen der Geräte stehen in `geraete.txt`.
+
+  - id: loeschbefehl
+    title: Der Befehl aus der Nacht
+    prompt: Mit welchem Befehl wurden die beiden Zeilen aus `zugaenge.log` gelöscht? Schreib ihn so ab, wie er in der `.bash_history` steht.
+    check:
+      type: answer
+      compare: regex
+      expect: '^\s*sed\s+-i\s+[''"]?/4471/d[''"]?\s+zugaenge\.log\s*$'
+    feedback:
+      - when: { matches: 'nano' }
+        say: Mit `nano` wurden die Einstellungen geändert. Gesucht ist der Befehl, der die Zeilen mit der Karte löscht.
+      - when: { matches: '^\s*git' }
+        say: Das ist der Commit danach. Gesucht ist der Befehl davor, der die Zeilen löscht.
+    solution: "`sed -i '/4471/d' zugaenge.log` um 23:40 Uhr: `sed` löscht (`d`) jede Zeile, in der 4471 steht, und schreibt die Datei gleich zurück (`-i`)."
+
+  - id: beweis
+    title: Beweise sichern
+    prompt: Kopier die `.bash_history` der Wartung mit `scp` nach `bitstein/beweis.txt` in deinem Workspace.
+    check:
+      type: files
+      path: bitstein/beweis.txt
+      expect:
+        format: text
+        contains:
+          - { pattern: '4471', say: 'In der Datei fehlt der Befehl mit der Karte 4471. Ist es die `.bash_history` von der Alarmanlage?' }
+          - 'Wartung beendet'
+    feedback:
+      - when: { problem: missing }
+        say: 'Es gibt noch keine `bitstein/beweis.txt`. `scp` kopiert in deinem Workspace, also ohne Verbindung zum Museum: `scp -J … ~/bitstein/beweis.txt`.'

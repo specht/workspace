@@ -32,8 +32,20 @@
     },
     "liesmich.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "f745ba966fcd38596079e94f06c0a42c54e37d6861bef0fcbe877ecd8ffa9ba8",
+      "output_sha256": "cae8ee13d503538a85d4cfd8d309bb97452da92e7a4201cb441073f69d6586c6",
       "state_hash": "31a5393a88613d3c1ec34a876d71072168371117cfb17b42a4fce38e46dd3c1a",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "ssh-alarmanlage.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "2087b429b02b6cf66f2a78a4d68c9f060b358705657023fe4d245749554830f5",
+      "state_hash": "6ac6a28aeb90b46ea95a59d97e69dee4fc3c3e7d6427258baf0d3909f93825cf",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "ssh-museum.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "5b7208836c02fe063856a356db6edd96ec79537135740663060d95cf258a82e9",
+      "state_hash": "43a0d9de4b7a4759e6a629274bc9e077d930bc4a4dcccfb760877d31984b3ca9",
       "workspace_look": "4.138.0-ls366"
     },
     "vereine.webp": {

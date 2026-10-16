@@ -317,6 +317,123 @@ check-task: taeter <- Konstantin Reuter
 
 Am Nachmittag des 15. März klingelt Kommissarin Weber an einer Tür in Bitstein. Die Goldene Diskette liegt noch in einer Sporttasche, unbeschädigt, in Zeitungspapier gewickelt. Die Zugangsdaten der Wartung hatte jemand seit dem Einbau der Anlage, und die alte Karte hat nie jemand zurückverlangt. Das Museum ändert noch am selben Abend alle Passwörter und sperrt jede Karte, die es nicht mehr braucht.
 
+<!-- feature: case_server -->
+## Beweise vom Server
+
+Konstantin Reuter streitet alles ab. Er sei die ganze Nacht zu Hause gewesen, und an die Alarmanlage komme man ohnehin nur im Museum heran. Ganz stimmt das nicht: Das Museum hat einen Server, über den man sich von außen verbinden kann, und es hat der Polizei einen Zugang gegeben. Für dich gibt es einen eigenen. Dein Workspace kennt ihn:
+
+```bash
+echo $CASE_USER $CASE_PASSWORD
+```
+
+Gibt `echo` nichts aus, lief dein Workspace schon, bevor der Server eingeschaltet wurde. Starte ihn neu, dann ist der Zugang da.
+
+### Anmelden mit ssh
+
+`ssh` (»Secure Shell«) öffnet ein Terminal auf einem anderen Rechner. Alles, was du tippst und was zurückkommt, geht verschlüsselt durchs Netz.
+
+```bash
+ssh $CASE_USER@museum.bitstein
+```
+
+Vor dem `@` steht, wer du dort bist, dahinter der Rechner. Beim ersten Mal fragt `ssh`, ob du dem Rechner traust, und zeigt seinen **Fingerabdruck**, eine Prüfsumme seines Schlüssels. Mit `yes` merkt sich `ssh` ihn in `~/.ssh/known_hosts`. Gibt sich später ein anderer Rechner als `museum.bitstein` aus, passt der Fingerabdruck nicht mehr, und `ssh` warnt laut. Dann fragt es nach dem Passwort. Beim Tippen erscheint nichts, auch keine Sternchen. Einfügen geht mit <kbd>Strg</kbd><kbd>Umschalt</kbd><kbd>V</kbd>.
+
+<!-- tutorial-step
+# ssh_askpass tippt das Passwort aus $CASE_PASSWORD, so muss das Rezept es
+# nicht kennen. Die Fingerabdrücke beider Rechner sind danach bekannt: Mit
+# SSH_ASKPASS_REQUIRE=force ginge auch die Frage danach an askpass.
+terminal-open
+terminal-run: printf '#!/bin/sh\necho "$CASE_PASSWORD"\n' > /tmp/askpass && chmod +x /tmp/askpass
+terminal-run: export SSH_ASKPASS=/tmp/askpass SSH_ASKPASS_REQUIRE=force
+terminal-run: ssh -o StrictHostKeyChecking=accept-new $CASE_USER@museum.bitstein true
+terminal-wait-for-prompt: 30
+terminal-run: ssh -o StrictHostKeyChecking=accept-new -J $CASE_USER@museum.bitstein $CASE_USER@alarmanlage.bitstein true
+terminal-wait-for-prompt: 30
+terminal-expect-no-text: Permission denied
+-->
+
+<!-- tutorial-screenshot
+# Angemeldet auf museum.bitstein
+terminal-run: clear
+terminal-run: ssh $CASE_USER@museum.bitstein
+wait-for-text: @museum:~$
+terminal-run: ls
+terminal-run: cat LIESMICH.txt
+wait-for-text: Ingrid Hollerbach
+crop-terminal-lines: auto
+-->
+
+<img class='full' src='ssh-museum.webp' alt='Im Terminal: ssh mit dem eigenen Zugang zu museum.bitstein, die Begrüßung des Servers der Verwaltung, die Eingabeaufforderung mit @museum, darunter ls mit LIESMICH.txt, geraete.txt, logs und netzplan.txt und der Inhalt von LIESMICH.txt.'>
+
+Die Eingabeaufforderung zeigt jetzt `@museum`: Jeder Befehl läuft dort, nicht in deinem Workspace. `hostname` sagt, auf welchem Rechner du bist, `whoami`, wer du dort bist. Schreiben kannst du hier nichts, lesen alles, mit denselben Werkzeugen wie in Bitstein. `exit` oder <kbd>Strg</kbd><kbd>D</kbd> bringt dich zurück.
+
+_task(vpn)
+
+_task(geraet)
+
+### Von Rechner zu Rechner
+
+Laut `netzplan.txt` hängt die Alarmanlage nur im Netz des Museums. Aus deinem Workspace findest du sie gar nicht, nur von `museum.bitstein` aus. Melde dich dort an und von dort aus weiter:
+
+```bash
+ssh alarmanlage.bitstein
+```
+
+Ohne Namen vor dem `@` nimmt `ssh` den, unter dem du gerade angemeldet bist, und der ist auf beiden Rechnern derselbe, mit demselben Passwort. Jetzt bist du zwei Rechner weit weg: dein Workspace, darin eine Verbindung zum Museum, darin eine zur Alarmanlage. Jedes `exit` geht einen Schritt zurück.
+
+Für diesen Weg gibt es eine Abkürzung. `-J` (»jump«) springt über den ersten Rechner zum zweiten, in einem Befehl, und das Passwort fragt `ssh` dann für beide:
+
+```bash
+ssh -J $CASE_USER@museum.bitstein $CASE_USER@alarmanlage.bitstein
+```
+
+<!-- tutorial-screenshot
+# Mit -J über das Museum auf die Alarmanlage
+terminal-run: exit
+wait-for-text: Connection to museum.bitstein closed
+terminal-run: clear
+terminal-run: ssh -J $CASE_USER@museum.bitstein $CASE_USER@alarmanlage.bitstein
+wait-for-text: @alarmanlage:~$
+terminal-run: hostname
+terminal-run: ls -a /home/wartung
+wait-for-text: .bash_history
+crop-terminal-lines: auto
+-->
+
+<img class='full' src='ssh-alarmanlage.webp' alt='Im Terminal: ssh -J über museum.bitstein zu alarmanlage.bitstein, die Begrüßung der Alarmanlage, hostname gibt alarmanlage aus, und ls -a /home/wartung zeigt die versteckte Datei .bash_history.'>
+
+Die Steuerung kennst du schon: `/srv/alarmanlage` ist das Repository aus deinen Akten. Neu ist `/home/wartung`. Die Bash schreibt in die versteckte Datei `.bash_history`, was jemand getippt hat, Befehl für Befehl. Über jedem Befehl steht, wann er kam, als Zeile mit `#` und den Sekunden seit dem 1. Januar 1970. `date -d @1773526140` macht daraus eine Uhrzeit.
+
+_task(loeschbefehl)
+
+### Beweise sichern
+
+`scp` (»secure copy«) kopiert Dateien über `ssh`, auch über einen Sprung. Vor dem `:` steht der Rechner, dahinter der Pfad dort, und das Letzte ist das Ziel bei dir:
+
+```bash
+scp -J $CASE_USER@museum.bitstein $CASE_USER@alarmanlage.bitstein:/home/wartung/.bash_history ~/bitstein/beweis.txt
+```
+
+Das kommt in deinem Workspace an, nicht auf einem der Server. Führ den Befehl darum in deinem Workspace aus, nicht in einer Verbindung zum Museum.
+
+_task(beweis)
+
+<!-- tutorial-step
+# Zurück im Workspace: die Beweise kopieren, die Aufgaben lösen
+terminal-run: exit
+wait-for-text: Connection to alarmanlage.bitstein closed
+terminal-run: scp -J $CASE_USER@museum.bitstein $CASE_USER@alarmanlage.bitstein:/home/wartung/.bash_history ~/bitstein/beweis.txt
+terminal-wait-for-prompt: 30
+check-task: beweis
+check-task-fails: vpn <- 10.8.0.31
+check-task: vpn <- 10.8.0.23
+check-task: geraet <- Elektro Reuter
+check-task: loeschbefehl <- sed -i '/4471/d' zugaenge.log
+-->
+
+Die Adresse aus dem VPN, das Gerät dazu und die Befehle aus der Nacht, minutengenau neben den Commits: Jetzt ist der Fall wasserdicht.
+<!-- /feature -->
+
 ## Ein eigener Fall
 
 Jetzt bist du dran: Bau einen Fall für jemanden aus deiner Klasse. Er muss nicht groß sein, aber er soll sich nur mit dem Terminal lösen lassen.
@@ -350,6 +467,11 @@ _task(eigener-fall)
 <tr><td><code>befehl &gt; datei</code>, <code>&gt;&gt; datei</code></td><td>Ausgabe in eine Datei schreiben; an sie anhängen</td></tr>
 <tr><td><code>git log --oneline --author=name</code></td><td>die Commits einer Person, jeder in einer Zeile</td></tr>
 <tr><td><code>git show hash</code></td><td>ein Commit mit allem, was er geändert hat</td></tr>
+<!-- feature: case_server -->
+<tr><td><code>ssh name@rechner</code>, <code>exit</code></td><td>ein Terminal auf einem anderen Rechner; zurück</td></tr>
+<tr><td><code>ssh -J name@a name@b</code></td><td>über den Rechner a zum Rechner b</td></tr>
+<tr><td><code>scp name@rechner:pfad ziel</code></td><td>eine Datei von dort zu dir kopieren</td></tr>
+<!-- /feature -->
 </table>
 
 ## Wie geht es weiter?

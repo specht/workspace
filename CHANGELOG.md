@@ -18,6 +18,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- »Ein Krimi im Terminal« hat ein letztes Kapitel, »Beweise vom Server«, wo
+  der Fallserver eingeschaltet ist: Lernende melden sich mit `ssh` auf dem
+  Server des Museums an, springen mit `ssh -J` weiter zur Alarmanlage, die
+  nur von dort erreichbar ist, finden im VPN-Protokoll und in der
+  `.bash_history` der Wartung die letzten Beweise und kopieren sie mit `scp`
+  in ihren Workspace. Vier Aufgaben, zwei Screenshots. Jede Person hat einen
+  eigenen Zugang; ohne Fallserver fehlt das Kapitel samt Aufgaben.
+- Seiten können Teile haben, die es nur gibt, wenn die Installation eine
+  Funktion eingeschaltet hat (`<!-- feature: case_server -->`).
+
 - Neue Aktivität »Ein Rechner für Ausdrücke« in »Wie Computer rechnen«, in
   Ruby und Python, nach den Endlichen Automaten: Lernende zerlegen Text in
   Tokens (die Zahl als Automat in Automatron), bauen mit rekursivem Abstieg
@@ -1140,6 +1150,17 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   `POST` zeigte, steht jetzt im Webserver.
 
 ### Für Betreibende
+
+- Neu und abgeschaltet: der Fallserver für »Ein Krimi im Terminal«, zwei
+  kleine SSH-Server (`case_museum`, `case_alarm`). Einschalten mit
+  `CASE_SERVER = true` in `credentials.rb`, dann
+  `./config.rb build case_museum case_alarm peer_firewall` und
+  `./config.rb up -d`; Workspaces bekommen ihren Zugang beim nächsten Start.
+  Die Server lassen nur lesen, begrenzen jedes Konto und erreichen keinen
+  Workspace; die `peer_firewall` lässt zu ihnen nur Port 22 durch (eigenes
+  Label, keine Infrastruktur). Neue Pflichtwerte gibt es nicht: Die
+  Passwörter kommen aus `LOGIN_CODE_SALT`. Einzelheiten in
+  docs/entwicklung.md, »Der Fallserver«.
 
 - Die schnellen Tests der Aufgabenbeispiele (`task_examples_test.rb`)
   brauchen für »Geheime Botschaften in Bildern« lokal `gem install
