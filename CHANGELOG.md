@@ -18,6 +18,20 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Neues Werkzeug: der Abfrage-Schrittmacher (`/query-stepper`). Er führt
+  eine SQL-Abfrage so aus, wie die Datenbank es tut, Teil für Teil: FROM,
+  JOIN, WHERE, GROUP BY, HAVING, SELECT, DISTINCT, ORDER BY, LIMIT. Nach
+  jedem Schritt zeigt er die Tabelle, die gerade entstanden ist, mit
+  durchgestrichenen Zeilen, die wegfallen, Gruppen in eigenen Farben und den
+  Spalten, mit denen der Schritt arbeitet. ← → schalten weiter. Er rechnet im
+  Browser mit den Tabellen aus terra1 und hält sich an MySQL, wo man es
+  merken würde. Groß- und Kleinschreibung zählen bei Texten nicht, NULL fällt
+  aus WHERE, einen Namen aus AS gibt es bei WHERE noch nicht, und mit GROUP BY
+  braucht jede andere Spalte eine Funktion wie COUNT. Fehler erklärt er
+  statt sie nur zu melden. Die »Einführung in SQL« hat dazu einen Abschnitt
+  »In welcher Reihenfolge arbeitet die Datenbank?« mit zwei Aufgaben, eine
+  davon eine Vermutung.
+
 - »Ein Krimi im Terminal« hat ein letztes Kapitel, »Beweise vom Server«, wo
   der Fallserver eingeschaltet ist: Lernende melden sich mit `ssh` auf dem
   Server des Museums an, springen mit `ssh -J` weiter zur Alarmanlage, die

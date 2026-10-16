@@ -4766,3 +4766,108 @@ div[data-stepper]::before {
     color: color-mix(in srgb, var(--bs-primary) 80%, var(--bs-body-color));
     margin-bottom: 0.6em;
 }
+
+/* The query stepper (query_stepper.js): a query, the clauses in the order
+   the database works through them, and the table after each step. Rows that
+   fall out are struck through; rows of one group share a tint. */
+.query-stepper .qs-input {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    margin-bottom: 0.6em;
+}
+.query-stepper .qs-order {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35em;
+    margin-bottom: 0.6em;
+    font-size: 0.85em;
+}
+.query-stepper .qs-order i {
+    color: var(--bs-secondary-color);
+}
+.query-stepper .qs-clause {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    padding: 0.1em 0.45em;
+    border-radius: 0.3em;
+    border: 1px solid var(--bs-border-color);
+    color: var(--bs-secondary-color);
+}
+.query-stepper .qs-clause.qs-current {
+    background: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: #fff;
+    font-weight: 600;
+}
+.query-stepper .qs-controls {
+    display: flex;
+    gap: 0.3em;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 0.6em;
+}
+.query-stepper .qs-count {
+    margin-left: 0.6em;
+    color: var(--bs-secondary-color);
+}
+.query-stepper .qs-say {
+    min-height: 3em;
+    margin-bottom: 0.4em;
+}
+.query-stepper .qs-error {
+    color: var(--bs-danger-text-emphasis);
+}
+.query-stepper .qs-table {
+    overflow-x: auto;
+}
+.query-stepper .qs-table table {
+    width: auto;
+    margin-bottom: 0;
+    font-size: 0.9em;
+}
+.query-stepper .qs-table th, .query-stepper .qs-table td {
+    white-space: nowrap;
+    padding: 0.15em 0.7em;
+    background: transparent;
+}
+.query-stepper .qs-table td {
+    font-family: '0xProto Nerd Font Mono', monospace;
+}
+.query-stepper tr.qs-drop td, .query-stepper tr.qs-null td {
+    text-decoration: line-through;
+    color: var(--bs-secondary-color);
+    background: color-mix(in srgb, var(--bs-danger) 10%, transparent);
+}
+.query-stepper tr.qs-null td {
+    background: color-mix(in srgb, var(--bs-warning) 14%, transparent);
+}
+.query-stepper tr.qs-group0 td {
+    background: color-mix(in srgb, var(--bs-primary) 10%, transparent);
+}
+.query-stepper tr.qs-group1 td {
+    background: color-mix(in srgb, var(--bs-success) 10%, transparent);
+}
+.query-stepper td.qs-null-value {
+    color: var(--bs-secondary-color);
+    font-style: italic;
+}
+.query-stepper tr.qs-more td {
+    font-family: inherit;
+    font-style: italic;
+    color: var(--bs-secondary-color);
+}
+.query-stepper-examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4em;
+    margin: -0.8em 0 1.5em;
+}
+.query-stepper-examples button {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 0.8em;
+}
+.query-stepper th.qs-col {
+    color: var(--bs-primary-text-emphasis);
+}
+.query-stepper td.qs-col {
+    font-weight: 700;
+}

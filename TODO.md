@@ -130,7 +130,7 @@ below is a writing priority, not a prerequisite chain.
 
 Plus, from the review:
 
-* [ ] **Query stepper / database sandbox**: FROM → JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT with the intermediate table after each step; class repository and Class progress like the other sandboxes
+* [ ] **Query stepper, further**: the stepper exists (`/query-stepper`, in »Einführung in SQL«); still open: the movie data of »Filmdatenbank« as a second dataset, so its JOIN and GROUP BY chapters can use it; subqueries and UNION
 * [ ] **»Wie sicher ist ein Passwort?«** (Netze & Sicherheit): the defender's side only (counting combinations, a list of common passwords, salt, PBKDF2, measuring hashes per second); solutions, starters, list and tasks are on the branch `passwords`, the page is not written
 * [ ] **JPEG decoder project**: the interactive Huffman section is excellent, but iDCT, MCU and colour conversion get one paragraph each and there is nothing to implement; a staged decoder with a check per stage
 

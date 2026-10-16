@@ -1,7 +1,7 @@
 require 'cgi'
 
-# Tools of the site that pages send students to: the TCP-Konsole and
-# Automatron. They live outside the activity, so every link to them opens a
+# Tools of the site that pages send students to: the TCP-Konsole,
+# Automatron and the query stepper. They live outside the activity, so every link to them opens a
 # new tab, and the page the student is working on stays where it was.
 #
 # Both need a login. They are not in the menu: a page shows one where it is
@@ -22,6 +22,12 @@ module Tools
             :path => '/automatron',
             :icon => 'bi-diagram-3',
             :text => 'Aus einem regulären Ausdruck Schritt für Schritt Automaten zeichnen',
+        },
+        'query-stepper' => {
+            :title => 'Abfrage-Schrittmacher',
+            :path => '/query-stepper',
+            :icon => 'bi-table',
+            :text => 'Eine SQL-Abfrage Schritt für Schritt ausführen, mit der Tabelle nach jedem Schritt',
         },
     }.freeze
 
