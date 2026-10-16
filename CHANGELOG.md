@@ -18,6 +18,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Hinzugefügt
 
+- Neue Aktivität »Eine GIF-Datei decodieren« (`/gif`), im Abschnitt »Wie
+  Computer rechnen« neben JPEG: Lernende schreiben in C einen GIF-Decoder, der
+  mit PixelRAM zeichnet. Die Seite geht jeden Block an einer Diskette mit
+  16 × 16 Pixeln durch, mit den Diagrammen der Spezifikation und farbigen
+  Hexdumps; ein Schrittmacher zeigt die LZW-Decodierung Code für Code, mit
+  Bits, Tabelle und dem Bild, das dabei entsteht. Dann folgen ein Foto mit
+  256 Farben (von Ian Kobylanski) und Interlacing. Sieben Aufgaben, drei davon
+  Prüfsummen, die der Decoder selbst ausgibt. Für Lehrkräfte gibt es die
+  Spezifikation GIF89a von 1990 als Heft zum Ausdrucken (A4, gefaltet A5) und
+  einen vollständigen Decoder in `src/content/gif/loesung/`.
 - Spiegel von Open-Meteo für »Daten aus dem Netz«: unter `/open-meteo/api/v1/forecast`
   und `/open-meteo/geocoding/v1/search` dieselben Endpunkte wie bei
   Open-Meteo. Er merkt sich jede Antwort eine Viertelstunde für alle und gibt

@@ -1,0 +1,23 @@
+{
+  "screenshots": {
+    "diskette.webp": {
+      "environment_fingerprint": "eff6c207569bcd523ea8bb3b68679b74a8ceda6621bafc5fdaf3cfcc3526f46a",
+      "output_sha256": "bd529665b37fa13cb1c9b5d8a30f3627c84686e5ac0dc039230c662b79d1d0f2",
+      "state_hash": "bca696d67265b9e140f9a8dd11ba8c8799a5b0ef6b11f5bbf0493030b249269c",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "make.webp": {
+      "environment_fingerprint": "eff6c207569bcd523ea8bb3b68679b74a8ceda6621bafc5fdaf3cfcc3526f46a",
+      "output_sha256": "a49f9c2caa132b42061d8054b2476fd20a79a4b8316426ccf3c2c053a0cc6352",
+      "state_hash": "3e7828507fed33d269fb2d296b05a200e2d18aea45398011684a719ca5b61be5",
+      "workspace_look": "4.138.0-ls366"
+    },
+    "markt.webp": {
+      "environment_fingerprint": "eff6c207569bcd523ea8bb3b68679b74a8ceda6621bafc5fdaf3cfcc3526f46a",
+      "output_sha256": "fb064b35c338cf301fd566cbe326a9af077753d7c6c9bbfde5db1ed9bae5a0c1",
+      "state_hash": "0af8289f3c6ffcf0ef1c03fde429f03310c298d021346f527d3da9aa5cdb9c09",
+      "workspace_look": "4.138.0-ls366"
+    }
+  },
+  "version": 1
+}
