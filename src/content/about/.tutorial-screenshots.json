@@ -2,10 +2,10 @@
   "screenshots": {
     "start-page.webp": {
       "environment_fingerprint": "f6458e32df5aac1160a38b0c53378b4b8f4bde221245bc8788030012d1342e5c",
-      "output_sha256": "e50dbe78e7252a2bf58f5a7cac7c106a1d541a459eacfe3fac659cce6192e7af",
+      "output_sha256": "a5136486341a3e118e46c5b5f7e17b9cf4931072d357d175ef7e042545fec06f",
       "state_hash": "4ee273cca21ebc04c4a0c5d88c6503258b188a6e528856c6d6f09b423014bb91",
       "variants": {
-        "start-page-dark.webp": "dffaf64cbe6fc03ec5ba26d3d83973b3c07b653f2910aeba0d0413e1ffba2d1a"
+        "start-page-dark.webp": "b50ecf46867efa4c6074b5dccb04f12b9cf1fb48dd89912872f0ee1dd74ccc83"
       },
       "workspace_look": "4.138.0-ls366"
     },
