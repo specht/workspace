@@ -126,6 +126,9 @@ test('a rebuilt workspace image alone does not make a shot stale', () => {
     assert.ok(entryIsCurrent({ ...entry, workspace_look: 'unknown' }, current, env));
     // A new code-server release is.
     assert.ok(!entryIsCurrent(entry, current, { ...env, workspaceLook: '4.139.0-ls301' }));
+    // a new packaging revision of the same code-server is the same look
+    assert.ok(entryIsCurrent(entry, current, { ...env, workspaceLook: '4.138.0-ls367' }));
+    assert.ok(entryIsCurrent(entry, current, { ...env, workspaceLook: '4.138.0' }));
     assert.ok(!entryIsCurrent(entry, current, { ...env, environmentFingerprint: 'x' }));
     assert.ok(!entryIsCurrent({ ...entry, state_hash: 'other' }, current, env));
     assert.ok(!entryIsCurrent(undefined, current, env));

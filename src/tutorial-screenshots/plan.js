@@ -144,8 +144,17 @@ export function chainStateHashes(shots, seed) {
 // workspaceLook: what the Workspace looks like (the code-server version), or
 //   'unknown' if it could not be read. An unknown look never counts as a
 //   change: a failed docker inspect must not re-render everything twice.
+//   Only the code-server release counts, not linuxserver's packaging
+//   revision (4.138.0-ls366 and -ls367 look the same): the image tag
+//   4.138.0 moves to a new revision now and then, so two machines that
+//   pulled it on different days must not see each other's screenshots as
+//   stale.
 // Entries written before workspace_look existed are accepted if their state
 //   matches; they record the new fields when the manifest is written next.
+export function codeServerRelease(look) {
+    return `${look}`.replace(/-ls\d+$/, '');
+}
+
 export function entryIsCurrent(previous, shot, { environmentFingerprint, workspaceLook }) {
     if (!previous) return false;
     if (previous.workspace_look === undefined) {
@@ -154,7 +163,7 @@ export function entryIsCurrent(previous, shot, { environmentFingerprint, workspa
     if (previous.state_hash !== shot.stateHash) return false;
     if (previous.environment_fingerprint !== environmentFingerprint) return false;
     if (workspaceLook !== 'unknown' && previous.workspace_look !== 'unknown' &&
-        previous.workspace_look !== workspaceLook) return false;
+        codeServerRelease(previous.workspace_look) !== codeServerRelease(workspaceLook)) return false;
     return true;
 }
 

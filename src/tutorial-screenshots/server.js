@@ -20,6 +20,7 @@ import {
     chainStateHashes,
     checkGitGraphForTarget,
     checkRecordForTarget,
+    codeServerRelease,
     entryIsCurrent,
     findRecipeTarget,
     frameTimes,
@@ -3341,7 +3342,11 @@ async function buildGenerationPlan(payload) {
                 ...previous,
                 state_hash: shot.stateHash,
                 environment_fingerprint: environmentFingerprint,
-                workspace_look: workspaceLook === 'unknown' ? (previous.workspace_look ?? 'unknown') : workspaceLook,
+                // the same release keeps its recorded revision, so a status check
+                // on a machine with a newer pull of the image changes no manifest
+                workspace_look: workspaceLook === 'unknown' ||
+                    codeServerRelease(workspaceLook) === codeServerRelease(previous.workspace_look ?? 'unknown')
+                    ? (previous.workspace_look ?? workspaceLook) : workspaceLook,
             };
         }
     }
