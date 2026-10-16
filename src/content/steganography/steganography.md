@@ -313,9 +313,14 @@ Mehr passt hinein, wenn man mehr als ein Bit pro Kanal ersetzt. Gib `hide` und `
 
 _task(sichtbar)
 
-So sieht der Himmel aus `moewen.png` aus, wenn alle untersten Bits voller Daten sind, von links mit 1, 2, 4 und 6 Bits pro Kanal:
+So sieht der Himmel aus `moewen.png` aus, wenn alle untersten Bits voller Daten sind:
 
-<img class='full' src='tiefe.webp' alt='Vier Ausschnitte desselben blauen Himmels mit einer Möwe. Mit 1 und 2 Bits pro Kanal sieht er aus wie das Original. Mit 4 Bits ist er körnig, und waagerechte Streifen ziehen sich durch den Verlauf. Mit 6 Bits ist er grob gesprenkelt in Blau, Grün und Violett.'>
+<div class='gallery columns-4'>
+<figure><img src='depth-1.webp' alt='Ein glatter blauer Himmel mit einer Möwe, wie im Original.'><figcaption>1 Bit pro Kanal: wie das Original</figcaption></figure>
+<figure><img src='depth-2.webp' alt='Derselbe Himmel, noch immer glatt.'><figcaption>2 Bits: noch nichts zu sehen</figcaption></figure>
+<figure><img src='depth-4.webp' alt='Derselbe Himmel, körnig, mit waagerechten Streifen im Verlauf.'><figcaption>4 Bits: körnig und gestreift</figcaption></figure>
+<figure><img src='depth-6.webp' alt='Derselbe Himmel, grob gesprenkelt in Blau, Grün und Violett.'><figcaption>6 Bits: grob gesprenkelt</figcaption></figure>
+</div>
 
 Mit 1 und 2 Bits sieht man nichts. Mit 4 Bits sieht man Rauschen und Streifen: Im glatten Verlauf des Himmels behält jeder Kanal nur noch seine oberen 4 Bits, also 16 Stufen statt 256, und der Verlauf zerfällt in **Bänder**. Gerade glatte Flächen verraten zu viele versteckte Daten; in Laub, Wellen oder Stoff fällt dasselbe Rauschen kaum auf.
 
@@ -327,7 +332,12 @@ Wer nach versteckten Botschaften sucht, hat das Bild ohne Botschaft nicht zum Ve
 
 Hier sind die Strandhäuser und daneben ihre Bitebene 0: so, wie sie sind, mit der GIF-Spezifikation als Text im untersten Bit (so viel davon hineinpasst), und mit derselben Spezifikation, aber vorher **komprimiert**:
 
-<img class='full' src='ebenen.webp' alt='Vier Bilder: ein Ausschnitt der Strandhäuser, daneben drei Bitebenen 0. Die Bitebene des Fotos ist Rauschen, oben im Himmel mit Flecken. Mit der Spezifikation als Text ziehen sich regelmäßige senkrechte Streifen durch die Ebene. Mit der komprimierten Spezifikation ist sie gleichmäßiges Rauschen.'>
+<div class='gallery columns-4'>
+<figure><img src='plane-photo.webp' alt='Eine Ecke der Strandhäuser: Himmel, zwei blasse Giebel, unten eine rote und eine hellblaue Tür.'><figcaption>Das Foto</figcaption></figure>
+<figure><img src='plane-clean.webp' alt='Die Bitebene 0 des Fotos: Rauschen, oben im Himmel mit großen Flecken.'><figcaption>Bitebene 0, ohne Botschaft</figcaption></figure>
+<figure><img src='plane-text.webp' alt='Die Bitebene 0 mit der Spezifikation als Text: regelmäßige senkrechte Streifen.'><figcaption>mit der Spezifikation als Text: Streifen</figcaption></figure>
+<figure><img src='plane-packed.webp' alt='Die Bitebene 0 mit der komprimierten Spezifikation: gleichmäßiges Rauschen.'><figcaption>komprimiert: gleichmäßiges Rauschen</figcaption></figure>
+</div>
 
 Text verrät sich: In UTF-8 ist bei den meisten Zeichen das oberste Bit jedes Bytes 0, und Buchstaben, Leerzeichen und Zeilenenden wiederholen sich. Jedes achte Bit ist fast immer gleich, und das ergibt die Streifen. Komprimierte Daten dagegen sehen aus wie Zufall: Ein guter Kompressor nimmt jede Wiederholung heraus, und übrig bleiben Bits, die so oft 0 wie 1 sind. Die Bitebene sieht dann aus wie bei einem gewöhnlichen Foto. Verschlüsselte Daten sehen genauso aus.
 
@@ -419,12 +429,82 @@ Mit `BoxClasses(2)` ist das wieder das LSB-Verfahren, 3 Bits pro Pixel. Mit 3 si
 
 _task(klassen)
 
+## Am Test vorbei
+
+Mit Würfeln der Breite 2 ist das Verfahren wieder das LSB-Verfahren, und der Chi-Quadrat-Test findet es wie vorher. Mit der Breite 3 ändert sich etwas, das man nicht sofort sieht: Jetzt kann ein Kanal nicht mehr nur das unterste Bit wechseln, sondern einen von drei Werten annehmen. Was macht der Test daraus?
+
+_task(vorbei)
+
+<!-- language: ruby -->
+```ruby
+image = ChunkyPNG::Image.from_file('strandhaeuser.png')
+hidden = embed(image, File.read('spec-gif89a.txt')[0, 20000], BoxClasses.new(3))
+puts chi_square(hidden, 0, 40)
+```
+<!-- /language -->
+<!-- language: python -->
+```python
+image = Image.open('strandhaeuser.png')
+hidden = embed(image, open('spec-gif89a.txt').read()[:20000], BoxClasses(3))
+print(chi_square(hidden, 0, 40))
+```
+<!-- /language -->
+
+Die Botschaft füllt die obersten gut 70 Zeilen, und trotzdem schlägt der Test nicht an. Er vergleicht die Paare 2k und 2k+1, weil das LSB-Verfahren genau diese beiden Werte gleich häufig macht. Würfel der Breite 3 machen aber Gruppen von drei Werten gleich häufig: 0, 1 und 2, dann 3, 4 und 5. Die Paare des Tests liegen quer dazu, 2 und 3 etwa gehören zu verschiedenen Gruppen. So geht es mit jeder ungeraden Breite. Bei der Breite 4 dagegen liegt jedes Paar in einer Gruppe, und der Test findet die Botschaft wieder.
+
+<div class='scroll-x'>
+<table class='table value-groups'>
+<tr><th>Werte</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td></tr>
+<tr><th>Paare des Tests</th><td colspan='2' class='group-even'>0–1</td><td colspan='2' class='group-odd'>2–3</td><td colspan='2' class='group-even'>4–5</td><td colspan='2' class='group-odd'>6–7</td><td colspan='2' class='group-even'>8–9</td><td colspan='2' class='group-odd'>10–11</td></tr>
+<tr><th>Würfel der Breite 3</th><td colspan='3' class='group-even'>0–2</td><td colspan='3' class='group-odd'>3–5</td><td colspan='3' class='group-even'>6–8</td><td colspan='3' class='group-odd'>9–11</td></tr>
+<tr><th>Würfel der Breite 4</th><td colspan='4' class='group-even'>0–3</td><td colspan='4' class='group-odd'>4–7</td><td colspan='4' class='group-even'>8–11</td></tr>
+</table>
+</div>
+
+<p class='expl'>Jede Farbe einer Gruppe kommt nach dem Verstecken gleich oft vor. Bei der Breite 4 liegen in jeder Gruppe zwei ganze Paare, also werden auch die Paare gleich. Bei der Breite 3 schneiden die Gruppen durch die Paare hindurch: 2 und 3, 8 und 9 liegen in verschiedenen Gruppen.</p>
+
+Der Test muss also wissen, wonach er sucht. Er lässt sich leicht verallgemeinern: Statt der Paare nimmt er Gruppen von `width` Werten, die Werte \\( k \cdot w \\) bis \\( k \cdot w + w - 1 \\). Für jede Gruppe ist \\( e \\) der Durchschnitt ihrer Zählungen, und sie trägt \\( \sum (c - e)^2 / e \\) bei, über ihre \\( w \\) Zählungen \\( c \\). Geteilt durch \\( w - 1 \\) ergibt eine Gruppe, die nur der Zufall gleichmacht, wieder etwa 1. Mit \\( w = 2 \\) ist das genau der Test von vorhin.
+
+_task(gruppen)
+
+Für den versteckten Text mit der Breite 3 ergibt der Test mit `width` 3 jetzt etwa 1. Wer etwas verstecken will, darf sich nicht darauf verlassen, dass der andere sein Verfahren nicht kennt; ein paar Breiten auszuprobieren dauert nur Sekunden. In der Kryptographie heißt das **Prinzip von Kerckhoffs**: Ein Verfahren muss sicher bleiben, auch wenn der Gegner alles darüber weiß außer dem Schlüssel.
+
+### Das zweite Fundstück
+
+Hol dir noch ein Bild:
+
+```bash
+wget ${web_root}/steganography/fundstueck-2.png
+```
+
+Darin steckt eine Botschaft, versteckt mit Würfeln, aber welche Breite sie haben, steht nirgends. Probier mit deinem Test die Breiten 2 bis 8 für die Zeilen 0 bis 40 aus:
+
+<!-- language: ruby -->
+```ruby
+image = ChunkyPNG::Image.from_file('fundstueck-2.png')
+(2..8).each { |width| puts "#{width}: #{chi_square(image, 0, 40, width).round(1)}" }
+```
+
+Mit der richtigen Breite liest `extract` die Botschaft. Sie ist lang; gib nur den Anfang aus, etwa mit `[0, 200]`.
+<!-- /language -->
+<!-- language: python -->
+```python
+image = Image.open('fundstueck-2.png')
+for width in range(2, 9):
+    print(width, round(chi_square(image, 0, 40, width), 1))
+```
+
+Mit der richtigen Breite liest `extract` die Botschaft. Sie ist lang; gib nur den Anfang aus, etwa mit `[:200]`.
+<!-- /language -->
+
+_task(fundstueck-2)
+
 _task(abgabe)
 
 ## Wie geht es weiter?
 
 - **Mit Schlüssel:** Wähle die Pixel nicht der Reihe nach, sondern in einer Reihenfolge, die ein Zufallsgenerator mit einem geheimen Startwert festlegt. Wer den Schlüssel nicht kennt, weiß nicht einmal, welche Pixel er untersuchen soll.
-- **Entdecken, Teil 2:** Gleichen sich bei den Farbklassen die Farben innerhalb einer Klasse an, so wie beim LSB-Verfahren die Paare? Schreib einen Test dafür.
+- **Ohne feste Breite:** Der Test mit Gruppen findet Würfel jeder Breite, weil alle Pixel dieselben Klassen haben. Was, wenn ein Schlüssel für jedes Pixel eine andere Einteilung wählt?
 - **Andere Farbräume:** Ein Würfel in RGB ist nicht die beste Farbklasse, denn das Auge sieht RGB nicht gleichmäßig: Unterschiede in der Helligkeit sieht es viel genauer als im Farbton. Im Handbuch unter [Farbräume](/reference/farbraeume) stehen Farbräume wie CIELab und OKLab, in denen gleiche Abstände ungefähr gleich verschieden aussehen. Schreib eine Klasseneinteilung mit Quadern in einem davon, mit mehr Stufen für die Helligkeit als für die Farbe; `embed` und `extract` brauchen von ihr nur `cell` und `members`.
 - **Töne:** Eine WAV-Datei ist eine Liste von Zahlen wie ein Bild, nur in der Zeit. Das unterste Bit eines Tons hört man genauso wenig.
 - **JPEG:** In einem JPEG gibt es keine Pixel, die man ändern könnte, nur die Koeffizienten der DCT aus [Ein JPEG-Decoder](/jpeg). Verfahren wie F5 verstecken ihre Bits dort.

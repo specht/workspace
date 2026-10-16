@@ -59,3 +59,21 @@ examples:
         - files: { stego/stego.py: loesung/stego.py }
       fail:
         - files: { stego/stego.py: stufen/start.py }
+  gruppen:
+    pass:
+      - files: { stego/stego.rb: loesung/stego.rb }
+    fail:
+      - files: { stego/stego.rb: stufen/start.rb }
+    python:
+      pass:
+        - files: { stego/stego.py: loesung/stego.py }
+      fail:
+        - files: { stego/stego.py: stufen/start.py }
+  fundstueck-2:
+    pass:
+      - answer: LEUCHTTURM
+      - answer: leuchtturm
+    fail:
+      - answer: STRANDKORB
+        say: ersten Fundstück
+      - answer: MOEWE

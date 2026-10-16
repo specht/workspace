@@ -2,8 +2,8 @@
   "screenshots": {
     "ebene-1.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "1464eb82133388587e40d12f7db0cb08ad588c115f07d5952f781d85561dfd54",
-      "state_hash": "ed7833f441f09233525ad237d640cee5b8e1c11b452b2bbeb405a375bd92ba16",
+      "output_sha256": "3cc2dc8cec4925dbc1990a43bfc2b81db0e1df732bab1cc68c04906621184c4e",
+      "state_hash": "2adf09c70460d110113e6200718cd5d4b0c941bf51b44d7c529c9b648e90b718",
       "workspace_look": "4.138.0-ls366"
     },
     "start-python.webp": {

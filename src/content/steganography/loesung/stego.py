@@ -68,23 +68,26 @@ def reveal(image, depth=1, raw=False):
 
 # --- Entdecken --------------------------------------------------------------
 
-def chi_square(image, top=0, bottom=None):
+def chi_square(image, top=0, bottom=None, width=2):
     """Der Test von Westfeld und Pfitzmann auf die Zeilen top bis bottom: Wie
     verschieden oft kommen die Werte 2k und 2k+1 vor, verglichen mit dem, was
     der Zufall ergäbe? Um 1 heißt: so gleich, wie es nur zufällige unterste
-    Bits machen. Bei einem Foto ohne Botschaft ist die Zahl viel größer."""
+    Bits machen. Bei einem Foto ohne Botschaft ist die Zahl viel größer.
+    Mit width vergleicht er Gruppen von width Werten statt Paaren, die Werte
+    k·width bis k·width + width − 1; geteilt durch width − 1 ist eine
+    gleichmäßige Gruppe wieder um 1."""
     image = image.crop((0, top, image.width, image.height if bottom is None else bottom))
     counts = [0] * 256
     for v in channels(image):
         counts[v] += 1
-    total, pairs = 0.0, 0
-    for k in range(128):
-        a, b = counts[2 * k], counts[2 * k + 1]
-        expected = (a + b) / 2
-        if expected >= 5:    # zu seltene Paare sagen nichts
-            total += (a - expected) ** 2 / expected + (b - expected) ** 2 / expected
-            pairs += 1
-    return total / pairs
+    total, groups = 0.0, 0
+    for k in range(256 // width):
+        group = counts[k * width:(k + 1) * width]
+        expected = sum(group) / width
+        if expected >= 5:    # zu seltene Gruppen sagen nichts
+            total += sum((c - expected) ** 2 / expected for c in group) / (width - 1)
+            groups += 1
+    return total / groups
 
 
 # --- Farbklassen und eine Zahl mit wechselnder Basis -----------------------

@@ -62,22 +62,25 @@ end
 # verschieden oft kommen die Werte 2k und 2k+1 vor, verglichen mit dem, was
 # der Zufall ergäbe? Um 1 heißt: so gleich, wie es nur zufällige unterste
 # Bits machen. Bei einem Foto ohne Botschaft ist die Zahl viel größer.
-def chi_square(image, top = 0, bottom = nil)
+# Mit width vergleicht er Gruppen von width Werten statt Paaren, die Werte
+# k·width bis k·width + width − 1; geteilt durch width − 1 ist eine
+# gleichmäßige Gruppe wieder um 1.
+def chi_square(image, top = 0, bottom = nil, width = 2)
     bottom ||= image.height
     image = image.crop(0, top, image.width, bottom - top)
     counts = Array.new(256, 0)
     channels(image).each { |v| counts[v] += 1 }
     total = 0.0
-    pairs = 0
-    128.times do |k|
-        a, b = counts[2 * k], counts[2 * k + 1]
-        expected = (a + b) / 2.0
-        next if expected < 5    # zu seltene Paare sagen nichts
+    groups = 0
+    (256 / width).times do |k|
+        group = counts[k * width, width]
+        expected = group.sum / width.to_f
+        next if expected < 5    # zu seltene Gruppen sagen nichts
 
-        total += (a - expected)**2 / expected + (b - expected)**2 / expected
-        pairs += 1
+        total += group.sum { |c| (c - expected)**2 / expected } / (width - 1)
+        groups += 1
     end
-    total / pairs
+    total / groups
 end
 
 # --- Farbklassen und eine Zahl mit wechselnder Basis -----------------------

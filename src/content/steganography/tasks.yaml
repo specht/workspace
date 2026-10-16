@@ -277,6 +277,88 @@ tasks:
             expect: '1374.2'
             say: 'Jedes Pixel ab dem zwölften trägt log2(27) ≈ 4,75 Bits: 289 · 4,755 ≈ 1374,2.'
 
+  - id: vorbei
+    title: Am Test vorbei?
+    prediction: true
+    prompt: |
+      Du versteckst die ersten 20.000 Zeichen der GIF-Spezifikation mit
+      Würfeln der Breite 3 in `strandhaeuser.png`. Was ergibt `chi_square`
+      danach für die Zeilen 0 bis 40? Überleg erst, dann probier es aus.
+    check:
+      type: choice
+      options:
+        - Eine große Zahl, wie bei einem Foto ohne Botschaft
+        - Etwa 1, wie beim LSB-Verfahren
+        - Etwa 3, weil jeder Kanal jetzt drei Werte annehmen kann
+        - Gar nichts, `chi_square` bricht mit einem Fehler ab
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Probier es aus. Der Test zählt die Paare 2k und 2k+1. Liegen die beiden Werte eines Paares in derselben Klasse?
+      - when: { picked: 3 }
+        say: Der Test zählt nur, wie oft jeder Wert vorkommt. Das geht mit jedem Bild.
+    solution: Über 200, sogar mehr als ohne Botschaft (163). Würfel der Breite 3 machen die Werte 3k, 3k+1 und 3k+2 gleich häufig. Die Paare des Tests liegen quer dazu, 2 und 3 etwa gehören zu verschiedenen Klassen. Für den Test sieht das Bild aus wie ein Foto.
+
+  - id: gruppen
+    title: Gruppen statt Paare
+    prompt: |
+      Gib `chi_square` einen vierten Parameter `width` mit dem Standardwert 2:
+      Gruppen von `width` Werten statt Paaren, jede Gruppe geteilt durch
+      `width - 1`. Speichere.
+    file: stego/stego.rb
+    check:
+      type: ruby
+      file: stego/stego.rb
+      cases:
+        - call: chi_square(from_channels(5, 1, [30, 31, 32] * 5), 0, 1, 3).round(2)
+          expect: '0.0'
+          say: 30, 31 und 32 kommen je fünfmal vor, eine ganz gleichmäßige Gruppe.
+        - call: chi_square(from_channels(5, 1, [30] * 15), 0, 1, 3).round(2)
+          expect: '15.0'
+          say: 'Die Gruppe 30, 31, 32 hat e = 15 / 3 = 5: (15 − 5)²/5 + 2 · (0 − 5)²/5 = 30, geteilt durch width − 1 = 2.'
+        - call: chi_square(from_channels(9, 1, [100] * 25 + [0, 0]), 0, 1, 5).round(2)
+          expect: '25.0'
+          say: 'Die Gruppe 100 bis 104 hat e = 5: (20² + 4 · 5²)/5 = 100, geteilt durch 4. Die Gruppe 0 bis 4 mit zwei Werten ist zu selten.'
+        - call: chi_square(from_channels(4, 1, [10] * 12), 0, 1).round(2)
+          expect: '12.0'
+          say: Ohne `width` ist es der Test mit Paaren wie vorher.
+    python:
+      prompt: |
+        Gib `chi_square` einen vierten Parameter `width` mit dem Standardwert
+        2: Gruppen von `width` Werten statt Paaren, jede Gruppe geteilt durch
+        `width - 1`. Speichere.
+      file: stego/stego.py
+      check:
+        type: python
+        file: stego/stego.py
+        cases:
+          - call: round(chi_square(from_channels(5, 1, [30, 31, 32] * 5), 0, 1, 3), 2)
+            expect: '0.0'
+            say: 30, 31 und 32 kommen je fünfmal vor, eine ganz gleichmäßige Gruppe.
+          - call: round(chi_square(from_channels(5, 1, [30] * 15), 0, 1, 3), 2)
+            expect: '15.0'
+            say: 'Die Gruppe 30, 31, 32 hat e = 15 / 3 = 5: (15 − 5)²/5 + 2 · (0 − 5)²/5 = 30, geteilt durch width − 1 = 2.'
+          - call: round(chi_square(from_channels(9, 1, [100] * 25 + [0, 0]), 0, 1, 5), 2)
+            expect: '25.0'
+            say: 'Die Gruppe 100 bis 104 hat e = 5: (20² + 4 · 5²)/5 = 100, geteilt durch 4. Die Gruppe 0 bis 4 mit zwei Werten ist zu selten.'
+          - call: round(chi_square(from_channels(4, 1, [10] * 12), 0, 1), 2)
+            expect: '12.0'
+            say: Ohne `width` ist es der Test mit Paaren wie vorher.
+
+  - id: fundstueck-2
+    title: Das zweite Fundstück
+    prompt: |
+      In `fundstueck-2.png` steckt eine Botschaft in Würfeln, aber welcher
+      Breite? Finde sie mit deinem Test und lies die Botschaft. Wie heißt das
+      Codewort?
+    check:
+      type: answer
+      expect: LEUCHTTURM
+    feedback:
+      - when: { matches: 'STRANDKORB' }
+        say: Das ist das Codewort aus dem ersten Fundstück. Das zweite liest du mit `extract` und Würfeln der richtigen Breite.
+    solution: Für die Zeilen 0 bis 40 ergibt nur der Test mit Gruppen von fünf etwa 1, alle anderen Breiten 45 und mehr. Mit Würfeln der Breite 5 kommt heraus »Gut gesucht! Mit Paaren findet der Test hier nichts, mit Gruppen von fünf schon. Das Codewort ist LEUCHTTURM.«, dann der Anfang der GIF-Spezifikation.
+
   - id: abgabe
     title: Deine Steganographie
     prompt: |
