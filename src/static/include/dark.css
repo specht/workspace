@@ -538,6 +538,11 @@ html[data-bs-theme="dark"] {
     .subview-code { color: #e7e6e1; }
     .subview-close { color: #adb5bd; }
     .subview-close:hover { background-color: #232a35; }
+    .subview-facts,
+    .subview-file .bi,
+    .subview-path,
+    .subview-path .bi { color: #adb5bd; }
+    .subview-file.active .bi { color: inherit; }
     .class-tabs { border-color: #343a40; }
     .class-tab { color: #ced4da; }
     .class-tab[aria-selected='true'] {

@@ -16,6 +16,32 @@
         return e;
     }
 
+    // An icon for a file, by its kind
+    function fileIcon(path) {
+        const ext = (path.match(/\.([a-z0-9]+)$/i) || [])[1];
+        const known = { html: 'html', htm: 'html', css: 'css', js: 'js', mjs: 'js', json: 'json', md: 'md', py: 'py',
+            rb: 'rb', java: 'java', c: 'c', h: 'h', cpp: 'cpp', cs: 'cs', php: 'php', sql: 'sql', svg: 'svg', txt: 'txt',
+            yml: 'yml', yaml: 'yml', xml: 'xml', sh: 'sh', tsx: 'tsx', jsx: 'jsx', ts: 'tsx' };
+        if (ext && known[ext.toLowerCase()]) return 'bi-filetype-' + known[ext.toLowerCase()];
+        if (IMAGE.test(path)) return 'bi-file-earmark-image';
+        if (MEDIA.test(path)) return 'bi-file-earmark-play';
+        return 'bi-file-earmark';
+    }
+
+    function icon(name) {
+        const i = el('i', 'bi ' + name);
+        i.setAttribute('aria-hidden', 'true');
+        return i;
+    }
+
+    // A button or link with an icon in front of its label
+    function withIcon(tag, className, iconName, label) {
+        const e = el(tag, className);
+        e.appendChild(icon(iconName));
+        e.appendChild(document.createTextNode(label));
+        return e;
+    }
+
     function sizeText(bytes) {
         if (bytes < 1000) return bytes + ' B';
         if (bytes < 1000000) return (bytes / 1000).toFixed(1).replace('.', ',').replace(/,0$/, '') + ' kB';
@@ -68,7 +94,10 @@
                 const li = el('li');
                 const details = el('details');
                 details.open = depth === 0 || count(node.dirs[name]) <= 12;
-                details.appendChild(el('summary', null, name + '/'));
+                const summary = el('summary');
+                summary.appendChild(icon('bi-folder2'));
+                summary.appendChild(el('span', null, name));
+                details.appendChild(summary);
                 details.appendChild(render(node.dirs[name], depth + 1));
                 li.appendChild(details);
                 ul.appendChild(li);
@@ -78,6 +107,7 @@
                 const b = el('button', 'subview-file');
                 b.type = 'button';
                 b.dataset.path = f.path;
+                b.appendChild(icon(fileIcon(f.path)));
                 b.appendChild(el('span', 'subview-file-name', f.path.split('/').pop()));
                 b.appendChild(el('span', 'subview-file-size', sizeText(f.size)));
                 b.addEventListener('click', () => onPick(f));
@@ -130,9 +160,22 @@
         viewer.appendChild(dialog);
 
         const head = el('div', 'subview-head');
-        head.appendChild(el('div', 'subview-title', link.dataset.viewTitle || 'Abgabe'));
-        const download = el('a', 'btn btn-sm btn-outline-secondary', 'Herunterladen');
+        const heading = el('div', 'subview-heading');
+        heading.appendChild(el('div', 'subview-title', link.dataset.viewTitle || 'Abgabe'));
+        // when, how many files, how big: the hand-in at a glance
+        const facts = [];
+        if (data.submitted_at) {
+            const when = new Date(data.submitted_at * 1000);
+            facts.push('abgegeben am ' + when.toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric', year: 'numeric' }) +
+                ' um ' + when.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr');
+        }
+        const total = data.files.reduce((n, f) => n + (f.size || 0), 0);
+        facts.push(data.files.length === 1 ? '1 Datei' : data.files.length + ' Dateien', sizeText(total));
+        heading.appendChild(el('div', 'subview-facts', facts.join(' · ')));
+        head.appendChild(heading);
+        const download = withIcon('a', 'btn btn-sm btn-outline-secondary subview-action', 'bi-download', 'Herunterladen');
         download.href = data.download;
+        download.title = 'Alle Dateien der Abgabe als Archiv';
         head.appendChild(download);
         const x = el('button', 'subview-close');
         x.type = 'button';
@@ -156,27 +199,48 @@
             nav.querySelectorAll('.subview-file').forEach((b) => b.classList.toggle('active', b.dataset.path === f.path));
             pane.innerHTML = '';
             const bar = el('div', 'subview-bar');
-            bar.appendChild(el('code', 'subview-path', f.path));
+            const where = el('div', 'subview-path');
+            where.appendChild(icon(fileIcon(f.path)));
+            where.appendChild(el('code', null, f.path));
+            bar.appendChild(where);
             const url = data.root + f.path.split('/').map(encodeURIComponent).join('/');
+            const newTab = () => {
+                const tab = withIcon('a', 'btn btn-sm btn-outline-secondary subview-action', 'bi-box-arrow-up-right', 'In neuem Tab');
+                tab.href = url;
+                tab.target = '_blank';
+                tab.rel = 'noopener noreferrer';
+                return tab;
+            };
             if (f.html) {
                 const run = mode !== 'source';
-                const seg = el('div', 'btn-group btn-group-sm');
-                const bRun = el('button', 'btn ' + (run ? 'btn-primary' : 'btn-outline-primary'), 'Starten');
-                const bSrc = el('button', 'btn ' + (run ? 'btn-outline-primary' : 'btn-primary'), 'Quelltext');
+                const seg = el('div', 'btn-group btn-group-sm subview-mode');
+                seg.setAttribute('role', 'group');
+                seg.setAttribute('aria-label', 'Ansicht');
+                const bRun = withIcon('button', 'btn ' + (run ? 'btn-primary' : 'btn-outline-primary'), 'bi-play-fill', 'Starten');
+                const bSrc = withIcon('button', 'btn ' + (run ? 'btn-outline-primary' : 'btn-primary'), 'bi-code-slash', 'Quelltext');
                 bRun.type = bSrc.type = 'button';
+                bRun.setAttribute('aria-pressed', String(run));
+                bSrc.setAttribute('aria-pressed', String(!run));
                 bRun.addEventListener('click', () => pick(f, 'run'));
                 bSrc.addEventListener('click', () => pick(f, 'source'));
                 seg.appendChild(bRun);
                 seg.appendChild(bSrc);
                 bar.appendChild(seg);
-                const tab = el('a', 'subview-newtab', 'In neuem Tab');
-                tab.href = url;
-                tab.target = '_blank';
-                tab.rel = 'noopener noreferrer';
-                bar.appendChild(tab);
+                let frame = null;
+                if (run) {
+                    // the page from the start, as after loading it
+                    const reload = el('button', 'btn btn-sm btn-outline-secondary subview-icon-button');
+                    reload.type = 'button';
+                    reload.title = 'Neu laden';
+                    reload.setAttribute('aria-label', 'Seite neu laden');
+                    reload.appendChild(icon('bi-arrow-clockwise'));
+                    reload.addEventListener('click', () => { if (frame) frame.src = url; });
+                    bar.appendChild(reload);
+                }
+                bar.appendChild(newTab());
                 pane.appendChild(bar);
                 if (run) {
-                    const frame = el('iframe', 'subview-frame');
+                    frame = el('iframe', 'subview-frame');
                     frame.setAttribute('sandbox', 'allow-scripts allow-forms allow-modals allow-popups allow-downloads');
                     frame.setAttribute('referrerpolicy', 'no-referrer');
                     frame.title = f.path;
@@ -185,6 +249,7 @@
                     return;
                 }
             } else {
+                if (IMAGE.test(f.path) || MEDIA.test(f.path)) bar.appendChild(newTab());
                 pane.appendChild(bar);
             }
             if (IMAGE.test(f.path)) {
@@ -209,8 +274,20 @@
             }
         };
         nav.appendChild(tree(data.files, (f) => pick(f)));
+        // Up and down move through the files, as in a file list
+        nav.addEventListener('keydown', (e) => {
+            if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+            const buttons = [...nav.querySelectorAll('.subview-file')].filter((b) => b.offsetParent);
+            const at = buttons.indexOf(document.activeElement);
+            const next = buttons[at < 0 ? 0 : Math.max(0, Math.min(buttons.length - 1, at + (e.key === 'ArrowDown' ? 1 : -1)))];
+            if (!next) return;
+            e.preventDefault();
+            next.focus();
+            next.click();
+        });
         const first = firstFile(data.files);
         if (first) pick(first);
+        else pane.appendChild(el('p', 'subview-note', 'Diese Abgabe enthält keine Dateien.'));
 
         viewer.addEventListener('click', (e) => { if (e.target === viewer) close(); });
         document.body.appendChild(viewer);

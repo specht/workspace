@@ -4636,13 +4636,34 @@ body.subview-open {
     border-bottom: 1px solid #e3e7ee;
 }
 
-.subview-title {
+.subview-heading {
     flex: 1;
     min-width: 0;
+}
+
+.subview-title {
     font-weight: 700;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+/* when it came, how many files, how big */
+.subview-facts {
+    color: #6c757d;
+    font-size: 85%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.subview-action {
+    flex-shrink: 0;
+}
+
+/* only an icon (»Neu laden«): no gap after it */
+.subview-icon-button .bi {
+    margin-right: 0;
 }
 
 .subview-close {
@@ -4689,6 +4710,21 @@ body.subview-open {
     padding: 0.15em 0.3em;
     color: #495057;
     font-weight: 600;
+}
+
+.subview-tree summary .bi {
+    margin: 0 0.4em 0 0.2em;
+    color: #c9a227;
+}
+
+/* the kind of file at a glance, quieter than its name */
+.subview-file .bi {
+    margin-right: 0.15em;
+    color: #6c757d;
+}
+
+.subview-file.active .bi {
+    color: inherit;
 }
 
 .subview-file {
@@ -4745,10 +4781,22 @@ body.subview-open {
 .subview-path {
     flex: 1;
     min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.45em;
+    color: #495057;
+}
+
+.subview-path .bi {
+    color: #6c757d;
+}
+
+.subview-path code {
+    min-width: 0;
     overflow-wrap: anywhere;
     padding: 0;
     background: none;
-    color: #495057;
+    color: inherit;
     font-size: 85%;
 }
 

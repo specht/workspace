@@ -769,6 +769,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   und Umbenennen bis zur Umwandlung nach WebP. Das Kontextmenü des Browsers
   ist nachgebaut, weil ein Screenshot das echte nicht zeigt. Nach einem Update
   von VS Code entstehen sie neu.
+- Abgaben ansehen: Der Kopf sagt, wann die Abgabe kam, wie viele Dateien sie
+  hat und wie groß sie ist. Alle Knöpfe haben Symbole, die Dateien ihre Art
+  als Symbol, eine laufende Seite lässt sich neu laden, und die Pfeiltasten
+  gehen durch die Dateien.
 - »Einstieg für Lehrkräfte«, Reiter »Lernende«: Im Bild läuft jeder Workspace
   der Klasse, die meisten fast im Leerlauf, ein paar beschäftigt, und die
   Karten zeigen die Werte eines echten Servers statt des Entwicklungsrechners.

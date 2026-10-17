@@ -5623,6 +5623,7 @@ class Main < Sinatra::Base
         end
         response.headers['Cache-Control'] = 'no-store'
         respond(:files => files, :root => "#{SUBMISSION_VIEW_ROOT}/v/#{token}/",
+            :submitted_at => File.mtime(path).to_i,
             :download => "/api/task/submission/#{params[:activity]}/#{params[:id]}#{email == @session_user[:email] ? '' : "?email=#{CGI.escape(email)}"}")
     end
 
