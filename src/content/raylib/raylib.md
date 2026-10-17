@@ -1,7 +1,7 @@
 <div class='meta'>
 image: tag.webp
 kind: projekt
-language: C / raylib
+language: raylib / C
 topic: graphics
 duration: 5 Doppelstunden
 requires: [pixelram]

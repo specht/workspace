@@ -1,6 +1,7 @@
 <div class='meta'>
 image: ../reference/bif/story-image.webp
 kind: projekt
+language: Markdown / JavaScript
 template: https://github.com/specht/bif.git
 template_name: der BIF-Vorlage
 reference: [workspace, bif]

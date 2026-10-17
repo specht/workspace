@@ -1,7 +1,7 @@
 <div class='meta'>
 image: sky.webp
 kind: projekt
-language: Lua
+language: TIC-80 / Lua
 duration: 3 Doppelstunden
 reference: [workspace]
 </div>

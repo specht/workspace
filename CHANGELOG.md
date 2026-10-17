@@ -742,6 +742,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Die Karten der Grafik-Aktivitäten nennen die Plattform mit der Sprache,
+  etwa »TIC-80 / Lua«, »PixelRAM / C« oder »Pixelflow Canvas / Ruby«; BIF
+  steht als »Markdown / JavaScript« da.
 - »Einführung in SQL« ist zweigeteilt: Der zweite Teil, mit `GROUP BY`,
   `JOIN`, den Amtssprachen und den Entfernungen, ist jetzt eine eigene
   Aktivität, »SQL mit mehreren Tabellen«, im Katalog direkt danach. Was

@@ -1,6 +1,7 @@
 <div class='meta'>
 image: 3d-torus-anaglyph.webp
 kind: projekt
+language: Anaglyph-Viewer
 template: https://github.com/specht/anaglyph.git
 template_name: der Anaglyph-Vorlage
 reference: [farben]
