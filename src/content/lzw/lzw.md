@@ -45,6 +45,9 @@ duration: 2 Doppelstunden
         word-break: break-all;
         margin-bottom: 0.6em;
     }
+    .lzw-codes {
+        font-family: '0xProto Nerd Font Mono', monospace;
+    }
     .lzw-codes span.done {
         opacity: 0.55;
     }
