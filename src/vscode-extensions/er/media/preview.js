@@ -127,7 +127,7 @@
     // anchor: { mx, my, px, py }: diagram point (mx, my) goes to board pixel
     // (px, py). Without anchor, the diagram is centred.
     function draw(anchor) {
-        const vb = core.viewBox(graph.nodes);
+        const vb = core.viewBox(graph.nodes, graph.edges);
         if (zooms[kind] === null) {
             zooms[kind] = fitZoom(vb);
             anchor = null;

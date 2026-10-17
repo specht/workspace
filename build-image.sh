@@ -34,8 +34,8 @@ cp src/vscode-extensions/bif-watcher/bif-authoring-tools-0.2.1.vsix \
     docker/code/bif-authoring-tools-0.2.1.vsix
 cp src/vscode-extensions/live-server/ritwickdey.LiveServer-5.7.10.vsix \
     docker/code/ritwickdey.LiveServer.vsix
-cp src/vscode-extensions/er/hackschule-er-0.2.0.vsix \
-    docker/code/hackschule-er-0.2.0.vsix
+cp src/vscode-extensions/er/hackschule-er-0.3.0.vsix \
+    docker/code/hackschule-er-0.3.0.vsix
 
 echo '=== Building reusable toolchains ==='
 bash docker/code/build-toolchains.sh

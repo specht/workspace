@@ -705,6 +705,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Die ER-Werkstatt (0.3.0) ordnet »Krähenfuß« und »Tabellen« in Schichten,
+  wie Mermaid es tut: Worauf andere Tabellen verweisen, steht oben, die
+  Verbindungstabellen unten, und die Reihenfolge hält Kreuzungen gering.
+  Die Linien sind Kurven, die senkrecht aus dem Kasten kommen, mit dem
+  Krähenfuß oder dem Strich gerade an der Kante; zwei Fremdschlüssel auf
+  dieselbe Tabelle sind zwei Linien, und eine lange Linie läuft um die
+  Kästen dazwischen herum. Die Kästen zeigen Typ, Name und Schlüssel in drei
+  Spalten. Verschobene Kästen bleiben, wo sie sind; »Neu anordnen« zeigt die
+  neue Anordnung. Chen bleibt, wie es ist. Die Bilder der »Filmdatenbank«
+  und die Vorschau im Handbuch »ER-Modelle« zeigen die neue Darstellung.
 - Die »Einführung in SQL« arbeitet mit den Ländern der Welt statt mit der
   alten Datenbank `terra1`, die Fehler hatte und deren Zahlen veraltet
   waren (Einwohner in Millionen, `Europa` neben `Europe`). Lernende laden
@@ -1368,6 +1378,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Für Betreibende
 
+- ER-Werkstatt 0.3.0 (`hackschule-er-0.3.0.vsix`): das Workspace-Image neu
+  bauen.
 - Der Screenshot-Generator sieht nur noch die Version von code-server als
   Aussehen des Workspaces, nicht die Paketrevision von linuxserver
   (`4.138.0-ls366` und `-ls367` gelten als gleich). Das Image baut auf dem

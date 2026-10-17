@@ -210,6 +210,71 @@ test('diagrams: deterministic, kept positions, escaped labels', () => {
     assert.equal(core.esc('<a href="x">'), '&lt;a href=&quot;x&quot;&gt;');
 });
 
+const SCHOOL = `entity student
+  id: int, primary key
+  name: text
+entity course
+  id: int, primary key
+entity teacher
+  id: int, primary key
+entity room
+  number: text, primary key
+entity class
+  id: int, primary key
+relationship attends: student n:m course
+relationship teaches: teacher 1:n course
+relationship takes_place: course, room, teacher as schedule
+relationship belongs_to: student n:1 class
+relationship leads: teacher 1:1 class
+`;
+
+const overlapping = (nodes) => nodes.flatMap((a, i) => nodes.slice(i + 1)
+    .filter((b) => Math.abs(a.x - b.x) < (a.w + b.w) / 2 && Math.abs(a.y - b.y) < (a.h + b.h) / 2)
+    .map((b) => `${a.id} ${b.id}`));
+
+test('crow\'s foot and tables in layers: what is referenced above, no box on another', () => {
+    for (const text of [FILM, SCHOOL]) {
+        for (const kind of ['crowfoot', 'tables']) {
+            const { graph } = core.diagram(text, kind);
+            assert.deepEqual(overlapping(graph.nodes), [], kind);
+        }
+    }
+    const { graph } = core.diagram(FILM, 'tables');
+    const at = Object.fromEntries(graph.nodes.map((n) => [n.label, n]));
+    for (const [child, parent] of [['movie_genre', 'movie'], ['movie_genre', 'genre'], ['movie_crew', 'crew'], ['movie_crew', 'job']]) {
+        assert.ok(at[parent].y < at[child].y, `${parent} above ${child}`);
+    }
+    // the three columns: type, name, key
+    assert.match(core.diagram(FILM, 'tables').svg, /<text class="typ"[^>]*>int<\/text><text class="row"[^>]*>movie_id<\/text><text class="tag pk"[^>]*>PK·FK<\/text>/);
+});
+
+test('crow\'s foot: long lines go round, a kept box stays and a new one moves aside', () => {
+    const { graph, positions, svg } = core.diagram(SCHOOL, 'tables');
+    const long = graph.edges.filter((e) => e.via && e.via.length);
+    assert.ok(long.length > 0, 'a line over two layers has stand-ins');
+    assert.equal((svg.match(/<path class="cfl"/g) || []).length, graph.edges.length, 'one curve per line');
+    // the positions of the last drawing passed back, as the preview does while typing: the same lines
+    const typing = core.diagram(SCHOOL, 'tables', { positions });
+    assert.equal(typing.svg, svg);
+    // moved: no stand-ins any more for its lines
+    const moved = Object.assign({}, positions, { [long[0].a]: { x: 5000, y: 5000 } });
+    const again = core.diagram(SCHOOL, 'tables', { positions: moved });
+    assert.deepEqual(again.positions[long[0].a], { x: 5000, y: 5000 });
+    assert.doesNotMatch(again.svg, /NaN/);
+    // a new table among kept ones does not land on one of them
+    const grown = core.diagram(`${SCHOOL}entity lunch\n  id: int, primary key\nrelationship eats: student n:1 lunch\n`, 'tables', { positions });
+    assert.deepEqual(overlapping(grown.graph.nodes), []);
+    for (const [id, p] of Object.entries(positions)) assert.deepEqual(grown.positions[id], p);
+});
+
+test('crow\'s foot: two foreign keys to the same table get two lines', () => {
+    const text = 'entity country\n  code: text, primary key\nrelationship borders: country n:m country\n';
+    const { svg } = core.diagram(text, 'tables');
+    const starts = [...svg.matchAll(/<path class="cfl" d="M([-\d.]+),([-\d.]+)/g)].map((m) => m.slice(1).join());
+    assert.equal(starts.length, 2);
+    assert.notEqual(starts[0], starts[1]);
+});
+
 test('chen: attributes spread around their entity, clear of relationship lines', () => {
     const { graph } = core.diagram(FILM, 'chen');
     const byId = new Map(graph.nodes.map((n) => [n.id, n]));

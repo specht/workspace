@@ -29,7 +29,7 @@
 })(typeof self !== 'undefined' ? self : this, function () {
     'use strict';
 
-    const VERSION = '0.2.0';
+    const VERSION = '0.3.0';
     const NAME = '[\\p{L}_][\\p{L}\\p{N}_]*';
     const RE_ENTITY = new RegExp(`^entity\\s+(${NAME})\\s*$`, 'u');
     const RE_BINARY = new RegExp(`^relationship\\s+(${NAME})\\s*:\\s*(${NAME})\\s+([1nm])\\s*:\\s*([1nm])\\s+(${NAME})(?:\\s+as\\s+(${NAME}))?\\s*$`, 'u');
@@ -391,9 +391,15 @@
         return { nodes, edges };
     }
 
+    // A box in three columns, type | name | key, as Mermaid draws tables.
     function boxNode(id, label, rows, tw) {
-        const w = Math.max(tw(label, 600) + 28, ...rows.map((r) => 48 + tw(r.name) + 16 + tw(r.type) * 0.92 + 12));
-        return { id, kind: 'T', label, rows, w: Math.max(120, w), h: HEAD_H + rows.length * ROW_H + 6 };
+        const cols = {
+            type: Math.max(0, ...rows.map((r) => tw(r.type) * 0.92)),
+            name: Math.max(0, ...rows.map((r) => tw(r.name))),
+            key: rows.some((r) => r.tag) ? Math.max(...rows.map((r) => tw(r.tag.replace(',', '·')) * 0.85)) : 0,
+        };
+        const w = Math.max(tw(label, 600) + 28, 10 + cols.type + 20 + cols.name + (cols.key ? 20 + cols.key : 0) + 10);
+        return { id, kind: 'T', label, rows, cols, w: Math.max(120, w), h: HEAD_H + rows.length * ROW_H + 6 };
     }
 
     // Crow's foot. resolved = false: the model (entities, n:m as one line, a
@@ -507,6 +513,228 @@
     // last, around their owner in the gaps between its relationship lines,
     // so no attribute sits on a line and they are spread evenly.
     function layout(graph, positions) {
+        const chen = graph.nodes.some((n) => n.kind === 'E' || n.kind === 'R' || n.kind === 'A');
+        return chen ? forceLayout(graph, positions) : layeredLayout(graph, positions);
+    }
+
+    // Crow's foot and tables in layers, as Mermaid (dagre) draws them: the
+    // side with »one« above the side with »many«, so a referenced table sits
+    // above the tables that point to it. Steps: break cycles, give every box
+    // a layer (longest path, a box with nothing above it moved down next to
+    // what it points to), stand-ins for lines over several layers, order each
+    // layer so few lines cross (barycentres, sweeping down and up), then x
+    // towards the neighbours without overlap. Kept positions win; a new box
+    // that would sit on one moves aside.
+    const LAYER_GAP = 90;
+    const BOX_GAP = 56;
+
+    function layeredLayout(graph, positions) {
+        const { nodes, edges } = graph;
+        const kept = positions || {};
+        const index = new Map(nodes.map((n, i) => [n.id, i]));
+        // parent -> child: the »one« end above
+        const pairs = [];
+        const pairEdge = [];
+        for (const e of edges) {
+            delete e.via;
+            if (e.a === e.b || !index.has(e.a) || !index.has(e.b)) continue;
+            pairs.push(e.endB === 'one' && e.endA !== 'one' ? [e.b, e.a] : [e.a, e.b]);
+            pairEdge.push(e);
+        }
+        // Break cycles: an edge back to a node on the current path turns round.
+        const state = new Map();
+        const out = new Map(nodes.map((n) => [n.id, []]));
+        pairs.forEach(([u, v], i) => out.get(u).push({ v, i }));
+        const dag = pairs.map((p) => p.slice());
+        const visit = (u) => {
+            state.set(u, 1);
+            for (const { v, i } of out.get(u)) {
+                if (state.get(v) === 1) dag[i] = [v, u];
+                else if (!state.get(v)) visit(v);
+            }
+            state.set(u, 2);
+        };
+        nodes.forEach((n) => { if (!state.get(n.id)) visit(n.id); });
+        const preds = new Map(nodes.map((n) => [n.id, []]));
+        const succs = new Map(nodes.map((n) => [n.id, []]));
+        for (const [u, v] of dag) { succs.get(u).push(v); preds.get(v).push(u); }
+        // Layers by the longest path from the top.
+        const rank = new Map();
+        const rankOf = (v) => {
+            if (rank.has(v)) return rank.get(v);
+            rank.set(v, 0);
+            const r = preds.get(v).length ? Math.max(...preds.get(v).map((u) => rankOf(u) + 1)) : 0;
+            rank.set(v, r);
+            return r;
+        };
+        nodes.forEach((n) => rankOf(n.id));
+        // A box with nothing above it goes right above the highest of its children.
+        for (let pass = 0; pass < nodes.length; pass++) {
+            let moved = false;
+            for (const n of nodes) {
+                const kids = succs.get(n.id);
+                if (preds.get(n.id).length || !kids.length) continue;
+                const r = Math.min(...kids.map((k) => rank.get(k))) - 1;
+                if (r > rank.get(n.id)) { rank.set(n.id, r); moved = true; }
+            }
+            if (!moved) break;
+        }
+        // Stand-ins where a line spans several layers.
+        const vertices = nodes.map((n) => ({ id: n.id, w: n.w, h: n.h, rank: rank.get(n.id) }));
+        const vById = new Map(vertices.map((v) => [v.id, v]));
+        const links = [];
+        const standIns = [];
+        dag.forEach(([u, v], i) => {
+            let prev = u;
+            const chain = [];
+            for (let r = rank.get(u) + 1; r < rank.get(v); r++) {
+                const id = `~${i}:${r}`;
+                const d = { id, w: 24, h: 0, rank: r, dummy: true };
+                vertices.push(d); vById.set(id, d);
+                links.push([prev, id]);
+                chain.push(id);
+                prev = id;
+            }
+            links.push([prev, v]);
+            if (chain.length) standIns.push({ edge: pairEdge[i], top: u, chain });
+        });
+        const up = new Map(vertices.map((v) => [v.id, []]));
+        const down = new Map(vertices.map((v) => [v.id, []]));
+        for (const [u, v] of links) { down.get(u).push(v); up.get(v).push(u); }
+        const depth = Math.max(0, ...vertices.map((v) => v.rank)) + 1;
+        let layers = Array.from({ length: depth }, () => []);
+        vertices.forEach((v) => layers[v.rank].push(v.id));
+        const pos = new Map();
+        const renumber = () => layers.forEach((l) => l.forEach((id, i) => pos.set(id, i)));
+        renumber();
+        const crossings = () => {
+            let c = 0;
+            for (let r = 0; r + 1 < depth; r++) {
+                const es = layers[r].flatMap((u) => down.get(u).map((v) => [pos.get(u), pos.get(v)]));
+                for (let i = 0; i < es.length; i++) {
+                    for (let j = i + 1; j < es.length; j++) {
+                        if ((es[i][0] - es[j][0]) * (es[i][1] - es[j][1]) < 0) c++;
+                    }
+                }
+            }
+            return c;
+        };
+        let best = layers.map((l) => l.slice());
+        let fewest = crossings();
+        for (let it = 0; it < 16 && fewest > 0; it++) {
+            const downward = it % 2 === 0;
+            const order = downward ? [...Array(depth).keys()].slice(1) : [...Array(depth).keys()].reverse().slice(1);
+            for (const r of order) {
+                const near = downward ? up : down;
+                const bary = (id) => {
+                    const ns = near.get(id);
+                    return ns.length ? ns.reduce((sum, n) => sum + pos.get(n), 0) / ns.length : pos.get(id);
+                };
+                layers[r] = layers[r].map((id) => [id, bary(id)]).sort((x, y) => x[1] - y[1] || pos.get(x[0]) - pos.get(y[0])).map((x) => x[0]);
+                layers[r].forEach((id, i) => pos.set(id, i));
+            }
+            const c = crossings();
+            if (c < fewest) { fewest = c; best = layers.map((l) => l.slice()); }
+        }
+        layers = best;
+        renumber();
+        // x: packed, then towards the neighbours without overlap.
+        const x = new Map();
+        const pack = (layer, want) => {
+            const gap = (i) => (vById.get(layer[i - 1]).w + vById.get(layer[i]).w) / 2 + BOX_GAP;
+            const fwd = want.slice();
+            for (let i = 1; i < layer.length; i++) fwd[i] = Math.max(fwd[i], fwd[i - 1] + gap(i));
+            const bwd = want.slice();
+            for (let i = layer.length - 2; i >= 0; i--) bwd[i] = Math.min(bwd[i], bwd[i + 1] - gap(i + 1));
+            const mix = want.map((_, i) => (fwd[i] + bwd[i]) / 2);
+            for (let i = 1; i < layer.length; i++) mix[i] = Math.max(mix[i], mix[i - 1] + gap(i));
+            layer.forEach((id, i) => x.set(id, mix[i]));
+        };
+        for (const layer of layers) {
+            const total = layer.reduce((s, id) => s + vById.get(id).w, 0) + BOX_GAP * (layer.length - 1);
+            let at = -total / 2;
+            const want = layer.map((id) => { const c = at + vById.get(id).w / 2; at += vById.get(id).w + BOX_GAP; return c; });
+            pack(layer, want);
+        }
+        for (let it = 0; it < 12; it++) {
+            const downward = it % 2 === 0;
+            const order = downward ? [...Array(depth).keys()] : [...Array(depth).keys()].reverse();
+            for (const r of order) {
+                const near = downward ? up : down;
+                const layer = layers[r];
+                const want = layer.map((id) => {
+                    const ns = near.get(id).length ? near.get(id) : [...up.get(id), ...down.get(id)];
+                    return ns.length ? ns.reduce((sum, n) => sum + x.get(n), 0) / ns.length : x.get(id);
+                });
+                pack(layer, want);
+            }
+        }
+        // y: one band per layer, as high as its highest box.
+        let top = 0;
+        const yOf = [];
+        for (const layer of layers) {
+            const h = Math.max(0, ...layer.map((id) => vById.get(id).h));
+            yOf.push(top + h / 2);
+            top += h + LAYER_GAP;
+        }
+        const fixed = new Set();
+        // moved: kept somewhere else than the layout would put it (dragged,
+        // or kept from before the model changed)
+        const moved = new Set();
+        const round = (v) => Math.round(v * 10) / 10;
+        for (const n of nodes) {
+            const p = kept[n.id];
+            const lx = x.get(n.id);
+            const ly = yOf[rank.get(n.id)];
+            if (p && Number.isFinite(p.x) && Number.isFinite(p.y)) {
+                n.x = p.x; n.y = p.y; fixed.add(n.id);
+                if (Math.abs(p.x - round(lx)) > 0.05 || Math.abs(p.y - round(ly)) > 0.05) moved.add(n.id);
+            } else {
+                n.x = lx; n.y = ly;
+            }
+        }
+        // A line over several layers goes through the places of its
+        // stand-ins, as long as its two boxes are where the layout put them.
+        for (const { edge, top, chain } of standIns) {
+            if (moved.has(edge.a) || moved.has(edge.b)) continue;
+            const points = chain.map((id) => ({ x: Math.round(x.get(id) * 10) / 10, y: Math.round(yOf[vById.get(id).rank] * 10) / 10 }));
+            edge.via = edge.a === top ? points : points.reverse();
+        }
+        // A new box among kept ones: aside, to the right, until it is free.
+        if (fixed.size) {
+            const placed = nodes.filter((n) => fixed.has(n.id));
+            for (const n of nodes.filter((m) => !fixed.has(m.id))) {
+                for (let guard = 0; guard < 50; guard++) {
+                    const hit = placed.find((m) => Math.abs(m.x - n.x) < (m.w + n.w) / 2 + 30 && Math.abs(m.y - n.y) < (m.h + n.h) / 2 + 30);
+                    if (!hit) break;
+                    n.x = hit.x + (hit.w + n.w) / 2 + BOX_GAP;
+                }
+                placed.push(n);
+            }
+        }
+        const result = {};
+        for (const n of nodes) {
+            n.x = Math.round(n.x * 10) / 10;
+            n.y = Math.round(n.y * 10) / 10;
+            result[n.id] = { x: n.x, y: n.y };
+        }
+        for (const e of edges) {
+            if (!e.via) continue;
+            const a = nodes[index.get(e.a)];
+            const b = nodes[index.get(e.b)];
+            e.viaFrom = { a: [a.x, a.y], b: [b.x, b.y] };
+        }
+        return result;
+    }
+
+    // The stand-in points of a line, while its boxes have not moved since the layout.
+    function waypoints(e, a, b) {
+        const w = e.viaFrom;
+        if (!e.via || !w || w.a[0] !== a.x || w.a[1] !== a.y || w.b[0] !== b.x || w.b[1] !== b.y) return [];
+        return e.via;
+    }
+
+    function forceLayout(graph, positions) {
         const { nodes, edges } = graph;
         const kept = positions || {};
         const byId = new Map(nodes.map((n) => [n.id, n]));
@@ -646,11 +874,73 @@
         return { x: n.x + dx * s, y: n.y + dy * s };
     }
 
-    function viewBox(nodes) {
+    // Where the crow's-foot lines meet their boxes: on the sides that face
+    // each other (top and bottom when the boxes are one above the other,
+    // else left and right), several lines on one side spread along it in the
+    // order of their other ends, so two foreign keys to the same table get
+    // two lines. Returns for each edge index { pa, na, pb, nb }: the points
+    // and the outward normals of their sides.
+    // How far a crow's-foot line runs straight out of its box: past the foot (16) and the bar (12).
+    const STUB = 22;
+
+    function crowfootRoutes(byId, edges) {
+        const sideOf = (a, b) => {
+            const gapV = Math.max(b.y - b.h / 2 - (a.y + a.h / 2), a.y - a.h / 2 - (b.y + b.h / 2));
+            const gapH = Math.max(b.x - b.w / 2 - (a.x + a.w / 2), a.x - a.w / 2 - (b.x + b.w / 2));
+            // One above the other at all: top and bottom, as in the layers.
+            if (gapV > 0 || gapV >= gapH) return b.y > a.y ? 'bottom' : 'top';
+            return b.x > a.x ? 'right' : 'left';
+        };
+        const normal = { top: [0, -1], bottom: [0, 1], left: [-1, 0], right: [1, 0] };
+        const ends = [];
+        edges.forEach((e, i) => {
+            const a = byId.get(e.a);
+            const b = byId.get(e.b);
+            if (e.kind !== 'cf' || !a || !b || a === b) return;
+            const via = waypoints(e, a, b);
+            const toA = via.length ? Object.assign({ w: 0, h: 0 }, via[0]) : b;
+            const toB = via.length ? Object.assign({ w: 0, h: 0 }, via[via.length - 1]) : a;
+            ends.push({ i, end: 'a', node: a, other: toA, side: sideOf(a, toA) });
+            ends.push({ i, end: 'b', node: b, other: toB, side: sideOf(b, toB) });
+        });
+        const groups = new Map();
+        for (const end of ends) {
+            const key = `${end.node.id}|${end.side}`;
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key).push(end);
+        }
+        const routes = {};
+        for (const list of groups.values()) {
+            const horizontal = list[0].side === 'top' || list[0].side === 'bottom';
+            list.sort((p, q) => (horizontal ? p.other.x - q.other.x : p.other.y - q.other.y) || p.i - q.i || (p.end < q.end ? -1 : 1));
+            const n = list[0].node;
+            const length = horizontal ? n.w : n.h;
+            const step = list.length > 1 ? Math.min(40, (length * 0.7) / (list.length - 1)) : 0;
+            list.forEach((end, k) => {
+                const offset = (k - (list.length - 1) / 2) * step;
+                const [nx, ny] = normal[end.side];
+                const p = horizontal ? { x: n.x + offset, y: n.y + ny * n.h / 2 } : { x: n.x + nx * n.w / 2, y: n.y + offset };
+                routes[end.i] = Object.assign(routes[end.i] || {}, end.end === 'a' ? { pa: p, na: [nx, ny] } : { pb: p, nb: [nx, ny] });
+            });
+        }
+        return routes;
+    }
+
+    // The area of the drawing: its boxes, and the points long lines pass through.
+    function viewBox(nodes, edges) {
         let x0 = Infinity; let y0 = Infinity; let x1 = -Infinity; let y1 = -Infinity;
         for (const n of nodes) {
             x0 = Math.min(x0, n.x - n.w / 2); x1 = Math.max(x1, n.x + n.w / 2);
             y0 = Math.min(y0, n.y - n.h / 2); y1 = Math.max(y1, n.y + n.h / 2);
+        }
+        const byId = new Map(nodes.map((n) => [n.id, n]));
+        for (const e of edges || []) {
+            const a = byId.get(e.a);
+            const b = byId.get(e.b);
+            if (!a || !b) continue;
+            for (const p of waypoints(e, a, b)) {
+                x0 = Math.min(x0, p.x - 20); x1 = Math.max(x1, p.x + 20);
+            }
         }
         if (!Number.isFinite(x0)) return [0, 0, 600, 380];
         const pad = 40;
@@ -680,7 +970,9 @@
     .row{font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:12.5px;fill:var(--er-ink,#1f2937);dominant-baseline:central}
     .tag{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:500;fill:var(--er-pen,#2b5fb4);dominant-baseline:central}
     .tag.pk{fill:var(--er-red,#b42318)}
-    .typ{font-family:"IBM Plex Mono",monospace;font-size:11px;fill:var(--er-muted,#6b7280);dominant-baseline:central;text-anchor:end}
+    .typ{font-family:"IBM Plex Mono",monospace;font-size:11px;fill:var(--er-muted,#6b7280);dominant-baseline:central}
+    .zebra{fill:var(--er-pen-soft,#e8effc);opacity:.45}
+    .colrule{stroke:var(--er-muted,#6b7280);stroke-width:.6;opacity:.5}
     .lbl{font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:12px;fill:var(--er-pen,#2b5fb4);font-style:italic;text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke:var(--er-paper,#fff);stroke-width:5px}`;
     const STYLE = STYLE_RULES.replace(/(^|\})\s*(\.[^{]+)\{/g, '$1\n    .er-diagram $2{');
 
@@ -689,7 +981,7 @@
         const opts = Object.assign({ background: null, measure: estimateWidth, title: 'ER-Diagramm' }, options || {});
         const { nodes, edges } = graph;
         const byId = new Map(nodes.map((n) => [n.id, n]));
-        const vb = opts.viewBox || viewBox(nodes);
+        const vb = opts.viewBox || viewBox(nodes, edges);
         const S = [];
         S.push(`<svg xmlns="http://www.w3.org/2000/svg" class="er-diagram" viewBox="${vb.join(' ')}" width="${vb[2]}" height="${vb[3]}" role="img" aria-label="${esc(opts.title)}">`);
         S.push(`<style>${STYLE}</style>`);
@@ -705,10 +997,11 @@
             const r = { x: p.x + ux * 12, y: p.y + uy * 12 };
             return `<line class="cfl" x1="${f(r.x + px * 8)}" y1="${f(r.y + py * 8)}" x2="${f(r.x - px * 8)}" y2="${f(r.y - py * 8)}"/>`;
         };
-        for (const e of edges) {
+        const routes = crowfootRoutes(byId, edges);
+        edges.forEach((e, i) => {
             const a = byId.get(e.a);
             const b = byId.get(e.b);
-            if (!a || !b) continue;
+            if (!a || !b) return;
             if (e.kind === 'cf') {
                 if (a === b) {
                     const x = a.x + a.w / 2;
@@ -716,18 +1009,37 @@
                     const y2 = a.y + 10;
                     S.push(`<path class="cfl" d="M${f(x)},${f(y1)} C${f(x + 70)},${f(y1 - 50)} ${f(x + 70)},${f(y2 + 50)} ${f(x)},${f(y2)}"/>`);
                     S.push(footMark({ x, y: y1 }, 1, 0, e.endA) + footMark({ x, y: y2 }, 1, 0, e.endB));
-                    if (e.label) S.push(`<text class="lbl" x="${f(x + 62)}" y="${f(a.y)}">${esc(e.label)}</text>`);
-                    continue;
+                    if (e.label) S.push(`<text class="lbl" x="${f(x + 62 + opts.measure(e.label) / 2)}" y="${f(a.y)}">${esc(e.label)}</text>`);
+                    return;
                 }
-                const pa = boundaryPoint(a, b.x, b.y);
-                const pb = boundaryPoint(b, a.x, a.y);
-                const len = Math.hypot(pb.x - pa.x, pb.y - pa.y) || 1;
-                const ux = (pb.x - pa.x) / len;
-                const uy = (pb.y - pa.y) / len;
-                S.push(`<line class="cfl" x1="${f(pa.x)}" y1="${f(pa.y)}" x2="${f(pb.x)}" y2="${f(pb.y)}"/>`);
-                S.push(footMark(pa, ux, uy, e.endA) + footMark(pb, -ux, -uy, e.endB));
-                if (e.label) S.push(`<text class="lbl" x="${f((pa.x + pb.x) / 2)}" y="${f((pa.y + pb.y) / 2 - 10)}">${esc(e.label)}</text>`);
-                continue;
+                // A curve that leaves each box at a right angle to its side.
+                // Through the stand-ins of a long line, upright at each of them.
+                // The first and last bit straight out of the box, through the
+                // crow's foot or the bar, so the mark sits square on the edge.
+                const { pa, na, pb, nb } = routes[i];
+                const via = waypoints(e, a, b);
+                const qa = { x: pa.x + na[0] * STUB, y: pa.y + na[1] * STUB };
+                const qb = { x: pb.x + nb[0] * STUB, y: pb.y + nb[1] * STUB };
+                const pts = [qa, ...via, qb];
+                const dirs = [na, ...via.map(() => [0, pb.y > pa.y ? 1 : -1]), [-nb[0], -nb[1]]];
+                let d = `M${f(pa.x)},${f(pa.y)} L${f(qa.x)},${f(qa.y)}`;
+                let middle = null;
+                for (let k = 0; k + 1 < pts.length; k++) {
+                    const p = pts[k];
+                    const q = pts[k + 1];
+                    const reach = Math.max(30, Math.hypot(q.x - p.x, q.y - p.y) * 0.4);
+                    const c1 = { x: p.x + dirs[k][0] * reach, y: p.y + dirs[k][1] * reach };
+                    const c2 = { x: q.x - dirs[k + 1][0] * reach, y: q.y - dirs[k + 1][1] * reach };
+                    d += ` C${f(c1.x)},${f(c1.y)} ${f(c2.x)},${f(c2.y)} ${f(q.x)},${f(q.y)}`;
+                    if (k === Math.floor((pts.length - 2) / 2)) {
+                        middle = { x: (p.x + 3 * c1.x + 3 * c2.x + q.x) / 8, y: (p.y + 3 * c1.y + 3 * c2.y + q.y) / 8 };
+                    }
+                }
+                d += ` L${f(pb.x)},${f(pb.y)}`;
+                S.push(`<path class="cfl" d="${d}"/>`);
+                S.push(footMark(pa, na[0], na[1], e.endA) + footMark(pb, nb[0], nb[1], e.endB));
+                if (e.label) S.push(`<text class="lbl" x="${f(middle.x)}" y="${f(middle.y)}">${esc(e.label)}</text>`);
+                return;
             }
             const ax = a.x;
             const ay = a.y + (e.offset || 0);
@@ -744,19 +1056,30 @@
                 const side = e.offset ? -1 : 1;
                 S.push(`<text class="card" x="${f(p.x + ux * 14 - uy * 10 * side)}" y="${f(p.y + uy * 14 + ux * 10 * side)}">${esc(e.card)}</text>`);
             }
-        }
+        });
         for (const n of nodes) {
             const g = `<g class="node" data-id="${esc(n.id)}" transform="translate(${f(n.x)},${f(n.y)})">`;
             if (n.kind === 'T') {
                 const x0 = -n.w / 2;
                 const y0 = -n.h / 2;
+                // Three columns, type | name | key, every other row shaded.
+                const cols = n.cols || { type: 40, name: n.w - 80, key: 0 };
+                const xName = x0 + 10 + cols.type + 20;
+                const xKey = xName + cols.name + 20;
+                const rowTop = (i) => y0 + HEAD_H + 3 + ROW_H * i;
+                const shade = n.rows.map((r, i) => (i % 2 ? `<rect class="zebra" x="${f(x0 + 0.8)}" y="${f(rowTop(i))}" width="${f(n.w - 1.6)}" height="${f(ROW_H)}"/>` : '')).join('');
+                const bottom = y0 + n.h;
+                const rules = n.rows.length
+                    ? `<line class="colrule" x1="${f(xName - 10)}" y1="${f(y0 + HEAD_H)}" x2="${f(xName - 10)}" y2="${f(bottom)}"/>` +
+                      (cols.key ? `<line class="colrule" x1="${f(xKey - 10)}" y1="${f(y0 + HEAD_H)}" x2="${f(xKey - 10)}" y2="${f(bottom)}"/>` : '')
+                    : '';
                 const rows = n.rows.map((r, i) => {
-                    const y = y0 + HEAD_H + 3 + ROW_H * i + ROW_H / 2;
-                    return (r.tag ? `<text class="tag${r.tag.startsWith('PK') ? ' pk' : ''}" x="${f(x0 + 8)}" y="${f(y)}">${esc(r.tag.replace(',', '·'))}</text>` : '') +
-                        `<text class="row" x="${f(x0 + 48)}" y="${f(y)}">${esc(r.name)}</text><text class="typ" x="${f(-x0 - 8)}" y="${f(y)}">${esc(r.type)}</text>`;
+                    const y = rowTop(i) + ROW_H / 2;
+                    return `<text class="typ" x="${f(x0 + 10)}" y="${f(y)}">${esc(r.type)}</text><text class="row" x="${f(xName)}" y="${f(y)}">${esc(r.name)}</text>` +
+                        (r.tag ? `<text class="tag${r.tag.startsWith('PK') ? ' pk' : ''}" x="${f(xKey)}" y="${f(y)}">${esc(r.tag.replace(',', '·'))}</text>` : '');
                 }).join('');
                 S.push(`${g}<rect class="box" x="${f(x0)}" y="${f(y0)}" width="${f(n.w)}" height="${f(n.h)}"/><rect class="boxhead" x="${f(x0 + 0.8)}" y="${f(y0 + 0.8)}" width="${f(n.w - 1.6)}" height="${f(HEAD_H - 0.8)}"/>` +
-                    `<line x1="${f(x0)}" y1="${f(y0 + HEAD_H)}" x2="${f(-x0)}" y2="${f(y0 + HEAD_H)}" stroke="var(--er-ink,#1f2937)" stroke-width="1"/>` +
+                    `${shade}${rules}<line x1="${f(x0)}" y1="${f(y0 + HEAD_H)}" x2="${f(-x0)}" y2="${f(y0 + HEAD_H)}" stroke="var(--er-ink,#1f2937)" stroke-width="1"/>` +
                     `<text class="t te" x="0" y="${f(y0 + HEAD_H / 2)}">${esc(n.label)}</text>${rows}</g>`);
             } else if (n.kind === 'E') {
                 S.push(`${g}<rect class="ent" x="${f(-n.w / 2)}" y="${f(-n.h / 2)}" width="${f(n.w)}" height="${f(n.h)}"/><text class="t te" x="0" y="0">${esc(n.label)}</text></g>`);

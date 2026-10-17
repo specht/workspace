@@ -141,11 +141,11 @@ Oben in der Vorschau wählst du zwischen drei Darstellungen desselben Modells.
 
 **Tabellen.** So wird das Modell in der Datenbank gespeichert. Aus jeder Entität wird eine Tabelle. Die n:m-Beziehung wird zu einer eigenen Tabelle `movie_genre`: In ihr steht pro Zeile ein Paar aus Film und Genre, nur mit den beiden IDs.
 
-<img class='invert-dark' src='film-1-tables.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Tabellendiagramm: movie und genre, dazwischen die Tabelle movie_genre mit movie_id und genre_id, beide PK und FK.'>
+<img class='invert-dark' src='film-1-tables.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Tabellendiagramm: oben movie und genre, darunter die Tabelle movie_genre mit movie_id und genre_id, beide PK und FK; von ihr führt je eine Linie hinauf zu movie und zu genre.'>
 
 Jetzt siehst du auch den Strich für »eins«: Die Linien führen von `movie_genre` zu `movie` und zu `genre`, mit dem Krähenfuß bei `movie_genre` und dem Strich am anderen Ende. Zu einem Film gehören viele Zeilen in `movie_genre`, aber jede Zeile gehört zu genau einem Film.
 
-In `movie_genre` steht `PK·FK` vor beiden Spalten:
+In `movie_genre` steht `PK·FK` hinter beiden Spalten:
 
 - **FK**, Fremdschlüssel: `movie_id` verweist auf eine `id` in `movie`, `genre_id` auf eine `id` in `genre`. Die Datenbank lässt nur IDs zu, die es dort gibt.
 - **PK**, Primärschlüssel: Beide Spalten **zusammen** bestimmen eine Zeile eindeutig. `movie_id` allein reicht nicht, ein Film hat mehrere Genres. Das nennt man einen zusammengesetzten Primärschlüssel.
@@ -387,7 +387,7 @@ relationship credit: movie, crew, job as movie_crew
 
 In der Tabellenansicht siehst du `movie_crew` mit drei Fremdschlüsseln, die zusammen den Primärschlüssel bilden. So kann dieselbe Person bei einem Film mehrere Tätigkeiten haben, aber dieselbe Kombination aus Film, Person und Tätigkeit nicht zweimal vorkommen.
 
-<img class='invert-dark' src='film-2-tables.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Tabellendiagramm mit movie, genre, movie_genre, crew, job und movie_crew; movie_crew hat drei Spalten, alle PK und FK.'>
+<img class='invert-dark' src='film-2-tables.svg' data-noconvert style='display: block; margin: 1em auto; max-width: 100%;' alt='Tabellendiagramm: oben genre, movie, crew und job, darunter movie_genre und movie_crew; movie_crew hat drei Spalten, alle PK und FK, mit Linien hinauf zu movie, crew und job.'>
 
 _task(modell-crew)
 

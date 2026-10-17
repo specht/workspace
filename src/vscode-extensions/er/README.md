@@ -12,7 +12,10 @@ In VS Code, a `.er` file gets:
   <kbd>V</kbd>): a preview beside the editor with Chen, Krähenfuß and Tabellen,
   the relational schema and »So wurde übersetzt«. Zoom with −, + and
   »Einpassen« or Ctrl + mouse wheel; typing never rescales the view, and
-  boxes stay where they are while you type. Boxes can be dragged; their
+  boxes stay where they are while you type. Krähenfuß and Tabellen are laid
+  out in layers, as Mermaid draws them (what is referenced above, join tables
+  below, few crossings, curves square to the box edges); Chen keeps a layout
+  of its own. Boxes can be dragged; their
   positions are kept in the hidden `.film.er.layout.json` next to the model
   (delete it, or press »Neu anordnen«, for a fresh layout);
 - »SQL erzeugen«: writes `film.sql` next to the model. A file the ER-Werkstatt

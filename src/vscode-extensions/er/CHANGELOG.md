@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.0
+
+- Krähenfuß and Tabellen in layers, as Mermaid draws them: a table that
+  others point to sits above them, join tables at the bottom; the order in
+  each layer keeps crossings few, and a line over several layers goes round
+  the boxes in between. Lines are curves that leave a box at a right angle,
+  through a crow's foot or bar that sits square on the edge; several lines
+  on one side get places of their own (two foreign keys to the same table
+  are two lines). Kept positions win; a new box moves aside instead of
+  landing on one. Chen keeps its own layout.
+- Boxes in three columns, type | name | key, every other row shaded.
+
 ## 0.2.0
 
 - Generated SQL names the right version (the core still said 0.1.0).
