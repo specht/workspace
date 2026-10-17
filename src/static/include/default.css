@@ -4842,7 +4842,7 @@ div[data-stepper]::before {
 }
 
 /* The tables of a dataset as schema lines (_schema(name), and in the
-   SQL-Zeitlupe): table(column, …), the primary key underlined, a foreign key
+   Query Stepper): table(column, …), the primary key underlined, a foreign key
    with ↑ and where it points in its title. */
 .schema-lines {
     margin: 0.6em 0 1em;

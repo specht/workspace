@@ -78,7 +78,7 @@ WHERE border.country_code = 'DEU';
 
 In Neo4j: Knoten `Continent`, `Country` und `City`, `(Country)-[:ON]->(Continent)`, `(City)-[:IN]->(Country)`, `(Country)-[:CAPITAL]->(City)` und `(Country)-[:BORDERS]->(Country)`, einmal pro Paar.
 
-Benutzt in: [Einführung in SQL](/mysql), in der [SQL-Zeitlupe](/query-stepper) (alle Tabellen ganz) und in den Beispielen des Handbuchs zu [SQL](/reference/sql).
+Benutzt in: [Einführung in SQL](/mysql), im [Query Stepper](/query-stepper) (alle Tabellen ganz) und in den Beispielen des Handbuchs zu [SQL](/reference/sql).
 
 <!-- /part -->
 
@@ -116,7 +116,7 @@ wget https://github.com/specht/workspace-files/raw/main/movie-archive/movies-dat
 
 Alles auf einmal, mit den Tabellen: `movie-archive/movies.sql`. In Neo4j: Knoten `Movie`, `Person` und `Genre`, `(Movie)-[:IN_GENRE]->(Genre)` und `(Person)-[:ACTOR|DIRECTOR|…]->(Movie)`.
 
-Benutzt in: [Filmdatenbank mit MySQL](/filmdatenbank), [Filmdatenbank mit Neo4j](/neo4j-filmdatenbank) und in der [SQL-Zeitlupe](/query-stepper) (dort nur Regie und Schauspiel, Schauspielerinnen und Schauspieler ab fünf Filmen).
+Benutzt in: [Filmdatenbank mit MySQL](/filmdatenbank), [Filmdatenbank mit Neo4j](/neo4j-filmdatenbank) und im [Query Stepper](/query-stepper) (dort nur Regie und Schauspiel, Schauspielerinnen und Schauspieler ab fünf Filmen).
 <!-- /part -->
 
 <!-- part: music -->

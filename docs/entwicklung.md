@@ -55,11 +55,11 @@ JavaScript-Tests laufen mit Node, ohne npm-Pakete:
 
 ```bash
 node --test src/tutorial-screenshots/test/*.test.js
-node --test test/static/*.test.cjs        # JavaScript der Website, etwa die SQL-Zeitlupe
+node --test test/static/*.test.cjs        # JavaScript der Website, etwa der Query Stepper
 cd src/vscode-extensions/er && node --test test/*.test.cjs core/*.test.cjs
 ```
 
-Die SQL-Zeitlupe (`src/static/include/query_stepper.js`, Seite
+Der Query Stepper (`src/static/include/query_stepper.js`, Seite
 `/query-stepper`, eingebettet in »Einführung in SQL« und »Filmdatenbank«)
 rechnet im Browser mit den Tabellen in `src/static/query-stepper/`.
 `src/scripts/query-stepper-data.rb` baut sie aus den Dateien, die Lernende
@@ -243,8 +243,8 @@ src/scripts/publish-datasets.rb --repo ~/workspace-files countries --push   # un
 
 Das Skript kopiert die Ausgabe des Sammlers (ohne die Caches) in einen Klon
 von `specht/workspace-files`, schreibt dort die `README.md` mit allen
-Datensätzen, ihren Tabellen und Zeilen, baut hier die Tabellen der
-SQL-Zeitlupe neu (die dann hier committet werden) und committet dort, mit
+Datensätzen, ihren Tabellen und Zeilen, baut hier die Tabellen des
+Query Steppers neu (die dann hier committet werden) und committet dort, mit
 `--push` auch gleich hinauf. `--repo` kann `WORKSPACE_FILES` ersetzen,
 `--from countries=DIR` nimmt einen Bau aus einem anderen Ordner. Ohne
 Datensatz schreibt es nur die Übersicht neu. Erwartet eine Aufgabe in einer

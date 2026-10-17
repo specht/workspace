@@ -68,7 +68,7 @@
                 const two = text.slice(i, i + 2);
                 if (['<>', '!=', '<=', '>='].includes(two)) { tokens.push({ type: 'op', value: two, start, end: i + 2 }); i += 2; continue; }
                 if ('=<>(),.*+-/;%'.includes(c)) { tokens.push({ type: 'op', value: c, start, end: ++i }); continue; }
-                throw new SqlError(`Das Zeichen »${c}« an Stelle ${i + 1} kennt die Zeitlupe nicht.`);
+                throw new SqlError(`Das Zeichen »${c}« an Stelle ${i + 1} kennt der Query Stepper nicht.`);
             }
         }
         return tokens;
@@ -167,7 +167,7 @@
             if (isKw('TRUE') || isKw('FALSE')) { pos++; return { type: 'lit', value: t.value === 'TRUE' ? 1 : 0 }; }
             if (isOp('(')) {
                 pos++;
-                if (isKw('SELECT')) throw new SqlError('Unterabfragen kann die Zeitlupe nicht zeigen.');
+                if (isKw('SELECT')) throw new SqlError('Unterabfragen kann der Query Stepper nicht zeigen.');
                 const inner = expression();
                 expectOp(')');
                 return inner;
@@ -177,7 +177,7 @@
                 const upper = t.value.toUpperCase();
                 if (isOp('(')) {
                     pos++;
-                    if (!AGGREGATES.has(upper) && !FUNCTIONS.has(upper)) throw new SqlError(`Die Funktion ${t.value} kennt die Zeitlupe nicht.`);
+                    if (!AGGREGATES.has(upper) && !FUNCTIONS.has(upper)) throw new SqlError(`Die Funktion ${t.value} kennt der Query Stepper nicht.`);
                     const call = { type: 'call', name: upper, args: [], star: false, distinct: false };
                     if (upper === 'COUNT' && isOp('*')) { pos++; call.star = true; }
                     else if (!isOp(')')) {
@@ -240,7 +240,7 @@
             if (isKw('JOIN')) { type = 'INNER'; pos++; }
             else if (isKw('INNER') && isKw('JOIN', 1)) { type = 'INNER'; pos += 2; }
             else if (isKw('LEFT')) { type = 'LEFT'; pos++; if (isKw('OUTER')) pos++; expectKw('JOIN'); }
-            else if (isOp(',')) throw new SqlError('Mehrere Tabellen mit Komma verbindet die Zeitlupe nicht; schreib JOIN … ON.');
+            else if (isOp(',')) throw new SqlError('Mehrere Tabellen mit Komma verbindet der Query Stepper nicht; schreib JOIN … ON.');
             else break;
             const at = joinStart;
             const ref = tableRef();
@@ -541,7 +541,7 @@
                     return null;
                 }
             }
-            throw new SqlError('Diesen Ausdruck kann die Zeitlupe nicht ausrechnen.');
+            throw new SqlError('Diesen Ausdruck kann der Query Stepper nicht ausrechnen.');
         }
 
         const hasAggregate = (expr) => !!expr && (expr.type === 'call' && AGGREGATES.has(expr.name) ||
@@ -587,7 +587,7 @@
                 for (const r of found) out.push(left.concat(r));
                 if (!found.length && join.type === 'LEFT') { out.push(left.concat(right.map(() => null))); unmatched++; }
                 if (!found.length && join.type === 'INNER') unmatched++;
-                if (out.length > MAX_JOINED) throw new SqlError(`Der JOIN ergibt mehr als ${MAX_JOINED.toLocaleString('de')} Zeilen; so viele kann die Zeitlupe nicht zeigen. Grenz die Abfrage ein, etwa mit einer genaueren Bedingung bei ON.`);
+                if (out.length > MAX_JOINED) throw new SqlError(`Der JOIN ergibt mehr als ${MAX_JOINED.toLocaleString('de')} Zeilen; so viele kann der Query Stepper nicht zeigen. Grenz die Abfrage ein, etwa mit einer genaueren Bedingung bei ON.`);
             }
             columns = both;
             rows = out;

@@ -473,7 +473,7 @@ _task(kontinente-grosse-laender)
 
 ## In welcher Reihenfolge arbeitet die Datenbank?
 
-Eine Abfrage schreibst du mit `SELECT` zuerst. Die Datenbank fängt aber woanders an: Sie holt zuerst die Zeilen der Tabelle aus `FROM`, wirft mit `WHERE` die weg, die nicht passen, und wählt erst danach mit `SELECT` die Spalten aus. Dann sortiert sie mit `ORDER BY` und schneidet mit `LIMIT` ab. Die Zeitlupe unten führt eine Abfrage so aus, Teil für Teil, und zeigt nach jedem Schritt die Tabelle, die gerade entstanden ist. Mit <kbd>←</kbd> und <kbd>→</kbd> gehst du durch die Schritte; die Abfrage kannst du ändern.
+Eine Abfrage schreibst du mit `SELECT` zuerst. Die Datenbank fängt aber woanders an: Sie holt zuerst die Zeilen der Tabelle aus `FROM`, wirft mit `WHERE` die weg, die nicht passen, und wählt erst danach mit `SELECT` die Spalten aus. Dann sortiert sie mit `ORDER BY` und schneidet mit `LIMIT` ab. Der Query Stepper unten führt eine Abfrage so aus, Teil für Teil, und zeigt nach jedem Schritt die Tabelle, die gerade entstanden ist. Mit <kbd>←</kbd> und <kbd>→</kbd> gehst du durch die Schritte; die Abfrage kannst du ändern.
 
 <div class='query-stepper' data-stepper data-query="SELECT name, ROUND(population / area) AS density
 FROM country
@@ -489,7 +489,7 @@ _task(reihenfolge)
 
 _task(dichte-where)
 
-Mehr Beispiele, auch mit `GROUP BY` und `JOIN`, die später drankommen, hat die SQL-Zeitlupe auf einer eigenen Seite:
+Mehr Beispiele, auch mit `GROUP BY` und `JOIN`, die später drankommen, hat der Query Stepper auf einer eigenen Seite:
 
 _tool(query-stepper)
 

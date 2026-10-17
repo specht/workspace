@@ -2,7 +2,7 @@ require 'minitest/autorun'
 require_relative '../include/schemas'
 
 # The tables of a dataset as schema lines (_schema(name)), from the JSON of
-# the SQL-Zeitlupe.
+# the Query Stepper.
 class SchemasTest < Minitest::Test
     def test_a_line_underlines_the_key_and_marks_foreign_keys
         table = { 'columns' => %w[movie_id genre_id], 'key' => %w[movie_id genre_id],

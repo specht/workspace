@@ -7,7 +7,7 @@ require 'cgi'
 #
 # _schema(countries) on a line of its own in a page becomes these lines
 # (docs/aufgaben.md). The tables, their columns and keys come from the JSON
-# the SQL-Zeitlupe uses (src/static/query-stepper/<name>.json, written by
+# the Query Stepper uses (src/static/query-stepper/<name>.json, written by
 # src/scripts/query-stepper-data.rb), so page and tool always agree.
 module Schemas
     ROOT = File.expand_path('../../static/query-stepper', __dir__)

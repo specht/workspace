@@ -20,8 +20,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 - Die Tabellen eines Datensatzes als Schema, eine Zeile pro Tabelle:
   `movie_genre(↑movie_id, ↑genre_id)`, der Primärschlüssel unterstrichen,
-  ein Fremdschlüssel mit ↑ und im Tooltip, worauf er verweist. Die
-  SQL-Zeitlupe zeigt sie unter der Auswahl der Tabellen, die »Einführung in
+  ein Fremdschlüssel mit ↑ und im Tooltip, worauf er verweist. Der
+  Query Stepper zeigt sie unter der Auswahl der Tabellen, die »Einführung in
   SQL« nach `SHOW TABLES` und `DESCRIBE` (mit einer Erklärung von Primär- und
   Fremdschlüssel), die »Filmdatenbank«, sobald alle sechs Tabellen geladen
   sind. Für Autorinnen und Autoren: `_schema(countries)`,
@@ -49,7 +49,7 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 - Für Autorinnen und Autoren: `src/scripts/publish-datasets.rb`
   veröffentlicht einen gebauten Datensatz in `specht/workspace-files`: Es
   kopiert ihn ohne Caches, schreibt dort eine Übersicht aller Datensätze mit
-  ihren Tabellen und Zeilen, baut die Tabellen der SQL-Zeitlupe neu,
+  ihren Tabellen und Zeilen, baut die Tabellen des Query Steppers neu,
   committet und pusht. Einen Bau, dessen Zeilenzahlen die Aufgaben nicht
   erwarten, verweigert es (docs/entwicklung.md).
 
@@ -100,9 +100,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Wert nach der Dequantisierung, ein Pixel nach der iDCT und die Lage der
   Blöcke in der MCU, jede mit Rückmeldungen für die typischen Fehler.
 
-- Die SQL-Zeitlupe kennt auch die Filme der »Filmdatenbank«:
+- Der Query Stepper kennt auch die Filme der »Filmdatenbank«:
   `movie`, `genre` und `movie_genre` ganz, von `crew`, `job` und
-  `movie_crew` Regie und Schauspiel. Die »Filmdatenbank« zeigt mit ihr, wie
+  `movie_crew` Regie und Schauspiel. Die »Filmdatenbank« zeigt mit ihm, wie
   die Tabelle mit jedem `JOIN` wächst und wie `HAVING` ganze Gruppen
   streicht; auf der Werkzeugseite wählt man die Tabellen aus. Vor `SELECT`
   zeigt er nur die Spalten, die die Abfrage benutzt. Ein `JOIN … ON a = b`
@@ -110,16 +110,16 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   vergleichen. Zwölf Abfragen der Seite geben dieselben Zeilen wie MySQL,
   auch »Wer spielt mit wem?« über sechs Tabellen.
 
-- Neues Werkzeug: die SQL-Zeitlupe (`/query-stepper`). Sie führt
+- Neues Werkzeug: der Query Stepper (`/query-stepper`). Er führt
   eine SQL-Abfrage so aus, wie die Datenbank es tut, Teil für Teil: FROM,
   JOIN, WHERE, GROUP BY, HAVING, SELECT, DISTINCT, ORDER BY, LIMIT. Nach
-  jedem Schritt zeigt sie die Tabelle, die gerade entstanden ist, mit
+  jedem Schritt zeigt er die Tabelle, die gerade entstanden ist, mit
   durchgestrichenen Zeilen, die wegfallen, Gruppen in eigenen Farben und den
-  Spalten, mit denen der Schritt arbeitet. ← → schalten weiter. Sie rechnet im
+  Spalten, mit denen der Schritt arbeitet. ← → schalten weiter. Er rechnet im
   Browser mit den Tabellen aus terra1 und hält sich an MySQL, wo man es
   merken würde. Groß- und Kleinschreibung zählen bei Texten nicht, NULL fällt
   aus WHERE, einen Namen aus AS gibt es bei WHERE noch nicht, und mit GROUP BY
-  braucht jede andere Spalte eine Funktion wie COUNT. Fehler erklärt sie,
+  braucht jede andere Spalte eine Funktion wie COUNT. Fehler erklärt er,
   statt sie nur zu melden. Die »Einführung in SQL« hat dazu einen Abschnitt
   »In welcher Reihenfolge arbeitet die Datenbank?« mit zwei Aufgaben, eine
   davon eine Vermutung.
@@ -700,13 +700,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Süden«). Wer `terra1` schon importiert hat, lädt die neuen Daten, sonst
   meldet »Prüfen«, dass die Beispieldaten fehlen. `terra1.sql` bleibt in
   `specht/workspace-files` für alte Links.
-- Die SQL-Zeitlupe rechnet mit den Ländern der Welt statt mit `terra1`,
+- Der Query Stepper rechnet mit den Ländern der Welt statt mit `terra1`,
   mit neuen Beispielen für Hauptstädte, Nachbarländer und `LEFT JOIN`.
 - Die READMEs der Film- und der Musikdaten zeigen die Tabellen als Schema
   und sagen, was die Spalten bedeuten.
 - Die Widgets zum Durchschalten heißen nicht mehr »Schrittmacher«, das an
   einen Herzschrittmacher denken ließ, sondern »Zeitlupe«; das Werkzeug für
-  SQL heißt »SQL-Zeitlupe« (die Adresse `/query-stepper` bleibt).
+  SQL heißt »Query Stepper«, wie seine Adresse `/query-stepper`.
 - Die TCP-Konsole scrollt nicht mehr in einem Kasten innerhalb der Seite:
   Das Protokoll wächst mit dem Gespräch, nur die Seite scrollt, und die
   Zeile zum Senden bleibt unten im Fenster. Neue Antworten ziehen die Seite

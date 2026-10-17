@@ -2,7 +2,7 @@
 # Publishes the classroom datasets to specht/workspace-files: copies what the
 # collectors built into a clone of that repository, writes the overview
 # README.md there with the tables and rows of every dataset, rebuilds the
-# tables of the SQL-Zeitlupe here, and commits (and pushes) there.
+# tables of the Query Stepper here, and commits (and pushes) there.
 #
 #   src/scripts/publish-datasets.rb --repo ~/workspace-files countries          # copy, then look
 #   src/scripts/publish-datasets.rb --repo ~/workspace-files countries --push   # and publish
@@ -29,7 +29,7 @@ DATASETS = {
         title: 'Countries of the world',
         about: 'The continents, the 197 countries of the world, every city with at least 100,000 inhabitants and every capital, and the land borders between the countries, each in both directions.',
         source: '[Wikidata](https://www.wikidata.org/), CC0 1.0',
-        used: '*Einführung in SQL*, the SQL-Zeitlupe',
+        used: '*Einführung in SQL*, the Query Stepper',
         stepper: %w[countries.sql]
     },
     'movies' => {
@@ -37,7 +37,7 @@ DATASETS = {
         title: 'Movies',
         about: 'Well-known feature films, their genres and the people who made them: cast, direction, writing, music, production, camera and editing.',
         source: '[Wikidata](https://www.wikidata.org/), CC0 1.0; IMDb votes only to choose the films',
-        used: '*Filmdatenbank* (MySQL and Neo4j), the SQL-Zeitlupe',
+        used: '*Filmdatenbank* (MySQL and Neo4j), the Query Stepper',
         stepper: %w[movies-schema.sql movies-data-films.sql movies-data-crew.sql],
         # the names before October 2026, for students halfway through the Filmdatenbank
         old_files: %w[mysql.sql mysql-schema.sql mysql-data.sql mysql-data-movies.sql mysql-data-crew.sql neo4j.dump]
@@ -197,7 +197,7 @@ class Publisher
         files = DATASETS[name][:stepper].map { |f| File.join(dir, f) }
         out, status = Open3.capture2e('ruby', File.join(ROOT, 'src/scripts/query-stepper-data.rb'), name, *files)
         abort "query-stepper-data.rb #{name} failed:\n#{out}" unless status.success?
-        puts "SQL-Zeitlupe: #{out.lines.last.strip} (commit it in specht/workspace)"
+        puts "Query Stepper: #{out.lines.last.strip} (commit it in specht/workspace)"
     end
 
     def generated(dir)

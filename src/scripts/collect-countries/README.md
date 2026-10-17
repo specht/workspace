@@ -1,7 +1,7 @@
 # Collect countries
 
 `collect-countries.rb` builds the classroom country dataset for *Einführung in SQL*
-(`src/content/mysql`) and the SQL-Zeitlupe: the continents, the countries of the world,
+(`src/content/mysql`) and the Query Stepper: the continents, the countries of the world,
 their cities and which countries share a land border.
 
 All data comes from [Wikidata](https://www.wikidata.org/) (CC0 1.0). The countries are
@@ -42,7 +42,7 @@ Generated files (shared with `collect-movies` and `collect-music` via
 - `README.md` — provenance, licence, the rules and what each column means
 
 The tables and columns are a contract with the Einführung in SQL, its tasks
-(`src/content/mysql/tasks.yaml`) and the SQL-Zeitlupe
+(`src/content/mysql/tasks.yaml`) and the Query Stepper
 (`src/scripts/query-stepper-data.rb countries countries.sql`). Change them together.
 So are the numbers: the tasks expect the published row counts (`tables: { city: … }`)
 and name results in their solutions, and the pictures of the tutorial show them. A
