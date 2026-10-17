@@ -12,30 +12,34 @@
     durch die Schritte. Wie man solche Abfragen schreibt, zeigt die <a href="/mysql">Einführung in SQL</a>.
   </p>
   <p class="qs-tables">
-    Es gibt zwei Sätze von Tabellen. <code>terra1</code> aus der Einführung: <code>land</code> mit allen 197 Ländern
-    und <code>ort</code> mit den 277 Orten ab einer Million Einwohnern (in der Datenbank sind es über 26.000);
-    <code>land.Einwohner</code> ist in Millionen. Die Filme aus der <a href="/filmdatenbank">Filmdatenbank</a>:
-    <code>movie</code>, <code>genre</code> und <code>movie_genre</code> ganz, von <code>crew</code>,
-    <code>job</code> und <code>movie_crew</code> nur Regie und die Schauspielerinnen und Schauspieler ab fünf
-    Filmen. Die Zeitlupe kennt <code>SELECT</code> mit <code>DISTINCT</code>, <code>JOIN</code> und
-    <code>LEFT JOIN</code>, <code>WHERE</code>, <code>GROUP BY</code>, <code>HAVING</code>, <code>ORDER BY</code>
-    und <code>LIMIT</code>, dazu <code>COUNT</code>, <code>SUM</code>, <code>AVG</code>, <code>MIN</code>,
-    <code>MAX</code> und <code>ROUND</code>. Sie rechnet alles im Browser; an deine Datenbank schickt er nichts.
+    Es gibt zwei Sätze von Tabellen. Die Länder der Welt aus der Einführung: <code>continent</code>,
+    <code>country</code> mit allen 197 Ländern, <code>city</code> mit den rund 4.700 Städten ab 100.000
+    Einwohnern und allen Hauptstädten und <code>border</code> mit den Landgrenzen, jede in beide Richtungen.
+    Die Filme aus der <a href="/filmdatenbank">Filmdatenbank</a>: <code>movie</code>, <code>genre</code> und
+    <code>movie_genre</code> ganz, von <code>crew</code>, <code>job</code> und <code>movie_crew</code> nur Regie
+    und die Schauspielerinnen und Schauspieler ab fünf Filmen. Was in den Tabellen steht, beschreibt das Handbuch
+    unter <a href="/reference/datensaetze">Datensätze</a>. Die Zeitlupe kennt <code>SELECT</code> mit
+    <code>DISTINCT</code>, <code>JOIN</code> und <code>LEFT JOIN</code>, <code>WHERE</code>, <code>GROUP BY</code>,
+    <code>HAVING</code>, <code>ORDER BY</code> und <code>LIMIT</code>, dazu <code>COUNT</code>, <code>SUM</code>,
+    <code>AVG</code>, <code>MIN</code>, <code>MAX</code> und <code>ROUND</code>. Sie rechnet alles im Browser; an
+    deine Datenbank schickt sie nichts.
   </p>
 
-  <div class="query-stepper" data-stepper data-choose data-query="SELECT kontinent, COUNT(*) AS laender
-FROM land
-WHERE einwohner > 10
-GROUP BY kontinent
-HAVING laender > 3
-ORDER BY laender DESC;"></div>
+  <div class="query-stepper" data-stepper data-choose data-query="SELECT continent, COUNT(*) AS countries
+FROM country
+WHERE population > 10000000
+GROUP BY continent
+HAVING countries > 3
+ORDER BY countries DESC;"></div>
   <div class="query-stepper-examples">
-    <button class="btn btn-sm btn-outline-secondary" data-query="SELECT name, hauptstadt FROM land WHERE kontinent = 'Europa' ORDER BY name LIMIT 5;">WHERE, ORDER BY, LIMIT</button>
-    <button class="btn btn-sm btn-outline-secondary" data-query="SELECT DISTINCT kontinent FROM land ORDER BY kontinent;">DISTINCT</button>
-    <button class="btn btn-sm btn-outline-secondary" data-query="SELECT kontinent, COUNT(*) AS laender, ROUND(AVG(einwohner), 1) AS schnitt FROM land GROUP BY kontinent ORDER BY schnitt DESC;">GROUP BY</button>
-    <button class="btn btn-sm btn-outline-secondary" data-query="SELECT o.name, o.einwohner, l.name FROM ort o JOIN land l ON o.land = l.name WHERE l.kontinent = 'Europa' ORDER BY o.einwohner DESC LIMIT 5;">JOIN</button>
-    <button class="btn btn-sm btn-outline-secondary" data-query="SELECT l.name, COUNT(o.name) AS millionenstaedte FROM land l LEFT JOIN ort o ON o.land = l.name GROUP BY l.name ORDER BY millionenstaedte DESC, l.name LIMIT 10;">LEFT JOIN</button>
-    <button class="btn btn-sm btn-outline-secondary" data-query="SELECT name, einwohner / flaeche * 1000000 AS dichte FROM land WHERE dichte > 1000;">Ein Fehler</button>
+    <button class="btn btn-sm btn-outline-secondary" data-query="SELECT name, population FROM country WHERE continent = 'Europa' ORDER BY population DESC LIMIT 5;">WHERE, ORDER BY, LIMIT</button>
+    <button class="btn btn-sm btn-outline-secondary" data-query="SELECT DISTINCT continent FROM country ORDER BY continent;">DISTINCT</button>
+    <button class="btn btn-sm btn-outline-secondary" data-query="SELECT continent, COUNT(*) AS countries, ROUND(AVG(population)) AS average FROM country GROUP BY continent ORDER BY average DESC;">GROUP BY</button>
+    <button class="btn btn-sm btn-outline-secondary" data-query="SELECT city.name, city.population, country.name FROM city JOIN country ON city.country_code = country.code WHERE country.continent = 'Europa' ORDER BY city.population DESC LIMIT 5;">JOIN</button>
+    <button class="btn btn-sm btn-outline-secondary" data-query="SELECT country.name, city.name FROM country JOIN city ON city.country_code = country.code WHERE city.is_capital AND country.continent = 'Südamerika' ORDER BY country.name;">Hauptstädte</button>
+    <button class="btn btn-sm btn-outline-secondary" data-query="SELECT neighbor.name FROM border JOIN country AS neighbor ON neighbor.code = border.neighbor_code WHERE border.country_code = 'DEU' ORDER BY neighbor.name;">Nachbarländer</button>
+    <button class="btn btn-sm btn-outline-secondary" data-query="SELECT country.name FROM country LEFT JOIN border ON border.country_code = country.code WHERE border.country_code IS NULL ORDER BY country.name;">LEFT JOIN</button>
+    <button class="btn btn-sm btn-outline-secondary" data-query="SELECT name, population / area AS density FROM country WHERE density > 1000;">Ein Fehler</button>
     <button class="btn btn-sm btn-outline-secondary" data-dataset="movies" data-query="SELECT movie.title, genre.name FROM movie JOIN movie_genre ON movie.id = movie_genre.movie_id JOIN genre ON movie_genre.genre_id = genre.id WHERE movie.title = 'Back to the Future';">Filme: zwei JOINs</button>
     <button class="btn btn-sm btn-outline-secondary" data-dataset="movies" data-query="SELECT genre.name, COUNT(*) FROM genre JOIN movie_genre ON genre.id = movie_genre.genre_id GROUP BY genre.id, genre.name HAVING COUNT(*) >= 100 ORDER BY COUNT(*) DESC;">Filme: GROUP BY und HAVING</button>
     <button class="btn btn-sm btn-outline-secondary" data-dataset="movies" data-query="SELECT movie.title, movie.year FROM crew JOIN movie_crew ON movie_crew.crew_id = crew.id JOIN job ON movie_crew.job_id = job.id JOIN movie ON movie_crew.movie_id = movie.id WHERE crew.name = 'Christopher Nolan' AND job.title = 'director' ORDER BY movie.year;">Filme: Regie</button>

@@ -138,7 +138,7 @@ class SqlCheckTest < Minitest::Test
                 'type' => 'sql',
                 'expect_query' => "SELECT COUNT(*) FROM land WHERE Kontinent IN ('Europa', 'Europe')",
                 'tables' => { 'land' => 4 },
-                'setup' => 'Lade zuerst die Beispieldaten: `mysql < terra1.sql`.',
+                'setup' => 'Lade zuerst die Beispieldaten: `mysql < mysql.sql`.',
             },
             'feedback' => [
                 { 'when' => { 'same_result_as' => "SELECT COUNT(*) FROM land WHERE Kontinent = 'Europa'" },
@@ -193,7 +193,7 @@ class SqlCheckTest < Minitest::Test
         r, = runner(answers('SELECT COUNT(*) FROM `land`' => { :error => { :code => 1146, :message => "Table 'anna.land' doesn't exist" } }))
         result = TaskCheck.check(task, 'SELECT 1', sql: r)
         assert_equal :unavailable, result.status
-        assert_equal 'In deiner Datenbank gibt es die Tabelle `land` nicht. Lade zuerst die Beispieldaten: `mysql < terra1.sql`.', result.message
+        assert_equal 'In deiner Datenbank gibt es die Tabelle `land` nicht. Lade zuerst die Beispieldaten: `mysql < mysql.sql`.', result.message
         # Emptied table: an empty answer must not become right.
         r, = runner(answers('SELECT COUNT(*) FROM `land`' => { :columns => ['COUNT(*)'], :rows => [[0]] }))
         result = TaskCheck.check(task, 'SELECT 1', sql: r)

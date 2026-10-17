@@ -1,13 +1,13 @@
 // The query stepper: a SELECT taken apart in the order the database works
 // through it, FROM, JOIN, WHERE, GROUP BY, HAVING, SELECT, DISTINCT,
 // ORDER BY, LIMIT, with the table after each step. ← and → step through it
-// (stepper_keys.js). The data are the tables of terra1.sql from the SQL
+// (stepper_keys.js). The data are the countries of the world from the SQL
 // introduction and the movies of »Filmdatenbank«
 // (src/scripts/query-stepper-data.rb).
 //
 // The engine below understands the SELECT the pages teach and follows MySQL
 // where a student would notice a difference: text compares without regard to
-// case and accents, as the collation latin1_german1_ci does; NULL is
+// case and accents, as the collation utf8mb4_unicode_ci does; NULL is
 // neither true nor false and drops out of WHERE; an alias from SELECT does
 // not exist yet in WHERE; with GROUP BY every other column needs an
 // aggregate (ONLY_FULL_GROUP_BY). What it does not understand, it says.
@@ -765,8 +765,8 @@
 
     const ORDER = ['FROM', 'JOIN', 'WHERE', 'GROUP BY', 'HAVING', 'SELECT', 'DISTINCT', 'ORDER BY', 'LIMIT'];
     const MAX_ROWS = 12;
-    // The tables to work on: terra1 (»Einführung in SQL«) or movies (»Filmdatenbank«)
-    const DATASETS = { terra1: 'Länder und Orte (terra1)', movies: 'Filme (Filmdatenbank)' };
+    // The tables to work on: countries (»Einführung in SQL«) or movies (»Filmdatenbank«)
+    const DATASETS = { countries: 'Länder der Welt', movies: 'Filme (Filmdatenbank)' };
     const loaded = new Map();
     const loadData = (name) => {
         if (!loaded.has(name)) loaded.set(name, fetch(`/query-stepper/${name}.json`).then((r) => r.json()));
@@ -838,8 +838,8 @@
     }
 
     function mount(rootElement) {
-        let dataset = DATASETS[rootElement.dataset.dataset] ? rootElement.dataset.dataset : 'terra1';
-        const start = rootElement.dataset.query || 'SELECT * FROM land;';
+        let dataset = DATASETS[rootElement.dataset.dataset] ? rootElement.dataset.dataset : 'countries';
+        const start = rootElement.dataset.query || 'SELECT * FROM country;';
         const choose = 'choose' in rootElement.dataset;
         const options = Object.entries(DATASETS).map(([k, v]) => `<option value='${k}'>${esc(v)}</option>`).join('');
         rootElement.innerHTML = `

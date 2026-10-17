@@ -1,5 +1,6 @@
 // The engine of the query stepper (src/static/include/query_stepper.js)
-// against what MySQL answers for the same queries on terra1.
+// against what MySQL answers for the same queries on the country dataset
+// (country-archive/mysql.sql).
 //   node --test test/static/*.test.cjs
 const test = require('node:test');
 const assert = require('node:assert');
@@ -7,63 +8,68 @@ const path = require('node:path');
 const fs = require('node:fs');
 const QS = require('../../src/static/include/query_stepper.js');
 
-const data = JSON.parse(fs.readFileSync(path.join(__dirname, '../../src/static/query-stepper/terra1.json')));
+const data = JSON.parse(fs.readFileSync(path.join(__dirname, '../../src/static/query-stepper/countries.json')));
 const result = (sql) => QS.run(sql, data).result;
+const values = (sql) => result(sql).rows.map((r) => r.cells.join(' | '));
 const clauses = (sql) => QS.run(sql, data).steps.map((s) => s.clause);
 const fails = (sql, pattern) => assert.throws(() => QS.run(sql, data), (e) => e instanceof QS.SqlError && pattern.test(e.message));
 
 test('the queries of the SQL introduction', () => {
-    assert.strictEqual(result('SELECT * FROM land;').rows.length, 197);
-    assert.deepStrictEqual(result("SELECT name, hauptstadt FROM land WHERE name = 'Deutschland';").rows[0].cells, ['Deutschland', 'Berlin']);
-    // Text compares without regard to case, as latin1_german1_ci does
-    assert.strictEqual(result("SELECT * FROM land WHERE name = 'deutschland'").rows.length, 1);
-    assert.deepStrictEqual(result('SELECT COUNT(*) FROM land;').rows[0].cells, ['197']);
-    assert.deepStrictEqual(result('SELECT * FROM land LIMIT 5;').rows.length, 5);
-    const sorted = result('SELECT name, einwohner FROM land ORDER BY einwohner DESC LIMIT 2').rows.map((r) => r.cells[0]);
-    assert.deepStrictEqual(sorted, ['China', 'Indien']);
-    const like = result("SELECT name FROM land WHERE name LIKE '%land%' ORDER BY name").rows.map((r) => r.cells[0]);
-    assert.ok(like.includes('Deutschland') && like.every((n) => /land/i.test(n)));
-    const continents = result('SELECT DISTINCT kontinent FROM land ORDER BY kontinent').rows.map((r) => r.cells[0]);
-    assert.deepStrictEqual(continents, [...new Set(continents)]);
-    assert.ok(continents.length >= 6 && continents.length <= 8);
+    assert.strictEqual(result('SELECT * FROM country;').rows.length, 197);
+    assert.deepStrictEqual(values("SELECT name, population FROM country WHERE name = 'Deutschland';"), ['Deutschland | 83467117']);
+    // Text compares without regard to case, as utf8mb4_unicode_ci does
+    assert.deepStrictEqual(values("SELECT name FROM country WHERE name = 'deutschland'"), ['Deutschland']);
+    assert.deepStrictEqual(values('SELECT COUNT(*) FROM country;'), ['197']);
+    assert.strictEqual(result('SELECT * FROM city LIMIT 5;').rows.length, 5);
+    assert.deepStrictEqual(values('SELECT name FROM country ORDER BY population DESC LIMIT 3'), ['China', 'Indien', 'Vereinigte Staaten']);
+    // Ä sorts as A
+    assert.deepStrictEqual(values('SELECT name FROM country ORDER BY name LIMIT 5'), ['Afghanistan', 'Ägypten', 'Albanien', 'Algerien', 'Andorra']);
+    assert.deepStrictEqual(values("SELECT name FROM country WHERE name LIKE '%land%' ORDER BY name"),
+        ['Deutschland', 'Estland', 'Finnland', 'Griechenland', 'Irland', 'Island', 'Lettland', 'Neuseeland', 'Niederlande', 'Russland', 'Thailand']);
+    assert.deepStrictEqual(values('SELECT DISTINCT continent FROM country ORDER BY continent'),
+        ['Afrika', 'Asien', 'Europa', 'Nordamerika', 'Ozeanien', 'Südamerika']);
+    assert.deepStrictEqual(values("SELECT COUNT(*) FROM city WHERE country_code = 'DEU'"), ['79']);
 });
 
 test('the steps come in the order the database works', () => {
     assert.deepStrictEqual(
-        clauses('SELECT DISTINCT kontinent, COUNT(*) AS n FROM land WHERE einwohner > 1 GROUP BY kontinent HAVING COUNT(*) > 5 ORDER BY n DESC LIMIT 3'),
+        clauses('SELECT DISTINCT continent, COUNT(*) AS n FROM country WHERE population > 1 GROUP BY continent HAVING COUNT(*) > 5 ORDER BY n DESC LIMIT 3'),
         ['FROM', 'WHERE', 'GROUP BY', 'HAVING', 'SELECT', 'DISTINCT', 'ORDER BY', 'LIMIT']);
-    assert.deepStrictEqual(clauses('SELECT o.name FROM ort o JOIN land l ON o.land = l.name'), ['FROM', 'JOIN', 'SELECT']);
+    assert.deepStrictEqual(clauses('SELECT city.name FROM city JOIN country ON city.country_code = country.code'), ['FROM', 'JOIN', 'SELECT']);
 });
 
 test('groups, HAVING and aliases', () => {
-    const rows = result('SELECT kontinent, COUNT(*) AS laender FROM land GROUP BY kontinent HAVING laender > 40 ORDER BY laender DESC').rows;
-    assert.ok(rows.length >= 2 && rows.every((r) => Number(r.cells[1]) > 40));
-    assert.ok(Number(rows[0].cells[1]) >= Number(rows[1].cells[1]));
-    const total = result('SELECT kontinent, COUNT(*) FROM land GROUP BY kontinent').rows.reduce((s, r) => s + Number(r.cells[1]), 0);
+    assert.deepStrictEqual(values('SELECT continent, COUNT(*) AS n FROM country GROUP BY continent HAVING n > 40 ORDER BY n DESC'),
+        ['Afrika | 54', 'Asien | 49', 'Europa | 45']);
+    const total = result('SELECT continent, COUNT(*) FROM country GROUP BY continent').rows.reduce((s, r) => s + Number(r.cells[1]), 0);
     assert.strictEqual(total, 197);
 });
 
 test('JOIN and LEFT JOIN', () => {
-    const europe = result("SELECT o.name, l.name FROM ort o JOIN land l ON o.land = l.name WHERE l.kontinent = 'Europa' ORDER BY o.einwohner DESC LIMIT 3").rows;
-    assert.strictEqual(europe.length, 3);
-    assert.ok(europe.every((r) => r.cells.length === 2));
-    const withNone = result('SELECT l.name, o.name FROM land l LEFT JOIN ort o ON o.land = l.name WHERE o.name IS NULL').rows;
-    assert.ok(withNone.length > 0 && withNone.every((r) => r.cells[1] === 'NULL'));
+    assert.deepStrictEqual(values("SELECT c.name, k.name FROM city c JOIN country k ON c.country_code = k.code WHERE k.continent = 'Europa' ORDER BY c.population DESC LIMIT 3"),
+        ['Moskau | Russland', 'London | Vereinigtes Königreich', 'Sankt Petersburg | Russland']);
+    assert.deepStrictEqual(values('SELECT k.name, c.name FROM country k JOIN city c ON c.country_code = k.code AND c.is_capital WHERE k.code IN (\'DEU\', \'FRA\') ORDER BY k.name'),
+        ['Deutschland | Berlin', 'Frankreich | Paris']);
+    assert.deepStrictEqual(values('SELECT ct.name, k.name FROM continent ct LEFT JOIN country k ON k.continent = ct.name WHERE k.code IS NULL'), ['Antarktika | NULL']);
+    assert.deepStrictEqual(values('SELECT COUNT(*) FROM country k LEFT JOIN border b ON b.country_code = k.code WHERE b.country_code IS NULL'), ['39']);
+    // the neighbours: border joined with country a second time
+    assert.deepStrictEqual(values("SELECT n.name FROM border b JOIN country n ON n.code = b.neighbor_code WHERE b.country_code = 'DEU' ORDER BY n.name"),
+        ['Belgien', 'Dänemark', 'Frankreich', 'Luxemburg', 'Niederlande', 'Österreich', 'Polen', 'Schweiz', 'Tschechien']);
 });
 
 test('NULL is neither true nor false', () => {
-    assert.strictEqual(result('SELECT * FROM land WHERE NULL = NULL').rows.length, 0);
-    assert.strictEqual(result('SELECT * FROM land WHERE NOT (NULL = 1)').rows.length, 0);
+    assert.strictEqual(result('SELECT * FROM country WHERE NULL = NULL').rows.length, 0);
+    assert.strictEqual(result('SELECT * FROM country WHERE NOT (NULL = 1)').rows.length, 0);
 });
 
 test('mistakes MySQL also rejects, with an explanation', () => {
-    fails('SELECT einwohner / flaeche AS dichte FROM land WHERE dichte > 0.0001', /SELECT kommt nach WHERE/);
-    fails('SELECT name FROM land WHERE COUNT(*) > 3', /HAVING/);
-    fails('SELECT kontinent, name FROM land GROUP BY kontinent', /weder in GROUP BY/);
-    fails('SELECT name FROM ort o JOIN land l ON o.land = l.name', /mehrdeutig/);
-    fails('SELECT * FROM laender', /gibt es nicht/);
-    fails('SELECT * FROM land ORDER BY name WHERE kontinent = \'Asien\'', /falschen Stelle/);
-    fails("SELECT * FROM land WHERE name = 'Deutschland", /hört nicht auf/);
+    fails('SELECT population / area AS density FROM country WHERE density > 100', /SELECT kommt nach WHERE/);
+    fails('SELECT name FROM country WHERE COUNT(*) > 3', /HAVING/);
+    fails('SELECT continent, name FROM country GROUP BY continent', /weder in GROUP BY/);
+    fails('SELECT name FROM city JOIN country ON city.country_code = country.code', /mehrdeutig/);
+    fails('SELECT * FROM countries', /gibt es nicht/);
+    fails('SELECT * FROM country ORDER BY name WHERE continent = \'Asien\'', /falschen Stelle/);
+    fails("SELECT * FROM country WHERE name = 'Deutschland", /hört nicht auf/);
 });
 
 // The queries of »Filmdatenbank« on the movie tables; values as MySQL gives
@@ -89,8 +95,8 @@ test('a self-join with many rows stays fast enough', () => {
 
 test('the schema lines, as _schema(name) on a page draws them', () => {
     const html = QS.schemaHtml(data.tables);
-    assert.ok(html.includes("<span class='schema-table'>land</span>(<u>LNR</u>, Name, Einwohner"));
-    assert.ok(html.includes("<span class='schema-table'>ort</span>(Name, <span class='schema-fk' title='verweist auf land.Name'><span class='schema-arrow'>↑</span>Land</span>, Einwohner"));
+    assert.ok(html.includes("<span class='schema-table'>country</span>(<u>code</u>, name, population, area, <span class='schema-fk' title='verweist auf continent.name'><span class='schema-arrow'>↑</span>continent</span>)"));
+    assert.ok(html.includes("<span class='schema-table'>border</span>(<u><span class='schema-fk' title='verweist auf country.code'><span class='schema-arrow'>↑</span>country_code</span></u>, <u><span class='schema-fk' title='verweist auf country.code'><span class='schema-arrow'>↑</span>neighbor_code</span></u>)"));
     // the same markup as the Ruby side (src/ruby/include/schemas.rb, test/schemas_test.rb)
     const movieGenre = { movie_genre: { columns: ['movie_id', 'genre_id'], key: ['movie_id', 'genre_id'], references: { movie_id: 'movie.id', genre_id: 'genre.id' } } };
     assert.strictEqual(QS.schemaHtml(movieGenre), "<div><span class='schema-table'>movie_genre</span>(" +

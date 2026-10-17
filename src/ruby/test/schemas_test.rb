@@ -16,9 +16,10 @@ class SchemasTest < Minitest::Test
     end
 
     def test_the_datasets_of_the_sql_zeitlupe
-        terra1 = Schemas.html('terra1')
-        assert_includes terra1, "<span class='schema-table'>land</span>(<u>LNR</u>, Name,"
-        assert_includes terra1, "title='verweist auf land.Name'><span class='schema-arrow'>↑</span>Land</span>"
+        countries = Schemas.html('countries')
+        %w[continent country city border].each { |table| assert_includes countries, ">#{table}</span>(" }
+        assert_includes countries, "<span class='schema-table'>city</span>(<u>id</u>, name, " \
+            "<span class='schema-fk' title='verweist auf country.code'><span class='schema-arrow'>↑</span>country_code</span>, population,"
         movies = Schemas.html('movies')
         %w[movie genre movie_genre crew job movie_crew].each { |table| assert_includes movies, ">#{table}</span>(" }
         assert_includes movies, "<u><span class='schema-fk' title='verweist auf job.id'><span class='schema-arrow'>↑</span>job_id</span></u>)"
@@ -26,10 +27,10 @@ class SchemasTest < Minitest::Test
 
     def test_expand_a_line_of_its_own_and_report_an_unknown_dataset
         warnings = []
-        out = Schemas.expand("Vorher\n\n_schema(terra1)\n\n_schema(nothing)\n`_schema(terra1)` im Text\n", warn: ->(m) { warnings << m })
+        out = Schemas.expand("Vorher\n\n_schema(countries)\n\n_schema(nothing)\n`_schema(countries)` im Text\n", warn: ->(m) { warnings << m })
         assert_includes out, "<div class='schema-lines'"
         assert_includes out, "_schema(nothing)"
-        assert_includes out, "`_schema(terra1)` im Text"
+        assert_includes out, "`_schema(countries)` im Text"
         assert_equal ['_schema(nothing): no such dataset'], warnings
     end
 end

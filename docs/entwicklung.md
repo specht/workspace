@@ -66,13 +66,17 @@ rechnet im Browser mit den Tabellen in `src/static/query-stepper/`.
 herunterladen:
 
 ```bash
-src/scripts/query-stepper-data.rb terra1 terra1.sql
-src/scripts/query-stepper-data.rb movies mysql-data-movies.sql mysql-data-crew.sql
+src/scripts/query-stepper-data.rb countries mysql.sql
+src/scripts/query-stepper-data.rb movies mysql-schema.sql mysql-data-movies.sql mysql-data-crew.sql
+src/scripts/query-stepper-data.rb music mysql-schema.sql
 ```
 
-`terra1`: `land` ganz, von `ort` die Orte ab einer Million Einwohnern.
-`movies`: Filme, Genres und ihre Zuordnung ganz, von den Personen nur Regie
-und Schauspiel ab fünf Filmen (522 kB, komprimiert gut 170 kB).
+`countries`: die Länder der Welt mit allen vier Tabellen ganz. `movies`:
+Filme, Genres und ihre Zuordnung ganz, von den Personen nur Regie und
+Schauspiel ab fünf Filmen (522 kB, komprimiert gut 170 kB). `music`: nur die
+Tabellen und Schlüssel, ohne Zeilen, für `_schema(music)`. Die Datensätze
+selbst baut `src/scripts/collect-countries`, `collect-movies` und
+`collect-music`; beschrieben sind sie im Handbuch unter »Datensätze«.
 
 Die End-to-End-Tests mit Playwright (Anmeldung, Workspace-Start,
 Toolchains bis zum Android-APK) stehen in [e2e/README.md](../e2e/README.md).
@@ -226,10 +230,13 @@ Workspaces bekommen ihren Zugang beim nächsten Start.
 ## Daten für Tutorials
 
 Große Dateien, die Lernende mit `wget` holen, liegen im Repository
-`specht/workspace-files`, nicht hier. Für die Filmdatenbank baut
-`src/scripts/collect-movies/collect-movies.rb` die Dateien in
-`movie-archive/` (Anleitung im README daneben); die Ausgabe kommt nach
-`specht/workspace-files/movie-archive/`.
+`specht/workspace-files`, nicht hier. Die drei Datensätze baut je ein Skript,
+mit Anleitung im README daneben: `src/scripts/collect-countries` die Länder
+der Welt (`country-archive/`), `src/scripts/collect-movies` die Filme
+(`movie-archive/`) und `src/scripts/collect-music` die Musik
+(`music-archive/`). Die Ausgabe kommt in den gleichnamigen Ordner von
+`specht/workspace-files`; danach die Tabellen der SQL-Zeitlupe neu bauen
+(oben).
 
 ## Icons
 

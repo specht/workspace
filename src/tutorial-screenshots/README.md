@@ -464,7 +464,7 @@ foreground shell command when the next screenshot or action must not happen unti
 the command has finished:
 
 ```text
-terminal-run: wget https://github.com/specht/workspace-files/raw/main/terra1.sql
+terminal-run: wget https://github.com/specht/workspace-files/raw/main/country-archive/mysql.sql
 terminal-wait-for-prompt
 ```
 
@@ -483,8 +483,8 @@ program already running in the terminal, so the same instruction works for Bash,
 `mycli`, or another interactive command:
 
 ```text
-terminal-run: wget -q -O terra1.sql https://github.com/specht/workspace-files/raw/main/terra1.sql
-terminal-run: mysql < terra1.sql
+terminal-run: wget -q https://github.com/specht/workspace-files/raw/main/country-archive/mysql.sql
+terminal-run: mysql < mysql.sql
 terminal-run: mycli
 terminal-run: SHOW TABLES;
 ```

@@ -14,17 +14,17 @@ test('the query stepper works through a query clause by clause', async ({ page, 
 
   const stepper = page.locator('.query-stepper');
   const say = stepper.locator('.qs-say');
-  await expect(say).toContainText('FROM land');
+  await expect(say).toContainText('FROM country');
   await expect(stepper.locator('.qs-clause')).toHaveText(['FROM', 'WHERE', 'GROUP BY', 'HAVING', 'SELECT', 'ORDER BY']);
   await expect(stepper.locator('.qs-clause.qs-current')).toHaveText('FROM');
   await expect(stepper.locator('.qs-count')).toHaveText('Schritt 1 von 6');
 
   // Above it, the tables as schema lines: the key underlined, a foreign key with ↑
   const schema = stepper.locator('.qs-schema > div');
-  await expect(schema).toHaveText(['land(LNR, Name, Einwohner, Flaeche, Hauptstadt, Kontinent, KontinentFlaeche, KontinentEinwohner)',
-    'ort(Name, ↑Land, Einwohner, Laenge, Breite)']);
-  await expect(schema.first().locator('u')).toHaveText('LNR');
-  await expect(schema.nth(1).locator('.schema-fk')).toHaveAttribute('title', 'verweist auf land.Name');
+  await expect(schema).toHaveText(['continent(name, area)', 'country(code, name, population, area, ↑continent)',
+    'city(id, name, ↑country_code, population, latitude, longitude, is_capital)', 'border(↑country_code, ↑neighbor_code)']);
+  await expect(schema.first().locator('u')).toHaveText('name');
+  await expect(schema.nth(1).locator('.schema-fk')).toHaveAttribute('title', 'verweist auf continent.name');
 
   // The arrow keys step it, as every stepper on the site
   await page.locator('h2').click();
@@ -37,7 +37,7 @@ test('the query stepper works through a query clause by clause', async ({ page, 
 
   await stepper.locator("[data-go='last']").click();
   await expect(stepper.locator('.qs-clause.qs-current')).toHaveText('ORDER BY');
-  await expect(stepper.locator('.qs-table thead th')).toHaveText(['kontinent', 'laender']);
+  await expect(stepper.locator('.qs-table thead th')).toHaveText(['continent', 'countries']);
   const counts = await stepper.locator('.qs-table tbody tr td:nth-child(2)').allTextContents();
   expect(counts.length).toBeGreaterThan(1);
   expect(counts.map(Number)).toEqual([...counts.map(Number)].sort((a, b) => b - a));
@@ -48,10 +48,10 @@ test('the query stepper works through a query clause by clause', async ({ page, 
   await expect(stepper.locator("[data-go='next']")).toBeDisabled();
 
   // Typing a query of one's own
-  await stepper.locator('.qs-input').fill("SELECT name FROM land WHERE name LIKE 'D%' ORDER BY name LIMIT 2");
+  await stepper.locator('.qs-input').fill("SELECT name FROM country WHERE name LIKE 'D%' ORDER BY name LIMIT 2");
   await expect(stepper.locator('.qs-clause')).toHaveText(['FROM', 'WHERE', 'SELECT', 'ORDER BY', 'LIMIT']);
   await stepper.locator("[data-go='last']").click();
-  await expect(stepper.locator('.qs-table tbody tr:not(.qs-drop) td')).toHaveText(['Dänemark', 'Deutschland']);
+  await expect(stepper.locator('.qs-table tbody tr:not(.qs-drop) td')).toHaveText(['Dänemark', 'Demokratische Republik Kongo']);
 
   // An example on the movie tables switches the tables
   await page.locator('.query-stepper-examples button', { hasText: 'Filme: zwei JOINs' }).click();
