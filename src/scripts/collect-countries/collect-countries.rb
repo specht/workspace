@@ -321,6 +321,8 @@ class WikidataCountryBuilder
     name.sub(/\A(?:Stadt|City of) (?=\p{Lu})/, '').sub(/ (?:city|\((?:Stadt|city|Tettsted)\))\z/, '')
   end
 
+  def self.sort_key(name) = name.to_s.unicode_normalize(:nfd).gsub(/\p{Mn}/, '').downcase
+
   # The same place as two items: same name, same country, close together.
   # A capital wins, then the item with the plain name, then the bigger count;
   # it keeps the plain name.
@@ -369,8 +371,9 @@ class WikidataCountryBuilder
     unnamed = cities.reject { |c| c[:name] }
     @notes << "#{unnamed.size} cities without a name in German, English or mul, left out" unless unnamed.empty?
     cities.replace(merge_same_places(cities - unnamed, countries.map { |c| c[:capital] }.to_set))
-    # ids by country and size, so that the biggest cities come first
-    cities.sort_by! { |c| [c[:country], -(c[:population] || 0), c[:name].to_s] }
+    # ids by country and name, Ä as A: not by size, so that a query without
+    # ORDER BY does not happen to give the biggest cities first
+    cities.sort_by! { |c| [c[:country], self.class.sort_key(c[:name]), -(c[:population] || 0)] }
     cities.each_with_index { |c, i| c[:id] = i + 1 }
     capitals = countries.map { |c| [c[:capital], c[:code]] }.to_set
     cities.each { |c| c[:is_capital] = capitals.include?([c[:wikidata], c[:country]]) }

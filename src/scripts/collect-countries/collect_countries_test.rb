@@ -111,6 +111,11 @@ class CollectCountriesTest < Minitest::Test
         assert_equal 'Kansas City', WikidataCountryBuilder.plain_name('Kansas City')
     end
 
+    def test_cities_sort_by_name_without_accents
+        names = %w[Zürich Ägypten Aachen Österreich Berlin]
+        assert_equal %w[Aachen Ägypten Berlin Österreich Zürich], names.sort_by { |n| WikidataCountryBuilder.sort_key(n) }
+    end
+
     def test_the_same_place_counts_once
         city = ->(q, name, lat, people) { { wikidata: q, country: 'ESP', name: name, latitude: lat, longitude: -3.7, population: people } }
         kept = builder.merge_same_places([city.('Q1', 'Stadt Madrid', 40.42, 3_300_000), city.('Q2', 'Madrid', 40.41, 3_200_000),
