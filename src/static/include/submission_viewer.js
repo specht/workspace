@@ -6,6 +6,7 @@
 (function () {
     const IMAGE = /\.(png|jpe?g|gif|webp|svg|ico)$/i;
     const MEDIA = /\.(mp3|ogg|wav|mp4|webm)$/i;
+    const PDF = /\.pdf$/i;
     let viewer = null;
     let lastFocus = null;
 
@@ -24,6 +25,7 @@
             yml: 'yml', yaml: 'yml', xml: 'xml', sh: 'sh', tsx: 'tsx', jsx: 'jsx', ts: 'tsx' };
         if (ext && known[ext.toLowerCase()]) return 'bi-filetype-' + known[ext.toLowerCase()];
         if (IMAGE.test(path)) return 'bi-file-earmark-image';
+        if (PDF.test(path)) return 'bi-file-earmark-pdf';
         if (MEDIA.test(path)) return 'bi-file-earmark-play';
         return 'bi-file-earmark';
     }
@@ -65,13 +67,25 @@
         if (e.key === 'Escape') close();
     }
 
-    // The file that shows first: the page nearest the top, else the first
-    // text file.
+    // The file that shows first, as a page: the index.html nearest the top,
+    // else another page nearest the top (raylib's main.html), but not a
+    // template (Hugo's layouts/), which makes no sense run on its own;
+    // without a page the text file nearest the top.
     function firstFile(files) {
-        const pages = files.filter((f) => f.html).sort((a, b) =>
-            a.path.split('/').length - b.path.split('/').length ||
-            (b.path.endsWith('index.html') ? 1 : 0) - (a.path.endsWith('index.html') ? 1 : 0));
-        return pages[0] || files.find((f) => f.text) || files[0];
+        const depth = (f) => f.path.split('/').length;
+        const nearest = (list) => list.slice().sort((a, b) => depth(a) - depth(b) || a.path.localeCompare(b.path))[0];
+        const template = (f) => /(^|\/)(layouts|partials|templates|_layouts|_includes)\//.test(f.path);
+        return nearest(files.filter((f) => /(^|\/)index\.html?$/i.test(f.path))) ||
+            nearest(files.filter((f) => f.html && !template(f))) ||
+            nearest(files.filter((f) => f.text)) || files[0];
+    }
+
+    // An index.html runs under its folder's address (…/build/ for …/build/
+    // index.html): a SvelteKit page takes the address as its route and finds
+    // »/« there, not »/index.html«. The viewer's host serves a folder's
+    // index.html.
+    function runUrl(url) {
+        return url.replace(/\/index\.html?$/i, '/');
     }
 
     // Files as a tree of folders. Big folders (a template's engine, say)
@@ -234,7 +248,7 @@
                     reload.title = 'Neu laden';
                     reload.setAttribute('aria-label', 'Seite neu laden');
                     reload.appendChild(icon('bi-arrow-clockwise'));
-                    reload.addEventListener('click', () => { if (frame) frame.src = url; });
+                    reload.addEventListener('click', () => { if (frame) frame.src = runUrl(url); });
                     bar.appendChild(reload);
                 }
                 bar.appendChild(newTab());
@@ -244,13 +258,23 @@
                     frame.setAttribute('sandbox', 'allow-scripts allow-forms allow-modals allow-popups allow-downloads');
                     frame.setAttribute('referrerpolicy', 'no-referrer');
                     frame.title = f.path;
-                    frame.src = url;
+                    frame.src = runUrl(url);
                     pane.appendChild(frame);
                     return;
                 }
             } else {
-                if (IMAGE.test(f.path) || MEDIA.test(f.path)) bar.appendChild(newTab());
+                if (IMAGE.test(f.path) || MEDIA.test(f.path) || PDF.test(f.path)) bar.appendChild(newTab());
                 pane.appendChild(bar);
+            }
+            // A PDF in the browser's own viewer: it shows only without a
+            // sandbox (SubmissionView.headers), on the viewer's host
+            if (PDF.test(f.path)) {
+                const frame = el('iframe', 'subview-frame');
+                frame.setAttribute('referrerpolicy', 'no-referrer');
+                frame.title = f.path;
+                frame.src = url;
+                pane.appendChild(frame);
+                return;
             }
             if (IMAGE.test(f.path)) {
                 const img = el('img', 'subview-image');

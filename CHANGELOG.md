@@ -769,6 +769,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   und Umbenennen bis zur Umwandlung nach WebP. Das Kontextmenü des Browsers
   ist nachgebaut, weil ein Screenshot das echte nicht zeigt. Nach einem Update
   von VS Code entstehen sie neu.
+- Abgaben ansehen funktioniert jetzt in allen 15 Aktivitäten mit Abgabe; ein
+  neuer Test (`e2e/tests/hand-ins.browser.spec.ts`) gibt jede einmal echt ab
+  und öffnet sie als Lehrkraft. Die Facharbeit (PDF) erscheint im Browser statt
+  »keine Vorschau«, Lua, TOML, Svelte, Makefiles und weitere Quelltexte als
+  Text (die TIC-80-Abgabe zeigte bisher nichts), raylib startet `main.html`,
+  Hugo zeigt zuerst `hugo.yaml` statt eine Vorlage roh, und eine gebaute
+  SvelteKit-Seite findet ihre Startseite.
 - Abgaben ansehen: Der Kopf sagt, wann die Abgabe kam, wie viele Dateien sie
   hat und wie groß sie ist. Alle Knöpfe haben Symbole, die Dateien ihre Art
   als Symbol, eine laufende Seite lässt sich neu laden, und die Pfeiltasten

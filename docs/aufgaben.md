@@ -1139,9 +1139,16 @@ Reflexionen zum Nachlesen und die Abgaben.
 Ein Klick auf eine Abgabe öffnet sie über der Klassenübersicht: links die
 Dateien, rechts der Quelltext mit Zeilennummern, Bilder und Medien, und bei
 Webseiten »Starten«. Die Seite läuft dann so, wie die Person sie abgegeben hat,
-mit ihrem CSS und JavaScript, auch BIF-Geschichten. Sie kommt von einem eigenen
+mit ihrem CSS und JavaScript, auch BIF-Geschichten, raylib-Programme und gebaute
+SvelteKit-Seiten. Zuerst zeigt der Viewer die `index.html`, die am weitesten
+oben liegt, sonst eine andere Seite (aber keine Vorlage aus `layouts/` wie bei
+Hugo), sonst die oberste Textdatei; eine `index.html` läuft unter der Adresse
+ihres Ordners, damit der Router von SvelteKit `/` findet. PDFs zeigt der Viewer
+im Browser. Die Seite kommt von einem eigenen
 Host, `abgaben.<host>`, unter einer signierten Adresse, die 12 Stunden gilt
-(`SubmissionView`), und jede Antwort trägt `Content-Security-Policy: sandbox`:
+(`SubmissionView`), und jede Antwort trägt `Content-Security-Policy: sandbox`
+(nur ein PDF nicht: Chrome zeigt keins in einer Sandbox; als `application/pdf`
+mit `nosniff` wird es nie zur Seite):
 Die Seite hat einen eigenen, leeren Ursprung, bekommt keine Cookies der Seite
 oder eines Workspaces und kann nichts im Namen der Lehrkraft tun. Damit Seiten,
 die `localStorage` oder Cookies benutzen, trotzdem laufen, bekommen sie beim

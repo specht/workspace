@@ -66,5 +66,16 @@ class SubmissionViewTest < Minitest::Test
         assert_equal 'application/octet-stream', SubmissionView.headers('x/datei.exe', 'x')['Content-Type']
         assert SubmissionView.text?('a/b.ini')
         refute SubmissionView.text?('a/b.png')
+        # the sources of the activities, also by name
+        %w[TIC-80/spiel.lua solar-system/hugo.toml src/routes/+page.svelte raylib-starter/Makefile].each do |path|
+            assert SubmissionView.text?(path), path
+            assert_equal 'text/plain; charset=utf-8', SubmissionView.content_type(path), path
+        end
+        assert_equal 'application/wasm', SubmissionView.content_type('raylib-starter/main.wasm')
+        # the one exception: a PDF, which Chrome shows only outside a sandbox
+        pdf = SubmissionView.headers('facharbeit/facharbeit.pdf', 'http://workspace.test:8025')
+        assert_equal 'application/pdf', pdf['Content-Type']
+        assert_equal 'frame-ancestors http://workspace.test:8025', pdf['Content-Security-Policy']
+        assert_equal 'nosniff', pdf['X-Content-Type-Options']
     end
 end

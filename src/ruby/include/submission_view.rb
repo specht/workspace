@@ -29,9 +29,14 @@ module SubmissionView
         'mp3' => 'audio/mpeg', 'ogg' => 'audio/ogg', 'wav' => 'audio/wav',
         'mp4' => 'video/mp4', 'webm' => 'video/webm',
         'woff' => 'font/woff', 'woff2' => 'font/woff2', 'ttf' => 'font/ttf', 'otf' => 'font/otf',
-        'pdf' => 'application/pdf',
+        'pdf' => 'application/pdf', 'wasm' => 'application/wasm',
     }.freeze
-    TEXT = %w[html htm css js mjs json md txt ini csv svg py rb c h cpp java sql er tex yaml yml xml sh].freeze
+    # Source files of the activities, shown as text
+    TEXT = %w[html htm css scss js mjs ts tsx jsx json md txt ini csv svg py rb c h cpp hpp java sql er tex bib
+        yaml yml toml xml sh lua svelte vue go rs cs pas pp f90 asm bas cob st lisp dart kt php r cfg conf mk
+        gitignore].freeze
+    # ... and files that are text by their name
+    TEXT_NAMES = %w[Makefile Dockerfile LICENSE README Gemfile Rakefile].freeze
 
     SANDBOX = 'sandbox allow-scripts allow-forms allow-modals allow-popups allow-downloads'
 
@@ -112,11 +117,15 @@ module SubmissionView
     end
 
     def self.content_type(path)
-        TYPES.fetch(extension(path), 'application/octet-stream')
+        TYPES.fetch(extension(path)) { text?(path) ? 'text/plain; charset=utf-8' : 'application/octet-stream' }
     end
 
     def self.text?(path)
-        TEXT.include?(extension(path))
+        TEXT.include?(extension(path)) || TEXT_NAMES.include?(File.basename(path.to_s))
+    end
+
+    def self.pdf?(path)
+        extension(path) == 'pdf'
     end
 
     def self.html?(path)
@@ -131,9 +140,14 @@ module SubmissionView
     end
 
     def self.headers(path, frame_ancestors)
+        # A PDF only shows outside a sandbox: Chrome refuses to show one in a
+        # sandboxed frame. As application/pdf with nosniff it is never taken
+        # for a page, its own scripts run in the PDF viewer, and this host
+        # has no cookies of the site.
+        policy = pdf?(path) ? "frame-ancestors #{frame_ancestors}" : "#{SANDBOX}; frame-ancestors #{frame_ancestors}"
         {
             'Content-Type' => content_type(path),
-            'Content-Security-Policy' => "#{SANDBOX}; frame-ancestors #{frame_ancestors}",
+            'Content-Security-Policy' => policy,
             'Access-Control-Allow-Origin' => '*',
             'X-Content-Type-Options' => 'nosniff',
             'Referrer-Policy' => 'no-referrer',
