@@ -47,7 +47,7 @@ sleep: 1
 
 ### Vorschau starten
 
-<img src='../reference/workspace/go-live.webp' class='r' style='width: 21em;' alt=''>
+<img src='../reference/workspace/go-live.webp' class='r' style='width: 21em;' alt='Unten rechts in der Statusleiste der Knopf »Go Live« mit dem Mauszeiger darauf und dem Hinweis »Click to run live server«.'>
 
 Im Workspace ist bereits die Erweiterung »Live Server« installiert. Unten rechts findest du den Eintrag »Go Live«. Klicke darauf, um die Vorschau zu starten. Es öffnet sich ein neuer Tab in deinem Browser mit deiner 3D-Szene, die anfangs nur aus einem einzigen Würfel besteht.
 

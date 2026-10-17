@@ -718,6 +718,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Alle Bilder haben einen Alt-Text, der sagt, was zu sehen ist: rund 450
+  Screenshots auf den Seiten der Programmiersprachen, in »Git«, »Mit Dateien
+  arbeiten«, im KI-Experiment mit Ziffern und anderswo, die bisher keinen
+  hatten. Für Lernende mit Screenreader beschreiben sie jetzt Terminal,
+  Editor und Fehlermeldungen. Ein Test (`alt_text_test.rb`) sorgt dafür,
+  dass es so bleibt.
 - Die ER-Werkstatt (0.3.0) ordnet »Krähenfuß« und »Tabellen« in Schichten,
   wie Mermaid es tut: Worauf andere Tabellen verweisen, steht oben, die
   Verbindungstabellen unten, und die Reihenfolge hält Kreuzungen gering.

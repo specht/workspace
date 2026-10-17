@@ -5,7 +5,7 @@ kind: grundlagen
 
 # Was ist der Hackschule Workspace?
 
-<img class='r' style='width: 8em;' src='vscode.png' alt=''>
+<img class='r' style='width: 8em;' src='vscode.png' alt='Das blaue Logo von Visual Studio Code'>
 
 <p class='abstract'>
 Der Hackschule Workspace ist eine Programmierumgebung, die direkt im Browser läuft. Schülerinnen und Schüler können damit programmieren, Webseiten bauen und neue Technologien ausprobieren, ohne vorher Software installieren oder einrichten zu müssen.

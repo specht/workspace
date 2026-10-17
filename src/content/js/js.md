@@ -12,7 +12,7 @@ kind: steckbrief
 # JavaScript <span style='font-size: 80%;'>(1995)</span>
 
 <div class='floatright' style='width: 16em;'>
-    <img src='eich.webp' alt=''>
+    <img src='eich.webp' alt='Foto von Brendan Eich, dem Erfinder von JavaScript, an einem Rednerpult mit Mikrofon'>
     <p>
       Brendan Eich<br>
       <span style='font-size: 90%; opacity: 0.7;'>(Foto von James Duncan Davidson)</span>
@@ -36,7 +36,7 @@ In diesem Kapitel wollen wir uns jedoch auf JavaScript außerhalb des Browsers k
 
 **Möglichkeit 1:** JavaScript-Code in der Node.js-Shell ausführen
 
-Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt='ein Rechteck mit einem Streifen unten'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <!-- tutorial-screenshot
 # Ein frischer Workspace ohne Ordner, das Terminal offen
@@ -45,7 +45,7 @@ terminal-open
 sleep: 0.5
 -->
 
-<img class='full' src='code-with-terminal.webp' alt=''>
+<img class='full' src='code-with-terminal.webp' alt='Ein frischer Workspace mit der Willkommensseite, darunter das offene Terminal mit der Eingabeaufforderung student@workspace:~$.'>
 
 Starte nun die Node.js-Shell, indem du `node` eingibst und dann <kbd>Enter</kbd> drückst. Du solltest eine Ausgabe wie diese sehen:
 
@@ -57,7 +57,7 @@ sleep: 0.5
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='node-shell.webp' alt=''>
+<img class='full' src='node-shell.webp' alt='Im Terminal läuft node, begrüßt mit »Welcome to Node.js v24.21.0« und wartet mit &gt; auf JavaScript-Code.'>
 
 Jetzt kannst du JavaScript-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `console.log("Hello, world!");` und drücke <kbd>Enter</kbd>. Du solltest die Ausgabe `Hello, world!` sehen.
 
@@ -79,7 +79,7 @@ show-left-sidebar
 sleep: 0.5
 -->
 
-<img class='full' src='fresh-start.webp' alt=''>
+<img class='full' src='fresh-start.webp' alt='Der Workspace ohne geöffneten Ordner, links »No Folder Opened«, rechts die Willkommensseite mit »New File…«.'>
 
 ### Quelltext schreiben
 
@@ -92,7 +92,7 @@ sleep: 0.5
 crop-bottom: 77%
 -->
 
-<img class='full' src='choose-filename.webp' alt=''>
+<img class='full' src='choose-filename.webp' alt='Nach »New File…« fragt oben ein Feld nach dem Dateityp, »Text File« ist ausgewählt.'>
 
 Schreibe nun den folgenden Code in die Datei:
 
@@ -110,7 +110,7 @@ sleep: 0.5
 crop-bottom: 82%
 -->
 
-<img class='full' src='no-syntax-highlighting.webp' alt=''>
+<img class='full' src='no-syntax-highlighting.webp' alt='Die neue, noch namenlose Datei Untitled-1 mit console.log("Hello, World!");, ganz in einer Farbe; ein weißer Punkt am Reiter zeigt, dass sie nicht gespeichert ist.'>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.js` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.js`.
 
@@ -123,7 +123,7 @@ sleep: 0.5
 crop-bottom: 82%
 -->
 
-<img class='full' src='enter-filename.webp' alt=''>
+<img class='full' src='enter-filename.webp' alt='Der Dialog »Save As« mit dem Pfad /workspace/hello.js.'>
 
 Sobald du die Datei gespeichert hast, wird sie automatisch als JavaScript-Datei erkannt und die Syntax wird hervorgehoben.
 
@@ -134,7 +134,7 @@ sleep: 1.5
 crop-bottom: 78%
 -->
 
-<img class='full' src='syntax-highlighting.webp' alt=''>
+<img class='full' src='syntax-highlighting.webp' alt='Die gespeicherte Datei hello.js, jetzt mit farbiger Syntax.'>
 
 ### Skript ausführen
 
@@ -161,7 +161,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello.webp' alt=''>
+<img class='full' src='hello.webp' alt='Im Terminal gibt node hello.js die Zeile Hello, World! aus.'>
 
 ### Fehler finden und beheben
 
@@ -193,7 +193,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello-error.webp' alt=''>
+<img class='full' src='hello-error.webp' alt='node meldet zu console.print("Hello, World!") in /workspace/hello.js:1 einen TypeError: console.print is not a function, darunter die Aufrufkette.'>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 1) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
@@ -231,7 +231,7 @@ move-mouse: selector:.part.statusbar
 sleep: 0.5
 -->
 
-<img class='full' src='shebang.webp' alt=''>
+<img class='full' src='shebang.webp' alt='Oben hello.js mit #!/usr/bin/env node in der ersten Zeile, unten im Terminal chmod +x hello.js und ./hello.js, das Hello, World! ausgibt.'>
 
 ## Primfaktorzerlegung
 
@@ -254,7 +254,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='try-factor.webp' alt=''>
+<img class='full' src='try-factor.webp' alt='node factor.js fragt nach einer Zahl und gibt für 123 die Primfaktoren [ 3, 41 ] aus.'>
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann JavaScript auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Auch mit einer sehr großen Zahl wie 123456789123456789 kommt das Programm problemlos zurecht. Falls du auf eine Zahl stoßen solltest, die so groß ist, dass das Programm sehr lange braucht, kannst du das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen.
 
@@ -278,7 +278,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bubblesort.webp' alt=''>
+<img class='full' src='bubblesort.webp' alt='node bubblesort.js gibt ein Array aus zehn Zufallszahlen aus und darunter dasselbe Array sortiert.'>
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
 

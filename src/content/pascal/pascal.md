@@ -12,7 +12,7 @@ kind: steckbrief
 # Pascal <span style='font-size: 80%;'>(1970)</span>
 
 <div class='floatright' style='width: 16em;'>
-    <img src='wirth.webp' alt=''>
+    <img src='wirth.webp' alt='Foto von Niklaus Wirth, dem Erfinder von Pascal'>
     <p>Niklaus Wirth</p>
 </div>
 
@@ -40,7 +40,7 @@ show-left-sidebar
 sleep: 0.5
 -->
 
-<img class='full' src='fresh-start.webp' alt=''>
+<img class='full' src='fresh-start.webp' alt='Der Workspace ohne geöffneten Ordner, links »No Folder Opened«, rechts die Willkommensseite mit »New File…«.'>
 
 ### Quelltext schreiben
 
@@ -53,7 +53,7 @@ sleep: 0.5
 crop-bottom: 77%
 -->
 
-<img class='full' src='choose-filename.webp' alt=''>
+<img class='full' src='choose-filename.webp' alt='Nach »New File…« fragt oben ein Feld nach dem Dateityp, »Text File« ist ausgewählt.'>
 
 Schreibe nun den folgenden Code in die Datei:
 
@@ -71,7 +71,7 @@ sleep: 0.5
 crop-bottom: 60%
 -->
 
-<img class='full' src='no-syntax-highlighting.webp' alt=''>
+<img class='full' src='no-syntax-highlighting.webp' alt='Die neue, noch namenlose Datei Untitled-1 mit dem Programm HelloWorld, ganz in einer Farbe; ein weißer Punkt am Reiter zeigt, dass sie nicht gespeichert ist.'>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.pas` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.pas`.
 
@@ -84,9 +84,9 @@ sleep: 0.5
 crop-bottom: 82%
 -->
 
-<img class='full' src='enter-filename.webp' alt=''>
+<img class='full' src='enter-filename.webp' alt='Der Dialog »Save As« mit dem Pfad /workspace/hello.pas.'>
 
-Da Pascal standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »Pascal Magic« und installiere sie. Weil der Herausgeber nicht verifiziert ist, fragt Visual Studio Code, ob du ihm vertraust; bestätige mit »Trust Publisher & Install«.
+Da Pascal standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt='vier Quadrate, eines davon abgehoben'> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »Pascal Magic« und installiere sie. Weil der Herausgeber nicht verifiziert ist, fragt Visual Studio Code, ob du ihm vertraust; bestätige mit »Trust Publisher & Install«.
 
 <!-- tutorial-screenshot
 # Speichern, dann die Erweiterung im Marketplace
@@ -100,7 +100,7 @@ sleep: 3
 crop-bottom: 50%
 -->
 
-<img class='full' src='pascal-syntax.webp' alt=''>
+<img class='full' src='pascal-syntax.webp' alt='Links der Marketplace mit der Suche nach Pascal Magic, darunter die Erweiterungen »Pascal« und »Pascal magic« von theangryepicbanana, jede mit »Install«; rechts hello.pas, noch einfarbig.'>
 
 Alternativ kannst du auch <kbd>Strg</kbd><kbd>P</kbd> drücken und `ext install theangryepicbanana.language-pascal` eingeben, um die Erweiterung zu installieren.
 
@@ -125,13 +125,13 @@ sleep: 2
 crop-bottom: 56%
 -->
 
-<img class='full' src='syntax-highlighting.webp' alt=''>
+<img class='full' src='syntax-highlighting.webp' alt='hello.pas mit farbiger Syntax, program HelloWorld; begin WriteLn(&#39;Hello, World!&#39;); end.'>
 
 ### Kompilieren und ausführen
 
 Bevor wir das Programm ausführen können, müssen wir es kompilieren. Dadurch wird der Quelltext in Maschinencode übersetzt, den dein Computer ausführen kann.
 
-Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt='ein Rechteck mit einem Streifen unten'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <!-- tutorial-screenshot
 hide-left-sidebar
@@ -139,7 +139,7 @@ terminal-open
 sleep: 0.5
 -->
 
-<img class='full' src='lets-compile.webp' alt=''>
+<img class='full' src='lets-compile.webp' alt='Oben hello.pas, darunter das offene Terminal mit der Eingabeaufforderung.'>
 
 Um das Programm zu kompilieren, gib folgenden Befehl ein:
 
@@ -164,7 +164,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ls.webp' alt=''>
+<img class='full' src='ls.webp' alt='Im Terminal übersetzt fpc hello.pas das Programm (4 lines compiled), danach zeigt ls -l die Dateien hello in Grün, hello.o und hello.pas.'>
 
 Die grüne Datei `hello` ist die ausführbare Datei – im Unterschied zu Windows, wo ausführbare Dateien die Endung `.exe` haben, haben ausführbare Dateien unter Linux keine Endung. Um das Programm auszuführen, gib folgenden Befehl ein:
 
@@ -212,7 +212,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='error.webp' alt=''>
+<img class='full' src='error.webp' alt='fpc meldet hello.pas(4,5) Error: Identifier not found "WritLn" und bricht die Übersetzung ab.'>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 4) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
@@ -244,7 +244,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='try-factor.webp' alt=''>
+<img class='full' src='try-factor.webp' alt='fpc übersetzt factor.pas, ./factor fragt nach einer Zahl und gibt für 123 die Faktoren 3 und 41 aus.'>
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Probiere aus, was passiert, wenn du die Zahl 100000 eingibst. Was könnte der Grund dafür sein?
 
@@ -275,7 +275,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bubblesort.webp' alt=''>
+<img class='full' src='bubblesort.webp' alt='fpc übersetzt bubblesort.pas, ./bubblesort gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
 
@@ -283,7 +283,7 @@ Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quellte
 
 Wenn du möchtest, kannst du eine kleine Zeitreise machen und wie früher in den 90ern programmieren. Vergrößere dein Terminal und gib einfach `fp bubblesort.pas` ein:
 
-<img class='full' src='fp.webp' alt=''>
+<img class='full' src='fp.webp' alt='Die Entwicklungsumgebung fp im Terminal, blau, mit Menüleiste und bubblesort.pas im Editor, unten die Tasten F1 Help, F2 Save, F3 Open, Alt+F9 Compile, F9 Make.'>
 
 In dieser Entwicklungsumgebung kannst du den Quelltext direkt bearbeiten und du kannst folgende Tasten verwenden:
 
@@ -300,11 +300,11 @@ Auch wenn es nicht so aussieht: in der FreePascal-Entwicklungsumgebung kann man 
 
 Bevor du ein Programm kompilieren kannst, musst du der Entwicklungsumgebung allerdings noch einen Hinweis geben, wo die benötigten Units zu finden sind. Klicke dazu auf »Options« und »Directories…«:
 
-<img class='full' src='options-dir-menu.webp' alt=''>
+<img class='full' src='options-dir-menu.webp' alt='In fp ist das Menü Options offen, »Directories…« ist ausgewählt.'>
 
 …und trage dann den Pfad `/usr/lib/x86_64-linux-gnu/fpc/3.2.2/units/x86_64-linux/*` ein:
 
-<img class='full' src='fp-directory-added.webp' alt=''>
+<img class='full' src='fp-directory-added.webp' alt='Der Dialog Directories in fp, Reiter Units, mit dem Eintrag /usr/lib/x86_64-linux-gnu/fpc/3.2.2/units/x86_64-linux/* und den Knöpfen OK und Cancel.'>
 
 ## Zusammenfassung
 

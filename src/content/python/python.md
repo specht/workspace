@@ -12,7 +12,7 @@ kind: steckbrief
 # Python <span style='font-size: 80%;'>(1991)</span>
 
 <div class='floatright' style='width: 16em;'>
-    <img src='guido.webp' alt=''>
+    <img src='guido.webp' alt='Foto von Guido van Rossum, dem Erfinder von Python, lachend mit einem Becher in der Hand'>
     <p>Guido van Rossum</p>
 </div>
 
@@ -31,7 +31,7 @@ Python ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpre
 
 **Möglichkeit 1:** Python-Code in der Python-Shell ausführen
 
-Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt='ein Rechteck mit einem Streifen unten'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <!-- tutorial-screenshot
 # Ein frischer Workspace ohne Ordner, das Terminal offen
@@ -40,7 +40,7 @@ terminal-open
 sleep: 0.5
 -->
 
-<img class='full' src='code-with-terminal.webp' alt=''>
+<img class='full' src='code-with-terminal.webp' alt='Ein frischer Workspace mit der Willkommensseite, darunter das offene Terminal mit der Eingabeaufforderung student@workspace:~$.'>
 
 Starte nun die Python-Shell, indem du `python3` eingibst und dann <kbd>Enter</kbd> drückst. Du solltest eine Ausgabe wie diese sehen:
 
@@ -51,7 +51,7 @@ wait-for-text: >>>
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='python-repl.webp' alt=''>
+<img class='full' src='python-repl.webp' alt='Im Terminal läuft python3, zeigt seine Version und wartet mit &gt;&gt;&gt; auf Python-Code.'>
 
 Jetzt kannst du Python-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `print("Hello, world!")` und drücke <kbd>Enter</kbd>. Du solltest die Ausgabe `Hello, world!` sehen.
 
@@ -73,7 +73,7 @@ show-left-sidebar
 sleep: 0.5
 -->
 
-<img class='full' src='fresh-start.webp' alt=''>
+<img class='full' src='fresh-start.webp' alt='Der Workspace ohne geöffneten Ordner, links »No Folder Opened«, rechts die Willkommensseite mit »New File…«.'>
 
 ### Quelltext schreiben
 
@@ -86,7 +86,7 @@ sleep: 0.5
 crop-bottom: 77%
 -->
 
-<img class='full' src='choose-filename.webp' alt=''>
+<img class='full' src='choose-filename.webp' alt='Nach »New File…« fragt oben ein Feld nach dem Dateityp, »Text File« ist ausgewählt.'>
 
 Schreibe nun den folgenden Code in die Datei:
 
@@ -103,7 +103,7 @@ sleep: 0.5
 crop-bottom: 82%
 -->
 
-<img class='full' src='no-syntax-highlighting.webp' alt=''>
+<img class='full' src='no-syntax-highlighting.webp' alt='Die neue, noch namenlose Datei Untitled-1 mit print("Hello, World!"), ganz in einer Farbe; ein weißer Punkt am Reiter zeigt, dass sie nicht gespeichert ist.'>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.py` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.py`.
 
@@ -116,7 +116,7 @@ sleep: 0.5
 crop-bottom: 82%
 -->
 
-<img class='full' src='enter-filename.webp' alt=''>
+<img class='full' src='enter-filename.webp' alt='Der Dialog »Save As« mit dem Pfad /workspace/hello.py.'>
 
 Sobald du die Datei gespeichert hast, wird sie automatisch als Python-Datei erkannt und die Syntax wird hervorgehoben.
 
@@ -127,7 +127,7 @@ sleep: 1.5
 crop-bottom: 78%
 -->
 
-<img class='full' src='syntax-highlighting.webp' alt=''>
+<img class='full' src='syntax-highlighting.webp' alt='Die gespeicherte Datei hello.py, jetzt mit farbiger Syntax.'>
 
 ### Skript ausführen
 
@@ -154,7 +154,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello.webp' alt=''>
+<img class='full' src='hello.webp' alt='Im Terminal gibt python3 hello.py die Zeile Hello, World! aus.'>
 
 ### Fehler finden und beheben
 
@@ -185,7 +185,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello-error.webp' alt=''>
+<img class='full' src='hello-error.webp' alt='Python meldet zu prin("Hello, World!") einen Traceback: Zeile 1, NameError: name »prin« is not defined. Did you mean: »print«?'>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 1) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
@@ -223,11 +223,11 @@ move-mouse: selector:.part.statusbar
 sleep: 0.5
 -->
 
-<img class='full' src='shebang.webp' alt=''>
+<img class='full' src='shebang.webp' alt='Oben hello.py mit #!/usr/bin/env python3 in der ersten Zeile, unten im Terminal chmod +x hello.py und ./hello.py, das Hello, World! ausgibt.'>
 
 ## Python-Skripte direkt in Visual Studio Code ausführen
 
-Visual Studio Code bietet auch eine integrierte Möglichkeit, Python-Skripte direkt auszuführen, ohne dass du das Skript jedesmal im Terminal ausführen musst. Dazu musst du die Python-Erweiterung installieren. Klicke dazu auf das Extensions-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste und suche nach »Python«. Klicke auf »Install«, um die Erweiterung zu installieren.
+Visual Studio Code bietet auch eine integrierte Möglichkeit, Python-Skripte direkt auszuführen, ohne dass du das Skript jedesmal im Terminal ausführen musst. Dazu musst du die Python-Erweiterung installieren. Klicke dazu auf das Extensions-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt='vier Quadrate, eines davon abgehoben'> in der Seitenleiste und suche nach »Python«. Klicke auf »Install«, um die Erweiterung zu installieren.
 
 <!-- tutorial-screenshot
 # Die Erweiterung im Marketplace, nicht installiert
@@ -239,9 +239,9 @@ sleep: 1.5
 crop-bottom: 50%
 -->
 
-<img class='full' src='python-ext.webp' alt=''>
+<img class='full' src='python-ext.webp' alt='Links der Marketplace mit der Suche nach python, ganz oben die Erweiterung »Python« von ms-python mit dem Knopf »Install«; rechts hello.py.'>
 
-Du kannst nun dein Skript einfach direkt aus dem Editor starten, indem du rechts oben auf das Run-Symbol <img src='../basics/run-button.webp' style='border-radius: 4px; height: 1.5em;' alt=''> klickst.
+Du kannst nun dein Skript einfach direkt aus dem Editor starten, indem du rechts oben auf das Run-Symbol <img src='../basics/run-button.webp' style='border-radius: 4px; height: 1.5em;' alt='ein Dreieck, das nach rechts zeigt'> klickst.
 
 ## Primfaktorzerlegung
 
@@ -265,7 +265,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='try-factor.webp' alt=''>
+<img class='full' src='try-factor.webp' alt='python3 factor.py fragt nach einer Zahl und gibt für 123 die Primfaktoren 3 und 41 aus.'>
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Python auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Wenn du allerdings eine sehr große Zahl wie 123456789123456789 verwendest, dauert die Berechnung sehr lange (probier es gern aus, du kannst das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen).
 
@@ -289,7 +289,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bubblesort.webp' alt=''>
+<img class='full' src='bubblesort.webp' alt='python3 bubblesort.py gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
 

@@ -12,7 +12,7 @@ kind: steckbrief
 # C&#35; <span style='font-size: 80%;'>(2000)</span>
 
 <div class='floatright' style='width: 16em;'>
-    <img src='heijlsberg.webp' alt=''>
+    <img src='heijlsberg.webp' alt='Foto von Anders Hejlsberg, der C# entwickelt hat'>
     <p>
         Anders Hejlsberg
     </p>
@@ -47,7 +47,7 @@ show-left-sidebar
 sleep: 0.5
 -->
 
-<img class='full' src='fresh-start.webp' alt=''>
+<img class='full' src='fresh-start.webp' alt='Der Workspace ohne geöffneten Ordner, links »No Folder Opened«, rechts die Willkommensseite mit »New File…«.'>
 
 ### Quelltext schreiben
 
@@ -60,7 +60,7 @@ sleep: 0.5
 crop-bottom: 77%
 -->
 
-<img class='full' src='choose-filename.webp' alt=''>
+<img class='full' src='choose-filename.webp' alt='Nach »New File…« fragt oben ein Feld nach dem Dateityp, »Text File« ist ausgewählt.'>
 
 Schreibe nun den folgenden Code in die Datei:
 
@@ -78,7 +78,7 @@ sleep: 0.5
 crop-bottom: 44%
 -->
 
-<img class='full' src='no-syntax-highlighting.webp' alt=''>
+<img class='full' src='no-syntax-highlighting.webp' alt='Die neue, noch namenlose Datei Untitled-1 mit der Klasse HelloWorld und Console.WriteLine("Hello, World!"), ganz in einer Farbe; ein weißer Punkt am Reiter zeigt, dass sie nicht gespeichert ist.'>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `HelloWorld.cs` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/HelloWorld.cs`.
 
@@ -91,7 +91,7 @@ sleep: 0.5
 crop-bottom: 82%
 -->
 
-<img class='full' src='enter-filename.webp' alt=''>
+<img class='full' src='enter-filename.webp' alt='Der Dialog »Save As« mit dem Pfad /workspace/HelloWorld.cs.'>
 
 Sobald du die Datei gespeichert hast, wird sie automatisch als C#-Datei erkannt und die Syntax wird hervorgehoben.
 
@@ -102,13 +102,13 @@ sleep: 1.5
 crop-bottom: 40%
 -->
 
-<img class='full' src='syntax-highlighting.webp' alt=''>
+<img class='full' src='syntax-highlighting.webp' alt='Die gespeicherte Datei HelloWorld.cs, jetzt mit farbiger Syntax.'>
 
 ### Kompilieren und ausführen
 
 Bevor das Programm laufen kann, muss es kompiliert werden: Der Compiler übersetzt den Quelltext in eine Form, die die .NET-Laufzeitumgebung ausführen kann.
 
-Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt='ein Rechteck mit einem Streifen unten'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <!-- tutorial-screenshot
 hide-left-sidebar
@@ -116,7 +116,7 @@ terminal-open
 sleep: 0.5
 -->
 
-<img class='full' src='code-with-terminal.webp' alt=''>
+<img class='full' src='code-with-terminal.webp' alt='Oben HelloWorld.cs, darunter das offene Terminal mit der Eingabeaufforderung.'>
 
 Übersetze und starte das Programm mit:
 
@@ -174,7 +174,7 @@ terminal-wait-for-prompt: 60
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello-error.webp' alt=''>
+<img class='full' src='hello-error.webp' alt='dotnet run HelloWorld.cs meldet HelloWorld.cs(7,17): error CS0117: »Console« does not contain a definition for »WriteLin«, darunter in Rot »The build failed«.'>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Die Stelle steht am Anfang der Meldung: `HelloWorld.cs(7,17)` heißt Zeile 7, Zeichen 17. Danach folgt der Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
@@ -203,7 +203,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='try-factor.webp' alt=''>
+<img class='full' src='try-factor.webp' alt='dotnet run Factor.cs fragt nach einer Zahl und gibt für 123 die Primfaktoren 3 und 41 aus.'>
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Probiere aus, was passiert, wenn du die Zahl 3000000000 eingibst. Was könnte der Grund dafür sein?
 
@@ -231,7 +231,7 @@ terminal-wait-for-prompt: 60
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bubblesort.webp' alt=''>
+<img class='full' src='bubblesort.webp' alt='dotnet run BubbleSort.cs gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
 

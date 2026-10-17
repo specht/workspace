@@ -87,7 +87,7 @@ sleep: 0.5
 crop-bottom: 60%
 -->
 
-<img class='full' src='no-syntax-highlighting.webp' alt=''>
+<img class='full' src='no-syntax-highlighting.webp' alt='Die neue, noch namenlose Datei Untitled-1 mit require &#39;pixelflow_canvas&#39; und Pixelflow::Canvas.new(320, 180, :palette) mit set_pixel(160, 90, 10), ganz in einer Farbe.'>
 
 Noch weiß Visual Studio Code nicht, dass es Ruby ist, deshalb ist der Code einfarbig. Speichere die Datei mit <kbd>Strg</kbd><kbd>S</kbd> unter dem Namen `/workspace/rainbow.rb`:
 
@@ -100,7 +100,7 @@ sleep: 0.5
 crop-bottom: 82%
 -->
 
-<img class='full' src='enter-filename.webp' alt=''>
+<img class='full' src='enter-filename.webp' alt='Der Dialog »Save As« mit dem Pfad /workspace/rainbow.rb.'>
 
 Jetzt erkennt Visual Studio Code die Endung `.rb`, und der Code wird farbig:
 
@@ -111,7 +111,7 @@ sleep: 1.5
 crop-bottom: 60%
 -->
 
-<img class='full' src='syntax-highlighting.webp' alt=''>
+<img class='full' src='syntax-highlighting.webp' alt='Die gespeicherte Datei rainbow.rb, jetzt mit farbiger Syntax.'>
 
 _task(erster-pixel)
 

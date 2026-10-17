@@ -22,13 +22,13 @@ Hinweis: Die Altgriechisch-App findest du hier für <a href='https://play.google
 
 Stelle zuerst sicher, dass du keinen Ordner geöffnet hast. Um sicherzugehen, drücke einfach den Shortcut für »Ordner schließen«: <kbd>Strg</kbd><kbd>K</kbd> und dann <kbd>F</kbd>. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='fresh-start.webp' alt=''>
+<img class='full' src='fresh-start.webp' alt='Der Workspace ohne geöffneten Ordner, links »No Folder Opened«, rechts die Willkommensseite mit »New File…«.'>
 
 ## HTTParty installieren
 
 Bevor wir anfangen können, müssen wir ein Rubygem installieren, das uns hilft, HTTP-Anfragen zu senden. Öffne das Terminal, indem du den Shortcut <kbd>Strg</kbd><kbd>J</kbd> drückst. Dein Workspace sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='got-terminal.webp' alt=''>
+<img class='full' src='got-terminal.webp' alt='Unter der Willkommensseite ist das Terminal offen und wartet auf einen Befehl.'>
 
 Installiere das Rubygem 'HTTParty', indem du folgenden Befehl in das Terminal eingibst:
 
@@ -38,7 +38,7 @@ gem install httparty
 
 Wenn du die Meldung `3 gems installed` siehst, war die Installation erfolgreich:
 
-<img class='full' src='gem-installed.webp' alt=''>
+<img class='full' src='gem-installed.webp' alt='Im Terminal endet die Installation mit den Zeilen zu httparty-0.22.0 und »3 gems installed«.'>
 
 ## Anmeldecode anfordern
 
@@ -46,7 +46,7 @@ Normalerweise meldest du dich in der App an, indem du deine E-Mail-Adresse eingi
 
 Wähle im Menü links oben »File« / »New Text File« (oder drücke <kbd>Strg</kbd><kbd>Alt</kbd><kbd>N</kbd>), um eine neue Datei anzulegen:
 
-<img class='full' src='new-file.webp' alt=''>
+<img class='full' src='new-file.webp' alt='Das Menü File ist offen, im Untermenü ist »New Text File« ausgewählt.'>
 
 Schreibe den folgenden Code in die Datei:
 
@@ -71,25 +71,25 @@ tag = post('/api/login', {email: email})['tag']
 
 Da Visual Studio Code noch nicht weiß, dass es sich um Ruby-Code handelt, sieht dein Code noch etwas farblos aus:
 
-<img class='full' src='no-syntax-highlighting.webp' alt=''>
+<img class='full' src='no-syntax-highlighting.webp' alt='Die noch namenlose Datei mit den ersten 16 Zeilen von hades.rb, von require &#39;httparty&#39; bis tag = post(&#39;/api/login&#39;, …), ganz in einer Farbe; unten steht Plain Text.'>
 
 Speichere die Datei unter dem Dateinamen `hades.rb`, indem du <kbd>Strg</kbd><kbd>S</kbd> drückst und den Dateinamen eingibst.
 
-<img class='full' src='enter-filename.webp' alt=''>
+<img class='full' src='enter-filename.webp' alt='Der Dialog »Save As« mit dem Pfad /workspace/hades.rb.'>
 
 Dein Programm sollte jetzt ungefähr so aussehen:
 
-<img class='full' src='syntax-highlighting.webp' alt=''>
+<img class='full' src='syntax-highlighting.webp' alt='hades.rb mit farbiger Syntax, unten in der Statusleiste steht jetzt Ruby.'>
 
 Wir lesen die E-Mail-Adresse ein und stellen eine Anfrage an den Server, in der wir die E-Mail-Adresse übergeben und um einen Anmeldecode bitten. Der Server antwortet mit einem kleinen Tag, das wir für die nächste Anfrage benötigen.
 
 Führe das Programm aus, indem du im Terminal `ruby hades.rb` eingibst. Du wirst nach deiner E-Mail-Adresse gefragt:
 
-<img class='full' src='enter-email.webp' alt=''>
+<img class='full' src='enter-email.webp' alt='Im Terminal fragt ruby hades.rb »Bitte gib deine E-Mail ein:«.'>
 
 Wenn du deine Adresse eingibst, bekommst du zwei Teile eines Codes: das Tag, das der Server zurückgibt, und den Code, den du per E-Mail erhältst:
 
-<img class='full' src='got-tag.webp' alt=''>
+<img class='full' src='got-tag.webp' alt='Nach der E-Mail-Adresse meldet das Programm »Code wird angefordert…« und gibt die Antwort des Servers aus, {"tag"=&gt;"fr7sbyvn"}.'>
 
 ## Anmeldung mit Code bestätigen
 
@@ -105,7 +105,7 @@ headers = { 'X-Session-ID': sid }
 
 Mit diesen Zeilen bitten wir um die Eingabe des Zahlencodes und melden uns dann mit dem zuvor erhaltenen Tag und dem Code an. Führe das Programm erneut aus, indem du im Terminal `ruby hades.rb` eingibst. Du bekommst eine weitere E-Mail mit einem Code, den du eingeben musst:
 
-<img class='full' src='got-sid.webp' alt=''>
+<img class='full' src='got-sid.webp' alt='Nach E-Mail-Adresse und Anmeldecode 123456 antwortet der Server mit "ok"=&gt;"yeah" und einer Session-ID unter "sid".'>
 
 <div class='hint'>
 Du musst natürlich deinen eigenen Code verwenden, den du per E-Mail bekommen hast.
@@ -126,7 +126,7 @@ post('/api/logout', nil, headers)
 
 Mit diesen Zeilen aktivieren wir Hades und melden uns dann wieder ab. Führe das Programm erneut aus, indem du im Terminal `ruby hades.rb` eingibst. Wenn alles geklappt hat, bekommst du eine Erfolgsmeldung:
 
-<img class='full' src='got-hades.webp' alt=''>
+<img class='full' src='got-hades.webp' alt='Der ganze Ablauf im Terminal bis »Aktiviere Hades…« und der Antwort »Herzlichen Glückwunsch, du besitzt nun Hades, den Herrscher der Unterwelt.«'>
 
 Herzlichen Glückwunsch, du hast nun Hades, den Herrscher der Unterwelten, in der Altgriechisch-App freigeschaltet!
 

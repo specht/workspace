@@ -45,7 +45,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='mkdir-and-ls.webp' alt=''>
+<img class='full' src='mkdir-and-ls.webp' alt='Im Terminal legt mkdir git-tutorial das Verzeichnis an; ls -l zeigt es mit einem d am Anfang der Zeile.'>
 
 <div class='hint books'>
 Falls du mehr über die Grundlagen der Kommandozeile erfahren möchtest, schau dir das <a href='/working-with-files'>Tutorial zu Dateien und Verzeichnissen</a> an.
@@ -75,7 +75,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-init.webp' alt=''>
+<img class='full' src='git-init.webp' alt='cd git-tutorial, mkdir alice, cd alice und git init, das »Initialized empty Git repository in /workspace/git-tutorial/alice/.git/« meldet.'>
 
 Mit dem Befehl `ls -la` kannst du sehen, dass ein verstecktes Verzeichnis namens `.git` erstellt wurde:
 
@@ -86,7 +86,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='dot-git-dir.webp' alt=''>
+<img class='full' src='dot-git-dir.webp' alt='ls -la zeigt im Verzeichnis alice das versteckte Verzeichnis .git.'>
 
 Das `.git`-Verzeichnis enthält alle Informationen, die Git benötigt, um die Versionsgeschichte deines Projekts zu verwalten. Darin befindet sich später die gesamte Historie deiner Änderungen.
 
@@ -112,7 +112,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='echo-hello-world.webp' alt=''>
+<img class='full' src='echo-hello-world.webp' alt='echo "Hello, world!" &gt; hello.txt legt die Datei an, cat hello.txt gibt Hello, world! aus.'>
 
 <div class='hint books'>
 Der Befehl <code>echo</code> gibt den angegebenen Text im Terminal aus. Mit dem Zeichen <code>&gt;</code> leitest du die Ausgabe in eine Datei um. Wenn die Datei noch nicht existiert, wird sie erstellt. Wenn sie bereits existiert, wird ihr Inhalt überschrieben. Der Befehl <code>cat</code> zeigt den Inhalt einer Datei im Terminal an.
@@ -127,7 +127,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-status.webp' alt=''>
+<img class='full' src='git-status.webp' alt='git status meldet On branch main, No commits yet und hello.txt in Rot unter Untracked files.'>
 
 ### Die Staging Area
 
@@ -151,7 +151,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='after-git-add.webp' alt=''>
+<img class='full' src='after-git-add.webp' alt='Nach git add hello.txt meldet git status hello.txt in Grün als new file unter Changes to be committed.'>
 
 Die Ausgabe zeigt jetzt, dass die Datei `hello.txt` in der Staging Area bereitsteht, um committet zu werden.
 
@@ -174,7 +174,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='first-commit.webp' alt=''>
+<img class='full' src='first-commit.webp' alt='git commit -m "initial commit" meldet einen root-commit auf main, 1 file changed, 1 insertion, create mode 100644 hello.txt.'>
 
 Im `.git`-Verzeichnis ist jetzt ein [gerichteter, azyklischer Graph (DAG)](https://en.wikipedia.org/wiki/Directed_acyclic_graph) entstanden, der mehrere Knoten enthält, wobei jeder Knoten durch eine eindeutige SHA-1-Hash-ID identifiziert wird. Diese Knoten repräsentieren die verschiedenen Objekte in Git: Blobs, Trees und Commits.
 
@@ -206,7 +206,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-status-after-first-commit.webp' alt=''>
+<img class='full' src='git-status-after-first-commit.webp' alt='git status meldet On branch main, nothing to commit, working tree clean.'>
 
 _task(erster-commit)
 
@@ -265,7 +265,7 @@ sleep: 0.5
 crop-bottom: 75%
 -->
 
-<img class='full' src='open-dir.webp' alt=''>
+<img class='full' src='open-dir.webp' alt='Der Dialog »Open Folder« mit dem Pfad /workspace/git-tutorial/alice/.'>
 
 Öffne die Datei `README.md`, ändere `world` zu `planet` und füge eine neue Zeile hinzu, sodass in der Datei Folgendes steht:
 
@@ -284,7 +284,7 @@ sleep: 1
 crop-bottom: 55%
 -->
 
-<img class='full' src='edit-readme.webp' alt=''>
+<img class='full' src='edit-readme.webp' alt='Im Ordner alice ist README.md offen, mit »Hello, planet!« und »Git is awesome!«; im Explorer ist die Datei mit M als geändert markiert.'>
 
 Speichere die Datei mit <kbd>Strg</kbd><kbd>S</kbd> und überprüfe den Status mit `git status` im Terminal:
 
@@ -298,7 +298,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-status-2.webp' alt=''>
+<img class='full' src='git-status-2.webp' alt='git status zeigt README.md in Rot als modified unter Changes not staged for commit.'>
 
 Überprüfe vor jedem Commit, welche Änderungen du vorgenommen hast, indem du den Befehl `git diff` ausführst:
 
@@ -309,7 +309,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-diff-2.webp' alt=''>
+<img class='full' src='git-diff-2.webp' alt='git diff zeigt für README.md die Zeile »Hello, world!« in Rot entfernt und »Hello, planet!«, eine Leerzeile und »Git is awesome!« in Grün hinzugefügt.'>
 
 Du siehst jetzt die aktuellen Änderungen in deinem Arbeitsverzeichnis. Rote Zeilen (`–`) zeigen entfernte Zeilen an, während grüne Zeilen (`+`) hinzugefügte Zeilen darstellen.
 
@@ -349,7 +349,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-log.webp' alt=''>
+<img class='full' src='git-log.webp' alt='git log zeigt drei Commits mit Autor und Datum, »updated README.md« mit HEAD -&gt; main, »rename hello.txt to README.md« und »initial commit«.'>
 
 Du siehst eine Liste der Commits, beginnend mit dem neuesten Commit. Du siehst außerdem, dass der `main`-Branch auf den neuesten Commit zeigt und gerade ausgecheckt ist, da auch `HEAD` auf diesen Commit zeigt.
 
@@ -372,7 +372,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='detached-head.webp' alt=''>
+<img class='full' src='detached-head.webp' alt='Nach git checkout HEAD~2 erklärt Git den Zustand »detached HEAD« und meldet am Ende HEAD is now at … initial commit.'>
 
 <div class='hint danger'>
 Nachdem du einen älteren Commit ausgecheckt hast, befindest du dich in einem sogenannten »detached HEAD«-Zustand. In diesem Zustand zeigt <code>HEAD</code> nicht auf einen Branch, sondern direkt auf einen bestimmten Commit. Das heißt, dass es momentan keinen Branch gibt, der auf diesen Commit zeigt. Änderungen, die du in diesem Zustand vornimmst, werden daher auch nicht automatisch einem Branch zugeordnet. Wenn du später zu einem Branch zurückkehrst, gehen diese Änderungen verloren, sofern du sie nicht vorher in einem neuen Branch speicherst oder du dir die Commit-ID notierst.
@@ -388,7 +388,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='old-hello-world.webp' alt=''>
+<img class='full' src='old-hello-world.webp' alt='ls zeigt nur hello.txt, cat hello.txt gibt Hello, world! aus.'>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
 
@@ -409,7 +409,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-checkout-main.webp' alt=''>
+<img class='full' src='git-checkout-main.webp' alt='git checkout main meldet Previous HEAD position was … initial commit und Switched to branch »main«.'>
 
 Damit sind wir wieder im neuesten Zustand des Repositories. Der Git-Objektgraph sieht jetzt wieder folgendermaßen aus:
 
@@ -440,7 +440,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='feature-branch.webp' alt=''>
+<img class='full' src='feature-branch.webp' alt='git branch feature und git checkout feature, das »Switched to branch »feature«« meldet.'>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
 
@@ -480,7 +480,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='compile-and-run.webp' alt=''>
+<img class='full' src='compile-and-run.webp' alt='gcc -o hello hello.c übersetzt das Programm, ./hello gibt Hello, World! aus.'>
 
 Überprüfe den Status mit `git status`:
 
@@ -491,7 +491,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-status-3.webp' alt=''>
+<img class='full' src='git-status-3.webp' alt='git status auf dem Branch feature zeigt hello und hello.c in Rot als Untracked files.'>
 
 Es sind zwei neue Dateien vorhanden: `hello.c` und `hello` (die ausführbare Datei). Wir möchten nur die Quellcodedatei `hello.c` zur Versionskontrolle hinzufügen, nicht jedoch die ausführbare Datei `hello`.
 
@@ -526,7 +526,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-status-4.webp' alt=''>
+<img class='full' src='git-status-4.webp' alt='Mit der .gitignore zeigt git status nur noch .gitignore und hello.c als Untracked files, hello fehlt.'>
 
 Jetzt wird nur noch die Datei `hello.c` als untracked angezeigt, während die ausführbare Datei `hello` ignoriert wird. Aber auch die Datei `.gitignore` selbst ist noch nicht zur Versionskontrolle hinzugefügt worden, was wir unbedingt nachholen sollten. Füge beide Dateien zur Staging Area hinzu:
 
@@ -548,7 +548,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-commit-feature.webp' alt=''>
+<img class='full' src='git-commit-feature.webp' alt='git add .gitignore hello.c und git commit -m "added hello.c" auf feature, 2 files changed, 7 insertions.'>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
 
@@ -569,7 +569,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-branch.webp' alt=''>
+<img class='full' src='git-branch.webp' alt='git branch listet feature, grün und mit Stern als aktuellen Branch, und main.'>
 
 Wie du siehst, gibt es momentan zwei Branches: `main` und `feature`. Der Stern (*) zeigt an, dass wir uns gerade im `feature`-Branch befinden.
 
@@ -603,7 +603,7 @@ sleep: 1
 crop-bottom: 50%
 -->
 
-<img class='full' src='smilez.webp' alt=''>
+<img class='full' src='smilez.webp' alt='README.md im Editor, unter »Git is awesome!« steht jetzt eine neue Zeile mit einem Smiley :).'>
 
 <div class='hint info'>
 Wie du in der oberen Leiste sehen kannst, sind die Dateien <code>hello.c</code> und <code>.gitignore</code>, die gerade noch geöffnet waren, jetzt nicht mehr im Arbeitsverzeichnis vorhanden. Das liegt daran, dass wir zu einem anderen Branch gewechselt haben, in dem diese Dateien nicht existieren. Git passt das Arbeitsverzeichnis automatisch an den Zustand des ausgecheckten Branches an.
@@ -620,7 +620,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-diff-5.webp' alt=''>
+<img class='full' src='git-diff-5.webp' alt='Nach git checkout main zeigt git diff für README.md eine Leerzeile und :) in Grün hinzugefügt.'>
 
 Wir erstellen jetzt einen neuen Commit:
 
@@ -635,7 +635,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-commit-5.webp' alt=''>
+<img class='full' src='git-commit-5.webp' alt='git commit -a -m "added smiley" auf main, 1 file changed, 2 insertions.'>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
 
@@ -666,7 +666,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-merge.webp' alt=''>
+<img class='full' src='git-merge.webp' alt='git merge feature -m "merged feature into main" meldet Merge made by the »ort« strategy, mit .gitignore und hello.c, 2 files changed, 7 insertions.'>
 
 <div class='hint warning'>
 Beim Mergen ist es wichtig, dass du dich im Ziel-Branch befindest, also in dem Branch, in den du die Änderungen übernehmen möchtest. In diesem Fall möchten wir die Änderungen aus dem <code>feature</code>-Branch in den <code>main</code>-Branch übernehmen, also müssen wir uns zuerst im <code>main</code>-Branch befinden, bevor wir den Merge-Befehl ausführen.
@@ -695,7 +695,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='delete-feature-branch.webp' alt=''>
+<img class='full' src='delete-feature-branch.webp' alt='git branch -d feature meldet Deleted branch feature.'>
 
 Der Git-Objektgraph sieht jetzt folgendermaßen aus:
 
@@ -762,7 +762,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-prompt.webp' alt=''>
+<img class='full' src='git-prompt.webp' alt='Nach source ~/.bashrc zeigt der neue Prompt den Pfad ~/git-tutorial/alice, in eckigen Klammern main mit einem grünen Haken und darunter die Uhrzeit.'>
 
 Links steht, ob der letzte Befehl geklappt hat (`✔`), dann das Verzeichnis und in eckigen Klammern der Branch und der Zustand: `✔` heißt, es gibt nichts zu committen. Darunter folgen die Uhrzeit und das `$`, hinter dem du tippst.
 
@@ -800,7 +800,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-init-bare.webp' alt=''>
+<img class='full' src='git-init-bare.webp' alt='In ~/git-tutorial legen mkdir remote-repo, cd remote-repo und git init --bare ein leeres Repository an.'>
 
 <div class='hint info'>
 Ein »bare«-Repository ist ein spezieller Typ von Git-Repository, das kein Arbeitsverzeichnis enthält. Es wird hauptsächlich als zentrales Repository verwendet, auf das mehrere Entwickler zugreifen können, um ihre Änderungen zu pushen und zu pullen. In einem bare-Repository gibt es keine ausgecheckten Dateien, sondern nur die Git-Objekte und Metadaten.
@@ -815,7 +815,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ls-bare.webp' alt=''>
+<img class='full' src='ls-bare.webp' alt='ls -l im bare Repository zeigt branches, config, description, HEAD, hooks, info, objects und refs.'>
 
 Wir wechseln jetzt zurück in das Verzeichnis von Alice, um unser Remote-Repository zu verknüpfen:
 
@@ -835,7 +835,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='remote-config.webp' alt=''>
+<img class='full' src='remote-config.webp' alt='Nach git remote add origin ../remote-repo zeigt cat .git/config einen Abschnitt [remote "origin"] mit url = ../remote-repo.'>
 
 <div class='hint info'>
 Der Befehl <code>git remote add</code> fügt ein neues Remote-Repository hinzu. In diesem Fall nennen wir das Remote <code>origin</code>, was der Standardname für das Haupt-Remote ist (wir könnten aber auch jeden anderen Namen wählen). Der Pfad <code>../remote-repo</code> gibt den Speicherort des Remote-Repositories an. In einem echten Szenario würde hier normalerweise eine URL zu einem entfernten Server stehen, die z. B. mit <code>https://</code> oder <code>git@</code> beginnt.
@@ -854,7 +854,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-push-origin-main.webp' alt=''>
+<img class='full' src='git-push-origin-main.webp' alt='git push -u origin main überträgt 17 Objekte nach ../remote-repo, legt den Branch main an und meldet branch »main« set up to track »origin/main«.'>
 
 Die Option `-u` (oder `--set-upstream`) richtet eine Tracking-Verbindung zwischen dem lokalen `main`-Branch und dem Remote-Branch `origin/main` ein. Dadurch kannst du in Zukunft einfach `git push` oder `git pull` ausführen, ohne den Remote-Namen und den Branch-Namen angeben zu müssen (ansonsten müsstest du immer `git push origin main` schreiben).
 
@@ -893,7 +893,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-clone.webp' alt=''>
+<img class='full' src='git-clone.webp' alt='In ~/git-tutorial/bob klont git clone ../remote-repo das Repository, danach wechselt cd remote-repo hinein; der Prompt zeigt main.'>
 
 Bob hat jetzt eine vollständige Kopie des Repositories, einschließlich der gesamten Versionsgeschichte. Öffne die Datei `README.md` mit dem Editor `nano` und ergänze die letzte Zeile, sodass dort `:) (Bob was here)` steht:
 
@@ -916,7 +916,7 @@ sleep: 0.5
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='bob-was-here.webp' alt=''>
+<img class='full' src='bob-was-here.webp' alt='README.md in nano, die letzte Zeile lautet jetzt »:) (Bob was here)«.'>
 
 Speichere die Datei mit <kbd>Strg</kbd><kbd>O</kbd> und <kbd>Enter</kbd> und schließe den Editor mit <kbd>Strg</kbd><kbd>X</kbd>. Mit `git diff` kann Bob seine Änderungen überprüfen:
 
@@ -933,7 +933,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-diff-bob.webp' alt=''>
+<img class='full' src='git-diff-bob.webp' alt='git diff zeigt in Bobs Kopie die Zeile :) in Rot entfernt und »:) (Bob was here)« in Grün hinzugefügt.'>
 
 Wir haben nun drei Möglichkeiten, wie Bob seine Änderungen committen kann:
 
@@ -948,7 +948,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bob-commit.webp' alt=''>
+<img class='full' src='bob-commit.webp' alt='git commit -a -m "Bob was here", 1 file changed, 1 insertion, 1 deletion; der Prompt zeigt einen Commit Vorsprung.'>
 
 <div class='hint info'>
 Achtung: Die Änderungen liegen immer noch komplett bei Bob lokal vor. Der Objektgraph in Bobs Repository ist gewachsen, aber das Remote-Repository hat davon noch nichts mitbekommen.
@@ -963,7 +963,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bob-push.webp' alt=''>
+<img class='full' src='bob-push.webp' alt='git push überträgt Bobs Commit, main -&gt; main.'>
 
 ### Alice holt Bobs Änderung
 
@@ -983,7 +983,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='alice-pull.webp' alt=''>
+<img class='full' src='alice-pull.webp' alt='In Alices Verzeichnis holt git pull Bobs Commit, Fast-forward, README.md mit 1 insertion und 1 deletion.'>
 
 Alice sieht mit `cat README.md`, dass die Datei aktualisiert wurde und jetzt auch Bobs Änderung enthält:
 
@@ -994,7 +994,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='alice-cat-readme.webp' alt=''>
+<img class='full' src='alice-cat-readme.webp' alt='cat README.md zeigt bei Alice jetzt auch die Zeile »:) (Bob was here)«.'>
 
 ### Merge-Konflikte
 
@@ -1021,7 +1021,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='alice-conflict-edit-diff.webp' alt=''>
+<img class='full' src='alice-conflict-edit-diff.webp' alt='Alice hängt HEYYYY an README.md an, cat zeigt die Datei, git diff die neue Zeile +HEYYYY.'>
 
 Alice committet ihre Änderungen und pusht sie zum Remote-Repository:
 
@@ -1038,7 +1038,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='alice-conflict-commit-push.webp' alt=''>
+<img class='full' src='alice-conflict-commit-push.webp' alt='Alice committet mit git commit -a -m "HEYYYY" und schickt den Commit mit git push ins Remote-Repository.'>
 
 Wechsle jetzt in Bobs Verzeichnis:
 
@@ -1069,7 +1069,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bob-conflict-edit-diff-commit.webp' alt=''>
+<img class='full' src='bob-conflict-edit-diff-commit.webp' alt='Bob hängt HOLAAA an README.md an, git diff zeigt +HOLAAA, und er committet mit git commit -a -m "HOLAAA".'>
 
 Wenn Bob jetzt versucht, seine Änderungen zu pushen, erhält er eine Fehlermeldung, da Alice bereits Änderungen gepusht hat, die Bob noch nicht in seinem lokalen Repository hat:
 
@@ -1080,7 +1080,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bob-conflict-push-error.webp' alt=''>
+<img class='full' src='bob-conflict-push-error.webp' alt='git push bei Bob wird abgelehnt, ! [rejected] main -&gt; main (fetch first), mit dem Hinweis, erst git pull auszuführen.'>
 
 Um die Änderungen von Alice zu holen und mit seinen eigenen zusammenzuführen, führt Bob den Befehl `git pull` aus:
 
@@ -1091,7 +1091,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bob-conflict-pull-error.webp' alt=''>
+<img class='full' src='bob-conflict-pull-error.webp' alt='git pull bei Bob meldet »You have divergent branches« mit drei Möglichkeiten für git config pull.rebase und bricht mit fatal ab.'>
 
 Auch hier erhält Bob eine Fehlermeldung: Sein Branch und der von Alice haben sich auseinanderentwickelt (»divergent branches«), weil beide gleichzeitig an derselben Datei gearbeitet haben. Git möchte wissen, wie es die beiden Stände in Zukunft zusammenführen soll, und bietet drei Strategien an, von denen wir eine als Voreinstellung für unser lokales Repository wählen sollen:
 
@@ -1118,7 +1118,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bob-pull-conflict.webp' alt=''>
+<img class='full' src='bob-pull-conflict.webp' alt='Nach git config pull.rebase false meldet git pull CONFLICT (content) Merge conflict in README.md; der Prompt zeigt MERGING.'>
 
 Wir sehen, dass Git den Merge-Konflikt in der Datei `README.md` markiert hat. Bob muss die Datei jetzt manuell bearbeiten, um den Konflikt zu lösen. Öffne die Datei `README.md` in einem Texteditor (`nano README.md`):
 
@@ -1130,7 +1130,7 @@ sleep: 0.5
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='bob-resolve-conflict.webp' alt=''>
+<img class='full' src='bob-resolve-conflict.webp' alt='README.md in nano mit den Konfliktmarkierungen, zwischen &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD und ======= steht HOLAAA, darunter bis &gt;&gt;&gt;&gt;&gt;&gt;&gt; HEYYYY.'>
 
 _task(konflikt)
 
@@ -1172,7 +1172,7 @@ sleep: 0.5
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='bob-bonjour.webp' alt=''>
+<img class='full' src='bob-bonjour.webp' alt='README.md in nano ohne Konfliktmarkierungen, die letzte Zeile lautet BONJOUR!.'>
 
 Speichere die Datei und beende den Editor. Bob muss den Konflikt nun als gelöst markieren, indem er die Datei mit `git add` zur Staging Area hinzufügt. Anschließend kann er den Merge-Commit, der durch den Pull-Vorgang erstellt wurde und zunächst aufgrund des Konflikts unvollständig war, abschließen und danach seine Änderungen pushen:
 
@@ -1193,7 +1193,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bob-complete-merge-push.webp' alt=''>
+<img class='full' src='bob-complete-merge-push.webp' alt='git add README.md, git commit -m "fixed merge conflict" und git push, der Prompt zeigt danach main mit grünem Haken.'>
 
 Alice hat von dem Merge-Konflikt nichts mitbekommen, da Bob den Konflikt lokal gelöst hat, bevor er seine Änderungen gepusht hat. Wenn Alice jetzt ihre Änderungen mit `git pull` holt, erhält sie die von Bob aktualisierte Datei `README.md`.
 
@@ -1207,7 +1207,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='alice-pull-after-conflict.webp' alt=''>
+<img class='full' src='alice-pull-after-conflict.webp' alt='Alice holt mit git pull Bobs Lösung des Konflikts, Fast-forward, README.md mit 1 insertion und 1 deletion.'>
 
 ## Nützlich für später
 
@@ -1234,7 +1234,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='git-log-graph.webp' alt=''>
+<img class='full' src='git-log-graph.webp' alt='git log --oneline --graph zeigt die ganze Geschichte als Graph, oben »fixed merge conflict« mit HEAD -&gt; main, tag v1.0 und origin/main, darunter die Zweige HEYYYY und HOLAAA, Bob was here, den Merge von feature und ganz unten initial commit.'>
 
 _task(tags)
 

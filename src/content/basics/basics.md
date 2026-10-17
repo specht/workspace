@@ -45,7 +45,7 @@ Wenn du den Workspace öffnest, siehst du die Entwicklungsumgebung Visual Studio
 show-left-sidebar
 -->
 
-<img class='full' src='vs-code-welcome.webp' data alt=''>
+<img class='full' src='vs-code-welcome.webp' data alt='Visual Studio Code ohne geöffneten Ordner, links der Explorer mit »Open Folder« und »Clone Repository«, rechts die Willkommensseite mit »New File…«, »Open File…« und »Clone Git Repository…«.'>
 
 ## Die Benutzeroberfläche
 
@@ -102,7 +102,7 @@ Rechts oben siehst du mehrere Buttons, mit denen du das Layout anpassen oder ver
 
 ## Dateien, Projekte, Verzeichnisse und Pfade
 
-<img src='directory-tree.webp' class='r' style='width: 15em;' alt=''>
+<img src='directory-tree.webp' class='r' style='width: 15em;' alt='Der Explorer mit dem Ordner SHOWER.JS, darin der Ordner pictures mit monkey.jpg, sky.jpg und titelfolie.jpg, der Ordner shower und die Dateien index.html, LICENSE.md, README.md und styles.css.'>
 
 Wenn du am Computer arbeitest, speicherst du deine Arbeit in Dateien. Jede Datei hat einen Dateinamen, der normalerweise auch eine Erweiterung wie `.jpg`, `.html`, `.py` oder `.rb` enthält. Die Dateiendung ist ein Teil des Namens und zeigt oft, um welche Art von Datei es sich handelt.
 
@@ -163,7 +163,7 @@ sleep: 1.5
 show-mouse
 -->
 
-<img src='create-checkpoint.webp' class='full' alt=''>
+<img src='create-checkpoint.webp' class='full' alt='Der Ordner checkpoint-test mit README.md im Editor; links unten ist der Bereich Checkpoints aufgeklappt, der Mauszeiger steht auf dem Plus mit dem Hinweis »Checkpoint erstellen«.'>
 
 Beim ersten Checkpoint in einem Ordner, der noch kein Git-Projekt ist, fragt VS Code, ob der Ordner für Checkpoints vorbereitet werden soll. Bestätige mit »Projekt vorbereiten«. Danach kannst du einen Namen für den Checkpoint eingeben und mit <kbd>Enter</kbd> bestätigen.
 
@@ -174,7 +174,7 @@ click: Projekt vorbereiten
 wait-for-text: Du kannst dem Checkpoint einen Namen geben
 -->
 
-<img src='enter-checkpoint-name.webp' class='full' alt=''>
+<img src='enter-checkpoint-name.webp' class='full' alt='Oben das Feld »Checkpoint erstellen« für den Namen, mit dem Hinweis, dass es auch leer bleiben darf.'>
 
 Der Checkpoint wird dann gespeichert:
 
@@ -185,7 +185,7 @@ move-mouse: selector:.editor-group-container .monaco-editor .view-lines
 sleep: 1
 -->
 
-<img src='checkpoint-created.webp' class='full' alt=''>
+<img src='checkpoint-created.webp' class='full' alt='Unter Checkpoints steht jetzt Donnerstag, 15.10.2026, mit dem Eintrag »Checkpoint 1«.'>
 
 Falls du später zu einem Checkpoint zurückkehren möchtest, klicke auf den entsprechenden Eintrag in der Liste:
 
@@ -196,7 +196,7 @@ sleep: 1.5
 show-mouse
 -->
 
-<img src='restore-checkpoint.webp' class='full' alt=''>
+<img src='restore-checkpoint.webp' class='full' alt='Der Mauszeiger auf einem Symbol neben »Checkpoint 1«, mit dem Hinweis »Diesen Checkpoint wiederherstellen«.'>
 
 
 <div class='hint'>

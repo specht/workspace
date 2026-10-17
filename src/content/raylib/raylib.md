@@ -89,7 +89,7 @@ check-task-fails: figur
 -->
 <img class='full' src='make.webp' alt='Der Workspace mit main.c im Editor; im Terminal darunter hat make die Datei main.html erzeugt.'>
 
-<img src='../reference/workspace/go-live.webp' class='r' style='width: 21em;' alt=''>
+<img src='../reference/workspace/go-live.webp' class='r' style='width: 21em;' alt='Unten rechts in der Statusleiste der Knopf »Go Live« mit dem Mauszeiger darauf und dem Hinweis »Click to run live server«.'>
 
 Klicke unten rechts auf »Go Live«. Im neuen Tab siehst du die Dateien des Projekts; klicke dort auf `main.html`. Du solltest einen orangefarbenen Würfel auf einem Gitter sehen:
 

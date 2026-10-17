@@ -30,13 +30,13 @@ _include(workspace#repository-klonen)
 
 Du siehst nun auf der linken Seite ein paar Verzeichnisse und Dateien, die wir für dieses Experiment verwenden werden.
 
-<img class='full' src='lets-start.webp' alt=''>
+<img class='full' src='lets-start.webp' alt='Der geöffnete Ordner digits-experiment im Explorer, mit den Ordnern 01-pages bis 05-model, den beiden Notebooks, bootstrap.sh, index.html, index.js, requirements.txt und worker.js.'>
 
 ### Python-Umgebung einrichten
 
 Öffne nun ein Terminal, indem du z. B. <kbd>Strg</kbd><kbd>J</kbd> drückst:
 
-<img class='full' src='got-terminal.webp' alt=''>
+<img class='full' src='got-terminal.webp' alt='Das offene Terminal im Ordner ~/digits-experiment.'>
 
 Starte nun das Skript `bootstrap.sh`, indem du den folgenden Befehl eingibst:
 
@@ -48,13 +48,13 @@ Starte nun das Skript `bootstrap.sh`, indem du den folgenden Befehl eingibst:
 Du musst nicht den vollständigen Dateinamen schreiben. Schreib einfach <code>./bo</code> und drücke <kbd>Tab</kbd>, um den Dateinamen automatisch zu <code>./bootstrap.sh</code> vervollständigen zu lassen. Drücke <kbd>Enter</kbd>, um das Skript auszuführen.
 </div>
 
-<img class='r' src='noticed-new-environment.webp' style='width: 25em;' alt=''>
+<img class='r' src='noticed-new-environment.webp' style='width: 25em;' alt='Eine Meldung von Python rechts unten, »We noticed a new environment has been created. Do you want to select it for the workspace folder?«, mit den Knöpfen Yes, No und Don&#39;t show again.'>
 
 Dieses Skript richtet eine Python-Umgebung ein und installiert die nötigen Pakete für das KI-Experiment. Dabei werden ca. 500 MB heruntergeladen und dein Verzeichnis ist danach ca. 2 GB groß (das ist aber in der Hackschule kein Problem). Wenn du den grünen Haken siehst, hat alles geklappt und du kannst das Terminal wieder schließen:
 
 Wenn du zwischendurch diesen Hinweis siehst (s. oben rechts), kannst du mit »Yes« antworten, da wir die frisch eingerichtete Python-Umgebung in diesem Verzeichnis verwenden wollen.
 
-<img class='full' src='bootstrap-finished.webp' alt=''>
+<img class='full' src='bootstrap-finished.webp' alt='Das Terminal am Ende von bootstrap.sh, eine lange Liste installierter Pakete von MarkupSafe bis wrapt und darunter »Pakete installiert«.'>
 
 ## Trainingsmaterial herstellen
 
@@ -80,7 +80,7 @@ Wenn du deinen eigenen Blätter beschreibst, kannst du statt Ziffern auch Symbol
 
 Stelle sicher, dass du mindestens zwei Bilddateien im Verzeichnis `01-pages` hast. Du kannst die Dateien öffnen, um zu überprüfen, ob sie korrekt sind:
 
-<img class='full' src='pages-ready.webp' alt=''>
+<img class='full' src='pages-ready.webp' alt='Im Ordner 01-pages liegen blatt1.png, blatt2.png und blatt3.png; blatt1.png ist offen, ein Blatt mit einem Raster voller handgeschriebener Ziffern.'>
 
 ### Das Notebook starten
 
@@ -88,15 +88,15 @@ Stelle sicher, dass du mindestens zwei Bilddateien im Verzeichnis `01-pages` has
 
 Bevor der Code ausgeführt werden kann, musst du noch einen Python-Interpreter auswählen. Bestätige die Auswahl »Python Environments« und »★ .venv (Python 3.12.3)«:
 
-<img class='full' src='choose-kernel.webp' alt=''>
+<img class='full' src='choose-kernel.webp' alt='Oben das Feld »Select Kernel« mit der Auswahl »Python Environments…« und »Existing Jupyter Server…«.'>
 
-<img class='full' src='python-venv.webp' alt=''>
+<img class='full' src='python-venv.webp' alt='Das Feld »Select a Python Environment«, ganz oben mit Stern .venv (Python 3.12.3), als Recommended markiert.'>
 
 ### Helligkeit und Kontrast
 
 Im ersten Schritt werden die Helligkeit und der Kontrast der eingescannten Seiten automatisch angepasst:
 
-<img class='full' src='colors-adjusted.webp' alt=''>
+<img class='full' src='colors-adjusted.webp' alt='Die Ausgabe des Codeblocks, für jedes der drei Blätter »Farben angepasst« von 01-pages nach 02-cache.'>
 
 Im nächsten Schritt siehst du den Effekt der Farbanpassung:
 
@@ -106,7 +106,7 @@ Im nächsten Schritt siehst du den Effekt der Farbanpassung:
 
 Wenn die Bilder korrekt angezeigt werden, führe den nächsten Codeblock aus. In diesem Schritt werden die gedruckten Rahmen in jeder Bilddatei gesucht:
 
-<img class='full' src='detect-frame.webp' alt=''>
+<img class='full' src='detect-frame.webp' alt='Die Ausgabe des Codeblocks, für jedes der drei Blätter in 02-cache »Rahmen erkannt«.'>
 
 Der nächste Schritt zeigt dir, wo die Rahmen gefunden wurden:
 
@@ -116,11 +116,11 @@ Der nächste Schritt zeigt dir, wo die Rahmen gefunden wurden:
 
 Wenn das Ergebnis zufriedenstellend aussieht, führe den nächsten Codeblock aus. In diesem Schritt werden die einzelnen Ziffern aus den Bildern ausgeschnitten:
 
-<img class='full' src='extracting-digits.webp' alt=''>
+<img class='full' src='extracting-digits.webp' alt='Die Ausgabe »Extrahiere Ziffern…« mit einem Fortschrittsbalken pro Blatt und je um die 600 extrahierten Ziffern.'>
 
 Im nächsten Schritt werden 10 Bilddateien generiert, in denen die einzelnen Ziffern gesammelt werden:
 
-<img class='full' src='collect-digits.webp' alt=''>
+<img class='full' src='collect-digits.webp' alt='Die Ausgabe für die Symbole 0 bis 9, je 176 bis 180 Beispiele, zusammengefasst in 04-sheets/0.png bis 9.png.'>
 
 Du kannst dir die Bilder anschauen, indem du auf das Verzeichnis `04-sheets` klickst:
 
@@ -134,9 +134,9 @@ Wenn alle Schritte erfolgreich durchgelaufen sind, können wir mit dem Training 
 
 Bevor du den ersten Codeblock starten kannst, musst du wieder den Kernel in ».venv« auswählen:
 
-<img class='full' src='choose-kernel-again.webp' alt=''>
+<img class='full' src='choose-kernel-again.webp' alt='Das Feld »Select kernel for 02-train-model.ipynb« mit .venv (Python 3.12.3) als erstem Eintrag.'>
 
-<img class='full' src='train-groups.webp' alt=''>
+<img class='full' src='train-groups.webp' alt='Die Ausgabe »Trainingsdaten: 1434, Validierungsdaten: 179, Testdaten: 180«.'>
 
 ### Die Architektur des Modells
 
@@ -146,7 +146,7 @@ Im nächsten Schritt wird die Architektur des Modells festgelegt. Es handelt sic
 - die zweite und dritte Schicht sind jeweils ein »Dense Layer« mit 100 Neuronen und der Aktivierungsfunktion »ReLU«.
 - die vierte Schicht ist ebenfalls ein »Dense Layer« mit 10 Neuronen, die die jeweiligen Ziffern repräsentieren, jedoch mit der Aktivierungsfunktion »Softmax«.
 
-<img class='full' src='architecture.webp' alt=''>
+<img class='full' src='architecture.webp' alt='Die Tabelle der Schichten, flatten mit 784 Ausgaben, dann dense mit 100, dense_1 mit 100 und dense_2 mit 10 Neuronen, darunter Total params 89.610.'>
 
 Dieses Modell verfügt über eine Gesamtzahl von 89.610 Parametern, die während des Trainings optimiert werden.
 
@@ -154,7 +154,7 @@ Dieses Modell verfügt über eine Gesamtzahl von 89.610 Parametern, die während
 
 Wir sind jetzt bereit, das Modell zu trainieren. Klicke auf das Play-Symbol, um den Codeblock auszuführen. Nach 30 Trainingsepochen ist das Training beendet.
 
-<img class='full' src='training-finished.webp' alt=''>
+<img class='full' src='training-finished.webp' alt='Die Ausgabe des Trainings, Epoche für Epoche mit accuracy, loss und val_accuracy, bis Epoch 30/30 und »Modell trainiert«.'>
 
 <div class='hint'>
 Du kannst hier gut beobachten, wie der »Loss« immer geringer wird – am Anfang ist er noch relativ groß und nach 30 Trainingsrunden schon bei 10<sup>-4</sup>.
@@ -162,7 +162,7 @@ Du kannst hier gut beobachten, wie der »Loss« immer geringer wird – am Anfan
 
 Im nächsten Schritt wird das Modell im Verzeichnis `05-model` gespeichert:
 
-<img class='full' src='saved-model.webp' alt=''>
+<img class='full' src='saved-model.webp' alt='Die letzte Zeile der Ausgabe, »Modell gespeichert«.'>
 
 ### Das Modell testen
 
@@ -171,7 +171,7 @@ Jetzt ermitteln wir, wie gut das Modell ist. Dazu verwenden wir die Testdaten, d
 - der Verlust sollte möglichst klein sein, idealerweise nahe bei 0.
 - die Genauigkeit sollte möglichst groß sein, idealerweise nahe bei 100%.
 
-<img class='full' src='evaluate.webp' alt=''>
+<img class='full' src='evaluate.webp' alt='Die Ausgabe »Das trainierte Modell erreicht einen Loss von 0.0384 und eine Accuracy von 98.33% auf dem Testdatensatz.«'>
 
 Um den vorherigen Schritt zu visualisieren, können wir uns nun ein paar Testbilder anzeigen lassen und die Vorhersagen des Modells überprüfen:
 
@@ -183,9 +183,9 @@ Die roten Ziffern markieren die falschen Vorhersagen. Das Modell ist noch nicht 
 
 Im nächsten Schritt wollen wir unser Modell interaktiv im Webbrowser testen. Dazu müssen wir das gespeicherte Modell zunächst in ein anderes Format namens [ONNX](https://de.wikipedia.org/wiki/ONNX) konvertieren, damit wir es im Webbrowser laufen lassen können. Führe dazu den nächsten Codeblock aus:
 
-<img class='full' src='convert-model.webp' alt=''>
+<img class='full' src='convert-model.webp' alt='Die Ausgabe »Modell konvertiert (4 hidden layers)«.'>
 
-<img src='../reference/workspace/go-live.webp' class='r' style='width: 21em;' alt=''>
+<img src='../reference/workspace/go-live.webp' class='r' style='width: 21em;' alt='Unten rechts in der Statusleiste der Knopf »Go Live« mit dem Mauszeiger darauf und dem Hinweis »Click to run live server«.'>
 
 Wenn das Modell erfolgreich konvertiert wurde, können wir es im Webbrowser testen. Klicke dazu rechts unten auf den Button »Go Live«.
 Du kannst nun links oben mit der Maus Ziffern schreiben und zuschauen, wie sich die Aktivierungen der Neuronen im Modell verändern. Du siehst die einzelnen Schichten und die Aktivierungen der Neuronen. Ganz rechts siehst du die Vorhersage des Modells.
@@ -204,7 +204,7 @@ Um unser Modell zu verbessern, können wir ein [Convolutional Neural Network](ht
 
 Um ein CNN zu verwenden, scrolle nach oben zum Abschnitt »Architektur des Modells« und setze die Variable `use_model` auf den Wert 2. Führe dann diesen und alle folgenden Codeblöcke erneut aus.
 
-<img src='model-2.webp' class='full' alt=''>
+<img src='model-2.webp' class='full' alt='Der Abschnitt »Architektur des Modells« im Notebook, im Codeblock steht use_model = 2.'>
 
 Das neue Modell hat eine etwas andere Architektur:
 
@@ -218,21 +218,21 @@ Das neue Modell hat eine etwas andere Architektur:
 
 Das verbesserte Modell verfügt über eine Gesamtzahl von 225.034 Parametern, also ca. 2,5 mal so viele Parameter wie im vorherigen Modell:
 
-<img class='full' src='new-model-parameters.webp' alt=''>
+<img class='full' src='new-model-parameters.webp' alt='Die Tabelle der Schichten des neuen Modells, zwei Conv2D- und zwei MaxPooling2D-Schichten, Flatten und zwei Dense-Schichten, Total params 225.034.'>
 
 ### Training und Test
 
 Da das neue Modell mehr Parameter hat, dauert das Training auch länger. Nach 30 Epochen ist das Training beendet:
 
-<img class='full' src='second-training-finished.webp' alt=''>
+<img class='full' src='second-training-finished.webp' alt='Die Ausgabe des zweiten Trainings bis Epoch 30/30 und »Modell trainiert«.'>
 
 Im nächsten Schritt wird das Modell wieder gespeichert (natürlich mit mehr Layern als vorher):
 
-<img class='full' src='saved-model-2.webp' alt=''>
+<img class='full' src='saved-model-2.webp' alt='Das Ende der Ausgabe beim Speichern, eine Liste von TensorSpec-Zeilen und »Modell gespeichert«.'>
 
 Bei der Evaluation des neuen Modells siehst du, dass Loss und Accuracy besser sein sollten als beim ersten Modell:
 
-<img class='full' src='evaluate-again.webp' alt=''>
+<img class='full' src='evaluate-again.webp' alt='Die Ausgabe »Das trainierte Modell erreicht einen Loss von 0.0009 und eine Accuracy von 100.00% auf dem Testdatensatz.«'>
 
 Die Testbilder sehen jetzt so aus:
 
@@ -242,7 +242,7 @@ Die Testbilder sehen jetzt so aus:
 
 Um das Modell im Browser zu testen, musst du es erst wieder konvertieren:
 
-<img class='full' src='convert-again.webp' alt=''>
+<img class='full' src='convert-again.webp' alt='Die Ausgabe »Modell konvertiert (7 hidden layers)«.'>
 
 Wenn du das Modell im Webbrowser testest, siehst du, wie die Pixel nicht mehr im ersten Schritt voneinander getrennt werden, sondern über mehrere Schichten hinweg im Quadrat angeordnet gemeinsam behandelt werden:
 

@@ -12,14 +12,14 @@ kind: steckbrief
 # Dart <span style='font-size: 80%;'>(2011)</span>
 
 <div class='floatright' style='width: 24em;'>
-    <img src='dart-team.webp' alt=''>
+    <img src='dart-team.webp' alt='Fotos von Lars Bak und Kasper Lund, die Dart entwickelt haben'>
     <p>
-        Lars Bak und Kaspar Lund
+        Lars Bak und Kasper Lund
     </p>
 </div>
 
 <p class='abstract'>
-Dart, entwickelt von Lars Bak und Kaspar Lund bei Google und erstmals 2011 veröffentlicht, ist eine objektorientierte Programmiersprache, die für die Entwicklung von Web- und mobilen Anwendungen konzipiert wurde. Dart wird häufig in Verbindung mit dem Framework Flutter verwendet, das es ermöglicht, plattformübergreifende mobile Anwendungen mit einer einzigen Codebasis zu erstellen.
+Dart, entwickelt von Lars Bak und Kasper Lund bei Google und erstmals 2011 veröffentlicht, ist eine objektorientierte Programmiersprache, die für die Entwicklung von Web- und mobilen Anwendungen konzipiert wurde. Dart wird häufig in Verbindung mit dem Framework Flutter verwendet, das es ermöglicht, plattformübergreifende mobile Anwendungen mit einer einzigen Codebasis zu erstellen.
 </p>
 
 Bekannte Beispiele für Anwendungen, die mit Dart und Flutter entwickelt wurden, sind die mobilen Apps Google Pay, Google Earth, Google Classroom und die App von Alibaba. Heutzutage ist Dart immer noch relevant, insbesondere in der mobilen App-Entwicklung, da Flutter eine wachsende Popularität genießt und eine effiziente und konsistente Entwicklungserfahrung über verschiedene Plattformen hinweg bietet.
@@ -36,7 +36,7 @@ show-left-sidebar
 sleep: 0.5
 -->
 
-<img class='full' src='fresh-start.webp' alt=''>
+<img class='full' src='fresh-start.webp' alt='Der Workspace ohne geöffneten Ordner, links »No Folder Opened«, rechts die Willkommensseite mit »New File…«.'>
 
 ### Quelltext schreiben
 
@@ -49,7 +49,7 @@ sleep: 0.5
 crop-bottom: 77%
 -->
 
-<img class='full' src='choose-filename.webp' alt=''>
+<img class='full' src='choose-filename.webp' alt='Nach »New File…« fragt oben ein Feld nach dem Dateityp, »Text File« ist ausgewählt.'>
 
 Schreibe nun den folgenden Code in die Datei:
 
@@ -67,7 +67,7 @@ sleep: 0.5
 crop-bottom: 60%
 -->
 
-<img class='full' src='no-syntax-highlighting.webp' alt=''>
+<img class='full' src='no-syntax-highlighting.webp' alt='Die neue, noch namenlose Datei Untitled-1 mit void main() und print(&#39;Hello, World!&#39;);, ganz in einer Farbe; ein weißer Punkt am Reiter zeigt, dass sie nicht gespeichert ist.'>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.dart` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.dart`.
 
@@ -80,7 +80,7 @@ sleep: 0.5
 crop-bottom: 82%
 -->
 
-<img class='full' src='enter-filename.webp' alt=''>
+<img class='full' src='enter-filename.webp' alt='Der Dialog »Save As« mit dem Pfad /workspace/hello.dart.'>
 
 Sobald du die Datei gespeichert hast, wird sie automatisch als Dart-Datei erkannt und die Syntax wird hervorgehoben.
 
@@ -91,7 +91,7 @@ sleep: 1.5
 crop-bottom: 56%
 -->
 
-<img class='full' src='syntax-highlighting.webp' alt=''>
+<img class='full' src='syntax-highlighting.webp' alt='Die gespeicherte Datei hello.dart, jetzt mit farbiger Syntax.'>
 
 ### Programm ausführen
 
@@ -119,7 +119,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello-telemetry.webp' alt=''>
+<img class='full' src='hello-telemetry.webp' alt='dart run hello.dart erklärt zuerst in einem langen Text, dass das Dart-Werkzeug Nutzungsdaten an Google Analytics schickt und wie dart --disable-analytics das abstellt; ganz unten steht Hello, World!.'>
 
 ### Was ist Telemetrie?
 
@@ -138,7 +138,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='disable-analytics.webp' alt=''>
+<img class='full' src='disable-analytics.webp' alt='dart --disable-analytics antwortet »Analytics reporting disabled«.'>
 
 Wenn wir das Programm erneut ausführen, sollte es die Nachricht `Hello, World!` ohne die Meldung zur Telemetrie ausgeben:
 
@@ -149,7 +149,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello-again.webp' alt=''>
+<img class='full' src='hello-again.webp' alt='dart run hello.dart gibt jetzt nur noch Hello, World! aus.'>
 
 <div class='hint'>
 Dart kann Quelltext für viele verschiedene Plattformen kompilieren, z. B. für Webanwendungen, mobile Apps für Android und iOS (mit Flutter) und Desktopanwendungen unter Windows, Mac OS und Linux. In diesem Artikel probieren wir Dart auf der Kommandozeile aus, aber du kannst Dart auch in anderen Umgebungen verwenden.
@@ -185,7 +185,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello-error.webp' alt=''>
+<img class='full' src='hello-error.webp' alt='dart run hello.dart meldet hello.dart:2:5: Error: Method not found: »prin« und markiert prin(&#39;Hello, World!&#39;).'>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 2) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
@@ -210,7 +210,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='try-factor.webp' alt=''>
+<img class='full' src='try-factor.webp' alt='dart run factor.dart fragt nach einer Zahl und gibt für 123 die Primfaktoren 3 und 41 aus.'>
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Dart auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Auch mit einer sehr großen Zahl wie 123456789123456789 kommt das Programm problemlos zurecht. Falls du auf eine Zahl stoßen solltest, die so groß ist, dass das Programm sehr lange braucht, kannst du das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen.
 
@@ -234,7 +234,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bubblesort.webp' alt=''>
+<img class='full' src='bubblesort.webp' alt='dart run bubblesort.dart gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
 

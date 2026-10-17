@@ -43,7 +43,7 @@ wait-for-file: bif/node_modules/markdown-it/LICENSE
 wait-for-file: bif/.story-tools/analysis.json
 -->
 
-<img class='full' src='bif-project.webp' alt=''>
+<img class='full' src='bif-project.webp' alt='Das geklonte Projekt bif im Explorer, mit den Ordnern engine, node_modules und pages-starter und den Dateien config.js, index.html, README.md und SYNTAX.md.'>
 
 _task(vorlage)
 
@@ -57,7 +57,7 @@ open-file: pages-starter/1.md
 close-tab: Welcome
 -->
 
-<img class='full' src='story-begin.webp' alt=''>
+<img class='full' src='story-begin.webp' alt='1.md aus pages-starter im Editor, mit der Überschrift »Nach Schulschluss« und dem ersten Satz der Geschichte.'>
 
 Dort steht bereits der Anfang unserer kleinen Geschichte:
 
@@ -86,7 +86,7 @@ Im Handbuch: _uses(seiten)
 
 ### Vorschau starten
 
-<img src='../reference/workspace/go-live.webp' class='r' style='width: 21em;' alt=''>
+<img src='../reference/workspace/go-live.webp' class='r' style='width: 21em;' alt='Unten rechts in der Statusleiste der Knopf »Go Live« mit dem Mauszeiger darauf und dem Hinweis »Click to run live server«.'>
 
 Damit du deine Geschichte im Browser ausprobieren kannst, ist im Workspace bereits die Erweiterung **Live Server** installiert.
 Klicke rechts unten auf »Go Live«. Es öffnet sich ein neuer Tab mit deiner Geschichte:
@@ -112,7 +112,7 @@ Eine Geschichte in BIF besteht aus Seiten. Entscheidungen verbinden sie: Wer lie
 
 ### Zweite Seite
 
-<img src='new-file.webp' class='r' style='width: 18em;' alt=''>
+<img src='new-file.webp' class='r' style='width: 18em;' alt='Der Mauszeiger auf dem Symbol »New File…« oben im Explorer, in dem pages-starter mit 1.md aufgeklappt ist.'>
 
 Unsere Geschichte soll nicht auf der ersten Seite stehen bleiben. Erstelle im Ordner `pages-starter` eine neue Datei, indem du auf das entsprechende Icon klickst. Nenne die Datei `2.md`.
 

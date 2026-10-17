@@ -16,7 +16,7 @@ reference: [workspace, html, css, layout]
 # Frontend-Entwicklung mit Svelte
 
 <div class='floatright' style='width: 30em;'>
-    <img src='rich-harris.webp' alt=''>
+    <img src='rich-harris.webp' alt='Foto von Rich Harris, dem Erfinder von Svelte, bei einem Vortrag vor einer Wand mit Svelte-Code'>
     <p>Rich Harris</p>
 </div>
 

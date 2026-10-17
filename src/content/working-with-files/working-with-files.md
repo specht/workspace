@@ -45,7 +45,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello-world.webp' alt=''>
+<img class='full' src='hello-world.webp' alt='Im Terminal gibt echo "Hello, World!" die Zeile Hello, World! aus.'>
 
 Jetzt können wir anfangen, mit Dateien und Verzeichnissen zu arbeiten.
 
@@ -67,7 +67,7 @@ wait-for-file: working-with-files.tar.gz
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='wget.webp' alt=''>
+<img class='full' src='wget.webp' alt='wget lädt working-with-files.tar.gz von GitHub herunter, folgt der Weiterleitung zu raw.githubusercontent.com und speichert 9,7 MB.'>
 
 <div class='hint'>
 Lass dich nicht davon stören, dass die Ausgabe so umfangreich ist. Der Grund dafür ist, dass der Webserver die
@@ -86,7 +86,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ls.webp' alt=''>
+<img class='full' src='ls.webp' alt='ls zeigt die Datei working-with-files.tar.gz in Rot.'>
 
 Viele Befehle auf der Kommandozeile haben Optionen, die stets hinter dem Befehlsnamen mit einem `-` beginnen.
 Probiere hier den Befehl `ls -l` (für »long«), um dir mehr Details anzeigen zu lassen:
@@ -98,7 +98,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ls-l.webp' alt=''>
+<img class='full' src='ls-l.webp' alt='ls -l zeigt working-with-files.tar.gz mit Rechten, Besitzer student, 10180401 Bytes und Datum.'>
 
 Du siehst nun u.a., wie groß die Datei ist. Nutze den Befehl `ls -lh` (für »long human-readable«),
 um die Größe in einer besser lesbaren Form zu sehen:
@@ -110,7 +110,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ls-lh.webp' alt=''>
+<img class='full' src='ls-lh.webp' alt='ls -lh zeigt dieselbe Datei mit der Größe 9.8M.'>
 
 Die Datei ist also fast 10 MB groß.
 Die Endung `.tar.gz` in unserem Beispiel zeigt an, dass es sich um ein komprimiertes Archiv handelt.
@@ -132,7 +132,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='tar-xvf.webp' alt=''>
+<img class='full' src='tar-xvf.webp' alt='tar xvf working-with-files.tar.gz listet beim Auspacken den Ordner working-with-files/ mit .hidden, jay.webm, stallman.jpg, music-releases.tar.bz2, zork.zip und alice.txt.'>
 
 Gib noch einmal `ls -l` ein, um zu sehen, was sich nun in deinem Verzeichnis befindet:
 
@@ -143,7 +143,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ls-after-tar-xvf.webp' alt=''>
+<img class='full' src='ls-after-tar-xvf.webp' alt='ls -l zeigt jetzt das Verzeichnis working-with-files in Blau neben dem Archiv.'>
 
 Du solltest jetzt zusätzlich zur heruntergeladenen Archivdatei ein Verzeichnis namens
 `working-with-files` sehen. Du erkennst an dem `d` am Anfang der Zeile, dass es sich um ein
@@ -174,7 +174,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='pwd.webp' alt=''>
+<img class='full' src='pwd.webp' alt='pwd gibt /workspace aus.'>
 
 Der Befehl `pwd` steht für »print working directory« und zeigt dir das aktuelle Verzeichnis an, in dem du dich gerade befindest. Das aktuelle Verzeichnis wird auch im Prompt angezeigt – da im Workspace das Verzeichnis `/workspace` dein Home-Verzeichnis ist, wird es im Prompt mit `~` abgekürzt.
 
@@ -187,7 +187,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='cd.webp' alt=''>
+<img class='full' src='cd.webp' alt='Nach cd working-with-files zeigt der Prompt ~/working-with-files.'>
 
 Wechsle wieder in das übergeordnete Verzeichnis, indem du `cd ..` eingibst und die Eingabetaste drückst. Du solltest nun wieder im Home-Verzeichnis sein.
 
@@ -197,7 +197,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='cd-back.webp' alt=''>
+<img class='full' src='cd-back.webp' alt='Nach cd .. zeigt der Prompt wieder ~.'>
 
 ### Die Tab-Ergänzung
 
@@ -218,7 +218,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ls-again.webp' alt=''>
+<img class='full' src='ls-again.webp' alt='In working-with-files zeigt ls -l alice.txt, jay.webm, music-releases.tar.bz2, stallman.jpg und zork.zip mit ihren Größen.'>
 
 <div class='hint'>
 Es gibt noch eine versteckte Datei in diesem Verzeichnis, die du dir mit dem Befehl <code>ls -la</code> (für »long all«) anzeigen lassen kannst. Versteckte Dateien beginnen unter Linux mit einem Punkt.
@@ -237,7 +237,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='file.webp' alt=''>
+<img class='full' src='file.webp' alt='file * nennt für jede Datei die Art: Unicode-Text, WebM, bzip2-komprimiert, JPEG mit Kameradaten und Zip-Archiv.'>
 
 Oft ist der Dateityp einer Datei schon anhand der Dateiendung zu erkennen. Das Programm `file` kann jedoch auch den Dateityp von Dateien ohne Dateiendung bestimmen und gibt einige zusätzliche Informationen aus.
 
@@ -272,7 +272,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='cat-alice.webp' alt=''>
+<img class='full' src='cat-alice.webp' alt='cat alice.txt hat das ganze Buch ausgegeben; zu sehen ist nur noch das Ende, der Text über Project Gutenberg.'>
 
 Um den Text Seite für Seite zu lesen und die Möglichkeit zum Scrollen zu bekommen, kannst du den Befehl `less` verwenden. Gib `less alice.txt` ein und drücke die Eingabetaste. Der Befehl `less` zeigt den Inhalt einer Datei an und ermöglicht es dir, durch den Text zu scrollen. Du kannst die Pfeiltasten <kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> oder <kbd>Bild↑</kbd><kbd>Bild↓</kbd> sowie <kbd>Pos1</kbd> und <kbd>Ende</kbd> verwenden, um durch den Text zu navigieren. Drücke die Taste <kbd>Q</kbd> (für »quit«), um `less` zu beenden.
 
@@ -291,7 +291,7 @@ wait-for-text: may be a binary file
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='less-jay-warning.webp' alt=''>
+<img class='full' src='less-jay-warning.webp' alt='less jay.webm fragt »"jay.webm" may be a binary file. See it anyway?«.'>
 
 Wenn du hier mit `y` bestätigst, wird der Inhalt der Datei trotzdem angezeigt, aber es wird nicht lesbar sein:
 
@@ -301,7 +301,7 @@ sleep: 1
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='less-jay.webp' alt=''>
+<img class='full' src='less-jay.webp' alt='less zeigt den Inhalt von jay.webm als unlesbaren Zeichensalat mit vielen hervorgehobenen Steuerzeichen.'>
 
 Drücke die Taste <kbd>Q</kbd>, um `less` zu beenden.
 
@@ -316,7 +316,7 @@ wait-for-text: (END)
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='less-stallman.webp' alt=''>
+<img class='full' src='less-stallman.webp' alt='less stallman.jpg zeigt nur eine Zeile mit Angaben zum Bild, JPEG 3072x2048, 8-bit sRGB, 2.9 MiB.'>
 
 Wenn du `less` auf die Archivdateien anwendest, bekommst du eine Vorschau der Dateien, die sich im Archiv befinden:
 
@@ -330,7 +330,7 @@ sleep: 0.5
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='less-zork.webp' alt=''>
+<img class='full' src='less-zork.webp' alt='less zork.zip zeigt das Inhaltsverzeichnis des Archivs, Dateien aus zork-master mit Länge, Kompression, Datum und Name.'>
 
 ### Bytes mit `hd`
 
@@ -350,7 +350,7 @@ sleep: 0.5
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='hd-alice-less.webp' alt=''>
+<img class='full' src='hd-alice-less.webp' alt='hd alice.txt | less zeigt den Anfang von alice.txt als Hexdump, links die Adressen, in der Mitte die Bytes in Hex, rechts als Text »The Project Gutenberg eBook of Alice&#39;s Adventures in Wonderland«.'>
 
 Im Hexdump siehst du immer 16 Bytes in einer Zeile. Die erste Spalte zeigt den Offset in der Datei an (hexadezimal), die zweite Spalte zeigt die hexadezimalen Werte der 16 Bytes an und die dritte Spalte zeigt die ASCII-Zeichen an, die den hexadezimalen Werten entsprechen. Wenn ein Byte nicht druckbar ist, wird ein Punkt angezeigt.
 
@@ -383,7 +383,7 @@ sleep: 0.5
 crop-bottom: 75%
 -->
 
-<img class='full' src='open-folder.webp' alt=''>
+<img class='full' src='open-folder.webp' alt='Der Dialog »Open Folder« mit dem Pfad /workspace/working-with-files/.'>
 
 Links siehst du jetzt die Dateien und kannst sie (bis auf die Archivdateien) öffnen, um ihren Inhalt zu sehen.
 
@@ -433,7 +433,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='touch-hello.webp' alt=''>
+<img class='full' src='touch-hello.webp' alt='touch hello.txt legt eine leere Datei an; ls -l zeigt hello.txt mit 0 Bytes und der Uhrzeit 08:01.'>
 
 Da die Datei keinen Inhalt hat, beträgt ihre Größe erwartungsgemäß 0 Byte. Wenn du nach einer oder mehreren Minuten noch einmal `touch hello.txt` eingibst, siehst du, dass sich danach der Zeitstempel der Datei geändert hat:
 
@@ -446,7 +446,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='touch-hello-again.webp' alt=''>
+<img class='full' src='touch-hello-again.webp' alt='Nach einem zweiten touch hello.txt zeigt ls -l für hello.txt die neue Uhrzeit 08:02, die Größe bleibt 0.'>
 
 Der Befehl <code>touch</code> wird oft verwendet, um den Zeitstempel einer Datei zu aktualisieren, ohne den Inhalt zu verändern. Wenn die Datei nicht existiert, wird sie erstellt.
 
@@ -472,7 +472,7 @@ wait-for-text: Wrote 1 line
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='hello-nano-saved.webp' alt=''>
+<img class='full' src='hello-nano-saved.webp' alt='nano mit hello-nano.txt und der Zeile Hello from nano, unten die Meldung Wrote 1 line.'>
 
 _task(nano)
 
@@ -495,7 +495,7 @@ wait-for-text: written
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='hello-vim-saved.webp' alt=''>
+<img class='full' src='hello-vim-saved.webp' alt='vim mit hello-vim.txt und der Zeile Hello from vim, unten die Meldung "hello-vim.txt" [New] 1L, 15B written.'>
 
 Für die oben stehende Eingabe musst du also folgende Tasten drücken:
 
@@ -518,7 +518,7 @@ sleep: 0.5
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='vimtutor.webp' alt=''>
+<img class='full' src='vimtutor.webp' alt='vimtutor begrüßt mit »Welcome to the VIM Tutor – Version 1.7« und erklärt, dass die Übung etwa 30 Minuten dauert.'>
 
 <div class='hint'>
 <code>vimtutor</code> lässt sich, genau wie <code>vim</code> selbst, mit <kbd>:</kbd>, <kbd>q</kbd> und <kbd>Enter</kbd> beenden.
@@ -545,7 +545,7 @@ wait-for-text: Wrote
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='hello-emacs.webp' alt=''>
+<img class='full' src='hello-emacs.webp' alt='emacs mit hello-emacs.txt und der Zeile Hello from emacs, oben die Menüleiste, unten Wrote /workspace/working-with-files/hello-emacs.txt.'>
 
 ## Texte untersuchen
 
@@ -569,7 +569,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='wc-alice.webp' alt=''>
+<img class='full' src='wc-alice.webp' alt='wc alice.txt gibt 3756 Zeilen, 29564 Wörter und 174355 Bytes aus.'>
 
 Die Datei `alice.txt` enthält also 3.756 Zeilen, 29.564 Wörter und 174.355 Bytes. Oft wird `wc` dazu verwendet, um die Anzahl der Zeilen in einer Datei zu zählen. Wenn du nur die Anzahl der Zeilen wissen möchtest, kannst du den Befehl `wc -l alice.txt` (`-l` für »lines«) verwenden:
 
@@ -580,7 +580,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='wc-l-alice.webp' alt=''>
+<img class='full' src='wc-l-alice.webp' alt='wc -l alice.txt gibt 3756 aus.'>
 
 ### Suchen mit `grep`
 
@@ -593,7 +593,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='grep-everybody.webp' alt=''>
+<img class='full' src='grep-everybody.webp' alt='grep everybody alice.txt gibt fünf Zeilen aus, das Wort everybody jeweils rot hervorgehoben.'>
 
 Mit der Option `-i` können wir `grep` anweisen, die Groß- und Kleinschreibung zu ignorieren. Gib `grep -i everybody alice.txt` ein und drücke die Eingabetaste:
 
@@ -604,7 +604,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='grep-i-everybody.webp' alt=''>
+<img class='full' src='grep-i-everybody.webp' alt='grep -i everybody findet acht Zeilen, auch mit Everybody am Satzanfang.'>
 
 Wir haben nun ein paar weitere Stellen gefunden. Wenn du die Zeilennummern sehen möchtest, in denen das Muster gefunden wurde, kannst du die Option `-n` verwenden:
 
@@ -615,7 +615,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='grep-in-everybody.webp' alt=''>
+<img class='full' src='grep-in-everybody.webp' alt='grep -in everybody zeigt dieselben acht Zeilen mit ihren Zeilennummern davor, von 569 bis 3321.'>
 
 `grep` ist ein sehr mächtiges Programm mit einer Vielzahl von Optionen. Du kannst z. B. reguläre Ausdrücke verwenden, um nach komplexeren Mustern zu suchen. Gib `man grep` ein, um die manpage von `grep` zu lesen und mehr über die verschiedenen Optionen zu erfahren.
 
@@ -637,7 +637,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='grep-words-alice.webp' alt=''>
+<img class='full' src='grep-words-alice.webp' alt='grep -o -E "[A-Za-z]+" gibt jedes Wort auf einer eigenen Zeile aus; zu sehen ist das Ende, help, produce, our, new, eBooks …'>
 
 <div class='hint'>
 Um eine lange Ausgabe seitenweise zu betrachten, kannst du an jeden Befehl einfach <code>| less</code> anhängen.
@@ -657,7 +657,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='alice-sort.webp' alt=''>
+<img class='full' src='alice-sort.webp' alt='Mit sort stehen die Wörter alphabetisch, gleiche untereinander; am Ende viele Male yourself und youth, dann Zealand und zigzag.'>
 
 Um Duplikate zu entfernen, können wir `uniq` verwenden:
 
@@ -674,7 +674,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='alice-sort-uniq.webp' alt=''>
+<img class='full' src='alice-sort-uniq.webp' alt='Mit uniq steht jedes Wort nur noch einmal da, aber you, You und YOU noch getrennt.'>
 
 Allerdings gibt es hinsichtlich der Groß- und Kleinschreibung noch Duplikate (»you«, »You«, »YOU«). Um auch diese zu entfernen, können wir die Option `-i` von `uniq` verwenden (für »ignore case«):
 
@@ -690,7 +690,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='alice-sort-uniq-i.webp' alt=''>
+<img class='full' src='alice-sort-uniq-i.webp' alt='Mit uniq -i steht auch you nur noch einmal da, ohne Unterschied zwischen Groß- und Kleinschreibung.'>
 
 Wir können nun die Anzahl der Wörter in der Liste zählen:
 
@@ -706,7 +706,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='alice-sort-uniq-wc.webp' alt=''>
+<img class='full' src='alice-sort-uniq-wc.webp' alt='Mit wc -l am Ende der Pipeline kommt 3002 heraus, so viele verschiedene Wörter.'>
 
 Wir können unser Ergebnis auch in einer Datei speichern, indem wir die Ausgabe der gesamten Pipeline in eine Datei umleiten:
 
@@ -722,7 +722,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='alice-redirect-to-file.webp' alt=''>
+<img class='full' src='alice-redirect-to-file.webp' alt='Die Pipeline schreibt mit &gt; words.txt in eine Datei; ls -l zeigt words.txt mit 21996 Bytes.'>
 
 _task(woerter)
 
@@ -741,7 +741,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='head-words.webp' alt=''>
+<img class='full' src='head-words.webp' alt='head words.txt zeigt die ersten zehn Wörter, von a, abide, able bis accepted.'>
 
 Analog dazu kannst du `tail` verwenden, um die letzten 10 Zeilen einer Datei oder einer Ausgabe zu sehen:
 
@@ -756,7 +756,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='tail-words.webp' alt=''>
+<img class='full' src='tail-words.webp' alt='tail words.txt zeigt die letzten zehn Wörter, von yesterday bis Zealand und zigzag.'>
 
 `tail` wird in Verbindung mit der Option `-f` (für »follow«) oft verwendet, um eine Datei in Echtzeit zu beobachten. Wenn du z. B. eine Logdatei überwachen möchtest, kannst du `tail -f logfile.log` verwenden, um die letzten Zeilen der Datei anzuzeigen und neue Zeilen anzuzeigen, sobald sie hinzugefügt werden.
 
@@ -779,7 +779,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='tree.webp' alt=''>
+<img class='full' src='tree.webp' alt='tree zeigt die Dateien in working-with-files als Baum, 1 directory, 10 files.'>
 
 Im Moment unterscheidet sich die Ausgabe von `tree` noch nicht sehr von der Ausgabe von `ls`. Das liegt daran, dass wir uns in einem flachen Verzeichnis ohne Unterverzeichnisse befinden. Wenn wir uns in einem tiefer verschachtelten Verzeichnis befinden, wird die Ausgabe von `tree` nützlicher.
 
@@ -798,7 +798,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='unzip-zork.webp' alt=''>
+<img class='full' src='unzip-zork.webp' alt='unzip zork.zip packt die Dateien aus, zu sehen sind die letzten Zeilen inflating zork-master/… bis villns.c.'>
 
 Wenn du nun wieder `tree` eingibst und nach oben scrollst, siehst du, dass das Verzeichnis `zork-master` mit einigen Dateien hinzugefügt wurde:
 
@@ -809,7 +809,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='tree-after-unzip.webp' alt=''>
+<img class='full' src='tree-after-unzip.webp' alt='tree zeigt jetzt auch den Ordner zork-master mit seinen Dateien, 2 directories, 52 files.'>
 
 Wechsle in das Verzeichnis `zork-master` und gib `ls` ein, um zu sehen, was sich darin befindet:
 
@@ -826,7 +826,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ls-zork.webp' alt=''>
+<img class='full' src='ls-zork.webp' alt='In zork-master zeigt ls die Quelltexte .c und .h, dazu Makefile, README.md und readme.txt.'>
 
 Lass dir den Inhalt der Datei `readme.txt` anzeigen:
 
@@ -841,7 +841,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='cat-zork-readme.webp' alt=''>
+<img class='full' src='cat-zork-readme.webp' alt='cat readme.txt sagt, dies sei der gemeinfreie Quelltext des Spiels DUNGEON (Zork I) von Infocom.'>
 
 Es handelt sich also um ein Spiel. Da es in der Programmiersprache [C](/c) geschrieben ist und es ein `Makefile` gibt, können wir es leicht kompilieren, um ein ausführbares Programm zu erhalten.
 
@@ -862,7 +862,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ls-zork-bin.webp' alt=''>
+<img class='full' src='ls-zork-bin.webp' alt='Nach make zeigt ls zu jeder .c-Datei eine .o-Datei und die ausführbare Datei zork in Grün.'>
 
 Du kannst das Spiel starten, indem du `./zork` eingibst:
 
@@ -874,7 +874,7 @@ sleep: 1
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='play-zork.webp' alt=''>
+<img class='full' src='play-zork.webp' alt='./zork startet das Spiel: »Welcome to Dungeon. You are in an open field west of a big white house with a boarded front door. There is a small mailbox here.«'>
 
 <div class='hint'>
 Anders als unter Windows kannst du hier nicht einfach <code>zork</code> eingeben, um das Spiel zu starten, da das aktuelle Verzeichnis nicht im Suchpfad enthalten ist. Du musst also explizit angeben, dass du die Datei <code>zork</code> im aktuellen Verzeichnis (welches mit <code>.</code> bezeichnet wird) ausführen möchtest.
@@ -908,7 +908,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='tree-music.webp' alt=''>
+<img class='full' src='tree-music.webp' alt='tree music-releases zeigt am Ende Whitney Houston mit Albums und Singles - EPs und meldet 493 directories, 3911 files.'>
 
 Es handelt sich um ein Verzeichnis mit mehreren Unterverzeichnissen, in dem sich Alben und Singles / EPs verschiedener Künstlerinnen und Künstler bzw. Bands, nach Land und Jahr sortiert, befinden.
 
@@ -927,7 +927,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='music-ls-l.webp' alt=''>
+<img class='full' src='music-ls-l.webp' alt='In music-releases zeigt ls -l je ein Verzeichnis pro Land, von Australia bis United States.'>
 
 Dir fällt sicherlich auf, dass einige Verzeichnisnamen in Anführungszeichen stehen. Das liegt daran, dass sie Leerzeichen enthalten. Wenn du einen Datei- oder Verzeichnisnamen als Argument an einen Befehl übergibst und der Name Leerzeichen enthält, musst du den Namen in Anführungszeichen setzen, damit der Befehl den Namen als ein Argument erkennt.
 
@@ -946,7 +946,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ls-radwimps.webp' alt=''>
+<img class='full' src='ls-radwimps.webp' alt='In Japan/Radwimps zeigt ls -l die Verzeichnisse Albums und Singles - EPs und die Datei Radwimps.txt.'>
 
 Eine kurze Information zur Geschichte der Band findest du in der Datei `Radwimps.txt`, die du dir mit `less` anzeigen lassen kannst:
 
@@ -962,7 +962,7 @@ sleep: 0.5
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='less-radwimps.webp' alt=''>
+<img class='full' src='less-radwimps.webp' alt='less Radwimps.txt zeigt eine Beschreibung der Band mit ihren Mitgliedern, zum Teil in japanischer Schrift.'>
 
 Schau auch in ein paar Alben rein, um ein Gefühl für die Tab-Ergänzung zu bekommen:
 
@@ -979,7 +979,7 @@ sleep: 1
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='less-radwimps-2016.webp' alt=''>
+<img class='full' src='less-radwimps-2016.webp' alt='less zeigt das Album 君の名は。 von 2016 mit Künstler, Erscheinungsdatum, Genres und den ersten Titeln mit ihrer Länge, in japanischer Schrift.'>
 
 <div class='hint'>
 Lass dir nun das Album »Die Bestie in Menschengestalt« der Band »Die Ärzte« anzeigen. Wenn du das geschafft hast, hast du die Navigation im Dateisystem und die Tab-Ergänzung gemeistert!
@@ -997,7 +997,7 @@ sleep: 1
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='bestie.webp' alt=''>
+<img class='full' src='bestie.webp' alt='less zeigt das Album »Die Bestie In Menschengestalt« von Die Ärzte, 1993, mit den Titeln von Inntro bis Gehirn-Stürm.'>
 
 ### Komprimieren mit `gzip` und `bzip2`
 
@@ -1018,7 +1018,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='re-ls-alice.webp' alt=''>
+<img class='full' src='re-ls-alice.webp' alt='Zurück in ~/working-with-files zeigt ls -l alice.txt die Größe 174355 Bytes.'>
 
 Die Datei ist 174.355 Bytes groß. Wir können sie komprimieren, um Speicherplatz zu sparen. Dazu verwenden wir `gzip`:
 
@@ -1037,7 +1037,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='gzip-alice.webp' alt=''>
+<img class='full' src='gzip-alice.webp' alt='Nach gzip alice.txt gibt es nur noch alice.txt.gz mit 61204 Bytes.'>
 
 Um die Datei wieder zu entpacken, verwenden wir `gzip -d`:
 
@@ -1055,7 +1055,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='gzip-d-alice.webp' alt=''>
+<img class='full' src='gzip-d-alice.webp' alt='gzip -d alice.txt.gz packt die Datei wieder aus, alice.txt hat wieder 174355 Bytes.'>
 
 Wir können die Datei auch mit `bzip2` komprimieren:
 
@@ -1072,7 +1072,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bzip2-alice.webp' alt=''>
+<img class='full' src='bzip2-alice.webp' alt='Nach bzip2 alice.txt gibt es alice.txt.bz2 mit 48925 Bytes.'>
 
 Wie du siehst, hat `bzip2` eine noch kleinere Datei erzeugt, die nur 48.925 Bytes groß ist und somit nur noch 28% des ursprünglichen Speicherplatzes belegt. Um die Datei wieder zu entpacken, verwenden wir `bzip2 -d`:
 
@@ -1089,7 +1089,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bzip2-d-alice.webp' alt=''>
+<img class='full' src='bzip2-d-alice.webp' alt='bzip2 -d alice.txt.bz2 packt die Datei wieder aus, alice.txt hat wieder 174355 Bytes.'>
 
 Die Datei ist wieder 174.355 Bytes groß.
 
@@ -1112,7 +1112,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='du-h.webp' alt=''>
+<img class='full' src='du-h.webp' alt='du -h zeigt die Größe jedes Unterverzeichnisses; am Ende music-releases mit 18M, zork-master mit 2.1M und alles zusammen mit 30M.'>
 
 An der letzten Zeile erkennst du, dass das ganze Verzeichnis mit allen Unterverzeichnissen insgesamt 30 MB groß ist. Falls dich interessiert, wie viel Speicherplatz jedes einzelne Unterverzeichnis belegt, kannst du die Option `-d` (für »depth«) verwenden, um die Tiefe der Analyse anzugeben. Gib `du -h -d 2` ein, um die Größen der Unterverzeichnisse bis zu einer Tiefe von 2 anzuzeigen:
 
@@ -1123,7 +1123,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='du-h-d-2.webp' alt=''>
+<img class='full' src='du-h-d-2.webp' alt='du -h -d 2 zeigt nur zwei Ebenen tief, ein Land pro Zeile, die Vereinigten Staaten mit 9.9M als größtes.'>
 
 Man sieht hier sehr gut, dass die Unterverzeichnisse `United States` und `United Kingdom` am meisten Speicherplatz belegen.
 
@@ -1146,7 +1146,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='grep-ri-welcome.webp' alt=''>
+<img class='full' src='grep-ri-welcome.webp' alt='grep -ri welcome . findet in music-releases Zeilen mit Welcome in vielen Dateien, vorn jeweils der Pfad der Datei in Violett.'>
 
 _task(welcome)
 
@@ -1181,7 +1181,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='mkdir-sandbox.webp' alt=''>
+<img class='full' src='mkdir-sandbox.webp' alt='Nach mkdir sandbox zeigt ls -l das neue, leere Verzeichnis sandbox zwischen den anderen Dateien.'>
 
 Wenn du ein Verzeichnis erstellen möchtest, das selbst ein Unterverzeichnis ist, kannst du die Option `-p` verwenden, um sicherzustellen, dass alle übergeordneten Verzeichnisse ebenfalls erstellt werden:
 
@@ -1197,7 +1197,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='mkdir-p.webp' alt=''>
+<img class='full' src='mkdir-p.webp' alt='mkdir -p sandbox/nested/nothing/to/see/here legt alle Verzeichnisse auf einmal an; tree sandbox zeigt sie ineinander, 6 directories, 0 files.'>
 
 ### Kopieren mit `cp`
 
@@ -1221,7 +1221,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='cp-jay-sandbox.webp' alt=''>
+<img class='full' src='cp-jay-sandbox.webp' alt='cp jay.webm sandbox kopiert das Video; ls -l sandbox zeigt jay.webm und nested.'>
 
 **Möglichkeit 2: eine Datei in das aktuelle Verzeichnis kopieren**
 
@@ -1247,7 +1247,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='cp-alice.webp' alt=''>
+<img class='full' src='cp-alice.webp' alt='In sandbox kopiert cp ../alice.txt . die Datei herein; ls -l zeigt alice.txt, jay.webm und nested.'>
 
 Wenn du versuchst, ein Verzeichnis zu kopieren, erhältst du eine Fehlermeldung:
 
@@ -1262,7 +1262,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='cp-zork.webp' alt=''>
+<img class='full' src='cp-zork.webp' alt='cp ../zork-master . meldet cp: -r not specified; omitting directory »../zork-master«.'>
 
 Um ein Verzeichnis zu kopieren, musst du die Option `-r` (für »recursive«) verwenden:
 
@@ -1280,7 +1280,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='cp-r-zork.webp' alt=''>
+<img class='full' src='cp-r-zork.webp' alt='cp -r ../zork-master . kopiert das Verzeichnis mit; ls -l zeigt jetzt auch zork-master.'>
 
 ### Verschieben und umbenennen mit `mv`
 
@@ -1301,7 +1301,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='mv-jay.webp' alt=''>
+<img class='full' src='mv-jay.webp' alt='mv jay.webm nested verschiebt das Video; ls -l zeigt es nicht mehr, ls -l nested zeigt jay.webm neben nothing.'>
 
 _task(sandbox)
 
@@ -1321,7 +1321,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='mv-alice.webp' alt=''>
+<img class='full' src='mv-alice.webp' alt='mv alice.txt alice-in-wonderland.txt benennt die Datei um; ls -l zeigt den neuen Namen.'>
 
 ### Löschen mit `rmdir` und `rm`
 
@@ -1339,7 +1339,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='mkdir-empty.webp' alt=''>
+<img class='full' src='mkdir-empty.webp' alt='Nach mkdir empty zeigt ls -l das neue Verzeichnis empty.'>
 
 Nutze `rmdir`, um das Verzeichnis `empty` zu löschen:
 
@@ -1357,7 +1357,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='rmdir-empty.webp' alt=''>
+<img class='full' src='rmdir-empty.webp' alt='Nach rmdir empty ist das Verzeichnis wieder weg.'>
 
 Versuche, das Verzeichnis `zork-master` mit `rmdir` zu löschen:
 
@@ -1374,7 +1374,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='rmdir-zork.webp' alt=''>
+<img class='full' src='rmdir-zork.webp' alt='rmdir zork-master meldet rmdir: failed to remove »zork-master«: Directory not empty.'>
 
 Du kannst `rmdir` also dann nutzen, wenn du ein Verzeichnis löschen möchtest, von dem du ausgehst, dass es leer ist. Falls das Verzeichnis doch nicht leer sein sollte, erhältst du eine Fehlermeldung.
 
@@ -1400,7 +1400,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='rm-alice.webp' alt=''>
+<img class='full' src='rm-alice.webp' alt='Nach rm alice-in-wonderland.txt zeigt ls -l nur noch nested und zork-master.'>
 
 Wenn du versuchst, ein Verzeichnis zu löschen, musst du wie bei `cp` die Option `-r` (für »recursive«) verwenden:
 
@@ -1416,7 +1416,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='rm-r-zork.webp' alt=''>
+<img class='full' src='rm-r-zork.webp' alt='Nach rm -r zork-master zeigt ls -l nur noch nested.'>
 
 _task(papierkorb)
 

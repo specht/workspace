@@ -12,7 +12,7 @@ kind: steckbrief
 # Netwide Assembler <span style='font-size: 80%;'>(1996)</span>
 
 <div class='floatright' style='width: 24em;'>
-    <img src='tatham.webp' alt=''>
+    <img src='tatham.webp' alt='Foto von Simon Tatham, einem der Autoren von NASM'>
     <p>Simon Tatham</p>
 </div>
 
@@ -36,7 +36,7 @@ show-left-sidebar
 sleep: 0.5
 -->
 
-<img class='full' src='fresh-start.webp' alt=''>
+<img class='full' src='fresh-start.webp' alt='Der Workspace ohne geöffneten Ordner, links »No Folder Opened«, rechts die Willkommensseite mit »New File…«.'>
 
 ### Quelltext schreiben
 
@@ -49,7 +49,7 @@ sleep: 0.5
 crop-bottom: 77%
 -->
 
-<img class='full' src='choose-filename.webp' alt=''>
+<img class='full' src='choose-filename.webp' alt='Nach »New File…« fragt oben ein Feld nach dem Dateityp, »Text File« ist ausgewählt.'>
 
 Schreibe nun den folgenden Code in die Datei:
 
@@ -89,7 +89,7 @@ sleep: 0.5
 crop-bottom: 14%
 -->
 
-<img class='full' src='no-syntax-highlighting.webp' alt=''>
+<img class='full' src='no-syntax-highlighting.webp' alt='Die neue, noch namenlose Datei Untitled-1 mit dem Assembler-Programm, 18 Zeilen von section .data bis syscall, ganz in einer Farbe; ein weißer Punkt am Reiter zeigt, dass sie nicht gespeichert ist.'>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.asm` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.asm`.
 
@@ -102,9 +102,9 @@ sleep: 0.5
 crop-bottom: 82%
 -->
 
-<img class='full' src='enter-filename.webp' alt=''>
+<img class='full' src='enter-filename.webp' alt='Der Dialog »Save As« mit dem Pfad /workspace/hello.asm.'>
 
-Da Assembler standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »The Netwide Assembler« und installiere sie. Weil der Herausgeber nicht verifiziert ist, fragt Visual Studio Code, ob du ihm vertraust; bestätige mit »Trust Publisher & Install«.
+Da Assembler standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt='vier Quadrate, eines davon abgehoben'> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »The Netwide Assembler« und installiere sie. Weil der Herausgeber nicht verifiziert ist, fragt Visual Studio Code, ob du ihm vertraust; bestätige mit »Trust Publisher & Install«.
 
 <!-- tutorial-screenshot
 # Speichern, dann die Erweiterung im Marketplace
@@ -118,7 +118,7 @@ sleep: 3
 crop-bottom: 50%
 -->
 
-<img class='full' src='nasm-syntax.webp' alt=''>
+<img class='full' src='nasm-syntax.webp' alt='Links der Marketplace mit der Suche nach The Netwide Assembler, mit Erweiterungen für Assembler und dem Knopf »Install«; rechts hello.asm, noch einfarbig.'>
 
 Alternativ kannst du auch <kbd>Strg</kbd><kbd>P</kbd> drücken und `ext install rights.nas-vscode` eingeben, um die Erweiterung zu installieren.
 
@@ -143,13 +143,13 @@ sleep: 2
 crop-bottom: 14%
 -->
 
-<img class='full' src='syntax-highlighting.webp' alt=''>
+<img class='full' src='syntax-highlighting.webp' alt='hello.asm mit farbiger Syntax, von section .data über mov rax, 1 bis zum letzten syscall.'>
 
 ### Kompilieren und ausführen
 
 Bevor wir das Programm ausführen können, müssen wir es kompilieren und linken. Dazu verwenden wir den Netwide Assembler `nasm`, um den Assembler-Code in eine Objektdatei zu übersetzen, und den GNU Linker `ld`, um die Objektdatei anschließend in eine ausführbare Datei zu linken.
 
-Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt='ein Rechteck mit einem Streifen unten'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <!-- tutorial-screenshot
 hide-left-sidebar
@@ -157,7 +157,7 @@ terminal-open
 sleep: 0.5
 -->
 
-<img class='full' src='lets-compile.webp' alt=''>
+<img class='full' src='lets-compile.webp' alt='Oben hello.asm, darunter das offene Terminal mit der Eingabeaufforderung.'>
 
 Um das Programm zu kompilieren, gib folgenden Befehl ein:
 
@@ -180,7 +180,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ls.webp' alt=''>
+<img class='full' src='ls.webp' alt='Im Terminal erzeugt nasm -f elf64 hello.asm die Objektdatei; ls -l zeigt hello.asm und hello.o.'>
 
 Um eine ausführbare Datei zu erstellen, müssen wir die Objektdatei mit dem GNU Linker `ld` linken. Gib dazu folgenden Befehl ein:
 
@@ -201,7 +201,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ls2.webp' alt=''>
+<img class='full' src='ls2.webp' alt='ld hello.o -o hello linkt die Objektdatei; ls -l zeigt jetzt dazu die ausführbare Datei hello in Grün.'>
 
 Die grüne Datei `hello` ist die ausführbare Datei – im Unterschied zu Windows, wo ausführbare Dateien die Endung `.exe` haben, haben ausführbare Dateien unter Linux keine Endung. Um das Programm auszuführen, gib folgenden Befehl ein:
 
@@ -249,7 +249,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello-error.webp' alt=''>
+<img class='full' src='hello-error.webp' alt='nasm meldet hello.asm:9: error: symbol »ray« not defined.'>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 9) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
@@ -283,7 +283,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='try-factor.webp' alt=''>
+<img class='full' src='try-factor.webp' alt='nasm und ld bauen factor, ./factor fragt nach einer Zahl und gibt für 123 die Primfaktoren 3 und 41 aus.'>
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Probiere aus, was passiert, wenn du die Zahl 3000000000 eingibst oder die Zahl 123456789123456789. Was könnte der Grund dafür sein?
 
@@ -315,7 +315,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bubblesort.webp' alt=''>
+<img class='full' src='bubblesort.webp' alt='nasm und ld bauen bubblesort, ./bubblesort gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 20 Zahlen sortiert werden. An welchen Stellen musst du dafür etwas ändern?
 

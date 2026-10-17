@@ -12,7 +12,7 @@ kind: steckbrief
 # COBOL <span style='font-size: 80%;'>(1959)</span>
 
 <div class='floatright' style='width: 16em;'>
-    <img src='hopper.webp' alt=''>
+    <img src='hopper.webp' alt='Foto von Grace Hopper, die COBOL mitentwickelt hat'>
     <p>Grace Hopper</p>
 </div>
 
@@ -34,7 +34,7 @@ show-left-sidebar
 sleep: 0.5
 -->
 
-<img class='full' src='fresh-start.webp' alt=''>
+<img class='full' src='fresh-start.webp' alt='Der Workspace ohne geöffneten Ordner, links »No Folder Opened«, rechts die Willkommensseite mit »New File…«.'>
 
 ### Quelltext schreiben
 
@@ -47,7 +47,7 @@ sleep: 0.5
 crop-bottom: 77%
 -->
 
-<img class='full' src='choose-filename.webp' alt=''>
+<img class='full' src='choose-filename.webp' alt='Nach »New File…« fragt oben ein Feld nach dem Dateityp, »Text File« ist ausgewählt.'>
 
 Schreibe nun den folgenden Code in die Datei:
 
@@ -65,7 +65,7 @@ sleep: 0.5
 crop-bottom: 60%
 -->
 
-<img class='full' src='no-syntax-highlighting.webp' alt=''>
+<img class='full' src='no-syntax-highlighting.webp' alt='Die neue, noch namenlose Datei Untitled-1 mit dem COBOL-Programm HELLO-WORLD, ganz in einer Farbe; ein weißer Punkt am Reiter zeigt, dass sie nicht gespeichert ist.'>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.cbl` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.cbl`.
 
@@ -78,13 +78,13 @@ sleep: 0.5
 crop-bottom: 82%
 -->
 
-<img class='full' src='enter-filename.webp' alt=''>
+<img class='full' src='enter-filename.webp' alt='Der Dialog »Save As« mit dem Pfad /workspace/hello.cbl.'>
 
 <div class='hint'>
 Achte darauf, dass du deine Datei nicht aus Versehen <code>hello.cbl.</code> (mit einem Punkt am Ende) nennst, da Visual Studio Code als Dateiname <code>IDENTIFICATION DIVISION.</code> vorschlägt.
 </div>
 
-Da COBOL standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »COBOL Language Support« und installiere sie. Weil der Herausgeber nicht verifiziert ist, fragt Visual Studio Code, ob du ihm vertraust; bestätige mit »Trust Publisher & Install«.
+Da COBOL standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt='vier Quadrate, eines davon abgehoben'> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »COBOL Language Support« und installiere sie. Weil der Herausgeber nicht verifiziert ist, fragt Visual Studio Code, ob du ihm vertraust; bestätige mit »Trust Publisher & Install«.
 
 <!-- tutorial-screenshot
 # Speichern, dann die Erweiterung im Marketplace
@@ -98,7 +98,7 @@ sleep: 3
 crop-bottom: 50%
 -->
 
-<img class='full' src='cobol-syntax.webp' alt=''>
+<img class='full' src='cobol-syntax.webp' alt='Links der Marketplace mit der Suche nach COBOL Language Support, ganz oben die Erweiterung von BroadcomMFD mit »Install«; rechts hello.cbl, noch einfarbig.'>
 
 Alternativ kannst du auch <kbd>Strg</kbd><kbd>P</kbd> drücken und `ext install broadcomMFD.cobol-language-support` eingeben, um die Erweiterung zu installieren.
 
@@ -123,7 +123,7 @@ sleep: 2
 crop-bottom: 56%
 -->
 
-<img class='full' src='syntax-highlighting.webp' alt=''>
+<img class='full' src='syntax-highlighting.webp' alt='hello.cbl mit farbiger Syntax, von IDENTIFICATION DIVISION bis STOP RUN.'>
 
 Wie man sieht, hat COBOL eine bestimmte Vorstellung davon, wie der Code eingerückt sein sollte. Das liegt daran, dass COBOL ein sehr altes Sprachdesign hat und auf Lochkartenprogrammierung ausgelegt ist. Die Einrückung ist also nicht nur eine Frage des Stils, sondern auch der Funktionalität. Früher wurde der Code auf solchen Formularen geschrieben:
 
@@ -133,7 +133,7 @@ Wie man sieht, hat COBOL eine bestimmte Vorstellung davon, wie der Code eingerü
 
 Bevor wir das Programm ausführen können, müssen wir es kompilieren. Dadurch wird der Quelltext in Maschinencode übersetzt, den dein Computer ausführen kann.
 
-Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt='ein Rechteck mit einem Streifen unten'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <!-- tutorial-screenshot
 hide-left-sidebar
@@ -141,7 +141,7 @@ terminal-open
 sleep: 0.5
 -->
 
-<img class='full' src='lets-compile.webp' alt=''>
+<img class='full' src='lets-compile.webp' alt='Oben hello.cbl, darunter das offene Terminal mit der Eingabeaufforderung.'>
 
 Um das Programm zu kompilieren, gib folgenden Befehl ein:
 
@@ -166,7 +166,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='ls.webp' alt=''>
+<img class='full' src='ls.webp' alt='Im Terminal übersetzt cobc -x hello.cbl -o hello das Programm mit der Warnung »line not terminated by a newline«, danach zeigt ls -l die ausführbare Datei hello in Grün und hello.cbl.'>
 
 Die grüne Datei `hello` ist die ausführbare Datei – im Unterschied zu Windows, wo ausführbare Dateien die Endung `.exe` haben, haben ausführbare Dateien unter Linux keine Endung. Um das Programm auszuführen, gib folgenden Befehl ein:
 
@@ -214,7 +214,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='error.webp' alt=''>
+<img class='full' src='error.webp' alt='cobc meldet hello.cbl:5: error: unknown statement »DISPLY«.'>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 5) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
@@ -246,7 +246,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='try-factor.webp' alt=''>
+<img class='full' src='try-factor.webp' alt='cobc übersetzt factor.cbl, ./factor fragt nach einer Zahl und gibt für 123 die Faktoren 3 und 41 aus.'>
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Probiere aus, was passiert, wenn du die Zahl 3000000000 eingibst. Was könnte der Grund dafür sein?
 
@@ -277,7 +277,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bubblesort.webp' alt=''>
+<img class='full' src='bubblesort.webp' alt='cobc übersetzt bubblesort.cbl, ./bubblesort gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
 

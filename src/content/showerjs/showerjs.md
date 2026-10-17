@@ -24,7 +24,7 @@ template_name: der shower.js-Vorlage
 Erstelle eine Präsentation mit shower.js in HTML und CSS. Mach dich unabhängig von PowerPoint und Keynote und erstelle eine Präsentation, die in jedem modernen Browser vom Stick oder aus der Cloud funktioniert.
 </p>
 
-<img class='full fit-width' src='showerjs.webp' alt=''>
+<img class='full fit-width' src='showerjs.webp' alt='Die Titelfolie einer shower.js-Präsentation: »Shower Presentation Engine«, darunter »Brought to you by Vadim Makeev«, im Hintergrund Hände an einer orangefarbenen Schreibmaschine auf einem Holztisch, oben rechts die Foliennummer 1.'>
 
 In diesem Tutorial erstellst du eine Präsentation mit [shower.js](https://github.com/shower/shower). Sie besteht aus HTML und CSS, wie eine Webseite: Jeder Browser kann sie abspielen, du brauchst keine besondere Software. Hier kannst du shower.js [in Aktion sehen](https://shwr.me/).
 

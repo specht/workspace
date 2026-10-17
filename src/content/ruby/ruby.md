@@ -12,7 +12,7 @@ kind: steckbrief
 # Ruby <span style='font-size: 80%;'>(1995)</span>
 
 <div class='floatright' style='width: 16em;'>
-    <img src='matz.webp' alt=''>
+    <img src='matz.webp' alt='Foto von Yukihiro Matsumoto, dem Erfinder von Ruby'>
     <p>
         Yukihiro Matsumoto<br>
         <span style='font-size: 90%; opacity: 0.7;'>(Foto von Marcin Bajer)</span>
@@ -43,7 +43,7 @@ Ruby ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpreti
 
 **Möglichkeit 1:** Ruby-Code in der Ruby-Shell ausführen
 
-Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt='ein Rechteck mit einem Streifen unten'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <!-- tutorial-screenshot
 # Ein frischer Workspace ohne Ordner, das Terminal offen
@@ -52,7 +52,7 @@ terminal-open
 sleep: 0.5
 -->
 
-<img class='full' src='code-with-terminal.webp' data-scroll='33%' alt=''>
+<img class='full' src='code-with-terminal.webp' data-scroll='33%' alt='Ein frischer Workspace mit der Willkommensseite, darunter das offene Terminal mit der Eingabeaufforderung student@workspace:~$.'>
 
 Starte nun die Ruby-Shell, indem du `irb` eingibst und dann <kbd>Enter</kbd> drückst. Du solltest eine Ausgabe wie diese sehen:
 
@@ -64,7 +64,7 @@ sleep: 0.5
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='irb.webp' data-scroll='5%' alt=''>
+<img class='full' src='irb.webp' data-scroll='5%' alt='Im Terminal läuft irb und wartet mit irb(main):001&gt; auf Ruby-Code.'>
 
 Jetzt kannst du Ruby-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `puts "Hello, world!"` und drücke <kbd>Enter</kbd>. Du solltest die Ausgabe `Hello, world!` sehen.
 
@@ -86,7 +86,7 @@ show-left-sidebar
 sleep: 0.5
 -->
 
-<img class='full' src='fresh-start.webp' data-scroll='28%' alt=''>
+<img class='full' src='fresh-start.webp' data-scroll='28%' alt='Der Workspace ohne geöffneten Ordner, links »No Folder Opened«, rechts die Willkommensseite mit »New File…«.'>
 
 ### Quelltext schreiben
 
@@ -99,7 +99,7 @@ sleep: 0.5
 crop-bottom: 77%
 -->
 
-<img class='full' src='choose-filename.webp' data-scroll='20%' alt=''>
+<img class='full' src='choose-filename.webp' data-scroll='20%' alt='Nach »New File…« fragt oben ein Feld nach dem Dateityp, »Text File« ist ausgewählt.'>
 
 Schreibe nun den folgenden Code in die Datei:
 
@@ -117,7 +117,7 @@ sleep: 0.5
 crop-bottom: 82%
 -->
 
-<img class='full' src='no-syntax-highlighting.webp' alt=''>
+<img class='full' src='no-syntax-highlighting.webp' alt='Die neue, noch namenlose Datei Untitled-1 mit puts "Hello, World!", ganz in einer Farbe; ein weißer Punkt am Reiter zeigt, dass sie nicht gespeichert ist.'>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.rb` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.rb`.
 
@@ -130,7 +130,7 @@ sleep: 0.5
 crop-bottom: 82%
 -->
 
-<img class='full' src='enter-filename.webp' alt=''>
+<img class='full' src='enter-filename.webp' alt='Der Dialog »Save As« mit dem Pfad /workspace/hello.rb.'>
 
 Sobald du die Datei gespeichert hast, wird sie automatisch als Ruby-Datei erkannt und die Syntax wird hervorgehoben.
 
@@ -141,7 +141,7 @@ sleep: 1.5
 crop-bottom: 78%
 -->
 
-<img class='full' src='syntax-highlighting.webp' alt=''>
+<img class='full' src='syntax-highlighting.webp' alt='Die gespeicherte Datei hello.rb, jetzt mit farbiger Syntax.'>
 
 ### Skript ausführen
 
@@ -168,7 +168,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello.webp' alt=''>
+<img class='full' src='hello.webp' alt='Im Terminal gibt ruby hello.rb die Zeile Hello, World! aus.'>
 
 ### Fehler finden und beheben
 
@@ -200,7 +200,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello-error.webp' alt=''>
+<img class='full' src='hello-error.webp' alt='Ruby meldet zu pust "Hello, World!": hello.rb:1, undefined method »pust« (NoMethodError), markiert das Wort und fragt »Did you mean? puts«.'>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 1) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
@@ -238,7 +238,7 @@ move-mouse: selector:.part.statusbar
 sleep: 0.5
 -->
 
-<img class='full' src='shebang.webp' alt=''>
+<img class='full' src='shebang.webp' alt='Oben hello.rb mit #!/usr/bin/env ruby in der ersten Zeile, unten im Terminal chmod +x hello.rb und ./hello.rb, das Hello, World! ausgibt.'>
 
 ## Primfaktorzerlegung
 
@@ -261,7 +261,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='try-factor.webp' alt=''>
+<img class='full' src='try-factor.webp' alt='ruby factor.rb fragt nach einer Zahl und gibt für 123 die Primfaktoren 3 und 41 aus.'>
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Ruby auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Auch mit einer sehr großen Zahl wie 123456789123456789 kommt das Programm problemlos zurecht. Falls du auf eine Zahl stoßen solltest, die so groß ist, dass das Programm sehr lange braucht, kannst du das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen.
 
@@ -285,7 +285,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bubblesort.webp' alt=''>
+<img class='full' src='bubblesort.webp' alt='ruby bubblesort.rb gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
 

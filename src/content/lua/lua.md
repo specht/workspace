@@ -12,7 +12,7 @@ kind: steckbrief
 # Lua <span style='font-size: 80%;'>(1993)</span>
 
 <div class='floatright' style='width: 30em;'>
-    <img src='lua-team.webp' alt=''>
+    <img src='lua-team.webp' alt='Foto von Waldemar Celes, Roberto Ierusalimschy und Luiz Henrique de Figueiredo, nebeneinander'>
     <p>
         Waldemar Celes, Roberto Ierusalimschy, Luiz Henrique de Figueiredo
         <span style='font-size: 90%; opacity: 0.7;'>(Foto von Ernani d'Almeida, 2011)</span>
@@ -34,7 +34,7 @@ Lua ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpretie
 
 **Möglichkeit 1:** Lua-Code in der Lua-Shell ausführen
 
-Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt='ein Rechteck mit einem Streifen unten'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <!-- tutorial-screenshot
 # Ein frischer Workspace ohne Ordner, das Terminal offen
@@ -43,7 +43,7 @@ terminal-open
 sleep: 0.5
 -->
 
-<img class='full' src='code-with-terminal.webp' alt=''>
+<img class='full' src='code-with-terminal.webp' alt='Ein frischer Workspace mit der Willkommensseite, darunter das offene Terminal mit der Eingabeaufforderung student@workspace:~$.'>
 
 Starte nun die Lua-Shell, indem du `lua` eingibst und dann <kbd>Enter</kbd> drückst. Du solltest eine Ausgabe wie diese sehen:
 
@@ -55,7 +55,7 @@ sleep: 0.5
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='lua-shell.webp' alt=''>
+<img class='full' src='lua-shell.webp' alt='Im Terminal läuft lua, zeigt »Lua 5.4.6« und wartet mit &gt; auf Lua-Code.'>
 
 Jetzt kannst du Lua-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `print("Hello, world!")` und drücke <kbd>Enter</kbd>. Du solltest die Ausgabe `Hello, world!` sehen.
 
@@ -77,7 +77,7 @@ show-left-sidebar
 sleep: 0.5
 -->
 
-<img class='full' src='fresh-start.webp' alt=''>
+<img class='full' src='fresh-start.webp' alt='Der Workspace ohne geöffneten Ordner, links »No Folder Opened«, rechts die Willkommensseite mit »New File…«.'>
 
 ### Quelltext schreiben
 
@@ -90,7 +90,7 @@ sleep: 0.5
 crop-bottom: 77%
 -->
 
-<img class='full' src='choose-filename.webp' alt=''>
+<img class='full' src='choose-filename.webp' alt='Nach »New File…« fragt oben ein Feld nach dem Dateityp, »Text File« ist ausgewählt.'>
 
 Schreibe nun den folgenden Code in die Datei:
 
@@ -108,7 +108,7 @@ sleep: 0.5
 crop-bottom: 82%
 -->
 
-<img class='full' src='no-syntax-highlighting.webp' alt=''>
+<img class='full' src='no-syntax-highlighting.webp' alt='Die neue, noch namenlose Datei Untitled-1 mit print("Hello, World!"), ganz in einer Farbe; ein weißer Punkt am Reiter zeigt, dass sie nicht gespeichert ist.'>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.lua` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.lua`.
 
@@ -121,7 +121,7 @@ sleep: 0.5
 crop-bottom: 82%
 -->
 
-<img class='full' src='enter-filename.webp' alt=''>
+<img class='full' src='enter-filename.webp' alt='Der Dialog »Save As« mit dem Pfad /workspace/hello.lua.'>
 
 Sobald du die Datei gespeichert hast, wird sie automatisch als Lua-Datei erkannt und die Syntax wird hervorgehoben.
 
@@ -132,7 +132,7 @@ sleep: 1.5
 crop-bottom: 78%
 -->
 
-<img class='full' src='syntax-highlighting.webp' alt=''>
+<img class='full' src='syntax-highlighting.webp' alt='Die gespeicherte Datei hello.lua, jetzt mit farbiger Syntax.'>
 
 ### Skript ausführen
 
@@ -159,7 +159,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello.webp' alt=''>
+<img class='full' src='hello.webp' alt='Im Terminal gibt lua hello.lua die Zeile Hello, World! aus.'>
 
 ### Fehler finden und beheben
 
@@ -191,7 +191,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello-error.webp' alt=''>
+<img class='full' src='hello-error.webp' alt='lua meldet hello.lua:1: attempt to call a nil value (global »prin«), darunter der stack traceback.'>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Achte auf die Zeilennummer (in diesem Beispiel 1) und den Text, der dir sagt, was falsch ist. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
@@ -229,7 +229,7 @@ move-mouse: selector:.part.statusbar
 sleep: 0.5
 -->
 
-<img class='full' src='shebang.webp' alt=''>
+<img class='full' src='shebang.webp' alt='Oben hello.lua mit #!/usr/bin/env lua in der ersten Zeile, unten im Terminal chmod +x hello.lua und ./hello.lua, das Hello, World! ausgibt.'>
 
 ## Primfaktorzerlegung
 
@@ -252,7 +252,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='try-factor.webp' alt=''>
+<img class='full' src='try-factor.webp' alt='lua factor.lua fragt nach einer Zahl und gibt für 123 die Primfaktoren 3 und 41 aus.'>
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Wenn du allerdings eine sehr große Zahl wie 3000000000 verwendest, dauert die Berechnung sehr lange (probier es gern aus, du kannst das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen).
 
@@ -276,7 +276,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bubblesort.webp' alt=''>
+<img class='full' src='bubblesort.webp' alt='lua bubblesort.lua gibt zehn Zufallszahlen aus und darunter dieselben Zahlen sortiert.'>
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
 

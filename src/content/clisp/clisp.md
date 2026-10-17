@@ -12,7 +12,7 @@ kind: steckbrief
 # Common Lisp <span style='font-size: 80%;'>(1984)</span>
 
 <div class='floatright' style='width: 16em;'>
-    <img src='mccarthy.webp' alt=''>
+    <img src='mccarthy.webp' alt='Foto von John McCarthy, dem Erfinder von Lisp, mit weißem Bart und Brille'>
     <p>John McCarthy</p>
 </div>
 
@@ -38,7 +38,7 @@ Lisp ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpreti
 
 **Möglichkeit 1:** Lisp-Code in der SBCL-Shell ausführen
 
-Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt=''> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt='ein Rechteck mit einem Streifen unten'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <!-- tutorial-screenshot
 # Ein frischer Workspace ohne Ordner, das Terminal offen
@@ -47,7 +47,7 @@ terminal-open
 sleep: 0.5
 -->
 
-<img class='full' src='code-with-terminal.webp' alt=''>
+<img class='full' src='code-with-terminal.webp' alt='Ein frischer Workspace mit der Willkommensseite, darunter das offene Terminal mit der Eingabeaufforderung student@workspace:~$.'>
 
 Starte nun die SBCL-Shell, indem du `sbcl` eingibst und dann <kbd>Enter</kbd> drückst. Du solltest eine Ausgabe wie diese sehen:
 
@@ -61,7 +61,7 @@ sleep: 0.5
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='sbcl.webp' alt=''>
+<img class='full' src='sbcl.webp' alt='Im Terminal läuft sbcl, begrüßt mit »This is SBCL 2.2.9.debian, an implementation of ANSI Common Lisp« und wartet mit * auf Lisp-Code.'>
 
 Jetzt kannst du Lisp-Code direkt in der Shell eingeben und ausführen. Schreibe einfach `(format t "Hello, world!")` und drücke <kbd>Enter</kbd>. Du solltest die Ausgabe `Hello, world!` sehen.
 
@@ -83,7 +83,7 @@ show-left-sidebar
 sleep: 0.5
 -->
 
-<img class='full' src='fresh-start.webp' alt=''>
+<img class='full' src='fresh-start.webp' alt='Der Workspace ohne geöffneten Ordner, links »No Folder Opened«, rechts die Willkommensseite mit »New File…«.'>
 
 ### Quelltext schreiben
 
@@ -96,7 +96,7 @@ sleep: 0.5
 crop-bottom: 77%
 -->
 
-<img class='full' src='choose-filename.webp' alt=''>
+<img class='full' src='choose-filename.webp' alt='Nach »New File…« fragt oben ein Feld nach dem Dateityp, »Text File« ist ausgewählt.'>
 
 Schreibe nun den folgenden Code in die Datei:
 
@@ -114,7 +114,7 @@ sleep: 0.5
 crop-bottom: 82%
 -->
 
-<img class='full' src='no-syntax-highlighting.webp' alt=''>
+<img class='full' src='no-syntax-highlighting.webp' alt='Die neue, noch namenlose Datei Untitled-1 mit (format t "Hello, World!~%"), ganz in einer Farbe; ein weißer Punkt am Reiter zeigt, dass sie nicht gespeichert ist.'>
 
 Drücke nun <kbd>Strg</kbd><kbd>S</kbd>, um die Datei zu speichern. Gib `hello.lisp` ein – der vollständige Pfad zu deiner Datei lautet dann `/workspace/hello.lisp`.
 
@@ -127,9 +127,9 @@ sleep: 0.5
 crop-bottom: 82%
 -->
 
-<img class='full' src='enter-filename.webp' alt=''>
+<img class='full' src='enter-filename.webp' alt='Der Dialog »Save As« mit dem Pfad /workspace/hello.lisp.'>
 
-Da Lisp standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt=''> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »Lisp-Syntax« und installiere sie. Weil der Herausgeber nicht verifiziert ist, fragt Visual Studio Code, ob du ihm vertraust; bestätige mit »Trust Publisher & Install«.
+Da Lisp standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt='vier Quadrate, eines davon abgehoben'> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »Lisp-Syntax« und installiere sie. Weil der Herausgeber nicht verifiziert ist, fragt Visual Studio Code, ob du ihm vertraust; bestätige mit »Trust Publisher & Install«.
 
 <!-- tutorial-screenshot
 # Speichern, dann die Erweiterung im Marketplace
@@ -143,7 +143,7 @@ sleep: 3
 crop-bottom: 50%
 -->
 
-<img class='full' src='lisp-syntax.webp' alt=''>
+<img class='full' src='lisp-syntax.webp' alt='Links der Marketplace mit der Suche nach Lisp-Syntax, ganz oben die Erweiterung Lisp-Syntax von slbtty mit »Install«; rechts hello.lisp, noch einfarbig.'>
 
 Alternativ kannst du auch <kbd>Strg</kbd><kbd>P</kbd> drücken und `ext install slbtty.lisp-syntax` eingeben, um die Erweiterung zu installieren.
 
@@ -168,7 +168,7 @@ sleep: 2
 crop-bottom: 78%
 -->
 
-<img class='full' src='syntax-highlighting.webp' alt=''>
+<img class='full' src='syntax-highlighting.webp' alt='hello.lisp, jetzt mit farbiger Syntax.'>
 
 ### Skript ausführen
 
@@ -195,7 +195,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='hello.webp' alt=''>
+<img class='full' src='hello.webp' alt='Im Terminal gibt sbcl --script hello.lisp die Zeile Hello, World! aus.'>
 
 ### Fehler finden und beheben
 
@@ -233,7 +233,7 @@ sleep: 0.5
 crop-terminal-lines: 4
 -->
 
-<img class='full' src='hello-error.webp' alt=''>
+<img class='full' src='hello-error.webp' alt='sbcl meldet Unhandled UNDEFINED-FUNCTION: The function COMMON-LISP-USER::FORMT is undefined.'>
 
 Es lohnt sich, die Fehlermeldungen genau zu lesen, um den Fehler zu finden und zu beheben. Leider gibt SBCL im Gegensatz zu vielen anderen Interpretern keine Zeilennummer an, aber die Meldung sollte dir trotzdem helfen, den Fehler zu finden. Denke daran, den Fehler wieder zu beheben, bevor du das nächste Beispiel ausprobierst.
 
@@ -258,7 +258,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='try-factor.webp' alt=''>
+<img class='full' src='try-factor.webp' alt='sbcl --script factor.lisp fragt nach einer Zahl und gibt für 123 die Primfaktoren als ((41 1) (3 1)) aus.'>
 
 Das Programm hat die Zahl 123 in ihre Primfaktoren zerlegt und ausgegeben. Anders als andere Programmiersprachen kann Lisp auch die Zahl 3000000000 in Sekundenbruchteilen zerlegen. Wenn du allerdings eine sehr große Zahl wie 123456789123456789 verwendest, dauert die Berechnung sehr lange (probier es gern aus, du kannst das Programm mit <kbd>Strg</kbd><kbd>C</kbd> abbrechen).
 
@@ -282,7 +282,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 -->
 
-<img class='full' src='bubblesort.webp' alt=''>
+<img class='full' src='bubblesort.webp' alt='sbcl --script bubblesort.lisp gibt eine Liste von zehn Zufallszahlen aus und darunter dieselbe Liste sortiert.'>
 
 Das Programm hat eine Liste von 10 Zufallszahlen sortiert. Versuche, den Quelltext so zu verändern, dass statt 10 Zahlen 100 oder mehr Zahlen sortiert werden.
 
