@@ -2117,9 +2117,9 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     background-color: #f4fbfa;
 }
 
-/* A hint in an included part: on the box's colour, not a grey of its own */
+/* A hint in an included part: a shade of the box's colour, not a grey */
 .reference-include .hint {
-    background-color: transparent;
+    background-color: rgba(15, 118, 110, 0.06);
     border-color: #cfe7e3;
 }
 

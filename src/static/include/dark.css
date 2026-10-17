@@ -258,7 +258,7 @@ html[data-bs-theme="dark"] {
         background-color: #15201f;
     }
     .reference-include .hint {
-        background-color: transparent;
+        background-color: rgba(47, 179, 165, 0.06);
         border-color: #23423e;
     }
     .page-kind {
