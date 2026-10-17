@@ -48,3 +48,24 @@ test('the 8 × 8 × 8 cubes, all or without a quarter', () => {
     const cut = CS.solid('rgb', { split: true, cut: true }).triangles;
     assert.ok(cut < all * 0.8 && cut > all * 0.7, `${cut} of ${all}`);
 });
+
+test('what is in front follows the pointer, however the solid lies', () => {
+    // where the turn puts a point of the space on the screen
+    const apply = (rot, p) => [0, 1, 2].map((r) => rot[r] * p[0] + rot[r + 3] * p[1] + rot[r + 6] * p[2]);
+    // also with the top tilted all the way towards the viewer
+    for (const rot of [CS.startTurn(-Math.PI / 4, 0.45), CS.startTurn(0.7, Math.PI / 2), CS.screenTurn(CS.startTurn(0, 0), 2, 1)]) {
+        // the point of the space that is in front: the row for z
+        const front = [rot[2], rot[5], rot[8]];
+        const right = apply(CS.screenTurn(rot, 0.1, 0), front);
+        [Math.sin(0.1), 0, Math.cos(0.1)].forEach((v, i) => near(right[i], v, 1e-9, 'right'));
+        const down = apply(CS.screenTurn(rot, 0, 0.1), front);
+        [0, -Math.sin(0.1), Math.cos(0.1)].forEach((v, i) => near(down[i], v, 1e-9, 'down'));
+    }
+    // and it stays a turn: axes of length 1, at right angles
+    let rot = CS.startTurn(0.3, 0.2);
+    for (let i = 0; i < 5000; i++) rot = CS.screenTurn(rot, 0.013, -0.007);
+    const col = (k) => rot.slice(3 * k, 3 * k + 3);
+    const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    for (let k = 0; k < 3; k++) near(dot(col(k), col(k)), 1, 1e-9, 'length');
+    near(dot(col(0), col(1)), 0, 1e-9, 'angle');
+});

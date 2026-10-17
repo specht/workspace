@@ -3,7 +3,8 @@
 // shaded by the normals of its faces. Drag turns it; a slider cuts it
 // horizontally, so the inside shows as a flat section; a quarter can be
 // taken out. Split into the 8 × 8 × 8 cubes of RGB and pulled apart, it
-// shows how the space bends equal steps of RGB. Brighter is always up.
+// shows how the space bends equal steps of RGB. Brighter is up in the solid,
+// and at the start also on the screen.
 //
 // <div class='color-solid' data-space='lab'></div>
 //   data-space  rgb, hsv, ycbcr, lab or oklab
@@ -376,14 +377,12 @@
             }
         }
 
-        // view: yaw, pitch, how far apart (explode) and the radius to fit in
+        // view: the turn (rot), how far apart (explode) and the radius to fit in
         function draw(view) {
             gl.viewport(0, 0, canvas.width, canvas.height);
             gl.clearColor(0, 0, 0, 0);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-            const cy = Math.cos(view.yaw), sy = Math.sin(view.yaw), cp = Math.cos(view.pitch), sp = Math.sin(view.pitch);
-            // first about the vertical axis, then tilted towards the viewer; column-major
-            const rot = [cy, sp * sy, -cp * sy, 0, cp, sp, sy, -sp * cy, cp * cy];
+            const rot = view.rot;
             const s = 0.9 / view.radius, aspect = canvas.width / canvas.height;
             const scale = aspect > 1 ? [s / aspect, s, s * 0.5] : [s, s * aspect, s * 0.5];
             if (mesh) {
@@ -398,12 +397,42 @@
         return { upload, draw };
     }
 
+    // --- Turning -----------------------------------------------------------------
+    //
+    // A turn is a 3 × 3 matrix, column-major: its columns are where the axes
+    // of the space point on the screen (x right, y up, z towards the viewer).
+
+    // first about the vertical axis, then tilted towards the viewer
+    function startTurn(yaw, pitch) {
+        const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+        return [cy, sp * sy, -cp * sy, 0, cp, sp, sy, -sp * cy, cp * cy];
+    }
+
+    // Turned further, about the screen's vertical axis by `right` (the front
+    // goes right) and about its horizontal axis by `down` (the front goes down)
+    function screenTurn(rot, right, down) {
+        const cr = Math.cos(right), sr = Math.sin(right), cd = Math.cos(down), sd = Math.sin(down);
+        const columns = [0, 3, 6].map((i) => {
+            let [x, y, z] = rot.slice(i, i + 3);
+            [x, z] = [x * cr + z * sr, -x * sr + z * cr];
+            [y, z] = [y * cd - z * sd, y * sd + z * cd];
+            return [x, y, z];
+        });
+        // straightened, so that rounding does not skew it over many turns
+        const unit = (v) => { const l = Math.hypot(...v) || 1; return v.map((c) => c / l); };
+        const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+        const a = unit(columns[0]);
+        const b = unit(columns[1].map((c, k) => c - dot(columns[1], a) * a[k]));
+        const c = [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+        return [...a, ...b, ...c];
+    }
+
     // --- The widget -------------------------------------------------------------
 
     function mount(element) {
         const name = element.dataset.space in SPACES ? element.dataset.space : 'rgb';
         const space = SPACES[name], whole = surface(name);
-        const state = { yaw: -Math.PI / 4, pitch: 0.45, cut: true, top: whole.high, split: false, explode: 0.3 };
+        const state = { rot: startTurn(-Math.PI / 4, 0.45), cut: true, top: whole.high, split: false, explode: 0.3 };
         element.innerHTML = `
             <div class='cs-stage'>
                 <canvas tabindex='0' aria-label='Die Farben des RGB-Würfels als Körper im Farbraum ${space.name}. Ziehen dreht ihn.'></canvas>
@@ -442,7 +471,7 @@
         function draw() {
             const explode = state.split ? state.explode : 0;
             const radius = extent * (1 + explode * 0.9);
-            const { rot, scale } = renderer.draw({ yaw: state.yaw, pitch: state.pitch, explode, radius });
+            const { rot, scale } = renderer.draw({ rot: state.rot, explode, radius });
             const w = canvas.clientWidth, h = canvas.clientHeight;
             labels.innerHTML = marks.map(([text, p]) => {
                 // none for what was cut away
@@ -486,12 +515,12 @@
             update(true);
         });
         explodeInput.addEventListener('input', () => { state.explode = Number(explodeInput.value) / 100; update(false); });
-        // Dragging turns it so that its front follows the pointer: an angle
-        // per pixel of the sphere's radius on the screen. Let go while moving,
-        // it turns on and slows down, unless the reader wants less motion.
-        const turnBy = (yaw, pitch) => {
-            state.yaw += yaw;
-            state.pitch = Math.max(-1.45, Math.min(1.45, state.pitch + pitch));
+        // Dragging turns it about the axes of the screen, so that what is in
+        // front follows the pointer however the solid lies: an angle per pixel
+        // of the sphere's radius on the screen. Let go while moving, it turns
+        // on and slows down, unless the reader wants less motion.
+        const turnBy = (right, down) => {
+            state.rot = screenTurn(state.rot, right, down);
             draw();
         };
         const perPixel = () => 1 / Math.max(1, 0.45 * Math.min(canvas.clientWidth, canvas.clientHeight));
@@ -544,7 +573,7 @@
         update(true);
     }
 
-    const api = { SPACES, inside, surface, cubes, solid, mount };
+    const api = { SPACES, inside, surface, cubes, solid, startTurn, screenTurn, mount };
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
     root.ColorSolid = api;
     if (typeof document !== 'undefined') {
