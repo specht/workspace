@@ -72,7 +72,7 @@ function divisibleBy3Svg() {
     states.forEach((s) => {
         const rings = `<ellipse fill="white" stroke="black" cx="${s.x}" cy="${s.y}" rx="${R}" ry="${R}"/>` +
             (s.accept ? `<ellipse fill="none" stroke="black" cx="${s.x}" cy="${s.y}" rx="${R + 4}" ry="${R + 4}"/>` : '');
-        parts.push(`<g class="node ${s.accept ? 'accept' : 'state'}">${rings}<text text-anchor="middle" x="${s.x}" y="${s.y + 4.5}" font-size="17.00">s<tspan dy="0.28em" font-size="0.7em">${s.name}</tspan></text></g>`);
+        parts.push(`<g class="node ${s.accept ? 'accept' : 'state'}">${rings}<text text-anchor="middle" x="${s.x}" y="${s.y + 4.5}" font-size="17.00">q<tspan dy="0.28em" font-size="0.7em">${s.name}</tspan></text></g>`);
     });
     return `<svg class="automaton" width="570pt" height="380pt" viewBox="0 0 570 380" xmlns="http://www.w3.org/2000/svg"><g class="graph">${parts.join('')}</g></svg>`;
 }

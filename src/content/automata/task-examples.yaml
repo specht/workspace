@@ -8,13 +8,13 @@ examples:
       - files: { automata/turnstile.py: loesung/turnstile.py }
     fail:
       - files: { automata/turnstile.py: stufen/turnstile.py }
-      - files: { automata/turnstile.py: { text: "def run(inputs):\n    return 'zu'\n" } }
+      - files: { automata/turnstile.py: { text: "def run(inputs):\n    return 'q0'\n" } }
     ruby:
       pass:
         - files: { automata/turnstile.rb: loesung/turnstile.rb }
       fail:
         - files: { automata/turnstile.rb: stufen/turnstile.rb }
-        - files: { automata/turnstile.rb: { text: "def run(inputs)\n  'zu'\nend\n" } }
+        - files: { automata/turnstile.rb: { text: "def run(inputs)\n  'q0'\nend\n" } }
   teilbar-5:
     pass:
       - files: { automata/divisible5.py: loesung/divisible5.py }

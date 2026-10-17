@@ -1,18 +1,19 @@
 # Ein Drehkreuz wie am Eingang zum Schwimmbad. Für jeden Zustand und jede
 # Eingabe steht hier, in welchen Zustand das Drehkreuz wechselt.
+# q0: Das Drehkreuz ist zu. q1: Es ist offen.
 TRANSITIONS = {
-    ('zu', 'münze'): 'offen',
-    ('zu', 'drücken'): 'zu',
-    ('offen', 'münze'): 'offen',
-    ('offen', 'drücken'): 'zu',
+    ('q0', 'münze'): 'q1',
+    ('q0', 'drücken'): 'q0',
+    ('q1', 'münze'): 'q1',
+    ('q1', 'drücken'): 'q0',
 }
 
 
 def run(inputs):
-    state = 'zu'
+    state = 'q0'
     for symbol in inputs:
         new_state = TRANSITIONS[(state, symbol)]
-        print(f'{state:>5}  {symbol:<8} → {new_state}')
+        print(f'{state}  {symbol:<8} → {new_state}')
         state = new_state
     return state
 

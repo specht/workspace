@@ -721,6 +721,12 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- »Endliche Automaten«: Die Zustände heißen überall q₀, q₁ und so weiter, in
+  den Bildern, im Text, in den Programmen (`'q0'`) und in den Aufgaben;
+  fehlende Übergänge führen in den Fehlerzustand q<sub>F</sub>, der genannt,
+  aber nicht gezeichnet wird. Die Seite erklärt, warum Automatron seine
+  Zustände q, r und s nennt. Wer »Eintritt zwei Euro« mit den alten Namen
+  (`zu`, `offen`) gelöst hat, muss die Aufgabe neu lösen.
 - »Einführung in SQL«: Nach jedem Import steht ein Kasten »Die Tabellen« mit
   jeder Tabelle, ihren Spalten und ihren ersten Zeilen; im zweiten Teil sind
   die neuen Tabellen markiert und aufgeklappt (`_schema(name, rows, new: …)`).

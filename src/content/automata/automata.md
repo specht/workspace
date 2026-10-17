@@ -1,5 +1,5 @@
 <div class='meta'>
-image: teaser.webp
+image: teaser.webp:contain
 kind: projekt
 language: Ruby / Python
 languages: [ruby, python]
@@ -44,14 +44,14 @@ Alle Dateien dieser Aktivität kommen in diesen Ordner. Ein Programm startest du
 
 ## Ein Drehkreuz
 
-Das Drehkreuz am Eingang zum Schwimmbad ist erst zu. Wirfst du eine Münze ein, ist es offen; gehst du durch (»drücken«), ist es wieder zu. Drückst du, ohne zu zahlen, bleibt es zu, und eine zweite Münze in ein offenes Drehkreuz ist verschenkt. Als Bild, mit einem Kreis für jeden Zustand und einem Pfeil für jeden Übergang:
+Das Drehkreuz am Eingang zum Schwimmbad ist erst zu. Wirfst du eine Münze ein, ist es offen; gehst du durch (»drücken«), ist es wieder zu. Drückst du, ohne zu zahlen, bleibt es zu, und eine zweite Münze in ein offenes Drehkreuz ist verschenkt. Als Bild, mit einem Kreis für jeden Zustand und einem Pfeil für jeden Übergang. Die Zustände heißen, wie in der Informatik üblich, q<sub>0</sub>, q<sub>1</sub> und so weiter; q<sub>0</sub> ist »zu«, q<sub>1</sub> ist »offen«:
 
-<svg class="automaton" role="img" aria-label="Zwei Kreise: zu und offen. Ein Pfeil ohne Anfang zeigt auf zu, dort beginnt das Drehkreuz. münze führt von zu nach offen, drücken von offen zurück nach zu. drücken in zu und münze in offen führen jeweils im Bogen zum selben Zustand zurück." style="max-width: 22em; width: 100%; margin: 1em auto;"
+<svg class="automaton" role="img" aria-label="Zwei Kreise: q0 für zu und q1 für offen. Ein Pfeil ohne Anfang zeigt auf q0, dort beginnt das Drehkreuz. münze führt von q0 nach q1, drücken von q1 zurück nach q0. drücken in q0 und münze in q1 führen jeweils im Bogen zum selben Zustand zurück." style="max-width: 22em; width: 100%; margin: 1em auto;"
  viewBox="0.00 0.00 250.72 98.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 94)">
 <g id="node2" class="node state">
 <ellipse fill="white" stroke="black" cx="66.72" cy="-29" rx="29" ry="29"/>
-<text text-anchor="middle" x="66.72" y="-25.5" font-size="15.00">zu</text>
+<text text-anchor="middle" x="66.72" y="-25.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">0</tspan></text>
 </g>
 <g id="edge1" class="edge">
 <path fill="none" stroke="black" d="M0.77,-29C1.68,-29 15.69,-29 30.46,-29"/>
@@ -64,7 +64,7 @@ Das Drehkreuz am Eingang zum Schwimmbad ist erst zu. Wirfst du eine Münze ein, 
 </g>
 <g id="node3" class="node state">
 <ellipse fill="white" stroke="black" cx="213.72" cy="-29" rx="29" ry="29"/>
-<text text-anchor="middle" x="213.72" y="-25.5" font-size="15.00">offen</text>
+<text text-anchor="middle" x="213.72" y="-25.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">1</tspan></text>
 </g>
 <g id="edge2" class="edge">
 <path fill="none" stroke="black" d="M96.02,-29C119.28,-29 152.34,-29 177.34,-29"/>
@@ -90,18 +90,19 @@ Lege `turnstile.rb` an:
 ```ruby
 # Ein Drehkreuz wie am Eingang zum Schwimmbad. Für jeden Zustand und jede
 # Eingabe steht hier, in welchen Zustand das Drehkreuz wechselt.
+# q0: Das Drehkreuz ist zu. q1: Es ist offen.
 TRANSITIONS = {
-    ['zu', 'münze'] => 'offen',
-    ['zu', 'drücken'] => 'zu',
-    ['offen', 'münze'] => 'offen',
-    ['offen', 'drücken'] => 'zu',
+    ['q0', 'münze'] => 'q1',
+    ['q0', 'drücken'] => 'q0',
+    ['q1', 'münze'] => 'q1',
+    ['q1', 'drücken'] => 'q0',
 }
 
 def run(inputs)
-    state = 'zu'
+    state = 'q0'
     inputs.each do |symbol|
         new_state = TRANSITIONS.fetch([state, symbol])
-        puts "#{state.rjust(5)}  #{symbol.ljust(8)} → #{new_state}"
+        puts "#{state}  #{symbol.ljust(8)} → #{new_state}"
         state = new_state
     end
     state
@@ -110,7 +111,7 @@ end
 run(['drücken', 'münze', 'drücken', 'drücken'])
 ```
 
-`TRANSITIONS` ist die Tabelle des Automaten: Zu jedem Paar aus Zustand und Eingabe steht dort der neue Zustand, so wie zu jedem Pfeil im Bild. `TRANSITIONS[['zu', 'münze']]` ist `'offen'`. `fetch` schlägt genauso nach, meldet aber einen Fehler, wenn es ein Paar nicht gibt. Die Methode `run` beginnt in `zu`, liest die Eingaben der Reihe nach, schlägt für jede den neuen Zustand nach und gibt ihn aus. Starte das Programm:
+`TRANSITIONS` ist die Tabelle des Automaten: Zu jedem Paar aus Zustand und Eingabe steht dort der neue Zustand, so wie zu jedem Pfeil im Bild. `TRANSITIONS[['q0', 'münze']]` ist `'q1'`. `fetch` schlägt genauso nach, meldet aber einen Fehler, wenn es ein Paar nicht gibt. Die Methode `run` beginnt in `q0`, liest die Eingaben der Reihe nach, schlägt für jede den neuen Zustand nach und gibt ihn aus. Starte das Programm:
 
 ```bash
 ruby turnstile.rb
@@ -137,7 +138,7 @@ terminal-wait-for-prompt
 move-mouse: selector:.terminal
 check-task-fails: drehkreuz ruby
 -->
-<img class='full' src='drehkreuz-ruby.webp' alt='Oben im Editor turnstile.rb mit der Tabelle TRANSITIONS und der Methode run, unten im Terminal vier Zeilen Ausgabe: zu, drücken, zu; zu, münze, offen; offen, drücken, zu; zu, drücken, zu.'>
+<img class='full' src='drehkreuz-ruby.webp' alt='Oben im Editor turnstile.rb mit der Tabelle TRANSITIONS und der Methode run, unten im Terminal vier Zeilen Ausgabe: q0, drücken, q0; q0, münze, q1; q1, drücken, q0; q0, drücken, q0.'>
 <!-- /language -->
 <!-- language: python -->
 Lege `turnstile.py` an:
@@ -145,19 +146,20 @@ Lege `turnstile.py` an:
 ```python
 # Ein Drehkreuz wie am Eingang zum Schwimmbad. Für jeden Zustand und jede
 # Eingabe steht hier, in welchen Zustand das Drehkreuz wechselt.
+# q0: Das Drehkreuz ist zu. q1: Es ist offen.
 TRANSITIONS = {
-    ('zu', 'münze'): 'offen',
-    ('zu', 'drücken'): 'zu',
-    ('offen', 'münze'): 'offen',
-    ('offen', 'drücken'): 'zu',
+    ('q0', 'münze'): 'q1',
+    ('q0', 'drücken'): 'q0',
+    ('q1', 'münze'): 'q1',
+    ('q1', 'drücken'): 'q0',
 }
 
 
 def run(inputs):
-    state = 'zu'
+    state = 'q0'
     for symbol in inputs:
         new_state = TRANSITIONS[(state, symbol)]
-        print(f'{state:>5}  {symbol:<8} → {new_state}')
+        print(f'{state}  {symbol:<8} → {new_state}')
         state = new_state
     return state
 
@@ -165,7 +167,7 @@ def run(inputs):
 run(['drücken', 'münze', 'drücken', 'drücken'])
 ```
 
-`TRANSITIONS` ist die Tabelle des Automaten: Zu jedem Paar aus Zustand und Eingabe steht dort der neue Zustand, so wie zu jedem Pfeil im Bild. `TRANSITIONS[('zu', 'münze')]` ist `'offen'`. Die Funktion `run` beginnt in `zu`, liest die Eingaben der Reihe nach, schlägt für jede den neuen Zustand nach und gibt ihn aus. Starte das Programm:
+`TRANSITIONS` ist die Tabelle des Automaten: Zu jedem Paar aus Zustand und Eingabe steht dort der neue Zustand, so wie zu jedem Pfeil im Bild. `TRANSITIONS[('q0', 'münze')]` ist `'q1'`. Die Funktion `run` beginnt in `q0`, liest die Eingaben der Reihe nach, schlägt für jede den neuen Zustand nach und gibt ihn aus. Starte das Programm:
 
 ```bash
 python3 turnstile.py
@@ -183,12 +185,14 @@ terminal-wait-for-prompt
 move-mouse: selector:.terminal
 check-task-fails: drehkreuz
 -->
-<img class='full' src='drehkreuz.webp' alt='Oben im Editor turnstile.py mit der Tabelle TRANSITIONS und der Funktion run, unten im Terminal vier Zeilen Ausgabe: zu, drücken, zu; zu, münze, offen; offen, drücken, zu; zu, drücken, zu.'>
+<img class='full' src='drehkreuz.webp' alt='Oben im Editor turnstile.py mit der Tabelle TRANSITIONS und der Funktion run, unten im Terminal vier Zeilen Ausgabe: q0, drücken, q0; q0, münze, q1; q1, drücken, q0; q0, drücken, q0.'>
 <!-- /language -->
 
 Jede Zeile ist ein Pfeil im Bild: der alte Zustand, die Eingabe und der neue Zustand. Probier eigene Folgen aus, indem du die letzte Zeile änderst. Was passiert, wenn du `run(['tritt'])` schreibst?
 
 _task(drehkreuz)
+
+Für `tritt` gibt es keinen Pfeil, und das Programm bricht mit einer Fehlermeldung ab. Ein Automat bricht nicht ab: Jede Eingabe, für die es keinen Pfeil gibt, führt ihn in einen **Fehlerzustand** q<sub>F</sub>. Aus q<sub>F</sub> kommt er nicht mehr heraus, und q<sub>F</sub> akzeptiert nichts. Meist zeichnet man ihn nicht, sondern sagt nur dazu, dass alle fehlenden Pfeile dorthin führen.
 
 ## Ein Automat, der rechnen kann
 
@@ -196,13 +200,13 @@ Das Drehkreuz macht etwas. Viele Automaten beantworten stattdessen eine Frage ü
 
 Hier ist ein Automat, der Binärzahlen liest und annimmt, wenn sie durch 3 teilbar sind:
 
-<svg class="automaton" role="img" aria-label="Drei Kreise für die Reste 0, 1 und 2; 0 ist der Start und hat einen doppelten Rand, weil dort Zahlen enden, die durch 3 teilbar sind. Von 0 führt 0 zurück zu 0 und 1 zu 1. Von 1 führt 1 zu 0 und 0 zu 2. Von 2 führt 0 zu 1 und 1 zurück zu 2." style="max-width: 24em; width: 100%; margin: 1em auto;"
+<svg class="automaton" role="img" aria-label="Drei Kreise q0, q1 und q2 für die Reste 0, 1 und 2; q0 ist der Start und hat einen doppelten Rand, weil dort Zahlen enden, die durch 3 teilbar sind. Von q0 führt 0 zurück zu q0 und 1 zu q1. Von q1 führt 1 zu q0 und 0 zu q2. Von q2 führt 0 zu q1 und 1 zurück zu q2." style="max-width: 24em; width: 100%; margin: 1em auto;"
  viewBox="0.00 0.00 251.72 84.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 80)">
 <g id="node2" class="node accept">
 <ellipse fill="white" stroke="black" cx="59.72" cy="-22" rx="18" ry="18"/>
 <ellipse fill="none" stroke="black" cx="59.72" cy="-22" rx="22" ry="22"/>
-<text text-anchor="middle" x="59.72" y="-18.5" font-size="15.00">0</text>
+<text text-anchor="middle" x="59.72" y="-18.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">0</tspan></text>
 </g>
 <g id="edge1" class="edge">
 <path fill="none" stroke="black" d="M0.89,-22C2.56,-22 16.6,-22 30.43,-22"/>
@@ -215,7 +219,7 @@ Hier ist ein Automat, der Binärzahlen liest und annimmt, wenn sie durch 3 teilb
 </g>
 <g id="node3" class="node state">
 <ellipse fill="white" stroke="black" cx="144.72" cy="-22" rx="18" ry="18"/>
-<text text-anchor="middle" x="144.72" y="-18.5" font-size="15.00">1</text>
+<text text-anchor="middle" x="144.72" y="-18.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">1</tspan></text>
 </g>
 <g id="edge3" class="edge">
 <path fill="none" stroke="black" d="M82.09,-22C93.55,-22 107.71,-22 119.56,-22"/>
@@ -229,7 +233,7 @@ Hier ist ein Automat, der Binärzahlen liest und annimmt, wenn sie durch 3 teilb
 </g>
 <g id="node4" class="node state">
 <ellipse fill="white" stroke="black" cx="225.72" cy="-22" rx="18" ry="18"/>
-<text text-anchor="middle" x="225.72" y="-18.5" font-size="15.00">2</text>
+<text text-anchor="middle" x="225.72" y="-18.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">2</tspan></text>
 </g>
 <g id="edge5" class="edge">
 <path fill="none" stroke="black" d="M162.86,-22C173.84,-22 188.24,-22 200.39,-22"/>
@@ -249,26 +253,27 @@ Hier ist ein Automat, der Binärzahlen liest und annimmt, wenn sie durch 3 teilb
 </g>
 </svg>
 
-Wie kann er das, ohne zu rechnen? Sein Zustand ist der **Rest**, der bisher beim Teilen durch 3 bleibt. Liest er von links eine weitere Ziffer, verdoppelt sich die Zahl, und die Ziffer kommt dazu: Aus `11` (3) wird mit einer `0` die `110` (6), mit einer `1` die `111` (7). Mit dem Rest passiert dasselbe: Aus Rest `r` wird mit der Ziffer `d` der Rest von `2 · r + d`. Mehr als den Rest muss sich der Automat nicht merken. Für `110`:
+Wie kann er das, ohne zu rechnen? Sein Zustand ist der **Rest**, der bisher beim Teilen durch 3 bleibt: In q<sub>0</sub> ist der Rest 0, in q<sub>1</sub> ist er 1, in q<sub>2</sub> ist er 2. Liest er von links eine weitere Ziffer, verdoppelt sich die Zahl, und die Ziffer kommt dazu: Aus `11` (3) wird mit einer `0` die `110` (6), mit einer `1` die `111` (7). Mit dem Rest passiert dasselbe: Aus Rest `r` wird mit der Ziffer `d` der Rest von `2 · r + d`, und der Automat geht in den Zustand mit diesem Rest als Index. Mehr als den Rest muss sich der Automat nicht merken. Für `110`:
 
 <table class='table' style='width: auto;'>
 <tr><th>gelesen</th><td><code>1</code></td><td><code>11</code></td><td><code>110</code></td></tr>
 <tr><th>Wert</th><td>1</td><td>3</td><td>6</td></tr>
-<tr><th>Zustand (Rest)</th><td>1</td><td>0</td><td>0</td></tr>
+<tr><th>Zustand</th><td>q<sub>1</sub></td><td>q<sub>0</sub></td><td>q<sub>0</sub></td></tr>
 </table>
 
 <!-- language: ruby -->
-Er endet in 0, also ist 6 durch 3 teilbar. Lege `divisible.rb` an:
+Er endet in q<sub>0</sub>, also ist 6 durch 3 teilbar. Lege `divisible.rb` an:
 
 ```ruby
 # Ist eine Binärzahl durch 3 teilbar? Der Automat liest sie Ziffer für Ziffer
-# von links. Sein Zustand ist der Rest, der bis dahin beim Teilen durch 3 bleibt.
-START = 0
-ACCEPTING = [0]
+# von links. Sein Zustand ist der Rest, der bis dahin beim Teilen durch 3
+# bleibt: In q2 ist der Rest 2.
+START = 'q0'
+ACCEPTING = ['q0']
 TRANSITIONS = {
-    [0, '0'] => 0, [0, '1'] => 1,
-    [1, '0'] => 2, [1, '1'] => 0,
-    [2, '0'] => 1, [2, '1'] => 2,
+    ['q0', '0'] => 'q0', ['q0', '1'] => 'q1',
+    ['q1', '0'] => 'q2', ['q1', '1'] => 'q0',
+    ['q2', '0'] => 'q1', ['q2', '1'] => 'q2',
 }
 
 def accepts(word)
@@ -291,17 +296,18 @@ ruby divisible.rb
 ```
 <!-- /language -->
 <!-- language: python -->
-Er endet in 0, also ist 6 durch 3 teilbar. Lege `divisible.py` an:
+Er endet in q<sub>0</sub>, also ist 6 durch 3 teilbar. Lege `divisible.py` an:
 
 ```python
 # Ist eine Binärzahl durch 3 teilbar? Der Automat liest sie Ziffer für Ziffer
-# von links. Sein Zustand ist der Rest, der bis dahin beim Teilen durch 3 bleibt.
-START = 0
-ACCEPTING = {0}
+# von links. Sein Zustand ist der Rest, der bis dahin beim Teilen durch 3
+# bleibt: In q2 ist der Rest 2.
+START = 'q0'
+ACCEPTING = {'q0'}
 TRANSITIONS = {
-    (0, '0'): 0, (0, '1'): 1,
-    (1, '0'): 2, (1, '1'): 0,
-    (2, '0'): 1, (2, '1'): 2,
+    ('q0', '0'): 'q0', ('q0', '1'): 'q1',
+    ('q1', '0'): 'q2', ('q1', '1'): 'q0',
+    ('q2', '0'): 'q1', ('q2', '1'): 'q2',
 }
 
 
@@ -340,7 +346,7 @@ print(accepts(bin(3 ** 1000)[2:]))
 ```
 <!-- /language -->
 
-Das sind 1585 Ziffern, und `accepts` merkt sich nie mehr als eine Zahl von 0 bis 2.
+Das sind 1585 Ziffern, und `accepts` merkt sich nie mehr als einen von drei Zuständen, q<sub>0</sub>, q<sub>1</sub> oder q<sub>2</sub>.
 
 _task(teilbar-5)
 
@@ -352,20 +358,20 @@ _task(grenzen)
 
 ## Das Zahlenschloss
 
-Am Fahrradkeller hängt ein Zahlenschloss mit Tastenfeld. Es hat keine Enter-Taste: Es geht auf, sobald die letzten vier getippten Ziffern der Code sind, 1213. Als Automat merkt es sich, wie viel vom Code schon stimmt; darum heißen seine Zustände so, wie das, was vom Code schon getippt ist:
+Am Fahrradkeller hängt ein Zahlenschloss mit Tastenfeld. Es hat keine Enter-Taste: Es geht auf, sobald die letzten vier getippten Ziffern der Code sind, 1213. Als Automat merkt es sich, wie viel vom Code schon stimmt: In q<sub>0</sub> noch nichts, in q<sub>1</sub> die erste Ziffer, 1, in q<sub>2</sub> die ersten zwei, 12, und so weiter bis q<sub>4</sub>, dem ganzen Code:
 
 <!-- language: ruby -->
 ```ruby
 # Ein Zahlenschloss mit dem Code 1213. Es öffnet, sobald die letzten vier
 # getippten Ziffern der Code sind. Der Zustand merkt sich, wie viel vom Code
-# schon stimmt.
-START = 'start'
-ACCEPTING = ['1213']
+# schon stimmt: In q2 stimmen die ersten zwei Ziffern, 12.
+START = 'q0'
+ACCEPTING = ['q4']
 TRANSITIONS = {
-    ['start', '1'] => '1',
-    ['1', '2'] => '12',
-    ['12', '1'] => '121',
-    ['121', '3'] => '1213',
+    ['q0', '1'] => 'q1',
+    ['q1', '2'] => 'q2',
+    ['q2', '1'] => 'q3',
+    ['q3', '3'] => 'q4',
 }
 
 def opens(digits)
@@ -401,14 +407,14 @@ check-task-fails: schloss ruby
 ```python
 # Ein Zahlenschloss mit dem Code 1213. Es öffnet, sobald die letzten vier
 # getippten Ziffern der Code sind. Der Zustand merkt sich, wie viel vom Code
-# schon stimmt.
-START = 'start'
-ACCEPTING = {'1213'}
+# schon stimmt: In q2 stimmen die ersten zwei Ziffern, 12.
+START = 'q0'
+ACCEPTING = {'q4'}
 TRANSITIONS = {
-    ('start', '1'): '1',
-    ('1', '2'): '12',
-    ('12', '1'): '121',
-    ('121', '3'): '1213',
+    ('q0', '1'): 'q1',
+    ('q1', '2'): 'q2',
+    ('q2', '1'): 'q3',
+    ('q3', '3'): 'q4',
 }
 
 
@@ -440,7 +446,7 @@ check-task-fails: schloss
 <img class='full' src='schloss.webp' alt='python3 lock.py gibt aus: 1213 True, 991213 True, 12 False und 121213 False.'>
 <!-- /language -->
 
-Die ersten drei Zeilen stimmen. Aber die letzte: Lena hat sich vertippt, 1 2 1 2, und dann richtig weitergetippt, 1 3. Die letzten vier Ziffern sind 1213, und trotzdem bleibt das Schloss zu. Geh die Ziffern mit dem Automaten durch: Nach `121` kommt eine `2`. Das ist nicht die erwartete `3`, also geht es zurück nach `start`. Dabei hat Lena mit `12` gerade wieder den Anfang des Codes getippt. Der Automat hat es vergessen.
+Die ersten drei Zeilen stimmen. Aber die letzte: Lena hat sich vertippt, 1 2 1 2, und dann richtig weitergetippt, 1 3. Die letzten vier Ziffern sind 1213, und trotzdem bleibt das Schloss zu. Geh die Ziffern mit dem Automaten durch: In q<sub>3</sub> (`121` stimmt) kommt eine `2`. Das ist nicht die erwartete `3`, also geht es zurück nach q<sub>0</sub>. Dabei hat Lena mit `12` gerade wieder den Anfang des Codes getippt. Der Automat hat es vergessen.
 
 _task(schloss)
 
@@ -467,22 +473,22 @@ variants: dark
 <img class='drawing' style='width: 40em' src='automatron-schloss.webp' alt='Automatron zeichnet fünf Zustände s0 bis s4 in einer Reihe, s4 grün mit doppeltem Rand. Mit 1 geht es von s0 nach s1, mit 2 nach s2, mit 1 nach s3, mit 3 nach s4. Zurück führen: 1 von s1 nach s1, 2 von s3 nach s2, 1 von s3 nach s1, 1 von s4 nach s1, alle übrigen Ziffern nach s0.'>
 
 <!-- language: ruby -->
-`s0` ist `start`, `s1` ist `1`, `s2` ist `12`, `s3` ist `121` und `s4` ist `1213`. Vergleiche die Pfeile mit deiner Tabelle: Automatron zeichnet auch die Pfeile zurück nach `s0`, die in `lock.rb` das `fetch` erledigt. Darüber steht, wie Automatron zu diesem Automaten gekommen ist. Einen Teil davon baust du gleich selbst.
+Automatron zeigt nacheinander drei Automaten und gibt jedem einen eigenen Buchstaben: q für den ersten, r für den zweiten, s für den kleinsten. s<sub>0</sub> bis s<sub>4</sub> sind darum deine q<sub>0</sub> bis q<sub>4</sub>. Vergleiche die Pfeile mit deiner Tabelle: Automatron zeichnet auch die Pfeile zurück nach s<sub>0</sub>, die in `lock.rb` das `fetch` erledigt. Darüber steht, wie Automatron zu diesem Automaten gekommen ist. Einen Teil davon baust du gleich selbst.
 <!-- /language -->
 <!-- language: python -->
-`s0` ist `start`, `s1` ist `1`, `s2` ist `12`, `s3` ist `121` und `s4` ist `1213`. Vergleiche die Pfeile mit deiner Tabelle: Automatron zeichnet auch die Pfeile zurück nach `s0`, die in `lock.py` das `get` erledigt. Darüber steht, wie Automatron zu diesem Automaten gekommen ist. Einen Teil davon baust du gleich selbst.
+Automatron zeigt nacheinander drei Automaten und gibt jedem einen eigenen Buchstaben: q für den ersten, r für den zweiten, s für den kleinsten. s<sub>0</sub> bis s<sub>4</sub> sind darum deine q<sub>0</sub> bis q<sub>4</sub>. Vergleiche die Pfeile mit deiner Tabelle: Automatron zeichnet auch die Pfeile zurück nach s<sub>0</sub>, die in `lock.py` das `get` erledigt. Darüber steht, wie Automatron zu diesem Automaten gekommen ist. Einen Teil davon baust du gleich selbst.
 <!-- /language -->
 
 ## Ein Automat, der rät
 
-Beim Schloss steckte die Arbeit in den Pfeilen zurück. Es geht auch anders, wenn der Automat raten darf: In `start` wartet er. Kommt eine 1, *könnte* hier der Code anfangen, oder auch nicht. Der Automat nimmt einfach beides: Er bleibt in `start` und geht zugleich nach `1`. Ab da folgt er dem Code; passt eine Ziffer nicht, endet dieser Weg einfach.
+Beim Schloss steckte die Arbeit in den Pfeilen zurück. Es geht auch anders, wenn der Automat raten darf: In q<sub>0</sub> wartet er. Kommt eine 1, *könnte* hier der Code anfangen, oder auch nicht. Der Automat nimmt einfach beides: Er bleibt in q<sub>0</sub> und geht zugleich nach q<sub>1</sub>. Ab da folgt er dem Code; passt eine Ziffer nicht, endet dieser Weg im Fehlerzustand q<sub>F</sub>, den das Bild wie immer nicht zeigt.
 
-<svg class="automaton" role="img" aria-label="Fünf Kreise in einer Reihe: start, 1, 12, 121 und 1213, der letzte mit doppeltem Rand. start führt mit jeder Ziffer 0 bis 9 zu sich selbst zurück und mit 1 außerdem nach 1. Danach geht es mit 2 nach 12, mit 1 nach 121 und mit 3 nach 1213." style="max-width: 36em; width: 100%; margin: 1em auto;"
+<svg class="automaton" role="img" aria-label="Fünf Kreise in einer Reihe: q0 bis q4, der letzte mit doppeltem Rand. q0 führt mit jeder Ziffer 0 bis 9 zu sich selbst zurück und mit 1 außerdem nach q1. Danach geht es mit 2 nach q2, mit 1 nach q3 und mit 3 nach q4." style="max-width: 36em; width: 100%; margin: 1em auto;"
  viewBox="0.00 0.00 483.72 94.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 90)">
 <g id="node2" class="node state">
 <ellipse fill="white" stroke="black" cx="62.72" cy="-29" rx="25" ry="25"/>
-<text text-anchor="middle" x="62.72" y="-25.5" font-size="15.00">start</text>
+<text text-anchor="middle" x="62.72" y="-25.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">0</tspan></text>
 </g>
 <g id="edge1" class="edge">
 <path fill="none" stroke="black" d="M0.76,-29C1.66,-29 15.93,-29 30.44,-29"/>
@@ -495,7 +501,7 @@ Beim Schloss steckte die Arbeit in den Pfeilen zurück. Es geht auch anders, wen
 </g>
 <g id="node4" class="node state">
 <ellipse fill="white" stroke="black" cx="157.72" cy="-29" rx="25" ry="25"/>
-<text text-anchor="middle" x="157.72" y="-25.5" font-size="15.00">1</text>
+<text text-anchor="middle" x="157.72" y="-25.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">1</tspan></text>
 </g>
 <g id="edge3" class="edge">
 <path fill="none" stroke="black" d="M88.15,-29C99.47,-29 113.07,-29 125.15,-29"/>
@@ -505,11 +511,11 @@ Beim Schloss steckte die Arbeit in den Pfeilen zurück. Es geht auch anders, wen
 <g id="node3" class="node accept">
 <ellipse fill="white" stroke="black" cx="446.72" cy="-29" rx="25" ry="25"/>
 <ellipse fill="none" stroke="black" cx="446.72" cy="-29" rx="29" ry="29"/>
-<text text-anchor="middle" x="446.72" y="-25.5" font-size="15.00">1213</text>
+<text text-anchor="middle" x="446.72" y="-25.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">4</tspan></text>
 </g>
 <g id="node5" class="node state">
 <ellipse fill="white" stroke="black" cx="252.72" cy="-29" rx="25" ry="25"/>
-<text text-anchor="middle" x="252.72" y="-25.5" font-size="15.00">12</text>
+<text text-anchor="middle" x="252.72" y="-25.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">2</tspan></text>
 </g>
 <g id="edge4" class="edge">
 <path fill="none" stroke="black" d="M183.15,-29C194.47,-29 208.07,-29 220.15,-29"/>
@@ -518,7 +524,7 @@ Beim Schloss steckte die Arbeit in den Pfeilen zurück. Es geht auch anders, wen
 </g>
 <g id="node6" class="node state">
 <ellipse fill="white" stroke="black" cx="347.72" cy="-29" rx="25" ry="25"/>
-<text text-anchor="middle" x="347.72" y="-25.5" font-size="15.00">121</text>
+<text text-anchor="middle" x="347.72" y="-25.5" font-size="15.00">q<tspan dy="0.28em" font-size="0.7em">3</tspan></text>
 </g>
 <g id="edge5" class="edge">
 <path fill="none" stroke="black" d="M278.15,-29C289.47,-29 303.07,-29 315.15,-29"/>
@@ -541,20 +547,21 @@ Ruby kann nicht raten, aber es kann alle Wege zugleich verfolgen: Statt eines Zu
 ```ruby_copy
 # Das Zahlenschloss als nichtdeterministischer endlicher Automat (NEA).
 # Ein Übergang führt hier zu einer Menge von Zuständen: Der NEA darf raten.
+# In q2 stimmen die ersten zwei Ziffern des Codes, wie beim Schloss vorher.
 DIGITS = '0123456789'
-START = 'start'
-ACCEPTING = Set['1213']
+START = 'q0'
+ACCEPTING = Set['q4']
 TRANSITIONS = {}
 
-# In start wartet der NEA: Jede Ziffer führt wieder nach start …
+# In q0 wartet der NEA: Jede Ziffer führt wieder nach q0 …
 DIGITS.each_char do |digit|
-    TRANSITIONS[['start', digit]] = Set['start']
+    TRANSITIONS[['q0', digit]] = Set['q0']
 end
 # … aber bei einer 1 darf er auch raten, dass hier der Code beginnt.
-TRANSITIONS[['start', '1']] = Set['start', '1']
-TRANSITIONS[['1', '2']] = Set['12']
-TRANSITIONS[['12', '1']] = Set['121']
-TRANSITIONS[['121', '3']] = Set['1213']
+TRANSITIONS[['q0', '1']] = Set['q0', 'q1']
+TRANSITIONS[['q1', '2']] = Set['q2']
+TRANSITIONS[['q2', '1']] = Set['q3']
+TRANSITIONS[['q3', '3']] = Set['q4']
 
 def opens(digits)
     states = Set[START]
@@ -574,7 +581,7 @@ if __FILE__ == $0
 end
 ```
 
-Ein paar Zeichen sind neu. `Set['start', '1']` ist eine Menge; `a |= b` fügt alle Elemente von `b` zur Menge `a` hinzu, und `states & ACCEPTING` sind die Zustände, die in beiden Mengen liegen. Der Teil unter `if __FILE__ == $0` läuft nur, wenn du die Datei selbst startest, nicht, wenn ein anderes Programm sie lädt; das brauchst du gleich.
+Ein paar Zeichen sind neu. `Set['q0', 'q1']` ist eine Menge; `a |= b` fügt alle Elemente von `b` zur Menge `a` hinzu, und `states & ACCEPTING` sind die Zustände, die in beiden Mengen liegen. Der Teil unter `if __FILE__ == $0` läuft nur, wenn du die Datei selbst startest, nicht, wenn ein anderes Programm sie lädt; das brauchst du gleich.
 <!-- /language -->
 <!-- language: python -->
 Python kann nicht raten, aber es kann alle Wege zugleich verfolgen: Statt eines Zustands merkt sich `opens` eine **Menge** von Zuständen, nämlich alle, in denen der NEA gerade sein könnte. Die Tabelle führt darum zu Mengen. Lege `lock_nfa.py` an:
@@ -582,19 +589,20 @@ Python kann nicht raten, aber es kann alle Wege zugleich verfolgen: Statt eines 
 ```python_copy
 # Das Zahlenschloss als nichtdeterministischer endlicher Automat (NEA).
 # Ein Übergang führt hier zu einer Menge von Zuständen: Der NEA darf raten.
+# In q2 stimmen die ersten zwei Ziffern des Codes, wie beim Schloss vorher.
 DIGITS = '0123456789'
-START = 'start'
-ACCEPTING = {'1213'}
+START = 'q0'
+ACCEPTING = {'q4'}
 TRANSITIONS = {}
 
-# In start wartet der NEA: Jede Ziffer führt wieder nach start …
+# In q0 wartet der NEA: Jede Ziffer führt wieder nach q0 …
 for digit in DIGITS:
-    TRANSITIONS[('start', digit)] = {'start'}
+    TRANSITIONS[('q0', digit)] = {'q0'}
 # … aber bei einer 1 darf er auch raten, dass hier der Code beginnt.
-TRANSITIONS[('start', '1')] = {'start', '1'}
-TRANSITIONS[('1', '2')] = {'12'}
-TRANSITIONS[('12', '1')] = {'121'}
-TRANSITIONS[('121', '3')] = {'1213'}
+TRANSITIONS[('q0', '1')] = {'q0', 'q1'}
+TRANSITIONS[('q1', '2')] = {'q2'}
+TRANSITIONS[('q2', '1')] = {'q3'}
+TRANSITIONS[('q3', '3')] = {'q4'}
 
 
 def opens(digits):
@@ -612,7 +620,7 @@ if __name__ == '__main__':
     print(opens('121213'))
 ```
 
-Ein paar Zeichen sind neu. `{'start', '1'}` ist eine Menge; `a |= b` fügt alle Elemente von `b` zur Menge `a` hinzu, und `states & ACCEPTING` sind die Zustände, die in beiden Mengen liegen. Der Teil unter `if __name__ == '__main__':` läuft nur, wenn du die Datei selbst startest, nicht, wenn ein anderes Programm sie lädt; das brauchst du gleich.
+Ein paar Zeichen sind neu. `{'q0', 'q1'}` ist eine Menge; `a |= b` fügt alle Elemente von `b` zur Menge `a` hinzu, und `states & ACCEPTING` sind die Zustände, die in beiden Mengen liegen. Der Teil unter `if __name__ == '__main__':` läuft nur, wenn du die Datei selbst startest, nicht, wenn ein anderes Programm sie lädt; das brauchst du gleich.
 <!-- /language -->
 
 _task(nea-zustaende)
@@ -633,10 +641,10 @@ Nach jeder Ziffer steht die Menge der Zustände, in denen der NEA sein könnte. 
 ## Vom NEA zum DEA
 
 <!-- language: ruby -->
-Ein NEA ist leicht zu schreiben. Ein DEA ist leichter auszuführen: ein Nachschlagen pro Zeichen, kein Hantieren mit Mengen, und genau so bauen ihn Programme in Hardware oder in schnelle Suchfunktionen ein. Zum Glück muss man sich nicht entscheiden. Die Mengen, die `opens` ausgibt, sind selbst die Zustände eines DEA. Ein Programm kann sie alle aufzählen, ausgehend von `{start}`: Für jede Menge und jede Ziffer rechnet es aus, welche Menge danach kommt, und macht weiter, bis keine neue mehr auftaucht. Das heißt **Potenzmengenkonstruktion**. Lege `convert.rb` an:
+Ein NEA ist leicht zu schreiben. Ein DEA ist leichter auszuführen: ein Nachschlagen pro Zeichen, kein Hantieren mit Mengen, und genau so bauen ihn Programme in Hardware oder in schnelle Suchfunktionen ein. Zum Glück muss man sich nicht entscheiden. Die Mengen, die `opens` ausgibt, sind selbst die Zustände eines DEA. Ein Programm kann sie alle aufzählen, ausgehend von `{q0}`: Für jede Menge und jede Ziffer rechnet es aus, welche Menge danach kommt, und macht weiter, bis keine neue mehr auftaucht. Das heißt **Potenzmengenkonstruktion**. Lege `convert.rb` an:
 <!-- /language -->
 <!-- language: python -->
-Ein NEA ist leicht zu schreiben. Ein DEA ist leichter auszuführen: ein Nachschlagen pro Zeichen, kein Hantieren mit Mengen, und genau so bauen ihn Programme in Hardware oder in schnelle Suchfunktionen ein. Zum Glück muss man sich nicht entscheiden. Die Mengen, die `opens` ausgibt, sind selbst die Zustände eines DEA. Ein Programm kann sie alle aufzählen, ausgehend von `{start}`: Für jede Menge und jede Ziffer rechnet es aus, welche Menge danach kommt, und macht weiter, bis keine neue mehr auftaucht. Das heißt **Potenzmengenkonstruktion**. Lege `convert.py` an:
+Ein NEA ist leicht zu schreiben. Ein DEA ist leichter auszuführen: ein Nachschlagen pro Zeichen, kein Hantieren mit Mengen, und genau so bauen ihn Programme in Hardware oder in schnelle Suchfunktionen ein. Zum Glück muss man sich nicht entscheiden. Die Mengen, die `opens` ausgibt, sind selbst die Zustände eines DEA. Ein Programm kann sie alle aufzählen, ausgehend von `{q0}`: Für jede Menge und jede Ziffer rechnet es aus, welche Menge danach kommt, und macht weiter, bis keine neue mehr auftaucht. Das heißt **Potenzmengenkonstruktion**. Lege `convert.py` an:
 <!-- /language -->
 
 <!-- language: ruby -->
@@ -683,7 +691,7 @@ transitions.each do |(states, symbol), target|
 end
 ```
 
-Eine Menge kann in Ruby Schlüssel eines Hash sein oder in einer anderen Menge liegen; sie darf sich danach nur nicht mehr ändern. `todo` ist die Liste der Mengen, deren Übergänge noch nicht ausgerechnet sind. Am Ende gibt das Programm aus, wie viele Zustände der DEA hat, und alle Übergänge, die nicht zurück nach `{start}` führen:
+Eine Menge kann in Ruby Schlüssel eines Hash sein oder in einer anderen Menge liegen; sie darf sich danach nur nicht mehr ändern. `todo` ist die Liste der Mengen, deren Übergänge noch nicht ausgerechnet sind. Am Ende gibt das Programm aus, wie viele Zustände der DEA hat, und alle Übergänge, die nicht zurück nach `{q0}` führen:
 
 <!-- tutorial-screenshot
 # convert.rb: der DEA für das Schloss
@@ -697,7 +705,7 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 check-task-fails: generalschluessel ruby
 -->
-<img class='full' src='umwandeln-ruby.webp' alt='ruby convert.rb gibt aus: 5 Zustände, dann acht Übergänge, etwa von der Menge 1, 121, start mit 2 zur Menge 12, start und mit 3 zur Menge 1213, start.'>
+<img class='full' src='umwandeln-ruby.webp' alt='ruby convert.rb gibt aus: 5 Zustände, dann acht Übergänge, etwa von der Menge q0, q1, q3 mit 2 zur Menge q0, q2 und mit 3 zur Menge q0, q4.'>
 <!-- /language -->
 <!-- language: python -->
 ```python_copy
@@ -738,7 +746,7 @@ for (states, symbol), target in transitions.items():
         print(sorted(states), symbol, '→', sorted(target))
 ```
 
-`frozenset` ist eine Menge, die sich nicht mehr ändern lässt. Nur solche Mengen dürfen in Python Schlüssel eines `dict` sein oder in einer anderen Menge liegen. `todo` ist die Liste der Mengen, deren Übergänge noch nicht ausgerechnet sind. Am Ende gibt das Programm aus, wie viele Zustände der DEA hat, und alle Übergänge, die nicht zurück nach `{start}` führen:
+`frozenset` ist eine Menge, die sich nicht mehr ändern lässt. Nur solche Mengen dürfen in Python Schlüssel eines `dict` sein oder in einer anderen Menge liegen. `todo` ist die Liste der Mengen, deren Übergänge noch nicht ausgerechnet sind. Am Ende gibt das Programm aus, wie viele Zustände der DEA hat, und alle Übergänge, die nicht zurück nach `{q0}` führen:
 
 <!-- tutorial-screenshot
 # convert.py: der DEA für das Schloss
@@ -752,14 +760,14 @@ terminal-wait-for-prompt
 crop-terminal-lines: auto
 check-task-fails: generalschluessel
 -->
-<img class='full' src='umwandeln.webp' alt='python3 convert.py gibt aus: 5 Zustände, dann acht Übergänge, etwa von der Menge 1, 121, start mit 2 zur Menge 12, start und mit 3 zur Menge 1213, start.'>
+<img class='full' src='umwandeln.webp' alt='python3 convert.py gibt aus: 5 Zustände, dann acht Übergänge, etwa von der Menge q0, q1, q3 mit 2 zur Menge q0, q2 und mit 3 zur Menge q0, q4.'>
 <!-- /language -->
 
 <!-- language: ruby -->
-Fünf Zustände, wie bei Automatron. Und sieh dir die Übergänge an: `["1", "121", "start"] 2 → ["12", "start"]` ist genau der Pfeil, den du in `lock.rb` von Hand gesucht hast, von `121` mit einer 2 nach `12`. Das Programm hat ihn gefunden, ohne nachzudenken.
+Fünf Zustände, wie bei Automatron. Und sieh dir die Übergänge an: `["q0", "q1", "q3"] 2 → ["q0", "q2"]` ist genau der Pfeil, den du in `lock.rb` von Hand gesucht hast, von q<sub>3</sub> mit einer 2 nach q<sub>2</sub>. Das Programm hat ihn gefunden, ohne nachzudenken. Eine leere Menge kommt hier nicht vor, weil der NEA in q<sub>0</sub> immer bleiben kann; käme eine vor, wäre sie der Fehlerzustand q<sub>F</sub> des DEA.
 <!-- /language -->
 <!-- language: python -->
-Fünf Zustände, wie bei Automatron. Und sieh dir die Übergänge an: `['1', '121', 'start'] 2 → ['12', 'start']` ist genau der Pfeil, den du in `lock.py` von Hand gesucht hast, von `121` mit einer 2 nach `12`. Das Programm hat ihn gefunden, ohne nachzudenken.
+Fünf Zustände, wie bei Automatron. Und sieh dir die Übergänge an: `['q0', 'q1', 'q3'] 2 → ['q0', 'q2']` ist genau der Pfeil, den du in `lock.py` von Hand gesucht hast, von q<sub>3</sub> mit einer 2 nach q<sub>2</sub>. Das Programm hat ihn gefunden, ohne nachzudenken. Eine leere Menge kommt hier nicht vor, weil der NEA in q<sub>0</sub> immer bleiben kann; käme eine vor, wäre sie der Fehlerzustand q<sub>F</sub> des DEA.
 <!-- /language -->
 
 ### Ein Generalschlüssel
@@ -780,44 +788,44 @@ _task(dea-generalschluessel)
 ### Wenn der DEA explodiert
 
 <!-- language: ruby -->
-Beim Schloss hat der DEA so viele Zustände wie der NEA. Das ist nicht immer so. Ein NEA, der prüft, ob die N-te Ziffer von hinten eine 1 ist, rät, wo diese 1 steht, und zählt dann bis zum Ende ab. Er braucht N + 1 Zustände. Lege `last.rb` an:
+Beim Schloss hat der DEA so viele Zustände wie der NEA. Das ist nicht immer so. Ein NEA, der prüft, ob die N-te Ziffer von hinten eine 1 ist, rät, wo diese 1 steht, und zählt dann bis zum Ende ab. Er braucht N + 1 Zustände, q<sub>0</sub> bis q<sub>N</sub>. Lege `last.rb` an:
 
 ```ruby
 # Ist die N-te Ziffer von hinten eine 1? Der NEA rät, wo diese 1 steht, und
-# zählt danach die Ziffern bis zum Ende ab.
+# zählt danach die Ziffern bis zum Ende ab: In q2 hat er zwei gezählt.
 N = 3
 DIGITS = '01'
-START = 0
-ACCEPTING = Set[N]
+START = 'q0'
+ACCEPTING = Set["q#{N}"]
 TRANSITIONS = {
-    [0, '0'] => Set[0],
-    [0, '1'] => Set[0, 1],
+    ['q0', '0'] => Set['q0'],
+    ['q0', '1'] => Set['q0', 'q1'],
 }
 (1...N).each do |i|
-    TRANSITIONS[[i, '0']] = Set[i + 1]
-    TRANSITIONS[[i, '1']] = Set[i + 1]
+    TRANSITIONS[["q#{i}", '0']] = Set["q#{i + 1}"]
+    TRANSITIONS[["q#{i}", '1']] = Set["q#{i + 1}"]
 end
 ```
 
 Ändere in `convert.rb` die Zeile `require_relative 'lock_nfa'` zu `require_relative 'last'` und starte es. Ändere dann `N` in `last.rb` auf 5 und starte `convert.rb` noch einmal.
 <!-- /language -->
 <!-- language: python -->
-Beim Schloss hat der DEA so viele Zustände wie der NEA. Das ist nicht immer so. Ein NEA, der prüft, ob die N-te Ziffer von hinten eine 1 ist, rät, wo diese 1 steht, und zählt dann bis zum Ende ab. Er braucht N + 1 Zustände. Lege `last.py` an:
+Beim Schloss hat der DEA so viele Zustände wie der NEA. Das ist nicht immer so. Ein NEA, der prüft, ob die N-te Ziffer von hinten eine 1 ist, rät, wo diese 1 steht, und zählt dann bis zum Ende ab. Er braucht N + 1 Zustände, q<sub>0</sub> bis q<sub>N</sub>. Lege `last.py` an:
 
 ```python
 # Ist die N-te Ziffer von hinten eine 1? Der NEA rät, wo diese 1 steht, und
-# zählt danach die Ziffern bis zum Ende ab.
+# zählt danach die Ziffern bis zum Ende ab: In q2 hat er zwei gezählt.
 N = 3
 DIGITS = '01'
-START = 0
-ACCEPTING = {N}
+START = 'q0'
+ACCEPTING = {f'q{N}'}
 TRANSITIONS = {
-    (0, '0'): {0},
-    (0, '1'): {0, 1},
+    ('q0', '0'): {'q0'},
+    ('q0', '1'): {'q0', 'q1'},
 }
 for i in range(1, N):
-    TRANSITIONS[(i, '0')] = {i + 1}
-    TRANSITIONS[(i, '1')] = {i + 1}
+    TRANSITIONS[(f'q{i}', '0')] = {f'q{i + 1}'}
+    TRANSITIONS[(f'q{i}', '1')] = {f'q{i + 1}'}
 ```
 
 Ändere in `convert.py` die Zeile `from lock_nfa import …` zu `from last import …` und starte es. Ändere dann `N` in `last.py` auf 5 und starte `convert.py` noch einmal.
@@ -854,13 +862,13 @@ hook: divisible-by-3
 crop-element: #output_area svg
 variants: dark
 -->
-<img class='teaser' hidden src='teaser.webp' alt='Ein endlicher Automat mit drei Zuständen s0, s1 und s2, gezeichnet wie in Automatron: Er prüft, ob eine Dezimalzahl durch 3 teilbar ist. Die Pfeile tragen Gruppen von Ziffern, 0, 3, 6, 9 lässt den Zustand, wie er ist, 1, 4, 7 und 2, 5, 8 führen weiter. s0 ist Start und hat einen doppelten Rand.'>
+<img class='teaser' hidden src='teaser.webp' alt='Ein endlicher Automat mit drei Zuständen q0, q1 und q2, gezeichnet wie in Automatron: Er prüft, ob eine Dezimalzahl durch 3 teilbar ist. Die Pfeile tragen Gruppen von Ziffern, 0, 3, 6, 9 lässt den Zustand, wie er ist, 1, 4, 7 und 2, 5, 8 führen weiter. q0 ist Start und hat einen doppelten Rand.'>
 
 <!-- tutorial-step
 # Für »Teilbar durch 5« kopiert man divisible.rb und divisible.py nach
 # divisible5: unverändert lösen sie die Aufgabe noch nicht.
-write-file: automata/divisible5.rb <- code:Ist eine Binärzahl durch 3 teilbar?||ACCEPTING = [0]
-write-file: automata/divisible5.py <- code:Ist eine Binärzahl durch 3 teilbar?||ACCEPTING = {0}
+write-file: automata/divisible5.rb <- code:Ist eine Binärzahl durch 3 teilbar?||ACCEPTING = ['q0']
+write-file: automata/divisible5.py <- code:Ist eine Binärzahl durch 3 teilbar?||ACCEPTING = {'q0'}
 check-task-fails: teilbar-5 ruby
 check-task-fails: teilbar-5
 -->

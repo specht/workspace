@@ -9,72 +9,70 @@ tasks:
       Das Schwimmbad verlangt jetzt zwei Euro, also zwei Münzen. Ändere
       `TRANSITIONS` in `turnstile.py`: Erst nach der zweiten Münze ist das
       Drehkreuz offen. Wer nach einer Münze schon drückt, kommt nicht durch,
-      aber die Münze bleibt drin. Wie du den neuen Zustand nennst, ist dir
-      überlassen.
+      aber die Münze bleibt drin. Der neue Zustand heißt `q2`.
     check:
       type: python
       file: automata/turnstile.py
       cases:
-        - run(['drücken']): "'zu'"
-        - call: run(['münze']) == 'offen'
+        - run(['drücken']): "'q0'"
+        - call: run(['münze']) == 'q1'
           expect: false
           say: Nach einer Münze darf das Drehkreuz noch nicht offen sein.
-        - run(['münze', 'münze']): "'offen'"
+        - run(['münze', 'münze']): "'q1'"
         - call: run(['münze', 'drücken', 'münze'])
-          expect: "'offen'"
+          expect: "'q1'"
           say: Wer mit einer Münze drückt, behält sie. Nach der zweiten ist es offen.
-        - run(['münze', 'münze', 'drücken']): "'zu'"
-        - call: run(['münze', 'münze', 'drücken', 'münze']) == 'offen'
+        - run(['münze', 'münze', 'drücken']): "'q0'"
+        - call: run(['münze', 'münze', 'drücken', 'münze']) == 'q1'
           expect: false
           say: Nach dem Durchgehen kostet es wieder zwei Münzen.
-        - run(['münze', 'münze', 'münze']): "'offen'"
-    hint: Du brauchst einen dritten Zustand, zum Beispiel `halb`, für »eine Münze ist drin«. Er braucht wie die anderen einen Übergang für `münze` und einen für `drücken`.
+        - run(['münze', 'münze', 'münze']): "'q1'"
+    hint: Der dritte Zustand `q2` heißt »eine Münze ist drin«. Er braucht wie die anderen einen Übergang für `münze` und einen für `drücken`.
     solution: |
-      Ein Zustand `halb` kommt dazu:
-      `('zu', 'münze'): 'halb'`, `('halb', 'münze'): 'offen'`,
-      `('halb', 'drücken'): 'halb'`; die übrigen Übergänge bleiben.
+      Der Zustand `q2` kommt dazu:
+      `('q0', 'münze'): 'q2'`, `('q2', 'münze'): 'q1'`,
+      `('q2', 'drücken'): 'q2'`; die übrigen Übergänge bleiben.
 
     ruby:
       prompt: |
         Das Schwimmbad verlangt jetzt zwei Euro, also zwei Münzen. Ändere
         `TRANSITIONS` in `turnstile.rb`: Erst nach der zweiten Münze ist das
         Drehkreuz offen. Wer nach einer Münze schon drückt, kommt nicht durch,
-        aber die Münze bleibt drin. Wie du den neuen Zustand nennst, ist dir
-        überlassen.
+        aber die Münze bleibt drin. Der neue Zustand heißt `q2`.
       check:
         type: ruby
         file: automata/turnstile.rb
         cases:
-          - run(['drücken']): "'zu'"
-          - call: run(['münze']) == 'offen'
+          - run(['drücken']): "'q0'"
+          - call: run(['münze']) == 'q1'
             expect: false
             say: Nach einer Münze darf das Drehkreuz noch nicht offen sein.
-          - run(['münze', 'münze']): "'offen'"
+          - run(['münze', 'münze']): "'q1'"
           - call: run(['münze', 'drücken', 'münze'])
-            expect: "'offen'"
+            expect: "'q1'"
             say: Wer mit einer Münze drückt, behält sie. Nach der zweiten ist es offen.
-          - run(['münze', 'münze', 'drücken']): "'zu'"
-          - call: run(['münze', 'münze', 'drücken', 'münze']) == 'offen'
+          - run(['münze', 'münze', 'drücken']): "'q0'"
+          - call: run(['münze', 'münze', 'drücken', 'münze']) == 'q1'
             expect: false
             say: Nach dem Durchgehen kostet es wieder zwei Münzen.
-          - run(['münze', 'münze', 'münze']): "'offen'"
+          - run(['münze', 'münze', 'münze']): "'q1'"
       solution: |
-        Ein Zustand `halb` kommt dazu:
-        `['zu', 'münze'] => 'halb'`, `['halb', 'münze'] => 'offen'`,
-        `['halb', 'drücken'] => 'halb'`; die übrigen Übergänge bleiben.
+        Der Zustand `q2` kommt dazu:
+        `['q0', 'münze'] => 'q2'`, `['q2', 'münze'] => 'q1'`,
+        `['q2', 'drücken'] => 'q2'`; die übrigen Übergänge bleiben.
 
   - id: rest
     title: Wo endet 1011?
     prompt: |
       Lies `1011` von Hand durch den Automaten im Bild, Ziffer für Ziffer.
-      In welchem Zustand endet er?
+      In welchem Zustand endet er? Gib seinen Index an, also 1 für q<sub>1</sub>.
     check:
       type: number
       expect: 2
     feedback:
       - when: { equals: 11 }
-        say: 11 ist der Wert der Binärzahl. Gefragt ist der Zustand, also der Rest beim Teilen durch 3.
-    solution: 'Die Zustände sind 0, 1, 2, 2, 2: `1011` ist 11, und 11 geteilt durch 3 ist 3 Rest 2.'
+        say: 11 ist der Wert der Binärzahl. Gefragt ist der Zustand, sein Index ist der Rest beim Teilen durch 3.
+    solution: 'Die Zustände sind q<sub>0</sub>, q<sub>1</sub>, q<sub>2</sub>, q<sub>2</sub>, q<sub>2</sub>: `1011` ist 11, und 11 geteilt durch 3 ist 3 Rest 2.'
 
   - id: teilbar-5
     title: Teilbar durch 5
@@ -100,13 +98,13 @@ tasks:
           expect: true
           say: 5 hoch 40 ist durch 5 teilbar, und dein Automat liest die Zahl nur einmal von links nach rechts.
         - accepts(bin(5 ** 40 + 1)[2:]): false
-    hint: Du brauchst fünf Zustände, einen für jeden Rest von 0 bis 4. Aus Rest `r` wird mit der Ziffer `d` der Rest `(2 * r + d) % 5`. Statt zehn Zeilen von Hand geht das auch mit zwei `for`-Schleifen.
+    hint: Du brauchst fünf Zustände, `q0` bis `q4`, einen für jeden Rest von 0 bis 4. Aus Rest `r` wird mit der Ziffer `d` der Rest `(2 * r + d) % 5`. Statt zehn Zeilen von Hand geht das auch mit zwei `for`-Schleifen und einem f-String, `f'q{r}'`.
     solution: |
       ```python
       TRANSITIONS = {}
       for r in range(5):
           for d in '01':
-              TRANSITIONS[(r, d)] = (2 * r + int(d)) % 5
+              TRANSITIONS[(f'q{r}', d)] = f'q{(2 * r + int(d)) % 5}'
       ```
 
     ruby:
@@ -132,13 +130,13 @@ tasks:
             expect: true
             say: 5 hoch 40 ist durch 5 teilbar, und dein Automat liest die Zahl nur einmal von links nach rechts.
           - accepts((5 ** 40 + 1).to_s(2)): false
-      hint: Du brauchst fünf Zustände, einen für jeden Rest von 0 bis 4. Aus Rest `r` wird mit der Ziffer `d` der Rest `(2 * r + d) % 5`. Statt zehn Zeilen von Hand geht das auch mit zwei Schleifen, etwa `5.times do |r|` und `'01'.each_char do |d|`.
+      hint: Du brauchst fünf Zustände, `q0` bis `q4`, einen für jeden Rest von 0 bis 4. Aus Rest `r` wird mit der Ziffer `d` der Rest `(2 * r + d) % 5`. Statt zehn Zeilen von Hand geht das auch mit zwei Schleifen, etwa `5.times do |r|` und `'01'.each_char do |d|`, und `"q#{r}"`.
       solution: |
         ```ruby
         TRANSITIONS = {}
         5.times do |r|
             '01'.each_char do |d|
-                TRANSITIONS[[r, d]] = (2 * r + d.to_i) % 5
+                TRANSITIONS[["q#{r}", d]] = "q#{(2 * r + d.to_i) % 5}"
             end
         end
         ```
@@ -191,9 +189,9 @@ tasks:
         - opens('312121213'): true
     hint: Frag dich in jedem Zustand für jede Ziffer, die nicht weiter zum Code führt, was vom bisher Getippten noch passt. Was ist das längste Ende davon, mit dem der Code beginnt?
     solution: |
-      Vier Übergänge kommen dazu: `('1', '1'): '1'`, `('121', '1'): '1'`,
-      `('121', '2'): '12'` und `('1213', '1'): '1'`. Alle anderen fehlenden
-      führen zu Recht zurück nach `start`.
+      Vier Übergänge kommen dazu: `('q1', '1'): 'q1'`, `('q3', '1'): 'q1'`,
+      `('q3', '2'): 'q2'` und `('q4', '1'): 'q1'`. Alle anderen fehlenden
+      führen zu Recht zurück nach `q0`.
 
     ruby:
       prompt: |
@@ -220,9 +218,9 @@ tasks:
           - opens('1213121'): false
           - opens('312121213'): true
       solution: |
-        Vier Übergänge kommen dazu: `['1', '1'] => '1'`, `['121', '1'] => '1'`,
-        `['121', '2'] => '12'` und `['1213', '1'] => '1'`. Alle anderen
-        fehlenden führen zu Recht zurück nach `start`.
+        Vier Übergänge kommen dazu: `['q1', '1'] => 'q1'`, `['q3', '1'] => 'q1'`,
+        `['q3', '2'] => 'q2'` und `['q4', '1'] => 'q1'`. Alle anderen
+        fehlenden führen zu Recht zurück nach `q0`.
 
   - id: nea-zustaende
     title: Drei Ziffern später
@@ -233,17 +231,17 @@ tasks:
     check:
       type: choice
       options:
-        - "start, 1 und 121"
-        - "nur 121"
-        - "start und 121"
-        - "1 und 121"
+        - "q<sub>0</sub>, q<sub>1</sub> und q<sub>3</sub>"
+        - "nur q<sub>3</sub>"
+        - "q<sub>0</sub> und q<sub>3</sub>"
+        - "q<sub>1</sub> und q<sub>3</sub>"
       correct: 0
     feedback:
       - when: { picked: 1 }
-        say: In 121 ist er, wenn er bei der ersten 1 geraten hat. Er hätte bei jeder Ziffer auch in start bleiben können, und bei der zweiten 1 neu raten.
+        say: In q<sub>3</sub> ist er, wenn er bei der ersten 1 geraten hat. Er hätte bei jeder Ziffer auch in q<sub>0</sub> bleiben können, und bei der zweiten 1 neu raten.
       - when: { picked: 2 }
-        say: Fast. Bei der letzten 1 kann er aus start auch wieder raten, dass der Code hier beginnt.
-    solution: In `start` bleibt er immer, `121` hat er erreicht, wenn er bei der ersten 1 geraten hat, und `1`, wenn er bei der letzten 1 rät.
+        say: Fast. Bei der letzten 1 kann er aus q<sub>0</sub> auch wieder raten, dass der Code hier beginnt.
+    solution: In q<sub>0</sub> bleibt er immer, q<sub>3</sub> hat er erreicht, wenn er bei der ersten 1 geraten hat, und q<sub>1</sub>, wenn er bei der letzten 1 rät.
 
     ruby:
       prompt: |
@@ -265,20 +263,20 @@ tasks:
         - opens('94711'): true
         - call: opens('44711')
           expect: true
-          say: Auch bei der zweiten 4 darf der NEA raten, dass hier der Code beginnt. Er bleibt dafür in start.
+          say: Auch bei der zweiten 4 darf der NEA raten, dass hier der Code beginnt. Er bleibt dafür in q<sub>0</sub>.
         - opens('471'): false
         - opens('4712'): false
         - opens('47121213'): true
         - opens('121213'): true
         - opens('4741711'): false
-    hint: Ein zweiter Weg aus `start`, so wie der für 1213. `ACCEPTING` bekommt einen zweiten Zustand.
+    hint: Ein zweiter Weg aus `q0`, so wie der für 1213, über neue Zustände `q5` bis `q8`. `ACCEPTING` bekommt einen zweiten Zustand.
     solution: |
       ```python
-      ACCEPTING = {'1213', '4711'}
-      TRANSITIONS[('start', '4')] = {'start', '4'}
-      TRANSITIONS[('4', '7')] = {'47'}
-      TRANSITIONS[('47', '1')] = {'471'}
-      TRANSITIONS[('471', '1')] = {'4711'}
+      ACCEPTING = {'q4', 'q8'}
+      TRANSITIONS[('q0', '4')] = {'q0', 'q5'}
+      TRANSITIONS[('q5', '7')] = {'q6'}
+      TRANSITIONS[('q6', '1')] = {'q7'}
+      TRANSITIONS[('q7', '1')] = {'q8'}
       ```
 
     ruby:
@@ -295,7 +293,7 @@ tasks:
           - opens('94711'): true
           - call: opens('44711')
             expect: true
-            say: Auch bei der zweiten 4 darf der NEA raten, dass hier der Code beginnt. Er bleibt dafür in start.
+            say: Auch bei der zweiten 4 darf der NEA raten, dass hier der Code beginnt. Er bleibt dafür in q<sub>0</sub>.
           - opens('471'): false
           - opens('4712'): false
           - opens('47121213'): true
@@ -303,11 +301,11 @@ tasks:
           - opens('4741711'): false
       solution: |
         ```ruby
-        ACCEPTING = Set['1213', '4711']
-        TRANSITIONS[['start', '4']] = Set['start', '4']
-        TRANSITIONS[['4', '7']] = Set['47']
-        TRANSITIONS[['47', '1']] = Set['471']
-        TRANSITIONS[['471', '1']] = Set['4711']
+        ACCEPTING = Set['q4', 'q8']
+        TRANSITIONS[['q0', '4']] = Set['q0', 'q5']
+        TRANSITIONS[['q5', '7']] = Set['q6']
+        TRANSITIONS[['q6', '1']] = Set['q7']
+        TRANSITIONS[['q7', '1']] = Set['q8']
         ```
 
   - id: dea-generalschluessel
@@ -321,7 +319,7 @@ tasks:
     feedback:
       - when: { equals: 5 }
         say: Das ist der DEA für 1213 allein. Ist der Generalschlüssel in `lock_nfa.py` eingebaut und gespeichert?
-    solution: 'Neun: `start`, je vier für »so viel stimmt von 1213« und »so viel stimmt von 4711«. Automatron kommt mit `(0|1|2|3|4|5|6|7|8|9)*(1213|4711)` auf dieselbe Zahl.'
+    solution: 'Neun: einer für q<sub>0</sub> allein, je vier für »so viel stimmt von 1213« und »so viel stimmt von 4711«. Automatron kommt mit `(0|1|2|3|4|5|6|7|8|9)*(1213|4711)` auf dieselbe Zahl.'
 
     ruby:
       prompt: |

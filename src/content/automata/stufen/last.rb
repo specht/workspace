@@ -1,14 +1,14 @@
 # Ist die N-te Ziffer von hinten eine 1? Der NEA rät, wo diese 1 steht, und
-# zählt danach die Ziffern bis zum Ende ab.
+# zählt danach die Ziffern bis zum Ende ab: In q2 hat er zwei gezählt.
 N = 3
 DIGITS = '01'
-START = 0
-ACCEPTING = Set[N]
+START = 'q0'
+ACCEPTING = Set["q#{N}"]
 TRANSITIONS = {
-    [0, '0'] => Set[0],
-    [0, '1'] => Set[0, 1],
+    ['q0', '0'] => Set['q0'],
+    ['q0', '1'] => Set['q0', 'q1'],
 }
 (1...N).each do |i|
-    TRANSITIONS[[i, '0']] = Set[i + 1]
-    TRANSITIONS[[i, '1']] = Set[i + 1]
+    TRANSITIONS[["q#{i}", '0']] = Set["q#{i + 1}"]
+    TRANSITIONS[["q#{i}", '1']] = Set["q#{i + 1}"]
 end

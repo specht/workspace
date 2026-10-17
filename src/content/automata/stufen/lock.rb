@@ -1,13 +1,13 @@
 # Ein Zahlenschloss mit dem Code 1213. Es öffnet, sobald die letzten vier
 # getippten Ziffern der Code sind. Der Zustand merkt sich, wie viel vom Code
-# schon stimmt.
-START = 'start'
-ACCEPTING = ['1213']
+# schon stimmt: In q2 stimmen die ersten zwei Ziffern, 12.
+START = 'q0'
+ACCEPTING = ['q4']
 TRANSITIONS = {
-    ['start', '1'] => '1',
-    ['1', '2'] => '12',
-    ['12', '1'] => '121',
-    ['121', '3'] => '1213',
+    ['q0', '1'] => 'q1',
+    ['q1', '2'] => 'q2',
+    ['q2', '1'] => 'q3',
+    ['q3', '3'] => 'q4',
 }
 
 def opens(digits)

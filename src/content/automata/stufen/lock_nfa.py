@@ -1,18 +1,19 @@
 # Das Zahlenschloss als nichtdeterministischer endlicher Automat (NEA).
 # Ein Übergang führt hier zu einer Menge von Zuständen: Der NEA darf raten.
+# In q2 stimmen die ersten zwei Ziffern des Codes, wie beim Schloss vorher.
 DIGITS = '0123456789'
-START = 'start'
-ACCEPTING = {'1213'}
+START = 'q0'
+ACCEPTING = {'q4'}
 TRANSITIONS = {}
 
-# In start wartet der NEA: Jede Ziffer führt wieder nach start …
+# In q0 wartet der NEA: Jede Ziffer führt wieder nach q0 …
 for digit in DIGITS:
-    TRANSITIONS[('start', digit)] = {'start'}
+    TRANSITIONS[('q0', digit)] = {'q0'}
 # … aber bei einer 1 darf er auch raten, dass hier der Code beginnt.
-TRANSITIONS[('start', '1')] = {'start', '1'}
-TRANSITIONS[('1', '2')] = {'12'}
-TRANSITIONS[('12', '1')] = {'121'}
-TRANSITIONS[('121', '3')] = {'1213'}
+TRANSITIONS[('q0', '1')] = {'q0', 'q1'}
+TRANSITIONS[('q1', '2')] = {'q2'}
+TRANSITIONS[('q2', '1')] = {'q3'}
+TRANSITIONS[('q3', '3')] = {'q4'}
 
 
 def opens(digits):
