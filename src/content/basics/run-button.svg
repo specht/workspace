@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="96" height="96">
+  <!-- Das Symbol »Datei ausführen, oben rechts im Editor« aus VS Code: die Glyphe »play« aus
+       codicon.ttf (/app/code-server/lib/vscode/out/media/), hell auf dem
+       dunklen Grund von »Dark Modern«. -->
+  <rect width="24" height="24" fill="#181818"/>
+  <path fill="#cccccc" d="M8.747 7.04Q8.48 6.933 8.24 7.067Q8 7.2 8 7.52V16.48Q8 16.8 8.24 16.933Q8.48 17.067 8.747 16.96L16.747 12.427Q17.013 12.267 17.013 12Q17.013 11.733 16.747 11.573ZM6.987 7.52Q6.987 6.933 7.333 6.533Q7.68 6.133 8.213 6.027Q8.747 5.92 9.227 6.187L17.227 10.667Q17.707 10.987 17.893 11.493Q18.08 12 17.893 12.507Q17.707 13.013 17.227 13.333L9.227 17.813Q8.747 18.08 8.213 17.973Q7.68 17.867 7.333 17.467Q6.987 17.067 6.987 16.48Z"/>
+</svg>

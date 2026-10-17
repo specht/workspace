@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="96" height="96">
+  <!-- Das Symbol »Panel ein- und ausblenden, oben rechts« aus VS Code: die Glyphe »layout-panel-off« aus
+       codicon.ttf (/app/code-server/lib/vscode/out/media/), hell auf dem
+       dunklen Grund von »Dark Modern«. -->
+  <rect width="24" height="24" fill="#181818"/>
+  <path fill="#cccccc" d="M16.48 5.013H7.52Q6.453 5.013 5.733 5.733Q5.013 6.453 5.013 7.52V16.48Q5.013 17.547 5.733 18.267Q6.453 18.987 7.52 18.987H16.48Q17.547 18.987 18.267 18.267Q18.987 17.547 18.987 16.48V7.52Q18.987 6.453 18.267 5.733Q17.547 5.013 16.48 5.013ZM18.027 16.48Q18.027 17.12 17.573 17.547Q17.12 17.973 16.48 17.973H7.52Q6.88 17.973 6.453 17.547Q6.027 17.12 6.027 16.48V14.987H18.027ZM18.027 13.973H6.027V7.52Q6.027 6.88 6.453 6.427Q6.88 5.973 7.52 5.973H16.48Q17.12 5.973 17.573 6.427Q18.027 6.88 18.027 7.52Z"/>
+</svg>

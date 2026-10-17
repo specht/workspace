@@ -764,6 +764,11 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   »Eine Klötzchenwelt in 3D« zeigt so bei jedem Stück Code, wo es in `main.c`
   hinkommt, mit drei Zeilen davor und danach, so wie die Datei an dieser
   Stelle aussieht.
+- Die Symbole für Panel, Erweiterungen und »Ausführen« im Text der
+  Sprachseiten sind SVGs aus der Symbolschrift von VS Code statt kleiner
+  Bildausschnitte: scharf in jeder Größe.
+- Bilder im SVG-Format bleiben SVG; bisher wurden sie wie Fotos umgewandelt
+  und kamen mit dem falschen Typ beim Browser an.
 - »Hades in der Altgriechisch-App« ist ganz entfernt; die Seite stand schon
   nicht mehr im Katalog.
 - Kontextzeilen auch in BIF, »Taschenrechner«, GIF, TIC-80, Hugo und

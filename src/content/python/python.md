@@ -31,7 +31,7 @@ Python ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit interpre
 
 **Möglichkeit 1:** Python-Code in der Python-Shell ausführen
 
-Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt='ein Rechteck mit einem Streifen unten'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.svg' style='border-radius: 4px; height: 1.5em;' alt='ein Rechteck mit einem Streifen unten'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <!-- tutorial-screenshot
 # Ein frischer Workspace ohne Ordner, das Terminal offen
@@ -228,7 +228,7 @@ sleep: 0.5
 
 ## Python-Skripte direkt in Visual Studio Code ausführen
 
-Visual Studio Code bietet auch eine integrierte Möglichkeit, Python-Skripte direkt auszuführen, ohne dass du das Skript jedesmal im Terminal ausführen musst. Dazu musst du die Python-Erweiterung installieren. Klicke dazu auf das Extensions-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt='vier Quadrate, eines davon abgehoben'> in der Seitenleiste und suche nach »Python«. Klicke auf »Install«, um die Erweiterung zu installieren.
+Visual Studio Code bietet auch eine integrierte Möglichkeit, Python-Skripte direkt auszuführen, ohne dass du das Skript jedesmal im Terminal ausführen musst. Dazu musst du die Python-Erweiterung installieren. Klicke dazu auf das Extensions-Symbol <img src='../basics/extensions.svg' style='border-radius: 4px; height: 1.5em;' alt='vier Quadrate, eines davon abgehoben'> in der Seitenleiste und suche nach »Python«. Klicke auf »Install«, um die Erweiterung zu installieren.
 
 <!-- tutorial-screenshot
 # Die Erweiterung im Marketplace, nicht installiert
@@ -242,7 +242,7 @@ crop-bottom: 50%
 
 <img class='full' src='python-ext.webp' alt='Links der Marketplace mit der Suche nach python, ganz oben die Erweiterung »Python« von ms-python mit dem Knopf »Install«; rechts hello.py.'>
 
-Du kannst nun dein Skript einfach direkt aus dem Editor starten, indem du rechts oben auf das Run-Symbol <img src='../basics/run-button.webp' style='border-radius: 4px; height: 1.5em;' alt='ein Dreieck, das nach rechts zeigt'> klickst.
+Du kannst nun dein Skript einfach direkt aus dem Editor starten, indem du rechts oben auf das Run-Symbol <img src='../basics/run-button.svg' style='border-radius: 4px; height: 1.5em;' alt='ein Dreieck, das nach rechts zeigt'> klickst.
 
 ## Primfaktorzerlegung
 

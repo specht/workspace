@@ -32,7 +32,7 @@ Smalltalk ist eine Skriptsprache, was bedeutet, dass der Code zur Laufzeit inter
 
 **Möglichkeit 1:** Smalltalk-Code in der Smalltalk-Shell ausführen
 
-Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt='ein Rechteck mit einem Streifen unten'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.svg' style='border-radius: 4px; height: 1.5em;' alt='ein Rechteck mit einem Streifen unten'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <!-- tutorial-screenshot
 # Ein frischer Workspace ohne Ordner, das Terminal offen
@@ -125,7 +125,7 @@ crop-bottom: 82%
 Achte darauf, dass du deine Datei nicht aus Versehen <code>hello.st.</code> (mit einem Punkt am Ende) nennst, da Visual Studio Code als Dateiname <code>Transcript show: 'Hello, World!'; cr.</code> vorschlägt.
 </div>
 
-Da Smalltalk standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.webp' style='border-radius: 4px; height: 1.5em;' alt='vier Quadrate, eines davon abgehoben'> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »Pharo Language Support« und installiere sie. Die Erweiterung bringt eine zweite Erweiterung mit. Weil beide Herausgeber nicht verifiziert sind, fragt Visual Studio Code, ob du ihnen vertraust; bestätige mit »Trust Publishers & Install«.
+Da Smalltalk standardmäßig nicht von Visual Studio Code unterstützt wird, müssen wir noch eine passende Erweiterung installieren. Klicke dazu auf das Erweiterungs-Symbol <img src='../basics/extensions.svg' style='border-radius: 4px; height: 1.5em;' alt='vier Quadrate, eines davon abgehoben'> in der Seitenleiste oder drücke <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>. Suche nach der Erweiterung »Pharo Language Support« und installiere sie. Die Erweiterung bringt eine zweite Erweiterung mit. Weil beide Herausgeber nicht verifiziert sind, fragt Visual Studio Code, ob du ihnen vertraust; bestätige mit »Trust Publishers & Install«.
 
 <!-- tutorial-screenshot
 # Speichern, dann die Erweiterung im Marketplace

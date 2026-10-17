@@ -1478,7 +1478,9 @@ class Main < Sinatra::Base
                 next if src.start_with?('/cache/')
                 image_path = File.join(File.dirname(path), src)
                 next unless File.exist?(image_path)
-                if img.attr('data-noconvert')
+                # an SVG stays an SVG: sharp at every size, and as WebP it
+                # would be served with the wrong type
+                if img.attr('data-noconvert') || File.extname(image_path).downcase == '.svg'
                     sha1 = Digest::SHA1.hexdigest(image_path)
                     extension = File.extname(image_path)
                     target_path = "/webcache/#{sha1}#{extension}"

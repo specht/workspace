@@ -36,7 +36,7 @@ In diesem Kapitel wollen wir uns jedoch auf JavaScript außerhalb des Browsers k
 
 **Möglichkeit 1:** JavaScript-Code in der Node.js-Shell ausführen
 
-Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.webp' style='border-radius: 4px; height: 1.5em;' alt='ein Rechteck mit einem Streifen unten'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
+Öffne dazu ein Terminal, indem du entweder <kbd>Strg</kbd><kbd>J</kbd> drückst oder das Panel-Symbol <img src='../basics/panel.svg' style='border-radius: 4px; height: 1.5em;' alt='ein Rechteck mit einem Streifen unten'> rechts oben drückst. Dein Fenster sollte jetzt ungefähr so aussehen:
 
 <!-- tutorial-screenshot
 # Ein frischer Workspace ohne Ordner, das Terminal offen
