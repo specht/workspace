@@ -1819,6 +1819,19 @@ body.has-autotoc-secondary.autotoc-primary-visible {
     .gallery.columns-3, .gallery.columns-4 { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* .hide-lone: of four pictures, the fourth goes when three fit in a row and
+   it would stand alone in the next (three columns from 3 × 15em + 2 gaps,
+   four from 4 × 15em + 3 gaps). For examples where three tell enough. */
+.gallery.hide-lone {
+    container-type: inline-size;
+}
+
+@container (min-width: 47em) and (max-width: 62.99em) {
+    .gallery.hide-lone > figure:nth-child(4):last-child {
+        display: none;
+    }
+}
+
 @media (max-width: 480px) {
     .gallery.columns-2 { grid-template-columns: 1fr; }
 }

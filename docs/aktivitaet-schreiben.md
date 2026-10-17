@@ -118,7 +118,9 @@ Ohne weitere Klasse verteilen sich die Bilder nach Platz. `columns-2`,
 `columns-3` und `columns-4` halten so viele in einer Reihe, für Bilder, die
 man vergleicht (auf dem Handy zwei, bei `columns-2` eins); `portrait` ist
 für hohe Bilder wie einen Handybildschirm, `tiles` für viele kleine wie die
-Modelle eines Kenney-Kits. Bilder zum Vergleichen sind einzelne Dateien, die
+Modelle eines Kenney-Kits. Mit `hide-lone` fällt von vier Bildern das vierte
+weg, wenn drei in eine Reihe passen und es allein in der nächsten stünde: für
+Beispiele, bei denen drei genügen. Bilder zum Vergleichen sind einzelne Dateien, die
 Unterschrift steht in der `<figcaption>`, nicht ins Bild gezeichnet: So lesen
 sie auch Screenreader, und sie bricht auf dem Handy um.
 `gallery_markup_test.rb` prüft, dass jede Galerie so aussieht und keine

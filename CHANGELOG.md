@@ -769,6 +769,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   und Umbenennen bis zur Umwandlung nach WebP. Das Kontextmenü des Browsers
   ist nachgebaut, weil ein Screenshot das echte nicht zeigt. Nach einem Update
   von VS Code entstehen sie neu.
+- Galerien können mit `hide-lone` ein viertes Bild weglassen, wenn es allein
+  in einer Reihe stünde; so die Farbschemata in den Grundlagen.
 - Pascal, »Programmieren wie in den 90ern«: Die Entwicklungsumgebung fp
   kennt die Ordner der Units inzwischen selbst (`/etc/fp.cfg`); der Schritt
   über »Options« und »Directories…« entfällt, stattdessen kompiliert

@@ -259,7 +259,7 @@ sleep: 1.5
 
 Die Liste findest du auch über das Zahnrad links unten unter »Themes« › »Color Theme«. Der Workspace startet mit **Dark 2026**. Diese Farbschemata sind unter anderem schon dabei:
 
-<div class='gallery'>
+<div class='gallery hide-lone'>
 <!-- tutorial-screenshot
 # Farbschema Light 2026 (die Vorschau von eben verwerfen)
 press: Escape
@@ -327,7 +327,7 @@ sleep: 1.5
 
 Ein paar beliebte Farbschemata zur Inspiration. Nach dem Namen unter jedem Bild kannst du in den Erweiterungen suchen:
 
-<div class='gallery'>
+<div class='gallery hide-lone'>
 <!-- tutorial-screenshot
 # Farbschema Dracula Theme
 hook: install dracula-theme.theme-dracula
