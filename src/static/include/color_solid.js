@@ -432,7 +432,7 @@
     function mount(element) {
         const name = element.dataset.space in SPACES ? element.dataset.space : 'rgb';
         const space = SPACES[name], whole = surface(name);
-        const state = { rot: startTurn(-Math.PI / 4, 0.45), cut: true, top: whole.high, split: false, explode: 0.3 };
+        const state = { rot: startTurn(-Math.PI / 4, 0.45), cut: false, top: whole.high, split: false, explode: 0.3 };
         element.innerHTML = `
             <div class='cs-stage'>
                 <canvas tabindex='0' aria-label='Die Farben des RGB-Würfels als Körper im Farbraum ${space.name}. Ziehen dreht ihn.'></canvas>
@@ -446,7 +446,7 @@
                     <span class='cs-value cs-height'></span>
                 </label>
                 <div class='cs-toggles'>
-                    <button type='button' class='cs-toggle' data-cut aria-pressed='true'><i class='bi bi-pie-chart'></i> Viertel herausnehmen</button>
+                    <button type='button' class='cs-toggle' data-cut aria-pressed='false'><i class='bi bi-pie-chart'></i> Viertel herausnehmen</button>
                     <button type='button' class='cs-toggle' data-split aria-pressed='false'><i class='bi bi-boxes'></i> Zerteilen</button>
                 </div>
                 <label class='cs-field' data-apart hidden>

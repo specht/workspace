@@ -773,7 +773,8 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   Zeiger, auch wenn die Oberseite schon zum Betrachter gekippt ist.
   Losgelassen dreht der Körper kurz weiter und läuft aus (nicht bei »weniger
   Bewegung«). Der Knopf »In 8 × 8 × 8 Würfel teilen« heißt »Zerteilen«: Im
-  Farbraum sind die Stücke meist keine Würfel mehr.
+  Farbraum sind die Stücke meist keine Würfel mehr. Die Körper sind am Anfang
+  ganz; das Viertel nimmt erst ein Klick heraus.
 - Der Sprachwechsel auf Seiten in Ruby und Python ist ein Umschalter mit den
   Logos der beiden Sprachen.
 - Das Widget zum Entpacken in »LZW« markiert den Code, der gerade gelesen
