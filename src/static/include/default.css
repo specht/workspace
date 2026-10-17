@@ -1249,7 +1249,7 @@ div.floatright > p {
 }
 
 /* The bar is three columns: »Nach oben«, the chapters (they scroll only
-   within theirs, never under the chevron), and an empty column as wide as
+   within theirs, never under the button), and an empty column as wide as
    the first, so the chapters stay centred. */
 .autotoc {
     display: flex;
@@ -1258,27 +1258,42 @@ div.floatright > p {
 
 .autotoc::after {
     content: '';
-    flex: 0 0 3.2em;
+    /* as wide as »Nach oben« with its margins */
+    flex: 0 0 calc(2.415em + 0.9em + 2px);
 }
 
-/* »Nach oben«: a quiet chevron, on the line of the chapter labels (same
-   padding and line), like the icons in the menu. */
+/* »Nach oben«: a small round button, centred on the line of the chapter
+   labels; quiet until it is pointed at. */
 .autotoc-up {
-    flex: 0 0 3.2em;
-    display: block;
-    padding: 1em 0 0;
-    border: 0;
-    color: #6c757d;
-    background: none;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.3em;
+    height: 2.3em;
+    margin: 0.6em 0.45em 0 0.45em;
+    padding: 0;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 50%;
+    color: #495057;
+    background: #f1f3f5;
     font: inherit;
-    line-height: inherit;
-    text-align: center;
+    font-size: 1.05em;
+    line-height: 1;
+    position: relative;
     cursor: pointer;
+    transition: background-color 0.15s, color 0.15s, transform 0.15s;
 }
 
-.autotoc-up:hover,
-.autotoc-up:focus-visible {
+.autotoc-up:hover {
     color: #212529;
+    background: #e2e6ea;
+    transform: translateY(-1px);
+}
+
+.autotoc-up:focus-visible {
+    outline: 2px solid #2b5fb4;
+    outline-offset: 2px;
 }
 
 .autotoc-up .bi {
@@ -1286,8 +1301,24 @@ div.floatright > p {
 }
 
 @media (max-width: 768px) {
+    /* The bar is lower on a phone: a smaller button, on the label's line */
     .autotoc-up {
+        width: 2em;
+        height: 2em;
+        margin-top: 0.8em;
+        font-size: 0.95em;
         pointer-events: auto;
+    }
+
+    /* A finger needs more than the circle: an invisible larger area */
+    .autotoc-up::before {
+        content: '';
+        position: absolute;
+        inset: -0.45em;
+    }
+
+    .autotoc::after {
+        flex-basis: calc(1.9em + 0.9em + 2px);
     }
 }
 

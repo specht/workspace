@@ -41,11 +41,16 @@ html[data-bs-theme="dark"] {
         box-shadow: 0 0 1em rgba(0, 0, 0, 1.0);
     }
     .autotoc-up {
-        color: #a3a29d;
+        color: #c9c8c3;
+        background: #2a2a28;
+        border-color: rgba(255, 255, 255, 0.1);
     }
-    .autotoc-up:hover,
+    .autotoc-up:hover {
+        color: #ffffff;
+        background: #383836;
+    }
     .autotoc-up:focus-visible {
-        color: #ececec;
+        outline-color: #7fbfe3;
     }
     .autotoc > .progress_spots_sm > div {
         background-color: rgba(255, 255, 255, 0.3);
