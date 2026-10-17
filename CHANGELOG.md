@@ -769,6 +769,10 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   und Umbenennen bis zur Umwandlung nach WebP. Das Kontextmenü des Browsers
   ist nachgebaut, weil ein Screenshot das echte nicht zeigt. Nach einem Update
   von VS Code entstehen sie neu.
+- Kontextzeilen: Von der Zickzacklinie fällt ein leichter Schatten in den
+  Kontext, so liegt der neue Code sichtbar obenauf.
+- Klassenseite und Startseite: Titel mit »&« (»Statische Webseiten mit HTML &
+  CSS«) standen dort als »&amp;«.
 - Abgaben ansehen funktioniert jetzt in allen 15 Aktivitäten mit Abgabe; ein
   neuer Test (`e2e/tests/hand-ins.browser.spec.ts`) gibt jede einmal echt ab
   und öffnet sie als Lehrkraft. Die Facharbeit (PDF) erscheint im Browser statt

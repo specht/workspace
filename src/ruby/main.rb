@@ -4660,7 +4660,7 @@ class Main < Sinatra::Base
                       :version => TaskSpec.check_version(t), :prediction => t['prediction'] == true }
                 end
                 { :slug => slug, :activity => c[:tasks][:activity],
-                  :title => c[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', ''), :tasks => tasks }
+                  :title => CGI.unescapeHTML(c[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '')), :tasks => tasks }
             end
     end
 
@@ -4707,8 +4707,10 @@ class Main < Sinatra::Base
             .select { |slug| @@content[slug] && (DEVELOPMENT || !@@content[slug][:dev_only]) }
     end
 
+    # The title as text: without tags, with »&« instead of &amp; (it is
+    # escaped where it goes into HTML)
     def plain_title(slug)
-        (@@content[slug] || {})[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '').strip
+        CGI.unescapeHTML((@@content[slug] || {})[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '')).strip
     end
 
     # Start page for logged-in students: activities a teacher pinned (M5).

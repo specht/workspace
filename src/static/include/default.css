@@ -233,6 +233,42 @@ pre.copy-code .code-cut {
     margin-right: -3em;
 }
 
+/* The new code lies on top: a shadow falls from it across the cut into the
+   context, upwards or downwards. It belongs to the code line next to the cut
+   (the context lines are faded, and their shadow would be too), across the
+   padding to both edges. */
+pre .code-cut + .code-line:not(.code-context),
+pre .code-line:not(.code-context):has(+ .code-cut) {
+    position: relative;
+}
+
+pre .code-cut + .code-line:not(.code-context)::before,
+pre .code-line:not(.code-context):has(+ .code-cut)::after {
+    content: '';
+    position: absolute;
+    left: -1em;
+    right: -1em;
+    height: 1.4em;
+    pointer-events: none;
+}
+
+/* from the middle of the zigzag line (its margin 0.3rem and half its
+   0.4rem) into the context */
+pre .code-cut + .code-line:not(.code-context)::before {
+    bottom: calc(100% + 0.5rem);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.42), transparent);
+}
+
+pre .code-line:not(.code-context):has(+ .code-cut)::after {
+    top: calc(100% + 0.5rem);
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.42), transparent);
+}
+
+pre.copy-code .code-cut + .code-line:not(.code-context)::before,
+pre.copy-code .code-line:not(.code-context):has(+ .code-cut)::after {
+    right: -3em;
+}
+
 /* Centred on the first line: the block's padding (0.5em at 93%) plus half
    a line (1.5 at 93%) minus half the button. */
 .code-copy {
@@ -4488,6 +4524,17 @@ ul.task-teacher-list .task-teacher-answer {
 
     pre.copy-code .code-cut {
         margin-right: -2.6em;
+    }
+
+    pre .code-cut + .code-line:not(.code-context)::before,
+    pre .code-line:not(.code-context):has(+ .code-cut)::after {
+        left: -0.6em;
+        right: -0.6em;
+    }
+
+    pre.copy-code .code-cut + .code-line:not(.code-context)::before,
+    pre.copy-code .code-line:not(.code-context):has(+ .code-cut)::after {
+        right: -2.6em;
     }
 
     /* A table wider than the phone scrolls sideways by itself instead of
