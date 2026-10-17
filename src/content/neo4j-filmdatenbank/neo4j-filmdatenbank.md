@@ -472,3 +472,21 @@ _task(vergleich)
 - **Schlüssel** (`IS NODE KEY`) übernehmen die Aufgabe von Primärschlüsseln, **Indizes** beschleunigen Suchen.
 
 Eine Graphdatenbank ist nicht besser als eine relationale. MySQL hat dir mit Tabellen, Primär- und Fremdschlüsseln eine klare Struktur gegeben. Aber sobald die Verbindungen selbst die Frage sind, wer mit wem, über welche Wege, lassen sie sich als Graph direkt hinschreiben.
+
+<!-- tutorial-step
+# Jede Cypher-Aufgabe nimmt ihre Lösung an und lehnt einen typischen Fehler ab
+check-task: koenig-der-loewen <- MATCH (m:Movie {title: 'The Lion King', year: 1994}) RETURN m.runtime, m.german_title
+check-task-fails: koenig-der-loewen <- MATCH (m:Movie {title: 'The Lion King'}) RETURN m.runtime, m.german_title
+check-task: scifi <- MATCH (m:Movie)-[:IN_GENRE]->(g:Genre) WHERE g.name = 'Sci-Fi' AND m.year >= 2010 RETURN m.title, m.year ORDER BY m.year DESC
+check-task-fails: scifi <- MATCH (m:Movie)-[:IN_GENRE]->(g:Genre) WHERE g.name = 'Sci-Fi' AND m.year >= 2010 RETURN m.title, m.year ORDER BY m.year
+check-task: drei-stunden <- MATCH (m:Movie) WHERE m.runtime > 180 RETURN m.title, m.runtime
+check-task-fails: drei-stunden <- MATCH (m:Movie) WHERE m.runtime > 3 RETURN m.title, m.runtime
+check-task: comedy-scifi <- MATCH (c:Genre {name: 'Comedy'})<-[:IN_GENRE]-(m:Movie)-[:IN_GENRE]->(s:Genre {name: 'Sci-Fi'}) RETURN m.title
+check-task-fails: comedy-scifi <- MATCH (m:Movie)-[:IN_GENRE]->(g:Genre) WHERE g.name = 'Comedy' OR g.name = 'Sci-Fi' RETURN DISTINCT m.title
+check-task: nolan <- MATCH (p:Person {name: 'Christopher Nolan'})-[:DIRECTOR]->(m:Movie) RETURN m.title, m.year ORDER BY m.year
+check-task-fails: nolan <- MATCH (p:Person {name: 'Christopher Nolan'})-[]->(m:Movie) RETURN DISTINCT m.title, m.year ORDER BY m.year
+check-task: zimmer <- MATCH (p:Person {name: 'Hans Zimmer'})-[r]->(m:Movie) RETURN m.title, type(r)
+check-task-fails: zimmer <- MATCH (p:Person {name: 'Hans Zimmer'})-[:COMPOSER]->(m:Movie) RETURN m.title
+check-task: viel-regie <- MATCH (p:Person)-[:DIRECTOR]->(m:Movie) WITH p, count(m) AS n WHERE n >= 15 RETURN p.name, n ORDER BY n DESC
+check-task-fails: viel-regie <- MATCH (p:Person)-[:DIRECTOR]->(m:Movie) RETURN p.name, count(m) AS n ORDER BY n DESC
+-->
