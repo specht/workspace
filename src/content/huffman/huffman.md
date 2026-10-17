@@ -353,7 +353,14 @@ Wer decodieren will, braucht die Codes. Anders als bei LZW lassen sie sich nicht
 
 Aus den Längen A: 2, B: 2, C: 2, D: 3, E: 3 werden so die Codes A = `00`, B = `01`, C = `10`, D = `110` (`10` + 1 = `11`, mit einer Null dahinter), E = `111`. Die Längen sind dieselben wie vorher, also braucht der Text genauso viele Bits, nur die Codes selbst haben sich geändert.
 
-Genau so speichert JPEG seine Huffman-Tabellen im [DHT-Segment](/jpeg): 16 Zahlen, wie viele Codes es mit 1, 2, … 16 Bits gibt, dann die Symbole in ihrer Reihenfolge. Daraus berechnet der Decoder die Codes. Ein Code darf bei JPEG höchstens 16 Bits haben; ein Encoder, dessen Baum tiefer wird, muss ihn so umbauen, dass kein Code länger ist.
+Genau so speichert JPEG seine Huffman-Tabellen im [DHT-Segment](/jpeg), in zwei Arrays mit den Namen aus der JPEG-Norm: `bits` mit 16 Zahlen, wie viele Codes es mit 1, 2, … 16 Bits gibt, und `huffval` mit den Symbolen in der Reihenfolge von Schritt 1. Für das Beispiel oben:
+
+```text
+bits    = [0, 3, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+huffval = [A, B, C, D, E]
+```
+
+Keine Codes mit einem Bit, drei mit zwei Bits (A, B, C), zwei mit drei Bits (D, E). Daraus berechnet der Decoder die Codes, mit derselben Regel. Ein Code darf bei JPEG höchstens 16 Bits haben; ein Encoder, dessen Baum tiefer wird, muss ihn so umbauen, dass kein Code länger ist.
 
 <!-- language: ruby -->
 Schreib `canonical(lengths)`: Es bekommt einen Hash mit der Länge jedes Bytes und gibt einen Hash mit den kanonischen Codes zurück, als Strings aus 0 und 1. `code.to_s(2)` schreibt eine Zahl als Binärzahl, `rjust(length, '0')` füllt vorn mit Nullen auf, und `<<` schiebt eine Zahl nach links, hängt also hinten Nullen an: `0b10 << 1` ist `0b100`.

@@ -113,7 +113,7 @@ void read_sof0(void)
 typedef struct
 {
     int min_code[17], max_code[17], val_ptr[17];
-    uint8_t values[256];
+    uint8_t huffval[256];
 } huffman;
 
 huffman dc_tables[4], ac_tables[4];
@@ -125,23 +125,23 @@ void read_dht(int length)
     {
         int tc_th = read_byte();
         huffman *t = (tc_th >> 4) ? &ac_tables[tc_th & 15] : &dc_tables[tc_th & 15];
-        int counts[17];
+        int bits[17];
         int total = 0;
         for (int len = 1; len <= 16; len++)
         {
-            counts[len] = read_byte();
-            total += counts[len];
+            bits[len] = read_byte();
+            total += bits[len];
         }
         for (int i = 0; i < total; i++)
-            t->values[i] = read_byte();
+            t->huffval[i] = read_byte();
         int code = 0, k = 0;
         for (int len = 1; len <= 16; len++)
         {
             t->val_ptr[len] = k;
             t->min_code[len] = code;
-            code += counts[len];
-            k += counts[len];
-            t->max_code[len] = counts[len] ? code - 1 : -1;
+            code += bits[len];
+            k += bits[len];
+            t->max_code[len] = bits[len] ? code - 1 : -1;
             code <<= 1;
         }
     }
@@ -203,7 +203,7 @@ int decode_huffman(huffman *t)
     {
         code = (code << 1) | read_bit();
         if (code <= t->max_code[len])
-            return t->values[t->val_ptr[len] + code - t->min_code[len]];
+            return t->huffval[t->val_ptr[len] + code - t->min_code[len]];
     }
     fail("Kein gültiger Huffman-Code.");
     return 0;

@@ -721,6 +721,9 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Huffman: Die beiden Arrays einer kanonischen Tabelle heißen wie in der
+  JPEG-Norm `bits` und `huffval`, mit dem Beispiel ausgeschrieben; die
+  Musterlösung des JPEG-Decoders benutzt dieselben Namen.
 - »Ein Krimi im Terminal«, Beweise vom Server: Der eigene Zugang zum
   Museumsserver liegt als Zettel der Kommissarin in den Akten
   (`bitstein/zugang-museum.txt`), wenn man sie im eigenen Workspace
