@@ -129,6 +129,8 @@ Speichere die Datei, indem du <kbd>Strg</kbd><kbd>S</kbd> drückst. Die Vorschau
 <!-- tutorial-screenshot
 write-file: pages-starter/2.md <- previous-code
 wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/2.md
+check-task: zweite-seite
+check-task-fails: entscheidung
 preview-reload
 tab: preview
 click: Fit graph
@@ -165,6 +167,8 @@ Speichere die Datei und probiere die Geschichte im Browser aus:
 <!-- tutorial-screenshot
 write-file: pages-starter/1.md <- previous-code
 wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/1.md
+check-task: entscheidung
+check-task-fails: verzweigung
 preview-reload
 tab: preview
 click: Fit graph
@@ -226,6 +230,9 @@ write-file: pages-starter/3.md <- previous-code (3-new)
 write-file: pages-starter/4.md <- previous-code (4-new)
 write-file: pages-starter/2.md <- previous-code (2-new)
 wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/2.md
+check-task: verzweigung
+check-task-fails: lokal
+check-task-fails: ende
 preview-reload
 tab: preview
 click: Fit graph
@@ -283,6 +290,8 @@ Der wichtige Unterschied ist der Punkt: `(.)` – er bedeutet, dass die Geschich
 <!-- tutorial-screenshot
 write-file: pages-starter/3.md <- previous-code (3-newer)
 wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/2.md
+check-task: lokal
+check-task-fails: schluessel
 preview-reload
 hold: 1.5s selector:.story-restart-control
 tab: preview
@@ -338,6 +347,7 @@ has_key = false;
 
 Die Datei sieht jetzt so aus:
 
+<!-- screenshot-code: 1-var -->
 ```markdown_wrap
 # Nach Schulschluss
 
@@ -560,6 +570,7 @@ Starte die Geschichte neu und probiere es aus:
 Jetzt verändert sich die Beschreibung des Flurs und die neue Entscheidung erscheint.
 
 <!-- tutorial-screenshot
+write-file: pages-starter/1.md <- previous-code (1-var)
 write-file: pages-starter/2.md <- previous-code (2-cond)
 write-file: pages-starter/3.md <- previous-code (3-cond)
 write-file: pages-starter/5.md <- previous-code (5-cond)
@@ -610,6 +621,9 @@ click: Öffne den Materialschrank.
 move-mouse: No problems
 sleep: 0.5
 variants: dark
+# Here the analysis knows all pages of the condition step
+check-task: schluessel
+check-task: ende
 -->
 
 <img class='full full-shadow scroll-right' src='unlocked-door.webp' alt='Der geöffnete Materialschrank bildet das Ende der Geschichte; darunter erscheint der Neustart-Button.'>
@@ -665,6 +679,7 @@ BIF erkennt, dass das JavaScript nicht gültig ist. Im Bereich **Problems** sieh
 <!-- tutorial-screenshot
 write-file: pages-starter/3.md <- file:3-with-error.md.txt
 wait-for-file-newer: bif/.story-tools/analysis.json <- bif/pages-starter/3.md
+check-task-fails: ende
 preview-reload
 hold: 1.5s selector:.story-restart-control
 tab: preview

@@ -20,7 +20,7 @@
       "output_sha256": "5160df9c829e03be777ef29157a9afee70a7416d89189fcd83760085dbe4ea0e",
       "state_hash": "a17c3c55e0f737e225e8cd4c700142378ae932003117c4f377cf12c14be375ad",
       "variants": {
-        "first-page-dark.webp": "fbb1737bcd719746fa90448cba1d23fa0fc71ae3a40c2946f41f99841d77de9b"
+        "first-page-dark.webp": "262fc29235f31329e8bfd57fd5da0f5e94e9720fb202a8ec0b44439b8d42626b"
       },
       "workspace_look": "4.138.0-ls366"
     },
@@ -36,7 +36,7 @@
     "locked-door.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
       "output_sha256": "558221f6b99861fe623f315fbcd5230b9b4994e34182e5a775568d9536a03ce1",
-      "state_hash": "503d5034d837754b22e59f29992563ad509edd36eaf34557620dfcea517a4646",
+      "state_hash": "b5244e9babe8b836bf9206b90612c597e785934b203c85c8d1f02be253bbdf2a",
       "variants": {
         "locked-door-dark.webp": "066225a08de59ce18e434a554f076002eb036a7e3ec31cf63894d52ffb7e91fa"
       },
@@ -45,15 +45,15 @@
     "script-error.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
       "output_sha256": "e1696a66f629c86f1910d8aa8981eb3726a2b9603a4298fe3995c2774b8ec0ee",
-      "state_hash": "78e401e8cbe2e96b639bc70e8d5b88cae3b80334f2e0af0f577cb16cfaa99024",
+      "state_hash": "d80e7b014b076c4578ee0ac474fc7d14222e1ae1deba182af7b4e8c71f713aef",
       "variants": {
-        "script-error-dark.webp": "c3a65b03e8d3cb4b424a1f4c8dfb87b26ac2806cfea140595cfe45917ddb731c"
+        "script-error-dark.webp": "b5a3d27663a71172e2c8ed0f8c7f76f34a0689b86832217008496876fd45528e"
       },
       "workspace_look": "4.138.0-ls366"
     },
     "story-begin.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
-      "output_sha256": "15fdda4bf09838bda6649094956933a7ccbe0ce5f3c0bcdff2fd88ca80335fe9",
+      "output_sha256": "1d1176a242f4c59fd6db7ef3264f5e59ff0f6ebbd368961c0791b78b7c7bba42",
       "state_hash": "d7ab535d07c5783a91fe02eadd421b7dc7ce421f879180443b9823bfd68d6d54",
       "workspace_look": "4.138.0-ls366"
     },
@@ -69,7 +69,7 @@
     "unlocked-door.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
       "output_sha256": "9e63025c9c9181bf57b9c636ad58914121e6abfa5866e035455b6baa05ff4952",
-      "state_hash": "78b6e2349adb7c795446de6afb3771158958c6621e772631b56296b8b631b05a",
+      "state_hash": "512c8f43987cde14f1fa0b653ea761d427b4ea2059df5d94bcf9cc50cefa07bf",
       "variants": {
         "unlocked-door-dark.webp": "b3e9d52beded4bcbbb375e572edf87e46209ab8a9badd4a1d3a720b5bafd56a9"
       },
