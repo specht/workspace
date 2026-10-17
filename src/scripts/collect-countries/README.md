@@ -1,0 +1,53 @@
+# Collect countries
+
+`collect-countries.rb` builds the classroom country dataset for *Einführung in SQL*
+(`src/content/mysql`) and the SQL-Zeitlupe: the continents, the countries of the world,
+their cities and which countries share a land border.
+
+All data comes from [Wikidata](https://www.wikidata.org/) (CC0 1.0). The countries are
+the 193 members of the United Nations, the two observer states, Kosovo and Taiwan; the
+cities every human settlement with at least 100,000 inhabitants, and every capital.
+
+Run:
+
+```sh
+./collect-countries.rb                    # writes ./country-archive
+./collect-countries.rb --output /path/to/workspace-files/country-archive
+./collect-countries.rb --offline          # only cached Wikidata answers
+```
+
+The Wikidata Query Service is asked with a pause in between (`--pause`, default 1 s)
+and a User-Agent that names this repository. Every answer is cached in
+`.wikidata-cache/` next to the output; a second run only asks for what is missing.
+Delete `.wikidata-cache/` to get fresh data. A first run takes some minutes.
+
+What a city is decides most of the code. Wikidata calls many things a human
+settlement: metropolitan areas, boroughs, counties, the metropolitan cities of Italy.
+The rules, in the order the script applies them, are in `load_cities`, and the
+generated README lists them for the reader. When a new build shows a strange city,
+look up its classes (P31) and add the class to `NOT_A_CITY`, or, if it is a single
+item, to `NOT_A_CITY_ITEM`. Change a class only as that class: Wikidata's tree of
+classes is not to be trusted (»city in the United States« is a subclass of »urban area
+of the United States«).
+
+Generated files (shared with `collect-movies` and `collect-music` via
+`../lib/classroom_dataset.rb`):
+
+- `continents.txt`, `countries.txt`, `cities.txt` — JSON Lines, with Wikidata item IDs
+- `mysql.sql` — schema and complete data
+- `mysql-schema.sql`, `mysql-data.sql` — schema only and data only
+- `mysql-data-countries.sql` (`continent`, `country`, `city`) and `mysql-data-borders.sql`
+  (`border`) — data in two steps
+- `neo4j.dump` — logical dump compatible with `neo4j_bolt load`
+- `README.md` — provenance, licence, the rules and what each column means
+
+The tables and columns are a contract with the Einführung in SQL, its tasks
+(`src/content/mysql/tasks.yaml`) and the SQL-Zeitlupe
+(`src/scripts/query-stepper-data.rb countries mysql.sql`). Change them together.
+
+At the end the script prints a sanity summary (counts, countries without capital or
+neighbours, Germany) and notes. Check it, and check by hand what the tutorial asks
+about, before publishing to https://github.com/specht/workspace-files under
+`country-archive/`. Do not publish the `.wikidata-cache/` folder.
+
+Test without network: `ruby collect_countries_test.rb`.

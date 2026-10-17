@@ -1022,25 +1022,35 @@ class DiscogsDatasetBuilder
 
       ## MySQL
 
-      `mysql.sql` creates these tables:
+      One line per table, the primary key first, `→` for a foreign key:
 
-      - `artist`
-      - `album`
-      - `track`
-      - `genre`
-      - `album_genre`
-      - `artist_part_of`
+      ```
+      artist(id, name, born, died)
+      genre(id, name)
+      album(id, discogs_release_id, artist_id → artist, title, year, country, versions)
+      track(album_id → album, number, title, duration)
+      album_genre(album_id → album, genre_id → genre)
+      artist_part_of(member_id → artist, band_id → artist)
+      ```
+
+      - `artist`: `born` and `died` are years read from the artist's Discogs
+        profile; empty for bands and where the profile does not say
+      - `album`: `id` is the Discogs master-release ID, `discogs_release_id` the
+        canonical concrete release that country and tracks come from; `year` the
+        year of the master release, `country` where that release came out;
+        `versions` how many release versions Discogs has for the master (useful
+        for sorting, it decides nothing about inclusion)
+      - `track`: `number` counts from 1 within the album, `duration` is in
+        seconds; empty where Discogs has no time
+      - `album_genre`: an album may have several genres
+      - `artist_part_of`: an artist (`member_id`) is or was a member of a band
+        (`band_id`); both are rows of `artist`
 
       Import it into an existing database with, for example:
 
       ```sh
       mysql < mysql.sql
       ```
-
-      `album.id` is the Discogs master-release ID and `album.discogs_release_id` is the
-      canonical concrete release used for country and track information. `album.versions`
-      contains the number of Discogs release versions for that master, so it is useful
-      for sorting and classroom queries without affecting inclusion.
 
       ## Neo4j / Neo4jBolt
 
