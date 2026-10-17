@@ -63,7 +63,7 @@ terminal-open
 
 <img class='full' src='got-terminal.webp' alt='Der Workspace mit dem geöffneten Ordner sql-einfuehrung und einem Terminal im unteren Bereich.'>
 
-<img src='../common/maximize-terminal.webp' class='r' style='width: 25em;' alt='Das Symbol zum Maximieren rechts oben im Terminal.'>
+<img src='../reference/workspace/maximize-terminal.webp' class='r' style='width: 25em;' alt='Rechts oben im Terminal das Symbol zum Maximieren, der Mauszeiger darauf, darunter der Hinweis »Maximize Panel«.'>
 
 Du kannst das Terminal auch maximieren, indem du auf das Symbol in der rechten oberen Ecke des Terminals klickst.
 

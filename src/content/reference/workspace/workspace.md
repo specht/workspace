@@ -39,7 +39,17 @@ terminal-open
 
 <img class='full' src='got-terminal.webp' alt='Der Workspace mit geöffnetem Terminal im unteren Bereich.'>
 
-<img src='../../common/maximize-terminal.webp' class='r' style='width: 25em;' alt='Das Symbol zum Maximieren rechts oben im Terminal.'>
+<!-- tutorial-screenshot
+# Shared: the pages that show it point to this picture (src/content/common/ is gone)
+move-mouse: selector:.part.panel [aria-label*="Maximize Panel"]
+sleep: 1.5
+show-mouse
+crop-left: 74%
+crop-top: 63.5%
+crop-bottom: 24%
+-->
+
+<img src='maximize-terminal.webp' class='r' style='width: 25em;' alt='Rechts oben im Terminal das Symbol zum Maximieren, der Mauszeiger darauf, darunter der Hinweis »Maximize Panel«.'>
 
 Mit dem Symbol rechts oben im Terminal kannst du es maximieren. Die linke Seitenleiste blendest du jederzeit mit <kbd>Strg</kbd><kbd>B</kbd> ein und aus.
 

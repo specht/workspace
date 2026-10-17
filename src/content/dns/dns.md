@@ -83,11 +83,11 @@ crop-terminal-lines: auto
 <table class='table'>
 <thead><tr><th>Typ</th><th>Was er nennt</th><th>Beispiel</th></tr></thead>
 <tbody>
-<tr><td><code>A</code></td><td>eine IPv4-Adresse</td><td><code>5.9.51.11</code></td></tr>
-<tr><td><code>AAAA</code></td><td>eine IPv6-Adresse</td><td><code>2a00:1450:…</code></td></tr>
-<tr><td><code>MX</code></td><td>den Mailserver für Adressen <code>…@name</code>, mit einer Zahl davor: Kleinere werden zuerst versucht</td><td><code>5 gmail-smtp-in.l.google.com.</code></td></tr>
-<tr><td><code>NS</code></td><td>die Nameserver, die für den Namen zuständig sind</td><td><code>joel.ns.cloudflare.com.</code></td></tr>
-<tr><td><code>TXT</code></td><td>beliebigen Text, etwa zum Nachweis, dass einem eine Domain gehört</td><td><code>"v=spf1 …"</code></td></tr>
+<tr><td class='text-nowrap'><code>A</code></td><td>eine IPv4-Adresse</td><td class='text-nowrap'><code>5.9.51.11</code></td></tr>
+<tr><td class='text-nowrap'><code>AAAA</code></td><td>eine IPv6-Adresse</td><td class='text-nowrap'><code>2a00:1450:…</code></td></tr>
+<tr><td class='text-nowrap'><code>MX</code></td><td>den Mailserver für Adressen <code>…@name</code>, mit einer Zahl davor: Kleinere werden zuerst versucht</td><td class='text-nowrap'><code>5 gmail-smtp-in.l.google.com.</code></td></tr>
+<tr><td class='text-nowrap'><code>NS</code></td><td>die Nameserver, die für den Namen zuständig sind</td><td class='text-nowrap'><code>joel.ns.cloudflare.com.</code></td></tr>
+<tr><td class='text-nowrap'><code>TXT</code></td><td>beliebigen Text, etwa zum Nachweis, dass einem eine Domain gehört</td><td class='text-nowrap'><code>"v=spf1 …"</code></td></tr>
 </tbody>
 </table>
 </div>
