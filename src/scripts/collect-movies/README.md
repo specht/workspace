@@ -43,7 +43,7 @@ At the end the script prints a sanity summary (counts, films left out, people be
 the limit per job, genres). Check it, and check by hand what the tutorial asks about
 (*Back to the Future* from 1985, Christopher Nolan, the genre Animation, several people with
 at least five films as director), before publishing to
-https://github.com/specht/workspace-files under `movie-archive/`. Do not publish the
-`.downloads/` and `.wikidata-cache/` folders.
+https://github.com/specht/workspace-files under `movie-archive/` with
+`../publish-datasets.rb movies` (it leaves out `.downloads/` and `.wikidata-cache/`).
 
 Test without network: `ruby collect_movies_test.rb`.

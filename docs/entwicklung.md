@@ -234,9 +234,25 @@ Große Dateien, die Lernende mit `wget` holen, liegen im Repository
 mit Anleitung im README daneben: `src/scripts/collect-countries` die Länder
 der Welt (`country-archive/`), `src/scripts/collect-movies` die Filme
 (`movie-archive/`) und `src/scripts/collect-music` die Musik
-(`music-archive/`). Die Ausgabe kommt in den gleichnamigen Ordner von
-`specht/workspace-files`; danach die Tabellen der SQL-Zeitlupe neu bauen
-(oben).
+(`music-archive/`). Veröffentlicht werden sie mit einem Befehl:
+
+```bash
+src/scripts/publish-datasets.rb --repo ~/workspace-files countries          # kopieren, dann ansehen
+src/scripts/publish-datasets.rb --repo ~/workspace-files countries --push   # und veröffentlichen
+```
+
+Das Skript kopiert die Ausgabe des Sammlers (ohne die Caches) in einen Klon
+von `specht/workspace-files`, schreibt dort die `README.md` mit allen
+Datensätzen, ihren Tabellen und Zeilen, baut hier die Tabellen der
+SQL-Zeitlupe neu (die dann hier committet werden) und committet dort, mit
+`--push` auch gleich hinauf. `--repo` kann `WORKSPACE_FILES` ersetzen,
+`--from countries=DIR` nimmt einen Bau aus einem anderen Ordner. Ohne
+Datensatz schreibt es nur die Übersicht neu. Erwartet eine Aufgabe in einer
+`tasks.yaml` eine andere Zeilenzahl (`tables: { city: 4748 }`), verweigert
+es den Bau, bis die Aufgaben, ihre Lösungen und die Screenshots nachgezogen
+sind, oder mit `--force`. Agenten veröffentlichen nicht selbst: `--patch
+DATEI` arbeitet in einem frischen Klon und schreibt einen Patch für
+`git am`.
 
 ## Icons
 

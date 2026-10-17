@@ -38,6 +38,13 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
   wie die Filme und die Musik (auch für Neo4j). Gebaut wird er von
   `src/scripts/collect-countries`, das man jederzeit neu laufen lassen kann.
 
+- Für Autorinnen und Autoren: `src/scripts/publish-datasets.rb`
+  veröffentlicht einen gebauten Datensatz in `specht/workspace-files`: Es
+  kopiert ihn ohne Caches, schreibt dort eine Übersicht aller Datensätze mit
+  ihren Tabellen und Zeilen, baut die Tabellen der SQL-Zeitlupe neu,
+  committet und pusht. Einen Bau, dessen Zeilenzahlen die Aufgaben nicht
+  erwarten, verweigert es (docs/entwicklung.md).
+
 - Neue Handbuch-Seite »Datensätze« unter »Datenbanken«: die Länder der
   Welt, die Filme und die Musik, jeweils mit ihren Tabellen als Schema, was
   die Spalten bedeuten, was drin ist und was nicht, woher die Daten kommen

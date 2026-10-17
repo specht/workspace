@@ -52,6 +52,7 @@ renewed with it; students who loaded the old build load the new one.
 At the end the script prints a sanity summary (counts, countries without capital or
 neighbours, Germany) and notes. Check it, and check by hand what the tutorial asks
 about, before publishing to https://github.com/specht/workspace-files under
-`country-archive/`. Do not publish the `.wikidata-cache/` folder.
+`country-archive/` with `../publish-datasets.rb countries` (it leaves out
+`.wikidata-cache/` and refuses a build whose row counts the tasks do not expect).
 
 Test without network: `ruby collect_countries_test.rb`.

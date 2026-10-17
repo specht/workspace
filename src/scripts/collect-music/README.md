@@ -56,4 +56,6 @@ The generated Neo4j graph contains `Artist`, `Album`, `Track` and `Genre` nodes 
 contains the equivalent `artist`, `album`, `track`, `genre`, `album_genre` and
 `artist_part_of` tables.
 
-To change the collection, edit `wanted-artists.txt` and rebuild the dataset.
+To change the collection, edit `wanted-artists.txt` and rebuild the dataset. Publish it
+to https://github.com/specht/workspace-files under `music-archive/` with
+`../publish-datasets.rb music`.

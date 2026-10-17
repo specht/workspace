@@ -73,4 +73,5 @@ address from `credentials.rb` and the code `123456`.
   when the maintainer asks for it.
 - Other repositories (starter templates such as `specht/raylib-starter`, the
   2D Game Studio) get a patch for `git am`, checked with `git apply --check`;
-  never commit or push there directly.
+  never commit or push there directly. For the datasets in
+  `specht/workspace-files`: `src/scripts/publish-datasets.rb --patch FILE`.
