@@ -346,7 +346,7 @@ sleep: 0.5
 
 <img class='full' src='select-country-order-by-desc.webp' alt='Die Länder sind nach Einwohnerzahl absteigend sortiert, oben China und Indien.'>
 
-_task(kleinste-laender)
+_task(groesste-laender)
 
 ### Begrenzen: LIMIT
 
@@ -481,6 +481,8 @@ _task(kontinente-grosse-laender)
 
 ## In welcher Reihenfolge arbeitet die Datenbank?
 
+_task(reihenfolge)
+
 Eine Abfrage schreibst du mit `SELECT` zuerst. Die Datenbank fängt aber woanders an: Sie holt zuerst die Zeilen der Tabelle aus `FROM`, wirft mit `WHERE` die weg, die nicht passen, und wählt erst danach mit `SELECT` die Spalten aus. Dann sortiert sie mit `ORDER BY` und schneidet mit `LIMIT` ab. Der Query Stepper unten führt eine Abfrage so aus, Teil für Teil, und zeigt nach jedem Schritt die Tabelle, die gerade entstanden ist. Mit <kbd>←</kbd> und <kbd>→</kbd> gehst du durch die Schritte; die Abfrage kannst du ändern.
 
 <div class='query-stepper' data-stepper data-query="SELECT name, ROUND(population / area) AS density
@@ -494,7 +496,6 @@ LIMIT 5;">
 
 `density` ist hier die Bevölkerungsdichte, die Zahl der Menschen pro Quadratkilometer, gerundet. Den Namen bekommt die Spalte mit `AS` bei `SELECT`, und weil `ORDER BY` danach kommt, darf es ihn schon benutzen.
 
-_task(reihenfolge)
 
 _task(dichte-where)
 
@@ -583,8 +584,8 @@ _task(hauptstaedte-sueden)
 # Jede SQL-Aufgabe nimmt ihre Lösung an und lehnt einen typischen Fehler ab, auf den Daten, die die Seite lädt
 check-task: griechenland <- 10566531
 check-task-fails: griechenland <- 1056653
-check-task: kleinste-laender <- SELECT name, population FROM country ORDER BY population;
-check-task-fails: kleinste-laender <- SELECT name, population FROM country ORDER BY population DESC;
+check-task: groesste-laender <- SELECT name, area FROM country ORDER BY area DESC;
+check-task-fails: groesste-laender <- SELECT name, area FROM country ORDER BY area;
 check-task: top5-laender <- SELECT name FROM country ORDER BY population DESC LIMIT 5;
 check-task-fails: top5-laender <- SELECT name FROM country ORDER BY population LIMIT 5;
 check-task: hundert-millionen <- 15
@@ -674,52 +675,53 @@ _task(linksverkehr)
 
 ## Gruppen bilden: GROUP BY
 
-`COUNT(*)` hat bisher alle Zeilen gezählt, die übrig blieben. Mit `GROUP BY` teilt die Datenbank die Zeilen vorher in Gruppen ein und rechnet für jede Gruppe einmal. Wie viele Länder hat jeder Kontinent?
+`COUNT(*)` hat bisher alle Zeilen gezählt, die übrig blieben. Mit `GROUP BY` teilt die Datenbank die Zeilen vorher in Gruppen ein und rechnet für jede Gruppe einmal. In wie vielen Ländern wird rechts gefahren, in wie vielen links?
 
 ```sql
-SELECT continent, COUNT(*)
+SELECT driving_side, COUNT(*)
 FROM country
-GROUP BY continent;
+GROUP BY driving_side;
 ```
 
 <!-- tutorial-screenshot
 press: Control+L
-terminal-run: SELECT continent, COUNT(*) FROM country GROUP BY continent;
+terminal-run: SELECT driving_side, COUNT(*) FROM country GROUP BY driving_side;
 sleep: 0.5
 terminal-scroll-back: 2
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
 
-<img class='full' src='group-by.webp' alt='Für jeden der sechs Kontinente mit Ländern eine Zeile mit der Zahl seiner Länder, Afrika mit 54.'>
+<img class='full' src='group-by.webp' alt='Zwei Zeilen: right mit 143 Ländern und left mit 54.'>
 
-Jede Gruppe wird zu einer Zeile. Neben `COUNT` gibt es `SUM` (die Summe), `AVG` (den Durchschnitt), `MIN` und `MAX`. Die Einwohner jedes Kontinents, die größten zuerst:
+Jede Gruppe wird zu einer Zeile. Neben `COUNT` gibt es `SUM` (die Summe), `AVG` (den Durchschnitt), `MIN` und `MAX`. Wie viele Städte jedes Land in `city` hat und wie viele Menschen darin wohnen, die fünf Länder mit den meisten zuerst:
 
 ```sql
-SELECT continent, COUNT(*) AS countries, SUM(population) AS people
-FROM country
-GROUP BY continent
-ORDER BY people DESC;
+SELECT country_code, COUNT(*) AS cities, SUM(population) AS people
+FROM city
+GROUP BY country_code
+ORDER BY people DESC
+LIMIT 5;
 ```
 
 <!-- tutorial-screenshot
 press: Control+L
-terminal-run: SELECT continent, COUNT(*) AS countries, SUM(population) AS people FROM country GROUP BY continent ORDER BY people DESC;
+terminal-run: SELECT country_code, COUNT(*) AS cities, SUM(population) AS people FROM city GROUP BY country_code ORDER BY people DESC LIMIT 5;
 sleep: 0.5
 terminal-scroll-back: 2
 crop-terminal-lines: auto
 crop-terminal-skip-bottom: 1
 -->
 
-<img class='full' src='group-by-sum.webp' alt='Die Kontinente mit der Zahl ihrer Länder und ihren Einwohnern, Asien mit gut 4,5 Milliarden oben.'>
+<img class='full' src='group-by-sum.webp' alt='Fünf Länder mit der Zahl ihrer Städte und deren Einwohnern: China mit 309 Städten und gut 1,3 Milliarden oben, dann Indien, Brasilien, die Vereinigten Staaten und Japan.'>
 
-Hinter `SELECT` dürfen bei `GROUP BY` nur die Spalten stehen, nach denen gruppiert wird, und Funktionen wie `COUNT` oder `SUM`: Welchen `name` sollte die Datenbank für Afrika auch zeigen, es sind 54? Gruppen filtern kannst du mit `HAVING`; anders als `WHERE`, das einzelne Zeilen prüft, kommt es nach dem Gruppieren:
+Hinter `SELECT` dürfen bei `GROUP BY` nur die Spalten stehen, nach denen gruppiert wird, und Funktionen wie `COUNT` oder `SUM`: Welchen `name` sollte die Datenbank für China auch zeigen, es sind 309 Städte? Gruppen filtern kannst du mit `HAVING`; anders als `WHERE`, das einzelne Zeilen prüft, kommt es nach dem Gruppieren. Die Länder mit mehr als 200 Städten:
 
 ```sql
-SELECT continent, COUNT(*) AS countries
-FROM country
-GROUP BY continent
-HAVING countries > 40;
+SELECT country_code, COUNT(*) AS cities
+FROM city
+GROUP BY country_code
+HAVING cities > 200;
 ```
 
 Wie die Gruppen entstehen, zeigt der [Query Stepper](/query-stepper): Er färbt bei `GROUP BY` jede Gruppe ein, und `HAVING` streicht ganze Gruppen.
@@ -820,7 +822,7 @@ crop-terminal-skip-bottom: 1
 
 Australien und Neuseeland bleiben im Ergebnis, mit `NULL`; Papua-Neuguinea hat einen Nachbarn, Indonesien auf derselben Insel. Mit `WHERE border.country_code IS NULL` bleiben die Länder ohne Nachbarn übrig.
 
-_task(ohne-nachbarn)
+_task(kontinent-ohne-laender)
 
 _task(meiste-staedte)
 
@@ -943,8 +945,8 @@ check-task: nachbarn-deutschland <- SELECT neighbor.name FROM border JOIN countr
 check-task-fails: nachbarn-deutschland <- SELECT neighbor_code FROM border WHERE country_code = 'DEU';
 check-task: viele-nachbarn <- SELECT country.name FROM border JOIN country ON country.code = border.country_code GROUP BY country.code, country.name HAVING COUNT(*) > 8;
 check-task-fails: viele-nachbarn <- SELECT country.name FROM border JOIN country ON country.code = border.country_code GROUP BY country.code, country.name HAVING COUNT(*) > 9;
-check-task: ohne-nachbarn <- SELECT country.name FROM country LEFT JOIN border ON border.country_code = country.code WHERE border.country_code IS NULL;
-check-task-fails: ohne-nachbarn <- SELECT country.name FROM country JOIN border ON border.country_code = country.code WHERE border.country_code IS NULL;
+check-task: kontinent-ohne-laender <- SELECT continent.name FROM continent LEFT JOIN country ON country.continent = continent.name WHERE country.code IS NULL;
+check-task-fails: kontinent-ohne-laender <- SELECT continent.name FROM continent JOIN country ON country.continent = continent.name WHERE country.code IS NULL;
 check-task: meiste-staedte <- SELECT country.name, COUNT(*) AS cities FROM country JOIN city ON city.country_code = country.code GROUP BY country.code, country.name ORDER BY cities DESC LIMIT 1;
 check-task-fails: meiste-staedte <- SELECT country.name, COUNT(*) AS cities FROM country JOIN city ON city.country_code = country.code GROUP BY country.code, country.name ORDER BY cities LIMIT 1;
 check-task: sprachen-schweiz <- SELECT language.name FROM country_language JOIN language ON language.code = country_language.language_code WHERE country_language.country_code = 'CHE';

@@ -341,16 +341,17 @@ _task(animation)
 
 ### Zählen pro Gruppe
 
-Mit `COUNT(*)` zählst du Zeilen. Mit `GROUP BY` teilst du das Ergebnis vorher in Gruppen und zählst jede Gruppe für sich:
+Mit `COUNT(*)` zählst du Zeilen. Mit `GROUP BY` teilst du das Ergebnis vorher in Gruppen und zählst jede Gruppe für sich. Wie viele Genres hat jeder Film, hier die ersten fünf?
 
 ```sql
-SELECT genre.name, COUNT(*)
-FROM genre
-JOIN movie_genre ON genre.id = movie_genre.genre_id
-GROUP BY genre.id, genre.name;
+SELECT movie.title, COUNT(*)
+FROM movie
+JOIN movie_genre ON movie.id = movie_genre.movie_id
+GROUP BY movie.id, movie.title
+LIMIT 5;
 ```
 
-Alle Zeilen mit demselben Genre werden zu einer zusammengefasst, und `COUNT(*)` zählt, wie viele es waren.
+Alle Zeilen mit demselben Film werden zu einer zusammengefasst, und `COUNT(*)` zählt, wie viele es waren: seine Genres. Gruppiert wird nach `movie.id`, weil zwei Filme denselben Titel haben können.
 
 _task(filme-pro-genre)
 

@@ -28,16 +28,19 @@ tasks:
 
   - id: bytes
     title: Wie viele Bytes?
-    prompt: Wie viele Bytes stecken in den 32 Zeichen des Base32-Schlüssels `GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ`?
+    prompt: Manche Dienste geben kürzere Schlüssel aus, etwa `JBSWY3DPEHPK3PXP` mit 16 Zeichen in Base32. Wie viele Bytes stecken darin?
     check:
       type: number
-      expect: 20
+      expect: 10
     feedback:
-      - when: { equals: 32 }
+      - when: { equals: 16 }
         say: Ein Base32-Zeichen ist kein ganzes Byte, sondern 5 Bits.
-      - when: { equals: 24 }
+      - when: { equals: 12 }
         say: Das wäre bei Base64, mit 6 Bits pro Zeichen. Base32 hat 5.
-    solution: '32 Zeichen mal 5 Bits sind 160 Bits, durch 8 sind das 20 Bytes.'
+      - when: { equals: 20 }
+        say: 20 Bytes hat der Schlüssel der Seite mit seinen 32 Zeichen. Dieser hat 16.
+    solution: '16 Zeichen mal 5 Bits sind 80 Bits, durch 8 sind das 10 Bytes.'
+
 
   - id: base32
     title: Base32

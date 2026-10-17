@@ -160,18 +160,22 @@ tasks:
         say: 'Ob annotiert oder nicht: Ein Tag wandert erst mit, wenn du ihn ausdrücklich pushst.'
 
   - id: rueckgaengig
-    title: Aus der Staging Area holen
-    prompt: Du hast `README.md` mit `git add` bereitgelegt, willst die Änderung aber noch nicht committen und auch nicht verlieren. Welcher Befehl?
+    title: Ganz zurück
+    prompt: Du hast `README.md` geändert und mit `git add` bereitgelegt. Dann merkst du, die Änderung war Unsinn und soll ganz weg, so als hättest du die Datei nie angefasst. Was tust du?
     check:
       type: choice
       options:
-        - "`git restore README.md`"
-        - "`git restore --staged README.md`"
+        - "`git restore --staged README.md`, danach `git restore README.md`"
+        - "`git restore --staged README.md` allein"
+        - "`git restore README.md` allein"
         - "`git revert HEAD`"
-        - '`rm README.md && git add .`'
-      correct: 1
+      correct: 0
     feedback:
-      - when: { picked: 0 }
-        say: Vorsicht, `git restore README.md` verwirft die Änderung in der Datei. `--staged` nimmt sie nur aus der Staging Area.
+      - when: { picked: 1 }
+        say: Damit ist die Änderung nur aus der Staging Area heraus. In der Datei steht sie noch; `git status` zeigt sie als geändert.
       - when: { picked: 2 }
-        say: "`git revert` macht einen ganzen Commit rückgängig. Hier gibt es noch keinen Commit."
+        say: Solange die Änderung bereitgelegt ist, holt `git restore README.md` den Stand aus der Staging Area, also die Änderung selbst. Erst muss sie dort heraus.
+      - when: { picked: 3 }
+        say: "`git revert` macht einen ganzen Commit rückgängig. Hier gibt es noch keinen Commit mit der Änderung."
+    solution: Zwei Schritte, zwei Zeilen der Tabelle von unten nach oben. `git restore --staged README.md` nimmt die Änderung aus der Staging Area, `git restore README.md` verwirft sie in der Datei. Neuere Git-Versionen können beides auf einmal, mit `git restore --staged --worktree README.md`.
+

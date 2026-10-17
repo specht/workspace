@@ -56,19 +56,20 @@ tasks:
         say: Der Punkt ist in SQL das Dezimalkomma, kein Tausenderpunkt. Vor dem Punkt steht hier eine sechsstellige Zahl.
     solution: Die Flächen in `country` sind in Quadratkilometern angegeben, mit zwei Nachkommastellen. Deutschland ist knapp 900 km lang und rund 600 km breit; das passt zu gut 350.000 km².
 
-  - id: kleinste-laender
-    title: Die kleinsten zuerst
-    prompt: Gib Name und Einwohnerzahl aller Länder aus, die Länder mit den wenigsten Einwohnern zuerst.
+  - id: groesste-laender
+    title: Die größten zuerst
+    prompt: Gib Name und Fläche aller Länder aus, die Länder mit der größten Fläche zuerst.
     check:
       type: sql
-      expect_query: SELECT name, population FROM country ORDER BY population
-      sorted_by: 2 ASC
+      expect_query: SELECT name, area FROM country ORDER BY area DESC
+      sorted_by: 2 DESC
       tables: { country: 197 }
       setup: Lade zuerst die Beispieldaten, wie unter »Beispieldaten laden« beschrieben.
     feedback:
-      - when: { query_matches: 'desc' }
-        say: "`DESC` sortiert absteigend, dann stehen die größten Länder oben. Ohne Angabe sortiert `ORDER BY` aufsteigend."
-    solution: "`SELECT name, population FROM country ORDER BY population;` Ganz oben steht die Vatikanstadt."
+      - when: { query_matches: 'order\s+by\s+area\s*(asc)?\s*;?\s*$' }
+        say: Ohne `DESC` sortiert `ORDER BY` aufsteigend, dann stehen die kleinsten Länder oben.
+    solution: "`SELECT name, area FROM country ORDER BY area DESC;` Ganz oben steht Russland."
+
 
   - id: top5-laender
     title: Die fünf größten Länder
@@ -283,9 +284,11 @@ tasks:
 
   - id: reihenfolge
     title: Die Reihenfolge
+    prediction: true
     prompt: |
-      In welcher Reihenfolge arbeitet die Datenbank die Teile einer Abfrage
-      mit `SELECT`, `FROM`, `WHERE`, `ORDER BY` und `LIMIT` ab?
+      Du schreibst eine Abfrage mit `SELECT` zuerst. Aber in welcher
+      Reihenfolge arbeitet die Datenbank ihre Teile `SELECT`, `FROM`, `WHERE`,
+      `ORDER BY` und `LIMIT` ab? Rate erst, dann lies weiter.
     check:
       type: choice
       shuffle: false
@@ -446,20 +449,21 @@ tasks:
         say: Die Länder stimmen, als Kürzel. Für die Namen kommt `country` mit einem `JOIN` dazu.
     solution: "`SELECT country.name FROM border JOIN country ON country.code = border.country_code GROUP BY country.code, country.name HAVING COUNT(*) > 8;` Brasilien, China, die Demokratische Republik Kongo, Deutschland, Frankreich, Russland und Serbien. China und Russland haben je 14."
 
-  - id: ohne-nachbarn
-    title: Länder ohne Nachbarn
-    prompt: Welche Länder haben keinen Nachbarn an Land? Gib ihre Namen aus.
+  - id: kontinent-ohne-laender
+    title: Ein Kontinent ohne Länder
+    prompt: Welcher Kontinent in `continent` hat kein einziges Land in `country`? Gib seinen Namen aus.
     check:
       type: sql
-      expect_query: SELECT country.name FROM country LEFT JOIN border ON border.country_code = country.code WHERE border.country_code IS NULL
-      tables: { country: 197, border: 636 }
+      expect_query: SELECT continent.name FROM continent LEFT JOIN country ON country.continent = continent.name WHERE country.code IS NULL
+      tables: { continent: 7, country: 197 }
       setup: Lade zuerst die ganze Fassung, wie unter »Die ganze Datenbank laden« beschrieben.
     feedback:
       - when: { query_matches: '=\s*null' }
         say: "`= NULL` ist nie wahr, auch nicht für `NULL`. Ob etwas fehlt, prüft `IS NULL`."
-      - when: { query_matches: '^\s*select[^;]*\bfrom\s+country\s+(inner\s+)?join\b' }
-        say: Ein `JOIN` lässt die Länder ohne Partner in `border` gerade weg. Sie behält nur ein `LEFT JOIN`.
-    solution: "`SELECT country.name FROM country LEFT JOIN border ON border.country_code = country.code WHERE border.country_code IS NULL;` 39 Länder, fast alle Inseln, von Antigua und Barbuda bis Vanuatu."
+      - when: { query_matches: '^\s*select[^;]*\bfrom\s+continent\s+(inner\s+)?join\b' }
+        say: Ein `JOIN` lässt die Kontinente ohne Partner in `country` gerade weg. Sie behält nur ein `LEFT JOIN`.
+    solution: "`SELECT continent.name FROM continent LEFT JOIN country ON country.continent = continent.name WHERE country.code IS NULL;` Antarktika: Dort gehört kein Land hin, auch wenn einige Länder Teile davon beanspruchen."
+
 
   - id: meiste-staedte
     title: Die meisten Städte

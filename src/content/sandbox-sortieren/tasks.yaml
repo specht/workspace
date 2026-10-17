@@ -64,21 +64,23 @@ tasks:
   - id: nur-dein-ordner
     title: Was gehört in deinen Commit?
     prompt: |
-      Im Klassen-Repository arbeiten alle. Mit welchem Befehl nimmst du nur
-      deine eigenen Dateien in den nächsten Commit auf?
+      Oben steht `git add DEIN_NAME/`. Warum nicht einfach `git add -A`, das
+      alles Geänderte aufnimmt?
     check:
       type: choice
       options:
-        - '`git add -A` im Ordner `sorting-sandbox`'
-        - '`git add DEIN_NAME/` im Ordner `algorithms`'
-        - '`git add algorithms/` im Ordner `sorting-sandbox`'
-        - '`git commit -a` im Ordner `algorithms`'
-      correct: 1
+        - Damit nichts außerhalb deines Ordners in deinen Commit gerät, etwa eine Datei einer anderen Person, die du aus Versehen geändert hast.
+        - Weil `git add -A` die Dateien der anderen aus dem Repository löscht.
+        - Weil `git add -A` in einem Repository mit mehreren Personen nicht funktioniert.
+        - Damit der Commit schneller fertig ist.
+      correct: 0
     feedback:
-      - when: { picked: 0 }
-        say: Im Ordner `sorting-sandbox` liegt die App. Die ändert nur deine Lehrkraft.
-      - when: { picked: 3 }
-        say: '`git commit -a` nimmt jede geänderte Datei mit, auch fremde, wenn du sie aus Versehen verändert hast.'
+      - when: { picked: 1 }
+        say: Löschen würde `git add -A` nur, was du selbst gelöscht hast. Aber es nimmt jede Änderung mit, auch eine an fremden Dateien.
+      - when: { picked: 2 }
+        say: Es funktioniert schon. Die Frage ist, was es alles mitnimmt.
+    solution: Im Ordner `algorithms` liegen die Dateien aller. `git add DEIN_NAME/` nimmt nur deinen Ordner auf; hast du aus Versehen eine fremde Datei verändert, bleibt die Änderung draußen, und beim nächsten `git pull` gibt es keinen Konflikt mit der Person, der die Datei gehört.
+
 
   - id: veroeffentlicht
     title: Committet und gepusht

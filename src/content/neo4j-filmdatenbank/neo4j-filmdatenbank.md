@@ -35,6 +35,12 @@ movie → movie_crew → crew
 
 Das funktioniert. Aber die letzte Frage dort, wer besonders oft mit wem gespielt hat, brauchte jede Tabelle zweimal. Es ging nicht mehr um einen Film oder eine Person, sondern um die **Verbindungen** zwischen ihnen. Eine Graphdatenbank speichert genau diese Verbindungen.
 
+Bevor du siehst, wie der Graph aussieht, rate:
+
+_task(zwischentabelle)
+
+_task(taetigkeit)
+
 Im Graphen gibt es drei Arten von **Knoten**: `Movie`, `Person` und `Genre`. Zwischen ihnen liegen **Beziehungen**, und jede Beziehung hat einen **Typ**:
 
 ```cypher
@@ -50,10 +56,6 @@ Im Graphen gibt es drei Arten von **Knoten**: `Movie`, `Person` und `Genre`. Zwi
 ```
 
 Die Typen sind die Tätigkeiten aus der Tabelle `job`, nur in Großbuchstaben, so wie man sie in Cypher üblicherweise schreibt.
-
-_task(zwischentabelle)
-
-_task(taetigkeit)
 
 <div class='hint'>
 Man muss eine relationale Datenbank nicht immer so in einen Graphen übersetzen. Wir wählen dieses Modell, weil bei unseren Filmdaten gerade die Verbindungen zwischen Filmen, Genres und Personen interessant sind.

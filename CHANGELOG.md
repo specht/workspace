@@ -721,6 +721,20 @@ Jeder Eintrag sagt, was sich für Lernende, Lehrkräfte und Betreibende ändert.
 
 ### Geändert
 
+- Aufgaben, deren Lösung direkt davor stand, fragen jetzt etwas Eigenes:
+  - Einführung in SQL: Die Beispiele zu `GROUP BY`, `SUM` und `HAVING` zählen
+    Straßenseiten und Städte pro Land statt der Länder pro Kontinent, die die
+    Aufgaben danach erfragen. »Die größten zuerst« sortiert nach der Fläche,
+    »Ein Kontinent ohne Länder« sucht mit `LEFT JOIN` Antarktika, und »Die
+    Reihenfolge« ist eine Vermutung vor der Erklärung.
+  - Filmdatenbank: Das Beispiel zählt die Genres jedes Films, die Aufgabe die
+    Filme jedes Genres.
+  - Neo4j-Filmdatenbank: Die beiden Fragen nach `IN_GENRE` und `DIRECTOR` sind
+    Vermutungen, bevor das Modell zu sehen ist.
+  - Git: Die Aufgabe zum Rückgängigmachen verbindet zwei Zeilen der Tabelle.
+  - Sandboxen: Gefragt ist, warum `git add DEIN_NAME/` und nicht `git add -A`.
+  - Zwei Faktoren: gefragt sind die Bytes eines Schlüssels mit 16 Zeichen,
+    nicht die 20 aus dem Text davor.
 - »Einführung in SQL«: Klar getrennt, wo Abfragen hingehören. Ausprobiert
   wird in `mycli`. Fragt eine Aufgabe nach einem Wert (wie viele Länder, wie
   heißt die Währung), trägt man nur das Ergebnis ein; sieben Aufgaben sind

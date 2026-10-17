@@ -7,6 +7,7 @@ activity: neo4j-filmdatenbank
 tasks:
   - id: zwischentabelle
     title: Wo ist movie_genre geblieben?
+    prediction: true
     prompt: |
       In MySQL ordnete die Tabelle `movie_genre` Filme ihren Genres zu. Was
       wird im Graphen aus ihr?
@@ -26,6 +27,7 @@ tasks:
 
   - id: taetigkeit
     title: Wo steckt die Tätigkeit?
+    prediction: true
     prompt: |
       Wo steht im Graphen, dass Robert Zemeckis bei »Back to the Future«
       Regie geführt hat, und nicht etwa mitgespielt?
