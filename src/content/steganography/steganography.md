@@ -363,11 +363,21 @@ Ist die Botschaft damit unauffindbar? Nein, und gerade weil ihre Bits so gleichm
 
 Ersetzt man das unterste Bit, wird aus einer 208 entweder 208 oder 209, aus einer 209 ebenso. Die Werte 208 und 209 bilden ein **Paar**, und dasselbe gilt für 0 und 1, 2 und 3, bis 254 und 255. Sind die versteckten Bits zufällig, landet jeder Wert eines Paares mit gleicher Wahrscheinlichkeit auf dem einen oder dem anderen. Nach dem Verstecken kommen deshalb beide Werte eines Paares **gleich oft** vor. In einem gewöhnlichen Foto ist das nicht so: Dort ist 208 vielleicht 300-mal da und 209 nur 250-mal.
 
-Der **Chi-Quadrat-Test** misst, wie weit die Paare von »gleich oft« entfernt sind, verglichen mit dem, was der Zufall allein ergäbe. Für jedes Paar zählst du, wie oft seine beiden Werte vorkommen, `a` und `b`. Gleich oft hieße: jeder \\( e = \frac{a+b}{2} \\)-mal. Dann rechnest du
+Der **Chi-Quadrat-Test** misst, wie weit die Paare von »gleich oft« entfernt sind. Zuerst zählst du in den Zeilen, die du untersuchst, wie oft jeder Wert von 0 bis 255 vorkommt, in allen drei Kanälen zusammen. Für jedes Paar heißen seine beiden Anzahlen \\( a \\) und \\( b \\): Beim Paar 208 und 209 ist \\( a \\), wie oft 208 vorkommt, und \\( b \\), wie oft 209 vorkommt.
+
+Wären beide Werte gleich oft da, bekäme jeder die Hälfte von zusammen \\( a + b \\). Diese **erwartete Anzahl** heißt \\( e \\):
+
+$$e = \frac{a+b}{2}$$
+
+Mit 300-mal 208 und 250-mal 209 ist \\( e = \frac{300+250}{2} = 275 \\). So oft käme jeder der beiden Werte vor, wenn sie gleich häufig wären. Tatsächlich liegt 208 um 25 darüber und 209 um 25 darunter. Der Test quadriert diese Abweichungen und teilt sie durch \\( e \\), denn 25 zu viel ist bei 275 viel, bei 27.500 kaum der Rede wert:
+
+$$\frac{(a-e)^2}{e} + \frac{(b-e)^2}{e} = \frac{(300-275)^2}{275} + \frac{(250-275)^2}{275} = \frac{625 + 625}{275} \approx 4{,}5$$
+
+Das rechnest du für jedes Paar, von 0 und 1 bis 254 und 255, und addierst alles:
 
 $$\chi^2 = \sum_{\text{Paare}} \left( \frac{(a-e)^2}{e} + \frac{(b-e)^2}{e} \right)$$
 
-und teilst durch die Zahl der Paare. Paare mit \\( e < 5 \\) lässt du weg, sie sind zu selten, um etwas zu sagen. Kommt etwa 1 heraus, sind die Paare genau so gleich, wie es zufällige unterste Bits machen: verdächtig. Ein Foto ohne Botschaft liegt weit darüber.
+Zum Schluss teilst du durch die Zahl der Paare. Paare mit \\( e < 5 \\) lässt du weg, sie sind zu selten, um etwas zu sagen. Auch zufällige Bits treffen \\( e \\) nicht genau: Wer 550-mal eine Münze wirft, bekommt selten genau 275-mal Kopf. Im Mittel ergibt der Zufall etwa 1 pro Paar. Kommt also etwa 1 heraus, sind die Paare genau so gleich, wie es zufällige unterste Bits machen: verdächtig. Ein Foto ohne Botschaft liegt weit darüber.
 
 Schreib `chi_square(image, top, bottom)`: Es rechnet den Test für die Zeilen `top` bis `bottom` des Bildes. Mit Pillow schneidet `image.crop((0, top, image.width, bottom))` diese Zeilen aus, mit ChunkyPNG `image.crop(0, top, image.width, bottom - top)`.
 
