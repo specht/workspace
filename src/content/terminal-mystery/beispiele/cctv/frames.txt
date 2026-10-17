@@ -1,0 +1,25 @@
+# Die Aufnahmen der drei Kameras in der Nacht vom 14. auf den 15. März 2026:
+# Kamera, Uhrzeit, Bild. Die Kameras zeichnen nur auf, solange sich etwas
+# bewegt, etwa alle 3 Sekunden ein Bild; längere Abstände sind Wege.
+# Laut Zugangsprotokoll öffnet die Karte den Hintereingang um 23:12 und 23:38.
+
+# Kamera 2, Hintereingang: herein
+2  23:12:02  cam2/in-doorway.jpg
+2  23:12:05  cam2/on-mat-door-closing.jpg
+2  23:12:08  cam2/off-mat.jpg
+2  23:12:14  cam2/corridor-away.jpg
+
+# Kamera 1, Ausstellung: an der Vitrine (das Bild vom Hereinkommen fehlt noch)
+1  23:31:04  cam1/at-case.jpg
+1  23:31:07  cam1/lifting-hood.jpg
+1  23:31:12  cam1/reaching-in.jpg
+1  23:31:18  cam1/into-bag.jpg
+1  23:31:41  cam1/leaving.jpg
+
+# Kamera 2, Hintereingang: hinaus
+2  23:37:51  cam2/corridor-back.jpg
+2  23:37:56  cam2/at-handle.jpg
+2  23:37:59  cam2/pushing-door.jpg
+2  23:38:02  cam2/stepping-out.jpg
+2  23:38:05  cam2/door-closing.jpg
+2  23:38:08  cam2/empty.jpg
