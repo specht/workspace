@@ -2,14 +2,14 @@
   "screenshots": {
     "distance-berlin.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "3b8c64af4e68c9b267490e783c440cd50aeb423f04516417247ba04d89b1554b",
+      "output_sha256": "c26efb36e315e5fbf20d951f312e80b54d2b7402ea2f858905de230df2117645",
       "state_hash": "3331f7108d6113ca789705630cb92caa86792cfcc95146cb96efdc0e43ff69ec",
       "workspace_look": "4.138.0-ls366"
     },
     "group-by-sum.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "3658ffa9eee47ca8e5f45b9fa91242b6ac35331c25a891277f393b74fd3589f0",
-      "state_hash": "e00fea31486e1bf96a2b43635275c72722ee2d6ec4ac85504bb5abbdb2e9361c",
+      "output_sha256": "d30defa4388ff1959c740d899dab0f4001daa7d7422063d23d08707454b56af7",
+      "state_hash": "3a107460450bf15b1dad3723e37df08ae60c289f794756f1a3e5bfc51c45cf23",
       "workspace_look": "4.138.0-ls366"
     },
     "group-by.webp": {
@@ -20,31 +20,31 @@
     },
     "join-capitals.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "b0b578e8831ae793e5477fc1afee0dc72780f5aab162190ff93cbb9985c111eb",
-      "state_hash": "e103fa17d168aaefa57b1909632a1a19c22fef16a5826a9acea2dcb078a94428",
+      "output_sha256": "8796706aa0b662a402ea957aa5f6162d2c4dc8e3f9e77f529d3d81a0a5ade1fb",
+      "state_hash": "fc3f02f13c454355eaad2898a62d3f310dd8049c71cd4f8665a07b3f0a65d5ca",
       "workspace_look": "4.138.0-ls366"
     },
     "join-languages.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "86d723a5610f59640d4bf9c4351e7bd8e2f16de031cc8822021f3879e9931f25",
-      "state_hash": "ae16c21ecb4eb9612d99ee2b6043d7f02648cff14860f84f5080bc438b1e6a17",
+      "output_sha256": "6c8e83d874e96e97053a2157f9da3fddee9fe660a5d82508a41f0e4ac44a95b2",
+      "state_hash": "7ca0689a2006b8d08227230991476e48ffb805b30455bb3279eca55b7bafd890",
       "workspace_look": "4.138.0-ls366"
     },
     "join-neighbors.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "b7ac393297ef99a611207c5060a58a791b93b078453fe9a11bd4b46864a66a18",
-      "state_hash": "020099b5bc458bd81c264a59933cf3096e28dbe2d2295b277523e0f4eb440c71",
+      "output_sha256": "d0d717240a6c248327d83b6b25a28deb4b791edc85abcaf05774220a6a6eefe3",
+      "state_hash": "7cfbc47be5e185dbe4815629eebf52b9733d909a4ebd12d5c370c54322aa37aa",
       "workspace_look": "4.138.0-ls366"
     },
     "left-join.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "5e4b031f29a5af5b45e6609185b2b7d97a734cffc507b20a3eac8e033ad4673e",
+      "output_sha256": "aebbce93571780230776154b334a1548bb0905650269ee24e12c3430f9face52",
       "state_hash": "c1abb1d1c9fb1453eec615d6c397bbf56ef2bbc1d027ab811df821e3304d3265",
       "workspace_look": "4.138.0-ls366"
     },
     "show-tables-full.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "dded67b331e793a5c79365c9200e17fabc3cb498e1443778dfde39e45346a3bd",
+      "output_sha256": "4911847032254089aed75ea1858f83b1b72a9aed04f77a4c13ce056600952f7c",
       "state_hash": "675c62968c24e19c3edd4a933ddae8731aa012d4515e6fe894de9d979a2d4522",
       "workspace_look": "4.138.0-ls366"
     },
